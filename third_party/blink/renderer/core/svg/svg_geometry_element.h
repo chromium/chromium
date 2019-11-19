@@ -51,7 +51,7 @@ class SVGGeometryElement : public SVGGraphicsElement {
 
   SVGAnimatedNumber* pathLength() const { return path_length_.Get(); }
 
-  virtual float getTotalLength();
+  virtual float getTotalLength(ExceptionState&);
   virtual SVGPointTearOff* getPointAtLength(float distance);
 
   float AuthorPathLength() const;
@@ -74,7 +74,7 @@ class SVGGeometryElement : public SVGGraphicsElement {
  private:
   bool IsSVGGeometryElement() const final { return true; }
   virtual float ComputePathLength() const;
-  LayoutObject* CreateLayoutObject(const ComputedStyle&) override;
+  LayoutObject* CreateLayoutObject(const ComputedStyle&, LegacyLayout) override;
 
   Member<SVGAnimatedNumber> path_length_;
 };

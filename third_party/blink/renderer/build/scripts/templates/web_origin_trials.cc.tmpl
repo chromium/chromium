@@ -14,13 +14,24 @@ namespace blink {
 
 bool WebOriginTrials::isTrialEnabled(const WebDocument* web_document, const WebString& trial) {
   if (!web_document) return false;
-{% for feature in features %}
-{% if feature.origin_trial_feature_name %}
-  if (trial == origin_trials::k{{feature.name}}TrialName)
-    return origin_trials::{{feature.name}}Enabled(*web_document);
-{% endif %}
-{% endfor %}
-  return false;
+  if (!origin_trials::IsTrialValid(trial))
+    return false;
+  const Vector<OriginTrialFeature>& features = origin_trials::FeaturesForTrial(trial);
+  for (OriginTrialFeature feature : features) {
+    switch (feature) {
+    {% for feature in features %}
+    {% if feature.origin_trial_feature_name %}
+      case OriginTrialFeature::k{{feature.name}}:
+        if (!RuntimeEnabledFeatures::{{feature.name}}Enabled(*web_document))
+          return false;
+        break;
+    {% endif %}
+    {% endfor %}
+      default:
+        break;
+    }
+  }
+  return true;
 }
 
 

@@ -17,7 +17,7 @@ class Profile;
 
 namespace extensions {
 
-class GcmApiFunction : public UIThreadExtensionFunction {
+class GcmApiFunction : public ExtensionFunction {
  public:
   GcmApiFunction() {}
 
@@ -42,7 +42,7 @@ class GcmRegisterFunction : public GcmApiFunction {
  protected:
   ~GcmRegisterFunction() override;
 
-  // UIThreadExtensionFunction:
+  // ExtensionFunction:
   ResponseAction Run() final;
 
  private:
@@ -59,7 +59,7 @@ class GcmUnregisterFunction : public GcmApiFunction {
  protected:
   ~GcmUnregisterFunction() override;
 
-  // UIThreadExtensionFunction:
+  // ExtensionFunction:
   ResponseAction Run() final;
 
  private:
@@ -75,7 +75,7 @@ class GcmSendFunction : public GcmApiFunction {
  protected:
   ~GcmSendFunction() override;
 
-  // UIThreadExtensionFunction:
+  // ExtensionFunction:
   ResponseAction Run() final;
 
  private:

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2018 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<org.chromium.ui.widget.ButtonCompat
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:gravity="center"
+    android:layout_height="wrap_content"
+    android:layout_width="wrap_content"
+    android:paddingEnd="@dimen/keyboard_accessory_suggestion_padding"
+    android:paddingStart="@dimen/keyboard_accessory_suggestion_padding"
+    android:textAlignment="center"
+    style="@style/FilledButton.Flat" />

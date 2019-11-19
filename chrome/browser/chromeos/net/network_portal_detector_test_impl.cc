@@ -41,8 +41,21 @@ void NetworkPortalDetectorTestImpl::NotifyObserversForTesting() {
   CaptivePortalState state;
   if (default_network_ && portal_state_map_.count(default_network_->guid()))
     state = portal_state_map_[default_network_->guid()];
+  portal_detection_in_progress_ = false;
   for (auto& observer : observers_)
     observer.OnPortalDetectionCompleted(default_network_.get(), state);
+}
+
+std::string NetworkPortalDetectorTestImpl::GetDefaultNetworkGuid() const {
+  if (!default_network_)
+    return "";
+
+  return default_network_->guid();
+}
+
+void NetworkPortalDetectorTestImpl::RegisterPortalDetectionStartCallback(
+    base::OnceClosure callback) {
+  start_detection_callbacks_.push_back(std::move(callback));
 }
 
 void NetworkPortalDetectorTestImpl::AddObserver(Observer* observer) {
@@ -89,7 +102,16 @@ void NetworkPortalDetectorTestImpl::Enable(bool start_detection) {
 }
 
 bool NetworkPortalDetectorTestImpl::StartPortalDetection(bool force) {
-  return false;
+  if (portal_detection_in_progress_ && !force)
+    return false;
+
+  portal_detection_in_progress_ = true;
+  std::vector<base::OnceClosure> callbacks =
+      std::move(start_detection_callbacks_);
+  for (auto& callback : callbacks)
+    std::move(callback).Run();
+
+  return true;
 }
 
 void NetworkPortalDetectorTestImpl::SetStrategy(

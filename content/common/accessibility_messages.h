@@ -31,6 +31,9 @@ IPC_ENUM_TRAITS_MAX_VALUE(content::AXContentIntAttribute,
                           content::AX_CONTENT_INT_ATTRIBUTE_LAST)
 IPC_ENUM_TRAITS_MAX_VALUE(ax::mojom::Action, ax::mojom::Action::kMaxValue)
 
+IPC_ENUM_TRAITS_MAX_VALUE(ax::mojom::ScrollAlignment,
+                          ax::mojom::ScrollAlignment::kMaxValue)
+
 IPC_STRUCT_TRAITS_BEGIN(ui::AXActionData)
   IPC_STRUCT_TRAITS_MEMBER(action)
   IPC_STRUCT_TRAITS_MEMBER(target_tree_id)
@@ -47,6 +50,8 @@ IPC_STRUCT_TRAITS_BEGIN(ui::AXActionData)
   IPC_STRUCT_TRAITS_MEMBER(target_point)
   IPC_STRUCT_TRAITS_MEMBER(value)
   IPC_STRUCT_TRAITS_MEMBER(hit_test_event_to_fire)
+  IPC_STRUCT_TRAITS_MEMBER(horizontal_scroll_alignment)
+  IPC_STRUCT_TRAITS_MEMBER(vertical_scroll_alignment)
 IPC_STRUCT_TRAITS_END()
 
 IPC_STRUCT_TRAITS_BEGIN(content::AXContentNodeData)
@@ -76,6 +81,7 @@ IPC_STRUCT_TRAITS_BEGIN(content::AXContentTreeData)
   IPC_STRUCT_TRAITS_MEMBER(loaded)
   IPC_STRUCT_TRAITS_MEMBER(loading_progress)
   IPC_STRUCT_TRAITS_MEMBER(focus_id)
+  IPC_STRUCT_TRAITS_MEMBER(sel_is_backward)
   IPC_STRUCT_TRAITS_MEMBER(sel_anchor_object_id)
   IPC_STRUCT_TRAITS_MEMBER(sel_anchor_offset)
   IPC_STRUCT_TRAITS_MEMBER(sel_anchor_affinity)
@@ -138,18 +144,6 @@ IPC_STRUCT_END()
 IPC_MESSAGE_ROUTED1(AccessibilityMsg_PerformAction,
                     ui::AXActionData  /* action parameters */)
 
-// Determine the accessibility object under a given point.
-//
-// If the target is an object with a child frame (like if the hit test
-// result is an iframe element), it responds with
-// AccessibilityHostMsg_ChildFrameHitTestResult so that the
-// hit test can be performed recursively on the child frame. Otherwise
-// it fires an accessibility event of type |event_to_fire| on the target.
-IPC_MESSAGE_ROUTED3(AccessibilityMsg_HitTest,
-                    gfx::Point /* location to test */,
-                    ax::mojom::Event /* event to fire */,
-                    int /* action request id */)
-
 // Tells the render view that a AccessibilityHostMsg_EventBundle
 // message was processed and it can send additional updates. The argument
 // must be the same as the ack_token passed to
@@ -201,7 +195,11 @@ IPC_MESSAGE_ROUTED1(
     AccessibilityHostMsg_FindInPageResult,
     AccessibilityHostMsg_FindInPageResultParams)
 
-// Sent in response to AccessibilityMsg_HitTest.
+// Sent when a Find In Page operation is finished and all highlighted results
+// are cleared.
+IPC_MESSAGE_ROUTED0(AccessibilityHostMsg_FindInPageTermination)
+
+// Sent in response to PerformAction with parameter kHitTest.
 IPC_MESSAGE_ROUTED5(AccessibilityHostMsg_ChildFrameHitTestResult,
                     int /* action request id of initial caller */,
                     gfx::Point /* location tested */,

@@ -15,8 +15,8 @@ cr.define('serviceworker', function() {
   }
 
   function onOptions(options) {
-    var template;
-    var container = $('serviceworker-options');
+    let template;
+    const container = $('serviceworker-options');
     if (container.childNodes) {
       template = container.childNodes[0];
     }
@@ -25,8 +25,8 @@ cr.define('serviceworker', function() {
       container.appendChild(template);
     }
     jstProcess(new JsEvalContext(options), template);
-    var inputs = container.querySelectorAll('input[type=\'checkbox\']');
-    for (var i = 0; i < inputs.length; ++i) {
+    const inputs = container.querySelectorAll('input[type=\'checkbox\']');
+    for (let i = 0; i < inputs.length; ++i) {
       if (!inputs[i].hasClickEvent) {
         inputs[i].addEventListener(
             'click',
@@ -45,10 +45,10 @@ cr.define('serviceworker', function() {
   }
 
   // All commands are completed with 'onOperationComplete'.
-  var COMMANDS = ['stop', 'inspect', 'unregister', 'start'];
+  const COMMANDS = ['stop', 'inspect', 'unregister', 'start'];
   function commandHandler(command) {
     return function(event) {
-      var link = event.target;
+      const link = event.target;
       progressNodeFor(link).style.display = 'inline';
       sendCommand(command, link.cmdArgs, (function(status) {
                                            progressNodeFor(link).style.display =
@@ -56,11 +56,11 @@ cr.define('serviceworker', function() {
                                          }).bind(null, link));
       return false;
     };
-  };
+  }
 
-  var commandCallbacks = [];
+  const commandCallbacks = [];
   function sendCommand(command, args, callback) {
-    var callbackId = 0;
+    let callbackId = 0;
     while (callbackId in commandCallbacks) {
       callbackId++;
     }
@@ -70,7 +70,7 @@ cr.define('serviceworker', function() {
 
   // Fired from the backend after the command call has completed.
   function onOperationComplete(status, callbackId) {
-    var callback = commandCallbacks[callbackId];
+    const callback = commandCallbacks[callbackId];
     delete commandCallbacks[callbackId];
     if (callback) {
       callback(status);
@@ -78,7 +78,7 @@ cr.define('serviceworker', function() {
     update();
   }
 
-  var allLogMessages = {};
+  const allLogMessages = {};
   // Set log for a worker version.
   function fillLogForVersion(container, partition_id, version) {
     if (!version) {
@@ -87,15 +87,15 @@ cr.define('serviceworker', function() {
     if (!(partition_id in allLogMessages)) {
       allLogMessages[partition_id] = {};
     }
-    var logMessages = allLogMessages[partition_id];
+    const logMessages = allLogMessages[partition_id];
     if (version.version_id in logMessages) {
       version.log = logMessages[version.version_id];
     } else {
       version.log = '';
     }
-    var logAreas = container.querySelectorAll('textarea.serviceworker-log');
-    for (var i = 0; i < logAreas.length; ++i) {
-      var logArea = logAreas[i];
+    const logAreas = container.querySelectorAll('textarea.serviceworker-log');
+    for (let i = 0; i < logAreas.length; ++i) {
+      const logArea = logAreas[i];
       if (logArea.partition_id == partition_id &&
           logArea.version_id == version.version_id) {
         logArea.value = version.log;
@@ -112,28 +112,28 @@ cr.define('serviceworker', function() {
   function getUnregisteredWorkers(
       stored_registrations, live_registrations, live_versions,
       unregistered_registrations, unregistered_versions) {
-    var registration_id_set = {};
-    var version_id_set = {};
+    const registrationIdSet = {};
+    const versionIdSet = {};
     stored_registrations.forEach(function(registration) {
-      registration_id_set[registration.registration_id] = true;
+      registrationIdSet[registration.registration_id] = true;
     });
     [stored_registrations, live_registrations].forEach(function(registrations) {
       registrations.forEach(function(registration) {
         [registration.active, registration.waiting].forEach(function(version) {
           if (version) {
-            version_id_set[version.version_id] = true;
+            versionIdSet[version.version_id] = true;
           }
         });
       });
     });
     live_registrations.forEach(function(registration) {
-      if (!registration_id_set[registration.registration_id]) {
+      if (!registrationIdSet[registration.registration_id]) {
         registration.unregistered = true;
         unregistered_registrations.push(registration);
       }
     });
     live_versions.forEach(function(version) {
-      if (!version_id_set[version.version_id]) {
+      if (!versionIdSet[version.version_id]) {
         unregistered_versions.push(version);
       }
     });
@@ -143,17 +143,17 @@ cr.define('serviceworker', function() {
   function onPartitionData(
       live_registrations, live_versions, stored_registrations, partition_id,
       partition_path) {
-    var unregistered_registrations = [];
-    var unregistered_versions = [];
+    const unregisteredRegistrations = [];
+    const unregisteredVersions = [];
     getUnregisteredWorkers(
         stored_registrations, live_registrations, live_versions,
-        unregistered_registrations, unregistered_versions);
-    var template;
-    var container = $('serviceworker-list');
+        unregisteredRegistrations, unregisteredVersions);
+    let template;
+    const container = $('serviceworker-list');
     // Existing templates are keyed by partition_id. This allows
     // the UI to be updated in-place rather than refreshing the
     // whole page.
-    for (var i = 0; i < container.childNodes.length; ++i) {
+    for (let i = 0; i < container.childNodes.length; ++i) {
       if (container.childNodes[i].partition_id == partition_id) {
         template = container.childNodes[i];
       }
@@ -163,27 +163,27 @@ cr.define('serviceworker', function() {
       template = jstGetTemplate('serviceworker-list-template');
       container.appendChild(template);
     }
-    var fillLogFunc = fillLogForVersion.bind(this, container, partition_id);
+    const fillLogFunc = fillLogForVersion.bind(this, container, partition_id);
     stored_registrations.forEach(function(registration) {
       [registration.active, registration.waiting].forEach(fillLogFunc);
     });
-    unregistered_registrations.forEach(function(registration) {
+    unregisteredRegistrations.forEach(function(registration) {
       [registration.active, registration.waiting].forEach(fillLogFunc);
     });
-    unregistered_versions.forEach(fillLogFunc);
+    unregisteredVersions.forEach(fillLogFunc);
     jstProcess(
         new JsEvalContext({
           stored_registrations: stored_registrations,
-          unregistered_registrations: unregistered_registrations,
-          unregistered_versions: unregistered_versions,
+          unregistered_registrations: unregisteredRegistrations,
+          unregistered_versions: unregisteredVersions,
           partition_id: partition_id,
           partition_path: partition_path
         }),
         template);
-    for (var i = 0; i < COMMANDS.length; ++i) {
-      var handler = commandHandler(COMMANDS[i]);
-      var links = container.querySelectorAll('button.' + COMMANDS[i]);
-      for (var j = 0; j < links.length; ++j) {
+    for (let i = 0; i < COMMANDS.length; ++i) {
+      const handler = commandHandler(COMMANDS[i]);
+      const links = container.querySelectorAll('button.' + COMMANDS[i]);
+      for (let j = 0; j < links.length; ++j) {
         if (!links[j].hasClickEvent) {
           links[j].addEventListener('click', handler, false);
           links[j].hasClickEvent = true;
@@ -192,7 +192,7 @@ cr.define('serviceworker', function() {
     }
   }
 
-  function onRunningStateChanged(partition_id, version_id) {
+  function onRunningStateChanged() {
     update();
   }
 
@@ -223,16 +223,16 @@ cr.define('serviceworker', function() {
     if (!(partition_id in allLogMessages)) {
       allLogMessages[partition_id] = {};
     }
-    var logMessages = allLogMessages[partition_id];
+    const logMessages = allLogMessages[partition_id];
     if (version_id in logMessages) {
       logMessages[version_id] += message;
     } else {
       logMessages[version_id] = message;
     }
 
-    var logAreas = document.querySelectorAll('textarea.serviceworker-log');
-    for (var i = 0; i < logAreas.length; ++i) {
-      var logArea = logAreas[i];
+    const logAreas = document.querySelectorAll('textarea.serviceworker-log');
+    for (let i = 0; i < logAreas.length; ++i) {
+      const logArea = logAreas[i];
       if (logArea.partition_id == partition_id &&
           logArea.version_id == version_id) {
         logArea.value += message;

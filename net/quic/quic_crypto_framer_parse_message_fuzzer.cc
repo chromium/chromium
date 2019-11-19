@@ -5,8 +5,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "net/third_party/quic/core/crypto/crypto_framer.h"
-#include "net/third_party/quic/platform/api/quic_string_piece.h"
+#include "net/third_party/quiche/src/quic/core/crypto/crypto_framer.h"
+#include "net/third_party/quiche/src/quic/platform/api/quic_string_piece.h"
 
 // Entry point for LibFuzzer.
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {

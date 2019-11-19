@@ -147,8 +147,8 @@ class PreferenceValidationDelegateValues
       }
       case Value::Type::LIST: {
         Value value(base::Value::Type::LIST);
-        value.GetList().emplace_back(22);
-        value.GetList().emplace_back(47);
+        value.Append(22);
+        value.Append(47);
         return value;
       }
       default:

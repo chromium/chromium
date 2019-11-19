@@ -45,11 +45,11 @@ class SystemMenuButton : public views::ImageButton {
   void SetInkDropColor(SkColor color);
 
   // views::ImageButton:
-  void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   std::unique_ptr<views::InkDrop> CreateInkDrop() override;
   std::unique_ptr<views::InkDropRipple> CreateInkDropRipple() const override;
   std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight()
       const override;
+  const char* GetClassName() const override;
 
  private:
   // Returns the size that the ink drop should be constructed with.

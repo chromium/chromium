@@ -5,6 +5,7 @@
 #include "printing/common/metafile_utils.h"
 
 #include "base/time/time.h"
+#include "printing/common/printing_features.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkPicture.h"
 #include "third_party/skia/include/core/SkPictureRecorder.h"
@@ -51,6 +52,10 @@ sk_sp<SkDocument> MakePdfDocument(const std::string& creator,
                           ? SkString("Chromium")
                           : SkString(creator.c_str(), creator.size());
   metadata.fRasterDPI = 300.0f;
+  metadata.fSubsetter =
+      base::FeatureList::IsEnabled(printing::features::kHarfBuzzPDFSubsetter)
+          ? SkPDF::Metadata::kHarfbuzz_Subsetter
+          : SkPDF::Metadata::kSfntly_Subsetter;
   return SkPDF::MakeDocument(stream, metadata);
 }
 

@@ -1,3 +1,0 @@
-Tests an animation where all keyframes are empty, applied to an element which is composited.
-
-This test passes if it doesn't crash.

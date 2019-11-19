@@ -6,8 +6,8 @@
 
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "chrome/browser/chromeos/child_accounts/consumer_status_reporting_service.h"
-#include "chrome/browser/chromeos/child_accounts/consumer_status_reporting_service_factory.h"
+#include "chrome/browser/chromeos/child_accounts/child_status_reporting_service.h"
+#include "chrome/browser/chromeos/child_accounts/child_status_reporting_service_factory.h"
 #include "chrome/browser/chromeos/child_accounts/screen_time_controller_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
@@ -111,7 +111,7 @@ void EventBasedStatusReportingService::RequestStatusReport(
     StatusReportEvent event) {
   VLOG(1) << StatusReportEventToString(event);
   bool was_scheduled =
-      ConsumerStatusReportingServiceFactory::GetForBrowserContext(context_)
+      ChildStatusReportingServiceFactory::GetForBrowserContext(context_)
           ->RequestImmediateStatusReport();
   if (was_scheduled)
     LogStatusReportEventUMA(event);

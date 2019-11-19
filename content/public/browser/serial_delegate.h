@@ -23,11 +23,15 @@ class CONTENT_EXPORT SerialDelegate {
 
   // Shows a chooser for the user to select a serial port.  |callback| will be
   // run when the prompt is closed. Deleting the returned object will cancel the
-  // prompt.
+  // prompt. This method should not be called if CanRequestPortPermission()
+  // below returned false.
   virtual std::unique_ptr<SerialChooser> RunChooser(
       RenderFrameHost* frame,
       std::vector<blink::mojom::SerialPortFilterPtr> filters,
       SerialChooser::Callback callback) = 0;
+
+  // Returns whether |frame| has permission to request access to a port.
+  virtual bool CanRequestPortPermission(RenderFrameHost* frame) = 0;
 
   // Returns whether |frame| has permission to access |port|.
   virtual bool HasPortPermission(RenderFrameHost* frame,

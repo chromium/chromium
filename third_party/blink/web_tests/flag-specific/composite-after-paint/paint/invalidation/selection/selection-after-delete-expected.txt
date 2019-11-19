@@ -1,0 +1,370 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "InlineTextBox ' '",
+          "rect": [39, 79, 154, 99],
+          "reason": "disappeared"
+        },
+        {
+          "object": "InlineTextBox ' '",
+          "rect": [39, 79, 154, 99],
+          "reason": "disappeared"
+        },
+        {
+          "object": "InlineTextBox ' '",
+          "rect": [39, 79, 154, 99],
+          "reason": "disappeared"
+        },
+        {
+          "object": "InlineTextBox ' '",
+          "rect": [39, 79, 154, 99],
+          "reason": "disappeared"
+        },
+        {
+          "object": "InlineTextBox 'hello world hello world'",
+          "rect": [39, 79, 154, 99],
+          "reason": "disappeared"
+        },
+        {
+          "object": "InlineTextBox 'hello world hello world'",
+          "rect": [39, 79, 154, 99],
+          "reason": "disappeared"
+        },
+        {
+          "object": "InlineTextBox 'hello world hello world'",
+          "rect": [39, 79, 154, 99],
+          "reason": "disappeared"
+        },
+        {
+          "object": "InlineTextBox 'hello world hello world'",
+          "rect": [39, 79, 154, 99],
+          "reason": "disappeared"
+        },
+        {
+          "object": "InlineTextBox 'hello'",
+          "rect": [39, 79, 154, 99],
+          "reason": "disappeared"
+        },
+        {
+          "object": "LayoutBlockFlow DIV id='test'",
+          "rect": [38, 78, 152, 102],
+          "reason": "geometry"
+        },
+        {
+          "object": "Caret",
+          "rect": [39, 79, 1, 19],
+          "reason": "appeared"
+        }
+      ],
+      "underPaintInvalidations": [
+        {
+          "x": 194,
+          "y": 79,
+          "oldPixel": "#338FFF",
+          "newPixel": "#FFFFFF"
+        },
+        {
+          "x": 194,
+          "y": 80,
+          "oldPixel": "#338FFF",
+          "newPixel": "#FFFFFF"
+        },
+        {
+          "x": 194,
+          "y": 81,
+          "oldPixel": "#338FFF",
+          "newPixel": "#FFFFFF"
+        },
+        {
+          "x": 194,
+          "y": 82,
+          "oldPixel": "#338FFF",
+          "newPixel": "#FFFFFF"
+        },
+        {
+          "x": 194,
+          "y": 83,
+          "oldPixel": "#338FFF",
+          "newPixel": "#FFFFFF"
+        },
+        {
+          "x": 194,
+          "y": 84,
+          "oldPixel": "#338FFF",
+          "newPixel": "#FFFFFF"
+        },
+        {
+          "x": 194,
+          "y": 85,
+          "oldPixel": "#338FFF",
+          "newPixel": "#FFFFFF"
+        },
+        {
+          "x": 194,
+          "y": 86,
+          "oldPixel": "#338FFF",
+          "newPixel": "#FFFFFF"
+        },
+        {
+          "x": 194,
+          "y": 87,
+          "oldPixel": "#338FFF",
+          "newPixel": "#FFFFFF"
+        },
+        {
+          "x": 194,
+          "y": 88,
+          "oldPixel": "#338FFF",
+          "newPixel": "#FFFFFF"
+        },
+        {
+          "x": 194,
+          "y": 89,
+          "oldPixel": "#338FFF",
+          "newPixel": "#FFFFFF"
+        },
+        {
+          "x": 194,
+          "y": 90,
+          "oldPixel": "#338FFF",
+          "newPixel": "#FFFFFF"
+        },
+        {
+          "x": 194,
+          "y": 91,
+          "oldPixel": "#338FFF",
+          "newPixel": "#FFFFFF"
+        },
+        {
+          "x": 194,
+          "y": 92,
+          "oldPixel": "#338FFF",
+          "newPixel": "#FFFFFF"
+        },
+        {
+          "x": 194,
+          "y": 93,
+          "oldPixel": "#338FFF",
+          "newPixel": "#FFFFFF"
+        },
+        {
+          "x": 194,
+          "y": 94,
+          "oldPixel": "#338FFF",
+          "newPixel": "#FFFFFF"
+        },
+        {
+          "x": 194,
+          "y": 95,
+          "oldPixel": "#338FFF",
+          "newPixel": "#FFFFFF"
+        },
+        {
+          "x": 194,
+          "y": 96,
+          "oldPixel": "#338FFF",
+          "newPixel": "#FFFFFF"
+        },
+        {
+          "x": 194,
+          "y": 97,
+          "oldPixel": "#338FFF",
+          "newPixel": "#FFFFFF"
+        },
+        {
+          "x": 194,
+          "y": 98,
+          "oldPixel": "#338FFF",
+          "newPixel": "#FFFFFF"
+        },
+        {
+          "x": 194,
+          "y": 99,
+          "oldPixel": "#338FFF",
+          "newPixel": "#FFFFFF"
+        },
+        {
+          "x": 194,
+          "y": 100,
+          "oldPixel": "#338FFF",
+          "newPixel": "#FFFFFF"
+        },
+        {
+          "x": 194,
+          "y": 101,
+          "oldPixel": "#338FFF",
+          "newPixel": "#FFFFFF"
+        },
+        {
+          "x": 194,
+          "y": 102,
+          "oldPixel": "#338FFF",
+          "newPixel": "#FFFFFF"
+        },
+        {
+          "x": 194,
+          "y": 103,
+          "oldPixel": "#338FFF",
+          "newPixel": "#FFFFFF"
+        },
+        {
+          "x": 194,
+          "y": 104,
+          "oldPixel": "#338FFF",
+          "newPixel": "#FFFFFF"
+        },
+        {
+          "x": 194,
+          "y": 105,
+          "oldPixel": "#338FFF",
+          "newPixel": "#FFFFFF"
+        },
+        {
+          "x": 194,
+          "y": 106,
+          "oldPixel": "#338FFF",
+          "newPixel": "#FFFFFF"
+        },
+        {
+          "x": 194,
+          "y": 107,
+          "oldPixel": "#338FFF",
+          "newPixel": "#FFFFFF"
+        },
+        {
+          "x": 194,
+          "y": 108,
+          "oldPixel": "#338FFF",
+          "newPixel": "#FFFFFF"
+        },
+        {
+          "x": 194,
+          "y": 109,
+          "oldPixel": "#338FFF",
+          "newPixel": "#FFFFFF"
+        },
+        {
+          "x": 194,
+          "y": 110,
+          "oldPixel": "#338FFF",
+          "newPixel": "#FFFFFF"
+        },
+        {
+          "x": 194,
+          "y": 111,
+          "oldPixel": "#338FFF",
+          "newPixel": "#FFFFFF"
+        },
+        {
+          "x": 194,
+          "y": 112,
+          "oldPixel": "#338FFF",
+          "newPixel": "#FFFFFF"
+        },
+        {
+          "x": 194,
+          "y": 113,
+          "oldPixel": "#338FFF",
+          "newPixel": "#FFFFFF"
+        },
+        {
+          "x": 194,
+          "y": 114,
+          "oldPixel": "#338FFF",
+          "newPixel": "#FFFFFF"
+        },
+        {
+          "x": 194,
+          "y": 115,
+          "oldPixel": "#338FFF",
+          "newPixel": "#FFFFFF"
+        },
+        {
+          "x": 194,
+          "y": 116,
+          "oldPixel": "#338FFF",
+          "newPixel": "#FFFFFF"
+        },
+        {
+          "x": 194,
+          "y": 117,
+          "oldPixel": "#338FFF",
+          "newPixel": "#FFFFFF"
+        },
+        {
+          "x": 194,
+          "y": 118,
+          "oldPixel": "#338FFF",
+          "newPixel": "#FFFFFF"
+        },
+        {
+          "x": 194,
+          "y": 119,
+          "oldPixel": "#338FFF",
+          "newPixel": "#FFFFFF"
+        },
+        {
+          "x": 194,
+          "y": 120,
+          "oldPixel": "#338FFF",
+          "newPixel": "#FFFFFF"
+        },
+        {
+          "x": 194,
+          "y": 121,
+          "oldPixel": "#338FFF",
+          "newPixel": "#FFFFFF"
+        },
+        {
+          "x": 194,
+          "y": 122,
+          "oldPixel": "#338FFF",
+          "newPixel": "#FFFFFF"
+        },
+        {
+          "x": 194,
+          "y": 123,
+          "oldPixel": "#338FFF",
+          "newPixel": "#FFFFFF"
+        },
+        {
+          "x": 194,
+          "y": 124,
+          "oldPixel": "#338FFF",
+          "newPixel": "#FFFFFF"
+        },
+        {
+          "x": 194,
+          "y": 125,
+          "oldPixel": "#338FFF",
+          "newPixel": "#FFFFFF"
+        },
+        {
+          "x": 194,
+          "y": 126,
+          "oldPixel": "#338FFF",
+          "newPixel": "#FFFFFF"
+        },
+        {
+          "x": 194,
+          "y": 127,
+          "oldPixel": "#338FFF",
+          "newPixel": "#FFFFFF"
+        },
+        {
+          "x": 194,
+          "y": 128,
+          "oldPixel": "#338FFF",
+          "newPixel": "#FFFFFF"
+        }
+      ]
+    }
+  ]
+}
+

@@ -14,6 +14,14 @@ TEST(NetworkLibraryTest, CaptivePortal) {
   EXPECT_FALSE(android::GetIsCaptivePortal());
 }
 
+TEST(NetworkLibraryTest, GetWifiSignalLevel) {
+  base::Optional<int32_t> signal_strength = android::GetWifiSignalLevel();
+  if (!signal_strength.has_value())
+    return;
+  EXPECT_LE(0, signal_strength.value());
+  EXPECT_GE(4, signal_strength.value());
+}
+
 }  // namespace android
 
 }  // namespace net

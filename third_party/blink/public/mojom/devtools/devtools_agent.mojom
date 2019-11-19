@@ -6,7 +6,7 @@ module blink.mojom;
 
 import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
-import "ui/gfx/geometry/mojo/geometry.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
 
 struct DevToolsMessage {
@@ -68,10 +68,15 @@ interface DevToolsAgent {
   // relative to anything coming over regular |session|.
   // For example, |session| may be already detached (interface unbound),
   // while commands are still coming to |io_session|, and vice versa.
-  AttachDevToolsSession(associated DevToolsSessionHost host,
-                        associated DevToolsSession& session,
-                        DevToolsSession& io_session,
-                        DevToolsSessionState? reattach_session_state);
+  //
+  // |client_expects_binary_response| indicates that responses (and
+  // notifications) sent from this session should use binary (CBOR)
+  // encoding as opposed to JSON encoding.
+  AttachDevToolsSession(pending_associated_remote<DevToolsSessionHost> host,
+                        pending_associated_receiver<DevToolsSession> session,
+                        pending_receiver<DevToolsSession> io_session,
+                        DevToolsSessionState? reattach_session_state,
+                        bool client_expects_binary_responses);
 
   // Requests an element at specific position to be inspected in every
   // attached session (or the next attached one if none yet).
@@ -97,8 +102,8 @@ interface DevToolsAgentHost {
   // |waiting_for_debugger| is true if worker was paused on startup and
   // should be resumed by debugger to actually start.
   ChildWorkerCreated(
-      DevToolsAgent worker_devtools_agent,
-      DevToolsAgentHost& worker_devtools_agent_host,
+      pending_remote<DevToolsAgent> worker_devtools_agent,
+      pending_receiver<DevToolsAgentHost> worker_devtools_agent_host,
       url.mojom.Url url,
       string name,
       mojo_base.mojom.UnguessableToken devtools_worker_token,
@@ -144,5 +149,5 @@ interface DevToolsSessionHost {
 // the respective key when its applying the updates in
 // DevToolsSession::ApplySessionStateUpdates.
 struct DevToolsSessionState {
-  map<string, string?> entries;
+  map<string, array<uint8>?> entries;
 };

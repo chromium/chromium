@@ -8,7 +8,7 @@
 #include <stdint.h>
 
 #include "ash/ash_export.h"
-#include "ash/wallpaper/wallpaper_info.h"
+#include "ash/public/cpp/wallpaper_info.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_resizer_observer.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
@@ -81,7 +81,7 @@ class ASH_EXPORT WallpaperResizer {
 
   scoped_refptr<base::TaskRunner> task_runner_;
 
-  base::WeakPtrFactory<WallpaperResizer> weak_ptr_factory_;
+  base::WeakPtrFactory<WallpaperResizer> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(WallpaperResizer);
 };

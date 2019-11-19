@@ -1,0 +1,153 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="/profile_browser_proxy.html">
+<link rel="import" href="/shared_styles.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_checkbox/cr_checkbox.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_input/cr_input.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_profile_avatar_selector/cr_profile_avatar_selector.html">
+<link rel="import" href="chrome://resources/cr_elements/icons.html">
+<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
+<link rel="import" href="chrome://resources/html/action_link.html">
+<link rel="import" href="chrome://resources/html/cr.html">
+<link rel="import" href="chrome://resources/html/i18n_behavior.html">
+<link rel="import" href="chrome://resources/cr_elements/md_select_css.html">
+<link rel="import" href="chrome://resources/html/util.html">
+<link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/paper-spinner/paper-spinner-lite.html">
+
+<dom-module id="create-profile">
+  <template>
+    <style include="shared-styles iron-positioning md-select">
+      :host {
+        align-self: center;
+      }
+
+      .container {
+        color: var(--cr-primary-text-color);
+        width: var(--page-width);
+      }
+
+      #message-container {
+        -webkit-transition: top 400ms cubic-bezier(.4, 0, .2, 1),
+                            visibility 0s linear 400ms;
+        align-items: center;
+        background-color: var(--paper-red-50);
+        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, .12);
+        color: var(--error-color);
+        display: flex;
+        height: 40px;
+        left: 0;
+        overflow: hidden;
+        padding: 0 16px;
+        position: absolute;
+        right: 0;
+        top: -40px;
+        visibility: hidden;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        #message-container {
+          background-color: unset;
+          border-bottom: var(--cr-separator-line);
+          box-shadow: none;
+        }
+      }
+
+      #message-container[visible] {
+        -webkit-transition: top 400ms cubic-bezier(.4, 0, .2, 1),
+                            visibility 0s linear 0s;
+        top: 0;
+        visibility: visible;
+      }
+
+      #message-container iron-icon {
+        --iron-icon-height: 20px;
+        --iron-icon-width: 20px;
+      }
+
+      #message-container #message {
+        margin-inline-start: 16px;
+      }
+
+      #message-container a {
+        color: inherit;
+        text-decoration: underline;
+      }
+
+      #title-bar {
+        font-size: 16px;
+        font-weight: 500;
+      }
+
+      #nameInput {
+        --cr-input-color: var(--cr-primary-text-color);
+        --cr-input-border-bottom: 1px solid var(--cr-secondary-text-color);
+        margin-bottom: 24px;
+        margin-top: 32px;
+        width: 300px;
+      }
+
+      cr-checkbox {
+        margin-top: 24px;
+      }
+
+      #actions {
+        bottom: 16px;
+        display: flex;
+        position: absolute;
+        right: 16px;
+      }
+
+      :host-context([dir='rtl']) #actions {
+        left: 16px;
+        right: auto;
+      }
+
+      #actions paper-spinner-lite {
+        align-self: center;
+        height: 20px;
+        margin-inline-end: 8px;
+        width: 20px;
+      }
+
+      cr-profile-avatar-selector {
+        max-height: 50vh;
+        overflow-x: hidden;
+        overflow-y: auto;
+        padding: 8px;
+      }
+    </style>
+    <div id="message-container" visible$="[[isMessageVisble_]]">
+      <iron-icon icon="cr:warning"></iron-icon>
+      <span id="message" inner-h-t-m-l="[[message_]]"></span>
+    </div>
+    <div class="container">
+      <div id="title-bar">$i18n{createProfileTitle}</div>
+      <cr-input id="nameInput" value="{{profileName_}}" pattern=".*\S.*"
+          placeholder="$i18n{createProfileNamePlaceholder}"
+          auto-validate spellcheck="false">
+      </cr-input>
+      <cr-profile-avatar-selector avatars="[[availableIcons_]]"
+          selected-avatar="{{selectedAvatar_}}">
+      </cr-profile-avatar-selector>
+      <cr-checkbox id="createShortcutCheckbox" checked="{{createShortcut_}}"
+          hidden="[[!isProfileShortcutsEnabled_]]">
+        $i18n{createDesktopShortcutLabel}
+      </cr-checkbox>
+      <div id="actions">
+        <paper-spinner-lite active="[[isSpinnerActive_(createInProgress_)]]">
+        </paper-spinner-lite>
+        <cr-button id="cancel" class="cancel-button" on-click="onCancelTap_">
+          $i18n{cancel}
+        </cr-button>
+        <cr-button id="save" class="action-button" on-click="onSaveTap_"
+            disabled="[[isSaveDisabled_(createInProgress_, profileName_)]]">
+          $i18n{createProfileConfirm}
+        </cr-button>
+      </div>
+    </div>
+  </template>
+  <script src="create_profile.js"></script>
+</dom-module>

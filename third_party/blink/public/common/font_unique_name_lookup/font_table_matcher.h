@@ -54,6 +54,12 @@ class BLINK_COMMON_EXPORT FontTableMatcher {
   // their internal list of fonts is disjoint. Used only for testing.
   bool FontListIsDisjointFrom(const FontTableMatcher& other) const;
 
+  // When building a FontUniqueNameTable, use this function to prepare and sort
+  // the font names in the protobuf datastructure so that the binary search used
+  // by calls to MatchName succeeds on ReadOnlySharedMemoryMappings that are
+  // handed out to renderers.
+  static void SortUniqueNameTableForSearch(FontUniqueNameTable* font_table);
+
  private:
   FontUniqueNameTable font_table_;
 };

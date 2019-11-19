@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/dom/document_init.h"
 #include "third_party/blink/renderer/core/dom/document_parser.h"
 #include "third_party/blink/renderer/core/html/html_view_source_document.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -15,10 +16,10 @@ namespace blink {
 // This is a regression test for https://crbug.com/664915
 TEST(HTMLViewSourceParserTest, DetachThenFinish_ShouldNotCrash) {
   String mime_type("text/html");
-  HTMLViewSourceDocument* document =
-      HTMLViewSourceDocument::Create(DocumentInit::Create(), mime_type);
-  HTMLViewSourceParser* parser =
-      HTMLViewSourceParser::Create(*document, mime_type);
+  auto* document = MakeGarbageCollected<HTMLViewSourceDocument>(
+      DocumentInit::Create(), mime_type);
+  auto* parser =
+      MakeGarbageCollected<HTMLViewSourceParser>(*document, mime_type);
   // A client may detach the parser from the document.
   parser->Detach();
   // A DocumentWriter may call finish() after detach().

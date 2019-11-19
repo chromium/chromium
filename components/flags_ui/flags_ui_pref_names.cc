@@ -8,7 +8,15 @@ namespace flags_ui {
 namespace prefs {
 
 // List of names of the enabled labs experiments.
-const char kEnabledLabsExperiments[] = "browser.enabled_labs_experiments";
+const char kAboutFlagsEntries[] = "browser.enabled_labs_experiments";
+
+// A dictionary of (flag, origin_list) pairs. Each origin_list is a string
+// containing comma concatenated, serialized Origin objects.
+// This must not be a child of kEnabledLabsExperiment
+// (e.g. browser.enabled_labs_experiments.origin_lists)
+// otherwise it will overwrite browser.enabled_labs_experiments values.
+const char kAboutFlagsOriginLists[] =
+    "browser.enabled_labs_experiments_origin_lists";
 
 }  // namespace prefs
 }  // namespace flags_ui

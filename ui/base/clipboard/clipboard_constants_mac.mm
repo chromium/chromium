@@ -9,8 +9,9 @@
 namespace ui {
 
 // TODO(dcheng): This name is temporary. See crbug.com/106449.
-#if !defined(USE_AURA)
 NSString* const kWebCustomDataPboardType = @"org.chromium.web-custom-data";
-#endif
+NSString* const kWebSmartPastePboardType = @"NeXT smart paste pasteboard type";
+NSString* const kPepperCustomDataPboardType =
+    @"org.chromium.pepper-custom-data";
 
 }  // namespace ui

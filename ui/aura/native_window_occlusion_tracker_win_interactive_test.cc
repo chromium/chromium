@@ -11,9 +11,10 @@
 #include "base/feature_list.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/task/task_scheduler/task_scheduler.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/win/scoped_gdi_object.h"
+#include "mojo/core/embedder/embedder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/env.h"
 #include "ui/aura/test/aura_test_base.h"
@@ -25,7 +26,7 @@
 #include "ui/aura/window_occlusion_tracker.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/aura/window_tree_host_platform.h"
-#include "ui/base/ime/input_method_initializer.h"
+#include "ui/base/ime/init/input_method_initializer.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/display/win/dpi.h"
 #include "ui/gfx/geometry/rect.h"
@@ -104,7 +105,12 @@ TestNativeWindow::~TestNativeWindow() {
 
 class NativeWindowOcclusionTrackerTest : public test::AuraTestBase {
  public:
-  NativeWindowOcclusionTrackerTest() {}
+  NativeWindowOcclusionTrackerTest() {
+    // These interactive_ui_tests are not based on browser tests which would
+    // normally handle initializing mojo. We can safely initialize mojo at the
+    // start of the test here since a new process is launched for each test.
+    mojo::core::Init();
+  }
   void SetUp() override {
     if (gl::GetGLImplementation() == gl::kGLImplementationNone)
       gl::GLSurfaceTestSupport::InitializeOneOff();
@@ -168,7 +174,7 @@ class NativeWindowOcclusionTrackerTest : public test::AuraTestBase {
     Window* window = CreateNormalWindow(1, host()->window(), nullptr);
     window->SetBounds(bounds);
 
-    window->env()->GetWindowOcclusionTracker()->Track(window);
+    Env::GetInstance()->GetWindowOcclusionTracker()->Track(window);
   }
 
   int GetNumVisibleRootWindows() {

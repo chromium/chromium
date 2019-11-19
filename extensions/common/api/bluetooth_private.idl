@@ -151,6 +151,19 @@ namespace bluetoothPrivate {
 
     // Pairs the given device.
     static void pair(DOMString deviceAddress, optional VoidCallback callback);
+
+    // Record that a pairing attempt finished. Do not record cancellations.
+    static void recordPairing(boolean success, bluetooth.Transport transport,
+                              long pairingDurationMs);
+
+    // Record that a user-initiated reconnection attempt to an already paired
+    // device finished. Do not record cancellations.
+    static void recordReconnection(boolean success);
+
+    // Record that a user selected a device to connect to.
+    static void recordDeviceSelection(long selectionDurationMs,
+                                      boolean wasPaired,
+                                      bluetooth.Transport transport);
   };
 
   interface Events {

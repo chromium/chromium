@@ -4,33 +4,31 @@
 
 #include "ash/public/cpp/shelf_item_delegate.h"
 
-#include <memory>
-#include <utility>
-
-#include "ash/public/cpp/menu_utils.h"
 #include "base/bind.h"
-#include "ui/base/models/menu_model.h"
+#include "ui/base/models/simple_menu_model.h"
 
 namespace ash {
 
 ShelfItemDelegate::ShelfItemDelegate(const ShelfID& shelf_id)
-    : shelf_id_(shelf_id), binding_(this), weak_ptr_factory_(this) {}
+    : shelf_id_(shelf_id) {}
 
 ShelfItemDelegate::~ShelfItemDelegate() = default;
 
-mojom::ShelfItemDelegatePtr ShelfItemDelegate::CreateInterfacePtrAndBind() {
-  mojom::ShelfItemDelegatePtr ptr;
-  binding_.Bind(mojo::MakeRequest(&ptr));
-  return ptr;
+void ShelfItemDelegate::ItemSelected(std::unique_ptr<ui::Event> event,
+                                     int64_t display_id,
+                                     ShelfLaunchSource source,
+                                     ItemSelectedCallback callback) {
+  std::move(callback).Run(SHELF_ACTION_NONE, {});
 }
 
-MenuItemList ShelfItemDelegate::GetAppMenuItems(int event_flags) {
-  return MenuItemList();
+ShelfItemDelegate::AppMenuItems ShelfItemDelegate::GetAppMenuItems(
+    int event_flags) {
+  return {};
 }
 
 void ShelfItemDelegate::GetContextMenu(int64_t display_id,
-                                       GetMenuModelCallback callback) {
-  // Shelf items do not have any custom context menu entries by default.
+                                       GetContextMenuCallback callback) {
+  // Supplying null will cause ShelfView to show a default context menu.
   std::move(callback).Run(nullptr);
 }
 
@@ -50,23 +48,6 @@ bool ShelfItemDelegate::ExecuteContextMenuCommand(int64_t command_id,
 
   model->ActivatedAt(index, event_flags);
   return true;
-}
-
-void ShelfItemDelegate::GetContextMenuItems(
-    int64_t display_id,
-    GetContextMenuItemsCallback callback) {
-  GetContextMenu(
-      display_id,
-      base::BindOnce(&ShelfItemDelegate::OnGetContextMenu,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-void ShelfItemDelegate::OnGetContextMenu(
-    GetContextMenuItemsCallback callback,
-    std::unique_ptr<ui::MenuModel> menu_model) {
-  context_menu_ = std::move(menu_model);
-  std::move(callback).Run(
-      menu_utils::GetMojoMenuItemsFromModel(context_menu_.get()));
 }
 
 }  // namespace ash

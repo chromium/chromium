@@ -29,7 +29,7 @@ void BackgroundIO::Cancel() {
   // controller_ may be in use from the background thread at this time.
   base::AutoLock lock(controller_lock_);
   DCHECK(controller_);
-  controller_ = NULL;
+  controller_ = nullptr;
 }
 
 BackgroundIO::~BackgroundIO() = default;

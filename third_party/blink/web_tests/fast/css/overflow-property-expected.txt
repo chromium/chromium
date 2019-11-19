@@ -24,12 +24,6 @@ PASS test6.style.overflowY is ""
 PASS test7.style.overflow is ""
 PASS test7.style.overflowX is ""
 PASS test7.style.overflowY is ""
-PASS test8.style.overflowX is ""
-PASS test8.style.overflowY is "-webkit-paged-x"
-PASS test9.style.overflowX is "auto"
-PASS test9.style.overflowY is "-webkit-paged-y"
-PASS test10.style.overflowX is "visible"
-PASS test10.style.overflowY is "-webkit-paged-y"
 PASS successfullyParsed is true
 
 TEST COMPLETE

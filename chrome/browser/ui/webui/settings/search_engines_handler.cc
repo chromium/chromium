@@ -46,7 +46,7 @@ const int kNewSearchEngineIndex = -1;
 namespace settings {
 
 SearchEnginesHandler::SearchEnginesHandler(Profile* profile)
-    : profile_(profile), list_controller_(profile), weak_ptr_factory_(this) {
+    : profile_(profile), list_controller_(profile) {
   pref_change_registrar_.Init(profile_->GetPrefs());
 }
 
@@ -108,8 +108,7 @@ SearchEnginesHandler::GetSearchEnginesList() {
       list_controller_.table_model()->IndexOfTemplateURL(default_engine);
 
   // Build the first list (default search engines).
-  std::unique_ptr<base::ListValue> defaults =
-      std::make_unique<base::ListValue>();
+  auto defaults = std::make_unique<base::ListValue>();
   int last_default_engine_index =
       list_controller_.table_model()->last_search_engine_index();
 
@@ -122,7 +121,7 @@ SearchEnginesHandler::GetSearchEnginesList() {
   }
 
   // Build the second list (other search engines).
-  std::unique_ptr<base::ListValue> others = std::make_unique<base::ListValue>();
+  auto others = std::make_unique<base::ListValue>();
   int last_other_engine_index =
       list_controller_.table_model()->last_other_engine_index();
 
@@ -135,8 +134,7 @@ SearchEnginesHandler::GetSearchEnginesList() {
   }
 
   // Build the third list (omnibox extensions).
-  std::unique_ptr<base::ListValue> extensions =
-      std::make_unique<base::ListValue>();
+  auto extensions = std::make_unique<base::ListValue>();
   int engine_count = list_controller_.table_model()->RowCount();
 
   // Sanity check for https://crbug.com/781703.
@@ -146,8 +144,7 @@ SearchEnginesHandler::GetSearchEnginesList() {
     extensions->Append(CreateDictionaryForEngine(i, i == default_index));
   }
 
-  std::unique_ptr<base::DictionaryValue> search_engines_info(
-      new base::DictionaryValue);
+  auto search_engines_info = std::make_unique<base::DictionaryValue>();
   search_engines_info->Set("defaults", std::move(defaults));
   search_engines_info->Set("others", std::move(others));
   search_engines_info->Set("extensions", std::move(extensions));
@@ -185,7 +182,7 @@ SearchEnginesHandler::CreateDictionaryForEngine(int index, bool is_default) {
   // chrome/browser/resources/settings/search_engines_page/
   // in @typedef for SearchEngine. Please update it whenever you add or remove
   // any keys here.
-  std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
+  auto dict = std::make_unique<base::DictionaryValue>();
   dict->SetInteger("id", template_url->id());
   dict->SetString("name", template_url->short_name());
   dict->SetString("displayName",
@@ -195,8 +192,8 @@ SearchEnginesHandler::CreateDictionaryForEngine(int index, bool is_default) {
       "keyword",
       table_model->GetText(index, IDS_SEARCH_ENGINES_EDITOR_KEYWORD_COLUMN));
   Profile* profile = Profile::FromWebUI(web_ui());
-  dict->SetString("url", template_url->url_ref().DisplayURL(
-                             UIThreadSearchTermsData(profile)));
+  dict->SetString(
+      "url", template_url->url_ref().DisplayURL(UIThreadSearchTermsData()));
   dict->SetBoolean("urlLocked", template_url->prepopulate_id() > 0);
   GURL icon_url = template_url->favicon_url();
   if (icon_url.is_valid())
@@ -284,10 +281,10 @@ void SearchEnginesHandler::HandleSearchEngineEditStarted(
     return;
   }
 
-  edit_controller_.reset(new EditSearchEngineController(
+  edit_controller_ = std::make_unique<EditSearchEngineController>(
       index == kNewSearchEngineIndex ? nullptr
                                      : list_controller_.GetTemplateURL(index),
-      this, Profile::FromWebUI(web_ui())));
+      this, Profile::FromWebUI(web_ui()));
 }
 
 void SearchEnginesHandler::OnEditedKeyword(TemplateURL* template_url,

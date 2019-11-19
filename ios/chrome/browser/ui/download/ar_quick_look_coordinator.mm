@@ -66,8 +66,9 @@ PresentQLPreviewController GetHistogramEnum(
 // The file URL pointing to the downloaded USDZ format file.
 @property(nonatomic, copy) NSURL* fileURL;
 
-// Displays USDZ format files.
-@property(nonatomic, strong) QLPreviewController* viewController;
+// Displays USDZ format files. Set as a weak reference so it only exists while
+// its being presented by baseViewController.
+@property(nonatomic, weak) QLPreviewController* viewController;
 
 @end
 
@@ -183,18 +184,18 @@ PresentQLPreviewController GetHistogramEnum(
       kIOSPresentQLPreviewControllerHistogram,
       GetHistogramEnum(self.baseViewController, self.fileURL));
 
-  // QLPreviewController should not be presented if there is already a view
-  // controller presented by the base view controller or the file URL is nil.
-  if (self.baseViewController.presentedViewController || !self.fileURL) {
+  // QLPreviewController should not be presented if the file URL is nil.
+  if (!self.fileURL) {
     return;
   }
 
-  self.viewController = [[QLPreviewController alloc] init];
-  self.viewController.dataSource = self;
-  self.viewController.delegate = self;
-  [self.baseViewController presentViewController:self.viewController
+  QLPreviewController* viewController = [[QLPreviewController alloc] init];
+  viewController.dataSource = self;
+  viewController.delegate = self;
+  [self.baseViewController presentViewController:viewController
                                         animated:YES
                                       completion:nil];
+  self.viewController = viewController;
 }
 
 #pragma mark - QLPreviewControllerDataSource

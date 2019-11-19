@@ -15,20 +15,9 @@ namespace gl {
 // checking compatibility.
 class GL_EXPORT GLSurfaceFormat {
  public:
-
-  // For use with constructor.
-  enum SurfacePixelLayout {
-    PIXEL_LAYOUT_DONT_CARE = -1,
-    PIXEL_LAYOUT_BGRA,
-    PIXEL_LAYOUT_RGBA,
-  };
-
   // Default surface format for the underlying gl_surface subtype.
   // Use the setters below to change attributes if needed.
   GLSurfaceFormat();
-
-  // Use a specified pixel layout, cf. GLSurfaceFormatTest.
-  GLSurfaceFormat(SurfacePixelLayout layout);
 
   // Copy constructor from pre-existing format.
   GLSurfaceFormat(const GLSurfaceFormat& other);
@@ -58,9 +47,6 @@ class GL_EXPORT GLSurfaceFormat {
   void SetSamples(int samples);
   int GetSamples() const { return samples_; }
 
-  void SetDefaultPixelLayout(SurfacePixelLayout layout);
-  SurfacePixelLayout GetPixelLayout() const;
-
   enum SurfaceColorSpace {
     COLOR_SPACE_UNSPECIFIED = -1,
     COLOR_SPACE_SRGB,
@@ -77,7 +63,6 @@ class GL_EXPORT GLSurfaceFormat {
   int GetBufferSize() const;
 
  private:
-  SurfacePixelLayout pixel_layout_ = PIXEL_LAYOUT_DONT_CARE;
   SurfaceColorSpace color_space_ = COLOR_SPACE_UNSPECIFIED;
   int red_bits_ = -1;
   int green_bits_ = -1;

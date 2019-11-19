@@ -12,7 +12,10 @@ _jni_sources = [
 android_library("policy_java") {
   deps = [
     "//base:base_java",
+    "//base:jni_java",
   ]
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+
   java_files =
       _jni_sources + [
         "java/src/org/chromium/policy/AbstractAppRestrictionsProvider.java",
@@ -38,7 +41,6 @@ android_library("policy_java_test_support") {
 generate_jni("jni_headers") {
   visibility = [ "//components/policy/*" ]
   sources = _jni_sources
-  jni_package = "policy"
 }
 
 junit_binary("components_policy_junit_tests") {

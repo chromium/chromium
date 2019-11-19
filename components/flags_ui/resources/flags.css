@@ -11,18 +11,64 @@
   margin: -80px 0 0;
 }
 
-body {
-  --color-dark-gray: rgba(0, 0, 0, 0.86);
-  --color-light-gray: rgba(0, 0, 0, 0.54);
-  --color-shadow: rgba(0, 0, 0, 0.1);
+html {
   --ease-in-out: cubic-bezier(0.4, 0.0, 0.2, 1);
-  --keyboard-focus-ring: rgba(66, 133, 244, 0.4);
+  --shadow-color: rgba(0, 0, 0, 0.1);
+
+  --google-blue-300-rgb: 138, 180, 248;
+  --google-blue-300: rgb(var(--google-blue-300-rgb));
   --google-blue-400: rgb(102, 157, 246);
-  --google-blue-500: rgb(66, 133, 244);
-  --google-blue-700: rgb(51, 103, 214);
-  --google-gray-100: rgb(245, 245, 245);
-  --google-gray-300: rgb(224, 224, 224);
-  color: var(--color-dark-gray);
+  --google-blue-500-rgb: 66, 133, 244;
+  --google-blue-500: rgb(var(--google-blue-500-rgb));
+  --google-blue-600: rgb(26, 115, 232);
+  --google-blue-700: rgb(25, 103, 210);
+  --google-grey-100: rgb(241, 243, 244);
+  --google-grey-200: rgb(232, 234, 237);
+  --google-grey-300: rgb(218, 220, 224);
+  --google-grey-500: rgb(154, 160, 166);
+  --google-grey-700: rgb(95, 99, 104);
+  --google-grey-900: rgb(32, 33, 36);
+  /* --google-grey-900 + 4% white blended together. */
+  --google-grey-900-white-4-percent: #292a2d;
+  --google-red-300: rgb(242, 139, 130);
+  --google-red-700: rgb(197, 34, 31);
+
+  --interactive-color: var(--google-blue-500);
+  --primary-color: var(--google-grey-900);
+  --secondary-color: var(--google-grey-700);
+  --warning-color: var(--google-red-700);
+
+  --input-background: var(--google-grey-100);
+  --keyboard-focus-ring: rgba(var(--google-blue-500-rgb), 0.4);
+  --link-color: var(--google-blue-700);
+  --separator-color: rgba(0, 0, 0, .06);
+  --toolbar-color: white;
+
+  background: white;
+  overflow-y: scroll;
+}
+
+@media (prefers-color-scheme: dark) {
+  html {
+    --interactive-color: var(--google-blue-300);
+    --primary-color: var(--google-grey-200);
+    --secondary-color: var(--google-grey-500);
+    --warning-color: var(--google-red-300);
+
+    --input-background: rgba(0, 0, 0, .3);
+    --keyboard-focus-ring: rgba(var(--google-blue-300-rgb), 0.4);
+    --link-color: var(--google-blue-300);
+    --separator-color: rgba(255, 255, 255, .1);
+    --toolbar-color: var(--google-grey-900-white-4-percent);
+
+    background: var(--google-grey-900);
+  }
+}
+
+body {
+  color: var(--primary-color);
+  display: flex;
+  flex-direction: column;
   font-family: Roboto;
   font-size: 0.8125em;
   /* Force the vertical scrollbar to always be displayed, to avoid UI jumps. */
@@ -31,31 +77,42 @@ body {
 }
 
 a {
-  color: var(--google-blue-700);
-  font-size: 1em;
+  color: var(--link-color);
+  font-size: .8125rem;
 }
 
 h1 {
-  font-size: 156%;
-  font-weight: bold;
-  margin: 0;
+  color: var(--primary-color);
+  font-size: 1.4625rem;
+  font-weight: 400;
+  margin-top: 0;
   padding: 0;
 }
 
-h2 {
-  color: var(--color-dark-gray);
-  font-size: 1.8em;
-  font-weight: 400;
+button {
+  cursor: pointer;
+  font-weight: 500;
 }
 
 #body-container {
-  margin: 80px auto;
-  max-width: 700px;
+  --side-padding: 20px;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  margin: 0 auto;
+  max-width: calc(700px + 2 * var(--side-padding));
   width: 100%;
 }
 
 #flagsTemplate {
-  padding: 8px 0;
+  flex: 1;
+  padding: calc(60px + 1rem) var(--side-padding) 8px;
+}
+
+@media (prefers-color-scheme: dark) {
+  #flagsTemplate {
+    background: rgba(255, 255, 255, .04);
+  }
 }
 
 .flex {
@@ -73,9 +130,10 @@ h2 {
 }
 
 #header {
-  background: white;
-  border-bottom: 1px solid rgba(255, 255, 255, .8);
-  box-shadow: 0 2px 2px 0 var(--color-shadow);
+  background: var(--toolbar-color);
+  box-shadow: 0 2px 2px 0 var(--shadow-color);
+  box-sizing: border-box;
+  flex: none;
   left: 0;
   position: fixed;
   top: 0;
@@ -83,18 +141,22 @@ h2 {
   z-index: 9;
 }
 
+@media (prefers-color-scheme: dark) {
+  #header {
+    border-bottom: 1px solid var(--separator-color);
+  }
+}
+
 #header .flex-container {
   margin: 0 auto;
   max-width: 700px;
 }
 
-#header .flex-container .flex:first-child,
-[dir='rtl'] #header .flex-container .flex:last-child {
+#header .flex-container .flex:first-child {
   text-align: left; /* csschecker-disable-line left-right */
 }
 
-#header .flex-container .flex:last-child,
-[dir='rtl'] #header .flex-container .flex:first-child {
+#header .flex-container .flex:last-child {
   text-align: right; /* csschecker-disable-line left-right */
 }
 
@@ -108,27 +170,31 @@ h2 {
 }
 
 #search {
-  background: var(--google-gray-100) url(../../../ui/webui/resources/images/icon_search.svg) no-repeat 8px 50%;
+  background: var(--input-background) url(../../../ui/webui/resources/images/icon_search.svg) no-repeat 8px 50%;
   border: 1px solid transparent;
   border-radius: 3px;
   box-sizing: border-box;
-  font-size: 1em;
+  color: inherit;
+  font-size: .8125rem;
   padding: 12px 36px;
   width: 100%;
 }
 
-[dir='rtl'] #search {
-  background-position: right 50%;
+@media (prefers-color-scheme: dark) {
+  #search {
+    background-image: url(../../../ui/webui/resources/images/dark/icon_search.svg);
+  }
 }
 
 #search:focus {
-  border-color: var(--google-blue-700);
+  border-color: var(--interactive-color);
   outline: 0;
 }
 
 .clear-search {
-  background: url(../../../ui/webui/resources/images/icon_cancel.svg) no-repeat;
-  background-size: 20px;
+  -webkit-mask-image: url(../../../ui/webui/resources/images/icon_cancel.svg);
+  -webkit-mask-size: 20px;
+  background: var(--secondary-color);
   border: 0;
   display: none;
   height: 20px;
@@ -148,47 +214,62 @@ h2 {
   display: inline-block;
 }
 
-[dir='rtl'] .clear-search {
-  left: 8px;
-  right: initial;
-}
-
 .searching .blurb-container,
-.searching .promo {
+.searching #promos {
   display: none;
 }
 
 .blurb-container {
-  color: var(--color-light-gray);
-  font-size: 14px;
+  color: var(--primary-color);
+  font-size: .875rem;
   line-height: 1.4;
+  margin-bottom: 1rem;
 }
 
 .blurb-warning {
-  color: red;
+  color: var(--warning-color);
   text-transform: uppercase;
 }
 
-.promo {
-  color: var(--color-light-gray);
-  font-size: 14px;
-  padding-bottom: 1.5em;
+.screen-reader-only {
+  clip: rect(0,0,0,0);
+  display: inline-block;
+  position: fixed;
 }
 
-#experiment-reset-all {
-  background: #eee;
-  border: 1px solid #999;
+#promos {
+  color: var(--secondary-color);
+  font-size: .875rem;
+}
+
+button:not(.primary) {
+  background: none;
+  border: 1px solid var(--google-grey-300);
   border-radius: 3px;
-  font-size: 1em;
+  color: var(--google-blue-600);
+  font-size: .8125rem;
   padding: 8px 12px;
 }
 
-#experiment-reset-all:hover {
-  background: var(--google-gray-300);
+@media (prefers-color-scheme: dark) {
+  button:not(.primary) {
+    border-color: var(--google-grey-700);
+    color: var(--google-blue-300);
+  }
+}
+
+button:not(.primary):hover {
+  background: rgba(var(--google-blue-500-rgb), .04);
+}
+
+@media (prefers-color-scheme: dark) {
+  button:not(.primary):hover {
+    background: rgba(var(--google-blue-300-rgb), .08);
+  }
 }
 
 .experiment {
-  color: var(--color-light-gray);
+  color: var(--secondary-color);
   line-height: 1.45;
   /* Adjustment for fixed header */
   margin: .3em 0 -70px;
@@ -206,18 +287,14 @@ h2 {
   padding-inline-end: 8px;
 }
 
-[dir='rtl'] .experiment .flex-container .flex:first-child  {
-  text-align: right; /* csschecker-disable-line left-right */
-}
-
 .experiment p {
   margin: .2em 0;
 }
 
 .experiment-name {
-  color: black;
+  color: var(--primary-color);
   display: inline-block;
-  font-size: 13px;
+  font-size: .8125rem;
   font-weight: 500;
   line-height: 1.5;
   margin: 0;
@@ -225,21 +302,25 @@ h2 {
 }
 
 .experiment-switched .experiment-name::before {
-  color: var(--google-blue-500);
+  --end-margin: 4px;
+  --width: 12px;
+  color: var(--interactive-color);
   content: '•';
   display: inline-block;
   font-size: 40px;
   line-height: 0;
-  margin-inline-end: 4px;
-  margin-inline-start: -20px;
+  margin-inline-end: var(--end-margin);
+  margin-inline-start: calc(-1 * var(--end-margin) - var(--width));
   vertical-align: middle;
-  width: 16px;
+  width: var(--width);
 }
 
 
 .match,
 .referenced h3 {
+  /* This UI is intentionally the same in light and dark mode. */
   background: yellow;
+  color: var(--google-grey-900);
 }
 
 .experiment-actions {
@@ -249,32 +330,66 @@ h2 {
   width: 150px;
 }
 
-.experiment-actions select {
+.experiment-origin-list-value {
+  resize: none;
+}
+
+select {
   background: white;
-  border: 1px solid var(--google-blue-700);
-  color: var(--google-blue-700);
-  font-size: 13px;
-  height: 26px;
+  border: 1px solid var(--link-color);
+  color: var(--link-color);
+  font-size: .8125rem;
+  height: 1.625rem;
   letter-spacing: .01em;
   max-width: 150px;
   text-align-last: center;
   width: 100%;
 }
 
-.experiment-origin-list-value {
-  border: 1px solid var(--color-light-gray);
+@media (prefers-color-scheme: dark) {
+  select {
+    background: var(--input-background);
+    border: none;
+    color: var(--primary-color);
+  }
+
+  option {
+    background: var(--toolbar-color);
+  }
+}
+
+textarea {
+  background: var(--input-background);
   border-radius: 3px;
   box-sizing: border-box;
-  font-size: 1em;
+  color: inherit;
+  font-size: .8125rem;
   margin: 0;
   min-height: 3em;
   padding: 8px;
   width: 100%;
 }
 
-.experiment-switched .experiment-actions select {
-  background: var(--google-blue-700);
+@media (prefers-color-scheme: dark) {
+  textarea {
+    border: 1px solid var(--secondary-color);
+  }
+}
+
+.experiment-switched select {
+  background: var(--link-color);
   color: white;
+}
+
+@media (prefers-color-scheme: dark) {
+  .experiment-switched select {
+    color: var(--google-grey-900);
+  }
+
+  .experiment-switched option {
+    background: inherit;
+    color: inherit;
+  }
 }
 
 .experiment-no-match {
@@ -283,7 +398,7 @@ h2 {
 }
 
 .permalink {
-  color: var(--color-light-gray);
+  color: var(--secondary-color);
 }
 
 .tabs {
@@ -303,11 +418,11 @@ h2 {
 }
 
 .tab {
-  border-bottom: 2px solid #eee;
-  color: var(--color-dark-gray);
+  border-bottom: 1px solid currentColor;
+  color: var(--secondary-color);
   cursor: pointer;
   display: block;
-  font-size: 16px;
+  font-size: 1rem;
   font-weight: normal;
   padding: 14px 21px;
   position: relative;
@@ -321,14 +436,13 @@ h2 {
 
 .tabs .selected .tab,
 .tabs .selected .tab:focus {
-  border-bottom: 3px solid rgb(66, 133, 244);
+  border-bottom-width: 2px;
+  color: var(--interactive-color);
   padding-top: 17px;
   top: 0;
 }
 
-.tab:active,
-.tab:focus {
-  background: #eee;
+html:not(.focus-outline-visible) .tab:focus {
   outline: 0;
 }
 
@@ -356,10 +470,9 @@ h2 {
 
 /* Restart tray. */
 #needs-restart {
-  background: white;
-  border-top: 1px solid rgba(255, 255, 255, .8);
+  background: var(--toolbar-color);
   bottom: 0;
-  box-shadow: 0 -2px 2px 0 var(--color-shadow);
+  box-shadow: 0 -2px 2px 0 var(--shadow-color);
   box-sizing: border-box;
   left: 0;
   opacity: 0;
@@ -375,10 +488,6 @@ h2 {
   text-align: right; /* csschecker-disable-line left-right */
 }
 
-[dir='rtl'] #needs-restart .flex:last-child {
-  text-align: left; /* csschecker-disable-line left-right */
-}
-
 #needs-restart.show {
   opacity: 1;
   transform: translate(0);
@@ -389,42 +498,42 @@ h2 {
 }
 
 .restart-notice {
-  font-size: 15px;
+  font-size: .9375rem;
   line-height: 1.4;
 }
 
-#experiment-restart-button {
-  background: var(--google-blue-500);
+button.primary {
+  background: var(--interactive-color);
   border: 0;
   border-radius: 3px;
   color: white;
-  font-size: 14px;
+  font-size: .875rem;
   padding: 14px 38px;
 }
 
-#experiment-restart-button:active,
-#experiment-restart-button:focus,
-#experiment-restart-button:hover {
+@media (prefers-color-scheme: dark) {
+  button.primary {
+    color: var(--google-grey-900);
+  }
+}
+
+button.primary:-webkit-any(:active, :focus, :hover) {
   background: var(--google-blue-400);
   outline: 0;
 }
 
-html.focus-outline-visible #experiment-restart-button:focus {
+html.focus-outline-visible button.primary:focus {
   box-shadow: 0 0 0 1px var(--keyboard-focus-ring);
 }
 
 #version {
-  color: var(--color-light-gray);
+  color: var(--secondary-color);
   text-align: right; /* csschecker-disable-line left-right */
-}
-
-[dir='rtl'] #version {
-  text-align: left; /* csschecker-disable-line left-right */
 }
 
 @media (max-width: 360px) {
   #experiment-reset-all {
-    font-size: 0.8em;
+    font-size: .65rem;
     padding: 2px 8px;
   }
 
@@ -436,7 +545,7 @@ html.focus-outline-visible #experiment-restart-button:focus {
     text-align: initial;
   }
 
-  #experiment-restart-button {
+  button.primary {
     padding: 8px;
   }
 
@@ -446,12 +555,8 @@ html.focus-outline-visible #experiment-restart-button:focus {
 }
 
 @media (max-width: 480px) {
-  h1 {
-    line-height: 1.4em;
-  }
-
   .experiment {
-    border-bottom: 1px solid #f7f7f7;
+    border-bottom: 1px solid var(--separator-color);
   }
 
   .experiment-name {
@@ -473,37 +578,25 @@ html.focus-outline-visible #experiment-restart-button:focus {
     width: 100%;
   }
 
-  #flagsTemplate {
-    padding: 0 16px;
-  }
-
   #flagsTemplate > .flex-container:first-child:not('.version') {
     flex-direction: column;
     text-align: left; /* csschecker-disable-line left-right */
-  }
-
-  [dir='rtl'] #flagsTemplate > .flex-container:first-child {
-    text-align: right; /* csschecker-disable-line left-right */
   }
 
   #flagsTemplate > .flex-container:first-child .flex {
     width: 100%;
   }
 
-  [dir='rtl'] #flagsTemplate > .flex-container #version {
-    text-align: right; /* csschecker-disable-line left-right */
-  }
-
   #needs-restart {
     padding: 8px 12px;
   }
 
-  #experiment-restart-button {
+  button.primary {
     padding: 8px 16px;
   }
 
   .restart-notice {
-    font-size: 1em;
+    font-size: .8125rem;
     padding: 4px;
   }
 
@@ -527,17 +620,19 @@ html.focus-outline-visible #experiment-restart-button:focus {
     margin-inline-start: 0;
   }
 
-  #flagsTemplate {
-    padding: 8px 16px;
+  #version,
+  .blurb-warning {
+    display: block;
+    margin-bottom: 1rem;
   }
 }
 
 @media (max-height: 400px) {
-  #body-container {
-    margin-top: 0;
-  }
-
   #header {
     position: relative;
+  }
+
+  #flagsTemplate {
+    padding-top: 1.5rem;
   }
 }

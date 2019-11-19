@@ -116,21 +116,21 @@ class MediaStreamDevicePermissionContextTests
 // MEDIASTREAM_MIC permission status should be ask for insecure origin to
 // accommodate the usage case of Flash.
 TEST_F(MediaStreamDevicePermissionContextTests, TestMicInsecureQueryingUrl) {
-  TestInsecureQueryingUrl(CONTENT_SETTINGS_TYPE_MEDIASTREAM_MIC);
+  TestInsecureQueryingUrl(ContentSettingsType::MEDIASTREAM_MIC);
 }
 
 // MEDIASTREAM_CAMERA permission status should be ask for insecure origin to
 // accommodate the usage case of Flash.
 TEST_F(MediaStreamDevicePermissionContextTests, TestCameraInsecureQueryingUrl) {
-  TestInsecureQueryingUrl(CONTENT_SETTINGS_TYPE_MEDIASTREAM_CAMERA);
+  TestInsecureQueryingUrl(ContentSettingsType::MEDIASTREAM_CAMERA);
 }
 
 // MEDIASTREAM_MIC permission status should be ask for Secure origin.
 TEST_F(MediaStreamDevicePermissionContextTests, TestMicSecureQueryingUrl) {
-  TestSecureQueryingUrl(CONTENT_SETTINGS_TYPE_MEDIASTREAM_MIC);
+  TestSecureQueryingUrl(ContentSettingsType::MEDIASTREAM_MIC);
 }
 
 // MEDIASTREAM_CAMERA permission status should be ask for Secure origin.
 TEST_F(MediaStreamDevicePermissionContextTests, TestCameraSecureQueryingUrl) {
-  TestSecureQueryingUrl(CONTENT_SETTINGS_TYPE_MEDIASTREAM_CAMERA);
+  TestSecureQueryingUrl(ContentSettingsType::MEDIASTREAM_CAMERA);
 }

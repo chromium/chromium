@@ -1,0 +1,34 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+// Provides extra capabilities required for DevTools frontend to function.
+// This includes communication channel from/to inspected target which implements
+// remote debugging protocol. Protocol messages go through browser process.
+//
+// Instances of this interface must be associated with navigation-related
+// interface, since we should setup DevToolsFrontend before the navigation
+// commits in the frame.
+interface DevToolsFrontend {
+  // Sets up a main frame as a DevTools frontend. This exposes DevToolsHost
+  // object (see DevToolsHost.idl for details). The |api_script| is executed
+  // on each navigation in the frame before the DevTools frontend starts
+  // loading. It makes use of DevToolsHost to expose embedder capabilities to
+  // DevTools (e.g. connection to the inspected target).
+  SetupDevToolsFrontend(string api_script,
+                        pending_associated_remote<DevToolsFrontendHost> host);
+
+  // Sets up a child frame to expose DevTools extension API by executing script
+  // |extension_api| on each navigation in the frame. This script provides
+  // required capabilities for DevTools extensions to function, implementing
+  // chrome.devtools extension API.
+  SetupDevToolsExtensionAPI(string extension_api);
+};
+
+// Provides embedder functionality to a frame serving as DevTools frontend.
+interface DevToolsFrontendHost {
+  // Sends a message to DevTools frontend embedder.
+  DispatchEmbedderMessage(string message);
+};

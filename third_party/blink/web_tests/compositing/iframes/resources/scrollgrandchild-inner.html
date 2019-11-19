@@ -23,21 +23,12 @@
     }
   </style>
   <script>
-    if (window.internals)
-      internals.settings.setMockScrollbarsEnabled(true);
-    if (window.testRunner) {
-      testRunner.dumpAsTextWithPixelResults();
-      testRunner.waitUntilDone();
-    }
-
     function doTest()
     {
       runAfterLayoutAndPaint(function() {
         // Scroll red box off screen and scroll green box into same place.
         window.scrollTo(0, 400);
-        if (window.testRunner)
-          testRunner.notifyDone();
-      });
+      }, true);
     }
 
     window.addEventListener('load', doTest, false);

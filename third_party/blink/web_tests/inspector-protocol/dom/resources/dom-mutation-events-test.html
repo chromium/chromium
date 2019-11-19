@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+        <title>Dom Mutation Observer Test</title>
+
+        <script>
+            let attrNumber = 1;
+
+            function addAttr() {
+                let target = document.getElementById('attrTarget');
+                let newAttr = 'testAttr' + String(attrNumber++);
+                target.setAttribute(newAttr, newAttr);
+            }
+
+            function removeAttr() {
+                let target = document.getElementById('attrTarget');
+                if(attrNumber > 1) {
+                    let targetAttr = 'testAttr' + String(--attrNumber);
+                    target.removeAttribute(targetAttr);
+                }
+            }
+
+            let childNo = 1;
+            function addDivChild() {
+                let target = document.getElementById('childrenAddRemoveTarget');
+                let para = document.createElement('p');
+                let text = document.createTextNode('ChildAdded');
+                para.appendChild(text);
+                target.appendChild(para);
+                childNo++;
+            }
+
+            function removeDivChild() {
+                if(childNo > 1) {
+                    let target = document.getElementById('childrenAddRemoveTarget');
+                    if(target.childNodes[0]) {
+                        target.removeChild(target.firstChild);
+                    }
+                    childNo--;
+                }
+            }
+
+            function modifyData() {
+                let target = document.getElementById('editDiv').firstChild;
+                target.appendData('AddedText.')
+            }
+
+            function addFrame() {
+                let target = document.getElementById('frameContainer');
+                let frame = document.createElement('iframe');
+                let src = 'iframe-content.html';
+                frame.setAttribute('src', src);
+                target.appendChild(frame);
+            }
+            </script>
+</head>
+
+<body>
+        <div id="attrTarget" class="testClass" fakeAttr="fakeAttr">Target for attr mods</div>
+        <div id="editDiv" contenteditable>InitialText.</div>
+        <div id="childrenAddRemoveTarget"></div>
+        <div id="frameContainer"></div>
+</body>
+</html>

@@ -4,8 +4,6 @@
 
 source_set("lib") {
   sources = [
-    "unzip_service.cc",
-    "unzip_service.h",
     "unzipper_impl.cc",
     "unzipper_impl.h",
   ]
@@ -17,9 +15,29 @@ source_set("lib") {
   ]
 
   public_deps = [
-    "//components/services/filesystem/public/interfaces",
-    "//components/services/unzip/public/interfaces",
-    "//services/service_manager/public/cpp",
+    "//components/services/filesystem/public/mojom",
+    "//components/services/unzip/public/mojom",
+  ]
+}
+
+source_set("in_process") {
+  # NOTE: In-process unzipping is unsafe! Unfortunately on iOS we have no other
+  # choice. On all other platforms, this target is restricted to tests.
+  testonly = !is_ios
+
+  sources = [
+    "in_process_unzipper.cc",
+    "in_process_unzipper.h",
+  ]
+
+  deps = [
+    ":lib",
+    "//base",
+  ]
+
+  public_deps = [
+    "//components/services/unzip/public/mojom",
+    "//mojo/public/cpp/bindings",
   ]
 }
 
@@ -49,7 +67,6 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/services/unzip/public/cpp",
-    "//services/service_manager/public/cpp/test:test_support",
     "//testing/gtest",
   ]
 }

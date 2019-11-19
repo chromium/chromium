@@ -12,9 +12,9 @@ PASS (y, ++x) is 7
 PASS ++((x)) is 8
 PASS ++((window.x)) is 9
 PASS ++((window["x"])) is 10
-PASS ++(y, x) threw exception ReferenceError: Invalid left-hand side expression in prefix operation.
-PASS ++(true ? x : y) threw exception ReferenceError: Invalid left-hand side expression in prefix operation.
-PASS ++++x threw exception ReferenceError: Invalid left-hand side expression in prefix operation.
+PASS ++(y, x) threw exception SyntaxError: Invalid left-hand side expression in prefix operation.
+PASS ++(true ? x : y) threw exception SyntaxError: Invalid left-hand side expression in prefix operation.
+PASS ++++x threw exception SyntaxError: Invalid left-hand side expression in prefix operation.
 PASS successfullyParsed is true
 
 TEST COMPLETE

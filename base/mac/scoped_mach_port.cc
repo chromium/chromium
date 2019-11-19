@@ -34,5 +34,34 @@ void PortSetTraits::Free(mach_port_t port) {
 }
 
 }  // namespace internal
+
+bool CreateMachPort(ScopedMachReceiveRight* receive,
+                    ScopedMachSendRight* send,
+                    Optional<mach_port_msgcount_t> queue_limit) {
+  mach_port_options_t options{};
+  options.flags = (send != nullptr ? MPO_INSERT_SEND_RIGHT : 0);
+
+  if (queue_limit.has_value()) {
+    options.flags |= MPO_QLIMIT;
+    options.mpl.mpl_qlimit = *queue_limit;
+  }
+
+  kern_return_t kr =
+      mach_port_construct(mach_task_self(), &options, 0,
+                          ScopedMachReceiveRight::Receiver(*receive).get());
+  if (kr != KERN_SUCCESS) {
+    MACH_LOG(ERROR, kr) << "mach_port_construct";
+    return false;
+  }
+
+  // Multiple rights are coalesced to the same name in a task, so assign the
+  // send rights to the same name.
+  if (send) {
+    send->reset(receive->get());
+  }
+
+  return true;
+}
+
 }  // namespace mac
 }  // namespace base

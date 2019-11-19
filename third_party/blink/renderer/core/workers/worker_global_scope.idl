@@ -53,7 +53,7 @@
 
     // CORS and RFC1918
     // https://wicg.github.io/cors-rfc1918/#feature-detect
-    [RuntimeEnabled=CorsRFC1918, ImplementedAs=addressSpaceForBindings] readonly attribute AddressSpace addressSpace;
+    [RuntimeEnabled=AddressSpace, ImplementedAs=addressSpaceForBindings] readonly attribute AddressSpace addressSpace;
 
     // Unhandled Promise Rejection Events
     attribute EventHandler onrejectionhandled;
@@ -68,17 +68,15 @@
     [Replaceable] readonly attribute DOMString origin;
     void queueMicrotask(VoidFunction callback);
 
-    // AnimationFrameProvider mixin
-    // https://html.spec.whatwg.org/C/#animation-frames
-    [RuntimeEnabled=OffscreenCanvas, RaisesException] long requestAnimationFrame(FrameRequestCallback callback);
-    [RuntimeEnabled=OffscreenCanvas] void cancelAnimationFrame(long handle);
-
     // FontFaceSource
     // https://drafts.csswg.org/css-font-loading-3/#font-face-source
     // TODO(fserb): temporarly until we can enable the interface below.
-    [RuntimeEnabled=OffscreenCanvasText] readonly attribute FontFaceSet fonts;
+    readonly attribute FontFaceSet fonts;
+
+    // TrustedTypes API: http://github.com/wicg/trusted-types
+    [RuntimeEnabled=TrustedDOMTypes, Unforgeable] readonly attribute TrustedTypePolicyFactory trustedTypes;
 };
 
-WorkerGlobalScope implements WindowOrWorkerGlobalScope;
+WorkerGlobalScope includes WindowOrWorkerGlobalScope;
 // TODO(fserb): this needs to be enabled once we get out of RuntimeEnabled.
-//WorkerGlobalScope implements FontFaceSource;
+//WorkerGlobalScope includes FontFaceSource;

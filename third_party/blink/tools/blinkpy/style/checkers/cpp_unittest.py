@@ -458,10 +458,23 @@ class CppStyleTest(CppStyleTestBase):
 
     # Test the integer type.
     def test_precise_width_integer(self):
-        self.assert_lint(
-            'unsigned short a = 1',
-            'Use a precise-width integer type from <stdint.h> or <cstdint> such as uint16_t instead of unsigned short'
-            '  [runtime/int] [1]')
+        errmsg = ('Use a precise-width integer type from <stdint.h> or <cstdint> such as uint16_t instead of %s')
+        self.assert_lint('unsigned short a = 1', errmsg % 'unsigned short  [runtime/int] [1]')
+        self.assert_lint('uint16_t unsignedshort = 1', '')
+        self.assert_lint('signed  short a = 1', errmsg % 'signed  short  [runtime/int] [1]')
+        self.assert_lint('short a = 1', errmsg % 'short  [runtime/int] [1]')
+        self.assert_lint('unsigned   long long a = 1', errmsg % 'unsigned   long long  [runtime/int] [1]')
+        self.assert_lint('signed long   long a = 1', errmsg % 'signed long   long  [runtime/int] [1]')
+        self.assert_lint('long long a = 1', errmsg % 'long long  [runtime/int] [1]')
+        self.assert_lint('uint64_t longlong = 1', '')
+        self.assert_lint('unsigned long a = 1', errmsg % 'unsigned long  [runtime/int] [1]')
+        self.assert_lint('signed   long a = 1', errmsg % 'signed   long  [runtime/int] [1]')
+        self.assert_lint('long a = 1', errmsg % 'long  [runtime/int] [1]')
+        self.assert_lint('signed int   long a = 1', errmsg % 'long  [runtime/int] [1]')
+        self.assert_lint('unsigned   long   int a = 1', errmsg % 'unsigned   long  [runtime/int] [1]')
+        self.assert_lint('unsigned longlong = 1', '')
+        self.assert_lint('signed   int a = 1', '')
+        self.assert_lint('int a = 1', '')
 
     # Test C-style cast cases.
     def test_cstyle_cast(self):
@@ -1508,9 +1521,8 @@ class CppStyleTest(CppStyleTestBase):
         errmsg = ('Please declare integral type bitfields with either signed or unsigned.  [runtime/bitfields] [5]')
 
         self.assert_lint('int a : 30;', errmsg)
-        self.assert_lint('mutable short a : 14;', errmsg)
+        self.assert_lint('mutable int a : 14;', errmsg)
         self.assert_lint('const char a : 6;', errmsg)
-        self.assert_lint('long int a : 30;', errmsg)
         self.assert_lint('int a = 1 ? 0 : 30;', '')
 
     # Bitfields which are not declared unsigned or bool will generate a warning.
@@ -2239,122 +2251,6 @@ class WebKitStyleTest(CppStyleTestBase):
             '  return 0;\n'
             '}\n',
             '')
-
-        # 3. An else if statement should be written as an if statement
-        #    when the prior if concludes with a return statement.
-        self.assert_multi_line_lint(
-            'if (motivated) {\n'
-            '  if (liquid)\n'
-            '    return money;\n'
-            '} else if (tired) {\n'
-            '  break;\n'
-            '}',
-            '')
-        self.assert_multi_line_lint(
-            'if (condition)\n'
-            '  doSomething();\n'
-            'else if (otherCondition)\n'
-            '  doSomethingElse();\n',
-            '')
-        self.assert_multi_line_lint(
-            'if (condition)\n'
-            '  doSomething();\n'
-            'else\n'
-            '  doSomethingElse();\n',
-            '')
-        self.assert_multi_line_lint(
-            'if (condition)\n'
-            '  returnValue = foo;\n'
-            'else if (otherCondition)\n'
-            '  returnValue = bar;\n',
-            '')
-        self.assert_multi_line_lint(
-            'if (condition)\n'
-            '  returnValue = foo;\n'
-            'else\n'
-            '  returnValue = bar;\n',
-            '')
-        self.assert_multi_line_lint(
-            'if (condition)\n'
-            '  doSomething();\n'
-            'else if (liquid)\n'
-            '  return money;\n'
-            'else if (broke)\n'
-            '  return favor;\n'
-            'else\n'
-            '  sleep(28800);\n',
-            '')
-        self.assert_multi_line_lint(
-            'if (liquid) {\n'
-            '  prepare();\n'
-            '  return money;\n'
-            '} else if (greedy) {\n'
-            '  keep();\n'
-            '  return nothing;\n'
-            '}\n',
-            'An else if statement should be written as an if statement when the '
-            'prior "if" concludes with a return, break, continue or goto statement.'
-            '  [readability/control_flow] [4]')
-        self.assert_multi_line_lint(
-            '  if (stupid) {\n'
-            'infiniteLoop:\n'
-            '    goto infiniteLoop;\n'
-            '  } else if (evil)\n'
-            '    goto hell;\n',
-            ['If one part of an if-else statement uses curly braces, the other part must too.  [whitespace/braces] [4]',
-             'An else if statement should be written as an if statement when the '
-             'prior "if" concludes with a return, break, continue or goto statement.'
-             '  [readability/control_flow] [4]'])
-        self.assert_multi_line_lint(
-            'if (liquid)\n'
-            '{\n'
-            '  prepare();\n'
-            '  return money;\n'
-            '}\n'
-            'else if (greedy)\n'
-            '  keep();\n',
-            ['If one part of an if-else statement uses curly braces, the other part must too.  [whitespace/braces] [4]',
-             'An else if statement should be written as an if statement when the '
-             'prior "if" concludes with a return, break, continue or goto statement.'
-             '  [readability/control_flow] [4]'])
-        self.assert_multi_line_lint(
-            'if (gone)\n'
-            '  return;\n'
-            'else if (here)\n'
-            '  go();\n',
-            'An else if statement should be written as an if statement when the '
-            'prior "if" concludes with a return, break, continue or goto statement.'
-            '  [readability/control_flow] [4]')
-        self.assert_multi_line_lint(
-            'if (gone)\n'
-            '  return;\n'
-            'else\n'
-            '  go();\n',
-            'An else statement can be removed when the prior "if" concludes '
-            'with a return, break, continue or goto statement.'
-            '  [readability/control_flow] [4]')
-        self.assert_multi_line_lint(
-            'if (motivated) {\n'
-            '  prepare();\n'
-            '  continue;\n'
-            '} else {\n'
-            '  cleanUp();\n'
-            '  break;\n'
-            '}\n',
-            'An else statement can be removed when the prior "if" concludes '
-            'with a return, break, continue or goto statement.'
-            '  [readability/control_flow] [4]')
-        self.assert_multi_line_lint(
-            'if (tired)\n'
-            '  break;\n'
-            'else {\n'
-            '  prepare();\n'
-            '  continue;\n'
-            '}\n',
-            ['If one part of an if-else statement uses curly braces, the other part must too.  [whitespace/braces] [4]',
-             'An else statement can be removed when the prior "if" concludes '
-             'with a return, break, continue or goto statement.'
-             '  [readability/control_flow] [4]'])
 
     def test_braces(self):
         # 3. Curly braces are not required for single-line conditionals and

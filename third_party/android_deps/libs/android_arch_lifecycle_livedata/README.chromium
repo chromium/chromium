@@ -1,0 +1,13 @@
+Name: Android Lifecycle LiveData
+Short Name: livedata
+URL: https://developer.android.com/topic/libraries/architecture/index.html
+Version: 1.1.1
+License: Apache Version 2.0
+License File: LICENSE
+Security Critical: yes
+
+Description:
+Android Lifecycle LiveData
+
+Local Modifications:
+No modifications.

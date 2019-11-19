@@ -106,13 +106,12 @@ Polymer({
   },
 
   /**
-   * @param {!CertificateType} certificateType
    * @param {!CertificateSubnode} model
    * @return {boolean} Whether the certificate can be edited.
    * @private
    */
-  canEdit_: function(certificateType, model) {
-    return certificateType == CertificateType.CA && !model.policy;
+  canEdit_: function(model) {
+    return model.canBeEdited;
   },
 
   /**
@@ -134,7 +133,7 @@ Polymer({
    * @private
    */
   canDelete_: function(model) {
-    return !model.readonly && !model.policy;
+    return model.canBeDeleted;
   },
 
   /** @private */

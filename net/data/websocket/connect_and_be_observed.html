@@ -1,0 +1,19 @@
+<!doctype html>
+<title>This tab will have its connection observed</title>
+<script>
+'use strict';
+
+let protocol = location.protocol.replace('http', 'ws');
+let url = protocol + '//' + location.host + '/close-observer?role=observed';
+
+window.ws = new WebSocket(url);
+ws.onopen = () => {
+  document.title = 'CONNECTED';
+  ws.onclose = null;
+};
+ws.onclose = () => {
+  document.title = 'CLOSED';
+};
+
+// Leave the connection open.
+</script>

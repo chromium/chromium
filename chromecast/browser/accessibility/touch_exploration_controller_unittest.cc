@@ -167,10 +167,10 @@ class TouchExplorationControllerTestApi {
     return touch_exploration_controller_->root_window_->GetBoundsInScreen();
   }
 
-  // VLOGs should be suppressed in tests that generate a lot of logs,
+  // DVLOGs should be suppressed in tests that generate a lot of logs,
   // for example permutations of nine touch events.
   void SuppressVLOGsForTesting(bool suppress) {
-    touch_exploration_controller_->VLOG_on_ = !suppress;
+    touch_exploration_controller_->DVLOG_on_ = !suppress;
   }
 
   float GetMaxDistanceFromEdge() const {

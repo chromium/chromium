@@ -8,9 +8,9 @@
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/address_normalization_manager.h"
-#include "components/autofill/core/browser/autofill_country.h"
 #include "components/autofill/core/browser/autofill_type.h"
-#include "components/autofill/core/browser/phone_number_i18n.h"
+#include "components/autofill/core/browser/geo/autofill_country.h"
+#include "components/autofill/core/browser/geo/phone_number_i18n.h"
 #include "components/payments/core/journey_logger.h"
 #include "components/payments/core/payment_address.h"
 #include "components/payments/core/payment_request_data_util.h"
@@ -32,7 +32,8 @@ PaymentResponseHelper::~PaymentResponseHelper() {}
 
 void PaymentResponseHelper::OnInstrumentDetailsReady(
     const std::string& method_name,
-    const std::string& stringified_details) {
+    const std::string& stringified_details,
+    const PayerData& payer_data) {
   method_name_ = method_name;
   stringified_details_ = stringified_details;
 
@@ -62,7 +63,8 @@ void PaymentResponseHelper::OnInstrumentDetailsReady(
           &PaymentResponseHelper::AddressNormalizationCompleted, AsWeakPtr()));
 }
 
-void PaymentResponseHelper::OnInstrumentDetailsError() {
+void PaymentResponseHelper::OnInstrumentDetailsError(
+    const std::string& error_message) {
   [consumer_ paymentResponseHelperDidFailToReceivePaymentMethodDetails];
 }
 

@@ -14,6 +14,7 @@ namespace switches {
 
 POLICY_EXPORT extern const char kDeviceManagementUrl[];
 POLICY_EXPORT extern const char kDisableComponentCloudPolicy[];
+POLICY_EXPORT extern const char kRealtimeReportingUrl[];
 POLICY_EXPORT extern const char kUserAlwaysAffiliated[];
 
 }  // namespace switches

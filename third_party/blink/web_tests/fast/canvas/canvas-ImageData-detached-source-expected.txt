@@ -1,0 +1,24 @@
+Tests how putImageData and createImageBitmap would react when the source data is detached
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+PASS len is 4
+PASS image.data[0] is 255
+PASS image.data[1] is 0
+PASS image.data[2] is 0
+PASS image.data[3] is 255
+PASS newImage.data[0] is 255
+PASS newImage.data[1] is 0
+PASS newImage.data[2] is 0
+PASS newImage.data[3] is 255
+PASS len is 0
+PASS image.data[0] is undefined
+PASS image.data[1] is undefined
+PASS image.data[2] is undefined
+PASS image.data[3] is undefined
+PASS context.putImageData(image, 0, 0) threw exception InvalidStateError: Failed to execute 'putImageData' on 'CanvasRenderingContext2D': The source data has been detached..
+PASS Promise rejected as expected: InvalidStateError: The source data has been detached.
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

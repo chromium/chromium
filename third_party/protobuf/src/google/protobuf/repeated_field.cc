@@ -34,9 +34,11 @@
 
 #include <algorithm>
 
-#include <google/protobuf/repeated_field.h>
 #include <google/protobuf/stubs/logging.h>
 #include <google/protobuf/stubs/common.h>
+#include <google/protobuf/repeated_field.h>
+
+#include <google/protobuf/port_def.inc>
 
 namespace google {
 namespace protobuf {
@@ -54,16 +56,14 @@ void** RepeatedPtrFieldBase::InternalExtend(int extend_amount) {
   Arena* arena = GetArenaNoVirtual();
   new_size = std::max(kMinRepeatedFieldAllocationSize,
                       std::max(total_size_ * 2, new_size));
-  GOOGLE_CHECK_LE(new_size,
-           (std::numeric_limits<size_t>::max() - kRepHeaderSize) /
-           sizeof(old_rep->elements[0]))
+  GOOGLE_CHECK_LE(new_size, (std::numeric_limits<size_t>::max() - kRepHeaderSize) /
+                         sizeof(old_rep->elements[0]))
       << "Requested size is too large to fit into size_t.";
   size_t bytes = kRepHeaderSize + sizeof(old_rep->elements[0]) * new_size;
   if (arena == NULL) {
     rep_ = reinterpret_cast<Rep*>(::operator new(bytes));
   } else {
-    rep_ = reinterpret_cast<Rep*>(
-        ::google::protobuf::Arena::CreateArray<char>(arena, bytes));
+    rep_ = reinterpret_cast<Rep*>(Arena::CreateArray<char>(arena, bytes));
   }
 #if defined(__GXX_DELETE_WITH_SIZE__) || defined(__cpp_sized_deallocation)
   const int old_total_size = total_size_;
@@ -103,24 +103,39 @@ void RepeatedPtrFieldBase::CloseGap(int start, int num) {
   rep_->allocated_size -= num;
 }
 
-google::protobuf::MessageLite* RepeatedPtrFieldBase::AddWeak(
-    const google::protobuf::MessageLite* prototype) {
+MessageLite* RepeatedPtrFieldBase::AddWeak(const MessageLite* prototype) {
   if (rep_ != NULL && current_size_ < rep_->allocated_size) {
-    return reinterpret_cast<google::protobuf::MessageLite*>(
-        rep_->elements[current_size_++]);
+    return reinterpret_cast<MessageLite*>(rep_->elements[current_size_++]);
   }
   if (!rep_ || rep_->allocated_size == total_size_) {
     Reserve(total_size_ + 1);
   }
   ++rep_->allocated_size;
-  google::protobuf::MessageLite* result = prototype ? prototype->New(arena_) :
-      Arena::CreateMessage<ImplicitWeakMessage>(arena_);
+  MessageLite* result = prototype
+                            ? prototype->New(arena_)
+                            : Arena::CreateMessage<ImplicitWeakMessage>(arena_);
   rep_->elements[current_size_++] = result;
   return result;
 }
 
 }  // namespace internal
 
+template class PROTOBUF_EXPORT_TEMPLATE_DEFINE(PROTOBUF_EXPORT)
+    RepeatedField<bool>;
+template class PROTOBUF_EXPORT_TEMPLATE_DEFINE(PROTOBUF_EXPORT)
+    RepeatedField<int32>;
+template class PROTOBUF_EXPORT_TEMPLATE_DEFINE(PROTOBUF_EXPORT)
+    RepeatedField<uint32>;
+template class PROTOBUF_EXPORT_TEMPLATE_DEFINE(PROTOBUF_EXPORT)
+    RepeatedField<int64>;
+template class PROTOBUF_EXPORT_TEMPLATE_DEFINE(PROTOBUF_EXPORT)
+    RepeatedField<uint64>;
+template class PROTOBUF_EXPORT_TEMPLATE_DEFINE(PROTOBUF_EXPORT)
+    RepeatedField<float>;
+template class PROTOBUF_EXPORT_TEMPLATE_DEFINE(PROTOBUF_EXPORT)
+    RepeatedField<double>;
+template class PROTOBUF_EXPORT_TEMPLATE_DEFINE(PROTOBUF_EXPORT)
+    RepeatedPtrField<std::string>;
 
 }  // namespace protobuf
 }  // namespace google

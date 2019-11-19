@@ -9,6 +9,7 @@
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/message_center/views/proportional_image_view.h"
+#include "ui/views/animation/slide_out_controller.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
@@ -45,16 +46,15 @@ constexpr SkColor kNotificationTitleTextColor =
 
 NotificationItemView::NotificationItemView(
     NotificationMenuView::Delegate* delegate,
-    message_center::SlideOutController::Delegate* slide_out_controller_delegate,
+    views::SlideOutControllerDelegate* slide_out_controller_delegate,
     const base::string16& title,
     const base::string16& message,
     const gfx::Image& icon,
     const std::string& notification_id)
     : delegate_(delegate),
-      slide_out_controller_(
-          std::make_unique<message_center::SlideOutController>(
-              this,
-              slide_out_controller_delegate)),
+      slide_out_controller_(std::make_unique<views::SlideOutController>(
+          this,
+          slide_out_controller_delegate)),
       title_(title),
       message_(message),
       notification_id_(notification_id) {

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/sequenced_task_runner.h"
+#include "content/common/content_export.h"
 
 namespace base {
 class ListValue;
@@ -18,7 +19,7 @@ namespace content {
 // GetFontList_SlowBlocking() must only be called from the SequencedTaskRunner
 // returned by this function because it is non-threadsafe on Linux for versions
 // of Pango predating 2013.
-scoped_refptr<base::SequencedTaskRunner> GetFontListTaskRunner();
+CONTENT_EXPORT scoped_refptr<base::SequencedTaskRunner> GetFontListTaskRunner();
 
 // Retrieves the fonts available on the current platform and returns them.
 // The caller will own the returned pointer. Each entry will be a list of
@@ -29,7 +30,7 @@ scoped_refptr<base::SequencedTaskRunner> GetFontListTaskRunner();
 // GetFontListTaskRunner(). Most callers will want to use the GetFontListAsync
 // function in content/browser/font_list_async.h which does an asynchronous
 // call.
-std::unique_ptr<base::ListValue> GetFontList_SlowBlocking();
+CONTENT_EXPORT std::unique_ptr<base::ListValue> GetFontList_SlowBlocking();
 
 }  // namespace content
 

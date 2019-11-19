@@ -11,6 +11,8 @@
 #include <string>
 #include <vector>
 
+@class NSError;
+
 namespace autofill {
 class AutofillProfile;
 class CreditCard;
@@ -24,12 +26,12 @@ class WebState;
 // Base class for various Payment Request related EarlGrey tests.
 @interface PaymentRequestEGTestBase : ChromeTestCase
 
-// Adds |profile| to the PersonalDataManager. If the profile is not added within
-// a timeout, a GREYAssert is induced.
+// Adds |profile| to the PersonalDataManager. Induces a GREYAssert if the
+// profile is not added within a timeout.
 - (void)addAutofillProfile:(const autofill::AutofillProfile&)profile;
 
-// Adds |card| to the PersonalDataManager. If the credit card is not added
-// within a timeout, a GREYAssert is induced.
+// Adds |card| to the PersonalDataManager. Induces a GREYAssert if the
+// credit care is not added within a timeout.
 - (void)addCreditCard:(const autofill::CreditCard&)card;
 
 // Adds |card| as a server card to the PersonalDataManager.

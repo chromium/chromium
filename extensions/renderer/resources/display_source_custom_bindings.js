@@ -4,24 +4,8 @@
 
 // Custom binding for the Display Source API.
 
-var binding = apiBridge || require('binding').Binding.create('displaySource');
-var chrome = requireNative('chrome').GetChrome();
 var natives = requireNative('display_source');
 var logging = requireNative('logging');
-
-var jsLastError = bindingUtil ? undefined : require('lastError');
-function setLastError(name, message) {
-  if (bindingUtil)
-    bindingUtil.setLastError(message);
-  else
-    jsLastError.set(name, message, null, chrome);
-}
-function clearLastError() {
-  if (bindingUtil)
-    bindingUtil.clearLastError();
-  else
-    jsLastError.clear(chrome);
-}
 
 var callbacksInfo = {};
 
@@ -31,10 +15,10 @@ function callbackWrapper(callback, method, message) {
 
   try {
     if (message !== null)
-      setLastError(method, message);
+      bindingUtil.setLastError(message);
     callback();
   } finally {
-    clearLastError();
+    bindingUtil.clearLastError();
   }
 }
 
@@ -48,7 +32,7 @@ function callCompletionCallback(callbackId, error_message) {
   }
 }
 
-binding.registerCustomHook(function(bindingsAPI, extensionId) {
+apiBridge.registerCustomHook(function(bindingsAPI, extensionId) {
   var apiFunctions = bindingsAPI.apiFunctions;
   apiFunctions.setHandleRequest(
       'startSession', function(sessionInfo, callback) {
@@ -76,9 +60,6 @@ binding.registerCustomHook(function(bindingsAPI, extensionId) {
         }
       });
 });
-
-if (!apiBridge)
-  exports.$set('binding', binding.generate());
 
 // Called by C++.
 exports.$set('callCompletionCallback', callCompletionCallback);

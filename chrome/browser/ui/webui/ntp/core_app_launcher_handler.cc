@@ -14,13 +14,7 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/manifest.h"
-#include "net/base/escape.h"
-
-namespace {
-const net::UnescapeRule::Type kUnescapeRules =
-    net::UnescapeRule::NORMAL | net::UnescapeRule::PATH_SEPARATORS |
-    net::UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS;
-}
+#include "url/gurl.h"
 
 CoreAppLauncherHandler::CoreAppLauncherHandler() {}
 
@@ -49,13 +43,13 @@ void CoreAppLauncherHandler::HandleRecordAppLaunchByUrl(
 
 void CoreAppLauncherHandler::RecordAppLaunchByUrl(
     Profile* profile,
-    std::string escaped_url,
+    std::string url,
     extension_misc::AppLaunchBucket bucket) {
   CHECK(bucket != extension_misc::APP_LAUNCH_BUCKET_INVALID);
 
-  GURL url(net::UnescapeURLComponent(escaped_url, kUnescapeRules));
   if (!extensions::ExtensionRegistry::Get(profile)
-          ->enabled_extensions().GetAppByURL(url)) {
+           ->enabled_extensions()
+           .GetAppByURL(GURL(url))) {
     return;
   }
 

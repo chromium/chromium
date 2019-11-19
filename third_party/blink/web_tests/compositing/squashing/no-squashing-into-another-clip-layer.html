@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <style>
 .hoverable:hover {
-    transform: translateZ(0);
+    will-change: transform;
 }
 </style>
 <script>
@@ -16,8 +16,8 @@
     }
   window.addEventListener('load', dumpLayers, false)
 </script>
-<div style="transform: translateZ(0); overflow: hidden; height: 10px; background-color: lightblue">
-  <div id="inner" style="transform: translateZ(0); height: 10px; background-color: whitesmoke">
+<div style="will-change: transform; overflow: hidden; height: 10px; background-color: lightblue">
+  <div id="inner" style="will-change: transform; height: 10px; background-color: whitesmoke">
   </div>
 </div>
 <!-- This div should not sqaush into the inner div, because it is inside an overflow:hidden div which therefore clips differently than this div's parent -->

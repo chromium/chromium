@@ -2,4 +2,4 @@ file://third_party/blink/renderer/modules/xr/OWNERS
 
 # TEAM: xr-dev@chromium.org
 # COMPONENT: Blink>WebXR
-# WPT-NOTIFY: false # TODO(crbug.com/923060): Enable when spec stabilizes.
+# WPT-NOTIFY: true

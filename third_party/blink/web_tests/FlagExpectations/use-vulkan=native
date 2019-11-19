@@ -1,0 +1,51 @@
+# Need a Vulkan native specific baseline.
+crbug.com/993384 compositing/geometry/vertical-scroll-composited.html [ Skip ]
+crbug.com/993384 compositing/lots-of-img-layers.html [ Skip ]
+crbug.com/993384 css3/blending/background-blend-mode-crossfade-image-gradient.html [ Skip ]
+crbug.com/993384 css3/blending/background-blend-mode-gradient-image.html [ Skip ]
+crbug.com/993384 css3/blending/background-blend-mode-image-color.html [ Skip ]
+crbug.com/993384 css3/blending/background-blend-mode-image-image.html [ Skip ]
+crbug.com/993384 css3/blending/background-blend-mode-image-svg.html [ Skip ]
+crbug.com/993384 css3/blending/background-blend-mode-tiled-gradient.html [ Skip ]
+crbug.com/993384 css3/blending/effect-background-blend-mode-tiled.html [ Skip ]
+crbug.com/993384 css3/blending/effect-background-blend-mode.html [ Skip ]
+crbug.com/993384 css3/masking/mask-repeat-space-border.html [ Skip ]
+crbug.com/993384 images/color-profile-background-image-space.html [ Skip ]
+crbug.com/993384 media/video-layer-crash.html [ Skip ]
+crbug.com/993384 transforms/transformed-document-element.html [ Skip ]
+crbug.com/993384 transforms/3d/point-mapping/3d-point-mapping-deep.html [ Skip ]
+
+# OffscreenCanvas not rendering.
+crbug.com/1002538 fast/canvas/OffscreenCanvas-2d-drawImage-in-worker.html [ Skip ]
+crbug.com/1002538 fast/canvas/OffscreenCanvas-2d-drawImage.html [ Skip ]
+crbug.com/1002538 fast/canvas/OffscreenCanvas-2d-gradients-in-worker.html [ Skip ]
+crbug.com/1002538 fast/canvas/OffscreenCanvas-2d-imageSmoothing-in-worker.html [ Skip ]
+crbug.com/1002538 fast/canvas/OffscreenCanvas-2d-imageSmoothing.html [ Skip ]
+crbug.com/1002538 fast/canvas/OffscreenCanvas-2d-pattern-in-worker.html [ Skip ]
+crbug.com/1002538 fast/canvas/OffscreenCanvas-2d-pattern.html [ Skip ]
+crbug.com/1002538 fast/canvas/OffscreenCanvas-Bitmaprenderer-TransferToImageBitmapResetsToBlack.html [ Skip ]
+crbug.com/1002538 fast/canvas/OffscreenCanvas-clearRect-in-worker.html [ Skip ]
+crbug.com/1002538 fast/canvas/OffscreenCanvas-fillRect-in-worker.html [ Skip ]
+crbug.com/1002538 fast/canvas/OffscreenCanvas-filter-in-worker.html [ Skip ]
+crbug.com/1002538 fast/canvas/OffscreenCanvas-paths-in-worker.html [ Skip ]
+crbug.com/1002538 fast/canvas/OffscreenCanvas-strokeRect-in-worker.html [ Skip ]
+crbug.com/1002538 fast/canvas/OffscreenCanvas-text-FontFace-in-worker.html [ Skip ]
+crbug.com/1002538 fast/canvas/OffscreenCanvas-text-rendering-in-worker.html [ Skip ]
+crbug.com/1002538 fast/canvas/OffscreenCanvas-transform-shadow-in-worker.html [ Skip ]
+
+# Expected Image Region Rendering Nothing.
+crbug.com/1002547 fast/canvas/imagebitmap/transferFromImageBitmap-alpha.html [ Skip ]
+crbug.com/1002547 fast/canvas/imagebitmap/transferFromImageBitmap-no-alpha.html [ Skip ]
+crbug.com/1002547 fast/canvas/imagebitmap/transferFromImageBitmap.html [ Skip ]
+
+# Crashing third_party/blink/tools/blinkpy/common/message_pool.py
+crbug.com/1018884 compositing/overflow/scrollbar-layer-placement.html [ Skip ]
+
+# OOPIF tests fail due to input event coordinates.
+crbug.com/935970 http/tests/misc/scroll-cross-origin-iframes-scrollbar.html [ Skip ]
+crbug.com/935970 http/tests/security/referrer-policy-redirect-link.html [ Skip ]
+crbug.com/935970 http/tests/security/frameNavigation/xss-ALLOWED-parent-navigation-change-async.html [ Skip ]
+crbug.com/935970 http/tests/security/frameNavigation/xss-ALLOWED-parent-navigation-change.html [ Skip ]
+
+# Viewport image is the wrong size.
+crbug.com/1009718 images/huge-image-viewport-scale.html [ Skip ]

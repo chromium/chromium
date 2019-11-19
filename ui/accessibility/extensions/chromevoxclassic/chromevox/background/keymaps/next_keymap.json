@@ -1,0 +1,575 @@
+{
+  "bindings": [
+    {
+      "command": "previousObject",
+      "sequence": {
+        "cvoxModifier": true,
+        "keys": {
+          "keyCode": [37]
+        }
+      }
+    },
+    {
+      "command": "previousLine",
+      "sequence": {
+        "cvoxModifier": true,
+        "keys": {
+          "keyCode": [38]
+        }
+      }
+    },
+    {
+      "command": "nextObject",
+      "sequence": {
+        "cvoxModifier": true,
+        "keys": {
+          "keyCode": [39]
+        }
+      }
+    },
+    {
+      "command": "nextLine",
+      "sequence": {
+        "cvoxModifier": true,
+        "keys": {
+          "keyCode": [40]
+        }
+      }
+    },
+    {
+      "command": "nextCharacter",
+      "sequence": {
+        "cvoxModifier": true,
+        "keys": {
+          "keyCode": [39],
+          "shiftKey": [true]
+        }
+      }
+    },
+    {
+      "command": "previousCharacter",
+      "sequence": {
+        "cvoxModifier": true,
+        "keys": {
+          "keyCode": [37],
+          "shiftKey": [true]
+        }
+      }
+    },
+    {
+      "command": "nextWord",
+      "sequence": {
+        "cvoxModifier": true,
+        "keys": {
+          "keyCode": [39],
+          "ctrlKey": [true],
+          "shiftKey": [true]
+        }
+      }
+    },
+    {
+      "command": "previousWord",
+      "sequence": {
+        "cvoxModifier": true,
+        "keys": {
+          "keyCode": [37],
+          "ctrlKey": [true],
+          "shiftKey": [true]
+        }
+      }
+    },
+    {
+      "command": "nextButton",
+      "sequence": {
+        "cvoxModifier": true,
+        "keys": {
+          "keyCode": [66]
+        }
+      }
+    },
+    {
+      "command": "previousButton",
+      "sequence": {
+        "cvoxModifier": true,
+        "keys": {
+          "keyCode": [66],
+          "shiftKey": [true]
+        }
+      }
+    },
+    {
+      "command": "nextCheckbox",
+      "sequence": {
+        "cvoxModifier": true,
+        "keys": {
+          "keyCode": [88]
+        }
+      }
+    },
+    {
+      "command": "previousCheckbox",
+      "sequence": {
+        "cvoxModifier": true,
+        "keys": {
+          "keyCode": [88],
+          "shiftKey": [true]
+        }
+      }
+    },
+    {
+      "command": "nextComboBox",
+      "sequence": {
+        "cvoxModifier": true,
+        "keys": {
+          "keyCode": [67]
+        }
+      }
+    },
+    {
+      "command": "previousComboBox",
+      "sequence": {
+        "cvoxModifier": true,
+        "keys": {
+          "keyCode": [67],
+          "shiftKey": [true]
+        }
+      }
+    },
+    {
+      "command": "nextEditText",
+      "sequence": {
+        "cvoxModifier": true,
+        "keys": {
+          "keyCode": [69]
+        }
+      }
+    },
+    {
+      "command": "previousEditText",
+      "sequence": {
+        "cvoxModifier": true,
+        "keys": {
+          "keyCode": [69],
+          "shiftKey": [true]
+        }
+      }
+    },
+    {
+      "command": "nextFormField",
+      "sequence": {
+        "cvoxModifier": true,
+        "keys": {
+          "keyCode": [70]
+        }
+      }
+    },
+    {
+      "command": "previousFormField",
+      "sequence": {
+        "cvoxModifier": true,
+        "keys": {
+          "keyCode": [70],
+          "shiftKey": [true]
+        }
+      }
+    },
+    {
+      "command": "nextHeading",
+      "sequence": {
+        "cvoxModifier": true,
+        "keys": {
+          "keyCode": [72]
+        }
+      }
+    },
+    {
+      "command": "previousHeading",
+      "sequence": {
+        "cvoxModifier": true,
+        "keys": {
+          "keyCode": [72],
+          "shiftKey": [true]
+        }
+      }
+    },
+    {
+      "command": "nextLink",
+      "sequence": {
+        "cvoxModifier": true,
+        "keys": {
+          "keyCode": [76]
+        }
+      }
+    },
+    {
+      "command": "previousLink",
+      "sequence": {
+        "cvoxModifier": true,
+        "keys": {
+          "keyCode": [76],
+          "shiftKey": [true]
+        }
+      }
+    },
+    {
+      "command": "nextTable",
+      "sequence": {
+        "cvoxModifier": true,
+        "keys": {
+          "keyCode": [84]
+        }
+      }
+    },
+    {
+      "command": "previousTable",
+      "sequence": {
+        "cvoxModifier": true,
+        "keys": {
+          "keyCode": [84],
+          "shiftKey": [true]
+        }
+      }
+    },
+    {
+      "command": "nextVisitedLink",
+      "sequence": {
+        "cvoxModifier": true,
+        "keys": {
+          "keyCode": [86]
+        }
+      }
+    },
+    {
+      "command": "previousVisitedLink",
+      "sequence": {
+        "cvoxModifier": true,
+        "keys": {
+          "keyCode": [86],
+          "shiftKey": [true]
+        }
+      }
+    },
+    {
+      "command": "jumpToBottom",
+      "sequence": {
+        "cvoxModifier": true,
+        "keys": {
+          "keyCode": [39],
+          "ctrlKey": [true]
+        }
+      }
+    },
+    {
+      "command": "jumpToTop",
+      "sequence": {
+        "cvoxModifier": true,
+        "keys": {
+          "keyCode": [37],
+          "ctrlKey": [true]
+        }
+      }
+    },
+    {
+      "command": "forceClickOnCurrentItem",
+      "sequence": {
+        "cvoxModifier": true,
+        "keys": {
+          "keyCode": [32]
+        }
+      }
+    },
+    {
+      "command": "contextMenu",
+      "sequence": {
+        "cvoxModifier": true,
+        "keys": {
+          "keyCode": [77]
+        }
+      }
+    },
+    {
+      "command": "readFromHere",
+      "sequence": {
+        "cvoxModifier": true,
+        "keys": {
+          "keyCode": [82]
+        }
+      }
+    },
+    {
+      "command": "toggleChromeVoxVersion",
+      "sequence": {
+        "cvoxModifier": true,
+        "keys": {
+          "keyCode": [81],
+          "shitKey": [true]
+        }
+      }
+    },
+    {
+      "command": "toggleChromeVox",
+      "sequence": {
+        "cvoxModifier": true,
+        "keys": {
+          "keyCode": [65, 65]
+        }
+      }
+    },
+    {
+      "command": "toggleStickyMode",
+      "sequence": {
+        "doubleTap": true,
+        "keys": {
+          "keyCode": [
+            45
+          ]
+        },
+        "platformFilter": 5
+      }
+    },
+    {
+      "command": "toggleStickyMode",
+      "sequence": {
+        "skipStripping": false,
+        "doubleTap": true,
+        "keys": {
+          "keyCode": [
+            91
+          ]
+        },
+        "platformFilter": 10
+      }
+    },
+    {
+      "command": "passThroughMode",
+      "sequence": {
+        "cvoxModifier": true,
+        "keys": {
+          "keyCode": [27],
+          "shiftKey": [true]
+        }
+      }
+    },
+    {
+      "command": "toggleKeyboardHelp",
+      "sequence": {
+        "cvoxModifier": true,
+        "keys": {
+          "keyCode": [190]
+        }
+      }
+    },
+    {
+      "command": "stopSpeech",
+      "sequence": {
+        "cvoxModifier": false,
+        "keys": {
+          "ctrlKey": [true],
+          "keyCode": [17]
+        }
+      }
+    },
+    {
+      "command": "decreaseTtsRate",
+      "sequence": {
+        "cvoxModifier": true,
+        "keys": {
+          "keyCode": [219]
+        }
+      }
+    },
+    {
+      "command": "increaseTtsRate",
+      "sequence": {
+        "cvoxModifier": true,
+        "keys": {
+          "keyCode": [221]
+        }
+      }
+    },
+    {
+      "command": "decreaseTtsPitch",
+      "sequence": {
+        "cvoxModifier": true,
+        "keys": {
+          "keyCode": [186]
+        }
+      }
+    },
+    {
+      "command": "increaseTtsPitch",
+      "sequence": {
+        "cvoxModifier": true,
+        "keys": {
+          "keyCode": [222]
+        }
+      }
+    },
+    {
+      "command": "stopSpeech",
+      "sequence": {
+        "keys": {
+          "ctrlKey": [true],
+          "keyCode": [17]
+        }
+      }
+    },
+    {
+      "command": "cyclePunctuationEcho",
+      "sequence": {
+        "cvoxModifier": true,
+        "keys": {
+          "keyCode": [65, 80]
+        }
+      }
+    },
+    {
+      "command": "showKbExplorerPage",
+      "sequence": {
+        "cvoxModifier": true,
+        "keys": {
+          "keyCode": [79, 75]
+        }
+      }
+    },
+    {
+      "command": "cycleTypingEcho",
+      "sequence": {
+        "cvoxModifier": true,
+        "keys": {
+          "keyCode": [65, 84]
+        }
+      }
+    },
+    {
+      "command": "showOptionsPage",
+      "sequence": {
+        "cvoxModifier": true,
+        "keys": {
+          "keyCode": [79, 79]
+        }
+      }
+    },
+    {
+      "command": "showNextUpdatePage",
+      "sequence": {
+        "cvoxModifier": true,
+        "keys": {
+          "keyCode": [79, 78]
+        }
+      }
+    },
+    {
+      "command": "toggleEarcons",
+      "sequence": {
+        "cvoxModifier": true,
+        "keys": {
+          "keyCode": [65, 69]
+        }
+      }
+    },
+    {
+      "command": "speakTimeAndDate",
+      "sequence": {
+        "cvoxModifier": true,
+        "keys": {
+          "keyCode": [65, 68]}
+      }
+    },
+    {
+      "command": "readCurrentTitle",
+      "sequence": {
+        "cvoxModifier": true,
+        "keys": {
+          "keyCode": [65, 87]
+        }
+      }
+    },
+    {
+      "command": "readCurrentURL",
+      "sequence": {
+        "cvoxModifier": true,
+        "keys": {
+          "keyCode": [65, 85]
+        }
+      }
+    },
+    {
+      "command": "reportIssue",
+      "sequence": {
+        "cvoxModifier": true,
+        "keys": {
+          "keyCode": [65, 73]
+        }
+      }
+    },
+    {
+      "command": "toggleSearchWidget",
+      "sequence": {
+        "cvoxModifier": true,
+        "keys": {
+          "keyCode": [191]
+        }
+      }
+    },
+    {
+      "command": "showHeadingsList",
+      "sequence": {
+        "cvoxModifier": true,
+        "keys": {
+          "keyCode": [72],
+          "ctrlKey": [true]
+        }
+      }
+    },
+    {
+      "command": "showFormsList",
+      "sequence": {
+        "cvoxModifier": true,
+        "keys": {
+          "keyCode": [70],
+          "ctrlKey": [true]
+        }
+      }
+    },
+    {
+      "command": "showLandmarksList",
+      "sequence": {
+        "cvoxModifier": true,
+        "keys": {
+          "keyCode": [186],
+          "ctrlKey": [true]
+        }
+      }
+    },
+    {
+      "command": "showLinksList",
+      "sequence": {
+        "cvoxModifier": true,
+        "keys": {
+          "keyCode": [76],
+          "ctrlKey": [true]
+        }
+      }
+    },
+    {
+      "command": "showTablesList",
+      "sequence": {
+        "cvoxModifier": true,
+        "keys": {
+          "keyCode": [84],
+          "ctrlKey": [true]
+        }
+      }
+    },
+    {
+      "command": "toggleBrailleCaptions",
+      "sequence": {
+        "cvoxModifier": true,
+        "keys": {
+          "keyCode": [65, 66]
+        }
+      }
+    }
+  ]
+}

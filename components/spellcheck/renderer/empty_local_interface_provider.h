@@ -10,7 +10,7 @@
 namespace spellcheck {
 
 // A dummy LocalInterfaceProvider that doesn't bind any remote application.
-// May require a base::test::ScopedTaskEnvironment if GetInterface() is expected
+// May require a base::test::TaskEnvironment if GetInterface() is expected
 // to be called.
 class EmptyLocalInterfaceProvider
     : public service_manager::LocalInterfaceProvider {

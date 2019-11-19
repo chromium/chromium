@@ -22,6 +22,6 @@ function runTest()
     document.getElementById("subframe").style.display= 'none';
 }
 </script>
-<iframe id="subframe" onload="runTest()" src="data:text/html,<div id='div'></div>"></iframe>
+<iframe id="subframe" onload="runTest()" srcdoc="<div id='div'></div>"></iframe>
 </body>
 </html>

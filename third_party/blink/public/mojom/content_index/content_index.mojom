@@ -1,0 +1,85 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "skia/public/mojom/bitmap.mojom";
+import "third_party/blink/public/mojom/manifest/manifest.mojom";
+import "url/mojom/url.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
+// As per https://github.com/rknoll/content-index.
+
+enum ContentIndexError {
+  NONE,
+
+  // The browser process received an unexpected parameter.
+  INVALID_PARAMETER,
+
+  // An IO error occured while interacting with the database.
+  STORAGE_ERROR,
+
+  // Service worker is missing or not activated yet.
+  NO_SERVICE_WORKER,
+};
+
+// These values are persisted and recorded, do not change or create gaps.
+enum ContentCategory {
+  // ""
+  NONE = 0,
+
+  // "homepage"
+  HOME_PAGE,
+
+  // "article"
+  ARTICLE,
+
+  // "video"
+  VIDEO,
+
+  // "audio"
+  AUDIO,
+};
+
+// Similar to ImageResource. These are developer provided fields that are
+// unprocessed so the same description can be returned when queried.
+// TODO(crbug.com/973844): Use ImageResource directly or the equivalent
+// after spec issues have been ironed out.
+struct ContentIconDefinition {
+  string src;
+  string? sizes;
+  string? type;
+};
+
+struct ContentDescription {
+  string id;
+  string title;
+  string description;
+  ContentCategory category;
+  array<ContentIconDefinition> icons;
+
+  // Passed as a string so the same description can be returned when queried.
+  string launch_url;
+};
+
+// The |service_worker_registration_id| comes from an untrusted renderer but
+// the origin it's validated against is trusted.
+// TODO(crbug.com/976962): Register interfaces that are exposed only on
+// Service Workers.
+interface ContentIndexService {
+  const int32 kMaxIconResolution = 65536;  // 256x256
+
+  // Returns how many icons are needed and their sizes (in pixels).
+  GetIconSizes(ContentCategory category) => (array<gfx.mojom.Size> icon_sizes);
+
+  Add(int64 service_worker_registration_id,
+      ContentDescription description,
+      array<skia.mojom.Bitmap> icon,
+      url.mojom.Url launchUrl)
+      => (ContentIndexError error);
+  Delete(int64 service_worker_registration_id, string id)
+      => (ContentIndexError error);
+  GetDescriptions(int64 service_worker_registration_id)
+      => (ContentIndexError error, array<ContentDescription> descriptions);
+};

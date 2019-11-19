@@ -36,12 +36,14 @@ if "--use_bundled_pylibs" in sys.argv[1:]:
 sys.path.insert(0, os.path.join(_GetDirAbove("components"),
                                 "mojo", "public", "tools", "bindings", "pylib"))
 
+# pylint: disable=wrong-import-position
 from mojom.error import Error
 import mojom.fileutil as fileutil
 from mojom.generate import translate
 from mojom.generate import template_expander
 from mojom.generate.generator import AddComputedData
 from mojom.parse.parser import Parse
+# pylint: enable=wrong-import-position
 
 
 _BUILTIN_GENERATORS = {

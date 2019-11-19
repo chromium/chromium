@@ -1,5 +1,7 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_input/cr_input.html">
 <link rel="import" href="chrome://resources/cr_elements/icons.html">
 <link rel="import" href="chrome://resources/html/assert.html">
@@ -8,8 +10,6 @@
 <link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-list/iron-list.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-button/paper-button.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-icon-button/paper-icon-button-light.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/paper-ripple/paper-ripple.html">
 <link rel="import" href="fingerprint_browser_proxy.html">
 <link rel="import" href="setup_fingerprint_dialog.html">
@@ -54,25 +54,24 @@
             <paper-ripple noink></paper-ripple>
             <cr-input value="{{item}}" on-change="onFingerprintLabelChanged_">
             </cr-input>
-            <paper-icon-button-light class="icon-delete-gray">
-              <button on-click="onFingerprintDeleteTapped_"
-                  aria-label$="[[getButtonAriaLabel_(item)]]">
-              </button>
-            </paper-icon-button-light>
+            <cr-icon-button class="icon-delete-gray"
+                on-click="onFingerprintDeleteTapped_"
+                aria-label$="[[getButtonAriaLabel_(item)]]"></cr-icon-button>
           </div>
         </template>
       </iron-list>
       <div class="continuation">
-        <paper-button id="addFingerprint" class="add-link action-button"
+        <cr-button id="addFingerprint" class="add-link action-button"
             on-click="openAddFingerprintDialog_">
           $i18n{lockScreenAddFingerprint}
-        </paper-button>
+        </cr-button>
       </div>
     </div>
     <i class="settings-box continuation">$i18n{lockScreenFingerprintWarning}</i>
 
     <template is="dom-if" if="[[showSetupFingerprintDialog_]]" restamp>
       <settings-setup-fingerprint-dialog
+          auth-token="[[authToken]]"
           on-add-fingerprint="updateFingerprintsList_"
           on-close="onSetupFingerprintDialogClose_"
           allow-add-another-finger="[[allowAddAnotherFinger_]]">

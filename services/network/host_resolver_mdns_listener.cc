@@ -23,11 +23,12 @@ HostResolverMdnsListener::HostResolverMdnsListener(
 
 HostResolverMdnsListener::~HostResolverMdnsListener() {
   internal_listener_ = nullptr;
-  response_client_ = nullptr;
+  response_client_.reset();
 }
 
-int HostResolverMdnsListener::Start(mojom::MdnsListenClientPtr response_client,
-                                    base::OnceClosure cancellation_callback) {
+int HostResolverMdnsListener::Start(
+    mojo::PendingRemote<mojom::MdnsListenClient> response_client,
+    base::OnceClosure cancellation_callback) {
   DCHECK(internal_listener_);
   DCHECK(!response_client_.is_bound());
 
@@ -35,10 +36,10 @@ int HostResolverMdnsListener::Start(mojom::MdnsListenClientPtr response_client,
   if (rv != net::OK)
     return rv;
 
-  response_client_ = std::move(response_client);
+  response_client_.Bind(std::move(response_client));
   // Unretained |this| reference is safe because connection error cannot occur
   // if |response_client_| goes out of scope.
-  response_client_.set_connection_error_handler(base::BindOnce(
+  response_client_.set_disconnect_handler(base::BindOnce(
       &HostResolverMdnsListener::OnConnectionError, base::Unretained(this)));
 
   cancellation_callback_ = std::move(cancellation_callback);

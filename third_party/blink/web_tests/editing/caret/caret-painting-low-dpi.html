@@ -9,15 +9,15 @@
     }
 </style>
 <textarea id="test">Some text</textarea>
-<script src="../../resources/run-after-layout-and-paint.js"></script>
 <script>
   window.onload = function() {
     if (window.testRunner) {
+      testRunner.waitUntilDone();
       document.getElementById("test").focus();
       testRunner.setBackingScaleFactor(0.9,
-        function() { runAfterLayoutAndPaint(
-          function() { testRunner.dumpAsTextWithPixelResults();
-          }, true)
+        function() {
+          if (window.testRunner)
+            testRunner.notifyDone();
         }
       );
     }

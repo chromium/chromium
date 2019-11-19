@@ -1,20 +1,26 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="nl">
+<translation id="1028699632127661925">Verzenden naar <ph name="DEVICE_NAME" />…</translation>
 <translation id="111910763555783249">Instellingen voor meldingen</translation>
 <translation id="1127811143501539442">{DAYS,plural, =1{1 dag geleden}other{# dagen geleden}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{1 minuut geleden}other{# minuten geleden}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{1 m}other{# m}}</translation>
 <translation id="1181037720776840403">Verwijderen</translation>
+<translation id="1201402288615127009">Volgende</translation>
 <translation id="1243314992276662751">Uploaden</translation>
+<translation id="1266864766717917324">Kan <ph name="CONTENT_TYPE" /> niet delen</translation>
 <translation id="1269641567813814718">Win</translation>
 <translation id="1290982764014248209"><ph name="DRAGGED_APP" /> verplaatsen naar map <ph name="FOLDER_NAME" />.</translation>
+<translation id="1291104554099683393">Verdeel de tekst in kleinere stukken en deel in meerdere keren.</translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1306549533752902673">AANBEVOLEN APPS</translation>
 <translation id="1368832886055348810">Links naar rechts</translation>
 <translation id="1383876407941801731">Zoeken</translation>
 <translation id="1398853756734560583">Maximaliseren</translation>
-<translation id="1413622004203049571">Meldingen van <ph name="NOTIFIER_NAME" /> uitschakelen</translation>
+<translation id="1409544243779336081">App-aanbeveling</translation>
+<translation id="1450753235335490080">Kan <ph name="CONTENT_TYPE" /> niet delen</translation>
+<translation id="1498028757988366001">Je hebt hier eerder naar gezocht. Als je '<ph name="QUERY" />' uit je geschiedenis verwijdert, wordt deze zoekopdracht definitief op al je apparaten uit je account verwijderd.</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 minuut en }other{# minuten en }}</translation>
 <translation id="1643823602425662293">Melding</translation>
 <translation id="169515659049020177">Shift</translation>
@@ -33,8 +39,12 @@
 <translation id="1884435127456172652"><ph name="NUMBER" />%</translation>
 <translation id="1901303067676059328">&amp;Alles selecteren</translation>
 <translation id="1938451708255335766">Als je de weergavedichtheid van het venster wilt aanpassen, start je de app opnieuw.</translation>
+<translation id="2006524834898217237">Zorg dat dit apparaat is verbonden met internet.</translation>
+<translation id="208586643495776849">Probeer het opnieuw</translation>
+<translation id="2090963878406559571">Als je vanaf <ph name="ORIGIN" /> een nummer naar je Android-telefoon wilt sturen, moet je in de instellingen <ph name="TROUBLESHOOT_LINK" /> voor beide apparaten.</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1 d}other{# d}}</translation>
 <translation id="2148716181193084225">Vandaag</translation>
+<translation id="2161656808144014275">Tekst</translation>
 <translation id="2168039046890040389">Pagina omhoog</translation>
 <translation id="2190355936436201913">(leeg)</translation>
 <translation id="2192232475740621500">Lage dichtheid gebruiken</translation>
@@ -43,6 +53,8 @@
 <translation id="2289052229480071835">Tik op de tikdoelen op je scherm.</translation>
 <translation id="2295140143284145483">Enquête</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> TB/s</translation>
+<translation id="2353636109065292463">Je internetverbinding controleren…</translation>
+<translation id="2388990488038464401">Dit nummer bellen vanaf je telefoon?</translation>
 <translation id="24452542372838207">Melding uitvouwen</translation>
 <translation id="2445449901874883781">Hoge dichtheid gebruiken</translation>
 <translation id="2482878487686419369">Meldingen</translation>
@@ -50,11 +62,15 @@
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2522350507219695259">Kalibratie is voltooid</translation>
 <translation id="252373100621549798">Onbekend display</translation>
+<translation id="2545651323591713692">Snoozen</translation>
+<translation id="2573731672208488250">{HOURS,plural, =1{over 1 u}other{over # u}}</translation>
 <translation id="2583543531130364912">Je touchscreen kalibreren</translation>
 <translation id="2666092431469916601">Boven</translation>
+<translation id="2701330563083355633">Gedeeld vanaf <ph name="DEVICE_NAME" /></translation>
 <translation id="2743387203779672305">Kopiëren naar klembord</translation>
 <translation id="2803313416453193357">Map openen</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{1 jaar geleden}other{# jaar geleden}}</translation>
+<translation id="2907671656515444832">{DAYS,plural, =1{over 1 d}other{over # d}}</translation>
 <translation id="2931838996092594335">klikken</translation>
 <translation id="3036649622769666520">Bestanden openen</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
@@ -65,14 +81,18 @@
 <translation id="3183922693828471536">Hiernaartoe bladeren</translation>
 <translation id="3234408098842461169">Pijl-omlaag</translation>
 <translation id="3291688615589870984">{DAYS,plural, =1{1 dag}other{# dagen}}</translation>
+<translation id="3295886253693811851">Bellen via</translation>
 <translation id="335581015389089642">Spraak</translation>
+<translation id="3389286852084373014">Tekst is te groot</translation>
 <translation id="3479552764303398839">Niet nu</translation>
 <translation id="348799646910989694">Plank automatisch verborgen</translation>
 <translation id="3600566671520689681">{DAYS,plural, =1{1 dag resterend}other{# dagen resterend}}</translation>
+<translation id="3600969208114796418"><ph name="SAVEAS_EXTENSION_TYPE" />-bestand</translation>
 <translation id="3608915363409716668"><ph name="MAXIMUM_VALUE" />+</translation>
 <translation id="3618849550573277856">'<ph name="LOOKUP_STRING" />' opzoeken</translation>
 <translation id="364720409959344976">Map voor uploaden selecteren</translation>
 <translation id="3660179305079774227">Pijl-omhoog</translation>
+<translation id="3670030362669914947">Nummer</translation>
 <translation id="3740362395218339114"><ph name="QUANTITY" /> GB/s</translation>
 <translation id="3757388668994797779"><ph name="QUANTITY" /> GB</translation>
 <translation id="3842239759367498783">Verder lezen vanaf je mobiele apparaat <ph name="TITLE" /></translation>
@@ -93,25 +113,28 @@
 <translation id="4724120544754982507">Meldingscentrum, <ph name="UNREAD_NOTIFICATION_COUNT" /> ongelezen meldingen</translation>
 <translation id="4730374152663651037">VEELGEBRUIKT</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{Nog 1 maand}other{Nog # maanden}}</translation>
-<translation id="4841881773802181781">Invoeging</translation>
+<translation id="4888938634149558681">Bellen</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 seconde}other{# seconden}}</translation>
 <translation id="4971687151119236543">Vorige track voor media</translation>
 <translation id="5046499563572181734">Tik hier</translation>
 <translation id="5076340679995252485">&amp;Plakken</translation>
-<translation id="5137751499640340777">De Google Assistent starten</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5266161281976477809">Driehoek voor samen-/uitvouwen</translation>
-<translation id="528468243742722775">End</translation>
+<translation id="5278860589123563674">Verzenden mislukt</translation>
+<translation id="528468243742722775">Beëindigen</translation>
+<translation id="5327567770033251652">synchronisatie inschakelen</translation>
 <translation id="5329858601952122676">Verwij&amp;deren</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> bovenop <ph name="IN_PLACE_APP" />, laat los om een map te maken.</translation>
 <translation id="5463830097259460683">Emoji en symbolen</translation>
-<translation id="5476505524087279545">Deselecteren</translation>
+<translation id="5476505524087279545">uitvinken</translation>
 <translation id="547979256943495781">Plank aan rechterkant</translation>
 <translation id="5574202486608032840"><ph name="IDS_SHORT_PRODUCT_OS_NAME" />-systeem</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5613020302032141669">Pijl-links</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 min.}other{# min.}}</translation>
+<translation id="5763338081255973061">{DAYS,plural, =0{Vandaag actief}=1{1 dag geleden actief}other{# dagen geleden actief}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 dag en }other{# dagen en }}</translation>
+<translation id="5866104238061687188">{YEARS,plural, =1{over 1 j}other{over # j}}</translation>
 <translation id="5895138241574237353">Opnieuw starten</translation>
 <translation id="5906667377645263094">{SECONDS,plural, =1{1 seconde resterend}other{# seconden reseterend}}</translation>
 <translation id="5941711191222866238">Minimaliseren</translation>
@@ -124,21 +147,26 @@
 <translation id="6135826906199951471">Del</translation>
 <translation id="6142413573757616983"><ph name="QUANTITY" /> B/s</translation>
 <translation id="6156262341071374681">Uitbreiden naar alle apps</translation>
+<translation id="6165508094623778733">Meer informatie</translation>
 <translation id="6264365405983206840">&amp;Alles selecteren</translation>
 <translation id="6351032674660237738">APP-SUGGESTIES</translation>
 <translation id="6364916375976753737">Naar links bladeren</translation>
 <translation id="6394627529324717982">Komma</translation>
 <translation id="6397363302884558537">Inspreken stoppen</translation>
 <translation id="6404817160109697034">{SECONDS,plural, =1{1 sec. geleden}other{# sec. geleden}}</translation>
+<translation id="6417265370957905582">Google Assistent</translation>
 <translation id="6430678249303439055">Alle meldingen van deze app blokkeren</translation>
 <translation id="6483402905448010557">{SECONDS,plural, =1{1 seconde geleden}other{# seconden geleden}}</translation>
+<translation id="6539092367496845964">Er is iets misgegaan. Probeer het later opnieuw.</translation>
 <translation id="654149438358937226">Alle meldingen blokkeren</translation>
 <translation id="6567071839949112727">klik via bovenliggende entiteit</translation>
 <translation id="6578407462441924264">Naamloos</translation>
 <translation id="6612467943526193239">Druk op Esc om de kalibratie af te sluiten.</translation>
 <translation id="6620110761915583480">Bestand opslaan</translation>
+<translation id="6656912866303152668">Zorg dat synchronisatie in Chrome is ingeschakeld voor <ph name="TARGET_DEVICE_NAME" /> en probeer opnieuw te verzenden.</translation>
 <translation id="6699343763173986273">Volgende track voor media</translation>
-<translation id="673773751041746814">Verwijdering</translation>
+<translation id="6710213216561001401">Vorige</translation>
+<translation id="6779314412797872738">Als je vanaf hier een nummer naar je Android-telefoon wilt sturen, moet je in de instellingen <ph name="TROUBLESHOOT_LINK" /> voor beide apparaten.</translation>
 <translation id="6786750046913594791">Map sluiten</translation>
 <translation id="6808150112686056157">Media stoppen</translation>
 <translation id="6845383723252244143">Map selecteren</translation>
@@ -155,9 +183,11 @@
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{1 min. resterend}other{# min. resterend}}</translation>
 <translation id="7319740667687257810">Launcher, gedeeltelijke weergave</translation>
+<translation id="7352651011704765696">Er is iets misgegaan</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{1 min. geleden}other{# min. geleden}}</translation>
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>
 <translation id="7410957453383678442">{MINUTES,plural, =1{1 minuut resterend}other{# minuten resterend}}</translation>
+<translation id="7430878839542012341">Deze zoekopdracht uit je geschiedenis verwijderen?</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> TB</translation>
 <translation id="7507604095951736240">Emoji's</translation>
 <translation id="7658239707568436148">Annuleren</translation>
@@ -167,12 +197,15 @@
 <translation id="7907591526440419938">Bestand openen</translation>
 <translation id="7969046989155602842">Command</translation>
 <translation id="8074552109918343525">{MAX_UNREAD_NOTIFICATIONS,plural, =1{Meer dan één ongelezen melding}other{Meer dan # ongelezen meldingen}}</translation>
+<translation id="8086866675552927481">{MINUTES,plural, =1{over 1 m}other{over # m}}</translation>
 <translation id="8087772101393322318"><ph name="KEY_MODIFIER_NAME" /> + <ph name="KEY_COMBO_NAME" /></translation>
+<translation id="8090736967111090568">Nummer van <ph name="ORIGIN" /></translation>
 <translation id="8106081041558092062">{HOURS,plural, =1{1 uur geleden}other{# uur geleden}}</translation>
 <translation id="8131263257437993507">{SECONDS,plural, =1{1 sec. resterend}other{# sec. resterend}}</translation>
+<translation id="8134065097954893699">Deze pagina wordt opnieuw geladen</translation>
+<translation id="8144660977431427332">Je zoekopdrachten worden mogelijk gemaakt door de Google Assistent. <ph name="LEARN_MORE" /></translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, automatisch aanvullen</translation>
 <translation id="815598010540052116">Omlaag bladeren</translation>
-<translation id="8170087467028567933">Als je de suggestie verwijdert, wordt deze verborgen voor je account op al je apparaten.</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8210608804940886430">Pagina omlaag</translation>
 <translation id="8245914219290430011">Tab</translation>
@@ -183,7 +216,6 @@
 <translation id="838869780401515933">Selecteren</translation>
 <translation id="8393700583063109961">Bericht verzenden</translation>
 <translation id="8394908167088220973">Media afspelen/onderbreken</translation>
-<translation id="8420205633584771378">Deze suggestie verwijderen?</translation>
 <translation id="8458811141851741261">{YEARS,plural, =1{1 j}other{# j}}</translation>
 <translation id="8602707065186045623"><ph name="SAVEAS_EXTENSION_TYPE" />-bestand (.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
 <translation id="8649597172973390955">Plank altijd weergegeven</translation>
@@ -195,8 +227,11 @@
 <translation id="8806053966018712535">Map <ph name="FOLDER_NAME" /></translation>
 <translation id="883911313571074303">Afbeelding annoteren</translation>
 <translation id="8841375032071747811">Knop Terug</translation>
+<translation id="8867568208303837180">Verzenden...</translation>
+<translation id="8876215549894133151">Indeling:</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" />  KB</translation>
 <translation id="8926951137623668982">Plank altijd verborgen</translation>
+<translation id="8996630695507351249">Zorg dat <ph name="TARGET_DEVICE_NAME" /> is verbonden met internet.</translation>
 <translation id="9002566407876343676">openen</translation>
 <translation id="9039076430527029379">Verplaatsen naar pagina <ph name="PAGE_NUMBER" />, rij <ph name="ROW_NUMBER" />, kolom <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="9044832324875206639">{SECONDS,plural, =1{1 sec.}other{# sec.}}</translation>

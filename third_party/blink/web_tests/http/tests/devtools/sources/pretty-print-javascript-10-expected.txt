@@ -1,0 +1,15 @@
+Verifies JavaScript pretty-printing functionality.
+
+
+Running: objectSpread
+====== 8< ------
+const a = {
+    a: 4,
+    ...{
+        a: 5,
+        b: 42
+    }
+};
+
+------ >8 ======
+

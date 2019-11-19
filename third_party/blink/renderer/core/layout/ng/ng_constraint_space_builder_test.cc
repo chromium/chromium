@@ -14,13 +14,13 @@ using NGConstraintSpaceBuilderTest = NGLayoutTest;
 // Asserts that indefinite inline length becomes initial containing
 // block width for horizontal-tb inside vertical document.
 TEST(NGConstraintSpaceBuilderTest, AvailableSizeFromHorizontalICB) {
-  NGPhysicalSize icb_size{NGSizeIndefinite, LayoutUnit(51)};
+  PhysicalSize icb_size{kIndefiniteSize, LayoutUnit(51)};
 
   NGConstraintSpaceBuilder horizontal_builder(WritingMode::kHorizontalTb,
                                               WritingMode::kHorizontalTb,
                                               /* is_new_fc */ true);
-  NGLogicalSize fixed_size{LayoutUnit(100), LayoutUnit(200)};
-  NGLogicalSize indefinite_size{NGSizeIndefinite, NGSizeIndefinite};
+  LogicalSize fixed_size{LayoutUnit(100), LayoutUnit(200)};
+  LogicalSize indefinite_size{kIndefiniteSize, kIndefiniteSize};
 
   horizontal_builder.SetOrthogonalFallbackInlineSize(icb_size.height);
   horizontal_builder.SetAvailableSize(fixed_size);
@@ -43,13 +43,13 @@ TEST(NGConstraintSpaceBuilderTest, AvailableSizeFromHorizontalICB) {
 // Asserts that indefinite inline length becomes initial containing
 // block height for vertical-lr inside horizontal document.
 TEST(NGConstraintSpaceBuilderTest, AvailableSizeFromVerticalICB) {
-  NGPhysicalSize icb_size{LayoutUnit(51), NGSizeIndefinite};
+  PhysicalSize icb_size{LayoutUnit(51), kIndefiniteSize};
 
   NGConstraintSpaceBuilder horizontal_builder(WritingMode::kVerticalLr,
                                               WritingMode::kVerticalLr,
                                               /* is_new_fc */ true);
-  NGLogicalSize fixed_size{LayoutUnit(100), LayoutUnit(200)};
-  NGLogicalSize indefinite_size{NGSizeIndefinite, NGSizeIndefinite};
+  LogicalSize fixed_size{LayoutUnit(100), LayoutUnit(200)};
+  LogicalSize indefinite_size{kIndefiniteSize, kIndefiniteSize};
 
   horizontal_builder.SetOrthogonalFallbackInlineSize(icb_size.width);
   horizontal_builder.SetAvailableSize(fixed_size);

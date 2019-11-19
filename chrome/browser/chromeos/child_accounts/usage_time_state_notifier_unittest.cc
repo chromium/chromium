@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "chromeos/dbus/fake_power_manager_client.h"
+#include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "components/session_manager/core/session_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -46,7 +46,7 @@ class UsageTimeStateNotifierTest : public testing::Test {
   ~UsageTimeStateNotifierTest() override = default;
 
   void SetUp() override {
-    PowerManagerClient::Initialize();
+    PowerManagerClient::InitializeFake();
     session_manager_.SetSessionState(
         session_manager::SessionState::LOGIN_PRIMARY);
   }

@@ -1,0 +1,49 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="browser_proxy.html">
+<link rel="import" href="shared_style.html">
+<link rel="import" href="store_client.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_toggle/cr_toggle.html">
+<link rel="import" href="chrome://resources/cr_elements/policy/cr_policy_indicator.html">
+
+<dom-module id="app-management-toggle-row">
+  <template>
+    <style include="app-management-shared-css">
+      :host {
+        align-items: center;
+        display: flex;
+        flex: 1;
+        justify-content: space-between;
+      }
+
+      #icon {
+        padding-inline-end: var(--row-item-icon-padding);
+      }
+
+      #policyIndicator {
+        fill: var(--google-grey-refresh-700);
+        padding-inline-end: var(--settings-controlled-by-spacing);
+      }
+    </style>
+
+    <div id="left-content" class="horizontal-align" aria-hidden="true">
+      <template is="dom-if" if="[[icon]]">
+        <iron-icon id="icon" icon="[[icon]]"></iron-icon>
+      </template>
+      <div id="label">[[label]]</div>
+    </div>
+    <div id="right-content" class="horizontal-align">
+      <template is="dom-if" if="[[managed]]">
+        <cr-policy-indicator id="policyIndicator"
+          indicator-type="devicePolicy">
+        </cr-policy-indicator>
+      </template>
+      <cr-toggle id="toggle"
+        checked="[[value]]"
+        disabled$="[[managed]]"
+        aria-label$="[[label]]">
+      </cr-toggle>
+    </div>
+  </template>
+  <script src="toggle_row.js"></script>
+</dom-module>

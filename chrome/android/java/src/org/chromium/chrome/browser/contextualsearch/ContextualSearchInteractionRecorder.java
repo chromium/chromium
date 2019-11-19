@@ -4,8 +4,8 @@
 
 package org.chromium.chrome.browser.contextualsearch;
 
-import android.support.annotation.IntDef;
-import android.support.annotation.Nullable;
+import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 
 import org.chromium.content_public.browser.WebContents;
 
@@ -34,6 +34,7 @@ public interface ContextualSearchInteractionRecorder {
             Feature.QUICK_ACTIONS_TAKEN_COUNT, Feature.QUICK_ACTIONS_IGNORED_COUNT})
     @Retention(RetentionPolicy.SOURCE)
     @interface Feature {
+        // Values are used for indexing - should start from 0 and can't have gaps.
         int UNKNOWN = 0;
         // Outcome labels:
         int OUTCOME_WAS_PANEL_OPENED = 1;
@@ -72,6 +73,8 @@ public interface ContextualSearchInteractionRecorder {
         int QUICK_ACTION_IMPRESSIONS_COUNT = 29;
         int QUICK_ACTIONS_TAKEN_COUNT = 30;
         int QUICK_ACTIONS_IGNORED_COUNT = 31;
+
+        int NUM_ENTRIES = 32;
     }
 
     /**

@@ -1,0 +1,18 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+mojom = "//third_party/blink/public/mojom/fetch/fetch_api_request.mojom"
+public_headers = [
+  "//base/memory/scoped_refptr.h",
+  "//services/network/public/cpp/resource_request_body.h",
+]
+traits_headers = [ "//third_party/blink/public/common/fetch/fetch_api_request_body_mojom_traits.h" ]
+public_deps = [
+  "//base",
+  "//services/network/public/cpp:cpp_base",
+]
+type_mappings = [
+  "blink.mojom.FetchAPIDataElement=::network::DataElement[move_only]",
+  "blink.mojom.FetchAPIRequestBody=::scoped_refptr<::network::ResourceRequestBody>[nullable_is_same_type,copyable_pass_by_value]",
+]

@@ -24,8 +24,7 @@ ReadingListStore::ReadingListStore(
     std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor)
     : ReadingListModelStorage(std::move(change_processor)),
       create_store_callback_(std::move(create_store_callback)),
-      pending_transaction_count_(0),
-      weak_ptr_factory_(this) {}
+      pending_transaction_count_(0) {}
 
 ReadingListStore::~ReadingListStore() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -95,7 +94,7 @@ void ReadingListStore::SaveEntry(const ReadingListEntry& entry) {
 
   std::unique_ptr<syncer::EntityData> entity_data(new syncer::EntityData());
   *entity_data->specifics.mutable_reading_list() = *pb_entry_sync;
-  entity_data->non_unique_name = pb_entry_sync->entry_id();
+  entity_data->name = pb_entry_sync->entry_id();
 
   change_processor()->Put(entry.URL().spec(), std::move(entity_data),
                           batch_->GetMetadataChangeList());
@@ -209,9 +208,9 @@ base::Optional<syncer::ModelError> ReadingListStore::MergeSyncData(
 
   // Merge sync to local data.
   for (const auto& change : entity_data) {
-    synced_entries.insert(change.storage_key());
+    synced_entries.insert(change->storage_key());
     const sync_pb::ReadingListSpecifics& specifics =
-        change.data().specifics.reading_list();
+        change->data().specifics.reading_list();
     // Deserialize entry.
     std::unique_ptr<ReadingListEntry> entry(
         ReadingListEntry::FromReadingListSpecifics(specifics, clock_->Now()));
@@ -245,7 +244,7 @@ base::Optional<syncer::ModelError> ReadingListStore::MergeSyncData(
       DCHECK(CompareEntriesForSync(specifics, *entry_sync_pb));
       auto entity_data = std::make_unique<syncer::EntityData>();
       *(entity_data->specifics.mutable_reading_list()) = *entry_sync_pb;
-      entity_data->non_unique_name = entry_sync_pb->entry_id();
+      entity_data->name = entry_sync_pb->entry_id();
 
       // TODO(crbug.com/666232): Investigate if there is a risk of sync
       // ping-pong.
@@ -268,7 +267,7 @@ base::Optional<syncer::ModelError> ReadingListStore::MergeSyncData(
 
     auto entity_data = std::make_unique<syncer::EntityData>();
     *(entity_data->specifics.mutable_reading_list()) = *entry_pb;
-    entity_data->non_unique_name = entry_pb->entry_id();
+    entity_data->name = entry_pb->entry_id();
 
     change_processor()->Put(entry_pb->entry_id(), std::move(entity_data),
                             metadata_change_list.get());
@@ -291,15 +290,15 @@ base::Optional<syncer::ModelError> ReadingListStore::ApplySyncChanges(
       model_->BeginBatchUpdates();
   auto token = EnsureBatchCreated();
 
-  for (syncer::EntityChange& change : entity_changes) {
-    if (change.type() == syncer::EntityChange::ACTION_DELETE) {
-      batch_->DeleteData(change.storage_key());
+  for (const std::unique_ptr<syncer::EntityChange>& change : entity_changes) {
+    if (change->type() == syncer::EntityChange::ACTION_DELETE) {
+      batch_->DeleteData(change->storage_key());
       // Need to notify model that entry is deleted.
-      delegate_->SyncRemoveEntry(GURL(change.storage_key()));
+      delegate_->SyncRemoveEntry(GURL(change->storage_key()));
     } else {
       // Deserialize entry.
       const sync_pb::ReadingListSpecifics& specifics =
-          change.data().specifics.reading_list();
+          change->data().specifics.reading_list();
       std::unique_ptr<ReadingListEntry> entry(
           ReadingListEntry::FromReadingListSpecifics(specifics, clock_->Now()));
 
@@ -332,7 +331,7 @@ base::Optional<syncer::ModelError> ReadingListStore::ApplySyncChanges(
         DCHECK(CompareEntriesForSync(specifics, *entry_sync_pb));
         auto entity_data = std::make_unique<syncer::EntityData>();
         *(entity_data->specifics.mutable_reading_list()) = *entry_sync_pb;
-        entity_data->non_unique_name = entry_sync_pb->entry_id();
+        entity_data->name = entry_sync_pb->entry_id();
 
         // TODO(crbug.com/666232): Investigate if there is a risk of sync
         // ping-pong.
@@ -381,7 +380,7 @@ void ReadingListStore::AddEntryToBatch(syncer::MutableDataBatch* batch,
 
   std::unique_ptr<syncer::EntityData> entity_data(new syncer::EntityData());
   *(entity_data->specifics.mutable_reading_list()) = *entry_pb;
-  entity_data->non_unique_name = entry_pb->entry_id();
+  entity_data->name = entry_pb->entry_id();
 
   batch->Put(entry_pb->entry_id(), std::move(entity_data));
 }

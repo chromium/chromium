@@ -9,14 +9,11 @@
 #include "base/scoped_observer.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 
 namespace content {
 class BrowserContext;
-}
-
-namespace extensions {
-class ExtensionRegistry;
 }
 
 class NotificationUIManager;
@@ -49,7 +46,7 @@ class NotificationSystemObserver : public content::NotificationObserver,
 
   ScopedObserver<extensions::ExtensionRegistry,
                  extensions::ExtensionRegistryObserver>
-      extension_registry_observer_;
+      extension_registry_observer_{this};
 
   DISALLOW_COPY_AND_ASSIGN(NotificationSystemObserver);
 };

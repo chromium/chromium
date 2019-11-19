@@ -9,8 +9,6 @@
     package="org.chromium.memconsumer" android:versionCode="1"
     android:versionName="1.0">
 
-    <uses-sdk android:minSdkVersion="16"/>
-
     <application
             android:label="MemConsumer">
         <activity android:name=".MemConsumer" android:icon="@drawable/icon" android:launchMode="singleTop">

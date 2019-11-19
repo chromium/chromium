@@ -37,6 +37,10 @@ LogoutConfirmationDialog::LogoutConfirmationDialog(
     LogoutConfirmationController* controller,
     base::TimeTicks logout_time)
     : controller_(controller), logout_time_(logout_time) {
+  DialogDelegate::set_button_label(
+      ui::DIALOG_BUTTON_OK,
+      l10n_util::GetStringUTF16(IDS_ASH_LOGOUT_CONFIRMATION_BUTTON));
+
   SetLayoutManager(std::make_unique<views::FillLayout>());
   SetBorder(views::CreateEmptyBorder(
       views::LayoutProvider::Get()->GetDialogInsetsForContentType(
@@ -54,7 +58,7 @@ LogoutConfirmationDialog::LogoutConfirmationDialog(
       GetDialogWidgetInitParams(this, nullptr, nullptr, gfx::Rect());
   params.parent = Shell::GetPrimaryRootWindow()->GetChildById(
       kShellWindowId_SystemModalContainer);
-  widget->Init(params);
+  widget->Init(std::move(params));
   widget->Show();
 
   update_timer_.Start(
@@ -81,13 +85,6 @@ bool LogoutConfirmationDialog::Accept() {
   return true;
 }
 
-base::string16 LogoutConfirmationDialog::GetDialogButtonLabel(
-    ui::DialogButton button) const {
-  if (button == ui::DIALOG_BUTTON_OK)
-    return l10n_util::GetStringUTF16(IDS_ASH_LOGOUT_CONFIRMATION_BUTTON);
-  return views::DialogDelegateView::GetDialogButtonLabel(button);
-}
-
 ui::ModalType LogoutConfirmationDialog::GetModalType() const {
   return ui::MODAL_TYPE_SYSTEM;
 }
@@ -110,6 +107,10 @@ gfx::Size LogoutConfirmationDialog::CalculatePreferredSize() const {
   return gfx::Size(
       kDefaultWidth,
       GetLayoutManager()->GetPreferredHeightForWidth(this, kDefaultWidth));
+}
+
+const char* LogoutConfirmationDialog::GetClassName() const {
+  return "LogoutConfirmationDialog";
 }
 
 void LogoutConfirmationDialog::UpdateLabel() {

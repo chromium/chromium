@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-PASS ReadableStream RangeError on invalid highWaterMark should have an appropriate message
-FAIL WritableStream RangeError on invalid highWaterMark should have an appropriate message assert_equals: message should be relevant expected "A queueing strategy's highWaterMark property must be a nonnegative, non-NaN number" but got "Failed to construct 'WritableStream': A queuing strategy's highWaterMark property must be a nonnegative, non-NaN number"
-Harness: the test ran to completion.
-

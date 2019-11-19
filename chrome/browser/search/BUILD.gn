@@ -8,7 +8,8 @@ action("local_ntp_code_generate") {
   script = "tools/generate_integrity_header.py"
   header_path = "$target_gen_dir/local_ntp_js_integrity.h"
   animations_js = local_ntp_resources + "/animations.js"
-  custom_bg_js = local_ntp_resources + "/custom_backgrounds.js"
+  assert_js = "//ui/webui/resources/js/assert.js"
+  customize_js = local_ntp_resources + "/customize.js"
   doodles_js = local_ntp_resources + "/doodles.js"
   local_ntp_js = local_ntp_resources + "/local_ntp.js"
   utils_js = local_ntp_resources + "/utils.js"
@@ -16,7 +17,8 @@ action("local_ntp_code_generate") {
 
   inputs = [
     animations_js,
-    custom_bg_js,
+    assert_js,
+    customize_js,
     doodles_js,
     local_ntp_js,
     utils_js,
@@ -30,7 +32,8 @@ action("local_ntp_code_generate") {
   args = [
     "--output_path=" + rebase_path(header_path, root_build_dir),
     rebase_path(animations_js, root_build_dir),
-    rebase_path(custom_bg_js, root_build_dir),
+    rebase_path(assert_js, root_build_dir),
+    rebase_path(customize_js, root_build_dir),
     rebase_path(doodles_js, root_build_dir),
     rebase_path(local_ntp_js, root_build_dir),
     rebase_path(utils_js, root_build_dir),

@@ -25,6 +25,7 @@
 
 // https://svgwg.org/svg2-draft/shapes.html#InterfaceSVGPolylineElement
 
+[Exposed=Window]
 interface SVGPolylineElement : SVGGeometryElement {
     // TODO(foolip): points and animatedPoints should be on the
     // SVGAnimatedPoints interface which SVGPolylineElement should implement:

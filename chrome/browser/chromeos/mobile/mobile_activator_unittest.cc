@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/macros.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/network/network_connection_handler.h"
@@ -140,7 +140,7 @@ class MobileActivatorTest : public testing::Test {
     cellular_network_.connection_state_ = state;
   }
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   NetworkState cellular_network_;
   TestMobileActivator mobile_activator_;
 
@@ -155,7 +155,7 @@ TEST_F(MobileActivatorTest, OTAHasNetworkConnection) {
       .WillRepeatedly(Return(&cellular_network_));
   EXPECT_CALL(mobile_activator_, ConnectNetwork(_))
       .Times(0);
-  set_connection_state(shill::kStatePortal);
+  set_connection_state(shill::kStateNoConnectivity);
   set_network_activation_type(shill::kActivationTypeOTA);
   set_network_activation_state(shill::kActivationStateNotActivated);
   mobile_activator_.InvokeStartActivation();
@@ -219,7 +219,7 @@ TEST_F(MobileActivatorTest, OTASPBasicFlowForNewDevices) {
   // We'll sit in this state until we go online as well.
   EXPECT_EQ(MobileActivator::PLAN_ACTIVATION_INITIATING_ACTIVATION,
             mobile_activator_.InvokePickNextState(&cellular_network_));
-  set_connection_state(shill::kStatePortal);
+  set_connection_state(shill::kStateNoConnectivity);
   // After we go online, we go back to START, which acts as a jumping off
   // point for the two types of initial OTASP.
   EXPECT_EQ(MobileActivator::PLAN_ACTIVATION_START,
@@ -233,7 +233,7 @@ TEST_F(MobileActivatorTest, OTASPBasicFlowForNewDevices) {
   EXPECT_EQ(MobileActivator::PLAN_ACTIVATION_TRYING_OTASP,
             mobile_activator_.InvokePickNextState(&cellular_network_));
   set_network_activation_state(shill::kActivationStatePartiallyActivated);
-  set_connection_state(shill::kStatePortal);
+  set_connection_state(shill::kStateNoConnectivity);
   // And when we come back online again and aren't activating, load the portal.
   EXPECT_EQ(MobileActivator::PLAN_ACTIVATION_PAYMENT_PORTAL_LOADING,
             mobile_activator_.InvokePickNextState(&cellular_network_));

@@ -5,6 +5,10 @@
 import("//third_party/blink/renderer/modules/modules.gni")
 import("//tools/grit/grit_rule.gni")
 
+if (is_android) {
+  import("//build/config/android/rules.gni")
+}
+
 blink_modules_sources("media_controls") {
   sources = [
     "elements/media_control_animated_arrow_container_element.cc",
@@ -27,7 +31,6 @@ blink_modules_sources("media_controls") {
     "elements/media_control_download_button_element.h",
     "elements/media_control_element_base.cc",
     "elements/media_control_element_base.h",
-    "elements/media_control_element_type.h",
     "elements/media_control_elements_helper.cc",
     "elements/media_control_elements_helper.h",
     "elements/media_control_fullscreen_button_element.cc",
@@ -88,6 +91,10 @@ blink_modules_sources("media_controls") {
     "media_controls_resource_loader.h",
     "media_controls_rotate_to_fullscreen_delegate.cc",
     "media_controls_rotate_to_fullscreen_delegate.h",
+    "media_controls_shared_helper.cc",
+    "media_controls_shared_helper.h",
+    "media_controls_text_track_manager.cc",
+    "media_controls_text_track_manager.h",
   ]
 
   deps = [

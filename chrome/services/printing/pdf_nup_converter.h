@@ -10,14 +10,12 @@
 #include "base/macros.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "chrome/services/printing/public/mojom/pdf_nup_converter.mojom.h"
-#include "services/service_manager/public/cpp/service_context_ref.h"
 
 namespace printing {
 
 class PdfNupConverter : public printing::mojom::PdfNupConverter {
  public:
-  explicit PdfNupConverter(
-      std::unique_ptr<service_manager::ServiceContextRef> service_ref);
+  PdfNupConverter();
   ~PdfNupConverter() override;
 
   // printing::mojom::PdfNupConverter
@@ -35,8 +33,6 @@ class PdfNupConverter : public printing::mojom::PdfNupConverter {
   void SetWebContentsURL(const GURL& url) override;
 
  private:
-  const std::unique_ptr<service_manager::ServiceContextRef> service_ref_;
-
   DISALLOW_COPY_AND_ASSIGN(PdfNupConverter);
 };
 

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+
+<script type="module">
+import "std:elements/toast";
+</script>
+
+<std-toast id="test-toast" open>
+        Hello World!
+ </std-toast>
+
+<script type="module">
+
+test(t => {
+    assert_own_property(window, 'accessibilityController', 'Require accessibilityController');
+
+    const toast = accessibilityController.accessibleElementById('test-toast');
+
+    assert_not_equals(toast, undefined);
+    assert_equals(toast.role, "AXRole: AXStatus");
+}, 'the toast has a status role');
+
+test(t => {
+    const toast = document.querySelector('#test-toast');
+    assert_false(toast.hasAttribute('role'));
+}, 'the toast has no role attribute'); // WARNING: this should fail until elementInternals API is released
+
+test(t => {
+    const toast = document.createElement('std-toast');
+    toast.setAttribute('role', 'button');
+    document.body.appendChild(toast);
+
+    assert_equals(toast.getAttribute('role'), 'button');
+}, 'the toast has manually set role');
+
+</script>
+
+</body>
+</html>

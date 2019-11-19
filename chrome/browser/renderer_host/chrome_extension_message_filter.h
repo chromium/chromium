@@ -9,13 +9,13 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/scoped_observer.h"
 #include "base/sequenced_task_runner_helpers.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_observer.h"
 #include "content/public/browser/browser_message_filter.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 
-class Profile;
 struct ExtensionHostMsg_APIActionOrEvent_Params;
 struct ExtensionHostMsg_DOMAction_Params;
 
@@ -28,7 +28,7 @@ struct Message;
 // This class filters out incoming Chrome-specific IPC messages from the
 // extension process on the IPC thread.
 class ChromeExtensionMessageFilter : public content::BrowserMessageFilter,
-                                     public content::NotificationObserver {
+                                     public ProfileObserver {
  public:
   ChromeExtensionMessageFilter(int render_process_id, Profile* profile);
 
@@ -68,10 +68,8 @@ class ChromeExtensionMessageFilter : public content::BrowserMessageFilter,
       const std::string& extension_id,
       const ExtensionHostMsg_APIActionOrEvent_Params& params);
 
-  // content::NotificationObserver implementation.
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
+  // ProfileObserver:
+  void OnProfileWillBeDestroyed(Profile* profile) override;
 
   // Returns true if an action should be logged for the given extension.
   bool ShouldLogExtensionAction(const std::string& extension_id) const;
@@ -90,7 +88,7 @@ class ChromeExtensionMessageFilter : public content::BrowserMessageFilter,
 
   scoped_refptr<extensions::InfoMap> extension_info_map_;
 
-  content::NotificationRegistrar notification_registrar_;
+  ScopedObserver<Profile, ProfileObserver> observed_profiles_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ChromeExtensionMessageFilter);
 };

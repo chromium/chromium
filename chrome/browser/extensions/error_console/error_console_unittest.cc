@@ -17,7 +17,7 @@
 #include "components/crx_file/id_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/version_info/version_info.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/extension_error.h"
 #include "extensions/browser/extension_error_test_util.h"
 #include "extensions/browser/extension_registry.h"
@@ -50,7 +50,7 @@ class ErrorConsoleUnitTest : public testing::Test {
   }
 
  protected:
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
   ErrorConsole* error_console_;
 };

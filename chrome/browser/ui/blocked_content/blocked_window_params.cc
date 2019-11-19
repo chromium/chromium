@@ -6,7 +6,6 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
@@ -47,7 +46,6 @@ NavigateParams BlockedWindowParams::CreateNavigateParams(
   nav_params.frame_name = frame_name_;
   nav_params.source_contents = web_contents;
   nav_params.is_renderer_initiated = true;
-  nav_params.tabstrip_add_types = TabStripModel::ADD_ACTIVE;
   nav_params.window_action = NavigateParams::SHOW_WINDOW;
   nav_params.user_gesture = user_gesture_;
   nav_params.created_with_opener = !opener_suppressed_;

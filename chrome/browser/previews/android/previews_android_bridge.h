@@ -43,7 +43,7 @@ class PreviewsAndroidBridge {
       const base::android::JavaParamRef<jobject>& j_web_contents);
 
  private:
-  base::WeakPtrFactory<PreviewsAndroidBridge> weak_factory_;
+  base::WeakPtrFactory<PreviewsAndroidBridge> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PreviewsAndroidBridge);
 };

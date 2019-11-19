@@ -1,25 +1,26 @@
 rootWebArea
-++genericContainer name='Atomic undefined'
-++textField name='Autocomplete undefined'
-++genericContainer name='Busy undefined'
-++treeItem name='Checked undefined' selected=false
-++genericContainer name='Current undefined'
-++genericContainer name='Disabled undefined'
-++genericContainer name='Dropeffect undefined'
-++treeItem name='Expanded undefined' selected=false
-++genericContainer name='Grabbed undefined'
-++button name='Haspopup undefined'
-++genericContainer name='Invalid undefined'
-++genericContainer name='Live undefined'
-++dialog name='Modal undefined' modal=false
-++textField name='Multiline undefined'
-++grid name='Multiselectable undefined'
-++scrollBar vertical name='Orientation undefined'
-++button name='Pressed undefined'
-++textField name='Readonly undefined'
-++genericContainer name='Relevant undefined'
-++textField name='Required undefined'
-++tree multiselectable vertical
-++++treeItem name='Selected undefined' selected=false
-++columnHeader name='Sort undefined' selected=false
-++genericContainer name='Hidden undefined, display block'
+++genericContainer ignored
+++++genericContainer name='Atomic undefined'
+++++textField name='Autocomplete undefined'
+++++genericContainer name='Busy undefined'
+++++treeItem name='Checked undefined' selected=false
+++++genericContainer name='Current undefined'
+++++genericContainer name='Disabled undefined'
+++++genericContainer name='Dropeffect undefined'
+++++treeItem name='Expanded undefined' selected=false
+++++genericContainer name='Grabbed undefined'
+++++button name='Haspopup undefined'
+++++genericContainer name='Invalid undefined'
+++++genericContainer name='Live undefined'
+++++dialog name='Modal undefined' modal=false
+++++textField name='Multiline undefined'
+++++grid name='Multiselectable undefined'
+++++scrollBar vertical name='Orientation undefined'
+++++button name='Pressed undefined'
+++++textField name='Readonly undefined'
+++++genericContainer name='Relevant undefined'
+++++textField name='Required undefined'
+++++tree multiselectable vertical
+++++++treeItem name='Selected undefined' selected=false
+++++columnHeader name='Sort undefined' selected=false
+++++genericContainer name='Hidden undefined, display block'

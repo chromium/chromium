@@ -70,6 +70,8 @@ AutofillQueryResponse::FormSuggestion::FieldSuggestion MakeFieldSuggestion(
 TEST(ProtoBridgeTest, TestCreateApiRequestFromLegacyRequest) {
   AutofillQueryContents legacy_request;
   legacy_request.set_client_version("dummy client v1");
+  legacy_request.add_experiments(1234);
+  legacy_request.add_experiments(5678);
   AutofillQueryContents::Form* new_form = legacy_request.add_form();
   new_form->set_signature(1234U);
   *new_form->mutable_form_metadata() = GetformMetadata();
@@ -86,6 +88,8 @@ TEST(ProtoBridgeTest, TestCreateApiRequestFromLegacyRequest) {
       CreateApiRequestFromLegacyRequest(legacy_request);
 
   EXPECT_EQ(api_request.client_version(), "dummy client v1");
+  EXPECT_EQ(api_request.experiments(0), 1234);
+  EXPECT_EQ(api_request.experiments(1), 5678);
   EXPECT_EQ(api_request.forms(0).signature(), 1234U);
   EXPECT_EQ(api_request.forms(0).metadata().id().encoding_type(),
             AutofillRandomizedValue::BIT_1);

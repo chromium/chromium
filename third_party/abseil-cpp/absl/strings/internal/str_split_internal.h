@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//      http://www.apache.org/licenses/LICENSE-2.0
+//      https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -96,8 +96,8 @@ ConvertibleToStringView(std::string&& s)  // NOLINT(runtime/explicit)
     }
   }
 
-  // Holds the data moved from temporary std::string arguments. Declared first so
-  // that 'value' can refer to 'copy_'.
+  // Holds the data moved from temporary std::string arguments. Declared first
+  // so that 'value' can refer to 'copy_'.
   std::string copy_;
   absl::string_view value_;
 };
@@ -376,10 +376,10 @@ class Splitter {
 
   // Partial specialization for a std::vector<std::string>.
   //
-  // Optimized for the common case of splitting to a std::vector<std::string>. In
-  // this case we first split the results to a std::vector<absl::string_view> so
-  // the returned std::vector<std::string> can have space reserved to avoid std::string
-  // moves.
+  // Optimized for the common case of splitting to a std::vector<std::string>.
+  // In this case we first split the results to a std::vector<absl::string_view>
+  // so the returned std::vector<std::string> can have space reserved to avoid
+  // std::string moves.
   template <typename A>
   struct ConvertToContainer<std::vector<std::string, A>, std::string, false> {
     std::vector<std::string, A> operator()(const Splitter& splitter) const {

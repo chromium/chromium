@@ -6,6 +6,8 @@
 #define SERVICES_DEVICE_GENERIC_SENSOR_SENSOR_IMPL_H_
 
 #include "base/macros.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/generic_sensor/platform_sensor.h"
 #include "services/device/public/mojom/sensor.mojom.h"
 
@@ -18,7 +20,7 @@ class SensorImpl final : public mojom::Sensor, public PlatformSensor::Client {
   explicit SensorImpl(scoped_refptr<PlatformSensor> sensor);
   ~SensorImpl() override;
 
-  mojom::SensorClientRequest GetClient();
+  mojo::PendingReceiver<mojom::SensorClient> GetClient();
 
  private:
   // Sensor implementation.
@@ -39,7 +41,7 @@ class SensorImpl final : public mojom::Sensor, public PlatformSensor::Client {
 
  private:
   scoped_refptr<PlatformSensor> sensor_;
-  mojom::SensorClientPtr client_;
+  mojo::Remote<mojom::SensorClient> client_;
   bool reading_notification_enabled_;
   bool suspended_;
 

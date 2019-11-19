@@ -39,6 +39,7 @@
 #include "content/public/browser/render_widget_host_iterator.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test_utils.h"
@@ -83,10 +84,8 @@ class BrowserClientForTextInputClientMac : public ChromeContentBrowserClient {
 
   // ContentBrowserClient overrides.
   void RenderProcessWillLaunch(
-      content::RenderProcessHost* process_host,
-      service_manager::mojom::ServiceRequest* service_request) override {
-    ChromeContentBrowserClient::RenderProcessWillLaunch(process_host,
-                                                        service_request);
+      content::RenderProcessHost* process_host) override {
+    ChromeContentBrowserClient::RenderProcessWillLaunch(process_host);
     filters_.push_back(
         new content::TestTextInputClientMessageFilter(process_host));
   }
@@ -675,9 +674,10 @@ class WebViewContextMenuBrowserPluginSpecificInteractiveTest
 // Disabled on Linux Aura because pointer lock does not work on Linux Aura.
 // crbug.com/341876
 
+// Timeouts flakily: crbug.com/1003345
 #if defined(OS_LINUX) && !defined(OS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(WebViewPointerLockInteractiveTest,
-                       PointerLock) {
+                       DISABLED_PointerLock) {
   SetupTest("web_view/pointer_lock",
             "/extensions/platform_apps/web_view/pointer_lock/guest.html");
 
@@ -776,8 +776,9 @@ IN_PROC_BROWSER_TEST_F(WebViewPointerLockInteractiveTest,
 
 // Tests that if a <webview> is focused before navigation then the guest starts
 // off focused.
+// Flaky. https://crbug.com/1013552
 IN_PROC_BROWSER_TEST_F(WebViewFocusInteractiveTest,
-                       Focus_FocusBeforeNavigation) {
+                       DISABLED_Focus_FocusBeforeNavigation) {
   TestHelper("testFocusBeforeNavigation", "web_view/focus", NO_TEST_SERVER);
 }
 
@@ -1070,6 +1071,51 @@ IN_PROC_BROWSER_TEST_F(WebViewNewWindowInteractiveTest,
   TestHelper("testNewWindowWebRequestRemoveElement",
              "web_view/newwindow",
              NEEDS_TEST_SERVER);
+}
+
+// Ensure that when one <webview> makes a window.open() call that references
+// another <webview> by name, the opener is updated without a crash. Regression
+// test for https://crbug.com/1013553.
+IN_PROC_BROWSER_TEST_F(WebViewNewWindowInteractiveTest,
+                       NewWindow_UpdateOpener) {
+  TestHelper("testNewWindowAndUpdateOpener", "web_view/newwindow",
+             NEEDS_TEST_SERVER);
+
+  // The first <webview> tag in the test will run window.open(), which the
+  // embedder will translate into an injected second <webview> tag, after which
+  // test control will return here.  Wait until there are two guests; i.e.,
+  // until the second <webview>'s guest is also created.
+  GetGuestViewManager()->WaitForNumGuestsCreated(2);
+
+  std::vector<content::WebContents*> guest_contents_list;
+  GetGuestViewManager()->GetGuestWebContentsList(&guest_contents_list);
+  ASSERT_EQ(2u, guest_contents_list.size());
+  content::WebContents* guest1 = guest_contents_list[0];
+  content::WebContents* guest2 = guest_contents_list[1];
+  EXPECT_TRUE(content::WaitForLoadStop(guest1));
+  EXPECT_TRUE(content::WaitForLoadStop(guest2));
+  ASSERT_NE(guest1, guest2);
+
+  // Change first guest's window.name to "foo" and check that it does not
+  // have an opener to start with.
+  EXPECT_TRUE(content::ExecJs(guest1, "window.name = 'foo'"));
+  EXPECT_EQ("foo", content::EvalJs(guest1, "window.name"));
+  EXPECT_EQ(true, content::EvalJs(guest1, "window.opener == null"));
+
+  // Create a subframe in the second guest.  This is needed because the crash
+  // in crbug.com/1013553 only happened when trying to incorrectly create
+  // proxies for a subframe.
+  EXPECT_TRUE(content::ExecuteScript(
+      guest2, "document.body.appendChild(document.createElement('iframe'));"));
+
+  // Update the opener of |guest1| to point to |guest2|.  This triggers
+  // creation of proxies on the new opener chain, which should not crash.
+  EXPECT_TRUE(content::ExecuteScript(guest2, "window.open('', 'foo');"));
+
+  // Ensure both guests have the proper opener relationship set up.  Namely,
+  // each guest's opener should point to the other guest, creating a cycle.
+  EXPECT_EQ(true, content::EvalJs(guest1, "window.opener.opener === window"));
+  EXPECT_EQ(true, content::EvalJs(guest2, "window.opener.opener === window"));
 }
 
 // There is a problem of missing keyup events with the command key after
@@ -1412,7 +1458,7 @@ IN_PROC_BROWSER_TEST_F(WebViewFocusInteractiveTest, Focus_FocusRestored) {
 
 // ui::TextInputClient is NULL for mac and android.
 #if !defined(OS_MACOSX) && !defined(OS_ANDROID)
-IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, DISABLED_Focus_InputMethod) {
+IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, Focus_InputMethod) {
   content::WebContents* embedder_web_contents = NULL;
   std::unique_ptr<ExtensionTestMessageListener> done_listener(
       RunAppHelper("testInputMethod", "web_view/focus", NO_TEST_SERVER,
@@ -1450,7 +1496,7 @@ IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, DISABLED_Focus_InputMethod) {
     ui::CompositionText composition;
     composition.text = base::UTF8ToUTF16("InputTest456");
     text_input_client->SetCompositionText(composition);
-    text_input_client->ConfirmCompositionText();
+    text_input_client->ConfirmCompositionText(/* keep_selection */ false);
     EXPECT_TRUE(content::ExecuteScript(
                   embedder_web_contents,
                   "window.runCommand('testInputMethodRunNextStep', 2);"));
@@ -1468,6 +1514,7 @@ IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, DISABLED_Focus_InputMethod) {
   // <webview>, not the second one.
 
   // Tests ExtendSelectionAndDelete message works in <webview>.
+  // https://crbug.com/971985
   {
     next_step_listener.Reset();
 

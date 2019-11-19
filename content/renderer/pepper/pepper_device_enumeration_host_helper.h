@@ -44,12 +44,14 @@ class CONTENT_EXPORT PepperDeviceEnumerationHostHelper {
    public:
     virtual ~Delegate() {}
 
-    using DevicesCallback = base::Callback<void(
+    using DevicesCallback = base::RepeatingCallback<void(
+        const std::vector<ppapi::DeviceRefData>& /* devices */)>;
+    using DevicesOnceCallback = base::OnceCallback<void(
         const std::vector<ppapi::DeviceRefData>& /* devices */)>;
 
     // Enumerates devices of the specified type.
     virtual void EnumerateDevices(PP_DeviceType_Dev type,
-                                  const DevicesCallback& callback) = 0;
+                                  DevicesOnceCallback callback) = 0;
 
     // Starts monitoring devices of the specified |type|. Returns a
     // subscription ID that must be used to stop monitoring for the device

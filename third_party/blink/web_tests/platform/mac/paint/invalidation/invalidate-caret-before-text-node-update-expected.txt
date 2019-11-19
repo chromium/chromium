@@ -1,17 +1,6 @@
 {
   "layers": [
     {
-      "name": "LayoutView #document",
-      "bounds": [800, 600],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [800, 600],
-      "drawsContent": false
-    },
-    {
       "name": "Scrolling Contents Layer",
       "bounds": [800, 600],
       "contentsOpaque": true,
@@ -20,7 +9,7 @@
         {
           "object": "LayoutBlockFlow DIV id='root' class='editing'",
           "rect": [3, 3, 794, 28],
-          "reason": "full"
+          "reason": "style change"
         },
         {
           "object": "InlineTextBox '1'",

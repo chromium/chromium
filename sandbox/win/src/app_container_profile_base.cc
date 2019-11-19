@@ -177,7 +177,7 @@ bool AppContainerProfileBase::GetFolderPath(base::FilePath* file_path) {
           GetModuleHandle(L"userenv"), "GetAppContainerFolderPath"));
   if (!get_app_container_folder_path)
     return false;
-  base::string16 sddl_str;
+  std::wstring sddl_str;
   if (!package_sid_.ToSddlString(&sddl_str))
     return false;
   base::win::ScopedCoMem<wchar_t> path_str;
@@ -189,7 +189,7 @@ bool AppContainerProfileBase::GetFolderPath(base::FilePath* file_path) {
 
 bool AppContainerProfileBase::GetPipePath(const wchar_t* pipe_name,
                                           base::FilePath* pipe_path) {
-  base::string16 sddl_str;
+  std::wstring sddl_str;
   if (!package_sid_.ToSddlString(&sddl_str))
     return false;
   *pipe_path = base::FilePath(base::StringPrintf(L"\\\\.\\pipe\\%ls\\%ls",

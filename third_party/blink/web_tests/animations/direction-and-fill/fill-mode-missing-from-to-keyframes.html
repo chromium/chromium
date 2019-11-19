@@ -1,161 +1,133 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
    "http://www.w3.org/TR/html4/loose.dtd">
+<title>Test missing keyframes with fill modes</title>
+<style type="text/css" media="screen">
+.box {
+  position: relative;
+  left: 100px;
+  top: 10px;
+  height: 30px;
+  width: 200px;
+  animation-delay: 0.1s;
+  animation-duration: 0.1s;
+  animation-timing-function: linear;
+}
+@keyframes anim1 {
+  from { left: 200px; }
+  50% { left: 250px; }
+  to   { left: 300px; }
+}
+@keyframes anim2 {
+  50% { left: 250px; }
+  to   { left: 300px; }
+}
+@keyframes anim3 {
+  from { left: 200px; }
+  50% { left: 250px; }
+}
+@keyframes anim4 {
+  50% { left: 250px; }
+}
 
-<html lang="en">
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>Test missing keyframes with fill modes</title>
-  <style type="text/css" media="screen">
-    .box {
-      position: relative;
-      left: 100px;
-      top: 10px;
-      height: 30px;
-      width: 200px;
-      animation-delay: 0.1s;
-      animation-duration: 0.1s;
-      animation-timing-function: linear;
-    }
-    @keyframes anim1 {
-        from { left: 200px; }
-        50% { left: 250px; }
-        to   { left: 300px; }
-    }
-    @keyframes anim2 {
-        50% { left: 250px; }
-        to   { left: 300px; }
-    }
-    @keyframes anim3 {
-        from { left: 200px; }
-        50% { left: 250px; }
-    }
-    @keyframes anim4 {
-        50% { left: 250px; }
-    }
+#a {
+  background-color: blue;
+  animation-fill-mode: none;
+  animation-name: anim1;
+}
+#b {
+  background-color: red;
+  animation-fill-mode: backwards;
+  animation-name: anim1;
+}
+#c {
+  background-color: green;
+  animation-fill-mode: forwards;
+  animation-name: anim1;
+}
+#d {
+  background-color: yellow;
+  animation-fill-mode: both;
+  animation-name: anim1;
+}
+#e {
+  background-color: #999;
+  animation-fill-mode: both;
+  animation-iteration-count: 2;
+  animation-direction: alternate;
+  animation-name: anim1;
+}
 
-    #a {
-      background-color: blue;
-      animation-fill-mode: none;
-      animation-name: anim1;
-    }
-    #b {
-      background-color: red;
-      animation-fill-mode: backwards;
-      animation-name: anim1;
-    }
-    #c {
-      background-color: green;
-      animation-fill-mode: forwards;
-      animation-name: anim1;
-    }
-    #d {
-      background-color: yellow;
-      animation-fill-mode: both;
-      animation-name: anim1;
-    }
-    #e {
-      background-color: #999;
-      animation-fill-mode: both;
-      animation-iteration-count: 2;
-      animation-direction: alternate;
-      animation-name: anim1;
-    }
+#f {
+  background-color: blue;
+  animation-fill-mode: none;
+  animation-name: anim2;
+}
+#g {
+  background-color: red;
+  animation-fill-mode: backwards;
+  animation-name: anim2;
+}
+#h {
+  background-color: green;
+  animation-fill-mode: forwards;
+  animation-name: anim2;
+}
+#i {
+  background-color: yellow;
+  animation-fill-mode: both;
+  animation-name: anim2;
+}
+#j {
+  background-color: #999;
+  animation-fill-mode: both;
+  animation-iteration-count: 2;
+  animation-direction: alternate;
+  animation-name: anim2;
+}
+</style>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script type="text/javascript" charset="utf-8">
+const numAnims = 10;
+var animsFinished = 0;
+const allowance = 5;
+const expectedValues = [
+  {id: "a", start: 100, end: 100},
+  {id: "b", start: 200, end: 100},
+  {id: "c", start: 100, end: 300},
+  {id: "d", start: 200, end: 300},
+  {id: "e", start: 200, end: 200}
+];
 
-    #f {
-      background-color: blue;
-      animation-fill-mode: none;
-      animation-name: anim2;
+async_test(t => {
+  function endTest() {
+    for (var i=0; i < expectedValues.length; i++) {
+      var el = document.getElementById(expectedValues[i].id);
+      var expectedValue = expectedValues[i].end;
+      var realValue = parseFloat(window.getComputedStyle(el).left);
+      var diff = Math.abs(expectedValue - realValue);
+      assert_less_than(diff, allowance, "end of animation - id: " + expectedValues[i].id + " expected: " + expectedValue + " actual: " + realValue);
     }
-    #g {
-      background-color: red;
-      animation-fill-mode: backwards;
-      animation-name: anim2;
+    t.done();
+  }
+
+  window.addEventListener("load", t.step_func(() => {
+    for (var i=0; i < expectedValues.length; i++) {
+      var el = document.getElementById(expectedValues[i].id);
+      var expectedValue = expectedValues[i].start;
+      var realValue = parseFloat(window.getComputedStyle(el).left);
+      var diff = Math.abs(expectedValue - realValue);
+      assert_less_than(diff, allowance, "start of animation - id: " + expectedValues[i].id + " expected: " + expectedValue + " actual: " + realValue);
     }
-    #h {
-      background-color: green;
-      animation-fill-mode: forwards;
-      animation-name: anim2;
-    }
-    #i {
-      background-color: yellow;
-      animation-fill-mode: both;
-      animation-name: anim2;
-    }
-    #j {
-      background-color: #999;
-      animation-fill-mode: both;
-      animation-iteration-count: 2;
-      animation-direction: alternate;
-      animation-name: anim2;
-    }
-
-  </style>
-  <script type="text/javascript" charset="utf-8">
-    const numAnims = 10;
-    var animsFinished = 0;
-    const allowance = 5;
-    const expectedValues = [
-      {id: "a", start: 100, end: 100},
-      {id: "b", start: 200, end: 100},
-      {id: "c", start: 100, end: 300},
-      {id: "d", start: 200, end: 300},
-      {id: "e", start: 200, end: 200}
-    ];
-    var result = "";
-
-    if (window.testRunner) {
-        testRunner.dumpAsText();
-        testRunner.waitUntilDone();
-    }
-
-    function animationEnded(event) {
-        if (++animsFinished == numAnims) {
-            setTimeout(endTest, 0); // this set timeout should be ok in the test environment
-                                    // since we're just giving style a chance to resolve
-        }
-    };
-
-    function endTest() {
-
-        for (var i=0; i < expectedValues.length; i++) {
-            var el = document.getElementById(expectedValues[i].id);
-            var expectedValue = expectedValues[i].end;
-            var realValue = parseFloat(window.getComputedStyle(el).left);
-            if (Math.abs(expectedValue - realValue) < allowance) {
-              result += "PASS";
-            } else {
-              result += "FAIL";
-            }
-            result += " - end of animation - id: " + expectedValues[i].id + " expected: " + expectedValue + " actual: " + realValue + "<br>";
-        }
-        document.getElementById('result').innerHTML = result;
-
-        if (window.testRunner)
-            testRunner.notifyDone();
-    }
-
-    window.onload = function () {
-        for (var i=0; i < expectedValues.length; i++) {
-            var el = document.getElementById(expectedValues[i].id);
-            var expectedValue = expectedValues[i].start;
-            var realValue = parseFloat(window.getComputedStyle(el).left);
-            if (Math.abs(expectedValue - realValue) < allowance) {
-              result += "PASS";
-            } else {
-              result += "FAIL";
-            }
-            result += " - start of animation - id: " + expectedValues[i].id + " expected: " + expectedValue + " actual: " + realValue + "<br>";
-        }
-        document.addEventListener("animationend", animationEnded, false);
-    };
-
-  </script>
-</head>
-<body>
-This test performs an animation of the left property with four different
-fill modes. It animates over 0.1 second with a 0.1 second delay.
-It takes snapshots at document load and the end of the animation.
-
+    document.addEventListener("animationend", t.step_func(() => {
+      if (++animsFinished == numAnims) {
+          t.step_timeout(endTest, 0); // this set timeout should be ok in the test environment
+                                      // since we're just giving style a chance to resolve
+      }
+    }));
+  }));
+}, "This test performs an animation of the left property with four different fill modes. It animates over 0.1 second with a 0.1 second delay. It takes snapshots at document load and the end of the animation");
+</script>
 <div id="a" class="box">
   None - from/to present
 </div>
@@ -187,8 +159,3 @@ It takes snapshots at document load and the end of the animation.
 <div id="j" class="box">
   Both iterating - from missing
 </div>
-
-<div id="result">
-</div>
-</body>
-</html>

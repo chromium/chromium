@@ -26,7 +26,6 @@
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/message_loop/message_loop.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_restrictions.h"
@@ -34,12 +33,12 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/cronet/android/buildflags.h"
+#include "components/cronet/android/cronet_jni_headers/CronetUrlRequestContext_jni.h"
 #include "components/cronet/android/cronet_library_loader.h"
 #include "components/cronet/cronet_prefs_manager.h"
 #include "components/cronet/histogram_manager.h"
 #include "components/cronet/host_cache_persistence_manager.h"
 #include "components/cronet/url_request_context_config.h"
-#include "jni/CronetUrlRequestContext_jni.h"
 #include "net/base/load_flags.h"
 #include "net/base/logging_network_change_observer.h"
 #include "net/base/net_errors.h"
@@ -54,8 +53,7 @@
 #include "net/nqe/network_quality_estimator_params.h"
 #include "net/proxy_resolution/proxy_config_service_android.h"
 #include "net/proxy_resolution/proxy_resolution_service.h"
-#include "net/ssl/channel_id_service.h"
-#include "net/third_party/quic/core/quic_versions.h"
+#include "net/third_party/quiche/src/quic/core/quic_versions.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_interceptor.h"
@@ -307,10 +305,7 @@ static void JNI_CronetUrlRequestContext_AddPkp(
           jinclude_subdomains,
           base::Time::UnixEpoch() +
               base::TimeDelta::FromMilliseconds(jexpiration_time)));
-  size_t hash_count = env->GetArrayLength(jhashes);
-  for (size_t i = 0; i < hash_count; ++i) {
-    ScopedJavaLocalRef<jbyteArray> bytes_array(
-        env, static_cast<jbyteArray>(env->GetObjectArrayElement(jhashes, i)));
+  for (auto bytes_array : jhashes.ReadElements<jbyteArray>()) {
     static_assert(std::is_pod<net::SHA256HashValue>::value,
                   "net::SHA256HashValue is not POD");
     static_assert(sizeof(net::SHA256HashValue) * CHAR_BIT == 256,

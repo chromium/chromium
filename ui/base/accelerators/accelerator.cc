@@ -65,7 +65,8 @@ Accelerator::Accelerator(const KeyEvent& key_event)
       // |modifiers_| may include the repeat flag.
       modifiers_(key_event.flags() & kInterestingFlagsMask),
       time_stamp_(key_event.time_stamp()),
-      interrupted_by_mouse_event_(false) {}
+      interrupted_by_mouse_event_(false),
+      source_device_id_(key_event.source_device_id()) {}
 
 Accelerator::Accelerator(const Accelerator& accelerator) {
   key_code_ = accelerator.key_code_;
@@ -73,6 +74,7 @@ Accelerator::Accelerator(const Accelerator& accelerator) {
   modifiers_ = accelerator.modifiers_;
   time_stamp_ = accelerator.time_stamp_;
   interrupted_by_mouse_event_ = accelerator.interrupted_by_mouse_event_;
+  source_device_id_ = accelerator.source_device_id_;
 }
 
 Accelerator::~Accelerator() {
@@ -143,9 +145,9 @@ base::string16 Accelerator::GetShortcutText() const {
   base::string16 shortcut;
 
 #if defined(OS_MACOSX)
-  shortcut = KeyCodeToMacSymbol(key_code_);
+  shortcut = KeyCodeToMacSymbol();
 #else
-  shortcut = KeyCodeToName(key_code_);
+  shortcut = KeyCodeToName();
 #endif
 
   if (shortcut.empty()) {
@@ -161,7 +163,10 @@ base::string16 Accelerator::GetShortcutText() const {
       key = static_cast<wchar_t>(key_code_);
     else
       key = LOWORD(::MapVirtualKeyW(key_code_, MAPVK_VK_TO_CHAR));
-    shortcut += key;
+    // If there is no translation for the given |key_code_| (e.g.
+    // VKEY_UNKNOWN), |::MapVirtualKeyW| returns 0.
+    if (key != 0)
+      shortcut += key;
 #elif defined(USE_AURA) || defined(OS_MACOSX) || defined(OS_ANDROID)
     const uint16_t c = DomCodeToUsLayoutCharacter(
         UsLayoutKeyboardCodeToDomCode(key_code_), false);
@@ -222,90 +227,45 @@ base::string16 Accelerator::GetShortcutText() const {
   return shortcut;
 }
 
-base::string16 Accelerator::ApplyLongFormModifiers(
-    base::string16 shortcut) const {
-  if (IsShiftDown())
-    shortcut = ApplyModifierToAcceleratorString(shortcut, IDS_APP_SHIFT_KEY);
-
-  // Note that we use 'else-if' in order to avoid using Ctrl+Alt as a shortcut.
-  // See http://blogs.msdn.com/oldnewthing/archive/2004/03/29/101121.aspx for
-  // more information.
-  if (IsCtrlDown())
-    shortcut = ApplyModifierToAcceleratorString(shortcut, IDS_APP_CTRL_KEY);
-  else if (IsAltDown())
-    shortcut = ApplyModifierToAcceleratorString(shortcut, IDS_APP_ALT_KEY);
-
-  if (IsCmdDown()) {
 #if defined(OS_MACOSX)
-    shortcut = ApplyModifierToAcceleratorString(shortcut, IDS_APP_COMMAND_KEY);
-#elif defined(OS_CHROMEOS)
-    shortcut = ApplyModifierToAcceleratorString(shortcut, IDS_APP_SEARCH_KEY);
-#elif defined(OS_WIN)
-    shortcut = ApplyModifierToAcceleratorString(shortcut, IDS_APP_WINDOWS_KEY);
-#else
-    NOTREACHED();
-#endif
-  }
-
-  return shortcut;
-}
-
-base::string16 Accelerator::ApplyShortFormModifiers(
-    base::string16 shortcut) const {
-  const base::char16 kCommandSymbol[] = {0x2318, 0};
-  const base::char16 kCtrlSymbol[] = {0x2303, 0};
-  const base::char16 kShiftSymbol[] = {0x21e7, 0};
-  const base::char16 kOptionSymbol[] = {0x2325, 0};
-  const base::char16 kNoSymbol[] = {0};
-
-  std::vector<base::string16> parts;
-  parts.push_back(base::string16(IsCtrlDown() ? kCtrlSymbol : kNoSymbol));
-  parts.push_back(base::string16(IsAltDown() ? kOptionSymbol : kNoSymbol));
-  parts.push_back(base::string16(IsShiftDown() ? kShiftSymbol : kNoSymbol));
-  parts.push_back(base::string16(IsCmdDown() ? kCommandSymbol : kNoSymbol));
-  parts.push_back(shortcut);
-  return base::StrCat(parts);
-}
-
-#if defined(OS_MACOSX)
-base::string16 Accelerator::KeyCodeToMacSymbol(KeyboardCode key_code) const {
-  switch (key_code) {
+base::string16 Accelerator::KeyCodeToMacSymbol() const {
+  switch (key_code_) {
     case VKEY_CAPITAL:
-      return base::string16({0x21ea, 0});
+      return base::string16({0x21ea});
     case VKEY_RETURN:
-      return base::string16({0x2324, 0});
+      return base::string16({0x2324});
     case VKEY_BACK:
-      return base::string16({0x232b, 0});
+      return base::string16({0x232b});
     case VKEY_ESCAPE:
-      return base::string16({0x238b, 0});
+      return base::string16({0x238b});
     case VKEY_RIGHT:
-      return base::string16({0x2192, 0});
+      return base::string16({0x2192});
     case VKEY_LEFT:
-      return base::string16({0x2190, 0});
+      return base::string16({0x2190});
     case VKEY_UP:
-      return base::string16({0x2191, 0});
+      return base::string16({0x2191});
     case VKEY_DOWN:
-      return base::string16({0x2193, 0});
+      return base::string16({0x2193});
     case VKEY_PRIOR:
-      return base::string16({0x21de, 0});
+      return base::string16({0x21de});
     case VKEY_NEXT:
-      return base::string16({0x21df, 0});
+      return base::string16({0x21df});
     case VKEY_HOME:
-      return base::string16({0x2196, 0});
+      return base::string16({0x2196});
     case VKEY_END:
-      return base::string16({0x2198, 0});
+      return base::string16({0x2198});
     case VKEY_TAB:
-      return base::string16({0x21e5, 0});
+      return base::string16({0x21e5});
     // Mac has a shift-tab icon (0x21e4) but we don't use it.
     // "Space" and some other keys are written out; fall back to KeyCodeToName()
     // for those (and any other unhandled keys).
     default:
-      return KeyCodeToName(key_code);
+      return KeyCodeToName();
   }
 }
 #endif  // OS_MACOSX
 
-base::string16 Accelerator::KeyCodeToName(KeyboardCode key_code) const {
+base::string16 Accelerator::KeyCodeToName() const {
   int string_id = 0;
   switch (key_code_) {
     case VKEY_TAB:
@@ -384,6 +344,51 @@ base::string16 Accelerator::KeyCodeToName(KeyboardCode key_code) const {
       break;
   }
   return string_id ? l10n_util::GetStringUTF16(string_id) : base::string16();
+}
+
+base::string16 Accelerator::ApplyLongFormModifiers(
+    base::string16 shortcut) const {
+  if (IsShiftDown())
+    shortcut = ApplyModifierToAcceleratorString(shortcut, IDS_APP_SHIFT_KEY);
+
+  // Note that we use 'else-if' in order to avoid using Ctrl+Alt as a shortcut.
+  // See http://blogs.msdn.com/oldnewthing/archive/2004/03/29/101121.aspx for
+  // more information.
+  if (IsCtrlDown())
+    shortcut = ApplyModifierToAcceleratorString(shortcut, IDS_APP_CTRL_KEY);
+  else if (IsAltDown())
+    shortcut = ApplyModifierToAcceleratorString(shortcut, IDS_APP_ALT_KEY);
+
+  if (IsCmdDown()) {
+#if defined(OS_MACOSX)
+    shortcut = ApplyModifierToAcceleratorString(shortcut, IDS_APP_COMMAND_KEY);
+#elif defined(OS_CHROMEOS)
+    shortcut = ApplyModifierToAcceleratorString(shortcut, IDS_APP_SEARCH_KEY);
+#elif defined(OS_WIN)
+    shortcut = ApplyModifierToAcceleratorString(shortcut, IDS_APP_WINDOWS_KEY);
+#else
+    NOTREACHED();
+#endif
+  }
+
+  return shortcut;
+}
+
+base::string16 Accelerator::ApplyShortFormModifiers(
+    base::string16 shortcut) const {
+  const base::char16 kCommandSymbol[] = {0x2318, 0};
+  const base::char16 kCtrlSymbol[] = {0x2303, 0};
+  const base::char16 kShiftSymbol[] = {0x21e7, 0};
+  const base::char16 kOptionSymbol[] = {0x2325, 0};
+  const base::char16 kNoSymbol[] = {0};
+
+  std::vector<base::string16> parts;
+  parts.push_back(base::string16(IsCtrlDown() ? kCtrlSymbol : kNoSymbol));
+  parts.push_back(base::string16(IsAltDown() ? kOptionSymbol : kNoSymbol));
+  parts.push_back(base::string16(IsShiftDown() ? kShiftSymbol : kNoSymbol));
+  parts.push_back(base::string16(IsCmdDown() ? kCommandSymbol : kNoSymbol));
+  parts.push_back(shortcut);
+  return base::StrCat(parts);
 }
 
 }  // namespace ui

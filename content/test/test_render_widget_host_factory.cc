@@ -16,14 +16,14 @@ TestRenderWidgetHostFactory::~TestRenderWidgetHostFactory() {
   RenderWidgetHostFactory::UnregisterFactory();
 }
 
-RenderWidgetHostImpl* TestRenderWidgetHostFactory::CreateRenderWidgetHost(
+std::unique_ptr<RenderWidgetHostImpl>
+TestRenderWidgetHostFactory::CreateRenderWidgetHost(
     RenderWidgetHostDelegate* delegate,
     RenderProcessHost* process,
     int32_t routing_id,
-    mojom::WidgetPtr widget_interface,
+    mojo::PendingRemote<mojom::Widget> widget_interface,
     bool hidden) {
-  return TestRenderWidgetHost::Create(delegate, process, routing_id, hidden)
-      .release();
+  return TestRenderWidgetHost::Create(delegate, process, routing_id, hidden);
 }
 
 }  // namespace content

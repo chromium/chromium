@@ -170,34 +170,63 @@ TEST(TweenTest, RectValueBetween) {
 }
 
 TEST(TweenTest, SizeValueBetween) {
-  const gfx::SizeF s1(12.0f, 24.0f);
-  const gfx::SizeF s2(36.0f, 48.0f);
+  constexpr gfx::Size kSize1(12, 24);
+  constexpr gfx::Size kSize2(36, 48);
 
-  double before = -0.125;
-  double from = 0.0;
-  double between = 0.5;
-  double to = 1.0;
-  double after = 1.125;
+  constexpr double kBefore = -0.125;
+  constexpr double kFrom = 0.0;
+  constexpr double kBetween = 0.5;
+  constexpr double kTo = 1.0;
+  constexpr double kAfter = 1.125;
 
-  EXPECT_SIZEF_EQ(gfx::SizeF(9.0f, 21.0f),
-                  Tween::SizeValueBetween(before, s1, s2));
-  EXPECT_SIZEF_EQ(s1, Tween::SizeValueBetween(from, s1, s2));
-  EXPECT_SIZEF_EQ(gfx::SizeF(24.0f, 36.0f),
-                  Tween::SizeValueBetween(between, s1, s2));
-  EXPECT_SIZEF_EQ(s2, Tween::SizeValueBetween(to, s1, s2));
-  EXPECT_SIZEF_EQ(gfx::SizeF(39.0f, 51.0f),
-                  Tween::SizeValueBetween(after, s1, s2));
+  EXPECT_EQ(gfx::Size(9, 21), Tween::SizeValueBetween(kBefore, kSize1, kSize2));
+  EXPECT_EQ(kSize1, Tween::SizeValueBetween(kFrom, kSize1, kSize2));
+  EXPECT_EQ(gfx::Size(24, 36),
+            Tween::SizeValueBetween(kBetween, kSize1, kSize2));
+  EXPECT_EQ(kSize2, Tween::SizeValueBetween(kTo, kSize1, kSize2));
+  EXPECT_EQ(gfx::Size(39, 51), Tween::SizeValueBetween(kAfter, kSize1, kSize2));
 }
 
 TEST(TweenTest, SizeValueBetweenClampedExtrapolation) {
-  const gfx::SizeF s1(0.0f, 0.0f);
-  const gfx::SizeF s2(36.0f, 48.0f);
+  constexpr gfx::Size kSize1(0, 0);
+  constexpr gfx::Size kSize2(36, 48);
 
-  double before = -1.0f;
+  constexpr double kBefore = -1.0f;
 
   // We should not extrapolate in this case as it would result in a negative and
   // invalid size.
-  EXPECT_SIZEF_EQ(s1, Tween::SizeValueBetween(before, s1, s2));
+  EXPECT_EQ(kSize1, Tween::SizeValueBetween(kBefore, kSize1, kSize2));
+}
+
+TEST(TweenTest, SizeFValueBetween) {
+  const gfx::SizeF s1(12.0f, 24.0f);
+  const gfx::SizeF s2(36.0f, 48.0f);
+
+  constexpr double kBefore = -0.125;
+  constexpr double kFrom = 0.0;
+  constexpr double kBetween = 0.5;
+  constexpr double kTo = 1.0;
+  constexpr double kAfter = 1.125;
+
+  EXPECT_SIZEF_EQ(gfx::SizeF(9.0f, 21.0f),
+                  Tween::SizeFValueBetween(kBefore, s1, s2));
+  EXPECT_SIZEF_EQ(s1, Tween::SizeFValueBetween(kFrom, s1, s2));
+  EXPECT_SIZEF_EQ(gfx::SizeF(24.0f, 36.0f),
+                  Tween::SizeFValueBetween(kBetween, s1, s2));
+  EXPECT_SIZEF_EQ(s2, Tween::SizeFValueBetween(kTo, s1, s2));
+  EXPECT_SIZEF_EQ(gfx::SizeF(39.0f, 51.0f),
+                  Tween::SizeFValueBetween(kAfter, s1, s2));
+}
+
+TEST(TweenTest, SizeFValueBetweenClampedExtrapolation) {
+  const gfx::SizeF s1(0.0f, 0.0f);
+  const gfx::SizeF s2(36.0f, 48.0f);
+
+  constexpr double kBefore = -1.0f;
+
+  // We should not extrapolate in this case as it would result in a negative and
+  // invalid size.
+  EXPECT_SIZEF_EQ(s1, Tween::SizeFValueBetween(kBefore, s1, s2));
 }
 
 }  // namespace

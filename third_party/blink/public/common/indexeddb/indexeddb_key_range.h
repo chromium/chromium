@@ -31,8 +31,8 @@ class BLINK_COMMON_EXPORT IndexedDBKeyRange {
   bool IsEmpty() const;
 
  private:
-  blink::IndexedDBKey lower_ = blink::IndexedDBKey(mojom::IDBKeyType::Null);
-  blink::IndexedDBKey upper_ = blink::IndexedDBKey(mojom::IDBKeyType::Null);
+  blink::IndexedDBKey lower_ = blink::IndexedDBKey(mojom::IDBKeyType::None);
+  blink::IndexedDBKey upper_ = blink::IndexedDBKey(mojom::IDBKeyType::None);
   bool lower_open_ = false;
   bool upper_open_ = false;
 };

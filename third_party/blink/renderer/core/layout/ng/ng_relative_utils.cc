@@ -5,19 +5,19 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_relative_utils.h"
 
 #include "base/optional.h"
-#include "third_party/blink/renderer/core/layout/ng/geometry/ng_physical_offset.h"
-#include "third_party/blink/renderer/core/layout/ng/geometry/ng_physical_size.h"
+#include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
+#include "third_party/blink/renderer/core/layout/geometry/physical_size.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
 
 namespace blink {
 
 // Returns the child's relative position wrt the containing fragment.
-NGPhysicalOffset ComputeRelativeOffset(const ComputedStyle& child_style,
-                                       WritingMode container_writing_mode,
-                                       TextDirection container_direction,
-                                       NGPhysicalSize container_size) {
-  NGPhysicalOffset offset;
+PhysicalOffset ComputeRelativeOffset(const ComputedStyle& child_style,
+                                     WritingMode container_writing_mode,
+                                     TextDirection container_direction,
+                                     PhysicalSize container_size) {
+  PhysicalOffset offset;
   if (child_style.GetPosition() != EPosition::kRelative)
     return offset;
 

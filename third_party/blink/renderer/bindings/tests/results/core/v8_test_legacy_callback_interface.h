@@ -51,34 +51,6 @@ class CORE_EXPORT V8TestLegacyCallbackInterface final : public CallbackInterface
   v8::Maybe<uint16_t> acceptNode(bindings::V8ValueOrScriptWrappableAdapter callback_this_value, Node* node) WARN_UNUSED_RESULT;
 };
 
-template <>
-class V8PersistentCallbackInterface<V8TestLegacyCallbackInterface> final : public V8PersistentCallbackInterfaceBase {
-  using V8CallbackInterface = V8TestLegacyCallbackInterface;
-
- public:
-  explicit V8PersistentCallbackInterface(V8CallbackInterface* callback_interface)
-      : V8PersistentCallbackInterfaceBase(callback_interface) {}
-  ~V8PersistentCallbackInterface() override = default;
-
-  CORE_EXPORT v8::Maybe<uint16_t> acceptNode(bindings::V8ValueOrScriptWrappableAdapter callback_this_value, Node* node) WARN_UNUSED_RESULT;
-
- private:
-  V8CallbackInterface* Proxy() {
-    return As<V8CallbackInterface>();
-  }
-
-  template <typename V8CallbackInterface>
-  friend V8PersistentCallbackInterface<V8CallbackInterface>*
-  ToV8PersistentCallbackInterface(V8CallbackInterface*);
-};
-
-// V8TestLegacyCallbackInterface is designed to be used with wrapper-tracing.
-// As blink::Persistent does not perform wrapper-tracing, use of
-// |WrapPersistent| for callback interfaces is likely (if not always) misuse.
-// Thus, this code prohibits such a use case. The call sites should explicitly
-// use WrapPersistent(V8PersistentCallbackInterface<T>*).
-Persistent<V8TestLegacyCallbackInterface> WrapPersistent(V8TestLegacyCallbackInterface*) = delete;
-
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_BINDINGS_TESTS_RESULTS_CORE_V8_TEST_LEGACY_CALLBACK_INTERFACE_H_

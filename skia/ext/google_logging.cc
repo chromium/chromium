@@ -10,12 +10,11 @@
 #include "base/strings/stringprintf.h"
 #include "third_party/skia/include/core/SkTypes.h"
 
-void SkDebugf_FileLine(const char* file, int line, bool fatal,
-                       const char* format, ...) {
+void SkDebugf_FileLine(const char* file, int line, const char* format, ...) {
 #if DCHECK_IS_ON()
-  int severity = fatal ? logging::LOG_FATAL : logging::LOG_ERROR;
+  int severity = logging::LOG_ERROR;
 #else
-  int severity = fatal ? logging::LOG_FATAL : logging::LOG_INFO;
+  int severity = logging::LOG_INFO;
 #endif
   if (severity < logging::GetMinLogLevel())
     return;

@@ -7,12 +7,12 @@
 #include <memory>
 
 #include "base/android/jni_android.h"
+#include "chrome/android/chrome_jni_headers/PreviewsAndroidBridge_jni.h"
 #include "chrome/browser/previews/previews_ui_tab_helper.h"
 #include "components/previews/content/previews_user_data.h"
 #include "components/previews/core/previews_experiments.h"
 #include "components/previews/core/previews_lite_page_redirect.h"
 #include "content/public/browser/web_contents.h"
-#include "jni/PreviewsAndroidBridge_jni.h"
 
 static jlong JNI_PreviewsAndroidBridge_Init(
     JNIEnv* env,
@@ -22,8 +22,7 @@ static jlong JNI_PreviewsAndroidBridge_Init(
 
 PreviewsAndroidBridge::PreviewsAndroidBridge(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj)
-    : weak_factory_(this) {}
+    const base::android::JavaParamRef<jobject>& obj) {}
 
 PreviewsAndroidBridge::~PreviewsAndroidBridge() {}
 
@@ -123,6 +122,5 @@ PreviewsAndroidBridge::GetPreviewsType(
 
   return base::android::ScopedJavaLocalRef<jstring>(
       base::android::ConvertUTF8ToJavaString(
-          env,
-          previews::GetStringNameForType(data->committed_previews_type())));
+          env, previews::GetStringNameForType(data->CommittedPreviewsType())));
 }

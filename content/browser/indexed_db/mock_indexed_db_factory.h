@@ -15,12 +15,11 @@
 
 namespace content {
 
+// TODO(dmurph) Remove this by making classes more testable.
 class MockIndexedDBFactory : public IndexedDBFactory {
  public:
   MockIndexedDBFactory();
-  MOCK_METHOD2(ReleaseDatabase,
-               void(const IndexedDBDatabase::Identifier& identifier,
-                    bool forced_close));
+  ~MockIndexedDBFactory() override;
   MOCK_METHOD3(GetDatabaseNames,
                void(scoped_refptr<IndexedDBCallbacks> callbacks,
                     const url::Origin& origin,
@@ -73,15 +72,14 @@ class MockIndexedDBFactory : public IndexedDBFactory {
                     const IndexedDBDatabaseError& error));
   // The Android NDK implements a subset of STL, and the gtest templates can't
   // deal with std::pair's. This means we can't use GoogleMock for this method
-  OriginDBs GetOpenDatabasesForOrigin(const url::Origin& origin) const override;
+  std::vector<IndexedDBDatabase*> GetOpenDatabasesForOrigin(
+      const url::Origin& origin) const override;
   MOCK_METHOD2(ForceClose,
                void(const url::Origin& origin, bool delete_in_memory_store));
   MOCK_METHOD1(ForceSchemaDowngrade, void(const url::Origin& origin));
   MOCK_METHOD1(HasV2SchemaCorruption,
                V2SchemaCorruptionStatus(const url::Origin& origin));
   MOCK_METHOD0(ContextDestroyed, void());
-  MOCK_METHOD1(DatabaseDeleted,
-               void(const IndexedDBDatabase::Identifier& identifier));
 
   MOCK_METHOD1(BlobFilesCleaned, void(const url::Origin& origin));
 
@@ -99,17 +97,6 @@ class MockIndexedDBFactory : public IndexedDBFactory {
                void(const url::Origin& origin,
                     const base::string16& database_name,
                     const base::string16& object_store_name));
-
- protected:
-  ~MockIndexedDBFactory() override;
-
-  MOCK_METHOD2(
-      OpenBackingStore,
-      std::tuple<scoped_refptr<IndexedDBBackingStore>,
-                 leveldb::Status,
-                 IndexedDBDataLossInfo,
-                 bool /* disk_full */>(const url::Origin& origin,
-                                       const base::FilePath& data_directory));
 
  private:
   DISALLOW_COPY_AND_ASSIGN(MockIndexedDBFactory);

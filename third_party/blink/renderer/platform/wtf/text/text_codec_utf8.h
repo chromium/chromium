@@ -47,8 +47,12 @@ class TextCodecUTF8 : public TextCodec {
                 FlushBehavior,
                 bool stop_on_error,
                 bool& saw_error) override;
-  CString Encode(const UChar*, wtf_size_t length, UnencodableHandling) override;
-  CString Encode(const LChar*, wtf_size_t length, UnencodableHandling) override;
+  std::string Encode(const UChar*,
+                     wtf_size_t length,
+                     UnencodableHandling) override;
+  std::string Encode(const LChar*,
+                     wtf_size_t length,
+                     UnencodableHandling) override;
 
   // See comment above TextCodec::EncodeInto for more information.
   // This implementation writes as many code points to |destination| as will
@@ -65,7 +69,7 @@ class TextCodecUTF8 : public TextCodec {
                               wtf_size_t capacity) override;
 
   template <typename CharType>
-  CString EncodeCommon(const CharType* characters, wtf_size_t length);
+  std::string EncodeCommon(const CharType* characters, wtf_size_t length);
   template <typename CharType>
   EncodeIntoResult EncodeIntoCommon(const CharType* characters,
                                     wtf_size_t length,

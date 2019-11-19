@@ -16,16 +16,16 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "components/autofill/core/browser/autofill_country.h"
-#include "components/autofill/core/browser/autofill_profile.h"
 #include "components/autofill/core/browser/autofill_type.h"
-#include "components/autofill/core/browser/credit_card.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
 #include "components/autofill/core/browser/webdata/autofill_entry.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/search_engines/keyword_table.h"
-#include "components/signin/core/browser/webdata/token_service_table.h"
+#include "components/signin/public/webdata/token_service_table.h"
 #include "components/webdata/common/web_database.h"
 #include "sql/statement.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -126,7 +126,7 @@ class WebDatabaseMigrationTest : public testing::Test {
   DISALLOW_COPY_AND_ASSIGN(WebDatabaseMigrationTest);
 };
 
-const int WebDatabaseMigrationTest::kCurrentTestedVersionNumber = 81;
+const int WebDatabaseMigrationTest::kCurrentTestedVersionNumber = 82;
 
 void WebDatabaseMigrationTest::LoadDatabase(
     const base::FilePath::StringType& file) {
@@ -1698,8 +1698,9 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion80ToCurrent) {
     ASSERT_TRUE(s1.Step());
     // Note: This is the *wrong* ID for AUTOFILL, simulating the botched
     // migration in version 78. See crbug.com/895826.
-    ASSERT_EQ(syncer::ModelTypeToHistogramInt(syncer::AUTOFILL),
-              s1.ColumnInt(0));
+    ASSERT_EQ(
+        static_cast<int>(syncer::ModelTypeHistogramValue(syncer::AUTOFILL)),
+        s1.ColumnInt(0));
     ASSERT_EQ("storage_key1", s1.ColumnString(1));
     ASSERT_EQ("blob1", s1.ColumnString(2));
 
@@ -1715,8 +1716,9 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion80ToCurrent) {
         "SELECT model_type, value FROM autofill_model_type_state"));
     ASSERT_TRUE(s2.Step());
     // Like above: Bad value.
-    ASSERT_EQ(syncer::ModelTypeToHistogramInt(syncer::AUTOFILL),
-              s2.ColumnInt(0));
+    ASSERT_EQ(
+        static_cast<int>(syncer::ModelTypeHistogramValue(syncer::AUTOFILL)),
+        s2.ColumnInt(0));
     ASSERT_EQ("state1", s2.ColumnString(1));
     ASSERT_TRUE(s2.Step());
     // Good value.
@@ -1756,5 +1758,38 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion80ToCurrent) {
               s2.ColumnInt(0));
     EXPECT_EQ("state2", s2.ColumnString(1));
     EXPECT_FALSE(s2.Step());
+  }
+}
+
+// Tests addition of created_from_play_api column in keywords table.
+TEST_F(WebDatabaseMigrationTest, MigrateVersion81ToCurrent) {
+  ASSERT_NO_FATAL_FAILURE(LoadDatabase(FILE_PATH_LITERAL("version_81.sql")));
+
+  // Verify pre-conditions.
+  {
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    ASSERT_TRUE(sql::MetaTable::DoesTableExist(&connection));
+
+    sql::MetaTable meta_table;
+    ASSERT_TRUE(meta_table.Init(&connection, 81, 79));
+
+    EXPECT_FALSE(
+        connection.DoesColumnExist("keywords", "created_from_play_api"));
+  }
+
+  DoMigration();
+
+  // Verify post-conditions.
+  {
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    ASSERT_TRUE(sql::MetaTable::DoesTableExist(&connection));
+
+    // Check version.
+    EXPECT_EQ(kCurrentTestedVersionNumber, VersionFromConnection(&connection));
+
+    EXPECT_TRUE(
+        connection.DoesColumnExist("keywords", "created_from_play_api"));
   }
 }

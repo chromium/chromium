@@ -128,15 +128,13 @@ bool EscapeJSONString(StringPiece16 str,
 
 std::string GetQuotedJSONString(StringPiece str) {
   std::string dest;
-  bool ok = EscapeJSONStringImpl(str, true, &dest);
-  DCHECK(ok);
+  EscapeJSONStringImpl(str, true, &dest);
   return dest;
 }
 
 std::string GetQuotedJSONString(StringPiece16 str) {
   std::string dest;
-  bool ok = EscapeJSONStringImpl(str, true, &dest);
-  DCHECK(ok);
+  EscapeJSONStringImpl(str, true, &dest);
   return dest;
 }
 

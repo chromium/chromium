@@ -5,8 +5,11 @@
 #ifndef CHROMEOS_COMPONENTS_MULTIDEVICE_FAKE_SECURE_MESSAGE_DELEGATE_H_
 #define CHROMEOS_COMPONENTS_MULTIDEVICE_FAKE_SECURE_MESSAGE_DELEGATE_H_
 
+#include <memory>
+
 #include "base/macros.h"
 #include "chromeos/components/multidevice/secure_message_delegate.h"
+#include "chromeos/components/multidevice/secure_message_delegate_impl.h"
 
 namespace chromeos {
 
@@ -49,6 +52,23 @@ class FakeSecureMessageDelegate : public SecureMessageDelegate {
   std::string next_public_key_;
 
   DISALLOW_COPY_AND_ASSIGN(FakeSecureMessageDelegate);
+};
+
+class FakeSecureMessageDelegateFactory
+    : public multidevice::SecureMessageDelegateImpl::Factory {
+ public:
+  FakeSecureMessageDelegateFactory() = default;
+  ~FakeSecureMessageDelegateFactory() override = default;
+
+  multidevice::FakeSecureMessageDelegate* instance() { return instance_; }
+
+ private:
+  // multidevice::SecureMessageDelegateImpl::Factory:
+  std::unique_ptr<multidevice::SecureMessageDelegate> BuildInstance() override;
+
+  multidevice::FakeSecureMessageDelegate* instance_ = nullptr;
+
+  DISALLOW_COPY_AND_ASSIGN(FakeSecureMessageDelegateFactory);
 };
 
 }  // namespace multidevice

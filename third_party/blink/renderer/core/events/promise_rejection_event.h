@@ -18,14 +18,13 @@ namespace blink {
 
 class CORE_EXPORT PromiseRejectionEvent final : public Event {
   DEFINE_WRAPPERTYPEINFO();
-  USING_PRE_FINALIZER(PromiseRejectionEvent, Dispose);
 
  public:
   static PromiseRejectionEvent* Create(
-      ScriptState* state,
+      ScriptState* script_state,
       const AtomicString& type,
       const PromiseRejectionEventInit* initializer) {
-    return MakeGarbageCollected<PromiseRejectionEvent>(state, type,
+    return MakeGarbageCollected<PromiseRejectionEvent>(script_state, type,
                                                        initializer);
   }
 
@@ -46,7 +45,6 @@ class CORE_EXPORT PromiseRejectionEvent final : public Event {
 
  private:
   ~PromiseRejectionEvent() override;
-  void Dispose();
 
   scoped_refptr<DOMWrapperWorld> world_;
   TraceWrapperV8Reference<v8::Value> promise_;

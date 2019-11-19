@@ -4,6 +4,8 @@
 
 """Helpers for dealing with translation files."""
 
+from __future__ import print_function
+
 import ast
 import os
 import re
@@ -75,14 +77,24 @@ def get_translatable_grds(repo_root, all_grd_paths,
     translation_expectations_path: The path to the translation expectations
         file, which specifies which grds to translate and into which languages.
   """
-  grd_to_langs, untranslated_grds = _parse_translation_expectations(
+  parsed_expectations = _parse_translation_expectations(
       translation_expectations_path)
+  grd_to_langs, untranslated_grds, internal_grds = parsed_expectations
 
+  errors = []
+  # Make sure that grds in internal_grds aren't processed, since they might
+  # contain pieces not available publicly.
+  for internal_grd in internal_grds:
+    try:
+      all_grd_paths.remove(internal_grd)
+    except ValueError:
+      errors.append(
+          '%s is listed in translation expectations as an internal file to be '
+          'ignored, but this grd file does not exist.' % internal_grd)
   # Check that every grd that appears translatable is listed in
   # the translation expectations.
   grds_with_expectations = set(grd_to_langs.keys()).union(untranslated_grds)
   all_grds = {p: GRDFile(os.path.join(repo_root, p)) for p in all_grd_paths}
-  errors = []
   for path, grd in all_grds.iteritems():
     if grd.appears_translatable:
       if path not in grds_with_expectations:
@@ -169,18 +181,25 @@ def _parse_translation_expectations(path):
       "languages": ["de", "pt-BR"],
       "files": [
         "chrome/android/android_chrome_strings.grd",
+      ],
     },
     "untranslated_grds": {
       "chrome/locale_settings.grd": "Not UI strings; localized separately",
       "chrome/locale_settings_mac.grd": "Not UI strings; localized separately",
     },
+    "internal_grds": [
+      "chrome/internal.grd",
+    ],
   }
 
   Returns:
-    A tuple (grd_to_langs, untranslated_grds). grd_to_langs maps each grd path
-    to the list of languages into which that grd should be translated.
-    untranslated_grds is a list of grds that "appear translatable" but should
-    not be translated.
+    A tuple (grd_to_langs, untranslated_grds, internal_grds).
+    grd_to_langs maps each grd path to the list of languages into which
+    that grd should be translated. untranslated_grds is a list of grds
+    that "appear translatable" but should not be translated.
+    internal_grds is a list of grds that are internal only and should
+    not be read by this helper (since they might contain parts not
+    available publicly).
   """
   with open(path) as f:
     file_contents = f.read()
@@ -196,11 +215,17 @@ def _parse_translation_expectations(path):
 
     grd_to_langs = {}
     untranslated_grds = []
+    internal_grds = []
 
     for group_name, settings in translations_expectations.iteritems():
       if group_name == 'untranslated_grds':
         untranslated_grds = list(settings.keys())
         assert_list_of_strings(untranslated_grds, 'untranslated_grds')
+        continue
+
+      if group_name == 'internal_grds':
+        internal_grds = settings
+        assert_list_of_strings(internal_grds, 'internal_grds')
         continue
 
       languages = settings['languages']
@@ -210,8 +235,8 @@ def _parse_translation_expectations(path):
       for grd in files:
         grd_to_langs[grd] = languages
 
-    return grd_to_langs, untranslated_grds
+    return grd_to_langs, untranslated_grds, internal_grds
 
   except Exception:
-    print 'Error: failed to parse', path
+    print('Error: failed to parse', path)
     raise

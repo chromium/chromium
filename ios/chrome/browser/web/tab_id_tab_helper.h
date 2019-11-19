@@ -6,7 +6,7 @@
 #define IOS_CHROME_BROWSER_WEB_TAB_ID_TAB_HELPER_H_
 
 #include "base/macros.h"
-#import "ios/web/public/web_state/web_state_user_data.h"
+#import "ios/web/public/web_state_user_data.h"
 
 // Handles creating a unique identifier, which is stable across cold starts.
 class TabIdTabHelper : public web::WebStateUserData<TabIdTabHelper> {

@@ -19,7 +19,9 @@
 
 // https://html.spec.whatwg.org/C/#the-blockquote-element
 // https://html.spec.whatwg.org/C/#the-q-element
-[HTMLConstructor]
-interface HTMLQuoteElement : HTMLElement {
+[
+    Exposed=Window,
+    HTMLConstructor
+] interface HTMLQuoteElement : HTMLElement {
     [CEReactions, Reflect, URL] attribute DOMString cite;
 };

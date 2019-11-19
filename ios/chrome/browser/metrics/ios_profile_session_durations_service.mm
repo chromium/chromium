@@ -10,7 +10,7 @@
 
 IOSProfileSessionDurationsService::IOSProfileSessionDurationsService(
     syncer::SyncService* sync_service,
-    identity::IdentityManager* identity_manager)
+    signin::IdentityManager* identity_manager)
     : KeyedService() {
   if (!sync_service && !identity_manager) {
     // |sync_service| and |identity_maanger| may be null for testing.

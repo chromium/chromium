@@ -3,6 +3,12 @@
     This test ensures that the offset from renderer is correctly applied
     to reparented overflow controls, even if they are unclipped.
 -->
+<script>
+if (window.internals) {
+    internals.useMockOverlayScrollbars();
+    internals.settings.setPreferCompositingToLCDTextEnabled(true);
+}
+</script>
 <style>
 #scroller {
     overflow: scroll;
@@ -27,12 +33,6 @@
     height: 500px;
 }
 </style>
-<script>
-if (window.internals) {
-    internals.runtimeFlags.overlayScrollbarsEnabled = true;
-    internals.settings.setPreferCompositingToLCDTextEnabled(true);
-}
-</script>
 <div id='scroller'>
     <div id='fixed'></div>
     <div id='scrolled'></div>

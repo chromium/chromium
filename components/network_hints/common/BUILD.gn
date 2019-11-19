@@ -2,24 +2,15 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-static_library("common") {
-  sources = [
-    "network_hints_common.cc",
-    "network_hints_common.h",
-    "network_hints_message_generator.cc",
-    "network_hints_message_generator.h",
-    "network_hints_messages.cc",
-    "network_hints_messages.h",
-  ]
+import("//mojo/public/tools/bindings/mojom.gni")
 
-  deps = [
-    "//base",
-    "//content/public/common",
-    "//ui/accessibility",
-    "//url",
+mojom("mojo_bindings") {
+  generate_java = false
+  sources = [
+    "network_hints.mojom",
   ]
 
   public_deps = [
-    "//ipc",
+    "//url/mojom:url_mojom_gurl",
   ]
 }

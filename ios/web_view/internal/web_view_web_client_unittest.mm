@@ -4,10 +4,10 @@
 
 #include "ios/web_view/internal/web_view_web_client.h"
 
+#import "ios/web/common/web_view_creation_util.h"
 #import "ios/web/public/test/js_test_util.h"
 #include "ios/web/public/test/scoped_testing_web_client.h"
 #include "ios/web/public/test/web_test.h"
-#import "ios/web/public/web_view_creation_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
 
@@ -31,6 +31,9 @@ class WebViewWebClientTest : public web::WebTest {
 TEST_F(WebViewWebClientTest, WKWebViewEarlyPageScriptAutofillController) {
   // WebView scripts rely on __gCrWeb object presence.
   WKWebView* web_view = web::BuildWKWebView(CGRectZero, GetBrowserState());
+  // Add |web_view| to the windowed container to keep the WKWebView processes
+  // from being suspended.
+  [GetWebClient()->GetWindowedContainer() addSubview:web_view];
   web::test::ExecuteJavaScript(web_view, @"__gCrWeb = {};");
 
   web::ScopedTestingWebClient web_client(std::make_unique<WebViewWebClient>());

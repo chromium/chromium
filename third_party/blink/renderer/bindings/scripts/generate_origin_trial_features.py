@@ -20,7 +20,7 @@ from idl_reader import IdlReader
 from utilities import (create_component_info_provider, write_file,
                        idl_filename_to_component)
 from v8_utilities import (binding_header_filename, v8_class_name,
-                          v8_class_name_or_partial)
+                          v8_class_name_or_partial, origin_trial_feature_name)
 
 # Make sure extension is .py, not .pyc or .pyo, so doesn't depend on caching
 MODULE_PYNAME = os.path.splitext(os.path.basename(__file__))[0] + '.py'
@@ -39,7 +39,7 @@ def get_install_functions(interfaces, feature_names):
         be installed on those interfaces.
     """
     return [
-        {'condition': 'origin_trials::%sEnabled' % feature_name,
+        {'condition': 'RuntimeEnabledFeatures::%sEnabled' % feature_name,
          'name': feature_name,
          'install_method': 'Install%s' % feature_name,
          'interface_is_global': interface_info.is_global,
@@ -49,29 +49,29 @@ def get_install_functions(interfaces, feature_names):
         for interface_info in interfaces]
 
 
-def get_origin_trial_feature_names_from_interface(interface):
+def get_origin_trial_feature_names_from_interface(interface, runtime_features):
     feature_names = set()
-    if ('OriginTrialEnabled' in interface.extended_attributes and
-            interface.is_partial):
-        feature_names.add(interface.extended_attributes['OriginTrialEnabled'])
+
+    def add_if_not_none(value):
+        if value:
+            feature_names.add(value)
+
+    if interface.is_partial:
+        add_if_not_none(origin_trial_feature_name(interface, runtime_features))
     for operation in interface.operations:
-        if 'OriginTrialEnabled' in operation.extended_attributes:
-            feature_names.add(
-                operation.extended_attributes['OriginTrialEnabled'])
+        add_if_not_none(origin_trial_feature_name(operation, runtime_features))
     for attribute in interface.attributes:
-        if 'OriginTrialEnabled' in attribute.extended_attributes:
-            feature_names.add(
-                attribute.extended_attributes['OriginTrialEnabled'])
+        add_if_not_none(origin_trial_feature_name(attribute, runtime_features))
     return feature_names
 
 
 def read_idl_file(reader, idl_filename):
     definitions = reader.read_idl_file(idl_filename)
     interfaces = definitions.interfaces
-    implements = definitions.implements
+    includes = definitions.includes
     # There should only be a single interface defined in an IDL file. Return it.
     assert len(interfaces) == 1
-    return (interfaces.values()[0], implements)
+    return (interfaces.values()[0], includes)
 
 
 def interface_is_global(interface):
@@ -90,40 +90,33 @@ def origin_trial_features_info(info_provider, reader, idl_filenames, target_comp
     """
     features_for_type = defaultdict(set)
     types_for_feature = defaultdict(set)
-    includes = set()
-
-    # Gather interfaces which are implemented by other interfaces.
-    implemented_interfaces = set()
-    for name, interface_info in info_provider.interfaces_info.iteritems():
-        # Skip special entries such as 'dictionaries' or 'ancestors'.
-        if name.lower() == name:
-            continue
-        implemented_interfaces.update(interface_info.get('implements_interfaces'))
+    include_files = set()
+    runtime_features = info_provider.component_info['runtime_enabled_features']
 
     for idl_filename in idl_filenames:
-        interface, implements = read_idl_file(reader, idl_filename)
-        feature_names = get_origin_trial_feature_names_from_interface(interface)
+        interface, includes = read_idl_file(reader, idl_filename)
+        feature_names = get_origin_trial_feature_names_from_interface(interface, runtime_features)
 
-        # If this interface is implemented by other interfaces, we don't generate
-        # V8 bindings code for it.
-        if interface.name in implemented_interfaces:
+        # If this interface is a mixin, we don't generate V8 bindings code for
+        # it.
+        if interface.is_mixin:
             continue
 
-        # If this interface implements another one,
+        # If this interface include another one,
         # it inherits any conditional features from it.
-        for implement in implements:
-            assert implement.left_interface == interface.name
-            implemented_interface, _ = read_idl_file(
+        for include in includes:
+            assert include.interface == interface.name
+            mixin, _ = read_idl_file(
                 reader,
-                info_provider.interfaces_info[implement.right_interface].get('full_path'))
-            feature_names |= get_origin_trial_feature_names_from_interface(implemented_interface)
+                info_provider.interfaces_info[include.mixin].get('full_path'))
+            feature_names |= get_origin_trial_feature_names_from_interface(mixin, runtime_features)
 
         feature_names = list(feature_names)
         if feature_names:
             is_global = interface_is_global(interface)
             if interface.is_partial:
                 # For partial interfaces, we need to generate different
-                # includes if the parent interface is in a different
+                # |include_files| if the parent interface is in a different
                 # component.
                 parent_interface_info = info_provider.interfaces_info[interface.name]
                 parent_interface, _ = read_idl_file(
@@ -132,13 +125,13 @@ def origin_trial_features_info(info_provider, reader, idl_filenames, target_comp
                 parent_component = idl_filename_to_component(
                     parent_interface_info.get('full_path'))
             if interface.is_partial and target_component != parent_component:
-                includes.add('bindings/%s/v8/%s' %
-                             (parent_component, binding_header_filename(interface.name)))
-                includes.add('bindings/%s/v8/%s' %
-                             (target_component, binding_header_filename(interface.name + 'Partial')))
+                include_files.add('bindings/%s/v8/%s' %
+                                  (parent_component, binding_header_filename(interface.name)))
+                include_files.add('bindings/%s/v8/%s' %
+                                  (target_component, binding_header_filename(interface.name + 'Partial')))
             else:
-                includes.add('bindings/%s/v8/%s' %
-                             (target_component, binding_header_filename(interface.name)))
+                include_files.add('bindings/%s/v8/%s' %
+                                  (target_component, binding_header_filename(interface.name)))
                 # If this is a partial interface in the same component as
                 # its parent, then treat it as a non-partial interface.
                 interface.is_partial = False
@@ -151,17 +144,17 @@ def origin_trial_features_info(info_provider, reader, idl_filenames, target_comp
                 features_for_type[interface_info].add(feature_name)
                 types_for_feature[feature_name].add(interface_info)
 
-    return features_for_type, types_for_feature, includes
+    return features_for_type, types_for_feature, include_files
 
 
 def origin_trial_features_context(generator_name, feature_info):
     context = {'code_generator': generator_name}
 
     # Unpack the feature info tuple.
-    features_for_type, types_for_feature, includes = feature_info
+    features_for_type, types_for_feature, include_files = feature_info
 
     # Add includes needed for cpp code and normalize.
-    includes.update([
+    include_files.update([
         'core/context_features/context_feature_settings.h',
         'core/execution_context/execution_context.h',
         'core/frame/frame.h',
@@ -169,11 +162,12 @@ def origin_trial_features_context(generator_name, feature_info):
         'platform/bindings/origin_trial_features.h',
         'platform/bindings/script_state.h',
         'platform/bindings/v8_per_context_data.h',
+        'platform/runtime_enabled_features.h',
         # TODO(iclelland): Remove the need to explicitly include this; it is
         # here because the ContextFeatureSettings code needs it.
         'bindings/core/v8/v8_window.h',
     ])
-    context['includes'] = normalize_and_sort_includes(includes)
+    context['includes'] = normalize_and_sort_includes(include_files)
 
     # For each interface, collect a list of bindings installation functions to
     # call, organized by conditional feature.
@@ -189,7 +183,7 @@ def origin_trial_features_context(generator_name, feature_info):
     # functions to call, organized by interface.
     context['installers_by_feature'] = [
         {'name': feature_name,
-         'name_constant': 'origin_trials::k%sTrialName' % feature_name,
+         'name_constant': 'OriginTrialFeature::k%s' % feature_name,
          'installers': get_install_functions(interfaces, [feature_name])}
         for feature_name, interfaces in types_for_feature.items()]
     context['installers_by_feature'].sort(key=lambda x: x['name'])

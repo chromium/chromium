@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/accessibility/ax_relation_cache.h"
 
 #include "base/memory/ptr_util.h"
+#include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/html/forms/html_label_element.h"
 
 namespace blink {
@@ -13,6 +14,24 @@ AXRelationCache::AXRelationCache(AXObjectCacheImpl* object_cache)
     : object_cache_(object_cache) {}
 
 AXRelationCache::~AXRelationCache() = default;
+
+void AXRelationCache::Init() {
+  // Init the relation cache with elements already in the document.
+  Document& document = object_cache_->GetDocument();
+  for (Element& element :
+       ElementTraversal::DescendantsOf(*document.documentElement())) {
+    const auto& id = element.FastGetAttribute(html_names::kForAttr);
+    if (!id.IsEmpty())
+      all_previously_seen_label_target_ids_.insert(id);
+
+    if (element.FastHasAttribute(html_names::kAriaOwnsAttr)) {
+      if (AXObject* obj = object_cache_->GetOrCreate(&element)) {
+        obj->ClearChildren();
+        obj->AddChildren();
+      }
+    }
+  }
+}
 
 bool AXRelationCache::IsAriaOwned(const AXObject* child) const {
   return aria_owned_child_to_owner_mapping_.Contains(child->AXObjectID());
@@ -167,14 +186,22 @@ void AXRelationCache::UpdateAriaOwns(
                                       validated_owned_child_axids);
 }
 
+bool AXRelationCache::MayHaveHTMLLabelViaForAttribute(
+    const HTMLElement& labelable) {
+  const AtomicString& id = labelable.GetIdAttribute();
+  if (id.IsEmpty())
+    return false;
+  return all_previously_seen_label_target_ids_.Contains(id);
+}
+
 // Fill source_objects with AXObjects for relations pointing to target.
 void AXRelationCache::GetReverseRelated(
     Node* target,
     HeapVector<Member<AXObject>>& source_objects) {
-  if (!target || !target->IsElementNode())
+  auto* element = DynamicTo<Element>(target);
+  if (!element)
     return;
 
-  Element* element = ToElement(target);
   if (!element->HasID())
     return;
 
@@ -222,7 +249,7 @@ void AXRelationCache::UpdateRelatedText(Node* node) {
     }
 
     // Forward relation via <label for="[id]">.
-    if (IsHTMLLabelElement(*node))
+    if (IsA<HTMLLabelElement>(*node))
       LabelChanged(node);
 
     node = node->parentNode();
@@ -260,8 +287,13 @@ void AXRelationCache::TextChanged(AXObject* object) {
 }
 
 void AXRelationCache::LabelChanged(Node* node) {
-  if (HTMLElement* control = ToHTMLLabelElement(node)->control())
-    TextChanged(Get(control));
+  const auto& id =
+      To<HTMLElement>(node)->FastGetAttribute(html_names::kForAttr);
+  if (!id.IsEmpty()) {
+    all_previously_seen_label_target_ids_.insert(id);
+    if (auto* control = To<HTMLLabelElement>(node)->control())
+      TextChanged(Get(control));
+  }
 }
 
 }  // namespace blink

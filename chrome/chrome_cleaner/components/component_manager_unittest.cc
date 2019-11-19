@@ -5,7 +5,7 @@
 #include "chrome/chrome_cleaner/components/component_manager.h"
 
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/chrome_cleaner/components/component_api.h"
 #include "chrome/chrome_cleaner/test/test_component.h"
@@ -68,7 +68,7 @@ class TestComponentManagerDelegate : public ComponentManagerDelegate {
 }  // namespace
 
 TEST(ComponentManagerTest, Empty) {
-  base::test::ScopedTaskEnvironment scoped_task_environment;
+  base::test::TaskEnvironment task_environment;
 
   TestComponentManagerDelegate::Calls calls;
   TestComponentManagerDelegate delegate(&calls);
@@ -118,7 +118,7 @@ TEST(ComponentManagerTest, Empty) {
 }
 
 TEST(ComponentManagerTest, All) {
-  base::test::ScopedTaskEnvironment scoped_task_environment;
+  base::test::TaskEnvironment task_environment;
 
   TestComponentManagerDelegate::Calls delegate_calls;
   TestComponentManagerDelegate delegate(&delegate_calls);
@@ -173,7 +173,7 @@ TEST(ComponentManagerTest, All) {
 }
 
 TEST(ComponentManagerTest, Interrupt) {
-  base::test::ScopedTaskEnvironment scoped_task_environment;
+  base::test::TaskEnvironment task_environment;
 
   TestComponentManagerDelegate::Calls delegate_calls;
   TestComponentManagerDelegate delegate(&delegate_calls);

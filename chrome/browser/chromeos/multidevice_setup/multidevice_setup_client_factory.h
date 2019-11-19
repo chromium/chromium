@@ -8,6 +8,7 @@
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
+class ChromeOSMetricsProviderTest;
 class Profile;
 
 namespace chromeos {
@@ -26,14 +27,21 @@ class MultiDeviceSetupClientFactory : public BrowserContextKeyedServiceFactory {
 
  private:
   friend struct base::DefaultSingletonTraits<MultiDeviceSetupClientFactory>;
+  friend class ::ChromeOSMetricsProviderTest;
 
   MultiDeviceSetupClientFactory();
   ~MultiDeviceSetupClientFactory() override;
+
+  void SetServiceIsNULLWhileTestingForTesting(
+      bool service_is_null_while_testing) {
+    service_is_null_while_testing_ = service_is_null_while_testing;
+  }
 
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
   bool ServiceIsNULLWhileTesting() const override;
+  bool service_is_null_while_testing_ = true;
 
   DISALLOW_COPY_AND_ASSIGN(MultiDeviceSetupClientFactory);
 };

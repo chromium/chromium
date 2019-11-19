@@ -12,42 +12,48 @@ dictionary DocumentTimelineOptions {
   DOMHighResTimeStamp originTime = 0;
 };
 
-[Exposed=Window,
- Constructor (optional DocumentTimelineOptions options)]
+[Exposed=Window]
 interface DocumentTimeline : AnimationTimeline {
+  constructor(optional DocumentTimelineOptions options = {});
 };
 
-[Exposed=Window,
- Constructor (optional AnimationEffect? effect = null,
-              optional AnimationTimeline? timeline)]
+[Exposed=Window]
 interface Animation : EventTarget {
+    constructor(optional AnimationEffect? effect = null,
+                optional AnimationTimeline? timeline);
              attribute DOMString                id;
              attribute AnimationEffect?         effect;
-             attribute AnimationTimeline?       timeline;
+    readonly attribute AnimationTimeline?       timeline;
              attribute double?                  startTime;
              attribute double?                  currentTime;
              attribute double                   playbackRate;
     readonly attribute AnimationPlayState       playState;
+    readonly attribute AnimationReplaceState    replaceState;
     readonly attribute boolean                  pending;
     readonly attribute Promise<Animation>       ready;
     readonly attribute Promise<Animation>       finished;
              attribute EventHandler             onfinish;
              attribute EventHandler             oncancel;
-    void cancel ();
-    void finish ();
-    void play ();
-    void pause ();
-    void updatePlaybackRate (double playbackRate);
-    void reverse ();
+             attribute EventHandler             onremove;
+    void cancel();
+    void finish();
+    void play();
+    void pause();
+    void updatePlaybackRate(double playbackRate);
+    void reverse();
+    void persist();
+    void commitStyles();
 };
 
 enum AnimationPlayState { "idle", "running", "paused", "finished" };
+
+enum AnimationReplaceState { "active", "removed", "persisted" };
 
 [Exposed=Window]
 interface AnimationEffect {
     EffectTiming         getTiming();
     ComputedEffectTiming getComputedTiming();
-    void                 updateTiming(optional OptionalEffectTiming timing);
+    void                 updateTiming(optional OptionalEffectTiming timing = {});
 };
 
 dictionary EffectTiming {
@@ -84,17 +90,17 @@ dictionary ComputedEffectTiming : EffectTiming {
     unrestricted double? currentIteration;
 };
 
-[Exposed=Window,
- Constructor ((Element or CSSPseudoElement)? target,
-              object? keyframes,
-              optional (unrestricted double or KeyframeEffectOptions) options),
- Constructor (KeyframeEffect source)]
+[Exposed=Window]
 interface KeyframeEffect : AnimationEffect {
-    attribute (Element or CSSPseudoElement)? target;
-    attribute IterationCompositeOperation    iterationComposite;
+    constructor(Element? target,
+                object? keyframes,
+                optional (unrestricted double or KeyframeEffectOptions) options = {});
+    constructor(KeyframeEffect source);
+    attribute Element? target;
+    attribute CSSOMString? pseudoElement;
     attribute CompositeOperation             composite;
-    sequence<object> getKeyframes ();
-    void             setKeyframes (object? keyframes);
+    sequence<object> getKeyframes();
+    void             setKeyframes(object? keyframes);
 };
 
 dictionary BaseComputedKeyframe {
@@ -117,37 +123,41 @@ dictionary BaseKeyframe {
 };
 
 dictionary KeyframeEffectOptions : EffectTiming {
-    IterationCompositeOperation iterationComposite = "replace";
-    CompositeOperation          composite = "replace";
+    CompositeOperation composite = "replace";
+    CSSOMString?       pseudoElement = null;
 };
 
-enum IterationCompositeOperation {"replace", "accumulate"};
+enum CompositeOperation { "replace", "add", "accumulate" };
 
-enum CompositeOperation {"replace", "add", "accumulate"};
-
-enum CompositeOperationOrAuto {"replace", "add", "accumulate", "auto"};
+enum CompositeOperationOrAuto { "replace", "add", "accumulate", "auto" };
 
 interface mixin Animatable {
-    Animation           animate (object? keyframes,
-                                 optional (unrestricted double or KeyframeAnimationOptions) options);
-    sequence<Animation> getAnimations ();
+    Animation           animate(object? keyframes,
+                                optional (unrestricted double or KeyframeAnimationOptions) options = {});
+    sequence<Animation> getAnimations(optional GetAnimationsOptions options = {});
 };
+
 dictionary KeyframeAnimationOptions : KeyframeEffectOptions {
     DOMString id = "";
 };
 
+dictionary GetAnimationsOptions {
+    boolean subtree = false;
+};
+
 partial interface Document {
     readonly attribute DocumentTimeline timeline;
+};
+
+partial interface mixin DocumentOrShadowRoot {
     sequence<Animation> getAnimations();
 };
 
 Element includes Animatable;
 
-CSSPseudoElement includes Animatable;
-
-[Exposed=Window,
- Constructor (DOMString type, optional AnimationPlaybackEventInit eventInitDict)]
+[Exposed=Window]
 interface AnimationPlaybackEvent : Event {
+    constructor(DOMString type, optional AnimationPlaybackEventInit eventInitDict = {});
     readonly attribute double? currentTime;
     readonly attribute double? timelineTime;
 };

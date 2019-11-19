@@ -70,20 +70,12 @@ String MediaQuery::Serialize() const {
 }
 
 static bool ExpressionCompare(const MediaQueryExp& a, const MediaQueryExp& b) {
-  return CodePointCompare(a.Serialize(), b.Serialize()) < 0;
+  return CodeUnitCompare(a.Serialize(), b.Serialize()) < 0;
 }
 
 std::unique_ptr<MediaQuery> MediaQuery::CreateNotAll() {
   return std::make_unique<MediaQuery>(MediaQuery::kNot, media_type_names::kAll,
                                       ExpressionHeapVector());
-}
-
-std::unique_ptr<MediaQuery> MediaQuery::Create(
-    RestrictorType restrictor,
-    String media_type,
-    ExpressionHeapVector expressions) {
-  return std::make_unique<MediaQuery>(restrictor, std::move(media_type),
-                                      std::move(expressions));
 }
 
 MediaQuery::MediaQuery(RestrictorType restrictor,

@@ -1,0 +1,285 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
+<link rel="import" href="chrome://resources/cr_elements/icons.html">
+<link rel="import" href="chrome://resources/html/assert.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-collapse/iron-collapse.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-selector/iron-selector.html">
+<!-- TODO(crbug.com/986596): Don't use browser icons here. Fork them. -->
+<link rel="import" href="../../icons.html">
+<link rel="import" href="../../route.html">
+<link rel="import" href="../../settings_shared_css.html">
+<link rel="import" href="../os_icons.html">
+
+<dom-module id="os-settings-menu">
+  <template>
+    <style include="settings-shared">
+      :host {
+        --menu-link-color: var(--cros-default-button-color);
+        --menu-text-color: var(--cros-default-text-color-secondary);
+        --menu-icon-color: var(--cros-default-text-color-secondary);
+        /* The tap target extends slightly above each visible menu item. */
+        --tap-target-padding: 3px;
+        /* Width of the keyboard focus border. */
+        --focus-border-width: 1px;
+        box-sizing: border-box;
+        display: block;
+        padding-bottom: 2px;
+        padding-top: 8px;
+      }
+
+      :host * {
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      /* Override --cr-selectable-focus mixin. */
+      [selectable]:focus,
+      [selectable] > :focus {
+        background-color: transparent;
+      }
+
+      /* The <a> is the entire tap target, including the padding around the
+       * visible icon and text. */
+      a {
+        background: transparent;
+        display: block;
+        padding: var(--tap-target-padding) 0;
+      }
+
+      /* The "item" draws the icon, text, and rounded background. */
+      a > .item {
+        align-items: center;
+        border-block-end-width: var(--focus-border-width);
+        border-block-start-width: var(--focus-border-width);
+        /* Always apply border so item doesn't shift when focused. */
+        border-color: transparent;
+        border-inline-end-width: var(--focus-border-width);
+        /* No border on window edge (left in LTR, right in RTL). */
+        border-inline-start-width: 0;
+        border-radius: 0 20px 20px 0;
+        border-style: solid;
+        color: var(--menu-text-color);
+        display: flex;
+        font-weight: 500;
+        margin-inline-end: 2px;
+        min-height: 32px;
+        padding-inline-start: 20px;
+        pointer-events: none;
+      }
+
+      :host-context([dir=rtl]) a > .item {
+        /* Chrome doesn't support border-start-end-radius, so override. */
+        border-radius: 20px 0 0 20px;
+      }
+
+      a.iron-selected > .item {
+        background-color: var(--cros-menu-button-bg-color-active);
+        color: var(--menu-link-color);
+      }
+
+      :host-context(.focus-outline-visible) a:focus > .item {
+        border-color: var(--cros-menu-button-outline-color-focused);
+      }
+
+      a:hover:not(.iron-selected) > .item {
+        background-color: var(--cros-menu-button-bg-color-hover);
+      }
+
+      iron-icon {
+        --iron-icon-fill-color: var(--menu-icon-color);
+        margin-inline-end: 16px;
+        pointer-events: none;
+        vertical-align: top;
+      }
+
+      a.iron-selected > .item > iron-icon {
+        fill: var(--menu-link-color);
+      }
+
+      #advancedButton {
+        --ink-color: var(--menu-text-color);
+        align-items: center;
+        background: none;
+        border: none;
+        border-radius: initial;
+        box-shadow: none;
+        color: var(--menu-text-color);
+        display: flex;
+        font-weight: 500;
+        height: unset;
+        margin-inline-end: 2px;
+        margin-top: 8px;
+        padding-inline-end: 0;
+        padding-inline-start: 20px;
+        text-transform: none;
+      }
+
+      #advancedButton:focus {
+        outline: none;
+      }
+
+      :host-context(.focus-outline-visible) #advancedButton:focus {
+        outline: auto 5px -webkit-focus-ring-color;
+      }
+
+      #advancedButton > span {
+        flex: 1;
+      }
+
+      #advancedButton > iron-icon {
+        @apply --cr-icon-height-width;
+        margin-inline-end: 14px;  /* 16px - 2px from margin for outline. */
+      }
+
+      #menuSeparator {
+        /* Per bettes@, this is different from the other separator lines. */
+        border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+        margin-bottom: 8px;
+        margin-top: 8px;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        #menuSeparator {
+          border-bottom: var(--cr-separator-line);  /* override */
+        }
+      }
+
+      #aboutItem {
+        /* Reserve space so the last menu item isn't too close to the window
+         * bottom edge, 48px under the text baseline. */
+        margin-bottom: calc(
+            48px - calc(var(--tap-target-padding) + var(--focus-border-width)));
+      }
+    </style>
+    <iron-selector id="topMenu"
+        attr-for-selected="href" on-iron-activate="onSelectorActivate_"
+        selectable="a"
+        role="navigation" on-click="onLinkClick_">
+      <a href="/internet">
+        <div class="item">
+          <iron-icon icon="os-settings:network-wifi"></iron-icon>
+          $i18n{internetPageTitle}
+        </div>
+      </a>
+      <a href="/bluetooth">
+        <div class="item">
+          <iron-icon icon="cr:bluetooth"></iron-icon>
+          $i18n{bluetoothPageTitle}
+        </div>
+      </a>
+      <a id="multidevice" href="/multidevice"
+          hidden="[[isGuestMode_]]">
+        <div class="item">
+          <iron-icon icon="os-settings:multidevice-better-together-suite">
+          </iron-icon>
+          $i18n{multidevicePageTitle}
+        </div>
+      </a>
+      <a id="people" href="/people" hidden="[[isGuestMode_]]">
+        <div class="item">
+          <iron-icon icon="cr:person"></iron-icon>
+          $i18n{peoplePageTitle}
+        </div>
+      </a>
+      <a href="/device">
+        <div class="item">
+          <iron-icon icon="os-settings:laptop-chromebook"></iron-icon>
+          $i18n{devicePageTitle}
+        </div>
+      </a>
+      <a id="personalization" href="/personalization"
+          hidden="[[isGuestMode_]]">
+        <div class="item">
+          <iron-icon icon="os-settings:paint-brush"></iron-icon>
+          $i18n{personalizationPageTitle}
+        </div>
+      </a>
+      <a href="/search">
+        <div class="item">
+          <iron-icon icon="cr:search"></iron-icon>
+          $i18n{osSearchPageTitle}
+        </div>
+      </a>
+      <a href="/apps" hidden="[[!showApps]]">
+        <div class="item">
+          <iron-icon icon="os-settings:apps"></iron-icon>
+          $i18n{appsPageTitle}
+        </div>
+      </a>
+      <a href="/crostini" hidden="[[!showCrostini]]">
+        <div class="item">
+          <iron-icon icon="os-settings:crostini-mascot"></iron-icon>
+          $i18n{crostiniPageTitle}
+        </div>
+      </a>
+      <a href="/pluginVm" hidden="[[!showPluginVm]]">
+        <div class="item">
+          <iron-icon icon="os-settings:plugin-vm"></iron-icon>
+          $i18n{pluginVmPageTitle}
+        </div>
+      </a>
+      <cr-button id="advancedButton"
+          aria-expanded$="[[boolToString_(advancedOpened)]]"
+          on-click="onAdvancedButtonToggle_">
+        <span>$i18n{advancedPageTitle}</span>
+        <iron-icon icon="[[arrowState_(advancedOpened)]]">
+        </iron-icon>
+      </cr-button>
+      <iron-collapse id="advancedSubmenu" opened="[[advancedOpened]]">
+        <iron-selector id="subMenu" selectable="a" attr-for-selected="href"
+            role="navigation" on-click="onLinkClick_">
+          <a href="/dateTime">
+            <div class="item">
+              <iron-icon icon="os-settings:access-time"></iron-icon>
+              $i18n{dateTimePageTitle}
+            </div>
+          </a>
+          <a href="/privacy">
+            <div class="item">
+              <iron-icon icon="cr:security"></iron-icon>
+              $i18n{privacyPageTitle}
+            </div>
+          </a>
+          <a href="/languages">
+            <div class="item">
+              <iron-icon icon="settings:language"></iron-icon>
+              $i18n{osLanguagesPageTitle}
+            </div>
+          </a>
+          <a href="/files" hidden="[[isGuestMode_]]">
+            <div class="item">
+              <iron-icon icon="os-settings:folder-outline"></iron-icon>
+              $i18n{filesPageTitle}
+            </div>
+          </a>
+          <a href="/printing">
+            <div class="item">
+              <iron-icon icon="cr:print"></iron-icon>
+              $i18n{printingPageTitle}
+            </div>
+          </a>
+          <a href="/accessibility">
+            <div class="item">
+              <iron-icon icon="settings:accessibility"></iron-icon>
+              $i18n{a11yPageTitle}
+            </div>
+          </a>
+          <a id="reset" href="/reset" hidden="[[!showReset]]">
+            <div class="item">
+              <iron-icon icon="settings:restore"></iron-icon>
+              $i18n{resetPageTitle}
+            </div>
+          </a>
+        </iron-selector>
+      </iron-collapse>
+      <div id="menuSeparator"></div>
+      <a id="aboutItem" href="/help">
+        <div class="item">
+          $i18n{aboutOsPageTitle}
+        </div>
+      </a>
+    </iron-selector>
+  </template>
+  <script src="os_settings_menu.js"></script>
+</dom-module>

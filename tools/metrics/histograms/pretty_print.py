@@ -18,20 +18,19 @@ import logging
 import os
 import shutil
 import sys
-import xml.dom.minidom
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'common'))
 import diff_util
 import presubmit_util
 
+import etree_util
 import histograms_print_style
-
 
 class Error(Exception):
   pass
 
-
 UNIT_REWRITES = {
+  'mcs': 'microseconds',
   'microsecond': 'microseconds',
   'us': 'microseconds',
   'millisecond': 'ms',
@@ -49,34 +48,48 @@ UNIT_REWRITES = {
   'percentage': '%',
 }
 
-
 def canonicalizeUnits(tree):
   """Canonicalize the spelling of certain units in histograms."""
-  histograms = tree.getElementsByTagName('histogram')
-  for histogram in histograms:
-    units = histogram.attributes.get('units')
-    if units and units.value in UNIT_REWRITES:
-      histogram.attributes['units'] = UNIT_REWRITES[units.value]
+  if tree.tag == 'histogram':
+    units = tree.get('units')
+    if units and units in UNIT_REWRITES:
+      tree.set('units', UNIT_REWRITES[units])
 
+  for child in tree:
+    canonicalizeUnits(child)
 
 def fixObsoleteOrder(tree):
   """Put obsolete tags at the beginning of histogram tags."""
-  histograms = tree.getElementsByTagName('histogram')
-  for histogram in histograms:
-    obsoletes = histogram.getElementsByTagName('obsolete')
-    if obsoletes:
-      histogram.insertBefore(obsoletes[0], histogram.firstChild)
+  obsoletes = []
 
+  for child in tree:
+    if child.tag == 'obsolete':
+      obsoletes.append(child)
+    else:
+      fixObsoleteOrder(child)
+
+  for obsolete in obsoletes:
+    tree.remove(obsolete)
+
+  # Only keep the first obsolete tag.
+  if obsoletes:
+    tree.insert(0, obsoletes[0])
 
 def DropNodesByTagName(tree, tag):
   """Drop all nodes with named tag from the XML tree."""
-  nodes = tree.getElementsByTagName(tag)
-  for node in nodes:
-    node.parentNode.removeChild(node)
+  removes = []
 
+  for child in tree:
+    if child.tag == tag:
+      removes.append(child)
+    else:
+      DropNodesByTagName(child, tag)
+
+  for child in removes:
+    tree.remove(child)
 
 def PrettyPrintHistograms(raw_xml):
-  """Pretty-print the given XML.
+  """Pretty-print the given histograms XML.
 
   Args:
     raw_xml: The contents of the histograms XML file, as a string.
@@ -84,43 +97,48 @@ def PrettyPrintHistograms(raw_xml):
   Returns:
     The pretty-printed version.
   """
-  tree = xml.dom.minidom.parseString(raw_xml)
-  return PrettyPrintHistogramsTree(tree)
-
+  top_level_content = etree_util.GetTopLevelContent(raw_xml)
+  root = etree_util.ParseXMLString(raw_xml)
+  return top_level_content + PrettyPrintHistogramsTree(root)
 
 def PrettyPrintHistogramsTree(tree):
-  """Pretty-print the given xml.dom.minidom.Document object.
+  """Pretty-print the given ElementTree element.
 
   Args:
-    tree: The xml.dom.minidom.Document object.
+    tree: The ElementTree element.
 
   Returns:
     The pretty-printed version as an XML string.
   """
-  assert isinstance(tree, xml.dom.minidom.Document)
   # Prevent accidentally adding enums to histograms.xml
   DropNodesByTagName(tree, 'enums')
   canonicalizeUnits(tree)
   fixObsoleteOrder(tree)
   return histograms_print_style.GetPrintStyle().PrettyPrintXml(tree)
 
-
 def PrettyPrintEnums(raw_xml):
-  """Pretty print the enums.xml file."""
-  tree = xml.dom.minidom.parseString(raw_xml)
-  # Prevent accidentally adding histograms to enums.xml
-  DropNodesByTagName(tree, 'histograms')
-  DropNodesByTagName(tree, 'histogram_suffixes_list')
-  return histograms_print_style.GetPrintStyle().PrettyPrintXml(tree)
+  """Pretty print the given enums XML."""
 
+  root = etree_util.ParseXMLString(raw_xml)
+
+  # Prevent accidentally adding histograms to enums.xml
+  DropNodesByTagName(root, 'histograms')
+  DropNodesByTagName(root, 'histogram_suffixes_list')
+
+  top_level_content = etree_util.GetTopLevelContent(raw_xml)
+
+  formatted_xml = (histograms_print_style.GetPrintStyle()
+                  .PrettyPrintXml(root))
+  return top_level_content + formatted_xml
 
 def main():
   status1 = presubmit_util.DoPresubmit(sys.argv, 'enums.xml',
                                        'enums.before.pretty-print.xml',
                                        'pretty_print.py', PrettyPrintEnums)
   status2 = presubmit_util.DoPresubmit(sys.argv, 'histograms.xml',
-                                       'histograms.before.pretty-print.xml',
-                                       'pretty_print.py', PrettyPrintHistograms)
+                                        'histograms.before.pretty-print.xml',
+                                        'pretty_print.py',
+                                        PrettyPrintHistograms)
   sys.exit(status1 or status2)
 
 if __name__ == '__main__':

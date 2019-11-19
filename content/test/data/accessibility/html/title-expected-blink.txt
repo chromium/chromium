@@ -1,1 +1,2 @@
 rootWebArea name='Title of the document'
+++genericContainer ignored

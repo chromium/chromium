@@ -5,4 +5,3 @@ main_dex_list.py
 util/__init__.py
 util/build_utils.py
 util/md5_check.py
-util/proguard_util.py

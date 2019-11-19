@@ -11,7 +11,7 @@
 namespace bluetooth {
 DiscoverySession::DiscoverySession(
     std::unique_ptr<device::BluetoothDiscoverySession> session)
-    : discovery_session_(std::move(session)), weak_ptr_factory_(this) {}
+    : discovery_session_(std::move(session)) {}
 
 DiscoverySession::~DiscoverySession() = default;
 

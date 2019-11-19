@@ -26,6 +26,7 @@ source_set("interstitials") {
     "//ios/chrome/browser/ui/util",
     "//ios/web",
     "//ios/web/public",
+    "//ios/web/public/security",
     "//ui/base",
     "//url",
   ]

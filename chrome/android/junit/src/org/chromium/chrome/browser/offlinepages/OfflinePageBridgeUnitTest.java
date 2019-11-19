@@ -8,16 +8,19 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -27,6 +30,7 @@ import org.robolectric.shadows.multidex.ShadowMultiDex;
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge.OfflinePageModelObserver;
 
 import java.util.ArrayList;
@@ -74,6 +78,12 @@ public class OfflinePageBridgeUnitTest {
     @Captor
     ArgumentCaptor<Callback<Integer>> mDeleteCallbackArgument;
 
+    @Rule
+    public JniMocker mocker = new JniMocker();
+
+    @Mock
+    OfflinePageBridge.Natives mOfflinePageBridgeJniMock;
+
     /**
      * Mocks the observer.
      */
@@ -89,8 +99,9 @@ public class OfflinePageBridgeUnitTest {
     }
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         MockitoAnnotations.initMocks(this);
+        mocker.mock(OfflinePageBridgeJni.TEST_HOOKS, mOfflinePageBridgeJniMock);
         OfflinePageBridge bridge = new OfflinePageBridge(0);
         // Using the spy to automatically marshal all the calls to the original methods if they are
         // not mocked explicitly.
@@ -310,8 +321,10 @@ public class OfflinePageBridgeUnitTest {
                 return null;
             }
         };
-        doAnswer(answer).when(mBridge).nativeGetAllPages(
-                anyLong(), mResultArgument.capture(), mCallbackArgument.capture());
+        doAnswer(answer)
+                .when(mOfflinePageBridgeJniMock)
+                .getAllPages(anyLong(), eq(mBridge), mResultArgument.capture(),
+                        mCallbackArgument.capture());
     }
 
     private void answerGetPagesByClientIds(final int itemCount) {
@@ -335,9 +348,11 @@ public class OfflinePageBridgeUnitTest {
             }
         };
 
-        doAnswer(answer).when(mBridge).nativeGetPagesByClientId(anyLong(),
-                mResultArgument.capture(), mNamespacesArgument.capture(), mIdsArgument.capture(),
-                mCallbackArgument.capture());
+        doAnswer(answer)
+                .when(mOfflinePageBridgeJniMock)
+                .getPagesByClientId(anyLong(), eq(mBridge), mResultArgument.capture(),
+                        mNamespacesArgument.capture(), mIdsArgument.capture(),
+                        mCallbackArgument.capture());
     }
 
     private void answerDeletePagesByOfflineIds(final int itemCount) {
@@ -357,8 +372,10 @@ public class OfflinePageBridgeUnitTest {
             }
         };
 
-        doAnswer(answer).when(mBridge).nativeDeletePagesByOfflineId(
-                anyLong(), mOfflineIdsArgument.capture(), mDeleteCallbackArgument.capture());
+        doAnswer(answer)
+                .when(mOfflinePageBridgeJniMock)
+                .deletePagesByOfflineId(anyLong(), eq(mBridge), mOfflineIdsArgument.capture(),
+                        mDeleteCallbackArgument.capture());
     }
 
     private void answerDeletePagesByClientIds(final int itemCount) {
@@ -377,8 +394,9 @@ public class OfflinePageBridgeUnitTest {
             }
         };
 
-        doAnswer(answer).when(mBridge).nativeDeletePagesByClientId(anyLong(),
-                mNamespacesArgument.capture(), mIdsArgument.capture(),
-                mDeleteCallbackArgument.capture());
+        doAnswer(answer)
+                .when(mOfflinePageBridgeJniMock)
+                .deletePagesByClientId(anyLong(), eq(mBridge), mNamespacesArgument.capture(),
+                        mIdsArgument.capture(), mDeleteCallbackArgument.capture());
     }
 }

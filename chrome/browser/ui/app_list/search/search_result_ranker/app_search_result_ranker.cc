@@ -92,11 +92,14 @@ std::unique_ptr<AppLaunchPredictor> LoadPredictorFromDiskOnWorkerThread(
 AppSearchResultRanker::AppSearchResultRanker(const base::FilePath& profile_path,
                                              bool is_ephemeral_user)
     : predictor_filename_(
-          profile_path.AppendASCII(kAppLaunchPredictorFilename)),
-      weak_factory_(this) {
-  if (!app_list_features::IsAppSearchResultRankerEnabled())
+          profile_path.AppendASCII(kAppLaunchPredictorFilename)) {
+  if (!app_list_features::IsZeroStateAppsRankerEnabled()) {
+    LOG(ERROR) << "AppSearchResultRanker: ZeroStateAppsRanker is not enabled.";
     return;
-
+  }
+  // TODO(charleszhao): remove these logs once the test review is done.
+  LOG(ERROR) << "AppSearchResultRanker::AppSearchResultRankerPredictorName "
+             << app_list_features::AppSearchResultRankerPredictorName();
   predictor_ =
       CreatePredictor(app_list_features::AppSearchResultRankerPredictorName());
 
@@ -113,8 +116,8 @@ AppSearchResultRanker::AppSearchResultRanker(const base::FilePath& profile_path,
   if (is_ephemeral_user)
     return;
 
-  task_runner_ = base::CreateSequencedTaskRunnerWithTraits(
-      {base::TaskPriority::BEST_EFFORT, base::MayBlock(),
+  task_runner_ = base::CreateSequencedTaskRunner(
+      {base::ThreadPool(), base::TaskPriority::BEST_EFFORT, base::MayBlock(),
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
 
   // Loads the predictor from disk asynchronously.
@@ -156,6 +159,8 @@ void AppSearchResultRanker::OnLoadFromDiskComplete(
     predictor_.swap(predictor);
   }
   load_from_disk_completed_ = true;
+  LOG(ERROR) << "AppSearchResultRanker::OnLoadFromDiskComplete "
+             << predictor_->GetPredictorName();
 }
 
 }  // namespace app_list

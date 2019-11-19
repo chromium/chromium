@@ -36,17 +36,12 @@
 
 namespace blink {
 
-using namespace html_names;
-
-InputType* TextInputType::Create(HTMLInputElement& element) {
-  return MakeGarbageCollected<TextInputType>(element);
-}
-
 void TextInputType::CountUsage() {
   CountUsageIfVisible(WebFeature::kInputTypeText);
-  if (GetElement().FastHasAttribute(kMaxlengthAttr))
+  if (GetElement().FastHasAttribute(html_names::kMaxlengthAttr))
     CountUsageIfVisible(WebFeature::kInputTypeTextMaxLength);
-  const AtomicString& type = GetElement().FastGetAttribute(kTypeAttr);
+  const AtomicString& type =
+      GetElement().FastGetAttribute(html_names::kTypeAttr);
   if (DeprecatedEqualIgnoringCase(type, input_type_names::kDatetime))
     CountUsageIfVisible(WebFeature::kInputTypeDateTimeFallback);
   else if (DeprecatedEqualIgnoringCase(type, input_type_names::kWeek))

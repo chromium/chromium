@@ -17,10 +17,10 @@ import json
 import logging
 import re
 
-from blinkpy.common.net.buildbot import current_build_link
 from blinkpy.common.net.git_cl import GitCL
 from blinkpy.common.net.network_transaction import NetworkTimeout
 from blinkpy.common.path_finder import PathFinder
+from blinkpy.common.system.executive import ScriptError
 from blinkpy.common.system.log_utils import configure_logging
 from blinkpy.w3c.chromium_exportable_commits import exportable_commits_over_last_n_commits
 from blinkpy.w3c.common import read_credentials, is_testharness_baseline, is_file_exportable, WPT_GH_URL
@@ -262,7 +262,14 @@ class TestImporter(object):
             return True
 
         _log.error('Cannot submit CL; aborting.')
-        self.git_cl.run(['set-close'])
+        try:
+            self.git_cl.run(['set-close'])
+        except ScriptError as e:
+            if e.output and 'Conflict: change is merged' in e.output:
+                _log.error('CL is already merged; treating as success.')
+                return True
+            else:
+                raise e
         return False
 
     def blink_try_bots(self):
@@ -385,19 +392,11 @@ class TestImporter(object):
         first ensures if upstream deletes some files, we also delete them.
         """
         _log.info('Cleaning out tests from %s.', self.dest_path)
-
-        # TODO(crbug.com/927187): Temporarily prevent the external/wpt/webdriver folder from deletion.
-        # Will delete once starting the two-way sync phase on webdriver/tests.
-        webdriver_dir_path = self.fs.join(self.dest_path, 'webdriver')
-
         should_remove = lambda fs, dirname, basename: (
             is_file_exportable(fs.relpath(fs.join(dirname, basename), self.finder.chromium_base())))
         files_to_delete = self.fs.files_under(self.dest_path, file_filter=should_remove)
         for subpath in files_to_delete:
-            remove_path = self.finder.path_from_web_tests('external', subpath)
-            if remove_path.startswith(webdriver_dir_path):
-                continue
-            self.remove(remove_path)
+            self.remove(self.finder.path_from_web_tests('external', subpath))
 
     def _commit_changes(self, commit_message):
         _log.info('Committing changes.')
@@ -502,10 +501,6 @@ class TestImporter(object):
         """
         # TODO(robertma): Add a method in Git for getting the commit body.
         description = self.chromium_git.run(['log', '-1', '--format=%B'])
-        build_link = current_build_link(self.host)
-        if build_link:
-            description += 'Build: %s\n\n' % build_link
-
         description += (
             'Note to sheriffs: This CL imports external tests and adds\n'
             'expectations for those tests; if this CL is large and causes\n'
@@ -548,6 +543,9 @@ class TestImporter(object):
             username = self._fetch_ecosystem_infra_sheriff_username()
         except (IOError, KeyError, ValueError) as error:
             _log.error('Exception while fetching current sheriff: %s', error)
+        if username in ['kyleju']:
+            _log.warning('Cannot TBR by %s: not a committer', username)
+            username = ''
         return username or TBR_FALLBACK
 
     def _fetch_ecosystem_infra_sheriff_username(self):
@@ -592,19 +590,26 @@ class TestImporter(object):
         for path, file_contents in port.all_expectations_dict().iteritems():
             parser = TestExpectationParser(port, all_tests=None, is_lint_mode=False)
             expectation_lines = parser.parse(path, file_contents)
-            self._update_single_test_expectations_file(path, expectation_lines, deleted_tests, renamed_tests)
+            self._update_single_test_expectations_file(port, path, expectation_lines, deleted_tests, renamed_tests)
 
-    def _update_single_test_expectations_file(self, path, expectation_lines, deleted_tests, renamed_tests):
+    def _update_single_test_expectations_file(self, port, path, expectation_lines, deleted_tests, renamed_tests):
         """Updates a single test expectations file."""
         # FIXME: This won't work for removed or renamed directories with test
         # expectations that are directories rather than individual tests.
         new_lines = []
         changed_lines = []
         for expectation_line in expectation_lines:
-            if expectation_line.name in deleted_tests:
+            expectation_test_name = expectation_line.name
+            if expectation_test_name and self.finder.is_webdriver_test_path(expectation_test_name):
+                expectation_test_name, subtest_suffix = port.split_webdriver_test_name(expectation_test_name)
+            if expectation_test_name in deleted_tests:
                 continue
-            if expectation_line.name in renamed_tests:
-                expectation_line.name = renamed_tests[expectation_line.name]
+            if expectation_test_name in renamed_tests:
+                if self.finder.is_webdriver_test_path(expectation_line.name):
+                    renamed_test = renamed_tests[expectation_test_name]
+                    expectation_line.name = port.add_webdriver_subtest_suffix(renamed_test, subtest_suffix)
+                else:
+                    expectation_line.name = renamed_tests[expectation_test_name]
                 # Upon parsing the file, a "path does not exist" warning is expected
                 # to be there for tests that have been renamed, and if there are warnings,
                 # then the original string is used. If the warnings are reset, then the

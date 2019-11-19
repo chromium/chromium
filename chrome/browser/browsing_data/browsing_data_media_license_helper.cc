@@ -15,10 +15,10 @@
 #include "chrome/browser/browsing_data/browsing_data_helper.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "storage/browser/fileapi/file_system_context.h"
-#include "storage/browser/fileapi/file_system_quota_util.h"
-#include "storage/browser/fileapi/plugin_private_file_system_backend.h"
-#include "storage/common/fileapi/file_system_types.h"
+#include "storage/browser/file_system/file_system_context.h"
+#include "storage/browser/file_system/file_system_quota_util.h"
+#include "storage/browser/file_system/plugin_private_file_system_backend.h"
+#include "storage/common/file_system/file_system_types.h"
 
 using content::BrowserThread;
 
@@ -112,8 +112,8 @@ void BrowsingDataMediaLicenseHelperImpl::FetchMediaLicenseInfoOnFileTaskRunner(
     result.push_back(MediaLicenseInfo(origin, size, last_modified_time));
   }
 
-  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
-                           base::BindOnce(std::move(callback), result));
+  base::PostTask(FROM_HERE, {BrowserThread::UI},
+                 base::BindOnce(std::move(callback), result));
 }
 
 void BrowsingDataMediaLicenseHelperImpl::

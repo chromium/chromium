@@ -73,9 +73,7 @@ void PassKitTabHelper::Download(std::unique_ptr<web::DownloadTask> task) {
 }
 
 void PassKitTabHelper::OnDownloadUpdated(web::DownloadTask* updated_task) {
-  auto it = std::find_if(tasks_.begin(), tasks_.end(), [=](const auto& task) {
-    return task.get() == updated_task;
-  });
+  auto it = tasks_.find(updated_task);
   DCHECK(it != tasks_.end());
 
   if (!updated_task->IsDone())

@@ -4,6 +4,8 @@
 
 package org.chromium.components.signin;
 
+import androidx.annotation.VisibleForTesting;
+
 import com.google.android.gms.auth.GoogleAuthException;
 import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.common.ConnectionResult;
@@ -13,7 +15,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.VisibleForTesting;
 
 import java.io.IOException;
 
@@ -55,7 +56,7 @@ public class AccountIdProvider {
      */
     public boolean canBeUsed() {
         // TODO(http://crbug.com/577190): Remove StrictMode override.
-        try (StrictModeContext unused = StrictModeContext.allowDiskWrites()) {
+        try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
             int resultCode = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(
                     ContextUtils.getApplicationContext());
             return resultCode == ConnectionResult.SUCCESS;

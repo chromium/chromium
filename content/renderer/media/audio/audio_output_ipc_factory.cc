@@ -25,7 +25,7 @@ AudioOutputIPCFactory::AudioOutputIPCFactory(
 
 AudioOutputIPCFactory::~AudioOutputIPCFactory() {
   // Allow destruction in tests.
-  DCHECK(factory_ptrs_.empty());
+  DCHECK(factory_remotes_.empty());
   DCHECK_EQ(instance_, this);
   instance_ = nullptr;
 }
@@ -42,16 +42,16 @@ AudioOutputIPCFactory::CreateAudioOutputIPC(int frame_id) const {
 void AudioOutputIPCFactory::RegisterRemoteFactory(
     int frame_id,
     service_manager::InterfaceProvider* interface_provider) {
-  mojom::RendererAudioOutputStreamFactoryPtr factory_ptr;
-  interface_provider->GetInterface(&factory_ptr);
-  // PassInterface unbinds the message pipe from the current thread. This
-  // allows us to bind it to the IO thread.
+  mojo::PendingRemote<mojom::RendererAudioOutputStreamFactory> factory_remote;
+  interface_provider->GetInterface(
+      factory_remote.InitWithNewPipeAndPassReceiver());
   // Unretained is safe due to the contract at the top of the header file.
+  // It's safe to pass the |factory_remote| PendingRemote between threads.
   io_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&AudioOutputIPCFactory::RegisterRemoteFactoryOnIOThread,
                      base::Unretained(this), frame_id,
-                     factory_ptr.PassInterface()));
+                     std::move(factory_remote)));
 }
 
 void AudioOutputIPCFactory::MaybeDeregisterRemoteFactory(int frame_id) {
@@ -65,17 +65,17 @@ void AudioOutputIPCFactory::MaybeDeregisterRemoteFactory(int frame_id) {
 mojom::RendererAudioOutputStreamFactory*
 AudioOutputIPCFactory::GetRemoteFactory(int frame_id) const {
   DCHECK(io_task_runner_->BelongsToCurrentThread());
-  auto it = factory_ptrs_.find(frame_id);
-  return it == factory_ptrs_.end() ? nullptr : it->second.get();
+  auto it = factory_remotes_.find(frame_id);
+  return it == factory_remotes_.end() ? nullptr : it->second.get();
 }
 
 void AudioOutputIPCFactory::RegisterRemoteFactoryOnIOThread(
     int frame_id,
-    mojom::RendererAudioOutputStreamFactoryPtrInfo factory_ptr_info) {
+    mojo::PendingRemote<mojom::RendererAudioOutputStreamFactory>
+        factory_pending_remote) {
   DCHECK(io_task_runner_->BelongsToCurrentThread());
   std::pair<StreamFactoryMap::iterator, bool> emplace_result =
-      factory_ptrs_.emplace(frame_id,
-                            mojo::MakeProxy(std::move(factory_ptr_info)));
+      factory_remotes_.emplace(frame_id, std::move(factory_pending_remote));
 
   DCHECK(emplace_result.second) << "Attempt to register a factory for a "
                                    "frame which already has a factory "
@@ -85,9 +85,9 @@ void AudioOutputIPCFactory::RegisterRemoteFactoryOnIOThread(
   DCHECK(emplaced_factory.is_bound())
       << "Factory is not bound to a remote implementation.";
 
-  // Unretained is safe because |this| owns the binding, so a connection error
+  // Unretained is safe because |this| owns the remote, so a connection error
   // cannot trigger after destruction.
-  emplaced_factory.set_connection_error_handler(base::BindOnce(
+  emplaced_factory.set_disconnect_handler(base::BindOnce(
       &AudioOutputIPCFactory::MaybeDeregisterRemoteFactoryOnIOThread,
       base::Unretained(this), frame_id));
 }
@@ -96,10 +96,10 @@ void AudioOutputIPCFactory::MaybeDeregisterRemoteFactoryOnIOThread(
     int frame_id) {
   DCHECK(io_task_runner_->BelongsToCurrentThread());
   // This function can be called both by the frame and the connection error
-  // handler of the factory pointer. Calling erase multiple times even though
+  // handler of the factory remote. Calling erase multiple times even though
   // there is nothing to erase is safe, so we don't have to handle this in any
   // particular way.
-  factory_ptrs_.erase(frame_id);
+  factory_remotes_.erase(frame_id);
 }
 
 }  // namespace content

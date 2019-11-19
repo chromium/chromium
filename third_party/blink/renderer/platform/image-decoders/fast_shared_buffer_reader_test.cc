@@ -145,9 +145,9 @@ TEST(FastSharedBufferReaderTest, readAllOverlappingLastSegmentBoundary) {
   SegmentReaders reader_struct(data);
   for (auto segment_reader : reader_struct.segment_readers) {
     FastSharedBufferReader reader(segment_reader);
-    char buffer[kDataSize];
-    reader.GetConsecutiveData(0, kDataSize, buffer);
-    ASSERT_FALSE(memcmp(buffer, reference_data, kDataSize));
+    char buffer[kDataSize] = {};
+    const char* result = reader.GetConsecutiveData(0, kDataSize, buffer);
+    ASSERT_FALSE(memcmp(result, reference_data, kDataSize));
   }
 }
 

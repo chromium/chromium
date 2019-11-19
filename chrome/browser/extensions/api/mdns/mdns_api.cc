@@ -156,12 +156,11 @@ void MDnsAPI::OnDnsSdEvent(const std::string& service_type,
       // the wiser.  Instead, changing the event to pass the number of
       // discovered instances would allow the caller to know when the list is
       // truncated and tell the user something meaningful in the extension/app.
-      WriteToConsole(service_type,
-                     content::CONSOLE_MESSAGE_LEVEL_WARNING,
-                     base::StringPrintf(
-                         "Truncating number of service instances in "
-                         "onServiceList to maximum allowed: %d",
-                         api::mdns::MAX_SERVICE_INSTANCES_PER_EVENT));
+      WriteToConsole(
+          service_type, blink::mojom::ConsoleMessageLevel::kWarning,
+          base::StringPrintf("Truncating number of service instances in "
+                             "onServiceList to maximum allowed: %d",
+                             api::mdns::MAX_SERVICE_INSTANCES_PER_EVENT));
       break;
     }
     mdns::MDnsService mdns_service;
@@ -232,7 +231,7 @@ void MDnsAPI::GetValidOnServiceListListeners(
 }
 
 void MDnsAPI::WriteToConsole(const std::string& service_type,
-                             content::ConsoleMessageLevel level,
+                             blink::mojom::ConsoleMessageLevel level,
                              const std::string& message) {
   // Get all the extensions with an onServiceList listener for a particular
   // service type.

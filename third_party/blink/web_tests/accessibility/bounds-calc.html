@@ -102,7 +102,7 @@ function assertHasTransform(id, expected) {
     assert_equals(axObject.hasNonIdentityTransform(), expected, id + " hasNonIdentityTransform");
 }
 
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     assertDOMRectSameAsAXRect("input");
     assertDOMRectSameAsAXRect("checkbox");
     assertDOMRectSameAsAXRect("radio");
@@ -146,7 +146,7 @@ test_after_layout_and_paint(function(t) {
 </div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     assertHasTransform("container2", false);
 
     assertHasTransform("div2", false);
@@ -163,17 +163,18 @@ test_after_layout_and_paint(function(t) {
 </div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+async_test(function(t) {
     document.getElementById("container3").scrollTop = 200;
+    runAfterLayoutAndPaint(t.step_func_done(() => {
+        assertHasTransform("container3", false);
 
-    assertHasTransform("container3", false);
-
-    assertHasTransform("div3", false);
-    assertDOMRectSameAsAXRect("div3");
-    assertOffsetContainerIs("div3", "container3");
-    assertHasTransform("input3", false);
-    assertDOMRectSameAsAXRect("input3");
-    assertOffsetContainerIs("input3", "container3");
+        assertHasTransform("div3", false);
+        assertDOMRectSameAsAXRect("div3");
+        assertOffsetContainerIs("div3", "container3");
+        assertHasTransform("input3", false);
+        assertDOMRectSameAsAXRect("input3");
+        assertOffsetContainerIs("input3", "container3");
+    }));
 }, "Test objects inside of scrolled container");
 </script>
 
@@ -182,7 +183,7 @@ test_after_layout_and_paint(function(t) {
 </div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     assertHasTransform("container4", true);
 
     assertHasTransform("div4", false);
@@ -204,9 +205,11 @@ test_after_layout_and_paint(function(t) {
 </div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+async_test(function(t) {
     document.getElementById("scroll5").scrollTop = 40;
-    assertDOMRectSameAsAXRect("div5");
+    runAfterLayoutAndPaint(t.step_func_done(() => {
+      assertDOMRectSameAsAXRect("div5");
+    }));
 }, "Test object inside of several nested containers with transforms and scrolling.");
 </script>
 
@@ -223,7 +226,7 @@ test_after_layout_and_paint(function(t) {
 </div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     // This test uses aria-owns to rearrange children between ancestors,
     // to ensure that an object's offset container is not a node that's an
     // ancestor in the accessibility tree but not in the layout tree.
@@ -256,7 +259,7 @@ test_after_layout_and_paint(function(t) {
 </div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     assertHasTransform("container7", false);
     assertHasTransform("span7", false);
     assertDOMRectSameAsAXRect("span7");
@@ -269,7 +272,7 @@ test_after_layout_and_paint(function(t) {
 </div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     assertStaticTextChildDOMRectSameAsAXRect("span8", 0);
 }, "Test node that's inline and relative-positioned");
 </script>

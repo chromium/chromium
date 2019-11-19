@@ -544,7 +544,7 @@ TEST_F(SecureChannelForegroundEidGeneratorTest,
       GenerateFakeAdvertisement(kSecondSeed, kDefaultCurrentPeriodStart,
                                 kDefaultAdvertisingDevicePublicKey);
 
-  std::string device_id = multidevice::RemoteDeviceRef::GenerateDeviceId(
+  std::string device_id = multidevice::RemoteDevice::GenerateDeviceId(
       kDefaultAdvertisingDevicePublicKey);
   std::vector<std::string> device_id_list = {device_id};
   std::string identified_device_id =
@@ -566,7 +566,7 @@ TEST_F(SecureChannelForegroundEidGeneratorTest,
   service_data.append(
       1, static_cast<char>(ForegroundEidGenerator::kBluetooth4Flag));
 
-  std::string device_id = multidevice::RemoteDeviceRef::GenerateDeviceId(
+  std::string device_id = multidevice::RemoteDevice::GenerateDeviceId(
       kDefaultAdvertisingDevicePublicKey);
   std::vector<std::string> device_id_list = {device_id};
   std::string identified_device_id =
@@ -587,7 +587,7 @@ TEST_F(SecureChannelForegroundEidGeneratorTest,
   // after the first 4 bytes.
   service_data.append("extra_flag_bytes");
 
-  std::string device_id = multidevice::RemoteDeviceRef::GenerateDeviceId(
+  std::string device_id = multidevice::RemoteDevice::GenerateDeviceId(
       kDefaultAdvertisingDevicePublicKey);
   std::vector<std::string> device_id_list = {device_id};
   std::string identified_device_id =
@@ -619,7 +619,7 @@ TEST_F(SecureChannelForegroundEidGeneratorTest,
       GenerateFakeAdvertisement(kSecondSeed, kDefaultCurrentPeriodStart,
                                 kDefaultAdvertisingDevicePublicKey);
 
-  std::string device_id = multidevice::RemoteDeviceRef::GenerateDeviceId(
+  std::string device_id = multidevice::RemoteDevice::GenerateDeviceId(
       kDefaultAdvertisingDevicePublicKey);
   std::vector<std::string> device_id_list = {device_id, "wrongDeviceId"};
   std::string identified_device_id =

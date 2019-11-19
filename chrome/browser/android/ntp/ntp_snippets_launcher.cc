@@ -4,8 +4,8 @@
 
 #include "chrome/browser/android/ntp/ntp_snippets_launcher.h"
 
+#include "chrome/android/chrome_jni_headers/SnippetsLauncher_jni.h"
 #include "content/public/browser/browser_thread.h"
-#include "jni/SnippetsLauncher_jni.h"
 
 using content::BrowserThread;
 

@@ -14,12 +14,13 @@ import android.widget.TextView;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.StateChangeReason;
 import org.chromium.chrome.browser.dom_distiller.ReaderModeManager;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.widget.accessibility.AccessibleTextView;
+import org.chromium.chrome.browser.ui.widget.text.AccessibleTextView;
 
 /**
  * This is the InfoBar implementation of the Reader Mode UI. This is used in place of the
@@ -44,7 +45,7 @@ public class ReaderModeInfoBar extends InfoBar {
      * Default constructor.
      */
     private ReaderModeInfoBar() {
-        super(R.drawable.infobar_mobile_friendly, null, null);
+        super(R.drawable.infobar_mobile_friendly, R.color.infobar_icon_drawable_color, null, null);
     }
 
     @Override
@@ -95,7 +96,7 @@ public class ReaderModeInfoBar extends InfoBar {
      * @param tab The tab that the {@link InfoBar} should be shown in.
      */
     public static void showReaderModeInfoBar(Tab tab) {
-        nativeCreate(tab);
+        ReaderModeInfoBarJni.get().create(tab);
     }
 
     /**
@@ -103,7 +104,7 @@ public class ReaderModeInfoBar extends InfoBar {
      */
     private ReaderModeManager getReaderModeManager() {
         if (getNativeInfoBarPtr() == 0) return null;
-        Tab tab = nativeGetTab(getNativeInfoBarPtr());
+        Tab tab = ReaderModeInfoBarJni.get().getTab(getNativeInfoBarPtr(), ReaderModeInfoBar.this);
 
         if (tab == null || tab.getActivity() == null) return null;
         return tab.getActivity().getReaderModeManager();
@@ -117,6 +118,9 @@ public class ReaderModeInfoBar extends InfoBar {
         return new ReaderModeInfoBar();
     }
 
-    private static native void nativeCreate(Tab tab);
-    private native Tab nativeGetTab(long nativeReaderModeInfoBar);
+    @NativeMethods
+    interface Natives {
+        void create(Tab tab);
+        Tab getTab(long nativeReaderModeInfoBar, ReaderModeInfoBar caller);
+    }
 }

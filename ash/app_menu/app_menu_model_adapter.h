@@ -21,7 +21,7 @@ class SimpleMenuModel;
 namespace views {
 class MenuItemView;
 class MenuRunner;
-class View;
+class Widget;
 }  // namespace views
 
 namespace ash {
@@ -32,9 +32,10 @@ class APP_MENU_EXPORT AppMenuModelAdapter : public views::MenuModelAdapter {
  public:
   AppMenuModelAdapter(const std::string& app_id,
                       std::unique_ptr<ui::SimpleMenuModel> model,
-                      views::View* menu_owner,
+                      views::Widget* widget_owner,
                       ui::MenuSourceType source_type,
-                      base::OnceClosure on_menu_closed_callback);
+                      base::OnceClosure on_menu_closed_callback,
+                      bool is_tablet_mode);
   ~AppMenuModelAdapter() override;
 
   // Builds the view tree and shows the menu.
@@ -43,8 +44,7 @@ class APP_MENU_EXPORT AppMenuModelAdapter : public views::MenuModelAdapter {
            int run_types);
   // Whether this is showing a menu.
   bool IsShowingMenu() const;
-  // Whether this is showing a menu for |view|.
-  bool IsShowingMenuForView(const views::View& view) const;
+
   // Closes the menu if one is being shown.
   void Cancel();
 
@@ -60,6 +60,7 @@ class APP_MENU_EXPORT AppMenuModelAdapter : public views::MenuModelAdapter {
   const std::string& app_id() const { return app_id_; }
   base::TimeTicks menu_open_time() const { return menu_open_time_; }
   ui::MenuSourceType source_type() const { return source_type_; }
+  bool is_tablet_mode() const { return is_tablet_mode_; }
 
   // Helper method to record ExecuteCommand() histograms.
   void RecordExecuteCommandHistogram(int command_id);
@@ -79,9 +80,8 @@ class APP_MENU_EXPORT AppMenuModelAdapter : public views::MenuModelAdapter {
   // MenuItemView, and adding NOTIFICATION_CONTAINER to the model.
   std::unique_ptr<NotificationMenuController> notification_menu_controller_;
 
-  // The view showing a context menu. This can be either a ShelfView,
-  // ShelfButton, or AppListItemView. Not owned.
-  views::View* const menu_owner_;
+  // The parent widget of the context menu.
+  views::Widget* widget_owner_;
 
   // The event type which was used to show the menu.
   const ui::MenuSourceType source_type_;
@@ -98,6 +98,9 @@ class APP_MENU_EXPORT AppMenuModelAdapter : public views::MenuModelAdapter {
 
   // The timestamp taken when the menu is opened. Used in metrics.
   base::TimeTicks menu_open_time_;
+
+  // Whether tablet mode is active.
+  bool is_tablet_mode_;
 
   DISALLOW_COPY_AND_ASSIGN(AppMenuModelAdapter);
 };

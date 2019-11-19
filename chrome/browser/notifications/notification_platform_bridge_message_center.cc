@@ -136,7 +136,7 @@ void NotificationPlatformBridgeMessageCenter::GetDisplayed(
       g_browser_process->notification_ui_manager()->GetAllIdsByProfile(
           NotificationUIManager::GetProfileID(profile_));
 
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {content::BrowserThread::UI},
       base::BindOnce(std::move(callback), std::move(displayed_notifications),
                      true /* supports_synchronization */));

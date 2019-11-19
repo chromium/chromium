@@ -32,7 +32,7 @@ constexpr base::TimeDelta kIdleTimeout = base::TimeDelta::FromSeconds(1);
 }
 
 class MockWebMediaPlayerDelegateObserver
-    : public WebMediaPlayerDelegate::Observer {
+    : public blink::WebMediaPlayerDelegate::Observer {
  public:
   MockWebMediaPlayerDelegateObserver() {}
   ~MockWebMediaPlayerDelegateObserver() {}
@@ -80,7 +80,8 @@ class RendererWebMediaPlayerDelegateTest : public content::RenderViewTest {
   }
 
   void CallOnMediaDelegatePause(int delegate_id) {
-    delegate_manager_->OnMediaDelegatePause(delegate_id);
+    delegate_manager_->OnMediaDelegatePause(delegate_id,
+                                            true /* triggered_by_user */);
   }
 
   void SetIsLowEndDeviceForTesting() {
@@ -206,7 +207,8 @@ TEST_F(RendererWebMediaPlayerDelegateTest, DeliversObserverNotifications) {
   delegate_manager_->WasShown();
 
   EXPECT_CALL(observer_1_, OnPause());
-  MediaPlayerDelegateMsg_Pause pause_msg(0, delegate_id);
+  MediaPlayerDelegateMsg_Pause pause_msg(0, delegate_id,
+                                         true /* triggered_by_user */);
   delegate_manager_->OnMessageReceived(pause_msg);
 
   EXPECT_CALL(observer_1_, OnPlay());

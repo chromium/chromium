@@ -4,7 +4,10 @@
 
 package org.chromium.net;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 
 /**
  * Class to access the GURL library from java.
@@ -20,7 +23,7 @@ public final class GURLUtils {
      * @return The origin of the url
      */
     public static String getOrigin(String url) {
-        return nativeGetOrigin(url);
+        return GURLUtilsJni.get().getOrigin(url);
     }
 
     /**
@@ -30,9 +33,13 @@ public final class GURLUtils {
      * @return The scheme of the url.
      */
     public static String getScheme(String url) {
-        return nativeGetScheme(url);
+        return GURLUtilsJni.get().getScheme(url);
     }
 
-    private static native String nativeGetOrigin(String url);
-    private static native String nativeGetScheme(String url);
+    @VisibleForTesting
+    @NativeMethods
+    public interface Natives {
+        String getOrigin(String url);
+        String getScheme(String url);
+    }
 }

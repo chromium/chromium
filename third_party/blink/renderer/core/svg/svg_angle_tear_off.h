@@ -40,12 +40,6 @@ class SVGAngleTearOff final : public SVGPropertyTearOff<SVGAngle> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static SVGAngleTearOff* Create(SVGAngle* target,
-                                 SVGAnimatedPropertyBase* binding,
-                                 PropertyIsAnimValType property_is_anim_val) {
-    return MakeGarbageCollected<SVGAngleTearOff>(target, binding,
-                                                 property_is_anim_val);
-  }
   static SVGAngleTearOff* CreateDetached();
 
   enum {

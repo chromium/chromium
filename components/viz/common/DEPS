@@ -32,10 +32,14 @@ specific_include_rules = {
     "+ui/gl",
   ],
   ".*_benchmark\.cc": [
+    "+components/viz/test/test_gpu_service_holder.h",
     "+gpu/ipc/gl_in_process_context.h",
-    "+gpu/ipc/test_gpu_thread_holder.h",
   ],
   "features.cc" : [
     "+gpu/config/gpu_finch_features.h",
+  ],
+  "bitmap_allocation.cc" : [
+    # Only used to pass Mojo handles, not to communicate with the viz service.
+    "+mojo/public/cpp/base/shared_memory_utils.h",
   ],
 }

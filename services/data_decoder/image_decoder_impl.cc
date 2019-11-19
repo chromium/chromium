@@ -12,8 +12,8 @@
 #include "mojo/public/cpp/bindings/strong_binding.h"
 #include "skia/ext/image_operations.h"
 #include "third_party/blink/public/platform/web_data.h"
-#include "third_party/blink/public/platform/web_image.h"
 #include "third_party/blink/public/platform/web_size.h"
+#include "third_party/blink/public/web/web_image.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 #if defined(OS_CHROMEOS)
@@ -24,6 +24,13 @@
 namespace data_decoder {
 
 namespace {
+
+#if defined(OS_CHROMEOS)
+// NOTE: This 1 GB limit is arbitrary and may be subject to change. The purpose
+// of limiting image decode size is to avoid OOM crashes caused by very large
+// image data being thrown at the service.
+constexpr size_t kJpegMaxDecodedNumBytes = 1024 * 1024 * 1024;
+#endif
 
 int64_t kPadding = 64;
 
@@ -58,9 +65,7 @@ void ResizeImage(SkBitmap* decoded_image,
 
 }  // namespace
 
-ImageDecoderImpl::ImageDecoderImpl(
-    std::unique_ptr<service_manager::ServiceContextRef> service_ref)
-    : service_ref_(std::move(service_ref)) {}
+ImageDecoderImpl::ImageDecoderImpl() = default;
 
 ImageDecoderImpl::~ImageDecoderImpl() = default;
 
@@ -81,7 +86,7 @@ void ImageDecoderImpl::DecodeImage(const std::vector<uint8_t>& encoded_data,
     // Our robust jpeg decoding is using IJG libjpeg.
     if (encoded_data.size()) {
       std::unique_ptr<SkBitmap> decoded_jpeg(gfx::JPEGCodecRobustSlow::Decode(
-          encoded_data.data(), encoded_data.size()));
+          encoded_data, kJpegMaxDecodedNumBytes));
       if (decoded_jpeg.get() && !decoded_jpeg->empty())
         decoded_image = *decoded_jpeg;
     }

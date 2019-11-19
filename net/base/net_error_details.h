@@ -7,7 +7,7 @@
 
 #include "net/base/net_export.h"
 #include "net/http/http_response_info.h"
-#include "net/third_party/quic/core/quic_packets.h"
+#include "net/third_party/quiche/src/quic/core/quic_packets.h"
 
 namespace net {
 

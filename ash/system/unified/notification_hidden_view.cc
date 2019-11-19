@@ -4,13 +4,14 @@
 
 #include "ash/system/unified/notification_hidden_view.h"
 
-#include "ash/public/cpp/ash_features.h"
+#include "ash/login/login_screen_controller.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_provider.h"
+#include "ash/style/default_color_constants.h"
 #include "ash/system/message_center/ash_message_center_lock_screen_controller.h"
-#include "ash/system/message_center/message_center_controller.h"
 #include "ash/system/tray/tray_constants.h"
-#include "ash/system/unified/sign_out_button.h"
+#include "ash/system/unified/rounded_label_button.h"
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -28,7 +29,7 @@ namespace {
 
 void ShowLockScreenNotificationSettings() {
   ash::Shell::Get()
-      ->message_center_controller()
+      ->login_screen_controller()
       ->ShowLockScreenNotificationSettings();
 }
 
@@ -36,7 +37,10 @@ void ShowLockScreenNotificationSettings() {
 
 NotificationHiddenView::NotificationHiddenView() {
   auto* label = new views::Label;
-  label->SetEnabledColor(kUnifiedMenuTextColor);
+  label->SetEnabledColor(
+      AshColorProvider::Get()->DeprecatedGetContentLayerColor(
+          AshColorProvider::ContentLayerType::kTextPrimary,
+          kUnifiedMenuTextColor));
   label->SetAutoColorReadabilityEnabled(false);
   label->SetText(
       l10n_util::GetStringUTF16(IDS_ASH_MESSAGE_CENTER_LOCKSCREEN_UNIFIED));
@@ -46,11 +50,14 @@ NotificationHiddenView::NotificationHiddenView() {
 
   auto* container = new views::View;
   container->SetBackground(views::CreateBackgroundFromPainter(
-      views::Painter::CreateSolidRoundRectPainter(kUnifiedMenuButtonColor,
-                                                  kUnifiedTrayCornerRadius)));
+      views::Painter::CreateSolidRoundRectPainter(
+          AshColorProvider::Get()->DeprecatedGetControlsLayerColor(
+              AshColorProvider::ControlsLayerType::kInactiveControlBackground,
+              kUnifiedMenuButtonColor),
+          kUnifiedTrayCornerRadius)));
 
-  auto* layout = container->SetLayoutManager(
-      std::make_unique<views::BoxLayout>(views::BoxLayout::kHorizontal));
+  auto* layout = container->SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kHorizontal));
 
   container->AddChildView(label);
   layout->SetFlexForView(label, 1);
@@ -83,6 +90,10 @@ void NotificationHiddenView::ButtonPressed(views::Button* sender,
       ->DismissLockScreenThenExecute(
           base::BindOnce(&ShowLockScreenNotificationSettings),
           base::DoNothing(), IDS_ASH_MESSAGE_CENTER_UNLOCK_TO_CHANGE_SETTING);
+}
+
+const char* NotificationHiddenView::GetClassName() const {
+  return "NotificationHiddenView";
 }
 
 }  // namespace ash

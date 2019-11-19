@@ -4,16 +4,13 @@
 
 #include "chrome/browser/ui/ash/accessibility/accessibility_controller_client.h"
 
-#include "ash/public/interfaces/accessibility_controller.mojom.h"
-#include "base/bind.h"
+#include "ash/public/cpp/accessibility_controller_enums.h"
 #include "base/macros.h"
-#include "base/run_loop.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/ash/accessibility/fake_accessibility_controller.h"
 #include "chromeos/audio/chromeos_sounds.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_service_manager_context.h"
-#include "mojo/public/cpp/bindings/binding.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 
@@ -28,48 +25,33 @@ class FakeAccessibilityControllerClient : public AccessibilityControllerClient {
   ~FakeAccessibilityControllerClient() override = default;
 
   // AccessibilityControllerClient:
-  void TriggerAccessibilityAlert(
-      ash::mojom::AccessibilityAlert alert) override {
+  void TriggerAccessibilityAlert(ash::AccessibilityAlert alert) override {
     last_a11y_alert_ = alert;
   }
-
   void PlayEarcon(int32_t sound_key) override { last_sound_key_ = sound_key; }
-
-  void PlayShutdownSound(PlayShutdownSoundCallback callback) override {
-    std::move(callback).Run(kShutdownSoundDuration);
+  base::TimeDelta PlayShutdownSound() override {
+    return kShutdownSoundDuration;
   }
-
   void HandleAccessibilityGesture(ax::mojom::Gesture gesture) override {
     last_a11y_gesture_ = gesture;
   }
-
-  void ToggleDictation(ToggleDictationCallback callback) override {
+  bool ToggleDictation() override {
     ++toggle_dictation_count_;
     dictation_on_ = !dictation_on_;
-    std::move(callback).Run(dictation_on_);
+    return dictation_on_;
   }
-
   void SilenceSpokenFeedback() override { ++silence_spoken_feedback_count_; }
-
   void OnTwoFingerTouchStart() override { ++on_two_finger_touch_start_count_; }
-
   void OnTwoFingerTouchStop() override { ++on_two_finger_touch_stop_count_; }
-
-  void ShouldToggleSpokenFeedbackViaTouch(
-      ShouldToggleSpokenFeedbackViaTouchCallback callback) override {
-    std::move(callback).Run(true);
-  }
-
+  bool ShouldToggleSpokenFeedbackViaTouch() const override { return true; }
   void PlaySpokenFeedbackToggleCountdown(int tick_count) override {
     spoken_feedback_toggle_count_down_ = tick_count;
   }
-
   void RequestSelectToSpeakStateChange() override {
     ++select_to_speak_state_changes_;
   }
 
-  ash::mojom::AccessibilityAlert last_a11y_alert_ =
-      ash::mojom::AccessibilityAlert::NONE;
+  ash::AccessibilityAlert last_a11y_alert_ = ash::AccessibilityAlert::NONE;
   int32_t last_sound_key_ = -1;
   ax::mojom::Gesture last_a11y_gesture_ = ax::mojom::Gesture::kNone;
   int toggle_dictation_count_ = 0;
@@ -80,8 +62,8 @@ class FakeAccessibilityControllerClient : public AccessibilityControllerClient {
   int select_to_speak_state_changes_ = 0;
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(FakeAccessibilityControllerClient);
   bool dictation_on_ = false;
+  DISALLOW_COPY_AND_ASSIGN(FakeAccessibilityControllerClient);
 };
 
 }  // namespace
@@ -92,24 +74,21 @@ class AccessibilityControllerClientTest : public testing::Test {
   ~AccessibilityControllerClientTest() override = default;
 
  private:
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   content::TestServiceManagerContext context_;
 
   DISALLOW_COPY_AND_ASSIGN(AccessibilityControllerClientTest);
 };
 
 TEST_F(AccessibilityControllerClientTest, MethodCalls) {
-  FakeAccessibilityControllerClient client;
   FakeAccessibilityController controller;
-  client.Init();
-  client.FlushForTesting();
+  FakeAccessibilityControllerClient client;
 
   // Tests client is set.
   EXPECT_TRUE(controller.was_client_set());
 
   // Tests TriggerAccessibilityAlert method call.
-  const ash::mojom::AccessibilityAlert alert =
-      ash::mojom::AccessibilityAlert::SCREEN_ON;
+  const ash::AccessibilityAlert alert = ash::AccessibilityAlert::SCREEN_ON;
   client.TriggerAccessibilityAlert(alert);
   EXPECT_EQ(alert, client.last_a11y_alert_);
 
@@ -119,12 +98,7 @@ TEST_F(AccessibilityControllerClientTest, MethodCalls) {
   EXPECT_EQ(sound_key, client.last_sound_key_);
 
   // Tests PlayShutdownSound method call.
-  base::TimeDelta sound_duration;
-  client.PlayShutdownSound(base::BindOnce(
-      [](base::TimeDelta* dst, base::TimeDelta duration) { *dst = duration; },
-      base::Unretained(&sound_duration)));
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(kShutdownSoundDuration, sound_duration);
+  EXPECT_EQ(kShutdownSoundDuration, client.PlayShutdownSound());
 
   // Tests HandleAccessibilityGesture method call.
   ax::mojom::Gesture gesture = ax::mojom::Gesture::kClick;
@@ -133,7 +107,7 @@ TEST_F(AccessibilityControllerClientTest, MethodCalls) {
 
   // Tests ToggleDictation method call.
   EXPECT_EQ(0, client.toggle_dictation_count_);
-  client.ToggleDictation(base::BindOnce([](bool b) {}));
+  EXPECT_TRUE(client.ToggleDictation());
   EXPECT_EQ(1, client.toggle_dictation_count_);
 
   EXPECT_EQ(0, client.silence_spoken_feedback_count_);
@@ -151,12 +125,7 @@ TEST_F(AccessibilityControllerClientTest, MethodCalls) {
   EXPECT_EQ(1, client.on_two_finger_touch_stop_count_);
 
   // Tests ShouldToggleSpokenFeedbackViaTouch method call.
-  bool should_toggle = false;
-  client.ShouldToggleSpokenFeedbackViaTouch(base::BindOnce(
-      [](bool* dst, bool should_toggle) { *dst = should_toggle; },
-      base::Unretained(&should_toggle)));
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(should_toggle);
+  EXPECT_TRUE(client.ShouldToggleSpokenFeedbackViaTouch());
 
   // Tests PlaySpokenFeedbackToggleCountdown method call.
   const int tick_count = 2;

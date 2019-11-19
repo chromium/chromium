@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/bind.h"
+#include "base/component_export.h"
 #include "base/sequence_checker.h"
 #include "components/leveldb_proto/internal/proto_leveldb_wrapper.h"
 #include "components/leveldb_proto/public/proto_database.h"
@@ -17,7 +18,7 @@ namespace leveldb_proto {
 
 // An implementation of ProtoDatabase<std::string> that manages the lifecycle of
 // a unique LevelDB instance.
-class UniqueProtoDatabase {
+class COMPONENT_EXPORT(LEVELDB_PROTO) UniqueProtoDatabase {
  public:
   explicit UniqueProtoDatabase(
       const scoped_refptr<base::SequencedTaskRunner>& task_runner);

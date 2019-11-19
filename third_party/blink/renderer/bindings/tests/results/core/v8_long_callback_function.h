@@ -36,37 +36,6 @@ class CORE_EXPORT V8LongCallbackFunction final : public CallbackFunctionBase {
   v8::Maybe<int32_t> Invoke(bindings::V8ValueOrScriptWrappableAdapter callback_this_value, int32_t num1, int32_t num2) WARN_UNUSED_RESULT;
 };
 
-template <>
-class V8PersistentCallbackFunction<V8LongCallbackFunction> final : public V8PersistentCallbackFunctionBase {
-  using V8CallbackFunction = V8LongCallbackFunction;
-
- public:
-  explicit V8PersistentCallbackFunction(V8CallbackFunction* callback_function)
-      : V8PersistentCallbackFunctionBase(callback_function) {}
-  ~V8PersistentCallbackFunction() override = default;
-
-  // Returns a wrapper-tracing version of this callback function.
-  V8CallbackFunction* ToNonV8Persistent() { return Proxy(); }
-
-  v8::Maybe<int32_t> Invoke(bindings::V8ValueOrScriptWrappableAdapter callback_this_value, int32_t num1, int32_t num2) WARN_UNUSED_RESULT;
-
- private:
-  V8CallbackFunction* Proxy() {
-    return As<V8CallbackFunction>();
-  }
-
-  template <typename V8CallbackFunction>
-  friend V8PersistentCallbackFunction<V8CallbackFunction>*
-  ToV8PersistentCallbackFunction(V8CallbackFunction*);
-};
-
-// V8LongCallbackFunction is designed to be used with wrapper-tracing.
-// As blink::Persistent does not perform wrapper-tracing, use of
-// |WrapPersistent| for callback functions is likely (if not always) misuse.
-// Thus, this code prohibits such a use case. The call sites should explicitly
-// use WrapPersistent(V8PersistentCallbackFunction<T>*).
-Persistent<V8LongCallbackFunction> WrapPersistent(V8LongCallbackFunction*) = delete;
-
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_BINDINGS_TESTS_RESULTS_CORE_V8_LONG_CALLBACK_FUNCTION_H_

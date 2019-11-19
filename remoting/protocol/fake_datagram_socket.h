@@ -12,7 +12,7 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "net/base/completion_callback.h"
+#include "net/base/completion_repeating_callback.h"
 #include "remoting/protocol/datagram_channel_factory.h"
 #include "remoting/protocol/p2p_datagram_socket.h"
 
@@ -62,16 +62,19 @@ class FakeDatagramSocket : public P2PDatagramSocket {
   base::WeakPtr<FakeDatagramSocket> GetWeakPtr();
 
   // P2PDatagramSocket implementation.
-  int Recv(const scoped_refptr<net::IOBuffer>& buf, int buf_len,
-           const net::CompletionCallback& callback) override;
-  int Send(const scoped_refptr<net::IOBuffer>& buf, int buf_len,
-           const net::CompletionCallback& callback) override;
+  int Recv(const scoped_refptr<net::IOBuffer>& buf,
+           int buf_len,
+           const net::CompletionRepeatingCallback& callback) override;
+  int Send(const scoped_refptr<net::IOBuffer>& buf,
+           int buf_len,
+           const net::CompletionRepeatingCallback& callback) override;
 
  private:
   int CopyReadData(const scoped_refptr<net::IOBuffer>& buf, int buf_len);
 
-  void DoAsyncSend(const scoped_refptr<net::IOBuffer>& buf, int buf_len,
-                   const net::CompletionCallback& callback);
+  void DoAsyncSend(const scoped_refptr<net::IOBuffer>& buf,
+                   int buf_len,
+                   const net::CompletionRepeatingCallback& callback);
   int DoSend(const scoped_refptr<net::IOBuffer>& buf, int buf_len);
 
   bool async_send_ = false;
@@ -82,14 +85,14 @@ class FakeDatagramSocket : public P2PDatagramSocket {
 
   scoped_refptr<net::IOBuffer> read_buffer_;
   int read_buffer_size_;
-  net::CompletionCallback read_callback_;
+  net::CompletionRepeatingCallback read_callback_;
 
   std::vector<std::string> written_packets_;
   std::vector<std::string> input_packets_;
   int input_pos_;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-  base::WeakPtrFactory<FakeDatagramSocket> weak_factory_;
+  base::WeakPtrFactory<FakeDatagramSocket> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FakeDatagramSocket);
 };
@@ -135,7 +138,7 @@ class FakeDatagramChannelFactory : public DatagramChannelFactory {
 
   bool fail_create_;
 
-  base::WeakPtrFactory<FakeDatagramChannelFactory> weak_factory_;
+  base::WeakPtrFactory<FakeDatagramChannelFactory> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FakeDatagramChannelFactory);
 };

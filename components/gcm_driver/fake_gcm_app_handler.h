@@ -23,7 +23,8 @@ class FakeGCMAppHandler : public GCMAppHandler {
     NO_EVENT,
     MESSAGE_EVENT,
     MESSAGES_DELETED_EVENT,
-    SEND_ERROR_EVENT
+    SEND_ERROR_EVENT,
+    DECRYPTION_FAILED_EVENT,
   };
 
   FakeGCMAppHandler();
@@ -48,6 +49,9 @@ class FakeGCMAppHandler : public GCMAppHandler {
   void OnSendError(
       const std::string& app_id,
       const GCMClient::SendErrorDetails& send_error_details) override;
+  void OnMessageDecryptionFailed(const std::string& app_id,
+                                 const std::string& message_id,
+                                 const std::string& error_message) override;
   void OnSendAcknowledged(const std::string& app_id,
                           const std::string& message_id) override;
 

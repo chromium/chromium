@@ -8,17 +8,14 @@
 #include <string>
 #include <vector>
 
-#include "base/callback.h"
 #include "base/macros.h"
 #include "base/strings/string16.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/ssl_blocking_page_base.h"
-#include "chrome/browser/ssl/ssl_cert_reporter.h"
 #include "components/security_interstitials/content/security_interstitial_page.h"
+#include "components/security_interstitials/content/ssl_cert_reporter.h"
 #include "content/public/browser/certificate_request_result_type.h"
-#include "extensions/buildflags/buildflags.h"
 #include "net/ssl/ssl_info.h"
 #include "url/gurl.h"
 
@@ -29,8 +26,6 @@ class PolicyTest_SSLErrorOverridingDisallowed_Test;
 namespace security_interstitials {
 class SSLErrorUI;
 }
-
-class ChromeMetricsHelper;
 
 // URL to use as the 'Learn More' link when the interstitial is caused by
 // a "ERR_CERT_SYMANTEC_LEGACY" error, -202 fragment is included so
@@ -52,7 +47,7 @@ class SSLBlockingPage : public SSLBlockingPageBase {
   // Creates an SSL blocking page. If the blocking page isn't shown, the caller
   // is responsible for cleaning up the blocking page, otherwise the
   // interstitial takes ownership when shown. |options_mask| must be a bitwise
-  // mask of SSLErrorUI::SSLErrorOptionsMask values.
+  // mask of SSLErrorOptionsMask values.
   // This is static because the constructor uses expensive to compute parameters
   // more than once (e.g. overrideable).
   static SSLBlockingPage* Create(
@@ -63,18 +58,14 @@ class SSLBlockingPage : public SSLBlockingPageBase {
       int options_mask,
       const base::Time& time_triggered,
       const GURL& support_url,
-      std::unique_ptr<SSLCertReporter> ssl_cert_reporter,
-      const base::Callback<void(content::CertificateRequestResultType)>&
-          callback);
+      std::unique_ptr<SSLCertReporter> ssl_cert_reporter);
 
   // InterstitialPageDelegate method:
-  InterstitialPageDelegate::TypeID GetTypeForTesting() const override;
+  InterstitialPageDelegate::TypeID GetTypeForTesting() override;
 
-  // Returns true if |options_mask| refers to a soft-overridable SSL error and
-  // if SSL error overriding is allowed by policy.
+  // Returns true if |options_mask| refers to a soft-overridable SSL error.
   static bool IsOverridable(int options_mask);
 
- protected:
   SSLBlockingPage(
       content::WebContents* web_contents,
       int cert_error,
@@ -85,16 +76,14 @@ class SSLBlockingPage : public SSLBlockingPageBase {
       const GURL& support_url,
       std::unique_ptr<SSLCertReporter> ssl_cert_reporter,
       bool overrideable,
-      std::unique_ptr<ChromeMetricsHelper> metrics_helper,
-      const base::Callback<void(content::CertificateRequestResultType)>&
-          callback);
+      std::unique_ptr<
+          security_interstitials::SecurityInterstitialControllerClient>
+          controller_client);
 
+ protected:
   // InterstitialPageDelegate implementation.
   void CommandReceived(const std::string& command) override;
   void OverrideEntry(content::NavigationEntry* entry) override;
-  void OverrideRendererPrefs(blink::mojom::RendererPreferences* prefs) override;
-  void OnProceed() override;
-  void OnDontProceed() override;
 
   // SecurityInterstitialPage implementation:
   bool ShouldCreateNewNavigation() const override;
@@ -109,13 +98,8 @@ class SSLBlockingPage : public SSLBlockingPageBase {
                            VerifySecurityInterstitialExtensionEvents);
   void NotifyDenyCertificate();
 
-  base::Callback<void(content::CertificateRequestResultType)> callback_;
   const net::SSLInfo ssl_info_;
   const bool overridable_;  // The UI allows the user to override the error.
-
-  // The user previously allowed a bad certificate, but the decision has now
-  // expired.
-  const bool expired_but_previously_allowed_;
 
   const std::unique_ptr<security_interstitials::SSLErrorUI> ssl_error_ui_;
 

@@ -16,11 +16,23 @@ const mockVolumeManager = new MockVolumeManager();
  * @suppress {checkTypes}
  */
 chrome.fileManagerPrivate = {
+  CrostiniEventType: {
+    ENABLE: 'enable',
+    DISABLE: 'disable',
+    SHARE: 'share',
+    UNSHARE: 'unshare',
+  },
   Verb: {
     OPEN_WITH: 'open_with',
     ADD_TO: 'add_to',
     PACK_WITH: 'pack_with',
     SHARE_WITH: 'share_with',
+  },
+  SearchType: {
+    ALL: 'ALL',
+    SHARED_WITH_ME: 'SHARED_WITH_ME',
+    EXCLUDE_DIRECTORIES: 'EXCLUDE_DIRECTORIES',
+    OFFLINE: 'OFFLINE',
   },
   currentId_: 'test@example.com',
   displayedId_: 'test@example.com',
@@ -30,6 +42,8 @@ chrome.fileManagerPrivate = {
     searchSuggestEnabled: true,
     timezone: 'Australia/Sydney',
     use24hourClock: false,
+    arcEnabled: false,
+    arcRemovableMediaAccessEnabled: false,
   },
   profiles_: [{
     displayName: 'Test User',
@@ -80,7 +94,7 @@ chrome.fileManagerPrivate = {
     }
     setTimeout(callback, 0, results);
   },
-  getCrostiniSharedPaths: (observeFirstForSession, callback) => {
+  getCrostiniSharedPaths: (observeFirstForSession, vmName, callback) => {
     // Returns Entry[], firstForSession.
     setTimeout(callback, 0, [], observeFirstForSession);
   },
@@ -128,9 +142,7 @@ chrome.fileManagerPrivate = {
   grantAccess: (entryUrls, callback) => {
     setTimeout(callback, 0);
   },
-  isUMAEnabled: (callback) => {
-    setTimeout(callback, 0, false);
-  },
+  importCrostiniImage: (entry) => {},
   // Simulate startup of vm and container by taking 1s.
   mountCrostiniDelay_: 1000,
   mountCrostini: (callback) => {
@@ -170,15 +182,15 @@ chrome.fileManagerPrivate = {
     setTimeout(callback, 0, entries);
   },
   searchDriveMetadata: (searchParams, callback) => {
-    // Returns chrome.fileManagerPrivate.SearchResult[].
-    // chrome.fileManagerPrivate.SearchResult { entry: Entry,
+    // Returns chrome.fileManagerPrivate.DriveMetadataSearchResult[].
+    // chrome.fileManagerPrivate.DriveMetadataSearchResult { entry: Entry,
     // highlightedBaseName: string }
     setTimeout(callback, 0, []);
   },
-  sharePathsWithCrostini: (entries, persist, callback) => {
+  sharePathsWithCrostini: (vmName, entries, persist, callback) => {
     setTimeout(callback, 0);
   },
-  unsharePathWithCrostini: (entry, callback) => {
+  unsharePathWithCrostini: (vmName, entry, callback) => {
     setTimeout(callback, 0);
   },
   nextCopyId_: 0,

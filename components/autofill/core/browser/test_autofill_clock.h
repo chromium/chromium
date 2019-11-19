@@ -19,7 +19,7 @@ namespace autofill {
 // Handles the customization of the time in tests. Replaces the clock in
 // AutofillClock with a test version that can be manipulated from this class.
 // Automatically resets a normal clock to AutofillClock when this gets
-// destroyed,
+// destroyed.
 class TestAutofillClock {
  public:
   TestAutofillClock();

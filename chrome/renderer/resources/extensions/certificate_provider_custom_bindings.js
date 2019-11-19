@@ -2,30 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var binding =
-    apiBridge || require('binding').Binding.create('certificateProvider');
-var certificateProviderInternal =
-    getInternalApi ?
-        getInternalApi('certificateProviderInternal') :
-        require('binding').Binding.create(
-            'certificateProviderInternal').generate();
-var registerArgumentMassager = bindingUtil ?
-    $Function.bind(bindingUtil.registerEventArgumentMassager, bindingUtil) :
-    require('event_bindings').registerArgumentMassager;
+var certificateProviderInternal = getInternalApi('certificateProviderInternal');
 
 var certificateProviderSchema =
     requireNative('schema_registry').GetSchema('certificateProvider')
 var utils = require('utils');
-var validate = bindingUtil ? undefined : require('schemaUtils').validate;
-
-// Validates that the result passed by the extension to the event callback
-// matches the callback schema. Throws an exception in case of an error.
-function validateListenerResponse(eventName, expectedSchema, listenerResponse) {
-  if (bindingUtil)
-    bindingUtil.validateCustomSignature(eventName, listenerResponse);
-  else
-    validate(listenerResponse, expectedSchema);
-}
 
 // Custom bindings for chrome.certificateProvider API.
 // The bindings are used to implement callbacks for the API events. Internally
@@ -54,10 +35,10 @@ function handleEvent(eventName, internalReportFunc) {
       utils.lookup(eventSchema.parameters, 'type', 'function').parameters;
   var fullEventName = 'certificateProvider.' + eventName;
 
-  if (bindingUtil)
-    bindingUtil.addCustomSignature(fullEventName, callbackSchema);
+  bindingUtil.addCustomSignature(fullEventName, callbackSchema);
 
-  registerArgumentMassager(fullEventName, function(args, dispatch) {
+  bindingUtil.registerEventArgumentMassager(fullEventName,
+                                            function(args, dispatch) {
     var responded = false;
 
     // Function provided to the extension as the event callback argument.
@@ -76,7 +57,7 @@ function handleEvent(eventName, internalReportFunc) {
         // Validates that the results reported by the extension matche the
         // callback schema of the event. Throws an exception in case of an
         // error.
-        validateListenerResponse(fullEventName, callbackSchema, reportArgs);
+        bindingUtil.validateCustomSignature(fullEventName, reportArgs);
         finalArgs = reportArgs;
       } finally {
         responded = true;
@@ -93,6 +74,3 @@ handleEvent('onCertificatesRequested',
 
 handleEvent('onSignDigestRequested',
             certificateProviderInternal.reportSignature);
-
-if (!apiBridge)
-  exports.$set('binding', binding.generate());

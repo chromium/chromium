@@ -29,8 +29,7 @@ namespace chromeos {
 
 namespace {
 
-void OnPrefChanged(const std::string& /* setting */) {
-}
+void OnPrefChanged(const std::string& /* setting */) {}
 
 class PrefsChecker : public ownership::OwnerSettingsService::Observer {
  public:
@@ -169,7 +168,7 @@ TEST_F(OwnerSettingsServiceChromeOSTest, MultipleSetTest) {
 }
 
 TEST_F(OwnerSettingsServiceChromeOSTest, FailedSetRequest) {
-  session_manager_client_.set_store_policy_success(false);
+  session_manager_client_.ForceStorePolicyFailure(true);
   std::string current_channel;
   ASSERT_TRUE(provider_->Get(kReleaseChannel)->GetAsString(&current_channel));
   ASSERT_NE(current_channel, "stable-channel");

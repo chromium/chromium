@@ -21,8 +21,8 @@
 #include "components/reading_list/core/reading_list_model_observer.h"
 #include "ios/chrome/browser/system_flags.h"
 #include "ios/chrome/common/app_group/app_group_constants.h"
-#include "ios/web/public/web_task_traits.h"
-#include "ios/web/public/web_thread.h"
+#include "ios/web/public/thread/web_task_traits.h"
+#include "ios/web/public/thread/web_thread.h"
 #import "net/base/mac/url_conversions.h"
 #include "url/gurl.h"
 
@@ -38,6 +38,7 @@ enum ShareExtensionItemReceived {
   CANCELLED_ENTRY,
   READINGLIST_ENTRY,
   BOOKMARK_ENTRY,
+  OPEN_IN_CHROME_ENTRY,
   SHARE_EXTENSION_ITEM_RECEIVED_COUNT
 };
 
@@ -131,8 +132,9 @@ void LogHistogramReceivedItem(ShareExtensionItemReceived type) {
   if (self) {
     _readingListModel = readingListModel;
     _bookmarkModel = bookmarkModel;
-    _taskRunner = base::CreateSequencedTaskRunnerWithTraits(
-        {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
+    _taskRunner =
+        base::CreateSequencedTaskRunner({base::ThreadPool(), base::MayBlock(),
+                                         base::TaskPriority::BEST_EFFORT});
 
     [[NSNotificationCenter defaultCenter]
         addObserver:self
@@ -180,9 +182,9 @@ void LogHistogramReceivedItem(ShareExtensionItemReceived type) {
   }
 
   __weak ShareExtensionItemReceiver* weakSelf = self;
-  base::PostTaskWithTraits(FROM_HERE, {web::WebThread::UI}, base::BindOnce(^{
-                             [weakSelf readingListFolderCreated];
-                           }));
+  base::PostTask(FROM_HERE, {web::WebThread::UI}, base::BindOnce(^{
+                   [weakSelf readingListFolderCreated];
+                 }));
 }
 
 - (void)readingListFolderCreated {
@@ -194,7 +196,18 @@ void LogHistogramReceivedItem(ShareExtensionItemReceived type) {
 }
 
 - (BOOL)receivedData:(NSData*)data withCompletion:(ProceduralBlock)completion {
-  id entryID = [NSKeyedUnarchiver unarchiveObjectWithData:data];
+  NSError* error = nil;
+  NSKeyedUnarchiver* unarchiver =
+      [[NSKeyedUnarchiver alloc] initForReadingFromData:data error:&error];
+  if (!unarchiver || error) {
+    DLOG(WARNING) << "Error creating share extension item unarchiver: "
+                  << base::SysNSStringToUTF8([error description]);
+    return NO;
+  }
+
+  unarchiver.requiresSecureCoding = NO;
+
+  id entryID = [unarchiver decodeObjectForKey:NSKeyedArchiveRootObjectKey];
   NSDictionary* entry = base::mac::ObjCCast<NSDictionary>(entryID);
   if (!entry) {
     if (completion) {
@@ -269,6 +282,12 @@ void LogHistogramReceivedItem(ShareExtensionItemReceived type) {
                                base::UTF8ToUTF16(entryTitle), entryURL);
         break;
       }
+      case app_group::OPEN_IN_CHROME_ITEM: {
+        LogHistogramReceivedItem(OPEN_IN_CHROME_ENTRY);
+        // Open URL command is sent directly by the extension. No processing is
+        // needed here.
+        break;
+      }
     }
 
     if (completion && _taskRunner) {
@@ -277,8 +296,8 @@ void LogHistogramReceivedItem(ShareExtensionItemReceived type) {
                             }));
     }
   };
-  base::PostTaskWithTraits(FROM_HERE, {web::WebThread::UI},
-                           base::BindOnce(processEntryBlock));
+  base::PostTask(FROM_HERE, {web::WebThread::UI},
+                 base::BindOnce(processEntryBlock));
   return YES;
 }
 
@@ -374,9 +393,9 @@ void LogHistogramReceivedItem(ShareExtensionItemReceived type) {
 
   if ([files count]) {
     __weak ShareExtensionItemReceiver* weakSelf = self;
-    base::PostTaskWithTraits(FROM_HERE, {web::WebThread::UI}, base::BindOnce(^{
-                               [weakSelf entriesReceived:files];
-                             }));
+    base::PostTask(FROM_HERE, {web::WebThread::UI}, base::BindOnce(^{
+                     [weakSelf entriesReceived:files];
+                   }));
   }
 }
 
@@ -393,11 +412,11 @@ void LogHistogramReceivedItem(ShareExtensionItemReceived type) {
     _taskRunner->PostTask(FROM_HERE, base::BindOnce(^{
                             [weakSelf handleFileAtURL:fileURL
                                        withCompletion:^{
-                                         base::PostTaskWithTraits(
-                                             FROM_HERE, {web::WebThread::UI},
-                                             base::BindOnce(^{
-                                               batchToken.reset();
-                                             }));
+                                         base::PostTask(FROM_HERE,
+                                                        {web::WebThread::UI},
+                                                        base::BindOnce(^{
+                                                          batchToken.reset();
+                                                        }));
                                        }];
                           }));
   }

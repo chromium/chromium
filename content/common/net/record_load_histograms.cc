@@ -7,18 +7,19 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_piece.h"
-#include "content/public/common/resource_type.h"
 #include "net/base/net_errors.h"
 #include "net/base/url_util.h"
 #include "url/gurl.h"
 
 namespace content {
 
-void RecordLoadHistograms(const GURL& url, int resource_type, int net_error) {
+void RecordLoadHistograms(const GURL& url,
+                          ResourceType resource_type,
+                          int net_error) {
   // Requests shouldn't complete with net::ERR_IO_PENDING.
   DCHECK_NE(net::ERR_IO_PENDING, net_error);
 
-  if (resource_type == RESOURCE_TYPE_MAIN_FRAME) {
+  if (resource_type == ResourceType::kMainFrame) {
     base::UmaHistogramSparse("Net.ErrorCodesForMainFrame4", -net_error);
     if (url.SchemeIsCryptographic()) {
       if (url.host_piece() == "www.google.com") {
@@ -32,7 +33,7 @@ void RecordLoadHistograms(const GURL& url, int resource_type, int net_error) {
       }
     }
   } else {
-    if (resource_type == RESOURCE_TYPE_IMAGE) {
+    if (resource_type == ResourceType::kImage) {
       base::UmaHistogramSparse("Net.ErrorCodesForImages2", -net_error);
     }
     base::UmaHistogramSparse("Net.ErrorCodesForSubresources3", -net_error);

@@ -10,7 +10,7 @@
 
 namespace extensions {
 
-class IdentityGetAccountsFunction : public UIThreadExtensionFunction {
+class IdentityGetAccountsFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("identity.getAccounts", IDENTITY_GETACCOUNTS)
 
@@ -19,7 +19,7 @@ class IdentityGetAccountsFunction : public UIThreadExtensionFunction {
  private:
   ~IdentityGetAccountsFunction() override;
 
-  // UIThreadExtensionFunction implementation.
+  // ExtensionFunction implementation.
   ExtensionFunction::ResponseAction Run() override;
 };
 

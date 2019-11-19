@@ -7,8 +7,8 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
-#include "base/test/scoped_task_environment.h"
 #include "base/test/simple_test_tick_clock.h"
+#include "base/test/task_environment.h"
 #include "chrome/browser/chromeos/arc/arc_migration_constants.h"
 #include "chrome/browser/chromeos/login/screens/encryption_migration_mode.h"
 #include "chrome/browser/chromeos/login/users/mock_user_manager.h"
@@ -16,17 +16,17 @@
 #include "chrome/browser/ui/webui/chromeos/login/encryption_migration_screen_handler.h"
 #include "chromeos/cryptohome/homedir_methods.h"
 #include "chromeos/cryptohome/mock_async_method_caller.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/fake_cryptohome_client.h"
-#include "chromeos/dbus/fake_power_manager_client.h"
-#include "chromeos/dbus/power_policy_controller.h"
-#include "chromeos/dbus/util/account_identifier_operators.h"
+#include "chromeos/dbus/cryptohome/account_identifier_operators.h"
+#include "chromeos/dbus/cryptohome/fake_cryptohome_client.h"
+#include "chromeos/dbus/power/fake_power_manager_client.h"
+#include "chromeos/dbus/power/power_policy_controller.h"
 #include "chromeos/login/auth/key.h"
 #include "chromeos/login/auth/user_context.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/test/test_web_ui.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -48,7 +48,8 @@ class FakeWakeLock : public device::mojom::WakeLock {
   // Implement device::mojom::WakeLock:
   void RequestWakeLock() override { has_wakelock_ = true; }
   void CancelWakeLock() override { has_wakelock_ = false; }
-  void AddClient(device::mojom::WakeLockRequest request) override {}
+  void AddClient(
+      mojo::PendingReceiver<device::mojom::WakeLock> receiver) override {}
   void ChangeType(device::mojom::WakeLockType type,
                   ChangeTypeCallback callback) override {
     NOTIMPLEMENTED();
@@ -129,14 +130,10 @@ class EncryptionMigrationScreenHandlerTest : public testing::Test {
     cryptohome::AsyncMethodCaller::InitializeForTesting(
         mock_async_method_caller_);
 
-    // Set up fake DBusThreadManager parts.
-    fake_cryptohome_client_ = new FakeCryptohomeClient();
-    DBusThreadManager::GetSetterForTesting()->SetCryptohomeClient(
-        base::WrapUnique<CryptohomeClient>(fake_cryptohome_client_));
-
-    PowerManagerClient::Initialize();
-
-    DBusThreadManager::Initialize();
+    // Set up fake dbus clients.
+    CryptohomeClient::InitializeFake();
+    fake_cryptohome_client_ = FakeCryptohomeClient::Get();
+    PowerManagerClient::InitializeFake();
 
     PowerPolicyController::Initialize(PowerManagerClient::Get());
 
@@ -145,7 +142,7 @@ class EncryptionMigrationScreenHandlerTest : public testing::Test {
     user_context_.SetKey(
         Key(Key::KeyType::KEY_TYPE_SALTED_SHA256, "salt", "secret"));
 
-    js_calls_container_.ExecuteDeferredJSCalls();
+    js_calls_container_.ExecuteDeferredJSCalls(&test_web_ui_);
     encryption_migration_screen_handler_ =
         std::make_unique<TestEncryptionMigrationScreenHandler>(
             &js_calls_container_);
@@ -165,17 +162,17 @@ class EncryptionMigrationScreenHandlerTest : public testing::Test {
     encryption_migration_screen_handler_.reset();
 
     PowerPolicyController::Shutdown();
-    DBusThreadManager::Shutdown();
     PowerManagerClient::Shutdown();
+    CryptohomeClient::Shutdown();
     cryptohome::AsyncMethodCaller::Shutdown();
   }
 
  protected:
   // Must be the first member.
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
 
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_enabler_;
-  FakeCryptohomeClient* fake_cryptohome_client_ = nullptr;
+  FakeCryptohomeClient* fake_cryptohome_client_ = nullptr;  // unowned
   cryptohome::MockAsyncMethodCaller* mock_async_method_caller_ = nullptr;
   JSCallsContainer js_calls_container_;
   std::unique_ptr<TestEncryptionMigrationScreenHandler>
@@ -223,7 +220,7 @@ TEST_F(EncryptionMigrationScreenHandlerTest, MinimalMigration) {
       EncryptionMigrationMode::START_MINIMAL_MIGRATION);
   encryption_migration_screen_handler_->SetupInitialView();
 
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   EXPECT_TRUE(
       encryption_migration_screen_handler_->fake_wake_lock()->HasWakeLock());
@@ -252,7 +249,7 @@ TEST_F(EncryptionMigrationScreenHandlerTest, ResumeMinimalMigration) {
       EncryptionMigrationMode::RESUME_MINIMAL_MIGRATION);
   encryption_migration_screen_handler_->SetupInitialView();
 
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   fake_cryptohome_client_->NotifyDircryptoMigrationProgress(
       cryptohome::DircryptoMigrationStatus::DIRCRYPTO_MIGRATION_SUCCESS,
@@ -277,7 +274,7 @@ TEST_F(EncryptionMigrationScreenHandlerTest, MinimalMigrationSlow) {
       EncryptionMigrationMode::START_MINIMAL_MIGRATION);
   encryption_migration_screen_handler_->SetupInitialView();
 
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   encryption_migration_screen_handler_->testing_tick_clock()->Advance(
       base::TimeDelta::FromMinutes(1));
@@ -302,7 +299,7 @@ TEST_F(EncryptionMigrationScreenHandlerTest, MinimalMigrationFails) {
       EncryptionMigrationMode::START_MINIMAL_MIGRATION);
   encryption_migration_screen_handler_->SetupInitialView();
 
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   encryption_migration_screen_handler_->testing_tick_clock()->Advance(
       base::TimeDelta::FromMinutes(1));

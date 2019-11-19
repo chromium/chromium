@@ -27,7 +27,7 @@ class MEDIA_EXPORT AudioTimestampValidator {
   // timestamp should roughly equal the timestamp of the previous buffer offset
   // by the previous buffer's duration.
   void CheckForTimestampGap(const DecoderBuffer& buffer);
-  void RecordOutputDuration(const scoped_refptr<AudioBuffer>& buffer);
+  void RecordOutputDuration(const AudioBuffer& buffer);
 
  private:
   bool has_codec_delay_;

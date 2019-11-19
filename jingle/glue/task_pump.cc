@@ -10,11 +10,7 @@
 
 namespace jingle_glue {
 
-TaskPump::TaskPump()
-    : posted_wake_(false),
-      stopped_(false),
-      weak_factory_(this) {
-}
+TaskPump::TaskPump() : posted_wake_(false), stopped_(false) {}
 
 TaskPump::~TaskPump() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

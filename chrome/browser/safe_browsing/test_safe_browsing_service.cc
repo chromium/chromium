@@ -6,19 +6,21 @@
 
 #include "base/strings/string_util.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
+#include "chrome/browser/safe_browsing/download_protection/test_binary_upload_service.h"
 #include "chrome/browser/safe_browsing/incident_reporting/incident_reporting_service.h"
+#include "chrome/browser/safe_browsing/services_delegate.h"
 #include "chrome/browser/safe_browsing/ui_manager.h"
+#include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/db/database_manager.h"
 #include "components/safe_browsing/db/test_database_manager.h"
-#include "components/safe_browsing/db/v4_feature_list.h"
 
 namespace safe_browsing {
 
 // TestSafeBrowsingService functions:
 TestSafeBrowsingService::TestSafeBrowsingService() {
-#if defined(FULL_SAFE_BROWSING)
+#if BUILDFLAG(FULL_SAFE_BROWSING)
   services_delegate_ = ServicesDelegate::CreateForTest(this, this);
-#endif  // defined(FULL_SAFE_BROWSING)
+#endif  // BUILDFLAG(FULL_SAFE_BROWSING)
 }
 
 TestSafeBrowsingService::~TestSafeBrowsingService() {}
@@ -96,15 +98,18 @@ bool TestSafeBrowsingService::CanCreateIncidentReportingService() {
 bool TestSafeBrowsingService::CanCreateResourceRequestDetector() {
   return false;
 }
+bool TestSafeBrowsingService::CanCreateBinaryUploadService() {
+  return true;
+}
 
 SafeBrowsingDatabaseManager* TestSafeBrowsingService::CreateDatabaseManager() {
   DCHECK(!use_v4_local_db_manager_);
-#if defined(FULL_SAFE_BROWSING)
+#if BUILDFLAG(FULL_SAFE_BROWSING)
   return new TestSafeBrowsingDatabaseManager();
 #else
   NOTIMPLEMENTED();
   return nullptr;
-#endif  // defined(FULL_SAFE_BROWSING)
+#endif  // BUILDFLAG(FULL_SAFE_BROWSING)
 }
 
 DownloadProtectionService*
@@ -114,17 +119,25 @@ TestSafeBrowsingService::CreateDownloadProtectionService() {
 }
 IncidentReportingService*
 TestSafeBrowsingService::CreateIncidentReportingService() {
-#if defined(FULL_SAFE_BROWSING)
+#if BUILDFLAG(FULL_SAFE_BROWSING)
   return new IncidentReportingService(nullptr);
 #else
   NOTIMPLEMENTED();
   return nullptr;
-#endif  // defined(FULL_SAFE_BROWSING)
+#endif  // BUILDFLAG(FULL_SAFE_BROWSING)
 }
 ResourceRequestDetector*
 TestSafeBrowsingService::CreateResourceRequestDetector() {
   NOTIMPLEMENTED();
   return nullptr;
+}
+BinaryUploadService* TestSafeBrowsingService::CreateBinaryUploadService() {
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+  return new TestBinaryUploadService();
+#else
+  NOTIMPLEMENTED();
+  return nullptr;
+#endif  // BUILDFLAG(FULL_SAFE_BROWSING)
 }
 
 // TestSafeBrowsingServiceFactory functions:

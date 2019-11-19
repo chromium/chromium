@@ -25,6 +25,7 @@
 
 // https://svgwg.org/svg2-draft/embedded.html#InterfaceSVGForeignObjectElement
 
+[Exposed=Window]
 interface SVGForeignObjectElement : SVGGraphicsElement {
     [MeasureAs=SVG1DOMForeignObjectElement] readonly attribute SVGAnimatedLength x;
     [MeasureAs=SVG1DOMForeignObjectElement] readonly attribute SVGAnimatedLength y;

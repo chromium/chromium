@@ -1,0 +1,28 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+[JavaPackage="org.chromium.page.mojom"]
+module blink.mojom;
+
+// Represents the current state of Spatial Navigation.
+struct SpatialNavigationState {
+  // True if Spatial Navigation's currently focused target can be unfocused.
+  bool can_exit_focus;
+  // True if Spatial Navigation has a target that can be selected.
+  bool can_select_element;
+  // True if the currently focused element is a form element.
+  bool is_form_focused;
+  // True if the currently focused element is a form element, and there is a
+  // next form element available to move to.
+  bool has_next_form_element;
+  // True if the video element has default controls and the element is focused.
+  bool has_default_video_controls;
+};
+
+// Mojo service for browser exposing Spatial Navigation state to the browser.
+interface SpatialNavigationHost {
+  // Called when the Spatial Navigation state has changed. Null if Spatial
+  // Navigation has been disabled.
+  SpatialNavigationStateChanged(SpatialNavigationState? state);
+};

@@ -22,8 +22,7 @@ OptOutBlacklist::OptOutBlacklist(std::unique_ptr<OptOutStore> opt_out_store,
     : loaded_(false),
       opt_out_store_(std::move(opt_out_store)),
       clock_(clock),
-      blacklist_delegate_(blacklist_delegate),
-      weak_factory_(this) {
+      blacklist_delegate_(blacklist_delegate) {
   DCHECK(clock_);
   DCHECK(blacklist_delegate_);
 }

@@ -5,6 +5,7 @@
 <translation id="1185134272377778587">Chromium – informacje</translation>
 <translation id="1289966288285062467">Informacje na temat ochrony prywatności w Chromium</translation>
 <translation id="1472013873724362412">Twoje konto nie działa w Chromium. Skontaktuj się z administratorem domeny lub zaloguj się przy użyciu zwykłego konta Google.</translation>
+<translation id="1507010443238049608">Pomóż w ulepszaniu funkcji i działania Chromium</translation>
 <translation id="1617663976202781617">Dane z synchronizacji Chromium</translation>
 <translation id="1736662517232558588">Wyczyszczono dane Chromium</translation>
 <translation id="1838412507805038478">Chromium sprawdził, że wydawcą certyfikatu tej witryny jest <ph name="ISSUER" />.</translation>
@@ -14,24 +15,16 @@
 <translation id="2168108852149185974">Niektóre dodatki mogą powodować awarie Chromium. Odinstaluj je.</translation>
 <translation id="2178608107313874732">Chromium nie może teraz użyć aparatu</translation>
 <translation id="2195025571279539885">Czy następnym razem Chromium ma zaproponować Ci tłumaczenie stron tej witryny, których język to <ph name="LANGUAGE_NAME" />?</translation>
-<translation id="2517624234762908348">Synchronizuj dane Chromium</translation>
-<translation id="2647554856022461007">Aby zwiększyć wygodę przeglądania, Chromium może korzystać z usług internetowych. Możesz je opcjonalnie wyłączyć. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
+<translation id="2590893390871230428">Synchronizuj dane Chromium</translation>
 <translation id="2730884209570016437">Chromium nie może użyć aparatu, bo używa go już inna aplikacja</translation>
 <translation id="2915596697727466327">Chromium używa Face ID do autoryzacji dostępu do Twoich haseł.</translation>
 <translation id="3256316712990552818">Skopiowana do Chromium</translation>
-<translation id="3413120535237193088">Aby korzystać ze swoich zakładek na wszystkich urządzeniach, zaloguj się w Chromium.</translation>
-<translation id="3473048256428424907">Włączanie skanera QR w Chromium</translation>
-<translation id="3605252743693911722">Zaloguj się w Chromium, by mieć dostęp do swoich zakładek, haseł i innych ustawień na wszystkich swoich urządzeniach.</translation>
 <translation id="3805899903892079518">Chromium nie ma dostępu do Twoich zdjęć ani filmów. Aby włączyć dostęp w iOS, wybierz Ustawienia &gt; Prywatność &gt; Zdjęcia.</translation>
-<translation id="4024541897090868497">Aby korzystać ze swoich kart na wszystkich urządzeniach, zaloguj się w Chromium.</translation>
-<translation id="4157467675761413638">Wskazówka dla użytkowników Chromium. Aby zobaczyć więcej opcji kart, naciśnij i przytrzymaj przycisk Pokaż karty na pasku narzędzi, który znajduje się na dole lub na górze ekranu.</translation>
-<translation id="4241912885070669028">Wylogowujesz się z konta, którym zarządza <ph name="SIGNOUT_MANAGED_DOMAIN" />. Spowoduje to usunięcie danych Chromium z tego urządzenia, ale pozostaną one na koncie Google.</translation>
-<translation id="4272892696084633551">Pomóż w ulepszaniu funkcji i działania Chromium</translation>
 <translation id="4555020257205549924">Gdy ta funkcja jest włączona, Chromium oferuje tłumaczenie stron w innych językach przy użyciu Tłumacza Google. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
+<translation id="4681781466797808448">Włącz skaner Chromium</translation>
 <translation id="4787850887676698916">Tutaj wyświetlą się karty otwarte w Chromium na innych urządzeniach.</translation>
-<translation id="495292094137889840">Skaner QR w Chromium</translation>
 <translation id="4999538639245140991">Wylogowujesz się z konta, którym zarządza <ph name="SIGNOUT_MANAGED_DOMAIN" />. Spowoduje to usunięcie danych Chromium z tego urządzenia, ale pozostaną one na koncie Google.</translation>
-<translation id="5231355151045086930">Wylogowanie z Chromium</translation>
+<translation id="5573014823074921752">Wskazówka dla użytkowników Chromium. Aby zobaczyć więcej opcji kart, naciśnij i przytrzymaj przycisk Pokaż karty na pasku narzędzi, który znajduje się na dole lub na górze ekranu.</translation>
 <translation id="5862307444128926510">Chromium – witamy!</translation>
 <translation id="5945387852661427312">Logujesz się na konto, którym zarządza <ph name="DOMAIN" />, i przekazujesz jego administratorowi kontrolę nad Twoimi danymi Chromium. Zostaną one trwale przypisane do tego konta. Gdy się wylogujesz, znikną one z tego urządzenia, ale pozostaną zapisane na Twoim koncie Google.</translation>
 <translation id="6068866989048414399">Warunki korzystania z Chromium</translation>
@@ -48,11 +41,13 @@
 <translation id="7674213385180944843">Wybierz Ustawienia &gt; Prywatność &gt; Aparat &gt; Chromium i włącz aparat.</translation>
 <translation id="7746854981345936341">Wskazówka dla użytkowników Chromium. Niektóre przyciski (na przykład Wstecz, Dalej i Szukaj) znajdują się teraz na dole ekranu.</translation>
 <translation id="786327964234957808">Przełączasz synchronizację kont z <ph name="USER_EMAIL1" /> na <ph name="USER_EMAIL2" />. Twoimi istniejącymi danymi Chromium zarządza <ph name="DOMAIN" />. Dane zostaną usunięte z tego urządzenia, ale pozostaną na koncie <ph name="USER_EMAIL1" />.</translation>
+<translation id="7890287942691234100">Zacznij używać skanera Chromium</translation>
 <translation id="8073677936375100957">Usunąć dane Chromium z tego urządzenia?</translation>
 <translation id="8175055321229419309">Wskazówka: <ph name="BEGIN_LINK" />przenieś Chromium do Docka<ph name="END_LINK" /></translation>
 <translation id="8252885722420466166">Włączenie udostępniania lokalizacji w Chromium pozwala w pełni korzystać z usług Google.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Autorzy Chromium. Wszelkie prawa zastrzeżone.</translation>
 <translation id="8809780021347235332">Aby zapisać obrazy, kliknij Ustawienia i pozwól Chromium na użycie zdjęć</translation>
 <translation id="9022552996538154597">Zaloguj się w Chromium</translation>
+<translation id="9217078088703304241"><ph name="BEGIN_LINK" />Zapoznaj się ze zaktualizowanymi Warunkami korzystania z usługi Chromium<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">Autorzy Chromium</translation>
 </translationbundle>

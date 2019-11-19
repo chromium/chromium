@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import <EarlGrey/EarlGrey.h>
+
 #include "base/time/time.h"
-#include "components/autofill/core/browser/autofill_profile.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/credit_card.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/strings/grit/components_strings.h"
@@ -64,7 +66,7 @@ const char kContactDetailsFreeShippingPage[] =
 
 // Completes the Payment Request.
 - (void)completePayment {
-  [ChromeEarlGrey tapWebViewElementWithID:@"buy"];
+  [ChromeEarlGrey tapWebStateElementWithID:@"buy"];
 
   // Tap the buy button.
   [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabelId(
@@ -88,12 +90,18 @@ const char kContactDetailsFreeShippingPage[] =
 // properly updated upon completion. The use stats for the billing address
 // associated with the card is expected not to change.
 - (void)testRecordUseOfCard {
+  if (@available(iOS 13, *)) {
+    // TODO(crbug.com/1007432): Enable this test.
+    EARL_GREY_TEST_DISABLED(@"The test is flaky on iOS 13");
+  }
+
   autofill::TestAutofillClock testClock;
   testClock.SetNow(kSomeDate);
 
   // Setup a credit card with an associated billing address.
   autofill::AutofillProfile billingAddress = autofill::test::GetFullProfile();
   [self addAutofillProfile:billingAddress];
+
   autofill::CreditCard card = autofill::test::GetCreditCard();  // visa
   card.set_billing_address_id(billingAddress.guid());
   [self addCreditCard:card];
@@ -130,6 +138,11 @@ const char kContactDetailsFreeShippingPage[] =
 // Tests that use stats for the shipping address used in a Payment Request are
 // properly updated upon completion.
 - (void)testRecordUseOfShippingAddress {
+  if (@available(iOS 13, *)) {
+    // TODO(crbug.com/1007432): Enable this test.
+    EARL_GREY_TEST_DISABLED(@"The test is flaky on iOS 13");
+  }
+
   autofill::TestAutofillClock testClock;
   testClock.SetNow(kSomeDate);
 
@@ -162,6 +175,11 @@ const char kContactDetailsFreeShippingPage[] =
 // Tests that use stats for the contact address used in a Payment Request are
 // properly updated upon completion.
 - (void)testRecordUseOfContactAddress {
+  if (@available(iOS 13, *)) {
+    // TODO(crbug.com/1007432): Enable this test.
+    EARL_GREY_TEST_DISABLED(@"The test is flaky on iOS 13");
+  }
+
   autofill::TestAutofillClock testClock;
   testClock.SetNow(kSomeDate);
 
@@ -194,6 +212,11 @@ const char kContactDetailsFreeShippingPage[] =
 // Tests that use stats for an address that was used both as a shipping and
 // contact address in a Payment Request are properly updated upon completion.
 - (void)testRecordUseOfContactAndShippingAddress {
+  if (@available(iOS 13, *)) {
+    // TODO(crbug.com/1007432): Enable this test.
+    EARL_GREY_TEST_DISABLED(@"The test is flaky on iOS 13");
+  }
+
   autofill::TestAutofillClock testClock;
   testClock.SetNow(kSomeDate);
 

@@ -1,0 +1,43 @@
+diff -ur --strip-trailing-cr /tmp/private-join-and-compute.original/util/statusor.cc third_party/private-join-and-compute/util/statusor.cc
+--- /tmp/private-join-and-compute.original/util/statusor.cc	2019-08-07 14:21:57.196714841 +0200
++++ third_party/private-join-and-compute/util/statusor.cc	2019-08-07 12:42:02.939051124 +0200
+@@ -24,7 +24,7 @@
+ static const char* kInvalidStatusCtorArgMessage =
+     "Status::OK is not a valid constructor argument to StatusOr<T>";
+ static const char* kNullObjectCtorArgMessage =
+-    "NULL is not a valid constructor argument to StatusOr<T*>";
++    "nullptr is not a valid constructor argument to StatusOr<T*>";
+ 
+ Status StatusOrHelper::HandleInvalidStatusCtorArg() {
+   LOG(DFATAL) << kInvalidStatusCtorArgMessage;
+diff -ur --strip-trailing-cr /tmp/private-join-and-compute.original/util/statusor.h third_party/private-join-and-compute/util/statusor.h
+--- /tmp/private-join-and-compute.original/util/statusor.h	2019-08-07 14:26:10.384523517 +0200
++++ third_party/private-join-and-compute/util/statusor.h	2019-08-07 12:42:02.939051124 +0200
+@@ -96,15 +96,15 @@
+   StatusOr(const Status& status);  // NOLINT - no explicit
+ 
+   // Construct a new StatusOr with the given value. If T is a plain pointer,
+-  // value must not be NULL. After calling this constructor, calls to
++  // value must not be nullptr. After calling this constructor, calls to
+   // ValueOrDie() will succeed, and calls to status() will return OK.
+   //
+   // NOTE: Not explicit - we want to use StatusOr<T> as a return type
+   // so it is convenient and sensible to be able to do 'return T()'
+   // when the return type is StatusOr<T>.
+   //
+-  // REQUIRES: if T is a plain pointer, value != NULL. This requirement is
+-  // DCHECKed. In optimized builds, passing a NULL pointer here will have
++  // REQUIRES: if T is a plain pointer, value != nullptr. This requirement is
++  // DCHECKed. In optimized builds, passing a nullptr pointer here will have
+   // the effect of passing ::private_join_and_compute::StatusCode::kInternal as a fallback.
+   StatusOr(const T& value);  // NOLINT - no explicit
+ 
+@@ -165,7 +165,7 @@
+ 
+ template <typename T>
+ struct StatusOrHelper::Specialize {
+-  // For non-pointer T, a reference can never be NULL.
++  // For non-pointer T, a reference can never be nullptr.
+   static inline bool IsValueNull(const T& t) { return false; }
+ };
+ 

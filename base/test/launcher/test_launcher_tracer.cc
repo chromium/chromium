@@ -37,11 +37,11 @@ bool TestLauncherTracer::Dump(const FilePath& path) {
     json_event->SetString("ph", "X");
     json_event->SetInteger(
         "ts", (event.timestamp - trace_start_time_).InMicroseconds());
-    json_event->SetInteger("dur", event.duration.InMicroseconds());
-    json_event->SetInteger("tid", event.thread_id);
+    json_event->SetIntKey("dur", event.duration.InMicroseconds());
+    json_event->SetIntKey("tid", event.thread_id);
 
     // Add fake values required by the trace viewer.
-    json_event->SetInteger("pid", 0);
+    json_event->SetIntKey("pid", 0);
 
     json_events->Append(std::move(json_event));
   }

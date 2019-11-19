@@ -1,10 +1,11 @@
 // This file is generated from a similarly-named Perl script in the BoringSSL
 // source tree. Do not edit by hand.
 
-#if defined(__has_feature)
+#if !defined(__has_feature)
+#define __has_feature(x) 0
+#endif
 #if __has_feature(memory_sanitizer) && !defined(OPENSSL_NO_ASM)
 #define OPENSSL_NO_ASM
-#endif
 #endif
 
 #if !defined(OPENSSL_NO_ASM)
@@ -777,3 +778,4 @@ aes_hw_ctr32_encrypt_blocks:
 #endif
 #endif
 #endif  // !OPENSSL_NO_ASM
+.section	.note.GNU-stack,"",%progbits

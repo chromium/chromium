@@ -14,12 +14,18 @@
 #include "base/macros.h"
 #include "base/scoped_observer.h"
 #include "build/build_config.h"
+#include "components/safe_browsing/buildflags.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_observer.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "net/base/directory_lister.h"
 #include "third_party/blink/public/mojom/choosers/file_chooser.mojom.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
+
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_dialog_delegate.h"
+#endif
 
 class Profile;
 
@@ -70,6 +76,17 @@ class FileSelectHelper : public base::RefCountedThreadSafe<
   FRIEND_TEST_ALL_PREFIXES(FileSelectHelperTest, ZipPackage);
   FRIEND_TEST_ALL_PREFIXES(FileSelectHelperTest, GetSanitizedFileName);
   FRIEND_TEST_ALL_PREFIXES(FileSelectHelperTest, LastSelectedDirectory);
+  FRIEND_TEST_ALL_PREFIXES(FileSelectHelperTest,
+                           DeepScanCompletionCallback_NoFiles);
+  FRIEND_TEST_ALL_PREFIXES(FileSelectHelperTest,
+                           DeepScanCompletionCallback_OneOKFile);
+  FRIEND_TEST_ALL_PREFIXES(FileSelectHelperTest,
+                           DeepScanCompletionCallback_TwoOKFiles);
+  FRIEND_TEST_ALL_PREFIXES(FileSelectHelperTest,
+                           DeepScanCompletionCallback_TwoBadFiles);
+  FRIEND_TEST_ALL_PREFIXES(FileSelectHelperTest,
+                           DeepScanCompletionCallback_OKBadFiles);
+
   explicit FileSelectHelper(Profile* profile);
   ~FileSelectHelper() override;
 
@@ -79,7 +96,7 @@ class FileSelectHelper : public base::RefCountedThreadSafe<
   void GetFileTypesInThreadPool(blink::mojom::FileChooserParamsPtr params);
   void GetSanitizedFilenameOnUIThread(
       blink::mojom::FileChooserParamsPtr params);
-#if defined(FULL_SAFE_BROWSING)
+#if BUILDFLAG(FULL_SAFE_BROWSING)
   void CheckDownloadRequestWithSafeBrowsing(
       const base::FilePath& default_path,
       blink::mojom::FileChooserParamsPtr params);
@@ -118,8 +135,10 @@ class FileSelectHelper : public base::RefCountedThreadSafe<
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
   void WebContentsDestroyed() override;
 
-  void EnumerateDirectory(std::unique_ptr<content::FileSelectListener> listener,
-                          const base::FilePath& path);
+  void EnumerateDirectoryImpl(
+      content::WebContents* tab,
+      std::unique_ptr<content::FileSelectListener> listener,
+      const base::FilePath& path);
 
   // Kicks off a new directory enumeration.
   void StartNewEnumeration(const base::FilePath& path);
@@ -155,15 +174,55 @@ class FileSelectHelper : public base::RefCountedThreadSafe<
   static base::FilePath ZipPackage(const base::FilePath& path);
 #endif  // defined(OS_MACOSX)
 
-  // Utility method that passes |files| to the FileSelectListener, and ends the
-  // file chooser.
-  // TODO(tkent): Remove 'RenderFrameHost' from the name.
-  void NotifyRenderFrameHostAndEnd(
+  // This function is the start of a call chain that may or may not be async
+  // depending on the platform and features enabled.  The call to this method
+  // is made after the user has chosen the file(s) in the UI in order to
+  // process and filter the list before returning the final result to the
+  // caller.  The call chain is as follows:
+  //
+  // ConvertToFileChooserFileInfoList: converts a vector of SelectedFileInfo
+  // into a vector of FileChooserFileInfoPtr and then calls
+  // PerformSafeBrowsingDeepScanIfNeeded().  On chromeos, the conversion is
+  // performed asynchronously.
+  //
+  // PerformSafeBrowsingDeepScanIfNeeded: if the deep scanning feature is
+  // enabled and it is determined by enterprise policy that scans are required,
+  // starts the scans and sets DeepScanCompletionCallback() as the async
+  // callback.  If deep scanning is not enabled or is not supported on the
+  // platform, this function calls NotifyListenerAndEnd() directly.
+  //
+  // DeepScanCompletionCallback: processes the results of the deep scan.  Any
+  // files that did not pass the scan are removed from the list.  Ends by
+  // calling NotifyListenerAndEnd().
+  //
+  // NotifyListenerAndEnd: Informs the listener of the final list of files to
+  // use and performs any required cleanup.
+  //
+  // Because the state of the web contents may change at each asynchronous
+  // step, calls are make to AbortIfWebContentsDestroyed() to check if, for
+  // example, the tab has been closed or the contents navigated.  In these
+  // cases the file selection is aborted and the state cleaned up.
+  void ConvertToFileChooserFileInfoList(
       const std::vector<ui::SelectedFileInfo>& files);
 
-  // Sends the result to the FileSelectListener, and call |RunFileChooserEnd|.
-  // TODO(tkent): Remove 'RenderFrameHost' from the name.
-  void NotifyRenderFrameHostAndEndAfterConversion(
+  // Checks to see if scans are required for the specified files.
+  void PerformSafeBrowsingDeepScanIfNeeded(
+      std::vector<blink::mojom::FileChooserFileInfoPtr> list);
+
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+  // Callback used to receive the results of a deep scan.
+  void DeepScanCompletionCallback(
+      std::vector<blink::mojom::FileChooserFileInfoPtr> list,
+      const safe_browsing::DeepScanningDialogDelegate::Data& data,
+      const safe_browsing::DeepScanningDialogDelegate::Result& result);
+#endif
+
+  // Finish the PerformSafeBrowsingDeepScanIfNeeded() handling after the
+  // deep scanning checks have been performed.  Deep scanning may change the
+  // list of files chosen by the user, so the list of files passed here may be
+  // a subset of of the files passed to
+  // PerformSafeBrowsingDeepScanIfNeeded().
+  void NotifyListenerAndEnd(
       std::vector<blink::mojom::FileChooserFileInfoPtr> list);
 
   // Schedules the deletion of the files in |temporary_files_| and clears the
@@ -176,6 +235,11 @@ class FileSelectHelper : public base::RefCountedThreadSafe<
   // Calls RunFileChooserEnd() if the webcontents was destroyed. Returns true
   // if the file chooser operation shouldn't proceed.
   bool AbortIfWebContentsDestroyed();
+
+  void SetFileSelectListenerForTesting(
+      std::unique_ptr<content::FileSelectListener> listener);
+
+  void DontAbortOnMissingWebContentsForTesting();
 
   // Helper method to get allowed extensions for select file dialog from
   // the specified accept types as defined in the spec:
@@ -238,11 +302,14 @@ class FileSelectHelper : public base::RefCountedThreadSafe<
   std::unique_ptr<ActiveDirectoryEnumeration> directory_enumeration_;
 
   ScopedObserver<content::RenderWidgetHost, content::RenderWidgetHostObserver>
-      observer_;
+      observer_{this};
 
   // Temporary files only used on OSX. This class is responsible for deleting
   // these files when they are no longer needed.
   std::vector<base::FilePath> temporary_files_;
+
+  // Set to false in unit tests since there is no WebContents.
+  bool abort_on_missing_web_contents_in_tests_ = true;
 
   DISALLOW_COPY_AND_ASSIGN(FileSelectHelper);
 };

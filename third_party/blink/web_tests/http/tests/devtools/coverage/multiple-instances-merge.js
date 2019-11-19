@@ -6,7 +6,7 @@
   TestRunner.addResult(`Tests the coverage list view after finishing recording in the Coverage view.\n`);
   await TestRunner.loadModule('coverage_test_runner');
 
-  CoverageTestRunner.startCoverage();
+  await CoverageTestRunner.startCoverage(true);
   await TestRunner.loadHTML(`
       <iframe src="resources/subframe.html"></iframe>
       <p class="class">

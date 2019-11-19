@@ -1,6 +1,0 @@
-This tests that when a frame navigates to a new page, closures in the old page cannot access page content of the new page if there are from different domains.
-
-You should see PASSED at the end of page if the test passes.
-
-PASSED
- 

@@ -2,15 +2,18 @@
 # Copyright 2017 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+
+from __future__ import print_function
+
 import optparse
 import sys
 
 from core import path_util
+path_util.AddTelemetryToPath()
+
 from core import benchmark_finders
-
-sys.path.insert(1, path_util.GetTelemetryDir())
-
 from telemetry import decorators
+
 
 def _CreateParser():
   parser = optparse.OptionParser()
@@ -28,10 +31,10 @@ def main(args):
   if options.include_contrib:
     benchmarks = benchmark_finders.GetAllBenchmarks()
   else:
-    benchmarks = benchmark_finders.GetAllPerfBenchmarks()
+    benchmarks = benchmark_finders.GetOfficialBenchmarks()
 
   for b in benchmarks:
-    print '{:<60}'.format(b.Name())
+    print('{:<60}'.format(b.Name()))
 
 
 if __name__ == '__main__':

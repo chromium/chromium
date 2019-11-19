@@ -14,6 +14,7 @@
 #include "base/synchronization/lock.h"
 #include "base/win/win_util.h"
 #include "base/win/wrapped_window_proc.h"
+#include "ui/gfx/win/crash_id_helper.h"
 #include "ui/gfx/win/hwnd_util.h"
 
 namespace gfx {
@@ -21,7 +22,6 @@ namespace gfx {
 static const DWORD kWindowDefaultChildStyle =
     WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS;
 static const DWORD kWindowDefaultStyle = WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN;
-static const DWORD kWindowDefaultExStyle = 0;
 
 ///////////////////////////////////////////////////////////////////////////////
 // WindowImpl class tracking.
@@ -33,10 +33,6 @@ const wchar_t* const WindowImpl::kBaseClassName = L"Chrome_WidgetWin_";
 
 // WindowImpl class information used for registering unique windows.
 struct ClassInfo {
-  UINT style;
-  HICON icon;
-  HICON small_icon;
-
   ClassInfo(int style, HICON icon, HICON small_icon)
       : style(style), icon(icon), small_icon(small_icon) {}
 
@@ -45,6 +41,10 @@ struct ClassInfo {
     return (other.style == style && other.icon == icon &&
             other.small_icon == small_icon);
   }
+
+  UINT style;
+  HICON icon;
+  HICON small_icon;
 };
 
 // WARNING: this class may be used on multiple threads.
@@ -125,7 +125,7 @@ ATOM ClassRegistrar::RetrieveClassAtom(const ClassInfo& class_info) {
 
   // No class found, need to register one.
   base::string16 name = base::string16(WindowImpl::kBaseClassName) +
-      base::IntToString16(registered_count_++);
+                        base::NumberToString16(registered_count_++);
 
   WNDCLASSEX window_class;
   base::win::InitializeWindowClass(
@@ -158,15 +158,8 @@ ClassRegistrar::ClassRegistrar() : registered_count_(0) {}
 ///////////////////////////////////////////////////////////////////////////////
 // WindowImpl, public
 
-WindowImpl::WindowImpl()
-    : window_style_(0),
-      window_ex_style_(kWindowDefaultExStyle),
-      class_style_(CS_DBLCLKS),
-      hwnd_(NULL),
-      got_create_(false),
-      got_valid_hwnd_(false),
-      destroyed_(NULL) {
-}
+WindowImpl::WindowImpl(const std::string& debugging_id)
+    : debugging_id_(debugging_id), class_style_(CS_DBLCLKS) {}
 
 WindowImpl::~WindowImpl() {
   if (destroyed_)
@@ -177,8 +170,8 @@ WindowImpl::~WindowImpl() {
 // static
 void WindowImpl::UnregisterClassesAtExit() {
   base::AtExitManager::RegisterTask(
-      base::Bind(&ClassRegistrar::UnregisterClasses,
-                 base::Unretained(ClassRegistrar::GetInstance())));
+      base::BindOnce(&ClassRegistrar::UnregisterClasses,
+                     base::Unretained(ClassRegistrar::GetInstance())));
 }
 
 void WindowImpl::Init(HWND parent, const Rect& bounds) {
@@ -263,7 +256,7 @@ LRESULT WindowImpl::OnWndProc(UINT message, WPARAM w_param, LPARAM l_param) {
 
   HWND hwnd = hwnd_;
   if (message == WM_NCDESTROY)
-    hwnd_ = NULL;
+    hwnd_ = nullptr;
 
   // Handle the message if it's in our message map; otherwise, let the system
   // handle it.
@@ -275,7 +268,7 @@ LRESULT WindowImpl::OnWndProc(UINT message, WPARAM w_param, LPARAM l_param) {
 
 void WindowImpl::ClearUserData() {
   if (::IsWindow(hwnd_))
-    gfx::SetWindowUserData(hwnd_, NULL);
+    gfx::SetWindowUserData(hwnd_, nullptr);
 }
 
 // static
@@ -300,6 +293,8 @@ LRESULT CALLBACK WindowImpl::WndProc(HWND hwnd,
   if (!window)
     return 0;
 
+  auto logger =
+      CrashIdHelper::Get()->OnWillProcessMessages(window->debugging_id_);
   return window->OnWndProc(message, w_param, l_param);
 }
 

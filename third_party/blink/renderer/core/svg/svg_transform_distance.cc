@@ -20,8 +20,10 @@
 #include "third_party/blink/renderer/core/svg/svg_transform_distance.h"
 
 #include <math.h>
+
 #include "third_party/blink/renderer/platform/geometry/float_point.h"
 #include "third_party/blink/renderer/platform/geometry/float_size.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
 
@@ -119,7 +121,7 @@ SVGTransform* SVGTransformDistance::AddSVGTransforms(SVGTransform* first,
                                                      unsigned repeat_count) {
   DCHECK_EQ(first->TransformType(), second->TransformType());
 
-  SVGTransform* transform = SVGTransform::Create();
+  auto* transform = MakeGarbageCollected<SVGTransform>();
 
   switch (first->TransformType()) {
     case SVGTransformType::kMatrix:
@@ -173,7 +175,7 @@ SVGTransform* SVGTransformDistance::AddToSVGTransform(
       NOTREACHED();
       FALLTHROUGH;
     case SVGTransformType::kUnknown:
-      return SVGTransform::Create();
+      return MakeGarbageCollected<SVGTransform>();
     case SVGTransformType::kTranslate: {
       FloatPoint translation = transform->Translate();
       translation += FloatSize::NarrowPrecision(transform_.E(), transform_.F());

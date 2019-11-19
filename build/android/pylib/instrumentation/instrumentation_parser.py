@@ -39,11 +39,11 @@ class InstrumentationParser(object):
 
       for code, bundle in parser.IterStatus():
         # do something with each instrumentation status
-        print 'status:', code, bundle
+        print('status:', code, bundle)
 
       # do something with the final instrumentation result
       code, bundle = parser.GetResult()
-      print 'result:', code, bundle
+      print('result:', code, bundle)
 
     Args:
       stream: a sequence of lines as produced by the raw output of an

@@ -1,0 +1,22 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("session") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  deps = [
+    "//base",
+    "//ios/web/common:user_agent",
+    "//ios/web/public",
+    "//ios/web/public/navigation",
+    "//net",
+    "//url",
+  ]
+  sources = [
+    "crw_navigation_item_storage.h",
+    "crw_session_certificate_policy_cache_storage.h",
+    "crw_session_storage.h",
+    "serializable_user_data_manager.h",
+    "session_certificate_policy_cache.h",
+  ]
+}

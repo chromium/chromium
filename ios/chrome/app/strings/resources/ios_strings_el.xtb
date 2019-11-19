@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="el">
+<translation id="1005230401424685968">ΕΕΕΕ</translation>
 <translation id="1016495303386450659">Το στοιχείο ενημερώθηκε</translation>
 <translation id="1047726139967079566">Τοποθέτηση Σελιδοδείκτη σε Αυτήν τη Σελίδα...</translation>
 <translation id="1049743911850919806">Ανώνυμη περιήγηση</translation>
@@ -8,6 +9,7 @@
 <translation id="1066060668811609597">Διαχείριση συγχρονισμού</translation>
 <translation id="1076421457278169141">Ο κώδικας σαρώθηκε</translation>
 <translation id="1084365883616172403">Η ανάρτηση στο Facebook ολοκληρώθηκε.</translation>
+<translation id="1103523840287552314">Να μεταφράζονται πάντα τα <ph name="LANGUAGE" /></translation>
 <translation id="1104948393051856124">Αποδοχή και συνέχεια</translation>
 <translation id="1112015203684611006">Η εκτύπωση απέτυχε.</translation>
 <translation id="1125564390852150847">Δημιουργία νέας καρτέλας.</translation>
@@ -15,8 +17,9 @@
 <translation id="1165039591588034296">Σφάλμα</translation>
 <translation id="1172898394251786223">Επόμενο πεδίο</translation>
 <translation id="1176932207622159128">Αδύνατη αποθ.εικόνας</translation>
+<translation id="1180526666083833456">Συγχρονισμός και εξατομίκευση σε όλες τις συσκευές.</translation>
 <translation id="1181037720776840403">Κατάργηση</translation>
-<translation id="1201530049782216880">Νέα καρτέλα ανώνυμης περιήγησης</translation>
+<translation id="1207113853726624428">Νέα αναζήτηση</translation>
 <translation id="1209206284964581585">Προσωρινή απόκρυψη</translation>
 <translation id="1219674500290482172">Δεν είναι δυνατή η σύνδεση στο διαδίκτυο.</translation>
 <translation id="122699739164161391">Κλείσιμο όλων των καρτελών</translation>
@@ -24,6 +27,8 @@
 <translation id="1254117744268754948">Επιλογή φακέλου</translation>
 <translation id="1265739287306757398">Μάθετε με ποιον τρόπο</translation>
 <translation id="1272079795634619415">Διακοπή</translation>
+<translation id="1283524564873030414">Τελευταίες 24 ώρες</translation>
+<translation id="1285320974508926690">Να μην γίνεται ποτέ μετάφραση αυτού του ιστότοπου</translation>
 <translation id="1323735185997015385">Διαγραφή</translation>
 <translation id="132683371494960526">Πατήστε δύο φορές για να αλλάξετε τον γονικό φάκελο.</translation>
 <translation id="1340643665687018190">Κλείσιμο μενού</translation>
@@ -37,12 +42,15 @@
 <translation id="1400642268715879018">Τελευταίες 4 εβδομάδες</translation>
 <translation id="1407135791313364759">Άνοιγμα όλων</translation>
 <translation id="1430915738399379752">Εκτύπωση</translation>
+<translation id="1436290164580597469">Εισαγάγετε τη φράση πρόσβασης για να ξεκινήσει ο συγχρονισμός.</translation>
+<translation id="1449835205994625556">Απόκρυψη κωδικού πρόσβασης</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> στοιχεία</translation>
 <translation id="1491277525950327607">Πατήστε δύο φορές για εναλλαγή της ρύθμισης</translation>
+<translation id="1509486075633541495">Σύνδεση στον ιστότοπο</translation>
 <translation id="152234381334907219">Δεν έγινε ποτέ αποθήκευση</translation>
 <translation id="1540800554400757039">Διεύθυνση 1</translation>
 <translation id="1545749641540134597">Σάρωση κωδικού QR</translation>
-<translation id="1558704936695638228">Πατήστε παρατεταμένα για περισσότερες επιλογές καρτέλας</translation>
+<translation id="1552525382687785070">Ο συγχρονισμός έχει απενεργοποιηθεί από τον διαχειριστή σας</translation>
 <translation id="1580783302095112590">Το μήνυμα εστάλη.</translation>
 <translation id="1582732959743469162">Αυτό θα σταματήσει όλη την πρόοδο για την τρέχουσα λήψη.</translation>
 <translation id="1605658421715042784">Αντιγραφή εικόνας</translation>
@@ -55,61 +63,68 @@
 <translation id="168715261339224929">Για να εμφανίζονται οι σελιδοδείκτες σας σε όλες τις συσκευές σας, ενεργοποιήστε τον συγχρονισμό.</translation>
 <translation id="1687475363370981210">Επισήμανση όλων ως αναγνωσμένων</translation>
 <translation id="1690731385917361335">Κανένα στοιχείο</translation>
+<translation id="1692118695553449118">Ο συγχρονισμός είναι ενεργοποιημένος</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> στοιχεία επιλεγμένα</translation>
 <translation id="1740468249224277719">Πατήστε δύο φορές για εγκατάσταση.</translation>
 <translation id="1746815479209538200">Για να περιηγηθείτε στον ιστό, προσθέστε μια νέα καρτέλα.</translation>
 <translation id="1752547299766512813">Απ. κωδ. πρόσβ.</translation>
 <translation id="1753905327828125965">Πιο Δημοφιλή</translation>
+<translation id="1803264062614276815">Όνομα κατόχου κάρτας</translation>
 <translation id="1809939268435598390">Διαγραφή φακέλου</translation>
-<translation id="1813414402673211292">Διαγραφή δεδομένων περιήγησης</translation>
+<translation id="1813414402673211292">Διαγραφή δεδ. περιήγ.</translation>
 <translation id="1820259098641718022">Προστέθηκε στη λίστα ανάγνωσης</translation>
 <translation id="1828824471510190776">Πρόταση κωδ. πρόσβ…</translation>
-<translation id="1876721852596493031">Αποστ. δεδομ. χρήσης</translation>
-<translation id="1886928167269928266">Από την αρχή</translation>
+<translation id="1870148520156231997">Αποκάλυψη κωδικού πρόσβασης</translation>
+<translation id="1872096359983322073">Φακός</translation>
 <translation id="1911619930368729126">Μεταφόρ.στο Google Drive</translation>
+<translation id="1923342640370224680">Τελευταία ώρα</translation>
 <translation id="1941314575388338491">Πατήστε δύο φορές για αντιγραφή.</translation>
+<translation id="1952172573699511566">Οι ιστότοποι θα εμφανίζουν κείμενο στην προτιμώμενη γλώσσα σας όταν υπάρχει αυτή η δυνατότητα.</translation>
 <translation id="1952728750904661634">Σύνδεση με διαχειριζόμενο λογαριασμό</translation>
 <translation id="1974060860693918893">Σύνθετες</translation>
 <translation id="1989112275319619282">Περιήγηση</translation>
-<translation id="2000419248597011803">Στέλνει ορισμένα cookie και αναζητήσεις από τη γραμμή διευθύνσεων και το πλαίσιο αναζήτησης στην προεπιλεγμένη μηχανή αναζήτησης</translation>
 <translation id="2015722694326466240">Για να δείτε τους κωδικούς πρόσβασης, θα πρέπει πρώτα να ορίσετε έναν κωδικό πρόσβασης για τη συσκευή σας.</translation>
-<translation id="2068952045031577364">Τελευταία εβδομάδα</translation>
+<translation id="2073572773299281212">Ενεργή <ph name="DAYS" /> ημέρες πριν</translation>
 <translation id="2074131957428911366">Μπορείτε πάντα να επιλέξετε τα στοιχεία που θέλετε να συγχρονίσετε στις <ph name="BEGIN_LINK" />ρυθμίσεις<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Αναίρεση</translation>
 <translation id="209018056901015185">Αίτηση ιστότ. για υπολογ.</translation>
-<translation id="2096012225669085171">Συγχρονισμός και εξατομίκευση σε όλες τις συσκευές</translation>
 <translation id="2103075008456228677">Ανοίξτε το history.google.com</translation>
 <translation id="2116625576999540962">Μετακινήθηκαν <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> στοιχεία</translation>
 <translation id="213900355088104901">Για να περιηγηθείτε ιδιωτικά, ανοίξτε μια καρτέλα για ανώνυμη περιήγηση</translation>
 <translation id="2139867232736819575">Αναζήτηση του κειμένου που αντιγράψατε</translation>
 <translation id="2149973817440762519">Επεξεργασία σελιδοδείκτη</translation>
+<translation id="2179182049312275900">Μπορείτε να ενεργοποιήσετε τον συγχρονισμό ανά πάσα στιγμή στις ρυθμίσεις.</translation>
 <translation id="2198757192731523470">Η Google μπορεί να χρησιμοποιεί το ιστορικό σας για την εξατομίκευση της Αναζήτησης, των διαφημίσεων και άλλων υπηρεσιών Google.</translation>
-<translation id="2207590065820824892"><ph name="UNREAD_COUNT" /> μη αναγνωσμένα άρθρα λίστας ανάγνωσης.</translation>
 <translation id="2230173723195178503">Η ιστοσελίδα φορτώθηκε</translation>
 <translation id="2239626343334228536">Διαγραφή δεδομένων περιήγησης…</translation>
-<translation id="2256128224215992540">Προτάσεις αναζήτησης και ιστοτόπων</translation>
 <translation id="2267753748892043616">Προσθήκη λογαριασμού</translation>
 <translation id="2268044343513325586">Περιορισμός</translation>
 <translation id="2273327106802955778">Μενού "Περισσότερα"</translation>
 <translation id="2316709634732130529">Χρ. προτ. κωδ. πρόσ.</translation>
 <translation id="2320166752086256636">Απόκρυψη πληκτρολογίου</translation>
+<translation id="2330129964253841015">Να ενημερώνεστε σε περίπτωση παραβίασης των κωδικών πρόσβασής σας</translation>
 <translation id="2339560363438331454">Συγχρ. και Υπηρ. Google</translation>
 <translation id="2351097562818989364">Έγινε επαναφορά ρυθμίσεων μετάφρασης.</translation>
+<translation id="2359043044084662842">Μετάφραση</translation>
 <translation id="2359808026110333948">Συνέχεια</translation>
 <translation id="2360196772093551345">Αίτημα ιστοτόπου για κινητά</translation>
 <translation id="2381405137052800939">Βασικές πληροφορίες</translation>
 <translation id="2386793615875593361">Έχει επιλεγεί 1 φωτογραφία</translation>
+<translation id="2421044535038393232">Συνέχιση επεξεργασίας</translation>
 <translation id="2435457462613246316">Εμφάνιση κωδικού πρόσβασης</translation>
 <translation id="2481538920734869610">ΠΡΟΣΘΗΚΗ ΛΟΓΑΡΙΑΣΜΟΥ</translation>
-<translation id="2523184218357549926">Αποστέλλει στην Google URL των σελίδων που επισκέπτεστε</translation>
+<translation id="2497852260688568942">Ο συγχρονισμός έχει απενεργοποιηθεί από τον διαχειριστή σας</translation>
+<translation id="2500374554657206846">Επιλογές για την αποθήκευση κωδικού πρόσβασης</translation>
 <translation id="2523363575747517183">Αυτός ο ιστότοπος προσπαθεί επανειλημμένως να ανοίξει κάποια άλλη εφαρμογή.</translation>
 <translation id="2529021024822217800">Άνοιγμα όλων</translation>
+<translation id="2562041823070056534">Αποστολή σε <ph name="DEVICE_NAME" />…</translation>
+<translation id="2570206273416014374">Αποστέλλει ορισμένα cookie και αναζητήσεις από τη γραμμή διευθύνσεων και το πλαίσιο αναζήτησης στην προεπιλεγμένη μηχανή αναζήτησης.</translation>
 <translation id="2572712655377361602">Μια πολιτική συσκευής απέκλεισε την πρόσβαση στις φωτογραφίες σας</translation>
+<translation id="2578571896248130439">Αποστολή ιστοσελίδας</translation>
 <translation id="2584132361465095047">Προσθήκη λογαριασμού…</translation>
 <translation id="2625189173221582860">Ο κωδικός πρόσβασης αντιγράφηκε</translation>
 <translation id="2648803196158606475">Διαγραφή αναγνωσμένων</translation>
 <translation id="2653659639078652383">Υποβολή</translation>
-<translation id="2684815431982545828">Νέα καρτέλα</translation>
 <translation id="2690858294534178585">Η κάμερα χρησιμοποιείται</translation>
 <translation id="2691653761409724435">Μη διαθέσιμο εκτός σύνδεσης</translation>
 <translation id="2702801445560668637">Λίστα ανάγνωσης</translation>
@@ -118,11 +133,13 @@
 <translation id="2712127207578915686">Αδύνατο άνοιγμα αρχείου</translation>
 <translation id="2718352093833049315">Μόνο σε Wi-Fi</translation>
 <translation id="2747003861858887689">Προηγούμενο πεδίο</translation>
+<translation id="2773292004659987824">Ανώνυμη αναζήτηση</translation>
 <translation id="2780046210906776326">Κανένας Λογαρ. Email</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2800683595868705743">Αποχώρηση από την εναλλαγή καρτελών</translation>
 <translation id="2830972654601096923">Διαχείριση διευθύνσεων…</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
+<translation id="2840687315230832938">Η αρχική ρύθμιση συγχρονισμού δεν ολοκληρώθηκε</translation>
 <translation id="2843803966603263712">Επαν.ρυθ.μετάφ.</translation>
 <translation id="2858204748079866344">Προκειμένου να προστατεύσει το απόρρητό σας, το Chrome δεν θα συμπληρώνει αυτόματα τον κωδικό πρόσβασής σας σε αυτό το πεδίο.</translation>
 <translation id="285960592395650245">Επανάληψη λήψης</translation>
@@ -130,21 +147,22 @@
 <translation id="2871695793448672541">Κρυφός κωδικός</translation>
 <translation id="288655811176831528">Κλείσιμο καρτέλας</translation>
 <translation id="2898963176829412617">Νέος φάκελος…</translation>
+<translation id="2916171785467530738">Αυτόματη συμπλήρωση αναζητήσεων και URL</translation>
 <translation id="291754862089661335">Τοποθετήστε τον κώδικα QR ή τον γραμμωτό κώδικα σε αυτό το πλαίσιο</translation>
 <translation id="2921219216347069551">Κοιν.χ. σελ. αδύνατη</translation>
 <translation id="2923448633003185837">Επικόλληση και μετάβαση</translation>
 <translation id="292639812446257861">Επισ. ως μη αναγνωσμένων</translation>
-<translation id="2933759065870693102">Φακός</translation>
 <translation id="2958718410589002129">Κωδικοί πρόσβασης</translation>
 <translation id="2969979262385602596">Αποτυχία σύνδεσης. Δοκιμάστε ξανά αργότερα.</translation>
+<translation id="298306318844797842">Προσθήκη τρόπου πληρωμής…</translation>
 <translation id="2989805286512600854">Άνοιγμα σε Νέα Καρτέλα</translation>
-<translation id="3024255823539804759">Τελευταία ημέρα</translation>
 <translation id="3037605927509011580">Όπα! Κάτι πήγε στραβά!</translation>
 <translation id="3112556859945124369">Επισήμανση…</translation>
+<translation id="3153862085237805241">Αποθήκευση κάρτας</translation>
 <translation id="3157684681743766797">Επισήμανση όλων…</translation>
 <translation id="3175081911749765310">Υπηρ.ιστού</translation>
+<translation id="3178650076442119961">Ενεργή σήμερα</translation>
 <translation id="3207960819495026254">Προστέθηκε στους σελιδοδείκτες</translation>
-<translation id="3210163015918861891">Ο συγχρονισμός είναι ανενεργός</translation>
 <translation id="3224641773458703735">Για να εξαγάγετε τους κωδικούς πρόσβασης, θα πρέπει πρώτα να ορίσετε έναν κωδικό πρόσβασης στη συσκευή σας.</translation>
 <translation id="3240426699337459095">Ο σύνδεσμος αντιγράφηκε</translation>
 <translation id="3244271242291266297">ΜΜ</translation>
@@ -155,7 +173,9 @@
 <translation id="3324193307694657476">Διεύθυνση 2</translation>
 <translation id="3329904751041170572">Δεν ήταν δυνατή η σύνδεση στο διακομιστή.</translation>
 <translation id="3335947283844343239">Εκ Νέου Άνοιγμα Κλεισμένης Καρτέλας</translation>
+<translation id="3371831930909698441">Διατίθεται μετάφραση. Διαθέσιμες επιλογές κοντά στο κάτω μέρος της οθόνης.</translation>
 <translation id="3393920035788932672">Επιτρέπ. τα αναδυόμ.</translation>
+<translation id="3443810440409579745">Η καρτέλα λήφθηκε.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> λεπτά</translation>
 <translation id="3448016392200048164">Προβολή διαχωρισμού οθόνης</translation>
 <translation id="345565170154308620">Διαχείριση κωδικών πρόσβασης…</translation>
@@ -173,14 +193,16 @@
 <translation id="3533202363250687977">Κλείσιμο όλων των καρτελών ανώνυμης περιήγησης</translation>
 <translation id="3533436815740441613">Νέα καρτέλα</translation>
 <translation id="3551320343578183772">Κλείσιμο Καρτέλας</translation>
+<translation id="3581564640715911333">Προσφορά για μετάφραση σελίδων σε άλλες γλώσσες</translation>
 <translation id="3588820906588687999">Άνοιγμα εικόνας σε νέα καρτέλα</translation>
 <translation id="3603009562372709545">Αντιγραφή διεύθυνσης URL συνδέσμου</translation>
 <translation id="3607167657931203000">Δεδομένα Αυτόματης συμπλήρωσης</translation>
-<translation id="3607323550193047592">Ο συγχρονισμός είναι ενεργός</translation>
 <translation id="3609785682760573515">Συγχρονισμός…</translation>
 <translation id="3638472932233958418">Προφόρτ. ιστοσελίδων</translation>
+<translation id="3670030362669914947">Αριθμός</translation>
 <translation id="3691593122358196899">Ο σελιδοδείκτης είναι στο "<ph name="FOLDER_TITLE" />"</translation>
 <translation id="3771033907050503522">Καρτ.αν.περιήγ.</translation>
+<translation id="3775743491439407556">Ο συγχρονισμός δεν λειτουργεί</translation>
 <translation id="3779810277399252432">Δεν υπάρχει σύνδεση στο διαδίκτυο.</translation>
 <translation id="3783017676699494206">Αποθήκευση εικόνας</translation>
 <translation id="3789841737615482174">Εγκατάσταση</translation>
@@ -191,35 +213,38 @@
 <translation id="3928666092801078803">Συνδυασμός των δεδομένων μου</translation>
 <translation id="3929457972718048006">Διευθύνσεις</translation>
 <translation id="3943492037546055397">Κωδικοί πρόσβασης</translation>
-<translation id="3950820424414687140">Σύνδεση</translation>
 <translation id="3967822245660637423">Ολοκλήρωση λήψης</translation>
 <translation id="3989635538409502728">Έξοδος</translation>
 <translation id="3995521777587992544">Γραμμή προόδου φόρτωσης σελίδας, φορτώθηκε το <ph name="EMAIL" />.</translation>
 <translation id="4002066346123236978">Τίτλος</translation>
 <translation id="4004204301268239848">Οι κωδικοί πρόσβασης αποθηκεύονται στον Λογαριασμό σας Google, ώστε να μπορείτε να τους χρησιμοποιήσετε σε οποιαδήποτε συσκευή.</translation>
+<translation id="4006921758705478413">Αποστολή στις συσκευές σας</translation>
 <translation id="4038354071007134711">Καμία εφαρμογή στη συσκευή για άνοιγμα αρχείου.</translation>
 <translation id="4042870976416480368">Εύρεση στη σελίδα</translation>
 <translation id="4049507953662678203">Βεβαιωθείτε ότι έχετε μια σύνδεση δικτύου και δοκιμάστε ξανά.</translation>
+<translation id="4071530748369333746">Ακύρωση συγχρονισμού;</translation>
 <translation id="4082688844002261427">Ελέγξτε τον τρόπο με τον οποίο χρησιμοποιείται το ιστορικό περιήγησής σας για την εξατομίκευση της Αναζήτησης, των διαφημίσεων και άλλων στοιχείων</translation>
 <translation id="408404951701638773">Η πρόσβαση στη γραμμή αναζήτησης είναι πλέον πιο εύκολη</translation>
-<translation id="4084682180776658562">Σελιδοδείκτης</translation>
 <translation id="411254640334432676">Αποτυχία λήψης.</translation>
 <translation id="4112644173421521737">Αναζήτηση</translation>
 <translation id="4121993058175073134">Για αποστ. δεδομ.εξαγ.δικτ.,διαμορφ. το email σας στην εφ. "Ρυθμίσεις"</translation>
 <translation id="4124987746317609294">Χρονικό εύρος</translation>
 <translation id="4172051516777682613">Εμφάνιση πάντα</translation>
 <translation id="418156467088430727">Προβολή έκδοσης εκτός σύνδεσης σε νέα καρτέλα</translation>
-<translation id="4237682350741091554">Διαχειριστείτε το Chrome Sync και την εξατομίκευση στις <ph name="BEGIN_LINK" />Ρυθμίσεις<ph name="END_LINK" /></translation>
+<translation id="4181841719683918333">Γλώσσες</translation>
 <translation id="424315890655130736">Εισαγωγή φράσης πρόσβασης</translation>
+<translation id="4263576668337963058">Εμφάνιση διαθέσιμων ενεργειών σελίδας</translation>
 <translation id="4272631900155121838">Για να σαρώσετε έναν κώδικα QR, ενεργοποιήστε την κάμερα από τις ρυθμίσεις</translation>
 <translation id="4281844954008187215">Όροι Παροχής Υπηρεσιών</translation>
 <translation id="430793432425771671">Συγχρονισμός όλων</translation>
-<translation id="4342284590510997375">Νέο</translation>
+<translation id="430967081421617822">Από την αρχή</translation>
+<translation id="4334428914252001502">1 μη αναγνωσμένο άρθρο.</translation>
+<translation id="4338650699862464074">Αποστέλλει στην Google URL των σελίδων που επισκέπτεστε.</translation>
 <translation id="4359125752503270327">Αυτή η σελίδα θα ανοίξει σε άλλη εφαρμογή.</translation>
-<translation id="4370827530403103842">Ο συγχρονισμός δεν λειτουργεί. Πατήστε για επιδιόρθωση.</translation>
 <translation id="4375040482473363939">Αναζήτηση κωδικού QR</translation>
 <translation id="4378154925671717803">Τηλέφωνο</translation>
 <translation id="441868831736628555">Σημείωση απορρήτου</translation>
+<translation id="4454246407045105932">Προσθήκη γλώσσας</translation>
 <translation id="4476574785019001431">Ρυθμίσεις</translation>
 <translation id="4496373720959965247">Προσθέστε καρτέλες και κάντε εναλλαγή μεταξύ σελίδων</translation>
 <translation id="4508750114462689118">Κλείσιμο προσφοράς σύνδεσης</translation>
@@ -230,7 +255,9 @@
 <translation id="461440297010471931">Αναζήτηση με το Google</translation>
 <translation id="4619615317237390068">Καρτέλες από άλλες συσκευές</translation>
 <translation id="4620246317052452550">Σελίδες που έχετε διαβάσει</translation>
+<translation id="4630540211544979320">Μετάφραση σελίδων</translation>
 <translation id="4636930964841734540">Πληροφορίες</translation>
+<translation id="4659126640776004816">Αυτή η λειτουργία ενεργοποιείται όταν συνδέεστε στον Λογαριασμό σας Google.</translation>
 <translation id="4659667755519643272">Εισαγωγή στην εναλλαγή καρτελών</translation>
 <translation id="4666531726415300315">Σύνδεση ως <ph name="EMAIL" />.
 
@@ -240,11 +267,14 @@
 <translation id="4747097190499141774">Η κρυπτογράφηση με φράση πρόσβασης δεν περιλαμβάνει τρόπους πληρωμής και διευθύνσεις από το Google Pay. Μόνο κάποιος που γνωρίζει τη φράση πρόσβασής σας μπορεί να διαβάσει τα κρυπτογραφημένα δεδομένα σας. Η φράση πρόσβασης δεν αποστέλλεται στην Google ούτε αποθηκεύεται από αυτήν. Εάν ξεχάσετε τη φράση πρόσβασής σας ή θέλετε να αλλάξετε αυτήν τη ρύθμιση, θα πρέπει να επαναφέρετε τον συγχρονισμό. <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
 <translation id="4749030437873592350">Εύρεση στη σελίδα…</translation>
 <translation id="4751645464639803239">Νέα καρτέλα ανώνυμης περιήγησης</translation>
+<translation id="4758977202923349869">Τοποθετήστε την πιστωτική κάρτα σε αυτό το πλαίσιο</translation>
 <translation id="4802417911091824046">Η κρυπτογράφηση φράσης πρόσβασης δεν περιλαμβάνει τρόπους πληρωμής και διευθύνσεις από το Google Pay.
 
 Για να αλλάξετε αυτήν τη ρύθμιση, <ph name="BEGIN_LINK" />επαναφέρετε τον συγχρονισμό<ph name="END_LINK" /></translation>
-<translation id="4807020197310989387">1 μη αναγνωσμένο άρθρο λίστας ανάγνωσης.</translation>
+<translation id="4805759445554688327">Μη έγκυρος αριθμός κάρτας</translation>
+<translation id="4818522717893377262">Προσθήκη γλώσσας…</translation>
 <translation id="481968316161811770">Cookie, δεδομένα ιστότοπου</translation>
+<translation id="4833786495304741580">Αποστέλλει αυτόματα στατιστικά στοιχεία χρήσης και αναφορές σφαλμάτων στην Google.</translation>
 <translation id="4840495572919996524">Οι σελιδοδείκτες, το ιστορικό, οι κωδικοί πρόσβασης και άλλα στοιχεία δεν θα συγχρονίζονται πλέον με τον Λογαριασμό σας Google.</translation>
 <translation id="4854345657858711387">Ορισμός κωδικού πρόσβασης</translation>
 <translation id="4860895144060829044">Κλήση</translation>
@@ -252,28 +282,34 @@
 <translation id="4904877109095351937">Επισήμ. ως αναγνωσμένων</translation>
 <translation id="4930268273022498155">Διαγραφή υπαρχόντων δεδομένων. Μπορείτε να τα επαναφέρετε επιστρέφοντας στον λογαριασμό <ph name="USER_EMAIL1" />.</translation>
 <translation id="4941089862236492464">Παρουσιάστηκε πρόβλημα με την κοινοποίηση του στοιχείου σας.</translation>
-<translation id="4979397965658815378">Συνδεθείτε στον Λογαριασμό σας Google για να λάβετε τους σελιδοδείκτες, τους κωδικούς πρόσβασης, το ιστορικό και άλλες ρυθμίσεις σε όλες τις συσκευές σας</translation>
+<translation id="4945756290001680296">Πρόσβαση στις ρυθμίσεις κωδικού πρόσβασης</translation>
+<translation id="4979397965658815378">Συνδεθείτε στον Λογαριασμό σας Google για να λάβετε τους σελιδοδείκτες, τους κωδικούς πρόσβασης, το ιστορικό και άλλες ρυθμίσεις σε όλες τις συσκευές σας.</translation>
 <translation id="5005498671520578047">Αντιγραφή κωδικού πρόσβασης</translation>
 <translation id="5010803260590204777">Άνοιγμα καρτέλας ανώνυμης περιήγησης για ιδιωτική περιήγηση στον ιστό</translation>
-<translation id="5011684439661633295">Γεια σας, <ph name="FULL_ACCOUNT_NAME" /></translation>
 <translation id="5039804452771397117">Επιτρέπεται</translation>
 <translation id="5059136629401106827">ΟΚ</translation>
 <translation id="5062321486222145940">Εγκατάσταση Google Drive</translation>
 <translation id="5083464117946352670">Αδύν.προσδ.μεγέθους αρχείου.</translation>
 <translation id="5094827893301452931">Το Tweet ολοκληρώθηκε.</translation>
+<translation id="5127805178023152808">Ο συγχρονισμός είναι απενεργοποιημένος</translation>
 <translation id="5132942445612118989">Συγχρονίστε κωδικούς πρόσβασης, ιστορικό και πολλά άλλα σε όλες τις συσκευές</translation>
 <translation id="5140288047769711648">Το Chrome θα απομνημονεύσει αυτόν τον κωδικό πρόσβασης για εσάς. Δεν χρειάζεται να τον θυμάστε.</translation>
+<translation id="5150492518600715772">Αποστολή στη συσκευή σας</translation>
 <translation id="5181140330217080051">Λήψη</translation>
 <translation id="5186185447130319458">Ιδιωτικό</translation>
 <translation id="5190835502935405962">Γραμμή σελιδοδεικτών</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5228579091201413441">Ενεργοποίηση συγχρονισμού</translation>
-<translation id="5244474230056479698">Συγχρονισμός με <ph name="EMAIL" /></translation>
+<translation id="5234764350956374838">Παράβλεψη</translation>
+<translation id="5245322853195994030">Ακύρωση συγχρονισμού</translation>
+<translation id="5271549068863921519">Αποθήκευση κωδικού πρόσβασης</translation>
 <translation id="5300589172476337783">Εμφάνιση</translation>
 <translation id="5317780077021120954">Αποθήκευση</translation>
 <translation id="5327248766486351172">Όνομα</translation>
 <translation id="5388358297987318779">Άνοιγμα εικόνας</translation>
+<translation id="5407969256130905701">Απόρριψη αλλαγών</translation>
 <translation id="5409365236829784218">Δεν υπάρχουν εγκατεστ. εφαρμογές για το άνοιγμα του αρχείου</translation>
+<translation id="5416022985862681400">Τελευταίες 7 ημέρες</translation>
 <translation id="5433691172869980887">Το όνομα χρήστη αντιγράφηκε</translation>
 <translation id="54401264925851789">Πληροφορίες ασφάλειας σελίδας</translation>
 <translation id="5443952882982198570">Πιστωτικές κάρτες</translation>
@@ -281,22 +317,28 @@
 <translation id="5548760955356983418">Το Handoff σάς δίνει τη δυνατότητα να ξεκινήσετε την περιήγηση σε έναν ιστότοπο σε αυτήν τη συσκευή και, στη συνέχεια, να συνεχίσετε εύκολα σε Mac. Ο ιστότοπος που είναι ανοικτός αυτήν τη στιγμή θα εμφανίζεται στο Dock του Mac.
 
 Το Handoff θα πρέπει να ενεργοποιηθεί επίσης στην ενότητα "Γενικά" των "Ρυθμίσεων" και οι συσκευές σας θα πρέπει να χρησιμοποιούν τον ίδιο λογαριασμό iCloud.</translation>
+<translation id="5551897871312988470">Προσφορά για μετάφραση</translation>
 <translation id="5556459405103347317">Επαναφόρτωση</translation>
+<translation id="5592679540098330836">Ενεργοποιήστε τον συγχρονισμό για το <ph name="NAME" /></translation>
 <translation id="5614553682702429503">Αποθήκευση κωδικού πρόσβασης;</translation>
 <translation id="5626245204502895507">Δεν ήταν δυνατή η λήψη του αρχείου αυτή τη φορά.</translation>
+<translation id="5631164295104953411">Προσθήκη τρόπου πληρωμής</translation>
 <translation id="5659593005791499971">Διεύθυνση ηλεκτρονικού ταχυδρομείου</translation>
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">Έκδοση <ph name="PRODUCT_VERSION" /></translation>
+<translation id="5706552126692816153">Ενεργή 1 ημέρα πριν</translation>
+<translation id="5711039611392265845">Για περισσότερες ρυθμίσεις που σχετίζονται με το απόρρητο, την ασφάλεια και τη συλλογή δεδομένων, ανατρέξτε στην ενότητα <ph name="BEGIN_LINK" />Συγχρονισμός και υπηρεσίες Google<ph name="END_LINK" />.</translation>
 <translation id="5728700505257787410">Παρουσιάστηκε πρόβλημα με τη σύνδεση στον λογαριασμό σας.</translation>
 <translation id="5737974891429562743">Τα στοιχεία σύνδεσης λογαριασμού δεν είναι ενημερωμένα. Ενημερώστε τα για να ξεκινήσει ο συγχρονισμός.</translation>
 <translation id="5738887413654608789">Αυτό σας επιτρέπει να ανακαλύψετε σχετικές ιστοσελίδες βάσει του περιβάλλοντός σας.</translation>
+<translation id="5782227691023083829">Μετάφραση...</translation>
+<translation id="5803566855766646066">Είστε βέβαιοι ότι θέλετε να απορρίψετε αυτήν τη νέα κάρτα;</translation>
 <translation id="5816228676161003208">Σας επιτρέπει να πραγματοποιείτε ταχύτερη αναζήτηση με φωνητικές εντολές.</translation>
 <translation id="5846482154967366008">Μηχανή αναζήτησης</translation>
 <translation id="5854790677617711513">Παλαιότερο από 30 ημέρες</translation>
 <translation id="5857090052475505287">Νέος φάκελος</translation>
 <translation id="5857770089550859117">Απαιτείται φράση πρόσβασης για έναρξη του συγχρονισμού.</translation>
 <translation id="5860033963881614850">Απενεργοποιημένη</translation>
-<translation id="5865733239029070421">Αποστέλλει αυτόματα στατιστικά στοιχεία χρήσης και αναφορές σφαλμάτων στην Google</translation>
 <translation id="5869029295770560994">OK, το κατάλαβα!</translation>
 <translation id="5871497086027727873">Μετακινήθηκε 1 στοιχείο</translation>
 <translation id="5897956970858271241">Μετάβαση στον αντιγραμμένο σύνδεσμο</translation>
@@ -305,6 +347,7 @@
 <translation id="5938160824633642847">Ο αποθηκευτικός χώρος της συσκευής σας έχει σχεδόν γεμίσει. Ελευθερώστε χώρο και προσπαθήστε ξανά.</translation>
 <translation id="5948291296578561264">Σας επιτρέπει να αποθηκεύετε φωτογραφίες στη βιβλιοθήκη φωτογραφιών σας.</translation>
 <translation id="5955891643922670672">Προβολή έκδοσης εκτός σύνδεσης</translation>
+<translation id="5957613098218939406">Περισσότερες επιλογές</translation>
 <translation id="5964480694698977962">Δημιουργία νέας καρτέλας ανώνυμης περιήγησης.</translation>
 <translation id="5965679971710331625">Είστε συνδεδεμένοι</translation>
 <translation id="5979837087407522202">Αναζήτηση κωδικών πρόσβασης</translation>
@@ -318,6 +361,7 @@
 <translation id="605721222689873409">ΕΕ</translation>
 <translation id="6066301408025741299">Πατήστε για ακύρωση.</translation>
 <translation id="6108923351542677676">Ρύθμιση σε εξέλιξη…</translation>
+<translation id="6119050551270742952">Ιστοσελίδα σε ανώνυμη περιήγηση</translation>
 <translation id="6122191549521593678">Συνδεδεμένο</translation>
 <translation id="6127379762771434464">Το στοιχείο καταργήθηκε</translation>
 <translation id="6136914049981179737">Δευτ.πριν</translation>
@@ -327,6 +371,7 @@
 <translation id="6187302354554850004">Τελευτ. συγχρ.: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6189413832092199491">Μη αναγνωσμένα</translation>
 <translation id="6196207969502475924">Φωνητική αναζήτηση</translation>
+<translation id="6219688215832490856">Να μην γίνεται ποτέ μετάφραση</translation>
 <translation id="6254066287920239840">Άνοιγμα συνδέσμων στην εφαρμογή αντί για το πρόγραμμα περιήγησης.</translation>
 <translation id="6255097610484507482">Επεξεργασία πιστωτικής κάρτας</translation>
 <translation id="6303969859164067831">Αποσύνδεση και απενεργοποίηση συγχρονισμού</translation>
@@ -354,37 +399,46 @@
 </translation>
 <translation id="6445981559479772097">Το μήνυμα εστάλη.</translation>
 <translation id="6464071786529933911">Άνοιγ. σε καρτ. αν. περ.</translation>
+<translation id="6476800141292307438">Μετάφραση της σελίδας σε <ph name="LANGUAGE" />. Οι επιλογές είναι διαθέσιμες κοντά στο κάτω μέρος της οθόνης.</translation>
 <translation id="6482629121755362506">Διαγράφηκαν <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> στοιχεία</translation>
-<translation id="6513773942555305766">Προτεινόμενος κωδικός πρόσβασης Chrome: <ph name="SUGGESTED_PASSWORD" /></translation>
-<translation id="6541915733953096570">Τελευταία ώρα</translation>
-<translation id="6548479190262846511">Δεν βρέθηκαν κωδ. πρόσβ. για τον ιστότ.</translation>
+<translation id="6610002944194042868">Μετάφραση επιλογών</translation>
+<translation id="6628106477656132239">Μη έγκυρη ημερομηνία λήξης</translation>
 <translation id="6642362222295953972">Εναλλαγή στην υπάρχουσα καρτέλα</translation>
 <translation id="6643016212128521049">Διαγραφή</translation>
 <translation id="6656103420185847513">Επεξεργασία φακέλου</translation>
 <translation id="6657585470893396449">Κωδικός πρόσβασης</translation>
+<translation id="6668619169535738264">Επεξεργασία σελιδοδείκτη</translation>
 <translation id="667999046851023355">Έγγραφο</translation>
 <translation id="6691331417640343772">Διαχείριση συγχρονισμένων δεδομένων στον Πίνακα ελέγχου Google</translation>
-<translation id="6709334795756764830">Επεξεργασία σελιδοδείκτη</translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">Δεν είναι δυνατή η εξαγωγή κωδικών πρόσβασης</translation>
+<translation id="6748108480210050150">Από</translation>
 <translation id="6780034285637185932">Ταχυδρομικός κώδικας</translation>
 <translation id="6785453220513215166">Αποστολή αναφοράς σφάλματος…</translation>
 <translation id="679325081238418596">Μεταφέρετε όλους τους σελιδοδείκτες, το ιστορικό, τους κωδικούς πρόσβασης και άλλες ρυθμίσεις σας σε όλες τις συσκευές σας</translation>
 <translation id="6797885426782475225">Φωνητική αναζήτηση</translation>
 <translation id="6807889908376551050">Εμφάνιση όλων…</translation>
 <translation id="681368974849482173">Δημιουργήθηκε ένα στοιχείο</translation>
+<translation id="6831043979455480757">Μετάφραση</translation>
 <translation id="6851516051005285358">Αίτημα ιστοτόπου για υπολογιστή</translation>
+<translation id="6858855187367714033">Σαρώθηκε</translation>
+<translation id="6859944681507688231">Για να σαρώσετε έναν κώδικα QR, ή μια πιστωτική κάρτα, ενεργοποιήστε την κάμερα από τις ρυθμίσεις.</translation>
+<translation id="6873263987691478642">Προβολή διαχωρισμού οθόνης</translation>
+<translation id="6888009575607455378">Είστε βέβαιοι ότι θέλετε να απορρίψετε τις αλλαγές σας;</translation>
 <translation id="6896758677409633944">Αντιγραφή</translation>
 <translation id="6903907808598579934">Ενεργοποίηση συγχρονισμού</translation>
 <translation id="6914583639806229067">Αναζήτηση της εικόνας που αντιγράψατε</translation>
 <translation id="6914783257214138813">Οι κωδικοί πρόσβασής σας θα είναι ορατοί σε οποιονδήποτε μπορεί να δει το αρχείο εξαγωγής.</translation>
+<translation id="6944369514868857500">Επιλογή άλλου λογαριασμού</translation>
 <translation id="6945221475159498467">Επιλογή</translation>
 <translation id="6973630695168034713">Φάκελοι</translation>
 <translation id="6979158407327259162">Google Drive</translation>
+<translation id="6988572888918530647">Διαχείριση Λογαριασμού Google</translation>
+<translation id="6998989275928107238">Προς</translation>
 <translation id="7004499039102548441">Πρόσφατες καρτέλες</translation>
 <translation id="7006788746334555276">Ρυθμίσεις περιεχομένου</translation>
-<translation id="7029809446516969842">Κωδικοί πρόσβασης</translation>
-<translation id="7031882061095297553">Συγχρονισμός με</translation>
+<translation id="7015203776128479407">Η αρχική ρύθμιση του συγχρονισμού δεν τελείωσε. Ο συγχρονισμός είναι απενεργοποιημένος.</translation>
+<translation id="7029809446516969842">Κωδ. πρόσβασης</translation>
 <translation id="7053983685419859001">Αποκλεισμός</translation>
 <translation id="7062545763355031412">Αποδοχή και εναλλαγή λογαριασμών</translation>
 <translation id="7099761977003084116">Πρόσφατες καρτέλες</translation>
@@ -393,23 +447,25 @@
 <translation id="7133798577887235672">Ονοματεπώνυμο</translation>
 <translation id="7136892417564438900">Η κάμερα δεν είναι διαθέσιμη</translation>
 <translation id="7159472599653637159">Αίτηση ιστότ. για κινητά</translation>
-<translation id="7167621057293532233">Τύποι δεδομένων</translation>
-<translation id="7189598951263744875">Μοιραστείτε…</translation>
+<translation id="7173114856073700355">Άνοιγμα ρυθμίσεων</translation>
+<translation id="7189598951263744875">Κοινοποίηση…</translation>
 <translation id="7192050974311852563">Έναρξη καταγραφής</translation>
 <translation id="7203585745079012652">Εκφώνηση απαντήσεων</translation>
-<translation id="722055596168483966">Εξατομίκευση υπηρεσιών Google</translation>
+<translation id="7265758999917665941">Ποτέ για αυτόν τον ιστότοπο</translation>
 <translation id="7272437679830969316">Δεν είναι δυνατή η επαλήθευση της ταυτότητας σας. Ο κωδικός πρόσβασης δεν αντιγράφηκε.</translation>
-<translation id="7280856130494094142">Εισαγάγετε τη φράση πρόσβασης για να ξεκινήσει ο συγχρονισμός.</translation>
 <translation id="7285236536143823449">ΝΑΙ, ΣΥΜΦΩΝΩ</translation>
 <translation id="7291368939935408496">Προετοιμασία κωδικών πρόσβασης…</translation>
+<translation id="7293171162284876153">Για να ξεκινήσετε τον συγχρονισμό, ενεργοποιήστε την επιλογή "Συγχρονισμός των δεδομένων του Chrome".</translation>
 <translation id="7336264872878993241">Έγινε λήψη του <ph name="PERCENT" /> τοις εκατό</translation>
 <translation id="7346909386216857016">OK, το κατάλαβα</translation>
+<translation id="7348502496356775519">Σελιδοδείκτης</translation>
 <translation id="7383797227493018512">Λίστα ανάγνωσης</translation>
 <translation id="7400418766976504921">URL</translation>
+<translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> μη αναγνωσμένα άρθρα.</translation>
 <translation id="7425346204213733349">Οι αλλαγές στους σελιδοδείκτες, το ιστορικό, τους κωδικούς πρόσβασης και σε άλλες ρυθμίσεις δεν θα συγχρονίζονται πλέον με το Λογαριασμό σας Google. Ωστόσο, τα υπάρχοντα δεδομένα σας θα παραμείνουν αποθηκευμένα στο Λογαριασμό σας Google.</translation>
-<translation id="744343212394640790">Δεν είμαι ο χρήστης <ph name="EMAIL" /></translation>
 <translation id="7454057999980797137">Νομός/Επαρχία</translation>
 <translation id="7456847797759667638">Άνοιγμα Τοποθεσίας...</translation>
+<translation id="7460314822154045102">Χρήση κάμερας</translation>
 <translation id="7464701184726199289">Διαγράφει τα συγχρονισμένα δεδομένα από όλες τις συσκευές. Οι αποθηκευμένες ρυθμίσεις ιστότοπου δεν θα διαγραφούν και ενδέχεται να υποδεικνύουν τις συνήθειες περιήγησής σας. <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
 <translation id="7472734401283673885">Επων. εταιρείας</translation>
 <translation id="7481312909269577407">Προώθηση</translation>
@@ -418,18 +474,17 @@
 <translation id="7537586195939242955">Δεν είναι δυνατή η εγκατάσταση του πάσου σας στο Passbook.</translation>
 <translation id="7554791636758816595">Νέα καρτέλα</translation>
 <translation id="7561196759112975576">Πάντα</translation>
+<translation id="7600965453749440009">Να μην γίνεται ποτέ μετάφραση από <ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">Αποκλεισμ. αναδ. (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
-<translation id="7605594153474022051">Ο συγχρονισμός δεν λειτουργεί</translation>
 <translation id="7638584964844754484">Εσφαλμένη φράση πρόσβασης</translation>
 <translation id="7658239707568436148">Ακύρωση</translation>
 <translation id="766891008101699113">Για να περιηγηθείτε στον ιστό ιδιωτικά, προσθέστε μια νέα καρτέλα.</translation>
 <translation id="7671141431838911305">ΕΓΚΑΤΑΣΤΑΣΗ</translation>
-<translation id="7704317875155739195">Αυτόματη συμπλήρωση αναζητήσεων και URL</translation>
 <translation id="7765158879357617694">Μεταφορά</translation>
-<translation id="7769602470925380267">Αποδοχή και αποσύνδεση</translation>
 <translation id="7772032839648071052">Επιβεβαίωση φράσης πρόσβασης</translation>
 <translation id="7781829728241885113">Χθες</translation>
 <translation id="778855399387580014">Ξεκινήστε μια αναζήτηση σε μια νέα καρτέλα Chrome.</translation>
+<translation id="7791543448312431591">Προσθήκη</translation>
 <translation id="780301667611848630">Όχι, ευχαριστώ</translation>
 <translation id="7840771868269352570">Τα στοιχεία που επιλέξατε θα καταργηθούν.</translation>
 <translation id="7856733331829174190">Δεν ήταν δυνατή η λήψη</translation>
@@ -443,33 +498,42 @@
 <translation id="7961015016161918242">Ποτέ</translation>
 <translation id="7971521879845308059">Αποκ. αναδυόμ.</translation>
 <translation id="7982789257301363584">Δίκτυο</translation>
+<translation id="8007420562015504427">Ανώνυμη αναζήτηση</translation>
 <translation id="8019783059653722575">Σας επιτρέπει να αποθηκεύετε και να ανεβάζετε φωτογραφίες.</translation>
 <translation id="802154636333426148">Η λήψη απέτυχε</translation>
 <translation id="8023878949384262191">Ανάπτυξη ενότητας.</translation>
 <translation id="8059533439631660104">Σύμπτυξη ενότητας.</translation>
 <translation id="806745655614357130">Διατήρηση των δεδομένων μου ξεχωριστά</translation>
 <translation id="8073670137947914548">Η λήψη ολοκληρώθηκε</translation>
+<translation id="8073872304774253879">Βελτιώστε τις αναζητήσεις και την περιήγηση</translation>
 <translation id="8076014560081431679">Οι αποθηκευμένες ρυθμίσεις ιστότοπου δεν θα διαγραφούν και ενδέχεται να υποδεικνύουν τις συνήθειες περιήγησής σας. <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
 <translation id="8114753159095730575">Η λήψη του αρχείου είναι διαθέσιμη. Οι διαθέσιμες επιλογές βρίσκονται κοντά στο κάτω μέρος της οθόνης.</translation>
+<translation id="8131740175452115882">Επιβεβαίωση</translation>
+<translation id="8197543752516192074">Μετάφραση σελίδας</translation>
 <translation id="8205564605687841303">Ακύρωση</translation>
 <translation id="8225985093977202398">Εικόνες και αρχεία στην κρυφή μνήμη</translation>
 <translation id="8261506727792406068">Διαγραφή</translation>
 <translation id="8281781826761538115">Προεπιλογή - <ph name="DEFAULT_LOCALE" /></translation>
+<translation id="8319076807703933069">Νέα αναζήτηση</translation>
+<translation id="8323906514956095947">Αγγίξτε παρατεταμένα για περισσότερες επιλογές καρτελών</translation>
 <translation id="8328777765163860529">Κλείσιμο όλων</translation>
-<translation id="8381750437846184350">Ελέγξτε τον τρόπο με τον οποίο η Google χρησιμοποιεί το ιστορικό περιήγησής σας για την εξατομίκευση της Αναζήτησης, των διαφημίσεων και άλλων υπηρεσιών Google</translation>
+<translation id="8407669440184693619">Δεν βρέθηκαν κωδικοί πρόσβασης για αυτόν τον ιστότοπο</translation>
 <translation id="842017693807136194">Σε σύνδεση με</translation>
 <translation id="8428045167754449968">Πόλη / Κωμόπολη</translation>
 <translation id="8428213095426709021">Ρυθμίσεις</translation>
-<translation id="8438566539970814960">Βελτιώστε τις αναζητήσεις και την περιήγηση</translation>
 <translation id="8458397775385147834">Διαγράφηκε 1 στοιχείο</translation>
+<translation id="8487667956631253959">Ενεργοποίηση</translation>
 <translation id="8487700953926739672">Διαθέσιμο εκτός σύνδεσης</translation>
+<translation id="8490978609246021741">Αποθήκευση αλλαγών</translation>
 <translation id="8503813439785031346">Όνομα χρήστη</translation>
 <translation id="850600235656508448">Άνοιγμα σε κατάσταση ανώνυμης περιήγησης</translation>
 <translation id="8517375800490286174">Άδειες λογισμ. ανοικτού κώδικα</translation>
 <translation id="8524799873541103884"><ph name="INCOGNITO" /> Καρτέλες <ph name="FIRST_VISIBLE_TAB" /> έως <ph name="LAST_VISIBLE_TAB" /> από <ph name="NUMBER_OF_OPEN_TABS" /></translation>
+<translation id="8529767659511976195">Νέο</translation>
 <translation id="8532105204136943229">Έτος λήξης</translation>
 <translation id="8534481786647257214">Η ανάρτηση Google+ ολοκληρώθηκε.</translation>
 <translation id="8548878600947630424">Εύρεση στη σελίδα...</translation>
+<translation id="8588404856427128947">Ανενεργό</translation>
 <translation id="8605219856220328675">Κλείσιμο καρτέλας.</translation>
 <translation id="8620640915598389714">Επεξεργασία</translation>
 <translation id="8636825310635137004">Για να εμφανίζονται οι καρτέλες από τις άλλες συσκευές σας, ενεργοποιήστε τον συγχρονισμό.</translation>
@@ -486,14 +550,12 @@
 <translation id="8840513115188359703">Δεν θα αποσυνδεθείτε από το Λογαριασμό σας Google.</translation>
 <translation id="8870413625673593573">Έκλεισαν πρόσφατα</translation>
 <translation id="8881801611828450202">Αναζήτηση εικόνας σε <ph name="SEARCH_ENGINE" /></translation>
-<translation id="8904976895050290827">Συγχρονισμός Chrome</translation>
 <translation id="895541991026785598">Αναφορά προβλήματος</translation>
-<translation id="8971089644512329999">OK, το κατάλαβα</translation>
 <translation id="8976382372951310360">Βοήθεια</translation>
 <translation id="8981454092730389528">Στοιχεία ελέγχου δραστηριότητας Google</translation>
 <translation id="8985320356172329008">Έχετε συνδεθεί στο Google ως</translation>
-<translation id="902659348151742535">Η Google μπορεί να χρησιμοποιεί το ιστορικό περιήγησής σας για την εξατομίκευση της Αναζήτησης, των διαφημίσεων και άλλων υπηρεσιών Google.</translation>
 <translation id="9034759925968272072">Δεν θα αποσυνδεθείτε από το Λογαριασμό σας Google. Ο Λογαριασμός σας Google ενδέχεται να διαθέτει άλλες μορφές ιστορικού περιήγησης στη διεύθυνση <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
+<translation id="9037965129289936994">Εμφάνιση πρωτοτύπου</translation>
 <translation id="9039373489628511875">Εύρος ζώνης</translation>
 <translation id="9055772144595778347">Σύνδεση αδύνατη</translation>
 <translation id="9065203028668620118">Επεξεργασία</translation>
@@ -501,14 +563,15 @@
 <translation id="9081058212938299310">Ενημέρωση κωδικού πρόσβασης για <ph name="USERNAME" />;</translation>
 <translation id="9083392325882095631">1 στοιχείο</translation>
 <translation id="9083838294503912307">Για να κάνετε συγχρονισμό και εξατομίκευση σε διάφορες συσκευές, ενεργοποιήστε τον συγχρονισμό.</translation>
+<translation id="9087108903408689779">Προτεινόμενος κωδικός πρόσβασης Chrome:</translation>
+<translation id="9094033019050270033">Ενημέρωση κωδικού πρόσβασης</translation>
 <translation id="9100610230175265781">Απαιτείται φράση πρόσβασης</translation>
 <translation id="9148126808321036104">Συνδεθείτε ξανά</translation>
 <translation id="9157836665414082580">Απόκρυψη παραθύρων διαλόγου</translation>
 <translation id="9188680907066685419">Αποσύνδεση από διαχειριζόμενο λογαριασμό</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">Η αναφορά σφάλματος εστάλη.</translation>
-<translation id="935490618240037774">Οι σελιδοδείκτες, το ιστορικό, οι κωδικοί πρόσβασης και άλλες ρυθμίσεις σας θα συγχρονιστούν στον Λογαριασμό σας Google, ώστε η χρήση τους να είναι δυνατή σε όλες τις συσκευές σας.</translation>
-<translation id="976982866697960176">Διαχείριση συγχρονισμένων δεδομένων…</translation>
+<translation id="952704832371081537">Ακύρωση</translation>
 <translation id="988141524645182168">Άλλες συσκευές</translation>
 <translation id="989988560359834682">Επεξεργασία διεύθυνσης</translation>
 <translation id="994757059139821576">Προτάσεις για άρθρα</translation>

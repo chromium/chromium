@@ -3,7 +3,6 @@
 <head>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 </head>
 <body id="body">
 
@@ -18,7 +17,7 @@ function axElementById(id) {
     return accessibilityController.accessibleElementById(id);
 }
 
-test_after_layout_and_paint((t) => {
+test((t) => {
     // Get the parent element.
     var parent = axElementById("parent");
 
@@ -31,24 +30,43 @@ test_after_layout_and_paint((t) => {
     assert_equals(parent.childAtIndex(0).name, button1.name, "button1 is first");
     assert_equals(parent.childAtIndex(1).name, button2.name, "button2 is second");
     assert_equals(parent.childAtIndex(2).name, button3.name, "button3 is third");
+    assert_false(parent.childAtIndex(0).isIgnored);
+    assert_false(parent.childAtIndex(1).isIgnored);
+    assert_false(parent.childAtIndex(2).isIgnored);
 
-    // Make the 2nd button hidden. Only 1 and 3 should be present.
+    // Make the 2nd button hidden. All 3 children should still be present.
     document.getElementById("button2").setAttribute("aria-hidden", "true");
 
-    assert_equals(parent.childAtIndex(0).name, button1.name, "button1 is first after setting button2 aria-hidden");
-    assert_equals(parent.childAtIndex(1).name, button3.name, "button3 is second after setting button2 aria-hidden");
+    // Verify that the 3 children are present.
+    assert_equals(parent.childAtIndex(0).name, button1.name, "button1 is first");
+    assert_equals(parent.childAtIndex(1).name, button2.name, "button2 is second");
+    assert_equals(parent.childAtIndex(2).name, button3.name, "button3 is third");
+    assert_false(parent.childAtIndex(0).isIgnored);
+    assert_true(parent.childAtIndex(1).isIgnored);
+    assert_false(parent.childAtIndex(2).isIgnored);
 
-    // Make the 1st button hidden. Only 3 should be present.
+    // Make the 1st button hidden. All 3 children should still be present.
     document.getElementById("button1").setAttribute("aria-hidden", "true");
 
-    assert_equals(parent.childAtIndex(0).name, button3.name, "button3 is first after setting button1 aria-hidden");
+    // Verify that the 3 children are present.
+    assert_equals(parent.childAtIndex(0).name, button1.name, "button1 is first");
+    assert_equals(parent.childAtIndex(1).name, button2.name, "button2 is second");
+    assert_equals(parent.childAtIndex(2).name, button3.name, "button3 is third");
+    assert_true(parent.childAtIndex(0).isIgnored);
+    assert_true(parent.childAtIndex(1).isIgnored);
+    assert_false(parent.childAtIndex(2).isIgnored);
 
-    // Make the 2nd button not hidden. 2 and 3 should be present.
+    // Make the 2nd button not hidden. All 3 children should still be present.
     document.getElementById("button2").setAttribute("aria-hidden", "false");
 
-    assert_equals(parent.childAtIndex(0).name, button2.name, "button2 is first after clearning button2 aria-hidden");
-    assert_equals(parent.childAtIndex(1).name, button3.name, "button3 is second after clearing button2 aria-hidden");
-}, "This test makes sure that when aria-hidden changes, the AX hierarchy is updated.");
+    // Verify that the 3 children are present.
+    assert_equals(parent.childAtIndex(0).name, button1.name, "button1 is first");
+    assert_equals(parent.childAtIndex(1).name, button2.name, "button2 is second");
+    assert_equals(parent.childAtIndex(2).name, button3.name, "button3 is third");
+    assert_true(parent.childAtIndex(0).isIgnored);
+    assert_false(parent.childAtIndex(1).isIgnored);
+    assert_false(parent.childAtIndex(2).isIgnored);
+}, "This test makes sure that when aria-hidden changes, the AX hierarchy does not change.");
 </script>
 
 </body>

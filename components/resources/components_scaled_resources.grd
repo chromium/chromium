@@ -16,6 +16,7 @@
       <part file="crash_scaled_resources.grdp" />
       <part file="flags_ui_scaled_resources.grdp" />
       <part file="neterror_scaled_resources.grdp" />
+      <part file="welcome_scaled_resources.grdp" />
       <part file="version_ui_scaled_resources.grdp" />
 
       <!-- Generic resources -->

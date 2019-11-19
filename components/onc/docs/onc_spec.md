@@ -194,7 +194,6 @@ warns admins of the implications of mis-using this policy for Chrome OS.
         * Cellular
         * Ethernet
         * WiFi
-        * WiMAX
         * Tether
     * List of strings containing disabled network interfaces.
 
@@ -278,11 +277,6 @@ Field **NetworkConfigurations** is an array of
     * (required if **Type** is *WiFi*, otherwise ignored) - [WiFi](#WiFi-type)
     * WiFi settings.
 
-* **WiMAX**
-    * (required if **Type** is *WiMAX*, otherwise ignored) -
-      [WiMAX](#WiMAX-type)
-    * WiMAX settings.
-
 * **Cellular**
     * (required if **Type** is *Cellular*, otherwise ignored) -
       [Cellular](#Cellular-type)
@@ -299,7 +293,6 @@ Field **NetworkConfigurations** is an array of
         * *Cellular*
         * *Ethernet*
         * *WiFi*
-        * *WiMAX*
         * *VPN*
     * Indicates which kind of connection this is.
 
@@ -1307,33 +1300,6 @@ type exists to configure the authentication.
     can be set.
 ---
 
-## WiMAX Networks
-
-For WiMAX connections, **Type** must be set to
-*WiMAX* and the field **WiMAX** must be set to an object of
-type [WiMAX](#WiMAX-type).
-
-Currently only used for representing an existing configuration;
-ONC configuration of of **WiMAX** networks is not yet fully supported.
-
-### WiMAX type
-
-* **AutoConnect**
-    * (optional, defaults to *false*) - **boolean**
-    * Indicating that the network should be connected to automatically when
-      possible.
-
-* **EAP**
-    * (required) - [EAP](#EAP-type)
-    * EAP settings.
-
-* **SignalStrength**
-    * (optional, read-only) - **integer**
-    * The current signal strength for this network in the range [0, 100],
-      provided by the system. If the network is not in range this field will
-      be set to '0' or not present.
-
-
 ## Cellular Networks
 
 For Cellular connections, **Type** must be set to *Cellular* and the
@@ -1470,10 +1436,6 @@ ONC configuration of of **Cellular** networks is not yet supported.
     * Properties describing the online payment portal (OLP) at which a user can
       sign up for or modify a mobile data plan.
 
-* **PRLVersion**
-    * (optional, read-only) - **integer**
-    * The revision of the Preferred Roaming List that is loaded in the modem.
-
 * **RoamingState**
     * (optional, read-only) - **string**
     * The roaming status of the cellular modem on the current network.
@@ -1513,10 +1475,6 @@ ONC configuration of of **Cellular** networks is not yet supported.
 * **SupportNetworkScan**
     * (optional, read-only) - **boolean**
     * True if the cellular network supports scanning.
-
-* **SupportedCarriers**
-    * (optional, read-only) - **array of string**
-    * A list of supported carriers.
 
 
 ### APN type
@@ -1689,6 +1647,11 @@ objects of [Certificate](#Certificate-type) type.
     * If *true*, remove this certificate (only GUID
       should be set).
 
+* **Scope**
+    * (optional, default Scope if missing) - [Scope](#Scope-type)
+    * If this is given, it specifies the scope in which the certificate should
+      be applied.
+
 * **TrustBits**
     * (optional if **Type**
         is *Server*
@@ -1729,6 +1692,21 @@ objects of [Certificate](#Certificate-type) type.
     If a global-scoped network connection refers to a user-scoped certificate,
     results are undefined, so this configuration should be prohibited by the
     configuration editor.
+
+### Scope type
+* **Id**
+    * (required if **Type** is *Extension*, otherwise ignored) - **string**
+    * If *Type* is *Extension*, this is the ID of the chrome extension for which
+      the certificate should be applied.
+* **Type**
+    * (required) - **string**
+    * Allowed values are:
+        * *Extension*
+        * *Default*
+    * *Extension* indicates that the certificate should only be applied in the
+      scope of a chrome extension.
+      *Default* indicates that the scope the certificate applies in should not
+      be restricted.
 
 
 ## Encrypted Configuration
@@ -1911,8 +1889,7 @@ particular PKCS#11 token, and tying to one OS's connection manager.
 
 In this example, we only allow managed networks to auto connect and
 disallow any other networks if a managed network is available. We also blacklist
-the "Guest" network (hex("Guest")=4775657374) and disable Cellular and WiMAX
-services.
+the "Guest" network (hex("Guest")=4775657374) and disable Cellular services.
 ```
 {
   "Type": "UnencryptedConfiguration",
@@ -1921,7 +1898,7 @@ services.
     “AllowOnlyPolicyNetworksToConnect”: false,
     “AllowOnlyPolicyNetworksToConnectIfAvailable”: true,
     “BlacklistedHexSSIDs”: [“4775657374”],
-    "DisableNetworkTypes": ["Cellular", "WiMAX"]
+    "DisableNetworkTypes": ["Cellular"]
   }
 }
 ```

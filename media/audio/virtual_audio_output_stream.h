@@ -26,14 +26,14 @@ class MEDIA_EXPORT VirtualAudioOutputStream
       public AudioConverter::InputCallback {
  public:
   // Callback invoked just after VirtualAudioOutputStream is closed.
-  typedef base::Callback<void(VirtualAudioOutputStream* vaos)>
+  typedef base::OnceCallback<void(VirtualAudioOutputStream* vaos)>
       AfterCloseCallback;
 
   // Construct an audio loopback pathway to the given |target| (not owned).
   // |target| must outlive this instance.
   VirtualAudioOutputStream(const AudioParameters& params,
                            VirtualAudioInputStream* target,
-                           const AfterCloseCallback& after_close_cb);
+                           AfterCloseCallback after_close_cb);
 
   ~VirtualAudioOutputStream() override;
 
@@ -44,6 +44,7 @@ class MEDIA_EXPORT VirtualAudioOutputStream
   void SetVolume(double volume) override;
   void GetVolume(double* volume) override;
   void Close() override;
+  void Flush() override;
 
  private:
   // AudioConverter::InputCallback:

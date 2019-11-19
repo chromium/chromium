@@ -16,12 +16,18 @@ import android.media.MediaCrypto;
 import android.media.MediaFormat;
 import android.os.Build;
 
+import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
+
+import org.chromium.base.BuildInfo;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.MainDex;
 import org.chromium.base.compat.ApiHelperForN;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -34,7 +40,7 @@ import java.util.NoSuchElementException;
 @JNINamespace("media")
 @MainDex
 class MediaCodecUtil {
-    private static final String TAG = "cr_MediaCodecUtil";
+    private static final String TAG = "MediaCodecUtil";
 
     /**
      * Information returned by createDecoder()
@@ -49,9 +55,11 @@ class MediaCodecUtil {
         public static final String VIDEO_MP4 = "video/mp4";
         public static final String VIDEO_WEBM = "video/webm";
         public static final String VIDEO_H264 = "video/avc";
-        public static final String VIDEO_H265 = "video/hevc";
+        public static final String VIDEO_HEVC = "video/hevc";
         public static final String VIDEO_VP8 = "video/x-vnd.on2.vp8";
         public static final String VIDEO_VP9 = "video/x-vnd.on2.vp9";
+        public static final String VIDEO_AV1 = "video/av01";
+        public static final String AUDIO_OPUS = "audio/opus";
     }
 
     /**
@@ -64,7 +72,7 @@ class MediaCodecUtil {
             if (supportsNewMediaCodecList()) {
                 try {
                     mCodecList = new MediaCodecList(MediaCodecList.ALL_CODECS).getCodecInfos();
-                } catch (RuntimeException e) {
+                } catch (Throwable e) {
                     // Swallow the exception due to bad Android implementation and pretend
                     // MediaCodecList is not supported.
                 }
@@ -180,7 +188,11 @@ class MediaCodecUtil {
 
             for (String supportedType : info.getSupportedTypes()) {
                 if (supportedType.equalsIgnoreCase(mime)) {
-                    return info.getCapabilitiesForType(supportedType).colorFormats;
+                    try {
+                        return info.getCapabilitiesForType(supportedType).colorFormats;
+                    } catch (IllegalArgumentException e) {
+                        // Type is not supported.
+                    }
                 }
             }
         }
@@ -195,6 +207,54 @@ class MediaCodecUtil {
       */
     @CalledByNative
     private static boolean canDecode(String mime, boolean isSecure) {
+        // Not supported on blacklisted devices.
+        if (!isDecoderSupportedForDevice(mime)) {
+            Log.e(TAG, "Decoder for type %s is not supported on this device", mime);
+            return false;
+        }
+
+        // MediaCodecInfo.CodecCapabilities.FEATURE_SecurePlayback is available as of
+        // API 21 (LOLLIPOP), which is the same as NewMediaCodecList.
+        MediaCodecListHelper codecListHelper = new MediaCodecListHelper();
+        if (codecListHelper.hasNewMediaCodecList()) {
+            for (MediaCodecInfo info : codecListHelper) {
+                if (info.isEncoder()) continue;
+
+                try {
+                    CodecCapabilities caps = info.getCapabilitiesForType(mime);
+                    if (caps != null) {
+                        // There may be multiple entries in the list for the same family
+                        // (e.g. OMX.qcom.video.decoder.avc and OMX.qcom.video.decoder.avc.secure),
+                        // so return early if this one matches what we're looking for.
+
+                        // If a secure decoder is required, then FEATURE_SecurePlayback must be
+                        // supported.
+                        if (isSecure
+                                && caps.isFeatureSupported(
+                                        CodecCapabilities.FEATURE_SecurePlayback)) {
+                            return true;
+                        }
+
+                        // If a secure decoder is not required, then make sure that
+                        // FEATURE_SecurePlayback is not required. It may work for unsecure
+                        // content, but keep scanning for another codec that supports
+                        // unsecure content directly.
+                        if (!isSecure
+                                && !caps.isFeatureRequired(
+                                        CodecCapabilities.FEATURE_SecurePlayback)) {
+                            return true;
+                        }
+                    }
+                } catch (IllegalArgumentException e) {
+                    // Type is not supported.
+                }
+            }
+
+            // Unable to find a match for |mime|, so not supported.
+            return false;
+        }
+
+        // On older versions of Android attempt to create a decoder for the specified MIME type.
         // TODO(liberato): Should we insist on software here?
         CodecCreationInfo info = createDecoder(mime, isSecure ? CodecType.SECURE : CodecType.ANY);
         if (info == null || info.mediaCodec == null) return false;
@@ -250,14 +310,19 @@ class MediaCodecUtil {
                 // support. In this case, estimate the level from MediaCodecInfo.VideoCapabilities
                 // instead. Assume VP9 is not supported before L. For more information, consult
                 // https://developer.android.com/reference/android/media/MediaCodecInfo.CodecProfileLevel.html
-                CodecCapabilities codecCapabilities = info.getCapabilitiesForType(mime);
-                if (mime.endsWith("vp9") && Build.VERSION_CODES.LOLLIPOP <= Build.VERSION.SDK_INT
-                        && Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
-                    addVp9CodecProfileLevels(profileLevels, codecCapabilities);
-                    continue;
-                }
-                for (CodecProfileLevel profileLevel : codecCapabilities.profileLevels) {
-                    profileLevels.addCodecProfileLevel(mime, profileLevel);
+                try {
+                    CodecCapabilities codecCapabilities = info.getCapabilitiesForType(mime);
+                    if (mime.endsWith("vp9")
+                            && Build.VERSION_CODES.LOLLIPOP <= Build.VERSION.SDK_INT
+                            && Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
+                        addVp9CodecProfileLevels(profileLevels, codecCapabilities);
+                        continue;
+                    }
+                    for (CodecProfileLevel profileLevel : codecCapabilities.profileLevels) {
+                        profileLevels.addCodecProfileLevel(mime, profileLevel);
+                    }
+                } catch (IllegalArgumentException e) {
+                    // Type is not supported.
                 }
             }
         }
@@ -290,13 +355,6 @@ class MediaCodecUtil {
 
         assert result.mediaCodec == null;
 
-        // Creation of ".secure" codecs sometimes crash instead of throwing exceptions
-        // on pre-JBMR2 devices.
-        if (codecType == CodecType.SECURE
-                && Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            return result;
-        }
-
         // Do not create codec for blacklisted devices.
         if (!isDecoderSupportedForDevice(mime)) {
             Log.e(TAG, "Decoder for type %s is not supported on this device", mime);
@@ -315,7 +373,7 @@ class MediaCodecUtil {
                 // TODO(xhwang): Now b/15587335 is fixed, we should have better
                 // API support.
                 String decoderName = getDefaultCodecName(mime, MediaCodecDirection.DECODER, false);
-                if (decoderName.equals("")) return null;
+                if (decoderName.equals("")) return result;
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                     // To work around an issue that we cannot get the codec info
                     // from the secure decoder, create an insecure decoder first
@@ -353,6 +411,10 @@ class MediaCodecUtil {
     /**
      * This is a way to blacklist misbehaving devices.
      * Some devices cannot decode certain codecs, while other codecs work fine.
+     *
+     * Do not access MediaCodec or MediaCodecList in this function since it's
+     * used from the renderer process.
+     *
      * @param mime MIME type as passed to mediaCodec.createDecoderByType(mime).
      * @return true if this codec is supported for decoder on this device.
      */
@@ -361,13 +423,7 @@ class MediaCodecUtil {
         // *************************************************************
         // *** DO NOT ADD ANY NEW CODECS WITHOUT UPDATING MIME_UTIL. ***
         // *************************************************************
-        if (mime.equals("video/x-vnd.on2.vp8")) {
-            // Only support VP8 on Android versions where we don't have to synchronously
-            // tear down the MediaCodec on surface destruction because VP8 requires us to
-            // completely drain the decoder before releasing it, which is difficult and
-            // time consuming to do while the surface is being destroyed.
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) return false;
-
+        if (mime.equals(MimeTypes.VIDEO_VP8)) {
             if (Build.MANUFACTURER.toLowerCase(Locale.getDefault()).equals("samsung")) {
                 // Some Samsung devices cannot render VP8 video directly to the surface.
 
@@ -416,7 +472,7 @@ class MediaCodecUtil {
                     && Build.MODEL.startsWith("Lenovo A6000")) {
                 return false;
             }
-        } else if (mime.equals("video/x-vnd.on2.vp9")) {
+        } else if (mime.equals(MimeTypes.VIDEO_VP9)) {
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) return false;
 
             // MediaTek decoders do not work properly on vp9 before Lollipop. See
@@ -430,7 +486,12 @@ class MediaCodecUtil {
             if (Build.MODEL.equals("Nexus Player")) {
                 return false;
             }
-        } else if (mime.equals("audio/opus")
+        } else if (mime.equals(MimeTypes.VIDEO_AV1)) {
+            if (!BuildInfo.isAtLeastQ()) return false;
+        } else if (mime.equals(MimeTypes.AUDIO_OPUS)
+                && Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            return false;
+        } else if (mime.equals(MimeTypes.VIDEO_HEVC)
                 && Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             return false;
         }
@@ -495,46 +556,72 @@ class MediaCodecUtil {
     }
 
     // List of supported HW encoders.
-    private static enum HWEncoderProperties {
-        QcomVp8(MimeTypes.VIDEO_VP8, "OMX.qcom.", Build.VERSION_CODES.KITKAT,
-                BitrateAdjuster.Type.NO_ADJUSTMENT),
-        QcomH264(MimeTypes.VIDEO_H264, "OMX.qcom.", Build.VERSION_CODES.KITKAT,
-                BitrateAdjuster.Type.NO_ADJUSTMENT),
-        ExynosVp8(MimeTypes.VIDEO_VP8, "OMX.Exynos.", Build.VERSION_CODES.M,
-                BitrateAdjuster.Type.NO_ADJUSTMENT),
-        ExynosH264(MimeTypes.VIDEO_H264, "OMX.Exynos.", Build.VERSION_CODES.LOLLIPOP,
-                BitrateAdjuster.Type.FRAMERATE_ADJUSTMENT),
-        MediatekH264(MimeTypes.VIDEO_H264, "OMX.MTK.", Build.VERSION_CODES.O_MR1,
-                BitrateAdjuster.Type.FRAMERATE_ADJUSTMENT);
+    @IntDef({HWEncoder.QcomVp8, HWEncoder.QcomH264, HWEncoder.ExynosVp8, HWEncoder.ExynosH264,
+            HWEncoder.MediatekH264})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface HWEncoder {
+        int QcomVp8 = 0;
+        int QcomH264 = 1;
+        int ExynosVp8 = 2;
+        int ExynosH264 = 3;
+        int MediatekH264 = 4;
+        int NUM_ENTRIES = 5;
+    }
 
-        private final String mMime;
-        private final String mPrefix;
-        private final int mMinSDK;
-        private final @BitrateAdjuster.Type int mBitrateAdjuster;
-
-        private HWEncoderProperties(
-                String mime, String prefix, int minSDK, @BitrateAdjuster.Type int bitrateAdjuster) {
-            this.mMime = mime;
-            this.mPrefix = prefix;
-            this.mMinSDK = minSDK;
-            this.mBitrateAdjuster = bitrateAdjuster;
+    private static String getMimeForHWEncoder(@HWEncoder int decoder) {
+        switch (decoder) {
+            case HWEncoder.QcomVp8:
+            case HWEncoder.ExynosVp8:
+                return MimeTypes.VIDEO_VP8;
+            case HWEncoder.QcomH264:
+            case HWEncoder.ExynosH264:
+            case HWEncoder.MediatekH264:
+                return MimeTypes.VIDEO_H264;
         }
+        return "";
+    }
 
-        public String getMime() {
-            return mMime;
+    private static String getPrefixForHWEncoder(@HWEncoder int decoder) {
+        switch (decoder) {
+            case HWEncoder.QcomVp8:
+            case HWEncoder.QcomH264:
+                return "OMX.qcom.";
+            case HWEncoder.ExynosVp8:
+            case HWEncoder.ExynosH264:
+                return "OMX.Exynos.";
+            case HWEncoder.MediatekH264:
+                return "OMX.MTK.";
         }
+        return "";
+    }
 
-        public String getPrefix() {
-            return mPrefix;
+    private static int getMinSDKForHWEncoder(@HWEncoder int decoder) {
+        switch (decoder) {
+            case HWEncoder.QcomVp8:
+            case HWEncoder.QcomH264:
+                return Build.VERSION_CODES.KITKAT;
+            case HWEncoder.ExynosVp8:
+                return Build.VERSION_CODES.M;
+            case HWEncoder.ExynosH264:
+                return Build.VERSION_CODES.LOLLIPOP;
+            case HWEncoder.MediatekH264:
+                return Build.VERSION_CODES.O_MR1;
         }
+        return -1;
+    }
 
-        public int getMinSDK() {
-            return mMinSDK;
+    private static @BitrateAdjuster.Type int getBitrateAdjusterTypeForHWEncoder(
+            @HWEncoder int decoder) {
+        switch (decoder) {
+            case HWEncoder.QcomVp8:
+            case HWEncoder.QcomH264:
+            case HWEncoder.ExynosVp8:
+                return BitrateAdjuster.Type.NO_ADJUSTMENT;
+            case HWEncoder.ExynosH264:
+            case HWEncoder.MediatekH264:
+                return BitrateAdjuster.Type.FRAMERATE_ADJUSTMENT;
         }
-
-        public @BitrateAdjuster.Type int getBitrateAdjuster() {
-            return mBitrateAdjuster;
-        }
+        return -1;
     }
 
     // List of devices with poor H.264 encoder quality.
@@ -553,15 +640,15 @@ class MediaCodecUtil {
         // if we cannot create the codec.
         CodecCreationInfo result = new CodecCreationInfo();
 
-        HWEncoderProperties encoderProperties = findHWEncoder(mime);
-        if (encoderProperties == null) {
-            return result;
-        }
+        @Nullable
+        @HWEncoder
+        Integer encoderProperties = findHWEncoder(mime);
+        if (encoderProperties == null) return result;
 
         try {
             result.mediaCodec = MediaCodec.createEncoderByType(mime);
             result.supportsAdaptivePlayback = false;
-            result.bitrateAdjuster = encoderProperties.getBitrateAdjuster();
+            result.bitrateAdjuster = getBitrateAdjusterTypeForHWEncoder(encoderProperties);
         } catch (Exception e) {
             Log.e(TAG, "Failed to create MediaCodec: %s", mime, e);
         }
@@ -591,11 +678,7 @@ class MediaCodecUtil {
             }
         }
 
-        if (findHWEncoder(mime) == null) {
-            return false;
-        }
-
-        return true;
+        return !(findHWEncoder(mime) == null);
     }
 
     /**
@@ -616,9 +699,9 @@ class MediaCodecUtil {
     /**
      * Find HW encoder with given MIME type.
      * @param mime MIME type of the media.
-     * @return HWEncoderProperties object.
+     * @return HWEncoder or null if not found.
      */
-    private static HWEncoderProperties findHWEncoder(String mime) {
+    private static @Nullable @HWEncoder Integer findHWEncoder(String mime) {
         MediaCodecListHelper codecListHelper = new MediaCodecListHelper();
         for (MediaCodecInfo info : codecListHelper) {
             if (!info.isEncoder() || isSoftwareCodec(info.getName())) continue;
@@ -636,11 +719,12 @@ class MediaCodecUtil {
             }
 
             // Check if this is supported HW encoder.
-            for (HWEncoderProperties codecProperties : HWEncoderProperties.values()) {
-                if (!mime.equalsIgnoreCase(codecProperties.getMime())) continue;
+            for (@HWEncoder int codecProperties = 0; codecProperties < HWEncoder.NUM_ENTRIES;
+                    codecProperties++) {
+                if (!mime.equalsIgnoreCase(getMimeForHWEncoder(codecProperties))) continue;
 
-                if (encoderName.startsWith(codecProperties.getPrefix())) {
-                    if (Build.VERSION.SDK_INT < codecProperties.getMinSDK()) {
+                if (encoderName.startsWith(getPrefixForHWEncoder(codecProperties))) {
+                    if (Build.VERSION.SDK_INT < getMinSDKForHWEncoder(codecProperties)) {
                         Log.w(TAG, "Codec " + encoderName + " is disabled due to SDK version "
                                         + Build.VERSION.SDK_INT);
                         continue;

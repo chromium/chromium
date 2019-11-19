@@ -42,8 +42,6 @@ MEDIA_SHMEM_EXPORT std::pair<float, float> EWMAAndMaxPower(
     int len,
     float smoothing_factor);
 
-MEDIA_SHMEM_EXPORT void Crossfade(const float src[], int len, float dest[]);
-
 }  // namespace vector_math
 }  // namespace media
 

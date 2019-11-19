@@ -22,7 +22,7 @@ namespace api {
 // Base class for bluetooth extension functions. This class initializes
 // bluetooth adapter and calls (on the UI thread) DoWork() implemented by
 // individual bluetooth extension functions.
-class BluetoothExtensionFunction : public UIThreadExtensionFunction {
+class BluetoothExtensionFunction : public ExtensionFunction {
  public:
   BluetoothExtensionFunction();
 

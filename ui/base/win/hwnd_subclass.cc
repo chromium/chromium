@@ -11,6 +11,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/singleton.h"
 #include "base/stl_util.h"
+#include "ui/base/win/touch_input.h"
 #include "ui/gfx/win/hwnd_util.h"
 
 namespace {
@@ -32,19 +33,6 @@ LRESULT CALLBACK WndProc(HWND hwnd,
 
 WNDPROC GetCurrentWndProc(HWND target) {
   return reinterpret_cast<WNDPROC>(GetWindowLongPtr(target, GWLP_WNDPROC));
-}
-
-// Not defined before Win7
-BOOL GetTouchInputInfoWrapper(HTOUCHINPUT handle, UINT count,
-                              PTOUCHINPUT pointer, int size) {
-  typedef BOOL(WINAPI *GetTouchInputInfoPtr)(HTOUCHINPUT, UINT,
-                                             PTOUCHINPUT, int);
-  GetTouchInputInfoPtr get_touch_input_info_func =
-      reinterpret_cast<GetTouchInputInfoPtr>(
-          GetProcAddress(GetModuleHandleA("user32.dll"), "GetTouchInputInfo"));
-  if (get_touch_input_info_func)
-    return get_touch_input_info_func(handle, count, pointer, size);
-  return FALSE;
 }
 
 }  // namespace
@@ -108,7 +96,7 @@ HWNDSubclass* HWNDSubclass::GetHwndSubclassForTarget(HWND target) {
 
 void HWNDSubclass::AddFilter(HWNDMessageFilter* filter) {
   DCHECK(filter);
-  if (!base::ContainsValue(filters_, filter))
+  if (!base::Contains(filters_, filter))
     filters_.push_back(filter);
 }
 
@@ -140,8 +128,8 @@ LRESULT HWNDSubclass::OnWndProc(HWND hwnd,
   if (message == WM_TOUCH) {
     TOUCHINPUT point;
 
-    if (GetTouchInputInfoWrapper(reinterpret_cast<HTOUCHINPUT>(l_param), 1,
-                                 &point, sizeof(TOUCHINPUT))) {
+    if (ui::GetTouchInputInfoWrapper(reinterpret_cast<HTOUCHINPUT>(l_param), 1,
+                                     &point, sizeof(TOUCHINPUT))) {
       POINT touch_location = {TOUCH_COORD_TO_PIXEL(point.x),
                               TOUCH_COORD_TO_PIXEL(point.y)};
       HWND actual_target = WindowFromPoint(touch_location);

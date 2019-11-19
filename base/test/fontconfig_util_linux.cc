@@ -21,8 +21,6 @@ void SetUpFontconfig() {
   CHECK(PathService::Get(DIR_MODULE, &dir_module));
 
   std::unique_ptr<Environment> env(Environment::Create());
-  // TODO(thomasanderson): This still stat()'s the real /etc/fonts/fonts.conf.
-  // Prevent fontconfig from doing this.
   CHECK(env->SetVar("FONTCONFIG_SYSROOT", dir_module.value().c_str()));
 }
 

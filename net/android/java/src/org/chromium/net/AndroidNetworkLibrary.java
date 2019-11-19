@@ -22,18 +22,18 @@ import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.os.ParcelFileDescriptor;
 import android.os.Process;
-import android.security.NetworkSecurityPolicy;
-import android.telephony.TelephonyManager;
 import android.util.Log;
 
+import androidx.annotation.VisibleForTesting;
+
+import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.VisibleForTesting;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.CalledByNativeUnchecked;
 import org.chromium.base.annotations.MainDex;
 import org.chromium.base.compat.ApiHelperForM;
+import org.chromium.base.compat.ApiHelperForN;
 import org.chromium.base.compat.ApiHelperForP;
-import org.chromium.base.metrics.RecordHistogram;
 
 import java.io.FileDescriptor;
 import java.io.IOException;
@@ -48,15 +48,11 @@ import java.net.SocketAddress;
 import java.net.SocketException;
 import java.net.SocketImpl;
 import java.net.URLConnection;
-import java.net.UnknownHostException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.util.Enumeration;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
-import java.util.Set;
 
 /**
  * This class implements net utilities required by the net component.
@@ -67,45 +63,8 @@ class AndroidNetworkLibrary {
 
     // Cached value indicating if app has ACCESS_NETWORK_STATE permission.
     private static Boolean sHaveAccessNetworkState;
-
-    // Set of public DNS servers supporting DNS-over-HTTPS.
-    private static final Set<InetAddress> sAutoDohServers = new HashSet<>();
-    // Set of public DNS-over-TLS servers supporting DNS-over-HTTPS.
-    private static final Set<String> sAutoDohDotServers = new HashSet<>();
-
-    static {
-        try {
-            // Populate set of public DNS servers supporting DNS-over-HTTPS.
-
-            // Google Public DNS
-            sAutoDohServers.add(InetAddress.getByName("8.8.8.8"));
-            sAutoDohServers.add(InetAddress.getByName("8.8.4.4"));
-            sAutoDohServers.add(InetAddress.getByName("2001:4860:4860::8888"));
-            sAutoDohServers.add(InetAddress.getByName("2001:4860:4860::8844"));
-            // Cloudflare DNS
-            sAutoDohServers.add(InetAddress.getByName("1.1.1.1"));
-            sAutoDohServers.add(InetAddress.getByName("1.0.0.1"));
-            sAutoDohServers.add(InetAddress.getByName("2606:4700:4700::1111"));
-            sAutoDohServers.add(InetAddress.getByName("2606:4700:4700::1001"));
-            // Quad9 DNS
-            sAutoDohServers.add(InetAddress.getByName("9.9.9.9"));
-            sAutoDohServers.add(InetAddress.getByName("149.112.112.112"));
-            sAutoDohServers.add(InetAddress.getByName("2620:fe::fe"));
-            sAutoDohServers.add(InetAddress.getByName("2620:fe::9"));
-        } catch (UnknownHostException e) {
-            throw new RuntimeException("Failed to parse IP addresses", e);
-        }
-
-        // Populate set of public DNS-over-TLS servers supporting DNS-over-HTTPS.
-
-        // Google Public DNS
-        sAutoDohDotServers.add("dns.google");
-        // Cloudflare DNS
-        sAutoDohDotServers.add("1dot1dot1dot1.cloudflare-dns.com");
-        sAutoDohDotServers.add("cloudflare-dns.com");
-        // Quad9 DNS
-        sAutoDohDotServers.add("dns.quad9.net");
-    }
+    // Cached value indicating if app has ACCESS_WIFI_STATE permission.
+    private static Boolean sHaveAccessWifiState;
 
     /**
      * @return the mime type (if any) that is associated with the file
@@ -192,11 +151,7 @@ class AndroidNetworkLibrary {
      */
     @CalledByNative
     private static String getNetworkCountryIso() {
-        TelephonyManager telephonyManager =
-                (TelephonyManager) ContextUtils.getApplicationContext().getSystemService(
-                        Context.TELEPHONY_SERVICE);
-        if (telephonyManager == null) return "";
-        return telephonyManager.getNetworkCountryIso();
+        return AndroidTelephonyManagerBridge.getInstance().getNetworkCountryIso();
     }
 
     /**
@@ -205,11 +160,7 @@ class AndroidNetworkLibrary {
      */
     @CalledByNative
     private static String getNetworkOperator() {
-        TelephonyManager telephonyManager =
-                (TelephonyManager) ContextUtils.getApplicationContext().getSystemService(
-                        Context.TELEPHONY_SERVICE);
-        if (telephonyManager == null) return "";
-        return telephonyManager.getNetworkOperator();
+        return AndroidTelephonyManagerBridge.getInstance().getNetworkOperator();
     }
 
     /**
@@ -218,11 +169,7 @@ class AndroidNetworkLibrary {
      */
     @CalledByNative
     private static String getSimOperator() {
-        TelephonyManager telephonyManager =
-                (TelephonyManager) ContextUtils.getApplicationContext().getSystemService(
-                        Context.TELEPHONY_SERVICE);
-        if (telephonyManager == null) return "";
-        return telephonyManager.getSimOperator();
+        return AndroidTelephonyManagerBridge.getInstance().getSimOperator();
     }
 
     /**
@@ -274,20 +221,73 @@ class AndroidNetworkLibrary {
      */
     @CalledByNative
     public static String getWifiSSID() {
-        final Intent intent = ContextUtils.getApplicationContext().registerReceiver(
-                null, new IntentFilter(WifiManager.NETWORK_STATE_CHANGED_ACTION));
-        if (intent != null) {
-            final WifiInfo wifiInfo = intent.getParcelableExtra(WifiManager.EXTRA_WIFI_INFO);
-            if (wifiInfo != null) {
-                final String ssid = wifiInfo.getSSID();
-                // On Android M+, the platform APIs may return "<unknown ssid>" as the SSID if the
-                // app does not have sufficient permissions. In that case, return an empty string.
-                if (ssid != null && !ssid.equals("<unknown ssid>")) {
-                    return ssid;
-                }
+        WifiInfo wifiInfo = null;
+        // On Android P and above, the WifiInfo cannot be obtained through broadcast.
+        if (haveAccessWifiState()) {
+            WifiManager wifiManager =
+                    (WifiManager) ContextUtils.getApplicationContext().getSystemService(
+                            Context.WIFI_SERVICE);
+            wifiInfo = wifiManager.getConnectionInfo();
+        } else {
+            final Intent intent = ContextUtils.getApplicationContext().registerReceiver(
+                    null, new IntentFilter(WifiManager.NETWORK_STATE_CHANGED_ACTION));
+            if (intent != null) {
+                wifiInfo = intent.getParcelableExtra(WifiManager.EXTRA_WIFI_INFO);
+            }
+        }
+
+        if (wifiInfo != null) {
+            final String ssid = wifiInfo.getSSID();
+            // On Android M+, the platform APIs may return "<unknown ssid>" as the SSID if the
+            // app does not have sufficient permissions. In that case, return an empty string.
+            if (ssid != null && !ssid.equals("<unknown ssid>")) {
+                return ssid;
             }
         }
         return "";
+    }
+
+    /**
+     * Gets the signal strength from the currently associated WiFi access point if there is one, and
+     * it is available. Signal strength may not be available if the app does not have permissions to
+     * access it.
+     * @return -1 if value is unavailable, otherwise, a value between 0 and {@code countBuckets-1}
+     *         (both inclusive).
+     */
+    @CalledByNative
+    public static int getWifiSignalLevel(int countBuckets) {
+        // Some devices unexpectedly have a null context. See https://crbug.com/1019974.
+        if (ContextUtils.getApplicationContext() == null) {
+            return -1;
+        }
+        if (ContextUtils.getApplicationContext().getContentResolver() == null) {
+            return -1;
+        }
+
+        Intent intent = null;
+        try {
+            intent = ContextUtils.getApplicationContext().registerReceiver(
+                    null, new IntentFilter(WifiManager.RSSI_CHANGED_ACTION));
+        } catch (IllegalArgumentException e) {
+            // Some devices unexpectedly throw IllegalArgumentException when registering
+            // the broadcast receiver. See https://crbug.com/984179.
+            return -1;
+        }
+        if (intent == null) {
+            return -1;
+        }
+
+        final int rssi = intent.getIntExtra(WifiManager.EXTRA_NEW_RSSI, Integer.MIN_VALUE);
+        if (rssi == Integer.MIN_VALUE) {
+            return -1;
+        }
+
+        final int signalLevel = WifiManager.calculateSignalLevel(rssi, countBuckets);
+        if (signalLevel < 0 || signalLevel >= countBuckets) {
+            return -1;
+        }
+
+        return signalLevel;
     }
 
     public static class NetworkSecurityPolicyProxy {
@@ -309,7 +309,7 @@ class AndroidNetworkLibrary {
                 // No per-host configuration before N.
                 return isCleartextTrafficPermitted();
             }
-            return NetworkSecurityPolicy.getInstance().isCleartextTrafficPermitted(host);
+            return ApiHelperForN.isCleartextTrafficPermitted(host);
         }
 
         @TargetApi(Build.VERSION_CODES.M)
@@ -318,7 +318,7 @@ class AndroidNetworkLibrary {
                 // Always true before M.
                 return true;
             }
-            return NetworkSecurityPolicy.getInstance().isCleartextTrafficPermitted();
+            return ApiHelperForM.isCleartextTrafficPermitted();
         }
     }
 
@@ -334,90 +334,64 @@ class AndroidNetworkLibrary {
         }
     }
 
-    /**
-     * @returns result of linkProperties.isPrivateDnsActive().
-     */
-    static boolean isPrivateDnsActive(LinkProperties linkProperties) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && linkProperties != null) {
-            return ApiHelperForP.isPrivateDnsActive(linkProperties);
-        }
-        return false;
-    }
-
-    /**
-     * @returns result of linkProperties.getPrivateDnsServerName().
-     */
-    private static String getPrivateDnsServerName(LinkProperties linkProperties) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && linkProperties != null) {
-            return ApiHelperForP.getPrivateDnsServerName(linkProperties);
-        }
-        return null;
-    }
-
     private static boolean haveAccessNetworkState() {
         // This could be racy if called on multiple threads, but races will
         // end in the same result so it's not a problem.
         if (sHaveAccessNetworkState == null) {
-            sHaveAccessNetworkState =
-                    Boolean.valueOf(ContextUtils.getApplicationContext().checkPermission(
-                                            Manifest.permission.ACCESS_NETWORK_STATE,
-                                            Process.myPid(), Process.myUid())
-                            == PackageManager.PERMISSION_GRANTED);
+            sHaveAccessNetworkState = Boolean.valueOf(
+                    ApiCompatibilityUtils.checkPermission(ContextUtils.getApplicationContext(),
+                            Manifest.permission.ACCESS_NETWORK_STATE, Process.myPid(),
+                            Process.myUid())
+                    == PackageManager.PERMISSION_GRANTED);
         }
         return sHaveAccessNetworkState;
     }
 
+    private static boolean haveAccessWifiState() {
+        // This could be racy if called on multiple threads, but races will
+        // end in the same result so it's not a problem.
+        if (sHaveAccessWifiState == null) {
+            sHaveAccessWifiState = Boolean.valueOf(
+                    ApiCompatibilityUtils.checkPermission(ContextUtils.getApplicationContext(),
+                            Manifest.permission.ACCESS_WIFI_STATE, Process.myPid(), Process.myUid())
+                    == PackageManager.PERMISSION_GRANTED);
+        }
+        return sHaveAccessWifiState;
+    }
+
     /**
-     * Returns list of IP addresses of DNS servers.
-     * If private DNS is active, then returns a 1x1 array.
+     * Returns object representing the DNS configuration for the provided
+     * network. If |network| is null, uses the active network.
      */
     @TargetApi(Build.VERSION_CODES.M)
     @CalledByNative
-    private static byte[][] getDnsServers() {
+    public static DnsStatus getDnsStatus(Network network) {
         if (!haveAccessNetworkState()) {
-            return new byte[0][0];
+            return null;
         }
         ConnectivityManager connectivityManager =
                 (ConnectivityManager) ContextUtils.getApplicationContext().getSystemService(
                         Context.CONNECTIVITY_SERVICE);
         if (connectivityManager == null) {
-            return new byte[0][0];
+            return null;
         }
-        Network network = ApiHelperForM.getActiveNetwork(connectivityManager);
         if (network == null) {
-            return new byte[0][0];
+            network = ApiHelperForM.getActiveNetwork(connectivityManager);
+        }
+        if (network == null) {
+            return null;
         }
         LinkProperties linkProperties = connectivityManager.getLinkProperties(network);
         if (linkProperties == null) {
-            return new byte[0][0];
+            return null;
         }
         List<InetAddress> dnsServersList = linkProperties.getDnsServers();
-        // Determine if any DNS servers could be auto-upgraded to DNS-over-HTTPS.
-        boolean autoDoh = false;
-        for (InetAddress dnsServer : dnsServersList) {
-            if (sAutoDohServers.contains(dnsServer)) {
-                autoDoh = true;
-                break;
-            }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            return new DnsStatus(dnsServersList, ApiHelperForP.isPrivateDnsActive(linkProperties),
+                    ApiHelperForP.getPrivateDnsServerName(linkProperties));
+        } else {
+            return new DnsStatus(dnsServersList, false, "");
         }
-        if (isPrivateDnsActive(linkProperties)) {
-            String privateDnsServerName = getPrivateDnsServerName(linkProperties);
-            // If user explicitly selected a DNS-over-TLS server...
-            if (privateDnsServerName != null) {
-                // ...their DNS-over-HTTPS support depends on the DNS-over-TLS server name.
-                autoDoh = sAutoDohDotServers.contains(privateDnsServerName.toLowerCase(Locale.US));
-            }
-            RecordHistogram.recordBooleanHistogram(
-                    "Net.DNS.Android.DotExplicit", privateDnsServerName != null);
-            RecordHistogram.recordBooleanHistogram("Net.DNS.Android.AutoDohPrivate", autoDoh);
-            return new byte[1][1];
-        }
-        RecordHistogram.recordBooleanHistogram("Net.DNS.Android.AutoDohPublic", autoDoh);
-        byte[][] dnsServers = new byte[dnsServersList.size()][];
-        for (int i = 0; i < dnsServersList.size(); i++) {
-            dnsServers[i] = dnsServersList.get(i).getAddress();
-        }
-        return dnsServers;
     }
 
     /**

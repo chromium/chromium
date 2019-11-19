@@ -309,8 +309,8 @@ TEST_F(RTLTest, WrapString) {
     WrapStringWithRTLFormatting(&empty);
     EXPECT_TRUE(empty.empty());
 
-    for (auto*& i : cases) {
-      string16 input = WideToUTF16(i);
+    for (auto*& test_case : cases) {
+      string16 input = WideToUTF16(test_case);
       string16 ltr_wrap = input;
       WrapStringWithLTRFormatting(&ltr_wrap);
       EXPECT_EQ(ltr_wrap[0], kLeftToRightEmbeddingMark);
@@ -350,11 +350,11 @@ TEST_F(RTLTest, GetDisplayStringInLTRDirectionality) {
   for (size_t i = 0; i < 2; ++i) {
     // Toggle the application default text direction (to try each direction).
     SetRTLForTesting(!IsRTL());
-    for (auto& i : cases) {
-      string16 input = WideToUTF16(i.path);
+    for (auto& test_case : cases) {
+      string16 input = WideToUTF16(test_case.path);
       string16 output = GetDisplayStringInLTRDirectionality(input);
       // Test the expected wrapping behavior for the current UI directionality.
-      if (IsRTL() ? i.wrap_rtl : i.wrap_ltr)
+      if (IsRTL() ? test_case.wrap_rtl : test_case.wrap_ltr)
         EXPECT_NE(output, input);
       else
         EXPECT_EQ(output, input);
@@ -438,17 +438,18 @@ TEST_F(RTLTest, UnadjustStringForLocaleDirection) {
     // Toggle the application default text direction (to try each direction).
     SetRTLForTesting(!IsRTL());
 
-    for (auto*& i : cases) {
-      string16 test_case = WideToUTF16(i);
-      string16 adjusted_string = test_case;
+    for (auto*& test_case : cases) {
+      string16 unadjusted_string = WideToUTF16(test_case);
+      string16 adjusted_string = unadjusted_string;
 
       if (!AdjustStringForLocaleDirection(&adjusted_string))
         continue;
 
-      EXPECT_NE(test_case, adjusted_string);
+      EXPECT_NE(unadjusted_string, adjusted_string);
       EXPECT_TRUE(UnadjustStringForLocaleDirection(&adjusted_string));
-      EXPECT_EQ(test_case, adjusted_string) << " for test case [" << test_case
-                                            << "] with IsRTL() == " << IsRTL();
+      EXPECT_EQ(unadjusted_string, adjusted_string)
+          << " for test case [" << unadjusted_string
+          << "] with IsRTL() == " << IsRTL();
     }
   }
 
@@ -488,9 +489,9 @@ TEST_F(RTLTest, EnsureTerminatedDirectionalFormatting) {
   for (size_t i = 0; i < 2; ++i) {
     // Toggle the application default text direction (to try each direction).
     SetRTLForTesting(!IsRTL());
-    for (auto& i : cases) {
-      string16 unsanitized_text = WideToUTF16(i.unformated_text);
-      string16 sanitized_text = WideToUTF16(i.formatted_text);
+    for (auto& test_case : cases) {
+      string16 unsanitized_text = WideToUTF16(test_case.unformated_text);
+      string16 sanitized_text = WideToUTF16(test_case.formatted_text);
       EnsureTerminatedDirectionalFormatting(&unsanitized_text);
       EXPECT_EQ(sanitized_text, unsanitized_text);
     }

@@ -29,6 +29,17 @@ void VideoDecodeAccelerator::Client::NotifyInitializationComplete(
   NOTREACHED() << "By default deferred initialization is not supported.";
 }
 
+void VideoDecodeAccelerator::Client::ProvidePictureBuffersWithVisibleRect(
+    uint32_t requested_num_of_buffers,
+    VideoPixelFormat format,
+    uint32_t textures_per_buffer,
+    const gfx::Size& dimensions,
+    const gfx::Rect& visible_rect,
+    uint32_t texture_target) {
+  ProvidePictureBuffers(requested_num_of_buffers, format, textures_per_buffer,
+                        dimensions, texture_target);
+}
+
 VideoDecodeAccelerator::~VideoDecodeAccelerator() = default;
 
 void VideoDecodeAccelerator::Decode(scoped_refptr<DecoderBuffer> buffer,
@@ -47,7 +58,7 @@ bool VideoDecodeAccelerator::TryToSetupDecodeOnSeparateThread(
 void VideoDecodeAccelerator::ImportBufferForPicture(
     int32_t picture_buffer_id,
     VideoPixelFormat pixel_format,
-    const gfx::GpuMemoryBufferHandle& gpu_memory_buffer_handle) {
+    gfx::GpuMemoryBufferHandle gpu_memory_buffer_handle) {
   NOTREACHED() << "Buffer import not supported.";
 }
 

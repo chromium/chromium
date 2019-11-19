@@ -21,7 +21,7 @@
 #include "content/browser/background_fetch/background_fetch_registration_id.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_registration.h"
-#include "content/common/service_worker/service_worker_types.h"
+#include "content/browser/storage_partition_impl.h"
 #include "content/common/service_worker/service_worker_utils.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
@@ -76,7 +76,7 @@ GURL GetScopeForId(const std::string& origin, int64_t id) {
 BackgroundFetchTestBase::BackgroundFetchTestBase()
     // Using REAL_IO_THREAD would give better coverage for thread safety, but
     // at time of writing EmbeddedWorkerTestHelper didn't seem to support that.
-    : thread_bundle_(TestBrowserThreadBundle::IO_MAINLOOP),
+    : task_environment_(BrowserTaskEnvironment::IO_MAINLOOP),
       delegate_(browser_context_.GetBackgroundFetchDelegate()),
       embedded_worker_test_helper_(base::FilePath()),
       origin_(url::Origin::Create(GURL(kTestOrigin))),
@@ -112,7 +112,7 @@ int64_t BackgroundFetchTestBase::RegisterServiceWorkerForOrigin(
     options.scope = GetScopeForId(origin.GetURL().spec(), next_pattern_id_++);
     base::RunLoop run_loop;
     embedded_worker_test_helper_.context()->RegisterServiceWorker(
-        script_url, options,
+        script_url, options, blink::mojom::FetchClientSettingsObject::New(),
         base::BindOnce(&DidRegisterServiceWorker,
                        &service_worker_registration_id,
                        run_loop.QuitClosure()));
@@ -180,15 +180,21 @@ BackgroundFetchTestBase::CreateRequestWithProvidedResponse(
   return request;
 }
 
-blink::mojom::BackgroundFetchRegistrationPtr
-BackgroundFetchTestBase::CreateBackgroundFetchRegistration(
+blink::mojom::BackgroundFetchRegistrationDataPtr
+BackgroundFetchTestBase::CreateBackgroundFetchRegistrationData(
     const std::string& developer_id,
-    const std::string& unique_id,
     blink::mojom::BackgroundFetchResult result,
     blink::mojom::BackgroundFetchFailureReason failure_reason) {
-  return blink::mojom::BackgroundFetchRegistration::New(
-      developer_id, unique_id, /* upload_total= */ 0, /* uploaded= */ 0,
+  return blink::mojom::BackgroundFetchRegistrationData::New(
+      developer_id, /* upload_total= */ 0, /* uploaded= */ 0,
       /* download_total= */ 0, /* downloaded= */ 0, result, failure_reason);
+}
+
+scoped_refptr<DevToolsBackgroundServicesContextImpl>
+BackgroundFetchTestBase::devtools_context() const {
+  DCHECK(storage_partition_);
+  return static_cast<StoragePartitionImpl*>(storage_partition_)
+      ->GetDevToolsBackgroundServicesContext();
 }
 
 }  // namespace content

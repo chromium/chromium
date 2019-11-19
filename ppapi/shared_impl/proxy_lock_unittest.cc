@@ -10,7 +10,7 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/message_loop/message_loop.h"
+#include "base/test/task_environment.h"
 #include "ppapi/shared_impl/proxy_lock.h"
 #include "ppapi/shared_impl/test_globals.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -68,7 +68,8 @@ void TestCallback_3(int p1, const std::string& p2, Param p3) {
 }  // namespace
 
 class PpapiProxyLockTest : public testing::Test {
-  base::MessageLoop message_loop_;  // Required to receive callbacks.
+  base::test::SingleThreadTaskEnvironment
+      task_environment_;  // Required to receive callbacks.
 };
 
 TEST_F(PpapiProxyLockTest, Locking) {

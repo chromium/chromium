@@ -12,7 +12,7 @@
 
 #include "base/macros.h"
 #include "chrome/common/media_router/media_route.h"
-#include "chrome/common/media_router/mojo/media_router.mojom.h"
+#include "chrome/common/media_router/mojom/media_router.mojom.h"
 
 namespace media_router {
 

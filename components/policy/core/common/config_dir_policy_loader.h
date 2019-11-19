@@ -42,10 +42,12 @@ class POLICY_EXPORT ConfigDirPolicyLoader : public AsyncPolicyLoader {
                     PolicyLevel level,
                     PolicyBundle* bundle);
 
-  // Merges the 3rd party |policies| into the |bundle|, with the given |level|.
+  // Merges the 3rd party |policies| (extension policies) into the |bundle|,
+  // with the given |level|.
   void Merge3rdPartyPolicy(const base::Value* policies,
                            PolicyLevel level,
-                           PolicyBundle* bundle);
+                           PolicyBundle* bundle,
+                           bool signin_profile = false);
 
   // Callback for the FilePathWatchers.
   void OnFileUpdated(const base::FilePath& path, bool error);

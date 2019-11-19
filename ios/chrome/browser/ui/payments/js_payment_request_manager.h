@@ -8,7 +8,7 @@
 #include "base/strings/string16.h"
 #include "components/payments/mojom/payment_request_data.mojom.h"
 #include "ios/chrome/browser/procedural_block_types.h"
-#import "ios/web/public/web_state/js/crw_js_injection_manager.h"
+#import "ios/web/public/deprecated/crw_js_injection_manager.h"
 
 namespace payments {
 class PaymentResponse;

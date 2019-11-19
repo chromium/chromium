@@ -13,7 +13,6 @@
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -21,8 +20,6 @@
 #include "google_apis/gcm/base/socket_stream.h"
 #include "google_apis/gcm/engine/connection_factory.h"
 #include "google_apis/gcm/monitoring/gcm_stats_recorder.h"
-
-using namespace google::protobuf::io;
 
 namespace gcm {
 
@@ -165,6 +162,7 @@ MCSClient::MCSClient(const std::string& version_string,
                      base::Clock* clock,
                      ConnectionFactory* connection_factory,
                      GCMStore* gcm_store,
+                     scoped_refptr<base::SequencedTaskRunner> io_task_runner,
                      GCMStatsRecorder* recorder)
     : version_string_(version_string),
       clock_(clock),
@@ -172,14 +170,17 @@ MCSClient::MCSClient(const std::string& version_string,
       android_id_(0),
       security_token_(0),
       connection_factory_(connection_factory),
-      connection_handler_(NULL),
+      connection_handler_(nullptr),
       last_device_to_server_stream_id_received_(0),
       last_server_to_device_stream_id_received_(0),
       stream_id_out_(0),
       stream_id_in_(0),
       gcm_store_(gcm_store),
-      recorder_(recorder),
-      weak_ptr_factory_(this) {
+      io_task_runner_(io_task_runner),
+      heartbeat_manager_(std::move(base::ThreadTaskRunnerHandle::Get()),
+                         std::move(io_task_runner)),
+      recorder_(recorder) {
+  DCHECK(io_task_runner_);
 }
 
 MCSClient::~MCSClient() {
@@ -288,6 +289,7 @@ void MCSClient::Initialize(
 }
 
 void MCSClient::Login(uint64_t android_id, uint64_t security_token) {
+  DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
   DCHECK_EQ(state_, LOADED);
   DCHECK(android_id_ == 0 || android_id_ == android_id);
   DCHECK(security_token_ == 0 || security_token_ == security_token);
@@ -529,6 +531,7 @@ void MCSClient::OnGCMUpdateFinished(bool success) {
 }
 
 void MCSClient::MaybeSendMessage() {
+  DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
   if (to_send_.empty())
     return;
 
@@ -549,9 +552,9 @@ void MCSClient::MaybeSendMessage() {
         packet->persistent_id,
         base::Bind(&MCSClient::OnGCMUpdateFinished,
                    weak_ptr_factory_.GetWeakPtr()));
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(&MCSClient::MaybeSendMessage,
-                                  weak_ptr_factory_.GetWeakPtr()));
+    io_task_runner_->PostTask(FROM_HERE,
+                              base::BindOnce(&MCSClient::MaybeSendMessage,
+                                             weak_ptr_factory_.GetWeakPtr()));
     return;
   }
   DVLOG(1) << "Pending output message found, sending.";
@@ -722,13 +725,13 @@ void MCSClient::HandlePacketFromWire(
       DCHECK_EQ(1U, stream_id_out_);
 
       // Pass the login response on up.
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      io_task_runner_->PostTask(
           FROM_HERE, base::BindOnce(message_received_callback_,
                                     MCSMessage(tag, std::move(protobuf))));
 
       // If there are pending messages, attempt to send one.
       if (!to_send_.empty()) {
-        base::ThreadTaskRunnerHandle::Get()->PostTask(
+        io_task_runner_->PostTask(
             FROM_HERE, base::BindOnce(&MCSClient::MaybeSendMessage,
                                       weak_ptr_factory_.GetWeakPtr()));
       }
@@ -791,7 +794,7 @@ void MCSClient::HandlePacketFromWire(
       }
 
       DCHECK(protobuf.get());
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      io_task_runner_->PostTask(
           FROM_HERE, base::BindOnce(message_received_callback_,
                                     MCSMessage(tag, std::move(protobuf))));
       return;
@@ -827,6 +830,8 @@ void MCSClient::HandleStreamAck(StreamId last_stream_id_received) {
 }
 
 void MCSClient::HandleSelectiveAck(const PersistentIdList& id_list) {
+  DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
+
   std::set<PersistentId> remaining_ids(id_list.begin(), id_list.end());
 
   StreamId last_stream_id_received = 0;
@@ -898,9 +903,9 @@ void MCSClient::HandleSelectiveAck(const PersistentIdList& id_list) {
     to_send_.push_front(std::move(to_resend_.back()));
     to_resend_.pop_back();
   }
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(&MCSClient::MaybeSendMessage,
-                                weak_ptr_factory_.GetWeakPtr()));
+  io_task_runner_->PostTask(FROM_HERE,
+                            base::BindOnce(&MCSClient::MaybeSendMessage,
+                                           weak_ptr_factory_.GetWeakPtr()));
 }
 
 void MCSClient::HandleServerConfirmedReceipt(StreamId device_stream_id) {

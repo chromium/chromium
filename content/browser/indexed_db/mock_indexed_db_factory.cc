@@ -4,6 +4,8 @@
 
 #include "content/browser/indexed_db/mock_indexed_db_factory.h"
 
+#include <vector>
+
 namespace content {
 
 MockIndexedDBFactory::MockIndexedDBFactory() {
@@ -12,9 +14,9 @@ MockIndexedDBFactory::MockIndexedDBFactory() {
 MockIndexedDBFactory::~MockIndexedDBFactory() {
 }
 
-IndexedDBFactory::OriginDBs MockIndexedDBFactory::GetOpenDatabasesForOrigin(
+std::vector<IndexedDBDatabase*> MockIndexedDBFactory::GetOpenDatabasesForOrigin(
     const url::Origin& origin) const {
-  return OriginDBs();
+  return std::vector<IndexedDBDatabase*>();
 }
 
 }  // namespace content

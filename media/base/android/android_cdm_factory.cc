@@ -31,8 +31,7 @@ void ReportMediaDrmBridgeKeySystemSupport(bool supported) {
 AndroidCdmFactory::AndroidCdmFactory(const CreateFetcherCB& create_fetcher_cb,
                                      const CreateStorageCB& create_storage_cb)
     : create_fetcher_cb_(create_fetcher_cb),
-      create_storage_cb_(create_storage_cb),
-      weak_factory_(this) {}
+      create_storage_cb_(create_storage_cb) {}
 
 AndroidCdmFactory::~AndroidCdmFactory() {
   weak_factory_.InvalidateWeakPtrs();

@@ -1,0 +1,7 @@
+include_rules = [
+  "+chromecast/graphics",
+  "+mojo/public",
+  "+ui/aura",
+  "+ui/gfx",
+  "+ui/views",
+]

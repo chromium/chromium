@@ -7,6 +7,7 @@
 // https://w3c.github.io/mediacapture-main/#mediadevices-interface-extensions
 
 [
+    Exposed=Window,
     ActiveScriptWrappable,
     SecureContext
 ] interface MediaDevices : EventTarget {

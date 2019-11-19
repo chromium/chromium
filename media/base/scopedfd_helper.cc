@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
 #include "media/base/scopedfd_helper.h"
 
@@ -17,10 +18,7 @@ std::vector<base::ScopedFD> DuplicateFDs(
 
   for (auto& fd : fds) {
     base::ScopedFD dup_fd = base::ScopedFD(HANDLE_EINTR(dup(fd.get())));
-    if (!dup_fd.is_valid()) {
-      DPLOG(ERROR) << "Failed to duplicate ScopedFD's file descriptor";
-      return std::vector<base::ScopedFD>();
-    }
+    PCHECK(dup_fd.is_valid());
     ret.push_back(std::move(dup_fd));
   }
 

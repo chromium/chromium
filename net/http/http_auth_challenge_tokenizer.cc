@@ -4,6 +4,7 @@
 
 #include "net/http/http_auth_challenge_tokenizer.h"
 
+#include "base/strings/string_piece.h"
 #include "base/strings/string_tokenizer.h"
 
 namespace net {
@@ -13,8 +14,6 @@ HttpAuthChallengeTokenizer::HttpAuthChallengeTokenizer(
     std::string::const_iterator end)
     : begin_(begin),
       end_(end),
-      scheme_begin_(begin),
-      scheme_end_(begin),
       params_begin_(end),
       params_end_(end) {
   Init(begin, end);
@@ -52,10 +51,10 @@ void HttpAuthChallengeTokenizer::Init(std::string::const_iterator begin,
   }
 
   // Save the scheme's position.
-  scheme_begin_ = tok.token_begin();
-  scheme_end_ = tok.token_end();
+  lower_case_scheme_ =
+      base::ToLowerASCII(base::StringPiece(tok.token_begin(), tok.token_end()));
 
-  params_begin_ = scheme_end_;
+  params_begin_ = tok.token_end();
   params_end_ = end;
   HttpUtil::TrimLWS(&params_begin_, &params_end_);
 }

@@ -1,4 +1,4 @@
 Tests that detaching frame while issuing request doesn't break virtual time.
-/protocol/emulation/resources/virtual-time-detach-frame-index.html
-/protocol/emulation/resources/virtual-time-detach-frame-iframe.html
-/protocol/emulation/resources/virtual-time-detach-frame-style.css
+Request to http://test.com/index.html, type: Document
+Request to http://test.com/detach-frame-iframe.html, type: Document
+Request to http://test.com/detach-frame-style.css, type: Stylesheet

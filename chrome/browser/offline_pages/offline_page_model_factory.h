@@ -5,13 +5,19 @@
 #ifndef CHROME_BROWSER_OFFLINE_PAGES_OFFLINE_PAGE_MODEL_FACTORY_H_
 #define CHROME_BROWSER_OFFLINE_PAGES_OFFLINE_PAGE_MODEL_FACTORY_H_
 
+#include <memory>
+
 #include "base/macros.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "components/keyed_service/core/simple_keyed_service_factory.h"
 
 namespace base {
 template <typename T>
 struct DefaultSingletonTraits;
 }  // namespace base
+
+namespace content {
+class BrowserContext;
+}  // namespace content
 
 namespace offline_pages {
 
@@ -22,11 +28,15 @@ class OfflinePageModel;
 // |GetBrowserContextToUse|.
 // TODO(fgorski): Add an integration test that ensures incognito users don't
 // save or open offline pages.
-class OfflinePageModelFactory : public BrowserContextKeyedServiceFactory {
+class OfflinePageModelFactory : public SimpleKeyedServiceFactory {
  public:
   static OfflinePageModelFactory* GetInstance();
+  static OfflinePageModel* GetForKey(SimpleFactoryKey* key);
+
+  // Helper method that calls GetForKey(). Extracts the SimpleFactoryKey
+  // from |browser_context|, which is assumed to be a Profile.
   static OfflinePageModel* GetForBrowserContext(
-      content::BrowserContext* context);
+      content::BrowserContext* browser_context);
 
  private:
   friend struct base::DefaultSingletonTraits<OfflinePageModelFactory>;
@@ -34,8 +44,8 @@ class OfflinePageModelFactory : public BrowserContextKeyedServiceFactory {
   OfflinePageModelFactory();
   ~OfflinePageModelFactory() override {}
 
-  KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* context) const override;
+  std::unique_ptr<KeyedService> BuildServiceInstanceFor(
+      SimpleFactoryKey* key) const override;
 
   DISALLOW_COPY_AND_ASSIGN(OfflinePageModelFactory);
 };

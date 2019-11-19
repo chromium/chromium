@@ -32,7 +32,7 @@ public class VrWindowAndroid
         extends WindowAndroid implements ApplicationStatus.ActivityStateListener {
     public VrWindowAndroid(Context context, DisplayAndroid display) {
         super(context, display);
-        Activity activity = activityFromContext(context);
+        Activity activity = ContextUtils.activityFromContext(context);
         if (activity == null) {
             throw new IllegalArgumentException("Context is not and does not wrap an Activity");
         }
@@ -63,7 +63,7 @@ public class VrWindowAndroid
 
     @Override
     public WeakReference<Activity> getActivity() {
-        return new WeakReference<>(activityFromContext(getContext().get()));
+        return new WeakReference<>(ContextUtils.activityFromContext(getContext().get()));
     }
 
     @Override

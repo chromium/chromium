@@ -8,12 +8,11 @@
 #include "base/scoped_observer.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
-
-class HostContentSettingsMap;
 
 class SoundContentSettingObserver
     : public content::WebContentsObserver,
@@ -72,7 +71,8 @@ class SoundContentSettingObserver
 
   HostContentSettingsMap* host_content_settings_map_;
 
-  ScopedObserver<HostContentSettingsMap, content_settings::Observer> observer_;
+  ScopedObserver<HostContentSettingsMap, content_settings::Observer> observer_{
+      this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 

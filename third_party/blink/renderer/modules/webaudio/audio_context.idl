@@ -32,6 +32,7 @@ enum AudioContextLatencyCategory {
 
 // See https://webaudio.github.io/web-audio-api/#AudioContext
 [
+    Exposed=Window,
     ActiveScriptWrappable,
     Constructor(optional AudioContextOptions contextOptions),
     ConstructorCallWith=Document,

@@ -41,11 +41,6 @@ CrashUploadListCrashpad::CrashUploadListCrashpad() = default;
 
 CrashUploadListCrashpad::~CrashUploadListCrashpad() = default;
 
-base::TaskTraits CrashUploadListCrashpad::LoadingTaskTraits() {
-  return {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-          base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN};
-}
-
 std::vector<UploadList::UploadInfo> CrashUploadListCrashpad::LoadUploadList() {
   std::vector<crash_reporter::Report> reports;
   crash_reporter::GetReports(&reports);
@@ -58,6 +53,11 @@ std::vector<UploadList::UploadInfo> CrashUploadListCrashpad::LoadUploadList() {
                    ReportUploadStateToUploadInfoState(report.state)));
   }
   return uploads;
+}
+
+void CrashUploadListCrashpad::ClearUploadList(const base::Time& begin,
+                                              const base::Time& end) {
+  crash_reporter::ClearReportsBetween(begin, end);
 }
 
 void CrashUploadListCrashpad::RequestSingleUpload(const std::string& local_id) {

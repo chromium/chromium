@@ -5,7 +5,7 @@
 '''Item formatters for RC headers.
 '''
 
-from grit.node import message
+from __future__ import print_function
 
 
 def Format(root, lang='en', output_dir='.'):

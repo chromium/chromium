@@ -30,7 +30,7 @@ TEST_F(CastDialogSinkButtonTest, SetTitleLabel) {
   UIMediaSink sink;
   sink.friendly_name = base::UTF8ToUTF16("sink name");
   CastDialogSinkButton button(nullptr, sink, 0);
-  EXPECT_EQ(sink.friendly_name, button.title()->text());
+  EXPECT_EQ(sink.friendly_name, button.title()->GetText());
 }
 
 TEST_F(CastDialogSinkButtonTest, SetStatusLabelForAvailableSink) {
@@ -38,16 +38,16 @@ TEST_F(CastDialogSinkButtonTest, SetStatusLabelForAvailableSink) {
   sink.state = UIMediaSinkState::AVAILABLE;
   CastDialogSinkButton button(nullptr, sink, 0);
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_MEDIA_ROUTER_SINK_AVAILABLE),
-            button.subtitle()->text());
+            button.subtitle()->GetText());
   // Disabling an AVAILABLE sink button should change its label to "Source not
   // supported".
   button.SetEnabled(false);
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_MEDIA_ROUTER_SOURCE_NOT_SUPPORTED),
-            button.subtitle()->text());
+            button.subtitle()->GetText());
   // Re-enabling it should make set the label to "Available" again.
   button.SetEnabled(true);
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_MEDIA_ROUTER_SINK_AVAILABLE),
-            button.subtitle()->text());
+            button.subtitle()->GetText());
 }
 
 TEST_F(CastDialogSinkButtonTest, SetStatusLabelForActiveSink) {
@@ -55,18 +55,18 @@ TEST_F(CastDialogSinkButtonTest, SetStatusLabelForActiveSink) {
   sink.state = UIMediaSinkState::CONNECTING;
   CastDialogSinkButton button1(nullptr, sink, 0);
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_MEDIA_ROUTER_SINK_CONNECTING),
-            button1.subtitle()->text());
+            button1.subtitle()->GetText());
 
   sink.state = UIMediaSinkState::CONNECTED;
   sink.status_text = base::UTF8ToUTF16("status text");
   CastDialogSinkButton button2(nullptr, sink, 1);
-  EXPECT_EQ(sink.status_text, button2.subtitle()->text());
+  EXPECT_EQ(sink.status_text, button2.subtitle()->GetText());
 
   // The status label should be "Disconnecting..." even if |status_text| is set.
   sink.state = UIMediaSinkState::DISCONNECTING;
   CastDialogSinkButton button3(nullptr, sink, 2);
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_MEDIA_ROUTER_SINK_DISCONNECTING),
-            button3.subtitle()->text());
+            button3.subtitle()->GetText());
 }
 
 TEST_F(CastDialogSinkButtonTest, SetStatusLabelForSinkWithIssue) {
@@ -77,11 +77,11 @@ TEST_F(CastDialogSinkButtonTest, SetStatusLabelForSinkWithIssue) {
   sink.state = UIMediaSinkState::AVAILABLE;
   CastDialogSinkButton button1(nullptr, sink, 0);
   EXPECT_EQ(base::UTF8ToUTF16(sink.issue->info().title),
-            button1.subtitle()->text());
+            button1.subtitle()->GetText());
   sink.state = UIMediaSinkState::CONNECTED;
   CastDialogSinkButton button2(nullptr, sink, 1);
   EXPECT_EQ(base::UTF8ToUTF16(sink.issue->info().title),
-            button2.subtitle()->text());
+            button2.subtitle()->GetText());
 }
 
 TEST_F(CastDialogSinkButtonTest, OverrideStatusText) {
@@ -93,27 +93,27 @@ TEST_F(CastDialogSinkButtonTest, OverrideStatusText) {
 
   // Calling RestoreStatusText does nothing when status has not been overridden.
   button.subtitle()->SetText(status0);
-  ASSERT_EQ(button.subtitle()->text(), status0);
+  ASSERT_EQ(button.subtitle()->GetText(), status0);
   button.RestoreStatusText();
-  EXPECT_EQ(button.subtitle()->text(), status0);
+  EXPECT_EQ(button.subtitle()->GetText(), status0);
 
   // OverrideStatusText replaces status text.
   button.OverrideStatusText(status1);
-  EXPECT_EQ(button.subtitle()->text(), status1);
+  EXPECT_EQ(button.subtitle()->GetText(), status1);
 
   // Additional calls to OverrideStatusText change the text.
   button.OverrideStatusText(status2);
-  EXPECT_EQ(button.subtitle()->text(), status2);
+  EXPECT_EQ(button.subtitle()->GetText(), status2);
 
   // RestoreStatusText restores the saved status text.
   button.RestoreStatusText();
-  EXPECT_EQ(button.subtitle()->text(), status0);
+  EXPECT_EQ(button.subtitle()->GetText(), status0);
 
   // Additional calls to RestoreStatusText don't change the text.
   button.subtitle()->SetText(status1);
-  ASSERT_EQ(button.subtitle()->text(), status1);
+  ASSERT_EQ(button.subtitle()->GetText(), status1);
   button.RestoreStatusText();
-  EXPECT_EQ(button.subtitle()->text(), status1);
+  EXPECT_EQ(button.subtitle()->GetText(), status1);
 }
 
 }  // namespace media_router

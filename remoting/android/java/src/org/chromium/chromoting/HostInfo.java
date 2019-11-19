@@ -27,6 +27,7 @@ public class HostInfo {
     public final String name;
     public final String id;
     public final String jabberId;
+    public final String ftlId;
     public final String publicKey;
     public final boolean isOnline;
     public final String hostOfflineReason;
@@ -47,30 +48,21 @@ public class HostInfo {
     // to have a safe fallback in case it does happen.
     private static final Date FALLBACK_DATE_IN_THE_PAST = new Date(0);
 
-    public HostInfo(String name, String id, String jabberId, String publicKey,
+    public HostInfo(String name, String id, String jabberId, String ftlId, String publicKey,
             ArrayList<String> tokenUrlPatterns, boolean isOnline, String hostOfflineReason,
-            String updatedTime, String hostVersion, String hostOs, String hostOsVersion) {
+            Date updatedTime, String hostVersion, String hostOs, String hostOsVersion) {
         this.name = name;
         this.id = id;
         this.jabberId = jabberId;
+        this.ftlId = ftlId;
         this.publicKey = publicKey;
         this.mTokenUrlPatterns = tokenUrlPatterns;
         this.isOnline = isOnline;
         this.hostOfflineReason = hostOfflineReason;
+        this.updatedTime = updatedTime;
         this.hostVersion = hostVersion;
         this.hostOs = hostOs;
         this.hostOsVersion = hostOsVersion;
-
-        ParsePosition parsePosition = new ParsePosition(0);
-        SimpleDateFormat format = new SimpleDateFormat(RFC_3339_FORMAT, Locale.US);
-        format.setTimeZone(TimeZone.getTimeZone("UTC"));
-        Date updatedTimeCandidate = format.parse(updatedTime, parsePosition);
-        if (updatedTimeCandidate == null) {
-            Log.e(TAG, "Unparseable host.updatedTime JSON: errorIndex = %d, input = %s",
-                    parsePosition.getErrorIndex(), updatedTime);
-            updatedTimeCandidate = FALLBACK_DATE_IN_THE_PAST;
-        }
-        this.updatedTime = updatedTimeCandidate;
     }
 
     private int getHostOfflineReasonResourceId(String reason) {
@@ -106,12 +98,24 @@ public class HostInfo {
         }
     }
 
+    /**
+     *
+     * @return true if the host is incomplete, meaning the host may be newly registered and doesn't
+     * have some required fields.
+     */
+    public boolean isIncomplete() {
+        return ftlId.isEmpty() || publicKey.isEmpty();
+    }
+
     public String getHostOfflineReasonText(Context context) {
         if (TextUtils.isEmpty(hostOfflineReason)) {
             return context.getString(R.string.host_offline_tooltip);
         }
-        return context.getString(
-                getHostOfflineReasonResourceId(hostOfflineReason.toLowerCase(Locale.ENGLISH)));
+        int resource_id =
+                getHostOfflineReasonResourceId(hostOfflineReason.toLowerCase(Locale.ENGLISH));
+        return resource_id == R.string.offline_reason_unknown
+                ? context.getString(resource_id, hostOfflineReason)
+                : context.getString(resource_id);
     }
 
     public ArrayList<String> getTokenUrlPatterns() {
@@ -132,10 +136,23 @@ public class HostInfo {
                 }
             }
         }
+
+        final String updatedTime = json.optString("updatedTime");
+        ParsePosition parsePosition = new ParsePosition(0);
+        SimpleDateFormat format = new SimpleDateFormat(RFC_3339_FORMAT, Locale.US);
+        format.setTimeZone(TimeZone.getTimeZone("UTC"));
+        Date updatedTimeCandidate = format.parse(updatedTime, parsePosition);
+        if (updatedTimeCandidate == null) {
+            Log.e(TAG, "Unparseable host.updatedTime JSON: errorIndex = %d, input = %s",
+                    parsePosition.getErrorIndex(), updatedTime);
+            updatedTimeCandidate = FALLBACK_DATE_IN_THE_PAST;
+        }
+        final Date parsedUpdatedTime = updatedTimeCandidate;
+
         return new HostInfo(json.getString("hostName"), json.getString("hostId"),
-                json.optString("jabberId"), json.optString("publicKey"), tokenUrlPatterns,
+                json.optString("jabberId"), null, json.optString("publicKey"), tokenUrlPatterns,
                 json.optString("status").equals("ONLINE"), json.optString("hostOfflineReason"),
-                json.optString("updatedTime"), json.optString("hostVersion"),
-                json.optString("hostOs"), json.optString("hostOsVersion"));
+                parsedUpdatedTime, json.optString("hostVersion"), json.optString("hostOs"),
+                json.optString("hostOsVersion"));
     }
 }

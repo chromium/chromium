@@ -1,0 +1,33 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+
+assert(is_chromeos, "Proximity Auth is Chrome OS only")
+
+js_type_check("closure_compile") {
+  deps = [
+    ":logs",
+    ":proximity_auth",
+    ":webui",
+  ]
+}
+
+js_library("webui") {
+  externs_list = [ "$externs_path/chrome_send.js" ]
+}
+
+js_library("logs") {
+  deps = [
+    ":webui",
+  ]
+}
+
+js_library("proximity_auth") {
+  deps = [
+    ":logs",
+    ":webui",
+    "//chromeos/services/multidevice_setup/public/mojom:mojom_js_library_for_compile",
+  ]
+}

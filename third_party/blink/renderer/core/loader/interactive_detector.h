@@ -18,6 +18,11 @@
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/wtf/pod_interval.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
+
+namespace base {
+class TickClock;
+}  // namespace base
 
 namespace blink {
 
@@ -30,7 +35,7 @@ class Event;
 // TODO(crbug.com/631203): This class currently only detects Time to
 // Interactive. Implement First Idle.
 class CORE_EXPORT InteractiveDetector
-    : public GarbageCollectedFinalized<InteractiveDetector>,
+    : public GarbageCollected<InteractiveDetector>,
       public Supplement<Document>,
       public ContextLifecycleObserver,
       public LongTaskObserver {
@@ -62,133 +67,141 @@ class CORE_EXPORT InteractiveDetector
   explicit InteractiveDetector(Document&, NetworkActivityChecker*);
   ~InteractiveDetector() override = default;
 
-  // Calls to CurrentTimeTicksInSeconds is expensive, so we try not to call it
-  // unless we really have to. If we already have the event time available, we
-  // pass it in as an argument.
-  void OnResourceLoadBegin(base::Optional<TimeTicks> load_begin_time);
-  void OnResourceLoadEnd(base::Optional<TimeTicks> load_finish_time);
+  // Calls to base::TimeTicks::Now().since_origin().InSecondsF() is expensive,
+  // so we try not to call it unless we really have to. If we already have the
+  // event time available, we pass it in as an argument.
+  void OnResourceLoadBegin(base::Optional<base::TimeTicks> load_begin_time);
+  void OnResourceLoadEnd(base::Optional<base::TimeTicks> load_finish_time);
 
-  void SetNavigationStartTime(TimeTicks navigation_start_time);
+  void SetNavigationStartTime(base::TimeTicks navigation_start_time);
   void OnFirstMeaningfulPaintDetected(
-      TimeTicks fmp_time,
+      base::TimeTicks fmp_time,
       FirstMeaningfulPaintDetector::HadUserInput user_input_before_fmp);
-  void OnDomContentLoadedEnd(TimeTicks dcl_time);
-  void OnInvalidatingInputEvent(TimeTicks invalidation_time);
+  void OnDomContentLoadedEnd(base::TimeTicks dcl_time);
+  void OnInvalidatingInputEvent(base::TimeTicks invalidation_time);
   void OnPageHiddenChanged(bool is_hidden);
 
   // Returns Interactive Time if already detected, or 0.0 otherwise.
-  TimeTicks GetInteractiveTime() const;
+  base::TimeTicks GetInteractiveTime() const;
 
   // Returns the time when page interactive was detected. The detection time can
   // be useful to make decisions about metric invalidation in scenarios like tab
   // backgrounding.
-  TimeTicks GetInteractiveDetectionTime() const;
+  base::TimeTicks GetInteractiveDetectionTime() const;
 
   // Returns the first time interactive detector received a significant input
   // that may cause observers to discard the interactive time value.
-  TimeTicks GetFirstInvalidatingInputTime() const;
+  base::TimeTicks GetFirstInvalidatingInputTime() const;
 
   // The duration between the hardware timestamp and being queued on the main
   // thread for the first click, tap, key press, cancelable touchstart, or
   // pointer down followed by a pointer up.
-  TimeDelta GetFirstInputDelay() const;
+  base::TimeDelta GetFirstInputDelay() const;
 
   // The timestamp of the event whose delay is reported by GetFirstInputDelay().
-  TimeTicks GetFirstInputTimestamp() const;
+  base::TimeTicks GetFirstInputTimestamp() const;
 
   // Queueing Time of the meaningful input event with longest delay. Meaningful
   // input events are click, tap, key press, cancellable touchstart, or pointer
   // down followed by a pointer up.
-  TimeDelta GetLongestInputDelay() const;
+  base::TimeDelta GetLongestInputDelay() const;
 
   // The timestamp of the event whose delay is reported by
   // GetLongestInputDelay().
-  TimeTicks GetLongestInputTimestamp() const;
+  base::TimeTicks GetLongestInputTimestamp() const;
 
   // Process an input event, updating first_input_delay and
   // first_input_timestamp if needed.
   void HandleForInputDelay(const Event&,
-                           TimeTicks event_platform_timestamp,
-                           TimeTicks processing_start);
+                           base::TimeTicks event_platform_timestamp,
+                           base::TimeTicks processing_start);
 
   // ContextLifecycleObserver
   void ContextDestroyed(ExecutionContext*) override;
 
   void Trace(Visitor*) override;
 
+  void SetTaskRunnerForTesting(
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner_for_testing);
+  // The caller owns the |clock| which must outlive the InteractiveDetector.
+  void SetTickClockForTesting(const base::TickClock* clock);
+
  private:
   friend class InteractiveDetectorTest;
 
-  TimeTicks interactive_time_;
-  TimeTicks interactive_detection_time_;
+  const base::TickClock* clock_;
+
+  base::TimeTicks interactive_time_;
+  base::TimeTicks interactive_detection_time_;
 
   // Page event times that Interactive Detector depends on.
-  // Null TimeTicks values indicate the event has not been detected yet.
+  // Null base::TimeTicks values indicate the event has not been detected yet.
   struct {
-    TimeTicks first_meaningful_paint;
-    TimeTicks dom_content_loaded_end;
-    TimeTicks nav_start;
-    TimeTicks first_invalidating_input;
-    TimeDelta first_input_delay;
-    TimeDelta longest_input_delay;
-    TimeTicks first_input_timestamp;
-    TimeTicks longest_input_timestamp;
+    base::TimeTicks first_meaningful_paint;
+    base::TimeTicks dom_content_loaded_end;
+    base::TimeTicks nav_start;
+    base::TimeTicks first_invalidating_input;
+    base::TimeDelta first_input_delay;
+    base::TimeDelta longest_input_delay;
+    base::TimeTicks first_input_timestamp;
+    base::TimeTicks longest_input_timestamp;
     bool first_meaningful_paint_invalidated = false;
   } page_event_times_;
 
   struct VisibilityChangeEvent {
-    TimeTicks timestamp;
+    base::TimeTicks timestamp;
     bool was_hidden;
   };
 
   // Stores sufficiently long quiet windows on main thread and network.
-  std::vector<WTF::PODInterval<TimeTicks>> main_thread_quiet_windows_;
-  std::vector<WTF::PODInterval<TimeTicks>> network_quiet_windows_;
+  Vector<WTF::PODInterval<base::TimeTicks>> main_thread_quiet_windows_;
+  Vector<WTF::PODInterval<base::TimeTicks>> network_quiet_windows_;
 
   // Start times of currently active main thread and network quiet windows.
-  // Null TimeTicks values indicate main thread or network is not quiet at the
-  // moment.
-  TimeTicks active_main_thread_quiet_window_start_;
-  TimeTicks active_network_quiet_window_start_;
+  // Null base::TimeTicks values indicate main thread or network is not quiet at
+  // the moment.
+  base::TimeTicks active_main_thread_quiet_window_start_;
+  base::TimeTicks active_network_quiet_window_start_;
 
   // Adds currently active quiet main thread and network quiet windows to the
   // vectors. Should be called before calling
   // FindInteractiveCandidate.
-  void AddCurrentlyActiveQuietIntervals(TimeTicks current_time);
+  void AddCurrentlyActiveQuietIntervals(base::TimeTicks current_time);
   // Undoes AddCurrentlyActiveQuietIntervals.
   void RemoveCurrentlyActiveQuietIntervals();
 
   std::unique_ptr<NetworkActivityChecker> network_activity_checker_;
   int ActiveConnections();
-  void BeginNetworkQuietPeriod(TimeTicks current_time);
-  void EndNetworkQuietPeriod(TimeTicks current_time);
+  void BeginNetworkQuietPeriod(base::TimeTicks current_time);
+  void EndNetworkQuietPeriod(base::TimeTicks current_time);
   // Updates current network quietness tracking information. Opens and closes
   // network quiet windows as necessary.
   void UpdateNetworkQuietState(double request_count,
-                               base::Optional<TimeTicks> current_time);
+                               base::Optional<base::TimeTicks> current_time);
 
   TaskRunnerTimer<InteractiveDetector> time_to_interactive_timer_;
-  TimeTicks time_to_interactive_timer_fire_time_;
-  void StartOrPostponeCITimer(TimeTicks timer_fire_time);
+  base::TimeTicks time_to_interactive_timer_fire_time_;
+  void StartOrPostponeCITimer(base::TimeTicks timer_fire_time);
   void TimeToInteractiveTimerFired(TimerBase*);
   void CheckTimeToInteractiveReached();
   void OnTimeToInteractiveDetected();
 
-  std::vector<VisibilityChangeEvent> visibility_change_events_;
+  Vector<VisibilityChangeEvent> visibility_change_events_;
   bool initially_hidden_;
   // Returns true if page was ever backgrounded in the range
-  // [event_time, CurrentTimeTicks()].
-  bool PageWasBackgroundedSinceEvent(TimeTicks event_time);
+  // [event_time, base::TimeTicks::Now()].
+  bool PageWasBackgroundedSinceEvent(base::TimeTicks event_time);
 
   // Finds a window of length kTimeToInteractiveWindowSeconds after lower_bound
   // such that both main thread and network are quiet. Returns the end of last
   // long task before that quiet window, or lower_bound, whichever is bigger -
   // this is called the Interactive Candidate. Returns 0.0 if no such quiet
   // window is found.
-  TimeTicks FindInteractiveCandidate(TimeTicks lower_bound);
+  base::TimeTicks FindInteractiveCandidate(base::TimeTicks lower_bound);
 
   // LongTaskObserver implementation
-  void OnLongTaskDetected(TimeTicks start_time, TimeTicks end_time) override;
+  void OnLongTaskDetected(base::TimeTicks start_time,
+                          base::TimeTicks end_time) override;
 
   // The duration between the hardware timestamp and when we received the event
   // for the previous pointer down. Only non-zero if we've received a pointer

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>let additionalChromiumResources = ["resources/xr-internal-device-mocking.js"];</script>
+<script src="/webxr/resources/webxr_util.js"></script>
+<script src="/webxr/resources/webxr_test_constants.js"></script>
+<script src="/webxr/resources/webxr_test_asserts.js"></script>
+<canvas />
+
+<script>
+// This is an internal version of the external xrBoundedReferenceSpace_updates.html
+// Because Mojo allows specifiying the stageSize with an x/z size, we want to ensure
+// that that gets turned into an appropraite bounds geometry.
+let testName =
+  "'XRBoundedReferenceSpace updates properly when the changes are applied";
+
+let fakeDeviceInitParams = {
+    supportsImmersive: true,
+    views: VALID_VIEWS,
+    viewerOrigin: IDENTITY_TRANSFORM,
+    floorOrigin: VALID_FLOOR_ORIGIN,
+    supportedFeatures: ALL_FEATURES
+};
+
+let testFunction = function(session, fakeDeviceController, t) {
+  // If the array bounds aren't set, but the stage size is, then Chrome should
+  // fake the stage size.
+  fakeDeviceController.setStageSize(2.0, 3.0);
+
+  return new Promise((resolve, reject) => {
+
+    // Need to request one animation frame to allow the stage setup to propagate
+    // before we can request the reference space, otherwise we won't have bounds.
+    session.requestAnimationFrame(() => {
+      session.requestReferenceSpace('bounded-floor')
+        .then((referenceSpace) => {
+          function onFirstFrame(time, xrFrame) {
+            t.step(() => {
+              // Ensure that the correct transform is being applied.
+              let pose = xrFrame.getViewerPose(referenceSpace);
+              assert_not_equals(pose, null);
+
+              let poseMatrix = pose.transform.matrix;
+              assert_matrix_approx_equals(poseMatrix, VALID_FLOOR_ORIGIN_MATRIX);
+
+              // If an explicit array of bounds points was not provided then the
+              // bounds geometry should represent the four corners of the rectangle
+              // defined by the stage size.
+              assert_equals(referenceSpace.boundsGeometry.length, 4);
+              for (point of referenceSpace.boundsGeometry) {
+                // Ensure corners are half the width & depth away from the origin.
+                assert_equals(Math.abs(point.x), 1.0);
+                assert_equals(point.y, 0.0);
+                assert_equals(Math.abs(point.z), 1.5);
+                assert_equals(point.w, 1.0);
+              }
+            });
+
+            // Now set the bounds explicitly and check again on the next frame.
+            fakeDeviceController.setBoundsGeometry(VALID_BOUNDS);
+            session.requestAnimationFrame(onFrame);
+          }
+
+          function onFrame(time, xrFrame) {
+            t.step(() => {
+              // After setting the bounds explicitly, make sure that's reflected
+              // in the boundsGeometry.
+              assert_equals(referenceSpace.boundsGeometry.length, VALID_BOUNDS.length);
+              for (i = 0; i < VALID_BOUNDS.length; ++i) {
+                let valid_point = VALID_BOUNDS[i];
+                let bounds_point = referenceSpace.boundsGeometry[i];
+                assert_equals(valid_point.x, bounds_point.x);
+                assert_equals(bounds_point.y, 0.0);
+                assert_equals(valid_point.z, bounds_point.z);
+                assert_equals(bounds_point.w, 1.0);
+              }
+            });
+
+            // Finished.
+            resolve();
+          }
+
+          session.requestAnimationFrame(onFirstFrame);
+        });
+    });
+  });
+};
+
+xr_session_promise_test(
+  testName, testFunction, fakeDeviceInitParams, 'immersive-vr', { 'requiredFeatures': ['bounded-floor'] });
+
+</script>

@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_REMOTE_FRAME_OWNER_H_
 
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
+#include "third_party/blink/public/common/frame/frame_policy.h"
 #include "third_party/blink/public/web/web_frame_owner_properties.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/frame/frame_owner.h"
@@ -20,23 +21,12 @@ namespace blink {
 //    its owner element in another process.
 // 2. Trigger a load event on its owner element once it finishes a load.
 class CORE_EXPORT RemoteFrameOwner final
-    : public GarbageCollectedFinalized<RemoteFrameOwner>,
+    : public GarbageCollected<RemoteFrameOwner>,
       public FrameOwner {
   USING_GARBAGE_COLLECTED_MIXIN(RemoteFrameOwner);
 
  public:
-  static RemoteFrameOwner* Create(
-      SandboxFlags flags,
-      const ParsedFeaturePolicy& container_policy,
-      const WebFrameOwnerProperties& frame_owner_properties,
-      FrameOwnerElementType frame_owner_element_type) {
-    return MakeGarbageCollected<RemoteFrameOwner>(flags, container_policy,
-                                                  frame_owner_properties,
-                                                  frame_owner_element_type);
-  }
-
-  RemoteFrameOwner(SandboxFlags,
-                   const ParsedFeaturePolicy&,
+  RemoteFrameOwner(const FramePolicy&,
                    const WebFrameOwnerProperties&,
                    FrameOwnerElementType frame_owner_element_type);
 
@@ -44,8 +34,7 @@ class CORE_EXPORT RemoteFrameOwner final
   Frame* ContentFrame() const override { return frame_.Get(); }
   void SetContentFrame(Frame&) override;
   void ClearContentFrame() override;
-  SandboxFlags GetSandboxFlags() const override { return sandbox_flags_; }
-  void SetSandboxFlags(SandboxFlags flags) { sandbox_flags_ = flags; }
+  const FramePolicy& GetFramePolicy() const override { return frame_policy_; }
   void AddResourceTiming(const ResourceTimingInfo&) override;
   void DispatchLoad() override;
   bool CanRenderFallbackContent() const override {
@@ -53,6 +42,7 @@ class CORE_EXPORT RemoteFrameOwner final
   }
   void RenderFallbackContent(Frame*) override;
   void IntrinsicSizingInfoChanged() override;
+  void SetNeedsOcclusionTracking(bool) override;
 
   AtomicString BrowsingContextContainerName() const override {
     return browsing_context_container_name_;
@@ -64,11 +54,11 @@ class CORE_EXPORT RemoteFrameOwner final
   bool AllowPaymentRequest() const override { return allow_payment_request_; }
   bool IsDisplayNone() const override { return is_display_none_; }
   AtomicString RequiredCsp() const override { return required_csp_; }
-  const ParsedFeaturePolicy& ContainerPolicy() const override {
-    return container_policy_;
-  }
   bool ShouldLazyLoadChildren() const final;
 
+  void SetFramePolicy(const FramePolicy& frame_policy) {
+    frame_policy_ = frame_policy;
+  }
   void SetBrowsingContextContainerName(const WebString& name) {
     browsing_context_container_name_ = name;
   }
@@ -87,9 +77,6 @@ class CORE_EXPORT RemoteFrameOwner final
   void SetRequiredCsp(const WebString& required_csp) {
     required_csp_ = required_csp;
   }
-  void SetContainerPolicy(const ParsedFeaturePolicy& container_policy) {
-    container_policy_ = container_policy;
-  }
 
   void Trace(blink::Visitor*) override;
 
@@ -100,7 +87,7 @@ class CORE_EXPORT RemoteFrameOwner final
   bool IsRemote() const override { return true; }
 
   Member<Frame> frame_;
-  SandboxFlags sandbox_flags_;
+  FramePolicy frame_policy_;
   AtomicString browsing_context_container_name_;
   ScrollbarMode scrolling_;
   int margin_width_;
@@ -108,8 +95,8 @@ class CORE_EXPORT RemoteFrameOwner final
   bool allow_fullscreen_;
   bool allow_payment_request_;
   bool is_display_none_;
+  bool needs_occlusion_tracking_;
   WebString required_csp_;
-  ParsedFeaturePolicy container_policy_;
   const FrameOwnerElementType frame_owner_element_type_;
 };
 

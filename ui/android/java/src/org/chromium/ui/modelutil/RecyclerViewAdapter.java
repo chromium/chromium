@@ -4,10 +4,11 @@
 
 package org.chromium.ui.modelutil;
 
-import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.view.ViewGroup;
+
+import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 
@@ -188,5 +189,10 @@ public class RecyclerViewAdapter<VH extends ViewHolder, P>
     public void onItemRangeChanged(
             ListObservable<P> source, int index, int count, @Nullable P payload) {
         notifyItemRangeChanged(index, count, payload);
+    }
+
+    @Override
+    public void onItemMoved(ListObservable source, int curIndex, int newIndex) {
+        notifyItemMoved(curIndex, newIndex);
     }
 }

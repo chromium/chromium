@@ -23,7 +23,7 @@
 #include "ios/chrome/browser/sync/model_type_store_service_factory.h"
 #include "ios/chrome/browser/system_flags.h"
 #include "ios/chrome/common/channel_info.h"
-#include "ios/web/public/web_thread.h"
+#include "ios/web/public/thread/web_thread.h"
 
 // static
 ReadingListModel* ReadingListModelFactory::GetForBrowserState(

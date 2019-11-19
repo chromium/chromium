@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+FAIL Getting property descriptor for key 9 assert_equals: expected "value for Getting property descriptor for key 9" but got "9"
+PASS Setting property for key 9 with accessor property on prototype
+PASS Getting property descriptor for key x
+PASS Setting property for key x with accessor property on prototype
+Harness: the test ran to completion.
+

@@ -1,0 +1,20 @@
+{
+  "name": "Print Job History",
+  "version": "1.0",
+  "description": "Reads your print history and displays the recent print jobs.",
+  "permissions": [
+    "printingMetrics",
+    "storage"
+  ],
+  "browser_action": {
+    "default_popup": "printJobs.html",
+    "default_icon": "print.png"
+  },
+  "background": {
+    "scripts": [
+      "background.js"
+    ],
+    "persistent": false
+  },
+  "manifest_version": 2
+}

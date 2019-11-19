@@ -58,6 +58,9 @@ class MockCertVerifier : public CertVerifier {
                                const CertVerifyResult& verify_result,
                                int rv);
 
+  // Clear all existing rules.
+  void ClearRules();
+
  private:
   struct Rule;
   using RuleList = std::list<Rule>;

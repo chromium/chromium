@@ -7,16 +7,11 @@ enum WakeLockType {
   "system"
 };
 
-// https://www.w3.org/TR/wake-lock
+// https://w3c.github.io/wake-lock/#the-wakelock-interface
 [
-  ActiveScriptWrappable,
   SecureContext,
-  Exposed=Window,
-  RuntimeEnabled=WakeLockNavigator
-] interface WakeLock : EventTarget {
-  readonly attribute WakeLockType type;
-  readonly attribute boolean active;
-
-  attribute EventHandler onactivechange;
-  WakeLockRequest createRequest();
+  Exposed=(DedicatedWorker,Window),
+  RuntimeEnabled=WakeLock
+] interface WakeLock {
+  [CallWith=ScriptState] Promise<WakeLockSentinel> request(WakeLockType type);
 };

@@ -6,7 +6,6 @@
 
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
     <View
@@ -27,26 +26,5 @@
         android:paddingStart="@dimen/list_item_default_margin"
         android:maxLines="1"
         android:textAppearance="@style/TextAppearance.BlackTitle1"/>
-
-    <TextView
-        android:id="@+id/title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/date"
-        android:paddingStart="@dimen/list_item_default_margin"
-        android:textAppearance="@style/TextAppearance.BlackHint2"
-        android:maxLines="1" />
-
-    <Space
-        android:id="@+id/bottom_space"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_below="@+id/title" />
-
-    <include layout="@layout/list_menu_button"
-        android:layout_width="48dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_centerVertical="true" />
 
 </RelativeLayout>

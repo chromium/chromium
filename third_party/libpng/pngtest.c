@@ -1,10 +1,10 @@
 
 /* pngtest.c - a simple test program to test libpng
  *
- * Last changed in libpng 1.6.35 [July 15, 2018]
+ * Copyright (c) 2018-2019 Cosmin Truta
  * Copyright (c) 1998-2002,2004,2006-2018 Glenn Randers-Pehrson
- * (Version 0.96 Copyright (c) 1996, 1997 Andreas Dilger)
- * (Version 0.88 Copyright (c) 1995, 1996 Guy Eric Schalnat, Group 42, Inc.)
+ * Copyright (c) 1996-1997 Andreas Dilger
+ * Copyright (c) 1995-1996 Guy Eric Schalnat, Group 42, Inc.
  *
  * This code is released under the libpng license.
  * For conditions of distribution and use, see the disclaimer
@@ -449,13 +449,13 @@ pngtest_write_data(png_structp png_ptr, png_bytep data, size_t length)
  */
 typedef struct
 {
-   PNG_CONST char *file_name;
+   const char *file_name;
 }  pngtest_error_parameters;
 
 static void PNGCBAPI
 pngtest_warning(png_structp png_ptr, png_const_charp message)
 {
-   PNG_CONST char *name = "UNKNOWN (ERROR!)";
+   const char *name = "UNKNOWN (ERROR!)";
    pngtest_error_parameters *test =
       (pngtest_error_parameters*)png_get_error_ptr(png_ptr);
 
@@ -850,7 +850,7 @@ pngtest_check_text_support(png_structp png_ptr, png_textp text_ptr,
 
 /* Test one file */
 static int
-test_one_file(PNG_CONST char *inname, PNG_CONST char *outname)
+test_one_file(const char *inname, const char *outname)
 {
    static png_FILE_p fpin;
    static png_FILE_p fpout;  /* "static" prevents setjmp corruption */
@@ -957,6 +957,8 @@ test_one_file(PNG_CONST char *inname, PNG_CONST char *outname)
    if (setjmp(png_jmpbuf(write_ptr)))
    {
       fprintf(STDERR, "%s -> %s: libpng write error\n", inname, outname);
+      png_free(read_ptr, row_buf);
+      row_buf = NULL;
       if (verbose != 0)
         fprintf(STDERR, "   destroying read structs\n");
       png_destroy_read_struct(&read_ptr, &read_info_ptr, &end_info_ptr);
@@ -1436,7 +1438,7 @@ test_one_file(PNG_CONST char *inname, PNG_CONST char *outname)
    row_buf = (png_bytep)png_malloc(read_ptr,
        png_get_rowbytes(read_ptr, read_info_ptr));
 
-   pngtest_debug1("\t0x%08lx", (unsigned long)row_buf);
+   pngtest_debug1("\t%p", row_buf);
 #endif /* SINGLE_ROWBUF_ALLOC */
    pngtest_debug("Writing row data");
 
@@ -1490,7 +1492,7 @@ test_one_file(PNG_CONST char *inname, PNG_CONST char *outname)
          row_buf = (png_bytep)png_malloc(read_ptr,
              png_get_rowbytes(read_ptr, read_info_ptr));
 
-         pngtest_debug2("\t0x%08lx (%lu bytes)", (unsigned long)row_buf,
+         pngtest_debug2("\t%p (%lu bytes)", row_buf,
              (unsigned long)png_get_rowbytes(read_ptr, read_info_ptr));
 
 #endif /* !SINGLE_ROWBUF_ALLOC */
@@ -1809,11 +1811,11 @@ test_one_file(PNG_CONST char *inname, PNG_CONST char *outname)
 
 /* Input and output filenames */
 #ifdef RISCOS
-static PNG_CONST char *inname = "pngtest/png";
-static PNG_CONST char *outname = "pngout/png";
+static const char *inname = "pngtest/png";
+static const char *outname = "pngout/png";
 #else
-static PNG_CONST char *inname = "pngtest.png";
-static PNG_CONST char *outname = "pngout.png";
+static const char *inname = "pngtest.png";
+static const char *outname = "pngout.png";
 #endif
 
 int
@@ -2153,4 +2155,4 @@ main(void)
 #endif
 
 /* Generate a compiler error if there is an old png.h in the search path. */
-typedef png_libpng_version_1_6_35 Your_png_h_is_not_version_1_6_35;
+typedef png_libpng_version_1_6_37 Your_png_h_is_not_version_1_6_37;

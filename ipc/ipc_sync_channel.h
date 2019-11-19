@@ -96,6 +96,12 @@ class COMPONENT_EXPORT(IPC) SyncChannel : public ChannelProxy {
       const scoped_refptr<base::SingleThreadTaskRunner>& listener_task_runner,
       base::WaitableEvent* shutdown_event);
 
+  void AddListenerTaskRunner(
+      int32_t routing_id,
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+
+  void RemoveListenerTaskRunner(int32_t routing_id);
+
   ~SyncChannel() override;
 
   bool Send(Message* message) override;

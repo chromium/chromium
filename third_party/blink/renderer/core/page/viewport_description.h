@@ -35,7 +35,7 @@
 #include "third_party/blink/renderer/core/frame/page_scale_constraints.h"
 #include "third_party/blink/renderer/platform/geometry/float_size.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
@@ -151,7 +151,6 @@ struct CORE_EXPORT ViewportDescription {
   }
   bool IsMetaViewportType() const { return type == kViewportMeta; }
   bool IsSpecifiedByAuthor() const { return type != kUserAgentStyleSheet; }
-  bool MatchesHeuristicsForGpuRasterization() const;
 
   // Reports UMA stat on whether the page is considered mobile or desktop and
   // what kind of mobile it is. Applies only to Android, must only be called

@@ -1,0 +1,21 @@
+This is a testharness.js-based test.
+PASS Property text-decoration-line value 'none' computes to 'none'
+PASS Property text-decoration-line value 'underline' computes to 'underline'
+PASS Property text-decoration-line value 'overline' computes to 'overline'
+PASS Property text-decoration-line value 'line-through' computes to 'line-through'
+FAIL Property text-decoration-line value 'blink' computes to 'blink' assert_equals: expected "blink" but got "none"
+PASS Property text-decoration-line value 'underline overline' computes to 'underline overline'
+PASS Property text-decoration-line value 'underline line-through' computes to 'underline line-through'
+FAIL Property text-decoration-line value 'underline blink' computes to 'underline blink' assert_equals: expected "underline blink" but got "underline"
+PASS Property text-decoration-line value 'overline line-through' computes to 'overline line-through'
+FAIL Property text-decoration-line value 'overline blink' computes to 'overline blink' assert_equals: expected "overline blink" but got "overline"
+FAIL Property text-decoration-line value 'line-through blink' computes to 'line-through blink' assert_equals: expected "line-through blink" but got "line-through"
+PASS Property text-decoration-line value 'underline overline line-through' computes to 'underline overline line-through'
+FAIL Property text-decoration-line value 'underline overline blink' computes to 'underline overline blink' assert_equals: expected "underline overline blink" but got "underline overline"
+FAIL Property text-decoration-line value 'underline line-through blink' computes to 'underline line-through blink' assert_equals: expected "underline line-through blink" but got "underline line-through"
+FAIL Property text-decoration-line value 'overline line-through blink' computes to 'overline line-through blink' assert_equals: expected "overline line-through blink" but got "overline line-through"
+FAIL Property text-decoration-line value 'underline overline line-through blink' computes to 'underline overline line-through blink' assert_equals: expected "underline overline line-through blink" but got "underline overline line-through"
+FAIL Property text-decoration-line value 'spelling-error' computes to 'spelling-error' assert_true: 'spelling-error' is a supported value for text-decoration-line. expected true got false
+FAIL Property text-decoration-line value 'grammar-error' computes to 'grammar-error' assert_true: 'grammar-error' is a supported value for text-decoration-line. expected true got false
+Harness: the test ran to completion.
+

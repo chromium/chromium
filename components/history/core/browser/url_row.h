@@ -35,7 +35,7 @@ class URLRow {
 
   virtual ~URLRow();
   URLRow& operator=(const URLRow& other);
-  URLRow& operator=(URLRow&& other);
+  URLRow& operator=(URLRow&& other) noexcept;
 
   URLID id() const { return id_; }
 

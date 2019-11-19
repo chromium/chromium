@@ -2,8 +2,8 @@ Tests that (S)CSS syntax highlighter properly detects the tokens.
 
 a[href='/']: cm-css-tag, *, cm-css-tag, *, cm-css-string, *
 #content > a:hover: cm-css-builtin, *, cm-css-tag, *, cm-css-variable-3
-@import url(style.css);: cm-css-def, *, cm-css-atom, *, cm-css-string, *
-@import url("style.css") projection, tv;: cm-css-def, *, cm-css-atom, *, cm-css-string, *, cm-css-attribute, *, cm-css-attribute, *
+@import url(style.css);: cm-css-def, *, cm-css-variable cm-css-callee, *, cm-css-string, *
+@import url("style.css") projection, tv;: cm-css-def, *, cm-css-variable cm-css-callee, *, cm-css-string, *, cm-css-attribute, *, cm-css-attribute, *
 @import "/css/fireball_unicode.css"; html {}: cm-css-def, *, cm-css-string, *, cm-css-tag, *
 @media screen { body { color: red; } }: cm-css-def, *, cm-css-attribute, *, cm-css-tag, *, cm-css-property, *, cm-css-keyword, *
 @font-face { font-family: "MyHelvetica"; }: cm-css-def, *, cm-css-property, *, cm-css-string, *
@@ -29,7 +29,7 @@ color: black;
 $x: 1px * $x;
 }
 position: relative; left: $x; top: $y;
-}: cm-css-def, *, cm-css-tag, *, cm-css-variable-2, *, cm-css-variable-2, *, *, cm-css-def, *, cm-css-tag, *, cm-css-variable-2, *, *, cm-css-def, *, cm-css-string, *, *, cm-css-variable-2, *, cm-css-number, *, cm-css-variable-2, *, *, *, *, cm-css-property, *, cm-css-atom, *, cm-css-property, *, cm-css-variable-2, *, cm-css-property, *, cm-css-variable-2, *, *, *
+}: cm-css-def, *, cm-css-variable cm-css-callee, *, cm-css-variable-2, *, cm-css-variable-2, *, *, cm-css-def, *, cm-css-variable cm-css-callee, *, cm-css-variable-2, *, *, cm-css-def, *, cm-css-string, *, *, cm-css-variable-2, *, cm-css-number, *, cm-css-variable-2, *, *, *, *, cm-css-property, *, cm-css-atom, *, cm-css-property, *, cm-css-variable-2, *, cm-css-property, *, cm-css-variable-2, *, *, *
 #navbar {
 $navbar-width: 800px;
 $items: 5;
@@ -45,5 +45,5 @@ background-color: lighten($navbar-color, 20%);
 background-color: lighten($navbar-color, 10%);
 }
 }
-}: cm-css-builtin, *, *, cm-css-variable-2, *, cm-css-number, *, *, cm-css-variable-2, *, cm-css-number, *, *, cm-css-variable-2, *, cm-css-atom, *, *, cm-css-property, *, cm-css-variable-2, *, *, cm-css-property, *, cm-css-number, *, cm-css-atom, *, cm-css-variable-2, *, *, cm-css-tag, *, *, cm-css-def, *, cm-css-qualifier, *, cm-css-keyword, *, *, cm-css-property, *, cm-css-atom, *, *, cm-css-property, *, cm-css-variable-2, cm-css-operator, cm-css-variable-2, *, cm-css-number, *, *, cm-css-property, *, cm-css-atom, *, cm-css-variable-2, *, cm-css-number, *, *, *, cm-css-variable-3, *, *, cm-css-property, *, cm-css-atom, *, cm-css-variable-2, *, cm-css-number, *, *, *, *, *, *, *
+}: cm-css-builtin, *, *, cm-css-variable-2, *, cm-css-number, *, *, cm-css-variable-2, *, cm-css-number, *, *, cm-css-variable-2, *, cm-css-atom, *, *, cm-css-property, *, cm-css-variable-2, *, *, cm-css-property, *, cm-css-number, *, cm-css-atom, *, cm-css-variable-2, *, *, cm-css-tag, *, *, cm-css-def, *, cm-css-qualifier, *, cm-css-keyword, *, *, cm-css-property, *, cm-css-atom, *, *, cm-css-property, *, cm-css-variable-2, cm-css-operator, cm-css-variable-2, *, cm-css-number, *, *, cm-css-property, *, cm-css-variable cm-css-callee, *, cm-css-variable-2, *, cm-css-number, *, *, *, cm-css-variable-3, *, *, cm-css-property, *, cm-css-variable cm-css-callee, *, cm-css-variable-2, *, cm-css-number, *, *, *, *, *, *, *
 

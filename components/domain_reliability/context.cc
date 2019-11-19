@@ -56,8 +56,7 @@ DomainReliabilityContext::DomainReliabilityContext(
       uploader_(uploader),
       uploading_beacons_size_(0),
       last_network_change_time_(last_network_change_time),
-      upload_allowed_callback_(upload_allowed_callback),
-      weak_factory_(this) {}
+      upload_allowed_callback_(upload_allowed_callback) {}
 
 DomainReliabilityContext::~DomainReliabilityContext() {
   ClearBeacons();

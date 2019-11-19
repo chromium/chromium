@@ -92,6 +92,6 @@ public class ClientAppDataRegisterTest {
 
     private void register(String domain) {
         mRegister.registerPackageForOrigin(UID, APP_NAME, APP_PACKAGE, domain,
-                new Origin("https://www." + domain));
+                Origin.create("https://www." + domain));
     }
 }

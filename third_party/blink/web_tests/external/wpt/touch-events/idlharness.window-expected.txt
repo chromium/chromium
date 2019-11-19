@@ -1,5 +1,10 @@
 This is a testharness.js-based test.
 FAIL idl_test setup promise_test: Unhandled rejection with value: "Document includes GlobalEventHandlers, but Document is undefined."
-PASS Partial interface GlobalEventHandlers: original interface defined
+PASS idl_test validation
+PASS Partial interface mixin GlobalEventHandlers: original interface mixin defined
+PASS Partial interface mixin GlobalEventHandlers: member names are unique
+PASS Partial interface UIEvent: member names are unique
+PASS Partial interface Window: member names are unique
+PASS Partial interface Window[2]: member names are unique
 Harness: the test ran to completion.
 

@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+PASS Feature-Policy allow="battery" allows same-origin relocation.
+FAIL Feature-Policy allow="battery" disallows cross-origin relocation. assert_false: navigator.getBattery() expected false got true
+Harness: the test ran to completion.
+

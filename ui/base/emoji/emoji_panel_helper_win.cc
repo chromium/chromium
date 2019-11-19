@@ -14,7 +14,7 @@ namespace ui {
 bool IsEmojiPanelSupported() {
   // Emoji picker is supported on Windows 10's Spring 2018 Update and
   // above.
-  return base::win::GetVersion() >= base::win::Version::VERSION_WIN10_RS4;
+  return base::win::GetVersion() >= base::win::Version::WIN10_RS4;
 }
 
 void ShowEmojiPanel() {

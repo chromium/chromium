@@ -11,12 +11,16 @@
 #include "base/callback.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "media/mojo/common/mojo_data_pipe_read_write.h"
-#include "media/mojo/interfaces/remoting.mojom.h"
+#include "media/mojo/mojom/remoting.mojom.h"
 #include "media/remoting/courier_renderer.h"
 #include "media/remoting/proto_utils.h"
 #include "media/remoting/receiver.h"
 #include "media/remoting/renderer_controller.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 namespace media {
 namespace remoting {
@@ -28,11 +32,12 @@ class TestStreamSender final : public mojom::RemotingDataStreamSender {
   using SendFrameToSinkCallback =
       base::Callback<void(const std::vector<uint8_t>& data,
                           DemuxerStream::Type type)>;
-  TestStreamSender(mojom::RemotingDataStreamSenderRequest request,
-                   mojo::ScopedDataPipeConsumerHandle handle,
-                   DemuxerStream::Type type,
-                   const SendFrameToSinkCallback& callback)
-      : binding_(this, std::move(request)),
+  TestStreamSender(
+      mojo::PendingReceiver<mojom::RemotingDataStreamSender> receiver,
+      mojo::ScopedDataPipeConsumerHandle handle,
+      DemuxerStream::Type type,
+      const SendFrameToSinkCallback& callback)
+      : receiver_(this, std::move(receiver)),
         data_pipe_reader_(std::move(handle)),
         type_(type),
         send_frame_to_sink_cb_(callback) {}
@@ -57,7 +62,7 @@ class TestStreamSender final : public mojom::RemotingDataStreamSender {
     next_frame_data_.resize(0);
   }
 
-  mojo::Binding<RemotingDataStreamSender> binding_;
+  mojo::Receiver<RemotingDataStreamSender> receiver_;
   MojoDataPipeReader data_pipe_reader_;
   const DemuxerStream::Type type_;
   const SendFrameToSinkCallback send_frame_to_sink_cb_;
@@ -71,7 +76,7 @@ class TestRemoter final : public mojom::Remoter {
   using SendMessageToSinkCallback =
       base::RepeatingCallback<void(const std::vector<uint8_t>& message)>;
   TestRemoter(
-      mojom::RemotingSourcePtr source,
+      mojo::PendingRemote<mojom::RemotingSource> source,
       const SendMessageToSinkCallback& send_message_to_sink_cb,
       const TestStreamSender::SendFrameToSinkCallback& send_frame_to_sink_cb)
       : source_(std::move(source)),
@@ -84,19 +89,20 @@ class TestRemoter final : public mojom::Remoter {
 
   void Start() override { source_->OnStarted(); }
 
-  void StartDataStreams(
-      mojo::ScopedDataPipeConsumerHandle audio_pipe,
-      mojo::ScopedDataPipeConsumerHandle video_pipe,
-      mojom::RemotingDataStreamSenderRequest audio_sender_request,
-      mojom::RemotingDataStreamSenderRequest video_sender_request) override {
+  void StartDataStreams(mojo::ScopedDataPipeConsumerHandle audio_pipe,
+                        mojo::ScopedDataPipeConsumerHandle video_pipe,
+                        mojo::PendingReceiver<mojom::RemotingDataStreamSender>
+                            audio_sender_receiver,
+                        mojo::PendingReceiver<mojom::RemotingDataStreamSender>
+                            video_sender_receiver) override {
     if (audio_pipe.is_valid()) {
       audio_stream_sender_.reset(new TestStreamSender(
-          std::move(audio_sender_request), std::move(audio_pipe),
+          std::move(audio_sender_receiver), std::move(audio_pipe),
           DemuxerStream::AUDIO, send_frame_to_sink_cb_));
     }
     if (video_pipe.is_valid()) {
       video_stream_sender_.reset(new TestStreamSender(
-          std::move(video_sender_request), std::move(video_pipe),
+          std::move(video_sender_receiver), std::move(video_pipe),
           DemuxerStream::VIDEO, send_frame_to_sink_cb_));
     }
   }
@@ -121,7 +127,7 @@ class TestRemoter final : public mojom::Remoter {
   }
 
  private:
-  mojom::RemotingSourcePtr source_;
+  mojo::Remote<mojom::RemotingSource> source_;
   const SendMessageToSinkCallback send_message_to_sink_cb_;
   const TestStreamSender::SendFrameToSinkCallback send_frame_to_sink_cb_;
   std::unique_ptr<TestStreamSender> audio_stream_sender_;
@@ -133,15 +139,17 @@ class TestRemoter final : public mojom::Remoter {
 std::unique_ptr<RendererController> CreateController(
     const TestRemoter::SendMessageToSinkCallback& send_message_to_sink_cb,
     const TestStreamSender::SendFrameToSinkCallback& send_frame_to_sink_cb) {
-  mojom::RemotingSourcePtr remoting_source;
-  auto remoting_source_request = mojo::MakeRequest(&remoting_source);
-  mojom::RemoterPtr remoter;
+  mojo::PendingRemote<mojom::RemotingSource> remoting_source;
+  auto remoting_source_receiver =
+      remoting_source.InitWithNewPipeAndPassReceiver();
+  mojo::PendingRemote<mojom::Remoter> remoter;
   std::unique_ptr<TestRemoter> test_remoter = std::make_unique<TestRemoter>(
       std::move(remoting_source), send_message_to_sink_cb,
       send_frame_to_sink_cb);
-  mojo::MakeStrongBinding(std::move(test_remoter), mojo::MakeRequest(&remoter));
+  mojo::MakeSelfOwnedReceiver(std::move(test_remoter),
+                              remoter.InitWithNewPipeAndPassReceiver());
   return std::make_unique<RendererController>(
-      std::move(remoting_source_request), std::move(remoter));
+      std::move(remoting_source_receiver), std::move(remoter));
 }
 
 }  // namespace
@@ -150,8 +158,7 @@ End2EndTestRenderer::End2EndTestRenderer(std::unique_ptr<Renderer> renderer)
     : receiver_rpc_broker_(
           base::BindRepeating(&End2EndTestRenderer::OnMessageFromSink,
                               base::Unretained(this))),
-      receiver_(new Receiver(std::move(renderer), &receiver_rpc_broker_)),
-      weak_factory_(this) {
+      receiver_(new Receiver(std::move(renderer), &receiver_rpc_broker_)) {
   controller_ = CreateController(
       base::BindRepeating(&End2EndTestRenderer::SendMessageToSink,
                           weak_factory_.GetWeakPtr()),
@@ -165,19 +172,19 @@ End2EndTestRenderer::~End2EndTestRenderer() = default;
 
 void End2EndTestRenderer::Initialize(MediaResource* media_resource,
                                      RendererClient* client,
-                                     const PipelineStatusCB& init_cb) {
-  courier_renderer_->Initialize(media_resource, client, init_cb);
+                                     PipelineStatusCallback init_cb) {
+  courier_renderer_->Initialize(media_resource, client, std::move(init_cb));
 }
 
 void End2EndTestRenderer::SetCdm(CdmContext* cdm_context,
-                                 const CdmAttachedCB& cdc_attached_cb) {
+                                 CdmAttachedCB cdc_attached_cb) {
   // TODO(xjz): Add the implementation when media remoting starts supporting
   // encrypted contents.
   NOTIMPLEMENTED() << "Media Remoting doesn't support EME for now.";
 }
 
-void End2EndTestRenderer::Flush(const base::Closure& flush_cb) {
-  courier_renderer_->Flush(flush_cb);
+void End2EndTestRenderer::Flush(base::OnceClosure flush_cb) {
+  courier_renderer_->Flush(std::move(flush_cb));
 }
 
 void End2EndTestRenderer::StartPlayingFrom(base::TimeDelta time) {

@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+FAIL e.style['counter-set'] = "none" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['counter-set'] = "chapter" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['counter-set'] = "section -1" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['counter-set'] = "first -1 second third 99" should set the property value assert_not_equals: property should be set got disallowed value ""
+Harness: the test ran to completion.
+

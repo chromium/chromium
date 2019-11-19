@@ -36,6 +36,18 @@ namespace blink {
 class DateComponents;
 class DateTimeFieldsState;
 
+enum class DateTimeField {
+  kYear,
+  kMonth,
+  kWeek,
+  kDay,
+  kHour,
+  kMinute,
+  kSecond,
+  kMillisecond,
+  kAMPM,
+};
+
 // DateTimeFieldElement is base class of date time field element.
 class DateTimeFieldElement : public HTMLSpanElement {
  public:
@@ -77,11 +89,12 @@ class DateTimeFieldElement : public HTMLSpanElement {
   virtual String Value() const = 0;
   virtual String VisibleValue() const = 0;
   void Trace(Visitor*) override;
+  DateTimeField Type() const;
 
   static float ComputeTextWidth(const ComputedStyle&, const String&);
 
  protected:
-  DateTimeFieldElement(Document&, FieldOwner&);
+  DateTimeFieldElement(Document&, FieldOwner&, DateTimeField);
   void FocusOnNextField();
   virtual void HandleKeyboardEvent(KeyboardEvent&) = 0;
   void Initialize(const AtomicString& pseudo,
@@ -105,6 +118,7 @@ class DateTimeFieldElement : public HTMLSpanElement {
   bool SupportsFocus() const final;
 
   Member<FieldOwner> field_owner_;
+  DateTimeField type_;
 
   DISALLOW_COPY_AND_ASSIGN(DateTimeFieldElement);
 };

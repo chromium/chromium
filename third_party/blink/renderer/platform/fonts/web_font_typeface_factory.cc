@@ -6,13 +6,14 @@
 
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/opentype/font_format_check.h"
-#include "third_party/blink/renderer/platform/histogram.h"
+#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/skia/include/core/SkStream.h"
 #include "third_party/skia/include/core/SkTypeface.h"
 
 #if defined(OS_WIN)
 #include "third_party/blink/public/common/dwrite_rasterizer_support/dwrite_rasterizer_support.h"
+#include "third_party/blink/renderer/platform/fonts/win/dwrite_font_format_support.h"
 #endif
 
 #if defined(OS_WIN) || defined(OS_MACOSX)
@@ -92,6 +93,8 @@ bool WebFontTypefaceFactory::CreateTypeface(sk_sp<SkData> sk_data,
 
 sk_sp<SkFontMgr> WebFontTypefaceFactory::FontManagerForVariations() {
 #if defined(OS_WIN)
+  if (DWriteVersionSupportsVariations())
+    return DefaultFontManager();
   return FreeTypeFontManager();
 #else
 #if defined(OS_MACOSX)

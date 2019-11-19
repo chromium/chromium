@@ -9,6 +9,8 @@
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "extensions/renderer/script_context.h"
+#include "third_party/blink/public/platform/task_type.h"
+#include "third_party/blink/public/web/web_local_frame.h"
 
 namespace extensions {
 
@@ -36,8 +38,7 @@ GCCallback::GCCallback(ScriptContext* context,
     : context_(context),
       object_(context->isolate(), object),
       closure_callback_(closure_callback),
-      fallback_(fallback),
-      weak_ptr_factory_(this) {
+      fallback_(fallback) {
   DCHECK(closure_callback_ || !v8_callback.IsEmpty());
   if (!v8_callback.IsEmpty())
     v8_callback_.Reset(context->isolate(), v8_callback);
@@ -57,9 +58,18 @@ void GCCallback::OnObjectGC(const v8::WeakCallbackInfo<GCCallback>& data) {
   // code is RunCallback.
   GCCallback* self = data.GetParameter();
   self->object_.Reset();
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(&GCCallback::RunCallback,
-                                self->weak_ptr_factory_.GetWeakPtr()));
+
+  blink::WebLocalFrame* frame = self->context_->web_frame();
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner;
+  if (frame) {
+    task_runner = frame->GetTaskRunner(blink::TaskType::kInternalDefault);
+  } else {
+    // |frame| can be null on tests.
+    task_runner = base::ThreadTaskRunnerHandle::Get();
+  }
+  task_runner->PostTask(FROM_HERE,
+                        base::BindOnce(&GCCallback::RunCallback,
+                                       self->weak_ptr_factory_.GetWeakPtr()));
 }
 
 void GCCallback::RunCallback() {

@@ -28,6 +28,7 @@
 #include "gpu/command_buffer/service/logger.h"
 #include "gpu/command_buffer/service/mailbox_manager.h"
 #include "gpu/command_buffer/service/passthrough_abstract_texture_impl.h"
+#include "gpu/command_buffer/service/shared_image_representation.h"
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
@@ -91,13 +92,49 @@ struct PassthroughResources {
   ClientServiceMap<GLuint, scoped_refptr<TexturePassthrough>>
       texture_object_map;
 
+  class SharedImageData {
+   public:
+    SharedImageData();
+    explicit SharedImageData(
+        std::unique_ptr<SharedImageRepresentationGLTexturePassthrough>
+            representation);
+    SharedImageData(SharedImageData&& other);
+    ~SharedImageData();
+    SharedImageData& operator=(SharedImageData&& other);
+
+    SharedImageRepresentationGLTexturePassthrough* representation() const {
+      return representation_.get();
+    }
+
+    bool BeginAccess(GLenum mode) {
+      DCHECK(!is_being_accessed());
+      scoped_access_.emplace(representation_.get(), mode);
+      if (!scoped_access_->success()) {
+        scoped_access_.reset();
+        return false;
+      }
+      return true;
+    }
+
+    void EndAccess() {
+      DCHECK(is_being_accessed());
+      scoped_access_.reset();
+    }
+
+    bool is_being_accessed() const { return !!scoped_access_; }
+
+   private:
+    std::unique_ptr<SharedImageRepresentationGLTexturePassthrough>
+        representation_;
+    base::Optional<SharedImageRepresentationGLTexturePassthrough::ScopedAccess>
+        scoped_access_;
+    DISALLOW_COPY_AND_ASSIGN(SharedImageData);
+  };
   // Mapping of client texture IDs to
   // SharedImageRepresentationGLTexturePassthroughs.
   // TODO(ericrk): Remove this once TexturePassthrough holds a reference to
   // the SharedImageRepresentationGLTexturePassthrough itself.
-  base::flat_map<GLuint,
-                 std::unique_ptr<SharedImageRepresentationGLTexturePassthrough>>
-      texture_shared_image_map;
+  base::flat_map<GLuint, SharedImageData> texture_shared_image_map;
 
   // A set of yet-to-be-deleted TexturePassthrough, which should be tossed
   // whenever a context switch happens or the resources is destroyed.
@@ -377,6 +414,10 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl : public GLES2Decoder {
 
   void SetOptionalExtensionsRequestedForTesting(bool request_extensions);
 
+  void InitializeFeatureInfo(ContextType context_type,
+                             const DisallowedFeatures& disallowed_features,
+                             bool force_reinitialize);
+
   void* GetScratchMemory(size_t size);
 
   template <typename T>
@@ -427,8 +468,6 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl : public GLES2Decoder {
   GLenum PopError();
   bool FlushErrors();
 
-  bool IsRobustnessSupported();
-
   bool IsEmulatedQueryTarget(GLenum target) const;
   error::Error ProcessQueries(bool did_finish);
   void RemovePendingQuery(GLuint service_id);
@@ -446,6 +485,7 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl : public GLES2Decoder {
   void UpdateTextureBinding(GLenum target,
                             GLuint client_id,
                             TexturePassthrough* texture);
+  void RebindTexture(TexturePassthrough* texture);
 
   void UpdateTextureSizeFromTexturePassthrough(TexturePassthrough* texture,
                                                GLuint client_id);
@@ -464,8 +504,12 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl : public GLES2Decoder {
     return feature_info_->feature_flags();
   }
 
-  void ExitCommandProcessingEarly() { commands_to_process_ = 0; }
+  void ExitCommandProcessingEarly() override;
 
+  void CheckSwapBuffersAsyncResult(const char* function_name,
+                                   uint64_t swap_id,
+                                   gfx::SwapResult result,
+                                   std::unique_ptr<gfx::GpuFence> gpu_fence);
   error::Error CheckSwapBuffersResult(gfx::SwapResult result,
                                       const char* function_name);
 
@@ -511,7 +555,7 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl : public GLES2Decoder {
     }
   }
 
-  DecoderClient* client_ = nullptr;
+  bool OnlyHasPendingProgramCompletionQueries();
 
   // A set of raw pointers to currently living PassthroughAbstractTextures
   // which allow us to properly signal to them when we are destroyed.
@@ -668,10 +712,13 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl : public GLES2Decoder {
     base::subtle::Atomic32 submit_count = 0;
 
     std::unique_ptr<gl::GLFence> commands_completed_fence;
+    base::TimeDelta commands_issued_time;
+    base::TimeTicks commands_issued_timestamp;
 
     std::vector<base::OnceClosure> callbacks;
     std::unique_ptr<gl::GLFence> buffer_shadow_update_fence = nullptr;
     BufferShadowUpdateMap buffer_shadow_updates;
+    GLuint program_service_id = 0u;
   };
   base::circular_deque<PendingQuery> pending_queries_;
 
@@ -687,6 +734,12 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl : public GLES2Decoder {
     GLuint service_id = 0;
     scoped_refptr<gpu::Buffer> shm;
     QuerySync* sync = nullptr;
+
+    // Time at which the commands for this query started processing. This is
+    // used to ensure we only include the time when the decoder is scheduled in
+    // the |active_time|. Used for GL_COMMANDS_ISSUED_CHROMIUM type query.
+    base::TimeTicks command_processing_start_time;
+    base::TimeDelta active_time;
   };
   std::unordered_map<GLenum, ActiveQuery> active_queries_;
 
@@ -838,7 +891,6 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl : public GLES2Decoder {
   bool gpu_debug_commands_;
 
   // Context lost state
-  bool has_robustness_extension_;
   bool context_lost_;
   bool reset_by_robustness_extension_;
   bool lose_context_when_out_of_memory_;
@@ -851,7 +903,12 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl : public GLES2Decoder {
   // get rescheduled.
   std::vector<std::unique_ptr<gl::GLFence>> deschedule_until_finished_fences_;
 
-  base::WeakPtrFactory<GLES2DecoderPassthroughImpl> weak_ptr_factory_;
+  GLuint linking_program_service_id_ = 0u;
+
+  // CA Layer state
+  std::unique_ptr<CALayerSharedState> ca_layer_shared_state_;
+
+  base::WeakPtrFactory<GLES2DecoderPassthroughImpl> weak_ptr_factory_{this};
 
 // Include the prototypes of all the doer functions from a separate header to
 // keep this file clean.

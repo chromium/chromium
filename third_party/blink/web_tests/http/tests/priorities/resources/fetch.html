@@ -1,10 +1,8 @@
 <script src="common.js"></script>
 <script>
-  fetch('../../resources/dummy.html')
-    .then(response => {
-      reportPriority(response.url);
-    })
-    .catch(() => {
-      reportFailure();
-    });
+  const url = new URL('../../resources/dummy.html', location);
+  observeAndReportResourceLoadPriority(url);
+
+  fetch(url)
+    .then(reportLoaded, reportFailure);
 </script>

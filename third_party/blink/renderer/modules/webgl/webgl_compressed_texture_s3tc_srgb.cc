@@ -11,6 +11,9 @@ namespace blink {
 WebGLCompressedTextureS3TCsRGB::WebGLCompressedTextureS3TCsRGB(
     WebGLRenderingContextBase* context)
     : WebGLExtension(context) {
+  context->ExtensionsUtil()->EnsureExtensionEnabled(
+      "GL_EXT_texture_compression_s3tc_srgb");
+
   // TODO(kainino): update these with _EXT versions once
   // GL_EXT_compressed_texture_s3tc_srgb is ratified
   context->AddCompressedTextureFormat(GL_COMPRESSED_SRGB_S3TC_DXT1_NV);

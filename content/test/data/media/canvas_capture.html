@@ -13,10 +13,24 @@
 
 const NUMBER_OF_EVENTS_TO_RECORD = 15;
 const ON_DATA_AVAILABLE_THRESHOLD = 10;
+// We might have a long time drift due to blocked threads, see
+// https://crbug.com/916928.
+const TIME_DRIFT_ALLOWED_IN_MS = 10;
 
 function checkForRedraw(canvas, drawCounter, drawFunction) {
-  if (++drawCounter <= NUMBER_OF_EVENTS_TO_RECORD)
-    requestAnimationFrame(function(){drawFunction(canvas, drawCounter)})
+  if (++drawCounter <= NUMBER_OF_EVENTS_TO_RECORD) {
+    requestAnimationFrame(function(timestamp) {
+      redraw(canvas, drawCounter, drawFunction, timestamp);
+    });
+  }
+}
+
+function redraw(canvas, drawCounter, drawFunction, timestamp) {
+  if (performance.now() - timestamp > TIME_DRIFT_ALLOWED_IN_MS) {
+    console.log("Drifted too much, draw again");
+    drawCounter--;
+  }
+  drawFunction(canvas, drawCounter)
 }
 
 function draw2d(canvas, drawCounter) {

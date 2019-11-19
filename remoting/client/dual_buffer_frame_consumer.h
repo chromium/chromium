@@ -70,7 +70,7 @@ class DualBufferFrameConsumer : public protocol::FrameConsumer {
   PixelFormat pixel_format_;
   base::ThreadChecker thread_checker_;
   base::WeakPtr<DualBufferFrameConsumer> weak_ptr_;
-  base::WeakPtrFactory<DualBufferFrameConsumer> weak_factory_;
+  base::WeakPtrFactory<DualBufferFrameConsumer> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DualBufferFrameConsumer);
 };

@@ -2,8 +2,8 @@ Tests that Web Inspector won't crash if some console have been logged by the tim
 
 console-log-short-hand-method.js:24 {foo: ƒ, boo: ƒ, gen: ƒ}
     baz: (...)
-    boo: ƒ (c,d)
     foo: ƒ foo(a,b)
+    boo: ƒ (c,d)
     gen: ƒ* gen()
     get baz: ƒ baz()
     set baz: ƒ baz(x)

@@ -15,10 +15,14 @@ namespace blink {
 namespace scheduler {
 
 class PLATFORM_EXPORT PendingUserInput {
+  DISALLOW_NEW();
+
  public:
   // Handles the dispatch of WebInputEvents from the main thread scheduler,
   // keeping track of the set of in-flight input events.
   class PLATFORM_EXPORT Monitor {
+    DISALLOW_NEW();
+
    public:
     Monitor() { this->counters_.fill(0); }
     void OnEnqueue(WebInputEvent::Type);

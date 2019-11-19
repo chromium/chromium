@@ -9,10 +9,6 @@
 
 namespace ui {
 
-bool AtkUtilAuraLinux::PlatformShouldEnableAccessibility() {
-  return false;
-}
-
 void AtkUtilAuraLinux::PlatformInitializeAsync() {
   // AT bridge enabling was disabled before loading GTK to avoid
   // getting GTK implementation ATK root.

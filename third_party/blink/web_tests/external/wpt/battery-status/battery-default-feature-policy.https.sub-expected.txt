@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+PASS Default "battery" feature policy ["self"] allows the top-level document.
+PASS Default "battery" feature policy ["self"] allows same-origin iframes.
+FAIL Default "battery" feature policy ["self"] disallows cross-origin iframes. assert_false: navigator.getBattery() expected false got true
+Harness: the test ran to completion.
+

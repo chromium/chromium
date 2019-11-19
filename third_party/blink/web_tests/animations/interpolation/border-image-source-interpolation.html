@@ -20,6 +20,9 @@
 <body>
 <script src="resources/interpolation-test.js"></script>
 <script>
+// Note that these tests are not to spec; the spec says border-image-source is
+// discretely animated: https://drafts.csswg.org/css-backgrounds-3/#border-image-source
+
 function assertCrossfadeInterpolation(options) {
   var fromComputed = options.fromComputed || options.from;
   assertInterpolation({
@@ -44,32 +47,11 @@ assertCrossfadeInterpolation({
   to: 'url(../resources/green-100.png)',
 });
 
-// initial
-assertNoInterpolation({
-  property: 'border-image-source',
-  from: 'initial',
-  to: 'url(../resources/green-100.png)',
-});
-
 // inherit
 assertCrossfadeInterpolation({
   from: 'inherit',
   fromComputed: 'url(../resources/blue-100.png)',
   to: 'url(../resources/green-100.png)',
-});
-
-// unset
-assertNoInterpolation({
-  property: 'border-image-source',
-  from: 'unset',
-  to: 'url(../resources/stripes-100.png)',
-});
-
-// None to image
-assertNoInterpolation({
-  property: 'border-image-source',
-  from: 'none',
-  to: 'url(../resources/stripes-100.png)',
 });
 
 // Image to image

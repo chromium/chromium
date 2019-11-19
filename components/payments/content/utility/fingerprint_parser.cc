@@ -37,7 +37,9 @@ std::vector<uint8_t> FingerprintStringToByteArray(const std::string& input,
   if (input.size() != kLength) {
     log.Error(base::StringPrintf(
         "Fingerprint \"%s\" should contain exactly %zu characters.",
-        input.c_str(), kLength));
+        (input.size() > kLength ? (input.substr(0, kLength) + "...") : input)
+            .c_str(),
+        kLength));
     return output;
   }
 

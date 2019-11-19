@@ -10,8 +10,8 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/message_loop/message_loop.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/single_thread_task_executor.h"
 #include "base/threading/thread.h"
 #include "base/timer/timer.h"
 #include "ipc/ipc_channel_proxy.h"
@@ -63,7 +63,7 @@ class ReplayProcess : public IPC::Listener {
   std::unique_ptr<content::ServiceManagerConnection>
       service_manager_connection_;
   std::unique_ptr<IPC::ChannelProxy> channel_;
-  base::MessageLoop main_loop_;
+  base::SingleThreadTaskExecutor main_task_executor_;
   base::Thread io_thread_;
   base::WaitableEvent shutdown_event_;
   MessageVector messages_;

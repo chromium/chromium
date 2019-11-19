@@ -150,12 +150,10 @@ void NineImagePainter::Paint(Canvas* canvas,
   i7h = std::min(i7h, height_in_pixels - i1h);
   i8h = std::min(i8h, height_in_pixels - i2h);
 
-  int i4x = std::min(std::min(i0w, i3w), i6w);
-  int i4y = std::min(std::min(i0h, i1h), i2h);
-  int i4w =
-      std::max(width_in_pixels - i4x - std::min(std::min(i2w, i5w), i8w), 0);
-  int i4h =
-      std::max(height_in_pixels - i4y - std::min(std::min(i6h, i7h), i8h), 0);
+  int i4x = std::min({i0w, i3w, i6w});
+  int i4y = std::min({i0h, i1h, i2h});
+  int i4w = std::max(width_in_pixels - i4x - std::min({i2w, i5w, i8w}), 0);
+  int i4h = std::max(height_in_pixels - i4y - std::min({i6h, i7h, i8h}), 0);
 
   cc::PaintFlags flags;
   flags.setAlpha(alpha);

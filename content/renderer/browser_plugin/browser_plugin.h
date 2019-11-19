@@ -26,14 +26,6 @@
 #include "third_party/blink/public/web/web_input_method_controller.h"
 #include "third_party/blink/public/web/web_node.h"
 
-#if defined(USE_AURA)
-#include "content/renderer/mus/mus_embedded_frame_delegate.h"
-#endif
-
-namespace base {
-class UnguessableToken;
-}
-
 namespace cc {
 class Layer;
 class RenderFrameMetadata;
@@ -45,14 +37,7 @@ class BrowserPluginDelegate;
 class BrowserPluginManager;
 class ChildFrameCompositingHelper;
 
-#if defined(USE_AURA)
-class MusEmbeddedFrame;
-#endif
-
 class CONTENT_EXPORT BrowserPlugin : public blink::WebPlugin,
-#if defined(USE_AURA)
-                                     public MusEmbeddedFrameDelegate,
-#endif
                                      public ChildFrameCompositor,
                                      public MouseLockDispatcher::LockTarget {
  public:
@@ -175,19 +160,12 @@ class CONTENT_EXPORT BrowserPlugin : public blink::WebPlugin,
   const gfx::Rect& screen_space_rect() const {
     return pending_visual_properties_.screen_space_rect;
   }
-  gfx::Rect FrameRectInPixels() const;
-  float GetDeviceScaleFactor() const;
-  RenderWidget* GetMainWidget() const;
 
   const ScreenInfo& screen_info() const {
     return pending_visual_properties_.screen_info;
   }
 
   void UpdateInternalInstanceId();
-
-#if defined(USE_AURA)
-  void CreateMusWindowAndEmbed(const base::UnguessableToken& embed_token);
-#endif
 
   // IPC message handlers.
   // Please keep in alphabetical order.
@@ -204,17 +182,7 @@ class CONTENT_EXPORT BrowserPlugin : public blink::WebPlugin,
   void OnSetContentsOpaque(int instance_id, bool opaque);
   void OnSetCursor(int instance_id, const WebCursor& cursor);
   void OnSetMouseLock(int instance_id, bool enable);
-#if defined(USE_AURA)
-  void OnSetMusEmbedToken(int instance_id,
-                          const base::UnguessableToken& embed_token);
-#endif
   void OnShouldAcceptTouchEvents(int instance_id, bool accept);
-
-#if defined(USE_AURA)
-  // MusEmbeddedFrameDelegate
-  void OnMusEmbeddedFrameSinkIdAllocated(
-      const viz::FrameSinkId& frame_sink_id) override;
-#endif
 
   // ChildFrameCompositor:
   cc::Layer* GetLayer() override;
@@ -267,13 +235,6 @@ class CONTENT_EXPORT BrowserPlugin : public blink::WebPlugin,
   // own this. The delegate destroys itself.
   base::WeakPtr<BrowserPluginDelegate> delegate_;
 
-#if defined(USE_AURA)
-  // Set if OnSetMusEmbedToken() is called before attached.
-  base::Optional<base::UnguessableToken> pending_embed_token_;
-
-  std::unique_ptr<MusEmbeddedFrame> mus_embedded_frame_;
-#endif
-
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   // Pointer to the RenderWidget that embeds this plugin.
@@ -284,7 +245,7 @@ class CONTENT_EXPORT BrowserPlugin : public blink::WebPlugin,
 
   // Weak factory used in v8 |MakeWeak| callback, since the v8 callback might
   // get called after BrowserPlugin has been destroyed.
-  base::WeakPtrFactory<BrowserPlugin> weak_ptr_factory_;
+  base::WeakPtrFactory<BrowserPlugin> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(BrowserPlugin);
 };

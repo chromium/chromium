@@ -4,6 +4,8 @@
 
 #include "ui/views/controls/button/toggle_button.h"
 
+#include <memory>
+
 #include "base/macros.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -47,20 +49,20 @@ class TestToggleButton : public ToggleButton {
 
 class ToggleButtonTest : public ViewsTestBase {
  public:
-  ToggleButtonTest() {}
-  ~ToggleButtonTest() override {}
+  ToggleButtonTest() = default;
+  ~ToggleButtonTest() override = default;
 
   void SetUp() override {
     ViewsTestBase::SetUp();
 
     // Create a widget so that the ToggleButton can query the hover state
     // correctly.
-    widget_.reset(new Widget);
+    widget_ = std::make_unique<Widget>();
     Widget::InitParams params =
         CreateParams(Widget::InitParams::TYPE_WINDOW_FRAMELESS);
     params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
     params.bounds = gfx::Rect(0, 0, 650, 650);
-    widget_->Init(params);
+    widget_->Init(std::move(params));
     widget_->Show();
 
     button_ = new TestToggleButton(&counter_);
@@ -108,41 +110,41 @@ TEST_F(ToggleButtonTest, ShutdownWithFocus) {
 
 // Verify that ToggleButton::accepts_events_ works as expected.
 TEST_F(ToggleButtonTest, AcceptEvents) {
-  EXPECT_FALSE(button()->is_on());
+  EXPECT_FALSE(button()->GetIsOn());
   ui::test::EventGenerator generator(GetRootWindow(widget()));
 
   // Clicking toggles.
   generator.ClickLeftButton();
-  EXPECT_TRUE(button()->is_on());
+  EXPECT_TRUE(button()->GetIsOn());
   generator.ClickLeftButton();
-  EXPECT_FALSE(button()->is_on());
+  EXPECT_FALSE(button()->GetIsOn());
 
   // Spacebar toggles.
   button()->RequestFocus();
   generator.PressKey(ui::VKEY_SPACE, ui::EF_NONE);
   generator.ReleaseKey(ui::VKEY_SPACE, ui::EF_NONE);
-  EXPECT_TRUE(button()->is_on());
+  EXPECT_TRUE(button()->GetIsOn());
   generator.PressKey(ui::VKEY_SPACE, ui::EF_NONE);
   generator.ReleaseKey(ui::VKEY_SPACE, ui::EF_NONE);
-  EXPECT_FALSE(button()->is_on());
+  EXPECT_FALSE(button()->GetIsOn());
 
   // Spacebar and clicking do nothing when not accepting events, but focus is
   // not affected.
-  button()->set_accepts_events(false);
+  button()->SetAcceptsEvents(false);
   EXPECT_TRUE(button()->HasFocus());
   generator.PressKey(ui::VKEY_SPACE, ui::EF_NONE);
   generator.ReleaseKey(ui::VKEY_SPACE, ui::EF_NONE);
-  EXPECT_FALSE(button()->is_on());
+  EXPECT_FALSE(button()->GetIsOn());
   generator.ClickLeftButton();
-  EXPECT_FALSE(button()->is_on());
+  EXPECT_FALSE(button()->GetIsOn());
 
   // Re-enable events and clicking and spacebar resume working.
-  button()->set_accepts_events(true);
+  button()->SetAcceptsEvents(true);
   generator.PressKey(ui::VKEY_SPACE, ui::EF_NONE);
   generator.ReleaseKey(ui::VKEY_SPACE, ui::EF_NONE);
-  EXPECT_TRUE(button()->is_on());
+  EXPECT_TRUE(button()->GetIsOn());
   generator.ClickLeftButton();
-  EXPECT_FALSE(button()->is_on());
+  EXPECT_FALSE(button()->GetIsOn());
 }
 
 }  // namespace views

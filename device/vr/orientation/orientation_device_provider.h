@@ -12,6 +12,8 @@
 #include "device/vr/orientation/orientation_device.h"
 #include "device/vr/vr_device_provider.h"
 #include "device/vr/vr_export.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/constants.mojom.h"
 #include "services/device/public/mojom/sensor_provider.mojom.h"
 #include "services/service_manager/public/cpp/connector.h"
@@ -26,7 +28,8 @@ class DEVICE_VR_EXPORT VROrientationDeviceProvider : public VRDeviceProvider {
   void Initialize(
       base::RepeatingCallback<void(mojom::XRDeviceId,
                                    mojom::VRDisplayInfoPtr,
-                                   mojom::XRRuntimePtr)> add_device_callback,
+                                   mojo::PendingRemote<mojom::XRRuntime>)>
+          add_device_callback,
       base::RepeatingCallback<void(mojom::XRDeviceId)> remove_device_callback,
       base::OnceClosure initialization_complete) override;
 
@@ -37,12 +40,13 @@ class DEVICE_VR_EXPORT VROrientationDeviceProvider : public VRDeviceProvider {
 
   bool initialized_ = false;
 
-  device::mojom::SensorProviderPtr sensor_provider_;
+  mojo::Remote<device::mojom::SensorProvider> sensor_provider_;
 
   std::unique_ptr<VROrientationDevice> device_;
 
-  base::RepeatingCallback<
-      void(mojom::XRDeviceId, mojom::VRDisplayInfoPtr, mojom::XRRuntimePtr)>
+  base::RepeatingCallback<void(mojom::XRDeviceId,
+                               mojom::VRDisplayInfoPtr,
+                               mojo::PendingRemote<mojom::XRRuntime>)>
       add_device_callback_;
   base::OnceClosure initialized_callback_;
 

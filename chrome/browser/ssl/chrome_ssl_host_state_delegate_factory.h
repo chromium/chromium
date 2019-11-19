@@ -29,7 +29,7 @@ class ChromeSSLHostStateDelegateFactory
   ChromeSSLHostStateDelegateFactory();
   ~ChromeSSLHostStateDelegateFactory() override;
 
-  // BrowserContextKeyedBaseFactory methods:
+  // BrowserContextKeyedServiceFactory methods:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* profile) const override;
   void RegisterProfilePrefs(

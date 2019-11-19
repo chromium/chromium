@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/bind_helpers.h"
+#include "chrome/browser/vr/test/multi_class_browser_test.h"
 #include "chrome/browser/vr/test/ui_utils.h"
 #include "chrome/browser/vr/test/webxr_vr_browser_test.h"
 #include "chrome/browser/vr/ui_test_input.h"
@@ -12,7 +13,12 @@
 
 namespace vr {
 
-void InSessionPermissionNotificationCommon(WebXrVrBrowserTestStandard* t) {
+// Tests that permission requests that occur when in an immersive session cause
+// a notification to appear telling the user that a permission request is
+// visible in the browser and that closing the browser while this is still
+// displayed does not cause any issues.
+WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(
+    TestInSessionPermissionNotificationCloseWhileVisible) {
   // We need to use a local server for permission requests to not hit a DCHECK.
   t->LoadUrlAndAwaitInitialization(
       t->GetEmbeddedServerUrlForHtmlTestFile("generic_webxr_page"));
@@ -27,15 +33,6 @@ void InSessionPermissionNotificationCommon(WebXrVrBrowserTestStandard* t) {
   utils->PerformActionAndWaitForVisibilityStatus(
       UserFriendlyElementName::kWebXrExternalPromptNotification,
       true /* visible */, base::DoNothing::Once());
-}
-
-// Tests that permission requests that occur when in an immersive session cause
-// a notification to appear telling the user that a permission request is
-// visible in the browser and that closing the browser while this is still
-// displayed does not cause any issues.
-IN_PROC_BROWSER_TEST_F(WebXrVrBrowserTestStandard,
-                       TestInSessionPermissionNotificationCloseWhileVisible) {
-  InSessionPermissionNotificationCommon(this);
 }
 
 // TODO(https://crbug.com/920697): Add tests verifying the notification

@@ -1,0 +1,52 @@
+# Copyright 2018 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+
+js_library("table_column") {
+  deps = [
+    "//ui/webui/resources/js:cr",
+    "//ui/webui/resources/js/cr:event_target",
+  ]
+}
+
+js_library("table") {
+  deps = [
+    ":table_column_model",
+    ":table_header",
+    ":table_list",
+    "//ui/webui/resources/js/cr/ui:list",
+    "//ui/webui/resources/js/cr/ui:list_single_selection_model",
+  ]
+}
+
+js_library("table_column_model") {
+  deps = [
+    ":table_column",
+    "//ui/webui/resources/js:cr",
+  ]
+}
+
+js_library("table_header") {
+  deps = [
+    ":table_splitter",
+    "//ui/webui/resources/js:cr",
+  ]
+}
+
+js_library("table_list") {
+  deps = [
+    ":table_column_model",
+    "//ui/webui/resources/js:cr",
+    "//ui/webui/resources/js/cr/ui:list",
+  ]
+}
+
+js_library("table_splitter") {
+  deps = [
+    ":table_column_model",
+    "//ui/webui/resources/js:cr",
+    "//ui/webui/resources/js/cr/ui:splitter",
+  ]
+}

@@ -1,0 +1,1143 @@
+[
+  {
+    "id": "ar-g1",
+    "locale": "ar",
+    "dots": "6",
+    "grade": "1",
+    "fileNames": "ar-ar-g1.utb"
+  },
+  {
+    "id": "bg-comp8",
+    "locale": "bg",
+    "dots": "8",
+    "fileNames": "bg.ctb"
+  },
+  {
+    "id": "ca-g1",
+    "locale": "ca",
+    "dots": "6",
+    "grade": "1",
+    "fileNames": "ca-g1.ctb"
+  },
+  {
+    "id": "cs-g1",
+    "locale": "cs",
+    "dots": "6",
+    "grade": "1",
+    "fileNames": "cs-g1.ctb"
+  },
+  {
+    "id": "da-comp8",
+    "locale": "da",
+    "dots": "8",
+    "fileNames": "da-dk-g18.ctb"
+  },
+  {
+    "id": "da-g1",
+    "locale": "da",
+    "dots": "6",
+    "grade": 1,
+    "fileNames": "da-dk-g16.ctb"
+  },
+  {
+    "id": "da-g2",
+    "locale": "da",
+    "dots": "6",
+    "grade": 2,
+    "fileNames": "da-dk-g26.ctb"
+  },
+  {
+    "id": "de-CH-g0",
+    "locale": "de_CH",
+    "dots": "6",
+    "grade": "0",
+    "fileNames": "de-ch-g0.utb"
+  },
+  {
+    "id": "de-CH-g1",
+    "locale": "de_CH",
+    "dots": "6",
+    "grade": "1",
+    "fileNames": "de-ch-g1.ctb"
+  },
+  {
+    "id": "de-CH-g2",
+    "locale": "de_CH",
+    "dots": "6",
+    "grade": "2",
+    "fileNames": "de-ch-g2.ctb"
+  },
+  {
+    "id": "de-DE-g0",
+    "locale": "de_DE",
+    "dots": "6",
+    "grade": "0",
+    "fileNames": "de-de-g0.utb"
+  },
+  {
+    "id": "de-DE-g1",
+    "locale": "de_DE",
+    "dots": "6",
+    "grade": "1",
+    "fileNames": "de-de-g1.ctb"
+  },
+  {
+    "id": "de-DE-g2",
+    "locale": "de_DE",
+    "dots": "6",
+    "grade": "2",
+    "fileNames": "de-de-g2.ctb"
+  },
+  {
+    "id": "de-comp8",
+    "locale": "de",
+    "dots": "8",
+    "fileNames": "de-de-comp8.ctb"
+  },
+  {
+    "id": "en-CA-comp8",
+    "locale": "en_CA",
+    "dots": "8",
+    "fileNames": "en_CA.ctb"
+  },
+  {
+    "id": "en-GB-comp8",
+    "locale": "en_GB",
+    "dots": "8",
+    "fileNames": "en-gb-comp8.ctb"
+  },
+  {
+    "id": "en-GB-g1",
+    "locale": "en_GB",
+    "dots": "6",
+    "grade": "1",
+    "fileNames": "en-gb-g1.utb"
+  },
+  {
+    "id": "en-GB-g2",
+    "locale": "en_GB",
+    "dots": "6",
+    "grade": "2",
+    "fileNames": "en-GB-g2.ctb"
+  },
+  {
+    "id": "en-UEB-g1",
+    "locale": "en",
+    "variant": "UEB",
+    "dots": "6",
+    "grade": 1,
+    "fileNames": "en-ueb-g1.ctb"
+  },
+  {
+    "id": "en-UEB-g2",
+    "locale": "en",
+    "variant": "UEB",
+    "dots": "6",
+    "grade": 2,
+    "fileNames": "en-ueb-g2.ctb"
+  },
+  {
+    "id": "en-US-comp8",
+    "locale": "en_US",
+    "dots": "8",
+    "fileNames": "en-us-comp8.ctb"
+  },
+  {
+    "id": "en-US-g1",
+    "locale": "en_US",
+    "dots": "6",
+    "grade": "1",
+    "fileNames": "en-us-g1.ctb"
+  },
+  {
+    "id": "en-US-g2",
+    "locale": "en_US",
+    "dots": "6",
+    "grade": "2",
+    "fileNames": "en-us-g2.ctb"
+  },
+  {
+    "id": "es-comp8",
+    "locale": "es",
+    "dots": "8",
+    "fileNames": "Es-Es-G0.utb"
+  },
+  {
+    "id": "es-g1",
+    "locale": "es",
+    "dots": "6",
+    "grade": "1",
+    "fileNames": "es-g1.ctb"
+  },
+  {
+    "id": "et-comp8",
+    "locale": "et",
+    "dots": "8",
+    "fileNames": "et-g0.utb"
+  },
+  {
+    "id": "fi-comp8",
+    "locale": "fi",
+    "dots": "8",
+    "fileNames": "fi-fi-8dot.ctb"
+  },
+  {
+    "id": "he-comp8",
+    "locale": "he",
+    "dots": "8",
+    "fileNames": "he.ctb"
+  },
+  {
+    "id": "hi-g1",
+    "locale": "hi",
+    "dots": "6",
+    "grade": "1",
+    "fileNames": "hi-in-g1.utb"
+  },
+  {
+    "id": "hu-comp8",
+    "locale": "hu",
+    "dots": "8",
+    "fileNames": "hu-hu-comp8.ctb"
+  },
+  {
+    "id": "hu-g1",
+    "locale": "hu",
+    "dots": "6",
+    "grade": "1",
+    "fileNames": "hu-hu-g1.ctb"
+  },
+  {
+    "id": "is-comp8",
+    "locale": "is",
+    "dots": "8",
+    "fileNames": "is.ctb"
+  },
+  {
+    "id": "it-comp8",
+    "locale": "it",
+    "dots": "8",
+    "fileNames": "it-it-comp8.utb"
+  },
+  {
+    "id": "it-g1",
+    "locale": "it",
+    "dots": "6",
+    "grade": "1",
+    "fileNames": "it-it-comp6.utb"
+  },
+  {
+    "id": "ko-g1",
+    "locale": "ko",
+    "dots": "6",
+    "grade": 1,
+    "fileNames": "ko-g1.ctb"
+  },
+  {
+    "id": "ko-g2",
+    "locale": "ko",
+    "dots": "6",
+    "grade": 2,
+    "fileNames": "ko-g2.ctb"
+  },
+  {
+    "id": "lv-g1",
+    "locale": "lv",
+    "dots": "6",
+    "grade": "1",
+    "fileNames": "Lv-Lv-g1.utb"
+  },
+  {
+    "id": "lt-comp8",
+    "locale": "lt",
+    "dots": "8",
+    "fileNames": "lt.ctb"
+  },
+  {
+    "id": "nb-g0",
+    "locale": "nb",
+    "dots": "6",
+    "grade": "0",
+    "fileNames": "no-no-g0.utb"
+  },
+  {
+    "id": "nb-g1",
+    "locale": "nb",
+    "dots": "6",
+    "grade": "1",
+    "fileNames": "no-no-g1.ctb"
+  },
+  {
+    "id": "nb-g2",
+    "locale": "nb",
+    "dots": "6",
+    "grade": "2",
+    "fileNames": "no-no-g2.ctb"
+  },
+  {
+    "id": "nb-g3",
+    "locale": "nb",
+    "dots": "6",
+    "grade": "3",
+    "fileNames": "no-no-g3.ctb"
+  },
+  {
+    "id": "pl-g1",
+    "locale": "pl",
+    "dots": "6",
+    "grade": "1",
+    "fileNames": "Pl-Pl-g1.utb"
+  },
+  {
+    "id": "pt-comp8",
+    "locale": "pt",
+    "dots": "8",
+    "fileNames": "pt-pt-comp8.ctb"
+  },
+  {
+    "id": "pt-g1",
+    "locale": "pt",
+    "dots": "6",
+    "grade": "1",
+    "fileNames": "pt-pt-g1.utb"
+  },
+  {
+    "id": "pt-g2",
+    "locale": "pt",
+    "dots": "6",
+    "grade": "2",
+    "fileNames": "pt-pt-g2.ctb"
+  },
+  {
+    "id": "ro-comp8",
+    "locale": "ro",
+    "dots": "8",
+    "fileNames": "ro.ctb"
+  },
+  {
+    "id": "ru-comp8",
+    "locale": "ru",
+    "dots": "8",
+    "fileNames": "ru-compbrl.ctb"
+  },
+  {
+    "id": "ru-g1",
+    "locale": "ru",
+    "dots": "6",
+    "grade": "1",
+    "fileNames": "ru-litbrl.ctb"
+  },
+  {
+    "id": "sk-g1",
+    "locale": "sk",
+    "dots": "6",
+    "grade": "1",
+    "fileNames": "sk-sk-g1.utb"
+  },
+  {
+    "id": "sl-comp8",
+    "locale": "sl",
+    "dots": "8",
+    "fileNames": "sl-si-comp8.ctb"
+  },
+  {
+    "id": "sl-g1",
+    "locale": "sl",
+    "dots": "6",
+    "grade": "1",
+    "fileNames": "sl-si-g1.utb"
+  },
+  {
+    "id": "sr-g1",
+    "locale": "sr",
+    "dots": "6",
+    "grade": "1",
+    "fileNames": "sr-g1.ctb"
+  },
+  {
+    "id": "sv-comp8",
+    "locale": "sv",
+    "dots": "8",
+    "fileNames": "sv-1996.ctb"
+  },
+  {
+    "id": "sv-g1",
+    "locale": "sv",
+    "dots": "6",
+    "grade": "1",
+    "fileNames": "Se-Se-g1.utb"
+  },
+  {
+    "id": "tr-comp8",
+    "locale": "tr",
+    "dots": "8",
+    "fileNames": "tr.ctb"
+  },
+  {
+    "id": "vi-comp8",
+    "locale": "vi",
+    "dots": "8",
+    "fileNames": "vi.ctb"
+  },
+  {
+    "id": "zh-TW-comp8",
+    "locale": "zh_TW",
+    "dots": "8",
+    "fileNames": "zh-tw.ctb"
+  },
+  {
+    "id": "zh-comp8",
+    "locale": "zh",
+    "dots": "8",
+    "fileNames": "zh-hk.ctb"
+  },
+  {
+    "locale": "ml",
+    "dots": "6",
+    "id": "ml-in-g1",
+    "grade": "1",
+    "fileNames": "ml-in-g1.utb"
+  },
+  {
+    "locale": "nl",
+    "dots": "6",
+    "id": "nl-NL-g0",
+    "grade": "0",
+    "fileNames": "nl-NL-g0.utb"
+  },
+  {
+    "locale": "da",
+    "dots": "8",
+    "id": "da-dk-g28l",
+    "grade": "2",
+    "fileNames": "da-dk-g28l.ctb"
+  },
+  {
+    "locale": "sk",
+    "dots": "6",
+    "id": "sk-g1",
+    "grade": "1",
+    "fileNames": "sk-g1.ctb"
+  },
+  {
+    "locale": "hr",
+    "dots": "8",
+    "id": "hr-comp8",
+    "grade": "1",
+    "fileNames": "hr-comp8.utb"
+  },
+  {
+    "locale": "sa",
+    "dots": "6",
+    "id": "sa-in-g1",
+    "grade": "1",
+    "fileNames": "sa-in-g1.utb"
+  },
+  {
+    "locale": "gu",
+    "dots": "6",
+    "id": "gu-in-g1",
+    "grade": "1",
+    "fileNames": "gu-in-g1.utb"
+  },
+  {
+    "locale": "mwr",
+    "dots": "6",
+    "id": "mwr",
+    "grade": "1",
+    "fileNames": "mwr.ctb"
+  },
+  {
+    "locale": "tr",
+    "dots": "6",
+    "id": "tr-g1",
+    "grade": "1",
+    "fileNames": "tr-g1.ctb"
+  },
+  {
+    "locale": "fr",
+    "dots": "6",
+    "id": "fr-bfu-comp6",
+    "grade": "1",
+    "fileNames": "fr-bfu-comp6.utb"
+  },
+  {
+    "locale": "en",
+    "dots": "6",
+    "id": "en-us-mathtext",
+    "grade": "1",
+    "fileNames": "en-us-mathtext.ctb"
+  },
+  {
+    "locale": "iu",
+    "dots": "6",
+    "id": "iu-ca-g1",
+    "grade": "1",
+    "fileNames": "iu-ca-g1.ctb"
+  },
+  {
+    "locale": "si",
+    "dots": "6",
+    "id": "si-in-g1",
+    "grade": "1",
+    "fileNames": "si-in-g1.utb"
+  },
+  {
+    "locale": "ga",
+    "dots": "6",
+    "id": "ga-g2",
+    "grade": "2",
+    "fileNames": "ga-g2.ctb"
+  },
+  {
+    "locale": "no",
+    "dots": "8",
+    "id": "no-no-comp8",
+    "grade": "1",
+    "fileNames": "no-no-comp8.ctb"
+  },
+  {
+    "locale": "en",
+    "dots": "6",
+    "id": "en-us-compbrl",
+    "grade": "1",
+    "fileNames": "en-us-compbrl.ctb"
+  },
+  {
+    "locale": "vi",
+    "dots": "6",
+    "id": "vi-g1",
+    "grade": "1",
+    "fileNames": "vi-g1.ctb"
+  },
+  {
+    "locale": "as",
+    "dots": "6",
+    "id": "as-in-g1",
+    "grade": "1",
+    "fileNames": "as-in-g1.utb"
+  },
+  {
+    "locale": "mt",
+    "dots": "6",
+    "id": "mt",
+    "grade": "1",
+    "fileNames": "mt.ctb"
+  },
+  {
+    "locale": "ne",
+    "dots": "6",
+    "id": "ne",
+    "grade": "1",
+    "fileNames": "ne.ctb"
+  },
+  {
+    "locale": "be",
+    "dots": "6",
+    "id": "be-in-g1",
+    "grade": "1",
+    "fileNames": "be-in-g1.utb"
+  },
+  {
+    "locale": "mn",
+    "dots": "6",
+    "id": "mn-MN-g2",
+    "grade": "2",
+    "fileNames": "mn-MN-g2.ctb"
+  },
+  {
+    "locale": "fi",
+    "dots": "6",
+    "id": "fi",
+    "grade": "1",
+    "fileNames": "fi.utb"
+  },
+  {
+    "locale": "ne",
+    "dots": "6",
+    "id": "np-in-g1",
+    "grade": "1",
+    "fileNames": "np-in-g1.utb"
+  },
+  {
+    "locale": "ko",
+    "dots": "6",
+    "id": "ko-2006-g2",
+    "grade": "2",
+    "fileNames": "ko-2006-g2.ctb"
+  },
+  {
+    "locale": "mn",
+    "dots": "6",
+    "id": "mn-in-g1",
+    "grade": "1",
+    "fileNames": "mn-in-g1.utb"
+  },
+  {
+    "locale": "ckb",
+    "dots": "6",
+    "id": "ckb-g1",
+    "grade": "1",
+    "fileNames": "ckb-g1.ctb"
+  },
+  {
+    "locale": "et",
+    "dots": "6",
+    "id": "et",
+    "grade": "1",
+    "fileNames": "et.ctb"
+  },
+  {
+    "locale": "el",
+    "dots": "6",
+    "id": "gr-bb",
+    "grade": "1",
+    "fileNames": "gr-bb.ctb"
+  },
+  {
+    "locale": "bh",
+    "dots": "6",
+    "id": "bh",
+    "grade": "1",
+    "fileNames": "bh.ctb"
+  },
+  {
+    "locale": "mun",
+    "dots": "6",
+    "id": "mun",
+    "grade": "1",
+    "fileNames": "mun.ctb"
+  },
+  {
+    "locale": "en",
+    "dots": "6",
+    "id": "en-in-g1",
+    "grade": "1",
+    "fileNames": "en-in-g1.ctb"
+  },
+  {
+    "locale": "gon",
+    "dots": "6",
+    "id": "gon",
+    "grade": "1",
+    "fileNames": "gon.ctb"
+  },
+  {
+    "locale": "hy",
+    "dots": "6",
+    "id": "hy",
+    "grade": "1",
+    "fileNames": "hy.ctb"
+  },
+  {
+    "locale": "en",
+    "dots": "6",
+    "id": "en-us-comp6",
+    "grade": "1",
+    "fileNames": "en-us-comp6.ctb"
+  },
+  {
+    "locale": "en",
+    "dots": "6",
+    "id": "en-chess",
+    "grade": "1",
+    "fileNames": "en-chess.ctb"
+  },
+  {
+    "locale": "ta",
+    "dots": "6",
+    "id": "ta",
+    "grade": "1",
+    "fileNames": "ta.ctb"
+  },
+  {
+    "locale": "mao",
+    "dots": "6",
+    "id": "mao-nz-g1",
+    "grade": "1",
+    "fileNames": "mao-nz-g1.ctb"
+  },
+  {
+    "locale": "bo",
+    "dots": "6",
+    "id": "bo",
+    "grade": "1",
+    "fileNames": "bo.ctb"
+  },
+  {
+    "locale": "pu",
+    "dots": "6",
+    "id": "pu-in-g1",
+    "grade": "1",
+    "fileNames": "pu-in-g1.utb"
+  },
+  {
+    "locale": "fa",
+    "dots": "8",
+    "id": "fa-ir-comp8",
+    "grade": "1",
+    "fileNames": "fa-ir-comp8.ctb"
+  },
+  {
+    "locale": "sin",
+    "dots": "6",
+    "id": "sin",
+    "grade": "1",
+    "fileNames": "sin.utb"
+  },
+  {
+    "locale": "kh",
+    "dots": "6",
+    "id": "kh-in-g1",
+    "grade": "1",
+    "fileNames": "kh-in-g1.utb"
+  },
+  {
+    "locale": "cs",
+    "dots": "8",
+    "id": "cs-comp8",
+    "grade": "1",
+    "fileNames": "cs-comp8.utb"
+  },
+  {
+    "locale": "zh",
+    "dots": "6",
+    "id": "zhcn-g1",
+    "grade": "1",
+    "fileNames": "zhcn-g1.ctb"
+  },
+  {
+    "locale": "tsn",
+    "dots": "6",
+    "id": "tsn-za-g1",
+    "grade": "1",
+    "fileNames": "tsn-za-g1.ctb"
+  },
+  {
+    "locale": "sv",
+    "dots": "6",
+    "id": "sv-1989",
+    "grade": "1",
+    "fileNames": "sv-1989.ctb"
+  },
+  {
+    "locale": "br",
+    "dots": "6",
+    "id": "br-in-g1",
+    "grade": "1",
+    "fileNames": "br-in-g1.utb"
+  },
+  {
+    "locale": "ko",
+    "dots": "6",
+    "id": "ko-2006-g1",
+    "grade": "1",
+    "fileNames": "ko-2006-g1.ctb"
+  },
+  {
+    "locale": "pl",
+    "dots": "8",
+    "id": "pl-pl-comp8",
+    "grade": "1",
+    "fileNames": "pl-pl-comp8.ctb"
+  },
+  {
+    "locale": "ur",
+    "dots": "6",
+    "id": "ur-pk-g2",
+    "grade": "2",
+    "fileNames": "ur-pk-g2.ctb"
+  },
+  {
+    "locale": "ka",
+    "dots": "6",
+    "id": "ka-in-g1",
+    "grade": "1",
+    "fileNames": "ka-in-g1.utb"
+  },
+  {
+    "locale": "ru",
+    "dots": "6",
+    "id": "ru-ru-g1",
+    "grade": "1",
+    "fileNames": "ru-ru-g1.utb"
+  },
+  {
+    "locale": "en",
+    "dots": "6",
+    "id": "haw-us-g1",
+    "grade": "1",
+    "fileNames": "haw-us-g1.ctb"
+  },
+  {
+    "locale": "no",
+    "dots": "6",
+    "id": "no-no-generic",
+    "grade": "1",
+    "fileNames": "no-no-generic.ctb"
+  },
+  {
+    "locale": "cy",
+    "dots": "6",
+    "id": "cy-cy-g2",
+    "grade": "2",
+    "fileNames": "cy-cy-g2.ctb"
+  },
+  {
+    "locale": "en",
+    "dots": "6",
+    "id": "en-us-interline",
+    "grade": "1",
+    "fileNames": "en-us-interline.ctb"
+  },
+  {
+    "locale": "nl",
+    "dots": "6",
+    "id": "nl-BE-g0",
+    "grade": "0",
+    "fileNames": "nl-BE-g0.utb"
+  },
+  {
+    "locale": "ta",
+    "dots": "6",
+    "id": "ta-ta-g1",
+    "grade": "1",
+    "fileNames": "ta-ta-g1.ctb"
+  },
+  {
+    "locale": "da",
+    "dots": "6",
+    "id": "da-lt",
+    "grade": "1",
+    "fileNames": "da-lt.ctb"
+  },
+  {
+    "locale": "fi",
+    "dots": "6",
+    "id": "fi-fi",
+    "grade": "1",
+    "fileNames": "fi-fi.ctb"
+  },
+  {
+    "locale": "tsn",
+    "dots": "6",
+    "id": "afr-za-g1",
+    "grade": "1",
+    "fileNames": "afr-za-g1.ctb"
+  },
+  {
+    "locale": "da",
+    "dots": "6",
+    "id": "da-dk-g26-lit",
+    "grade": "2",
+    "fileNames": "da-dk-g26-lit.ctb"
+  },
+  {
+    "locale": "no",
+    "dots": "6",
+    "id": "no-no-8dot-fallback-6dot-g0",
+    "grade": "0",
+    "fileNames": "no-no-8dot-fallback-6dot-g0.utb"
+  },
+  {
+    "locale": "en_US",
+    "dots": "8",
+    "id": "en-us-comp8-ext",
+    "grade": "1",
+    "fileNames": "en-us-comp8-ext.utb"
+  },
+  {
+    "locale": "es",
+    "dots": "6",
+    "id": "Es-Es-g1",
+    "grade": "1",
+    "fileNames": "Es-Es-g1.utb"
+  },
+  {
+    "locale": "fi",
+    "dots": "6",
+    "id": "fi1",
+    "grade": "1",
+    "fileNames": "fi1.ctb"
+  },
+  {
+    "locale": "el",
+    "dots": "6",
+    "id": "el",
+    "grade": "1",
+    "fileNames": "el.ctb"
+  },
+  {
+    "locale": "kru",
+    "dots": "6",
+    "id": "kru",
+    "grade": "1",
+    "fileNames": "kru.ctb"
+  },
+  {
+    "locale": "en",
+    "dots": "6",
+    "id": "mr-in-g1",
+    "grade": "1",
+    "fileNames": "mr-in-g1.utb"
+  },
+  {
+    "locale": "zh",
+    "dots": "6",
+    "id": "zh-chn",
+    "grade": "1",
+    "fileNames": "zh-chn.ctb"
+  },
+  {
+    "locale": "de",
+    "dots": "6",
+    "id": "de-chess",
+    "grade": "1",
+    "fileNames": "de-chess.ctb"
+  },
+  {
+    "locale": "en",
+    "dots": "6",
+    "id": "en-ueb-math",
+    "grade": "1",
+    "fileNames": "en-ueb-math.ctb"
+  },
+  {
+    "locale": "cy",
+    "dots": "6",
+    "id": "cy-cy-g1",
+    "grade": "1",
+    "fileNames": "cy-cy-g1.utb"
+  },
+  {
+    "locale": "lt",
+    "dots": "6",
+    "id": "lt-6dot",
+    "grade": "1",
+    "fileNames": "lt-6dot.utb"
+  },
+  {
+    "locale": "eo",
+    "dots": "6",
+    "id": "eo-g1",
+    "grade": "1",
+    "fileNames": "eo-g1.ctb"
+  },
+  {
+    "locale": "pi",
+    "dots": "6",
+    "id": "pi",
+    "grade": "1",
+    "fileNames": "pi.ctb"
+  },
+  {
+    "locale": "zh",
+    "dots": "6",
+    "id": "zhcn-g2",
+    "grade": "2",
+    "fileNames": "zhcn-g2.ctb"
+  },
+  {
+    "locale": "fr",
+    "dots": "8",
+    "id": "fr-bfu-comp8",
+    "grade": "1",
+    "fileNames": "fr-bfu-comp8.utb"
+  },
+  {
+    "locale": "eo",
+    "dots": "6",
+    "id": "eo-g1-x-system",
+    "grade": "1",
+    "fileNames": "eo-g1-x-system.ctb"
+  },
+  {
+    "locale": "ks",
+    "dots": "6",
+    "id": "ks-in-g1",
+    "grade": "1",
+    "fileNames": "ks-in-g1.utb"
+  },
+  {
+    "locale": "da",
+    "dots": "8",
+    "id": "da-dk-g28",
+    "grade": "2",
+    "fileNames": "da-dk-g28.ctb"
+  },
+  {
+    "locale": "kok",
+    "dots": "6",
+    "id": "kok",
+    "grade": "1",
+    "fileNames": "kok.ctb"
+  },
+  {
+    "locale": "da",
+    "dots": "6",
+    "id": "da-dk-g26l-lit",
+    "grade": "2",
+    "fileNames": "da-dk-g26l-lit.ctb"
+  },
+  {
+    "locale": "ar",
+    "dots": "6",
+    "id": "ar-fa",
+    "grade": "1",
+    "fileNames": "ar-fa.utb"
+  },
+  {
+    "locale": "da",
+    "dots": "6",
+    "id": "da-dk-g16-lit",
+    "grade": "1",
+    "fileNames": "da-dk-g16-lit.ctb"
+  },
+  {
+    "locale": "hr",
+    "dots": "6",
+    "id": "hr-g1",
+    "grade": "1",
+    "fileNames": "hr-g1.ctb"
+  },
+  {
+    "locale": "uk",
+    "dots": "6",
+    "id": "uk",
+    "grade": "1",
+    "fileNames": "uk.utb"
+  },
+  {
+    "locale": "aw",
+    "dots": "6",
+    "id": "aw-in-g1",
+    "grade": "1",
+    "fileNames": "aw-in-g1.utb"
+  },
+  {
+    "locale": "en",
+    "dots": "6",
+    "id": "chr-us-g1",
+    "grade": "1",
+    "fileNames": "chr-us-g1.ctb"
+  },
+  {
+    "locale": "no",
+    "dots": "8",
+    "id": "no-no-8dot",
+    "grade": "1",
+    "fileNames": "no-no-8dot.utb"
+  },
+  {
+    "locale": "da",
+    "dots": "8",
+    "id": "da-dk-g08",
+    "grade": "0",
+    "fileNames": "da-dk-g08.ctb"
+  },
+  {
+    "locale": "en",
+    "dots": "6",
+    "id": "sot-za-g1",
+    "grade": "1",
+    "fileNames": "sot-za-g1.ctb"
+  },
+  {
+    "locale": "da",
+    "dots": "6",
+    "id": "da-dk-g26l",
+    "grade": "2",
+    "fileNames": "da-dk-g26l.ctb"
+  },
+  {
+    "locale": "dra",
+    "dots": "6",
+    "id": "dra",
+    "grade": "1",
+    "fileNames": "dra.ctb"
+  },
+  {
+    "locale": "hu",
+    "dots": "6",
+    "id": "hu-hu-g2",
+    "grade": "2",
+    "fileNames": "hu-hu-g2.ctb"
+  },
+  {
+    "locale": "ga",
+    "dots": "6",
+    "id": "ga-g1",
+    "grade": "1",
+    "fileNames": "ga-g1.utb"
+  },
+  {
+    "locale": "te",
+    "dots": "6",
+    "id": "te-in-g1",
+    "grade": "1",
+    "fileNames": "te-in-g1.utb"
+  },
+  {
+    "locale": "fi",
+    "dots": "6",
+    "id": "fi2",
+    "grade": "2",
+    "fileNames": "fi2.ctb"
+  },
+  {
+    "locale": "sk",
+    "dots": "6",
+    "id": "sk-sk",
+    "grade": "1",
+    "fileNames": "sk-sk.utb"
+  },
+  {
+    "locale": "ur",
+    "dots": "6",
+    "id": "ur-pk-g1",
+    "grade": "1",
+    "fileNames": "ur-pk-g1.utb"
+  },
+  {
+    "locale": "sv",
+    "dots": "6",
+    "id": "se-se",
+    "grade": "1",
+    "fileNames": "se-se.ctb"
+  },
+  {
+    "locale": "ru",
+    "dots": "6",
+    "id": "ru",
+    "grade": "1",
+    "fileNames": "ru.ctb"
+  },
+    {
+    "locale": "fa",
+    "dots": "6",
+    "id": "fa-ir-g1",
+    "grade": "1",
+    "fileNames": "fa-ir-g1.utb"
+  },
+  {
+    "locale": "gd",
+    "dots": "6",
+    "id": "gd",
+    "grade": "1",
+    "fileNames": "gd.ctb"
+  },
+  {
+    "locale": "fr",
+    "dots": "6",
+    "id": "fr-bfu-g2",
+    "grade": "2",
+    "fileNames": "fr-bfu-g2.ctb"
+  },
+  {
+    "locale": "mn",
+    "dots": "6",
+    "id": "mn-MN-g1",
+    "grade": "1",
+    "fileNames": "mn-MN-g1.utb"
+  }
+]

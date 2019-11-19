@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<title>Tests that scrubbing stops when the controls are hidden.</title>
+<script src='../../resources/testharness.js'></script>
+<script src='../../resources/testharnessreport.js'></script>
+<script src='../media-controls.js'></script>
+<video controls width=400 src="../content/60_sec_video.webm"></video>
+<script>
+async_test(t => {
+  let video = document.querySelector('video');
+  const thumb = timelineThumb(video);
+  const MOVEMENT_X = 50;
+  let thumbPosition;
+  const leftButton = 0;
+
+  video.onloadedmetadata = t.step_func(() => {
+    // Should not be initially scrubbing.
+    expectNotScrubbing();
+
+    thumbPosition = elementCoordinates(thumb);
+    mouseDownOnThumb();
+  });
+
+  function mouseDownOnThumb() {
+    // Should be scrubbing on mousedown on thumb.
+    chrome.gpuBenchmarking.pointerActionSequence([
+      {
+        source: 'mouse',
+        actions: [
+          { name: 'pointerMove', x: thumbPosition[0], y: thumbPosition[1] },
+          { name: 'pointerDown', x: thumbPosition[0], y: thumbPosition[1], button: leftButton },
+        ]
+      }
+    ], t.step_func(() => {
+      expectScrubbing();
+      mouseMoveWithControls();
+    }));
+  }
+
+  function mouseMoveWithControls() {
+    // Should be scrubbing on mousemove.
+    thumbPosition[0] += MOVEMENT_X;
+    chrome.gpuBenchmarking.pointerActionSequence([
+      {
+        source: 'mouse',
+        actions: [
+          { name: 'pointerMove', x: thumbPosition[0], y: thumbPosition[1] },
+        ]
+      }
+    ], t.step_func(() => {
+      expectScrubbing();
+      removeControls();
+    }));
+  }
+
+  function removeControls() {
+    // Should not be scrubbing if the controls are removed.
+    video.controls = false;
+    expectNotScrubbing();
+    mouseMoveWithoutControls();
+  }
+
+  function mouseMoveWithoutControls() {
+    // Should still not be scrubbing if the mouse continues to move.
+    thumbPosition[0] += MOVEMENT_X;
+    chrome.gpuBenchmarking.pointerActionSequence([
+      {
+        source: 'mouse',
+        actions: [
+          { name: 'pointerMove', x: thumbPosition[0], y: thumbPosition[1] },
+        ]
+      }
+    ], t.step_func_done(expectNotScrubbing));
+  }
+
+  function expectScrubbing() {
+    checkControlsHasClass(video, 'state-scrubbing');
+  }
+
+  function expectNotScrubbing() {
+    checkControlsDoesNotHaveClass(video, 'state-scrubbing');
+  }
+});
+</script>

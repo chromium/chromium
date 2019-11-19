@@ -87,7 +87,7 @@ class CastRtpStream {
   ErrorCallback error_callback_;
   bool is_audio_;
 
-  base::WeakPtrFactory<CastRtpStream> weak_factory_;
+  base::WeakPtrFactory<CastRtpStream> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(CastRtpStream);
 };

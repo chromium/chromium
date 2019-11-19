@@ -13,6 +13,7 @@ enum RemotePlaybackState {
 callback RemotePlaybackAvailabilityCallback = void(boolean available);
 
 [
+    Exposed=Window,
     ActiveScriptWrappable,
     RuntimeEnabled=RemotePlayback
 ] interface RemotePlayback : EventTarget {

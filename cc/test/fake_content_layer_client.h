@@ -56,6 +56,10 @@ class FakeContentLayerClient : public ContentLayerClient {
     contains_slow_paths_ = contains_slow_paths;
   }
 
+  void set_has_non_aa_paint(bool has_non_aa_paint) {
+    has_non_aa_paint_ = has_non_aa_paint;
+  }
+
   void add_draw_rect(const gfx::Rect& rect, const PaintFlags& flags) {
     draw_rects_.push_back(std::make_pair(gfx::RectF(rect), flags));
   }
@@ -107,15 +111,16 @@ class FakeContentLayerClient : public ContentLayerClient {
   using RectPaintVector = std::vector<std::pair<gfx::RectF, PaintFlags>>;
   using ImageVector = std::vector<ImageData>;
 
-  bool fill_with_nonsolid_color_;
+  bool fill_with_nonsolid_color_ = false;
   RectPaintVector draw_rects_;
   ImageVector draw_images_;
-  SkCanvas* last_canvas_;
-  PaintingControlSetting last_painting_control_;
-  size_t reported_memory_usage_;
+  SkCanvas* last_canvas_ = nullptr;
+  PaintingControlSetting last_painting_control_ = PAINTING_BEHAVIOR_NORMAL;
+  size_t reported_memory_usage_ = 0;
   gfx::Size bounds_;
-  bool bounds_set_;
-  bool contains_slow_paths_;
+  bool bounds_set_ = false;
+  bool contains_slow_paths_ = false;
+  bool has_non_aa_paint_ = false;
 };
 
 }  // namespace cc

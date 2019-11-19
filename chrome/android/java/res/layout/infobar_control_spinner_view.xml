@@ -5,7 +5,7 @@
      found in the LICENSE file.
 -->
 
-<org.chromium.chrome.browser.widget.DualControlLayout
+<org.chromium.chrome.browser.ui.widget.DualControlLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content" >
@@ -22,4 +22,4 @@
         android:layout_height="wrap_content"
         android:textAppearance="@style/TextAppearance.BlackTitle1" />
 
-</org.chromium.chrome.browser.widget.DualControlLayout>
+</org.chromium.chrome.browser.ui.widget.DualControlLayout>

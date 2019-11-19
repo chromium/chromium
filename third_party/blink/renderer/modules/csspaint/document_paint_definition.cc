@@ -6,27 +6,43 @@
 
 namespace blink {
 
-DocumentPaintDefinition::DocumentPaintDefinition(CSSPaintDefinition* definition)
-    : paint_definition_(definition), registered_definitions_count_(1u) {
-  DCHECK(definition);
-}
+DocumentPaintDefinition::DocumentPaintDefinition(
+    const Vector<CSSPropertyID>& native_invalidation_properties,
+    const Vector<AtomicString>& custom_invalidation_properties,
+    const Vector<CSSSyntaxDefinition>& input_argument_types,
+    bool alpha)
+    : native_invalidation_properties_(native_invalidation_properties),
+      custom_invalidation_properties_(custom_invalidation_properties),
+      input_argument_types_(input_argument_types),
+      alpha_(alpha),
+      registered_definitions_count_(1u) {}
 
 DocumentPaintDefinition::~DocumentPaintDefinition() = default;
 
 bool DocumentPaintDefinition::RegisterAdditionalPaintDefinition(
     const CSSPaintDefinition& other) {
-  if (GetPaintRenderingContext2DSettings()->alpha() !=
-          other.GetPaintRenderingContext2DSettings()->alpha() ||
-      NativeInvalidationProperties() != other.NativeInvalidationProperties() ||
-      CustomInvalidationProperties() != other.CustomInvalidationProperties() ||
-      InputArgumentTypes() != other.InputArgumentTypes())
+  if (other.NativeInvalidationProperties() != NativeInvalidationProperties() ||
+      other.CustomInvalidationProperties() != CustomInvalidationProperties() ||
+      other.InputArgumentTypes() != InputArgumentTypes() ||
+      other.GetPaintRenderingContext2DSettings()->alpha() != alpha())
     return false;
   registered_definitions_count_++;
   return true;
 }
 
-void DocumentPaintDefinition::Trace(blink::Visitor* visitor) {
-  visitor->Trace(paint_definition_);
+bool DocumentPaintDefinition::RegisterAdditionalPaintDefinition(
+    const Vector<CSSPropertyID>& native_properties,
+    const Vector<String>& custom_properties,
+    const Vector<CSSSyntaxDefinition>& input_argument_types,
+    bool alpha) {
+  if (native_properties != NativeInvalidationProperties() ||
+      !std::equal(custom_properties.begin(), custom_properties.end(),
+                  CustomInvalidationProperties().begin(),
+                  CustomInvalidationProperties().end()) ||
+      input_argument_types != InputArgumentTypes() || alpha != this->alpha())
+    return false;
+  registered_definitions_count_++;
+  return true;
 }
 
 }  // namespace blink

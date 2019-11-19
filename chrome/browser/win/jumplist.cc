@@ -220,14 +220,14 @@ void JumpList::Shutdown() {
 
 JumpList::JumpList(Profile* profile)
     : profile_(profile),
-      update_jumplist_task_runner_(base::CreateCOMSTATaskRunnerWithTraits(
-          {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+      update_jumplist_task_runner_(base::CreateCOMSTATaskRunner(
+          {base::ThreadPool(), base::MayBlock(),
+           base::TaskPriority::USER_VISIBLE,
            base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})),
-      delete_jumplisticons_task_runner_(
-          base::CreateSequencedTaskRunnerWithTraits(
-              {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-               base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})),
-      weak_ptr_factory_(this) {
+      delete_jumplisticons_task_runner_(base::CreateSequencedTaskRunner(
+          {base::ThreadPool(), base::MayBlock(),
+           base::TaskPriority::BEST_EFFORT,
+           base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})) {
   DCHECK(Enabled());
   // To update JumpList when a tab is added or removed, we add this object to
   // the observer list of the TabRestoreService class.
@@ -537,8 +537,8 @@ void JumpList::OnFaviconDataAvailable(
     if (!image_result.image.IsEmpty() && icon_urls_.front().second.get()) {
       gfx::ImageSkia image_skia = image_result.image.AsImageSkia();
       image_skia.EnsureRepsForSupportedScales();
-      std::unique_ptr<gfx::ImageSkia> deep_copy(image_skia.DeepCopy());
-      icon_urls_.front().second->set_icon_image(*deep_copy);
+      gfx::ImageSkia deep_copy(image_skia.DeepCopy());
+      icon_urls_.front().second->set_icon_image(deep_copy);
     }
     icon_urls_.pop_front();
   }

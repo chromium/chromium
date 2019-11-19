@@ -8,8 +8,8 @@
 #include "base/metrics/histogram_macros.h"
 #include "components/captive_portal/captive_portal_detector.h"
 #import "ios/chrome/browser/ssl/captive_portal_detector_tab_helper.h"
-#import "ios/web/public/web_state/navigation_context.h"
-#import "ios/web/public/web_state/web_state.h"
+#import "ios/web/public/navigation/navigation_context.h"
+#import "ios/web/public/web_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

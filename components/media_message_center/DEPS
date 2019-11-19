@@ -1,0 +1,8 @@
+include_rules = [
+  "+components/strings/grit/components_strings.h",
+  "+components/vector_icons",
+  "+mojo/public/cpp/bindings",
+  "+services/media_session/public",
+  "+skia/ext",
+  "+ui",
+]

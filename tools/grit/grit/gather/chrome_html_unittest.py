@@ -5,6 +5,7 @@
 
 '''Unit tests for grit.gather.chrome_html'''
 
+from __future__ import print_function
 
 import os
 import re
@@ -145,6 +146,65 @@ class ChromeHtmlUnittest(unittest.TestCase):
       '''))
     tmp_dir.CleanUp()
 
+  def testFileResourcesNoFlattenSubdir(self):
+    '''Tests non-inlined image file resources w/high DPI assets in subdirs.'''
+
+    tmp_dir = util.TempDir({
+      'test.css': '''
+      .image {
+        background: url('sub/test.png');
+      }
+      ''',
+
+      'sub/test.png': 'PNG DATA',
+
+      'sub/1.4x/test.png': '1.4x PNG DATA',
+
+      'sub/1.8x/test.png': '1.8x PNG DATA',
+    })
+
+    html = chrome_html.ChromeHtml(tmp_dir.GetPath('test.css'))
+    html.SetDefines({'scale_factors': '1.4x,1.8x'})
+    html.SetAttributes({'flattenhtml': 'false'})
+    html.Parse()
+    self.failUnlessEqual(StandardizeHtml(html.GetData('en', 'utf-8')),
+                         StandardizeHtml('''
+      .image {
+        background: -webkit-image-set(url('sub/test.png') 1x, url('sub/1.4x/test.png') 1.4x, url('sub/1.8x/test.png') 1.8x);
+      }
+      '''))
+    tmp_dir.CleanUp()
+
+  def testFileResourcesPreprocess(self):
+    '''Tests preprocessed image file resources with available high DPI
+    assets.'''
+
+    tmp_dir = util.TempDir({
+      'test.css': '''
+      .image {
+        background: url('test.png');
+      }
+      ''',
+
+      'test.png': 'PNG DATA',
+
+      '1.4x/test.png': '1.4x PNG DATA',
+
+      '1.8x/test.png': '1.8x PNG DATA',
+    })
+
+    html = chrome_html.ChromeHtml(tmp_dir.GetPath('test.css'))
+    html.SetDefines({'scale_factors': '1.4x,1.8x'})
+    html.SetAttributes({'flattenhtml': 'false', 'preprocess': 'true'})
+    html.Parse()
+    self.failUnlessEqual(StandardizeHtml(html.GetData('en', 'utf-8')),
+                         StandardizeHtml('''
+      .image {
+        background: -webkit-image-set(url('test.png') 1x, url('1.4x/test.png') 1.4x, url('1.8x/test.png') 1.8x);
+      }
+      '''))
+    tmp_dir.CleanUp()
+
   def testFileResourcesDoubleQuotes(self):
     '''Tests inlined image file resources if url() filename is double quoted.'''
 
@@ -195,6 +255,33 @@ class ChromeHtmlUnittest(unittest.TestCase):
                          StandardizeHtml('''
       .image {
         background: -webkit-image-set(url(data:image/png;base64,UE5HIERBVEE=) 1x, url(data:image/png;base64,MnggUE5HIERBVEE=) 2x);
+      }
+      '''))
+    tmp_dir.CleanUp()
+
+  def testFileResourcesSubdirs(self):
+    '''Tests inlined image file resources if url() filename is in a subdir.'''
+
+    tmp_dir = util.TempDir({
+      'test.css': '''
+      .image {
+        background: url('some/sub/path/test.png');
+      }
+      ''',
+
+      'some/sub/path/test.png': 'PNG DATA',
+
+      'some/sub/path/2x/test.png': '2x PNG DATA',
+    })
+
+    html = chrome_html.ChromeHtml(tmp_dir.GetPath('test.css'))
+    html.SetDefines({'scale_factors': '2x'})
+    html.SetAttributes({'flattenhtml': 'true'})
+    html.Parse()
+    self.failUnlessEqual(StandardizeHtml(html.GetData('en', 'utf-8')),
+                         StandardizeHtml('''
+      .image {
+        background: -webkit-image-set(url('data:image/png;base64,UE5HIERBVEE=') 1x, url('data:image/png;base64,MnggUE5HIERBVEE=') 2x);
       }
       '''))
     tmp_dir.CleanUp()

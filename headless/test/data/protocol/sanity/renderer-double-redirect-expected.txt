@@ -1,6 +1,4 @@
 Tests renderer: double redirection.
-requested url: http://www.example.com/
-requested url: http://www.example.com/2
 <p>Pass</p>
 Frames: 1
  frameId=MainFrame

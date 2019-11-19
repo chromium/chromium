@@ -149,6 +149,7 @@ class EditorViewController : public PaymentRequestSheetController,
 
   // PaymentRequestSheetController;
   std::unique_ptr<views::Button> CreatePrimaryButton() override;
+  bool ShouldShowSecondaryButton() override;
   void FillContentView(views::View* content_view) override;
 
   // views::ComboboxListener:

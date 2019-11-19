@@ -1,22 +1,41 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ar">
-<translation id="1510238584712386396">المشغّل</translation>
+<translation id="1482734542997480527">يدير النطاق <ph name="ENROLLMENT_DOMAIN" /> هذا الجهاز وقد يتمكن من مراقبة نشاطك.</translation>
+<translation id="1510238584712386396">مشغِّل التطبيقات</translation>
 <translation id="1734367976349034509">يخضع هذا الجهاز لإدارة المؤسسة</translation>
+<translation id="1930797645656624981">‏خدمة أسلوب الإدخال لنظام التشغيل Chrome</translation>
+<translation id="1979103255016296513">تأخير تغيير كلمة المرور</translation>
 <translation id="2049639323467105390">تتم إدارة هذا الجهاز بواسطة <ph name="DOMAIN" />.</translation>
 <translation id="2083960536266308407">لم يتم العثور على أي نتائج على الشاشة</translation>
 <translation id="2338501278241028356">تشغيل البلوتوث لاكتشاف الأجهزة القريبة</translation>
 <translation id="2805756323405976993">التطبيقات</translation>
 <translation id="2872961005593481000">إيقاف التشغيل</translation>
-<translation id="3147142846278915599">‏Launcher (مزامنة التطبيقات...)</translation>
+<translation id="3008341117444806826">إعادة التحميل</translation>
+<translation id="3838338534323494292">كلمة المرور الجديدة</translation>
+<translation id="4003259559679196451">يُدير <ph name="ENROLLMENT_DOMAIN" /> هذا الجهاز ويحصل على إذن الوصول إلى جميع أنشطة المستخدم، بما في ذلك صفحات الويب التي تمت زيارتها وكلمات المرور والبريد الإلكتروني.</translation>
+<translation id="4227825898293920515">تنتهي صلاحية كلمة المرور في <ph name="TIME" /></translation>
+<translation id="4429881212383817840">‏ستنتهي صلاحية تذكرة Kerberos قريبًا</translation>
+<translation id="445059817448385655">كلمة المرور القديمة</translation>
+<translation id="467510802200863975">كلمتا المرور غير متطابقتين.</translation>
 <translation id="4731797938093519117">وصول أحد الوالدين</translation>
+<translation id="4890353053343094602">اختيار كلمة مرور جديدة فورًا</translation>
 <translation id="5212543919916444558">يتعذَّر عليَّ العثور على شيء مفيد في هذه الشاشة.
 يُرجى تجربة النقر على الميكروفون لمطالبتي بأي شيء.</translation>
-<translation id="5222676887888702881">الخروج</translation>
+<translation id="5222676887888702881">تسجيل الخروج</translation>
+<translation id="5317780077021120954">حفظ</translation>
+<translation id="5332948983412042822">اختيار كلمة مرور جديدة الآن</translation>
 <translation id="5457599981699367932">تصفَّح كزائر</translation>
 <translation id="54609108002486618">تتم إدارته</translation>
 <translation id="5832805196449965646">إضافة شخص</translation>
 <translation id="5895138241574237353">إعادة التشغيل</translation>
+<translation id="6058625436358447366">يُرجى إدخال كلمتي المرور القديمة والجديدة لإنهاء الإجراء.</translation>
+<translation id="6106186594183574873">يُرجى إدخال كلمة المرور القديمة لإنهاء الإجراء.</translation>
+<translation id="6146993107019042706">يُرجى إدخال كلمة مرور جديدة لإنهاء الإجراء.</translation>
 <translation id="7658239707568436148">إلغاء</translation>
+<translation id="7690294790491645610">تأكيد كلمة المرور الجديدة</translation>
+<translation id="808894953321890993">تغيير كلمة المرور</translation>
+<translation id="8747900814994928677">تأكيد التغيير</translation>
+<translation id="910415269708673980">إعادة تحميل تذكرة من أجل <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9111102763498581341">فتح القفل</translation>
 </translationbundle>

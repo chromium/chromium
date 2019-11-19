@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.webapps;
 
 import android.text.TextUtils;
 
-import org.chromium.blink_public.platform.WebDisplayMode;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabStateBrowserControlsVisibilityDelegate;
 import org.chromium.components.security_state.ConnectionSecurityLevel;

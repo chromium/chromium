@@ -38,7 +38,6 @@
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/mediasource/track_default_list.h"
-#include "third_party/blink/renderer/platform/bindings/trace_wrapper_member.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -78,6 +77,7 @@ class SourceBuffer final : public EventTargetWithInlineData,
   void setMode(const AtomicString&, ExceptionState&);
   bool updating() const { return updating_; }
   TimeRanges* buffered(ExceptionState&) const;
+  WebTimeRanges buffered() const;
   double timestampOffset() const;
   void setTimestampOffset(double, ExceptionState&);
   void appendBuffer(DOMArrayBuffer* data, ExceptionState&);
@@ -159,20 +159,20 @@ class SourceBuffer final : public EventTargetWithInlineData,
 
   // If any portion of an attached HTMLMediaElement (HTMLME) and the MediaSource
   // Extensions (MSE) API is alive (having pending activity or traceable from a
-  // GC root), the whole group is not GC'ed. Here, using TraceWrapperMember,
+  // GC root), the whole group is not GC'ed. Here, using Member,
   // instead of Member, because |source_|'s and |track_defaults_|'s wrappers
   // need to remain alive at least to successfully dispatch any events enqueued
   // by the behavior of the HTMLME+MSE API. It makes those wrappers remain alive
   // as long as this SourceBuffer's wrapper is alive.
-  TraceWrapperMember<MediaSource> source_;
-  TraceWrapperMember<TrackDefaultList> track_defaults_;
+  Member<MediaSource> source_;
+  Member<TrackDefaultList> track_defaults_;
   Member<EventQueue> async_event_queue_;
 
   AtomicString mode_;
   bool updating_;
   double timestamp_offset_;
-  TraceWrapperMember<AudioTrackList> audio_tracks_;
-  TraceWrapperMember<VideoTrackList> video_tracks_;
+  Member<AudioTrackList> audio_tracks_;
+  Member<VideoTrackList> video_tracks_;
   double append_window_start_;
   double append_window_end_;
   bool first_initialization_segment_received_;

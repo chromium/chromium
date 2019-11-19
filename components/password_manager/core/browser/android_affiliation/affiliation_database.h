@@ -57,14 +57,6 @@ class AffiliationDatabase {
   // containing |facet_uri|.
   void DeleteAffiliationsAndBrandingForFacetURI(const FacetURI& facet_uri);
 
-  // Removes stored equivalence classes and branding information that were last
-  // updated before the |cutoff_threshold|.
-  void DeleteAffiliationsAndBrandingOlderThan(
-      const base::Time& cutoff_threshold);
-
-  // Removes all records from all tables of the database.
-  void DeleteAllAffiliationsAndBranding();
-
   // Stores the equivalence class and branding information defined by
   // |affiliated_facets| to the DB and returns true unless it has a non-empty
   // subset with a preexisting class, in which case no changes are made and the

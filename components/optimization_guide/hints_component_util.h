@@ -7,37 +7,77 @@
 
 #include <memory>
 
+#include "components/optimization_guide/proto/hints.pb.h"
+
 namespace optimization_guide {
 
 struct HintsComponentInfo;
-namespace proto {
-class Configuration;
-}  // namespace proto
+class OptimizationFilter;
 
-// The UMA histogram used to record the result of processing the hints
-// component.
-extern const char kProcessHintsComponentResultHistogramString[];
+// The local histogram used to record that the component hints are stored in
+// the cache and are ready for use.
+extern const char kComponentHintsUpdatedResultHistogramString[];
 
-// Enumerates the possible outcomes of processing the hints component. Used in
-// UMA histograms, so the order of enumerators should not be changed.
+// Enumerates the possible outcomes of processing the hints component.
 //
+// Used in UMA histograms, so the order of enumerators should not be changed.
 // Keep in sync with OptimizationGuideProcessHintsResult in
 // tools/metrics/histograms/enums.xml.
 enum class ProcessHintsComponentResult {
-  SUCCESS,
-  FAILED_INVALID_PARAMETERS,
-  FAILED_READING_FILE,
-  FAILED_INVALID_CONFIGURATION,
+  kSuccess,
+  kFailedInvalidParameters,
+  kFailedReadingFile,
+  kFailedInvalidConfiguration,
+  kFailedFinishProcessing,
+  kSkippedProcessingHints,
+  kProcessedNoHints,
 
   // Insert new values before this line.
-  MAX,
+  kMaxValue = kProcessedNoHints,
 };
 
-// Processes the specified hints component, records the result in a UMA
-// histogram, and, if successful, returns the component's Configuration
-// protobuf. If unsuccessful, returns a nullptr.
+// Records the ProcessHintsComponentResult to UMA.
+void RecordProcessHintsComponentResult(ProcessHintsComponentResult result);
+
+// Processes the specified hints component.
+//
+// If successful, returns the component's Configuration protobuf. Otherwise,
+// returns a nullptr.
+//
+// If |out_result| provided, it will be populated with the result up to that
+// point.
 std::unique_ptr<proto::Configuration> ProcessHintsComponent(
-    const HintsComponentInfo& info);
+    const HintsComponentInfo& info,
+    ProcessHintsComponentResult* out_result);
+
+// Enumerates status event of processing optimization filters (such as the
+// lite page redirect blacklist). Used in UMA histograms, so the order of
+// enumerators should not be changed.
+//
+// Keep in sync with OptimizationGuideOptimizationFilterStatus in
+// tools/metrics/histograms/enums.xml.
+enum class OptimizationFilterStatus {
+  kFoundServerBlacklistConfig,
+  kCreatedServerBlacklist,
+  kFailedServerBlacklistBadConfig,
+  kFailedServerBlacklistTooBig,
+  kFailedServerBlacklistDuplicateConfig,
+  kInvalidRegexp,
+
+  // Insert new values before this line.
+  kMaxValue = kInvalidRegexp,
+};
+
+// Records the OptimizationFilterStatus to UMA.
+void RecordOptimizationFilterStatus(proto::OptimizationType optimization_type,
+                                    OptimizationFilterStatus status);
+
+// Validates and parses |optimization_filter_proto| and creates one that is
+// intended to be queried to make decisions for whether an optimization type
+// should be applied on a navigation.
+std::unique_ptr<OptimizationFilter> ProcessOptimizationFilter(
+    const proto::OptimizationFilter& optimization_filter_proto,
+    OptimizationFilterStatus* out_status);
 
 }  // namespace optimization_guide
 

@@ -66,10 +66,6 @@
 #define DEFINE_THREAD_SAFE_STATIC_LOCAL(Type, Name, Arguments) \
   DEFINE_STATIC_LOCAL_IMPL(Type, Name, Arguments, true)
 
-namespace blink {
-
-}  // namespace blink
-
 namespace WTF {
 
 template <typename Type>

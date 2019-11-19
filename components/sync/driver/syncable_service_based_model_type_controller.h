@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/callback_forward.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/sync/base/model_type.h"
@@ -22,13 +21,11 @@ class SyncableService;
 // a non-blocking datatype (USS), for datatypes living in the UI thread.
 class SyncableServiceBasedModelTypeController : public ModelTypeController {
  public:
-  using SyncableServiceProvider =
-      base::OnceCallback<base::WeakPtr<syncer::SyncableService>()>;
-
+  // |syncable_service| may be null in tests.
   SyncableServiceBasedModelTypeController(
       ModelType type,
       OnceModelTypeStoreFactory store_factory,
-      SyncableServiceProvider syncable_service_provider,
+      base::WeakPtr<SyncableService> syncable_service,
       const base::RepeatingClosure& dump_stack);
   ~SyncableServiceBasedModelTypeController() override;
 

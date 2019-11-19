@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 
 <div id="editable" contenteditable="true">
     Hello
@@ -9,18 +8,16 @@
 </div>
 
 <script>
-  test_after_layout_and_paint(() => {
+  test(() => {
     let editable = accessibilityController.accessibleElementById('editable');
     assert_not_equals(editable, null);
     assert_equals(editable.childrenCount, 2);
 
-    let anonymousBlock = editable.childAtIndex(0);
-    assert_not_equals(anonymousBlock, null);
-    assert_equals(anonymousBlock.childrenCount, 1);
-    assert_equals(anonymousBlock.childAtIndex(0).role, 'AXRole: AXStaticText');
-    assert_equals(anonymousBlock.childAtIndex(0).name, 'Hello');
-
-    assert_true(anonymousBlock.isEditable);
-    assert_true(anonymousBlock.isRichlyEditable);
-  }, 'Ensure that anonymous blocks inside content editables are not ignored and are marked as editable.');
+    let staticText = editable.childAtIndex(0);
+    assert_not_equals(staticText, null);
+    assert_equals(staticText.role, 'AXRole: AXStaticText');
+    assert_equals(staticText.name, 'Hello');
+    assert_true(staticText.isEditable);
+    assert_true(staticText.isRichlyEditable);
+  }, 'This no longer really tests anything');
 </script>

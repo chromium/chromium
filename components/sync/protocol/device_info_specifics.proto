@@ -9,6 +9,9 @@
 
 syntax = "proto2";
 
+option java_multiple_files = true;
+option java_package = "org.chromium.components.sync.protocol";
+
 option optimize_for = LITE_RUNTIME;
 
 package sync_pb;
@@ -48,4 +51,67 @@ message DeviceInfoSpecifics {
   // difference between this field and the current time, it should be possible
   // to reason about the inactivity of any device that was syncing at one time.
   optional int64 last_updated_timestamp = 8;
+
+  // Device info fields that are specific to a feature. This is information that
+  // can not be derived from the other fields in the proto and are not general
+  // enough to be used by another feature.
+  optional FeatureSpecificFields feature_fields = 9;
+
+  // Device specific information for Sharing feature.
+  optional SharingSpecificFields sharing_fields = 10;
+
+  // Model of device.
+  optional string model = 11;
+
+  // Name of device manufacturer.
+  optional string manufacturer = 12;
+}
+
+// Feature specific information about the device that is running a sync-enabled
+// Chrome browser. Adding to this proto is discouraged and should only be added
+// when the information can not be derived more generally.
+message FeatureSpecificFields {
+  // Tracks whether the SendTabToSelf feature is enabled on the device. For this
+  // to be true, two things must be true: (1) The receiving side of the feature
+  // must be enabled on the device (2) The user has enabled sync for this
+  // feature
+  optional bool send_tab_to_self_receiving_enabled = 1;
+}
+
+// Device specific information for Sharing feature. Used to send end-to-end
+// encrypted message through FCM to other devices.
+message SharingSpecificFields {
+  // FCM registration token of device subscribed using VAPID key.
+  // TODO(crbug.com/1012226): Deprecate when VAPID migration is over.
+  optional string vapid_fcm_token = 1;
+
+  // Public key for message encryption [RFC8291] using VAPID key.
+  // TODO(crbug.com/1012226): Deprecate when VAPID migration is over.
+  optional bytes vapid_p256dh = 2;
+
+  // Auth secret for message encryption [RFC8291] using VAPID key.
+  // TODO(crbug.com/1012226): Deprecate when VAPID migration is over.
+  optional bytes vapid_auth_secret = 3;
+
+  // Enum defining available Sharing features.
+  enum EnabledFeatures {
+    UNKNOWN = 0;
+    CLICK_TO_CALL = 1;
+    SHARED_CLIPBOARD = 2;
+    SMS_FETCHER = 3;
+    REMOTE_COPY = 4;
+    PEER_CONNECTION = 5;
+  }
+
+  // A list of enabled Sharing features.
+  repeated EnabledFeatures enabled_features = 4;
+
+  // FCM registration token of device subscribed using Sharing sender ID.
+  optional string sender_id_fcm_token = 5;
+
+  // Public key for message encryption [RFC8291] using Sharing sender ID.
+  optional bytes sender_id_p256dh = 6;
+
+  // Auth secret for message encryption [RFC8291] using Sharing sender ID.
+  optional bytes sender_id_auth_secret = 7;
 }

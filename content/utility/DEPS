@@ -5,6 +5,7 @@ include_rules = [
   "+services/audio",
   "+services/data_decoder",
   "+services/network",
+  "+services/proxy_resolver",
   "+services/service_manager",
   "+services/shape_detection",
   "+services/tracing",

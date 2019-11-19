@@ -12,6 +12,11 @@ include_rules = [
   "+services/metrics",
   "+services/service_manager",
 
+
+  # For converting GpuMemoryBufferHandle to GpuMemoryBuffer in
+  # video_frame_mojom_traits.cc.
+  "+gpu/ipc/common/gpu_memory_buffer_support.h",
+
   # media/mojo is not part of "media" target and should not use MEDIA_EXPORT.
   "-media/base/media_export.h"
 ]

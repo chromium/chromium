@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="/js-test-resources/js-test.js"></script>
+</head>
+<body>
+<form method="GET" target="target" action="resources/form1.html">
+      <input name="query" value="AAA" />
+      <input type="submit" id="submitButton"/>
+</form>
+<form method="GET" target="target1" action="resources/form2.html">
+      <input name="query1" value="AAA" />
+      <input type="submit" id="submitButton1"/>
+</form>
+<iframe id="target" name="target"></iframe>
+<iframe id="target1" name="target1"></iframe>
+<script>
+description('Test that form submit within onsubmit event handlers are not delayed and sends the form data when invoked');
+
+document.forms[0].onsubmit = function (event) {
+    document.forms[0].submit();
+    document.forms[0].children.query.value = 'BBB';
+    return false;
+}
+
+document.forms[1].onsubmit = function (event) {
+    document.forms[1].submit();
+    document.forms[1].children.query1.value = 'BBB';
+    return true;
+}
+
+window.onload = function() {
+    document.getElementById('target').onload = function(event) {
+        // This should return back query AAA
+        shouldBeEqualToString('event.target.contentWindow.location.search', '?query=AAA');
+        document.getElementById('submitButton1').click();
+    }
+
+    document.getElementById('target1').onload = function(event) {
+        // This should return back query BBB
+        shouldBeEqualToString('event.target.contentWindow.location.search', '?query1=BBB');
+        finishJSTest();
+    }
+
+    document.getElementById('submitButton').click();
+}
+
+if (window.testRunner)
+    window.jsTestIsAsync = true;
+</script>
+</body>
+</html>
+
+
+
+

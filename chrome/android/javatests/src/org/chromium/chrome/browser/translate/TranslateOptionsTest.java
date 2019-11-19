@@ -26,7 +26,7 @@ public class TranslateOptionsTest {
     private static final int[] UMA_HASH_CODES = {10, 20, 30};
 
     @Before
-    public void setUp() throws Exception {}
+    public void setUp() {}
 
     @Test
     @SmallTest

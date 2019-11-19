@@ -34,14 +34,13 @@ class Receiver final : public RendererClient {
   void OnError(PipelineStatus status) override;
   void OnEnded() override;
   void OnStatisticsUpdate(const PipelineStatistics& stats) override;
-  void OnBufferingStateChange(BufferingState state) override;
+  void OnBufferingStateChange(BufferingState state,
+                              BufferingStateChangeReason reason) override;
   void OnWaiting(WaitingReason reason) override;
   void OnAudioConfigChange(const AudioDecoderConfig& config) override;
   void OnVideoConfigChange(const VideoDecoderConfig& config) override;
   void OnVideoNaturalSizeChange(const gfx::Size& size) override;
   void OnVideoOpacityChange(bool opaque) override;
-  void OnDurationChange(base::TimeDelta duration) override;
-  void OnRemotePlayStateChange(MediaStatus::State state) override;
 
   void OnReceivedRpc(std::unique_ptr<pb::RpcMessage> message);
   void OnReceivedBuffer(DemuxerStream::Type type,
@@ -80,7 +79,7 @@ class Receiver final : public RendererClient {
   // The timer to periodically update the media time.
   base::RepeatingTimer time_update_timer_;
 
-  base::WeakPtrFactory<Receiver> weak_factory_;
+  base::WeakPtrFactory<Receiver> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(Receiver);
 };

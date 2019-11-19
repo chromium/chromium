@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "mojo/public/cpp/system/invitation.h"
+
 #include <utility>
 
-#include "mojo/public/cpp/system/invitation.h"
 #include "base/base_paths.h"
 #include "base/bind.h"
 #include "base/callback.h"
@@ -17,7 +18,7 @@
 #include "base/strings/string_piece.h"
 #include "base/test/bind_test_util.h"
 #include "base/test/multiprocess_test.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
@@ -172,7 +173,7 @@ class InvitationCppTest : public testing::Test,
   }
 
  private:
-  base::test::ScopedTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
   base::Process child_process_;
 
   DISALLOW_COPY_AND_ASSIGN(InvitationCppTest);
@@ -264,7 +265,7 @@ DEFINE_TEST_CLIENT(CppSendWithMultiplePipesClient) {
 }
 
 TEST(InvitationCppTest_NoParam, SendIsolatedInvitationWithDuplicateName) {
-  base::test::ScopedTaskEnvironment task_environment;
+  base::test::TaskEnvironment task_environment;
   PlatformChannel channel1;
   PlatformChannel channel2;
   const char kConnectionName[] = "foo";

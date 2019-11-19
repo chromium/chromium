@@ -1,0 +1,27 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_fuchsia)
+
+source_set("common") {
+  sources = [
+    "stream_processor_helper.cc",
+    "stream_processor_helper.h",
+    "sysmem_buffer_pool.cc",
+    "sysmem_buffer_pool.h",
+    "sysmem_buffer_reader.cc",
+    "sysmem_buffer_reader.h",
+    "sysmem_buffer_writer.cc",
+    "sysmem_buffer_writer.h",
+    "sysmem_buffer_writer_queue.cc",
+    "sysmem_buffer_writer_queue.h",
+  ]
+
+  deps = [
+    "//base",
+    "//media/base",
+    "//third_party/fuchsia-sdk/sdk:media",
+    "//third_party/fuchsia-sdk/sdk:sysmem",
+  ]
+}

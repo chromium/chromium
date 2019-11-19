@@ -72,6 +72,46 @@ const DisplayGeometry* DesktopDisplayInfo::GetDisplayInfo(unsigned int id) {
   return &displays_[id];
 }
 
+// Calculate the offset from the upper-left of the desktop to the origin of
+// the specified display.
+//
+// x         b-----------+            ---
+//           |           |             |  y-offset to c
+// a---------+           |             |
+// |         +-------c---+-------+    ---
+// |         |       |           |
+// +---------+       |           |
+//                   +-----------+
+//
+// |-----------------|
+//    x-offset to c
+//
+// x = upper left of desktop
+// a,b,c = origin of display A,B,C
+webrtc::DesktopVector DesktopDisplayInfo::CalcDisplayOffset(
+    unsigned int disp_id) {
+  if (disp_id >= displays_.size()) {
+    LOG(INFO) << "Invalid display id for CalcDisplayOffset: " << disp_id;
+    return webrtc::DesktopVector();
+  }
+
+  DisplayGeometry disp_info = displays_[disp_id];
+  webrtc::DesktopVector origin(disp_info.x, disp_info.y);
+
+  // Find topleft-most display coordinate. This is the topleft of the desktop.
+  int dx = 0;
+  int dy = 0;
+  for (size_t id = 0; id < displays_.size(); id++) {
+    DisplayGeometry disp = displays_[id];
+    if (disp.x < dx)
+      dx = disp.x;
+    if (disp.y < dy)
+      dy = disp.y;
+  }
+  webrtc::DesktopVector topleft(dx, dy);
+  return origin.subtract(topleft);
+}
+
 void DesktopDisplayInfo::AddDisplay(DisplayGeometry* display) {
   displays_.push_back(*display);
 }
@@ -83,7 +123,7 @@ void DesktopDisplayInfo::AddDisplayFrom(protocol::VideoTrackLayout track) {
   display->width = track.width();
   display->height = track.height();
   display->dpi = track.x_dpi();
-  display->bpp = kDefaultDpi;
+  display->bpp = 24;
   display->is_default = false;
   displays_.push_back(*display);
 }

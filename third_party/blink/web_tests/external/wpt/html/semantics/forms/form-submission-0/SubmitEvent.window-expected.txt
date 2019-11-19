@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+FAIL Failing SubmitEvent constructor assert_throws: 0 arguments function "() => { new SubmitEvent() }" threw object "ReferenceError: SubmitEvent is not defined" ("ReferenceError") expected object "TypeError" ("TypeError")
+FAIL Successful SubmitEvent constructor SubmitEvent is not defined
+FAIL Successful SubmitEvent constructor; null submitter SubmitEvent is not defined
+FAIL Successful SubmitEvent constructor; empty dictionary SubmitEvent is not defined
+FAIL Successful SubmitEvent constructor; missing dictionary SubmitEvent is not defined
+Harness: the test ran to completion.
+

@@ -1,0 +1,55 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/jumbo.gni")
+
+assert(is_win)
+
+jumbo_component("win") {
+  output_name = "ui_base_ime_win"
+  sources = [
+    "imm32_manager.cc",
+    "imm32_manager.h",
+    "input_method_win_base.cc",
+    "input_method_win_base.h",
+    "input_method_win_imm32.cc",
+    "input_method_win_imm32.h",
+    "input_method_win_tsf.cc",
+    "input_method_win_tsf.h",
+    "on_screen_keyboard_display_manager_input_pane.cc",
+    "on_screen_keyboard_display_manager_input_pane.h",
+    "on_screen_keyboard_display_manager_tab_tip.cc",
+    "on_screen_keyboard_display_manager_tab_tip.h",
+    "tsf_bridge.cc",
+    "tsf_bridge.h",
+    "tsf_event_router.cc",
+    "tsf_event_router.h",
+    "tsf_input_scope.cc",
+    "tsf_input_scope.h",
+    "tsf_text_store.cc",
+    "tsf_text_store.h",
+  ]
+
+  defines = [ "IS_UI_BASE_IME_WIN_IMPL" ]
+
+  public_deps = [
+    "//ui/base/ime",
+  ]
+
+  deps = [
+    "//ui/base",
+    "//ui/display",
+  ]
+
+  libs = [ "imm32.lib" ]
+
+  ldflags = [ "/DELAYLOAD:imm32.dll" ]
+
+  jumbo_excluded_sources = [
+    # tsf_text_store.cc needs INITGUID to be defined before
+    # including any header to properly generate GUID objects. That
+    # is not guaranteed when included in a jumbo build.
+    "tsf_text_store.cc",
+  ]
+}

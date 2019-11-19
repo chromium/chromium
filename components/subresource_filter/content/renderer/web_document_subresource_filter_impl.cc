@@ -9,7 +9,7 @@
 
 #include "base/bind.h"
 #include "base/memory/ref_counted.h"
-#include "base/message_loop/message_loop_current.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "components/subresource_filter/core/common/load_policy.h"
 #include "components/subresource_filter/core/common/memory_mapped_ruleset.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
@@ -157,13 +157,12 @@ WebDocumentSubresourceFilterImpl::BuilderImpl::BuilderImpl(
       ruleset_file_(std::move(ruleset_file)),
       first_disallowed_load_callback_(
           std::move(first_disallowed_load_callback)),
-      main_task_runner_(base::MessageLoopCurrent::Get()->task_runner()) {}
+      main_task_runner_(base::ThreadTaskRunnerHandle::Get()) {}
 WebDocumentSubresourceFilterImpl::BuilderImpl::~BuilderImpl() {}
 
 std::unique_ptr<blink::WebDocumentSubresourceFilter>
 WebDocumentSubresourceFilterImpl::BuilderImpl::Build() {
   DCHECK(ruleset_file_.IsValid());
-  DCHECK(!main_task_runner_->BelongsToCurrentThread());
   scoped_refptr<MemoryMappedRuleset> ruleset =
       MemoryMappedRuleset::CreateAndInitialize(std::move(ruleset_file_));
   if (!ruleset)

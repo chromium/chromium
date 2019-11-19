@@ -10,8 +10,8 @@
 
 #include "base/json/json_writer.h"
 #include "base/values.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
-
 #include "components/update_client/updater_state.h"
 
 namespace update_client {
@@ -67,7 +67,7 @@ std::string ProtocolSerializerJSON::Serialize(
   if (!request.os.service_pack.empty())
     os_node->SetKey("sp", Value(request.os.service_pack));
 
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (request.updater) {
     const auto& updater = *request.updater;
     auto* updater_node =

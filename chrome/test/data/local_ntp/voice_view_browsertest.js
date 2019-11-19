@@ -2,17 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 /**
  * @fileoverview Tests the view module of Voice Search on the local NTP.
  */
-
 
 /**
  * Voice Search View module's object for test and setup functions.
  */
 test.view = {};
-
 
 /**
  * The set of textual strings for different states.
@@ -25,13 +22,11 @@ test.view.TEXT = {
   WAITING: 'Waiting...'
 };
 
-
 /**
  * Variable to indicate whether level animations are active.
  * @type {boolean}
  */
 test.view.levelAnimationActive = false;
-
 
 /**
  * The interim / low confidence speech recognition result element.
@@ -39,13 +34,11 @@ test.view.levelAnimationActive = false;
  */
 test.view.interimText = '';
 
-
 /**
  * The final / high confidence speech recognition result element.
  * @type {string}
  */
 test.view.finalText = '';
-
 
 /**
  * The state that is affected by the view.
@@ -53,13 +46,11 @@ test.view.finalText = '';
  */
 test.view.state = {};
 
-
 /**
  * Utility to mock out object properties.
  * @type {Replacer}
  */
 test.view.stubs = new Replacer();
-
 
 /**
  * Set up the text DOM and test environment.
@@ -120,14 +111,12 @@ test.view.setUp = function() {
   });
 };
 
-
 /**
  * Makes sure the view sets up with the correct settings.
  */
 test.view.testInit = function() {
   test.view.assertViewInactive();
 };
-
 
 /**
  * Test showing the UI.
@@ -141,7 +130,6 @@ test.view.testShowWithReadyElements = function() {
       /*containerClass=*/view.INACTIVE_CLASS_,
       /*levelAnimationActive=*/false);
 };
-
 
 /**
  * Test that trying to show the UI twice doesn't change the
@@ -158,7 +146,6 @@ test.view.testShowCalledTwice = function() {
       /*levelAnimationActive=*/false);
 };
 
-
 /**
  * Test that hiding the UI twice doesn't change the view.
  */
@@ -172,7 +159,6 @@ test.view.testHideCalledTwiceAfterShow = function() {
 
   test.view.assertViewInactive();
 };
-
 
 /**
  * Test showing the "Speak now" message does not show the pulsing animation.
@@ -188,7 +174,6 @@ test.view.testAudioDeviceReady = function() {
       /*levelAnimationActive=*/false);
 };
 
-
 /**
  * Test that the listening text is not shown and the animations are not
  * started if the UI hasn't been started.
@@ -198,7 +183,6 @@ test.view.testAudioDeviceListeningBeforeViewStart = function() {
 
   test.view.assertViewInactive();
 };
-
 
 /**
  * Test that the volume level animation is active after receiving speech
@@ -217,7 +201,6 @@ test.view.testSpeechStartWithWorkingViews = function() {
       /*levelAnimationActive=*/true);
 };
 
-
 /**
  * Test that the output text updates.
  */
@@ -233,7 +216,6 @@ test.view.testTextUpdateWithWorkingViews = function() {
       /*levelAnimationActive=*/true);
 };
 
-
 /**
  * Test that starting again after updating the output text doesn't change the
  * view state. This forces hide() to be called to restart the UI.
@@ -248,7 +230,6 @@ test.view.testShowCalledAfterUpdate = function() {
       /*containerClass=*/view.RECEIVING_SPEECH_CLASS_,
       /*levelAnimationActive=*/true);
 };
-
 
 /**
  * Test the typical flow for the view.
@@ -277,7 +258,6 @@ test.view.testTypicalFlowWithWorkingViews = function() {
   test.view.assertViewInactive();
 };
 
-
 /**
  * Test hiding the UI after showing it.
  */
@@ -287,7 +267,6 @@ test.view.testStopAfterStart = function() {
 
   test.view.assertViewInactive();
 };
-
 
 /**
  * Test hiding the UI after audio start.
@@ -299,7 +278,6 @@ test.view.testHideAfterAudioStart = function() {
 
   test.view.assertViewInactive();
 };
-
 
 /**
  * Test hiding the UI after showing speech results.
@@ -314,7 +292,6 @@ test.view.testHideAfterSpeechTranscriptReceived = function() {
   test.view.assertViewInactive();
 };
 
-
 /**
  * Test hiding the UI after speech start.
  */
@@ -326,7 +303,6 @@ test.view.testHideAfterSpeechStart = function() {
 
   test.view.assertViewInactive();
 };
-
 
 /**
  * Test that clicking the microphone button when the "Didn't get that" message
@@ -348,7 +324,6 @@ test.view.testClickMicButtonWithNoMatch = function() {
   assertEquals(LOG_TYPE.ACTION_TRY_AGAIN_MIC_BUTTON, test.view.state.lastEvent);
 };
 
-
 /**
  * Test that clicking the retry link when the "Didn't get that" message
  * has been shown retries voice search.
@@ -369,7 +344,6 @@ test.view.testClickTryAgainLinkWithNoMatch = function() {
   assertEquals(LOG_TYPE.ACTION_TRY_AGAIN_LINK, test.view.state.lastEvent);
 };
 
-
 /**
  * Test that clicking on the microphone with results present submits the query.
  */
@@ -384,9 +358,8 @@ test.view.testClickMicButtonWithResults = function() {
   assertFalse(test.view.state.shouldRetry);
   assertTrue(test.view.state.shouldSubmit);
   assertFalse(test.view.state.navigatingAway);
-  assert(!test.view.state.lastEvent);
+  assertTrue(!test.view.state.lastEvent);
 };
-
 
 /**
  * Test that clicking on the microphone after showing results that then changed
@@ -410,7 +383,6 @@ test.view.testClickMicButtonWithNoMatchAfterResults = function() {
   assertEquals(LOG_TYPE.ACTION_TRY_AGAIN_MIC_BUTTON, test.view.state.lastEvent);
 };
 
-
 /**
  * Test that clicking on the background with results present hides the view.
  */
@@ -427,7 +399,6 @@ test.view.testClickBackgroundWithResults = function() {
   assertFalse(test.view.state.navigatingAway);
 };
 
-
 /**
  * Test that clicking on the close button with results present hides the view.
  */
@@ -443,7 +414,6 @@ test.view.testClickCloseButtonWithResults = function() {
   assertFalse(test.view.state.shouldSubmit);
   assertFalse(test.view.state.navigatingAway);
 };
-
 
 /**
  * Test that clicking the support link does not change the UI, and waits
@@ -463,7 +433,6 @@ test.view.testClickSupportLinkWithError = function() {
   assertEquals(LOG_TYPE.ACTION_SUPPORT_LINK_CLICKED, test.view.state.lastEvent);
 };
 
-
 /**
  * Test that showing an unknown error message is handled gracefully.
  */
@@ -478,10 +447,8 @@ test.view.testShowingUnknownErrorDoesNotProduceAnError = function() {
       /*levelAnimationActive=*/false);
 };
 
-
 // ***************************** HELPER FUNCTIONS *****************************
 // Helper functions used in tests.
-
 
 /**
  * Tests to make sure no components of the view are active.
@@ -496,7 +463,6 @@ test.view.assertViewInactive = function() {
   assertEquals(view.INACTIVE_CLASS_, view.container_.className);
   assertFalse(test.view.levelAnimationActive);
 };
-
 
 /**
  * Tests to make sure the all components of the view are working correctly.

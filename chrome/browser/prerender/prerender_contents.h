@@ -15,6 +15,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/optional.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/prerender/prerender_final_status.h"
@@ -25,9 +26,10 @@
 #include "content/public/browser/notification_registrar.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/referrer.h"
-#include "mojo/public/cpp/bindings/binding.h"
-#include "services/service_manager/public/cpp/binder_registry.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/gfx/geometry/rect.h"
+#include "url/origin.h"
 
 class Profile;
 
@@ -71,6 +73,7 @@ class PrerenderContents : public content::NotificationObserver,
         Profile* profile,
         const GURL& url,
         const content::Referrer& referrer,
+        const base::Optional<url::Origin>& initiator_origin,
         Origin origin) = 0;
 
    private:
@@ -138,8 +141,7 @@ class PrerenderContents : public content::NotificationObserver,
   // it if not.
   void DestroyWhenUsingTooManyResources();
 
-  content::RenderViewHost* GetRenderViewHostMutable();
-  const content::RenderViewHost* GetRenderViewHost() const;
+  content::RenderViewHost* GetRenderViewHost();
 
   PrerenderManager* prerender_manager() { return prerender_manager_; }
 
@@ -165,13 +167,12 @@ class PrerenderContents : public content::NotificationObserver,
   // |url| and |session_storage_namespace|.
   bool Matches(
       const GURL& url,
-      const content::SessionStorageNamespace* session_storage_namespace) const;
+      content::SessionStorageNamespace* session_storage_namespace) const;
 
   // content::WebContentsObserver implementation.
   void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
   void DidStopLoading() override;
-  void DocumentLoadedInFrame(
-      content::RenderFrameHost* render_frame_host) override;
+  void DOMContentLoaded(content::RenderFrameHost* render_frame_host) override;
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
   void DidRedirectNavigation(
@@ -182,10 +183,6 @@ class PrerenderContents : public content::NotificationObserver,
       content::NavigationHandle* navigation_handle) override;
 
   void RenderProcessGone(base::TerminationStatus status) override;
-  void OnInterfaceRequestFromFrame(
-      content::RenderFrameHost* render_frame_host,
-      const std::string& interface_name,
-      mojo::ScopedMessagePipeHandle* interface_pipe) override;
 
   // content::NotificationObserver
   void Observe(int type,
@@ -236,11 +233,15 @@ class PrerenderContents : public content::NotificationObserver,
   // Running byte count. Increased when each resource completes loading.
   int64_t network_bytes() { return network_bytes_; }
 
+  void OnPrerenderCancelerReceiver(
+      mojo::PendingReceiver<chrome::mojom::PrerenderCanceler> receiver);
+
  protected:
   PrerenderContents(PrerenderManager* prerender_manager,
                     Profile* profile,
                     const GURL& url,
                     const content::Referrer& referrer,
+                    const base::Optional<url::Origin>& initiator_origin,
                     Origin origin);
 
   // Set the final status for how the PrerenderContents was used. This
@@ -296,10 +297,8 @@ class PrerenderContents : public content::NotificationObserver,
   void CancelPrerenderForUnsupportedScheme(const GURL& url) override;
   void CancelPrerenderForSyncDeferredRedirect() override;
 
-  void OnPrerenderCancelerRequest(
-      chrome::mojom::PrerenderCancelerRequest request);
-
-  mojo::Binding<chrome::mojom::PrerenderCanceler> prerender_canceler_binding_;
+  mojo::Receiver<chrome::mojom::PrerenderCanceler> prerender_canceler_receiver_{
+      this};
 
   base::ObserverList<Observer>::Unchecked observer_list_;
 
@@ -311,6 +310,10 @@ class PrerenderContents : public content::NotificationObserver,
 
   // The referrer.
   content::Referrer referrer_;
+
+  // The origin of the page requesting the prerender. Empty when the prerender
+  // is browser initiated.
+  base::Optional<url::Origin> initiator_origin_;
 
   // The profile being used
   Profile* profile_;
@@ -356,9 +359,7 @@ class PrerenderContents : public content::NotificationObserver,
   // transferred over the network for resources.  Updated with AddNetworkBytes.
   int64_t network_bytes_;
 
-  service_manager::BinderRegistry registry_;
-
-  base::WeakPtrFactory<PrerenderContents> weak_factory_;
+  base::WeakPtrFactory<PrerenderContents> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PrerenderContents);
 };

@@ -6,14 +6,15 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
 
 TEST(StyleSheetContentsTest, InsertMediaRule) {
-  CSSParserContext* context = CSSParserContext::Create(
+  auto* context = MakeGarbageCollected<CSSParserContext>(
       kHTMLStandardMode, SecureContextMode::kInsecureContext);
 
-  StyleSheetContents* style_sheet = StyleSheetContents::Create(context);
+  auto* style_sheet = MakeGarbageCollected<StyleSheetContents>(context);
   style_sheet->ParseString("@namespace ns url(test);");
   EXPECT_EQ(1U, style_sheet->RuleCount());
 
@@ -34,10 +35,10 @@ TEST(StyleSheetContentsTest, InsertMediaRule) {
 }
 
 TEST(StyleSheetContentsTest, InsertFontFaceRule) {
-  CSSParserContext* context = CSSParserContext::Create(
+  auto* context = MakeGarbageCollected<CSSParserContext>(
       kHTMLStandardMode, SecureContextMode::kInsecureContext);
 
-  StyleSheetContents* style_sheet = StyleSheetContents::Create(context);
+  auto* style_sheet = MakeGarbageCollected<StyleSheetContents>(context);
   style_sheet->ParseString("@namespace ns url(test);");
   EXPECT_EQ(1U, style_sheet->RuleCount());
 
@@ -58,20 +59,20 @@ TEST(StyleSheetContentsTest, InsertFontFaceRule) {
 }
 
 TEST(StyleSheetContentsTest, HasViewportRule) {
-  CSSParserContext* context = CSSParserContext::Create(
+  auto* context = MakeGarbageCollected<CSSParserContext>(
       kHTMLStandardMode, SecureContextMode::kInsecureContext);
 
-  StyleSheetContents* style_sheet = StyleSheetContents::Create(context);
+  auto* style_sheet = MakeGarbageCollected<StyleSheetContents>(context);
   style_sheet->ParseString("@viewport { width: 200px}");
   EXPECT_EQ(1U, style_sheet->RuleCount());
   EXPECT_TRUE(style_sheet->HasViewportRule());
 }
 
 TEST(StyleSheetContentsTest, HasViewportRuleAfterInsertion) {
-  CSSParserContext* context = CSSParserContext::Create(
+  auto* context = MakeGarbageCollected<CSSParserContext>(
       kHTMLStandardMode, SecureContextMode::kInsecureContext);
 
-  StyleSheetContents* style_sheet = StyleSheetContents::Create(context);
+  auto* style_sheet = MakeGarbageCollected<StyleSheetContents>(context);
   style_sheet->ParseString("body { color: pink }");
   EXPECT_EQ(1U, style_sheet->RuleCount());
   EXPECT_FALSE(style_sheet->HasViewportRule());
@@ -85,10 +86,10 @@ TEST(StyleSheetContentsTest, HasViewportRuleAfterInsertion) {
 }
 
 TEST(StyleSheetContentsTest, HasViewportRuleAfterInsertionIntoMediaRule) {
-  CSSParserContext* context = CSSParserContext::Create(
+  auto* context = MakeGarbageCollected<CSSParserContext>(
       kHTMLStandardMode, SecureContextMode::kInsecureContext);
 
-  StyleSheetContents* style_sheet = StyleSheetContents::Create(context);
+  auto* style_sheet = MakeGarbageCollected<StyleSheetContents>(context);
   style_sheet->ParseString("@media {}");
   ASSERT_EQ(1U, style_sheet->RuleCount());
   EXPECT_FALSE(style_sheet->HasViewportRule());

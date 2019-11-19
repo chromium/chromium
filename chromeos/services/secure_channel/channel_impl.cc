@@ -14,31 +14,30 @@ namespace {
 const char kReasonForDisconnection[] = "Remote device disconnected.";
 }  // namespace
 
-ChannelImpl::ChannelImpl(Delegate* delegate)
-    : delegate_(delegate), binding_(this), weak_ptr_factory_(this) {}
+ChannelImpl::ChannelImpl(Delegate* delegate) : delegate_(delegate) {}
 
 ChannelImpl::~ChannelImpl() = default;
 
-mojom::ChannelPtr ChannelImpl::GenerateInterfacePtr() {
-  // Only one InterfacePtr should be generated from this instance.
-  DCHECK(!binding_);
+mojo::PendingRemote<mojom::Channel> ChannelImpl::GenerateRemote() {
+  // Only one PendingRemote should be generated from this instance.
+  DCHECK(!receiver_.is_bound());
 
-  mojom::ChannelPtr interface_ptr;
-  binding_.Bind(mojo::MakeRequest(&interface_ptr));
+  mojo::PendingRemote<mojom::Channel> interface_remote =
+      receiver_.BindNewPipeAndPassRemote();
 
-  binding_.set_connection_error_handler(base::BindOnce(
+  receiver_.set_disconnect_handler(base::BindOnce(
       &ChannelImpl::OnBindingDisconnected, base::Unretained(this)));
 
-  return interface_ptr;
+  return interface_remote;
 }
 
 void ChannelImpl::HandleRemoteDeviceDisconnection() {
-  DCHECK(binding_);
+  DCHECK(receiver_.is_bound());
 
   // If the RemoteDevice disconnected, alert clients by providing them a
   // reason specific to this event.
-  binding_.CloseWithReason(mojom::Channel::kConnectionDroppedReason,
-                           kReasonForDisconnection);
+  receiver_.ResetWithReason(mojom::Channel::kConnectionDroppedReason,
+                            kReasonForDisconnection);
 }
 
 void ChannelImpl::SendMessage(const std::string& message,

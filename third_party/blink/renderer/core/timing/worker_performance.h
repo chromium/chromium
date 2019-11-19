@@ -43,10 +43,6 @@ class WorkerGlobalScope;
 
 class WorkerPerformance final : public Performance {
  public:
-  static WorkerPerformance* Create(WorkerGlobalScope* context) {
-    return MakeGarbageCollected<WorkerPerformance>(context);
-  }
-
   explicit WorkerPerformance(WorkerGlobalScope*);
 
   ExecutionContext* GetExecutionContext() const override {

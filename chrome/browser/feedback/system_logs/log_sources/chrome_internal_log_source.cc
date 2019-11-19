@@ -6,20 +6,27 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/bind.h"
 #include "base/json/json_string_value_serializer.h"
+#include "base/logging.h"
+#include "base/path_service.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/task/post_task.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/data_reduction_proxy/data_reduction_proxy_chrome_settings.h"
+#include "chrome/browser/data_reduction_proxy/data_reduction_proxy_chrome_settings_factory.h"
 #include "chrome/browser/google/google_brand.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/sync/profile_sync_service_factory.h"
 #include "chrome/common/channel_info.h"
-#include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/driver/about_sync_util.h"
 #include "components/sync/driver/sync_service.h"
@@ -31,19 +38,22 @@
 #include "extensions/common/extension_set.h"
 
 #if defined(OS_CHROMEOS)
-#include "ash/public/interfaces/constants.mojom.h"
+#include "ash/public/mojom/constants.mojom.h"
 #include "chrome/browser/chromeos/arc/arc_util.h"
 #include "chrome/browser/chromeos/login/demo_mode/demo_session.h"
 #include "chrome/browser/metrics/chromeos_metrics_provider.h"
 #include "chromeos/dbus/util/version_loader.h"
 #include "chromeos/system/statistics_provider.h"
 #include "components/user_manager/user_manager.h"
-#include "content/public/common/service_manager_connection.h"
+#include "content/public/browser/system_connector.h"
 #include "services/service_manager/public/cpp/connector.h"
 #endif
 
 #if defined(OS_WIN)
 #include "base/win/win_util.h"
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chrome/browser/google/google_update_win.h"
+#endif
 #include "ui/base/win/hidden_window.h"
 #endif
 
@@ -73,6 +83,12 @@ constexpr char kOsVersionTag[] = "OS VERSION";
 constexpr char kUsbKeyboardDetected[] = "usb_keyboard_detected";
 constexpr char kIsEnrolledToDomain[] = "enrolled_to_domain";
 constexpr char kInstallerBrandCode[] = "installer_brand_code";
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+constexpr char kUpdateErrorCode[] = "update_error_code";
+constexpr char kUpdateHresult[] = "update_hresult";
+constexpr char kInstallResultCode[] = "install_result_code";
+constexpr char kInstallLocation[] = "install_location";
+#endif
 #endif
 
 #if defined(OS_CHROMEOS)
@@ -103,6 +119,8 @@ std::string GetPrimaryAccountTypeString() {
       return "arc_kiosk_app";
     case user_manager::USER_TYPE_ACTIVE_DIRECTORY:
       return "active_directory";
+    case user_manager::USER_TYPE_WEB_KIOSK_APP:
+      return "web_kiosk_app";
     case user_manager::NUM_USER_TYPES:
       NOTREACHED();
       break;
@@ -191,14 +209,46 @@ void PopulateEntriesAsync(SystemLogsResponse* response) {
 }
 #endif  // defined(OS_CHROMEOS)
 
+#if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+// Returns true if the path identified by |key| with the PathService is a parent
+// or ancestor of |child|.
+bool IsParentOf(int key, const base::FilePath& child) {
+  base::FilePath path;
+  return base::PathService::Get(key, &path) && path.IsParent(child);
+}
+
+// Returns a string representing the overall install location of the browser.
+// "Program Files" and "Program Files (x86)" are both considered "per-machine"
+// locations (for all users), whereas anything in a user's local app data dir is
+// considered a "per-user" location. This function returns an answer that gives,
+// in essence, the broad category of location without checking that the browser
+// is operating out of the exact expected install directory. It is interesting
+// to know via feedback reports if updates are failing with
+// CANNOT_UPGRADE_CHROME_IN_THIS_DIRECTORY, which checks the exact directory,
+// yet the reported install_location is not "unknown".
+std::string DetermineInstallLocation() {
+  base::FilePath exe_path;
+
+  if (base::PathService::Get(base::FILE_EXE, &exe_path)) {
+    if (IsParentOf(base::DIR_PROGRAM_FILESX86, exe_path) ||
+        IsParentOf(base::DIR_PROGRAM_FILES, exe_path)) {
+      return "per-machine";
+    }
+    if (IsParentOf(base::DIR_LOCAL_APP_DATA, exe_path))
+      return "per-user";
+  }
+  return "unknown";
+}
+#endif  // defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
 }  // namespace
 
 ChromeInternalLogSource::ChromeInternalLogSource()
     : SystemLogsSource("ChromeInternal") {
 #if defined(OS_CHROMEOS)
-  content::ServiceManagerConnection::GetForProcess()
-      ->GetConnector()
-      ->BindInterface(ash::mojom::kServiceName, &cros_display_config_ptr_);
+  content::GetSystemConnector()->Connect(
+      ash::mojom::kServiceName,
+      cros_display_config_.BindNewPipeAndPassReceiver());
 #endif
 }
 
@@ -230,6 +280,7 @@ void ChromeInternalLogSource::Fetch(SysLogsSourceCallback callback) {
   PopulateUsbKeyboardDetected(response.get());
   PopulateEnrolledToDomain(response.get());
   PopulateInstallerBrandCode(response.get());
+  PopulateLastUpdateState(response.get());
 #endif
 
   if (ProfileManager::GetLastUsedProfile()->IsChild())
@@ -249,13 +300,15 @@ void ChromeInternalLogSource::Fetch(SysLogsSourceCallback callback) {
 
   // Chain asynchronous fetchers: PopulateMonitorInfoAsync, PopulateEntriesAsync
   PopulateMonitorInfoAsync(
-      cros_display_config_ptr_.get(), response.get(),
+      cros_display_config_.get(), response.get(),
       base::BindOnce(
           [](std::unique_ptr<SystemLogsResponse> response,
              SysLogsSourceCallback callback) {
             SystemLogsResponse* response_ptr = response.get();
-            base::PostTaskWithTraitsAndReply(
-                FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+            base::PostTaskAndReply(
+                FROM_HERE,
+                {base::ThreadPool(), base::MayBlock(),
+                 base::TaskPriority::BEST_EFFORT},
                 base::BindOnce(&PopulateEntriesAsync, response_ptr),
                 base::BindOnce(std::move(callback), std::move(response)));
           },
@@ -350,12 +403,15 @@ void ChromeInternalLogSource::PopulatePowerApiLogs(
 
 void ChromeInternalLogSource::PopulateDataReductionProxyLogs(
     SystemLogsResponse* response) {
-  PrefService* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
-  bool is_data_reduction_proxy_enabled =
-      prefs->HasPrefPath(prefs::kDataSaverEnabled) &&
-      prefs->GetBoolean(prefs::kDataSaverEnabled);
+  data_reduction_proxy::DataReductionProxySettings*
+      data_reduction_proxy_settings =
+          DataReductionProxyChromeSettingsFactory::GetForBrowserContext(
+              ProfileManager::GetActiveUserProfile());
+  bool data_saver_enabled =
+      data_reduction_proxy_settings &&
+      data_reduction_proxy_settings->IsDataReductionProxyEnabled();
   response->emplace(kDataReductionProxyKey,
-                    is_data_reduction_proxy_enabled ? "enabled" : "disabled");
+                    data_saver_enabled ? "enabled" : "disabled");
 }
 
 #if defined(OS_CHROMEOS)
@@ -386,7 +442,7 @@ void ChromeInternalLogSource::PopulateUsbKeyboardDetected(
     SystemLogsResponse* response) {
   std::string reason;
   bool result =
-      base::win::IsKeyboardPresentOnSlate(&reason, ui::GetHiddenWindow());
+      base::win::IsKeyboardPresentOnSlate(ui::GetHiddenWindow(), &reason);
   reason.insert(0, result ? "Keyboard Detected:\n" : "No Keyboard:\n");
   response->emplace(kUsbKeyboardDetected, reason);
 }
@@ -405,6 +461,29 @@ void ChromeInternalLogSource::PopulateInstallerBrandCode(
   response->emplace(kInstallerBrandCode,
                     brand.empty() ? "Unknown brand code" : brand);
 }
-#endif
+
+void ChromeInternalLogSource::PopulateLastUpdateState(
+    SystemLogsResponse* response) {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  const base::Optional<UpdateState> update_state = GetLastUpdateState();
+  if (!update_state)
+    return;  // There is nothing to include if no update check has completed.
+
+  response->emplace(kUpdateErrorCode,
+                    base::NumberToString(update_state->error_code));
+  response->emplace(kInstallLocation, DetermineInstallLocation());
+
+  if (update_state->error_code == GOOGLE_UPDATE_NO_ERROR)
+    return;  // There is nothing more to include if the last check succeeded.
+
+  response->emplace(kUpdateHresult,
+                    base::StringPrintf("0x%08lX", update_state->hresult));
+  if (update_state->installer_exit_code) {
+    response->emplace(kInstallResultCode,
+                      base::NumberToString(*update_state->installer_exit_code));
+  }
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+}
+#endif  // defined(OS_WIN)
 
 }  // namespace system_logs

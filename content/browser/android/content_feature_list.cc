@@ -7,8 +7,8 @@
 #include "base/android/jni_string.h"
 #include "base/feature_list.h"
 #include "base/stl_util.h"
+#include "content/public/android/content_jni_headers/ContentFeatureListImpl_jni.h"
 #include "content/public/common/content_features.h"
-#include "jni/ContentFeatureList_jni.h"
 
 using base::android::ConvertJavaStringToUTF8;
 using base::android::JavaParamRef;
@@ -23,8 +23,8 @@ namespace {
 // in other locations in the code base (e.g. content_features.h).
 const base::Feature* kFeaturesExposedToJava[] = {
     &features::kBackgroundMediaRendererHasModerateBinding,
-    &kEnhancedSelectionInsertionHandle,
-    &features::kServiceWorkerForegroundPriority,
+    &features::kWebNfc,
+    &kServiceGroupImportance,
 };
 
 const base::Feature* FindFeatureExposedToJava(const std::string& feature_name) {
@@ -40,12 +40,10 @@ const base::Feature* FindFeatureExposedToJava(const std::string& feature_name) {
 }  // namespace
 
 // Alphabetical:
-const base::Feature kEnhancedSelectionInsertionHandle{
-    "EnhancedSelectionInsertionHandle", base::FEATURE_ENABLED_BY_DEFAULT};
-const base::Feature kRequestUnbufferedDispatch{
-    "RequestUnbufferedDispatch", base::FEATURE_ENABLED_BY_DEFAULT};
+const base::Feature kServiceGroupImportance{"ServiceGroupImportance",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
-static jboolean JNI_ContentFeatureList_IsEnabled(
+static jboolean JNI_ContentFeatureListImpl_IsEnabled(
     JNIEnv* env,
     const JavaParamRef<jstring>& jfeature_name) {
   const base::Feature* feature =

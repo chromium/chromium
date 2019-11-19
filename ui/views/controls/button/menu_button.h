@@ -8,11 +8,11 @@
 #include "base/macros.h"
 #include "base/strings/string16.h"
 #include "ui/views/controls/button/label_button.h"
-#include "ui/views/controls/button/menu_button_event_handler.h"
 
 namespace views {
 
-class MenuButtonListener;
+class ButtonListener;
+class MenuButtonController;
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -23,67 +23,26 @@ class MenuButtonListener;
 ////////////////////////////////////////////////////////////////////////////////
 class VIEWS_EXPORT MenuButton : public LabelButton {
  public:
-  static const char kViewClassName[];
-
-  // How much padding to put on the left and right of the menu marker.
-  static const int kMenuMarkerPaddingLeft;
-  static const int kMenuMarkerPaddingRight;
+  METADATA_HEADER(MenuButton);
 
   // Create a Button.
   MenuButton(const base::string16& text,
-             MenuButtonListener* menu_button_listener,
+             ButtonListener* button_listener,
              int button_context = style::CONTEXT_BUTTON);
   ~MenuButton() override;
 
-  bool Activate(const ui::Event* event);
-
-  // TODO(cyan): Move into MenuButtonEventHandler.
-  virtual bool IsTriggerableEventType(const ui::Event& event);
-
-  // View:
-  const char* GetClassName() const override;
-  bool OnMousePressed(const ui::MouseEvent& event) override;
-  void OnMouseReleased(const ui::MouseEvent& event) override;
-  bool OnKeyPressed(const ui::KeyEvent& event) override;
-  bool OnKeyReleased(const ui::KeyEvent& event) override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-  void OnGestureEvent(ui::GestureEvent* event) override;
-
-  // Disallow overriding of these methods.
-  // No-op implementations as these are handled in MenuButtonEventHandler (and
-  // should not be handled here as well). To override these you need to subclass
-  // MenuButtonEventHandler and replace this event handler of the button.
-  void OnMouseEntered(const ui::MouseEvent& event) final;
-  void OnMouseExited(const ui::MouseEvent& event) final;
-  void OnMouseMoved(const ui::MouseEvent& event) final;
-
-  // Protected methods needed for MenuButtonEventHandler.
-  // TODO(cyan): Move these to a delegate interface.
-  using InkDropHostView::GetInkDrop;
-  using View::InDrag;
-  using View::GetDragOperations;
-  using Button::ShouldEnterHoveredState;
-  void LabelButtonStateChanged(ButtonState old_state);
-
-  // Button:
-  bool IsTriggerableEvent(const ui::Event& event) override;
-
-  MenuButtonEventHandler* menu_button_event_handler() {
-    return &menu_button_event_handler_;
+  MenuButtonController* button_controller() const {
+    return menu_button_controller_;
   }
 
- protected:
-  void StateChanged(ButtonState old_state) override;
+  bool Activate(const ui::Event* event);
 
+ protected:
   // Button:
-  bool ShouldEnterPushedState(const ui::Event& event) final;
   void NotifyClick(const ui::Event& event) final;
 
  private:
-  // All events get sent to this handler to be processed.
-  // TODO(cyan): This will be generalized into a ButtonEventHandler and moved
-  // into the Button class.
-  MenuButtonEventHandler menu_button_event_handler_;
+  MenuButtonController* menu_button_controller_;
 
   DISALLOW_COPY_AND_ASSIGN(MenuButton);
 };

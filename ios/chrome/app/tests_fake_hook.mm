@@ -16,9 +16,6 @@ bool DisableAppGroupAccess() {
 bool DisableContentSuggestions() {
   return false;
 }
-bool DisableContextualSearch() {
-  return false;
-}
 bool DisableFirstRun() {
   return false;
 }

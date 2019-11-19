@@ -14,9 +14,10 @@
 #error "This file requires ARC support."
 #endif
 
-@interface StoreKitCoordinator ()<SKStoreProductViewControllerDelegate> {
-  SKStoreProductViewController* _viewController;
-}
+@interface StoreKitCoordinator () <SKStoreProductViewControllerDelegate>
+// StoreKitViewController to present. Set as a weak reference so it only exists
+// while its being presented by baseViewController.
+@property(nonatomic, weak) SKStoreProductViewController* viewController;
 @end
 
 @implementation StoreKitCoordinator
@@ -27,26 +28,27 @@
 - (void)start {
   DCHECK(self.iTunesProductParameters
              [SKStoreProductParameterITunesItemIdentifier]);
-  // StoreKit shouldn't be launched, if there is one already presented or if
-  // there is another view presented by the base view controller.
-  if (_viewController || self.baseViewController.presentedViewController)
+  // StoreKit shouldn't be launched, if there is one already presented.
+  if (self.viewController)
     return;
-  _viewController = [[SKStoreProductViewController alloc] init];
-  _viewController.delegate = self;
-  [_viewController
+  SKStoreProductViewController* viewController =
+      [[SKStoreProductViewController alloc] init];
+  viewController.delegate = self;
+  [viewController
       loadProductWithParameters:self.iTunesProductParameters
                 completionBlock:^(BOOL result, NSError* _Nullable error) {
                   UMA_HISTOGRAM_BOOLEAN("IOS.StoreKitLoadedSuccessfully",
                                         result);
                 }];
-  [self.baseViewController presentViewController:_viewController
+  [self.baseViewController presentViewController:viewController
                                         animated:YES
                                       completion:nil];
+  self.viewController = viewController;
 }
 
 - (void)stop {
   [self.baseViewController dismissViewControllerAnimated:YES completion:nil];
-  _viewController = nil;
+  self.viewController = nil;
 }
 
 #pragma mark - StoreKitLauncher

@@ -55,14 +55,9 @@ class CORE_EXPORT HTMLInputElement
   USING_GARBAGE_COLLECTED_MIXIN(HTMLInputElement);
 
  public:
-  static HTMLInputElement* Create(Document&, const CreateElementFlags);
-
   HTMLInputElement(Document&, const CreateElementFlags);
   ~HTMLInputElement() override;
   void Trace(Visitor*) override;
-
-  // Returns attributes that should be checked against Trusted Types
-  const AttrNameToTrustedType& GetCheckedAttributeTypes() const override;
 
   bool HasPendingActivity() const final;
 
@@ -194,8 +189,8 @@ class CORE_EXPORT HTMLInputElement
                                    ExceptionState&);
 
   bool LayoutObjectIsNeeded(const ComputedStyle&) const final;
-  LayoutObject* CreateLayoutObject(const ComputedStyle&) override;
-  void DetachLayoutTree(const AttachContext& = AttachContext()) final;
+  LayoutObject* CreateLayoutObject(const ComputedStyle&, LegacyLayout) override;
+  void DetachLayoutTree(bool performing_reattach) final;
   void UpdateFocusAppearanceWithOptions(SelectionBehaviorOnFocus,
                                         const FocusOptions*) final;
 
@@ -313,6 +308,10 @@ class CORE_EXPORT HTMLInputElement
 
   void ChildrenChanged(const ChildrenChange&) override;
 
+  PaintLayerScrollableArea* GetScrollableArea() const final;
+
+  void SetHasBeenPasswordField() { has_been_password_field_ = true; }
+
  protected:
   void DefaultEventHandler(Event&) override;
   void CreateShadowSubtree();
@@ -367,10 +366,14 @@ class CORE_EXPORT HTMLInputElement
   bool CanBeSuccessfulSubmitButton() const final;
 
   void ResetImpl() final;
-  bool SupportsAutofocus() const final;
 
   EventDispatchHandlingState* PreDispatchEventHandler(Event&) final;
   void PostDispatchEventHandler(Event&, EventDispatchHandlingState*) final;
+  // TODO(crbug.com/1013385): Remove DidPreventDefault and
+  //   DefaultEventHandlerInternal. They are here as a temporary fix for form
+  //   double-submit.
+  void DidPreventDefault(const Event&) final;
+  void DefaultEventHandlerInternal(Event& evt);
 
   bool IsURLAttribute(const Attribute&) const final;
   bool HasLegalLinkAttribute(const QualifiedName&) const final;

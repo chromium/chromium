@@ -7,6 +7,7 @@
 
 #include <functional>
 #include <map>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -46,21 +47,22 @@ class TestPasswordStore : public PasswordStore {
       const override;
 
   // PasswordStore interface
-  PasswordStoreChangeList AddLoginImpl(
-      const autofill::PasswordForm& form) override;
-  PasswordStoreChangeList UpdateLoginImpl(
-      const autofill::PasswordForm& form) override;
+  PasswordStoreChangeList AddLoginImpl(const autofill::PasswordForm& form,
+                                       AddLoginError* error) override;
+  PasswordStoreChangeList UpdateLoginImpl(const autofill::PasswordForm& form,
+                                          UpdateLoginError* error) override;
   PasswordStoreChangeList RemoveLoginImpl(
       const autofill::PasswordForm& form) override;
   std::vector<std::unique_ptr<autofill::PasswordForm>> FillMatchingLogins(
       const FormDigest& form) override;
+  std::vector<std::unique_ptr<autofill::PasswordForm>>
+  FillMatchingLoginsByPassword(
+      const base::string16& plain_text_password) override;
   bool FillAutofillableLogins(
       std::vector<std::unique_ptr<autofill::PasswordForm>>* forms) override;
   bool FillBlacklistLogins(
       std::vector<std::unique_ptr<autofill::PasswordForm>>* forms) override;
   DatabaseCleanupResult DeleteUndecryptableLogins() override;
-  std::vector<std::unique_ptr<autofill::PasswordForm>>
-  FillLoginsForSameOrganizationName(const std::string& signon_realm) override;
   std::vector<InteractionsStats> GetSiteStatsImpl(
       const GURL& origin_domain) override;
 
@@ -74,9 +76,6 @@ class TestPasswordStore : public PasswordStore {
   PasswordStoreChangeList RemoveLoginsCreatedBetweenImpl(
       base::Time begin,
       base::Time end) override;
-  PasswordStoreChangeList RemoveLoginsSyncedBetweenImpl(
-      base::Time delete_begin,
-      base::Time delete_end) override;
   PasswordStoreChangeList DisableAutoSignInForOriginsImpl(
       const base::Callback<bool(const GURL&)>& origin_filter) override;
   bool RemoveStatisticsByOriginAndTimeImpl(
@@ -86,14 +85,32 @@ class TestPasswordStore : public PasswordStore {
   void AddSiteStatsImpl(const InteractionsStats& stats) override;
   void RemoveSiteStatsImpl(const GURL& origin_domain) override;
   std::vector<InteractionsStats> GetAllSiteStatsImpl() override;
+  void AddCompromisedCredentialsImpl(
+      const CompromisedCredentials& compromised_credentials) override;
+  void RemoveCompromisedCredentialsImpl(
+      const GURL& url,
+      const base::string16& username) override;
+  std::vector<CompromisedCredentials> GetAllCompromisedCredentialsImpl()
+      override;
+  void RemoveCompromisedCredentialsByUrlAndTimeImpl(
+      const base::RepeatingCallback<bool(const GURL&)>& url_filter,
+      base::Time remove_begin,
+      base::Time remove_end) override;
+  void AddFieldInfoImpl(const FieldInfo& field_info) override;
+  std::vector<FieldInfo> GetAllFieldInfoImpl() override;
+  void RemoveFieldInfoByTimeImpl(base::Time remove_begin,
+                                 base::Time remove_end) override;
 
   // PasswordStoreSync interface.
   bool BeginTransaction() override;
+  void RollbackTransaction() override;
   bool CommitTransaction() override;
   FormRetrievalResult ReadAllLogins(
       PrimaryKeyToFormMap* key_to_form_map) override;
   PasswordStoreChangeList RemoveLoginByPrimaryKeySync(int primary_key) override;
   PasswordStoreSync::MetadataStore* GetMetadataStore() override;
+  bool IsAccountStore() const override;
+  bool DeleteAndRecreateDatabaseFile() override;
 
  private:
   PasswordMap stored_passwords_;

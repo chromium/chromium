@@ -135,7 +135,7 @@ class StartupBrowserCreatorImpl {
   bool OpenApplicationTab(Profile* profile);
 
   // Determines the URLs to be shown at startup by way of various policies
-  // (onboarding, pinned tabs, etc.), determines whether a session restore
+  // (welcome, pinned tabs, etc.), determines whether a session restore
   // is necessary, and opens the URLs in a new or restored browser accordingly.
   void DetermineURLsAndLaunch(bool process_startup,
                               const std::vector<GURL>& cmd_line_urls);
@@ -149,7 +149,8 @@ class StartupBrowserCreatorImpl {
                                    bool is_ephemeral_profile,
                                    bool is_post_crash_launch,
                                    bool has_incompatible_applications,
-                                   bool promotional_tabs_enabled);
+                                   bool promotional_tabs_enabled,
+                                   bool welcome_enabled);
 
   // Begins an asynchronous session restore if current state allows it (e.g.,
   // this is not process startup) and SessionService indicates that one is
@@ -173,9 +174,6 @@ class StartupBrowserCreatorImpl {
   void AddInfoBarsIfNecessary(
       Browser* browser,
       chrome::startup::IsProcessStartup is_process_startup);
-
-  // Records Rappor metrics on startup URLs.
-  void RecordRapporOnStartupURLs(const std::vector<GURL>& urls_to_open);
 
   // Determines how the launch flow should obtain a Browser.
   static BrowserOpenBehavior DetermineBrowserOpenBehavior(

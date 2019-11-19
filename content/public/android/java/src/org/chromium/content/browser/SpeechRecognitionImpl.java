@@ -22,6 +22,7 @@ import org.chromium.base.Log;
 import org.chromium.base.PackageUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.blink.mojom.SpeechRecognitionErrorCode;
 import org.chromium.content_public.browser.SpeechRecognition;
 
@@ -68,7 +69,8 @@ public class SpeechRecognitionImpl {
         @Override
         public void onBeginningOfSpeech() {
             mState = STATE_CAPTURING_SPEECH;
-            nativeOnSoundStart(mNativeSpeechRecognizerImplAndroid);
+            SpeechRecognitionImplJni.get().onSoundStart(
+                    mNativeSpeechRecognizerImplAndroid, SpeechRecognitionImpl.this);
         }
 
         @Override
@@ -82,10 +84,12 @@ public class SpeechRecognitionImpl {
             // equivalent (onsoundend) event. Thus, the only way to provide a valid onsoundend
             // event is to trigger it when the last result is received or the session is aborted.
             if (!mContinuous) {
-                nativeOnSoundEnd(mNativeSpeechRecognizerImplAndroid);
+                SpeechRecognitionImplJni.get().onSoundEnd(
+                        mNativeSpeechRecognizerImplAndroid, SpeechRecognitionImpl.this);
                 // Since Android doesn't have a dedicated event for when audio capture is finished,
                 // we fire it after speech has ended.
-                nativeOnAudioEnd(mNativeSpeechRecognizerImplAndroid);
+                SpeechRecognitionImplJni.get().onAudioEnd(
+                        mNativeSpeechRecognizerImplAndroid, SpeechRecognitionImpl.this);
                 mState = STATE_IDLE;
             }
         }
@@ -136,7 +140,8 @@ public class SpeechRecognitionImpl {
         @Override
         public void onReadyForSpeech(Bundle bundle) {
             mState = STATE_AWAITING_SPEECH;
-            nativeOnAudioStart(mNativeSpeechRecognizerImplAndroid);
+            SpeechRecognitionImplJni.get().onAudioStart(
+                    mNativeSpeechRecognizerImplAndroid, SpeechRecognitionImpl.this);
         }
 
         @Override
@@ -163,10 +168,8 @@ public class SpeechRecognitionImpl {
 
             float[] scores = bundle.getFloatArray(SpeechRecognizer.CONFIDENCE_SCORES);
 
-            nativeOnRecognitionResults(mNativeSpeechRecognizerImplAndroid,
-                                       results,
-                                       scores,
-                                       provisional);
+            SpeechRecognitionImplJni.get().onRecognitionResults(mNativeSpeechRecognizerImplAndroid,
+                    SpeechRecognitionImpl.this, results, scores, provisional);
         }
     }
 
@@ -177,7 +180,8 @@ public class SpeechRecognitionImpl {
      */
     // TODO(crbug.com/635567): Fix this properly.
     @SuppressLint("WrongConstant")
-    public static boolean initialize(Context context) {
+    public static boolean initialize() {
+        Context context = ContextUtils.getApplicationContext();
         if (!SpeechRecognizer.isRecognitionAvailable(context)) return false;
 
         PackageManager pm = context.getPackageManager();
@@ -231,14 +235,17 @@ public class SpeechRecognitionImpl {
 
         if (mState != STATE_IDLE) {
             if (mState == STATE_CAPTURING_SPEECH) {
-                nativeOnSoundEnd(mNativeSpeechRecognizerImplAndroid);
+                SpeechRecognitionImplJni.get().onSoundEnd(
+                        mNativeSpeechRecognizerImplAndroid, SpeechRecognitionImpl.this);
             }
-            nativeOnAudioEnd(mNativeSpeechRecognizerImplAndroid);
+            SpeechRecognitionImplJni.get().onAudioEnd(
+                    mNativeSpeechRecognizerImplAndroid, SpeechRecognitionImpl.this);
             mState = STATE_IDLE;
         }
 
         if (error != SpeechRecognitionErrorCode.NONE) {
-            nativeOnRecognitionError(mNativeSpeechRecognizerImplAndroid, error);
+            SpeechRecognitionImplJni.get().onRecognitionError(
+                    mNativeSpeechRecognizerImplAndroid, SpeechRecognitionImpl.this, error);
         }
 
         try {
@@ -249,7 +256,8 @@ public class SpeechRecognitionImpl {
             Log.w(TAG, "Destroy threw exception " + mRecognizer, e);
         }
         mRecognizer = null;
-        nativeOnRecognitionEnd(mNativeSpeechRecognizerImplAndroid);
+        SpeechRecognitionImplJni.get().onRecognitionEnd(
+                mNativeSpeechRecognizerImplAndroid, SpeechRecognitionImpl.this);
         mNativeSpeechRecognizerImplAndroid = 0;
     }
 
@@ -286,15 +294,19 @@ public class SpeechRecognitionImpl {
         mRecognizer.stopListening();
     }
 
-    // Native JNI calls to content/browser/speech/speech_recognizer_impl_android.cc
-    private native void nativeOnAudioStart(long nativeSpeechRecognizerImplAndroid);
-    private native void nativeOnSoundStart(long nativeSpeechRecognizerImplAndroid);
-    private native void nativeOnSoundEnd(long nativeSpeechRecognizerImplAndroid);
-    private native void nativeOnAudioEnd(long nativeSpeechRecognizerImplAndroid);
-    private native void nativeOnRecognitionResults(long nativeSpeechRecognizerImplAndroid,
-            String[] results,
-            float[] scores,
-            boolean provisional);
-    private native void nativeOnRecognitionError(long nativeSpeechRecognizerImplAndroid, int error);
-    private native void nativeOnRecognitionEnd(long nativeSpeechRecognizerImplAndroid);
+    @NativeMethods
+    interface Natives {
+        // Native JNI calls to content/browser/speech/speech_recognizer_impl_android.cc
+        void onAudioStart(long nativeSpeechRecognizerImplAndroid, SpeechRecognitionImpl caller);
+
+        void onSoundStart(long nativeSpeechRecognizerImplAndroid, SpeechRecognitionImpl caller);
+        void onSoundEnd(long nativeSpeechRecognizerImplAndroid, SpeechRecognitionImpl caller);
+        void onAudioEnd(long nativeSpeechRecognizerImplAndroid, SpeechRecognitionImpl caller);
+        void onRecognitionResults(long nativeSpeechRecognizerImplAndroid,
+                SpeechRecognitionImpl caller, String[] results, float[] scores,
+                boolean provisional);
+        void onRecognitionError(
+                long nativeSpeechRecognizerImplAndroid, SpeechRecognitionImpl caller, int error);
+        void onRecognitionEnd(long nativeSpeechRecognizerImplAndroid, SpeechRecognitionImpl caller);
+    }
 }

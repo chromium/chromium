@@ -13,6 +13,7 @@
 
 #include <utility>
 
+#include "base/command_line.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/posix/eintr_wrapper.h"
@@ -21,6 +22,8 @@
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "ui/gfx/buffer_format_util.h"
+#include "ui/gfx/switches.h"
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 11, 0)
 #include <linux/dma-buf.h>
@@ -61,15 +64,18 @@ void PrimeSyncEnd(int dmabuf_fd) {
   PLOG_IF(ERROR, rv) << "Failed DMA_BUF_SYNC_END";
 }
 
+bool AllowCpuMappableBuffers() {
+  static bool result = base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kEnableNativeGpuMemoryBuffers);
+  return result;
+}
+
 }  // namespace
 
 ClientNativePixmapDmaBuf::PlaneInfo::PlaneInfo() {}
 
 ClientNativePixmapDmaBuf::PlaneInfo::PlaneInfo(PlaneInfo&& info)
-    : fd(std::move(info.fd)),
-      data(info.data),
-      offset(info.offset),
-      size(info.size) {
+    : data(info.data), offset(info.offset), size(info.size) {
   // Set nullptr to info.data in order not to call munmap in |info| dtor.
   info.data = nullptr;
 }
@@ -88,7 +94,6 @@ bool ClientNativePixmapDmaBuf::IsConfigurationSupported(
 #if defined(CHROMECAST_BUILD)
   switch (usage) {
     case gfx::BufferUsage::GPU_READ_CPU_READ_WRITE:
-    case gfx::BufferUsage::GPU_READ_CPU_READ_WRITE_PERSISTENT:
       // TODO(spang): Fix b/121148905 and turn these back on.
       return false;
     default:
@@ -110,14 +115,21 @@ bool ClientNativePixmapDmaBuf::IsConfigurationSupported(
              format == gfx::BufferFormat::RGBA_8888 ||
              format == gfx::BufferFormat::BGRA_8888;
     case gfx::BufferUsage::SCANOUT_CPU_READ_WRITE:
+      // TODO(crbug.com/954233): RG_88 is enabled only with
+      // --enable-native-gpu-memory-buffers . Otherwise it breaks some telemetry
+      // tests. Fix that issue and enable it again.
+      if (format == gfx::BufferFormat::RG_88 && !AllowCpuMappableBuffers())
+        return false;
+
       return
 #if defined(ARCH_CPU_X86_FAMILY)
-          // Currently only Intel driver (i.e. minigbm and Mesa) supports R_8
-          // RG_88, NV12 and XB30. https://crbug.com/356871
+          // Currently only Intel driver (i.e. minigbm and Mesa) supports
+          // R_8 RG_88, NV12 and XB30/XR30.
           format == gfx::BufferFormat::R_8 ||
           format == gfx::BufferFormat::RG_88 ||
           format == gfx::BufferFormat::YUV_420_BIPLANAR ||
           format == gfx::BufferFormat::RGBX_1010102 ||
+          format == gfx::BufferFormat::BGRX_1010102 ||
 #endif
 
           format == gfx::BufferFormat::BGRX_8888 ||
@@ -128,15 +140,16 @@ bool ClientNativePixmapDmaBuf::IsConfigurationSupported(
       return false;
 
     case gfx::BufferUsage::GPU_READ_CPU_READ_WRITE:
-    case gfx::BufferUsage::GPU_READ_CPU_READ_WRITE_PERSISTENT:
+      if (!AllowCpuMappableBuffers())
+        return false;
       return
 #if defined(ARCH_CPU_X86_FAMILY)
-          // Currently only Intel driver (i.e. minigbm and
-          // Mesa) supports R_8 RG_88 and NV12.
-          // https://crbug.com/356871
+          // Only the Intel stack (i.e. minigbm and Mesa) supports the formats
+          // below.
           format == gfx::BufferFormat::R_8 ||
           format == gfx::BufferFormat::RG_88 ||
           format == gfx::BufferFormat::YUV_420_BIPLANAR ||
+          format == gfx::BufferFormat::P010 ||
 #endif
           format == gfx::BufferFormat::BGRA_8888;
     case gfx::BufferUsage::SCANOUT_CAMERA_READ_WRITE:
@@ -149,6 +162,9 @@ bool ClientNativePixmapDmaBuf::IsConfigurationSupported(
     case gfx::BufferUsage::CAMERA_AND_CPU_READ_WRITE:
       // R_8 is used as the underlying pixel format for BLOB buffers.
       return format == gfx::BufferFormat::R_8;
+    case gfx::BufferUsage::SCANOUT_VEA_READ_CAMERA_AND_CPU_READ_WRITE:
+      return format == gfx::BufferFormat::YVU_420 ||
+             format == gfx::BufferFormat::YUV_420_BIPLANAR;
   }
   NOTREACHED();
   return false;
@@ -156,21 +172,34 @@ bool ClientNativePixmapDmaBuf::IsConfigurationSupported(
 
 // static
 std::unique_ptr<gfx::ClientNativePixmap>
-ClientNativePixmapDmaBuf::ImportFromDmabuf(
-    const gfx::NativePixmapHandle& handle,
-    const gfx::Size& size) {
+ClientNativePixmapDmaBuf::ImportFromDmabuf(gfx::NativePixmapHandle handle,
+                                           const gfx::Size& size,
+                                           gfx::BufferFormat format) {
   std::array<PlaneInfo, kMaxPlanes> plane_info;
-  for (size_t i = 0; i < handle.fds.size(); ++i) {
-    const auto& fd = handle.fds[i];
-    DCHECK(fd.auto_close);
-    plane_info[i].fd.reset(fd.fd);
-    DCHECK(plane_info[i].fd.is_valid());
+
+  size_t expected_planes = gfx::NumberOfPlanesForLinearBufferFormat(format);
+  if (expected_planes == 0 || handle.planes.size() != expected_planes) {
+    return nullptr;
   }
 
-  DCHECK_EQ(handle.planes.size(), handle.fds.size());
-
   const size_t page_size = base::GetPageSize();
-  for (size_t i = 0; i < handle.fds.size(); ++i) {
+  for (size_t i = 0; i < handle.planes.size(); ++i) {
+    // Verify that the plane buffer has appropriate size.
+    size_t min_stride = 0;
+    size_t subsample_factor = SubsamplingFactorForBufferFormat(format, i);
+    base::CheckedNumeric<size_t> plane_height =
+        (base::CheckedNumeric<size_t>(size.height()) + subsample_factor - 1) /
+        subsample_factor;
+    if (!gfx::RowSizeForBufferFormatChecked(size.width(), format, i,
+                                            &min_stride) ||
+        handle.planes[i].stride < min_stride) {
+      return nullptr;
+    }
+    base::CheckedNumeric<size_t> min_size =
+        base::CheckedNumeric<size_t>(handle.planes[i].stride) * plane_height;
+    if (!min_size.IsValid() || handle.planes[i].size < min_size.ValueOrDie())
+      return nullptr;
+
     // mmap() fails if the offset argument is not page-aligned.
     // Since handle.planes[i].offset is possibly not page-aligned, we
     // have to map with an additional offset to be aligned to the page.
@@ -182,7 +211,7 @@ ClientNativePixmapDmaBuf::ImportFromDmabuf(
 
     void* data =
         mmap(nullptr, map_size, (PROT_READ | PROT_WRITE), MAP_SHARED,
-             plane_info[i].fd.get(), handle.planes[i].offset - extra_offset);
+             handle.planes[i].fd.get(), handle.planes[i].offset - extra_offset);
     if (data == MAP_FAILED) {
       logging::SystemErrorCode mmap_error = logging::GetLastSystemErrorCode();
       if (mmap_error == ENOMEM)
@@ -194,15 +223,17 @@ ClientNativePixmapDmaBuf::ImportFromDmabuf(
     plane_info[i].data = data;
   }
 
-  return base::WrapUnique(
-      new ClientNativePixmapDmaBuf(handle, size, std::move(plane_info)));
+  return base::WrapUnique(new ClientNativePixmapDmaBuf(std::move(handle), size,
+                                                       std::move(plane_info)));
 }
 
 ClientNativePixmapDmaBuf::ClientNativePixmapDmaBuf(
-    const gfx::NativePixmapHandle& handle,
+    gfx::NativePixmapHandle handle,
     const gfx::Size& size,
     std::array<PlaneInfo, kMaxPlanes> plane_info)
-    : pixmap_handle_(handle), size_(size), plane_info_(std::move(plane_info)) {
+    : pixmap_handle_(std::move(handle)),
+      size_(size),
+      plane_info_(std::move(plane_info)) {
   TRACE_EVENT0("drm", "ClientNativePixmapDmaBuf");
 }
 
@@ -213,14 +244,14 @@ ClientNativePixmapDmaBuf::~ClientNativePixmapDmaBuf() {
 bool ClientNativePixmapDmaBuf::Map() {
   TRACE_EVENT0("drm", "DmaBuf:Map");
   for (size_t i = 0; i < pixmap_handle_.planes.size(); ++i)
-    PrimeSyncStart(plane_info_[i].fd.get());
+    PrimeSyncStart(pixmap_handle_.planes[i].fd.get());
   return true;
 }
 
 void ClientNativePixmapDmaBuf::Unmap() {
   TRACE_EVENT0("drm", "DmaBuf:Unmap");
   for (size_t i = 0; i < pixmap_handle_.planes.size(); ++i)
-    PrimeSyncEnd(plane_info_[i].fd.get());
+    PrimeSyncEnd(pixmap_handle_.planes[i].fd.get());
 }
 
 void* ClientNativePixmapDmaBuf::GetMemoryAddress(size_t plane) const {

@@ -10,7 +10,6 @@
 
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "components/signin/core/browser/signin_header_helper.h"
 
 class Profile;
 class ProfileManager;
@@ -20,8 +19,15 @@ class FilePath;
 }
 
 namespace profile_metrics {
+enum class BrowserProfileType;
 struct Counts;
 }
+
+#if defined(OS_ANDROID)
+namespace signin {
+enum GAIAServiceType : int;
+}
+#endif  // defined(OS_ANDROID)
 
 class ProfileMetrics {
  public:
@@ -130,7 +136,7 @@ class ProfileMetrics {
     // User opened the user menu, and opened the user manager.
     PROFILE_DESKTOP_MENU_OPEN_USER_MANAGER,
     // User opened the user menu, and selected Go Incognito.
-    PROFILE_DESKTOP_MENU_GO_INCOGNITO,
+    DEPRECATED_PROFILE_DESKTOP_MENU_GO_INCOGNITO,
     NUM_PROFILE_DESKTOP_MENU_METRICS,
   };
 
@@ -166,7 +172,6 @@ class ProfileMetrics {
   };
 #endif  // defined(OS_ANDROID)
 
-  static void UpdateReportedProfilesStatistics(ProfileManager* manager);
   // Count and return summary information about the profiles currently in the
   // |manager|. This information is returned in the output variable |counts|.
   static bool CountProfileInformation(ProfileManager* manager,
@@ -176,10 +181,9 @@ class ProfileMetrics {
   static void LogNumberOfProfileSwitches();
 #endif
 
-#if defined(OS_WIN) || defined(OS_MACOSX)
-  // Update OS level tracking of profile counts.
-  static void UpdateReportedOSProfileStatistics(size_t active, size_t signedin);
-#endif
+  // Returns profile type for logging.
+  static profile_metrics::BrowserProfileType GetBrowserProfileType(
+      Profile* profile);
 
   static void LogNumberOfProfiles(ProfileManager* manager);
   static void LogProfileAddNewUser(ProfileAdd metric);
@@ -194,8 +198,7 @@ class ProfileMetrics {
   static void LogProfileSwitchGaia(ProfileGaia metric);
   static void LogProfileSyncInfo(ProfileSync metric);
   static void LogProfileAuthResult(ProfileAuth metric);
-  static void LogProfileDesktopMenu(ProfileDesktopMenu metric,
-                                    signin::GAIAServiceType gaia_service);
+  static void LogProfileDesktopMenu(ProfileDesktopMenu metric);
   static void LogProfileDelete(bool profile_was_signed_in);
   static void LogTimeToOpenUserManager(const base::TimeDelta& time_to_open);
 

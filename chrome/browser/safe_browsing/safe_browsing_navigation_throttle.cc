@@ -44,10 +44,6 @@ SafeBrowsingNavigationThrottle::WillFailRequest() {
                               handle->GetNavigationId(),
                               base::WrapUnique(blocking_page));
 
-    manager->AddToWhitelistUrlSet(handle->GetURL().GetWithEmptyPath(),
-                                  handle->GetWebContents(), true /* pending */,
-                                  resource.threat_type);
-
     return content::NavigationThrottle::ThrottleCheckResult(
         CANCEL, net::ERR_BLOCKED_BY_CLIENT, error_page_content);
   }

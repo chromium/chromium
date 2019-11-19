@@ -59,8 +59,7 @@ class AwSSLHostStateDelegate : public content::SSLHostStateDelegate {
   content::SSLHostStateDelegate::CertJudgment QueryPolicy(
       const std::string& host,
       const net::X509Certificate& cert,
-      int error,
-      bool* expired_previous_decision) override;
+      int error) override;
 
   // Records that a host has run insecure content.
   void HostRanInsecureContent(const std::string& host,
@@ -68,10 +67,9 @@ class AwSSLHostStateDelegate : public content::SSLHostStateDelegate {
                               InsecureContentType content_type) override;
 
   // Returns whether the specified host ran insecure content.
-  bool DidHostRunInsecureContent(
-      const std::string& host,
-      int child_id,
-      InsecureContentType content_type) const override;
+  bool DidHostRunInsecureContent(const std::string& host,
+                                 int child_id,
+                                 InsecureContentType content_type) override;
 
   // Revokes all SSL certificate error allow exceptions made by the user for
   // |host|.
@@ -81,7 +79,7 @@ class AwSSLHostStateDelegate : public content::SSLHostStateDelegate {
   // |host|. This does not mean that *all* certificate errors are allowed, just
   // that there exists an exception. To see if a particular certificate and
   // error combination exception is allowed, use QueryPolicy().
-  bool HasAllowException(const std::string& host) const override;
+  bool HasAllowException(const std::string& host) override;
 
  private:
   // Certificate policies for each host.

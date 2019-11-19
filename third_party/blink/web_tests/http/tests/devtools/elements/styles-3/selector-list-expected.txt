@@ -4,17 +4,17 @@ Tests representation of selector lists in the protocol. Bug 103118.
 element.style { ()
 
 [expanded] 
-FOO bAr, #inspected, MOO>BAR, htML div, Foo~Moo, MOO { (<style>…</style>)
+FOO bAr, #inspected, MOO>BAR, htML div, Foo~Moo, MOO { (<style>)
     color: green;
 
 [expanded] 
-#inspected { (<style>…</style>)
+#inspected { (<style>)
 
 [expanded] 
-#InSpEcTeD { (<style>…</style>)
+#InSpEcTeD { (<style>)
 
 [expanded] 
-#inspected { (<style>…</style>)
+#inspected { (<style>)
 
 [expanded] 
 div { (user agent stylesheet)

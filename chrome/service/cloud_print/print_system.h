@@ -156,10 +156,8 @@ class PrintSystem : public base::RefCountedThreadSafe<PrintSystem> {
     std::string message_;
   };
 
-  typedef base::Callback<void(bool,
-                              const std::string&,
-                              const printing::PrinterCapsAndDefaults&)>
-      PrinterCapsAndDefaultsCallback;
+  using PrinterCapsAndDefaultsCallback = base::OnceCallback<
+      void(bool, const std::string&, const printing::PrinterCapsAndDefaults&)>;
 
   // Initialize print system. This need to be called before any other function
   // of PrintSystem.
@@ -172,7 +170,7 @@ class PrintSystem : public base::RefCountedThreadSafe<PrintSystem> {
   // Gets the capabilities and defaults for a specific printer asynchronously.
   virtual void GetPrinterCapsAndDefaults(
       const std::string& printer_name,
-      const PrinterCapsAndDefaultsCallback& callback) = 0;
+      PrinterCapsAndDefaultsCallback callback) = 0;
 
   // Returns true if printer_name points to a valid printer.
   virtual bool IsValidPrinter(const std::string& printer_name) = 0;

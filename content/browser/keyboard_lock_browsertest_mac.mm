@@ -20,7 +20,7 @@ class TestRenderWidgetHostView : public RenderWidgetHostViewMac {
       : RenderWidgetHostViewMac(host, is_guest_view_hack) {}
   ~TestRenderWidgetHostView() override {}
 
-  bool HasFocus() const override { return g_window_has_focus; }
+  bool HasFocus() override { return g_window_has_focus; }
 };
 }
 

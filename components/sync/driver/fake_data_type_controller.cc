@@ -22,7 +22,7 @@ FakeDataTypeController::FakeDataTypeController(ModelType type)
                                   GROUP_PASSIVE),
       state_(NOT_RUNNING),
       model_load_delayed_(false),
-      ready_for_start_(true),
+      precondition_state_(PreconditionState::kPreconditionsMet),
       should_load_model_before_configure_(false),
       register_with_backend_call_count_(0),
       clear_metadata_call_count_(0) {}
@@ -55,10 +55,10 @@ void FakeDataTypeController::LoadModels(
   }
 }
 
-void FakeDataTypeController::RegisterWithBackend(
-    base::OnceCallback<void(bool)> set_downloaded,
-    ModelTypeConfigurer* configurer) {
+DataTypeController::RegisterWithBackendResult
+FakeDataTypeController::RegisterWithBackend(ModelTypeConfigurer* configurer) {
   ++register_with_backend_call_count_;
+  return REGISTRATION_IGNORED;
 }
 
 // MODEL_LOADED -> MODEL_STARTING.
@@ -127,8 +127,9 @@ DataTypeController::State FakeDataTypeController::state() const {
   return state_;
 }
 
-bool FakeDataTypeController::ReadyForStart() const {
-  return ready_for_start_;
+DataTypeController::PreconditionState
+FakeDataTypeController::GetPreconditionState() const {
+  return precondition_state_;
 }
 
 void FakeDataTypeController::SetDelayModelLoad() {
@@ -147,8 +148,8 @@ void FakeDataTypeController::SimulateModelLoadFinishing() {
   model_load_callback_.Run(type(), load_error_);
 }
 
-void FakeDataTypeController::SetReadyForStart(bool ready) {
-  ready_for_start_ = ready;
+void FakeDataTypeController::SetPreconditionState(PreconditionState state) {
+  precondition_state_ = state;
 }
 
 void FakeDataTypeController::SetShouldLoadModelBeforeConfigure(bool value) {

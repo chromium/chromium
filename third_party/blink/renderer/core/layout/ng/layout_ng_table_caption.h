@@ -7,12 +7,12 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/layout_table_caption.h"
-#include "third_party/blink/renderer/core/layout/ng/layout_ng_mixin.h"
+#include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow_mixin.h"
 
 namespace blink {
 
 class CORE_EXPORT LayoutNGTableCaption final
-    : public LayoutNGMixin<LayoutTableCaption> {
+    : public LayoutNGBlockFlowMixin<LayoutTableCaption> {
  public:
   explicit LayoutNGTableCaption(Element*);
 

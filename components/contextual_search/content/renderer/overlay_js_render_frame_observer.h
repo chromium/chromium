@@ -7,9 +7,10 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "components/contextual_search/content/common/contextual_search_js_api_service.mojom.h"
+#include "components/contextual_search/content/common/mojom/contextual_search_js_api_service.mojom.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_frame_observer.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "v8/include/v8.h"
@@ -42,14 +43,15 @@ class OverlayJsRenderFrameObserver : public content::RenderFrameObserver {
 
   // The CS service to notify when deciding to enable the API or when API calls
   // are made.
-  mojom::ContextualSearchJsApiServicePtr contextual_search_js_api_service_;
+  mojo::Remote<mojom::ContextualSearchJsApiService>
+      contextual_search_js_api_service_;
 
   // Remembers whether we did start enabling the JS API by making a request
   // to the Contextual Search service to ask if we should enable for this
   // URL or not.
   bool did_start_enabling_js_api_ = false;
 
-  base::WeakPtrFactory<OverlayJsRenderFrameObserver> weak_factory_;
+  base::WeakPtrFactory<OverlayJsRenderFrameObserver> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(OverlayJsRenderFrameObserver);
 };

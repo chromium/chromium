@@ -2,27 +2,29 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {PDFScriptingAPI} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_scripting_api.js';
+
 /**
  * These tests require that the PDF plugin be available to run correctly.
  */
-var tests = [
+const tests = [
   /**
    * Test that the page is sized to the size of the document.
    */
   function testPageSize() {
     // Verify that the initial zoom is less than or equal to 100%.
-    chrome.test.assertTrue(viewer.viewport.zoom <= 1);
+    chrome.test.assertTrue(viewer.viewport.getZoom() <= 1);
 
     viewer.viewport.setZoom(1);
-    var sizer = document.getElementById('sizer');
+    const sizer = document.getElementById('sizer');
     chrome.test.assertEq(826, sizer.offsetWidth);
-    chrome.test.assertEq(1066 + viewer.viewport.topToolbarHeight_,
-                         sizer.offsetHeight);
+    chrome.test.assertEq(
+        1066 + viewer.viewport.topToolbarHeight_, sizer.offsetHeight);
     chrome.test.succeed();
   },
 
   function testGetSelectedText() {
-    var client = new PDFScriptingAPI(window, window);
+    const client = new PDFScriptingAPI(window, window);
     client.selectAll();
     client.getSelectedText(chrome.test.callbackPass(function(selectedText) {
       chrome.test.assertEq('this is some text\nsome more text', selectedText);
@@ -48,7 +50,7 @@ var tests = [
       chrome.test.assertEq(27, e.keyCode);
       chrome.test.assertEq('Escape', e.code);
     }));
-    var e = document.createEvent('Event');
+    const e = document.createEvent('Event');
     e.initEvent('keydown');
     e.keyCode = 27;
     e.code = 'Escape';
@@ -56,7 +58,7 @@ var tests = [
   }
 ];
 
-var scriptingAPI = new PDFScriptingAPI(window, window);
+const scriptingAPI = new PDFScriptingAPI(window, window);
 scriptingAPI.setLoadCallback(function() {
   chrome.test.runTests(tests);
 });

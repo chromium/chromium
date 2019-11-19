@@ -60,23 +60,32 @@ class CrashReportExceptionHandler : public ExceptionHandlerServer::Delegate {
       const std::map<std::string, std::string>* process_annotations,
       const UserStreamDataSources* user_stream_data_sources);
 
-  ~CrashReportExceptionHandler();
+  ~CrashReportExceptionHandler() override;
 
   // ExceptionHandlerServer::Delegate:
 
   bool HandleException(pid_t client_process_id,
-                       const ClientInformation& info,
+                       uid_t client_uid,
+                       const ExceptionHandlerProtocol::ClientInformation& info,
+                       VMAddress requesting_thread_stack_address = 0,
+                       pid_t* requesting_thread_id = nullptr,
                        UUID* local_report_id = nullptr) override;
 
-  bool HandleExceptionWithBroker(pid_t client_process_id,
-                                 const ClientInformation& info,
-                                 int broker_sock,
-                                 UUID* local_report_id = nullptr) override;
+  bool HandleExceptionWithBroker(
+      pid_t client_process_id,
+      uid_t client_uid,
+      const ExceptionHandlerProtocol::ClientInformation& info,
+      int broker_sock,
+      UUID* local_report_id = nullptr) override;
 
  private:
-  bool HandleExceptionWithConnection(PtraceConnection* connection,
-                                     const ClientInformation& info,
-                                     UUID* local_report_id = nullptr);
+  bool HandleExceptionWithConnection(
+      PtraceConnection* connection,
+      const ExceptionHandlerProtocol::ClientInformation& info,
+      uid_t client_uid,
+      VMAddress requesting_thread_stack_address,
+      pid_t* requesting_thread_id,
+      UUID* local_report_id = nullptr);
 
   CrashReportDatabase* database_;  // weak
   CrashReportUploadThread* upload_thread_;  // weak

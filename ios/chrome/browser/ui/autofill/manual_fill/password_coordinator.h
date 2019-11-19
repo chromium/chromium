@@ -15,6 +15,9 @@ class GURL;
 // Opens the passwords settings.
 - (void)openPasswordSettings;
 
+// Opens the all passwords picker, used for manual fallback.
+- (void)openAllPasswordsPicker;
+
 @end
 
 // Creates and manages a view controller to present passwords to the user. It

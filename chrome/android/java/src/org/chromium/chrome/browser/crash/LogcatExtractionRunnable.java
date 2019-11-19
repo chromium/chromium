@@ -6,10 +6,11 @@ package org.chromium.chrome.browser.crash;
 
 import android.os.Build;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PiiElider;
-import org.chromium.base.VisibleForTesting;
 import org.chromium.components.minidump_uploader.CrashFileManager;
 
 import java.io.BufferedReader;

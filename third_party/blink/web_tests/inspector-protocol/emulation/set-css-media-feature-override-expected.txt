@@ -1,0 +1,24 @@
+Tests that CSS media features can be overridden.
+matchMedia("(prefers-color-scheme: __invalid__)").matches: false
+matchMedia("(prefers-color-scheme: __invalid__)").matches applied: 3px x 2px
+matchMedia("(prefers-color-scheme: no-preference)").matches: true
+matchMedia("(prefers-color-scheme: no-preference)").matches applied: 2px x 2px
+matchMedia("(prefers-color-scheme: light)").matches: true
+matchMedia("(prefers-color-scheme: light)").matches applied: 3px x 2px
+matchMedia("(prefers-color-scheme: dark)").matches: true
+matchMedia("(prefers-color-scheme: dark)").matches applied: 4px x 2px
+matchMedia("(prefers-color-scheme: __invalid__)").matches: false
+matchMedia("(prefers-color-scheme: __invalid__)").matches applied: 3px x 2px
+matchMedia("(prefers-reduced-motion: __invalid__)").matches: false
+matchMedia("(prefers-reduced-motion: __invalid__)").matches applied: 3px x 2px
+matchMedia("(prefers-reduced-motion: no-preference)").matches: true
+matchMedia("(prefers-reduced-motion: no-preference)").matches applied: 3px x 2px
+matchMedia("(prefers-reduced-motion: reduce)").matches: true
+matchMedia("(prefers-reduced-motion: reduce)").matches applied: 3px x 3px
+matchMedia("(prefers-reduced-motion: __invalid__)").matches: false
+matchMedia("(prefers-reduced-motion: __invalid__)").matches applied: 3px x 2px
+matchMedia("(prefers-color-scheme: dark) and (prefers-reduced-motion: reduce)").matches: true
+matchMedia("(prefers-color-scheme: dark) and (prefers-reduced-motion: reduce)").matches applied: 999px x 999px
+matchMedia("(prefers-color-scheme: __invalid__)").matches: false
+matchMedia("(prefers-color-scheme: __invalid__)").matches applied: 3px x 2px
+

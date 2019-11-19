@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "ash/public/cpp/window_state_type.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "ui/gfx/buffer_types.h"

@@ -8,26 +8,18 @@ import("//build/config/features.gni")
 import("//build/config/jumbo.gni")
 import("//build/config/linux/gtk/gtk.gni")
 import("//printing/buildflags/buildflags.gni")
+import("//ui/ozone/ozone.gni")
 
 jumbo_component("libgtkui") {
   sources = [
-    "app_indicator_icon.cc",
-    "app_indicator_icon.h",
-    "app_indicator_icon_menu.cc",
-    "app_indicator_icon_menu.h",
-    "gtk_background_painter.cc",
-    "gtk_background_painter.h",
-    "gtk_event_loop.cc",
-    "gtk_event_loop.h",
     "gtk_key_bindings_handler.cc",
     "gtk_key_bindings_handler.h",
     "gtk_ui.cc",
     "gtk_ui.h",
     "gtk_util.cc",
     "gtk_util.h",
-    "libgtkui_export.h",
-    "menu_util.cc",
-    "menu_util.h",
+    "input_method_context_impl_gtk.cc",
+    "input_method_context_impl_gtk.h",
     "native_theme_gtk.cc",
     "native_theme_gtk.h",
     "nav_button_provider_gtk.cc",
@@ -44,25 +36,9 @@ jumbo_component("libgtkui") {
     "settings_provider.h",
     "settings_provider_gtk.cc",
     "settings_provider_gtk.h",
-    "skia_utils_gtk.cc",
-    "skia_utils_gtk.h",
-    "unity_service.cc",
-    "unity_service.h",
-    "x11_input_method_context_impl_gtk.cc",
-    "x11_input_method_context_impl_gtk.h",
   ]
 
-  if (gtk_version <= 3) {
-    sources += [
-      "gtk_status_icon.cc",
-      "gtk_status_icon.h",
-    ]
-  }
-
-  configs += [
-    "//build/config/linux/pangocairo",
-    "//build/config/linux:x11",
-  ]
+  configs += [ "//build/config/linux/pangocairo" ]
 
   if (use_gio) {
     sources += [
@@ -76,25 +52,15 @@ jumbo_component("libgtkui") {
     configs += [ "//printing:cups" ]
   }
 
-  defines = [ "LIBGTKUI_IMPLEMENTATION" ]
+  defines = [ "IS_LIBGTKUI_IMPL" ]
 
   deps = [
     "//base",
-    "//base:i18n",
-    "//base/third_party/dynamic_annotations",
     "//build/config/linux/gtk",
     "//build/config/linux/gtk:gtkprint",
-    "//cc/paint",
-    "//chrome:extra_resources",
-    "//chrome:resources",
-    "//chrome:strings",
-    "//chrome/app:command_ids",
-    "//chrome/app/theme:theme_resources",
     "//chrome/browser/ui/views",
-    "//chrome/common:buildflags",
     "//chrome/common:constants",
     "//components/prefs",
-    "//components/resources",
     "//content/public/browser",
     "//printing",
     "//skia",
@@ -106,17 +72,14 @@ jumbo_component("libgtkui") {
     "//ui/aura",
     "//ui/base",
     "//ui/base/ime",
+    "//ui/base/ime/linux",
     "//ui/display",
     "//ui/events",
     "//ui/events:dom_keyboard_layout",
     "//ui/events:dom_keycode_converter",
-    "//ui/events:events_base",
-    "//ui/events/platform/x11",
     "//ui/gfx",
     "//ui/gfx/geometry",
-    "//ui/gfx/x",
     "//ui/native_theme",
-    "//ui/resources",
     "//ui/shell_dialogs",
     "//ui/strings",
     "//ui/views",
@@ -124,4 +87,24 @@ jumbo_component("libgtkui") {
   public_deps = [
     "//chrome/browser:theme_properties",
   ]
+
+  if (use_x11 || ozone_platform_x11) {
+    sources += [
+      "gtk_event_loop_x11.cc",
+      "gtk_event_loop_x11.h",
+    ]
+
+    configs += [ "//build/config/linux:x11" ]
+
+    defines += [ "USE_GTK_EVENT_LOOP_X11" ]
+
+    deps += [
+      "//ui/events/platform/x11",
+      "//ui/gfx/x",
+    ]
+  }
+
+  if (use_ozone) {
+    deps += [ "//ui/ozone" ]
+  }
 }

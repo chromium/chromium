@@ -1,5 +1,4 @@
 <!doctype HTML>
-Any errors will show below this line.
 <style>
 @keyframes twiddle {
   0% { transform: rotate(0deg); }
@@ -14,19 +13,17 @@ Any errors will show below this line.
 }
 </style>
 <div id="target" class="animated" style="position: absolute; width: 200px; height: 200px; background: lightblue"></div>
-<div style="position: absolute; width: 200px; height: 200px; top: 100px; left: 100px; background: lightgray"></div>
+<div id="affected" style="position: absolute; width: 200px; height: 200px; top: 100px; left: 100px; background: lightgray"></div>
 <script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
 <script>
-if (window.testRunner) {
-    testRunner.dumpAsText();
-}
 onload = function() {
-    target.style.transform = "translateX(10px)";
-    if (window.internals) {
-        var layers = JSON.parse(internals.layerTreeAsText(document, 1))["layers"]
-        var nonAnimatedDIVLayer = layers[4];
-        assert_true(nonAnimatedDIVLayer.compositingReasons[1] == "Layer was separately composited because it could not be squashed.");
-        assert_true(nonAnimatedDIVLayer.squashingDisallowedReasons[0] == "Cannot squash into a layer that is animating.");
-    }
+    test(function() {
+        if (window.internals) {
+            var layer_tree = internals.layerTreeAsText(document);
+            assert_true(layer_tree.includes("id='affected'"), 'should not be squashed into animated layer');
+            assert_true(layer_tree.includes("id='target'"), 'animated layer');
+        }
+    });
 };
 </script>

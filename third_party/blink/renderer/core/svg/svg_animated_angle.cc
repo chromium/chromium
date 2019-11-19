@@ -31,17 +31,19 @@
 #include "third_party/blink/renderer/core/svg/svg_animated_angle.h"
 
 #include "third_party/blink/renderer/core/svg_names.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
 
 SVGAnimatedAngle::SVGAnimatedAngle(SVGElement* context_element)
     : SVGAnimatedProperty<SVGAngle>(context_element,
                                     svg_names::kOrientAttr,
-                                    SVGAngle::Create()),
-      orient_type_(SVGAnimatedEnumeration<SVGMarkerOrientType>::Create(
-          context_element,
-          svg_names::kOrientAttr,
-          BaseValue()->OrientType())) {}
+                                    MakeGarbageCollected<SVGAngle>()),
+      orient_type_(
+          MakeGarbageCollected<SVGAnimatedEnumeration<SVGMarkerOrientType>>(
+              context_element,
+              svg_names::kOrientAttr,
+              BaseValue()->OrientType())) {}
 
 SVGAnimatedAngle::~SVGAnimatedAngle() = default;
 

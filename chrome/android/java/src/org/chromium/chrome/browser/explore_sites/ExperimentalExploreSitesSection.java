@@ -51,7 +51,7 @@ public class ExperimentalExploreSitesSection {
                 (View v)
                         -> mNavigationDelegate.openUrl(WindowOpenDisposition.CURRENT_TAB,
                                 new LoadUrlParams(
-                                        ExploreSitesBridgeExperimental.nativeGetCatalogUrl(),
+                                        ExploreSitesBridgeExperimentalJni.get().getCatalogUrl(),
                                         PageTransition.AUTO_BOOKMARK)));
     }
 

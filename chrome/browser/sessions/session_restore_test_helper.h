@@ -43,7 +43,7 @@ class SessionRestoreTestHelper {
   SessionRestore::CallbackSubscription callback_subscription_;
 
   // For safely binding pointers to callbacks.
-  base::WeakPtrFactory<SessionRestoreTestHelper> weak_ptr_factory;
+  base::WeakPtrFactory<SessionRestoreTestHelper> weak_ptr_factory{this};
 
   DISALLOW_COPY_AND_ASSIGN(SessionRestoreTestHelper);
 };

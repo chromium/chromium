@@ -5,246 +5,235 @@
 /**
  * Base class for image metadata parsers that only need to look at a short
  * fragment at the start of the file.
- * @param {MetadataParserLogger} parent Parent object.
- * @param {string} type Image type.
- * @param {RegExp} urlFilter RegExp to match URLs.
- * @param {number} headerSize Size of header.
- * @constructor
- * @struct
- * @extends {ImageParser}
+ * @abstract
  */
-function SimpleImageParser(parent, type, urlFilter, headerSize) {
-  ImageParser.call(this, parent, type, urlFilter);
-  this.headerSize = headerSize;
+class SimpleImageParser extends ImageParser {
+  /**
+   * @param {!MetadataParserLogger} parent Parent object.
+   * @param {string} type Image type.
+   * @param {!RegExp} urlFilter RegExp to match URLs.
+   * @param {number} headerSize Size of header.
+   */
+  constructor(parent, type, urlFilter, headerSize) {
+    super(parent, type, urlFilter);
+    /** @public @const {number} */
+    this.headerSize = headerSize;
+  }
+
+  /**
+   * @param {File} file File to be parses.
+   * @param {Object} metadata Metadata object of the file.
+   * @param {function(Object)} callback Success callback.
+   * @param {function(string)} errorCallback Error callback.
+   */
+  parse(file, metadata, callback, errorCallback) {
+    const self = this;
+    MetadataParser.readFileBytes(file, 0, this.headerSize, (file, br) => {
+      try {
+        self.parseHeader(metadata, br);
+        callback(metadata);
+      } catch (e) {
+        errorCallback(e.toString());
+      }
+    }, errorCallback);
+  }
+
+  /**
+   * Parse header of an image. Inherited class must implement this.
+   * @abstract
+   * @param {Object} metadata Dictionary to store the parsed metadata.
+   * @param {ByteReader} byteReader Reader for header binary data.
+   */
+  parseHeader(metadata, byteReader) {}
 }
-
-SimpleImageParser.prototype.__proto__ = ImageParser.prototype;
-
-/**
- * @param {File} file File to be parses.
- * @param {Object} metadata Metadata object of the file.
- * @param {function(Object)} callback Success callback.
- * @param {function(string)} errorCallback Error callback.
- */
-SimpleImageParser.prototype.parse = function(
-    file, metadata, callback, errorCallback) {
-  const self = this;
-  MetadataParser.readFileBytes(
-      file, 0, this.headerSize,
-      (file, br) => {
-        try {
-          self.parseHeader(metadata, br);
-          callback(metadata);
-        } catch (e) {
-          errorCallback(e.toString());
-        }
-      },
-      errorCallback);
-};
-
-/**
- * Parse header of an image. Inherited class must implement this.
- * @param {Object} metadata Dictionary to store the parsed metadata.
- * @param {ByteReader} byteReader Reader for header binary data.
- */
-SimpleImageParser.prototype.parseHeader = (metadata, byteReader) => {};
 
 /**
  * Parser for the header of png files.
- * @param {MetadataParserLogger} parent Parent object.
- * @extends {SimpleImageParser}
- * @constructor
- * @struct
+ * @final
  */
-function PngParser(parent) {
-  SimpleImageParser.call(this, parent, 'png', /\.png$/i, 24);
+class PngParser extends SimpleImageParser {
+  /**
+   * @param {!MetadataParserLogger} parent Parent object.
+   */
+  constructor(parent) {
+    super(parent, 'png', /\.png$/i, 24);
+  }
+
+  /**
+   * @override
+   */
+  parseHeader(metadata, br) {
+    br.setByteOrder(ByteReader.BIG_ENDIAN);
+
+    const signature = br.readString(8);
+    if (signature != '\x89PNG\x0D\x0A\x1A\x0A') {
+      throw new Error('Invalid PNG signature: ' + signature);
+    }
+
+    br.seek(12);
+    const ihdr = br.readString(4);
+    if (ihdr != 'IHDR') {
+      throw new Error('Missing IHDR chunk');
+    }
+
+    metadata.width = br.readScalar(4);
+    metadata.height = br.readScalar(4);
+  }
 }
-
-PngParser.prototype = {__proto__: SimpleImageParser.prototype};
-
-/**
- * @override
- */
-PngParser.prototype.parseHeader = (metadata, br) => {
-  br.setByteOrder(ByteReader.BIG_ENDIAN);
-
-  const signature = br.readString(8);
-  if (signature != '\x89PNG\x0D\x0A\x1A\x0A') {
-    throw new Error('Invalid PNG signature: ' + signature);
-  }
-
-  br.seek(12);
-  const ihdr = br.readString(4);
-  if (ihdr != 'IHDR') {
-    throw new Error('Missing IHDR chunk');
-  }
-
-  metadata.width = br.readScalar(4);
-  metadata.height = br.readScalar(4);
-};
-
-registerParserClass(PngParser);
 
 /**
  * Parser for the header of bmp files.
- * @param {MetadataParserLogger} parent Parent object.
- * @constructor
- * @extends {SimpleImageParser}
- * @struct
+ * @final
  */
-function BmpParser(parent) {
-  SimpleImageParser.call(this, parent, 'bmp', /\.bmp$/i, 28);
-}
-
-BmpParser.prototype = {__proto__: SimpleImageParser.prototype};
-
-/**
- * @override
- */
-BmpParser.prototype.parseHeader = (metadata, br) => {
-  br.setByteOrder(ByteReader.LITTLE_ENDIAN);
-
-  const signature = br.readString(2);
-  if (signature != 'BM') {
-    throw new Error('Invalid BMP signature: ' + signature);
+class BmpParser extends SimpleImageParser {
+  /**
+   * @param {!MetadataParserLogger} parent Parent object.
+   */
+  constructor(parent) {
+    super(parent, 'bmp', /\.bmp$/i, 28);
   }
 
-  br.seek(18);
-  metadata.width = br.readScalar(4);
-  metadata.height = br.readScalar(4);
-};
+  /**
+   * @override
+   */
+  parseHeader(metadata, br) {
+    br.setByteOrder(ByteReader.LITTLE_ENDIAN);
 
-registerParserClass(BmpParser);
+    const signature = br.readString(2);
+    if (signature != 'BM') {
+      throw new Error('Invalid BMP signature: ' + signature);
+    }
+
+    br.seek(18);
+    metadata.width = br.readScalar(4);
+    metadata.height = br.readScalar(4);
+  }
+}
 
 /**
  * Parser for the header of gif files.
- * @param {MetadataParserLogger} parent Parent object.
- * @constructor
- * @extends {SimpleImageParser}
- * @struct
+ * @final
  */
-function GifParser(parent) {
-  SimpleImageParser.call(this, parent, 'gif', /\.Gif$/i, 10);
-}
-
-GifParser.prototype = {__proto__: SimpleImageParser.prototype};
-
-/**
- * @override
- */
-GifParser.prototype.parseHeader = (metadata, br) => {
-  br.setByteOrder(ByteReader.LITTLE_ENDIAN);
-
-  const signature = br.readString(6);
-  if (!signature.match(/GIF8(7|9)a/)) {
-    throw new Error('Invalid GIF signature: ' + signature);
+class GifParser extends SimpleImageParser {
+  /**
+   * @param {!MetadataParserLogger} parent Parent object.
+   */
+  constructor(parent) {
+    super(parent, 'gif', /\.Gif$/i, 10);
   }
 
-  metadata.width = br.readScalar(2);
-  metadata.height = br.readScalar(2);
-};
+  /**
+   * @override
+   */
+  parseHeader(metadata, br) {
+    br.setByteOrder(ByteReader.LITTLE_ENDIAN);
 
-registerParserClass(GifParser);
+    const signature = br.readString(6);
+    if (!signature.match(/GIF8(7|9)a/)) {
+      throw new Error('Invalid GIF signature: ' + signature);
+    }
+
+    metadata.width = br.readScalar(2);
+    metadata.height = br.readScalar(2);
+  }
+}
 
 /**
  * Parser for the header of webp files.
- * @param {MetadataParserLogger} parent Parent object.
- * @constructor
- * @extends {SimpleImageParser}
- * @struct
+ * @final
  */
-function WebpParser(parent) {
-  SimpleImageParser.call(this, parent, 'webp', /\.webp$/i, 30);
+class WebpParser extends SimpleImageParser {
+  /**
+   * @param {!MetadataParserLogger} parent Parent object.
+   */
+  constructor(parent) {
+    super(parent, 'webp', /\.webp$/i, 30);
+  }
+
+  /**
+   * @override
+   */
+  parseHeader(metadata, br) {
+    br.setByteOrder(ByteReader.LITTLE_ENDIAN);
+
+    const riffSignature = br.readString(4);
+    if (riffSignature != 'RIFF') {
+      throw new Error('Invalid RIFF signature: ' + riffSignature);
+    }
+
+    br.seek(8);
+    const webpSignature = br.readString(4);
+    if (webpSignature != 'WEBP') {
+      throw new Error('Invalid WEBP signature: ' + webpSignature);
+    }
+
+    const chunkFormat = br.readString(4);
+    switch (chunkFormat) {
+      // VP8 lossy bitstream format.
+      case 'VP8 ':
+        br.seek(23);
+        const lossySignature = br.readScalar(2) | (br.readScalar(1) << 16);
+        if (lossySignature != 0x2a019d) {
+          throw new Error(
+              'Invalid VP8 lossy bitstream signature: ' + lossySignature);
+        }
+        var dimensionBits = br.readScalar(4);
+        metadata.width = dimensionBits & 0x3fff;
+        metadata.height = (dimensionBits >> 16) & 0x3fff;
+        break;
+
+      // VP8 lossless bitstream format.
+      case 'VP8L':
+        br.seek(20);
+        const losslessSignature = br.readScalar(1);
+        if (losslessSignature != 0x2f) {
+          throw new Error(
+              'Invalid VP8 lossless bitstream signature: ' + losslessSignature);
+        }
+        var dimensionBits = br.readScalar(4);
+        metadata.width = (dimensionBits & 0x3fff) + 1;
+        metadata.height = ((dimensionBits >> 14) & 0x3fff) + 1;
+        break;
+
+      // VP8 extended file format.
+      case 'VP8X':
+        br.seek(20);
+        // Read 24-bit value. ECMAScript assures left-to-right evaluation order.
+        metadata.width = (br.readScalar(2) | (br.readScalar(1) << 16)) + 1;
+        metadata.height = (br.readScalar(2) | (br.readScalar(1) << 16)) + 1;
+        break;
+
+      default:
+        throw new Error('Invalid chunk format: ' + chunkFormat);
+    }
+  }
 }
-
-WebpParser.prototype = {__proto__: SimpleImageParser.prototype};
-
-/**
- * @override
- */
-WebpParser.prototype.parseHeader = (metadata, br) => {
-  br.setByteOrder(ByteReader.LITTLE_ENDIAN);
-
-  const riffSignature = br.readString(4);
-  if (riffSignature != 'RIFF') {
-    throw new Error('Invalid RIFF signature: ' + riffSignature);
-  }
-
-  br.seek(8);
-  const webpSignature = br.readString(4);
-  if (webpSignature != 'WEBP') {
-    throw new Error('Invalid WEBP signature: ' + webpSignature);
-  }
-
-  const chunkFormat = br.readString(4);
-  switch (chunkFormat) {
-    // VP8 lossy bitstream format.
-    case 'VP8 ':
-      br.seek(23);
-      const lossySignature = br.readScalar(2) | (br.readScalar(1) << 16);
-      if (lossySignature != 0x2a019d) {
-        throw new Error('Invalid VP8 lossy bitstream signature: ' +
-            lossySignature);
-      }
-      var dimensionBits = br.readScalar(4);
-      metadata.width = dimensionBits & 0x3fff;
-      metadata.height = (dimensionBits >> 16) & 0x3fff;
-      break;
-
-    // VP8 lossless bitstream format.
-    case 'VP8L':
-      br.seek(20);
-      const losslessSignature = br.readScalar(1);
-      if (losslessSignature != 0x2f) {
-        throw new Error('Invalid VP8 lossless bitstream signature: ' +
-            losslessSignature);
-      }
-      var dimensionBits = br.readScalar(4);
-      metadata.width = (dimensionBits & 0x3fff) + 1;
-      metadata.height = ((dimensionBits >> 14) & 0x3fff) + 1;
-      break;
-
-    // VP8 extended file format.
-    case 'VP8X':
-      br.seek(20);
-      // Read 24-bit value. ECMAScript assures left-to-right evaluation order.
-      metadata.width = (br.readScalar(2) | (br.readScalar(1) << 16)) + 1;
-      metadata.height = (br.readScalar(2) | (br.readScalar(1) << 16)) + 1;
-      break;
-
-    default:
-      throw new Error('Invalid chunk format: ' + chunkFormat);
-  }
-};
-
-registerParserClass(WebpParser);
 
 /**
  * Parser for the header of .ico icon files.
- * @param {MetadataParserLogger} parent Parent metadata dispatcher object.
- * @constructor
- * @extends {SimpleImageParser}
+ * @final
  */
-function IcoParser(parent) {
-  SimpleImageParser.call(this, parent, 'ico', /\.ico$/i, 8);
-}
-
-IcoParser.prototype = {__proto__: SimpleImageParser.prototype};
-
-/**
- * @override
- */
-IcoParser.prototype.parseHeader = (metadata, byteReader) => {
-  byteReader.setByteOrder(ByteReader.LITTLE_ENDIAN);
-
-  const signature = byteReader.readString(4);
-  if (signature !== '\x00\x00\x00\x01') {
-    throw new Error('Invalid ICO signature: ' + signature);
+class IcoParser extends SimpleImageParser {
+  /**
+   * @param {!MetadataParserLogger} parent Parent metadata dispatcher object.
+   */
+  constructor(parent) {
+    super(parent, 'ico', /\.ico$/i, 8);
   }
 
-  byteReader.seek(2);
-  metadata.width = byteReader.readScalar(1);
-  metadata.height = byteReader.readScalar(1);
-};
+  /**
+   * @override
+   */
+  parseHeader(metadata, byteReader) {
+    byteReader.setByteOrder(ByteReader.LITTLE_ENDIAN);
 
-registerParserClass(IcoParser);
+    const signature = byteReader.readString(4);
+    if (signature !== '\x00\x00\x00\x01') {
+      throw new Error('Invalid ICO signature: ' + signature);
+    }
+
+    byteReader.seek(2);
+    metadata.width = byteReader.readScalar(1);
+    metadata.height = byteReader.readScalar(1);
+  }
+}

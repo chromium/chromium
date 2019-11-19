@@ -1,6 +1,7 @@
 This is a testharness.js-based test.
-Found 67 tests; 57 PASS, 10 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 68 tests; 58 PASS, 10 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
+PASS idl_test validation
 PASS MediaRecorder interface: existence and properties of interface object
 PASS MediaRecorder interface object length
 PASS MediaRecorder interface object name

@@ -43,7 +43,7 @@ void CheckAndResolveInputMethodIDs(
                  extension_ime_util::GetInputMethodIDByEngineID);
 
   // Remove values that aren't found in the set of supported input method IDs.
-  std::vector<std::string>::iterator it = values->begin();
+  auto it = values->begin();
   while (it != values->end()) {
     if (it->size() && supported_input_method_ids.find(*it) !=
                       supported_input_method_ids.end()) {
@@ -69,7 +69,7 @@ std::string CheckAndResolveLocales(const std::string& languages) {
   std::sort(accept_language_codes.begin(), accept_language_codes.end());
 
   // Remove unsupported language values.
-  std::vector<std::string>::iterator value_iter = values.begin();
+  auto value_iter = values.begin();
   while (value_iter != values.end()) {
     if (binary_search(accept_language_codes.begin(),
                       accept_language_codes.end(),
@@ -116,10 +116,7 @@ void MergeLists(std::vector<base::StringPiece>* dest,
 InputMethodSyncer::InputMethodSyncer(
     sync_preferences::PrefServiceSyncable* prefs,
     scoped_refptr<input_method::InputMethodManager::State> ime_state)
-    : prefs_(prefs),
-      ime_state_(ime_state),
-      merging_(false),
-      weak_factory_(this) {}
+    : prefs_(prefs), ime_state_(ime_state), merging_(false) {}
 
 InputMethodSyncer::~InputMethodSyncer() {
   prefs_->RemoveObserver(this);
@@ -129,11 +126,11 @@ InputMethodSyncer::~InputMethodSyncer() {
 void InputMethodSyncer::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterStringPref(
-      prefs::kLanguagePreloadEnginesSyncable,
-      "",
-      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-  registry->RegisterStringPref(prefs::kLanguageEnabledImesSyncable, "",
-                               user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+      prefs::kLanguagePreloadEnginesSyncable, "",
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  registry->RegisterStringPref(
+      prefs::kLanguageEnabledImesSyncable, "",
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
   registry->RegisterBooleanPref(prefs::kLanguageShouldMergeInputMethods, false);
 }
 
@@ -230,8 +227,9 @@ void InputMethodSyncer::MergeSyncedPrefs() {
   std::string languages(AddSupportedInputMethodValues(
       preferred_languages_.GetValue(), preferred_languages_syncable,
       language::prefs::kPreferredLanguages));
-  base::PostTaskWithTraitsAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+  base::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::Bind(&CheckAndResolveLocales, languages),
       base::Bind(&InputMethodSyncer::FinishMerge, weak_factory_.GetWeakPtr()));
 }

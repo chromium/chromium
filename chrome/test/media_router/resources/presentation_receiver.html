@@ -4,13 +4,11 @@
     <title>Media Router Integration Test - Receiver Page</title>
     <script>
       const addConnection = connection => {
-        connection.onconnect = () => {
-          connection.onmessage = event => {
-            if (event.data == 'close') {
-              connection.close();
-            } else {
-              connection.send('Pong: ' + event.data);
-            }
+        connection.onmessage = event => {
+          if (event.data == 'close') {
+            connection.close();
+          } else {
+            connection.send('Pong: ' + event.data);
           }
         };
       };

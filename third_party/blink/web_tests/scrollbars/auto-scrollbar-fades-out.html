@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <script>
   if (window.internals) {
-    internals.runtimeFlags.overlayScrollbarsEnabled = true;
-    internals.settings.setMockScrollbarsEnabled(true);
+    internals.useMockOverlayScrollbars();
 
     window.onload = function() {
       var div = document.getElementById('iframe')

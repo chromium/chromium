@@ -1,0 +1,73 @@
+{
+  // This list declares all [RuntimeEnabled] test features in the test idls.
+  // It is used to determine whether the feature is a runtime feature or an
+  // origin trial feature.
+  //
+  // Use one of the existing features here or add new ones for your tests.
+
+  parameters: {
+    // Used to specify if the feature is an origin trial feature.
+    in_origin_trial: {
+      valid_type: "bool",
+      default: false,
+    },
+  },
+
+  data: [
+    {
+      name: "FeatureName",
+      in_origin_trial: true,
+    },
+    {
+      name: "FeatureName1",
+      in_origin_trial: true,
+    },
+    {
+      name: "FeatureName2",
+      in_origin_trial: true,
+    },
+    {
+      name: "FeatureName3",
+      in_origin_trial: true,
+    },
+    {
+      name: "InterfaceFeatureName",
+      in_origin_trial: true,
+    },
+    {
+      name: "Interface2PartialRuntimeFeature",
+    },
+    {
+      name: "MixinRuntimeFeature",
+    },
+    {
+      name: "Mixin2RuntimeFeature",
+    },
+    {
+      name: "OriginTrialPartialFeature",
+      in_origin_trial: true,
+    },
+    {
+      name: "PartialRuntimeFeature",
+    },
+    {
+      name: "RuntimeFeature",
+    },
+    {
+      name: "RuntimeFeature1",
+    },
+    {
+      name: "RuntimeFeature2",
+    },
+    {
+      name: "RuntimeFeature3",
+    },
+    {
+      name: "SecureFeature",
+    },
+    {
+      name: "TestFeature",
+      in_origin_trial: true,
+    },
+  ],
+}

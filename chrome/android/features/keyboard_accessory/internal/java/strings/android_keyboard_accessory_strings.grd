@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- android_chrome_strings.grd contains strings for the keyboard accessory in Chrome for Android. -->
+<grit current_release="1" latest_public_release="0" output_all_resource_defines="false">
+  <outputs>
+    <output filename="values-am/android_keyboard_accessory_strings.xml" lang="am" type="android" />
+    <output filename="values-ar/android_keyboard_accessory_strings.xml" lang="ar" type="android" />
+    <output filename="values-bg/android_keyboard_accessory_strings.xml" lang="bg" type="android" />
+    <output filename="values-ca/android_keyboard_accessory_strings.xml" lang="ca" type="android" />
+    <output filename="values-cs/android_keyboard_accessory_strings.xml" lang="cs" type="android" />
+    <output filename="values-da/android_keyboard_accessory_strings.xml" lang="da" type="android" />
+    <output filename="values-de/android_keyboard_accessory_strings.xml" lang="de" type="android" />
+    <output filename="values-el/android_keyboard_accessory_strings.xml" lang="el" type="android" />
+    <output filename="values/android_keyboard_accessory_strings.xml" lang="en" type="android" />
+    <output filename="values-en-rGB/android_keyboard_accessory_strings.xml" lang="en-GB" type="android" />
+    <output filename="values-es/android_keyboard_accessory_strings.xml" lang="es" type="android" />
+    <output filename="values-es-rUS/android_keyboard_accessory_strings.xml" lang="es-419" type="android" />
+    <output filename="values-fa/android_keyboard_accessory_strings.xml" lang="fa" type="android" />
+    <output filename="values-fi/android_keyboard_accessory_strings.xml" lang="fi" type="android" />
+    <output filename="values-tl/android_keyboard_accessory_strings.xml" lang="fil" type="android" />
+    <output filename="values-fr/android_keyboard_accessory_strings.xml" lang="fr" type="android" />
+    <output filename="values-hi/android_keyboard_accessory_strings.xml" lang="hi" type="android" />
+    <output filename="values-hr/android_keyboard_accessory_strings.xml" lang="hr" type="android" />
+    <output filename="values-hu/android_keyboard_accessory_strings.xml" lang="hu" type="android" />
+    <output filename="values-in/android_keyboard_accessory_strings.xml" lang="id" type="android" />
+    <output filename="values-it/android_keyboard_accessory_strings.xml" lang="it" type="android" />
+    <output filename="values-iw/android_keyboard_accessory_strings.xml" lang="iw" type="android" />
+    <output filename="values-ja/android_keyboard_accessory_strings.xml" lang="ja" type="android" />
+    <output filename="values-ko/android_keyboard_accessory_strings.xml" lang="ko" type="android" />
+    <output filename="values-lt/android_keyboard_accessory_strings.xml" lang="lt" type="android" />
+    <output filename="values-lv/android_keyboard_accessory_strings.xml" lang="lv" type="android" />
+    <output filename="values-nl/android_keyboard_accessory_strings.xml" lang="nl" type="android" />
+    <output filename="values-nb/android_keyboard_accessory_strings.xml" lang="no" type="android" />
+    <output filename="values-pl/android_keyboard_accessory_strings.xml" lang="pl" type="android" />
+    <output filename="values-pt-rBR/android_keyboard_accessory_strings.xml" lang="pt-BR" type="android" />
+    <output filename="values-pt-rPT/android_keyboard_accessory_strings.xml" lang="pt-PT" type="android" />
+    <output filename="values-ro/android_keyboard_accessory_strings.xml" lang="ro" type="android" />
+    <output filename="values-ru/android_keyboard_accessory_strings.xml" lang="ru" type="android" />
+    <output filename="values-sk/android_keyboard_accessory_strings.xml" lang="sk" type="android" />
+    <output filename="values-sl/android_keyboard_accessory_strings.xml" lang="sl" type="android" />
+    <output filename="values-sr/android_keyboard_accessory_strings.xml" lang="sr" type="android" />
+    <output filename="values-sv/android_keyboard_accessory_strings.xml" lang="sv" type="android" />
+    <output filename="values-sw/android_keyboard_accessory_strings.xml" lang="sw" type="android" />
+    <output filename="values-th/android_keyboard_accessory_strings.xml" lang="th" type="android" />
+    <output filename="values-tr/android_keyboard_accessory_strings.xml" lang="tr" type="android" />
+    <output filename="values-uk/android_keyboard_accessory_strings.xml" lang="uk" type="android" />
+    <output filename="values-vi/android_keyboard_accessory_strings.xml" lang="vi" type="android" />
+    <output filename="values-zh-rCN/android_keyboard_accessory_strings.xml" lang="zh-CN" type="android" />
+    <output filename="values-zh-rTW/android_keyboard_accessory_strings.xml" lang="zh-TW" type="android" />
+  </outputs>
+  <translations>
+    <file lang="am" path="translations/android_keyboard_accessory_strings_am.xtb" />
+    <file lang="ar" path="translations/android_keyboard_accessory_strings_ar.xtb" />
+    <file lang="bg" path="translations/android_keyboard_accessory_strings_bg.xtb" />
+    <file lang="bn" path="translations/android_keyboard_accessory_strings_bn.xtb" />
+    <file lang="ca" path="translations/android_keyboard_accessory_strings_ca.xtb" />
+    <file lang="cs" path="translations/android_keyboard_accessory_strings_cs.xtb" />
+    <file lang="da" path="translations/android_keyboard_accessory_strings_da.xtb" />
+    <file lang="de" path="translations/android_keyboard_accessory_strings_de.xtb" />
+    <file lang="el" path="translations/android_keyboard_accessory_strings_el.xtb" />
+    <file lang="en-GB" path="translations/android_keyboard_accessory_strings_en-GB.xtb" />
+    <file lang="es" path="translations/android_keyboard_accessory_strings_es.xtb" />
+    <file lang="es-419" path="translations/android_keyboard_accessory_strings_es-419.xtb" />
+    <file lang="et" path="translations/android_keyboard_accessory_strings_et.xtb" />
+    <file lang="fa" path="translations/android_keyboard_accessory_strings_fa.xtb" />
+    <file lang="fi" path="translations/android_keyboard_accessory_strings_fi.xtb" />
+    <file lang="fil" path="translations/android_keyboard_accessory_strings_fil.xtb" />
+    <file lang="fr" path="translations/android_keyboard_accessory_strings_fr.xtb" />
+    <file lang="gu" path="translations/android_keyboard_accessory_strings_gu.xtb" />
+    <file lang="hi" path="translations/android_keyboard_accessory_strings_hi.xtb" />
+    <file lang="hr" path="translations/android_keyboard_accessory_strings_hr.xtb" />
+    <file lang="hu" path="translations/android_keyboard_accessory_strings_hu.xtb" />
+    <file lang="id" path="translations/android_keyboard_accessory_strings_id.xtb" />
+    <file lang="it" path="translations/android_keyboard_accessory_strings_it.xtb" />
+    <file lang="iw" path="translations/android_keyboard_accessory_strings_iw.xtb" />
+    <file lang="ja" path="translations/android_keyboard_accessory_strings_ja.xtb" />
+    <file lang="ko" path="translations/android_keyboard_accessory_strings_ko.xtb" />
+    <file lang="kn" path="translations/android_keyboard_accessory_strings_kn.xtb" />
+    <file lang="lt" path="translations/android_keyboard_accessory_strings_lt.xtb" />
+    <file lang="lv" path="translations/android_keyboard_accessory_strings_lv.xtb" />
+    <file lang="ml" path="translations/android_keyboard_accessory_strings_ml.xtb" />
+    <file lang="mr" path="translations/android_keyboard_accessory_strings_mr.xtb" />
+    <file lang="ms" path="translations/android_keyboard_accessory_strings_ms.xtb" />
+    <file lang="nl" path="translations/android_keyboard_accessory_strings_nl.xtb" />
+    <file lang="no" path="translations/android_keyboard_accessory_strings_no.xtb" />
+    <file lang="pl" path="translations/android_keyboard_accessory_strings_pl.xtb" />
+    <file lang="pt-BR" path="translations/android_keyboard_accessory_strings_pt-BR.xtb" />
+    <file lang="pt-PT" path="translations/android_keyboard_accessory_strings_pt-PT.xtb" />
+    <file lang="ro" path="translations/android_keyboard_accessory_strings_ro.xtb" />
+    <file lang="ru" path="translations/android_keyboard_accessory_strings_ru.xtb" />
+    <file lang="sk" path="translations/android_keyboard_accessory_strings_sk.xtb" />
+    <file lang="sl" path="translations/android_keyboard_accessory_strings_sl.xtb" />
+    <file lang="sr" path="translations/android_keyboard_accessory_strings_sr.xtb" />
+    <file lang="sv" path="translations/android_keyboard_accessory_strings_sv.xtb" />
+    <file lang="sw" path="translations/android_keyboard_accessory_strings_sw.xtb" />
+    <file lang="ta" path="translations/android_keyboard_accessory_strings_ta.xtb" />
+    <file lang="te" path="translations/android_keyboard_accessory_strings_te.xtb" />
+    <file lang="th" path="translations/android_keyboard_accessory_strings_th.xtb" />
+    <file lang="tr" path="translations/android_keyboard_accessory_strings_tr.xtb" />
+    <file lang="uk" path="translations/android_keyboard_accessory_strings_uk.xtb" />
+    <file lang="vi" path="translations/android_keyboard_accessory_strings_vi.xtb" />
+    <file lang="zh-CN" path="translations/android_keyboard_accessory_strings_zh-CN.xtb" />
+    <file lang="zh-TW" path="translations/android_keyboard_accessory_strings_zh-TW.xtb" />
+  </translations>
+  <release allow_pseudo="false" seq="1">
+    <messages fallback_to_english="true">
+      <message name="IDS_AUTOFILL_KEYBOARD_ACCESSORY_CONTENT_DESCRIPTION" desc="The text announced by the screen reader when the password suggestions are shown.">
+        Passwords available
+      </message>
+      <message name="IDS_AUTOFILL_KEYBOARD_ACCESSORY_MODERN_CONTENT_DESCRIPTION" desc="The text announced by the screen reader when the autofill suggestions and fallbacks are shown.">
+        Autofill suggestions available above the keyboard
+      </message>
+      <message name="IDS_KEYBOARD_ACCESSORY_SHEET_HIDE" desc="Description for the active icon button that closes an accessory sheet and brings back the keyboard.">
+          Show keyboard
+      </message>
+      <message name="IDS_IPH_KEYBOARD_ACCESSORY_FILL_ADDRESS" desc="Text in In-Product-Help bubble suggesting to fill a physical address with Chrome.">
+          Fill address
+      </message>
+      <message name="IDS_IPH_KEYBOARD_ACCESSORY_FILL_PASSWORD" desc="Text in In-Product-Help bubble suggesting to fill a password with Chrome.">
+          Fill password
+      </message>
+      <message name="IDS_IPH_KEYBOARD_ACCESSORY_FILL_PAYMENT" desc="Text in In-Product-Help bubble suggesting to fill a credit card with Chrome.">
+          Fill payment method
+      </message>
+      <message name="IDS_PASSWORD_GENERATION_ACCESSORY_BUTTON" desc="Text for the button used to generate a password.">
+          Suggest strong password
+      </message>
+      <message name="IDS_PASSWORD_GENERATION_ACCESSORY_BUTTON_SHORT" desc="Shortened text for the button used to generate a password. This is used for devices with small screen.">
+          Suggest password
+      </message>
+      <message name="IDS_PASSWORD_ACCESSORY_SHEET_TOGGLE" desc="Description for the icon button used to open and close the password accessory sheet.">
+          Show passwords
+      </message>
+      <message name="IDS_PASSWORD_ACCESSORY_SHEET_OPENED" desc="Accessibility announcement when opening a password bottom sheet containing saved credentials and options like managing and generating passwords.">
+          Showing saved passwords and password options
+      </message>
+      <message name="IDS_ADDRESS_ACCESSORY_SHEET_TITLE" desc="Text used as title for the address accessory sheet.">
+          Addresses
+      </message>
+      <message name="IDS_ADDRESS_ACCESSORY_SHEET_TOGGLE" desc="Description for the icon button used to open and close the address accessory sheet.">
+          Show Addresses
+      </message>
+      <message name="IDS_ADDRESS_ACCESSORY_SHEET_OPENED" desc="Accessibility announcement when opening an address bottom sheet containing saved addresses.">
+          Showing saved addresses
+      </message>
+      <message name="IDS_CREDIT_CARD_ACCESSORY_SHEET_TOGGLE" desc="Description for the icon button used to open and close the payment method accessory sheet, where users' saved payment methods (e.g., credit cards) are shown for use when filling web forms.">
+        Show payment methods
+      </message>
+      <message name="IDS_CREDIT_CARD_ACCESSORY_SHEET_OPENED" desc="Accessibility announcement when opening a sheet containing users' saved payment methods (e.g., credit cards) for use when filling web forms.">
+        Showing saved payment methods
+      </message>
+    </messages>
+  </release>
+</grit>

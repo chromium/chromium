@@ -3,7 +3,7 @@
  * @const { {{constant.kind|lite_closure_type_with_nullability}} }
  * @export
  */
-{{module.namespace}}.{{struct.name}}.{{constant.name}} =
+{{module.namespace}}.{{struct.name}}_{{constant.name}} =
     {{constant.value|expression_to_text_lite}};
 {%  endfor %}
 
@@ -32,6 +32,11 @@ mojo.internal.Struct(
 {%-   endif %}
 {%- endfor %}
     ]);
+
+{% if generate_struct_deserializers %}
+{{module.namespace}}.{{struct.name}}_Deserialize =
+    mojo.internal.createStructDeserializer({{module.namespace}}.{{struct.name}}Spec.$);
+{% endif %}
 
 {%  if generate_closure_exports -%}
 goog.provide('{{module.namespace}}.{{struct.name}}');

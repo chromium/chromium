@@ -14,7 +14,7 @@ function sleep(time_ms) {
   return new Promise(resolve => window.setTimeout(resolve, time_ms));
 }
 
-sensor_test(async sensorProvider => {
+sensor_test(async (t, sensorProvider) => {
   const orientationData = generateOrientationData(1, 2, 3, false);
 
   setMockOrientationData(sensorProvider, orientationData);

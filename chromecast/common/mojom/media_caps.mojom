@@ -12,7 +12,7 @@ struct CodecProfileLevel {
 
 // Media capabilities that apply to all applications.
 interface MediaCaps {
-  AddObserver(MediaCapsObserver observer);
+  AddObserver(pending_remote<MediaCapsObserver> observer);
 };
 
 // Observes changes in media capabilities that apply to all applications.

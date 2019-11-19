@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-FAIL Test that an ImageBitmapRenderingContext with alpha disabled makes the canvas opaque assert_array_equals: property 1, expected 127 but got 255
-FAIL Test that an ImageBitmapRenderingContext with alpha enabled preserves the alpha assert_array_equals: property 3, expected 127 but got 128
-FAIL Test that the 'alpha' context creation attribute is true by default assert_array_equals: property 3, expected 127 but got 128
-Harness: the test ran to completion.
-

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<body>
+    <p id="p1" aria-label="p1">abcde</p>
+    <script>
+        const textNode = document.getElementById('p1').childNodes[0];
+        var selection = window.getSelection();
+        var selectionRange = document.createRange();
+
+        var go_passes = [
+            () => {
+                // Attempt to place caret within text node. This will fail
+                // and not generate a caret moved event if caret browsing is disabled.
+                selectionRange.setStart(textNode, 1);
+                selectionRange.setEnd(textNode, 1);
+                selection.removeAllRanges();
+                selection.addRange(selectionRange);
+            },
+            () => {
+                // Change selection, which is possible even if caret
+                // browsing is disabled, and fires a caret moved event.
+                selectionRange.setEnd(textNode, 3);
+            },
+        ];
+
+        var current_pass = 0;
+        function go() {
+            go_passes[current_pass++].call();
+            return current_pass < go_passes.length;
+        }
+    </script>
+</body>
+</html>

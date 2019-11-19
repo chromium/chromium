@@ -2,13 +2,13 @@
 <!-- Settings-specific Chromium strings (included from chromium_strings.grd). -->
 <grit-part>
   <!-- About Page -->
+  <message name="IDS_SETTINGS_ABOUT_PROGRAM" desc="Menu title for the About Chromium page.">
+    About Chromium
+  </message>
+  <message name="IDS_SETTINGS_GET_HELP_USING_CHROME" desc="Text of the button which takes the user to the Chrome help page.">
+    Get help with Chromium
+  </message>
   <if expr="not chromeos">
-    <message name="IDS_SETTINGS_ABOUT_PROGRAM" desc="Menu title for the About Chromium page.">
-      About Chromium
-    </message>
-    <message name="IDS_SETTINGS_GET_HELP_USING_CHROME" desc="Text of the button which takes the user to the Chrome help page.">
-      Get help with Chromium
-    </message>
     <message name="IDS_SETTINGS_UPGRADE_UPDATING" desc="Status label: Updating Chromium">
       Updating Chromium
     </message>
@@ -23,13 +23,21 @@
     </message>
   </if>
   <if expr="chromeos">
-    <message name="IDS_SETTINGS_ABOUT_PROGRAM" desc="Menu title for the About Chromium page.">
+    <message name="IDS_SETTINGS_ABOUT_OS" desc="Menu title for the About Chromium OS page.">
       About Chromium OS
     </message>
-    <message name="IDS_SETTINGS_GET_HELP_USING_CHROME" desc="Text of the button which takes the user to the Chrome help page.">
+    <message name="IDS_SETTINGS_ABOUT_SEE_OS_SETTINGS_FOR_UPDATE_MESSAGE" desc="Message shown to users on Chromium browser settings which alerts the user that OS updates are shown in Chromium OS settings.">
+      To see if your device is up to date, go to <ph name="LINK_BEGIN">&lt;a href="chrome://os-settings/help"&gt;</ph>Chromium OS Settings<ph name="LINK_END">&lt;/a&gt;</ph>
+    </message>
+    <message name="IDS_SETTINGS_GET_HELP_USING_CHROME_OS" desc="Text of the button which takes the user to the Chrome help page.">
       Get help with Chromium OS
     </message>
   </if>
+
+  <!-- Cookie Settings Page -->
+  <message name="IDS_SETTINGS_SITE_SETTINGS_DELETE_DATA_POST_SESSION" desc="Label for the checkbox that allows the user to automatically delete their cookies and site data at the end of the browser session.">
+    Clear cookies and site data when you quit Chromium
+  </message>
 
   <!-- Autofill Page -->
   <message name="IDS_SETTINGS_GOOGLE_PAYMENTS_CACHED" desc="Label that will be used to show that a credit card comes from Google Pay and is saved locally. This should follow the casing of the 'Google Pay' and 'Chrome' brands. 'Copied to Chromium' is short for 'The credit card is copied to Chromium'. 'Google Pay' should not be translated as it is the product name.">
@@ -52,11 +60,21 @@
     </message>
   </if>
 
+  <!-- Main Page -->
+  <if expr="chromeos">
+    <message name="IDS_SETTINGS_BROWSER_SETTINGS_BANNER" desc="Banner displayed in OS settings page that links to Browser settings.">
+      If a setting doesn't show on this page, look in your <ph name="LINK_BEGIN">&lt;a target="_blank" href="$1<ex>https://google.com/</ex>"&gt;</ph>
+      Chromium browser settings<ph name="LINK_END">&lt;/a&gt;</ph>
+    </message>
+    <!-- No target="_blank" because OS settings opens its own window. -->
+    <message name="IDS_SETTINGS_OS_SETTINGS_BANNER" desc="Banner displayed in browser settings page that links to OS settings.">
+      If a setting doesn't show on this page, look in your <ph name="LINK_BEGIN">&lt;a href="$1<ex>https://google.com/</ex>"&gt;</ph>
+      Chromium OS settings<ph name="LINK_END">&lt;/a&gt;</ph>
+    </message>
+  </if>
+
   <!-- Privacy Page -->
-  <message name="IDS_SETTINGS_IMPROVE_BROWSING_EXPERIENCE" desc="The text in the options panel that describes how we use web services to improve browsing experience.">
-    Chromium may use web services to improve your browsing experience. You may optionally disable these services. <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1"&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>
-  </message>
-  <message name="IDS_SETTINGS_SPELLING_DESCRIPTION_UNIFIED_CONSENT" desc="Description of using a web serviced to help resolve spelling errors. It is important to convey that what the user types will be sent to Google.">
+  <message name="IDS_SETTINGS_SPELLING_PREF_DESC" desc="Description of using a web serviced to help resolve spelling errors. It is important to convey that what the user types will be sent to Google.">
     To fix spelling errors, Chromium sends the text you type in text fields to Google
   </message>
   <message name="IDS_SETTINGS_RESTART_TO_APPLY_CHANGES" desc="Description in the snackbar to restart Chrome and apply changes.">
@@ -111,14 +129,7 @@
 </if>
 
   <!-- Languages Page -->
-  <if expr="chromeos">
-    <message name="IDS_SETTINGS_LANGUAGES_IS_DISPLAYED_IN_THIS_LANGUAGE" desc="The label for a language that is currently used as the UI display language.">
-      This language is used to display the Chromium OS UI
-    </message>
-    <message name="IDS_SETTINGS_LANGUAGES_DISPLAY_IN_THIS_LANGUAGE" desc="The label used for a button that changes the UI language.">
-      Display Chromium OS in this language
-    </message>
-  </if>
+  <!-- Chrome OS string is in settings_strings.grdp. -->
   <if expr="not chromeos">
     <message name="IDS_SETTINGS_LANGUAGES_IS_DISPLAYED_IN_THIS_LANGUAGE" desc="The label for a language that is currently used as the UI display language.">
       This language is used to display the Chromium UI

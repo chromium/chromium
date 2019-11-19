@@ -1,5 +1,4 @@
 google_apis/drive/request_sender_unittest.cc
-google_apis::(anonymous namespace)::RequestSenderTest::RequestSenderTest
 67
 Definition
 test

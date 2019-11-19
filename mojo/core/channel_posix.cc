@@ -28,10 +28,6 @@
 #include <sys/uio.h>
 #endif
 
-#if defined(OS_MACOSX) && !defined(OS_IOS)
-#include "mojo/core/mach_port_relay.h"
-#endif
-
 namespace mojo {
 namespace core {
 
@@ -47,18 +43,13 @@ class MessageView {
   MessageView(Channel::MessagePtr message, size_t offset)
       : message_(std::move(message)),
         offset_(offset),
-        handles_(message_->TakeHandlesForTransport()) {
+        handles_(message_->TakeHandles()) {
     DCHECK(!message_->data_num_bytes() || message_->data_num_bytes() > offset_);
   }
 
   MessageView(MessageView&& other) { *this = std::move(other); }
 
-  MessageView& operator=(MessageView&& other) {
-    message_ = std::move(other.message_);
-    offset_ = other.offset_;
-    handles_ = std::move(other.handles_);
-    return *this;
-  }
+  MessageView& operator=(MessageView&& other) = default;
 
   ~MessageView() {}
 
@@ -101,9 +92,6 @@ class MessageView {
 };
 
 class ChannelPosix : public Channel,
-#if defined(OS_MACOSX) && !defined(OS_IOS)
-                     public MachPortRelay::Observer,
-#endif
                      public base::MessageLoopCurrent::DestructionObserver,
                      public base::MessagePumpForIO::FdWatcher {
  public:
@@ -123,15 +111,6 @@ class ChannelPosix : public Channel,
   }
 
   void Start() override {
-#if defined(OS_MACOSX) && !defined(OS_IOS)
-    auto* relay = Core::Get()->GetMachPortRelay();
-    if (relay) {
-      // We should only have a relay if we know the remote process handle,
-      // because that means we're in the broker process.
-      relay->AddObserver(this);
-    }
-#endif
-
     if (io_task_runner_->RunsTasksInCurrentSequence()) {
       StartOnIOThread();
     } else {
@@ -147,30 +126,6 @@ class ChannelPosix : public Channel,
   }
 
   void Write(MessagePtr message) override {
-#if defined(OS_MACOSX) && !defined(OS_IOS)
-    // If this message has Mach ports and we have a MachPortRelay, use the relay
-    // to rewrite the ports as receive rights from which the send right can be
-    // read. See |MachPortRelay::SendPortsToProcess()|.
-    //
-    // Note that if we don't have a relay, the receiving process must, and they
-    // must also have the ability to extract a send right from the ports that
-    // are already attached.
-    MachPortRelay* relay = Core::Get()->GetMachPortRelay();
-    if (relay && remote_process().is_valid() && message->has_mach_ports()) {
-      if (relay->port_provider()->TaskForPid(remote_process().get()) ==
-          MACH_PORT_NULL) {
-        // We also need to have a task port for the remote process before we can
-        // send it any other ports. If we don't have one yet, queue the message
-        // until OnProcessReady() is invoked.
-        base::AutoLock lock(task_port_wait_lock_);
-        pending_outgoing_with_mach_ports_.emplace_back(std::move(message));
-        return;
-      }
-
-      relay->SendPortsToProcess(message.get(), remote_process().get());
-    }
-#endif
-
     bool write_error = false;
     {
       base::AutoLock lock(write_lock_);
@@ -206,82 +161,6 @@ class ChannelPosix : public Channel,
                               bool* deferred) override {
     if (num_handles > std::numeric_limits<uint16_t>::max())
       return false;
-#if defined(OS_MACOSX) && !defined(OS_IOS)
-    // On OSX, we can have mach ports which are located in the extra header
-    // section.
-    using MachPortsEntry = Channel::Message::MachPortsEntry;
-    using MachPortsExtraHeader = Channel::Message::MachPortsExtraHeader;
-    if (extra_header_size <
-        sizeof(MachPortsExtraHeader) + num_handles * sizeof(MachPortsEntry)) {
-      return false;
-    }
-    const MachPortsExtraHeader* mach_ports_header =
-        reinterpret_cast<const MachPortsExtraHeader*>(extra_header);
-    size_t num_mach_ports = mach_ports_header->num_ports;
-    if (num_mach_ports > num_handles)
-      return false;
-    if (incoming_fds_.size() + num_mach_ports < num_handles)
-      return true;
-
-    std::vector<PlatformHandleInTransit> handles_in_transit(num_handles);
-    const MachPortsEntry* mach_ports = mach_ports_header->entries;
-
-    // If we know the remote process handle, we assume all incoming Mach ports
-    // are send right references owned by the remote process. Otherwise they're
-    // receive ports we can use to read a send right.
-    const bool extract_send_rights = remote_process().is_valid();
-    for (size_t i = 0, mach_port_index = 0; i < num_handles; ++i) {
-      if (mach_port_index < num_mach_ports &&
-          mach_ports[mach_port_index].index == i) {
-        mach_port_t port_name =
-            static_cast<mach_port_t>(mach_ports[mach_port_index].mach_port);
-        if (extract_send_rights) {
-          handles_in_transit[i] =
-              PlatformHandleInTransit::CreateForMachPortName(port_name);
-        } else {
-          handles_in_transit[i] = PlatformHandleInTransit(
-              PlatformHandle(MachPortRelay::ReceiveSendRight(
-                  base::mac::ScopedMachReceiveRight(port_name))));
-        }
-        mach_port_index++;
-      } else {
-        if (incoming_fds_.empty())
-          return false;
-        handles_in_transit[i] = PlatformHandleInTransit(
-            PlatformHandle(std::move(incoming_fds_.front())));
-        incoming_fds_.pop_front();
-      }
-    }
-    if (extract_send_rights && num_mach_ports) {
-      MachPortRelay* relay = Core::Get()->GetMachPortRelay();
-      DCHECK(relay);
-      // Extracting send rights requires that we have a task port for the
-      // remote process, which we may not yet have.
-      if (relay->port_provider()->TaskForPid(remote_process().get()) !=
-          MACH_PORT_NULL) {
-        // We do have a task port, so extract the send rights immediately.
-        for (auto& handle : handles_in_transit) {
-          if (handle.is_mach_port_name()) {
-            handle = PlatformHandleInTransit(PlatformHandle(relay->ExtractPort(
-                handle.mach_port_name(), remote_process().get())));
-          }
-        }
-      } else {
-        // No task port, we have to defer this message.
-        *deferred = true;
-        base::AutoLock lock(task_port_wait_lock_);
-        std::vector<uint8_t> data(payload_size);
-        memcpy(data.data(), payload, payload_size);
-        pending_incoming_with_mach_ports_.emplace_back(
-            std::move(data), std::move(handles_in_transit));
-        return true;
-      }
-    }
-
-    handles->resize(handles_in_transit.size());
-    for (size_t i = 0; i < handles->size(); ++i)
-      handles->at(i) = handles_in_transit[i].TakeHandle();
-#else
     if (incoming_fds_.size() < num_handles)
       return true;
 
@@ -290,7 +169,6 @@ class ChannelPosix : public Channel,
       handles->at(i) = PlatformHandle(std::move(incoming_fds_.front()));
       incoming_fds_.pop_front();
     }
-#endif
 
     return true;
   }
@@ -356,73 +234,13 @@ class ChannelPosix : public Channel,
       socket_.reset();
       ignore_result(server_.TakePlatformHandle());
     }
-#if defined(OS_MACOSX)
+#if defined(OS_IOS)
     fds_to_close_.clear();
-#endif
-
-#if defined(OS_MACOSX) && !defined(OS_IOS)
-    auto* relay = Core::Get()->GetMachPortRelay();
-    if (relay)
-      relay->RemoveObserver(this);
 #endif
 
     // May destroy the |this| if it was the last reference.
     self_ = nullptr;
   }
-
-#if defined(OS_MACOSX) && !defined(OS_IOS)
-  // MachPortRelay::Observer:
-  void OnProcessReady(base::ProcessHandle process) override {
-    if (process != remote_process().get())
-      return;
-
-    io_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &ChannelPosix::FlushPendingMessagesWithMachPortsOnIOThread, this));
-  }
-
-  void FlushPendingMessagesWithMachPortsOnIOThread() {
-    // We have a task port for the remote process. Now we can send or accept
-    // any pending messages with Mach ports.
-    std::vector<RawIncomingMessage> incoming;
-    std::vector<MessagePtr> outgoing;
-    {
-      base::AutoLock lock(task_port_wait_lock_);
-      if (reject_incoming_messages_with_mach_ports_)
-        return;
-      std::swap(pending_incoming_with_mach_ports_, incoming);
-      std::swap(pending_outgoing_with_mach_ports_, outgoing);
-    }
-
-    DCHECK(remote_process().is_valid());
-    base::ProcessHandle process = remote_process().get();
-    MachPortRelay* relay = Core::Get()->GetMachPortRelay();
-    DCHECK(relay);
-    for (auto& message : incoming) {
-      Channel::Delegate* d = delegate();
-      if (!d)
-        break;
-      std::vector<PlatformHandle> handles(message.handles.size());
-      for (size_t i = 0; i < message.handles.size(); ++i) {
-        if (message.handles[i].is_mach_port_name()) {
-          handles[i] = PlatformHandle(
-              relay->ExtractPort(message.handles[i].mach_port_name(), process));
-        } else {
-          DCHECK(!message.handles[i].owning_process().is_valid());
-          handles[i] = message.handles[i].TakeHandle();
-        }
-      }
-      d->OnChannelMessage(message.data.data(), message.data.size(),
-                          std::move(handles));
-    }
-
-    for (auto& message : outgoing) {
-      relay->SendPortsToProcess(message.get(), process);
-      Write(std::move(message));
-    }
-  }
-#endif
 
   // base::MessageLoopCurrent::DestructionObserver:
   void WillDestroyCurrentMessageLoop() override {
@@ -467,8 +285,8 @@ class ChannelPosix : public Channel,
       std::vector<base::ScopedFD> incoming_fds;
       ssize_t read_result =
           SocketRecvmsg(socket_.get(), buffer, buffer_capacity, &incoming_fds);
-      for (auto& fd : incoming_fds)
-        incoming_fds_.emplace_back(std::move(fd));
+      for (auto& incoming_fd : incoming_fds)
+        incoming_fds_.emplace_back(std::move(incoming_fd));
 
       if (read_result > 0) {
         bytes_read = static_cast<size_t>(read_result);
@@ -539,8 +357,8 @@ class ChannelPosix : public Channel,
         // TODO: Handle lots of handles.
         result = SendmsgWithHandles(socket_.get(), &iov, 1, fds);
         if (result >= 0) {
-#if defined(OS_MACOSX)
-          // There is a bug on OSX which makes it dangerous to close
+#if defined(OS_IOS)
+          // There is a bug in XNU which makes it dangerous to close
           // a file descriptor while it is in transit. So instead we
           // store the file descriptor in a set and send a message to
           // the recipient, which is queued AFTER the message that
@@ -559,7 +377,7 @@ class ChannelPosix : public Channel,
             for (auto& fd : fds)
               fds_to_close_.emplace_back(std::move(fd));
           }
-#endif  // defined(OS_MACOSX)
+#endif  // defined(OS_IOS)
           handles_written += num_handles_to_send;
           DCHECK_LE(handles_written, num_handles);
           message_view.set_num_handles_sent(handles_written);
@@ -579,8 +397,8 @@ class ChannelPosix : public Channel,
       if (result < 0) {
         if (errno != EAGAIN &&
             errno != EWOULDBLOCK
-#if defined(OS_MACOSX)
-            // On OS X if sendmsg() is trying to send fds between processes and
+#if defined(OS_IOS)
+            // On iOS if sendmsg() is trying to send fds between processes and
             // there isn't enough room in the output buffer to send the fd
             // structure over atomically then EMSGSIZE is returned.
             //
@@ -595,7 +413,7 @@ class ChannelPosix : public Channel,
             // passing the FD over atomically.
             && errno != EMSGSIZE
 #endif
-            ) {
+        ) {
           return false;
         }
         message_view.SetHandles(std::move(handles));
@@ -638,7 +456,7 @@ class ChannelPosix : public Channel,
     return true;
   }
 
-#if defined(OS_MACOSX)
+#if defined(OS_IOS)
   bool OnControlMessage(Message::MessageType message_type,
                         const void* payload,
                         size_t payload_size,
@@ -704,7 +522,7 @@ class ChannelPosix : public Channel,
     fds_to_close_.erase(start, it);
     return true;
   }
-#endif  // defined(OS_MACOSX)
+#endif  // defined(OS_IOS)
 
   void OnWriteError(Error error) {
     DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
@@ -750,30 +568,10 @@ class ChannelPosix : public Channel,
 
   bool leak_handle_ = false;
 
-#if defined(OS_MACOSX)
+#if defined(OS_IOS)
   base::Lock fds_to_close_lock_;
   std::vector<base::ScopedFD> fds_to_close_;
-#if !defined(OS_IOS)
-  // Guards access to the send/receive queues below. These are messages that
-  // can't be fully accepted from or dispatched to the Channel user yet because
-  // we're still waiting on a task port for the remote process.
-  struct RawIncomingMessage {
-    RawIncomingMessage(std::vector<uint8_t> data,
-                       std::vector<PlatformHandleInTransit> handles)
-        : data(std::move(data)), handles(std::move(handles)) {}
-    RawIncomingMessage(RawIncomingMessage&&) = default;
-    ~RawIncomingMessage() = default;
-
-    std::vector<uint8_t> data;
-    std::vector<PlatformHandleInTransit> handles;
-  };
-
-  base::Lock task_port_wait_lock_;
-  bool reject_incoming_messages_with_mach_ports_ = false;
-  std::vector<MessagePtr> pending_outgoing_with_mach_ports_;
-  std::vector<RawIncomingMessage> pending_incoming_with_mach_ports_;
-#endif  // !defined(OS_IOS)
-#endif  // defined(OS_MACOSX)
+#endif  // defined(OS_IOS)
 
   DISALLOW_COPY_AND_ASSIGN(ChannelPosix);
 };

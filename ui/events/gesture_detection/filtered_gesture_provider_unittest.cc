@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 #include "ui/events/gesture_detection/filtered_gesture_provider.h"
-#include "base/test/scoped_task_environment.h"
+
+#include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/test/motion_event_test_utils.h"
 
@@ -13,8 +14,8 @@ class FilteredGestureProviderTest : public GestureProviderClient,
                                     public testing::Test {
  public:
   FilteredGestureProviderTest()
-      : scoped_task_environment_(
-            base::test::ScopedTaskEnvironment::MainThreadType::UI) {}
+      : task_environment_(
+            base::test::SingleThreadTaskEnvironment::MainThreadType::UI) {}
   ~FilteredGestureProviderTest() override {}
 
   // GestureProviderClient implementation.
@@ -22,7 +23,7 @@ class FilteredGestureProviderTest : public GestureProviderClient,
   bool RequiresDoubleTapGestureEvents() const override { return false; }
 
  private:
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
 // Single touch drag test: After touch-start, the moved_beyond_slop_region bit

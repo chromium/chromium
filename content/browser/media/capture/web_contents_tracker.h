@@ -33,11 +33,7 @@ class CONTENT_EXPORT WebContentsTracker
     : public base::RefCountedThreadSafe<WebContentsTracker>,
       public WebContentsObserver {
  public:
-  // If |track_fullscreen_rwhv| is true, the ChangeCallback will be run when a
-  // WebContents shows/destroys a fullscreen RenderWidgetHostView. If false,
-  // fullscreen events are ignored. Normally, specify true for video capture and
-  // false for audio capture.
-  explicit WebContentsTracker(bool track_fullscreen_rwhv);
+  WebContentsTracker();
 
   // Callback to indicate a new RenderWidgetHostView should be targeted for
   // capture. This is also invoked with false to indicate tracking will not
@@ -115,10 +111,6 @@ class CONTENT_EXPORT WebContentsTracker
   // may have changed due to a separate fullscreen widget shown/destroyed.
   void DidShowFullscreenWidget() final;
   void DidDestroyFullscreenWidget() final;
-
-  // If true, the client is interested in the showing/destruction of fullscreen
-  // RenderWidgetHostViews.
-  const bool track_fullscreen_rwhv_;
 
   // Pointer to the RenderWidgetHostView provided in the last run of
   // |callback_|. This is used to eliminate duplicate callback runs.

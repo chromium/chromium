@@ -18,12 +18,15 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
+#include "base/scoped_observer.h"
 #include "base/strings/string16.h"
 #include "chrome/browser/extensions/blacklist.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/forced_extensions/installation_tracker.h"
 #include "chrome/browser/extensions/install_gate.h"
 #include "chrome/browser/extensions/pending_extension_manager.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/upgrade_detector/upgrade_observer.h"
 #include "components/sync/model/string_ordinal.h"
 #include "content/public/browser/notification_observer.h"
@@ -51,6 +54,7 @@ class Profile;
 
 namespace base {
 class CommandLine;
+class OneShotEvent;
 }
 
 FORWARD_DECLARE_TEST(BlacklistedExtensionSyncServiceTest,
@@ -66,7 +70,6 @@ class ExtensionRegistry;
 class ExtensionSystem;
 class ExtensionUpdater;
 class ExternalInstallManager;
-class OneShotEvent;
 class SharedModuleService;
 class UpdateObserver;
 
@@ -88,36 +91,6 @@ class ExtensionServiceInterface
   virtual bool UpdateExtension(const CRXFileInfo& file,
                                bool file_ownership_passed,
                                CrxInstaller** out_crx_installer) = 0;
-
-  // DEPRECATED. Use ExtensionRegistry instead.
-  //
-  // Looks up an extension by its ID.
-  //
-  // If |include_disabled| is false then this will only include enabled
-  // extensions. Use instead:
-  //
-  //   ExtensionRegistry::enabled_extensions().GetByID(id).
-  //
-  // If |include_disabled| is true then this will also include disabled and
-  // blacklisted extensions (not terminated extensions). Use instead:
-  //
-  //   ExtensionRegistry::GetExtensionById(
-  //         id, ExtensionRegistry::ENABLED |
-  //             ExtensionRegistry::DISABLED |
-  //             ExtensionRegistry::BLACKLISTED)
-  //
-  // Or don't, because it's probably not something you ever need to know.
-  virtual const Extension* GetExtensionById(const std::string& id,
-                                            bool include_disabled) const = 0;
-
-  // DEPRECATED: Use ExtensionRegistry instead.
-  //
-  // Looks up an extension by ID, regardless of whether it's enabled,
-  // disabled, blacklisted, or terminated. Use instead:
-  //
-  // ExtensionRegistry::GetInstalledExtension(id).
-  virtual const Extension* GetInstalledExtension(
-      const std::string& id) const = 0;
 
   // Returns an update for an extension with the specified id, if installation
   // of that update was previously delayed because the extension was in use. If
@@ -180,7 +153,8 @@ class ExtensionService : public ExtensionServiceInterface,
                          public Blacklist::Observer,
                          public ExtensionManagement::Observer,
                          public UpgradeObserver,
-                         public ExtensionRegistrar::Delegate {
+                         public ExtensionRegistrar::Delegate,
+                         public ProfileManagerObserver {
  public:
   // Constructor stores pointers to |profile| and |extension_prefs| but
   // ownership remains at caller.
@@ -191,17 +165,13 @@ class ExtensionService : public ExtensionServiceInterface,
                    Blacklist* blacklist,
                    bool autoupdate_enabled,
                    bool extensions_enabled,
-                   OneShotEvent* ready);
+                   base::OneShotEvent* ready);
 
   ~ExtensionService() override;
 
   // ExtensionServiceInterface implementation.
   //
-  // NOTE: Many of these methods are DEPRECATED. See the interface for details.
   PendingExtensionManager* pending_extension_manager() override;
-  const Extension* GetExtensionById(const std::string& id,
-                                    bool include_disabled) const override;
-  const Extension* GetInstalledExtension(const std::string& id) const override;
   bool UpdateExtension(const CRXFileInfo& file,
                        bool file_ownership_passed,
                        CrxInstaller** out_crx_installer) override;
@@ -471,6 +441,9 @@ class ExtensionService : public ExtensionServiceInterface,
   bool CanDisableExtension(const Extension* extension) override;
   bool ShouldBlockExtension(const Extension* extension) override;
 
+  // ProfileManagerObserver implementation.
+  void OnProfileMarkedForPermanentDeletion(Profile* profile) override;
+
   // For the extension in |version_path| with |id|, check to see if it's an
   // externally managed extension.  If so, uninstall it.
   void CheckExternalUninstall(const std::string& id);
@@ -619,7 +592,7 @@ class ExtensionService : public ExtensionServiceInterface,
   bool extensions_enabled_ = true;
 
   // Signaled when all extensions are loaded.
-  OneShotEvent* const ready_;
+  base::OneShotEvent* const ready_;
 
   // Our extension updater, if updates are turned on.
   std::unique_ptr<ExtensionUpdater> updater_;
@@ -688,6 +661,9 @@ class ExtensionService : public ExtensionServiceInterface,
 
   // Tracker of enterprise policy forced installation.
   InstallationTracker forced_extensions_tracker_;
+
+  ScopedObserver<ProfileManager, ProfileManagerObserver>
+      profile_manager_observer_{this};
 
   using InstallGateRegistry =
       std::map<ExtensionPrefs::DelayReason, InstallGate*>;

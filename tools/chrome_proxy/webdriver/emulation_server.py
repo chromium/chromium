@@ -140,7 +140,7 @@ def _CreateSelfSignedCert():
 
   # Create a private key pair.
   pk = crypto.PKey()
-  pk.generate_key(crypto.TYPE_RSA, 1024)
+  pk.generate_key(crypto.TYPE_RSA, 3072)
 
   # Create a certificate and sign it.
   cert = crypto.X509()

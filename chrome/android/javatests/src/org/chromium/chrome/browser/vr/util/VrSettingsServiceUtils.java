@@ -40,7 +40,8 @@ public class VrSettingsServiceUtils {
     private static final String EXTRA_ACTION_VALUE = "UPDATE_SETTINGS";
     private static final String EXTRA_VR_SETTINGS_PATH = "vr_settings_path";
 
-    private static final int SETTINGS_APPLICATION_DELAY_MS = 500;
+    // Needs to be long because this can occasionally take multiple seconds to apply.
+    private static final int SETTINGS_APPLICATION_DELAY_MS = 3000;
 
     /**
      * Applies the settings specified in the provided file to VrCore.
@@ -69,10 +70,10 @@ public class VrSettingsServiceUtils {
 
         // We need to tell the rule whether the newly applied settings enable the DON flow.
         rule.setDonEnabled(fileEnablesDon(filename));
-        // The settings seem to apply nearly instantly, but since it's done through a service, we
-        // don't have any guarantees about that or a way to be notified when they're applied. So,
-        // sleep a bit to be safe. This shouldn't be an issue in terms of runtime since this is
-        // used pretty infrequently.
+        // The settings usually apply nearly instantly, but can occasionally take multiple seconds.
+        // Since this is done through a service, we don't have any guarantees about that or a way to
+        // be notified when they're applied. So, sleep for a while. This is a long sleep, but few
+        // tests use this functionality, so overall runtime impact is pretty low.
         SystemClock.sleep(SETTINGS_APPLICATION_DELAY_MS);
     }
 

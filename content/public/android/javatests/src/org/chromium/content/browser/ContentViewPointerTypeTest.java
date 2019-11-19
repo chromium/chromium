@@ -18,13 +18,13 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.UrlUtils;
-import org.chromium.blink_public.web.WebCursorInfoType;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_shell.ShellViewAndroidDelegate;
 import org.chromium.content_shell.ShellViewAndroidDelegate.OnCursorUpdateHelper;
 import org.chromium.content_shell_apk.ContentShellActivity;
 import org.chromium.content_shell_apk.ContentShellActivityTestRule;
+import org.chromium.ui_base.web.CursorType;
 
 /**
  * Tests that we can move mouse cursor and test cursor icon.
@@ -58,7 +58,7 @@ public class ContentViewPointerTypeTest {
     }
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         ContentShellActivity activity =
                 mActivityTestRule.launchContentShellWithUrlSync(CURSOR_PAGE);
         if (activity != null) {
@@ -113,8 +113,8 @@ public class ContentViewPointerTypeTest {
     //@Feature({"Main"})
     @DisabledTest(message = "crbug.com/755112")
     public void testPointerType() throws Throwable {
-        checkPointerTypeForNode("hand", WebCursorInfoType.HAND);
-        checkPointerTypeForNode("text", WebCursorInfoType.I_BEAM);
-        checkPointerTypeForNode("help", WebCursorInfoType.HELP);
+        checkPointerTypeForNode("hand", CursorType.HAND);
+        checkPointerTypeForNode("text", CursorType.I_BEAM);
+        checkPointerTypeForNode("help", CursorType.HELP);
     }
 }

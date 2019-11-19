@@ -4,7 +4,7 @@
 
 #include <jni.h>
 
-#include "android_webview/test/jni/AwEmbeddedTestServerImpl_jni.h"
+#include "android_webview/test/embedded_test_server/aw_net_jni_headers/AwEmbeddedTestServerImpl_jni.h"
 #include "base/android/jni_array.h"
 #include "base/base64.h"
 #include "base/strings/stringprintf.h"

@@ -4,6 +4,7 @@ include_rules = [
     "+third_party/blink/renderer/core/layout/api",
     "+third_party/blink/renderer/core/layout/line",
     "+third_party/blink/renderer/core/layout/logical_values.h",
+    "+third_party/blink/renderer/core/layout/ng/inline",
     "+third_party/blink/renderer/platform",
 
     "!third_party/blink/renderer/core/layout/bidi_run.h",

@@ -6,8 +6,12 @@
 
 #include <unistd.h>
 
+#include <utility>
+
 #include "base/files/file_util.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/oom_intervention/oom_intervention_types.h"
@@ -35,14 +39,15 @@ const uint64_t kTestVmSizeThreshold = 1024 * 1024;
 
 class MockOomInterventionHost : public mojom::blink::OomInterventionHost {
  public:
-  MockOomInterventionHost(mojom::blink::OomInterventionHostRequest request)
-      : binding_(this, std::move(request)) {}
+  MockOomInterventionHost(
+      mojo::PendingReceiver<mojom::blink::OomInterventionHost> receiver)
+      : receiver_(this, std::move(receiver)) {}
   ~MockOomInterventionHost() override = default;
 
   void OnHighMemoryUsage() override {}
 
  private:
-  mojo::Binding<mojom::blink::OomInterventionHost> binding_;
+  mojo::Receiver<mojom::blink::OomInterventionHost> receiver_;
 };
 
 // Mock that allows setting mock memory usage.
@@ -99,8 +104,9 @@ class OomInterventionImplTest : public testing::Test {
   void RunDetection(bool renderer_pause_enabled,
                     bool navigate_ads_enabled,
                     bool purge_v8_memory_enabled) {
-    mojom::blink::OomInterventionHostPtr host_ptr;
-    MockOomInterventionHost mock_host(mojo::MakeRequest(&host_ptr));
+    mojo::PendingRemote<mojom::blink::OomInterventionHost> remote_host;
+    MockOomInterventionHost mock_host(
+        remote_host.InitWithNewPipeAndPassReceiver());
 
     mojom::blink::DetectionArgsPtr args(mojom::blink::DetectionArgs::New());
     args->blink_workload_threshold = kTestBlinkThreshold;
@@ -108,10 +114,10 @@ class OomInterventionImplTest : public testing::Test {
     args->swap_threshold = kTestSwapThreshold;
     args->virtual_memory_thresold = kTestVmSizeThreshold;
 
-    intervention_->StartDetection(std::move(host_ptr), std::move(args),
+    intervention_->StartDetection(std::move(remote_host), std::move(args),
                                   renderer_pause_enabled, navigate_ads_enabled,
                                   purge_v8_memory_enabled);
-    test::RunDelayedTasks(TimeDelta::FromSeconds(1));
+    test::RunDelayedTasks(base::TimeDelta::FromSeconds(1));
   }
 
  protected:
@@ -271,6 +277,11 @@ TEST_F(OomInterventionImplTest, V1DetectionAdsNavigation) {
   WebFrame* non_ad_iframe = web_view_helper_.LocalMainFrame()->FindFrameByName(
       WebString::FromUTF8("non-ad"));
 
+  frame_test_helpers::PumpPendingRequestsForFrameToLoad(
+      ad_iframe->ToWebLocalFrame());
+  frame_test_helpers::PumpPendingRequestsForFrameToLoad(
+      non_ad_iframe->ToWebLocalFrame());
+
   auto* local_adframe = To<LocalFrame>(WebFrame::ToCoreFrame(*ad_iframe));
   local_adframe->SetIsAdSubframe(blink::mojom::AdFrameType::kRootAd);
   auto* local_non_adframe =
@@ -278,12 +289,20 @@ TEST_F(OomInterventionImplTest, V1DetectionAdsNavigation) {
 
   EXPECT_TRUE(local_adframe->IsAdSubframe());
   EXPECT_FALSE(local_non_adframe->IsAdSubframe());
+  EXPECT_EQ(local_adframe->GetDocument()->Url().GetString(), "data:text/html,");
+  EXPECT_EQ(local_non_adframe->GetDocument()->Url().GetString(),
+            "data:text/html,");
 
   RunDetection(true, true, false);
 
+  EXPECT_TRUE(page->Paused());
+  intervention_.reset();
+
+  // The about:blank navigation won't actually happen until the page unpauses.
+  frame_test_helpers::PumpPendingRequestsForFrameToLoad(
+      ad_iframe->ToWebLocalFrame());
   EXPECT_EQ(local_adframe->GetDocument()->Url().GetString(), "about:blank");
   EXPECT_NE(local_non_adframe->GetDocument()->Url().GetString(), "about:blank");
-  EXPECT_TRUE(page->Paused());
 }
 
 TEST_F(OomInterventionImplTest, V2DetectionV8PurgeMemory) {
@@ -329,35 +348,36 @@ TEST_F(OomInterventionImplTest, ReducedMemoryMetricReporting) {
   usage.private_footprint_bytes =
       initial_private_footprint_bytes + 2 * 1024 * 1024;
   intervention_->mock_memory_usage_monitor()->SetMockMemoryUsage(usage);
-  test::RunDelayedTasks(TimeDelta::FromSeconds(10));
+  test::RunDelayedTasks(base::TimeDelta::FromSeconds(10));
   histogram_tester.ExpectUniqueSample(
-      "Memory.Experimental.OomIntervention.ReducedBlinkUsageAfter10secs", -2,
+      "Memory.Experimental.OomIntervention.ReducedBlinkUsageAfter10secs2", 2,
       1);
   histogram_tester.ExpectUniqueSample(
-      "Memory.Experimental.OomIntervention.ReducedRendererPMFAfter10secs", 2,
+      "Memory.Experimental.OomIntervention.ReducedRendererPMFAfter10secs2", -2,
       1);
 
   usage.v8_bytes = initial_blink_usage_bytes - 1;
   usage.private_footprint_bytes = initial_private_footprint_bytes + 1;
   intervention_->mock_memory_usage_monitor()->SetMockMemoryUsage(usage);
-  test::RunDelayedTasks(TimeDelta::FromSeconds(10));
+  test::RunDelayedTasks(base::TimeDelta::FromSeconds(10));
   histogram_tester.ExpectUniqueSample(
-      "Memory.Experimental.OomIntervention.ReducedBlinkUsageAfter20secs", 0, 1);
+      "Memory.Experimental.OomIntervention.ReducedBlinkUsageAfter20secs2", 0,
+      1);
   histogram_tester.ExpectUniqueSample(
-      "Memory.Experimental.OomIntervention.ReducedRendererPMFAfter20secs", 0,
+      "Memory.Experimental.OomIntervention.ReducedRendererPMFAfter20secs2", 0,
       1);
 
   usage.v8_bytes = initial_blink_usage_bytes - 800 * 1024 * 1024;
   usage.private_footprint_bytes =
       initial_private_footprint_bytes + 800 * 1024 * 1024;
   intervention_->mock_memory_usage_monitor()->SetMockMemoryUsage(usage);
-  test::RunDelayedTasks(TimeDelta::FromSeconds(10));
+  test::RunDelayedTasks(base::TimeDelta::FromSeconds(10));
   histogram_tester.ExpectUniqueSample(
-      "Memory.Experimental.OomIntervention.ReducedBlinkUsageAfter30secs", -500,
+      "Memory.Experimental.OomIntervention.ReducedBlinkUsageAfter30secs2", 500,
       1);
   histogram_tester.ExpectUniqueSample(
-      "Memory.Experimental.OomIntervention.ReducedRendererPMFAfter30secs", 500,
-      1);
+      "Memory.Experimental.OomIntervention.ReducedRendererPMFAfter30secs2",
+      -500, 1);
 }
 
 }  // namespace blink

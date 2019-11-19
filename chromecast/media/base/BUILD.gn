@@ -2,8 +2,15 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/buildflag_header.gni")
 import("//chromecast/chromecast.gni")
 import("//third_party/widevine/cdm/widevine.gni")
+
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+
+  flags = [ "MEDIA_CLOCK_MONOTONIC_RAW=$media_clock_monotonic_raw" ]
+}
 
 cast_source_set("key_systems") {
   sources = [
@@ -31,8 +38,6 @@ cast_source_set("base") {
     "audio_device_ids.h",
     "decrypt_context_impl.cc",
     "decrypt_context_impl.h",
-    "decrypt_context_impl_clearkey.cc",
-    "decrypt_context_impl_clearkey.h",
     "media_caps.cc",
     "media_caps.h",
     "slew_volume.cc",
@@ -59,8 +64,6 @@ cast_source_set("base") {
   deps = [
     "//base",
     "//chromecast/base",
-    "//crypto",
-    "//crypto:platform",
     "//media",
     "//media:shared_memory_support",
     "//ui/gfx/geometry",
@@ -111,5 +114,16 @@ cast_source_set("video_plane_controller") {
     "//chromecast/media:libcast_media",
     "//ui/gfx",
     "//ui/gfx/geometry",
+  ]
+}
+
+cast_source_set("monotonic_clock") {
+  sources = [
+    "monotonic_clock.cc",
+    "monotonic_clock.h",
+  ]
+  deps = [
+    ":buildflags",
+    "//base",
   ]
 }

@@ -12,8 +12,8 @@ namespace base {
 
 UserActionTester::UserActionTester()
     : task_runner_(new base::TestSimpleTaskRunner),
-      action_callback_(
-          base::Bind(&UserActionTester::OnUserAction, base::Unretained(this))) {
+      action_callback_(base::BindRepeating(&UserActionTester::OnUserAction,
+                                           base::Unretained(this))) {
   base::SetRecordActionTaskRunner(task_runner_);
   base::AddActionCallback(action_callback_);
 }

@@ -6,20 +6,13 @@ static_library("renderer") {
   sources = [
     "print_render_frame_helper.cc",
     "print_render_frame_helper.h",
-    "print_render_frame_helper_linux.cc",
     "print_render_frame_helper_mac.mm",
   ]
-
-  if (is_android) {
-    # Add back the Linux file which Android shares.
-    set_sources_assignment_filter([])
-    sources += [ "print_render_frame_helper_linux.cc" ]
-    set_sources_assignment_filter(sources_assignment_filter)
-  }
 
   deps = [
     "//base",
     "//components/printing/common",
+    "//components/printing/common:mojo_interfaces",
     "//components/resources",
     "//content/public/common",
     "//content/public/renderer",

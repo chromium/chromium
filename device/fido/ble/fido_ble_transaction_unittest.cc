@@ -11,7 +11,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "device/bluetooth/test/bluetooth_test.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
@@ -55,9 +55,7 @@ std::vector<std::vector<uint8_t>> ToByteFragments(const FidoBleFrame& frame) {
 
 class FidoBleTransactionTest : public ::testing::Test {
  public:
-  base::test::ScopedTaskEnvironment& scoped_task_environment() {
-    return scoped_task_environment_;
-  }
+  base::test::TaskEnvironment& task_environment() { return task_environment_; }
   MockFidoBleConnection& connection() { return connection_; }
   FidoBleTransaction& transaction() { return *transaction_; }
 
@@ -67,7 +65,7 @@ class FidoBleTransactionTest : public ::testing::Test {
   }
 
  private:
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
 
   scoped_refptr<BluetoothAdapter> adapter_ =
       base::MakeRefCounted<::testing::NiceMock<MockBluetoothAdapter>>();
@@ -124,7 +122,7 @@ TEST_F(FidoBleTransactionTest, WriteRequestFrame_DelayedWriteAck) {
   for (auto&& byte_fragment : ToByteFragments(frame))
     transaction().OnResponseFragment(std::move(byte_fragment));
 
-  scoped_task_environment().RunUntilIdle();
+  task_environment().RunUntilIdle();
   EXPECT_FALSE(receiver.was_called());
 
   std::move(delayed_write_callback).Run(true);
@@ -156,7 +154,7 @@ TEST_F(FidoBleTransactionTest, WriteRequestFrame_DelayedWriteAck_KeepAlive) {
   for (auto&& byte_fragment : ToByteFragments(frame))
     transaction().OnResponseFragment(std::move(byte_fragment));
 
-  scoped_task_environment().RunUntilIdle();
+  task_environment().RunUntilIdle();
   EXPECT_FALSE(receiver.was_called());
 
   std::move(delayed_write_callback).Run(true);
@@ -195,7 +193,7 @@ TEST_F(FidoBleTransactionTest, WriteRequestFrame_IgnoreValidKeepAlives) {
   for (auto&& byte_fragment : ToByteFragments(tup_needed_frame))
     transaction().OnResponseFragment(std::move(byte_fragment));
 
-  scoped_task_environment().RunUntilIdle();
+  task_environment().RunUntilIdle();
   EXPECT_FALSE(receiver.was_called());
 
   FidoBleFrame processing_frame(
@@ -204,7 +202,7 @@ TEST_F(FidoBleTransactionTest, WriteRequestFrame_IgnoreValidKeepAlives) {
   for (auto&& byte_fragment : ToByteFragments(processing_frame))
     transaction().OnResponseFragment(std::move(byte_fragment));
 
-  scoped_task_environment().RunUntilIdle();
+  task_environment().RunUntilIdle();
   EXPECT_FALSE(receiver.was_called());
 
   for (auto&& byte_fragment : ToByteFragments(frame))

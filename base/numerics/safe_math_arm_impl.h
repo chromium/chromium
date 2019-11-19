@@ -57,8 +57,8 @@ struct ClampedAddFastAsmOp {
       return saturated_cast<V>(x + y);
 
     int32_t result;
-    int32_t x_i32 = x;
-    int32_t y_i32 = y;
+    int32_t x_i32 = checked_cast<int32_t>(x);
+    int32_t y_i32 = checked_cast<int32_t>(y);
 
     asm("qadd %[result], %[first], %[second]"
         : [result] "=r"(result)
@@ -83,8 +83,8 @@ struct ClampedSubFastAsmOp {
       return saturated_cast<V>(x - y);
 
     int32_t result;
-    int32_t x_i32 = x;
-    int32_t y_i32 = y;
+    int32_t x_i32 = checked_cast<int32_t>(x);
+    int32_t y_i32 = checked_cast<int32_t>(y);
 
     asm("qsub %[result], %[first], %[second]"
         : [result] "=r"(result)

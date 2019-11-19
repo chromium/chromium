@@ -50,7 +50,7 @@ class StaleEntryFinalizerTask : public Task {
 
   Result final_status_ = Result::NO_MORE_WORK;
 
-  base::WeakPtrFactory<StaleEntryFinalizerTask> weak_ptr_factory_;
+  base::WeakPtrFactory<StaleEntryFinalizerTask> weak_ptr_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(StaleEntryFinalizerTask);
 };
 

@@ -97,6 +97,10 @@ class VirtualKeyboardDelegate {
   // Sets the areas on the keyboard window where events are handled.
   virtual bool SetHitTestBounds(const std::vector<gfx::Rect>& bounds) = 0;
 
+  // Sets the area of the keyboard window that should remain on screen
+  // whenever the user moves the keyboard around their screen.
+  virtual bool SetAreaToRemainOnScreen(const gfx::Rect& bounds) = 0;
+
   // Restricts the virtual keyboard IME features.
   // Returns the values which were updated.
   virtual api::virtual_keyboard::FeatureRestrictions RestrictFeatures(

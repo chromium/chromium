@@ -63,7 +63,7 @@ cr.define('cr.quota', function() {
         break;
     }
     if (target) {
-      const event = cr.doc.createEvent('CustomEvent');
+      const event = document.createEvent('CustomEvent');
       event.initCustomEvent('update', false, false, detail);
       target.dispatchEvent(event);
     }

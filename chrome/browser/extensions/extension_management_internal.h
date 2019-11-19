@@ -4,6 +4,7 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_EXTENSION_MANAGEMENT_INTERNAL_H_
 #define CHROME_BROWSER_EXTENSIONS_EXTENSION_MANAGEMENT_INTERNAL_H_
 
+#include <memory>
 #include <string>
 #include <vector>
 

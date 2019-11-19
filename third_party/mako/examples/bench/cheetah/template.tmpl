@@ -1,0 +1,31 @@
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <title>${title}</title>
+  </head>
+  <body>
+
+      #def greeting(name)
+      <p>hello ${name}!</p>
+      #end def
+ 
+    #include "cheetah/header.tmpl"
+
+    $greeting($user)
+    $greeting('me')
+    $greeting('world')
+ 
+    <h2>Loop</h2>
+    #if $list_items
+      <ul>
+        #for $list_item in $list_items
+          <li #if $list_item is $list_items[-1] then "class='last'" else ""#>$list_item</li>
+        #end for
+      </ul>
+    #end if
+
+    #include "cheetah/footer.tmpl"
+  </body>
+</html>

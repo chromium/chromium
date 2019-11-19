@@ -15,12 +15,11 @@
 #include "chrome/browser/ui/profile_chooser_constants.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/common/url_constants.h"
-#include "components/signin/core/browser/signin_metrics.h"
-#include "services/identity/public/cpp/identity_manager.h"
+#include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "ui/base/page_transition_types.h"
 
 const char kWelcomeReturningUserUrl[] = "chrome://welcome/returning-user";
-const char kWelcomeEmailInterstitial[] = "chrome://welcome/email-interstitial";
 
 WelcomeHandler::WelcomeHandler(content::WebUI* web_ui)
     : profile_(Profile::FromWebUI(web_ui)),
@@ -53,9 +52,7 @@ WelcomeHandler::~WelcomeHandler() {
 bool WelcomeHandler::isValidRedirectUrl() {
   GURL current_url = web_ui()->GetWebContents()->GetVisibleURL();
 
-  return current_url == kWelcomeReturningUserUrl ||
-         current_url.spec().find(kWelcomeEmailInterstitial) !=
-             std::string::npos;
+  return current_url == kWelcomeReturningUserUrl;
 }
 
 // Override from LoginUIService::Observer.
@@ -64,7 +61,7 @@ void WelcomeHandler::OnSyncConfirmationUIClosed(
   if (result != LoginUIService::ABORT_SIGNIN) {
     result_ = WelcomeResult::SIGNED_IN;
 
-    // When signed in from NUX onboarding flow, it's possible to come back to
+    // When signed in from welcome flow, it's possible to come back to
     // chrome://welcome/... after closing sync-confirmation UI. If current URL
     // matches such a case, do not navigate away.
     if (!is_redirected_welcome_impression_) {
@@ -108,21 +105,12 @@ void WelcomeHandler::HandleUserDecline(const base::ListValue* args) {
                 ? WelcomeResult::ATTEMPTED_DECLINED
                 : WelcomeResult::DECLINED;
 
-  if (args->GetSize() == 1U) {
-    std::string url_string;
-    CHECK(args->GetString(0, &url_string));
-    GURL redirect_url = GURL(url_string);
-    DCHECK(redirect_url.is_valid());
-
-    GoToURL(redirect_url);
-  } else {
-    GoToNewTabPage();
-  }
+  GoToNewTabPage();
 }
 
 // Override from WebUIMessageHandler.
 void WelcomeHandler::RegisterMessages() {
-  // Check if this instance of WelcomeHandler is spawned by onboarding flow
+  // Check if this instance of WelcomeHandler is spawned by welcome flow
   // redirecting users back to welcome page. This is done here instead of
   // constructor, because web_ui hasn't loaded yet at that time.
   is_redirected_welcome_impression_ = isValidRedirectUrl();

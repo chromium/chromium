@@ -1,0 +1,54 @@
+# Copyright 2018 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/polymer.gni")
+
+js_type_check("closure_compile") {
+  closure_flags = default_closure_args + [
+                    "js_module_root=../../chrome/browser/resources/welcome/",
+                    "js_module_root=gen/chrome/browser/resources/welcome/",
+                  ]
+  is_polymer3 = true
+  deps = [
+    ":google_app_proxy",
+    ":google_apps_metrics_proxy",
+    ":nux_google_apps",
+  ]
+}
+
+js_library("nux_google_apps") {
+  deps = [
+    ":google_app_proxy",
+    ":google_apps_metrics_proxy",
+    "../:navigation_behavior",
+    "../shared:bookmark_proxy",
+    "../shared:nux_types",
+    "../shared:step_indicator",
+    "//third_party/polymer/v3_0/components-chromium/iron-a11y-announcer:iron-a11y-announcer",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/js:util.m",
+  ]
+}
+
+js_library("google_app_proxy") {
+  deps = [
+    "//ui/webui/resources/js:cr.m",
+  ]
+  externs_list = [ "$externs_path/chrome_send.js" ]
+}
+
+js_library("google_apps_metrics_proxy") {
+  deps = [
+    "../shared:module_metrics_proxy",
+  ]
+}
+
+polymer_modulizer("nux_google_apps") {
+  js_file = "nux_google_apps.js"
+  html_file = "nux_google_apps.html"
+  html_type = "v3-ready"
+}

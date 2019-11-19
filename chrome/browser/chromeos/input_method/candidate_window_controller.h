@@ -21,14 +21,14 @@ class CandidateWindowController {
  public:
   class Observer {
    public:
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
 
     virtual void CandidateClicked(int index) = 0;
     virtual void CandidateWindowOpened() = 0;
     virtual void CandidateWindowClosed() = 0;
   };
 
-  virtual ~CandidateWindowController() {}
+  virtual ~CandidateWindowController() = default;
 
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;

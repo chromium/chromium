@@ -44,7 +44,7 @@ public class OnDiskFileTest {
                                                 .getTargetContext()
                                                 .getCacheDir()
                                                 .getPath(),
-                "org.chromium.android_webview");
+                "WebView/Default/HTTP Cache");
         FileUtils.recursivelyDeleteFile(webViewCacheDir);
 
         mActivityTestRule.startBrowserProcess();
@@ -75,12 +75,12 @@ public class OnDiskFileTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    public void testCookiePathIsInsideDataDir() throws Exception {
+    public void testCookiePathIsInsideDataDir() {
         File webViewCookiePath = new File(InstrumentationRegistry.getInstrumentation()
                                                   .getTargetContext()
                                                   .getDir("webview", Context.MODE_PRIVATE)
                                                   .getPath(),
-                "Cookies");
+                "Default/Cookies");
         webViewCookiePath.delete();
 
         // Set a cookie and flush it to disk. This should guarantee the cookie file is created.

@@ -36,7 +36,8 @@ class LayoutTableCellDeathTest : public RenderingTest {
     RenderingTest::SetUp();
     auto style = ComputedStyle::Create();
     style->SetDisplay(EDisplay::kTableCell);
-    cell_ = LayoutTableCell::CreateAnonymous(&GetDocument(), std::move(style));
+    cell_ = LayoutTableCell::CreateAnonymous(&GetDocument(), std::move(style),
+                                             LegacyLayout::kAuto);
   }
 
   void TearDown() override {
@@ -79,12 +80,9 @@ class LayoutTableCellTest : public RenderingTest {
   bool IsInEndColumn(const LayoutTableCell* cell) {
     return cell->IsInEndColumn();
   }
-  LayoutRect LocalVisualRect(const LayoutTableCell* cell) {
-    return cell->LocalVisualRect();
-  }
-
+  // TODO(958381) Make this code TableNG compatible.
   LayoutTableCell* GetCellByElementId(const char* id) {
-    return ToLayoutTableCell(GetLayoutObjectByElementId(id));
+    return To<LayoutTableCell>(GetLayoutObjectByElementId(id));
   }
 };
 
@@ -118,7 +116,7 @@ TEST_F(LayoutTableCellTest,
     </table>
   )HTML");
   EXPECT_FALSE(GetCellByElementId("cell")->BackgroundIsKnownToBeOpaqueInRect(
-      LayoutRect(0, 0, 1, 1)));
+      PhysicalRect(0, 0, 1, 1)));
 }
 
 TEST_F(LayoutTableCellTest, RepaintContentInTableCell) {
@@ -141,9 +139,8 @@ TEST_F(LayoutTableCellTest, RepaintContentInTableCell) {
   UpdateAllLifecyclePhasesForTest();
 
   // Check that overflow was calculated on the cell.
-  auto* input_block = ToLayoutBlock(cell->GetLayoutObject());
-  LayoutRect rect = input_block->LocalVisualRect();
-  EXPECT_EQ(LayoutRect(-1, -1, 24, 24), rect);
+  auto* input_block = To<LayoutBlock>(cell->GetLayoutObject());
+  EXPECT_EQ(PhysicalRect(-1, -1, 24, 24), input_block->LocalVisualRect());
 }
 
 TEST_F(LayoutTableCellTest, IsInStartAndEndColumn) {
@@ -295,7 +292,7 @@ TEST_F(LayoutTableCellTest, BorderWidthsWithCollapsedBorders) {
   EXPECT_EQ(1u, cell2->CollapsedOuterBorderBefore());
   EXPECT_EQ(2u, cell2->CollapsedOuterBorderAfter());
 
-  ToElement(cell1->Table()->GetNode())
+  To<Element>(cell1->Table()->GetNode())
       ->setAttribute(html_names::kStyleAttr,
                      "writing-mode: vertical-rl; direction: rtl");
   UpdateAllLifecyclePhasesForTest();
@@ -326,6 +323,36 @@ TEST_F(LayoutTableCellTest, BorderWidthsWithCollapsedBorders) {
   EXPECT_EQ(7u, cell2->CollapsedOuterBorderEnd());
   EXPECT_EQ(2u, cell2->CollapsedOuterBorderBefore());
   EXPECT_EQ(1u, cell2->CollapsedOuterBorderAfter());
+}
+
+TEST_F(LayoutTableCellTest, HasNonCollapsedBorderDecoration) {
+  SetBodyInnerHTML(R"HTML(
+    <table>
+      <tr><td id="cell"></td></tr>
+    </table>
+  )HTML");
+  auto* cell = GetCellByElementId("cell");
+  EXPECT_FALSE(cell->HasNonCollapsedBorderDecoration());
+
+  To<Element>(cell->GetNode())
+      ->setAttribute(html_names::kStyleAttr, "border: 1px solid black");
+  GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint();
+  EXPECT_TRUE(cell->HasNonCollapsedBorderDecoration());
+
+  To<Element>(cell->Table()->GetNode())
+      ->setAttribute(html_names::kStyleAttr, "border-collapse: collapse");
+  GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint();
+  EXPECT_FALSE(cell->HasNonCollapsedBorderDecoration());
+
+  To<Element>(cell->GetNode())
+      ->setAttribute(html_names::kStyleAttr, "border: 2px solid black");
+  GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint();
+  EXPECT_FALSE(cell->HasNonCollapsedBorderDecoration());
+
+  To<Element>(cell->Table()->GetNode())
+      ->setAttribute(html_names::kStyleAttr, "");
+  GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint();
+  EXPECT_TRUE(cell->HasNonCollapsedBorderDecoration());
 }
 
 }  // namespace blink

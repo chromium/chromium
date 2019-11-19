@@ -16,7 +16,6 @@
 #include "chrome/browser/chromeos/power/auto_screen_brightness/modeller_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 
 namespace chromeos {
 namespace power {
@@ -33,8 +32,8 @@ Controller::Controller() {
   als_reader_ = std::make_unique<AlsReaderImpl>();
   als_reader_->Init();
 
-  brightness_monitor_ =
-      std::make_unique<BrightnessMonitorImpl>(power_manager_client);
+  brightness_monitor_ = std::make_unique<BrightnessMonitorImpl>();
+  brightness_monitor_->Init();
 
   model_config_loader_ = std::make_unique<ModelConfigLoaderImpl>();
 
@@ -51,7 +50,8 @@ Controller::Controller() {
 
   adapter_ = std::make_unique<Adapter>(
       profile, als_reader_.get(), brightness_monitor_.get(), modeller_.get(),
-      metrics_reporter_.get(), power_manager_client);
+      model_config_loader_.get(), metrics_reporter_.get());
+  adapter_->Init();
 }
 
 Controller::~Controller() = default;

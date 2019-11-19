@@ -73,14 +73,6 @@ class SVGPreserveAspectRatioTearOff final
     kSvgMeetorsliceSlice = SVGPreserveAspectRatio::kSvgMeetorsliceSlice
   };
 
-  static SVGPreserveAspectRatioTearOff* Create(
-      SVGPreserveAspectRatio* target,
-      SVGAnimatedPropertyBase* binding,
-      PropertyIsAnimValType property_is_anim_val) {
-    return MakeGarbageCollected<SVGPreserveAspectRatioTearOff>(
-        target, binding, property_is_anim_val);
-  }
-
   SVGPreserveAspectRatioTearOff(SVGPreserveAspectRatio*,
                                 SVGAnimatedPropertyBase* binding,
                                 PropertyIsAnimValType);

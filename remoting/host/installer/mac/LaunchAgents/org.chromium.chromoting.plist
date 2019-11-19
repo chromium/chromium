@@ -13,7 +13,7 @@
 	</array>
 	<key>ProgramArguments</key>
 	<array>
-		<string>/Library/PrivilegedHelperTools/org.chromium.chromoting.me2me.sh</string>
+		<string>/Library/PrivilegedHelperTools/@@HOST_BUNDLE_NAME@@/Contents/MacOS/remoting_me2me_host_service</string>
 		<string>--run-from-launchd</string>
 	</array>
 	<key>RunAtLoad</key>

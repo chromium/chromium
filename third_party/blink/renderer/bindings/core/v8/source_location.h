@@ -8,7 +8,7 @@
 #include <v8-inspector-protocol.h>
 #include <memory>
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -40,12 +40,11 @@ class CORE_EXPORT SourceLocation {
   // Forces full stack trace.
   static std::unique_ptr<SourceLocation> CaptureWithFullStackTrace();
 
-  static std::unique_ptr<SourceLocation> Create(
-      const String& url,
-      unsigned line_number,
-      unsigned column_number,
-      std::unique_ptr<v8_inspector::V8StackTrace>,
-      int script_id = 0);
+  SourceLocation(const String& url,
+                 unsigned line_number,
+                 unsigned column_number,
+                 std::unique_ptr<v8_inspector::V8StackTrace>,
+                 int script_id = 0);
   ~SourceLocation();
 
   bool IsUnknown() const {
@@ -59,8 +58,8 @@ class CORE_EXPORT SourceLocation {
     return std::move(stack_trace_);
   }
 
-  std::unique_ptr<SourceLocation> Clone()
-      const;  // Safe to pass between threads.
+  // Safe to pass between threads, drops async chain in stack trace.
+  std::unique_ptr<SourceLocation> Clone() const;
 
   // No-op when stack trace is unknown.
   void ToTracedValue(TracedValue*, const char* name) const;
@@ -72,12 +71,10 @@ class CORE_EXPORT SourceLocation {
   std::unique_ptr<v8_inspector::protocol::Runtime::API::StackTrace>
   BuildInspectorObject() const;
 
+  std::unique_ptr<v8_inspector::protocol::Runtime::API::StackTrace>
+  BuildInspectorObject(int max_async_depth) const;
+
  private:
-  SourceLocation(const String& url,
-                 unsigned line_number,
-                 unsigned column_number,
-                 std::unique_ptr<v8_inspector::V8StackTrace>,
-                 int script_id);
   static std::unique_ptr<SourceLocation> CreateFromNonEmptyV8StackTrace(
       std::unique_ptr<v8_inspector::V8StackTrace>,
       int script_id);

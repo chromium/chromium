@@ -1,0 +1,112 @@
+%PDF-1.7
+% ò¤ô
+1 0 obj <<
+  /Type /Catalog
+  /Pages 2 0 R
+>>
+endobj
+2 0 obj <<
+  /Type /Pages
+  /MediaBox [0 0 200 200]
+  /Count 1
+  /Kids [3 0 R]
+>>
+endobj
+3 0 obj <<
+  /Type /Page
+  /Parent 2 0 R
+  /Resources <<
+    /Font <<
+      /F1 4 0 R
+      /F2 5 0 R
+      /F3 6 0 R
+      /F4 7 0 R
+    >>
+  >>
+  /Contents 8 0 R
+>>
+endobj
+4 0 obj <<
+  /Type /Font
+  /Subtype /Type1
+  /BaseFont /Helvetica
+>>
+endobj
+5 0 obj <<
+  /Type /Font
+  /Subtype /Type1
+  /BaseFont /Courier
+>>
+endobj
+6 0 obj <<
+  /Type /Font
+  /Subtype /Type1
+  /BaseFont /Helvetica-Bold
+>>
+endobj
+7 0 obj <<
+  /Type /Font
+  /Subtype /Type1
+  /BaseFont /Helvetica-Oblique
+>>
+endobj
+8 0 obj <<
+  /Length 489
+>>
+stream
+BT
+/F1 10 Tf
+10 180 Td
+(This is some ) Tj
+/F2 10 Tf
+(simple) Tj
+/F1 10 Tf
+( text with a font) Tj
+0 -10 Td
+(change in the middle of the line.) Tj
+ET
+BT
+/F1 10 Tf
+10 150 Td
+(In this ) Tj
+/F2 12 Tf
+(example) Tj
+/F1 10 Tf
+( the font size is slightly) Tj
+0 -10 Td
+(different from the surrounding text.) Tj
+ET
+BT
+/F1 10 Tf
+10 120 Td
+(Similarly, attributes such as ) Tj
+/F3 10 Tf
+(bold) Tj
+/F1 10 Tf
+( and / or) Tj
+0 -10 Td
+/F4 10 Tf
+(italics) Tj
+/F1 10 Tf
+( should not cause line breaks.) Tj
+ET
+endstream
+endobj
+xref
+0 9
+0000000000 65535 f 
+0000000015 00000 n 
+0000000068 00000 n 
+0000000157 00000 n 
+0000000331 00000 n 
+0000000407 00000 n 
+0000000481 00000 n 
+0000000562 00000 n 
+0000000646 00000 n 
+trailer <<
+  /Root 1 0 R
+  /Size 9
+>>
+startxref
+1187
+%%EOF

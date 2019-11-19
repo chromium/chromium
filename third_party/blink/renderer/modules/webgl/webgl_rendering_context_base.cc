@@ -26,10 +26,13 @@
 #include "third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.h"
 
 #include <memory>
+#include <utility>
 
+#include "base/feature_list.h"
 #include "base/numerics/checked_math.h"
 #include "base/stl_util.h"
 #include "build/build_config.h"
+#include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/common/capabilities.h"
 #include "gpu/config/gpu_feature_info.h"
@@ -42,6 +45,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context_host.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/html/canvas/image_data.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
@@ -51,6 +55,7 @@
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/origin_trials/origin_trials.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "third_party/blink/renderer/core/typed_arrays/array_buffer/array_buffer_contents.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
@@ -92,10 +97,10 @@
 #include "third_party/blink/renderer/modules/webgl/webgl_uniform_location.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_vertex_array_object.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_vertex_array_object_oes.h"
+#include "third_party/blink/renderer/modules/webgl/webgl_video_texture.h"
+#include "third_party/blink/renderer/modules/webgl/webgl_video_texture_enum.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/bindings/script_wrappable_visitor.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding_macros.h"
-#include "third_party/blink/renderer/platform/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/geometry/int_size.h"
 #include "third_party/blink/renderer/platform/graphics/accelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_2d_layer_bridge.h"
@@ -104,13 +109,17 @@
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
-#include "third_party/blink/renderer/platform/wtf/typed_arrays/array_buffer_contents.h"
 
 namespace blink {
+namespace {
+const base::Feature kLowLatencyWebGLSwapChain{
+    "LowLatencyWebGLSwapChain", base::FEATURE_DISABLED_BY_DEFAULT};
+}  // namespace
 
 bool WebGLRenderingContextBase::webgl_context_limits_initialized_ = false;
 unsigned WebGLRenderingContextBase::max_active_webgl_contexts_ = 0;
@@ -118,7 +127,8 @@ unsigned WebGLRenderingContextBase::max_active_webgl_contexts_on_worker_ = 0;
 
 namespace {
 
-constexpr TimeDelta kDurationBetweenRestoreAttempts = TimeDelta::FromSeconds(1);
+constexpr base::TimeDelta kDurationBetweenRestoreAttempts =
+    base::TimeDelta::FromSeconds(1);
 const int kMaxGLErrorsAllowedToConsole = 256;
 
 Mutex& WebGLContextLimitMutex() {
@@ -188,8 +198,7 @@ void WebGLRenderingContextBase::InitializeWebGLContextLimits(
   MutexLocker locker(WebGLContextLimitMutex());
   if (!webgl_context_limits_initialized_) {
     // These do not change over the lifetime of the browser.
-    auto webgl_preferences =
-        context_provider->GetGpuFeatureInfo().webgl_preferences;
+    auto webgl_preferences = context_provider->GetWebglPreferences();
     max_active_webgl_contexts_ = webgl_preferences.max_active_webgl_contexts;
     max_active_webgl_contexts_on_worker_ =
         webgl_preferences.max_active_webgl_contexts_on_worker;
@@ -323,27 +332,6 @@ GLint Clamp(GLint value, GLint min, GLint max) {
   return value;
 }
 
-// Return true if a character belongs to the ASCII subset as defined in
-// GLSL ES 1.0 spec section 3.1.
-bool ValidateCharacter(unsigned char c) {
-  // Printing characters are valid except " $ ` @ \ ' DEL.
-  if (c >= 32 && c <= 126 && c != '"' && c != '$' && c != '`' && c != '@' &&
-      c != '\\' && c != '\'')
-    return true;
-  // Horizontal tab, line feed, vertical tab, form feed, carriage return
-  // are also valid.
-  if (c >= 9 && c <= 13)
-    return true;
-  return false;
-}
-
-bool IsPrefixReserved(const String& name) {
-  if (name.StartsWith("gl_") || name.StartsWith("webgl_") ||
-      name.StartsWith("_webgl_"))
-    return true;
-  return false;
-}
-
 // Strips comments from shader text. This allows non-ASCII characters
 // to be used in comments without potentially breaking OpenGL
 // implementations not expecting characters outside the GLSL ES set.
@@ -457,6 +445,7 @@ void StripComments::Process(UChar c) {
       break;
 
     case kMiddleOfLine:
+    case kInPreprocessorDirective:
       if (c == '/' && Peek(temp)) {
         if (temp == '/') {
           parse_state_ = kInSingleLineComment;
@@ -477,14 +466,6 @@ void StripComments::Process(UChar c) {
         }
       }
 
-      Emit(c);
-      break;
-
-    case kInPreprocessorDirective:
-      // No matter what the character is, just pass it
-      // through. Do not parse comments in this state. This
-      // might not be the right thing to do long term, but it
-      // should handle the #error preprocessor directive.
       Emit(c);
       break;
 
@@ -601,9 +582,9 @@ static String ExtractWebGLContextCreationError(
                           builder);
   FormatWebGLStatusString(
       "Reset notification strategy",
-      String::Format("0x%04x", info.reset_notification_strategy).Utf8().data(),
+      String::Format("0x%04x", info.reset_notification_strategy).Utf8().c_str(),
       builder);
-  FormatWebGLStatusString("ErrorMessage", info.error_message.Utf8().data(),
+  FormatWebGLStatusString("ErrorMessage", info.error_message.Utf8().c_str(),
                           builder);
   builder.Append('.');
   return builder.ToString();
@@ -648,10 +629,11 @@ CreateContextProviderOnWorkerThread(
   creation_info.using_gpu_compositing = using_gpu_compositing;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
       Thread::MainThread()->GetTaskRunner();
-  PostCrossThreadTask(*task_runner, FROM_HERE,
-                      CrossThreadBind(&CreateContextProviderOnMainThread,
-                                      CrossThreadUnretained(&creation_info),
-                                      CrossThreadUnretained(&waitable_event)));
+  PostCrossThreadTask(
+      *task_runner, FROM_HERE,
+      CrossThreadBindOnce(&CreateContextProviderOnMainThread,
+                          CrossThreadUnretained(&creation_info),
+                          CrossThreadUnretained(&waitable_event)));
   waitable_event.Wait();
   return std::move(creation_info.created_context_provider);
 }
@@ -760,6 +742,9 @@ ImageBitmap* WebGLRenderingContextBase::TransferToImageBitmapBase(
 }
 
 void WebGLRenderingContextBase::commit() {
+  if (!GetDrawingBuffer() || (Host() && Host()->IsOffscreenCanvas()))
+    return;
+
   int width = GetDrawingBuffer()->Size().Width();
   int height = GetDrawingBuffer()->Size().Height();
 
@@ -785,9 +770,11 @@ WebGLRenderingContextBase::GetStaticBitmapImage(
 }
 
 scoped_refptr<StaticBitmapImage> WebGLRenderingContextBase::GetImage(
-    AccelerationHint hint) const {
+    AccelerationHint hint) {
   if (!GetDrawingBuffer())
     return nullptr;
+
+  ScopedFramebufferRestorer fbo_restorer(this);
   GetDrawingBuffer()->ResolveAndBindForReadAndDraw();
   // Use the drawing buffer size here instead of the canvas size to ensure that
   // sizing is consistent for the GetStaticBitmapImage() result. The forced
@@ -799,8 +786,10 @@ scoped_refptr<StaticBitmapImage> WebGLRenderingContextBase::GetImage(
   // resources (e.g. GpuMemoryBuffer)
   std::unique_ptr<CanvasResourceProvider> resource_provider =
       CanvasResourceProvider::Create(
-          size, CanvasResourceProvider::kAcceleratedResourceUsage,
-          SharedGpuContext::ContextProviderWrapper(), 0, ColorParams(),
+          size,
+          CanvasResourceProvider::ResourceUsage::kAcceleratedResourceUsage,
+          SharedGpuContext::ContextProviderWrapper(), 0,
+          GetDrawingBuffer()->FilterQuality(), ColorParams(),
           CanvasResourceProvider::kDefaultPresentationMode,
           nullptr /* canvas_resource_dispatcher */, is_origin_top_left_);
   if (!resource_provider || !resource_provider->IsValid())
@@ -820,7 +809,8 @@ ScriptPromise WebGLRenderingContextBase::makeXRCompatible(
     ScriptState* script_state) {
   if (isContextLost()) {
     return ScriptPromise::RejectWithDOMException(
-        script_state, DOMException::Create(DOMExceptionCode::kInvalidStateError,
+        script_state,
+        MakeGarbageCollected<DOMException>(DOMExceptionCode::kInvalidStateError,
                                            "Context lost."));
   }
 
@@ -838,13 +828,20 @@ ScriptPromise WebGLRenderingContextBase::makeXRCompatible(
   // compatible GPU.
   return ScriptPromise::RejectWithDOMException(
       script_state,
-      DOMException::Create(
+      MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNotSupportedError,
           "Context is not compatible. Switching not yet implemented."));
 }
 
 bool WebGLRenderingContextBase::IsXRCompatible() {
   return xr_compatible_;
+}
+
+void WebGLRenderingContextBase::
+    UpdateNumberOfUserAllocatedMultisampledRenderbuffers(int delta) {
+  DCHECK(delta >= -1 && delta <= 1);
+  number_of_user_allocated_multisampled_renderbuffers_ += delta;
+  DCHECK_GE(number_of_user_allocated_multisampled_renderbuffers_, 0);
 }
 
 namespace {
@@ -1014,7 +1011,14 @@ WebGLRenderingContextBase::WebGLRenderingContextBase(
                      &WebGLRenderingContextBase::MaybeRestoreContext),
       task_runner_(task_runner),
       num_gl_errors_to_console_allowed_(kMaxGLErrorsAllowedToConsole),
-      context_type_(context_type) {
+      context_type_(context_type),
+      program_completion_queries_(
+          base::MRUCache<WebGLProgram*, GLuint>::NO_AUTO_EVICT),
+      feature_handle_for_scheduler_(
+          host->GetTopExecutionContext()->GetScheduler()->RegisterFeature(
+              SchedulingPolicy::Feature::kWebGL,
+              {SchedulingPolicy::RecordMetricsForBackForwardCache()})),
+      number_of_user_allocated_multisampled_renderbuffers_(0) {
   DCHECK(context_provider);
 
   // TODO(http://crbug.com/876140) Make sure this is being created on a
@@ -1069,14 +1073,15 @@ WebGLRenderingContextBase::WebGLRenderingContextBase(
 scoped_refptr<DrawingBuffer> WebGLRenderingContextBase::CreateDrawingBuffer(
     std::unique_ptr<WebGraphicsContext3DProvider> context_provider,
     bool using_gpu_compositing) {
-  bool premultiplied_alpha = CreationAttributes().premultiplied_alpha;
-  bool want_alpha_channel = CreationAttributes().alpha;
-  bool want_depth_buffer = CreationAttributes().depth;
-  bool want_stencil_buffer = CreationAttributes().stencil;
-  bool want_antialiasing = CreationAttributes().antialias;
-  DrawingBuffer::PreserveDrawingBuffer preserve =
-      CreationAttributes().preserve_drawing_buffer ? DrawingBuffer::kPreserve
-                                                   : DrawingBuffer::kDiscard;
+  const CanvasContextCreationAttributesCore& attrs = CreationAttributes();
+  bool premultiplied_alpha = attrs.premultiplied_alpha;
+  bool want_alpha_channel = attrs.alpha;
+  bool want_depth_buffer = attrs.depth;
+  bool want_stencil_buffer = attrs.stencil;
+  bool want_antialiasing = attrs.antialias;
+  DrawingBuffer::PreserveDrawingBuffer preserve = attrs.preserve_drawing_buffer
+                                                      ? DrawingBuffer::kPreserve
+                                                      : DrawingBuffer::kDiscard;
   DrawingBuffer::WebGLVersion web_gl_version = DrawingBuffer::kWebGL1;
   if (context_type_ == Platform::kWebGL1ContextType) {
     web_gl_version = DrawingBuffer::kWebGL1;
@@ -1100,11 +1105,17 @@ scoped_refptr<DrawingBuffer> WebGLRenderingContextBase::CreateDrawingBuffer(
       Host()->IsOffscreenCanvas() ? DrawingBuffer::kDisallowChromiumImage
                                   : DrawingBuffer::kAllowChromiumImage;
 
+  bool using_swap_chain =
+      base::FeatureList::IsEnabled(kLowLatencyWebGLSwapChain) &&
+      context_provider->GetCapabilities().shared_image_swap_chain &&
+      attrs.desynchronized;
+
   return DrawingBuffer::Create(
-      std::move(context_provider), using_gpu_compositing, this,
-      ClampedCanvasSize(), premultiplied_alpha, want_alpha_channel,
+      std::move(context_provider), using_gpu_compositing, using_swap_chain,
+      this, ClampedCanvasSize(), premultiplied_alpha, want_alpha_channel,
       want_depth_buffer, want_stencil_buffer, want_antialiasing, preserve,
-      web_gl_version, chromium_image_usage, ColorParams());
+      web_gl_version, chromium_image_usage, ColorParams(),
+      PowerPreferenceToGpuPreference(attrs.power_preference));
 }
 
 void WebGLRenderingContextBase::InitializeNewContext() {
@@ -1225,6 +1236,11 @@ void WebGLRenderingContextBase::InitializeNewContext() {
   for (int i = 0; i < kWebGLExtensionNameCount; ++i)
     extension_enabled_[i] = false;
 
+  // This limits the count of threads if the extension is yet to be requested.
+  if (String(ContextGL()->GetString(GL_EXTENSIONS))
+          .Contains("GL_KHR_parallel_shader_compile")) {
+    ContextGL()->MaxShaderCompilerThreadsKHR(2);
+  }
   is_web_gl2_formats_types_added_ = false;
   is_web_gl2_tex_image_source_formats_types_added_ = false;
   is_web_gl2_internal_formats_copy_tex_image_added_ = false;
@@ -1250,6 +1266,8 @@ void WebGLRenderingContextBase::InitializeNewContext() {
   ADD_VALUES_TO_SET(supported_types_, kSupportedTypesES2);
   supported_tex_image_source_types_.clear();
   ADD_VALUES_TO_SET(supported_tex_image_source_types_, kSupportedTypesES2);
+
+  number_of_user_allocated_multisampled_renderbuffers_ = 0;
 
   // The DrawingBuffer was unable to store the state that dirtied when it was
   // initialized. Restore it now.
@@ -1320,6 +1338,8 @@ void WebGLRenderingContextBase::DestroyContext() {
   if (!GetDrawingBuffer())
     return;
 
+  clearProgramCompletionQueries();
+
   extensions_util_.reset();
 
   base::RepeatingClosure null_closure;
@@ -1383,20 +1403,31 @@ void WebGLRenderingContextBase::DidDraw() {
   CanvasRenderingContext::DidDraw();
 }
 
-void WebGLRenderingContextBase::PushFrame() {
+bool WebGLRenderingContextBase::PushFrame() {
   int width = GetDrawingBuffer()->Size().Width();
   int height = GetDrawingBuffer()->Size().Height();
+  int submitted_frame = false;
   if (PaintRenderingResultsToCanvas(kBackBuffer)) {
     if (Host()->GetOrCreateCanvasResourceProvider(kPreferAcceleration)) {
-      Host()->PushFrame(Host()->ResourceProvider()->ProduceCanvasResource(),
-                        SkIRect::MakeWH(width, height));
+      submitted_frame =
+          Host()->PushFrame(Host()->ResourceProvider()->ProduceCanvasResource(),
+                            SkIRect::MakeWH(width, height));
     }
   }
   MarkLayerComposited();
+  return submitted_frame;
 }
 
 void WebGLRenderingContextBase::FinalizeFrame() {
+  if (GetDrawingBuffer() && GetDrawingBuffer()->UsingSwapChain())
+    GetDrawingBuffer()->PresentSwapChain();
   marked_canvas_dirty_ = false;
+
+  // For low-latency canvases
+  const bool webgl_overlay_enabled =
+      RuntimeEnabledFeatures::WebGLImageChromiumEnabled() || UsingSwapChain();
+  if (canvas() && canvas()->LowLatencyEnabled() && !webgl_overlay_enabled)
+    PaintRenderingResultsToCanvas(kBackBuffer);
 }
 
 void WebGLRenderingContextBase::OnErrorMessage(const char* message,
@@ -1519,6 +1550,10 @@ void WebGLRenderingContextBase::MarkLayerComposited() {
     GetDrawingBuffer()->ResetBuffersToAutoClear();
 }
 
+bool WebGLRenderingContextBase::UsingSwapChain() const {
+  return GetDrawingBuffer() && GetDrawingBuffer()->UsingSwapChain();
+}
+
 bool WebGLRenderingContextBase::IsOriginTopLeft() const {
   if (isContextLost())
     return false;
@@ -1533,7 +1568,7 @@ void WebGLRenderingContextBase::SetIsHidden(bool hidden) {
   if (!hidden && isContextLost() && restore_allowed_ &&
       auto_recovery_method_ == kAuto) {
     DCHECK(!restore_timer_.IsActive());
-    restore_timer_.StartOneShot(TimeDelta(), FROM_HERE);
+    restore_timer_.StartOneShot(base::TimeDelta(), FROM_HERE);
   }
 }
 
@@ -1597,18 +1632,19 @@ bool WebGLRenderingContextBase::ContextCreatedOnXRCompatibleAdapter() {
 
 bool WebGLRenderingContextBase::CopyRenderingResultsFromDrawingBuffer(
     CanvasResourceProvider* resource_provider,
-    SourceDrawingBuffer source_buffer) const {
+    SourceDrawingBuffer source_buffer) {
   if (!drawing_buffer_)
     return false;
   if (resource_provider->IsAccelerated()) {
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> shared_context_wrapper =
         SharedGpuContext::ContextProviderWrapper();
-    if (!shared_context_wrapper)
+    if (!shared_context_wrapper || !shared_context_wrapper->ContextProvider())
       return false;
     gpu::gles2::GLES2Interface* gl =
         shared_context_wrapper->ContextProvider()->ContextGL();
     GLuint texture_id =
         resource_provider->GetBackingTextureHandleForOverwrite();
+    GLenum texture_target = resource_provider->GetBackingTextureTarget();
     if (!texture_id)
       return false;
 
@@ -1616,9 +1652,9 @@ bool WebGLRenderingContextBase::CopyRenderingResultsFromDrawingBuffer(
     // CopyToPlatformTexture is done correctly. See crbug.com/794706.
     gl->Flush();
 
-    bool flip_y = is_origin_top_left_ && !canvas()->LowLatencyEnabled();
+    bool flip_y = IsOriginTopLeft() != resource_provider->IsOriginTopLeft();
     return drawing_buffer_->CopyToPlatformTexture(
-        gl, GL_TEXTURE_2D, texture_id, true, flip_y,
+        gl, texture_target, texture_id, 0 /*texture LOD */, true, flip_y,
         IntPoint(0, 0), IntRect(IntPoint(0, 0), drawing_buffer_->Size()),
         source_buffer);
   }
@@ -1627,7 +1663,7 @@ bool WebGLRenderingContextBase::CopyRenderingResultsFromDrawingBuffer(
   // is a separate path for the accelerated case is that we assume texture
   // copying is faster than drawImage.
   scoped_refptr<StaticBitmapImage> image = GetImage(kPreferAcceleration);
-  if (!image)
+  if (!image || !image->PaintImageForCurrentFrame())
     return false;
   cc::PaintFlags paint_flags;
   paint_flags.setBlendMode(SkBlendMode::kSrc);
@@ -1642,8 +1678,7 @@ IntSize WebGLRenderingContextBase::DrawingBufferSize() const {
   return GetDrawingBuffer()->Size();
 }
 
-scoped_refptr<Uint8Array>
-WebGLRenderingContextBase::PaintRenderingResultsToDataArray(
+sk_sp<SkData> WebGLRenderingContextBase::PaintRenderingResultsToDataArray(
     SourceDrawingBuffer source_buffer) {
   if (isContextLost())
     return nullptr;
@@ -1675,11 +1710,11 @@ void WebGLRenderingContextBase::Reshape(int width, int height) {
   width = Clamp(width, 1, max_width);
   height = Clamp(height, 1, max_height);
 
-  // Limit drawing buffer area to 4k*4k to avoid memory exhaustion. Width or
-  // height may be larger than 4k as long as it's within the max viewport
-  // dimensions and total area remains within the limit.
-  // For example: 5120x2880 should be fine.
-  const int kMaxArea = 4096 * 4096;
+  // Limit drawing buffer area to the resolution of an 8K monitor to avoid
+  // memory exhaustion.  Width or height may be larger than that size as long as
+  // it's within the max viewport dimensions and total area remains within the
+  // limit. For example: 7680x4320 should be fine.
+  const int kMaxArea = 5760 * 5760;
   int current_area = width * height;
   if (current_area > kMaxArea) {
     // If we've exceeded the area limit scale the buffer down, preserving
@@ -1747,7 +1782,7 @@ void WebGLRenderingContextBase::bindAttribLocation(WebGLProgram* program,
     return;
   }
   ContextGL()->BindAttribLocation(ObjectOrZero(program), index,
-                                  name.Utf8().data());
+                                  name.Utf8().c_str());
 }
 
 bool WebGLRenderingContextBase::ValidateAndUpdateBufferBindTarget(
@@ -1835,12 +1870,39 @@ void WebGLRenderingContextBase::bindTexture(GLenum target,
     texture_units_[active_texture_unit_].texture2d_array_binding_ = texture;
   } else if (IsWebGL2OrHigher() && target == GL_TEXTURE_3D) {
     texture_units_[active_texture_unit_].texture3d_binding_ = texture;
+  } else if (target == GL_TEXTURE_VIDEO_IMAGE_WEBGL) {
+    if (!ExtensionEnabled(kWebGLVideoTextureName)) {
+      SynthesizeGLError(
+          GL_INVALID_VALUE, "bindTexture",
+          "unhandled type, WEBGL_video_texture extension not enabled");
+      return;
+    }
+    texture_units_[active_texture_unit_].texture_video_image_binding_ = texture;
   } else {
     SynthesizeGLError(GL_INVALID_ENUM, "bindTexture", "invalid target");
     return;
   }
 
-  ContextGL()->BindTexture(target, ObjectOrZero(texture));
+  // We use TEXTURE_EXTERNAL_OES to implement video texture on Android platform
+  if (target == GL_TEXTURE_VIDEO_IMAGE_WEBGL) {
+#if defined(OS_ANDROID)
+    ContextGL()->BindTexture(GL_TEXTURE_EXTERNAL_OES, ObjectOrZero(texture));
+#else
+    ContextGL()->BindTexture(GL_TEXTURE_2D, ObjectOrZero(texture));
+    if (texture && !texture->GetTarget()) {
+      ContextGL()->TexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
+                                 GL_LINEAR);
+      ContextGL()->TexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+                                 GL_LINEAR);
+      ContextGL()->TexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
+                                 GL_CLAMP_TO_EDGE);
+      ContextGL()->TexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
+                                 GL_CLAMP_TO_EDGE);
+    }
+#endif  // defined OS_ANDROID
+  } else {
+    ContextGL()->BindTexture(target, ObjectOrZero(texture));
+  }
   if (texture) {
     texture->SetTarget(target);
     one_plus_max_non_default_texture_unit_ =
@@ -1906,7 +1968,7 @@ void WebGLRenderingContextBase::blendFuncSeparate(GLenum src_rgb,
 }
 
 void WebGLRenderingContextBase::BufferDataImpl(GLenum target,
-                                               long long size,
+                                               int64_t size,
                                                const void* data,
                                                GLenum usage) {
   WebGLBuffer* buffer = ValidateBufferDataTarget("bufferData", target);
@@ -1925,7 +1987,7 @@ void WebGLRenderingContextBase::BufferDataImpl(GLenum target,
 }
 
 void WebGLRenderingContextBase::bufferData(GLenum target,
-                                           long long size,
+                                           int64_t size,
                                            GLenum usage) {
   if (isContextLost())
     return;
@@ -1941,7 +2003,7 @@ void WebGLRenderingContextBase::bufferData(GLenum target,
     SynthesizeGLError(GL_INVALID_VALUE, "bufferData", "no data");
     return;
   }
-  BufferDataImpl(target, data->ByteLength(), data->Data(), usage);
+  BufferDataImpl(target, data->ByteLengthAsSizeT(), data->Data(), usage);
 }
 
 void WebGLRenderingContextBase::bufferData(GLenum target,
@@ -1955,7 +2017,7 @@ void WebGLRenderingContextBase::bufferData(GLenum target,
 }
 
 void WebGLRenderingContextBase::BufferSubDataImpl(GLenum target,
-                                                  long long offset,
+                                                  int64_t offset,
                                                   GLsizeiptr size,
                                                   const void* data) {
   WebGLBuffer* buffer = ValidateBufferDataTarget("bufferSubData", target);
@@ -1965,7 +2027,7 @@ void WebGLRenderingContextBase::BufferSubDataImpl(GLenum target,
     return;
   if (!data)
     return;
-  if (offset + static_cast<long long>(size) > buffer->GetSize()) {
+  if (offset + static_cast<int64_t>(size) > buffer->GetSize()) {
     SynthesizeGLError(GL_INVALID_VALUE, "bufferSubData", "buffer overflow");
     return;
   }
@@ -1974,17 +2036,17 @@ void WebGLRenderingContextBase::BufferSubDataImpl(GLenum target,
 }
 
 void WebGLRenderingContextBase::bufferSubData(GLenum target,
-                                              long long offset,
+                                              int64_t offset,
                                               DOMArrayBuffer* data) {
   if (isContextLost())
     return;
   DCHECK(data);
-  BufferSubDataImpl(target, offset, data->ByteLength(), data->Data());
+  BufferSubDataImpl(target, offset, data->ByteLengthAsSizeT(), data->Data());
 }
 
 void WebGLRenderingContextBase::bufferSubData(
     GLenum target,
-    long long offset,
+    int64_t offset,
     const FlexibleArrayBufferView& data) {
   if (isContextLost())
     return;
@@ -2292,25 +2354,6 @@ void WebGLRenderingContextBase::SetBoundVertexArrayObject(
     bound_vertex_array_object_ = default_vertex_array_object_;
 }
 
-bool WebGLRenderingContextBase::ValidateShaderType(const char* function_name,
-                                                   GLenum shader_type) {
-  switch (shader_type) {
-    case GL_VERTEX_SHADER:
-    case GL_FRAGMENT_SHADER:
-      return true;
-    case GL_COMPUTE_SHADER:
-      if (context_type_ != Platform::kWebGL2ComputeContextType) {
-        SynthesizeGLError(GL_INVALID_ENUM, function_name,
-                          "invalid shader type");
-        return false;
-      }
-      return true;
-    default:
-      SynthesizeGLError(GL_INVALID_ENUM, function_name, "invalid shader type");
-      return false;
-  }
-}
-
 WebGLShader* WebGLRenderingContextBase::createShader(GLenum type) {
   if (isContextLost())
     return nullptr;
@@ -2432,7 +2475,7 @@ void WebGLRenderingContextBase::deleteTexture(WebGLTexture* texture) {
   // If the deleted was bound to the the current maximum index, trace backwards
   // to find the new max texture index.
   if (one_plus_max_non_default_texture_unit_ ==
-      static_cast<unsigned long>(max_bound_texture_index + 1)) {
+      static_cast<wtf_size_t>(max_bound_texture_index + 1)) {
     FindNewMaxNonDefaultTextureUnit();
   }
 }
@@ -2593,7 +2636,7 @@ void WebGLRenderingContextBase::drawArrays(GLenum mode,
 void WebGLRenderingContextBase::drawElements(GLenum mode,
                                              GLsizei count,
                                              GLenum type,
-                                             long long offset) {
+                                             int64_t offset) {
   if (!ValidateDrawElements("drawElements", type, offset))
     return;
 
@@ -2633,7 +2676,7 @@ void WebGLRenderingContextBase::DrawArraysInstancedANGLE(GLenum mode,
 void WebGLRenderingContextBase::DrawElementsInstancedANGLE(GLenum mode,
                                                            GLsizei count,
                                                            GLenum type,
-                                                           long long offset,
+                                                           int64_t offset,
                                                            GLsizei primcount) {
   if (!ValidateDrawElements("drawElementsInstancedANGLE", type, offset))
     return;
@@ -2868,7 +2911,7 @@ GLint WebGLRenderingContextBase::getAttribLocation(WebGLProgram* program,
     return 0;
   }
   return ContextGL()->GetAttribLocation(ObjectOrZero(program),
-                                        name.Utf8().data());
+                                        name.Utf8().c_str());
 }
 
 bool WebGLRenderingContextBase::ValidateBufferTarget(const char* function_name,
@@ -2888,7 +2931,7 @@ ScriptValue WebGLRenderingContextBase::getBufferParameter(
     GLenum target,
     GLenum pname) {
   if (isContextLost() || !ValidateBufferTarget("getBufferParameter", target))
-    return ScriptValue::CreateNull(script_state);
+    return ScriptValue::CreateNull(script_state->GetIsolate());
 
   switch (pname) {
     case GL_BUFFER_USAGE: {
@@ -2906,7 +2949,7 @@ ScriptValue WebGLRenderingContextBase::getBufferParameter(
     default:
       SynthesizeGLError(GL_INVALID_ENUM, "getBufferParameter",
                         "invalid parameter name");
-      return ScriptValue::CreateNull(script_state);
+      return ScriptValue::CreateNull(script_state->GetIsolate());
   }
 }
 
@@ -3010,7 +3053,7 @@ ScriptValue WebGLRenderingContextBase::getExtension(ScriptState* script_state,
       ToV8(extension, script_state->GetContext()->Global(),
            script_state->GetIsolate());
 
-  return ScriptValue(script_state, wrapped_extension);
+  return ScriptValue(script_state->GetIsolate(), wrapped_extension);
 }
 
 ScriptValue WebGLRenderingContextBase::getFramebufferAttachmentParameter(
@@ -3021,18 +3064,18 @@ ScriptValue WebGLRenderingContextBase::getFramebufferAttachmentParameter(
   if (isContextLost() ||
       !ValidateFramebufferFuncParameters("getFramebufferAttachmentParameter",
                                          target, attachment))
-    return ScriptValue::CreateNull(script_state);
+    return ScriptValue::CreateNull(script_state->GetIsolate());
 
   if (!framebuffer_binding_ || !framebuffer_binding_->Object()) {
     SynthesizeGLError(GL_INVALID_OPERATION, "getFramebufferAttachmentParameter",
                       "no framebuffer bound");
-    return ScriptValue::CreateNull(script_state);
+    return ScriptValue::CreateNull(script_state->GetIsolate());
   }
 
   if (framebuffer_binding_ && framebuffer_binding_->Opaque()) {
     SynthesizeGLError(GL_INVALID_OPERATION, "getFramebufferAttachmentParameter",
                       "cannot query parameters of an opaque framebuffer");
-    return ScriptValue::CreateNull(script_state);
+    return ScriptValue::CreateNull(script_state->GetIsolate());
   }
 
   WebGLSharedObject* attachment_object =
@@ -3044,7 +3087,7 @@ ScriptValue WebGLRenderingContextBase::getFramebufferAttachmentParameter(
     // specifies INVALID_OPERATION.
     SynthesizeGLError(GL_INVALID_ENUM, "getFramebufferAttachmentParameter",
                       "invalid parameter name");
-    return ScriptValue::CreateNull(script_state);
+    return ScriptValue::CreateNull(script_state->GetIsolate());
   }
 
   DCHECK(attachment_object->IsTexture() || attachment_object->IsRenderbuffer());
@@ -3070,11 +3113,11 @@ ScriptValue WebGLRenderingContextBase::getFramebufferAttachmentParameter(
         }
         SynthesizeGLError(GL_INVALID_ENUM, "getFramebufferAttachmentParameter",
                           "invalid parameter name for renderbuffer attachment");
-        return ScriptValue::CreateNull(script_state);
+        return ScriptValue::CreateNull(script_state->GetIsolate());
       default:
         SynthesizeGLError(GL_INVALID_ENUM, "getFramebufferAttachmentParameter",
                           "invalid parameter name for texture attachment");
-        return ScriptValue::CreateNull(script_state);
+        return ScriptValue::CreateNull(script_state->GetIsolate());
     }
   } else {
     switch (pname) {
@@ -3091,11 +3134,11 @@ ScriptValue WebGLRenderingContextBase::getFramebufferAttachmentParameter(
         }
         SynthesizeGLError(GL_INVALID_ENUM, "getFramebufferAttachmentParameter",
                           "invalid parameter name for renderbuffer attachment");
-        return ScriptValue::CreateNull(script_state);
+        return ScriptValue::CreateNull(script_state->GetIsolate());
       default:
         SynthesizeGLError(GL_INVALID_ENUM, "getFramebufferAttachmentParameter",
                           "invalid parameter name for renderbuffer attachment");
-        return ScriptValue::CreateNull(script_state);
+        return ScriptValue::CreateNull(script_state->GetIsolate());
     }
   }
 }
@@ -3103,7 +3146,7 @@ ScriptValue WebGLRenderingContextBase::getFramebufferAttachmentParameter(
 ScriptValue WebGLRenderingContextBase::getParameter(ScriptState* script_state,
                                                     GLenum pname) {
   if (isContextLost())
-    return ScriptValue::CreateNull(script_state);
+    return ScriptValue::CreateNull(script_state->GetIsolate());
   const int kIntZero = 0;
   switch (pname) {
     case GL_ACTIVE_TEXTURE:
@@ -3313,7 +3356,7 @@ ScriptValue WebGLRenderingContextBase::getParameter(ScriptState* script_state,
       SynthesizeGLError(
           GL_INVALID_ENUM, "getParameter",
           "invalid parameter name, OES_standard_derivatives not enabled");
-      return ScriptValue::CreateNull(script_state);
+      return ScriptValue::CreateNull(script_state->GetIsolate());
     case WebGLDebugRendererInfo::kUnmaskedRendererWebgl:
       if (ExtensionEnabled(kWebGLDebugRendererInfoName))
         return WebGLAny(script_state,
@@ -3321,7 +3364,7 @@ ScriptValue WebGLRenderingContextBase::getParameter(ScriptState* script_state,
       SynthesizeGLError(
           GL_INVALID_ENUM, "getParameter",
           "invalid parameter name, WEBGL_debug_renderer_info not enabled");
-      return ScriptValue::CreateNull(script_state);
+      return ScriptValue::CreateNull(script_state->GetIsolate());
     case WebGLDebugRendererInfo::kUnmaskedVendorWebgl:
       if (ExtensionEnabled(kWebGLDebugRendererInfoName))
         return WebGLAny(script_state,
@@ -3329,59 +3372,60 @@ ScriptValue WebGLRenderingContextBase::getParameter(ScriptState* script_state,
       SynthesizeGLError(
           GL_INVALID_ENUM, "getParameter",
           "invalid parameter name, WEBGL_debug_renderer_info not enabled");
-      return ScriptValue::CreateNull(script_state);
+      return ScriptValue::CreateNull(script_state->GetIsolate());
     case GL_VERTEX_ARRAY_BINDING_OES:  // OES_vertex_array_object
       if (ExtensionEnabled(kOESVertexArrayObjectName) || IsWebGL2OrHigher()) {
         if (!bound_vertex_array_object_->IsDefaultObject())
           return WebGLAny(script_state, bound_vertex_array_object_.Get());
-        return ScriptValue::CreateNull(script_state);
+        return ScriptValue::CreateNull(script_state->GetIsolate());
       }
       SynthesizeGLError(
           GL_INVALID_ENUM, "getParameter",
           "invalid parameter name, OES_vertex_array_object not enabled");
-      return ScriptValue::CreateNull(script_state);
+      return ScriptValue::CreateNull(script_state->GetIsolate());
     case GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT:  // EXT_texture_filter_anisotropic
-      if (ExtensionEnabled(kEXTTextureFilterAnisotropicName))
-        return GetUnsignedIntParameter(script_state,
-                                       GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT);
+      if (ExtensionEnabled(kEXTTextureFilterAnisotropicName)) {
+        return GetFloatParameter(script_state,
+                                 GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT);
+      }
       SynthesizeGLError(
           GL_INVALID_ENUM, "getParameter",
           "invalid parameter name, EXT_texture_filter_anisotropic not enabled");
-      return ScriptValue::CreateNull(script_state);
+      return ScriptValue::CreateNull(script_state->GetIsolate());
     case GL_MAX_COLOR_ATTACHMENTS_EXT:  // EXT_draw_buffers BEGIN
       if (ExtensionEnabled(kWebGLDrawBuffersName) || IsWebGL2OrHigher())
         return WebGLAny(script_state, MaxColorAttachments());
       SynthesizeGLError(
           GL_INVALID_ENUM, "getParameter",
           "invalid parameter name, WEBGL_draw_buffers not enabled");
-      return ScriptValue::CreateNull(script_state);
+      return ScriptValue::CreateNull(script_state->GetIsolate());
     case GL_MAX_DRAW_BUFFERS_EXT:
       if (ExtensionEnabled(kWebGLDrawBuffersName) || IsWebGL2OrHigher())
         return WebGLAny(script_state, MaxDrawBuffers());
       SynthesizeGLError(
           GL_INVALID_ENUM, "getParameter",
           "invalid parameter name, WEBGL_draw_buffers not enabled");
-      return ScriptValue::CreateNull(script_state);
+      return ScriptValue::CreateNull(script_state->GetIsolate());
     case GL_TIMESTAMP_EXT:
       if (ExtensionEnabled(kEXTDisjointTimerQueryName))
         return WebGLAny(script_state, 0);
       SynthesizeGLError(
           GL_INVALID_ENUM, "getParameter",
           "invalid parameter name, EXT_disjoint_timer_query not enabled");
-      return ScriptValue::CreateNull(script_state);
+      return ScriptValue::CreateNull(script_state->GetIsolate());
     case GL_GPU_DISJOINT_EXT:
       if (ExtensionEnabled(kEXTDisjointTimerQueryName))
         return GetBooleanParameter(script_state, GL_GPU_DISJOINT_EXT);
       SynthesizeGLError(
           GL_INVALID_ENUM, "getParameter",
           "invalid parameter name, EXT_disjoint_timer_query not enabled");
-      return ScriptValue::CreateNull(script_state);
+      return ScriptValue::CreateNull(script_state->GetIsolate());
     case GL_MAX_VIEWS_OVR:
-      if (ExtensionEnabled(kWebGLMultiviewName))
+      if (ExtensionEnabled(kOVRMultiview2Name))
         return GetIntParameter(script_state, pname);
       SynthesizeGLError(GL_INVALID_ENUM, "getParameter",
-                        "invalid parameter name, WEBGL_multiview not enabled");
-      return ScriptValue::CreateNull(script_state);
+                        "invalid parameter name, OVR_multiview2 not enabled");
+      return ScriptValue::CreateNull(script_state->GetIsolate());
     default:
       if ((ExtensionEnabled(kWebGLDrawBuffersName) || IsWebGL2OrHigher()) &&
           pname >= GL_DRAW_BUFFER0_EXT &&
@@ -3395,7 +3439,7 @@ ScriptValue WebGLRenderingContextBase::getParameter(ScriptState* script_state,
       }
       SynthesizeGLError(GL_INVALID_ENUM, "getParameter",
                         "invalid parameter name");
-      return ScriptValue::CreateNull(script_state);
+      return ScriptValue::CreateNull(script_state->GetIsolate());
   }
 }
 
@@ -3404,7 +3448,7 @@ ScriptValue WebGLRenderingContextBase::getProgramParameter(
     WebGLProgram* program,
     GLenum pname) {
   if (!ValidateWebGLProgramOrShader("getProgramParamter", program)) {
-    return ScriptValue::CreateNull(script_state);
+    return ScriptValue::CreateNull(script_state->GetIsolate());
   }
 
   GLint value = 0;
@@ -3420,16 +3464,19 @@ ScriptValue WebGLRenderingContextBase::getProgramParameter(
       if (!ExtensionEnabled(kKHRParallelShaderCompileName)) {
         SynthesizeGLError(GL_INVALID_ENUM, "getProgramParameter",
                           "invalid parameter name");
-        return ScriptValue::CreateNull(script_state);
+        return ScriptValue::CreateNull(script_state->GetIsolate());
       }
-
+      bool completed;
+      if (checkProgramCompletionQueryAvailable(program, &completed)) {
+        return WebGLAny(script_state, completed);
+      }
       return WebGLAny(script_state, program->CompletionStatus(this));
     case GL_ACTIVE_UNIFORM_BLOCKS:
     case GL_TRANSFORM_FEEDBACK_VARYINGS:
       if (!IsWebGL2OrHigher()) {
         SynthesizeGLError(GL_INVALID_ENUM, "getProgramParameter",
                           "invalid parameter name");
-        return ScriptValue::CreateNull(script_state);
+        return ScriptValue::CreateNull(script_state->GetIsolate());
       }
       FALLTHROUGH;
     case GL_ATTACHED_SHADERS:
@@ -3441,7 +3488,7 @@ ScriptValue WebGLRenderingContextBase::getProgramParameter(
       if (!IsWebGL2OrHigher()) {
         SynthesizeGLError(GL_INVALID_ENUM, "getProgramParameter",
                           "invalid parameter name");
-        return ScriptValue::CreateNull(script_state);
+        return ScriptValue::CreateNull(script_state->GetIsolate());
       }
       ContextGL()->GetProgramiv(ObjectOrZero(program), pname, &value);
       return WebGLAny(script_state, static_cast<unsigned>(value));
@@ -3454,7 +3501,7 @@ ScriptValue WebGLRenderingContextBase::getProgramParameter(
     default:
       SynthesizeGLError(GL_INVALID_ENUM, "getProgramParameter",
                         "invalid parameter name");
-      return ScriptValue::CreateNull(script_state);
+      return ScriptValue::CreateNull(script_state->GetIsolate());
   }
 }
 
@@ -3470,16 +3517,16 @@ ScriptValue WebGLRenderingContextBase::getRenderbufferParameter(
     GLenum target,
     GLenum pname) {
   if (isContextLost())
-    return ScriptValue::CreateNull(script_state);
+    return ScriptValue::CreateNull(script_state->GetIsolate());
   if (target != GL_RENDERBUFFER) {
     SynthesizeGLError(GL_INVALID_ENUM, "getRenderbufferParameter",
                       "invalid target");
-    return ScriptValue::CreateNull(script_state);
+    return ScriptValue::CreateNull(script_state->GetIsolate());
   }
   if (!renderbuffer_binding_ || !renderbuffer_binding_->Object()) {
     SynthesizeGLError(GL_INVALID_OPERATION, "getRenderbufferParameter",
                       "no renderbuffer bound");
-    return ScriptValue::CreateNull(script_state);
+    return ScriptValue::CreateNull(script_state->GetIsolate());
   }
 
   GLint value = 0;
@@ -3488,7 +3535,7 @@ ScriptValue WebGLRenderingContextBase::getRenderbufferParameter(
       if (!IsWebGL2OrHigher()) {
         SynthesizeGLError(GL_INVALID_ENUM, "getRenderbufferParameter",
                           "invalid parameter name");
-        return ScriptValue::CreateNull(script_state);
+        return ScriptValue::CreateNull(script_state->GetIsolate());
       }
       FALLTHROUGH;
     case GL_RENDERBUFFER_WIDTH:
@@ -3508,7 +3555,7 @@ ScriptValue WebGLRenderingContextBase::getRenderbufferParameter(
     default:
       SynthesizeGLError(GL_INVALID_ENUM, "getRenderbufferParameter",
                         "invalid parameter name");
-      return ScriptValue::CreateNull(script_state);
+      return ScriptValue::CreateNull(script_state->GetIsolate());
   }
 }
 
@@ -3517,7 +3564,7 @@ ScriptValue WebGLRenderingContextBase::getShaderParameter(
     WebGLShader* shader,
     GLenum pname) {
   if (!ValidateWebGLProgramOrShader("getShaderParameter", shader)) {
-    return ScriptValue::CreateNull(script_state);
+    return ScriptValue::CreateNull(script_state->GetIsolate());
   }
   GLint value = 0;
   switch (pname) {
@@ -3530,7 +3577,7 @@ ScriptValue WebGLRenderingContextBase::getShaderParameter(
       if (!ExtensionEnabled(kKHRParallelShaderCompileName)) {
         SynthesizeGLError(GL_INVALID_ENUM, "getShaderParameter",
                           "invalid parameter name");
-        return ScriptValue::CreateNull(script_state);
+        return ScriptValue::CreateNull(script_state->GetIsolate());
       }
       ContextGL()->GetShaderiv(ObjectOrZero(shader), pname, &value);
       return WebGLAny(script_state, static_cast<bool>(value));
@@ -3540,7 +3587,7 @@ ScriptValue WebGLRenderingContextBase::getShaderParameter(
     default:
       SynthesizeGLError(GL_INVALID_ENUM, "getShaderParameter",
                         "invalid parameter name");
-      return ScriptValue::CreateNull(script_state);
+      return ScriptValue::CreateNull(script_state->GetIsolate());
   }
 }
 
@@ -3611,9 +3658,9 @@ ScriptValue WebGLRenderingContextBase::getTexParameter(
     GLenum target,
     GLenum pname) {
   if (isContextLost())
-    return ScriptValue::CreateNull(script_state);
+    return ScriptValue::CreateNull(script_state->GetIsolate());
   if (!ValidateTextureBinding("getTexParameter", target))
-    return ScriptValue::CreateNull(script_state);
+    return ScriptValue::CreateNull(script_state->GetIsolate());
   switch (pname) {
     case GL_TEXTURE_MAG_FILTER:
     case GL_TEXTURE_MIN_FILTER:
@@ -3632,11 +3679,11 @@ ScriptValue WebGLRenderingContextBase::getTexParameter(
       SynthesizeGLError(
           GL_INVALID_ENUM, "getTexParameter",
           "invalid parameter name, EXT_texture_filter_anisotropic not enabled");
-      return ScriptValue::CreateNull(script_state);
+      return ScriptValue::CreateNull(script_state->GetIsolate());
     default:
       SynthesizeGLError(GL_INVALID_ENUM, "getTexParameter",
                         "invalid parameter name");
-      return ScriptValue::CreateNull(script_state);
+      return ScriptValue::CreateNull(script_state->GetIsolate());
   }
 }
 
@@ -3645,12 +3692,12 @@ ScriptValue WebGLRenderingContextBase::getUniform(
     WebGLProgram* program,
     const WebGLUniformLocation* uniform_location) {
   if (!ValidateWebGLProgramOrShader("getUniform", program))
-    return ScriptValue::CreateNull(script_state);
+    return ScriptValue::CreateNull(script_state->GetIsolate());
   DCHECK(uniform_location);
   if (uniform_location->Program() != program) {
     SynthesizeGLError(GL_INVALID_OPERATION, "getUniform",
                       "no uniformlocation or not valid for this program");
-    return ScriptValue::CreateNull(script_state);
+    return ScriptValue::CreateNull(script_state->GetIsolate());
   }
   GLint location = uniform_location->Location();
 
@@ -3659,11 +3706,11 @@ ScriptValue WebGLRenderingContextBase::getUniform(
   ContextGL()->GetProgramiv(program_id, GL_ACTIVE_UNIFORM_MAX_LENGTH,
                             &max_name_length);
   if (max_name_length < 0)
-    return ScriptValue::CreateNull(script_state);
+    return ScriptValue::CreateNull(script_state->GetIsolate());
   if (max_name_length == 0) {
     SynthesizeGLError(GL_INVALID_VALUE, "getUniform",
                       "no active uniforms exist");
-    return ScriptValue::CreateNull(script_state);
+    return ScriptValue::CreateNull(script_state->GetIsolate());
   }
 
   // FIXME: make this more efficient using WebGLUniformLocation and caching
@@ -3681,7 +3728,7 @@ ScriptValue WebGLRenderingContextBase::getUniform(
                                   &size, &type,
                                   reinterpret_cast<GLchar*>(name_ptr));
     if (size < 0)
-      return ScriptValue::CreateNull(script_state);
+      return ScriptValue::CreateNull(script_state->GetIsolate());
     String name(name_impl->Substring(0, name_length));
     StringBuilder name_builder;
     // Strip "[0]" from the name if it's an array.
@@ -3699,7 +3746,7 @@ ScriptValue WebGLRenderingContextBase::getUniform(
       }
       // Now need to look this up by name again to find its location
       GLint loc = ContextGL()->GetUniformLocation(
-          ObjectOrZero(program), name_builder.ToString().Utf8().data());
+          ObjectOrZero(program), name_builder.ToString().Utf8().c_str());
       if (loc == location) {
         // Found it. Use the type in the ActiveInfo to determine the return
         // type.
@@ -3771,12 +3818,22 @@ ScriptValue WebGLRenderingContextBase::getUniform(
             base_type = GL_INT;
             length = 1;
             break;
+          case GL_SAMPLER_VIDEO_IMAGE_WEBGL:
+            if (!ExtensionEnabled(kWebGLVideoTextureName)) {
+              SynthesizeGLError(
+                  GL_INVALID_VALUE, "getUniform",
+                  "unhandled type, WEBGL_video_texture extension not enabled");
+              return ScriptValue::CreateNull(script_state->GetIsolate());
+            }
+            base_type = GL_INT;
+            length = 1;
+            break;
           default:
             if (!IsWebGL2OrHigher()) {
               // Can't handle this type
               SynthesizeGLError(GL_INVALID_VALUE, "getUniform",
                                 "unhandled type");
-              return ScriptValue::CreateNull(script_state);
+              return ScriptValue::CreateNull(script_state->GetIsolate());
             }
             // handle GLenums for WebGL 2.0 or higher
             switch (type) {
@@ -3851,7 +3908,7 @@ ScriptValue WebGLRenderingContextBase::getUniform(
                 if (context_type_ != Platform::kWebGL2ComputeContextType) {
                   SynthesizeGLError(GL_INVALID_VALUE, "getUniform",
                                     "unhandled type");
-                  return ScriptValue::CreateNull(script_state);
+                  return ScriptValue::CreateNull(script_state->GetIsolate());
                 }
                 base_type = GL_INT;
                 length = 1;
@@ -3861,7 +3918,7 @@ ScriptValue WebGLRenderingContextBase::getUniform(
                 // Can't handle this type
                 SynthesizeGLError(GL_INVALID_VALUE, "getUniform",
                                   "unhandled type");
-                return ScriptValue::CreateNull(script_state);
+                return ScriptValue::CreateNull(script_state->GetIsolate());
             }
         }
         switch (base_type) {
@@ -3908,7 +3965,7 @@ ScriptValue WebGLRenderingContextBase::getUniform(
   // If we get here, something went wrong in our unfortunately complex logic
   // above
   SynthesizeGLError(GL_INVALID_VALUE, "getUniform", "unknown error");
-  return ScriptValue::CreateNull(script_state);
+  return ScriptValue::CreateNull(script_state->GetIsolate());
 }
 
 WebGLUniformLocation* WebGLRenderingContextBase::getUniformLocation(
@@ -3928,7 +3985,7 @@ WebGLUniformLocation* WebGLRenderingContextBase::getUniformLocation(
     return nullptr;
   }
   GLint uniform_location = ContextGL()->GetUniformLocation(
-      ObjectOrZero(program), name.Utf8().data());
+      ObjectOrZero(program), name.Utf8().c_str());
   if (uniform_location == -1)
     return nullptr;
   return WebGLUniformLocation::Create(program, uniform_location);
@@ -3939,11 +3996,11 @@ ScriptValue WebGLRenderingContextBase::getVertexAttrib(
     GLuint index,
     GLenum pname) {
   if (isContextLost())
-    return ScriptValue::CreateNull(script_state);
+    return ScriptValue::CreateNull(script_state->GetIsolate());
   if (index >= max_vertex_attribs_) {
     SynthesizeGLError(GL_INVALID_VALUE, "getVertexAttrib",
                       "index out of range");
-    return ScriptValue::CreateNull(script_state);
+    return ScriptValue::CreateNull(script_state->GetIsolate());
   }
 
   if ((ExtensionEnabled(kANGLEInstancedArraysName) || IsWebGL2OrHigher()) &&
@@ -3997,7 +4054,7 @@ ScriptValue WebGLRenderingContextBase::getVertexAttrib(
           NOTREACHED();
           break;
       }
-      return ScriptValue::CreateNull(script_state);
+      return ScriptValue::CreateNull(script_state->GetIsolate());
     }
     case GL_VERTEX_ATTRIB_ARRAY_INTEGER:
       if (IsWebGL2OrHigher()) {
@@ -4009,19 +4066,19 @@ ScriptValue WebGLRenderingContextBase::getVertexAttrib(
     default:
       SynthesizeGLError(GL_INVALID_ENUM, "getVertexAttrib",
                         "invalid parameter name");
-      return ScriptValue::CreateNull(script_state);
+      return ScriptValue::CreateNull(script_state->GetIsolate());
   }
 }
 
-long long WebGLRenderingContextBase::getVertexAttribOffset(GLuint index,
-                                                           GLenum pname) {
+int64_t WebGLRenderingContextBase::getVertexAttribOffset(GLuint index,
+                                                         GLenum pname) {
   if (isContextLost())
     return 0;
   GLvoid* result = nullptr;
   // NOTE: If pname is ever a value that returns more than 1 element
   // this will corrupt memory.
   ContextGL()->GetVertexAttribPointerv(index, pname, &result);
-  return static_cast<long long>(reinterpret_cast<intptr_t>(result));
+  return static_cast<int64_t>(reinterpret_cast<intptr_t>(result));
 }
 
 void WebGLRenderingContextBase::hint(GLenum target, GLenum mode) {
@@ -4147,7 +4204,17 @@ void WebGLRenderingContextBase::linkProgram(WebGLProgram* program) {
     return;
   }
 
+  GLuint query = 0u;
+  if (ExtensionEnabled(kKHRParallelShaderCompileName)) {
+    ContextGL()->GenQueriesEXT(1, &query);
+    ContextGL()->BeginQueryEXT(GL_PROGRAM_COMPLETION_QUERY_CHROMIUM, query);
+  }
   ContextGL()->LinkProgram(ObjectOrZero(program));
+  if (ExtensionEnabled(kKHRParallelShaderCompileName)) {
+    ContextGL()->EndQueryEXT(GL_PROGRAM_COMPLETION_QUERY_CHROMIUM);
+    addProgramCompletionQuery(program, query);
+  }
+
   program->IncreaseLinkCount();
 }
 
@@ -4239,11 +4306,16 @@ bool WebGLRenderingContextBase::ValidateReadPixelsFormatAndType(
 
   switch (type) {
     case GL_UNSIGNED_BYTE:
-      if (buffer && buffer->GetType() != DOMArrayBufferView::kTypeUint8) {
-        SynthesizeGLError(
-            GL_INVALID_OPERATION, "readPixels",
-            "type UNSIGNED_BYTE but ArrayBufferView not Uint8Array");
-        return false;
+      if (buffer) {
+        auto bufferType = buffer->GetType();
+        if (bufferType != DOMArrayBufferView::kTypeUint8 &&
+            bufferType != DOMArrayBufferView::kTypeUint8Clamped) {
+          SynthesizeGLError(
+              GL_INVALID_OPERATION, "readPixels",
+              "type UNSIGNED_BYTE but ArrayBufferView not Uint8Array or "
+              "Uint8ClampedArray");
+          return false;
+        }
       }
       return true;
     case GL_UNSIGNED_SHORT_5_6_5:
@@ -4306,7 +4378,7 @@ bool WebGLRenderingContextBase::ValidateReadPixelsFuncParameters(
     GLenum format,
     GLenum type,
     DOMArrayBufferView* buffer,
-    long long buffer_size) {
+    int64_t buffer_size) {
   if (!ValidateReadPixelsFormatAndType(format, type, buffer))
     return false;
 
@@ -4320,7 +4392,7 @@ bool WebGLRenderingContextBase::ValidateReadPixelsFuncParameters(
     return false;
   }
   if (buffer_size <
-      static_cast<long long>(total_bytes_required + total_skip_bytes)) {
+      static_cast<int64_t>(total_bytes_required + total_skip_bytes)) {
     SynthesizeGLError(GL_INVALID_OPERATION, "readPixels",
                       "buffer is not large enough for dimensions");
     return false;
@@ -4346,7 +4418,7 @@ void WebGLRenderingContextBase::ReadPixelsHelper(GLint x,
                                                  GLenum format,
                                                  GLenum type,
                                                  DOMArrayBufferView* pixels,
-                                                 long long offset) {
+                                                 int64_t offset) {
   if (isContextLost())
     return;
   // Due to WebGL's same-origin restrictions, it is not possible to
@@ -4386,8 +4458,21 @@ void WebGLRenderingContextBase::ReadPixelsHelper(GLint x,
     return;
   }
   ClearIfComposited();
+
   uint8_t* data = static_cast<uint8_t*>(pixels->BaseAddressMaybeShared()) +
                   offset_in_bytes.ValueOrDie();
+
+  // We add special handling here if the 'ArrayBufferView' is size '0' and the
+  // backing store is 'nullptr'. 'ReadPixels' creates an error if the provided
+  // data is 'nullptr'. However, in the case that we want to read zero pixels,
+  // we want to avoid this error. Therefore we provide temporary memory here if
+  // 'ArrayBufferView' does not provide a backing store but we actually read
+  // zero pixels.
+  base::Optional<Vector<uint8_t>> buffer;
+  if (!data && (width == 0 || height == 0)) {
+    buffer.emplace(32);
+    data = buffer->data();
+  }
   {
     ScopedDrawingBufferBinder binder(GetDrawingBuffer(), framebuffer);
     ContextGL()->ReadPixels(x, y, width, height, format, type, data);
@@ -4435,6 +4520,8 @@ void WebGLRenderingContextBase::RenderbufferStorageImpl(
                         "invalid internalformat");
       break;
   }
+  UpdateNumberOfUserAllocatedMultisampledRenderbuffers(
+      renderbuffer_binding_->UpdateMultisampleState(false));
 }
 
 void WebGLRenderingContextBase::renderbufferStorage(GLenum target,
@@ -4491,9 +4578,9 @@ void WebGLRenderingContextBase::shaderSource(WebGLShader* shader,
     return;
   shader->SetSource(string);
   WTF::StringUTF8Adaptor adaptor(string_without_comments);
-  const GLchar* shader_data = adaptor.Data();
+  const GLchar* shader_data = adaptor.data();
   // TODO(danakj): Use base::saturated_cast<GLint>.
-  const GLint shader_length = adaptor.length();
+  const GLint shader_length = adaptor.size();
   ContextGL()->ShaderSource(ObjectOrZero(shader), 1, &shader_data,
                             &shader_length);
 }
@@ -4772,17 +4859,17 @@ bool WebGLRenderingContextBase::ValidateTexFunc(
 bool WebGLRenderingContextBase::ValidateValueFitNonNegInt32(
     const char* function_name,
     const char* param_name,
-    long long value) {
+    int64_t value) {
   if (value < 0) {
     String error_msg = String(param_name) + " < 0";
     SynthesizeGLError(GL_INVALID_VALUE, function_name,
-                      error_msg.Ascii().data());
+                      error_msg.Ascii().c_str());
     return false;
   }
-  if (value > static_cast<long long>(std::numeric_limits<int>::max())) {
+  if (value > static_cast<int64_t>(std::numeric_limits<int>::max())) {
     String error_msg = String(param_name) + " more than 32-bit";
     SynthesizeGLError(GL_INVALID_OPERATION, function_name,
-                      error_msg.Ascii().data());
+                      error_msg.Ascii().c_str());
     return false;
   }
   return true;
@@ -4991,9 +5078,9 @@ void WebGLRenderingContextBase::TexImageHelperImageData(
   if (isContextLost())
     return;
   DCHECK(pixels);
-  if (pixels->data()->BufferBase()->IsNeutered()) {
+  if (pixels->data()->BufferBase()->IsDetached()) {
     SynthesizeGLError(GL_INVALID_VALUE, func_name,
-                      "The source data has been neutered.");
+                      "The source data has been detached.");
     return;
   }
   if (!ValidateTexImageBinding(func_name, function_id, target))
@@ -5244,7 +5331,7 @@ void WebGLRenderingContextBase::TexImageViaGPU(
     ScopedUnpackParametersResetRestore temporaryResetUnpack(this);
     if (source_image) {
       source_image->CopyToTexture(
-          ContextGL(), target, target_texture, premultiply_alpha, flip_y,
+          ContextGL(), target, target_texture, level, premultiply_alpha, flip_y,
           IntPoint(xoffset, yoffset), source_sub_rectangle);
     } else {
       WebGLRenderingContextBase* gl = source_canvas_webgl_context;
@@ -5252,9 +5339,9 @@ void WebGLRenderingContextBase::TexImageViaGPU(
         flip_y = !flip_y;
       ScopedTexture2DRestorer inner_restorer(gl);
       if (!gl->GetDrawingBuffer()->CopyToPlatformTexture(
-              ContextGL(), target, target_texture, unpack_premultiply_alpha_,
-              !flip_y, IntPoint(xoffset, yoffset), source_sub_rectangle,
-              kBackBuffer)) {
+              ContextGL(), target, target_texture, level,
+              unpack_premultiply_alpha_, !flip_y, IntPoint(xoffset, yoffset),
+              source_sub_rectangle, kBackBuffer)) {
         NOTREACHED();
       }
     }
@@ -5371,7 +5458,12 @@ void WebGLRenderingContextBase::TexImageHelperCanvasRenderingContextHost(
 
     // The GPU-GPU copy path uses the Y-up coordinate system.
     IntRect adjusted_source_sub_rectangle = source_sub_rectangle;
-    if (!unpack_flip_y_) {
+
+    bool should_adjust_source_sub_rectangle = !unpack_flip_y_;
+    if (is_origin_top_left_ && source_canvas_webgl_context)
+      should_adjust_source_sub_rectangle = !should_adjust_source_sub_rectangle;
+
+    if (should_adjust_source_sub_rectangle) {
       adjusted_source_sub_rectangle.SetY(context_host->Size().Height() -
                                          adjusted_source_sub_rectangle.MaxY());
     }
@@ -5399,9 +5491,13 @@ void WebGLRenderingContextBase::TexImageHelperCanvasRenderingContextHost(
     // TODO(crbug.com/612542): Implement GPU-to-GPU copy path for more
     // cases, like copying to layers of 3D textures, and elements of
     // 2D texture arrays.
+    bool flip_y = unpack_flip_y_;
+    if (is_origin_top_left_ && is_webgl_canvas)
+      flip_y = !flip_y;
+
     TexImageImpl(function_id, target, level, internalformat, xoffset, yoffset,
                  zoffset, format, type, image.get(),
-                 WebGLImageConversion::kHtmlDomCanvas, unpack_flip_y_,
+                 WebGLImageConversion::kHtmlDomCanvas, flip_y,
                  unpack_premultiply_alpha_, source_sub_rectangle, depth,
                  unpack_image_height);
   }
@@ -5666,7 +5762,7 @@ void WebGLRenderingContextBase::TexImageHelperImageBitmap(
 
   SkPixmap pixmap;
   uint8_t* pixel_data_ptr = nullptr;
-  scoped_refptr<Uint8Array> pixel_data;
+  Vector<uint8_t> pixel_data;
   // In the case where an ImageBitmap is not texture backed, peekPixels() always
   // succeed.  However, when it is texture backed and !canUseTexImageByGPU, we
   // do a GPU read back.
@@ -5676,7 +5772,7 @@ void WebGLRenderingContextBase::TexImageHelperImageBitmap(
   } else {
     pixel_data = bitmap->CopyBitmapData(
         bitmap->IsPremultiplied() ? kPremultiplyAlpha : kUnpremultiplyAlpha);
-    pixel_data_ptr = pixel_data->Data();
+    pixel_data_ptr = pixel_data.data();
   }
   Vector<uint8_t> data;
   bool need_conversion = true;
@@ -5753,6 +5849,15 @@ void WebGLRenderingContextBase::TexParameter(GLenum target,
     return;
   switch (pname) {
     case GL_TEXTURE_MIN_FILTER:
+      if (target == GL_TEXTURE_VIDEO_IMAGE_WEBGL) {
+        if ((is_float && paramf != GL_NEAREST && paramf != GL_LINEAR) ||
+            (!is_float && parami != GL_NEAREST && parami != GL_LINEAR)) {
+          SynthesizeGLError(GL_INVALID_ENUM, "texParameter",
+                            "invalid parameter name");
+          return;
+        }
+      }
+      break;
     case GL_TEXTURE_MAG_FILTER:
       break;
     case GL_TEXTURE_WRAP_R:
@@ -5770,6 +5875,15 @@ void WebGLRenderingContextBase::TexParameter(GLenum target,
            parami != GL_MIRRORED_REPEAT && parami != GL_REPEAT)) {
         SynthesizeGLError(GL_INVALID_ENUM, "texParameter", "invalid parameter");
         return;
+      }
+
+      if (target == GL_TEXTURE_VIDEO_IMAGE_WEBGL) {
+        if ((is_float && paramf != GL_CLAMP_TO_EDGE) ||
+            (!is_float && parami != GL_CLAMP_TO_EDGE)) {
+          SynthesizeGLError(GL_INVALID_ENUM, "texParameter",
+                            "invalid parameter");
+          return;
+        }
       }
       break;
     case GL_TEXTURE_MAX_ANISOTROPY_EXT:  // EXT_texture_filter_anisotropic
@@ -5920,8 +6034,8 @@ void WebGLRenderingContextBase::uniform1f(const WebGLUniformLocation* location,
 
 void WebGLRenderingContextBase::uniform1fv(const WebGLUniformLocation* location,
                                            const FlexibleFloat32ArrayView& v) {
-  if (isContextLost() || !ValidateUniformParameters<WTF::Float32Array>(
-                             "uniform1fv", location, v, 1, 0, v.length()))
+  if (isContextLost() ||
+      !ValidateUniformParameters("uniform1fv", location, v, 1, 0, v.length()))
     return;
 
   ContextGL()->Uniform1fv(location->Location(), v.length(),
@@ -5954,8 +6068,8 @@ void WebGLRenderingContextBase::uniform1i(const WebGLUniformLocation* location,
 
 void WebGLRenderingContextBase::uniform1iv(const WebGLUniformLocation* location,
                                            const FlexibleInt32ArrayView& v) {
-  if (isContextLost() || !ValidateUniformParameters<WTF::Int32Array>(
-                             "uniform1iv", location, v, 1, 0, v.length()))
+  if (isContextLost() ||
+      !ValidateUniformParameters("uniform1iv", location, v, 1, 0, v.length()))
     return;
 
   ContextGL()->Uniform1iv(location->Location(), v.length(),
@@ -5989,8 +6103,8 @@ void WebGLRenderingContextBase::uniform2f(const WebGLUniformLocation* location,
 
 void WebGLRenderingContextBase::uniform2fv(const WebGLUniformLocation* location,
                                            const FlexibleFloat32ArrayView& v) {
-  if (isContextLost() || !ValidateUniformParameters<WTF::Float32Array>(
-                             "uniform2fv", location, v, 2, 0, v.length()))
+  if (isContextLost() ||
+      !ValidateUniformParameters("uniform2fv", location, v, 2, 0, v.length()))
     return;
 
   ContextGL()->Uniform2fv(location->Location(), v.length() >> 1,
@@ -6024,8 +6138,8 @@ void WebGLRenderingContextBase::uniform2i(const WebGLUniformLocation* location,
 
 void WebGLRenderingContextBase::uniform2iv(const WebGLUniformLocation* location,
                                            const FlexibleInt32ArrayView& v) {
-  if (isContextLost() || !ValidateUniformParameters<WTF::Int32Array>(
-                             "uniform2iv", location, v, 2, 0, v.length()))
+  if (isContextLost() ||
+      !ValidateUniformParameters("uniform2iv", location, v, 2, 0, v.length()))
     return;
 
   ContextGL()->Uniform2iv(location->Location(), v.length() >> 1,
@@ -6060,8 +6174,8 @@ void WebGLRenderingContextBase::uniform3f(const WebGLUniformLocation* location,
 
 void WebGLRenderingContextBase::uniform3fv(const WebGLUniformLocation* location,
                                            const FlexibleFloat32ArrayView& v) {
-  if (isContextLost() || !ValidateUniformParameters<WTF::Float32Array>(
-                             "uniform3fv", location, v, 3, 0, v.length()))
+  if (isContextLost() ||
+      !ValidateUniformParameters("uniform3fv", location, v, 3, 0, v.length()))
     return;
 
   ContextGL()->Uniform3fv(location->Location(), v.length() / 3,
@@ -6096,8 +6210,8 @@ void WebGLRenderingContextBase::uniform3i(const WebGLUniformLocation* location,
 
 void WebGLRenderingContextBase::uniform3iv(const WebGLUniformLocation* location,
                                            const FlexibleInt32ArrayView& v) {
-  if (isContextLost() || !ValidateUniformParameters<WTF::Int32Array>(
-                             "uniform3iv", location, v, 3, 0, v.length()))
+  if (isContextLost() ||
+      !ValidateUniformParameters("uniform3iv", location, v, 3, 0, v.length()))
     return;
 
   ContextGL()->Uniform3iv(location->Location(), v.length() / 3,
@@ -6133,8 +6247,8 @@ void WebGLRenderingContextBase::uniform4f(const WebGLUniformLocation* location,
 
 void WebGLRenderingContextBase::uniform4fv(const WebGLUniformLocation* location,
                                            const FlexibleFloat32ArrayView& v) {
-  if (isContextLost() || !ValidateUniformParameters<WTF::Float32Array>(
-                             "uniform4fv", location, v, 4, 0, v.length()))
+  if (isContextLost() ||
+      !ValidateUniformParameters("uniform4fv", location, v, 4, 0, v.length()))
     return;
 
   ContextGL()->Uniform4fv(location->Location(), v.length() >> 2,
@@ -6170,8 +6284,8 @@ void WebGLRenderingContextBase::uniform4i(const WebGLUniformLocation* location,
 
 void WebGLRenderingContextBase::uniform4iv(const WebGLUniformLocation* location,
                                            const FlexibleInt32ArrayView& v) {
-  if (isContextLost() || !ValidateUniformParameters<WTF::Int32Array>(
-                             "uniform4iv", location, v, 4, 0, v.length()))
+  if (isContextLost() ||
+      !ValidateUniformParameters("uniform4iv", location, v, 4, 0, v.length()))
     return;
 
   ContextGL()->Uniform4iv(location->Location(), v.length() >> 2,
@@ -6433,7 +6547,7 @@ void WebGLRenderingContextBase::vertexAttribPointer(GLuint index,
                                                     GLenum type,
                                                     GLboolean normalized,
                                                     GLsizei stride,
-                                                    long long offset) {
+                                                    int64_t offset) {
   if (isContextLost())
     return;
   if (index >= max_vertex_attribs_) {
@@ -6551,7 +6665,7 @@ void WebGLRenderingContextBase::LoseContextImpl(
 
   // Always defer the dispatch of the context lost event, to implement
   // the spec behavior of queueing a task.
-  dispatch_context_lost_event_timer_.StartOneShot(TimeDelta(), FROM_HERE);
+  dispatch_context_lost_event_timer_.StartOneShot(base::TimeDelta(), FROM_HERE);
 }
 
 void WebGLRenderingContextBase::HoldReferenceToDrawingBuffer(DrawingBuffer*) {
@@ -6573,7 +6687,7 @@ void WebGLRenderingContextBase::ForceRestoreContext() {
   }
 
   if (!restore_timer_.IsActive())
-    restore_timer_.StartOneShot(TimeDelta(), FROM_HERE);
+    restore_timer_.StartOneShot(base::TimeDelta(), FROM_HERE);
 }
 
 uint32_t WebGLRenderingContextBase::NumberOfContextLosses() const {
@@ -6683,6 +6797,17 @@ void WebGLRenderingContextBase::
 void WebGLRenderingContextBase::
     DrawingBufferClientRestorePixelPackBufferBinding() {}
 
+bool WebGLRenderingContextBase::
+    DrawingBufferClientUserAllocatedMultisampledRenderbuffers() {
+  return number_of_user_allocated_multisampled_renderbuffers_ > 0;
+}
+
+void WebGLRenderingContextBase::
+    DrawingBufferClientForceLostContextWithAutoRecovery() {
+  ForceLostContext(WebGLRenderingContextBase::kSyntheticLostContext,
+                   WebGLRenderingContextBase::kAuto);
+}
+
 ScriptValue WebGLRenderingContextBase::GetBooleanParameter(
     ScriptState* script_state,
     GLenum pname) {
@@ -6729,7 +6854,7 @@ ScriptValue WebGLRenderingContextBase::GetIntParameter(
         if (value == 0) {
           // This indicates read framebuffer is incomplete and an
           // INVALID_OPERATION has been generated.
-          return ScriptValue::CreateNull(script_state);
+          return ScriptValue::CreateNull(script_state->GetIsolate());
         }
         break;
       default:
@@ -6857,6 +6982,15 @@ WebGLTexture* WebGLRenderingContextBase::ValidateTextureBinding(
       }
       tex = texture_units_[active_texture_unit_].texture2d_array_binding_.Get();
       break;
+    case GL_TEXTURE_VIDEO_IMAGE_WEBGL:
+      if (!ExtensionEnabled(kWebGLVideoTextureName)) {
+        SynthesizeGLError(GL_INVALID_ENUM, function_name,
+                          "invalid texture target");
+        return nullptr;
+      }
+      tex = texture_units_[active_texture_unit_]
+                .texture_video_image_binding_.Get();
+      break;
     default:
       SynthesizeGLError(GL_INVALID_ENUM, function_name,
                         "invalid texture target");
@@ -6890,6 +7024,18 @@ bool WebGLRenderingContextBase::ValidateSize(const char* function_name,
   return true;
 }
 
+bool WebGLRenderingContextBase::ValidateCharacter(unsigned char c) {
+  // Printing characters are valid except " $ ` @ \ ' DEL.
+  if (c >= 32 && c <= 126 && c != '"' && c != '$' && c != '`' && c != '@' &&
+      c != '\\' && c != '\'')
+    return true;
+  // Horizontal tab, line feed, vertical tab, form feed, carriage return
+  // are also valid.
+  if (c >= 9 && c <= 13)
+    return true;
+  return false;
+}
+
 bool WebGLRenderingContextBase::ValidateString(const char* function_name,
                                                const String& string) {
   for (wtf_size_t i = 0; i < string.length(); ++i) {
@@ -6899,6 +7045,13 @@ bool WebGLRenderingContextBase::ValidateString(const char* function_name,
     }
   }
   return true;
+}
+
+bool WebGLRenderingContextBase::IsPrefixReserved(const String& name) {
+  if (name.StartsWith("gl_") || name.StartsWith("webgl_") ||
+      name.StartsWith("_webgl_"))
+    return true;
+  return false;
 }
 
 bool WebGLRenderingContextBase::ValidateShaderSource(const String& string) {
@@ -6913,6 +7066,18 @@ bool WebGLRenderingContextBase::ValidateShaderSource(const String& string) {
     }
   }
   return true;
+}
+
+bool WebGLRenderingContextBase::ValidateShaderType(const char* function_name,
+                                                   GLenum shader_type) {
+  switch (shader_type) {
+    case GL_VERTEX_SHADER:
+    case GL_FRAGMENT_SHADER:
+      return true;
+    default:
+      SynthesizeGLError(GL_INVALID_ENUM, function_name, "invalid shader type");
+      return false;
+  }
 }
 
 void WebGLRenderingContextBase::AddExtensionSupportedFormatsTypes() {
@@ -7072,6 +7237,8 @@ GLint WebGLRenderingContextBase::GetMaxTextureLevelForTarget(GLenum target) {
     case GL_TEXTURE_CUBE_MAP_POSITIVE_Z:
     case GL_TEXTURE_CUBE_MAP_NEGATIVE_Z:
       return max_cube_map_texture_level_;
+    case GL_TEXTURE_VIDEO_IMAGE_WEBGL:
+      return 1;
   }
   return 0;
 }
@@ -7109,6 +7276,7 @@ bool WebGLRenderingContextBase::ValidateTexFuncDimensions(
 
   switch (target) {
     case GL_TEXTURE_2D:
+    case GL_TEXTURE_VIDEO_IMAGE_WEBGL:
       if (width > (max_texture_size_ >> level) ||
           height > (max_texture_size_ >> level)) {
         SynthesizeGLError(GL_INVALID_VALUE, function_name,
@@ -7235,24 +7403,28 @@ bool WebGLRenderingContextBase::ValidateTexFuncData(
   if (!ValidateSettableTexFormat(function_name, format))
     return false;
 
+  auto pixelType = pixels->GetType();
+
   switch (type) {
     case GL_BYTE:
-      if (pixels->GetType() != DOMArrayBufferView::kTypeInt8) {
+      if (pixelType != DOMArrayBufferView::kTypeInt8) {
         SynthesizeGLError(GL_INVALID_OPERATION, function_name,
                           "type BYTE but ArrayBufferView not Int8Array");
         return false;
       }
       break;
     case GL_UNSIGNED_BYTE:
-      if (pixels->GetType() != DOMArrayBufferView::kTypeUint8) {
+      if (pixelType != DOMArrayBufferView::kTypeUint8 &&
+          pixelType != DOMArrayBufferView::kTypeUint8Clamped) {
         SynthesizeGLError(
             GL_INVALID_OPERATION, function_name,
-            "type UNSIGNED_BYTE but ArrayBufferView not Uint8Array");
+            "type UNSIGNED_BYTE but ArrayBufferView not Uint8Array or "
+            "Uint8ClampedArray");
         return false;
       }
       break;
     case GL_SHORT:
-      if (pixels->GetType() != DOMArrayBufferView::kTypeInt16) {
+      if (pixelType != DOMArrayBufferView::kTypeInt16) {
         SynthesizeGLError(GL_INVALID_OPERATION, function_name,
                           "type SHORT but ArrayBufferView not Int16Array");
         return false;
@@ -7262,7 +7434,7 @@ bool WebGLRenderingContextBase::ValidateTexFuncData(
     case GL_UNSIGNED_SHORT_5_6_5:
     case GL_UNSIGNED_SHORT_4_4_4_4:
     case GL_UNSIGNED_SHORT_5_5_5_1:
-      if (pixels->GetType() != DOMArrayBufferView::kTypeUint16) {
+      if (pixelType != DOMArrayBufferView::kTypeUint16) {
         SynthesizeGLError(
             GL_INVALID_OPERATION, function_name,
             "type UNSIGNED_SHORT but ArrayBufferView not Uint16Array");
@@ -7270,7 +7442,7 @@ bool WebGLRenderingContextBase::ValidateTexFuncData(
       }
       break;
     case GL_INT:
-      if (pixels->GetType() != DOMArrayBufferView::kTypeInt32) {
+      if (pixelType != DOMArrayBufferView::kTypeInt32) {
         SynthesizeGLError(GL_INVALID_OPERATION, function_name,
                           "type INT but ArrayBufferView not Int32Array");
         return false;
@@ -7281,7 +7453,7 @@ bool WebGLRenderingContextBase::ValidateTexFuncData(
     case GL_UNSIGNED_INT_10F_11F_11F_REV:
     case GL_UNSIGNED_INT_5_9_9_9_REV:
     case GL_UNSIGNED_INT_24_8:
-      if (pixels->GetType() != DOMArrayBufferView::kTypeUint32) {
+      if (pixelType != DOMArrayBufferView::kTypeUint32) {
         SynthesizeGLError(
             GL_INVALID_OPERATION, function_name,
             "type UNSIGNED_INT but ArrayBufferView not Uint32Array");
@@ -7289,7 +7461,7 @@ bool WebGLRenderingContextBase::ValidateTexFuncData(
       }
       break;
     case GL_FLOAT:  // OES_texture_float
-      if (pixels->GetType() != DOMArrayBufferView::kTypeFloat32) {
+      if (pixelType != DOMArrayBufferView::kTypeFloat32) {
         SynthesizeGLError(GL_INVALID_OPERATION, function_name,
                           "type FLOAT but ArrayBufferView not Float32Array");
         return false;
@@ -7299,7 +7471,7 @@ bool WebGLRenderingContextBase::ValidateTexFuncData(
     case GL_HALF_FLOAT_OES:  // OES_texture_half_float
       // As per the specification, ArrayBufferView should be null or a
       // Uint16Array when OES_texture_half_float is enabled.
-      if (pixels->GetType() != DOMArrayBufferView::kTypeUint16) {
+      if (pixelType != DOMArrayBufferView::kTypeUint16) {
         SynthesizeGLError(GL_INVALID_OPERATION, function_name,
                           "type HALF_FLOAT_OES but ArrayBufferView is not NULL "
                           "and not Uint16Array");
@@ -7381,10 +7553,12 @@ void WebGLRenderingContextBase::PrintGLErrorToConsole(const String& message) {
 }
 
 void WebGLRenderingContextBase::PrintWarningToConsole(const String& message) {
-  if (!canvas())
-    return;
-  canvas()->GetDocument().AddConsoleMessage(ConsoleMessage::Create(
-      kRenderingMessageSource, mojom::ConsoleMessageLevel::kWarning, message));
+  blink::ExecutionContext* context = Host()->GetTopExecutionContext();
+  if (context) {
+    context->AddConsoleMessage(
+        ConsoleMessage::Create(mojom::ConsoleMessageSource::kRendering,
+                               mojom::ConsoleMessageLevel::kWarning, message));
+  }
 }
 
 bool WebGLRenderingContextBase::ValidateFramebufferFuncParameters(
@@ -7679,7 +7853,7 @@ bool WebGLRenderingContextBase::ValidateDrawArrays(const char* function_name) {
 
 bool WebGLRenderingContextBase::ValidateDrawElements(const char* function_name,
                                                      GLenum type,
-                                                     long long offset) {
+                                                     int64_t offset) {
   if (isContextLost())
     return false;
 
@@ -7718,7 +7892,7 @@ void WebGLRenderingContextBase::DispatchContextLostEvent(TimerBase*) {
   restore_allowed_ = event->defaultPrevented();
   if (restore_allowed_ && !is_hidden_) {
     if (auto_recovery_method_ == kAuto)
-      restore_timer_.StartOneShot(TimeDelta(), FROM_HERE);
+      restore_timer_.StartOneShot(base::TimeDelta(), FROM_HERE);
   }
 }
 
@@ -7834,10 +8008,12 @@ CanvasResourceProvider* WebGLRenderingContextBase::
     return resource_provider;
   }
 
+  // TODO(fserb): why is this software?
   std::unique_ptr<CanvasResourceProvider> temp(CanvasResourceProvider::Create(
-      size, CanvasResourceProvider::kSoftwareResourceUsage,
-      nullptr,              // context_provider_wrapper
-      0,                    // msaa_sample_count,
+      size, CanvasResourceProvider::ResourceUsage::kSoftwareResourceUsage,
+      nullptr,  // context_provider_wrapper
+      0,        // msaa_sample_count,
+      kLow_SkFilterQuality,
       CanvasColorParams(),  // TODO: should this use the canvas's colorspace?
       CanvasResourceProvider::kDefaultPresentationMode,
       nullptr));  // canvas_resource_dispatcher
@@ -8013,6 +8189,7 @@ void WebGLRenderingContextBase::TextureUnitState::Trace(
   visitor->Trace(texture_cube_map_binding_);
   visitor->Trace(texture3d_binding_);
   visitor->Trace(texture2d_array_binding_);
+  visitor->Trace(texture_video_image_binding_);
 }
 
 void WebGLRenderingContextBase::Trace(blink::Visitor* visitor) {
@@ -8076,4 +8253,45 @@ void WebGLRenderingContextBase::getHTMLOrOffscreenCanvas(
   }
 }
 
+void WebGLRenderingContextBase::addProgramCompletionQuery(WebGLProgram* program,
+                                                          GLuint query) {
+  auto old_query = program_completion_queries_.Get(program);
+  if (old_query != program_completion_queries_.end()) {
+    ContextGL()->DeleteQueriesEXT(1, &old_query->second);
+  }
+  program_completion_queries_.Put(program, query);
+  if (program_completion_queries_.size() > kMaxProgramCompletionQueries) {
+    auto oldest = program_completion_queries_.rbegin();
+    ContextGL()->DeleteQueriesEXT(1, &oldest->second);
+    program_completion_queries_.Erase(oldest);
+  }
+}
+
+void WebGLRenderingContextBase::clearProgramCompletionQueries() {
+  for (auto query : program_completion_queries_) {
+    ContextGL()->DeleteQueriesEXT(1, &query.second);
+  }
+  program_completion_queries_.Clear();
+}
+
+bool WebGLRenderingContextBase::checkProgramCompletionQueryAvailable(
+    WebGLProgram* program,
+    bool* completed) {
+  GLuint id = 0;
+  auto found = program_completion_queries_.Get(program);
+  if (found != program_completion_queries_.end()) {
+    id = found->second;
+    GLuint available;
+    ContextGL()->GetQueryObjectuivEXT(id, GL_QUERY_RESULT_AVAILABLE,
+                                      &available);
+    if (available) {
+      GLuint result = 0u;
+      ContextGL()->GetQueryObjectuivEXT(id, GL_QUERY_RESULT, &result);
+      program->setLinkStatus(result);
+    }
+    *completed = (available == GL_TRUE);
+    return true;
+  }
+  return false;
+}
 }  // namespace blink

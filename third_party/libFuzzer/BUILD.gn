@@ -63,6 +63,11 @@ source_set("libfuzzer") {
 
   configs -= fuzzing_engine_remove_configs
   configs += fuzzing_engine_add_configs
+
+  deps = []
+  if (is_fuchsia) {
+    deps += [ "//third_party/fuchsia-sdk/sdk:fdio" ]
+  }
 }
 
 if (use_afl) {

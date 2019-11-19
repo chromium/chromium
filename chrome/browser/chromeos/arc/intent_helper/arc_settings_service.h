@@ -8,9 +8,9 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "chrome/browser/chromeos/arc/arc_session_manager.h"
-#include "components/arc/common/intent_helper.mojom.h"
-#include "components/arc/connection_observer.h"
+#include "chrome/browser/chromeos/arc/session/arc_session_manager.h"
+#include "components/arc/mojom/intent_helper.mojom.h"
+#include "components/arc/session/connection_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class Profile;

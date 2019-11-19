@@ -23,7 +23,7 @@ ChromeVoxLibLouisTest.prototype = {
   __proto__: ChromeVoxE2ETest.prototype,
 
   createLiblouis: function() {
-    return new cvox.LibLouis(
+    return new LibLouis(
         chrome.extension.getURL('braille/liblouis_wrapper.js'),
         '',
         () => {
@@ -46,7 +46,7 @@ function assertEqualsUint8Array(expected, actual) {
 
 function LIBLOUIS_TEST_F(testName, testFunc, opt_preamble) {
   var wrappedTestFunc = function() {
-    var liblouis = new cvox.LibLouis(
+    var liblouis = new LibLouis(
         chrome.extension.getURL('braille/liblouis_wrapper.js'),
         '',
         testFunc.bind(this));
@@ -76,7 +76,7 @@ LIBLOUIS_TEST_F_WITH_PREAMBLE(`
 #define MAYBE_checkAllTables checkAllTables
 #endif
 `, 'MAYBE_checkAllTables', function(liblouis) {
-  cvox.BrailleTable.getAll(this.newCallback(function(tables) {
+  BrailleTable.getAll(this.newCallback(function(tables) {
     var i = 0;
     var checkNextTable = function() {
       var table = tables[i++];
@@ -103,7 +103,7 @@ LIBLOUIS_TEST_F('testBackTranslateComputerBraille', function(liblouis) {
 
 LIBLOUIS_TEST_F('testTranslateGermanGrade2Braille', function(liblouis) {
   // This is one of the moderately large tables.
-  this.withTranslator(liblouis, 'de-de-g2.ctb', function(translator) {
+  this.withTranslator(liblouis, 'de-g2.ctb', function(translator) {
     translator.translate('München', [], this.newCallback(
         function(cells, textToBraille, brailleToText) {
           assertEqualsUint8Array([0x0d, 0x33, 0x1d, 0x39, 0x09], cells);
@@ -148,13 +148,13 @@ LIBLOUIS_TEST_F('testKeyEventStaticData', function(liblouis) {
           var view = new Uint8Array(cells);
           for (var i = 0; i < 26; i++) {
             assertEquals(String.fromCharCode(i + 65),
-                cvox.BrailleKeyEvent.brailleDotsToStandardKeyCode[view[i]]);
+                BrailleKeyEvent.brailleDotsToStandardKeyCode[view[i]]);
           }
 
           // 0-9.
           for (var i = 27; i < 37; i++) {
             assertEquals(String.fromCharCode(i + 21),
-                cvox.BrailleKeyEvent.brailleDotsToStandardKeyCode[view[i]]);
+                BrailleKeyEvent.brailleDotsToStandardKeyCode[view[i]]);
           }
         }));
   });

@@ -39,14 +39,14 @@ class BluetoothSocketEventDispatcher;
 // thread while providing methods to manage resources of that class. This
 // follows the pattern of AsyncApiFunction, but does not derive from it,
 // because BluetoothApiSocket methods must be called on the UI Thread.
-class BluetoothSocketAsyncApiFunction : public UIThreadExtensionFunction {
+class BluetoothSocketAsyncApiFunction : public ExtensionFunction {
  public:
   BluetoothSocketAsyncApiFunction();
 
  protected:
   ~BluetoothSocketAsyncApiFunction() override;
 
-  // UIThreadExtensionFunction:
+  // ExtensionFunction:
   bool PreRunValidation(std::string* error) override;
 
   content::BrowserThread::ID work_thread_id() const;
@@ -84,7 +84,7 @@ class BluetoothSocketUpdateFunction : public BluetoothSocketAsyncApiFunction {
  protected:
   ~BluetoothSocketUpdateFunction() override;
 
-  // UIThreadExtensionFunction:
+  // ExtensionFunction:
   ResponseAction Run() override;
 
  private:
@@ -102,7 +102,7 @@ class BluetoothSocketSetPausedFunction
  protected:
   ~BluetoothSocketSetPausedFunction() override;
 
-  // UIThreadExtensionFunction:
+  // ExtensionFunction:
   ResponseAction Run() override;
 
  private:
@@ -126,7 +126,7 @@ class BluetoothSocketListenFunction : public BluetoothSocketAsyncApiFunction {
   virtual int socket_id() const = 0;
   virtual const std::string& uuid() const = 0;
 
-  // UIThreadExtensionFunction:
+  // ExtensionFunction:
   ResponseAction Run() override;
   bool PreRunValidation(std::string* error) override;
 
@@ -206,7 +206,7 @@ class BluetoothSocketAbstractConnectFunction :
  protected:
   ~BluetoothSocketAbstractConnectFunction() override;
 
-  // UIThreadExtensionFunction:
+  // ExtensionFunction:
   bool PreRunValidation(std::string* error) override;
   ResponseAction Run() override;
 
@@ -251,7 +251,7 @@ class BluetoothSocketDisconnectFunction
  protected:
   ~BluetoothSocketDisconnectFunction() override;
 
-  // UIThreadExtensionFunction:
+  // ExtensionFunction:
   ResponseAction Run() override;
 
  private:
@@ -269,7 +269,7 @@ class BluetoothSocketCloseFunction : public BluetoothSocketAsyncApiFunction {
  protected:
   ~BluetoothSocketCloseFunction() override;
 
-  // UIThreadExtensionFunction:
+  // ExtensionFunction:
   ResponseAction Run() override;
 
  private:
@@ -285,7 +285,7 @@ class BluetoothSocketSendFunction : public BluetoothSocketAsyncApiFunction {
  protected:
   ~BluetoothSocketSendFunction() override;
 
-  // UIThreadExtensionFunction:
+  // ExtensionFunction:
   ResponseAction Run() override;
 
  private:
@@ -309,7 +309,7 @@ class BluetoothSocketGetInfoFunction : public BluetoothSocketAsyncApiFunction {
  protected:
   ~BluetoothSocketGetInfoFunction() override;
 
-  // UIThreadExtensionFunction:
+  // ExtensionFunction:
   ResponseAction Run() override;
 
  private:
@@ -327,7 +327,7 @@ class BluetoothSocketGetSocketsFunction
  protected:
   ~BluetoothSocketGetSocketsFunction() override;
 
-  // UIThreadExtensionFunction:
+  // ExtensionFunction:
   ResponseAction Run() override;
 };
 

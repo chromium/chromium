@@ -30,6 +30,7 @@ TEST(ChromeBrowserPolicyConnectorTest, HasMachineLevelPolicies) {
           nullptr);
   provider.UpdateChromePolicy(map);
   EXPECT_TRUE(connector.HasMachineLevelPolicies());
+  BrowserPolicyConnectorBase::SetPolicyProviderForTesting(nullptr);
 }
 #endif  // !defined(OS_CHROMEOS)
 

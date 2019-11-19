@@ -30,7 +30,7 @@ class NET_EXPORT URLRequestErrorJob : public URLRequestJob {
 
   int error_;
 
-  base::WeakPtrFactory<URLRequestErrorJob> weak_factory_;
+  base::WeakPtrFactory<URLRequestErrorJob> weak_factory_{this};
 };
 
 }  // namespace net

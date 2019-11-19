@@ -33,7 +33,7 @@ void WaitForever() {
 
 }  // namespace
 
-ScopedProcess::ScopedProcess(const base::Closure& child_callback)
+ScopedProcess::ScopedProcess(base::OnceClosure child_callback)
     : child_process_id_(-1), process_id_(getpid()) {
   PCHECK(0 == pipe(pipe_fds_));
 #if !defined(THREAD_SANITIZER)
@@ -46,7 +46,7 @@ ScopedProcess::ScopedProcess(const base::Closure& child_callback)
   if (0 == child_process_id_) {
     PCHECK(0 == IGNORE_EINTR(close(pipe_fds_[0])));
     pipe_fds_[0] = -1;
-    child_callback.Run();
+    std::move(child_callback).Run();
     // Notify the parent that the closure has run.
     CHECK_EQ(1, HANDLE_EINTR(write(pipe_fds_[1], kSynchronisationChar, 1)));
     WaitForever();

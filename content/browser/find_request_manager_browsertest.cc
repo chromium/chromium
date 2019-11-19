@@ -60,7 +60,8 @@ class FindRequestManagerTest : public ContentBrowserTest,
   // Navigates to |url| and waits for it to finish loading.
   void LoadAndWait(const std::string& url) {
     TestNavigationObserver navigation_observer(contents());
-    NavigateToURL(shell(), embedded_test_server()->GetURL("a.com", url));
+    EXPECT_TRUE(
+        NavigateToURL(shell(), embedded_test_server()->GetURL("a.com", url)));
     ASSERT_TRUE(navigation_observer.last_navigation_succeeded());
   }
 
@@ -429,7 +430,7 @@ IN_PROC_BROWSER_TEST_P(FindRequestManagerTest, DISABLED_AddFrame) {
 // matches.
 IN_PROC_BROWSER_TEST_F(FindRequestManagerTest, MAYBE(AddFrameAfterNoMatches)) {
   TestNavigationObserver navigation_observer(contents());
-  NavigateToURL(shell(), GURL("about:blank"));
+  EXPECT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
   EXPECT_TRUE(navigation_observer.last_navigation_succeeded());
 
   auto default_options = blink::mojom::FindOptions::New();
@@ -622,7 +623,7 @@ IN_PROC_BROWSER_TEST_F(FindRequestManagerTest, DetachFrameWithMatch) {
 
 IN_PROC_BROWSER_TEST_F(FindRequestManagerTest, MAYBE(FindInPage_Issue644448)) {
   TestNavigationObserver navigation_observer(contents());
-  NavigateToURL(shell(), GURL("about:blank"));
+  EXPECT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
   EXPECT_TRUE(navigation_observer.last_navigation_succeeded());
 
   auto default_options = blink::mojom::FindOptions::New();
@@ -843,5 +844,64 @@ IN_PROC_BROWSER_TEST_P(FindRequestManagerTest, ActivateNearestFindMatch) {
   }
 }
 #endif  // defined(OS_ANDROID)
+
+// Test basic find-in-page functionality after going back and forth to the same
+// page. In particular, find-in-page should continue to work after going back to
+// a page using the back-forward cache.
+IN_PROC_BROWSER_TEST_P(FindRequestManagerTest, HistoryBackAndForth) {
+  GURL url_a = embedded_test_server()->GetURL("a.com", "/find_in_page.html");
+  GURL url_b = embedded_test_server()->GetURL("b.com", "/find_in_page.html");
+
+  auto test_page = [&] {
+    if (GetParam())
+      MakeChildFrameCrossProcess();
+
+    auto options = blink::mojom::FindOptions::New();
+
+    // The initial find-in-page request.
+    Find("result", options->Clone());
+    delegate()->WaitForFinalReply();
+
+    FindResults results = delegate()->GetFindResults();
+    EXPECT_EQ(last_request_id(), results.request_id);
+    EXPECT_EQ(19, results.number_of_matches);
+
+    // Iterate forward/backward over a few elements.
+    int match_index = results.active_match_ordinal;
+    for (int delta : {-1, -1, +1, +1, +1, +1, -1, +1, +1}) {
+      options->find_next = true;
+      options->forward = delta > 0;
+      // |active_match_ordinal| uses 1-based index. It belongs to [1, 19].
+      match_index += delta;
+      match_index = (match_index + 18) % 19 + 1;
+
+      Find("result", options->Clone());
+      delegate()->WaitForFinalReply();
+      results = delegate()->GetFindResults();
+
+      EXPECT_EQ(last_request_id(), results.request_id);
+      EXPECT_EQ(19, results.number_of_matches);
+      EXPECT_EQ(match_index, results.active_match_ordinal);
+    }
+  };
+
+  // 1) Navigate to A.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  test_page();
+
+  // 2) Navigate to B.
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+  test_page();
+
+  // 3) Go back to A.
+  contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  test_page();
+
+  // 4) Go forward to B.
+  contents()->GetController().GoForward();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  test_page();
+}
 
 }  // namespace content

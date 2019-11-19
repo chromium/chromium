@@ -79,8 +79,8 @@ struct Arrow {
   WeakPtr<Target> target;
 };
 struct TargetWithFactory : public Target {
-  TargetWithFactory() : factory(this) {}
-  WeakPtrFactory<Target> factory;
+  TargetWithFactory() {}
+  WeakPtrFactory<Target> factory{this};
 };
 
 // Helper class to create and destroy weak pointer copies
@@ -527,11 +527,11 @@ TEST(WeakPtrTest, MoveOwnershipImplicitly) {
   {
     // Main thread creates another WeakPtr, but this does not trigger implicitly
     // thread ownership move.
-    Arrow arrow;
-    arrow.target = target->AsWeakPtr();
+    Arrow scoped_arrow;
+    scoped_arrow.target = target->AsWeakPtr();
 
     // The new WeakPtr is owned by background thread.
-    EXPECT_EQ(target, background.DeRef(&arrow));
+    EXPECT_EQ(target, background.DeRef(&scoped_arrow));
   }
 
   // Target can only be deleted on background thread.

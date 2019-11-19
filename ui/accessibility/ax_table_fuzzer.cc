@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/macros.h"
+#include "build/build_config.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_tree.h"
 
@@ -79,13 +80,14 @@ ax::mojom::IntAttribute GetInterestingTableAttribute(unsigned char byte) {
 // These will be no-ops if the node is not part of a complete
 // table. We don't care about any of the results, we just want
 // to make sure none of these crash or hang.
-void TestTableAPIs(ui::AXNode* node) {
+void TestTableAPIs(const ui::AXNode* node) {
   ignore_result(node->IsTable());
   ignore_result(node->GetTableColCount());
   ignore_result(node->GetTableRowCount());
   ignore_result(node->GetTableAriaColCount());
   ignore_result(node->GetTableAriaRowCount());
   ignore_result(node->GetTableCellCount());
+  ignore_result(node->GetTableCaption());
   for (int i = 0; i < 8; i++)
     ignore_result(node->GetTableCellFromIndex(i));
   for (int i = 0; i < 3; i++)
@@ -104,7 +106,10 @@ void TestTableAPIs(ui::AXNode* node) {
   node->GetTableUniqueCellIds(&ids);
   ignore_result(node->IsTableRow());
   ignore_result(node->GetTableRowRowIndex());
-
+#if defined(OS_MACOSX)
+  ignore_result(node->IsTableColumn());
+  ignore_result(node->GetTableColColIndex());
+#endif
   ignore_result(node->IsTableCellOrHeader());
   ignore_result(node->GetTableCellIndex());
   ignore_result(node->GetTableCellColIndex());
@@ -119,8 +124,8 @@ void TestTableAPIs(ui::AXNode* node) {
   node->GetTableCellColHeaders(&headers);
   node->GetTableCellRowHeaders(&headers);
 
-  for (int i = 0; i < node->child_count(); i++)
-    TestTableAPIs(node->children()[i]);
+  for (const auto* child : node->children())
+    TestTableAPIs(child);
 }
 
 // Entry point for LibFuzzer.

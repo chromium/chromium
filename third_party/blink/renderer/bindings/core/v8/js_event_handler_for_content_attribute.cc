@@ -65,7 +65,7 @@ v8::Local<v8::Value> JSEventHandlerForContentAttribute::GetCompiledHandler(
       // https://html.spec.whatwg.org/C/#window-reflecting-body-element-event-handler-set
       document = &node->GetDocument();
     } else {
-      element = ToElement(node);
+      element = To<Element>(node);
       document = &node->GetDocument();
     }
     // EventTarget::GetExecutionContext() sometimes returns the document which
@@ -97,8 +97,8 @@ v8::Local<v8::Value> JSEventHandlerForContentAttribute::GetCompiledHandler(
   // Step 5. If element is not null and element has a form owner, let form owner
   // be that form owner. Otherwise, let form owner be null.
   HTMLFormElement* form_owner = nullptr;
-  if (element && element->IsHTMLElement()) {
-    form_owner = ToHTMLElement(element)->formOwner();
+  if (auto* html_element = DynamicTo<HTMLElement>(element)) {
+    form_owner = html_element->formOwner();
   }
 
   // Step 10. Let function be the result of calling FunctionCreate, with
@@ -205,8 +205,9 @@ JSEventHandlerForContentAttribute::GetSourceLocation(EventTarget& target) {
   if (source_location)
     return source_location;
   // Fallback to uncompiled source info.
-  return SourceLocation::Create(source_url_, position_.line_.ZeroBasedInt(),
-                                position_.column_.ZeroBasedInt(), nullptr);
+  return std::make_unique<SourceLocation>(
+      source_url_, position_.line_.ZeroBasedInt(),
+      position_.column_.ZeroBasedInt(), nullptr);
 }
 
 }  // namespace blink

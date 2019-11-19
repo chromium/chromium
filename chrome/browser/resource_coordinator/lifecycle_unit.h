@@ -35,37 +35,22 @@ class TabLifecycleUnitExternal;
 // use any system resource.
 class LifecycleUnit {
  public:
-  // Used to sort LifecycleUnit by importance using a reactivation score or the
-  // last focused time.
+  // Used to sort LifecycleUnit by importance using the last focused time.
   // The most important LifecycleUnit has the greatest SortKey.
   struct SortKey {
-    // kMaxScore is used when a SortKey should rank ahead of any other SortKey.
-    // Two SortKeys with kMaxScore are compared using |last_focused_time|.
-    static constexpr float kMaxScore = std::numeric_limits<float>::max();
 
     SortKey();
 
     // Creates a SortKey based on the LifecycleUnit's last focused time.
     explicit SortKey(base::TimeTicks last_focused_time);
 
-    // Creates a SortKey based on a score calculated for the LifecycleUnit and
-    // the last focused time. Used when the TabRanker feature is enabled.
-    SortKey(float score, base::TimeTicks last_focused_time);
-
     SortKey(const SortKey& other);
 
     bool operator<(const SortKey& other) const;
     bool operator>(const SortKey& other) const;
 
-    // Abstract importance score calculated by the Tab Ranker where a higher
-    // score suggests the tab is more likely to be reactivated.
-    // kMaxScore if the LifecycleUnit is currently focused.
-    base::Optional<float> score;
-
     // Last time at which the LifecycleUnit was focused. base::TimeTicks::Max()
     // if the LifecycleUnit is currently focused.
-    // Used when the TabRanker feature is disabled. Also used as a tiebreaker
-    // when two scores are the same.
     base::TimeTicks last_focused_time;
   };
 
@@ -139,12 +124,6 @@ class LifecycleUnit {
   // accurately for a group of LifecycleUnits that live in the same process(es)
   // than for individual LifecycleUnits. https://crbug.com/775644
   virtual int GetEstimatedMemoryFreedOnDiscardKB() const = 0;
-
-  // Whether memory can be purged in the process hosting this LifecycleUnit.
-  //
-  // TODO(fdoray): This method should be on a class that represents a process,
-  // not on a LifecycleUnit. https://crbug.com/775644
-  virtual bool CanPurge() const = 0;
 
   // Returns true if this LifecycleUnit can be frozen. Full details regarding
   // the policy decision are recorded in |decision_details|, for logging.

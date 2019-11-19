@@ -19,9 +19,9 @@ namespace {
 // have a situation where a modal dialog in one window blocks the appearance
 // of a modal dialog in another.
 scoped_refptr<base::SingleThreadTaskRunner> CreateDialogTaskRunner() {
-  return CreateCOMSTATaskRunnerWithTraits(
-      {base::TaskPriority::USER_BLOCKING,
-       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN, base::MayBlock()},
+  return CreateCOMSTATaskRunner(
+      {base::ThreadPool(), base::TaskPriority::USER_BLOCKING,
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN, base::MayBlock()},
       base::SingleThreadTaskRunnerThreadMode::DEDICATED);
 }
 

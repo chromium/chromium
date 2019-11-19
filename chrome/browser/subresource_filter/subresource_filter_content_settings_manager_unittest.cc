@@ -24,7 +24,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/test/history_service_test_util.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -58,9 +58,8 @@ class SubresourceFilterContentSettingsManagerTest : public testing::Test {
 
   ContentSetting GetContentSettingMatchingUrlWithEmptyPath(const GURL& url) {
     ContentSettingsForOneType host_settings;
-    GetSettingsMap()->GetSettingsForOneType(
-        ContentSettingsType::CONTENT_SETTINGS_TYPE_ADS, std::string(),
-        &host_settings);
+    GetSettingsMap()->GetSettingsForOneType(ContentSettingsType::ADS,
+                                            std::string(), &host_settings);
     GURL url_with_empty_path = url.GetWithEmptyPath();
     for (const auto& it : host_settings) {
       // Need GURL conversion to get rid of unnecessary default ports.
@@ -73,9 +72,7 @@ class SubresourceFilterContentSettingsManagerTest : public testing::Test {
   base::SimpleTestClock* test_clock() { return test_clock_; }
 
  private:
-  base::ScopedTempDir scoped_dir_;
-
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   base::HistogramTester histogram_tester_;
   TestingProfile testing_profile_;
 
@@ -165,7 +162,7 @@ TEST_F(SubresourceFilterContentSettingsManagerTest,
 
   // Set the setting to the default, should not populate the metadata.
   GetSettingsMap()->SetContentSettingDefaultScope(
-      url, GURL(), CONTENT_SETTINGS_TYPE_ADS, std::string(),
+      url, GURL(), ContentSettingsType::ADS, std::string(),
       CONTENT_SETTING_DEFAULT);
 
   EXPECT_FALSE(settings_manager()->GetSiteMetadata(url));
@@ -197,7 +194,7 @@ TEST_F(SubresourceFilterContentSettingsManagerHistoryTest,
 
   // Deleting a URL from history while there are still other urls for the
   // same origin should not delete the setting.
-  history_service->DeleteURL(url1);
+  history_service->DeleteURLs({url1});
   history::BlockUntilHistoryProcessesPendingRequests(history_service);
   EXPECT_FALSE(settings_manager()->ShouldShowUIForSite(url1));
   EXPECT_FALSE(settings_manager()->ShouldShowUIForSite(url2));
@@ -205,7 +202,7 @@ TEST_F(SubresourceFilterContentSettingsManagerHistoryTest,
   // Deleting all URLs of an origin from history should clear the setting for
   // this URL. Note that since there is another URL in the history this won't
   // clear all items.
-  history_service->DeleteURL(url2);
+  history_service->DeleteURLs({url2});
   history::BlockUntilHistoryProcessesPendingRequests(history_service);
 
   EXPECT_TRUE(settings_manager()->ShouldShowUIForSite(url1));

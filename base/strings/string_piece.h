@@ -154,8 +154,7 @@ BASE_EXPORT void AssertIteratorsInOrder(string16::const_iterator begin,
 // BasicStringPiece ------------------------------------------------------------
 
 // Defines the types, methods, operators, and data members common to both
-// StringPiece and StringPiece16. Do not refer to this class directly, but
-// rather to BasicStringPiece, StringPiece, or StringPiece16.
+// StringPiece and StringPiece16.
 //
 // This is templatized by string class type rather than character type, so
 // BasicStringPiece<std::string> or BasicStringPiece<base::string16>.

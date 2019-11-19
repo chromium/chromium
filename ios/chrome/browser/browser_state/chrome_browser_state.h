@@ -114,13 +114,10 @@ class ChromeBrowserState : public web::BrowserState {
   virtual net::URLRequestContextGetter* CreateRequestContext(
       ProtocolHandlerMap* protocol_handlers) = 0;
 
-  // Creates a isolated net::URLRequestContextGetter. Should only be called once
-  // per partition_path per browser state object.
-  virtual net::URLRequestContextGetter* CreateIsolatedRequestContext(
-      const base::FilePath& partition_path) = 0;
-
   // web::BrowserState
   net::URLRequestContextGetter* GetRequestContext() override;
+  void UpdateCorsExemptHeader(
+      network::mojom::NetworkContextParams* params) override;
 
  protected:
   explicit ChromeBrowserState(

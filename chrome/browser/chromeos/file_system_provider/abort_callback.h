@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_CHROMEOS_FILE_SYSTEM_PROVIDER_ABORT_CALLBACK_H_
 
 #include "base/callback.h"
-#include "storage/browser/fileapi/async_file_util.h"
+#include "storage/browser/file_system/async_file_util.h"
 
 namespace chromeos {
 namespace file_system_provider {

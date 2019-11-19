@@ -12,6 +12,7 @@
 #include "base/task/sequence_manager/sequence_manager_impl.h"
 #include "base/task/sequence_manager/task_queue_impl.h"
 #include "base/threading/thread_checker.h"
+#include "base/threading/thread_checker_impl.h"
 #include "base/time/time.h"
 
 namespace base {
@@ -35,11 +36,15 @@ class NullTaskRunner final : public SingleThreadTaskRunner {
     return false;
   }
 
-  bool RunsTasksInCurrentSequence() const override { return false; }
+  bool RunsTasksInCurrentSequence() const override {
+    return thread_checker_.CalledOnValidThread();
+  }
 
  private:
   // Ref-counted
   ~NullTaskRunner() override = default;
+
+  ThreadCheckerImpl thread_checker_;
 };
 
 // TODO(kraynov): Move NullTaskRunner from //base/test to //base.
@@ -59,7 +64,7 @@ TaskQueue::QueueEnabledVoter::~QueueEnabledVoter() {
   task_queue_->RemoveQueueEnabledVoter(enabled_);
 }
 
-void TaskQueue::QueueEnabledVoter::SetQueueEnabled(bool enabled) {
+void TaskQueue::QueueEnabledVoter::SetVoteToEnable(bool enabled) {
   if (enabled == enabled_)
     return;
   enabled_ = enabled;
@@ -120,9 +125,14 @@ TaskQueue::TaskQueue(std::unique_ptr<internal::TaskQueueImpl> impl,
                              ? impl_->sequence_manager()->associated_thread()
                              : MakeRefCounted<internal::AssociatedThreadId>()),
       default_task_runner_(impl_ ? impl_->CreateTaskRunner(kTaskTypeNone)
-                                 : CreateNullTaskRunner()) {}
+                                 : CreateNullTaskRunner()),
+      name_(impl_ ? impl_->GetName() : "") {}
 
 TaskQueue::~TaskQueue() {
+  ShutdownTaskQueueGracefully();
+}
+
+void TaskQueue::ShutdownTaskQueueGracefully() {
   // scoped_refptr guarantees us that this object isn't used.
   if (!impl_)
     return;
@@ -131,7 +141,7 @@ TaskQueue::~TaskQueue() {
 
   // If we've not been unregistered then this must occur on the main thread.
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
-  impl_->SetOnNextWakeUpChangedCallback(RepeatingCallback<void(TimeTicks)>());
+  impl_->SetObserver(nullptr);
   impl_->sequence_manager()->ShutdownTaskQueueGracefully(TakeTaskQueueImpl());
 }
 
@@ -139,6 +149,9 @@ TaskQueue::TaskTiming::TaskTiming(bool has_wall_time, bool has_thread_time)
     : has_wall_time_(has_wall_time), has_thread_time_(has_thread_time) {}
 
 void TaskQueue::TaskTiming::RecordTaskStart(LazyNow* now) {
+  DCHECK_EQ(State::NotStarted, state_);
+  state_ = State::Running;
+
   if (has_wall_time())
     start_time_ = now->Now();
   if (has_thread_time())
@@ -146,6 +159,11 @@ void TaskQueue::TaskTiming::RecordTaskStart(LazyNow* now) {
 }
 
 void TaskQueue::TaskTiming::RecordTaskEnd(LazyNow* now) {
+  DCHECK(state_ == State::Running || state_ == State::Finished);
+  if (state_ == State::Finished)
+    return;
+  state_ = State::Finished;
+
   if (has_wall_time())
     end_time_ = now->Now();
   if (has_thread_time())
@@ -154,11 +172,10 @@ void TaskQueue::TaskTiming::RecordTaskEnd(LazyNow* now) {
 
 void TaskQueue::ShutdownTaskQueue() {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
-  AutoLock lock(impl_lock_);
   if (!impl_)
     return;
   if (!sequence_manager_) {
-    impl_.reset();
+    TakeTaskQueueImpl().reset();
     return;
   }
   impl_->SetBlameContext(nullptr);
@@ -170,8 +187,10 @@ void TaskQueue::ShutdownTaskQueue() {
 }
 
 scoped_refptr<SingleThreadTaskRunner> TaskQueue::CreateTaskRunner(
-    int task_type) {
-  Optional<MoveableAutoLock> lock(AcquireImplReadLockIfNeeded());
+    TaskType task_type) {
+  // We only need to lock if we're not on the main thread.
+  base::internal::CheckedAutoLockMaybe lock(IsOnMainThread() ? &impl_lock_
+                                                             : nullptr);
   if (!impl_)
     return CreateNullTaskRunner();
   return impl_->CreateTaskRunner(task_type);
@@ -234,14 +253,14 @@ TaskQueue::QueuePriority TaskQueue::GetQueuePriority() const {
   return impl_->GetQueuePriority();
 }
 
-void TaskQueue::AddTaskObserver(MessageLoop::TaskObserver* task_observer) {
+void TaskQueue::AddTaskObserver(TaskObserver* task_observer) {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
   if (!impl_)
     return;
   impl_->AddTaskObserver(task_observer);
 }
 
-void TaskQueue::RemoveTaskObserver(MessageLoop::TaskObserver* task_observer) {
+void TaskQueue::RemoveTaskObserver(TaskObserver* task_observer) {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
   if (!impl_)
     return;
@@ -301,39 +320,37 @@ bool TaskQueue::BlockedByFence() const {
   return impl_->BlockedByFence();
 }
 
-const char* TaskQueue::GetName() const {
-  auto lock = AcquireImplReadLockIfNeeded();
+EnqueueOrder TaskQueue::GetLastUnblockEnqueueOrder() const {
+  DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
   if (!impl_)
-    return "";
-  return impl_->GetName();
+    return EnqueueOrder();
+  return impl_->GetLastUnblockEnqueueOrder();
+}
+
+const char* TaskQueue::GetName() const {
+  return name_;
 }
 
 void TaskQueue::SetObserver(Observer* observer) {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
   if (!impl_)
     return;
-  if (observer) {
-    // Observer is guaranteed to outlive TaskQueue and TaskQueueImpl lifecycle
-    // is controlled by |this|.
-    impl_->SetOnNextWakeUpChangedCallback(
-        BindRepeating(&TaskQueue::Observer::OnQueueNextWakeUpChanged,
-                      Unretained(observer), Unretained(this)));
-  } else {
-    impl_->SetOnNextWakeUpChangedCallback(RepeatingCallback<void(TimeTicks)>());
-  }
+
+  // Observer is guaranteed to outlive TaskQueue and TaskQueueImpl lifecycle is
+  // controlled by |this|.
+  impl_->SetObserver(observer);
+}
+
+void TaskQueue::SetShouldReportPostedTasksWhenDisabled(bool should_report) {
+  impl_->SetShouldReportPostedTasksWhenDisabled(should_report);
 }
 
 bool TaskQueue::IsOnMainThread() const {
   return associated_thread_->IsBoundToCurrentThread();
 }
 
-Optional<MoveableAutoLock> TaskQueue::AcquireImplReadLockIfNeeded() const {
-  if (IsOnMainThread())
-    return nullopt;
-  return MoveableAutoLock(impl_lock_);
-}
-
 std::unique_ptr<internal::TaskQueueImpl> TaskQueue::TakeTaskQueueImpl() {
+  base::internal::CheckedAutoLock lock(impl_lock_);
   DCHECK(impl_);
   return std::move(impl_);
 }

@@ -13,7 +13,7 @@
 #include "device/bluetooth/bluetooth_export.h"
 #include "device/bluetooth/bluetooth_gatt_characteristic.h"
 #include "device/bluetooth/bluetooth_gatt_service.h"
-#include "device/bluetooth/bluetooth_uuid.h"
+#include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 
 namespace device {
 
@@ -24,8 +24,8 @@ namespace device {
 class DEVICE_BLUETOOTH_EXPORT BluetoothGattDescriptor {
  public:
   // The ErrorCallback is used by methods to asynchronously report errors.
-  typedef base::Callback<void(BluetoothGattService::GattErrorCode)>
-      ErrorCallback;
+  using ErrorCallback =
+      base::OnceCallback<void(BluetoothGattService::GattErrorCode)>;
 
   // The Bluetooth Specification declares several predefined descriptors that
   // profiles can use. The following are definitions for the list of UUIDs

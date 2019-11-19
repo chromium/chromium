@@ -31,13 +31,7 @@ TEST(ContentPreviewsRenderFrameObserverTest,
   EXPECT_TRUE(
       ContentPreviewsRenderFrameObserverTest::ValidatePreviewsStateWithResponse(
           content::NOSCRIPT_ON, response_no_headers));
-  EXPECT_TRUE(
-      ContentPreviewsRenderFrameObserverTest::ValidatePreviewsStateWithResponse(
-          content::CLIENT_LOFI_ON, response_no_headers));
 
-  EXPECT_DCHECK_DEATH(
-      ContentPreviewsRenderFrameObserverTest::ValidatePreviewsStateWithResponse(
-          content::SERVER_LOFI_ON, response_no_headers));
   EXPECT_DCHECK_DEATH(
       ContentPreviewsRenderFrameObserverTest::ValidatePreviewsStateWithResponse(
           content::SERVER_LITE_PAGE_ON, response_no_headers));
@@ -46,7 +40,7 @@ TEST(ContentPreviewsRenderFrameObserverTest,
 TEST(ContentPreviewsRenderFrameObserverTest,
      ValidatePreviewsStateWithResponseLitePageHeader) {
   blink::WebURLResponse response_with_lite_page;
-  response_with_lite_page.AddHTTPHeaderField("chrome-proxy-content-transform",
+  response_with_lite_page.AddHttpHeaderField("chrome-proxy-content-transform",
                                              "lite-page");
 
   EXPECT_TRUE(
@@ -59,37 +53,6 @@ TEST(ContentPreviewsRenderFrameObserverTest,
   EXPECT_DCHECK_DEATH(
       ContentPreviewsRenderFrameObserverTest::ValidatePreviewsStateWithResponse(
           content::NOSCRIPT_ON, response_with_lite_page));
-  EXPECT_DCHECK_DEATH(
-      ContentPreviewsRenderFrameObserverTest::ValidatePreviewsStateWithResponse(
-          content::CLIENT_LOFI_ON, response_with_lite_page));
-
-  EXPECT_DCHECK_DEATH(
-      ContentPreviewsRenderFrameObserverTest::ValidatePreviewsStateWithResponse(
-          content::SERVER_LOFI_ON, response_with_lite_page));
-}
-
-TEST(ContentPreviewsRenderFrameObserverTest,
-     ValidatePreviewsStateWithResponsePagePolicyHeader) {
-  blink::WebURLResponse response_with_page_policy;
-  response_with_page_policy.AddHTTPHeaderField("Chrome-Proxy",
-                                               "Page-Policies=Empty-Image");
-
-  EXPECT_TRUE(
-      ContentPreviewsRenderFrameObserverTest::ValidatePreviewsStateWithResponse(
-          content::SERVER_LOFI_ON, response_with_page_policy));
-
-  EXPECT_DCHECK_DEATH(
-      ContentPreviewsRenderFrameObserverTest::ValidatePreviewsStateWithResponse(
-          content::PREVIEWS_UNSPECIFIED, response_with_page_policy));
-  EXPECT_DCHECK_DEATH(
-      ContentPreviewsRenderFrameObserverTest::ValidatePreviewsStateWithResponse(
-          content::NOSCRIPT_ON, response_with_page_policy));
-  EXPECT_DCHECK_DEATH(
-      ContentPreviewsRenderFrameObserverTest::ValidatePreviewsStateWithResponse(
-          content::CLIENT_LOFI_ON, response_with_page_policy));
-  EXPECT_DCHECK_DEATH(
-      ContentPreviewsRenderFrameObserverTest::ValidatePreviewsStateWithResponse(
-          content::SERVER_LITE_PAGE_ON, response_with_page_policy));
 }
 
 }  // namespace data_reduction_proxy

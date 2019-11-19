@@ -119,8 +119,7 @@ class ProfilesHaveSameTypedURLsChecker : public MultiClientStatusChangeChecker {
   ProfilesHaveSameTypedURLsChecker();
 
   // Implementation of StatusChangeChecker.
-  bool IsExitConditionSatisfied() override;
-  std::string GetDebugMessage() const override;
+  bool IsExitConditionSatisfied(std::ostream* os) override;
 };
 
 class TypedURLChecker : public SingleClientStatusChangeChecker {
@@ -129,8 +128,7 @@ class TypedURLChecker : public SingleClientStatusChangeChecker {
   ~TypedURLChecker() override;
 
   // StatusChangeChecker implementation
-  bool IsExitConditionSatisfied() override;
-  std::string GetDebugMessage() const override;
+  bool IsExitConditionSatisfied(std::ostream* os) override;
 
  private:
   int index_;

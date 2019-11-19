@@ -9,7 +9,6 @@
 danakj@chromium.org
 enne@chromium.org
 ericrk@chromium.org
-piman@chromium.org
 vmpstr@chromium.org
 weiliangc@chromium.org
 
@@ -21,6 +20,7 @@ weiliangc@chromium.org
 rjkroege@chromium.org
 ccameron@chromium.org
 penghuang@chromium.org
+backer@chromium.org
 
 # display_embedder / ozone
 rjkroege@chromium.org
@@ -30,11 +30,11 @@ sadrul@chromium.org
 enne@chromium.org
 kylechar@chromium.org
 samans@chromium.org
+jonross@chromium.org
 
 # gpu
 danakj@chromium.org
 ericrk@chromium.org
-piman@chromium.org
 sadrul@chromium.org
 
 # hit testing
@@ -47,6 +47,7 @@ flackr@chromium.org
 # overlays
 ccameron@chromium.org
 dcastagna@chromium.org
+khushalsagar@chromium.org
 
 # scheduling / begin frames
 sunnyps@chromium.org

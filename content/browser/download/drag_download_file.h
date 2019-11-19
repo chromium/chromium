@@ -42,6 +42,7 @@ class CONTENT_EXPORT DragDownloadFile : public ui::DownloadFileProvider {
                    const Referrer& referrer,
                    const std::string& referrer_encoding,
                    WebContents* web_contents);
+  ~DragDownloadFile() override;
 
   // DownloadFileProvider methods.
   void Start(ui::DownloadFileObserver* observer) override;
@@ -52,19 +53,16 @@ class CONTENT_EXPORT DragDownloadFile : public ui::DownloadFileProvider {
   class DragDownloadFileUI;
   enum State {INITIALIZED, STARTED, SUCCESS, FAILURE};
 
-  ~DragDownloadFile() override;
-
   void DownloadCompleted(bool is_successful);
   void CheckThread();
 
   base::FilePath file_path_;
   base::File file_;
-  const scoped_refptr<base::SingleThreadTaskRunner> drag_task_runner_;
   State state_;
   scoped_refptr<ui::DownloadFileObserver> observer_;
   base::RunLoop nested_loop_;
   DragDownloadFileUI* drag_ui_;
-  base::WeakPtrFactory<DragDownloadFile> weak_ptr_factory_;
+  base::WeakPtrFactory<DragDownloadFile> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DragDownloadFile);
 };

@@ -10,20 +10,21 @@
 #include "base/logging.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/limits.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 
 namespace media {
 
 // static
 void MojoVideoEncodeAcceleratorService::Create(
-    mojom::VideoEncodeAcceleratorRequest request,
+    mojo::PendingReceiver<mojom::VideoEncodeAccelerator> receiver,
     const CreateAndInitializeVideoEncodeAcceleratorCallback&
         create_vea_callback,
     const gpu::GpuPreferences& gpu_preferences) {
-  mojo::MakeStrongBinding(std::make_unique<MojoVideoEncodeAcceleratorService>(
-                              create_vea_callback, gpu_preferences),
-                          std::move(request));
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<MojoVideoEncodeAcceleratorService>(create_vea_callback,
+                                                          gpu_preferences),
+      std::move(receiver));
 }
 
 MojoVideoEncodeAcceleratorService::MojoVideoEncodeAcceleratorService(
@@ -32,8 +33,7 @@ MojoVideoEncodeAcceleratorService::MojoVideoEncodeAcceleratorService(
     const gpu::GpuPreferences& gpu_preferences)
     : create_vea_callback_(create_vea_callback),
       gpu_preferences_(gpu_preferences),
-      output_buffer_size_(0),
-      weak_factory_(this) {
+      output_buffer_size_(0) {
   DVLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
@@ -45,20 +45,21 @@ MojoVideoEncodeAcceleratorService::~MojoVideoEncodeAcceleratorService() {
 
 void MojoVideoEncodeAcceleratorService::Initialize(
     const media::VideoEncodeAccelerator::Config& config,
-    mojom::VideoEncodeAcceleratorClientPtr client,
+    mojo::PendingRemote<mojom::VideoEncodeAcceleratorClient> client,
     InitializeCallback success_callback) {
   DVLOG(1) << __func__ << " " << config.AsHumanReadableString();
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!encoder_);
-  DCHECK_EQ(PIXEL_FORMAT_I420, config.input_format)
-      << "Only I420 format supported";
+  DCHECK(config.input_format == PIXEL_FORMAT_I420 ||
+         config.input_format == PIXEL_FORMAT_NV12)
+      << "Only I420 or NV12 format supported";
 
   if (!client) {
     DLOG(ERROR) << __func__ << "null |client|";
     std::move(success_callback).Run(false);
     return;
   }
-  vea_client_ = std::move(client);
+  vea_client_.Bind(std::move(client));
 
   if (config.input_visible_size.width() > limits::kMaxDimension ||
       config.input_visible_size.height() > limits::kMaxDimension ||
@@ -89,7 +90,8 @@ void MojoVideoEncodeAcceleratorService::Encode(
   if (!encoder_)
     return;
 
-  if (frame->coded_size() != input_coded_size_) {
+  if (frame->coded_size() != input_coded_size_ &&
+      frame->storage_type() != media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
     DLOG(ERROR) << __func__ << " wrong input coded size, expected "
                 << input_coded_size_.ToString() << ", got "
                 << frame->coded_size().ToString();
@@ -122,16 +124,10 @@ void MojoVideoEncodeAcceleratorService::UseOutputBitstreamBuffer(
     return;
   }
 
-  base::SharedMemoryHandle handle;
-  size_t memory_size = 0;
-  auto result = mojo::UnwrapSharedMemoryHandle(std::move(buffer), &handle,
-                                               &memory_size, nullptr);
-  if (result != MOJO_RESULT_OK || memory_size == 0u) {
-    DLOG(ERROR) << __func__ << " mojo::UnwrapSharedMemoryHandle() failed";
-    NotifyError(::media::VideoEncodeAccelerator::kPlatformFailureError);
-    return;
-  }
+  base::subtle::PlatformSharedMemoryRegion region =
+      mojo::UnwrapPlatformSharedMemoryRegion(std::move(buffer));
 
+  auto memory_size = region.GetSize();
   if (memory_size < output_buffer_size_) {
     DLOG(ERROR) << __func__ << " bitstream_buffer_id=" << bitstream_buffer_id
                 << " has a size of " << memory_size
@@ -141,7 +137,7 @@ void MojoVideoEncodeAcceleratorService::UseOutputBitstreamBuffer(
   }
 
   encoder_->UseOutputBitstreamBuffer(
-      BitstreamBuffer(bitstream_buffer_id, handle, memory_size));
+      BitstreamBuffer(bitstream_buffer_id, std::move(region), memory_size));
 }
 
 void MojoVideoEncodeAcceleratorService::RequestEncodingParametersChange(

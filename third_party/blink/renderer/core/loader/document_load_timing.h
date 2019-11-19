@@ -30,7 +30,11 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
-#include "third_party/blink/renderer/platform/wtf/time.h"
+
+namespace base {
+class Clock;
+class TickClock;
+}  // namespace base
 
 namespace blink {
 
@@ -44,29 +48,29 @@ class CORE_EXPORT DocumentLoadTiming final {
  public:
   explicit DocumentLoadTiming(DocumentLoader&);
 
-  TimeDelta MonotonicTimeToZeroBasedDocumentTime(TimeTicks) const;
-  TimeDelta MonotonicTimeToPseudoWallTime(TimeTicks) const;
+  base::TimeDelta MonotonicTimeToZeroBasedDocumentTime(base::TimeTicks) const;
+  base::TimeDelta MonotonicTimeToPseudoWallTime(base::TimeTicks) const;
 
   void MarkNavigationStart();
-  void SetNavigationStart(TimeTicks);
+  void SetNavigationStart(base::TimeTicks);
 
-  void SetInputStart(TimeTicks);
+  void SetInputStart(base::TimeTicks);
 
   void AddRedirect(const KURL& redirecting_url, const KURL& redirected_url);
-  void SetRedirectStart(TimeTicks);
-  void SetRedirectEnd(TimeTicks);
+  void SetRedirectStart(base::TimeTicks);
+  void SetRedirectEnd(base::TimeTicks);
   void SetRedirectCount(uint16_t value) { redirect_count_ = value; }
   void SetHasCrossOriginRedirect(bool value) {
     has_cross_origin_redirect_ = value;
   }
 
-  void MarkUnloadEventStart(TimeTicks);
-  void MarkUnloadEventEnd(TimeTicks);
+  void MarkUnloadEventStart(base::TimeTicks);
+  void MarkUnloadEventEnd(base::TimeTicks);
 
   void MarkFetchStart();
-  void SetFetchStart(TimeTicks);
+  void SetFetchStart(base::TimeTicks);
 
-  void SetResponseEnd(TimeTicks);
+  void SetResponseEnd(base::TimeTicks);
 
   void MarkLoadEventStart();
   void MarkLoadEventEnd();
@@ -75,25 +79,30 @@ class CORE_EXPORT DocumentLoadTiming final {
     has_same_origin_as_previous_document_ = value;
   }
 
-  TimeTicks InputStart() const { return input_start_; }
-  TimeTicks NavigationStart() const { return navigation_start_; }
-  TimeTicks UnloadEventStart() const { return unload_event_start_; }
-  TimeTicks UnloadEventEnd() const { return unload_event_end_; }
-  TimeTicks RedirectStart() const { return redirect_start_; }
-  TimeTicks RedirectEnd() const { return redirect_end_; }
+  base::TimeTicks InputStart() const { return input_start_; }
+  base::TimeTicks NavigationStart() const { return navigation_start_; }
+  base::TimeTicks UnloadEventStart() const { return unload_event_start_; }
+  base::TimeTicks UnloadEventEnd() const { return unload_event_end_; }
+  base::TimeTicks RedirectStart() const { return redirect_start_; }
+  base::TimeTicks RedirectEnd() const { return redirect_end_; }
   uint16_t RedirectCount() const { return redirect_count_; }
-  TimeTicks FetchStart() const { return fetch_start_; }
-  TimeTicks ResponseEnd() const { return response_end_; }
-  TimeTicks LoadEventStart() const { return load_event_start_; }
-  TimeTicks LoadEventEnd() const { return load_event_end_; }
+  base::TimeTicks FetchStart() const { return fetch_start_; }
+  base::TimeTicks ResponseEnd() const { return response_end_; }
+  base::TimeTicks LoadEventStart() const { return load_event_start_; }
+  base::TimeTicks LoadEventEnd() const { return load_event_end_; }
   bool HasCrossOriginRedirect() const { return has_cross_origin_redirect_; }
   bool HasSameOriginAsPreviousDocument() const {
     return has_same_origin_as_previous_document_;
   }
 
-  TimeTicks ReferenceMonotonicTime() const { return reference_monotonic_time_; }
+  base::TimeTicks ReferenceMonotonicTime() const {
+    return reference_monotonic_time_;
+  }
 
   void Trace(blink::Visitor*);
+
+  void SetTickClockForTesting(const base::TickClock* tick_clock);
+  void SetClockForTesting(const base::Clock* clock);
 
  private:
   void MarkRedirectEnd();
@@ -102,21 +111,24 @@ class CORE_EXPORT DocumentLoadTiming final {
   LocalFrame* GetFrame() const;
   std::unique_ptr<TracedValue> GetNavigationStartTracingData() const;
 
-  TimeTicks reference_monotonic_time_;
-  TimeDelta reference_wall_time_;
-  TimeTicks input_start_;
-  TimeTicks navigation_start_;
-  TimeTicks unload_event_start_;
-  TimeTicks unload_event_end_;
-  TimeTicks redirect_start_;
-  TimeTicks redirect_end_;
+  base::TimeTicks reference_monotonic_time_;
+  base::TimeDelta reference_wall_time_;
+  base::TimeTicks input_start_;
+  base::TimeTicks navigation_start_;
+  base::TimeTicks unload_event_start_;
+  base::TimeTicks unload_event_end_;
+  base::TimeTicks redirect_start_;
+  base::TimeTicks redirect_end_;
   uint16_t redirect_count_;
-  TimeTicks fetch_start_;
-  TimeTicks response_end_;
-  TimeTicks load_event_start_;
-  TimeTicks load_event_end_;
+  base::TimeTicks fetch_start_;
+  base::TimeTicks response_end_;
+  base::TimeTicks load_event_start_;
+  base::TimeTicks load_event_end_;
   bool has_cross_origin_redirect_;
   bool has_same_origin_as_previous_document_;
+
+  const base::Clock* clock_;
+  const base::TickClock* tick_clock_;
 
   Member<DocumentLoader> document_loader_;
 };

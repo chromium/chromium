@@ -27,8 +27,8 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/system/fake_statistics_provider.h"
 #include "chromeos/system/statistics_provider.h"
-#include "components/browser_sync/browser_sync_switches.h"
 #include "components/sync/base/pref_names.h"
+#include "components/sync/driver/sync_driver_switches.h"
 #include "components/sync/model/fake_sync_change_processor.h"
 #include "components/sync/model/sync_change_processor.h"
 #include "components/sync/model/sync_error_factory_mock.h"
@@ -36,6 +36,7 @@
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/test/test_utils.h"
+#include "extensions/browser/extension_registry.h"
 
 namespace extensions {
 
@@ -132,7 +133,7 @@ TEST_F(ExternalProviderImplChromeOSTest, Normal) {
       extensions::NOTIFICATION_CRX_INSTALLER_DONE,
       content::NotificationService::AllSources()).Wait();
 
-  EXPECT_TRUE(service_->GetInstalledExtension(kExternalAppId));
+  EXPECT_TRUE(registry()->GetInstalledExtension(kExternalAppId));
 }
 
 // App mode, no external app should be installed.
@@ -146,7 +147,7 @@ TEST_F(ExternalProviderImplChromeOSTest, AppMode) {
   service_->CheckForExternalUpdates();
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_FALSE(service_->GetInstalledExtension(kExternalAppId));
+  EXPECT_FALSE(registry()->GetInstalledExtension(kExternalAppId));
 }
 
 // Normal mode, standalone app should be installed, because sync is enabled but
@@ -157,9 +158,9 @@ TEST_F(ExternalProviderImplChromeOSTest, DISABLED_Standalone) {
 
   WaitForPendingStandaloneExtensionsInstalled();
 
-  EXPECT_TRUE(service_->GetInstalledExtension(kStandaloneAppId));
+  EXPECT_TRUE(registry()->GetInstalledExtension(kStandaloneAppId));
   // Also include apps available for child.
-  EXPECT_TRUE(service_->GetInstalledExtension(kStandaloneChildAppId));
+  EXPECT_TRUE(registry()->GetInstalledExtension(kStandaloneChildAppId));
 }
 
 // Should include only subset of default apps
@@ -171,8 +172,8 @@ TEST_F(ExternalProviderImplChromeOSTest, DISABLED_StandaloneChild) {
   WaitForPendingStandaloneExtensionsInstalled();
 
   // kStandaloneAppId is not available for child.
-  EXPECT_FALSE(service_->GetInstalledExtension(kStandaloneAppId));
-  EXPECT_TRUE(service_->GetInstalledExtension(kStandaloneChildAppId));
+  EXPECT_FALSE(registry()->GetInstalledExtension(kStandaloneAppId));
+  EXPECT_TRUE(registry()->GetInstalledExtension(kStandaloneChildAppId));
 }
 
 // Normal mode, standalone app should be installed, because sync is disabled.
@@ -186,7 +187,7 @@ TEST_F(ExternalProviderImplChromeOSTest, SyncDisabled) {
       extensions::NOTIFICATION_CRX_INSTALLER_DONE,
       content::NotificationService::AllSources()).Wait();
 
-  EXPECT_TRUE(service_->GetInstalledExtension(kStandaloneAppId));
+  EXPECT_TRUE(registry()->GetInstalledExtension(kStandaloneAppId));
 }
 
 // User signed in, sync service started, install app when sync is disabled by
@@ -214,7 +215,7 @@ TEST_F(ExternalProviderImplChromeOSTest, DISABLED_PolicyDisabled) {
       extensions::NOTIFICATION_CRX_INSTALLER_DONE,
       content::NotificationService::AllSources()).Wait();
 
-  EXPECT_TRUE(service_->GetInstalledExtension(kStandaloneAppId));
+  EXPECT_TRUE(registry()->GetInstalledExtension(kStandaloneAppId));
 
   TestingBrowserProcess::GetGlobal()->SetProfileManager(NULL);
 }
@@ -247,7 +248,7 @@ TEST_F(ExternalProviderImplChromeOSTest, PriorityCompleted) {
       extensions::NOTIFICATION_CRX_INSTALLER_DONE,
       content::NotificationService::AllSources()).Wait();
 
-  EXPECT_TRUE(service_->GetInstalledExtension(kStandaloneAppId));
+  EXPECT_TRUE(registry()->GetInstalledExtension(kStandaloneAppId));
 }
 
 }  // namespace extensions

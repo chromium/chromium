@@ -10,12 +10,15 @@
 
 #include "base/debug/crash_logging.h"
 #include "content/browser/service_worker/service_worker_cache_writer.h"
+#include "content/browser/service_worker/service_worker_consts.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_installed_script_loader.h"
 #include "content/browser/service_worker/service_worker_new_script_loader.h"
 #include "content/browser/service_worker/service_worker_provider_host.h"
+#include "content/browser/service_worker/service_worker_updated_script_loader.h"
 #include "content/browser/service_worker/service_worker_version.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/network/public/cpp/resource_response.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/blink/public/common/service_worker/service_worker_utils.h"
@@ -25,30 +28,31 @@ namespace content {
 ServiceWorkerScriptLoaderFactory::ServiceWorkerScriptLoaderFactory(
     base::WeakPtr<ServiceWorkerContextCore> context,
     base::WeakPtr<ServiceWorkerProviderHost> provider_host,
-    scoped_refptr<network::SharedURLLoaderFactory> loader_factory)
+    scoped_refptr<network::SharedURLLoaderFactory>
+        loader_factory_for_new_scripts)
     : context_(context),
       provider_host_(provider_host),
-      loader_factory_(std::move(loader_factory)),
-      weak_factory_(this) {
+      loader_factory_for_new_scripts_(
+          std::move(loader_factory_for_new_scripts)) {
   DCHECK(provider_host_->IsProviderForServiceWorker());
-  DCHECK(loader_factory_);
+  DCHECK(loader_factory_for_new_scripts_ ||
+         ServiceWorkerVersion::IsInstalled(
+             provider_host_->running_hosted_version()->status()));
 }
 
 ServiceWorkerScriptLoaderFactory::~ServiceWorkerScriptLoaderFactory() = default;
 
 void ServiceWorkerScriptLoaderFactory::CreateLoaderAndStart(
-    network::mojom::URLLoaderRequest request,
+    mojo::PendingReceiver<network::mojom::URLLoader> receiver,
     int32_t routing_id,
     int32_t request_id,
     uint32_t options,
     const network::ResourceRequest& resource_request,
-    network::mojom::URLLoaderClientPtr client,
+    mojo::PendingRemote<network::mojom::URLLoaderClient> client,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
-  DCHECK(blink::ServiceWorkerUtils::IsServicificationEnabled());
   if (!CheckIfScriptRequestIsValid(resource_request)) {
-    // TODO(kinuko): Record the reason like what we do with netlog in
-    // ServiceWorkerContextRequestHandler.
-    client->OnComplete(network::URLLoaderCompletionStatus(net::ERR_ABORTED));
+    mojo::Remote<network::mojom::URLLoaderClient>(std::move(client))
+        ->OnComplete(network::URLLoaderCompletionStatus(net::ERR_ABORTED));
     return;
   }
 
@@ -64,39 +68,39 @@ void ServiceWorkerScriptLoaderFactory::CreateLoaderAndStart(
   //    storage (use ServiceWorkerInstalledScriptLoader)
   // D) service worker is not installed, script is not installed:
   //    When ServiceWorkerImportedScriptsUpdateCheck is enabled, there are
-  //    three sub cases:
+  //    three sub cases (D.1 to D.3). When not, D.3 always happens.
   //    1) If compared script info exists and specifies that the script is
   //       installed in an old service worker and content is not changed, then
   //       copy the old script into the new service worker and load it using
   //       ServiceWorkerInstalledScriptLoader.
   //    2) If compared script info exists and specifies that the script is
   //       installed in an old service worker but content has changed, then
-  //       resume the paused state in the compared script info to load the
-  //       script.
+  //       ServiceWorkerUpdatedScriptLoader::CreateAndStart() is called to
+  //       resume the paused state stored in the compared script info.
   //    3) For other cases or if ServiceWorkerImportedScriptsUpdateCheck is not
-  //       enabled, serve from network with installing the script
-  //       (use ServiceWorkerNewScriptLoader).
-  //       This is the common case: load the script and install it.
+  //       enabled, serve from network with installing the script by using
+  //       ServiceWorkerNewScriptLoader.
 
   // Case A and C:
   scoped_refptr<ServiceWorkerVersion> version =
       provider_host_->running_hosted_version();
   int64_t resource_id =
       version->script_cache_map()->LookupResourceId(resource_request.url);
-  if (resource_id != kInvalidServiceWorkerResourceId) {
+  if (resource_id != ServiceWorkerConsts::kInvalidServiceWorkerResourceId) {
     std::unique_ptr<ServiceWorkerResponseReader> response_reader =
         context_->storage()->CreateResponseReader(resource_id);
-    mojo::MakeStrongBinding(
+    mojo::MakeSelfOwnedReceiver(
         std::make_unique<ServiceWorkerInstalledScriptLoader>(
             options, std::move(client), std::move(response_reader), version,
             resource_request.url),
-        std::move(request));
+        std::move(receiver));
     return;
   }
 
   // Case B:
   if (ServiceWorkerVersion::IsInstalled(version->status())) {
-    client->OnComplete(network::URLLoaderCompletionStatus(net::ERR_FAILED));
+    mojo::Remote<network::mojom::URLLoaderClient>(std::move(client))
+        ->OnComplete(network::URLLoaderCompletionStatus(net::ERR_FAILED));
     return;
   }
 
@@ -111,24 +115,24 @@ void ServiceWorkerScriptLoaderFactory::CreateLoaderAndStart(
     auto it = compared_script_info_map.find(resource_request.url);
     if (it != compared_script_info_map.end()) {
       switch (it->second.result) {
-        case ServiceWorkerSingleScriptUpdateChecker::Result::kFailed:
-          // Network failure is treated as D.1
         case ServiceWorkerSingleScriptUpdateChecker::Result::kIdentical:
           // Case D.1:
           CopyScript(
               it->first, it->second.old_resource_id,
               base::BindOnce(
                   &ServiceWorkerScriptLoaderFactory::OnCopyScriptFinished,
-                  weak_factory_.GetWeakPtr(), std::move(request), options,
+                  weak_factory_.GetWeakPtr(), std::move(receiver), options,
                   resource_request, std::move(client)));
           return;
+        case ServiceWorkerSingleScriptUpdateChecker::Result::kFailed:
+          // Network failure is treated as D.2
         case ServiceWorkerSingleScriptUpdateChecker::Result::kDifferent:
           // Case D.2:
-          // TODO(https://crbug.com/648295): Currently, this case is treated
-          // the same as case D.3. In future, the paused state in compared
-          // script info should be resumed instead of a fresh download.
-          NOTIMPLEMENTED();
-          break;
+          mojo::MakeSelfOwnedReceiver(
+              ServiceWorkerUpdatedScriptLoader::CreateAndStart(
+                  options, resource_request, std::move(client), version),
+              std::move(receiver));
+          return;
         case ServiceWorkerSingleScriptUpdateChecker::Result::kNotCompared:
           // This is invalid, as scripts in compared script info must have been
           // compared.
@@ -139,17 +143,22 @@ void ServiceWorkerScriptLoaderFactory::CreateLoaderAndStart(
   }
 
   // Case D.3:
-  mojo::MakeStrongBinding(
-      std::make_unique<ServiceWorkerNewScriptLoader>(
+  mojo::MakeSelfOwnedReceiver(
+      ServiceWorkerNewScriptLoader::CreateAndStart(
           routing_id, request_id, options, resource_request, std::move(client),
-          provider_host_->running_hosted_version(), loader_factory_,
-          traffic_annotation),
-      std::move(request));
+          provider_host_->running_hosted_version(),
+          loader_factory_for_new_scripts_, traffic_annotation),
+      std::move(receiver));
 }
 
 void ServiceWorkerScriptLoaderFactory::Clone(
-    network::mojom::URLLoaderFactoryRequest request) {
-  bindings_.AddBinding(this, std::move(request));
+    mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver) {
+  receivers_.Add(this, std::move(receiver));
+}
+
+void ServiceWorkerScriptLoaderFactory::Update(
+    scoped_refptr<network::SharedURLLoaderFactory> loader_factory) {
+  loader_factory_for_new_scripts_ = std::move(loader_factory);
 }
 
 bool ServiceWorkerScriptLoaderFactory::CheckIfScriptRequestIsValid(
@@ -162,10 +171,12 @@ bool ServiceWorkerScriptLoaderFactory::CheckIfScriptRequestIsValid(
   if (!version)
     return false;
 
-  // Handle only the service worker main script (RESOURCE_TYPE_SERVICE_WORKER)
-  // or importScripts() (RESOURCE_TYPE_SCRIPT).
-  if (resource_request.resource_type != RESOURCE_TYPE_SERVICE_WORKER &&
-      resource_request.resource_type != RESOURCE_TYPE_SCRIPT) {
+  // Handle only the service worker main script (ResourceType::kServiceWorker)
+  // or importScripts() (ResourceType::kScript).
+  if (resource_request.resource_type !=
+          static_cast<int>(ResourceType::kServiceWorker) &&
+      resource_request.resource_type !=
+          static_cast<int>(ResourceType::kScript)) {
     static auto* key = base::debug::AllocateCrashKeyString(
         "swslf_bad_type", base::debug::CrashKeySize::Size32);
     base::debug::SetCrashKeyString(
@@ -215,10 +226,10 @@ void ServiceWorkerScriptLoaderFactory::CopyScript(
 }
 
 void ServiceWorkerScriptLoaderFactory::OnCopyScriptFinished(
-    network::mojom::URLLoaderRequest request,
+    mojo::PendingReceiver<network::mojom::URLLoader> receiver,
     uint32_t options,
     const network::ResourceRequest& resource_request,
-    network::mojom::URLLoaderClientPtr client,
+    mojo::PendingRemote<network::mojom::URLLoaderClient> client,
     int64_t new_resource_id,
     net::Error error) {
   int64_t resource_size = cache_writer_->bytes_written();
@@ -229,9 +240,10 @@ void ServiceWorkerScriptLoaderFactory::OnCopyScriptFinished(
   if (error != net::OK) {
     version->script_cache_map()->NotifyFinishedCaching(
         resource_request.url, resource_size, error,
-        kServiceWorkerCopyScriptError);
+        ServiceWorkerConsts::kServiceWorkerCopyScriptError);
 
-    client->OnComplete(network::URLLoaderCompletionStatus(error));
+    mojo::Remote<network::mojom::URLLoaderClient>(std::move(client))
+        ->OnComplete(network::URLLoaderCompletionStatus(error));
     return;
   }
 
@@ -241,11 +253,11 @@ void ServiceWorkerScriptLoaderFactory::OnCopyScriptFinished(
       resource_request.url, resource_size, net::OK, std::string());
 
   // Use ServiceWorkerInstalledScriptLoader to load the new copy.
-  mojo::MakeStrongBinding(
+  mojo::MakeSelfOwnedReceiver(
       std::make_unique<ServiceWorkerInstalledScriptLoader>(
           options, std::move(client),
           context_->storage()->CreateResponseReader(new_resource_id), version,
           resource_request.url),
-      std::move(request));
+      std::move(receiver));
 }
 }  // namespace content

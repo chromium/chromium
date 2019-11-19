@@ -44,12 +44,12 @@ class WTF_EXPORT TextStream final {
   };
 
   TextStream& operator<<(bool);
-  TextStream& operator<<(int);
-  TextStream& operator<<(unsigned);
-  TextStream& operator<<(long);
-  TextStream& operator<<(unsigned long);
-  TextStream& operator<<(long long);
-  TextStream& operator<<(unsigned long long);
+  TextStream& operator<<(int16_t);
+  TextStream& operator<<(uint16_t);
+  TextStream& operator<<(int32_t);
+  TextStream& operator<<(uint32_t);
+  TextStream& operator<<(int64_t);
+  TextStream& operator<<(uint64_t);
   TextStream& operator<<(float);
   TextStream& operator<<(double);
   TextStream& operator<<(const char*);

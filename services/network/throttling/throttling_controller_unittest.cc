@@ -12,9 +12,9 @@
 
 #include "base/bind.h"
 #include "base/memory/ref_counted.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "net/base/chunked_upload_data_stream.h"
 #include "net/base/completion_repeating_callback.h"
@@ -58,8 +58,7 @@ class TestCallback {
 class ThrottlingControllerTestHelper {
  public:
   ThrottlingControllerTestHelper()
-      : task_runner_(base::MakeRefCounted<base::TestMockTimeTaskRunner>()),
-        completion_callback_(base::BindRepeating(&TestCallback::Run,
+      : completion_callback_(base::BindRepeating(&TestCallback::Run,
                                                  base::Unretained(&callback_))),
         mock_transaction_(kSimpleGET_Transaction),
         buffer_(base::MakeRefCounted<net::IOBuffer>(64)),
@@ -77,7 +76,6 @@ class ThrottlingControllerTestHelper {
                                      &network_transaction);
     transaction_.reset(
         new ThrottlingNetworkTransaction(std::move(network_transaction)));
-    message_loop_.SetTaskRunner(task_runner_);
   }
 
   void SetNetworkState(bool offline, double download, double upload) {
@@ -145,12 +143,12 @@ class ThrottlingControllerTestHelper {
   ThrottlingNetworkTransaction* transaction() { return transaction_.get(); }
 
   void FastForwardUntilNoTasksRemain() {
-    task_runner_->FastForwardUntilNoTasksRemain();
+    task_environment_.FastForwardUntilNoTasksRemain();
   }
 
  private:
-  scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
-  base::MessageLoop message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME};
   MockNetworkLayer network_layer_;
   TestCallback callback_;
   net::CompletionRepeatingCallback completion_callback_;

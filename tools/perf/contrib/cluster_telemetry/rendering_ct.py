@@ -9,6 +9,8 @@ from telemetry.web_perf import timeline_based_measurement
 
 from core import perf_benchmark
 
+import benchmarks.rendering as rendering
+
 def ScrollToEndOfPage(action_runner):
   action_runner.Wait(1)
   with action_runner.CreateGestureInteraction('ScrollAction'):
@@ -40,5 +42,7 @@ class RenderingCT(perf_benchmark.PerfBenchmark):
   def CreateCoreTimelineBasedMeasurementOptions(self):
     category_filter = chrome_trace_category_filter.CreateLowOverheadFilter()
     options = timeline_based_measurement.Options(category_filter)
-    options.SetTimelineBasedMetrics(['renderingMetric'])
+    options.config.chrome_trace_config.EnableUMAHistograms(
+        *rendering.RENDERING_BENCHMARK_UMA)
+    options.SetTimelineBasedMetrics(['renderingMetric', 'umaMetric'])
     return options

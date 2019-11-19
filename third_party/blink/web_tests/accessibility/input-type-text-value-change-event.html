@@ -1,12 +1,11 @@
 <!DOCTYPE HTML>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 
 <input id="text" type="text" value="before">
 
 <script>
-async_test_after_layout_and_paint(function(t)
+async_test(function(t)
 {
     var target = document.getElementById("text");
     target.addEventListener("change", function() {

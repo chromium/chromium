@@ -64,10 +64,10 @@ bool ManagePasswordsIconViews::Update() {
   if (!GetWebContents())
     return false;
 
-  const bool was_visible = visible();
+  const bool was_visible = GetVisible();
   ManagePasswordsUIController::FromWebContents(GetWebContents())
       ->UpdateIconAndBubbleState(this);
-  return was_visible != visible();
+  return was_visible != GetVisible();
 }
 
 void ManagePasswordsIconViews::OnExecuting(

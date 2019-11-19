@@ -2,11 +2,18 @@ Tests quota reporting.
 
 Tree element found: true
 Clear storage view is visible: true
--- B used out of -- storage quota
+-- B used out of -- storage quota. 
 Usage breakdown:
+Total: 0 B
 
 Running: Now with data
--- KB used out of -- storage quota
+-- KB used out of -- storage quota. 
 Usage breakdown:
 IndexedDB: --.- KB
+Total: --.- KB
+
+Running: Clear again with ActionDelegate
+-- B used out of -- storage quota. 
+Usage breakdown:
+Total: 0 B
 

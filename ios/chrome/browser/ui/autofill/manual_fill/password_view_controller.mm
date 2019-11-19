@@ -5,25 +5,39 @@
 #import "ios/chrome/browser/ui/autofill/manual_fill/password_view_controller.h"
 
 #include "base/ios/ios_util.h"
+#include "base/mac/foundation_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/action_cell.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_password_cell.h"
+#import "ios/chrome/browser/ui/list_model/list_item+Controller.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
+#import "ios/chrome/browser/ui/table_view/table_view_favicon_data_source.h"
 #import "ios/chrome/browser/ui/table_view/table_view_navigation_controller_constants.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/favicon/favicon_attributes.h"
+#import "ios/chrome/common/favicon/favicon_view.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util_mac.h"
+#include "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
+typedef NS_ENUM(NSInteger, ManualFallbackItemType) {
+  ManualFallbackItemTypeUnkown = kItemTypeEnumZero,
+  ManualFallbackItemTypeCredential,
+};
+
 namespace manual_fill {
 
-NSString* const PasswordSearchBarAccessibilityIdentifier =
+NSString* const kPasswordDoneButtonAccessibilityIdentifier =
+    @"kManualFillPasswordDoneButtonAccessibilityIdentifier";
+NSString* const kPasswordSearchBarAccessibilityIdentifier =
     @"kManualFillPasswordSearchBarAccessibilityIdentifier";
-NSString* const PasswordTableViewAccessibilityIdentifier =
+NSString* const kPasswordTableViewAccessibilityIdentifier =
     @"kManualFillPasswordTableViewAccessibilityIdentifier";
 
 }  // namespace manual_fill
@@ -49,7 +63,7 @@ NSString* const PasswordTableViewAccessibilityIdentifier =
   [super viewDidLoad];
 
   self.tableView.accessibilityIdentifier =
-      manual_fill::PasswordTableViewAccessibilityIdentifier;
+      manual_fill::kPasswordTableViewAccessibilityIdentifier;
 
   self.definesPresentationContext = YES;
   self.searchController.searchBar.backgroundColor = [UIColor clearColor];
@@ -57,7 +71,7 @@ NSString* const PasswordTableViewAccessibilityIdentifier =
   self.navigationItem.searchController = self.searchController;
   self.navigationItem.hidesSearchBarWhenScrolling = NO;
   self.searchController.searchBar.accessibilityIdentifier =
-      manual_fill::PasswordSearchBarAccessibilityIdentifier;
+      manual_fill::kPasswordSearchBarAccessibilityIdentifier;
   NSString* titleString =
       l10n_util::GetNSString(IDS_IOS_MANUAL_FALLBACK_USE_OTHER_PASSWORD);
   self.title = titleString;
@@ -69,6 +83,14 @@ NSString* const PasswordTableViewAccessibilityIdentifier =
       UIOffsetMake(0.0f, kTableViewNavigationVerticalOffsetForSearchHeader);
   self.searchController.searchBar.searchFieldBackgroundPositionAdjustment =
       offset;
+
+  UIBarButtonItem* doneButton = [[UIBarButtonItem alloc]
+      initWithBarButtonSystemItem:UIBarButtonSystemItemDone
+                           target:self
+                           action:@selector(handleDoneButton)];
+  doneButton.accessibilityIdentifier =
+      manual_fill::kPasswordDoneButtonAccessibilityIdentifier;
+  self.navigationItem.rightBarButtonItem = doneButton;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -98,6 +120,21 @@ NSString* const PasswordTableViewAccessibilityIdentifier =
   }
 }
 
+#pragma mark - UITableViewDataSource
+
+- (UITableViewCell*)tableView:(UITableView*)tableView
+        cellForRowAtIndexPath:(NSIndexPath*)indexPath {
+  DCHECK_EQ(tableView, self.tableView);
+  UITableViewCell* cell = [super tableView:tableView
+                     cellForRowAtIndexPath:indexPath];
+  NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:indexPath];
+  // Retrieve favicons for credential cells.
+  if (itemType == ManualFallbackItemTypeCredential) {
+    [self loadFaviconForCell:cell indexPath:indexPath];
+  }
+  return cell;
+}
+
 #pragma mark - ManualFillPasswordConsumer
 
 - (void)presentCredentials:(NSArray<ManualFillCredentialItem*>*)credentials {
@@ -108,6 +145,11 @@ NSString* const PasswordTableViewAccessibilityIdentifier =
     UMA_HISTOGRAM_COUNTS_100("ManualFallback.PresentedOptions.Passwords",
                              credentials.count);
   }
+
+  for (ManualFillCredentialItem* credentialItem in credentials) {
+    credentialItem.type = ManualFallbackItemTypeCredential;
+  }
+
   // If no items were posted and there is no search bar, present the empty item
   // and return.
   if (!credentials.count && !self.searchController) {
@@ -126,6 +168,40 @@ NSString* const PasswordTableViewAccessibilityIdentifier =
 
 - (void)presentActions:(NSArray<ManualFillActionItem*>*)actions {
   [self presentActionItems:actions];
+}
+
+#pragma mark - Private
+
+// Retrieves favicon from FaviconLoader and sets image in |cell|.
+- (void)loadFaviconForCell:(UITableViewCell*)cell
+                 indexPath:(NSIndexPath*)indexPath {
+  TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
+  DCHECK(item);
+  DCHECK(cell);
+
+  ManualFillCredentialItem* passwordItem =
+      base::mac::ObjCCastStrict<ManualFillCredentialItem>(item);
+  if (passwordItem.isConnectedToPreviousItem) {
+    return;
+  }
+
+  ManualFillPasswordCell* passwordCell =
+      base::mac::ObjCCastStrict<ManualFillPasswordCell>(cell);
+
+  NSString* itemIdentifier = passwordItem.uniqueIdentifier;
+  [self.imageDataSource
+      faviconForURL:passwordItem.faviconURL
+         completion:^(FaviconAttributes* attributes) {
+           // Only set favicon if the cell hasn't been reused.
+           if ([passwordCell.uniqueIdentifier isEqualToString:itemIdentifier]) {
+             DCHECK(attributes);
+             [passwordCell configureWithFaviconAttributes:attributes];
+           }
+         }];
+}
+
+- (void)handleDoneButton {
+  [self.delegate passwordViewControllerDidTapDoneButton:self];
 }
 
 @end

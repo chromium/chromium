@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "components/arc/common/file_system.mojom.h"
+#include "components/arc/mojom/file_system.mojom.h"
 
 class GURL;
 

@@ -6,7 +6,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BLOB_BLOB_BYTES_PROVIDER_H_
 
 #include "base/sequenced_task_runner.h"
-#include "third_party/blink/public/mojom/blob/blob_registry.mojom-blink.h"
+#include "third_party/blink/public/mojom/blob/blob_registry.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/blob/data_element.mojom-blink.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
 
 namespace blink {
@@ -27,7 +28,8 @@ class PLATFORM_EXPORT BlobBytesProvider : public mojom::blink::BytesProvider {
   // Creates a new instance, and binds it on a new SequencedTaskRunner. The
   // returned instance should only be considered valid as long as the request
   // passed in to this method is still known to be valid.
-  static BlobBytesProvider* CreateAndBind(mojom::blink::BytesProviderRequest);
+  static BlobBytesProvider* CreateAndBind(
+      mojo::PendingReceiver<mojom::blink::BytesProvider>);
   static std::unique_ptr<BlobBytesProvider> CreateForTesting(
       scoped_refptr<base::SequencedTaskRunner>);
 

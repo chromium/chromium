@@ -32,10 +32,13 @@ void RecordDragAndDropContentHistogram(DragContentForReporting sample) {
 // Records the DragAndDrop.DragContent histogram for a given |dropSession|.
 void RecordDragTypesForSession(id<UIDropSession> dropSession)
     API_AVAILABLE(ios(11.0)) {
+  // Map keys must conform to the NSCopying protocol. Class doesn't declare
+  // that it does this, but Class does implement |copyWithZone:|, so the cast
+  // is safe.
   static NSDictionary* classToSampleNameMap = @{
-        [UIImage class] : @(DragContentForReporting::IMAGE),
-        [NSURL class] : @(DragContentForReporting::URL),
-        [NSString class] : @(DragContentForReporting::TEXT)
+    (id)[UIImage class] : @(DragContentForReporting::IMAGE),
+    (id)[NSURL class] : @(DragContentForReporting::URL),
+    (id)[NSString class] : @(DragContentForReporting::TEXT)
   };
   bool containsAKnownClass = false;
   // Report a histogram for every item contained in |dropSession|.

@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/heap/process_heap.h"
 
 #include "base/sampling_heap_profiler/poisson_allocation_sampler.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/heap/gc_info.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/heap/persistent_node.h"
@@ -27,9 +28,13 @@ void BlinkGCFreeHook(uint8_t* address) {
 }  // namespace
 
 void ProcessHeap::Init() {
+  DCHECK(!base::FeatureList::IsEnabled(
+             blink::features::kBlinkHeapConcurrentMarking) ||
+         base::FeatureList::IsEnabled(
+             blink::features::kBlinkHeapIncrementalMarking));
+
   total_allocated_space_ = 0;
   total_allocated_object_size_ = 0;
-  total_marked_object_size_ = 0;
 
   GCInfoTable::CreateGlobalTable();
 
@@ -41,7 +46,6 @@ void ProcessHeap::Init() {
 
 void ProcessHeap::ResetHeapCounters() {
   total_allocated_object_size_ = 0;
-  total_marked_object_size_ = 0;
 }
 
 CrossThreadPersistentRegion& ProcessHeap::GetCrossThreadPersistentRegion() {
@@ -63,6 +67,5 @@ Mutex& ProcessHeap::CrossThreadPersistentMutex() {
 
 std::atomic_size_t ProcessHeap::total_allocated_space_{0};
 std::atomic_size_t ProcessHeap::total_allocated_object_size_{0};
-std::atomic_size_t ProcessHeap::total_marked_object_size_{0};
 
 }  // namespace blink

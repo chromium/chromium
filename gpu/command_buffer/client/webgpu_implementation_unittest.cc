@@ -93,6 +93,7 @@ class WebGPUImplementationTest : public testing::Test {
   void SetUp() override { ASSERT_TRUE(Initialize()); }
 
   void TearDown() override {
+    gl_->Flush();
     Mock::VerifyAndClear(gl_.get());
     EXPECT_CALL(*command_buffer_, OnFlush()).Times(AnyNumber());
     // For command buffer.

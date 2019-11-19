@@ -9,12 +9,13 @@
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/files/file_util.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/win/scoped_handle.h"
 #include "chrome/chrome_cleaner/constants/quarantine_constants.h"
-#include "chrome/chrome_cleaner/interfaces/zip_archiver.mojom.h"
 #include "chrome/chrome_cleaner/ipc/mojo_task_runner.h"
+#include "chrome/chrome_cleaner/mojom/zip_archiver.mojom.h"
 #include "chrome/chrome_cleaner/zip_archiver/test_zip_archiver_util.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -50,7 +51,7 @@ class ZipArchiverImplTest : public testing::Test {
   base::FilePath zip_file_path_;
 
  private:
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
 };
 
 void RunArchiver(base::win::ScopedHandle src_file_handle,
@@ -58,9 +59,9 @@ void RunArchiver(base::win::ScopedHandle src_file_handle,
                  const std::string& filename,
                  const std::string& password,
                  mojom::ZipArchiver::ArchiveCallback callback) {
-  mojom::ZipArchiverPtr zip_archiver_ptr;
+  mojo::Remote<mojom::ZipArchiver> zip_archiver;
   ZipArchiverImpl zip_archiver_impl(
-      mojo::MakeRequest(&zip_archiver_ptr),
+      zip_archiver.BindNewPipeAndPassReceiver(),
       /*connection_error_handler=*/base::DoNothing());
   zip_archiver_impl.Archive(mojo::WrapPlatformFile(src_file_handle.Take()),
                             mojo::WrapPlatformFile(zip_file_handle.Take()),

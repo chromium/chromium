@@ -75,19 +75,6 @@ class DatabaseTask {
 
 class Database::DatabaseOpenTask final : public DatabaseTask {
  public:
-  static std::unique_ptr<DatabaseOpenTask> Create(
-      Database* db,
-      bool set_version_in_new_database,
-      base::WaitableEvent* complete_event,
-      DatabaseError& error,
-      String& error_message,
-      bool& success) {
-    return base::WrapUnique(
-        new DatabaseOpenTask(db, set_version_in_new_database, complete_event,
-                             error, error_message, success));
-  }
-
- private:
   DatabaseOpenTask(Database*,
                    bool set_version_in_new_database,
                    base::WaitableEvent*,
@@ -95,6 +82,7 @@ class Database::DatabaseOpenTask final : public DatabaseTask {
                    String& error_message,
                    bool& success);
 
+ private:
   void DoPerformTask() override;
 #if DCHECK_IS_ON()
   const char* DebugTaskName() const override;
@@ -108,15 +96,9 @@ class Database::DatabaseOpenTask final : public DatabaseTask {
 
 class Database::DatabaseCloseTask final : public DatabaseTask {
  public:
-  static std::unique_ptr<DatabaseCloseTask> Create(
-      Database* db,
-      base::WaitableEvent* synchronizer) {
-    return base::WrapUnique(new DatabaseCloseTask(db, synchronizer));
-  }
-
- private:
   DatabaseCloseTask(Database*, base::WaitableEvent*);
 
+ private:
   void DoPerformTask() override;
 #if DCHECK_IS_ON()
   const char* DebugTaskName() const override;
@@ -125,19 +107,13 @@ class Database::DatabaseCloseTask final : public DatabaseTask {
 
 class Database::DatabaseTransactionTask final : public DatabaseTask {
  public:
-  ~DatabaseTransactionTask() override;
-
   // Transaction task is never synchronous, so no 'synchronizer' parameter.
-  static std::unique_ptr<DatabaseTransactionTask> Create(
-      SQLTransactionBackend* transaction) {
-    return base::WrapUnique(new DatabaseTransactionTask(transaction));
-  }
+  explicit DatabaseTransactionTask(SQLTransactionBackend*);
+  ~DatabaseTransactionTask() override;
 
   SQLTransactionBackend* Transaction() const { return transaction_.Get(); }
 
  private:
-  explicit DatabaseTransactionTask(SQLTransactionBackend*);
-
   void DoPerformTask() override;
   void TaskCancelled() override;
 #if DCHECK_IS_ON()
@@ -149,19 +125,11 @@ class Database::DatabaseTransactionTask final : public DatabaseTask {
 
 class Database::DatabaseTableNamesTask final : public DatabaseTask {
  public:
-  static std::unique_ptr<DatabaseTableNamesTask> Create(
-      Database* db,
-      base::WaitableEvent* synchronizer,
-      Vector<String>& names) {
-    return base::WrapUnique(
-        new DatabaseTableNamesTask(db, synchronizer, names));
-  }
-
- private:
   DatabaseTableNamesTask(Database*,
                          base::WaitableEvent*,
                          Vector<String>& names);
 
+ private:
   void DoPerformTask() override;
 #if DCHECK_IS_ON()
   const char* DebugTaskName() const override;

@@ -102,16 +102,22 @@ struct DatabaseSizeResult {
 //       after a tab being loaded.
 //     - Ignore the audio events happening during the first fews seconds after a
 //       tab being backgrounded.
+// - 2:
+//     - Ignore events that happen shortly after a tab is backgrounded. This is
+//       because such events are likely a response to a recent user action
+//       rather than an attempt from the tab to communicate in background.
+//       See https://crbug.com/1865601.
 //
 // Transform logic:
-//     - From {no version} to v1: The database is erased entirely.
-const size_t LevelDBSiteCharacteristicsDatabase::kDbVersion = 1U;
+//     - From any version to v1: The database is erased entirely.
+//     - From any version to v2: The database is erased entirely.
+const size_t LevelDBSiteCharacteristicsDatabase::kDbVersion = 2U;
 
 const char LevelDBSiteCharacteristicsDatabase::kDbMetadataKey[] =
     "database_metadata";
 
 // Helper class used to run all the blocking operations posted by
-// LocalSiteCharacteristicDatabase on a TaskScheduler sequence with the
+// LocalSiteCharacteristicDatabase on a ThreadPool sequence with the
 // |MayBlock()| trait.
 //
 // Instances of this class should only be destructed once all the posted tasks
@@ -134,11 +140,11 @@ class LevelDBSiteCharacteristicsDatabase::AsyncHelper {
 
   // Implementations of the DB manipulation functions of
   // LevelDBSiteCharacteristicsDatabase that run on a blocking sequence.
-  base::Optional<SiteCharacteristicsProto> ReadSiteCharacteristicsFromDB(
+  base::Optional<SiteDataProto> ReadSiteCharacteristicsFromDB(
       const url::Origin& origin);
   void WriteSiteCharacteristicsIntoDB(
       const url::Origin& origin,
-      const SiteCharacteristicsProto& site_characteristic_proto);
+      const SiteDataProto& site_characteristic_proto);
   void RemoveSiteCharacteristicsFromDB(
       const std::vector<url::Origin>& site_origin);
   void ClearDatabase();
@@ -216,7 +222,7 @@ void LevelDBSiteCharacteristicsDatabase::AsyncHelper::OpenOrCreateDatabase() {
   }
 }
 
-base::Optional<SiteCharacteristicsProto>
+base::Optional<SiteDataProto>
 LevelDBSiteCharacteristicsDatabase::AsyncHelper::ReadSiteCharacteristicsFromDB(
     const url::Origin& origin) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -232,12 +238,12 @@ LevelDBSiteCharacteristicsDatabase::AsyncHelper::ReadSiteCharacteristicsFromDB(
     s = db_->Get(read_options_, SerializeOriginIntoDatabaseKey(origin),
                  &protobuf_value);
   }
-  base::Optional<SiteCharacteristicsProto> site_characteristic_proto;
+  base::Optional<SiteDataProto> site_characteristic_proto;
   if (s.ok()) {
-    site_characteristic_proto = SiteCharacteristicsProto();
+    site_characteristic_proto = SiteDataProto();
     if (!site_characteristic_proto->ParseFromString(protobuf_value)) {
       site_characteristic_proto = base::nullopt;
-      DLOG(ERROR) << "Error while trying to parse a SiteCharacteristicsProto "
+      DLOG(ERROR) << "Error while trying to parse a SiteDataProto "
                   << "protobuf.";
     }
   }
@@ -247,7 +253,7 @@ LevelDBSiteCharacteristicsDatabase::AsyncHelper::ReadSiteCharacteristicsFromDB(
 void LevelDBSiteCharacteristicsDatabase::AsyncHelper::
     WriteSiteCharacteristicsIntoDB(
         const url::Origin& origin,
-        const SiteCharacteristicsProto& site_characteristic_proto) {
+        const SiteDataProto& site_characteristic_proto) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!db_)
@@ -391,10 +397,11 @@ LevelDBSiteCharacteristicsDatabase::AsyncHelper::OpenOrCreateDatabaseImpl() {
 
 LevelDBSiteCharacteristicsDatabase::LevelDBSiteCharacteristicsDatabase(
     const base::FilePath& db_path)
-    : blocking_task_runner_(base::CreateSequencedTaskRunnerWithTraits(
+    : blocking_task_runner_(base::CreateSequencedTaskRunner(
           // The |BLOCK_SHUTDOWN| trait is required to ensure that a clearing of
           // the database won't be skipped.
-          {base::MayBlock(), base::TaskShutdownBehavior::BLOCK_SHUTDOWN})),
+          {base::ThreadPool(), base::MayBlock(),
+           base::TaskShutdownBehavior::BLOCK_SHUTDOWN})),
       async_helper_(new AsyncHelper(db_path),
                     base::OnTaskRunnerDeleter(blocking_task_runner_)) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -426,7 +433,7 @@ void LevelDBSiteCharacteristicsDatabase::ReadSiteCharacteristicsFromDB(
 
 void LevelDBSiteCharacteristicsDatabase::WriteSiteCharacteristicsIntoDB(
     const url::Origin& origin,
-    const SiteCharacteristicsProto& site_characteristic_proto) {
+    const SiteDataProto& site_characteristic_proto) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   blocking_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&LevelDBSiteCharacteristicsDatabase::

@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/tab_modal_confirm_dialog_browsertest.h"
 
+#include <memory>
+#include <utility>
+
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/single_thread_task_runner.h"
@@ -22,12 +25,9 @@
 MockTabModalConfirmDialogDelegate::MockTabModalConfirmDialogDelegate(
     content::WebContents* web_contents,
     Delegate* delegate)
-    : TabModalConfirmDialogDelegate(web_contents),
-      delegate_(delegate) {
-}
+    : TabModalConfirmDialogDelegate(web_contents), delegate_(delegate) {}
 
-MockTabModalConfirmDialogDelegate::~MockTabModalConfirmDialogDelegate() {
-}
+MockTabModalConfirmDialogDelegate::~MockTabModalConfirmDialogDelegate() {}
 
 base::string16 MockTabModalConfirmDialogDelegate::GetTitle() {
   return base::string16();
@@ -57,14 +57,15 @@ TabModalConfirmDialogTest::TabModalConfirmDialogTest()
       dialog_(NULL),
       accepted_count_(0),
       canceled_count_(0),
-      closed_count_(0) {
-}
+      closed_count_(0) {}
 
 void TabModalConfirmDialogTest::SetUpOnMainThread() {
-  delegate_ = new MockTabModalConfirmDialogDelegate(
+  auto delegate = std::make_unique<MockTabModalConfirmDialogDelegate>(
       browser()->tab_strip_model()->GetActiveWebContents(), this);
+  delegate_ = delegate.get();
   dialog_ = TabModalConfirmDialog::Create(
-      delegate_, browser()->tab_strip_model()->GetActiveWebContents());
+      std::move(delegate),
+      browser()->tab_strip_model()->GetActiveWebContents());
   content::RunAllPendingInMessageLoop();
 }
 

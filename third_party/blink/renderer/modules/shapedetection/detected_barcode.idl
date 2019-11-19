@@ -5,17 +5,16 @@
 // https://wicg.github.io/shape-detection-api/#barcode-detection-api
 
 [
-    Constructor,
     Serializable,
+    Exposed=(Window,Worker),
+    SecureContext,
     RuntimeEnabled=ShapeDetection
 ] interface DetectedBarcode {
     // TODO(mcasas): Implement missing fields. https://crbug.com/646083
     [SameObject] readonly attribute DOMString rawValue;
     [SameObject] readonly attribute DOMRectReadOnly boundingBox;
+    [SameObject] readonly attribute DOMString format;
     // 4 corner points in clockwise direction starting with top-left. Due to
     // possible perspective distortions, this is not necessarily a rectangle.
     [SameObject, SaveSameObject] readonly attribute FrozenArray<Point2D> cornerPoints;
-
-    // TODO(peria): toJSON is not in spec. https://crbug.com/736332
-    [CallWith=ScriptState, ImplementedAs=toJSONForBinding] object toJSON();
 };

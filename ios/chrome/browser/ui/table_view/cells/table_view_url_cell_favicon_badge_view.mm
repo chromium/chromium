@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/table_view/cells/table_view_url_cell_favicon_badge_view.h"
 
+#import "ios/chrome/browser/ui/reading_list/reading_list_constants.h"
+
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
@@ -21,7 +23,7 @@
 #pragma mark - Public
 
 + (NSString*)accessibilityIdentifier {
-  return @"TableViewURLCellFaviconBadgeView";
+  return kTableViewURLCellFaviconBadgeViewID;
 }
 
 #pragma mark - UIImageView

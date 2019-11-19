@@ -3,13 +3,17 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/chromeos/input_method/input_method_configuration.h"
+
 #include "chrome/browser/chromeos/input_method/mock_input_method_manager_impl.h"
+#include "components/session_manager/core/session_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
 namespace input_method {
 
 TEST(InputMethodConfigurationTest, TestInitialize) {
+  session_manager::SessionManager session_manager;
+
   InputMethodManager* manager = InputMethodManager::Get();
   EXPECT_FALSE(manager);
 

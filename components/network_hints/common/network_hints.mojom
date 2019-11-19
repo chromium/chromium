@@ -1,0 +1,20 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module network_hints.mojom;
+
+import "url/mojom/url.mojom";
+
+// This interface is used by the renderer to provide hints to the browser.
+interface NetworkHintsHandler {
+  // This method is called periodically with a hint to prefetch a batch set of
+  // hostnames.
+  PrefetchDNS(array<string> hostname_list);
+
+  // This method is called periodically with a hint to preconnect to the origin
+  // of the specified url.
+  Preconnect(int32 render_frame_id,
+             url.mojom.Url url,
+             bool allow_credentials);
+};

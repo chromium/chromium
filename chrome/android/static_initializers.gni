@@ -12,9 +12,7 @@ import("//build/config/sanitizers/sanitizers.gni")
 if (current_toolchain == default_toolchain &&
     (!is_debug && !using_sanitizer && proprietary_codecs)) {
   # Define expectations only for target_cpu covered by trybots.
-  if (target_cpu == "arm") {
-    expected_static_initializer_count = 6
-  } else if (target_cpu == "arm64") {
-    expected_static_initializer_count = 5
+  if (target_cpu == "arm" || target_cpu == "arm64") {
+    expected_static_initializer_count = 4
   }
 }

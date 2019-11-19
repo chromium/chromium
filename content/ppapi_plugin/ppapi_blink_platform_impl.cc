@@ -15,13 +15,13 @@
 #include "content/child/child_thread_impl.h"
 #include "ppapi/proxy/plugin_globals.h"
 #include "ppapi/shared_impl/proxy_lock.h"
-#include "third_party/blink/public/platform/web_storage_namespace.h"
 #include "third_party/blink/public/platform/web_string.h"
 
 #if defined(OS_MACOSX)
 #include "content/child/child_process_sandbox_support_impl_mac.h"
 #elif defined(OS_LINUX)
 #include "content/child/child_process_sandbox_support_impl_linux.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #endif
 
 using blink::WebSandboxSupport;
@@ -35,13 +35,14 @@ namespace content {
 
 PpapiBlinkPlatformImpl::PpapiBlinkPlatformImpl() {
 #if defined(OS_LINUX)
-  font_loader_ =
-      sk_make_sp<font_service::FontLoader>(ChildThread::Get()->GetConnector());
+  mojo::PendingRemote<font_service::mojom::FontService> font_service;
+  ChildThread::Get()->BindHostReceiver(
+      font_service.InitWithNewPipeAndPassReceiver());
+  font_loader_ = sk_make_sp<font_service::FontLoader>(std::move(font_service));
   SkFontConfigInterface::SetGlobal(font_loader_);
   sandbox_support_.reset(new WebSandboxSupportLinux(font_loader_));
 #elif defined(OS_MACOSX)
-  sandbox_support_.reset(
-      new WebSandboxSupportMac(ChildThread::Get()->GetConnector()));
+  sandbox_support_ = std::make_unique<WebSandboxSupportMac>();
 #endif
 }
 
@@ -66,14 +67,13 @@ blink::WebSandboxSupport* PpapiBlinkPlatformImpl::GetSandboxSupport() {
 #endif
 }
 
-unsigned long long PpapiBlinkPlatformImpl::VisitedLinkHash(
-    const char* canonical_url,
-    size_t length) {
+uint64_t PpapiBlinkPlatformImpl::VisitedLinkHash(const char* canonical_url,
+                                                 size_t length) {
   NOTREACHED();
   return 0;
 }
 
-bool PpapiBlinkPlatformImpl::IsLinkVisited(unsigned long long link_hash) {
+bool PpapiBlinkPlatformImpl::IsLinkVisited(uint64_t link_hash) {
   NOTREACHED();
   return false;
 }
@@ -85,24 +85,6 @@ blink::WebString PpapiBlinkPlatformImpl::DefaultLocale() {
 blink::WebThemeEngine* PpapiBlinkPlatformImpl::ThemeEngine() {
   NOTREACHED();
   return nullptr;
-}
-
-blink::WebData PpapiBlinkPlatformImpl::GetDataResource(const char* name) {
-  NOTREACHED();
-  return blink::WebData();
-}
-
-std::unique_ptr<blink::WebStorageNamespace>
-PpapiBlinkPlatformImpl::CreateLocalStorageNamespace() {
-  NOTREACHED();
-  return nullptr;
-}
-
-int PpapiBlinkPlatformImpl::DatabaseDeleteFile(
-    const blink::WebString& vfs_file_name,
-    bool sync_dir) {
-  NOTREACHED();
-  return 0;
 }
 
 }  // namespace content

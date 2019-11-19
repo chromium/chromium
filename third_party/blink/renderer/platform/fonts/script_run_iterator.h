@@ -7,9 +7,8 @@
 
 #include "base/macros.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
-#include "third_party/blink/renderer/platform/wtf/dtoa/utils.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 #include <unicode/uchar.h>
@@ -32,7 +31,7 @@ class PLATFORM_EXPORT ScriptRunIterator {
 
   bool Consume(unsigned* limit, UScriptCode*);
 
-  static constexpr int kMaxScriptCount = 20;
+  static constexpr int kMaxScriptCount = 32;
   using UScriptCodeList = Vector<UScriptCode, kMaxScriptCount>;
 
  private:

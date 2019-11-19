@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/session_crashed_bubble_view.h"
 
 #include <stddef.h>
+
 #include <string>
 #include <utility>
 #include <vector>
@@ -14,6 +15,7 @@
 #include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task_runner_util.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/metrics/metrics_reporting_state.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
@@ -68,7 +70,7 @@ void RecordBubbleHistogramValue(SessionCrashedBubbleHistogramValue value) {
 }
 
 bool DoesSupportConsentCheck() {
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return true;
 #else
   return false;
@@ -116,30 +118,29 @@ class SessionCrashedBubbleView::BrowserRemovalObserver
 };
 
 // static
-bool SessionCrashedBubble::Show(Browser* browser) {
+void SessionCrashedBubble::ShowIfNotOffTheRecordProfile(Browser* browser) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (browser->profile()->IsOffTheRecord())
-    return true;
+    return;
 
-  // Observes browser removal event and will be deallocated in ShowForReal.
-  std::unique_ptr<SessionCrashedBubbleView::BrowserRemovalObserver>
-      browser_observer(
-          new SessionCrashedBubbleView::BrowserRemovalObserver(browser));
+  // Observes possible browser removal before Show is called.
+  auto browser_observer =
+      std::make_unique<SessionCrashedBubbleView::BrowserRemovalObserver>(
+          browser);
 
   if (DoesSupportConsentCheck()) {
     base::PostTaskAndReplyWithResult(
         GoogleUpdateSettings::CollectStatsConsentTaskRunner(), FROM_HERE,
         base::Bind(&GoogleUpdateSettings::GetCollectStatsConsent),
-        base::Bind(&SessionCrashedBubbleView::ShowForReal,
+        base::Bind(&SessionCrashedBubbleView::Show,
                    base::Passed(&browser_observer)));
   } else {
-    SessionCrashedBubbleView::ShowForReal(std::move(browser_observer), false);
+    SessionCrashedBubbleView::Show(std::move(browser_observer), false);
   }
-  return true;
 }
 
 // static
-void SessionCrashedBubbleView::ShowForReal(
+void SessionCrashedBubbleView::Show(
     std::unique_ptr<BrowserRemovalObserver> browser_observer,
     bool uma_opted_in_already) {
   // Determine whether or not the UMA opt-in option should be offered. It is
@@ -176,6 +177,12 @@ SessionCrashedBubbleView::SessionCrashedBubbleView(views::View* anchor_view,
       uma_option_(NULL),
       offer_uma_optin_(offer_uma_optin),
       ignored_(true) {
+  DialogDelegate::set_button_label(
+      ui::DIALOG_BUTTON_OK,
+      l10n_util::GetStringUTF16(IDS_SESSION_CRASHED_VIEW_RESTORE_BUTTON));
+  DialogDelegate::set_button_label(
+      ui::DIALOG_BUTTON_CANCEL,
+      l10n_util::GetStringUTF16(IDS_SESSION_CRASHED_VIEW_STARTUP_PAGES_BUTTON));
   set_close_on_deactivate(false);
   chrome::RecordDialogCreation(chrome::DialogIdentifier::SESSION_CRASHED);
 
@@ -210,11 +217,11 @@ void SessionCrashedBubbleView::OnWidgetDestroying(views::Widget* widget) {
 void SessionCrashedBubbleView::Init() {
   ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
   SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::kVertical, gfx::Insets(),
+      views::BoxLayout::Orientation::kVertical, gfx::Insets(),
       provider->GetDistanceMetric(views::DISTANCE_UNRELATED_CONTROL_VERTICAL)));
 
   // Description text label.
-  views::Label* text_label = new views::Label(
+  auto text_label = std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(IDS_SESSION_CRASHED_VIEW_MESSAGE));
   text_label->SetMultiLine(true);
   text_label->SetLineHeight(20);
@@ -223,13 +230,13 @@ void SessionCrashedBubbleView::Init() {
       provider->GetDistanceMetric(
           ChromeDistanceMetric::DISTANCE_BUBBLE_PREFERRED_WIDTH) -
       margins().width());
-  AddChildView(text_label);
+  AddChildView(std::move(text_label));
 
   if (offer_uma_optin_)
     AddChildView(CreateUmaOptInView());
 }
 
-views::View* SessionCrashedBubbleView::CreateUmaOptInView() {
+std::unique_ptr<views::View> SessionCrashedBubbleView::CreateUmaOptInView() {
   RecordBubbleHistogramValue(SESSION_CRASHED_BUBBLE_OPTIN_BAR_SHOWN);
 
   // The text to the right of the checkbox.
@@ -240,11 +247,11 @@ views::View* SessionCrashedBubbleView::CreateUmaOptInView() {
       IDS_SESSION_CRASHED_VIEW_UMA_OPTIN,
       link_text,
       &offset);
-  views::StyledLabel* uma_label = new views::StyledLabel(uma_text, this);
+  auto uma_label = std::make_unique<views::StyledLabel>(uma_text, this);
   uma_label->AddStyleRange(gfx::Range(offset, offset + link_text.length()),
                            views::StyledLabel::RangeStyleInfo::CreateForLink());
   views::StyledLabel::RangeStyleInfo uma_style;
-  uma_style.text_style = STYLE_SECONDARY;
+  uma_style.text_style = views::style::STYLE_SECONDARY;
   gfx::Range before_link_range(0, offset);
   if (!before_link_range.is_empty())
     uma_label->AddStyleRange(before_link_range, uma_style);
@@ -255,14 +262,14 @@ views::View* SessionCrashedBubbleView::CreateUmaOptInView() {
   uma_label->SetBorder(views::CreateEmptyBorder(1, 0, 0, 0));
 
   // Checkbox for metric reporting setting.
-  uma_option_ = new views::Checkbox(base::string16());
-  uma_option_->SetChecked(false);
-  uma_option_->SetAssociatedLabel(uma_label);
+  auto uma_option = std::make_unique<views::Checkbox>(base::string16());
+  uma_option->SetChecked(false);
+  uma_option->SetAssociatedLabel(uma_label.get());
 
   // Create a view to hold the checkbox and the text.
-  views::View* uma_view = new views::View();
+  auto uma_view = std::make_unique<views::View>();
   views::GridLayout* uma_layout =
-      uma_view->SetLayoutManager(std::make_unique<views::GridLayout>(uma_view));
+      uma_view->SetLayoutManager(std::make_unique<views::GridLayout>());
 
   const int kReportColumnSetId = 0;
   views::ColumnSet* cs = uma_layout->AddColumnSet(kReportColumnSetId);
@@ -276,8 +283,8 @@ views::View* SessionCrashedBubbleView::CreateUmaOptInView() {
                 views::GridLayout::USE_PREF, 0, 0);
 
   uma_layout->StartRow(views::GridLayout::kFixedSize, kReportColumnSetId);
-  uma_layout->AddView(uma_option_);
-  uma_layout->AddView(uma_label);
+  uma_option_ = uma_layout->AddView(std::move(uma_option));
+  uma_layout->AddView(std::move(uma_label));
 
   return uma_view;
 }
@@ -311,15 +318,6 @@ int SessionCrashedBubbleView::GetDialogButtons() const {
     buttons |= ui::DIALOG_BUTTON_CANCEL;
   }
   return buttons;
-}
-
-base::string16 SessionCrashedBubbleView::GetDialogButtonLabel(
-    ui::DialogButton button) const {
-  if (button == ui::DIALOG_BUTTON_OK)
-    return l10n_util::GetStringUTF16(IDS_SESSION_CRASHED_VIEW_RESTORE_BUTTON);
-  DCHECK_EQ(ui::DIALOG_BUTTON_CANCEL, button);
-  return l10n_util::GetStringUTF16(
-      IDS_SESSION_CRASHED_VIEW_STARTUP_PAGES_BUTTON);
 }
 
 void SessionCrashedBubbleView::StyledLabelLinkClicked(views::StyledLabel* label,
@@ -357,7 +355,7 @@ void SessionCrashedBubbleView::OpenStartupPages() {
 void SessionCrashedBubbleView::MaybeEnableUma() {
   // Record user's choice for opt-in in to UMA.
   // There's no opt-out choice in the crash restore bubble.
-  if (uma_option_ && uma_option_->checked()) {
+  if (uma_option_ && uma_option_->GetChecked()) {
     ChangeMetricsReportingState(true);
     RecordBubbleHistogramValue(SESSION_CRASHED_BUBBLE_UMA_OPTIN);
   }

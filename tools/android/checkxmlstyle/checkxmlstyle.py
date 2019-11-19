@@ -63,7 +63,7 @@ def _CheckColorFormat(input_api, output_api):
   """Checks color (A)RGB values are of format either RRGGBB or AARRGGBB."""
   errors = []
   for f in IncludedFiles(input_api):
-    # Ingnore vector drawable xmls
+    # Ignore vector drawable xmls
     contents = input_api.ReadFile(f)
     if '<vector' in contents:
       continue
@@ -92,20 +92,24 @@ def _CheckColorFormat(input_api, output_api):
 def _CheckColorReferences(input_api, output_api):
   """Checks no (A)RGB values are defined outside colors.xml."""
   errors = []
+  warnings = []
   for f in IncludedFiles(input_api):
     if (f.LocalPath().endswith('/colors.xml') or
         f.LocalPath().endswith('/color_palette.xml')):
       continue
-    # Ingnore vector drawable xmls
+    # Ignore new references in vector/shape drawable xmls
     contents = input_api.ReadFile(f)
-    if '<vector' in contents:
-      continue
+    is_vector_drawable = '<vector' in contents or '<shape' in contents
     for line_number, line in f.ChangedContents():
       if COLOR_PATTERN.search(line):
-        errors.append(
-            '  %s:%d\n    \t%s' % (f.LocalPath(), line_number, line.strip()))
+        issue = '  %s:%d\n    \t%s' % (f.LocalPath(), line_number, line.strip())
+        if is_vector_drawable:
+          warnings.append(issue)
+        else:
+          errors.append(issue)
+  result = []
   if errors:
-    return [output_api.PresubmitError(
+    result += [output_api.PresubmitError(
   '''
   Android Color Reference Check failed:
     Your new code added new color references that are not color resources from
@@ -117,7 +121,24 @@ def _CheckColorReferences(input_api, output_api):
     See https://crbug.com/775198 for more information.
   ''',
         errors)]
-  return []
+  if warnings:
+    result += [output_api.PresubmitPromptWarning(
+  '''
+  Android Color Reference Check warning:
+    Your new code added new color references that are not color resources from
+    chrome/android/java/res/values/colors.xml, listed below.
+
+    This is typically not needed even in vector/shape drawables. Please consider
+    using an existing color resources if possible.
+
+    Only bypass this check if you are confident that you should be using a HEX
+    reference, e.g. you are adding an illustration or a shadow using XML rather
+    than a PNG/9-patch.
+
+    Please contact src/chrome/android/java/res/OWNERS for questions.
+  ''',
+        warnings)]
+  return result
 
 
 def _CheckDuplicateColors(input_api, output_api):

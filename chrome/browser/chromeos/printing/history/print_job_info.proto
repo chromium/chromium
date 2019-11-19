@@ -1,0 +1,117 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package chromeos.printing.proto;
+
+// Required in Chrome.
+option optimize_for = LITE_RUNTIME;
+
+// The size of requested media.
+message MediaSize {
+  // Width (in micrometers) of the media used for printing.
+  int32 width = 1;
+
+  // Height (in micrometers) of the media used for printing.
+  int32 height = 2;
+
+  // Vendor-provided ID, e.g. "iso_a3_297x420mm" or "na_index-3x5_3x5in".
+  // Possible values are values of "media" IPP attribute and can be found on
+  // https://www.iana.org/assignments/ipp-registrations/ipp-registrations.xhtml.
+  string vendor_id = 3;
+}
+
+// The requested settings of print job.
+message PrintSettings {
+  enum ColorMode {
+    BLACK_AND_WHITE = 0;
+    COLOR = 1;
+  }
+
+  enum DuplexMode {
+    // One-sided printing was used.
+    ONE_SIDED = 0;
+    // Two-sided printing was used, flipping on long edge.
+    TWO_SIDED_LONG_EDGE = 1;
+    // Two-sided printing was used, flipping on short edge.
+    TWO_SIDED_SHORT_EDGE = 2;
+  }
+
+  // The requested color mode.
+  ColorMode color = 1;
+
+  // The requested duplex mode.
+  DuplexMode duplex = 2;
+
+  // The requested media size.
+  MediaSize media_size = 3;
+
+  // The requested number of copies.
+  int32 copies = 4;
+}
+
+// The printer info.
+message Printer {
+  enum PrinterSource {
+    // Printer was added by user.
+    USER = 0;
+    // Printer was added via policy.
+    POLICY = 1;
+  }
+
+  // Displayed name of the printer.
+  string name = 1;
+
+  // The full path for the printer.
+  // Contains protocol, hostname, port, and queue.
+  string uri = 2;
+
+  // The source of the printer.
+  PrinterSource source = 3;
+}
+
+// Print job information.
+message PrintJobInfo {
+  enum PrintJobSource {
+    PRINT_PREVIEW = 0;
+    ARC = 1;
+  }
+
+  enum PrintJobStatus {
+    FAILED = 0;
+    CANCELED = 1;
+    PRINTED = 2;
+  }
+
+  // The ID of the job.
+  string id = 1;
+
+  // The title of the document which was printed.
+  string title = 2;
+
+  // Source showing which component initiated the print job.
+  PrintJobSource source = 3;
+
+  // ID of source. Should be empty if source is PRINT_PREVIEW or ARC.
+  string source_id = 4;
+
+  // The final status of the job.
+  PrintJobStatus status = 5;
+
+  // The job creation time (in milliseconds past the Unix epoch).
+  int64 creation_time = 6;
+
+  // The job completion time (in milliseconds past the Unix epoch).
+  int64 completion_time = 7;
+
+  // The info about the printer which printed the document.
+  Printer printer = 8;
+
+  // The settings of the print job.
+  PrintSettings settings = 9;
+
+  // The number of pages in the document.
+  int32 number_of_pages = 10;
+}

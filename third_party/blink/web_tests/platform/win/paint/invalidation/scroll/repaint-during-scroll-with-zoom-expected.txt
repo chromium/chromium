@@ -1,0 +1,28 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#C0C0C0",
+      "paintInvalidations": [
+        {
+          "object": "HorizontalScrollbar",
+          "rect": [3, 300, 235, 15],
+          "reason": "scroll control"
+        },
+        {
+          "object": "LayoutNGBlockFlow HTML",
+          "rect": [3, 65, 52, 17],
+          "reason": "chunk appeared"
+        },
+        {
+          "object": "VerticalScrollbar",
+          "rect": [238, 65, 15, 235],
+          "reason": "scroll control"
+        }
+      ]
+    }
+  ]
+}
+

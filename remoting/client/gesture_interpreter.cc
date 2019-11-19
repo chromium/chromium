@@ -27,8 +27,7 @@ GestureInterpreter::GestureInterpreter()
       scroll_animation_(
           kScrollFlingTimeConstant,
           base::Bind(&GestureInterpreter::ScrollWithoutAbortAnimations,
-                     base::Unretained(this))),
-      weak_factory_(this) {}
+                     base::Unretained(this))) {}
 
 GestureInterpreter::~GestureInterpreter() = default;
 

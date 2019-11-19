@@ -13,11 +13,16 @@ import org.chromium.content.browser.ChildProcessCreationParamsImpl;
  * child service binging flags.
  */
 public final class ChildProcessCreationParams {
-    /** Set params. This should be called once on start up. */
+    /**
+     * Set params. This should be called once on start up. If null is passed for
+     * privilegedServicesName or sandboxedServicesName, the default service names will be used.
+     */
     public static void set(String packageNameForService, boolean isExternalSandboxedService,
             int libraryProcessType, boolean bindToCallerCheck,
-            boolean ignoreVisibilityForImportance) {
+            boolean ignoreVisibilityForImportance, String privilegedServicesName,
+            String sandboxedServicesName) {
         ChildProcessCreationParamsImpl.set(packageNameForService, isExternalSandboxedService,
-                libraryProcessType, bindToCallerCheck, ignoreVisibilityForImportance);
+                libraryProcessType, bindToCallerCheck, ignoreVisibilityForImportance,
+                privilegedServicesName, sandboxedServicesName);
     }
 }

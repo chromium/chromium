@@ -19,8 +19,8 @@ namespace {
 
 class TestFocusRules : public wm::BaseFocusRules {
  public:
-  TestFocusRules() {}
-  ~TestFocusRules() override {}
+  TestFocusRules() = default;
+  ~TestFocusRules() override = default;
 
   void set_can_activate(bool can_activate) { can_activate_ = can_activate; }
 
@@ -60,7 +60,7 @@ TEST_F(NativeWidgetAuraTest, NonActiveWindowRequestImeFocus) {
   params1.native_widget =
       CreatePlatformNativeWidgetImpl(params1, widget1, kDefault, nullptr);
   params1.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
-  widget1->Init(params1);
+  widget1->Init(std::move(params1));
   Textfield* textfield1 = new Textfield;
   widget1->GetRootView()->AddChildView(textfield1);
 
@@ -70,7 +70,7 @@ TEST_F(NativeWidgetAuraTest, NonActiveWindowRequestImeFocus) {
   params2.native_widget =
       CreatePlatformNativeWidgetImpl(params2, widget2, kDefault, nullptr);
   params2.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
-  widget2->Init(params2);
+  widget2->Init(std::move(params2));
   Textfield* textfield2a = new Textfield;
   widget2->GetRootView()->AddChildView(textfield2a);
   Textfield* textfield2b = new Textfield;

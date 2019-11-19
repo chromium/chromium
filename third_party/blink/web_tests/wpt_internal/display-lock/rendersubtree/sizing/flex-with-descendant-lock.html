@@ -1,0 +1,44 @@
+<!doctype HTML>
+<html class="reftest-wait">
+<meta charset="utf8">
+<title>Display Locking: flex layout with descendant lock</title>
+<link rel="author" title="Vladimir Levin" href="mailto:vmpstr@chromium.org">
+<link rel="help" href="https://github.com/WICG/display-locking">
+<link rel="match" href="flex-with-descendant-lock-ref.html">
+<script src="/common/reftest-wait.js"></script>
+<script src="../resources/utils.js"></script>
+
+<style>
+#flexer {
+  display: flex;
+  width: 200px;
+  height: 300px;
+  background: lightgreen;
+}
+#container {
+  intrinsic-size: 123px 234px;
+  background: lightblue;
+}
+div:not([rendersubtree~="invisible"]) {
+  intrinsic-size: legacy !important;
+}
+</style>
+
+<div id="flexer">
+  <div>
+    <div id="container">
+      <div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+async function runTest() {
+  const container = document.getElementById("container");
+  await setInvisible(container);
+  takeScreenshot();
+}
+
+window.onload = runTest;
+</script>
+</html>

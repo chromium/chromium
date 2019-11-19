@@ -13,6 +13,7 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "net/base/net_export.h"
@@ -78,6 +79,13 @@ class NET_EXPORT_PRIVATE ThroughputAnalyzer {
   // Notifies |this| that |request| has completed.
   void NotifyRequestCompleted(const URLRequest& request);
 
+  // Notifies |this| that |request| has an expected response body size in octets
+  // (8-bit bytes). |expected_content_size| is an estimate of total body length
+  // based on the Content-Length header field when available or a general size
+  // estimate when the Content-Length is not provided.
+  void NotifyExpectedResponseContentSize(const URLRequest& request,
+                                         int64_t expected_content_size);
+
   // Notifies |this| of a change in connection type.
   void OnConnectionTypeChanged();
 
@@ -93,12 +101,6 @@ class NET_EXPORT_PRIVATE ThroughputAnalyzer {
   // Overrides the tick clock used by |this| for testing.
   void SetTickClockForTesting(const base::TickClock* tick_clock);
 
- protected:
-  // Exposed for testing.
-  bool disable_throughput_measurements() const {
-    return disable_throughput_measurements_;
-  }
-
   // Returns the number of bits received by Chromium so far. The count may not
   // start from zero, so the caller should only look at difference from a prior
   // call. The count is obtained by polling TrafficStats on Android, and
@@ -108,7 +110,22 @@ class NET_EXPORT_PRIVATE ThroughputAnalyzer {
 
   // Returns the number of in-flight requests that can be used for computing
   // throughput.
-  size_t CountInFlightRequests() const;
+  size_t CountActiveInFlightRequests() const;
+
+  // Returns the total number of in-flight requests. This also includes hanging
+  // requests.
+  size_t CountTotalInFlightRequests() const;
+
+  // Returns the sum of expected response content size in bytes for all inflight
+  // requests. Request with an unknown response content size have the default
+  // response content size.
+  int64_t CountTotalContentSizeBytes() const;
+
+ protected:
+  // Exposed for testing.
+  bool disable_throughput_measurements_for_testing() const {
+    return disable_throughput_measurements_;
+  }
 
   // Removes hanging requests from |requests_|. If any hanging requests are
   // detected to be in-flight, the observation window is ended. Protected for
@@ -124,6 +141,11 @@ class NET_EXPORT_PRIVATE ThroughputAnalyzer {
  private:
   friend class TestThroughputAnalyzer;
 
+  // Mapping from URL request to the expected content size of the response body
+  // for that request. The map tracks all inflight requests. If the expected
+  // content size is not available, the value is set to the default value.
+  typedef std::unordered_map<const URLRequest*, int64_t> ResponseContentSizes;
+
   // Mapping from URL request to the last time data was received for that
   // request.
   typedef std::unordered_map<const URLRequest*, base::TimeTicks> Requests;
@@ -132,6 +154,12 @@ class NET_EXPORT_PRIVATE ThroughputAnalyzer {
   // throughput computation. These requests are not used in throughput
   // computation.
   typedef std::unordered_set<const URLRequest*> AccuracyDegradingRequests;
+
+  // Updates the response content size map for |request|. Also keeps the total
+  // response content size counter updated. Adds an new entry if there is no
+  // matching record in the map.
+  void UpdateResponseContentSize(const URLRequest* request,
+                                 int64_t response_size);
 
   // Returns true if downstream throughput can be recorded. In that case,
   // |downstream_kbps| is set to the computed downstream throughput (in
@@ -196,6 +224,13 @@ class NET_EXPORT_PRIVATE ThroughputAnalyzer {
   // Container that holds active requests that do not reduce the accuracy of
   // throughput computation. These requests are used in throughput computation.
   Requests requests_;
+
+  // Container that holds inflight request sizes. These requests are used in
+  // computing the total of response content size for all inflight requests.
+  ResponseContentSizes response_content_sizes_;
+
+  // The running total of response content size for all inflight requests.
+  int64_t total_response_content_size_;
 
   // Last time when the check for hanging requests was run.
   base::TimeTicks last_hanging_request_check_;

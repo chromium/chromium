@@ -1,0 +1,27 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "mojo/public/mojom/base/time.mojom";
+
+// Implementation of the proposed "Sms Detection API".
+//
+// Proposal: https://github.com/samuelgoto/sms-receiver
+enum SmsStatus {
+  kSuccess,
+  kTimeout,
+  kCancelled
+};
+
+// This interface is created per storage partition but its execution is context
+// associated: there is an origin associated with a request that is multiplexed
+// through one instance on a storage partition.
+interface SmsReceiver {
+  // Retrieves the next SMS message that arrives on the phone that is addressed
+  // to the caller's origin.
+  // Returns the raw content of the received SMS.
+  // |message| is only set if status == kSuccess.
+  Receive() => (SmsStatus status, string? message);
+};

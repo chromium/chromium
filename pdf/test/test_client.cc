@@ -4,11 +4,21 @@
 
 #include "pdf/test/test_client.h"
 
+#include "pdf/document_layout.h"
+
 namespace chrome_pdf {
 
 TestClient::TestClient() = default;
 
 TestClient::~TestClient() = default;
+
+void TestClient::ProposeDocumentLayout(const DocumentLayout& layout) {
+  // Most tests will want to accept the proposed layout immediately: Applying
+  // layout asynchronously is more accurate, but in most cases, doing so adds
+  // complexity without much gain. Instead, we can override this behavior just
+  // where it matters (like PDFiumEngineTest.ProposeDocumentLayoutWithOverlap).
+  engine()->ApplyDocumentLayout(layout.options());
+}
 
 bool TestClient::Confirm(const std::string& message) {
   return false;

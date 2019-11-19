@@ -62,36 +62,6 @@ class SupportLibWebMessagePortAdapter implements WebMessagePortBoundaryInterface
         }, handler);
     }
 
-    /**
-     * Utility class for creating a WebMessageBoundaryInterface (this is necessary to pass a
-     * WebMessage back across the boundary).
-     */
-    private static class SupportLibWebMessageAdapter implements WebMessageBoundaryInterface {
-        private String mData;
-        private MessagePort[] mPorts;
-
-        SupportLibWebMessageAdapter(String data, MessagePort[] ports) {
-            mData = data;
-            mPorts = ports;
-        }
-
-        @Override
-        public String getData() {
-            return mData;
-        }
-
-        @Override
-        public /* WebMessagePort */ InvocationHandler[] getPorts() {
-            return SupportLibWebMessagePortAdapter.fromMessagePorts(mPorts);
-        }
-
-        @Override
-        public String[] getSupportedFeatures() {
-            // getData() and getPorts() are not covered by feature flags.
-            return new String[0];
-        }
-    }
-
     public static /* WebMessagePort */ InvocationHandler[] fromMessagePorts(
             MessagePort[] messagePorts) {
         if (messagePorts == null) return null;

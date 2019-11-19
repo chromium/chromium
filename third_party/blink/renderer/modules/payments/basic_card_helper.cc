@@ -41,6 +41,7 @@ void BasicCardHelper::ParseBasiccardData(
     const ScriptValue& input,
     Vector<BasicCardNetwork>& supported_networks_output,
     Vector<BasicCardType>& supported_types_output,
+    bool* has_supported_card_types,
     ExceptionState& exception_state) {
   DCHECK(!input.IsEmpty());
 
@@ -68,6 +69,10 @@ void BasicCardHelper::ParseBasiccardData(
   }
 
   if (basic_card->hasSupportedTypes()) {
+    if (has_supported_card_types) {
+      *has_supported_card_types = true;
+    }
+
     if (basic_card->supportedTypes().size() > PaymentRequest::kMaxListSize) {
       exception_state.ThrowTypeError(
           "basic-card supportedTypes cannot be longer than 1024 elements");

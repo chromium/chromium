@@ -67,7 +67,7 @@ function testEmptySourceList() {
 function testIsScanning(callback) {
   const filenames = [
     'happy',
-    'thoughts'
+    'thoughts',
   ];
   reportPromise(
       makeTestFileSystemRoot('testIsScanning')
@@ -87,7 +87,7 @@ function testIsScanning(callback) {
 function testObserverNotifiedOnScanFinish(callback) {
   const filenames = [
     'happy',
-    'thoughts'
+    'thoughts',
   ];
   makeTestFileSystemRoot('testObserverNotifiedOnScanFinish')
       .then(populateDir.bind(null, filenames))
@@ -102,12 +102,11 @@ function testObserverNotifiedOnScanFinish(callback) {
             // use in an assert. Promises ensure the scan won't finish
             // until after our function is fully processed.
             const result = scanner.scanDirectory(root, scanMode);
-            scanner.addObserver(
-                (eventType, scanResult) => {
-                  assertEquals(importer.ScanEvent.FINALIZED, eventType);
-                  assertEquals(result, scanResult);
-                  callback(false);
-                });
+            scanner.addObserver((eventType, scanResult) => {
+              assertEquals(importer.ScanEvent.FINALIZED, eventType);
+              assertEquals(result, scanResult);
+              callback(false);
+            });
           })
       .catch(() => {
         callback(true);
@@ -122,12 +121,12 @@ function testScanFiles(callback) {
     'foo',
     'foo.jpg',
     'bar.gif',
-    'baz.avi'
+    'baz.avi',
   ];
   const expectedFiles = [
     '/testScanFiles/foo.jpg',
     '/testScanFiles/bar.gif',
-    '/testScanFiles/baz.avi'
+    '/testScanFiles/baz.avi',
   ];
   reportPromise(
       makeTestFileSystemRoot('testScanFiles')
@@ -151,7 +150,7 @@ function testScanFilesIgnoresPreviousImports(callback) {
     'driveimage1234.jpg',  // a content duplicate
     'foo.jpg',
     'bar.gif',
-    'baz.avi'
+    'baz.avi',
   ];
 
   // Replace the default dispositionChecker with a function
@@ -190,7 +189,7 @@ function testScanFilesIgnoresPreviousImports(callback) {
 function testEmptyScanResults(callback) {
   const filenames = [
     'happy',
-    'thoughts'
+    'thoughts',
   ];
   reportPromise(
       makeTestFileSystemRoot('testEmptyScanResults')
@@ -217,12 +216,12 @@ function testSingleLevel(callback) {
     'bar.gif',
     'baz.avi',
     'foo.mp3',
-    'bar.txt'
+    'bar.txt',
   ];
   const expectedFiles = [
     '/testSingleLevel/foo.jpg',
     '/testSingleLevel/bar.gif',
-    '/testSingleLevel/baz.avi'
+    '/testSingleLevel/baz.avi',
   ];
   reportPromise(
       makeTestFileSystemRoot('testSingleLevel')
@@ -250,12 +249,12 @@ function testProgress(callback) {
     'bar.gif',
     'baz.avi',
     'foo.mp3',
-    'bar.txt'
+    'bar.txt',
   ];
   const expectedFiles = [
     '/testProgress/foo.jpg',
     '/testProgress/bar.gif',
-    '/testProgress/baz.avi'
+    '/testProgress/baz.avi',
   ];
   reportPromise(
       makeTestFileSystemRoot('testProgress')
@@ -276,15 +275,14 @@ function testProgress(callback) {
  * Verifies that scanning ignores previously imported entries.
  */
 function testIgnoresPreviousImports(callback) {
-  importHistory.importedPaths[
-      '/testIgnoresPreviousImports/oldimage1234.jpg'] =
-          [importer.Destination.GOOGLE_DRIVE];
+  importHistory.importedPaths['/testIgnoresPreviousImports/oldimage1234.jpg'] =
+      [importer.Destination.GOOGLE_DRIVE];
   const filenames = [
     'oldimage1234.jpg',    // a history duplicate
     'driveimage1234.jpg',  // a content duplicate
     'foo.jpg',
     'bar.gif',
-    'baz.avi'
+    'baz.avi',
   ];
 
   // Replace the default dispositionChecker with a function
@@ -302,7 +300,7 @@ function testIgnoresPreviousImports(callback) {
   const expectedFiles = [
     '/testIgnoresPreviousImports/foo.jpg',
     '/testIgnoresPreviousImports/bar.gif',
-    '/testIgnoresPreviousImports/baz.avi'
+    '/testIgnoresPreviousImports/baz.avi',
   ];
 
   const promise =
@@ -322,15 +320,14 @@ function testIgnoresPreviousImports(callback) {
 }
 
 function testTracksDuplicates(callback) {
-  importHistory.importedPaths[
-      '/testTracksDuplicates/oldimage1234.jpg'] =
-          [importer.Destination.GOOGLE_DRIVE];
+  importHistory.importedPaths['/testTracksDuplicates/oldimage1234.jpg'] =
+      [importer.Destination.GOOGLE_DRIVE];
   const filenames = [
     'oldimage1234.jpg',    // a history duplicate
     'driveimage1234.jpg',  // a content duplicate
     'driveimage9999.jpg',  // a content duplicate
     'bar.gif',
-    'baz.avi'
+    'baz.avi',
   ];
 
   // Replace the default dispositionChecker with a function
@@ -350,7 +347,7 @@ function testTracksDuplicates(callback) {
 
   const expectedDuplicates = [
     '/testTracksDuplicates/driveimage1234.jpg',
-    '/testTracksDuplicates/driveimage9999.jpg'
+    '/testTracksDuplicates/driveimage9999.jpg',
   ];
 
   const promise =
@@ -371,26 +368,25 @@ function testTracksDuplicates(callback) {
 
 function testMultiLevel(callback) {
   const filenames = [
-    'foo.jpg',
-    'bar',
+    'foo.jpg', 'bar',
     [
       'dir1',
-      'bar.0.jpg'
+      'bar.0.jpg',
     ],
     [
       'dir2',
       'bar.1.gif',
       [
         'dir3',
-        'bar.1.0.avi'
-      ]
+        'bar.1.0.avi',
+      ],
     ]
   ];
   const expectedFiles = [
     '/testMultiLevel/foo.jpg',
     '/testMultiLevel/dir1/bar.0.jpg',
     '/testMultiLevel/dir2/bar.1.gif',
-    '/testMultiLevel/dir2/dir3/bar.1.0.avi'
+    '/testMultiLevel/dir2/dir3/bar.1.0.avi',
   ];
 
   reportPromise(
@@ -410,12 +406,11 @@ function testMultiLevel(callback) {
 
 function testDedupesFilesInScanResult(callback) {
   const filenames = [
-    'foo.jpg',
-    'bar.jpg',
+    'foo.jpg', 'bar.jpg',
     [
       'dir1',
       'foo.jpg',
-      'bar.jpg'
+      'bar.jpg',
     ],
     [
       'dir2',
@@ -424,13 +419,13 @@ function testDedupesFilesInScanResult(callback) {
       [
         'dir3',
         'foo.jpg',
-        'bar.jpg'
-      ]
+        'bar.jpg',
+      ],
     ]
   ];
   const expectedFiles = [
     '/testDedupesFilesInScanResult/foo.jpg',
-    '/testDedupesFilesInScanResult/bar.jpg'
+    '/testDedupesFilesInScanResult/bar.jpg',
   ];
 
   reportPromise(
@@ -535,28 +530,18 @@ function makeTestFileSystemRoot(directoryName) {
   function makeTestFilesystem() {
     return new Promise((resolve, reject) => {
       window.webkitRequestFileSystem(
-          window.TEMPORARY,
-          1024 * 1024,
-          resolve,
-          reject);
+          window.TEMPORARY, 1024 * 1024, resolve, reject);
     });
   }
 
-  return makeTestFilesystem()
-      .then(
-          // Create a directory, pretend that's the root.
-          fs => {
-            return new Promise((resolve, reject) => {
-              fs.root.getDirectory(
-                    directoryName,
-                    {
-                      create: true,
-                      exclusive: true
-                    },
-                  resolve,
-                  reject);
-            });
-          });
+  return makeTestFilesystem().then(
+      // Create a directory, pretend that's the root.
+      fs => {
+        return new Promise((resolve, reject) => {
+          fs.root.getDirectory(
+              directoryName, {create: true, exclusive: true}, resolve, reject);
+        });
+      });
 }
 
 /**
@@ -568,27 +553,22 @@ function makeTestFileSystemRoot(directoryName) {
  *     directory tree.
  */
 function populateDir(filenames, dir) {
-  return Promise.all(
-      filenames.map(
-          filename => {
-            if (filename instanceof Array) {
-              return new Promise(
-                  (resolve, reject) => {
-                    dir.getDirectory(
-                        filename[0],
-                        {create: true},
-                        resolve,
-                        reject);
-                  })
-                  .then(populateDir.bind(null, filename));
-            } else {
-              const name = /** @type {string} */ (filename);
-              return new Promise((resolve, reject) => {
-                dir.getFile(name, {create: true}, resolve, reject);
-              });
-            }
-          })).then(
-              () => {
-                return dir;
-              });
+  return Promise
+      .all(filenames.map(filename => {
+        if (filename instanceof Array) {
+          return new Promise((resolve, reject) => {
+                   dir.getDirectory(
+                       filename[0], {create: true}, resolve, reject);
+                 })
+              .then(populateDir.bind(null, filename));
+        } else {
+          const name = /** @type {string} */ (filename);
+          return new Promise((resolve, reject) => {
+            dir.getFile(name, {create: true}, resolve, reject);
+          });
+        }
+      }))
+      .then(() => {
+        return dir;
+      });
 }

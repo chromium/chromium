@@ -88,7 +88,7 @@ void SplitElementCommand::DoUnapply() {
     element2_->InsertBefore(child, ref_child, IGNORE_EXCEPTION_FOR_TESTING);
 
   // Recover the id attribute of the original element.
-  const AtomicString& id = element1_->getAttribute(html_names::kIdAttr);
+  const AtomicString& id = element1_->FastGetAttribute(html_names::kIdAttr);
   if (!id.IsNull())
     element2_->setAttribute(html_names::kIdAttr, id);
 

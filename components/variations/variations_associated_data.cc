@@ -37,8 +37,9 @@ class GroupMapAccessor {
                    const ActiveGroupId& group_identifier,
                    const VariationID id,
                    const bool force) {
-#if !defined(NDEBUG)
-    DCHECK_EQ(4, ID_COLLECTION_COUNT);
+    static_assert(3 == ID_COLLECTION_COUNT,
+                  "If you add a new collection key, add handling code here!");
+#if DCHECK_IS_ON()
     // Ensure that at most one of the trigger/non-trigger/signed-in web property
     // IDs are set.
     if (key == GOOGLE_WEB_PROPERTIES || key == GOOGLE_WEB_PROPERTIES_TRIGGER ||

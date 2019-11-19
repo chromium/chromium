@@ -24,7 +24,9 @@
         {
             if (window.testRunner) {
                 // Simulate an attempt to close the window
-                location.href = "resources/notify-done.html";
+                setTimeout(function() {
+                    location.href = "resources/notify-done.html";
+                }, 0);
             }
         }
     </script>

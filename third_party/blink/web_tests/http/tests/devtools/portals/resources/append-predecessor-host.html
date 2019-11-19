@@ -1,0 +1,11 @@
+<body>
+  <portal src="append-predecessor.html"></portal>
+  <script>
+    function activate() {
+      var portal = document.querySelector('portal');
+      setTimeout(() => {
+        portal.activate().then(() => { document.body.removeChild(portal); })
+      });
+    }
+  </script>
+</body>

@@ -1,0 +1,23 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "LayoutNGBlockFlow (relative positioned) DIV id='box' class='rotated'",
+          "rect": [66, 110, 286, 286],
+          "reason": "paint property change"
+        },
+        {
+          "object": "LayoutNGBlockFlow (relative positioned) DIV id='box' class='rotated'",
+          "rect": [108, 152, 202, 202],
+          "reason": "paint property change"
+        }
+      ]
+    }
+  ]
+}
+

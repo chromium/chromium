@@ -45,18 +45,13 @@ namespace blink {
 // using v8::Context::NewRemoteContext().
 class RemoteWindowProxy final : public WindowProxy {
  public:
-  static RemoteWindowProxy* Create(v8::Isolate* isolate,
-                                   RemoteFrame& frame,
-                                   scoped_refptr<DOMWrapperWorld> world) {
-    return MakeGarbageCollected<RemoteWindowProxy>(isolate, frame,
-                                                   std::move(world));
-  }
-
   RemoteWindowProxy(v8::Isolate*, RemoteFrame&, scoped_refptr<DOMWrapperWorld>);
 
  private:
   void Initialize() override;
-  void DisposeContext(Lifecycle next_status, FrameReuseStatus) override;
+  void DisposeContext(Lifecycle next_status,
+                      FrameReuseStatus,
+                      v8::Context::DetachedWindowReason) override;
 
   // Creates a new v8::Context with the window wrapper object as the global
   // object (aka the inner global).  Note that the window wrapper and its

@@ -23,6 +23,7 @@ let QueryInputs;
  *   showDetails: boolean,
  *   showAllProviders: boolean,
  *   elideCells: boolean,
+ *   thinRows: boolean,
  * }}
  */
 let DisplayInputs;
@@ -68,6 +69,7 @@ class OmniboxInput extends OmniboxElement {
      '#show-details',
      '#show-all-providers',
      '#elide-cells',
+     '#thin-rows',
     ].forEach(query => {
       this.$$(query).addEventListener(
           'input', this.onDisplayInputsChanged_.bind(this));
@@ -76,18 +78,23 @@ class OmniboxInput extends OmniboxElement {
     this.$$('#filter-text')
         .addEventListener('input', this.onFilterInputsChanged_.bind(this));
 
-    this.$$('#download-json')
-        .addEventListener('click', this.onDownloadJson_.bind(this));
-
-    ['#import-json', '#import-clipboard'].forEach(query => {
+    this.$$('#export-clipboard')
+        .addEventListener('click', this.onExportClipboard_.bind(this));
+    this.$$('#export-file')
+        .addEventListener('click', this.onExportFile_.bind(this));
+    this.$$('#import-clipboard')
+        .addEventListener('click', this.onImportClipboard_.bind(this));
+    this.$$('#import-file-input')
+        .addEventListener('input', this.onImportFile_.bind(this));
+    this.$$('#process-batch-input')
+        .addEventListener('input', this.onProcessBatchFile_.bind(this));
+    ['#import-clipboard', '#import-file'].forEach(query => {
       this.setupDragListeners_(this.$$(query));
       this.$$(query).addEventListener('drop', this.onImportDropped_.bind(this));
     });
-
-    this.$$('#import-json-input')
-        .addEventListener('input', this.onImportFileSelected_.bind(this));
-    this.$$('#import-clipboard')
-        .addEventListener('click', this.onImportClipboard_.bind(this));
+    this.setupDragListeners_(this.$$('#process-batch'));
+    this.$$('#process-batch')
+        .addEventListener('drop', this.onProcessBatchDropped_.bind(this));
   }
 
   /**
@@ -213,6 +220,7 @@ class OmniboxInput extends OmniboxElement {
       showDetails: this.$$('#show-details').checked,
       showAllProviders: this.$$('#show-all-providers').checked,
       elideCells: this.$$('#elide-cells').checked,
+      thinRows: this.$$('#thin-rows').checked,
     };
   }
 
@@ -223,6 +231,7 @@ class OmniboxInput extends OmniboxElement {
     this.$$('#show-details').checked = displayInputs.showDetails;
     this.$$('#show-all-providers').checked = displayInputs.showAllProviders;
     this.$$('#elide-cells').checked = displayInputs.elideCells;
+    this.$$('#thin-rows').checked = displayInputs.thinRows;
   }
 
   /** @private */
@@ -232,8 +241,28 @@ class OmniboxInput extends OmniboxElement {
   }
 
   /** @private */
-  onDownloadJson_() {
-    this.dispatchEvent(new CustomEvent('download-json'));
+  onExportClipboard_() {
+    this.dispatchEvent(new CustomEvent('export-clipboard'));
+  }
+
+  /** @private */
+  onExportFile_() {
+    this.dispatchEvent(new CustomEvent('export-file'));
+  }
+
+  /** @private */
+  async onImportClipboard_() {
+    this.import_(await navigator.clipboard.readText());
+  }
+
+  /** @private @param {!Event} event */
+  onImportFile_(event) {
+    this.importFile_(event.target.files[0]);
+  }
+
+  /** @private @param {!Event} event */
+  onProcessBatchFile_(event) {
+    this.processBatchFile_(event.target.files[0]);
   }
 
   /** @private @param {!Event} event */
@@ -247,36 +276,61 @@ class OmniboxInput extends OmniboxElement {
   }
 
   /** @private @param {!Event} event */
-  onImportFileSelected_(event) {
-    this.importFile_(event.target.files[0]);
+  onProcessBatchDropped_(event) {
+    const dragText = event.dataTransfer.getData('Text');
+    if (dragText) {
+      this.processBatch_(dragText);
+    } else if (event.dataTransfer.files[0]) {
+      this.processBatchFile_(event.dataTransfer.files[0]);
+    }
   }
 
   /** @private @param {!File} file */
   importFile_(file) {
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      if (reader.readyState === FileReader.DONE) {
-        this.import_(/** @type {string} */ (reader.result));
-      } else {
-        console.error('error importing, unable to read file:', reader.error);
-      }
-    };
-    reader.readAsText(file);
+    OmniboxInput.readFile_(file).then(this.import_.bind(this));
   }
 
-  async onImportClipboard_() {
-    this.import_(await navigator.clipboard.readText());
+  /** @private @param {!File} file */
+  processBatchFile_(file) {
+    OmniboxInput.readFile_(file).then(this.processBatch_.bind(this));
   }
 
   /** @private @param {string} importString */
   import_(importString) {
     try {
       const importData = JSON.parse(importString);
+      // TODO(manukh): If import fails, this UI state change shouldn't happen.
       this.$$('#imported-warning').hidden = false;
-      this.dispatchEvent(new CustomEvent('import-json', {detail: importData}));
+      this.dispatchEvent(new CustomEvent('import', {detail: importData}));
     } catch (error) {
       console.error('error during import, invalid json:', error);
     }
+  }
+
+  /** @private @param {string} processBatchString */
+  processBatch_(processBatchString) {
+    try {
+      const processBatchData = JSON.parse(processBatchString);
+      this.dispatchEvent(
+          new CustomEvent('process-batch', {detail: processBatchData}));
+    } catch (error) {
+      console.error('error during process batch, invalid json:', error);
+    }
+  }
+
+  /** @private @param {!File} file */
+  static readFile_(file) {
+    return new Promise(resolve => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        if (reader.readyState === FileReader.DONE) {
+          resolve(/** @type {string} */(reader.result));
+        } else {
+          console.error('error importing, unable to read file:', reader.error);
+        }
+      };
+      reader.readAsText(file);
+    });
   }
 
   /** @return {DisplayInputs} */
@@ -286,6 +340,7 @@ class OmniboxInput extends OmniboxElement {
       showDetails: false,
       showAllProviders: true,
       elideCells: true,
+      thinRows: false,
     };
   }
 }

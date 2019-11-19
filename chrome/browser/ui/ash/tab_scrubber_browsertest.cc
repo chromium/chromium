@@ -5,10 +5,10 @@
 #include "chrome/browser/ui/ash/tab_scrubber.h"
 
 #include <memory>
+#include <utility>
 
 #include "ash/display/event_transformation_handler.h"
 #include "ash/shell.h"
-#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
@@ -26,11 +26,12 @@
 #include "content/public/common/url_constants.h"
 #include "content/public/test/test_utils.h"
 #include "ui/aura/window.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/test/event_generator.h"
 
 namespace {
+
+constexpr int kScrubbingGestureFingerCount = 3;
 
 // Waits until the immersive mode reveal ends, and therefore the top view of
 // the browser is no longer visible.
@@ -59,7 +60,7 @@ class ImmersiveRevealEndedWaiter : public ImmersiveModeController::Observer {
  private:
   void MaybeQuitRunLoop() {
     if (!quit_closure_.is_null())
-      base::ResetAndReturn(&quit_closure_).Run();
+      std::move(quit_closure_).Run();
   }
 
   // ImmersiveModeController::Observer:
@@ -88,6 +89,7 @@ class TabScrubberTest : public InProcessBrowserTest,
     command_line->AppendSwitch(chromeos::switches::kNaturalScrollDefault);
   }
 
+  // InProcessBrowserTest:
   void SetUpOnMainThread() override {
     TabScrubber::GetInstance()->use_default_activation_delay_ = false;
     // Disable external monitor scaling of coordinates.
@@ -153,7 +155,7 @@ class TabScrubberTest : public InProcessBrowserTest,
                  GetStartX(browser, active_index, direction);
     ui::ScrollEvent scroll_event(ui::ET_SCROLL, gfx::Point(0, 0),
                                  ui::EventTimeForNow(), 0, offset, 0, offset, 0,
-                                 3);
+                                 kScrubbingGestureFingerCount);
     event_generator->Dispatch(&scroll_event);
   }
 
@@ -243,23 +245,20 @@ class TabScrubberTest : public InProcessBrowserTest,
   // forces the TabScrubber to complete any pending activation.
   class ScrollGenerator {
    public:
-    // TabScrubber reacts to three-finger scrolls.
-    static const int kNumFingers = 3;
-
     explicit ScrollGenerator(ui::test::EventGenerator* event_generator)
         : event_generator_(event_generator) {
       ui::ScrollEvent fling_cancel(ui::ET_SCROLL_FLING_CANCEL, gfx::Point(),
                                    time_for_next_event_, 0, 0, 0, 0, 0,
-                                   kNumFingers);
+                                   kScrubbingGestureFingerCount);
       event_generator->Dispatch(&fling_cancel);
       if (TabScrubber::GetInstance()->IsActivationPending())
         TabScrubber::GetInstance()->FinishScrub(true);
     }
 
     ~ScrollGenerator() {
-      ui::ScrollEvent fling_start(ui::ET_SCROLL_FLING_START, gfx::Point(),
-                                  time_for_next_event_, 0, last_x_offset_, 0,
-                                  last_x_offset_, 0, kNumFingers);
+      ui::ScrollEvent fling_start(
+          ui::ET_SCROLL_FLING_START, gfx::Point(), time_for_next_event_, 0,
+          last_x_offset_, 0, last_x_offset_, 0, kScrubbingGestureFingerCount);
       event_generator_->Dispatch(&fling_start);
       if (TabScrubber::GetInstance()->IsActivationPending())
         TabScrubber::GetInstance()->FinishScrub(true);
@@ -268,7 +267,8 @@ class TabScrubberTest : public InProcessBrowserTest,
     void GenerateScroll(int x_offset) {
       time_for_next_event_ += base::TimeDelta::FromMilliseconds(100);
       ui::ScrollEvent scroll(ui::ET_SCROLL, gfx::Point(), time_for_next_event_,
-                             0, x_offset, 0, x_offset, 0, kNumFingers);
+                             0, x_offset, 0, x_offset, 0,
+                             kScrubbingGestureFingerCount);
       last_x_offset_ = x_offset;
       event_generator_->Dispatch(&scroll);
       if (TabScrubber::GetInstance()->IsActivationPending())
@@ -287,10 +287,8 @@ class TabScrubberTest : public InProcessBrowserTest,
       Browser* browser) {
     aura::Window* window = browser->window()->GetNativeWindow();
     aura::Window* root = window->GetRootWindow();
-    return std::make_unique<ui::test::EventGenerator>(
-        features::IsUsingWindowService() ? nullptr : root, window);
+    return std::make_unique<ui::test::EventGenerator>(root, window);
   }
-
 
   DISALLOW_COPY_AND_ASSIGN(TabScrubberTest);
 };

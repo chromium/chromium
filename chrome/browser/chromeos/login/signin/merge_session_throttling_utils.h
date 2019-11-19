@@ -43,9 +43,6 @@ bool ShouldDelayUrl(const GURL& url);
 // True if session restore hasn't started or in progress.
 bool IsSessionRestorePending(Profile* profile);
 
-// Resets the merged session counter, should only be used in tests.
-void ResetAreAllSessionsMergedForTesting();
-
 }  // namespace merge_session_throttling_utils
 
 #endif  // CHROME_BROWSER_CHROMEOS_LOGIN_SIGNIN_MERGE_SESSION_THROTTLING_UTILS_H_

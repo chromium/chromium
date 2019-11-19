@@ -117,7 +117,7 @@ class TetherNotificationPresenter : public NotificationPresenter {
   // hotspot nearby" notification. If the notification is not visible or it is
   // in the "multiple hotspots available" mode, this pointer is null.
   std::unique_ptr<std::string> hotspot_nearby_device_id_;
-  base::WeakPtrFactory<TetherNotificationPresenter> weak_ptr_factory_;
+  base::WeakPtrFactory<TetherNotificationPresenter> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(TetherNotificationPresenter);
 };

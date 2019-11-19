@@ -58,12 +58,8 @@ class SyncCycle {
     // use is for UI reporting.
     virtual bool IsAnyThrottleOrBackoff() = 0;
 
-    // The client has been instructed to change its short poll interval.
-    virtual void OnReceivedShortPollIntervalUpdate(
-        const base::TimeDelta& new_interval) = 0;
-
-    // The client has been instructed to change its long poll interval.
-    virtual void OnReceivedLongPollIntervalUpdate(
+    // The client has been instructed to change its poll interval.
+    virtual void OnReceivedPollIntervalUpdate(
         const base::TimeDelta& new_interval) = 0;
 
     // The client has been instructed to change a nudge delay.

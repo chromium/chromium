@@ -31,23 +31,27 @@ class ProfileSigninConfirmationDialogViews : public views::DialogDelegateView,
       const std::string& username,
       std::unique_ptr<ui::ProfileSigninConfirmationDelegate> delegate);
 
- private:
   ProfileSigninConfirmationDialogViews(
       Browser* browser,
       const std::string& username,
-      std::unique_ptr<ui::ProfileSigninConfirmationDelegate> delegate);
+      std::unique_ptr<ui::ProfileSigninConfirmationDelegate> delegate,
+      bool prompt_for_new_profile);
   ~ProfileSigninConfirmationDialogViews() override;
+
+ private:
+  static void Show(
+      Browser* browser,
+      const std::string& username,
+      std::unique_ptr<ui::ProfileSigninConfirmationDelegate> delegate,
+      bool prompt_for_new_profile);
 
   // views::DialogDelegateView:
   base::string16 GetWindowTitle() const override;
-  base::string16 GetDialogButtonLabel(ui::DialogButton button) const override;
-  int GetDefaultDialogButton() const override;
-  views::View* CreateExtraView() override;
   bool Accept() override;
   bool Cancel() override;
   ui::ModalType GetModalType() const override;
   void ViewHierarchyChanged(
-      const ViewHierarchyChangedDetails& details) override;
+      const views::ViewHierarchyChangedDetails& details) override;
 
   // views::WidgetDelegate::
   void WindowClosing() override;
@@ -60,11 +64,6 @@ class ProfileSigninConfirmationDialogViews : public views::DialogDelegateView,
   // views::ButtonListener:
   void ButtonPressed(views::Button*, const ui::Event& event) override;
 
-  // Shows the dialog and releases ownership of this object. It will
-  // delete itself when the dialog is closed. If |prompt_for_new_profile|
-  // is true, the dialog will offer to create a new profile before signin.
-  void Show(bool prompt_for_new_profile);
-
   // Weak ptr to parent view.
   Browser* const browser_;
 
@@ -75,7 +74,7 @@ class ProfileSigninConfirmationDialogViews : public views::DialogDelegateView,
   std::unique_ptr<ui::ProfileSigninConfirmationDelegate> delegate_;
 
   // Whether the user should be prompted to create a new profile.
-  bool prompt_for_new_profile_;
+  const bool prompt_for_new_profile_;
 
   DISALLOW_COPY_AND_ASSIGN(ProfileSigninConfirmationDialogViews);
 };

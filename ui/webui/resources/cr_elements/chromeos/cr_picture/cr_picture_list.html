@@ -57,7 +57,7 @@
 
     <div id="container">
       <iron-a11y-keys keys="up down left right space enter"
-          on-keys-pressed="onKeysPressed_">
+          on-keys-pressed="onKeysPressed">
       </iron-a11y-keys>
       <iron-selector id="selector"
           on-iron-activate="onIronActivate_" on-iron-select="onIronSelect_"
@@ -72,7 +72,7 @@
         <template is="dom-if" if="[[chooseFileLabel]]">
           <!-- Selects the file picker as the picture source. -->
           <iron-icon data-type$="[[selectionTypesEnum_.FILE]]" role="radio"
-              icon="cr:folder" title="[[chooseFileLabel]]">
+              icon="cr:folder-filled" title="[[chooseFileLabel]]">
           </iron-icon>
         </template>
         <!-- Shows and selects the current profile picture. -->

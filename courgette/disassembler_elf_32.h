@@ -129,7 +129,13 @@ class DisassemblerElf32 : public Disassembler {
                           size_t length,
                           e_machine_values elf_em);
 
-  bool UpdateLength();
+  // Returns whether all non-SHT_NOBITS sections lie within image.
+  bool CheckSectionRanges();
+
+  // Returns whether all program segments lie within image.
+  bool CheckProgramSegmentRanges();
+
+  void UpdateLength();
 
   // Misc Section Helpers
 
@@ -143,8 +149,9 @@ class DisassemblerElf32 : public Disassembler {
   }
 
   const uint8_t* SectionBody(Elf32_Half id) const {
-    // TODO(huangs): Assert that section does not have SHT_NOBITS.
-    return FileOffsetToPointer(SectionHeader(id)->sh_offset);
+    const Elf32_Shdr* section_header = SectionHeader(id);
+    DCHECK(section_header->sh_type != SHT_NOBITS);
+    return FileOffsetToPointer(section_header->sh_offset);
   }
 
   // Gets the |name| of section |shdr|. Returns true on success.

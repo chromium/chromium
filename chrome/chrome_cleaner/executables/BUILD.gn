@@ -1,0 +1,143 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/chrome_cleaner/chrome_cleaner_args.gni")
+
+# Nothing outside //chrome/chrome_cleaner can depend on these targets.
+visibility = [ "//chrome/chrome_cleaner/*" ]
+
+group("engine_target_factory") {
+  if (is_internal_chrome_cleaner_build) {
+    deps = [
+      "${chrome_cleaner_internal_root}:engine_target_factory",
+    ]
+  } else {
+    deps = [
+      "//chrome/chrome_cleaner/engines/target:dummy_engine_delegate_factory",
+    ]
+  }
+}
+
+source_set("shutdown_sequence") {
+  sources = [
+    "shutdown_sequence.cc",
+    "shutdown_sequence.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/chrome_cleaner/engines/broker:common",
+    "//chrome/chrome_cleaner/engines/controllers:facade_interface_header",
+    "//chrome/chrome_cleaner/ipc:mojo_task_runner",
+  ]
+}
+
+# The Chrome Cleanup tool is distributed as two executables:
+# software_reporter_tool only scans the user's system and returns a status code
+# to Chrome, while chrome_cleanup_tool is invoked to remove UwS. This template
+# holds the definitions they share.
+template("chrome_cleaner_executable") {
+  executable(target_name) {
+    sources = invoker.sources
+
+    # Default entrypoint is main, console app. Change it to wWinMain, windowed.
+    configs -= [ "//build/config/win:console" ]
+    configs += [ "//build/config/win:windowed" ]
+    if (defined(invoker.configs)) {
+      configs += invoker.configs
+    }
+
+    libs = [
+      "crypt32.lib",
+      "mstask.lib",
+      "ntdll.lib",
+      "taskschd.lib",
+      "wintrust.lib",
+    ]
+    if (defined(invoker.libs)) {
+      libs += invoker.libs
+    }
+
+    deps = [
+      ":engine_target_factory",
+      ":shutdown_sequence",
+      "//base",
+      "//build/win:default_exe_manifest",
+      "//chrome/chrome_cleaner:buildflags",
+      "//chrome/chrome_cleaner:engine_definitions",
+      "//chrome/chrome_cleaner/constants:common_strings",
+      "//chrome/chrome_cleaner/constants:version_header",
+      "//chrome/chrome_cleaner/crash:crashpad_lib",
+      "//chrome/chrome_cleaner/engines/broker:common",
+      "//chrome/chrome_cleaner/engines/broker:interface_log_service",
+      "//chrome/chrome_cleaner/engines/common:resources_header",
+      "//chrome/chrome_cleaner/engines/target:common",
+      "//chrome/chrome_cleaner/engines/target:engine_delegate_factory_header",
+      "//chrome/chrome_cleaner/ipc:mojo_task_runner",
+      "//chrome/chrome_cleaner/ipc:sandbox",
+      "//chrome/chrome_cleaner/logging:common",
+      "//chrome/chrome_cleaner/logging:logging_definitions",
+      "//chrome/chrome_cleaner/os:common_os",
+      "//chrome/chrome_cleaner/parsers/broker:parser_sandbox_broker",
+      "//chrome/chrome_cleaner/parsers/shortcut_parser/broker:sandboxed_shortcut_parser",
+      "//chrome/chrome_cleaner/parsers/target:parser_sandbox_target",
+      "//chrome/chrome_cleaner/settings",
+      "//chrome/chrome_cleaner/settings:default_matching_options",
+      "//chrome/chrome_cleaner/settings:engine_settings_header",
+      "//chrome/chrome_cleaner/settings:matching_options",
+      "//chrome/chrome_cleaner/settings:settings_types",
+      "//sandbox/win:sandbox",
+    ]
+    if (defined(invoker.deps)) {
+      deps += invoker.deps
+    }
+  }
+}
+
+chrome_cleaner_executable("chrome_cleanup_tool") {
+  sources = [
+    "chrome_cleaner_main.cc",
+  ]
+
+  libs = [ "comctl32.lib" ]
+
+  deps = [
+    "//chrome/chrome_cleaner/cleaner:cleaner_headers",
+    "//chrome/chrome_cleaner/components",
+    "//chrome/chrome_cleaner/constants:chrome_cleaner_version_resource",
+    "//chrome/chrome_cleaner/constants:chrome_cleanup_tool_branding_header",
+    "//chrome/chrome_cleaner/engines/controllers:engine_cleaner_lib",
+    "//chrome/chrome_cleaner/engines/controllers:facade_interface_header",
+    "//chrome/chrome_cleaner/engines/controllers:main_controller",
+    "//chrome/chrome_cleaner/ipc:chrome_prompt_ipc",
+    "//chrome/chrome_cleaner/logging:cleaner_logging",
+    "//chrome/chrome_cleaner/logging:cleaner_logging_definitions",
+    "//chrome/chrome_cleaner/os:cleaner_os",
+    "//chrome/chrome_cleaner/parsers/json_parser",
+    "//chrome/chrome_cleaner/scanner:force_installed_extension_scanner",
+    "//chrome/chrome_cleaner/scanner:force_installed_extension_scanner_api",
+    "//chrome/chrome_cleaner/settings:cleaner_settings_definitions",
+    "//chrome/chrome_cleaner/zip_archiver/target:common",
+  ]
+}
+
+chrome_cleaner_executable("software_reporter_tool") {
+  sources = [
+    "chrome_reporter_main.cc",
+  ]
+
+  deps = [
+    "//chrome/chrome_cleaner/constants:reporter_version_resource",
+    "//chrome/chrome_cleaner/constants:software_reporter_tool_branding_header",
+    "//chrome/chrome_cleaner/engines/broker:disabled_cleaner_sandbox_interface",
+    "//chrome/chrome_cleaner/engines/controllers:scanner_controller",
+    "//chrome/chrome_cleaner/logging:noop_logging",
+    "//chrome/chrome_cleaner/logging:reporter_logging",
+    "//chrome/chrome_cleaner/logging:reporter_logging_definitions",
+    "//chrome/chrome_cleaner/logging/proto:reporter_logs_proto",
+    "//chrome/chrome_cleaner/parsers/shortcut_parser/broker:shortcut_parser_api",
+    "//chrome/chrome_cleaner/scanner:reporter_scanner",
+    "//chrome/chrome_cleaner/settings:reporter_settings_definitions",
+  ]
+}

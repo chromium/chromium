@@ -8,11 +8,6 @@ mojom("mojom") {
   sources = [
     "uuid.mojom",
   ]
-
-  # This mojom interface is exposed publicly to layout tests which use
-  # prepackaged redistributable JS bindings. It is therefore not desirable to
-  # scramble these messages.
-  scramble_message_ids = false
 }
 
 mojom("fake_bluetooth_interfaces") {
@@ -23,11 +18,6 @@ mojom("fake_bluetooth_interfaces") {
   public_deps = [
     ":mojom",
   ]
-
-  # This mojom interface is exposed publicly to layout tests which use
-  # prepackaged redistributable JS bindings. It is therefore not desirable to
-  # scramble these messages.
-  scramble_message_ids = false
 }
 
 # Experimental interfaces are not ready for production use yet. See README.md

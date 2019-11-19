@@ -10,12 +10,12 @@
 #import "base/mac/scoped_nsobject.h"
 #include "chrome/browser/certificate_viewer.h"
 #include "components/constrained_window/constrained_window_views.h"
+#include "components/remote_cocoa/browser/window.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util_ios_and_mac.h"
 #include "net/cert/x509_util_mac.h"
-#include "ui/base/cocoa/remote_views_window.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 
@@ -165,9 +165,9 @@ class CertificateAnchorWidgetDelegate : public views::WidgetDelegateView {
     // Cocoa should be wrapped in a mojo interface in order to allow
     // instantiating across processes. As a temporary solution, create a
     // transparent in-process window to the front.
-    if (ui::IsWindowUsingRemoteViews(overlayNSWindow)) {
+    if (remote_cocoa::IsWindowRemote(overlayNSWindow)) {
       remote_views_clone_window_ =
-          ui::CreateTransparentRemoteViewsClone(overlayNSWindow);
+          remote_cocoa::CreateInProcessTransparentClone(overlayNSWindow);
       overlayNSWindow = remote_views_clone_window_;
     }
     [certificate_viewer_ showCertificateSheet:overlayNSWindow];

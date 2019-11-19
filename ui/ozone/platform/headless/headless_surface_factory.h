@@ -20,15 +20,15 @@ class HeadlessSurfaceFactory : public SurfaceFactoryOzone {
   explicit HeadlessSurfaceFactory(base::FilePath base_path);
   ~HeadlessSurfaceFactory() override;
 
-  base::FilePath GetPathForWidget(gfx::AcceleratedWidget widget);
-
   // SurfaceFactoryOzone:
   std::vector<gl::GLImplementation> GetAllowedGLImplementations() override;
   GLOzone* GetGLOzone(gl::GLImplementation implementation) override;
   std::unique_ptr<SurfaceOzoneCanvas> CreateCanvasForWidget(
-      gfx::AcceleratedWidget widget) override;
+      gfx::AcceleratedWidget widget,
+      base::TaskRunner* task_runner) override;
   scoped_refptr<gfx::NativePixmap> CreateNativePixmap(
       gfx::AcceleratedWidget widget,
+      VkDevice vk_device,
       gfx::Size size,
       gfx::BufferFormat format,
       gfx::BufferUsage usage) override;

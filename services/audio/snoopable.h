@@ -19,18 +19,15 @@ class Snoopable {
  public:
   class Snooper {
    public:
-    // Provides read-only access to the data flowing through a GroupMember.
+    // Provides read-only access to the data flowing through a GroupMember. This
+    // must execute quickly, as it will typically be called on a realtime
+    // thread; otherwise, audio glitches may occur.
     virtual void OnData(const media::AudioBus& audio_bus,
                         base::TimeTicks reference_time,
                         double volume) = 0;
 
    protected:
     virtual ~Snooper() = default;
-  };
-
-  enum class SnoopingMode {
-    kDeferred,  // Deferred snooping is done on the audio thread.
-    kRealtime   // Realtime snooping is done on the device thread. Must be fast!
   };
 
   // Returns the audio parameters of the snoopable audio data. The parameters
@@ -42,11 +39,8 @@ class Snoopable {
   virtual std::string GetDeviceId() const = 0;
 
   // Starts/Stops snooping on the audio data flowing through this group member.
-  // The snooping modes are handled individually, so it's possible (though
-  // inadvisable) to call StartSnooping twice with the same snooper, but with
-  // different modes.
-  virtual void StartSnooping(Snooper* snooper, SnoopingMode mode) = 0;
-  virtual void StopSnooping(Snooper* snooper, SnoopingMode mode) = 0;
+  virtual void StartSnooping(Snooper* snooper) = 0;
+  virtual void StopSnooping(Snooper* snooper) = 0;
 
  protected:
   virtual ~Snoopable() = default;

@@ -5,20 +5,20 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_ROUNDED_INNER_RECT_CLIPPER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_ROUNDED_INNER_RECT_CLIPPER_H_
 
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
 class FloatRoundedRect;
 class GraphicsContext;
-class LayoutRect;
+struct PhysicalRect;
 
 class RoundedInnerRectClipper {
   DISALLOW_NEW();
 
  public:
   RoundedInnerRectClipper(GraphicsContext&,
-                          const LayoutRect&,
+                          const PhysicalRect&,
                           const FloatRoundedRect& clip_rect);
   ~RoundedInnerRectClipper();
 

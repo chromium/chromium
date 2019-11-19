@@ -10,13 +10,16 @@
 #include <memory>
 #include <string>
 
-#include "ash/public/interfaces/locale.mojom.h"
+#include "ash/public/cpp/locale_update_controller.h"
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/lazy_instance.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observer.h"
 #include "base/strings/string16.h"
 #include "chrome/browser/chromeos/settings/device_settings_service.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/session_manager/core/session_manager_observer.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
 #include "content/public/browser/notification_types.h"
@@ -29,6 +32,7 @@ namespace chromeos {
 // (based on synchronized user preference).  If so: shows notification that
 // allows user to revert change.
 class LocaleChangeGuard : public content::NotificationObserver,
+                          public session_manager::SessionManagerObserver,
                           public DeviceSettingsService::Observer,
                           public base::SupportsWeakPtr<LocaleChangeGuard> {
  public:
@@ -48,11 +52,9 @@ class LocaleChangeGuard : public content::NotificationObserver,
   FRIEND_TEST_ALL_PREFIXES(LocaleChangeGuardTest,
                            ShowNotificationLocaleChangedList);
 
-  void ConnectToLocaleUpdateController();
-
   void Check();
 
-  void OnResult(ash::mojom::LocaleNotificationResult result);
+  void OnResult(ash::LocaleNotificationResult result);
   void AcceptLocaleChange();
   void RevertLocaleChange();
 
@@ -60,6 +62,9 @@ class LocaleChangeGuard : public content::NotificationObserver,
   void Observe(int type,
                const content::NotificationSource& source,
                const content::NotificationDetails& details) override;
+
+  // session_manager::SessionManagerObserver:
+  void OnUserSessionStarted(bool is_primary_user) override;
 
   // DeviceSettingsService::Observer
   void OwnershipStatusChanged() override;
@@ -71,16 +76,15 @@ class LocaleChangeGuard : public content::NotificationObserver,
   static const char* const* GetSkipShowNotificationLanguagesForTesting();
   static size_t GetSkipShowNotificationLanguagesSizeForTesting();
 
-  // Ash's mojom::LocaleUpdateController used to display notifications.
-  ash::mojom::LocaleUpdateControllerPtr notification_controller_;
-
   std::string from_locale_;
   std::string to_locale_;
   Profile* profile_;
-  bool reverted_;
-  bool session_started_;
-  bool main_frame_loaded_;
+  bool reverted_ = false;
+  bool main_frame_loaded_ = false;
   content::NotificationRegistrar registrar_;
+  ScopedObserver<session_manager::SessionManager,
+                 session_manager::SessionManagerObserver>
+      session_observer_{this};
 
   DISALLOW_COPY_AND_ASSIGN(LocaleChangeGuard);
 };

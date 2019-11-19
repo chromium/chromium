@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//components/ui_devtools/devtools.gni")
 import("//components/viz/viz.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 
@@ -41,10 +40,11 @@ viz_component("host") {
 
   deps = [
     "//base",
+    "//components/ui_devtools:buildflags",
     "//components/viz/common",
     "//gpu/ipc/client",
     "//gpu/ipc/common",
-    "//services/viz/privileged/interfaces",
+    "//services/viz/privileged/mojom",
     "//ui/base",
     "//ui/gfx",
 
@@ -56,18 +56,13 @@ viz_component("host") {
   public_deps = [
     "//gpu/command_buffer/client",
     "//gpu/ipc/host",
-    "//services/viz/privileged/interfaces/compositing",
-    "//services/viz/public/interfaces",
-    "//services/ws/public/mojom",
+    "//services/viz/privileged/mojom/compositing",
+    "//services/viz/public/mojom",
     "//ui/gfx/geometry",
   ]
 
   if (is_mac) {
     deps += [ "//ui/accelerated_widget_mac" ]
-  }
-
-  if (use_viz_devtools) {
-    defines += [ "USE_VIZ_DEVTOOLS" ]
   }
 }
 
@@ -88,8 +83,8 @@ viz_source_set("unit_tests") {
     "//gpu",
     "//gpu/ipc/host",
     "//mojo/public/cpp/bindings",
-    "//services/viz/privileged/interfaces",
-    "//services/viz/public/interfaces",
+    "//services/viz/privileged/mojom",
+    "//services/viz/public/mojom",
     "//testing/gmock",
     "//testing/gtest",
 

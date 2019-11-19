@@ -2,12 +2,14 @@ main frame - DidStartNavigation
 main frame - ReadyToCommitNavigation
 main frame - didCommitLoadForFrame
 frame "iframe" - didReceiveTitle: 
+frame "iframe" - BeginNavigation request to 'http://127.0.0.1:8000/loading/resources/onbeforeunload-detach-iframe.html', http method GET
 frame "iframe" - DidStartNavigation
 main frame - didReceiveTitle: 
 main frame - didFinishDocumentLoadForFrame
 frame "iframe" - ReadyToCommitNavigation
 frame "iframe" - didCommitLoadForFrame
 CONSOLE MESSAGE: line 12: iframe: clicking
+frame "iframe" - BeginNavigation request to 'http://127.0.0.1:8000/loading/resources/onbeforeunload-detach-iframe.html?done', http method GET
 CONSOLE MESSAGE: line 5: iframe: onbeforeunload
 frame "iframe" - didFailLoadWithError
 main frame - didHandleOnloadEventsForFrame

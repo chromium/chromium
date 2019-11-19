@@ -22,8 +22,8 @@
   description("Check that the scroll offset in an LTR block is correctly preserved when the existence of its vertical scrollbar changes.");
 
   var scrollLeftDiv = document.getElementById("scrollLeftRtl");
-  var initialOffset = scrollLeftDiv.scrollWidth - scrollLeftDiv.clientWidth - scrollLeftDiv.scrollLeft;
+  var initialOffset = scrollLeftDiv.scrollLeft;
   scrollLeftDiv.style.overflow = "auto";
-  var finalOffset = scrollLeftDiv.scrollWidth - scrollLeftDiv.clientWidth - scrollLeftDiv.scrollLeft;
+  var finalOffset = scrollLeftDiv.scrollLeft;
   shouldBe("finalOffset", "initialOffset");
 </script>

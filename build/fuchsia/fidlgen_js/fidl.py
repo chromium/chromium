@@ -546,4 +546,3 @@ def fidl_from_dict(s):
 
 def fidl_to_dict(x):
     return to_class(Fidl, x)
-

@@ -5,10 +5,8 @@
 #include "components/offline_pages/core/prefetch/suggested_articles_observer.h"
 
 #include "base/memory/ptr_util.h"
-#include "base/message_loop/message_loop.h"
-#include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/test_simple_task_runner.h"
+#include "base/test/task_environment.h"
 #include "components/offline_pages/core/client_namespace_constants.h"
 #include "components/offline_pages/core/prefetch/prefetch_dispatcher.h"
 #include "components/offline_pages/core/prefetch/prefetch_gcm_app_handler.h"
@@ -41,12 +39,7 @@ ContentSuggestion ContentSuggestionFromTestURL(const GURL& test_url) {
 
 class OfflinePageSuggestedArticlesObserverTest : public testing::Test {
  public:
-  OfflinePageSuggestedArticlesObserverTest()
-      : task_runner_(new base::TestSimpleTaskRunner) {
-    message_loop_.SetTaskRunner(task_runner_);
-  }
-
-  void SetUp() override {
+  OfflinePageSuggestedArticlesObserverTest() {
     prefetch_service_test_taco_ = std::make_unique<PrefetchServiceTestTaco>();
     test_prefetch_dispatcher_ = new TestPrefetchDispatcher();
     prefetch_service_test_taco_->SetPrefetchDispatcher(
@@ -56,10 +49,10 @@ class OfflinePageSuggestedArticlesObserverTest : public testing::Test {
     prefetch_service_test_taco_->CreatePrefetchService();
   }
 
-  void TearDown() override {
+  ~OfflinePageSuggestedArticlesObserverTest() override {
     // Ensure the store can be properly disposed off.
     prefetch_service_test_taco_.reset();
-    task_runner_->RunUntilIdle();
+    task_environment_.RunUntilIdle();
   }
 
   SuggestedArticlesObserver* observer() {
@@ -76,8 +69,7 @@ class OfflinePageSuggestedArticlesObserverTest : public testing::Test {
       Category::FromKnownCategory(ntp_snippets::KnownCategories::ARTICLES);
 
  private:
-  base::MessageLoop message_loop_;
-  scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   std::unique_ptr<PrefetchServiceTestTaco> prefetch_service_test_taco_;
 
   // Owned by the PrefetchServiceTestTaco.

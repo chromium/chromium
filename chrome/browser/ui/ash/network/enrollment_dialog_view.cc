@@ -54,7 +54,6 @@ class EnrollmentDialogView : public views::DialogDelegateView {
 
   // views::DialogDelegateView overrides
   bool Accept() override;
-  base::string16 GetDialogButtonLabel(ui::DialogButton button) const override;
 
   // views::WidgetDelegate overrides
   ui::ModalType GetModalType() const override;
@@ -92,6 +91,9 @@ EnrollmentDialogView::EnrollmentDialogView(const std::string& network_name,
       target_uri_(target_uri),
       connect_(connect),
       added_cert_(false) {
+  DialogDelegate::set_button_label(
+      ui::DIALOG_BUTTON_OK,
+      l10n_util::GetStringUTF16(IDS_NETWORK_ENROLLMENT_HANDLER_BUTTON));
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
       views::TEXT, views::TEXT));
   chrome::RecordDialogCreation(chrome::DialogIdentifier::ENROLLMENT);
@@ -114,7 +116,7 @@ void EnrollmentDialogView::ShowDialog(const std::string& network_name,
   ash_util::SetupWidgetInitParamsForContainer(
       &params, ash_util::GetSystemModalDialogContainerId());
   views::Widget* widget = new views::Widget;  // Owned by native widget.
-  widget->Init(params);
+  widget->Init(std::move(params));
   dialog_view->InitDialog();
   widget->Show();
 }
@@ -122,13 +124,6 @@ void EnrollmentDialogView::ShowDialog(const std::string& network_name,
 bool EnrollmentDialogView::Accept() {
   accepted_ = true;
   return true;
-}
-
-base::string16 EnrollmentDialogView::GetDialogButtonLabel(
-    ui::DialogButton button) const {
-  if (button == ui::DIALOG_BUTTON_OK)
-    return l10n_util::GetStringUTF16(IDS_NETWORK_ENROLLMENT_HANDLER_BUTTON);
-  return views::DialogDelegateView::GetDialogButtonLabel(button);
 }
 
 ui::ModalType EnrollmentDialogView::GetModalType() const {
@@ -155,7 +150,7 @@ gfx::Size EnrollmentDialogView::CalculatePreferredSize() const {
 void EnrollmentDialogView::InitDialog() {
   added_cert_ = false;
   // Create the views and layout manager and set them up.
-  views::Label* label = new views::Label(
+  auto label = std::make_unique<views::Label>(
       l10n_util::GetStringFUTF16(IDS_NETWORK_ENROLLMENT_HANDLER_INSTRUCTIONS,
                                  base::UTF8ToUTF16(network_name_)));
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
@@ -163,7 +158,7 @@ void EnrollmentDialogView::InitDialog() {
   label->SetAllowCharacterBreak(true);
 
   views::GridLayout* grid_layout =
-      SetLayoutManager(std::make_unique<views::GridLayout>(this));
+      SetLayoutManager(std::make_unique<views::GridLayout>());
 
   views::ColumnSet* columns = grid_layout->AddColumnSet(0);
   columns->AddColumn(views::GridLayout::FILL,      // Horizontal resize.
@@ -187,7 +182,7 @@ void EnrollmentDialogView::InitDialog() {
                      0);                           // Minimum size.
 
   grid_layout->StartRow(views::GridLayout::kFixedSize, 0);
-  grid_layout->AddView(label);
+  grid_layout->AddView(std::move(label));
   grid_layout->AddPaddingRow(
       views::GridLayout::kFixedSize,
       provider->GetDistanceMetric(views::DISTANCE_UNRELATED_CONTROL_VERTICAL));

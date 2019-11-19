@@ -52,12 +52,12 @@ Polymer({
   },
 
   /** @private */
-  onCancelButtonTap_: function() {
+  onCancelButtonClick_: function() {
     chrome.send('dialogClose');
   },
 
   /** @private */
-  onSaveButtonTap_: function() {
+  onSaveButtonClick_: function() {
     this.browserProxy_.updateCredentials(
         this.mountId_, this.username_, this.password_);
     chrome.send('dialogClose');

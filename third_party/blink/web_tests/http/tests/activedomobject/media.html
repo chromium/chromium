@@ -11,12 +11,12 @@
 
         log('Before Reparenting');
         shouldBe('internals.contextLifecycleStateObserverObjectCount(document)', 0);
-        shouldBe('internals.contextLifecycleStateObserverObjectCount(iframe)', 1);
+        shouldBe('internals.contextLifecycleStateObserverObjectCount(iframe)', 2);
 
         document.body.appendChild(window.iframe.querySelector('video'));
 
         log('After Reparenting');
-        shouldBe('internals.contextLifecycleStateObserverObjectCount(document)', 1);
+        shouldBe('internals.contextLifecycleStateObserverObjectCount(document)', 2);
         shouldBe('internals.contextLifecycleStateObserverObjectCount(iframe)', 0);
     }
 </script>

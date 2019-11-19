@@ -71,43 +71,43 @@ selection_test(
 selection_test(
   '<div contenteditable dir="ltr">abc def<div><br></div>|<div><br></div><div><br></div>uvw xyz</div>',
   selection => selection.modify('move', 'left', 'word'),
-  '<div contenteditable dir="ltr">abc |def<div><br></div><div><br></div><div><br></div>uvw xyz</div>',
+  '<div contenteditable dir="ltr">abc def<div>|<br></div><div><br></div><div><br></div>uvw xyz</div>',
   '2-10 ltr left word');
 
 selection_test(
   '<div contenteditable dir="ltr">abc def<div><br></div><div>|<br></div><div><br></div>uvw xyz</div>',
   selection => selection.modify('move', 'left', 'word'),
-  '<div contenteditable dir="ltr">abc |def<div><br></div><div><br></div><div><br></div>uvw xyz</div>',
+  '<div contenteditable dir="ltr">abc def<div>|<br></div><div><br></div><div><br></div>uvw xyz</div>',
   '2-11 ltr left word');
 
 selection_test(
   '<div contenteditable dir="ltr">abc def<div><br></div><div><br>|</div><div><br></div>uvw xyz</div>',
   selection => selection.modify('move', 'left', 'word'),
-  '<div contenteditable dir="ltr">abc |def<div><br></div><div><br></div><div><br></div>uvw xyz</div>',
+  '<div contenteditable dir="ltr">abc def<div>|<br></div><div><br></div><div><br></div>uvw xyz</div>',
   '2-12 ltr left word');
 
 selection_test(
   '<div contenteditable dir="ltr">abc def<div><br></div><div><br></div>|<div><br></div>uvw xyz</div>',
   selection => selection.modify('move', 'left', 'word'),
-  '<div contenteditable dir="ltr">abc |def<div><br></div><div><br></div><div><br></div>uvw xyz</div>',
+  '<div contenteditable dir="ltr">abc def<div><br></div><div>|<br></div><div><br></div>uvw xyz</div>',
   '2-13 ltr left word');
 
 selection_test(
   '<div contenteditable dir="ltr">abc def<div><br></div><div><br></div><div>|<br></div>uvw xyz</div>',
   selection => selection.modify('move', 'left', 'word'),
-  '<div contenteditable dir="ltr">abc |def<div><br></div><div><br></div><div><br></div>uvw xyz</div>',
+  '<div contenteditable dir="ltr">abc def<div><br></div><div>|<br></div><div><br></div>uvw xyz</div>',
   '2-14 ltr left word');
 
 selection_test(
   '<div contenteditable dir="ltr">abc def<div><br></div><div><br></div><div><br>|</div>uvw xyz</div>',
   selection => selection.modify('move', 'left', 'word'),
-  '<div contenteditable dir="ltr">abc |def<div><br></div><div><br></div><div><br></div>uvw xyz</div>',
+  '<div contenteditable dir="ltr">abc def<div><br></div><div>|<br></div><div><br></div>uvw xyz</div>',
   '2-15 ltr left word');
 
 selection_test(
   '<div contenteditable dir="ltr">abc def<div><br></div><div><br></div><div><br></div>|uvw xyz</div>',
   selection => selection.modify('move', 'left', 'word'),
-  '<div contenteditable dir="ltr">abc |def<div><br></div><div><br></div><div><br></div>uvw xyz</div>',
+  '<div contenteditable dir="ltr">abc def<div><br></div><div><br></div><div>|<br></div>uvw xyz</div>',
   '2-16 ltr left word');
 
 selection_test(

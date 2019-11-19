@@ -14,6 +14,8 @@ blink_core_sources("input") {
     "event_handler.h",
     "event_handling_util.cc",
     "event_handling_util.h",
+    "fallback_cursor_event_manager.cc",
+    "fallback_cursor_event_manager.h",
     "gesture_manager.cc",
     "gesture_manager.h",
     "input_device_capabilities.cc",

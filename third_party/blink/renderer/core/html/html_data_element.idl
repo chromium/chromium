@@ -4,7 +4,9 @@
 
 // https://html.spec.whatwg.org/C/#the-data-element
 
-[HTMLConstructor]
-interface HTMLDataElement : HTMLElement {
+[
+    Exposed=Window,
+    HTMLConstructor
+] interface HTMLDataElement : HTMLElement {
     [CEReactions, Reflect] attribute DOMString value;
 };

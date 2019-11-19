@@ -18,15 +18,16 @@ namespace blink {
 class LengthUnitsChecker : public CSSInterpolationType::CSSConversionChecker {
  public:
   static std::unique_ptr<LengthUnitsChecker> MaybeCreate(
-      CSSLengthArray&& length_array,
+      const CSSPrimitiveValue::LengthTypeFlags& length_types,
       const StyleResolverState& state) {
     bool create = false;
     wtf_size_t last_index = 0;
-    for (wtf_size_t i = 0; i < length_array.values.size(); i++) {
-      if (i == CSSPrimitiveValue::kUnitTypePercentage ||
-          !length_array.type_flags.Get(i))
+    CSSLengthArray length_array;
+    for (wtf_size_t i = 0; i < length_types.size(); ++i) {
+      if (i == CSSPrimitiveValue::kUnitTypePercentage || !length_types[i])
         continue;
       length_array.values[i] = LengthUnit(i, state.CssToLengthConversionData());
+      length_array.type_flags.set(i);
       create = true;
       last_index = i;
     }
@@ -40,7 +41,7 @@ class LengthUnitsChecker : public CSSInterpolationType::CSSConversionChecker {
                const InterpolationValue& underlying) const final {
     for (wtf_size_t i = 0; i <= last_index_; i++) {
       if (i == CSSPrimitiveValue::kUnitTypePercentage ||
-          !length_array_.type_flags.Get(i))
+          !length_array_.type_flags[i])
         continue;
       if (length_array_.values[i] !=
           LengthUnit(i, state.CssToLengthConversionData()))

@@ -24,6 +24,10 @@
   var initialAddsExpected = 3;
   var initialAdded = [];
   await new Promise(f => TestRunner.cssModel.addEventListener(SDK.CSSModel.Events.StyleSheetAdded, function styleSheetAdded(event) {
+    if (event.data.sourceURL === "") {
+      // Don't include the <style> element sheet.
+      return;
+    }
     initialAdded.push(resourceName(event.data.sourceURL));
     if (!(--initialAddsExpected)) {
       initialAdded.sort();

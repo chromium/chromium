@@ -45,7 +45,6 @@ class SigninViewControllerDelegateViews
   void DeleteDelegate() override;
   ui::ModalType GetModalType() const override;
   bool ShouldShowCloseButton() const override;
-  int GetDialogButtons() const override;
 
   // SigninViewControllerDelegate:
   void CloseModalSignin() override;

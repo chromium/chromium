@@ -26,9 +26,10 @@ namespace {
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 void CallbackContentSettingWrapper(
-    const base::Callback<void(ContentSetting)>& callback,
+    base::OnceCallback<void(ContentSetting)> callback,
     bool allowed) {
-  callback.Run(allowed ? CONTENT_SETTING_ALLOW : CONTENT_SETTING_BLOCK);
+  std::move(callback).Run(allowed ? CONTENT_SETTING_ALLOW
+                                  : CONTENT_SETTING_BLOCK);
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
@@ -52,7 +53,7 @@ bool GeolocationPermissionContextExtensions::DecidePermission(
     int bridge_id,
     const GURL& requesting_frame,
     bool user_gesture,
-    const base::Callback<void(ContentSetting)>& callback,
+    base::OnceCallback<void(ContentSetting)>* callback,
     bool* permission_set,
     bool* new_permission) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -63,7 +64,7 @@ bool GeolocationPermissionContextExtensions::DecidePermission(
   if (web_view_permission_helper) {
     web_view_permission_helper->RequestGeolocationPermission(
         bridge_id, requesting_frame, user_gesture,
-        base::Bind(&CallbackContentSettingWrapper, callback));
+        base::BindOnce(&CallbackContentSettingWrapper, std::move(*callback)));
     *permission_set = false;
     *new_permission = false;
     return true;

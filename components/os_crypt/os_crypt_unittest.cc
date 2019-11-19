@@ -22,6 +22,12 @@
 #include "components/os_crypt/os_crypt_mocker_linux.h"
 #endif
 
+#if defined(OS_WIN)
+#include "base/strings/string_util.h"
+#include "components/prefs/testing_pref_service.h"
+#include "crypto/random.h"
+#endif
+
 namespace {
 
 class OSCryptTest : public testing::Test {
@@ -185,5 +191,116 @@ TEST_F(OSCryptConcurrencyTest, ConcurrentInitialization) {
     thread->Stop();
   }
 }
+
+#if defined(OS_WIN)
+
+class OSCryptTestWin : public testing::Test {
+ public:
+  OSCryptTestWin() {}
+
+  ~OSCryptTestWin() override { OSCryptMocker::ResetState(); }
+
+ private:
+  DISALLOW_COPY_AND_ASSIGN(OSCryptTestWin);
+};
+
+// This test verifies that the header of the data returned from CryptProtectData
+// never collides with the kEncryptionVersionPrefix ("v10") used in
+// os_crypt_win.cc. If this ever happened, we would not be able to distinguish
+// between data encrypted using the legacy DPAPI interface, and data that's been
+// encrypted with the new session key.
+
+// If this test ever breaks do not ignore it as it might result in data loss for
+// users.
+TEST_F(OSCryptTestWin, DPAPIHeader) {
+  std::string plaintext;
+  std::string ciphertext;
+
+  OSCryptMocker::SetLegacyEncryption(true);
+  crypto::RandBytes(base::WriteInto(&plaintext, 11), 10);
+  ASSERT_TRUE(OSCrypt::EncryptString(plaintext, &ciphertext));
+
+  using std::string_literals::operator""s;
+  const std::string expected_header("\x01\x00\x00\x00"s);
+  ASSERT_EQ(4U, expected_header.length());
+
+  ASSERT_TRUE(ciphertext.length() >= expected_header.length());
+  std::string dpapi_header = ciphertext.substr(0, expected_header.length());
+  EXPECT_EQ(expected_header, dpapi_header);
+}
+
+TEST_F(OSCryptTestWin, ReadOldData) {
+  OSCryptMocker::SetLegacyEncryption(true);
+
+  std::string plaintext = "secrets";
+  std::string legacy_ciphertext;
+  ASSERT_TRUE(OSCrypt::EncryptString(plaintext, &legacy_ciphertext));
+
+  OSCryptMocker::SetLegacyEncryption(false);
+
+  TestingPrefServiceSimple pref_service_simple;
+  OSCrypt::RegisterLocalPrefs(pref_service_simple.registry());
+  ASSERT_TRUE(OSCrypt::Init(&pref_service_simple));
+
+  std::string decrypted;
+  // Should be able to decrypt data encrypted with DPAPI.
+  ASSERT_TRUE(OSCrypt::DecryptString(legacy_ciphertext, &decrypted));
+  EXPECT_EQ(plaintext, decrypted);
+
+  // Should now encrypt same plaintext to get different ciphertext.
+  std::string new_ciphertext;
+  ASSERT_TRUE(OSCrypt::EncryptString(plaintext, &new_ciphertext));
+
+  // Should be different from DPAPI ciphertext.
+  EXPECT_NE(legacy_ciphertext, new_ciphertext);
+
+  // Decrypt new ciphertext to give original string.
+  ASSERT_TRUE(OSCrypt::DecryptString(new_ciphertext, &decrypted));
+  EXPECT_EQ(plaintext, decrypted);
+}
+
+TEST_F(OSCryptTestWin, PrefsKeyTest) {
+  TestingPrefServiceSimple first_prefs;
+  OSCrypt::RegisterLocalPrefs(first_prefs.registry());
+
+  // Verify new random key can be generated.
+  ASSERT_TRUE(OSCrypt::Init(&first_prefs));
+  std::string first_key = OSCrypt::GetRawEncryptionKey();
+
+  std::string plaintext = "secrets";
+  std::string ciphertext;
+  ASSERT_TRUE(OSCrypt::EncryptString(plaintext, &ciphertext));
+
+  TestingPrefServiceSimple second_prefs;
+  OSCrypt::RegisterLocalPrefs(second_prefs.registry());
+
+  OSCryptMocker::ResetState();
+  ASSERT_TRUE(OSCrypt::Init(&second_prefs));
+  std::string second_key = OSCrypt::GetRawEncryptionKey();
+  // Keys should be different since they are random.
+  EXPECT_NE(first_key, second_key);
+
+  std::string decrypted;
+  // Cannot decrypt with the wrong key.
+  EXPECT_FALSE(OSCrypt::DecryptString(ciphertext, &decrypted));
+
+  // Initialize OSCrypt from existing key.
+  OSCryptMocker::ResetState();
+  OSCrypt::SetRawEncryptionKey(first_key);
+
+  // Verify decryption works with first key.
+  ASSERT_TRUE(OSCrypt::DecryptString(ciphertext, &decrypted));
+  EXPECT_EQ(plaintext, decrypted);
+
+  // Initialize OSCrypt from existing prefs.
+  OSCryptMocker::ResetState();
+  ASSERT_TRUE(OSCrypt::Init(&first_prefs));
+
+  // Verify decryption works with key from first prefs.
+  ASSERT_TRUE(OSCrypt::DecryptString(ciphertext, &decrypted));
+  EXPECT_EQ(plaintext, decrypted);
+}
+
+#endif  // defined(OS_WIN)
 
 }  // namespace

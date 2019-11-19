@@ -12,7 +12,7 @@
 #include "chrome/browser/extensions/api/signed_in_devices/signed_in_devices_api.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/crx_file/id_util.h"
-#include "components/sync/device_info/device_info.h"
+#include "components/sync_device_info/device_info.h"
 
 using base::DictionaryValue;
 using base::Value;

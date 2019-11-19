@@ -15,7 +15,7 @@
 // Static
 bool BrowsingDataHelper::IsWebScheme(const std::string& scheme) {
   const std::vector<std::string>& schemes = url::GetWebStorageSchemes();
-  return base::ContainsValue(schemes, scheme);
+  return base::Contains(schemes, scheme);
 }
 
 // Static

@@ -8,6 +8,7 @@
 
 #include "android_webview/browser/aw_browser_context.h"
 #include "android_webview/browser/aw_content_browser_client.h"
+#include "android_webview/browser_jni_headers/AwQuotaManagerBridge_jni.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/bind.h"
@@ -19,7 +20,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_client.h"
-#include "jni/AwQuotaManagerBridge_jni.h"
 #include "storage/browser/quota/quota_manager.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 #include "url/gurl.h"
@@ -87,7 +87,7 @@ GetOriginsTask::~GetOriginsTask() {}
 
 void GetOriginsTask::Run() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&QuotaManager::GetOriginsModifiedSince, quota_manager_,
                      blink::mojom::StorageType::kTemporary,
@@ -129,9 +129,8 @@ void GetOriginsTask::OnUsageAndQuotaObtained(
 void GetOriginsTask::CheckDone() {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   if (num_callbacks_received_ == num_callbacks_to_wait_) {
-    base::PostTaskWithTraits(
-        FROM_HERE, {BrowserThread::UI},
-        base::BindOnce(&GetOriginsTask::DoneOnUIThread, this));
+    base::PostTask(FROM_HERE, {BrowserThread::UI},
+                   base::BindOnce(&GetOriginsTask::DoneOnUIThread, this));
   } else if (num_callbacks_received_ > num_callbacks_to_wait_) {
     NOTREACHED();
   }
@@ -147,7 +146,7 @@ void RunOnUIThread(base::OnceClosure task) {
   if (BrowserThread::CurrentlyOn(BrowserThread::UI)) {
     std::move(task).Run();
   } else {
-    base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI}, std::move(task));
+    base::PostTask(FROM_HERE, {BrowserThread::UI}, std::move(task));
   }
 }
 
@@ -156,8 +155,7 @@ void RunOnUIThread(base::OnceClosure task) {
 // static
 jlong JNI_AwQuotaManagerBridge_GetDefaultNativeAwQuotaManagerBridge(
     JNIEnv* env) {
-  AwBrowserContext* browser_context =
-      AwContentBrowserClient::GetAwBrowserContext();
+  AwBrowserContext* browser_context = AwBrowserContext::GetDefault();
 
   AwQuotaManagerBridge* bridge = static_cast<AwQuotaManagerBridge*>(
       browser_context->GetQuotaManagerBridge());
@@ -172,7 +170,7 @@ scoped_refptr<AwQuotaManagerBridge> AwQuotaManagerBridge::Create(
 }
 
 AwQuotaManagerBridge::AwQuotaManagerBridge(AwBrowserContext* browser_context)
-    : browser_context_(browser_context), weak_factory_(this) {}
+    : browser_context_(browser_context) {}
 
 AwQuotaManagerBridge::~AwQuotaManagerBridge() {}
 
@@ -287,9 +285,8 @@ void OnUsageAndQuotaObtained(
     usage = 0;
     quota = 0;
   }
-  base::PostTaskWithTraits(
-      FROM_HERE, {BrowserThread::UI},
-      base::BindOnce(std::move(ui_callback), usage, quota));
+  base::PostTask(FROM_HERE, {BrowserThread::UI},
+                 base::BindOnce(std::move(ui_callback), usage, quota));
 }
 
 }  // namespace
@@ -317,7 +314,7 @@ void AwQuotaManagerBridge::GetUsageAndQuotaForOriginOnUiThread(
                      weak_factory_.GetWeakPtr(), callback_id, is_quota);
 
   // TODO(crbug.com/889590): Use helper for url::Origin creation from string.
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::IO},
       base::BindOnce(
           &QuotaManager::GetUsageAndQuota, GetQuotaManager(),

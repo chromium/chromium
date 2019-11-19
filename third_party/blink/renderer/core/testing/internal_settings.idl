@@ -26,7 +26,6 @@
 interface InternalSettings : InternalSettingsGenerated {
     // All methods which access Page::settings() can raise an exception
     // when the page cannot be accessed. (Such as during page tear-down.)
-    [RaisesException] void setMockScrollbarsEnabled(boolean enabled);
     [RaisesException] void setHideScrollbars(boolean enabled);
     [RaisesException] void setMockGestureTapHighlightsEnabled(boolean enabled);
     [RaisesException] void setStandardFontFamily(DOMString family, DOMString script);
@@ -55,6 +54,7 @@ interface InternalSettings : InternalSettingsGenerated {
     [RaisesException] void setImageAnimationPolicy(DOMString policy);
     [RaisesException] void setPresentationReceiver(boolean enabled);
     [RaisesException] void setAutoplayPolicy(DOMString policy);
+    [RaisesException] void setUniversalAccessFromFileURLs(boolean enabled);
 
     // FIXME: The following are RuntimeEnabledFeatures and likely
     // cannot be changed after process start.  These setters should

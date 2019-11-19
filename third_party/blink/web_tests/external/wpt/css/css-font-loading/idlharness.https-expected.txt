@@ -1,6 +1,17 @@
 This is a testharness.js-based test.
-Found 78 tests; 59 PASS, 19 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 89 tests; 70 PASS, 19 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
+PASS idl_test validation
+PASS Partial interface Document: member names are unique
+PASS Partial interface Document[2]: member names are unique
+PASS Document includes FontFaceSource: member names are unique
+PASS Document includes NonElementParentNode: member names are unique
+PASS Document includes ParentNode: member names are unique
+PASS Document includes XPathEvaluatorBase: member names are unique
+PASS Document includes GlobalEventHandlers: member names are unique
+PASS Document includes DocumentAndElementEventHandlers: member names are unique
+PASS WorkerGlobalScope includes FontFaceSource: member names are unique
+PASS WorkerGlobalScope includes WindowOrWorkerGlobalScope: member names are unique
 PASS FontFace interface: existence and properties of interface object
 PASS FontFace interface object length
 PASS FontFace interface object name

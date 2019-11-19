@@ -41,7 +41,7 @@
     Exposed(Window FeatureName) // Conflicts with Exposed=(Window,Worker)
 ] interface TestInterface2 {
     // This interface has only runtime enabled constants.
-    [RuntimeEnabled=FeatureName] const unsigned short CONST_VALUE_1 = 1;
+    [RuntimeEnabled=RuntimeFeature] const unsigned short CONST_VALUE_1 = 1;
 
     // Indexed property operations with an identifier
     [RaisesException] getter TestInterfaceEmpty item(unsigned long index);

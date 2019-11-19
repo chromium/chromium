@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<body>
+<ul role="listbox">
+  <li id="li1" role="option">Li1</li>
+  <li id="li2" role="option" aria-posinset="2">Li2</li>
+  <li id="li3" role="option" aria-posinset="3">Li3</li>
+</ul>
+<script>
+  function go() {
+    // Set aria-posinset from default calculation '1'->'2'; should fire an event.
+    document.getElementById('li1').setAttribute('aria-posinset', '2');
+
+    // Set aria-posinset from '2'->[removed]; should fire an event.
+    document.getElementById('li2').removeAttribute('aria-posinset');
+
+    // Set aria-posinset from '3'->'3; should not fire an event.
+    document.getElementById('li3').setAttribute('aria-posinset', '3');
+  }
+</script>
+</body>
+</html>

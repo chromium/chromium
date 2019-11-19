@@ -1,0 +1,122 @@
+[
+{"category": "Ll",
+ "names": [],
+ "key": "1D26",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "greek letter small capital gamma",
+   "alternative": "greek letter gamma",
+   "short": "small cap gamma"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1D27",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "greek letter small capital lamda",
+   "alternative": "greek letter lamda",
+   "short": "small cap lamda"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1D28",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "greek letter small capital pi",
+   "alternative": "greek letter pi",
+   "short": "small cap pi"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1D29",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "greek letter small capital rho",
+   "alternative": "greek letter rho",
+   "short": "small cap rho"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1D2A",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "greek letter small capital psi",
+   "alternative": "greek letter psi",
+   "short": "small cap psi"
+  }}},
+{"category": "Lm",
+ "names": [],
+ "key": "1D5E",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "modifier letter small greek gamma",
+   "alternative": "greek letter superscript gamma",
+   "short": "superscript gamma"
+  }}},
+{"category": "Lm",
+ "names": [],
+ "key": "1D60",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "modifier letter small greek phi",
+   "alternative": "greek letter superscript phi",
+   "short": "superscript phi"
+  }}},
+{"category": "Lm",
+ "names": [],
+ "key": "1D66",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "greek subscript small letter beta",
+   "alternative": "",
+   "short": "subscript beta"
+  }}},
+{"category": "Lm",
+ "names": [],
+ "key": "1D67",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "greek subscript small letter gamma",
+   "alternative": "greek letter gamma",
+   "short": "subscript gamma"
+  }}},
+{"category": "Lm",
+ "names": [],
+ "key": "1D68",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "greek subscript small letter rho",
+   "alternative": "greek letter rho",
+   "short": "subscript rho"
+  }}},
+{"category": "Lm",
+ "names": [],
+ "key": "1D69",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "greek subscript small letter phi",
+   "alternative": "greek letter phi",
+   "short": "subscript phi"
+  }}},
+{"category": "Lm",
+ "names": [],
+ "key": "1D6A",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "greek subscript small letter chi",
+   "alternative": "greek letter chi",
+   "short": "subscript chi"
+  }}}
+]

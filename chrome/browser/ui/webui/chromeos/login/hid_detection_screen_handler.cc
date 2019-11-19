@@ -11,8 +11,8 @@
 #include "base/strings/string16.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/login/oobe_screen.h"
-#include "chrome/browser/chromeos/login/screens/core_oobe_view.h"
 #include "chrome/browser/chromeos/login/screens/hid_detection_screen.h"
+#include "chrome/browser/ui/webui/chromeos/login/core_oobe_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -20,20 +20,15 @@
 #include "components/login/localized_values_builder.h"
 #include "components/prefs/pref_service.h"
 
-namespace {
-
-const char kJsScreenPath[] = "login.HIDDetectionScreen";
-
-}  // namespace
-
 namespace chromeos {
+
+constexpr StaticOobeScreenId HIDDetectionView::kScreenId;
 
 HIDDetectionScreenHandler::HIDDetectionScreenHandler(
     JSCallsContainer* js_calls_container,
     CoreOobeView* core_oobe_view)
     : BaseScreenHandler(kScreenId, js_calls_container),
       core_oobe_view_(core_oobe_view) {
-  set_call_js_prefix(kJsScreenPath);
 }
 
 HIDDetectionScreenHandler::~HIDDetectionScreenHandler() {
@@ -75,6 +70,53 @@ void HIDDetectionScreenHandler::Unbind() {
 void HIDDetectionScreenHandler::CheckIsScreenRequired(
       const base::Callback<void(bool)>& on_check_done) {
   screen_->CheckIsScreenRequired(on_check_done);
+}
+
+void HIDDetectionScreenHandler::SetKeyboardState(const std::string& value) {
+  keyboard_state_ = value;
+  CallJS("login.HIDDetectionScreen.setKeyboardState", value);
+}
+
+void HIDDetectionScreenHandler::SetMouseState(const std::string& value) {
+  mouse_state_ = value;
+  CallJS("login.HIDDetectionScreen.setMouseState", value);
+}
+
+void HIDDetectionScreenHandler::SetKeyboardPinCode(const std::string& value) {
+  keyboard_pin_code_ = value;
+  CallJS("login.HIDDetectionScreen.setKeyboardPinCode", value);
+}
+
+void HIDDetectionScreenHandler::SetNumKeysEnteredExpected(bool value) {
+  num_keys_entered_expected_ = value;
+  CallJS("login.HIDDetectionScreen.setNumKeysEnteredExpected", value);
+}
+
+void HIDDetectionScreenHandler::SetNumKeysEnteredPinCode(int value) {
+  num_keys_entered_pin_code_ = value;
+  CallJS("login.HIDDetectionScreen.setNumKeysEnteredPinCode", value);
+}
+
+void HIDDetectionScreenHandler::SetMouseDeviceName(const std::string& value) {
+  mouse_device_name_ = value;
+  CallJS("login.HIDDetectionScreen.setMouseDeviceName", value);
+}
+
+void HIDDetectionScreenHandler::SetKeyboardDeviceName(
+    const std::string& value) {
+  keyboard_device_name_ = value;
+  CallJS("login.HIDDetectionScreen.setKeyboardDeviceName", value);
+}
+
+void HIDDetectionScreenHandler::SetKeyboardDeviceLabel(
+    const std::string& value) {
+  keyboard_device_label_ = value;
+  CallJS("login.HIDDetectionScreen.setKeyboardDeviceLabel", value);
+}
+
+void HIDDetectionScreenHandler::SetContinueButtonEnabled(bool value) {
+  continue_button_enabled_ = value;
+  CallJS("login.HIDDetectionScreen.setContinueButtonEnabled", value);
 }
 
 void HIDDetectionScreenHandler::DeclareLocalizedValues(

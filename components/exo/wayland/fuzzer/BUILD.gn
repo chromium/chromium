@@ -1,0 +1,197 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//components/exo/wayland/fuzzer/wayland_templater.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
+import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+# This is the canonical list of protocols which the generators should use
+# (though they don't have to)
+kDefaultWaylandProtocols = [
+  "//components/exo/wayland/protocol/aura-shell.xml",
+  "//third_party/wayland/src/protocol/wayland.xml",
+  "//third_party/wayland-protocols/src/stable/presentation-time/presentation-time.xml",
+  "//third_party/wayland-protocols/src/stable/viewporter/viewporter.xml",
+  "//third_party/wayland-protocols/src/unstable/fullscreen-shell/fullscreen-shell-unstable-v1.xml",
+  "//third_party/wayland-protocols/src/unstable/input-timestamps/input-timestamps-unstable-v1.xml",
+  "//third_party/wayland-protocols/src/unstable/linux-dmabuf/linux-dmabuf-unstable-v1.xml",
+  "//third_party/wayland-protocols/src/unstable/linux-explicit-synchronization/linux-explicit-synchronization-unstable-v1.xml",
+  "//third_party/wayland-protocols/src/unstable/pointer-gestures/pointer-gestures-unstable-v1.xml",
+  "//third_party/wayland-protocols/src/unstable/relative-pointer/relative-pointer-unstable-v1.xml",
+  "//third_party/wayland-protocols/src/unstable/text-input/text-input-unstable-v1.xml",
+  "//third_party/wayland-protocols/src/unstable/xdg-shell/xdg-shell-unstable-v6.xml",
+  "//third_party/wayland-protocols/unstable/alpha-compositing/alpha-compositing-unstable-v1.xml",
+  "//third_party/wayland-protocols/unstable/cursor-shapes/cursor-shapes-unstable-v1.xml",
+  "//third_party/wayland-protocols/unstable/gaming-input/gaming-input-unstable-v2.xml",
+  "//third_party/wayland-protocols/unstable/keyboard/keyboard-configuration-unstable-v1.xml",
+  "//third_party/wayland-protocols/unstable/keyboard/keyboard-extension-unstable-v1.xml",
+  "//third_party/wayland-protocols/unstable/notification-shell/notification-shell-unstable-v1.xml",
+  "//third_party/wayland-protocols/unstable/remote-shell/remote-shell-unstable-v1.xml",
+  "//third_party/wayland-protocols/unstable/secure-output/secure-output-unstable-v1.xml",
+  "//third_party/wayland-protocols/unstable/stylus/stylus-unstable-v2.xml",
+  "//third_party/wayland-protocols/unstable/stylus-tools/stylus-tools-unstable-v1.xml",
+  "//third_party/wayland-protocols/unstable/vsync-feedback/vsync-feedback-unstable-v1.xml",
+]
+
+wayland_templater("protocol_dump") {
+  sources = [
+    "misc/dump.tmpl",
+  ]
+  protocols = kDefaultWaylandProtocols
+}
+
+wayland_templater("protocol_graph") {
+  sources = [
+    "misc/graph.dot.tmpl",
+  ]
+  protocols = kDefaultWaylandProtocols
+}
+
+wayland_templater("protocol_docs") {
+  sources = [
+    "misc/docs.md.tmpl",
+  ]
+  protocols = kDefaultWaylandProtocols
+}
+
+wayland_templater("actions_tmpl") {
+  sources = [
+    "actions.proto.tmpl",
+  ]
+  protocols = kDefaultWaylandProtocols
+}
+
+wayland_templater("harness_h_tmpl") {
+  sources = [
+    "harness.h.tmpl",
+  ]
+  protocols = kDefaultWaylandProtocols
+}
+
+wayland_templater("harness_cc_tmpl") {
+  sources = [
+    "harness.cc.tmpl",
+  ]
+  protocols = kDefaultWaylandProtocols
+}
+
+# We make the seed corpus by enumerating call sequences to all requests
+# using the wayland_sequencer script.
+wayland_templater("corpus") {
+  sources = [
+    "corpus.tmpl",
+  ]
+  protocols = kDefaultWaylandProtocols
+  script_override = "wayland_sequencer.py"
+}
+
+if (use_libfuzzer) {
+  fuzzer_test("wayland_fuzzer") {
+    sources = [
+      "fuzzer.cc",
+    ]
+
+    deps = [
+      ":actions",
+      ":harness",
+      ":server_environment",
+      "//base",
+      "//third_party/libprotobuf-mutator",
+    ]
+
+    libfuzzer_options = [ "len_control=0" ]
+
+    corpus_target_outputs = get_target_outputs(":corpus")
+    seed_corpus = corpus_target_outputs[0]
+    seed_corpus_deps = [ ":corpus" ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "harness_unittest.cc",
+  ]
+
+  deps = [
+    ":actions",
+    ":harness",
+    "//base",
+    "//components/exo",
+    "//components/exo:test_support",
+    "//components/exo/wayland",
+    "//skia",
+    "//third_party/wayland:wayland_util",
+  ]
+}
+
+source_set("server_environment") {
+  testonly = true
+
+  sources = [
+    "server_environment.cc",
+    "server_environment.h",
+  ]
+
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//components/exo",
+    "//components/exo/wayland:wayland",
+    "//components/exo/wayland:wayland_client_test_helper",
+    "//mojo/core/embedder",
+    "//ui/aura",
+    "//ui/base",
+    "//ui/gl:test_support",
+  ]
+}
+
+source_set("harness") {
+  sources = get_target_outputs(":harness_h_tmpl") +
+            get_target_outputs(":harness_cc_tmpl")
+
+  deps = [
+    ":actions",
+    ":harness_cc_tmpl",
+    ":harness_h_tmpl",
+    "//base",
+    "//components/exo/wayland/protocol:aura_shell_protocol",
+    "//third_party/wayland:wayland_client",
+    "//third_party/wayland-protocols:alpha_compositing_protocol",
+    "//third_party/wayland-protocols:cursor_shapes_protocol",
+    "//third_party/wayland-protocols:fullscreen_shell_protocol",
+    "//third_party/wayland-protocols:gaming_input_protocol",
+    "//third_party/wayland-protocols:input_timestamps_protocol",
+    "//third_party/wayland-protocols:keyboard_configuration_protocol",
+    "//third_party/wayland-protocols:keyboard_extension_protocol",
+    "//third_party/wayland-protocols:linux_dmabuf_protocol",
+    "//third_party/wayland-protocols:linux_explicit_synchronization_protocol",
+    "//third_party/wayland-protocols:notification_shell_protocol",
+    "//third_party/wayland-protocols:pointer_gestures_protocol",
+    "//third_party/wayland-protocols:presentation_time_protocol",
+    "//third_party/wayland-protocols:relative_pointer_protocol",
+    "//third_party/wayland-protocols:remote_shell_protocol",
+    "//third_party/wayland-protocols:secure_output_protocol",
+    "//third_party/wayland-protocols:stylus_protocol",
+    "//third_party/wayland-protocols:stylus_tools_protocol",
+    "//third_party/wayland-protocols:text_input_protocol",
+    "//third_party/wayland-protocols:viewporter_protocol",
+    "//third_party/wayland-protocols:vsync_feedback_protocol",
+    "//third_party/wayland-protocols:xdg_shell_protocol",
+  ]
+}
+
+fuzzable_proto_library("actions") {
+  sources = get_target_outputs(":actions_tmpl")
+
+  # Since the .proto file is under gen/ we need to manually tell the
+  # output directory to rebase under the source root.
+  proto_out_dir = rebase_path(".", "//")
+
+  deps = [
+    ":actions_tmpl",
+  ]
+}

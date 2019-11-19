@@ -14,8 +14,8 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "components/feature_engagement/internal/configuration.h"
 #include "components/feature_engagement/internal/stats.h"
+#include "components/feature_engagement/public/configuration.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace feature_engagement {
@@ -45,7 +45,7 @@ SessionRateImpact CreateSessionRateImpactExplicit(
 
 class ChromeVariationsConfigurationTest : public ::testing::Test {
  public:
-  ChromeVariationsConfigurationTest() : field_trials_(nullptr) {
+  ChromeVariationsConfigurationTest() {
     base::FieldTrial* foo_trial =
         base::FieldTrialList::CreateFieldTrial(kFooTrialName, kGroupName);
     base::FieldTrial* bar_trial =
@@ -67,7 +67,7 @@ class ChromeVariationsConfigurationTest : public ::testing::Test {
         kChromeTestFeatureQux.name, base::FeatureList::OVERRIDE_ENABLE_FEATURE,
         qux_trial);
 
-    scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+    scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
     EXPECT_EQ(foo_trial,
               base::FeatureList::GetFieldTrial(kChromeTestFeatureFoo));
     EXPECT_EQ(bar_trial,
@@ -111,9 +111,8 @@ class ChromeVariationsConfigurationTest : public ::testing::Test {
   ChromeVariationsConfiguration configuration_;
 
  private:
-  base::FieldTrialList field_trials_;
+  base::test::ScopedFeatureList scoped_feature_list_;
   std::map<std::string, base::FieldTrial*> trials_;
-  base::test::ScopedFeatureList scoped_feature_list;
 
   DISALLOW_COPY_AND_ASSIGN(ChromeVariationsConfigurationTest);
 };
@@ -1009,6 +1008,71 @@ TEST_F(ChromeVariationsConfigurationTest, ParseMultipleFeatures) {
   expected_qux.session_rate = Comparator(NOT_EQUAL, 13);
   expected_qux.availability = Comparator(EQUAL, 0);
   EXPECT_EQ(expected_qux, qux);
+}
+
+TEST_F(ChromeVariationsConfigurationTest, CheckedInConfigIsReadable) {
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitWithFeatureState(kIPHDummyFeature, true);
+  base::HistogramTester histogram_tester;
+  FeatureVector features;
+  features.push_back(&kIPHDummyFeature);
+  configuration_.ParseFeatureConfigs(features);
+
+  FeatureConfig expected;
+  expected.valid = false;
+  expected.availability = Comparator(LESS_THAN, 0);
+  expected.session_rate = Comparator(LESS_THAN, 0);
+  expected.trigger =
+      EventConfig("dummy_feature_iph_trigger", Comparator(LESS_THAN, 0), 1, 1);
+  expected.used =
+      EventConfig("dummy_feature_action", Comparator(LESS_THAN, 0), 1, 1);
+
+  const FeatureConfig& config =
+      configuration_.GetFeatureConfig(kIPHDummyFeature);
+  EXPECT_EQ(expected, config);
+  histogram_tester.ExpectBucketCount(
+      kConfigParseEventName,
+      static_cast<int>(stats::ConfigParsingEvent::SUCCESS_FROM_SOURCE), 1);
+  histogram_tester.ExpectTotalCount(kConfigParseEventName, 1);
+}
+
+TEST_F(ChromeVariationsConfigurationTest,
+       CheckedInConfigButDisabledFeatureIsInvalid) {
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitWithFeatureState(kIPHDummyFeature, false);
+  base::HistogramTester histogram_tester;
+  FeatureVector features;
+  features.push_back(&kIPHDummyFeature);
+  configuration_.ParseFeatureConfigs(features);
+
+  FeatureConfig expected;
+  expected.valid = false;
+
+  const FeatureConfig& config =
+      configuration_.GetFeatureConfig(kIPHDummyFeature);
+  EXPECT_EQ(expected, config);
+  histogram_tester.ExpectBucketCount(
+      kConfigParseEventName,
+      static_cast<int>(stats::ConfigParsingEvent::FAILURE_NO_FIELD_TRIAL), 1);
+  histogram_tester.ExpectTotalCount(kConfigParseEventName, 1);
+}
+
+TEST_F(ChromeVariationsConfigurationTest, NonExistingConfigIsInvalid) {
+  base::HistogramTester histogram_tester;
+  FeatureVector features;
+  features.push_back(&kChromeTestFeatureFoo);
+  configuration_.ParseFeatureConfigs(features);
+
+  FeatureConfig expected;
+  expected.valid = false;
+
+  const FeatureConfig& config =
+      configuration_.GetFeatureConfig(kChromeTestFeatureFoo);
+  EXPECT_EQ(expected, config);
+  histogram_tester.ExpectBucketCount(
+      kConfigParseEventName,
+      static_cast<int>(stats::ConfigParsingEvent::FAILURE_NO_FIELD_TRIAL), 1);
+  histogram_tester.ExpectTotalCount(kConfigParseEventName, 1);
 }
 
 }  // namespace feature_engagement

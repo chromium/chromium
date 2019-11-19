@@ -27,6 +27,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EVENTS_TRANSITION_EVENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EVENTS_TRANSITION_EVENT_H_
 
+#include "third_party/blink/renderer/core/animation/animation_time_delta.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/events/transition_event_init.h"
 
@@ -41,7 +42,7 @@ class TransitionEvent final : public Event {
   }
   static TransitionEvent* Create(const AtomicString& type,
                                  const String& property_name,
-                                 double elapsed_time,
+                                 const AnimationTimeDelta& elapsed_time,
                                  const String& pseudo_element) {
     return MakeGarbageCollected<TransitionEvent>(type, property_name,
                                                  elapsed_time, pseudo_element);
@@ -54,7 +55,7 @@ class TransitionEvent final : public Event {
   TransitionEvent();
   TransitionEvent(const AtomicString& type,
                   const String& property_name,
-                  double elapsed_time,
+                  const AnimationTimeDelta& elapsed_time,
                   const String& pseudo_element);
   TransitionEvent(const AtomicString& type,
                   const TransitionEventInit* initializer);
@@ -70,7 +71,7 @@ class TransitionEvent final : public Event {
 
  private:
   String property_name_;
-  double elapsed_time_;
+  AnimationTimeDelta elapsed_time_;
   String pseudo_element_;
 };
 

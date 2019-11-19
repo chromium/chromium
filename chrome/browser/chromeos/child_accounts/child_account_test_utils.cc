@@ -10,8 +10,6 @@
 namespace chromeos {
 namespace test {
 
-const char kChildAccountServiceFlags[] = R"(["uca"])";
-
 std::string GetChildAccountOAuthIdToken() {
   std::string encoded;
   base::Base64Encode(R"({ "services": ["uca"] })", &encoded);

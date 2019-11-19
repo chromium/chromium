@@ -64,7 +64,7 @@ TEST(ProfileInfoUtilTest, WebUIIcon) {
 
   // Test that a rectangular picture is changed.
   gfx::Image rect_picture(gfx::test::CreateImage());
-  gfx::Size size(profiles::kAvatarIconWidth, profiles::kAvatarIconHeight);
+  gfx::Size size(profiles::kAvatarIconSize, profiles::kAvatarIconSize);
   gfx::Image result2 = profiles::GetAvatarIconForWebUI(rect_picture, true);
 
   VerifyScaling(result2, size);

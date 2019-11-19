@@ -1,9 +1,8 @@
 // GENERATED CONTENT - DO NOT EDIT
 // Content was automatically extracted by Reffy into reffy-reports
 // (https://github.com/tidoust/reffy-reports)
-// Source: Feature Policy (https://wicg.github.io/feature-policy/)
+// Source: Feature Policy (https://w3c.github.io/webappsec-feature-policy/)
 
-[NoInterfaceObject]
 interface FeaturePolicy {
   boolean allowsFeature(DOMString feature, optional DOMString origin);
   sequence<DOMString> features();
@@ -18,6 +17,7 @@ partial interface Document {
 partial interface HTMLIFrameElement {
     [SameObject] readonly attribute FeaturePolicy featurePolicy;
 };
+[Exposed=Window]
 interface FeaturePolicyViolationReportBody : ReportBody {
   readonly attribute DOMString featureId;
   readonly attribute DOMString? sourceFile;

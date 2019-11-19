@@ -7,6 +7,7 @@
 
 #include "base/macros.h"
 #include "chrome/browser/engagement/site_engagement_details.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
 // The UI for chrome://site-engagement/.
@@ -17,7 +18,7 @@ class SiteEngagementUI : public ui::MojoWebUIController {
 
  private:
   void BindSiteEngagementDetailsProvider(
-      mojom::SiteEngagementDetailsProviderRequest request);
+      mojo::PendingReceiver<mojom::SiteEngagementDetailsProvider> receiver);
 
   std::unique_ptr<mojom::SiteEngagementDetailsProvider> ui_handler_;
 

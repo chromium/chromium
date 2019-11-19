@@ -5,9 +5,9 @@
 package org.chromium.chrome.browser;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -22,12 +22,12 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.metrics.test.DisableHistogramsRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.blink.mojom.document_metadata.CopylessPaste;
 import org.chromium.blink.mojom.document_metadata.WebPage;
 import org.chromium.chrome.browser.historyreport.AppIndexingReporter;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.test.support.DisableHistogramsRule;
 import org.chromium.url.mojom.Url;
 
 /**
@@ -39,7 +39,7 @@ public class AppIndexingUtilTest {
     @Rule
     public DisableHistogramsRule mDisableHistogramsRule = new DisableHistogramsRule();
     @Spy
-    private AppIndexingUtil mUtil = new AppIndexingUtil();
+    private AppIndexingUtil mUtil = new AppIndexingUtil(null);
     @Mock
     private AppIndexingReporter mReporter;
     @Mock
@@ -70,29 +70,36 @@ public class AppIndexingUtilTest {
     }
 
     @Test
-    public void testNoCacheHit() {
+    public void testExtractCopylessPasteMetadata_Incognito() {
+        doReturn(true).when(mTab).isIncognito();
+
+        mUtil.extractCopylessPasteMetadata(mTab);
+        verify(mCopylessPaste, never()).getEntities(any());
+        verify(mReporter, never()).reportWebPage(any());
+    }
+
+    @Test
+    public void testExtractCopylessPasteMetadata_NoCacheHit() {
         mUtil.extractCopylessPasteMetadata(mTab);
         verify(mCopylessPaste).getEntities(any(CopylessPaste.GetEntitiesResponse.class));
         verify(mReporter).reportWebPage(any(WebPage.class));
     }
 
     @Test
-    public void testCacheHit() {
+    public void testExtractCopylessPasteMetadata_CacheHit() {
         mUtil.extractCopylessPasteMetadata(mTab);
         verify(mCopylessPaste).getEntities(any(CopylessPaste.GetEntitiesResponse.class));
         verify(mCopylessPaste).close();
         verify(mReporter).reportWebPage(any(WebPage.class));
-        verify(mReporter, never()).reportWebPageView(any(String.class), any(String.class));
 
         doReturn(1L).when(mUtil).getElapsedTime();
         mUtil.extractCopylessPasteMetadata(mTab);
-        verify(mReporter).reportWebPageView(eq("http://www.test.com"), eq("My neat website"));
         verifyNoMoreInteractions(mCopylessPaste);
         verifyNoMoreInteractions(mReporter);
     }
 
     @Test
-    public void testCacheHit_expired() {
+    public void testExtractCopylessPasteMetadata_CacheHit_Expired() {
         mUtil.extractCopylessPasteMetadata(mTab);
 
         doReturn(60 * 60 * 1000L + 1).when(mUtil).getElapsedTime();
@@ -101,7 +108,7 @@ public class AppIndexingUtilTest {
     }
 
     @Test
-    public void testCacheHit_noEntity() {
+    public void testExtractCopylessPasteMetadata_CacheHit_NoEntity() {
         doAnswer(invocation -> {
             CopylessPaste.GetEntitiesResponse callback =
                     (CopylessPaste.GetEntitiesResponse) invocation.getArguments()[0];
@@ -114,6 +121,20 @@ public class AppIndexingUtilTest {
         mUtil.extractCopylessPasteMetadata(mTab);
         verify(mCopylessPaste, times(1)).getEntities(any(CopylessPaste.GetEntitiesResponse.class));
         verifyNoMoreInteractions(mReporter);
+    }
+
+    @Test
+    public void testReportPageView_Incognito() {
+        doReturn(true).when(mTab).isIncognito();
+
+        mUtil.reportPageView(mTab);
+        verify(mReporter, never()).reportWebPageView(any(), any());
+    }
+
+    @Test
+    public void testReportPageView() {
+        mUtil.reportPageView(mTab);
+        verify(mReporter).reportWebPageView(eq("http://www.test.com"), eq("My neat website"));
     }
 
     private Url createUrl(String s) {

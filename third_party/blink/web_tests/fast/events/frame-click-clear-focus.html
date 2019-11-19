@@ -2,8 +2,8 @@
 <html>
 <body>
 <script src="../../resources/js-test.js"></script>
-<iframe id="frame1" src="data:text/html,<input>" width="800" height="600"></iframe>
-<iframe id="frame2" src="data:text/html,<input>" width="800" height="600"></iframe>
+<iframe id="frame1" srcdoc="<input>" width="800" height="600"></iframe>
+<iframe id="frame2" srcdoc="<input>" width="800" height="600"></iframe>
 <script>
 description('Make sure that clicking on an inactive frame clears existing element focus.');
 jsTestIsAsync = true;

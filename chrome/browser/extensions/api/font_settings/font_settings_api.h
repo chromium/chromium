@@ -101,7 +101,7 @@ class FontSettingsAPI : public BrowserContextKeyedAPI {
 };
 
 // fontSettings.clearFont API function.
-class FontSettingsClearFontFunction : public UIThreadExtensionFunction {
+class FontSettingsClearFontFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("fontSettings.clearFont", FONTSETTINGS_CLEARFONT)
 
@@ -115,7 +115,7 @@ class FontSettingsClearFontFunction : public UIThreadExtensionFunction {
 };
 
 // fontSettings.getFont API function.
-class FontSettingsGetFontFunction : public UIThreadExtensionFunction {
+class FontSettingsGetFontFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("fontSettings.getFont", FONTSETTINGS_GETFONT)
 
@@ -127,7 +127,7 @@ class FontSettingsGetFontFunction : public UIThreadExtensionFunction {
 };
 
 // fontSettings.setFont API function.
-class FontSettingsSetFontFunction : public UIThreadExtensionFunction {
+class FontSettingsSetFontFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("fontSettings.setFont", FONTSETTINGS_SETFONT)
 
@@ -156,7 +156,7 @@ class FontSettingsGetFontListFunction : public ChromeAsyncExtensionFunction {
 };
 
 // Base class for extension API functions that clear a browser font pref.
-class ClearFontPrefExtensionFunction : public UIThreadExtensionFunction {
+class ClearFontPrefExtensionFunction : public ExtensionFunction {
  protected:
   ~ClearFontPrefExtensionFunction() override {}
 
@@ -169,7 +169,7 @@ class ClearFontPrefExtensionFunction : public UIThreadExtensionFunction {
 };
 
 // Base class for extension API functions that get a browser font pref.
-class GetFontPrefExtensionFunction : public UIThreadExtensionFunction {
+class GetFontPrefExtensionFunction : public ExtensionFunction {
  protected:
   ~GetFontPrefExtensionFunction() override {}
 
@@ -186,7 +186,7 @@ class GetFontPrefExtensionFunction : public UIThreadExtensionFunction {
 };
 
 // Base class for extension API functions that set a browser font pref.
-class SetFontPrefExtensionFunction : public UIThreadExtensionFunction {
+class SetFontPrefExtensionFunction : public ExtensionFunction {
  protected:
   ~SetFontPrefExtensionFunction() override {}
 

@@ -12,11 +12,12 @@
 #include "ash/test/ash_test_base.h"
 #include "base/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "services/ws/public/cpp/input_devices/input_device_client_test_api.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
+#include "ui/compositor/test/test_utils.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/events/devices/device_data_manager_test_api.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/widget/widget.h"
@@ -29,18 +30,18 @@ class KeyboardShortcutViewTest : public ash::AshTestBase {
   ~KeyboardShortcutViewTest() override = default;
 
   views::Widget* Toggle() {
-    return KeyboardShortcutView::Toggle(base::TimeTicks(), CurrentContext());
+    return KeyboardShortcutView::Toggle(CurrentContext());
   }
 
   // ash::AshTestBase:
   void SetUp() override {
     ash::AshTestBase::SetUp();
     // Simulate the complete listing of input devices, required by the viewer.
-    ws::InputDeviceClientTestApi().OnDeviceListsComplete();
+    ui::DeviceDataManagerTestApi().OnDeviceListsComplete();
   }
 
  protected:
-  int GetTabCount() const {
+  size_t GetTabCount() const {
     DCHECK(GetView());
     return GetView()->GetTabCountForTesting();
   }
@@ -92,12 +93,7 @@ TEST_F(KeyboardShortcutViewTest, ShowAndClose) {
 
 TEST_F(KeyboardShortcutViewTest, StartupTimeHistogram) {
   views::Widget* widget = Toggle();
-  base::RunLoop runloop;
-  widget->GetCompositor()->RequestPresentationTimeForNextFrame(base::BindOnce(
-      [](base::RepeatingClosure closure,
-         const gfx::PresentationFeedback& feedback) { closure.Run(); },
-      runloop.QuitClosure()));
-  runloop.Run();
+  ui::WaitForNextFrameToBePresented(widget->GetCompositor());
   histograms_.ExpectTotalCount("Keyboard.ShortcutViewer.StartupTime", 1);
   widget->CloseNow();
 }
@@ -128,7 +124,7 @@ TEST_F(KeyboardShortcutViewTest, SideTabsCount) {
   // Show the widget.
   views::Widget* widget = Toggle();
 
-  int category_number = 0;
+  size_t category_number = 0;
   ShortcutCategory current_category = ShortcutCategory::kUnknown;
   for (const auto& item_view : GetShortcutViews()) {
     const ShortcutCategory category = item_view->category();
@@ -155,19 +151,17 @@ TEST_F(KeyboardShortcutViewTest, TopLineCenterAlignedInItemView) {
     if (item_view->category() != ShortcutCategory::kPopular)
       continue;
 
-    DCHECK(item_view->child_count() == 2);
+    ASSERT_EQ(2u, item_view->children().size());
 
     // The top lines in both |description_label_view_| and
     // |shortcut_label_view_| should be center aligned. Only need to check one
     // view in the top line, because StyledLabel always center align all the
     // views in a line.
-    const views::View* description_view = item_view->child_at(0);
-    const views::View* shortcut_view = item_view->child_at(1);
-    const views::View* description_top_line_view =
-        description_view->child_at(0);
-    const views::View* shortcut_top_line_view = shortcut_view->child_at(0);
-    EXPECT_EQ(description_top_line_view->GetBoundsInScreen().CenterPoint().y(),
-              shortcut_top_line_view->GetBoundsInScreen().CenterPoint().y());
+    const views::View* description = item_view->children()[0];
+    const views::View* shortcut = item_view->children()[1];
+    EXPECT_EQ(
+        description->children().front()->GetBoundsInScreen().CenterPoint().y(),
+        shortcut->children().front()->GetBoundsInScreen().CenterPoint().y());
   }
 
   // Cleaning up.
@@ -184,8 +178,8 @@ TEST_F(KeyboardShortcutViewTest, FocusOnSearchBox) {
 
   // Press a key should enter search mode.
   KeyPress(ui::VKEY_A, /*should_insert=*/true);
-  EXPECT_TRUE(GetSearchBoxView()->back_button()->visible());
-  EXPECT_FALSE(GetSearchBoxView()->search_box()->text().empty());
+  EXPECT_TRUE(GetSearchBoxView()->back_button()->GetVisible());
+  EXPECT_FALSE(GetSearchBoxView()->search_box()->GetText().empty());
 
   // Case 2: Exit search mode by clicking |back_button|. The focus should be on
   // search box.
@@ -194,17 +188,17 @@ TEST_F(KeyboardShortcutViewTest, FocusOnSearchBox) {
       ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
                      base::TimeTicks(), ui::EF_LEFT_MOUSE_BUTTON,
                      ui::EF_LEFT_MOUSE_BUTTON));
-  EXPECT_TRUE(GetSearchBoxView()->search_box()->text().empty());
+  EXPECT_TRUE(GetSearchBoxView()->search_box()->GetText().empty());
   EXPECT_TRUE(GetSearchBoxView()->search_box()->HasFocus());
 
   // Enter search mode again.
   KeyPress(ui::VKEY_A, /*should_insert=*/true);
-  EXPECT_FALSE(GetSearchBoxView()->search_box()->text().empty());
+  EXPECT_FALSE(GetSearchBoxView()->search_box()->GetText().empty());
 
   // Case 3: Exit search mode by pressing |VKEY_ESCAPE|. The focus should be on
   // search box.
   KeyPress(ui::VKEY_ESCAPE, /*should_insert=*/false);
-  EXPECT_TRUE(GetSearchBoxView()->search_box()->text().empty());
+  EXPECT_TRUE(GetSearchBoxView()->search_box()->GetText().empty());
   EXPECT_TRUE(GetSearchBoxView()->search_box()->HasFocus());
 
   // Cleaning up.

@@ -41,8 +41,7 @@ class ReadableStreamBytesConsumer::OnFulfilled final : public ScriptFunction {
       return ScriptValue();
     }
     v8::Local<v8::Value> value;
-    if (!V8UnpackIteratorResult(v.GetScriptState(), item.As<v8::Object>(),
-                                &done)
+    if (!V8UnpackIteratorResult(GetScriptState(), item.As<v8::Object>(), &done)
              .ToLocal(&value)) {
       consumer_->OnRejected();
       return ScriptValue();
@@ -175,10 +174,6 @@ void ReadableStreamBytesConsumer::Trace(blink::Visitor* visitor) {
   visitor->Trace(pending_buffer_);
   visitor->Trace(script_state_);
   BytesConsumer::Trace(visitor);
-}
-
-void ReadableStreamBytesConsumer::Dispose() {
-  read_handle_ = nullptr;
 }
 
 void ReadableStreamBytesConsumer::OnRead(DOMUint8Array* buffer) {

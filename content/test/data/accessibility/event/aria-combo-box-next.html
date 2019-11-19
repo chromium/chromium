@@ -1,19 +1,23 @@
 <!DOCTYPE html>
 <html>
+
 <body>
-<input role="combobox" type="search" aria-expanded="true" aria-haspopup="true"
-    aria-autocomplete="list" aria-activedescendant="option2" aria-owns="list">
-<ul id="list" role="listbox">
-<li id="option1" role="option">Apple</li>
-<li id="option2" role="option">Orange</li>
-<li id="option3" role="option">Banana</li>
-</ul>
-<script>
-  document.querySelector('input').focus();
-  function go() {
-    var combo_box = document.querySelector('input');
-    combo_box.setAttribute('aria-activedescendant', 'option3');
-  }
-</script>
+  <input role="combobox" type="search" aria-expanded="true" aria-haspopup="true" aria-autocomplete="list"
+    aria-activedescendant="option1" aria-owns="list">
+  <ul id="list" role="listbox">
+    <li id="option1" role="option">Apple</li>
+    <li id="option2" role="option">Orange</li>
+    <li id="option3" role="option">Banana</li>
+  </ul>
+  <script>
+    document.querySelector('input').focus();
+    var option = 2;
+    function go() {
+      var combo_box = document.querySelector('input');
+      combo_box.setAttribute('aria-activedescendant', 'option' + option);
+      return option++ < 3;
+    }
+  </script>
 </body>
+
 </html>

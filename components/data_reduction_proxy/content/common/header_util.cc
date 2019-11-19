@@ -22,7 +22,7 @@ void MaybeSetAcceptTransformHeader(const GURL& url,
   if (headers->HasHeader(chrome_proxy_accept_transform_header()))
     return;
 
-  if (resource_type == content::RESOURCE_TYPE_MEDIA) {
+  if (resource_type == content::ResourceType::kMedia) {
     headers->SetHeader(chrome_proxy_accept_transform_header(),
                        compressed_video_directive());
     return;
@@ -37,24 +37,8 @@ void MaybeSetAcceptTransformHeader(const GURL& url,
 
   std::string accept_transform_value;
   if ((previews_state & content::SERVER_LITE_PAGE_ON) &&
-      resource_type == content::RESOURCE_TYPE_MAIN_FRAME) {
+      resource_type == content::ResourceType::kMainFrame) {
     accept_transform_value = lite_page_directive();
-  } else if ((previews_state & content::SERVER_LOFI_ON)) {
-    // Note that for subresource requests, the Lo-Fi bit should only be set
-    // if the main frame response provided the "empty-image" directive (for
-    // the client to echo back to the server here for any image resources).
-    // Also, it should only be set for subresource requests that might be
-    // image requests.
-    bool resource_type_supports_empty_image =
-        !(resource_type == content::RESOURCE_TYPE_MAIN_FRAME ||
-          resource_type == content::RESOURCE_TYPE_STYLESHEET ||
-          resource_type == content::RESOURCE_TYPE_SCRIPT ||
-          resource_type == content::RESOURCE_TYPE_FONT_RESOURCE ||
-          resource_type == content::RESOURCE_TYPE_MEDIA ||
-          resource_type == content::RESOURCE_TYPE_CSP_REPORT);
-    if (resource_type_supports_empty_image) {
-      accept_transform_value = empty_image_directive();
-    }
   }
 
   if (accept_transform_value.empty())

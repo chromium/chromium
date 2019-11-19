@@ -1,8 +1,8 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_input/cr_input.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-button/paper-button.html">
 <link rel="import" href="../i18n_setup.html">
 <link rel="import" href="site_settings_prefs_browser_proxy.html">
 
@@ -19,12 +19,12 @@
         </cr-input>
       </div>
       <div slot="button-container">
-        <paper-button class="cancel-button" on-click="onCancelTap_"
-            id="cancel">$i18n{cancel}</paper-button>
-        <paper-button id="actionButton" class="action-button"
+        <cr-button class="cancel-button" on-click="onCancelTap_"
+            id="cancel">$i18n{cancel}</cr-button>
+        <cr-button id="actionButton" class="action-button"
             on-click="onActionButtonTap_" disabled="[[invalid_]]">
           $i18n{save}
-        </paper-button>
+        </cr-button>
       </div>
     </cr-dialog>
   </template>

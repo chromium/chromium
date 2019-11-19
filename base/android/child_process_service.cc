@@ -5,12 +5,13 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/library_loader/library_loader_hooks.h"
+#include "base/base_jni_headers/ChildProcessService_jni.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/file_descriptor_store.h"
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/optional.h"
 #include "base/posix/global_descriptors.h"
-#include "jni/ChildProcessService_jni.h"
 
 using base::android::JavaIntArrayToIntVector;
 using base::android::JavaParamRef;
@@ -26,13 +27,11 @@ void JNI_ChildProcessService_RegisterFileDescriptors(
     const JavaParamRef<jlongArray>& j_offsets,
     const JavaParamRef<jlongArray>& j_sizes) {
   std::vector<base::Optional<std::string>> keys;
-  jsize keys_size = env->GetArrayLength(j_keys);
-  keys.reserve(keys_size);
-  for (jsize i = 0; i < keys_size; i++) {
-    base::android::ScopedJavaLocalRef<jstring> str(
-        env, static_cast<jstring>(env->GetObjectArrayElement(j_keys, i)));
+  JavaObjectArrayReader<jstring> keys_array(j_keys);
+  keys.reserve(keys_array.size());
+  for (auto str : keys_array) {
     base::Optional<std::string> key;
-    if (!str.is_null()) {
+    if (str) {
       key = base::android::ConvertJavaStringToUTF8(env, str);
     }
     keys.push_back(std::move(key));
@@ -70,6 +69,14 @@ void JNI_ChildProcessService_ExitChildProcess(JNIEnv* env) {
   VLOG(0) << "ChildProcessService: Exiting child process.";
   base::android::LibraryLoaderExitHook();
   _exit(0);
+}
+
+// Make sure this isn't inlined so it shows up in stack traces.
+// the function body unique by adding a log line, so it doesn't get merged
+// with other functions by link time optimizations (ICF).
+NOINLINE void JNI_ChildProcessService_DumpProcessStack(JNIEnv* env) {
+  LOG(ERROR) << "Dumping as requested.";
+  base::debug::DumpWithoutCrashing();
 }
 
 }  // namespace android

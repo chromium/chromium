@@ -1,0 +1,47 @@
+// Copyright 2016 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module viz.mojom;
+
+import "gpu/ipc/common/gpu_feature_info.mojom";
+import "gpu/ipc/common/gpu_info.mojom";
+import "gpu/ipc/common/gpu_extra_info.mojom";
+import "gpu/ipc/common/surface_handle.mojom";
+import "services/viz/privileged/mojom/gl/context_lost_reason.mojom";
+import "url/mojom/url.mojom";
+
+// Communication channel from the gpu process to the gpu host. This interface
+// should never have any sync function calls.
+interface GpuHost {
+  // If |gpu_info| and |gpu_feature_info| are for hardware GPU, then
+  // |gpu_info_for_hardware_gpu| and |gpu_feature_info_for_hardware_gpu| can
+  // be uninitialized data.
+  DidInitialize(gpu.mojom.GpuInfo gpu_info,
+                gpu.mojom.GpuFeatureInfo gpu_feature_info,
+                gpu.mojom.GpuInfo? gpu_info_for_hardware_gpu,
+                gpu.mojom.GpuFeatureInfo? gpu_feature_info_for_hardware_gpu,
+                gpu.mojom.GpuExtraInfo gpu_extra_info);
+  DidFailInitialize();
+
+  DidCreateContextSuccessfully();
+  DidCreateOffscreenContext(url.mojom.Url url);
+  DidDestroyOffscreenContext(url.mojom.Url url);
+
+  DidDestroyChannel(int32 client_id);
+  DidLoseContext(bool offscreen,
+                 ContextLostReason reason,
+                 url.mojom.Url active_url);
+
+  // GPU process has decided to disable GPU compositing. Host process keeps
+  // track of this decision in case the GPU process crashes.
+  DisableGpuCompositing();
+
+  [EnableIf=is_win]
+  SetChildSurface(gpu.mojom.SurfaceHandle parent,
+                  gpu.mojom.SurfaceHandle child);
+
+  StoreShaderToDisk(int32 client_id, string key, string shader);
+
+  RecordLogMessage(int32 severity, string header, string message);
+};

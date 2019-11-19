@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/wallpaper/wallpaper_controller_test_api.h"
-#include "ash/wallpaper/wallpaper_controller.h"
+#include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "base/bind.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
@@ -26,29 +26,30 @@ gfx::ImageSkia CreateImageWithColor(const SkColor color) {
 }  // namespace
 
 WallpaperControllerTestApi::WallpaperControllerTestApi(
-    WallpaperController* controller)
+    WallpaperControllerImpl* controller)
     : controller_(controller) {}
 
 WallpaperControllerTestApi::~WallpaperControllerTestApi() = default;
 
 SkColor WallpaperControllerTestApi::ApplyColorProducingWallpaper() {
+  // TODO(manucornet): Figure out where all those "magic numbers" come from
+  // and document/compute them instead of just hard-coding them.
   controller_->ShowWallpaperImage(
       CreateImageWithColor(SkColorSetRGB(60, 40, 40)), kTestWallpaperInfo,
       /*preview_mode=*/false, /*always_on_top=*/false);
-  return SkColorSetRGB(18, 12, 12);
+  return SkColorSetRGB(40, 35, 37);
 }
 
 void WallpaperControllerTestApi::StartWallpaperPreview() {
   // Preview mode is considered active when the two callbacks have non-empty
   // values. Their specific values don't matter for testing purpose.
   controller_->confirm_preview_wallpaper_callback_ =
-      base::BindOnce(&WallpaperController::SetWallpaperFromInfo,
+      base::BindOnce(&WallpaperControllerImpl::SetWallpaperFromInfo,
                      controller_->weak_factory_.GetWeakPtr(),
                      AccountId::FromUserEmail("user@test.com"),
-                     user_manager::USER_TYPE_REGULAR, kTestWallpaperInfo,
-                     /*show_wallpaper=*/true);
+                     kTestWallpaperInfo, /*show_wallpaper=*/true);
   controller_->reload_preview_wallpaper_callback_ = base::BindRepeating(
-      &WallpaperController::ShowWallpaperImage,
+      &WallpaperControllerImpl::ShowWallpaperImage,
       controller_->weak_factory_.GetWeakPtr(),
       CreateImageWithColor(SK_ColorBLUE), kTestWallpaperInfo,
       /*preview_mode=*/true, /*always_on_top=*/false);

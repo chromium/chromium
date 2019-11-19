@@ -43,9 +43,6 @@ class CORE_EXPORT DOMTokenList : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static DOMTokenList* Create(Element& element, const QualifiedName& attr) {
-    return MakeGarbageCollected<DOMTokenList>(element, attr);
-  }
   DOMTokenList(Element& element, const QualifiedName& attr)
       : element_(element), attribute_name_(attr) {}
   ~DOMTokenList() override = default;
@@ -62,9 +59,9 @@ class CORE_EXPORT DOMTokenList : public ScriptWrappable {
                const AtomicString& new_token,
                ExceptionState&);
   bool supports(const AtomicString&, ExceptionState&);
-  const AtomicString& value() const { return value_; }
-  void setValue(const AtomicString&);
-  const AtomicString& toString() const { return value(); }
+  virtual AtomicString value() const;
+  virtual void setValue(const AtomicString&);
+  AtomicString toString() const { return value(); }
 
   // This function should be called when the associated attribute value was
   // updated.
@@ -87,8 +84,11 @@ class CORE_EXPORT DOMTokenList : public ScriptWrappable {
   void UpdateWithTokenSet(const SpaceSplitString&);
 
   SpaceSplitString token_set_;
-  AtomicString value_;
   const Member<Element> element_;
+  // Normal DOMTokenList instances is associated to an attribute name.
+  // So |attribute_name_| is typically an html_names::kFooAttr.
+  // CustomStateTokenList is associated to no attribute name.
+  // |attribute_name_| is |g_null_name| in that case.
   const QualifiedName attribute_name_;
   bool is_in_update_step_ = false;
   DISALLOW_COPY_AND_ASSIGN(DOMTokenList);

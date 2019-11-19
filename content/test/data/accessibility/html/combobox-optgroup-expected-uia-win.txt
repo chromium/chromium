@@ -1,0 +1,8 @@
+document
+++group
+++++combobox ExpandCollapse.ExpandCollapseState='Collapsed' Value.IsReadOnly=false Value.Value='Mercedes Label'
+++++++list Selection.CanSelectMultiple=false Selection.IsSelectionRequired=false Value.IsReadOnly=false
+++++++++listitem Name='Volvo Label' SelectionItem.IsSelected=false
+++++++++listitem Name='Saab Label' SelectionItem.IsSelected=false
+++++++++listitem Name='Mercedes Label' SelectionItem.IsSelected=true
+++++++++listitem Name='Audi Label' SelectionItem.IsSelected=false

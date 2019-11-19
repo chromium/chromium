@@ -36,7 +36,7 @@
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/mhtml/shared_buffer_chunk_reader.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
-#include "third_party/blink/renderer/platform/wtf/time.h"
+
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace WTF {
@@ -47,7 +47,6 @@ namespace blink {
 
 class ArchiveResource;
 class MIMEHeader;
-class SharedBuffer;
 
 class PLATFORM_EXPORT MHTMLParser final {
   STACK_ALLOCATED();
@@ -56,7 +55,7 @@ class PLATFORM_EXPORT MHTMLParser final {
   explicit MHTMLParser(scoped_refptr<const SharedBuffer>);
 
   HeapVector<Member<ArchiveResource>> ParseArchive();
-  WTF::Time CreationDate() const;
+  base::Time CreationDate() const;
 
   // Translates |contentIDFromMimeHeader| (of the form "<foo@bar.com>")
   // into a cid-scheme URI (of the form "cid:foo@bar.com").
@@ -74,7 +73,7 @@ class PLATFORM_EXPORT MHTMLParser final {
                                  const String& end_of_document_boundary,
                                  bool& end_of_archive_reached);
 
-  WTF::Time creation_date_;
+  base::Time creation_date_;
   SharedBufferChunkReader line_reader_;
 };
 

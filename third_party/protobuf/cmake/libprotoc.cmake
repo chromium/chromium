@@ -44,8 +44,6 @@ set(libprotoc_files
   ${protobuf_source_dir}/src/google/protobuf/compiler/java/java_generator.cc
   ${protobuf_source_dir}/src/google/protobuf/compiler/java/java_generator_factory.cc
   ${protobuf_source_dir}/src/google/protobuf/compiler/java/java_helpers.cc
-  ${protobuf_source_dir}/src/google/protobuf/compiler/java/java_lazy_message_field.cc
-  ${protobuf_source_dir}/src/google/protobuf/compiler/java/java_lazy_message_field_lite.cc
   ${protobuf_source_dir}/src/google/protobuf/compiler/java/java_map_field.cc
   ${protobuf_source_dir}/src/google/protobuf/compiler/java/java_map_field_lite.cc
   ${protobuf_source_dir}/src/google/protobuf/compiler/java/java_message.cc
@@ -128,8 +126,6 @@ set(libprotoc_headers
   ${protobuf_source_dir}/src/google/protobuf/compiler/java/java_file.h
   ${protobuf_source_dir}/src/google/protobuf/compiler/java/java_generator_factory.h
   ${protobuf_source_dir}/src/google/protobuf/compiler/java/java_helpers.h
-  ${protobuf_source_dir}/src/google/protobuf/compiler/java/java_lazy_message_field.h
-  ${protobuf_source_dir}/src/google/protobuf/compiler/java/java_lazy_message_field_lite.h
   ${protobuf_source_dir}/src/google/protobuf/compiler/java/java_map_field.h
   ${protobuf_source_dir}/src/google/protobuf/compiler/java/java_map_field_lite.h
   ${protobuf_source_dir}/src/google/protobuf/compiler/java/java_message.h
@@ -155,8 +151,10 @@ set(libprotoc_headers
   ${protobuf_source_dir}/src/google/protobuf/compiler/objectivec/objectivec_map_field.h
   ${protobuf_source_dir}/src/google/protobuf/compiler/objectivec/objectivec_message.h
   ${protobuf_source_dir}/src/google/protobuf/compiler/objectivec/objectivec_message_field.h
+  ${protobuf_source_dir}/src/google/protobuf/compiler/objectivec/objectivec_nsobject_methods.h
   ${protobuf_source_dir}/src/google/protobuf/compiler/objectivec/objectivec_oneof.h
   ${protobuf_source_dir}/src/google/protobuf/compiler/objectivec/objectivec_primitive_field.h
+  ${protobuf_source_dir}/src/google/protobuf/compiler/scc.h
   ${protobuf_source_dir}/src/google/protobuf/compiler/subprocess.h
   ${protobuf_source_dir}/src/google/protobuf/compiler/zip_writer.h
 )
@@ -166,18 +164,6 @@ set(libprotoc_rc_files
   ${CMAKE_CURRENT_BINARY_DIR}/version.rc
 )
 endif()
-
-set(js_well_known_types_sources
-  ${protobuf_source_dir}/src/google/protobuf/compiler/js/well_known_types/any.js
-  ${protobuf_source_dir}/src/google/protobuf/compiler/js/well_known_types/struct.js
-  ${protobuf_source_dir}/src/google/protobuf/compiler/js/well_known_types/timestamp.js
-)
-add_executable(js_embed ${protobuf_source_dir}/src/google/protobuf/compiler/js/embed.cc)
-add_custom_command(
-  OUTPUT ${protobuf_source_dir}/src/google/protobuf/compiler/js/well_known_types_embed.cc
-  DEPENDS js_embed ${js_well_known_types_sources}
-  COMMAND js_embed ${js_well_known_types_sources} > ${protobuf_source_dir}/src/google/protobuf/compiler/js/well_known_types_embed.cc
-)
 
 add_library(libprotoc ${protobuf_SHARED_OR_STATIC}
   ${libprotoc_files} ${libprotoc_headers} ${libprotoc_rc_files})
@@ -193,3 +179,4 @@ set_target_properties(libprotoc PROPERTIES
     OUTPUT_NAME ${LIB_PREFIX}protoc
     DEBUG_POSTFIX "${protobuf_DEBUG_POSTFIX}")
 add_library(protobuf::libprotoc ALIAS libprotoc)
+

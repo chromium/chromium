@@ -45,7 +45,7 @@ void MediaInternalsProxy::GetEverything() {
 #endif
 
   // Ask MediaInternals for its data on IO thread.
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&MediaInternalsProxy::GetEverythingOnIOThread, this));
 }

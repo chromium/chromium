@@ -155,14 +155,16 @@
 
       lockGet.onsuccess = incrementBarrier();
       let docGetBarrier = incrementBarrier();
+      let docGetCallbackPromise;
       documentGet.onsuccess = () => {
-        docGetCallback();
+        docGetCallbackPromise = docGetCallback();
         docGetBarrier();
       };
       commandsDelete.onsuccess = incrementBarrier();
       queuesGet.onsuccess = incrementBarrier();
 
-      return transactionCompletePromise(txn).then(() => {
+      return transactionCompletePromise(txn).then(async () => {
+        await docGetCallbackPromise;
         logToDocumentBody("Txn17 done.");
       });
     };

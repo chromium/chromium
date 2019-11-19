@@ -10,6 +10,7 @@
 #include "base/macros.h"
 #include "base/scoped_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/host_id.h"
 
@@ -57,7 +58,7 @@ class DeclarativeUserScriptManager : public KeyedService,
   content::BrowserContext* browser_context_;
 
   ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      extension_registry_observer_;
+      extension_registry_observer_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DeclarativeUserScriptManager);
 };

@@ -8,15 +8,17 @@
 
 #include "base/guid.h"
 #include "base/rand_util.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_external_delegate.h"
-#include "components/autofill/core/browser/autofill_profile.h"
-#include "components/autofill/core/browser/credit_card.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
+#include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/form_data.h"
@@ -113,14 +115,17 @@ void CreateTestAddressFormData(FormData* form,
                                const char* unique_id) {
   form->name =
       ASCIIToUTF16("MyForm") + ASCIIToUTF16(unique_id ? unique_id : "");
-  form->button_titles = {std::make_pair(
-      ASCIIToUTF16("Submit"), ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)};
-  form->origin = GURL("http://myform.com/form.html");
+  form->button_titles = {
+      std::make_pair(ASCIIToUTF16("Submit"),
+                     mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)};
+  form->url = GURL("http://myform.com/form.html");
   form->action = GURL("http://myform.com/submit.html");
+  form->is_action_empty = true;
   form->main_frame_origin =
       url::Origin::Create(GURL("https://myform_root.com/form.html"));
   types->clear();
-  form->submission_event = SubmissionIndicatorEvent::SAME_DOCUMENT_NAVIGATION;
+  form->submission_event =
+      mojom::SubmissionIndicatorEvent::SAME_DOCUMENT_NAVIGATION;
 
   FormFieldData field;
   ServerFieldTypeSet type_set;
@@ -185,7 +190,7 @@ void CreateTestPersonalInformationFormData(FormData* form,
                                            const char* unique_id) {
   form->name =
       ASCIIToUTF16("MyForm") + ASCIIToUTF16(unique_id ? unique_id : "");
-  form->origin = GURL("http://myform.com/form.html");
+  form->url = GURL("http://myform.com/form.html");
   form->action = GURL("http://myform.com/submit.html");
   form->main_frame_origin =
       url::Origin::Create(GURL("https://myform_root.com/form.html"));
@@ -210,12 +215,12 @@ void CreateTestCreditCardFormData(FormData* form,
   form->name =
       ASCIIToUTF16("MyForm") + ASCIIToUTF16(unique_id ? unique_id : "");
   if (is_https) {
-    form->origin = GURL("https://myform.com/form.html");
+    form->url = GURL("https://myform.com/form.html");
     form->action = GURL("https://myform.com/submit.html");
     form->main_frame_origin =
         url::Origin::Create(GURL("https://myform_root.com/form.html"));
   } else {
-    form->origin = GURL("http://myform.com/form.html");
+    form->url = GURL("http://myform.com/form.html");
     form->action = GURL("http://myform.com/submit.html");
     form->main_frame_origin =
         url::Origin::Create(GURL("http://myform_root.com/form.html"));
@@ -252,8 +257,9 @@ void CreateTestCreditCardFormData(FormData* form,
   form->fields.push_back(field);
 }
 
-inline void check_and_set(
-    FormGroup* profile, ServerFieldType type, const char* value) {
+inline void check_and_set(FormGroup* profile,
+                          ServerFieldType type,
+                          const char* value) {
   if (value)
     profile->SetRawInfo(type, base::UTF8ToUTF16(value));
 }
@@ -276,34 +282,16 @@ AutofillProfile GetFullValidProfileForChina() {
 
 AutofillProfile GetFullProfile() {
   AutofillProfile profile(base::GenerateGUID(), kEmptyOrigin);
-  SetProfileInfo(&profile,
-                 "John",
-                 "H.",
-                 "Doe",
-                 "johndoe@hades.com",
-                 "Underworld",
-                 "666 Erebus St.",
-                 "Apt 8",
-                 "Elysium", "CA",
-                 "91111",
-                 "US",
-                 "16502111111");
+  SetProfileInfo(&profile, "John", "H.", "Doe", "johndoe@hades.com",
+                 "Underworld", "666 Erebus St.", "Apt 8", "Elysium", "CA",
+                 "91111", "US", "16502111111");
   return profile;
 }
 
 AutofillProfile GetFullProfile2() {
   AutofillProfile profile(base::GenerateGUID(), kEmptyOrigin);
-  SetProfileInfo(&profile,
-                 "Jane",
-                 "A.",
-                 "Smith",
-                 "jsmith@example.com",
-                 "ACME",
-                 "123 Main Street",
-                 "Unit 1",
-                 "Greensdale", "MI",
-                 "48838",
-                 "US",
+  SetProfileInfo(&profile, "Jane", "A.", "Smith", "jsmith@example.com", "ACME",
+                 "123 Main Street", "Unit 1", "Greensdale", "MI", "48838", "US",
                  "13105557889");
   return profile;
 }
@@ -333,12 +321,6 @@ AutofillProfile GetIncompleteProfile2() {
 
 AutofillProfile GetVerifiedProfile() {
   AutofillProfile profile(GetFullProfile());
-  profile.set_origin(kSettingsOrigin);
-  return profile;
-}
-
-AutofillProfile GetVerifiedProfile2() {
-  AutofillProfile profile(GetFullProfile2());
   profile.set_origin(kSettingsOrigin);
   return profile;
 }
@@ -403,6 +385,20 @@ CreditCard GetCreditCard2() {
   return credit_card;
 }
 
+CreditCard GetExpiredCreditCard() {
+  CreditCard credit_card(base::GenerateGUID(), kEmptyOrigin);
+  SetCreditCardInfo(&credit_card, "Test User", "4111111111111111" /* Visa */,
+                    "11", "2002", "1");
+  return credit_card;
+}
+
+CreditCard GetIncompleteCreditCard() {
+  CreditCard credit_card(base::GenerateGUID(), kEmptyOrigin);
+  SetCreditCardInfo(&credit_card, "", "4111111111111111" /* Visa */, "11",
+                    "2022", "1");
+  return credit_card;
+}
+
 CreditCard GetVerifiedCreditCard() {
   CreditCard credit_card(GetCreditCard());
   credit_card.set_origin(kSettingsOrigin);
@@ -456,7 +452,7 @@ CreditCard GetRandomCreditCard(CreditCard::RecordType record_type) {
   };
   constexpr size_t kNumNetworks = sizeof(kNetworks) / sizeof(kNetworks[0]);
   base::Time::Exploded now;
-  base::Time::Now().LocalExplode(&now);
+  AutofillClock::Now().LocalExplode(&now);
 
   CreditCard credit_card =
       (record_type == CreditCard::LOCAL_CARD)
@@ -531,16 +527,23 @@ void SetProfileInfo(AutofillProfile* profile,
 }
 
 void SetProfileInfoWithGuid(AutofillProfile* profile,
-    const char* guid, const char* first_name, const char* middle_name,
-    const char* last_name, const char* email, const char* company,
-    const char* address1, const char* address2, const char* city,
-    const char* state, const char* zipcode, const char* country,
-    const char* phone) {
+                            const char* guid,
+                            const char* first_name,
+                            const char* middle_name,
+                            const char* last_name,
+                            const char* email,
+                            const char* company,
+                            const char* address1,
+                            const char* address2,
+                            const char* city,
+                            const char* state,
+                            const char* zipcode,
+                            const char* country,
+                            const char* phone) {
   if (guid)
     profile->set_guid(guid);
-  SetProfileInfo(profile, first_name, middle_name, last_name, email,
-                 company, address1, address2, city, state, zipcode, country,
-                 phone);
+  SetProfileInfo(profile, first_name, middle_name, last_name, email, company,
+                 address1, address2, city, state, zipcode, country, phone);
 }
 
 void SetCreditCardInfo(CreditCard* credit_card,
@@ -715,20 +718,25 @@ std::string ObfuscatedCardDigitsAsUTF8(const std::string& str) {
       internal::GetObfuscatedStringForCardDigits(base::ASCIIToUTF16(str)));
 }
 
+std::string NextMonth() {
+  base::Time::Exploded now;
+  base::Time::Now().LocalExplode(&now);
+  return base::NumberToString(now.month % 12 + 1);
+}
 std::string LastYear() {
   base::Time::Exploded now;
   base::Time::Now().LocalExplode(&now);
-  return std::to_string(now.year - 1);
+  return base::NumberToString(now.year - 1);
 }
 std::string NextYear() {
   base::Time::Exploded now;
   base::Time::Now().LocalExplode(&now);
-  return std::to_string(now.year + 1);
+  return base::NumberToString(now.year + 1);
 }
 std::string TenYearsFromNow() {
   base::Time::Exploded now;
   base::Time::Now().LocalExplode(&now);
-  return std::to_string(now.year + 10);
+  return base::NumberToString(now.year + 10);
 }
 
 }  // namespace test

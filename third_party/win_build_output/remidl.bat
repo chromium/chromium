@@ -5,6 +5,7 @@
 @REM midl.exe output is arch-specific, remember to run this for all supported
 @REM target_cpu, currently x86, x64 and arm64.
 ninja -C out\gn ^
+    gen/browser_switcher/ie_bho/ie_bho_idl.h ^
     gen/google_update/google_update_idl.h ^
     gen/remoting/host/win/chromoting_lib.h ^
     gen/third_party/iaccessible2/ia2_api_all.h ^

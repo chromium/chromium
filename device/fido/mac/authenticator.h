@@ -22,27 +22,27 @@ namespace device {
 namespace fido {
 namespace mac {
 
+struct AuthenticatorConfig;
+
 class COMPONENT_EXPORT(DEVICE_FIDO) TouchIdAuthenticator
     : public FidoAuthenticator {
  public:
-  // IsAvailable returns whether Touch ID is available and enrolled on the
-  // current device.
+  // IsAvailable returns true iff Touch ID is available and
+  // enrolled on the current device and the current binary carries
+  // a keychain-access-groups entitlement that matches the one set
+  // in |config|.
   //
   // Note that this may differ from the result of
-  // AuthenticatorImpl::IsUserVerifyingPlatformAuthenticatorAvailable, which
-  // also checks whether the embedder supports this authenticator, and if the
-  // request occurs from an off-the-record/incognito context.
-  static bool IsAvailable();
+  // AuthenticatorImpl::IsUserVerifyingPlatformAuthenticatorAvailable(),
+  // which also checks whether the embedder supports this
+  // authenticator, and if the request occurs from an
+  // off-the-record/incognito context.
+  static bool IsAvailable(const AuthenticatorConfig& config);
 
-  // CreateIfAvailable returns a TouchIdAuthenticator if IsAvailable() returns
-  // true and nullptr otherwise.
-  static std::unique_ptr<TouchIdAuthenticator> CreateIfAvailable(
-      std::string keychain_access_group,
-      std::string metadata_secret);
-
-  static std::unique_ptr<TouchIdAuthenticator> CreateForTesting(
-      std::string keychain_access_group,
-      std::string metadata_secret);
+  // CreateIfAvailable returns a TouchIdAuthenticator. Callers must check
+  // IsAvailable() first.
+  static std::unique_ptr<TouchIdAuthenticator> Create(
+      AuthenticatorConfig config);
 
   ~TouchIdAuthenticator() override;
 
@@ -55,6 +55,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) TouchIdAuthenticator
                       MakeCredentialCallback callback) override;
   void GetAssertion(CtapGetAssertionRequest request,
                     GetAssertionCallback callback) override;
+  void GetNextAssertion(GetAssertionCallback callback) override;
   void Cancel() override;
   std::string GetId() const override;
   base::string16 GetDisplayName() const override;
@@ -62,6 +63,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) TouchIdAuthenticator
   base::Optional<FidoTransportProtocol> AuthenticatorTransport() const override;
   bool IsInPairingMode() const override;
   bool IsPaired() const override;
+  bool RequiresBlePairingPin() const override;
+  bool IsTouchIdAuthenticator() const override;
+  void GetTouch(base::OnceClosure callback) override;
   base::WeakPtr<FidoAuthenticator> GetWeakPtr() override;
 
  private:

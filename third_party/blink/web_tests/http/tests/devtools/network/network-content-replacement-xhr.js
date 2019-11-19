@@ -32,7 +32,7 @@
       return callback();
     TestRunner.addResult(request.url());
 
-    async function contentLoaded(content) {
+    async function contentLoaded({ content, error, isEncoded }) {
       TestRunner.addResult('resource.content: ' + content);
       callback();
     }

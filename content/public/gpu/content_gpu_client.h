@@ -12,7 +12,7 @@
 #include "base/single_thread_task_runner.h"
 #include "content/public/common/content_client.h"
 #include "media/media_buildflags.h"
-#include "services/service_manager/public/cpp/binder_registry.h"
+#include "mojo/public/cpp/bindings/binder_map.h"
 
 namespace base {
 class Token;
@@ -28,6 +28,10 @@ namespace media {
 class CdmProxy;
 }
 
+namespace viz {
+class VizCompositorThreadRunner;
+}
+
 namespace content {
 
 // Embedder API for participating in gpu logic.
@@ -35,17 +39,15 @@ class CONTENT_EXPORT ContentGpuClient {
  public:
   virtual ~ContentGpuClient() {}
 
-  // Initializes the registry. |registry| will be passed to a ConnectionFilter
-  // (which lives on the IO thread). Unlike other childthreads, the client must
-  // register additional interfaces on this registry rather than just creating
-  // more ConnectionFilters as the ConnectionFilter that wraps this registry
-  // specifically does not bind any interface requests until after the Gpu
-  // process receives CreateGpuService() from the browser.
-  virtual void InitializeRegistry(service_manager::BinderRegistry* registry) {}
-
   // Called during initialization once the GpuService has been initialized.
-  virtual void GpuServiceInitialized(
-      const gpu::GpuPreferences& gpu_preferences) {}
+  virtual void GpuServiceInitialized() {}
+
+  // Registers Mojo interface binders that can handle interface requests from
+  // the browser. Binders registered here will never run until the GPU process
+  // has received a |CreateGpuService()| call from the browser.
+  virtual void ExposeInterfacesToBrowser(
+      const gpu::GpuPreferences& gpu_preferences,
+      mojo::BinderMap* binders) {}
 
   // Called right after the IO/compositor thread is created.
   virtual void PostIOThreadCreated(
@@ -53,12 +55,13 @@ class CONTENT_EXPORT ContentGpuClient {
   virtual void PostCompositorThreadCreated(
       base::SingleThreadTaskRunner* task_runner) {}
 
-  // Allows client to supply SyncPointManager and SharedImageManager instance
-  // instead of having content internally create one.
+  // Allows client to supply these object instances instead of having content
+  // internally create one.
   virtual gpu::SyncPointManager* GetSyncPointManager();
   virtual gpu::SharedImageManager* GetSharedImageManager();
+  virtual viz::VizCompositorThreadRunner* GetVizCompositorThreadRunner();
 
-#if BUILDFLAG(ENABLE_LIBRARY_CDMS)
+#if BUILDFLAG(ENABLE_CDM_PROXY)
   // Creates a media::CdmProxy for the type of Content Decryption Module (CDM)
   // identified by |cdm_guid|.
   virtual std::unique_ptr<media::CdmProxy> CreateCdmProxy(

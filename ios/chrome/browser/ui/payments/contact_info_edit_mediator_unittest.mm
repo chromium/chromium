@@ -5,8 +5,8 @@
 #import "ios/chrome/browser/ui/payments/contact_info_edit_mediator.h"
 
 #include "base/mac/foundation_util.h"
-#include "components/autofill/core/browser/autofill_profile.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/strings/grit/components_strings.h"
 #include "ios/chrome/browser/payments/payment_request_test_util.h"
 #import "ios/chrome/browser/payments/payment_request_unittest_base.h"
@@ -29,13 +29,17 @@ class PaymentRequestContactInfoEditMediatorTest
  protected:
   // PlatformTest:
   void SetUp() override {
+    PlatformTest::SetUp();
     DoSetUp();
 
     CreateTestPaymentRequest();
   }
 
   // PlatformTest:
-  void TearDown() override { DoTearDown(); }
+  void TearDown() override {
+    DoTearDown();
+    PlatformTest::TearDown();
+  }
 };
 
 // Tests that the expected editor fields are created when creating a profile.
@@ -255,7 +259,7 @@ TEST_F(PaymentRequestContactInfoEditMediatorTest, ValidateFieldInvalidValue) {
       initWithAutofillUIType:AutofillUITypeProfileHomePhoneWholeNumber
                    fieldType:EditorFieldTypeTextField
                        label:@""
-                       value:@"1506853121"  // Missing one last digit.
+                       value:@"15068531"  // It is too short.
                     required:YES];
   NSString* validationError =
       [mediator paymentRequestEditViewController:nil

@@ -157,8 +157,9 @@ The server is composed of two parts:
 
 1) A compute engine VM instance which runs a cron job to periodicially pull the
    chromium repo and uses the update_cache.py script to push the new data to the
-   cloud datastore. All the keys in the cloud datastore are indexed by the app
-   version specified in app.yaml.
+   cloud datastore and clear the existing memcache for the App engine instance
+   to ensure stale data is not served. All the keys in the cloud datastore are
+   indexed by the app version specified in app.yaml.
 
 2) A python app engine app which reads the data in the cloud datastore and
    serves the website.
@@ -166,6 +167,27 @@ The server is composed of two parts:
 Hence, even if we were to stop the compute engine VM instance, the website
 should still keep running. But it won't update, since the cloud datastore won't
 get updated.
+
+-----------------------------------------------
+Updating Docs served from Google Cloud Storage.
+
+Some docs (e.g. webstore docs) are served using Google Cloud Storage buckets. To
+update files in these docs, follow these steps:
+
+1) Go the project homepage and then to the Storage section.
+2) Go to the relevant storage bucket. For example, to update webstore docs, go
+   to the page for "chromedocs-webstore".
+3) Modify an existing file or upload a new file. Edit file permissions if
+   necessary to ensure these are accessible to Public. (Ideally these should be
+   only accessible to the cron job running on the compute engine VM instance.)
+4) After the next cron job on the compute engine completes, the modifications
+   should be live.
+5) In order to expedite 4), a manual datastore update can be performed by
+   running "./update_docs.sh --data-source=content_providers --force" on the VM
+   instance.
+
+Note: these steps shouldn't require a server version bump. If they do, please
+file a bug.
 
 ---------------------------------------
 VM: Some notes and troubleshooting tips
@@ -233,6 +255,30 @@ Wed Dec 14 19:50:01 2016 10745 10744 bash /home/git-processor/update-docs-full.s
     while, you'd want to kill them, which should be "safe" (endorsed by rockot@)
     in most of the cases. If that doesn't work, then delete the lock file. This
     will let subsequent cron runs to update docserver.
+
+    Also ensure that the App engine's current version is in sync with the
+    version specified in app.yaml on ToT.
+
+    Some other miscellaneous debugging tips:
+    - Viewing updates made by last cron job
+      To view the contents of the data persisted by the last cron job, inspect
+      the .docserver_cache file on the Compute Engine instance. See
+      /home/git-processor/tools/dump_keys.py for an example of how to do so.
+
+    - Viewing actual datastore entries
+      Go to the project homepage and then move to the "Datastore" section. From
+      the dropdowns, choose "Namespace" = [default], "Kind"=
+      "PersistentObjectStoreItem" and click on "Filter Entities" and then enter
+      the key to inspect. Example search:
+      Key(PersistentObjectStoreItem, 'class=APIListDataSource&category=LocalGitFileSystem@master&app_version=3-65-0/api_data')
+      The data here should be the same as the one in .docserver_cache.
+
+    - Debugging live App Engine instance
+      Go the Project homepage, and head over to the "Debug" section. Using
+      Stackdriver debugging, it's possible to take live snapshots and inspect
+      the state of the live App Engine instance. E.g. it allows you to inspect
+      variables, see the stack trace etc. by setting a "logpoint".
+
 
 Q5: How to migrate to a new VM instance? (Say to update the operating system).
     ROUGH steps:

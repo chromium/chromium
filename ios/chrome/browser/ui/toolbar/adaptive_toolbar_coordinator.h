@@ -23,9 +23,9 @@ class WebStateList;
 @interface AdaptiveToolbarCoordinator
     : ChromeCoordinator<SideSwipeToolbarSnapshotProviding, ToolbarCoordinatee>
 
-// Initializes this Coordinator with its |browserState|.
-- (instancetype)initWithBrowserState:(ios::ChromeBrowserState*)browserState
-    NS_DESIGNATED_INITIALIZER;
+// Initializes this Coordinator with its |browser| and a nil base view
+// controller.
+- (instancetype)initWithBrowser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
     NS_UNAVAILABLE;
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController

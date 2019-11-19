@@ -4,12 +4,17 @@
 
 #include "ash/wm/overview/scoped_overview_transform_window.h"
 
+#include "ash/public/cpp/ash_features.h"
+#include "ash/public/cpp/window_properties.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/window_state.h"
+#include "base/test/scoped_feature_list.h"
 #include "ui/aura/window.h"
 #include "ui/display/display.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/screen.h"
+#include "ui/wm/core/window_util.h"
 
 namespace ash {
 
@@ -207,16 +212,13 @@ TEST_F(ScopedOverviewTransformWindowTest, TransformingPillaredRect) {
 // Tests the cases when very wide or tall windows enter overview mode.
 TEST_F(ScopedOverviewTransformWindowTest, ExtremeWindowBounds) {
   // Add three windows which in overview mode will be considered wide, tall and
-  // normal. Window |wide|, with size (400, 160) will be resized to (200, 160)
-  // when the 400x200 is rotated to 200x400, and should be considered a normal
+  // normal. Window |wide|, with size (400, 160) will be resized to (300, 160)
+  // when the 400x300 is rotated to 300x400, and should be considered a normal
   // overview window after display change.
-  UpdateDisplay("400x200");
-  std::unique_ptr<aura::Window> wide =
-      CreateTestWindow(gfx::Rect(10, 10, 400, 160));
-  std::unique_ptr<aura::Window> tall =
-      CreateTestWindow(gfx::Rect(10, 10, 50, 200));
-  std::unique_ptr<aura::Window> normal =
-      CreateTestWindow(gfx::Rect(10, 10, 200, 200));
+  UpdateDisplay("400x300");
+  std::unique_ptr<aura::Window> wide = CreateTestWindow(gfx::Rect(400, 160));
+  std::unique_ptr<aura::Window> tall = CreateTestWindow(gfx::Rect(100, 300));
+  std::unique_ptr<aura::Window> normal = CreateTestWindow(gfx::Rect(300, 300));
 
   ScopedOverviewTransformWindow scoped_wide(nullptr, wide.get());
   ScopedOverviewTransformWindow scoped_tall(nullptr, tall.get());
@@ -245,22 +247,94 @@ TEST_F(ScopedOverviewTransformWindowTest, ExtremeWindowBounds) {
   EXPECT_EQ(GridWindowFillMode::kNormal, scoped_normal.type());
 }
 
-// Verify that if the window's bounds are changed while it's in overview mode,
-// the rounded edge mask's bounds are also changed accordingly.
-TEST_F(ScopedOverviewTransformWindowTest, WindowBoundsChangeTest) {
-  UpdateDisplay("400x400");
-  const gfx::Rect bounds(10, 10, 200, 200);
-  std::unique_ptr<aura::Window> window = CreateTestWindow(bounds);
+// Tests that transients which should be invisible in overview do not have their
+// transforms or opacities altered.
+TEST_F(ScopedOverviewTransformWindowTest, InvisibleTransients) {
+  auto window = CreateTestWindow(gfx::Rect(200, 200));
+  auto child = CreateTestWindow(gfx::Rect(100, 190, 100, 10),
+                                aura::client::WINDOW_TYPE_POPUP);
+  auto child2 = CreateTestWindow(gfx::Rect(0, 190, 100, 10),
+                                 aura::client::WINDOW_TYPE_POPUP);
+  ::wm::AddTransientChild(window.get(), child.get());
+  ::wm::AddTransientChild(window.get(), child2.get());
+
+  child2->SetProperty(kHideInOverviewKey, true);
+
+  for (auto* it : {window.get(), child.get(), child2.get()}) {
+    it->SetTransform(gfx::Transform());
+    it->layer()->SetOpacity(1.f);
+  }
+
   ScopedOverviewTransformWindow scoped_window(nullptr, window.get());
-  scoped_window.UpdateMask(true);
+  scoped_window.SetOpacity(0.5f);
+  EXPECT_EQ(0.5f, window->layer()->opacity());
+  EXPECT_EQ(0.5f, child->layer()->opacity());
+  EXPECT_EQ(0.f, child2->layer()->opacity());
+  EXPECT_TRUE(window->IsVisible());
+  EXPECT_TRUE(child->IsVisible());
+  EXPECT_FALSE(child2->IsVisible());
 
-  EXPECT_TRUE(scoped_window.mask_);
-  EXPECT_EQ(window->bounds(), scoped_window.GetMaskBoundsForTesting());
-  EXPECT_EQ(bounds, scoped_window.GetMaskBoundsForTesting());
+  gfx::Transform transform(1.f, 0.f, 0.f, 1.f, 10.f, 10.f);
+  SetTransform(window.get(), transform);
+  EXPECT_EQ(transform, window->transform());
+  EXPECT_EQ(transform, child->transform());
+  EXPECT_TRUE(child2->transform().IsIdentity());
+}
 
-  wm::GetWindowState(window.get())->Maximize();
-  EXPECT_EQ(window->bounds(), scoped_window.GetMaskBoundsForTesting());
-  EXPECT_NE(bounds, scoped_window.GetMaskBoundsForTesting());
+// Tests that the event targeting policies of a given window and transient
+// descendants gets set as expected.
+TEST_F(ScopedOverviewTransformWindowTest, EventTargetingPolicy) {
+  using etp = aura::EventTargetingPolicy;
+
+  // Helper for creating popups that will be transients for testing.
+  auto create_popup = [this] {
+    std::unique_ptr<aura::Window> popup =
+        CreateTestWindow(gfx::Rect(10, 10), aura::client::WINDOW_TYPE_POPUP);
+    popup->SetEventTargetingPolicy(etp::kTargetAndDescendants);
+    return popup;
+  };
+
+  auto window = CreateTestWindow(gfx::Rect(200, 200));
+  window->SetEventTargetingPolicy(etp::kTargetAndDescendants);
+
+  auto transient = create_popup();
+  auto transient1 = create_popup();
+  auto transient2 = create_popup();
+  ::wm::AddTransientChild(window.get(), transient.get());
+
+  {
+    // Tests that after creating the scoped object, the window and its current
+    // transient child have |kNone| targeting policy.
+    ScopedOverviewTransformWindow scoped_window(nullptr, window.get());
+    EXPECT_EQ(etp::kNone, window->event_targeting_policy());
+    EXPECT_EQ(etp::kNone, transient->event_targeting_policy());
+
+    // Tests that after adding transient children, one to the window itself and
+    // one to the current transient child, they will both have |kNone| targeting
+    // policy.
+    ::wm::AddTransientChild(window.get(), transient1.get());
+    ::wm::AddTransientChild(transient.get(), transient2.get());
+    EXPECT_EQ(etp::kNone, transient1->event_targeting_policy());
+    EXPECT_EQ(etp::kNone, transient2->event_targeting_policy());
+
+    // Tests that adding a transient child which does not have |window| as its
+    // descendant does not have its targeting policy altered.
+    auto window2 = CreateTestWindow(gfx::Rect(200, 200));
+    auto transient3 = create_popup();
+    ::wm::AddTransientChild(window2.get(), transient3.get());
+    EXPECT_EQ(etp::kTargetAndDescendants, transient3->event_targeting_policy());
+
+    // Tests that removing a transient child from |window| will reset its
+    // targeting policy.
+    ::wm::RemoveTransientChild(window.get(), transient1.get());
+    EXPECT_EQ(etp::kTargetAndDescendants, transient1->event_targeting_policy());
+  }
+
+  // Tests that when the scoped object is destroyed, the targeting policies all
+  // get reset.
+  EXPECT_EQ(etp::kTargetAndDescendants, window->event_targeting_policy());
+  EXPECT_EQ(etp::kTargetAndDescendants, transient->event_targeting_policy());
+  EXPECT_EQ(etp::kTargetAndDescendants, transient2->event_targeting_policy());
 }
 
 }  // namespace ash

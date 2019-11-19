@@ -12,13 +12,13 @@
 #include "base/macros.h"
 #include "base/optional.h"
 #include "chrome/browser/chromeos/login/screens/encryption_migration_mode.h"
-#include "chrome/browser/chromeos/login/screens/encryption_migration_screen_view.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
+#include "chromeos/dbus/cryptohome/cryptohome_client.h"
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
-#include "chromeos/dbus/cryptohome_client.h"
-#include "chromeos/dbus/power_manager_client.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/login/auth/user_context.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/wake_lock.mojom.h"
 #include "third_party/cros_system_api/dbus/cryptohome/dbus-constants.h"
 
@@ -29,7 +29,28 @@ class TimeTicks;
 
 namespace chromeos {
 
+class EncryptionMigrationScreen;
 class LoginFeedback;
+class UserContext;
+
+class EncryptionMigrationScreenView {
+ public:
+  using ContinueLoginCallback = base::OnceCallback<void(const UserContext&)>;
+  using RestartLoginCallback = base::OnceCallback<void(const UserContext&)>;
+
+  constexpr static StaticOobeScreenId kScreenId{"encryption-migration"};
+
+  virtual ~EncryptionMigrationScreenView() {}
+
+  virtual void Show() = 0;
+  virtual void Hide() = 0;
+  virtual void SetDelegate(EncryptionMigrationScreen* delegate) = 0;
+  virtual void SetUserContext(const UserContext& user_context) = 0;
+  virtual void SetMode(EncryptionMigrationMode mode) = 0;
+  virtual void SetContinueLoginCallback(ContinueLoginCallback callback) = 0;
+  virtual void SetRestartLoginCallback(RestartLoginCallback callback) = 0;
+  virtual void SetupInitialView() = 0;
+};
 
 // WebUI implementation of EncryptionMigrationScreenView
 class EncryptionMigrationScreenHandler : public EncryptionMigrationScreenView,
@@ -37,6 +58,8 @@ class EncryptionMigrationScreenHandler : public EncryptionMigrationScreenView,
                                          public CryptohomeClient::Observer,
                                          public PowerManagerClient::Observer {
  public:
+  using TView = EncryptionMigrationScreenView;
+
   explicit EncryptionMigrationScreenHandler(
       JSCallsContainer* js_calls_container);
   ~EncryptionMigrationScreenHandler() override;
@@ -44,7 +67,7 @@ class EncryptionMigrationScreenHandler : public EncryptionMigrationScreenView,
   // EncryptionMigrationScreenView implementation:
   void Show() override;
   void Hide() override;
-  void SetDelegate(Delegate* delegate) override;
+  void SetDelegate(EncryptionMigrationScreen* delegate) override;
   void SetUserContext(const UserContext& user_context) override;
   void SetMode(EncryptionMigrationMode mode) override;
   void SetContinueLoginCallback(ContinueLoginCallback callback) override;
@@ -56,19 +79,20 @@ class EncryptionMigrationScreenHandler : public EncryptionMigrationScreenView,
       ::login::LocalizedValuesBuilder* builder) override;
   void Initialize() override;
 
- protected:
   // Callback that can be used to check free disk space.
   using FreeDiskSpaceFetcher = base::RepeatingCallback<int64_t()>;
 
   // Testing only: Sets the free disk space fetcher.
   void SetFreeDiskSpaceFetcherForTesting(
       FreeDiskSpaceFetcher free_disk_space_fetcher);
+
   // Testing only: Sets the tick clock used to measure elapsed time during
   // migration.
-  // This doesn't toke the ownership of the clock. |tick_clock| must outlive the
+  // This doesn't take the ownership of the clock. |tick_clock| must outlive the
   // EncryptionMigrationScreenHandler instance.
   void SetTickClockForTesting(const base::TickClock* tick_clock);
 
+ protected:
   virtual device::mojom::WakeLock* GetWakeLock();
 
  private:
@@ -145,7 +169,7 @@ class EncryptionMigrationScreenHandler : public EncryptionMigrationScreenView,
   // Stop forcing migration if it was forced by policy.
   void MaybeStopForcingMigration();
 
-  Delegate* delegate_ = nullptr;
+  EncryptionMigrationScreen* delegate_ = nullptr;
   bool show_on_init_ = false;
 
   // The current UI state which should be refrected in the web UI.
@@ -178,7 +202,7 @@ class EncryptionMigrationScreenHandler : public EncryptionMigrationScreenView,
   // Point in time when minimal migration started, as reported by |tick_clock_|.
   base::TimeTicks minimal_migration_start_;
 
-  device::mojom::WakeLockPtr wake_lock_;
+  mojo::Remote<device::mojom::WakeLock> wake_lock_;
 
   std::unique_ptr<LoginFeedback> login_feedback_;
 
@@ -187,7 +211,8 @@ class EncryptionMigrationScreenHandler : public EncryptionMigrationScreenView,
 
   FreeDiskSpaceFetcher free_disk_space_fetcher_;
 
-  base::WeakPtrFactory<EncryptionMigrationScreenHandler> weak_ptr_factory_;
+  base::WeakPtrFactory<EncryptionMigrationScreenHandler> weak_ptr_factory_{
+      this};
 
   DISALLOW_COPY_AND_ASSIGN(EncryptionMigrationScreenHandler);
 };

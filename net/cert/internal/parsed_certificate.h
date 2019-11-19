@@ -229,6 +229,19 @@ class NET_EXPORT ParsedCertificate
     return inhibit_any_policy_;
   }
 
+  // Returns the AuthorityKeyIdentifier extension, or nullopt if there wasn't
+  // one.
+  const base::Optional<ParsedAuthorityKeyIdentifier>& authority_key_identifier()
+      const {
+    return authority_key_identifier_;
+  }
+
+  // Returns the SubjectKeyIdentifier extension, or nullopt if there wasn't
+  // one.
+  const base::Optional<der::Input>& subject_key_identifier() const {
+    return subject_key_identifier_;
+  }
+
   // Returns a map of all the extensions in the certificate.
   const ExtensionsMap& extensions() const { return extensions_; }
 
@@ -316,6 +329,12 @@ class NET_EXPORT ParsedCertificate
   // Inhibit Any Policy extension.
   bool has_inhibit_any_policy_ = false;
   uint8_t inhibit_any_policy_;
+
+  // AuthorityKeyIdentifier extension.
+  base::Optional<ParsedAuthorityKeyIdentifier> authority_key_identifier_;
+
+  // SubjectKeyIdentifier extension.
+  base::Optional<der::Input> subject_key_identifier_;
 
   // All of the extensions.
   ExtensionsMap extensions_;

@@ -324,13 +324,13 @@ public class MultiplexingGcmListener extends GCMBaseIntentService {
    * @throws IllegalStateException if the manifest is not correctly configured
    */
   public static String initializeGcm(Context context) {
-    AndroidChannelPreferences.setGcmChannelType(context, GcmChannelType.DEFAULT);
-    GCMRegistrar.checkDevice(context);
-    GCMRegistrar.checkManifest(context);
-    final String regId = GCMRegistrar.getRegistrationId(context);
-    if (regId.isEmpty()) {
-      GCMRegistrar.register(context, readSenderIdsFromManifestOrDie(context));
-    }
+      AndroidChannelPreferences.setGcmChannelType(GcmChannelType.DEFAULT);
+      GCMRegistrar.checkDevice(context);
+      GCMRegistrar.checkManifest(context);
+      final String regId = GCMRegistrar.getRegistrationId(context);
+      if (regId.isEmpty()) {
+          GCMRegistrar.register(context, readSenderIdsFromManifestOrDie(context));
+      }
     return regId;
   }
 

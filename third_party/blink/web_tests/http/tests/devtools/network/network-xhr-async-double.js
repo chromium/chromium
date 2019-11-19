@@ -38,9 +38,10 @@
     var request1Content = await request1.requestContent();
     var request2Content = await request2.requestContent();
 
-    TestRunner.addResult('resource1.content: ' + request1Content);
-    TestRunner.addResult('resource2.content: ' + request2Content);
-    TestRunner.assertTrue(request1Content === 'request1' && request2Content === 'request2');
+    TestRunner.addResult('resource1.content: ' + request1Content.content);
+    TestRunner.addResult('resource2.content: ' + request2Content.content);
+    TestRunner.assertTrue(request1Content.content === 'request1'
+        && request2Content.content === 'request2');
     TestRunner.completeTest();
   }
 })();

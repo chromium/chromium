@@ -25,12 +25,11 @@ enum NetworkTypeBitFlag {
   kNetworkTypeNone = 0,
   kNetworkTypeEthernet = 1 << 0,
   kNetworkTypeWifi = 1 << 1,
-  kNetworkTypeWimax = 1 << 2,
-  kNetworkTypeCellular = 1 << 3,
-  kNetworkTypeVPN = 1 << 4,
-  kNetworkTypeEthernetEap = 1 << 5,
-  kNetworkTypeBluetooth = 1 << 6,
-  kNetworkTypeTether = 1 << 7
+  kNetworkTypeCellular = 1 << 2,
+  kNetworkTypeVPN = 1 << 3,
+  kNetworkTypeEthernetEap = 1 << 4,
+  kNetworkTypeBluetooth = 1 << 5,
+  kNetworkTypeTether = 1 << 6
 };
 
 struct ShillToBitFlagEntry {
@@ -39,7 +38,6 @@ struct ShillToBitFlagEntry {
 } shill_type_to_flag[] = {{shill::kTypeEthernet, kNetworkTypeEthernet},
                           {shill::kTypeEthernetEap, kNetworkTypeEthernetEap},
                           {shill::kTypeWifi, kNetworkTypeWifi},
-                          {shill::kTypeWimax, kNetworkTypeWimax},
                           {shill::kTypeCellular, kNetworkTypeCellular},
                           {shill::kTypeVPN, kNetworkTypeVPN},
                           {shill::kTypeBluetooth, kNetworkTypeBluetooth},
@@ -63,20 +61,19 @@ NetworkTypePattern NetworkTypePattern::Default() {
 
 // static
 NetworkTypePattern NetworkTypePattern::Wireless() {
-  return NetworkTypePattern(kNetworkTypeWifi | kNetworkTypeWimax |
-                            kNetworkTypeCellular | kNetworkTypeTether);
-}
-
-// static
-NetworkTypePattern NetworkTypePattern::Mobile() {
-  return NetworkTypePattern(kNetworkTypeCellular | kNetworkTypeWimax |
+  return NetworkTypePattern(kNetworkTypeWifi | kNetworkTypeCellular |
                             kNetworkTypeTether);
 }
 
 // static
+NetworkTypePattern NetworkTypePattern::Mobile() {
+  return NetworkTypePattern(kNetworkTypeCellular | kNetworkTypeTether);
+}
+
+// static
 NetworkTypePattern NetworkTypePattern::Physical() {
-  return NetworkTypePattern(kNetworkTypeWifi | kNetworkTypeWimax |
-                            kNetworkTypeCellular | kNetworkTypeEthernet);
+  return NetworkTypePattern(kNetworkTypeWifi | kNetworkTypeCellular |
+                            kNetworkTypeEthernet);
 }
 
 // static
@@ -107,11 +104,6 @@ NetworkTypePattern NetworkTypePattern::Cellular() {
 // static
 NetworkTypePattern NetworkTypePattern::VPN() {
   return NetworkTypePattern(kNetworkTypeVPN);
-}
-
-// static
-NetworkTypePattern NetworkTypePattern::Wimax() {
-  return NetworkTypePattern(kNetworkTypeWimax);
 }
 
 // static

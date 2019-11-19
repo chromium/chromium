@@ -38,7 +38,6 @@ class UserScriptInjector : public ScriptInjector,
 
   // ScriptInjector implementation.
   UserScript::InjectionType script_type() const override;
-  bool ShouldExecuteInMainWorld() const override;
   bool IsUserGesture() const override;
   base::Optional<CSSOrigin> GetCssOrigin() const override;
   const base::Optional<std::string> GetInjectionKey() const override;

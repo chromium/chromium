@@ -93,8 +93,8 @@ void VrController::OnPause() {
     controller_api_->Pause();
 }
 
-device::GvrGamepadData VrController::GetGamepadData() {
-  device::GvrGamepadData pad = {};
+GvrGamepadData VrController::GetGamepadData() {
+  GvrGamepadData pad = {};
   pad.connected = IsConnected();
   pad.timestamp = controller_state_->GetLastOrientationTimestamp();
 

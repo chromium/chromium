@@ -1,0 +1,5 @@
+syntax = "proto2";
+
+package xfa_proto;
+
+message Xfa {}

@@ -42,6 +42,7 @@ namespace blink {
 
 class WebURL;
 class WebServiceWorkerProviderClient;
+struct WebFetchClientSettingsObject;
 struct WebServiceWorkerError;
 
 // WebServiceWorkerProvider attaches to a Document
@@ -74,8 +75,8 @@ class WebServiceWorkerProvider {
   using WebServiceWorkerGetRegistrationsCallbacks =
       WebCallbacks<WebVector<WebServiceWorkerRegistrationObjectInfo>,
                    const WebServiceWorkerError&>;
-  using WebServiceWorkerGetRegistrationForReadyCallbacks =
-      WebCallbacks<WebServiceWorkerRegistrationObjectInfo, void>;
+  using GetRegistrationForReadyCallback =
+      base::OnceCallback<void(WebServiceWorkerRegistrationObjectInfo)>;
 
   // For ServiceWorkerContainer#register(). Requests the embedder to register a
   // service worker.
@@ -86,6 +87,7 @@ class WebServiceWorkerProvider {
       const WebURL& script_url,
       blink::mojom::ScriptType script_type,
       blink::mojom::ServiceWorkerUpdateViaCache update_via_cache,
+      const WebFetchClientSettingsObject& fetch_client_settings_object,
       std::unique_ptr<WebServiceWorkerRegistrationCallbacks>) {}
   // For ServiceWorkerContainer#getRegistration(). Requests the embedder to
   // return a registration.
@@ -98,8 +100,7 @@ class WebServiceWorkerProvider {
       std::unique_ptr<WebServiceWorkerGetRegistrationsCallbacks>) {}
   // For ServiceWorkerContainer#ready. Requests the embedder to return the
   // ready registration.
-  virtual void GetRegistrationForReady(
-      std::unique_ptr<WebServiceWorkerGetRegistrationForReadyCallbacks>) {}
+  virtual void GetRegistrationForReady(GetRegistrationForReadyCallback) {}
   // Helper function for checking URLs. The |scope| and |script_url| cannot
   // include escape sequences for "/" or "\" as per spec, as they would break
   // would the path restriction.

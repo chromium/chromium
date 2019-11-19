@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<style>
+div {
+    content: -webkit-image-set(url("http://127.0.0.1:8080/security/resources/green250x50.png") 1x);
+}
+</style>
+<body>
+<p>
+Checks that a CSS image that was created from an image-set before a referrer
+policy was set is loaded with the correct referrer, in this case, without a
+referrer.
+</p>
+<p>
+The test passes, if a green rectangle is displayed below.
+</p>
+<div></div>
+</body>

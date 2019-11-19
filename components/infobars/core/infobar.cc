@@ -24,8 +24,10 @@ InfoBar::InfoBar(std::unique_ptr<InfoBarDelegate> delegate)
       target_height_(0) {
   DCHECK(delegate_ != nullptr);
   animation_.SetTweenType(gfx::Tween::LINEAR);
-  if (!gfx::Animation::ShouldRenderRichAnimation())
-    animation_.SetSlideDuration(0);
+  if (!gfx::Animation::ShouldRenderRichAnimation() ||
+      !delegate_->ShouldAnimate()) {
+    animation_.SetSlideDuration(base::TimeDelta());
+  }
   delegate_->set_infobar(this);
 }
 

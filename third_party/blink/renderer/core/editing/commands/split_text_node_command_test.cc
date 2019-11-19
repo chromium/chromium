@@ -17,7 +17,7 @@ class SplitTextNodeCommandTest : public EditingTestBase {};
 TEST_F(SplitTextNodeCommandTest, splitInMarkerInterior) {
   SetBodyContent("<div contenteditable>test1 test2 test3</div>");
 
-  ContainerNode* div = ToContainerNode(GetDocument().body()->firstChild());
+  auto* div = To<ContainerNode>(GetDocument().body()->firstChild());
 
   EphemeralRange range = PlainTextRange(0, 5).CreateRange(*div);
   GetDocument().Markers().AddTextMatchMarker(
@@ -31,14 +31,14 @@ TEST_F(SplitTextNodeCommandTest, splitInMarkerInterior) {
   GetDocument().Markers().AddTextMatchMarker(
       range, TextMatchMarker::MatchStatus::kInactive);
 
-  SimpleEditCommand* command = SplitTextNodeCommand::Create(
-      ToText(GetDocument().body()->firstChild()->firstChild()), 8);
+  SimpleEditCommand* command = MakeGarbageCollected<SplitTextNodeCommand>(
+      To<Text>(GetDocument().body()->firstChild()->firstChild()), 8);
 
   EditingState editingState;
   command->DoApply(&editingState);
 
-  const Text& text1 = ToText(*div->firstChild());
-  const Text& text2 = ToText(*text1.nextSibling());
+  const Text& text1 = To<Text>(*div->firstChild());
+  const Text& text2 = To<Text>(*text1.nextSibling());
 
   // The first marker should end up in text1, the second marker should be
   // truncated and end up text1, the third marker should end up in text2
@@ -60,7 +60,7 @@ TEST_F(SplitTextNodeCommandTest, splitInMarkerInterior) {
   // Test undo
   command->DoUnapply();
 
-  const Text& text = ToText(*div->firstChild());
+  const Text& text = To<Text>(*div->firstChild());
 
   EXPECT_EQ(3u, GetDocument().Markers().MarkersFor(text).size());
 
@@ -78,8 +78,8 @@ TEST_F(SplitTextNodeCommandTest, splitInMarkerInterior) {
   // Test redo
   command->DoReapply();
 
-  const Text& text3 = ToText(*div->firstChild());
-  const Text& text4 = ToText(*text3.nextSibling());
+  const Text& text3 = To<Text>(*div->firstChild());
+  const Text& text4 = To<Text>(*text3.nextSibling());
 
   EXPECT_EQ(2u, GetDocument().Markers().MarkersFor(text3).size());
 

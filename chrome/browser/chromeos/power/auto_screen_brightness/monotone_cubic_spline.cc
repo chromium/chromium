@@ -28,16 +28,25 @@ bool IsIncreasing(const std::vector<double>& data, bool is_strict) {
   return true;
 }
 
+bool IsDataValid(const std::vector<double>& xs, const std::vector<double>& ys) {
+  const size_t num_points = xs.size();
+  if (num_points < 2)
+    return false;
+
+  if (num_points != ys.size())
+    return false;
+
+  if (!IsIncreasing(xs, true /* is_strict */))
+    return false;
+
+  return IsIncreasing(ys, false /* is_strict */);
+}
+
 // Computes the tangents at every control point as the average of the secants,
 // while ensuring monotonicity is preserved.
 std::vector<double> ComputeTangents(const std::vector<double>& xs,
                                     const std::vector<double>& ys,
                                     size_t num_points) {
-  DCHECK_GT(num_points, 1u);
-  DCHECK_EQ(num_points, ys.size());
-  DCHECK(IsIncreasing(xs, true /* is_strict */));
-  DCHECK(IsIncreasing(ys, false /* is_strict */));
-
   // Calculate the slopes of the secant lines between successive points.
   std::vector<double> ds;
   std::vector<double> ms;
@@ -81,15 +90,11 @@ std::vector<double> ComputeTangents(const std::vector<double>& xs,
 
 }  // namespace
 
-MonotoneCubicSpline::MonotoneCubicSpline(const std::vector<double>& xs,
-                                         const std::vector<double>& ys)
-    : xs_(xs),
-      ys_(ys),
-      num_points_(xs.size()),
-      ms_(ComputeTangents(xs, ys, num_points_)) {}
-
 MonotoneCubicSpline::MonotoneCubicSpline(const MonotoneCubicSpline& spline) =
     default;
+
+MonotoneCubicSpline& MonotoneCubicSpline::operator=(
+    const MonotoneCubicSpline& spline) = default;
 
 MonotoneCubicSpline::~MonotoneCubicSpline() = default;
 
@@ -124,7 +129,16 @@ base::Optional<MonotoneCubicSpline> MonotoneCubicSpline::FromString(
     ys.push_back(y);
   }
 
-  if (xs.size() < 2)
+  if (!IsDataValid(xs, ys))
+    return base::nullopt;
+
+  return MonotoneCubicSpline(xs, ys);
+}
+
+base::Optional<MonotoneCubicSpline>
+MonotoneCubicSpline::CreateMonotoneCubicSpline(const std::vector<double>& xs,
+                                               const std::vector<double>& ys) {
+  if (!IsDataValid(xs, ys))
     return base::nullopt;
 
   return MonotoneCubicSpline(xs, ys);
@@ -143,6 +157,10 @@ bool MonotoneCubicSpline::operator==(const MonotoneCubicSpline& spline) const {
   }
 
   return true;
+}
+
+bool MonotoneCubicSpline::operator!=(const MonotoneCubicSpline& spline) const {
+  return !(*this == spline);
 }
 
 double MonotoneCubicSpline::Interpolate(double x) const {
@@ -200,6 +218,13 @@ std::string MonotoneCubicSpline::ToString() const {
 
   return base::JoinString(rows, "\n");
 }
+
+MonotoneCubicSpline::MonotoneCubicSpline(const std::vector<double>& xs,
+                                         const std::vector<double>& ys)
+    : xs_(xs),
+      ys_(ys),
+      num_points_(xs.size()),
+      ms_(ComputeTangents(xs, ys, num_points_)) {}
 
 }  // namespace auto_screen_brightness
 }  // namespace power

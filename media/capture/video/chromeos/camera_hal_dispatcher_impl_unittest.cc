@@ -10,10 +10,12 @@
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
-#include "base/test/scoped_task_environment.h"
-#include "media/capture/video/chromeos/mojo/camera_common.mojom.h"
-#include "media/capture/video/chromeos/mojo/cros_camera_service.mojom.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
+#include "base/test/task_environment.h"
+#include "media/capture/video/chromeos/mojom/camera_common.mojom.h"
+#include "media/capture/video/chromeos/mojom/cros_camera_service.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -25,54 +27,49 @@ namespace {
 
 class MockCameraHalServer : public cros::mojom::CameraHalServer {
  public:
-  MockCameraHalServer() : binding_(this) {}
+  MockCameraHalServer() = default;
 
   ~MockCameraHalServer() = default;
 
-  void CreateChannel(
-      cros::mojom::CameraModuleRequest camera_module_request) override {
-    DoCreateChannel(camera_module_request);
+  void CreateChannel(mojo::PendingReceiver<cros::mojom::CameraModule>
+                         camera_module_receiver) override {
+    DoCreateChannel(std::move(camera_module_receiver));
   }
   MOCK_METHOD1(DoCreateChannel,
-               void(cros::mojom::CameraModuleRequest& camera_module_request));
+               void(mojo::PendingReceiver<cros::mojom::CameraModule>
+                        camera_module_receiver));
 
   MOCK_METHOD1(SetTracingEnabled, void(bool enabled));
 
-  cros::mojom::CameraHalServerPtrInfo GetInterfacePtrInfo() {
-    cros::mojom::CameraHalServerPtrInfo camera_hal_server_ptr_info;
-    cros::mojom::CameraHalServerRequest camera_hal_server_request =
-        mojo::MakeRequest(&camera_hal_server_ptr_info);
-    binding_.Bind(std::move(camera_hal_server_request));
-    return camera_hal_server_ptr_info;
+  mojo::PendingRemote<cros::mojom::CameraHalServer> GetPendingRemote() {
+    return receiver_.BindNewPipeAndPassRemote();
   }
 
  private:
-  mojo::Binding<cros::mojom::CameraHalServer> binding_;
+  mojo::Receiver<cros::mojom::CameraHalServer> receiver_{this};
   DISALLOW_COPY_AND_ASSIGN(MockCameraHalServer);
 };
 
 class MockCameraHalClient : public cros::mojom::CameraHalClient {
  public:
-  MockCameraHalClient() : binding_(this) {}
+  MockCameraHalClient() = default;
 
   ~MockCameraHalClient() = default;
 
-  void SetUpChannel(cros::mojom::CameraModulePtr camera_module_ptr) override {
-    DoSetUpChannel(camera_module_ptr);
+  void SetUpChannel(
+      mojo::PendingRemote<cros::mojom::CameraModule> camera_module) override {
+    DoSetUpChannel(std::move(camera_module));
   }
-  MOCK_METHOD1(DoSetUpChannel,
-               void(cros::mojom::CameraModulePtr& camera_module_ptr));
+  MOCK_METHOD1(
+      DoSetUpChannel,
+      void(mojo::PendingRemote<cros::mojom::CameraModule> camera_module));
 
-  cros::mojom::CameraHalClientPtrInfo GetInterfacePtrInfo() {
-    cros::mojom::CameraHalClientPtrInfo camera_hal_client_ptr_info;
-    cros::mojom::CameraHalClientRequest camera_hal_client_request =
-        mojo::MakeRequest(&camera_hal_client_ptr_info);
-    binding_.Bind(std::move(camera_hal_client_request));
-    return camera_hal_client_ptr_info;
+  mojo::PendingRemote<cros::mojom::CameraHalClient> GetPendingRemote() {
+    return receiver_.BindNewPipeAndPassRemote();
   }
 
  private:
-  mojo::Binding<cros::mojom::CameraHalClient> binding_;
+  mojo::Receiver<cros::mojom::CameraHalClient> receiver_{this};
   DISALLOW_COPY_AND_ASSIGN(MockCameraHalClient);
 };
 
@@ -106,14 +103,16 @@ class CameraHalDispatcherImplTest : public ::testing::Test {
     }
   }
 
-  static void RegisterServer(CameraHalDispatcherImpl* dispatcher,
-                             cros::mojom::CameraHalServerPtrInfo server) {
-    dispatcher->RegisterServer(mojo::MakeProxy(std::move(server)));
+  static void RegisterServer(
+      CameraHalDispatcherImpl* dispatcher,
+      mojo::PendingRemote<cros::mojom::CameraHalServer> server) {
+    dispatcher->RegisterServer(std::move(server));
   }
 
-  static void RegisterClient(CameraHalDispatcherImpl* dispatcher,
-                             cros::mojom::CameraHalClientPtrInfo client) {
-    dispatcher->RegisterClient(mojo::MakeProxy(std::move(client)));
+  static void RegisterClient(
+      CameraHalDispatcherImpl* dispatcher,
+      mojo::PendingRemote<cros::mojom::CameraHalClient> client) {
+    dispatcher->RegisterClient(std::move(client));
   }
 
  protected:
@@ -122,7 +121,7 @@ class CameraHalDispatcherImplTest : public ::testing::Test {
   CameraHalDispatcherImpl* dispatcher_;
 
  private:
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   std::unique_ptr<base::RunLoop> run_loop_;
   DISALLOW_COPY_AND_ASSIGN(CameraHalDispatcherImplTest);
 };
@@ -141,16 +140,16 @@ TEST_F(CameraHalDispatcherImplTest, ServerConnectionError) {
       .WillOnce(
           InvokeWithoutArgs(this, &CameraHalDispatcherImplTest::QuitRunLoop));
 
-  auto server_ptr = mock_server->GetInterfacePtrInfo();
+  auto server = mock_server->GetPendingRemote();
   GetProxyTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(&CameraHalDispatcherImplTest::RegisterServer,
-                     base::Unretained(dispatcher_), base::Passed(&server_ptr)));
-  auto client_ptr = mock_client->GetInterfacePtrInfo();
+                     base::Unretained(dispatcher_), std::move(server)));
+  auto client = mock_client->GetPendingRemote();
   GetProxyTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(&CameraHalDispatcherImplTest::RegisterClient,
-                     base::Unretained(dispatcher_), base::Passed(&client_ptr)));
+                     base::Unretained(dispatcher_), std::move(client)));
 
   // Wait until the client gets the established Mojo channel.
   DoLoop();
@@ -166,11 +165,11 @@ TEST_F(CameraHalDispatcherImplTest, ServerConnectionError) {
       .WillOnce(
           InvokeWithoutArgs(this, &CameraHalDispatcherImplTest::QuitRunLoop));
 
-  server_ptr = mock_server->GetInterfacePtrInfo();
+  server = mock_server->GetPendingRemote();
   GetProxyTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(&CameraHalDispatcherImplTest::RegisterServer,
-                     base::Unretained(dispatcher_), base::Passed(&server_ptr)));
+                     base::Unretained(dispatcher_), std::move(server)));
 
   // Wait until the clients gets the newly established Mojo channel.
   DoLoop();
@@ -190,16 +189,16 @@ TEST_F(CameraHalDispatcherImplTest, ClientConnectionError) {
       .WillOnce(
           InvokeWithoutArgs(this, &CameraHalDispatcherImplTest::QuitRunLoop));
 
-  auto server_ptr = mock_server->GetInterfacePtrInfo();
+  auto server = mock_server->GetPendingRemote();
   GetProxyTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(&CameraHalDispatcherImplTest::RegisterServer,
-                     base::Unretained(dispatcher_), base::Passed(&server_ptr)));
-  auto client_ptr = mock_client->GetInterfacePtrInfo();
+                     base::Unretained(dispatcher_), std::move(server)));
+  auto client = mock_client->GetPendingRemote();
   GetProxyTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(&CameraHalDispatcherImplTest::RegisterClient,
-                     base::Unretained(dispatcher_), base::Passed(&client_ptr)));
+                     base::Unretained(dispatcher_), std::move(client)));
 
   // Wait until the client gets the established Mojo channel.
   DoLoop();
@@ -215,11 +214,11 @@ TEST_F(CameraHalDispatcherImplTest, ClientConnectionError) {
       .WillOnce(
           InvokeWithoutArgs(this, &CameraHalDispatcherImplTest::QuitRunLoop));
 
-  client_ptr = mock_client->GetInterfacePtrInfo();
+  client = mock_client->GetPendingRemote();
   GetProxyTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(&CameraHalDispatcherImplTest::RegisterClient,
-                     base::Unretained(dispatcher_), base::Passed(&client_ptr)));
+                     base::Unretained(dispatcher_), std::move(client)));
 
   // Wait until the clients gets the newly established Mojo channel.
   DoLoop();

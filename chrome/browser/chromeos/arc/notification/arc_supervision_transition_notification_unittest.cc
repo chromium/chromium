@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <string>
 
 #include "base/macros.h"
 #include "base/run_loop.h"
@@ -13,11 +14,11 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/arc/arc_prefs.h"
-#include "components/arc/arc_supervision_transition.h"
 #include "components/arc/metrics/arc_metrics_constants.h"
+#include "components/arc/session/arc_supervision_transition.h"
 #include "components/arc/test/fake_app_instance.h"
 #include "components/prefs/pref_service.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace arc {
@@ -53,7 +54,7 @@ class ArcSupervisionTransitionNotificationTest
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;
   ArcAppTest arc_app_test_;
 
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
 
   DISALLOW_COPY_AND_ASSIGN(ArcSupervisionTransitionNotificationTest);
 };
@@ -67,7 +68,6 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST_P(ArcSupervisionTransitionNotificationTest, BaseFlow) {
   ASSERT_TRUE(arc_app_test()->fake_apps().size());
-  arc_app_test()->app_instance()->RefreshAppList();
   arc_app_test()->app_instance()->SendRefreshAppList(
       arc_app_test()->fake_apps());
   const std::string app_id =

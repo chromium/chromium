@@ -5,14 +5,14 @@
 #include "chrome/browser/language/url_language_histogram_factory.h"
 
 #include "chrome/test/base/testing_profile.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 using testing::IsNull;
 using testing::Not;
 
 TEST(UrlLanguageHistogramFactoryTest, NotCreatedInIncognito) {
-  content::TestBrowserThreadBundle thread_bundle;
+  content::BrowserTaskEnvironment task_environment;
   TestingProfile profile;
 
   EXPECT_THAT(UrlLanguageHistogramFactory::GetForBrowserContext(&profile),

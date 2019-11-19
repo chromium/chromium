@@ -21,6 +21,15 @@ int64_t METRICS_EXPORT GetExponentialBucketMin(int64_t sample,
 // timing user actions.
 int64_t METRICS_EXPORT GetExponentialBucketMinForUserTiming(int64_t sample);
 
+// Like GetExponentialBucketMin but uses a standard bucket_spacing of 1.15.
+int64_t METRICS_EXPORT GetExponentialBucketMinForCounts1000(int64_t sample);
+
+// Like GetExponentialBucketMin but uses a standard bucket_spacing of 1.3.
+int64_t METRICS_EXPORT GetExponentialBucketMinForBytes(int64_t sample);
+
+// Like GetExponentialBucketMin but uses a standard bucket_spacing of 1.15.
+int64_t METRICS_EXPORT GetExponentialBucketMinForBytesUnder1KB(int64_t sample);
+
 // Calculates the linear bucket |sample| falls in and returns the lower
 // threshold of that bucket (i.e., rounding down to the nearest multiple of
 // |bucket_size|). Negative sample values will be rounded down as well (away

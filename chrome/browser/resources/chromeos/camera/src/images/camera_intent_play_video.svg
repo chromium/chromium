@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="72px" height="72px" viewBox="0 0 72 72" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 57.1 (83088) - https://sketch.com -->
+    <title>btn_play_video_1x</title>
+    <desc>Created with Sketch.</desc>
+    <g id="btn_play_video_1x" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="camera-button" transform="translate(6.127660, 6.127660)" opacity="0.9">
+            <circle id="Oval-3" fill="#FFFFFF" cx="30.0154866" cy="30.0154866" r="30.0154866"></circle>
+            <circle id="Oval-3" fill-opacity="0.1" fill="#5F6368" cx="30.0154866" cy="30.0154866" r="30.0154866"></circle>
+        </g>
+        <g id="dense/av/play" transform="translate(29.412766, 24.817021)" fill="#5F6368">
+            <polygon id="↳Color-fill" points="0 22.7345051 19.4867186 11.3672525 0 0"></polygon>
+        </g>
+    </g>
+</svg>

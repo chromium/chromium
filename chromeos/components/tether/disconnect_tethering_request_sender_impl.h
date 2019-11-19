@@ -76,7 +76,8 @@ class DisconnectTetheringRequestSenderImpl
   std::map<std::string, std::unique_ptr<DisconnectTetheringOperation>>
       device_id_to_operation_map_;
 
-  base::WeakPtrFactory<DisconnectTetheringRequestSenderImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<DisconnectTetheringRequestSenderImpl> weak_ptr_factory_{
+      this};
 
   DISALLOW_COPY_AND_ASSIGN(DisconnectTetheringRequestSenderImpl);
 };

@@ -52,6 +52,7 @@ component("prefs") {
 
   deps = [
     "//base",
+    "//base/util/values:values_util",
   ]
 }
 

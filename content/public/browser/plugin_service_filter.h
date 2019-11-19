@@ -22,7 +22,7 @@ struct WebPluginInfo;
 
 // Callback class to let the client filter the list of all installed plugins
 // and block them from being loaded.
-// This class is called on the FILE thread.
+// This class is called on the UI thread.
 class PluginServiceFilter {
  public:
   virtual ~PluginServiceFilter() {}
@@ -31,7 +31,6 @@ class PluginServiceFilter {
   // plugin, or return true and optionally change the passed in plugin.
   virtual bool IsPluginAvailable(int render_process_id,
                                  int render_frame_id,
-                                 const void* context,
                                  const GURL& url,
                                  const url::Origin& main_frame_origin,
                                  WebPluginInfo* plugin) = 0;

@@ -12,6 +12,7 @@ option java_package = "org.chromium.components.metrics";
 package metrics;
 
 import "cast_logs.proto";
+import "chrome_os_app_list_launch_event.proto";
 import "histogram_event.proto";
 import "memory_leak_report.proto";
 import "omnibox_event.proto";
@@ -20,10 +21,12 @@ import "printer_event.proto";
 import "reporting_info.proto";
 import "sampled_profile.proto";
 import "system_profile.proto";
+import "trace_log.proto";
 import "translate_event.proto";
 import "user_action_event.proto";
+import "user_demographics.proto";
 
-// Next tag: 19
+// Next tag: 22
 message ChromeUserMetricsExtension {
   // The product (i.e. end user application) for a given UMA log.
   enum Product {
@@ -64,12 +67,19 @@ message ChromeUserMetricsExtension {
   // Information about the user's browser and system configuration.
   optional SystemProfileProto system_profile = 3;
 
+  // The user's demographic information. This data is made available to Chrome
+  // via syncable priority pref, so is only available if the user is signed-in
+  // and syncing.
+  optional UserDemographicsProto user_demographics = 21;
+
   // This message will log one or more of the following event types:
   repeated UserActionEventProto user_action_event = 4;
   repeated OmniboxEventProto omnibox_event = 5;
   repeated HistogramEventProto histogram_event = 6;
+
   repeated TranslateEventProto translate_event = 15;
   repeated PrinterEventProto printer_event = 16;
+  repeated ChromeOSAppListLaunchEventProto chrome_os_app_list_launch_event = 20;
 
   // Deprecated: use |sampled_profile| instead.
   repeated PerfDataProto perf_data = 8 [deprecated = true];
@@ -86,4 +96,10 @@ message ChromeUserMetricsExtension {
   // The ReportingInfo message sent in the X-Chrome-UMA-ReportingInfo header.
   // Copied in by the receiving server.
   optional ReportingInfo reporting_info = 17;
+
+  // The Chrome traces obtained during the current session. The start time,
+  // duration and details depend on the experiment triggers in the current
+  // session. This field is uploaded as independent logs, which contain only
+  // session id and core system profile fields, apart from this field.
+  repeated TraceLog trace_log = 19;
 }

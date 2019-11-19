@@ -17,9 +17,9 @@
 #include "components/translate/core/language_detection/language_detection_util.h"
 #import "components/translate/ios/browser/js_language_detection_manager.h"
 #include "components/translate/ios/browser/string_clipping_util.h"
-#import "ios/web/public/url_scheme_util.h"
-#import "ios/web/public/web_state/navigation_context.h"
-#include "ios/web/public/web_state/web_state.h"
+#import "ios/web/common/url_scheme_util.h"
+#include "ios/web/public/js_messaging/web_frame.h"
+#import "ios/web/public/navigation/navigation_context.h"
 #include "net/http/http_response_headers.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -46,7 +46,7 @@ LanguageDetectionController::LanguageDetectionController(
 
   translate_enabled_.Init(prefs::kOfferTranslateEnabled, prefs);
   web_state_->AddObserver(this);
-  web_state_->AddScriptCommandCallback(
+  subscription_ = web_state_->AddScriptCommandCallback(
       base::Bind(&LanguageDetectionController::OnTextCaptured,
                  base::Unretained(this)),
       kCommandPrefix);
@@ -54,7 +54,6 @@ LanguageDetectionController::LanguageDetectionController(
 
 LanguageDetectionController::~LanguageDetectionController() {
   if (web_state_) {
-    web_state_->RemoveScriptCommandCallback(kCommandPrefix);
     web_state_->RemoveObserver(this);
     web_state_ = nullptr;
   }
@@ -71,33 +70,32 @@ void LanguageDetectionController::StartLanguageDetection() {
   [js_manager_ startLanguageDetection];
 }
 
-bool LanguageDetectionController::OnTextCaptured(
+void LanguageDetectionController::OnTextCaptured(
     const base::DictionaryValue& command,
     const GURL& url,
-    bool interacting,
-    bool is_main_frame,
+    bool user_is_interacting,
     web::WebFrame* sender_frame) {
-  if (!is_main_frame) {
+  if (!sender_frame->IsMainFrame()) {
     // Translate is only supported on main frame.
-    return false;
+    return;
   }
   std::string textCapturedCommand;
   if (!command.GetString("command", &textCapturedCommand) ||
       textCapturedCommand != "languageDetection.textCaptured" ||
       !command.HasKey("translationAllowed")) {
     NOTREACHED();
-    return false;
+    return;
   }
   bool translation_allowed = false;
   command.GetBoolean("translationAllowed", &translation_allowed);
   if (!translation_allowed) {
     // Translation not allowed by the page. Done processing.
-    return true;
+    return;
   }
   if (!command.HasKey("captureTextTime") || !command.HasKey("htmlLang") ||
       !command.HasKey("httpContentLanguage")) {
     NOTREACHED();
-    return false;
+    return;
   }
 
   double capture_text_time = 0;
@@ -116,7 +114,6 @@ bool LanguageDetectionController::OnTextCaptured(
                    base::Bind(&LanguageDetectionController::OnTextRetrieved,
                               weak_method_factory_.GetWeakPtr(),
                               http_content_language, html_lang, url)];
-  return true;
 }
 
 void LanguageDetectionController::OnTextRetrieved(
@@ -187,7 +184,6 @@ void LanguageDetectionController::DidFinishNavigation(
 
 void LanguageDetectionController::WebStateDestroyed(web::WebState* web_state) {
   DCHECK_EQ(web_state_, web_state);
-  web_state_->RemoveScriptCommandCallback(kCommandPrefix);
   web_state_->RemoveObserver(this);
   web_state_ = nullptr;
 }

@@ -16,7 +16,11 @@ namespace blink {
 class WebSourceBufferClient {
  public:
   // Parser notification types used to monitor problematic usage.
-  enum ParseWarning { kKeyframeTimeGreaterThanDependant, kMuxedSequenceMode };
+  enum ParseWarning {
+    kKeyframeTimeGreaterThanDependant,
+    kMuxedSequenceMode,
+    kGroupEndTimestampDecreaseWithinMediaSegment
+  };
 
   virtual ~WebSourceBufferClient() = default;
 

@@ -18,6 +18,8 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string16.h"
+#include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/time/time.h"
@@ -29,10 +31,11 @@
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/policy_conversions.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
-#include "chrome/browser/policy/profile_policy_connector_factory.h"
 #include "chrome/browser/policy/schema_registry_service.h"
-#include "chrome/browser/policy/schema_registry_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/localized_string.h"
+#include "chrome/common/channel_info.h"
+#include "chrome/grit/chromium_strings.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/browser/cloud/message_util.h"
 #include "components/policy/core/browser/configuration_policy_handler_list.h"
@@ -55,6 +58,7 @@
 #include "components/policy/policy_constants.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/version_info/version_info.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
 #include "google_apis/gaia/gaia_auth_util.h"
@@ -62,18 +66,31 @@
 #include "ui/base/l10n/time_format.h"
 #include "ui/shell_dialogs/select_file_policy.h"
 
+#if defined(OS_ANDROID)
+#include "chrome/browser/ui/android/android_about_app_info.h"
+#endif
+
 #if defined(OS_CHROMEOS)
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/policy/active_directory_policy_manager.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
 #include "chrome/browser/chromeos/policy/device_cloud_policy_store_chromeos.h"
 #include "chrome/browser/chromeos/policy/device_local_account_policy_service.h"
+#include "chrome/browser/chromeos/policy/off_hours/device_off_hours_controller.h"
 #include "chrome/browser/chromeos/policy/user_cloud_policy_manager_chromeos.h"
-#include "chrome/browser/chromeos/policy/user_policy_manager_factory_chromeos.h"
+#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chromeos/dbus/util/version_loader.h"
 #include "components/user_manager/user_manager.h"
 #else
-#include "chrome/browser/policy/cloud/user_cloud_policy_manager_factory.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
+#endif
+
+#if defined(OS_MACOSX)
+#include "base/mac/mac_util.h"
+#endif
+
+#if defined(OS_WIN)
+#include "chrome/browser/ui/webui/version_util_win.h"
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -108,16 +125,12 @@ base::string16 FormatAssociationState(const em::PolicyData* data) {
   return l10n_util::GetStringUTF16(IDS_POLICY_ASSOCIATION_STATE_UNMANAGED);
 }
 
-void GetStatusFromCore(const policy::CloudPolicyCore* core,
-                       base::DictionaryValue* dict) {
-  const policy::CloudPolicyStore* store = core->store();
-  const policy::CloudPolicyClient* client = core->client();
-  const policy::CloudPolicyRefreshScheduler* refresh_scheduler =
-        core->refresh_scheduler();
-
-  // CloudPolicyStore errors take precedence to show in the status message.
-  // Other errors (such as transient policy fetching problems) get displayed
-  // only if CloudPolicyStore is in STATUS_OK.
+// CloudPolicyStore errors take precedence to show in the status message.
+// Other errors (such as transient policy fetching problems) get displayed
+// only if CloudPolicyStore is in STATUS_OK.
+base::string16 GetPolicyStatusFromStore(
+    const policy::CloudPolicyStore* store,
+    const policy::CloudPolicyClient* client) {
   base::string16 status =
       policy::FormatStoreStatus(store->status(), store->validation_status());
   if (store->status() == policy::CloudPolicyStore::STATUS_OK) {
@@ -126,6 +139,17 @@ void GetStatusFromCore(const policy::CloudPolicyCore* core,
     else if (!store->is_managed())
       status = FormatAssociationState(store->policy());
   }
+  return status;
+}
+
+void GetStatusFromCore(const policy::CloudPolicyCore* core,
+                       base::DictionaryValue* dict) {
+  const policy::CloudPolicyStore* store = core->store();
+  const policy::CloudPolicyClient* client = core->client();
+  const policy::CloudPolicyRefreshScheduler* refresh_scheduler =
+      core->refresh_scheduler();
+
+  const base::string16 status = GetPolicyStatusFromStore(store, client);
 
   const em::PolicyData* policy = store->policy();
   std::string client_id = policy ? policy->device_id() : std::string();
@@ -140,32 +164,57 @@ void GetStatusFromCore(const policy::CloudPolicyCore* core,
   if (policy && policy->has_gaia_id())
     dict->SetString("gaiaId", policy->gaia_id());
 
-  base::TimeDelta refresh_interval =
-      base::TimeDelta::FromMilliseconds(refresh_scheduler ?
-          refresh_scheduler->GetActualRefreshDelay() :
-          policy::CloudPolicyRefreshScheduler::kDefaultRefreshDelayMs);
-  base::Time last_refresh_time = refresh_scheduler ?
-      refresh_scheduler->last_refresh() : base::Time();
+  base::TimeDelta refresh_interval = base::TimeDelta::FromMilliseconds(
+      refresh_scheduler
+          ? refresh_scheduler->GetActualRefreshDelay()
+          : policy::CloudPolicyRefreshScheduler::kDefaultRefreshDelayMs);
+  base::Time last_refresh_time =
+      refresh_scheduler ? refresh_scheduler->last_refresh() : base::Time();
 
   bool no_error = store->status() == policy::CloudPolicyStore::STATUS_OK &&
                   client && client->status() == policy::DM_STATUS_SUCCESS;
   dict->SetBoolean("error", !no_error);
-  dict->SetBoolean("policiesPushAvailable",
-                   refresh_scheduler->invalidations_available());
+  dict->SetBoolean(
+      "policiesPushAvailable",
+      refresh_scheduler ? refresh_scheduler->invalidations_available() : false);
   dict->SetString("status", status);
   dict->SetString("clientId", client_id);
   dict->SetString("username", username);
-  dict->SetString("refreshInterval",
-                  ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_DURATION,
-                                         ui::TimeFormat::LENGTH_SHORT,
-                                         refresh_interval));
-  dict->SetString("timeSinceLastRefresh", last_refresh_time.is_null() ?
-      l10n_util::GetStringUTF16(IDS_POLICY_NEVER_FETCHED) :
-      ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_ELAPSED,
-                             ui::TimeFormat::LENGTH_SHORT,
-                             base::Time::NowFromSystemTime() -
-                                 last_refresh_time));
+  dict->SetString(
+      "refreshInterval",
+      ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_DURATION,
+                             ui::TimeFormat::LENGTH_SHORT, refresh_interval));
+  dict->SetString(
+      "timeSinceLastRefresh",
+      last_refresh_time.is_null()
+          ? l10n_util::GetStringUTF16(IDS_POLICY_NEVER_FETCHED)
+          : ui::TimeFormat::Simple(
+                ui::TimeFormat::FORMAT_ELAPSED, ui::TimeFormat::LENGTH_SHORT,
+                base::Time::NowFromSystemTime() - last_refresh_time));
 }
+
+#if defined(OS_CHROMEOS)
+// Adds a new entry to |dict| with the affiliation status of the user associated
+// with |profile|. Device scope policy status providers call this method with
+// nullptr |profile|. In this case no entry is added as affiliation status only
+// makes sense for user scope policy status providers.
+void GetUserAffiliationStatus(base::DictionaryValue* dict, Profile* profile) {
+  if (!profile)
+    return;
+  const user_manager::User* user =
+      chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+  if (!user)
+    return;
+  dict->SetBoolean("isAffiliated", user->IsAffiliated());
+}
+
+void GetOffHoursStatus(base::DictionaryValue* dict) {
+  policy::off_hours::DeviceOffHoursController* off_hours_controller =
+      chromeos::DeviceSettingsService::Get()->device_off_hours_controller();
+  if (off_hours_controller)
+    dict->SetBoolean("isOffHoursActive", off_hours_controller->is_off_hours_mode());
+}
+#endif  // defined(OS_CHROMEOS)
 
 void ExtractDomainFromUsername(base::DictionaryValue* dict) {
   std::string username;
@@ -235,13 +284,31 @@ class UserCloudPolicyStatusProvider : public CloudPolicyCoreStatusProvider {
   DISALLOW_COPY_AND_ASSIGN(UserCloudPolicyStatusProvider);
 };
 
+#if defined(OS_CHROMEOS)
+// A cloud policy status provider for user policy on Chrome OS.
+class UserCloudPolicyStatusProviderChromeOS
+    : public UserCloudPolicyStatusProvider {
+ public:
+  explicit UserCloudPolicyStatusProviderChromeOS(policy::CloudPolicyCore* core,
+                                                 Profile* profile);
+  ~UserCloudPolicyStatusProviderChromeOS() override;
+
+  // CloudPolicyCoreStatusProvider implementation.
+  void GetStatus(base::DictionaryValue* dict) override;
+
+ private:
+  Profile* profile_;
+  DISALLOW_COPY_AND_ASSIGN(UserCloudPolicyStatusProviderChromeOS);
+};
+#endif  // defined(OS_CHROMEOS)
+
 #if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
 class MachineLevelUserCloudPolicyStatusProvider
     : public PolicyStatusProvider,
       public policy::CloudPolicyStore::Observer {
  public:
   explicit MachineLevelUserCloudPolicyStatusProvider(
-      policy::MachineLevelUserCloudPolicyStore* store);
+      policy::CloudPolicyCore* core);
   ~MachineLevelUserCloudPolicyStatusProvider() override;
 
   void GetStatus(base::DictionaryValue* dict) override;
@@ -251,7 +318,7 @@ class MachineLevelUserCloudPolicyStatusProvider
   void OnStoreError(policy::CloudPolicyStore* store) override;
 
  private:
-  policy::MachineLevelUserCloudPolicyStore* store_;
+  policy::CloudPolicyCore* core_;
 
   DISALLOW_COPY_AND_ASSIGN(MachineLevelUserCloudPolicyStatusProvider);
 };
@@ -259,11 +326,12 @@ class MachineLevelUserCloudPolicyStatusProvider
 
 #if defined(OS_CHROMEOS)
 // A cloud policy status provider for device policy.
-class DeviceCloudPolicyStatusProvider : public CloudPolicyCoreStatusProvider {
+class DeviceCloudPolicyStatusProviderChromeOS
+    : public CloudPolicyCoreStatusProvider {
  public:
-  explicit DeviceCloudPolicyStatusProvider(
+  explicit DeviceCloudPolicyStatusProviderChromeOS(
       policy::BrowserPolicyConnectorChromeOS* connector);
-  ~DeviceCloudPolicyStatusProvider() override;
+  ~DeviceCloudPolicyStatusProviderChromeOS() override;
 
   // CloudPolicyCoreStatusProvider implementation.
   void GetStatus(base::DictionaryValue* dict) override;
@@ -272,7 +340,7 @@ class DeviceCloudPolicyStatusProvider : public CloudPolicyCoreStatusProvider {
   std::string enterprise_enrollment_domain_;
   std::string enterprise_display_domain_;
 
-  DISALLOW_COPY_AND_ASSIGN(DeviceCloudPolicyStatusProvider);
+  DISALLOW_COPY_AND_ASSIGN(DeviceCloudPolicyStatusProviderChromeOS);
 };
 
 // A cloud policy status provider that reads policy status from the policy core
@@ -310,7 +378,8 @@ class UserActiveDirectoryPolicyStatusProvider
       public policy::CloudPolicyStore::Observer {
  public:
   explicit UserActiveDirectoryPolicyStatusProvider(
-      policy::ActiveDirectoryPolicyManager* policy_manager);
+      policy::ActiveDirectoryPolicyManager* policy_manager,
+      Profile* profile);
 
   ~UserActiveDirectoryPolicyStatusProvider() override;
 
@@ -323,7 +392,7 @@ class UserActiveDirectoryPolicyStatusProvider
 
  private:
   policy::ActiveDirectoryPolicyManager* const policy_manager_;  // not owned.
-
+  Profile* profile_;
   DISALLOW_COPY_AND_ASSIGN(UserActiveDirectoryPolicyStatusProvider);
 };
 
@@ -366,7 +435,8 @@ void PolicyStatusProvider::NotifyStatusChange() {
 }
 
 CloudPolicyCoreStatusProvider::CloudPolicyCoreStatusProvider(
-    policy::CloudPolicyCore* core) : core_(core) {
+    policy::CloudPolicyCore* core)
+    : core_(core) {
   core_->store()->AddObserver(this);
   // TODO(bartfab): Add an observer that watches for client errors. Observing
   // core_->client() directly is not safe as the client may be destroyed and
@@ -400,24 +470,46 @@ void UserCloudPolicyStatusProvider::GetStatus(base::DictionaryValue* dict) {
   ExtractDomainFromUsername(dict);
 }
 
+#if defined(OS_CHROMEOS)
+UserCloudPolicyStatusProviderChromeOS::UserCloudPolicyStatusProviderChromeOS(
+    policy::CloudPolicyCore* core,
+    Profile* profile)
+    : UserCloudPolicyStatusProvider(core) {
+  profile_ = profile;
+}
+
+UserCloudPolicyStatusProviderChromeOS::
+    ~UserCloudPolicyStatusProviderChromeOS() {}
+
+void UserCloudPolicyStatusProviderChromeOS::GetStatus(
+    base::DictionaryValue* dict) {
+  if (!core_->store()->is_managed())
+    return;
+  UserCloudPolicyStatusProvider::GetStatus(dict);
+  GetUserAffiliationStatus(dict, profile_);
+}
+#endif  // defined(OS_CHROMEOS)
+
 #if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
 
 MachineLevelUserCloudPolicyStatusProvider::
-    MachineLevelUserCloudPolicyStatusProvider(
-        policy::MachineLevelUserCloudPolicyStore* store) {
-  store_ = store;
-  if (store_)
-    store_->AddObserver(this);
+    MachineLevelUserCloudPolicyStatusProvider(policy::CloudPolicyCore* core)
+    : core_(core) {
+  if (core_->store())
+    core_->store()->AddObserver(this);
 }
 
 MachineLevelUserCloudPolicyStatusProvider::
     ~MachineLevelUserCloudPolicyStatusProvider() {
-  if (store_)
-    store_->RemoveObserver(this);
+  if (core_->store())
+    core_->store()->RemoveObserver(this);
 }
 
 void MachineLevelUserCloudPolicyStatusProvider::GetStatus(
     base::DictionaryValue* dict) {
+  policy::CloudPolicyStore* store = core_->store();
+  policy::CloudPolicyClient* client = core_->client();
+
   policy::BrowserDMTokenStorage* dmTokenStorage =
       policy::BrowserDMTokenStorage::Get();
 
@@ -434,12 +526,11 @@ void MachineLevelUserCloudPolicyStatusProvider::GetStatus(
 
     dict->SetString("deviceId", dmTokenStorage->RetrieveClientId());
   }
-  if (store_) {
-    base::string16 status = policy::FormatStoreStatus(
-        store_->status(), store_->validation_status());
+  if (store) {
+    base::string16 status = GetPolicyStatusFromStore(store, client);
 
     dict->SetString("status", status);
-    const em::PolicyData* policy = store_->policy();
+    const em::PolicyData* policy = store->policy();
     if (policy) {
       dict->SetString(
           "timeSinceLastRefresh",
@@ -467,27 +558,30 @@ void MachineLevelUserCloudPolicyStatusProvider::OnStoreError(
 #endif  // !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
 
 #if defined(OS_CHROMEOS)
-DeviceCloudPolicyStatusProvider::DeviceCloudPolicyStatusProvider(
-    policy::BrowserPolicyConnectorChromeOS* connector)
+DeviceCloudPolicyStatusProviderChromeOS::
+    DeviceCloudPolicyStatusProviderChromeOS(
+        policy::BrowserPolicyConnectorChromeOS* connector)
     : CloudPolicyCoreStatusProvider(
           connector->GetDeviceCloudPolicyManager()->core()) {
   enterprise_enrollment_domain_ = connector->GetEnterpriseEnrollmentDomain();
   enterprise_display_domain_ = connector->GetEnterpriseDisplayDomain();
 }
 
-DeviceCloudPolicyStatusProvider::~DeviceCloudPolicyStatusProvider() = default;
+DeviceCloudPolicyStatusProviderChromeOS::
+    ~DeviceCloudPolicyStatusProviderChromeOS() = default;
 
-void DeviceCloudPolicyStatusProvider::GetStatus(base::DictionaryValue* dict) {
+void DeviceCloudPolicyStatusProviderChromeOS::GetStatus(
+    base::DictionaryValue* dict) {
   GetStatusFromCore(core_, dict);
   dict->SetString("enterpriseEnrollmentDomain", enterprise_enrollment_domain_);
   dict->SetString("enterpriseDisplayDomain", enterprise_display_domain_);
+  GetOffHoursStatus(dict);
 }
 
 DeviceLocalAccountPolicyStatusProvider::DeviceLocalAccountPolicyStatusProvider(
     const std::string& user_id,
     policy::DeviceLocalAccountPolicyService* service)
-      : user_id_(user_id),
-        service_(service) {
+    : user_id_(user_id), service_(service) {
   service_->AddObserver(this);
 }
 
@@ -526,9 +620,11 @@ void DeviceLocalAccountPolicyStatusProvider::OnDeviceLocalAccountsChanged() {
 
 UserActiveDirectoryPolicyStatusProvider::
     UserActiveDirectoryPolicyStatusProvider(
-        policy::ActiveDirectoryPolicyManager* policy_manager)
+        policy::ActiveDirectoryPolicyManager* policy_manager,
+        Profile* profile)
     : policy_manager_(policy_manager) {
   policy_manager_->store()->AddObserver(this);
+  profile_ = profile;
 }
 
 UserActiveDirectoryPolicyStatusProvider::
@@ -566,6 +662,7 @@ void UserActiveDirectoryPolicyStatusProvider::GetStatus(
           : ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_ELAPSED,
                                    ui::TimeFormat::LENGTH_SHORT,
                                    base::Time::Now() - last_refresh_time));
+  GetUserAffiliationStatus(dict, profile_);
 }
 
 void UserActiveDirectoryPolicyStatusProvider::OnStoreLoaded(
@@ -583,7 +680,7 @@ DeviceActiveDirectoryPolicyStatusProvider::
         policy::ActiveDirectoryPolicyManager* policy_manager,
         const std::string& enterprise_realm,
         const std::string& enterprise_display_domain)
-    : UserActiveDirectoryPolicyStatusProvider(policy_manager),
+    : UserActiveDirectoryPolicyStatusProvider(policy_manager, nullptr),
       enterprise_realm_(enterprise_realm),
       enterprise_display_domain_(enterprise_display_domain) {}
 
@@ -596,16 +693,15 @@ void DeviceActiveDirectoryPolicyStatusProvider::GetStatus(
 
 #endif  // defined(OS_CHROMEOS)
 
-PolicyUIHandler::PolicyUIHandler()
-    : weak_factory_(this) {
-}
+PolicyUIHandler::PolicyUIHandler() {}
 
 PolicyUIHandler::~PolicyUIHandler() {
   GetPolicyService()->RemoveObserver(policy::POLICY_DOMAIN_CHROME, this);
   GetPolicyService()->RemoveObserver(policy::POLICY_DOMAIN_EXTENSIONS, this);
-  policy::SchemaRegistry* registry =
-      policy::SchemaRegistryServiceFactory::GetForContext(
-          Profile::FromWebUI(web_ui())->GetOriginalProfile())->registry();
+  policy::SchemaRegistry* registry = Profile::FromWebUI(web_ui())
+                                         ->GetOriginalProfile()
+                                         ->GetPolicySchemaRegistryService()
+                                         ->registry();
   registry->RemoveObserver(this);
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -614,43 +710,40 @@ PolicyUIHandler::~PolicyUIHandler() {
 #endif
 }
 
-void PolicyUIHandler::AddLocalizedPolicyStrings(
-    content::WebUIDataSource* source,
-    const policy::PolicyStringMap* strings,
-    size_t count) {
-  for (size_t i = 0; i < count; ++i)
-    source->AddLocalizedString(strings[i].key, strings[i].string_id);
-}
-
 void PolicyUIHandler::AddCommonLocalizedStringsToSource(
-      content::WebUIDataSource* source) {
-  AddLocalizedPolicyStrings(source, policy::kPolicySources,
-                            static_cast<size_t>(policy::POLICY_SOURCE_COUNT));
-  source->AddLocalizedString("conflict", IDS_POLICY_LABEL_CONFLICT);
-  source->AddLocalizedString("headerLevel", IDS_POLICY_HEADER_LEVEL);
-  source->AddLocalizedString("headerName", IDS_POLICY_HEADER_NAME);
-  source->AddLocalizedString("headerScope", IDS_POLICY_HEADER_SCOPE);
-  source->AddLocalizedString("headerSource", IDS_POLICY_HEADER_SOURCE);
-  source->AddLocalizedString("headerStatus", IDS_POLICY_HEADER_STATUS);
-  source->AddLocalizedString("headerValue", IDS_POLICY_HEADER_VALUE);
-  source->AddLocalizedString("warning", IDS_POLICY_HEADER_WARNING);
-  source->AddLocalizedString("levelMandatory", IDS_POLICY_LEVEL_MANDATORY);
-  source->AddLocalizedString("levelRecommended", IDS_POLICY_LEVEL_RECOMMENDED);
-  source->AddLocalizedString("messages", IDS_POLICY_LABEL_MESSAGES);
-  source->AddLocalizedString("warningAndConflicts",
-                             IDS_POLICY_LABEL_WARNING_AND_CONFLICT);
-  source->AddLocalizedString("notSpecified", IDS_POLICY_NOT_SPECIFIED);
-  source->AddLocalizedString("ok", IDS_POLICY_OK);
-  source->AddLocalizedString("scopeDevice", IDS_POLICY_SCOPE_DEVICE);
-  source->AddLocalizedString("scopeUser", IDS_POLICY_SCOPE_USER);
-  source->AddLocalizedString("title", IDS_POLICY_TITLE);
-  source->AddLocalizedString("unknown", IDS_POLICY_UNKNOWN);
-  source->AddLocalizedString("unset", IDS_POLICY_UNSET);
-  source->AddLocalizedString("value", IDS_POLICY_LABEL_VALUE);
-  source->SetJsonPath("strings.js");
+    content::WebUIDataSource* source) {
+  AddLocalizedStringsBulk(source, policy::kPolicySources,
+                          policy::POLICY_SOURCE_COUNT);
+
+  static constexpr LocalizedString kStrings[] = {
+      {"conflict", IDS_POLICY_LABEL_CONFLICT},
+      {"headerLevel", IDS_POLICY_HEADER_LEVEL},
+      {"headerName", IDS_POLICY_HEADER_NAME},
+      {"headerScope", IDS_POLICY_HEADER_SCOPE},
+      {"headerSource", IDS_POLICY_HEADER_SOURCE},
+      {"headerStatus", IDS_POLICY_HEADER_STATUS},
+      {"headerValue", IDS_POLICY_HEADER_VALUE},
+      {"warning", IDS_POLICY_HEADER_WARNING},
+      {"levelMandatory", IDS_POLICY_LEVEL_MANDATORY},
+      {"levelRecommended", IDS_POLICY_LEVEL_RECOMMENDED},
+      {"error", IDS_POLICY_LABEL_ERROR},
+      {"ignored", IDS_POLICY_LABEL_IGNORED},
+      {"notSpecified", IDS_POLICY_NOT_SPECIFIED},
+      {"ok", IDS_POLICY_OK},
+      {"scopeDevice", IDS_POLICY_SCOPE_DEVICE},
+      {"scopeUser", IDS_POLICY_SCOPE_USER},
+      {"title", IDS_POLICY_TITLE},
+      {"unknown", IDS_POLICY_UNKNOWN},
+      {"unset", IDS_POLICY_UNSET},
+      {"value", IDS_POLICY_LABEL_VALUE},
+  };
+  AddLocalizedStringsBulk(source, kStrings, base::size(kStrings));
+
+  source->UseStringsJs();
 }
 
 void PolicyUIHandler::RegisterMessages() {
+  Profile* profile = Profile::FromWebUI(web_ui());
 #if defined(OS_CHROMEOS)
   policy::BrowserPolicyConnectorChromeOS* connector =
       g_browser_process->platform_part()->browser_policy_connector_chromeos();
@@ -662,40 +755,37 @@ void PolicyUIHandler::RegisterMessages() {
               connector->GetRealm(), connector->GetEnterpriseDisplayDomain());
     } else {
       device_status_provider_ =
-          std::make_unique<DeviceCloudPolicyStatusProvider>(connector);
+          std::make_unique<DeviceCloudPolicyStatusProviderChromeOS>(connector);
     }
   }
 
   const user_manager::UserManager* user_manager =
       user_manager::UserManager::Get();
-  Profile* profile = Profile::FromWebUI(web_ui());
   policy::DeviceLocalAccountPolicyService* local_account_service =
       user_manager->IsLoggedInAsPublicAccount()
           ? connector->GetDeviceLocalAccountPolicyService()
           : nullptr;
   policy::UserCloudPolicyManagerChromeOS* user_cloud_policy =
-      policy::UserPolicyManagerFactoryChromeOS::GetCloudPolicyManagerForProfile(
-          profile);
+      profile->GetUserCloudPolicyManagerChromeOS();
   policy::ActiveDirectoryPolicyManager* active_directory_policy =
-      policy::UserPolicyManagerFactoryChromeOS::
-          GetActiveDirectoryPolicyManagerForProfile(profile);
+      profile->GetActiveDirectoryPolicyManager();
   if (local_account_service) {
     user_status_provider_ =
         std::make_unique<DeviceLocalAccountPolicyStatusProvider>(
             user_manager->GetActiveUser()->GetAccountId().GetUserEmail(),
             local_account_service);
   } else if (user_cloud_policy) {
-    user_status_provider_ = std::make_unique<UserCloudPolicyStatusProvider>(
-        user_cloud_policy->core());
+    user_status_provider_ =
+        std::make_unique<UserCloudPolicyStatusProviderChromeOS>(
+            user_cloud_policy->core(), profile);
   } else if (active_directory_policy) {
     user_status_provider_ =
         std::make_unique<UserActiveDirectoryPolicyStatusProvider>(
-            active_directory_policy);
+            active_directory_policy, profile);
   }
 #else
   policy::UserCloudPolicyManager* user_cloud_policy_manager =
-      policy::UserCloudPolicyManagerFactory::GetForBrowserContext(
-          web_ui()->GetWebContents()->GetBrowserContext());
+      profile->GetUserCloudPolicyManager();
   if (user_cloud_policy_manager) {
     user_status_provider_ = std::make_unique<UserCloudPolicyStatusProvider>(
         user_cloud_policy_manager->core());
@@ -709,7 +799,7 @@ void PolicyUIHandler::RegisterMessages() {
   if (manager) {
     machine_status_provider_ =
         std::make_unique<MachineLevelUserCloudPolicyStatusProvider>(
-            manager->store());
+            manager->core());
   }
 #endif  // !defined(OS_ANDROID)
 #endif  // defined(OS_CHROMEOS)
@@ -733,9 +823,10 @@ void PolicyUIHandler::RegisterMessages() {
   extensions::ExtensionRegistry::Get(Profile::FromWebUI(web_ui()))
       ->AddObserver(this);
 #endif
-  policy::SchemaRegistry* registry =
-      policy::SchemaRegistryServiceFactory::GetForContext(
-          Profile::FromWebUI(web_ui())->GetOriginalProfile())->registry();
+  policy::SchemaRegistry* registry = Profile::FromWebUI(web_ui())
+                                         ->GetOriginalProfile()
+                                         ->GetPolicySchemaRegistryService()
+                                         ->registry();
   registry->AddObserver(this);
 
   web_ui()->RegisterMessageCallback(
@@ -783,18 +874,18 @@ void PolicyUIHandler::OnPolicyUpdated(const policy::PolicyNamespace& ns,
 base::Value PolicyUIHandler::GetPolicyNames() const {
   base::DictionaryValue names;
   Profile* profile = Profile::FromWebUI(web_ui());
-  policy::SchemaRegistry* registry =
-      policy::SchemaRegistryServiceFactory::GetForContext(
-          profile->GetOriginalProfile())->registry();
+  policy::SchemaRegistry* registry = profile->GetOriginalProfile()
+                                         ->GetPolicySchemaRegistryService()
+                                         ->registry();
   scoped_refptr<policy::SchemaMap> schema_map = registry->schema_map();
 
   // Add Chrome policy names.
   auto chrome_policy_names = std::make_unique<base::ListValue>();
   policy::PolicyNamespace chrome_ns(policy::POLICY_DOMAIN_CHROME, "");
   const policy::Schema* chrome_schema = schema_map->GetSchema(chrome_ns);
-  for (policy::Schema::Iterator it = chrome_schema->GetPropertiesIterator();
-       !it.IsAtEnd(); it.Advance()) {
-    chrome_policy_names->GetList().push_back(base::Value(it.key()));
+  for (auto it = chrome_schema->GetPropertiesIterator(); !it.IsAtEnd();
+       it.Advance()) {
+    chrome_policy_names->Append(base::Value(it.key()));
   }
   auto chrome_values = std::make_unique<base::DictionaryValue>();
   chrome_values->SetString("name", "Chrome Policies");
@@ -807,7 +898,7 @@ base::Value PolicyUIHandler::GetPolicyNames() const {
        extensions::ExtensionRegistry::Get(profile)->enabled_extensions()) {
     // Skip this extension if it's not an enterprise extension.
     if (!extension->manifest()->HasPath(
-        extensions::manifest_keys::kStorageManagedSchema))
+            extensions::manifest_keys::kStorageManagedSchema))
       continue;
     auto extension_value = std::make_unique<base::DictionaryValue>();
     extension_value->SetString("name", extension->name());
@@ -818,9 +909,9 @@ base::Value PolicyUIHandler::GetPolicyNames() const {
     if (schema && schema->valid()) {
       // Get policy names from the extension's policy schema.
       // Store in a map, not an array, for faster lookup on JS side.
-      for (policy::Schema::Iterator prop = schema->GetPropertiesIterator();
-           !prop.IsAtEnd(); prop.Advance()) {
-        policy_names->GetList().push_back(base::Value(prop.key()));
+      for (auto prop = schema->GetPropertiesIterator(); !prop.IsAtEnd();
+           prop.Advance()) {
+        policy_names->Append(base::Value(prop.key()));
       }
     }
     extension_value->Set("policyNames", std::move(policy_names));
@@ -832,10 +923,10 @@ base::Value PolicyUIHandler::GetPolicyNames() const {
 }
 
 base::Value PolicyUIHandler::GetPolicyValues() const {
-  return policy::GetAllPolicyValuesAsArray(
-      web_ui()->GetWebContents()->GetBrowserContext(),
-      true /* with_user_policies */, true /* convert_values */,
-      false /* with_device_data */, true /* is_pretty_print */);
+  return policy::ArrayPolicyConversions()
+      .WithBrowserContext(web_ui()->GetWebContents()->GetBrowserContext())
+      .EnableConvertValues(true)
+      .ToValue();
 }
 
 void PolicyUIHandler::SendStatus() {
@@ -914,8 +1005,7 @@ void PolicyUIHandler::HandleReloadPolicies(const base::ListValue* args) {
           ->GetDeviceCloudPolicyManager();
   Profile* const profile = Profile::FromWebUI(web_ui());
   policy::CloudPolicyManager* const user_manager =
-      policy::UserPolicyManagerFactoryChromeOS::GetCloudPolicyManagerForProfile(
-          profile);
+      profile->GetUserCloudPolicyManagerChromeOS();
 
   // Fetch both device and user remote commands.
   for (policy::CloudPolicyManager* manager : {device_manager, user_manager}) {
@@ -939,14 +1029,65 @@ void DoWritePoliciesToJSONFile(const base::FilePath& path,
 
 void PolicyUIHandler::WritePoliciesToJSONFile(
     const base::FilePath& path) const {
-  std::string json_policies = policy::GetAllPolicyValuesAsJSON(
-      web_ui()->GetWebContents()->GetBrowserContext(),
-      true /* with_user_policies */, false /* with_device_data */,
-      true /* is_pretty_print */);
+  base::Value dict =
+      policy::DictionaryPolicyConversions()
+          .WithBrowserContext(web_ui()->GetWebContents()->GetBrowserContext())
+          .ToValue();
 
-  base::PostTaskWithTraits(
+  base::Value chrome_metadata(base::Value::Type::DICTIONARY);
+
+  chrome_metadata.SetKey(
+      "application", base::Value(l10n_util::GetStringUTF8(IDS_PRODUCT_NAME)));
+  std::string cohort_name;
+#if defined(OS_WIN)
+  base::string16 cohort_version_info =
+      version_utils::win::GetCohortVersionInfo();
+  if (!cohort_version_info.empty()) {
+    cohort_name = base::StringPrintf(
+        " %s", base::UTF16ToUTF8(cohort_version_info).c_str());
+  }
+#endif
+  std::string channel_name = chrome::GetChannelName();
+  std::string version = base::StringPrintf(
+      "%s (%s)%s %s%s", version_info::GetVersionNumber().c_str(),
+      l10n_util::GetStringUTF8(version_info::IsOfficialBuild()
+                                   ? IDS_VERSION_UI_OFFICIAL
+                                   : IDS_VERSION_UI_UNOFFICIAL)
+          .c_str(),
+      (channel_name.empty() ? "" : " " + channel_name).c_str(),
+      l10n_util::GetStringUTF8(sizeof(void*) == 8 ? IDS_VERSION_UI_64BIT
+                                                  : IDS_VERSION_UI_32BIT)
+          .c_str(),
+      cohort_name.c_str());
+  chrome_metadata.SetKey("version", base::Value(version));
+
+#if defined(OS_CHROMEOS)
+  chrome_metadata.SetKey("platform",
+                         base::Value(chromeos::version_loader::GetVersion(
+                             chromeos::version_loader::VERSION_FULL)));
+#elif defined(OS_MACOSX)
+  chrome_metadata.SetKey("OS", base::Value(base::mac::GetOSDisplayName()));
+#else
+  std::string os = version_info::GetOSType();
+#if defined(OS_WIN)
+  os += " " + version_utils::win::GetFullWindowsVersion();
+#elif defined(OS_ANDROID)
+  os += " " + AndroidAboutAppInfo::GetOsInfo();
+#endif
+  chrome_metadata.SetKey("OS", base::Value(os));
+#endif
+  chrome_metadata.SetKey("revision",
+                         base::Value(version_info::GetLastChange()));
+
+  dict.SetKey("chromeMetadata", std::move(chrome_metadata));
+
+  std::string json_policies;
+  base::JSONWriter::WriteWithOptions(
+      dict, base::JSONWriter::OPTIONS_PRETTY_PRINT, &json_policies);
+
+  base::PostTask(
       FROM_HERE,
-      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
       base::BindOnce(&DoWritePoliciesToJSONFile, path, json_policies));
 }
@@ -977,6 +1118,7 @@ void PolicyUIHandler::OnRefreshPoliciesDone() {
 }
 
 policy::PolicyService* PolicyUIHandler::GetPolicyService() const {
-  return policy::ProfilePolicyConnectorFactory::GetForBrowserContext(
-             web_ui()->GetWebContents()->GetBrowserContext())->policy_service();
+  Profile* profile = Profile::FromBrowserContext(
+      web_ui()->GetWebContents()->GetBrowserContext());
+  return profile->GetProfilePolicyConnector()->policy_service();
 }

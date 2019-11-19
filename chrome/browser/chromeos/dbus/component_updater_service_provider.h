@@ -107,7 +107,7 @@ class ComponentUpdaterServiceProvider
 
   // Keep this last so that all weak pointers will be invalidated at the
   // beginning of destruction.
-  base::WeakPtrFactory<ComponentUpdaterServiceProvider> weak_ptr_factory_;
+  base::WeakPtrFactory<ComponentUpdaterServiceProvider> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ComponentUpdaterServiceProvider);
 };

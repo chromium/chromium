@@ -9,7 +9,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.provider.Browser;
 
-import org.chromium.chrome.browser.UrlConstants;
+import org.chromium.chrome.browser.util.UrlConstants;
 
 /**
 * Controls how Google uses Chrome data to personalize Search and other Google services.

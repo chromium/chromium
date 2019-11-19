@@ -7,10 +7,13 @@
 
 #include <memory>
 #include "third_party/blink/public/platform/blame_context.h"
+#include "third_party/blink/public/platform/scheduler/web_scoped_virtual_time_pauser.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/page_lifecycle_state.h"
+#include "third_party/blink/renderer/platform/scheduler/public/scheduling_policy.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -21,11 +24,16 @@ class PLATFORM_EXPORT PageScheduler {
    public:
     virtual ~Delegate() = default;
 
+    // An "ordinary" page is a fully-featured page owned by a web view.
+    virtual bool IsOrdinary() const = 0;
     virtual void ReportIntervention(const WTF::String& message) = 0;
     // Returns true if the request has been succcessfully relayed to the
     // compositor.
     virtual bool RequestBeginMainFrameNotExpected(bool new_state) = 0;
     virtual void SetLifecycleState(PageLifecycleState) = 0;
+    // Returns true iff the network is idle for the local main frame.
+    // Always returns false if the main frame is remote.
+    virtual bool LocalMainFrameNetworkIsAlmostIdle() const { return true; }
   };
 
   virtual ~PageScheduler() = default;
@@ -41,6 +49,9 @@ class PLATFORM_EXPORT PageScheduler {
   // Whether the main frame of this page is local or not (remote).
   virtual bool IsMainFrameLocal() const = 0;
   virtual void SetIsMainFrameLocal(bool) = 0;
+  // Invoked when the local main frame's network becomes almost idle.
+  // Never invoked if the main frame is remote.
+  virtual void OnLocalMainFrameNetworkAlmostIdle() = 0;
 
   // Creates a new FrameScheduler. The caller is responsible for deleting
   // it. All tasks executed by the frame scheduler will be attributed to
@@ -52,8 +63,8 @@ class PLATFORM_EXPORT PageScheduler {
 
   // Instructs this PageScheduler to use virtual time. When virtual time is
   // enabled the system doesn't actually sleep for the delays between tasks
-  // before executing them. Returns the TimeTicks that virtual time offsets will
-  // be relative to.
+  // before executing them. Returns the base::TimeTicks that virtual time
+  // offsets will be relative to.
   //
   // E.g: A-E are delayed tasks
   //
@@ -125,11 +136,21 @@ class PLATFORM_EXPORT PageScheduler {
   // (e.g. due to a page maintaining an active connection).
   virtual bool IsExemptFromBudgetBasedThrottling() const = 0;
 
-  virtual bool HasActiveConnectionForTest() const = 0;
+  virtual bool OptedOutFromAggressiveThrottlingForTest() const = 0;
 
   // Returns true if the request has been succcessfully relayed to the
   // compositor.
   virtual bool RequestBeginMainFrameNotExpected(bool new_state) = 0;
+
+  // Returns a WebScopedVirtualTimePauser which can be used to vote for pausing
+  // virtual time. Virtual time will be paused if any WebScopedVirtualTimePauser
+  // votes to pause it, and only unpaused only if all
+  // WebScopedVirtualTimePausers are either destroyed or vote to unpause.  Note
+  // the WebScopedVirtualTimePauser returned by this method is initially
+  // unpaused.
+  virtual WebScopedVirtualTimePauser CreateWebScopedVirtualTimePauser(
+      const String& name,
+      WebScopedVirtualTimePauser::VirtualTaskDuration) = 0;
 };
 
 }  // namespace blink

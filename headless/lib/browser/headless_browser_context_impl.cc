@@ -12,6 +12,7 @@
 #include "base/guid.h"
 #include "base/path_service.h"
 #include "base/task/post_task.h"
+#include "components/keyed_service/core/simple_key_map.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
@@ -21,7 +22,6 @@
 #include "headless/lib/browser/headless_browser_main_parts.h"
 #include "headless/lib/browser/headless_permission_manager.h"
 #include "headless/lib/browser/headless_web_contents_impl.h"
-#include "net/url_request/url_request_context.h"
 #include "ui/base/resource/resource_bundle.h"
 
 namespace headless {
@@ -34,6 +34,9 @@ HeadlessBrowserContextImpl::HeadlessBrowserContextImpl(
       permission_controller_delegate_(
           std::make_unique<HeadlessPermissionManager>(this)) {
   InitWhileIOAllowed();
+  simple_factory_key_ =
+      std::make_unique<SimpleFactoryKey>(GetPath(), IsOffTheRecord());
+  SimpleKeyMap::GetInstance()->Associate(this, simple_factory_key_.get());
   base::FilePath user_data_path =
       IsOffTheRecord() || context_options_->user_data_dir().empty()
           ? base::FilePath()
@@ -44,14 +47,15 @@ HeadlessBrowserContextImpl::HeadlessBrowserContextImpl(
 
 HeadlessBrowserContextImpl::~HeadlessBrowserContextImpl() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  SimpleKeyMap::GetInstance()->Dissociate(this);
   NotifyWillBeDestroyed(this);
 
   // Destroy all web contents before shutting down storage partitions.
   web_contents_map_.clear();
 
   if (request_context_manager_) {
-    content::BrowserThread::DeleteSoon(content::BrowserThread::IO, FROM_HERE,
-                                       request_context_manager_.release());
+    base::DeleteSoon(FROM_HERE, {content::BrowserThread::IO},
+                     request_context_manager_.release());
   }
 
   ShutdownStoragePartitions();
@@ -160,11 +164,11 @@ HeadlessBrowserContextImpl::CreateZoomLevelDelegate(
   return std::unique_ptr<content::ZoomLevelDelegate>();
 }
 
-base::FilePath HeadlessBrowserContextImpl::GetPath() const {
+base::FilePath HeadlessBrowserContextImpl::GetPath() {
   return path_;
 }
 
-bool HeadlessBrowserContextImpl::IsOffTheRecord() const {
+bool HeadlessBrowserContextImpl::IsOffTheRecord() {
   return context_options_->incognito_mode();
 }
 
@@ -193,6 +197,10 @@ HeadlessBrowserContextImpl::GetPushMessagingService() {
   return nullptr;
 }
 
+content::StorageNotificationService*
+HeadlessBrowserContextImpl::GetStorageNotificationService() {
+  return nullptr;
+}
 content::SSLHostStateDelegate*
 HeadlessBrowserContextImpl::GetSSLHostStateDelegate() {
   return nullptr;
@@ -220,34 +228,6 @@ HeadlessBrowserContextImpl::GetBackgroundSyncController() {
 
 content::BrowsingDataRemoverDelegate*
 HeadlessBrowserContextImpl::GetBrowsingDataRemoverDelegate() {
-  return nullptr;
-}
-
-net::URLRequestContextGetter* HeadlessBrowserContextImpl::CreateRequestContext(
-    content::ProtocolHandlerMap* protocol_handlers,
-    content::URLRequestInterceptorScopedVector request_interceptors) {
-  return request_context_manager_->CreateRequestContext(
-      protocol_handlers, std::move(request_interceptors));
-}
-
-net::URLRequestContextGetter*
-HeadlessBrowserContextImpl::CreateRequestContextForStoragePartition(
-    const base::FilePath& partition_path,
-    bool in_memory,
-    content::ProtocolHandlerMap* protocol_handlers,
-    content::URLRequestInterceptorScopedVector request_interceptors) {
-  return nullptr;
-}
-
-net::URLRequestContextGetter*
-HeadlessBrowserContextImpl::CreateMediaRequestContext() {
-  return request_context_manager_->url_request_context_getter();
-}
-
-net::URLRequestContextGetter*
-HeadlessBrowserContextImpl::CreateMediaRequestContextForStoragePartition(
-    const base::FilePath& partition_path,
-    bool in_memory) {
   return nullptr;
 }
 
@@ -301,11 +281,11 @@ const HeadlessBrowserContextOptions* HeadlessBrowserContextImpl::options()
   return context_options_.get();
 }
 
-const std::string& HeadlessBrowserContextImpl::Id() const {
+const std::string& HeadlessBrowserContextImpl::Id() {
   return UniqueId();
 }
 
-::network::mojom::NetworkContextPtr
+mojo::Remote<::network::mojom::NetworkContext>
 HeadlessBrowserContextImpl::CreateNetworkContext(
     bool in_memory,
     const base::FilePath& relative_partition_path) {
@@ -320,13 +300,6 @@ HeadlessBrowserContext::Builder::Builder(HeadlessBrowserImpl* browser)
 HeadlessBrowserContext::Builder::~Builder() = default;
 
 HeadlessBrowserContext::Builder::Builder(Builder&&) = default;
-
-HeadlessBrowserContext::Builder&
-HeadlessBrowserContext::Builder::SetProtocolHandlers(
-    ProtocolHandlerMap protocol_handlers) {
-  options_->protocol_handlers_ = std::move(protocol_handlers);
-  return *this;
-}
 
 HeadlessBrowserContext::Builder&
 HeadlessBrowserContext::Builder::SetProductNameAndVersion(

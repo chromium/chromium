@@ -5,7 +5,6 @@
 #ifndef UI_VIEWS_ACCESSIBILITY_AX_TREE_SOURCE_VIEWS_H_
 #define UI_VIEWS_ACCESSIBILITY_AX_TREE_SOURCE_VIEWS_H_
 
-#include "base/macros.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/ax_tree_source.h"
 #include "ui/views/views_export.h"
@@ -18,6 +17,7 @@ struct AXTreeData;
 
 namespace views {
 
+class AXAuraObjCache;
 class AXAuraObjWrapper;
 
 // This class exposes the views hierarchy as an accessibility tree permitting
@@ -29,7 +29,11 @@ class VIEWS_EXPORT AXTreeSourceViews
     : public ui::
           AXTreeSource<AXAuraObjWrapper*, ui::AXNodeData, ui::AXTreeData> {
  public:
-  AXTreeSourceViews(AXAuraObjWrapper* root, const ui::AXTreeID& tree_id);
+  AXTreeSourceViews(AXAuraObjWrapper* root,
+                    const ui::AXTreeID& tree_id,
+                    AXAuraObjCache* cache);
+  AXTreeSourceViews(const AXTreeSourceViews&) = delete;
+  AXTreeSourceViews& operator=(const AXTreeSourceViews&) = delete;
   ~AXTreeSourceViews() override;
 
   // Invokes an action on an Aura object.
@@ -43,6 +47,7 @@ class VIEWS_EXPORT AXTreeSourceViews
   void GetChildren(AXAuraObjWrapper* node,
                    std::vector<AXAuraObjWrapper*>* out_children) const override;
   AXAuraObjWrapper* GetParent(AXAuraObjWrapper* node) const override;
+  bool IsIgnored(AXAuraObjWrapper* node) const override;
   bool IsValid(AXAuraObjWrapper* node) const override;
   bool IsEqual(AXAuraObjWrapper* node1, AXAuraObjWrapper* node2) const override;
   AXAuraObjWrapper* GetNull() const override;
@@ -59,7 +64,7 @@ class VIEWS_EXPORT AXTreeSourceViews
   // ID to use for the AX tree.
   const ui::AXTreeID tree_id_;
 
-  DISALLOW_COPY_AND_ASSIGN(AXTreeSourceViews);
+  views::AXAuraObjCache* cache_;
 };
 
 }  // namespace views

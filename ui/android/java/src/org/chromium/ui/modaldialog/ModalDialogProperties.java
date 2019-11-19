@@ -5,11 +5,13 @@
 package org.chromium.ui.modaldialog;
 
 import android.graphics.drawable.Drawable;
-import android.support.annotation.IntDef;
 import android.view.View;
+
+import androidx.annotation.IntDef;
 
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
@@ -80,12 +82,20 @@ public class ModalDialogProperties {
     public static final WritableObjectPropertyKey<String> POSITIVE_BUTTON_TEXT =
             new WritableObjectPropertyKey<>();
 
+    /** Content description for the positive button. */
+    public static final WritableObjectPropertyKey<String> POSITIVE_BUTTON_CONTENT_DESCRIPTION =
+            new WritableObjectPropertyKey<>();
+
     /** The enabled state on the positive button. */
     public static final WritableBooleanPropertyKey POSITIVE_BUTTON_DISABLED =
             new WritableBooleanPropertyKey();
 
     /** The text on the negative button. */
     public static final WritableObjectPropertyKey<String> NEGATIVE_BUTTON_TEXT =
+            new WritableObjectPropertyKey<>();
+
+    /** Content description for the negative button. */
+    public static final WritableObjectPropertyKey<String> NEGATIVE_BUTTON_CONTENT_DESCRIPTION =
             new WritableObjectPropertyKey<>();
 
     /** The enabled state on the negative button. */
@@ -96,12 +106,24 @@ public class ModalDialogProperties {
     public static final WritableBooleanPropertyKey CANCEL_ON_TOUCH_OUTSIDE =
             new WritableBooleanPropertyKey();
 
+    /**
+     * Whether button touch events should be filtered when buttons are obscured by another visible
+     * window.
+     */
+    public static final ReadableBooleanPropertyKey FILTER_TOUCH_FOR_SECURITY =
+            new ReadableBooleanPropertyKey();
+
     /** Whether the title is scrollable with the message. */
     public static final WritableBooleanPropertyKey TITLE_SCROLLABLE =
             new WritableBooleanPropertyKey();
 
+    /** Whether the primary (positive) button should be a filled button */
+    public static final ReadableBooleanPropertyKey PRIMARY_BUTTON_FILLED =
+            new ReadableBooleanPropertyKey();
+
     public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {CONTROLLER, CONTENT_DESCRIPTION,
-            TITLE, TITLE_ICON, MESSAGE, CUSTOM_VIEW, POSITIVE_BUTTON_TEXT, POSITIVE_BUTTON_DISABLED,
-            NEGATIVE_BUTTON_TEXT, NEGATIVE_BUTTON_DISABLED, CANCEL_ON_TOUCH_OUTSIDE,
-            TITLE_SCROLLABLE};
+            TITLE, TITLE_ICON, MESSAGE, CUSTOM_VIEW, POSITIVE_BUTTON_TEXT,
+            POSITIVE_BUTTON_CONTENT_DESCRIPTION, POSITIVE_BUTTON_DISABLED, NEGATIVE_BUTTON_TEXT,
+            NEGATIVE_BUTTON_CONTENT_DESCRIPTION, NEGATIVE_BUTTON_DISABLED, CANCEL_ON_TOUCH_OUTSIDE,
+            FILTER_TOUCH_FOR_SECURITY, TITLE_SCROLLABLE, PRIMARY_BUTTON_FILLED};
 }

@@ -16,7 +16,7 @@
 #include "remoting/base/telemetry_log_writer.h"
 
 namespace base {
-class MessageLoopForUI;
+class SingleThreadTaskExecutor;
 
 template <typename T>
 struct DefaultSingletonTraits;
@@ -91,8 +91,8 @@ class ChromotingClientRuntime {
   void InitializeOnNetworkThread();
 
   // Chromium code's connection to the app message loop. Once created the
-  // MessageLoop will live for the life of the program.
-  std::unique_ptr<base::MessageLoopForUI> ui_loop_;
+  // SingleThreadTaskExecutor will live for the life of the program.
+  std::unique_ptr<base::SingleThreadTaskExecutor> ui_task_executor_;
 
   // References to native threads.
   scoped_refptr<AutoThreadTaskRunner> ui_task_runner_;
@@ -101,7 +101,7 @@ class ChromotingClientRuntime {
   // thread. We should update this class to use regular threads like the client
   // plugin does.
   // Longer term we should migrate most of these to background tasks except the
-  // network thread to TaskScheduler, removing the need for threads.
+  // network thread to ThreadPool, removing the need for threads.
 
   scoped_refptr<AutoThreadTaskRunner> audio_task_runner_;
   scoped_refptr<AutoThreadTaskRunner> display_task_runner_;

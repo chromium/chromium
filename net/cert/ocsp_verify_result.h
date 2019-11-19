@@ -58,7 +58,11 @@ struct NET_EXPORT OCSPVerifyResult {
 
     // The OCSPResponseData structure could not be parsed.
     PARSE_RESPONSE_DATA_ERROR = 8,
-    RESPONSE_STATUS_MAX = PARSE_RESPONSE_DATA_ERROR
+
+    // Unhandled critical extension in either OCSPResponseData or
+    // OCSPSingleResponse
+    UNHANDLED_CRITICAL_EXTENSION = 9,
+    RESPONSE_STATUS_MAX = UNHANDLED_CRITICAL_EXTENSION
   };
 
   ResponseStatus response_status = NOT_CHECKED;

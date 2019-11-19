@@ -37,12 +37,12 @@ function renovation_wikipedia() {
   }
 }
 
-var map_renovations = {
-  "wikipedia" : renovation_wikipedia,
+var mapRenovations = {
+  'wikipedia': renovation_wikipedia,
 };
 
 function run_renovations(flist) {
-  for (var func_name of flist) {
-    map_renovations[func_name]();
+  for (var funcName of flist) {
+    mapRenovations[funcName]();
   }
 }

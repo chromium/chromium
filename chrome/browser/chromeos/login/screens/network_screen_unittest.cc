@@ -12,13 +12,11 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
 #include "chrome/browser/chromeos/login/mock_network_state_helper.h"
-#include "chrome/browser/chromeos/login/screens/mock_base_screen_delegate.h"
-#include "chrome/browser/chromeos/login/screens/mock_model_view_channel.h"
 #include "chrome/browser/chromeos/login/screens/mock_network_screen.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;
@@ -43,10 +41,9 @@ class NetworkScreenUnitTest : public testing::Test {
 
     // Create the NetworkScreen we will use for testing.
     network_screen_ = std::make_unique<NetworkScreen>(
-        &mock_base_screen_delegate_, &mock_view_,
+        &mock_view_,
         base::BindRepeating(&NetworkScreenUnitTest::HandleScreenExit,
                             base::Unretained(this)));
-    network_screen_->set_model_view_channel(&mock_channel_);
     mock_network_state_helper_ = new login::MockNetworkStateHelper();
     network_screen_->SetNetworkStateHelperForTest(mock_network_state_helper_);
   }
@@ -61,8 +58,6 @@ class NetworkScreenUnitTest : public testing::Test {
   // A pointer to the NetworkScreen.
   std::unique_ptr<NetworkScreen> network_screen_;
 
-  // Accessory objects needed by NetworkScreen.
-  MockBaseScreenDelegate mock_base_screen_delegate_;
   login::MockNetworkStateHelper* mock_network_state_helper_ = nullptr;
   base::Optional<NetworkScreen::Result> last_screen_result_;
 
@@ -73,11 +68,10 @@ class NetworkScreenUnitTest : public testing::Test {
   }
 
   // Test versions of core browser infrastructure.
-  content::TestBrowserThreadBundle threads_;
+  content::BrowserTaskEnvironment task_environment_;
 
   // More accessory objects needed by NetworkScreen.
   MockNetworkScreenView mock_view_;
-  MockModelViewChannel mock_channel_;
 
   DISALLOW_COPY_AND_ASSIGN(NetworkScreenUnitTest);
 };

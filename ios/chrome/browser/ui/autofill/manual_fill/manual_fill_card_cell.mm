@@ -10,10 +10,10 @@
 #import "ios/chrome/browser/ui/autofill/manual_fill/card_list_delegate.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/credit_card.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_cell_utils.h"
-#import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_content_delegate.h"
-#import "ios/chrome/browser/ui/autofill/manual_fill/uicolor_manualfill.h"
+#import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_content_injector.h"
 #import "ios/chrome/browser/ui/list_model/list_model.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui_util/constraints_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util_mac.h"
@@ -25,8 +25,8 @@
 @interface ManualFillCardItem ()
 
 // The content delegate for this item.
-@property(nonatomic, weak, readonly) id<ManualFillContentDelegate>
-    contentDelegate;
+@property(nonatomic, weak, readonly) id<ManualFillContentInjector>
+    contentInjector;
 
 // The navigation delegate for this item.
 @property(nonatomic, weak, readonly) id<CardListDelegate> navigationDelegate;
@@ -37,17 +37,14 @@
 @end
 
 @implementation ManualFillCardItem
-@synthesize contentDelegate = _contentDelegate;
-@synthesize navigationDelegate = _navigationDelegate;
-@synthesize card = _card;
 
 - (instancetype)initWithCreditCard:(ManualFillCreditCard*)card
-                   contentDelegate:
-                       (id<ManualFillContentDelegate>)contentDelegate
+                   contentInjector:
+                       (id<ManualFillContentInjector>)contentInjector
                 navigationDelegate:(id<CardListDelegate>)navigationDelegate {
   self = [super initWithType:kItemTypeEnumZero];
   if (self) {
-    _contentDelegate = contentDelegate;
+    _contentInjector = contentInjector;
     _navigationDelegate = navigationDelegate;
     _card = card;
     self.cellClass = [ManualFillCardCell class];
@@ -59,13 +56,17 @@
            withStyler:(ChromeTableViewStyler*)styler {
   [super configureCell:cell withStyler:styler];
   [cell setUpWithCreditCard:self.card
-            contentDelegate:self.contentDelegate
+            contentInjector:self.contentInjector
          navigationDelegate:self.navigationDelegate];
 }
 
 @end
 
 @interface ManualFillCardCell ()
+
+// The dynamic constraints for all the lines (i.e. not set in createView).
+@property(nonatomic, strong)
+    NSMutableArray<NSLayoutConstraint*>* dynamicConstraints;
 
 // The label with bank name and network.
 @property(nonatomic, strong) UILabel* cardLabel;
@@ -86,7 +87,7 @@
 @property(nonatomic, strong) UIButton* expirationYearButton;
 
 // The content delegate for this item.
-@property(nonatomic, weak) id<ManualFillContentDelegate> contentDelegate;
+@property(nonatomic, weak) id<ManualFillContentInjector> contentInjector;
 
 // The navigation delegate for this item.
 @property(nonatomic, weak) id<CardListDelegate> navigationDelegate;
@@ -102,24 +103,36 @@
 
 - (void)prepareForReuse {
   [super prepareForReuse];
+
+  [NSLayoutConstraint deactivateConstraints:self.dynamicConstraints];
+  [self.dynamicConstraints removeAllObjects];
+
   self.cardLabel.text = @"";
   [self.cardNumberButton setTitle:@"" forState:UIControlStateNormal];
   [self.cardholderButton setTitle:@"" forState:UIControlStateNormal];
   [self.expirationMonthButton setTitle:@"" forState:UIControlStateNormal];
   [self.expirationYearButton setTitle:@"" forState:UIControlStateNormal];
-  self.contentDelegate = nil;
+
+  self.cardNumberButton.hidden = NO;
+  self.cardholderButton.hidden = NO;
+
+  self.contentInjector = nil;
   self.navigationDelegate = nil;
   self.cardIcon.image = nil;
   self.card = nil;
 }
 
 - (void)setUpWithCreditCard:(ManualFillCreditCard*)card
-            contentDelegate:(id<ManualFillContentDelegate>)contentDelegate
+            contentInjector:(id<ManualFillContentInjector>)contentInjector
          navigationDelegate:(id<CardListDelegate>)navigationDelegate {
+  if (!self.dynamicConstraints) {
+    self.dynamicConstraints = [[NSMutableArray alloc] init];
+  }
+
   if (self.contentView.subviews.count == 0) {
     [self createViewHierarchy];
   }
-  self.contentDelegate = contentDelegate;
+  self.contentInjector = contentInjector;
   self.navigationDelegate = navigationDelegate;
   self.card = card;
 
@@ -135,7 +148,8 @@
       [[NSMutableAttributedString alloc]
           initWithString:cardName
               attributes:@{
-                NSForegroundColorAttributeName : UIColor.blackColor,
+                NSForegroundColorAttributeName :
+                    [UIColor colorNamed:kTextPrimaryColor],
                 NSFontAttributeName :
                     [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline]
               }];
@@ -152,6 +166,27 @@
                               forState:UIControlStateNormal];
   [self.expirationYearButton setTitle:card.expirationYear
                              forState:UIControlStateNormal];
+
+  NSMutableArray<UIView*>* verticalViews =
+      [[NSMutableArray alloc] initWithObjects:self.cardLabel, nil];
+
+  if (card.obfuscatedNumber.length) {
+    [verticalViews addObject:self.cardNumberButton];
+  } else {
+    self.cardNumberButton.hidden = YES;
+  }
+
+  [verticalViews addObject:self.expirationMonthButton];
+
+  if (card.cardHolder.length) {
+    [verticalViews addObject:self.cardholderButton];
+  } else {
+    self.cardholderButton.hidden = YES;
+  }
+
+  AppendVerticalConstraintsSpacingForViews(self.dynamicConstraints,
+                                           verticalViews, self.contentView);
+  [NSLayoutConstraint activateConstraints:self.dynamicConstraints];
 }
 
 #pragma mark - Private
@@ -160,8 +195,7 @@
 - (void)createViewHierarchy {
   self.selectionStyle = UITableViewCellSelectionStyleNone;
 
-  UIView* guide = self.contentView;
-  CreateGraySeparatorForContainer(guide);
+  UIView* grayLine = CreateGraySeparatorForContainer(self.contentView);
 
   NSMutableArray<NSLayoutConstraint*>* staticConstraints =
       [[NSMutableArray alloc] init];
@@ -173,33 +207,40 @@
   self.cardIcon.translatesAutoresizingMaskIntoConstraints = NO;
   [self.contentView addSubview:self.cardIcon];
   AppendHorizontalConstraintsForViews(
-      staticConstraints, @[ self.cardLabel, self.cardIcon ], guide,
-      ButtonHorizontalMargin, AppendConstraintsHorizontalExtraSpaceLeft);
+      staticConstraints, @[ self.cardIcon, self.cardLabel ], self.contentView,
+      kButtonHorizontalMargin);
   [NSLayoutConstraint activateConstraints:@[
-    [self.cardIcon.bottomAnchor
-        constraintEqualToAnchor:self.cardLabel.firstBaselineAnchor]
+    [self.cardIcon.centerYAnchor
+        constraintEqualToAnchor:self.cardLabel.centerYAnchor]
   ]];
 
   self.cardNumberButton =
-      CreateButtonWithSelectorAndTarget(@selector(userDidTapCardNumber:), self);
+      CreateChipWithSelectorAndTarget(@selector(userDidTapCardNumber:), self);
   [self.contentView addSubview:self.cardNumberButton];
-  AppendHorizontalConstraintsForViews(staticConstraints,
-                                      @[ self.cardNumberButton ], guide);
+  AppendHorizontalConstraintsForViews(
+      staticConstraints, @[ self.cardNumberButton ], grayLine,
+      kChipsHorizontalMargin,
+      AppendConstraintsHorizontalEqualOrSmallerThanGuide);
 
   self.cardholderButton =
-      CreateButtonWithSelectorAndTarget(@selector(userDidTapCardInfo:), self);
+      CreateChipWithSelectorAndTarget(@selector(userDidTapCardInfo:), self);
   [self.contentView addSubview:self.cardholderButton];
-  AppendHorizontalConstraintsForViews(staticConstraints,
-                                      @[ self.cardholderButton ], guide);
+  AppendHorizontalConstraintsForViews(
+      staticConstraints, @[ self.cardholderButton ], grayLine,
+      kChipsHorizontalMargin,
+      AppendConstraintsHorizontalEqualOrSmallerThanGuide);
 
   // Expiration line.
   self.expirationMonthButton =
-      CreateButtonWithSelectorAndTarget(@selector(userDidTapCardInfo:), self);
+      CreateChipWithSelectorAndTarget(@selector(userDidTapCardInfo:), self);
   [self.contentView addSubview:self.expirationMonthButton];
   self.expirationYearButton =
-      CreateButtonWithSelectorAndTarget(@selector(userDidTapCardInfo:), self);
+      CreateChipWithSelectorAndTarget(@selector(userDidTapCardInfo:), self);
   [self.contentView addSubview:self.expirationYearButton];
   UILabel* expirationSeparatorLabel = CreateLabel();
+  expirationSeparatorLabel.font =
+      [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
+  [expirationSeparatorLabel setTextColor:[UIColor colorNamed:kSeparatorColor]];
   expirationSeparatorLabel.text = @"/";
   [self.contentView addSubview:expirationSeparatorLabel];
   AppendHorizontalConstraintsForViews(
@@ -208,15 +249,9 @@
         self.expirationMonthButton, expirationSeparatorLabel,
         self.expirationYearButton
       ],
-      guide, 0, AppendConstraintsHorizontalSyncBaselines);
-
-  AppendVerticalConstraintsSpacingForViews(
-      staticConstraints,
-      @[
-        self.cardLabel, self.cardNumberButton, self.expirationMonthButton,
-        self.cardholderButton
-      ],
-      self.contentView);
+      grayLine, kChipsHorizontalMargin,
+      AppendConstraintsHorizontalSyncBaselines |
+          AppendConstraintsHorizontalEqualOrSmallerThanGuide);
 
   // Without this set, Voice Over will read the content vertically instead of
   // horizontally.
@@ -227,7 +262,7 @@
 
 - (void)userDidTapCardNumber:(UIButton*)sender {
   NSString* number = self.card.number;
-  if (![self.contentDelegate canUserInjectInPasswordField:NO
+  if (![self.contentInjector canUserInjectInPasswordField:NO
                                             requiresHTTPS:YES]) {
     return;
   }
@@ -236,7 +271,7 @@
   if (!number.length) {
     [self.navigationDelegate requestFullCreditCard:self.card];
   } else {
-    [self.contentDelegate userDidPickContent:number
+    [self.contentInjector userDidPickContent:number
                                passwordField:NO
                                requiresHTTPS:YES];
   }
@@ -254,7 +289,7 @@
   DCHECK(metricsAction);
   base::RecordAction(base::UserMetricsAction(metricsAction));
 
-  [self.contentDelegate userDidPickContent:sender.titleLabel.text
+  [self.contentInjector userDidPickContent:sender.titleLabel.text
                              passwordField:NO
                              requiresHTTPS:NO];
 }

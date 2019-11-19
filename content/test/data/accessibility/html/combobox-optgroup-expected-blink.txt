@@ -1,0 +1,8 @@
+rootWebArea
+++genericContainer
+++++popUpButton collapsed value='Mercedes Label' setSize=4
+++++++menuListPopup invisible setSize=4
+++++++++menuListOption invisible name='Volvo Label' setSize=4 posInSet=1 selected=false
+++++++++menuListOption invisible name='Saab Label' setSize=4 posInSet=2 selected=false
+++++++++menuListOption name='Mercedes Label' setSize=4 posInSet=3 selected=true
+++++++++menuListOption invisible name='Audi Label' setSize=4 posInSet=4 selected=false

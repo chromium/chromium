@@ -14,11 +14,6 @@ DataTypeController::DataTypeController(ModelType type) : type_(type) {}
 DataTypeController::~DataTypeController() {}
 
 // static
-bool DataTypeController::IsUnrecoverableResult(ConfigureResult result) {
-  return (result == UNRECOVERABLE_ERROR);
-}
-
-// static
 bool DataTypeController::IsSuccessfulResult(ConfigureResult result) {
   return (result == OK || result == OK_FIRST_RUN);
 }
@@ -45,8 +40,9 @@ std::string DataTypeController::StateToString(State state) {
   return "Invalid";
 }
 
-bool DataTypeController::ReadyForStart() const {
-  return true;
+DataTypeController::PreconditionState DataTypeController::GetPreconditionState()
+    const {
+  return PreconditionState::kPreconditionsMet;
 }
 
 bool DataTypeController::CalledOnValidThread() const {

@@ -95,8 +95,8 @@ class AudioDecoderTest : public ::testing::TestWithParam<TestScenario> {
     // Encode |audio_bus| into |encoded_frame->data|.
     const int num_elements = audio_bus->channels() * audio_bus->frames();
     std::vector<int16_t> interleaved(num_elements);
-    audio_bus->ToInterleaved(audio_bus->frames(), sizeof(int16_t),
-                             &interleaved.front());
+    audio_bus->ToInterleaved<SignedInt16SampleTypeTraits>(audio_bus->frames(),
+                                                          &interleaved.front());
     if (GetParam().codec == CODEC_AUDIO_PCM16) {
       encoded_frame->data.resize(num_elements * sizeof(int16_t));
       int16_t* const pcm_data =

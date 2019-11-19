@@ -13,21 +13,22 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.SystemClock;
-import android.support.annotation.IntDef;
-import android.support.annotation.NonNull;
-import android.support.customtabs.CustomTabsCallback;
-import android.support.customtabs.CustomTabsService;
-import android.support.customtabs.CustomTabsService.Relation;
-import android.support.customtabs.CustomTabsSessionToken;
-import android.support.customtabs.PostMessageServiceConnection;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.util.SparseBooleanArray;
 
+import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
+import androidx.browser.customtabs.CustomTabsCallback;
+import androidx.browser.customtabs.CustomTabsService;
+import androidx.browser.customtabs.CustomTabsService.Relation;
+import androidx.browser.customtabs.CustomTabsSessionToken;
+import androidx.browser.customtabs.PostMessageServiceConnection;
+
 import org.chromium.base.ContextUtils;
-import org.chromium.base.ThreadUtils;
-import org.chromium.base.VisibleForTesting;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.Origin;
 import org.chromium.chrome.browser.browserservices.OriginVerifier;
@@ -35,6 +36,7 @@ import org.chromium.chrome.browser.browserservices.OriginVerifier.OriginVerifica
 import org.chromium.chrome.browser.browserservices.PostMessageHandler;
 import org.chromium.chrome.browser.installedapp.InstalledAppProviderImpl;
 import org.chromium.chrome.browser.util.UrlUtilities;
+import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.Referrer;
 
@@ -276,7 +278,7 @@ class ClientManager {
     private boolean mWarmupHasBeenCalled;
 
     public ClientManager() {
-        RequestThrottler.loadInBackground(ContextUtils.getApplicationContext());
+        RequestThrottler.loadInBackground();
     }
 
     /** Creates a new session.
@@ -345,8 +347,7 @@ class ClientManager {
                 TextUtils.isEmpty(url) && lowConfidence && !params.lowConfidencePrediction;
         params.setPredictionMetrics(url, SystemClock.elapsedRealtime(), lowConfidence);
         if (firstLowConfidencePrediction) return true;
-        RequestThrottler throttler =
-                RequestThrottler.getForUid(ContextUtils.getApplicationContext(), uid);
+        RequestThrottler throttler = RequestThrottler.getForUid(uid);
         return throttler.updateStatsAndReturnWhetherAllowed();
     }
 
@@ -400,8 +401,7 @@ class ClientManager {
         if (outcome == PredictionStatus.GOOD) {
             long elapsedTimeMs = SystemClock.elapsedRealtime()
                     - params.getLastMayLaunchUrlTimestamp();
-            RequestThrottler.getForUid(ContextUtils.getApplicationContext(), params.uid)
-                    .registerSuccess(params.mPredictedUrl);
+            RequestThrottler.getForUid(params.uid).registerSuccess(params.mPredictedUrl);
             RecordHistogram.recordCustomTimesHistogram("CustomTabs.PredictionToLaunch",
                     elapsedTimeMs, 1, DateUtils.MINUTE_IN_MILLIS * 3, 100);
         }
@@ -477,8 +477,10 @@ class ClientManager {
             }
         };
 
-        params.originVerifier = new OriginVerifier(params.getPackageName(), relation);
-        ThreadUtils.runOnUiThread(() -> { params.originVerifier.start(listener, origin); });
+        params.originVerifier =
+                new OriginVerifier(params.getPackageName(), relation, /* webContents= */ null);
+        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
+                () -> { params.originVerifier.start(listener, origin); });
         if (relation == CustomTabsService.RELATION_HANDLE_ALL_URLS
                 && InstalledAppProviderImpl.isAppInstalledAndAssociatedWithOrigin(
                            params.getPackageName(), URI.create(origin.toString()),
@@ -767,24 +769,22 @@ class ClientManager {
 
     /** See {@link RequestThrottler#isPrerenderingAllowed()} */
     public synchronized boolean isPrerenderingAllowed(int uid) {
-        return RequestThrottler.getForUid(ContextUtils.getApplicationContext(), uid)
-                .isPrerenderingAllowed();
+        return RequestThrottler.getForUid(uid).isPrerenderingAllowed();
     }
 
     /** See {@link RequestThrottler#registerPrerenderRequest(String)} */
     public synchronized void registerPrerenderRequest(int uid, String url) {
-        RequestThrottler.getForUid(ContextUtils.getApplicationContext(), uid)
-                .registerPrerenderRequest(url);
+        RequestThrottler.getForUid(uid).registerPrerenderRequest(url);
     }
 
     /** See {@link RequestThrottler#reset()} */
     public synchronized void resetThrottling(int uid) {
-        RequestThrottler.getForUid(ContextUtils.getApplicationContext(), uid).reset();
+        RequestThrottler.getForUid(uid).reset();
     }
 
     /** See {@link RequestThrottler#ban()} */
     public synchronized void ban(int uid) {
-        RequestThrottler.getForUid(ContextUtils.getApplicationContext(), uid).ban();
+        RequestThrottler.getForUid(uid).ban();
     }
 
     /**

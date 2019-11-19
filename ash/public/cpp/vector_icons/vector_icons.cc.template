@@ -5,20 +5,20 @@
 // vector_icons.cc.template is used to generate vector_icons.cc. Edit the former
 // rather than the latter.
 
-#include "ash/public/cpp/vector_icons/vector_icons.h"
-
-#include "base/logging.h"
-#include "ui/gfx/vector_icon_types.h"
-
 // Some of the icons in this target are passed over Mojo and thus rely on having
 // a unique ID, so make sure there's a prefix that won't be reused elsewhere.
 #define VECTOR_ICON_ID_PREFIX "ash_public::"
 
+#include "ash/public/cpp/vector_icons/vector_icons.h"
+
+#include "base/logging.h"
 #include "components/vector_icons/cc_macros.h"
+#include "ui/gfx/vector_icon_types.h"
+
+#define DECLARE_VECTOR_COMMAND(x) using gfx::x;
+DECLARE_VECTOR_COMMANDS
 
 namespace ash {
-
-using namespace gfx;
 
 TEMPLATE_PLACEHOLDER
 

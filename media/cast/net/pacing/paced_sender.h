@@ -240,7 +240,7 @@ class PacedSender : public PacedPacketSender {
   State state_;
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
-  base::WeakPtrFactory<PacedSender> weak_factory_;
+  base::WeakPtrFactory<PacedSender> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PacedSender);
 };

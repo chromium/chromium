@@ -53,12 +53,10 @@ class OwnerSettingsServiceChromeOSFactory
   OwnerSettingsServiceChromeOSFactory();
   ~OwnerSettingsServiceChromeOSFactory() override;
 
-  static KeyedService* BuildInstanceFor(content::BrowserContext* context);
-
-  // BrowserContextKeyedBaseFactory overrides:
+  // BrowserContextKeyedServiceFactory overrides:
+  content::BrowserContext* GetBrowserContextToUse(
+      content::BrowserContext* context) const override;
   bool ServiceIsCreatedWithBrowserContext() const override;
-
-  // BrowserContextKeyedServiceFactory implementation:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* browser_context) const override;
 

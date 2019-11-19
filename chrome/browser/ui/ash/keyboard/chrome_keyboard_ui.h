@@ -7,9 +7,9 @@
 
 #include <memory>
 
+#include "ash/keyboard/ui/keyboard_ui.h"
 #include "base/macros.h"
 #include "ui/aura/window_observer.h"
-#include "ui/keyboard/keyboard_ui.h"
 
 class ChromeKeyboardWebContents;
 
@@ -27,6 +27,7 @@ class Shadow;
 
 // Subclass of KeyboardUI. It is used by KeyboardController to get
 // access to the virtual keyboard window and setup Chrome extension functions.
+// Used in classic ash, not in mash.
 class ChromeKeyboardUI : public keyboard::KeyboardUI,
                          public aura::WindowObserver {
  public:

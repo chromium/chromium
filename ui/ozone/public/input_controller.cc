@@ -4,6 +4,8 @@
 
 #include "ui/ozone/public/input_controller.h"
 
+#include <memory>
+
 #include "base/callback.h"
 #include "base/logging.h"
 #include "base/macros.h"
@@ -41,6 +43,8 @@ class StubInputController : public InputController {
   void SetMouseSensitivity(int value) override {}
   void SetPrimaryButtonRight(bool right) override {}
   void SetMouseReverseScroll(bool enabled) override {}
+  void SetMouseAcceleration(bool enabled) override {}
+  void SetTouchpadAcceleration(bool enabled) override {}
   void SetTapToClickPaused(bool state) override {}
   void GetTouchDeviceStatus(GetTouchDeviceStatusReply reply) override {
     std::move(reply).Run(std::string());
@@ -54,6 +58,9 @@ class StubInputController : public InputController {
   void SetTouchscreensEnabled(bool enabled) override {}
   void SetInternalKeyboardFilter(bool enable_filter,
                                  std::vector<DomCode> allowed_keys) override {}
+  void GetGesturePropertiesService(
+      mojo::PendingReceiver<ui::ozone::mojom::GesturePropertiesService>
+          receiver) override {}
 
  private:
   DISALLOW_COPY_AND_ASSIGN(StubInputController);

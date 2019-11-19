@@ -8,34 +8,15 @@
 #include <memory>
 
 #include "ash/ash_export.h"
-#include "base/compiler_specific.h"
 
 namespace ash {
+class DelayedAnimationObserver;
 
-class OverviewDelegate;
-
-class ASH_EXPORT DelayedAnimationObserver {
- public:
-  virtual ~DelayedAnimationObserver() {}
-
-  // Sets an |owner| that can be notified when the animation that |this|
-  // observes completes.
-  virtual void SetOwner(OverviewDelegate* owner) = 0;
-
-  // Can be called by the |owner| to delete the owned widget. The |owner| is
-  // then responsible for deleting |this| instance of the
-  // DelayedAnimationObserver.
-  virtual void Shutdown() = 0;
-};
-
-// Implement this class to handle the selection event from OverviewSession.
+// Implement this class to handle adding and removing animation observers.
 class ASH_EXPORT OverviewDelegate {
  public:
-  // Invoked if selection is ended.
-  virtual void OnSelectionEnded() = 0;
-
   // Passes ownership of |animation_observer| to |this| delegate.
-  virtual void AddDelayedAnimationObserver(
+  virtual void AddExitAnimationObserver(
       std::unique_ptr<DelayedAnimationObserver> animation_observer) = 0;
 
   // Finds and erases |animation_observer| from the list deleting the widget
@@ -44,17 +25,17 @@ class ASH_EXPORT OverviewDelegate {
   // result of a window getting destroyed then the
   // DelayedAnimationObserver::Shutdown() should be called first before
   // destroying the window.
-  virtual void RemoveAndDestroyAnimationObserver(
+  virtual void RemoveAndDestroyExitAnimationObserver(
       DelayedAnimationObserver* animation_observer) = 0;
 
   // Passes ownership of |animation_observer| to |this| delegate.
-  virtual void AddStartAnimationObserver(
+  virtual void AddEnterAnimationObserver(
       std::unique_ptr<DelayedAnimationObserver> animation_observer) = 0;
 
   // Finds and erases |animation_observer| from the list which tracks the start
   // animations. This method should be called when a scheduled start overview
   // animation completes.
-  virtual void RemoveAndDestroyStartAnimationObserver(
+  virtual void RemoveAndDestroyEnterAnimationObserver(
       DelayedAnimationObserver* animation_observer) = 0;
 
  protected:

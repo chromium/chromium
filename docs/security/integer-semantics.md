@@ -21,12 +21,13 @@ practices:
 base/numerics](../../base/numerics/README.md) to avoid overflows, **especially when
 calculating the size or offset of memory allocations**.
 * Use unsigned types for values that shouldn't be negative or where defined
-overflow behavior is required.
-* Use explicitly sized integer types, such as `int32_t`, `int64_t`, or
-`uint32_t`, since caller and callee could potentially use different
-interpretations of implicitly-sized types like `int` or `long`. (For example, a
-64-bit browser process and a 32-bit plug-in process might interpret `long`
-differently.)
+overflow behavior is required. (Overflow is undefined behavior for signed
+types!)
+* Across any process boundary, use explicitly sized integer types, such as
+`int32_t`, `int64_t`, or `uint32_t`, since caller and callee could potentially
+use different interpretations of implicitly-sized types like `int` or `long`.
+(For example, a 64-bit browser process and a 32-bit plug-in process might
+interpret `long` differently.)
 
 ## Be Aware Of The Subtleties Of Integer Types Across Languages
 
@@ -50,12 +51,12 @@ Anybody, but it's good to keep in mind.
 
 You need to make sure that every integer value survives its journey across
 languages intact. That generally means explicit casts with range checks; the
-easiest way to do this is with the `base::checked_cast` or
+easiest way to do this is with the `base::checked_cast` or (much less likely)
 `base::saturated_cast` templates in base/numerics. Depending on how the integer
 object is going to be used, and in which direction the value is flowing, it may
 make sense to cast the value to `jint` (an ID or regular integer), `jlong` (a
 regular long integer), `size_t` (a size or index), or one of the other more
-exotic C++ integer types like `off_t`.
+exotic C/C++ integer types like `off_t`.
 
 ### JavaScript And JSON
 

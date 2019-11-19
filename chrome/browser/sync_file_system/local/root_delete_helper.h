@@ -10,7 +10,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "storage/browser/fileapi/file_system_url.h"
+#include "storage/browser/file_system/file_system_url.h"
 
 class GURL;
 
@@ -54,7 +54,7 @@ class RootDeleteHelper {
   // Not owned; owner of this instance owns it.
   LocalFileSyncStatus* sync_status_;
 
-  base::WeakPtrFactory<RootDeleteHelper> weak_factory_;
+  base::WeakPtrFactory<RootDeleteHelper> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(RootDeleteHelper);
 };

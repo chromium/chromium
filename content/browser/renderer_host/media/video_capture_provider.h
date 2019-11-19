@@ -18,10 +18,10 @@ namespace content {
 class VideoCaptureDeviceLauncher;
 
 // Note: GetDeviceInfosAsync is only relevant for devices with
-// MediaStreamType == MEDIA_DEVICE_VIDEO_CAPTURE, i.e. camera devices.
+// MediaStreamType == DEVICE_VIDEO_CAPTURE, i.e. camera devices.
 class CONTENT_EXPORT VideoCaptureProvider {
  public:
-  using GetDeviceInfosCallback = base::OnceCallback<void(
+  using GetDeviceInfosCallback = base::RepeatingCallback<void(
       const std::vector<media::VideoCaptureDeviceInfo>&)>;
 
   virtual ~VideoCaptureProvider() {}

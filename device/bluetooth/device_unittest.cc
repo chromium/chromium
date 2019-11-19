@@ -13,12 +13,13 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "device/bluetooth/test/mock_bluetooth_device.h"
 #include "device/bluetooth/test/mock_bluetooth_gatt_characteristic.h"
 #include "device/bluetooth/test/mock_bluetooth_gatt_connection.h"
 #include "device/bluetooth/test/mock_bluetooth_gatt_service.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::Return;
@@ -72,8 +73,7 @@ class BluetoothInterfaceDeviceTest : public testing::Test {
                 kTestLeDeviceName0,
                 kTestLeDeviceAddress0,
                 false,
-                true),
-        weak_factory_(this) {
+                true) {
     ON_CALL(*adapter_, GetDevice(kTestLeDeviceAddress0))
         .WillByDefault(Return(&device_));
 
@@ -122,9 +122,10 @@ class BluetoothInterfaceDeviceTest : public testing::Test {
     auto connection = std::make_unique<NiceMockBluetoothGattConnection>(
         adapter_, device_.GetAddress());
 
-    Device::Create(adapter_, std::move(connection), mojo::MakeRequest(&proxy_));
+    Device::Create(adapter_, std::move(connection),
+                   proxy_.BindNewPipeAndPassReceiver());
 
-    proxy_.set_connection_error_handler(
+    proxy_.set_disconnect_handler(
         base::BindOnce(&BluetoothInterfaceDeviceTest::OnConnectionError,
                        weak_factory_.GetWeakPtr()));
   }
@@ -174,9 +175,8 @@ class BluetoothInterfaceDeviceTest : public testing::Test {
 
   scoped_refptr<NiceMockBluetoothAdapter> adapter_;
   NiceMockBluetoothDevice device_;
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
-  mojom::DevicePtr proxy_;
-  mojo::StrongBindingPtr<mojom::Device> binding_ptr_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
+  mojo::Remote<mojom::Device> proxy_;
 
   bool message_pipe_closed_ = false;
   bool expect_device_service_deleted_ = false;
@@ -185,7 +185,7 @@ class BluetoothInterfaceDeviceTest : public testing::Test {
   int actual_callback_count_ = 0;
   int expected_callback_count_ = 0;
 
-  base::WeakPtrFactory<BluetoothInterfaceDeviceTest> weak_factory_;
+  base::WeakPtrFactory<BluetoothInterfaceDeviceTest> weak_factory_{this};
 };
 }  // namespace
 

@@ -10,11 +10,16 @@ import android.net.http.SslError;
 import android.os.Handler;
 import android.util.Log;
 
+import org.chromium.android_webview.safe_browsing.AwSafeBrowsingConversionHelper;
+import org.chromium.android_webview.safe_browsing.AwSafeBrowsingResponse;
 import org.chromium.base.Callback;
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.CalledByNativeUnchecked;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
+import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.task.PostTask;
+import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.net.NetError;
 
 import java.security.Principal;
@@ -77,15 +82,16 @@ public class AwContentsClientBridge {
         }
 
         public void proceed(final PrivateKey privateKey, final X509Certificate[] chain) {
-            ThreadUtils.runOnUiThread(() -> proceedOnUiThread(privateKey, chain));
+            PostTask.runOrPostTask(
+                    UiThreadTaskTraits.DEFAULT, () -> proceedOnUiThread(privateKey, chain));
         }
 
         public void ignore() {
-            ThreadUtils.runOnUiThread(() -> ignoreOnUiThread());
+            PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> ignoreOnUiThread());
         }
 
         public void cancel() {
-            ThreadUtils.runOnUiThread(() -> cancelOnUiThread());
+            PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> cancelOnUiThread());
         }
 
         private void proceedOnUiThread(PrivateKey privateKey, X509Certificate[] chain) {
@@ -131,8 +137,9 @@ public class AwContentsClientBridge {
 
         private void provideResponse(PrivateKey privateKey, byte[][] certChain) {
             if (mNativeContentsClientBridge == 0) return;
-            nativeProvideClientCertificateResponse(mNativeContentsClientBridge, mId,
-                    certChain, privateKey);
+            AwContentsClientBridgeJni.get().provideClientCertificateResponse(
+                    mNativeContentsClientBridge, AwContentsClientBridge.this, mId, certChain,
+                    privateKey);
         }
     }
 
@@ -157,19 +164,26 @@ public class AwContentsClientBridge {
             return false;
         }
         final SslError sslError = SslUtil.sslErrorFromNetErrorCode(certError, cert, url);
-        final Callback<Boolean> callback =
-                value -> ThreadUtils.runOnUiThread(() -> proceedSslError(value.booleanValue(), id));
+        final Callback<Boolean> callback = value
+                -> PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
+                        () -> proceedSslError(value.booleanValue(), id));
         // Post the application callback back to the current thread to ensure the application
         // callback is executed without any native code on the stack. This so that any exception
         // thrown by the application callback won't have to be propagated through a native call
         // stack.
         new Handler().post(() -> mClient.onReceivedSslError(callback, sslError));
+
+        // Record UMA on ssl error
+        // Use sparse histogram in case new values are added in future releases
+        RecordHistogram.recordSparseHistogram(
+                "Android.WebView.onReceivedSslError.ErrorCode", sslError.getPrimaryError());
         return true;
     }
 
     private void proceedSslError(boolean proceed, int id) {
         if (mNativeContentsClientBridge == 0) return;
-        nativeProceedSslError(mNativeContentsClientBridge, proceed, id);
+        AwContentsClientBridgeJni.get().proceedSslError(
+                mNativeContentsClientBridge, AwContentsClientBridge.this, proceed, id);
     }
 
     // Intentionally not private for testing the native peer of this class.
@@ -179,13 +193,14 @@ public class AwContentsClientBridge {
         assert mNativeContentsClientBridge != 0;
         ClientCertLookupTable.Cert cert = mLookupTable.getCertData(host, port);
         if (mLookupTable.isDenied(host, port)) {
-            nativeProvideClientCertificateResponse(mNativeContentsClientBridge, id,
-                    null, null);
+            AwContentsClientBridgeJni.get().provideClientCertificateResponse(
+                    mNativeContentsClientBridge, AwContentsClientBridge.this, id, null, null);
             return;
         }
         if (cert != null) {
-            nativeProvideClientCertificateResponse(mNativeContentsClientBridge, id,
-                    cert.mCertChain, cert.mPrivateKey);
+            AwContentsClientBridgeJni.get().provideClientCertificateResponse(
+                    mNativeContentsClientBridge, AwContentsClientBridge.this, id, cert.mCertChain,
+                    cert.mPrivateKey);
             return;
         }
         // Build the list of principals from encoded versions.
@@ -197,8 +212,9 @@ public class AwContentsClientBridge {
                     principals[n] = new X500Principal(encodedPrincipals[n]);
                 } catch (IllegalArgumentException e) {
                     Log.w(TAG, "Exception while decoding issuers list: " + e);
-                    nativeProvideClientCertificateResponse(mNativeContentsClientBridge, id,
-                            null, null);
+                    AwContentsClientBridgeJni.get().provideClientCertificateResponse(
+                            mNativeContentsClientBridge, AwContentsClientBridge.this, id, null,
+                            null);
                     return;
                 }
             }
@@ -208,6 +224,10 @@ public class AwContentsClientBridge {
         final ClientCertificateRequestCallback callback =
                 new ClientCertificateRequestCallback(id, host, port);
         mClient.onReceivedClientCertRequest(callback, keyTypes, principals, host, port);
+
+        // Record UMA for onReceivedClientCertRequest.
+        AwHistogramRecorder.recordCallbackInvocation(
+                AwHistogramRecorder.WebViewCallbackType.ON_RECEIVED_CLIENT_CERT_REQUEST);
     }
 
     @CalledByNative
@@ -264,11 +284,19 @@ public class AwContentsClientBridge {
             String mimeType, long contentLength) {
         mClient.getCallbackHelper().postOnDownloadStart(
                 url, userAgent, contentDisposition, mimeType, contentLength);
+
+        // Record UMA for onDownloadStart.
+        AwHistogramRecorder.recordCallbackInvocation(
+                AwHistogramRecorder.WebViewCallbackType.ON_DOWNLOAD_START);
     }
 
     @CalledByNative
     private void newLoginRequest(String realm, String account, String args) {
         mClient.getCallbackHelper().postOnReceivedLoginRequest(realm, account, args);
+
+        // Record UMA for onReceivedLoginRequest.
+        AwHistogramRecorder.recordCallbackInvocation(
+                AwHistogramRecorder.WebViewCallbackType.ON_RECEIVED_LOGIN_REQUEST);
     }
 
     @CalledByNative
@@ -277,7 +305,7 @@ public class AwContentsClientBridge {
             String url, boolean isMainFrame, boolean hasUserGesture, boolean isRendererInitiated,
             String method, String[] requestHeaderNames, String[] requestHeaderValues,
             // WebResourceError
-            int errorCode, String description, boolean safebrowsingHit) {
+            @NetError int errorCode, String description, boolean safebrowsingHit) {
         AwContentsClient.AwWebResourceRequest request = new AwContentsClient.AwWebResourceRequest(
                 url, isMainFrame, hasUserGesture, method, requestHeaderNames, requestHeaderValues);
         AwContentsClient.AwWebResourceError error = new AwContentsClient.AwWebResourceError();
@@ -327,13 +355,18 @@ public class AwContentsClientBridge {
         // TODO(ntfschr): remove clang-format directives once crbug/764582 is resolved
         // clang-format off
         Callback<AwSafeBrowsingResponse> callback =
-                response -> ThreadUtils.runOnUiThread(
-                        () -> nativeTakeSafeBrowsingAction(mNativeContentsClientBridge,
+                response -> PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
+                        () -> AwContentsClientBridgeJni.get().takeSafeBrowsingAction(
+                                mNativeContentsClientBridge, AwContentsClientBridge.this,
                                 response.action(), response.reporting(), requestId));
         // clang-format on
 
-        mClient.getCallbackHelper().postOnSafeBrowsingHit(
-                request, AwSafeBrowsingConversionHelper.convertThreatType(threatType), callback);
+        int webViewThreatType = AwSafeBrowsingConversionHelper.convertThreatType(threatType);
+        mClient.getCallbackHelper().postOnSafeBrowsingHit(request, webViewThreatType, callback);
+
+        // Record UMA on threat type
+        RecordHistogram.recordEnumeratedHistogram("Android.WebView.onSafeBrowsingHit.ThreatType",
+                webViewThreatType, AwSafeBrowsingConversionHelper.SAFE_BROWSING_THREAT_BOUNDARY);
     }
 
     @CalledByNative
@@ -364,6 +397,10 @@ public class AwContentsClientBridge {
         AwWebResourceResponse response = new AwWebResourceResponse(
                 mimeType, encoding, null, statusCode, reasonPhrase, responseHeaders);
         mClient.getCallbackHelper().postOnReceivedHttpError(request, response);
+
+        // Record UMA on http response status.
+        RecordHistogram.recordSparseHistogram(
+                "Android.WebView.onReceivedHttpError.StatusCode", statusCode);
     }
 
     @CalledByNativeUnchecked
@@ -375,25 +412,28 @@ public class AwContentsClientBridge {
 
     void confirmJsResult(int id, String prompt) {
         if (mNativeContentsClientBridge == 0) return;
-        nativeConfirmJsResult(mNativeContentsClientBridge, id, prompt);
+        AwContentsClientBridgeJni.get().confirmJsResult(
+                mNativeContentsClientBridge, AwContentsClientBridge.this, id, prompt);
     }
 
     void cancelJsResult(int id) {
         if (mNativeContentsClientBridge == 0) return;
-        nativeCancelJsResult(mNativeContentsClientBridge, id);
+        AwContentsClientBridgeJni.get().cancelJsResult(
+                mNativeContentsClientBridge, AwContentsClientBridge.this, id);
     }
 
-    //--------------------------------------------------------------------------------------------
-    //  Native methods
-    //--------------------------------------------------------------------------------------------
-    private native void nativeTakeSafeBrowsingAction(
-            long nativeAwContentsClientBridge, int action, boolean reporting, int requestId);
-    private native void nativeProceedSslError(long nativeAwContentsClientBridge, boolean proceed,
-            int id);
-    private native void nativeProvideClientCertificateResponse(long nativeAwContentsClientBridge,
-            int id, byte[][] certChain, PrivateKey androidKey);
+    @NativeMethods
+    interface Natives {
+        void takeSafeBrowsingAction(long nativeAwContentsClientBridge,
+                AwContentsClientBridge caller, int action, boolean reporting, int requestId);
 
-    private native void nativeConfirmJsResult(long nativeAwContentsClientBridge, int id,
-            String prompt);
-    private native void nativeCancelJsResult(long nativeAwContentsClientBridge, int id);
+        void proceedSslError(long nativeAwContentsClientBridge, AwContentsClientBridge caller,
+                boolean proceed, int id);
+        void provideClientCertificateResponse(long nativeAwContentsClientBridge,
+                AwContentsClientBridge caller, int id, byte[][] certChain, PrivateKey androidKey);
+        void confirmJsResult(long nativeAwContentsClientBridge, AwContentsClientBridge caller,
+                int id, String prompt);
+        void cancelJsResult(
+                long nativeAwContentsClientBridge, AwContentsClientBridge caller, int id);
+    }
 }

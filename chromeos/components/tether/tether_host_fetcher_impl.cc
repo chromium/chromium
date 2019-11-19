@@ -48,8 +48,7 @@ TetherHostFetcherImpl::TetherHostFetcherImpl(
     chromeos::multidevice_setup::MultiDeviceSetupClient*
         multidevice_setup_client)
     : device_sync_client_(device_sync_client),
-      multidevice_setup_client_(multidevice_setup_client),
-      weak_ptr_factory_(this) {
+      multidevice_setup_client_(multidevice_setup_client) {
   device_sync_client_->AddObserver(this);
   multidevice_setup_client_->AddObserver(this);
 

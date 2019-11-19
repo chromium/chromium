@@ -32,8 +32,7 @@ WifiHotspotConnector::WifiHotspotConnector(
       network_connect_(network_connect),
       timer_(std::make_unique<base::OneShotTimer>()),
       clock_(base::DefaultClock::GetInstance()),
-      task_runner_(base::ThreadTaskRunnerHandle::Get()),
-      weak_ptr_factory_(this) {
+      task_runner_(base::ThreadTaskRunnerHandle::Get()) {
   network_state_handler_->AddObserver(this, FROM_HERE);
 }
 

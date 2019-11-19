@@ -79,7 +79,7 @@ void ExtensionAppItem::Reload() {
   if (!icon_) {
     icon_ = extensions::ChromeAppIconService::Get(profile())->CreateIcon(
         this, extension_id(),
-        app_list::AppListConfig::instance().grid_icon_dimension(),
+        ash::AppListConfig::instance().grid_icon_dimension(),
         base::BindRepeating(&app_list::MaybeResizeAndPadIconForMd));
   } else {
     icon_->Reload();

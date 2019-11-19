@@ -1,0 +1,18 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("alert") {
+  sources = [
+    "sc_alert_coordinator.h",
+    "sc_alert_coordinator.mm",
+  ]
+  deps = [
+    "//ios/chrome/browser/ui/alert_view_controller",
+    "//ios/chrome/browser/ui/elements",
+    "//ios/chrome/browser/ui/presenters",
+    "//ios/showcase/common",
+  ]
+  libs = [ "UIKit.framework" ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+}

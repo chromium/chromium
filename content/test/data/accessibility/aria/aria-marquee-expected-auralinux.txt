@@ -1,0 +1,4 @@
+[document web]
+++[marquee] container-atomic:false container-busy:false container-live:off container-relevant:additions text live:off xml-roles:marquee
+++[marquee] container-atomic:false container-busy:false container-live:polite container-relevant:additions text live:polite xml-roles:marquee
+++[marquee] container-atomic:false container-busy:false container-live:assertive container-relevant:additions text live:assertive xml-roles:marquee

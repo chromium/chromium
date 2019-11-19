@@ -45,7 +45,8 @@ import java.util.RandomAccess;
 final class DoubleArrayList extends AbstractProtobufList<Double>
     implements DoubleList, RandomAccess, PrimitiveNonBoxingCollection {
 
-  private static final DoubleArrayList EMPTY_LIST = new DoubleArrayList();
+  private static final DoubleArrayList EMPTY_LIST = new DoubleArrayList(new double[0], 0);
+
   static {
     EMPTY_LIST.makeImmutable();
   }
@@ -54,9 +55,7 @@ final class DoubleArrayList extends AbstractProtobufList<Double>
     return EMPTY_LIST;
   }
 
-  /**
-   * The backing store for the list.
-   */
+  /** The backing store for the list. */
   private double[] array;
 
   /**
@@ -65,16 +64,13 @@ final class DoubleArrayList extends AbstractProtobufList<Double>
    */
   private int size;
 
-  /**
-   * Constructs a new mutable {@code DoubleArrayList} with default capacity.
-   */
+  /** Constructs a new mutable {@code DoubleArrayList} with default capacity. */
   DoubleArrayList() {
     this(new double[DEFAULT_CAPACITY], 0);
   }
 
   /**
-   * Constructs a new mutable {@code DoubleArrayList}
-   * containing the same elements as {@code other}.
+   * Constructs a new mutable {@code DoubleArrayList} containing the same elements as {@code other}.
    */
   private DoubleArrayList(double[] other, int size) {
     array = other;
@@ -108,7 +104,7 @@ final class DoubleArrayList extends AbstractProtobufList<Double>
 
     final double[] arr = other.array;
     for (int i = 0; i < size; i++) {
-      if (array[i] != arr[i]) {
+      if (Double.doubleToLongBits(array[i]) != Double.doubleToLongBits(arr[i])) {
         return false;
       }
     }
@@ -169,17 +165,13 @@ final class DoubleArrayList extends AbstractProtobufList<Double>
     addDouble(index, element);
   }
 
-  /**
-   * Like {@link #add(Double)} but more efficient in that it doesn't box the element.
-   */
+  /** Like {@link #add(Double)} but more efficient in that it doesn't box the element. */
   @Override
   public void addDouble(double element) {
     addDouble(size, element);
   }
 
-  /**
-   * Like {@link #add(int, Double)} but more efficient in that it doesn't box the element.
-   */
+  /** Like {@link #add(int, Double)} but more efficient in that it doesn't box the element. */
   private void addDouble(int index, double element) {
     ensureIsMutable();
     if (index < 0 || index > size) {
@@ -245,7 +237,7 @@ final class DoubleArrayList extends AbstractProtobufList<Double>
     ensureIsMutable();
     for (int i = 0; i < size; i++) {
       if (o.equals(array[i])) {
-        System.arraycopy(array, i + 1, array, i, size - i);
+        System.arraycopy(array, i + 1, array, i, size - i - 1);
         size--;
         modCount++;
         return true;
@@ -260,7 +252,7 @@ final class DoubleArrayList extends AbstractProtobufList<Double>
     ensureIndexInRange(index);
     double value = array[index];
     if (index < size - 1) {
-      System.arraycopy(array, index + 1, array, index, size - index);
+      System.arraycopy(array, index + 1, array, index, size - index - 1);
     }
     size--;
     modCount++;

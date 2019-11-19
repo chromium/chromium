@@ -159,8 +159,6 @@ struct SimpleOverflowModel {
 // visual overflow.
 
 class BoxLayoutOverflowModel {
-  USING_FAST_MALLOC(BoxLayoutOverflowModel);
-
  public:
   BoxLayoutOverflowModel(const LayoutRect& layout_rect)
       : layout_overflow_(layout_rect) {}
@@ -186,8 +184,6 @@ class BoxLayoutOverflowModel {
 };
 
 class BoxVisualOverflowModel {
-  USING_FAST_MALLOC(BoxVisualOverflowModel);
-
  public:
   BoxVisualOverflowModel(const LayoutRect& self_visual_overflow_rect)
       : self_visual_overflow_(self_visual_overflow_rect) {}
@@ -237,6 +233,8 @@ class BoxVisualOverflowModel {
 struct BoxOverflowModel {
   base::Optional<BoxLayoutOverflowModel> layout_overflow;
   base::Optional<BoxVisualOverflowModel> visual_overflow;
+
+  USING_FAST_MALLOC(BoxOverflowModel);
 };
 
 }  // namespace blink

@@ -7,9 +7,9 @@
 
 #include "ui/accessibility/ax_relative_bounds.h"
 #include "ui/accessibility/mojom/ax_relative_bounds.mojom-shared.h"
-#include "ui/gfx/geometry/mojo/geometry_struct_traits.h"
-#include "ui/gfx/mojo/transform.mojom.h"
-#include "ui/gfx/mojo/transform_struct_traits.h"
+#include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
+#include "ui/gfx/mojom/transform.mojom.h"
+#include "ui/gfx/mojom/transform_mojom_traits.h"
 
 namespace mojo {
 

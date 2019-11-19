@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/atomicops.h"
-#include "base/hash.h"
+#include "base/hash/hash.h"
 #include "base/logging.h"
 #include "third_party/metrics_proto/ukm/source.pb.h"
 
@@ -64,6 +64,7 @@ UkmSource::NavigationData UkmSource::NavigationData::CopyWithSanitizedUrls(
   sanitized_navigation_data.tab_id = tab_id;
   sanitized_navigation_data.is_same_document_navigation =
       is_same_document_navigation;
+  sanitized_navigation_data.navigation_time = navigation_time;
   return sanitized_navigation_data;
 }
 
@@ -101,11 +102,8 @@ void UkmSource::PopulateProto(Source* proto_source) const {
   DCHECK(!proto_source->has_initial_url());
 
   proto_source->set_id(id_);
-  proto_source->set_url(GetShortenedURL(url()));
-  if (urls().size() > 1u) {
-    DCHECK_EQ(SourceIdType::NAVIGATION_ID, GetSourceIdType(id_));
-    const GURL& initial_url = urls().front();
-    proto_source->set_initial_url(GetShortenedURL(initial_url));
+  for (const auto& url : urls()) {
+    proto_source->add_urls()->set_url(GetShortenedURL(url));
   }
 
   if (custom_tab_state_ != kCustomTabUnset)
@@ -129,6 +127,11 @@ void UkmSource::PopulateProto(Source* proto_source) const {
 
   if (navigation_data_.is_same_document_navigation)
     proto_source->set_is_same_document_navigation(true);
+
+  if (navigation_data_.navigation_time) {
+    proto_source->set_navigation_time_msec(
+        navigation_data_.navigation_time->since_origin().InMilliseconds());
+  }
 }
 
 }  // namespace ukm

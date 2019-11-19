@@ -108,7 +108,7 @@ VariationsSeed CreateTestSeed() {
 // for testing.
 std::unique_ptr<ClientFilterableState> CreateTestClientFilterableState() {
   std::unique_ptr<ClientFilterableState> client_state =
-      std::make_unique<ClientFilterableState>();
+      std::make_unique<ClientFilterableState>(base::OnceCallback<bool()>());
   client_state->locale = "es-MX";
   client_state->reference_date = WrapTime(1234554321);
   client_state->version = base::Version("1.2.3.4");
@@ -568,7 +568,7 @@ TEST(VariationsSeedStoreTest, LoadSafeSeed_EmptySeed) {
   // Loading an empty seed should return false.
   TestVariationsSeedStore seed_store(&prefs);
   VariationsSeed loaded_seed;
-  ClientFilterableState client_state;
+  ClientFilterableState client_state({});
   base::Time fetch_time;
   EXPECT_FALSE(
       seed_store.LoadSafeSeed(&loaded_seed, &client_state, &fetch_time));
@@ -578,7 +578,7 @@ TEST(VariationsSeedStoreTest, StoreSafeSeed_ValidSeed) {
   const VariationsSeed seed = CreateTestSeed();
   const std::string serialized_seed = SerializeSeed(seed);
   const std::string signature = "a completely ignored signature";
-  ClientFilterableState client_state;
+  ClientFilterableState client_state({});
   client_state.locale = "en-US";
   client_state.reference_date = WrapTime(12345);
   client_state.session_consistency_country = "US";
@@ -618,7 +618,7 @@ TEST(VariationsSeedStoreTest, StoreSafeSeed_ValidSeed) {
 TEST(VariationsSeedStoreTest, StoreSafeSeed_EmptySeed) {
   const std::string serialized_seed;
   const std::string signature = "a completely ignored signature";
-  ClientFilterableState client_state;
+  ClientFilterableState client_state({});
   client_state.locale = "en-US";
   client_state.reference_date = WrapTime(54321);
   client_state.session_consistency_country = "US";
@@ -663,7 +663,7 @@ TEST(VariationsSeedStoreTest, StoreSafeSeed_EmptySeed) {
 TEST(VariationsSeedStoreTest, StoreSafeSeed_InvalidSeed) {
   const std::string serialized_seed = "a nonsense seed";
   const std::string signature = "a completely ignored signature";
-  ClientFilterableState client_state;
+  ClientFilterableState client_state({});
   client_state.locale = "en-US";
   client_state.reference_date = WrapTime(12345);
   client_state.session_consistency_country = "US";
@@ -711,7 +711,7 @@ TEST(VariationsSeedStoreTest, StoreSafeSeed_InvalidSignature) {
   const std::string serialized_seed = SerializeSeed(seed);
   // A valid signature, but for a different seed.
   const std::string signature = kBase64SeedSignature;
-  ClientFilterableState client_state;
+  ClientFilterableState client_state({});
   client_state.locale = "en-US";
   client_state.reference_date = WrapTime(12345);
   client_state.session_consistency_country = "US";
@@ -762,7 +762,7 @@ TEST(VariationsSeedStoreTest, StoreSafeSeed_ValidSignature) {
   ASSERT_TRUE(
       base::Base64Decode(kUncompressedBase64SeedData, &serialized_seed));
   const std::string signature = kBase64SeedSignature;
-  ClientFilterableState client_state;
+  ClientFilterableState client_state({});
   client_state.locale = "en-US";
   client_state.reference_date = WrapTime(12345);
   client_state.session_consistency_country = "US";
@@ -807,7 +807,7 @@ TEST(VariationsSeedStoreTest, StoreSafeSeed_IdenticalToLatestSeed) {
   const std::string serialized_seed = SerializeSeed(seed);
   const std::string base64_seed = SerializeSeedBase64(seed);
   const std::string signature = "a completely ignored signature";
-  ClientFilterableState unused_client_state;
+  ClientFilterableState unused_client_state({});
   const base::Time fetch_time = WrapTime(12345);
 
   TestingPrefServiceSimple prefs;
@@ -865,7 +865,7 @@ TEST(VariationsSeedStoreTest, StoreSafeSeed_PreviouslyIdenticalToLatestSeed) {
   const std::string base64_new_seed = SerializeSeedBase64(new_seed);
   const std::string signature = "a completely ignored signature";
   const base::Time fetch_time = WrapTime(12345);
-  ClientFilterableState unused_client_state;
+  ClientFilterableState unused_client_state({});
 
   TestingPrefServiceSimple prefs;
   VariationsSeedStore::RegisterPrefs(prefs.registry());
@@ -1085,14 +1085,14 @@ TEST(VariationsSeedStoreTest, LastFetchTime_DistinctSeeds) {
   prefs.SetTime(prefs::kVariationsLastFetchTime, WrapTime(1));
   prefs.SetTime(prefs::kVariationsSafeSeedFetchTime, WrapTime(0));
 
-  base::Time start_time = base::Time::Now();
+  base::Time start_time = WrapTime(10);
   TestVariationsSeedStore seed_store(&prefs);
-  seed_store.RecordLastFetchTime();
+  seed_store.RecordLastFetchTime(WrapTime(11));
 
   // Verify that the last fetch time was updated.
   const base::Time last_fetch_time =
       prefs.GetTime(prefs::kVariationsLastFetchTime);
-  EXPECT_NE(WrapTime(1), last_fetch_time);
+  EXPECT_EQ(WrapTime(11), last_fetch_time);
   EXPECT_GE(last_fetch_time, start_time);
 
   // Verify that the safe seed's fetch time was *not* updated.
@@ -1108,14 +1108,14 @@ TEST(VariationsSeedStoreTest, LastFetchTime_IdenticalSeeds) {
   prefs.SetTime(prefs::kVariationsLastFetchTime, WrapTime(1));
   prefs.SetTime(prefs::kVariationsSafeSeedFetchTime, WrapTime(0));
 
-  base::Time start_time = base::Time::Now();
+  base::Time start_time = WrapTime(10);
   TestVariationsSeedStore seed_store(&prefs);
-  seed_store.RecordLastFetchTime();
+  seed_store.RecordLastFetchTime(WrapTime(11));
 
   // Verify that the last fetch time was updated.
   const base::Time last_fetch_time =
       prefs.GetTime(prefs::kVariationsLastFetchTime);
-  EXPECT_NE(WrapTime(1), last_fetch_time);
+  EXPECT_EQ(WrapTime(11), last_fetch_time);
   EXPECT_GE(last_fetch_time, start_time);
 
   // Verify that the safe seed's fetch time *was* also updated.
@@ -1188,7 +1188,7 @@ TEST(VariationsSeedStoreTest, ImportFirstRunJavaSeed) {
   const std::string test_seed_data = "raw_seed_data_test";
   const std::string test_seed_signature = "seed_signature_test";
   const std::string test_seed_country = "seed_country_code_test";
-  const std::string test_response_date = "seed_response_date_test";
+  const long test_response_date = 1234567890;
   const bool test_is_gzip_compressed = true;
   android::SetJavaFirstRunPrefsForTesting(test_seed_data, test_seed_signature,
                                           test_seed_country, test_response_date,
@@ -1206,7 +1206,7 @@ TEST(VariationsSeedStoreTest, ImportFirstRunJavaSeed) {
   EXPECT_EQ("", seed->data);
   EXPECT_EQ("", seed->signature);
   EXPECT_EQ("", seed->country);
-  EXPECT_EQ("", seed->date);
+  EXPECT_EQ(0, seed->date);
   EXPECT_FALSE(seed->is_gzip_compressed);
 }
 #endif  // OS_ANDROID

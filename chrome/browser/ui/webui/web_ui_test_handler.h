@@ -50,7 +50,7 @@ class WebUITestHandler {
 
  private:
   // Gets the callback that Javascript execution is complete.
-  void JavaScriptComplete(const base::Value* result);
+  void JavaScriptComplete(base::Value result);
 
   // Runs a message loop until test finishes. Returns the result of the
   // test.

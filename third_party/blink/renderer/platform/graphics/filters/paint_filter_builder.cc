@@ -25,18 +25,18 @@
 
 #include "third_party/blink/renderer/platform/graphics/filters/paint_filter_builder.h"
 
-#include "SkBlurImageFilter.h"
-#include "SkColorFilterImageFilter.h"
-#include "SkColorMatrixFilter.h"
-#include "SkTableColorFilter.h"
 #include "third_party/blink/renderer/platform/graphics/box_reflection.h"
 #include "third_party/blink/renderer/platform/graphics/filters/filter_effect.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
+#include "third_party/skia/include/effects/SkBlurImageFilter.h"
+#include "third_party/skia/include/effects/SkColorFilterImageFilter.h"
+#include "third_party/skia/include/effects/SkColorMatrixFilter.h"
 #include "third_party/skia/include/effects/SkImageSource.h"
 #include "third_party/skia/include/effects/SkOffsetImageFilter.h"
 #include "third_party/skia/include/effects/SkPictureImageFilter.h"
+#include "third_party/skia/include/effects/SkTableColorFilter.h"
 #include "third_party/skia/include/effects/SkXfermodeImageFilter.h"
 
 namespace blink {

@@ -7,7 +7,6 @@
 #include "base/base64.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
-#include "build/build_config.h"
 #include "net/cert/internal/test_helpers.h"
 #include "net/der/encode_values.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -109,6 +108,15 @@ const TestParams kTestParams[] = {
     {"has_single_extension.pem", OCSPRevocationStatus::GOOD,
      OCSPVerifyResult::PROVIDED},
 
+    {"has_critical_single_extension.pem", OCSPRevocationStatus::UNKNOWN,
+     OCSPVerifyResult::UNHANDLED_CRITICAL_EXTENSION},
+
+    {"has_critical_response_extension.pem", OCSPRevocationStatus::UNKNOWN,
+     OCSPVerifyResult::UNHANDLED_CRITICAL_EXTENSION},
+
+    {"has_critical_ct_extension.pem", OCSPRevocationStatus::GOOD,
+     OCSPVerifyResult::PROVIDED},
+
     {"missing_response.pem", OCSPRevocationStatus::UNKNOWN,
      OCSPVerifyResult::NO_MATCHING_RESPONSE},
 };
@@ -169,133 +177,6 @@ TEST_P(CheckOCSPTest, FromFile) {
 
   EXPECT_EQ(der::Input(encoded_request.data(), encoded_request.size()),
             der::Input(&request_data));
-}
-
-TEST(OCSPDateTest, Valid) {
-  OCSPSingleResponse response;
-
-  base::Time now = base::Time::Now();
-  base::Time this_update = now - base::TimeDelta::FromHours(1);
-  ASSERT_TRUE(
-      der::EncodeTimeAsGeneralizedTime(this_update, &response.this_update));
-  response.has_next_update = false;
-  EXPECT_TRUE(CheckOCSPDateValid(response, now, kOCSPAgeOneWeek));
-
-  base::Time next_update = this_update + base::TimeDelta::FromDays(7);
-  ASSERT_TRUE(
-      der::EncodeTimeAsGeneralizedTime(next_update, &response.next_update));
-  response.has_next_update = true;
-  EXPECT_TRUE(CheckOCSPDateValid(response, now, kOCSPAgeOneWeek));
-}
-
-TEST(OCSPDateTest, ThisUpdateInTheFuture) {
-  OCSPSingleResponse response;
-
-  base::Time now = base::Time::Now();
-  base::Time this_update = now + base::TimeDelta::FromHours(1);
-  ASSERT_TRUE(
-      der::EncodeTimeAsGeneralizedTime(this_update, &response.this_update));
-  response.has_next_update = false;
-  EXPECT_FALSE(CheckOCSPDateValid(response, now, kOCSPAgeOneWeek));
-
-  base::Time next_update = this_update + base::TimeDelta::FromDays(7);
-  ASSERT_TRUE(
-      der::EncodeTimeAsGeneralizedTime(next_update, &response.next_update));
-  response.has_next_update = true;
-  EXPECT_FALSE(CheckOCSPDateValid(response, now, kOCSPAgeOneWeek));
-}
-
-TEST(OCSPDateTest, NextUpdatePassed) {
-  OCSPSingleResponse response;
-
-  base::Time now = base::Time::Now();
-  base::Time this_update = now - base::TimeDelta::FromDays(6);
-  ASSERT_TRUE(
-      der::EncodeTimeAsGeneralizedTime(this_update, &response.this_update));
-  response.has_next_update = false;
-  EXPECT_TRUE(CheckOCSPDateValid(response, now, kOCSPAgeOneWeek));
-
-  base::Time next_update = now - base::TimeDelta::FromHours(1);
-  ASSERT_TRUE(
-      der::EncodeTimeAsGeneralizedTime(next_update, &response.next_update));
-  response.has_next_update = true;
-  EXPECT_FALSE(CheckOCSPDateValid(response, now, kOCSPAgeOneWeek));
-}
-
-TEST(OCSPDateTest, NextUpdateBeforeThisUpdate) {
-  OCSPSingleResponse response;
-
-  base::Time now = base::Time::Now();
-  base::Time this_update = now - base::TimeDelta::FromDays(1);
-  ASSERT_TRUE(
-      der::EncodeTimeAsGeneralizedTime(this_update, &response.this_update));
-  response.has_next_update = false;
-  EXPECT_TRUE(CheckOCSPDateValid(response, now, kOCSPAgeOneWeek));
-
-  base::Time next_update = this_update - base::TimeDelta::FromDays(1);
-  ASSERT_TRUE(
-      der::EncodeTimeAsGeneralizedTime(next_update, &response.next_update));
-  response.has_next_update = true;
-  EXPECT_FALSE(CheckOCSPDateValid(response, now, kOCSPAgeOneWeek));
-}
-
-TEST(OCSPDateTest, ThisUpdateOlderThanMaxAge) {
-  OCSPSingleResponse response;
-
-  base::Time now = base::Time::Now();
-  base::Time this_update = now - kOCSPAgeOneWeek;
-  ASSERT_TRUE(
-      der::EncodeTimeAsGeneralizedTime(this_update, &response.this_update));
-  response.has_next_update = false;
-  EXPECT_TRUE(CheckOCSPDateValid(response, now, kOCSPAgeOneWeek));
-
-  base::Time next_update = now + base::TimeDelta::FromHours(1);
-  ASSERT_TRUE(
-      der::EncodeTimeAsGeneralizedTime(next_update, &response.next_update));
-  response.has_next_update = true;
-  EXPECT_TRUE(CheckOCSPDateValid(response, now, kOCSPAgeOneWeek));
-
-  ASSERT_TRUE(der::EncodeTimeAsGeneralizedTime(
-      this_update - base::TimeDelta::FromSeconds(1), &response.this_update));
-  response.has_next_update = false;
-  EXPECT_FALSE(CheckOCSPDateValid(response, now, kOCSPAgeOneWeek));
-  response.has_next_update = true;
-  EXPECT_FALSE(CheckOCSPDateValid(response, now, kOCSPAgeOneWeek));
-}
-
-TEST(OCSPDateTest, VerifyTimeFromBeforeWindowsEpoch) {
-  OCSPSingleResponse response;
-  base::Time windows_epoch;
-  base::Time verify_time = windows_epoch - base::TimeDelta::FromDays(1);
-
-  base::Time now = base::Time::Now();
-  base::Time this_update = now - base::TimeDelta::FromHours(1);
-  ASSERT_TRUE(
-      der::EncodeTimeAsGeneralizedTime(this_update, &response.this_update));
-  response.has_next_update = false;
-  EXPECT_FALSE(CheckOCSPDateValid(response, verify_time, kOCSPAgeOneWeek));
-
-  base::Time next_update = this_update + kOCSPAgeOneWeek;
-  ASSERT_TRUE(
-      der::EncodeTimeAsGeneralizedTime(next_update, &response.next_update));
-  response.has_next_update = true;
-  EXPECT_FALSE(CheckOCSPDateValid(response, verify_time, kOCSPAgeOneWeek));
-}
-
-TEST(OCSPDateTest, VerifyTimeMinusAgeFromBeforeWindowsEpoch) {
-  OCSPSingleResponse response;
-  base::Time windows_epoch;
-  base::Time verify_time = windows_epoch + base::TimeDelta::FromDays(1);
-
-  base::Time this_update = windows_epoch;
-  ASSERT_TRUE(
-      der::EncodeTimeAsGeneralizedTime(this_update, &response.this_update));
-  response.has_next_update = false;
-#if defined(OS_WIN)
-  EXPECT_FALSE(CheckOCSPDateValid(response, verify_time, kOCSPAgeOneWeek));
-#else
-  EXPECT_TRUE(CheckOCSPDateValid(response, verify_time, kOCSPAgeOneWeek));
-#endif
 }
 
 base::StringPiece kGetURLTestParams[] = {

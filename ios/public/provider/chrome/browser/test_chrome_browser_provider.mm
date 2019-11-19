@@ -15,7 +15,6 @@
 #include "ios/public/provider/chrome/browser/signin/test_signin_resources_provider.h"
 #import "ios/public/provider/chrome/browser/spotlight/test_spotlight_provider.h"
 #import "ios/public/provider/chrome/browser/ui/fullscreen_provider.h"
-#import "ios/public/provider/chrome/browser/ui/test_styled_text_field.h"
 #import "ios/public/provider/chrome/browser/user_feedback/test_user_feedback_provider.h"
 #import "ios/public/provider/chrome/browser/voice/test_voice_search_provider.h"
 #import "ios/public/provider/chrome/browser/voice/voice_search_language.h"
@@ -65,9 +64,8 @@ ChromeIdentityService* TestChromeBrowserProvider::GetChromeIdentityService() {
   return chrome_identity_service_.get();
 }
 
-UITextField<TextFieldStyling>* TestChromeBrowserProvider::CreateStyledTextField(
-    CGRect frame) const {
-  return [[TestStyledTextField alloc] initWithFrame:frame];
+UITextField* TestChromeBrowserProvider::CreateStyledTextField() const {
+  return [[UITextField alloc] initWithFrame:CGRectZero];
 }
 
 VoiceSearchProvider* TestChromeBrowserProvider::GetVoiceSearchProvider() const {

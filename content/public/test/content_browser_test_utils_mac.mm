@@ -14,7 +14,7 @@
 #include "base/mac/scoped_objc_class_swizzler.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
-#import "content/browser/renderer_host/render_widget_host_view_cocoa.h"
+#import "content/app_shim_remote_cocoa/render_widget_host_view_cocoa.h"
 #include "content/browser/renderer_host/render_widget_host_view_mac.h"
 #include "content/browser/renderer_host/text_input_client_mac.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -56,7 +56,7 @@ content::RenderWidgetHostViewMac* GetRenderWidgetHostViewMac(NSObject* object) {
     if (!contents->GetBrowserPluginGuest()) {
       RenderWidgetHostViewMac* rwhv_mac = static_cast<RenderWidgetHostViewMac*>(
           contents->GetRenderWidgetHostView());
-      if (rwhv_mac->cocoa_view() == object)
+      if (rwhv_mac->GetInProcessNSView() == object)
         return rwhv_mac;
     }
   }
@@ -163,7 +163,7 @@ void GetStringFromRangeForRenderWidget(
 - (void)didAddSubview:(NSView*)view {
   content::RenderWidgetHostViewCocoaObserver::GetSwizzler(
       content::RenderWidgetHostViewCocoaObserver::kDidAddSubview)
-      ->GetOriginalImplementation()(self, _cmd, view);
+      ->InvokeOriginal<void, NSView*>(self, _cmd, view);
 
   content::RenderWidgetHostViewMac* rwhv_mac =
       content::GetRenderWidgetHostViewMac(self);
@@ -179,10 +179,10 @@ void GetStringFromRangeForRenderWidget(
     return;
 
   NSRect bounds_in_cocoa_view =
-      [view convertRect:view.bounds toView:rwhv_mac->cocoa_view()];
+      [view convertRect:view.bounds toView:rwhv_mac->GetInProcessNSView()];
 
   gfx::Rect rect =
-      [rwhv_mac->cocoa_view() flipNSRectToRect:bounds_in_cocoa_view];
+      [rwhv_mac->GetInProcessNSView() flipNSRectToRect:bounds_in_cocoa_view];
 
   observer->DidAddSubviewWillBeDismissed(rect);
 
@@ -206,7 +206,8 @@ void GetStringFromRangeForRenderWidget(
   content::RenderWidgetHostViewCocoaObserver::GetSwizzler(
       content::RenderWidgetHostViewCocoaObserver::
           kShowDefinitionForAttributedString)
-      ->GetOriginalImplementation()(self, _cmd, attrString, textBaselineOrigin);
+      ->InvokeOriginal<void, NSAttributedString*, NSPoint>(
+          self, _cmd, attrString, textBaselineOrigin);
 
   auto* rwhv_mac = content::GetRenderWidgetHostViewMac(self);
 

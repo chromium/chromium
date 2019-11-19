@@ -4,20 +4,20 @@
 
 #include "chromecast/browser/bluetooth/cast_bluetooth_chooser.h"
 #include "base/bind.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace chromecast {
 
 CastBluetoothChooser::CastBluetoothChooser(
     content::BluetoothChooser::EventHandler event_handler,
-    mojom::BluetoothDeviceAccessProviderPtr provider)
-    : event_handler_(std::move(event_handler)), binding_(this) {
+    mojo::PendingRemote<mojom::BluetoothDeviceAccessProvider> pending_provider)
+    : event_handler_(std::move(event_handler)) {
   DCHECK(event_handler_);
-
-  mojom::BluetoothDeviceAccessProviderClientPtr client;
-  binding_.Bind(mojo::MakeRequest(&client));
-  binding_.set_connection_error_handler(base::BindOnce(
+  mojo::Remote<mojom::BluetoothDeviceAccessProvider> provider(
+      std::move(pending_provider));
+  provider->RequestDeviceAccess(receiver_.BindNewPipeAndPassRemote());
+  receiver_.set_disconnect_handler(base::BindOnce(
       &CastBluetoothChooser::OnClientConnectionError, base::Unretained(this)));
-  provider->RequestDeviceAccess(std::move(client));
 }
 
 CastBluetoothChooser::~CastBluetoothChooser() = default;
@@ -31,7 +31,7 @@ void CastBluetoothChooser::GrantAccess(const std::string& address) {
   }
 
   if (available_devices_.find(address) != available_devices_.end()) {
-    RunEventHandlerAndResetBinding(Event::SELECTED, address);
+    RunEventHandlerAndResetReceiver(Event::SELECTED, address);
     return;
   }
   approved_devices_.insert(address);
@@ -42,8 +42,8 @@ void CastBluetoothChooser::GrantAccessToAllDevices() {
 
   all_devices_approved_ = true;
   if (!available_devices_.empty()) {
-    RunEventHandlerAndResetBinding(Event::SELECTED,
-                                   *available_devices_.begin());
+    RunEventHandlerAndResetReceiver(Event::SELECTED,
+                                    *available_devices_.begin());
   }
 }
 
@@ -58,18 +58,18 @@ void CastBluetoothChooser::AddOrUpdateDevice(const std::string& device_id,
   // Note: |device_id| is just a canonical Bluetooth address.
   if (all_devices_approved_ ||
       approved_devices_.find(device_id) != approved_devices_.end()) {
-    RunEventHandlerAndResetBinding(Event::SELECTED, device_id);
+    RunEventHandlerAndResetReceiver(Event::SELECTED, device_id);
     return;
   }
   available_devices_.insert(device_id);
 }
 
-void CastBluetoothChooser::RunEventHandlerAndResetBinding(
+void CastBluetoothChooser::RunEventHandlerAndResetReceiver(
     content::BluetoothChooser::Event event,
     std::string address) {
   DCHECK(event_handler_);
   std::move(event_handler_).Run(event, std::move(address));
-  binding_.Close();
+  receiver_.reset();
 }
 
 void CastBluetoothChooser::OnClientConnectionError() {
@@ -77,7 +77,7 @@ void CastBluetoothChooser::OnClientConnectionError() {
   // tear down the client immediately. In this case, do not run the event
   // handler, as we may have not had the opportunity to select a device.
   if (!all_devices_approved_ && event_handler_) {
-    RunEventHandlerAndResetBinding(Event::CANCELLED, "");
+    RunEventHandlerAndResetReceiver(Event::CANCELLED, "");
   }
 }
 

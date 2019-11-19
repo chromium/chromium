@@ -35,7 +35,7 @@
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/html/html_collection.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
@@ -64,13 +64,13 @@ class ParentNode {
   }
 
   static void prepend(Node& node,
-                      const HeapVector<NodeOrString>& nodes,
+                      const HeapVector<NodeOrStringOrTrustedScript>& nodes,
                       ExceptionState& exception_state) {
     return node.Prepend(nodes, exception_state);
   }
 
   static void append(Node& node,
-                     const HeapVector<NodeOrString>& nodes,
+                     const HeapVector<NodeOrStringOrTrustedScript>& nodes,
                      ExceptionState& exception_state) {
     return node.Append(nodes, exception_state);
   }

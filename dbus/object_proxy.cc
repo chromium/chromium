@@ -274,6 +274,10 @@ void ObjectProxy::SetNameOwnerChangedCallback(
   bus_->AssertOnOriginThread();
 
   name_owner_changed_callback_ = callback;
+
+  bus_->GetDBusTaskRunner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&ObjectProxy::TryConnectToNameOwnerChangedSignal, this));
 }
 
 void ObjectProxy::WaitForServiceToBeAvailable(
@@ -456,6 +460,15 @@ bool ObjectProxy::ConnectToNameOwnerChangedSignal() {
   UpdateNameOwnerAndBlock();
 
   return success;
+}
+
+void ObjectProxy::TryConnectToNameOwnerChangedSignal() {
+  bus_->AssertOnDBusThread();
+
+  bool success = ConnectToNameOwnerChangedSignal();
+  LOG_IF(WARNING, !success)
+      << "Failed to connect to NameOwnerChanged signal for object: "
+      << object_path_.value();
 }
 
 bool ObjectProxy::ConnectToSignalInternal(const std::string& interface_name,

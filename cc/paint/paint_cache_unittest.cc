@@ -106,11 +106,13 @@ TEST_P(PaintCacheTest, ServiceBasic) {
     case PaintCacheDataType::kPath: {
       auto path = CreatePath();
       auto id = path.getGenerationID();
-      EXPECT_EQ(nullptr, service_cache.GetPath(id));
+      SkPath cached_path;
+      EXPECT_EQ(false, service_cache.GetPath(id, &cached_path));
       service_cache.PutPath(id, path);
-      EXPECT_EQ(path, *service_cache.GetPath(id));
+      EXPECT_EQ(true, service_cache.GetPath(id, &cached_path));
+      EXPECT_EQ(path, cached_path);
       service_cache.Purge(GetType(), 1, &id);
-      EXPECT_EQ(nullptr, service_cache.GetPath(id));
+      EXPECT_EQ(false, service_cache.GetPath(id, &cached_path));
 
       service_cache.PutPath(id, path);
     } break;

@@ -183,48 +183,75 @@ none exist, create a new config file and pass its path in your target.
 The first two bytes of a resource id is the package id. For regular apks, this
 is `0x7f`. However, Webview is a shared library which gets loaded into other
 apks. The package id for webview resources is assigned dynamically at runtime.
-When webview is loaded it [rewrites all resources][ResourceRewriter.java] to
-have the correct package id. When deobfuscating webview resource ids, disregard
-the first two bytes in the id when looking it up in the `R.txt` file.
+When webview is loaded it calls this [R file's][Base Module R.java File]
+onResourcesLoaded function to have the correct package id. When deobfuscating
+webview resource ids, disregard the first two bytes in the id when looking it up
+in the `R.txt` file.
 
 Monochrome, when loaded as webview, rewrites the package ids of resources used
 by the webview portion to the correct value at runtime, otherwise, its resources
 have package id `0x7f` when run as a regular apk.
 
-[ResourceRewriter.java]: https://cs.chromium.org/chromium/src/out/android-Debug/gen/android_webview/glue/glue/generated_java/com/android/webview/chromium/ResourceRewriter.java
+[Base Module R.java File]: https://cs.chromium.org/chromium/src/out/android-Debug/gen/android_webview/system_webview_apk/generated_java/gen/base_module/R.java
 
 ## How R.java files are generated
 
-This is how a sample R.java file looks like:
+R.java is a list of static classes, each with multiple static fields containing
+ids. These ids are used in java code to reference resources in the apk.
 
+There are three types of R.java files in Chrome.
+1. Base Module Root R.java Files
+2. DFM Root R.java Files
+3. Source R.java Files
+
+Example Base Module Root R.java File
 ```java
-package org.chromium.ui;
+package gen.base_module;
 
 public final class R {
-    public static final class attr {
-        public static final int buttonAlignment = 0x7f030038;
-        public static final int buttonColor = 0x7f03003e;
-        public static final int layout = 0x7f030094;
-        public static final int roundedfillColor = 0x7f0300bf;
-        public static final int secondaryButtonText = 0x7f0300c4;
-        public static final int stackedMargin = 0x7f0300d4;
+    public static class anim  {
+        public static final int abc_fade_in = 0x7f010000;
+        public static final int abc_fade_out = 0x7f010001;
+        public static final int abc_slide_in_top = 0x7f010007;
     }
-    public static final class id {
-        public static final int apart = 0x7f080021;
-        public static final int dropdown_body_footer_divider = 0x7f08003d;
-        public static final int dropdown_body_list = 0x7f08003e;
-        public static final int dropdown_footer = 0x7f08003f;
-    }
-    public static final class layout {
-        public static final int dropdown_item = 0x7f0a0022;
-        public static final int dropdown_window = 0x7f0a0023;
+    public static class animator  {
+        public static final int design_appbar_state_list_animator = 0x7f020000;
     }
 }
 ```
+Base module root R.java files contain base android resources. All R.java files
+can access base module resources through inheritance.
 
-R.java is a list of static classes, each with multiple static fields containing
-ids. These ids are used in java code to reference resources in the apk. The
-R.java file generated via the prepare resources step above has temporary ids
+Example DFM Root R.java File
+```java
+package gen.vr_module;
+
+public final class R {
+    public static class anim extends gen.base_module.R.anim {
+    }
+    public static class animator extends gen.base_module.R.animator  {
+        public static final int design_appbar_state_list_animator = 0x7f030000;
+    }
+}
+```
+DFM root R.java files extend base module root R.java files. This allows DFMs to
+access their own resources as well as the base module's resources.
+
+Example Source R.java File
+```java
+package org.chromium.chrome.vr;
+
+public final class R {
+    public static final class anim extends
+            gen.base_module.R.anim {}
+    public static final class animator extends
+            gen.base_module.R.animator {}
+}
+```
+Source R.java files extend root R.java files and have no resources of their own.
+Developers can import these R.java files to access resources in the apk.
+
+The R.java file generated via the prepare resources step above has temporary ids
 which are not marked `final`. That R.java file is only used so that javac can
 compile the java code that references R.*.
 

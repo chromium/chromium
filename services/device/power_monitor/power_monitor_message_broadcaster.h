@@ -7,8 +7,10 @@
 
 #include "base/macros.h"
 #include "base/power_monitor/power_observer.h"
-#include "mojo/public/cpp/bindings/binding_set.h"
-#include "mojo/public/cpp/bindings/interface_ptr_set.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 #include "services/device/public/mojom/power_monitor.mojom.h"
 
 namespace device {
@@ -21,11 +23,11 @@ class PowerMonitorMessageBroadcaster : public base::PowerObserver,
   PowerMonitorMessageBroadcaster();
   ~PowerMonitorMessageBroadcaster() override;
 
-  void Bind(device::mojom::PowerMonitorRequest request);
+  void Bind(mojo::PendingReceiver<device::mojom::PowerMonitor> receiver);
 
   // device::mojom::PowerMonitor:
-  void AddClient(
-      device::mojom::PowerMonitorClientPtr power_monitor_client) override;
+  void AddClient(mojo::PendingRemote<device::mojom::PowerMonitorClient>
+                     power_monitor_client) override;
 
   // base::PowerObserver:
   void OnPowerStateChange(bool on_battery_power) override;
@@ -33,8 +35,8 @@ class PowerMonitorMessageBroadcaster : public base::PowerObserver,
   void OnResume() override;
 
  private:
-  mojo::BindingSet<device::mojom::PowerMonitor> bindings_;
-  mojo::InterfacePtrSet<device::mojom::PowerMonitorClient> clients_;
+  mojo::ReceiverSet<device::mojom::PowerMonitor> receivers_;
+  mojo::RemoteSet<device::mojom::PowerMonitorClient> clients_;
 
   DISALLOW_COPY_AND_ASSIGN(PowerMonitorMessageBroadcaster);
 };

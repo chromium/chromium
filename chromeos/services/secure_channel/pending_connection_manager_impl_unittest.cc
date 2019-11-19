@@ -11,7 +11,7 @@
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "base/optional.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "chromeos/services/secure_channel/ble_initiator_connection_attempt.h"
 #include "chromeos/services/secure_channel/ble_listener_connection_attempt.h"
 #include "chromeos/services/secure_channel/fake_authenticated_channel.h"
@@ -406,8 +406,8 @@ class SecureChannelPendingConnectionManagerImplTest : public testing::Test {
             fake_pending_ble_initiator_connection_request_factory_
                 ->last_created_instance()
                 ->GetRequestId();
-        EXPECT_TRUE(base::ContainsKey(active_attempt->id_to_request_map(),
-                                      token_for_last_init_request));
+        EXPECT_TRUE(base::Contains(active_attempt->id_to_request_map(),
+                                   token_for_last_init_request));
         break;
       }
 
@@ -418,8 +418,8 @@ class SecureChannelPendingConnectionManagerImplTest : public testing::Test {
             fake_pending_ble_listener_connection_request_factory_
                 ->last_created_instance()
                 ->GetRequestId();
-        EXPECT_TRUE(base::ContainsKey(active_attempt->id_to_request_map(),
-                                      token_for_last_listen_request));
+        EXPECT_TRUE(base::Contains(active_attempt->id_to_request_map(),
+                                   token_for_last_listen_request));
         break;
       }
     }
@@ -586,7 +586,7 @@ class SecureChannelPendingConnectionManagerImplTest : public testing::Test {
         std::move(fake_client_connection_parameters), connection_priority);
   }
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
 
   std::unique_ptr<FakePendingConnectionManagerDelegate> fake_delegate_;
   std::unique_ptr<FakeBleConnectionManager> fake_ble_connection_manager_;

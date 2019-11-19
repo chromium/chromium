@@ -24,9 +24,7 @@
 namespace ui {
 
 FakeContextFactory::FakeContextFactory() {
-#if defined(OS_WIN)
-  renderer_settings_.finish_rendering_on_resize = true;
-#elif defined(OS_MACOSX)
+#if defined(OS_MACOSX)
   renderer_settings_.release_overlay_resources_after_gpu_query = true;
   // Ensure that tests don't wait for frames that will never come.
   ui::CATransactionCoordinator::Get().DisableForTesting();
@@ -48,6 +46,11 @@ void FakeContextFactory::CreateLayerTreeFrameSink(
 
 scoped_refptr<viz::ContextProvider>
 FakeContextFactory::SharedMainThreadContextProvider() {
+  return nullptr;
+}
+
+scoped_refptr<viz::RasterContextProvider>
+FakeContextFactory::SharedMainThreadRasterContextProvider() {
   return nullptr;
 }
 

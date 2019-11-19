@@ -8,7 +8,6 @@
 #include "base/metrics/statistics_recorder.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
 
@@ -24,7 +23,6 @@ constexpr const char* kStartupMetrics[] = {
     "Startup.BrowserWindow.FirstPaint",
     "Startup.BrowserWindow.FirstPaint.CompositingEnded",
     "Startup.BrowserWindowDisplay",
-    "Startup.FirstWebContents.MainFrameLoad2",
     "Startup.FirstWebContents.MainNavigationFinished",
     "Startup.FirstWebContents.MainNavigationStart",
     "Startup.FirstWebContents.NonEmptyPaint2",
@@ -49,8 +47,7 @@ IN_PROC_BROWSER_TEST_F(StartupMetricsTest, ReportsValues) {
 
   // This is usually done from ChromeBrowserMainParts::MainMessageLoopRun().
   startup_metric_utils::RecordBrowserMainMessageLoopStart(
-      base::TimeTicks::Now(), false /* is_first_run */,
-      g_browser_process->local_state());
+      base::TimeTicks::Now(), false /* is_first_run */);
 
   // Wait for all histograms to be recorded. The test will hang if an histogram
   // is not recorded.

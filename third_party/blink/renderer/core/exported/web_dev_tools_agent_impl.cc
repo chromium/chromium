@@ -34,10 +34,10 @@
 #include <memory>
 #include <utility>
 
-#include "mojo/public/cpp/bindings/binding.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_float_rect.h"
 #include "third_party/blink/public/platform/web_rect.h"
+#include "third_party/blink/public/platform/web_scoped_page_pauser.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/public/web/web_view_client.h"
@@ -68,6 +68,7 @@
 #include "third_party/blink/renderer/core/inspector/inspector_io_agent.h"
 #include "third_party/blink/renderer/core/inspector/inspector_layer_tree_agent.h"
 #include "third_party/blink/renderer/core/inspector/inspector_log_agent.h"
+#include "third_party/blink/renderer/core/inspector/inspector_media_agent.h"
 #include "third_party/blink/renderer/core/inspector/inspector_memory_agent.h"
 #include "third_party/blink/renderer/core/inspector/inspector_network_agent.h"
 #include "third_party/blink/renderer/core/inspector/inspector_overlay_agent.h"
@@ -76,16 +77,15 @@
 #include "third_party/blink/renderer/core/inspector/inspector_resource_container.h"
 #include "third_party/blink/renderer/core/inspector/inspector_resource_content_loader.h"
 #include "third_party/blink/renderer/core/inspector/inspector_task_runner.h"
-#include "third_party/blink/renderer/core/inspector/inspector_testing_agent.h"
 #include "third_party/blink/renderer/core/inspector/main_thread_debugger.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
-#include "third_party/blink/renderer/platform/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -165,7 +165,7 @@ class ClientMessageLoopAdapter : public MainThreadDebugger::ClientMessageLoop {
       view->GetChromeClient().NotifyPopupOpeningObservers();
 
     // 2. Disable active objects
-    WebView::WillEnterModalLoop();
+    page_pauser_ = WebScopedPagePauser::Create();
 
     // 3. Process messages until quitNow is called.
     message_loop_->Run();
@@ -194,7 +194,7 @@ class ClientMessageLoopAdapter : public MainThreadDebugger::ClientMessageLoop {
     // NOTE: This code used to be above right after the |mesasge_loop_->Run()|
     // code, but it is moved here to support browser-side navigation.
     message_loop_->QuitNow();
-    WebView::DidExitModalLoop();
+    page_pauser_.reset();
     WebFrameWidgetBase::SetIgnoreInputEvents(false);
   }
 
@@ -202,17 +202,12 @@ class ClientMessageLoopAdapter : public MainThreadDebugger::ClientMessageLoop {
     // If we've paused for Page.waitForDebugger, handle it ourselves.
     if (QuitForPageWait())
       return;
-
-    // Otherwise, pass to the client (embedded workers do it differently).
-    WebDevToolsAgentImpl* agent =
-        WebLocalFrameImpl::FromFrame(frame)->DevToolsAgentImpl();
-    if (agent && agent->worker_client_)
-      agent->worker_client_->ResumeStartup();
   }
 
   bool running_for_debug_break_;
   bool running_for_page_wait_;
   std::unique_ptr<Platform::NestedMessageLoopRunner> message_loop_;
+  std::unique_ptr<WebScopedPagePauser> page_pauser_;
 
   static ClientMessageLoopAdapter* instance_;
 };
@@ -238,8 +233,8 @@ void WebDevToolsAgentImpl::AttachSession(DevToolsSession* session,
       isolate, inspected_frames, session->V8Session());
   session->Append(dom_agent);
 
-  InspectorLayerTreeAgent* layer_tree_agent =
-      InspectorLayerTreeAgent::Create(inspected_frames, this);
+  auto* layer_tree_agent =
+      MakeGarbageCollected<InspectorLayerTreeAgent>(inspected_frames, this);
   session->Append(layer_tree_agent);
 
   InspectorNetworkAgent* network_agent =
@@ -247,7 +242,7 @@ void WebDevToolsAgentImpl::AttachSession(DevToolsSession* session,
                                                   session->V8Session());
   session->Append(network_agent);
 
-  InspectorCSSAgent* css_agent = InspectorCSSAgent::Create(
+  auto* css_agent = MakeGarbageCollected<InspectorCSSAgent>(
       dom_agent, inspected_frames, network_agent,
       resource_content_loader_.Get(), resource_container_.Get());
   session->Append(css_agent);
@@ -257,19 +252,21 @@ void WebDevToolsAgentImpl::AttachSession(DevToolsSession* session,
                                                       session->V8Session());
   session->Append(dom_debugger_agent);
 
-  session->Append(
-      InspectorDOMSnapshotAgent::Create(inspected_frames, dom_debugger_agent));
+  session->Append(MakeGarbageCollected<InspectorDOMSnapshotAgent>(
+      inspected_frames, dom_debugger_agent));
 
   session->Append(MakeGarbageCollected<InspectorAnimationAgent>(
       inspected_frames, css_agent, session->V8Session()));
 
-  session->Append(InspectorMemoryAgent::Create(inspected_frames));
+  session->Append(MakeGarbageCollected<InspectorMemoryAgent>(inspected_frames));
 
-  session->Append(InspectorPerformanceAgent::Create(inspected_frames));
+  session->Append(
+      MakeGarbageCollected<InspectorPerformanceAgent>(inspected_frames));
 
-  session->Append(InspectorApplicationCacheAgent::Create(inspected_frames));
+  session->Append(
+      MakeGarbageCollected<InspectorApplicationCacheAgent>(inspected_frames));
 
-  InspectorPageAgent* page_agent = InspectorPageAgent::Create(
+  auto* page_agent = MakeGarbageCollected<InspectorPageAgent>(
       inspected_frames, this, resource_content_loader_.Get(),
       session->V8Session());
   session->Append(page_agent);
@@ -289,22 +286,18 @@ void WebDevToolsAgentImpl::AttachSession(DevToolsSession* session,
 
   session->Append(MakeGarbageCollected<InspectorAuditsAgent>(network_agent));
 
+  session->Append(MakeGarbageCollected<InspectorMediaAgent>(inspected_frames));
+
   // TODO(dgozman): we should actually pass the view instead of frame, but
   // during remote->local transition we cannot access mainFrameImpl() yet, so
   // we have to store the frame which will become the main frame later.
   session->Append(MakeGarbageCollected<InspectorEmulationAgent>(
       web_local_frame_impl_.Get()));
 
-  session->Append(
-      MakeGarbageCollected<InspectorTestingAgent>(inspected_frames));
-
   // Call session init callbacks registered from higher layers.
   CoreInitializer::GetInstance().InitInspectorAgentSession(
       session, include_view_agents_, dom_agent, inspected_frames,
       web_local_frame_impl_->ViewImpl()->GetPage());
-
-  if (restore && worker_client_)
-    worker_client_->ResumeStartup();
 
   if (node_to_inspect_) {
     overlay_agent->Inspect(node_to_inspect_);
@@ -319,26 +312,23 @@ void WebDevToolsAgentImpl::AttachSession(DevToolsSession* session,
 // static
 WebDevToolsAgentImpl* WebDevToolsAgentImpl::CreateForFrame(
     WebLocalFrameImpl* frame) {
-  return MakeGarbageCollected<WebDevToolsAgentImpl>(frame, IsMainFrame(frame),
-                                                    nullptr);
+  return MakeGarbageCollected<WebDevToolsAgentImpl>(frame, IsMainFrame(frame));
 }
 
 // static
 WebDevToolsAgentImpl* WebDevToolsAgentImpl::CreateForWorker(
-    WebLocalFrameImpl* frame,
-    WorkerClient* worker_client) {
-  return MakeGarbageCollected<WebDevToolsAgentImpl>(frame, true, worker_client);
+    WebLocalFrameImpl* frame) {
+  return MakeGarbageCollected<WebDevToolsAgentImpl>(frame, true);
 }
 
 WebDevToolsAgentImpl::WebDevToolsAgentImpl(
     WebLocalFrameImpl* web_local_frame_impl,
-    bool include_view_agents,
-    WorkerClient* worker_client)
-    : worker_client_(worker_client),
-      web_local_frame_impl_(web_local_frame_impl),
+    bool include_view_agents)
+    : web_local_frame_impl_(web_local_frame_impl),
       probe_sink_(web_local_frame_impl_->GetFrame()->GetProbeSink()),
-      resource_content_loader_(InspectorResourceContentLoader::Create(
-          web_local_frame_impl_->GetFrame())),
+      resource_content_loader_(
+          MakeGarbageCollected<InspectorResourceContentLoader>(
+              web_local_frame_impl_->GetFrame())),
       inspected_frames_(MakeGarbageCollected<InspectedFrames>(
           web_local_frame_impl_->GetFrame())),
       resource_container_(
@@ -351,9 +341,7 @@ WebDevToolsAgentImpl::WebDevToolsAgentImpl(
       Platform::Current()->GetIOTaskRunner());
 }
 
-WebDevToolsAgentImpl::~WebDevToolsAgentImpl() {
-  DCHECK(!worker_client_);
-}
+WebDevToolsAgentImpl::~WebDevToolsAgentImpl() {}
 
 void WebDevToolsAgentImpl::Trace(blink::Visitor* visitor) {
   visitor->Trace(agent_);
@@ -373,14 +361,13 @@ void WebDevToolsAgentImpl::WillBeDestroyed() {
   DCHECK(inspected_frames_->Root()->View());
   agent_->Dispose();
   resource_content_loader_->Dispose();
-  worker_client_ = nullptr;
 }
 
-void WebDevToolsAgentImpl::BindRequest(
-    mojom::blink::DevToolsAgentHostAssociatedPtrInfo host_ptr_info,
-    mojom::blink::DevToolsAgentAssociatedRequest request) {
-  agent_->BindRequest(
-      std::move(host_ptr_info), std::move(request),
+void WebDevToolsAgentImpl::BindReceiver(
+    mojo::PendingAssociatedRemote<mojom::blink::DevToolsAgentHost> host_remote,
+    mojo::PendingAssociatedReceiver<mojom::blink::DevToolsAgent> receiver) {
+  agent_->BindReceiver(
+      std::move(host_remote), std::move(receiver),
       web_local_frame_impl_->GetTaskRunner(TaskType::kInternalInspector));
 }
 
@@ -393,18 +380,10 @@ void WebDevToolsAgentImpl::DetachSession(DevToolsSession* session) {
 }
 
 void WebDevToolsAgentImpl::InspectElement(const WebPoint& point_in_local_root) {
-  WebPoint point = point_in_local_root;
-  // TODO(dgozman): the ViewImpl() check must not be necessary,
-  // but it is required when attaching early to a provisional frame.
-  // We should clean this up once provisional frames are gone.
-  // See https://crbug.com/578349.
-  if (web_local_frame_impl_->ViewImpl() &&
-      web_local_frame_impl_->ViewImpl()->Client()) {
-    WebFloatRect rect(point.x, point.y, 0, 0);
-    web_local_frame_impl_->ViewImpl()->WidgetClient()->ConvertWindowToViewport(
-        &rect);
-    point = WebPoint(rect.x, rect.y);
-  }
+  WebFloatRect rect(point_in_local_root.x, point_in_local_root.y, 0, 0);
+  web_local_frame_impl_->FrameWidgetImpl()->Client()->ConvertWindowToViewport(
+      &rect);
+  WebPoint point(rect.x, rect.y);
 
   HitTestRequest::HitTestRequestType hit_type =
       HitTestRequest::kMove | HitTestRequest::kReadOnly |
@@ -412,7 +391,7 @@ void WebDevToolsAgentImpl::InspectElement(const WebPoint& point_in_local_root) {
   HitTestRequest request(hit_type);
   WebMouseEvent dummy_event(WebInputEvent::kMouseDown,
                             WebInputEvent::kNoModifiers,
-                            WTF::CurrentTimeTicks());
+                            base::TimeTicks::Now());
   dummy_event.SetPositionInWidget(point.x, point.y);
   IntPoint transformed_point = FlooredIntPoint(
       TransformWebMouseEvent(web_local_frame_impl_->GetFrameView(), dummy_event)
@@ -476,9 +455,9 @@ String WebDevToolsAgentImpl::EvaluateInOverlayForTesting(const String& script) {
   return result;
 }
 
-void WebDevToolsAgentImpl::UpdateOverlays() {
+void WebDevToolsAgentImpl::UpdateOverlaysPrePaint() {
   for (auto& it : overlay_agents_)
-    it.value->UpdateAllOverlayLifecyclePhases();
+    it.value->UpdatePrePaint();
 }
 
 void WebDevToolsAgentImpl::PaintOverlays(GraphicsContext& context) {
@@ -492,12 +471,14 @@ void WebDevToolsAgentImpl::DispatchBufferedTouchEvents() {
     it.value->DispatchBufferedTouchEvents();
 }
 
-bool WebDevToolsAgentImpl::HandleInputEvent(const WebInputEvent& event) {
+WebInputEventResult WebDevToolsAgentImpl::HandleInputEvent(
+    const WebInputEvent& event) {
   for (auto& it : overlay_agents_) {
-    if (it.value->HandleInputEvent(event))
-      return true;
+    auto result = it.value->HandleInputEvent(event);
+    if (result != WebInputEventResult::kNotHandled)
+      return result;
   }
-  return false;
+  return WebInputEventResult::kNotHandled;
 }
 
 String WebDevToolsAgentImpl::NavigationInitiatorInfo(LocalFrame* frame) {

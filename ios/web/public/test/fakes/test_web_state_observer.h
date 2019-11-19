@@ -6,7 +6,7 @@
 #define IOS_WEB_PUBLIC_TEST_FAKES_TEST_WEB_STATE_OBSERVER_H_
 
 #include "ios/web/public/test/fakes/test_web_state_observer_util.h"
-#include "ios/web/public/web_state/web_state_observer.h"
+#include "ios/web/public/web_state_observer.h"
 
 namespace web {
 

@@ -1,17 +1,6 @@
 {
   "layers": [
     {
-      "name": "LayoutView #document",
-      "bounds": [800, 600],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [800, 600],
-      "drawsContent": false
-    },
-    {
       "name": "Scrolling Contents Layer",
       "bounds": [800, 600],
       "contentsOpaque": true,
@@ -33,27 +22,27 @@
           "reason": "DocumentMarker change"
         },
         {
-          "object": "InlineTextBox 'findme'",
+          "object": "NGPhysicalTextFragment 'findme'",
           "rect": [278, 40, 44, 19],
           "reason": "DocumentMarker change"
         },
         {
-          "object": "InlineTextBox 'findme'",
+          "object": "NGPhysicalTextFragment 'findme'",
           "rect": [264, 60, 44, 19],
           "reason": "DocumentMarker change"
         },
         {
-          "object": "InlineTextBox 'findme'",
+          "object": "NGPhysicalTextFragment 'findme'",
           "rect": [220, 60, 44, 19],
           "reason": "DocumentMarker change"
         },
         {
-          "object": "InlineTextBox 'findme'",
+          "object": "NGPhysicalTextFragment 'findme'",
           "rect": [89, 60, 44, 19],
           "reason": "DocumentMarker change"
         },
         {
-          "object": "InlineTextBox 'findme'",
+          "object": "NGPhysicalTextFragment 'findme'",
           "rect": [51, 80, 44, 19],
           "reason": "DocumentMarker change"
         }

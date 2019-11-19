@@ -10,12 +10,12 @@
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
-#include "components/sync/base/cryptographer.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/time.h"
 #include "components/sync/engine/sync_string_conversions.h"
 #include "components/sync/js/js_event_details.h"
 #include "components/sync/js/js_event_handler.h"
+#include "components/sync/nigori/cryptographer.h"
 
 namespace syncer {
 
@@ -46,6 +46,24 @@ void JsSyncEncryptionHandlerObserver::OnPassphraseAccepted() {
   }
   base::DictionaryValue details;
   HandleJsEvent(FROM_HERE, "onPassphraseAccepted", JsEventDetails(&details));
+}
+
+void JsSyncEncryptionHandlerObserver::OnTrustedVaultKeyRequired() {
+  if (!event_handler_.IsInitialized()) {
+    return;
+  }
+  base::DictionaryValue details;
+  HandleJsEvent(FROM_HERE, "OnTrustedVaultKeyRequired",
+                JsEventDetails(&details));
+}
+
+void JsSyncEncryptionHandlerObserver::OnTrustedVaultKeyAccepted() {
+  if (!event_handler_.IsInitialized()) {
+    return;
+  }
+  base::DictionaryValue details;
+  HandleJsEvent(FROM_HERE, "OnTrustedVaultKeyAccepted",
+                JsEventDetails(&details));
 }
 
 void JsSyncEncryptionHandlerObserver::OnBootstrapTokenUpdated(
@@ -81,13 +99,14 @@ void JsSyncEncryptionHandlerObserver::OnEncryptionComplete() {
 }
 
 void JsSyncEncryptionHandlerObserver::OnCryptographerStateChanged(
-    Cryptographer* cryptographer) {
+    Cryptographer* cryptographer,
+    bool has_pending_keys) {
   if (!event_handler_.IsInitialized()) {
     return;
   }
   base::DictionaryValue details;
-  details.SetBoolean("ready", cryptographer->is_ready());
-  details.SetBoolean("hasPendingKeys", cryptographer->has_pending_keys());
+  details.SetBoolean("canEncrypt", cryptographer->CanEncrypt());
+  details.SetBoolean("hasPendingKeys", has_pending_keys);
   HandleJsEvent(FROM_HERE, "onCryptographerStateChanged",
                 JsEventDetails(&details));
 }

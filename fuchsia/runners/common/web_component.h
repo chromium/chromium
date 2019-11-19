@@ -5,8 +5,10 @@
 #ifndef FUCHSIA_RUNNERS_COMMON_WEB_COMPONENT_H_
 #define FUCHSIA_RUNNERS_COMMON_WEB_COMPONENT_H_
 
+#include <fuchsia/modular/cpp/fidl.h>
 #include <fuchsia/sys/cpp/fidl.h>
 #include <fuchsia/ui/app/cpp/fidl.h>
+#include <fuchsia/web/cpp/fidl.h>
 #include <lib/fidl/cpp/binding.h>
 #include <lib/fidl/cpp/binding_set.h>
 #include <memory>
@@ -18,13 +20,13 @@
 #include "base/fuchsia/service_directory_client.h"
 #include "base/fuchsia/startup_context.h"
 #include "base/logging.h"
-#include "fuchsia/fidl/chromium/web/cpp/fidl.h"
+#include "fuchsia/base/lifecycle_impl.h"
 #include "url/gurl.h"
 
 class WebContentRunner;
 
 // Base component implementation for web-based content Runners. Each instance
-// manages the lifetime of its own chromium::web::Frame, including associated
+// manages the lifetime of its own fuchsia::web::Frame, including associated
 // resources and service bindings.  Runners for specialized web-based content
 // (e.g. Cast applications) can extend this class to configure the Frame to
 // their needs, publish additional APIs, etc.
@@ -34,19 +36,28 @@ class WebComponent : public fuchsia::sys::ComponentController,
   // Creates a WebComponent encapsulating a web.Frame. A ViewProvider service
   // will be published to the service-directory specified by |startup_context|,
   // and if |controller_request| is valid then it will be bound to this
-  // component, and the componentconfigured to teardown if that channel closes.
+  // component, and the component configured to teardown if that channel closes.
   // |runner| must outlive this component.
   WebComponent(WebContentRunner* runner,
-               std::unique_ptr<base::fuchsia::StartupContext> startup_context,
+               std::unique_ptr<base::fuchsia::StartupContext> context,
                fidl::InterfaceRequest<fuchsia::sys::ComponentController>
                    controller_request);
 
   ~WebComponent() override;
 
-  // Navigates this component's Frame to |url|.
-  void LoadUrl(const GURL& url);
+  // Enables remote debugging on this WebComponent. Must be called before
+  // StartComponent().
+  void EnableRemoteDebugging();
 
-  chromium::web::Frame* frame() const { return frame_.get(); }
+  // Starts this component. Must be called before LoadUrl().
+  virtual void StartComponent();
+
+  // Navigates this component's Frame to |url| and passes |extra_headers|.
+  // May not be called until after StartComponent().
+  void LoadUrl(const GURL& url,
+               std::vector<fuchsia::net::http::Header> extra_headers);
+
+  fuchsia::web::Frame* frame() const { return frame_.get(); }
 
  protected:
   // fuchsia::sys::ComponentController implementation.
@@ -75,15 +86,14 @@ class WebComponent : public fuchsia::sys::ComponentController,
   WebContentRunner* const runner_ = nullptr;
   const std::unique_ptr<base::fuchsia::StartupContext> startup_context_;
 
-  chromium::web::FramePtr frame_;
+  fuchsia::web::FramePtr frame_;
 
+  // Bindings used to manage the lifetime of this component instance.
   fidl::Binding<fuchsia::sys::ComponentController> controller_binding_;
+  std::unique_ptr<cr_fuchsia::LifecycleImpl> lifecycle_;
 
-  // Incoming services provided at component creation.
-  std::unique_ptr<base::fuchsia::ServiceDirectoryClient> additional_services_;
-
-  // The names of services provided at component creation.
-  std::vector<std::string> additional_service_names_;
+  // If running as a Mod then these are used to e.g. RemoveSelfFromStory().
+  fuchsia::modular::ModuleContextPtr module_context_;
 
   // Objects used for binding and exporting the ViewProvider service.
   std::unique_ptr<
@@ -97,6 +107,9 @@ class WebComponent : public fuchsia::sys::ComponentController,
   int termination_exit_code_ = 0;
 
   bool view_is_bound_ = false;
+
+  bool component_started_ = false;
+  bool enable_remote_debugging_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(WebComponent);
 };

@@ -6,7 +6,6 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "content/browser/renderer_host/pepper/pepper_message_filter.h"
-#include "content/browser/tracing/trace_message_filter.h"
 #include "content/common/pepper_renderer_instance_data.h"
 #include "content/public/common/process_type.h"
 #include "ipc/ipc_message_macros.h"
@@ -39,7 +38,6 @@ BrowserPpapiHost* BrowserPpapiHost::CreateExternalPluginProcess(
       new PepperMessageFilter());
   channel->AddFilter(pepper_message_filter->GetFilter());
   channel->AddFilter(browser_ppapi_host->message_filter().get());
-  channel->AddFilter((new TraceMessageFilter(render_process_id))->GetFilter());
 
   return browser_ppapi_host;
 }
@@ -83,20 +81,19 @@ ppapi::host::PpapiHost* BrowserPpapiHostImpl::GetPpapiHost() {
   return ppapi_host_.get();
 }
 
-const base::Process& BrowserPpapiHostImpl::GetPluginProcess() const {
+const base::Process& BrowserPpapiHostImpl::GetPluginProcess() {
   // Handle should previously have been set before use.
   DCHECK(in_process_ || plugin_process_.IsValid());
   return plugin_process_;
 }
 
-bool BrowserPpapiHostImpl::IsValidInstance(PP_Instance instance) const {
+bool BrowserPpapiHostImpl::IsValidInstance(PP_Instance instance) {
   return instance_map_.find(instance) != instance_map_.end();
 }
 
-bool BrowserPpapiHostImpl::GetRenderFrameIDsForInstance(
-    PP_Instance instance,
-    int* render_process_id,
-    int* render_frame_id) const {
+bool BrowserPpapiHostImpl::GetRenderFrameIDsForInstance(PP_Instance instance,
+                                                        int* render_process_id,
+                                                        int* render_frame_id) {
   auto it = instance_map_.find(instance);
   if (it == instance_map_.end()) {
     *render_process_id = 0;

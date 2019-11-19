@@ -3,9 +3,56 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
-<org.chromium.chrome.browser.widget.selection.SelectableListLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/selectable_list"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/default_primary_color" />
+    android:background="@color/default_bg_color_elev_0" >
+
+    <org.chromium.chrome.browser.widget.selection.SelectableListLayout
+        android:id="@+id/selectable_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/modern_primary_color" />
+
+    <RelativeLayout
+        android:id="@+id/playback_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/black_alpha_65"
+        android:clickable="true"
+        android:gravity="bottom"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@android:color/black"
+            android:gravity="end">
+            <ImageView
+                android:id="@+id/close"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginBottom="8dp"
+                android:layout_marginEnd="4dp"
+                android:layout_marginTop="8dp"
+                android:tint="@android:color/white"
+                android:contentDescription="@string/close"
+                app:srcCompat="@drawable/ic_cancel_circle" />
+
+            <VideoView
+                android:id="@+id/video_player"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center" />
+
+            <FrameLayout
+                android:id="@+id/controls_wrapper"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+    </RelativeLayout>
+</FrameLayout>

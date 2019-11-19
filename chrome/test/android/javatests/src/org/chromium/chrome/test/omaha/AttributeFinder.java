@@ -51,8 +51,7 @@ public class AttributeFinder extends DefaultHandler {
     }
 
     @Override
-    public void startElement(String uri, String localName, String tag, Attributes attributes)
-            throws SAXException {
+    public void startElement(String uri, String localName, String tag, Attributes attributes) {
         if (tag.equals(mDesiredTag)) {
             mTagFound = true;
             mValue = mDesiredAttribute != null ? attributes.getValue(mDesiredAttribute) : null;

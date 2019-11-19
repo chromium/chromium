@@ -1,11 +1,11 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
-<link rel="import" href="chrome://resources/cr_elements/chromeos/network/cr_network_icon.html">
-<link rel="import" href="chrome://resources/cr_elements/chromeos/network/cr_onc_types.html">
+<link rel="import" href="chrome://resources/cr_components/chromeos/network/network_icon.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
+<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-button/paper-button.html">
-<link rel="import" href="../icons.html">
+<link rel="import" href="../chromeos/os_icons.html">
 <link rel="import" href="../route.html">
 <link rel="import" href="../settings_shared_css.html">
 
@@ -21,7 +21,7 @@
       }
 
       [slot=body] > * {
-        margin-left: 5px;
+        margin-inline-start: 5px;
       }
 
       iron-icon {
@@ -31,7 +31,7 @@
       #host-device-text-container {
         display: flex;
         flex-direction: column;
-        margin-left: 18px;
+        margin-inline-start: 18px;
       }
 
       #availability-title {
@@ -50,7 +50,7 @@
       #tether-explanation,
       #tether-carrier-warning,
       #tether-description-title {
-        margin-top: var(--settings-page-vertical-margin);
+        margin-top: var(--cr-section-vertical-margin);
       }
 
       #tether-carrier-warning {
@@ -58,7 +58,7 @@
       }
 
       #tether-description-list {
-        padding-left: 16px;
+        padding-inline-start: 16px;
       }
 
       #host-device-lost-container {
@@ -74,47 +74,48 @@
         </span>
         <div id="host-device-container">
           <!-- TODO(hsuregan): Add an a11y label. -->
-          <iron-icon icon="[[getSignalStrengthIconName_(networkProperties)]]">
+          <iron-icon icon="[[getSignalStrengthIconName_(managedProperties)]]">
           </iron-icon>
           <div id="host-device-text-container">
             <span id="host-device-text-name">
-              [[getDeviceName_(networkProperties)]]
+              [[getDeviceName_(managedProperties)]]
             </span>
             <span id="host-device-text-battery" class="secondary">
-              [[getBatteryPercentageString_(networkProperties)]]
+              [[getBatteryPercentageString_(managedProperties)]]
             </span>
           </div>
           <div class="flex"></div>
           <div id="host-device-lost-container" hidden$="[[!outOfRange]]">
-            <iron-icon icon="settings:alert-device-out-of-range"></iron-icon>
+            <iron-icon icon="os-settings:alert-device-out-of-range">
+            </iron-icon>
             $i18n{tetherPhoneOutOfRange}
           </div>
         </div>
         <div id="tether-explanation">
-          [[getExplanation_(networkProperties)]]
+          [[getExplanation_(managedProperties)]]
         </div>
         <div id="tether-carrier-warning">
           $i18n{tetherConnectionCarrierWarning}
         </div>
         <div id="tether-description-title">
-          [[getDescriptionTitle_(networkProperties)]]
+          [[getDescriptionTitle_(managedProperties)]]
         </div>
         <ul id="tether-description-list">
           <li>$i18n{tetherConnectionDescriptionMobileData}</li>
-          <li>[[getBatteryDescription_(networkProperties)]]</li>
-          <li hidden$="[[!shouldShowDisconnectFromWifi_(networkProperties)]]">
+          <li>[[getBatteryDescription_(managedProperties)]]</li>
+          <li hidden$="[[!shouldShowDisconnectFromWifi_(managedProperties)]]">
             $i18n{tetherConnectionDescriptionWiFi}
           </li>
         </ul>
       </div>
       <div slot="button-container">
-        <paper-button class="cancel-button" on-click="onNotNowTap_">
+        <cr-button class="cancel-button" on-click="onNotNowTap_">
           $i18n{tetherConnectionNotNowButton}
-        </paper-button>
-        <paper-button id="connectButton" class="action-button"
+        </cr-button>
+        <cr-button id="connectButton" class="action-button"
             on-click="onConnectTap_" disabled="[[outOfRange]]">
           $i18n{tetherConnectionConnectButton}
-        </paper-button>
+        </cr-button>
       </div>
     </cr-dialog>
   </template>

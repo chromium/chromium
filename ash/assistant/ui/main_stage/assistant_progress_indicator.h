@@ -21,6 +21,8 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantProgressIndicator
 
   // views::View:
   const char* GetClassName() const override;
+  gfx::Size CalculatePreferredSize() const override;
+  int GetHeightForWidth(int width) const override;
   void AddedToWidget() override;
   void RemovedFromWidget() override;
   void OnLayerOpacityChanged(ui::PropertyChangeReason reason) override;
@@ -31,7 +33,7 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantProgressIndicator
 
   // Caches the last call to VisibilityChanged. Because we trigger this event
   // artificially, we want to make sure that we don't over trigger.
-  bool is_visible_ = false;
+  bool is_drawn_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(AssistantProgressIndicator);
 };

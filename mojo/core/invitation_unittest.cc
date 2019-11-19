@@ -14,16 +14,21 @@
 #include "base/macros.h"
 #include "base/optional.h"
 #include "base/path_service.h"
+#include "base/process/process.h"
 #include "base/run_loop.h"
 #include "base/synchronization/lock.h"
+#include "base/test/bind_test_util.h"
 #include "base/test/multiprocess_test.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
+#include "mojo/core/core.h"
+#include "mojo/core/node_controller.h"
 #include "mojo/core/test/mojo_test_base.h"
 #include "mojo/public/c/system/invitation.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
+#include "mojo/public/cpp/system/invitation.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 
 namespace mojo {
@@ -66,7 +71,7 @@ class InvitationTest : public test::MojoTestBase {
       base::StringPiece isolated_invitation_name);
 
  private:
-  base::test::ScopedTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
 
   DISALLOW_COPY_AND_ASSIGN(InvitationTest);
 };
@@ -78,6 +83,9 @@ void PrepareToPassRemoteEndpoint(PlatformChannel* channel,
   std::string value;
 #if defined(OS_FUCHSIA)
   channel->PrepareToPassRemoteEndpoint(&options->handles_to_transfer, &value);
+#elif defined(OS_MACOSX)
+  channel->PrepareToPassRemoteEndpoint(&options->mach_ports_for_rendezvous,
+                                       &value);
 #elif defined(OS_POSIX)
   channel->PrepareToPassRemoteEndpoint(&options->fds_to_remap, &value);
 #elif defined(OS_WIN)
@@ -681,6 +689,89 @@ DEFINE_TEST_CLIENT(ProcessErrorsClient) {
   // Wait for our goodbye before exiting.
   WaitForSignals(pipe, MOJO_HANDLE_SIGNAL_READABLE);
   EXPECT_EQ(kDisconnectMessage, ReadMessage(pipe));
+}
+
+TEST_F(InvitationTest, Reinvitation) {
+  // The gist of this test is that a process should be able to accept an
+  // invitation, lose its connection to the process network, and then accept a
+  // new invitation to re-establish communication.
+
+  // We pass an extra PlatformChannel endpoint to the child process which it
+  // will use to accept a secondary invitation after we sever its first
+  // connection.
+  PlatformChannel secondary_channel;
+  auto command_line = base::GetMultiProcessTestChildBaseCommandLine();
+  base::LaunchOptions launch_options;
+  PrepareToPassRemoteEndpoint(&secondary_channel, &launch_options,
+                              &command_line, kSecondaryChannelHandleSwitch);
+
+  MojoHandle pipe;
+  base::Process child_process = LaunchChildTestClient(
+      "ReinvitationClient", &pipe, 1, TransportType::kChannel,
+      MOJO_SEND_INVITATION_FLAG_NONE, nullptr, 0, &command_line,
+      &launch_options);
+  secondary_channel.RemoteProcessLaunchAttempted();
+
+  // Synchronize end-to-end communication first to ensure the process connection
+  // is fully established.
+  WriteMessage(pipe, kTestMessage1);
+  EXPECT_EQ(kTestMessage2, ReadMessage(pipe));
+
+  // Force-disconnect the child process.
+  Core::Get()->GetNodeController()->ForceDisconnectProcessForTesting(
+      child_process.Pid());
+
+  // The above disconnection should force pipe closure eventually.
+  WaitForSignals(pipe, MOJO_HANDLE_SIGNAL_PEER_CLOSED);
+  MojoClose(pipe);
+
+  // Now use our secondary channel to send a new invitation to the same process.
+  // It should be able to accept the new invitation and re-establish
+  // communication.
+  mojo::OutgoingInvitation new_invitation;
+  auto new_pipe = new_invitation.AttachMessagePipe(0);
+  mojo::OutgoingInvitation::Send(std::move(new_invitation),
+                                 child_process.Handle(),
+                                 secondary_channel.TakeLocalEndpoint());
+
+  WriteMessage(new_pipe.get().value(), kTestMessage3);
+  EXPECT_EQ(kTestMessage4, ReadMessage(new_pipe.get().value()));
+  WriteMessage(new_pipe.get().value(), kDisconnectMessage);
+
+  int wait_result = -1;
+  base::WaitForMultiprocessTestChildExit(
+      child_process, TestTimeouts::action_timeout(), &wait_result);
+  child_process.Close();
+  EXPECT_EQ(0, wait_result);
+}
+
+DEFINE_TEST_CLIENT(ReinvitationClient) {
+  MojoHandle pipe;
+  MojoHandle invitation = AcceptInvitation(MOJO_ACCEPT_INVITATION_FLAG_NONE);
+  const uint32_t pipe_name = 0;
+  ASSERT_EQ(MOJO_RESULT_OK, MojoExtractMessagePipeFromInvitation(
+                                invitation, &pipe_name, 4, nullptr, &pipe));
+  ASSERT_EQ(MOJO_RESULT_OK, MojoClose(invitation));
+  EXPECT_EQ(kTestMessage1, ReadMessage(pipe));
+  WriteMessage(pipe, kTestMessage2);
+
+  // Wait for the pipe to break due to forced process disconnection.
+  WaitForSignals(pipe, MOJO_HANDLE_SIGNAL_PEER_CLOSED);
+  MojoClose(pipe);
+
+  // Now grab the secondary channel and accept a new invitation from it.
+  PlatformChannelEndpoint new_endpoint =
+      PlatformChannel::RecoverPassedEndpointFromString(
+          base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+              kSecondaryChannelHandleSwitch));
+  auto secondary_invitation =
+      mojo::IncomingInvitation::Accept(std::move(new_endpoint));
+  auto new_pipe = secondary_invitation.ExtractMessagePipe(0);
+
+  // Ensure that the new connection is working end-to-end.
+  EXPECT_EQ(kTestMessage3, ReadMessage(new_pipe.get().value()));
+  WriteMessage(new_pipe.get().value(), kTestMessage4);
+  EXPECT_EQ(kDisconnectMessage, ReadMessage(new_pipe.get().value()));
 }
 
 TEST_F(InvitationTest, SendIsolatedInvitation) {

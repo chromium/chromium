@@ -11,34 +11,32 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "mojo/public/cpp/bindings/binding_set.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "services/proxy_resolver/public/mojom/proxy_resolver.mojom.h"
-#include "services/service_manager/public/cpp/service_keepalive.h"
-
-namespace net {
-class ProxyResolverV8TracingFactory;
-}  // namespace net
 
 namespace proxy_resolver {
+
+class ProxyResolverV8TracingFactory;
 
 // mojom::ProxyResolverFactory implementation that handles multiple bound pipes.
 class ProxyResolverFactoryImpl : public mojom::ProxyResolverFactory {
  public:
-  ProxyResolverFactoryImpl();
-
+  explicit ProxyResolverFactoryImpl(
+      mojo::PendingReceiver<mojom::ProxyResolverFactory> receiver);
   ~ProxyResolverFactoryImpl() override;
 
-  // Binds |request| to |this|. If |this| has no ServiceKeepaliveRef, creates
-  // one, and only destroys all refs once all bound requests, and all
-  // ProxyResolvers they are used to create are destroyed.
-  void BindRequest(proxy_resolver::mojom::ProxyResolverFactoryRequest request,
-                   service_manager::ServiceKeepalive* service_keepalive);
+  // Used by jobs to pass ownership of a newly bound ProxyResolver to this
+  // factory.
+  void AddResolver(std::unique_ptr<mojom::ProxyResolver> resolver,
+                   mojo::PendingReceiver<mojom::ProxyResolver> receiver);
 
  protected:
   // Visible for tests.
-  explicit ProxyResolverFactoryImpl(
-      std::unique_ptr<net::ProxyResolverV8TracingFactory>
-          proxy_resolver_factory);
+  ProxyResolverFactoryImpl(
+      mojo::PendingReceiver<mojom::ProxyResolverFactory> receiver,
+      std::unique_ptr<ProxyResolverV8TracingFactory> proxy_resolver_factory);
 
  private:
   class Job;
@@ -46,21 +44,19 @@ class ProxyResolverFactoryImpl : public mojom::ProxyResolverFactory {
   // mojom::ProxyResolverFactory override.
   void CreateResolver(
       const std::string& pac_script,
-      mojom::ProxyResolverRequest request,
-      mojom::ProxyResolverFactoryRequestClientPtr client) override;
+      mojo::PendingReceiver<mojom::ProxyResolver> receiver,
+      mojo::PendingRemote<mojom::ProxyResolverFactoryRequestClient> client)
+      override;
 
   void RemoveJob(Job* job);
 
-  void OnConnectionError();
-
-  std::unique_ptr<service_manager::ServiceKeepaliveRef> service_keepalive_ref_;
-
-  const std::unique_ptr<net::ProxyResolverV8TracingFactory>
+  const std::unique_ptr<ProxyResolverV8TracingFactory>
       proxy_resolver_impl_factory_;
 
   std::map<Job*, std::unique_ptr<Job>> jobs_;
 
-  mojo::BindingSet<mojom::ProxyResolverFactory> binding_set_;
+  mojo::Receiver<mojom::ProxyResolverFactory> receiver_;
+  mojo::UniqueReceiverSet<mojom::ProxyResolver> resolvers_;
 
   DISALLOW_COPY_AND_ASSIGN(ProxyResolverFactoryImpl);
 };

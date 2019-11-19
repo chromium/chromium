@@ -5,6 +5,13 @@
 
 '''Unit tests for ChromeScaledImage.'''
 
+from __future__ import print_function
+
+import os
+import sys
+if __name__ == '__main__':
+  sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                               '../..')))
 
 import re
 import struct
@@ -38,7 +45,8 @@ _PNG_FOOTER = (
 
 def _MakePNG(chunks):
   pack_int32 = struct.Struct('>i').pack
-  chunks = [pack_int32(len(payload)) + type + payload + pack_int32(zlib.crc32(type + payload))
+  chunks = [pack_int32(len(payload)) + type + payload +
+            pack_int32(zlib.crc32(type + payload))
             for type, payload in chunks]
   return _PNG_HEADER + ''.join(chunks) + _PNG_FOOTER
 
@@ -54,8 +62,8 @@ def _GetFilesInRc(rcname, tmp_dir, contents):
   '''
   data = util.ReadFile(rcname, util.BINARY).decode('utf-16')
   contents = dict((tmp_dir.GetPath(k), v) for k, v in contents.items())
-  return set(contents[m.group(1)]
-             for m in re.finditer(ur'(?m)^\w+\s+BINDATA\s+"([^"]+)"$', data))
+  return set(contents[os.path.normpath(m.group(1))]
+             for m in re.finditer(r'(?m)^\w+\s+BINDATA\s+"([^"]+)"$', data))
 
 
 def _MakeFallbackAttr(fallback):
@@ -79,7 +87,8 @@ def _If(expr, *body):
   return '<if expr="%s">\n%s\n</if>' % (expr, '\n'.join(body))
 
 
-def _RunBuildTest(self, structures, inputs, expected_outputs, skip_rc=False, layout_fallback=''):
+def _RunBuildTest(self, structures, inputs, expected_outputs, skip_rc=False,
+                  layout_fallback=''):
   outputs = '\n'.join('<output filename="out/%s%s" type="%s" context="%s"%s />'
                               % (context, ext, type, context, layout_fallback)
                       for ext, type in _OUTFILETYPES
@@ -98,7 +107,8 @@ def _RunBuildTest(self, structures, inputs, expected_outputs, skip_rc=False, lay
       ''' % (outputs, structures),
   }
   for pngpath, pngdata in inputs.items():
-    infiles['in/' + pngpath] = pngdata
+    normpath = os.path.normpath('in/' + pngpath)
+    infiles[normpath] = pngdata
   class Options(object):
     pass
   with util.TempDir(infiles) as tmp_dir:
@@ -191,3 +201,6 @@ class ChromeScaledImageUnittest(unittest.TestCase):
          'tactile_123_percent': set([t123a]),
         },
         layout_fallback=' fallback_to_default_layout="false"')
+
+if __name__ == '__main__':
+  unittest.main()

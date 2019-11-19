@@ -66,7 +66,8 @@ Channel::MessagePtr WaitForBrokerMessage(
 
 }  // namespace
 
-Broker::Broker(PlatformHandle handle) : sync_channel_(std::move(handle)) {
+Broker::Broker(PlatformHandle handle, bool wait_for_channel_handle)
+    : sync_channel_(std::move(handle)) {
   CHECK(sync_channel_.is_valid());
 
   int fd = sync_channel_.GetFD().get();
@@ -75,6 +76,9 @@ Broker::Broker(PlatformHandle handle) : sync_channel_(std::move(handle)) {
   PCHECK(flags != -1);
   flags = fcntl(fd, F_SETFL, flags & ~O_NONBLOCK);
   PCHECK(flags != -1);
+
+  if (!wait_for_channel_handle)
+    return;
 
   // Wait for the first message, which should contain a handle.
   std::vector<PlatformHandle> incoming_platform_handles;

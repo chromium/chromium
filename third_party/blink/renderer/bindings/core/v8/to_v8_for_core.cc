@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/window_proxy.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
+#include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/frame/dom_window.h"
 #include "third_party/blink/renderer/core/frame/frame.h"
 #include "third_party/blink/renderer/platform/bindings/runtime_call_stats.h"
@@ -47,6 +48,12 @@ v8::Local<v8::Value> ToV8(EventTarget* impl,
   if (impl->InterfaceName() == event_target_names::kWindow)
     return ToV8(static_cast<DOMWindow*>(impl), creation_context, isolate);
   return ToV8(static_cast<ScriptWrappable*>(impl), creation_context, isolate);
+}
+
+v8::Local<v8::Value> ToV8(Node* node,
+                          v8::Local<v8::Object> creation_context,
+                          v8::Isolate* isolate) {
+  return ToV8(static_cast<ScriptWrappable*>(node), creation_context, isolate);
 }
 
 }  // namespace blink

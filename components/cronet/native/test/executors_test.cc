@@ -6,8 +6,8 @@
 
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
+#include "base/test/task_environment.h"
 #include "components/cronet/native/test/test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -22,8 +22,9 @@ class ExecutorsTest : public ::testing::Test {
   static void TestRunnable_Run(Cronet_RunnablePtr self);
   bool runnable_called() const { return runnable_called_; }
 
-  // Provide a message loop for use by TestExecutor instances.
-  base::MessageLoop message_loop_;
+  // Provide a task environment for use by TestExecutor instances. Do not
+  // initialize the ThreadPool as this is done by the Cronet_Engine
+  base::test::SingleThreadTaskEnvironment task_environment_;
 
  private:
   void set_runnable_called(bool value) { runnable_called_ = value; }

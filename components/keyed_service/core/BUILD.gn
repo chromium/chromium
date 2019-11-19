@@ -28,6 +28,8 @@ component("core") {
     "simple_dependency_manager.h",
     "simple_factory_key.cc",
     "simple_factory_key.h",
+    "simple_key_map.cc",
+    "simple_key_map.h",
     "simple_keyed_service_factory.cc",
     "simple_keyed_service_factory.h",
   ]

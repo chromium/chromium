@@ -60,8 +60,10 @@ void ConnectAsyncWithBackoff(
       response_task_runner->PostTask(
           FROM_HERE, base::BindOnce(std::move(response_callback), nullptr));
     } else {
-      base::PostDelayedTaskWithTraits(
-          FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      base::PostDelayedTask(
+          FROM_HERE,
+          {base::ThreadPool(), base::MayBlock(),
+           base::TaskPriority::BEST_EFFORT},
           base::BindOnce(
               &ConnectAsyncWithBackoff, std::move(interface_provider_request),
               server_name, num_retries_left - 1, retry_delay * 2,
@@ -82,7 +84,7 @@ void ConnectAsyncWithBackoff(
 
 // ServiceProcessControl implementation.
 ServiceProcessControl::ServiceProcessControl()
-    : apply_changes_from_upgrade_observer_(false), weak_factory_(this) {
+    : apply_changes_from_upgrade_observer_(false) {
   UpgradeDetector::GetInstance()->AddObserver(this);
 }
 
@@ -104,8 +106,9 @@ void ServiceProcessControl::ConnectInternal() {
   service_manager::mojom::InterfaceProviderPtr remote_interfaces;
   auto interface_provider_request = mojo::MakeRequest(&remote_interfaces);
   SetMojoHandle(std::move(remote_interfaces));
-  base::PostTaskWithTraits(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+  base::PostTask(
+      FROM_HERE,
+      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(
           &ConnectAsyncWithBackoff, std::move(interface_provider_request),
           GetServiceProcessServerName(), kMaxConnectionAttempts,
@@ -128,7 +131,8 @@ void ServiceProcessControl::SetMojoHandle(
       &ServiceProcessControl::OnChannelError, base::Unretained(this)));
 
   // TODO(hclam): Handle error connecting to channel.
-  remote_interfaces_.GetInterface(&service_process_);
+  remote_interfaces_.GetInterface(
+      service_process_.BindNewPipeAndPassReceiver());
   service_process_->Hello(base::BindOnce(
       &ServiceProcessControl::OnChannelConnected, base::Unretained(this)));
 }
@@ -221,7 +225,7 @@ void ServiceProcessControl::OnProcessLaunched() {
   }
 
   // We don't need the launcher anymore.
-  launcher_ = NULL;
+  launcher_.reset();
 }
 
 void ServiceProcessControl::OnUpgradeRecommended() {
@@ -281,11 +285,6 @@ bool ServiceProcessControl::GetHistograms(
   DCHECK(!histograms_callback.is_null());
   histograms_callback_.Reset();
 
-#if defined(OS_MACOSX)
-  // TODO(vitalybuka): Investigate why it crashes MAC http://crbug.com/406227.
-  return false;
-#endif  // OS_MACOSX
-
   // If the service process is already running then connect to it.
   if (!CheckServiceProcessReady())
     return false;
@@ -304,9 +303,8 @@ bool ServiceProcessControl::GetHistograms(
   // Run timeout task to make sure |histograms_callback| is called.
   histograms_timeout_callback_.Reset(base::Bind(
       &ServiceProcessControl::RunHistogramsCallback, base::Unretained(this)));
-  base::PostDelayedTaskWithTraits(FROM_HERE, {BrowserThread::UI},
-                                  histograms_timeout_callback_.callback(),
-                                  timeout);
+  base::PostDelayedTask(FROM_HERE, {BrowserThread::UI},
+                        histograms_timeout_callback_.callback(), timeout);
 
   histograms_callback_ = histograms_callback;
   return true;
@@ -361,8 +359,8 @@ void ServiceProcessControl::Launcher::DoDetectLaunched() {
   if (launched_ || (retry_count_ >= kMaxLaunchDetectRetries) ||
       process_.WaitForExitWithTimeout(base::TimeDelta(), &exit_code)) {
     process_.Close();
-    base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
-                             base::BindOnce(&Launcher::Notify, this));
+    base::PostTask(FROM_HERE, {BrowserThread::UI},
+                   base::BindOnce(&Launcher::Notify, this));
     return;
   }
   retry_count_++;
@@ -384,11 +382,11 @@ void ServiceProcessControl::Launcher::DoRun() {
   process_ = base::LaunchProcess(*cmd_line_, options);
   if (process_.IsValid()) {
     saved_pid_ = process_.Pid();
-    base::PostTaskWithTraits(FROM_HERE, {BrowserThread::IO},
-                             base::BindOnce(&Launcher::DoDetectLaunched, this));
+    base::PostTask(FROM_HERE, {BrowserThread::IO},
+                   base::BindOnce(&Launcher::DoDetectLaunched, this));
   } else {
-    base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
-                             base::BindOnce(&Launcher::Notify, this));
+    base::PostTask(FROM_HERE, {BrowserThread::UI},
+                   base::BindOnce(&Launcher::Notify, this));
   }
 }
 #endif  // !OS_MACOSX

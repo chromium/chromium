@@ -101,6 +101,7 @@ GpuVideoAcceleratorUtil::ConvertGpuToMediaEncodeProfiles(
   for (const auto& gpu_profile : gpu_profiles) {
     VideoEncodeAccelerator::SupportedProfile profile;
     profile.profile = static_cast<VideoCodecProfile>(gpu_profile.profile);
+    profile.min_resolution = gpu_profile.min_resolution;
     profile.max_resolution = gpu_profile.max_resolution;
     profile.max_framerate_numerator = gpu_profile.max_framerate_numerator;
     profile.max_framerate_denominator = gpu_profile.max_framerate_denominator;
@@ -118,6 +119,7 @@ GpuVideoAcceleratorUtil::ConvertMediaToGpuEncodeProfiles(
     gpu::VideoEncodeAcceleratorSupportedProfile profile;
     profile.profile =
         static_cast<gpu::VideoCodecProfile>(media_profile.profile);
+    profile.min_resolution = media_profile.min_resolution;
     profile.max_resolution = media_profile.max_resolution;
     profile.max_framerate_numerator = media_profile.max_framerate_numerator;
     profile.max_framerate_denominator = media_profile.max_framerate_denominator;

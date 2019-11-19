@@ -29,19 +29,14 @@ class QueueMessageSwapPromise : public cc::SwapPromise {
   void DidActivate() override;
   void WillSwap(viz::CompositorFrameMetadata* metadata) override;
   void DidSwap() override;
-  void DidNotSwap(DidNotSwapReason reason) override;
+  DidNotSwapAction DidNotSwap(DidNotSwapReason reason) override;
 
   int64_t TraceId() const override;
 
  private:
-  void PromiseCompleted();
-
   scoped_refptr<IPC::SyncMessageFilter> message_sender_;
   scoped_refptr<content::FrameSwapMessageQueue> message_queue_;
   int source_frame_number_;
-#if DCHECK_IS_ON()
-  bool completed_;
-#endif
 };
 
 }  // namespace content

@@ -14,10 +14,12 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.TraceEvent;
-import org.chromium.base.VisibleForTesting;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 
 /**
  * Class used to forward view, input events down to native.
@@ -52,7 +54,10 @@ public class EventForwarder {
     // Returns the scaling being applied to the event's source. Typically only used for VR when
     // drawing Android UI to a texture.
     private float getEventSourceScaling() {
-        return nativeGetJavaWindowAndroid(mNativeEventForwarder).getDisplay().getAndroidUIScaling();
+        return EventForwarderJni.get()
+                .getJavaWindowAndroid(mNativeEventForwarder, EventForwarder.this)
+                .getDisplay()
+                .getAndroidUIScaling();
     }
 
     private boolean hasTouchEventOffset() {
@@ -138,13 +143,14 @@ public class EventForwarder {
 
             float scale = getEventSourceScaling();
 
-            final boolean consumed = nativeOnTouchEvent(mNativeEventForwarder, event,
-                    oldestEventTime, eventAction, pointerCount, event.getHistorySize(),
-                    event.getActionIndex(), event.getX() / scale, event.getY() / scale,
-                    secondPointerX / scale, secondPointerY / scale, event.getPointerId(0),
-                    pointerCount > 1 ? event.getPointerId(1) : -1, touchMajor[0] / scale,
-                    touchMajor[1] / scale, touchMinor[0] / scale, touchMinor[1] / scale,
-                    event.getOrientation(), pointerCount > 1 ? event.getOrientation(1) : 0,
+            final boolean consumed = EventForwarderJni.get().onTouchEvent(mNativeEventForwarder,
+                    EventForwarder.this, event, oldestEventTime, eventAction, pointerCount,
+                    event.getHistorySize(), event.getActionIndex(), event.getX() / scale,
+                    event.getY() / scale, secondPointerX / scale, secondPointerY / scale,
+                    event.getPointerId(0), pointerCount > 1 ? event.getPointerId(1) : -1,
+                    touchMajor[0] / scale, touchMajor[1] / scale, touchMinor[0] / scale,
+                    touchMinor[1] / scale, event.getOrientation(),
+                    pointerCount > 1 ? event.getOrientation(1) : 0,
                     event.getAxisValue(MotionEvent.AXIS_TILT),
                     pointerCount > 1 ? event.getAxisValue(MotionEvent.AXIS_TILT, 1) : 0,
                     event.getRawX() / scale, event.getRawY() / scale, event.getToolType(0),
@@ -214,10 +220,11 @@ public class EventForwarder {
             if (eventAction == MotionEvent.ACTION_HOVER_ENTER) {
                 if (mLastMouseButtonState == MotionEvent.BUTTON_PRIMARY) {
                     float scale = getEventSourceScaling();
-                    nativeOnMouseEvent(mNativeEventForwarder, event.getEventTime(),
-                            MotionEvent.ACTION_BUTTON_RELEASE, event.getX() / scale,
-                            event.getY() / scale, event.getPointerId(0), event.getPressure(0),
-                            event.getOrientation(0), event.getAxisValue(MotionEvent.AXIS_TILT, 0),
+                    EventForwarderJni.get().onMouseEvent(mNativeEventForwarder, EventForwarder.this,
+                            event.getEventTime(), MotionEvent.ACTION_BUTTON_RELEASE,
+                            event.getX() / scale, event.getY() / scale, event.getPointerId(0),
+                            event.getPressure(0), event.getOrientation(0),
+                            event.getAxisValue(MotionEvent.AXIS_TILT, 0),
                             MotionEvent.BUTTON_PRIMARY, event.getButtonState(),
                             event.getMetaState(), event.getToolType(0));
                 }
@@ -278,9 +285,9 @@ public class EventForwarder {
 
         float scale = getEventSourceScaling();
 
-        nativeOnMouseEvent(mNativeEventForwarder, event.getEventTime(), eventAction,
-                event.getX() / scale, event.getY() / scale, event.getPointerId(0),
-                event.getPressure(0), event.getOrientation(0),
+        EventForwarderJni.get().onMouseEvent(mNativeEventForwarder, EventForwarder.this,
+                event.getEventTime(), eventAction, event.getX() / scale, event.getY() / scale,
+                event.getPointerId(0), event.getPressure(0), event.getOrientation(0),
                 event.getAxisValue(MotionEvent.AXIS_TILT, 0), getMouseEventActionButton(event),
                 event.getButtonState(), event.getMetaState(), event.getToolType(0));
         return true;
@@ -352,9 +359,9 @@ public class EventForwarder {
 
         float scale = getEventSourceScaling();
 
-        nativeOnDragEvent(mNativeEventForwarder, event.getAction(), (int) (x / scale),
-                (int) (y / scale), (int) (screenX / scale), (int) (screenY / scale), mimeTypes,
-                content.toString());
+        EventForwarderJni.get().onDragEvent(mNativeEventForwarder, EventForwarder.this,
+                event.getAction(), (int) (x / scale), (int) (y / scale), (int) (screenX / scale),
+                (int) (screenY / scale), mimeTypes, content.toString());
         return true;
     }
 
@@ -369,7 +376,8 @@ public class EventForwarder {
      */
     public boolean onGestureEvent(@GestureEventType int type, long timeMs, float delta) {
         if (mNativeEventForwarder == 0) return false;
-        return nativeOnGestureEvent(mNativeEventForwarder, type, timeMs, delta);
+        return EventForwarderJni.get().onGestureEvent(
+                mNativeEventForwarder, EventForwarder.this, type, timeMs, delta);
     }
 
     /**
@@ -382,7 +390,8 @@ public class EventForwarder {
             updateMouseEventState(event);
         }
 
-        return nativeOnGenericMotionEvent(mNativeEventForwarder, event, event.getEventTime());
+        return EventForwarderJni.get().onGenericMotionEvent(
+                mNativeEventForwarder, EventForwarder.this, event, event.getEventTime());
     }
 
     /**
@@ -390,7 +399,8 @@ public class EventForwarder {
      */
     public boolean onKeyUp(int keyCode, KeyEvent event) {
         if (mNativeEventForwarder == 0) return false;
-        return nativeOnKeyUp(mNativeEventForwarder, event, keyCode);
+        return EventForwarderJni.get().onKeyUp(
+                mNativeEventForwarder, EventForwarder.this, event, keyCode);
     }
 
     /**
@@ -398,7 +408,8 @@ public class EventForwarder {
      */
     public boolean dispatchKeyEvent(KeyEvent event) {
         if (mNativeEventForwarder == 0) return false;
-        return nativeDispatchKeyEvent(mNativeEventForwarder, event);
+        return EventForwarderJni.get().dispatchKeyEvent(
+                mNativeEventForwarder, EventForwarder.this, event);
     }
 
     /**
@@ -406,7 +417,7 @@ public class EventForwarder {
      */
     public void scrollBy(float dxPix, float dyPix) {
         if (mNativeEventForwarder == 0) return;
-        nativeScrollBy(mNativeEventForwarder, dxPix, dyPix);
+        EventForwarderJni.get().scrollBy(mNativeEventForwarder, EventForwarder.this, dxPix, dyPix);
     }
 
     /**
@@ -414,13 +425,13 @@ public class EventForwarder {
      */
     public void scrollTo(float xPix, float yPix) {
         if (mNativeEventForwarder == 0) return;
-        nativeScrollTo(mNativeEventForwarder, xPix, yPix);
+        EventForwarderJni.get().scrollTo(mNativeEventForwarder, EventForwarder.this, xPix, yPix);
     }
 
     @VisibleForTesting
     public void doubleTapForTest(long timeMs, int x, int y) {
         if (mNativeEventForwarder == 0) return;
-        nativeDoubleTap(mNativeEventForwarder, timeMs, x, y);
+        EventForwarderJni.get().doubleTap(mNativeEventForwarder, EventForwarder.this, timeMs, x, y);
     }
 
     /**
@@ -436,8 +447,8 @@ public class EventForwarder {
     public void startFling(long timeMs, float velocityX, float velocityY, boolean syntheticScroll,
             boolean preventBoosting) {
         if (mNativeEventForwarder == 0) return;
-        nativeStartFling(mNativeEventForwarder, timeMs, velocityX, velocityY, syntheticScroll,
-                preventBoosting);
+        EventForwarderJni.get().startFling(mNativeEventForwarder, EventForwarder.this, timeMs,
+                velocityX, velocityY, syntheticScroll, preventBoosting);
     }
 
     /**
@@ -446,34 +457,40 @@ public class EventForwarder {
      */
     public void cancelFling(long timeMs) {
         if (mNativeEventForwarder == 0) return;
-        nativeCancelFling(mNativeEventForwarder, timeMs, /*preventBoosting*/ true);
+        EventForwarderJni.get().cancelFling(
+                mNativeEventForwarder, EventForwarder.this, timeMs, /*preventBoosting*/ true);
     }
 
-    private native WindowAndroid nativeGetJavaWindowAndroid(long nativeEventForwarder);
-    // All touch events (including flings, scrolls etc) accept coordinates in physical pixels.
-    private native boolean nativeOnTouchEvent(long nativeEventForwarder, MotionEvent event,
-            long timeMs, int action, int pointerCount, int historySize, int actionIndex, float x0,
-            float y0, float x1, float y1, int pointerId0, int pointerId1, float touchMajor0,
-            float touchMajor1, float touchMinor0, float touchMinor1, float orientation0,
-            float orientation1, float tilt0, float tilt1, float rawX, float rawY,
-            int androidToolType0, int androidToolType1, int androidButtonState,
-            int androidMetaState, boolean isTouchHandleEvent);
-    private native void nativeOnMouseEvent(long nativeEventForwarder, long timeMs, int action,
-            float x, float y, int pointerId, float pressure, float orientation, float tilt,
-            int changedButton, int buttonState, int metaState, int toolType);
-    private native void nativeOnDragEvent(long nativeEventForwarder, int action, int x, int y,
-            int screenX, int screenY, String[] mimeTypes, String content);
-    private native boolean nativeOnGestureEvent(
-            long nativeEventForwarder, int type, long timeMs, float delta);
-    private native boolean nativeOnGenericMotionEvent(
-            long nativeEventForwarder, MotionEvent event, long timeMs);
-    private native boolean nativeOnKeyUp(long nativeEventForwarder, KeyEvent event, int keyCode);
-    private native boolean nativeDispatchKeyEvent(long nativeEventForwarder, KeyEvent event);
-    private native void nativeScrollBy(long nativeEventForwarder, float deltaX, float deltaY);
-    private native void nativeScrollTo(long nativeEventForwarder, float x, float y);
-    private native void nativeDoubleTap(long nativeEventForwarder, long timeMs, int x, int y);
-    private native void nativeStartFling(long nativeEventForwarder, long timeMs, float velocityX,
-            float velocityY, boolean syntheticScroll, boolean preventBoosting);
-    private native void nativeCancelFling(
-            long nativeEventForwarder, long timeMs, boolean preventBoosting);
+    @NativeMethods
+    interface Natives {
+        WindowAndroid getJavaWindowAndroid(long nativeEventForwarder, EventForwarder caller);
+        // All touch events (including flings, scrolls etc) accept coordinates in physical pixels.
+        boolean onTouchEvent(long nativeEventForwarder, EventForwarder caller, MotionEvent event,
+                long timeMs, int action, int pointerCount, int historySize, int actionIndex,
+                float x0, float y0, float x1, float y1, int pointerId0, int pointerId1,
+                float touchMajor0, float touchMajor1, float touchMinor0, float touchMinor1,
+                float orientation0, float orientation1, float tilt0, float tilt1, float rawX,
+                float rawY, int androidToolType0, int androidToolType1, int androidButtonState,
+                int androidMetaState, boolean isTouchHandleEvent);
+
+        void onMouseEvent(long nativeEventForwarder, EventForwarder caller, long timeMs, int action,
+                float x, float y, int pointerId, float pressure, float orientation, float tilt,
+                int changedButton, int buttonState, int metaState, int toolType);
+        void onDragEvent(long nativeEventForwarder, EventForwarder caller, int action, int x, int y,
+                int screenX, int screenY, String[] mimeTypes, String content);
+        boolean onGestureEvent(long nativeEventForwarder, EventForwarder caller, int type,
+                long timeMs, float delta);
+        boolean onGenericMotionEvent(
+                long nativeEventForwarder, EventForwarder caller, MotionEvent event, long timeMs);
+        boolean onKeyUp(
+                long nativeEventForwarder, EventForwarder caller, KeyEvent event, int keyCode);
+        boolean dispatchKeyEvent(long nativeEventForwarder, EventForwarder caller, KeyEvent event);
+        void scrollBy(long nativeEventForwarder, EventForwarder caller, float deltaX, float deltaY);
+        void scrollTo(long nativeEventForwarder, EventForwarder caller, float x, float y);
+        void doubleTap(long nativeEventForwarder, EventForwarder caller, long timeMs, int x, int y);
+        void startFling(long nativeEventForwarder, EventForwarder caller, long timeMs,
+                float velocityX, float velocityY, boolean syntheticScroll, boolean preventBoosting);
+        void cancelFling(long nativeEventForwarder, EventForwarder caller, long timeMs,
+                boolean preventBoosting);
+    }
 }

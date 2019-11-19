@@ -65,23 +65,6 @@ void FEImage::Trace(blink::Visitor* visitor) {
   FilterEffect::Trace(visitor);
 }
 
-FEImage* FEImage::CreateWithImage(
-    Filter* filter,
-    scoped_refptr<Image> image,
-    SVGPreserveAspectRatio* preserve_aspect_ratio) {
-  return MakeGarbageCollected<FEImage>(filter, std::move(image),
-                                       preserve_aspect_ratio);
-}
-
-FEImage* FEImage::CreateWithIRIReference(
-    Filter* filter,
-    TreeScope& tree_scope,
-    const String& href,
-    SVGPreserveAspectRatio* preserve_aspect_ratio) {
-  return MakeGarbageCollected<FEImage>(filter, tree_scope, href,
-                                       preserve_aspect_ratio);
-}
-
 static FloatRect GetLayoutObjectRepaintRect(LayoutObject* layout_object) {
   return layout_object->LocalToSVGParentTransform().MapRect(
       layout_object->VisualRectInLocalSVGCoordinates());
@@ -106,7 +89,7 @@ FloatRect FEImage::MapInputs(const FloatRect&) const {
   FloatRect src_rect;
   if (layout_object) {
     src_rect = GetLayoutObjectRepaintRect(layout_object);
-    SVGElement* context_node = ToSVGElement(layout_object->GetNode());
+    auto* context_node = To<SVGElement>(layout_object->GetNode());
 
     if (context_node->HasRelativeLengths()) {
       // FIXME: This fixes relative lengths but breaks non-relative ones (see
@@ -163,7 +146,7 @@ sk_sp<PaintFilter> FEImage::CreateImageFilterForLayoutObject(
   FloatRect dst_rect = FilterPrimitiveSubregion();
 
   AffineTransform transform;
-  SVGElement* context_node = ToSVGElement(layout_object.GetNode());
+  auto* context_node = To<SVGElement>(layout_object.GetNode());
 
   if (context_node->HasRelativeLengths()) {
     SVGLengthContext length_context(context_node);

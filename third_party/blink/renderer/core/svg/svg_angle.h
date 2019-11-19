@@ -43,15 +43,11 @@ DECLARE_SVG_ENUM_MAP(SVGMarkerOrientType);
 class SVGMarkerOrientEnumeration final
     : public SVGEnumeration<SVGMarkerOrientType> {
  public:
-  static SVGMarkerOrientEnumeration* Create(SVGAngle* angle) {
-    return MakeGarbageCollected<SVGMarkerOrientEnumeration>(angle);
-  }
-
   SVGMarkerOrientEnumeration(SVGAngle*);
   ~SVGMarkerOrientEnumeration() override;
 
   void Add(SVGPropertyBase*, SVGElement*) override;
-  void CalculateAnimatedValue(SVGAnimationElement*,
+  void CalculateAnimatedValue(const SVGAnimateElement&,
                               float,
                               unsigned,
                               SVGPropertyBase*,
@@ -80,8 +76,6 @@ class SVGAngle final : public SVGPropertyHelper<SVGAngle> {
     kSvgAngletypeGrad = 4,
     kSvgAngletypeTurn = 5
   };
-
-  static SVGAngle* Create() { return MakeGarbageCollected<SVGAngle>(); }
 
   SVGAngle();
   SVGAngle(SVGAngleType, float, SVGMarkerOrientType);
@@ -124,7 +118,7 @@ class SVGAngle final : public SVGPropertyHelper<SVGAngle> {
   SVGParsingError SetValueAsString(const String&);
 
   void Add(SVGPropertyBase*, SVGElement*) override;
-  void CalculateAnimatedValue(SVGAnimationElement*,
+  void CalculateAnimatedValue(const SVGAnimateElement&,
                               float percentage,
                               unsigned repeat_count,
                               SVGPropertyBase* from,

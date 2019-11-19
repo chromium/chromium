@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_PAINT_CHUNK_SUBSET_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_PAINT_CHUNK_SUBSET_H_
 
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -13,6 +14,8 @@ struct PaintChunk;
 
 // Provides access to a subset of a Vector<PaintChunk>.
 class PaintChunkSubset {
+  DISALLOW_NEW();
+
  public:
   PaintChunkSubset(const Vector<PaintChunk>& chunks,
                    const Vector<wtf_size_t>& subset_indices)

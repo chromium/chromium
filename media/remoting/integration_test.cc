@@ -24,13 +24,9 @@ class TestRendererFactory final : public PipelineTestRendererFactory {
   ~TestRendererFactory() override = default;
 
   // PipelineTestRendererFactory implementation.
-  std::unique_ptr<Renderer> CreateRenderer(
-      CreateVideoDecodersCB prepend_video_decoders_cb,
-      CreateAudioDecodersCB prepend_audio_decoders_cb) override {
-    std::unique_ptr<Renderer> renderer_impl =
-        default_renderer_factory_->CreateRenderer(prepend_video_decoders_cb,
-                                                  prepend_audio_decoders_cb);
-    return std::make_unique<End2EndTestRenderer>(std::move(renderer_impl));
+  std::unique_ptr<Renderer> CreateRenderer() override {
+    return std::make_unique<End2EndTestRenderer>(
+        default_renderer_factory_->CreateRenderer());
   }
 
  private:

@@ -11,7 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/system/handle.h"
 #include "net/base/completion_once_callback.h"
-#include "storage/browser/fileapi/file_stream_reader.h"
+#include "storage/browser/file_system/file_stream_reader.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -86,7 +86,8 @@ class ArcContentFileSystemFileStreamReader : public storage::FileStreamReader {
 
   std::unique_ptr<base::File> file_;
 
-  base::WeakPtrFactory<ArcContentFileSystemFileStreamReader> weak_ptr_factory_;
+  base::WeakPtrFactory<ArcContentFileSystemFileStreamReader> weak_ptr_factory_{
+      this};
 
   DISALLOW_COPY_AND_ASSIGN(ArcContentFileSystemFileStreamReader);
 };

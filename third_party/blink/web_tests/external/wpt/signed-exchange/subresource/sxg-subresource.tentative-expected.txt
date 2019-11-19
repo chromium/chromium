@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Subresource signed exchange prefetch. assert_equals: expected "from signed exchange" but got "sxg-subresource-script.js should not be prefetched"
+Harness: the test ran to completion.
+

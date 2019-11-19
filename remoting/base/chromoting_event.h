@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/values.h"
+#include "remoting/proto/remoting/v1/chromoting_event.pb.h"
 
 namespace remoting {
 
@@ -180,6 +181,9 @@ class ChromotingEvent {
 
   // Returns a copy of the internal dictionary value.
   std::unique_ptr<base::DictionaryValue> CopyDictionaryValue() const;
+
+  // Converts into a ChromotingEvent protobuf.
+  apis::v1::ChromotingEvent CreateProto() const;
 
   // Returns true if the SessionState concludes the end of session.
   static bool IsEndOfSession(SessionState state);

@@ -32,7 +32,7 @@ class WebFrameTestClient : public blink::WebLocalFrameClient {
                      WebFrameTestProxy* web_frame_test_proxy);
 
   ~WebFrameTestClient() override;
-  bool ShouldContinueNavigation(const blink::WebNavigationInfo& info);
+  bool ShouldContinueNavigation(blink::WebNavigationInfo* info);
 
   static void PrintFrameDescription(WebTestDelegate* delegate,
                                     blink::WebLocalFrame* frame);
@@ -45,7 +45,8 @@ class WebFrameTestClient : public blink::WebLocalFrameClient {
                             blink::WebString* actual_value) override;
   bool RunModalBeforeUnloadDialog(bool is_reload) override;
   void PostAccessibilityEvent(const blink::WebAXObject& object,
-                              ax::mojom::Event event) override;
+                              ax::mojom::Event event,
+                              ax::mojom::EventFrom event_from) override;
   void MarkWebAXObjectDirty(const blink::WebAXObject& obj,
                             bool subtree) override;
   void DidChangeSelection(bool is_selection_empty) override;
@@ -58,8 +59,7 @@ class WebFrameTestClient : public blink::WebLocalFrameClient {
                               unsigned source_line,
                               const blink::WebString& stack_trace) override;
   void DownloadURL(const blink::WebURLRequest& request,
-                   blink::WebLocalFrameClient::CrossOriginRedirects
-                       cross_origin_redirect_behavior,
+                   network::mojom::RedirectMode cross_origin_redirect_behavior,
                    mojo::ScopedMessagePipeHandle blob_url_token) override;
   void DidReceiveTitle(const blink::WebString& title,
                        blink::WebTextDirection direction) override;
@@ -70,10 +70,9 @@ class WebFrameTestClient : public blink::WebLocalFrameClient {
   void DidStopLoading() override;
   void DidDispatchPingLoader(const blink::WebURL& url) override;
   void WillSendRequest(blink::WebURLRequest& request) override;
-  void DidReceiveResponse(const blink::WebURLResponse& response) override;
   void CheckIfAudioSinkExistsAndIsAuthorized(
       const blink::WebString& sink_id,
-      std::unique_ptr<blink::WebSetSinkIdCallbacks> web_callbacks) override;
+      blink::WebSetSinkIdCompleteCallback completion_callback) override;
   void DidClearWindowObject() override;
   blink::WebEffectiveConnectionType GetEffectiveConnectionType() override;
 

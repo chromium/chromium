@@ -158,7 +158,8 @@ WebMouseWheelEvent WebMouseWheelEventBuilder::Build(
   result.SetPositionInWidget(motion_event.GetX(0), motion_event.GetY(0));
   result.SetPositionInScreen(motion_event.GetRawX(0), motion_event.GetRawY(0));
   result.button = WebMouseEvent::Button::kNoButton;
-  result.has_precise_scrolling_deltas = true;
+  result.delta_units =
+      ui::input_types::ScrollGranularity::kScrollByPrecisePixel;
   result.delta_x = motion_event.ticks_x() * motion_event.GetTickMultiplier();
   result.delta_y = motion_event.ticks_y() * motion_event.GetTickMultiplier();
   result.wheel_ticks_x = motion_event.ticks_x();
@@ -173,7 +174,7 @@ WebGestureEvent WebGestureEventBuilder::Build(WebInputEvent::Type type,
                                               float y) {
   DCHECK(WebInputEvent::IsGestureEventType(type));
   WebGestureEvent result(type, WebInputEvent::kNoModifiers, time,
-                         blink::kWebGestureDeviceTouchscreen);
+                         blink::WebGestureDevice::kTouchscreen);
   result.SetPositionInWidget(gfx::PointF(x, y));
 
   return result;

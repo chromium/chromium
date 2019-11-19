@@ -55,6 +55,8 @@ TEST_F(LearnerValueTest, VariousTypesWork) {
   EXPECT_EQ(Value(10).value(), 10);
   EXPECT_EQ(Value(static_cast<int64_t>(-10)).value(), -10);
   EXPECT_EQ(Value(static_cast<uint64_t>(10)).value(), 10);
+  EXPECT_EQ(Value(true).value(), 1.0);
+  EXPECT_EQ(Value(false).value(), 0.0);
 }
 
 }  // namespace learning

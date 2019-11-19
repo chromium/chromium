@@ -42,7 +42,7 @@ const char kErrorCannotRemoveManifestRules[] =
 base::Value RulesToValue(const std::vector<const api::events::Rule*>& rules) {
   base::Value value(base::Value::Type::LIST);
   for (const auto* rule : rules)
-    value.GetList().push_back(std::move(*rule->ToValue()));
+    value.Append(std::move(*rule->ToValue()));
   return value;
 }
 
@@ -86,8 +86,7 @@ RulesRegistry::RulesRegistry(content::BrowserContext* browser_context,
       id_(id),
       ready_(/*signaled=*/!cache_delegate),  // Immediately ready if no cache
                                              // delegate to wait for.
-      last_generated_rule_identifier_id_(0),
-      weak_ptr_factory_(this) {
+      last_generated_rule_identifier_id_(0) {
   if (cache_delegate) {
     cache_delegate_ = cache_delegate->GetWeakPtr();
     cache_delegate->Init(this);
@@ -344,12 +343,12 @@ void RulesRegistry::MarkReady(base::Time storage_init_time) {
 void RulesRegistry::ProcessChangedRules(const std::string& extension_id) {
   DCHECK_CURRENTLY_ON(owner_thread());
 
-  DCHECK(base::ContainsKey(process_changed_rules_requested_, extension_id));
+  DCHECK(base::Contains(process_changed_rules_requested_, extension_id));
   process_changed_rules_requested_[extension_id] = NOT_SCHEDULED_FOR_PROCESSING;
 
   std::vector<const api::events::Rule*> new_rules;
   GetRules(extension_id, &rules_, &new_rules);
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {content::BrowserThread::UI},
       base::BindOnce(&RulesCacheDelegate::UpdateRules, cache_delegate_,
                      extension_id, RulesToValue(new_rules)));
@@ -368,9 +367,8 @@ void RulesRegistry::MaybeProcessChangedRules(const std::string& extension_id) {
 
   process_changed_rules_requested_[extension_id] = SCHEDULED_FOR_PROCESSING;
   ready_.Post(FROM_HERE,
-              base::Bind(&RulesRegistry::ProcessChangedRules,
-                         weak_ptr_factory_.GetWeakPtr(),
-                         extension_id));
+              base::BindOnce(&RulesRegistry::ProcessChangedRules,
+                             weak_ptr_factory_.GetWeakPtr(), extension_id));
 }
 
 bool RulesRegistry::IsUniqueId(const std::string& extension_id,

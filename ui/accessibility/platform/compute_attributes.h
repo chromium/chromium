@@ -8,11 +8,12 @@
 #include <cstddef>
 
 #include "base/optional.h"
-#include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_export.h"
-#include "ui/accessibility/platform/ax_platform_node_delegate.h"
 
 namespace ui {
+
+class AXPlatformNodeDelegate;
 
 // Compute the attribute value instead of returning the "raw" attribute value
 // for those attributes that have computation methods.

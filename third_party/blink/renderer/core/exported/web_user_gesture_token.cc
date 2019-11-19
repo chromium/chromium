@@ -34,10 +34,6 @@
 
 namespace blink {
 
-bool WebUserGestureToken::HasGestures() const {
-  return !token_.IsNull() && token_->HasGestures();
-}
-
 WebUserGestureToken::WebUserGestureToken(
     scoped_refptr<UserGestureToken> token) {
   token_ = std::move(token);

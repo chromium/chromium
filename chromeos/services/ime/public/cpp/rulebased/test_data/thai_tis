@@ -1,0 +1,14 @@
+# Created from RulebasedImeTest.Thai
+engine_id: TH_TIS
+key_events {
+  code: KEY_A
+  shift: false
+  altgr: false
+  caps_lock: false
+}
+key_events {
+  code: KEY_M
+  shift: true
+  altgr: false
+  caps_lock: false
+}

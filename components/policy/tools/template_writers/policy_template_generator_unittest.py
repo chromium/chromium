@@ -28,6 +28,7 @@ class PolicyTemplateGeneratorUnittest(unittest.TestCase):
       'messages': {},
       'placeholders': [],
       'policy_definitions': [],
+      'policy_atomic_group_definitions': [],
   }
 
   def do_test(self, policy_data, writer):
@@ -256,44 +257,6 @@ class PolicyTemplateGeneratorUnittest(unittest.TestCase):
 
     self.do_test(policy_defs_mock, LocalMockWriter())
 
-  def testPolicyTexts(self):
-    # Test that GUI messages of policies all get placeholders replaced.
-    policy_data_mock = {
-        'policy_definitions': [
-            {
-                'name': 'Group1',
-                'type': 'group',
-                'desc': '',
-                'caption': '',
-                'policies': ['Policy1'],
-            },
-            {
-                'name': 'Policy1',
-                'caption': '1. app_name -- $1',
-                'label': '2. os_name -- $2',
-                'desc': '3. frame_name -- $3',
-                'type': 'string',
-                'supported_on': []
-            },
-        ]
-    }
-
-    class LocalMockWriter(mock_writer.MockWriter):
-
-      def WritePolicy(self, policy):
-        if policy['name'] == 'Policy1':
-          self.tester.assertEquals(policy['caption'],
-                                   '1. app_name -- _app_name')
-          self.tester.assertEquals(policy['label'], '2. os_name -- _os_name')
-          self.tester.assertEquals(policy['desc'],
-                                   '3. frame_name -- _frame_name')
-        elif policy['name'] == 'Group1':
-          pass
-        else:
-          self.tester.fail()
-
-    self.do_test(policy_data_mock, LocalMockWriter())
-
   def testIntEnumTexts(self):
     # Test that GUI messages are assigned correctly to int-enums
     # (aka dropdown menus).
@@ -431,6 +394,40 @@ class PolicyTemplateGeneratorUnittest(unittest.TestCase):
         self.tester.assertEquals(policy['items'][2]['caption'], 'string3')
 
     self.do_test(policy_data_mock, LocalMockWriter())
+
+  def testWin7OnlyPolicy(self):
+    # Test that Win7 only policy is marked as windows policy with speicial flag.
+    policy_data_mock = {
+        'policy_definitions': [{
+            'name':
+                'Policy1',
+            'type':
+                'string-enum-list',
+            'caption':
+                '',
+            'desc':
+                '',
+            'supported_on': ['chrome.win7:2-'],
+            'items': [{
+                'name': 'item1',
+                'value': 'one',
+                'caption': 'string1',
+                'desc': '',
+                'supported_on': ['chrome.win7:2-'],
+            },]
+        }]
+    }
+
+    class LocalMockWriter(mock_writer.MockWriter):
+
+      def WritePolicy(self, policy):
+        self.tester.assertEquals(policy['supported_on'][0]['platforms'],
+                                 ['win7'])
+        self.tester.assertEquals(
+            policy['items'][0]['supported_on'][0]['platforms'], ['win7'])
+
+    self.do_test(policy_data_mock, LocalMockWriter())
+
 
   def testPolicyFiltering(self):
     # Test that policies are filtered correctly based on their annotations.

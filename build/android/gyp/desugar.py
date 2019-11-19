@@ -14,6 +14,7 @@ from util import build_utils
 def main():
   args = build_utils.ExpandFileArgs(sys.argv[1:])
   parser = argparse.ArgumentParser()
+  build_utils.AddDepfileOption(parser)
   parser.add_argument('--desugar-jar', required=True,
                       help='Path to Desugar.jar.')
   parser.add_argument('--input-jar', required=True,
@@ -30,13 +31,14 @@ def main():
   options.classpath = build_utils.ParseGnList(options.classpath)
 
   cmd = [
-      'java',
+      build_utils.JAVA_PATH,
       '-jar',
       options.desugar_jar,
       '--input',
       options.input_jar,
       '--output',
       options.output_jar,
+      '--generate_base_classes_for_default_methods',
       # Don't include try-with-resources files in every .jar. Instead, they
       # are included via //third_party/bazel/desugar:desugar_runtime_java.
       '--desugar_try_with_resources_omit_runtime_classes',
@@ -45,7 +47,17 @@ def main():
     cmd += ['--bootclasspath_entry', path]
   for path in options.classpath:
     cmd += ['--classpath_entry', path]
-  build_utils.CheckOutput(cmd, print_stdout=False)
+  build_utils.CheckOutput(
+      cmd,
+      print_stdout=False,
+      stderr_filter=build_utils.FilterReflectiveAccessJavaWarnings)
+
+  if options.depfile:
+    build_utils.WriteDepfile(
+        options.depfile,
+        options.output_jar,
+        inputs=options.bootclasspath + options.classpath,
+        add_pydeps=False)
 
 
 if __name__ == '__main__':

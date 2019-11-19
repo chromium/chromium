@@ -8,17 +8,18 @@
 #include <sstream>
 #include <utility>
 
-#include "base/base64url.h"
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/components/multidevice/secure_message_delegate.h"
 #include "chromeos/services/device_sync/cryptauth_enroller.h"
 #include "chromeos/services/device_sync/pref_names.h"
 #include "chromeos/services/device_sync/proto/enum_util.h"
 #include "chromeos/services/device_sync/sync_scheduler_impl.h"
+#include "chromeos/services/device_sync/value_string_encoding.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
@@ -105,6 +106,21 @@ void CryptAuthEnrollmentManagerImpl::Factory::SetInstanceForTesting(
 
 CryptAuthEnrollmentManagerImpl::Factory::~Factory() = default;
 
+// static
+void CryptAuthEnrollmentManagerImpl::RegisterPrefs(
+    PrefRegistrySimple* registry) {
+  registry->RegisterBooleanPref(
+      prefs::kCryptAuthEnrollmentIsRecoveringFromFailure, false);
+  registry->RegisterDoublePref(
+      prefs::kCryptAuthEnrollmentLastEnrollmentTimeSeconds, 0.0);
+  registry->RegisterIntegerPref(prefs::kCryptAuthEnrollmentReason,
+                                cryptauth::INVOCATION_REASON_UNKNOWN);
+  registry->RegisterStringPref(prefs::kCryptAuthEnrollmentUserPublicKey,
+                               std::string());
+  registry->RegisterStringPref(prefs::kCryptAuthEnrollmentUserPrivateKey,
+                               std::string());
+}
+
 std::unique_ptr<CryptAuthEnrollmentManager>
 CryptAuthEnrollmentManagerImpl::Factory::BuildInstance(
     base::Clock* clock,
@@ -131,8 +147,7 @@ CryptAuthEnrollmentManagerImpl::CryptAuthEnrollmentManagerImpl(
       device_info_(device_info),
       gcm_manager_(gcm_manager),
       pref_service_(pref_service),
-      scheduler_(CreateSyncScheduler(this /* delegate */)),
-      weak_ptr_factory_(this) {}
+      scheduler_(CreateSyncScheduler(this /* delegate */)) {}
 
 CryptAuthEnrollmentManagerImpl::~CryptAuthEnrollmentManagerImpl() {
   gcm_manager_->RemoveObserver(this);
@@ -157,7 +172,8 @@ void CryptAuthEnrollmentManagerImpl::Start() {
 }
 
 void CryptAuthEnrollmentManagerImpl::ForceEnrollmentNow(
-    cryptauth::InvocationReason invocation_reason) {
+    cryptauth::InvocationReason invocation_reason,
+    const base::Optional<std::string>& session_id) {
   // We store the invocation reason in a preference so that it can persist
   // across browser restarts. If the sync fails, the next retry should still use
   // this original reason instead of
@@ -213,25 +229,25 @@ void CryptAuthEnrollmentManagerImpl::OnEnrollmentFinished(bool success) {
 }
 
 std::string CryptAuthEnrollmentManagerImpl::GetUserPublicKey() const {
-  std::string public_key;
-  if (!base::Base64UrlDecode(
-          pref_service_->GetString(prefs::kCryptAuthEnrollmentUserPublicKey),
-          base::Base64UrlDecodePolicy::REQUIRE_PADDING, &public_key)) {
+  base::Optional<std::string> public_key = util::DecodeFromValueString(
+      pref_service_->Get(prefs::kCryptAuthEnrollmentUserPublicKey));
+  if (!public_key) {
     PA_LOG(ERROR) << "Invalid public key stored in user prefs.";
     return std::string();
   }
-  return public_key;
+
+  return *public_key;
 }
 
 std::string CryptAuthEnrollmentManagerImpl::GetUserPrivateKey() const {
-  std::string private_key;
-  if (!base::Base64UrlDecode(
-          pref_service_->GetString(prefs::kCryptAuthEnrollmentUserPrivateKey),
-          base::Base64UrlDecodePolicy::REQUIRE_PADDING, &private_key)) {
+  base::Optional<std::string> private_key = util::DecodeFromValueString(
+      pref_service_->Get(prefs::kCryptAuthEnrollmentUserPrivateKey));
+  if (!private_key) {
     PA_LOG(ERROR) << "Invalid private key stored in user prefs.";
     return std::string();
   }
-  return private_key;
+
+  return *private_key;
 }
 
 void CryptAuthEnrollmentManagerImpl::SetSyncSchedulerForTest(
@@ -256,27 +272,23 @@ void CryptAuthEnrollmentManagerImpl::OnKeyPairGenerated(
     const std::string& private_key) {
   if (!public_key.empty() && !private_key.empty()) {
     PA_LOG(VERBOSE) << "Key pair generated for CryptAuth enrollment";
-    // Store the keypair in Base64 format because pref values require readable
-    // string values.
-    std::string public_key_b64, private_key_b64;
-    base::Base64UrlEncode(public_key,
-                          base::Base64UrlEncodePolicy::INCLUDE_PADDING,
-                          &public_key_b64);
-    base::Base64UrlEncode(private_key,
-                          base::Base64UrlEncodePolicy::INCLUDE_PADDING,
-                          &private_key_b64);
-    pref_service_->SetString(prefs::kCryptAuthEnrollmentUserPublicKey,
-                             public_key_b64);
-    pref_service_->SetString(prefs::kCryptAuthEnrollmentUserPrivateKey,
-                             private_key_b64);
+
+    // Pref values must be UTF-8 valid base::Value strings.
+    pref_service_->Set(prefs::kCryptAuthEnrollmentUserPublicKey,
+                       util::EncodeAsValueString(public_key));
+    pref_service_->Set(prefs::kCryptAuthEnrollmentUserPrivateKey,
+                       util::EncodeAsValueString(private_key));
     DoCryptAuthEnrollment();
   } else {
     OnEnrollmentFinished(false);
   }
 }
 
-void CryptAuthEnrollmentManagerImpl::OnReenrollMessage() {
-  ForceEnrollmentNow(cryptauth::INVOCATION_REASON_SERVER_INITIATED);
+void CryptAuthEnrollmentManagerImpl::OnReenrollMessage(
+    const base::Optional<std::string>& session_id,
+    const base::Optional<CryptAuthFeatureType>& feature_type) {
+  ForceEnrollmentNow(cryptauth::INVOCATION_REASON_SERVER_INITIATED,
+                     base::nullopt /* session_id */);
 }
 
 void CryptAuthEnrollmentManagerImpl::OnSyncRequested(
@@ -333,12 +345,9 @@ void CryptAuthEnrollmentManagerImpl::DoCryptAuthEnrollmentWithKeys() {
   device_info.set_gcm_registration_id(gcm_manager_->GetRegistrationId());
   device_info.set_device_software_package(kDeviceSoftwarePackage);
 
-  std::string public_key_b64;
-  base::Base64UrlEncode(GetUserPublicKey(),
-                        base::Base64UrlEncodePolicy::INCLUDE_PADDING,
-                        &public_key_b64);
   PA_LOG(VERBOSE) << "Making enrollment:\n"
-                  << "  public_key: " << public_key_b64 << "\n"
+                  << "  public_key: "
+                  << util::EncodeAsValueString(GetUserPublicKey()) << "\n"
                   << "  invocation_reason: " << invocation_reason << "\n"
                   << "  gcm_registration_id: "
                   << device_info.gcm_registration_id()

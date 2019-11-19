@@ -11,10 +11,10 @@
 #include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "media/base/video_bitrate_allocation.h"
-#include "media/filters/vp8_parser.h"
 #include "media/gpu/vaapi/accelerated_video_encoder.h"
 #include "media/gpu/vp8_picture.h"
 #include "media/gpu/vp8_reference_frame_vector.h"
+#include "media/parsers/vp8_parser.h"
 
 namespace media {
 
@@ -57,12 +57,14 @@ class VP8Encoder : public AcceleratedVideoEncoder {
 
     // Initializes |job| to use the provided |encode_params| as its parameters,
     // and |pic| as the target, as well as |ref_frames| as reference frames for
-    // it. Returns true on success.
+    // it. |ref_frames_used| specifies which frames in |ref_frames| will be
+    // actually used as reference frames on encoding. Returns true on success.
     virtual bool SubmitFrameParameters(
         EncodeJob* job,
         const VP8Encoder::EncodeParams& encode_params,
         scoped_refptr<VP8Picture> pic,
-        const Vp8ReferenceFrameVector& ref_frames) = 0;
+        const Vp8ReferenceFrameVector& ref_frames,
+        const std::array<bool, kNumVp8ReferenceBuffers>& ref_frames_used) = 0;
 
    private:
     DISALLOW_COPY_AND_ASSIGN(Accelerator);
@@ -72,7 +74,8 @@ class VP8Encoder : public AcceleratedVideoEncoder {
   ~VP8Encoder() override;
 
   // AcceleratedVideoEncoder implementation.
-  bool Initialize(const VideoEncodeAccelerator::Config& config) override;
+  bool Initialize(const VideoEncodeAccelerator::Config& config,
+                  const AcceleratedVideoEncoder::Config& ave_config) override;
   bool UpdateRates(const VideoBitrateAllocation& bitrate_allocation,
                    uint32_t framerate) override;
   gfx::Size GetCodedSize() const override;

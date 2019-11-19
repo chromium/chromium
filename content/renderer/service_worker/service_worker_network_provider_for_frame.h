@@ -23,7 +23,6 @@ class CONTENT_EXPORT ServiceWorkerNetworkProviderForFrame final
  public:
   // Creates a network provider for |frame|.
   //
-  // For S13nServiceWorker:
   // |controller_info| contains the endpoint and object info that is needed to
   // set up the controller service worker for the client.
   // |fallback_loader_factory| is a default loader factory for fallback
@@ -32,7 +31,7 @@ class CONTENT_EXPORT ServiceWorkerNetworkProviderForFrame final
   // the loading context, e.g. a frame, provides it.
   static std::unique_ptr<ServiceWorkerNetworkProviderForFrame> Create(
       RenderFrameImpl* frame,
-      int provider_id,
+      blink::mojom::ServiceWorkerProviderInfoForClientPtr provider_info,
       blink::mojom::ControllerServiceWorkerInfoPtr controller_info,
       scoped_refptr<network::SharedURLLoaderFactory> fallback_loader_factory);
 
@@ -49,12 +48,11 @@ class CONTENT_EXPORT ServiceWorkerNetworkProviderForFrame final
       const blink::WebURLRequest& request,
       std::unique_ptr<blink::scheduler::WebResourceLoadingTaskRunnerHandle>
           task_runner_handle) override;
-  blink::mojom::ControllerServiceWorkerMode IsControlledByServiceWorker()
+  blink::mojom::ControllerServiceWorkerMode GetControllerServiceWorkerMode()
       override;
   int64_t ControllerServiceWorkerID() override;
   void DispatchNetworkQuiet() override;
 
-  int provider_id() const;
   ServiceWorkerProviderContext* context() { return context_.get(); }
 
  private:
@@ -67,8 +65,6 @@ class CONTENT_EXPORT ServiceWorkerNetworkProviderForFrame final
   // |context_| is null if |this| is an invalid instance, in which case there is
   // no connection to the browser process.
   scoped_refptr<ServiceWorkerProviderContext> context_;
-
-  blink::mojom::ServiceWorkerDispatcherHostAssociatedPtr dispatcher_host_;
 
   std::unique_ptr<NewDocumentObserver> observer_;
 };

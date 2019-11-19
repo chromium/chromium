@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/location.h"
+#include "base/memory/ptr_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/http/http_cache.h"
@@ -59,8 +60,7 @@ HttpCacheDataCounter::HttpCacheDataCounter(
     HttpCacheDataCounterCallback callback)
     : start_time_(start_time),
       end_time_(end_time),
-      callback_(std::move(callback)),
-      weak_factory_(this) {}
+      callback_(std::move(callback)) {}
 
 HttpCacheDataCounter::~HttpCacheDataCounter() {}
 

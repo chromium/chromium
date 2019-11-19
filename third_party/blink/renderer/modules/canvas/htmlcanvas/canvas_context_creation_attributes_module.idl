@@ -28,13 +28,19 @@ enum CanvasPixelFormat {
     "float16",
 };
 
+enum CanvasPowerPreference {
+    "default",
+    "low-power",
+    "high-performance",
+};
+
 [PermissiveDictionaryConversion]
 dictionary CanvasContextCreationAttributesModule {
     // This is an experimental feature, but it is not hidden behind a flag in
     // the bindings because origin trial bindings don't work in extensions.
     // The trial's runtime flag is instead checked inside
     // HTMLCanvasElement.getContext().
-    boolean lowLatency = false;
+    [RuntimeEnabled=SurfaceEmbeddingFeatures] boolean desynchronized = false;
 
     // Canvas 2D attributes
     boolean alpha = true;  // Also used for WebGL.
@@ -47,6 +53,7 @@ dictionary CanvasContextCreationAttributesModule {
     boolean antialias = true;
     boolean premultipliedAlpha = true;
     boolean preserveDrawingBuffer = false;
+    CanvasPowerPreference powerPreference = "default";
     boolean failIfMajorPerformanceCaveat = false;
-    [OriginTrialEnabled=WebXR] boolean xrCompatible = false;
+    [RuntimeEnabled=WebXR] boolean xrCompatible = false;
 };

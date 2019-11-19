@@ -7,7 +7,8 @@
 
 #include <memory>
 
-#include "mojo/public/cpp/bindings/binding_set.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/audio/log_factory_adapter.h"
 #include "services/audio/public/mojom/log_factory_manager.mojom.h"
 #include "services/audio/traced_service_ref.h"
@@ -26,15 +27,16 @@ class LogFactoryManager final : public mojom::LogFactoryManager {
   LogFactoryManager();
   ~LogFactoryManager() final;
 
-  void Bind(mojom::LogFactoryManagerRequest request,
+  void Bind(mojo::PendingReceiver<mojom::LogFactoryManager> receiver,
             TracedServiceRef context_ref);
 
   // LogFactoryManager implementation.
-  void SetLogFactory(media::mojom::AudioLogFactoryPtr log_factory) final;
+  void SetLogFactory(
+      mojo::PendingRemote<media::mojom::AudioLogFactory> log_factory) final;
   media::AudioLogFactory* GetLogFactory();
 
  private:
-  mojo::BindingSet<mojom::LogFactoryManager, TracedServiceRef> bindings_;
+  mojo::ReceiverSet<mojom::LogFactoryManager, TracedServiceRef> receivers_;
   LogFactoryAdapter log_factory_adapter_;
   SEQUENCE_CHECKER(owning_sequence_);
 

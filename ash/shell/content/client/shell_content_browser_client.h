@@ -5,20 +5,16 @@
 #ifndef ASH_SHELL_CONTENT_CLIENT_SHELL_CONTENT_BROWSER_CLIENT_H_
 #define ASH_SHELL_CONTENT_CLIENT_SHELL_CONTENT_BROWSER_CLIENT_H_
 
+#include <memory>
 #include <string>
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "content/public/browser/content_browser_client.h"
-
-namespace content {
-class ShellBrowserMainParts;
-}
+#include "storage/browser/quota/quota_settings.h"
 
 namespace ash {
 namespace shell {
-
-class ShellBrowserMainParts;
 
 class ShellContentBrowserClient : public content::ContentBrowserClient {
  public:
@@ -26,7 +22,7 @@ class ShellContentBrowserClient : public content::ContentBrowserClient {
   ~ShellContentBrowserClient() override;
 
   // Overridden from content::ContentBrowserClient:
-  content::BrowserMainParts* CreateBrowserMainParts(
+  std::unique_ptr<content::BrowserMainParts> CreateBrowserMainParts(
       const content::MainFunctionParams& parameters) override;
   void GetQuotaSettings(
       content::BrowserContext* context,
@@ -34,14 +30,8 @@ class ShellContentBrowserClient : public content::ContentBrowserClient {
       storage::OptionalQuotaSettingsCallback callback) override;
   base::Optional<service_manager::Manifest> GetServiceManifestOverlay(
       base::StringPiece name) override;
-  void RegisterOutOfProcessServices(OutOfProcessServiceMap* services) override;
-  void HandleServiceRequest(
-      const std::string& service_name,
-      service_manager::mojom::ServiceRequest request) override;
 
  private:
-  ShellBrowserMainParts* shell_browser_main_parts_;
-
   DISALLOW_COPY_AND_ASSIGN(ShellContentBrowserClient);
 };
 

@@ -499,4 +499,15 @@ TEST(HttpContentDispositionTest, ParseResult) {
   }
 }
 
+TEST(HttpContentDispositionTest, ContainsNul) {
+  const char kHeader[] = "filename=ab\0c";
+  const char kExpectedFilename[] = "ab\0c";
+  // Note: both header and expected_filename include the trailing NUL.
+  std::string header{kHeader, sizeof(kHeader)};
+  std::string expected_filename{kExpectedFilename, sizeof(kExpectedFilename)};
+
+  HttpContentDisposition content_disposition(header, "utf-8");
+  EXPECT_EQ(expected_filename, content_disposition.filename());
+}
+
 }  // namespace net

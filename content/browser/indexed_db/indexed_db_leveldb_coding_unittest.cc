@@ -15,6 +15,7 @@
 #include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/services/storage/indexed_db/scopes/varint_coding.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::ASCIIToUTF16;
@@ -31,16 +32,13 @@ static IndexedDBKey CreateArrayIDBKey() {
 }
 
 static IndexedDBKey CreateArrayIDBKey(const IndexedDBKey& key1) {
-  IndexedDBKey::KeyArray array;
-  array.push_back(key1);
+  IndexedDBKey::KeyArray array = {key1};
   return IndexedDBKey(std::move(array));
 }
 
 static IndexedDBKey CreateArrayIDBKey(const IndexedDBKey& key1,
                                       const IndexedDBKey& key2) {
-  IndexedDBKey::KeyArray array;
-  array.push_back(key1);
-  array.push_back(key2);
+  IndexedDBKey::KeyArray array = {key1, key2};
   return IndexedDBKey(std::move(array));
 }
 
@@ -69,10 +67,7 @@ TEST(IndexedDBLevelDBCodingTest, EncodeByte) {
 }
 
 TEST(IndexedDBLevelDBCodingTest, DecodeByte) {
-  std::vector<unsigned char> test_cases;
-  test_cases.push_back(0);
-  test_cases.push_back(1);
-  test_cases.push_back(255);
+  std::vector<unsigned char> test_cases = {0, 1, 255};
 
   for (size_t i = 0; i < test_cases.size(); ++i) {
     unsigned char n = test_cases[i];
@@ -219,18 +214,19 @@ TEST(IndexedDBLevelDBCodingTest, DecodeBool) {
 }
 
 TEST(IndexedDBLevelDBCodingTest, DecodeInt) {
-  std::vector<int64_t> test_cases;
-  test_cases.push_back(0);
-  test_cases.push_back(1);
-  test_cases.push_back(255);
-  test_cases.push_back(256);
-  test_cases.push_back(65535);
-  test_cases.push_back(655536);
-  test_cases.push_back(7711192431755665792ll);
-  test_cases.push_back(0x7fffffffffffffffll);
+  std::vector<int64_t> test_cases = {
+      0,
+      1,
+      255,
+      256,
+      65535,
+      655536,
+      7711192431755665792ll,
+      0x7fffffffffffffffll,
 #ifdef NDEBUG
-  test_cases.push_back(-3);
+      -3,
 #endif
+  };
 
   for (size_t i = 0; i < test_cases.size(); ++i) {
     int64_t n = test_cases[i];
@@ -256,64 +252,6 @@ TEST(IndexedDBLevelDBCodingTest, DecodeInt) {
   }
 }
 
-static std::string WrappedEncodeVarInt(int64_t value) {
-  std::string buffer;
-  EncodeVarInt(value, &buffer);
-  return buffer;
-}
-
-TEST(IndexedDBLevelDBCodingTest, EncodeVarInt) {
-  EXPECT_EQ(1u, WrappedEncodeVarInt(0).size());
-  EXPECT_EQ(1u, WrappedEncodeVarInt(1).size());
-  EXPECT_EQ(2u, WrappedEncodeVarInt(255).size());
-  EXPECT_EQ(2u, WrappedEncodeVarInt(256).size());
-  EXPECT_EQ(5u, WrappedEncodeVarInt(0xffffffff).size());
-  EXPECT_EQ(8u, WrappedEncodeVarInt(0xfffffffffffffLL).size());
-  EXPECT_EQ(9u, WrappedEncodeVarInt(0x7fffffffffffffffLL).size());
-#ifdef NDEBUG
-  EXPECT_EQ(10u, WrappedEncodeVarInt(-100).size());
-#endif
-}
-
-TEST(IndexedDBLevelDBCodingTest, DecodeVarInt) {
-  std::vector<int64_t> test_cases;
-  test_cases.push_back(0);
-  test_cases.push_back(1);
-  test_cases.push_back(255);
-  test_cases.push_back(256);
-  test_cases.push_back(65535);
-  test_cases.push_back(655536);
-  test_cases.push_back(7711192431755665792ll);
-  test_cases.push_back(0x7fffffffffffffffll);
-#ifdef NDEBUG
-  test_cases.push_back(-3);
-#endif
-
-  for (size_t i = 0; i < test_cases.size(); ++i) {
-    int64_t n = test_cases[i];
-    std::string v = WrappedEncodeVarInt(n);
-    ASSERT_GT(v.size(), 0u);
-    StringPiece slice(v);
-    int64_t res;
-    EXPECT_TRUE(DecodeVarInt(&slice, &res));
-    EXPECT_EQ(n, res);
-    EXPECT_TRUE(slice.empty());
-
-    slice = StringPiece(&*v.begin(), v.size() - 1);
-    EXPECT_FALSE(DecodeVarInt(&slice, &res));
-
-    slice = StringPiece(&*v.begin(), static_cast<size_t>(0));
-    EXPECT_FALSE(DecodeVarInt(&slice, &res));
-
-    // Verify decoding at an offset, to detect unaligned memory access.
-    v.insert(v.begin(), 1u, static_cast<char>(0));
-    slice = StringPiece(&*v.begin() + 1, v.size() - 1);
-    EXPECT_TRUE(DecodeVarInt(&slice, &res));
-    EXPECT_EQ(n, res);
-    EXPECT_TRUE(slice.empty());
-  }
-}
-
 static std::string WrappedEncodeString(base::string16 value) {
   std::string buffer;
   EncodeString(value, &buffer);
@@ -335,12 +273,9 @@ TEST(IndexedDBLevelDBCodingTest, DecodeString) {
   const base::char16 test_string_a[] = {'f', 'o', 'o', '\0'};
   const base::char16 test_string_b[] = {0xdead, 0xbeef, '\0'};
 
-  std::vector<base::string16> test_cases;
-  test_cases.push_back(base::string16());
-  test_cases.push_back(ASCIIToUTF16("a"));
-  test_cases.push_back(ASCIIToUTF16("foo"));
-  test_cases.push_back(test_string_a);
-  test_cases.push_back(test_string_b);
+  std::vector<base::string16> test_cases = {base::string16(), ASCIIToUTF16("a"),
+                                            ASCIIToUTF16("foo"), test_string_a,
+                                            test_string_b};
 
   for (size_t i = 0; i < test_cases.size(); ++i) {
     const base::string16& test_case = test_cases[i];
@@ -393,13 +328,12 @@ TEST(IndexedDBLevelDBCodingTest, DecodeStringWithLength) {
     long_string[i] = i;
   long_string[kLongStringLen] = 0;
 
-  std::vector<base::string16> test_cases;
-  test_cases.push_back(ASCIIToUTF16(""));
-  test_cases.push_back(ASCIIToUTF16("a"));
-  test_cases.push_back(ASCIIToUTF16("foo"));
-  test_cases.push_back(base::string16(test_string_a));
-  test_cases.push_back(base::string16(test_string_b));
-  test_cases.push_back(base::string16(long_string));
+  std::vector<base::string16> test_cases = {ASCIIToUTF16(""),
+                                            ASCIIToUTF16("a"),
+                                            ASCIIToUTF16("foo"),
+                                            base::string16(test_string_a),
+                                            base::string16(test_string_b),
+                                            base::string16(long_string)};
 
   for (size_t i = 0; i < test_cases.size(); ++i) {
     base::string16 s = test_cases[i];
@@ -447,19 +381,20 @@ TEST(IndexedDBLevelDBCodingTest, CompareEncodedStringsWithLength) {
   const base::char16 test_string_e[] = {0xd834, 0xdd1e, '\0'};
   const base::char16 test_string_f[] = {0xfffd, '\0'};
 
-  std::vector<base::string16> test_cases;
-  test_cases.push_back(ASCIIToUTF16(""));
-  test_cases.push_back(ASCIIToUTF16("a"));
-  test_cases.push_back(ASCIIToUTF16("b"));
-  test_cases.push_back(ASCIIToUTF16("baaa"));
-  test_cases.push_back(ASCIIToUTF16("baab"));
-  test_cases.push_back(ASCIIToUTF16("c"));
-  test_cases.push_back(base::string16(test_string_a));
-  test_cases.push_back(base::string16(test_string_b));
-  test_cases.push_back(base::string16(test_string_c));
-  test_cases.push_back(base::string16(test_string_d));
-  test_cases.push_back(base::string16(test_string_e));
-  test_cases.push_back(base::string16(test_string_f));
+  std::vector<base::string16> test_cases = {
+      ASCIIToUTF16(""),
+      ASCIIToUTF16("a"),
+      ASCIIToUTF16("b"),
+      ASCIIToUTF16("baaa"),
+      ASCIIToUTF16("baab"),
+      ASCIIToUTF16("c"),
+      base::string16(test_string_a),
+      base::string16(test_string_b),
+      base::string16(test_string_c),
+      base::string16(test_string_d),
+      base::string16(test_string_e),
+      base::string16(test_string_f),
+  };
 
   for (size_t i = 0; i < test_cases.size() - 1; ++i) {
     base::string16 a = test_cases[i];
@@ -504,10 +439,10 @@ TEST(IndexedDBLevelDBCodingTest, EncodeBinary) {
 TEST(IndexedDBLevelDBCodingTest, DecodeBinary) {
   const unsigned char binary_data[] = { 0x00, 0x01, 0xfe, 0xff };
 
-  std::vector<std::string> test_cases;
-  test_cases.push_back(std::string(binary_data, binary_data + 0));
-  test_cases.push_back(std::string(binary_data, binary_data + 1));
-  test_cases.push_back(std::string(binary_data, binary_data + 4));
+  std::vector<std::string> test_cases = {
+      std::string(binary_data, binary_data + 0),
+      std::string(binary_data, binary_data + 1),
+      std::string(binary_data, binary_data + 4)};
 
   for (size_t i = 0; i < test_cases.size(); ++i) {
     std::string value = test_cases[i];
@@ -546,9 +481,7 @@ TEST(IndexedDBLevelDBCodingTest, EncodeDouble) {
 }
 
 TEST(IndexedDBLevelDBCodingTest, DecodeDouble) {
-  std::vector<double> test_cases;
-  test_cases.push_back(3.14);
-  test_cases.push_back(-3.14);
+  std::vector<double> test_cases = {3.14, -3.14};
 
   for (size_t i = 0; i < test_cases.size(); ++i) {
     double value = test_cases[i];
@@ -581,19 +514,19 @@ TEST(IndexedDBLevelDBCodingTest, EncodeDecodeIDBKey) {
   std::string v;
   StringPiece slice;
 
-  std::vector<IndexedDBKey> test_cases;
-  test_cases.push_back(IndexedDBKey(1234, blink::mojom::IDBKeyType::Number));
-  test_cases.push_back(IndexedDBKey(7890, blink::mojom::IDBKeyType::Date));
-  test_cases.push_back(IndexedDBKey(ASCIIToUTF16("Hello World!")));
-  test_cases.push_back(IndexedDBKey(std::string("\x01\x02")));
-  test_cases.push_back(IndexedDBKey(IndexedDBKey::KeyArray()));
+  std::vector<IndexedDBKey> test_cases = {
+      IndexedDBKey(1234, blink::mojom::IDBKeyType::Number),
+      IndexedDBKey(7890, blink::mojom::IDBKeyType::Date),
+      IndexedDBKey(ASCIIToUTF16("Hello World!")),
+      IndexedDBKey(std::string("\x01\x02")),
+      IndexedDBKey(IndexedDBKey::KeyArray())};
 
-  IndexedDBKey::KeyArray array;
-  array.push_back(IndexedDBKey(1234, blink::mojom::IDBKeyType::Number));
-  array.push_back(IndexedDBKey(7890, blink::mojom::IDBKeyType::Date));
-  array.push_back(IndexedDBKey(ASCIIToUTF16("Hello World!")));
-  array.push_back(IndexedDBKey(std::string("\x01\x02")));
-  array.push_back(IndexedDBKey(IndexedDBKey::KeyArray()));
+  IndexedDBKey::KeyArray array = {
+      IndexedDBKey(1234, blink::mojom::IDBKeyType::Number),
+      IndexedDBKey(7890, blink::mojom::IDBKeyType::Date),
+      IndexedDBKey(ASCIIToUTF16("Hello World!")),
+      IndexedDBKey(std::string("\x01\x02")),
+      IndexedDBKey(IndexedDBKey::KeyArray())};
   test_cases.push_back(IndexedDBKey(std::move(array)));
 
   for (size_t i = 0; i < test_cases.size(); ++i) {
@@ -664,10 +597,8 @@ TEST(IndexedDBLevelDBCodingTest, EncodeDecodeIDBKeyPath) {
   }
 
   {
-    std::vector<base::string16> array;
-    array.push_back(base::string16());
-    array.push_back(ASCIIToUTF16("foo"));
-    array.push_back(ASCIIToUTF16("foo.bar"));
+    std::vector<base::string16> array = {base::string16(), ASCIIToUTF16("foo"),
+                                         ASCIIToUTF16("foo.bar")};
 
     key_paths.push_back(IndexedDBKeyPath(array));
     char expected[] = {0, 0,                       // Header
@@ -704,32 +635,20 @@ TEST(IndexedDBLevelDBCodingTest, EncodeDecodeBlobJournal) {
   std::vector<BlobJournalType> journals;
 
   {  // Empty journal
-    BlobJournalType journal;
-    journals.push_back(journal);
+    journals.push_back({});
   }
 
   {  // One item
-    BlobJournalType journal;
-    journal.push_back(std::make_pair(4, 7));
-    journals.push_back(journal);
+    journals.push_back({{4, 7}});
   }
 
   {  // kAllBlobsKey
-    BlobJournalType journal;
-    journal.push_back(std::make_pair(5, DatabaseMetaDataKey::kAllBlobsKey));
-    journals.push_back(journal);
+    journals.push_back({{5, DatabaseMetaDataKey::kAllBlobsKey}});
   }
 
   {  // A bunch of items
-    BlobJournalType journal;
-    journal.push_back(std::make_pair(4, 7));
-    journal.push_back(std::make_pair(5, 6));
-    journal.push_back(std::make_pair(4, 5));
-    journal.push_back(std::make_pair(4, 4));
-    journal.push_back(std::make_pair(1, 12));
-    journal.push_back(std::make_pair(4, 3));
-    journal.push_back(std::make_pair(15, 14));
-    journals.push_back(journal);
+    journals.push_back(
+        {{4, 7}, {5, 6}, {4, 5}, {4, 4}, {1, 12}, {4, 3}, {15, 14}});
   }
 
   for (const auto& journal_iter : journals) {
@@ -744,15 +663,11 @@ TEST(IndexedDBLevelDBCodingTest, EncodeDecodeBlobJournal) {
   journals.clear();
 
   {  // Illegal database id
-    BlobJournalType journal;
-    journal.push_back(std::make_pair(0, 3));
-    journals.push_back(journal);
+    journals.push_back({{0, 3}});
   }
 
   {  // Illegal blob id
-    BlobJournalType journal;
-    journal.push_back(std::make_pair(4, 0));
-    journals.push_back(journal);
+    journals.push_back({{4, 0}});
   }
 
   for (const auto& journal_iter : journals) {
@@ -798,51 +713,51 @@ TEST(IndexedDBLevelDBCodingTest, DecodeLegacyIDBKeyPath) {
 }
 
 TEST(IndexedDBLevelDBCodingTest, ExtractAndCompareIDBKeys) {
-  std::vector<IndexedDBKey> keys;
+  std::vector<IndexedDBKey> keys = {
+      IndexedDBKey(-10, blink::mojom::IDBKeyType::Number),
+      IndexedDBKey(0, blink::mojom::IDBKeyType::Number),
+      IndexedDBKey(3.14, blink::mojom::IDBKeyType::Number),
 
-  keys.push_back(IndexedDBKey(-10, blink::mojom::IDBKeyType::Number));
-  keys.push_back(IndexedDBKey(0, blink::mojom::IDBKeyType::Number));
-  keys.push_back(IndexedDBKey(3.14, blink::mojom::IDBKeyType::Number));
+      IndexedDBKey(0, blink::mojom::IDBKeyType::Date),
+      IndexedDBKey(100, blink::mojom::IDBKeyType::Date),
+      IndexedDBKey(100000, blink::mojom::IDBKeyType::Date),
 
-  keys.push_back(IndexedDBKey(0, blink::mojom::IDBKeyType::Date));
-  keys.push_back(IndexedDBKey(100, blink::mojom::IDBKeyType::Date));
-  keys.push_back(IndexedDBKey(100000, blink::mojom::IDBKeyType::Date));
+      IndexedDBKey(ASCIIToUTF16("")),
+      IndexedDBKey(ASCIIToUTF16("a")),
+      IndexedDBKey(ASCIIToUTF16("b")),
+      IndexedDBKey(ASCIIToUTF16("baaa")),
+      IndexedDBKey(ASCIIToUTF16("baab")),
+      IndexedDBKey(ASCIIToUTF16("c")),
 
-  keys.push_back(IndexedDBKey(ASCIIToUTF16("")));
-  keys.push_back(IndexedDBKey(ASCIIToUTF16("a")));
-  keys.push_back(IndexedDBKey(ASCIIToUTF16("b")));
-  keys.push_back(IndexedDBKey(ASCIIToUTF16("baaa")));
-  keys.push_back(IndexedDBKey(ASCIIToUTF16("baab")));
-  keys.push_back(IndexedDBKey(ASCIIToUTF16("c")));
+      IndexedDBKey(std::string()),
+      IndexedDBKey(std::string("\x01")),
+      IndexedDBKey(std::string("\x01\x01")),
+      IndexedDBKey(std::string("\x01\x02")),
+      IndexedDBKey(std::string("\x02")),
+      IndexedDBKey(std::string("\x02\x01")),
+      IndexedDBKey(std::string("\x02\x02")),
+      IndexedDBKey(std::string("\xff")),
 
-  keys.push_back(IndexedDBKey(std::string()));
-  keys.push_back(IndexedDBKey(std::string("\x01")));
-  keys.push_back(IndexedDBKey(std::string("\x01\x01")));
-  keys.push_back(IndexedDBKey(std::string("\x01\x02")));
-  keys.push_back(IndexedDBKey(std::string("\x02")));
-  keys.push_back(IndexedDBKey(std::string("\x02\x01")));
-  keys.push_back(IndexedDBKey(std::string("\x02\x02")));
-  keys.push_back(IndexedDBKey(std::string("\xff")));
+      CreateArrayIDBKey(),
 
-  keys.push_back(CreateArrayIDBKey());
-  keys.push_back(
-      CreateArrayIDBKey(IndexedDBKey(0, blink::mojom::IDBKeyType::Number)));
-  keys.push_back(
+      CreateArrayIDBKey(IndexedDBKey(0, blink::mojom::IDBKeyType::Number)),
+
       CreateArrayIDBKey(IndexedDBKey(0, blink::mojom::IDBKeyType::Number),
-                        IndexedDBKey(3.14, blink::mojom::IDBKeyType::Number)));
-  keys.push_back(
-      CreateArrayIDBKey(IndexedDBKey(0, blink::mojom::IDBKeyType::Date)));
-  keys.push_back(
+                        IndexedDBKey(3.14, blink::mojom::IDBKeyType::Number)),
+
+      CreateArrayIDBKey(IndexedDBKey(0, blink::mojom::IDBKeyType::Date)),
+
       CreateArrayIDBKey(IndexedDBKey(0, blink::mojom::IDBKeyType::Date),
-                        IndexedDBKey(0, blink::mojom::IDBKeyType::Date)));
-  keys.push_back(CreateArrayIDBKey(IndexedDBKey(ASCIIToUTF16(""))));
-  keys.push_back(CreateArrayIDBKey(IndexedDBKey(ASCIIToUTF16("")),
-                                   IndexedDBKey(ASCIIToUTF16("a"))));
-  keys.push_back(CreateArrayIDBKey(CreateArrayIDBKey()));
-  keys.push_back(CreateArrayIDBKey(CreateArrayIDBKey(), CreateArrayIDBKey()));
-  keys.push_back(CreateArrayIDBKey(CreateArrayIDBKey(CreateArrayIDBKey())));
-  keys.push_back(CreateArrayIDBKey(
-      CreateArrayIDBKey(CreateArrayIDBKey(CreateArrayIDBKey()))));
+                        IndexedDBKey(0, blink::mojom::IDBKeyType::Date)),
+      CreateArrayIDBKey(IndexedDBKey(ASCIIToUTF16(""))),
+      CreateArrayIDBKey(IndexedDBKey(ASCIIToUTF16("")),
+                        IndexedDBKey(ASCIIToUTF16("a"))),
+      CreateArrayIDBKey(CreateArrayIDBKey()),
+      CreateArrayIDBKey(CreateArrayIDBKey(), CreateArrayIDBKey()),
+      CreateArrayIDBKey(CreateArrayIDBKey(CreateArrayIDBKey())),
+      CreateArrayIDBKey(
+          CreateArrayIDBKey(CreateArrayIDBKey(CreateArrayIDBKey()))),
+  };
 
   for (size_t i = 0; i < keys.size() - 1; ++i) {
     const IndexedDBKey& key_a = keys[i];
@@ -882,85 +797,85 @@ TEST(IndexedDBLevelDBCodingTest, ExtractAndCompareIDBKeys) {
 }
 
 TEST(IndexedDBLevelDBCodingTest, ComparisonTest) {
-  std::vector<std::string> keys;
-  keys.push_back(SchemaVersionKey::Encode());
-  keys.push_back(MaxDatabaseIdKey::Encode());
-  keys.push_back(DatabaseFreeListKey::Encode(0));
-  keys.push_back(DatabaseFreeListKey::EncodeMaxKey());
-  keys.push_back(DatabaseNameKey::Encode("", ASCIIToUTF16("")));
-  keys.push_back(DatabaseNameKey::Encode("", ASCIIToUTF16("a")));
-  keys.push_back(DatabaseNameKey::Encode("a", ASCIIToUTF16("a")));
-  keys.push_back(
-      DatabaseMetaDataKey::Encode(1, DatabaseMetaDataKey::ORIGIN_NAME));
-  keys.push_back(
-      DatabaseMetaDataKey::Encode(1, DatabaseMetaDataKey::DATABASE_NAME));
-  keys.push_back(
-      DatabaseMetaDataKey::Encode(1, DatabaseMetaDataKey::USER_STRING_VERSION));
-  keys.push_back(
-      DatabaseMetaDataKey::Encode(1, DatabaseMetaDataKey::MAX_OBJECT_STORE_ID));
-  keys.push_back(
-      DatabaseMetaDataKey::Encode(1, DatabaseMetaDataKey::USER_VERSION));
-  keys.push_back(
-      ObjectStoreMetaDataKey::Encode(1, 1, ObjectStoreMetaDataKey::NAME));
-  keys.push_back(
-      ObjectStoreMetaDataKey::Encode(1, 1, ObjectStoreMetaDataKey::KEY_PATH));
-  keys.push_back(ObjectStoreMetaDataKey::Encode(
-      1, 1, ObjectStoreMetaDataKey::AUTO_INCREMENT));
-  keys.push_back(
-      ObjectStoreMetaDataKey::Encode(1, 1, ObjectStoreMetaDataKey::EVICTABLE));
-  keys.push_back(ObjectStoreMetaDataKey::Encode(
-      1, 1, ObjectStoreMetaDataKey::LAST_VERSION));
-  keys.push_back(ObjectStoreMetaDataKey::Encode(
-      1, 1, ObjectStoreMetaDataKey::MAX_INDEX_ID));
-  keys.push_back(ObjectStoreMetaDataKey::Encode(
-      1, 1, ObjectStoreMetaDataKey::HAS_KEY_PATH));
-  keys.push_back(ObjectStoreMetaDataKey::Encode(
-      1, 1, ObjectStoreMetaDataKey::KEY_GENERATOR_CURRENT_NUMBER));
-  keys.push_back(ObjectStoreMetaDataKey::EncodeMaxKey(1, 1));
-  keys.push_back(ObjectStoreMetaDataKey::EncodeMaxKey(1, 2));
-  keys.push_back(ObjectStoreMetaDataKey::EncodeMaxKey(1));
-  keys.push_back(IndexMetaDataKey::Encode(1, 1, 30, IndexMetaDataKey::NAME));
-  keys.push_back(IndexMetaDataKey::Encode(1, 1, 30, IndexMetaDataKey::UNIQUE));
-  keys.push_back(
-      IndexMetaDataKey::Encode(1, 1, 30, IndexMetaDataKey::KEY_PATH));
-  keys.push_back(
-      IndexMetaDataKey::Encode(1, 1, 30, IndexMetaDataKey::MULTI_ENTRY));
-  keys.push_back(IndexMetaDataKey::Encode(1, 1, 31, 0));
-  keys.push_back(IndexMetaDataKey::Encode(1, 1, 31, 1));
-  keys.push_back(IndexMetaDataKey::EncodeMaxKey(1, 1, 31));
-  keys.push_back(IndexMetaDataKey::EncodeMaxKey(1, 1, 32));
-  keys.push_back(IndexMetaDataKey::EncodeMaxKey(1, 1));
-  keys.push_back(IndexMetaDataKey::EncodeMaxKey(1, 2));
-  keys.push_back(ObjectStoreFreeListKey::Encode(1, 1));
-  keys.push_back(ObjectStoreFreeListKey::EncodeMaxKey(1));
-  keys.push_back(IndexFreeListKey::Encode(1, 1, kMinimumIndexId));
-  keys.push_back(IndexFreeListKey::EncodeMaxKey(1, 1));
-  keys.push_back(IndexFreeListKey::Encode(1, 2, kMinimumIndexId));
-  keys.push_back(IndexFreeListKey::EncodeMaxKey(1, 2));
-  keys.push_back(ObjectStoreNamesKey::Encode(1, ASCIIToUTF16("")));
-  keys.push_back(ObjectStoreNamesKey::Encode(1, ASCIIToUTF16("a")));
-  keys.push_back(IndexNamesKey::Encode(1, 1, ASCIIToUTF16("")));
-  keys.push_back(IndexNamesKey::Encode(1, 1, ASCIIToUTF16("a")));
-  keys.push_back(IndexNamesKey::Encode(1, 2, ASCIIToUTF16("a")));
-  keys.push_back(ObjectStoreDataKey::Encode(1, 1, std::string()));
-  keys.push_back(ObjectStoreDataKey::Encode(1, 1, MinIDBKey()));
-  keys.push_back(ObjectStoreDataKey::Encode(1, 1, MaxIDBKey()));
-  keys.push_back(ExistsEntryKey::Encode(1, 1, std::string()));
-  keys.push_back(ExistsEntryKey::Encode(1, 1, MinIDBKey()));
-  keys.push_back(ExistsEntryKey::Encode(1, 1, MaxIDBKey()));
-  keys.push_back(IndexDataKey::Encode(1, 1, 30, MinIDBKey(), std::string(), 0));
-  keys.push_back(IndexDataKey::Encode(1, 1, 30, MinIDBKey(), MinIDBKey(), 0));
-  keys.push_back(IndexDataKey::Encode(1, 1, 30, MinIDBKey(), MinIDBKey(), 1));
-  keys.push_back(IndexDataKey::Encode(1, 1, 30, MinIDBKey(), MaxIDBKey(), 0));
-  keys.push_back(IndexDataKey::Encode(1, 1, 30, MinIDBKey(), MaxIDBKey(), 1));
-  keys.push_back(IndexDataKey::Encode(1, 1, 30, MaxIDBKey(), MinIDBKey(), 0));
-  keys.push_back(IndexDataKey::Encode(1, 1, 30, MaxIDBKey(), MinIDBKey(), 1));
-  keys.push_back(IndexDataKey::Encode(1, 1, 30, MaxIDBKey(), MaxIDBKey(), 0));
-  keys.push_back(IndexDataKey::Encode(1, 1, 30, MaxIDBKey(), MaxIDBKey(), 1));
-  keys.push_back(IndexDataKey::Encode(1, 1, 31, MinIDBKey(), MinIDBKey(), 0));
-  keys.push_back(IndexDataKey::Encode(1, 2, 30, MinIDBKey(), MinIDBKey(), 0));
-  keys.push_back(IndexDataKey::EncodeMaxKey(
-      1, 2, std::numeric_limits<int32_t>::max() - 1));
+  std::vector<std::string> keys = {
+      SchemaVersionKey::Encode(),
+      MaxDatabaseIdKey::Encode(),
+      DatabaseFreeListKey::Encode(0),
+      DatabaseFreeListKey::EncodeMaxKey(),
+      DatabaseNameKey::Encode("", ASCIIToUTF16("")),
+      DatabaseNameKey::Encode("", ASCIIToUTF16("a")),
+      DatabaseNameKey::Encode("a", ASCIIToUTF16("a")),
+
+      DatabaseMetaDataKey::Encode(1, DatabaseMetaDataKey::ORIGIN_NAME),
+
+      DatabaseMetaDataKey::Encode(1, DatabaseMetaDataKey::DATABASE_NAME),
+
+      DatabaseMetaDataKey::Encode(1, DatabaseMetaDataKey::USER_STRING_VERSION),
+
+      DatabaseMetaDataKey::Encode(1, DatabaseMetaDataKey::MAX_OBJECT_STORE_ID),
+
+      DatabaseMetaDataKey::Encode(1, DatabaseMetaDataKey::USER_VERSION),
+
+      ObjectStoreMetaDataKey::Encode(1, 1, ObjectStoreMetaDataKey::NAME),
+
+      ObjectStoreMetaDataKey::Encode(1, 1, ObjectStoreMetaDataKey::KEY_PATH),
+      ObjectStoreMetaDataKey::Encode(1, 1,
+                                     ObjectStoreMetaDataKey::AUTO_INCREMENT),
+
+      ObjectStoreMetaDataKey::Encode(1, 1, ObjectStoreMetaDataKey::EVICTABLE),
+      ObjectStoreMetaDataKey::Encode(1, 1,
+                                     ObjectStoreMetaDataKey::LAST_VERSION),
+      ObjectStoreMetaDataKey::Encode(1, 1,
+                                     ObjectStoreMetaDataKey::MAX_INDEX_ID),
+      ObjectStoreMetaDataKey::Encode(1, 1,
+                                     ObjectStoreMetaDataKey::HAS_KEY_PATH),
+      ObjectStoreMetaDataKey::Encode(
+          1, 1, ObjectStoreMetaDataKey::KEY_GENERATOR_CURRENT_NUMBER),
+      ObjectStoreMetaDataKey::EncodeMaxKey(1, 1),
+      ObjectStoreMetaDataKey::EncodeMaxKey(1, 2),
+      ObjectStoreMetaDataKey::EncodeMaxKey(1),
+      IndexMetaDataKey::Encode(1, 1, 30, IndexMetaDataKey::NAME),
+      IndexMetaDataKey::Encode(1, 1, 30, IndexMetaDataKey::UNIQUE),
+
+      IndexMetaDataKey::Encode(1, 1, 30, IndexMetaDataKey::KEY_PATH),
+
+      IndexMetaDataKey::Encode(1, 1, 30, IndexMetaDataKey::MULTI_ENTRY),
+      IndexMetaDataKey::Encode(1, 1, 31, 0),
+      IndexMetaDataKey::Encode(1, 1, 31, 1),
+      IndexMetaDataKey::EncodeMaxKey(1, 1, 31),
+      IndexMetaDataKey::EncodeMaxKey(1, 1, 32),
+      IndexMetaDataKey::EncodeMaxKey(1, 1),
+      IndexMetaDataKey::EncodeMaxKey(1, 2),
+      ObjectStoreFreeListKey::Encode(1, 1),
+      ObjectStoreFreeListKey::EncodeMaxKey(1),
+      IndexFreeListKey::Encode(1, 1, kMinimumIndexId),
+      IndexFreeListKey::EncodeMaxKey(1, 1),
+      IndexFreeListKey::Encode(1, 2, kMinimumIndexId),
+      IndexFreeListKey::EncodeMaxKey(1, 2),
+      ObjectStoreNamesKey::Encode(1, ASCIIToUTF16("")),
+      ObjectStoreNamesKey::Encode(1, ASCIIToUTF16("a")),
+      IndexNamesKey::Encode(1, 1, ASCIIToUTF16("")),
+      IndexNamesKey::Encode(1, 1, ASCIIToUTF16("a")),
+      IndexNamesKey::Encode(1, 2, ASCIIToUTF16("a")),
+      ObjectStoreDataKey::Encode(1, 1, std::string()),
+      ObjectStoreDataKey::Encode(1, 1, MinIDBKey()),
+      ObjectStoreDataKey::Encode(1, 1, MaxIDBKey()),
+      ExistsEntryKey::Encode(1, 1, std::string()),
+      ExistsEntryKey::Encode(1, 1, MinIDBKey()),
+      ExistsEntryKey::Encode(1, 1, MaxIDBKey()),
+      IndexDataKey::Encode(1, 1, 30, MinIDBKey(), std::string(), 0),
+      IndexDataKey::Encode(1, 1, 30, MinIDBKey(), MinIDBKey(), 0),
+      IndexDataKey::Encode(1, 1, 30, MinIDBKey(), MinIDBKey(), 1),
+      IndexDataKey::Encode(1, 1, 30, MinIDBKey(), MaxIDBKey(), 0),
+      IndexDataKey::Encode(1, 1, 30, MinIDBKey(), MaxIDBKey(), 1),
+      IndexDataKey::Encode(1, 1, 30, MaxIDBKey(), MinIDBKey(), 0),
+      IndexDataKey::Encode(1, 1, 30, MaxIDBKey(), MinIDBKey(), 1),
+      IndexDataKey::Encode(1, 1, 30, MaxIDBKey(), MaxIDBKey(), 0),
+      IndexDataKey::Encode(1, 1, 30, MaxIDBKey(), MaxIDBKey(), 1),
+      IndexDataKey::Encode(1, 1, 31, MinIDBKey(), MinIDBKey(), 0),
+      IndexDataKey::Encode(1, 2, 30, MinIDBKey(), MinIDBKey(), 0),
+      IndexDataKey::EncodeMaxKey(1, 2, std::numeric_limits<int32_t>::max() - 1),
+  };
 
   for (size_t i = 0; i < keys.size(); ++i) {
     EXPECT_EQ(Compare(keys[i], keys[i], false), 0);
@@ -973,22 +888,22 @@ TEST(IndexedDBLevelDBCodingTest, ComparisonTest) {
 }
 
 TEST(IndexedDBLevelDBCodingTest, IndexDataKeyEncodeDecode) {
-  std::vector<std::string> keys;
-  keys.push_back(IndexDataKey::Encode(1, 1, 30, MinIDBKey(), MinIDBKey(), 0));
-  keys.push_back(IndexDataKey::Encode(1, 1, 30, MinIDBKey(), MinIDBKey(), 1));
-  keys.push_back(
+  std::vector<std::string> keys = {
+      IndexDataKey::Encode(1, 1, 30, MinIDBKey(), MinIDBKey(), 0),
+      IndexDataKey::Encode(1, 1, 30, MinIDBKey(), MinIDBKey(), 1),
+
       IndexDataKey::Encode(1, 1, 30, IndexedDBKey(ASCIIToUTF16("user key")),
-                           IndexedDBKey(ASCIIToUTF16("primary key"))));
-  keys.push_back(IndexDataKey::Encode(1, 1, 30, MinIDBKey(), MaxIDBKey(), 0));
-  keys.push_back(IndexDataKey::Encode(1, 1, 30, MinIDBKey(), MaxIDBKey(), 1));
-  keys.push_back(IndexDataKey::Encode(1, 1, 30, MaxIDBKey(), MinIDBKey(), 0));
-  keys.push_back(IndexDataKey::Encode(1, 1, 30, MaxIDBKey(), MinIDBKey(), 1));
-  keys.push_back(IndexDataKey::Encode(1, 1, 30, MaxIDBKey(), MaxIDBKey(), 0));
-  keys.push_back(IndexDataKey::Encode(1, 1, 30, MaxIDBKey(), MaxIDBKey(), 1));
-  keys.push_back(IndexDataKey::Encode(1, 1, 31, MinIDBKey(), MinIDBKey(), 0));
-  keys.push_back(IndexDataKey::Encode(1, 2, 30, MinIDBKey(), MinIDBKey(), 0));
-  keys.push_back(IndexDataKey::EncodeMaxKey(
-      1, 2, std::numeric_limits<int32_t>::max() - 1));
+                           IndexedDBKey(ASCIIToUTF16("primary key"))),
+      IndexDataKey::Encode(1, 1, 30, MinIDBKey(), MaxIDBKey(), 0),
+      IndexDataKey::Encode(1, 1, 30, MinIDBKey(), MaxIDBKey(), 1),
+      IndexDataKey::Encode(1, 1, 30, MaxIDBKey(), MinIDBKey(), 0),
+      IndexDataKey::Encode(1, 1, 30, MaxIDBKey(), MinIDBKey(), 1),
+      IndexDataKey::Encode(1, 1, 30, MaxIDBKey(), MaxIDBKey(), 0),
+      IndexDataKey::Encode(1, 1, 30, MaxIDBKey(), MaxIDBKey(), 1),
+      IndexDataKey::Encode(1, 1, 31, MinIDBKey(), MinIDBKey(), 0),
+      IndexDataKey::Encode(1, 2, 30, MinIDBKey(), MinIDBKey(), 0),
+      IndexDataKey::EncodeMaxKey(1, 2, std::numeric_limits<int32_t>::max() - 1),
+  };
 
   std::vector<IndexDataKey> obj_keys;
   for (const std::string& key : keys) {
@@ -1004,16 +919,14 @@ TEST(IndexedDBLevelDBCodingTest, IndexDataKeyEncodeDecode) {
 }
 
 TEST(IndexedDBLevelDBCodingTest, EncodeVarIntVSEncodeByteTest) {
-  std::vector<unsigned char> test_cases;
-  test_cases.push_back(0);
-  test_cases.push_back(1);
-  test_cases.push_back(127);
+  std::vector<unsigned char> test_cases = {0, 1, 127};
 
   for (size_t i = 0; i < test_cases.size(); ++i) {
     unsigned char n = test_cases[i];
 
     std::string a = WrappedEncodeByte(n);
-    std::string b = WrappedEncodeVarInt(static_cast<int64_t>(n));
+    std::string b;
+    EncodeVarInt(static_cast<int64_t>(n), &b);
 
     EXPECT_EQ(a.size(), b.size());
     EXPECT_EQ(*a.begin(), *b.begin());

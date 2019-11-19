@@ -46,7 +46,8 @@ class MediaSessionServiceMock {
         blink.mojom.MediaSessionService);
 
     this.interceptor_ =
-        new MojoInterfaceInterceptor(blink.mojom.MediaSessionService.name);
+        new MojoInterfaceInterceptor(blink.mojom.MediaSessionService.name,
+                                     "context", true);
     this.interceptor_.oninterfacerequest =
         e => this.bindingSet_.addBinding(this, e.handle);
     this.interceptor_.start();
@@ -68,6 +69,15 @@ class MediaSessionServiceMock {
 
   setPlaybackStateCallback(callback) {
     this.setPlaybackStateCallback_ = callback;
+  }
+
+  setPositionState(position) {
+    if (!!this.setPositionStateCallback_)
+      this.setPositionStateCallback_(position);
+  }
+
+  setPositionStateCallback(callback) {
+    this.setPositionStateCallback_ = callback;
   }
 
   enableAction(action) {

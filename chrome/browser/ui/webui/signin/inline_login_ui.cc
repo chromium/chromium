@@ -21,7 +21,6 @@
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/signin/core/browser/account_consistency_method.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/content_switches.h"
@@ -38,7 +37,7 @@ content::WebUIDataSource* CreateWebUIDataSource() {
   content::WebUIDataSource* source =
         content::WebUIDataSource::Create(chrome::kChromeUIChromeSigninHost);
   source->OverrideContentSecurityPolicyObjectSrc("object-src chrome:;");
-  source->SetJsonPath("strings.js");
+  source->UseStringsJs();
 
   source->SetDefaultResource(IDR_INLINE_LOGIN_HTML);
 
@@ -46,8 +45,10 @@ content::WebUIDataSource* CreateWebUIDataSource() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   const bool is_running_test = command_line->HasSwitch(::switches::kTestName) ||
                                command_line->HasSwitch(::switches::kTestType);
-  if (is_running_test)
-    source->SetRequestFilter(test::GetTestFilesRequestFilter());
+  if (is_running_test) {
+    source->SetRequestFilter(test::GetTestShouldHandleRequest(),
+                             test::GetTestFilesRequestFilter());
+  }
 
   source->AddResourcePath("inline_login.css", IDR_INLINE_LOGIN_CSS);
   source->AddResourcePath("inline_login.js", IDR_INLINE_LOGIN_JS);
@@ -97,10 +98,7 @@ bool IsValidChromeSigninReason(const GURL& url) {
 
 }  // namespace
 
-InlineLoginUI::InlineLoginUI(content::WebUI* web_ui)
-    : WebDialogUI(web_ui),
-      auth_extension_(Profile::FromWebUI(web_ui)),
-      weak_factory_(this) {
+InlineLoginUI::InlineLoginUI(content::WebUI* web_ui) : WebDialogUI(web_ui) {
   if (!IsValidChromeSigninReason(web_ui->GetWebContents()->GetVisibleURL()))
     return;
 

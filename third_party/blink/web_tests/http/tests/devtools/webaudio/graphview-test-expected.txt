@@ -1,0 +1,57 @@
+Tests the graph model.
+
+Original lengths
+Number of nodes: 0
+Number of edges: 0
+Number of nodes with out-bound edges: 0
+Number of nodes with in-bound edges: 0
+
+Test adding node
+Number of nodes: 1
+Number of edges: 0
+Number of nodes with out-bound edges: 0
+Number of nodes with in-bound edges: 0
+
+Test removing node with no edges
+Number of nodes: 0
+Number of edges: 0
+Number of nodes with out-bound edges: 0
+Number of nodes with in-bound edges: 0
+
+Test adding node-to-node connection
+Number of nodes: 2
+Number of edges: 1
+Number of nodes with out-bound edges: 1
+Number of nodes with in-bound edges: 1
+
+Test removing node-to-node connection
+Number of nodes: 2
+Number of edges: 0
+Number of nodes with out-bound edges: 0
+Number of nodes with in-bound edges: 0
+
+Test removing node with edges
+Number of nodes: 1
+Number of edges: 0
+Number of nodes with out-bound edges: 0
+Number of nodes with in-bound edges: 0
+Add the node back for other tests.
+
+Test adding param
+Number of nodes: 2
+Number of edges: 0
+Number of nodes with out-bound edges: 0
+Number of nodes with in-bound edges: 0
+
+Test adding node-to-param connection
+Number of nodes: 2
+Number of edges: 1
+Number of nodes with out-bound edges: 1
+Number of nodes with in-bound edges: 1
+
+Test removing node-to-param connection
+Number of nodes: 2
+Number of edges: 0
+Number of nodes with out-bound edges: 0
+Number of nodes with in-bound edges: 0
+

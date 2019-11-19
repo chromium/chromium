@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// This file implements the ScopedClipboardWriter class. Documentation on its
-// purpose can be found in our header. Documentation on the format of the
-// parameters for each clipboard target can be found in clipboard.h.
-
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 
 #include "base/pickle.h"
@@ -14,14 +10,27 @@
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/gfx/geometry/size.h"
 
+// Documentation on the format of the parameters for each clipboard target can
+// be found in clipboard.h.
 namespace ui {
 
-ScopedClipboardWriter::ScopedClipboardWriter(ClipboardType type) : type_(type) {
-}
+ScopedClipboardWriter::ScopedClipboardWriter(ClipboardBuffer buffer)
+    : buffer_(buffer) {}
 
 ScopedClipboardWriter::~ScopedClipboardWriter() {
-  if (!objects_.empty())
-    ui::Clipboard::GetForCurrentThread()->WriteObjects(type_, objects_);
+  static constexpr size_t kMaxRepresentations = 1 << 12;
+  DCHECK(objects_.empty() || platform_representations_.empty())
+      << "Portable and Platform representations should not be written on the "
+         "same write.";
+  DCHECK(platform_representations_.size() < kMaxRepresentations);
+  if (!objects_.empty()) {
+    Clipboard::GetForCurrentThread()->WritePortableRepresentations(buffer_,
+                                                                   objects_);
+  }
+  if (!platform_representations_.empty()) {
+    Clipboard::GetForCurrentThread()->WritePlatformRepresentations(
+        buffer_, std::move(platform_representations_));
+  }
 }
 
 void ScopedClipboardWriter::WriteText(const base::string16& text) {
@@ -30,7 +39,7 @@ void ScopedClipboardWriter::WriteText(const base::string16& text) {
   Clipboard::ObjectMapParams parameters;
   parameters.push_back(
       Clipboard::ObjectMapParam(utf8_text.begin(), utf8_text.end()));
-  objects_[Clipboard::CBF_TEXT] = parameters;
+  objects_[Clipboard::PortableFormat::kText] = parameters;
 }
 
 void ScopedClipboardWriter::WriteHTML(const base::string16& markup,
@@ -46,14 +55,14 @@ void ScopedClipboardWriter::WriteHTML(const base::string16& markup,
                                                    source_url.end()));
   }
 
-  objects_[Clipboard::CBF_HTML] = parameters;
+  objects_[Clipboard::PortableFormat::kHtml] = parameters;
 }
 
 void ScopedClipboardWriter::WriteRTF(const std::string& rtf_data) {
   Clipboard::ObjectMapParams parameters;
   parameters.push_back(Clipboard::ObjectMapParam(rtf_data.begin(),
                                                  rtf_data.end()));
-  objects_[Clipboard::CBF_RTF] = parameters;
+  objects_[Clipboard::PortableFormat::kRtf] = parameters;
 }
 
 void ScopedClipboardWriter::WriteBookmark(const base::string16& bookmark_title,
@@ -67,7 +76,7 @@ void ScopedClipboardWriter::WriteBookmark(const base::string16& bookmark_title,
   parameters.push_back(Clipboard::ObjectMapParam(utf8_markup.begin(),
                                                  utf8_markup.end()));
   parameters.push_back(Clipboard::ObjectMapParam(url.begin(), url.end()));
-  objects_[Clipboard::CBF_BOOKMARK] = parameters;
+  objects_[Clipboard::PortableFormat::kBookmark] = parameters;
 }
 
 void ScopedClipboardWriter::WriteHyperlink(const base::string16& anchor_text,
@@ -76,16 +85,16 @@ void ScopedClipboardWriter::WriteHyperlink(const base::string16& anchor_text,
     return;
 
   // Construct the hyperlink.
-  std::string html("<a href=\"");
-  html.append(net::EscapeForHTML(url));
-  html.append("\">");
-  html.append(net::EscapeForHTML(base::UTF16ToUTF8(anchor_text)));
-  html.append("</a>");
+  std::string html = "<a href=\"";
+  html += net::EscapeForHTML(url);
+  html += "\">";
+  html += net::EscapeForHTML(base::UTF16ToUTF8(anchor_text));
+  html += "</a>";
   WriteHTML(base::UTF8ToUTF16(html), std::string());
 }
 
 void ScopedClipboardWriter::WriteWebSmartPaste() {
-  objects_[Clipboard::CBF_WEBKIT] = Clipboard::ObjectMapParams();
+  objects_[Clipboard::PortableFormat::kWebkit] = Clipboard::ObjectMapParams();
 }
 
 void ScopedClipboardWriter::WriteImage(const SkBitmap& bitmap) {
@@ -102,7 +111,7 @@ void ScopedClipboardWriter::WriteImage(const SkBitmap& bitmap) {
   *reinterpret_cast<SkBitmap**>(&*packed_pointer.begin()) = bitmap_pointer;
   Clipboard::ObjectMapParams parameters;
   parameters.push_back(packed_pointer);
-  objects_[Clipboard::CBF_SMBITMAP] = parameters;
+  objects_[Clipboard::PortableFormat::kBitmap] = parameters;
 }
 
 void ScopedClipboardWriter::WritePickledData(
@@ -120,21 +129,26 @@ void ScopedClipboardWriter::WritePickledData(
   Clipboard::ObjectMapParams parameters;
   parameters.push_back(format_parameter);
   parameters.push_back(data_parameter);
-  objects_[Clipboard::CBF_DATA] = parameters;
+  objects_[Clipboard::PortableFormat::kData] = parameters;
 }
 
-void ScopedClipboardWriter::WriteData(const std::string& type,
-                                      const std::string& data) {
-  Clipboard::ObjectMapParam type_parameter(type.begin(), type.end());
-  Clipboard::ObjectMapParam data_parameter(data.begin(), data.end());
-  Clipboard::ObjectMapParams parameters;
-  parameters.push_back(type_parameter);
-  parameters.push_back(data_parameter);
-  objects_[Clipboard::CBF_DATA] = parameters;
+void ScopedClipboardWriter::WriteData(const base::string16& format,
+                                      mojo_base::BigBuffer data) {
+  // Conservative limit to maximum format and data string size, to avoid
+  // potential attacks with long strings. Callers should implement similar
+  // checks.
+  constexpr size_t kMaxFormatSize = 1024;
+  constexpr size_t kMaxDataSize = 1 << 30;  // 1 GB
+  DCHECK_LT(format.size(), kMaxFormatSize);
+  DCHECK_LT(data.size(), kMaxDataSize);
+
+  platform_representations_.push_back(
+      {base::UTF16ToUTF8(format), std::move(data)});
 }
 
 void ScopedClipboardWriter::Reset() {
   objects_.clear();
+  platform_representations_.clear();
   bitmap_.reset();
 }
 

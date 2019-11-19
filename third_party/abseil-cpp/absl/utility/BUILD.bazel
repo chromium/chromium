@@ -1,6 +1,7 @@
 load(
     "//absl:copts/configure_copts.bzl",
     "ABSL_DEFAULT_COPTS",
+    "ABSL_DEFAULT_LINKOPTS",
     "ABSL_TEST_COPTS",
 )
 
@@ -12,6 +13,7 @@ cc_library(
     name = "utility",
     hdrs = ["utility.h"],
     copts = ABSL_DEFAULT_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
         "//absl/base:base_internal",
         "//absl/base:config",
@@ -23,6 +25,7 @@ cc_test(
     name = "utility_test",
     srcs = ["utility_test.cc"],
     copts = ABSL_TEST_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
         ":utility",
         "//absl/base:core_headers",

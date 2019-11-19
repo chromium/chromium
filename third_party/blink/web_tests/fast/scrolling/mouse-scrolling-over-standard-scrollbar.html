@@ -1,0 +1,85 @@
+<!DOCTYPE>
+<title>Mouse scrolling by using non-custom scrollbar should scroll its scroller</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/gesture-util.js"></script>
+<style>
+html,body {
+  margin: 0;
+}
+.wheelDiv {
+  width: 100px;
+  height: 100px;
+  overflow: auto;
+  border: 1px solid black;
+  margin: 20px;
+  position: absolute;
+}
+.mainThreadDivPos {
+  top: 100px;
+}
+.compThreadDivPos {
+  top: 250px;
+}
+.slow {
+  clip: rect(0px, 1000px, 500px, 0px);
+}
+.fast {
+  will-change: transform;
+}
+.space {
+  height: 1000px;
+}
+</style>
+
+<!-- Non-composited slow scroller -->
+<div class="wheelDiv slow mainThreadDivPos">
+  <div class="space">MAIN-THREAD SCROLLING</div>
+</div>
+
+<!-- Composited fast scroller -->
+<div class="wheelDiv fast compThreadDivPos">
+  <div class="space">COMPOSITOR-THREAD SCROLLING</div>
+</div>
+
+<script>
+
+window.onload = () => {
+  const divSlow = document.querySelector('.slow');
+  const divFast = document.querySelector('.fast');
+  const rectSlow = divSlow.getBoundingClientRect();
+  const rectFast = divFast.getBoundingClientRect();
+
+  promise_test (async () => {
+    await waitForCompositorCommit();
+
+    const distance = 10;
+    const source_type = GestureSourceType.MOUSE_INPUT;
+    const direction = 'down';
+    const use_precise_deltas = true;
+    const SCROLLBAR_WIDTH = 15;
+
+    let x = rectSlow.right - SCROLLBAR_WIDTH / 2;
+    let y = rectSlow.top + 30;
+
+    await smoothScroll(distance,
+                       x, y,
+                       source_type,
+                       direction,
+                       SPEED_INSTANT,
+                       use_precise_deltas);
+
+    assert_greater_than(divSlow.scrollTop, 0, "Main-thread scrolling div didn't scroll.");
+
+    x = rectFast.right - SCROLLBAR_WIDTH / 2;
+    y = rectFast.top + 30;
+    await smoothScroll(distance,
+                       x, y,
+                       source_type,
+                       direction,
+                       SPEED_INSTANT,
+                       use_precise_deltas);
+    assert_greater_than(divFast.scrollTop, 0, "Compositor-thread scrolling div didn't scroll.");
+  }, "Test mouse scrolling over non-custom scrollbars");
+}
+</script>

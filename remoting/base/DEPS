@@ -5,6 +5,8 @@ include_rules = [
   "+net",
   "+services/network/public/cpp",
   "+third_party/breakpad",
+  "+third_party/google_trust_services",
+  "+third_party/grpc",
   "+third_party/zlib",
   "+ui/base",
 ]

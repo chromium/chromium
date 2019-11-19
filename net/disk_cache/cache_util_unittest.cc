@@ -27,14 +27,14 @@ class CacheUtilTest : public PlatformTest {
     file3_ = base::FilePath(dir1_.Append(FILE_PATH_LITERAL("file03")));
     ASSERT_TRUE(base::CreateDirectory(cache_dir_));
     FILE *fp = base::OpenFile(file1_, "w");
-    ASSERT_TRUE(fp != NULL);
+    ASSERT_TRUE(fp != nullptr);
     base::CloseFile(fp);
     fp = base::OpenFile(file2_, "w");
-    ASSERT_TRUE(fp != NULL);
+    ASSERT_TRUE(fp != nullptr);
     base::CloseFile(fp);
     ASSERT_TRUE(base::CreateDirectory(dir1_));
     fp = base::OpenFile(file3_, "w");
-    ASSERT_TRUE(fp != NULL);
+    ASSERT_TRUE(fp != nullptr);
     base::CloseFile(fp);
     dest_dir_ = tmp_dir_.GetPath().Append(FILE_PATH_LITERAL("old_Cache_001"));
     dest_file1_ = base::FilePath(dest_dir_.Append(FILE_PATH_LITERAL("file01")));

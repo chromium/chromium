@@ -7,6 +7,8 @@
  Foo = "hello world"]
 module sample;
 
+import "mojo/public/mojom/base/generic_pending_receiver.mojom";
+
 const uint64 kLong = 4405;
 
 enum Enum {
@@ -29,4 +31,8 @@ interface IntegerAccessor {
   GetInteger() => (int64 data, [MinVersion=2] Enum type);
   [MinVersion=1]
   SetInteger(int64 data, [MinVersion=3] Enum type);
+};
+
+interface InterfaceFactory {
+  BindInterface(mojo_base.mojom.GenericPendingReceiver receiver);
 };

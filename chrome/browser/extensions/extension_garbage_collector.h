@@ -88,7 +88,7 @@ class ExtensionGarbageCollector : public KeyedService,
 
   // Generate weak pointers for safely posting to the file thread for garbage
   // collection.
-  base::WeakPtrFactory<ExtensionGarbageCollector> weak_factory_;
+  base::WeakPtrFactory<ExtensionGarbageCollector> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ExtensionGarbageCollector);
 };

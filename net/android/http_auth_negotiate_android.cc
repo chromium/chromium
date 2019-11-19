@@ -11,12 +11,14 @@
 #include "base/location.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "jni/HttpNegotiateAuthenticator_jni.h"
 #include "net/base/auth.h"
 #include "net/base/net_errors.h"
+#include "net/http/http_auth.h"
 #include "net/http/http_auth_challenge_tokenizer.h"
 #include "net/http/http_auth_multi_round_parse.h"
 #include "net/http/http_auth_preferences.h"
+#include "net/log/net_log_with_source.h"
+#include "net/net_jni_headers/HttpNegotiateAuthenticator_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertUTF8ToJavaString;
@@ -60,11 +62,7 @@ void JavaNegotiateResultWrapper::SetResult(JNIEnv* env,
 
 HttpAuthNegotiateAndroid::HttpAuthNegotiateAndroid(
     const HttpAuthPreferences* prefs)
-    : prefs_(prefs),
-      can_delegate_(false),
-      first_challenge_(true),
-      auth_token_(nullptr),
-      weak_factory_(this) {
+    : prefs_(prefs) {
   JNIEnv* env = AttachCurrentThread();
   java_authenticator_.Reset(Java_HttpNegotiateAuthenticator_create(
       env, ConvertUTF8ToJavaString(env, GetAuthAndroidNegotiateAccountType())));
@@ -73,7 +71,7 @@ HttpAuthNegotiateAndroid::HttpAuthNegotiateAndroid(
 HttpAuthNegotiateAndroid::~HttpAuthNegotiateAndroid() {
 }
 
-bool HttpAuthNegotiateAndroid::Init() {
+bool HttpAuthNegotiateAndroid::Init(const NetLogWithSource& net_log) {
   return true;
 }
 
@@ -89,11 +87,22 @@ HttpAuth::AuthorizationResult HttpAuthNegotiateAndroid::ParseChallenge(
     net::HttpAuthChallengeTokenizer* tok) {
   if (first_challenge_) {
     first_challenge_ = false;
-    return net::ParseFirstRoundChallenge("negotiate", tok);
+    return net::ParseFirstRoundChallenge(HttpAuth::AUTH_SCHEME_NEGOTIATE, tok);
   }
   std::string decoded_auth_token;
-  return net::ParseLaterRoundChallenge("negotiate", tok, &server_auth_token_,
+  return net::ParseLaterRoundChallenge(HttpAuth::AUTH_SCHEME_NEGOTIATE, tok,
+                                       &server_auth_token_,
                                        &decoded_auth_token);
+}
+
+int HttpAuthNegotiateAndroid::GenerateAuthTokenAndroid(
+    const AuthCredentials* credentials,
+    const std::string& spn,
+    const std::string& channel_bindings,
+    std::string* auth_token,
+    net::CompletionOnceCallback callback) {
+  return GenerateAuthToken(credentials, spn, channel_bindings, auth_token,
+                           NetLogWithSource(), std::move(callback));
 }
 
 int HttpAuthNegotiateAndroid::GenerateAuthToken(
@@ -101,6 +110,7 @@ int HttpAuthNegotiateAndroid::GenerateAuthToken(
     const std::string& spn,
     const std::string& channel_bindings,
     std::string* auth_token,
+    const NetLogWithSource& net_log,
     net::CompletionOnceCallback callback) {
   if (GetAuthAndroidNegotiateAccountType().empty()) {
     // This can happen if there is a policy change, removing the account type,
@@ -136,12 +146,14 @@ int HttpAuthNegotiateAndroid::GenerateAuthToken(
       callback_task_runner, thread_safe_callback);
   Java_HttpNegotiateAuthenticator_getNextAuthToken(
       env, java_authenticator_, reinterpret_cast<intptr_t>(callback_wrapper),
-      java_spn, java_server_auth_token, can_delegate_);
+      java_spn, java_server_auth_token, can_delegate());
   return ERR_IO_PENDING;
 }
 
-void HttpAuthNegotiateAndroid::Delegate() {
-  can_delegate_ = true;
+void HttpAuthNegotiateAndroid::SetDelegation(
+    HttpAuth::DelegationType delegation_type) {
+  DCHECK_NE(delegation_type, HttpAuth::DelegationType::kByKdcPolicy);
+  can_delegate_ = delegation_type == HttpAuth::DelegationType::kUnconstrained;
 }
 
 std::string HttpAuthNegotiateAndroid::GetAuthAndroidNegotiateAccountType()

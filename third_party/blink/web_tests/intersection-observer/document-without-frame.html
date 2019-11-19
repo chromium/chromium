@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<style>
+div {
+  width: 100px;
+  height: 100px;
+}
+</style>
+
+<div id=target></div>
+
+<script>
+if (self.internals) {
+  internals.DisableIntersectionObserverThrottleDelay();
+}
+async_test(t => {
+  let observer = new IntersectionObserver(
+    entries => {},
+    {trackVisibility: true, delay: 100});
+  let target = document.getElementById('target');
+  observer.observe(target);
+  let newdoc = document.implementation.createHTMLDocument("");
+  newdoc.body.appendChild(target);
+  target.parentNode.removeChild(target);
+  requestAnimationFrame(() => {
+    setTimeout(() => { t.done() });
+  });
+}, "Removing an IntersectionObserver target from a frameless document. Test passes if it does not crash.");
+</script>

@@ -398,6 +398,19 @@ FileHandle LoggingOpenFileForWrite(const base::FilePath& path,
                                    FileWriteMode mode,
                                    FilePermissions permissions);
 
+#if defined(OS_LINUX)
+//! \brief Wraps memfd_create(), logging an error if the operation fails.
+//!     Unlike other file open operations, this doesn't set `O_CLOEXEC`.
+//!
+//! \return The newly opened FileHandle, or an invalid FileHandle on failure.
+//!
+//! \sa ScopedFileHandle
+//! \sa LoggingOpenFileForRead
+//! \sa LoggingOpenFileForWrite
+//! \sa LoggingOpenFileForReadAndWrite
+FileHandle LoggingOpenMemFileForWrite(const base::FilePath& path);
+#endif  // OS_LINUX
+
 //! \brief Wraps OpenFileForReadAndWrite(), logging an error if the operation
 //!     fails.
 //!

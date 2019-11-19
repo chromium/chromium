@@ -1,0 +1,3 @@
+document LocalizedControlType='document'
+++group LocalizedControlType='group'
+++++progressbar LocalizedControlType='meter' RangeValue.IsReadOnly=false RangeValue.LargeChange=0.00 RangeValue.SmallChange=0.00 RangeValue.Maximum=10.00 RangeValue.Minimum=1.00 RangeValue.Value=2.00 Value.Value='2'

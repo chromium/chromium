@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/html/html_body_element.h"
 #include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/html/html_head_element.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
 
@@ -54,38 +55,38 @@ TEST_F(EditingCommandsUtilitiesTest, AreaIdenticalElements) {
 }
 
 TEST_F(EditingCommandsUtilitiesTest, TidyUpHTMLStructureFromBody) {
-  Element* body = HTMLBodyElement::Create(GetDocument());
+  auto* body = MakeGarbageCollected<HTMLBodyElement>(GetDocument());
   MakeDocumentEmpty();
   GetDocument().setDesignMode("on");
   GetDocument().AppendChild(body);
   TidyUpHTMLStructure(GetDocument());
 
-  EXPECT_TRUE(IsHTMLHtmlElement(GetDocument().documentElement()));
+  EXPECT_TRUE(IsA<HTMLHtmlElement>(GetDocument().documentElement()));
   EXPECT_EQ(body, GetDocument().body());
   EXPECT_EQ(GetDocument().documentElement(), body->parentNode());
 }
 
 TEST_F(EditingCommandsUtilitiesTest, TidyUpHTMLStructureFromDiv) {
-  Element* div = HTMLDivElement::Create(GetDocument());
+  auto* div = MakeGarbageCollected<HTMLDivElement>(GetDocument());
   MakeDocumentEmpty();
   GetDocument().setDesignMode("on");
   GetDocument().AppendChild(div);
   TidyUpHTMLStructure(GetDocument());
 
-  EXPECT_TRUE(IsHTMLHtmlElement(GetDocument().documentElement()));
-  EXPECT_TRUE(IsHTMLBodyElement(GetDocument().body()));
+  EXPECT_TRUE(IsA<HTMLHtmlElement>(GetDocument().documentElement()));
+  EXPECT_TRUE(IsA<HTMLBodyElement>(GetDocument().body()));
   EXPECT_EQ(GetDocument().body(), div->parentNode());
 }
 
 TEST_F(EditingCommandsUtilitiesTest, TidyUpHTMLStructureFromHead) {
-  Element* head = HTMLHeadElement::Create(GetDocument());
+  auto* head = MakeGarbageCollected<HTMLHeadElement>(GetDocument());
   MakeDocumentEmpty();
   GetDocument().setDesignMode("on");
   GetDocument().AppendChild(head);
   TidyUpHTMLStructure(GetDocument());
 
-  EXPECT_TRUE(IsHTMLHtmlElement(GetDocument().documentElement()));
-  EXPECT_TRUE(IsHTMLBodyElement(GetDocument().body()));
+  EXPECT_TRUE(IsA<HTMLHtmlElement>(GetDocument().documentElement()));
+  EXPECT_TRUE(IsA<HTMLBodyElement>(GetDocument().body()));
   EXPECT_EQ(GetDocument().documentElement(), head->parentNode());
 }
 

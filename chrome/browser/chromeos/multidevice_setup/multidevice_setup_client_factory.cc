@@ -62,6 +62,9 @@ MultiDeviceSetupClientFactory::~MultiDeviceSetupClientFactory() = default;
 // static
 MultiDeviceSetupClient* MultiDeviceSetupClientFactory::GetForProfile(
     Profile* profile) {
+  if (!profile)
+    return nullptr;
+
   MultiDeviceSetupClientHolder* holder =
       static_cast<MultiDeviceSetupClientHolder*>(
           GetInstance()->GetServiceForBrowserContext(profile, true));
@@ -83,7 +86,7 @@ KeyedService* MultiDeviceSetupClientFactory::BuildServiceInstanceFor(
 }
 
 bool MultiDeviceSetupClientFactory::ServiceIsNULLWhileTesting() const {
-  return true;
+  return service_is_null_while_testing_;
 }
 
 }  // namespace multidevice_setup

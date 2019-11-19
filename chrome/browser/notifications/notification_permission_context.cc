@@ -20,10 +20,10 @@
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/page_visibility_state.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "content/public/common/page_visibility_state.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -51,7 +51,7 @@ class VisibilityTimerTabHelper
   // Runs |task| after the WebContents has been visible for a consecutive
   // duration of at least |visible_delay|.
   void PostTaskAfterVisibleDelay(const base::Location& from_here,
-                                 const base::Closure& task,
+                                 base::OnceClosure task,
                                  base::TimeDelta visible_delay,
                                  const PermissionRequestID& id);
 
@@ -66,7 +66,7 @@ class VisibilityTimerTabHelper
   friend class content::WebContentsUserData<VisibilityTimerTabHelper>;
   explicit VisibilityTimerTabHelper(content::WebContents* contents);
 
-  void RunTask(const base::Closure& task);
+  void RunTask(base::OnceClosure task);
 
   bool is_visible_;
 
@@ -105,7 +105,7 @@ VisibilityTimerTabHelper::VisibilityTimerTabHelper(
   } else {
     switch (contents->GetMainFrame()->GetVisibilityState()) {
       case content::PageVisibilityState::kHidden:
-      case content::PageVisibilityState::kPrerender:
+      case content::PageVisibilityState::kHiddenButPainting:
         is_visible_ = false;
         break;
       case content::PageVisibilityState::kVisible:
@@ -117,18 +117,21 @@ VisibilityTimerTabHelper::VisibilityTimerTabHelper(
 
 void VisibilityTimerTabHelper::PostTaskAfterVisibleDelay(
     const base::Location& from_here,
-    const base::Closure& task,
+    base::OnceClosure task,
     base::TimeDelta visible_delay,
     const PermissionRequestID& id) {
   if (web_contents()->IsBeingDestroyed())
     return;
 
-  // Safe to use Unretained, as destroying this will destroy task_queue_, hence
-  // cancelling all timers.
+  // Safe to use Unretained, as destroying |this| will destroy task_queue_,
+  // hence cancelling all timers.
+  // RetainingOneShotTimer is used which needs a RepeatingCallback, but we
+  // only have it run this callback a single time, and destroy it after.
   auto timer = std::make_unique<base::RetainingOneShotTimer>(
       from_here, visible_delay,
-      base::Bind(&VisibilityTimerTabHelper::RunTask, base::Unretained(this),
-                 task));
+      base::AdaptCallbackForRepeating(
+          base::BindOnce(&VisibilityTimerTabHelper::RunTask,
+                         base::Unretained(this), std::move(task))));
   DCHECK(!timer->IsRunning());
 
   task_queue_.emplace_back(id, std::move(timer));
@@ -163,9 +166,9 @@ void VisibilityTimerTabHelper::WebContentsDestroyed() {
   task_queue_.clear();
 }
 
-void VisibilityTimerTabHelper::RunTask(const base::Closure& task) {
+void VisibilityTimerTabHelper::RunTask(base::OnceClosure task) {
   DCHECK(is_visible_);
-  task.Run();
+  std::move(task).Run();
   task_queue_.pop_front();
   if (!task_queue_.empty())
     task_queue_.front().timer->Reset();
@@ -183,7 +186,7 @@ void NotificationPermissionContext::UpdatePermission(Profile* profile,
     case CONTENT_SETTING_DEFAULT:
       HostContentSettingsMapFactory::GetForProfile(profile)
           ->SetContentSettingDefaultScope(
-              origin, GURL(), CONTENT_SETTINGS_TYPE_NOTIFICATIONS,
+              origin, GURL(), ContentSettingsType::NOTIFICATIONS,
               content_settings::ResourceIdentifier(), setting);
       break;
 
@@ -194,9 +197,8 @@ void NotificationPermissionContext::UpdatePermission(Profile* profile,
 
 NotificationPermissionContext::NotificationPermissionContext(Profile* profile)
     : PermissionContextBase(profile,
-                            CONTENT_SETTINGS_TYPE_NOTIFICATIONS,
-                            blink::mojom::FeaturePolicyFeature::kNotFound),
-      weak_factory_ui_thread_(this) {}
+                            ContentSettingsType::NOTIFICATIONS,
+                            blink::mojom::FeaturePolicyFeature::kNotFound) {}
 
 NotificationPermissionContext::~NotificationPermissionContext() {}
 
@@ -265,7 +267,7 @@ void NotificationPermissionContext::DecidePermission(
     const GURL& requesting_origin,
     const GURL& embedding_origin,
     bool user_gesture,
-    const BrowserPermissionCallback& callback) {
+    BrowserPermissionCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Permission requests for either Web Notifications and Push Notifications may
@@ -274,7 +276,7 @@ void NotificationPermissionContext::DecidePermission(
   // around the restriction by posting a message to their Service Worker, where
   // showing a notification is allowed.
   if (requesting_origin != embedding_origin) {
-    callback.Run(CONTENT_SETTING_BLOCK);
+    std::move(callback).Run(CONTENT_SETTING_BLOCK);
     return;
   }
 
@@ -292,17 +294,18 @@ void NotificationPermissionContext::DecidePermission(
     VisibilityTimerTabHelper::FromWebContents(web_contents)
         ->PostTaskAfterVisibleDelay(
             FROM_HERE,
-            base::Bind(&NotificationPermissionContext::NotifyPermissionSet,
-                       weak_factory_ui_thread_.GetWeakPtr(), id,
-                       requesting_origin, embedding_origin, callback,
-                       true /* persist */, CONTENT_SETTING_BLOCK),
+            base::BindOnce(&NotificationPermissionContext::NotifyPermissionSet,
+                           weak_factory_ui_thread_.GetWeakPtr(), id,
+                           requesting_origin, embedding_origin,
+                           std::move(callback), true /* persist */,
+                           CONTENT_SETTING_BLOCK),
             base::TimeDelta::FromSecondsD(delay_seconds), id);
     return;
   }
 
   PermissionContextBase::DecidePermission(web_contents, id, requesting_origin,
                                           embedding_origin, user_gesture,
-                                          callback);
+                                          std::move(callback));
 }
 
 // Unlike other permission types, granting a notification for a given origin

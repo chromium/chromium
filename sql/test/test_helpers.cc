@@ -12,10 +12,12 @@
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
+#include "base/logging.h"
 #include "base/threading/thread_restrictions.h"
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/sqlite/sqlite3.h"
 
 namespace {
 
@@ -143,7 +145,7 @@ bool CorruptTableOrIndex(const base::FilePath& db_path,
   if (!db.Open(db_path))
     return false;
 
-  int page_size = 0;
+  int page_size = db.page_size();
   if (!GetPageSize(&db, &page_size))
     return false;
 
@@ -295,6 +297,38 @@ std::string ExecuteWithResults(sql::Database* db,
     }
   }
   return ret;
+}
+
+int GetPageCount(sql::Database* db) {
+  sql::Statement statement(db->GetUniqueStatement("PRAGMA page_count"));
+  CHECK(statement.Step());
+  return statement.ColumnInt(0);
+}
+
+// static
+ColumnInfo ColumnInfo::Create(sql::Database* db,
+                              const std::string& db_name,
+                              const std::string& table_name,
+                              const std::string& column_name) {
+  sqlite3* const sqlite3_db = db->db(InternalApiToken());
+
+  const char* data_type;
+  const char* collation_sequence;
+  int not_null;
+  int primary_key;
+  int auto_increment;
+  int status = sqlite3_table_column_metadata(
+      sqlite3_db, db_name.c_str(), table_name.c_str(), column_name.c_str(),
+      &data_type, &collation_sequence, &not_null, &primary_key,
+      &auto_increment);
+  CHECK_EQ(status, SQLITE_OK) << "SQLite error: " << sqlite3_errmsg(sqlite3_db);
+
+  // This happens when virtual tables report no type information.
+  if (data_type == nullptr)
+    data_type = "(nullptr)";
+
+  return {std::string(data_type), std::string(collation_sequence),
+          not_null != 0, primary_key != 0, auto_increment != 0};
 }
 
 }  // namespace test

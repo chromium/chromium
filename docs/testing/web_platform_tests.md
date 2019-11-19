@@ -33,20 +33,23 @@ possible, and running as many of the tests as possible.
 
 There is an automatic process for updating the Chromium copy of
 web-platform-tests. The import is done by the builder [wpt-importer
-builder](https://build.chromium.org/p/chromium.infra.cron/builders/wpt-importer).
+builder][wpt-importer].
 
 The easiest way to check the status of recent imports is to look at:
 
--   Recent logs on Buildbot for [wpt-importer
-    builder](https://build.chromium.org/p/chromium.infra.cron/builders/wpt-importer)
--   Recent CLs created by
-    [blink-w3c-test-autoroller@chromium.org](https://chromium-review.googlesource.com/q/owner:blink-w3c-test-autoroller%40chromium.org).
+-   Recent logs on LUCI for [wpt-importer builder][wpt-importer]
+-   Recent CLs created by [WPT
+    Autoroller](https://chromium-review.googlesource.com/q/owner:wpt-autoroller%2540chops-service-accounts.iam.gserviceaccount.com).
 
 The import jobs will generally be green if either there was nothing to do,
 or a CL was successfully submitted.
 
-If the importer starts misbehaving, it could be disabled by turning off the
-auto-import mode by landing [this CL](https://crrev.com/c/617479/).
+For maintainers:
+
+-   The source lives in
+    [third_party/blink/tools/wpt_import.py](../../third_party/blink/tools/wpt_import.py).
+-   If the importer starts misbehaving, it could be disabled by turning off the
+    auto-import mode by landing [this CL](https://crrev.com/c/617479/).
 
 ### Failures caused by automatic imports.
 
@@ -63,19 +66,22 @@ to have them in the repository (and marked failing) than not, so prefer to
 However, if a huge number of tests are failing, please revert the CL so we
 can fix it manually.
 
+[wpt-importer]: https://ci.chromium.org/p/infra/builders/luci.infra.cron/wpt-importer
+
 ### Automatic export process
 
 If you upload a CL with any changes in
 [third_party/blink/web_tests/external/wpt](../../third_party/blink/web_tests/external/wpt),
 once you add reviewers the exporter will create a provisional pull request with
 those changes in the [upstream WPT GitHub repository](https://github.com/web-platform-tests/wpt/).
+The exporter runs on [wpt-exporter builder][wpt-exporter].
 
-Once you're ready to land your CL, please check the Travis CI status on the
-upstream PR (link at the bottom of the page). If it's green, go ahead and land your CL
-and the exporter will automatically remove the "do not merge yet" label and merge the PR.
+Once you're ready to land your CL, please follow the link posted by the bot and
+check the status of the required checks of the GitHub PR. If it's green, go
+ahead landing your CL and the exporter will automatically merge the PR.
 
-If Travis CI is red on the upstream PR, please try to resolve the failures before
-merging. If you run into Travis CI issues, or if you have a CL with WPT changes that
+If GitHub status is red on the PR, please try to resolve the failures before
+merging. If you run into any issues, or if you have a CL with WPT changes that
 the exporter did not pick up, please reach out to ecosystem-infra@chromium.org.
 
 Additional things to note:
@@ -85,30 +91,17 @@ Additional things to note:
     [`chromium-export`](https://github.com/web-platform-tests/wpt/pulls?utf8=%E2%9C%93&q=is%3Apr%20label%3Achromium-export) label.
 -   All PRs for CLs that haven't yet been landed in Chromium also use the
     [`do not merge yet`](https://github.com/web-platform-tests/wpt/pulls?q=is%3Apr+is%3Aopen+label%3A%22do+not+merge+yet%22) label.
--   The exporter cannot create upstream PRs for in-flight CLs with binary files (e.g. webm files).
-    An export PR will still be made after the CL lands.
+-   The exporter cannot create upstream PRs for in-flight CLs with binary files
+    (e.g. webm files). An export PR will still be made after the CL lands.
 
 For maintainers:
 
--   The exporter runs continuously under the
-    [chromium.infra.cron master](https://build.chromium.org/p/chromium.infra.cron/builders/wpt-exporter).
 -   The source lives in
     [third_party/blink/tools/wpt_export.py](../../third_party/blink/tools/wpt_export.py).
--   If the exporter starts misbehaving
-    (for example, creating the same PR over and over again)
-    put it in "dry run" mode by landing [this CL](https://crrev.com/c/462381/).
+-   If the exporter starts misbehaving (for example, creating the same PR over
+    and over again), put it in "dry run" mode by landing [this CL](https://crrev.com/c/462381/).
 
-### Skipped tests
-
-We control which tests are imported via a file called
-[W3CImportExpectations](../../third_party/blink/web_tests/W3CImportExpectations),
-which has a list of directories to skip while importing.
-
-In addition to the directories and tests explicitly skipped there, tests may
-also be skipped for a couple other reasons, e.g. if the file path is too long
-for Windows. To check what files are skipped in import, check the recent logs
-for [wpt-importer
-builder](https://build.chromium.org/p/chromium.infra.cron/builders/wpt-importer).
+[wpt-exporter]: https://ci.chromium.org/p/infra/builders/luci.infra.cron/wpt-exporter
 
 ### GitHub credentials
 
@@ -142,6 +135,17 @@ committed locally to your local repository. You may then upload the changes.
 Remember your import might fail due to GitHub's limit for unauthenticated
 requests, so consider [passing your GitHub credentials](#GitHub-credentials) to
 the script.
+
+### Skipped tests
+
+We control which tests are imported via a file called
+[W3CImportExpectations](../../third_party/blink/web_tests/W3CImportExpectations),
+which has a list of directories to skip while importing.
+
+In addition to the directories and tests explicitly skipped there, tests may
+also be skipped for a couple other reasons, e.g. if the file path is too long
+for Windows. To check what files are skipped in import, check the recent logs
+for [wpt-importer builder][wpt-importer].
 
 ### Enabling import for a new directory
 
@@ -197,7 +201,9 @@ web tests.
 
 If no testdriver.js API exists, check if it's a
 [known issue](https://github.com/web-platform-tests/wpt/labels/testdriver.js)
-and otherwise consider filing a new issue.
+and otherwise consider filing a new issue. For instructions on how to add a new
+testing API, see [WPT Test Automation for
+Chromium](https://docs.google.com/document/d/18BpD41vyX1cFZ77CE0a_DJYlGpdvyLlx3pwXVRxUzvI/preview#)
 
 An alternative is to write manual tests that are automated with scripts from
 [wpt_automation](../../third_party/blink/web_tests/external/wpt_automation).
@@ -248,6 +254,9 @@ Same as Blink web tests, you can use
 [`run_web_tests.py`](web_tests.md#running-the-tests) to run any WPT test.
 
 One thing to note is that glob patterns for WPT tests are not yet supported.
+
+See [Running WPT tests in Content Shell](web_tests_in_content_shell.md#Running-WPT-Tests-in-Content-Shell)
+for debugging etc.
 
 ## Reviewing tests
 

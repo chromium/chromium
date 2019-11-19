@@ -51,6 +51,9 @@
     [self.consumer itemHasChanged:previousSelectedItem];
   }
   _selectedIdentity = selectedIdentity;
+  if (!_selectedIdentity) {
+    return;
+  }
   IdentityChooserItem* selectedItem = [self.consumer
       identityChooserItemWithGaiaID:self.selectedIdentity.gaiaID];
   DCHECK(selectedItem);
@@ -112,7 +115,11 @@
   NSArray* allIdentities =
       self.chromeIdentityService->GetAllIdentitiesSortedForDisplay();
   if (![allIdentities containsObject:self.selectedIdentity]) {
-    self.selectedIdentity = allIdentities[0];
+    if (allIdentities.count) {
+      self.selectedIdentity = allIdentities[0];
+    } else {
+      self.selectedIdentity = nil;
+    }
   }
 }
 

@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//      http://www.apache.org/licenses/LICENSE-2.0
+//      https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,8 +27,8 @@ namespace {
 
 // A helper that tests the given format specifier by itself, and with leading
 // and trailing characters.  For example: TestFormatSpecifier(t, "%a", "Thu").
-void TestFormatSpecifier(absl::Time t, absl::TimeZone tz, const std::string& fmt,
-                         const std::string& ans) {
+void TestFormatSpecifier(absl::Time t, absl::TimeZone tz,
+                         const std::string& fmt, const std::string& ans) {
   EXPECT_EQ(ans, absl::FormatTime(fmt, t, tz));
   EXPECT_EQ("xxx " + ans, absl::FormatTime("xxx " + fmt, t, tz));
   EXPECT_EQ(ans + " yyy", absl::FormatTime(fmt + " yyy", t, tz));
@@ -201,7 +201,7 @@ TEST(ParseTime, ErrorCases) {
   err.clear();
   EXPECT_FALSE(absl::ParseTime("%Q", "x", &t, &err)) << err;
   // Exact contents of "err" are platform-dependent because of
-  // differences in the strptime implementation between OSX and Linux.
+  // differences in the strptime implementation between macOS and Linux.
   EXPECT_FALSE(err.empty());
 
   // Fails because of trailing, unparsed data "blah".
@@ -375,7 +375,8 @@ TEST(FormatParse, RoundTrip) {
   // RFC3339, which renders subseconds.
   {
     absl::Time out;
-    const std::string s = absl::FormatTime(absl::RFC3339_full, in + subseconds, lax);
+    const std::string s =
+        absl::FormatTime(absl::RFC3339_full, in + subseconds, lax);
     EXPECT_TRUE(absl::ParseTime(absl::RFC3339_full, s, &out, &err))
         << s << ": " << err;
     EXPECT_EQ(in + subseconds, out);  // RFC3339_full includes %Ez

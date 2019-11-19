@@ -30,7 +30,7 @@ class VIEWS_EXPORT MenuModelAdapter : public MenuDelegate,
   // reflected in the created MenuItemView.
   explicit MenuModelAdapter(ui::MenuModel* menu_model);
   MenuModelAdapter(ui::MenuModel* menu_model,
-                   const base::Closure& on_menu_closed_callback);
+                   base::RepeatingClosure on_menu_closed_callback);
   ~MenuModelAdapter() override;
 
   // Populate a MenuItemView menu with the ui::MenuModel items
@@ -108,7 +108,7 @@ class VIEWS_EXPORT MenuModelAdapter : public MenuDelegate,
   std::map<MenuItemView*, ui::MenuModel*> menu_map_;
 
   // Optional callback triggered during OnMenuClosed().
-  base::Closure on_menu_closed_callback_;
+  base::RepeatingClosure on_menu_closed_callback_;
 
   DISALLOW_COPY_AND_ASSIGN(MenuModelAdapter);
 };

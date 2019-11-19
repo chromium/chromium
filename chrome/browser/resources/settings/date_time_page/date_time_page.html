@@ -1,9 +1,9 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
+<link rel="import" href="chrome://resources/cr_elements/cr_link_row/cr_link_row.html">
 <link rel="import" href="chrome://resources/html/cr.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
 <link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-icon-button/paper-icon-button-light.html">
 <link rel="import" href="../controls/settings_toggle_button.html">
 <link rel="import" href="../i18n_setup.html">
 <link rel="import" href="../prefs/prefs_behavior.html">
@@ -44,28 +44,15 @@
         <template is="dom-if"
             if="[[prefs.cros.flags.fine_grained_time_zone_detection_enabled.value]]"
             restamp>
-          <div id="timeZoneSettingsTrigger" class="settings-box first"
-              on-click="onTimeZoneSettings_" actionable>
-            <div id="timeZoneButton" class="two-line">
-                $i18n{timeZoneButton}
-              <div class="secondary">
-                <div hidden="[[prefs.generated.resolve_timezone_by_geolocation_on_off.value]]">
-                  [[activeTimeZoneDisplayName]]
-                </div>
-                <div hidden="[[!prefs.generated.resolve_timezone_by_geolocation_on_off.value]]">
-                  [[getTimeZoneAutoDetectMethodDisplayName_(
-                        prefs.generated.resolve_timezone_by_geolocation_method_short.value)]]
-                </div>
-              </div>
-            </div>
+          <cr-link-row id="timeZoneSettingsTrigger" class="hr"
+              on-click="onTimeZoneSettings_" label="$i18n{timeZoneButton}"
+              sub-label="[[timeZoneSettingSubLabel_]]"
+              role-description="$i18n{subpageArrowRoleDescription}">
             <div class="flex"></div>
             <cr-policy-pref-indicator
                 pref="[[prefs.generated.resolve_timezone_by_geolocation_on_off]]">
             </cr-policy-pref-indicator>
-            <paper-icon-button-light class="subpage-arrow">
-              <button aria-label="$i18n{timeZoneButton}"></button>
-            </paper-icon-button-light>
-          </div>
+          </cr-link-row>
         </template>
         <div class="settings-box continuation embedded"
             hidden="[[prefs.cros.flags.fine_grained_time_zone_detection_enabled.value]]">
@@ -77,13 +64,13 @@
             pref="{{prefs.settings.clock.use_24hour_clock}}"
             label="$i18n{use24HourClock}">
         </settings-toggle-button>
-        <div class="settings-box" id="setDateTime" actionable
-            on-click="onSetDateTimeTap_" hidden$="[[!canSetDateTime_]]">
-          <div class="start">$i18n{setDateTime}</div>
-          <paper-icon-button-light class="subpage-arrow">
-            <button aria-label="$i18n{setDateTime}"></button>
-          </paper-icon-button-light>
-        </div>
+        <cr-link-row class="hr" id="setDateTime"
+            on-click="onSetDateTimeTap_" hidden$="[[!canSetDateTime_]]"
+            label="$i18n{setDateTime}">
+          <template is="dom-if" if="[[displayManagedByParentIcon_]]">
+            <cr-policy-indicator indicator-type="parent"></cr-policy-indicator>
+          </template>
+        </cr-link-row>
       </div>
       <template is="dom-if" route-path="/dateTime/timeZone">
         <settings-subpage data-route="DATETIME_TIMEZONE_SUBPAGE"

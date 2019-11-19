@@ -1,8 +1,27 @@
 include_rules = [
+    "+base/containers/queue.h",
+    "+base/strings/string_piece.h",
+    "+base/task_runner_util.h",
+    "+base/threading/thread_task_runner_handle.h",
+    "+cc/paint",
+    "+media",
+    "+skia/ext/platform_canvas.h",
     "-third_party/blink/renderer/modules",
     "+third_party/blink/renderer/modules/event_modules.h",
     "+third_party/blink/renderer/modules/event_target_modules.h",
     "+third_party/blink/renderer/modules/modules_export.h",
     "+third_party/blink/renderer/modules/mediarecorder",
     "+third_party/blink/renderer/modules/mediastream",
+    '+third_party/opus',
+    "+third_party/libvpx",
+    "+third_party/libyuv",
+    "+third_party/openh264/src/codec/api/svc",
+    "+ui/gfx/geometry",
 ]
+
+specific_include_rules = {
+    ".*_unittest.cc": [
+        "+base/run_loop.h",
+        "+ui/gfx/gpu_memory_buffer.h",
+    ],
+}

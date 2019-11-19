@@ -4,11 +4,10 @@
 
 package org.chromium.chrome.browser.preferences.website;
 
-import android.support.annotation.IntDef;
-import android.support.annotation.Nullable;
+import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.ContentSettingsType;
-import org.chromium.chrome.browser.preferences.PrefServiceBridge;
 
 import java.io.Serializable;
 import java.lang.annotation.Retention;
@@ -18,9 +17,8 @@ import java.lang.annotation.RetentionPolicy;
  * Exception information for a given origin.
  */
 public class ContentSettingException implements Serializable {
-    @IntDef({Type.ADS, Type.AUTOMATIC_DOWNLOADS, Type.AUTOPLAY,
-             Type.BACKGROUND_SYNC, Type.COOKIE, Type.JAVASCRIPT, Type.POPUP,
-             Type.SOUND})
+    @IntDef({Type.ADS, Type.AUTOMATIC_DOWNLOADS, Type.AUTOPLAY, Type.BACKGROUND_SYNC, Type.COOKIE,
+            Type.JAVASCRIPT, Type.POPUP, Type.SOUND, Type.BLUETOOTH_SCANNING})
     @Retention(RetentionPolicy.SOURCE)
     public @interface Type {
         // Values used to address array index - should be enumerated from 0 and can't have gaps.
@@ -34,10 +32,11 @@ public class ContentSettingException implements Serializable {
         int POPUP = 5;
         int SOUND = 6;
         int AUTOMATIC_DOWNLOADS = 7;
+        int BLUETOOTH_SCANNING = 8;
         /**
          * Number of handled exceptions used for calculating array sizes.
          */
-        int NUM_ENTRIES = 8;
+        int NUM_ENTRIES = 9;
     }
 
     private final int mContentSettingType;
@@ -72,35 +71,40 @@ public class ContentSettingException implements Serializable {
         return mContentSetting;
     }
 
+    public int getContentSettingType() {
+        return mContentSettingType;
+    }
+
     /**
      * Sets the content setting value for this exception.
      */
     public void setContentSetting(@ContentSettingValues @Nullable Integer value) {
-        PrefServiceBridge.getInstance().nativeSetContentSettingForPattern(
-                mContentSettingType, mPattern, value);
+        WebsitePreferenceBridge.setContentSettingForPattern(mContentSettingType, mPattern, value);
     }
 
     public static @ContentSettingsType int getContentSettingsType(@Type int type) {
         switch (type) {
             case Type.ADS:
-                return ContentSettingsType.CONTENT_SETTINGS_TYPE_ADS;
+                return ContentSettingsType.ADS;
             case Type.AUTOMATIC_DOWNLOADS:
-                return ContentSettingsType.CONTENT_SETTINGS_TYPE_AUTOMATIC_DOWNLOADS;
+                return ContentSettingsType.AUTOMATIC_DOWNLOADS;
             case Type.AUTOPLAY:
-                return ContentSettingsType.CONTENT_SETTINGS_TYPE_AUTOPLAY;
+                return ContentSettingsType.AUTOPLAY;
             case Type.BACKGROUND_SYNC:
-                return ContentSettingsType.CONTENT_SETTINGS_TYPE_BACKGROUND_SYNC;
+                return ContentSettingsType.BACKGROUND_SYNC;
+            case Type.BLUETOOTH_SCANNING:
+                return ContentSettingsType.BLUETOOTH_SCANNING;
             case Type.COOKIE:
-                return ContentSettingsType.CONTENT_SETTINGS_TYPE_COOKIES;
+                return ContentSettingsType.COOKIES;
             case Type.JAVASCRIPT:
-                return ContentSettingsType.CONTENT_SETTINGS_TYPE_JAVASCRIPT;
+                return ContentSettingsType.JAVASCRIPT;
             case Type.POPUP:
-                return ContentSettingsType.CONTENT_SETTINGS_TYPE_POPUPS;
+                return ContentSettingsType.POPUPS;
             case Type.SOUND:
-                return ContentSettingsType.CONTENT_SETTINGS_TYPE_SOUND;
+                return ContentSettingsType.SOUND;
             default:
                 assert false;
-                return ContentSettingsType.CONTENT_SETTINGS_TYPE_DEFAULT;
+                return ContentSettingsType.DEFAULT;
         }
     }
 }

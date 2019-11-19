@@ -50,8 +50,7 @@ FakeWindow::FakeWindow(BrowserViewRenderer* view,
       surface_size_(100, 100),
       location_(location),
       on_draw_hardware_pending_(false),
-      context_current_(false),
-      weak_ptr_factory_(this) {
+      context_current_(false) {
   CheckCurrentlyOnUIThread();
   DCHECK(view_);
   view_->OnAttachedToWindow(location_.width(), location_.height());

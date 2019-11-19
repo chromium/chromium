@@ -16,12 +16,15 @@
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "chrome/browser/safe_browsing/local_two_phase_testserver.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/browser/network_service_instance.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/net_errors.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "services/network/network_context.h"
 #include "services/network/network_service.h"
-#include "services/network/test/test_network_service_client.h"
+#include "services/network/test/test_network_context_client.h"
 #include "services/network/test/test_shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -69,27 +72,31 @@ base::FilePath GetTestFilePath() {
 class TwoPhaseUploaderTest : public testing::Test {
  public:
   TwoPhaseUploaderTest()
-      : thread_bundle_(content::TestBrowserThreadBundle::IO_MAINLOOP) {
-    // A NetworkServiceClient is needed for uploads to work.
-    network::mojom::NetworkServiceClientPtr network_service_client_ptr;
-    network_service_client_ =
-        std::make_unique<network::TestNetworkServiceClient>(
-            mojo::MakeRequest(&network_service_client_ptr));
-    network_service_ = network::NetworkService::CreateForTesting();
-    network_service_->SetClient(std::move(network_service_client_ptr),
-                                network::mojom::NetworkServiceParams::New());
+      : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP) {
+    // Make sure the Network Service is started before making a NetworkContext.
+    content::GetNetworkService();
+    content::RunAllPendingInMessageLoop(content::BrowserThread::IO);
+
     shared_url_loader_factory_ =
         base::MakeRefCounted<network::TestSharedURLLoaderFactory>(
-            network_service_.get());
+            network::NetworkService::GetNetworkServiceForTesting());
+
+    // A NetworkContextClient is needed for uploads to work.
+    mojo::PendingRemote<network::mojom::NetworkContextClient>
+        network_context_client_remote;
+    network_context_client_ =
+        std::make_unique<network::TestNetworkContextClient>(
+            network_context_client_remote.InitWithNewPipeAndPassReceiver());
+    shared_url_loader_factory_->network_context()->SetClient(
+        std::move(network_context_client_remote));
   }
 
  protected:
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   const scoped_refptr<base::SequencedTaskRunner> task_runner_ =
-      base::CreateSequencedTaskRunnerWithTraits(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
-  std::unique_ptr<network::TestNetworkServiceClient> network_service_client_;
-  std::unique_ptr<network::NetworkService> network_service_;
+      base::CreateSequencedTaskRunner({base::ThreadPool(), base::MayBlock(),
+                                       base::TaskPriority::BEST_EFFORT});
+  std::unique_ptr<network::mojom::NetworkContextClient> network_context_client_;
   scoped_refptr<network::TestSharedURLLoaderFactory> shared_url_loader_factory_;
 };
 

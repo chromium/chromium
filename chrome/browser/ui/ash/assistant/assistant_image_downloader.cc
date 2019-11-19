@@ -4,14 +4,11 @@
 
 #include "chrome/browser/ui/ash/assistant/assistant_image_downloader.h"
 
-#include "ash/public/interfaces/assistant_controller.mojom.h"
-#include "ash/public/interfaces/constants.mojom.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher_delegate.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "content/public/browser/storage_partition.h"
 #include "net/base/load_flags.h"
-#include "services/service_manager/public/cpp/connector.h"
 
 namespace {
 
@@ -42,7 +39,7 @@ class DownloadTask : public BitmapFetcherDelegate {
  public:
   DownloadTask(Profile* profile,
                const GURL& url,
-               ash::mojom::AssistantImageDownloader::DownloadCallback callback)
+               ash::AssistantImageDownloader::DownloadCallback callback)
       : callback_(std::move(callback)) {
     StartTask(profile, url);
   }
@@ -64,8 +61,7 @@ class DownloadTask : public BitmapFetcherDelegate {
 
     bitmap_fetcher_->Init(
         /*referrer=*/std::string(), net::URLRequest::NEVER_CLEAR_REFERRER,
-        net::LOAD_DO_NOT_SEND_COOKIES | net::LOAD_DO_NOT_SAVE_COOKIES |
-            net::LOAD_DO_NOT_SEND_AUTH_DATA | net::LOAD_MAYBE_USER_GESTURE);
+        network::mojom::CredentialsMode::kOmit);
 
     bitmap_fetcher_->Start(
         content::BrowserContext::GetDefaultStoragePartition(profile)
@@ -73,7 +69,7 @@ class DownloadTask : public BitmapFetcherDelegate {
             .get());
   }
 
-  ash::mojom::AssistantImageDownloader::DownloadCallback callback_;
+  ash::AssistantImageDownloader::DownloadCallback callback_;
   std::unique_ptr<BitmapFetcher> bitmap_fetcher_;
 
   DISALLOW_COPY_AND_ASSIGN(DownloadTask);
@@ -83,23 +79,14 @@ class DownloadTask : public BitmapFetcherDelegate {
 
 // AssistantImageDownloader ----------------------------------------------------
 
-AssistantImageDownloader::AssistantImageDownloader(
-    service_manager::Connector* connector)
-    : binding_(this) {
-  // Bind to the Assistant controller in ash.
-  ash::mojom::AssistantControllerPtr assistant_controller;
-  connector->BindInterface(ash::mojom::kServiceName, &assistant_controller);
-  ash::mojom::AssistantImageDownloaderPtr ptr;
-  binding_.Bind(mojo::MakeRequest(&ptr));
-  assistant_controller->SetAssistantImageDownloader(std::move(ptr));
-}
+AssistantImageDownloader::AssistantImageDownloader() = default;
 
 AssistantImageDownloader::~AssistantImageDownloader() = default;
 
 void AssistantImageDownloader::Download(
     const AccountId& account_id,
     const GURL& url,
-    ash::mojom::AssistantImageDownloader::DownloadCallback callback) {
+    ash::AssistantImageDownloader::DownloadCallback callback) {
   Profile* profile =
       chromeos::ProfileHelper::Get()->GetProfileByAccountId(account_id);
 

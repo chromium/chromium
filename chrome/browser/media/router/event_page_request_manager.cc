@@ -10,7 +10,7 @@
 #include "base/containers/circular_deque.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "extensions/browser/event_page_tracker.h"
+#include "extensions/browser/extension_host.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_manager_factory.h"
 
@@ -19,7 +19,7 @@ namespace media_router {
 EventPageRequestManager::~EventPageRequestManager() = default;
 
 void EventPageRequestManager::Shutdown() {
-  event_page_tracker_ = nullptr;
+  extension_process_manager_ = nullptr;
 }
 
 void EventPageRequestManager::SetExtensionId(const std::string& extension_id) {
@@ -77,10 +77,22 @@ void EventPageRequestManager::OnMojoConnectionError() {
   }
 }
 
+content::WebContents* EventPageRequestManager::GetEventPageWebContents() {
+  if (!extension_process_manager_)
+    return nullptr;
+
+  extensions::ExtensionHost* extension_host =
+      extension_process_manager_->GetBackgroundHostForExtension(
+          media_route_provider_extension_id_);
+  if (!extension_host)
+    return nullptr;
+
+  return extension_host->host_contents();
+}
+
 EventPageRequestManager::EventPageRequestManager(
     content::BrowserContext* context)
-    : event_page_tracker_(extensions::ProcessManager::Get(context)),
-      weak_factory_(this) {}
+    : extension_process_manager_(extensions::ProcessManager::Get(context)) {}
 
 void EventPageRequestManager::EnqueueRequest(base::OnceClosure request) {
   pending_requests_.push_back(std::move(request));
@@ -106,8 +118,9 @@ void EventPageRequestManager::SetWakeReason(
 }
 
 bool EventPageRequestManager::IsEventPageSuspended() const {
-  return !event_page_tracker_ || event_page_tracker_->IsEventPageSuspended(
-                                     media_route_provider_extension_id_);
+  return !extension_process_manager_ ||
+         extension_process_manager_->IsEventPageSuspended(
+             media_route_provider_extension_id_);
 }
 
 void EventPageRequestManager::AttemptWakeEventPage() {
@@ -123,16 +136,16 @@ void EventPageRequestManager::AttemptWakeEventPage() {
 
   DVLOG(1) << "Attempting to wake up event page: attempt "
            << wakeup_attempt_count_;
-  if (!event_page_tracker_) {
+  if (!extension_process_manager_) {
     DLOG(ERROR) << "Attempted to wake up event page without a valid event page"
                    "tracker";
     return;
   }
 
   // This return false if the extension is already awake.
-  // Callback is bound using WeakPtr because |event_page_tracker_| outlives
-  // |this|.
-  if (!event_page_tracker_->WakeEventPage(
+  // Callback is bound using WeakPtr because |extension_process_manager_|
+  // outlives |this|.
+  if (!extension_process_manager_->WakeEventPage(
           media_route_provider_extension_id_,
           base::BindOnce(&EventPageRequestManager::OnWakeComplete,
                          weak_factory_.GetWeakPtr()))) {

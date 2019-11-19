@@ -19,7 +19,7 @@
 
 namespace chromeos {
 
-EasyUnlockKeyManager::EasyUnlockKeyManager() : weak_ptr_factory_(this) {}
+EasyUnlockKeyManager::EasyUnlockKeyManager() {}
 
 EasyUnlockKeyManager::~EasyUnlockKeyManager() {}
 

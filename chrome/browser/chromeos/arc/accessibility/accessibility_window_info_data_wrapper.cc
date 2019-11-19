@@ -3,8 +3,11 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/chromeos/arc/accessibility/accessibility_window_info_data_wrapper.h"
+
 #include "chrome/browser/chromeos/arc/accessibility/ax_tree_source_arc.h"
 #include "components/exo/wm_helper.h"
+#include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/platform/ax_android_constants.h"
 
 namespace arc {
@@ -12,7 +15,7 @@ namespace arc {
 AccessibilityWindowInfoDataWrapper::AccessibilityWindowInfoDataWrapper(
     AXTreeSourceArc* tree_source,
     mojom::AccessibilityWindowInfoData* window)
-    : tree_source_(tree_source), window_ptr_(window) {}
+    : AccessibilityInfoDataWrapper(tree_source), window_ptr_(window) {}
 
 bool AccessibilityWindowInfoDataWrapper::IsNode() const {
   return false;
@@ -90,26 +93,13 @@ void AccessibilityWindowInfoDataWrapper::Serialize(
   if (!tree_source_->GetRoot())
     return;
 
+  AccessibilityInfoDataWrapper::Serialize(out_data);
+
   // String properties.
   std::string title;
   if (GetProperty(mojom::AccessibilityWindowStringProperty::TITLE, &title)) {
     out_data->SetName(title);
     out_data->SetNameFrom(ax::mojom::NameFrom::kTitle);
-  }
-
-  // Bounds.
-  exo::WMHelper* wm_helper =
-      exo::WMHelper::HasInstance() ? exo::WMHelper::GetInstance() : nullptr;
-  if (tree_source_->GetRoot()->GetId() != -1 && wm_helper) {
-    aura::Window* active_window = (tree_source_->is_notification() ||
-                                   tree_source_->is_input_method_window())
-                                      ? nullptr
-                                      : wm_helper->GetActiveWindow();
-    const gfx::Rect& local_bounds = tree_source_->GetBounds(
-        tree_source_->GetFromId(GetId()), active_window);
-    out_data->relative_bounds.bounds.SetRect(local_bounds.x(), local_bounds.y(),
-                                             local_bounds.width(),
-                                             local_bounds.height());
   }
 
   // Not all properties are currently used in Chrome Accessibility.
@@ -126,7 +116,7 @@ void AccessibilityWindowInfoDataWrapper::Serialize(
 }
 
 void AccessibilityWindowInfoDataWrapper::GetChildren(
-    std::vector<ArcAccessibilityInfoData*>* children) const {
+    std::vector<AccessibilityInfoDataWrapper*>* children) const {
   // Populate the children vector by combining the child window IDs with the
   // root node ID.
   if (window_ptr_->int_list_properties) {

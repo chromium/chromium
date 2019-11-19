@@ -16,11 +16,6 @@ class CSSNamespaceRule final : public CSSRule {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static CSSNamespaceRule* Create(StyleRuleNamespace* rule,
-                                  CSSStyleSheet* sheet) {
-    return MakeGarbageCollected<CSSNamespaceRule>(rule, sheet);
-  }
-
   CSSNamespaceRule(StyleRuleNamespace*, CSSStyleSheet*);
   ~CSSNamespaceRule() override;
 

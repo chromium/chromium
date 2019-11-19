@@ -5,6 +5,8 @@
 
 '''Unit tests for grit.format.rc'''
 
+from __future__ import print_function
+
 import os
 import re
 import sys
@@ -13,7 +15,8 @@ if __name__ == '__main__':
 
 import tempfile
 import unittest
-import StringIO
+
+from six import StringIO
 
 from grit import grd_reader
 from grit import util
@@ -49,14 +52,14 @@ class DummyOutput(object):
 
 class FormatRcUnittest(unittest.TestCase):
   def testMessages(self):
-    root = util.ParseGrdForUnittest('''
+    root = util.ParseGrdForUnittest("""
       <messages>
           <message name="IDS_BTN_GO" desc="Button text" meaning="verb">Go!</message>
           <message name="IDS_GREETING" desc="Printed to greet the currently logged in user">
             Hello <ph name="USERNAME">%s<ex>Joi</ex></ph>, how are you doing today?
           </message>
           <message name="BONGO" desc="Flippo nippo">
-            Howdie "Mr. Elephant", how are you doing?   \'\'\'
+            Howdie "Mr. Elephant", how are you doing?   '''
           </message>
           <message name="IDS_WITH_LINEBREAKS">
 Good day sir,
@@ -64,9 +67,9 @@ I am a bee
 Sting sting
           </message>
       </messages>
-      ''')
+      """)
 
-    buf = StringIO.StringIO()
+    buf = StringIO()
     build.RcBuilder.ProcessNode(root, DummyOutput('rc_all', 'en'), buf)
     output = util.StripBlankLinesAndComments(buf.getvalue())
     self.assertEqual(_PREAMBLE + u'''\
@@ -79,16 +82,16 @@ BEGIN
 END''', output)
 
   def testRcSection(self):
-    root = util.ParseGrdForUnittest('''
+    root = util.ParseGrdForUnittest(r'''
       <structures>
-          <structure type="menu" name="IDC_KLONKMENU" file="grit\\testdata\klonk.rc" encoding="utf-16" />
-          <structure type="dialog" name="IDD_ABOUTBOX" file="grit\\testdata\klonk.rc" encoding="utf-16" />
-          <structure type="version" name="VS_VERSION_INFO" file="grit\\testdata\klonk.rc" encoding="utf-16" />
+          <structure type="menu" name="IDC_KLONKMENU" file="grit\testdata\klonk.rc" encoding="utf-16" />
+          <structure type="dialog" name="IDD_ABOUTBOX" file="grit\testdata\klonk.rc" encoding="utf-16" />
+          <structure type="version" name="VS_VERSION_INFO" file="grit\testdata\klonk.rc" encoding="utf-16" />
       </structures>''')
     root.SetOutputLanguage('en')
     root.RunGatherers()
 
-    buf = StringIO.StringIO()
+    buf = StringIO()
     build.RcBuilder.ProcessNode(root, DummyOutput('rc_all', 'en'), buf)
     output = util.StripBlankLinesAndComments(buf.getvalue())
     expected = _PREAMBLE + u'''\
@@ -165,7 +168,7 @@ END'''.strip()
       </structures>''', base_dir = '/temp')
     # We do not run gatherers as it is not needed and wouldn't find the file
 
-    buf = StringIO.StringIO()
+    buf = StringIO()
     build.RcBuilder.ProcessNode(root, DummyOutput('rc_all', 'en'), buf)
     output = util.StripBlankLinesAndComments(buf.getvalue())
     expected = (_PREAMBLE +
@@ -174,7 +177,7 @@ END'''.strip()
                 % (util.normpath('/temp/bingo.html').replace('\\', '\\\\'),
                    util.normpath('/temp/bingo2.html').replace('\\', '\\\\')))
     # hackety hack to work on win32&lin
-    output = re.sub('"[c-zC-Z]:', '"', output)
+    output = re.sub(r'"[c-zC-Z]:', '"', output)
     self.assertEqual(expected, output)
 
   def testRcIncludeFile(self):
@@ -184,7 +187,7 @@ END'''.strip()
         <include type="TXT" name="TEXT_TWO" file="bingo2.txt"  filenameonly="true" />
       </includes>''', base_dir = '/temp')
 
-    buf = StringIO.StringIO()
+    buf = StringIO()
     build.RcBuilder.ProcessNode(root, DummyOutput('rc_all', 'en'), buf)
     output = util.StripBlankLinesAndComments(buf.getvalue())
     expected = (_PREAMBLE +
@@ -193,7 +196,7 @@ END'''.strip()
                 % (util.normpath('/temp/bingo.txt').replace('\\', '\\\\'),
                    'bingo2.txt'))
     # hackety hack to work on win32&lin
-    output = re.sub('"[c-zC-Z]:', '"', output)
+    output = re.sub(r'"[c-zC-Z]:', '"', output)
     self.assertEqual(expected, output)
 
   def testRcIncludeFlattenedHtmlFile(self):
@@ -204,7 +207,7 @@ END'''.strip()
         <include name="HTML_FILE1" flattenhtml="true" file="%s" type="BINDATA" />
       </includes>''' % input_file)
 
-    buf = StringIO.StringIO()
+    buf = StringIO()
     build.RcBuilder.ProcessNode(root, DummyOutput('rc_all', 'en', output_file),
                                 buf)
     output = util.StripBlankLinesAndComments(buf.getvalue())
@@ -212,7 +215,7 @@ END'''.strip()
     expected = (_PREAMBLE +
         u'HTML_FILE1         BINDATA            "HTML_FILE1_include_test.html"')
     # hackety hack to work on win32&lin
-    output = re.sub('"[c-zC-Z]:', '"', output)
+    output = re.sub(r'"[c-zC-Z]:', '"', output)
     self.assertEqual(expected, output)
 
     file_contents = util.ReadFile(output_file, util.RAW_TEXT)
@@ -235,7 +238,7 @@ END'''.strip()
 
   def testStructureNodeOutputfile(self):
     input_file = util.PathFromRoot('grit/testdata/simple.html')
-    root = util.ParseGrdForUnittest('''\
+    root = util.ParseGrdForUnittest('''
         <structures>
           <structure type="tr_html" name="IDR_HTML" file="%s" />
         </structures>''' % input_file)
@@ -260,7 +263,7 @@ END'''.strip()
   def testChromeHtmlNodeOutputfile(self):
     input_file = util.PathFromRoot('grit/testdata/chrome_html.html')
     output_file = '%s/HTML_FILE1_chrome_html.html' % tempfile.gettempdir()
-    root = util.ParseGrdForUnittest('''\
+    root = util.ParseGrdForUnittest('''
         <structures>
           <structure type="chrome_html" name="HTML_FILE1" file="%s" flattenhtml="true" />
         </structures>''' % input_file)
@@ -271,14 +274,14 @@ END'''.strip()
     root.SetOutputLanguage('en')
     root.RunGatherers()
 
-    buf = StringIO.StringIO()
+    buf = StringIO()
     build.RcBuilder.ProcessNode(root, DummyOutput('rc_all', 'en', output_file),
                                 buf)
     output = util.StripBlankLinesAndComments(buf.getvalue())
     expected = (_PREAMBLE +
         u'HTML_FILE1         BINDATA            "HTML_FILE1_chrome_html.html"')
     # hackety hack to work on win32&lin
-    output = re.sub('"[c-zC-Z]:', '"', output)
+    output = re.sub(r'"[c-zC-Z]:', '"', output)
     self.assertEqual(expected, output)
 
     file_contents = util.ReadFile(output_file, util.RAW_TEXT)
@@ -291,7 +294,7 @@ END'''.strip()
 
   def testSubstitutionHtml(self):
     input_file = util.PathFromRoot('grit/testdata/toolbar_about.html')
-    root = grd_reader.Parse(StringIO.StringIO('''<?xml version="1.0" encoding="UTF-8"?>
+    root = grd_reader.Parse(StringIO('''<?xml version="1.0" encoding="UTF-8"?>
       <grit latest_public_release="2" source_lang_id="en-US" current_release="3" base_dir=".">
         <release seq="1" allow_pseudo="False">
           <structures fallback_to_english="True">
@@ -317,14 +320,14 @@ END'''.strip()
     os.remove(ar_file)
 
   def testFallbackToEnglish(self):
-    root = util.ParseGrdForUnittest('''\
+    root = util.ParseGrdForUnittest(r'''
         <structures fallback_to_english="True">
-          <structure type="dialog" name="IDD_ABOUTBOX" file="grit\\testdata\klonk.rc" encoding="utf-16" />
+          <structure type="dialog" name="IDD_ABOUTBOX" file="grit\testdata\klonk.rc" encoding="utf-16" />
         </structures>''', base_dir=util.PathFromRoot('.'))
     root.SetOutputLanguage('en')
     root.RunGatherers()
 
-    buf = StringIO.StringIO()
+    buf = StringIO()
     formatter = build.RcBuilder.ProcessNode(
         root, DummyOutput('rc_all', 'bingobongo'), buf)
     output = util.StripBlankLinesAndComments(buf.getvalue())
@@ -345,16 +348,16 @@ END''', output)
 
 
   def testSubstitutionRc(self):
-    root = grd_reader.Parse(StringIO.StringIO('''<?xml version="1.0" encoding="UTF-8"?>
+    root = grd_reader.Parse(StringIO(r'''<?xml version="1.0" encoding="UTF-8"?>
     <grit latest_public_release="2" source_lang_id="en-US" current_release="3"
           base_dir=".">
       <outputs>
-        <output lang="en" type="rc_all" filename="grit\\testdata\klonk_resources.rc"/>
+        <output lang="en" type="rc_all" filename="grit\testdata\klonk_resources.rc"/>
       </outputs>
       <release seq="1" allow_pseudo="False">
         <structures>
           <structure type="menu" name="IDC_KLONKMENU"
-              file="grit\\testdata\klonk.rc" encoding="utf-16"
+              file="grit\testdata\klonk.rc" encoding="utf-16"
               expand_variables="true" />
         </structures>
         <messages>
@@ -368,7 +371,7 @@ END''', output)
     root.SetOutputLanguage('en')
     root.RunGatherers()
 
-    buf = StringIO.StringIO()
+    buf = StringIO()
     build.RcBuilder.ProcessNode(root, DummyOutput('rc_all', 'en'), buf)
     output = buf.getvalue()
     self.assertEqual('''

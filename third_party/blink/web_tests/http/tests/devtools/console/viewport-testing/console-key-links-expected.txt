@@ -9,12 +9,22 @@ Setting focus in prompt:
 Shift+Tab:
 Viewport virtual selection: 2
 activeElement: SPAN.devtools-link
+active text: console-key-links.js:26
+
+ArrowUp:
+Viewport virtual selection: 2
+activeElement: SPAN.devtools-link
 active text: www.chromium.org/2
 
 ArrowUp:
 Viewport virtual selection: 2
 activeElement: DIV.console-message-wrapper.console-from-api.console-info-level.console-selected
 active text: console-key-links.js:26 www.chromium.org/2
+
+ArrowUp:
+Viewport virtual selection: 1
+activeElement: SPAN.devtools-link
+active text: console-key-links.js:26
 
 ArrowUp:
 Viewport virtual selection: 1
@@ -42,6 +52,11 @@ activeElement: SPAN.devtools-link
 active text: www.chromium.org/1b
 
 ArrowDown:
+Viewport virtual selection: 1
+activeElement: SPAN.devtools-link
+active text: console-key-links.js:26
+
+ArrowDown:
 Viewport virtual selection: 2
 activeElement: DIV.console-message-wrapper.console-from-api.console-info-level.console-selected
 active text: console-key-links.js:26 www.chromium.org/2
@@ -54,7 +69,7 @@ active text: www.chromium.org/2
 ArrowDown:
 Viewport virtual selection: 2
 activeElement: SPAN.devtools-link
-active text: www.chromium.org/2
+active text: console-key-links.js:26
 
 Running: testNavigatingLinksInStackTrace
 Evaluating: fn1()
@@ -62,12 +77,16 @@ Message count: 1
 Setting focus in prompt:
 
 Shift+Tab:
+
+ArrowUp:
 Viewport virtual selection: 0
 Is trace expanded: NO
 activeElement: SPAN.devtools-link
 active text: www.chromium.org/linkInErrMsg
 
 ArrowDown:
+
+ArrowUp:
 Viewport virtual selection: 0
 Is trace expanded: NO
 activeElement: SPAN.devtools-link
@@ -79,7 +98,7 @@ Is trace expanded: NO
 activeElement: DIV.console-message-wrapper.console-from-api.console-error-level.console-selected
 active text: foo.js:18 Custom error with link www.chromium.org/linkInErrMsg
 fn1 @ foo.js:18
-(anonymous) @ console-key-links.js:62
+(anonymous) @ console-key-links.js:71
 
 ArrowRight:
 Viewport virtual selection: 0
@@ -87,7 +106,7 @@ Is trace expanded: YES
 activeElement: DIV.console-message-wrapper.console-from-api.console-error-level.console-selected
 active text: foo.js:18 Custom error with link www.chromium.org/linkInErrMsg
 fn1 @ foo.js:18
-(anonymous) @ console-key-links.js:62
+(anonymous) @ console-key-links.js:71
 
 ArrowDown:
 Viewport virtual selection: 0
@@ -105,13 +124,19 @@ ArrowDown:
 Viewport virtual selection: 0
 Is trace expanded: YES
 activeElement: SPAN.devtools-link
-active text: console-key-links.js:62
+active text: foo.js:18
 
 ArrowDown:
 Viewport virtual selection: 0
 Is trace expanded: YES
 activeElement: SPAN.devtools-link
-active text: console-key-links.js:62
+active text: console-key-links.js:71
+
+ArrowDown:
+Viewport virtual selection: 0
+Is trace expanded: YES
+activeElement: SPAN.devtools-link
+active text: console-key-links.js:71
 
 ArrowLeft:
 Viewport virtual selection: 0
@@ -119,7 +144,7 @@ Is trace expanded: YES
 activeElement: DIV.console-message-wrapper.console-from-api.console-error-level.console-selected
 active text: foo.js:18 Custom error with link www.chromium.org/linkInErrMsg
 fn1 @ foo.js:18
-(anonymous) @ console-key-links.js:62
+(anonymous) @ console-key-links.js:71
 
 ArrowLeft:
 Viewport virtual selection: 0
@@ -127,5 +152,5 @@ Is trace expanded: NO
 activeElement: DIV.console-message-wrapper.console-from-api.console-error-level.console-selected
 active text: foo.js:18 Custom error with link www.chromium.org/linkInErrMsg
 fn1 @ foo.js:18
-(anonymous) @ console-key-links.js:62
+(anonymous) @ console-key-links.js:71
 

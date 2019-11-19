@@ -36,13 +36,13 @@ public class ProviderSearchesUriTest {
     private Uri mSearchesUri;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mSearchesUri = ChromeBrowserProvider.getSearchesApiUri(mProviderTestRule.getActivity());
         mProviderTestRule.getContentResolver().delete(mSearchesUri, null, null);
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         mProviderTestRule.getContentResolver().delete(mSearchesUri, null, null);
     }
 

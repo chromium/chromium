@@ -58,12 +58,14 @@ class NET_EXPORT_PRIVATE BackendImpl : public Backend {
   BackendImpl(const base::FilePath& path,
               scoped_refptr<BackendCleanupTracker> cleanup_tracker,
               const scoped_refptr<base::SingleThreadTaskRunner>& cache_thread,
+              net::CacheType cache_type,
               net::NetLog* net_log);
 
   // mask can be used to limit the usable size of the hash table, for testing.
   BackendImpl(const base::FilePath& path,
               uint32_t mask,
               const scoped_refptr<base::SingleThreadTaskRunner>& cache_thread,
+              net::CacheType cache_type,
               net::NetLog* net_log);
 
   ~BackendImpl() override;
@@ -99,9 +101,6 @@ class NET_EXPORT_PRIVATE BackendImpl : public Backend {
 
   // Sets the maximum size for the total amount of data stored by this instance.
   bool SetMaxSize(int64_t max_bytes);
-
-  // Sets the cache type for this backend.
-  void SetType(net::CacheType type);
 
   // Returns the full name for an external storage file.
   base::FilePath GetFileName(Addr address) const;
@@ -192,10 +191,6 @@ class NET_EXPORT_PRIVATE BackendImpl : public Backend {
   // is the cache type and e the provided |experiment|.
   std::string HistogramName(const char* name, int experiment) const;
 
-  net::CacheType cache_type() const {
-    return cache_type_;
-  }
-
   bool read_only() const {
     return read_only_;
   }
@@ -275,20 +270,16 @@ class NET_EXPORT_PRIVATE BackendImpl : public Backend {
   static void FlushForTesting();
 
   // Backend implementation.
-  net::CacheType GetCacheType() const override;
   int32_t GetEntryCount() const override;
-  net::Error OpenOrCreateEntry(const std::string& key,
-                               net::RequestPriority request_priority,
-                               EntryWithOpened* entry_struct,
-                               CompletionOnceCallback callback) override;
-  net::Error OpenEntry(const std::string& key,
-                       net::RequestPriority request_priority,
-                       Entry** entry,
-                       CompletionOnceCallback callback) override;
-  net::Error CreateEntry(const std::string& key,
-                         net::RequestPriority request_priority,
-                         Entry** entry,
-                         CompletionOnceCallback callback) override;
+  EntryResult OpenOrCreateEntry(const std::string& key,
+                                net::RequestPriority request_priority,
+                                EntryResultCallback callback) override;
+  EntryResult OpenEntry(const std::string& key,
+                        net::RequestPriority request_priority,
+                        EntryResultCallback callback) override;
+  EntryResult CreateEntry(const std::string& key,
+                          net::RequestPriority request_priority,
+                          EntryResultCallback callback) override;
   net::Error DoomEntry(const std::string& key,
                        net::RequestPriority priority,
                        CompletionOnceCallback callback) override;
@@ -416,7 +407,6 @@ class NET_EXPORT_PRIVATE BackendImpl : public Backend {
   int byte_count_;  // Number of bytes read/written lately.
   int buffer_bytes_;  // Total size of the temporary entries' buffers.
   int up_ticks_;  // The number of timer ticks received (OnStatsTimer).
-  net::CacheType cache_type_;
   int uma_report_;  // Controls transmission of UMA data.
   uint32_t user_flags_;  // Flags set by the user.
   bool init_;  // controls the initialization of the system.
@@ -437,7 +427,7 @@ class NET_EXPORT_PRIVATE BackendImpl : public Backend {
   std::unique_ptr<base::RepeatingTimer> timer_;  // Usage timer.
   base::WaitableEvent done_;  // Signals the end of background work.
   scoped_refptr<TraceObject> trace_object_;  // Initializes internal tracing.
-  base::WeakPtrFactory<BackendImpl> ptr_factory_;
+  base::WeakPtrFactory<BackendImpl> ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(BackendImpl);
 };

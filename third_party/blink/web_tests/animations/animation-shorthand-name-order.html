@@ -36,7 +36,10 @@
     to { left: 100px; }
 }
 </style>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
 <script>
+var test = async_test("Shorthand animation name ordering test");
 
 const PROPERTIES_TO_TEST = [
     "animationName",
@@ -96,7 +99,6 @@ function clearElementAnimationStyle(element) {
 }
 
 function runIndividualTest(testIndex) {
-    var result = document.getElementById("result");
     var element = document.getElementById("box");
 
     clearElementAnimationStyle(element);
@@ -111,31 +113,21 @@ function runIndividualTest(testIndex) {
 
     for (var i=0; i < PROPERTIES_TO_TEST.length; i++) {
         var value = computedStyle[PROPERTIES_TO_TEST[i]];
-        if (value == EXPECTED_VALUES[testIndex][i])
-            result.innerHTML += "PASS Test " + (numTestsComplete + 1) + ": " + PROPERTIES_TO_TEST[i] + " was " + value + "<br>";
-        else
-            result.innerHTML += "FAIL Test " + (numTestsComplete + 1) + ": " + PROPERTIES_TO_TEST[i] + " was " + value + " should be " + EXPECTED_VALUES[testIndex][i] + "<br>";
+        assert_equals(value, EXPECTED_VALUES[testIndex][i], "Test " + (numTestsComplete + 1) + ": " + PROPERTIES_TO_TEST[i] + " was " + value + " should be " + EXPECTED_VALUES[testIndex][i]);
     }
 
     numTestsComplete++;
     if (numTestsComplete < TEST_INPUTS.length)
         runIndividualTest(numTestsComplete);
     else {
-        if (window.testRunner)
-            testRunner.notifyDone();
+        test.done();
     }
 }
 
-if (window.testRunner) {
-    testRunner.dumpAsText();
-    testRunner.waitUntilDone();
-}
-
-window.addEventListener("load", runTests, false);
+window.addEventListener("load", test.step_func(runTests), false);
 </script>
 </head>
 <body>
 <div id="box"></div>
-<div id="result"></div>
 </body>
 </html>

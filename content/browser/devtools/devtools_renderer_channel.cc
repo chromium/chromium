@@ -19,42 +19,50 @@ namespace content {
 
 DevToolsRendererChannel::DevToolsRendererChannel(DevToolsAgentHostImpl* owner)
     : owner_(owner),
-      binding_(this),
-      associated_binding_(this),
-      process_id_(ChildProcessHost::kInvalidUniqueID),
-      weak_factory_(this) {}
+      process_id_(ChildProcessHost::kInvalidUniqueID) {}
 
 DevToolsRendererChannel::~DevToolsRendererChannel() = default;
 
 void DevToolsRendererChannel::SetRenderer(
-    blink::mojom::DevToolsAgentPtr agent_ptr,
-    blink::mojom::DevToolsAgentHostRequest host_request,
+    mojo::PendingRemote<blink::mojom::DevToolsAgent> agent_remote,
+    mojo::PendingReceiver<blink::mojom::DevToolsAgentHost> host_receiver,
     int process_id,
-    RenderFrameHostImpl* frame_host) {
+    base::OnceClosure connection_error) {
   CleanupConnection();
-  agent_ptr_ = std::move(agent_ptr);
-  if (host_request)
-    binding_.Bind(std::move(host_request));
-  SetRendererInternal(agent_ptr_.get(), process_id, frame_host);
+  blink::mojom::DevToolsAgent* agent = nullptr;
+  if (agent_remote.is_valid()) {
+    agent_remote_.Bind(std::move(agent_remote));
+    agent = agent_remote_.get();
+  }
+  if (connection_error)
+    agent_remote_.set_disconnect_handler(std::move(connection_error));
+  if (host_receiver)
+    receiver_.Bind(std::move(host_receiver));
+  SetRendererInternal(agent, process_id, nullptr);
 }
 
 void DevToolsRendererChannel::SetRendererAssociated(
-    blink::mojom::DevToolsAgentAssociatedPtr agent_ptr,
-    blink::mojom::DevToolsAgentHostAssociatedRequest host_request,
+    mojo::PendingAssociatedRemote<blink::mojom::DevToolsAgent> agent_remote,
+    mojo::PendingAssociatedReceiver<blink::mojom::DevToolsAgentHost>
+        host_receiver,
     int process_id,
     RenderFrameHostImpl* frame_host) {
   CleanupConnection();
-  associated_agent_ptr_ = std::move(agent_ptr);
-  if (host_request)
-    associated_binding_.Bind(std::move(host_request));
-  SetRendererInternal(associated_agent_ptr_.get(), process_id, frame_host);
+  blink::mojom::DevToolsAgent* agent = nullptr;
+  if (agent_remote.is_valid()) {
+    associated_agent_remote_.Bind(std::move(agent_remote));
+    agent = associated_agent_remote_.get();
+  }
+  if (host_receiver)
+    associated_receiver_.Bind(std::move(host_receiver));
+  SetRendererInternal(agent, process_id, frame_host);
 }
 
 void DevToolsRendererChannel::CleanupConnection() {
-  binding_.Close();
-  associated_binding_.Close();
-  associated_agent_ptr_ = nullptr;
-  agent_ptr_ = nullptr;
+  receiver_.reset();
+  associated_receiver_.reset();
+  associated_agent_remote_.reset();
+  agent_remote_.reset();
 }
 
 void DevToolsRendererChannel::ForceDetachWorkerSessions() {
@@ -82,25 +90,25 @@ void DevToolsRendererChannel::SetRendererInternal(
 }
 
 void DevToolsRendererChannel::AttachSession(DevToolsSession* session) {
-  if (!agent_ptr_ && !associated_agent_ptr_)
+  if (!agent_remote_ && !associated_agent_remote_)
     owner_->UpdateRendererChannel(true /* force */);
   for (auto& pair : session->handlers())
     pair.second->SetRenderer(process_id_, frame_host_);
-  if (agent_ptr_)
-    session->AttachToAgent(agent_ptr_.get());
-  else if (associated_agent_ptr_)
-    session->AttachToAgent(associated_agent_ptr_.get());
+  if (agent_remote_)
+    session->AttachToAgent(agent_remote_.get());
+  else if (associated_agent_remote_)
+    session->AttachToAgent(associated_agent_remote_.get());
 }
 
 void DevToolsRendererChannel::InspectElement(const gfx::Point& point) {
-  if (!agent_ptr_ && !associated_agent_ptr_)
+  if (!agent_remote_ && !associated_agent_remote_)
     owner_->UpdateRendererChannel(true /* force */);
-  // Previous call might update |agent_ptr_| or |associated_agent_ptr_|
+  // Previous call might update |agent_remote_| or |associated_agent_remote_|
   // via SetRenderer(), so we should check them again.
-  if (agent_ptr_)
-    agent_ptr_->InspectElement(point);
-  else if (associated_agent_ptr_)
-    associated_agent_ptr_->InspectElement(point);
+  if (agent_remote_)
+    agent_remote_->InspectElement(point);
+  else if (associated_agent_remote_)
+    associated_agent_remote_->InspectElement(point);
 }
 
 void DevToolsRendererChannel::SetReportChildWorkers(
@@ -123,13 +131,13 @@ void DevToolsRendererChannel::SetReportChildWorkers(
     wait_for_debugger_attachers_.insert(attacher);
   else
     wait_for_debugger_attachers_.erase(attacher);
-  if (agent_ptr_) {
-    agent_ptr_->ReportChildWorkers(
+  if (agent_remote_) {
+    agent_remote_->ReportChildWorkers(
         !report_attachers_.empty(), !wait_for_debugger_attachers_.empty(),
         base::BindOnce(&DevToolsRendererChannel::ReportChildWorkersCallback,
                        base::Unretained(this)));
-  } else if (associated_agent_ptr_) {
-    associated_agent_ptr_->ReportChildWorkers(
+  } else if (associated_agent_remote_) {
+    associated_agent_remote_->ReportChildWorkers(
         !report_attachers_.empty(), !wait_for_debugger_attachers_.empty(),
         base::BindOnce(&DevToolsRendererChannel::ReportChildWorkersCallback,
                        base::Unretained(this)));
@@ -144,8 +152,8 @@ void DevToolsRendererChannel::ReportChildWorkersCallback() {
 }
 
 void DevToolsRendererChannel::ChildWorkerCreated(
-    blink::mojom::DevToolsAgentPtr worker_devtools_agent,
-    blink::mojom::DevToolsAgentHostRequest host_request,
+    mojo::PendingRemote<blink::mojom::DevToolsAgent> worker_devtools_agent,
+    mojo::PendingReceiver<blink::mojom::DevToolsAgentHost> host_receiver,
     const GURL& url,
     const std::string& name,
     const base::UnguessableToken& devtools_worker_token,
@@ -160,7 +168,7 @@ void DevToolsRendererChannel::ChildWorkerCreated(
   GURL filtered_url = url;
   process->FilterURL(true /* empty_allowed */, &filtered_url);
   auto agent_host = base::MakeRefCounted<WorkerDevToolsAgentHost>(
-      process_id_, std::move(worker_devtools_agent), std::move(host_request),
+      process_id_, std::move(worker_devtools_agent), std::move(host_receiver),
       filtered_url, std::move(name), devtools_worker_token, owner_->GetId(),
       base::BindOnce(&DevToolsRendererChannel::ChildWorkerDestroyed,
                      weak_factory_.GetWeakPtr()));

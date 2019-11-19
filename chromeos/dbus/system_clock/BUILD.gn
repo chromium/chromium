@@ -9,7 +9,6 @@ component("system_clock") {
 
   deps = [
     "//base",
-    "//chromeos/dbus",
     "//dbus",
   ]
 

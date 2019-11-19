@@ -12,8 +12,10 @@
 #include "components/exo/surface.h"
 #include "components/exo/wm_helper.h"
 #include "components/viz/common/quads/compositor_frame.h"
+#include "components/viz/common/quads/render_pass.h"
+#include "components/viz/common/quads/shared_quad_state.h"
+#include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
-#include "services/ws/public/mojom/window_tree_constants.mojom.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
@@ -82,23 +84,22 @@ class CustomWindowTargeter : public aura::WindowTargeter {
 SurfaceTreeHost::SurfaceTreeHost(const std::string& window_name)
     : host_window_(
           std::make_unique<aura::Window>(nullptr,
-                                         aura::client::WINDOW_TYPE_CONTROL,
-                                         WMHelper::GetInstance()->env())) {
+                                         aura::client::WINDOW_TYPE_CONTROL)) {
   host_window_->SetName(window_name);
   host_window_->Init(ui::LAYER_SOLID_COLOR);
   host_window_->set_owned_by_parent(false);
   // The host window is a container of surface tree. It doesn't handle pointer
   // events.
   host_window_->SetEventTargetingPolicy(
-      ws::mojom::EventTargetingPolicy::DESCENDANTS_ONLY);
+      aura::EventTargetingPolicy::kDescendantsOnly);
   host_window_->SetEventTargeter(std::make_unique<CustomWindowTargeter>(this));
   layer_tree_frame_sink_holder_ = std::make_unique<LayerTreeFrameSinkHolder>(
       this, host_window_->CreateLayerTreeFrameSink());
-  WMHelper::GetInstance()->env()->context_factory()->AddObserver(this);
+  aura::Env::GetInstance()->context_factory()->AddObserver(this);
 }
 
 SurfaceTreeHost::~SurfaceTreeHost() {
-  WMHelper::GetInstance()->env()->context_factory()->RemoveObserver(this);
+  aura::Env::GetInstance()->context_factory()->RemoveObserver(this);
   SetRootSurface(nullptr);
   LayerTreeFrameSinkHolder::DeleteWhenLastResourceHasBeenReclaimed(
       std::move(layer_tree_frame_sink_holder_));
@@ -111,8 +112,7 @@ void SurfaceTreeHost::SetRootSurface(Surface* root_surface) {
   // This method applies multiple changes to the window tree. Use ScopedPause to
   // ensure that occlusion isn't recomputed before all changes have been
   // applied.
-  aura::WindowOcclusionTracker::ScopedPause pause_occlusion(
-      host_window_->env());
+  aura::WindowOcclusionTracker::ScopedPause pause_occlusion;
 
   if (root_surface_) {
     root_surface_->window()->Hide();
@@ -206,19 +206,14 @@ void SurfaceTreeHost::OnLostSharedContext() {
   SubmitCompositorFrame();
 }
 
-void SurfaceTreeHost::OnLostVizProcess() {}
-
 ////////////////////////////////////////////////////////////////////////////////
 // SurfaceTreeHost, protected:
 
 void SurfaceTreeHost::SubmitCompositorFrame() {
-  DCHECK(root_surface_);
-  viz::CompositorFrame frame;
-  frame.metadata.begin_frame_ack =
-      viz::BeginFrameAck::CreateManualAckWithDamage();
+  viz::CompositorFrame frame = PrepareToSubmitCompositorFrame();
+
   root_surface_->AppendSurfaceHierarchyCallbacks(&frame_callbacks_,
                                                  &presentation_callbacks_);
-  frame.metadata.frame_token = ++next_token_;
   if (!presentation_callbacks_.empty()) {
     DCHECK_EQ(active_presentation_callbacks_.count(*next_token_), 0u);
     active_presentation_callbacks_[*next_token_] =
@@ -226,37 +221,16 @@ void SurfaceTreeHost::SubmitCompositorFrame() {
   } else {
     active_presentation_callbacks_[*next_token_] = PresentationCallbacks();
   }
-  frame.render_pass_list.push_back(viz::RenderPass::Create());
-  const std::unique_ptr<viz::RenderPass>& render_pass =
-      frame.render_pass_list.back();
 
-  const int kRenderPassId = 1;
-  // Compute a temporaly stable (across frames) size for the render pass output
-  // rectangle that is consistent with the window size. It is used to set the
-  // size of the output surface. Note that computing the actual coverage while
-  // building up the render pass can lead to the size being one pixel too large,
-  // especially if the device scale factor has a floating point representation
-  // that requires many bits of precision in the mantissa, due to the coverage
-  // computing an "enclosing" pixel rectangle. This isn't a problem for the
-  // dirty rectangle, so it is updated as part of filling in the render pass.
-  const float device_scale_factor =
-      host_window()->layer()->device_scale_factor();
-  const gfx::Size output_surface_size_in_pixels = gfx::ConvertSizeToPixel(
-      device_scale_factor, host_window_->bounds().size());
-  render_pass->SetNew(kRenderPassId, gfx::Rect(output_surface_size_in_pixels),
-                      gfx::Rect(), gfx::Transform());
-  frame.metadata.device_scale_factor = device_scale_factor;
-  frame.metadata.local_surface_id_allocation_time =
-      host_window()->GetLocalSurfaceIdAllocation().allocation_time();
   root_surface_->AppendSurfaceHierarchyContentsToFrame(
-      root_surface_origin_, device_scale_factor,
+      root_surface_origin_, host_window()->layer()->device_scale_factor(),
       layer_tree_frame_sink_holder_->resource_manager(), &frame);
 
   std::vector<GLbyte*> sync_tokens;
   for (auto& resource : frame.resource_list)
     sync_tokens.push_back(resource.mailbox_holder.sync_token.GetData());
   ui::ContextFactory* context_factory =
-      WMHelper::GetInstance()->env()->context_factory();
+      aura::Env::GetInstance()->context_factory();
   gpu::gles2::GLES2Interface* gles2 =
       context_factory->SharedMainThreadContextProvider()->ContextGL();
   gles2->VerifySyncTokensCHROMIUM(sync_tokens.data(), sync_tokens.size());
@@ -264,15 +238,33 @@ void SurfaceTreeHost::SubmitCompositorFrame() {
   layer_tree_frame_sink_holder_->SubmitCompositorFrame(std::move(frame));
 }
 
-////////////////////////////////////////////////////////////////////////////////
-// SurfaceTreeHost, private:
+void SurfaceTreeHost::SubmitEmptyCompositorFrame() {
+  viz::CompositorFrame frame = PrepareToSubmitCompositorFrame();
+
+  const std::unique_ptr<viz::RenderPass>& render_pass =
+      frame.render_pass_list.back();
+  const gfx::Rect quad_rect = gfx::Rect(0, 0, 1, 1);
+  viz::SharedQuadState* quad_state =
+      render_pass->CreateAndAppendSharedQuadState();
+  quad_state->SetAll(
+      gfx::Transform(), /*quad_layer_rect=*/quad_rect,
+      /*visible_quad_layer_rect=*/quad_rect,
+      /*rounded_corner_bounds=*/gfx::RRectF(), /*clip_rect=*/gfx::Rect(),
+      /*is_clipped=*/false, /*are_contents_opaque=*/true, /*opacity=*/1.f,
+      /*blend_mode=*/SkBlendMode::kSrcOver, /*sorting_context_id=*/0);
+
+  viz::SolidColorDrawQuad* solid_quad =
+      render_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
+  solid_quad->SetNew(quad_state, quad_rect, quad_rect, SK_ColorBLACK,
+                     /*force_anti_aliasing_off=*/false);
+  layer_tree_frame_sink_holder_->SubmitCompositorFrame(std::move(frame));
+}
 
 void SurfaceTreeHost::UpdateHostWindowBounds() {
   // This method applies multiple changes to the window tree. Use ScopedPause
   // to ensure that occlusion isn't recomputed before all changes have been
   // applied.
-  aura::WindowOcclusionTracker::ScopedPause pause_occlusion(
-      host_window_->env());
+  aura::WindowOcclusionTracker::ScopedPause pause_occlusion;
 
   gfx::Rect bounds = root_surface_->surface_hierarchy_content_bounds();
   host_window_->SetBounds(
@@ -285,6 +277,53 @@ void SurfaceTreeHost::UpdateHostWindowBounds() {
   root_surface_origin_ = gfx::Point() - bounds.OffsetFromOrigin();
   root_surface_->window()->SetBounds(gfx::Rect(
       root_surface_origin_, root_surface_->window()->bounds().size()));
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// SurfaceTreeHost, private:
+
+viz::CompositorFrame SurfaceTreeHost::PrepareToSubmitCompositorFrame() {
+  DCHECK(root_surface_);
+
+  if (layer_tree_frame_sink_holder_->is_lost()) {
+    // We can immediately delete the old LayerTreeFrameSinkHolder because all of
+    // it's resources are lost anyways.
+    layer_tree_frame_sink_holder_ = std::make_unique<LayerTreeFrameSinkHolder>(
+        this, host_window_->CreateLayerTreeFrameSink());
+  }
+
+  viz::CompositorFrame frame;
+  frame.metadata.begin_frame_ack =
+      viz::BeginFrameAck::CreateManualAckWithDamage();
+  frame.metadata.frame_token = ++next_token_;
+  frame.render_pass_list.push_back(viz::RenderPass::Create());
+  const std::unique_ptr<viz::RenderPass>& render_pass =
+      frame.render_pass_list.back();
+
+  const int kRenderPassId = 1;
+  // Compute a temporally stable (across frames) size for the render pass output
+  // rectangle that is consistent with the window size. It is used to set the
+  // size of the output surface. Note that computing the actual coverage while
+  // building up the render pass can lead to the size being one pixel too large,
+  // especially if the device scale factor has a floating point representation
+  // that requires many bits of precision in the mantissa, due to the coverage
+  // computing an "enclosing" pixel rectangle. This isn't a problem for the
+  // dirty rectangle, so it is updated as part of filling in the render pass.
+  // Additionally, we must use this size even if we are submitting an empty
+  // compositor frame, otherwise we may set the Surface created by Viz to be the
+  // wrong size. Then, trying to submit a regular compositor frame will fail
+  // because  the size is different.
+  const float device_scale_factor =
+      host_window()->layer()->device_scale_factor();
+  const gfx::Size output_surface_size_in_pixels = gfx::ConvertSizeToPixel(
+      device_scale_factor, host_window_->bounds().size());
+  render_pass->SetNew(kRenderPassId, gfx::Rect(output_surface_size_in_pixels),
+                      gfx::Rect(), gfx::Transform());
+  frame.metadata.device_scale_factor = device_scale_factor;
+  frame.metadata.local_surface_id_allocation_time =
+      host_window()->GetLocalSurfaceIdAllocation().allocation_time();
+
+  return frame;
 }
 
 }  // namespace exo

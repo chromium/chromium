@@ -1,0 +1,60 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module media.mojom;
+
+import "media/mojo/mojom/audio_parameters.mojom";
+
+// This interface is implemented by the browser process to log state information
+// about an active audio component.
+interface AudioLog {
+  // Called when an audio component is created.  |params| are the parameters of
+  // the created stream.  |device_id| is the id of the audio device opened by
+  // the created stream.
+  OnCreated(media.mojom.AudioParameters params,
+            string device_id);
+
+  // Called when an audio component is started, generally this is synonymous
+  // with "playing."
+  OnStarted();
+
+  // Called when an audio component is stopped, generally this is synonymous
+  // with "paused."
+  OnStopped();
+
+  // Called when an audio component is closed, generally this is synonymous
+  // with "deleted."
+  OnClosed();
+
+  // Called when an audio component encounters an error.
+  OnError();
+
+  // Called when an audio component changes volume.  |volume| is the new volume.
+  OnSetVolume(double volume);
+
+  // Called with information about audio processing set-up for an audio
+  // component.
+  OnProcessingStateChanged(string message);
+
+  // Called when an audio component wants to forward a log message.
+  OnLogMessage(string message);
+};
+
+enum AudioLogComponent {
+  kInputController,
+  kOutputController,
+  kOutputStream,
+};
+
+// This interface is implemented by the browser process to allow clients to
+// create AudioLog instances for tracking the behavior of an audio component.
+// The only client for this interface is the audio service.
+interface AudioLogFactory {
+  // Creates an AudioLog object for tracking the behavior for one instance of
+  // the given |component|.  Each instance of an "owning" class must create its
+  // own AudioLog. The created AudioLog object is bound to |audio_log_receiver|.
+  CreateAudioLog(AudioLogComponent component,
+                 int32 component_id,
+                 pending_receiver<AudioLog> audio_log_receiver);
+};

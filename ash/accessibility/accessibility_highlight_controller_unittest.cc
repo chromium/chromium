@@ -7,9 +7,9 @@
 #include <cmath>
 #include <memory>
 
-#include "ash/accessibility/accessibility_controller.h"
+#include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/accessibility/accessibility_cursor_ring_layer.h"
-#include "ash/accessibility/accessibility_focus_ring_controller.h"
+#include "ash/accessibility/accessibility_focus_ring_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/bind.h"
@@ -209,7 +209,7 @@ TEST_F(AccessibilityHighlightControllerTest, CursorWorksOnMultipleDisplays) {
   event_mod.set_target(root_windows[0]);
   highlight_controller.OnMouseEvent(&event0);
 
-  AccessibilityFocusRingController* focus_ring_controller =
+  AccessibilityFocusRingControllerImpl* focus_ring_controller =
       Shell::Get()->accessibility_focus_ring_controller();
   auto* cursor_layer = focus_ring_controller->cursor_layer_for_testing();
   EXPECT_EQ(root_windows[0], cursor_layer->root_window());
@@ -251,7 +251,7 @@ TEST_F(AccessibilityHighlightControllerTest, CaretRingDrawnOnlyWithinBounds) {
   text_input_client.SetCaretBounds(caret_bounds);
   highlight_controller.OnCaretBoundsChanged(&text_input_client);
 
-  AccessibilityFocusRingController* focus_ring_controller =
+  AccessibilityFocusRingControllerImpl* focus_ring_controller =
       Shell::Get()->accessibility_focus_ring_controller();
   auto* caret_layer = focus_ring_controller->caret_layer_for_testing();
   EXPECT_EQ(
@@ -302,13 +302,13 @@ TEST_F(AccessibilityHighlightControllerTest, SetCaretBounds) {
   std::unique_ptr<views::Widget> window = CreateTestWidget();
   window->SetBounds(gfx::Rect(5, 5, 300, 300));
 
-  AccessibilityController* accessibility_controller =
+  AccessibilityControllerImpl* accessibility_controller =
       Shell::Get()->accessibility_controller();
   accessibility_controller->SetCaretHighlightEnabled(true);
 
   // Bounds inside the active window create a highlight.
   accessibility_controller->SetCaretBounds(gfx::Rect(10, 10, 1, 16));
-  AccessibilityFocusRingController* focus_ring_controller =
+  AccessibilityFocusRingControllerImpl* focus_ring_controller =
       Shell::Get()->accessibility_focus_ring_controller();
   EXPECT_TRUE(focus_ring_controller->caret_layer_for_testing());
 

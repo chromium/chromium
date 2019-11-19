@@ -1,3 +1,10 @@
 include_rules = [
     "+third_party/skia/include",
 ]
+
+specific_include_rules = {
+    # Additional allowed includes for tests.
+    ".*_test(_.*)?\.(cc|h)" : [
+        "+components/viz",
+    ]
+}

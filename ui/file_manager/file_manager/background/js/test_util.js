@@ -10,10 +10,11 @@
  *     App ID.
  */
 test.util.async.openMainWindow = (appState, callback) => {
-  launcher.launchFileManager(appState,
-                    undefined,  // opt_type
-                    undefined,  // opt_id
-                    callback);
+  launcher.launchFileManager(
+      appState,
+      undefined,  // opt_type
+      undefined,  // opt_id
+      callback);
 };
 
 /**
@@ -117,7 +118,7 @@ test.util.sync.selectFile = (contentWindow, filename) => {
 test.util.sync.openFile = (contentWindow, filename) => {
   const query = '#file-list li.table-row[selected] .filename-label span';
   return test.util.sync.selectFile(contentWindow, filename) &&
-         test.util.sync.fakeMouseDoubleClick(contentWindow, query);
+      test.util.sync.fakeMouseDoubleClick(contentWindow, query);
 };
 
 /**
@@ -134,7 +135,6 @@ test.util.async.selectVolume = (contentWindow, iconName, callback) => {
       iconName == 'drive_shared_with_me' || iconName == 'drive_offline';
   return test.util.async.selectInDirectoryTree(
       contentWindow, query, isDriveSubVolume, callback);
-
 };
 
 /**
@@ -147,40 +147,42 @@ test.util.async.selectVolume = (contentWindow, iconName, callback) => {
  * @param {function(boolean)} callback Callback function to notify the caller
  *     whether the target is found and mousedown and click events are sent.
  */
-test.util.async.selectInDirectoryTree = (contentWindow, query, isDriveSubVolume, callback) => {
-  const driveQuery = '#directory-tree [volume-type-icon=drive]';
-  let preSelection = false;
-  const steps = {
-    checkQuery: function() {
-      if (contentWindow.document.querySelector(query)) {
-        steps.sendEvents();
-        return;
-      }
-      // If the target volume is sub-volume of drive, we must click 'drive'
-      // before clicking the sub-item.
-      if (!preSelection) {
-        if (!isDriveSubVolume) {
-          callback(false);
-          return;
+test.util.async.selectInDirectoryTree =
+    (contentWindow, query, isDriveSubVolume, callback) => {
+      const driveQuery = '#directory-tree [volume-type-icon=drive]';
+      let preSelection = false;
+      const steps = {
+        checkQuery: function() {
+          if (contentWindow.document.querySelector(query)) {
+            steps.sendEvents();
+            return;
+          }
+          // If the target volume is sub-volume of drive, we must click 'drive'
+          // before clicking the sub-item.
+          if (!preSelection) {
+            if (!isDriveSubVolume) {
+              callback(false);
+              return;
+            }
+            if (!(test.util.sync.fakeMouseDown(contentWindow, driveQuery) &&
+                  test.util.sync.fakeMouseClick(contentWindow, driveQuery))) {
+              callback(false);
+              return;
+            }
+            preSelection = true;
+          }
+          setTimeout(steps.checkQuery, 50);
+        },
+        sendEvents: function() {
+          // To change the selected volume, we have to send both events
+          // 'mousedown' and 'click' to the navigation list.
+          callback(
+              test.util.sync.fakeMouseDown(contentWindow, query) &&
+              test.util.sync.fakeMouseClick(contentWindow, query));
         }
-        if (!(test.util.sync.fakeMouseDown(contentWindow, driveQuery) &&
-              test.util.sync.fakeMouseClick(contentWindow, driveQuery))) {
-          callback(false);
-          return;
-        }
-        preSelection = true;
-      }
-      setTimeout(steps.checkQuery, 50);
-    },
-    sendEvents: function() {
-      // To change the selected volume, we have to send both events 'mousedown'
-      // and 'click' to the navigation list.
-      callback(test.util.sync.fakeMouseDown(contentWindow, query) &&
-               test.util.sync.fakeMouseClick(contentWindow, query));
-    }
-  };
-  steps.checkQuery();
-};
+      };
+      steps.checkQuery();
+    };
 
 /**
  * Fakes pressing the down arrow until the given |folderName| is selected in the
@@ -246,44 +248,10 @@ test.util.sync.collapseSelectedFolderInTree = contentWindow => {
     return false;
   }
   test.util.sync.fakeKeyDown(
-      contentWindow, '#directory-tree .tree-item[selected]', 'ArrowLeft',
-      false, false, false);
+      contentWindow, '#directory-tree .tree-item[selected]', 'ArrowLeft', false,
+      false, false);
   return true;
 };
-
-/**
- * Fakes pressing the down arrow until the given |folderName| is selected in the
- * navigation tree.
- * TODO(sashab): Merge this functionality into selectTeamDrive and remove this
- * function.
- *
- * @param {Window} contentWindow Window to be tested.
- * @param {string} folderName Name of the folder to be selected.
- * @return {boolean} True if Team Drive folder got selected, false otherwise.
- */
-test.util.sync.selectTeamDrive = (contentWindow, teamDriveName) => {
-  // Select + expand Team Drives gran root.
-  const teamDrivesSelector = '#directory-tree .tree-item ' +
-      '[entry-label="Team Drives"]:not([hidden])';
-  if (!test.util.sync.fakeMouseClick(contentWindow, teamDrivesSelector)) {
-    return false;
-  }
-
-  // Expand the 'Team Drives' root.
-  if (!test.util.sync.expandSelectedFolderInTree(contentWindow)) {
-    return false;
-  }
-
-  // Select the team drive folder.
-  const teamDriveNameSelector = '#directory-tree .tree-item ' +
-      '[entry-label="' + teamDriveName + '"]:not([hidden])';
-  if (!test.util.sync.fakeMouseClick(contentWindow, teamDriveNameSelector)) {
-    return false;
-  }
-
-  return true;
-};
-
 
 /**
  * Obtains visible tree items.
@@ -292,8 +260,8 @@ test.util.sync.selectTeamDrive = (contentWindow, teamDriveName) => {
  * @return {!Array<string>} List of visible item names.
  */
 test.util.sync.getTreeItems = contentWindow => {
-  const items = contentWindow.document.querySelectorAll(
-      '#directory-tree .tree-item');
+  const items =
+      contentWindow.document.querySelectorAll('#directory-tree .tree-item');
   const result = [];
   for (let i = 0; i < items.length; i++) {
     if (items[i].matches('.tree-children:not([expanded]) *')) {
@@ -323,10 +291,11 @@ test.util.sync.getLastVisitedURL = contentWindow => {
  * @param {function(*)} callback Callback function with results returned by the
  *     script.
  */
-test.util.async.executeScriptInWebView = (contentWindow, webViewQuery, code, callback) => {
-  const webView = contentWindow.document.querySelector(webViewQuery);
-  webView.executeScript({code: code}, callback);
-};
+test.util.async.executeScriptInWebView =
+    (contentWindow, webViewQuery, code, callback) => {
+      const webView = contentWindow.document.querySelector(webViewQuery);
+      webView.executeScript({code: code}, callback);
+    };
 
 /**
  * Selects |filename| and fakes pressing Ctrl+C, Ctrl+V (copy, paste).
@@ -388,29 +357,29 @@ test.util.sync.execCommand = (contentWindow, command) => {
  */
 test.util.sync.overrideInstallWebstoreItemApi =
     (contentWindow, expectedItemId, intendedError) => {
-  const setLastError = message => {
-    contentWindow.chrome.runtime.lastError =
-        message ? {message: message} : undefined;
-  };
+      const setLastError = message => {
+        contentWindow.chrome.runtime.lastError =
+            message ? {message: message} : undefined;
+      };
 
-  const installWebstoreItem = (itemId, silentInstallation, callback) => {
-    setTimeout(() => {
-      if (itemId !== expectedItemId) {
-        setLastError('Invalid Chrome Web Store item ID');
-        callback();
-        return;
-      }
+      const installWebstoreItem = (itemId, silentInstallation, callback) => {
+        setTimeout(() => {
+          if (itemId !== expectedItemId) {
+            setLastError('Invalid Chrome Web Store item ID');
+            callback();
+            return;
+          }
 
-      setLastError(intendedError);
-      callback();
-    }, 0);
-  };
+          setLastError(intendedError);
+          callback();
+        }, 0);
+      };
 
-  test.util.executedTasks_ = [];
-  contentWindow.chrome.webstoreWidgetPrivate.installWebstoreItem =
-      installWebstoreItem;
-  return true;
-};
+      test.util.executedTasks_ = [];
+      contentWindow.chrome.webstoreWidgetPrivate.installWebstoreItem =
+          installWebstoreItem;
+      return true;
+    };
 
 /**
  * Override the task-related methods in private api for test.
@@ -493,12 +462,12 @@ test.util.sync.unload = contentWindow => {
  * @return {string} Path which is shown in the breadcrumb.
  */
 test.util.sync.getBreadcrumbPath = contentWindow => {
-  const breadcrumb = contentWindow.document.querySelector(
-      '#location-breadcrumbs');
+  const breadcrumb =
+      contentWindow.document.querySelector('#location-breadcrumbs');
   const paths = breadcrumb.querySelectorAll('.breadcrumb-path');
 
   let path = '';
-  for(let i = 0; i < paths.length; i++) {
+  for (let i = 0; i < paths.length; i++) {
     path += '/' + paths[i].textContent;
   }
   return path;
@@ -511,6 +480,16 @@ test.util.sync.getBreadcrumbPath = contentWindow => {
  */
 test.util.async.getPreferences = callback => {
   chrome.fileManagerPrivate.getPreferences(callback);
+};
+
+/**
+ * Stubs out the formatVolume() function in fileManagerPrivate.
+ *
+ * @param {Window} contentWindow Window to be affected.
+ */
+test.util.sync.overrideFormat = contentWindow => {
+  contentWindow.chrome.fileManagerPrivate.formatVolume =
+      (volumeId, filesystem, volumeLabel) => {};
 };
 
 // Register the test utils.

@@ -15,7 +15,7 @@ set -eu
 cd "$(dirname "$0")"
 
 BASE_URL="https://nodejs.org/dist"
-NODE_VERSION="v8.9.1"
+NODE_VERSION="v10.15.3"
 
 update_unix() {
   local SUFFIX="$1"
@@ -84,7 +84,7 @@ update_win() {
 
 # First download checksum file.
 rm -f "SHASUMS256.txt"
-wget "https://nodejs.org/dist/latest-v8.x/SHASUMS256.txt"
+wget "https://nodejs.org/dist/${NODE_VERSION}/SHASUMS256.txt"
 
 update_unix "darwin-x64" "mac"
 update_unix "linux-x64" "linux"

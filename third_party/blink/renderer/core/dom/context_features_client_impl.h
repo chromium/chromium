@@ -42,9 +42,7 @@ namespace blink {
 class CORE_EXPORT ContextFeaturesClientImpl final
     : public ContextFeaturesClient {
  public:
-  static std::unique_ptr<ContextFeaturesClientImpl> Create() {
-    return base::WrapUnique(new ContextFeaturesClientImpl());
-  }
+  ContextFeaturesClientImpl() = default;
 
   bool IsEnabled(Document*,
                  ContextFeatures::FeatureType,
@@ -52,8 +50,6 @@ class CORE_EXPORT ContextFeaturesClientImpl final
   void UrlDidChange(Document*) override;
 
  private:
-  ContextFeaturesClientImpl() = default;
-
   bool AskIfIsEnabled(Document*,
                       ContextFeatures::FeatureType,
                       bool default_value);

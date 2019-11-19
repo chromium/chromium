@@ -148,13 +148,13 @@ void LayoutSVGResourceContainer::InvalidateCacheAndMarkForLayout(
 static inline void RemoveFromCacheAndInvalidateDependencies(
     LayoutObject& object,
     bool needs_layout) {
-  if (!object.GetNode() || !object.GetNode()->IsSVGElement())
+  auto* element = DynamicTo<SVGElement>(object.GetNode());
+  if (!element)
     return;
-  SVGElement& element = ToSVGElement(*object.GetNode());
 
   if (SVGResources* resources =
           SVGResourcesCache::CachedResourcesForLayoutObject(object)) {
-    SVGResourceClient* client = element.GetSVGResourceClient();
+    SVGResourceClient* client = element->GetSVGResourceClient();
     if (InvalidationModeMask invalidation_mask =
             resources->RemoveClientFromCacheAffectingObjectBounds(*client)) {
       LayoutSVGResourceContainer::MarkClientForInvalidation(object,
@@ -162,7 +162,7 @@ static inline void RemoveFromCacheAndInvalidateDependencies(
     }
   }
 
-  element.NotifyIncomingReferences([needs_layout](SVGElement& element) {
+  element->NotifyIncomingReferences([needs_layout](SVGElement& element) {
     DCHECK(element.GetLayoutObject());
     LayoutSVGResourceContainer::MarkForLayoutAndParentResourceInvalidation(
         *element.GetLayoutObject(), needs_layout);

@@ -5,18 +5,19 @@
 package org.chromium.chrome.browser.compositor.bottombar.contextualsearch;
 
 import android.content.Context;
-import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Interpolator;
 import android.widget.TextView;
 
-import org.chromium.base.VisibleForTesting;
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.ChromeFeatureList;
 import org.chromium.chrome.browser.compositor.animation.CompositorAnimator;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelAnimation;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelTextViewInflater;
+import org.chromium.chrome.browser.ui.widget.animation.Interpolators;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 
 /**
@@ -27,7 +28,6 @@ public class ContextualSearchCaptionControl extends OverlayPanelTextViewInflater
     private static final float ANIMATION_PERCENTAGE_ZERO = 0.f;
     private static final float ANIMATION_PERCENTAGE_COMPLETE = 1.f;
     private static final float EXPANDED_CAPTION_THRESHOLD = 0.5f;
-    private static final Interpolator ANIMATION_INTERPOLATOR = new FastOutSlowInInterpolator();
 
     /**
      * The resource id for the string to display when the Bar is expanded.
@@ -92,7 +92,11 @@ public class ContextualSearchCaptionControl extends OverlayPanelTextViewInflater
     public ContextualSearchCaptionControl(OverlayPanel panel, Context context, ViewGroup container,
             DynamicResourceLoader resourceLoader, boolean shouldShowExpandedCaption) {
         super(panel, R.layout.contextual_search_caption_view, R.id.contextual_search_caption_view,
-                context, container, resourceLoader);
+                context, container, resourceLoader,
+                (ChromeFeatureList.isEnabled(ChromeFeatureList.OVERLAY_NEW_LAYOUT)
+                                ? R.dimen.contextual_search_end_padding
+                                : R.dimen.contextual_search_padded_button_width),
+                R.dimen.contextual_search_padded_button_width);
         mShouldShowExpandedCaption = shouldShowExpandedCaption;
     }
 
@@ -124,7 +128,18 @@ public class ContextualSearchCaptionControl extends OverlayPanelTextViewInflater
      * Updates the caption when in transition between peeked to expanded states.
      * @param percentage The percentage to the more opened state.
      */
+    @Override
     public void onUpdateFromPeekToExpand(float percentage) {
+        super.onUpdateFromPeekToExpand(percentage);
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.OVERLAY_NEW_LAYOUT)) {
+            if (mHasPeekingCaption) {
+                if (mTransitionAnimator != null) mTransitionAnimator.cancel();
+                mAnimationPercentage = 1.f - percentage;
+            }
+            return;
+        }
+
+        // ChromeFeatureList.OVERLAY_NEW_LAYOUT not enabled.
         if (!mShouldShowExpandedCaption) {
             if (mHasPeekingCaption) {
                 if (mTransitionAnimator != null) mTransitionAnimator.cancel();
@@ -173,9 +188,14 @@ public class ContextualSearchCaptionControl extends OverlayPanelTextViewInflater
      * Hides the caption.
      */
     public void hide() {
-        if (!mShowingExpandedCaption) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.OVERLAY_NEW_LAYOUT)) {
             mIsVisible = false;
             mAnimationPercentage = ANIMATION_PERCENTAGE_ZERO;
+        } else {
+            if (!mShowingExpandedCaption) {
+                mIsVisible = false;
+                mAnimationPercentage = ANIMATION_PERCENTAGE_ZERO;
+            }
         }
         mHasPeekingCaption = false;
     }
@@ -245,7 +265,11 @@ public class ContextualSearchCaptionControl extends OverlayPanelTextViewInflater
 
         mDidCapture = true;
 
-        if (!mShowingExpandedCaption) animateTransitionIn();
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.OVERLAY_NEW_LAYOUT)) {
+            animateTransitionIn();
+        } else if (!mShowingExpandedCaption) {
+            animateTransitionIn();
+        }
     }
 
     // ============================================================================================
@@ -258,7 +282,8 @@ public class ContextualSearchCaptionControl extends OverlayPanelTextViewInflater
                 OverlayPanelAnimation.BASE_ANIMATION_DURATION_MS, null);
         mTransitionAnimator.addUpdateListener(
                 animator -> mAnimationPercentage = animator.getAnimatedValue());
-        mTransitionAnimator.setInterpolator(ANIMATION_INTERPOLATOR);
+        mTransitionAnimator.setInterpolator(Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR);
+
         mTransitionAnimator.start();
     }
 }

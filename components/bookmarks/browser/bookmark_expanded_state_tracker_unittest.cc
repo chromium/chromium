@@ -10,7 +10,7 @@
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
@@ -32,7 +32,7 @@ class BookmarkExpandedStateTrackerTest : public testing::Test {
   void SetUp() override;
   void TearDown() override;
 
-  base::test::ScopedTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   TestingPrefServiceSimple prefs_;
   std::unique_ptr<BookmarkModel> model_;
 
@@ -78,7 +78,7 @@ TEST_F(BookmarkExpandedStateTrackerTest, SetExpandedNodes) {
   EXPECT_EQ(nodes, tracker->GetExpandedNodes());
 
   // Remove the folder, which should remove it from the list of expanded nodes.
-  model_->Remove(model_->bookmark_bar_node()->GetChild(0));
+  model_->Remove(model_->bookmark_bar_node()->children().front().get());
   nodes.erase(n1);
   n1 = nullptr;
   EXPECT_EQ(nodes, tracker->GetExpandedNodes());

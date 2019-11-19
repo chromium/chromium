@@ -4,48 +4,48 @@
 
 /**
  * @interface
- * @extends {FileBrowserBackground}
- * @struct
  */
-var FileBrowserBackgroundFull = function() {};
+class FileBrowserBackgroundFull extends FileBrowserBackground {
+  constructor() {
+    /**
+     * @type {!DriveSyncHandler}
+     */
+    this.driveSyncHandler;
 
-/**
- * @type {!DriveSyncHandler}
- */
-FileBrowserBackgroundFull.prototype.driveSyncHandler;
+    /**
+     * @type {!ProgressCenter}
+     */
+    this.progressCenter;
 
-/**
- * @type {!ProgressCenter}
- */
-FileBrowserBackgroundFull.prototype.progressCenter;
+    /**
+     * String assets.
+     * @type {Object<string>}
+     */
+    this.stringData;
 
-/**
- * String assets.
- * @type {Object<string>}
- */
-FileBrowserBackgroundFull.prototype.stringData;
+    /**
+     * @type {FileOperationManager}
+     */
+    this.fileOperationManager;
 
-/**
- * @type {FileOperationManager}
- */
-FileBrowserBackgroundFull.prototype.fileOperationManager;
+    /**
+     * @type {!importer.ImportRunner}
+     */
+    this.mediaImportHandler;
 
-/**
- * @type {!importer.ImportRunner}
- */
-FileBrowserBackgroundFull.prototype.mediaImportHandler;
+    /**
+     * @type {!importer.MediaScanner}
+     */
+    this.mediaScanner;
 
-/**
- * @type {!importer.MediaScanner}
- */
-FileBrowserBackgroundFull.prototype.mediaScanner;
+    /**
+     * @type {!importer.HistoryLoader}
+     */
+    this.historyLoader;
 
-/**
- * @type {!importer.HistoryLoader}
- */
-FileBrowserBackgroundFull.prototype.historyLoader;
-
-/**
- * @type {!Crostini}
- */
-FileBrowserBackgroundFull.prototype.crostini;
+    /**
+     * @type {!Crostini}
+     */
+    this.crostini;
+  }
+}

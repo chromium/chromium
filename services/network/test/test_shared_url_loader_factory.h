@@ -6,6 +6,9 @@
 #define SERVICES_NETWORK_TEST_TEST_SHARED_URL_LOADER_FACTORY_H_
 
 #include "base/macros.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace net {
@@ -24,22 +27,24 @@ class NetworkService;
 // across threads.
 class TestSharedURLLoaderFactory : public SharedURLLoaderFactory {
  public:
-  explicit TestSharedURLLoaderFactory(
-      NetworkService* network_service = nullptr);
+  explicit TestSharedURLLoaderFactory(NetworkService* network_service = nullptr,
+                                      bool is_trusted = false);
 
   // URLLoaderFactory implementation:
-  void CreateLoaderAndStart(mojom::URLLoaderRequest loader,
+  void CreateLoaderAndStart(mojo::PendingReceiver<mojom::URLLoader> loader,
                             int32_t routing_id,
                             int32_t request_id,
                             uint32_t options,
                             const ResourceRequest& request,
-                            mojom::URLLoaderClientPtr client,
+                            mojo::PendingRemote<mojom::URLLoaderClient> client,
                             const net::MutableNetworkTrafficAnnotationTag&
                                 traffic_annotation) override;
-  void Clone(mojom::URLLoaderFactoryRequest request) override;
+  void Clone(mojo::PendingReceiver<mojom::URLLoaderFactory> receiver) override;
 
   // SharedURLLoaderFactoryInfo implementation
   std::unique_ptr<SharedURLLoaderFactoryInfo> Clone() override;
+
+  NetworkContext* network_context() { return network_context_.get(); }
 
  private:
   friend class base::RefCounted<TestSharedURLLoaderFactory>;
@@ -47,7 +52,7 @@ class TestSharedURLLoaderFactory : public SharedURLLoaderFactory {
 
   std::unique_ptr<net::TestURLRequestContext> url_request_context_;
   std::unique_ptr<NetworkContext> network_context_;
-  mojom::URLLoaderFactoryPtr url_loader_factory_;
+  mojo::Remote<mojom::URLLoaderFactory> url_loader_factory_;
 
   DISALLOW_COPY_AND_ASSIGN(TestSharedURLLoaderFactory);
 };

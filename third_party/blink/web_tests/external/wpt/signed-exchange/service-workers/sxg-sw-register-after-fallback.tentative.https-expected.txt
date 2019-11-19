@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Service worker registration after fallback assert_equals: expected (undefined) undefined but got (string) "SecurityError: Failed to register a ServiceWorker for scope ('https://web-platform.test:8444/signed-exchange/resources/scope/https://web-platform.test:8444/signed-exchange/resources/register-sw-after-fallback.html') with script ('https://web-platform.test:8444/signed-exchange/resources/service-worker.js'): No URL is associated with the caller's document."
+Harness: the test ran to completion.
+

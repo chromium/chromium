@@ -94,7 +94,7 @@ FloatRect SVGRootInlineBox::LayoutInlineBoxes(InlineBox& box) {
       rect.Unite(LayoutInlineBoxes(*child));
   }
 
-  LayoutRect logical_rect(rect);
+  LayoutRect logical_rect(EnclosingLayoutRect(rect));
   if (!box.IsHorizontal())
     logical_rect.SetSize(logical_rect.Size().TransposedSize());
 
@@ -112,7 +112,7 @@ FloatRect SVGRootInlineBox::LayoutInlineBoxes(InlineBox& box) {
 }
 
 InlineBox* SVGRootInlineBox::ClosestLeafChildForPosition(
-    const LayoutPoint& point) {
+    const PhysicalOffset& point) {
   InlineBox* first_leaf = FirstLeafChild();
   InlineBox* last_leaf = LastLeafChild();
   if (first_leaf == last_leaf)
@@ -123,13 +123,13 @@ InlineBox* SVGRootInlineBox::ClosestLeafChildForPosition(
   for (InlineBox* leaf = first_leaf; leaf; leaf = leaf->NextLeafChild()) {
     if (!leaf->IsSVGInlineTextBox())
       continue;
-    if (point.Y() < leaf->Y())
+    if (point.top < leaf->Y())
       continue;
-    if (point.Y() > leaf->Y() + leaf->VirtualLogicalHeight())
+    if (point.left > leaf->Y() + leaf->VirtualLogicalHeight())
       continue;
 
     closest_leaf = leaf;
-    if (point.X() < leaf->X() + leaf->LogicalWidth())
+    if (point.left < leaf->X() + leaf->LogicalWidth())
       return leaf;
   }
 
@@ -195,15 +195,15 @@ void SVGRootInlineBox::ReorderValueLists() {
 }
 
 bool SVGRootInlineBox::NodeAtPoint(HitTestResult& result,
-                                   const HitTestLocation& location_in_container,
-                                   const LayoutPoint& accumulated_offset,
+                                   const HitTestLocation& hit_test_location,
+                                   const PhysicalOffset& accumulated_offset,
                                    LayoutUnit line_top,
                                    LayoutUnit line_bottom) {
   // Iterate the text boxes in reverse so that the top-most node will be considered first.
   for (InlineBox* leaf = LastLeafChild(); leaf; leaf = leaf->PrevLeafChild()) {
     if (!leaf->IsSVGInlineTextBox())
       continue;
-    if (leaf->NodeAtPoint(result, location_in_container, accumulated_offset,
+    if (leaf->NodeAtPoint(result, hit_test_location, accumulated_offset,
                           line_top, line_bottom))
       return true;
   }

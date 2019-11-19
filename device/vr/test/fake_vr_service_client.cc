@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 
 #include "device/vr/test/fake_vr_service_client.h"
-#include "device/vr/test/fake_vr_display_impl_client.h"
 
 namespace device {
 
-FakeVRServiceClient::FakeVRServiceClient(mojom::VRServiceClientRequest request)
-    : m_binding_(this, std::move(request)) {}
+FakeVRServiceClient::FakeVRServiceClient(
+    mojo::PendingReceiver<mojom::VRServiceClient> receiver)
+    : receiver_(this, std::move(receiver)) {}
 
 FakeVRServiceClient::~FakeVRServiceClient() {}
 

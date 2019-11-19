@@ -1,0 +1,45 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [800, 2016],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "LayoutBlockFlow (positioned) TD id='moveMe' class='fixed'",
+          "rect": [100, 100, 100, 100],
+          "reason": "chunk appeared"
+        },
+        {
+          "object": "LayoutTableCell TD id='moveMe'",
+          "rect": [100, 100, 100, 100],
+          "reason": "disappeared"
+        },
+        {
+          "object": "LayoutBlockFlow (positioned) TD id='moveMe' class='fixed'",
+          "rect": [0, 100, 100, 100],
+          "reason": "chunk appeared"
+        },
+        {
+          "object": "LayoutBlockFlow (relative positioned) DIV class='green'",
+          "rect": [0, 100, 100, 100],
+          "reason": "disappeared"
+        }
+      ],
+      "transform": 1
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [0, -100, 0, 1]
+      ]
+    }
+  ]
+}
+

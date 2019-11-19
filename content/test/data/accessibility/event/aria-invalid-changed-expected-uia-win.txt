@@ -1,0 +1,6 @@
+AriaProperties changed on role=textbox, name=field1
+AriaProperties changed on role=textbox, name=field2
+AriaProperties changed on role=textbox, name=field3
+IsDataValidForForm changed on role=textbox, name=field1
+IsDataValidForForm changed on role=textbox, name=field2
+IsDataValidForForm changed on role=textbox, name=field3

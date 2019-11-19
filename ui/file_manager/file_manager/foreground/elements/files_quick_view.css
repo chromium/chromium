@@ -43,8 +43,9 @@ dialog::backdrop {
   max-width: 100%;
 }
 
-paper-button:focus:not(:active) {
+cr-button:focus:not(:active) {
   box-shadow: 0 0 0 1px rgba(66, 133, 244, 0.5);
+  font-weight: bold;
 }
 
 #audio-artwork {
@@ -142,21 +143,21 @@ paper-button:focus:not(:active) {
 }
 
 #metadata-button {
-  --files-toggle-ripple: {
-    background-color: white;
-  };
-  --files-toggle-ripple-activated: {
-    opacity: 0.3;
-  };
+  --files-toggle-ripple-bg-color: white;
+  --files-toggle-ripple-activated-opacity: 0.3;
 }
 
-paper-button,
+cr-button,
 files-icon-button {
+  --ink-color: currentColor;
+  border: none;
   border-radius: 2px;
+  color: currentColor;
   height: 32px;
   margin: 0 8px;
   min-width: 32px;
   padding: 0;
+  text-transform: uppercase;
 }
 
 iron-icon {

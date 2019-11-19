@@ -21,12 +21,25 @@ TEST(AddressRewriterTest, InvalidCountryCode) {
   EXPECT_NE(ad.Rewrite(kSomeRandomText), ad.Rewrite(kOtherRandomText));
 }
 
+TEST(AddressRewriterTest, LastRule) {
+  AddressRewriter last_rule = AddressRewriter::ForCustomRules("1\t2\n3\t4\n");
+  AddressRewriter large_rewrite =
+      AddressRewriter::ForCustomRules("1\tonelongrewrite\n2\tshort\n");
+
+  EXPECT_EQ(last_rule.Rewrite(UTF8ToUTF16("3")),
+            last_rule.Rewrite(UTF8ToUTF16("4")));
+  // Checks if last rule works when previous rewrite is larger than last rule.
+  EXPECT_EQ(large_rewrite.Rewrite(UTF8ToUTF16("2")),
+            large_rewrite.Rewrite(UTF8ToUTF16("short")));
+}
+
 TEST(AddressRewriterTest, AD) {
   AddressRewriter ad = AddressRewriter::ForCountryCode(UTF8ToUTF16("ad"));
   EXPECT_EQ(ad.Rewrite(UTF8ToUTF16("parroquia de andorra la vella")),
             ad.Rewrite(UTF8ToUTF16("andorra la vella")));
   EXPECT_EQ(ad.Rewrite(UTF8ToUTF16("principal de andorra")),
             ad.Rewrite(UTF8ToUTF16("an")));
+  EXPECT_EQ(ad.Rewrite(UTF8ToUTF16("or")), ad.Rewrite(UTF8ToUTF16("ordino")));
 }
 
 TEST(AddressRewriterTest, AR) {
@@ -67,6 +80,8 @@ TEST(AddressRewriterTest, CA) {
             ca.Rewrite(UTF8ToUTF16("pei")));
   EXPECT_EQ(ca.Rewrite(UTF8ToUTF16("prince edward island")),
             ca.Rewrite(UTF8ToUTF16("ile du prince edouard")));
+  EXPECT_EQ(ca.Rewrite(UTF8ToUTF16("cul-de-sac")),
+            ca.Rewrite(UTF8ToUTF16("cul de sac")));
   EXPECT_EQ(ca.Rewrite(UTF8ToUTF16("st")), ca.Rewrite(UTF8ToUTF16("street")));
   EXPECT_EQ(ca.Rewrite(UTF8ToUTF16("sainte")),
             ca.Rewrite(UTF8ToUTF16("saint")));
@@ -85,6 +100,8 @@ TEST(AddressRewriterTest, CL) {
   EXPECT_EQ(
       cl.Rewrite(UTF8ToUTF16("aisen del general carlos ibanez del campo")),
       cl.Rewrite(UTF8ToUTF16("xi")));
+  EXPECT_EQ(cl.Rewrite(UTF8ToUTF16("libertador general bernardo o'higgins")),
+            cl.Rewrite(UTF8ToUTF16("vi")));
   EXPECT_EQ(cl.Rewrite(UTF8ToUTF16("metropolitana de santiago de chile")),
             cl.Rewrite(UTF8ToUTF16("metropolitana de santiago")));
 }
@@ -157,6 +174,15 @@ TEST(AddressRewriterTest, IN) {
   AddressRewriter in = AddressRewriter::ForCountryCode(UTF8ToUTF16("in"));
   EXPECT_EQ(in.Rewrite(UTF8ToUTF16("thiruvananthapuram")),
             in.Rewrite(UTF8ToUTF16("tiruvananthapuram")));
+  EXPECT_EQ(in.Rewrite(UTF8ToUTF16("jammu & kashmir")),
+            in.Rewrite(UTF8ToUTF16("j&k")));
+  EXPECT_EQ(in.Rewrite(UTF8ToUTF16("cross-road")),
+            in.Rewrite(UTF8ToUTF16("xrd")));
+  EXPECT_EQ(in.Rewrite(UTF8ToUTF16("j & k")), in.Rewrite(UTF8ToUTF16("j&k")));
+  EXPECT_EQ(in.Rewrite(UTF8ToUTF16("i.n.d.i.a")),
+            in.Rewrite(UTF8ToUTF16("india")));
+  EXPECT_NE(in.Rewrite(UTF8ToUTF16("i\\_n\\_d\\_i\\_a")),
+            in.Rewrite(UTF8ToUTF16("india")));
 }
 
 TEST(AddressRewriterTest, IT) {

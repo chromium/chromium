@@ -1,2 +1,1 @@
-CONSOLE ERROR: line 9: Uncaught NoModificationAllowedError: Failed to execute 'insertAdjacentHTML' on 'Element': The element has no parent.
 This test passes if it doesn't crash (or ASSERT).

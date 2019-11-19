@@ -12,12 +12,13 @@ namespace media {
 
 // Handy callback type to provide a routing token.
 using RoutingTokenCallback =
-    base::Callback<void(const base::UnguessableToken&)>;
+    base::OnceCallback<void(const base::UnguessableToken&)>;
 
 // Callback to register a RoutingTokenCallback with something that can provide
 // it.  For example, RenderFrame(Impl) will provide this, while WMPI can choose
 // to call it if it would like to be called back with a routing token.
-using RequestRoutingTokenCallback = base::Callback<void(RoutingTokenCallback)>;
+using RequestRoutingTokenCallback =
+    base::RepeatingCallback<void(RoutingTokenCallback)>;
 
 }  // namespace media
 

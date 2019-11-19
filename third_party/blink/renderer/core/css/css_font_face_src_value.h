@@ -27,9 +27,11 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_FONT_FACE_SRC_VALUE_H_
 
 #include "base/memory/scoped_refptr.h"
+#include "third_party/blink/renderer/core/css/css_origin_clean.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/loader/resource/font_resource.h"
 #include "third_party/blink/renderer/platform/weborigin/referrer.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -42,17 +44,19 @@ class CORE_EXPORT CSSFontFaceSrcValue : public CSSValue {
       const String& specified_resource,
       const String& absolute_resource,
       const Referrer& referrer,
-      ContentSecurityPolicyDisposition should_check_content_security_policy) {
+      ContentSecurityPolicyDisposition should_check_content_security_policy,
+      OriginClean origin_clean) {
     return MakeGarbageCollected<CSSFontFaceSrcValue>(
         specified_resource, absolute_resource, referrer, false,
-        should_check_content_security_policy);
+        should_check_content_security_policy, origin_clean);
   }
   static CSSFontFaceSrcValue* CreateLocal(
       const String& absolute_resource,
-      ContentSecurityPolicyDisposition should_check_content_security_policy) {
+      ContentSecurityPolicyDisposition should_check_content_security_policy,
+      OriginClean origin_clean) {
     return MakeGarbageCollected<CSSFontFaceSrcValue>(
         g_empty_string, absolute_resource, Referrer(), true,
-        should_check_content_security_policy);
+        should_check_content_security_policy, origin_clean);
   }
 
   CSSFontFaceSrcValue(
@@ -60,14 +64,16 @@ class CORE_EXPORT CSSFontFaceSrcValue : public CSSValue {
       const String& absolute_resource,
       const Referrer& referrer,
       bool local,
-      ContentSecurityPolicyDisposition should_check_content_security_policy)
+      ContentSecurityPolicyDisposition should_check_content_security_policy,
+      OriginClean origin_clean)
       : CSSValue(kFontFaceSrcClass),
         absolute_resource_(absolute_resource),
         specified_resource_(specified_resource),
         referrer_(referrer),
         is_local_(local),
         should_check_content_security_policy_(
-            should_check_content_security_policy) {}
+            should_check_content_security_policy),
+        origin_clean_(origin_clean) {}
 
   const String& GetResource() const { return absolute_resource_; }
   const String& Format() const { return format_; }
@@ -93,25 +99,19 @@ class CORE_EXPORT CSSFontFaceSrcValue : public CSSValue {
  private:
   void RestoreCachedResourceIfNeeded(ExecutionContext*) const;
 
-  String absolute_resource_;
-  String specified_resource_;
+  const String absolute_resource_;
+  const String specified_resource_;
   String format_;
-  Referrer referrer_;
-  bool is_local_;
-  ContentSecurityPolicyDisposition should_check_content_security_policy_;
+  const Referrer referrer_;
+  const bool is_local_;
+  const ContentSecurityPolicyDisposition should_check_content_security_policy_;
+  const OriginClean origin_clean_;
 
-  class FontResourceHelper
-      : public GarbageCollectedFinalized<FontResourceHelper>,
-        public FontResourceClient {
+  class FontResourceHelper : public GarbageCollected<FontResourceHelper>,
+                             public FontResourceClient {
     USING_GARBAGE_COLLECTED_MIXIN(FontResourceHelper);
 
    public:
-    static FontResourceHelper* Create(
-        FontResource* resource,
-        base::SingleThreadTaskRunner* task_runner) {
-      return MakeGarbageCollected<FontResourceHelper>(resource, task_runner);
-    }
-
     FontResourceHelper(FontResource* resource,
                        base::SingleThreadTaskRunner* task_runner) {
       SetResource(resource, task_runner);
@@ -129,7 +129,12 @@ class CORE_EXPORT CSSFontFaceSrcValue : public CSSValue {
   mutable Member<FontResourceHelper> fetched_;
 };
 
-DEFINE_CSS_VALUE_TYPE_CASTS(CSSFontFaceSrcValue, IsFontFaceSrcValue());
+template <>
+struct DowncastTraits<CSSFontFaceSrcValue> {
+  static bool AllowFrom(const CSSValue& value) {
+    return value.IsFontFaceSrcValue();
+  }
+};
 
 }  // namespace blink
 

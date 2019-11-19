@@ -129,7 +129,7 @@ The UMA data is internal-only. Key metrics include:
 controlled loads:
 - PageLoad.Clients.ServiceWorker2.PaintTiming.NavigationToFirstContentfulPaint
 - PageLoad.Clients.ServiceWorker2.Input.NavigationToFirstContentfulPaint
-- PageLoad.Clients.ServiceWorker2.InteractiveTiming.FirstInputDelay2
+- PageLoad.Clients.ServiceWorker2.InteractiveTiming.FirstInputDelay3
 
 Service worker startup time and breakdown:
 - ServiceWorker.StartWorker.Time

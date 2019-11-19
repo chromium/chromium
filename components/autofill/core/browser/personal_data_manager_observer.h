@@ -13,7 +13,7 @@ namespace autofill {
 class PersonalDataManagerObserver {
  public:
   // Notifies the observer that the PersonalDataManager changed in some way.
-  virtual void OnPersonalDataChanged() = 0;
+  virtual void OnPersonalDataChanged() {}
 
   // Called when there is insufficient data to fill a form. Used for testing.
   virtual void OnInsufficientFormData() {}
@@ -21,6 +21,11 @@ class PersonalDataManagerObserver {
   // Notifies the observer that the PersonalDataManager has no more tasks to
   // handle.
   virtual void OnPersonalDataFinishedProfileTasks() {}
+
+  // Notifies the observer whenever at least one (can be multiple) credit card
+  // is suceesfully saved.
+  virtual void OnCreditCardSaved(bool should_show_sign_in_promo_if_applicable) {
+  }
 
  protected:
   virtual ~PersonalDataManagerObserver() {}

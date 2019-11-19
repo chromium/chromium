@@ -2,27 +2,27 @@ This test should trigger 'window.onerror' for the syntax error in the attribute 
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-window.onerror: "Uncaught SyntaxError: Unexpected token %" at window-onerror-11.html (Line: 11, Column: 25)
+window.onerror: "Uncaught SyntaxError: Unexpected token '%'" at window-onerror-11.html (Line: 11, Column: 25)
 Stack Trace:
-SyntaxError: Unexpected token %
+SyntaxError: Unexpected token '%'
     at window-onerror-11.html:31:24
 
 Returning 'true': the error should not be reported in the console as an unhandled exception.
 
 
 
-window.onerror: "Uncaught SyntaxError: Unexpected token %" at window-onerror-11.html (Line: 33, Column: 14)
+window.onerror: "Uncaught SyntaxError: Unexpected token '%'" at window-onerror-11.html (Line: 33, Column: 14)
 Stack Trace:
-SyntaxError: Unexpected token %
+SyntaxError: Unexpected token '%'
     at window-onerror-11.html:31:24
 
 Returning 'true': the error should not be reported in the console as an unhandled exception.
 
 
 
-window.onerror: "Uncaught SyntaxError: Unexpected token %" at window-onerror-11.html (Line: 33, Column: 14)
+window.onerror: "Uncaught SyntaxError: Unexpected token '%'" at window-onerror-11.html (Line: 33, Column: 14)
 Stack Trace:
-SyntaxError: Unexpected token %
+SyntaxError: Unexpected token '%'
     at window-onerror-11.html:31:24
 
 Returning 'true': the error should not be reported in the console as an unhandled exception.

@@ -35,13 +35,13 @@ namespace base {
 //    }
 //
 //    // Start listening.
-//    MemoryPressureListener* my_listener =
-//        new MemoryPressureListener(base::Bind(&OnMemoryPressure));
+//    auto listener = std::make_unique<MemoryPressureListener>(
+//        base::BindRepeating(&OnMemoryPressure));
 //
 //    ...
 //
 //    // Stop listening.
-//    delete my_listener;
+//    listener.reset();
 //
 class BASE_EXPORT MemoryPressureListener {
  public:
@@ -63,8 +63,9 @@ class BASE_EXPORT MemoryPressureListener {
     MEMORY_PRESSURE_LEVEL_CRITICAL,
   };
 
-  typedef Callback<void(MemoryPressureLevel)> MemoryPressureCallback;
-  typedef Callback<void(MemoryPressureLevel)> SyncMemoryPressureCallback;
+  using MemoryPressureCallback = RepeatingCallback<void(MemoryPressureLevel)>;
+  using SyncMemoryPressureCallback =
+      RepeatingCallback<void(MemoryPressureLevel)>;
 
   explicit MemoryPressureListener(
       const MemoryPressureCallback& memory_pressure_callback);

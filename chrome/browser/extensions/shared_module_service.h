@@ -10,6 +10,7 @@
 #include "base/macros.h"
 #include "base/scoped_observer.h"
 #include "chrome/browser/extensions/install_gate.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/manifest_handlers/shared_module_info.h"
 
@@ -20,7 +21,6 @@ class BrowserContext;
 namespace extensions {
 class Extension;
 class ExtensionSet;
-class ExtensionRegistry;
 
 class SharedModuleService : public ExtensionRegistryObserver,
                             public InstallGate {
@@ -75,7 +75,7 @@ class SharedModuleService : public ExtensionRegistryObserver,
                               extensions::UninstallReason reason) override;
 
   ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      extension_registry_observer_;
+      extension_registry_observer_{this};
 
   // The context associated with this SharedModuleService.
   content::BrowserContext* browser_context_;

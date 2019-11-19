@@ -650,6 +650,35 @@ TEST(IPAddressTest, IPAddressStartsWith) {
   EXPECT_FALSE(IPAddressStartsWith(ipv6_address, ipv6_prefix5));
 }
 
+TEST(IPAddressTest, IsLinkLocal) {
+  const char* kPositive[] = {
+      "169.254.0.0",
+      "169.254.100.1",
+      "169.254.100.1",
+      "::ffff:169.254.0.0",
+      "::ffff:169.254.100.1",
+      "fe80::1",
+      "fe81::1",
+  };
+
+  for (const char* literal : kPositive) {
+    IPAddress ip_address;
+    ASSERT_TRUE(ip_address.AssignFromIPLiteral(literal));
+    EXPECT_TRUE(ip_address.IsLinkLocal()) << literal;
+  }
+
+  const char* kNegative[] = {
+      "170.254.0.0",        "169.255.0.0",        "::169.254.0.0",
+      "::fffe:169.254.0.0", "::ffff:169.255.0.0", "fec0::1",
+  };
+
+  for (const char* literal : kNegative) {
+    IPAddress ip_address;
+    ASSERT_TRUE(ip_address.AssignFromIPLiteral(literal));
+    EXPECT_FALSE(ip_address.IsLinkLocal()) << literal;
+  }
+}
+
 }  // anonymous namespace
 
 }  // namespace net

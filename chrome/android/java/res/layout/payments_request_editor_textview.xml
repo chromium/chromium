@@ -5,16 +5,18 @@
 
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginTop="@dimen/editor_dialog_section_small_spacing"
     android:layout_marginBottom="@dimen/editor_dialog_section_small_spacing">
 
-    <org.chromium.chrome.browser.widget.CompatibilityTextInputLayout
+    <org.chromium.chrome.browser.widget.ChromeTextInputLayout
         android:id="@+id/text_input_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        app:errorTextAppearance="@style/TextAppearance.ErrorCaption">
 
         <!-- TODO(crbug.com/900912): Fix and remove lint ignore -->
         <AutoCompleteTextView
@@ -24,7 +26,7 @@
             android:layout_height="wrap_content"
             android:singleLine="true"
             android:imeOptions="flagNoExtractUi" />
-    </org.chromium.chrome.browser.widget.CompatibilityTextInputLayout>
+    </org.chromium.chrome.browser.widget.ChromeTextInputLayout>
 
     <LinearLayout
         android:id="@+id/icons_layer"

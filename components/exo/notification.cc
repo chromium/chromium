@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "ash/session/session_controller.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/message_center/message_center.h"
@@ -71,7 +71,7 @@ Notification::Notification(
   notifier.profile_id = ash::Shell::Get()
                             ->session_controller()
                             ->GetPrimaryUserSession()
-                            ->user_info->account_id.GetUserEmail();
+                            ->user_info.account_id.GetUserEmail();
 
   message_center::RichNotificationData data;
   for (const auto& button : buttons)

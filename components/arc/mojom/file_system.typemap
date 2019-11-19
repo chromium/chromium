@@ -1,0 +1,14 @@
+# Copyright 2017 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+mojom = "//components/arc/mojom/file_system.mojom"
+public_headers = [ "//storage/browser/file_system/watcher_manager.h" ]
+public_deps = [
+  "//storage/browser",
+]
+traits_headers = [ "//components/arc/file_system/file_system_mojom_traits.h" ]
+sources = [
+  "//components/arc/file_system/file_system_mojom_traits.cc",
+]
+type_mappings = [ "arc.mojom.ChangeType=::storage::WatcherManager::ChangeType" ]

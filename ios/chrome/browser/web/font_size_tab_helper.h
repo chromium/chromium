@@ -6,8 +6,8 @@
 #define IOS_CHROME_BROWSER_WEB_FONT_SIZE_TAB_HELPER_H_
 
 #include "base/macros.h"
-#import "ios/web/public/web_state/web_state_observer.h"
-#import "ios/web/public/web_state/web_state_user_data.h"
+#include "ios/web/public/web_state_observer.h"
+#import "ios/web/public/web_state_user_data.h"
 
 namespace web {
 class WebState;

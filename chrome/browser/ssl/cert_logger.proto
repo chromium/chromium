@@ -39,6 +39,9 @@ message CertLoggerInterstitialInfo {
     INTERSTITIAL_SUPERFISH = 4 [deprecated = true];
     // An interstitial telling the user to fix misconfigured MITM software.
     INTERSTITIAL_MITM_SOFTWARE = 5;
+    // An interstitial telling the user that their connection is being
+    // intercepted by a known certificate.
+    INTERSTITIAL_BLOCKED_INTERCEPTION = 6;
   }
 
   // The type of interstitial that was shown
@@ -100,7 +103,8 @@ message CertLoggerRequest {
   // The certificate chain as a series of PEM-encoded certificates, including
   // intermediates but not necessarily the root.
   required string cert_chain = 2;
-  // The time (in usec since the epoch) when the client generated the report.
+  // The time (in usec since the Windows epoch) when the client generated the
+  // report.
   required int64 time_usec = 3;
   // public_key_hash contains the string forms of the hashes calculated for
   // the chain. (I.e. "sha1/<base64 data>".)
@@ -183,6 +187,28 @@ message CertLoggerRequest {
   repeated CertStatus cert_status = 14;
 };
 
+message MacCertEvidenceInfo {
+  // A bitfield indicating various status of the cert, defined in
+  // cssmapple.h
+  optional uint32 status_bits = 1;
+
+  // CSSM_RETURN status codes for the cert, defined in cssmtype.h, values in
+  // cssmerr.h and cssmErrorStrings.h.
+  repeated int32 status_codes = 2;
+}
+
+message MacPlatformDebugInfo {
+  // The SecTrustResultType result from SecTrustEvaluate.
+  optional uint32 trust_result = 1;
+
+  // The OSStatus resultCode from SecTrustGetCssmResultCode.
+  optional int32 result_code = 2;
+
+  // The CSSM_TP_APPLE_EVIDENCE_INFO statusChain from SecTrustGetResult. Each
+  // entry corresponds to one of the certs in the verified chain (leaf first).
+  repeated MacCertEvidenceInfo status_chain = 3;
+}
+
 // Contains the results of verification by the trial verifier. All fields
 // have the same meaning as those of the same name in CertLoggerRequest.
 message TrialVerificationInfo {
@@ -211,4 +237,34 @@ message TrialVerificationInfo {
   // The VerifyFlags that were used when validating this chain. (Note this
   // applies to both the primary and trial verifiers.)
   repeated VerifyFlags verify_flags = 6;
+
+  enum MacTrustFlags {
+    UNKNOWN_MAC_TRUST_FLAG = 0;
+    MAC_TRUST_SETTINGS_ARRAY_EMPTY = 1;
+    MAC_TRUST_SETTINGS_DICT_EMPTY = 2;
+    MAC_TRUST_SETTINGS_DICT_UNKNOWN_KEY = 3;
+    MAC_TRUST_SETTINGS_DICT_CONTAINS_POLICY = 4;
+    MAC_TRUST_SETTINGS_DICT_INVALID_POLICY_TYPE = 5;
+    MAC_TRUST_SETTINGS_DICT_CONTAINS_APPLICATION = 6;
+    MAC_TRUST_SETTINGS_DICT_CONTAINS_POLICY_STRING = 7;
+    MAC_TRUST_SETTINGS_DICT_CONTAINS_KEY_USAGE = 8;
+    MAC_TRUST_SETTINGS_DICT_CONTAINS_RESULT = 9;
+    MAC_TRUST_SETTINGS_DICT_INVALID_RESULT_TYPE = 10;
+    MAC_TRUST_SETTINGS_DICT_CONTAINS_ALLOWED_ERROR = 11;
+  }
+  // Debug flags from the trial verifier path building attempt, only populated
+  // on reports from macOS.  Contains the union of flags from all the GetTrust
+  // calls done during verification.
+  repeated MacTrustFlags mac_combined_trust_debug_info = 7;
+
+  // The time (in usec since the Windows epoch) when the trial verifier
+  // attempted to verify the chain.
+  optional int64 trial_verification_time_usec = 8;
+
+  // The GeneralizedTime encoded time when the trial verifier attempted to
+  // verify the chain.
+  optional string trial_der_verification_time = 9;
+
+  // Debug information from CertVerifyProcMac (if it was the primary verifier).
+  optional MacPlatformDebugInfo mac_platform_debug_info = 10;
 }

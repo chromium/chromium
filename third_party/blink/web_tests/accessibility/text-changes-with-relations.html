@@ -1,7 +1,6 @@
 <!DOCTYPE HTML>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 
 <!DOCTYPE html>
 <html>
@@ -27,21 +26,21 @@ function axElementById(id) {
     return accessibilityController.accessibleElementById(id);
 }
 
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var ax = axElementById("input");
     assert_equals(ax.name, "cats");
     document.getElementById("input-name").innerText = "dogs";
     assert_equals(ax.name, "dogs");
 }, "Changing text in a <label for> changes a name pointed to by @for");
 
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var ax = axElementById("main");
     assert_equals(ax.name, "apples");
     document.getElementById("main-name").innerText = "oranges";
     assert_equals(ax.name, "oranges");
 }, "Changing text pointed to by aria-labelledby changes the name pointed to by @aria-labelledby");
 
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var ax = axElementById("nav");
     assert_equals(ax.description, "butter");
     document.getElementById("nav-desc").innerText = "margarine";

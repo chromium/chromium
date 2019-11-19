@@ -32,4 +32,17 @@ void AnimationTestApi::Step(base::TimeTicks ticks) {
   animation_->Step(ticks);
 }
 
+AnimationContainerTestApi::AnimationContainerTestApi(
+    AnimationContainer* container)
+    : container_(container) {
+  container_->runner_->Stop();
+}
+
+AnimationContainerTestApi::~AnimationContainerTestApi() = default;
+
+void AnimationContainerTestApi::IncrementTime(base::TimeDelta delta) {
+  container_->runner_->SetAnimationTimeForTesting(container_->last_tick_time() +
+                                                  delta);
+}
+
 }  // namespace gfx

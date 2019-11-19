@@ -10,9 +10,9 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/task_environment.h"
 #include "chromeos/dbus/biod/messages.pb.h"
 #include "chromeos/dbus/biod/test_utils.h"
 #include "dbus/mock_bus.h"
@@ -82,12 +82,14 @@ class BiodClientTest : public testing::Test {
     EXPECT_CALL(*proxy_.get(), DoConnectToSignal(kInterface, _, _, _))
         .WillRepeatedly(Invoke(this, &BiodClientTest::ConnectToSignal));
 
-    client_.reset(BiodClient::Create(REAL_DBUS_CLIENT_IMPLEMENTATION));
-    client_->Init(bus_.get());
+    BiodClient::Initialize(bus_.get());
+    client_ = BiodClient::Get();
 
     // Execute callbacks posted by Init().
     base::RunLoop().RunUntilIdle();
   }
+
+  void TearDown() override { BiodClient::Shutdown(); }
 
   void GetBiometricType(biod::BiometricType type) { biometric_type_ = type; }
 
@@ -156,13 +158,14 @@ class BiodClientTest : public testing::Test {
 
   std::map<std::string, std::unique_ptr<dbus::Response>> pending_method_calls_;
 
-  base::MessageLoop message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
 
   // Mock bus and proxy for simulating calls.
   scoped_refptr<dbus::MockBus> bus_;
   scoped_refptr<dbus::MockObjectProxy> proxy_;
 
-  std::unique_ptr<BiodClient> client_;
+  // Convenience pointer to the global instance.
+  BiodClient* client_;
 
   // Maps from biod signal name to the corresponding callback provided by
   // |client_|.
@@ -179,7 +182,7 @@ class BiodClientTest : public testing::Test {
       dbus::ObjectProxy::OnConnectedCallback* on_connected_callback) {
     EXPECT_EQ(interface_name, kInterface);
     signal_callbacks_[signal_name] = signal_callback;
-    message_loop_.task_runner()->PostTask(
+    task_environment_.GetMainThreadTaskRunner()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(*on_connected_callback), interface_name,
                        signal_name, true /* success */));
@@ -194,7 +197,7 @@ class BiodClientTest : public testing::Test {
     auto pending_response = std::move(it->second);
     pending_method_calls_.erase(it);
 
-    message_loop_.task_runner()->PostTask(
+    task_environment_.GetMainThreadTaskRunner()->PostTask(
         FROM_HERE, base::BindOnce(&RunResponseCallback, std::move(*callback),
                                   std::move(pending_response)));
   }

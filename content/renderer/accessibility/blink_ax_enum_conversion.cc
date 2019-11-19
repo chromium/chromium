@@ -31,6 +31,11 @@ void AXStateFromBlink(const blink::WebAXObject& o, ui::AXNodeData* dst) {
   if (o.IsDefault())
     dst->AddState(ax::mojom::State::kDefault);
 
+  // aria-grabbed is deprecated in WAI-ARIA 1.1.
+  if (o.IsGrabbed() != blink::kWebAXGrabbedStateUndefined)
+    dst->AddBoolAttribute(ax::mojom::BoolAttribute::kGrabbed,
+                          o.IsGrabbed() == blink::kWebAXGrabbedStateTrue);
+
   if (o.IsHovered())
     dst->AddState(ax::mojom::State::kHovered);
 
@@ -71,8 +76,8 @@ void AXStateFromBlink(const blink::WebAXObject& o, ui::AXNodeData* dst) {
   else if (o.Orientation() == blink::kWebAXOrientationHorizontal)
     dst->AddState(ax::mojom::State::kHorizontal);
 
-  if (o.IsVisited())
-    dst->AddState(ax::mojom::State::kVisited);
+  if (o.AccessibilityIsIgnored())
+    dst->AddState(ax::mojom::State::kIgnored);
 }
 
 }  // namespace content.

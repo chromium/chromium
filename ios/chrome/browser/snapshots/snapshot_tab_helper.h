@@ -11,8 +11,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observer.h"
 #include "components/infobars/core/infobar_manager.h"
-#include "ios/web/public/web_state/web_state_observer.h"
-#import "ios/web/public/web_state/web_state_user_data.h"
+#include "ios/web/public/web_state_observer.h"
+#import "ios/web/public/web_state_user_data.h"
 
 @class SnapshotGenerator;
 @protocol SnapshotGeneratorDelegate;

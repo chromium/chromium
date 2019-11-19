@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import print_function
+
 import logging
 import time
 
@@ -52,7 +54,7 @@ class CrosMultiTabStory(page_module.Page):
       except exceptions.DevtoolsTargetCrashException:
         logging.info('Navigate: devtools context lost')
       if i % 10 == 0:
-        print 'opening tab:', i
+        print('opening tab:', i)
 
     # Waiting for every tabs to be stable.
     for i, url in enumerate(url_list):
@@ -82,7 +84,7 @@ class CrosMultiTabStory(page_module.Page):
         time.sleep(self._pause_after_switch)
 
         if i % 10 == 0:
-          print 'switching tab:', i
+          print('switching tab:', i)
 
 
 class CrosMultiTabTypical24Story(CrosMultiTabStory):

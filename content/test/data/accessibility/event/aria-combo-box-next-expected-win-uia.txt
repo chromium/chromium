@@ -1,1 +1,0 @@
-UIA_AutomationFocusChangedEventId on role=option, name=Banana

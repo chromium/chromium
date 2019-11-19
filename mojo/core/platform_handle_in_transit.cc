@@ -89,9 +89,6 @@ PlatformHandleInTransit& PlatformHandleInTransit::operator=(
 
   remote_handle_ = INVALID_HANDLE_VALUE;
   std::swap(remote_handle_, other.remote_handle_);
-#elif defined(OS_MACOSX) && !defined(OS_IOS)
-  mach_port_name_ = MACH_PORT_NULL;
-  std::swap(mach_port_name_, other.mach_port_name_);
 #endif
   handle_ = std::move(other.handle_);
   owning_process_ = std::move(other.owning_process_);
@@ -149,21 +146,6 @@ PlatformHandle PlatformHandleInTransit::TakeIncomingRemoteHandle(
     base::ProcessHandle owning_process) {
   return PlatformHandle(base::win::ScopedHandle(
       TransferHandle(handle, owning_process, base::GetCurrentProcessHandle())));
-}
-#endif
-
-#if defined(OS_MACOSX) && !defined(OS_IOS)
-// static
-PlatformHandleInTransit PlatformHandleInTransit::CreateForMachPortName(
-    mach_port_t name) {
-  if (name == MACH_PORT_NULL) {
-    return PlatformHandleInTransit(
-        PlatformHandle(base::mac::ScopedMachSendRight()));
-  }
-
-  PlatformHandleInTransit handle;
-  handle.mach_port_name_ = name;
-  return handle;
 }
 #endif
 

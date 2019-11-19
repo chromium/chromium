@@ -53,8 +53,10 @@ void ContextualSearchWrapper::Install(content::RenderFrame* render_frame) {
 
   v8::Local<v8::Object> chrome =
       content::GetOrCreateChromeObject(isolate, context);
-  chrome->Set(gin::StringToV8(isolate, kContextualSearchObjectName),
-              wrapper.ToV8());
+  chrome
+      ->Set(context, gin::StringToV8(isolate, kContextualSearchObjectName),
+            wrapper.ToV8())
+      .Check();
 }
 
 ContextualSearchWrapper::ContextualSearchWrapper(
@@ -73,10 +75,9 @@ gin::ObjectTemplateBuilder ContextualSearchWrapper::GetObjectTemplateBuilder(
 }
 
 bool ContextualSearchWrapper::EnsureServiceConnected() {
-  if (render_frame() && (!contextual_search_js_api_service_ ||
-                         !contextual_search_js_api_service_.is_bound())) {
+  if (render_frame() && !contextual_search_js_api_service_) {
     render_frame()->GetRemoteInterfaces()->GetInterface(
-        &contextual_search_js_api_service_);
+        contextual_search_js_api_service_.BindNewPipeAndPassReceiver());
     return true;
   }
   return false;

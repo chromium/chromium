@@ -99,8 +99,8 @@ function test()
     runTest('', 'innerText', '<a></a><b></b>', 'modified');
 
     runTest('text', 'innerText', '', 'modified');
-    runTest('text', 'innerText', 'different text', 'modified, with same first child');
-    runTest('text', 'innerText', 'text', 'modified, with same first child');
+    runTest('text', 'innerText', 'different text', 'modified');
+    runTest('text', 'innerText', 'text', 'modified');
 
     runTest('<a></a>', 'innerText', '', 'modified');
     runTest('<a></a>', 'innerText', 'text', 'modified');

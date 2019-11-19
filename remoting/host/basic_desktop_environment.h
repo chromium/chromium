@@ -18,10 +18,6 @@ namespace base {
 class SingleThreadTaskRunner;
 }
 
-namespace ui {
-class SystemInputInjectorFactory;
-}
-
 namespace webrtc {
 
 class DesktopCaptureOptions;
@@ -57,7 +53,6 @@ class BasicDesktopEnvironment : public DesktopEnvironment {
       scoped_refptr<base::SingleThreadTaskRunner> video_capture_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> input_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
-      ui::SystemInputInjectorFactory* system_input_injector_factory,
       base::WeakPtr<ClientSessionControl> client_session_control,
       const DesktopEnvironmentOptions& options);
 
@@ -86,10 +81,6 @@ class BasicDesktopEnvironment : public DesktopEnvironment {
     return *options_.desktop_capture_options();
   }
 
-  ui::SystemInputInjectorFactory* system_input_injector_factory() const {
-    return system_input_injector_factory_;
-  }
-
   const DesktopEnvironmentOptions& desktop_environment_options() const {
     return options_;
   }
@@ -108,9 +99,6 @@ class BasicDesktopEnvironment : public DesktopEnvironment {
   // Used to run UI code.
   scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
 
-  // Passed to InputInjector.
-  ui::SystemInputInjectorFactory* system_input_injector_factory_;
-
   // Used to send messages directly to the client session.
   base::WeakPtr<ClientSessionControl> client_session_control_;
 
@@ -126,8 +114,7 @@ class BasicDesktopEnvironmentFactory : public DesktopEnvironmentFactory {
       scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> video_capture_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> input_task_runner,
-      scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
-      ui::SystemInputInjectorFactory* system_input_injector_factory);
+      scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner);
   ~BasicDesktopEnvironmentFactory() override;
 
   // DesktopEnvironmentFactory implementation.
@@ -151,10 +138,6 @@ class BasicDesktopEnvironmentFactory : public DesktopEnvironmentFactory {
     return ui_task_runner_;
   }
 
-  ui::SystemInputInjectorFactory* system_input_injector_factory() const {
-    return system_input_injector_factory_;
-  }
-
  private:
   // Task runner on which methods of DesktopEnvironmentFactory interface should
   // be called.
@@ -168,9 +151,6 @@ class BasicDesktopEnvironmentFactory : public DesktopEnvironmentFactory {
 
   // Used to run UI code.
   scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
-
-  // Passed to the environments built.
-  ui::SystemInputInjectorFactory* system_input_injector_factory_;
 
   DISALLOW_COPY_AND_ASSIGN(BasicDesktopEnvironmentFactory);
 };

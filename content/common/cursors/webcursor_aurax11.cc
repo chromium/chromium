@@ -26,11 +26,6 @@ ui::PlatformCursor WebCursor::GetPlatformCursor(const ui::Cursor& cursor) {
   return platform_cursor_;
 }
 
-void WebCursor::InitPlatformData() {
-  platform_cursor_ = 0;
-  device_scale_factor_ = 1.f;
-}
-
 bool WebCursor::IsPlatformDataEqual(const WebCursor& other) const {
   return true;
 }

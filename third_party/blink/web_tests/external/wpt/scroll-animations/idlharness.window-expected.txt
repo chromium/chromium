@@ -1,5 +1,12 @@
 This is a testharness.js-based test.
 PASS idl_test setup
+PASS idl_test validation
+PASS Partial interface Element: member names are unique
+PASS Element includes Animatable: member names are unique
+PASS Element includes ParentNode: member names are unique
+PASS Element includes NonDocumentTypeChildNode: member names are unique
+PASS Element includes ChildNode: member names are unique
+PASS Element includes Slotable: member names are unique
 PASS ScrollTimeline interface: existence and properties of interface object
 PASS ScrollTimeline interface object length
 PASS ScrollTimeline interface object name

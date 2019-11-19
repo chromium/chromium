@@ -13,7 +13,11 @@ const TransformPaintPropertyNode& TransformPaintPropertyNode::Root() {
       TransformPaintPropertyNode, root,
       base::AdoptRef(new TransformPaintPropertyNode(
           nullptr,
-          State{TransformationMatrix(), &ScrollPaintPropertyNode::Root()},
+          State{
+              FloatSize(), &ScrollPaintPropertyNode::Root(),
+              State::Flags{false /* flattens_inherited_transform */,
+                           false /* affected_by_outer_viewport_bounds_delta */,
+                           false /* in_subtree_of_page_scale */}},
           true /* is_parent_alias */)));
   return *root;
 }
@@ -31,31 +35,37 @@ TransformPaintPropertyNode::NearestScrollTranslationNode() const {
 }
 
 bool TransformPaintPropertyNode::Changed(
+    PaintPropertyChangeType change,
     const TransformPaintPropertyNode& relative_to_node) const {
   for (const auto* node = this; node; node = node->Parent()) {
     if (node == &relative_to_node)
       return false;
-    if (node->NodeChanged())
+    if (node->NodeChanged() >= change)
       return true;
   }
 
   // |this| is not a descendant of |relative_to_node|. We have seen no changed
   // flag from |this| to the root. Now check |relative_to_node| to the root.
-  return relative_to_node.Changed(Root());
+  return relative_to_node.Changed(change, Root());
 }
 
 std::unique_ptr<JSONObject> TransformPaintPropertyNode::ToJSON() const {
-  auto json = JSONObject::Create();
+  auto json = std::make_unique<JSONObject>();
   if (Parent())
     json->SetString("parent", String::Format("%p", Parent()));
-  if (NodeChanged())
-    json->SetBoolean("changed", true);
-  if (!state_.matrix.IsIdentity())
-    json->SetString("matrix", state_.matrix.ToString());
-  if (!state_.matrix.IsIdentityOrTranslation())
-    json->SetString("origin", state_.origin.ToString());
-  if (!state_.flattens_inherited_transform)
+  if (NodeChanged() != PaintPropertyChangeType::kUnchanged)
+    json->SetString("changed", PaintPropertyChangeTypeToString(NodeChanged()));
+  if (IsIdentityOr2DTranslation()) {
+    if (!Translation2D().IsZero())
+      json->SetString("translation2d", Translation2D().ToString());
+  } else {
+    json->SetString("matrix", Matrix().ToString());
+    json->SetString("origin", Origin().ToString());
+  }
+  if (!state_.flags.flattens_inherited_transform)
     json->SetBoolean("flattensInheritedTransform", false);
+  if (!state_.flags.in_subtree_of_page_scale)
+    json->SetBoolean("in_subtree_of_page_scale", false);
   if (state_.backface_visibility != BackfaceVisibility::kInherited) {
     json->SetString("backface",
                     state_.backface_visibility == BackfaceVisibility::kVisible

@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/run_loop.h"
 #include "base/values.h"
@@ -20,7 +21,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -76,7 +77,7 @@ class BrowserSwitcherPrefsTest : public testing::Test {
   BrowserSwitcherPrefs* prefs() { return prefs_.get(); }
 
  private:
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
 
   sync_preferences::TestingPrefServiceSyncable prefs_backend_;
 
@@ -137,8 +138,13 @@ TEST_F(BrowserSwitcherPrefsTest, TriggersObserversOnPolicyChange) {
 
   base::RunLoop run_loop;
   auto subscription = prefs()->RegisterPrefsChangedCallback(base::BindRepeating(
-      [](base::OnceClosure quit, BrowserSwitcherPrefs* prefs) {
+      [](base::OnceClosure quit, BrowserSwitcherPrefs* prefs,
+         const std::vector<std::string>& changed_prefs) {
         EXPECT_EQ("notepad.exe", prefs->GetAlternativeBrowserPath());
+        std::vector<std::string> expected_changed_prefs{
+            prefs::kAlternativeBrowserPath,
+        };
+        EXPECT_EQ(expected_changed_prefs, changed_prefs);
         std::move(quit).Run();
       },
       run_loop.QuitClosure()));

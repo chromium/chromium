@@ -6,8 +6,8 @@
   await dp.Page.enable();
   await dp.Page.setLifecycleEventsEnabled({enabled: true});
 
-  // Start tight loop in page.
-  session.evaluate(`debugger;`),
+  // Note that evaluate will return an error after navigation.
+  dp.Runtime.evaluate({expression: `debugger;`});
   await dp.Debugger.oncePaused(),
   testRunner.log('SUCCESS: Paused');
 

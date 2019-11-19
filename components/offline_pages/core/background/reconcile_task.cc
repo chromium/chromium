@@ -16,7 +16,7 @@ namespace offline_pages {
 
 ReconcileTask::ReconcileTask(RequestQueueStore* store,
                              RequestQueueStore::UpdateCallback callback)
-    : store_(store), callback_(std::move(callback)), weak_ptr_factory_(this) {}
+    : store_(store), callback_(std::move(callback)) {}
 
 ReconcileTask::~ReconcileTask() {}
 

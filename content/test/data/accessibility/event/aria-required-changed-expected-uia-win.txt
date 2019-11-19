@@ -1,0 +1,6 @@
+AriaProperties changed on role=checkbox
+AriaProperties changed on role=combobox
+AriaProperties changed on role=radio
+IsRequiredForForm changed on role=checkbox
+IsRequiredForForm changed on role=combobox
+IsRequiredForForm changed on role=radio

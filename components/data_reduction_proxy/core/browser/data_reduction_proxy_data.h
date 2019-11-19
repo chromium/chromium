@@ -17,10 +17,6 @@
 #include "net/nqe/effective_connection_type.h"
 #include "url/gurl.h"
 
-namespace net {
-class URLRequest;
-}
-
 namespace data_reduction_proxy {
 
 // DataReductionProxy-related data that can be put into UserData or other
@@ -45,26 +41,6 @@ class DataReductionProxyData : public base::SupportsUserData::Data {
   bool lite_page_received() const { return lite_page_received_; }
   void set_lite_page_received(bool lite_page_received) {
     lite_page_received_ = lite_page_received;
-  }
-
-  // Whether a Lo-Fi (or empty-image) page policy directive was received for
-  // the navigation.
-  bool lofi_policy_received() const { return lofi_policy_received_; }
-  void set_lofi_policy_received(bool lofi_policy_received) {
-    lofi_policy_received_ = lofi_policy_received;
-  }
-
-  // Whether a server Lo-Fi page response was seen for the request or
-  // navigation.
-  bool lofi_received() const { return lofi_received_; }
-  void set_lofi_received(bool lofi_received) { lofi_received_ = lofi_received; }
-
-  // Whether client Lo-Fi was requested for this request. This is only set on
-  // image requests that have added a range header to attempt to get a smaller
-  // file size image.
-  bool client_lofi_requested() const { return client_lofi_requested_; }
-  void set_client_lofi_requested(bool client_lofi_requested) {
-    client_lofi_requested_ = client_lofi_requested;
   }
 
   // This response was fetched from cache, but the original request used DRP.
@@ -117,17 +93,6 @@ class DataReductionProxyData : public base::SupportsUserData::Data {
   bool black_listed() const { return black_listed_; }
   void set_black_listed(bool black_listed) { black_listed_ = black_listed; }
 
-  // Removes |this| from |request|.
-  static void ClearData(net::URLRequest* request);
-
-  // Returns the Data from the URLRequest's UserData.
-  static DataReductionProxyData* GetData(const net::URLRequest& request);
-  // Returns the Data for a given URLRequest. If there is currently no
-  // DataReductionProxyData on URLRequest, it creates one, and adds it to the
-  // URLRequest's UserData, and returns a raw pointer to the new instance.
-  static DataReductionProxyData* GetDataAndCreateIfNecessary(
-      net::URLRequest* request);
-
   // Create a brand new instance of DataReductionProxyData that could be used in
   // a different thread. Several of deep copies may occur per navigation, so
   // this is inexpensive.
@@ -140,21 +105,9 @@ class DataReductionProxyData : public base::SupportsUserData::Data {
   // Cached responses are not considered to have used DRP.
   bool used_data_reduction_proxy_;
 
-  // Whether client Lo-Fi was requested for this request. This is only set on
-  // image requests that have added a range header to attempt to get a smaller
-  // file size image.
-  bool client_lofi_requested_;
-
   // Whether a proxy-served lite page response was seen for the HTTP request or
   // navigation.
   bool lite_page_received_;
-
-  // Whether server Lo-Fi directive was received for this navigation. True if
-  // the proxy returns the empty-image page-policy for the main frame response.
-  bool lofi_policy_received_;
-
-  // Whether a lite page response was seen for the request or navigation.
-  bool lofi_received_;
 
   // Whether the blacklist prevented a preview.
   bool black_listed_;

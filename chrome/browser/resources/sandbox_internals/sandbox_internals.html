@@ -30,10 +30,13 @@
       }
     </style>
     <script src="chrome://resources/js/cr.js"></script>
-    <if expr="not is_android">
+<if expr="is_linux">
     <script src="chrome://resources/js/load_time_data.js"></script>
     <script src="chrome://sandbox/strings.js"></script>
-    </if>
+</if>
+<if expr="is_win">
+    <script src="chrome://resources/js/promise_resolver.js"></script>
+</if>
     <script src="chrome://resources/js/util.js"></script>
     <script src="sandbox_internals.js"></script>
   </head>
@@ -42,7 +45,9 @@
 
     <table id="sandbox-status">
     </table>
-
     <p id="evaluation"></p>
+<if expr="is_win">
+    <pre id="raw-info"></pre>
+</if>
   </body>
 </html>

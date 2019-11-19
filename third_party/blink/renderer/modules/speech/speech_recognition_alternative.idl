@@ -23,7 +23,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// https://dvcs.w3.org/hg/speech-api/raw-file/tip/webspeechapi.html#speechrecognitionalternative
+// https://w3c.github.io/speech-api/#speechrecognitionalternative
 
 [
     NoInterfaceObject

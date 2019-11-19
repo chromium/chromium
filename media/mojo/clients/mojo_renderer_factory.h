@@ -11,8 +11,11 @@
 #include "base/macros.h"
 #include "build/build_config.h"
 #include "media/base/renderer_factory.h"
-#include "media/mojo/interfaces/interface_factory.mojom.h"
-#include "media/mojo/interfaces/renderer.mojom.h"
+#include "media/mojo/buildflags.h"
+#include "media/mojo/mojom/interface_factory.mojom.h"
+#include "media/mojo/mojom/renderer.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace service_manager {
 class InterfaceProvider;
@@ -20,7 +23,6 @@ class InterfaceProvider;
 
 namespace media {
 
-class GpuVideoAcceleratorFactories;
 class MojoRenderer;
 
 // The default factory class for creating MojoRenderer.
@@ -34,12 +36,10 @@ class MojoRenderer;
 // MediaPlayerRendererClientFactory for examples of small wrappers around MRF.
 class MojoRendererFactory : public RendererFactory {
  public:
-  using GetGpuFactoriesCB = base::Callback<GpuVideoAcceleratorFactories*()>;
   using GetTypeSpecificIdCB = base::Callback<std::string()>;
 
-  MojoRendererFactory(const GetGpuFactoriesCB& get_gpu_factories_cb,
-                      media::mojom::InterfaceFactory* interface_factory);
-
+  explicit MojoRendererFactory(
+      media::mojom::InterfaceFactory* interface_factory);
   ~MojoRendererFactory() final;
 
   std::unique_ptr<Renderer> CreateRenderer(
@@ -50,20 +50,30 @@ class MojoRendererFactory : public RendererFactory {
       const RequestOverlayInfoCB& request_overlay_info_cb,
       const gfx::ColorSpace& target_color_space) final;
 
+#if BUILDFLAG(ENABLE_CAST_RENDERER)
+  std::unique_ptr<MojoRenderer> CreateCastRenderer(
+      const scoped_refptr<base::SingleThreadTaskRunner>& media_task_runner,
+      VideoRendererSink* video_renderer_sink);
+#endif  // BUILDFLAG(ENABLE_CAST_RENDERER)
+
 #if defined(OS_ANDROID)
   std::unique_ptr<MojoRenderer> CreateFlingingRenderer(
       const std::string& presentation_id,
+      mojo::PendingRemote<mojom::FlingingRendererClientExtension>
+          client_extenion_ptr,
       const scoped_refptr<base::SingleThreadTaskRunner>& media_task_runner,
       VideoRendererSink* video_renderer_sink);
 
   std::unique_ptr<MojoRenderer> CreateMediaPlayerRenderer(
+      mojo::PendingReceiver<mojom::MediaPlayerRendererExtension>
+          renderer_extension_receiver,
+      mojo::PendingRemote<mojom::MediaPlayerRendererClientExtension>
+          client_extension_remote,
       const scoped_refptr<base::SingleThreadTaskRunner>& media_task_runner,
       VideoRendererSink* video_renderer_sink);
 #endif  // defined (OS_ANDROID)
 
  private:
-  GetGpuFactoriesCB get_gpu_factories_cb_;
-
   // InterfaceFactory or InterfaceProvider used to create or connect to remote
   // renderer.
   media::mojom::InterfaceFactory* interface_factory_ = nullptr;

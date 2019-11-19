@@ -47,7 +47,7 @@ GlobalSyncCallSettings& GetGlobalSettings() {
 
 size_t& GetSequenceLocalScopedAllowCount() {
   static base::NoDestructor<base::SequenceLocalStorageSlot<size_t>> count;
-  return count->Get();
+  return count->GetOrCreateValue();
 }
 
 }  // namespace

@@ -1,0 +1,2 @@
+[document web]
+++[progress bar] valuetext:three current=3.000000 minimum=1.000000 maximum=96.000000

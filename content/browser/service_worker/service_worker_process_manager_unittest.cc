@@ -14,9 +14,9 @@
 #include "content/public/common/child_process_host.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/url_constants.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/test_browser_context.h"
-#include "content/public/test/test_browser_thread_bundle.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -34,7 +34,7 @@ class SiteInstanceRenderProcessHostFactory : public RenderProcessHostFactory {
 
   RenderProcessHost* CreateRenderProcessHost(
       BrowserContext* browser_context,
-      SiteInstance* site_instance) const override {
+      SiteInstance* site_instance) override {
     processes_.push_back(
         std::make_unique<MockRenderProcessHost>(browser_context));
 
@@ -89,7 +89,7 @@ class ServiceWorkerProcessManagerTest : public testing::Test {
   }
 
  protected:
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestBrowserContext> browser_context_;
   std::unique_ptr<ServiceWorkerProcessManager> process_manager_;
   GURL script_url_;

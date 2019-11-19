@@ -14,8 +14,8 @@
 #include "base/files/file_util.h"
 #include "base/run_loop.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
-#include "content/public/test/test_browser_thread_bundle.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -45,7 +45,7 @@ class IsDirectoryUtilTest : public testing::Test {
     EXPECT_TRUE(base::CreateTemporaryFile(&file_path_));
   }
 
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   ExtensionsAPIClient extensions_api_client_;
   content::TestBrowserContext context_;
   base::FilePath dir_path_;

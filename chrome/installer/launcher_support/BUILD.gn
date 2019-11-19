@@ -10,5 +10,6 @@ source_set("launcher_support") {
 
   deps = [
     "//base",
+    "//build:branding_buildflags",
   ]
 }

@@ -6,9 +6,10 @@ package org.chromium.chrome.test.util;
 
 import static java.lang.annotation.RetentionPolicy.SOURCE;
 
-import android.support.annotation.IntDef;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.annotation.IntDef;
 
 import org.hamcrest.Matcher;
 
@@ -67,18 +68,21 @@ public class ViewUtils {
 
         private boolean hasViewExpectedState(View view) {
             if (view == null) {
-                updateFailureReason("No matching view was found!");
+                updateFailureReason("No view found to match: " + mViewMatcher.toString());
                 return (mViewState & VIEW_NULL) != 0;
             }
             switch (view.getVisibility()) {
                 case View.VISIBLE:
-                    updateFailureReason("Found view is unexpectedly visible!");
+                    updateFailureReason("View matching '" + mViewMatcher.toString()
+                            + "' is unexpectedly visible!");
                     return (mViewState & VIEW_VISIBLE) != 0;
                 case View.INVISIBLE:
-                    updateFailureReason("Found view is unexpectedly invisible!");
+                    updateFailureReason("View matching '" + mViewMatcher.toString()
+                            + "' is unexpectedly invisible!");
                     return (mViewState & VIEW_INVISIBLE) != 0;
                 case View.GONE:
-                    updateFailureReason("Found view is unexpectedly gone!");
+                    updateFailureReason("View matching '" + mViewMatcher.toString()
+                            + "' is unexpectedly gone!");
                     return (mViewState & VIEW_GONE) != 0;
             }
             assert false; // Not Reached.

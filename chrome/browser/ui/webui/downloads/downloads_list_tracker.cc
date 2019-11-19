@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/downloads/downloads_list_tracker.h"
 
 #include <iterator>
+#include <utility>
 #include <vector>
 
 #include "base/bind.h"
@@ -21,13 +22,16 @@
 #include "chrome/browser/download/download_item_model.h"
 #include "chrome/browser/download/download_query.h"
 #include "chrome/browser/extensions/api/downloads/downloads_api.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/downloads/downloads.mojom.h"
+#include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_item.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/browser/download_manager.h"
-#include "extensions/browser/extension_system.h"
+#include "extensions/browser/extension_registry.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/filename_util.h"
 #include "third_party/icu/source/i18n/unicode/datefmt.h"
 #include "ui/base/l10n/time_format.h"
@@ -41,9 +45,8 @@ using DownloadVector = DownloadManager::DownloadVector;
 namespace {
 
 // Returns a string constant to be used as the |danger_type| value in
-// CreateDownloadData().  Only return strings for DANGEROUS_FILE,
-// DANGEROUS_URL, DANGEROUS_CONTENT, and UNCOMMON_CONTENT because the
-// |danger_type| value is only defined if the value of |state| is |DANGEROUS|.
+// CreateDownloadData(). This can be the empty string, if the danger type is not
+// relevant for the UI.
 const char* GetDangerTypeString(download::DownloadDangerType danger_type) {
   switch (danger_type) {
     case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE:
@@ -58,6 +61,20 @@ const char* GetDangerTypeString(download::DownloadDangerType danger_type) {
       return "DANGEROUS_HOST";
     case download::DOWNLOAD_DANGER_TYPE_POTENTIALLY_UNWANTED:
       return "POTENTIALLY_UNWANTED";
+    case download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING:
+      return "ASYNC_SCANNING";
+    case download::DOWNLOAD_DANGER_TYPE_BLOCKED_PASSWORD_PROTECTED:
+      return "BLOCKED_PASSWORD_PROTECTED";
+    case download::DOWNLOAD_DANGER_TYPE_BLOCKED_TOO_LARGE:
+      return "BLOCKED_TOO_LARGE";
+    case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING:
+      return "SENSITIVE_CONTENT_WARNING";
+    case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK:
+      return "SENSITIVE_CONTENT_BLOCK";
+    case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_SAFE:
+      return "DEEP_SCANNED_SAFE";
+    case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_OPENED_DANGEROUS:
+      return "DEEP_SCANNED_OPENED_DANGEROUS";
     case download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS:
     case download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT:
     case download::DOWNLOAD_DANGER_TYPE_USER_VALIDATED:
@@ -65,9 +82,9 @@ const char* GetDangerTypeString(download::DownloadDangerType danger_type) {
     case download::DOWNLOAD_DANGER_TYPE_MAX:
       break;
   }
+
   // Don't return a danger type string if it is NOT_DANGEROUS,
-  // MAYBE_DANGEROUS_CONTENT, or USER_VALIDATED.
-  NOTREACHED();
+  // MAYBE_DANGEROUS_CONTENT, or USER_VALIDATED, or WHITELISTED_BY_POLICY.
   return "";
 }
 
@@ -82,8 +99,9 @@ std::string TimeFormatLongDate(const base::Time& time) {
 
 }  // namespace
 
-DownloadsListTracker::DownloadsListTracker(DownloadManager* download_manager,
-                                           downloads::mojom::PagePtr page)
+DownloadsListTracker::DownloadsListTracker(
+    DownloadManager* download_manager,
+    mojo::PendingRemote<downloads::mojom::Page> page)
     : main_notifier_(download_manager, this),
       page_(std::move(page)),
       should_show_(base::BindRepeating(&DownloadsListTracker::ShouldShow,
@@ -177,7 +195,7 @@ void DownloadsListTracker::OnDownloadRemoved(DownloadManager* manager,
 
 DownloadsListTracker::DownloadsListTracker(
     DownloadManager* download_manager,
-    downloads::mojom::PagePtr page,
+    mojo::PendingRemote<downloads::mojom::Page> page,
     base::Callback<bool(const DownloadItem&)> should_show)
     : main_notifier_(download_manager, this),
       page_(std::move(page)),
@@ -219,13 +237,11 @@ downloads::mojom::DataPtr DownloadsListTracker::CreateDownloadData(
     // Lookup the extension's current name() in case the user changed their
     // language. This won't work if the extension was uninstalled, so the name
     // might be the wrong language.
-    bool include_disabled = true;
     auto* profile = Profile::FromBrowserContext(
         content::DownloadItemUtils::GetBrowserContext(download_item));
-    auto* service =
-        extensions::ExtensionSystem::Get(profile)->extension_service();
-    const extensions::Extension* extension =
-        service->GetExtensionById(by_ext->id(), include_disabled);
+    auto* registry = extensions::ExtensionRegistry::Get(profile);
+    const extensions::Extension* extension = registry->GetExtensionById(
+        by_ext->id(), extensions::ExtensionRegistry::EVERYTHING);
     if (extension)
       by_ext_name = extension->name();
   }
@@ -244,7 +260,7 @@ downloads::mojom::DataPtr DownloadsListTracker::CreateDownloadData(
   file_value->resume = download_item->CanResume();
   file_value->otr = IsIncognito(*download_item);
 
-  const char* danger_type = "";
+  const char* danger_type = GetDangerTypeString(download_item->GetDangerType());
   base::string16 last_reason_text;
   // -2 is invalid, -1 means indeterminate, and 0-100 are in-progress.
   int percent = -2;
@@ -256,7 +272,6 @@ downloads::mojom::DataPtr DownloadsListTracker::CreateDownloadData(
     case download::DownloadItem::IN_PROGRESS: {
       if (download_item->IsDangerous()) {
         state = "DANGEROUS";
-        danger_type = GetDangerTypeString(download_item->GetDangerType());
       } else if (download_item->IsPaused()) {
         state = "PAUSED";
       } else {
@@ -333,8 +348,12 @@ void DownloadsListTracker::SetChunkSizeForTesting(size_t chunk_size) {
 }
 
 bool DownloadsListTracker::ShouldShow(const DownloadItem& item) const {
-  return !download_crx_util::IsExtensionDownload(item) && !item.IsTemporary() &&
-         !item.IsTransient() && !item.GetFileNameToReportUser().empty() &&
+  return !download_crx_util::IsTrustedExtensionDownload(
+             Profile::FromBrowserContext(
+                 GetMainNotifierManager()->GetBrowserContext()),
+             item) &&
+         !item.IsTemporary() && !item.IsTransient() &&
+         !item.GetFileNameToReportUser().empty() &&
          !item.GetTargetFilePath().empty() && !item.GetURL().is_empty() &&
          DownloadItemModel(const_cast<DownloadItem*>(&item))
              .ShouldShowInShelf() &&
@@ -352,8 +371,8 @@ void DownloadsListTracker::Init() {
       GetMainNotifierManager()->GetBrowserContext());
   if (profile->IsOffTheRecord()) {
     Profile* original_profile = profile->GetOriginalProfile();
-    original_notifier_.reset(new download::AllDownloadItemNotifier(
-        BrowserContext::GetDownloadManager(original_profile), this));
+    original_notifier_ = std::make_unique<download::AllDownloadItemNotifier>(
+        BrowserContext::GetDownloadManager(original_profile), this);
   }
 
   RebuildSortedItems();

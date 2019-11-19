@@ -4,5 +4,4 @@
 
 module video_capture.mojom;
 
-const string kServiceName = "video_capture";
 const int32 kInvalidBufferId = -1;

@@ -20,7 +20,9 @@ PageLoadStrategy* PageLoadStrategy::Create(
   if (strategy == kNone) {
     return new NonBlockingNavigationTracker();
   } else if (strategy == kNormal) {
-    return new NavigationTracker(client, browser_info, dialog_manager);
+    return new NavigationTracker(client, browser_info, dialog_manager, false);
+  } else if (strategy == kEager) {
+    return new NavigationTracker(client, browser_info, dialog_manager, true);
   } else {
     NOTREACHED() << "invalid strategy '" << strategy << "'";
     return nullptr;

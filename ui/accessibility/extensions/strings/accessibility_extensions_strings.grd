@@ -217,8 +217,8 @@
       <message desc="The title of the options page." name="IDS_CARET_BROWSING_CARETBROWSINGOPTIONS">
         Caret Browsing Options
       </message>
-      <message desc="Instructions for how to enable or disable this feature on a Chromebook, where you have to hold Alt and press the special Increase Brightness key on the top of the keyboard, or F7 if you're using an alternate keyboard." name="IDS_CARET_BROWSING_ENABLEDISABLECROS">
-        Press &lt;span class='key'&gt;Alt&lt;/span&gt; + &lt;img src='increase_brightness.png'&gt; (the Increase Brightness key, or F7) to turn on Caret Browsing. Press it again to turn it off.
+      <message desc="Instructions for how to enable or disable this feature on a Chromebook, where you have to hold Search and press the special Increase Brightness key on the top of the keyboard, or F7 if you're using an alternate keyboard." name="IDS_CARET_BROWSING_ENABLEDISABLECROS">
+        Press &lt;span class='key'&gt;Search&lt;/span&gt; + &lt;img src='increase_brightness.png'&gt; (the Increase Brightness key, or F7) to turn on Caret Browsing. Press it again to turn it off.
       </message>
       <message desc="Instructions for how to enable or disable this feature on any platform other than Chrome OS." name="IDS_CARET_BROWSING_ENABLEDISABLENONCROS">
         Press &lt;span class='key'&gt;F7&lt;/span&gt; to turn on Caret Browsing. Press it again to turn it off.

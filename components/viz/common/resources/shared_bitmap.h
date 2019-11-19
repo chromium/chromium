@@ -8,7 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/hash.h"
+#include "base/hash/hash.h"
 #include "base/macros.h"
 #include "base/trace_event/memory_allocator_dump.h"
 #include "components/viz/common/resources/resource_format.h"

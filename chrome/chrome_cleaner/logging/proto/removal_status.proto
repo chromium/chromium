@@ -10,6 +10,8 @@ package chrome_cleaner;
 
 // Removal status for files and folder.
 enum RemovalStatus {
+  reserved 9;
+  reserved "REMOVAL_STATUS_NOT_REMOVED_INACTIVE_EXTENSION";
   // Default value found in logs for records sent by cleaner versions that don't
   // write removal_status fields, and should never be used in the cleaner code.
   REMOVAL_STATUS_UNSPECIFIED = 0;
@@ -30,9 +32,6 @@ enum RemovalStatus {
   REMOVAL_STATUS_NOT_FOUND = 7;
   // File registered for post-reboot removal after failed regular deletion.
   REMOVAL_STATUS_SCHEDULED_FOR_REMOVAL_FALLBACK = 8;
-  // File deletion was requested, not performed due to non-executable file
-  // extension, but reported as success.
-  REMOVAL_STATUS_NOT_REMOVED_INACTIVE_EXTENSION = 9;
   // There is an error in the archiver.
   REMOVAL_STATUS_ERROR_IN_ARCHIVER = 10;
 }

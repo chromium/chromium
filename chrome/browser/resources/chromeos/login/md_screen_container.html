@@ -1,22 +1,18 @@
 <div id="background" class="background-initial"></div>
 <include src="api_keys_notice.html">
 <div id="scroll-container">
-  <div id="outer-container" class="down">
+  <div id="outer-container" class="layout vertical">
+    <div class="oobe-vertical-margin"></div>
     <div id="oobe" class="faded">
       <div id="inner-container" class="down">
-        <div id="step-logo" hidden>
-          <img src="chrome://theme/IDR_PRODUCT_LOGO" alt>
-          <div id="header-sections">
-          </div>
-        </div>
         <include src="[OOBE]_screens.html">
       </div>
     </div>
+    <div class="oobe-vertical-margin"></div>
   </div>
 </div>
 <div id="bubble-persistent" class="bubble faded" hidden></div>
 <div id="bubble" class="bubble faded" hidden></div>
 <include src="md_top_header_bar.html">
-<include src="md_header_bar.html">
 <include src="../../../../../ui/login/account_picker/chromeos_user_pod_template.html">
 <include src="oobe_screen_reset_confirmation_overlay.html">

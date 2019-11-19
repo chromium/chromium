@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<script src='../../resources/testharness.js'></script>
+<script src='../../resources/testharnessreport.js'></script>
+<script src='../../resources/gesture-util.js'></script>
+
+<style>
+  body, html {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  #fixed {
+    position: fixed;
+    width: 80%;
+    height: 80%;
+    top: 10%;
+    left: 10%;
+    padding: 20px;
+    box-sizing: border-box;
+    background-color: PaleTurquoise;
+    overflow-y: scroll;
+  }
+
+  #instructions {
+    width: 100%;
+    height: 100px;
+    text-align: center;
+  }
+
+  #scroller {
+    position: absolute;
+    border: 5px solid salmon;
+    clip: rect(0px, 1000px, 500px, 0px);
+    width: 90%;
+    height: 300px;
+    overflow-y: scroll;
+  }
+
+  .box {
+    position: fixed;
+    width: 200px;
+    height: 200px;
+    border: 2px solid black;
+    background-color: lightgrey;
+  }
+
+  .subbox {
+    width: 100%;
+    height: 80%;
+  }
+
+  .composited {
+    will-change: transform;
+  }
+
+  .scrolls {
+    overflow: auto;
+  }
+
+  .spacer {
+   height: 400%;
+   width: 100%;
+   background:repeating-linear-gradient(#FFF 0%, #FFF 10%, #000 10%, #000 20%);
+
+  }
+</style>
+
+<div id="fixedScroller" class="box scrolls" style="left: 20px; top: 20px">
+  <div class="spacer"></div>
+  position: fixed scroller
+</div>
+
+<div id="childScroller" class="box" style="right: 20px; top: 20px">
+  Scroller child of position: fixed non-scroller
+  <div class="scrolls subbox">
+    <div class="spacer"></div>
+  </div>
+</div>
+
+<div id="childScrollerFixedScroller" class="box scrolls"
+     style="left: 20px; bottom: 20px">
+  <div class="spacer"></div>
+  Scroller child of position: fixed scroller
+  <div class="scrolls subbox">
+    <div class="spacer"></div>
+  </div>
+</div>
+
+<div id="fixedScrollerInFixedTransform" class="box"
+     style="right: 20px; bottom: 20px; will-change: transform;">
+  position: fixed scroller child in position: fixed non-scroller
+  <div class="scrolls subbox" style="position: fixed; top: 40px">
+    <div class="spacer"></div>
+  </div>
+</div>
+<div class="spacer"></div>
+
+<script>
+  async function scrollBox(box) {
+    const delta = 100;
+    // This relies on the fact that the center point of each box is in the
+    // scroller.
+    const location = elementCenter(box);
+    await smoothScroll(delta,
+                       location.x,
+                       location.y,
+                       GestureSourceType.TOUCH_INPUT,
+                       'down',
+                       SPEED_INSTANT);
+  }
+
+  function reset() {
+    window.scrollTo(0, 0);
+  }
+
+  window.onload = async () => {
+    // Start with all the scrollers scrolled to their maximal extent. That way
+    // new scrolls should chain.
+    const scrollers = document.querySelectorAll('.scrolls');
+    for(let scroller of scrollers)
+      scroller.scrollTop = 10000;
+
+    promise_test(async () => {
+      reset();
+      await waitForCompositorCommit();
+      assert_equals(window.scrollY, 0, 'Main window starts off unscrolled.');
+      await scrollBox(document.getElementById('fixedScroller'));
+
+      assert_greater_than(window.scrollY, 0,
+                          'Scroll should chained to main window.');
+
+    }, 'Position: fixed scroller');
+
+    promise_test(async () => {
+      reset();
+      await waitForCompositorCommit();
+      assert_equals(window.scrollY, 0, 'Main window starts off unscrolled.');
+      await scrollBox(document.getElementById('childScroller'));
+
+      assert_greater_than(window.scrollY, 0,
+                          'Scroll should chained to main window.');
+
+    }, 'Child scroller of position:fixed layer');
+
+    promise_test(async () => {
+      reset();
+      await waitForCompositorCommit();
+      assert_equals(window.scrollY, 0, 'Main window starts off unscrolled.');
+      await scrollBox(document.getElementById('childScrollerFixedScroller'));
+
+      assert_greater_than(window.scrollY, 0,
+                          'Scroll should chained to main window.');
+
+    }, 'Child scroller of position:fixed scroller');
+
+    promise_test(async () => {
+      reset();
+      await waitForCompositorCommit();
+      assert_equals(window.scrollY, 0, 'Main window starts off unscrolled.');
+      await scrollBox(document.getElementById('fixedScrollerInFixedTransform'));
+
+      assert_greater_than(window.scrollY, 0,
+                          'Scroll should chained to main window.');
+
+    }, 'Child position:fixed scroller in fixed and transformed layer');
+  }
+
+</script>

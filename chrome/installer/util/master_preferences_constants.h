@@ -25,10 +25,6 @@ extern const char kDistroImportBookmarksFromFilePref[];
 // String of Chrome version for which the "set as default browser" infobar will
 // never be shown.
 extern const char kDistroSuppressDefaultBrowserPromptPref[];
-// Boolean that specifies whether or not showing the welcome page following an
-// OS upgrade is enabled. True by default. May be overridden by the
-// WelcomePageOnOSUpgradeEnabled policy setting.
-extern const char kDistroWelcomePageOnOSUpgradeEnabled[];
 // Boolean. Prevent creation of all shortcuts to chrome, including the
 // desktop, quick launch, taskbar and the start menu shortcuts.
 extern const char kDoNotCreateAnyShortcuts[];
@@ -59,11 +55,6 @@ extern const char kMsi[];
 extern const char kMsiProductId[];
 // Boolean. Show EULA dialog before install.
 extern const char kRequireEula[];
-// Boolean. Indicates that the first-run 'set-as-default' dialog should not be
-// shown. Relevant in Windows 8+ context only. If this is true, the standard
-// 'set default browser' prompt on the butter-bar will appear during the first
-// run.
-extern const char kSuppressFirstRunDefaultBrowserPrompt[];
 // Boolean. Install Chrome to system wise location. Cmd line override present.
 extern const char kSystemLevel[];
 // Boolean. Run installer in verbose mode. Cmd line override present.

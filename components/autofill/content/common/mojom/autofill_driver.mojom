@@ -1,0 +1,191 @@
+// Copyright 2016 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module autofill.mojom;
+
+import "components/autofill/core/common/mojom/autofill_types.mojom";
+import "mojo/public/mojom/base/string16.mojom";
+import "mojo/public/mojom/base/text_direction.mojom";
+import "mojo/public/mojom/base/time.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+import "url/mojom/url.mojom";
+
+// There is one instance of this interface per render frame host in the browser
+// process. All methods are called by renderer on browser.
+interface AutofillDriver {
+  // Notification that forms have been seen that are candidates for
+  // filling/submitting by the AutofillManager.
+  FormsSeen(array<FormData> forms, mojo_base.mojom.TimeTicks timestamp);
+
+  // Notification that a form has been submitted. The |known_success| indicates
+  // whether the submission succeeded or not. Currently, we assume submission
+  // succeeds if the form is removed.
+  FormSubmitted(FormData form,
+                bool known_success,
+                SubmissionSource source);
+
+  // Notification that a form field's value has changed.
+  TextFieldDidChange(FormData form,
+                     FormFieldData field,
+                     gfx.mojom.RectF bounding_box,
+                     mojo_base.mojom.TimeTicks timestamp);
+
+  // Notification that a form field has scrolled.
+  TextFieldDidScroll(FormData form,
+                     FormFieldData field,
+                     gfx.mojom.RectF bounding_box);
+
+  // Notification that a form select control has changed.
+  SelectControlDidChange(FormData form,
+                         FormFieldData field,
+                         gfx.mojom.RectF bounding_box);
+
+  // Notification that a select element's options were modified.
+  SelectFieldOptionsDidChange(FormData form);
+
+  // Queries the browser for Autofill suggestions for a form input field.
+  // |id| is the request ID which is used to map responses correctly.
+  QueryFormFieldAutofill(int32 id,
+                         FormData form,
+                         FormFieldData field,
+                         gfx.mojom.RectF bounding_box,
+                         bool autoselect_first_suggestion);
+
+  // Instructs the browser to hide the Autofill popup if it is open.
+  HidePopup();
+
+  // Sent when the current form is no longer focused.
+  FocusNoLongerOnForm();
+
+  // Notification that a form field is focused.
+  FocusOnFormField(FormData form,
+                   FormFieldData field,
+                   gfx.mojom.RectF bounding_box);
+
+  // Sent when a form is filled with Autofill suggestions.
+  DidFillAutofillFormData(FormData form, mojo_base.mojom.TimeTicks timestamp);
+
+  // Sent when a form is previewed with Autofill suggestions.
+  DidPreviewAutofillFormData();
+
+  // Sent when a text field is done editing.
+  DidEndTextFieldEditing();
+
+  // Informs browser of data list values for the current field.
+  SetDataList(array<mojo_base.mojom.String16> values,
+              array<mojo_base.mojom.String16> labels);
+};
+
+// There is one instance of this interface per web contents in the browser
+// process that handles all the frames. The motivation was to make the interface
+// associated with PasswordGenerationDriver.
+interface PasswordManagerDriver {
+  // Notification that password forms have been seen that are candidates for
+  // filling/submitting by the password manager.
+  PasswordFormsParsed(array<PasswordForm> forms);
+
+  // Notification that initial layout has occurred and the following password
+  // forms are visible on the page (e.g. not set to display:none.), and whether
+  // all frames in the page have been rendered.
+  PasswordFormsRendered(array<PasswordForm> visible_forms,
+                        bool did_stop_loading);
+
+  // Notification that this password form was submitted by the user.
+  PasswordFormSubmitted(PasswordForm password_form);
+
+  // Notification that a user starts typing in password fields and the omnibox
+  // icon with anchored save/update prompt should be available.
+  ShowManualFallbackForSaving(PasswordForm password_form);
+
+  // Notification that there is no user input in password fields and the
+  // save/update prompt anchored to the omnibox icon should be removed.
+  HideManualFallbackForSaving();
+
+  // Notification that same-document navigation happened. We use this as a
+  // signal for successful login.
+  // TODO(crbug.com/949519): Rename this method to a more generic name since
+  // it's called in many scenarios other than SameDocumentNavigation such as
+  // FRAME_DETACHED.
+  SameDocumentNavigation(SubmissionIndicatorEvent submission_indication_event);
+
+  // Sends |log| to browser for displaying to the user. Only strings passed as
+  // an argument to methods overriding SavePasswordProgressLogger::SendLog may
+  // become |log|, because those are guaranteed to be sanitized.
+  // Never pass a free-form string as |log|.
+  RecordSavePasswordProgress(string log);
+
+  // Notification that the user (not JavaScript) modified the value of a
+  // password field.
+  UserModifiedPasswordField();
+
+  // Notification that the user (not JavaScript) modified the value of a
+  // non-password field with |renderer_id|, and |value| is the current value.
+  UserModifiedNonPasswordField(uint32 renderer_id,
+                               mojo_base.mojom.String16 value);
+
+  // Instructs the browser to show a popup with password suggestions. The popup
+  // will use |text_direction| for displaying text.
+  ShowPasswordSuggestions(mojo_base.mojom.TextDirection text_direction,
+                          mojo_base.mojom.String16 typed_username,
+                          int32 options, gfx.mojom.RectF bounds);
+
+  // Instructs the browser to show the Touch To Fill UI.
+  ShowTouchToFill();
+
+  // Checks the safe browsing reputation of the website where the focused
+  // username/password field is on.
+  CheckSafeBrowsingReputation(
+      url.mojom.Url form_action, url.mojom.Url frame_url);
+
+  // The focus changed to a different input in the same frame (e.g. tabbed from
+  // email to password field).
+  FocusedInputChanged(FocusedFieldType focused_field_type);
+
+  // Sends the success state of filling credentials into a form. This happens
+  // only if the form being filled has a renderer_id. |result| is an
+  // integer serialization of autofill::FillingResult. It is passed as an
+  // integer as no further interpretation of the value is necessary in the
+  // browser.
+  LogFirstFillingResult(uint32 form_renderer_id, int32 result);
+};
+
+// There is one instance of this interface per web contents in the browser
+// process.
+interface PasswordGenerationDriver {
+  // Instructs the browser that generation is available for this particular
+  // form. This is used for UMA stats.
+  GenerationAvailableForForm(PasswordForm password_form);
+
+  // Notifies the browser when automatic generation becomes available
+  // and provides data needed by the UI.
+  AutomaticGenerationAvailable(
+    PasswordGenerationUIData password_generation_ui_data);
+
+  // Instructs the browser to show the popup for editing a generated password.
+  // The location should be specified in the renderers coordinate system. Form
+  // is the form associated with the password field. |field_renderer_id| is the
+  // ID of the password field triggering generation.
+  ShowPasswordEditingPopup(gfx.mojom.RectF bounds, PasswordForm password_form,
+      uint32 field_renderer_id);
+
+  // Informs the browser that the password generation option was rejected
+  // by the user typing more characters than the maximum offer size into the
+  // password field.
+  PasswordGenerationRejectedByTyping();
+
+  // Instructs the browser to presave the form with generated password.
+  PresaveGeneratedPassword(PasswordForm password_form);
+
+  // Instructs the browser that form no longer contains a generated password and
+  // the presaved form should be removed.
+  PasswordNoLongerGenerated(PasswordForm password_form);
+
+  // Communicates to the browser that a scroll event happened on the frame. This
+  // event affects the password generation popup position.
+  FrameWasScrolled();
+
+  // Informs the browser that the generation element lost focus, so the browser
+  // might hide the generation popup.
+  GenerationElementLostFocus();
+};

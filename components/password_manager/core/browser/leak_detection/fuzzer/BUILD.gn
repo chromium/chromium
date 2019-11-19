@@ -1,0 +1,43 @@
+import("//testing/libfuzzer/fuzzer_test.gni")
+
+# Empty group for package discovery.
+group("fuzzer") {
+}
+
+fuzzer_test("cipher_encrypt_fuzzer") {
+  sources = [
+    "cipher_encrypt_fuzzer.cc",
+  ]
+  deps = [
+    "//components/password_manager/core/browser/leak_detection",
+  ]
+}
+
+fuzzer_test("cypher_encrypt_with_key_fuzzer") {
+  sources = [
+    "cypher_encrypt_with_key_fuzzer.cc",
+  ]
+  deps = [
+    "//components/password_manager/core/browser/leak_detection",
+    "//third_party/private-join-and-compute/src:ec_commutative_cipher",
+  ]
+}
+
+fuzzer_test("cypher_reencrypt_fuzzer") {
+  sources = [
+    "cypher_reencrypt_fuzzer.cc",
+  ]
+  deps = [
+    "//components/password_manager/core/browser/leak_detection",
+  ]
+}
+
+fuzzer_test("cypher_decrypt_fuzzer") {
+  sources = [
+    "cypher_decrypt_fuzzer.cc",
+  ]
+  deps = [
+    "//components/password_manager/core/browser/leak_detection",
+    "//third_party/private-join-and-compute/src:ec_commutative_cipher",
+  ]
+}

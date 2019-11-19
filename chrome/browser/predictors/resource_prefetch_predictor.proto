@@ -14,12 +14,27 @@ package predictors;
 option optimize_for = LITE_RUNTIME;
 
 // Represents a single redirect chain endpoint.
+// When adding a field here, please also update the equality operator and the
+// output operator in
+// chrome/browser/predictors/loading_test_util.cc.
 message RedirectStat {
   // Represents the host for RedirectData in a host-based table.
+  //
+  // Note that the |url| field contains only the origin portion of the full URL.
+  // The full URL is not available, because in some cases the path and query may
+  // be sanitized away - see https://crbug.com/973885.
   optional string url = 1;
   optional uint32 number_of_hits = 2;
   optional uint32 number_of_misses = 3;
   optional uint32 consecutive_misses = 4;
+  // |url_scheme| is typically either "http" or "https". This field was added
+  // in M-77 without wiping the database. As such, it may be empty in some
+  // cases even when originally |url| had a non-empty scheme.
+  optional string url_scheme = 5;
+  // |url_port| field was added in M-77 without wiping the database. As such,
+  // it may be empty in some cases even when originally |url| had a non-empty
+  // port number.
+  optional int32 url_port = 6;
 }
 
 // Represents a mapping from URL or host to a list of redirect endpoints.

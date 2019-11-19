@@ -120,7 +120,7 @@ class CONTENT_EXPORT BrowserPluginEmbedder : public WebContentsObserver {
   // Keeps track of "dragend" state.
   bool guest_drag_ending_;
 
-  base::WeakPtrFactory<BrowserPluginEmbedder> weak_ptr_factory_;
+  base::WeakPtrFactory<BrowserPluginEmbedder> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(BrowserPluginEmbedder);
 };

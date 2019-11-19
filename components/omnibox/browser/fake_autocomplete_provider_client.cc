@@ -48,7 +48,7 @@ FakeAutocompleteProviderClient::~FakeAutocompleteProviderClient() {
   // it to prevent memory leaks.
   GetHistoryService()->Shutdown();
   // Note that RunUntilIdle() must still be called after this, from
-  // whichever task model is being used, probably ScopedTaskEnvironment,
+  // whichever task model is being used, probably TaskEnvironment,
   // or there will be memory leaks.
 }
 

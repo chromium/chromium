@@ -12,8 +12,8 @@
 namespace base {
 namespace trace_event {
 class TracedValue;
-}
-}
+}  // namespace trace_event
+}  // namespace base
 
 namespace content {
 

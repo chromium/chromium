@@ -28,13 +28,13 @@ public class GSAAccountChangeListenerTest {
     private static final String PERMISSION = "permission.you.dont.have";
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         RecordHistogram.setDisabledForTests(true);
     }
 
     @Test(expected = AssertionError.class)
     @SmallTest
-    public void testReceivesBroadcastIntents() throws Exception {
+    public void testReceivesBroadcastIntents() {
         final Context context = InstrumentationRegistry.getTargetContext();
         BroadcastReceiver receiver = new GSAAccountChangeListener.AccountChangeBroadcastReceiver();
         context.registerReceiver(receiver,

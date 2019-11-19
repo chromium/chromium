@@ -1,22 +1,41 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pl">
+<translation id="1482734542997480527">Tym urządzeniem zarządza domena <ph name="ENROLLMENT_DOMAIN" />. Możliwe, że monitoruje ona też Twoją aktywność.</translation>
 <translation id="1510238584712386396">Menu z aplikacjami</translation>
 <translation id="1734367976349034509">Tym urządzeniem zarządza firma</translation>
+<translation id="1930797645656624981">Usługa Metoda wprowadzania Chrome OS</translation>
+<translation id="1979103255016296513">Zaległa zmiana hasła</translation>
 <translation id="2049639323467105390">To urządzenie jest zarządzane przez: <ph name="DOMAIN" />.</translation>
 <translation id="2083960536266308407">Na ekranie nic nie znaleziono</translation>
 <translation id="2338501278241028356">Włącz Bluetooth, by wykryć urządzenia w pobliżu</translation>
 <translation id="2805756323405976993">Aplikacje</translation>
 <translation id="2872961005593481000">Wyłącz</translation>
-<translation id="3147142846278915599">Menu z aplikacjami (synchronizuję aplikacje...)</translation>
+<translation id="3008341117444806826">ODŚWIEŻ</translation>
+<translation id="3838338534323494292">Nowe hasło</translation>
+<translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> zarządza tym urządzeniem i ma dostęp do wszelkiej aktywności użytkownika, w tym odwiedzanych stron internetowych, haseł i e-maili.</translation>
+<translation id="4227825898293920515">Hasło wygasa za <ph name="TIME" /></translation>
+<translation id="4429881212383817840">Bilet Kerberos wkrótce straci ważność</translation>
+<translation id="445059817448385655">Stare hasło</translation>
+<translation id="467510802200863975">Hasła nie są zgodne</translation>
 <translation id="4731797938093519117">Dostęp rodzica</translation>
+<translation id="4890353053343094602">Jak najszybciej wybierz nowe.</translation>
 <translation id="5212543919916444558">Na Twoim ekranie nie ma nic, w czym mogę pomóc.
 Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="5222676887888702881">Wyloguj się</translation>
+<translation id="5317780077021120954">Zapisz</translation>
+<translation id="5332948983412042822">Wybierz teraz nowe.</translation>
 <translation id="5457599981699367932">Przeglądaj jako gość</translation>
 <translation id="54609108002486618">Zarządzany</translation>
 <translation id="5832805196449965646">Dodaj osobę</translation>
 <translation id="5895138241574237353">Uruchom ponownie</translation>
+<translation id="6058625436358447366">Aby zakończyć, wpisz stare i nowe hasło</translation>
+<translation id="6106186594183574873">Aby zakończyć, wpisz stare hasło</translation>
+<translation id="6146993107019042706">Aby zakończyć, wpisz nowe hasło</translation>
 <translation id="7658239707568436148">Anuluj</translation>
+<translation id="7690294790491645610">Potwierdź nowe hasło</translation>
+<translation id="808894953321890993">Zmień hasło</translation>
+<translation id="8747900814994928677">Potwierdź zmianę</translation>
+<translation id="910415269708673980">Odśwież bilet przypisany do konta <ph name="PRINCIPAL_NAME" />.</translation>
 <translation id="9111102763498581341">Odblokuj</translation>
 </translationbundle>

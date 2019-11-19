@@ -5,6 +5,7 @@
 #include <stddef.h>
 
 #include "base/bind.h"
+#include "base/bind_helpers.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/extension_apitest.h"
@@ -53,20 +54,17 @@ void CancelDialog() {
 
 void CheckAlertResult(const std::string& dialog_name,
                       size_t* call_count,
-                      const base::Value* value) {
-  ASSERT_TRUE(value) << dialog_name;
-  ASSERT_TRUE(value->is_none());
+                      base::Value value) {
+  ASSERT_TRUE(value.is_none());
   ++*call_count;
 }
 
 void CheckConfirmResult(const std::string& dialog_name,
                         bool expected_value,
                         size_t* call_count,
-                        const base::Value* value) {
-  ASSERT_TRUE(value) << dialog_name;
-  bool current_value;
-  ASSERT_TRUE(value->GetAsBoolean(&current_value)) << dialog_name;
-  ASSERT_EQ(expected_value, current_value) << dialog_name;
+                        base::Value value) {
+  ASSERT_TRUE(value.is_bool()) << dialog_name;
+  ASSERT_EQ(expected_value, value.GetBool()) << dialog_name;
   ++*call_count;
 }
 
@@ -80,7 +78,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, AlertBasic) {
                             ->GetBackgroundHostForExtension(extension->id());
   ASSERT_TRUE(host);
   host->host_contents()->GetMainFrame()->ExecuteJavaScriptForTests(
-      base::ASCIIToUTF16("alert('This should not crash.');"));
+      base::ASCIIToUTF16("alert('This should not crash.');"),
+      base::NullCallback());
 
   ASSERT_NO_FATAL_FAILURE(CloseDialog());
 }
@@ -100,8 +99,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, AlertQueue) {
     const std::string dialog_name = "Dialog #" + base::NumberToString(i) + ".";
     host->host_contents()->GetMainFrame()->ExecuteJavaScriptForTests(
         base::ASCIIToUTF16("alert('" + dialog_name + "');"),
-        base::Bind(&CheckAlertResult, dialog_name,
-                   base::Unretained(&call_count)));
+        base::BindOnce(&CheckAlertResult, dialog_name,
+                       base::Unretained(&call_count)));
   }
 
   // Closes these dialogs.
@@ -136,16 +135,16 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, ConfirmQueue) {
         "Accepted dialog #" + base::NumberToString(i) + ".";
     host->host_contents()->GetMainFrame()->ExecuteJavaScriptForTests(
         base::ASCIIToUTF16("confirm('" + dialog_name + "');"),
-        base::Bind(&CheckConfirmResult, dialog_name, true,
-                   base::Unretained(&call_count)));
+        base::BindOnce(&CheckConfirmResult, dialog_name, true,
+                       base::Unretained(&call_count)));
   }
   for (size_t i = 0; i != num_cancelled_dialogs; ++i) {
     const std::string dialog_name =
         "Cancelled dialog #" + base::NumberToString(i) + ".";
     host->host_contents()->GetMainFrame()->ExecuteJavaScriptForTests(
         base::ASCIIToUTF16("confirm('" + dialog_name + "');"),
-        base::Bind(&CheckConfirmResult, dialog_name, false,
-                   base::Unretained(&call_count)));
+        base::BindOnce(&CheckConfirmResult, dialog_name, false,
+                       base::Unretained(&call_count)));
   }
 
   // Closes these dialogs.

@@ -8,7 +8,7 @@ import static org.junit.Assert.assertEquals;
 
 import android.support.test.filters.SmallTest;
 
-import com.google.android.libraries.feed.host.config.ApplicationInfo;
+import com.google.android.libraries.feed.api.host.config.ApplicationInfo;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

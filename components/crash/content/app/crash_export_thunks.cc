@@ -76,17 +76,3 @@ bool DumpHungProcessWithPtype_ExportThunk(HANDLE process_handle,
 
   return crash_reporter::DumpHungProcessWithPtypeImpl(process, ptype);
 }
-
-#if defined(ARCH_CPU_X86_64)
-
-void RegisterNonABICompliantCodeRange_ExportThunk(void* start,
-                                                  size_t size_in_bytes) {
-  crash_reporter::internal::RegisterNonABICompliantCodeRangeImpl(start,
-                                                                 size_in_bytes);
-}
-
-void UnregisterNonABICompliantCodeRange_ExportThunk(void* start) {
-  crash_reporter::internal::UnregisterNonABICompliantCodeRangeImpl(start);
-}
-
-#endif  // ARCH_CPU_X86_64

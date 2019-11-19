@@ -41,8 +41,8 @@ bool ChildComparator::operator()(const EntryKernel* a,
 
 ParentChildIndex::ParentChildIndex() {
   // Pre-allocate these two vectors to the number of model types.
-  model_type_root_ids_.resize(MODEL_TYPE_COUNT);
-  type_root_child_sets_.resize(MODEL_TYPE_COUNT);
+  model_type_root_ids_.resize(ModelType::NUM_ENTRIES);
+  type_root_child_sets_.resize(ModelType::NUM_ENTRIES);
 }
 
 ParentChildIndex::~ParentChildIndex() {}

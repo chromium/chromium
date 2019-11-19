@@ -31,9 +31,13 @@
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/geometry/float_size.h"
 #include "third_party/blink/renderer/platform/geometry/int_point.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/geometry/int_size.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
+#include "third_party/skia/include/core/SkPoint.h"
+#include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/scroll_offset.h"
 
 #if defined(OS_MACOSX)
 typedef struct CGPoint CGPoint;
@@ -43,22 +47,7 @@ typedef struct CGPoint CGPoint;
 #endif
 #endif
 
-struct SkPoint;
-
-namespace gfx {
-class PointF;
-class Point3F;
-class ScrollOffset;
-class Vector2dF;
-}
-
 namespace blink {
-
-class DoublePoint;
-class IntPoint;
-class IntSize;
-class LayoutPoint;
-class LayoutSize;
 
 class PLATFORM_EXPORT FloatPoint {
   DISALLOW_NEW();
@@ -66,17 +55,17 @@ class PLATFORM_EXPORT FloatPoint {
  public:
   constexpr FloatPoint() : x_(0), y_(0) {}
   constexpr FloatPoint(float x, float y) : x_(x), y_(y) {}
-  explicit FloatPoint(const IntPoint&);
-  explicit FloatPoint(const SkPoint&);
-  explicit FloatPoint(const DoublePoint&);
-  explicit FloatPoint(const LayoutPoint&);
-  constexpr explicit FloatPoint(const FloatSize& size)
-      : x_(size.Width()), y_(size.Height()) {}
-  explicit FloatPoint(const LayoutSize&);
-  constexpr explicit FloatPoint(const IntSize& size)
-      : x_(size.Width()), y_(size.Height()) {}
-  explicit FloatPoint(const gfx::PointF& point)
-      : x_(point.x()), y_(point.y()) {}
+  constexpr explicit FloatPoint(const IntPoint& p) : x_(p.X()), y_(p.Y()) {}
+  explicit FloatPoint(const SkPoint& p) : x_(p.x()), y_(p.y()) {}
+  constexpr explicit FloatPoint(const FloatSize& s)
+      : x_(s.Width()), y_(s.Height()) {}
+  constexpr explicit FloatPoint(const IntSize& s)
+      : x_(s.Width()), y_(s.Height()) {}
+  constexpr explicit FloatPoint(const gfx::PointF& p) : x_(p.x()), y_(p.y()) {}
+  constexpr explicit FloatPoint(const gfx::Vector2dF& v)
+      : x_(v.x()), y_(v.y()) {}
+  // We also have conversion operators to FloatPoint defined LayoutPoint,
+  // LayoutSize and DoublePoint.
 
   static constexpr FloatPoint Zero() { return FloatPoint(); }
 
@@ -99,7 +88,6 @@ class PLATFORM_EXPORT FloatPoint {
     x_ += a.Width();
     y_ += a.Height();
   }
-  void Move(const LayoutSize&);
   void Move(const FloatSize& a) {
     x_ += a.Width();
     y_ += a.Height();
@@ -108,7 +96,6 @@ class PLATFORM_EXPORT FloatPoint {
     x_ += a.X();
     y_ += a.Y();
   }
-  void MoveBy(const LayoutPoint&);
   void MoveBy(const FloatPoint& a) {
     x_ += a.X();
     y_ += a.Y();
@@ -138,10 +125,15 @@ class PLATFORM_EXPORT FloatPoint {
   operator CGPoint() const;
 #endif
 
-  operator gfx::PointF() const;
-  explicit operator gfx::ScrollOffset() const;
-  explicit operator gfx::Vector2dF() const;
-  operator gfx::Point3F() const;
+  constexpr operator gfx::PointF() const { return gfx::PointF(x_, y_); }
+  constexpr explicit operator gfx::Vector2dF() const {
+    return gfx::Vector2dF(x_, y_);
+  }
+  explicit operator SkPoint() const { return SkPoint::Make(x_, y_); }
+  explicit operator gfx::ScrollOffset() const {
+    return gfx::ScrollOffset(x_, y_);
+  }
+  operator gfx::Point3F() const { return gfx::Point3F(x_, y_, 0.f); }
 
   String ToString() const;
 

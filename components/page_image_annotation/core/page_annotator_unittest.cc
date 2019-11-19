@@ -7,7 +7,10 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -49,19 +52,24 @@ class MockObserver : public PageAnnotator::Observer {
 // AnnotateImage method was called.
 class TestAnnotator : public ia_mojom::Annotator {
  public:
-  ia_mojom::AnnotatorPtr GetPtr() {
-    ia_mojom::AnnotatorPtr ptr;
-    bindings_.AddBinding(this, mojo::MakeRequest(&ptr));
-    return ptr;
+  mojo::PendingRemote<ia_mojom::Annotator> GetRemote() {
+    mojo::PendingRemote<ia_mojom::Annotator> remote;
+    receivers_.Add(this, remote.InitWithNewPipeAndPassReceiver());
+    return remote;
   }
 
-  void AnnotateImage(const std::string& source_id,
-                     ia_mojom::ImageProcessorPtr image_processor,
-                     AnnotateImageCallback callback) override {
+  void AnnotateImage(
+      const std::string& source_id,
+      const std::string& description_language_tag,
+      mojo::PendingRemote<ia_mojom::ImageProcessor> image_processor,
+      AnnotateImageCallback callback) override {
+    CHECK_EQ(description_language_tag, std::string());
+
     source_ids_.push_back(source_id);
 
-    image_processors_.push_back(std::move(image_processor));
-    image_processors_.back().set_connection_error_handler(
+    image_processors_.push_back(
+        mojo::Remote<ia_mojom::ImageProcessor>(std::move(image_processor)));
+    image_processors_.back().set_disconnect_handler(
         base::BindOnce(&TestAnnotator::ResetImageProcessor,
                        base::Unretained(this), image_processors_.size() - 1));
 
@@ -70,7 +78,7 @@ class TestAnnotator : public ia_mojom::Annotator {
 
   // Tests should not delete entries in these lists.
   std::vector<std::string> source_ids_;
-  std::vector<ia_mojom::ImageProcessorPtr> image_processors_;
+  std::vector<mojo::Remote<ia_mojom::ImageProcessor>> image_processors_;
   std::vector<AnnotateImageCallback> callbacks_;
 
  private:
@@ -78,16 +86,16 @@ class TestAnnotator : public ia_mojom::Annotator {
     image_processors_[index].reset();
   }
 
-  mojo::BindingSet<ia_mojom::Annotator> bindings_;
+  mojo::ReceiverSet<ia_mojom::Annotator> receivers_;
 };
 
 // Tests that correct image tracking messages are sent to observers.
 TEST(PageAnnotatorTest, ImageTracking) {
   const auto get_pixels = base::BindRepeating([]() { return SkBitmap(); });
 
-  base::test::ScopedTaskEnvironment test_task_env;
+  base::test::TaskEnvironment test_task_env;
 
-  PageAnnotator page_annotator(ia_mojom::AnnotatorPtr{});
+  PageAnnotator page_annotator((mojo::NullRemote()));
 
   MockObserver o1;
   page_annotator.AddObserver(&o1);
@@ -115,10 +123,10 @@ TEST(PageAnnotatorTest, Annotation) {
   // the local ImageProcessor.
   const auto get_pixels = base::BindRepeating([]() { return SkBitmap(); });
 
-  base::test::ScopedTaskEnvironment test_task_env;
+  base::test::TaskEnvironment test_task_env;
 
   TestAnnotator test_annotator;
-  PageAnnotator page_annotator(test_annotator.GetPtr());
+  PageAnnotator page_annotator(test_annotator.GetRemote());
   test_task_env.RunUntilIdle();
 
   // We use NiceMocks here since we don't place expectations on image added /

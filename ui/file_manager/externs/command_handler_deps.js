@@ -6,109 +6,69 @@
  * Interface on which |CommandHandler| depends.
  * @interface
  */
-function CommandHandlerDeps() {}
+class CommandHandlerDeps {
+  constructor() {
+    /** @type {ActionsController} */
+    this.actionsController;
 
-/**
- * @type {ActionsController}
- */
-CommandHandlerDeps.prototype.actionsController;
+    /** @type {DialogType} */
+    this.dialogType;
 
-/**
- * @type {BackgroundWindow}
- */
-CommandHandlerDeps.prototype.backgroundPage;
+    /** @type {DirectoryModel} */
+    this.directoryModel;
 
-/**
- * @type {DialogType}
- */
-CommandHandlerDeps.prototype.dialogType;
+    /** @type {DirectoryTree} */
+    this.directoryTree;
 
-/**
- * @type {DirectoryModel}
- */
-CommandHandlerDeps.prototype.directoryModel;
+    /** @type {DirectoryTreeNamingController} */
+    this.directoryTreeNamingController;
 
-/**
- * @type {DirectoryTree}
- */
-CommandHandlerDeps.prototype.directoryTree;
+    /** @type {Document} */
+    this.document;
 
-/**
- * @type {DirectoryTreeNamingController}
- */
-CommandHandlerDeps.prototype.directoryTreeNamingController;
+    /** @type {FileFilter} */
+    this.fileFilter;
 
-/**
- * @type {Document}
- */
-CommandHandlerDeps.prototype.document;
+    /** @type {FileOperationManager} */
+    this.fileOperationManager;
 
-/**
- * @type {FileFilter}
- */
-CommandHandlerDeps.prototype.fileFilter;
+    /** @type {FileTransferController} */
+    this.fileTransferController;
 
-/**
- * @type {FileOperationManager}
- */
-CommandHandlerDeps.prototype.fileOperationManager;
+    /** @type {FileSelectionHandler} */
+    this.selectionHandler;
 
-/**
- * @type {FileTransferController}
- */
-CommandHandlerDeps.prototype.fileTransferController;
+    /** @type {NamingController} */
+    this.namingController;
 
-/**
- * @type {FileSelectionHandler}
- */
-CommandHandlerDeps.prototype.selectionHandler;
+    /** @type {ProvidersModel} */
+    this.providersModel;
 
-/**
- * @type {NamingController}
- */
-CommandHandlerDeps.prototype.namingController;
+    /** @type {SpinnerController} */
+    this.spinnerController;
 
-/**
- * @type {ProvidersModel}
- */
-CommandHandlerDeps.prototype.providersModel;
+    /** @type {TaskController} */
+    this.taskController;
 
-/**
- * @type {SpinnerController}
- */
-CommandHandlerDeps.prototype.spinnerController;
+    /** @type {FileManagerUI} */
+    this.ui;
 
-/**
- * @type {TaskController}
- */
-CommandHandlerDeps.prototype.taskController;
+    /** @type {!VolumeManager} */
+    this.volumeManager;
 
-/**
- * @type {FileManagerUI}
- */
-CommandHandlerDeps.prototype.ui;
+    /** @type {MetadataModel} */
+    this.metadataModel;
 
-/**
- * @type {!VolumeManager}
- */
-CommandHandlerDeps.prototype.volumeManager;
+    /** @type {Crostini} */
+    this.crostini;
+  }
 
-/**
- * @return {DirectoryEntry|FilesAppEntry}
- */
-CommandHandlerDeps.prototype.getCurrentDirectoryEntry = function() {};
+  /** @return {DirectoryEntry|FilesAppEntry} */
+  getCurrentDirectoryEntry() {}
 
-/**
- * @return {FileSelection}
- */
-CommandHandlerDeps.prototype.getSelection = function() {};
+  /** @return {FileSelection} */
+  getSelection() {}
 
-/**
- * @type {MetadataModel}
- */
-CommandHandlerDeps.prototype.metadataModel;
-
-/**
- * @type {Crostini}
- */
-CommandHandlerDeps.prototype.crostini;
+  /** @param {Object} appState App state. */
+  launchFileManager(appState) {}
+}

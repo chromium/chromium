@@ -112,12 +112,21 @@ WebViewInttestBase::WebViewInttestBase()
     : web_view_(test::CreateWebView()),
       test_server_(std::make_unique<net::EmbeddedTestServer>(
           net::test_server::EmbeddedTestServer::TYPE_HTTP)) {
+  // The WKWebView must be present in the view hierarchy in order to prevent
+  // WebKit optimizations which may pause internal parts of the web view
+  // without notice. Work around this by adding the view directly.
+  // TODO:(crbug.com/944077) Remove this workaround once fixed in ios/web.
+  UIViewController* view_controller =
+      [[[UIApplication sharedApplication] keyWindow] rootViewController];
+  [view_controller.view addSubview:web_view_];
   test_server_->AddDefaultHandlers(FILE_PATH_LITERAL(base::FilePath()));
   test_server_->RegisterRequestHandler(
       base::BindRepeating(&TestRequestHandler));
 }
 
-WebViewInttestBase::~WebViewInttestBase() = default;
+WebViewInttestBase::~WebViewInttestBase() {
+  [web_view_ removeFromSuperview];
+}
 
 GURL WebViewInttestBase::GetUrlForPageWithTitle(const std::string& title) {
   return GetUrlForPageWithTitleAndBody(title, std::string());

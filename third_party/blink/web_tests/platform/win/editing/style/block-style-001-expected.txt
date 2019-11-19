@@ -9,7 +9,7 @@ layer at (0,0) size 800x600
       LayoutBlockFlow {DIV} at (0,0) size 784x56 [border: (2px solid #FF0000)]
         LayoutText {#text} at (204,14) size 281x27
           text run at (204,14) width 281: "Here is some text. Should be "
-        LayoutInline {B} at (0,0) size 90x26
+        LayoutInline {B} at (484,14) size 90x26
           LayoutText {#text} at (484,14) size 90x26
             text run at (484,14) width 90: "centered"
         LayoutText {#text} at (573,14) size 7x27
@@ -17,7 +17,7 @@ layer at (0,0) size 800x600
       LayoutBlockFlow {DIV} at (0,56) size 784x56 [border: (2px solid #FF0000)]
         LayoutText {#text} at (14,14) size 280x27
           text run at (14,14) width 280: "Here is some text. Should be "
-        LayoutInline {B} at (0,0) size 88x26
+        LayoutInline {B} at (294,14) size 88x26
           LayoutText {#text} at (294,14) size 88x26
             text run at (294,14) width 88: "flush left"
         LayoutText {#text} at (382,14) size 6x27

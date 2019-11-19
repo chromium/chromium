@@ -53,32 +53,6 @@ TEST_F(FirstRunTest, SetupMasterPrefsFromInstallPrefs_VariationsSeedSignature) {
   EXPECT_TRUE(install_prefs.master_dictionary().empty());
 }
 
-TEST_F(FirstRunTest,
-       SetupMasterPrefsFromInstallPrefs_WelcomePageOnOSUpgradeMissing) {
-  installer::MasterPreferences install_prefs("{\"distribution\":{}}");
-  MasterPrefs out_prefs;
-  internal::SetupMasterPrefsFromInstallPrefs(install_prefs, &out_prefs);
-  EXPECT_TRUE(out_prefs.welcome_page_on_os_upgrade_enabled);
-}
-
-TEST_F(FirstRunTest,
-       SetupMasterPrefsFromInstallPrefs_WelcomePageOnOSUpgradeEnabled) {
-  installer::MasterPreferences install_prefs(
-      "{\"distribution\":{\"welcome_page_on_os_upgrade_enabled\": true}}");
-  MasterPrefs out_prefs;
-  internal::SetupMasterPrefsFromInstallPrefs(install_prefs, &out_prefs);
-  EXPECT_TRUE(out_prefs.welcome_page_on_os_upgrade_enabled);
-}
-
-TEST_F(FirstRunTest,
-       SetupMasterPrefsFromInstallPrefs_WelcomePageOnOSUpgradeDisabled) {
-  installer::MasterPreferences install_prefs(
-      "{\"distribution\":{\"welcome_page_on_os_upgrade_enabled\": false}}");
-  MasterPrefs out_prefs;
-  internal::SetupMasterPrefsFromInstallPrefs(install_prefs, &out_prefs);
-  EXPECT_FALSE(out_prefs.welcome_page_on_os_upgrade_enabled);
-}
-
 // No switches and no sentinel present. This is the standard case for first run.
 TEST_F(FirstRunTest, DetermineFirstRunState_FirstRun) {
   internal::FirstRunState result =

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<!-- Note: if this page gets long (or wide) enough that it can't fit entirely on
+     the phone's display without scrolling, the test will start being flaky and
+     it will be very difficult to debug :(. -->
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width">
+  </head>
+  <body>
+    <form action="about:blank">
+      <input id="input_text" type="text" size="10">
+      <input id="input_enter" type="text" size="10" enterKeyHint="enter">
+      <input id="input_go" type="text" size="10" enterKeyHint="go">
+      <input id="input_done" type="text" size="10" enterKeyHint="done">
+      <input id="input_next" type="text" size="10" enterKeyHint="next">
+      <input id="input_previous" type="text" size="10" enterKeyHint="previous">
+      <input id="input_search" type="text" size="10" enterKeyHint="search">
+      <input id="input_send" type="text" size="10" enterKeyHint="send">
+    </form>
+
+    <form action="about:blank">
+      <textarea id="textarea_default" rows="2" cols="10"></textarea>
+      <textarea id="textarea_enter" rows="2" cols="10" enterKeyHint="enter"></textarea>
+      <textarea id="textarea_go" rows="2" cols="10" enterKeyHint="go"></textarea>
+      <textarea id="textarea_done" rows="2" cols="10" enterKeyHint="done"></textarea>
+      <textarea id="textarea_next" rows="2" cols="10" enterKeyHint="next"></textarea>
+      <textarea id="textarea_previous" rows="2" cols="10" enterKeyHint="previous"></textarea>
+      <textarea id="textarea_search" rows="2" cols="10" enterKeyHint="search"></textarea>
+      <textarea id="textarea_send" rows="2" cols="10" enterKeyHint="send"></textarea>
+    </form>
+
+    <div id="contenteditable_default" contenteditable></div>
+    <div id="contenteditable_enter" contenteditable enterKeyHint="enter"></div>
+    <div id="contenteditable_go" contenteditable enterKeyHint="go"></div>
+    <div id="contenteditable_done" contenteditable enterKeyHint="done"></div>
+    <div id="contenteditable_next" contenteditable enterKeyHint="next"></div>
+    <div id="contenteditable_previous" contenteditable enterKeyHint="previous"></div>
+    <div id="contenteditable_search" contenteditable enterKeyHint="search"></div>
+    <div id="contenteditable_send" contenteditable enterKeyHint="send"></div>
+  </body>
+
+    <script>
+      var selectionChangeEventLog = "";
+      var otherEventLog = "";
+
+      function addOtherEventLog(type, detail) {
+        if (otherEventLog.length > 0) {
+          otherEventLog += ',';
+        }
+        if (detail == null) {
+          otherEventLog += type;
+        } else {
+          otherEventLog += type + '(' + detail + ')';
+        }
+      }
+
+      function addSelectionChangeEventLog(type, detail) {
+        if (selectionChangeEventLog.length > 0) {
+          selectionChangeEventLog += ',';
+        }
+        if (detail == null) {
+          selectionChangeEventLog += type;
+        } else {
+          selectionChangeEventLog += type + '(' + detail + ')';
+        }
+      }
+
+      // selectionchange event is queued, so it races with the other events.
+      // crbug.com/628964
+      function getEventLogs() {
+        if (otherEventLog.length > 0 && selectionChangeEventLog.length > 0)
+          return otherEventLog + ',' + selectionChangeEventLog;
+        return otherEventLog + selectionChangeEventLog;
+      }
+
+      function clearEventLogs() {
+        selectionChangeEventLog = '';
+        otherEventLog = '';
+      }
+
+      function addKeyEventListener(element, event_name) {
+        element.addEventListener(event_name, function (e) { addOtherEventLog(event_name, e.keyCode); });
+      }
+
+      function addSelectionEventListener(event_name) {
+        // Note that listeners added to the element are not effective for now.
+        document.addEventListener(event_name, function (e) { addSelectionChangeEventLog(event_name, e.data); });
+      }
+
+      function registerListeners(element) {
+        addKeyEventListener(element, "keydown");
+        addKeyEventListener(element, "keypress");
+        addKeyEventListener(element, "keyup");
+      }
+
+      // SelectionEventListener should be outside registerListenersAndObserver() to avoid duplication.
+      addSelectionEventListener("selectionchange");
+      registerListeners(document.body);
+    </script>
+</html>

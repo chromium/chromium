@@ -11,7 +11,7 @@
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "components/sync/model/data_batch.h"
 #include "components/sync/model/mock_model_type_change_processor.h"
 #include "components/sync/model/model_type_store_test_util.h"
@@ -164,7 +164,7 @@ class ConsentSyncBridgeImplTest : public testing::Test {
   }
 
  private:
-  base::test::ScopedTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   testing::NiceMock<MockModelTypeChangeProcessor> mock_processor_;
   std::unique_ptr<ConsentSyncBridgeImpl> bridge_;
 };
@@ -241,9 +241,10 @@ TEST_F(ConsentSyncBridgeImplTest,
   bridge()->RecordConsent(SpecificsUniquePtr(/*client_consent_time_usec=*/2u));
   ASSERT_THAT(GetAllData(), SizeIs(2));
 
+  syncer::EntityChangeList entity_change_list;
+  entity_change_list.push_back(EntityChange::CreateDelete(first_storage_key));
   auto error_on_delete = bridge()->ApplySyncChanges(
-      bridge()->CreateMetadataChangeList(),
-      {EntityChange::CreateDelete(first_storage_key)});
+      bridge()->CreateMetadataChangeList(), std::move(entity_change_list));
   EXPECT_FALSE(error_on_delete);
   EXPECT_THAT(GetAllData(), SizeIs(1));
   EXPECT_THAT(GetData(first_storage_key), IsNull());

@@ -20,7 +20,7 @@
 #include "base/stl_util.h"
 #include "base/task/post_task.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "components/component_updater/component_updater_service_internal.h"
@@ -165,7 +165,7 @@ class ComponentUpdaterTest : public testing::Test {
                 const UpdateScheduler::UserTask& user_task,
                 const UpdateScheduler::OnStopTaskCallback& on_stop);
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   base::RunLoop runloop_;
 
   scoped_refptr<TestConfigurator> config_ =
@@ -257,7 +257,7 @@ void ComponentUpdaterTest::RunThreads() {
 
 void ComponentUpdaterTest::RunUpdateTask(
     const UpdateScheduler::UserTask& user_task) {
-  scoped_task_environment_.GetMainThreadTaskRunner()->PostTask(
+  task_environment_.GetMainThreadTaskRunner()->PostTask(
       FROM_HERE, base::BindRepeating(
                      [](const UpdateScheduler::UserTask& user_task,
                         ComponentUpdaterTest* test) {
@@ -332,11 +332,13 @@ TEST_F(ComponentUpdaterTest, RegisterComponent) {
   ids.push_back(id2);
 
   CrxComponent crx_component1;
+  crx_component1.app_id = id1;
   crx_component1.pk_hash.assign(abag_hash, abag_hash + base::size(abag_hash));
   crx_component1.version = base::Version("1.0");
   crx_component1.installer = installer;
 
   CrxComponent crx_component2;
+  crx_component2.app_id = id2;
   crx_component2.pk_hash.assign(jebg_hash, jebg_hash + base::size(jebg_hash));
   crx_component2.version = base::Version("0.9");
   crx_component2.installer = installer;
@@ -427,6 +429,7 @@ TEST_F(ComponentUpdaterTest, OnDemandUpdate) {
   {
     using update_client::jebg_hash;
     CrxComponent crx_component;
+    crx_component.app_id = "jebgalgnebhfojomionfpkfelancnnkf";
     crx_component.pk_hash.assign(jebg_hash, jebg_hash + base::size(jebg_hash));
     crx_component.version = base::Version("0.9");
     crx_component.installer = base::MakeRefCounted<MockInstaller>();
@@ -435,6 +438,7 @@ TEST_F(ComponentUpdaterTest, OnDemandUpdate) {
   {
     using update_client::abag_hash;
     CrxComponent crx_component;
+    crx_component.app_id = "abagagagagagagagagagagagagagagag";
     crx_component.pk_hash.assign(abag_hash, abag_hash + base::size(abag_hash));
     crx_component.version = base::Version("0.9");
     crx_component.installer = base::MakeRefCounted<MockInstaller>();
@@ -486,6 +490,7 @@ TEST_F(ComponentUpdaterTest, MaybeThrottle) {
 
   using update_client::jebg_hash;
   CrxComponent crx_component;
+  crx_component.app_id = "jebgalgnebhfojomionfpkfelancnnkf";
   crx_component.pk_hash.assign(jebg_hash, jebg_hash + base::size(jebg_hash));
   crx_component.version = base::Version("0.9");
   crx_component.installer = installer;

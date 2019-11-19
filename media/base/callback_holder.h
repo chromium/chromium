@@ -22,10 +22,10 @@ template <typename CB> class CallbackHolder {
   }
 
   // Sets the callback to be potentially held.
-  void SetCallback(const CB& cb) {
+  void SetCallback(CB cb) {
     DCHECK(original_cb_.is_null());
     DCHECK(held_cb_.is_null());
-    original_cb_ = cb;
+    original_cb_ = std::move(cb);
   }
 
   bool IsNull() const {

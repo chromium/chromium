@@ -46,9 +46,9 @@ found in the FAQ.
   usually the case if the OS security is used properly.
 * **Emulation is not security:** Emulation and virtual machine solutions do not
   by themselves provide security. The sandbox should not rely on code emulation,
-  code translation, or patching to provide security.  
-  
-## Sandbox windows architecture
+  code translation, or patching to provide security.
+
+## Sandbox Windows architecture
 
 The Windows sandbox is a user-mode only sandbox. There are no special kernel
 mode drivers, and the user does not need to be an administrator in order for the
@@ -79,10 +79,10 @@ processes. The responsibilities of the broker process are:
 
 The broker should always outlive all the target processes that it spawned. The
 sandbox IPC is a low-level mechanism (different from Chromium's IPC) that is
-used to transparently forward certain windows API calls from the target to the
+used to transparently forward certain Windows API calls from the target to the
 broker: these calls are evaluated against the policy. The policy-allowed calls
 are then executed by the broker and the results returned to the target process
-via the same IPC. The job of the interceptions manager is to patch the windows
+via the same IPC. The job of the interceptions manager is to patch the Windows
 API calls that should be forwarded via IPC to the broker.
 
 ### The target process
@@ -122,7 +122,7 @@ mechanisms:
 * A restricted token
 * The Windows _job_ object
 * The Windows _desktop_ object
-* Windows Vista and above: The integrity levels
+* Integrity levels
 
 These mechanisms are highly effective at protecting the OS, its configuration,
 and the user's data provided that:
@@ -139,8 +139,7 @@ in the "Process Mitigations" section below.
 
 One issue that other similar sandbox projects face is how restricted can the
 token and job be while still having a properly functioning process. For the
-Chromium sandbox, the most restrictive token for Windows XP takes the following
-form:
+Chromium sandbox, the most restrictive token takes the following form:
 
 #### Regular Groups
 * Logon SID : mandatory
@@ -149,23 +148,22 @@ form:
 * S-1-0-0 : mandatory
 #### Privileges
 * None
+#### Integrity
+* Untrusted integrity level label (S-1-16-0x0)
 
 With the caveats described above, it is near impossible to find an existing
 resource that the OS will grant access with such a token. As long as the disk
 root directories have non-null security, even files with null security cannot be
-accessed. In Vista, the most restrictive token is the same but it also includes
-the low integrity level label. The Chromium renderer normally runs with this
-token, which means that almost all resources that the renderer process uses have
-been acquired by the Browser and their handles duplicated into the renderer
-process.
+accessed. The Chromium renderer runs with this token, which means that almost
+all resources that the renderer process uses have been acquired by the Browser
+and their handles duplicated into the renderer process.
 
 Note that the token is not derived from anonymous or from the guest token; it is
 derived from the user's token and thus associated to the user logon. As a
 result, any auditing that the system or the domain has in place can still be
 used.
 
-By design, the sandbox token cannot protect the following non-securable
-resources:
+By design, the sandbox token cannot protect the non-securable resources such as:
 
 * Mounted FAT or FAT32 volumes: The security descriptor on them is effectively
   null. Malware running in the target can read and write to these volumes as
@@ -173,10 +171,11 @@ resources:
 * TCP/IP: The security of TCP/IP sockets in Windows 2000 and Windows XP (but not
   in Vista) is effectively null. It might be possible for malicious code in the
   target to send and receive network packets to any host.
+* Some unlabelled objects, such as anonymous shared memory sections (e.g.
+  [bug 338538](https://crbug.com/338538))
 
-More information about the Windows token object can be
-found
-[here](http://alt.pluralsight.com/wiki/default.aspx/Keith.GuideBook/WhatIsAToken.htm)
+See NULL DACLs and Other Dangerous ACE Types, _Secure Coding Techniques_, 195-199
+for more information.
 
 ### The Job object
 
@@ -197,7 +196,7 @@ security descriptor associated with them are enforced:
 * One active process limit (disallows creating child processes)
 
 Chromium renderers normally run with all these restrictions active. Each
-renderers run in its own Job object. Using the Job object, the sandbox can (but
+renderer runs in its own Job object. Using the Job object, the sandbox can (but
 currently does not) prevent:
 
 * Excessive use of CPU cycles
@@ -205,7 +204,7 @@ currently does not) prevent:
 * Excessive use of IO
 
 More information about Windows Job Objects can be
-found [here](http://www.microsoft.com/msj/0399/jobkernelobj/jobkernelobj.aspx)
+found [here](https://docs.microsoft.com/en-us/windows/desktop/procthread/job-objects).
 
 ### The alternate desktop
 
@@ -247,9 +246,11 @@ window messages exchanged between different processes on the same desktop.
 
 By default, a token can read an object of a higher integrity level, but not
 write to it. Most desktop applications run at medium integrity (MI), while less
-trusted processes like Internet Explorer's protected mode and our own sandbox
-run at low integrity (LI). A low integrity mode token can access only the
-following shared resources:
+trusted processes like Internet Explorer's protected mode and our GPU sandbox
+run at low integrity (LI), while our renderer processes run at the lowest
+Untrusted integrity level.
+
+A low integrity level token can access only the following shared resources:
 
 * Read access to most files
 * Write access to `%USER PROFILE%\AppData\LocalLow`
@@ -263,6 +264,9 @@ following shared resources:
 * COM interfaces with LI (low integrity) launch activation rights
 * Named pipes exposed via LI (low integrity) labels
 
+While an Untrusted integrity level can only write to resources which
+have a null DACL or an explicit Untrusted Mandatory Level.
+
 You'll notice that the previously described attributes of the token, job object,
 and alternate desktop are more restrictive, and would in fact block access to
 everything allowed in the above list. So, the integrity level is a bit redundant
@@ -270,8 +274,15 @@ with the other measures, but it can be seen as an additional degree of
 defense-in-depth, and its use has no visible impact on performance or resource
 usage.
 
+The integrity level of different Chrome components will change over
+time as functionality is split into smaller services. At M75 the
+browser, crash handler, and network utility processes run at Medium
+integrity, the GPU process at Low and most remaining services
+including isolated renderers at Untrusted.
+
 More information on integrity levels can be
-found [here](http://msdn.microsoft.com/en-us/library/bb625963.aspx).
+found [here](http://msdn.microsoft.com/en-us/library/bb625963.aspx)
+and in Chapter 7 of *Windows Internals, Part 1, 7th Ed.*.
 
 ### Process mitigation policies
 
@@ -355,6 +366,15 @@ policies on the target process for enforcing security characteristics.
 
 * &gt;= Win10
 * `ProcessFontDisablePolicy`
+
+#### Disable Loading of Unsigned Code (CIG):
+
+* &gt;= Win10 TH2
+* `ProcessSignaturePolicy`
+* Prevents loading unsigned code into our processes. This means attackers can't just LoadLibrary a DLL after gaining execution (which shouldn't be possible anyway due to other sandbox mitigations), but more importantly, prevents third party DLLs from being injected into our processes, which can affect stability and our ability to enable other security mitigations.
+* Enabled (post-startup) for all sandboxed child processes.
+* Enabled (pre-startup) for sandboxed renderer processes. This eliminates a process launch time gap where local injection of improperly signed DLLs into a renderer process could occur.
+* See [msedgedev blog](https://blogs.windows.com/msedgedev/2017/02/23/mitigating-arbitrary-native-code-execution/) for more background on this mitigation.
 
 #### Disable Image Load from Remote Devices:
 

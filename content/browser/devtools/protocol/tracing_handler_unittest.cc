@@ -72,7 +72,7 @@ const char kCustomTraceConfigStringDevToolsStyle[] =
 class TracingHandlerTest : public testing::Test {
  public:
   void SetUp() override {
-    tracing_handler_.reset(new TracingHandler(nullptr, nullptr, false));
+    tracing_handler_.reset(new TracingHandler(nullptr, nullptr));
   }
 
   void TearDown() override { tracing_handler_.reset(); }

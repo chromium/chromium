@@ -4,11 +4,11 @@
 
 module blink.mojom;
 
-import "mojo/public/mojom/base/time.mojom";
+import "mojo/public/mojom/base/read_only_buffer.mojom";
+import "third_party/blink/public/mojom/blob/blob.mojom";
 import "third_party/blink/public/mojom/fetch/fetch_api_response.mojom";
 import "third_party/blink/public/mojom/fetch/fetch_api_request.mojom";
 import "mojo/public/mojom/base/string16.mojom";
-import "url/mojom/url.mojom";
 
 // This enum is used in histograms, so do not change the ordering and always
 // append new types to the end.
@@ -74,7 +74,15 @@ struct BatchOperation {
 // Result of Open method. |status| is only set if there is a failure.
 union OpenResult {
   CacheStorageError status;
-  associated CacheStorageCache cache;
+  pending_associated_remote<CacheStorageCache> cache;
+};
+
+// EagerResponse: A blob response where the source has eagerly started reading
+// the body into a DataPipe.
+struct EagerResponse {
+  blink.mojom.FetchAPIResponse response;
+  handle<data_pipe_consumer> pipe;
+  pending_receiver<BlobReaderClient> client_receiver;
 };
 
 // Result of Match for both interfaces CacheStorage and CacheStorageCache
@@ -82,6 +90,7 @@ union OpenResult {
 union MatchResult {
   CacheStorageError status;
   blink.mojom.FetchAPIResponse response;
+  EagerResponse eager_response;
 };
 
 // Result of MatchAll method |status| is only set if there is a failure.
@@ -101,48 +110,48 @@ union CacheKeysResult {
 // defined on spec: https://w3c.github.io/ServiceWorker/#cache-interface
 interface CacheStorageCache {
   // Returns the first cached response that matches |request| according to
-  // options specified on |query_options|.
-  Match(blink.mojom.FetchAPIRequest request, CacheQueryOptions query_options)
+  // options specified on |query_options|.  |in_related_fetch_event| will be
+  // true if the operation was initiated within a FetchEvent handler with
+  // a matching request URL.
+  Match(blink.mojom.FetchAPIRequest request, CacheQueryOptions query_options,
+        bool in_related_fetch_event, int64 trace_id)
       => (MatchResult result);
 
   // Returns all cached responses that match |request| according to options
   // specified on |query_options|.
-  MatchAll(blink.mojom.FetchAPIRequest? request, CacheQueryOptions query_options)
+  MatchAll(blink.mojom.FetchAPIRequest? request, CacheQueryOptions query_options, int64 trace_id)
       => (MatchAllResult result);
 
   // Returns all keys (which are requests) of matching |request| and
   // |query_options|.
-  Keys(blink.mojom.FetchAPIRequest? request, CacheQueryOptions query_options)
+  Keys(blink.mojom.FetchAPIRequest? request, CacheQueryOptions query_options, int64 trace_id)
       => (CacheKeysResult result);
 
   // Perform a batch of operations, used for PUT and DELETE operations.
-  Batch(array<BatchOperation> batch_operations, bool fail_on_duplicates)
+  Batch(array<BatchOperation> batch_operations, int64 trace_id)
       => (CacheStorageVerboseError result);
-
-  // Sets |side_data| if there is an entry of which key is |url| and the entry
-  // has the same |response_time|.
-  SetSideData(url.mojom.Url url, mojo_base.mojom.Time response_time,
-              array<uint8> side_data) => (CacheStorageError result);
 };
 
 // Handles global CacheStorage methods, directly relates to methods available on
 // spec: https://w3c.github.io/ServiceWorker/#cachestorage-interface
 interface CacheStorage {
   // Returns kSuccess if |cache_name| exists or kErrorNotFound if not.
-  Has(mojo_base.mojom.String16 cache_name) => (CacheStorageError result);
+  Has(mojo_base.mojom.String16 cache_name, int64 trace_id) => (CacheStorageError result);
 
   // Removes a given cache.
-  Delete(mojo_base.mojom.String16 cache_name) => (CacheStorageError result);
+  Delete(mojo_base.mojom.String16 cache_name, int64 trace_id) => (CacheStorageError result);
 
   // Returns all cache names managed on this origin.
-  Keys() => (array<mojo_base.mojom.String16> keys);
+  Keys(int64 trace_id) => (array<mojo_base.mojom.String16> keys);
 
   // Returns the first cached response that matches |request| and
   // |match_options|. It can search on all caches if |cache_name| isn't provided
-  // on |match_options|.
-  Match(blink.mojom.FetchAPIRequest request, MultiCacheQueryOptions match_options)
+  // on |match_options|.  |in_related_fetch_event| will be true if the operation
+  // was initiated within a FetchEvent handler with a matching request URL.
+  Match(blink.mojom.FetchAPIRequest request, MultiCacheQueryOptions match_options,
+        bool in_related_fetch_event, int64 trace_id)
       => (MatchResult result);
 
   // Opens and returns a mojo interface to a cache, it creates if doesn't exist.
-  Open(mojo_base.mojom.String16 cache_name) => (OpenResult result);
+  Open(mojo_base.mojom.String16 cache_name, int64 trace_id) => (OpenResult result);
 };

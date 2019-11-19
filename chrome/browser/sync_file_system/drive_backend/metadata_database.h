@@ -402,7 +402,7 @@ class MetadataDatabase {
 
   std::unique_ptr<MetadataDatabaseIndexInterface> index_;
 
-  base::WeakPtrFactory<MetadataDatabase> weak_ptr_factory_;
+  base::WeakPtrFactory<MetadataDatabase> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(MetadataDatabase);
 };

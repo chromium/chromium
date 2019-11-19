@@ -3,9 +3,11 @@
 <script src="../../resources/testharness.js"></script>
 <script src="../../resources/testharnessreport.js"></script>
 <style>
+html {
+  scroll-snap-type: both proximity;
+}
 body {
   overflow: scroll;
-  scroll-snap-type: both proximity;
   height: 300px;
   width: 300px;
   margin: 0px;

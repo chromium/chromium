@@ -25,25 +25,31 @@ class GPU_EXPORT GPUTestConfig {
     kOsWinVista = 1 << 1,
     kOsWin7 = 1 << 2,
     kOsWin8 = 1 << 3,
-    kOsMacLeopard = 1 << 4,
-    kOsMacSnowLeopard = 1 << 5,
-    kOsMacLion = 1 << 6,
-    kOsMacMountainLion = 1 << 7,
-    kOsMacMavericks = 1 << 8,
-    kOsMacYosemite = 1 << 9,
-    kOsMacElCapitan = 1 << 10,
-    kOsMacSierra = 1 << 11,
-    kOsMacHighSierra = 1 << 12,
-    kOsMacMojave = 1 << 13,
+    kOsWin10 = 1 << 4,
+    kOsWin = kOsWinXP | kOsWinVista | kOsWin7 | kOsWin8 | kOsWin10,
+    // Jump over a few bits for future Windows versions.
+    kOsMacLeopard = 1 << 10,
+    kOsMacSnowLeopard = 1 << 11,
+    kOsMacLion = 1 << 12,
+    kOsMacMountainLion = 1 << 13,
+    kOsMacMavericks = 1 << 14,
+    kOsMacYosemite = 1 << 15,
+    kOsMacElCapitan = 1 << 16,
+    kOsMacSierra = 1 << 17,
+    kOsMacHighSierra = 1 << 18,
+    kOsMacMojave = 1 << 19,
+    kOsMacCatalina = 1 << 20,
     kOsMac = kOsMacLeopard | kOsMacSnowLeopard | kOsMacLion |
              kOsMacMountainLion | kOsMacMavericks | kOsMacYosemite |
-             kOsMacElCapitan | kOsMacSierra | kOsMacHighSierra | kOsMacMojave,
-    kOsLinux = 1 << 14,
-    kOsChromeOS = 1 << 15,
-    kOsAndroid = 1 << 16,
-    kOsWin10 = 1 << 17,
-    kOsWin = kOsWinXP | kOsWinVista | kOsWin7 | kOsWin8 | kOsWin10,
-    kOsFuchsia = 1 << 18,
+             kOsMacElCapitan | kOsMacSierra | kOsMacHighSierra | kOsMacMojave |
+             kOsMacCatalina,
+    // Jump over a few bits for future OSX versions.
+    kOsLinux = 1 << 25,
+    kOsChromeOS = 1 << 26,
+    kOsAndroid = 1 << 27,
+    kOsFuchsia = 1 << 28,
+    // If we run out of bits, please retire older OS versions, like WinXP,
+    // MacLeopard, etc., for which we no longer have bots.
   };
 
   enum BuildType {
@@ -141,4 +147,3 @@ class GPU_EXPORT GPUTestBotConfig : public GPUTestConfig {
 }  // namespace gpu
 
 #endif  // GPU_CONFIG_GPU_TEST_CONFIG_H_
-

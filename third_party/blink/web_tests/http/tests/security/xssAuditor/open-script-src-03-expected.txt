@@ -1,2 +1,0 @@
-CONSOLE ERROR: line 5: The XSS Auditor refused to execute a script in 'http://localhost:8000/security/xssAuditor/resources/echo-inspan.pl?q=%3Cobject%20data=http://127.0.0.1:8000/security/xssAuditor/resources/xss.js?%3E' because its source code was found within the request. The server sent an 'X-XSS-Protection' header requesting this behavior.
-

@@ -117,8 +117,7 @@ class KEYED_SERVICE_EXPORT BrowserStateKeyedServiceFactory
 
   // KeyedServiceFactory:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      void* context,
-      void* side_parameter) const final;
+      void* context) const final;
   bool IsOffTheRecord(void* context) const final;
 
   // KeyedServiceBaseFactory:

@@ -59,11 +59,6 @@ class MediaKeys : public ScriptWrappable,
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static MediaKeys* Create(
-      ExecutionContext*,
-      const WebVector<WebEncryptedMediaSessionType>& supported_session_types,
-      std::unique_ptr<WebContentDecryptionModule>);
-
   MediaKeys(
       ExecutionContext*,
       const WebVector<WebEncryptedMediaSessionType>& supported_session_types,

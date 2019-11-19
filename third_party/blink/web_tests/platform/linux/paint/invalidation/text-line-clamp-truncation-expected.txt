@@ -1,56 +1,20 @@
 {
   "layers": [
     {
-      "name": "LayoutView #document",
-      "bounds": [800, 600],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [800, 600],
-      "drawsContent": false
-    },
-    {
       "name": "Scrolling Contents Layer",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
       "paintInvalidations": [
         {
-          "object": "EllipsisBox",
+          "object": "LayoutDeprecatedFlexibleBox DIV id='container' class='folded'",
           "rect": [8, 8, 285, 24],
-          "reason": "disappeared"
+          "reason": "chunk disappeared"
         },
         {
-          "object": "LayoutDeprecatedFlexibleBox DIV id='container'",
-          "rect": [8, 8, 285, 2],
-          "reason": "incremental"
-        },
-        {
-          "object": "InlineTextBox '___these_two_lines_should_be_identical___'",
+          "object": "LayoutFlexibleBox DIV id='container'",
           "rect": [8, 10, 284, 43],
-          "reason": "geometry"
-        },
-        {
-          "object": "InlineTextBox '___these_two_lines_should_be_identical___'",
-          "rect": [8, 10, 284, 43],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox '___these_two_lines_should_be_identical___'",
-          "rect": [8, 10, 284, 43],
-          "reason": "disappeared"
-        },
-        {
-          "object": "LayoutDeprecatedFlexibleBox DIV id='container'",
-          "rect": [8, 32, 284, 21],
-          "reason": "incremental"
-        },
-        {
-          "object": "LayoutDeprecatedFlexibleBox DIV id='container'",
-          "rect": [292, 10, 1, 22],
-          "reason": "incremental"
+          "reason": "chunk appeared"
         }
       ]
     }

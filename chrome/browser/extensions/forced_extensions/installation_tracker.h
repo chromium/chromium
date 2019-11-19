@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/extension.h"
 
@@ -23,8 +24,6 @@ class BrowserContext;
 }
 
 namespace extensions {
-
-class ExtensionRegistry;
 
 // Used to track installation of force-installed extensions for the profile
 // and report stats to UMA.
@@ -41,6 +40,8 @@ class InstallationTracker : public ExtensionRegistryObserver {
   // ExtensionRegistryObserver overrides:
   void OnExtensionLoaded(content::BrowserContext* browser_context,
                          const Extension* extension) override;
+
+  void OnShutdown(ExtensionRegistry*) override;
 
  private:
   // Loads list of force-installed extensions if available.
@@ -67,10 +68,13 @@ class InstallationTracker : public ExtensionRegistryObserver {
   // Set of not yet loaded force installed extensions.
   std::set<std::string> pending_forced_extensions_;
 
+  // Tracks whether non-empty forcelist policy was received at least once.
+  bool loaded_ = false;
+
   // Tracks whether stats were already reported for the session.
   bool reported_ = false;
 
-  ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver> observer_;
+  ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver> observer_{this};
 
   // Tracks installation reporting timeout.
   std::unique_ptr<base::OneShotTimer> timer_;

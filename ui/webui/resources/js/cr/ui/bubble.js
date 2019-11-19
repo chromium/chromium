@@ -4,59 +4,53 @@
 
 // require: event_tracker.js
 
-// TODO(vitalyp): Inline the enums below into cr.ui definition function, remove
-// cr.exportPath() call and remove exportPath from exports in cr.js when this
-// issue will be fixed:
-// https://github.com/google/closure-compiler/issues/544
-cr.exportPath('cr.ui');
-
-/**
- * The arrow location specifies how the arrow and bubble are positioned in
- * relation to the anchor node.
- * @enum {string}
- */
-cr.ui.ArrowLocation = {
-  // The arrow is positioned at the top and the start of the bubble. In left
-  // to right mode this is the top left. The entire bubble is positioned below
-  // the anchor node.
-  TOP_START: 'top-start',
-  // The arrow is positioned at the top and the end of the bubble. In left to
-  // right mode this is the top right. The entire bubble is positioned below
-  // the anchor node.
-  TOP_END: 'top-end',
-  // The arrow is positioned at the bottom and the start of the bubble. In
-  // left to right mode this is the bottom left. The entire bubble is
-  // positioned above the anchor node.
-  BOTTOM_START: 'bottom-start',
-  // The arrow is positioned at the bottom and the end of the bubble. In
-  // left to right mode this is the bottom right. The entire bubble is
-  // positioned above the anchor node.
-  BOTTOM_END: 'bottom-end'
-};
-
-/**
- * The bubble alignment specifies the position of the bubble in relation to
- * the anchor node.
- * @enum {string}
- */
-cr.ui.BubbleAlignment = {
-  // The bubble is positioned just above or below the anchor node (as
-  // specified by the arrow location) so that the arrow points at the midpoint
-  // of the anchor.
-  ARROW_TO_MID_ANCHOR: 'arrow-to-mid-anchor',
-  // The bubble is positioned just above or below the anchor node (as
-  // specified by the arrow location) so that its reference edge lines up with
-  // the edge of the anchor.
-  BUBBLE_EDGE_TO_ANCHOR_EDGE: 'bubble-edge-anchor-edge',
-  // The bubble is positioned so that it is entirely within view and does not
-  // obstruct the anchor element, if possible. The specified arrow location is
-  // taken into account as the preferred alignment but may be overruled if
-  // there is insufficient space (see BubbleBase.reposition for the exact
-  // placement algorithm).
-  ENTIRELY_VISIBLE: 'entirely-visible'
-};
-
 cr.define('cr.ui', function() {
+  /**
+   * The arrow location specifies how the arrow and bubble are positioned in
+   * relation to the anchor node.
+   * @enum {string}
+   */
+  const ArrowLocation = {
+    // The arrow is positioned at the top and the start of the bubble. In left
+    // to right mode this is the top left. The entire bubble is positioned below
+    // the anchor node.
+    TOP_START: 'top-start',
+    // The arrow is positioned at the top and the end of the bubble. In left to
+    // right mode this is the top right. The entire bubble is positioned below
+    // the anchor node.
+    TOP_END: 'top-end',
+    // The arrow is positioned at the bottom and the start of the bubble. In
+    // left to right mode this is the bottom left. The entire bubble is
+    // positioned above the anchor node.
+    BOTTOM_START: 'bottom-start',
+    // The arrow is positioned at the bottom and the end of the bubble. In
+    // left to right mode this is the bottom right. The entire bubble is
+    // positioned above the anchor node.
+    BOTTOM_END: 'bottom-end'
+  };
+
+  /**
+   * The bubble alignment specifies the position of the bubble in relation to
+   * the anchor node.
+   * @enum {string}
+   */
+  const BubbleAlignment = {
+    // The bubble is positioned just above or below the anchor node (as
+    // specified by the arrow location) so that the arrow points at the midpoint
+    // of the anchor.
+    ARROW_TO_MID_ANCHOR: 'arrow-to-mid-anchor',
+    // The bubble is positioned just above or below the anchor node (as
+    // specified by the arrow location) so that its reference edge lines up with
+    // the edge of the anchor.
+    BUBBLE_EDGE_TO_ANCHOR_EDGE: 'bubble-edge-anchor-edge',
+    // The bubble is positioned so that it is entirely within view and does not
+    // obstruct the anchor element, if possible. The specified arrow location is
+    // taken into account as the preferred alignment but may be overruled if
+    // there is insufficient space (see BubbleBase.reposition for the exact
+    // placement algorithm).
+    ENTIRELY_VISIBLE: 'entirely-visible'
+  };
+
   /**
    * Abstract base class that provides common functionality for implementing
    * free-floating informational bubbles with a triangular arrow pointing at an
@@ -552,10 +546,11 @@ cr.define('cr.ui', function() {
     },
   };
 
-
   return {
+    ArrowLocation: ArrowLocation,
+    AutoCloseBubble: AutoCloseBubble,
+    BubbleAlignment: BubbleAlignment,
     BubbleBase: BubbleBase,
     Bubble: Bubble,
-    AutoCloseBubble: AutoCloseBubble
   };
 });

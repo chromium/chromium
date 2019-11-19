@@ -8,6 +8,7 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
+#include "base/threading/thread.h"
 #include "gpu/command_buffer/common/discardable_handle.h"
 #include "gpu/gpu_gles2_export.h"
 #include "third_party/skia/src/core/SkRemoteGlyphCache.h"
@@ -22,6 +23,7 @@ class GPU_GLES2_EXPORT ServiceFontManager
    public:
     virtual ~Client() {}
     virtual scoped_refptr<Buffer> GetShmBuffer(uint32_t shm_id) = 0;
+    virtual void ReportProgress() = 0;
   };
 
   ServiceFontManager(Client* client);
@@ -46,6 +48,7 @@ class GPU_GLES2_EXPORT ServiceFontManager
   base::Lock lock_;
 
   Client* client_;
+  const base::PlatformThreadId client_thread_id_;
   std::unique_ptr<SkStrikeClient> strike_client_;
   base::flat_map<SkDiscardableHandleId, ServiceDiscardableHandle>
       discardable_handle_map_;

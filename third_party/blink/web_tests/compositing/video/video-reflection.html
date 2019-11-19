@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <title>Test "-webkit-box-reflect" property on a video element.</title>
-<script src="../../resources/run-after-layout-and-paint.js"></script>
 <style>
 video {
     -webkit-box-reflect: below 0px;
@@ -9,13 +8,14 @@ video {
 </style>
 <video></video>
 <script>
-testRunner.dumpAsTextWithPixelResults();
-testRunner.waitUntilDone();
+if (window.testRunner)
+    testRunner.waitUntilDone();
 
 var video = document.querySelector('video');
 video.onseeked = function() {
     video.onseeked = null;
-    runAfterLayoutAndPaint(function() {}, true);
+    if (window.testRunner)
+        testRunner.notifyDone();
 };
 
 video.src = '../../media/content/test.ogv';

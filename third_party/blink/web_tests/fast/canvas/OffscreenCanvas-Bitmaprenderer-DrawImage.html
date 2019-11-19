@@ -1,0 +1,39 @@
+<html>
+<br> <canvas id="canvasNewOffscreenDrawImage" width="60" height="60"></canvas>
+
+<script>
+  if (window.testRunner) {
+    testRunner.waitUntilDone();
+  }
+  // source content as canvas
+  var htmlCanvas = document.createElement('canvas');
+  htmlCanvas.width = 60;
+  htmlCanvas.height = 60;
+  var htmlCanvasCtx = htmlCanvas.getContext("2d");
+  htmlCanvasCtx.fillStyle = "blue";
+  htmlCanvasCtx.fillRect(0, 0, 15, 60);
+  htmlCanvasCtx.fillStyle = "red";
+  htmlCanvasCtx.fillRect(15, 0, 45, 30);
+  htmlCanvasCtx.fillStyle = "green";
+  htmlCanvasCtx.fillRect(15, 30, 45, 30);
+
+  createImageBitmap(htmlCanvas).then(function(bmap){
+    // This offscreen canvas will be used in several tests
+    var canNewOffscreen = new OffscreenCanvas(60,60);
+    var ctxNewOffscreen = canNewOffscreen.getContext("bitmaprenderer");
+    ctxNewOffscreen.transferFromImageBitmap(bmap);
+
+    // Fill canvasNewOffscreenDrawImage
+    var output2dCanvas = document.getElementById("canvasNewOffscreenDrawImage");
+    var output2dcontext = output2dCanvas.getContext("2d");
+    output2dcontext.drawImage(canNewOffscreen, 0, 0);
+
+    if (window.testRunner) {
+      requestAnimationFrame(() => {
+        testRunner.notifyDone();
+      });
+    }
+  });
+
+</script>
+</html>

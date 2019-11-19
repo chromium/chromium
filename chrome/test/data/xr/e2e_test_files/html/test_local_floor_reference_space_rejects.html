@@ -1,0 +1,28 @@
+<!doctype html>
+<!--
+Tests that a request for a stationary reference space is rejected.
+-->
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="../resources/webxr_e2e.css">
+  </head>
+  <body>
+    <script src="../../../../../../third_party/blink/web_tests/resources/testharness.js"></script>
+    <script src="../resources/webxr_e2e.js"></script>
+    <script>
+      let session_ = null;
+      navigator.xr.requestSession('inline')
+      .then((xrSession) => {
+        session_ = xrSession;
+        return xrSession.requestReferenceSpace('local-floor');
+      })
+      .then((refSpace) => {
+        assert_unreached("Should not be able to get a stationary reference space");
+      }, (err) => {
+        assert_not_equals(session_, null, "Ensure session was created");
+        assert_equals(err.name, "NotSupportedError", "Ensure we got the right error");
+        done();
+      });
+    </script>
+  </body>
+</html>

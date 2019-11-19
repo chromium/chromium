@@ -8,5 +8,17 @@ blink_modules_sources("manifest") {
   sources = [
     "image_resource_type_converters.cc",
     "image_resource_type_converters.h",
+    "manifest_change_notifier.cc",
+    "manifest_change_notifier.h",
+    "manifest_fetcher.cc",
+    "manifest_fetcher.h",
+    "manifest_manager.cc",
+    "manifest_manager.h",
+    "manifest_parser.cc",
+    "manifest_parser.h",
+    "manifest_type_converters.cc",
+    "manifest_type_converters.h",
+    "manifest_uma_util.cc",
+    "manifest_uma_util.h",
   ]
 }

@@ -329,23 +329,22 @@ inline uint64_t ToUInt64(v8::Isolate* isolate,
 
 // NaNs and +/-Infinity should be 0, otherwise modulo 2^64.
 // Step 8 - 12 of https://heycam.github.io/webidl/#abstract-opdef-converttoint
-inline unsigned long long DoubleToInteger(double d) {
+inline uint64_t DoubleToInteger(double d) {
   if (std::isnan(d) || std::isinf(d))
     return 0;
-  constexpr unsigned long long kMaxULL =
-      std::numeric_limits<unsigned long long>::max();
+  constexpr uint64_t kMaxULL = std::numeric_limits<uint64_t>::max();
 
   // -2^{64} < fmod_value < 2^{64}.
   double fmod_value = fmod(trunc(d), kMaxULL + 1.0);
   if (fmod_value >= 0) {
     // 0 <= fmod_value < 2^{64}.
     // 0 <= value < 2^{64}. This cast causes no loss.
-    return static_cast<unsigned long long>(fmod_value);
+    return static_cast<uint64_t>(fmod_value);
   }
   // -2^{64} < fmod_value < 0.
   // 0 < fmod_value_in_unsigned_long_long < 2^{64}. This cast causes no loss.
-  unsigned long long fmod_value_in_unsigned_long_long =
-      static_cast<unsigned long long>(-fmod_value);
+  uint64_t fmod_value_in_unsigned_long_long =
+      static_cast<uint64_t>(-fmod_value);
   // -1 < (kMaxULL - fmod_value_in_unsigned_long_long) < 2^{64} - 1.
   // 0 < value < 2^{64}.
   return kMaxULL - fmod_value_in_unsigned_long_long + 1;
@@ -372,7 +371,15 @@ CORE_EXPORT double ToRestrictedDouble(v8::Isolate*,
 inline float ToFloat(v8::Isolate* isolate,
                      v8::Local<v8::Value> value,
                      ExceptionState& exception_state) {
-  return static_cast<float>(ToDouble(isolate, value, exception_state));
+  double double_value = ToDouble(isolate, value, exception_state);
+  if (exception_state.HadException())
+    return 0;
+  using Limits = std::numeric_limits<float>;
+  if (UNLIKELY(double_value > Limits::max()))
+    return Limits::infinity();
+  if (UNLIKELY(double_value < Limits::lowest()))
+    return -Limits::infinity();
+  return static_cast<float>(double_value);
 }
 
 // Convert a value to a single precision float, throwing on non-finite values.
@@ -495,12 +502,12 @@ CORE_EXPORT void ToFlexibleArrayBufferView(v8::Isolate*,
                                            void* storage = nullptr);
 
 CORE_EXPORT bool IsValidEnum(const String& value,
-                             const char** valid_values,
+                             const char* const* valid_values,
                              size_t length,
                              const String& enum_name,
                              ExceptionState&);
 CORE_EXPORT bool IsValidEnum(const Vector<String>& values,
-                             const char** valid_values,
+                             const char* const* valid_values,
                              size_t length,
                              const String& enum_name,
                              ExceptionState&);
@@ -547,6 +554,9 @@ MaybeSharedType ToMaybeShared(v8::Isolate* isolate,
 CORE_EXPORT Vector<String> GetOwnPropertyNames(v8::Isolate*,
                                                const v8::Local<v8::Object>&,
                                                ExceptionState&);
+
+v8::MicrotaskQueue* ToMicrotaskQueue(ExecutionContext*);
+v8::MicrotaskQueue* ToMicrotaskQueue(ScriptState*);
 
 }  // namespace blink
 

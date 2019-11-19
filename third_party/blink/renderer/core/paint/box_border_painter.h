@@ -13,9 +13,9 @@ namespace blink {
 
 class ComputedStyle;
 class GraphicsContext;
-class LayoutRect;
-struct PaintInfo;
 class Path;
+struct PaintInfo;
+struct PhysicalRect;
 
 typedef unsigned BorderEdgeFlags;
 
@@ -23,18 +23,18 @@ class BoxBorderPainter {
   STACK_ALLOCATED();
 
  public:
-  BoxBorderPainter(const LayoutRect& border_rect,
+  BoxBorderPainter(const PhysicalRect& border_rect,
                    const ComputedStyle&,
                    BackgroundBleedAvoidance,
                    bool include_logical_left_edge,
                    bool include_logical_right_edge);
 
   BoxBorderPainter(const ComputedStyle&,
-                   const LayoutRect& outer,
-                   const LayoutRect& inner,
+                   const PhysicalRect& outer,
+                   const PhysicalRect& inner,
                    const BorderEdge& uniform_edge_info);
 
-  void PaintBorder(const PaintInfo&, const LayoutRect& border_rect) const;
+  void PaintBorder(const PaintInfo&, const PhysicalRect& border_rect) const;
 
  private:
   struct ComplexBorderInfo;
@@ -65,11 +65,12 @@ class BoxBorderPainter {
                           Color,
                           BorderEdgeFlags) const;
   bool PaintBorderFastPath(GraphicsContext&,
-                           const LayoutRect& border_rect) const;
-  void DrawDoubleBorder(GraphicsContext&, const LayoutRect& border_rect) const;
+                           const PhysicalRect& border_rect) const;
+  void DrawDoubleBorder(GraphicsContext&,
+                        const PhysicalRect& border_rect) const;
 
   void DrawBoxSideFromPath(GraphicsContext&,
-                           const LayoutRect&,
+                           const PhysicalRect&,
                            const Path&,
                            float thickness,
                            float draw_thickness,
@@ -77,7 +78,7 @@ class BoxBorderPainter {
                            Color,
                            EBorderStyle) const;
   void DrawDashedDottedBoxSideFromPath(GraphicsContext&,
-                                       const LayoutRect&,
+                                       const PhysicalRect&,
                                        float thickness,
                                        float draw_thickness,
                                        Color,
@@ -86,14 +87,14 @@ class BoxBorderPainter {
                                      const Path&,
                                      float thickness) const;
   void DrawDoubleBoxSideFromPath(GraphicsContext&,
-                                 const LayoutRect&,
+                                 const PhysicalRect&,
                                  const Path&,
                                  float thickness,
                                  float draw_thickness,
                                  BoxSide,
                                  Color) const;
   void DrawRidgeGrooveBoxSideFromPath(GraphicsContext&,
-                                      const LayoutRect&,
+                                      const PhysicalRect&,
                                       const Path&,
                                       float thickness,
                                       float draw_thickness,

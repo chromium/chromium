@@ -24,6 +24,8 @@ static const CGFloat kHostCardIconInset = 10.f;
 static const CGFloat kHostCardPadding = 4.f;
 static const CGFloat kHostCardIconSize = 45.f;
 
+static NSString* const kSuccessExitOfflineReason = @"SUCCESS_EXIT";
+
 // Maps an offline reason enum string to the l10n ID used to retrieve the
 // localized message.
 static NSDictionary<NSString*, NSNumber*>* const kOfflineReasonL10nId = @{
@@ -44,8 +46,6 @@ static NSDictionary<NSString*, NSNumber*>* const kOfflineReasonL10nId = @{
       @(IDS_OFFLINE_REASON_X_SERVER_RETRIES_EXCEEDED),
   @"SESSION_RETRIES_EXCEEDED" : @(IDS_OFFLINE_REASON_SESSION_RETRIES_EXCEEDED),
   @"HOST_RETRIES_EXCEEDED" : @(IDS_OFFLINE_REASON_HOST_RETRIES_EXCEEDED),
-  @"UNKNOWN" : @(IDS_OFFLINE_REASON_UNKNOWN),
-  // Don't need to show offline reason for "SUCCESS_EXIT".
 };
 
 @interface HostCollectionViewCell () {
@@ -165,7 +165,7 @@ static NSDictionary<NSString*, NSNumber*>* const kOfflineReasonL10nId = @{
 
   _imageView.image = RemotingTheme.desktopIcon;
 
-  if ([_hostInfo.status isEqualToString:@"ONLINE"]) {
+  if (_hostInfo.isOnline) {
     _imageView.backgroundColor = RemotingTheme.hostOnlineColor;
     _statusLabel.text = l10n_util::GetNSString(IDS_HOST_ONLINE_SUBTITLE);
   } else {
@@ -176,11 +176,16 @@ static NSDictionary<NSString*, NSNumber*>* const kOfflineReasonL10nId = @{
                   base::SysNSStringToUTF16(hostInfo.updatedTime))
             : l10n_util::GetNSString(IDS_HOST_OFFLINE_SUBTITLE);
     NSString* localizedOfflineReason = nil;
-    if (hostInfo.offlineReason.length > 0) {
+    if (hostInfo.offlineReason.length > 0 &&
+        ![hostInfo.offlineReason isEqualToString:kSuccessExitOfflineReason]) {
       NSNumber* offlineReasonId = kOfflineReasonL10nId[hostInfo.offlineReason];
       if (offlineReasonId) {
         localizedOfflineReason =
             l10n_util::GetNSString(offlineReasonId.intValue);
+      } else {
+        localizedOfflineReason = l10n_util::GetNSStringF(
+            IDS_OFFLINE_REASON_UNKNOWN,
+            base::SysNSStringToUTF16(hostInfo.offlineReason));
       }
     }
 

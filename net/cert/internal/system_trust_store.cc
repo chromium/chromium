@@ -5,6 +5,10 @@
 #include "net/cert/internal/system_trust_store.h"
 
 #if defined(USE_NSS_CERTS)
+#include "net/cert/internal/system_trust_store_nss.h"
+#endif  // defined(USE_NSS_CERTS)
+
+#if defined(USE_NSS_CERTS)
 #include <cert.h>
 #include <pk11pub.h>
 #elif defined(OS_MACOSX) && !defined(OS_IOS)
@@ -15,6 +19,7 @@
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "net/cert/internal/cert_errors.h"
 #include "net/cert/internal/parsed_certificate.h"
@@ -31,7 +36,6 @@
 #include "net/cert/scoped_nss_types.h"
 #elif defined(OS_MACOSX) && !defined(OS_IOS)
 #include "net/cert/internal/trust_store_mac.h"
-#include "net/cert/known_roots_mac.h"
 #include "net/cert/x509_util_mac.h"
 #elif defined(OS_FUCHSIA)
 #include "third_party/boringssl/src/include/openssl/pool.h"
@@ -66,6 +70,15 @@ class BaseSystemTrustStore : public SystemTrustStore {
   TrustStoreInMemory additional_trust_store_;
 };
 
+class DummySystemTrustStore : public BaseSystemTrustStore {
+ public:
+  bool UsesSystemTrustStore() const override { return false; }
+
+  bool IsKnownRoot(const ParsedCertificate* trust_anchor) const override {
+    return false;
+  }
+};
+
 }  // namespace
 
 #if defined(USE_NSS_CERTS)
@@ -73,8 +86,19 @@ namespace {
 
 class SystemTrustStoreNSS : public BaseSystemTrustStore {
  public:
-  explicit SystemTrustStoreNSS() : trust_store_nss_(trustSSL) {
-    trust_store_.AddTrustStore(&trust_store_nss_);
+  explicit SystemTrustStoreNSS(std::unique_ptr<TrustStoreNSS> trust_store_nss)
+      : trust_store_nss_(std::move(trust_store_nss)) {
+    trust_store_.AddTrustStore(trust_store_nss_.get());
+
+    // When running in test mode, also layer in the test-only root certificates.
+    //
+    // Note that this integration requires TestRootCerts::HasInstance() to be
+    // true by the time SystemTrustStoreNSS is created - a limitation which is
+    // acceptable for the test-only code that consumes this.
+    if (TestRootCerts::HasInstance()) {
+      trust_store_.AddTrustStore(
+          TestRootCerts::GetInstance()->test_trust_store());
+    }
   }
 
   bool UsesSystemTrustStore() const override { return true; }
@@ -102,22 +126,35 @@ class SystemTrustStoreNSS : public BaseSystemTrustStore {
   }
 
  private:
-  TrustStoreNSS trust_store_nss_;
+  std::unique_ptr<TrustStoreNSS> trust_store_nss_;
 };
 
 }  // namespace
 
 std::unique_ptr<SystemTrustStore> CreateSslSystemTrustStore() {
-  return std::make_unique<SystemTrustStoreNSS>();
+  return std::make_unique<SystemTrustStoreNSS>(
+      std::make_unique<TrustStoreNSS>(trustSSL));
+}
+
+std::unique_ptr<SystemTrustStore>
+CreateSslSystemTrustStoreNSSWithUserSlotRestriction(
+    crypto::ScopedPK11Slot user_slot) {
+  return std::make_unique<SystemTrustStoreNSS>(
+      std::make_unique<TrustStoreNSS>(trustSSL, std::move(user_slot)));
+}
+
+std::unique_ptr<SystemTrustStore>
+CreateSslSystemTrustStoreNSSWithNoUserSlots() {
+  return std::make_unique<SystemTrustStoreNSS>(std::make_unique<TrustStoreNSS>(
+      trustSSL, TrustStoreNSS::DisallowTrustForCertsOnUserSlots()));
 }
 
 #elif defined(OS_MACOSX) && !defined(OS_IOS)
 
 class SystemTrustStoreMac : public BaseSystemTrustStore {
  public:
-  explicit SystemTrustStoreMac() : trust_store_mac_(kSecPolicyAppleSSL) {
-    InitializeKnownRoots();
-    trust_store_.AddTrustStore(&trust_store_mac_);
+  SystemTrustStoreMac() {
+    trust_store_.AddTrustStore(GetGlobalTrustStoreMac());
 
     // When running in test mode, also layer in the test-only root certificates.
     //
@@ -135,18 +172,15 @@ class SystemTrustStoreMac : public BaseSystemTrustStore {
   // IsKnownRoot returns true if the given trust anchor is a standard one (as
   // opposed to a user-installed root)
   bool IsKnownRoot(const ParsedCertificate* trust_anchor) const override {
-    der::Input bytes = trust_anchor->der_cert();
-    base::ScopedCFTypeRef<SecCertificateRef> cert_ref =
-        x509_util::CreateSecCertificateFromBytes(bytes.UnsafeData(),
-                                                 bytes.Length());
-    if (!cert_ref)
-      return false;
-
-    return net::IsKnownRoot(cert_ref);
+    return GetGlobalTrustStoreMac()->IsKnownRoot(trust_anchor);
   }
 
  private:
-  TrustStoreMac trust_store_mac_;
+  TrustStoreMac* GetGlobalTrustStoreMac() const {
+    static base::NoDestructor<TrustStoreMac> static_trust_store_mac(
+        kSecPolicyAppleSSL);
+    return static_trust_store_mac.get();
+  }
 };
 
 std::unique_ptr<SystemTrustStore> CreateSslSystemTrustStore() {
@@ -217,19 +251,14 @@ std::unique_ptr<SystemTrustStore> CreateSslSystemTrustStore() {
 
 #else
 
-class DummySystemTrustStore : public BaseSystemTrustStore {
- public:
-  bool UsesSystemTrustStore() const override { return false; }
-
-  bool IsKnownRoot(const ParsedCertificate* trust_anchor) const override {
-    return false;
-  }
-};
-
 std::unique_ptr<SystemTrustStore> CreateSslSystemTrustStore() {
   return std::make_unique<DummySystemTrustStore>();
 }
 
 #endif
+
+std::unique_ptr<SystemTrustStore> CreateEmptySystemTrustStore() {
+  return std::make_unique<DummySystemTrustStore>();
+}
 
 }  // namespace net

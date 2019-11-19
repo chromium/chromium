@@ -51,8 +51,9 @@ import java.util.concurrent.Callable;
  */
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@MinAndroidSdkLevel(Build.VERSION_CODES.KITKAT) // WebVR is only supported on K+
+@CommandLineFlags.
+Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "enable-features=LogJsConsoleMessages"})
+@MinAndroidSdkLevel(Build.VERSION_CODES.LOLLIPOP) // WebVR is only supported on L+
 @Restriction(RESTRICTION_TYPE_SVR)
 public class VrInstallUpdateInfoBarTest {
     @ClassParameter
@@ -117,7 +118,7 @@ public class VrInstallUpdateInfoBarTest {
     @Test
     @MediumTest
     @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
-    public void testInfoBarNotPresentWhenVrServicesCurrent() throws InterruptedException {
+    public void testInfoBarNotPresentWhenVrServicesCurrent() {
         infoBarTestHelper(VrCoreCompatibility.VR_READY);
     }
 
@@ -126,8 +127,10 @@ public class VrInstallUpdateInfoBarTest {
      */
     @Test
     @MediumTest
-    @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
-    public void testInfoBarPresentWhenVrServicesOutdated() throws InterruptedException {
+    @XrActivityRestriction({XrActivityRestriction.SupportedActivity.CTA,
+            XrActivityRestriction.SupportedActivity.CCT})
+    public void
+    testInfoBarPresentWhenVrServicesOutdated() {
         infoBarTestHelper(VrCoreCompatibility.VR_OUT_OF_DATE);
     }
 
@@ -136,8 +139,10 @@ public class VrInstallUpdateInfoBarTest {
      */
     @Test
     @MediumTest
-    @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
-    public void testInfoBarPresentWhenVrServicesMissing() throws InterruptedException {
+    @XrActivityRestriction({XrActivityRestriction.SupportedActivity.CTA,
+            XrActivityRestriction.SupportedActivity.CCT})
+    public void
+    testInfoBarPresentWhenVrServicesMissing() {
         infoBarTestHelper(VrCoreCompatibility.VR_NOT_AVAILABLE);
     }
 
@@ -148,7 +153,7 @@ public class VrInstallUpdateInfoBarTest {
     @Test
     @MediumTest
     @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
-    public void testInfoBarNotPresentWhenVrServicesNotSupported() throws InterruptedException {
+    public void testInfoBarNotPresentWhenVrServicesNotSupported() {
         infoBarTestHelper(VrCoreCompatibility.VR_NOT_SUPPORTED);
     }
 
@@ -159,7 +164,7 @@ public class VrInstallUpdateInfoBarTest {
     @Test
     @MediumTest
     @Restriction(RESTRICTION_TYPE_VIEWER_DAYDREAM)
-    public void testKeyboardInstallUpgradePromptUrlBar() throws InterruptedException {
+    public void testKeyboardInstallUpgradePromptUrlBar() {
         testKeyboardInstallUpgradeImpl(UserFriendlyElementName.URL);
     }
 
@@ -170,12 +175,11 @@ public class VrInstallUpdateInfoBarTest {
     @Test
     @MediumTest
     @Restriction(RESTRICTION_TYPE_VIEWER_DAYDREAM)
-    public void testKeyboardInstallUpgradePromptWebInput() throws InterruptedException {
+    public void testKeyboardInstallUpgradePromptWebInput() {
         testKeyboardInstallUpgradeImpl(UserFriendlyElementName.CONTENT_QUAD);
     }
 
-    private void testKeyboardInstallUpgradeImpl(final int uiElementToClick)
-            throws InterruptedException {
+    private void testKeyboardInstallUpgradeImpl(final int uiElementToClick) {
         mVrTestRule.loadUrl(
                 VrBrowserTestFramework.getFileUrlForHtmlTestFile("test_web_input_editing"),
                 PAGE_LOAD_TIMEOUT_S);

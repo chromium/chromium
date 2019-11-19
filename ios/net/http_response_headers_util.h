@@ -13,7 +13,7 @@ namespace net {
 
 // Placeholder status description since the actual text from the headers is not
 // available.
-extern const std::string kDummyHttpStatusDescription;
+extern const char kDummyHttpStatusDescription[];
 
 // Constructs a net::HttpResponseHeaders from |response|.
 // Note: The HTTP version and the status code description are not accessible

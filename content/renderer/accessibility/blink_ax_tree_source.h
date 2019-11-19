@@ -9,6 +9,7 @@
 
 #include <set>
 
+#include "base/optional.h"
 #include "content/common/ax_content_node_data.h"
 #include "third_party/blink/public/web/web_ax_object.h"
 #include "third_party/blink/public/web/web_document.h"
@@ -76,9 +77,14 @@ class BlinkAXTreeSource
   // The following methods add or remove an image annotator which is used to
   // provide automatic labels for images.
   void AddImageAnnotator(AXImageAnnotator* const annotator) {
+    DCHECK_EQ(image_annotator_, nullptr);
+    DCHECK(!first_unlabeled_image_id_.has_value());
     image_annotator_ = annotator;
   }
-  void RemoveImageAnnotator() { image_annotator_ = nullptr; }
+  void RemoveImageAnnotator() {
+    image_annotator_ = nullptr;
+    first_unlabeled_image_id_ = base::nullopt;
+  }
 
   // Query or update a set of IDs for which we should load inline text boxes.
   bool ShouldLoadInlineTextBoxes(const blink::WebAXObject& obj) const;
@@ -95,6 +101,7 @@ class BlinkAXTreeSource
   blink::WebAXObject GetParent(blink::WebAXObject node) const override;
   void SerializeNode(blink::WebAXObject node,
                      AXContentNodeData* out_data) const override;
+  bool IsIgnored(blink::WebAXObject node) const override;
   bool IsValid(blink::WebAXObject node) const override;
   bool IsEqual(blink::WebAXObject node1,
                blink::WebAXObject node2) const override;
@@ -129,8 +136,8 @@ class BlinkAXTreeSource
       const std::string& value,
       uint32_t max_len = kMaxStringAttributeLength) const;
 
-  void AddImageAnnotations(blink::WebAXObject node,
-                           AXContentNodeData* out_data) const;
+  void AddImageAnnotations(blink::WebAXObject& src,
+                           AXContentNodeData* dst) const;
 
   RenderFrameImpl* render_frame_;
 
@@ -147,7 +154,18 @@ class BlinkAXTreeSource
 
   gfx::Size max_image_data_size_;
 
+  // The class instance that retrieves and manages automatic labels for images.
   AXImageAnnotator* image_annotator_ = nullptr;
+
+  // Whether we should highlight annotation results visually on the page
+  // for debugging.
+  bool image_annotation_debugging_ = false;
+
+  // The AxID of the first unlabeled image we have encountered in this tree.
+  //
+  // Used to ensure that the tutor message that explains to screen reader users
+  // how to turn on automatic image labels is provided only once.
+  mutable base::Optional<int32_t> first_unlabeled_image_id_ = base::nullopt;
 
   // These are updated when calling |Freeze|.
   bool frozen_ = false;

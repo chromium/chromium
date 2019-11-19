@@ -40,6 +40,9 @@
 // Sets the alpha level of the leading image view.
 - (void)setLeadingImageAlpha:(CGFloat)alpha;
 
+// Asks the container view to attch any layout guides to its views.
+- (void)attachLayoutGuides;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_CONTAINER_VIEW_H_

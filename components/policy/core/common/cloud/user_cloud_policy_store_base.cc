@@ -18,9 +18,14 @@ namespace policy {
 
 UserCloudPolicyStoreBase::UserCloudPolicyStoreBase(
     scoped_refptr<base::SequencedTaskRunner> background_task_runner,
-    PolicyScope policy_scope)
+    PolicyScope policy_scope,
+    PolicySource policy_source)
     : background_task_runner_(background_task_runner),
-      policy_scope_(policy_scope) {}
+      policy_scope_(policy_scope),
+      policy_source_(policy_source) {
+  DCHECK(policy_source == POLICY_SOURCE_CLOUD ||
+         policy_source == POLICY_SOURCE_PRIORITY_CLOUD);
+}
 
 UserCloudPolicyStoreBase::~UserCloudPolicyStoreBase() {}
 
@@ -46,7 +51,7 @@ void UserCloudPolicyStoreBase::InstallPolicy(
     const std::string& policy_signature_public_key) {
   // Decode the payload.
   policy_map_.Clear();
-  DecodeProtoFields(*payload, external_data_manager(), POLICY_SOURCE_CLOUD,
+  DecodeProtoFields(*payload, external_data_manager(), policy_source_,
                     policy_scope_, &policy_map_);
   policy_ = std::move(policy_data);
   policy_signature_public_key_ = policy_signature_public_key;

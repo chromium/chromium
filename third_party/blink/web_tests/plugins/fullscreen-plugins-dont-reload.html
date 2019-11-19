@@ -14,7 +14,7 @@ if (window.testRunner) {
 
     var plugin = document.querySelector('embed');
     plugin.addEventListener('webkitfullscreenchange', function () {
-        internals.updateLayoutIgnorePendingStylesheetsAndRunPostLayoutTasks();
+        internals.updateLayoutAndRunPostLayoutTasks();
         testRunner.notifyDone();
     })
     document.addEventListener('keydown', function () {

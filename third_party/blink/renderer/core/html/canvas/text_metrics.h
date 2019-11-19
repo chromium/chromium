@@ -39,19 +39,12 @@ class CORE_EXPORT TextMetrics final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static TextMetrics* Create() { return MakeGarbageCollected<TextMetrics>(); }
-
-  static TextMetrics* Create(const Font& font,
-                             const TextDirection& direction,
-                             const TextBaseline& baseline,
-                             const TextAlign& align,
-                             const String& text) {
-    TextMetrics* metric = MakeGarbageCollected<TextMetrics>();
-    metric->Update(font, direction, baseline, align, text);
-    return metric;
-  }
-
   TextMetrics();
+  TextMetrics(const Font& font,
+              const TextDirection& direction,
+              const TextBaseline& baseline,
+              const TextAlign& align,
+              const String& text);
 
   double width() const { return width_; }
   const Vector<double>& advances() const { return advances_; }

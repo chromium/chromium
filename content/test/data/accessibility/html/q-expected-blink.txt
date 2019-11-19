@@ -1,12 +1,13 @@
 rootWebArea
-++paragraph
-++++staticText name='This is '
-++++++inlineTextBox name='This is '
-++++staticText name='"'
-++++++inlineTextBox name='"'
-++++staticText name='Chromium Blink'
-++++++inlineTextBox name='Chromium Blink'
-++++staticText name='"'
-++++++inlineTextBox name='"'
-++++staticText name=' based browser.'
-++++++inlineTextBox name=' based browser.'
+++genericContainer ignored
+++++paragraph
+++++++staticText name='This is '
+++++++++inlineTextBox name='This is '
+++++++staticText name='"'
+++++++++inlineTextBox name='"'
+++++++staticText name='Chromium Blink'
+++++++++inlineTextBox name='Chromium Blink'
+++++++staticText name='"'
+++++++++inlineTextBox name='"'
+++++++staticText name=' based browser.'
+++++++++inlineTextBox name=' based browser.'

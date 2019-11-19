@@ -5,6 +5,7 @@
 <translation id="1185134272377778587">‏על Chromium</translation>
 <translation id="1289966288285062467">‏הודעת פרטיות של Chromium</translation>
 <translation id="1472013873724362412">‏החשבון שלך לא פועל ב-Chromium. פנה אל מנהל הדומיין או השתמש בחשבון Google רגיל כדי להיכנס לחשבון.</translation>
+<translation id="1507010443238049608">‏עזרה בשיפור התכונות והביצועים של Chromium</translation>
 <translation id="1617663976202781617">‏נתונים מסנכרון Chromium</translation>
 <translation id="1736662517232558588">‏נתוני Chromium נמחקו</translation>
 <translation id="1838412507805038478">‏Chromium אימת ש-<ph name="ISSUER" /> הנפיק את האישור של האתר הזה.</translation>
@@ -14,24 +15,16 @@
 <translation id="2168108852149185974">‏תוספים מסוימים גורמים ל-Chromium לקרוס. הסר אותם:</translation>
 <translation id="2178608107313874732">‏Chromium לא יכול להשתמש עכשיו במצלמה</translation>
 <translation id="2195025571279539885">‏האם ברצונך ש-Chromium יציע בפעם הבאה לתרגם דפים ב-<ph name="LANGUAGE_NAME" /> מאתר זה?</translation>
-<translation id="2517624234762908348">‏סנכרון הנתונים מ-Chromium</translation>
-<translation id="2647554856022461007">‏Chromium עשוי להשתמש בשירותי אינטרנט לשיפור חוויית הגלישה. ניתן להשבית את השירותים האלה. <ph name="BEGIN_LINK" />למידע נוסף<ph name="END_LINK" /></translation>
+<translation id="2590893390871230428">‏סנכרון נתוני Chromium שלך</translation>
 <translation id="2730884209570016437">‏Chromium לא יכול להשתמש במצלמה כי אפליקציה אחרת משתמשת בה</translation>
 <translation id="2915596697727466327">‏Chromium משתמש ב-Face ID כדי להבטיח גישה מאושרת לסיסמאות שלך.</translation>
 <translation id="3256316712990552818">‏הועתק אל Chromium</translation>
-<translation id="3413120535237193088">‏היכנס ל-Chromium כדי לקבל גישה אל הסימניות שלך בכל המכשירים.</translation>
-<translation id="3473048256428424907">‏הפעלת סורק ה-QR של Chromium</translation>
-<translation id="3605252743693911722">‏היכנס אל Chromium כדי לקבל גישה אל הסימניות, הסיסמאות ונתונים נוספים בכל המכשירים שלך.</translation>
 <translation id="3805899903892079518">‏ל-Chromium אין גישה לתמונות או לסרטונים שלך. אפשר גישה ב'הגדרות iOS' &gt; 'פרטיות' &gt; 'תמונות'.</translation>
-<translation id="4024541897090868497">‏כדי לקבל גישה לכרטיסיות שלך בכל המכשירים, היכנס ל-Chromium.</translation>
-<translation id="4157467675761413638">‏טיפ למשתמשי Chromium. כדי לקבל יותר אפשרויות של כרטיסיות, יש ללחוץ לחיצה ארוכה על הלחצן 'הצגת כרטיסיות' בסרגל הכלים, שנמצא בחלק התחתון או העליון של המסך.</translation>
-<translation id="4241912885070669028">‏אתה יוצא מחשבון המנוהל על-ידי <ph name="SIGNOUT_MANAGED_DOMAIN" />. פעולה זו תמחק את הנתונים שלך ב-Chromium מהמכשיר הזה, אבל הם יישארו בחשבון Google שלך.</translation>
-<translation id="4272892696084633551">‏עזרה בשיפור התכונות והביצועים של Chromium</translation>
 <translation id="4555020257205549924">‏כשהתכונה הזו פועלת, Chromium יציע לתרגם באמצעות Google Translate דפים שנכתבו בשפות אחרות‏. <ph name="BEGIN_LINK" />למידע נוסף<ph name="END_LINK" /></translation>
+<translation id="4681781466797808448">‏הפעלת הסורק של Chromium</translation>
 <translation id="4787850887676698916">‏כרטיסיות שפתחת ב-Chromium במכשירים האחרים שלך יופיעו כאן.</translation>
-<translation id="495292094137889840">‏תחילת השימוש בסורק ה-QR של Chromium</translation>
 <translation id="4999538639245140991">‏יציאה מחשבון שמנוהל על ידי <ph name="SIGNOUT_MANAGED_DOMAIN" /> תגרום למחיקת נתוני Chromium שלך מהמכשיר הזה. הנתונים האלה יישארו בחשבון Google שלך.</translation>
-<translation id="5231355151045086930">‏יציאה מ-Chromium</translation>
+<translation id="5573014823074921752">‏טיפ למשתמשי Chromium: כדי לקבל אפשרויות נוספות של כרטיסיות, יש ללחוץ לחיצה ארוכה על הלחצן 'הצגת כרטיסיות' בסרגל הכלים, שנמצא בחלק התחתון או העליון של המסך.</translation>
 <translation id="5862307444128926510">‏ברוכים הבאים ל-Chromium‏</translation>
 <translation id="5945387852661427312">‏אתה נכנס עם חשבון המנוהל על-ידי <ph name="DOMAIN" /> ומעניק למנהל שלו שליטה על הנתונים שלך ב-Chromium. הנתונים שלך ישויכו לצמיתות אל החשבון הזה. יציאה מ-Chromium תמחק את הנתונים שלך מהמכשיר הזה, אבל הם יישארו בחשבון Google שלך.</translation>
 <translation id="6068866989048414399">‏התנאים וההגבלות של Chromium</translation>
@@ -48,11 +41,13 @@
 <translation id="7674213385180944843">‏עבור אל 'הגדרות' &gt; 'פרטיות' &gt; 'מצלמה' &gt; Chromium והפעל את המצלמה.</translation>
 <translation id="7746854981345936341">‏טיפ למשתמשי Chromium. חלק מהלחצנים נמצאים עכשיו בחלק התחתון של המסך, כמו 'הקודם', 'קדימה' ו'חיפוש'.</translation>
 <translation id="786327964234957808">‏אתה עובר מחשבון סינכרון <ph name="USER_EMAIL1" /> אל <ph name="USER_EMAIL2" />. נתוני Chromium הקיימים שלך מנוהלים על-ידי <ph name="DOMAIN" />. פעולה זו תמחק את הנתונים שלך מהמכשיר הזה, אבל הם יישארו ב-<ph name="USER_EMAIL1" />.</translation>
+<translation id="7890287942691234100">‏התחלת השימוש בסורק של Chromium</translation>
 <translation id="8073677936375100957">‏למחוק את נתוני Chromium שלך מהמכשיר הזה?</translation>
 <translation id="8175055321229419309">‏טיפ: <ph name="BEGIN_LINK" />העבר את Chromium לשורת המשימות<ph name="END_LINK" /></translation>
 <translation id="8252885722420466166">‏לחוויית Google משופרת ב-Chromium בהתבסס על המיקום שלך.</translation>
 <translation id="8586442755830160949">‏Copyright <ph name="YEAR" /> The Chromium Authors. כל הזכויות שמורות.</translation>
 <translation id="8809780021347235332">‏כדי לשמור תמונות, הקש על 'הגדרות' ואפשר ל-Chromium להשתמש בתמונות שלך</translation>
 <translation id="9022552996538154597">‏היכנס אל Chromium</translation>
+<translation id="9217078088703304241">‏<ph name="BEGIN_LINK" />עיון בתנאים ובהגבלות המעודכנים של Chromium.<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">‏מחברי Chromium</translation>
 </translationbundle>

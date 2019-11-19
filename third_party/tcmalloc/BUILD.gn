@@ -2,19 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/allocator.gni")
 import("//build/config/compiler/compiler.gni")
 
 executable("addr2line-pdb") {
-  if (use_new_tcmalloc) {
-    sources = [
-      "chromium/src/windows/addr2line-pdb.c",
-    ]
-  } else {
-    sources = [
-      "gperftools-2.0/chromium/src/windows/addr2line-pdb.c",
-    ]
-  }
+  sources = [
+    "chromium/src/windows/addr2line-pdb.c",
+  ]
 
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]

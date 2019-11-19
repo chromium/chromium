@@ -24,6 +24,21 @@ Polymer({
   currentIndex_: 0,
 
   /**
+   * The delay in ms between speaker ID enrollment finishes and the
+   * voice-match-done action is reported to chrome.
+   * @private {number}
+   */
+  doneActionDelayMs_: 3000,
+
+  /**
+   * Overrides the default delay for sending voice-match-done action.
+   * @param {number} delay The delay to be used in tests.
+   */
+  setDoneActionDelayForTesting: function(delay) {
+    this.doneActionDelayMs_ = delay;
+  },
+
+  /**
    * On-tap event handler for skip button.
    *
    * @private
@@ -32,6 +47,8 @@ Polymer({
     chrome.send(
         'login.AssistantOptInFlowScreen.VoiceMatchScreen.userActed',
         ['skip-pressed']);
+    this.$['voice-match-lottie'].setPlay(false);
+    this.$['already-setup-lottie'].setPlay(false);
   },
 
   /**
@@ -86,6 +103,10 @@ Polymer({
   listenForHotword: function() {
     if (this.currentIndex_ == 0) {
       this.fire('loaded');
+      announceAccessibleMessage(
+          loadTimeData.getString('assistantVoiceMatchRecording'));
+      announceAccessibleMessage(
+          loadTimeData.getString('assistantVoiceMatchA11yMessage'));
     }
     var currentEntry = this.$['voice-entry-' + this.currentIndex_];
     currentEntry.setAttribute('active', true);
@@ -103,12 +124,19 @@ Polymer({
       this.$['voice-match-entries'].hidden = true;
       this.$['later-button'].hidden = true;
       this.$['loading-animation'].hidden = false;
+      announceAccessibleMessage(
+          loadTimeData.getString('assistantVoiceMatchUploading'));
+    } else {
+      announceAccessibleMessage(
+          loadTimeData.getString('assistantVoiceMatchComplete'));
     }
   },
 
   voiceMatchDone: function() {
     this.removeClass_('recording');
     this.fire('loaded');
+    announceAccessibleMessage(
+        loadTimeData.getString('assistantVoiceMatchCompleted'));
     if (this.currentIndex_ != MAX_INDEX) {
       // Existing voice model found on cloud. No need to train.
       this.$['later-button'].hidden = true;
@@ -121,7 +149,9 @@ Polymer({
       chrome.send(
           'login.AssistantOptInFlowScreen.VoiceMatchScreen.userActed',
           ['voice-match-done']);
-    }, 3000);
+      this.$['voice-match-lottie'].setPlay(false);
+      this.$['already-setup-lottie'].setPlay(false);
+    }, this.doneActionDelayMs_);
   },
 
   /**
@@ -129,6 +159,8 @@ Polymer({
    */
   onShow: function() {
     chrome.send('login.AssistantOptInFlowScreen.VoiceMatchScreen.screenShown');
+    this.$['voice-match-lottie'].setPlay(true);
+    this.$['already-setup-lottie'].setPlay(true);
     this.$['agree-button'].focus();
     if (loadTimeData.getBoolean('hotwordDspAvailable')) {
       this.$['no-dsp-message'].hidden = true;

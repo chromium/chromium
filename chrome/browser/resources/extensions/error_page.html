@@ -1,0 +1,192 @@
+<style include="cr-icons cr-shared-style shared-style">
+  :host {
+    display: block;
+    height: 100%;
+  }
+
+  iron-icon {
+    --iron-icon-fill-color: var(--google-grey-refresh-700);
+    @apply --cr-icon-height-width;
+    flex-shrink: 0;
+  }
+
+  iron-icon[icon='cr:warning'] {
+    /* TODO(dbeam): find dark mode equivalent for this orange. */
+    --iron-icon-fill-color: var(--paper-orange-500);
+  }
+
+  iron-icon[icon='cr:error'] {
+    --iron-icon-fill-color: var(--error-color);
+  }
+
+  .section {
+    padding: 0 var(--cr-section-padding);
+  }
+
+  #heading {
+    align-items: center;
+    display: flex;
+    height: 40px;
+    margin-bottom: 30px;
+    padding: 8px 12px 0;
+  }
+
+  #heading span {
+    flex: 1;
+    margin: 0 10px;
+  }
+
+  #errorsList {
+    min-height: 100px;
+  }
+
+  .error-item {
+    @apply --cr-section;
+    padding-inline-start: 0;
+  }
+
+  .error-item cr-icon-button {
+    margin: 0;
+  }
+
+  .error-item.selected {
+    background-color: rgba(0, 0, 0, 0.08);
+  }
+
+  .error-item .start {
+    align-items: center;
+    align-self: stretch;  /* Makes the tappable area fill its parent. */
+    display: flex;
+    flex: 1;
+    padding: 0 var(--cr-section-padding);
+  }
+
+  .error-message {
+    flex-grow: 1;
+    margin-inline-start: 10px;
+    word-break: break-word;
+  }
+
+  .devtools-controls {
+    padding: 0 var(--cr-section-padding);
+  }
+
+  .details-heading {
+    align-items: center;
+    display: flex;
+    height: var(--cr-section-min-height);
+  }
+
+  .stack-trace-container {
+    list-style: none;
+    margin-top: 0;
+    padding: 0;
+  }
+
+  .stack-trace-container li {
+    cursor: pointer;
+    font-family: monospace;
+    padding: 4px;
+  }
+
+  .stack-trace-container li.selected,
+  .stack-trace-container li:hover {
+    background: var(--google-blue-100);
+    color: var(--google-grey-900);  /* Same in light & dark modes. */
+  }
+
+  extensions-code-section {
+    height: 200px;
+    margin-bottom: 20px;
+  }
+
+  :host-context(.focus-outline-visible) .start:focus {
+    outline: -webkit-focus-ring-color auto 5px;
+  }
+
+  .start:focus {
+    outline: none;
+  }
+
+  .context-url {
+    word-wrap: break-word;
+  }
+</style>
+<div class="page-container" id="container">
+  <div class="page-content">
+    <div id="heading" class="cr-title-text">
+      <cr-icon-button class="icon-arrow-back no-overlap" id="closeButton"
+          aria-label="$i18n{back}" on-click="onCloseButtonTap_">
+      </cr-icon-button>
+      <span role="heading" aria-level="2">$i18n{errorsPageHeading}</span>
+      <cr-button on-click="onClearAllTap_" hidden="[[!entries_.length]]">
+        $i18n{clearAll}
+      </cr-button>
+    </div>
+    <div class="section">
+      <div id="errorsList">
+        <template is="dom-repeat" items="[[entries_]]">
+          <div class="item-container">
+            <div class$="error-item
+                [[computeErrorClass_(item, selectedEntry_)]]">
+              <div actionable class="start" on-click="onErrorItemAction_"
+                  on-keydown="onErrorItemAction_" tabindex="0"
+                  role="button" aria-expanded$="[[isAriaExpanded_(
+                      index, selectedEntry_)]]">
+                <iron-icon icon$="cr:[[computeErrorIcon_(item)]]"
+                    title$="[[computeErrorTypeLabel_(item)]]">
+                </iron-icon>
+                <div id$="[[item.id]]" class="error-message">
+                  [[item.message]]
+                </div>
+                <div class$="cr-icon [[iconName_(index, selectedEntry_)]]">
+                </div>
+              </div>
+              <div class="separator"></div>
+              <cr-icon-button class="icon-delete-gray"
+                  on-click="onDeleteErrorAction_"
+                  aria-describedby$="[[item.id]]"
+                  aria-label="$i18n{clearEntry}"></cr-icon-button>
+            </div>
+            <iron-collapse opened="[[isOpened_(index, selectedEntry_)]]">
+              <div class="devtools-controls">
+                <template is="dom-if"
+                    if="[[computeIsRuntimeError_(item)]]">
+                  <div class="details-heading cr-title-text" role="heading"
+                      aria-level="3">
+                    $i18n{errorContext}
+                  </div>
+                  <span class="context-url">
+                    [[getContextUrl_(
+                        item, '$i18nPolymer{errorContextUnknown}')]]
+                  </span>
+                  <div class="details-heading cr-title-text" role="heading"
+                      aria-level="3">
+                    $i18n{stackTrace}
+                  </div>
+                  <ul class="stack-trace-container"
+                      on-keydown="onStackKeydown_">
+                    <template is="dom-repeat" items="[[item.stackTrace]]">
+                      <li on-click="onStackFrameTap_"
+                          tabindex$="[[getStackFrameTabIndex_(item,
+                              selectedStackFrame_)]]"
+                          hidden="[[!shouldDisplayFrame_(item.url)]]"
+                          class$="[[getStackFrameClass_(item,
+                              selectedStackFrame_)]]">
+                        [[getStackTraceLabel_(item)]]
+                      </li>
+                    </template>
+                  </ul>
+                </template>
+                <extensions-code-section code="[[code_]]"
+                    is-active="[[isOpened_(index, selectedEntry_)]]"
+                    could-not-display-code="$i18n{noErrorsToShow}">
+                </extensions-code-section>
+              </div>
+            </iron-collapse>
+          </div>
+        </template>
+      </div>
+    </div>
+  </div>
+</div>

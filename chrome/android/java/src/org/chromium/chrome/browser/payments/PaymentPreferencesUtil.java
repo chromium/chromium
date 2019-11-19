@@ -4,8 +4,9 @@
 
 package org.chromium.chrome.browser.payments;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.ContextUtils;
-import org.chromium.base.VisibleForTesting;
 
 /** Place to define and control payment preferences. */
 public class PaymentPreferencesUtil {

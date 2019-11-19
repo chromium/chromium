@@ -62,6 +62,7 @@ Status FrameTracker::OnConnected(DevToolsClient* client) {
   // Enable target events to allow tracking iframe targets creation.
   base::DictionaryValue params;
   params.SetBoolean("autoAttach", true);
+  params.SetBoolean("flatten", true);
   params.SetBoolean("waitForDebuggerOnStart", false);
   Status status = client->SendCommand("Target.setAutoAttach", params);
   if (status.IsError())

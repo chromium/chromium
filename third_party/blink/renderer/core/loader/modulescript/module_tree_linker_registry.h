@@ -7,7 +7,6 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
-#include "third_party/blink/renderer/platform/bindings/trace_wrapper_member.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 
 namespace blink {
@@ -15,14 +14,10 @@ namespace blink {
 class ModuleTreeLinker;
 
 // ModuleTreeLinkerRegistry keeps active ModuleTreeLinkers alive.
-class CORE_EXPORT ModuleTreeLinkerRegistry
+class CORE_EXPORT ModuleTreeLinkerRegistry final
     : public GarbageCollected<ModuleTreeLinkerRegistry>,
       public NameClient {
  public:
-  static ModuleTreeLinkerRegistry* Create() {
-    return MakeGarbageCollected<ModuleTreeLinkerRegistry>();
-  }
-
   ModuleTreeLinkerRegistry() = default;
 
   void Trace(blink::Visitor*);
@@ -35,7 +30,7 @@ class CORE_EXPORT ModuleTreeLinkerRegistry
   void AddFetcher(ModuleTreeLinker*);
   void ReleaseFinishedFetcher(ModuleTreeLinker*);
 
-  HeapHashSet<TraceWrapperMember<ModuleTreeLinker>> active_tree_linkers_;
+  HeapHashSet<Member<ModuleTreeLinker>> active_tree_linkers_;
 };
 
 }  // namespace blink

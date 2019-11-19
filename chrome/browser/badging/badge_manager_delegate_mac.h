@@ -14,15 +14,15 @@ class Profile;
 
 namespace badging {
 
+class BadgeManager;
+
 // OSX specific implementation of the BadgeManagerDelegate.
 class BadgeManagerDelegateMac : public BadgeManagerDelegate {
  public:
-  explicit BadgeManagerDelegateMac(Profile* profile);
+  explicit BadgeManagerDelegateMac(Profile* profile,
+                                   BadgeManager* badge_manager);
 
-  void OnBadgeSet(const std::string& app_id,
-                  base::Optional<uint64_t> contents) override;
-
-  void OnBadgeCleared(const std::string& app_id) override;
+  void OnAppBadgeUpdated(const web_app::AppId& app_id) override;
 
  private:
   void SetAppBadgeLabel(const std::string& app_id,

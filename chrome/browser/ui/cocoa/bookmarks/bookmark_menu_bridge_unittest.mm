@@ -4,6 +4,7 @@
 
 #import <AppKit/AppKit.h>
 
+#include "base/guid.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -95,7 +96,7 @@ TEST_F(BookmarkMenuBridgeTest, TestBookmarkMenuAutoSeparator) {
   EXPECT_EQ(2, [menu_ numberOfItems]);
   // Remove the new bookmark and reload and we should have 0 items again
   // because the separator should have been removed as well.
-  model->Remove(parent->GetChild(0));
+  model->Remove(parent->children().front().get());
   UpdateRootMenu();
   EXPECT_EQ(0, [menu_ numberOfItems]);
 }
@@ -255,7 +256,7 @@ TEST_F(BookmarkMenuBridgeTest, TestGetMenuItemForNode) {
   // There will be a new submenu each time, Cocoa will update it if needed.
   bridge_->UpdateMenu([[menu_ itemAtIndex:1] submenu], folder);
 
-  EXPECT_TRUE(MenuItemForNode(bridge_.get(), folder->GetChild(0)));
+  EXPECT_TRUE(MenuItemForNode(bridge_.get(), folder->children().front().get()));
 
   model->AddURL(folder, 1, ASCIIToUTF16("Test 2"), GURL("http://second-test"));
 
@@ -272,13 +273,13 @@ TEST_F(BookmarkMenuBridgeTest, TestGetMenuItemForNode) {
   EXPECT_FALSE([old_menu delegate]);
 
   bridge_->UpdateMenu([[menu_ itemAtIndex:1] submenu], folder);
-  EXPECT_TRUE(MenuItemForNode(bridge_.get(), folder->GetChild(0)));
-  EXPECT_TRUE(MenuItemForNode(bridge_.get(), folder->GetChild(1)));
+  EXPECT_TRUE(MenuItemForNode(bridge_.get(), folder->children()[0].get()));
+  EXPECT_TRUE(MenuItemForNode(bridge_.get(), folder->children()[1].get()));
 
-  const BookmarkNode* removed_node = folder->GetChild(0);
-  EXPECT_EQ(2, folder->child_count());
-  model->Remove(folder->GetChild(0));
-  EXPECT_EQ(1, folder->child_count());
+  const BookmarkNode* removed_node = folder->children()[0].get();
+  EXPECT_EQ(2u, folder->children().size());
+  model->Remove(folder->children()[0].get());
+  EXPECT_EQ(1u, folder->children().size());
 
   EXPECT_FALSE(menu_is_valid());
   UpdateRootMenu();
@@ -286,15 +287,16 @@ TEST_F(BookmarkMenuBridgeTest, TestGetMenuItemForNode) {
   // Initially both will be false, but the submenu corresponding to the folder
   // will have a delegate set again, allowing it to be updated on demand.
   EXPECT_FALSE(MenuItemForNode(bridge_.get(), removed_node));
-  EXPECT_FALSE(MenuItemForNode(bridge_.get(), folder->GetChild(0)));
+  EXPECT_FALSE(MenuItemForNode(bridge_.get(), folder->children()[0].get()));
 
   UpdateRootMenu();
   bridge_->UpdateMenu([[menu_ itemAtIndex:1] submenu], folder);
 
   EXPECT_FALSE(MenuItemForNode(bridge_.get(), removed_node));
-  EXPECT_TRUE(MenuItemForNode(bridge_.get(), folder->GetChild(0)));
+  EXPECT_TRUE(MenuItemForNode(bridge_.get(), folder->children()[0].get()));
 
-  const BookmarkNode empty_node(GURL("http://no-where/"));
+  const BookmarkNode empty_node(/*id=*/0, base::GenerateGUID(),
+                                GURL("http://no-where/"));
   EXPECT_FALSE(MenuItemForNode(bridge_.get(), &empty_node));
   EXPECT_FALSE(MenuItemForNode(bridge_.get(), nullptr));
 }

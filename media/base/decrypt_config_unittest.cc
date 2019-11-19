@@ -26,7 +26,7 @@ TEST(DecryptConfigTest, CencConstruction) {
   EXPECT_EQ(config->key_id(), kDefaultKeyId);
   EXPECT_EQ(config->iv(), kDefaultIV);
   EXPECT_EQ(config->subsamples().size(), 0u);
-  EXPECT_EQ(config->encryption_mode(), EncryptionMode::kCenc);
+  EXPECT_EQ(config->encryption_scheme(), EncryptionScheme::kCenc);
 
   // Now with single subsample entry.
   config =
@@ -36,7 +36,7 @@ TEST(DecryptConfigTest, CencConstruction) {
   EXPECT_EQ(config->subsamples().size(), 1u);
   EXPECT_EQ(config->subsamples()[0].clear_bytes, 1u);
   EXPECT_EQ(config->subsamples()[0].cypher_bytes, 2u);
-  EXPECT_EQ(config->encryption_mode(), EncryptionMode::kCenc);
+  EXPECT_EQ(config->encryption_scheme(), EncryptionScheme::kCenc);
 
   // Now with multiple subsample entries.
   config = DecryptConfig::CreateCencConfig(kDefaultKeyId, kAlternateIV,
@@ -46,7 +46,7 @@ TEST(DecryptConfigTest, CencConstruction) {
   EXPECT_EQ(config->subsamples().size(), 4u);
   EXPECT_EQ(config->subsamples()[1].clear_bytes, 3u);
   EXPECT_EQ(config->subsamples()[3].cypher_bytes, 8u);
-  EXPECT_EQ(config->encryption_mode(), EncryptionMode::kCenc);
+  EXPECT_EQ(config->encryption_scheme(), EncryptionScheme::kCenc);
 }
 
 TEST(DecryptConfigTest, CbcsConstruction) {
@@ -55,7 +55,7 @@ TEST(DecryptConfigTest, CbcsConstruction) {
   EXPECT_EQ(config->key_id(), kDefaultKeyId);
   EXPECT_EQ(config->iv(), kDefaultIV);
   EXPECT_EQ(config->subsamples().size(), 0u);
-  EXPECT_EQ(config->encryption_mode(), EncryptionMode::kCbcs);
+  EXPECT_EQ(config->encryption_scheme(), EncryptionScheme::kCbcs);
   EXPECT_TRUE(config->HasPattern());
   EXPECT_EQ(config->encryption_pattern()->crypt_byte_block(), 1u);
   EXPECT_EQ(config->encryption_pattern()->skip_byte_block(), 2u);
@@ -71,7 +71,7 @@ TEST(DecryptConfigTest, CbcsConstruction) {
   EXPECT_EQ(config->subsamples()[0].cypher_bytes, 2u);
   EXPECT_EQ(config->subsamples()[3].clear_bytes, 7u);
   EXPECT_EQ(config->subsamples()[3].cypher_bytes, 8u);
-  EXPECT_EQ(config->encryption_mode(), EncryptionMode::kCbcs);
+  EXPECT_EQ(config->encryption_scheme(), EncryptionScheme::kCbcs);
   EXPECT_TRUE(config->HasPattern());
   EXPECT_EQ(config->encryption_pattern()->crypt_byte_block(), 1u);
   EXPECT_EQ(config->encryption_pattern()->skip_byte_block(), 0u);
@@ -84,7 +84,7 @@ TEST(DecryptConfigTest, CbcsConstruction) {
   EXPECT_EQ(config->subsamples().size(), 1u);
   EXPECT_EQ(config->subsamples()[0].clear_bytes, 1u);
   EXPECT_EQ(config->subsamples()[0].cypher_bytes, 2u);
-  EXPECT_EQ(config->encryption_mode(), EncryptionMode::kCbcs);
+  EXPECT_EQ(config->encryption_scheme(), EncryptionScheme::kCbcs);
   EXPECT_FALSE(config->HasPattern());
 }
 

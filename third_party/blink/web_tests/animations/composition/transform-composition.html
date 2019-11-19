@@ -3,50 +3,11 @@
 <body>
 <script src="../interpolation/resources/interpolation-test.js"></script>
 <script>
-assertComposition({
-  property: 'transform',
-  underlying: 'translate(10px, 20px)',
-  addFrom: 'translate(100px, 200px)',
-  addTo: 'translate(200px, 400px)',
-}, [
-  {at: -0.5, is: 'translate(60px, 120px)'},
-  {at: 0, is: 'translate(110px, 220px)'},
-  {at: 0.25, is: 'translate(135px, 270px)'},
-  {at: 0.5, is: 'translate(160px, 320px)'},
-  {at: 0.75, is: 'translate(185px, 370px)'},
-  {at: 1, is: 'translate(210px, 420px)'},
-  {at: 1.5, is: 'translate(260px, 520px)'},
-]);
+// This file contains tests for the composition behavior of transforms that is
+// unrelated to the individual transform functions. For the transform functions
+// themselves, see the transform-*-composition.html subtests.
 
-assertComposition({
-  property: 'transform',
-  underlying: 'translate(10px, 20px)',
-  addFrom: 'translate(100px, 200px)',
-  replaceTo: 'translate(210px, 420px)',
-}, [
-  {at: -0.5, is: 'translate(60px, 120px)'},
-  {at: 0, is: 'translate(110px, 220px)'},
-  {at: 0.25, is: 'translate(135px, 270px)'},
-  {at: 0.5, is: 'translate(160px, 320px)'},
-  {at: 0.75, is: 'translate(185px, 370px)'},
-  {at: 1, is: 'translate(210px, 420px)'},
-  {at: 1.5, is: 'translate(260px, 520px)'},
-]);
-
-assertComposition({
-  property: 'transform',
-  underlying: 'rotateX(45deg)',
-  addFrom: 'rotateY(-100deg)',
-  addTo: 'rotateY(100deg)',
-}, [
-  {at: -0.5, is: 'rotateX(45deg) rotateY(-200deg)'},
-  {at: 0, is: 'rotateX(45deg) rotateY(-100deg)'},
-  {at: 0.25, is: 'rotateX(45deg) rotateY(-50deg)'},
-  {at: 0.5, is: 'rotateX(45deg) rotateY(0deg)'},
-  {at: 0.75, is: 'rotateX(45deg) rotateY(50deg)'},
-  {at: 1, is: 'rotateX(45deg) rotateY(100deg)'},
-  {at: 1.5, is: 'rotateX(45deg) rotateY(200deg)'},
-]);
+// ------------------ Addition -----------------
 
 assertComposition({
   property: 'transform',
@@ -61,21 +22,6 @@ assertComposition({
   {at: 0.75, is: 'rotateX(175deg) rotateY(175deg) translate(85px, 170px)'},
   {at: 1, is: 'rotateX(200deg) rotateY(200deg) translate(110px, 220px)'},
   {at: 1.5, is: 'rotateX(250deg) rotateY(250deg) translate(160px, 320px)'},
-]);
-
-assertComposition({
-  property: 'transform',
-  underlying: 'rotateX(45deg)',
-  addFrom: 'rotateY(0deg)',
-  addTo: 'rotateY(360deg)',
-}, [
-  {at: -0.5, is: 'rotateX(45deg) rotateY(-180deg)'},
-  {at: 0, is: 'rotateX(45deg) rotateY(0deg)'},
-  {at: 0.25, is: 'rotateX(45deg) rotateY(90deg)'},
-  {at: 0.5, is: 'rotateX(45deg) rotateY(180deg)'},
-  {at: 0.75, is: 'rotateX(45deg) rotateY(270deg)'},
-  {at: 1, is: 'rotateX(45deg) rotateY(360deg)'},
-  {at: 1.5, is: 'rotateX(45deg) rotateY(540deg)'},
 ]);
 
 // Shorter list is extended with corresponding identity transforms for pairwise
@@ -127,5 +73,8 @@ assertComposition({
   {at: 1.5, is: 'rotateX(45deg)'},
 ]);
 
+// ------------------ Accumulation -----------------
+
+// TODO(smcgruer): Add tests for accumulation behaviors.
 </script>
 </body>

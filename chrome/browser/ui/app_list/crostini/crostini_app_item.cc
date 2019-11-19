@@ -26,8 +26,7 @@ CrostiniAppItem::CrostiniAppItem(
     : ChromeAppListItem(profile, id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   crostini_app_icon_ = std::make_unique<CrostiniAppIcon>(
-      profile, id, app_list::AppListConfig::instance().grid_icon_dimension(),
-      this);
+      profile, id, ash::AppListConfig::instance().grid_icon_dimension(), this);
 
   SetName(name);
   UpdateIcon();

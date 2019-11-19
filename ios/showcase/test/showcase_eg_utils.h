@@ -5,7 +5,7 @@
 #ifndef IOS_SHOWCASE_TEST_SHOWCASE_EG_UTILS_H_
 #define IOS_SHOWCASE_TEST_SHOWCASE_EG_UTILS_H_
 
-#import <EarlGrey/EarlGrey.h>
+#import <Foundation/Foundation.h>
 
 namespace showcase_utils {
 

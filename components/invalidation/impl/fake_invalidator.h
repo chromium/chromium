@@ -23,7 +23,7 @@ class FakeInvalidator : public Invalidator {
   bool IsHandlerRegistered(InvalidationHandler* handler) const;
   ObjectIdSet GetRegisteredIds(InvalidationHandler* handler) const;
   const std::string& GetUniqueId() const;
-  const std::string& GetCredentialsEmail() const;
+  const CoreAccountId& GetCredentialsAccountId() const;
   const std::string& GetCredentialsToken() const;
 
   void EmitOnInvalidatorStateChange(InvalidatorState state);
@@ -34,10 +34,10 @@ class FakeInvalidator : public Invalidator {
   bool UpdateRegisteredIds(InvalidationHandler* handler,
                            const ObjectIdSet& ids) override;
   bool UpdateRegisteredIds(InvalidationHandler* handler,
-                           const TopicSet& topics) override;
+                           const Topics& topics) override;
   void UnregisterHandler(InvalidationHandler* handler) override;
   InvalidatorState GetInvalidatorState() const override;
-  void UpdateCredentials(const std::string& email,
+  void UpdateCredentials(const CoreAccountId& account_id,
                          const std::string& token) override;
   void RequestDetailedStatus(base::Callback<void(const base::DictionaryValue&)>
                                  callback) const override;
@@ -45,7 +45,7 @@ class FakeInvalidator : public Invalidator {
  private:
   DeprecatedInvalidatorRegistrar registrar_;
   std::string state_;
-  std::string email_;
+  CoreAccountId account_id_;
   std::string token_;
 };
 

@@ -5,12 +5,17 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TOOLBAR_BROWSER_ACTION_TEST_UTIL_VIEWS_H_
 #define CHROME_BROWSER_UI_VIEWS_TOOLBAR_BROWSER_ACTION_TEST_UTIL_VIEWS_H_
 
+#include <memory>
+
 #include "chrome/browser/ui/extensions/browser_action_test_util.h"
+
+class BrowserActionsContainer;
 
 class BrowserActionTestUtilViews : public BrowserActionTestUtil {
  public:
-  explicit BrowserActionTestUtilViews(Browser* browser);
-  BrowserActionTestUtilViews(Browser* browser, bool is_real_window);
+  BrowserActionTestUtilViews(const BrowserActionTestUtilViews&) = delete;
+  BrowserActionTestUtilViews& operator=(const BrowserActionTestUtilViews&) =
+      delete;
   ~BrowserActionTestUtilViews() override;
 
   // BrowserActionTestUtil:
@@ -29,7 +34,8 @@ class BrowserActionTestUtilViews : public BrowserActionTestUtil {
   bool ActionButtonWantsToRun(size_t index) override;
   void SetWidth(int width) override;
   ToolbarActionsBar* GetToolbarActionsBar() override;
-  std::unique_ptr<BrowserActionTestUtil> CreateOverflowBar() override;
+  std::unique_ptr<BrowserActionTestUtil> CreateOverflowBar(
+      Browser* browser) override;
   gfx::Size GetMinPopupSize() override;
   gfx::Size GetMaxPopupSize() override;
   bool CanBeResized() override;
@@ -37,14 +43,21 @@ class BrowserActionTestUtilViews : public BrowserActionTestUtil {
  private:
   friend class BrowserActionTestUtil;
 
-  Browser* const browser_;  // weak
+  class TestToolbarActionsBarHelper;
 
-  // Our test helper, which constructs and owns the views if we don't have a
-  // real browser window, or if this is an overflow version.
+  // Constructs a version of BrowserActionTestUtilViews that does not own the
+  // BrowserActionsContainer it tests.
+  explicit BrowserActionTestUtilViews(
+      BrowserActionsContainer* browser_actions_container);
+  // Constructs a version of BrowserActionTestUtilViews given a |test_helper|
+  // responsible for owning the BrowserActionsContainer.
+  explicit BrowserActionTestUtilViews(
+      std::unique_ptr<TestToolbarActionsBarHelper> test_helper);
+
   std::unique_ptr<TestToolbarActionsBarHelper> test_helper_;
 
-  BrowserActionTestUtilViews(Browser* browser,
-                             BrowserActionTestUtilViews* main_bar);
+  // The associated BrowserActionsContainer. Not owned.
+  BrowserActionsContainer* const browser_actions_container_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_BROWSER_ACTION_TEST_UTIL_VIEWS_H_

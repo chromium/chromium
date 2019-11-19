@@ -19,6 +19,7 @@ class Origin;
 
 namespace net {
 
+class NetworkIsolationKey;
 class URLRequestContext;
 
 // Uploads already-serialized reports and converts responses to one of the
@@ -37,6 +38,7 @@ class NET_EXPORT ReportingUploader {
   // |report_origin| must be that origin.
   virtual void StartUpload(const url::Origin& report_origin,
                            const GURL& url,
+                           const NetworkIsolationKey& network_isolation_key,
                            const std::string& json,
                            int max_depth,
                            UploadCallback callback) = 0;

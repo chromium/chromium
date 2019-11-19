@@ -8,7 +8,7 @@
 
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "components/sync/base/model_type_test_util.h"
 #include "components/sync/driver/data_type_manager_mock.h"
 #include "components/sync/protocol/sync.pb.h"
@@ -53,7 +53,7 @@ class SyncBackendMigratorTest : public testing::Test {
   // types as synced.
   void SetUnsyncedTypes(ModelTypeSet unsynced_types) {
     WriteTransaction trans(FROM_HERE, test_user_share_.user_share());
-    for (int i = FIRST_REAL_MODEL_TYPE; i < MODEL_TYPE_COUNT; ++i) {
+    for (int i = FIRST_REAL_MODEL_TYPE; i < ModelType::NUM_ENTRIES; ++i) {
       ModelType type = ModelTypeFromInt(i);
       sync_pb::DataTypeProgressMarker progress_marker;
       if (!unsynced_types.Has(type)) {
@@ -87,7 +87,7 @@ class SyncBackendMigratorTest : public testing::Test {
   BackendMigrator* migrator() { return migrator_.get(); }
 
  private:
-  base::test::ScopedTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   ModelTypeSet preferred_types_;
   NiceMock<DataTypeManagerMock> manager_;
   NiceMock<base::MockCallback<base::RepeatingClosure>> reconfigure_callback_;

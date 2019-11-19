@@ -6,7 +6,7 @@
 #include "base/command_line.h"
 #include "base/i18n/icu_util.h"
 #include "base/logging.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 
 namespace {
@@ -19,12 +19,11 @@ struct InitGlobals {
   InitGlobals() {
     base::CommandLine::Init(0, nullptr);
 
-    // |test| instances uses ScopedTaskEnvironment, which needs TestTimeouts.
+    // |test| instances uses TaskEnvironment, which needs TestTimeouts.
     TestTimeouts::Initialize();
 
-    scoped_task_environment =
-        std::make_unique<base::test::ScopedTaskEnvironment>(
-            base::test::ScopedTaskEnvironment::MainThreadType::IO);
+    task_environment = std::make_unique<base::test::TaskEnvironment>(
+        base::test::TaskEnvironment::MainThreadType::IO);
 
     // Set up ICU. ICU is used internally by GURL, which is used throughout the
     // //net code. Initializing ICU is important to prevent fuzztests from
@@ -37,9 +36,9 @@ struct InitGlobals {
   }
 
   // A number of tests use async code which depends on there being a
-  // ScopedTaskEnvironment.  Setting one up here allows tests to reuse the
-  // ScopedTaskEnvironment between runs.
-  std::unique_ptr<base::test::ScopedTaskEnvironment> scoped_task_environment;
+  // TaskEnvironment.  Setting one up here allows tests to reuse the
+  // TaskEnvironment between runs.
+  std::unique_ptr<base::test::TaskEnvironment> task_environment;
 
   base::AtExitManager at_exit_manager;
 };

@@ -13,10 +13,13 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observer.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/notifications/notification_system_observer.h"
 #include "chrome/browser/notifications/notification_ui_manager.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_observer.h"
 #include "ui/message_center/message_center_observer.h"
 #include "ui/message_center/message_center_types.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -35,7 +38,8 @@ FORWARD_DECLARE_TEST(NotificationTrayTest, ManuallyCloseMessageCenter);
 // of notifications to MessageCenter, doing necessary conversions. This is only
 // used on platforms that support non-native notifications.
 class NotificationUIManagerImpl : public NotificationUIManager,
-                                  public message_center::MessageCenterObserver {
+                                  public message_center::MessageCenterObserver,
+                                  public ProfileObserver {
  public:
   NotificationUIManagerImpl();
   ~NotificationUIManagerImpl() override;
@@ -52,13 +56,15 @@ class NotificationUIManagerImpl : public NotificationUIManager,
                   ProfileID profile_id) override;
   std::set<std::string> GetAllIdsByProfile(ProfileID profile_id) override;
   bool CancelAllBySourceOrigin(const GURL& source_origin) override;
-  bool CancelAllByProfile(ProfileID profile_id) override;
   void CancelAll() override;
   void StartShutdown() override;
 
   // MessageCenterObserver:
   void OnNotificationRemoved(const std::string& notification_id,
                              bool by_user) override;
+
+  // ProfileObserver:
+  void OnProfileWillBeDestroyed(Profile* profile) override;
 
   // Resets the ui controller.
   void ResetUiControllerForTest();
@@ -94,6 +100,8 @@ class NotificationUIManagerImpl : public NotificationUIManager,
   std::vector<std::unique_ptr<message_center::NotificationBlocker>> blockers_;
 
   NotificationSystemObserver system_observer_;
+
+  ScopedObserver<Profile, ProfileObserver> observed_otr_profiles_{this};
 
   // Delegate of this class.
   std::unique_ptr<PopupsOnlyUiController> popups_only_ui_controller_;

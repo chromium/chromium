@@ -26,7 +26,7 @@ class TestWithBrowserView : public BrowserWithTestWindowTest {
   void SetUp() override;
   void TearDown() override;
   TestingProfile* CreateProfile() override;
-  BrowserWindow* CreateBrowserWindow() override;
+  std::unique_ptr<BrowserWindow> CreateBrowserWindow() override;
   TestingProfile::TestingFactories GetTestingFactories() override;
 
   BrowserView* browser_view() { return browser_view_; }

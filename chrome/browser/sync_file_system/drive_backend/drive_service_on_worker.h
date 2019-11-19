@@ -107,7 +107,7 @@ class DriveServiceOnWorker : public drive::DriveServiceInterface {
   bool HasRefreshToken() const override;
 
   // Following virtual methods are expected not to be accessed at all.
-  void Initialize(const std::string& account_id) override;
+  void Initialize(const CoreAccountId& account_id) override;
   void AddObserver(drive::DriveServiceObserver* observer) override;
   void RemoveObserver(drive::DriveServiceObserver* observer) override;
   bool CanSendRequest() const override;

@@ -10,7 +10,6 @@
 #include "base/big_endian.h"
 #include "base/logging.h"
 #include "base/rand_util.h"
-#include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 
 namespace net {
@@ -70,6 +69,7 @@ void WebSocketFrameHeader::CopyFrom(const WebSocketFrameHeader& source) {
   reserved3 = source.reserved3;
   opcode = source.opcode;
   masked = source.masked;
+  masking_key = source.masking_key;
   payload_length = source.payload_length;
 }
 

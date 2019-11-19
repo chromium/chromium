@@ -26,9 +26,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_POD_ARENA_TEST_HELPERS_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_POD_ARENA_TEST_HELPERS_H_
 
-#include "third_party/blink/renderer/platform/wtf/not_found.h"
 #include "third_party/blink/renderer/platform/wtf/pod_arena.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 #include <gtest/gtest.h>
 

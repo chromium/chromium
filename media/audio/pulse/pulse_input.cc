@@ -88,7 +88,11 @@ void PulseAudioInputStream::Start(AudioInputCallback* callback) {
 
   pa_operation* operation =
       pa_stream_cork(handle_, 0, &pulse::StreamSuccessCallback, pa_mainloop_);
-  WaitForOperationCompletion(pa_mainloop_, operation);
+
+  if (!WaitForOperationCompletion(pa_mainloop_, operation, pa_context_,
+                                  handle_)) {
+    callback_->OnError();
+  }
 }
 
 void PulseAudioInputStream::Stop() {
@@ -106,16 +110,21 @@ void PulseAudioInputStream::Stop() {
   pa_stream_drop(handle_);
   fifo_.Clear();
 
-  pa_operation* operation = pa_stream_flush(handle_,
-                                            &pulse::StreamSuccessCallback,
-                                            pa_mainloop_);
-  WaitForOperationCompletion(pa_mainloop_, operation);
+  pa_operation* operation =
+      pa_stream_flush(handle_, &pulse::StreamSuccessCallback, pa_mainloop_);
+  if (!WaitForOperationCompletion(pa_mainloop_, operation, pa_context_,
+                                  handle_)) {
+    callback_->OnError();
+  }
 
   // Stop the stream.
   pa_stream_set_read_callback(handle_, NULL, NULL);
-  operation = pa_stream_cork(handle_, 1, &pulse::StreamSuccessCallback,
-                             pa_mainloop_);
-  WaitForOperationCompletion(pa_mainloop_, operation);
+  operation =
+      pa_stream_cork(handle_, 1, &pulse::StreamSuccessCallback, pa_mainloop_);
+  if (!WaitForOperationCompletion(pa_mainloop_, operation, pa_context_,
+                                  handle_)) {
+    callback_->OnError();
+  }
   callback_ = NULL;
 }
 
@@ -126,9 +135,9 @@ void PulseAudioInputStream::Close() {
     if (handle_) {
       // Disable all the callbacks before disconnecting.
       pa_stream_set_state_callback(handle_, NULL, NULL);
-      pa_operation* operation = pa_stream_flush(
-          handle_, &pulse::StreamSuccessCallback, pa_mainloop_);
-      WaitForOperationCompletion(pa_mainloop_, operation);
+      pa_operation* operation =
+          pa_stream_flush(handle_, &pulse::StreamSuccessCallback, pa_mainloop_);
+      WaitForOperationCompletion(pa_mainloop_, operation, pa_context_, handle_);
 
       if (pa_stream_get_state(handle_) != PA_STREAM_UNCONNECTED)
         pa_stream_disconnect(handle_);
@@ -158,10 +167,11 @@ void PulseAudioInputStream::SetVolume(double volume) {
   if (!channels_) {
     // Get the number of channels for the source only when the |channels_| is 0.
     // We are assuming the stream source is not changed on the fly here.
-    operation = pa_context_get_source_info_by_index(
-        pa_context_, index, &VolumeCallback, this);
-    WaitForOperationCompletion(pa_mainloop_, operation);
-    if (!channels_) {
+    operation = pa_context_get_source_info_by_index(pa_context_, index,
+                                                    &VolumeCallback, this);
+    if (!WaitForOperationCompletion(pa_mainloop_, operation, pa_context_,
+                                    handle_) ||
+        !channels_) {
       DLOG(WARNING) << "Failed to get the number of channels for the source";
       return;
     }
@@ -351,8 +361,8 @@ bool PulseAudioInputStream::GetSourceInformation(pa_source_info_cb_t callback) {
   size_t index = pa_stream_get_device_index(handle_);
   pa_operation* operation =
       pa_context_get_source_info_by_index(pa_context_, index, callback, this);
-  WaitForOperationCompletion(pa_mainloop_, operation);
-  return true;
+  return WaitForOperationCompletion(pa_mainloop_, operation, pa_context_,
+                                    handle_);
 }
 
 }  // namespace media

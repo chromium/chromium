@@ -11,6 +11,7 @@
 #include "base/metrics/user_metrics_action.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/chromium_strings.h"
@@ -26,6 +27,7 @@
 #include "ui/gfx/text_constants.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view.h"
@@ -72,19 +74,6 @@ bool RelaunchRequiredDialogView::Accept() {
   return false;
 }
 
-int RelaunchRequiredDialogView::GetDefaultDialogButton() const {
-  // Do not focus either button so that the user doesn't relaunch or dismiss by
-  // accident if typing when the dialog appears.
-  return ui::DIALOG_BUTTON_NONE;
-}
-
-base::string16 RelaunchRequiredDialogView::GetDialogButtonLabel(
-    ui::DialogButton button) const {
-  return l10n_util::GetStringUTF16(button == ui::DIALOG_BUTTON_OK
-                                       ? IDS_RELAUNCH_ACCEPT_BUTTON
-                                       : IDS_RELAUNCH_REQUIRED_CANCEL_BUTTON);
-}
-
 ui::ModalType RelaunchRequiredDialogView::GetModalType() const {
   return ui::MODAL_TYPE_WINDOW;
 }
@@ -107,16 +96,6 @@ bool RelaunchRequiredDialogView::ShouldShowWindowIcon() const {
   return true;
 }
 
-int RelaunchRequiredDialogView::GetHeightForWidth(int width) const {
-  const gfx::Insets insets = GetInsets();
-  return body_label_->GetHeightForWidth(width - insets.width()) +
-         insets.height();
-}
-
-void RelaunchRequiredDialogView::Layout() {
-  body_label_->SetBoundsRect(GetContentsBounds());
-}
-
 gfx::Size RelaunchRequiredDialogView::CalculatePreferredSize() const {
   const int width = ChromeLayoutProvider::Get()->GetDistanceMetric(
                         DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH) -
@@ -130,20 +109,28 @@ RelaunchRequiredDialogView::RelaunchRequiredDialogView(
     base::Time deadline,
     base::RepeatingClosure on_accept)
     : on_accept_(on_accept),
-      body_label_(nullptr),
       relaunch_required_timer_(
           deadline,
           base::BindRepeating(&RelaunchRequiredDialogView::UpdateWindowTitle,
                               base::Unretained(this))) {
+  DialogDelegate::set_default_button(ui::DIALOG_BUTTON_NONE);
+  DialogDelegate::set_button_label(
+      ui::DIALOG_BUTTON_OK,
+      l10n_util::GetStringUTF16(IDS_RELAUNCH_ACCEPT_BUTTON));
+  DialogDelegate::set_button_label(
+      ui::DIALOG_BUTTON_CANCEL,
+      l10n_util::GetStringUTF16(IDS_RELAUNCH_REQUIRED_CANCEL_BUTTON));
+  SetLayoutManager(std::make_unique<views::FillLayout>());
   chrome::RecordDialogCreation(chrome::DialogIdentifier::RELAUNCH_REQUIRED);
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
       views::TEXT, views::TEXT));
 
-  body_label_ =
-      new views::Label(l10n_util::GetStringUTF16(IDS_RELAUNCH_REQUIRED_BODY),
-                       views::style::CONTEXT_MESSAGE_BOX_BODY_TEXT);
-  body_label_->SetMultiLine(true);
-  body_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  auto label = std::make_unique<views::Label>(
+      l10n_util::GetPluralStringFUTF16(IDS_RELAUNCH_REQUIRED_BODY,
+                                       BrowserList::GetIncognitoBrowserCount()),
+      views::style::CONTEXT_MESSAGE_BOX_BODY_TEXT);
+  label->SetMultiLine(true);
+  label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 
   // Align the body label with the left edge of the dialog's title.
   // TODO(bsep): Remove this when fixing https://crbug.com/810970.
@@ -151,10 +138,10 @@ RelaunchRequiredDialogView::RelaunchRequiredDialogView(
                              ->GetInsetsMetric(views::INSETS_DIALOG_TITLE)
                              .left() +
                      kTitleIconSize;
-  body_label_->SetBorder(views::CreateEmptyBorder(
+  label->SetBorder(views::CreateEmptyBorder(
       gfx::Insets(0, title_offset - margins().left(), 0, 0)));
 
-  AddChildView(body_label_);
+  AddChildView(std::move(label));
 
   base::RecordAction(base::UserMetricsAction("RelaunchRequiredShown"));
 }

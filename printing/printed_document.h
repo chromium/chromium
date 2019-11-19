@@ -38,7 +38,7 @@ class PRINTING_EXPORT PrintedDocument
  public:
   // The cookie shall be unique and has a specific relationship with its
   // originating source and settings.
-  PrintedDocument(const PrintSettings& settings,
+  PrintedDocument(std::unique_ptr<PrintSettings> settings,
                   const base::string16& name,
                   int cookie);
 
@@ -102,7 +102,7 @@ class PRINTING_EXPORT PrintedDocument
   int expected_page_count() const;
 
   // Getters. All these items are immutable hence thread-safe.
-  const PrintSettings& settings() const { return immutable_.settings_; }
+  const PrintSettings& settings() const { return *immutable_.settings_; }
   const base::string16& name() const { return immutable_.name_; }
   int cookie() const { return immutable_.cookie_; }
 
@@ -174,13 +174,13 @@ class PRINTING_EXPORT PrintedDocument
   // any lock held. This is because it can't be changed after the object's
   // construction.
   struct Immutable {
-    Immutable(const PrintSettings& settings,
+    Immutable(std::unique_ptr<PrintSettings> settings,
               const base::string16& name,
               int cookie);
     ~Immutable();
 
     // Print settings used to generate this document. Immutable.
-    PrintSettings settings_;
+    std::unique_ptr<PrintSettings> settings_;
 
     // Document name. Immutable.
     base::string16 name_;

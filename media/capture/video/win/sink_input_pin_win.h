@@ -41,6 +41,7 @@ class SinkInputPin : public PinBase {
   float requested_frame_rate_;
   BITMAPINFOHEADER requested_info_header_;
   VideoCaptureFormat resulting_format_;
+  bool flip_y_;
   SinkFilterObserver* observer_;
 
   DISALLOW_IMPLICIT_CONSTRUCTORS(SinkInputPin);

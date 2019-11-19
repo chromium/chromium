@@ -1,0 +1,5 @@
+[document web]
+++[push button] name='Regular button' xml-roles:button
+++[toggle button] name='Toggle button' checkable:true xml-roles:button
+++[toggle button] name='Toggle button' pressed checkable:true xml-roles:button
+++[toggle button] name='Toggle button' indeterminate checkable:true xml-roles:button

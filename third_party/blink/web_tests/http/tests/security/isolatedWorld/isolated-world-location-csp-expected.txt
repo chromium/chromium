@@ -1,0 +1,16 @@
+CONSOLE MESSAGE: line 50: Testing main world. Javascript url should be blocked by mainworld CSP.
+CONSOLE ERROR: line 33: Refused to run the JavaScript URL because it violates the following Content Security Policy directive: "script-src 'self' 'unsafe-eval'". Either the 'unsafe-inline' keyword, a hash ('sha256-...'), or a nonce ('nonce-...') is required to enable inline execution.
+
+CONSOLE MESSAGE: line 17: PASS: Javascript url blocked as expected.
+CONSOLE MESSAGE: line 56: Testing isolated world with no csp. Javascript url should be blocked by main world CSP.
+CONSOLE ERROR: Refused to run the JavaScript URL because it violates the following Content Security Policy directive: "script-src 'self' 'unsafe-eval'". Either the 'unsafe-inline' keyword, a hash ('sha256-...'), or a nonce ('nonce-...') is required to enable inline execution.
+
+CONSOLE MESSAGE: PASS: Javascript url blocked as expected.
+CONSOLE MESSAGE: line 63: Testing isolated world with permissive csp.
+ALERT: iframe javascript: src running
+CONSOLE MESSAGE: PASS: Javascript url worked as expected
+CONSOLE MESSAGE: line 70: Testing isolated world with strict csp.
+CONSOLE MESSAGE: line 71: internals.runtimeFlags.isolatedWorldCSPEnabled is false
+ALERT: iframe javascript: src running
+CONSOLE MESSAGE: PASS: Javascript url worked as expected
+This tests the isolated world CSP and its implications on changing the window location to Javascript urls.

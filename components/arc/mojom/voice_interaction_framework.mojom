@@ -1,0 +1,90 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+//
+// Next MinVersion: 14
+
+module arc.mojom;
+
+import "components/arc/mojom/gfx.mojom";
+
+// There is another copy of the VoiceInteractionState definition in
+// //ash/public/mojom/voice_interaction_controller.mojom
+// Please also update the other one if you change it.
+// The duplicate definition is because we do not use extensible widely
+// (crbug.com/731893).
+
+[Extensible]
+enum VoiceInteractionState {
+  NOT_READY = 0,
+  STOPPED,
+  RUNNING
+};
+
+// Handles voice interaction queries from Android.
+// Next method ID: 6
+// Deprecated method ID: 0, 2, 3, 4
+interface VoiceInteractionFrameworkHost {
+  // Returns a fullscreen screenshot of the primary display.
+  // |data| represents the image encoded in JPEG format.
+  [MinVersion=1]CaptureFullscreen@1() => (array<uint8> data);
+
+  // Notifies Chrome the state of voice interaction session.
+  [MinVersion=8]SetVoiceInteractionState@5(VoiceInteractionState state);
+};
+
+// Indicates voice interaction configuration status.
+struct VoiceInteractionStatus {
+  // Whether voice interaction is configured during OOBE flow. |false| if
+  // OOBE flow has been skipped.
+  bool configured;
+  // Whether voice interaction service is enabled.
+  bool voice_interaction_enabled;
+  // Whether allow voice interaction service to request screenshot
+  // and screen context.
+  bool context_enabled;
+};
+
+// Connects with Android system server.
+// Next method ID: 12
+// Deprecated method ID: 4
+interface VoiceInteractionFrameworkInstance {
+  // DEPRECATED: Please use Init@11 instead.
+  InitDeprecated@0(VoiceInteractionFrameworkHost host_ptr);
+
+  // Establishes full-duplex communication with the host.
+  [MinVersion=13] Init@11(VoiceInteractionFrameworkHost host_ptr) => ();
+
+  // Starts the voice interaction session in container.
+  // |homescreen_is_active| is true if the session was invoked when homescreen is active.
+  StartVoiceInteractionSession@1([MinVersion=11] bool homescreen_is_active);
+
+  // Starts or stops voice interaction session based on current state.
+  // |homescreen_is_active| is true if the session was invoked when homescreen is active.
+  [MinVersion=9] ToggleVoiceInteractionSession@8([MinVersion=11] bool homescreen_is_active);
+
+  // Starts the voice interaction session in container, with a screen region
+  // selected.
+  [MinVersion=1] StartVoiceInteractionSessionForRegion@2(Rect region);
+
+  // Shows/hides the metalayer in the container.
+  [MinVersion=1] SetMetalayerVisibility@3([MinVersion=2] bool visible);
+
+  // Turns on / off voice interaction and ack the setting.
+  [MinVersion=12] SetVoiceInteractionEnabled@10(bool enable) => ();
+
+  // Turns on / off context for voice interaction in container. This function
+  // controls whether screenshot and view hierarchy information should be sent
+  // to container.
+  [MinVersion=4] SetVoiceInteractionContextEnabled@5(bool enable);
+
+  // Starts the voice interaction setup wizard in container.
+  [MinVersion=5] StartVoiceInteractionSetupWizard@6();
+
+  // Starts the voice interaction setup wizard in container.
+  [MinVersion=10] ShowVoiceInteractionSettings@9();
+
+  // Queries voice interaction settings status.
+  [MinVersion=7] GetVoiceInteractionSettings@7() =>
+    (VoiceInteractionStatus status);
+};

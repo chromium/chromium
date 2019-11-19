@@ -6,8 +6,7 @@
   <template>
     <style>
       .search-bubble {
-        /* RGB value matches var(--paper-yellow-500). */
-        --search-bubble-color: rgba(255, 235, 59, 0.9);
+        --search-bubble-color: var(--paper-yellow-500);
         position: absolute;
         z-index: 1;
       }
@@ -16,6 +15,7 @@
         align-items: center;
         background-color: var(--search-bubble-color);
         border-radius: 2px;
+        color: var(--google-grey-900);
         max-width: 100px;
         min-width: 64px;
         padding: 4px 10px;

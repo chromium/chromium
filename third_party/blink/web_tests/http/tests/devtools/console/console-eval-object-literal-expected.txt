@@ -5,12 +5,12 @@ Tests that evaluating object literal in the console correctly reported.
 {a:1}
 {a: 1}
 {var a = 1; eval("{ a:1, b:2 }");}
-VM:1 Uncaught SyntaxError: Unexpected token :
+VM:1 Uncaught SyntaxError: Unexpected token ':'
 (anonymous) @ VM:1
 { for (var i = 0; i < 5; ++i); }
 undefined
 { a: 4 }),({ b: 7 }
-VM:1 Uncaught SyntaxError: Unexpected token )
+VM:1 Uncaught SyntaxError: Unexpected token ')'
 { let a = 4; a; }
 4
 { let a = 4; }; { let b = 5; };

@@ -26,10 +26,22 @@ chrome.fileSystemProvider.onGetMetadataRequested.addListener(
       });
     });
 
-chrome.fileSystemProvider.onReadDirectoryRequested.addListener(
-    function(options, onSuccess, onError) {
-      onSuccess([], false /* hasMore */);
-    });
+chrome.fileSystemProvider.onReadDirectoryRequested.addListener(function(
+    options, onSuccess, onError) {
+  // For anything other than root, return no entries.
+  if (options.directoryPath !== '/') {
+    onSuccess([], false /* hasMore */);
+    return;
+  }
+  // For root we return 1 folder entry.
+  const entries = [
+    {
+      isDirectory: true,
+      name: 'folder',
+    },
+  ];
+  onSuccess(entries, false /* hasMore */);
+});
 
 chrome.fileSystemProvider.onMountRequested.addListener(mountFileSystem);
 

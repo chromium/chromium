@@ -22,7 +22,7 @@ iframe style:
 element.style { ()
 
 [expanded] 
-body { (styles-iframe-data.html:4 -> styles-iframe-data.html:4:9)
+body { (styles-ifra…data.html:4 -> styles-iframe-data.html:4:9)
     background: green;
 
 [expanded] 

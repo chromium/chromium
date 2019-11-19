@@ -133,7 +133,7 @@ class NetworkPortalNotificationController
   // Do not close Portal Login dialog on "No network" error in browser tests.
   bool ignore_no_network_for_testing_ = false;
 
-  base::WeakPtrFactory<NetworkPortalNotificationController> weak_factory_;
+  base::WeakPtrFactory<NetworkPortalNotificationController> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(NetworkPortalNotificationController);
 };

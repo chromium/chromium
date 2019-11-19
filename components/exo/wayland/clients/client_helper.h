@@ -11,6 +11,7 @@
 #include <linux-dmabuf-unstable-v1-client-protocol.h>
 #include <linux-explicit-synchronization-unstable-v1-client-protocol.h>
 #include <presentation-time-client-protocol.h>
+#include <vsync-feedback-unstable-v1-client-protocol.h>
 #include <wayland-client-core.h>
 #include <wayland-client-protocol.h>
 
@@ -64,6 +65,8 @@ DEFAULT_DELETER_FDECL(zwp_linux_buffer_params_v1)
 DEFAULT_DELETER_FDECL(zwp_linux_dmabuf_v1)
 DEFAULT_DELETER_FDECL(zwp_linux_explicit_synchronization_v1)
 DEFAULT_DELETER_FDECL(zwp_linux_surface_synchronization_v1)
+DEFAULT_DELETER_FDECL(zcr_vsync_feedback_v1)
+DEFAULT_DELETER_FDECL(zcr_vsync_timing_v1)
 
 #if defined(USE_GBM)
 DEFAULT_DELETER_FDECL(gbm_bo)

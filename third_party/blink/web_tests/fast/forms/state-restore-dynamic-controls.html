@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../external/wpt/html/interaction/focus/the-autofocus-attribute/resources/utils.js"></script>
+<body>
+<iframe src="resources/state-restore-dynamic-controls-frame.html"></iframe>
+<script>
+promise_test(async t => {
+  await waitForEvent(window, 'load', {once:true});
+  const iframe = document.querySelector('iframe');
+  const container = iframe.contentDocument.querySelector('div');
+  // Change states of controls
+  container.firstChild.click();
+  container.lastChild.focus();
+  eventSender.keyDown('z');
+  assert_true(container.firstChild.checked, 'sanity check for a checkbox');
+  assert_equals(container.lastChild.value, 'z', 'sanity check for a text field');
+
+  // Navigate
+  iframe.src = 'data:text/html,<h1></h1>';
+  await waitForEvent(iframe, 'load', {once:true});
+
+  // Navigate back
+  history.back();
+  await waitForEvent(iframe, 'load', {once:true});
+  // Wait until finishing the restore task.
+  await timeOut(t, 0);
+  const inputs = iframe.contentDocument.querySelectorAll('input');
+  assert_true(inputs[0].checked, 'Checkbox state should be restored.');
+  assert_equals(inputs[1].value, 'z', 'Text field state should be restored.');
+  assert_false(inputs[2].checked, 'Checkbox should have initial value.');
+  assert_equals(inputs[3].value, '', 'Text field should have initial value.');
+}, 'Control states should be restored correctly even if controls were inserted before existing controls.');
+</script>

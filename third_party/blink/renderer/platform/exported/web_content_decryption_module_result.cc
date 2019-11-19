@@ -33,7 +33,7 @@ void WebContentDecryptionModuleResult::CompleteWithKeyStatus(
 
 void WebContentDecryptionModuleResult::CompleteWithError(
     WebContentDecryptionModuleException exception,
-    unsigned long system_code,
+    uint32_t system_code,
     const WebString& error_message) {
   impl_->CompleteWithError(exception, system_code, error_message);
   Reset();

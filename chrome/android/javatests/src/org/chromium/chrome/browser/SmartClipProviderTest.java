@@ -24,7 +24,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
@@ -36,6 +35,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.Coordinates;
 import org.chromium.content_public.browser.test.util.DOMUtils;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
 
 import java.lang.reflect.Method;
@@ -118,7 +118,7 @@ public class SmartClipProviderTest implements Handler.Callback {
     public void setUp() throws Exception {
         mActivityTestRule.startMainActivityWithURL(DATA_URL);
         mActivity = mActivityTestRule.getActivity();
-        ThreadUtils.runOnUiThreadBlocking(
+        TestThreadUtils.runOnUiThreadBlocking(
                 () -> { mWebContents = mActivityTestRule.getWebContents(); });
 
         DOMUtils.waitForNonZeroNodeBounds(mWebContents, "simple_text");
@@ -139,7 +139,7 @@ public class SmartClipProviderTest implements Handler.Callback {
 
     @After
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
-    public void tearDown() throws Exception {
+    public void tearDown() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
             mHandlerThread.quitSafely();
         } else {
@@ -194,10 +194,10 @@ public class SmartClipProviderTest implements Handler.Callback {
     @MediumTest
     @Feature({"SmartClip"})
     @RetryOnFailure
-    public void testSmartClipDataCallback() throws InterruptedException, TimeoutException {
+    public void testSmartClipDataCallback() throws TimeoutException {
         final float dpi = Coordinates.createFor(mWebContents).getDeviceScaleFactor();
         final Rect bounds = DOMUtils.getNodeBounds(mWebContents, "simple_text");
-        ThreadUtils.runOnUiThreadBlocking(() -> {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
             // This emulates what OEM will be doing when they want to call
             // functions on SmartClipProvider through view hierarchy.
 
@@ -226,8 +226,8 @@ public class SmartClipProviderTest implements Handler.Callback {
     @MediumTest
     @Feature({"SmartClip"})
     @RetryOnFailure
-    public void testSmartClipNoHandlerDoesntCrash() throws InterruptedException, TimeoutException {
-        ThreadUtils.runOnUiThreadBlocking(() -> {
+    public void testSmartClipNoHandlerDoesntCrash() throws TimeoutException {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
             Object scp = findSmartClipProvider(
                     mActivityTestRule.getActivity().findViewById(android.R.id.content));
             Assert.assertNotNull(scp);

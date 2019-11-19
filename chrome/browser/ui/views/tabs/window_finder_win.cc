@@ -161,12 +161,10 @@ class LocalProcessWindowFinder : public BaseWindowFinder {
     // Windows 8 has a window that appears first in the list of iterated
     // windows, yet is not visually on top of everything.
     // TODO(sky): figure out a better way to ignore this window.
-    if (finder.result_ &&
-        ((base::win::OSInfo::GetInstance()->version() >=
-          base::win::VERSION_WIN8) ||
-         TopMostFinder::IsTopMostWindowAtPoint(finder.result_,
-                                               screen_loc,
-                                               ignore))) {
+    if (finder.result_ && ((base::win::OSInfo::GetInstance()->version() >=
+                            base::win::Version::WIN8) ||
+                           TopMostFinder::IsTopMostWindowAtPoint(
+                               finder.result_, screen_loc, ignore))) {
       return views::DesktopWindowTreeHostWin::GetContentWindowForHWND(
           finder.result_);
     }
@@ -178,7 +176,7 @@ class LocalProcessWindowFinder : public BaseWindowFinder {
     RECT r;
 
     // Make sure the window is on the same virtual desktop.
-    if (base::win::GetVersion() >= base::win::VERSION_WIN10) {
+    if (virtual_desktop_manager_) {
       BOOL on_current_desktop;
       if (SUCCEEDED(virtual_desktop_manager_->IsWindowOnCurrentVirtualDesktop(
               hwnd, &on_current_desktop)) &&
@@ -200,10 +198,9 @@ class LocalProcessWindowFinder : public BaseWindowFinder {
                            const std::set<HWND>& ignore)
       : BaseWindowFinder(ignore),
         result_(NULL) {
-    if (base::win::GetVersion() >= base::win::VERSION_WIN10) {
-      CHECK(SUCCEEDED(::CoCreateInstance(
-          __uuidof(VirtualDesktopManager), nullptr, CLSCTX_ALL,
-          IID_PPV_ARGS(&virtual_desktop_manager_))));
+    if (base::win::GetVersion() >= base::win::Version::WIN10) {
+      ::CoCreateInstance(__uuidof(VirtualDesktopManager), nullptr, CLSCTX_ALL,
+                         IID_PPV_ARGS(&virtual_desktop_manager_));
     }
     screen_loc_ = display::win::ScreenWin::DIPToScreenPoint(screen_loc);
     EnumThreadWindows(GetCurrentThreadId(), WindowCallbackProc, as_lparam());

@@ -17,9 +17,9 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
-#include "ash/tray_action/tray_action.h"
-#include "ash/wallpaper/wallpaper_controller.h"
+#include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/command_line.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "ui/display/display.h"
@@ -51,9 +51,7 @@ LockScreen::LockScreen(ScreenType type) : type_(type) {
 }
 
 LockScreen::~LockScreen() {
-  // Must happen before data_dispatcher_.reset().
   widget_.reset();
-  data_dispatcher_.reset();
 
   ui::Clipboard::DestroyClipboardForCurrentThread();
   if (saved_clipboard_)
@@ -83,29 +81,22 @@ void LockScreen::Show(ScreenType type) {
   instance_->widget_->SetBounds(
       display::Screen::GetScreen()->GetPrimaryDisplay().bounds());
 
-  auto data_dispatcher = std::make_unique<LoginDataDispatcher>();
   auto initial_note_action_state =
       Shell::Get()->tray_action()->GetLockScreenNoteState();
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           chromeos::switches::kShowLoginDevOverlay)) {
-    auto* debug_view = new LockDebugView(initial_note_action_state, type,
-                                         data_dispatcher.get());
+    auto* debug_view = new LockDebugView(initial_note_action_state, type);
     instance_->contents_view_ = debug_view->lock();
     instance_->widget_->SetContentsView(debug_view);
   } else {
     auto detachable_base_model = LoginDetachableBaseModel::Create(
-        Shell::Get()->detachable_base_handler(), data_dispatcher.get());
+        Shell::Get()->detachable_base_handler());
     instance_->contents_view_ = new LockContentsView(
-        initial_note_action_state, type, data_dispatcher.get(),
+        initial_note_action_state, type,
+        Shell::Get()->login_screen_controller()->data_dispatcher(),
         std::move(detachable_base_model));
     instance_->widget_->SetContentsView(instance_->contents_view_);
   }
-
-  data_dispatcher->AddObserver(Shelf::ForWindow(Shell::GetPrimaryRootWindow())
-                                   ->shelf_widget()
-                                   ->login_shelf_view());
-
-  instance_->data_dispatcher_ = std::move(data_dispatcher);
 
   // Postpone showing the screen after the animation of the first wallpaper
   // completes, to make the transition smooth. The callback will be dispatched
@@ -137,7 +128,7 @@ void LockScreen::Destroy() {
   }
   CHECK_EQ(instance_, this);
 
-  data_dispatcher_->RemoveObserver(
+  Shell::Get()->login_screen_controller()->data_dispatcher()->RemoveObserver(
       Shelf::ForWindow(Shell::GetPrimaryRootWindow())
           ->shelf_widget()
           ->login_shelf_view());
@@ -154,9 +145,23 @@ void LockScreen::FocusPreviousUser() {
   contents_view_->FocusPreviousUser();
 }
 
+void LockScreen::ShowParentAccessDialog() {
+  contents_view_->ShowParentAccessDialog();
+}
+
+void LockScreen::RequestSecurityTokenPin(SecurityTokenPinRequest request) {
+  contents_view_->RequestSecurityTokenPin(std::move(request));
+}
+
+void LockScreen::ClearSecurityTokenPinRequest() {
+  contents_view_->ClearSecurityTokenPinRequest();
+}
+
 void LockScreen::OnLockScreenNoteStateChanged(mojom::TrayActionState state) {
-  if (data_dispatcher())
-    data_dispatcher()->SetLockScreenNoteState(state);
+  Shell::Get()
+      ->login_screen_controller()
+      ->data_dispatcher()
+      ->SetLockScreenNoteState(state);
 }
 
 void LockScreen::OnSessionStateChanged(session_manager::SessionState state) {

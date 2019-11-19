@@ -89,8 +89,7 @@ NativeMessagePort::NativeMessagePort(
     std::unique_ptr<NativeMessageHost> native_message_host)
     : weak_channel_delegate_(channel_delegate),
       host_task_runner_(native_message_host->task_runner()),
-      port_id_(port_id),
-      weak_factory_(this) {
+      port_id_(port_id) {
   core_.reset(new Core(std::move(native_message_host),
                        weak_factory_.GetWeakPtr(),
                        base::ThreadTaskRunnerHandle::Get()));

@@ -7,10 +7,6 @@
 
 #include "components/ntp_tiles/ntp_tile_impression.h"
 
-namespace rappor {
-class RapporService;
-}  // namespace rappor
-
 namespace ntp_tiles {
 namespace metrics {
 
@@ -18,10 +14,8 @@ namespace metrics {
 void RecordPageImpression(int number_of_tiles);
 
 // Records an individual tile impression, which should be called only after the
-// visual type of the tile has been determined. If |rappor_service| is null, no
-// rappor metrics will be reported.
-void RecordTileImpression(const NTPTileImpression& impression,
-                          rappor::RapporService* rappor_service);
+// visual type of the tile has been determined.
+void RecordTileImpression(const NTPTileImpression& impression);
 
 // Records a click on a tile.
 void RecordTileClick(const NTPTileImpression& impression);

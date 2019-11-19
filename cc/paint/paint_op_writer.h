@@ -11,6 +11,7 @@
 #include "cc/paint/paint_export.h"
 #include "cc/paint/paint_filter.h"
 #include "cc/paint/paint_op_buffer_serializer.h"
+#include "third_party/skia/include/core/SkImageInfo.h"
 
 struct SkRect;
 struct SkIRect;
@@ -62,6 +63,7 @@ class CC_PAINT_EXPORT PaintOpWriter {
   void Write(const PaintFilter* filter);
   void Write(const sk_sp<SkTextBlob>& blob);
   void Write(SkColorType color_type);
+  void Write(SkYUVColorSpace yuv_color_space);
 
   void Write(SkClipOp op) { Write(static_cast<uint8_t>(op)); }
   void Write(PaintCanvas::AnnotationType type) {

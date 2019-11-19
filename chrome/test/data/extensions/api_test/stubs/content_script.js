@@ -15,30 +15,64 @@ function logToConsoleAndStdout(msg) {
 console.log("asking for api ...");
 chrome.extension.sendRequest("getApi", function(apis) {
   var apiFeatures = chrome.test.getApiFeatures();
+  // TODO(crbug.com/998971): This really should support more than two levels of
+  // inheritance.
   function isAvailableToContentScripts(namespace, path) {
-    function checkContexts(contextList) {
-      return contextList == 'all' ||
-          contextList.indexOf('content_script') != -1;
+    const results = {
+      NULL: 'null',
+      NOT_FOUND: 'not_found',
+      FOUND: 'found'
+    };
+    function searchContexts(contexts) {
+      // This is tricky because the context can be either:
+      //   1. Undefined, so return results.NULL.
+      //   2. The string value 'all', so return results.FOUND.
+      //   3. An array of string values, which cannot be empty.
+      //      Return results.FOUND if 'content_script' is in the array.
+      if (!contexts) {
+        return results.NULL;
+      }
+      if (contexts == 'all' || contexts.includes('content_script')) {
+        return results.FOUND;
+      }
+      return results.NOT_FOUND;
     }
-    function checkFeature(feature) {
-      if (feature.contexts) {
-        // Simple features.
-        return checkContexts(feature.contexts);
-      } else {
-        // Complex features.
-        for (var i = 0; i < feature.length; i++) {
-          if (checkContexts(feature[i].contexts))
-            return true;
+
+    function searchFeature(feature) {
+      if (!feature.length) {
+        // Simple feature, not an array. Can return results.NULL,
+        // because feature.context may be undefined.
+        return searchContexts(feature.contexts);
+      }
+      // Complex feature. We need to return results.NULL if we didn't
+      // find any contexts.
+      var foundContext = false;
+      for (var i = 0; i < feature.length; ++i) {
+        var currentResult = searchContexts(feature[i].contexts);
+        if (currentResult === results.FOUND) {
+          return results.FOUND;
         }
-        return false;
+        foundContext = currentResult !== results.NULL;
+      }
+      return foundContext ? results.NOT_FOUND : results.NULL;
+    }
+
+    var pathFeature = apiFeatures[path];
+    if (!!pathFeature) {
+      const result = searchFeature(pathFeature);
+      // If we found something, use that result.
+      if (result !== results.NULL) {
+          return result === results.FOUND;
       }
     }
 
-    if (apiFeatures.hasOwnProperty(path))
-      return checkFeature(apiFeatures[path]);
-    return apiFeatures.hasOwnProperty(namespace) &&
-        checkFeature(apiFeatures[namespace]);
-  }
+    var namespaceFeature = apiFeatures[namespace];
+    // Check the namespace, if it's defined.
+    if (!!namespaceFeature) {
+      return searchFeature(namespaceFeature) === results.FOUND;
+    }
+    return false;
+  } /* isAvailableToContentScripts */
 
   console.log("got api response");
   var privilegedPaths = [];

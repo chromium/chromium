@@ -7,15 +7,14 @@ package org.chromium.chrome.browser.payments;
 import android.support.test.filters.MediumTest;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.LocaleUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.components.payments.CurrencyFormatter;
-import org.chromium.content_public.browser.test.NativeLibraryTestRule;
 
 import java.util.Arrays;
 import java.util.List;
@@ -26,18 +25,13 @@ import java.util.List;
 @RunWith(BaseJUnit4ClassRunner.class)
 public class CurrencyFormatterTest {
     @Rule
-    public NativeLibraryTestRule mActivityTestRule = new NativeLibraryTestRule();
+    public ChromeBrowserTestRule mActivityTestRule = new ChromeBrowserTestRule();
 
     /**
      * Unicode non-breaking space.
      */
     private static final String NBSP = "\u00A0";
     private static final String NarrowNBSP = "\u202F";
-
-    @Before
-    public void setUp() throws Exception {
-        mActivityTestRule.loadNativeLibraryAndInitBrowserProcess();
-    }
 
     private static String longStringOfLength(int len) {
         StringBuilder currency = new StringBuilder();
@@ -49,7 +43,7 @@ public class CurrencyFormatterTest {
 
     @Test
     @MediumTest
-    public void testMultipleConversions() throws Exception {
+    public void testMultipleConversions() {
         // Note, all spaces are expected to be unicode non-breaking spaces. Here they are shown as
         // normal spaces.
         List<Object[]> testCases = Arrays.asList(new Object[][] {

@@ -5,8 +5,13 @@
 #include "components/metrics/version_utils.h"
 
 #include "base/logging.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "components/version_info/version_info.h"
+
+#if defined(OS_ANDROID)
+#include "base/android/build_info.h"
+#endif
 
 namespace metrics {
 
@@ -16,7 +21,7 @@ std::string GetVersionString() {
   version += "-64";
 #endif  // defined(ARCH_CPU_64_BITS)
 
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   bool is_chrome_branded = true;
 #else
   bool is_chrome_branded = false;
@@ -41,6 +46,13 @@ SystemProfileProto::Channel AsProtobufChannel(version_info::Channel channel) {
   }
   NOTREACHED();
   return SystemProfileProto::CHANNEL_UNKNOWN;
+}
+
+std::string GetAppPackageName() {
+#if defined(OS_ANDROID)
+  return base::android::BuildInfo::GetInstance()->package_name();
+#endif
+  return std::string();
 }
 
 }  // namespace metrics

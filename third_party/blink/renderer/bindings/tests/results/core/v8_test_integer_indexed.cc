@@ -10,12 +10,15 @@
 // clang-format off
 #include "third_party/blink/renderer/bindings/tests/results/core/v8_test_integer_indexed.h"
 
+#include <algorithm>
+
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_document.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_configuration.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_for_each_iterator_callback.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_iterator.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_node.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -24,6 +27,7 @@
 #include "third_party/blink/renderer/platform/bindings/runtime_call_stats.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_object_constructor.h"
+#include "third_party/blink/renderer/platform/scheduler/public/cooperative_scheduling_manager.h"
 #include "third_party/blink/renderer/platform/wtf/get_ptr.h"
 
 namespace blink {
@@ -107,7 +111,7 @@ static void VoidMethodDocumentMethod(const v8::FunctionCallbackInfo<v8::Value>& 
   Document* document;
   document = V8Document::ToImplWithTypeCheck(info.GetIsolate(), info[0]);
   if (!document) {
-    V8ThrowException::ThrowTypeError(info.GetIsolate(), ExceptionMessages::FailedToExecute("voidMethodDocument", "TestIntegerIndexed", "parameter 1 is not of type 'Document'."));
+    V8ThrowException::ThrowTypeError(info.GetIsolate(), ExceptionMessages::FailedToExecute("voidMethodDocument", "TestIntegerIndexed", ExceptionMessages::ArgumentNotOfType(0, "Document")));
     return;
   }
 
@@ -154,18 +158,18 @@ static void ForEachMethod(const v8::FunctionCallbackInfo<v8::Value>& info) {
     return;
   }
 
-  ScriptValue callback;
+  V8ForEachIteratorCallback* callback;
   ScriptValue this_arg;
   if (info[0]->IsFunction()) {
-    callback = ScriptValue(ScriptState::Current(info.GetIsolate()), info[0]);
+    callback = V8ForEachIteratorCallback::Create(info[0].As<v8::Function>());
   } else {
     exception_state.ThrowTypeError("The callback provided as parameter 1 is not a function.");
     return;
   }
 
-  this_arg = ScriptValue(ScriptState::Current(info.GetIsolate()), info[1]);
+  this_arg = ScriptValue(info.GetIsolate(), info[1]);
 
-  impl->forEachForBinding(script_state, ScriptValue(script_state, info.Holder()), callback, this_arg, exception_state);
+  impl->forEachForBinding(script_state, ScriptValue(info.GetIsolate(), info.Holder()), callback, this_arg, exception_state);
   if (exception_state.HadException()) {
     return;
   }
@@ -331,10 +335,6 @@ void V8TestIntegerIndexed::IndexedPropertyDefinerCallback(
   // Return nothing and fall back to indexedPropertySetterCallback.
 }
 
-static constexpr V8DOMConfiguration::AccessorConfiguration kV8TestIntegerIndexedAccessors[] = {
-    { "length", V8TestIntegerIndexed::LengthAttributeGetterCallback, V8TestIntegerIndexed::LengthAttributeSetterCallback, V8PrivateProperty::kNoCachedAccessor, static_cast<v8::PropertyAttribute>(v8::None), V8DOMConfiguration::kOnPrototype, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAlwaysCallGetter, V8DOMConfiguration::kAllWorlds },
-};
-
 static constexpr V8DOMConfiguration::MethodConfiguration kV8TestIntegerIndexedMethods[] = {
     {"voidMethodDocument", V8TestIntegerIndexed::VoidMethodDocumentMethodCallback, 1, v8::None, V8DOMConfiguration::kOnPrototype, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kDoNotCheckAccess, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAllWorlds},
     {"keys", V8TestIntegerIndexed::KeysMethodCallback, 0, v8::None, V8DOMConfiguration::kOnPrototype, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kDoNotCheckAccess, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAllWorlds},
@@ -357,9 +357,14 @@ static void InstallV8TestIntegerIndexedTemplate(
   ALLOW_UNUSED_LOCAL(prototype_template);
 
   // Register IDL constants, attributes and operations.
+  static constexpr V8DOMConfiguration::AccessorConfiguration
+  kAccessorConfigurations[] = {
+      { "length", V8TestIntegerIndexed::LengthAttributeGetterCallback, V8TestIntegerIndexed::LengthAttributeSetterCallback, V8PrivateProperty::kNoCachedAccessor, static_cast<v8::PropertyAttribute>(v8::None), V8DOMConfiguration::kOnPrototype, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAlwaysCallGetter, V8DOMConfiguration::kAllWorlds },
+  };
   V8DOMConfiguration::InstallAccessors(
       isolate, world, instance_template, prototype_template, interface_template,
-      signature, kV8TestIntegerIndexedAccessors, base::size(kV8TestIntegerIndexedAccessors));
+      signature, kAccessorConfigurations,
+      base::size(kAccessorConfigurations));
   V8DOMConfiguration::InstallMethods(
       isolate, world, instance_template, prototype_template, interface_template,
       signature, kV8TestIntegerIndexedMethods, base::size(kV8TestIntegerIndexedMethods));

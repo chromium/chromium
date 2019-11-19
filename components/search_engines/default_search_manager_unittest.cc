@@ -115,6 +115,7 @@ TEST_F(DefaultSearchManagerTest, ReadAndWritePref) {
   data.date_created = base::Time();
   data.last_modified = base::Time();
   data.last_modified = base::Time();
+  data.created_from_play_api = true;
 
   manager.SetUserSelectedDefaultSearchEngine(data);
   const TemplateURLData* read_data = manager.GetDefaultSearchEngine(nullptr);

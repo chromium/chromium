@@ -1,0 +1,56 @@
+Test graph events for the object connection.
+EventType = WebAudio.nodesConnected
+ contextId : <GraphObjectId>
+ sourceId : <GraphObjectId>
+ destinationId : <GraphObjectId>
+ sourceOutputIndex : 0
+ destinationInputIndex : 0
+EventType = WebAudio.nodesDisconnected
+ contextId : <GraphObjectId>
+ sourceId : <GraphObjectId>
+ destinationId : <GraphObjectId>
+ sourceOutputIndex : 0
+ destinationInputIndex : 0
+EventType = WebAudio.nodesDisconnected
+ contextId : <GraphObjectId>
+ sourceId : <GraphObjectId>
+ destinationId : null
+ sourceOutputIndex : 0
+ destinationInputIndex : 0
+EventType = WebAudio.nodesConnected
+ contextId : <GraphObjectId>
+ sourceId : <GraphObjectId>
+ destinationId : <GraphObjectId>
+ sourceOutputIndex : 1
+ destinationInputIndex : 4
+EventType = WebAudio.nodesDisconnected
+ contextId : <GraphObjectId>
+ sourceId : <GraphObjectId>
+ destinationId : <GraphObjectId>
+ sourceOutputIndex : 1
+ destinationInputIndex : 4
+EventType = WebAudio.nodeParamConnected
+ contextId : <GraphObjectId>
+ sourceId : <GraphObjectId>
+ destinationId : <GraphObjectId>
+ sourceOutputIndex : 0
+ destinationInputIndex : undefined
+EventType = WebAudio.nodeParamDisconnected
+ contextId : <GraphObjectId>
+ sourceId : <GraphObjectId>
+ destinationId : <GraphObjectId>
+ sourceOutputIndex : 0
+ destinationInputIndex : undefined
+EventType = WebAudio.nodeParamConnected
+ contextId : <GraphObjectId>
+ sourceId : <GraphObjectId>
+ destinationId : <GraphObjectId>
+ sourceOutputIndex : 1
+ destinationInputIndex : undefined
+EventType = WebAudio.nodeParamDisconnected
+ contextId : <GraphObjectId>
+ sourceId : <GraphObjectId>
+ destinationId : <GraphObjectId>
+ sourceOutputIndex : 1
+ destinationInputIndex : undefined
+

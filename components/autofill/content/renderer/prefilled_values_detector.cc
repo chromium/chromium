@@ -57,7 +57,7 @@ const base::flat_set<std::string, std::less<>>& KnownUsernamePlaceholders() {
                      "ååååmmddxxxx",
                      "아이디 or @이하 모두 입력",
                      "Имя",
-                     "Имя (логин)"
+                     "Имя (логин)",
                      "Логин",
                      "Логин...",
                      "Логин (e-mail)",

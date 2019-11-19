@@ -1,4 +1,4 @@
-# Integrating a feature with the Origin Trials framework
+# Integrating a feature with the origin trials framework
 
 To expose your feature via the origin trials framework, there are a few code
 changes required.
@@ -13,11 +13,10 @@ First, you’ll need to configure [runtime\_enabled\_features.json5]. This is
 explained in the file, but you use `origin_trial_feature_name` to associate your
 runtime feature flag with a name for your origin trial.  The name can be the
 same as your runtime feature flag, or different.  Eventually, this configured
-name will be used in the Origin Trials developer console (still under
-development). You can have both `status: experimental` and
-`origin_trial_feature_name` if you want your feature to be enabled either by
-using the `--enable-experimental-web-platform-features` flag **or** the origin
-trial.
+name will be used in the origin trials developer console. You can have both
+`status: experimental` and `origin_trial_feature_name` if you want your feature
+to be enabled either by using the `--enable-experimental-web-platform-features`
+flag **or** the origin trial.
 
 You may have a feature that is not available on all platforms, or need to limit
 the trial to specific platforms. Use `origin_trial_os: [list]` to specify which
@@ -60,24 +59,80 @@ an origin trial. You can use either mechanism, or both, as appropriate to your
 feature implementation.
 
 1. A native C++ method that you can call in Blink code at runtime to expose your
-    feature: `bool OriginTrials::myFeatureEnabled()`
-2. An IDL attribute \[[OriginTrialEnabled]\] that you can use to automatically
-    generate code to expose and hide JavaScript methods/attributes/objects. This
-    attribute works very similarly to \[RuntimeEnabled\].
+    feature: `bool RuntimeEnabledFeatures::MyFeatureEnabled(ExecutionContext*)`
+2. An IDL attribute \[[RuntimeEnabled]\] that you can use to automatically
+    generate code to expose and hide JavaScript methods/attributes/objects.
 ```
-[OriginTrialEnabled=MyFeature]
+[RuntimeEnabled=MyFeature]
 partial interface Navigator {
      readonly attribute MyFeatureManager myFeature;
 }
 ```
 
 **NOTE:** Your feature implementation must not persist the result of the enabled
-check. Your code should simply call `OriginTrials::myFeatureEnabled()` as often
-as necessary to gate access to your feature.
+check. Your code should simply call
+`RuntimeEnabledFeatures::MyFeatureEnabled(ExecutionContext*)` as often as
+necessary to gate access to your feature.
+
+### Web Feature Counting
+
+Once the feature is created, in order to run the origin trial you need to track
+how often users use your feature. You can do it in two ways.
+
+#### Increment counter in your c++ code.
+
+1. Add your feature counter to end of [web\_feature.mojom]:
+
+```
+enum WebFeature {
+  // ...
+  kLastFeatureBeforeYours = 1235,
+  // Here, increment the last feature count before yours by 1.
+  kMyFeature = 1236,
+
+  kNumberOfFeatures,  // This enum value must be last.
+};
+```
+2. Run [update\_use\_counter\_feature\_enum.py] to update the UMA mapping.
+
+3. Increment your feature counter in c++ code.
+```c++
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+
+// ...
+
+  if (RuntimeEnabledFeatures::MyFeatureEnabled(context)) {
+    UseCounter::Count(context, WebFeature::kMyFeature);
+  }
+```
+
+#### Update counter with \[Measure\] IDL attribute
+
+1. Add \[[Measure]\] IDL attribute
+```
+partial interface Navigator {
+  [RuntimeEnabled=MyFeature, Measure]
+  readonly attribute MyFeatureManager myFeature;
+```
+
+2. The code to increment your feature counter will be generated in V8
+    automatically. But it requires you to follow \[[Measure]\] IDL attribute
+    naming convention when you will add your feature counter to
+    [web\_feature.mojom].
+```
+enum WebFeature {
+  // ...
+  kLastFeatureBeforeYours = 1235,
+  // Here, increment the last feature count before yours by 1.
+  kV8Navigator_MyFeature_AttributeGetter = 1236,
+
+  kNumberOfFeatures,  // This enum value must be last.
+};
+```
 
 ## Limitations
 
-What you can't do, because of the nature of these Origin Trials, is know at
+What you can't do, because of the nature of these origin trials, is know at
 either browser or renderer startup time whether your feature is going to be used
 in the current page/context. This means that if you require lots of expensive
 processing to begin (say you index the user's hard drive, or scan an entire city
@@ -125,7 +180,7 @@ If you cannot set command-line switches (e.g., on Chrome OS), you can also
 directly modify [chrome_origin_trial_policy.cc].
 
 ### Web Tests
-When using the \[OriginTrialEnabled\] IDL attribute, you should add web tests
+When using the \[RuntimeEnabled\] IDL attribute, you should add web tests
 to verify that the V8 bindings code is working as expected. Depending on how
 your feature is exposed, you'll want tests for the exposed interfaces, as well
 as tests for script-added tokens. For examples, refer to the existing tests in
@@ -135,7 +190,10 @@ as tests for script-added tokens. For examples, refer to the existing tests in
 [chrome_origin_trial_policy.cc]: /chrome/common/origin_trials/chrome_origin_trial_policy.cc
 [generate_token.py]: /tools/origin_trials/generate_token.py
 [Developer Guide]: https://github.com/jpchase/OriginTrials/blob/gh-pages/developer-guide.md
-[OriginTrialEnabled]: /third_party/blink/renderer/bindings/IDLExtendedAttributes.md#_OriginTrialEnabled_i_m_a_c_
+[RuntimeEnabled]: /third_party/blink/renderer/bindings/IDLExtendedAttributes.md#RuntimeEnabled_i_m_a_c
 [origin_trials/webexposed]: /third_party/blink/web_tests/http/tests/origin_trials/webexposed/
 [runtime\_enabled\_features.json5]: /third_party/blink/renderer/platform/runtime_enabled_features.json5
 [trial_token_unittest.cc]: /third_party/blink/common/origin_trials/trial_token_unittest.cc
+[web\_feature.mojom]: /third_party/blink/public/mojom/web_feature/web_feature.mojom
+[update\_use\_counter\_feature\_enum.py]: /tools/metrics/histograms/update_use_counter_feature_enum.py
+[Measure]: /third_party/blink/renderer/bindings/IDLExtendedAttributes.md#Measure_i_m_a_c

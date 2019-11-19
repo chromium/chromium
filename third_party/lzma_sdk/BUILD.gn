@@ -15,6 +15,14 @@ config("clang_warnings") {
   }
 }
 
+config("lzma_defines") {
+  defines = [
+    "_7ZIP_ST",
+    "_7Z_NO_METHODS_FILTERS",
+    "_LZMA_PROB32",
+  ]
+}
+
 static_library("lzma_sdk") {
   sources = [
     "7z.h",
@@ -57,10 +65,33 @@ static_library("lzma_sdk") {
     "Precomp.h",
   ]
 
-  defines = [
-    "_7ZIP_ST",
-    "_7Z_NO_METHODS_FILTERS",
-    "_LZMA_PROB32",
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+
+    # Must be after no_chromium_code for warning flags to be ordered correctly.
+    ":clang_warnings",
+    ":lzma_defines"
+  ]
+  public_configs = [ ":lzma_sdk_config" ]
+}
+
+static_library("lzma_sdk_xz") {
+  sources = [
+    "BraIA64.c",
+    "RotateDefs.h",
+    "Sha256.c",
+    "Sha256.h",
+    "Xz.c",
+    "Xz.h",
+    "XzCrc64.c",
+    "XzCrc64.h",
+    "XzCrc64Opt.c",
+    "XzDec.c",
+  ]
+
+  deps = [
+    ":lzma_sdk"
   ]
 
   configs -= [ "//build/config/compiler:chromium_code" ]
@@ -69,6 +100,7 @@ static_library("lzma_sdk") {
 
     # Must be after no_chromium_code for warning flags to be ordered correctly.
     ":clang_warnings",
+    ":lzma_defines"
   ]
   public_configs = [ ":lzma_sdk_config" ]
 }

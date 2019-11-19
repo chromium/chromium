@@ -276,7 +276,7 @@ Count* PersistentSampleMap::ImportSamples(Sample until_value,
     DCHECK_EQ(id(), record->id);
 
     // Check if the record's value is already known.
-    if (!ContainsKey(sample_counts_, record->value)) {
+    if (!Contains(sample_counts_, record->value)) {
       // No: Add it to map of known values.
       sample_counts_[record->value] = &record->count;
     } else {

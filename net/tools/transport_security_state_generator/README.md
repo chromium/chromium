@@ -129,9 +129,10 @@ dispatch-table     = prefix-part         ; a common prefix for the node and its 
                      1*value-part        ; 1 or more values or pointers to children
                      end-of-table-value  ; signals the end of the table
 
-prefix-part        = *%b1               ; 0 or more 1 bits indicating the prefix length
-                     %b0                ; 0 bit to indicate the end of the length encoding
+prefix-part        = prefix-length      ; a prefix code encoding of the number
+of characters in the prefix
                      prefix-characters  ; the actual prefix characters
+prefix-length      = 1*BIT  ; See net::extras::PreloadDecoder::DecodeSize for the format
 value-part         = huffman-character node-value
                      ; table with the node value and pointers to children
 

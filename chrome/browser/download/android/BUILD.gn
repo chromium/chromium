@@ -1,0 +1,61 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+android_library("java") {
+  java_files = [
+    "java/src/org/chromium/chrome/browser/download/DirectoryOption.java",
+    "java/src/org/chromium/chrome/browser/download/DownloadConstants.java",
+    "java/src/org/chromium/chrome/browser/download/DownloadDirectoryProvider.java",
+    "java/src/org/chromium/chrome/browser/download/DownloadFileProvider.java",
+    "java/src/org/chromium/chrome/browser/download/DownloadFilter.java",
+    "java/src/org/chromium/chrome/browser/download/DownloadInfo.java",
+    "java/src/org/chromium/chrome/browser/download/DownloadManagerBridge.java",
+    "java/src/org/chromium/chrome/browser/download/DownloadStatus.java",
+    "java/src/org/chromium/chrome/browser/download/MediaStoreHelper.java",
+    "java/src/org/chromium/chrome/browser/download/DownloadStartupUtils.java",
+    "java/src/org/chromium/chrome/browser/download/MimeUtils.java",
+    "java/src/org/chromium/chrome/browser/download/UriUtils.java",
+  ]
+
+  deps = [
+    "//base:base_java",
+    "//base:jni_java",
+    "//chrome/browser/util:java",
+    "//components/download/public/common:public_java",
+    "//components/offline_items_collection/core:core_java",
+    "//content/public/android:content_java",
+    "//third_party/android_deps:com_android_support_support_compat_java",
+  ]
+
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+}
+
+generate_jni("jni_headers") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/download/DownloadInfo.java",
+    "java/src/org/chromium/chrome/browser/download/DownloadManagerBridge.java",
+    "java/src/org/chromium/chrome/browser/download/DownloadStartupUtils.java",
+    "java/src/org/chromium/chrome/browser/download/MimeUtils.java",
+  ]
+}
+
+android_library("download_java_tests") {
+  testonly = true
+
+  java_files = [
+    "javatests/src/org/chromium/chrome/browser/download/MimeUtilsTest.java",
+    "javatests/src/org/chromium/chrome/browser/download/DownloadFileProviderTest.java",
+  ]
+
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//chrome/test/android:chrome_java_test_support",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+  ]
+}

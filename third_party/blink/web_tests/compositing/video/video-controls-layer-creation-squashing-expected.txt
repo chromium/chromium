@@ -1,0 +1,39 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV",
+      "bounds": [300, 300],
+      "contentsOpaque": true,
+      "backgroundColor": "#008000",
+      "transform": 1
+    },
+    {
+      "name": "LayoutFlexibleBox (relative positioned) DIV class='use-default-poster sizing-small test-mode phase-pre-ready state-no-source'",
+      "bounds": [272, 153],
+      "contentsOpaque": true,
+      "backgroundColor": "#333333"
+    },
+    {
+      "name": "LayoutFlexibleBox DIV",
+      "bounds": [272, 153]
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [0, 100, 0, 1]
+      ]
+    }
+  ]
+}
+

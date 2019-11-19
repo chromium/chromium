@@ -9,7 +9,10 @@
 
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/tick_clock.h"
+#include "net/base/network_isolation_key.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace net {
 
@@ -26,12 +29,20 @@ class BrokenAlternativeServicesTest
       : test_task_runner_(new base::TestMockTimeTaskRunner()),
         test_task_runner_context_(test_task_runner_),
         broken_services_clock_(test_task_runner_->GetMockTickClock()),
-        broken_services_(this, broken_services_clock_) {}
+        broken_services_(50, this, broken_services_clock_) {
+    auto origin1 = url::Origin::Create(GURL("http://foo.test"));
+    auto origin2 = url::Origin::Create(GURL("http://bar.test"));
+    network_isolation_key1_ = NetworkIsolationKey(origin1, origin1);
+    network_isolation_key2_ = NetworkIsolationKey(origin2, origin2);
+  }
 
   // BrokenAlternativeServices::Delegate implementation
   void OnExpireBrokenAlternativeService(
-      const AlternativeService& expired_alternative_service) override {
-    expired_alt_svcs_.push_back(expired_alternative_service);
+      const AlternativeService& expired_alternative_service,
+      const NetworkIsolationKey& network_isolation_key) override {
+    expired_alt_svcs_.push_back(BrokenAlternativeService(
+        expired_alternative_service, network_isolation_key,
+        true /* use_network_isolation_key */));
   }
 
   // All tests will run inside the scope of |test_task_runner_context_|, which
@@ -43,63 +54,163 @@ class BrokenAlternativeServicesTest
   const base::TickClock* broken_services_clock_;
   BrokenAlternativeServices broken_services_;
 
-  std::vector<AlternativeService> expired_alt_svcs_;
+  std::vector<BrokenAlternativeService> expired_alt_svcs_;
+
+  NetworkIsolationKey network_isolation_key1_;
+  NetworkIsolationKey network_isolation_key2_;
 };
 
 TEST_F(BrokenAlternativeServicesTest, MarkBroken) {
-  const AlternativeService alternative_service1(kProtoHTTP2, "foo", 443);
-  const AlternativeService alternative_service2(kProtoHTTP2, "foo", 1234);
+  const BrokenAlternativeService alternative_service1(
+      AlternativeService(kProtoHTTP2, "foo", 443), network_isolation_key1_,
+      true /* use_network_isolation_key */);
+  const BrokenAlternativeService alternative_service2(
+      AlternativeService(kProtoHTTP2, "foo", 1234), network_isolation_key1_,
+      true /* use_network_isolation_key */);
+  const BrokenAlternativeService alternative_service3(
+      AlternativeService(kProtoHTTP2, "foo", 443), network_isolation_key2_,
+      true /* use_network_isolation_key */);
 
   EXPECT_FALSE(broken_services_.IsBroken(alternative_service1));
   EXPECT_FALSE(broken_services_.IsBroken(alternative_service2));
+  EXPECT_FALSE(broken_services_.IsBroken(alternative_service3));
 
   broken_services_.MarkBroken(alternative_service1);
 
   EXPECT_TRUE(broken_services_.IsBroken(alternative_service1));
   EXPECT_FALSE(broken_services_.IsBroken(alternative_service2));
+  EXPECT_FALSE(broken_services_.IsBroken(alternative_service3));
 
   broken_services_.MarkBroken(alternative_service2);
 
   EXPECT_TRUE(broken_services_.IsBroken(alternative_service1));
   EXPECT_TRUE(broken_services_.IsBroken(alternative_service2));
+  EXPECT_FALSE(broken_services_.IsBroken(alternative_service3));
+
+  broken_services_.MarkBroken(alternative_service3);
+
+  EXPECT_TRUE(broken_services_.IsBroken(alternative_service1));
+  EXPECT_TRUE(broken_services_.IsBroken(alternative_service2));
+  EXPECT_TRUE(broken_services_.IsBroken(alternative_service3));
 
   broken_services_.Confirm(alternative_service1);
 
   EXPECT_FALSE(broken_services_.IsBroken(alternative_service1));
   EXPECT_TRUE(broken_services_.IsBroken(alternative_service2));
+  EXPECT_TRUE(broken_services_.IsBroken(alternative_service3));
 
   broken_services_.Confirm(alternative_service2);
 
   EXPECT_FALSE(broken_services_.IsBroken(alternative_service1));
   EXPECT_FALSE(broken_services_.IsBroken(alternative_service2));
+  EXPECT_TRUE(broken_services_.IsBroken(alternative_service3));
+
+  broken_services_.Confirm(alternative_service3);
+
+  EXPECT_FALSE(broken_services_.IsBroken(alternative_service1));
+  EXPECT_FALSE(broken_services_.IsBroken(alternative_service2));
+  EXPECT_FALSE(broken_services_.IsBroken(alternative_service3));
 
   EXPECT_EQ(0u, expired_alt_svcs_.size());
 }
 
 TEST_F(BrokenAlternativeServicesTest, MarkBrokenUntilDefaultNetworkChanges) {
-  const AlternativeService alternative_service1(kProtoHTTP2, "foo", 443);
-  const AlternativeService alternative_service2(kProtoHTTP2, "foo", 1234);
+  const BrokenAlternativeService alternative_service1(
+      AlternativeService(kProtoHTTP2, "foo", 443), network_isolation_key1_,
+      true /* use_network_isolation_key */);
+  const BrokenAlternativeService alternative_service2(
+      AlternativeService(kProtoHTTP2, "foo", 1234), network_isolation_key1_,
+      true /* use_network_isolation_key */);
+  const BrokenAlternativeService alternative_service3(
+      AlternativeService(kProtoHTTP2, "foo", 443), network_isolation_key2_,
+      true /* use_network_isolation_key */);
   EXPECT_FALSE(broken_services_.IsBroken(alternative_service1));
   EXPECT_FALSE(broken_services_.WasRecentlyBroken(alternative_service1));
   EXPECT_FALSE(broken_services_.IsBroken(alternative_service2));
   EXPECT_FALSE(broken_services_.WasRecentlyBroken(alternative_service2));
+  EXPECT_FALSE(broken_services_.IsBroken(alternative_service3));
+  EXPECT_FALSE(broken_services_.WasRecentlyBroken(alternative_service3));
 
   broken_services_.MarkBrokenUntilDefaultNetworkChanges(alternative_service1);
   EXPECT_TRUE(broken_services_.IsBroken(alternative_service1));
   EXPECT_TRUE(broken_services_.WasRecentlyBroken(alternative_service1));
   EXPECT_FALSE(broken_services_.IsBroken(alternative_service2));
   EXPECT_FALSE(broken_services_.WasRecentlyBroken(alternative_service2));
+  EXPECT_FALSE(broken_services_.IsBroken(alternative_service3));
+  EXPECT_FALSE(broken_services_.WasRecentlyBroken(alternative_service3));
 
   broken_services_.MarkBrokenUntilDefaultNetworkChanges(alternative_service2);
   EXPECT_TRUE(broken_services_.IsBroken(alternative_service1));
   EXPECT_TRUE(broken_services_.WasRecentlyBroken(alternative_service1));
   EXPECT_TRUE(broken_services_.IsBroken(alternative_service2));
   EXPECT_TRUE(broken_services_.WasRecentlyBroken(alternative_service2));
+  EXPECT_FALSE(broken_services_.IsBroken(alternative_service3));
+  EXPECT_FALSE(broken_services_.WasRecentlyBroken(alternative_service3));
+
+  broken_services_.MarkBrokenUntilDefaultNetworkChanges(alternative_service3);
+  EXPECT_TRUE(broken_services_.IsBroken(alternative_service1));
+  EXPECT_TRUE(broken_services_.WasRecentlyBroken(alternative_service1));
+  EXPECT_TRUE(broken_services_.IsBroken(alternative_service2));
+  EXPECT_TRUE(broken_services_.WasRecentlyBroken(alternative_service2));
+  EXPECT_TRUE(broken_services_.IsBroken(alternative_service3));
+  EXPECT_TRUE(broken_services_.WasRecentlyBroken(alternative_service3));
 
   broken_services_.Confirm(alternative_service1);
   EXPECT_FALSE(broken_services_.IsBroken(alternative_service1));
   EXPECT_FALSE(broken_services_.WasRecentlyBroken(alternative_service1));
   EXPECT_TRUE(broken_services_.IsBroken(alternative_service2));
+  EXPECT_TRUE(broken_services_.WasRecentlyBroken(alternative_service2));
+  EXPECT_TRUE(broken_services_.IsBroken(alternative_service3));
+  EXPECT_TRUE(broken_services_.WasRecentlyBroken(alternative_service3));
+
+  broken_services_.Confirm(alternative_service2);
+  EXPECT_FALSE(broken_services_.IsBroken(alternative_service1));
+  EXPECT_FALSE(broken_services_.WasRecentlyBroken(alternative_service1));
+  EXPECT_FALSE(broken_services_.IsBroken(alternative_service2));
+  EXPECT_FALSE(broken_services_.WasRecentlyBroken(alternative_service2));
+  EXPECT_TRUE(broken_services_.IsBroken(alternative_service3));
+  EXPECT_TRUE(broken_services_.WasRecentlyBroken(alternative_service3));
+
+  broken_services_.Confirm(alternative_service3);
+  EXPECT_FALSE(broken_services_.IsBroken(alternative_service1));
+  EXPECT_FALSE(broken_services_.WasRecentlyBroken(alternative_service1));
+  EXPECT_FALSE(broken_services_.IsBroken(alternative_service2));
+  EXPECT_FALSE(broken_services_.WasRecentlyBroken(alternative_service2));
+  EXPECT_FALSE(broken_services_.IsBroken(alternative_service3));
+  EXPECT_FALSE(broken_services_.WasRecentlyBroken(alternative_service3));
+
+  EXPECT_EQ(0u, expired_alt_svcs_.size());
+}
+
+TEST_F(BrokenAlternativeServicesTest, MarkRecentlyBroken) {
+  const BrokenAlternativeService alternative_service1(
+      AlternativeService(kProtoHTTP2, "foo", 443), network_isolation_key1_,
+      true /* use_network_isolation_key */);
+  const BrokenAlternativeService alternative_service2(
+      AlternativeService(kProtoHTTP2, "foo", 443), network_isolation_key2_,
+      true /* use_network_isolation_key */);
+
+  EXPECT_FALSE(broken_services_.IsBroken(alternative_service1));
+  EXPECT_FALSE(broken_services_.WasRecentlyBroken(alternative_service1));
+  EXPECT_FALSE(broken_services_.IsBroken(alternative_service2));
+  EXPECT_FALSE(broken_services_.WasRecentlyBroken(alternative_service2));
+
+  broken_services_.MarkRecentlyBroken(alternative_service1);
+  EXPECT_FALSE(broken_services_.IsBroken(alternative_service1));
+  EXPECT_TRUE(broken_services_.WasRecentlyBroken(alternative_service1));
+  EXPECT_FALSE(broken_services_.IsBroken(alternative_service2));
+  EXPECT_FALSE(broken_services_.WasRecentlyBroken(alternative_service2));
+
+  broken_services_.MarkRecentlyBroken(alternative_service2);
+  EXPECT_FALSE(broken_services_.IsBroken(alternative_service1));
+  EXPECT_TRUE(broken_services_.WasRecentlyBroken(alternative_service1));
+  EXPECT_FALSE(broken_services_.IsBroken(alternative_service2));
+  EXPECT_TRUE(broken_services_.WasRecentlyBroken(alternative_service2));
+
+  broken_services_.Confirm(alternative_service1);
+  EXPECT_FALSE(broken_services_.IsBroken(alternative_service1));
+  EXPECT_FALSE(broken_services_.WasRecentlyBroken(alternative_service1));
+  EXPECT_FALSE(broken_services_.IsBroken(alternative_service2));
   EXPECT_TRUE(broken_services_.WasRecentlyBroken(alternative_service2));
 
   broken_services_.Confirm(alternative_service2);
@@ -107,29 +218,19 @@ TEST_F(BrokenAlternativeServicesTest, MarkBrokenUntilDefaultNetworkChanges) {
   EXPECT_FALSE(broken_services_.WasRecentlyBroken(alternative_service1));
   EXPECT_FALSE(broken_services_.IsBroken(alternative_service2));
   EXPECT_FALSE(broken_services_.WasRecentlyBroken(alternative_service2));
-
-  EXPECT_EQ(0u, expired_alt_svcs_.size());
-}
-
-TEST_F(BrokenAlternativeServicesTest, MarkRecentlyBroken) {
-  const AlternativeService alternative_service(kProtoHTTP2, "foo", 443);
-
-  EXPECT_FALSE(broken_services_.IsBroken(alternative_service));
-  EXPECT_FALSE(broken_services_.WasRecentlyBroken(alternative_service));
-
-  broken_services_.MarkRecentlyBroken(alternative_service);
-  EXPECT_FALSE(broken_services_.IsBroken(alternative_service));
-  EXPECT_TRUE(broken_services_.WasRecentlyBroken(alternative_service));
-
-  broken_services_.Confirm(alternative_service);
-  EXPECT_FALSE(broken_services_.IsBroken(alternative_service));
-  EXPECT_FALSE(broken_services_.WasRecentlyBroken(alternative_service));
 }
 
 TEST_F(BrokenAlternativeServicesTest, OnDefaultNetworkChanged) {
-  AlternativeService alternative_service1(kProtoQUIC, "foo", 443);
-  AlternativeService alternative_service2(kProtoQUIC, "bar", 443);
-  AlternativeService alternative_service3(kProtoQUIC, "baz", 443);
+  BrokenAlternativeService alternative_service1(
+      AlternativeService(kProtoQUIC, "foo", 443), network_isolation_key1_,
+      true /* use_network_isolation_key */);
+  BrokenAlternativeService alternative_service2(
+      AlternativeService(kProtoQUIC, "bar", 443), network_isolation_key1_,
+      true /* use_network_isolation_key */);
+  BrokenAlternativeService alternative_service3(
+      AlternativeService(kProtoQUIC, "foo", 443), network_isolation_key2_,
+      true /* use_network_isolation_key */);
+
   EXPECT_FALSE(broken_services_.IsBroken(alternative_service1));
   EXPECT_FALSE(broken_services_.WasRecentlyBroken(alternative_service1));
   EXPECT_FALSE(broken_services_.IsBroken(alternative_service2));
@@ -204,7 +305,9 @@ TEST_F(BrokenAlternativeServicesTest, OnDefaultNetworkChanged) {
 
 TEST_F(BrokenAlternativeServicesTest,
        ExpireBrokenAlternativeServiceOnDefaultNetwork) {
-  AlternativeService alternative_service(kProtoQUIC, "foo", 443);
+  BrokenAlternativeService alternative_service(
+      AlternativeService(kProtoQUIC, "foo", 443), network_isolation_key1_,
+      true /* use_network_isolation_key */);
 
   broken_services_.MarkBrokenUntilDefaultNetworkChanges(alternative_service);
 
@@ -230,12 +333,17 @@ TEST_F(BrokenAlternativeServicesTest,
   EXPECT_FALSE(broken_services_.IsBroken(alternative_service));
   EXPECT_FALSE(test_task_runner_->HasPendingTask());
   EXPECT_EQ(1u, expired_alt_svcs_.size());
-  EXPECT_EQ(alternative_service, expired_alt_svcs_[0]);
+  EXPECT_EQ(alternative_service.alternative_service,
+            expired_alt_svcs_[0].alternative_service);
+  EXPECT_EQ(alternative_service.network_isolation_key,
+            expired_alt_svcs_[0].network_isolation_key);
   EXPECT_TRUE(broken_services_.WasRecentlyBroken(alternative_service));
 }
 
 TEST_F(BrokenAlternativeServicesTest, ExpireBrokenAlternateProtocolMappings) {
-  AlternativeService alternative_service(kProtoQUIC, "foo", 443);
+  BrokenAlternativeService alternative_service(
+      AlternativeService(kProtoQUIC, "foo", 443), network_isolation_key1_,
+      true /* use_network_isolation_key */);
 
   broken_services_.MarkBroken(alternative_service);
 
@@ -261,13 +369,18 @@ TEST_F(BrokenAlternativeServicesTest, ExpireBrokenAlternateProtocolMappings) {
   EXPECT_FALSE(broken_services_.IsBroken(alternative_service));
   EXPECT_FALSE(test_task_runner_->HasPendingTask());
   EXPECT_EQ(1u, expired_alt_svcs_.size());
-  EXPECT_EQ(alternative_service, expired_alt_svcs_[0]);
+  EXPECT_EQ(alternative_service.alternative_service,
+            expired_alt_svcs_[0].alternative_service);
+  EXPECT_EQ(alternative_service.network_isolation_key,
+            expired_alt_svcs_[0].network_isolation_key);
   EXPECT_TRUE(broken_services_.WasRecentlyBroken(alternative_service));
 }
 
 TEST_F(BrokenAlternativeServicesTest, IsBroken) {
   // Tests the IsBroken() methods.
-  AlternativeService alternative_service(kProtoQUIC, "foo", 443);
+  BrokenAlternativeService alternative_service(
+      AlternativeService(kProtoQUIC, "foo", 443), NetworkIsolationKey(),
+      true /* use_network_isolation_key */);
   base::TimeTicks brokenness_expiration;
 
   EXPECT_FALSE(broken_services_.IsBroken(alternative_service));
@@ -311,7 +424,9 @@ TEST_F(BrokenAlternativeServicesTest, IsBroken) {
 // - (signal received that default network changes);
 // - brokenness expires after two intervals.
 TEST_F(BrokenAlternativeServicesTest, BrokenAfterBrokenOnDefaultNetwork) {
-  AlternativeService alternative_service(kProtoQUIC, "foo", 443);
+  BrokenAlternativeService alternative_service(
+      AlternativeService(kProtoQUIC, "foo", 443), NetworkIsolationKey(),
+      true /* use_network_isolation_key */);
 
   // Mark the alternative service broken on the default network.
   broken_services_.MarkBrokenUntilDefaultNetworkChanges(alternative_service);
@@ -360,7 +475,9 @@ TEST_F(BrokenAlternativeServicesTest, BrokenAfterBrokenOnDefaultNetwork) {
 // - broknenss expires after two intervals;
 // - (signal received that default network changes);
 TEST_F(BrokenAlternativeServicesTest, BrokenOnDefaultNetworkAfterBroken) {
-  AlternativeService alternative_service(kProtoQUIC, "foo", 443);
+  BrokenAlternativeService alternative_service(
+      AlternativeService(kProtoQUIC, "foo", 443), NetworkIsolationKey(),
+      true /* use_network_isolation_key */);
 
   // Mark the alternative service broken.
   broken_services_.MarkBroken(alternative_service);
@@ -402,7 +519,9 @@ TEST_F(BrokenAlternativeServicesTest, BrokenOnDefaultNetworkAfterBroken) {
 // network changes, the exponential backoff is cleared.
 TEST_F(BrokenAlternativeServicesTest,
        BrokenUntilDefaultNetworkChangeWithExponentialBackoff) {
-  AlternativeService alternative_service(kProtoQUIC, "foo", 443);
+  BrokenAlternativeService alternative_service(
+      AlternativeService(kProtoQUIC, "foo", 443), NetworkIsolationKey(),
+      true /* use_network_isolation_key */);
 
   // Mark the alternative service broken on the default network.
   broken_services_.MarkBrokenUntilDefaultNetworkChanges(alternative_service);
@@ -462,7 +581,9 @@ TEST_F(BrokenAlternativeServicesTest, ExponentialBackoff) {
   // expiration delay will have been reached and exponential backoff will no
   // longer apply.
 
-  AlternativeService alternative_service(kProtoQUIC, "foo", 443);
+  BrokenAlternativeService alternative_service(
+      AlternativeService(kProtoQUIC, "foo", 443), NetworkIsolationKey(),
+      true /* use_network_isolation_key */);
 
   broken_services_.MarkBroken(alternative_service);
   test_task_runner_->FastForwardBy(base::TimeDelta::FromMinutes(5) -
@@ -553,8 +674,12 @@ TEST_F(BrokenAlternativeServicesTest, RemoveExpiredBrokenAltSvc) {
   // sure that even though A was marked broken before B, B's brokenness should
   // expire before A.
 
-  AlternativeService alternative_service1(kProtoQUIC, "foo", 443);
-  AlternativeService alternative_service2(kProtoQUIC, "bar", 443);
+  BrokenAlternativeService alternative_service1(
+      AlternativeService(kProtoQUIC, "foo", 443), network_isolation_key1_,
+      true /* use_network_isolation_key */);
+  BrokenAlternativeService alternative_service2(
+      AlternativeService(kProtoQUIC, "bar", 443), network_isolation_key2_,
+      true /* use_network_isolation_key */);
 
   // Repeately mark |alternative_service1| broken and let brokenness expire.
   // Do this a few times.
@@ -563,19 +688,28 @@ TEST_F(BrokenAlternativeServicesTest, RemoveExpiredBrokenAltSvc) {
   EXPECT_EQ(1u, test_task_runner_->GetPendingTaskCount());
   test_task_runner_->FastForwardBy(base::TimeDelta::FromMinutes(5));
   EXPECT_EQ(1u, expired_alt_svcs_.size());
-  EXPECT_EQ(alternative_service1, expired_alt_svcs_.back());
+  EXPECT_EQ(alternative_service1.alternative_service,
+            expired_alt_svcs_.back().alternative_service);
+  EXPECT_EQ(alternative_service1.network_isolation_key,
+            expired_alt_svcs_.back().network_isolation_key);
 
   broken_services_.MarkBroken(alternative_service1);
   EXPECT_EQ(1u, test_task_runner_->GetPendingTaskCount());
   test_task_runner_->FastForwardBy(base::TimeDelta::FromMinutes(10));
   EXPECT_EQ(2u, expired_alt_svcs_.size());
-  EXPECT_EQ(alternative_service1, expired_alt_svcs_.back());
+  EXPECT_EQ(alternative_service1.alternative_service,
+            expired_alt_svcs_.back().alternative_service);
+  EXPECT_EQ(alternative_service1.network_isolation_key,
+            expired_alt_svcs_.back().network_isolation_key);
 
   broken_services_.MarkBroken(alternative_service1);
   EXPECT_EQ(1u, test_task_runner_->GetPendingTaskCount());
   test_task_runner_->FastForwardBy(base::TimeDelta::FromMinutes(20));
   EXPECT_EQ(3u, expired_alt_svcs_.size());
-  EXPECT_EQ(alternative_service1, expired_alt_svcs_.back());
+  EXPECT_EQ(alternative_service1.alternative_service,
+            expired_alt_svcs_.back().alternative_service);
+  EXPECT_EQ(alternative_service1.network_isolation_key,
+            expired_alt_svcs_.back().network_isolation_key);
 
   expired_alt_svcs_.clear();
 
@@ -604,7 +738,10 @@ TEST_F(BrokenAlternativeServicesTest, RemoveExpiredBrokenAltSvc) {
   EXPECT_TRUE(broken_services_.IsBroken(alternative_service1));
   EXPECT_FALSE(broken_services_.IsBroken(alternative_service2));
   EXPECT_EQ(1u, expired_alt_svcs_.size());
-  EXPECT_EQ(alternative_service2, expired_alt_svcs_[0]);
+  EXPECT_EQ(alternative_service2.alternative_service,
+            expired_alt_svcs_[0].alternative_service);
+  EXPECT_EQ(alternative_service2.network_isolation_key,
+            expired_alt_svcs_[0].network_isolation_key);
 
   // Advance time until one time quantum before |alternative_service1|'s
   // brokenness expires
@@ -615,7 +752,10 @@ TEST_F(BrokenAlternativeServicesTest, RemoveExpiredBrokenAltSvc) {
   EXPECT_TRUE(broken_services_.IsBroken(alternative_service1));
   EXPECT_FALSE(broken_services_.IsBroken(alternative_service2));
   EXPECT_EQ(1u, expired_alt_svcs_.size());
-  EXPECT_EQ(alternative_service2, expired_alt_svcs_[0]);
+  EXPECT_EQ(alternative_service2.alternative_service,
+            expired_alt_svcs_[0].alternative_service);
+  EXPECT_EQ(alternative_service2.network_isolation_key,
+            expired_alt_svcs_[0].network_isolation_key);
 
   // Advance time by one time quantum.  |alternative_service1| should no longer
   // be broken.
@@ -624,13 +764,127 @@ TEST_F(BrokenAlternativeServicesTest, RemoveExpiredBrokenAltSvc) {
   EXPECT_FALSE(broken_services_.IsBroken(alternative_service1));
   EXPECT_FALSE(broken_services_.IsBroken(alternative_service2));
   EXPECT_EQ(2u, expired_alt_svcs_.size());
-  EXPECT_EQ(alternative_service2, expired_alt_svcs_[0]);
-  EXPECT_EQ(alternative_service1, expired_alt_svcs_[1]);
+  EXPECT_EQ(alternative_service2.alternative_service,
+            expired_alt_svcs_[0].alternative_service);
+  EXPECT_EQ(alternative_service2.network_isolation_key,
+            expired_alt_svcs_[0].network_isolation_key);
+  EXPECT_EQ(alternative_service1.alternative_service,
+            expired_alt_svcs_[1].alternative_service);
+  EXPECT_EQ(alternative_service1.network_isolation_key,
+            expired_alt_svcs_[1].network_isolation_key);
+}
+
+// Same as above, but checks a single alternative service with two different
+// NetworkIsolationKeys.
+TEST_F(BrokenAlternativeServicesTest,
+       RemoveExpiredBrokenAltSvcWithNetworkIsolationKey) {
+  BrokenAlternativeService alternative_service1(
+      AlternativeService(kProtoQUIC, "foo", 443), network_isolation_key1_,
+      true /* use_network_isolation_key */);
+  BrokenAlternativeService alternative_service2(
+      AlternativeService(kProtoQUIC, "foo", 443), network_isolation_key2_,
+      true /* use_network_isolation_key */);
+
+  // Repeately mark |alternative_service1| broken and let brokenness expire.
+  // Do this a few times.
+
+  broken_services_.MarkBroken(alternative_service1);
+  EXPECT_EQ(1u, test_task_runner_->GetPendingTaskCount());
+  test_task_runner_->FastForwardBy(base::TimeDelta::FromMinutes(5));
+  EXPECT_EQ(1u, expired_alt_svcs_.size());
+  EXPECT_EQ(alternative_service1.alternative_service,
+            expired_alt_svcs_.back().alternative_service);
+  EXPECT_EQ(alternative_service1.network_isolation_key,
+            expired_alt_svcs_.back().network_isolation_key);
+
+  broken_services_.MarkBroken(alternative_service1);
+  EXPECT_EQ(1u, test_task_runner_->GetPendingTaskCount());
+  test_task_runner_->FastForwardBy(base::TimeDelta::FromMinutes(10));
+  EXPECT_EQ(2u, expired_alt_svcs_.size());
+  EXPECT_EQ(alternative_service1.alternative_service,
+            expired_alt_svcs_.back().alternative_service);
+  EXPECT_EQ(alternative_service1.network_isolation_key,
+            expired_alt_svcs_.back().network_isolation_key);
+
+  broken_services_.MarkBroken(alternative_service1);
+  EXPECT_EQ(1u, test_task_runner_->GetPendingTaskCount());
+  test_task_runner_->FastForwardBy(base::TimeDelta::FromMinutes(20));
+  EXPECT_EQ(3u, expired_alt_svcs_.size());
+  EXPECT_EQ(alternative_service1.alternative_service,
+            expired_alt_svcs_.back().alternative_service);
+  EXPECT_EQ(alternative_service1.network_isolation_key,
+            expired_alt_svcs_.back().network_isolation_key);
+
+  expired_alt_svcs_.clear();
+
+  // Mark |alternative_service1| broken (will be given longer expiration delay),
+  // then mark |alternative_service2| broken (will be given shorter expiration
+  // delay).
+  broken_services_.MarkBroken(alternative_service1);
+  broken_services_.MarkBroken(alternative_service2);
+
+  EXPECT_TRUE(broken_services_.IsBroken(alternative_service1));
+  EXPECT_TRUE(broken_services_.IsBroken(alternative_service2));
+
+  // Advance time until one time quantum before |alternative_service2|'s
+  // brokenness expires.
+  test_task_runner_->FastForwardBy(base::TimeDelta::FromMinutes(5) -
+                                   base::TimeDelta::FromSeconds(1));
+
+  EXPECT_TRUE(broken_services_.IsBroken(alternative_service1));
+  EXPECT_TRUE(broken_services_.IsBroken(alternative_service2));
+  EXPECT_EQ(0u, expired_alt_svcs_.size());
+
+  // Advance time by one time quantum. |alternative_service2| should no longer
+  // be broken.
+  test_task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(1));
+
+  EXPECT_TRUE(broken_services_.IsBroken(alternative_service1));
+  EXPECT_FALSE(broken_services_.IsBroken(alternative_service2));
+  EXPECT_EQ(1u, expired_alt_svcs_.size());
+  EXPECT_EQ(alternative_service2.alternative_service,
+            expired_alt_svcs_[0].alternative_service);
+  EXPECT_EQ(alternative_service2.network_isolation_key,
+            expired_alt_svcs_[0].network_isolation_key);
+
+  // Advance time until one time quantum before |alternative_service1|'s
+  // brokenness expires
+  test_task_runner_->FastForwardBy(base::TimeDelta::FromMinutes(40) -
+                                   base::TimeDelta::FromMinutes(5) -
+                                   base::TimeDelta::FromSeconds(1));
+
+  EXPECT_TRUE(broken_services_.IsBroken(alternative_service1));
+  EXPECT_FALSE(broken_services_.IsBroken(alternative_service2));
+  EXPECT_EQ(1u, expired_alt_svcs_.size());
+  EXPECT_EQ(alternative_service2.alternative_service,
+            expired_alt_svcs_[0].alternative_service);
+  EXPECT_EQ(alternative_service2.network_isolation_key,
+            expired_alt_svcs_[0].network_isolation_key);
+
+  // Advance time by one time quantum.  |alternative_service1| should no longer
+  // be broken.
+  test_task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(1));
+
+  EXPECT_FALSE(broken_services_.IsBroken(alternative_service1));
+  EXPECT_FALSE(broken_services_.IsBroken(alternative_service2));
+  EXPECT_EQ(2u, expired_alt_svcs_.size());
+  EXPECT_EQ(alternative_service2.alternative_service,
+            expired_alt_svcs_[0].alternative_service);
+  EXPECT_EQ(alternative_service2.network_isolation_key,
+            expired_alt_svcs_[0].network_isolation_key);
+  EXPECT_EQ(alternative_service1.alternative_service,
+            expired_alt_svcs_[1].alternative_service);
+  EXPECT_EQ(alternative_service1.network_isolation_key,
+            expired_alt_svcs_[1].network_isolation_key);
 }
 
 TEST_F(BrokenAlternativeServicesTest, SetBrokenAlternativeServices) {
-  AlternativeService alternative_service1(kProtoQUIC, "foo1", 443);
-  AlternativeService alternative_service2(kProtoQUIC, "foo2", 443);
+  BrokenAlternativeService alternative_service1(
+      AlternativeService(kProtoQUIC, "foo1", 443), NetworkIsolationKey(),
+      true /* use_network_isolation_key */);
+  BrokenAlternativeService alternative_service2(
+      AlternativeService(kProtoQUIC, "foo2", 443), NetworkIsolationKey(),
+      true /* use_network_isolation_key */);
 
   base::TimeDelta delay1 = base::TimeDelta::FromMinutes(1);
 
@@ -640,7 +894,7 @@ TEST_F(BrokenAlternativeServicesTest, SetBrokenAlternativeServices) {
       {alternative_service1, broken_services_clock_->NowTicks() + delay1});
 
   std::unique_ptr<RecentlyBrokenAlternativeServices> recently_broken_map =
-      std::make_unique<RecentlyBrokenAlternativeServices>();
+      std::make_unique<RecentlyBrokenAlternativeServices>(10);
   recently_broken_map->Put(alternative_service1, 1);
   recently_broken_map->Put(alternative_service2, 2);
 
@@ -687,9 +941,15 @@ TEST_F(BrokenAlternativeServicesTest, SetBrokenAlternativeServices) {
 
 TEST_F(BrokenAlternativeServicesTest,
        SetBrokenAlternativeServicesWithExisting) {
-  AlternativeService alternative_service1(kProtoQUIC, "foo1", 443);
-  AlternativeService alternative_service2(kProtoQUIC, "foo2", 443);
-  AlternativeService alternative_service3(kProtoQUIC, "foo3", 443);
+  BrokenAlternativeService alternative_service1(
+      AlternativeService(kProtoQUIC, "foo1", 443), NetworkIsolationKey(),
+      true /* use_network_isolation_key */);
+  BrokenAlternativeService alternative_service2(
+      AlternativeService(kProtoQUIC, "foo2", 443), network_isolation_key1_,
+      true /* use_network_isolation_key */);
+  BrokenAlternativeService alternative_service3(
+      AlternativeService(kProtoQUIC, "foo3", 443), network_isolation_key2_,
+      true /* use_network_isolation_key */);
 
   std::unique_ptr<BrokenAlternativeServiceList> broken_list =
       std::make_unique<BrokenAlternativeServiceList>();
@@ -701,7 +961,7 @@ TEST_F(BrokenAlternativeServicesTest,
        broken_services_clock_->NowTicks() + base::TimeDelta::FromMinutes(1)});
 
   std::unique_ptr<RecentlyBrokenAlternativeServices> recently_broken_map =
-      std::make_unique<RecentlyBrokenAlternativeServices>();
+      std::make_unique<RecentlyBrokenAlternativeServices>(10);
   recently_broken_map->Put(alternative_service1, 1);
   recently_broken_map->Put(alternative_service3, 1);
 
@@ -763,19 +1023,32 @@ TEST_F(BrokenAlternativeServicesTest,
   // recency list; in this case, only |alternative_service3| is added as
   // recently broken.
   auto it = broken_services_.recently_broken_alternative_services().begin();
-  EXPECT_EQ(alternative_service2, it->first);
+  EXPECT_EQ(alternative_service2.alternative_service,
+            it->first.alternative_service);
+  EXPECT_EQ(alternative_service2.network_isolation_key,
+            it->first.network_isolation_key);
   ++it;
-  EXPECT_EQ(alternative_service1, it->first);
+  EXPECT_EQ(alternative_service1.alternative_service,
+            it->first.alternative_service);
+  EXPECT_EQ(alternative_service1.network_isolation_key,
+            it->first.network_isolation_key);
   ++it;
-  EXPECT_EQ(alternative_service3, it->first);
+  EXPECT_EQ(alternative_service3.alternative_service,
+            it->first.alternative_service);
+  EXPECT_EQ(alternative_service3.network_isolation_key,
+            it->first.network_isolation_key);
 }
 
 TEST_F(BrokenAlternativeServicesTest, ScheduleExpireTaskAfterExpire) {
   // This test will check that when a broken alt svc expires, an expiration task
   // is scheduled for the next broken alt svc in the expiration queue.
 
-  AlternativeService alternative_service1(kProtoQUIC, "foo", 443);
-  AlternativeService alternative_service2(kProtoQUIC, "bar", 443);
+  BrokenAlternativeService alternative_service1(
+      AlternativeService(kProtoQUIC, "foo", 443), NetworkIsolationKey(),
+      true /* use_network_isolation_key */);
+  BrokenAlternativeService alternative_service2(
+      AlternativeService(kProtoQUIC, "bar", 443), NetworkIsolationKey(),
+      true /* use_network_isolation_key */);
 
   // Mark |alternative_service1| broken and let brokenness expire. This will
   // increase its expiration delay the next time it's marked broken.
@@ -799,8 +1072,12 @@ TEST_F(BrokenAlternativeServicesTest, ScheduleExpireTaskAfterExpire) {
 }
 
 TEST_F(BrokenAlternativeServicesTest, Clear) {
-  AlternativeService alternative_service1(kProtoQUIC, "foo", 443);
-  AlternativeService alternative_service2(kProtoQUIC, "bar", 443);
+  BrokenAlternativeService alternative_service1(
+      AlternativeService(kProtoQUIC, "foo", 443), NetworkIsolationKey(),
+      true /* use_network_isolation_key */);
+  BrokenAlternativeService alternative_service2(
+      AlternativeService(kProtoQUIC, "bar", 443), NetworkIsolationKey(),
+      true /* use_network_isolation_key */);
 
   broken_services_.MarkBroken(alternative_service1);
   broken_services_.MarkRecentlyBroken(alternative_service2);
@@ -822,7 +1099,7 @@ TEST_F(BrokenAlternativeServicesTest, Clear) {
        broken_services_clock_->NowTicks() + base::TimeDelta::FromMinutes(1)});
 
   std::unique_ptr<RecentlyBrokenAlternativeServices> recently_broken_map =
-      std::make_unique<RecentlyBrokenAlternativeServices>();
+      std::make_unique<RecentlyBrokenAlternativeServices>(10);
   recently_broken_map->Put(alternative_service2, 2);
 
   broken_services_.SetBrokenAndRecentlyBrokenAlternativeServices(

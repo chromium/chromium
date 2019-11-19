@@ -76,11 +76,6 @@ class SystemTimeChangeNotifierTest : public testing::Test {
 
     observer_.reset(new TimeChangeObserver);
     notifier_->AddObserver(observer_.get());
-    notifier_->Initialize();
-  }
-
-  void TearDown() override {
-    notifier_->Finalize();
   }
 
   // Runs pending tasks. It doesn't run tasks schedule after this call.

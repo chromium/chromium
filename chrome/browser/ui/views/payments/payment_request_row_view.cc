@@ -28,9 +28,9 @@ PaymentRequestRowView::PaymentRequestRowView(views::ButtonListener* listener,
 PaymentRequestRowView::~PaymentRequestRowView() {}
 
 void PaymentRequestRowView::SetActiveBackground() {
-  ui::NativeTheme* theme = GetWidget()->GetNativeTheme();
-  SetBackground(views::CreateSolidBackground(theme->GetSystemColor(
-      ui::NativeTheme::kColorId_ResultsTableHoveredBackground)));
+  // TODO(crbug/976890): Check whether we can GetSystemColor from a NativeTheme
+  // ColorId instead of hard code here.
+  SetBackground(views::CreateSolidBackground(SkColorSetA(SK_ColorBLACK, 0x0D)));
 }
 
 void PaymentRequestRowView::ShowBottomSeparator() {

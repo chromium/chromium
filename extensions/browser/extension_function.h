@@ -20,19 +20,15 @@
 #include "base/sequenced_task_runner_helpers.h"
 #include "base/timer/elapsed_timer.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/common/console_message_level.h"
 #include "extensions/browser/extension_function_histogram_value.h"
 #include "extensions/browser/info_map.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/features/feature.h"
 #include "ipc/ipc_message.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom-forward.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom-forward.h"
-
-class ExtensionFunction;
-class UIThreadExtensionFunction;
-class IOThreadExtensionFunction;
 
 namespace base {
 class ListValue;
@@ -47,7 +43,6 @@ class WebContents;
 
 namespace extensions {
 class ExtensionFunctionDispatcher;
-class IOThreadExtensionMessageFilter;
 class QuotaLimitHeuristic;
 }
 
@@ -75,13 +70,6 @@ class QuotaLimitHeuristic;
 #define EXTENSION_FUNCTION_PRERUN_VALIDATE(test) CHECK(test)
 #endif  // NDEBUG
 
-#define EXTENSION_FUNCTION_ERROR(error) \
-  do {                                  \
-    error_ = error;                     \
-    this->SetBadMessage();              \
-    return ValidationFailure(this);     \
-  } while (0)
-
 // Declares a callable extension function with the given |name|. You must also
 // supply a unique |histogramvalue| used for histograms of extension function
 // invocation (add new ones at the end of the enum in
@@ -95,19 +83,11 @@ class QuotaLimitHeuristic;
     return extensions::functions::histogramvalue;                            \
   }
 
-// Traits that describe how ExtensionFunction should be deleted. This just calls
-// the virtual "Destruct" method on ExtensionFunction, allowing derived classes
-// to override the behavior.
-struct ExtensionFunctionDeleteTraits {
- public:
-  static void Destruct(const ExtensionFunction* x);
-};
-
 // Abstract base class for extension functions the ExtensionFunctionDispatcher
 // knows how to dispatch to.
-class ExtensionFunction
-    : public base::RefCountedThreadSafe<ExtensionFunction,
-                                        ExtensionFunctionDeleteTraits> {
+class ExtensionFunction : public base::RefCountedThreadSafe<
+                              ExtensionFunction,
+                              content::BrowserThread::DeleteOnUIThread> {
  public:
   enum ResponseType {
     // The function has succeeded.
@@ -118,16 +98,12 @@ class ExtensionFunction
     BAD_MESSAGE
   };
 
-  using ResponseCallback = base::Callback<void(
-      ResponseType type,
-      const base::ListValue& results,
-      const std::string& error,
-      extensions::functions::HistogramValue histogram_value)>;
+  using ResponseCallback =
+      base::RepeatingCallback<void(ResponseType type,
+                                   const base::ListValue& results,
+                                   const std::string& error)>;
 
   ExtensionFunction();
-
-  virtual UIThreadExtensionFunction* AsUIThreadExtensionFunction();
-  virtual IOThreadExtensionFunction* AsIOThreadExtensionFunction();
 
   // Returns true if the function has permission to run.
   //
@@ -312,9 +288,55 @@ class ExtensionFunction
     return source_process_id_;
   }
 
+  void set_service_worker_version_id(int64_t service_worker_version_id) {
+    service_worker_version_id_ = service_worker_version_id;
+  }
+  int64_t service_worker_version_id() const {
+    return service_worker_version_id_;
+  }
+
+  bool is_from_service_worker() const {
+    return service_worker_version_id_ !=
+           blink::mojom::kInvalidServiceWorkerVersionId;
+  }
+
   ResponseType* response_type() const { return response_type_.get(); }
 
   bool did_respond() const { return did_respond_; }
+
+  // Called when a message was received.
+  // Should return true if it processed the message.
+  virtual bool OnMessageReceived(const IPC::Message& message);
+
+  // Set the browser context which contains the extension that has originated
+  // this function call.
+  void set_browser_context(content::BrowserContext* context) {
+    context_ = context;
+  }
+  content::BrowserContext* browser_context() const { return context_; }
+
+  void SetRenderFrameHost(content::RenderFrameHost* render_frame_host);
+  content::RenderFrameHost* render_frame_host() const {
+    return render_frame_host_;
+  }
+
+  void set_dispatcher(
+      const base::WeakPtr<extensions::ExtensionFunctionDispatcher>&
+          dispatcher) {
+    dispatcher_ = dispatcher;
+  }
+  extensions::ExtensionFunctionDispatcher* dispatcher() const {
+    return dispatcher_.get();
+  }
+
+  void set_worker_thread_id(int worker_thread_id) {
+    worker_thread_id_ = worker_thread_id;
+  }
+  int worker_thread_id() const { return worker_thread_id_; }
+
+  // Returns the web contents associated with the sending |render_frame_host_|.
+  // This can be null.
+  content::WebContents* GetSenderWebContents();
 
   // Sets did_respond_ to true so that the function won't DCHECK if it never
   // sends a response. Typically, this shouldn't be used, even in testing. It's
@@ -415,16 +437,20 @@ class ExtensionFunction
 
   virtual ~ExtensionFunction();
 
-  // Helper method for ExtensionFunctionDeleteTraits. Deletes this object.
-  virtual void Destruct() const = 0;
-
   // Called after the response is sent, allowing the function to perform any
   // additional work or cleanup.
-  virtual void OnResponded() {}
+  virtual void OnResponded();
 
   // Return true if the argument to this function at |index| was provided and
   // is non-null.
   bool HasOptionalArgument(size_t index);
+
+  // Emits a message to the extension's devtools console.
+  void WriteToConsole(blink::mojom::ConsoleMessageLevel level,
+                      const std::string& message);
+
+  // Sets the Blob UUIDs whose ownership is being transferred to the renderer.
+  void SetTransferredBlobUUIDs(const std::vector<std::string>& blob_uuids);
 
   // The extension that called this function.
   scoped_refptr<const extensions::Extension> extension_;
@@ -432,8 +458,16 @@ class ExtensionFunction
   // The arguments to the API. Only non-null if argument were specified.
   std::unique_ptr<base::ListValue> args_;
 
+  // The BrowserContext of this function's extension.
+  // TODO(devlin): Grr... protected members. Move this to be private.
+  content::BrowserContext* context_ = nullptr;
+
  private:
+  friend struct content::BrowserThread::DeleteOnThread<
+      content::BrowserThread::UI>;
+  friend class base::DeleteHelper<ExtensionFunction>;
   friend class ResponseValueObject;
+  class RenderFrameHostTracker;
 
   // Call with true to indicate success, false to indicate failure. If this
   // failed, |error_| should be set.
@@ -454,197 +488,73 @@ class ExtensionFunction
   ResponseCallback response_callback_;
 
   // Id of this request, used to map the response back to the caller.
-  int request_id_;
+  int request_id_ = -1;
 
   // The id of the profile of this function's extension.
-  void* profile_id_;
+  void* profile_id_ = nullptr;
 
   // The name of this function.
-  const char* name_;
+  const char* name_ = nullptr;
 
   // The URL of the frame which is making this request
   GURL source_url_;
 
   // True if the js caller provides a callback function to receive the response
   // of this call.
-  bool has_callback_;
+  bool has_callback_ = false;
 
   // True if this callback should include information from incognito contexts
   // even if our profile_ is non-incognito. Note that in the case of a "split"
   // mode extension, this will always be false, and we will limit access to
   // data from within the same profile_ (either incognito or not).
-  bool include_incognito_information_;
+  bool include_incognito_information_ = false;
 
   // True if the call was made in response of user gesture.
-  bool user_gesture_;
+  bool user_gesture_ = false;
 
   // Any class that gets a malformed message should set this to true before
   // returning.  Usually we want to kill the message sending process.
-  bool bad_message_;
+  bool bad_message_ = false;
 
   // The sample value to record with the histogram API when the function
   // is invoked.
-  extensions::functions::HistogramValue histogram_value_;
+  extensions::functions::HistogramValue histogram_value_ =
+      extensions::functions::UNKNOWN;
 
   // The type of the JavaScript context where this call originated.
-  extensions::Feature::Context source_context_type_;
+  extensions::Feature::Context source_context_type_ =
+      extensions::Feature::UNSPECIFIED_CONTEXT;
 
   // The process ID of the page that triggered this function call, or -1
   // if unknown.
-  int source_process_id_;
+  int source_process_id_ = -1;
+
+  // If this ExtensionFunction was called by an extension Service Worker, then
+  // this contains the worker's version id.
+  int64_t service_worker_version_id_ =
+      blink::mojom::kInvalidServiceWorkerVersionId;
 
   // The response type of the function, if the response has been sent.
   std::unique_ptr<ResponseType> response_type_;
 
   // Whether this function has responded.
   // TODO(devlin): Replace this with response_type_ != null.
-  bool did_respond_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionFunction);
-};
-
-// Extension functions that run on the UI thread. Most functions fall into
-// this category.
-class UIThreadExtensionFunction : public ExtensionFunction {
- public:
-  UIThreadExtensionFunction();
-
-  UIThreadExtensionFunction* AsUIThreadExtensionFunction() override;
-
-  bool PreRunValidation(std::string* error) override;
-  void SetBadMessage() final;
-
-  // Called when a message was received.
-  // Should return true if it processed the message.
-  virtual bool OnMessageReceived(const IPC::Message& message);
-
-  // Set the browser context which contains the extension that has originated
-  // this function call.
-  void set_browser_context(content::BrowserContext* context) {
-    context_ = context;
-  }
-  content::BrowserContext* browser_context() const { return context_; }
-
-  void SetRenderFrameHost(content::RenderFrameHost* render_frame_host);
-  content::RenderFrameHost* render_frame_host() const {
-    return render_frame_host_;
-  }
-
-  void set_dispatcher(const base::WeakPtr<
-      extensions::ExtensionFunctionDispatcher>& dispatcher) {
-    dispatcher_ = dispatcher;
-  }
-  extensions::ExtensionFunctionDispatcher* dispatcher() const {
-    return dispatcher_.get();
-  }
-
-  void set_service_worker_version_id(int64_t version_id) {
-    service_worker_version_id_ = version_id;
-  }
-
-  // Returns the web contents associated with the sending |render_frame_host_|.
-  // This can be null.
-  content::WebContents* GetSenderWebContents();
-
- protected:
-  // Emits a message to the extension's devtools console.
-  void WriteToConsole(content::ConsoleMessageLevel level,
-                      const std::string& message);
-
-  friend struct content::BrowserThread::DeleteOnThread<
-      content::BrowserThread::UI>;
-  friend class base::DeleteHelper<UIThreadExtensionFunction>;
-
-  ~UIThreadExtensionFunction() override;
-
-  void OnResponded() override;
-
-  // Sets the Blob UUIDs whose ownership is being transferred to the renderer.
-  void SetTransferredBlobUUIDs(const std::vector<std::string>& blob_uuids);
-
-  // The BrowserContext of this function's extension.
-  // TODO(devlin): Grr... protected members. Move this to be private.
-  content::BrowserContext* context_;
-
- private:
-  class RenderFrameHostTracker;
-
-  void Destruct() const override;
-
-  bool is_from_service_worker() const {
-    return service_worker_version_id_ !=
-           blink::mojom::kInvalidServiceWorkerVersionId;
-  }
+  bool did_respond_ = false;
 
   // The dispatcher that will service this extension function call.
   base::WeakPtr<extensions::ExtensionFunctionDispatcher> dispatcher_;
 
   // The RenderFrameHost we will send responses to.
-  content::RenderFrameHost* render_frame_host_;
-
-  // If this ExtensionFunction was called by an extension Service Worker, then
-  // this contains the worker's version id.
-  int64_t service_worker_version_id_;
+  content::RenderFrameHost* render_frame_host_ = nullptr;
 
   std::unique_ptr<RenderFrameHostTracker> tracker_;
 
   // The blobs transferred to the renderer process.
   std::vector<std::string> transferred_blob_uuids_;
 
-  DISALLOW_COPY_AND_ASSIGN(UIThreadExtensionFunction);
-};
+  int worker_thread_id_ = -1;
 
-// Extension functions that run on the IO thread. This type of function avoids
-// a roundtrip to and from the UI thread (because communication with the
-// extension process happens on the IO thread). It's intended to be used when
-// performance is critical (e.g. the webRequest API which can block network
-// requests). Generally, UIThreadExtensionFunction is more appropriate and will
-// be easier to use and interface with the rest of the browser.
-// To use this, specify `"forIOThread": true` in the function's schema.
-class IOThreadExtensionFunction : public ExtensionFunction {
- public:
-  IOThreadExtensionFunction();
-
-  IOThreadExtensionFunction* AsIOThreadExtensionFunction() override;
-  void SetBadMessage() final;
-
-  void set_ipc_sender(
-      base::WeakPtr<extensions::IOThreadExtensionMessageFilter> ipc_sender,
-      int routing_id) {
-    ipc_sender_ = ipc_sender;
-    routing_id_ = routing_id;
-  }
-
-  base::WeakPtr<extensions::IOThreadExtensionMessageFilter> ipc_sender_weak()
-      const {
-    return ipc_sender_;
-  }
-
-  int routing_id() const { return routing_id_; }
-
-  void set_extension_info_map(const extensions::InfoMap* extension_info_map) {
-    extension_info_map_ = extension_info_map;
-  }
-  const extensions::InfoMap* extension_info_map() const {
-    return extension_info_map_.get();
-  }
-
- protected:
-  friend struct content::BrowserThread::DeleteOnThread<
-      content::BrowserThread::IO>;
-  friend class base::DeleteHelper<IOThreadExtensionFunction>;
-
-  ~IOThreadExtensionFunction() override;
-
-  void Destruct() const override;
-
- private:
-  base::WeakPtr<extensions::IOThreadExtensionMessageFilter> ipc_sender_;
-  int routing_id_;
-
-  scoped_refptr<const extensions::InfoMap> extension_info_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(IOThreadExtensionFunction);
+  DISALLOW_COPY_AND_ASSIGN(ExtensionFunction);
 };
 
 #endif  // EXTENSIONS_BROWSER_EXTENSION_FUNCTION_H_

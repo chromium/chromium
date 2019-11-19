@@ -41,8 +41,8 @@ void DeviceSensorEventPump::HandleSensorProviderError() {
 }
 
 void DeviceSensorEventPump::SetSensorProviderForTesting(
-    device::mojom::blink::SensorProviderPtr sensor_provider) {
-  sensor_provider_ = std::move(sensor_provider);
+    mojo::PendingRemote<device::mojom::blink::SensorProvider> sensor_provider) {
+  sensor_provider_.Bind(std::move(sensor_provider));
 }
 
 DeviceSensorEventPump::PumpState
@@ -69,7 +69,7 @@ void DeviceSensorEventPump::DidStartIfPossible() {
   DCHECK(!timer_.IsActive());
 
   timer_.StartRepeating(
-      WTF::TimeDelta::FromMicroseconds(kDefaultPumpDelayMicroseconds),
+      base::TimeDelta::FromMicroseconds(kDefaultPumpDelayMicroseconds),
       FROM_HERE);
   state_ = PumpState::RUNNING;
 }

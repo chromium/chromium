@@ -154,6 +154,7 @@ const NSTimeInterval kTimeDeltaFuzzFactor = 1.0;
 // Returns the menu item for the Quit menu item, or a thrown-together default
 // one if no Quit menu item exists.
 + (NSMenuItem*)quitMenuItem;
+- (void)sendAccessibilityAnnouncement;
 @end
 
 ConfirmQuitPanelController* g_confirmQuitPanelController = nil;
@@ -235,6 +236,13 @@ ConfirmQuitPanelController* g_confirmQuitPanelController = nil;
 
   // Show the info panel that explains what the user must to do confirm quit.
   [self showWindow:self];
+
+  // Explicitly announce the hold-to-quit message. For an ordinary modal dialog
+  // VoiceOver would announce it and read its message, but VoiceOver does not do
+  // this for windows whose styleMask is NSBorderlessWindowMask, so do it
+  // manually here. Without this screenreader users have no way to know why
+  // their quit hotkey seems not to work.
+  [self sendAccessibilityAnnouncement];
 
   // Spin a nested run loop until the |targetDate| is reached or a KeyUp event
   // is sent.
@@ -394,6 +402,18 @@ ConfirmQuitPanelController* g_confirmQuitPanelController = nil;
 
   [string appendString:[item.keyEquivalent uppercaseString]];
   return string;
+}
+
+- (void)sendAccessibilityAnnouncement {
+  NSString* message = l10n_util::GetNSStringF(
+      IDS_CONFIRM_TO_QUIT_DESCRIPTION,
+      base::SysNSStringToUTF16([[self class] keyCommandString]));
+
+  NSAccessibilityPostNotificationWithUserInfo(
+      [NSApp mainWindow], NSAccessibilityAnnouncementRequestedNotification, @{
+        NSAccessibilityAnnouncementKey : message,
+        NSAccessibilityPriorityKey : @(NSAccessibilityPriorityHigh),
+      });
 }
 
 @end

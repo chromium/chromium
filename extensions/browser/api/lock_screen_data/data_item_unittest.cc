@@ -16,8 +16,8 @@
 #include "base/sequenced_task_runner.h"
 #include "base/values.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
-#include "content/public/test/test_browser_thread_bundle.h"
 #include "crypto/symmetric_key.h"
 #include "extensions/browser/api/lock_screen_data/operation_result.h"
 #include "extensions/browser/api/storage/backend_task_runner.h"
@@ -291,7 +291,7 @@ class DataItemTest : public testing::Test {
 
   std::unique_ptr<content::TestBrowserContext> context_;
 
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   std::unique_ptr<TestExtensionsBrowserClient> extensions_browser_client_;

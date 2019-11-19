@@ -41,3 +41,4 @@ use_libpci = false
 use_pulseaudio = false
 use_udev = false
 rtc_use_pipewire = false
+v8_enable_lazy_source_positions = false

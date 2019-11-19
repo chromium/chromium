@@ -1,0 +1,100 @@
+# This file defines all the extra packages we need to install to run the python
+# scripts in our repo and is used in LUCI to create reproducible bubbles in
+# which to run our ./test.py script.
+#
+# You can also use this locally by invoking `vpython` instead of `python` when
+# running the test scripts.
+#
+# More information:
+# https://chromium.googlesource.com/infra/infra/+/master/doc/users/vpython.md
+python_version: "2.7"
+
+wheel: <
+  name: "infra/celab/celab/windows-amd64"
+  # Source: https://ci.chromium.org/p/celab/builders/ci/Windows/b8900225462594660384
+  version: "Q1ebL0sPA1vX4tcIGj6d0IXxXa02M5CsBm3p0SbeGZUC"
+>
+
+# googleapiclient
+wheel: <
+  name: "infra/python/wheels/google_api_python_client-py2_py3"
+  version: "version:1.6.2"
+>
+
+# googleapiclient's dependencies
+wheel: <
+  name: "infra/python/wheels/httplib2-py2_py3"
+  version: "version:0.10.3"
+>
+wheel: <
+  name: "infra/python/wheels/oauth2client-py2_py3"
+  version: "version:4.1.3"
+>
+wheel: <
+  name: "infra/python/wheels/pyasn1-py2_py3"
+  version: "version:0.2.3"
+>
+wheel: <
+  name: "infra/python/wheels/pyasn1_modules-py2_py3"
+  version: "version:0.0.8"
+>
+wheel: <
+  name: "infra/python/wheels/rsa-py2_py3"
+  version: "version:3.4.2"
+>
+wheel: <
+  name: "infra/python/wheels/six-py2_py3"
+  version: "version:1.10.0"
+>
+wheel: <
+  name: "infra/python/wheels/uritemplate-py2_py3"
+  version: "version:3.0.0"
+>
+
+# google.protobuf
+wheel: <
+  name: "infra/python/wheels/protobuf-py2_py3"
+  version: "version:3.6.1"
+>
+
+# iam.admin.v1
+wheel: <
+  name: "infra/python/wheels/grpc-google-iam-admin-v1-py2_py3"
+  version: "version:0.10.0"
+>
+
+# iam.admin.v1's dependencies
+wheel: <
+  name: "infra/python/wheels/grpc-google-iam-v1-py2_py3"
+  version: "version:0.11.4"
+>
+
+wheel: <
+  name: "infra/python/wheels/googleapis-common-protos-py2_py3"
+  version: "version:1.5.3"
+>
+
+wheel: <
+  name: "infra/python/wheels/grpcio/${vpython_platform}"
+  version: "version:1.4.0"
+>
+
+wheel: <
+  name: "infra/python/wheels/futures-py2_py3"
+  version: "version:3.1.1"
+>
+
+wheel: <
+  name: "infra/python/wheels/enum34-py2"
+  version: "version:1.1.6"
+>
+
+wheel: <
+  name: "infra/python/wheels/absl-py-py2_py3"
+  version: "version:0.7.1"
+>
+
+wheel: <
+  name: "infra/python/wheels/wheel-py2_py3"
+  version: "version:0.33.1"
+>

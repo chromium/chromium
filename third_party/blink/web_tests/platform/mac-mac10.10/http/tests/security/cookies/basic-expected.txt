@@ -1,0 +1,4 @@
+CONSOLE WARNING: [Deprecation] A cookie associated with a cross-site resource at http://localhost:8000/security/cookies/resources/set-a-cookie.html was set without the `SameSite` attribute. Starting in M77, Chrome will only deliver cookies with cross-site requests if they are set with `SameSite=None`. You can review cookies in developer tools under Application>Storage>Cookies and see more details at https://www.chromestatus.com/feature/5088147346030592.
+Running test.
+secret=PASS
+Test complete.

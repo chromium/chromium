@@ -19,7 +19,7 @@ if (window.testRunner) {
 <div id="composited" style="position: absolute; height: 200px; width: 100px; opacity: 0; background-color: lightblue;"></div>
 <script>
 var element = document.getElementById('composited');
-element.style.transform = 'translateZ(0)';
+element.style.willChange = 'transform';
 runAfterLayoutAndPaint(function() {
     element.style.transform = '';
     runAfterLayoutAndPaint(function() {

@@ -2,35 +2,26 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/android/rules.gni")
+import("//build/config/android/config.gni")
 
-android_library("monochrome_license_provider_java") {
-  java_files =
-      [ "java/src/com/android/webview/chromium/LicenseContentProvider.java" ]
+if (public_android_sdk) {
+  group("monochrome_apk_checker") {
+    testonly = true
+    data_deps = [
+      "//chrome/android:chrome_modern_public_apk",
+      "//chrome/android:monochrome_public_apk",
+    ]
+    if (public_android_sdk) {
+      # system_webview_apk only defined for public sdk builds, so this dependency
+      # must be guarded.
+      data_deps += [ "//android_webview:system_webview_apk" ]
+    }
 
-  deps = [
-    "//base:base_java",
-    "//chrome/android:chrome_java",
-    "//components/about_ui/android:aboutui_java",
-  ]
-}
-
-group("monochrome_apk_checker") {
-  testonly = true
-  data_deps = [
-    "//chrome/android:chrome_modern_public_apk",
-    "//chrome/android:monochrome_public_apk",
-  ]
-  if (public_android_sdk) {
-    # system_webview_apk only defined for public sdk builds, so this dependency
-    # must be guarded.
-    data_deps += [ "//android_webview:system_webview_apk" ]
+    data = [
+      "./scripts/monochrome_apk_checker.py",
+      "//testing/scripts/monochrome_apk_checker_wrapper.py",
+      "//testing/scripts/common.py",
+      "//testing/xvfb.py",
+    ]
   }
-
-  data = [
-    "./scripts/monochrome_apk_checker.py",
-    "//testing/scripts/monochrome_apk_checker_wrapper.py",
-    "//testing/scripts/common.py",
-    "//testing/xvfb.py",
-  ]
 }

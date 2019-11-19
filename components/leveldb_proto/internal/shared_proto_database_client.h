@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/bind.h"
+#include "base/component_export.h"
 #include "base/sequence_checker.h"
 #include "components/leveldb_proto/internal/leveldb_database.h"
 #include "components/leveldb_proto/internal/proto/shared_db_metadata.pb.h"
@@ -25,44 +26,47 @@ using SharedClientInitCallback =
     base::OnceCallback<void(Enums::InitStatus,
                             SharedDBMetadataProto::MigrationStatus)>;
 
-std::string StripPrefix(const std::string& key, const std::string& prefix);
-
-std::unique_ptr<KeyVector> PrefixStrings(std::unique_ptr<KeyVector> strings,
-                                         const std::string& prefix);
-
-bool KeyFilterStripPrefix(const KeyFilter& key_filter,
-                          const std::string& prefix,
-                          const std::string& key);
-
-void GetSharedDatabaseInitStatusAsync(
-    const std::string& client_db_id,
-    const scoped_refptr<SharedProtoDatabase>& db,
-    Callbacks::InitStatusCallback callback);
-
-void UpdateClientMetadataAsync(
-    const scoped_refptr<SharedProtoDatabase>& db,
-    const std::string& client_db_id,
-    SharedDBMetadataProto::MigrationStatus migration_status,
-    ClientCorruptCallback callback);
-
-// Destroys all the data from obsolete clients, for the given |db_wrapper|
-// instance. |callback| is called once all the obsolete clients data are
-// removed, with failure status if one or more of the update fails.
-void DestroyObsoleteSharedProtoDatabaseClients(
-    std::unique_ptr<ProtoLevelDBWrapper> db_wrapper,
-    Callbacks::UpdateCallback callback);
-
-// Sets list of client names that are obsolete and will be cleared by next call
-// to DestroyObsoleteSharedProtoDatabaseClients(). |list| is list of dbs
-// with a |LAST| to mark the end of list.
-void SetObsoleteClientListForTesting(const ProtoDbType* list);
-
 // An implementation of ProtoDatabase<T> that uses a shared LevelDB and task
 // runner.
 // Should be created, destroyed, and used on the same sequenced task runner.
-class SharedProtoDatabaseClient : public UniqueProtoDatabase {
+class COMPONENT_EXPORT(LEVELDB_PROTO) SharedProtoDatabaseClient
+    : public UniqueProtoDatabase {
  public:
   static std::string PrefixForDatabase(ProtoDbType db_type);
+
+  static std::string StripPrefix(const std::string& key,
+                                 const std::string& prefix);
+
+  static std::unique_ptr<KeyVector> PrefixStrings(
+      std::unique_ptr<KeyVector> strings,
+      const std::string& prefix);
+
+  static bool KeyFilterStripPrefix(const KeyFilter& key_filter,
+                                   const std::string& prefix,
+                                   const std::string& key);
+
+  static void GetSharedDatabaseInitStatusAsync(
+      const std::string& client_db_id,
+      const scoped_refptr<SharedProtoDatabase>& db,
+      Callbacks::InitStatusCallback callback);
+
+  static void UpdateClientMetadataAsync(
+      const scoped_refptr<SharedProtoDatabase>& db,
+      const std::string& client_db_id,
+      SharedDBMetadataProto::MigrationStatus migration_status,
+      ClientCorruptCallback callback);
+
+  // Destroys all the data from obsolete clients, for the given |db_wrapper|
+  // instance. |callback| is called once all the obsolete clients data are
+  // removed, with failure status if one or more of the update fails.
+  static void DestroyObsoleteSharedProtoDatabaseClients(
+      std::unique_ptr<ProtoLevelDBWrapper> db_wrapper,
+      Callbacks::UpdateCallback callback);
+
+  // Sets list of client names that are obsolete and will be cleared by next
+  // call to DestroyObsoleteSharedProtoDatabaseClients(). |list| is list of dbs
+  // with a |LAST| to mark the end of list.
+  static void SetObsoleteClientListForTesting(const ProtoDbType* list);
 
   ~SharedProtoDatabaseClient() override;
 
@@ -177,7 +181,7 @@ class SharedProtoDatabaseClient : public UniqueProtoDatabase {
 
   scoped_refptr<SharedProtoDatabase> parent_db_;
 
-  base::WeakPtrFactory<SharedProtoDatabaseClient> weak_ptr_factory_;
+  base::WeakPtrFactory<SharedProtoDatabaseClient> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SharedProtoDatabaseClient);
 };

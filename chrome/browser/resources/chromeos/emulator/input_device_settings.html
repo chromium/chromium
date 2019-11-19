@@ -1,17 +1,5 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
-
-<link rel="import" href="chrome://resources/cr_elements/cr_toggle/cr_toggle.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-collapse/iron-collapse.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-icon-button/paper-icon-button.html">
-<link rel="import" href="icons.html">
-<link rel="import" href="shared_styles.html">
-
-<dom-module id="input-device-settings">
-  <template>
-    <!-- TODO(michaelpg): Wrap the line below to fit within the 80-char limit.
-         See https://github.com/Polymer/polymer/pull/3668. -->
-    <style include="device-emulator-shared-styles iron-flex iron-flex-alignment iron-positioning">
+    <style include="device-emulator-shared-styles iron-flex iron-flex-alignment
+        iron-positioning">
       .content > *:not(:first-child) {
         margin-top: 10px;
       }
@@ -23,7 +11,7 @@
     </style>
     <div class="layout vertical">
       <div class="element-label">
-        <paper-icon-button icon="device-emulator:mouse"></paper-icon-button>
+        <cr-icon-button iron-icon="device-emulator:mouse"></cr-icon-button>
         Input Devices
       </div>
       <div class="content">
@@ -41,6 +29,3 @@
         </iron-collapse>
       </div>
     </div>
-  </template>
-  <script src="input_device_settings.js"></script>
-</dom-module>

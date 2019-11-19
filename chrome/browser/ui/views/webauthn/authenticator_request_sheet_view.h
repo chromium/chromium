@@ -13,6 +13,7 @@
 #include "ui/views/view.h"
 
 class AuthenticatorRequestSheetModel;
+class NonAccessibleImageView;
 
 // Defines the basic structure of sheets shown in the authenticator request
 // dialog. Each sheet corresponds to a given step of the authentication flow,
@@ -86,9 +87,16 @@ class AuthenticatorRequestSheetView : public views::View,
   // and step-specific content, if any.
   std::unique_ptr<views::View> CreateContentsBelowIllustration();
 
+  // Updates the illustration icon shown on the sheet.
+  void UpdateIconImageFromModel();
+
+  // views::View:
+  void OnThemeChanged() override;
+
   std::unique_ptr<AuthenticatorRequestSheetModel> model_;
   views::Button* back_arrow_button_ = nullptr;
   views::View* step_specific_content_ = nullptr;
+  NonAccessibleImageView* step_illustration_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(AuthenticatorRequestSheetView);
 };

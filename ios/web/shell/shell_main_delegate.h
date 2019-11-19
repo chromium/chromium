@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "ios/web/public/app/web_main_delegate.h"
+#include "ios/web/public/init/web_main_delegate.h"
 
 namespace web {
 class ShellWebClient;

@@ -13,8 +13,14 @@
     "contexts": ["blessed_extension"],
     "extension_types": ["extension", "platform_app"],
     "location": "component",
-    "whitelist": ["aaa", "bbb"],
-    "blacklist": ["zzz", "yyy"],
+    "whitelist": [
+      "ABCDEF0123456789ABCDEF0123456789ABCDEF01",
+      "10FEDCBA9876543210FEDCBA9876543210FEDCBA"
+    ],
+    "blacklist": [
+      "0123456789ABCDEF0123456789ABCDEF01234567",
+      "76543210FEDCBA9876543210FEDCBA9876543210"
+    ],
     "component_extensions_auto_granted": false
   },
   "gamma": {
@@ -26,13 +32,13 @@
     "internal": true
   },
   "gamma.child": {
-    "whitelist": ["ccc"],
+    "whitelist": ["0123456789ABCDEF0123456789ABCDEF01234567"],
     "dependencies": [],
     "platforms": ["linux"]
   },
   "gamma.unparented": {
     "channel": "dev",
-    "blacklist": ["ddd"],
+    "blacklist": ["0123456789ABCDEF0123456789ABCDEF01234567"],
     "contexts": ["unblessed_extension"],
     "noparent": true
   },
@@ -55,7 +61,8 @@
     "channel": "beta",
     "contexts": ["blessed_extension"],
     "extension_types": ["extension"],
-    "whitelist": ["aaa"]
+    "whitelist": ["0123456789ABCDEF0123456789ABCDEF01234567"],
+    "disallow_for_service_workers": false
   }, {
     "channel": "stable",
     "contexts": ["blessed_extension"],

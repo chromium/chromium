@@ -50,11 +50,11 @@ class MessageDispatcher::RequestHolder {
 };
 
 MessageDispatcher::MessageDispatcher(
-    mojom::CastMessageChannelPtr outbound_channel,
-    mojom::CastMessageChannelRequest inbound_channel,
+    mojo::PendingRemote<mojom::CastMessageChannel> outbound_channel,
+    mojo::PendingReceiver<mojom::CastMessageChannel> inbound_channel,
     ErrorCallback error_callback)
     : outbound_channel_(std::move(outbound_channel)),
-      binding_(this, std::move(inbound_channel)),
+      receiver_(this, std::move(inbound_channel)),
       error_callback_(std::move(error_callback)),
       last_sequence_number_(base::RandInt(0, 1e9)) {
   DCHECK(outbound_channel_);

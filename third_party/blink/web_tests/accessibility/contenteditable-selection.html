@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 
 <div id="main" role="main">
 
@@ -18,7 +17,7 @@
 </div>
 
 <script>
-    test_after_layout_and_paint(() =>
+    test(() =>
     {
         let selection = window.getSelection();
         let selectionRange = document.createRange();
@@ -27,8 +26,6 @@
 
         let textbox = document.getElementById("contenteditable-textbox");
         let textboxAccessible = accessibilityController.accessibleElementById("contenteditable-textbox");
-        let line1Accessible = accessibilityController.accessibleElementById("contenteditable-line1");
-        let line1TextAccessible = line1Accessible.childAtIndex(0);
 
         // Select the entire contents of the outer ARIA textbox.
         // These include another ARIA textbox and a textarea node
@@ -38,24 +35,25 @@
         selection.removeAllRanges();
         selection.addRange(selectionRange);
 
+        assert_equals(textboxAccessible.selectionAnchorObject, textboxAccessible);
         assert_equals(textboxAccessible.selectionAnchorOffset, 0);
-        // 7 for the "Line 1" text div + 1 for the textarea node.
-        // (The textarea node should be treated as a single unit.)
-        assert_equals(textboxAccessible.selectionFocusOffset, 8);
+        assert_equals(textboxAccessible.selectionFocusObject, textboxAccessible);
+        // Two nodes have been selected: the two text fields  inside the outer one.
+        assert_equals(textboxAccessible.selectionFocusOffset, 2);
 
         // Selection offsets should be the same when retrieved from the parent object.
-        assert_equals(mainAccessible.selectionAnchorObject, line1TextAccessible);
+        assert_equals(mainAccessible.selectionAnchorObject, textboxAccessible);
         assert_equals(mainAccessible.selectionAnchorOffset, 0);
-        assert_equals(mainAccessible.selectionAnchorObject, line1TextAccessible);
-        assert_equals(mainAccessible.selectionFocusOffset, 8);
+        assert_equals(mainAccessible.selectionFocusObject, textboxAccessible);
+        assert_equals(mainAccessible.selectionFocusOffset, 2);
 
-        assert_equals(rootAccessible.selectionAnchorObject, line1TextAccessible);
+        assert_equals(rootAccessible.selectionAnchorObject, textboxAccessible);
         assert_equals(rootAccessible.selectionAnchorOffset, 0);
         assert_equals(rootAccessible.selectionFocusObject, textboxAccessible);
-        assert_equals(rootAccessible.selectionFocusOffset, 8);
+        assert_equals(rootAccessible.selectionFocusOffset, 2);
     }, "Test selectNodeContents on an ARIA textbox.");
 
-    test_after_layout_and_paint(() =>
+    test(() =>
     {
         let selection = window.getSelection();
         let selectionRange = document.createRange();
@@ -73,21 +71,23 @@
         selection.removeAllRanges();
         selection.addRange(selectionRange);
 
+        assert_equals(contenteditableAccessible.selectionAnchorObject, contenteditableAccessible);
         assert_equals(contenteditableAccessible.selectionAnchorOffset, 0);
-        assert_equals(contenteditableAccessible.selectionFocusOffset, 6);
+        assert_equals(contenteditableAccessible.selectionFocusObject, contenteditableAccessible);
+        assert_equals(contenteditableAccessible.selectionFocusOffset, 2);
 
+        assert_equals(mainAccessible.selectionAnchorObject, contenteditableAccessible);
         assert_equals(mainAccessible.selectionAnchorOffset, 0);
-        assert_equals(mainAccessible.selectionFocusOffset, 6);
+        assert_equals(mainAccessible.selectionFocusObject, contenteditableAccessible);
+        assert_equals(mainAccessible.selectionFocusOffset, 2);
 
-        assert_equals(rootAccessible.selectionAnchorObject.name,
-            line1.textContent);
+        assert_equals(rootAccessible.selectionAnchorObject, contenteditableAccessible);
         assert_equals(rootAccessible.selectionAnchorOffset, 0);
-        assert_equals(rootAccessible.selectionFocusObject.name,
-            line3.textContent);
-        assert_equals(rootAccessible.selectionFocusOffset, 6);
+        assert_equals(rootAccessible.selectionFocusObject, contenteditableAccessible);
+        assert_equals(rootAccessible.selectionFocusOffset, 2);
     }, "Test selectNodeContents on a contenteditable.");
 
-    test_after_layout_and_paint(() =>
+    test(() =>
     {
         let selection = window.getSelection();
         let selectionRange = document.createRange();
@@ -120,7 +120,7 @@
         assert_equals(rootAccessible.selectionFocusOffset, 6);
     }, "The effects of the setStart and setEnd methods should be reflected in the accessibility API.");
 
-    test_after_layout_and_paint(() =>
+    test(() =>
     {
         let textboxAccessible = accessibilityController.accessibleElementById("contenteditable-textbox");
         let rootAccessible = accessibilityController.rootElement;
@@ -142,7 +142,7 @@
         assert_equals(rootAccessible.selectionFocusOffset, 0);
     }, "Verify that changing the focus removes the selection.");
 
-    test_after_layout_and_paint(() =>
+    test(() =>
     {
         let textboxAccessible = accessibilityController.accessibleElementById("contenteditable-textbox");
         let mainAccessible = accessibilityController.accessibleElementById("main");
@@ -173,7 +173,7 @@
         assert_equals(rootAccessible.selectionFocusOffset, line2.textLength);
     }, "The effects of the textarea.setSelectionRange method should be reflected in the accessibility API.");
 
-    test_after_layout_and_paint(() =>
+    test(() =>
     {
         let textboxAccessible = accessibilityController.accessibleElementById("contenteditable-textbox");
         let mainAccessible = accessibilityController.accessibleElementById("main");
@@ -204,7 +204,7 @@
         assert_equals(rootAccessible.selectionFocusOffset, 5);
     }, "Test the setSelectedTextRange accessibility API function.");
 
-    test_after_layout_and_paint(() =>
+    test(() =>
     {
         let selection = window.getSelection();
         let selectionRange = document.createRange();
@@ -216,28 +216,40 @@
         let line2 = document.getElementById("paragraph1").lastChild;
         let line3 = document.getElementById("paragraph2").firstChild;
         let contenteditableLines = [ line1, line2, line3 ];
+
         let contenteditableAccessible = accessibilityController.accessibleElementById("contenteditable-div");
+        let paragraph1Accessible = accessibilityController.accessibleElementById("paragraph1");
+        let paragraph2Accessible = accessibilityController.accessibleElementById("paragraph2");
+        let line1Accessible = paragraph1Accessible.childAtIndex(0);
+        let line2Accessible = paragraph1Accessible.childAtIndex(2);
+        let line3Accessible = paragraph2Accessible.childAtIndex(0);
+        let expectations = [
+          [  line1Accessible, 0, paragraph1Accessible, 1 ],
+          [ line2Accessible, 0, paragraph1Accessible, 3 ],
+          [ line3Accessible, 0, paragraph2Accessible, 1 ],
+        ];
 
         // Select entire lines in the second content editable.
         for (let testCase = 0; testCase < 2; ++testCase) {
-
             for (let i = 0; i < contenteditableLines.length; ++i) {
                 selectionRange.selectNode(contenteditableLines[i]);
                 selection.removeAllRanges();
                 selection.addRange(selectionRange);
 
-                assert_equals(contenteditableAccessible.selectionAnchorOffset, 0);
-                assert_equals(contenteditableAccessible.selectionFocusOffset, 6);
+                assert_equals(contenteditableAccessible.selectionAnchorObject, expectations[i][0]);
+                assert_equals(contenteditableAccessible.selectionAnchorOffset, expectations[i][1]);
+                assert_equals(contenteditableAccessible.selectionFocusObject, expectations[i][2]);
+                assert_equals(contenteditableAccessible.selectionFocusOffset, expectations[i][3]);
 
-                assert_equals(mainAccessible.selectionAnchorOffset, 0);
-                assert_equals(mainAccessible.selectionFocusOffset, 6);
+                assert_equals(mainAccessible.selectionAnchorObject, expectations[i][0]);
+                assert_equals(mainAccessible.selectionAnchorOffset, expectations[i][1]);
+                assert_equals(mainAccessible.selectionFocusObject, expectations[i][2]);
+                assert_equals(mainAccessible.selectionFocusOffset, expectations[i][3]);
 
-                assert_equals(rootAccessible.selectionAnchorObject.name,
-                    contenteditableLines[i].textContent);
-                assert_equals(rootAccessible.selectionAnchorOffset, 0);
-                assert_equals(rootAccessible.selectionFocusObject.name,
-                    contenteditableLines[i].textContent);
-                assert_equals(rootAccessible.selectionFocusOffset, 6);
+                assert_equals(rootAccessible.selectionAnchorObject, expectations[i][0]);
+                assert_equals(rootAccessible.selectionAnchorOffset, expectations[i][1]);
+                assert_equals(rootAccessible.selectionFocusObject, expectations[i][2]);
+                assert_equals(rootAccessible.selectionFocusOffset, expectations[i][3]);
             }
 
             // For a sanity check, try the same test with contenteditable="false".

@@ -6,17 +6,17 @@
 
 #include <memory>
 
+#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
+#include "components/viz/common/gpu/context_provider.h"
 #include "media/base/decoder_factory.h"
-#include "media/base/media_log.h"
 #include "media/base/media_switches.h"
-#include "media/filters/gpu_video_decoder.h"
 #include "media/media_buildflags.h"
 #include "media/video/gpu_video_accelerator_factories.h"
-#include "third_party/libaom/av1_buildflags.h"
+#include "third_party/libaom/libaom_buildflags.h"
 
 #if !defined(OS_ANDROID)
 #include "media/filters/decrypting_audio_decoder.h"
@@ -24,10 +24,11 @@
 #endif
 
 #if defined(OS_FUCHSIA)
+#include "fuchsia/engine/switches.h"
 #include "media/filters/fuchsia/fuchsia_video_decoder.h"
 #endif
 
-#if BUILDFLAG(ENABLE_AV1_DECODER)
+#if BUILDFLAG(ENABLE_LIBAOM_DECODER)
 #include "media/filters/aom_video_decoder.h"
 #endif
 
@@ -93,29 +94,30 @@ void DefaultDecoderFactory::CreateVideoDecoders(
 
   // Perfer an external decoder since one will only exist if it is hardware
   // accelerated.
-  // Remember that |gpu_factories| will be null if HW video decode is turned
-  // off in chrome://flags.
-  if (gpu_factories) {
+  if (external_decoder_factory_ && gpu_factories &&
+      gpu_factories->IsGpuVideoAcceleratorEnabled()) {
     // |gpu_factories_| requires that its entry points be called on its
     // |GetTaskRunner()|. Since |pipeline_| will own decoders created from the
     // factories, require that their message loops are identical.
     DCHECK_EQ(gpu_factories->GetTaskRunner(), task_runner);
 
-    // MojoVideoDecoder replaces any VDA for this platform when it's enabled.
-    if (external_decoder_factory_ &&
-        base::FeatureList::IsEnabled(kMojoVideoDecoder)) {
-      external_decoder_factory_->CreateVideoDecoders(
-          task_runner, gpu_factories, media_log, request_overlay_info_cb,
-          target_color_space, video_decoders);
-    } else {
-      video_decoders->push_back(std::make_unique<GpuVideoDecoder>(
-          gpu_factories, request_overlay_info_cb, target_color_space,
-          media_log));
-    }
+    external_decoder_factory_->CreateVideoDecoders(
+        task_runner, gpu_factories, media_log, request_overlay_info_cb,
+        target_color_space, video_decoders);
   }
 
 #if defined(OS_FUCHSIA)
-  video_decoders->push_back(CreateFuchsiaVideoDecoder());
+  if (gpu_factories) {
+    video_decoders->push_back(CreateFuchsiaVideoDecoder(
+        gpu_factories->SharedImageInterface(),
+        gpu_factories->GetMediaContextProvider()->ContextSupport()));
+  }
+
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDisableSoftwareVideoDecoders)) {
+    // Bypass software codec registration.
+    return;
+  }
 #endif
 
 #if BUILDFLAG(ENABLE_LIBVPX)
@@ -123,13 +125,9 @@ void DefaultDecoderFactory::CreateVideoDecoders(
 #endif
 
 #if BUILDFLAG(ENABLE_DAV1D_DECODER)
-  if (base::FeatureList::IsEnabled(kDav1dVideoDecoder))
-    video_decoders->push_back(std::make_unique<Dav1dVideoDecoder>(media_log));
-#if BUILDFLAG(ENABLE_AV1_DECODER)
-  else
-    video_decoders->push_back(std::make_unique<AomVideoDecoder>(media_log));
-#endif
-#elif BUILDFLAG(ENABLE_AV1_DECODER)
+  video_decoders->push_back(
+      std::make_unique<OffloadingDav1dVideoDecoder>(media_log));
+#elif BUILDFLAG(ENABLE_LIBAOM_DECODER)
   video_decoders->push_back(std::make_unique<AomVideoDecoder>(media_log));
 #endif
 

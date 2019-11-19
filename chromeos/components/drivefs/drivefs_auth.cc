@@ -6,9 +6,7 @@
 
 #include "base/bind.h"
 #include "components/account_id/account_id.h"
-#include "services/identity/public/mojom/constants.mojom.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "services/service_manager/public/cpp/connector.h"
 
 namespace drivefs {
 
@@ -18,8 +16,12 @@ constexpr char kIdentityConsumerId[] = "drivefs";
 
 DriveFsAuth::DriveFsAuth(const base::Clock* clock,
                          const base::FilePath& profile_path,
+                         std::unique_ptr<base::OneShotTimer> timer,
                          Delegate* delegate)
-    : clock_(clock), profile_path_(profile_path), delegate_(delegate) {}
+    : clock_(clock),
+      profile_path_(profile_path),
+      timer_(std::move(timer)),
+      delegate_(delegate) {}
 
 DriveFsAuth::~DriveFsAuth() {}
 
@@ -47,15 +49,23 @@ void DriveFsAuth::GetAccessToken(
   }
 
   get_access_token_callback_ = std::move(callback);
-  GetIdentityAccessor().GetPrimaryAccountWhenAvailable(
-      base::BindOnce(&DriveFsAuth::AccountReady, base::Unretained(this)));
+  timer_->Start(FROM_HERE, base::TimeDelta::FromSeconds(30),
+                base::BindOnce(&DriveFsAuth::AuthTimeout,
+                               weak_ptr_factory_.GetWeakPtr()));
+  GetIdentityAccessor()->GetPrimaryAccountWhenAvailable(base::BindOnce(
+      &DriveFsAuth::AccountReady, weak_ptr_factory_.GetWeakPtr()));
 }
 
-void DriveFsAuth::AccountReady(const AccountInfo& info,
+void DriveFsAuth::AccountReady(const CoreAccountId& account_id,
+                               const std::string& gaia,
+                               const std::string& email,
                                const identity::AccountState& state) {
-  GetIdentityAccessor().GetAccessToken(
-      delegate_->GetAccountId().GetUserEmail(),
-      {"https://www.googleapis.com/auth/drive"}, kIdentityConsumerId,
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  weak_ptr_factory_.InvalidateWeakPtrs();
+  timer_->Stop();
+  GetIdentityAccessor()->GetAccessToken(
+      account_id, {"https://www.googleapis.com/auth/drive"},
+      kIdentityConsumerId,
       base::BindOnce(&DriveFsAuth::GotChromeAccessToken,
                      base::Unretained(this)));
 }
@@ -91,13 +101,20 @@ void DriveFsAuth::UpdateCachedToken(const std::string& token,
   last_token_expiry_ = expiry;
 }
 
-identity::mojom::IdentityAccessor& DriveFsAuth::GetIdentityAccessor() {
+void DriveFsAuth::AuthTimeout() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  weak_ptr_factory_.InvalidateWeakPtrs();
+  std::move(get_access_token_callback_)
+      .Run(mojom::AccessTokenStatus::kAuthError, "");
+}
+
+identity::mojom::IdentityAccessor* DriveFsAuth::GetIdentityAccessor() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!identity_accessor_) {
-    delegate_->GetConnector()->BindInterface(
-        identity::mojom::kServiceName, mojo::MakeRequest(&identity_accessor_));
+    delegate_->BindIdentityAccessor(
+        identity_accessor_.BindNewPipeAndPassReceiver());
   }
-  return *identity_accessor_;
+  return identity_accessor_.get();
 }
 
 }  // namespace drivefs

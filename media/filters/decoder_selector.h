@@ -124,7 +124,7 @@ class MEDIA_EXPORT DecoderSelector {
   bool is_codec_changing_ = false;
   base::TimeTicks codec_change_start_;
 
-  base::WeakPtrFactory<DecoderSelector> weak_this_factory_;
+  base::WeakPtrFactory<DecoderSelector> weak_this_factory_{this};
 
   DISALLOW_IMPLICIT_CONSTRUCTORS(DecoderSelector);
 };

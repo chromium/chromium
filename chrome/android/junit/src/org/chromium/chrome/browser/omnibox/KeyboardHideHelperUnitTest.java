@@ -47,7 +47,7 @@ public class KeyboardHideHelperUnitTest {
     private KeyboardHideHelper mKeyboardHideHelper;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         MockitoAnnotations.initMocks(this);
 
         mView = spy(new View(RuntimeEnvironment.application));
@@ -74,7 +74,7 @@ public class KeyboardHideHelperUnitTest {
         final AtomicInteger height = new AtomicInteger(300);
         Answer<Void> windowVisibleDisplayFrameAnswer = new Answer<Void>() {
             @Override
-            public Void answer(InvocationOnMock invocation) throws Throwable {
+            public Void answer(InvocationOnMock invocation) {
                 ((Rect) invocation.getArgument(0)).set(0, 0, 100, height.get());
                 return null;
             }

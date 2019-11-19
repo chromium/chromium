@@ -104,7 +104,7 @@ id Iterator::GetNext() {
   DCHECK(observer);
   DCHECK([observer conformsToProtocol:self.protocol]);
 
-  if (base::ContainsValue(_observers, observer))
+  if (base::Contains(_observers, observer))
     return;
 
   _observers.push_back(observer);

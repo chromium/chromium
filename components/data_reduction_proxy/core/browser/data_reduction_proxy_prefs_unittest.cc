@@ -66,21 +66,6 @@ class DataReductionProxyPrefsTest : public testing::Test {
 
     registry->RegisterListPref(prefs::kDailyHttpOriginalContentLength);
     registry->RegisterListPref(prefs::kDailyHttpReceivedContentLength);
-    registry->RegisterListPref(
-        prefs::kDailyOriginalContentLengthWithDataReductionProxyEnabled);
-    registry->RegisterListPref(
-        prefs::kDailyContentLengthWithDataReductionProxyEnabled);
-    registry->RegisterListPref(
-        prefs::kDailyContentLengthHttpsWithDataReductionProxyEnabled);
-    registry->RegisterListPref(
-        prefs::kDailyContentLengthShortBypassWithDataReductionProxyEnabled);
-    registry->RegisterListPref(
-        prefs::kDailyContentLengthLongBypassWithDataReductionProxyEnabled);
-    registry->RegisterListPref(
-        prefs::kDailyContentLengthUnknownWithDataReductionProxyEnabled);
-    registry->RegisterListPref(
-        prefs::kDailyOriginalContentLengthViaDataReductionProxy);
-    registry->RegisterListPref(prefs::kDailyContentLengthViaDataReductionProxy);
     registry->RegisterInt64Pref(
         prefs::kDailyHttpContentLengthLastUpdateDate, 0L);
   }

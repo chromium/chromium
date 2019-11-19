@@ -25,8 +25,6 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.CollectionUtil;
-import org.chromium.base.ContextUtils;
-import org.chromium.base.PathUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryProcessType;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
@@ -58,7 +56,6 @@ public class InvalidationClientServiceTest extends
 
     /** Id used when creating clients. */
     private static final byte[] CLIENT_ID = new byte[]{0, 4, 7};
-    private static final String PRIVATE_DATA_DIRECTORY_SUFFIX = "invalidation_test";
 
     /** Intents provided to {@link #startService}. */
     private List<Intent> mStartServiceIntents;
@@ -79,8 +76,6 @@ public class InvalidationClientServiceTest extends
                 return new ComponentName(this, InvalidationClientServiceTest.class);
             }
         });
-        ContextUtils.initApplicationContextForTests(getContext().getApplicationContext());
-        PathUtils.setPrivateDataDirectorySuffix(PRIVATE_DATA_DIRECTORY_SUFFIX);
         LibraryLoader.getInstance().ensureInitialized(LibraryProcessType.PROCESS_BROWSER);
         setupService();
     }

@@ -11,8 +11,8 @@
 #include <utility>
 #include <vector>
 
+#include "base/hash/md5.h"
 #include "base/macros.h"
-#include "base/md5.h"
 #include "base/strings/string_piece.h"
 #include "sandbox/linux/system_headers/linux_filter.h"
 #include "testing/gtest/include/gtest/gtest.h"

@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/bind_helpers.h"
 #include "base/guid.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
@@ -27,6 +28,7 @@
 #include "components/offline_pages/core/prefetch/prefetch_prefs.h"
 #include "components/offline_pages/core/prefetch/prefetch_service.h"
 #include "components/offline_pages/core/prefetch/prefetch_types.h"
+#include "components/offline_pages/core/prefetch/server_forbidden_check_request.h"
 #include "components/offline_pages/core/prefetch/suggested_articles_observer.h"
 #include "components/offline_pages/core/prefetch/suggestions_provider.h"
 #include "components/offline_pages/core/prefetch/tasks/add_unique_urls_task.h"
@@ -43,10 +45,11 @@
 #include "components/offline_pages/core/prefetch/tasks/mark_operation_done_task.h"
 #include "components/offline_pages/core/prefetch/tasks/metrics_finalization_task.h"
 #include "components/offline_pages/core/prefetch/tasks/page_bundle_update_task.h"
+#include "components/offline_pages/core/prefetch/tasks/remove_url_task.h"
 #include "components/offline_pages/core/prefetch/tasks/sent_get_operation_cleanup_task.h"
 #include "components/offline_pages/core/prefetch/tasks/stale_entry_finalizer_task.h"
-#include "components/offline_pages/core/prefetch/thumbnail_fetch_by_url.h"
 #include "components/offline_pages/core/prefetch/thumbnail_fetcher.h"
+#include "components/offline_pages/core/prefetch/visuals_fetch_by_url.h"
 #include "components/prefs/pref_service.h"
 #include "url/gurl.h"
 
@@ -59,16 +62,17 @@ void DeleteBackgroundTaskHelper(std::unique_ptr<PrefetchBackgroundTask> task) {
 }
 
 PrefetchURL SuggestionToPrefetchURL(PrefetchSuggestion suggestion) {
-  PrefetchURL result(suggestion.article_url.spec(), suggestion.article_url,
-                     base::UTF8ToUTF16(suggestion.article_title));
-  result.thumbnail_url = suggestion.thumbnail_url;
-  return result;
+  return PrefetchURL(suggestion.article_url.spec(), suggestion.article_url,
+                     base::UTF8ToUTF16(suggestion.article_title),
+                     suggestion.thumbnail_url, suggestion.favicon_url,
+                     suggestion.article_snippet,
+                     suggestion.article_attribution);
 }
 
 }  // namespace
 
 PrefetchDispatcherImpl::PrefetchDispatcherImpl(PrefService* pref_service)
-    : pref_service_(pref_service), task_queue_(this), weak_factory_(this) {}
+    : pref_service_(pref_service), task_queue_(this) {}
 
 PrefetchDispatcherImpl::~PrefetchDispatcherImpl() = default;
 
@@ -95,8 +99,11 @@ void PrefetchDispatcherImpl::EnsureTaskScheduled() {
 void PrefetchDispatcherImpl::AddCandidatePrefetchURLs(
     const std::string& name_space,
     const std::vector<PrefetchURL>& prefetch_urls) {
-  if (!prefetch_prefs::IsEnabled(pref_service_))
+  if (!prefetch_prefs::IsEnabled(pref_service_)) {
+    if (prefetch_prefs::IsForbiddenCheckDue(pref_service_))
+      CheckIfEnabledByServer(pref_service_, service_);
     return;
+  }
 
   service_->GetLogger()->RecordActivity("Dispatcher: Received " +
                                         std::to_string(prefetch_urls.size()) +
@@ -126,8 +133,14 @@ void PrefetchDispatcherImpl::AddCandidatePrefetchURLs(
 
 void PrefetchDispatcherImpl::NewSuggestionsAvailable(
     SuggestionsProvider* suggestions_provider) {
-  if (!prefetch_prefs::IsEnabled(pref_service_))
+  // No need to GetKnownContent if prefetching is disabled (however, we don't
+  // want to prevent the server-forbidden check).
+  if (!prefetch_prefs::IsEnabled(pref_service_)) {
+    if (prefetch_prefs::IsForbiddenCheckDue(pref_service_))
+      CheckIfEnabledByServer(pref_service_, service_);
     return;
+  }
+
   suggestions_provider->GetCurrentArticleSuggestions(
       base::BindOnce(&PrefetchDispatcherImpl::AddSuggestions, GetWeakPtr()));
 }
@@ -135,8 +148,17 @@ void PrefetchDispatcherImpl::NewSuggestionsAvailable(
 void PrefetchDispatcherImpl::RemoveSuggestion(const GURL& url) {
   if (!prefetch_prefs::IsEnabled(pref_service_))
     return;
-  // TODO(https://crbug.com/841516): to be implemented soon.
-  NOTIMPLEMENTED();
+
+  // Remove the URL from the prefetch database.
+  task_queue_.AddTask(MakeRemoveUrlTask(service_->GetPrefetchStore(), url));
+
+  // Remove the URL from the offline model.
+  PageCriteria criteria;
+  criteria.url = url;
+  criteria.client_namespaces =
+      std::vector<std::string>{kSuggestedArticlesNamespace};
+  service_->GetOfflinePageModel()->DeletePagesWithCriteria(criteria,
+                                                           base::DoNothing());
 }
 
 void PrefetchDispatcherImpl::RemoveAllUnprocessedPrefetchURLs(
@@ -231,20 +253,21 @@ void PrefetchDispatcherImpl::QueueActionTasks() {
   // as we need to ensure WiFi access at that time.
   if (!background_task_)
     return;
+  DCHECK(!service_->GetCachedGCMToken().empty());
 
   std::unique_ptr<Task> get_operation_task = std::make_unique<GetOperationTask>(
       service_->GetPrefetchStore(),
       service_->GetPrefetchNetworkRequestFactory(),
-      base::BindOnce(
+      base::BindRepeating(
           &PrefetchDispatcherImpl::DidGenerateBundleOrGetOperationRequest,
           GetWeakPtr(), "GetOperationRequest"));
   task_queue_.AddTask(std::move(get_operation_task));
 
   std::unique_ptr<Task> generate_page_bundle_task =
       std::make_unique<GeneratePageBundleTask>(
-          this, service_->GetPrefetchStore(), service_->GetPrefetchGCMHandler(),
+          this, service_->GetPrefetchStore(), service_->GetCachedGCMToken(),
           service_->GetPrefetchNetworkRequestFactory(),
-          base::BindOnce(
+          base::BindRepeating(
               &PrefetchDispatcherImpl::DidGenerateBundleOrGetOperationRequest,
               GetWeakPtr(), "GeneratePageBundleRequest"));
   task_queue_.AddTask(std::move(generate_page_bundle_task));
@@ -320,7 +343,8 @@ void PrefetchDispatcherImpl::DidGenerateBundleOrGetOperationRequest(
   task_queue_.AddTask(std::make_unique<PageBundleUpdateTask>(
       prefetch_store, this, operation_name, pages));
 
-  if (background_task_ && status != PrefetchRequestStatus::kSuccess) {
+  if (background_task_ && status != PrefetchRequestStatus::kSuccess &&
+      status != PrefetchRequestStatus::kEmptyRequestSuccess) {
     PrefetchBackgroundTaskRescheduleType reschedule_type =
         PrefetchBackgroundTaskRescheduleType::NO_RESCHEDULE;
     switch (status) {
@@ -332,12 +356,15 @@ void PrefetchDispatcherImpl::DidGenerateBundleOrGetOperationRequest(
         reschedule_type =
             PrefetchBackgroundTaskRescheduleType::RESCHEDULE_WITHOUT_BACKOFF;
         break;
+      case PrefetchRequestStatus::kShouldSuspendForbiddenByOPS:
+      case PrefetchRequestStatus::kShouldSuspendNewlyForbiddenByOPS:
       case PrefetchRequestStatus::kShouldSuspendForbidden:
       case PrefetchRequestStatus::kShouldSuspendNotImplemented:
       case PrefetchRequestStatus::kShouldSuspendBlockedByAdministrator:
         reschedule_type = PrefetchBackgroundTaskRescheduleType::SUSPEND;
         break;
       case PrefetchRequestStatus::kSuccess:
+      case PrefetchRequestStatus::kEmptyRequestSuccess:
         NOTREACHED();
         break;
     }
@@ -362,7 +389,7 @@ void PrefetchDispatcherImpl::GeneratePageBundleRequested(
   // Reverse the order so that the fresher items are last. This is done because
   // the ids are popped from the end of the vector.
   std::reverse(ids->begin(), ids->end());
-  FetchThumbnails(std::move(ids), /* is_first_attempt= */ true);
+  FetchVisuals(std::move(ids), /* is_first_attempt= */ true);
 }
 
 void PrefetchDispatcherImpl::DownloadCompleted(
@@ -388,7 +415,7 @@ void PrefetchDispatcherImpl::ItemDownloaded(int64_t offline_id,
                                             const ClientId& client_id) {
   auto ids = std::make_unique<IdsVector>();
   ids->emplace_back(offline_id, client_id);
-  FetchThumbnails(std::move(ids), /* is_first_attempt= */ false);
+  FetchVisuals(std::move(ids), /* is_first_attempt= */ false);
 }
 
 void PrefetchDispatcherImpl::ArchiveImported(int64_t offline_id, bool success) {
@@ -426,7 +453,7 @@ void PrefetchDispatcherImpl::LogRequestResult(
   }
 }
 
-void PrefetchDispatcherImpl::FetchThumbnails(
+void PrefetchDispatcherImpl::FetchVisuals(
     std::unique_ptr<PrefetchDispatcher::IdsVector> remaining_ids,
     bool is_first_attempt) {
   if (remaining_ids->empty())
@@ -437,73 +464,103 @@ void PrefetchDispatcherImpl::FetchThumbnails(
   DCHECK(client_id.name_space == kSuggestedArticlesNamespace);
   remaining_ids->pop_back();
 
-  service_->GetOfflinePageModel()->HasThumbnailForOfflineId(
+  service_->GetOfflinePageModel()->GetVisualsAvailability(
       offline_id,
-      base::BindOnce(&PrefetchDispatcherImpl::ThumbnailExistenceChecked,
+      base::BindOnce(&PrefetchDispatcherImpl::VisualsAvailabilityChecked,
                      GetWeakPtr(), offline_id, std::move(client_id),
                      std::move(remaining_ids), is_first_attempt));
 }
 
-void PrefetchDispatcherImpl::ThumbnailExistenceChecked(
-    const int64_t offline_id,
+void PrefetchDispatcherImpl::VisualsAvailabilityChecked(
+    int64_t offline_id,
     ClientId client_id,
     std::unique_ptr<PrefetchDispatcher::IdsVector> remaining_ids,
     bool is_first_attempt,
-    bool thumbnail_exists) {
-  if (thumbnail_exists) {
-    FetchThumbnails(std::move(remaining_ids), is_first_attempt);
+    VisualsAvailability availability) {
+  if (availability.has_thumbnail && availability.has_favicon) {
+    FetchVisuals(std::move(remaining_ids), is_first_attempt);
   } else {
     // Zine/Feed: thumbnail_fetcher is non-null only with Zine.
     ThumbnailFetcher* thumbnail_fetcher = service_->GetThumbnailFetcher();
     if (thumbnail_fetcher) {
       auto complete_callback = base::BindOnce(
           &PrefetchDispatcherImpl::ThumbnailFetchComplete, GetWeakPtr(),
-          offline_id, std::move(remaining_ids), is_first_attempt);
+          offline_id, std::move(remaining_ids), is_first_attempt, GURL());
       thumbnail_fetcher->FetchSuggestionImageData(client_id,
                                                   std::move(complete_callback));
     } else {
-      task_queue_.AddTask(std::make_unique<GetThumbnailInfoTask>(
+      task_queue_.AddTask(std::make_unique<GetVisualsInfoTask>(
           service_->GetPrefetchStore(), offline_id,
-          base::BindOnce(&PrefetchDispatcherImpl::ThumbnailInfoReceived,
+          base::BindOnce(&PrefetchDispatcherImpl::VisualsInfoReceived,
                          GetWeakPtr(), offline_id, std::move(remaining_ids),
-                         is_first_attempt)));
+                         is_first_attempt, availability)));
     }
   }
 }
 
-void PrefetchDispatcherImpl::ThumbnailInfoReceived(
-    const int64_t offline_id,
+void PrefetchDispatcherImpl::VisualsInfoReceived(
+    int64_t offline_id,
     std::unique_ptr<IdsVector> remaining_ids,
     bool is_first_attempt,
-    GetThumbnailInfoTask::Result result) {
-  if (result.thumbnail_url.is_empty()) {
-    FetchThumbnails(std::move(remaining_ids), is_first_attempt);
-    return;  // No thumbnail url was given to us for this page.
+    VisualsAvailability availability,
+    GetVisualsInfoTask::Result result) {
+  GURL favicon_url = availability.has_favicon || result.favicon_url.is_empty()
+                         ? GURL()
+                         : result.favicon_url;
+
+  if (!availability.has_thumbnail && !result.thumbnail_url.is_empty()) {
+    FetchThumbnailByURL(
+        base::BindOnce(&PrefetchDispatcherImpl::ThumbnailFetchComplete,
+                       GetWeakPtr(), offline_id, std::move(remaining_ids),
+                       is_first_attempt, favicon_url),
+        service_->GetImageFetcher(), result.thumbnail_url);
+  } else if (!favicon_url.is_empty()) {
+    FetchFavicon(offline_id, std::move(remaining_ids), is_first_attempt,
+                 favicon_url);
+  } else {
+    FetchVisuals(std::move(remaining_ids), is_first_attempt);
   }
-  FetchThumbnailByURL(
-      base::BindOnce(&PrefetchDispatcherImpl::ThumbnailFetchComplete,
-                     GetWeakPtr(), offline_id, std::move(remaining_ids),
-                     is_first_attempt),
-      service_->GetThumbnailImageFetcher(), result.thumbnail_url);
 }
 
 void PrefetchDispatcherImpl::ThumbnailFetchComplete(
-    const int64_t offline_id,
-    std::unique_ptr<PrefetchDispatcher::IdsVector> remaining_ids,
+    int64_t offline_id,
+    std::unique_ptr<IdsVector> remaining_ids,
     bool is_first_attempt,
-    const std::string& image_data) {
-  // Thumbnails are marked to expire after this delta. Expired thumbnails are
-  // eventually deleted if their offline_id does not correspond to an offline
-  // item. Two days gives us plenty of time so that the prefetched item can be
-  // imported into the offline item database.
-  const base::TimeDelta kThumbnailExpirationDelta =
-      base::TimeDelta::FromDays(2);
+    const GURL& favicon_url,
+    const std::string& thumbnail) {
+  if (!thumbnail.empty())
+    service_->GetOfflinePageModel()->StoreThumbnail(offline_id, thumbnail);
 
-  if (!image_data.empty()) {
-    service_->GetOfflinePageModel()->StoreThumbnail(OfflinePageThumbnail(
-        offline_id, base::Time::Now() + kThumbnailExpirationDelta, image_data));
+  if (favicon_url.is_empty()) {
+    FetchVisuals(std::move(remaining_ids), is_first_attempt);
+  } else {
+    FetchFavicon(offline_id, std::move(remaining_ids), is_first_attempt,
+                 favicon_url);
   }
-  FetchThumbnails(std::move(remaining_ids), is_first_attempt);
+}
+
+void PrefetchDispatcherImpl::FetchFavicon(
+    int64_t offline_id,
+    std::unique_ptr<IdsVector> remaining_ids,
+    bool is_first_attempt,
+    const GURL& favicon_url) {
+  FetchFaviconByURL(
+      base::BindOnce(&PrefetchDispatcherImpl::FaviconFetchComplete,
+                     GetWeakPtr(), offline_id, std::move(remaining_ids),
+                     is_first_attempt),
+      service_->GetImageFetcher(), favicon_url);
+}
+
+void PrefetchDispatcherImpl::FaviconFetchComplete(
+    int64_t offline_id,
+    std::unique_ptr<IdsVector> remaining_ids,
+    bool is_first_attempt,
+    const std::string& favicon_data) {
+  if (!favicon_data.empty()) {
+    service_->GetOfflinePageModel()->StoreFavicon(offline_id, favicon_data);
+  }
+
+  FetchVisuals(std::move(remaining_ids), is_first_attempt);
 }
 
 }  // namespace offline_pages

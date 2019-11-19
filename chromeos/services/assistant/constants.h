@@ -5,9 +5,12 @@
 #ifndef CHROMEOS_SERVICES_ASSISTANT_CONSTANTS_H_
 #define CHROMEOS_SERVICES_ASSISTANT_CONSTANTS_H_
 
+#include "base/component_export.h"
+
 namespace chromeos {
 namespace assistant {
 
+COMPONENT_EXPORT(ASSISTANT_SERVICE)
 extern const char kUserID[];
 
 }  // namespace assistant

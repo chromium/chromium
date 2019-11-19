@@ -27,7 +27,7 @@ class NativeWidgetPrivate;
 //
 class VIEWS_EXPORT NativeWidget {
  public:
-  virtual ~NativeWidget() {}
+  virtual ~NativeWidget() = default;
 
  private:
   friend class Widget;

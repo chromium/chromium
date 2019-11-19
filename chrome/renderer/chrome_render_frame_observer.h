@@ -11,8 +11,8 @@
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "chrome/common/prerender_types.h"
 #include "content/public/renderer/render_frame_observer.h"
-#include "mojo/public/cpp/bindings/associated_binding_set.h"
-#include "mojo/public/cpp/bindings/binding_set.h"
+#include "mojo/public/cpp/bindings/associated_receiver_set.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 
@@ -28,12 +28,17 @@ namespace translate {
 class TranslateHelper;
 }
 
+namespace web_cache {
+class WebCacheImpl;
+}
+
 // This class holds the Chrome specific parts of RenderFrame, and has the same
 // lifetime.
 class ChromeRenderFrameObserver : public content::RenderFrameObserver,
                                   public chrome::mojom::ChromeRenderFrame {
  public:
-  explicit ChromeRenderFrameObserver(content::RenderFrame* render_frame);
+  ChromeRenderFrameObserver(content::RenderFrame* render_frame,
+                            web_cache::WebCacheImpl* web_cache_impl);
   ~ChromeRenderFrameObserver() override;
 
   service_manager::BinderRegistry* registry() { return &registry_; }
@@ -84,12 +89,10 @@ class ChromeRenderFrameObserver : public content::RenderFrameObserver,
   void RequestReloadImageForContextNode() override;
   void SetClientSidePhishingDetection(bool enable_phishing_detection) override;
   void GetWebApplicationInfo(GetWebApplicationInfoCallback callback) override;
-  void UpdateBrowserControlsState(content::BrowserControlsState constraints,
-                                  content::BrowserControlsState current,
-                                  bool animate) override;
 
   void OnRenderFrameObserverRequest(
-      chrome::mojom::ChromeRenderFrameAssociatedRequest request);
+      mojo::PendingAssociatedReceiver<chrome::mojom::ChromeRenderFrame>
+          receiver);
 
   // Captures page information using the top (main) frame of a frame tree.
   // Currently, this page information is just the text content of the all
@@ -105,13 +108,15 @@ class ChromeRenderFrameObserver : public content::RenderFrameObserver,
   translate::TranslateHelper* translate_helper_;
   safe_browsing::PhishingClassifierDelegate* phishing_classifier_;
 
+  // Owned by ChromeContentRendererClient and outlive us.
+  web_cache::WebCacheImpl* web_cache_impl_;
 
 #if !defined(OS_ANDROID)
   // Save the JavaScript to preload if ExecuteWebUIJavaScript is invoked.
   std::vector<base::string16> webui_javascript_;
 #endif
 
-  mojo::AssociatedBindingSet<chrome::mojom::ChromeRenderFrame> bindings_;
+  mojo::AssociatedReceiverSet<chrome::mojom::ChromeRenderFrame> receivers_;
 
   service_manager::BinderRegistry registry_;
   blink::AssociatedInterfaceRegistry associated_interfaces_;

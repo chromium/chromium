@@ -70,22 +70,28 @@ void WebSecurityPolicy::AddOriginAccessAllowListEntry(
     const WebURL& source_origin,
     const WebString& destination_protocol,
     const WebString& destination_host,
-    bool allow_destination_subdomains,
+    const uint16_t destination_port,
+    const network::mojom::CorsDomainMatchMode domain_match_mode,
+    const network::mojom::CorsPortMatchMode port_match_mode,
     const network::mojom::CorsOriginAccessMatchPriority priority) {
   SecurityPolicy::AddOriginAccessAllowListEntry(
       *SecurityOrigin::Create(source_origin), destination_protocol,
-      destination_host, allow_destination_subdomains, priority);
+      destination_host, destination_port, domain_match_mode, port_match_mode,
+      priority);
 }
 
 void WebSecurityPolicy::AddOriginAccessBlockListEntry(
     const WebURL& source_origin,
     const WebString& destination_protocol,
     const WebString& destination_host,
-    bool allow_destination_subdomains,
+    const uint16_t destination_port,
+    const network::mojom::CorsDomainMatchMode domain_match_mode,
+    const network::mojom::CorsPortMatchMode port_match_mode,
     const network::mojom::CorsOriginAccessMatchPriority priority) {
   SecurityPolicy::AddOriginAccessBlockListEntry(
       *SecurityOrigin::Create(source_origin), destination_protocol,
-      destination_host, allow_destination_subdomains, priority);
+      destination_host, destination_port, domain_match_mode, port_match_mode,
+      priority);
 }
 
 void WebSecurityPolicy::ClearOriginAccessListForOrigin(
@@ -99,20 +105,23 @@ void WebSecurityPolicy::ClearOriginAccessList() {
   SecurityPolicy::ClearOriginAccessList();
 }
 
-void WebSecurityPolicy::AddOriginTrustworthyWhiteList(const WebString& origin) {
-  SecurityPolicy::AddOriginTrustworthyWhiteList(origin);
+void WebSecurityPolicy::AddOriginToTrustworthySafelist(
+    const WebString& origin) {
+  SecurityPolicy::AddOriginToTrustworthySafelist(origin);
 }
 
-void WebSecurityPolicy::AddSchemeToBypassSecureContextWhitelist(
+void WebSecurityPolicy::AddSchemeToSecureContextSafelist(
     const WebString& scheme) {
   SchemeRegistry::RegisterURLSchemeBypassingSecureContextCheck(scheme);
 }
 
 WebString WebSecurityPolicy::GenerateReferrerHeader(
     network::mojom::ReferrerPolicy referrer_policy,
+    const WebSecurityOrigin& origin,
     const WebURL& url,
     const WebString& referrer) {
-  return SecurityPolicy::GenerateReferrer(referrer_policy, url, referrer)
+  return SecurityPolicy::GenerateReferrer(referrer_policy, origin, url,
+                                          referrer)
       .referrer;
 }
 

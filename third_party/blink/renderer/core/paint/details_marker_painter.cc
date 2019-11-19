@@ -37,7 +37,7 @@ void DetailsMarkerPainter::Paint(const PaintInfo& paint_info) {
   local_paint_info.context.SetFillColor(color);
 
   auto box_origin = paint_state.PaintOffset();
-  box_origin.Move(
+  box_origin += PhysicalOffset(
       layout_details_marker_.BorderLeft() +
           layout_details_marker_.PaddingLeft(),
       layout_details_marker_.BorderTop() + layout_details_marker_.PaddingTop());
@@ -91,12 +91,12 @@ Path DetailsMarkerPainter::GetCanonicalPath() const {
   return Path();
 }
 
-Path DetailsMarkerPainter::GetPath(const LayoutPoint& origin) const {
+Path DetailsMarkerPainter::GetPath(const PhysicalOffset& origin) const {
   Path result = GetCanonicalPath();
   result.Transform(AffineTransform().Scale(
       layout_details_marker_.ContentWidth().ToFloat(),
       layout_details_marker_.ContentHeight().ToFloat()));
-  result.Translate(FloatSize(origin.X().ToFloat(), origin.Y().ToFloat()));
+  result.Translate(FloatSize(origin));
   return result;
 }
 

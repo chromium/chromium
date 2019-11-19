@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AddressAccessoryInfoView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:gravity="center_vertical|start"
+    android:fillViewport="true"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:paddingStart="@dimen/keyboard_accessory_suggestion_padding"
+    android:paddingEnd="@dimen/keyboard_accessory_suggestion_padding"
+    android:layout_marginTop="@dimen/keyboard_accessory_sheet_top_margin"
+    android:layout_marginBottom="@dimen/keyboard_accessory_sheet_bottom_margin"
+    android:orientation="vertical">
+
+    <org.chromium.ui.widget.ChipView
+        android:id="@+id/name_full"
+        android:gravity="center_vertical|start"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/InputChip" />
+
+    <org.chromium.ui.widget.ChipView
+        android:id="@+id/company_name"
+        android:gravity="center_vertical|start"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/InputChip" />
+
+    <org.chromium.ui.widget.ChipView
+        android:id="@+id/address_home_line_1"
+        android:gravity="center_vertical|start"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/InputChip" />
+
+    <org.chromium.ui.widget.ChipView
+        android:id="@+id/address_home_line_2"
+        android:gravity="center_vertical|start"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/InputChip" />
+
+    <LinearLayout
+        android:gravity="center_vertical|start"
+        android:fillViewport="true"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:orientation="horizontal">
+
+        <org.chromium.ui.widget.ChipView
+            android:id="@+id/address_home_state"
+            android:gravity="center_vertical|start"
+            android:layout_marginEnd="@dimen/keyboard_accessory_sheet_padding"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/InputChip" />
+
+        <org.chromium.ui.widget.ChipView
+            android:id="@+id/address_home_city"
+            android:gravity="center_vertical|start"
+            android:layout_marginEnd="@dimen/keyboard_accessory_sheet_padding"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/InputChip" />
+
+        <org.chromium.ui.widget.ChipView
+            android:id="@+id/address_home_zip"
+            android:gravity="center_vertical|start"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/InputChip" />
+
+    </LinearLayout>
+
+    <org.chromium.ui.widget.ChipView
+        android:id="@+id/address_home_country"
+        android:gravity="center_vertical|start"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/InputChip" />
+
+    <org.chromium.ui.widget.ChipView
+        android:id="@+id/phone_home_whole_number"
+        android:gravity="center_vertical|start"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/InputChip" />
+
+    <org.chromium.ui.widget.ChipView
+        android:id="@+id/email_address"
+        android:gravity="center_vertical|start"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/InputChip" />
+
+    <View style="@style/HorizontalDivider"
+        android:layout_marginTop="@dimen/keyboard_accessory_sheet_divider_margin"
+        android:layout_marginBottom="0dp" />
+
+</org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AddressAccessoryInfoView>

@@ -102,8 +102,7 @@ strings = {
     }
 grdp_files = [
     'chrome/app/chromeos_strings.grdp',
-    'chrome/app/file_manager_strings.grdp',
-    'ui/chromeos/ui_chromeos_strings.grd',
+    'ui/chromeos/file_manager_strings.grdp',
     ]
 resource_bundle = {}
 for grdp in grdp_files:
@@ -210,7 +209,9 @@ for filename, substitutions in (
     ('test/js/strings.js', (
         ('$GRDP', json.dumps(strings, sort_keys=True, indent=2)),
     )),
-    ('foreground/elements/elements_bundle.html', ()),
+    ('foreground/elements/elements_bundle.html', (
+        ('="files_xf', '="' + elements_path('files_xf')),
+    )),
     ('foreground/js/elements_importer.js', (
         ("= 'foreground", "= 'test/gen/foreground"),
     )),
@@ -244,7 +245,13 @@ for filename, substitutions in (
   buf = buf.replace('chrome://resources/polymer/v1_0/', '../../cc/')
   buf = buf.replace('<link rel="import" href="chrome://resources/cr_elements/'
                     'cr_input/cr_input.html">', '')
+  buf = buf.replace('<link rel="import" href="chrome://resources/cr_elements/'
+                    'cr_button/cr_button.html">', '')
   buf = buf.replace('src="files_', 'src="' + elements_path('files_'))
+  # The files_format_dialog and files_message import various files that are
+  # not available in a ui test, just ignore them completely.
+  buf = buf.replace('<link rel="import" href="files_format_dialog.html">', '')
+  buf = buf.replace('<link rel="import" href="files_message.html">', '')
   for old, new in substitutions:
     buf = buf.replace(old, new)
   write('test/gen/' + filename, buf)

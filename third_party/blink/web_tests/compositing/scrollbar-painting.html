@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <style>
 .composited {
-  transform: translateZ(0);
+  will-change: transform;
 }
 
 .container {
@@ -26,10 +26,6 @@
   width: 100%;
 }
 </style>
-<script>
-  if (window.testRunner)
-    testRunner.dumpAsTextWithPixelResults();
-</script>
 <!-- You should see a single 50% transparent green square -->
 <div id="container" class="container composited">
   <div class="contents"></div>

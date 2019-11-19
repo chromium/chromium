@@ -1,22 +1,41 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ja">
+<translation id="1482734542997480527"><ph name="ENROLLMENT_DOMAIN" /> はこのデバイスを管理しており、アクティビティを監視できる可能性があります。</translation>
 <translation id="1510238584712386396">ランチャー</translation>
 <translation id="1734367976349034509">このデバイスは会社が管理しています</translation>
-<translation id="2049639323467105390">この端末は <ph name="DOMAIN" /> によって管理されています。</translation>
+<translation id="1930797645656624981">Chrome OS の入力方法サービス</translation>
+<translation id="1979103255016296513">パスワードの変更期限を過ぎました</translation>
+<translation id="2049639323467105390">このデバイスは <ph name="DOMAIN" /> によって管理されています。</translation>
 <translation id="2083960536266308407">画面では何も見つかりませんでした</translation>
 <translation id="2338501278241028356">近くのデバイスを検出するには Bluetooth をオンにしてください</translation>
 <translation id="2805756323405976993">アプリ</translation>
 <translation id="2872961005593481000">終了</translation>
-<translation id="3147142846278915599">ランチャー（アプリを同期中...）</translation>
+<translation id="3008341117444806826">更新</translation>
+<translation id="3838338534323494292">新しいパスワード</translation>
+<translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> はこのデバイスを管理しており、閲覧したウェブページ、パスワード、メールなど、すべてのユーザー アクティビティにアクセスできます。</translation>
+<translation id="4227825898293920515">パスワードの有効期限はあと <ph name="TIME" />です</translation>
+<translation id="4429881212383817840">Kerberos チケットはまもなく有効期限が切れます</translation>
+<translation id="445059817448385655">古いパスワード</translation>
+<translation id="467510802200863975">パスワードが一致しません</translation>
 <translation id="4731797938093519117">保護者によるアクセス</translation>
+<translation id="4890353053343094602">新しいパスワードを今すぐ選択してください</translation>
 <translation id="5212543919916444558">画面からはサポートできる内容が見つかりませんでした。
 マイクをタップして質問してみてください。</translation>
 <translation id="5222676887888702881">ログアウト</translation>
+<translation id="5317780077021120954">保存</translation>
+<translation id="5332948983412042822">新しいパスワードを今すぐ選択してください</translation>
 <translation id="5457599981699367932">ゲストとしてブラウジング</translation>
 <translation id="54609108002486618">管理</translation>
 <translation id="5832805196449965646">ユーザーを追加</translation>
 <translation id="5895138241574237353">再起動</translation>
+<translation id="6058625436358447366">終了するには、古いパスワードと新しいパスワードを入力してください</translation>
+<translation id="6106186594183574873">終了するには、古いパスワードを入力してください</translation>
+<translation id="6146993107019042706">終了するには、新しいパスワードを入力してください</translation>
 <translation id="7658239707568436148">キャンセル</translation>
+<translation id="7690294790491645610">新しいパスワードの確認入力</translation>
+<translation id="808894953321890993">パスワードの変更</translation>
+<translation id="8747900814994928677">変更を確認</translation>
+<translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> のチケットを更新してください</translation>
 <translation id="9111102763498581341">ロック解除</translation>
 </translationbundle>

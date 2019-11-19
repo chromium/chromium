@@ -146,7 +146,7 @@ class HostScannerOperation : public MessageTransferOperation {
   std::map<std::string, base::Time>
       device_id_to_tether_availability_request_start_time_map_;
 
-  base::WeakPtrFactory<HostScannerOperation> weak_ptr_factory_;
+  base::WeakPtrFactory<HostScannerOperation> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(HostScannerOperation);
 };

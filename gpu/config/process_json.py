@@ -9,10 +9,11 @@ import json
 import os
 import platform
 import sys
+import zlib
 from optparse import OptionParser
 from subprocess import call
 
-_LICENSE = """// Copyright 2017 The Chromium Authors. All rights reserved.
+_LICENSE = """// Copyright (c) 2019 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,7 +38,7 @@ _OS_TYPE_MAP = {
 
 
 def load_software_rendering_list_features(feature_type_filename):
-  header_file = open(feature_type_filename, 'rb')
+  header_file = open(feature_type_filename, 'r')
   start = False
   features = []
   for line in header_file:
@@ -66,7 +67,7 @@ def load_software_rendering_list_features(feature_type_filename):
 
 
 def load_gpu_driver_bug_workarounds(workaround_type_filename):
-  header_file = open(workaround_type_filename, 'rb')
+  header_file = open(workaround_type_filename, 'r')
   start = False
   workaround = None
   workarounds = []
@@ -188,14 +189,14 @@ def write_version(version_info, name_tag, data_file):
     'between': 'kBetween',
     '': 'kUnknown',
   }
-  assert op_map.has_key(op)
+  assert op in op_map
   data_file.write('GpuControlList::%s, ' % op_map[op])
   style_map = {
     'lexical': 'Lexical',
     'numerical': 'Numerical',
     '': 'Numerical',
   }
-  assert style_map.has_key(style)
+  assert style in style_map
   data_file.write('GpuControlList::kVersionStyle%s, ' % style_map[style])
   write_string(version1, data_file)
   data_file.write(', ')
@@ -204,7 +205,7 @@ def write_version(version_info, name_tag, data_file):
 
 
 def write_driver_info(entry_id, is_exception, exception_id, driver_vendor,
-                      driver_version, driver_date, unique_symbol_id,
+                      driver_version, unique_symbol_id,
                       data_file, data_helper_file):
   var_name = 'kDriverInfoFor%sEntry%d' % (unique_symbol_id, entry_id)
   if is_exception:
@@ -214,7 +215,6 @@ def write_driver_info(entry_id, is_exception, exception_id, driver_vendor,
                          var_name)
   write_string_value(driver_vendor, 'driver_vendor', data_helper_file)
   write_version(driver_version, 'driver_version', data_helper_file)
-  write_version(driver_date, 'driver_date', data_helper_file)
   data_helper_file.write('};\n\n')
   # reference the GL strings
   data_file.write('&%s,  // driver info\n' % var_name)
@@ -300,7 +300,7 @@ def write_machine_model_info(entry_id, is_exception, exception_id,
 
 
 def write_os_type(os_type, data_file):
-  assert _OS_TYPE_MAP.has_key(os_type)
+  assert os_type in _OS_TYPE_MAP
   data_file.write('GpuControlList::%s,  // os_type\n' % _OS_TYPE_MAP[os_type])
 
 
@@ -312,7 +312,7 @@ def write_multi_gpu_category(multi_gpu_category, data_file):
     'any': 'Any',
     '': 'None',
   }
-  assert map.has_key(multi_gpu_category)
+  assert multi_gpu_category in map
   data_file.write(
     'GpuControlList::kMultiGpuCategory%s,  // multi_gpu_category\n' %
     map[multi_gpu_category])
@@ -326,7 +326,7 @@ def write_multi_gpu_style(multi_gpu_style, data_file):
     'amd_switchable_integrated': 'AMDSwitchableIntegrated',
     '': 'None',
   }
-  assert map.has_key(multi_gpu_style)
+  assert multi_gpu_style in map
   data_file.write(
     'GpuControlList::kMultiGpuStyle%s,  // multi_gpu_style\n' %
     map[multi_gpu_style])
@@ -339,7 +339,7 @@ def write_gl_type(gl_type, data_file):
     'angle': 'ANGLE',
     '': 'None',
   }
-  assert map.has_key(gl_type)
+  assert gl_type in map
   data_file.write('GpuControlList::kGLType%s,  // gl_type\n' % map[gl_type])
 
 
@@ -351,7 +351,7 @@ def write_supported_or_not(feature_value, feature_name, data_file):
     'unsupported': 'Unsupported',
     'dont_care': 'DontCare',
   }
-  assert map.has_key(feature_value)
+  assert feature_value in map
   data_file.write('GpuControlList::k%s,  // %s\n' %
                   (map[feature_value], feature_name))
 
@@ -366,9 +366,9 @@ def write_conditions(entry_id, is_exception, exception_id, entry,
   multi_gpu_category = ''
   multi_gpu_style = ''
   gpu_series_list = None
+  intel_gpu_generation = None
   driver_vendor = ''
   driver_version = None
-  driver_date = None
   gl_renderer = ''
   gl_vendor = ''
   gl_extensions = ''
@@ -378,13 +378,14 @@ def write_conditions(entry_id, is_exception, exception_id, entry,
   pixel_shader_version = None
   in_process_gpu = False
   gl_reset_notification_strategy = None
-  direct_rendering = True
+  direct_rendering_version = ''
   gpu_count = None
   hardware_overlay = None
   test_group = 0
   machine_model_name = None
   machine_model_version = None
   exception_count = 0
+  subpixel_font_rendering = None
   # process the entry
   for key in entry:
     if key == 'id':
@@ -426,12 +427,12 @@ def write_conditions(entry_id, is_exception, exception_id, entry,
       multi_gpu_style = entry[key]
     elif key == 'gpu_series':
       gpu_series_list = entry[key]
+    elif key == 'intel_gpu_generation':
+      intel_gpu_generation = entry[key]
     elif key == 'driver_vendor':
       driver_vendor = entry[key]
     elif key == 'driver_version':
       driver_version = entry[key]
-    elif key == 'driver_date':
-      driver_date = entry[key]
     elif key == 'gl_vendor':
       gl_vendor = entry[key]
     elif key == 'gl_renderer':
@@ -451,9 +452,8 @@ def write_conditions(entry_id, is_exception, exception_id, entry,
       in_process_gpu = True
     elif key == 'gl_reset_notification_strategy':
       gl_reset_notification_strategy = entry[key]
-    elif key == 'direct_rendering':
-      assert not entry[key]
-      direct_rendering = False
+    elif key == 'direct_rendering_version':
+      direct_rendering_version = entry[key]
     elif key == 'gpu_count':
       gpu_count = entry[key]
     elif key == 'hardware_overlay':
@@ -465,6 +465,8 @@ def write_conditions(entry_id, is_exception, exception_id, entry,
       machine_model_name = entry[key]
     elif key == 'machine_model_version':
       machine_model_version = entry[key]
+    elif key == 'subpixel_font_rendering':
+      subpixel_font_rendering = entry[key]
     elif key == 'exceptions':
       assert not is_exception
       assert exception_count == 0
@@ -481,9 +483,9 @@ def write_conditions(entry_id, is_exception, exception_id, entry,
   write_multi_gpu_category(multi_gpu_category, data_file)
   write_multi_gpu_style(multi_gpu_style, data_file)
   # group driver info
-  if driver_vendor != '' or driver_version != None or driver_date != None:
+  if driver_vendor != '' or driver_version != None:
     write_driver_info(entry_id, is_exception, exception_id, driver_vendor,
-                      driver_version, driver_date, unique_symbol_id,
+                      driver_version, unique_symbol_id,
                       data_file, data_helper_file)
   else:
     data_file.write('nullptr,  // driver info\n')
@@ -500,15 +502,18 @@ def write_conditions(entry_id, is_exception, exception_id, entry,
                            data_file, data_helper_file)
   write_gpu_series_list(entry_id, is_exception, exception_id, gpu_series_list,
                         data_file, data_helper_file)
+  write_version(intel_gpu_generation, 'intel_gpu_generation', data_file)
   # group a bunch of less used conditions
   if (gl_version != None or pixel_shader_version != None or in_process_gpu or
-      gl_reset_notification_strategy != None or (not direct_rendering) or
-      gpu_count != None or hardware_overlay != None or test_group != 0):
+      gl_reset_notification_strategy != None or direct_rendering_version != None
+      or gpu_count != None or hardware_overlay != None or test_group != 0 or
+      subpixel_font_rendering != None):
     write_entry_more_data(entry_id, is_exception, exception_id, gl_type,
                           gl_version, pixel_shader_version, in_process_gpu,
-                          gl_reset_notification_strategy, direct_rendering,
-                          gpu_count, hardware_overlay, test_group, data_file,
-                          data_helper_file)
+                          gl_reset_notification_strategy,
+                          direct_rendering_version, gpu_count, hardware_overlay,
+                          test_group, subpixel_font_rendering,
+                          data_file, data_helper_file)
   else:
     data_file.write('nullptr,  // more conditions\n')
 
@@ -522,20 +527,24 @@ def write_gpu_series_list(entry_id, is_exception, exception_id, gpu_series_list,
     data_helper_file.write('const GpuSeriesType %s[%d] = {\n' %
                            (var_name, len(gpu_series_list)))
     gpu_series_map = {
-      'intel_sandybridge': 'kIntelSandyBridge',
-      'intel_valleyview': 'kIntelValleyView',
-      'intel_ivybridge': 'kIntelIvyBridge',
+      'intel_sandybridge': 'kIntelSandybridge',
+      'intel_baytrail': 'kIntelBaytrail',
+      'intel_ivybridge': 'kIntelIvybridge',
       'intel_haswell': 'kIntelHaswell',
-      'intel_cherryview': 'kIntelCherryView',
+      'intel_cherrytrail': 'kIntelCherrytrail',
       'intel_broadwell': 'kIntelBroadwell',
-      'intel_apollolake': 'kIntelApolloLake',
-      'intel_skylake': 'kIntelSkyLake',
-      'intel_geminilake': 'kIntelGeminiLake',
-      'intel_kabylake': 'kIntelKabyLake',
-      'intel_coffeelake': 'kIntelCoffeeLake',
+      'intel_apollolake': 'kIntelApollolake',
+      'intel_skylake': 'kIntelSkylake',
+      'intel_geminilake': 'kIntelGeminilake',
+      'intel_kabylake': 'kIntelKabylake',
+      'intel_coffeelake': 'kIntelCoffeelake',
+      'intel_whiskeylake': 'kIntelWhiskeylake',
+      'intel_cometlake': 'kIntelCometlake',
+      'intel_cannonlake': 'kIntelCannonlake',
+      'intel_icelake': 'kIntelIcelake'
     }
     for series in gpu_series_list:
-      assert gpu_series_map.has_key(series)
+      assert series in gpu_series_map
       data_helper_file.write('GpuSeriesType::%s,\n' %
                              gpu_series_map[series])
     data_helper_file.write('};\n\n')
@@ -549,11 +558,19 @@ def write_gpu_series_list(entry_id, is_exception, exception_id, gpu_series_list,
 
 def write_entry_more_data(entry_id, is_exception, exception_id, gl_type,
                           gl_version, pixel_shader_version, in_process_gpu,
-                          gl_reset_notification_strategy, direct_rendering,
-                          gpu_count, hardware_overlay, test_group, data_file,
+                          gl_reset_notification_strategy,
+                          direct_rendering_version, gpu_count, hardware_overlay,
+                          test_group, subpixel_font_rendering, data_file,
                           data_helper_file):
   # write more data
-  var_name = 'kMoreForEntry' + str(entry_id)
+
+  # Generate a unique name for jumbo build which concatenates multiple
+  # translation units into one to speed compilation.
+  basename = os.path.basename(data_helper_file.name)
+  # & 0xffffffff converts to unsigned to keep consistent across Python versions
+  # and platforms as per https://docs.python.org/3/library/zlib.html
+  suffix = '_%s' % (zlib.crc32(basename.encode()) & 0xffffffff)
+  var_name = 'kMoreForEntry' + str(entry_id) + suffix
   if is_exception:
     var_name += 'Exception' + str(exception_id)
   data_helper_file.write('const GpuControlList::More %s = {\n' % var_name)
@@ -565,10 +582,13 @@ def write_entry_more_data(entry_id, is_exception, exception_id, gl_type,
     gl_reset_notification_strategy = '0'
   data_helper_file.write('%s,  // gl_reset_notification_strategy\n' %
                          gl_reset_notification_strategy)
-  write_boolean_value(direct_rendering, 'direct_rendering', data_helper_file)
+  write_version(direct_rendering_version, 'direct_rendering_version',
+                data_helper_file)
   write_version(gpu_count, 'gpu_count', data_helper_file)
   write_supported_or_not(hardware_overlay, 'hardware_overlay', data_helper_file)
   write_integer_value(test_group, 'test_group', data_helper_file)
+  write_supported_or_not(subpixel_font_rendering, 'subpixel_font_rendering',
+                         data_helper_file)
   data_helper_file.write('};\n\n')
   # reference more data in entry
   data_file.write('&%s,  // more data\n' % var_name)
@@ -667,20 +687,20 @@ def process_json_file(json_filepath, list_tag,
   json_file = open(json_filepath, 'rb')
   json_data = json.load(json_file)
   json_file.close()
-  data_file = open(output_data_filepath, 'wb')
+  data_file = open(output_data_filepath, 'w')
   data_file.write(_LICENSE)
   data_file.write(_DO_NOT_EDIT_WARNING)
   data_file.write('#include "%s/%s"\n\n' % (path, output_header_filename))
   data_file.write('#include "%s/%s"\n' % (path, output_helper_filename))
   data_file.write('#include "%s/%s"\n\n' % (path, output_exception_filename))
-  data_helper_file = open(output_helper_filepath, 'wb')
+  data_helper_file = open(output_helper_filepath, 'w')
   data_helper_file.write(_LICENSE)
   data_helper_file.write(_DO_NOT_EDIT_WARNING)
   write_header_file_guard(data_helper_file, output_helper_filename, path, True)
   data_helper_file.write('#include "gpu/config/%s"\n\n' %
                          feature_header_filename)
   data_helper_file.write('namespace gpu {\n')
-  data_exception_file = open(output_exception_filepath, 'wb')
+  data_exception_file = open(output_exception_filepath, 'w')
   data_exception_file.write(_LICENSE)
   data_exception_file.write(_DO_NOT_EDIT_WARNING)
   write_header_file_guard(data_exception_file, output_exception_filename, path,
@@ -698,7 +718,7 @@ def process_json_file(json_filepath, list_tag,
     if 'os' in entry:
       os_type = entry['os']['type']
       # Check for typos in the .json data
-      if not _OS_TYPE_MAP.has_key(os_type):
+      if os_type not in _OS_TYPE_MAP:
         raise Exception('Unknown OS type "%s" for entry %d' %
                         (os_type, entry_id))
       if os_filter != None and os_type != os_filter:
@@ -718,7 +738,7 @@ def process_json_file(json_filepath, list_tag,
   write_header_file_guard(data_exception_file, output_exception_filename, path,
                           False)
   data_exception_file.close()
-  data_header_file = open(output_header_filepath, 'wb')
+  data_header_file = open(output_header_filepath, 'w')
   data_header_file.write(_LICENSE)
   data_header_file.write(_DO_NOT_EDIT_WARNING)
   write_header_file_guard(data_header_file, output_header_filename, path, True)
@@ -830,7 +850,7 @@ def write_test_entry_enums(input_json_filepath, output_entry_enums_filepath,
   json_file.close()
 
   output_entry_enums_filename = os.path.basename(output_entry_enums_filepath)
-  enum_file = open(output_entry_enums_filepath, 'wb')
+  enum_file = open(output_entry_enums_filepath, 'w')
   enum_file.write(_LICENSE)
   enum_file.write(_DO_NOT_EDIT_WARNING)
   write_header_file_guard(enum_file, output_entry_enums_filename, path, True)

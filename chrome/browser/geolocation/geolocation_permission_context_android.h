@@ -68,12 +68,11 @@ class GeolocationPermissionContextAndroid
   static void SetDSEOriginForTesting(const char* dse_origin);
 
   // GeolocationPermissionContext:
-  void RequestPermission(
-      content::WebContents* web_contents,
-      const PermissionRequestID& id,
-      const GURL& requesting_frame_origin,
-      bool user_gesture,
-      const BrowserPermissionCallback& callback) override;
+  void RequestPermission(content::WebContents* web_contents,
+                         const PermissionRequestID& id,
+                         const GURL& requesting_frame_origin,
+                         bool user_gesture,
+                         BrowserPermissionCallback callback) override;
   void UserMadePermissionDecision(const PermissionRequestID& id,
                                   const GURL& requesting_origin,
                                   const GURL& embedding_origin,
@@ -81,7 +80,7 @@ class GeolocationPermissionContextAndroid
   void NotifyPermissionSet(const PermissionRequestID& id,
                            const GURL& requesting_origin,
                            const GURL& embedding_origin,
-                           const BrowserPermissionCallback& callback,
+                           BrowserPermissionCallback callback,
                            bool persist,
                            ContentSetting content_setting) override;
   PermissionResult UpdatePermissionStatusWithDeviceStatus(
@@ -110,7 +109,7 @@ class GeolocationPermissionContextAndroid
   void HandleUpdateAndroidPermissions(const PermissionRequestID& id,
                                       const GURL& requesting_frame_origin,
                                       const GURL& embedding_origin,
-                                      const BrowserPermissionCallback& callback,
+                                      BrowserPermissionCallback callback,
                                       bool permissions_updated);
 
   // Will return true if the location settings dialog will be shown for the
@@ -131,7 +130,7 @@ class GeolocationPermissionContextAndroid
   void FinishNotifyPermissionSet(const PermissionRequestID& id,
                                  const GURL& requesting_origin,
                                  const GURL& embedding_origin,
-                                 const BrowserPermissionCallback& callback,
+                                 BrowserPermissionCallback callback,
                                  bool persist,
                                  ContentSetting content_setting);
 
@@ -147,7 +146,7 @@ class GeolocationPermissionContextAndroid
 
   // Must be the last member, to ensure that it will be destroyed first, which
   // will invalidate weak pointers.
-  base::WeakPtrFactory<GeolocationPermissionContextAndroid> weak_factory_;
+  base::WeakPtrFactory<GeolocationPermissionContextAndroid> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(GeolocationPermissionContextAndroid);
 };

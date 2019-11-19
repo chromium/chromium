@@ -17,7 +17,7 @@ namespace views {
 class View;
 }  // namespace views
 
-namespace app_list {
+namespace ash {
 
 // This class will get used by the AppListView to drag and drop Application
 // shortcuts onto another host (the launcher).
@@ -34,7 +34,7 @@ class ApplicationDragAndDropHost {
       const gfx::ImageSkia& icon,
       views::View* replaced_view,
       const gfx::Vector2d& cursor_offset_from_center,
-      float scale_factor) = 0;
+      float scale_factor) {}
 
   // Creates an OS dependent drag proxy icon which can escape the given view.
   // The proxy should get created using the |icon| with a magnification of
@@ -52,12 +52,12 @@ class ApplicationDragAndDropHost {
 
   // Updates the screen location of the Drag icon proxy.
   virtual void UpdateDragIconProxy(
-      const gfx::Point& location_in_screen_coordinates) = 0;
+      const gfx::Point& location_in_screen_coordinates) {}
 
   // Updates the screen location of the Drag icon proxy with its origin at
   // |origin_in_screen_coordinates|.
   virtual void UpdateDragIconProxyByLocation(
-      const gfx::Point& origin_in_screen_coordinates) = 0;
+      const gfx::Point& origin_in_screen_coordinates) {}
 
   // Removes the OS dependent drag proxy from the screen.
   virtual void DestroyDragIconProxy() = 0;
@@ -79,9 +79,9 @@ class ApplicationDragAndDropHost {
   // Once |StartDrag| returned true, this function is guaranteed to be called
   // when the mouse / touch events stop. If |cancel| is set, the drag operation
   // was aborted, otherwise the change should be kept.
-  virtual void EndDrag(bool cancel) = 0;
+  virtual void EndDrag(bool cancel) {}
 };
 
-}  // namespace app_list
+}  // namespace ash
 
 #endif  // ASH_APP_LIST_VIEWS_APP_LIST_DRAG_AND_DROP_HOST_H_

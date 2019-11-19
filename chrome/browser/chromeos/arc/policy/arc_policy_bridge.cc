@@ -17,27 +17,25 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
-#include "chrome/browser/chromeos/arc/arc_session_manager.h"
+#include "chrome/browser/chromeos/arc/enterprise/cert_store/arc_smart_card_manager_bridge.h"
+#include "chrome/browser/chromeos/arc/session/arc_session_manager.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/policy/developer_tools_policy_handler.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
-#include "chrome/browser/policy/profile_policy_connector_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/network/onc/onc_utils.h"
-#include "components/arc/arc_bridge_service.h"
 #include "components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "components/arc/arc_prefs.h"
+#include "components/arc/session/arc_bridge_service.h"
 #include "components/onc/onc_constants.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user.h"
-#include "content/public/common/service_manager_connection.h"
 #include "crypto/sha2.h"
-#include "services/data_decoder/public/cpp/safe_json_parser.h"
 
 namespace arc {
 
@@ -45,6 +43,7 @@ namespace {
 
 constexpr char kArcCaCerts[] = "caCerts";
 constexpr char kPolicyCompliantJson[] = "{ \"policyCompliant\": true }";
+constexpr char kArcRequiredKeyPairs[] = "requiredKeyPairs";
 
 // invert_bool_value: If the Chrome policy and the ARC policy with boolean value
 // have opposite semantics, set this to true so the bool is inverted before
@@ -215,10 +214,24 @@ void AddOncCaCertsToPolicies(const policy::PolicyMap& policy_map,
   filtered_policies->Set(kArcCaCerts, std::move(ca_certs));
 }
 
-std::string GetFilteredJSONPolicies(const policy::PolicyMap& policy_map,
-                                    const PrefService* profile_prefs,
-                                    const std::string& guid,
-                                    bool is_affiliated) {
+void AddRequiredKeyPairs(const ArcSmartCardManagerBridge* smart_card_manager,
+                         base::DictionaryValue* filtered_policies) {
+  if (!smart_card_manager)
+    return;
+  std::unique_ptr<base::ListValue> cert_names(
+      std::make_unique<base::ListValue>());
+  for (const auto& name : smart_card_manager->get_required_cert_names()) {
+    cert_names->Append(name);
+  }
+  filtered_policies->Set(kArcRequiredKeyPairs, std::move(cert_names));
+}
+
+std::string GetFilteredJSONPolicies(
+    const policy::PolicyMap& policy_map,
+    const PrefService* profile_prefs,
+    const std::string& guid,
+    bool is_affiliated,
+    const ArcSmartCardManagerBridge* smart_card_manager) {
   base::DictionaryValue filtered_policies;
   // Parse ArcPolicy as JSON string before adding other policies to the
   // dictionary.
@@ -276,18 +289,12 @@ std::string GetFilteredJSONPolicies(const policy::PolicyMap& policy_map,
 
   filtered_policies.SetString("guid", guid);
 
+  AddRequiredKeyPairs(smart_card_manager, &filtered_policies);
+
   std::string policy_json;
   JSONStringValueSerializer serializer(&policy_json);
   serializer.Serialize(filtered_policies);
   return policy_json;
-}
-
-void OnReportComplianceParseFailure(
-    base::OnceCallback<void(const std::string&)> callback,
-    const std::string& error) {
-  // TODO(poromov@): Report to histogram.
-  DLOG(ERROR) << "Can't parse policy compliance report";
-  std::move(callback).Run(kPolicyCompliantJson);
 }
 
 void UpdateFirstComplianceSinceSignInTiming(
@@ -337,9 +344,7 @@ class ArcPolicyBridgeFactory
  private:
   friend base::DefaultSingletonTraits<ArcPolicyBridgeFactory>;
 
-  ArcPolicyBridgeFactory() {
-    DependsOn(policy::ProfilePolicyConnectorFactory::GetInstance());
-  }
+  ArcPolicyBridgeFactory() {}
   ~ArcPolicyBridgeFactory() override = default;
 };
 
@@ -357,6 +362,11 @@ ArcPolicyBridge* ArcPolicyBridge::GetForBrowserContextForTesting(
   return ArcPolicyBridgeFactory::GetForBrowserContextForTesting(context);
 }
 
+// static
+BrowserContextKeyedServiceFactory* ArcPolicyBridge::GetFactory() {
+  return ArcPolicyBridgeFactory::GetInstance();
+}
+
 base::WeakPtr<ArcPolicyBridge> ArcPolicyBridge::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
@@ -371,8 +381,7 @@ ArcPolicyBridge::ArcPolicyBridge(content::BrowserContext* context,
     : context_(context),
       arc_bridge_service_(bridge_service),
       policy_service_(policy_service),
-      instance_guid_(base::GenerateGUID()),
-      weak_ptr_factory_(this) {
+      instance_guid_(base::GenerateGUID()) {
   VLOG(2) << "ArcPolicyBridge::ArcPolicyBridge";
   arc_bridge_service_->policy()->SetHost(this);
   arc_bridge_service_->policy()->AddObserver(this);
@@ -436,12 +445,10 @@ void ArcPolicyBridge::ReportCompliance(const std::string& request,
   // the callee interface.
   auto repeating_callback =
       base::AdaptCallbackForRepeating(std::move(callback));
-  data_decoder::SafeJsonParser::Parse(
-      content::ServiceManagerConnection::GetForProcess()->GetConnector(),
+  data_decoder::DataDecoder::ParseJsonIsolated(
       request,
-      base::Bind(&ArcPolicyBridge::OnReportComplianceParseSuccess,
-                 weak_ptr_factory_.GetWeakPtr(), repeating_callback),
-      base::Bind(&OnReportComplianceParseFailure, repeating_callback));
+      base::BindOnce(&ArcPolicyBridge::OnReportComplianceParse,
+                     weak_ptr_factory_.GetWeakPtr(), repeating_callback));
 }
 
 void ArcPolicyBridge::ReportCloudDpsRequested(
@@ -469,6 +476,24 @@ void ArcPolicyBridge::ReportCloudDpsFailed(base::Time time,
     observer.OnCloudDpsFailed(time, package_name, reason);
 }
 
+void ArcPolicyBridge::ReportDirectInstall(
+    base::Time time,
+    const std::vector<std::string>& package_names) {
+  const std::set<std::string> packages_set(package_names.begin(),
+                                           package_names.end());
+  for (Observer& observer : observers_)
+    observer.OnReportDirectInstall(time, packages_set);
+}
+
+void ArcPolicyBridge::ReportForceInstallMainLoopFailed(
+    base::Time time,
+    const std::vector<std::string>& package_names) {
+  const std::set<std::string> packages_set(package_names.begin(),
+                                           package_names.end());
+  for (Observer& observer : observers_)
+    observer.OnReportForceInstallMainLoopFailed(time, packages_set);
+}
+
 void ArcPolicyBridge::OnPolicyUpdated(const policy::PolicyNamespace& ns,
                                       const policy::PolicyMap& previous,
                                       const policy::PolicyMap& current) {
@@ -481,7 +506,7 @@ void ArcPolicyBridge::OnPolicyUpdated(const policy::PolicyNamespace& ns,
   const std::string policies_hash = GetPoliciesHash(GetCurrentJSONPolicies());
   if (policies_hash != update_notification_policies_hash_) {
     update_notification_policies_hash_ = policies_hash;
-    update_notification_time_ = base::Time::Now();
+    update_notification_time_ = base::TimeTicks::Now();
     compliance_since_update_timing_reported_ = false;
   }
 
@@ -513,7 +538,7 @@ void ArcPolicyBridge::OnCommandReceived(
 
 void ArcPolicyBridge::InitializePolicyService() {
   auto* profile_policy_connector =
-      policy::ProfilePolicyConnectorFactory::GetForBrowserContext(context_);
+      Profile::FromBrowserContext(context_)->GetProfilePolicyConnector();
   policy_service_ = profile_policy_connector->policy_service();
   is_managed_ = profile_policy_connector->IsManaged();
 }
@@ -529,24 +554,34 @@ std::string ArcPolicyBridge::GetCurrentJSONPolicies() const {
   const Profile* const profile = Profile::FromBrowserContext(context_);
   const user_manager::User* const user =
       chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+  const ArcSmartCardManagerBridge* smart_card_manager =
+      ArcSmartCardManagerBridge::GetForBrowserContext(context_);
 
   return GetFilteredJSONPolicies(policy_map, profile->GetPrefs(),
-                                 instance_guid_, user->IsAffiliated());
+                                 instance_guid_, user->IsAffiliated(),
+                                 smart_card_manager);
 }
 
-void ArcPolicyBridge::OnReportComplianceParseSuccess(
+void ArcPolicyBridge::OnReportComplianceParse(
     base::OnceCallback<void(const std::string&)> callback,
-    std::unique_ptr<base::Value> parsed_json) {
+    data_decoder::DataDecoder::ValueOrError result) {
+  if (!result.value) {
+    // TODO(poromov@): Report to histogram.
+    DLOG(ERROR) << "Can't parse policy compliance report";
+    std::move(callback).Run(kPolicyCompliantJson);
+    return;
+  }
+
   // Always returns "compliant".
   std::move(callback).Run(kPolicyCompliantJson);
   Profile::FromBrowserContext(context_)->GetPrefs()->SetBoolean(
       prefs::kArcPolicyComplianceReported, true);
 
   const base::DictionaryValue* dict = nullptr;
-  if (parsed_json->GetAsDictionary(&dict)) {
+  if (result.value->GetAsDictionary(&dict)) {
     UpdateComplianceReportMetrics(dict);
     for (Observer& observer : observers_) {
-      observer.OnComplianceReportReceived(parsed_json.get());
+      observer.OnComplianceReportReceived(&result.value.value());
     }
   }
 }
@@ -561,12 +596,13 @@ void ArcPolicyBridge::UpdateComplianceReportMetrics(
   if (!is_arc_plus_plus_report_successful || reported_policies_hash.empty())
     return;
 
-  const base::Time now = base::Time::Now();
+  const base::TimeTicks now = base::TimeTicks::Now();
   ArcSessionManager* const session_manager = ArcSessionManager::Get();
 
   if (reported_policies_hash == initial_policies_hash_ &&
       !first_compliance_timing_reported_) {
-    const base::Time sign_in_start_time = session_manager->sign_in_start_time();
+    const base::TimeTicks sign_in_start_time =
+        session_manager->sign_in_start_time();
     if (!sign_in_start_time.is_null()) {
       UpdateFirstComplianceSinceSignInTiming(now - sign_in_start_time);
     } else {

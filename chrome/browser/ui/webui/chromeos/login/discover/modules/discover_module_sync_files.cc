@@ -30,8 +30,7 @@ class DiscoverModuleSyncFilesHandler : public DiscoverHandler {
 
 DiscoverModuleSyncFilesHandler::DiscoverModuleSyncFilesHandler(
     JSCallsContainer* js_calls_container)
-    : DiscoverHandler(DiscoverModuleSyncFiles::kModuleName,
-                      js_calls_container) {}
+    : DiscoverHandler(js_calls_container) {}
 
 void DiscoverModuleSyncFilesHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {

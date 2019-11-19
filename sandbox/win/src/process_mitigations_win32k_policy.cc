@@ -40,7 +40,7 @@ const GUID DXGKMDT_OPM_SET_PROTECTION_LEVEL = {
     {0x9f, 0x00, 0xb4, 0x2b, 0x09, 0x19, 0xc0, 0xda}};
 
 void StringToUnicodeString(PUNICODE_STRING unicode_string,
-                           const base::string16& device_name) {
+                           const std::wstring& device_name) {
   static RtlInitUnicodeStringFunction RtlInitUnicodeString;
   if (!RtlInitUnicodeString) {
     HMODULE ntdll = ::GetModuleHandle(kNtdllName);
@@ -88,11 +88,11 @@ T GetExportedFunc(const wchar_t* libname, const char* name) {
 
 struct ValidateMonitorParams {
   HMONITOR monitor;
-  base::string16 device_name;
+  std::wstring device_name;
   bool result;
 };
 
-bool GetMonitorDeviceName(HMONITOR monitor, base::string16* device_name) {
+bool GetMonitorDeviceName(HMONITOR monitor, std::wstring* device_name) {
   MONITORINFOEXW monitor_info = {};
   monitor_info.cbSize = sizeof(monitor_info);
   if (!USERFUNC(GetMonitorInfoW)(monitor, &monitor_info))
@@ -109,7 +109,7 @@ BOOL CALLBACK ValidateMonitorEnumProc(HMONITOR monitor,
                                       LPARAM data) {
   ValidateMonitorParams* valid_params =
       reinterpret_cast<ValidateMonitorParams*>(data);
-  base::string16 device_name;
+  std::wstring device_name;
   bool result = false;
   if (valid_params->device_name.empty()) {
     result = monitor == valid_params->monitor;
@@ -143,38 +143,38 @@ bool ProcessMitigationsWin32KLockdownPolicy::GenerateRules(
     TargetPolicy::Semantics semantics,
     LowLevelPolicy* policy) {
   PolicyRule rule(FAKE_SUCCESS);
-  if (!policy->AddRule(IPC_GDI_GDIDLLINITIALIZE_TAG, &rule))
+  if (!policy->AddRule(IpcTag::GDI_GDIDLLINITIALIZE, &rule))
     return false;
-  if (!policy->AddRule(IPC_GDI_GETSTOCKOBJECT_TAG, &rule))
+  if (!policy->AddRule(IpcTag::GDI_GETSTOCKOBJECT, &rule))
     return false;
-  if (!policy->AddRule(IPC_USER_REGISTERCLASSW_TAG, &rule))
+  if (!policy->AddRule(IpcTag::USER_REGISTERCLASSW, &rule))
     return false;
   if (semantics != TargetPolicy::IMPLEMENT_OPM_APIS)
     return true;
-  if (!policy->AddRule(IPC_USER_ENUMDISPLAYMONITORS_TAG, &rule))
+  if (!policy->AddRule(IpcTag::USER_ENUMDISPLAYMONITORS, &rule))
     return false;
-  if (!policy->AddRule(IPC_USER_ENUMDISPLAYDEVICES_TAG, &rule))
+  if (!policy->AddRule(IpcTag::USER_ENUMDISPLAYDEVICES, &rule))
     return false;
-  if (!policy->AddRule(IPC_USER_GETMONITORINFO_TAG, &rule))
+  if (!policy->AddRule(IpcTag::USER_GETMONITORINFO, &rule))
     return false;
-  if (!policy->AddRule(IPC_GDI_CREATEOPMPROTECTEDOUTPUTS_TAG, &rule))
+  if (!policy->AddRule(IpcTag::GDI_CREATEOPMPROTECTEDOUTPUTS, &rule))
     return false;
-  if (!policy->AddRule(IPC_GDI_GETCERTIFICATE_TAG, &rule))
+  if (!policy->AddRule(IpcTag::GDI_GETCERTIFICATE, &rule))
     return false;
-  if (!policy->AddRule(IPC_GDI_GETCERTIFICATESIZE_TAG, &rule))
+  if (!policy->AddRule(IpcTag::GDI_GETCERTIFICATESIZE, &rule))
     return false;
-  if (!policy->AddRule(IPC_GDI_DESTROYOPMPROTECTEDOUTPUT_TAG, &rule))
+  if (!policy->AddRule(IpcTag::GDI_DESTROYOPMPROTECTEDOUTPUT, &rule))
     return false;
-  if (!policy->AddRule(IPC_GDI_CONFIGUREOPMPROTECTEDOUTPUT_TAG, &rule))
+  if (!policy->AddRule(IpcTag::GDI_CONFIGUREOPMPROTECTEDOUTPUT, &rule))
     return false;
-  if (!policy->AddRule(IPC_GDI_GETOPMINFORMATION_TAG, &rule))
+  if (!policy->AddRule(IpcTag::GDI_GETOPMINFORMATION, &rule))
     return false;
-  if (!policy->AddRule(IPC_GDI_GETOPMRANDOMNUMBER_TAG, &rule))
+  if (!policy->AddRule(IpcTag::GDI_GETOPMRANDOMNUMBER, &rule))
     return false;
-  if (!policy->AddRule(IPC_GDI_GETSUGGESTEDOPMPROTECTEDOUTPUTARRAYSIZE_TAG,
+  if (!policy->AddRule(IpcTag::GDI_GETSUGGESTEDOPMPROTECTEDOUTPUTARRAYSIZE,
                        &rule))
     return false;
-  if (!policy->AddRule(IPC_GDI_SETOPMSIGNINGKEYANDSEQUENCENUMBERS_TAG, &rule))
+  if (!policy->AddRule(IpcTag::GDI_SETOPMSIGNINGKEYANDSEQUENCENUMBERS, &rule))
     return false;
   return true;
 }
@@ -208,7 +208,7 @@ bool ProcessMitigationsWin32KLockdownPolicy::GetMonitorInfoAction(
 NTSTATUS ProcessMitigationsWin32KLockdownPolicy::
     GetSuggestedOPMProtectedOutputArraySizeAction(
         const ClientInfo& client_info,
-        const base::string16& device_name,
+        const std::wstring& device_name,
         uint32_t* suggested_array_size) {
   if (!IsValidMonitorOrDeviceName(nullptr, device_name.c_str())) {
     return STATUS_ACCESS_DENIED;
@@ -226,7 +226,7 @@ NTSTATUS ProcessMitigationsWin32KLockdownPolicy::
 NTSTATUS
 ProcessMitigationsWin32KLockdownPolicy::CreateOPMProtectedOutputsAction(
     const ClientInfo& client_info,
-    const base::string16& device_name,
+    const std::wstring& device_name,
     HANDLE* protected_outputs,
     uint32_t array_input_size,
     uint32_t* array_output_size) {
@@ -249,7 +249,7 @@ ProcessMitigationsWin32KLockdownPolicy::CreateOPMProtectedOutputsAction(
 
 NTSTATUS ProcessMitigationsWin32KLockdownPolicy::GetCertificateSizeAction(
     const ClientInfo& client_info,
-    const base::string16& device_name,
+    const std::wstring& device_name,
     uint32_t* cert_size) {
   if (!IsValidMonitorOrDeviceName(nullptr, device_name.c_str())) {
     return STATUS_ACCESS_DENIED;
@@ -264,7 +264,7 @@ NTSTATUS ProcessMitigationsWin32KLockdownPolicy::GetCertificateSizeAction(
 
 NTSTATUS ProcessMitigationsWin32KLockdownPolicy::GetCertificateAction(
     const ClientInfo& client_info,
-    const base::string16& device_name,
+    const std::wstring& device_name,
     BYTE* cert_data,
     uint32_t cert_size) {
   if (!IsValidMonitorOrDeviceName(nullptr, device_name.c_str())) {

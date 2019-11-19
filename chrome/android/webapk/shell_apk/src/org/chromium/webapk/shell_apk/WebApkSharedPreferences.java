@@ -28,8 +28,14 @@ public final class WebApkSharedPreferences {
             "org.chromium.webapk.shell_apk.dex_version";
 
     /** Timestamp of when the WebAPK asked the host browser to relaunch the WebAPK. */
-    public static final String SHARED_PREF_REQUEST_HOST_BROWSER_RELAUNCH_TIMESTAMP =
+    public static final String PREF_REQUEST_HOST_BROWSER_RELAUNCH_TIMESTAMP =
             "org.chromium.webapk.shell_apk.request_host_browser_relaunch_timestamp";
+
+    /** Width of splash screen during previous WebAPK launch. */
+    public static final String PREF_SPLASH_WIDTH = "org.chromium.webapk.shell_apk.splash_width";
+
+    /** Height of splash screen during previous WebAPK launch. */
+    public static final String PREF_SPLASH_HEIGHT = "org.chromium.webapk.shell_apk.splash_height";
 
     public static SharedPreferences getPrefs(Context context) {
         return context.getSharedPreferences(PREF_PACKAGE, Context.MODE_PRIVATE);

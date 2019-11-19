@@ -16,9 +16,7 @@ namespace quick_unlock {
 
 // static
 void PinStoragePrefs::RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  // Mark it as PUBLIC so ash could access this pref.
-  registry->RegisterStringPref(ash::prefs::kQuickUnlockPinSalt, "",
-                               PrefRegistry::PUBLIC);
+  registry->RegisterStringPref(ash::prefs::kQuickUnlockPinSalt, "");
   registry->RegisterStringPref(prefs::kQuickUnlockPinSecret, "");
 }
 

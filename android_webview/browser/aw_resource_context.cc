@@ -30,7 +30,6 @@ void AwResourceContext::SetExtraHeaders(
 }
 
 std::string AwResourceContext::GetExtraHeaders(const GURL& url) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
   if (!url.is_valid()) return std::string();
   base::AutoLock scoped_lock(extra_headers_lock_);
   std::map<std::string, std::string>::iterator iter =

@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "ios/web/public/app/web_main_parts.h"
+#include "ios/web/public/init/web_main_parts.h"
 
 namespace ios_web_view {
 

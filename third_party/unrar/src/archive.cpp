@@ -2,7 +2,6 @@
 
 #include "arccmt.cpp"
 
-namespace third_party_unrar {
 
 Archive::Archive(RAROptions *InitCmd)
 {
@@ -101,7 +100,6 @@ RARFORMAT Archive::IsSignature(const byte *D,size_t Size)
 {
   RARFORMAT Type=RARFMT_NONE;
   if (Size>=1 && D[0]==0x52)
-  {
 #ifndef SFX_MODULE
     if (Size>=4 && D[1]==0x45 && D[2]==0x7e && D[3]==0x5e)
       Type=RARFMT14;
@@ -121,7 +119,6 @@ RARFORMAT Archive::IsSignature(const byte *D,size_t Size)
             if (D[6]>1 && D[6]<5)
               Type=RARFMT_FUTURE;
       }
-  }
   return Type;
 }
 
@@ -206,7 +203,7 @@ bool Archive::IsArchive(bool EnableBroken)
     HEADER_TYPE Type=GetHeaderType();
     // In RAR 5.0 we need to quit after reading HEAD_CRYPT if we wish to
     // avoid the password prompt.
-    StartFound=Type==HEAD_MAIN || (SilentOpen && Type==HEAD_CRYPT);
+    StartFound=Type==HEAD_MAIN || SilentOpen && Type==HEAD_CRYPT;
     if (StartFound)
       break;
   }
@@ -347,5 +344,3 @@ FileHandle Archive::GetTempFileHandle() {
   return hTempFile;
 }
 #endif
-
-}  // namespace third_party_unrar

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef NGSpaceUtils_h
-#define NGSpaceUtils_h
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_SPACE_UTILS_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_SPACE_UTILS_H_
 
 #include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
@@ -44,4 +44,4 @@ void SetOrthogonalFallbackInlineSizeIfNeeded(const ComputedStyle& parent_style,
 
 }  // namespace blink
 
-#endif  // NGSpaceUtils_h
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_SPACE_UTILS_H_

@@ -19,10 +19,14 @@ class FilePath;
 
 namespace net {
 class CookieStore;
+class HostResolver;
+class HostResolverManager;
 class HttpTransactionFactory;
 class HttpUserAgentSettings;
 class NetLog;
 class ProxyConfigService;
+class QuicContext;
+class URLRequestContextGetter;
 class URLRequestJobFactory;
 }  // namespace net
 
@@ -59,10 +63,6 @@ class URLRequestContextFactory {
     return app_network_delegate_.get();
   }
 
-  net::HostResolver* host_resolver() const {
-    return host_resolver_.get();
-  }
-
   // Initialize the CastNetworkDelegate objects. This needs to be done
   // after the CastService is created, but before any URL requests are made.
   void InitializeNetworkDelegates();
@@ -77,11 +77,13 @@ class URLRequestContextFactory {
   void InitializeMainContextDependencies(
       content::ProtocolHandlerMap* protocol_handlers,
       content::URLRequestInterceptorScopedVector request_interceptors);
-  void InitializeMediaContextDependencies(net::HttpTransactionFactory* factory);
+  void InitializeMediaContextDependencies();
 
   void PopulateNetworkSessionParams(
       bool ignore_certificate_errors,
       net::HttpNetworkSession::Params* session_params);
+  std::unique_ptr<net::HttpNetworkSession> CreateNetworkSession(
+      const net::URLRequestContext* context);
 
   // These are called by the RequestContextGetters to create each
   // RequestContext.
@@ -98,7 +100,8 @@ class URLRequestContextFactory {
       net::URLRequestContext* context,
       const std::unique_ptr<net::URLRequestJobFactory>& job_factory,
       const std::unique_ptr<net::CookieStore>& cookie_store,
-      const std::unique_ptr<CastNetworkDelegate>& network_delegate);
+      const std::unique_ptr<CastNetworkDelegate>& network_delegate,
+      const std::unique_ptr<net::HostResolver>& host_resolver);
 
   scoped_refptr<net::URLRequestContextGetter> system_getter_;
   scoped_refptr<net::URLRequestContextGetter> media_getter_;
@@ -112,8 +115,7 @@ class URLRequestContextFactory {
   // The URLRequestContextStorage class manages dependent resources for a single
   // instance of URLRequestContext only.
   bool system_dependencies_initialized_;
-  std::unique_ptr<net::HostResolver> host_resolver_;
-  std::unique_ptr<net::ChannelIDService> channel_id_service_;
+  std::unique_ptr<net::HostResolverManager> host_resolver_manager_;
   std::unique_ptr<net::CertVerifier> cert_verifier_;
   std::unique_ptr<net::SSLConfigService> ssl_config_service_;
   std::unique_ptr<net::TransportSecurityState> transport_security_state_;
@@ -124,17 +126,24 @@ class URLRequestContextFactory {
   std::unique_ptr<net::HttpAuthHandlerFactory> http_auth_handler_factory_;
   std::unique_ptr<net::HttpServerProperties> http_server_properties_;
   std::unique_ptr<net::HttpUserAgentSettings> http_user_agent_settings_;
+  std::unique_ptr<net::HttpNetworkSession> system_network_session_;
   std::unique_ptr<net::HttpTransactionFactory> system_transaction_factory_;
   std::unique_ptr<net::CookieStore> system_cookie_store_;
   std::unique_ptr<net::URLRequestJobFactory> system_job_factory_;
+  std::unique_ptr<net::HostResolver> system_host_resolver_;
+  std::unique_ptr<net::QuicContext> quic_context_;
 
   bool main_dependencies_initialized_;
+  std::unique_ptr<net::HttpNetworkSession> main_network_session_;
   std::unique_ptr<net::HttpTransactionFactory> main_transaction_factory_;
   std::unique_ptr<net::CookieStore> main_cookie_store_;
   std::unique_ptr<net::URLRequestJobFactory> main_job_factory_;
+  std::unique_ptr<net::HostResolver> main_host_resolver_;
 
   bool media_dependencies_initialized_;
+  std::unique_ptr<net::HttpNetworkSession> media_network_session_;
   std::unique_ptr<net::HttpTransactionFactory> media_transaction_factory_;
+  std::unique_ptr<net::HostResolver> media_host_resolver_;
 
   std::unique_ptr<PrefProxyConfigTracker> pref_proxy_config_tracker_impl_;
 

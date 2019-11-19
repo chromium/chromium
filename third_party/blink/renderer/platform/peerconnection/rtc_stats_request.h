@@ -40,7 +40,7 @@ namespace blink {
 class MediaStreamComponent;
 class RTCStatsResponseBase;
 
-class RTCStatsRequest : public GarbageCollectedFinalized<RTCStatsRequest> {
+class RTCStatsRequest : public GarbageCollected<RTCStatsRequest> {
  public:
   virtual ~RTCStatsRequest() = default;
 

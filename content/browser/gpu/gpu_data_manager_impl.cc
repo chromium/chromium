@@ -25,24 +25,31 @@ void GpuDataManagerImpl::BlacklistWebGLForTesting() {
   private_->BlacklistWebGLForTesting();
 }
 
-gpu::GPUInfo GpuDataManagerImpl::GetGPUInfo() const {
+gpu::GPUInfo GpuDataManagerImpl::GetGPUInfo() {
   base::AutoLock auto_lock(lock_);
   return private_->GetGPUInfo();
 }
 
-bool GpuDataManagerImpl::GpuAccessAllowed(std::string* reason) const {
+bool GpuDataManagerImpl::GpuAccessAllowed(std::string* reason) {
   base::AutoLock auto_lock(lock_);
   return private_->GpuAccessAllowed(reason);
 }
 
-void GpuDataManagerImpl::RequestCompleteGpuInfoIfNeeded() {
+void GpuDataManagerImpl::RequestDxdiagDx12VulkanGpuInfoIfNeeded(
+    GpuInfoRequest request,
+    bool delayed) {
   base::AutoLock auto_lock(lock_);
-  private_->RequestCompleteGpuInfoIfNeeded();
+  private_->RequestDxdiagDx12VulkanGpuInfoIfNeeded(request, delayed);
 }
 
-bool GpuDataManagerImpl::IsEssentialGpuInfoAvailable() const {
+bool GpuDataManagerImpl::IsEssentialGpuInfoAvailable() {
   base::AutoLock auto_lock(lock_);
   return private_->IsEssentialGpuInfoAvailable();
+}
+
+bool GpuDataManagerImpl::IsDx12VulkanVersionAvailable() const {
+  base::AutoLock auto_lock(lock_);
+  return private_->IsDx12VulkanVersionAvailable();
 }
 
 bool GpuDataManagerImpl::IsGpuFeatureInfoAvailable() const {
@@ -57,7 +64,7 @@ gpu::GpuFeatureStatus GpuDataManagerImpl::GetFeatureStatus(
 }
 
 void GpuDataManagerImpl::RequestVideoMemoryUsageStatsUpdate(
-    VideoMemoryUsageStatsCallback callback) const {
+    VideoMemoryUsageStatsCallback callback) {
   base::AutoLock auto_lock(lock_);
   private_->RequestVideoMemoryUsageStatsUpdate(std::move(callback));
 }
@@ -79,20 +86,15 @@ void GpuDataManagerImpl::DisableHardwareAcceleration() {
   private_->DisableHardwareAcceleration();
 }
 
-bool GpuDataManagerImpl::HardwareAccelerationEnabled() const {
+bool GpuDataManagerImpl::HardwareAccelerationEnabled() {
   base::AutoLock auto_lock(lock_);
   return private_->HardwareAccelerationEnabled();
 }
 
-void GpuDataManagerImpl::AppendGpuCommandLine(
-    base::CommandLine* command_line) const {
+void GpuDataManagerImpl::AppendGpuCommandLine(base::CommandLine* command_line,
+                                              GpuProcessKind kind) {
   base::AutoLock auto_lock(lock_);
-  private_->AppendGpuCommandLine(command_line);
-}
-
-void GpuDataManagerImpl::RequestGpuSupportedRuntimeVersion() const {
-  base::AutoLock auto_lock(lock_);
-  private_->RequestGpuSupportedRuntimeVersion();
+  private_->AppendGpuCommandLine(command_line, kind);
 }
 
 bool GpuDataManagerImpl::GpuProcessStartAllowed() const {
@@ -119,6 +121,21 @@ void GpuDataManagerImpl::UpdateDx12VulkanInfo(
   base::AutoLock auto_lock(lock_);
   private_->UpdateDx12VulkanInfo(dx12_vulkan_version_info);
 }
+
+void GpuDataManagerImpl::UpdateDxDiagNodeRequestStatus(bool request_continues) {
+  base::AutoLock auto_lock(lock_);
+  private_->UpdateDxDiagNodeRequestStatus(request_continues);
+}
+
+void GpuDataManagerImpl::UpdateDx12VulkanRequestStatus(bool request_continues) {
+  base::AutoLock auto_lock(lock_);
+  private_->UpdateDx12VulkanRequestStatus(request_continues);
+}
+
+bool GpuDataManagerImpl::Dx12VulkanRequested() const {
+  base::AutoLock auto_lock(lock_);
+  return private_->Dx12VulkanRequested();
+}
 #endif
 
 void GpuDataManagerImpl::UpdateGpuFeatureInfo(
@@ -128,6 +145,12 @@ void GpuDataManagerImpl::UpdateGpuFeatureInfo(
   base::AutoLock auto_lock(lock_);
   private_->UpdateGpuFeatureInfo(gpu_feature_info,
                                  gpu_feature_info_for_hardware_gpu);
+}
+
+void GpuDataManagerImpl::UpdateGpuExtraInfo(
+    const gpu::GpuExtraInfo& gpu_extra_info) {
+  base::AutoLock auto_lock(lock_);
+  private_->UpdateGpuExtraInfo(gpu_extra_info);
 }
 
 gpu::GpuFeatureInfo GpuDataManagerImpl::GetGpuFeatureInfo() const {
@@ -146,10 +169,26 @@ gpu::GpuFeatureInfo GpuDataManagerImpl::GetGpuFeatureInfoForHardwareGpu()
   return private_->GetGpuFeatureInfoForHardwareGpu();
 }
 
-void GpuDataManagerImpl::UpdateGpuPreferences(
-    gpu::GpuPreferences* gpu_preferences) const {
+gpu::GpuExtraInfo GpuDataManagerImpl::GetGpuExtraInfo() const {
   base::AutoLock auto_lock(lock_);
-  private_->UpdateGpuPreferences(gpu_preferences);
+  return private_->GetGpuExtraInfo();
+}
+
+bool GpuDataManagerImpl::IsGpuCompositingDisabled() const {
+  base::AutoLock auto_lock(lock_);
+  return private_->IsGpuCompositingDisabled();
+}
+
+void GpuDataManagerImpl::SetGpuCompositingDisabled() {
+  base::AutoLock auto_lock(lock_);
+  private_->SetGpuCompositingDisabled();
+}
+
+void GpuDataManagerImpl::UpdateGpuPreferences(
+    gpu::GpuPreferences* gpu_preferences,
+    GpuProcessKind kind) const {
+  base::AutoLock auto_lock(lock_);
+  private_->UpdateGpuPreferences(gpu_preferences, kind);
 }
 
 void GpuDataManagerImpl::AddLogMessage(int level,
@@ -204,11 +243,6 @@ bool GpuDataManagerImpl::UpdateActiveGpu(uint32_t vendor_id,
                                          uint32_t device_id) {
   base::AutoLock auto_lock(lock_);
   return private_->UpdateActiveGpu(vendor_id, device_id);
-}
-
-void GpuDataManagerImpl::NotifyGpuInfoUpdate() {
-  base::AutoLock auto_lock(lock_);
-  private_->NotifyGpuInfoUpdate();
 }
 
 gpu::GpuMode GpuDataManagerImpl::GetGpuMode() const {

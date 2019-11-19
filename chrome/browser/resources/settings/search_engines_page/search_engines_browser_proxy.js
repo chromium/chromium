@@ -68,8 +68,6 @@ cr.define('settings', function() {
      * @return {!Promise<boolean>}
      */
     validateSearchEngineInput(fieldName, fieldValue) {}
-
-    turnOnGoogleAssistant() {}
   }
 
   /**
@@ -114,11 +112,6 @@ cr.define('settings', function() {
     validateSearchEngineInput(fieldName, fieldValue) {
       return cr.sendWithPromise(
           'validateSearchEngineInput', fieldName, fieldValue);
-    }
-
-    /** @override */
-    turnOnGoogleAssistant() {
-      chrome.send('turnOnGoogleAssistant');
     }
   }
 

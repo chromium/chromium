@@ -21,7 +21,7 @@ bool ScopedSimpleKeyboardHook::IsKeyLocked(ui::DomCode dom_code) {
   if (dom_code == ui::DomCode::NONE)
     return false;
 
-  return !dom_codes_ || base::ContainsKey(dom_codes_.value(), dom_code);
+  return !dom_codes_ || base::Contains(dom_codes_.value(), dom_code);
 }
 
 }  // namespace aura

@@ -52,6 +52,7 @@
 
 namespace cc {
 class Layer;
+struct BeginMainFrameMetrics;
 }
 
 namespace blink {
@@ -60,8 +61,6 @@ class Element;
 class HTMLPlugInElement;
 class LocalFrame;
 class PaintLayerCompositor;
-class UserGestureToken;
-class WebLayerTreeView;
 class WebMouseEvent;
 class WebMouseWheelEvent;
 class WebFrameWidgetImpl;
@@ -69,8 +68,6 @@ class WebFrameWidgetImpl;
 class WebFrameWidgetImpl final : public WebFrameWidgetBase,
                                  public PageWidgetEventHandler {
  public:
-  static WebFrameWidgetImpl* Create(WebWidgetClient&);
-
   explicit WebFrameWidgetImpl(WebWidgetClient&);
   ~WebFrameWidgetImpl() override;
 
@@ -78,7 +75,6 @@ class WebFrameWidgetImpl final : public WebFrameWidgetBase,
   void Close() override;
   WebSize Size() override;
   void Resize(const WebSize&) override;
-  void ResizeVisualViewport(const WebSize&) override;
   void DidEnterFullscreen() override;
   void DidExitFullscreen() override;
   void SetSuppressFrameRequestsWorkaroundFor704763Only(bool) final;
@@ -87,25 +83,29 @@ class WebFrameWidgetImpl final : public WebFrameWidgetBase,
   void DidBeginFrame() override;
   void BeginRafAlignedInput() override;
   void EndRafAlignedInput() override;
+  void BeginUpdateLayers() override;
+  void EndUpdateLayers() override;
+  void BeginCommitCompositorFrame() override;
+  void EndCommitCompositorFrame() override;
   void RecordStartOfFrameMetrics() override;
   void RecordEndOfFrameMetrics(base::TimeTicks) override;
+  std::unique_ptr<cc::BeginMainFrameMetrics> GetBeginMainFrameMetrics()
+      override;
   void UpdateLifecycle(LifecycleUpdate requested_update,
                        LifecycleUpdateReason reason) override;
-  void PaintContent(cc::PaintCanvas*, const WebRect&) override;
-  void CompositeAndReadbackAsync(
-      base::OnceCallback<void(const SkBitmap&)> callback) override;
   void ThemeChanged() override;
   WebHitTestResult HitTestResultAt(const gfx::Point&) override;
   WebInputEventResult DispatchBufferedTouchEvents() override;
   WebInputEventResult HandleInputEvent(const WebCoalescedInputEvent&) override;
   void SetCursorVisibilityState(bool is_visible) override;
+  void OnFallbackCursorModeToggled(bool is_on) override;
 
   void ApplyViewportChanges(const ApplyViewportChangesArgs&) override;
   void MouseCaptureLost() override;
   void SetFocus(bool enable) override;
   bool SelectionBounds(WebRect& anchor, WebRect& focus) const override;
   bool IsAcceleratedCompositingActive() const override;
-  void SetRemoteViewportIntersection(const WebRect&, bool) override;
+  void SetRemoteViewportIntersection(const ViewportIntersectionState&) override;
   void SetIsInert(bool) override;
   void SetInheritedEffectiveTouchAction(TouchAction) override;
   void UpdateRenderThrottlingStatus(bool is_throttled,
@@ -113,6 +113,7 @@ class WebFrameWidgetImpl final : public WebFrameWidgetBase,
   WebURL GetURLForDebugTrace() override;
 
   // WebFrameWidget implementation.
+  void DidDetachLocalFrameTree() override;
   WebInputMethodController* GetActiveWebInputMethodController() const override;
   bool ScrollFocusedEditableElementIntoView() override;
 
@@ -124,29 +125,20 @@ class WebFrameWidgetImpl final : public WebFrameWidgetBase,
   PaintLayerCompositor* Compositor() const;
 
   // WebFrameWidgetBase overrides:
-  void SetLayerTreeView(WebLayerTreeView*, cc::AnimationHost*) override;
+  void SetAnimationHost(cc::AnimationHost*) override;
   bool ForSubframe() const override { return true; }
   void IntrinsicSizingInfoChanged(const IntrinsicSizingInfo&) override;
   void DidCreateLocalRootView() override;
 
-  void SetRootGraphicsLayer(GraphicsLayer*) override;
   void SetRootLayer(scoped_refptr<cc::Layer>) override;
-  WebLayerTreeView* GetLayerTreeView() const override;
   cc::AnimationHost* AnimationHost() const override;
   HitTestResult CoreHitTestResultAt(const gfx::Point&) override;
   void ZoomToFindInPageRect(const WebRect& rect_in_root_frame) override;
-
-  // Exposed for the purpose of overriding device metrics.
-  void SendResizeEventAndRepaint();
 
   void UpdateMainFrameLayoutSize();
 
   // Event related methods:
   void MouseContextMenu(const WebMouseEvent&);
-
-  GraphicsLayer* RootGraphicsLayer() const override {
-    return root_graphics_layer_;
-  }
 
   void Trace(blink::Visitor*) override;
 
@@ -155,15 +147,14 @@ class WebFrameWidgetImpl final : public WebFrameWidgetBase,
 
   // Perform a hit test for a point relative to the root frame of the page.
   HitTestResult HitTestResultForRootFramePos(
-      const LayoutPoint& pos_in_root_frame);
+      const PhysicalOffset& pos_in_root_frame);
 
-  void SetIsAcceleratedCompositingActive(bool);
   void UpdateLayerTreeViewport();
 
   // PageWidgetEventHandler functions
   void HandleMouseLeave(LocalFrame&, const WebMouseEvent&) override;
   void HandleMouseDown(LocalFrame&, const WebMouseEvent&) override;
-  void HandleMouseUp(LocalFrame&, const WebMouseEvent&) override;
+  WebInputEventResult HandleMouseUp(LocalFrame&, const WebMouseEvent&) override;
   WebInputEventResult HandleMouseWheel(LocalFrame&,
                                        const WebMouseWheelEvent&) override;
   WebInputEventResult HandleGestureEvent(const WebGestureEvent&) override;
@@ -180,20 +171,22 @@ class WebFrameWidgetImpl final : public WebFrameWidgetBase,
   // includes the caret and is with respect to absolute coordinates.
   void GetScrollParamsForFocusedEditableElement(
       const Element& element,
-      LayoutRect& rect_to_scroll,
+      PhysicalRect& rect_to_scroll,
       WebScrollIntoViewParams& params);
 
   base::Optional<WebSize> size_;
 
   // If set, the (plugin) element which has mouse capture.
   Member<HTMLPlugInElement> mouse_capture_element_;
-  scoped_refptr<UserGestureToken> mouse_capture_gesture_token_;
 
-  WebLayerTreeView* layer_tree_view_ = nullptr;
   cc::AnimationHost* animation_host_ = nullptr;
   scoped_refptr<cc::Layer> root_layer_;
-  GraphicsLayer* root_graphics_layer_ = nullptr;
-  base::TimeTicks raf_aligned_input_start_time_;
+
+  // Metrics gathering timing information
+  base::Optional<base::TimeTicks> raf_aligned_input_start_time_;
+  base::Optional<base::TimeTicks> update_layers_start_time_;
+  base::Optional<base::TimeTicks> commit_compositor_frame_start_time_;
+
   bool is_accelerated_compositing_active_ = false;
 
   bool suppress_next_keypress_event_ = false;

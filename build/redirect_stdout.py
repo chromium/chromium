@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import print_function
+
 import subprocess
 import sys
 
@@ -12,7 +14,7 @@ import sys
 
 if __name__ == '__main__':
   if len(sys.argv) < 2:
-    print >> sys.stderr, "Usage: %s output_file command..." % (sys.argv[0])
+    print("Usage: %s output_file command..." % sys.argv[0], file=sys.stderr)
     sys.exit(1)
 
   with open(sys.argv[1], 'w') as fp:

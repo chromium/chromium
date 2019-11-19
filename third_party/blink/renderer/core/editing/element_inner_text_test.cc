@@ -47,4 +47,14 @@ TEST_P(ElementInnerTest, SVGElementAsTableRow) {
   EXPECT_EQ("abc", target.innerText());
 }
 
+// https://crbug.com/947422
+TEST_P(ElementInnerTest, OverflowingListItemWithFloatFirstLetter) {
+  InsertStyleElement(
+      "div { display: list-item; overflow: hidden; }"
+      "div::first-letter { float: right; }");
+  SetBodyContent("<div id=target>foo</div>");
+  Element& target = *GetDocument().getElementById("target");
+  EXPECT_EQ("foo", target.innerText());
+}
+
 }  // namespace blink

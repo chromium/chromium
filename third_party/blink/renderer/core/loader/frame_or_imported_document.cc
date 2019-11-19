@@ -13,14 +13,14 @@
 namespace blink {
 
 LocalFrame& FrameOrImportedDocument::GetFrame() const {
+  DCHECK(document_);
   if (document_loader_) {
-    LocalFrame* frame = document_loader_->GetFrame();
+    LocalFrame* frame = document_->GetFrame();
     DCHECK(frame);
     return *frame;
   }
 
   // HTML imports case
-  DCHECK(document_);
   // It's guaranteed that imports_controller is not nullptr since:
   // - only ClearImportsController() clears it
   // - ClearImportsController() also calls ResourceFethcer::ClearContext().
@@ -55,11 +55,6 @@ DocumentLoader& FrameOrImportedDocument::GetMasterDocumentLoader() const {
   auto* loader = GetFrame().Loader().GetDocumentLoader();
   DCHECK(loader);
   return *loader;
-}
-
-void FrameOrImportedDocument::UpdateDocument(Document& document) {
-  DCHECK(document_loader_);
-  document_ = document;
 }
 
 void FrameOrImportedDocument::Trace(Visitor* visitor) {

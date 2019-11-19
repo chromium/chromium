@@ -26,21 +26,21 @@ sources = [
 
 deps = [
   "//ipc",
-  "//services/network/public/cpp:cpp_base",
 ]
 
 public_deps = [
   "//net",
+  "//services/network/public/cpp:cpp_base",
 ]
 type_mappings = [
-  "network.mojom.AuthChallengeInfo=scoped_refptr<net::AuthChallengeInfo>[nullable_is_same_type]",
-  "network.mojom.AuthCredentials=net::AuthCredentials",
-  "network.mojom.CertVerifyResult=net::CertVerifyResult",
-  "network.mojom.CTVerifyResult=net::ct::CTVerifyResult",
-  "network.mojom.HostPortPair=net::HostPortPair",
-  "network.mojom.HttpResponseHeaders=scoped_refptr<net::HttpResponseHeaders>[nullable_is_same_type]",
-  "network.mojom.HttpVersion=net::HttpVersion",
-  "network.mojom.SSLCertRequestInfo=scoped_refptr<net::SSLCertRequestInfo>[nullable_is_same_type]",
-  "network.mojom.SSLInfo=net::SSLInfo",
-  "network.mojom.X509Certificate=scoped_refptr<net::X509Certificate>[nullable_is_same_type]",
+  "network.mojom.AuthChallengeInfo=::net::AuthChallengeInfo",
+  "network.mojom.AuthCredentials=::net::AuthCredentials",
+  "network.mojom.CertVerifyResult=::net::CertVerifyResult",
+  "network.mojom.CTVerifyResult=::net::ct::CTVerifyResult",
+  "network.mojom.HostPortPair=::net::HostPortPair",
+  "network.mojom.HttpResponseHeaders=::scoped_refptr<::net::HttpResponseHeaders>[nullable_is_same_type]",
+  "network.mojom.HttpVersion=::net::HttpVersion",
+  "network.mojom.SSLCertRequestInfo=::scoped_refptr<::net::SSLCertRequestInfo>[nullable_is_same_type]",
+  "network.mojom.SSLInfo=::net::SSLInfo",
+  "network.mojom.X509Certificate=::scoped_refptr<::net::X509Certificate>[nullable_is_same_type]",
 ]

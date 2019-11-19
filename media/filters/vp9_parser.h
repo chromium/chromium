@@ -25,6 +25,7 @@
 #include "media/base/decrypt_config.h"
 #include "media/base/media_export.h"
 #include "media/base/video_color_space.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace media {
 
@@ -260,6 +261,10 @@ struct MEDIA_EXPORT Vp9FrameHeader {
   Vp9FrameContext initial_frame_context;
   // Current frame entropy context after header parsing.
   Vp9FrameContext frame_context;
+
+  // Segmentation and loop filter params from uncompressed header
+  Vp9SegmentationParams segmentation;
+  Vp9LoopFilterParams loop_filter;
 };
 
 // A parser for VP9 bitstream.
@@ -322,7 +327,7 @@ class MEDIA_EXPORT Vp9Parser {
       bool needs_client_update_ = false;
       Vp9FrameContext frame_context_;
 
-      base::WeakPtrFactory<Vp9FrameContextManager> weak_ptr_factory_;
+      base::WeakPtrFactory<Vp9FrameContextManager> weak_ptr_factory_{this};
     };
 
     void Reset();
@@ -368,14 +373,23 @@ class MEDIA_EXPORT Vp9Parser {
   // Set a new stream buffer to read from, starting at |stream| and of size
   // |stream_size| in bytes. |stream| must point to the beginning of a single
   // frame or a single superframe, is owned by caller and must remain valid
-  // until the next call to SetStream().
+  // until the next call to SetStream(). |spatial_layer_frame_size| may be
+  // filled if the parsed stream is VP9 SVC. It stands for frame sizes of
+  // spatial layers. SVC frame might have multiple frames without superframe
+  // index. The info helps Vp9Parser detecting the beginning of each frame.
+  void SetStream(const uint8_t* stream,
+                 off_t stream_size,
+                 const std::vector<uint32_t>& spatial_layer_frame_size,
+                 std::unique_ptr<DecryptConfig> stream_config);
+
   void SetStream(const uint8_t* stream,
                  off_t stream_size,
                  std::unique_ptr<DecryptConfig> stream_config);
 
   // Parse the next frame in the current stream buffer, filling |fhdr| with
   // the parsed frame header and updating current segmentation and loop filter
-  // state.
+  // state. The necessary frame size to decode |fhdr| fills in |allocate_size|.
+  // The size can be larger than frame size of |fhdr| in the case of SVC stream.
   // Also fills |frame_decrypt_config| _if_ the parser was set to use a super
   // frame decrypt config.
   // Return kOk if a frame has successfully been parsed,
@@ -383,6 +397,7 @@ class MEDIA_EXPORT Vp9Parser {
   //        kAwaitingRefresh if this frame awaiting frame context update, or
   //        kInvalidStream on error.
   Result ParseNextFrame(Vp9FrameHeader* fhdr,
+                        gfx::Size* allocate_size,
                         std::unique_ptr<DecryptConfig>* frame_decrypt_config);
 
   // Perform the same superframe parsing logic, but don't attempt to parse
@@ -422,10 +437,16 @@ class MEDIA_EXPORT Vp9Parser {
     // Size of the frame in bytes.
     off_t size = 0;
 
+    // Necessary height and width to decode the frame.
+    // This is filled only if the stream is SVC.
+    gfx::Size allocate_size;
+
     std::unique_ptr<DecryptConfig> decrypt_config;
   };
 
   base::circular_deque<FrameInfo> ParseSuperframe();
+  // Parses a frame in SVC stream with |spatial_layer_frame_size_|.
+  base::circular_deque<FrameInfo> ParseSVCFrame();
 
   // Returns true and populates |result| with the parsing result if parsing of
   // current frame is finished (possibly unsuccessfully). |fhdr| will only be
@@ -433,7 +454,8 @@ class MEDIA_EXPORT Vp9Parser {
   // that the compressed header must be parsed next.
   bool ParseUncompressedHeader(const FrameInfo& frame_info,
                                Vp9FrameHeader* fhdr,
-                               Result* result);
+                               Result* result,
+                               Vp9Parser::Context* context);
 
   // Returns true if parsing of current frame is finished and |result| will be
   // populated with value of parsing result. Otherwise, needs to continue setup
@@ -441,10 +463,11 @@ class MEDIA_EXPORT Vp9Parser {
   bool ParseCompressedHeader(const FrameInfo& frame_info, Result* result);
 
   int64_t GetQIndex(const Vp9QuantizationParams& quant, size_t segid) const;
-  // Returns true if the setup succeeded.
+  // Returns true if the setup to |context_| succeeded.
   bool SetupSegmentationDequant();
   void SetupLoopFilter();
-  void UpdateSlots();
+  // Returns true if the setup to |context| succeeded.
+  void UpdateSlots(Vp9Parser::Context* context);
 
   // Current address in the bitstream buffer.
   const uint8_t* stream_;
@@ -461,6 +484,9 @@ class MEDIA_EXPORT Vp9Parser {
 
   // Encrypted stream info.
   std::unique_ptr<DecryptConfig> stream_decrypt_config_;
+
+  // The frame size of each spatial layer.
+  std::vector<uint32_t> spatial_layer_frame_size_;
 
   FrameInfo curr_frame_info_;
   Vp9FrameHeader curr_frame_header_;

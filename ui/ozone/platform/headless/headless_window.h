@@ -8,11 +8,11 @@
 #include "base/macros.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/platform_window/platform_window_delegate.h"
 #include "ui/platform_window/stub/stub_window.h"
 
 namespace ui {
 
-class PlatformWindowDelegate;
 class HeadlessWindowManager;
 
 class HeadlessWindow : public StubWindow {

@@ -29,9 +29,8 @@ AccessibilityDelegate* TestShellDelegate::CreateAccessibilityDelegate() {
   return new DefaultAccessibilityDelegate;
 }
 
-ws::InputDeviceControllerClient*
-TestShellDelegate::GetInputDeviceControllerClient() {
-  return nullptr;
+bool TestShellDelegate::CanGoBack(gfx::NativeWindow window) const {
+  return true;
 }
 
 }  // namespace ash

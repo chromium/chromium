@@ -11,7 +11,7 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "storage/browser/fileapi/watcher_manager.h"
+#include "storage/browser/file_system/watcher_manager.h"
 #include "url/gurl.h"
 
 namespace chromeos {

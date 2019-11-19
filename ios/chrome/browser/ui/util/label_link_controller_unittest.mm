@@ -289,6 +289,37 @@ TEST_F(LabelLinkControllerTest, LabelStylePropertyChangeTest) {
   EXPECT_NSNE(smallTextRect, rects[0]);
 }
 
+// Tests if the accessibility identifier is correctly set to the link button.
+TEST_F(LabelLinkControllerTest, AccessibilityIdentifier) {
+  [label_ setText:@"accessibility identifier"];
+  // Choose a size large enough so that the full text can be laid out with both
+  // fonts in this test.
+  CGSize labelSize = CGSizeMake(400, 50);
+  [label_ setFrame:{CGPointZero, labelSize}];
+
+  NSRange linkRange = NSMakeRange(14, 4);  // "iden".
+
+  // Don't use an injected text mapper for this test.
+  LabelLinkController* llc =
+      [[LabelLinkController alloc] initWithLabel:label_ action:nullptr];
+  GURL url = GURL("http://www.google.com");
+  NSString* accessibilityID = @"GoogleLink";
+  [llc addLinkWithRange:linkRange url:url accessibilityID:accessibilityID];
+
+  UIView* linkButton = nil;
+  NSMutableArray* views = [NSMutableArray arrayWithObject:label_.superview];
+  while (views.count) {
+    UIView* view = [views objectAtIndex:0];
+    [views removeObjectAtIndex:0];
+    [views addObjectsFromArray:view.subviews];
+    if ([view.accessibilityIdentifier isEqualToString:accessibilityID]) {
+      linkButton = view;
+      break;
+    }
+  }
+  EXPECT_NE(nil, linkButton);
+}
+
 TEST_F(LabelLinkControllerTest, LinkMaximumHeightTest) {
   NSMutableParagraphStyle* newStyle =
       [[NSParagraphStyle defaultParagraphStyle] mutableCopy];

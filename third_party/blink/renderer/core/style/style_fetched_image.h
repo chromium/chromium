@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/loader/resource/image_resource_observer.h"
 #include "third_party/blink/renderer/core/style/style_image.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
@@ -40,13 +41,6 @@ class StyleFetchedImage final : public StyleImage,
   USING_PRE_FINALIZER(StyleFetchedImage, Dispose);
 
  public:
-  static StyleFetchedImage* Create(const Document& document,
-                                   FetchParameters& params,
-                                   bool is_lazyload_deferred) {
-    return MakeGarbageCollected<StyleFetchedImage>(document, params,
-                                                   is_lazyload_deferred);
-  }
-
   StyleFetchedImage(const Document&,
                     FetchParameters&,
                     bool is_lazyload_deferred);
@@ -55,7 +49,8 @@ class StyleFetchedImage final : public StyleImage,
   WrappedImagePtr Data() const override;
 
   CSSValue* CssValue() const override;
-  CSSValue* ComputedCSSValue() const override;
+  CSSValue* ComputedCSSValue(const ComputedStyle&,
+                             bool allow_visited_style) const override;
 
   bool CanRender() const override;
   bool IsLoaded() const override;
@@ -66,8 +61,6 @@ class StyleFetchedImage final : public StyleImage,
   bool HasIntrinsicSize() const override;
   void AddClient(ImageResourceObserver*) override;
   void RemoveClient(ImageResourceObserver*) override;
-  void ImageNotifyFinished(ImageResourceContent*) override;
-  bool GetImageAnimationPolicy(ImageAnimationPolicy&) override;
   String DebugName() const override { return "StyleFetchedImage"; }
   scoped_refptr<Image> GetImage(const ImageResourceObserver&,
                                 const Document&,
@@ -86,12 +79,22 @@ class StyleFetchedImage final : public StyleImage,
   bool IsEqual(const StyleImage&) const override;
   void Dispose();
 
+  // ImageResourceObserver overrides
+  void ImageNotifyFinished(ImageResourceContent*) override;
+  bool GetImageAnimationPolicy(ImageAnimationPolicy&) override;
+
   Member<ImageResourceContent> image_;
   Member<const Document> document_;
   const KURL url_;
+  const bool origin_clean_;
 };
 
-DEFINE_STYLE_IMAGE_TYPE_CASTS(StyleFetchedImage, IsImageResource());
+template <>
+struct DowncastTraits<StyleFetchedImage> {
+  static bool AllowFrom(const StyleImage& styleImage) {
+    return styleImage.IsImageResource();
+  }
+};
 
 }  // namespace blink
 #endif

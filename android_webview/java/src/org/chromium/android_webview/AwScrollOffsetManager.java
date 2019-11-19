@@ -6,7 +6,7 @@ package org.chromium.android_webview;
 
 import android.graphics.Rect;
 
-import org.chromium.base.VisibleForTesting;
+import androidx.annotation.VisibleForTesting;
 
 /**
  * Takes care of syncing the scroll offset between the Android View system and the

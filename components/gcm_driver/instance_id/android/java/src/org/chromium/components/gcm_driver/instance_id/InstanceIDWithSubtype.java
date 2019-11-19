@@ -8,10 +8,11 @@ import android.content.Context;
 import android.os.Bundle;
 import android.text.TextUtils;
 
+import androidx.annotation.VisibleForTesting;
+
 import com.google.android.gms.iid.InstanceID;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.VisibleForTesting;
 
 import java.io.IOException;
 import java.util.HashMap;

@@ -38,12 +38,6 @@ message NetworkTrafficAnnotation {
     // specified.
     string file = 1;
 
-    // Function name where the network request is instantiated.
-    // This is typically filled by the extractor and does not need to be
-    // specified in the source code. For manual whitelisting this needs to be
-    // specified.
-    string function = 2;
-
     // __LINE__ in file, where the AuditPolicy object is instantiated.
     // This is typically filled by the extractor and does not need to be
     // specified in the source code.

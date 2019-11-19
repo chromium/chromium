@@ -25,6 +25,8 @@
 
 #include "third_party/blink/renderer/core/css/css_font_face_src_value.h"
 
+#include "base/feature_list.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/renderer/core/css/css_markup.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
@@ -83,13 +85,18 @@ FontResource& CSSFontFaceSrcValue::Fetch(ExecutionContext* context,
                                          FontResourceClient* client) const {
   if (!fetched_) {
     ResourceRequest resource_request(absolute_resource_);
-    resource_request.SetHTTPReferrer(SecurityPolicy::GenerateReferrer(
-        referrer_.referrer_policy, resource_request.Url(), referrer_.referrer));
+    resource_request.SetReferrerPolicy(
+        ReferrerPolicyResolveDefault(referrer_.referrer_policy));
+    resource_request.SetReferrerString(referrer_.referrer);
     ResourceLoaderOptions options;
     options.initiator_info.name = fetch_initiator_type_names::kCSS;
     FetchParameters params(resource_request, options);
-    params.SetCacheAwareLoadingEnabled(kIsCacheAwareLoadingEnabled);
+    if (base::FeatureList::IsEnabled(
+            features::kWebFontsCacheAwareTimeoutAdaption)) {
+      params.SetCacheAwareLoadingEnabled(kIsCacheAwareLoadingEnabled);
+    }
     params.SetContentSecurityCheck(should_check_content_security_policy_);
+    params.SetFromOriginDirtyStyleSheet(origin_clean_ != OriginClean::kTrue);
     const SecurityOrigin* security_origin = context->GetSecurityOrigin();
 
     // Local fonts are accessible from file: URLs even when
@@ -103,7 +110,7 @@ FontResource& CSSFontFaceSrcValue::Fetch(ExecutionContext* context,
     if (auto* scope = DynamicTo<WorkerGlobalScope>(context)) {
       scope->EnsureFetcher();
     }
-    fetched_ = FontResourceHelper::Create(
+    fetched_ = MakeGarbageCollected<FontResourceHelper>(
         FontResource::Fetch(params, context->Fetcher(), client),
         context->GetTaskRunner(TaskType::kInternalLoading).get());
   } else {

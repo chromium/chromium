@@ -26,8 +26,7 @@ void RegisterPrefs(PrefRegistrySimple* registry);
 
 }  // namespace chromeos
 
-class EchoPrivateGetRegistrationCodeFunction
-    : public UIThreadExtensionFunction {
+class EchoPrivateGetRegistrationCodeFunction : public ExtensionFunction {
  public:
   EchoPrivateGetRegistrationCodeFunction();
 
@@ -56,7 +55,7 @@ class EchoPrivateGetOobeTimestampFunction
                              ECHOPRIVATE_GETOOBETIMESTAMP)
 };
 
-class EchoPrivateSetOfferInfoFunction : public UIThreadExtensionFunction {
+class EchoPrivateSetOfferInfoFunction : public ExtensionFunction {
  public:
   EchoPrivateSetOfferInfoFunction();
 
@@ -69,7 +68,7 @@ class EchoPrivateSetOfferInfoFunction : public UIThreadExtensionFunction {
                              ECHOPRIVATE_SETOFFERINFO)
 };
 
-class EchoPrivateGetOfferInfoFunction : public UIThreadExtensionFunction {
+class EchoPrivateGetOfferInfoFunction : public ExtensionFunction {
  public:
   EchoPrivateGetOfferInfoFunction();
 

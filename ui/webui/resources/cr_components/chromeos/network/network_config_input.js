@@ -8,7 +8,10 @@
 Polymer({
   is: 'network-config-input',
 
-  behaviors: [CrPolicyNetworkBehavior, NetworkConfigElementBehavior],
+  behaviors: [
+    CrPolicyNetworkBehaviorMojo,
+    NetworkConfigElementBehavior,
+  ],
 
   properties: {
     label: String,
@@ -31,5 +34,17 @@ Polymer({
 
   focus: function() {
     this.$$('cr-input').focus();
+  },
+
+  /**
+   * @param {!Event} event
+   * @private
+   */
+  onKeypress_: function(event) {
+    if (event.key != 'Enter') {
+      return;
+    }
+    event.stopPropagation();
+    this.fire('enter');
   },
 });

@@ -4,31 +4,100 @@
 
 /**
  * @fileoverview Polymer element for displaying the IP Config properties for
- * a network state. TODO(stevenjb): Allow editing of static IP configurations
- * when 'editable' is true.
+ * a network state.
  */
+(function() {
+'use strict';
+
+/**
+ * Returns the routing prefix as a string for a given prefix length. If
+ * |prefixLength| is invalid, returns undefined.
+ * @param {number} prefixLength The ONC routing prefix length.
+ * @return {string|undefined}
+ */
+const getRoutingPrefixAsNetmask = function(prefixLength) {
+  'use strict';
+  // Return the empty string for invalid inputs.
+  if (prefixLength <= 0 || prefixLength > 32) {
+    return undefined;
+  }
+  let netmask = '';
+  for (let i = 0; i < 4; ++i) {
+    let remainder = 8;
+    if (prefixLength >= 8) {
+      prefixLength -= 8;
+    } else {
+      remainder = prefixLength;
+      prefixLength = 0;
+    }
+    if (i > 0) {
+      netmask += '.';
+    }
+    let value = 0;
+    if (remainder != 0) {
+      value = ((2 << (remainder - 1)) - 1) << (8 - remainder);
+    }
+    netmask += value.toString();
+  }
+  return netmask;
+};
+
+/**
+ * Returns the routing prefix length as a number from the netmask string.
+ * @param {string} netmask The netmask string, e.g. 255.255.255.0.
+ * @return {number} The corresponding netmask or NO_ROUTING_PREFIX if invalid.
+ */
+const getRoutingPrefixAsLength = function(netmask) {
+  'use strict';
+  let prefixLength = 0;
+  const tokens = netmask.split('.');
+  if (tokens.length != 4) {
+    return -1;
+  }
+  for (let i = 0; i < tokens.length; ++i) {
+    const token = tokens[i];
+    // If we already found the last mask and the current one is not
+    // '0' then the netmask is invalid. For example, 255.224.255.0
+    if (prefixLength / 8 != i) {
+      if (token != '0') {
+        return chromeos.networkConfig.mojom.NO_ROUTING_PREFIX;
+      }
+    } else if (token == '255') {
+      prefixLength += 8;
+    } else if (token == '254') {
+      prefixLength += 7;
+    } else if (token == '252') {
+      prefixLength += 6;
+    } else if (token == '248') {
+      prefixLength += 5;
+    } else if (token == '240') {
+      prefixLength += 4;
+    } else if (token == '224') {
+      prefixLength += 3;
+    } else if (token == '192') {
+      prefixLength += 2;
+    } else if (token == '128') {
+      prefixLength += 1;
+    } else if (token == '0') {
+      prefixLength += 0;
+    } else {
+      // mask is not a valid number.
+      return chromeos.networkConfig.mojom.NO_ROUTING_PREFIX;
+    }
+  }
+  return prefixLength;
+};
+
 Polymer({
   is: 'network-ip-config',
 
-  behaviors: [I18nBehavior, CrPolicyNetworkBehavior],
+  behaviors: [I18nBehavior, CrPolicyNetworkBehaviorMojo],
 
   properties: {
-    /**
-     * The network properties dictionary containing the IP Config properties to
-     * display and modify.
-     * @type {!CrOnc.NetworkProperties|undefined}
-     */
-    networkProperties: {
+    /** @private {!chromeos.networkConfig.mojom.ManagedProperties|undefined} */
+    managedProperties: {
       type: Object,
-      observer: 'networkPropertiesChanged_',
-    },
-
-    /**
-     * Whether or not the IP Address can be edited.
-     */
-    editable: {
-      type: Boolean,
-      value: false,
+      observer: 'managedPropertiesChanged_',
     },
 
     /**
@@ -41,11 +110,10 @@ Polymer({
     },
 
     /**
-     * The currently visible IP Config property dictionary. The 'RoutingPrefix'
-     * property is a human-readable mask instead of a prefix length.
+     * The currently visible IP Config property dictionary.
      * @private {{
-     *   ipv4: (!CrOnc.IPConfigUIProperties|undefined),
-     *   ipv6: (!CrOnc.IPConfigUIProperties|undefined)
+     *   ipv4: (OncMojo.IPConfigUIProperties|undefined),
+     *   ipv6: (OncMojo.IPConfigUIProperties|undefined)
      * }|undefined}
      */
     ipConfig_: Object,
@@ -58,10 +126,10 @@ Polymer({
       type: Array,
       value: function() {
         return [
-          'ipv4.IPAddress',
-          'ipv4.RoutingPrefix',
-          'ipv4.Gateway',
-          'ipv6.IPAddress',
+          'ipv4.ipAddress',
+          'ipv4.routingPrefix',
+          'ipv4.gateway',
+          'ipv6.ipAddress',
         ];
       },
       readOnly: true
@@ -70,39 +138,40 @@ Polymer({
 
   /**
    * Saved static IP configuration properties when switching to 'automatic'.
-   * @private {!CrOnc.IPConfigUIProperties|undefined}
+   * @private {!OncMojo.IPConfigUIProperties|undefined}
    */
   savedStaticIp_: undefined,
 
-  /**
-   * Polymer networkProperties changed method.
-   */
-  networkPropertiesChanged_: function(newValue, oldValue) {
-    if (!this.networkProperties) {
+  /** @private */
+  managedPropertiesChanged_: function(newValue, oldValue) {
+    if (!this.managedProperties) {
       return;
     }
 
-    const properties = this.networkProperties;
-    if (newValue.GUID != (oldValue && oldValue.GUID)) {
+    const properties = this.managedProperties;
+    if (newValue.guid != (oldValue && oldValue.guid)) {
       this.savedStaticIp_ = undefined;
     }
 
     // Update the 'automatic' property.
-    if (properties.IPAddressConfigType) {
-      const ipConfigType = CrOnc.getActiveValue(properties.IPAddressConfigType);
-      this.automatic_ = (ipConfigType != CrOnc.IPConfigType.STATIC);
+    if (properties.ipAddressConfigType) {
+      const ipConfigType =
+          OncMojo.getActiveValue(properties.ipAddressConfigType);
+      this.automatic_ = ipConfigType != 'Static';
     }
 
-    if (properties.IPConfigs || properties.StaticIPConfig) {
+    if (properties.ipConfigs || properties.staticIpConfig) {
       // Update the 'ipConfig' property.
       const ipv4 = this.getIPConfigUIProperties_(
-          CrOnc.getIPConfigForType(properties, CrOnc.IPType.IPV4));
+          OncMojo.getIPConfigForType(properties, 'IPv4'));
       let ipv6 = this.getIPConfigUIProperties_(
-          CrOnc.getIPConfigForType(properties, CrOnc.IPType.IPV6));
-      if (properties.ConnectionState == CrOnc.ConnectionState.CONNECTED &&
-          ipv4 && ipv4.IPAddress) {
+          OncMojo.getIPConfigForType(properties, 'IPv6'));
+      // If connected and the IP address is automatic and set, show 'Loading' if
+      // the ipv6 address is not set.
+      if (OncMojo.connectionStateIsConnected(properties.connectionState) &&
+          this.automatic_ && ipv4 && ipv4.ipAddress) {
         ipv6 = ipv6 || {};
-        ipv6.IPAddress = ipv6.IPAddress || this.i18n('loading');
+        ipv6.ipAddress = ipv6.ipAddress || this.i18n('loading');
       }
       this.ipConfig_ = {ipv4: ipv4, ipv6: ipv6};
     } else {
@@ -112,34 +181,23 @@ Polymer({
 
   /**
    * Checks whether IP address config type can be changed.
-   * @param {boolean} editable
-   * @param {!CrOnc.NetworkProperties} networkProperties
-   * @return {boolean} true only if 'IPAddressConfigType' as well as all other
-   * IP address config related fields are editable.
+   * @param {!chromeos.networkConfig.mojom.ManagedProperties} managedProperties
+   * @return {boolean}
    * @private
    */
-  canChangeIPConfigType_: function(editable, networkProperties) {
-    if (!editable) {
-      return false;
-    }
-    const controlledProps = [
-      'IPAddressConfigType', 'StaticIPConfig.IPAddress',
-      'StaticIPConfig.RoutingPrefix', 'StaticIPConfig.Gateway'
-    ];
-
-    return controlledProps.every(
-        setting =>
-            !this.isNetworkPolicyPathEnforced(networkProperties, setting));
+  canChangeIPConfigType_: function(managedProperties) {
+    const ipConfigType = managedProperties.ipAddressConfigType;
+    return !ipConfigType || !this.isNetworkPolicyEnforced(ipConfigType);
   },
 
   /** @private */
   onAutomaticChange_: function() {
     if (!this.automatic_) {
       const defaultIpv4 = {
-        Gateway: '192.168.1.1',
-        IPAddress: '192.168.1.1',
-        RoutingPrefix: '255.255.255.0',
-        Type: CrOnc.IPType.IPV4,
+        gateway: '192.168.1.1',
+        ipAddress: '192.168.1.1',
+        routingPrefix: '255.255.255.0',
+        type: 'IPv4',
       };
       // Ensure that there is a valid IPConfig object. Copy any set properties
       // over the default properties to ensure all properties are set.
@@ -156,18 +214,19 @@ Polymer({
     if (this.ipConfig_) {
       this.savedStaticIp_ = this.ipConfig_.ipv4;
     }
-    // Send the change.
     this.fire('ip-change', {
-      field: 'IPAddressConfigType',
-      value: CrOnc.IPConfigType.DHCP,
+      field: 'ipAddressConfigType',
+      value: 'DHCP',
     });
   },
 
   /**
-   * @param {!CrOnc.IPConfigProperties|undefined} ipconfig
-   * @return {!CrOnc.IPConfigUIProperties|undefined} A new IPConfigUIProperties
-   *     object with RoutingPrefix expressed as a string mask instead of a
-   *     prefix length. Returns undefined if |ipconfig| is not defined.
+   * @param {!chromeos.networkConfig.mojom.IPConfigProperties|undefined}
+   *     ipconfig
+   * @return {!OncMojo.IPConfigUIProperties|undefined} A new
+   *     IPConfigUIProperties object with routingPrefix expressed as a string
+   *     mask instead of a prefix length. Returns undefined if |ipconfig| is not
+   *     defined.
    * @private
    */
   getIPConfigUIProperties_: function(ipconfig) {
@@ -177,8 +236,11 @@ Polymer({
     const result = {};
     for (const key in ipconfig) {
       const value = ipconfig[key];
-      if (key == 'RoutingPrefix') {
-        result.RoutingPrefix = CrOnc.getRoutingPrefixAsNetmask(value);
+      if (key == 'routingPrefix') {
+        const netmask = getRoutingPrefixAsNetmask(value);
+        if (netmask !== undefined) {
+          result.routingPrefix = netmask;
+        }
       } else {
         result[key] = value;
       }
@@ -187,17 +249,21 @@ Polymer({
   },
 
   /**
-   * @param {!CrOnc.IPConfigUIProperties} ipconfig The IP Config UI properties.
-   * @return {!CrOnc.IPConfigProperties} A new IPConfigProperties object with
-   *     RoutingPrefix expressed as a a prefix length.
+   * @param {!OncMojo.IPConfigUIProperties} ipconfig
+   * @return {!chromeos.networkConfig.mojom.IPConfigProperties} A new
+   *     IPConfigProperties object with RoutingPrefix expressed as a a prefix
+   *     length.
    * @private
    */
   getIPConfigProperties_: function(ipconfig) {
     const result = {};
     for (const key in ipconfig) {
       const value = ipconfig[key];
-      if (key == 'RoutingPrefix') {
-        result.RoutingPrefix = CrOnc.getRoutingPrefixAsLength(value);
+      if (key == 'routingPrefix') {
+        const routingPrefix = getRoutingPrefixAsLength(value);
+        if (routingPrefix != chromeos.networkConfig.mojom.NO_ROUTING_PREFIX) {
+          result.routingPrefix = routingPrefix;
+        }
       } else {
         result[key] = value;
       }
@@ -222,17 +288,34 @@ Polymer({
   },
 
   /**
+   * @param {string} path path to a property inside of |managedProperties|.
+   * @return {string|undefined} Edit type to be used in network-property-list
+   *     for the given path.
+   * @private
+   */
+  getIPFieldEditType_: function(path) {
+    if (!this.managedProperties) {
+      return undefined;
+    }
+    const property = /** @type{!OncMojo.ManagedProperty|undefined}*/ (
+        this.get(path, this.managedProperties));
+    return (property && this.isNetworkPolicyEnforced(property)) ? undefined :
+                                                                  'String';
+  },
+
+  /**
    * @return {Object} An object with the edit type for each editable field.
    * @private
    */
   getIPEditFields_: function() {
-    if (!this.editable || this.automatic_) {
+    if (this.automatic_ || !this.managedProperties) {
       return {};
     }
     return {
-      'ipv4.IPAddress': 'String',
-      'ipv4.RoutingPrefix': 'String',
-      'ipv4.Gateway': 'String'
+      'ipv4.ipAddress': this.getIPFieldEditType_('staticIpConfig.ipAddress'),
+      'ipv4.routingPrefix':
+          this.getIPFieldEditType_('staticIpConfig.routingPrefix'),
+      'ipv4.gateway': this.getIPFieldEditType_('staticIpConfig.gateway')
     };
   },
 
@@ -257,10 +340,11 @@ Polymer({
   sendStaticIpConfig_: function() {
     // This will also set IPAddressConfigType to STATIC.
     this.fire('ip-change', {
-      field: 'StaticIPConfig',
+      field: 'staticIpConfig',
       value: this.ipConfig_.ipv4 ?
           this.getIPConfigProperties_(this.ipConfig_.ipv4) :
           {}
     });
   },
 });
+})();

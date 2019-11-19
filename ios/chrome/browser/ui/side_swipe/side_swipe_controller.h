@@ -11,6 +11,10 @@
 #import "ios/chrome/browser/tabs/tab_model.h"
 #import "ios/web/web_state/ui/crw_swipe_recognizer_provider.h"
 
+namespace web {
+class WebState;
+}
+
 @class CardSideSwipeView;
 @class SideSwipeGestureRecognizer;
 @protocol SideSwipeToolbarInteracting;
@@ -29,7 +33,7 @@ extern NSString* const kSideSwipeDidStopNotification;
 // Returns the main content view.
 - (UIView*)sideSwipeContentView;
 // Makes |tab| the currently visible tab, displaying its view.
-- (void)sideSwipeRedisplayTab:(Tab*)tab;
+- (void)sideSwipeRedisplayWebState:(web::WebState*)webState;
 // Check the invariant of "toolbar in front of infobar container which
 // is in front of content area." This DCHECK happens if addSubview and/or
 // insertSubview messed up the view ordering earlier.

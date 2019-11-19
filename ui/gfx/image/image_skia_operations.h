@@ -109,6 +109,10 @@ class GFX_EXPORT ImageSkiaOperations {
   static ImageSkia CreateIconWithBadge(const ImageSkia& icon,
                                        const ImageSkia& badge);
 
+  // Creates an image by combining |image| and color |color|.
+  // The image must use the kARGB_8888_Config config.
+  static ImageSkia CreateColorMask(const gfx::ImageSkia& image, SkColor color);
+
  private:
   ImageSkiaOperations();  // Class for scoping only.
 };

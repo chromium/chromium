@@ -24,8 +24,8 @@ async_test(function(t) {
       return;
     }
 
-    assert_equals(video.buffered.length, 1);
-    assert_equals(video.seekable.length, 1);
+    assert_greater_than_equal(video.buffered.length, 1);
+    assert_greater_than_equal(video.seekable.length, 1);
 
     // If the entire clip wasn't buffered, the buffered range should be smaller
     // than the seekable range; which should be the duration since the server

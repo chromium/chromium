@@ -16,11 +16,6 @@ namespace time_limit_test_utils {
 namespace {
 
 // Definition of private constants.
-constexpr char kOverrides[] = "overrides";
-constexpr char kOverrideAction[] = "action";
-constexpr char kOverrideActionCreatedAt[] = "created_at_millis";
-constexpr char kOverrideActionDuration[] = "duration_mins";
-constexpr char kOverrideActionSpecificData[] = "action_specific_data";
 constexpr char kTimeLimitLastUpdatedAt[] = "last_updated_millis";
 constexpr char kTimeWindowLimit[] = "time_window_limit";
 constexpr char kTimeUsageLimit[] = "time_usage_limit";
@@ -33,25 +28,6 @@ constexpr char kWindowLimitEntryStartsAt[] = "starts_at";
 constexpr char kWindowLimitEntryTimeHour[] = "hour";
 constexpr char kWindowLimitEntryTimeMinute[] = "minute";
 
-// Creates a time limit override dictionary used on the Time Limit policy.
-base::Value CreateOverride(std::string action,
-                           base::Time created_at,
-                           base::Optional<base::TimeDelta> duration) {
-  base::Value time_limit_override(base::Value::Type::DICTIONARY);
-  time_limit_override.SetKey(kOverrideAction, base::Value(action));
-  time_limit_override.SetKey(kOverrideActionCreatedAt,
-                             base::Value(CreatePolicyTimestamp(created_at)));
-  if (duration) {
-    base::Value action_specific_data(base::Value::Type::DICTIONARY);
-    action_specific_data.SetKey(kOverrideActionDuration,
-                                base::Value(duration.value().InMinutes()));
-
-    time_limit_override.SetKey(kOverrideActionSpecificData,
-                               std::move(action_specific_data));
-  }
-  return time_limit_override;
-}
-
 }  // namespace
 
 // Definition of public constants.
@@ -62,8 +38,6 @@ const char kThursday[] = "THURSDAY";
 const char kFriday[] = "FRIDAY";
 const char kSaturday[] = "SATURDAY";
 const char kSunday[] = "SUNDAY";
-const char kLock[] = "LOCK";
-const char kUnlock[] = "UNLOCK";
 
 base::Time TimeFromString(const char* time_string) {
   base::Time time;
@@ -128,19 +102,17 @@ base::Value CreateTimeUsage(base::TimeDelta usage_quota,
   return time_usage;
 }
 
-std::unique_ptr<base::DictionaryValue> CreateTimeLimitPolicy(
-    base::TimeDelta reset_time) {
+base::Value CreateTimeLimitPolicy(base::TimeDelta reset_time) {
   base::Value time_usage_limit = base::Value(base::Value::Type::DICTIONARY);
   time_usage_limit.SetKey(kUsageLimitResetAt, CreatePolicyTime(reset_time));
 
   base::Value time_limit = base::Value(base::Value::Type::DICTIONARY);
   time_limit.SetKey(kTimeUsageLimit, std::move(time_usage_limit));
 
-  return base::DictionaryValue::From(
-      std::make_unique<base::Value>(std::move(time_limit)));
+  return time_limit;
 }
 
-void AddTimeUsageLimit(base::DictionaryValue* policy,
+void AddTimeUsageLimit(base::Value* policy,
                        std::string day,
                        base::TimeDelta quota,
                        base::Time last_updated) {
@@ -156,7 +128,7 @@ void AddTimeUsageLimit(base::DictionaryValue* policy,
       ->SetKey(day, CreateTimeUsage(quota, last_updated));
 }
 
-void AddTimeWindowLimit(base::DictionaryValue* policy,
+void AddTimeWindowLimit(base::Value* policy,
                         const std::string& day,
                         base::TimeDelta start_time,
                         base::TimeDelta end_time,
@@ -174,39 +146,46 @@ void AddTimeWindowLimit(base::DictionaryValue* policy,
         kWindowLimitEntries, base::Value(base::Value::Type::LIST));
   }
 
-  window_limit_entries->GetList().push_back(
+  window_limit_entries->Append(
       CreateTimeWindow(day, start_time, end_time, last_updated));
 }
 
-void AddOverride(base::DictionaryValue* policy,
-                 std::string action,
+void AddOverride(base::Value* policy,
+                 usage_time_limit::TimeLimitOverride::Action action,
                  base::Time created_at) {
-  base::Value* overrides = policy->FindKey(kOverrides);
+  base::Value* overrides =
+      policy->FindKey(usage_time_limit::TimeLimitOverride::kOverridesDictKey);
   if (!overrides) {
     overrides =
-        policy->SetKey(kOverrides, base::Value(base::Value::Type::LIST));
+        policy->SetKey(usage_time_limit::TimeLimitOverride::kOverridesDictKey,
+                       base::Value(base::Value::Type::LIST));
   }
 
-  overrides->GetList().push_back(
-      CreateOverride(action, created_at, base::nullopt));
+  usage_time_limit::TimeLimitOverride new_override(action, created_at,
+                                                   base::nullopt);
+  overrides->Append(new_override.ToDictionary());
 }
 
-void AddOverrideWithDuration(base::DictionaryValue* policy,
-                             std::string action,
+void AddOverrideWithDuration(base::Value* policy,
+                             usage_time_limit::TimeLimitOverride::Action action,
                              base::Time created_at,
                              base::TimeDelta duration) {
-  base::Value* overrides = policy->FindKey(kOverrides);
+  base::Value* overrides =
+      policy->FindKey(usage_time_limit::TimeLimitOverride::kOverridesDictKey);
   if (!overrides) {
     overrides =
-        policy->SetKey(kOverrides, base::Value(base::Value::Type::LIST));
+        policy->SetKey(usage_time_limit::TimeLimitOverride::kOverridesDictKey,
+                       base::Value(base::Value::Type::LIST));
   }
 
-  overrides->GetList().push_back(CreateOverride(action, created_at, duration));
+  usage_time_limit::TimeLimitOverride new_override(action, created_at,
+                                                   duration);
+  overrides->Append(new_override.ToDictionary());
 }
 
-std::string PolicyToString(const base::DictionaryValue* policy) {
+std::string PolicyToString(const base::Value& policy) {
   std::string json_string;
-  base::JSONWriter::Write(*policy, &json_string);
+  base::JSONWriter::Write(policy, &json_string);
   return json_string;
 }
 

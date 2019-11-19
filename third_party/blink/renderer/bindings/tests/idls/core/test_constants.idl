@@ -27,13 +27,13 @@ interface TestConstants {
     // Extended attributes
     [DeprecateAs=Constant] const short DEPRECATED_CONSTANT = 1;
     [MeasureAs=Constant] const short MEASURED_CONSTANT = 1;
-    [RuntimeEnabled=FeatureName1] const short FEATURE1_ENABLED_CONST1 = 1;
-    [RuntimeEnabled=FeatureName1] const short FEATURE1_ENABLED_CONST2 = 2;
-    [RuntimeEnabled=FeatureName2] const short FEATURE2_ENABLED_CONST1 = 3;
-    [RuntimeEnabled=FeatureName2] const short FEATURE2_ENABLED_CONST2 = 4;
-    [OriginTrialEnabled=FeatureName1] const short FEATURE1_ORIGIN_TRIAL_ENABLED_CONST1 = 6;
-    [OriginTrialEnabled=FeatureName1] const short FEATURE1_ORIGIN_TRIAL_ENABLED_CONST2 = 7;
-    [OriginTrialEnabled=FeatureName2] const short FEATURE2_ORIGIN_TRIAL_ENABLED_CONST1 = 8;
-    [OriginTrialEnabled=FeatureName2] const short FEATURE2_ORIGIN_TRIAL_ENABLED_CONST2 = 9;
+    [RuntimeEnabled=RuntimeFeature1] const short FEATURE1_ENABLED_CONST1 = 1;
+    [RuntimeEnabled=RuntimeFeature1] const short FEATURE1_ENABLED_CONST2 = 2;
+    [RuntimeEnabled=RuntimeFeature2] const short FEATURE2_ENABLED_CONST1 = 3;
+    [RuntimeEnabled=RuntimeFeature2] const short FEATURE2_ENABLED_CONST2 = 4;
+    [RuntimeEnabled=FeatureName1] const short FEATURE1_ORIGIN_TRIAL_ENABLED_CONST1 = 6;
+    [RuntimeEnabled=FeatureName1] const short FEATURE1_ORIGIN_TRIAL_ENABLED_CONST2 = 7;
+    [RuntimeEnabled=FeatureName2] const short FEATURE2_ORIGIN_TRIAL_ENABLED_CONST1 = 8;
+    [RuntimeEnabled=FeatureName2] const short FEATURE2_ORIGIN_TRIAL_ENABLED_CONST2 = 9;
     [Reflect=CONST_IMPL] const short CONST_JAVASCRIPT = 1;
 };

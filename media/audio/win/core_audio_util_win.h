@@ -205,8 +205,6 @@ class MEDIA_EXPORT CoreAudioUtil {
   // speaker, and so on, continuing in the order defined in KsMedia.h.
   // See http://msdn.microsoft.com/en-us/library/windows/hardware/ff537083(v=vs.85).aspx
   // for more details.
-  // To get the channel config of the default device, pass an empty string
-  // for |device_id|.
   static ChannelConfig GetChannelConfig(const std::string& device_id,
                                         EDataFlow data_flow);
 

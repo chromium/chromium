@@ -6,10 +6,9 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "chrome/browser/win/util_win_service.h"
 #include "chrome/common/channel_info.h"
-#include "chrome/services/util_win/public/mojom/constants.mojom.h"
 #include "components/version_info/channel.h"
-#include "services/service_manager/public/cpp/connector.h"
 
 namespace {
 
@@ -31,9 +30,7 @@ bool ShouldReportFullNames() {
 
 constexpr base::Feature AntiVirusMetricsProvider::kReportNamesFeature;
 
-AntiVirusMetricsProvider::AntiVirusMetricsProvider(
-    service_manager::Connector* connector)
-    : connector_(connector) {}
+AntiVirusMetricsProvider::AntiVirusMetricsProvider() = default;
 
 AntiVirusMetricsProvider::~AntiVirusMetricsProvider() = default;
 
@@ -47,13 +44,16 @@ void AntiVirusMetricsProvider::ProvideSystemProfileMetrics(
 }
 
 void AntiVirusMetricsProvider::AsyncInit(const base::Closure& done_callback) {
-  connector_->BindInterface(chrome::mojom::kUtilWinServiceName, &util_win_ptr_);
+  if (!remote_util_win_) {
+    remote_util_win_ = LaunchUtilWinServiceInstance();
+    remote_util_win_.reset_on_idle_timeout(base::TimeDelta::FromSeconds(5));
+  }
 
   // Intentionally don't handle connection errors as not reporting this metric
-  // is acceptable in the rare cases it'll happen.
-  // The usage of base::Unretained(this) is safe here because |util_win_ptr_|,
-  // who owns the callback, will be destoyed once this instance goes away.
-  util_win_ptr_->GetAntiVirusProducts(
+  // is acceptable in the rare cases it'll happen. The usage of
+  // base::Unretained(this) is safe here because |remote_util_win_|, which owns
+  // the callback, will be destroyed once this instance goes away.
+  remote_util_win_->GetAntiVirusProducts(
       ShouldReportFullNames(),
       base::BindOnce(&AntiVirusMetricsProvider::GotAntiVirusProducts,
                      base::Unretained(this), done_callback));
@@ -63,7 +63,7 @@ void AntiVirusMetricsProvider::GotAntiVirusProducts(
     const base::Closure& done_callback,
     const std::vector<metrics::SystemProfileProto::AntiVirusProduct>& result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  util_win_ptr_ = nullptr;
+  remote_util_win_.reset();
   av_products_ = result;
   done_callback.Run();
 }

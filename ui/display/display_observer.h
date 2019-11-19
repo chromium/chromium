@@ -41,8 +41,11 @@ class DISPLAY_EXPORT DisplayObserver : public base::CheckedObserver {
   // Called when |old_display| has been removed.
   virtual void OnDisplayRemoved(const Display& old_display);
 
-  // Called when a |display| has one or more metrics changed. |changed_metrics|
-  // will contain the information about the change, see |DisplayMetric|.
+  // Called when the metrics of a display change.
+  // |changed_metrics| is a bitmask of DisplayMatric types indicating which
+  // metrics have changed. Eg; if mirroring changes (either from true to false,
+  // or false to true), than the DISPLAY_METRIC_MIRROR_STATE bit is set in
+  // changed_metrics.
   virtual void OnDisplayMetricsChanged(const Display& display,
                                        uint32_t changed_metrics);
 

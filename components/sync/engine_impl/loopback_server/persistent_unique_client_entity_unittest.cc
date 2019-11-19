@@ -4,7 +4,7 @@
 
 #include "components/sync/engine_impl/loopback_server/persistent_unique_client_entity.h"
 
-#include "components/sync/base/hash_util.h"
+#include "components/sync/base/client_tag_hash.h"
 #include "components/sync/engine_impl/loopback_server/loopback_server_entity.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -45,10 +45,11 @@ TEST(PersistentUniqueClientEntityTest, CreateFromSpecificsForTesting) {
   ASSERT_TRUE(entity);
   EXPECT_EQ(kNonUniqueName, entity->GetName());
   EXPECT_EQ(syncer::PREFERENCES, entity->GetModelType());
-  EXPECT_EQ(LoopbackServerEntity::CreateId(
-                syncer::PREFERENCES,
-                GenerateSyncableHash(syncer::PREFERENCES, kClientTag)),
-            entity->GetId());
+  EXPECT_EQ(
+      LoopbackServerEntity::CreateId(
+          syncer::PREFERENCES,
+          ClientTagHash::FromUnhashed(syncer::PREFERENCES, kClientTag).value()),
+      entity->GetId());
 }
 
 }  // namespace

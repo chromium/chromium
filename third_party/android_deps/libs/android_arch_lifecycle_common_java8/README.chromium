@@ -1,0 +1,13 @@
+Name: Android Lifecycle-Common for Java 8 Language
+Short Name: common-java8
+URL: https://developer.android.com/topic/libraries/architecture/index.html
+Version: 1.1.1
+License: Apache Version 2.0
+License File: LICENSE
+Security Critical: yes
+
+Description:
+Android Lifecycle-Common for Java 8 Language
+
+Local Modifications:
+No modifications.

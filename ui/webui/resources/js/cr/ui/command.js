@@ -16,86 +16,6 @@
  */
 
 cr.define('cr.ui', function() {
-
-  /**
-   * This is used to identify keyboard shortcuts.
-   * @param {string} shortcut The text used to describe the keys for this
-   *     keyboard shortcut.
-   * @constructor
-   */
-  function KeyboardShortcut(shortcut) {
-    this.useKeyCode_ = false;
-    this.mods_ = {};
-    shortcut.split('|').forEach((part) => {
-      const partLc = part.toLowerCase();
-      switch (partLc) {
-        case 'alt':
-        case 'ctrl':
-        case 'meta':
-        case 'shift':
-          this.mods_[partLc + 'Key'] = true;
-          break;
-        default:
-          if (this.key_) {
-            throw Error('Invalid shortcut');
-          }
-          this.key_ = part;
-          // For single key alpha shortcuts use event.keyCode rather than
-          // event.key to match how chrome handles shortcuts and allow
-          // non-english language input to work.
-          if (part.match(/^[a-z]$/)) {
-            this.useKeyCode_ = true;
-            this.keyCode_ = part.toUpperCase().charCodeAt(0);
-          }
-      }
-    });
-  }
-
-  KeyboardShortcut.prototype = {
-    /**
-     * Whether the keyboard shortcut object matches a keyboard event.
-     * @param {!Event} e The keyboard event object.
-     * @return {boolean} Whether we found a match or not.
-     */
-    matchesEvent: function(e) {
-      if ((this.useKeyCode_ && e.keyCode == this.keyCode_) ||
-          e.key == this.key_) {
-        // All keyboard modifiers need to match.
-        const mods = this.mods_;
-        return ['altKey', 'ctrlKey', 'metaKey', 'shiftKey'].every(function(k) {
-          return e[k] == !!mods[k];
-        });
-      }
-      return false;
-    }
-  };
-
-  /**
-   * A list of keyboard shortcuts which all perform one command.
-   * @param {string} shortcuts Text-based representation of one or more keyboard
-   *     shortcuts, separated by spaces.
-   * @constructor
-   */
-  function KeyboardShortcutList(shortcuts) {
-    this.shortcuts_ = shortcuts.split(/\s+/).map(function(shortcut) {
-      return new KeyboardShortcut(shortcut);
-    });
-  }
-
-  KeyboardShortcutList.prototype = {
-    /**
-     * Returns true if any of the keyboard shortcuts in the list matches a
-     * keyboard event.
-     * @param {!Event} e
-     * @return {boolean}
-     */
-    matchesEvent: function(e) {
-      return this.shortcuts_.some(function(keyboardShortcut) {
-        return keyboardShortcut.matchesEvent(e);
-      });
-    },
-  };
-
   /**
    * Creates a new command element.
    * @constructor
@@ -169,7 +89,7 @@ cr.define('cr.ui', function() {
     set shortcut(shortcut) {
       const oldShortcut = this.shortcut_;
       if (shortcut !== oldShortcut) {
-        this.keyboardShortcuts_ = new KeyboardShortcutList(shortcut);
+        this.keyboardShortcuts_ = new cr.ui.KeyboardShortcutList(shortcut);
 
         // Set this after the keyboardShortcuts_ since that might throw.
         this.shortcut_ = shortcut;
@@ -233,8 +153,9 @@ cr.define('cr.ui', function() {
 
   /**
    * The command managers for different documents.
+   * @type {!Map<!Document, !CommandManager>}
    */
-  const commandManagers = {};
+  const commandManagers = new Map();
 
   /**
    * Keeps track of the focused element and updates the commands when the focus
@@ -254,9 +175,8 @@ cr.define('cr.ui', function() {
    * @param {!Document} doc The document to manage the commands for.
    */
   CommandManager.init = function(doc) {
-    const uid = cr.getUid(doc);
-    if (!(uid in commandManagers)) {
-      commandManagers[uid] = new CommandManager(doc);
+    if (!commandManagers.has(doc)) {
+      commandManagers.set(doc, new CommandManager(doc));
     }
   };
 
@@ -357,6 +277,5 @@ cr.define('cr.ui', function() {
   return {
     Command: Command,
     CanExecuteEvent: CanExecuteEvent,
-    KeyboardShortcutList: KeyboardShortcutList,
   };
 });

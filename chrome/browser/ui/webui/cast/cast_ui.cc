@@ -13,6 +13,8 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 
+// TODO: Figure out a way to self-navigate the WebUI in C++ on instantiation,
+// and replace the navigation in cast.js with that.
 CastUI::CastUI(content::WebUI* web_ui)
     : content::WebUIController(web_ui) {
   // Retrieve the ID of the component extension.
@@ -26,13 +28,10 @@ CastUI::CastUI(content::WebUI* web_ui)
   content::WebUIDataSource* html_source =
       content::WebUIDataSource::Create(chrome::kChromeUICastHost);
 
-  html_source->AddResourcePath("cast.css", IDR_CAST_CSS);
   html_source->AddResourcePath("cast.js", IDR_CAST_JS);
-  html_source->AddResourcePath("cast_favicon.ico", IDR_CAST_FAVICON);
   html_source->AddString("extensionId", extension_id);
-  html_source->SetJsonPath("strings.js");
+  html_source->UseStringsJs();
   html_source->SetDefaultResource(IDR_CAST_HTML);
-  html_source->OverrideContentSecurityPolicyObjectSrc("object-src * chrome:;");
 
   content::WebUIDataSource::Add(Profile::FromWebUI(web_ui), html_source);
 }

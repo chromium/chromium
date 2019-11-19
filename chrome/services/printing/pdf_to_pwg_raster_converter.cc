@@ -126,9 +126,7 @@ base::ReadOnlySharedMemoryRegion RenderPdfPagesToPwgRaster(
 
 }  // namespace
 
-PdfToPwgRasterConverter::PdfToPwgRasterConverter(
-    std::unique_ptr<service_manager::ServiceContextRef> service_ref)
-    : service_ref_(std::move(service_ref)) {}
+PdfToPwgRasterConverter::PdfToPwgRasterConverter() = default;
 
 PdfToPwgRasterConverter::~PdfToPwgRasterConverter() {}
 

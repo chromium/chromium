@@ -31,7 +31,7 @@ public class StateListDrawableBuilderTest {
     private static final int DEFAULT_DRAWABLE = 45678;
 
     @Test
-    @Config(sdk = 18)
+    @Config(sdk = 19)
     public void testPreL() {
         StateListDrawableBuilder b = new StateListDrawableBuilder(RuntimeEnvironment.application);
         b.addState(CHECKED_DRAWABLE, android.R.attr.state_checked);

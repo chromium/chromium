@@ -11,8 +11,6 @@
    this software. If not, see <http://creativecommons.org/publicdomain/zero/1.0/>.
 */
 
-namespace third_party_unrar {
-
 #define PARALLELISM_DEGREE 8
 
 void blake2sp_init( blake2sp_state *S )
@@ -153,5 +151,3 @@ void blake2sp_final( blake2sp_state *S, byte *digest )
 
   blake2s_final( &S->R, digest );
 }
-
-}  // namespace third_party_unrar

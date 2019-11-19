@@ -4,12 +4,16 @@
 
 #include "chromeos/components/drivefs/drivefs_search.h"
 
+#include <utility>
+
 #include "base/run_loop.h"
 #include "base/test/bind_test_util.h"
-#include "base/test/scoped_task_environment.h"
 #include "base/test/simple_test_clock.h"
+#include "base/test/task_environment.h"
 #include "chromeos/components/drivefs/mojom/drivefs.mojom-test-utils.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "chromeos/components/drivefs/mojom/drivefs.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -22,7 +26,7 @@ using testing::_;
 class MockDriveFs : public mojom::DriveFsInterceptorForTesting,
                     public mojom::SearchQuery {
  public:
-  MockDriveFs() : search_binding_(this) {}
+  MockDriveFs() = default;
 
   DriveFs* GetForwardingInterface() override {
     NOTREACHED();
@@ -30,12 +34,11 @@ class MockDriveFs : public mojom::DriveFsInterceptorForTesting,
   }
 
   MOCK_CONST_METHOD1(OnStartSearchQuery, void(const mojom::QueryParameters&));
-  void StartSearchQuery(mojom::SearchQueryRequest query,
+  void StartSearchQuery(mojo::PendingReceiver<mojom::SearchQuery> receiver,
                         mojom::QueryParametersPtr query_params) override {
-    if (search_binding_.is_bound())
-      search_binding_.Unbind();
+    search_receiver_.reset();
     OnStartSearchQuery(*query_params);
-    search_binding_.Bind(std::move(query));
+    search_receiver_.Bind(std::move(receiver));
   }
 
   MOCK_METHOD1(OnGetNextPage,
@@ -49,7 +52,7 @@ class MockDriveFs : public mojom::DriveFsInterceptorForTesting,
   }
 
  private:
-  mojo::Binding<mojom::SearchQuery> search_binding_;
+  mojo::Receiver<mojom::SearchQuery> search_receiver_{this};
   DISALLOW_COPY_AND_ASSIGN(MockDriveFs);
 };
 
@@ -62,7 +65,7 @@ class DriveFsSearchTest : public testing::Test {
   }
 
  protected:
-  base::test::ScopedTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
   std::unique_ptr<network::TestNetworkConnectionTracker>
       network_connection_tracker_;
   MockDriveFs mock_drivefs_;

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="40px" height="40px" viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 53.2 (72643) - https://sketchapp.com -->
+    <title>mode_square_1x</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <path d="M26.6666667,0 L3.33333333,0 C1.5,0 0,1.5 0,3.33333333 L0,26.6666667 C0,28.5 1.5,30 3.33333333,30 L26.6666667,30 C28.5,30 30,28.5 30,26.6666667 L30,3.33333333 C30,1.5 28.5,0 26.6666667,0 Z M27,27 L3,27 L3,3 L27,3 L27,27 Z M18.3333333,14.67 L13.3333333,20.87 L10,16.3366667 L5,23.0033333 L25,23.0033333 L18.3333333,14.67 Z" id="path-1"></path>
+    </defs>
+    <g id="mode_square_1x" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="image" transform="translate(5.000000, 5.000000)">
+            <mask id="mask-2" fill="white">
+                <use xlink:href="#path-1"></use>
+            </mask>
+            <use id="Shape" fill="#FFFFFF" fill-rule="nonzero" xlink:href="#path-1"></use>
+        </g>
+    </g>
+</svg>

@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Uncaught Error: assert_unreached: Got unexpected event resize Reached unreachable code
+PASS Tests that loading a MediaStream in a media element eventually results in "canplay" even when not playing or autoplaying
+PASS Tests that loading a MediaStream in a media element sees all the expected (deterministic) events even when not playing or autoplaying
+Harness: the test ran to completion.
+

@@ -10,6 +10,37 @@ source_set("banners") {
     "infobar_banner_view_controller.mm",
   ]
   deps = [
+    ":public",
+    "//base",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/infobars:public",
     "//ios/chrome/browser/ui/util",
+    "//ios/chrome/common/colors",
+    "//ui/base",
+  ]
+}
+
+source_set("public") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "infobar_banner_constants.h",
+    "infobar_banner_constants.mm",
+    "infobar_banner_interaction_delegate.h",
+    "infobar_banner_presentation_state.h",
+  ]
+}
+
+source_set("unit_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [
+    "infobar_banner_view_controller_unittest.mm",
+  ]
+  deps = [
+    ":banners",
+    "//ios/chrome/browser/infobars:public",
+    "//ios/chrome/test:test_support",
+    "//testing/gtest",
+    "//third_party/ocmock",
   ]
 }

@@ -7,6 +7,7 @@
 
 #include <memory>
 #include "base/memory/scoped_refptr.h"
+#include "base/sequenced_task_runner.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_image_source.h"
 #include "third_party/blink/renderer/core/html/canvas/image_element_base.h"
@@ -17,6 +18,7 @@
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 
 namespace blink {
@@ -120,9 +122,9 @@ class CORE_EXPORT ImageBitmap final : public ScriptWrappable,
   static ImageBitmap* Take(ScriptPromiseResolver*, sk_sp<SkImage>);
 
   scoped_refptr<StaticBitmapImage> BitmapImage() const { return image_; }
-  scoped_refptr<Uint8Array> CopyBitmapData();
-  scoped_refptr<Uint8Array> CopyBitmapData(AlphaDisposition,
-                                           DataU8ColorType = kRGBAColorType);
+  Vector<uint8_t> CopyBitmapData();
+  Vector<uint8_t> CopyBitmapData(AlphaDisposition,
+                                 DataU8ColorType = kRGBAColorType);
   unsigned width() const;
   unsigned height() const;
   IntSize Size() const;
@@ -172,14 +174,14 @@ class CORE_EXPORT ImageBitmap final : public ScriptWrappable,
  private:
   void UpdateImageBitmapMemoryUsage();
   static void ResolvePromiseOnOriginalThread(ScriptPromiseResolver*,
-                                             sk_sp<SkImage>,
                                              bool origin_clean,
-                                             std::unique_ptr<ParsedOptions>);
-  static void RasterizeImageOnBackgroundThread(ScriptPromiseResolver*,
-                                               sk_sp<PaintRecord>,
-                                               const IntRect&,
-                                               bool origin_clean,
-                                               std::unique_ptr<ParsedOptions>);
+                                             std::unique_ptr<ParsedOptions>,
+                                             sk_sp<SkImage>);
+  static void RasterizeImageOnBackgroundThread(
+      sk_sp<PaintRecord>,
+      const IntRect&,
+      scoped_refptr<base::SequencedTaskRunner>,
+      WTF::CrossThreadOnceFunction<void(sk_sp<SkImage>)> callback);
   scoped_refptr<StaticBitmapImage> image_;
   bool is_neutered_ = false;
   int32_t memory_usage_ = 0;

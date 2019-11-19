@@ -7,9 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-// a11y identifier used to locate the autofill suggestion in automation
-extern NSString* const kFormSuggestionLabelAccessibilityIdentifier;
-
 @class FormSuggestion;
 @protocol FormSuggestionClient;
 
@@ -17,11 +14,8 @@ extern NSString* const kFormSuggestionLabelAccessibilityIdentifier;
 @interface FormSuggestionLabel : UIView
 
 // Designated initializer. Initializes with |client| for |suggestion|.
-// |userInteractionEnabled| is a boolean that denotes whether user interaction
-// is enabled on the suggestion.
 - (instancetype)initWithSuggestion:(FormSuggestion*)suggestion
                              index:(NSUInteger)index
-            userInteractionEnabled:(BOOL)userInteractionEnabled
                     numSuggestions:(NSUInteger)numSuggestions
                             client:(id<FormSuggestionClient>)client
     NS_DESIGNATED_INITIALIZER;

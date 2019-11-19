@@ -76,9 +76,8 @@ class BrowserAssociatedInterface {
 
     void ClearBindings() {
       if (!BrowserThread::CurrentlyOn(BrowserThread::IO)) {
-        base::PostTaskWithTraits(
-            FROM_HERE, {BrowserThread::IO},
-            base::BindOnce(&InternalState::ClearBindings, this));
+        base::PostTask(FROM_HERE, {BrowserThread::IO},
+                       base::BindOnce(&InternalState::ClearBindings, this));
         return;
       }
       bindings_.reset();

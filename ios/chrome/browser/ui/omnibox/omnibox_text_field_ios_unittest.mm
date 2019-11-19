@@ -14,6 +14,7 @@
 #include "ios/chrome/grit/ios_strings.h"
 #include "testing/gtest_mac.h"
 #include "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -168,6 +169,34 @@ TEST_F(OmniboxTextFieldTest, SelectAllExitsPreEditState) {
   EXPECT_TRUE([textfield_ isPreEditing]);
   [textfield_ selectAll:nil];
   EXPECT_FALSE([textfield_ isPreEditing]);
+}
+
+TEST_F(OmniboxTextFieldTest, CopyInPreedit) {
+  id delegateMock = OCMProtocolMock(@protocol(OmniboxTextFieldDelegate));
+  NSString* testString = @"omnibox test string";
+  [textfield_ setText:testString];
+  textfield_.delegate = delegateMock;
+  [textfield_ becomeFirstResponder];
+  [textfield_ enterPreEditState];
+  EXPECT_TRUE([textfield_ canPerformAction:@selector(copy:) withSender:nil]);
+  [delegateMock onCopy];
+  [textfield_ copy:nil];
+  EXPECT_TRUE([textfield_.text isEqualToString:testString]);
+  [delegateMock verify];
+}
+
+TEST_F(OmniboxTextFieldTest, CutInPreedit) {
+  id delegateMock = OCMProtocolMock(@protocol(OmniboxTextFieldDelegate));
+  NSString* testString = @"omnibox test string";
+  [textfield_ setText:testString];
+  textfield_.delegate = delegateMock;
+  [textfield_ becomeFirstResponder];
+  [textfield_ enterPreEditState];
+  EXPECT_TRUE([textfield_ canPerformAction:@selector(cut:) withSender:nil]);
+  [delegateMock onCopy];
+  [textfield_ cut:nil];
+  EXPECT_TRUE([textfield_.text isEqualToString:@""]);
+  [delegateMock verify];
 }
 
 }  // namespace

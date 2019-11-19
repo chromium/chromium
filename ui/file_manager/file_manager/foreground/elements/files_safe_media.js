@@ -50,7 +50,7 @@ var FilesSafeMedia = Polymer({
   onSrcChange_: function() {
     if (!this.src && this.webview_) {
       // Remove webview to clean up unnecessary processes.
-      Polymer.dom(this.$.content).removeChild(this.webview_);
+      this.$.content.removeChild(this.webview_);
       this.webview_ = null;
     } else if (this.src && !this.webview_) {
       // Create webview node only if src exists to save resources.
@@ -59,7 +59,7 @@ var FilesSafeMedia = Polymer({
       this.webview_ = webview;
       webview.partition = 'trusted';
       webview.allowtransparency = 'true';
-      Polymer.dom(this.$.content).appendChild(webview);
+      this.$.content.appendChild(webview);
       webview.addEventListener(
           'contentload', this.onSrcChange_.bind(this));
       webview.src = this.sourceFile_();

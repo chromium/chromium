@@ -36,7 +36,7 @@ class URLRequestHangingReadJob : public URLRequestJob {
   void StartAsync();
 
   const int content_length_;
-  base::WeakPtrFactory<URLRequestHangingReadJob> weak_factory_;
+  base::WeakPtrFactory<URLRequestHangingReadJob> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(URLRequestHangingReadJob);
 };

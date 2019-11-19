@@ -4,7 +4,7 @@
 
 #include "chrome/browser/chromeos/login/screens/gaia_screen.h"
 
-#include "chrome/browser/chromeos/login/screens/gaia_view.h"
+#include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 
 namespace chromeos {
 

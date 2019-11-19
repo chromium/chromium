@@ -39,8 +39,6 @@ class ExceptionState;
 
 class DateTimeLocalInputType final : public BaseTemporalInputType {
  public:
-  static InputType* Create(HTMLInputElement&);
-
   explicit DateTimeLocalInputType(HTMLInputElement& element)
       : BaseTemporalInputType(element) {}
 

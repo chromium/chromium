@@ -4,6 +4,7 @@
 
 static_library("profile_metrics") {
   sources = [
+    "browser_profile_type.h",
     "counts.cc",
     "counts.h",
   ]

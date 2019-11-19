@@ -13,8 +13,8 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/permission_type.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/system_connector.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/service_manager_connection.h"
 #include "mojo/public/cpp/bindings/strong_binding.h"
 #include "services/device/public/mojom/constants.mojom.h"
 #include "services/service_manager/public/cpp/connector.h"
@@ -30,8 +30,7 @@ SensorProviderProxyImpl::SensorProviderProxyImpl(
     PermissionControllerImpl* permission_controller,
     RenderFrameHost* render_frame_host)
     : permission_controller_(permission_controller),
-      render_frame_host_(render_frame_host),
-      weak_factory_(this) {
+      render_frame_host_(render_frame_host) {
   DCHECK(permission_controller);
   DCHECK(render_frame_host);
 }
@@ -39,8 +38,8 @@ SensorProviderProxyImpl::SensorProviderProxyImpl(
 SensorProviderProxyImpl::~SensorProviderProxyImpl() = default;
 
 void SensorProviderProxyImpl::Bind(
-    device::mojom::SensorProviderRequest request) {
-  binding_set_.AddBinding(this, std::move(request));
+    mojo::PendingReceiver<device::mojom::SensorProvider> receiver) {
+  receiver_set_.Add(this, std::move(receiver));
 }
 
 void SensorProviderProxyImpl::GetSensor(SensorType type,
@@ -51,17 +50,16 @@ void SensorProviderProxyImpl::GetSensor(SensorType type,
   }
 
   if (!sensor_provider_) {
-    auto* connection = ServiceManagerConnection::GetForProcess();
-
-    if (!connection) {
+    auto* connector = GetSystemConnector();
+    if (!connector) {
       std::move(callback).Run(SensorCreationResult::ERROR_NOT_AVAILABLE,
                               nullptr);
       return;
     }
 
-    connection->GetConnector()->BindInterface(
-        device::mojom::kServiceName, mojo::MakeRequest(&sensor_provider_));
-    sensor_provider_.set_connection_error_handler(base::BindOnce(
+    connector->Connect(device::mojom::kServiceName,
+                       sensor_provider_.BindNewPipeAndPassReceiver());
+    sensor_provider_.set_disconnect_handler(base::BindOnce(
         &SensorProviderProxyImpl::OnConnectionError, base::Unretained(this)));
   }
 
@@ -128,9 +126,9 @@ bool SensorProviderProxyImpl::CheckFeaturePolicies(SensorType type) const {
 }
 
 void SensorProviderProxyImpl::OnConnectionError() {
-  // Close all the upstream bindings to notify them of this failure as the
+  // Close all the bindings to notify them of this failure as the
   // GetSensorCallbacks will never be called.
-  binding_set_.CloseAllBindings();
+  receiver_set_.Clear();
   sensor_provider_.reset();
 }
 

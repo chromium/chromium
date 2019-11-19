@@ -9,17 +9,17 @@
 
 #include "ash/assistant/assistant_controller.h"
 #include "ash/assistant/test/test_assistant_service.h"
+#include "ash/assistant/util/assistant_util.h"
 #include "ash/highlighter/highlighter_controller.h"
 #include "ash/highlighter/highlighter_controller_test_api.h"
 #include "ash/public/cpp/ash_pref_names.h"
 #include "ash/public/cpp/ash_switches.h"
+#include "ash/public/cpp/assistant/assistant_state.h"
 #include "ash/public/cpp/stylus_utils.h"
-#include "ash/public/interfaces/voice_interaction_controller.mojom.h"
 #include "ash/root_window_controller.h"
-#include "ash/session/session_controller.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shell.h"
-#include "ash/shell_test_api.h"
 #include "ash/system/palette/palette_tray_test_api.h"
 #include "ash/system/palette/palette_utils.h"
 #include "ash/system/palette/palette_welcome_bubble.h"
@@ -28,12 +28,13 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
 #include "ash/test_shell_delegate.h"
-#include "ash/voice_interaction/voice_interaction_controller.h"
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "chromeos/constants/chromeos_switches.h"
+#include "chromeos/services/assistant/public/cpp/assistant_prefs.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/session_manager_types.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -81,6 +82,10 @@ class PaletteTrayTest : public AshTestBase {
     test_api_ = std::make_unique<PaletteTrayTestApi>(palette_tray_);
   }
 
+  PrefService* prefs() {
+    return Shell::Get()->session_controller()->GetPrimaryUserPrefService();
+  }
+
  protected:
   PrefService* active_user_pref_service() {
     return Shell::Get()->session_controller()->GetActivePrefService();
@@ -101,13 +106,13 @@ class PaletteTrayTest : public AshTestBase {
 // Verify the palette tray button exists and but is not visible initially.
 TEST_F(PaletteTrayTest, PaletteTrayIsInvisible) {
   ASSERT_TRUE(palette_tray_);
-  EXPECT_FALSE(palette_tray_->visible());
+  EXPECT_FALSE(palette_tray_->GetVisible());
 }
 
 // Verify if the has seen stylus pref is not set initially, the palette tray
 // should become visible after seeing a stylus event.
 TEST_F(PaletteTrayTest, PaletteTrayVisibleAfterStylusSeen) {
-  ASSERT_FALSE(palette_tray_->visible());
+  ASSERT_FALSE(palette_tray_->GetVisible());
   ASSERT_FALSE(local_state_pref_service()->GetBoolean(prefs::kHasSeenStylus));
 
   // Send a stylus event.
@@ -117,16 +122,16 @@ TEST_F(PaletteTrayTest, PaletteTrayVisibleAfterStylusSeen) {
   generator->ReleaseTouch();
   generator->ExitPenPointerMode();
 
-  EXPECT_TRUE(palette_tray_->visible());
+  EXPECT_TRUE(palette_tray_->GetVisible());
 }
 
 // Verify if the has seen stylus pref is initially set, the palette tray is
 // visible.
 TEST_F(PaletteTrayTest, StylusSeenPrefInitiallySet) {
-  ASSERT_FALSE(palette_tray_->visible());
+  ASSERT_FALSE(palette_tray_->GetVisible());
   local_state_pref_service()->SetBoolean(prefs::kHasSeenStylus, true);
 
-  EXPECT_TRUE(palette_tray_->visible());
+  EXPECT_TRUE(palette_tray_->GetVisible());
 }
 
 // Verify taps on the palette tray button results in expected behaviour.
@@ -193,26 +198,21 @@ TEST_F(PaletteTrayTest, ModeToolDeactivatedAutomatically) {
   EXPECT_FALSE(palette_tray_->is_active());
 }
 
-TEST_F(PaletteTrayTest, NoMetalayerToolViewCreated) {
-  EXPECT_FALSE(
-      test_api_->palette_tool_manager()->HasTool(PaletteToolId::METALAYER));
-}
-
 TEST_F(PaletteTrayTest, EnableStylusPref) {
   local_state_pref_service()->SetBoolean(prefs::kHasSeenStylus, true);
 
   // kEnableStylusTools is true by default
   ASSERT_TRUE(
       active_user_pref_service()->GetBoolean(prefs::kEnableStylusTools));
-  EXPECT_TRUE(palette_tray_->visible());
+  EXPECT_TRUE(palette_tray_->GetVisible());
 
   // Resetting the pref hides the palette tray.
   active_user_pref_service()->SetBoolean(prefs::kEnableStylusTools, false);
-  EXPECT_FALSE(palette_tray_->visible());
+  EXPECT_FALSE(palette_tray_->GetVisible());
 
   // Setting the pref again shows the palette tray.
   active_user_pref_service()->SetBoolean(prefs::kEnableStylusTools, true);
-  EXPECT_TRUE(palette_tray_->visible());
+  EXPECT_TRUE(palette_tray_->GetVisible());
 }
 
 TEST_F(PaletteTrayTest, WelcomeBubbleVisibility) {
@@ -236,15 +236,15 @@ TEST_F(PaletteTrayTest, WelcomeBubbleVisibility) {
 }
 
 // Base class for tests that rely on Assistant enabled.
-class PaletteTrayTestWithVoiceInteraction : public PaletteTrayTest {
+class PaletteTrayTestWithAssistant : public PaletteTrayTest {
  public:
-  PaletteTrayTestWithVoiceInteraction() {
-    feature_list_.InitAndEnableFeature(chromeos::switches::kAssistantFeature);
-  }
-  ~PaletteTrayTestWithVoiceInteraction() override = default;
+  PaletteTrayTestWithAssistant() = default;
+  ~PaletteTrayTestWithAssistant() override = default;
 
   // PaletteTrayTest:
   void SetUp() override {
+    assistant::util::OverrideIsGoogleDeviceForTesting();
+
     PaletteTrayTest::SetUp();
 
     // Instantiate EventGenerator now so that its constructor does not overwrite
@@ -257,12 +257,10 @@ class PaletteTrayTestWithVoiceInteraction : public PaletteTrayTest {
 
     highlighter_test_api_ = std::make_unique<HighlighterControllerTestApi>(
         Shell::Get()->highlighter_controller());
-
-    Shell::Get()->assistant_controller()->SetAssistant(
-        assistant_.CreateInterfacePtrAndBind());
   }
 
   void TearDown() override {
+    ui::SetEventTickClockForTesting(nullptr);
     // This needs to be called first to reset the controller state before the
     // shell instance gets torn down.
     highlighter_test_api_.reset();
@@ -278,6 +276,8 @@ class PaletteTrayTestWithVoiceInteraction : public PaletteTrayTest {
   bool highlighter_showing() const {
     return highlighter_test_api_->IsShowingHighlighter();
   }
+
+  AssistantState* assistant_state() const { return AssistantState::Get(); }
 
   void DragAndAssertMetalayer(const std::string& context,
                               const gfx::Point& origin,
@@ -325,26 +325,23 @@ class PaletteTrayTestWithVoiceInteraction : public PaletteTrayTest {
   std::unique_ptr<HighlighterControllerTestApi> highlighter_test_api_;
 
  private:
-  TestAssistantService assistant_;
   base::SimpleTestTickClock simulated_clock_;
-  base::test::ScopedFeatureList feature_list_;
 
-  DISALLOW_COPY_AND_ASSIGN(PaletteTrayTestWithVoiceInteraction);
+  DISALLOW_COPY_AND_ASSIGN(PaletteTrayTestWithAssistant);
 };
 
-TEST_F(PaletteTrayTestWithVoiceInteraction, MetalayerToolViewCreated) {
+TEST_F(PaletteTrayTestWithAssistant, MetalayerToolViewCreated) {
   EXPECT_TRUE(
       test_api_->palette_tool_manager()->HasTool(PaletteToolId::METALAYER));
 }
 
-TEST_F(PaletteTrayTestWithVoiceInteraction, MetalayerToolActivatesHighlighter) {
+TEST_F(PaletteTrayTestWithAssistant, MetalayerToolActivatesHighlighter) {
   ui::ScopedAnimationDurationScaleMode animation_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
-  Shell::Get()->voice_interaction_controller()->NotifyStatusChanged(
-      mojom::VoiceInteractionState::RUNNING);
-  Shell::Get()->voice_interaction_controller()->NotifySettingsEnabled(true);
-  Shell::Get()->voice_interaction_controller()->NotifyContextEnabled(true);
-  Shell::Get()->voice_interaction_controller()->FlushForTesting();
+  assistant_state()->NotifyStatusChanged(mojom::AssistantState::READY);
+  prefs()->SetBoolean(chromeos::assistant::prefs::kAssistantEnabled, true);
+  prefs()->SetBoolean(chromeos::assistant::prefs::kAssistantContextEnabled,
+                      true);
 
   ui::test::EventGenerator* generator = GetEventGenerator();
   generator->EnterPenPointerMode();
@@ -406,8 +403,8 @@ TEST_F(PaletteTrayTestWithVoiceInteraction, MetalayerToolActivatesHighlighter) {
   // Disabling metalayer support in the delegate should disable the palette
   // tool.
   test_api_->palette_tool_manager()->ActivateTool(PaletteToolId::METALAYER);
-  Shell::Get()->voice_interaction_controller()->NotifyContextEnabled(false);
-  Shell::Get()->voice_interaction_controller()->FlushForTesting();
+  prefs()->SetBoolean(chromeos::assistant::prefs::kAssistantContextEnabled,
+                      false);
   EXPECT_FALSE(metalayer_enabled());
 
   // With the metalayer disabled again, press/drag does not activate the
@@ -417,15 +414,13 @@ TEST_F(PaletteTrayTestWithVoiceInteraction, MetalayerToolActivatesHighlighter) {
                          false /* no highlighter on press */);
 }
 
-TEST_F(PaletteTrayTestWithVoiceInteraction,
-       StylusBarrelButtonActivatesHighlighter) {
+TEST_F(PaletteTrayTestWithAssistant, StylusBarrelButtonActivatesHighlighter) {
   ui::ScopedAnimationDurationScaleMode animation_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
-  Shell::Get()->voice_interaction_controller()->NotifyStatusChanged(
-      mojom::VoiceInteractionState::NOT_READY);
-  Shell::Get()->voice_interaction_controller()->NotifySettingsEnabled(false);
-  Shell::Get()->voice_interaction_controller()->NotifyContextEnabled(false);
-  Shell::Get()->voice_interaction_controller()->FlushForTesting();
+  assistant_state()->NotifyStatusChanged(mojom::AssistantState::NOT_READY);
+  prefs()->SetBoolean(chromeos::assistant::prefs::kAssistantEnabled, false);
+  prefs()->SetBoolean(chromeos::assistant::prefs::kAssistantContextEnabled,
+                      false);
 
   ui::test::EventGenerator* generator = GetEventGenerator();
   generator->EnterPenPointerMode();
@@ -445,23 +440,20 @@ TEST_F(PaletteTrayTestWithVoiceInteraction,
                              false /* no highlighter on press */);
 
   // Enable one of the two user prefs, should not be sufficient.
-  Shell::Get()->voice_interaction_controller()->NotifyContextEnabled(true);
-  Shell::Get()->voice_interaction_controller()->FlushForTesting();
+  prefs()->SetBoolean(chromeos::assistant::prefs::kAssistantContextEnabled,
+                      true);
   WaitDragAndAssertMetalayer("one pref enabled", origin,
                              ui::EF_LEFT_MOUSE_BUTTON, false /* no metalayer */,
                              false /* no highlighter on press */);
 
   // Enable the other user pref, still not sufficient.
-  Shell::Get()->voice_interaction_controller()->NotifySettingsEnabled(true);
-  Shell::Get()->voice_interaction_controller()->FlushForTesting();
+  prefs()->SetBoolean(chromeos::assistant::prefs::kAssistantEnabled, true);
   WaitDragAndAssertMetalayer("two prefs enabled", origin,
                              ui::EF_LEFT_MOUSE_BUTTON, false /* no metalayer */,
                              false /* no highlighter on press */);
 
   // Once the service is ready, the button should start working.
-  Shell::Get()->voice_interaction_controller()->NotifyStatusChanged(
-      mojom::VoiceInteractionState::RUNNING);
-  Shell::Get()->voice_interaction_controller()->FlushForTesting();
+  assistant_state()->NotifyStatusChanged(mojom::AssistantState::READY);
 
   // Press and drag with no button, still no highlighter.
   WaitDragAndAssertMetalayer("all enabled, no button ", origin, ui::EF_NONE,
@@ -510,7 +502,7 @@ TEST_F(PaletteTrayTestWithVoiceInteraction,
 
   // The barrel button should not work on the lock screen.
   highlighter_test_api_->DestroyPointerView();
-  GetSessionControllerClient()->RequestLockScreen();
+  GetSessionControllerClient()->LockScreen();
   EXPECT_FALSE(test_api_->palette_tool_manager()->IsToolActive(
       PaletteToolId::METALAYER));
   WaitDragAndAssertMetalayer("screen locked", origin, ui::EF_LEFT_MOUSE_BUTTON,
@@ -525,8 +517,8 @@ TEST_F(PaletteTrayTestWithVoiceInteraction,
 
   // Disable the metalayer support.
   // This should deactivate both the palette tool and the highlighter.
-  Shell::Get()->voice_interaction_controller()->NotifyContextEnabled(false);
-  Shell::Get()->voice_interaction_controller()->FlushForTesting();
+  prefs()->SetBoolean(chromeos::assistant::prefs::kAssistantContextEnabled,
+                      false);
   EXPECT_FALSE(test_api_->palette_tool_manager()->IsToolActive(
       PaletteToolId::METALAYER));
 
@@ -554,13 +546,13 @@ class PaletteTrayTestWithInternalStylus : public PaletteTrayTest {
 // internal stylus.
 TEST_F(PaletteTrayTestWithInternalStylus, Visible) {
   ASSERT_TRUE(palette_tray_);
-  EXPECT_TRUE(palette_tray_->visible());
+  EXPECT_TRUE(palette_tray_->GetVisible());
 }
 
 // Verify that when entering or exiting the lock screen, the behavior of the
 // palette tray button is as expected.
 TEST_F(PaletteTrayTestWithInternalStylus, PaletteTrayOnLockScreenBehavior) {
-  ASSERT_TRUE(palette_tray_->visible());
+  ASSERT_TRUE(palette_tray_->GetVisible());
 
   PaletteToolManager* manager = test_api_->palette_tool_manager();
   manager->ActivateTool(PaletteToolId::LASER_POINTER);
@@ -568,21 +560,21 @@ TEST_F(PaletteTrayTestWithInternalStylus, PaletteTrayOnLockScreenBehavior) {
 
   // Verify that when entering the lock screen, the palette tray button is
   // hidden, and the tool that was active is no longer active.
-  GetSessionControllerClient()->RequestLockScreen();
+  GetSessionControllerClient()->LockScreen();
   EXPECT_FALSE(manager->IsToolActive(PaletteToolId::LASER_POINTER));
-  EXPECT_FALSE(palette_tray_->visible());
+  EXPECT_FALSE(palette_tray_->GetVisible());
 
   // Verify that when logging back in the tray is visible, but the tool that was
   // active before locking the screen is still inactive.
   GetSessionControllerClient()->UnlockScreen();
-  EXPECT_TRUE(palette_tray_->visible());
+  EXPECT_TRUE(palette_tray_->GetVisible());
   EXPECT_FALSE(manager->IsToolActive(PaletteToolId::LASER_POINTER));
 }
 
 // Verify a tool deactivates when the palette bubble is opened while the tool
 // is active.
 TEST_F(PaletteTrayTestWithInternalStylus, ToolDeactivatesWhenOpeningBubble) {
-  ASSERT_TRUE(palette_tray_->visible());
+  ASSERT_TRUE(palette_tray_->GetVisible());
 
   palette_tray_->ShowBubble(false /* show_by_click */);
   EXPECT_TRUE(test_api_->tray_bubble_wrapper());
@@ -747,8 +739,8 @@ TEST_F(PaletteTrayNoSessionTestWithInternalStylus,
       controllers[1]->GetStatusAreaWidget()->palette_tray();
 
   // The palette tray on the external monitor is not visible.
-  EXPECT_TRUE(main_tray->visible());
-  EXPECT_FALSE(external_tray->visible());
+  EXPECT_TRUE(main_tray->GetVisible());
+  EXPECT_FALSE(external_tray->GetVisible());
 
   // Removing the stylus shows the bubble only on the main palette tray.
   fake_stylus_event_on_all_trays(ui::StylusState::REMOVED);

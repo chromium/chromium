@@ -13,12 +13,8 @@ class BookmarkBar {
     // The bookmark bar is not visible.
     HIDDEN,
 
-    // The bookmark bar is visible and not detached.
-    SHOW,
-
-    // The bookmark bar is visible and detached from the location bar (as
-    // happens on the new tab page).
-    DETACHED
+    // The bookmark bar is visible.
+    SHOW
   };
 
   // Used when the state changes to indicate if the transition should be

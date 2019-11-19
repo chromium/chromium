@@ -21,8 +21,7 @@ PlatformSensor::PlatformSensor(mojom::SensorType type,
     : task_runner_(base::ThreadTaskRunnerHandle::Get()),
       reading_buffer_(reading_buffer),
       type_(type),
-      provider_(provider),
-      weak_factory_(this) {}
+      provider_(provider) {}
 
 PlatformSensor::~PlatformSensor() {
   if (provider_)
@@ -102,12 +101,7 @@ void PlatformSensor::RemoveClient(Client* client) {
 }
 
 bool PlatformSensor::GetLatestReading(SensorReading* result) {
-  if (!shared_buffer_reader_) {
-    shared_buffer_reader_ =
-        std::make_unique<SensorReadingSharedBufferReader>(reading_buffer_);
-  }
-
-  return shared_buffer_reader_->GetReading(result);
+  return SensorReadingSharedBufferReader::GetReading(reading_buffer_, result);
 }
 
 void PlatformSensor::UpdateSharedBufferAndNotifyClients(

@@ -4,7 +4,7 @@
 
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
-#include "jni/CrashpadMain_jni.h"
+#include "components/crash/android/java_handler_jni_headers/CrashpadMain_jni.h"
 #include "third_party/crashpad/crashpad/client/client_argv_handling.h"
 #include "third_party/crashpad/crashpad/handler/handler_main.h"
 
@@ -19,7 +19,7 @@ static void JNI_CrashpadMain_CrashpadMain(
 
   std::vector<const char*> argv;
   StringVectorToCStringVector(argv_strings, &argv);
-  HandlerMain(argv.size() - 1, const_cast<char**>(argv.data()), nullptr);
+  CrashpadHandlerMain(argv.size() - 1, const_cast<char**>(argv.data()));
 }
 
 }  // namespace crashpad

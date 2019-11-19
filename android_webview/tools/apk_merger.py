@@ -3,19 +3,31 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-""" Merges a 64-bit and a 32-bit APK into a single APK
+""" Merges a 32-bit APK into a 32/64-bit APK.
 
-This script is used to merge two APKs which have only 32-bit or 64-bit
-binaries respectively into a APK that has both 32-bit and 64-bit binaries
-for 64-bit Android platform.
+This script is used to make the 32-bit parts of a pure 32-bit APK identical to
+those of an APK built on a 64-bit configuration (whether adding 32-bit parts to
+a pure 64-bit build, or replacing 32-bit parts in a multi-architecture build to
+ensurce consistency with pure 32-bit builds).
 
-You normally don't need this script because GN 64-bit build generates
-such APK for you.
+In an ideal world, the libraries and assets in a pure 32-bit APK would be
+identical to the 32-bit equivalents in a 64-bit-generated APK (with secondary
+ABI). However, this isn't reality. For example, subtle differences due to paths
+yield different native libraries (a benign difference). Accidental differences
+in build configuration yield legitimate differences (impacting functionality and
+binary size). This script overwrites parts of the 64-bit APK with pieces from
+the 32-bit APK, so that the two versions are identical from a 32-bit
+perspective.
+
+Longer term, the 64-bit build configuration should be updated to generate pure
+32-bit APKs. While slightly counter-intuitive, this would ensure that 32-bit
+pieces are identical across the different versions without having to merge
+anything.
 
 To use this script, you need to
 1. Build 32-bit APK as usual.
 2. Build 64-bit APK with GN variable build_apk_secondary_abi=false OR true.
-3. Use this script to merge 2 APKs.
+3. Use this script to merge the 2 APKs.
 
 """
 
@@ -25,7 +37,6 @@ import filecmp
 import logging
 import os
 import pprint
-import re
 import shutil
 import sys
 import tempfile
@@ -45,7 +56,7 @@ sys.path.append(BUILD_ANDROID_DIR)
 from pylib import constants  # pylint: disable=import-error,wrong-import-position
 
 DEFAULT_ZIPALIGN_PATH = os.path.join(
-    SRC_DIR, 'third_party', 'android_tools', 'sdk', 'build-tools',
+    SRC_DIR, 'third_party', 'android_sdk', 'public', 'build-tools',
     constants.ANDROID_SDK_BUILD_TOOLS_VERSION, 'zipalign')
 
 
@@ -94,34 +105,26 @@ def GetDiffFiles(dcmp, base_dir):
                           (dcmp.diff_files, dcmp.left, dcmp.right))
 
   if len(dcmp.funny_files) > 0:
-    ApkMergeFailure('found uncomparable files: %s in %s and %s' %
-                    (dcmp.funny_files, dcmp.left, dcmp.right))
+    raise ApkMergeFailure('found uncomparable files: %s in %s and %s' %
+                          (dcmp.funny_files, dcmp.left, dcmp.right))
 
   for sub_dcmp in dcmp.subdirs.itervalues():
     copy_files.extend(GetDiffFiles(sub_dcmp, base_dir))
   return copy_files
 
 
-def CheckFilesExpected(actual_files, expected_files, component_build):
+def CheckFilesExpected(actual_files, expected_files):
   """ Check that the lists of actual and expected files are the same. """
   actual_file_names = collections.defaultdict(int)
   for f in actual_files:
-    actual_file_names[os.path.basename(f)] += 1
+    actual_file_names[f] += 1
   actual_file_set = set(actual_file_names.iterkeys())
-  expected_file_set = set(expected_files.iterkeys())
+  expected_file_set = set(expected_files)
 
   unexpected_file_set = actual_file_set.difference(expected_file_set)
-  if component_build:
-    unexpected_file_set = set(
-        f for f in unexpected_file_set if not f.endswith('.so'))
   missing_file_set = expected_file_set.difference(actual_file_set)
   duplicate_file_set = set(
       f for f, n in actual_file_names.iteritems() if n > 1)
-
-  # TODO(crbug.com/839191): Remove this once we're plumbing the lib correctly.
-  missing_file_set = set(
-      f for f in missing_file_set if not os.path.basename(f) ==
-      'libarcore_sdk_c.so')
 
   errors = []
   if unexpected_file_set:
@@ -137,91 +140,48 @@ def CheckFilesExpected(actual_files, expected_files, component_build):
         "Files don't match expectations:\n%s" % '\n'.join(errors))
 
 
-def AddDiffFiles(diff_files, tmp_dir_32, out_zip, expected_files,
-                 component_build, uncompress_shared_libraries):
+def AddDiffFiles(diff_files, tmp_dir_32, out_zip, uncompress_shared_libraries):
   """ Insert files only present in 32-bit APK into 64-bit APK (tmp_apk). """
   for diff_file in diff_files:
-    if component_build and diff_file.endswith('.so'):
-      compress = not uncompress_shared_libraries
-    else:
-      compress = expected_files[os.path.basename(diff_file)]
+    compress = not uncompress_shared_libraries and diff_file.endswith('.so')
     build_utils.AddToZipHermetic(out_zip,
                                  diff_file,
                                  os.path.join(tmp_dir_32, diff_file),
                                  compress=compress)
 
 
-def GetTargetAbiPath(apk_path, shared_library):
-  with zipfile.ZipFile(apk_path) as z:
-    matches = [p for p in z.namelist() if p.endswith(shared_library)]
-  if len(matches) != 1:
-    raise ApkMergeFailure('Found multiple/no libs for %s: %s' % (
-        shared_library, matches))
-  return matches[0]
-
-
-def GetSecondaryAbi(apk_zipfile, shared_library):
-  ret = ''
-  for name in apk_zipfile.namelist():
-    if os.path.basename(name) == shared_library:
-      abi = re.search('(^lib/)(.+)(/' + shared_library + '$)', name).group(2)
-      # Intentionally not to add 64bit abi because they are not used.
-      if abi == 'armeabi-v7a' or abi == 'armeabi':
-        ret = 'arm64-v8a'
-      elif abi == 'mips':
-        ret = 'mips64'
-      elif abi == 'x86':
-        ret = 'x86_64'
-      else:
-        raise ApkMergeFailure('Unsupported abi ' + abi)
-  if ret == '':
-    raise ApkMergeFailure('Failed to find secondary abi')
-  return ret
-
 def MergeApk(args, tmp_apk, tmp_dir_32, tmp_dir_64):
-  # Expected files to copy from 32- to 64-bit APK together with whether to
-  # compress within the .apk.
-  expected_files = {'snapshot_blob_32.bin': False}
-  if args.shared_library:
-    expected_files[args.shared_library] = not args.uncompress_shared_libraries
-  if args.has_unwind_cfi:
-    expected_files['unwind_cfi_32'] = False
+  # expected_files is the set of 32-bit related files that we expect to differ
+  # between a 32- and 64-bit build. Hence, they will be skipped when seeding the
+  # generated APK with the original 64-bit version, and explicitly copied in
+  # from the 32-bit version.
+  expected_files = []
 
-  # TODO(crbug.com/839191): we should pass this in via script arguments.
-  if not args.loadable_module_32:
-    args.loadable_module_32.append('libarcore_sdk_c.so')
-
-  for f in args.loadable_module_32:
-    expected_files[f] = not args.uncompress_shared_libraries
-
-  for f in args.loadable_module_64:
-    expected_files[f] = not args.uncompress_shared_libraries
-
-  # need to unpack APKs to compare their contents
   assets_path = 'base/assets' if args.bundle else 'assets'
-  exclude_files_64 = ['%s/snapshot_blob_32.bin' % assets_path,
-                      GetTargetAbiPath(args.apk_32bit, args.shared_library)]
-  if 'libcrashpad_handler.so' in expected_files:
-    exclude_files_64.append(
-        GetTargetAbiPath(args.apk_32bit, 'libcrashpad_handler.so'))
-  if 'libcrashpad_handler_trampoline.so' in expected_files:
-    exclude_files_64.append(
-        GetTargetAbiPath(args.apk_32bit, 'libcrashpad_handler_trampoline.so'))
-  if args.has_unwind_cfi:
-    exclude_files_64.append('%s/unwind_cfi_32' % assets_path)
-  UnpackApk(args.apk_64bit, tmp_dir_64, exclude_files_64)
-  UnpackApk(args.apk_32bit, tmp_dir_32)
+  expected_files.append('%s/snapshot_blob_32.bin' % assets_path)
 
+  if args.has_unwind_cfi:
+    expected_files.append('%s/unwind_cfi_32' % assets_path)
+
+  # All native libraries are assumed to differ, and will be merged.
+  with zipfile.ZipFile(args.apk_32bit) as z:
+    expected_files.extend([p for p in z.namelist() if p.endswith('.so')])
+
+  UnpackApk(args.apk_32bit, tmp_dir_32)
+  UnpackApk(args.apk_64bit, tmp_dir_64, expected_files)
+
+  # These are files that we know will be different, and we will hence ignore in
+  # the file comparison.
   ignores = ['META-INF', 'AndroidManifest.xml']
   if args.ignore_classes_dex:
-    ignores += ['classes.dex', 'classes2.dex']
+    ignores += ['classes.dex', 'classes2.dex', 'classes3.dex']
   if args.debug:
     # see http://crbug.com/648720
     ignores += ['webview_licenses.notice']
   if args.bundle:
     # if merging a bundle we must ignore the bundle specific
     # proto files as they will always be different.
-    ignores += ['BundleConfig.pb', 'native.pb', 'resources.pb']
+    ignores += ['BundleConfig.pb', 'native.pb']
 
   dcmp = filecmp.dircmp(
       tmp_dir_64,
@@ -232,23 +192,21 @@ def MergeApk(args, tmp_apk, tmp_dir_32, tmp_dir_64):
 
   # Check that diff_files match exactly those files we want to insert into
   # the 64-bit APK.
-  CheckFilesExpected(diff_files, expected_files, args.component_build)
+  CheckFilesExpected(diff_files, expected_files)
 
   with zipfile.ZipFile(tmp_apk, 'w') as out_zip:
-    exclude_patterns = ['META-INF/*'] + exclude_files_64
+    exclude_patterns = ['META-INF/*'] + expected_files
 
-    # If there are libraries for which we don't want the 32 bit versions, we
-    # should remove them here.
-    if args.loadable_module_32:
-      exclude_patterns.extend(['*' + f for f in args.loadable_module_32 if
-                               f not in args.loadable_module_64])
-
+    # Build the initial merged APK from the 64-bit APK, excluding all files we
+    # will pull from the 32-bit APK.
     path_transform = (
         lambda p: None if build_utils.MatchesGlob(p, exclude_patterns) else p)
     build_utils.MergeZips(
         out_zip, [args.apk_64bit], path_transform=path_transform)
-    AddDiffFiles(diff_files, tmp_dir_32, out_zip, expected_files,
-                 args.component_build, args.uncompress_shared_libraries)
+
+    # Add the files from the 32-bit APK.
+    AddDiffFiles(diff_files, tmp_dir_32, out_zip,
+                 args.uncompress_shared_libraries)
 
 
 def main():
@@ -263,11 +221,6 @@ def main():
   parser.add_argument('--keystore_path', required=True, type=os.path.abspath)
   parser.add_argument('--key_name', required=True)
   parser.add_argument('--key_password', required=True)
-  group = parser.add_mutually_exclusive_group(required=True)
-  group.add_argument('--component-build', action='store_true')
-  group.add_argument('--shared_library')
-  parser.add_argument('--page-align-shared-libraries', action='store_true',
-                      help='Obsolete, but remains for backwards compatibility')
   parser.add_argument('--uncompress-shared-libraries', action='store_true')
   parser.add_argument('--bundle', action='store_true')
   parser.add_argument('--debug', action='store_true')
@@ -275,12 +228,6 @@ def main():
   parser.add_argument('--ignore-classes-dex', action='store_true')
   parser.add_argument('--has-unwind-cfi', action='store_true',
                       help='Specifies if the 32-bit apk has unwind_cfi file')
-  parser.add_argument('--loadable_module_32', action='append', default=[],
-                      help='Use for each 32-bit library added via '
-                      'loadable_modules')
-  parser.add_argument('--loadable_module_64', action='append', default=[],
-                      help='Use for each 64-bit library added via '
-                      'loadable_modules')
   args = parser.parse_args()
 
   if (args.zipalign_path is not None and

@@ -8,10 +8,11 @@
 #include <shlobj.h>
 #include <wrl.h>
 
+#include <memory>
 #include <vector>
 
 #include "base/memory/ref_counted.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "content/child/dwrite_font_proxy/dwrite_font_proxy_win.h"
 #include "content/test/dwrite_font_fake_sender_win.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -46,10 +47,10 @@ class FontFallbackUnitTest : public testing::Test {
         .AddFilePath(segoe_path);
 
     DWriteFontCollectionProxy::Create(&collection_, factory_.Get(),
-                                      fake_collection_->CreatePtr());
+                                      fake_collection_->CreateRemote());
   }
 
-  base::test::ScopedTaskEnvironment task_environment;
+  base::test::TaskEnvironment task_environment;
   std::unique_ptr<FakeFontCollection> fake_collection_;
   mswr::ComPtr<IDWriteFactory> factory_;
   mswr::ComPtr<DWriteFontCollectionProxy> collection_;

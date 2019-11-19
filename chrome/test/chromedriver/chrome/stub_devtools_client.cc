@@ -32,6 +32,13 @@ Status StubDevToolsClient::SendCommand(
   return SendCommandAndGetResult(method, params, &result);
 }
 
+Status StubDevToolsClient::SendCommandFromWebSocket(
+    const std::string& method,
+    const base::DictionaryValue& params,
+    const int client_command_id) {
+  return SendCommand(method, params);
+}
+
 Status StubDevToolsClient::SendCommandWithTimeout(
     const std::string& method,
     const base::DictionaryValue& params,

@@ -147,8 +147,8 @@ void CopyTexImageResourceManager::DoCopyTexImage2DToLUMACompatibilityTexture(
     GLuint source_framebuffer,
     GLenum source_framebuffer_internal_format) {
   GLenum adjusted_internal_format =
-      gles2::TextureManager::AdjustTexInternalFormat(feature_info_.get(),
-                                                     internal_format);
+      gles2::TextureManager::AdjustTexInternalFormat(
+          feature_info_.get(), internal_format, luma_type);
   glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
   GLenum adjusted_format = gles2::TextureManager::AdjustTexFormat(
       feature_info_.get(), internal_format);

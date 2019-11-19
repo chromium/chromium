@@ -39,7 +39,7 @@ class WaitPromiseImpl : public async_wait_t {
                   zx_handle_t handle,
                   zx_signals_t signals)
       : async_wait_t({ASYNC_STATE_INIT, &WaitPromiseImpl::StaticOnSignaled,
-                      handle, signals}),
+                      handle, signals, 0}),
         isolate_(isolate),
         wait_state_(WaitState::kCreated),
         failed_start_status_(ZX_OK) {
@@ -243,7 +243,7 @@ v8::Local<v8::Object> ZxChannelRead(gin::Arguments* args) {
   uint32_t data_size;
   uint32_t num_handles;
   zx_status_t status =
-      ch->read(0, nullptr, 0, &data_size, nullptr, 0, &num_handles);
+      ch->read(0, nullptr, nullptr, 0, 0, &data_size, &num_handles);
   DCHECK_EQ(status, ZX_ERR_BUFFER_TOO_SMALL);
 
   std::vector<zx_handle_t> handles;
@@ -252,8 +252,8 @@ v8::Local<v8::Object> ZxChannelRead(gin::Arguments* args) {
   v8::Local<v8::ArrayBuffer> buf =
       v8::ArrayBuffer::New(args->isolate(), data_size);
   uint32_t actual_bytes, actual_handles;
-  status = ch->read(0, buf->GetContents().Data(), data_size, &actual_bytes,
-                    handles.data(), handles.size(), &actual_handles);
+  status = ch->read(0, buf->GetContents().Data(), handles.data(), data_size,
+                    handles.size(), &actual_bytes, &actual_handles);
   DCHECK_EQ(actual_bytes, data_size);
   DCHECK_EQ(actual_handles, num_handles);
 
@@ -308,10 +308,13 @@ ZxBindings::ZxBindings(v8::Isolate* isolate, v8::Local<v8::Object> global)
     : isolate_(isolate), wait_set_(std::make_unique<WaitSet>()) {
   DCHECK_EQ(isolate->GetData(gin::kEmbedderFuchsia), nullptr);
   isolate->SetData(gin::kEmbedderFuchsia, wait_set_.get());
+  v8::Local<v8::Context> context = isolate->GetCurrentContext();
 
-#define SET_CONSTANT(k)                             \
-  global->Set(gin::StringToSymbol(isolate, "$" #k), \
-              gin::ConvertToV8(isolate, k))
+#define SET_CONSTANT(k)                                    \
+  global                                                   \
+      ->Set(context, gin::StringToSymbol(isolate, "$" #k), \
+            gin::ConvertToV8(isolate, k))                  \
+      .Check()
 
   // zx_status_t.
   SET_CONSTANT(ZX_OK);
@@ -361,8 +364,6 @@ ZxBindings::ZxBindings(v8::Isolate* isolate, v8::Local<v8::Object> global)
   SET_CONSTANT(ZX_ERR_CONNECTION_RESET);
   SET_CONSTANT(ZX_ERR_CONNECTION_ABORTED);
 
-  v8::Local<v8::Context> context = isolate->GetCurrentContext();
-
   // Handle APIs.
   global
       ->Set(context, gin::StringToSymbol(isolate, "$ZxObjectWaitOne"),
@@ -370,14 +371,14 @@ ZxBindings::ZxBindings(v8::Isolate* isolate, v8::Local<v8::Object> global)
                                         base::BindRepeating(ZxObjectWaitOne))
                 ->GetFunction(context)
                 .ToLocalChecked())
-      .ToChecked();
+      .Check();
   global
       ->Set(context, gin::StringToSymbol(isolate, "$zx_handle_close"),
             gin::CreateFunctionTemplate(isolate,
                                         base::BindRepeating(zx_handle_close))
                 ->GetFunction(context)
                 .ToLocalChecked())
-      .ToChecked();
+      .Check();
   SET_CONSTANT(ZX_HANDLE_INVALID);
   SET_CONSTANT(ZX_TIME_INFINITE);
 
@@ -388,21 +389,21 @@ ZxBindings::ZxBindings(v8::Isolate* isolate, v8::Local<v8::Object> global)
                                         base::BindRepeating(&ZxChannelCreate))
                 ->GetFunction(context)
                 .ToLocalChecked())
-      .ToChecked();
+      .Check();
   global
       ->Set(context, gin::StringToSymbol(isolate, "$ZxChannelWrite"),
             gin::CreateFunctionTemplate(isolate,
                                         base::BindRepeating(&ZxChannelWrite))
                 ->GetFunction(context)
                 .ToLocalChecked())
-      .ToChecked();
+      .Check();
   global
       ->Set(context, gin::StringToSymbol(isolate, "$ZxChannelRead"),
             gin::CreateFunctionTemplate(isolate,
                                         base::BindRepeating(&ZxChannelRead))
                 ->GetFunction(context)
                 .ToLocalChecked())
-      .ToChecked();
+      .Check();
   SET_CONSTANT(ZX_CHANNEL_READABLE);
   SET_CONSTANT(ZX_CHANNEL_WRITABLE);
   SET_CONSTANT(ZX_CHANNEL_PEER_CLOSED);
@@ -418,14 +419,14 @@ ZxBindings::ZxBindings(v8::Isolate* isolate, v8::Local<v8::Object> global)
                                         base::BindRepeating(&StrToUtf8Array))
                 ->GetFunction(context)
                 .ToLocalChecked())
-      .ToChecked();
+      .Check();
   global
       ->Set(context, gin::StringToSymbol(isolate, "$FidlJsUtf8ArrayToStr"),
             gin::CreateFunctionTemplate(isolate,
                                         base::BindRepeating(&Utf8ArrayToStr))
                 ->GetFunction(context)
                 .ToLocalChecked())
-      .ToChecked();
+      .Check();
 
 #undef SET_CONSTANT
 }

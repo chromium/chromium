@@ -11,7 +11,7 @@
  * Launches the PaymentRequest UI with shipping options, but does not request a
  * shipping address.
  */
-function buy() {  // eslint-disable-line no-unused-vars
+function buy() { // eslint-disable-line no-unused-vars
   try {
     var details = {
       total: {label: 'Total', amount: {currency: 'USD', value: '5.00'}},

@@ -31,7 +31,6 @@
 #include "third_party/blink/renderer/core/html/link_rel_attribute.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/renderer/platform/wtf/text/cstring.h"
 
 namespace blink {
 
@@ -45,7 +44,7 @@ static inline void TestLinkRelAttribute(const String& value,
                                         bool is_import = false,
                                         bool is_preconnect = false,
                                         bool is_canonical = false) {
-  SCOPED_TRACE(value.Utf8().data());
+  SCOPED_TRACE(value.Utf8());
   LinkRelAttribute link_rel_attribute(value);
   ASSERT_EQ(is_style_sheet, link_rel_attribute.IsStyleSheet());
   ASSERT_EQ(icon_type, link_rel_attribute.GetIconType());

@@ -25,6 +25,7 @@
 
 // https://svgwg.org/svg2-draft/pservers.html#InterfaceSVGRadialGradientElement
 
+[Exposed=Window]
 interface SVGRadialGradientElement : SVGGradientElement {
     [MeasureAs=SVG1DOMPaintServer] readonly attribute SVGAnimatedLength cx;
     [MeasureAs=SVG1DOMPaintServer] readonly attribute SVGAnimatedLength cy;

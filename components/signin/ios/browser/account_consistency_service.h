@@ -15,11 +15,14 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
-#include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/ios/browser/active_state_manager.h"
 #import "components/signin/ios/browser/manage_accounts_delegate.h"
-#import "services/identity/public/cpp/identity_manager.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
+
+namespace content_settings {
+class CookieSettings;
+}
 
 namespace web {
 class BrowserState;
@@ -28,6 +31,7 @@ class WebStatePolicyDecider;
 }
 
 class AccountReconcilor;
+class PrefService;
 
 @class AccountConsistencyNavigationDelegate;
 @class WKWebView;
@@ -38,7 +42,7 @@ class AccountReconcilor;
 //
 // This is currently only used when WKWebView is enabled.
 class AccountConsistencyService : public KeyedService,
-                                  public identity::IdentityManager::Observer,
+                                  public signin::IdentityManager::Observer,
                                   public ActiveStateManager::Observer {
  public:
   // Name of the preference property that persists the domains that have a
@@ -50,7 +54,7 @@ class AccountConsistencyService : public KeyedService,
       PrefService* prefs,
       AccountReconcilor* account_reconcilor,
       scoped_refptr<content_settings::CookieSettings> cookie_settings,
-      identity::IdentityManager* identity_manager);
+      signin::IdentityManager* identity_manager);
   ~AccountConsistencyService() override;
 
   // Registers the preferences used by AccountConsistencyService.
@@ -147,7 +151,7 @@ class AccountConsistencyService : public KeyedService,
   void OnPrimaryAccountCleared(
       const CoreAccountInfo& previous_account_info) override;
   void OnAccountsInCookieUpdated(
-      const identity::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
+      const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
       const GoogleServiceAuthError& error) override;
 
   // ActiveStateManager::Observer implementation.
@@ -166,7 +170,7 @@ class AccountConsistencyService : public KeyedService,
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
   // Identity manager, observed to be notified of primary account signin and
   // signout events.
-  identity::IdentityManager* identity_manager_;
+  signin::IdentityManager* identity_manager_;
 
   // Whether a CHROME_CONNECTED cookie request is currently being applied.
   bool applying_cookie_requests_;

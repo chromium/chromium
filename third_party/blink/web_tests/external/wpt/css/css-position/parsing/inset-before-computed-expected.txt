@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+FAIL Property inset-before value 'auto' computes to 'auto' assert_true: inset-before doesn't seem to be supported in the computed style expected true got false
+FAIL Property inset-before value 'calc(10px + 0.5em)' computes to '30px' assert_true: inset-before doesn't seem to be supported in the computed style expected true got false
+FAIL Property inset-before value 'calc(10px - 0.5em)' computes to '-10px' assert_true: inset-before doesn't seem to be supported in the computed style expected true got false
+FAIL Property inset-before value '-40%' computes to '-40%' assert_true: inset-before doesn't seem to be supported in the computed style expected true got false
+FAIL Property inset-before value 'calc(50% + 60px)' computes to 'calc(50% + 60px)' assert_true: inset-before doesn't seem to be supported in the computed style expected true got false
+Harness: the test ran to completion.
+

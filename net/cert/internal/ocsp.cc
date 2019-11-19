@@ -13,10 +13,10 @@
 #include "net/cert/internal/cert_errors.h"
 #include "net/cert/internal/extended_key_usage.h"
 #include "net/cert/internal/parsed_certificate.h"
+#include "net/cert/internal/revocation_util.h"
 #include "net/cert/internal/verify_name_match.h"
 #include "net/cert/internal/verify_signed_data.h"
 #include "net/cert/x509_util.h"
-#include "net/der/encode_values.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/digest.h"
 #include "third_party/boringssl/src/include/openssl/mem.h"
@@ -672,6 +672,65 @@ WARN_UNUSED_RESULT bool VerifyOCSPResponseSignature(
   return false;
 }
 
+// Parse ResponseData and return false if any unhandled critical extensions are
+// found. No known critical ResponseData extensions exist.
+bool ParseOCSPResponseDataExtensions(
+    const der::Input& response_extensions,
+    OCSPVerifyResult::ResponseStatus* response_details) {
+  std::map<der::Input, ParsedExtension> extensions;
+  if (!ParseExtensions(response_extensions, &extensions)) {
+    *response_details = OCSPVerifyResult::PARSE_RESPONSE_DATA_ERROR;
+    return false;
+  }
+
+  for (const auto& ext : extensions) {
+    // TODO: handle ResponseData extensions
+
+    if (ext.second.critical) {
+      *response_details = OCSPVerifyResult::UNHANDLED_CRITICAL_EXTENSION;
+      return false;
+    }
+  }
+
+  return true;
+}
+
+// Parse SingleResponse and return false if any unhandled critical extensions
+// (other than the CT extension) are found. The CT-SCT extension is not required
+// to be marked critical, but since it is handled by Chrome, we will overlook
+// the flag setting.
+bool ParseOCSPSingleResponseExtensions(
+    const der::Input& single_extensions,
+    OCSPVerifyResult::ResponseStatus* response_details) {
+  std::map<der::Input, ParsedExtension> extensions;
+  if (!ParseExtensions(single_extensions, &extensions)) {
+    *response_details = OCSPVerifyResult::PARSE_RESPONSE_DATA_ERROR;
+    return false;
+  }
+
+  // The wire form of the OID 1.3.6.1.4.1.11129.2.4.5 - OCSP SingleExtension for
+  // X.509v3 Certificate Transparency Signed Certificate Timestamp List, see
+  // Section 3.3 of RFC6962.
+  const uint8_t ct_ocsp_ext_oid[] = {0x2B, 0x06, 0x01, 0x04, 0x01,
+                                     0xD6, 0x79, 0x02, 0x04, 0x05};
+  der::Input ct_ext_oid(ct_ocsp_ext_oid);
+
+  for (const auto& ext : extensions) {
+    // The CT OCSP extension is handled in ct::ExtractSCTListFromOCSPResponse
+    if (ext.second.oid == ct_ext_oid)
+      continue;
+
+    // TODO: handle SingleResponse extensions
+
+    if (ext.second.critical) {
+      *response_details = OCSPVerifyResult::UNHANDLED_CRITICAL_EXTENSION;
+      return false;
+    }
+  }
+
+  return true;
+}
+
 // Loops through the OCSPSingleResponses to find the best match for |cert|.
 OCSPRevocationStatus GetRevocationStatusForCert(
     const OCSPResponseData& response_data,
@@ -694,6 +753,14 @@ OCSPRevocationStatus GetRevocationStatusForCert(
     OCSPSingleResponse single_response;
     if (!ParseOCSPSingleResponse(single_response_der, &single_response))
       return OCSPRevocationStatus::UNKNOWN;
+
+    // Reject unhandled critical extensions in SingleResponse
+    if (single_response.has_extensions &&
+        !ParseOCSPSingleResponseExtensions(single_response.extensions,
+                                           response_details)) {
+      return OCSPRevocationStatus::UNKNOWN;
+    }
+
     OCSPCertID cert_id;
     if (!ParseOCSPCertID(single_response.cert_id_tlv, &cert_id))
       return OCSPRevocationStatus::UNKNOWN;
@@ -705,7 +772,11 @@ OCSPRevocationStatus GetRevocationStatusForCert(
     // serial numbers. If an OCSP responder provides both an up to date
     // response and an expired response, the up to date response takes
     // precedence (PROVIDED > INVALID_DATE).
-    if (!CheckOCSPDateValid(single_response, verify_time, max_age)) {
+    if (!CheckRevocationDateValid(single_response.this_update,
+                                  single_response.has_next_update
+                                      ? &single_response.next_update
+                                      : nullptr,
+                                  verify_time, max_age)) {
       if (*response_details != OCSPVerifyResult::PROVIDED)
         *response_details = OCSPVerifyResult::INVALID_DATE;
       continue;
@@ -724,12 +795,12 @@ OCSPRevocationStatus GetRevocationStatusForCert(
   return result;
 }
 
-}  // namespace
-
 OCSPRevocationStatus CheckOCSP(
     base::StringPiece raw_response,
     base::StringPiece certificate_der,
+    const ParsedCertificate* certificate,
     base::StringPiece issuer_certificate_der,
+    const ParsedCertificate* issuer_certificate,
     const base::Time& verify_time,
     const base::TimeDelta& max_age,
     OCSPVerifyResult::ResponseStatus* response_details) {
@@ -777,10 +848,24 @@ OCSPRevocationStatus CheckOCSP(
     return OCSPRevocationStatus::UNKNOWN;
   }
 
-  scoped_refptr<ParsedCertificate> certificate =
-      OCSPParseCertificate(certificate_der);
-  scoped_refptr<ParsedCertificate> issuer_certificate =
-      OCSPParseCertificate(issuer_certificate_der);
+  // Process the OCSP ResponseData extensions. In particular, must reject if
+  // there are any critical extensions that are not understood.
+  if (response_data.has_extensions &&
+      !ParseOCSPResponseDataExtensions(response_data.extensions,
+                                       response_details)) {
+    return OCSPRevocationStatus::UNKNOWN;
+  }
+
+  scoped_refptr<ParsedCertificate> parsed_certificate;
+  scoped_refptr<ParsedCertificate> parsed_issuer_certificate;
+  if (!certificate) {
+    parsed_certificate = OCSPParseCertificate(certificate_der);
+    certificate = parsed_certificate.get();
+  }
+  if (!issuer_certificate) {
+    parsed_issuer_certificate = OCSPParseCertificate(issuer_certificate_der);
+    issuer_certificate = parsed_issuer_certificate.get();
+  }
 
   if (!certificate || !issuer_certificate) {
     *response_details = OCSPVerifyResult::NOT_CHECKED;
@@ -797,46 +882,45 @@ OCSPRevocationStatus CheckOCSP(
 
   // Look through all of the OCSPSingleResponses for a match (based on CertID
   // and time).
-  OCSPRevocationStatus status = GetRevocationStatusForCert(
-      response_data, certificate.get(), issuer_certificate.get(), verify_time,
-      max_age, response_details);
-
-  // TODO(eroman): Process the OCSP extensions. In particular, must reject if
-  // there are any critical extensions that are not understood.
+  OCSPRevocationStatus status =
+      GetRevocationStatusForCert(response_data, certificate, issuer_certificate,
+                                 verify_time, max_age, response_details);
 
   // Check that the OCSP response has a valid signature. It must either be
   // signed directly by the issuing certificate, or a valid authorized
   // responder.
   if (!VerifyOCSPResponseSignature(response, response_data,
-                                   issuer_certificate.get())) {
+                                   issuer_certificate)) {
     return OCSPRevocationStatus::UNKNOWN;
   }
 
   return status;
 }
 
-bool CheckOCSPDateValid(const OCSPSingleResponse& response,
-                        const base::Time& verify_time,
-                        const base::TimeDelta& max_age) {
-  der::GeneralizedTime verify_time_der;
-  if (!der::EncodeTimeAsGeneralizedTime(verify_time, &verify_time_der))
-    return false;
+}  // namespace
 
-  if (response.this_update > verify_time_der)
-    return false;  // Response is not yet valid.
+OCSPRevocationStatus CheckOCSP(
+    base::StringPiece raw_response,
+    base::StringPiece certificate_der,
+    base::StringPiece issuer_certificate_der,
+    const base::Time& verify_time,
+    const base::TimeDelta& max_age,
+    OCSPVerifyResult::ResponseStatus* response_details) {
+  return CheckOCSP(raw_response, certificate_der, nullptr,
+                   issuer_certificate_der, nullptr, verify_time, max_age,
+                   response_details);
+}
 
-  if (response.has_next_update && (response.next_update <= verify_time_der))
-    return false;  // Response is no longer valid.
-
-  der::GeneralizedTime earliest_this_update;
-  if (!der::EncodeTimeAsGeneralizedTime(verify_time - max_age,
-                                        &earliest_this_update)) {
-    return false;
-  }
-  if (response.this_update < earliest_this_update)
-    return false;  // Response is too old.
-
-  return true;
+OCSPRevocationStatus CheckOCSP(
+    base::StringPiece raw_response,
+    const ParsedCertificate* certificate,
+    const ParsedCertificate* issuer_certificate,
+    const base::Time& verify_time,
+    const base::TimeDelta& max_age,
+    OCSPVerifyResult::ResponseStatus* response_details) {
+  return CheckOCSP(raw_response, base::StringPiece(), certificate,
+                   base::StringPiece(), issuer_certificate, verify_time,
+                   max_age, response_details);
 }
 
 bool CreateOCSPRequest(const ParsedCertificate* cert,

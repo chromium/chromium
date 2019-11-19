@@ -8,16 +8,21 @@
 
 #include <algorithm>
 
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/global_error/global_error.h"
 #include "chrome/browser/ui/global_error/global_error_bubble_view_base.h"
-#include "content/public/browser/notification_service.h"
 
-GlobalErrorService::GlobalErrorService(Profile* profile) : profile_(profile) {
+GlobalErrorService::GlobalErrorService() = default;
+
+GlobalErrorService::~GlobalErrorService() = default;
+
+void GlobalErrorService::AddObserver(GlobalErrorObserver* observer) {
+  observer_list_.AddObserver(observer);
 }
 
-GlobalErrorService::~GlobalErrorService() {}
+void GlobalErrorService::RemoveObserver(GlobalErrorObserver* observer) {
+  observer_list_.RemoveObserver(observer);
+}
 
 void GlobalErrorService::AddGlobalError(std::unique_ptr<GlobalError> error) {
   DCHECK(error);
@@ -29,7 +34,7 @@ void GlobalErrorService::AddGlobalError(std::unique_ptr<GlobalError> error) {
 void GlobalErrorService::AddUnownedGlobalError(GlobalError* error) {
   DCHECK(error);
   all_errors_.push_back(error);
-  NotifyErrorsChanged(error);
+  NotifyErrorsChanged();
 }
 
 std::unique_ptr<GlobalError> GlobalErrorService::RemoveGlobalError(
@@ -46,7 +51,7 @@ void GlobalErrorService::RemoveUnownedGlobalError(GlobalError* error) {
   GlobalErrorBubbleViewBase* bubble = error->GetBubbleView();
   if (bubble)
     bubble->CloseBubbleView();
-  NotifyErrorsChanged(error);
+  NotifyErrorsChanged();
 }
 
 GlobalError* GlobalErrorService::GetGlobalErrorByMenuItemCommandID(
@@ -83,22 +88,7 @@ GlobalError* GlobalErrorService::GetFirstGlobalErrorWithBubbleView() const {
   return nullptr;
 }
 
-void GlobalErrorService::NotifyErrorsChanged(GlobalError* error) {
-  // GlobalErrorService is bound only to original profile so we need to send
-  // notifications to both it and its off-the-record profile to update
-  // incognito windows as well.
-  std::vector<Profile*> profiles_to_notify;
-  if (profile_) {
-    profiles_to_notify.push_back(profile_);
-    if (profile_->IsOffTheRecord())
-      profiles_to_notify.push_back(profile_->GetOriginalProfile());
-    else if (profile_->HasOffTheRecordProfile())
-      profiles_to_notify.push_back(profile_->GetOffTheRecordProfile());
-    for (size_t i = 0; i < profiles_to_notify.size(); ++i) {
-      content::NotificationService::current()->Notify(
-        chrome::NOTIFICATION_GLOBAL_ERRORS_CHANGED,
-        content::Source<Profile>(profiles_to_notify[i]),
-        content::Details<GlobalError>(error));
-    }
-  }
+void GlobalErrorService::NotifyErrorsChanged() {
+  for (auto& observer : observer_list_)
+    observer.OnGlobalErrorsChanged();
 }

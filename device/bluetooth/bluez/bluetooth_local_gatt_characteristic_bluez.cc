@@ -47,8 +47,7 @@ BluetoothLocalGattCharacteristicBlueZ::BluetoothLocalGattCharacteristicBlueZ(
       uuid_(uuid),
       properties_(properties),
       permissions_(permissions),
-      service_(service),
-      weak_ptr_factory_(this) {
+      service_(service) {
   VLOG(1) << "Creating local GATT characteristic with identifier: "
           << GetIdentifier();
   service->AddCharacteristic(base::WrapUnique(this));

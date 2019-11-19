@@ -66,7 +66,7 @@ const uint8_t* Varint::Parse32WithLimit(const uint8_t* source,
                                         uint32_t* output) {
   uint32_t digit, result;
   if (source >= limit)
-    return NULL;
+    return nullptr;
   digit = *(source++);
   result = digit & 127;
   if (digit < 128) {
@@ -75,7 +75,7 @@ const uint8_t* Varint::Parse32WithLimit(const uint8_t* source,
   }
 
   if (source >= limit)
-    return NULL;
+    return nullptr;
   digit = *(source++);
   result |= (digit & 127) <<  7;
   if (digit < 128) {
@@ -84,7 +84,7 @@ const uint8_t* Varint::Parse32WithLimit(const uint8_t* source,
   }
 
   if (source >= limit)
-    return NULL;
+    return nullptr;
   digit = *(source++);
   result |= (digit & 127) << 14;
   if (digit < 128) {
@@ -93,7 +93,7 @@ const uint8_t* Varint::Parse32WithLimit(const uint8_t* source,
   }
 
   if (source >= limit)
-    return NULL;
+    return nullptr;
   digit = *(source++);
   result |= (digit & 127) << 21;
   if (digit < 128) {
@@ -102,7 +102,7 @@ const uint8_t* Varint::Parse32WithLimit(const uint8_t* source,
   }
 
   if (source >= limit)
-    return NULL;
+    return nullptr;
   digit = *(source++);
   result |= (digit & 127) << 28;
   if (digit < 128) {
@@ -110,7 +110,7 @@ const uint8_t* Varint::Parse32WithLimit(const uint8_t* source,
     return source;
   }
 
-  return NULL;  // Value is too long to be a Varint32.
+  return nullptr;  // Value is too long to be a Varint32.
 }
 
 // Write the base-128 digits in little-endian order.  All except the last digit
@@ -244,14 +244,14 @@ bool SourceStreamSet::Init(const void* source, size_t byte_count) {
 
   unsigned int version;
   const uint8_t* finger = Varint::Parse32WithLimit(start, end, &version);
-  if (finger == NULL)
+  if (finger == nullptr)
     return false;
   if (version != kStreamsSerializationFormatVersion)
     return false;
 
   unsigned int count;
   finger = Varint::Parse32WithLimit(finger, end, &count);
-  if (finger == NULL)
+  if (finger == nullptr)
     return false;
   if (count > kMaxStreams)
     return false;
@@ -263,7 +263,7 @@ bool SourceStreamSet::Init(const void* source, size_t byte_count) {
 
   for (size_t i = 0; i < count_; ++i) {
     finger = Varint::Parse32WithLimit(finger, end, &lengths[i]);
-    if (finger == NULL)
+    if (finger == nullptr)
       return false;
     accumulated_length += lengths[i];
   }

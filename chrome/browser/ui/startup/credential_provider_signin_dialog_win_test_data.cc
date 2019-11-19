@@ -44,6 +44,8 @@ void CredentialProviderSigninDialogTestDataStorage::SetSigninPassword(
                                         base::Value("mdm_token"));
   expected_success_fetch_result_.SetKey(credential_provider::kKeyFullname,
                                         base::Value("Foo Bar"));
+  expected_success_fetch_result_.SetKey(credential_provider::kKeyMdmAccessToken,
+                                        base::Value("123456789"));
 
   // Initialize expected successful full result sent to the credential provider.
   expected_success_signin_result_.SetKey(credential_provider::kKeyId,
@@ -127,7 +129,9 @@ std::string CredentialProviderSigninDialogTestDataStorage::
 std::string CredentialProviderSigninDialogTestDataStorage::
     GetSuccessfulMdmTokenFetchResult() const {
   return "{"
-         "  \"access_token\": \"123456789\","
+         "  \"access_token\": \"" +
+         GetSuccessMdmAccessToken() +
+         "\","
          "  \"refresh_token\": \"mdm_refresh_token\","
          "  \"id_token\": \"" +
          GetSuccessMdmIdToken() +

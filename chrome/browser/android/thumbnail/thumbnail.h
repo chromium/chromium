@@ -86,7 +86,7 @@ class Thumbnail : public cc::UIResourceClient {
   ui::UIResourceProvider* ui_resource_provider_;
   ThumbnailDelegate* thumbnail_delegate_;
 
-  base::WeakPtrFactory<Thumbnail> weak_factory_;
+  base::WeakPtrFactory<Thumbnail> weak_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(Thumbnail);
 };
 

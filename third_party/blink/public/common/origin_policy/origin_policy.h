@@ -6,10 +6,13 @@
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_ORIGIN_POLICY_ORIGIN_POLICY_H_
 
 #include <memory>
+#include <set>
 #include <string>
+#include <vector>
 
 #include "base/strings/string_piece.h"
 #include "third_party/blink/public/common/common_export.h"
+#include "url/origin.h"
 
 namespace blink {
 
@@ -32,6 +35,10 @@ class BLINK_COMMON_EXPORT OriginPolicy {
     return features_;
   }
 
+  const std::set<url::Origin>& GetFirstPartySet() const {
+    return first_party_set_;
+  }
+
  private:
   friend class OriginPolicyParser;
 
@@ -39,6 +46,7 @@ class BLINK_COMMON_EXPORT OriginPolicy {
 
   std::vector<CSP> csp_;
   std::vector<std::string> features_;
+  std::set<url::Origin> first_party_set_;
 };
 
 }  // namespace blink

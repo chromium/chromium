@@ -143,7 +143,7 @@ class AutomationController::Context {
   Microsoft::WRL::ComPtr<IUnknown> event_handler_;
 
   // Weak pointers to the context are given to event handlers.
-  base::WeakPtrFactory<Context> weak_ptr_factory_;
+  base::WeakPtrFactory<Context> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(Context);
 };
@@ -276,7 +276,7 @@ void AutomationController::Context::Initialize(
     delete this;
 }
 
-AutomationController::Context::Context() : weak_ptr_factory_(this) {
+AutomationController::Context::Context() {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
@@ -356,8 +356,8 @@ AutomationController::AutomationController(std::unique_ptr<Delegate> delegate) {
   ui::win::CreateATLModuleIfNeeded();
 
   // Create the task runner on which the automation client lives.
-  automation_task_runner_ = base::CreateSequencedTaskRunnerWithTraits(
-      {base::TaskPriority::USER_VISIBLE,
+  automation_task_runner_ = base::CreateSequencedTaskRunner(
+      {base::ThreadPool(), base::TaskPriority::USER_VISIBLE,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN});
 
   // Initialize the context on the automation task runner.

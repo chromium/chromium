@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 
 import org.chromium.base.Callback;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.profiles.Profile;
 
 import java.util.ArrayList;
@@ -25,7 +26,7 @@ public class ExploreSitesBridgeExperimental {
     public static void getNtpCategories(
             Profile profile, final Callback<List<ExploreSitesCategoryTile>> callback) {
         List<ExploreSitesCategoryTile> result = new ArrayList<>();
-        nativeGetNtpCategories(profile, result, callback);
+        ExploreSitesBridgeExperimentalJni.get().getNtpCategories(profile, result, callback);
     }
 
     /**
@@ -34,13 +35,16 @@ public class ExploreSitesBridgeExperimental {
      */
     public static void getIcon(
             Profile profile, final String iconUrl, final Callback<Bitmap> callback) {
-        nativeGetIcon(profile, iconUrl, callback);
+        ExploreSitesBridgeExperimentalJni.get().getIcon(profile, iconUrl, callback);
     }
-    /* UX prototype methods. */
-    private static native void nativeGetNtpCategories(Profile profile,
-            List<ExploreSitesCategoryTile> result,
-            Callback<List<ExploreSitesCategoryTile>> callback);
-    public static native String nativeGetCatalogUrl();
-    private static native void nativeGetIcon(
-            Profile profile, String iconUrl, Callback<Bitmap> callback);
+
+    @NativeMethods
+    interface Natives {
+        /* UX prototype methods. */
+        void getNtpCategories(Profile profile, List<ExploreSitesCategoryTile> result,
+                Callback<List<ExploreSitesCategoryTile>> callback);
+
+        String getCatalogUrl();
+        void getIcon(Profile profile, String iconUrl, Callback<Bitmap> callback);
+    }
 }

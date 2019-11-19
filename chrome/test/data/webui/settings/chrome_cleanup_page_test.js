@@ -132,11 +132,11 @@ function validateVisibleItemsList(originalItems, visibleItems) {
  * @param {boolean} expectSuffix Whether a highlight suffix should exist.
  */
 function validateHighlightSuffix(originalItems, container, expectSuffix) {
-  let itemList =
+  const itemList =
       container.shadowRoot.querySelectorAll('li:not(#more-items-link)');
   assertEquals(originalItems.length, itemList.length);
-  for (let item of itemList) {
-    let suffixes = item.querySelectorAll('.highlight-suffix');
+  for (const item of itemList) {
+    const suffixes = item.querySelectorAll('.highlight-suffix');
     assertEquals(suffixes.length, 1);
     assertEquals(expectSuffix, !suffixes[0].hidden);
   }

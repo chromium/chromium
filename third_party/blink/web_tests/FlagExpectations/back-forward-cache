@@ -1,0 +1,5 @@
+# Tests that fail with BackForwardCache, running on linux-bfcache-debug bot.
+crbug.com/1010870 virtual/gpu/fast/canvas/color-space/canvas-createImageBitmap-e_srgb.html [ Failure ]
+crbug.com/1010870 virtual/gpu/fast/canvas/canvas-composite-alpha.html [ Failure ]
+crbug.com/1010870 virtual/gpu/fast/canvas/canvas-composite-text-alpha.html [ Failure ]
+crbug.com/1010870 virtual/disable-deferred-rendering/fast/canvas/OffscreenCanvas-copyImage.html [ Failure ]

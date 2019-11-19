@@ -20,7 +20,7 @@ namespace base {
 class DictionaryValue;
 }
 
-namespace identity {
+namespace signin {
 class IdentityManager;
 }
 
@@ -78,7 +78,7 @@ class GCDApiFlow {
 
   static std::unique_ptr<GCDApiFlow> Create(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      identity::IdentityManager* identity_manager);
+      signin::IdentityManager* identity_manager);
 
   virtual void Start(std::unique_ptr<Request> request) = 0;
 

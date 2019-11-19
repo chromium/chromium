@@ -12,6 +12,8 @@ source_set("platform_apps") {
     "app_load_service.h",
     "app_load_service_factory.cc",
     "app_load_service_factory.h",
+    "app_shim_registry_mac.cc",
+    "app_shim_registry_mac.h",
     "app_termination_observer.cc",
     "app_termination_observer.h",
     "app_window_registry_util.cc",
@@ -58,6 +60,7 @@ source_set("platform_apps") {
     "//extensions/common",
     "//extensions/common/api",
     "//net",
+    "//services/preferences/public/cpp:cpp",
     "//ui/gfx",
   ]
 

@@ -10,6 +10,8 @@ option optimize_for = LITE_RUNTIME;
 
 package remoting.protocol;
 
+import "layout_key_function.proto";
+
 // Set the host resolution to match the client. If none of the fields are
 // present, restore the host resolution instead.
 message ClientResolution {
@@ -136,4 +138,24 @@ message DesktopDisplayInfo {
 
   // True if this is the default display.
   optional bool is_default = 8;
+}
+
+// Next ID: 2
+message KeyboardLayout {
+  // Next ID: 3
+  message KeyAction {
+    oneof action {
+      LayoutKeyFunction function = 1;
+      string character = 2;
+    }
+  }
+
+  // Next ID: 2
+  message KeyBehavior {
+    // Maps shift level to key action.
+    map<int32, KeyAction> actions = 1;
+  }
+
+  // Map USB code to key behavior.
+  map<uint32, KeyBehavior> keys = 1;
 }

@@ -1,0 +1,17 @@
+<html>
+<head></head>
+<img alt="long_placeholder_text" src="fail_image.png" />
+<script>
+function checkImage() {
+	sendValueToTest(document.images[0].complete);
+}
+
+function imageSrc() {
+	sendValueToTest(document.images[0].src);
+}
+
+function sendValueToTest(value) {
+  window.domAutomationController.send(value);
+}
+</script>
+</html>

@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 
-#include "chromeos/dbus/fake_power_manager_client.h"
+#include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power_manager/suspend.pb.h"
 #include "chromeos/disks/disk_mount_manager.h"
 #include "chromeos/disks/mock_disk_mount_manager.h"
@@ -38,7 +38,6 @@ class FakeDiskMountManager : public MockDiskMountManager {
 
  private:
   void UnmountPath(const std::string& mount_path,
-                   UnmountOptions options,
                    UnmountPathCallback callback) override {
     unmounting_mount_paths_.push_back(mount_path);
     callbacks_.push_back(std::move(callback));
@@ -49,14 +48,23 @@ class FakeDiskMountManager : public MockDiskMountManager {
 
 class SuspendUnmountManagerTest : public testing::Test {
  public:
-  SuspendUnmountManagerTest()
-      : suspend_unmount_manager_(&disk_mount_manager_) {}
-  ~SuspendUnmountManagerTest() override = default;
+  SuspendUnmountManagerTest() {
+    PowerManagerClient::InitializeFake();
+    suspend_unmount_manager_ =
+        std::make_unique<SuspendUnmountManager>(&disk_mount_manager_);
+  }
+
+  ~SuspendUnmountManagerTest() override {
+    suspend_unmount_manager_.reset();
+    PowerManagerClient::Shutdown();
+  }
 
  protected:
   FakeDiskMountManager disk_mount_manager_;
-  FakePowerManagerClient fake_power_client_;
-  SuspendUnmountManager suspend_unmount_manager_;
+  std::unique_ptr<SuspendUnmountManager> suspend_unmount_manager_;
+
+ private:
+  DISALLOW_COPY_AND_ASSIGN(SuspendUnmountManagerTest);
 };
 
 TEST_F(SuspendUnmountManagerTest, Basic) {
@@ -88,10 +96,12 @@ TEST_F(SuspendUnmountManagerTest, Basic) {
       false /* on_boot_device */, true /* on_removable_device */,
       kFileSystemType);
   disk_mount_manager_.SetupDefaultReplies();
-  fake_power_client_.SendSuspendImminent(
+  FakePowerManagerClient::Get()->SendSuspendImminent(
       power_manager::SuspendImminent_Reason_OTHER);
 
-  EXPECT_EQ(1, fake_power_client_.GetNumPendingSuspendReadinessCallbacks());
+  EXPECT_EQ(
+      1,
+      FakePowerManagerClient::Get()->num_pending_suspend_readiness_callbacks());
   EXPECT_EQ(2u, disk_mount_manager_.unmounting_mount_paths().size());
   EXPECT_EQ(1, std::count(disk_mount_manager_.unmounting_mount_paths().begin(),
                           disk_mount_manager_.unmounting_mount_paths().end(),
@@ -103,7 +113,9 @@ TEST_F(SuspendUnmountManagerTest, Basic) {
                           disk_mount_manager_.unmounting_mount_paths().end(),
                           kDummyMountPathUnknown));
   disk_mount_manager_.NotifyUnmountDeviceComplete(MOUNT_ERROR_NONE);
-  EXPECT_EQ(0, fake_power_client_.GetNumPendingSuspendReadinessCallbacks());
+  EXPECT_EQ(
+      0,
+      FakePowerManagerClient::Get()->num_pending_suspend_readiness_callbacks());
 }
 
 TEST_F(SuspendUnmountManagerTest, CancelAndSuspendAgain) {
@@ -117,18 +129,20 @@ TEST_F(SuspendUnmountManagerTest, CancelAndSuspendAgain) {
       false /* on_boot_device */, true /* on_removable_device */,
       kFileSystemType);
   disk_mount_manager_.SetupDefaultReplies();
-  fake_power_client_.SendSuspendImminent(
+  FakePowerManagerClient::Get()->SendSuspendImminent(
       power_manager::SuspendImminent_Reason_OTHER);
-  EXPECT_EQ(1, fake_power_client_.GetNumPendingSuspendReadinessCallbacks());
+  EXPECT_EQ(
+      1,
+      FakePowerManagerClient::Get()->num_pending_suspend_readiness_callbacks());
   ASSERT_EQ(1u, disk_mount_manager_.unmounting_mount_paths().size());
   EXPECT_EQ(kDummyMountPath,
             disk_mount_manager_.unmounting_mount_paths().front());
 
   // Suspend cancelled.
-  fake_power_client_.SendSuspendDone();
+  FakePowerManagerClient::Get()->SendSuspendDone();
 
   // Suspend again.
-  fake_power_client_.SendSuspendImminent(
+  FakePowerManagerClient::Get()->SendSuspendImminent(
       power_manager::SuspendImminent_Reason_OTHER);
   ASSERT_EQ(2u, disk_mount_manager_.unmounting_mount_paths().size());
   EXPECT_EQ(kDummyMountPath,

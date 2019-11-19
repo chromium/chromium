@@ -42,7 +42,7 @@
 @property(nonatomic, readonly)
     ToolbarComponentVisibility contractButtonVisibility;
 @property(nonatomic, readonly)
-    ToolbarComponentVisibility omniboxButtonVisibility;
+    ToolbarComponentVisibility searchButtonVisibility;
 @property(nonatomic, readonly)
     ToolbarComponentVisibility locationBarLeadingButtonVisibility;
 

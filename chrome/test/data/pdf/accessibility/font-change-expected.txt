@@ -1,0 +1,8 @@
+This is some simple text with a font
+change in the middle of the line.
+¶
+In this example the font size is slightly
+different from the surrounding text.
+¶
+Similarly, attributes such as bold and / or
+italics should not cause line breaks.

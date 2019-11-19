@@ -79,6 +79,38 @@ class CBOR_EXPORT Reader {
   // CBOR nested depth sufficient for most use cases.
   static const int kCBORMaxDepth = 16;
 
+  // Config contains configuration for a CBOR parsing operation.
+  struct CBOR_EXPORT Config {
+    Config();
+    ~Config();
+
+    // Used to report the number of bytes of input consumed. This suppresses the
+    // |EXTRANEOUS_DATA| error case. May be nullptr.
+    size_t* num_bytes_consumed = nullptr;
+
+    // Used to report the specific error in the case that parsing fails. May be
+    // nullptr;
+    DecoderError* error_code_out = nullptr;
+
+    // Controls the maximum depth of CBOR nesting that will be permitted. This
+    // exists to control stack consumption during parsing.
+    int max_nesting_level = kCBORMaxDepth;
+
+    // Causes strings that are not valid UTF-8 to be accepted and suppresses the
+    // |INVALID_UTF8| error, unless such strings are map keys. Invalid strings
+    // will result in Values of type |INVALID_UTF8| rather than |STRING|. Users
+    // of this feature should ensure that every invalid string is accounted for
+    // in the resulting structure.
+    //
+    // (Map keys are not allowed to be invalid because it was not necessary for
+    // the motivating case and because it adds complexity to handle the ordering
+    // correctly.)
+    bool allow_invalid_utf8 = false;
+
+   private:
+    DISALLOW_COPY_AND_ASSIGN(Config);
+  };
+
   ~Reader();
 
   // Reads and parses |input_data| into a Value. Returns an empty Optional
@@ -97,8 +129,13 @@ class CBOR_EXPORT Reader {
                                     DecoderError* error_code_out = nullptr,
                                     int max_nesting_level = kCBORMaxDepth);
 
-  // Never fails with EXTRANEOUS_DATA, but informs the caller of how many bytes
-  // were consumed through |num_bytes_consumed|.
+  // A version of |Read|, above, that takes a |Config| structure to allow
+  // additional controls.
+  static base::Optional<Value> Read(base::span<const uint8_t> input_data,
+                                    const Config& config);
+
+  // A version of |Read| that takes some fields of |Config| as parameters to
+  // avoid having to construct a |Config| object explicitly.
   static base::Optional<Value> Read(base::span<const uint8_t> input_data,
                                     size_t* num_bytes_consumed,
                                     DecoderError* error_code_out = nullptr,
@@ -126,23 +163,23 @@ class CBOR_EXPORT Reader {
   };
 
   base::Optional<DataItemHeader> DecodeDataItemHeader();
-  base::Optional<Value> DecodeCompleteDataItem(int max_nesting_level);
+  base::Optional<Value> DecodeCompleteDataItem(const Config& config,
+                                               int max_nesting_level);
   base::Optional<Value> DecodeValueToNegative(uint64_t value);
   base::Optional<Value> DecodeValueToUnsigned(uint64_t value);
   base::Optional<Value> DecodeToSimpleValue(const DataItemHeader& header);
   base::Optional<uint64_t> ReadVariadicLengthInteger(uint8_t additional_info);
   base::Optional<Value> ReadByteStringContent(const DataItemHeader& header);
-  base::Optional<Value> ReadStringContent(const DataItemHeader& header);
+  base::Optional<Value> ReadStringContent(const DataItemHeader& header,
+                                          const Config& config);
   base::Optional<Value> ReadArrayContent(const DataItemHeader& header,
+                                         const Config& config,
                                          int max_nesting_level);
   base::Optional<Value> ReadMapContent(const DataItemHeader& header,
+                                       const Config& config,
                                        int max_nesting_level);
   base::Optional<uint8_t> ReadByte();
   base::Optional<base::span<const uint8_t>> ReadBytes(uint64_t num_bytes);
-  // TODO(crbug/879237): This function's only caller has to make a copy of a
-  // `span<uint8_t>` to satisfy this function's interface. Maybe we can make
-  // this function take a `const span<const uint8_t>` and avoid copying?
-  bool HasValidUTF8Format(const std::string& string_data);
   bool IsKeyInOrder(const Value& new_key, Value::MapValue* map);
   bool IsEncodingMinimal(uint8_t additional_bytes, uint64_t uint_data);
 

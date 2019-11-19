@@ -27,20 +27,34 @@ Polymer({
 
   /** @override */
   attached: function() {
-    var dialogArgs = chrome.getVariableValue('dialogArguments');
-    this.pairingDevice_ =
-        /** @type {!chrome.bluetooth.Device} */ (
-            dialogArgs ? JSON.parse(dialogArgs) : {});
-    this.connect_();
+    let dialogArgs = chrome.getVariableValue('dialogArguments');
+    if (!dialogArgs) {
+      // This situation currently only occurs if the user navigates to the debug
+      // chrome://bluetooth-pairing.
+      console.warn('No arguments were provided to the dialog.');
+      this.$.deviceDialog.open();
+      return;
+    }
+
+    let parsedDialogArgs = JSON.parse(dialogArgs);
+    this.connect_(parsedDialogArgs.address);
   },
 
-  /** @private */
-  connect_: function() {
+  /**
+   * @param {!string} address The address of the pairing device.
+   * @private
+   */
+  connect_: function(address) {
     this.$.deviceDialog.open();
-    var device = this.pairingDevice_;
-    chrome.bluetoothPrivate.connect(device.address, result => {
-      var dialog = this.$.deviceDialog;
-      dialog.handleError(device, chrome.runtime.lastError, result);
+
+    chrome.bluetooth.getDevice(address, device => {
+      this.pairingDevice_ = device;
+      chrome.bluetoothPrivate.connect(address, result => {
+        var dialog = this.$.deviceDialog;
+        dialog.endConnectionAttempt(
+            this.pairingDevice_, true /* wasPairing */,
+            chrome.runtime.lastError, result);
+      });
     });
   },
 

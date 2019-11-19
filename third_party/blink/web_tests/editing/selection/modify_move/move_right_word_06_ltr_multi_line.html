@@ -37,7 +37,7 @@ selection_test(
   selection => selection.modify('move', 'right', 'word'),
   isMac
       ? '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0| hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>'
-      : '<div contenteditable dir="ltr">abc |\u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
+      : '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 |hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
   '6-3 ltr right word');
 
 selection_test(
@@ -69,7 +69,7 @@ selection_test(
   selection => selection.modify('move', 'right', 'word'),
   isMac
       ? '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij| \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>'
-      : '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 |hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
+      : '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij |\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
   '6-7 ltr right word');
 
 selection_test(
@@ -100,32 +100,32 @@ selection_test(
   '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij| \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
   selection => selection.modify('move', 'right', 'word'),
   isMac
-      ? '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 |\u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>'
-      : '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij |\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
+      ? '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0| \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>'
+      : '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 |\u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
   '6-11 ltr right word');
 
 selection_test(
   '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij |\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
   selection => selection.modify('move', 'right', 'word'),
   isMac
-      ? '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 |\u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>'
-      : '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0| \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
+      ? '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0| \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>'
+      : '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 |\u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
   '6-12 ltr right word');
 
 selection_test(
   '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0|\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
   selection => selection.modify('move', 'right', 'word'),
   isMac
-      ? '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0| uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>'
-      : '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 |uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
+      ? '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0| \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>'
+      : '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 |\u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
   '6-13 ltr right word');
 
 selection_test(
   '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0|\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
   selection => selection.modify('move', 'right', 'word'),
   isMac
-      ? '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0| uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>'
-      : '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 |uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
+      ? '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0| \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>'
+      : '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 |\u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
   '6-14 ltr right word');
 
 selection_test(
@@ -141,23 +141,23 @@ selection_test(
   selection => selection.modify('move', 'right', 'word'),
   isMac
       ? '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0| uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>'
-      : '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0| \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
+      : '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 |uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
   '6-16 ltr right word');
 
 selection_test(
   '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0|\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
   selection => selection.modify('move', 'right', 'word'),
   isMac
-      ? '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 |\u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>'
-      : '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0| \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
+      ? '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0| uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>'
+      : '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 |uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
   '6-17 ltr right word');
 
 selection_test(
   '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0|\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
   selection => selection.modify('move', 'right', 'word'),
   isMac
-      ? '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 |\u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>'
-      : '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0| \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
+      ? '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0| uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>'
+      : '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 |uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
   '6-18 ltr right word');
 
 selection_test(
@@ -165,7 +165,7 @@ selection_test(
   selection => selection.modify('move', 'right', 'word'),
   isMac
       ? '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw| xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>'
-      : '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 |uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
+      : '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw |xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
   '6-19 ltr right word');
 
 selection_test(
@@ -197,7 +197,7 @@ selection_test(
   selection => selection.modify('move', 'right', 'word'),
   isMac
       ? '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz| <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>'
-      : '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw |xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
+      : '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz| <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
   '6-23 ltr right word');
 
 selection_test(
@@ -205,7 +205,7 @@ selection_test(
   selection => selection.modify('move', 'right', 'word'),
   isMac
       ? '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz| <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>'
-      : '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>|\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
+      : '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz| <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
   '6-24 ltr right word');
 
 selection_test(
@@ -213,7 +213,7 @@ selection_test(
   selection => selection.modify('move', 'right', 'word'),
   isMac
       ? '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz| <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>'
-      : '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>|\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
+      : '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz| <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
   '6-25 ltr right word');
 
 selection_test(
@@ -221,7 +221,7 @@ selection_test(
   selection => selection.modify('move', 'right', 'word'),
   isMac
       ? '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz| <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>'
-      : '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>|\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
+      : '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz| <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
   '6-26 ltr right word');
 
 selection_test(
@@ -229,7 +229,7 @@ selection_test(
   selection => selection.modify('move', 'right', 'word'),
   isMac
       ? '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0| kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>'
-      : '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>|\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
+      : '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 |kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
   '6-27 ltr right word');
 
 selection_test(
@@ -237,23 +237,23 @@ selection_test(
   selection => selection.modify('move', 'right', 'word'),
   isMac
       ? '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0| kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>'
-      : '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>|\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
+      : '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 |kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
   '6-28 ltr right word');
 
 selection_test(
   '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div>|<br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
   selection => selection.modify('move', 'right', 'word'),
   isMac
-      ? '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div>|<br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>'
-      : '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>|\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
+      ? '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0| kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>'
+      : '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 |kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
   '6-29 ltr right word');
 
 selection_test(
   '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br>|</div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
   selection => selection.modify('move', 'right', 'word'),
   isMac
-      ? '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div>|<br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>'
-      : '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>|\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
+      ? '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0| kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>'
+      : '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 |kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
   '6-30 ltr right word');
 
 selection_test(
@@ -261,7 +261,7 @@ selection_test(
   selection => selection.modify('move', 'right', 'word'),
   isMac
       ? '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0| kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>'
-      : '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>|\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
+      : '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 |kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
   '6-31 ltr right word');
 
 selection_test(
@@ -269,7 +269,7 @@ selection_test(
   selection => selection.modify('move', 'right', 'word'),
   isMac
       ? '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0| kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>'
-      : '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>|\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
+      : '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 |kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
   '6-32 ltr right word');
 
 selection_test(
@@ -277,7 +277,7 @@ selection_test(
   selection => selection.modify('move', 'right', 'word'),
   isMac
       ? '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0| kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>'
-      : '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>|\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
+      : '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 |kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
   '6-33 ltr right word');
 
 selection_test(
@@ -285,7 +285,7 @@ selection_test(
   selection => selection.modify('move', 'right', 'word'),
   isMac
       ? '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0| kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>'
-      : '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>|\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
+      : '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 |kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
   '6-34 ltr right word');
 
 selection_test(
@@ -293,7 +293,7 @@ selection_test(
   selection => selection.modify('move', 'right', 'word'),
   isMac
       ? '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0| kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>'
-      : '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>|\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
+      : '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 |kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
   '6-35 ltr right word');
 
 selection_test(
@@ -301,7 +301,7 @@ selection_test(
   selection => selection.modify('move', 'right', 'word'),
   isMac
       ? '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0| kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>'
-      : '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>|\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
+      : '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 |kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
   '6-36 ltr right word');
 
 selection_test(
@@ -333,7 +333,7 @@ selection_test(
   selection => selection.modify('move', 'right', 'word'),
   isMac
       ? '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj| \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>'
-      : '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 |kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
+      : '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj |\u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
   '6-40 ltr right word');
 
 selection_test(
@@ -357,7 +357,7 @@ selection_test(
   selection => selection.modify('move', 'right', 'word'),
   isMac
       ? '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0| mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>'
-      : '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj |\u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
+      : '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 |mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
   '6-43 ltr right word');
 
 selection_test(
@@ -389,7 +389,7 @@ selection_test(
   selection => selection.modify('move', 'right', 'word'),
   isMac
       ? '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn| opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>'
-      : '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 |mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
+      : '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn |opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
   '6-47 ltr right word');
 
 selection_test(
@@ -413,7 +413,7 @@ selection_test(
   selection => selection.modify('move', 'right', 'word'),
   isMac
       ? '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq| \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>'
-      : '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn |opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
+      : '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq |\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
   '6-50 ltr right word');
 
 selection_test(
@@ -444,28 +444,32 @@ selection_test(
   '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq| \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
   selection => selection.modify('move', 'right', 'word'),
   isMac
-      ? '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 |\u05D0\u05D0\u05D0</div>'
-      : '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq |\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
+      ? '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0| \u05D0\u05D0\u05D0</div>'
+      : '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 |\u05D0\u05D0\u05D0</div>',
   '6-54 ltr right word');
 
 selection_test(
   '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq |\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
   selection => selection.modify('move', 'right', 'word'),
   isMac
-      ? '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 |\u05D0\u05D0\u05D0</div>'
-      : '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0| \u05D0\u05D0\u05D0</div>',
+      ? '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0| \u05D0\u05D0\u05D0</div>'
+      : '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 |\u05D0\u05D0\u05D0</div>',
   '6-55 ltr right word');
 
 selection_test(
   '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0|\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
   selection => selection.modify('move', 'right', 'word'),
-  '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0|</div>',
+  isMac
+      ? '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0| \u05D0\u05D0\u05D0</div>'
+      : '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 |\u05D0\u05D0\u05D0</div>',
   '6-56 ltr right word');
 
 selection_test(
   '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0|\u05D0 \u05D0\u05D0\u05D0</div>',
   selection => selection.modify('move', 'right', 'word'),
-  '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0|</div>',
+  isMac
+      ? '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0| \u05D0\u05D0\u05D0</div>'
+      : '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 |\u05D0\u05D0\u05D0</div>',
   '6-57 ltr right word');
 
 selection_test(
@@ -479,23 +483,23 @@ selection_test(
   selection => selection.modify('move', 'right', 'word'),
   isMac
       ? '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0|</div>'
-      : '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0| \u05D0\u05D0\u05D0</div>',
+      : '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0|</div>',
   '6-59 ltr right word');
 
 selection_test(
   '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0|\u05D0\u05D0</div>',
   selection => selection.modify('move', 'right', 'word'),
   isMac
-      ? '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 |\u05D0\u05D0\u05D0</div>'
-      : '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0| \u05D0\u05D0\u05D0</div>',
+      ? '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0|</div>'
+      : '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0|</div>',
   '6-60 ltr right word');
 
 selection_test(
   '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0|\u05D0</div>',
   selection => selection.modify('move', 'right', 'word'),
   isMac
-      ? '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 |\u05D0\u05D0\u05D0</div>'
-      : '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0| \u05D0\u05D0\u05D0</div>',
+      ? '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0|</div>'
+      : '<div contenteditable dir="ltr">abc \u05D0\u05D0\u05D0 hij \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0 uvw xyz <div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 kj \u05D0\u05D0\u05D0 mn opq \u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0|</div>',
   '6-61 ltr right word');
 
 selection_test(

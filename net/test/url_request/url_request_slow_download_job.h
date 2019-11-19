@@ -94,7 +94,7 @@ class URLRequestSlowDownloadJob : public URLRequestJob {
   scoped_refptr<IOBuffer> buffer_;
   int buffer_size_;
 
-  base::WeakPtrFactory<URLRequestSlowDownloadJob> weak_factory_;
+  base::WeakPtrFactory<URLRequestSlowDownloadJob> weak_factory_{this};
 };
 
 }  // namespace net

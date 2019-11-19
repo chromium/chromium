@@ -15,27 +15,23 @@ namespace background_fetch {
 class CacheEntryHandlerImpl : public CacheStorageCacheEntryHandler {
  public:
   explicit CacheEntryHandlerImpl(
-      base::WeakPtr<storage::BlobStorageContext> blob_context);
-
+      scoped_refptr<BlobStorageContextWrapper> blob_storage_context);
   ~CacheEntryHandlerImpl() override;
 
   // CacheStorageCacheEntryHandler implementation:
   std::unique_ptr<PutContext> CreatePutContext(
       blink::mojom::FetchAPIRequestPtr request,
-      blink::mojom::FetchAPIResponsePtr response) override;
-  void PopulateResponseBody(scoped_refptr<BlobDataHandle> data_handle,
+      blink::mojom::FetchAPIResponsePtr response,
+      int64_t trace_id) override;
+  void PopulateResponseBody(scoped_refptr<DiskCacheBlobEntry> blob_entry,
                             blink::mojom::FetchAPIResponse* response) override;
-  void PopulateRequestBody(scoped_refptr<BlobDataHandle> data_handle,
+  void PopulateRequestBody(scoped_refptr<DiskCacheBlobEntry> blob_entry,
                            blink::mojom::FetchAPIRequest* request) override;
 
  private:
-  void PopulateBody(scoped_refptr<BlobDataHandle> data_handle,
-                    const blink::mojom::SerializedBlobPtr& blob,
-                    CacheStorageCache::EntryIndex index);
-
   base::WeakPtr<CacheStorageCacheEntryHandler> GetWeakPtr() override;
 
-  base::WeakPtrFactory<CacheEntryHandlerImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<CacheEntryHandlerImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(CacheEntryHandlerImpl);
 };

@@ -1,0 +1,11 @@
+  {"response":{
+   "protocol":"3.1",
+   "app":[
+    {"appid":"12345",
+     "status":"ok",
+     "updatecheck":{
+     "status":"noupdate"
+     }
+    }
+   ]
+  }}

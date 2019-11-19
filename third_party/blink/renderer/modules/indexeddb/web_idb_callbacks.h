@@ -26,7 +26,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_INDEXEDDB_WEB_IDB_CALLBACKS_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_INDEXEDDB_WEB_IDB_CALLBACKS_H_
 
+#include <memory>
+
 #include "base/memory/weak_ptr.h"
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 
@@ -36,9 +39,25 @@ class WebIDBCursorImpl;
 
 class WebIDBCallbacks : public mojom::blink::IDBCallbacks {
  public:
+  virtual void SuccessCursorPrefetch(
+      Vector<std::unique_ptr<IDBKey>> keys,
+      Vector<std::unique_ptr<IDBKey>> primary_keys,
+      Vector<std::unique_ptr<IDBValue>> values) = 0;
   virtual void DetachRequestFromCallback() = 0;
   virtual void SetState(base::WeakPtr<WebIDBCursorImpl> cursor,
                         int64_t transaction_id) = 0;
+  virtual void SuccessCursor(
+      mojo::PendingAssociatedRemote<mojom::blink::IDBCursor> cursor_info,
+      std::unique_ptr<IDBKey> key,
+      std::unique_ptr<IDBKey> primary_key,
+      base::Optional<std::unique_ptr<IDBValue>> optional_value) = 0;
+  virtual void SuccessCursorContinue(
+      std::unique_ptr<IDBKey>,
+      std::unique_ptr<IDBKey> primary_key,
+      base::Optional<std::unique_ptr<IDBValue>>) = 0;
+  virtual void SuccessArray(Vector<mojom::blink::IDBReturnValuePtr> values) = 0;
+  virtual void SuccessValue(mojom::blink::IDBReturnValuePtr value) = 0;
+  virtual void SuccessKey(std::unique_ptr<IDBKey> key) = 0;
 };
 
 }  // namespace blink

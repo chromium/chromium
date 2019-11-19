@@ -29,7 +29,6 @@ PrerenderHandle::~PrerenderHandle() {
 }
 
 void PrerenderHandle::SetObserver(Observer* observer) {
-  DCHECK(observer);
   observer_ = observer;
 }
 
@@ -68,7 +67,7 @@ PrerenderContents* PrerenderHandle::contents() const {
 
 PrerenderHandle::PrerenderHandle(
     PrerenderManager::PrerenderData* prerender_data)
-    : observer_(nullptr), weak_ptr_factory_(this) {
+    : observer_(nullptr) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (prerender_data) {
     prerender_data_ = prerender_data->AsWeakPtr();

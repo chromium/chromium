@@ -10,7 +10,7 @@
 #include "ppapi/thunk/ppapi_thunk_export.h"
 
 namespace base {
-class SharedMemory;
+class UnsafeSharedMemoryRegion;
 }  // namespace base
 
 namespace ppapi {
@@ -26,7 +26,7 @@ class PPAPI_THUNK_EXPORT PPB_Buffer_API {
   virtual void Unmap() = 0;
 
   // Trusted API
-  virtual int32_t GetSharedMemory(base::SharedMemory** shm) = 0;
+  virtual int32_t GetSharedMemory(base::UnsafeSharedMemoryRegion** shm) = 0;
 };
 
 }  // namespace thunk

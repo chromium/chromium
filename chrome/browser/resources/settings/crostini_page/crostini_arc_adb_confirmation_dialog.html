@@ -1,0 +1,36 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
+<link rel="import" href="chrome://resources/html/i18n_behavior.html">
+<link rel="import" href="crostini_browser_proxy.html">
+<link rel="import" href="../settings_shared_css.html">
+
+<dom-module id="settings-crostini-arc-adb-confirmation-dialog">
+  <template>
+    <style include="settings-shared"></style>
+    <cr-dialog id="dialog" close-text="$i18n{close}">
+      <div slot="title" hidden="[[!isEnabling_(action)]]">
+        $i18n{crostiniArcAdbConfirmationTitleEnable}
+      </div>
+      <div slot="title" hidden="[[!isDisabling_(action)]]">
+        $i18n{crostiniArcAdbConfirmationTitleDisable}
+      </div>
+      <div slot="body" hidden="[[!isEnabling_(action)]]">
+        $i18n{crostiniArcAdbConfirmationMessageEnable}
+      </div>
+      <div slot="body" hidden="[[!isDisabling_(action)]]">
+        $i18n{crostiniArcAdbConfirmationMessageDisable}
+      </div>
+      <div slot="button-container">
+        <cr-button id="cancel" class="cancel-button" on-click="onCancelTap_">
+          $i18n{cancel}
+        </cr-button>
+        <cr-button id="continue" class="action-button" on-click="onRestartTap_">
+          $i18n{crostiniArcAdbRestartButton}
+        </cr-button>
+      </div>
+    </cr-dialog>
+  </template>
+  <script src="crostini_arc_adb_confirmation_dialog.js"></script>
+</dom-module>

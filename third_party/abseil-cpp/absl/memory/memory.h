@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//      http://www.apache.org/licenses/LICENSE-2.0
+//      https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -47,19 +47,14 @@ namespace absl {
 //   X* NewX(int, int);
 //   auto x = WrapUnique(NewX(1, 2));  // 'x' is std::unique_ptr<X>.
 //
-// The purpose of WrapUnique is to automatically deduce the pointer type. If you
-// wish to make the type explicit, for readability reasons or because you prefer
-// to use a base-class pointer rather than a derived one, just use
+// Do not call WrapUnique with an explicit type, as in
+// `WrapUnique<X>(NewX(1, 2))`.  The purpose of WrapUnique is to automatically
+// deduce the pointer type. If you wish to make the type explicit, just use
 // `std::unique_ptr` directly.
 //
-// Example:
-//   X* Factory(int, int);
-//   auto x = std::unique_ptr<X>(Factory(1, 2));
+//   auto x = std::unique_ptr<X>(NewX(1, 2));
 //                  - or -
-//   std::unique_ptr<X> x(Factory(1, 2));
-//
-// This has the added advantage of working whether Factory returns a raw
-// pointer or a `std::unique_ptr`.
+//   std::unique_ptr<X> x(NewX(1, 2));
 //
 // While `absl::WrapUnique` is useful for capturing the output of a raw
 // pointer factory, prefer 'absl::make_unique<T>(args...)' over
@@ -120,7 +115,7 @@ using std::make_unique;
 //
 // For more background on why `std::unique_ptr<T>(new T(a,b))` is problematic,
 // see Herb Sutter's explanation on
-// (Exception-Safe Function Calls)[http://herbsutter.com/gotw/_102/].
+// (Exception-Safe Function Calls)[https://herbsutter.com/gotw/_102/].
 // (In general, reviewers should treat `new T(a,b)` with scrutiny.)
 //
 // Example usage:

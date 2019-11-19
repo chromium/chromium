@@ -9,7 +9,7 @@ source_set("signin") {
   ]
   deps = [
     "//base",
-    "//ios/chrome/browser/ui",
+    "//ios/chrome/browser/ui/util",
     "//ios/public/provider/chrome/browser/signin",
   ]
   libs = [ "UIKit.framework" ]

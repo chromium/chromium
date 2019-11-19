@@ -14,7 +14,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.widget.animation.CancelAwareAnimatorListener;
+import org.chromium.chrome.browser.ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.ui.interpolators.BakedBezierInterpolator;
 
 /**

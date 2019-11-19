@@ -12,104 +12,159 @@
 
 'use strict';
 
-var resolveCallback = null;
-var rejectCallback = null;
+let resolveCallback = null;
+let rejectCallback = null;
+let periodicSyncEventCount = 0;
 
-this.onmessage = function(event) {
-  if (event.data['action'] === 'completeDelayedSyncEvent') {
-    if (resolveCallback === null) {
-      sendMessageToClients('sync', 'error - resolveCallback is null');
+this.onmessage = (event) => {
+  switch(event.data.action) {
+    case 'completeDelayedSyncEvent': {
+      if (resolveCallback === null) {
+        sendMessageToClients('sync', 'error - resolveCallback is null');
+        return;
+      }
+
+      periodicSyncEventCount++;
+      resolveCallback();
+      sendMessageToClients('sync', 'ok - delay completed');
       return;
     }
+    case 'rejectDelayedSyncEvent': {
+      if (rejectCallback === null) {
+        sendMessageToClients('sync', 'error - rejectCallback is null');
+        return;
+      }
 
-    resolveCallback();
-    sendMessageToClients('sync', 'ok - delay completed');
-    return;
-  }
-
-  if (event.data['action'] === 'rejectDelayedSyncEvent') {
-    if (rejectCallback === null) {
-      sendMessageToClients('sync', 'error - rejectCallback is null');
+      rejectCallback();
+      sendMessageToClients('sync', 'ok - delay rejected');
+    }
+    case 'registerOneShotSync': {
+      const tag = event.data.tag;
+      registration.sync.register(tag)
+        .then(() => {
+          sendMessageToClients('register', 'ok - ' + tag + ' registered in SW');
+        })
+        .catch(sendSyncErrorToClients);
       return;
     }
-
-    rejectCallback();
-    sendMessageToClients('sync', 'ok - delay rejected');
-  }
-
-  if (event.data['action'] === 'register') {
-    var tag = event.data['tag'];
-    registration.sync.register(tag)
-      .then(function () {
-        sendMessageToClients('register', 'ok - ' + tag + ' registered in SW');
-      })
-      .catch(sendSyncErrorToClients);
-  }
-
-  if (event.data['action'] === 'hasTag') {
-    var tag = event.data['tag'];
-    registration.sync.getTags()
-      .then(function(tags) {
-        if (tags.indexOf(tag) >= 0) {
-          sendMessageToClients('register', 'ok - ' + tag + ' found');
-        } else {
-          sendMessageToClients('register', 'error - ' + tag + ' not found');
-          return;
-        }
-      })
-      .catch(sendSyncErrorToClients);
-  }
-
-  if (event.data['action'] === 'getTags') {
-    registration.sync.getTags()
-      .then(function(tags) {
-        sendMessageToClients('register', 'ok - ' + tags.toString());
-      })
-      .catch(sendSyncErrorToClients);
+    case 'registerPeriodicSync': {
+      const tag = event.data.tag;
+      const minInterval = event.data.minInterval;
+      registration.periodicSync.register(tag, { minInterval: minInterval })
+        .then(() =>
+          sendMessageToClients('register', 'ok - ' + tag + ' registered in SW'))
+        .catch(sendSyncErrorToClients);
+      return;
+    }
+    case 'unregister': {
+      const tag = event.data.tag;
+      registration.periodicSync.unregister(tag)
+        .then(() =>
+          sendMessageToClients(
+            'unregister', 'ok - ' + tag + ' unregistered in SW'))
+        .catch(sendSyncErrorToClients);
+      return;
+    }
+    case 'hasOneShotSyncTag': {
+      const tag = event.data.tag;
+      registration.sync.getTags()
+        .then((tags) => {
+          if (tags.indexOf(tag) >= 0) {
+            sendMessageToClients('register', 'ok - ' + tag + ' found');
+          } else {
+            sendMessageToClients('register', 'error - ' + tag + ' not found');
+            return;
+          }
+        })
+        .catch(sendSyncErrorToClients);
+        return;
+      }
+    case 'hasPeriodicSyncTag': {
+      const tag = event.data.tag;
+      registration.periodicSync.getTags()
+        .then((tags) => {
+          if (tags.indexOf(tag) >= 0) {
+            sendMessageToClients('register', 'ok - ' + tag + ' found in SW');
+          } else {
+            sendMessageToClients('register', 'error - ' + tag + ' not found');
+            return;
+          }
+        })
+        .catch(sendSyncErrorToClients);
+      return;
+    }
+    case 'getOneShotSyncTags': {
+      registration.sync.getTags()
+        .then((tags) => {
+          sendMessageToClients('register', 'ok - ' + tags.toString());
+        })
+        .catch(sendSyncErrorToClients);
+      return;
+    }
+    case 'getPeriodicSyncTags': {
+      registration.periodicSync.getTags()
+        .then((tags) => {
+          sendMessageToClients('register', 'ok - ' + tags.toString());
+        })
+        .catch(sendSyncErrorToClients);
+      return;
+    }
+    case 'getPeriodicSyncEventCount':
+      sendMessageToClients('gotEventCount', periodicSyncEventCount.toString());
+      return;
   }
 }
 
-this.onsync = function(event) {
-  var eventProperties = [
+function handleSync(event, isPeriodic) {
+  const expectedEventType = isPeriodic ? 'PeriodicSyncEvent' : 'SyncEvent';
+
+  const eventProperties = [
     // Extract name from toString result: "[object <Class>]"
     Object.prototype.toString.call(event).match(/\s([a-zA-Z]+)/)[1],
     (typeof event.waitUntil)
   ];
 
-  if (eventProperties[0] != 'SyncEvent') {
-    sendMessageToClients('sync', 'error - wrong event type');
-    return;
+  if (eventProperties[0] !== expectedEventType) {
+    return sendMessageToClients('sync', 'error - wrong event type');
   }
 
   if (eventProperties[1] != 'function') {
-    sendMessageToClients('sync', 'error - wrong wait until type');
+    return sendMessageToClients('sync', 'error - wrong wait until type');
   }
 
   if (event.tag === undefined) {
-    sendMessageToClients('sync', 'error - registration missing tag');
-    return;
+    return sendMessageToClients('sync', 'error - registration missing tag');
   }
 
-  var tag = event.tag;
+  const tag = event.tag;
 
   if (tag === 'delay') {
-    var syncPromise = new Promise(function(resolve, reject) {
+    const syncPromise = new Promise((resolve, reject) => {
       resolveCallback = resolve;
       rejectCallback = reject;
     });
-    event.waitUntil(syncPromise);
-    return;
+    return syncPromise;
   }
 
-  sendMessageToClients('sync', tag + ' fired');
-};
+  if (isPeriodic)
+    periodicSyncEventCount++;
+  return sendMessageToClients('sync', tag + ' fired');
+}
+
+self.addEventListener('sync', event => {
+  event.waitUntil(handleSync(event, /* isPeriodic= */ false));
+});
+
+self.addEventListener('periodicsync', event => {
+  event.waitUntil(handleSync(event, /* isPeriodic= */ true));
+});
 
 function sendMessageToClients(type, data) {
-  clients.matchAll({ includeUncontrolled: true }).then(function(clients) {
-    clients.forEach(function(client) {
+  return clients.matchAll({ includeUncontrolled: true }).then((clients) => {
+    clients.forEach((client) => {
       client.postMessage({type, data});
     });
-  }, function(error) {
+  }, (error) => {
     console.log(error);
   });
 }

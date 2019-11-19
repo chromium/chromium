@@ -1,10 +1,11 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
 <link rel="import" href="chrome://resources/cr_elements/cr_action_menu/cr_action_menu.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
 <link rel="import" href="chrome://resources/cr_elements/icons.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-icon-button/paper-icon-button-light.html">
+<link rel="import" href="../chromeos/os_icons.html">
 <link rel="import" href="../icons.html">
 <link rel="import" href="../settings_shared_css.html">
 
@@ -23,7 +24,7 @@
       <iron-icon id="deviceIcon" icon="[[getDeviceIcon_(device)]]">
       </iron-icon>
       <div class="middle">
-        <div class="name" connected$="[[device.connected]]">
+        <div class="name" connected$="[[device.connected]]" aria-hidden="true">
           [[getDeviceName_(device)]]
         </div>
         <div class="state secondary" connected$="[[device.connected]]"
@@ -31,14 +32,11 @@
           [[getConnectionStatusText_(device)]]
         </div>
       </div>
-      <span hidden$="[[!device.connecting]]">$i18n{bluetoothConnecting}</span>
       <div hidden$="[[!device.paired]]">
-        <paper-icon-button-light class="icon-more-vert">
-          <button on-click="onMenuButtonTap_" tabindex$="[[tabindex]]"
-              title="$i18n{moreActions}" on-keydown="ignoreEnterKey_">
-          </button>
-        </paper-icon-button-light>
-        <cr-action-menu id="dotsMenu">
+        <cr-icon-button class="icon-more-vert" on-click="onMenuButtonTap_"
+            tabindex$="[[tabindex]]" title="$i18n{moreActions}"
+            on-keydown="ignoreEnterKey_"></cr-icon-button>
+        <cr-action-menu id="dotsMenu" role-description="$i18n{menu}">
           <button class="dropdown-item"
               on-click="onConnectActionTap_">
             [[getConnectActionText_(device.connected)]]

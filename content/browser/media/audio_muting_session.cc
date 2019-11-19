@@ -9,14 +9,14 @@ namespace content {
 AudioMutingSession::AudioMutingSession(const base::UnguessableToken& group_id)
     : group_id_(group_id) {}
 
-AudioMutingSession::~AudioMutingSession() {}
+AudioMutingSession::~AudioMutingSession() = default;
 
 void AudioMutingSession::Connect(audio::mojom::StreamFactory* factory) {
   if (muter_)
     muter_.reset();
 
   DCHECK(factory);
-  factory->BindMuter(mojo::MakeRequest(&muter_), group_id_);
+  factory->BindMuter(muter_.BindNewEndpointAndPassReceiver(), group_id_);
 }
 
 }  // namespace content

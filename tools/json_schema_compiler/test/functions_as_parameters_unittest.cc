@@ -9,7 +9,8 @@
 #include "base/values.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using namespace test::api::functions_as_parameters;
+using test::api::functions_as_parameters::FunctionType;
+using test::api::functions_as_parameters::OptionalFunctionType;
 
 TEST(JsonSchemaCompilerFunctionsAsParametersTest, PopulateRequiredFunction) {
   // The expectation is that if any value is set for the function, then

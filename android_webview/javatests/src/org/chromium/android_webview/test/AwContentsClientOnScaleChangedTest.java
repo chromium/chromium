@@ -14,7 +14,8 @@ import org.junit.runner.RunWith;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.test.util.CommonResources;
-import org.chromium.base.ThreadUtils;
+import org.chromium.base.task.PostTask;
+import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
 
@@ -30,7 +31,7 @@ public class AwContentsClientOnScaleChangedTest {
     private AwContents mAwContents;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mContentsClient = new TestAwContentsClient();
         AwTestContainerView testContainerView =
                 mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
@@ -54,7 +55,8 @@ public class AwContentsClientOnScaleChangedTest {
             }
         });
         int callCount = mContentsClient.getOnScaleChangedHelper().getCallCount();
-        ThreadUtils.runOnUiThread(() -> Assert.assertTrue(mAwContents.zoomIn()));
+        PostTask.runOrPostTask(
+                UiThreadTaskTraits.DEFAULT, () -> Assert.assertTrue(mAwContents.zoomIn()));
         mContentsClient.getOnScaleChangedHelper().waitForCallback(callCount);
         Assert.assertTrue(
                 "Scale ratio:" + mContentsClient.getOnScaleChangedHelper().getLastScaleRatio(),

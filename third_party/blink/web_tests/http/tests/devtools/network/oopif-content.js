@@ -15,7 +15,7 @@
     TestRunner.completeTest();
     return;
   }
-  const content = await request.requestContent();
+  const { content, error, isEncoded } = await request.requestContent();
   TestRunner.addResult(`content: ${content}`);
   TestRunner.completeTest();
 })();

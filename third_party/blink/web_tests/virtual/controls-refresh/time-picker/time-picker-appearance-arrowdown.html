@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<script>
+testRunner.waitUntilDone();
+</script>
+<script src="../../../fast/forms/resources/picker-common.js"></script>
+<input type="time" id="time" value="14:15">
+<script>
+openPicker(document.getElementById('time'), () => {
+  // change hours value
+  for (let i = 0; i < 26; i++)
+    eventSender.keyDown('ArrowDown');
+  testRunner.notifyDone()
+}, () => testRunner.notifyDone());
+</script>

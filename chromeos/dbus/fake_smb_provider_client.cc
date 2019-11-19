@@ -48,27 +48,16 @@ void FakeSmbProviderClient::AddNetBiosPacketParsingForTesting(
 void FakeSmbProviderClient::Init(dbus::Bus* bus) {}
 
 void FakeSmbProviderClient::Mount(const base::FilePath& share_path,
-                                  bool ntlm_enabled,
-                                  const std::string& workgroup,
-                                  const std::string& username,
+                                  const MountOptions& options,
                                   base::ScopedFD password_fd,
                                   MountCallback callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), smbprovider::ERROR_OK, 1));
 }
 
-void FakeSmbProviderClient::Remount(const base::FilePath& share_path,
-                                    int32_t mount_id,
-                                    bool ntlm_enabled,
-                                    const std::string& workgroup,
-                                    const std::string& username,
-                                    base::ScopedFD password_fd,
+void FakeSmbProviderClient::Unmount(int32_t mount_id,
+                                    bool remove_password,
                                     StatusCallback callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), smbprovider::ERROR_OK));
-}
-
-void FakeSmbProviderClient::Unmount(int32_t mount_id, StatusCallback callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), smbprovider::ERROR_OK));
 }
@@ -281,14 +270,6 @@ void FakeSmbProviderClient::UpdateMountCredentials(int32_t mount_id,
                                                    StatusCallback callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), smbprovider::ERROR_OK));
-}
-
-void FakeSmbProviderClient::Premount(const base::FilePath& share_path,
-                                     bool ntlm_enabled,
-                                     MountCallback callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), smbprovider::ERROR_OK,
-                                1 /* mount_id */));
 }
 
 void FakeSmbProviderClient::UpdateSharePath(int32_t mount_id,

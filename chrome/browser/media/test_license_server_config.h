@@ -6,8 +6,11 @@
 #define CHROME_BROWSER_MEDIA_TEST_LICENSE_SERVER_CONFIG_H_
 
 #include <string>
+#include <vector>
 
+#include "base/environment.h"
 #include "base/macros.h"
+#include "base/optional.h"
 
 namespace base {
 class CommandLine;
@@ -27,6 +30,10 @@ class TestLicenseServerConfig {
   // Returns true if it successfully sets the command line to run the license
   // server with needed args and switches.
   virtual bool GetServerCommandLine(base::CommandLine* command_line) = 0;
+
+  // Returns the environment map to apply to the server, or base::nullopt on
+  // error.
+  virtual base::Optional<base::EnvironmentMap> GetServerEnvironment() = 0;
 
   // Returns true if the server is supported on current platform.
   virtual bool IsPlatformSupported() = 0;

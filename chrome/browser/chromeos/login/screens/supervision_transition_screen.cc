@@ -4,17 +4,16 @@
 
 #include "chrome/browser/chromeos/login/screens/supervision_transition_screen.h"
 
-#include "chrome/browser/chromeos/login/screens/base_screen_delegate.h"
-#include "chrome/browser/chromeos/login/screens/supervision_transition_screen_view.h"
+#include "chrome/browser/ui/webui/chromeos/login/supervision_transition_screen_handler.h"
 
 namespace chromeos {
 
 SupervisionTransitionScreen::SupervisionTransitionScreen(
-    BaseScreenDelegate* base_screen_delegate,
-    SupervisionTransitionScreenView* view)
-    : BaseScreen(base_screen_delegate,
-                 OobeScreen::SCREEN_SUPERVISION_TRANSITION),
-      view_(view) {
+    SupervisionTransitionScreenView* view,
+    const base::RepeatingClosure& exit_callback)
+    : BaseScreen(SupervisionTransitionScreenView::kScreenId),
+      view_(view),
+      exit_callback_(exit_callback) {
   if (view_)
     view_->Bind(this);
 }
@@ -41,7 +40,7 @@ void SupervisionTransitionScreen::OnViewDestroyed(
 }
 
 void SupervisionTransitionScreen::OnSupervisionTransitionFinished() {
-  Finish(ScreenExitCode::SUPERVISION_TRANSITION_FINISHED);
+  exit_callback_.Run();
 }
 
 }  // namespace chromeos

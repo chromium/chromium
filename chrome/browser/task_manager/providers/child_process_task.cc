@@ -28,6 +28,8 @@
 #include "content/public/common/process_type.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension_set.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -116,7 +118,8 @@ base::string16 GetLocalizedTitle(const base::string16& title,
 // BrowserChildProcessHost whose unique ID is |unique_child_process_id|.
 void ConnectResourceReporterOnIOThread(
     int unique_child_process_id,
-    content::mojom::ResourceUsageReporterRequest resource_reporter) {
+    mojo::PendingReceiver<content::mojom::ResourceUsageReporter>
+        resource_reporter) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
   content::BrowserChildProcessHost* host =
@@ -124,7 +127,7 @@ void ConnectResourceReporterOnIOThread(
   if (!host)
     return;
 
-  BindInterface(host->GetHost(), std::move(resource_reporter));
+  host->GetHost()->BindReceiver(std::move(resource_reporter));
 }
 
 // Creates the Mojo service wrapper that will be used to sample the V8 memory
@@ -132,11 +135,12 @@ void ConnectResourceReporterOnIOThread(
 // |unique_child_process_id|.
 ProcessResourceUsage* CreateProcessResourcesSampler(
     int unique_child_process_id) {
-  content::mojom::ResourceUsageReporterPtr usage_reporter;
-  base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::IO},
-                           base::BindOnce(&ConnectResourceReporterOnIOThread,
-                                          unique_child_process_id,
-                                          mojo::MakeRequest(&usage_reporter)));
+  mojo::PendingRemote<content::mojom::ResourceUsageReporter> usage_reporter;
+  base::PostTask(
+      FROM_HERE, {content::BrowserThread::IO},
+      base::BindOnce(&ConnectResourceReporterOnIOThread,
+                     unique_child_process_id,
+                     usage_reporter.InitWithNewPipeAndPassReceiver()));
   return new ProcessResourceUsage(std::move(usage_reporter));
 }
 

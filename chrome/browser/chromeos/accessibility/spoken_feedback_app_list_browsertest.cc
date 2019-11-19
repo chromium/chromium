@@ -25,9 +25,9 @@ namespace chromeos {
 
 enum SpokenFeedbackAppListTestVariant { kTestAsNormalUser, kTestAsGuestUser };
 
-class TestSuggestionChipResult : public app_list::TestSearchResult {
+class TestSuggestionChipResult : public ash::TestSearchResult {
  public:
-  TestSuggestionChipResult(const base::string16& title) {
+  explicit TestSuggestionChipResult(const base::string16& title) {
     set_display_type(ash::SearchResultDisplayType::kRecommendation);
     set_title(title);
   }
@@ -47,13 +47,13 @@ class SpokenFeedbackAppListTest
   void SetUp() override {
     // Do not run expand arrow hinting animation to avoid msan test crash.
     // (See https://crbug.com/926038)
-    app_list::AppListView::SetShortAnimationForTesting(true);
+    ash::AppListView::SetShortAnimationForTesting(true);
     LoggedInSpokenFeedbackTest::SetUp();
   }
 
   void TearDown() override {
     LoggedInSpokenFeedbackTest::TearDown();
-    app_list::AppListView::SetShortAnimationForTesting(false);
+    ash::AppListView::SetShortAnimationForTesting(false);
   }
 
   void SetUpOnMainThread() override {
@@ -63,9 +63,9 @@ class SpokenFeedbackAppListTest
         l10n_util::GetStringUTF16(IDS_SEARCH_BOX_ACCESSIBILITY_NAME_TABLET),
         l10n_util::GetStringUTF16(IDS_SEARCH_BOX_ACCESSIBILITY_NAME));
     controller->SetAppListModelForTest(
-        std::make_unique<app_list::test::AppListTestModel>());
+        std::make_unique<ash::test::AppListTestModel>());
     app_list_test_model_ =
-        static_cast<app_list::test::AppListTestModel*>(controller->GetModel());
+        static_cast<ash::test::AppListTestModel*>(controller->GetModel());
     search_model = controller->GetSearchModel();
   }
 
@@ -87,13 +87,13 @@ class SpokenFeedbackAppListTest
   void PopulateChips(size_t num) {
     for (size_t i = 0; i < num; i++) {
       search_model->results()->Add(std::make_unique<TestSuggestionChipResult>(
-          base::UTF8ToUTF16("Chip " + base::IntToString(i))));
+          base::UTF8ToUTF16("Chip " + base::NumberToString(i))));
     }
   }
 
  private:
-  app_list::test::AppListTestModel* app_list_test_model_ = nullptr;
-  app_list::SearchModel* search_model = nullptr;
+  ash::test::AppListTestModel* app_list_test_model_ = nullptr;
+  ash::SearchModel* search_model = nullptr;
 };
 
 INSTANTIATE_TEST_SUITE_P(TestAsNormalAndGuestUser,
@@ -129,6 +129,9 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListTest, LauncherStateTransition) {
   // Check that Launcher, partial view state is announced.
   EXPECT_EQ("Launcher, partial view", speech_monitor_.GetNextUtterance());
 
+  // Send a key press to enable keyboard traversal
+  SendKeyPressWithSearchAndShift(ui::VKEY_TAB);
+
   // Move focus to expand all apps button;
   SendKeyPressWithSearchAndShift(ui::VKEY_TAB);
   EXPECT_EQ("Expand to all apps", speech_monitor_.GetNextUtterance());
@@ -163,6 +166,9 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListTest,
   SendKeyPressWithSearch(ui::VKEY_SPACE);
   while (speech_monitor_.GetNextUtterance() != "Launcher, partial view") {
   }
+
+  // Send a key press to enable keyboard traversal
+  SendKeyPressWithSearchAndShift(ui::VKEY_TAB);
 
   // Move focus to expand all apps button.
   SendKeyPressWithSearchAndShift(ui::VKEY_TAB);
@@ -262,6 +268,9 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListTest,
   SendKeyPressWithSearch(ui::VKEY_SPACE);
   while (speech_monitor_.GetNextUtterance() != "Launcher, partial view") {
   }
+
+  // Send a key press to enable keyboard traversal
+  SendKeyPressWithSearchAndShift(ui::VKEY_TAB);
 
   // Move focus to expand all apps button.
   SendKeyPressWithSearchAndShift(ui::VKEY_TAB);

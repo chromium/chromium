@@ -31,43 +31,22 @@ pre {
   margin-left: 2em;
 }
 </style>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
 <script type="text/javascript">
-
-if (window.testRunner)
-    testRunner.dumpAsText();
-
-function execute()
-{
+test(() => {
   var parser = new DOMParser();
   var str =
     '<?xml version="1.0"?>\n<!DOCTYPE doc [\n<!ATTLIST d id ID #IMPLIED>\n]>\n<doc>\n  <foo xmlns="foobar">One</foo> <x:bar xmlns:x="barfoo">Two</x:bar>\n  <d id="id3">Three</d>\n<f id="&amp;&lt;&gt;>">Four&amp;&lt;&gt;</f><empty/><empty></empty></doc>\n';
   var doc = parser.parseFromString(str,"text/xml");
 
-  document.getElementById("id1").firstChild.nodeValue = str;
-  document.getElementById("id2").firstChild.nodeValue = doc;
+  assert_equals(Object.prototype.toString.call(doc) , "[object XMLDocument]");
   var ser = new XMLSerializer();
-  document.getElementById("id3").firstChild.nodeValue = ser.serializeToString(doc);
-}
+  assert_equals(ser.serializeToString(doc) , '<?xml version="1.0"?><!DOCTYPE doc><doc>\n  <foo xmlns="foobar">One</foo> <x:bar xmlns:x="barfoo">Two</x:bar>\n  <d id="id3">Three</d>\n<f id="&amp;&lt;&gt;&gt;">Four&amp;&lt;&gt;</f><empty/><empty/></doc>');
+}, "Tests that the 'text to parse' and 'document object serialized' boxes should show the same text, and it should be an XML document");
 
 </script>
 </head>
-<body onload="execute();">
-<h1>DOMParser/XMLSerializer test</h1>
-
-<div>The "text to parse" and "document object serialized" boxes should show the same text, and it should be an XML document, not "@@No result@@".
-</div>
-
-<div class="box"><h2>text to parse</h2>
-<pre id="id1">@@No result@@</pre>
-</div>
-<br>
-<div class="box"><h2>document object</h2>
-<pre id="id2">@@No result@@</pre>
-</div>
-<br>
-<div class="box"><h2>document object serialized</h2>
-<pre id="id3">@@No result@@</pre>
-</div>
-
+<body>
 </body>
 </html>

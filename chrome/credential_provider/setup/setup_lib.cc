@@ -21,12 +21,14 @@
 #include "base/stl_util.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/win/registry.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
-#include "chrome/installer/util/delete_after_reboot_helper.h"
+#include "chrome/credential_provider/common/gcp_strings.h"
 #include "chrome/credential_provider/gaiacp/gcp_utils.h"
 #include "chrome/credential_provider/gaiacp/logging.h"
+#include "chrome/installer/util/delete_after_reboot_helper.h"
 
 namespace credential_provider {
 
@@ -182,6 +184,13 @@ const char kInstallPath[] = "install-path";
 // is not present the assumption is to install GCP.
 const char kUninstall[] = "uninstall";
 
+// Command line arguments used to either enable or disable stats and crash
+// dump collection.  When either of these command line args is used setup
+// will perform the requested action and exit without trying to install or
+// uninstall anything.  Disable takes precedence over enable.
+const char kEnableStats[] = "enable-stats";
+const char kDisableStats[] = "disable-stats";
+
 }  // namespace switches
 
 HRESULT DoInstall(const base::FilePath& installer_path,
@@ -297,6 +306,29 @@ void GetInstalledFileBasenames(const base::FilePath::CharType* const** names,
                                size_t* count) {
   *names = kFilenames;
   *count = base::size(kFilenames);
+}
+
+int EnableStatsCollection(const base::CommandLine& cmdline) {
+  DCHECK(cmdline.HasSwitch(credential_provider::switches::kEnableStats) ||
+         cmdline.HasSwitch(credential_provider::switches::kDisableStats));
+
+  bool enable =
+      !cmdline.HasSwitch(credential_provider::switches::kDisableStats);
+
+  base::win::RegKey key;
+  LONG sts = key.Create(HKEY_LOCAL_MACHINE,
+                        credential_provider::kRegUpdaterClientStateAppPath,
+                        KEY_SET_VALUE | KEY_WOW64_32KEY);
+  if (sts != ERROR_SUCCESS) {
+    LOGFN(ERROR) << "Unable to open omaha key sts=" << sts;
+  } else {
+    sts =
+        key.WriteValue(credential_provider::kRegUsageStatsName, enable ? 1 : 0);
+    if (sts != ERROR_SUCCESS)
+      LOGFN(ERROR) << "Unable to write userstats value sts=" << sts;
+  }
+
+  return sts == ERROR_SUCCESS ? 0 : -1;
 }
 
 }  // namespace credential_provider

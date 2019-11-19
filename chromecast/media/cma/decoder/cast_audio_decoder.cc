@@ -26,7 +26,6 @@
 #include "media/base/audio_bus.h"
 #include "media/base/cdm_context.h"
 #include "media/base/channel_layout.h"
-#include "media/base/channel_mixer.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/media_util.h"
 #include "media/base/sample_format.h"
@@ -36,8 +35,6 @@ namespace chromecast {
 namespace media {
 
 namespace {
-
-constexpr int kMonoChannelCount = 1;
 
 class CastAudioDecoderImpl : public CastAudioDecoder {
  public:
@@ -55,34 +52,23 @@ class CastAudioDecoderImpl : public CastAudioDecoder {
     DCHECK(initialized_callback_);
   }
 
-  void Initialize(const media::AudioConfig& config,
-                  ::media::ChannelLayout output_channel_layout) {
+  void Initialize(const media::AudioConfig& config) {
     DCHECK(task_runner_->RunsTasksInCurrentSequence());
     DCHECK(!initialized_);
 
-    input_channel_count_ = config.channel_number;
-    output_channel_layout_ = output_channel_layout;
-
-    media::AudioConfig input_config = config;
-    if (input_config.is_encrypted()) {
+    config_ = config;
+    if (config_.is_encrypted()) {
       LOG(ERROR) << "Cannot decode encrypted audio";
       // TODO(kmackay) Should call OnInitialized(false) here, but that generally
       // causes the browsertests to crash since it happens during the render
       // pipeline initialization.
-      input_config.encryption_scheme = Unencrypted();
+      config_.encryption_scheme = EncryptionScheme::kUnencrypted;
     }
-    config_ = input_config;
-
-    // Remix to desired channel layout; update config_ to match what this class
-    // outputs.
-    CreateMixerIfNeeded(input_channel_count_);
-    config_.channel_number =
-        ::media::ChannelLayoutToChannelCount(output_channel_layout_);
 
     decoder_ = std::make_unique<::media::FFmpegAudioDecoder>(task_runner_,
                                                              &media_log_);
     decoder_->Initialize(
-        media::DecoderConfigAdapter::ToMediaAudioDecoderConfig(input_config),
+        media::DecoderConfigAdapter::ToMediaAudioDecoderConfig(config_),
         nullptr,
         base::BindRepeating(&CastAudioDecoderImpl::OnInitialized, weak_this_),
         base::BindRepeating(&CastAudioDecoderImpl::OnDecoderOutput, weak_this_),
@@ -116,17 +102,6 @@ class CastAudioDecoderImpl : public CastAudioDecoder {
  private:
   typedef std::pair<scoped_refptr<media::DecoderBufferBase>, DecodeCallback>
       DecodeBufferCallbackPair;
-
-  void CreateMixerIfNeeded(int num_input_channels) {
-    ::media::ChannelLayout input_channel_layout =
-        ::media::GuessChannelLayout(num_input_channels);
-    if (input_channel_layout == output_channel_layout_) {
-      mixer_.reset();
-    } else {
-      mixer_ = std::make_unique<::media::ChannelMixer>(input_channel_layout,
-                                                       output_channel_layout_);
-    }
-  }
 
   void CallDecodeCallback(DecodeCallback decode_callback,
                           Status status,
@@ -176,7 +151,7 @@ class CastAudioDecoderImpl : public CastAudioDecoder {
                 << (config_.is_encrypted() ? "true" : "false");
       LOG(INFO) << "\tCodec: " << config_.codec;
       LOG(INFO) << "\tSample format: " << config_.sample_format;
-      LOG(INFO) << "\tChannels: " << input_channel_count_;
+      LOG(INFO) << "\tChannels: " << config_.channel_number;
       LOG(INFO) << "\tSample rate: " << config_.samples_per_second;
     }
 
@@ -220,20 +195,21 @@ class CastAudioDecoderImpl : public CastAudioDecoder {
     decode_queue_.pop();
   }
 
-  void OnDecoderOutput(const scoped_refptr<::media::AudioBuffer>& decoded) {
+  void OnDecoderOutput(scoped_refptr<::media::AudioBuffer> decoded) {
     if (decoded->sample_rate() != config_.samples_per_second) {
       LOG(WARNING) << "sample_rate changed to " << decoded->sample_rate()
                    << " from " << config_.samples_per_second;
       config_.samples_per_second = decoded->sample_rate();
     }
 
-    if (decoded->channel_count() != input_channel_count_) {
-      CreateMixerIfNeeded(decoded->channel_count());
-      input_channel_count_ = decoded->channel_count();
+    if (decoded->channel_count() != config_.channel_number) {
+      LOG(WARNING) << "channel_count changed to " << decoded->channel_count()
+                   << " from " << config_.channel_number;
+      config_.channel_number = decoded->channel_count();
       decoded_bus_.reset();
     }
 
-    decoded_chunks_.push_back(decoded);
+    decoded_chunks_.push_back(std::move(decoded));
   }
 
   scoped_refptr<media::DecoderBufferBase> ConvertDecoded() {
@@ -245,8 +221,6 @@ class CastAudioDecoderImpl : public CastAudioDecoder {
     // Copy decoded data into an AudioBus for conversion.
     if (!decoded_bus_ || decoded_bus_->frames() < num_frames) {
       decoded_bus_ =
-          ::media::AudioBus::Create(input_channel_count_, num_frames * 2);
-      conversion_bus_ =
           ::media::AudioBus::Create(config_.channel_number, num_frames * 2);
     }
     int bus_frame_offset = 0;
@@ -256,12 +230,7 @@ class CastAudioDecoderImpl : public CastAudioDecoder {
       bus_frame_offset += chunk->frame_count();
     }
 
-    if (!mixer_) {
-      return FinishConversion(decoded_bus_.get(), bus_frame_offset);
-    }
-
-    mixer_->Transform(decoded_bus_.get(), conversion_bus_.get());
-    return FinishConversion(conversion_bus_.get(), bus_frame_offset);
+    return FinishConversion(decoded_bus_.get(), bus_frame_offset);
   }
 
   scoped_refptr<media::DecoderBufferBase> FinishConversion(
@@ -297,21 +266,17 @@ class CastAudioDecoderImpl : public CastAudioDecoder {
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   InitializedCallback initialized_callback_;
   OutputFormat output_format_;
-  ::media::ChannelLayout output_channel_layout_;
   bool initialized_;
-  int input_channel_count_ = 0;
   media::AudioConfig config_;
 
   std::unique_ptr<::media::AudioDecoder> decoder_;
   base::queue<DecodeBufferCallbackPair> decode_queue_;
-  std::unique_ptr<::media::ChannelMixer> mixer_;
 
   bool decode_pending_;
   DecodeCallback pending_decode_callback_;
   std::vector<scoped_refptr<::media::AudioBuffer>> decoded_chunks_;
 
   std::unique_ptr<::media::AudioBus> decoded_bus_;
-  std::unique_ptr<::media::AudioBus> conversion_bus_;
 
   base::WeakPtr<CastAudioDecoderImpl> weak_this_;
   base::WeakPtrFactory<CastAudioDecoderImpl> weak_factory_;
@@ -326,11 +291,10 @@ std::unique_ptr<CastAudioDecoder> CastAudioDecoder::Create(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     const media::AudioConfig& config,
     OutputFormat output_format,
-    ::media::ChannelLayout output_channel_layout,
     InitializedCallback initialized_callback) {
   std::unique_ptr<CastAudioDecoderImpl> decoder(new CastAudioDecoderImpl(
       std::move(task_runner), std::move(initialized_callback), output_format));
-  decoder->Initialize(config, output_channel_layout);
+  decoder->Initialize(config);
   return std::move(decoder);
 }
 
@@ -345,16 +309,6 @@ int CastAudioDecoder::OutputFormatSizeInBytes(
   }
   NOTREACHED();
   return 1;
-}
-
-// static
-::media::ChannelLayout CastAudioDecoder::OutputChannelLayoutFromConfig(
-    const AudioConfig& config) {
-  if (config.channel_number == kMonoChannelCount) {
-    return ::media::CHANNEL_LAYOUT_STEREO;
-  }
-
-  return ::media::GuessChannelLayout(config.channel_number);
 }
 
 }  // namespace media

@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "cc/base/devtools_instrumentation.h"
 #include "cc/base/invalidation_region.h"
 #include "cc/benchmarks/micro_benchmark_controller.h"
@@ -23,6 +22,9 @@ class CC_EXPORT PictureLayer : public Layer {
  public:
   static scoped_refptr<PictureLayer> Create(ContentLayerClient* client);
 
+  PictureLayer(const PictureLayer&) = delete;
+  PictureLayer& operator=(const PictureLayer&) = delete;
+
   void ClearClient();
 
   void SetNearestNeighbor(bool nearest_neighbor);
@@ -35,6 +37,11 @@ class CC_EXPORT PictureLayer : public Layer {
     return picture_layer_inputs_.transformed_rasterization_allowed;
   }
 
+  void SetIsBackdropFilterMask(bool is_backdrop_filter_mask);
+  bool is_backdrop_filter_mask() const {
+    return picture_layer_inputs_.is_backdrop_filter_mask;
+  }
+
   // Layer interface.
   std::unique_ptr<LayerImpl> CreateLayerImpl(LayerTreeImpl* tree_impl) override;
   void SetLayerTreeHost(LayerTreeHost* host) override;
@@ -42,11 +49,9 @@ class CC_EXPORT PictureLayer : public Layer {
   void SetNeedsDisplayRect(const gfx::Rect& layer_rect) override;
   sk_sp<SkPicture> GetPicture() const override;
   bool Update() override;
-  bool HasSlowPaths() const override;
-  bool HasNonAAPaint() const override;
   void RunMicroBenchmark(MicroBenchmark* benchmark) override;
   void CaptureContent(const gfx::Rect& rect,
-                      std::vector<NodeHolder>* content) override;
+                      std::vector<NodeId>* content) override;
 
   ContentLayerClient* client() { return picture_layer_inputs_.client; }
 
@@ -55,9 +60,6 @@ class CC_EXPORT PictureLayer : public Layer {
   }
 
   const DisplayItemList* GetDisplayItemList();
-
-  void SetLayerMaskType(LayerMaskType mask_type);
-  LayerMaskType mask_type() { return mask_type_; }
 
  protected:
   // Encapsulates all data, callbacks or interfaces received from the embedder.
@@ -68,6 +70,7 @@ class CC_EXPORT PictureLayer : public Layer {
     ContentLayerClient* client = nullptr;
     bool nearest_neighbor = false;
     bool transformed_rasterization_allowed = false;
+    bool is_backdrop_filter_mask = false;
     gfx::Rect recorded_viewport;
     scoped_refptr<DisplayItemList> display_list;
     size_t painter_reported_memory_usage = 0;
@@ -97,9 +100,6 @@ class CC_EXPORT PictureLayer : public Layer {
   Region last_updated_invalidation_;
 
   int update_source_frame_number_;
-  LayerMaskType mask_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(PictureLayer);
 };
 
 }  // namespace cc

@@ -37,7 +37,7 @@ class StylePropertyShorthand {
   constexpr StylePropertyShorthand()
       : properties_(0),
         length_(0),
-        shorthand_id_(CSSPropertyInvalid) {}
+        shorthand_id_(CSSPropertyID::kInvalid) {}
 
   constexpr StylePropertyShorthand(CSSPropertyID id,
                                    const CSSProperty** properties,
@@ -64,7 +64,7 @@ const StylePropertyShorthand& animationShorthandForParsing();
 const StylePropertyShorthand& transitionShorthandForParsing();
 
 // Returns an empty list if the property is not a shorthand.
-const StylePropertyShorthand& shorthandForProperty(CSSPropertyID);
+CORE_EXPORT const StylePropertyShorthand& shorthandForProperty(CSSPropertyID);
 
 // Return the list of shorthands for a given longhand.
 // The client must pass in an empty result vector.

@@ -81,7 +81,7 @@ class FeedSchedulerBridge {
   // Object to which all Java to native calls are delegated.
   FeedSchedulerHost* scheduler_host_;
 
-  base::WeakPtrFactory<FeedSchedulerBridge> weak_factory_;
+  base::WeakPtrFactory<FeedSchedulerBridge> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FeedSchedulerBridge);
 };

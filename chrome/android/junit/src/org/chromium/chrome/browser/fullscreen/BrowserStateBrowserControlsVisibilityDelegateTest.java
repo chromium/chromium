@@ -38,7 +38,7 @@ public class BrowserStateBrowserControlsVisibilityDelegateTest {
     public void beforeTest() {
         MockitoAnnotations.initMocks(this);
 
-        mDelegate = new BrowserStateBrowserControlsVisibilityDelegate(mCallback);
+        mDelegate = new BrowserStateBrowserControlsVisibilityDelegate(mCallback, () -> true);
     }
 
     private void advanceTime(long amount) {

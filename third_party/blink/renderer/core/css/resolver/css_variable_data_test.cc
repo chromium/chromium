@@ -4,19 +4,12 @@
 
 #include "third_party/blink/renderer/core/css/css_variable_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 
 namespace blink {
 
-namespace {
-
-scoped_refptr<CSSVariableData> CreateVariableData(const String& string) {
-  auto tokens = CSSTokenizer(string).TokenizeToEOF();
-  return CSSVariableData::Create(tokens, false, false, KURL(),
-                                 WTF::TextEncoding());
-}
-
-}  // namespace
+using css_test_helpers::CreateVariableData;
 
 TEST(CSSVariableDataTest, FontUnitsDetected) {
   EXPECT_FALSE(CreateVariableData("100px")->HasFontUnits());

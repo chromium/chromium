@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/feature_list.h"
 #include "components/ntp_snippets/category_rankers/category_ranker.h"
@@ -27,26 +28,9 @@ namespace ntp_snippets {
 extern const base::Feature* const kAllFeatures[];
 
 ////////////////////////////////////////////////////////////////////////////////
-// Dependent features.
-// DO NOT check directly whether these features are enabled (i.e. do
-// not use base::FeatureList::IsEnabled()). They are enabled conditionally. Use
-// helpers in chrome/browser/ntp_snippets/dependent_features.h instead.
-
-extern const base::Feature kBookmarkSuggestionsFeature;
-
-////////////////////////////////////////////////////////////////////////////////
 // Independent features. Treat as normal
 
 extern const base::Feature kArticleSuggestionsFeature;
-
-// Feature to allow UI as specified here: https://crbug.com/660837.
-extern const base::Feature kIncreasedVisibility;
-
-// Feature to listen for GCM push updates from the server.
-extern const base::Feature kBreakingNewsPushFeature;
-
-// Feature to choose a category ranker.
-extern const base::Feature kCategoryRanker;
 
 // Feature for simple experimental comparison and validation of changes since
 // M58: enabling this brings back the M58 Stable fetching schedule (which is
@@ -54,41 +38,9 @@ extern const base::Feature kCategoryRanker;
 // TODO(jkrcal): Remove when the comparison is done (probably after M62).
 extern const base::Feature kRemoteSuggestionsEmulateM58FetchingSchedule;
 
-// Parameter and its values for the kCategoryRanker feature flag.
-extern const char kCategoryRankerParameter[];
-extern const char kCategoryRankerConstantRanker[];
-extern const char kCategoryRankerClickBasedRanker[];
-
-enum class CategoryRankerChoice {
-  CONSTANT,
-  CLICK_BASED,
-};
-
-// Returns which CategoryRanker to use according to kCategoryRanker feature and
-// Chrome Home.
-CategoryRankerChoice GetSelectedCategoryRanker(bool is_chrome_home_enabled);
-
-// Builds a CategoryRanker according to kCategoryRanker feature and Chrome Home.
 std::unique_ptr<CategoryRanker> BuildSelectedCategoryRanker(
     PrefService* pref_service,
-    base::Clock* clock,
-    bool is_chrome_home_enabled);
-
-// Feature to choose a default category order.
-extern const base::Feature kCategoryOrder;
-
-// Parameter and its values for the kCategoryOrder feature flag.
-extern const char kCategoryOrderParameter[];
-extern const char kCategoryOrderGeneral[];
-extern const char kCategoryOrderEmergingMarketsOriented[];
-
-enum class CategoryOrderChoice {
-  GENERAL,
-  EMERGING_MARKETS_ORIENTED,
-};
-
-// Returns which category order to use according to kCategoryOrder feature.
-CategoryOrderChoice GetSelectedCategoryOrder();
+    base::Clock* clock);
 
 // Enables and configures notifications for content suggestions on Android.
 extern const base::Feature kNotificationsFeature;
@@ -127,8 +79,8 @@ constexpr int kNotificationsIgnoredDefaultLimit = 3;
 // have been fetched.
 extern const base::Feature kKeepPrefetchedContentSuggestions;
 
-// Enables debug logging accessible through snippets-internals.
-extern const base::Feature kContentSuggestionsDebugLog;
+// Whether this version of the client supports responses without an image.
+extern const base::Feature kOptionalImagesEnabledFeature;
 
 // Return all the features as a vector.
 std::vector<const base::Feature*> GetAllFeatures();

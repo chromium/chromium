@@ -42,14 +42,6 @@ class CORE_EXPORT ColorChooserPopupUIController final
   USING_PRE_FINALIZER(ColorChooserPopupUIController, Dispose);
 
  public:
-  static ColorChooserPopupUIController* Create(
-      LocalFrame* frame,
-      ChromeClient* chrome_client,
-      blink::ColorChooserClient* client) {
-    return MakeGarbageCollected<ColorChooserPopupUIController>(
-        frame, chrome_client, client);
-  }
-
   ColorChooserPopupUIController(LocalFrame*,
                                 ChromeClient*,
                                 blink::ColorChooserClient*);
@@ -74,8 +66,13 @@ class CORE_EXPORT ColorChooserPopupUIController final
   void DidClosePopup() override;
 
  private:
+  ChromeClient& GetChromeClient() override;
+
   void OpenPopup();
   void Dispose();
+
+  void WriteColorPickerDocument(SharedBuffer*);
+  void WriteColorSuggestionPickerDocument(SharedBuffer*);
 
   Member<ChromeClient> chrome_client_;
   PagePopup* popup_;

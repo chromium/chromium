@@ -10,8 +10,8 @@
 #include "third_party/blink/renderer/core/loader/resource/script_resource.h"
 #include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/core/script/pending_script.h"
+#include "third_party/blink/renderer/platform/instrumentation/memory_pressure_listener.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
-#include "third_party/blink/renderer/platform/memory_pressure_listener.h"
 
 namespace blink {
 
@@ -58,7 +58,7 @@ class CORE_EXPORT ClassicPendingScript final : public PendingScript,
   void SetStreamer(ScriptStreamer*);
   void StreamingFinished();
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) override;
 
   mojom::ScriptType GetScriptType() const override {
     return mojom::ScriptType::kClassic;

@@ -39,14 +39,16 @@ ScreenCaptureInfoBarDelegateAndroid::ScreenCaptureInfoBarDelegateAndroid(
     : web_contents_(web_contents),
       request_(request),
       callback_(std::move(callback)) {
-  DCHECK_EQ(blink::MEDIA_GUM_DESKTOP_VIDEO_CAPTURE, request.video_type);
+  DCHECK_EQ(blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE,
+            request.video_type);
 }
 
 ScreenCaptureInfoBarDelegateAndroid::~ScreenCaptureInfoBarDelegateAndroid() {
   if (!callback_.is_null()) {
-    std::move(callback_).Run(blink::MediaStreamDevices(),
-                             blink::MEDIA_DEVICE_FAILED_DUE_TO_SHUTDOWN,
-                             nullptr);
+    std::move(callback_).Run(
+        blink::MediaStreamDevices(),
+        blink::mojom::MediaStreamRequestResult::FAILED_DUE_TO_SHUTDOWN,
+        nullptr);
   }
 }
 
@@ -72,31 +74,31 @@ base::string16 ScreenCaptureInfoBarDelegateAndroid::GetButtonLabel(
 }
 
 bool ScreenCaptureInfoBarDelegateAndroid::Accept() {
-  RunCallback(blink::MEDIA_DEVICE_OK);
+  RunCallback(blink::mojom::MediaStreamRequestResult::OK);
   return true;
 }
 
 bool ScreenCaptureInfoBarDelegateAndroid::Cancel() {
-  RunCallback(blink::MEDIA_DEVICE_PERMISSION_DENIED);
+  RunCallback(blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED);
   return true;
 }
 
 void ScreenCaptureInfoBarDelegateAndroid::InfoBarDismissed() {
-  RunCallback(blink::MEDIA_DEVICE_PERMISSION_DISMISSED);
+  RunCallback(blink::mojom::MediaStreamRequestResult::PERMISSION_DISMISSED);
 }
 
 void ScreenCaptureInfoBarDelegateAndroid::RunCallback(
-    blink::MediaStreamRequestResult result) {
+    blink::mojom::MediaStreamRequestResult result) {
   DCHECK(!callback_.is_null());
 
   blink::MediaStreamDevices devices;
   std::unique_ptr<content::MediaStreamUI> ui;
-  if (result == blink::MEDIA_DEVICE_OK) {
+  if (result == blink::mojom::MediaStreamRequestResult::OK) {
     content::DesktopMediaID screen_id = content::DesktopMediaID(
         content::DesktopMediaID::TYPE_SCREEN, webrtc::kFullDesktopScreenId);
-    devices.push_back(
-        blink::MediaStreamDevice(blink::MEDIA_GUM_DESKTOP_VIDEO_CAPTURE,
-                                 screen_id.ToString(), "Screen"));
+    devices.push_back(blink::MediaStreamDevice(
+        blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE,
+        screen_id.ToString(), "Screen"));
 
     ui = MediaCaptureDevicesDispatcher::GetInstance()
              ->GetMediaStreamCaptureIndicator()

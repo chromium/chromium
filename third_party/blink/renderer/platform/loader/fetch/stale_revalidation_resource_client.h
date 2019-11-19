@@ -14,7 +14,7 @@ namespace blink {
 // to revalidate the resource. When the request has been completed the original
 // resource will be removed from the memory cache.
 class StaleRevalidationResourceClient
-    : public GarbageCollectedFinalized<StaleRevalidationResourceClient>,
+    : public GarbageCollected<StaleRevalidationResourceClient>,
       public RawResourceClient {
   USING_GARBAGE_COLLECTED_MIXIN(StaleRevalidationResourceClient);
 

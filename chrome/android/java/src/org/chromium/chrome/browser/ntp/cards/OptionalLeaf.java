@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.ntp.cards;
 
-import android.support.annotation.CallSuper;
+import androidx.annotation.CallSuper;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.ntp.cards.NewTabPageViewHolder.PartialBindCallback;

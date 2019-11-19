@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/power/power_button_controller.h"
-#include "base/feature_list.h"
 #include "base/macros.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/views/controls/button/button.h"
@@ -28,11 +27,6 @@ class ASH_EXPORT PowerButtonMenuView : public views::View,
 
   // Distance of the menu animation transform.
   static constexpr int kMenuViewTransformDistanceDp = 16;
-
-  // The feedback item is controlled by a feature solely so it can be turned on
-  // only for some users on the beta, dev and stable channels.
-  static constexpr base::Feature kEnableFeedbackItem{
-      "PowerButtonMenuFeedbackItem", base::FEATURE_DISABLED_BY_DEFAULT};
 
   // Direction of the animation transform. X means to translate from
   // x-coordinate. Y means to translate from y-coordinate.
@@ -69,6 +63,9 @@ class ASH_EXPORT PowerButtonMenuView : public views::View,
 
   // Gets the transform displacement, which contains direction and distance.
   TransformDisplacement GetTransformDisplacement() const;
+
+  // views::View:
+  const char* GetClassName() const override;
 
  private:
   // Creates the items that in the menu.

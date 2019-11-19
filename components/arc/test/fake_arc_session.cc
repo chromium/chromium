@@ -18,6 +18,7 @@ void FakeArcSession::StartMiniInstance() {}
 
 void FakeArcSession::RequestUpgrade(UpgradeParams params) {
   upgrade_requested_ = true;
+  upgrade_locale_param_ = params.locale;
   if (boot_failure_emulation_enabled_) {
     for (auto& observer : observer_list_)
       observer.OnSessionStopped(boot_failure_reason_, false, true);
@@ -38,6 +39,9 @@ bool FakeArcSession::IsStopRequested() {
 void FakeArcSession::OnShutdown() {
   StopWithReason(ArcStopReason::SHUTDOWN);
 }
+
+void FakeArcSession::SetUserInfo(const std::string& hash,
+                                 const std::string& serial_number) {}
 
 void FakeArcSession::StopWithReason(ArcStopReason reason) {
   bool was_mojo_connected = running_;

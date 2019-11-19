@@ -10,9 +10,11 @@
 #include "base/memory/ref_counted.h"
 #include "base/observer_list_threadsafe.h"
 
-namespace content {
-
+namespace blink {
 class URLLoaderThrottle;
+}
+
+namespace content {
 
 // Allows the browser to block and then resume requests from a frame. This
 // includes requests from the frame's dedicated workers as well.
@@ -35,7 +37,7 @@ class FrameRequestBlocker
   // Cancels any blocked subresource requests.
   void Cancel();
 
-  std::unique_ptr<URLLoaderThrottle> GetThrottleIfRequestsBlocked();
+  std::unique_ptr<blink::URLLoaderThrottle> GetThrottleIfRequestsBlocked();
 
  private:
   class Client {

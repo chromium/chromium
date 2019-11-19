@@ -49,7 +49,7 @@ class CryptohomeWebUIHandler : public content::WebUIMessageHandler {
   void SetCryptohomeProperty(const std::string& destination_id,
                              const base::Value& value);
 
-  base::WeakPtrFactory<CryptohomeWebUIHandler> weak_ptr_factory_;
+  base::WeakPtrFactory<CryptohomeWebUIHandler> weak_ptr_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(CryptohomeWebUIHandler);
 };
 

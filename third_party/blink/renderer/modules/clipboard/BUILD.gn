@@ -8,10 +8,14 @@ blink_modules_sources("clipboard") {
   sources = [
     "clipboard.cc",
     "clipboard.h",
-    "clipboard_file_reader.cc",
-    "clipboard_file_reader.h",
+    "clipboard_item.cc",
+    "clipboard_item.h",
     "clipboard_promise.cc",
     "clipboard_promise.h",
+    "clipboard_reader.cc",
+    "clipboard_reader.h",
+    "clipboard_writer.cc",
+    "clipboard_writer.h",
     "navigator_clipboard.cc",
     "navigator_clipboard.h",
   ]

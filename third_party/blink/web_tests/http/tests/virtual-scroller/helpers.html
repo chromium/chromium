@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script src="resources/helpers.js"></script>
+<div id=contentDiv>
+</div>
+
+<script type="module">
+  'use strict';
+
+  import * as findElement from '/gen/third_party/blink/renderer/core/script/resources/layered_api/elements/virtual-scroller/find-element.mjs';
+  import * as helpers from './resources/helpers.mjs';
+  import * as wptHelpers from '/wpt_internal/virtual-scroller/resources/helpers.mjs';
+
+  /**
+   * Asserts that we find |element| when we search in |elements| with this |offset| and |bias|.
+   */
+  function assertFindsElement(elements, offset, bias, element) {
+    const found = helpers.simpleFindElement(elements, offset, bias);
+    assert_equals(found, element, `Searching offset=${offset}, bias=${bias.toString()}`);
+  }
+
+  // Since even simpleFindElement isn't that simple, we have some tests for it too.
+  test(() => {
+    assertFindsElement([], 100, findElement.BIAS_LOW, null);
+    assertFindsElement([], 100, findElement.BIAS_HIGH, null);
+  }, 'Test simpleFindElement no elements');
+
+  test(() => {
+    wptHelpers.withElement('div', containerDiv => {
+      wptHelpers.appendDivs(containerDiv, 2, "10px");
+      const elements = containerDiv.children;
+      // Check all boundaries of the first element.
+      // Check 1px before the top.
+      assertFindsElement(
+        elements, helpers.topOf(elements[0]) - 1, findElement.BIAS_LOW, null);
+      assertFindsElement(
+        elements, helpers.topOf(elements[0]) - 1, findElement.BIAS_HIGH, null);
+      // Check at the top.
+      assertFindsElement(
+        elements, helpers.topOf(elements[0]), findElement.BIAS_LOW, elements[0]);
+      assertFindsElement(
+        elements, helpers.topOf(elements[0]), findElement.BIAS_HIGH, elements[0]);
+      // Check 1px after the top.
+      assertFindsElement(
+        elements, helpers.topOf(elements[0]) + 1, findElement.BIAS_LOW, elements[0]);
+      assertFindsElement(
+        elements, helpers.topOf(elements[0]) + 1, findElement.BIAS_HIGH, elements[0]);
+
+      // Check 1px before the bottom.
+      assertFindsElement(
+        elements, helpers.bottomOf(elements[0]) - 1, findElement.BIAS_LOW, elements[0]);
+      assertFindsElement(
+        elements, helpers.bottomOf(elements[0]) - 1, findElement.BIAS_HIGH, elements[0]);
+      // Check at the bottom.
+      assertFindsElement(
+        elements, helpers.bottomOf(elements[0]), findElement.BIAS_LOW, elements[0]);
+      assertFindsElement(
+        elements, helpers.bottomOf(elements[0]), findElement.BIAS_HIGH, elements[0]);
+      // Check 1px after the bottom.
+      assertFindsElement(
+        elements, helpers.bottomOf(elements[0]) + 1, findElement.BIAS_LOW, elements[0]);
+      assertFindsElement(
+        elements, helpers.bottomOf(elements[0]) + 1, findElement.BIAS_HIGH, elements[1]);
+
+      // Check all boundaries of the second (last) element.
+      // Check 1px before the top.
+      assertFindsElement(
+        elements, helpers.topOf(elements[1]) - 1, findElement.BIAS_LOW, elements[0]);
+      assertFindsElement(
+        elements, helpers.topOf(elements[1]) - 1, findElement.BIAS_HIGH, elements[1]);
+      // Check at the top.
+      assertFindsElement(
+        elements, helpers.topOf(elements[1]), findElement.BIAS_LOW, elements[1]);
+      assertFindsElement(
+        elements, helpers.topOf(elements[1]), findElement.BIAS_HIGH, elements[1]);
+      // Check 1px after the top.
+      assertFindsElement(
+        elements, helpers.topOf(elements[1]) + 1, findElement.BIAS_LOW, elements[1]);
+      assertFindsElement(
+        elements, helpers.topOf(elements[1]) + 1, findElement.BIAS_HIGH, elements[1]);
+
+      // Check 1px before the bottom.
+      assertFindsElement(
+        elements, helpers.bottomOf(elements[1]) - 1, findElement.BIAS_LOW, elements[1]);
+      assertFindsElement(
+        elements, helpers.bottomOf(elements[1]) - 1, findElement.BIAS_HIGH, elements[1]);
+      // Check at the bottom.
+      assertFindsElement(
+        elements, helpers.bottomOf(elements[1]), findElement.BIAS_LOW, elements[1]);
+      assertFindsElement(
+        elements, helpers.bottomOf(elements[1]), findElement.BIAS_HIGH, elements[1]);
+      // Check 1px after the bottom.
+      assertFindsElement(
+        elements, helpers.bottomOf(elements[1]) + 1, findElement.BIAS_LOW, null);
+      assertFindsElement(
+        elements, helpers.bottomOf(elements[1]) + 1, findElement.BIAS_HIGH, null);
+    });
+  }, 'Test simpleFindElement 10px margin');
+
+  test(() => {
+    wptHelpers.withElement('div', containerDiv => {
+      wptHelpers.appendDivs(containerDiv, 2, "10px");
+      const elements = containerDiv.children;
+      // Check all boundaries of the first element.
+      // Check 1px before the top.
+      assertFindsElement(
+        elements, helpers.topOf(elements[0]) - 1, findElement.BIAS_LOW, null);
+      assertFindsElement(
+        elements, helpers.topOf(elements[0]) - 1, findElement.BIAS_HIGH, null);
+      // Check at the top.
+      assertFindsElement(
+        elements, helpers.topOf(elements[0]), findElement.BIAS_LOW, elements[0]);
+      assertFindsElement(
+        elements, helpers.topOf(elements[0]), findElement.BIAS_HIGH, elements[0]);
+      // Check 1px after the top.
+      assertFindsElement(
+        elements, helpers.topOf(elements[0]) + 1, findElement.BIAS_LOW, elements[0]);
+      assertFindsElement(
+        elements, helpers.topOf(elements[0]) + 1, findElement.BIAS_HIGH, elements[0]);
+
+      // Check 1px before the bottom.
+      assertFindsElement(
+        elements, helpers.bottomOf(elements[0]) - 1, findElement.BIAS_LOW, elements[0]);
+      assertFindsElement(
+        elements, helpers.bottomOf(elements[0]) - 1, findElement.BIAS_HIGH, elements[0]);
+      // Check at the bottom.
+      assertFindsElement(
+        elements, helpers.bottomOf(elements[0]), findElement.BIAS_LOW, elements[0]);
+      assertFindsElement(
+        elements, helpers.bottomOf(elements[0]), findElement.BIAS_HIGH, elements[0]);
+
+      // Bottom of first == top of second.
+
+      // Check all boundaries of the second (last) element.
+      // Check 1px after the top.
+      assertFindsElement(
+        elements, helpers.topOf(elements[1]) + 1, findElement.BIAS_LOW, elements[1]);
+      assertFindsElement(
+        elements, helpers.topOf(elements[1]) + 1, findElement.BIAS_HIGH, elements[1]);
+
+      // Check 1px before the bottom.
+      assertFindsElement(
+        elements, helpers.bottomOf(elements[1]) - 1, findElement.BIAS_LOW, elements[1]);
+      assertFindsElement(
+        elements, helpers.bottomOf(elements[1]) - 1, findElement.BIAS_HIGH, elements[1]);
+      // Check at the bottom.
+      assertFindsElement(
+        elements, helpers.bottomOf(elements[1]), findElement.BIAS_LOW, elements[1]);
+      assertFindsElement(
+        elements, helpers.bottomOf(elements[1]), findElement.BIAS_HIGH, elements[1]);
+      // Check 1px after the bottom.
+      assertFindsElement(
+        elements, helpers.bottomOf(elements[1]) + 1, findElement.BIAS_LOW, null);
+      assertFindsElement(
+        elements, helpers.bottomOf(elements[1]) + 1, findElement.BIAS_HIGH, null);
+    });
+  }, 'Test simpleFindElement 0px margin');
+</script>

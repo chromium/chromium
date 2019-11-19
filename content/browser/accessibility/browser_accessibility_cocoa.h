@@ -33,7 +33,7 @@ struct AXTextEdit {
 // object. The renderer converts webkit's accessibility tree into a
 // WebAccessibility tree and passes it to the browser process over IPC.
 // This class converts it into a format Cocoa can query.
-@interface BrowserAccessibilityCocoa : NSObject {
+@interface BrowserAccessibilityCocoa : NSAccessibilityElement {
  @private
   content::BrowserAccessibility* owner_;
   base::scoped_nsobject<NSMutableArray> children_;
@@ -98,7 +98,7 @@ struct AXTextEdit {
 @property(nonatomic, readonly) NSArray* columns;
 @property(nonatomic, readonly) NSArray* columnHeaders;
 @property(nonatomic, readonly) NSValue* columnIndexRange;
-@property(nonatomic, readonly) NSString* description;
+@property(nonatomic, readonly) NSString* descriptionForAccessibility;
 @property(nonatomic, readonly) NSNumber* disclosing;
 @property(nonatomic, readonly) id disclosedByRow;
 @property(nonatomic, readonly) NSNumber* disclosureLevel;

@@ -90,7 +90,7 @@ class WifiHotspotConnector : public NetworkStateHandlerObserver {
   base::Time connection_attempt_start_time_;
   scoped_refptr<base::TaskRunner> task_runner_;
 
-  base::WeakPtrFactory<WifiHotspotConnector> weak_ptr_factory_;
+  base::WeakPtrFactory<WifiHotspotConnector> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(WifiHotspotConnector);
 };

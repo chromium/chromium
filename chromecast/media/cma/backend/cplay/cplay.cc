@@ -20,15 +20,17 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/no_destructor.h"
+#include "base/numerics/ranges.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "chromecast/media/cma/backend/cast_audio_json.h"
 #include "chromecast/media/cma/backend/cplay/wav_header.h"
-#include "chromecast/media/cma/backend/mixer_input.h"
-#include "chromecast/media/cma/backend/mixer_pipeline.h"
-#include "chromecast/media/cma/backend/post_processing_pipeline_impl.h"
-#include "chromecast/media/cma/backend/post_processing_pipeline_parser.h"
+#include "chromecast/media/cma/backend/mixer/mixer_input.h"
+#include "chromecast/media/cma/backend/mixer/mixer_pipeline.h"
+#include "chromecast/media/cma/backend/mixer/post_processing_pipeline_impl.h"
+#include "chromecast/media/cma/backend/mixer/post_processing_pipeline_parser.h"
 #include "chromecast/media/cma/backend/volume_map.h"
 #include "chromecast/public/media/media_pipeline_backend.h"
-#include "media/audio/sounds/wav_audio_handler.h"
+#include "media/audio/wav_audio_handler.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_sample_types.h"
 
@@ -42,19 +44,15 @@ VolumeMap& GetVolumeMap() {
   return *volume_map;
 }
 
-// static
-float VolumeControl::DbFSToVolume(float db) {
-  return GetVolumeMap().DbFSToVolume(db);
-}
-
 namespace {
 
-const int kReadSize = 256;
+const int kReadSize = 1024;
 
 void PrintHelp(const std::string& command) {
   LOG(INFO) << "Usage: " << command;
   LOG(INFO) << "  -i input .wav file";
   LOG(INFO) << "  -o output .wav file";
+  LOG(INFO) << "  -r output samples per second";
   LOG(INFO) << " [-c cast_audio.json path]";
   LOG(INFO) << " [-v cast volume as fraction of 1 (0.0-1.0)]";
   LOG(INFO) << " [-d max duration (s)]";
@@ -63,7 +61,7 @@ void PrintHelp(const std::string& command) {
 struct Parameters {
   double cast_volume = 1.0;
   double duration_s = std::numeric_limits<double>::infinity();
-  int output_samples_per_second = -1.0;
+  int output_samples_per_second = -1;
   std::string device_id = "default";
   base::FilePath input_file_path;
   base::FilePath output_file_path;
@@ -108,6 +106,7 @@ class WavMixerInputSource : public MixerInput::Source {
     return input_handler_->sample_rate();
   }
   bool primary() override { return true; }
+  bool active() override { return true; }
   const std::string& device_id() override { return device_id_; }
   AudioContentType content_type() override { return AudioContentType::kMedia; }
   int desired_read_size() override { return kReadSize; }
@@ -141,26 +140,6 @@ class WavMixerInputSource : public MixerInput::Source {
   DISALLOW_COPY_AND_ASSIGN(WavMixerInputSource);
 };
 
-// Implementation of CastAudioJsonProvider that reads from a specified path.
-class FixedCastAudioJsonProvider : public CastAudioJsonProvider {
- public:
-  FixedCastAudioJsonProvider(const base::FilePath& path) : file_path_(path) {}
-  ~FixedCastAudioJsonProvider() override = default;
-
-  std::unique_ptr<base::Value> GetCastAudioConfig() override {
-    std::string contents;
-    base::ReadFileToString(file_path_, &contents);
-    return base::JSONReader::Read(contents);
-  }
-
-  void SetTuningChangedCallback(TuningChangedCallback callback) override {}
-
- private:
-  const base::FilePath file_path_;
-
-  DISALLOW_COPY_AND_ASSIGN(FixedCastAudioJsonProvider);
-};
-
 // OutputHandler interface to allow switching between alsa and file output.
 // TODO(bshaya): Add option to play directly to an output device!
 class OutputHandler {
@@ -179,7 +158,6 @@ class WavOutputHandler : public OutputHandler {
         num_channels_(num_channels) {
     header_.SetNumChannels(num_channels);
     header_.SetSampleRate(sample_rate);
-    header_.SetBitsPerSample(sizeof(int16_t) * 8);
 
     // Write wav file header to fill space. We'll need to go back and fill in
     // the size later.
@@ -198,13 +176,14 @@ class WavOutputHandler : public OutputHandler {
   }
 
   void WriteData(float* data, int num_frames) override {
-    std::vector<int16_t> fixed_data(num_frames * num_channels_);
-    for (size_t i = 0; i < fixed_data.size(); ++i) {
-      fixed_data[i] =
-          ::media::FixedSampleTypeTraits<int16_t>::FromFloat(data[i]);
+    std::vector<float> clipped_data(num_frames * num_channels_);
+    std::memcpy(clipped_data.data(), data,
+                clipped_data.size() * sizeof(clipped_data[0]));
+    for (size_t i = 0; i < clipped_data.size(); ++i) {
+      clipped_data[i] = base::ClampToRange(clipped_data[i], -1.0f, 1.0f);
     }
-    wav_file_.WriteAtCurrentPos(reinterpret_cast<char*>(fixed_data.data()),
-                                sizeof(fixed_data[0]) * fixed_data.size());
+    wav_file_.WriteAtCurrentPos(reinterpret_cast<char*>(clipped_data.data()),
+                                sizeof(clipped_data[0]) * clipped_data.size());
   }
 
  private:
@@ -215,13 +194,14 @@ class WavOutputHandler : public OutputHandler {
   DISALLOW_COPY_AND_ASSIGN(WavOutputHandler);
 };
 
-class ClippingDetector {
+class AudioMetrics {
  public:
-  ClippingDetector(int num_channels) : num_channels_(num_channels) {}
-  ~ClippingDetector() = default;
+  AudioMetrics(int num_channels) : num_channels_(num_channels) {}
+  ~AudioMetrics() = default;
 
   void ProcessFrames(float* data, int num_frames) {
     for (int i = 0; i < num_frames * num_channels_; ++i) {
+      squared_sum_ += std::pow(data[i], 2);
       if (std::fabs(data[i]) > 1.0) {
         ++clipped_samples_;
         largest_sample_ = std::max(largest_sample_, std::fabs(data[i]));
@@ -231,6 +211,8 @@ class ClippingDetector {
   }
 
   void PrintReport() {
+    LOG(INFO) << "RMS magnitude: "
+              << 20 * log10(std::sqrt(squared_sum_ / total_samples_)) << "dB";
     if (clipped_samples_ == 0) {
       return;
     }
@@ -244,15 +226,16 @@ class ClippingDetector {
   int clipped_samples_ = 0;
   int total_samples_ = 0;
   float largest_sample_ = 0.0f;
+  double squared_sum_ = 0.0;
 
-  DISALLOW_COPY_AND_ASSIGN(ClippingDetector);
+  DISALLOW_COPY_AND_ASSIGN(AudioMetrics);
 };
 
 Parameters ReadArgs(int argc, char* argv[]) {
   Parameters params;
   params.cast_audio_json_path = CastAudioJson::GetFilePath();
   int opt;
-  while ((opt = getopt(argc, argv, "i:o:c:v:d:")) != -1) {
+  while ((opt = getopt(argc, argv, "i:o:c:v:d:r:")) != -1) {
     switch (opt) {
       case 'i':
         params.input_file_path = base::FilePath(optarg);
@@ -270,6 +253,9 @@ Parameters ReadArgs(int argc, char* argv[]) {
         break;
       case 'd':
         params.duration_s = strtod(optarg, nullptr);
+        break;
+      case 'r':
+        params.output_samples_per_second = strtod(optarg, nullptr);
         break;
       default:
         PrintHelp(argv[0]);
@@ -291,29 +277,42 @@ Parameters ReadArgs(int argc, char* argv[]) {
 int CplayMain(int argc, char* argv[]) {
   Parameters params = ReadArgs(argc, argv);
 
+  // Comply with CastAudioJsonProviderImpl.
+  base::ThreadPoolInstance::CreateAndStartWithDefaultParams(
+      "cplay_thread_pool");
+
   // Read input file.
   WavMixerInputSource input_source(params);
-  params.output_samples_per_second = input_source.input_samples_per_second();
+  if (params.output_samples_per_second <= 0) {
+    params.output_samples_per_second = input_source.input_samples_per_second();
+  }
+  if (params.output_samples_per_second !=
+      input_source.input_samples_per_second()) {
+    LOG(INFO) << "Resampling from " << input_source.input_samples_per_second()
+              << " to " << params.output_samples_per_second;
+  } else {
+    LOG(INFO) << "Sample rate: " << params.output_samples_per_second;
+  }
 
   // Build Processing Pipeline.
   PostProcessingPipelineParser parser(params.cast_audio_json_path);
   auto factory = std::make_unique<PostProcessingPipelineFactoryImpl>();
-  auto pipeline = MixerPipeline::CreateMixerPipeline(&parser, factory.get());
+  auto pipeline = MixerPipeline::CreateMixerPipeline(
+      &parser, factory.get(), input_source.num_channels());
   CHECK(pipeline);
-  pipeline->Initialize(params.output_samples_per_second);
+  pipeline->Initialize(params.output_samples_per_second, kReadSize);
   LOG(INFO) << "Initialized Cast Audio Pipeline at "
             << params.output_samples_per_second << " samples per second";
 
   // Add |input_source| to |pipeline|
   FilterGroup* input_group = pipeline->GetInputGroup(params.device_id);
   CHECK(input_group);
-  MixerInput mixer_input(&input_source, params.output_samples_per_second,
-                         kReadSize, MixerInput::RenderingDelay(), input_group);
+  MixerInput mixer_input(&input_source, input_group);
 
   // Set volume.
   std::string contents;
   base::ReadFileToString(params.cast_audio_json_path, &contents);
-  GetVolumeMap().LoadVolumeMap(base::JSONReader::Read(contents));
+  GetVolumeMap().LoadVolumeMap(base::JSONReader::ReadDeprecated(contents));
   float volume_dbfs = GetVolumeMap().VolumeToDbFS(params.cast_volume);
   float volume_multiplier = std::pow(10.0, volume_dbfs / 20.0);
   mixer_input.SetVolumeMultiplier(1.0);
@@ -326,7 +325,7 @@ int CplayMain(int argc, char* argv[]) {
       std::make_unique<WavOutputHandler>(params.output_file_path,
                                          pipeline->GetOutputChannelCount(),
                                          params.output_samples_per_second);
-  ClippingDetector clip_detector(pipeline->GetOutputChannelCount());
+  AudioMetrics audio_metrics(pipeline->GetOutputChannelCount());
 
   // Play!
   int frames_written = 0;
@@ -334,11 +333,13 @@ int CplayMain(int argc, char* argv[]) {
          frames_written / params.output_samples_per_second <
              params.duration_s) {
     pipeline->MixAndFilter(kReadSize, MixerInput::RenderingDelay());
-    clip_detector.ProcessFrames(pipeline->GetOutput(), kReadSize);
+    audio_metrics.ProcessFrames(pipeline->GetOutput(), kReadSize);
     output_handler_->WriteData(pipeline->GetOutput(), kReadSize);
+    frames_written += kReadSize;
   }
 
-  clip_detector.PrintReport();
+  audio_metrics.PrintReport();
+  base::ThreadPoolInstance::Get()->Shutdown();
   return 0;
 }
 

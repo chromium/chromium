@@ -30,11 +30,10 @@ void PictureDrawQuad::SetNew(
     float contents_scale,
     ImageAnimationMap image_animation_map,
     scoped_refptr<cc::DisplayItemList> display_item_list) {
-  ContentDrawQuadBase::SetNew(
-      shared_quad_state, DrawQuad::PICTURE_CONTENT, rect, visible_rect,
-      needs_blending, tex_coord_rect, texture_size,
-      !PlatformColor::SameComponentOrder(texture_format), false,
-      nearest_neighbor, false);
+  ContentDrawQuadBase::SetNew(shared_quad_state,
+                              DrawQuad::Material::kPictureContent, rect,
+                              visible_rect, needs_blending, tex_coord_rect,
+                              texture_size, false, nearest_neighbor, false);
   this->content_rect = content_rect;
   this->contents_scale = contents_scale;
   this->image_animation_map = std::move(image_animation_map);
@@ -55,11 +54,10 @@ void PictureDrawQuad::SetAll(
     float contents_scale,
     ImageAnimationMap image_animation_map,
     scoped_refptr<cc::DisplayItemList> display_item_list) {
-  ContentDrawQuadBase::SetAll(
-      shared_quad_state, DrawQuad::PICTURE_CONTENT, rect, visible_rect,
-      needs_blending, tex_coord_rect, texture_size,
-      !PlatformColor::SameComponentOrder(texture_format), false,
-      nearest_neighbor, false);
+  ContentDrawQuadBase::SetAll(shared_quad_state,
+                              DrawQuad::Material::kPictureContent, rect,
+                              visible_rect, needs_blending, tex_coord_rect,
+                              texture_size, false, nearest_neighbor, false);
   this->content_rect = content_rect;
   this->contents_scale = contents_scale;
   this->image_animation_map = std::move(image_animation_map);
@@ -68,7 +66,7 @@ void PictureDrawQuad::SetAll(
 }
 
 const PictureDrawQuad* PictureDrawQuad::MaterialCast(const DrawQuad* quad) {
-  DCHECK(quad->material == DrawQuad::PICTURE_CONTENT);
+  DCHECK(quad->material == DrawQuad::Material::kPictureContent);
   return static_cast<const PictureDrawQuad*>(quad);
 }
 

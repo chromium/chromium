@@ -8,6 +8,7 @@
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/test/mock_widget_impl.h"
 #include "content/test/mock_widget_input_handler.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace content {
 // TestRenderWidgetHostView ----------------------------------------------------
@@ -33,7 +34,7 @@ class TestRenderWidgetHost : public RenderWidgetHostImpl {
                        RenderProcessHost* process,
                        int32_t routing_id,
                        std::unique_ptr<MockWidgetImpl> widget_impl,
-                       mojom::WidgetPtr widget,
+                       mojo::PendingRemote<mojom::Widget> widget,
                        bool hidden);
 
   std::unique_ptr<MockWidgetImpl> widget_impl_;

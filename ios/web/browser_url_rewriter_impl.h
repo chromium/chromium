@@ -9,7 +9,7 @@
 
 #include "base/macros.h"
 #include "base/no_destructor.h"
-#include "ios/web/public/browser_url_rewriter.h"
+#include "ios/web/public/navigation/browser_url_rewriter.h"
 
 class GURL;
 

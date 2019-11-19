@@ -6,7 +6,6 @@
 #define MOJO_PUBLIC_CPP_BASE_BIG_BUFFER_MOJOM_TRAITS_H_
 
 #include <cstdint>
-#include <vector>
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
@@ -37,7 +36,7 @@ struct COMPONENT_EXPORT(MOJO_BASE_SHARED_TRAITS)
   static mojo_base::mojom::BigBufferDataView::Tag GetTag(
       const mojo_base::BigBuffer& buffer);
 
-  static const std::vector<uint8_t>& bytes(const mojo_base::BigBuffer& buffer);
+  static base::span<const uint8_t> bytes(const mojo_base::BigBuffer& buffer);
   static mojo_base::internal::BigBufferSharedMemoryRegion& shared_memory(
       mojo_base::BigBuffer& buffer);
   static bool invalid_buffer(mojo_base::BigBuffer& buffer);

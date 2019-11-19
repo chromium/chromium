@@ -11,12 +11,12 @@ namespace syncer {
 SystemEncryptor::~SystemEncryptor() {}
 
 bool SystemEncryptor::EncryptString(const std::string& plaintext,
-                                    std::string* ciphertext) {
+                                    std::string* ciphertext) const {
   return ::OSCrypt::EncryptString(plaintext, ciphertext);
 }
 
 bool SystemEncryptor::DecryptString(const std::string& ciphertext,
-                                    std::string* plaintext) {
+                                    std::string* plaintext) const {
   return ::OSCrypt::DecryptString(ciphertext, plaintext);
 }
 

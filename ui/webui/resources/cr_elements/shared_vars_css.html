@@ -8,20 +8,21 @@
   html {
     --google-blue-50-rgb: 232, 240, 254;  /* #e8f0fe */
     --google-blue-50: rgb(var(--google-blue-50-rgb));
-    --google-blue-600-rgb: 26, 115, 232;
+    --google-blue-600-rgb: 26, 115, 232;  /* #1a73e8 */
     --google-blue-600: rgb(var(--google-blue-600-rgb));
-    --google-blue-900-rgb: 13, 71, 161;
 
     --google-grey-200-rgb: 232, 234, 237;  /* #e8eaed */
     --google-grey-200: rgb(var(--google-grey-200-rgb));
     --google-grey-400-rgb: 189, 193, 198;  /* #bdc1c6 */
     --google-grey-400: rgb(var(--google-grey-400-rgb));
-    --google-grey-600-rgb: 128, 134, 139;
+    --google-grey-600-rgb: 128, 134, 139;  /* #80868b */
     --google-grey-600: rgb(var(--google-grey-600-rgb));
-    --google-grey-800-rgb: 60, 64, 67;
+    --google-grey-800-rgb: 60, 64, 67;  /* #3c4043 */
     --google-grey-800: rgb(var(--google-grey-800-rgb));
     --google-grey-900-rgb: 32, 33, 36;  /* #202124 */
     --google-grey-900: rgb(var(--google-grey-900-rgb));
+    /* --google-grey-900 + 4% white blended together. */
+    --google-grey-900-white-4-percent: #292a2d;
 
     --google-red-600-rgb: 217, 48, 37;  /* #d93025 */
     --google-red-600: rgb(var(--google-red-600-rgb));
@@ -51,6 +52,9 @@
     --google-red-refresh-300-rgb: 242, 139, 130;  /* #f28b82 */
     --google-red-refresh-300: rgb(var(--google-red-refresh-300-rgb));
 
+    --google-yellow-refresh-300-rgb: 253, 214, 51;  /* #fdd633 */
+    --google-yellow-refresh-300: rgb(var(--google-yellow-refresh-300-rgb));
+
     --cr-primary-text-color: var(--google-grey-900);
     --cr-secondary-text-color: var(--google-grey-refresh-700);
 
@@ -60,6 +64,8 @@
     --cr-card-shadow: rgba(var(--cr-card-shadow-color-rgb), .3) 0 1px 2px 0,
                       rgba(var(--cr-card-shadow-color-rgb), .15) 0 1px 3px 1px;
 
+    /* TODO(aee): rename --cr-card-shadow  to --cr-card-elevation-box-shadow and
+     * use directly in place of mixin. */
     --cr-card-elevation: {
       box-shadow: var(--cr-card-shadow);
     }
@@ -67,6 +73,7 @@
     --cr-checked-color: var(--google-blue-600);
     --cr-focused-item-color: var(--google-grey-300);
     --cr-form-field-label-color: var(--google-grey-refresh-700);
+    --cr-hairline-rgb: 0, 0, 0;
     --cr-link-color: var(--google-blue-700);
     --cr-menu-background-color: white;
     --cr-menu-background-focus-color: var(--google-grey-200);
@@ -74,44 +81,37 @@
     --cr-separator-color: rgba(0, 0, 0, .06);
     --cr-title-text-color: rgb(90, 90, 90);
     --cr-toggle-color: var(--google-blue-500);
+    --cr-toolbar-background-color: var(--google-blue-700);
   }
 
-  html[dark] {
-    --cr-primary-text-color: var(--google-grey-200);
-    --cr-secondary-text-color: var(--google-grey-refresh-500);
+  @media (prefers-color-scheme: dark) {
+    html {
+      --cr-primary-text-color: var(--google-grey-200);
+      --cr-secondary-text-color: var(--google-grey-refresh-500);
 
-    --cr-card-background-color: var(--google-grey-900);
-    --cr-card-shadow-color-rgb: 0, 0, 0;
+      --cr-card-background-color: var(--google-grey-900-white-4-percent);
+      --cr-card-shadow-color-rgb: 0, 0, 0;
 
-    --cr-card-elevation: {
-      /* This gradient intentionally uses the same from/to colors to add 4%
-       * white on top of an opaque background-color. */
-      background-image: linear-gradient(rgba(255, 255, 255, .04),
-                                        rgba(255, 255, 255, .04));
-      box-shadow: var(--cr-card-shadow);  /* Uses --cr-card-shadow-color-rgb. */
+      --cr-checked-color: var(--google-blue-refresh-300);
+      --cr-form-field-label-color: var(--dark-secondary-color);
+      --cr-hairline-rgb: 255, 255, 255;
+      --cr-link-color: var(--google-blue-refresh-300);
+      --cr-menu-background-color: var(--google-grey-900);
+      --cr-menu-background-focus-color: rgba(var(--google-grey-800-rgb), .6);
+      --cr-menu-background-sheen: rgba(255, 255, 255, .06);  /* Only dark mode. */
+      --cr-menu-shadow: rgba(0, 0, 0, .3) 0 1px 2px 0,
+                        rgba(0, 0, 0, .15) 0 3px 6px 2px;
+      --cr-separator-color: rgba(255, 255, 255, .1);
+      /* TODO(dbeam): --cr-toggle-color (CrOS only). */
+      --cr-title-text-color: var(--cr-primary-text-color);
+      --cr-toolbar-background-color: var(--google-grey-900-white-4-percent);
     }
-
-    --cr-checked-color: var(--google-blue-refresh-300);
-    --cr-form-field-label-color: var(--dark-secondary-color);
-    --cr-link-color: var(--google-blue-refresh-300);
-    --cr-menu-background-color: var(--google-grey-900);
-    --cr-menu-background-focus-color: rgba(var(--google-grey-800-rgb), .6);
-    --cr-menu-background-sheen: rgba(255, 255, 255, .06);  /* Only dark mode. */
-    --cr-menu-shadow: rgba(0, 0, 0, .3) 0 1px 2px 0,
-                      rgba(0, 0, 0, .15) 0 3px 6px 2px;
-    --cr-separator-color: rgba(255, 255, 255, .1);
-    /* TODO(dbeam): --cr-toggle-color (CrOS only). */
-    --cr-title-text-color: var(--cr-primary-text-color);
   }
 
   /* Don't use color values past this point. Instead, create a variable that's
    * set for both light and dark modes and use a single variable below. */
 
   html {
-    --cr-actionable: {
-      cursor: pointer;
-    }
-
     --cr-button-edge-spacing: 12px;
     --cr-button-height: 32px;
 
@@ -136,23 +136,10 @@
 
     --cr-icon-ripple-margin: calc(var(--cr-icon-ripple-padding) * -1);
 
-    /* Common properties for WebUI pages. */
-    --cr-page-host: {
-      color: var(--cr-primary-text-color);
-      line-height: 154%; /* Apply 20px default line-height to all text. */
-      overflow: hidden;  /* Prevent double scroll bar bugs. */
-      user-select: text;
-    }
-
     --cr-paper-icon-button-margin: {
       /* Shift button so ripple overlaps the end of the row. */
       margin-inline-end: var(--cr-icon-ripple-margin);
       margin-inline-start: var(--cr-icon-button-margin-start);
-    }
-
-    --cr-primary-text: {
-      color: var(--cr-primary-text-color);
-      line-height: 154%;  /* 20px. */
     }
 
     --cr-secondary-text: {
@@ -160,7 +147,7 @@
       font-weight: 400;
     }
 
-    /* TODO (scottchen): re-implement with paddings instead; */
+    /* TODO (johntlee): re-implement with paddings instead; */
     /* These are used for row items such as radio buttons, check boxes, list
      * items etc. */
     --cr-section-min-height: 48px;
@@ -181,30 +168,25 @@
       padding: 0 var(--cr-section-padding);
     }
 
-    --cr-centered-card-container-vertical-margin: 21px;
+    --cr-section-vertical-margin: 21px;
 
     --cr-centered-card-max-width: 680px;
+    --cr-centered-card-width-percentage: 0.96;
     --cr-centered-card-container: {
       box-sizing: border-box;
       display: block;
       height: inherit;
       margin: 0 auto;
-      max-width: calc(var(--cr-centered-card-max-width) + 3 * 2px);
+      max-width: var(--cr-centered-card-max-width);
       min-width: 550px;
       position: relative;
-      width: 96%;
+      width: calc(100% * var(--cr-centered-card-width-percentage));
     }
 
     --cr-text-elide: {
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
-    }
-
-    --cr-title-text: {
-      color: var(--cr-title-text-color);
-      font-size: 107.6923%;  /* Go to 14px from 13px. */
-      font-weight: 500;
     }
 
     --cr-tooltip: {
@@ -219,25 +201,18 @@
       background-color: var(--cr-focused-item-color);
       outline: none;
     }
+
+    --cr-hairline: 1px solid rgba(var(--cr-hairline-rgb), .14);
+
     --cr-separator-height: 1px;
     --cr-separator-line: var(--cr-separator-height) solid
         var(--cr-separator-color);
 
     --cr-toolbar-overlay-animation-duration: 150ms;
+    --cr-toolbar-height: 56px;
 
-    --cr-container-shadow: {
-      box-shadow: inset 0 5px 6px -3px rgba(0, 0, 0, .4);
-      height: 6px;
-      left: 0;
-      margin-bottom: -6px;
-      opacity: 0;
-      pointer-events: none;
-      position: relative;
-      right: 0;
-      top: 0px;
-      transition: opacity 500ms;
-      z-index: 1;
-    }
+    --cr-container-shadow-height: 6px;
+    --cr-container-shadow-margin: calc(-1 * var(--cr-container-shadow-height));
 
     --cr-container-shadow-max-opacity: 1;
 
@@ -248,15 +223,6 @@
     --cr-form-field-label-font-size: .625rem;
     --cr-form-field-label-height: 1em;
     --cr-form-field-label-line-height: 1em;
-    --cr-form-field-label: {
-      color: var(--cr-form-field-label-color);
-      display: block;
-      font-size: var(--cr-form-field-label-font-size);
-      font-weight: 500;
-      letter-spacing: .4px;
-      line-height: var(--cr-form-field-label-line-height);
-      margin-bottom: 8px;
-    }
   }
 </style>
 </custom-style>

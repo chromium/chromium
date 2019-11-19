@@ -13,6 +13,7 @@
 #include "base/memory/singleton.h"
 #include "base/memory/writable_shared_memory_region.h"
 #include "content/common/histogram_fetcher.mojom.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace content {
 
@@ -80,12 +81,13 @@ class HistogramController {
 
   template <class T>
   using ChildHistogramFetcherMap =
-      std::map<T*, content::mojom::ChildHistogramFetcherPtr>;
+      std::map<T*, mojo::Remote<content::mojom::ChildHistogramFetcher>>;
 
   template <class T>
   void InsertChildHistogramFetcherInterface(
       T* host,
-      content::mojom::ChildHistogramFetcherPtr child_histogram_fetcher);
+      mojo::Remote<content::mojom::ChildHistogramFetcher>
+          child_histogram_fetcher);
 
   template <class T>
   content::mojom::ChildHistogramFetcher* GetChildHistogramFetcherInterface(

@@ -5,15 +5,15 @@
         {
             "name": "rare_non_inherited_properties_rule",
             "cumulative_distribution": [
-                0.134,
-                0.327,
+                0.11925287356321838,
+                0.23275862068965517,
                 1.0
             ]
         },
         {
             "name": "rare_inherited_properties_rule",
             "cumulative_distribution": [
-                0.4,
+                0.5718390804597702,
                 1.0
             ]
         }

@@ -18,25 +18,25 @@ namespace device {
 // Implementation of PlatformSensor interface for Windows platform. Instance
 // of PlatformSensorWin is bound to IPC thread where PlatformSensorProvider is
 // running and communication with Windows platform sensor is done through
-// PlatformSensorReaderWin |sensor_reader_| interface which is bound to sensor
-// thread and communicates with PlatformSensorWin using
-// PlatformSensorReaderWin::Client interface. The error and data change events
-// are forwarded to IPC task runner.
+// PlatformSensorReaderWinBase |sensor_reader_| interface which is bound to
+// sensor thread and communicates with PlatformSensorWin using
+// PlatformSensorReaderWinBase::Client interface. The error and data change
+// events are forwarded to IPC task runner.
 class PlatformSensorWin final : public PlatformSensor,
-                                public PlatformSensorReaderWin::Client {
+                                public PlatformSensorReaderWinBase::Client {
  public:
   PlatformSensorWin(
       mojom::SensorType type,
       SensorReadingSharedBuffer* reading_buffer,
       PlatformSensorProvider* provider,
       scoped_refptr<base::SingleThreadTaskRunner> sensor_thread_runner,
-      std::unique_ptr<PlatformSensorReaderWin> sensor_reader);
+      std::unique_ptr<PlatformSensorReaderWinBase> sensor_reader);
 
   PlatformSensorConfiguration GetDefaultConfiguration() override;
   mojom::ReportingMode GetReportingMode() override;
   double GetMaximumSupportedFrequency() override;
 
-  // PlatformSensorReaderWin::Client interface implementation.
+  // PlatformSensorReaderWinBase::Client interface implementation.
   void OnReadingUpdated(const SensorReading& reading) override;
   void OnSensorError() override;
 
@@ -51,8 +51,8 @@ class PlatformSensorWin final : public PlatformSensor,
 
  private:
   scoped_refptr<base::SingleThreadTaskRunner> sensor_thread_runner_;
-  PlatformSensorReaderWin* const sensor_reader_;
-  base::WeakPtrFactory<PlatformSensorWin> weak_factory_;
+  PlatformSensorReaderWinBase* const sensor_reader_;
+  base::WeakPtrFactory<PlatformSensorWin> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PlatformSensorWin);
 };

@@ -25,7 +25,32 @@ class PrefRegistrySyncable;
 
 #if defined(OS_CHROMEOS)
 enum class Slot { kUser, kSystem };
-#endif
+enum class CertificateSource { kBuiltIn, kImported };
+
+// Enumeration of certificate management permissions which corresponds to
+// values of policy ClientCertificateManagementAllowed.
+// Underlying type is int because values are casting to/from prefs values.
+enum class ClientCertificateManagementPermission : int {
+  // Allow users to manage all certificates
+  kAll = 0,
+  // Allow users to manage user certificates
+  kUserOnly = 1,
+  // Disallow users from managing certificates
+  kNone = 2
+};
+
+// Enumeration of certificate management permissions which corresponds to
+// values of policy CACertificateManagementAllowed.
+// Underlying type is int because values are casting to/from prefs values.
+enum class CACertificateManagementPermission : int {
+  // Allow users to manage all certificates
+  kAll = 0,
+  // Allow users to manage user certificates
+  kUserOnly = 1,
+  // Disallow users from managing certificates
+  kNone = 2
+};
+#endif  // defined(OS_CHROMEOS)
 
 namespace certificate_manager {
 
@@ -178,15 +203,21 @@ class CertificatesHandler : public content::WebUIMessageHandler,
 
 #if defined(OS_CHROMEOS)
   // Returns true if the user may manage certificates on |slot| according
-  // CertificateManagementAllowed to policy.
-  bool IsCertificateManagementAllowedPolicy(Slot slot) const;
-#endif
+  // to ClientCertificateManagementAllowed policy.
+  bool IsClientCertificateManagementAllowedPolicy(Slot slot) const;
 
-  // Returns true if the certificate represented by |cert_info| is read-only
-  // (i.e. can not be deleted). Evaluates the certificate attributes and, on
-  // Chrome OS devices, the enterprise policy CertificateManagementAllowed.
-  bool IsCertificateReadOnly(
-      const CertificateManagerModel::CertInfo* cert_info);
+  // Returns true if the user may manage certificates according
+  // to CACertificateManagementAllowed policy.
+  bool IsCACertificateManagementAllowedPolicy(CertificateSource source) const;
+#endif  // defined(OS_CHROMEOS)
+
+  // Returns true if the certificate represented by |cert_info| can be deleted.
+  bool CanDeleteCertificate(
+      const CertificateManagerModel::CertInfo* cert_info) const;
+
+  // Returns true if the certificate represented by |cert_info| can be edited.
+  bool CanEditCertificate(
+      const CertificateManagerModel::CertInfo* cert_info) const;
 
   // The Certificates Manager model
   bool requested_certificate_manager_model_;
@@ -213,9 +244,10 @@ class CertificatesHandler : public content::WebUIMessageHandler,
   base::IDMap<std::unique_ptr<CertificateManagerModel::CertInfo>>
       cert_info_id_map_;
 
-  base::WeakPtrFactory<CertificatesHandler> weak_ptr_factory_;
+  base::WeakPtrFactory<CertificatesHandler> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(CertificatesHandler);
+  friend class ::CertificateHandlerTest;
 };
 
 }  // namespace certificate_manager

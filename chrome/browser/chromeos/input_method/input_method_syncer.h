@@ -15,11 +15,11 @@
 
 namespace sync_preferences {
 class PrefServiceSyncable;
-}
+}  // namespace sync_preferences
 
 namespace user_prefs {
 class PrefRegistrySyncable;
-}
+}  // namespace user_prefs
 
 namespace chromeos {
 namespace input_method {
@@ -85,7 +85,7 @@ class InputMethodSyncer : public sync_preferences::PrefServiceSyncableObserver {
   // Used to ignore PrefChanged events while InputMethodManager is merging.
   bool merging_;
 
-  base::WeakPtrFactory<InputMethodSyncer> weak_factory_;
+  base::WeakPtrFactory<InputMethodSyncer> weak_factory_{this};
 };
 
 }  // namespace input_method

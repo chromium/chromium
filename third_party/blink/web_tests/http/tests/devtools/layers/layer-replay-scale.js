@@ -7,7 +7,7 @@
       `Tests that when layer snapshots are replayed with scaling applied the image dimensions are properly scaled.\n`);
   await TestRunner.loadModule('layers_test_runner');
   await TestRunner.loadHTML(`
-      <div id="a" style="background-color:blue; transform: translateZ(0px); overflow: hidden;">
+      <div id="a" style="background-color:blue; will-change: transform; overflow: hidden;">
 
           <div style="width:50px; height:50px; background-color:red;"></div>
           <img src="../tracing/resources/test.png">

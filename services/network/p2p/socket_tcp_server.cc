@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/bind_helpers.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/address_list.h"
 #include "net/base/net_errors.h"
 #include "net/log/net_log_source.h"
@@ -22,10 +23,11 @@ const int kListenBacklog = 5;
 
 namespace network {
 
-P2PSocketTcpServer::P2PSocketTcpServer(Delegate* delegate,
-                                       mojom::P2PSocketClientPtr client,
-                                       mojom::P2PSocketRequest socket,
-                                       P2PSocketType client_type)
+P2PSocketTcpServer::P2PSocketTcpServer(
+    Delegate* delegate,
+    mojo::PendingRemote<mojom::P2PSocketClient> client,
+    mojo::PendingReceiver<mojom::P2PSocket> socket,
+    P2PSocketType client_type)
     : P2PSocket(delegate, std::move(client), std::move(socket), P2PSocket::TCP),
       client_type_(client_type),
       socket_(new net::TCPServerSocket(nullptr, net::NetLogSource())),
@@ -86,23 +88,22 @@ void P2PSocketTcpServer::HandleAcceptResult(int result) {
     return;
   }
 
-  mojom::P2PSocketPtr socket_ptr;
-  auto socket_request = mojo::MakeRequest(&socket_ptr);
+  mojo::PendingRemote<mojom::P2PSocket> socket_pending_remote;
+  auto socket_receiver = socket_pending_remote.InitWithNewPipeAndPassReceiver();
 
-  mojom::P2PSocketClientPtr client;
-  auto client_request = mojo::MakeRequest(&client);
-
-  client_->IncomingTcpConnection(remote_address, std::move(socket_ptr),
-                                 std::move(client_request));
+  mojo::PendingRemote<mojom::P2PSocketClient> client;
+  client_->IncomingTcpConnection(remote_address,
+                                 std::move(socket_pending_remote),
+                                 client.InitWithNewPipeAndPassReceiver());
 
   std::unique_ptr<P2PSocketTcpBase> p2p_socket;
   if (client_type_ == P2P_SOCKET_TCP_CLIENT) {
     p2p_socket = std::make_unique<P2PSocketTcp>(delegate_, std::move(client),
-                                                std::move(socket_request),
+                                                std::move(socket_receiver),
                                                 client_type_, nullptr);
   } else {
     p2p_socket = std::make_unique<P2PSocketStunTcp>(
-        delegate_, std::move(client), std::move(socket_request), client_type_,
+        delegate_, std::move(client), std::move(socket_receiver), client_type_,
         nullptr);
   }
 

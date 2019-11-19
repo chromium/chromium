@@ -16,6 +16,9 @@ class AutocompleteProviderListener {
   // NOTE: Providers MUST only call this method while processing asynchronous
   // queries.  Do not call this for a synchronous query.
   //
+  // NOTE: If a provider has finished, it should set done() to true BEFORE
+  // calling this method.
+  //
   // NOTE: There's no parameter to tell the listener _which_ provider is
   // calling it.  Because the AutocompleteController (the typical listener)
   // doesn't cache the providers' individual matches locally, it has to get

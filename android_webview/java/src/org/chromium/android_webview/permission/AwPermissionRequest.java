@@ -10,6 +10,7 @@ import org.chromium.android_webview.CleanupReference;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 
 /**
  * This class wraps permission request in Chromium side, and can only be created
@@ -42,7 +43,7 @@ public class AwPermissionRequest {
         }
         @Override
         public void run() {
-            nativeDestroy(mNativeAwPermissionRequest);
+            AwPermissionRequestJni.get().destroy(mNativeAwPermissionRequest);
         }
     }
 
@@ -74,7 +75,8 @@ public class AwPermissionRequest {
     public void grant() {
         validate();
         if (mNativeAwPermissionRequest != 0) {
-            nativeOnAccept(mNativeAwPermissionRequest, true);
+            AwPermissionRequestJni.get().onAccept(
+                    mNativeAwPermissionRequest, AwPermissionRequest.this, true);
             destroyNative();
         }
         mProcessed = true;
@@ -83,7 +85,8 @@ public class AwPermissionRequest {
     public void deny() {
         validate();
         if (mNativeAwPermissionRequest != 0) {
-            nativeOnAccept(mNativeAwPermissionRequest, false);
+            AwPermissionRequestJni.get().onAccept(
+                    mNativeAwPermissionRequest, AwPermissionRequest.this, false);
             destroyNative();
         }
         mProcessed = true;
@@ -97,14 +100,19 @@ public class AwPermissionRequest {
     }
 
     private void validate() {
-        if (!ThreadUtils.runningOnUiThread())
+        if (!ThreadUtils.runningOnUiThread()) {
             throw new IllegalStateException(
                     "Either grant() or deny() should be called on UI thread");
+        }
 
-        if (mProcessed)
+        if (mProcessed) {
             throw new IllegalStateException("Either grant() or deny() has been already called.");
+        }
     }
 
-    private native void nativeOnAccept(long nativeAwPermissionRequest, boolean allowed);
-    private static native void nativeDestroy(long nativeAwPermissionRequest);
+    @NativeMethods
+    interface Natives {
+        void onAccept(long nativeAwPermissionRequest, AwPermissionRequest caller, boolean allowed);
+        void destroy(long nativeAwPermissionRequest);
+    }
 }

@@ -10,6 +10,8 @@ compressed .dl_) or .exe is expected at a path like:
   foo.dll/FINGERPRINT/foo.dll
 """
 
+from __future__ import print_function
+
 import sys
 import pefile
 
@@ -23,10 +25,10 @@ def GetImgFingerprint(filename):
 
 def main():
   if len(sys.argv) != 2:
-    print "usage: file.dll"
+    print("usage: file.dll")
     return 1
 
-  print GetImgFingerprint(sys.argv[1])
+  print(GetImgFingerprint(sys.argv[1]))
   return 0
 
 

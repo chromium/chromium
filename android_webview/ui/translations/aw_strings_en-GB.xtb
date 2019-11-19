@@ -4,6 +4,5 @@
 <translation id="6106989379647458772">The web page at <ph name="PAGE" /> might be temporarily down or it may have moved permanently to a new web address.</translation>
 <translation id="6312113039770857350">Web page not available</translation>
 <translation id="8681531050781943054">The web page at <ph name="PAGE" /> could not be loaded because:</translation>
-<translation id="8882178685025065378">Oops! You need to ask your parent if it's OK to visit <ph name="PAGE" />.</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Suggestions:<ph name="MARKUP_2" />Make sure that you have a data connection<ph name="MARKUP_3" />Reload this web page later<ph name="MARKUP_4" />Check the address that you entered<ph name="MARKUP_5" /></translation>
 </translationbundle>

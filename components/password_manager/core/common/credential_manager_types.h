@@ -82,11 +82,6 @@ std::unique_ptr<autofill::PasswordForm> CreatePasswordFormFromCredentialInfo(
     const CredentialInfo& info,
     const GURL& origin);
 
-// Create a new autofill::PasswordForm object based on |origin|. The result
-// plays the role of an observed form on that page.
-std::unique_ptr<autofill::PasswordForm> CreateObservedPasswordFormFromOrigin(
-    const GURL& origin);
-
 }  // namespace password_manager
 
 #endif  // COMPONENTS_PASSWORD_MANAGER_CORE_COMMON_CREDENTIAL_MANAGER_TYPES_H_

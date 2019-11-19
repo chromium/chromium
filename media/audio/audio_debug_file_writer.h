@@ -63,8 +63,9 @@ class MEDIA_EXPORT AudioDebugFileWriter {
 
   // The task runner to do file output operations on.
   const scoped_refptr<base::SequencedTaskRunner> file_task_runner_ =
-      base::CreateSequencedTaskRunnerWithTraits(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+      base::CreateSequencedTaskRunner(
+          {base::ThreadPool(), base::MayBlock(),
+           base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
 
   AudioFileWriterUniquePtr file_writer_;

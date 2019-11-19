@@ -9,13 +9,13 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/metrics/user_metrics.h"
+#include "chrome/android/chrome_jni_headers/InstantAppsInfoBarDelegate_jni.h"
 #include "chrome/browser/android/instantapps/instant_apps_settings.h"
 #include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/ui/android/infobars/instant_apps_infobar.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
-#include "jni/InstantAppsInfoBarDelegate_jni.h"
 #include "ui/base/page_transition_types.h"
 
 namespace {

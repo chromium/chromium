@@ -1,8 +1,11 @@
 include_rules = [
+  "+chrome/app/chrome_command_ids.h",
   "+chrome/app/chrome_crash_reporter_client.h",
   "+chrome/browser/ui/cocoa",
+  "+chrome/grit/generated_resources.h",
   "+chrome/installer/launcher_support",
   "+components/crash/content/app",
+  "+components/remote_cocoa",
   "+content/public/browser",
   "+mojo/core/embedder",
 ]

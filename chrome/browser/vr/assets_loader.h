@@ -96,7 +96,7 @@ class VR_BASE_EXPORT AssetsLoader {
   std::unique_ptr<MetricsHelper> metrics_helper_;
   OnComponentReadyCallback on_component_ready_callback_;
 
-  base::WeakPtrFactory<AssetsLoader> weak_ptr_factory_;
+  base::WeakPtrFactory<AssetsLoader> weak_ptr_factory_{this};
 
   friend struct AssetsLoaderSingletonTrait;
 };

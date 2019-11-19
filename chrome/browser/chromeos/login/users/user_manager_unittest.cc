@@ -33,7 +33,7 @@
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/common/content_switches.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
@@ -44,12 +44,11 @@ class UnittestProfileManager : public ::ProfileManagerWithoutInit {
       : ::ProfileManagerWithoutInit(user_data_dir) {}
 
  protected:
-  Profile* CreateProfileHelper(const base::FilePath& file_path) override {
-    if (!base::PathExists(file_path)) {
-      if (!base::CreateDirectory(file_path))
-        return NULL;
-    }
-    return new TestingProfile(file_path, NULL);
+  std::unique_ptr<Profile> CreateProfileHelper(
+      const base::FilePath& path) override {
+    if (!base::PathExists(path) && !base::CreateDirectory(path))
+      return nullptr;
+    return std::make_unique<TestingProfile>(path);
   }
 };
 
@@ -83,8 +82,7 @@ class UserManagerTest : public testing::Test {
 
     wallpaper_controller_client_ =
         std::make_unique<WallpaperControllerClient>();
-    wallpaper_controller_client_->InitForTesting(
-        test_wallpaper_controller_.CreateInterfacePtr());
+    wallpaper_controller_client_->InitForTesting(&test_wallpaper_controller_);
   }
 
   void TearDown() override {
@@ -159,7 +157,7 @@ class UserManagerTest : public testing::Test {
   std::unique_ptr<WallpaperControllerClient> wallpaper_controller_client_;
   TestWallpaperController test_wallpaper_controller_;
 
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
 
   ScopedCrosSettingsTestHelper settings_helper_;
   std::unique_ptr<ScopedTestingLocalState> local_state_;
@@ -218,7 +216,6 @@ TEST_F(UserManagerTest, RemoveAllExceptOwnerFromList) {
   EXPECT_EQ(1U, users->size());
   EXPECT_EQ((*users)[0]->GetAccountId(), owner_account_id_at_invalid_domain_);
   // Verify that the wallpaper is removed when user is removed.
-  wallpaper_controller_client_->FlushForTesting();
   EXPECT_EQ(2, test_wallpaper_controller_.remove_user_wallpaper_count());
 }
 

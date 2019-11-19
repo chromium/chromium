@@ -8,6 +8,8 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/optional.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -55,17 +57,14 @@ class ExtensionInstallDialogView : public views::BubbleDialogDelegateView,
   gfx::Size CalculatePreferredSize() const override;
   void VisibilityChanged(views::View* starting_from, bool is_visible) override;
   void AddedToWidget() override;
-  views::View* CreateExtraView() override;
   bool Cancel() override;
   bool Accept() override;
   int GetDialogButtons() const override;
-  int GetDefaultDialogButton() const override;
-  base::string16 GetDialogButtonLabel(ui::DialogButton button) const override;
   bool IsDialogButtonEnabled(ui::DialogButton button) const override;
   bool ShouldShowCloseButton() const override;
 
   // views::WidgetDelegate:
-  ax::mojom::Role GetAccessibleWindowRole() const override;
+  ax::mojom::Role GetAccessibleWindowRole() override;
   base::string16 GetAccessibleWindowTitle() const override;
   ui::ModalType GetModalType() const override;
 
@@ -100,8 +99,12 @@ class ExtensionInstallDialogView : public views::BubbleDialogDelegateView,
   // has been run.
   bool handled_result_;
 
+  // Used to record time between dialog creation and acceptance, cancellation,
+  // or dismissal.
+  base::Optional<base::ElapsedTimer> install_result_timer_;
+
   // Used to delay the activation of the install button.
-  base::OneShotTimer timer_;
+  base::OneShotTimer enable_install_timer_;
 
   // Used to determine whether the install button should be enabled.
   bool install_button_enabled_;

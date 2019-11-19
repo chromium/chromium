@@ -14,10 +14,13 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/media_keys_listener_manager.h"
 #include "extensions/browser/event_router.h"
-#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/notification_types.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/manifest_constants.h"
+
+#if defined(OS_CHROMEOS)
+#include "chrome/browser/ui/ash/media_client_impl.h"
+#endif
 
 namespace {
 
@@ -34,7 +37,6 @@ ExtensionKeybindingRegistry::ExtensionKeybindingRegistry(
     : browser_context_(context),
       extension_filter_(extension_filter),
       delegate_(delegate),
-      extension_registry_observer_(this),
       shortcut_handling_suspended_(false) {
   extension_registry_observer_.Add(ExtensionRegistry::Get(browser_context_));
 
@@ -95,14 +97,20 @@ void ExtensionKeybindingRegistry::RemoveExtensionKeybinding(
 
   // If we're no longer listening to any media keys, tell the browser that
   // it can start handling media keys.
-  if (any_media_keys_removed &&
-      content::MediaKeysListenerManager::IsMediaKeysListenerManagerEnabled() &&
-      !IsListeningToAnyMediaKeys()) {
-    content::MediaKeysListenerManager* media_keys_listener_manager =
-        content::MediaKeysListenerManager::GetInstance();
-    DCHECK(media_keys_listener_manager);
+  if (any_media_keys_removed && !IsListeningToAnyMediaKeys()) {
+    if (content::MediaKeysListenerManager::
+            IsMediaKeysListenerManagerEnabled()) {
+      content::MediaKeysListenerManager* media_keys_listener_manager =
+          content::MediaKeysListenerManager::GetInstance();
+      DCHECK(media_keys_listener_manager);
 
-    media_keys_listener_manager->EnableInternalMediaKeyHandling();
+      media_keys_listener_manager->EnableInternalMediaKeyHandling();
+    } else {
+#if defined(OS_CHROMEOS)
+      MediaClientImpl::Get()->DisableCustomMediaKeyHandler(browser_context_,
+                                                           this);
+#endif
+    }
   }
 }
 
@@ -184,6 +192,11 @@ void ExtensionKeybindingRegistry::AddEventTarget(
       DCHECK(media_keys_listener_manager);
 
       media_keys_listener_manager->DisableInternalMediaKeyHandling();
+    } else {
+#if defined(OS_CHROMEOS)
+      MediaClientImpl::Get()->EnableCustomMediaKeyHandler(browser_context_,
+                                                          this);
+#endif
     }
   }
 }

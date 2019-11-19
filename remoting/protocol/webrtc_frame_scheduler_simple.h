@@ -98,7 +98,7 @@ class WebrtcFrameSchedulerSimple : public VideoChannelStateObserver,
   const std::unique_ptr<BandwidthEstimator> bandwidth_estimator_;
 
   base::ThreadChecker thread_checker_;
-  base::WeakPtrFactory<WebrtcFrameSchedulerSimple> weak_factory_;
+  base::WeakPtrFactory<WebrtcFrameSchedulerSimple> weak_factory_{this};
 };
 
 }  // namespace protocol

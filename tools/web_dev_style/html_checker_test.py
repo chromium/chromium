@@ -11,20 +11,16 @@ import test_util
 import unittest
 
 _HERE = os_path.dirname(os_path.abspath(__file__))
-sys_path.append(os_path.join(_HERE, '..', '..', 'build'))
+sys_path.append(os_path.join(_HERE, '..', '..'))
 
-import find_depot_tools  # pylint: disable=W0611
-from testing_support.super_mox import SuperMoxTestBase
+from PRESUBMIT_test_mocks import MockInputApi, MockOutputApi
 
 
-class HtmlCheckerTest(SuperMoxTestBase):
+class HtmlCheckerTest(unittest.TestCase):
   def setUp(self):
-    SuperMoxTestBase.setUp(self)
+    super(HtmlCheckerTest, self).setUp()
 
-    input_api = self.mox.CreateMockAnything()
-    input_api.re = re
-    output_api = self.mox.CreateMockAnything()
-    self.checker = html_checker.HtmlChecker(input_api, output_api)
+    self.checker = html_checker.HtmlChecker(MockInputApi(), MockOutputApi())
 
   def ShouldFailCheck(self, line, checker):
     """Checks that the |checker| flags |line| as a style error."""
@@ -115,6 +111,7 @@ class HtmlCheckerTest(SuperMoxTestBase):
     lines = [
       "br",
       "br>",
+      "<browser-switch-app></browser-switch-app>",
       "give me a break"
     ]
     for line in lines:

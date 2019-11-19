@@ -1,13 +1,14 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
+<link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_link_row/cr_link_row.html">
 <link rel="import" href="chrome://resources/cr_elements/icons.html">
 <link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
 <link rel="import" href="chrome://resources/html/assert.html">
 <link rel="import" href="chrome://resources/html/cr/ui/focus_without_ink.html">
 <link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-icon-button/paper-icon-button-light.html">
-<link rel="import" href="drive_cache_dialog.html">
+<link rel="import" href="storage_external.html">
 <link rel="import" href="../prefs/prefs.html">
 <link rel="import" href="../route.html">
 <link rel="import" href="../settings_shared_css.html">
@@ -177,8 +178,11 @@
     <div class="settings-box first">
       <div id="barArea">
         <progress id="bar" class$="[[getBarClass_(sizeStat_.spaceState)]]"
-            value="[[sizeStat_.usedRatio]]"></progress>
-        <div id="barLabels">
+            value="[[sizeStat_.usedRatio]]"
+            aria-label="$i18n{storageOverviewAriaLabel}"
+            aria-describedby="barLabels">
+        </progress>
+        <div id="barLabels" aria-hidden="true">
           <div id="inUseLabelArea" class="bar-label">
             <div class="vertical-line"></div>
             <div class="wrapper"><span>$i18n{storageItemInUse}</span></div>
@@ -196,92 +200,35 @@
         </div>
       </div>
     </div>
-    <div class="settings-box two-line" on-click="onDownloadsTap_" actionable>
-      <div class="start">
-        $i18n{storageItemDownloads}
-        <div id="downloadsSize" class="secondary">
-          $i18n{storageSizeComputing}
-        </div>
-      </div>
-      <paper-icon-button-light class="icon-external">
-        <button aria-label="$i18n{storageItemDownloads}"
-            aria-describedby="downloadsSize"></button>
-      </paper-icon-button-light>
-    </div>
-    <template is="dom-if" if="[[driveEnabled_]]">
-      <div class="settings-box two-line" on-click="onDriveCacheTap_"
-          actionable$="[[hasDriveCache_]]" >
-        <div class="start">
-          $i18n{storageItemDriveCache}
-          <div id="driveCacheSize" class="secondary">
-            $i18n{storageSizeComputing}
-          </div>
-        </div>
-        <paper-icon-button-light class="icon-delete-gray">
-          <button id="deleteButton" aria-label="$i18n{storageItemDriveCache}"
-              aria-describedby="driveSizeCache">
-          </button>
-        </paper-icon-button-light>
-      </div>
-    </template>
-    <div class="settings-box two-line" on-click="onBrowsingDataTap_" actionable>
-      <div class="start">
-        $i18n{storageItemBrowsingData}
-        <div id="browsingDataSize" class="secondary">
-          $i18n{storageSizeComputing}
-        </div>
-      </div>
-      <paper-icon-button-light class="subpage-arrow">
-        <button aria-label="$i18n{storageItemBrowsingData}"
-            aria-describedby="browsingDataSize"></button>
-      </paper-icon-button-light>
-    </div>
-    <template is="dom-if" if="[[androidEnabled_]]">
-      <div class="settings-box two-line" on-click="onAndroidTap_" actionable>
-        <div class="start">
-          $i18n{storageItemAndroid}
-          <div id="androidSize" class="secondary">
-            $i18n{storageSizeComputing}
-          </div>
-        </div>
-        <paper-icon-button-light class="icon-external">
-          <button aria-label="$i18n{storageItemAndroid}"
-              aria-describedby="androidSize"></button>
-        </paper-icon-button-light>
-      </div>
+    <cr-link-row id="downloadsSize" class="hr" on-click="onDownloadsTap_"
+        label="$i18n{storageItemDownloads}"
+        sub-label="$i18n{storageSizeComputing}" external></cr-link-row>
+    <cr-link-row id="browsingDataSize" class="hr" on-click="onBrowsingDataTap_"
+        label="$i18n{storageItemBrowsingData}"
+        sub-label="$i18n{storageSizeComputing}" external></cr-link-row>
+    <template is="dom-if" if="[[androidRunning_]]">
+      <cr-link-row id="androidSize" class="hr" on-click="onAndroidTap_"
+          label="$i18n{storageItemAndroid}"
+          sub-label="$i18n{storageSizeComputing}" external></cr-link-row>
     </template>
     <template is="dom-if" if="[[showCrostiniStorage_]]">
-      <div class="settings-box two-line" on-click="onCrostiniTap_" actionable>
-        <div class="start">
-          $i18n{storageItemCrostini}
-          <div id="crostiniSize" class="secondary">
-            $i18n{storageSizeComputing}
-          </div>
-        </div>
-        <paper-icon-button-light class="subpage-arrow">
-          <button aria-label="$i18n{storageItemCrostini}"
-              aria-describedby="crostiniSize"></button>
-        </paper-icon-button-light>
-      </div>
+      <cr-link-row id="crostiniSize" class="hr" on-click="onCrostiniTap_"
+          label="$i18n{storageItemCrostini}"
+          sub-label="$i18n{storageSizeComputing}"
+          role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
     </template>
     <template is="dom-if" if="[[!isGuest_]]">
-      <div class="settings-box two-line" on-click="onOtherUsersTap_" actionable>
-        <div class="start">
-          $i18n{storageItemOtherUsers}
-          <div id="otherUsersSize" class="secondary">
-            $i18n{storageSizeComputing}
-          </div>
-        </div>
-        <paper-icon-button-light class="subpage-arrow">
-          <button aria-label="$i18n{storageItemOtherUsers}"
-              aria-describedby="otherUsersSize"></button>
-        </paper-icon-button-light>
-      </div>
+      <cr-link-row id="otherUsersSize" class="hr" on-click="onOtherUsersTap_"
+          label="$i18n{storageItemOtherUsers}"
+          sub-label="$i18n{storageSizeComputing}"
+          role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
     </template>
-
-    <settings-drive-cache-dialog id="storageDriveCache"
-        on-close="onCloseDriveCacheDialog_">
-    </settings-drive-cache-dialog>
+    <template is="dom-if" if="[[androidEnabled]]">
+      <cr-link-row id="externalStoragePreferences" class="hr"
+          on-click="onExternalStoragePreferencesTap_"
+          label="$i18n{storageExternal}"
+          role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
+    </template>
   </template>
   <script src="storage.js"></script>
 </dom-module>

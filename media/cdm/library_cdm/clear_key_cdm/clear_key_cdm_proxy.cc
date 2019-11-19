@@ -31,7 +31,7 @@ class IgnoreResponsePromise : public SimpleCdmPromise {
 
 }  // namespace
 
-ClearKeyCdmProxy::ClearKeyCdmProxy() : weak_factory_(this) {}
+ClearKeyCdmProxy::ClearKeyCdmProxy() {}
 
 ClearKeyCdmProxy::~ClearKeyCdmProxy() {}
 

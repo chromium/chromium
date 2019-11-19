@@ -1,4 +1,10 @@
 kbr@chromium.org
-piman@chromium.org
+zmo@chromium.org
+
+# For security review.
+per-file browser_exposed_gpu_interfaces.cc=set noparent
+per-file browser_exposed_gpu_interfaces.cc=file://ipc/SECURITY_OWNERS
+per-file gpu_child_thread_receiver_bindings.cc=set noparent
+per-file gpu_child_thread_receiver_bindings.cc=file://ipc/SECURITY_OWNERS
 
 # COMPONENT: Internals>GPU>Internals

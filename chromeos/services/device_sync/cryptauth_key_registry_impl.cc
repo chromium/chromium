@@ -6,6 +6,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
+#include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/services/device_sync/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -33,6 +34,8 @@ void CryptAuthKeyRegistryImpl::Factory::SetFactoryForTesting(
   test_factory_ = test_factory;
 }
 
+CryptAuthKeyRegistryImpl::Factory::~Factory() = default;
+
 std::unique_ptr<CryptAuthKeyRegistry>
 CryptAuthKeyRegistryImpl::Factory::BuildInstance(PrefService* pref_service) {
   return base::WrapUnique(new CryptAuthKeyRegistryImpl(pref_service));
@@ -47,18 +50,23 @@ CryptAuthKeyRegistryImpl::CryptAuthKeyRegistryImpl(PrefService* pref_service)
     : CryptAuthKeyRegistry(), pref_service_(pref_service) {
   const base::DictionaryValue* dict =
       pref_service_->GetDictionary(prefs::kCryptAuthKeyRegistry);
-  DCHECK(dict);
 
   for (const CryptAuthKeyBundle::Name& name : CryptAuthKeyBundle::AllNames()) {
-    const base::Value* bundle_dict =
-        dict->FindKey(CryptAuthKeyBundle::KeyBundleNameEnumToString(name));
+    std::string name_string =
+        CryptAuthKeyBundle::KeyBundleNameEnumToString(name);
+    const base::Value* bundle_dict = dict->FindKey(name_string);
     if (!bundle_dict)
       continue;
 
     base::Optional<CryptAuthKeyBundle> bundle =
         CryptAuthKeyBundle::FromDictionary(*bundle_dict);
-    DCHECK(bundle);
-    enrolled_key_bundles_.insert_or_assign(name, *bundle);
+    if (!bundle) {
+      PA_LOG(ERROR) << "Error retrieving key bundle " << name_string
+                    << " from CryptAuthKeyRegistry pref.";
+      continue;
+    }
+
+    key_bundles_.insert_or_assign(name, *bundle);
   }
 }
 
@@ -70,7 +78,7 @@ void CryptAuthKeyRegistryImpl::OnKeyRegistryUpdated() {
 
 base::Value CryptAuthKeyRegistryImpl::AsDictionary() const {
   base::Value dict(base::Value::Type::DICTIONARY);
-  for (const auto& name_bundle_pair : enrolled_key_bundles_) {
+  for (const auto& name_bundle_pair : key_bundles_) {
     dict.SetKey(
         CryptAuthKeyBundle::KeyBundleNameEnumToString(name_bundle_pair.first),
         name_bundle_pair.second.AsDictionary());

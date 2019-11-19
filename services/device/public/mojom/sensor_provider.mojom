@@ -8,10 +8,10 @@ import "services/device/public/mojom/sensor.mojom";
 
 struct SensorInitParams {
   // The Sensor interface.
-  Sensor sensor;
+  pending_remote<Sensor> sensor;
 
   // The SensorClient interface used to report sensor events.
-  SensorClient& client_request;
+  pending_receiver<SensorClient> client_receiver;
 
   // The shared memory handle used to fetch the sensor reading.
   handle<shared_buffer> memory;

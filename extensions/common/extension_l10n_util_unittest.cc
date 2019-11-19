@@ -19,7 +19,10 @@
 #include "extensions/common/message_bundle.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/zlib/google/compression_utils.h"
 #include "ui/base/l10n/l10n_util.h"
+
+using extension_l10n_util::GzippedMessagesPermission;
 
 namespace extensions {
 
@@ -132,8 +135,9 @@ TEST(ExtensionL10nUtil, LoadMessageCatalogsValidFallback) {
 
   std::string error;
   std::unique_ptr<MessageBundle> bundle(
-      extension_l10n_util::LoadMessageCatalogs(install_dir, "sr", &error));
-  ASSERT_FALSE(NULL == bundle.get());
+      extension_l10n_util::LoadMessageCatalogs(
+          install_dir, "sr", GzippedMessagesPermission::kDisallow, &error));
+  ASSERT_TRUE(bundle);
   EXPECT_TRUE(error.empty());
   EXPECT_EQ("Color", bundle->GetL10nMessage("color"));
   EXPECT_EQ("Not in the US or GB.", bundle->GetL10nMessage("not_in_US_or_GB"));
@@ -150,8 +154,8 @@ TEST(ExtensionL10nUtil, LoadMessageCatalogsMissingFiles) {
   ASSERT_TRUE(base::CreateDirectory(src_path.AppendASCII("sr")));
 
   std::string error;
-  EXPECT_TRUE(NULL ==
-              extension_l10n_util::LoadMessageCatalogs(src_path, "en", &error));
+  EXPECT_FALSE(extension_l10n_util::LoadMessageCatalogs(
+      src_path, "en", GzippedMessagesPermission::kDisallow, &error));
   EXPECT_FALSE(error.empty());
 }
 
@@ -172,8 +176,8 @@ TEST(ExtensionL10nUtil, LoadMessageCatalogsBadJSONFormat) {
             base::WriteFile(messages_file, data.c_str(), data.length()));
 
   std::string error;
-  EXPECT_TRUE(NULL == extension_l10n_util::LoadMessageCatalogs(
-                          src_path, "en_US", &error));
+  EXPECT_FALSE(extension_l10n_util::LoadMessageCatalogs(
+      src_path, "en_US", GzippedMessagesPermission::kDisallow, &error));
   EXPECT_EQ(ErrorUtils::FormatErrorMessage(
                 errors::kLocalesInvalidLocale,
                 base::UTF16ToUTF8(messages_file.LossyDisplayName()),
@@ -210,9 +214,49 @@ TEST(ExtensionL10nUtil, LoadMessageCatalogsDuplicateKeys) {
   // JSON parser hides duplicates. We are going to get only one key/value
   // pair at the end.
   std::unique_ptr<MessageBundle> message_bundle(
-      extension_l10n_util::LoadMessageCatalogs(src_path, "en", &error));
-  EXPECT_TRUE(NULL != message_bundle.get());
+      extension_l10n_util::LoadMessageCatalogs(
+          src_path, "en", GzippedMessagesPermission::kDisallow, &error));
+  EXPECT_TRUE(message_bundle.get());
   EXPECT_TRUE(error.empty());
+}
+
+TEST(ExtensionL10nUtil, LoadMessageCatalogsCompressed) {
+  extension_l10n_util::ScopedLocaleForTest scoped_locale("sr");
+  base::ScopedTempDir temp;
+  ASSERT_TRUE(temp.CreateUniqueTempDir());
+
+  base::FilePath src_path = temp.GetPath().Append(kLocaleFolder);
+  ASSERT_TRUE(base::CreateDirectory(src_path));
+
+  base::FilePath locale = src_path.AppendASCII("en");
+  ASSERT_TRUE(base::CreateDirectory(locale));
+
+  // Create a compressed messages.json.gz file.
+  std::string data = "{ \"name\": { \"message\": \"something\" } }";
+  std::string compressed_data;
+  ASSERT_TRUE(compression::GzipCompress(data, &compressed_data));
+  ASSERT_EQ(static_cast<int>(compressed_data.length()),
+            base::WriteFile(locale.Append(kMessagesFilename)
+                                .AddExtension(FILE_PATH_LITERAL(".gz")),
+                            compressed_data.c_str(), compressed_data.length()));
+
+  // Test that LoadMessageCatalogs fails with gzip_permission = kDisallow.
+  std::string error;
+  std::unique_ptr<MessageBundle> message_bundle(
+      extension_l10n_util::LoadMessageCatalogs(
+          src_path, "en", GzippedMessagesPermission::kDisallow, &error));
+  EXPECT_FALSE(message_bundle.get());
+  EXPECT_FALSE(error.empty());
+
+  // Test that LoadMessageCatalogs succeeds with gzip_permission =
+  // kAllowForTrustedSource.
+  error.clear();
+  message_bundle.reset(extension_l10n_util::LoadMessageCatalogs(
+      src_path, "en", GzippedMessagesPermission::kAllowForTrustedSource,
+      &error));
+  EXPECT_TRUE(message_bundle.get());
+  EXPECT_TRUE(error.empty());
+  EXPECT_EQ("something", message_bundle->GetL10nMessage("name"));
 }
 
 // Caller owns the returned object.
@@ -384,7 +428,7 @@ TEST(ExtensionL10nUtil, LocalizeManifestWithNameDescriptionDefaultTitleMsgs) {
   manifest.SetString(keys::kDescription, "__MSG_description__");
   std::string action_title(keys::kBrowserAction);
   action_title.append(".");
-  action_title.append(keys::kPageActionDefaultTitle);
+  action_title.append(keys::kActionDefaultTitle);
   manifest.SetString(action_title, "__MSG_title__");
 
   std::string error;
@@ -437,10 +481,9 @@ TEST(ExtensionL10nUtil, LocalizeManifestWithNameDescriptionFileHandlerTitle) {
   manifest.SetString(keys::kDescription, "__MSG_description__");
 
   base::DictionaryValue handler;
-  handler.SetString(keys::kPageActionDefaultTitle,
-                    "__MSG_file_handler_title__");
+  handler.SetString(keys::kActionDefaultTitle, "__MSG_file_handler_title__");
   auto handlers = std::make_unique<base::ListValue>();
-  handlers->GetList().push_back(std::move(handler));
+  handlers->Append(std::move(handler));
   manifest.Set(keys::kFileBrowserHandlers, std::move(handlers));
 
   std::string error;
@@ -460,7 +503,7 @@ TEST(ExtensionL10nUtil, LocalizeManifestWithNameDescriptionFileHandlerTitle) {
   manifest.GetList(keys::kFileBrowserHandlers, &handlers_raw);
   base::DictionaryValue* handler_raw = nullptr;
   handlers_raw->GetList()[0].GetAsDictionary(&handler_raw);
-  ASSERT_TRUE(handler_raw->GetString(keys::kPageActionDefaultTitle, &result));
+  ASSERT_TRUE(handler_raw->GetString(keys::kActionDefaultTitle, &result));
   EXPECT_EQ("file handler title", result);
 
   EXPECT_TRUE(error.empty());

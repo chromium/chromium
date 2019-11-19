@@ -139,6 +139,8 @@
       newIdentity = identities[0];
     }
     self.selectedIdentity = newIdentity;
+    [self.delegate
+        unifiedConsentViewMediatorDelegateNeedPrimaryButtonUpdate:self];
   }
 }
 

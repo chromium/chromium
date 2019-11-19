@@ -6,18 +6,19 @@
 
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/values.h"
+#include "components/services/storage/indexed_db/scopes/leveldb_scopes.h"
+#include "components/services/storage/indexed_db/scopes/varint_coding.h"
+#include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_database.h"
+#include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_iterator.h"
+#include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_transaction.h"
 #include "content/browser/indexed_db/indexed_db_data_format_version.h"
 #include "content/browser/indexed_db/indexed_db_data_loss_info.h"
-#include "content/browser/indexed_db/indexed_db_leveldb_coding.h"
+#include "content/browser/indexed_db/indexed_db_leveldb_env.h"
 #include "content/browser/indexed_db/indexed_db_reporting.h"
 #include "content/browser/indexed_db/indexed_db_tracing.h"
-#include "content/browser/indexed_db/leveldb/leveldb_database.h"
-#include "content/browser/indexed_db/leveldb/leveldb_env.h"
-#include "content/browser/indexed_db/leveldb/leveldb_iterator.h"
-#include "content/browser/indexed_db/leveldb/leveldb_transaction.h"
 #include "storage/common/database/database_identifier.h"
 #include "third_party/leveldatabase/env_chromium.h"
 
@@ -28,18 +29,6 @@ using leveldb::Status;
 namespace content {
 namespace indexed_db {
 namespace {
-
-class IDBComparator : public LevelDBComparator {
- public:
-  IDBComparator() = default;
-  ~IDBComparator() override = default;
-  int Compare(const base::StringPiece& a,
-              const base::StringPiece& b) const override {
-    return content::Compare(a, b, false /*index_keys*/);
-  }
-  const char* Name() const override { return "idb_cmp1"; }
-};
-
 class LDBComparator : public leveldb::Comparator {
  public:
   LDBComparator() = default;
@@ -54,127 +43,6 @@ class LDBComparator : public leveldb::Comparator {
                              const leveldb::Slice& limit) const override {}
   void FindShortSuccessor(std::string* key) const override {}
 };
-
-bool IsPathTooLong(const base::FilePath& leveldb_dir) {
-  int limit = base::GetMaximumPathComponentLength(leveldb_dir.DirName());
-  if (limit == -1) {
-    DLOG(WARNING) << "GetMaximumPathComponentLength returned -1";
-// In limited testing, ChromeOS returns 143, other OSes 255.
-#if defined(OS_CHROMEOS)
-    limit = 143;
-#else
-    limit = 255;
-#endif
-  }
-  size_t component_length = leveldb_dir.BaseName().value().length();
-  if (component_length > static_cast<uint32_t>(limit)) {
-    DLOG(WARNING) << "Path component length (" << component_length
-                  << ") exceeds maximum (" << limit
-                  << ") allowed by this filesystem.";
-    const int min = 140;
-    const int max = 300;
-    const int num_buckets = 12;
-    UMA_HISTOGRAM_CUSTOM_COUNTS(
-        "WebCore.IndexedDB.BackingStore.OverlyLargeOriginLength",
-        component_length, min, max, num_buckets);
-    return true;
-  }
-  return false;
-}
-
-template <typename DBOrTransaction>
-Status GetIntInternal(DBOrTransaction* db,
-                      const StringPiece& key,
-                      int64_t* found_int,
-                      bool* found) {
-  std::string result;
-  Status s = db->Get(key, &result, found);
-  if (!s.ok())
-    return s;
-  if (!*found)
-    return Status::OK();
-  StringPiece slice(result);
-  if (DecodeInt(&slice, found_int) && slice.empty())
-    return s;
-  return InternalInconsistencyStatus();
-}
-
-WARN_UNUSED_RESULT bool IsSchemaKnown(LevelDBDatabase* db, bool* known) {
-  int64_t db_schema_version = 0;
-  bool found = false;
-  Status s = GetInt(db, SchemaVersionKey::Encode(), &db_schema_version, &found);
-  if (!s.ok())
-    return false;
-  if (!found) {
-    *known = true;
-    return true;
-  }
-  if (db_schema_version < 0)
-    return false;  // Only corruption should cause this.
-  if (db_schema_version > indexed_db::kLatestKnownSchemaVersion) {
-    *known = false;
-    return true;
-  }
-
-  int64_t raw_db_data_version = 0;
-  s = GetInt(db, DataVersionKey::Encode(), &raw_db_data_version, &found);
-  if (!s.ok())
-    return false;
-  if (!found) {
-    *known = true;
-    return true;
-  }
-  if (raw_db_data_version < 0)
-    return false;  // Only corruption should cause this.
-
-  *known = IndexedDBDataFormatVersion::GetCurrent().IsAtLeast(
-      IndexedDBDataFormatVersion::Decode(raw_db_data_version));
-  return true;
-}
-std::tuple<std::unique_ptr<LevelDBDatabase>,
-           leveldb::Status,
-           bool /* is_disk_full */>
-DeleteAndRecreateDatabase(
-    const url::Origin& origin,
-    base::FilePath database_path,
-    LevelDBFactory* ldb_factory,
-    scoped_refptr<base::SequencedTaskRunner> task_runner) {
-  scoped_refptr<LevelDBState> state;
-  DCHECK(!database_path.empty())
-      << "Opening an in-memory database should not have failed.";
-  LOG(ERROR) << "IndexedDB backing store open failed, attempting cleanup";
-  state.reset();
-  leveldb::Status status = ldb_factory->DestroyLevelDB(database_path);
-  if (!status.ok()) {
-    LOG(ERROR) << "IndexedDB backing store cleanup failed";
-    ReportOpenStatus(
-        indexed_db::INDEXED_DB_BACKING_STORE_OPEN_CLEANUP_DESTROY_FAILED,
-        origin);
-    return {nullptr, status, false};
-  }
-
-  LOG(ERROR) << "IndexedDB backing store cleanup succeeded, reopening";
-  state.reset();
-  bool is_disk_full;
-  std::tie(state, status, is_disk_full) =
-      ldb_factory->OpenLevelDB(database_path, GetDefaultIndexedDBComparator(),
-                               GetDefaultLevelDBComparator());
-  if (!status.ok()) {
-    LOG(ERROR) << "IndexedDB backing store reopen after recovery failed";
-    ReportOpenStatus(
-        indexed_db::INDEXED_DB_BACKING_STORE_OPEN_CLEANUP_REOPEN_FAILED,
-        origin);
-    return {nullptr, status, is_disk_full};
-  }
-  std::unique_ptr<LevelDBDatabase> database = std::make_unique<LevelDBDatabase>(
-      std::move(state), std::move(task_runner),
-      LevelDBDatabase::kDefaultMaxOpenIteratorsPerDatabase);
-  ReportOpenStatus(
-      indexed_db::INDEXED_DB_BACKING_STORE_OPEN_CLEANUP_REOPEN_SUCCESS, origin);
-
-  return {std::move(database), status, is_disk_full};
-}
-
 }  // namespace
 
 const base::FilePath::CharType kBlobExtension[] = FILE_PATH_LITERAL(".blob");
@@ -206,10 +74,37 @@ base::FilePath ComputeCorruptionFileName(const url::Origin& origin) {
       FILE_PATH_LITERAL("corruption_info.json"));
 }
 
+bool IsPathTooLong(const base::FilePath& leveldb_dir) {
+  int limit = base::GetMaximumPathComponentLength(leveldb_dir.DirName());
+  if (limit == -1) {
+    DLOG(WARNING) << "GetMaximumPathComponentLength returned -1";
+// In limited testing, ChromeOS returns 143, other OSes 255.
+#if defined(OS_CHROMEOS)
+    limit = 143;
+#else
+    limit = 255;
+#endif
+  }
+  size_t component_length = leveldb_dir.BaseName().value().length();
+  if (component_length > static_cast<uint32_t>(limit)) {
+    DLOG(WARNING) << "Path component length (" << component_length
+                  << ") exceeds maximum (" << limit
+                  << ") allowed by this filesystem.";
+    const int min = 140;
+    const int max = 300;
+    const int num_buckets = 12;
+    base::UmaHistogramCustomCounts(
+        "WebCore.IndexedDB.BackingStore.OverlyLargeOriginLength",
+        component_length, min, max, num_buckets);
+    return true;
+  }
+  return false;
+}
+
 std::string ReadCorruptionInfo(const base::FilePath& path_base,
                                const url::Origin& origin) {
   const base::FilePath info_path =
-      path_base.Append(ComputeCorruptionFileName(origin));
+      path_base.Append(indexed_db::ComputeCorruptionFileName(origin));
   std::string message;
   if (IsPathTooLong(info_path))
     return message;
@@ -253,35 +148,12 @@ leveldb::Status IOErrorStatus() {
   return leveldb::Status::IOError("IO Error");
 }
 
-Status GetInt(LevelDBTransaction* txn,
-              const StringPiece& key,
-              int64_t* found_int,
-              bool* found) {
-  return GetIntInternal(txn, key, found_int, found);
-}
-
-Status GetInt(LevelDBDatabase* db,
-              const StringPiece& key,
-              int64_t* found_int,
-              bool* found) {
-  return GetIntInternal(db, key, found_int, found);
-}
-
-void PutBool(LevelDBTransaction* transaction,
-             const StringPiece& key,
-             bool value) {
+leveldb::Status PutBool(TransactionalLevelDBTransaction* transaction,
+                        const StringPiece& key,
+                        bool value) {
   std::string buffer;
   EncodeBool(value, &buffer);
-  transaction->Put(key, &buffer);
-}
-
-void PutInt(LevelDBTransaction* transaction,
-            const StringPiece& key,
-            int64_t value) {
-  DCHECK_GE(value, 0);
-  std::string buffer;
-  EncodeInt(value, &buffer);
-  transaction->Put(key, &buffer);
+  return transaction->Put(key, &buffer);
 }
 
 template <typename DBOrTransaction>
@@ -300,23 +172,37 @@ Status GetVarInt(DBOrTransaction* db,
     return s;
   return InternalInconsistencyStatus();
 }
+template Status GetVarInt<TransactionalLevelDBTransaction>(
+    TransactionalLevelDBTransaction* txn,
+    const StringPiece& key,
+    int64_t* found_int,
+    bool* found);
+template Status GetVarInt<TransactionalLevelDBDatabase>(
+    TransactionalLevelDBDatabase* db,
+    const StringPiece& key,
+    int64_t* found_int,
+    bool* found);
 
-template Status GetVarInt<LevelDBTransaction>(LevelDBTransaction* txn,
-                                              const StringPiece& key,
-                                              int64_t* found_int,
-                                              bool* found);
-template Status GetVarInt<LevelDBDatabase>(LevelDBDatabase* db,
-                                           const StringPiece& key,
-                                           int64_t* found_int,
-                                           bool* found);
-
-void PutVarInt(LevelDBTransaction* transaction,
-               const StringPiece& key,
-               int64_t value) {
+template <typename TransactionOrWriteBatch>
+leveldb::Status PutVarInt(TransactionOrWriteBatch* transaction_or_write_batch,
+                          const StringPiece& key,
+                          int64_t value) {
   std::string buffer;
   EncodeVarInt(value, &buffer);
-  transaction->Put(key, &buffer);
+  return PutValue(transaction_or_write_batch, key, &buffer);
 }
+template leveldb::Status PutVarInt<TransactionalLevelDBTransaction>(
+    TransactionalLevelDBTransaction* transaction,
+    const StringPiece& key,
+    int64_t value);
+template leveldb::Status PutVarInt<LevelDBDirectTransaction>(
+    LevelDBDirectTransaction* transaction,
+    const StringPiece& key,
+    int64_t value);
+template leveldb::Status PutVarInt<LevelDBWriteBatch>(
+    LevelDBWriteBatch* transaction,
+    const StringPiece& key,
+    int64_t value);
 
 template <typename DBOrTransaction>
 Status GetString(DBOrTransaction* db,
@@ -336,29 +222,31 @@ Status GetString(DBOrTransaction* db,
   return InternalInconsistencyStatus();
 }
 
-template Status GetString<LevelDBTransaction>(LevelDBTransaction* txn,
-                                              const StringPiece& key,
-                                              base::string16* found_string,
-                                              bool* found);
-template Status GetString<LevelDBDatabase>(LevelDBDatabase* db,
-                                           const StringPiece& key,
-                                           base::string16* found_string,
-                                           bool* found);
+template Status GetString<TransactionalLevelDBTransaction>(
+    TransactionalLevelDBTransaction* txn,
+    const StringPiece& key,
+    base::string16* found_string,
+    bool* found);
+template Status GetString<TransactionalLevelDBDatabase>(
+    TransactionalLevelDBDatabase* db,
+    const StringPiece& key,
+    base::string16* found_string,
+    bool* found);
 
-void PutString(LevelDBTransaction* transaction,
-               const StringPiece& key,
-               const base::string16& value) {
+leveldb::Status PutString(TransactionalLevelDBTransaction* transaction,
+                          const StringPiece& key,
+                          const base::string16& value) {
   std::string buffer;
   EncodeString(value, &buffer);
-  transaction->Put(key, &buffer);
+  return transaction->Put(key, &buffer);
 }
 
-void PutIDBKeyPath(LevelDBTransaction* transaction,
-                   const StringPiece& key,
-                   const IndexedDBKeyPath& value) {
+leveldb::Status PutIDBKeyPath(TransactionalLevelDBTransaction* transaction,
+                              const StringPiece& key,
+                              const IndexedDBKeyPath& value) {
   std::string buffer;
   EncodeIDBKeyPath(value, &buffer);
-  transaction->Put(key, &buffer);
+  return transaction->Put(key, &buffer);
 }
 
 template <typename DBOrTransaction>
@@ -380,16 +268,16 @@ Status GetMaxObjectStoreId(DBOrTransaction* db,
   return s;
 }
 
-template Status GetMaxObjectStoreId<LevelDBTransaction>(
-    LevelDBTransaction* db,
+template Status GetMaxObjectStoreId<TransactionalLevelDBTransaction>(
+    TransactionalLevelDBTransaction* db,
     int64_t database_id,
     int64_t* max_object_store_id);
-template Status GetMaxObjectStoreId<LevelDBDatabase>(
-    LevelDBDatabase* db,
+template Status GetMaxObjectStoreId<TransactionalLevelDBDatabase>(
+    TransactionalLevelDBDatabase* db,
     int64_t database_id,
     int64_t* max_object_store_id);
 
-Status SetMaxObjectStoreId(LevelDBTransaction* transaction,
+Status SetMaxObjectStoreId(TransactionalLevelDBTransaction* transaction,
                            int64_t database_id,
                            int64_t object_store_id) {
   const std::string max_object_store_id_key = DatabaseMetaDataKey::Encode(
@@ -410,14 +298,14 @@ Status SetMaxObjectStoreId(LevelDBTransaction* transaction,
   }
 
   if (object_store_id <= max_object_store_id) {
-    INTERNAL_CONSISTENCY_ERROR_UNTESTED(SET_MAX_OBJECT_STORE_ID);
+    INTERNAL_CONSISTENCY_ERROR(SET_MAX_OBJECT_STORE_ID);
     return indexed_db::InternalInconsistencyStatus();
   }
-  indexed_db::PutInt(transaction, max_object_store_id_key, object_store_id);
-  return s;
+  return indexed_db::PutInt(transaction, max_object_store_id_key,
+                            object_store_id);
 }
 
-Status GetNewVersionNumber(LevelDBTransaction* transaction,
+Status GetNewVersionNumber(TransactionalLevelDBTransaction* transaction,
                            int64_t database_id,
                            int64_t object_store_id,
                            int64_t* new_version_number) {
@@ -438,7 +326,11 @@ Status GetNewVersionNumber(LevelDBTransaction* transaction,
   DCHECK_GE(last_version, 0);
 
   int64_t version = last_version + 1;
-  PutInt(transaction, last_version_key, version);
+  s = PutInt(transaction, last_version_key, version);
+  if (!s.ok()) {
+    INTERNAL_READ_ERROR_UNTESTED(GET_NEW_VERSION_NUMBER);
+    return s;
+  }
 
   // TODO(jsbell): Think about how we want to handle the overflow scenario.
   DCHECK(version > last_version);
@@ -447,7 +339,7 @@ Status GetNewVersionNumber(LevelDBTransaction* transaction,
   return s;
 }
 
-Status SetMaxIndexId(LevelDBTransaction* transaction,
+Status SetMaxIndexId(TransactionalLevelDBTransaction* transaction,
                      int64_t database_id,
                      int64_t object_store_id,
                      int64_t index_id) {
@@ -468,11 +360,10 @@ Status SetMaxIndexId(LevelDBTransaction* transaction,
     return InternalInconsistencyStatus();
   }
 
-  PutInt(transaction, max_index_id_key, index_id);
-  return s;
+  return PutInt(transaction, max_index_id_key, index_id);
 }
 
-Status VersionExists(LevelDBTransaction* transaction,
+Status VersionExists(TransactionalLevelDBTransaction* transaction,
                      int64_t database_id,
                      int64_t object_store_id,
                      int64_t version,
@@ -498,7 +389,16 @@ Status VersionExists(LevelDBTransaction* transaction,
   return s;
 }
 
-Status GetNewDatabaseId(LevelDBTransaction* transaction, int64_t* new_id) {
+template Status GetNewDatabaseId<LevelDBDirectTransaction>(
+    LevelDBDirectTransaction* transaction,
+    int64_t* new_id);
+
+template Status GetNewDatabaseId<TransactionalLevelDBTransaction>(
+    TransactionalLevelDBTransaction* transaction,
+    int64_t* new_id);
+
+template <typename Transaction>
+Status GetNewDatabaseId(Transaction* transaction, int64_t* new_id) {
   *new_id = -1;
   int64_t max_database_id = -1;
   bool found = false;
@@ -514,12 +414,16 @@ Status GetNewDatabaseId(LevelDBTransaction* transaction, int64_t* new_id) {
   DCHECK_GE(max_database_id, 0);
 
   int64_t database_id = max_database_id + 1;
-  indexed_db::PutInt(transaction, MaxDatabaseIdKey::Encode(), database_id);
+  s = indexed_db::PutInt(transaction, MaxDatabaseIdKey::Encode(), database_id);
+  if (!s.ok()) {
+    INTERNAL_READ_ERROR_UNTESTED(GET_NEW_DATABASE_ID);
+    return s;
+  }
   *new_id = database_id;
   return Status::OK();
 }
 
-bool CheckObjectStoreAndMetaDataType(const LevelDBIterator* it,
+bool CheckObjectStoreAndMetaDataType(const TransactionalLevelDBIterator* it,
                                      const std::string& stop_key,
                                      int64_t object_store_id,
                                      int64_t meta_data_type) {
@@ -538,7 +442,7 @@ bool CheckObjectStoreAndMetaDataType(const LevelDBIterator* it,
   return ok;
 }
 
-bool CheckIndexAndMetaDataKey(const LevelDBIterator* it,
+bool CheckIndexAndMetaDataKey(const TransactionalLevelDBIterator* it,
                               const std::string& stop_key,
                               int64_t index_id,
                               unsigned char meta_data_type) {
@@ -556,11 +460,13 @@ bool CheckIndexAndMetaDataKey(const LevelDBIterator* it,
   return true;
 }
 
-bool FindGreatestKeyLessThanOrEqual(LevelDBTransaction* transaction,
-                                    const std::string& target,
-                                    std::string* found_key,
-                                    Status* s) {
-  std::unique_ptr<LevelDBIterator> it = transaction->CreateIterator();
+bool FindGreatestKeyLessThanOrEqual(
+    TransactionalLevelDBTransaction* transaction,
+    const std::string& target,
+    std::string* found_key,
+    Status* s) {
+  std::unique_ptr<TransactionalLevelDBIterator> it =
+      transaction->CreateIterator();
   *s = it->Seek(target);
   if (!s->ok())
     return false;
@@ -588,7 +494,7 @@ bool FindGreatestKeyLessThanOrEqual(LevelDBTransaction* transaction,
 }
 
 bool GetBlobKeyGeneratorCurrentNumber(
-    LevelDBTransaction* leveldb_transaction,
+    LevelDBDirectTransaction* leveldb_transaction,
     int64_t database_id,
     int64_t* blob_key_generator_current_number) {
   const std::string key_gen_key = DatabaseMetaDataKey::Encode(
@@ -617,7 +523,7 @@ bool GetBlobKeyGeneratorCurrentNumber(
 }
 
 bool UpdateBlobKeyGeneratorCurrentNumber(
-    LevelDBTransaction* leveldb_transaction,
+    LevelDBDirectTransaction* leveldb_transaction,
     int64_t database_id,
     int64_t blob_key_generator_current_number) {
 #if DCHECK_IS_ON()
@@ -632,11 +538,13 @@ bool UpdateBlobKeyGeneratorCurrentNumber(
   const std::string key = DatabaseMetaDataKey::Encode(
       database_id, DatabaseMetaDataKey::BLOB_KEY_GENERATOR_CURRENT_NUMBER);
 
-  PutVarInt(leveldb_transaction, key, blob_key_generator_current_number);
-  return true;
+  leveldb::Status s =
+      PutVarInt(leveldb_transaction, key, blob_key_generator_current_number);
+  return s.ok();
 }
 
-Status GetEarliestSweepTime(LevelDBDatabase* db, base::Time* earliest_sweep) {
+Status GetEarliestSweepTime(TransactionalLevelDBDatabase* db,
+                            base::Time* earliest_sweep) {
   const std::string earliest_sweep_time_key = EarliestSweepKey::Encode();
   *earliest_sweep = base::Time();
   bool found = false;
@@ -654,147 +562,24 @@ Status GetEarliestSweepTime(LevelDBDatabase* db, base::Time* earliest_sweep) {
   return s;
 }
 
-void SetEarliestSweepTime(LevelDBTransaction* txn, base::Time earliest_sweep) {
+template leveldb::Status SetEarliestSweepTime<TransactionalLevelDBTransaction>(
+    TransactionalLevelDBTransaction* db,
+    base::Time earliest_sweep);
+template leveldb::Status SetEarliestSweepTime<LevelDBDirectTransaction>(
+    LevelDBDirectTransaction* db,
+    base::Time earliest_sweep);
+
+template <typename Transaction>
+leveldb::Status SetEarliestSweepTime(Transaction* txn,
+                                     base::Time earliest_sweep) {
   const std::string earliest_sweep_time_key = EarliestSweepKey::Encode();
   int64_t time_micros = (earliest_sweep - base::Time()).InMicroseconds();
-  indexed_db::PutInt(txn, earliest_sweep_time_key, time_micros);
-}
-
-const LevelDBComparator* GetDefaultIndexedDBComparator() {
-  static const base::NoDestructor<IDBComparator> kIDBComparator;
-  return kIDBComparator.get();
+  return indexed_db::PutInt(txn, earliest_sweep_time_key, time_micros);
 }
 
 const leveldb::Comparator* GetDefaultLevelDBComparator() {
   static const base::NoDestructor<LDBComparator> ldb_comparator;
   return ldb_comparator.get();
-}
-
-std::tuple<base::FilePath /*leveldb_path*/,
-           base::FilePath /*blob_path*/,
-           leveldb::Status>
-CreateDatabaseDirectories(const base::FilePath& path_base,
-                          const url::Origin& origin) {
-  leveldb::Status status;
-  if (!base::CreateDirectoryAndGetError(path_base, nullptr)) {
-    status = Status::IOError("Unable to create IndexedDB database path");
-    LOG(ERROR) << status.ToString() << ": \"" << path_base.AsUTF8Unsafe()
-               << "\"";
-    ReportOpenStatus(indexed_db::INDEXED_DB_BACKING_STORE_OPEN_FAILED_DIRECTORY,
-                     origin);
-    return {base::FilePath(), base::FilePath(), status};
-  }
-
-  base::FilePath leveldb_path = path_base.Append(GetLevelDBFileName(origin));
-  base::FilePath blob_path = path_base.Append(GetBlobStoreFileName(origin));
-  if (IsPathTooLong(leveldb_path)) {
-    ReportOpenStatus(indexed_db::INDEXED_DB_BACKING_STORE_OPEN_ORIGIN_TOO_LONG,
-                     origin);
-    status = Status::IOError("File path too long");
-    return {base::FilePath(), base::FilePath(), status};
-  }
-  return {leveldb_path, blob_path, status};
-}
-
-std::tuple<std::unique_ptr<LevelDBDatabase>,
-           leveldb::Status,
-           IndexedDBDataLossInfo,
-           bool /* is_disk_full */>
-OpenAndVerifyLevelDBDatabase(
-    const url::Origin& origin,
-    base::FilePath path_base,
-    base::FilePath database_path,
-    LevelDBFactory* ldb_factory,
-    scoped_refptr<base::SequencedTaskRunner> task_runner) {
-  // Please see docs/open_and_verify_leveldb_database.code2flow, and the
-  // generated pdf (from https://code2flow.com).
-  // The intended strategy here is to have this function match that flowchart,
-  // where the flowchart should be seen as the 'master' logic template. Please
-  // check the git history of both to make sure they are supposed to be in sync.
-  DCHECK_EQ(database_path.empty(), path_base.empty());
-  IDB_TRACE("indexed_db::OpenAndVerifyLevelDBDatabase");
-  bool is_disk_full;
-  std::unique_ptr<LevelDBDatabase> database;
-  leveldb::Status status;
-  scoped_refptr<LevelDBState> state;
-  std::tie(state, status, is_disk_full) =
-      ldb_factory->OpenLevelDB(database_path, GetDefaultIndexedDBComparator(),
-                               GetDefaultLevelDBComparator());
-  bool is_schema_known = false;
-  // On I/O error the database isn't deleted, in case the issue is temporary.
-  if (status.IsIOError()) {
-    ReportOpenStatus(indexed_db::INDEXED_DB_BACKING_STORE_OPEN_NO_RECOVERY,
-                     origin);
-    return {std::move(database), status, IndexedDBDataLossInfo(), is_disk_full};
-  }
-
-  IndexedDBDataLossInfo data_loss_info;
-  data_loss_info.status = blink::mojom::IDBDataLoss::None;
-  if (status.IsCorruption()) {
-    // On corruption, recovery will happen in the next section.
-    data_loss_info.status = blink::mojom::IDBDataLoss::Total;
-    data_loss_info.message = leveldb_env::GetCorruptionMessage(status);
-    std::tie(database, status, is_disk_full) = DeleteAndRecreateDatabase(
-        origin, database_path, ldb_factory, task_runner);
-    // If successful, then the database should be empty and doesn't need any of
-    // the corruption or schema checks below.
-    if (status.ok()) {
-      ReportOpenStatus(indexed_db::INDEXED_DB_BACKING_STORE_OPEN_SUCCESS,
-                       origin);
-    }
-    return {std::move(database), status, data_loss_info, is_disk_full};
-  }
-  // The leveldb database is successfully opened.
-  DCHECK(status.ok());
-  database = std::make_unique<LevelDBDatabase>(
-      std::move(state), std::move(task_runner),
-      LevelDBDatabase::kDefaultMaxOpenIteratorsPerDatabase);
-
-  // Check for previous corruption or invalid schemas.
-  std::string corruption_message;
-  if (!path_base.empty())
-    corruption_message = ReadCorruptionInfo(path_base, origin);
-  if (!corruption_message.empty()) {
-    LOG(ERROR) << "IndexedDB recovering from a corrupted (and deleted) "
-                  "database.";
-    ReportOpenStatus(
-        indexed_db::INDEXED_DB_BACKING_STORE_OPEN_FAILED_PRIOR_CORRUPTION,
-        origin);
-    status = leveldb::Status::Corruption(corruption_message);
-    database.reset();
-    data_loss_info.status = blink::mojom::IDBDataLoss::Total;
-    data_loss_info.message =
-        "IndexedDB (database was corrupt): " + corruption_message;
-  } else if (!IsSchemaKnown(database.get(), &is_schema_known)) {
-    LOG(ERROR) << "IndexedDB had IO error checking schema, treating it as "
-                  "failure to open";
-    ReportOpenStatus(
-        indexed_db::
-            INDEXED_DB_BACKING_STORE_OPEN_FAILED_IO_ERROR_CHECKING_SCHEMA,
-        origin);
-    database.reset();
-    data_loss_info.status = blink::mojom::IDBDataLoss::Total;
-    data_loss_info.message = "I/O error checking schema";
-  } else if (!is_schema_known) {
-    LOG(ERROR) << "IndexedDB backing store had unknown schema, treating it "
-                  "as failure to open";
-    ReportOpenStatus(
-        indexed_db::INDEXED_DB_BACKING_STORE_OPEN_FAILED_UNKNOWN_SCHEMA,
-        origin);
-    database.reset();
-    data_loss_info.status = blink::mojom::IDBDataLoss::Total;
-    data_loss_info.message = "Unknown schema";
-  }
-  // Try to delete & recreate the database for any of the above issues.
-  if (!database.get()) {
-    DCHECK(!is_schema_known || status.IsCorruption());
-    std::tie(database, status, is_disk_full) = DeleteAndRecreateDatabase(
-        origin, database_path, ldb_factory, task_runner);
-  }
-
-  if (status.ok())
-    ReportOpenStatus(indexed_db::INDEXED_DB_BACKING_STORE_OPEN_SUCCESS, origin);
-  return {std::move(database), status, data_loss_info, is_disk_full};
 }
 
 }  // namespace indexed_db

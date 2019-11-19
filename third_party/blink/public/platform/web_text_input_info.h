@@ -30,6 +30,7 @@
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_text_input_mode.h"
 #include "third_party/blink/public/platform/web_text_input_type.h"
+#include "ui/base/ime/text_input_action.h"
 
 namespace blink {
 
@@ -57,6 +58,9 @@ struct WebTextInputInfo {
   // The inputmode attribute value of the currently focused input field.
   WebTextInputMode input_mode;
 
+  // The enterkeyhint attribute value of the currently focused input field.
+  ui::TextInputAction action;
+
   BLINK_PLATFORM_EXPORT bool Equals(const WebTextInputInfo&) const;
 
   WebTextInputInfo()
@@ -66,7 +70,8 @@ struct WebTextInputInfo {
         selection_end(0),
         composition_start(-1),
         composition_end(-1),
-        input_mode(kWebTextInputModeDefault) {}
+        input_mode(kWebTextInputModeDefault),
+        action(ui::TextInputAction::kDefault) {}
 };
 
 inline bool operator==(const WebTextInputInfo& a, const WebTextInputInfo& b) {

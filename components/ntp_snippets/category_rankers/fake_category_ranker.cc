@@ -15,8 +15,8 @@ FakeCategoryRanker::FakeCategoryRanker() = default;
 FakeCategoryRanker::~FakeCategoryRanker() = default;
 
 bool FakeCategoryRanker::Compare(Category left, Category right) const {
-  DCHECK(base::ContainsValue(categories_, left));
-  DCHECK(base::ContainsValue(categories_, right));
+  DCHECK(base::Contains(categories_, left));
+  DCHECK(base::Contains(categories_, right));
 
   return std::find(categories_.begin(), categories_.end(), left) <
          std::find(categories_.begin(), categories_.end(), right);

@@ -15,8 +15,8 @@
 #include "net/proxy_resolution/proxy_retry_info.h"
 
 namespace base {
-class ListValue;
 class TimeDelta;
+class Value;
 }
 
 namespace net {
@@ -83,7 +83,7 @@ class NET_EXPORT_PRIVATE ProxyList {
   std::string ToPacString() const;
 
   // Returns a serialized value for the list.
-  std::unique_ptr<base::ListValue> ToValue() const;
+  base::Value ToValue() const;
 
   // Marks the current proxy server as bad and deletes it from the list. The
   // list of known bad proxies is given by |proxy_retry_info|. |net_error|

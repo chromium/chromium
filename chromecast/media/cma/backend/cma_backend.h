@@ -33,6 +33,9 @@ class CmaBackend {
     // MediaPipelineBackend::Decoder.
     // See chromecast/public/media/media_pipeline_backend.h for documentation.
     virtual void SetDelegate(Delegate* delegate) = 0;
+
+    // Pushes buffer to decoder.  A new |buffer| should be used for each call
+    // and should not be mutated by the caller.
     virtual BufferStatus PushBuffer(
         scoped_refptr<DecoderBufferBase> buffer) = 0;
 

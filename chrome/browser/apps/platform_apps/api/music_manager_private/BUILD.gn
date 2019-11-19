@@ -29,6 +29,11 @@ source_set("music_manager_private") {
     "//rlz/buildflags",
   ]
 
+  libs = []
+  if (is_win) {
+    libs += [ "iphlpapi.lib" ]
+  }
+
   if (is_chromeos) {
     sources -= [ "device_id_linux.cc" ]
 

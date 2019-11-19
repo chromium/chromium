@@ -9,7 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chromeos/services/device_sync/cryptauth_gcm_manager.h"
-#include "components/gcm_driver/common/gcm_messages.h"
+#include "components/gcm_driver/common/gcm_message.h"
 #include "components/gcm_driver/gcm_app_handler.h"
 #include "components/gcm_driver/gcm_client.h"
 
@@ -94,7 +94,7 @@ class CryptAuthGCMManagerImpl : public CryptAuthGCMManager,
   // List of observers.
   base::ObserverList<Observer>::Unchecked observers_;
 
-  base::WeakPtrFactory<CryptAuthGCMManagerImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<CryptAuthGCMManagerImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(CryptAuthGCMManagerImpl);
 };

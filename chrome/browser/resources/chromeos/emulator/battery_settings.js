@@ -2,8 +2,28 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var BatterySettings = Polymer({
+import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
+import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.m.js';
+import 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.m.js';
+import 'chrome://resources/cr_elements/shared_vars_css.m.js';
+import 'chrome://resources/cr_elements/md_select_css.m.js';
+import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
+import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
+import './icons.js';
+import './shared_styles.js';
+
+import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+Polymer({
   is: 'battery-settings',
+
+  _template: html`{__html_template__}`,
+
+  behaviors: [WebUIListenerBehavior],
 
   properties: {
     /** The system's battery percentage. */
@@ -115,11 +135,11 @@ var BatterySettings = Polymer({
     /** The ID of the current power source, or the empty string. */
     selectedPowerSourceId: String,
 
-    /** A string representing the time left until the battery is discharged. */
-    timeUntilEmpty: String,
+    /** A number representing the time left until the battery is discharged. */
+    timeUntilEmpty: Number,
 
-    /** A string representing the time left until the battery is at 100%. */
-    timeUntilFull: String,
+    /** A number representing the time left until the battery is at 100%. */
+    timeUntilFull: Number,
   },
 
   observers: [
@@ -127,16 +147,22 @@ var BatterySettings = Polymer({
   ],
 
   ready: function() {
+    this.addWebUIListener(
+        'power-properties-updated', this.onPowerPropertiesUpdated_.bind(this));
     chrome.send('requestPowerInfo');
   },
 
   onBatteryPercentChange: function(e) {
-    this.percent = parseInt(e.target.value);
+    this.percent = parseInt(e.target.value, 10);
     if (!isNaN(this.percent))
       chrome.send('updateBatteryPercent', [this.percent]);
   },
 
-  onSetAsSourceTap: function(e) {
+  /**
+   * @param {!{model: {item: {id: string}}}} e
+   * @private
+   */
+  onSetAsSourceClick_: function(e) {
     chrome.send('updatePowerSourceId', [e.model.item.id]);
   },
 
@@ -157,13 +183,13 @@ var BatterySettings = Polymer({
   },
 
   onTimeUntilEmptyChange: function(e) {
-    this.timeUntilEmpty = parseInt(e.target.value);
+    this.timeUntilEmpty = parseInt(e.target.value, 10);
     if (!isNaN(this.timeUntilEmpty))
       chrome.send('updateTimeToEmpty', [this.timeUntilEmpty]);
   },
 
   onTimeUntilFullChange: function(e) {
-    this.timeUntilFull = parseInt(e.target.value);
+    this.timeUntilFull = parseInt(e.target.value, 10);
     if (!isNaN(this.timeUntilFull))
       chrome.send('updateTimeToFull', [this.timeUntilFull]);
   },
@@ -172,13 +198,22 @@ var BatterySettings = Polymer({
     e.model.set('item.power', e.target.value);
   },
 
-  updatePowerProperties: function(power_properties) {
-    this.batteryPercent = power_properties.battery_percent;
-    this.batteryState =
-        this.batteryStateOptions[power_properties.battery_state];
-    this.timeUntilEmpty = power_properties.battery_time_to_empty_sec;
-    this.timeUntilFull = power_properties.battery_time_to_full_sec;
-    this.selectedPowerSourceId = power_properties.external_power_source_id;
+  /**
+   * @param {{
+   *   battery_percent: number,
+   *   battery_state: number,
+   *   battery_time_to_empty_sec: number,
+   *   battery_time_to_full_sec: number,
+   *   external_power_source_id: string,
+   * }} properties
+   * @private
+   */
+  onPowerPropertiesUpdated_: function(properties) {
+    this.batteryPercent = properties.battery_percent;
+    this.batteryState = this.batteryStateOptions[properties.battery_state];
+    this.timeUntilEmpty = properties.battery_time_to_empty_sec;
+    this.timeUntilFull = properties.battery_time_to_full_sec;
+    this.selectedPowerSourceId = properties.external_power_source_id;
   },
 
   isBatteryPresent: function() {
@@ -189,8 +224,13 @@ var BatterySettings = Polymer({
     return source.type == 'DualRoleUSB';
   },
 
-  isSelectedSource: function(source) {
-    return source.id == this.selectedPowerSourceId;
+  /**
+   * @param {!{id: string}} source
+   * @return {string}
+   * @private
+   */
+  cssClassForSetAsSource_: function(source) {
+    return source.id == this.selectedPowerSourceId ? '' : 'action-button';
   },
 
   canAmpsChange: function(type) {

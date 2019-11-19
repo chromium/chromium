@@ -13,7 +13,7 @@
 #include "base/logging.h"
 #include "base/macros.h"
 
-namespace app_list {
+namespace ash {
 
 namespace {
 
@@ -235,4 +235,4 @@ bool TokenizedStringMatch::Calculate(const base::string16& query,
   return Calculate(tokenized_query, tokenized_text);
 }
 
-}  // namespace app_list
+}  // namespace ash

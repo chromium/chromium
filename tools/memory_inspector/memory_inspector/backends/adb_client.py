@@ -10,6 +10,8 @@ It can be used to run commands, push and pull files from/to Android devices,
 requiring only that an adb daemon (adb start-server) is running on the host.
 """
 
+from __future__ import print_function
+
 import logging
 import os
 import pipes
@@ -280,34 +282,35 @@ def _EndToEndTest():
   """Some minimal non-automated end-to-end testing."""
   import tempfile
   local_test_file = tempfile.mktemp()
-  print 'Starting test, please  make sure at least one device is connected'
+  print('Starting test, please  make sure at least one device is connected')
   devices = ListDevices()
-  print 'Devices:', devices
+  print('Devices:', devices)
   device = GetDevice(devices[0].serial)
   assert device.IsConnected()
   device.RestartShellAsRoot()
   device.WaitForDevice()
   build_fingerprint = device.Shell(['getprop', 'ro.build.fingerprint']).strip()
-  print 'Build fingerprint', build_fingerprint
+  print('Build fingerprint', build_fingerprint)
   device.RemountSystemPartition()
   assert 'rw' in device.Shell('cat /proc/mounts | grep system')
   mode, size, _ = device.Stat('/system/bin/sh')
   assert mode == 0100755, oct(mode)
   assert size > 1024
-  print 'Pulling a large file'
+  print('Pulling a large file')
   device.Pull('/system/lib/libwebviewchromium.so', local_test_file)
-  print 'Pushing a large file'
+  print('Pushing a large file')
   device.Push(local_test_file, '/data/local/tmp/file name.so')
   remote_md5 = device.Shell('md5 /system/lib/libwebviewchromium.so')[:32]
   remote_md5_copy = device.Shell(['md5', '/data/local/tmp/file name.so'])[:32]
   size = device.Stat('/data/local/tmp/file name.so')[1]
   assert size == os.path.getsize(local_test_file)
   device.Shell(['rm', '/data/local/tmp/file name.so'])
-  print 'Remote MD5 of the original file is', remote_md5
-  print 'Remote MD5 of the copied file is', remote_md5_copy
+  print('Remote MD5 of the original file is', remote_md5)
+  print('Remote MD5 of the copied file is', remote_md5_copy)
   os.unlink(local_test_file)
   assert remote_md5 == remote_md5_copy
-  print '[TEST PASSED]'
+  print('[TEST PASSED]')
+
 
 if __name__ == '__main__':
   _EndToEndTest()

@@ -6,14 +6,17 @@
 
 #include "components/sessions/core/serialized_navigation_entry.h"
 #include "components/sessions/core/serialized_navigation_entry_test_helper.h"
-#include "ios/web/public/favicon_status.h"
-#include "ios/web/public/navigation_item.h"
-#include "ios/web/public/referrer.h"
+#include "ios/web/public/favicon/favicon_status.h"
+#include "ios/web/public/navigation/navigation_item.h"
+#include "ios/web/public/navigation/referrer.h"
+#include "ios/web/public/test/web_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+using IOSSerializedNavigationBuilderTest = web::WebTest;
 
 namespace sessions {
 
@@ -37,10 +40,9 @@ std::unique_ptr<web::NavigationItem> MakeNavigationItemForTest() {
 
 }  // namespace
 
-
 // Create a SerializedNavigationEntry from a NavigationItem.  All its fields
 // should match the NavigationItem's.
-TEST(IOSSerializedNavigationBuilderTest, FromNavigationItem) {
+TEST_F(IOSSerializedNavigationBuilderTest, FromNavigationItem) {
   const std::unique_ptr<web::NavigationItem> navigation_item(
       MakeNavigationItemForTest());
 
@@ -79,7 +81,7 @@ TEST(IOSSerializedNavigationBuilderTest, FromNavigationItem) {
 // a SerializedNavigationEntry and back.  The new one should match the old one
 // except for fields that aren't preserved, which should be set to
 // expected values.
-TEST(IOSSerializedNavigationBuilderTest, ToNavigationItem) {
+TEST_F(IOSSerializedNavigationBuilderTest, ToNavigationItem) {
   const std::unique_ptr<web::NavigationItem> old_navigation_item(
       MakeNavigationItemForTest());
 

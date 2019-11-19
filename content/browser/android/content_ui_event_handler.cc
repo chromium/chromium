@@ -8,7 +8,7 @@
 #include "content/browser/renderer_host/render_widget_host_view_android.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/web_contents/web_contents_view_android.h"
-#include "jni/ContentUiEventHandler_jni.h"
+#include "content/public/android/content_jni_headers/ContentUiEventHandler_jni.h"
 #include "ui/android/window_android.h"
 #include "ui/events/android/event_handler_android.h"
 #include "ui/events/android/gesture_event_android.h"

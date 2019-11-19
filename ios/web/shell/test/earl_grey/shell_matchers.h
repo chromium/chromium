@@ -7,32 +7,22 @@
 
 #import <Foundation/Foundation.h>
 
-#include <string>
-
-// ObjC matcher class for use in EG2 tests (Test and App process).
-// Shell_matchers_shorthand.h/mm is C++ and for use when writing EG1 tests.
 @protocol GREYMatcher;
 
-@interface ShellMatchers : NSObject
+namespace web {
 
 // Matcher for the WKWebView.
-+ (id<GREYMatcher>)webView;
+id<GREYMatcher> WebView();
 
 // Matcher for WKWebView's scroll view.
-+ (id<GREYMatcher>)webViewScrollView;
-
-// Matcher for web shell address field text property equal to |text|.
-+ (id<GREYMatcher>)addressFieldWithText:(NSString*)text;
+id<GREYMatcher> WebViewScrollView();
 
 // Matcher for back button in web shell.
-+ (id<GREYMatcher>)backButton;
+id<GREYMatcher> BackButton();
 
 // Matcher for forward button in web shell.
-+ (id<GREYMatcher>)forwardButton;
+id<GREYMatcher> ForwardButton();
 
-// Matcher for address field in web shell.
-+ (id<GREYMatcher>)addressField;
-
-@end
+}  // namespace web
 
 #endif  // IOS_WEB_SHELL_TEST_EARL_GREY_SHELL_MATCHERS_H_

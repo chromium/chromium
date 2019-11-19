@@ -9,7 +9,8 @@
 #include <string>
 #include <vector>
 
-#include "ash/public/interfaces/login_screen.mojom.h"
+#include "ash/public/cpp/login_types.h"
+#include "ash/public/cpp/session/user_info.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/timer/timer.h"
@@ -112,13 +113,12 @@ class UserSelectionScreen
   // Determines if user auth status requires online sign in.
   static bool ShouldForceOnlineSignIn(const user_manager::User* user);
 
-  // Builds a |UserAvatarPtr| instance which contains the current image for
-  // |user|.
-  static ash::mojom::UserAvatarPtr BuildMojoUserAvatarForUser(
-      const user_manager::User* user);
+  // Builds a |UserAvatar| instance which contains the current image for |user|.
+  static ash::UserAvatar BuildAshUserAvatarForUser(
+      const user_manager::User& user);
 
   std::unique_ptr<base::ListValue> UpdateAndReturnUserListForWebUI();
-  std::vector<ash::mojom::LoginUserInfoPtr> UpdateAndReturnUserListForMojo();
+  std::vector<ash::LoginUserInfo> UpdateAndReturnUserListForAsh();
   void SetUsersLoaded(bool loaded);
 
  protected:
@@ -163,7 +163,7 @@ class UserSelectionScreen
 
   user_manager::UserList users_to_send_;
 
-  base::WeakPtrFactory<UserSelectionScreen> weak_factory_;
+  base::WeakPtrFactory<UserSelectionScreen> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(UserSelectionScreen);
 };

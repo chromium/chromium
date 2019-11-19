@@ -24,7 +24,12 @@ Polymer({
 
     /**
      * Reference to OOBE screen object.
-     * @type {!OobeTypes.Screen}
+     * @type {!{
+     *     onAccept: function(),
+     *     onNext: function(),
+     *     onSkip: function(),
+     *     reloadPlayStoreToS: function(),
+     * }}
      */
     screen: {
       type: Object,

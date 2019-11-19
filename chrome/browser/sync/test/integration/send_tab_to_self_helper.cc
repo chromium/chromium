@@ -4,6 +4,8 @@
 
 #include "chrome/browser/sync/test/integration/send_tab_to_self_helper.h"
 
+#include <sstream>
+
 #include "base/logging.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
@@ -17,6 +19,7 @@ SendTabToSelfUrlChecker::SendTabToSelfUrlChecker(
     send_tab_to_self::SendTabToSelfSyncService* service,
     const GURL& url)
     : url_(url), service_(service) {
+  DCHECK(service);
   service->GetSendTabToSelfModel()->AddObserver(this);
 }
 
@@ -24,7 +27,9 @@ SendTabToSelfUrlChecker::~SendTabToSelfUrlChecker() {
   service_->GetSendTabToSelfModel()->RemoveObserver(this);
 }
 
-bool SendTabToSelfUrlChecker::IsExitConditionSatisfied() {
+bool SendTabToSelfUrlChecker::IsExitConditionSatisfied(std::ostream* os) {
+  *os << "Waiting for data for url '" + url_.spec() + "' to be populated.";
+
   send_tab_to_self::SendTabToSelfModel* model =
       service_->GetSendTabToSelfModel();
   for (auto const& guid : model->GetAllGuids()) {
@@ -33,10 +38,6 @@ bool SendTabToSelfUrlChecker::IsExitConditionSatisfied() {
     }
   }
   return false;
-}
-
-std::string SendTabToSelfUrlChecker::GetDebugMessage() const {
-  return "Waiting for data for url '" + url_.spec() + "' to be populated.";
 }
 
 void SendTabToSelfUrlChecker::SendTabToSelfModelLoaded() {
@@ -54,10 +55,60 @@ void SendTabToSelfUrlChecker::EntriesRemovedRemotely(
   CheckExitCondition();
 }
 
+SendTabToSelfUrlOpenedChecker::SendTabToSelfUrlOpenedChecker(
+    send_tab_to_self::SendTabToSelfSyncService* service,
+    const GURL& url)
+    : url_(url), service_(service) {
+  DCHECK(service);
+  service->GetSendTabToSelfModel()->AddObserver(this);
+}
+
+SendTabToSelfUrlOpenedChecker::~SendTabToSelfUrlOpenedChecker() {
+  service_->GetSendTabToSelfModel()->RemoveObserver(this);
+}
+
+bool SendTabToSelfUrlOpenedChecker::IsExitConditionSatisfied(std::ostream* os) {
+  *os << "Waiting for data for url '" + url_.spec() + "' to be marked opened.";
+
+  send_tab_to_self::SendTabToSelfModel* model =
+      service_->GetSendTabToSelfModel();
+  for (auto const& guid : model->GetAllGuids()) {
+    const send_tab_to_self::SendTabToSelfEntry* entry =
+        model->GetEntryByGUID(guid);
+    if (entry->GetURL() == url_ && entry->IsOpened()) {
+      return true;
+    }
+  }
+  return false;
+}
+
+void SendTabToSelfUrlOpenedChecker::SendTabToSelfModelLoaded() {
+  CheckExitCondition();
+}
+
+void SendTabToSelfUrlOpenedChecker::EntriesAddedRemotely(
+    const std::vector<const send_tab_to_self::SendTabToSelfEntry*>&
+        new_entries) {
+  CheckExitCondition();
+}
+
+void SendTabToSelfUrlOpenedChecker::EntriesRemovedRemotely(
+    const std::vector<std::string>& guids_removed) {
+  CheckExitCondition();
+}
+
+void SendTabToSelfUrlOpenedChecker::EntriesOpenedRemotely(
+    const std::vector<const send_tab_to_self::SendTabToSelfEntry*>&
+        opened_entries) {
+  CheckExitCondition();
+}
+
 SendTabToSelfModelEqualityChecker::SendTabToSelfModelEqualityChecker(
     send_tab_to_self::SendTabToSelfSyncService* service0,
     send_tab_to_self::SendTabToSelfSyncService* service1)
     : service0_(service0), service1_(service1) {
+  DCHECK(service0);
+  DCHECK(service1);
   service0->GetSendTabToSelfModel()->AddObserver(this);
   service1->GetSendTabToSelfModel()->AddObserver(this);
 }
@@ -67,7 +118,10 @@ SendTabToSelfModelEqualityChecker::~SendTabToSelfModelEqualityChecker() {
   service1_->GetSendTabToSelfModel()->RemoveObserver(this);
 }
 
-bool SendTabToSelfModelEqualityChecker::IsExitConditionSatisfied() {
+bool SendTabToSelfModelEqualityChecker::IsExitConditionSatisfied(
+    std::ostream* os) {
+  *os << "Waiting for services to converge";
+
   const send_tab_to_self::SendTabToSelfModel* model0 =
       service0_->GetSendTabToSelfModel();
   const send_tab_to_self::SendTabToSelfModel* model1 =
@@ -98,10 +152,6 @@ bool SendTabToSelfModelEqualityChecker::IsExitConditionSatisfied() {
   return true;
 }
 
-std::string SendTabToSelfModelEqualityChecker::GetDebugMessage() const {
-  return "Waiting for services to converge";
-}
-
 void SendTabToSelfModelEqualityChecker::SendTabToSelfModelLoaded() {
   CheckExitCondition();
 }
@@ -113,6 +163,124 @@ void SendTabToSelfModelEqualityChecker::EntriesAddedRemotely(
 }
 
 void SendTabToSelfModelEqualityChecker::EntriesRemovedRemotely(
+    const std::vector<std::string>& guids_removed) {
+  CheckExitCondition();
+}
+
+SendTabToSelfActiveChecker::SendTabToSelfActiveChecker(
+    send_tab_to_self::SendTabToSelfSyncService* service)
+    : service_(service) {
+  DCHECK(service);
+  service->GetSendTabToSelfModel()->AddObserver(this);
+}
+
+SendTabToSelfActiveChecker::~SendTabToSelfActiveChecker() {
+  service_->GetSendTabToSelfModel()->RemoveObserver(this);
+}
+
+bool SendTabToSelfActiveChecker::IsExitConditionSatisfied(std::ostream* os) {
+  *os << "Waiting for model to be active.";
+  return service_->GetSendTabToSelfModel()->IsReady();
+}
+
+void SendTabToSelfActiveChecker::SendTabToSelfModelLoaded() {
+  CheckExitCondition();
+}
+
+void SendTabToSelfActiveChecker::EntriesAddedRemotely(
+    const std::vector<const send_tab_to_self::SendTabToSelfEntry*>&
+        new_entries) {
+  CheckExitCondition();
+}
+
+void SendTabToSelfActiveChecker::EntriesRemovedRemotely(
+    const std::vector<std::string>& guids_removed) {
+  CheckExitCondition();
+}
+
+SendTabToSelfMultiDeviceActiveChecker::SendTabToSelfMultiDeviceActiveChecker(
+    syncer::DeviceInfoTracker* tracker)
+    : tracker_(tracker) {
+  tracker_->AddObserver(this);
+}
+
+SendTabToSelfMultiDeviceActiveChecker::
+    ~SendTabToSelfMultiDeviceActiveChecker() {
+  tracker_->RemoveObserver(this);
+}
+
+bool SendTabToSelfMultiDeviceActiveChecker::IsExitConditionSatisfied(
+    std::ostream* os) {
+  *os << "Waiting for multiple devices to be active.";
+  return tracker_->CountActiveDevices() > 1;
+}
+
+void SendTabToSelfMultiDeviceActiveChecker::OnDeviceInfoChange() {
+  CheckExitCondition();
+}
+
+SendTabToSelfDeviceDisabledChecker::SendTabToSelfDeviceDisabledChecker(
+    syncer::DeviceInfoTracker* tracker,
+    const std::string& device_guid)
+    : tracker_(tracker), device_guid_(device_guid) {
+  tracker_->AddObserver(this);
+}
+
+SendTabToSelfDeviceDisabledChecker::~SendTabToSelfDeviceDisabledChecker() {
+  tracker_->RemoveObserver(this);
+}
+
+bool SendTabToSelfDeviceDisabledChecker::IsExitConditionSatisfied(
+    std::ostream* os) {
+  *os << "Waiting for device to have send_tab_to_self disabled";
+  auto device_info = tracker_->GetDeviceInfo(device_guid_);
+  return device_info && !device_info->send_tab_to_self_receiving_enabled();
+}
+
+void SendTabToSelfDeviceDisabledChecker::OnDeviceInfoChange() {
+  CheckExitCondition();
+}
+
+SendTabToSelfUrlDeletedChecker::SendTabToSelfUrlDeletedChecker(
+    send_tab_to_self::SendTabToSelfSyncService* service,
+    const GURL& url)
+    : url_(url), service_(service) {
+  DCHECK(service);
+  service->GetSendTabToSelfModel()->AddObserver(this);
+}
+
+SendTabToSelfUrlDeletedChecker::~SendTabToSelfUrlDeletedChecker() {
+  service_->GetSendTabToSelfModel()->RemoveObserver(this);
+}
+
+bool SendTabToSelfUrlDeletedChecker::IsExitConditionSatisfied(
+    std::ostream* os) {
+  *os << "Waiting for data for url '" + url_.spec() + "' to be deleted.";
+
+  send_tab_to_self::SendTabToSelfModel* model =
+      service_->GetSendTabToSelfModel();
+  DCHECK(model);
+  // Checks each URL in the model and returns passes if URL in question is not
+  // found.
+  for (auto const& guid : model->GetAllGuids()) {
+    if (model->GetEntryByGUID(guid)->GetURL() == url_) {
+      return false;
+    }
+  }
+  return true;
+}
+
+void SendTabToSelfUrlDeletedChecker::SendTabToSelfModelLoaded() {
+  // This ensures that the URL being inspected is present when the model loads.
+  std::ostringstream s;
+  DCHECK(!IsExitConditionSatisfied(&s));
+}
+
+void SendTabToSelfUrlDeletedChecker::EntriesAddedRemotely(
+    const std::vector<const send_tab_to_self::SendTabToSelfEntry*>&
+        new_entries) {}
+
+void SendTabToSelfUrlDeletedChecker::EntriesRemovedRemotely(
     const std::vector<std::string>& guids_removed) {
   CheckExitCondition();
 }

@@ -104,6 +104,43 @@ bool FilterOperations::HasFilterThatMovesPixels() const {
   return false;
 }
 
+float FilterOperations::MaximumPixelMovement() const {
+  float max_movement = 0.;
+  for (size_t i = 0; i < operations_.size(); ++i) {
+    const FilterOperation& op = operations_[i];
+    switch (op.type()) {
+      case FilterOperation::BLUR:
+        max_movement = fmax(max_movement, op.amount() * 2);
+        continue;
+      case FilterOperation::DROP_SHADOW:
+        max_movement = fmax(max_movement, fmax(op.drop_shadow_offset().x(),
+                                               op.drop_shadow_offset().y()));
+        continue;
+      case FilterOperation::ZOOM:
+        max_movement = fmax(max_movement, op.zoom_inset());
+        continue;
+      case FilterOperation::REFERENCE:
+        // TODO(hendrikw): SkImageFilter needs a function that tells us how far
+        // the filter can move pixels. See crbug.com/523538 (sort of).
+        max_movement = fmax(max_movement, 100);
+        continue;
+      case FilterOperation::OPACITY:
+      case FilterOperation::COLOR_MATRIX:
+      case FilterOperation::GRAYSCALE:
+      case FilterOperation::SEPIA:
+      case FilterOperation::SATURATE:
+      case FilterOperation::HUE_ROTATE:
+      case FilterOperation::INVERT:
+      case FilterOperation::BRIGHTNESS:
+      case FilterOperation::CONTRAST:
+      case FilterOperation::SATURATING_BRIGHTNESS:
+      case FilterOperation::ALPHA_THRESHOLD:
+        continue;
+    }
+  }
+  return max_movement;
+}
+
 bool FilterOperations::HasFilterThatAffectsOpacity() const {
   for (size_t i = 0; i < operations_.size(); ++i) {
     const FilterOperation& op = operations_[i];

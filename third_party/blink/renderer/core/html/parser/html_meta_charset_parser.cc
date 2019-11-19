@@ -34,10 +34,8 @@
 
 namespace blink {
 
-using namespace html_names;
-
 HTMLMetaCharsetParser::HTMLMetaCharsetParser()
-    : tokenizer_(HTMLTokenizer::Create(HTMLParserOptions(nullptr))),
+    : tokenizer_(std::make_unique<HTMLTokenizer>(HTMLParserOptions(nullptr))),
       assumed_codec_(NewTextCodec(Latin1Encoding())),
       in_head_section_(true),
       done_checking_(false) {}
@@ -94,22 +92,22 @@ bool HTMLMetaCharsetParser::CheckForMetaCharset(const char* data,
           AttemptStaticStringCreation(token_.GetName(), kLikely8Bit);
       if (!end) {
         tokenizer_->UpdateStateFor(tag_name);
-        if (ThreadSafeMatch(tag_name, kMetaTag) && ProcessMeta()) {
+        if (ThreadSafeMatch(tag_name, html_names::kMetaTag) && ProcessMeta()) {
           done_checking_ = true;
           return true;
         }
       }
 
-      if (!ThreadSafeMatch(tag_name, kScriptTag) &&
-          !ThreadSafeMatch(tag_name, kNoscriptTag) &&
-          !ThreadSafeMatch(tag_name, kStyleTag) &&
-          !ThreadSafeMatch(tag_name, kLinkTag) &&
-          !ThreadSafeMatch(tag_name, kMetaTag) &&
-          !ThreadSafeMatch(tag_name, kObjectTag) &&
-          !ThreadSafeMatch(tag_name, kTitleTag) &&
-          !ThreadSafeMatch(tag_name, kBaseTag) &&
-          (end || !ThreadSafeMatch(tag_name, kHTMLTag)) &&
-          (end || !ThreadSafeMatch(tag_name, kHeadTag))) {
+      if (!ThreadSafeMatch(tag_name, html_names::kScriptTag) &&
+          !ThreadSafeMatch(tag_name, html_names::kNoscriptTag) &&
+          !ThreadSafeMatch(tag_name, html_names::kStyleTag) &&
+          !ThreadSafeMatch(tag_name, html_names::kLinkTag) &&
+          !ThreadSafeMatch(tag_name, html_names::kMetaTag) &&
+          !ThreadSafeMatch(tag_name, html_names::kObjectTag) &&
+          !ThreadSafeMatch(tag_name, html_names::kTitleTag) &&
+          !ThreadSafeMatch(tag_name, html_names::kBaseTag) &&
+          (end || !ThreadSafeMatch(tag_name, html_names::kHTMLTag)) &&
+          (end || !ThreadSafeMatch(tag_name, html_names::kHeadTag))) {
         in_head_section_ = false;
       }
     }

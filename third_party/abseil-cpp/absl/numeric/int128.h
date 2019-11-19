@@ -5,7 +5,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//      http://www.apache.org/licenses/LICENSE-2.0
+//      https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,8 +19,8 @@
 //
 // This header file defines 128-bit integer types.
 //
-// Currently, this file defines `uint128`, an unsigned 128-bit integer; a signed
-// 128-bit integer is forthcoming.
+// Currently, this file defines `uint128`, an unsigned 128-bit integer;
+// a signed 128-bit integer is forthcoming.
 
 #ifndef ABSL_NUMERIC_INT128_H_
 #define ABSL_NUMERIC_INT128_H_
@@ -52,7 +52,6 @@
 #endif  // defined(_MSC_VER)
 
 namespace absl {
-
 
 // uint128
 //

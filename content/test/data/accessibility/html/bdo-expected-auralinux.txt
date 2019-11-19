@@ -1,6 +1,6 @@
 [document web]
 ++[section]
-++++[text] name='Some LTR text'
-++++[text] name=' '
-++++[text] name='Some RTL text '
-++++[text] name='with some LTR text embedded'
+++++[static] name='Some LTR text'
+++++[static] name=' '
+++++[static] name='Some RTL text '
+++++[static] name='with some LTR text embedded'

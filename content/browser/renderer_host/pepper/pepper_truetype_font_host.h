@@ -62,7 +62,7 @@ class CONTENT_EXPORT PepperTrueTypeFontHost : public ppapi::host::ResourceHost {
   scoped_refptr<PepperTrueTypeFont> font_;
   bool initialize_completed_;
 
-  base::WeakPtrFactory<PepperTrueTypeFontHost> weak_factory_;
+  base::WeakPtrFactory<PepperTrueTypeFontHost> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PepperTrueTypeFontHost);
 };

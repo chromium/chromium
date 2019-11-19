@@ -4,6 +4,9 @@
 
 #include "ui/views/layout/grid_layout.h"
 
+#include <memory>
+#include <utility>
+
 #include "base/compiler_specific.h"
 #include "base/test/gtest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -21,8 +24,8 @@ void ExpectViewBoundsEquals(int x, int y, int w, int h,
   EXPECT_EQ(h, view->height());
 }
 
-View* CreateSizedView(const gfx::Size& size) {
-  auto* view = new View();
+std::unique_ptr<View> CreateSizedView(const gfx::Size& size) {
+  auto view = std::make_unique<View>();
   view->SetPreferredSize(size);
   return view;
 }
@@ -42,8 +45,9 @@ class MinSizeView : public View {
   DISALLOW_COPY_AND_ASSIGN(MinSizeView);
 };
 
-View* CreateViewWithMinAndPref(const gfx::Size& min, const gfx::Size& pref) {
-  MinSizeView* view = new MinSizeView(min);
+std::unique_ptr<MinSizeView> CreateViewWithMinAndPref(const gfx::Size& min,
+                                                      const gfx::Size& pref) {
+  auto view = std::make_unique<MinSizeView>(min);
   view->SetPreferredSize(pref);
   return view;
 }
@@ -65,7 +69,7 @@ class LayoutOnAddView : public View {
       return;
 
     // Contrive a realistic thing that a View might what to do, but which would
-    // break the layout machinery. Note an override of OnNativeThemeChanged()
+    // break the layout machinery. Note an override of OnThemeChanged()
     // would be more compelling, but there is no Widget in this test harness.
     SetPreferredSize(target_size_);
     PreferredSizeChanged();
@@ -99,58 +103,47 @@ class FlexibleView : public View {
 
 class GridLayoutTest : public testing::Test {
  public:
-  GridLayoutTest() {
-    layout_ =
-        host_.SetLayoutManager(std::make_unique<views::GridLayout>(&host_));
+  GridLayoutTest() : host_(std::make_unique<View>()) {
+    layout_ = host_->SetLayoutManager(std::make_unique<views::GridLayout>());
   }
 
-  void RemoveAll() {
-    for (int i = host_.child_count() - 1; i >= 0; i--)
-      host_.RemoveChildView(host_.child_at(i));
+  gfx::Size GetPreferredSize() {
+    return layout_->GetPreferredSize(host_.get());
   }
 
-  gfx::Size GetPreferredSize() { return layout_->GetPreferredSize(&host_); }
-
-  View& host() { return host_; }
+  View* host() { return host_.get(); }
   GridLayout* layout() { return layout_; }
 
  private:
-  View host_;
+  std::unique_ptr<View> host_;
   GridLayout* layout_;
 };
 
 class GridLayoutAlignmentTest : public testing::Test {
  public:
-  GridLayoutAlignmentTest() {
-    layout_ =
-        host_.SetLayoutManager(std::make_unique<views::GridLayout>(&host_));
-    v1_.SetPreferredSize(gfx::Size(10, 20));
-  }
-
-  void RemoveAll() {
-    for (int i = host_.child_count() - 1; i >= 0; i--)
-      host_.RemoveChildView(host_.child_at(i));
+  GridLayoutAlignmentTest() : host_(std::make_unique<View>()) {
+    layout_ = host_->SetLayoutManager(std::make_unique<views::GridLayout>());
   }
 
   void TestAlignment(GridLayout::Alignment alignment, gfx::Rect* bounds) {
+    auto v1 = std::make_unique<View>();
+    v1->SetPreferredSize(gfx::Size(10, 20));
     ColumnSet* c1 = layout_->AddColumnSet(0);
     c1->AddColumn(alignment, alignment, 1, GridLayout::USE_PREF, 0, 0);
     layout_->StartRow(1, 0);
-    layout_->AddView(&v1_);
-    gfx::Size pref = layout_->GetPreferredSize(&host_);
+    auto* v1_ptr = layout_->AddView(std::move(v1));
+    gfx::Size pref = layout_->GetPreferredSize(host_.get());
     EXPECT_EQ(gfx::Size(10, 20), pref);
-    host_.SetBounds(0, 0, 100, 100);
-    layout_->Layout(&host_);
-    *bounds = v1_.bounds();
-    RemoveAll();
+    host_->SetBounds(0, 0, 100, 100);
+    layout_->Layout(host_.get());
+    *bounds = v1_ptr->bounds();
   }
 
-  View& host() { return host_; }
+  View* host() { return host_.get(); }
   GridLayout* layout() { return layout_; }
 
  private:
-  View host_;
-  View v1_;
+  std::unique_ptr<View> host_;
   GridLayout* layout_;
 };
 
@@ -179,38 +172,28 @@ TEST_F(GridLayoutAlignmentTest, Trailing) {
 }
 
 TEST_F(GridLayoutTest, TwoColumns) {
-  View v1;
-  v1.SetPreferredSize(gfx::Size(10, 20));
-  View v2;
-  v2.SetPreferredSize(gfx::Size(20, 20));
+  auto v1 = CreateSizedView(gfx::Size(10, 20));
+  auto v2 = CreateSizedView(gfx::Size(20, 20));
   ColumnSet* c1 = layout()->AddColumnSet(0);
   c1->AddColumn(GridLayout::LEADING, GridLayout::LEADING,
                 0, GridLayout::USE_PREF, 0, 0);
   c1->AddColumn(GridLayout::LEADING, GridLayout::LEADING,
                 0, GridLayout::USE_PREF, 0, 0);
   layout()->StartRow(0, 0);
-  layout()->AddView(&v1);
-  layout()->AddView(&v2);
+  auto* v1_ptr = layout()->AddView(std::move(v1));
+  auto* v2_ptr = layout()->AddView(std::move(v2));
 
   gfx::Size pref = GetPreferredSize();
   EXPECT_EQ(gfx::Size(30, 20), pref);
 
-  host().SetBounds(0, 0, pref.width(), pref.height());
-  layout()->Layout(&host());
-  ExpectViewBoundsEquals(0, 0, 10, 20, &v1);
-  ExpectViewBoundsEquals(10, 0, 20, 20, &v2);
-
-  RemoveAll();
+  host()->SetBounds(0, 0, pref.width(), pref.height());
+  layout()->Layout(host());
+  ExpectViewBoundsEquals(0, 0, 10, 20, v1_ptr);
+  ExpectViewBoundsEquals(10, 0, 20, 20, v2_ptr);
 }
 
 // Test linked column sizes, and the column size limit.
 TEST_F(GridLayoutTest, LinkedSizes) {
-  View v1;
-  v1.SetPreferredSize(gfx::Size(10, 20));
-  View v2;
-  v2.SetPreferredSize(gfx::Size(20, 20));
-  View v3;
-  v3.SetPreferredSize(gfx::Size(0, 20));
   ColumnSet* c1 = layout()->AddColumnSet(0);
 
   // Fill widths.
@@ -222,141 +205,119 @@ TEST_F(GridLayoutTest, LinkedSizes) {
                 0, 0);
 
   layout()->StartRow(0, 0);
-  layout()->AddView(&v1);
-  layout()->AddView(&v2);
-  layout()->AddView(&v3);
+  auto* v1 = layout()->AddView(CreateSizedView(gfx::Size(10, 20)));
+  auto* v2 = layout()->AddView(CreateSizedView(gfx::Size(20, 20)));
+  auto* v3 = layout()->AddView(CreateSizedView(gfx::Size(0, 20)));
 
   // Link all the columns.
-  c1->LinkColumnSizes(0, 1, 2, -1);
+  c1->LinkColumnSizes({0, 1, 2});
   gfx::Size pref = GetPreferredSize();
 
   // |v1| and |v3| should obtain the same width as |v2|, since |v2| is largest.
   pref = GetPreferredSize();
   EXPECT_EQ(gfx::Size(20 + 20 + 20, 20), pref);
-  host().SetBounds(0, 0, pref.width(), pref.height());
-  layout()->Layout(&host());
-  ExpectViewBoundsEquals(0, 0, 20, 20, &v1);
-  ExpectViewBoundsEquals(20, 0, 20, 20, &v2);
-  ExpectViewBoundsEquals(40, 0, 20, 20, &v3);
+  host()->SetBounds(0, 0, pref.width(), pref.height());
+  layout()->Layout(host());
+  ExpectViewBoundsEquals(0, 0, 20, 20, v1);
+  ExpectViewBoundsEquals(20, 0, 20, 20, v2);
+  ExpectViewBoundsEquals(40, 0, 20, 20, v3);
 
   // If the limit is zero, behaves as though the columns are not linked.
   c1->set_linked_column_size_limit(0);
   pref = GetPreferredSize();
   EXPECT_EQ(gfx::Size(10 + 20 + 0, 20), pref);
-  host().SetBounds(0, 0, pref.width(), pref.height());
-  layout()->Layout(&host());
-  ExpectViewBoundsEquals(0, 0, 10, 20, &v1);
-  ExpectViewBoundsEquals(10, 0, 20, 20, &v2);
-  ExpectViewBoundsEquals(30, 0, 0, 20, &v3);
+  host()->SetBounds(0, 0, pref.width(), pref.height());
+  layout()->Layout(host());
+  ExpectViewBoundsEquals(0, 0, 10, 20, v1);
+  ExpectViewBoundsEquals(10, 0, 20, 20, v2);
+  ExpectViewBoundsEquals(30, 0, 0, 20, v3);
 
   // Set a size limit.
   c1->set_linked_column_size_limit(40);
-  v1.SetPreferredSize(gfx::Size(35, 20));
+  v1->SetPreferredSize(gfx::Size(35, 20));
 
   // |v1| now dominates, but it is still below the limit.
   pref = GetPreferredSize();
   EXPECT_EQ(gfx::Size(35 + 35 + 35, 20), pref);
-  host().SetBounds(0, 0, pref.width(), pref.height());
-  layout()->Layout(&host());
-  ExpectViewBoundsEquals(0, 0, 35, 20, &v1);
-  ExpectViewBoundsEquals(35, 0, 35, 20, &v2);
-  ExpectViewBoundsEquals(70, 0, 35, 20, &v3);
+  host()->SetBounds(0, 0, pref.width(), pref.height());
+  layout()->Layout(host());
+  ExpectViewBoundsEquals(0, 0, 35, 20, v1);
+  ExpectViewBoundsEquals(35, 0, 35, 20, v2);
+  ExpectViewBoundsEquals(70, 0, 35, 20, v3);
 
   // Go over the limit. |v1| shouldn't influence size at all, but the others
   // should still be linked to the next largest width.
-  v1.SetPreferredSize(gfx::Size(45, 20));
+  v1->SetPreferredSize(gfx::Size(45, 20));
   pref = GetPreferredSize();
   EXPECT_EQ(gfx::Size(45 + 20 + 20, 20), pref);
-  host().SetBounds(0, 0, pref.width(), pref.height());
-  layout()->Layout(&host());
-  ExpectViewBoundsEquals(0, 0, 45, 20, &v1);
-  ExpectViewBoundsEquals(45, 0, 20, 20, &v2);
-  ExpectViewBoundsEquals(65, 0, 20, 20, &v3);
-
-  RemoveAll();
+  host()->SetBounds(0, 0, pref.width(), pref.height());
+  layout()->Layout(host());
+  ExpectViewBoundsEquals(0, 0, 45, 20, v1);
+  ExpectViewBoundsEquals(45, 0, 20, 20, v2);
+  ExpectViewBoundsEquals(65, 0, 20, 20, v3);
 }
 
 TEST_F(GridLayoutTest, ColSpan1) {
-  View v1;
-  v1.SetPreferredSize(gfx::Size(100, 20));
-  View v2;
-  v2.SetPreferredSize(gfx::Size(10, 40));
   ColumnSet* c1 = layout()->AddColumnSet(0);
   c1->AddColumn(GridLayout::LEADING, GridLayout::LEADING,
                 0, GridLayout::USE_PREF, 0, 0);
   c1->AddColumn(GridLayout::LEADING, GridLayout::LEADING,
                 1, GridLayout::USE_PREF, 0, 0);
   layout()->StartRow(0, 0);
-  layout()->AddView(&v1, 2, 1);
+  auto* v1 = layout()->AddView(CreateSizedView(gfx::Size(100, 20)), 2, 1);
   layout()->StartRow(0, 0);
-  layout()->AddView(&v2);
+  auto* v2 = layout()->AddView(CreateSizedView(gfx::Size(10, 40)));
 
   gfx::Size pref = GetPreferredSize();
   EXPECT_EQ(gfx::Size(100, 60), pref);
 
-  host().SetBounds(0, 0, pref.width(), pref.height());
-  layout()->Layout(&host());
-  ExpectViewBoundsEquals(0, 0, 100, 20, &v1);
-  ExpectViewBoundsEquals(0, 20, 10, 40, &v2);
-
-  RemoveAll();
+  host()->SetBounds(0, 0, pref.width(), pref.height());
+  layout()->Layout(host());
+  ExpectViewBoundsEquals(0, 0, 100, 20, v1);
+  ExpectViewBoundsEquals(0, 20, 10, 40, v2);
 }
 
 TEST_F(GridLayoutTest, ColSpan2) {
-  View v1;
-  v1.SetPreferredSize(gfx::Size(100, 20));
-  View v2;
-  v2.SetPreferredSize(gfx::Size(10, 20));
   ColumnSet* c1 = layout()->AddColumnSet(0);
   c1->AddColumn(GridLayout::LEADING, GridLayout::LEADING,
                 1, GridLayout::USE_PREF, 0, 0);
   c1->AddColumn(GridLayout::LEADING, GridLayout::LEADING,
                 0, GridLayout::USE_PREF, 0, 0);
   layout()->StartRow(0, 0);
-  layout()->AddView(&v1, 2, 1);
+  auto* v1 = layout()->AddView(CreateSizedView(gfx::Size(100, 20)), 2, 1);
   layout()->StartRow(0, 0);
   layout()->SkipColumns(1);
-  layout()->AddView(&v2);
+  auto* v2 = layout()->AddView(CreateSizedView(gfx::Size(10, 20)));
 
   gfx::Size pref = GetPreferredSize();
   EXPECT_EQ(gfx::Size(100, 40), pref);
 
-  host().SetBounds(0, 0, pref.width(), pref.height());
-  layout()->Layout(&host());
-  ExpectViewBoundsEquals(0, 0, 100, 20, &v1);
-  ExpectViewBoundsEquals(90, 20, 10, 20, &v2);
-
-  RemoveAll();
+  host()->SetBounds(0, 0, pref.width(), pref.height());
+  layout()->Layout(host());
+  ExpectViewBoundsEquals(0, 0, 100, 20, v1);
+  ExpectViewBoundsEquals(90, 20, 10, 20, v2);
 }
 
 TEST_F(GridLayoutTest, ColSpan3) {
-  View v1;
-  v1.SetPreferredSize(gfx::Size(100, 20));
-  View v2;
-  v2.SetPreferredSize(gfx::Size(10, 20));
-  View v3;
-  v3.SetPreferredSize(gfx::Size(10, 20));
   ColumnSet* c1 = layout()->AddColumnSet(0);
   c1->AddColumn(GridLayout::LEADING, GridLayout::LEADING,
                 0, GridLayout::USE_PREF, 0, 0);
   c1->AddColumn(GridLayout::LEADING, GridLayout::LEADING,
                 0, GridLayout::USE_PREF, 0, 0);
   layout()->StartRow(0, 0);
-  layout()->AddView(&v1, 2, 1);
+  auto* v1 = layout()->AddView(CreateSizedView(gfx::Size(100, 20)), 2, 1);
   layout()->StartRow(0, 0);
-  layout()->AddView(&v2);
-  layout()->AddView(&v3);
+  auto* v2 = layout()->AddView(CreateSizedView(gfx::Size(10, 20)));
+  auto* v3 = layout()->AddView(CreateSizedView(gfx::Size(10, 20)));
 
   gfx::Size pref = GetPreferredSize();
   EXPECT_EQ(gfx::Size(100, 40), pref);
 
-  host().SetBounds(0, 0, pref.width(), pref.height());
-  layout()->Layout(&host());
-  ExpectViewBoundsEquals(0, 0, 100, 20, &v1);
-  ExpectViewBoundsEquals(0, 20, 10, 20, &v2);
-  ExpectViewBoundsEquals(50, 20, 10, 20, &v3);
-
-  RemoveAll();
+  host()->SetBounds(0, 0, pref.width(), pref.height());
+  layout()->Layout(host());
+  ExpectViewBoundsEquals(0, 0, 100, 20, v1);
+  ExpectViewBoundsEquals(0, 20, 10, 20, v2);
+  ExpectViewBoundsEquals(50, 20, 10, 20, v3);
 }
 
 
@@ -368,28 +329,20 @@ TEST_F(GridLayoutTest, ColSpan4) {
   set->AddColumn(GridLayout::LEADING, GridLayout::LEADING, 0,
                  GridLayout::USE_PREF, 0, 0);
 
-  View v1;
-  v1.SetPreferredSize(gfx::Size(10, 10));
-  View v2;
-  v2.SetPreferredSize(gfx::Size(10, 10));
-  View v3;
-  v3.SetPreferredSize(gfx::Size(25, 20));
   layout()->StartRow(0, 0);
-  layout()->AddView(&v1);
-  layout()->AddView(&v2);
+  auto* v1 = layout()->AddView(CreateSizedView(gfx::Size(10, 10)));
+  auto* v2 = layout()->AddView(CreateSizedView(gfx::Size(10, 10)));
   layout()->StartRow(0, 0);
-  layout()->AddView(&v3, 2, 1);
+  auto* v3 = layout()->AddView(CreateSizedView(gfx::Size(25, 20)), 2, 1);
 
   gfx::Size pref = GetPreferredSize();
   EXPECT_EQ(gfx::Size(25, 30), pref);
 
-  host().SetBounds(0, 0, pref.width(), pref.height());
-  layout()->Layout(&host());
-  ExpectViewBoundsEquals(0, 0, 10, 10, &v1);
-  ExpectViewBoundsEquals(12, 0, 10, 10, &v2);
-  ExpectViewBoundsEquals(0, 10, 25, 20, &v3);
-
-  RemoveAll();
+  host()->SetBounds(0, 0, pref.width(), pref.height());
+  layout()->Layout(host());
+  ExpectViewBoundsEquals(0, 0, 10, 10, v1);
+  ExpectViewBoundsEquals(12, 0, 10, 10, v2);
+  ExpectViewBoundsEquals(0, 10, 25, 20, v3);
 }
 
 // Verifies the sizing of a view that doesn't start in the first column
@@ -404,105 +357,74 @@ TEST_F(GridLayoutTest, ColSpanStartSecondColumn) {
   set->AddColumn(GridLayout::FILL, GridLayout::FILL, 0,
                  GridLayout::FIXED, 10, 0);
 
-  View v1;
-  v1.SetPreferredSize(gfx::Size(10, 10));
-  View v2;
-  v2.SetPreferredSize(gfx::Size(20, 10));
-
   layout()->StartRow(0, 0);
-  layout()->AddView(&v1);
-  layout()->AddView(&v2, 2, 1);
+  auto* v1 = layout()->AddView(CreateSizedView(gfx::Size(10, 10)));
+  auto* v2 = layout()->AddView(CreateSizedView(gfx::Size(20, 10)), 2, 1);
 
   gfx::Size pref = GetPreferredSize();
   EXPECT_EQ(gfx::Size(30, 10), pref);
 
-  host().SetBounds(0, 0, pref.width(), pref.height());
-  layout()->Layout(&host());
-  ExpectViewBoundsEquals(0, 0, 10, 10, &v1);
-  ExpectViewBoundsEquals(10, 0, 20, 10, &v2);
-
-  RemoveAll();
+  host()->SetBounds(0, 0, pref.width(), pref.height());
+  layout()->Layout(host());
+  ExpectViewBoundsEquals(0, 0, 10, 10, v1);
+  ExpectViewBoundsEquals(10, 0, 20, 10, v2);
 }
 
 TEST_F(GridLayoutTest, SameSizeColumns) {
-  View v1;
-  v1.SetPreferredSize(gfx::Size(50, 20));
-  View v2;
-  v2.SetPreferredSize(gfx::Size(10, 10));
   ColumnSet* c1 = layout()->AddColumnSet(0);
   c1->AddColumn(GridLayout::LEADING, GridLayout::LEADING,
                 0, GridLayout::USE_PREF, 0, 0);
   c1->AddColumn(GridLayout::LEADING, GridLayout::LEADING,
                 0, GridLayout::USE_PREF, 0, 0);
-  c1->LinkColumnSizes(0, 1, -1);
+  c1->LinkColumnSizes({0, 1});
   layout()->StartRow(0, 0);
-  layout()->AddView(&v1);
-  layout()->AddView(&v2);
+  auto* v1 = layout()->AddView(CreateSizedView(gfx::Size(50, 20)));
+  auto* v2 = layout()->AddView(CreateSizedView(gfx::Size(10, 10)));
 
   gfx::Size pref = GetPreferredSize();
   EXPECT_EQ(gfx::Size(100, 20), pref);
 
-  host().SetBounds(0, 0, pref.width(), pref.height());
-  layout()->Layout(&host());
-  ExpectViewBoundsEquals(0, 0, 50, 20, &v1);
-  ExpectViewBoundsEquals(50, 0, 10, 10, &v2);
-
-  RemoveAll();
+  host()->SetBounds(0, 0, pref.width(), pref.height());
+  layout()->Layout(host());
+  ExpectViewBoundsEquals(0, 0, 50, 20, v1);
+  ExpectViewBoundsEquals(50, 0, 10, 10, v2);
 }
 
 TEST_F(GridLayoutTest, HorizontalResizeTest1) {
-  View v1;
-  v1.SetPreferredSize(gfx::Size(50, 20));
-  View v2;
-  v2.SetPreferredSize(gfx::Size(10, 10));
   ColumnSet* c1 = layout()->AddColumnSet(0);
   c1->AddColumn(GridLayout::FILL, GridLayout::LEADING,
                 1, GridLayout::USE_PREF, 0, 0);
   c1->AddColumn(GridLayout::LEADING, GridLayout::LEADING,
                 0, GridLayout::USE_PREF, 0, 0);
   layout()->StartRow(0, 0);
-  layout()->AddView(&v1);
-  layout()->AddView(&v2);
+  auto* v1 = layout()->AddView(CreateSizedView(gfx::Size(50, 20)));
+  auto* v2 = layout()->AddView(CreateSizedView(gfx::Size(10, 10)));
 
-  host().SetBounds(0, 0, 110, 20);
-  layout()->Layout(&host());
-  ExpectViewBoundsEquals(0, 0, 100, 20, &v1);
-  ExpectViewBoundsEquals(100, 0, 10, 10, &v2);
-
-  RemoveAll();
+  host()->SetBounds(0, 0, 110, 20);
+  layout()->Layout(host());
+  ExpectViewBoundsEquals(0, 0, 100, 20, v1);
+  ExpectViewBoundsEquals(100, 0, 10, 10, v2);
 }
 
 TEST_F(GridLayoutTest, HorizontalResizeTest2) {
-  View v1;
-  v1.SetPreferredSize(gfx::Size(50, 20));
-  View v2;
-  v2.SetPreferredSize(gfx::Size(10, 10));
   ColumnSet* c1 = layout()->AddColumnSet(0);
   c1->AddColumn(GridLayout::FILL, GridLayout::LEADING,
                 1, GridLayout::USE_PREF, 0, 0);
   c1->AddColumn(GridLayout::TRAILING, GridLayout::LEADING,
                 1, GridLayout::USE_PREF, 0, 0);
   layout()->StartRow(0, 0);
-  layout()->AddView(&v1);
-  layout()->AddView(&v2);
+  auto* v1 = layout()->AddView(CreateSizedView(gfx::Size(50, 20)));
+  auto* v2 = layout()->AddView(CreateSizedView(gfx::Size(10, 10)));
 
-  host().SetBounds(0, 0, 120, 20);
-  layout()->Layout(&host());
-  ExpectViewBoundsEquals(0, 0, 80, 20, &v1);
-  ExpectViewBoundsEquals(110, 0, 10, 10, &v2);
-
-  RemoveAll();
+  host()->SetBounds(0, 0, 120, 20);
+  layout()->Layout(host());
+  ExpectViewBoundsEquals(0, 0, 80, 20, v1);
+  ExpectViewBoundsEquals(110, 0, 10, 10, v2);
 }
 
 // Tests that space leftover due to rounding is distributed to the last
 // resizable column.
 TEST_F(GridLayoutTest, HorizontalResizeTest3) {
-  View v1;
-  v1.SetPreferredSize(gfx::Size(10, 10));
-  View v2;
-  v2.SetPreferredSize(gfx::Size(10, 10));
-  View v3;
-  v3.SetPreferredSize(gfx::Size(10, 10));
   ColumnSet* c1 = layout()->AddColumnSet(0);
   c1->AddColumn(GridLayout::FILL, GridLayout::LEADING,
                 1, GridLayout::USE_PREF, 0, 0);
@@ -511,106 +433,87 @@ TEST_F(GridLayoutTest, HorizontalResizeTest3) {
   c1->AddColumn(GridLayout::TRAILING, GridLayout::LEADING,
                 0, GridLayout::USE_PREF, 0, 0);
   layout()->StartRow(0, 0);
-  layout()->AddView(&v1);
-  layout()->AddView(&v2);
-  layout()->AddView(&v3);
+  auto* v1 = layout()->AddView(CreateSizedView(gfx::Size(10, 10)));
+  auto* v2 = layout()->AddView(CreateSizedView(gfx::Size(10, 10)));
+  auto* v3 = layout()->AddView(CreateSizedView(gfx::Size(10, 10)));
 
-  host().SetBounds(0, 0, 31, 10);
-  layout()->Layout(&host());
-  ExpectViewBoundsEquals(0, 0, 10, 10, &v1);
-  ExpectViewBoundsEquals(10, 0, 11, 10, &v2);
-  ExpectViewBoundsEquals(21, 0, 10, 10, &v3);
-
-  RemoveAll();
+  host()->SetBounds(0, 0, 31, 10);
+  layout()->Layout(host());
+  ExpectViewBoundsEquals(0, 0, 10, 10, v1);
+  ExpectViewBoundsEquals(10, 0, 11, 10, v2);
+  ExpectViewBoundsEquals(21, 0, 10, 10, v3);
 }
 
 TEST_F(GridLayoutTest, TestVerticalResize1) {
-  View v1;
-  v1.SetPreferredSize(gfx::Size(50, 20));
-  View v2;
-  v2.SetPreferredSize(gfx::Size(10, 10));
   ColumnSet* c1 = layout()->AddColumnSet(0);
   c1->AddColumn(GridLayout::FILL, GridLayout::FILL,
                 1, GridLayout::USE_PREF, 0, 0);
   layout()->StartRow(1, 0);
-  layout()->AddView(&v1);
+  auto* v1 = layout()->AddView(CreateSizedView(gfx::Size(50, 20)));
   layout()->StartRow(0, 0);
-  layout()->AddView(&v2);
+  auto* v2 = layout()->AddView(CreateSizedView(gfx::Size(10, 10)));
 
   gfx::Size pref = GetPreferredSize();
   EXPECT_EQ(gfx::Size(50, 30), pref);
 
-  host().SetBounds(0, 0, 50, 100);
-  layout()->Layout(&host());
-  ExpectViewBoundsEquals(0, 0, 50, 90, &v1);
-  ExpectViewBoundsEquals(0, 90, 50, 10, &v2);
-
-  RemoveAll();
+  host()->SetBounds(0, 0, 50, 100);
+  layout()->Layout(host());
+  ExpectViewBoundsEquals(0, 0, 50, 90, v1);
+  ExpectViewBoundsEquals(0, 90, 50, 10, v2);
 }
 
 TEST_F(GridLayoutTest, Border) {
-  host().SetBorder(CreateEmptyBorder(1, 2, 3, 4));
-  View v1;
-  v1.SetPreferredSize(gfx::Size(10, 20));
+  host()->SetBorder(CreateEmptyBorder(1, 2, 3, 4));
   ColumnSet* c1 = layout()->AddColumnSet(0);
   c1->AddColumn(GridLayout::LEADING, GridLayout::LEADING,
                 0, GridLayout::USE_PREF, 0, 0);
   layout()->StartRow(0, 0);
-  layout()->AddView(&v1);
+  auto* v1 = layout()->AddView(CreateSizedView(gfx::Size(10, 20)));
 
   gfx::Size pref = GetPreferredSize();
   EXPECT_EQ(gfx::Size(16, 24), pref);
 
-  host().SetBounds(0, 0, pref.width(), pref.height());
-  layout()->Layout(&host());
-  ExpectViewBoundsEquals(2, 1, 10, 20, &v1);
-
-  RemoveAll();
+  host()->SetBounds(0, 0, pref.width(), pref.height());
+  layout()->Layout(host());
+  ExpectViewBoundsEquals(2, 1, 10, 20, v1);
 }
 
 TEST_F(GridLayoutTest, FixedSize) {
-  host().SetBorder(CreateEmptyBorder(2, 2, 2, 2));
+  host()->SetBorder(CreateEmptyBorder(2, 2, 2, 2));
 
   ColumnSet* set = layout()->AddColumnSet(0);
 
-  int column_count = 4;
-  int title_width = 100;
-  int row_count = 2;
-  int pref_width = 10;
-  int pref_height = 20;
+  constexpr size_t kRowCount = 2;
+  constexpr size_t kColumnCount = 4;
+  constexpr int kTitleWidth = 100;
+  constexpr int kPrefWidth = 10;
+  constexpr int kPrefHeight = 20;
 
-  for (int i = 0; i < column_count; ++i) {
-    set->AddColumn(GridLayout::CENTER,
-                   GridLayout::CENTER,
-                   0,
-                   GridLayout::FIXED,
-                   title_width,
-                   title_width);
+  for (size_t i = 0; i < kColumnCount; ++i) {
+    set->AddColumn(GridLayout::CENTER, GridLayout::CENTER, 0, GridLayout::FIXED,
+                   kTitleWidth, kTitleWidth);
   }
 
-  for (int row = 0; row < row_count; ++row) {
+  for (size_t row = 0; row < kRowCount; ++row) {
     layout()->StartRow(0, 0);
-    for (int col = 0; col < column_count; ++col) {
-      layout()->AddView(CreateSizedView(gfx::Size(pref_width, pref_height)));
-    }
+    for (size_t column = 0; column < kColumnCount; ++column)
+      layout()->AddView(CreateSizedView(gfx::Size(kPrefWidth, kPrefHeight)));
   }
 
-  layout()->Layout(&host());
+  layout()->Layout(host());
 
-  for (int i = 0; i < column_count; ++i) {
-    for (int row = 0; row < row_count; ++row) {
-      View* view = host().child_at(row * column_count + i);
+  auto i = host()->children().cbegin();
+  for (size_t row = 0; row < kRowCount; ++row) {
+    for (size_t column = 0; column < kColumnCount; ++column, ++i) {
       ExpectViewBoundsEquals(
-          2 + title_width * i + (title_width - pref_width) / 2,
-          2 + pref_height * row,
-          pref_width,
-          pref_height, view);
+          2 + kTitleWidth * column + (kTitleWidth - kPrefWidth) / 2,
+          2 + kPrefHeight * row, kPrefWidth, kPrefHeight, *i);
     }
   }
 
-  gfx::Size pref = GetPreferredSize();
-  EXPECT_EQ(gfx::Size(column_count * title_width + 4,
-                      row_count * pref_height + 4), pref);
+  EXPECT_EQ(
+      gfx::Size(kColumnCount * kTitleWidth + 4, kRowCount * kPrefHeight + 4),
+      GetPreferredSize());
 }
 
 TEST_F(GridLayoutTest, RowSpanWithPaddingRow) {
@@ -648,14 +551,13 @@ TEST_F(GridLayoutTest, RowSpan) {
   layout()->AddView(CreateSizedView(gfx::Size(20, 10)));
   layout()->AddView(CreateSizedView(gfx::Size(20, 40)), 1, 2);
   layout()->StartRow(1, 0);
-  View* s3 = CreateSizedView(gfx::Size(20, 10));
-  layout()->AddView(s3);
+  auto* s3 = layout()->AddView(CreateSizedView(gfx::Size(20, 10)));
 
   gfx::Size pref = GetPreferredSize();
   EXPECT_EQ(gfx::Size(40, 40), pref);
 
-  host().SetBounds(0, 0, pref.width(), pref.height());
-  layout()->Layout(&host());
+  host()->SetBounds(0, 0, pref.width(), pref.height());
+  layout()->Layout(host());
   ExpectViewBoundsEquals(0, 10, 20, 10, s3);
 }
 
@@ -669,8 +571,7 @@ TEST_F(GridLayoutTest, RowSpan2) {
 
   layout()->StartRow(0, 0);
   layout()->AddView(CreateSizedView(gfx::Size(20, 20)));
-  View* s3 = CreateSizedView(gfx::Size(64, 64));
-  layout()->AddView(s3, 1, 3);
+  auto* s3 = layout()->AddView(CreateSizedView(gfx::Size(64, 64)), 1, 3);
 
   layout()->AddPaddingRow(0, 10);
 
@@ -680,8 +581,8 @@ TEST_F(GridLayoutTest, RowSpan2) {
   gfx::Size pref = GetPreferredSize();
   EXPECT_EQ(gfx::Size(84, 64), pref);
 
-  host().SetBounds(0, 0, pref.width(), pref.height());
-  layout()->Layout(&host());
+  host()->SetBounds(0, 0, pref.width(), pref.height());
+  layout()->Layout(host());
   ExpectViewBoundsEquals(20, 0, 64, 64, s3);
 }
 
@@ -694,16 +595,16 @@ TEST_F(GridLayoutTest, FixedViewWidth) {
                  0,GridLayout::USE_PREF, 0, 0);
 
   layout()->StartRow(0, 0);
-  View* view = CreateSizedView(gfx::Size(30, 40));
-  layout()->AddView(view, 1, 1, GridLayout::LEADING, GridLayout::LEADING, 10,
-                    0);
+  auto* view =
+      layout()->AddView(CreateSizedView(gfx::Size(30, 40)), 1, 1,
+                        GridLayout::LEADING, GridLayout::LEADING, 10, 0);
 
   gfx::Size pref = GetPreferredSize();
   EXPECT_EQ(10, pref.width());
   EXPECT_EQ(40, pref.height());
 
-  host().SetBounds(0, 0, pref.width(), pref.height());
-  layout()->Layout(&host());
+  host()->SetBounds(0, 0, pref.width(), pref.height());
+  layout()->Layout(host());
   ExpectViewBoundsEquals(0, 0, 10, 40, view);
 }
 
@@ -716,16 +617,16 @@ TEST_F(GridLayoutTest, FixedViewHeight) {
                  0,GridLayout::USE_PREF, 0, 0);
 
   layout()->StartRow(0, 0);
-  View* view = CreateSizedView(gfx::Size(30, 40));
-  layout()->AddView(view, 1, 1, GridLayout::LEADING, GridLayout::LEADING, 0,
-                    10);
+  auto* view =
+      layout()->AddView(CreateSizedView(gfx::Size(30, 40)), 1, 1,
+                        GridLayout::LEADING, GridLayout::LEADING, 0, 10);
 
   gfx::Size pref = GetPreferredSize();
   EXPECT_EQ(30, pref.width());
   EXPECT_EQ(10, pref.height());
 
-  host().SetBounds(0, 0, pref.width(), pref.height());
-  layout()->Layout(&host());
+  host()->SetBounds(0, 0, pref.width(), pref.height());
+  layout()->Layout(host());
   ExpectViewBoundsEquals(0, 0, 30, 10, view);
 }
 
@@ -741,17 +642,15 @@ TEST_F(GridLayoutTest, ColumnSpanResizing) {
 
   layout()->StartRow(0, 0);
   // span_view spans two columns and is twice as big the views added below.
-  View* span_view = CreateSizedView(gfx::Size(12, 40));
-  layout()->AddView(span_view, 2, 1, GridLayout::LEADING, GridLayout::LEADING);
+  View* span_view = layout()->AddView(CreateSizedView(gfx::Size(12, 40)), 2, 1,
+                                      GridLayout::LEADING, GridLayout::LEADING);
 
   layout()->StartRow(0, 0);
-  View* view1 = CreateSizedView(gfx::Size(2, 40));
-  View* view2 = CreateSizedView(gfx::Size(4, 40));
-  layout()->AddView(view1);
-  layout()->AddView(view2);
+  auto* view1 = layout()->AddView(CreateSizedView(gfx::Size(2, 40)));
+  auto* view2 = layout()->AddView(CreateSizedView(gfx::Size(4, 40)));
 
-  host().SetBounds(0, 0, 12, 80);
-  layout()->Layout(&host());
+  host()->SetBounds(0, 0, 12, 80);
+  layout()->Layout(host());
 
   ExpectViewBoundsEquals(0, 0, 12, 40, span_view);
 
@@ -783,20 +682,20 @@ TEST_F(GridLayoutTest, ColumnResizingOnGetPreferredSize) {
 
   // Make a row containing a flexible view that trades width for height.
   layout()->StartRow(0, 0);
-  View* view1 = new FlexibleView(100);
-  layout()->AddView(view1, 1, 1, GridLayout::FILL, GridLayout::LEADING);
+  layout()->AddView(std::make_unique<FlexibleView>(100), 1, 1, GridLayout::FILL,
+                    GridLayout::LEADING);
 
   // The second row contains a view of fixed size that will enforce a column
   // width of 20 pixels.
   layout()->StartRow(0, 1);
-  View* view2 = CreateSizedView(gfx::Size(20, 20));
-  layout()->AddView(view2, 1, 1, GridLayout::FILL, GridLayout::LEADING);
+  layout()->AddView(CreateSizedView(gfx::Size(20, 20)), 1, 1, GridLayout::FILL,
+                    GridLayout::LEADING);
 
   // Add another flexible view in row three in order to ensure column set
   // ordering doesn't influence sizing behaviour.
   layout()->StartRow(0, 2);
-  View* view3 = new FlexibleView(40);
-  layout()->AddView(view3, 1, 1, GridLayout::FILL, GridLayout::LEADING);
+  layout()->AddView(std::make_unique<FlexibleView>(40), 1, 1, GridLayout::FILL,
+                    GridLayout::LEADING);
 
   // We expect a height of 50: 30 from the variable width view in the first row
   // plus 20 from the statically sized view in the second row. The flexible
@@ -805,13 +704,11 @@ TEST_F(GridLayoutTest, ColumnResizingOnGetPreferredSize) {
 }
 
 TEST_F(GridLayoutTest, MinimumPreferredSize) {
-  View v1;
-  v1.SetPreferredSize(gfx::Size(10, 20));
   ColumnSet* set = layout()->AddColumnSet(0);
   set->AddColumn(GridLayout::FILL, GridLayout::FILL,
                  0, GridLayout::USE_PREF, 0, 0);
   layout()->StartRow(0, 0);
-  layout()->AddView(&v1);
+  layout()->AddView(CreateSizedView(gfx::Size(10, 20)));
 
   gfx::Size pref = GetPreferredSize();
   EXPECT_EQ(gfx::Size(10, 20), pref);
@@ -819,8 +716,6 @@ TEST_F(GridLayoutTest, MinimumPreferredSize) {
   layout()->set_minimum_size(gfx::Size(40, 40));
   pref = GetPreferredSize();
   EXPECT_EQ(gfx::Size(40, 40), pref);
-
-  RemoveAll();
 }
 
 // Test that attempting a Layout() while nested in AddView() causes a DCHECK.
@@ -831,17 +726,15 @@ TEST_F(GridLayoutTest, LayoutOnAddDeath) {
   set->AddColumn(GridLayout::FILL, GridLayout::FILL, 0, GridLayout::USE_PREF, 0,
                  0);
   layout()->StartRow(0, 0);
-  LayoutOnAddView view;
-  EXPECT_DCHECK_DEATH(layout()->AddView(&view));
+  auto view = std::make_unique<LayoutOnAddView>();
+  EXPECT_DCHECK_DEATH(layout()->AddView(std::move(view)));
   // Death tests use fork(), so nothing should be added here.
-  EXPECT_FALSE(view.parent());
+  EXPECT_FALSE(view->parent());
 
   // If the View has nothing to change, adding should succeed.
-  view.set_target_size(view.GetPreferredSize());
-  layout()->AddView(&view);
-  EXPECT_TRUE(view.parent());
-
-  RemoveAll();
+  view->set_target_size(view->GetPreferredSize());
+  auto* view_ptr = layout()->AddView(std::move(view));
+  EXPECT_TRUE(view_ptr->parent());
 }
 
 TEST_F(GridLayoutTest, ColumnMinForcesPreferredWidth) {
@@ -851,8 +744,7 @@ TEST_F(GridLayoutTest, ColumnMinForcesPreferredWidth) {
   set->AddColumn(GridLayout::FILL, GridLayout::FILL, 5, GridLayout::USE_PREF, 0,
                  100);
   layout()->StartRow(0, 0);
-  View* view1 = CreateSizedView(gfx::Size(20, 10));
-  layout()->AddView(view1);
+  layout()->AddView(CreateSizedView(gfx::Size(20, 10)));
 
   EXPECT_EQ(gfx::Size(100, 10), GetPreferredSize());
 }
@@ -868,26 +760,25 @@ TEST_F(GridLayoutTest, HonorsColumnMin) {
   set->AddColumn(GridLayout::FILL, GridLayout::FILL, 5, GridLayout::USE_PREF, 0,
                  0);
   layout()->StartRow(0, 0);
-  View* view1 = CreateViewWithMinAndPref(gfx::Size(10, 10), gfx::Size(125, 10));
-  layout()->AddView(view1);
-
-  View* view2 = CreateViewWithMinAndPref(gfx::Size(10, 10), gfx::Size(50, 10));
-  layout()->AddView(view2);
+  View* view1 = layout()->AddView(
+      CreateViewWithMinAndPref(gfx::Size(10, 10), gfx::Size(125, 10)));
+  View* view2 = layout()->AddView(
+      CreateViewWithMinAndPref(gfx::Size(10, 10), gfx::Size(50, 10)));
 
   EXPECT_EQ(gfx::Size(175, 10), GetPreferredSize());
 
-  host().SetBounds(0, 0, 175, 0);
-  layout()->Layout(&host());
+  host()->SetBounds(0, 0, 175, 0);
+  layout()->Layout(host());
   EXPECT_EQ(gfx::Rect(0, 0, 125, 10), view1->bounds());
   EXPECT_EQ(gfx::Rect(125, 0, 50, 10), view2->bounds());
 
-  host().SetBounds(0, 0, 125, 0);
-  layout()->Layout(&host());
+  host()->SetBounds(0, 0, 125, 0);
+  layout()->Layout(host());
   EXPECT_EQ(gfx::Rect(0, 0, 100, 10), view1->bounds());
   EXPECT_EQ(gfx::Rect(100, 0, 25, 10), view2->bounds());
 
-  host().SetBounds(0, 0, 120, 0);
-  layout()->Layout(&host());
+  host()->SetBounds(0, 0, 120, 0);
+  layout()->Layout(host());
   EXPECT_EQ(gfx::Rect(0, 0, 100, 10), view1->bounds());
   EXPECT_EQ(gfx::Rect(100, 0, 20, 10), view2->bounds());
 }
@@ -902,15 +793,13 @@ TEST_F(GridLayoutTest, TwoViewsOneSizeSmallerThanMinimum) {
   set->AddColumn(GridLayout::FILL, GridLayout::FILL, 5, GridLayout::USE_PREF, 0,
                  0);
   layout()->StartRow(0, 0);
-  View* view1 = CreateViewWithMinAndPref(gfx::Size(20, 10), gfx::Size(100, 10));
-  layout()->AddView(view1);
+  View* view1 = layout()->AddView(
+      CreateViewWithMinAndPref(gfx::Size(20, 10), gfx::Size(100, 10)));
+  View* view2 = layout()->AddView(
+      CreateViewWithMinAndPref(gfx::Size(100, 10), gfx::Size(100, 10)));
 
-  View* view2 =
-      CreateViewWithMinAndPref(gfx::Size(100, 10), gfx::Size(100, 10));
-  layout()->AddView(view2);
-
-  host().SetBounds(0, 0, 110, 0);
-  layout()->Layout(&host());
+  host()->SetBounds(0, 0, 110, 0);
+  layout()->Layout(host());
   EXPECT_EQ(gfx::Rect(0, 0, 20, 10), view1->bounds());
   EXPECT_EQ(gfx::Rect(20, 0, 100, 10), view2->bounds());
 }
@@ -925,44 +814,43 @@ TEST_F(GridLayoutTest, TwoViewsBothSmallerThanMinimumDifferentResizeWeights) {
   set->AddColumn(GridLayout::FILL, GridLayout::FILL, 2, GridLayout::USE_PREF, 0,
                  0);
   layout()->StartRow(0, 0);
-  View* view1 = CreateViewWithMinAndPref(gfx::Size(91, 10), gfx::Size(100, 10));
-  layout()->AddView(view1);
-
-  View* view2 = CreateViewWithMinAndPref(gfx::Size(10, 10), gfx::Size(100, 10));
-  layout()->AddView(view2);
+  View* view1 = layout()->AddView(
+      CreateViewWithMinAndPref(gfx::Size(91, 10), gfx::Size(100, 10)));
+  View* view2 = layout()->AddView(
+      CreateViewWithMinAndPref(gfx::Size(10, 10), gfx::Size(100, 10)));
 
   // 200 is the preferred, each should get their preferred width.
-  host().SetBounds(0, 0, 200, 0);
-  layout()->Layout(&host());
+  host()->SetBounds(0, 0, 200, 0);
+  layout()->Layout(host());
   EXPECT_EQ(gfx::Rect(0, 0, 100, 10), view1->bounds());
   EXPECT_EQ(gfx::Rect(100, 0, 100, 10), view2->bounds());
 
   // 1 pixel smaller than pref.
-  host().SetBounds(0, 0, 199, 0);
-  layout()->Layout(&host());
+  host()->SetBounds(0, 0, 199, 0);
+  layout()->Layout(host());
   EXPECT_EQ(gfx::Rect(0, 0, 99, 10), view1->bounds());
   EXPECT_EQ(gfx::Rect(99, 0, 100, 10), view2->bounds());
 
   // 10 pixels smaller than pref.
-  host().SetBounds(0, 0, 190, 0);
-  layout()->Layout(&host());
+  host()->SetBounds(0, 0, 190, 0);
+  layout()->Layout(host());
   EXPECT_EQ(gfx::Rect(0, 0, 92, 10), view1->bounds());
   EXPECT_EQ(gfx::Rect(92, 0, 98, 10), view2->bounds());
 
   // 11 pixels smaller than pref.
-  host().SetBounds(0, 0, 189, 0);
-  layout()->Layout(&host());
+  host()->SetBounds(0, 0, 189, 0);
+  layout()->Layout(host());
   EXPECT_EQ(gfx::Rect(0, 0, 91, 10), view1->bounds());
   EXPECT_EQ(gfx::Rect(91, 0, 98, 10), view2->bounds());
 
   // 12 pixels smaller than pref.
-  host().SetBounds(0, 0, 188, 0);
-  layout()->Layout(&host());
+  host()->SetBounds(0, 0, 188, 0);
+  layout()->Layout(host());
   EXPECT_EQ(gfx::Rect(0, 0, 91, 10), view1->bounds());
   EXPECT_EQ(gfx::Rect(91, 0, 97, 10), view2->bounds());
 
-  host().SetBounds(0, 0, 5, 0);
-  layout()->Layout(&host());
+  host()->SetBounds(0, 0, 5, 0);
+  layout()->Layout(host());
   EXPECT_EQ(gfx::Rect(0, 0, 91, 10), view1->bounds());
   EXPECT_EQ(gfx::Rect(91, 0, 10, 10), view2->bounds());
 }
@@ -975,19 +863,19 @@ TEST_F(GridLayoutTest, TwoViewsOneColumnUsePrefOtherFixed) {
   set->AddColumn(GridLayout::FILL, GridLayout::FILL, 2, GridLayout::FIXED, 100,
                  0);
   layout()->StartRow(0, 0);
-  View* view1 = CreateViewWithMinAndPref(gfx::Size(10, 10), gfx::Size(100, 10));
-  layout()->AddView(view1);
-  View* view2 = CreateViewWithMinAndPref(gfx::Size(10, 10), gfx::Size(100, 10));
-  layout()->AddView(view2);
+  View* view1 = layout()->AddView(
+      CreateViewWithMinAndPref(gfx::Size(10, 10), gfx::Size(100, 10)));
+  View* view2 = layout()->AddView(
+      CreateViewWithMinAndPref(gfx::Size(10, 10), gfx::Size(100, 10)));
 
-  host().SetBounds(0, 0, 120, 0);
-  layout()->Layout(&host());
+  host()->SetBounds(0, 0, 120, 0);
+  layout()->Layout(host());
   EXPECT_EQ(gfx::Rect(0, 0, 20, 10), view1->bounds());
   // Even though column 2 has a resize percent, it's FIXED, so it won't shrink.
   EXPECT_EQ(gfx::Rect(20, 0, 100, 10), view2->bounds());
 
-  host().SetBounds(0, 0, 10, 0);
-  layout()->Layout(&host());
+  host()->SetBounds(0, 0, 10, 0);
+  layout()->Layout(host());
   EXPECT_EQ(gfx::Rect(0, 0, 10, 10), view1->bounds());
   EXPECT_EQ(gfx::Rect(10, 0, 100, 10), view2->bounds());
 }
@@ -1000,23 +888,24 @@ TEST_F(GridLayoutTest, TwoViewsBothColumnsResizableOneViewFixedWidthMin) {
   set->AddColumn(GridLayout::FILL, GridLayout::FILL, 1, GridLayout::USE_PREF, 0,
                  0);
   layout()->StartRow(0, 0);
-  View* view1 = CreateViewWithMinAndPref(gfx::Size(10, 10), gfx::Size(100, 10));
-  layout()->AddView(view1);
-  View* view2 = CreateViewWithMinAndPref(gfx::Size(10, 10), gfx::Size(100, 10));
-  layout()->AddView(view2, 1, 1, GridLayout::FILL, GridLayout::FILL, 50, 10);
+  View* view1 = layout()->AddView(
+      CreateViewWithMinAndPref(gfx::Size(10, 10), gfx::Size(100, 10)));
+  View* view2 = layout()->AddView(
+      CreateViewWithMinAndPref(gfx::Size(10, 10), gfx::Size(100, 10)), 1, 1,
+      GridLayout::FILL, GridLayout::FILL, 50, 10);
 
-  host().SetBounds(0, 0, 80, 0);
-  layout()->Layout(&host());
+  host()->SetBounds(0, 0, 80, 0);
+  layout()->Layout(host());
   EXPECT_EQ(gfx::Rect(0, 0, 30, 10), view1->bounds());
   EXPECT_EQ(gfx::Rect(30, 0, 50, 10), view2->bounds());
 
-  host().SetBounds(0, 0, 70, 0);
-  layout()->Layout(&host());
+  host()->SetBounds(0, 0, 70, 0);
+  layout()->Layout(host());
   EXPECT_EQ(gfx::Rect(0, 0, 20, 10), view1->bounds());
   EXPECT_EQ(gfx::Rect(20, 0, 50, 10), view2->bounds());
 
-  host().SetBounds(0, 0, 10, 0);
-  layout()->Layout(&host());
+  host()->SetBounds(0, 0, 10, 0);
+  layout()->Layout(host());
   EXPECT_EQ(gfx::Rect(0, 0, 10, 10), view1->bounds());
   EXPECT_EQ(gfx::Rect(10, 0, 50, 10), view2->bounds());
 }
@@ -1041,15 +930,13 @@ TEST_F(GridLayoutTest, HeightForWidthCalledWhenNotGivenPreferredWidth) {
                  0, 0);
   layout()->StartRow(0, 0);
   const int pref_height = 100;
-  // |view| is owned by parent.
-  SettablePreferredHeightView* view =
-      new SettablePreferredHeightView(pref_height);
+  auto view = std::make_unique<SettablePreferredHeightView>(pref_height);
   const gfx::Size pref(10, 20);
   view->SetPreferredSize(pref);
-  layout()->AddView(view);
+  layout()->AddView(std::move(view));
 
   EXPECT_EQ(pref, GetPreferredSize());
-  EXPECT_EQ(pref_height, host().GetHeightForWidth(5));
+  EXPECT_EQ(pref_height, host()->GetHeightForWidth(5));
 }
 
 }  // namespace views

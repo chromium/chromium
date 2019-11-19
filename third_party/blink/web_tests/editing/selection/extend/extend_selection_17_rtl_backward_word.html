@@ -92,7 +92,13 @@ selection_test(
 selection_test(
   '<div contenteditable dir="rtl">\u202Bcar \u05D3\u05D4\u05D5 \u05D0\u05D1\u05D2.|\u202C</div>',
   selection => selection.modify('extend', 'backward', 'word'),
-  '<div contenteditable dir="rtl">\u202Bcar \u05D3\u05D4\u05D5 |\u05D0\u05D1\u05D2.^\u202C</div>',
+  '<div contenteditable dir="rtl">\u202Bcar \u05D3\u05D4\u05D5 \u05D0\u05D1\u05D2|.^\u202C</div>',
   `${behavior} 17-13 rtl backward word`);
+
+  selection_test(
+  '<div contenteditable dir="rtl">\u202Bcar \u05D3\u05D4\u05D5 \u05D0\u05D1\u05D2|.\u202C</div>',
+  selection => selection.modify('extend', 'backward', 'word'),
+  '<div contenteditable dir="rtl">\u202Bcar \u05D3\u05D4\u05D5 |\u05D0\u05D1\u05D2^.\u202C</div>',
+  `${behavior} 17-14 rtl backward word`);
 }
 </script>

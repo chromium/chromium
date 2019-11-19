@@ -16,7 +16,6 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.ResolveInfo;
 import android.content.pm.Signature;
 import android.os.Bundle;
@@ -233,7 +232,7 @@ public class WebApkValidatorTest {
      * WebAPK and the WebAPK is valid.
      */
     @Test
-    public void testIsValidWebApkReturnsTrueForValidWebApk() throws NameNotFoundException {
+    public void testIsValidWebApkReturnsTrueForValidWebApk() {
         mPackageManager.addPackage(newPackageInfoWithBrowserSignature(
                 WEBAPK_PACKAGE_NAME, new Signature(EXPECTED_SIGNATURE), TEST_STARTURL));
 
@@ -291,8 +290,7 @@ public class WebApkValidatorTest {
      * signatures, even if the second one matches the expected signature.
      */
     @Test
-    public void testIsValidWebApkReturnsFalseForMoreThanTwoSignatures()
-            throws NameNotFoundException {
+    public void testIsValidWebApkReturnsFalseForMoreThanTwoSignatures() {
         Signature[] signatures = new Signature[] {new Signature(SIGNATURE_1),
                 new Signature(EXPECTED_SIGNATURE), new Signature(SIGNATURE_2)};
         mPackageManager.addPackage(
@@ -307,8 +305,7 @@ public class WebApkValidatorTest {
      * signatures but none of the signatures match the expected signature.
      */
     @Test
-    public void testIsValidWebApkReturnsFalseForWebApkWithMultipleSignaturesWithoutAnyMatched()
-            throws NameNotFoundException {
+    public void testIsValidWebApkReturnsFalseForWebApkWithMultipleSignaturesWithoutAnyMatched() {
         Signature signatures[] =
                 new Signature[] {new Signature(SIGNATURE_1), new Signature(SIGNATURE_2)};
         mPackageManager.addPackage(

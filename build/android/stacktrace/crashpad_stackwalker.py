@@ -18,15 +18,18 @@ import shutil
 import subprocess
 import tempfile
 
-sys.path.append(
-    os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir)))
+_BUILD_ANDROID_PATH = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), '..'))
+sys.path.append(_BUILD_ANDROID_PATH)
 import devil_chromium
 from devil.android import device_utils
+from devil.utils import timeout_retry
 
 
 def _CreateSymbolsDir(build_path, dynamic_library_names):
-  generator = os.path.join('components', 'crash', 'content', 'tools',
-                           'generate_breakpad_symbols.py')
+  generator = os.path.normpath(
+      os.path.join(_BUILD_ANDROID_PATH, '..', '..', 'components', 'crash',
+                   'content', 'tools', 'generate_breakpad_symbols.py'))
   syms_dir = os.path.join(build_path, 'crashpad_syms')
   shutil.rmtree(syms_dir, ignore_errors=True)
   os.mkdir(syms_dir)
@@ -43,6 +46,8 @@ def _CreateSymbolsDir(build_path, dynamic_library_names):
         build_path,
         '--binary',
         unstripped_library_path,
+        '--platform',
+        'android',
     ]
     return_code = subprocess.call(cmd)
     if return_code != 0:
@@ -72,8 +77,9 @@ def _ExtractLibraryNamesFromDump(build_path, dump_path):
   default_library_name = 'libmonochrome.so'
   dumper_path = os.path.join(build_path, 'minidump_dump')
   if not os.access(dumper_path, os.X_OK):
-    logging.warning('Cannot extract library name from dump, default to: %s',
-                    default_library_name)
+    logging.warning(
+        'Cannot extract library name from dump because %s is not found, '
+        'default to: %s', dumper_path, default_library_name)
     return [default_library_name]
   p = subprocess.Popen([dumper_path, dump_path],
                        stdout=subprocess.PIPE,
@@ -88,7 +94,7 @@ def _ExtractLibraryNamesFromDump(build_path, dump_path):
                                       r'"(?P<library_name>lib[^. ]+.so)"')
   in_module = False
   for line in stdout.splitlines():
-    line = line.rstrip('\n')
+    line = line.lstrip().rstrip('\n')
     if line == 'MDRawModule':
       in_module = True
       continue
@@ -125,35 +131,43 @@ def main():
       help='Directory on the device where Chrome stores cached files,'
       ' crashpad stores dumps in a subdirectory of it')
   args = parser.parse_args()
+
+  stackwalk_path = os.path.join(args.build_path, 'minidump_stackwalk')
+  if not os.path.exists(stackwalk_path):
+    logging.error('Missing minidump_stackwalk executable')
+    return 1
+
   devil_chromium.Initialize(adb_path=args.adb_path)
   device = device_utils.DeviceUtils(args.device)
 
   device_crashpad_path = posixpath.join(args.chrome_cache_path, 'Crashpad',
                                         'pending')
-  crashpad_file = _ChooseLatestCrashpadDump(device, device_crashpad_path)
+
+  def CrashpadDumpExists():
+    return _ChooseLatestCrashpadDump(device, device_crashpad_path)
+
+  crashpad_file = timeout_retry.WaitFor(
+      CrashpadDumpExists, wait_period=1, max_tries=9)
   if not crashpad_file:
     logging.error('Could not locate a crashpad dump')
     return 1
-  else:
-    dump_dir = tempfile.mkdtemp()
-    symbols_dir = None
-    try:
-      device.PullFile(
-          device_path=posixpath.join(device_crashpad_path, crashpad_file),
-          host_path=dump_dir)
-      dump_full_path = os.path.join(dump_dir, crashpad_file)
-      library_names = _ExtractLibraryNamesFromDump(args.build_path,
-                                                   dump_full_path)
-      symbols_dir = _CreateSymbolsDir(args.build_path, library_names)
-      stackwalk_cmd = [
-          os.path.join(args.build_path, 'minidump_stackwalk'), dump_full_path,
-          symbols_dir
-      ]
-      subprocess.call(stackwalk_cmd)
-    finally:
-      shutil.rmtree(dump_dir, ignore_errors=True)
-      if symbols_dir:
-        shutil.rmtree(symbols_dir, ignore_errors=True)
+
+  dump_dir = tempfile.mkdtemp()
+  symbols_dir = None
+  try:
+    device.PullFile(
+        device_path=posixpath.join(device_crashpad_path, crashpad_file),
+        host_path=dump_dir)
+    dump_full_path = os.path.join(dump_dir, crashpad_file)
+    library_names = _ExtractLibraryNamesFromDump(args.build_path,
+                                                 dump_full_path)
+    symbols_dir = _CreateSymbolsDir(args.build_path, library_names)
+    stackwalk_cmd = [stackwalk_path, dump_full_path, symbols_dir]
+    subprocess.call(stackwalk_cmd)
+  finally:
+    shutil.rmtree(dump_dir, ignore_errors=True)
+    if symbols_dir:
+      shutil.rmtree(symbols_dir, ignore_errors=True)
   return 0
 
 

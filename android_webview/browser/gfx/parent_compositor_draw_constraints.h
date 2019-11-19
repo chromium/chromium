@@ -5,6 +5,7 @@
 #ifndef ANDROID_WEBVIEW_BROWSER_GFX_PARENT_COMPOSITOR_DRAW_CONSTRAINTS_H_
 #define ANDROID_WEBVIEW_BROWSER_GFX_PARENT_COMPOSITOR_DRAW_CONSTRAINTS_H_
 
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/transform.h"
 
 namespace android_webview {
@@ -12,14 +13,12 @@ namespace android_webview {
 class ChildFrame;
 
 struct ParentCompositorDrawConstraints {
-  bool is_layer;
+  gfx::Size viewport_size;
   gfx::Transform transform;
-  bool surface_rect_empty;
 
   ParentCompositorDrawConstraints();
-  ParentCompositorDrawConstraints(bool is_layer,
-                                  const gfx::Transform& transform,
-                                  bool surface_rect_empty);
+  ParentCompositorDrawConstraints(const gfx::Size& viewport_size,
+                                  const gfx::Transform& transform);
   bool NeedUpdate(const ChildFrame& frame) const;
 
   bool operator==(const ParentCompositorDrawConstraints& other) const;

@@ -136,7 +136,7 @@ void ChromeContentRulesRegistry::MonitorWebContentsForRuleEvaluation(
 void ChromeContentRulesRegistry::DidFinishNavigation(
     content::WebContents* contents,
     content::NavigationHandle* navigation_handle) {
-  if (base::ContainsKey(active_rules_, contents)) {
+  if (base::Contains(active_rules_, contents)) {
     EvaluationScope evaluation_scope(this);
     for (const std::unique_ptr<ContentPredicateEvaluator>& evaluator :
          evaluators_)
@@ -321,7 +321,7 @@ std::string ChromeContentRulesRegistry::RemoveRulesImpl(
 
     // Remove the ContentRule from active_rules_.
     for (auto& tab_rules_pair : active_rules_) {
-      if (base::ContainsKey(tab_rules_pair.second, rule)) {
+      if (base::Contains(tab_rules_pair.second, rule)) {
         ContentAction::ApplyInfo apply_info =
             {rule->extension, browser_context(), tab_rules_pair.first,
              rule->priority};
@@ -363,14 +363,14 @@ std::string ChromeContentRulesRegistry::RemoveAllRulesImpl(
 void ChromeContentRulesRegistry::EvaluateConditionsForTab(
     content::WebContents* tab) {
   std::set<const ContentRule*> matching_rules = GetMatchingRules(tab);
-  if (matching_rules.empty() && !base::ContainsKey(active_rules_, tab))
+  if (matching_rules.empty() && !base::Contains(active_rules_, tab))
     return;
 
   std::set<const ContentRule*>& prev_matching_rules = active_rules_[tab];
   for (const ContentRule* rule : matching_rules) {
     ContentAction::ApplyInfo apply_info =
         {rule->extension, browser_context(), tab, rule->priority};
-    if (!base::ContainsKey(prev_matching_rules, rule)) {
+    if (!base::Contains(prev_matching_rules, rule)) {
       for (const std::unique_ptr<const ContentAction>& action : rule->actions)
         action->Apply(apply_info);
     } else {
@@ -379,7 +379,7 @@ void ChromeContentRulesRegistry::EvaluateConditionsForTab(
     }
   }
   for (const ContentRule* rule : prev_matching_rules) {
-    if (!base::ContainsKey(matching_rules, rule)) {
+    if (!base::Contains(matching_rules, rule)) {
       ContentAction::ApplyInfo apply_info =
           {rule->extension, browser_context(), tab, rule->priority};
       for (const std::unique_ptr<const ContentAction>& action : rule->actions)

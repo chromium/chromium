@@ -14,4 +14,15 @@ const char kFindInPageSearch[] = "findInPage.findString";
 
 const char kFindInPagePump[] = "findInPage.pumpSearch";
 
+const char kFindInPageSelectAndScrollToMatch[] =
+    "findInPage.selectAndScrollToVisibleMatch";
+
+const char kSelectAndScrollResultMatches[] = "matches";
+
+const char kSelectAndScrollResultIndex[] = "index";
+
+const char kSelectAndScrollResultContextString[] = "contextString";
+
+const char kFindInPageStop[] = "findInPage.stop";
+
 }  // namespace web

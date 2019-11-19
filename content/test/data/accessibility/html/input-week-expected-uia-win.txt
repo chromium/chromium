@@ -1,0 +1,12 @@
+document
+++group
+++++textbox LocalizedControlType='week picker'
+++++++group
+++++++++group
+++++++++++description Name='Week '
+++++++++++spinbutton Name='Week' RangeValue.IsReadOnly=false RangeValue.LargeChange=0.00 RangeValue.SmallChange=0.00 RangeValue.Maximum=53.00 RangeValue.Minimum=1.00 RangeValue.Value=0.00 Value.Value='0'
+++++++++++++description Name='--'
+++++++++++description Name=', '
+++++++++++spinbutton Name='Year' RangeValue.IsReadOnly=false RangeValue.LargeChange=0.00 RangeValue.SmallChange=0.00 RangeValue.Maximum=275760.00 RangeValue.Minimum=1.00 RangeValue.Value=0.00 Value.Value='0'
+++++++++++++description Name='----'
+++++++menu Name='Show date picker' ExpandCollapse.ExpandCollapseState='Collapsed'

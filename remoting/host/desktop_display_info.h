@@ -36,6 +36,8 @@ class DesktopDisplayInfo {
   int NumDisplays();
   const DisplayGeometry* GetDisplayInfo(unsigned int id);
 
+  webrtc::DesktopVector CalcDisplayOffset(unsigned int id);
+
   // Add a new display with the given info to the display list.
   void AddDisplay(DisplayGeometry* display);
 

@@ -7,8 +7,8 @@
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/no_destructor.h"
+#include "base/strings/pattern.h"
 #include "base/strings/stringprintf.h"
-#include "base/task/post_task.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "content/browser/devtools/protocol/network.h"
@@ -16,9 +16,10 @@
 #include "content/browser/frame_host/frame_tree_node.h"
 #include "content/browser/loader/download_utils_impl.h"
 #include "content/public/browser/browser_task_traits.h"
-#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
-#include "mojo/public/cpp/bindings/binding_set.h"
+#include "content/public/common/content_client.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
 #include "net/base/load_flags.h"
 #include "net/base/mime_sniffer.h"
@@ -26,25 +27,107 @@
 #include "net/http/http_util.h"
 #include "net/url_request/redirect_util.h"
 #include "net/url_request/url_request.h"
+#include "services/network/public/cpp/cors/cors.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "third_party/blink/public/platform/resource_request_blocked_reason.h"
 
 namespace content {
 
-namespace {
+InterceptedRequestInfo::InterceptedRequestInfo() = default;
 
-using RequestInterceptedCallback =
-    DevToolsNetworkInterceptor::RequestInterceptedCallback;
-using ContinueInterceptedRequestCallback =
-    DevToolsNetworkInterceptor::ContinueInterceptedRequestCallback;
-using GetResponseBodyForInterceptionCallback =
-    DevToolsNetworkInterceptor::GetResponseBodyForInterceptionCallback;
-using TakeResponseBodyPipeCallback =
-    DevToolsNetworkInterceptor::TakeResponseBodyPipeCallback;
-using Modifications = DevToolsNetworkInterceptor::Modifications;
-using InterceptionStage = DevToolsNetworkInterceptor::InterceptionStage;
-using protocol::Response;
-using GlobalRequestId = std::tuple<int32_t, int32_t, int32_t>;
+InterceptedRequestInfo::~InterceptedRequestInfo() = default;
+
+DevToolsURLLoaderInterceptor::AuthChallengeResponse::AuthChallengeResponse(
+    ResponseType response_type)
+    : response_type(response_type) {
+  DCHECK_NE(kProvideCredentials, response_type);
+}
+
+DevToolsURLLoaderInterceptor::AuthChallengeResponse::AuthChallengeResponse(
+    const base::string16& username,
+    const base::string16& password)
+    : response_type(kProvideCredentials), credentials(username, password) {}
+
+DevToolsURLLoaderInterceptor::FilterEntry::FilterEntry(
+    const base::UnguessableToken& target_id,
+    std::vector<Pattern> patterns,
+    RequestInterceptedCallback callback)
+    : target_id(target_id),
+      patterns(std::move(patterns)),
+      callback(std::move(callback)) {}
+
+DevToolsURLLoaderInterceptor::FilterEntry::FilterEntry(FilterEntry&&) = default;
+DevToolsURLLoaderInterceptor::FilterEntry::~FilterEntry() = default;
+
+DevToolsURLLoaderInterceptor::Modifications::Modifications() = default;
+
+DevToolsURLLoaderInterceptor::Modifications::Modifications(
+    net::Error error_reason)
+    : error_reason(error_reason) {}
+
+DevToolsURLLoaderInterceptor::Modifications::Modifications(
+    scoped_refptr<net::HttpResponseHeaders> response_headers,
+    scoped_refptr<base::RefCountedMemory> response_body)
+    : response_headers(std::move(response_headers)),
+      response_body(std::move(response_body)) {}
+
+DevToolsURLLoaderInterceptor::Modifications::Modifications(
+    std::unique_ptr<AuthChallengeResponse> auth_challenge_response)
+    : auth_challenge_response(std::move(auth_challenge_response)) {}
+
+DevToolsURLLoaderInterceptor::Modifications::Modifications(
+    protocol::Maybe<std::string> modified_url,
+    protocol::Maybe<std::string> modified_method,
+    protocol::Maybe<std::string> modified_post_data,
+    std::unique_ptr<HeadersVector> modified_headers)
+    : modified_url(std::move(modified_url)),
+      modified_method(std::move(modified_method)),
+      modified_post_data(std::move(modified_post_data)),
+      modified_headers(std::move(modified_headers)) {}
+
+DevToolsURLLoaderInterceptor::Modifications::Modifications(
+    base::Optional<net::Error> error_reason,
+    scoped_refptr<net::HttpResponseHeaders> response_headers,
+    scoped_refptr<base::RefCountedMemory> response_body,
+    size_t body_offset,
+    protocol::Maybe<std::string> modified_url,
+    protocol::Maybe<std::string> modified_method,
+    protocol::Maybe<std::string> modified_post_data,
+    std::unique_ptr<HeadersVector> modified_headers,
+    std::unique_ptr<AuthChallengeResponse> auth_challenge_response)
+    : error_reason(std::move(error_reason)),
+      response_headers(std::move(response_headers)),
+      response_body(std::move(response_body)),
+      body_offset(body_offset),
+      modified_url(std::move(modified_url)),
+      modified_method(std::move(modified_method)),
+      modified_post_data(std::move(modified_post_data)),
+      modified_headers(std::move(modified_headers)),
+      auth_challenge_response(std::move(auth_challenge_response)) {}
+
+DevToolsURLLoaderInterceptor::Modifications::~Modifications() = default;
+
+DevToolsURLLoaderInterceptor::Pattern::~Pattern() = default;
+
+DevToolsURLLoaderInterceptor::Pattern::Pattern(const Pattern& other) = default;
+
+DevToolsURLLoaderInterceptor::Pattern::Pattern(
+    const std::string& url_pattern,
+    base::flat_set<ResourceType> resource_types,
+    InterceptionStage interception_stage)
+    : url_pattern(url_pattern),
+      resource_types(std::move(resource_types)),
+      interception_stage(interception_stage) {}
+
+bool DevToolsURLLoaderInterceptor::Pattern::Matches(
+    const std::string& url,
+    ResourceType resource_type) const {
+  if (!resource_types.empty() &&
+      resource_types.find(resource_type) == resource_types.end()) {
+    return false;
+  }
+  return base::MatchPattern(url, url_pattern);
+}
 
 struct CreateLoaderParameters {
   CreateLoaderParameters(
@@ -66,6 +149,23 @@ struct CreateLoaderParameters {
   const net::MutableNetworkTrafficAnnotationTag traffic_annotation;
 };
 
+namespace {
+
+using RequestInterceptedCallback =
+    DevToolsURLLoaderInterceptor::RequestInterceptedCallback;
+using ContinueInterceptedRequestCallback =
+    DevToolsURLLoaderInterceptor::ContinueInterceptedRequestCallback;
+using GetResponseBodyCallback =
+    DevToolsURLLoaderInterceptor::GetResponseBodyForInterceptionCallback;
+using TakeResponseBodyPipeCallback =
+    DevToolsURLLoaderInterceptor::TakeResponseBodyPipeCallback;
+using Modifications = DevToolsURLLoaderInterceptor::Modifications;
+using InterceptionStage = DevToolsURLLoaderInterceptor::InterceptionStage;
+using protocol::Response;
+using GlobalRequestId = std::tuple<int32_t, int32_t, int32_t>;
+using network::mojom::CredentialsMode;
+using network::mojom::FetchResponseType;
+
 class BodyReader : public mojo::DataPipeDrainer::Client {
  public:
   explicit BodyReader(base::OnceClosure download_complete_callback)
@@ -74,16 +174,13 @@ class BodyReader : public mojo::DataPipeDrainer::Client {
 
   void StartReading(mojo::ScopedDataPipeConsumerHandle body);
 
-  void AddCallback(
-      std::unique_ptr<GetResponseBodyForInterceptionCallback> callback) {
-    callbacks_.push_back(std::move(callback));
+  void AddCallback(std::unique_ptr<GetResponseBodyCallback> callback) {
     if (data_complete_) {
-      DCHECK_EQ(1UL, callbacks_.size());
-      base::PostTaskWithTraits(
-          FROM_HERE, {BrowserThread::UI},
-          base::BindOnce(&BodyReader::DispatchBodyOnUI, std::move(callbacks_),
-                         encoded_body_));
+      DCHECK(callbacks_.empty());
+      callback->sendSuccess(encoded_body_, true);
+      return;
     }
+    callbacks_.push_back(std::move(callback));
   }
 
   bool data_complete() const { return data_complete_; }
@@ -94,20 +191,12 @@ class BodyReader : public mojo::DataPipeDrainer::Client {
   }
 
   void CancelWithError(std::string error) {
-    base::PostTaskWithTraits(
-        FROM_HERE, {BrowserThread::UI},
-        base::BindOnce(&BodyReader::DispatchErrorOnUI, std::move(callbacks_),
-                       std::move(error)));
+    for (auto& cb : callbacks_)
+      cb->sendFailure(Response::Error(error));
+    callbacks_.clear();
   }
 
  private:
-  using CallbackVector =
-      std::vector<std::unique_ptr<GetResponseBodyForInterceptionCallback>>;
-  static void DispatchBodyOnUI(const CallbackVector& callbacks,
-                               const std::string& body);
-  static void DispatchErrorOnUI(const CallbackVector& callbacks,
-                                const std::string& error);
-
   void OnDataAvailable(const void* data, size_t num_bytes) override {
     DCHECK(!data_complete_);
     body_->data().append(
@@ -117,7 +206,7 @@ class BodyReader : public mojo::DataPipeDrainer::Client {
   void OnDataComplete() override;
 
   std::unique_ptr<mojo::DataPipeDrainer> body_pipe_drainer_;
-  CallbackVector callbacks_;
+  std::vector<std::unique_ptr<GetResponseBodyCallback>> callbacks_;
   base::OnceClosure download_complete_callback_;
   scoped_refptr<base::RefCountedString> body_;
   std::string encoded_body_;
@@ -138,25 +227,10 @@ void BodyReader::OnDataComplete() {
   body_pipe_drainer_.reset();
   // TODO(caseq): only encode if necessary.
   base::Base64Encode(body_->data(), &encoded_body_);
-  base::PostTaskWithTraits(
-      FROM_HERE, {BrowserThread::UI},
-      base::BindOnce(&BodyReader::DispatchBodyOnUI, std::move(callbacks_),
-                     encoded_body_));
+  for (auto& cb : callbacks_)
+    cb->sendSuccess(encoded_body_, true);
+  callbacks_.clear();
   std::move(download_complete_callback_).Run();
-}
-
-// static
-void BodyReader::DispatchBodyOnUI(const CallbackVector& callbacks,
-                                  const std::string& encoded_body) {
-  for (const auto& cb : callbacks)
-    cb->sendSuccess(encoded_body, true);
-}
-
-// static
-void BodyReader::DispatchErrorOnUI(const CallbackVector& callbacks,
-                                   const std::string& error) {
-  for (const auto& cb : callbacks)
-    cb->sendFailure(Response::Error(error));
 }
 
 struct ResponseMetadata {
@@ -166,11 +240,13 @@ struct ResponseMetadata {
 
   network::ResourceResponseHead head;
   std::unique_ptr<net::RedirectInfo> redirect_info;
-  std::vector<uint8_t> cached_metadata;
+  mojo_base::BigBuffer cached_metadata;
   size_t encoded_length = 0;
   size_t transfer_size = 0;
   network::URLLoaderCompletionStatus status;
 };
+
+}  // namespace
 
 class InterceptionJob : public network::mojom::URLLoaderClient,
                         public network::mojom::URLLoader {
@@ -182,19 +258,20 @@ class InterceptionJob : public network::mojom::URLLoaderClient,
     return it == map.end() ? nullptr : it->second;
   }
 
-  InterceptionJob(DevToolsURLLoaderInterceptor::Impl* interceptor,
-                  const std::string& id,
-                  const base::UnguessableToken& frame_token,
-                  int32_t process_id,
-                  std::unique_ptr<CreateLoaderParameters> create_loader_params,
-                  bool is_download,
-                  network::mojom::URLLoaderRequest loader_request,
-                  network::mojom::URLLoaderClientPtr client,
-                  network::mojom::URLLoaderFactoryPtr target_factory,
-                  network::mojom::CookieManagerPtr cookie_manager);
+  InterceptionJob(
+      DevToolsURLLoaderInterceptor* interceptor,
+      const std::string& id,
+      const base::UnguessableToken& frame_token,
+      int32_t process_id,
+      const base::Optional<std::string>& renderer_request_id,
+      std::unique_ptr<CreateLoaderParameters> create_loader_params,
+      bool is_download,
+      mojo::PendingReceiver<network::mojom::URLLoader> loader_receiver,
+      mojo::PendingRemote<network::mojom::URLLoaderClient> client,
+      mojo::PendingRemote<network::mojom::URLLoaderFactory> target_factory,
+      mojo::PendingRemote<network::mojom::CookieManager> cookie_manager);
 
-  void GetResponseBody(
-      std::unique_ptr<GetResponseBodyForInterceptionCallback> callback);
+  void GetResponseBody(std::unique_ptr<GetResponseBodyCallback> callback);
   void TakeResponseBodyPipe(TakeResponseBodyPipeCallback callback);
   void ContinueInterceptedRequest(
       std::unique_ptr<Modifications> modifications,
@@ -202,12 +279,11 @@ class InterceptionJob : public network::mojom::URLLoaderClient,
   void Detach();
 
   void OnAuthRequest(
-      const scoped_refptr<net::AuthChallengeInfo>& auth_info,
+      const net::AuthChallengeInfo& auth_info,
       DevToolsURLLoaderInterceptor::HandleAuthRequestCallback callback);
 
  private:
   static std::map<GlobalRequestId, InterceptionJob*>& GetInterceptionJobMap() {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
     static base::NoDestructor<std::map<GlobalRequestId, InterceptionJob*>> inst;
     return *inst;
   }
@@ -221,7 +297,7 @@ class InterceptionJob : public network::mojom::URLLoaderClient,
 
   Response InnerContinueRequest(std::unique_ptr<Modifications> modifications);
   void ProcessAuthResponse(
-      const DevToolsNetworkInterceptor::AuthChallengeResponse&
+      const DevToolsURLLoaderInterceptor::AuthChallengeResponse&
           auth_challenge_response);
   Response ProcessResponseOverride(
       scoped_refptr<net::HttpResponseHeaders> headers,
@@ -239,14 +315,14 @@ class InterceptionJob : public network::mojom::URLLoaderClient,
   void Shutdown();
 
   std::unique_ptr<InterceptedRequestInfo> BuildRequestInfo(
-      const network::ResourceResponseHead* head);
+      const network::mojom::URLResponseHeadPtr& head);
   void NotifyClient(std::unique_ptr<InterceptedRequestInfo> request_info);
   void FetchCookies(
-      base::OnceCallback<void(const std::vector<net::CanonicalCookie>&)>
-          callback);
+      network::mojom::CookieManager::GetCookieListCallback callback);
   void NotifyClientWithCookies(
       std::unique_ptr<InterceptedRequestInfo> request_info,
-      const std::vector<net::CanonicalCookie>& cookie_list);
+      const net::CookieStatusList& cookie_list_with_statuses,
+      const net::CookieStatusList& excluded_cookies);
 
   void ResponseBodyComplete();
 
@@ -262,20 +338,19 @@ class InterceptionJob : public network::mojom::URLLoaderClient,
   void FollowRedirect(const std::vector<std::string>& removed_headers,
                       const net::HttpRequestHeaders& modified_headers,
                       const base::Optional<GURL>& new_url) override;
-  void ProceedWithResponse() override;
   void SetPriority(net::RequestPriority priority,
                    int32_t intra_priority_value) override;
   void PauseReadingBodyFromNet() override;
   void ResumeReadingBodyFromNet() override;
 
   // network::mojom::URLLoaderClient methods
-  void OnReceiveResponse(const network::ResourceResponseHead& head) override;
+  void OnReceiveResponse(network::mojom::URLResponseHeadPtr head) override;
   void OnReceiveRedirect(const net::RedirectInfo& redirect_info,
-                         const network::ResourceResponseHead& head) override;
+                         network::mojom::URLResponseHeadPtr head) override;
   void OnUploadProgress(int64_t current_position,
                         int64_t total_size,
                         OnUploadProgressCallback callback) override;
-  void OnReceiveCachedMetadata(const std::vector<uint8_t>& data) override;
+  void OnReceiveCachedMetadata(mojo_base::BigBuffer data) override;
   void OnTransferSizeUpdated(int32_t transfer_size_diff) override;
   void OnStartLoadingResponseBody(
       mojo::ScopedDataPipeConsumerHandle body) override;
@@ -284,24 +359,28 @@ class InterceptionJob : public network::mojom::URLLoaderClient,
   bool CanGetResponseBody(std::string* error_reason);
   bool StartJobAndMaybeNotify();
 
+  void UpdateCORSFlag();
+  network::mojom::FetchResponseType CalculateResponseTainting();
+  network::ResourceRequest GetResourceRequestForCookies();
+
   const std::string id_prefix_;
   const GlobalRequestId global_req_id_;
   const base::UnguessableToken frame_token_;
   const bool report_upload_;
 
-  DevToolsURLLoaderInterceptor::Impl* interceptor_;
+  DevToolsURLLoaderInterceptor* interceptor_;
   InterceptionStage stage_;
 
   std::unique_ptr<CreateLoaderParameters> create_loader_params_;
   const bool is_download_;
 
-  mojo::Binding<network::mojom::URLLoaderClient> client_binding_;
-  mojo::Binding<network::mojom::URLLoader> loader_binding_;
+  mojo::Receiver<network::mojom::URLLoaderClient> client_receiver_{this};
+  mojo::Receiver<network::mojom::URLLoader> loader_receiver_{this};
 
-  network::mojom::URLLoaderClientPtr client_;
+  mojo::Remote<network::mojom::URLLoaderClient> client_;
   network::mojom::URLLoaderPtr loader_;
-  network::mojom::URLLoaderFactoryPtr target_factory_;
-  network::mojom::CookieManagerPtr cookie_manager_;
+  mojo::Remote<network::mojom::URLLoaderFactory> target_factory_;
+  mojo::Remote<network::mojom::CookieManager> cookie_manager_;
 
   enum State {
     kNotStarted,
@@ -319,6 +398,8 @@ class InterceptionJob : public network::mojom::URLLoaderClient,
 
   bool waiting_for_resolution_;
   int redirect_count_;
+  bool tainted_origin_ = false;
+  bool fetch_cors_flag_ = false;
   std::string current_id_;
 
   std::unique_ptr<BodyReader> body_reader_;
@@ -330,119 +411,45 @@ class InterceptionJob : public network::mojom::URLLoaderClient,
       pending_auth_callback_;
   TakeResponseBodyPipeCallback pending_response_body_pipe_callback_;
 
+  const base::Optional<std::string> renderer_request_id_;
+
   DISALLOW_COPY_AND_ASSIGN(InterceptionJob);
 };
 
-}  // namespace
+void DevToolsURLLoaderInterceptor::CreateJob(
+    const base::UnguessableToken& frame_token,
+    int32_t process_id,
+    bool is_download,
+    const base::Optional<std::string>& renderer_request_id,
+    std::unique_ptr<CreateLoaderParameters> create_params,
+    mojo::PendingReceiver<network::mojom::URLLoader> loader_receiver,
+    mojo::PendingRemote<network::mojom::URLLoaderClient> client,
+    mojo::PendingRemote<network::mojom::URLLoaderFactory> target_factory,
+    mojo::PendingRemote<network::mojom::CookieManager> cookie_manager) {
+  DCHECK(!frame_token.is_empty());
 
-class DevToolsURLLoaderInterceptor::Impl
-    : public base::SupportsWeakPtr<DevToolsURLLoaderInterceptor::Impl> {
- public:
-  explicit Impl(RequestInterceptedCallback callback)
-      : request_intercepted_callback_(callback), handle_auth_(false) {}
-  ~Impl() {
-    for (auto const& entry : jobs_)
-      entry.second->Detach();
+  static int last_id = 0;
+
+  std::string id = base::StringPrintf("interception-job-%d", ++last_id);
+  // This class will manage its own life time to match the loader client.
+  new InterceptionJob(
+      this, std::move(id), frame_token, process_id, renderer_request_id,
+      std::move(create_params), is_download, std::move(loader_receiver),
+      std::move(client), std::move(target_factory), std::move(cookie_manager));
+}
+
+InterceptionStage DevToolsURLLoaderInterceptor::GetInterceptionStage(
+    const GURL& url,
+    ResourceType resource_type) const {
+  InterceptionStage stage = InterceptionStage::DONT_INTERCEPT;
+  std::string unused;
+  std::string url_str = protocol::NetworkHandler::ExtractFragment(url, &unused);
+  for (const auto& pattern : patterns_) {
+    if (pattern.Matches(url_str, resource_type))
+      stage |= pattern.interception_stage;
   }
-
-  void CreateJob(const base::UnguessableToken& frame_token,
-                 int32_t process_id,
-                 bool is_download,
-                 std::unique_ptr<CreateLoaderParameters> create_params,
-                 network::mojom::URLLoaderRequest loader_request,
-                 network::mojom::URLLoaderClientPtr client,
-                 network::mojom::URLLoaderFactoryPtr target_factory,
-                 network::mojom::CookieManagerPtr cookie_manager) {
-    DCHECK(!frame_token.is_empty());
-
-    static int last_id = 0;
-
-    std::string id = base::StringPrintf("interception-job-%d", ++last_id);
-    // This class will manage its own life time to match the loader client.
-    new InterceptionJob(this, std::move(id), frame_token, process_id,
-                        std::move(create_params), is_download,
-                        std::move(loader_request), std::move(client),
-                        std::move(target_factory), std::move(cookie_manager));
-  }
-
-  void SetPatterns(std::vector<DevToolsNetworkInterceptor::Pattern> patterns,
-                   bool handle_auth) {
-    patterns_ = std::move(patterns);
-    handle_auth_ = handle_auth;
-  }
-
-  InterceptionStage GetInterceptionStage(const GURL& url,
-                                         ResourceType resource_type) const {
-    InterceptionStage stage = InterceptionStage::DONT_INTERCEPT;
-    std::string unused;
-    std::string url_str =
-        protocol::NetworkHandler::ExtractFragment(url, &unused);
-    for (const auto& pattern : patterns_) {
-      if (pattern.Matches(url_str, resource_type))
-        stage |= pattern.interception_stage;
-    }
-    return stage;
-  }
-
-  void GetResponseBody(
-      const std::string& interception_id,
-      std::unique_ptr<GetResponseBodyForInterceptionCallback> callback) {
-    if (InterceptionJob* job = FindJob(interception_id, &callback))
-      job->GetResponseBody(std::move(callback));
-  }
-
-  void TakeResponseBodyPipe(
-      const std::string& interception_id,
-      DevToolsNetworkInterceptor::TakeResponseBodyPipeCallback callback) {
-    auto it = jobs_.find(interception_id);
-    if (it == jobs_.end()) {
-      std::move(callback).Run(
-          protocol::Response::InvalidParams("Invalid InterceptionId."),
-          mojo::ScopedDataPipeConsumerHandle(), std::string());
-      return;
-    }
-    it->second->TakeResponseBodyPipe(std::move(callback));
-  }
-
-  void ContinueInterceptedRequest(
-      const std::string& interception_id,
-      std::unique_ptr<Modifications> modifications,
-      std::unique_ptr<ContinueInterceptedRequestCallback> callback) {
-    if (InterceptionJob* job = FindJob(interception_id, &callback)) {
-      job->ContinueInterceptedRequest(std::move(modifications),
-                                      std::move(callback));
-    }
-  }
-
- private:
-  friend class content::InterceptionJob;
-
-  template <typename Callback>
-  InterceptionJob* FindJob(const std::string& id,
-                           std::unique_ptr<Callback>* callback) {
-    auto it = jobs_.find(id);
-    if (it != jobs_.end())
-      return it->second;
-    base::PostTaskWithTraits(
-        FROM_HERE, {BrowserThread::UI},
-        base::BindOnce(
-            &Callback::sendFailure, std::move(*callback),
-            protocol::Response::InvalidParams("Invalid InterceptionId.")));
-    return nullptr;
-  }
-
-  void RemoveJob(const std::string& id) { jobs_.erase(id); }
-  void AddJob(const std::string& id, InterceptionJob* job) {
-    jobs_.emplace(id, job);
-  }
-
-  std::map<std::string, InterceptionJob*> jobs_;
-  RequestInterceptedCallback request_intercepted_callback_;
-  std::vector<DevToolsNetworkInterceptor::Pattern> patterns_;
-  bool handle_auth_;
-
-  DISALLOW_COPY_AND_ASSIGN(Impl);
-};
+  return stage;
+}
 
 class DevToolsURLLoaderFactoryProxy : public network::mojom::URLLoaderFactory {
  public:
@@ -450,27 +457,27 @@ class DevToolsURLLoaderFactoryProxy : public network::mojom::URLLoaderFactory {
       const base::UnguessableToken& frame_token,
       int32_t process_id,
       bool is_download,
-      network::mojom::URLLoaderFactoryRequest loader_request,
-      network::mojom::URLLoaderFactoryPtrInfo target_factory_info,
-      network::mojom::CookieManagerPtrInfo cookie_manager,
-      base::WeakPtr<DevToolsURLLoaderInterceptor::Impl> interceptor);
+      mojo::PendingReceiver<network::mojom::URLLoaderFactory> loader_receiver,
+      mojo::PendingRemote<network::mojom::URLLoaderFactory>
+          target_factory_remote,
+      mojo::PendingRemote<network::mojom::CookieManager> cookie_manager,
+      base::WeakPtr<DevToolsURLLoaderInterceptor> interceptor);
   ~DevToolsURLLoaderFactoryProxy() override;
 
  private:
   // network::mojom::URLLoaderFactory implementation
-  void CreateLoaderAndStart(network::mojom::URLLoaderRequest loader,
-                            int32_t routing_id,
-                            int32_t request_id,
-                            uint32_t options,
-                            const network::ResourceRequest& request,
-                            network::mojom::URLLoaderClientPtr client,
-                            const net::MutableNetworkTrafficAnnotationTag&
-                                traffic_annotation) override;
-  void Clone(network::mojom::URLLoaderFactoryRequest request) override;
+  void CreateLoaderAndStart(
+      mojo::PendingReceiver<network::mojom::URLLoader> loader,
+      int32_t routing_id,
+      int32_t request_id,
+      uint32_t options,
+      const network::ResourceRequest& request,
+      mojo::PendingRemote<network::mojom::URLLoaderClient> client,
+      const net::MutableNetworkTrafficAnnotationTag& traffic_annotation)
+      override;
+  void Clone(mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver)
+      override;
 
-  void StartOnIO(network::mojom::URLLoaderFactoryRequest loader_request,
-                 network::mojom::URLLoaderFactoryPtrInfo target_factory_info,
-                 network::mojom::CookieManagerPtrInfo cookie_manager);
   void OnProxyBindingError();
   void OnTargetFactoryError();
 
@@ -478,49 +485,58 @@ class DevToolsURLLoaderFactoryProxy : public network::mojom::URLLoaderFactory {
   const int32_t process_id_;
   const bool is_download_;
 
-  network::mojom::URLLoaderFactoryPtr target_factory_;
-  network::mojom::CookieManagerPtr cookie_manager_;
-  base::WeakPtr<DevToolsURLLoaderInterceptor::Impl> interceptor_;
-  mojo::BindingSet<network::mojom::URLLoaderFactory> bindings_;
+  mojo::Remote<network::mojom::URLLoaderFactory> target_factory_;
+  mojo::Remote<network::mojom::CookieManager> cookie_manager_;
+  base::WeakPtr<DevToolsURLLoaderInterceptor> interceptor_;
+  mojo::ReceiverSet<network::mojom::URLLoaderFactory> receivers_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
+// This class owns itself and will delete self when any mojo
+// connection is broken.
 DevToolsURLLoaderFactoryProxy::DevToolsURLLoaderFactoryProxy(
     const base::UnguessableToken& frame_token,
     int32_t process_id,
     bool is_download,
-    network::mojom::URLLoaderFactoryRequest loader_request,
-    network::mojom::URLLoaderFactoryPtrInfo target_factory_info,
-    network::mojom::CookieManagerPtrInfo cookie_manager,
-    base::WeakPtr<DevToolsURLLoaderInterceptor::Impl> interceptor)
+    mojo::PendingReceiver<network::mojom::URLLoaderFactory> loader_receiver,
+    mojo::PendingRemote<network::mojom::URLLoaderFactory> target_factory_remote,
+    mojo::PendingRemote<network::mojom::CookieManager> cookie_manager,
+    base::WeakPtr<DevToolsURLLoaderInterceptor> interceptor)
     : frame_token_(frame_token),
       process_id_(process_id),
       is_download_(is_download),
+      target_factory_(std::move(target_factory_remote)),
       interceptor_(std::move(interceptor)) {
-  DETACH_FROM_SEQUENCE(sequence_checker_);
-  base::PostTaskWithTraits(
-      FROM_HERE, {BrowserThread::IO},
-      base::BindOnce(&DevToolsURLLoaderFactoryProxy::StartOnIO,
-                     base::Unretained(this), std::move(loader_request),
-                     std::move(target_factory_info),
-                     std::move(cookie_manager)));
+  target_factory_.set_disconnect_handler(
+      base::BindOnce(&DevToolsURLLoaderFactoryProxy::OnTargetFactoryError,
+                     base::Unretained(this)));
+
+  receivers_.Add(this, std::move(loader_receiver));
+  receivers_.set_disconnect_handler(
+      base::BindRepeating(&DevToolsURLLoaderFactoryProxy::OnProxyBindingError,
+                          base::Unretained(this)));
+
+  cookie_manager_.Bind(std::move(cookie_manager));
+  cookie_manager_.set_disconnect_handler(
+      base::BindOnce(&DevToolsURLLoaderFactoryProxy::OnTargetFactoryError,
+                     base::Unretained(this)));
 }
 
 DevToolsURLLoaderFactoryProxy::~DevToolsURLLoaderFactoryProxy() {}
 
 void DevToolsURLLoaderFactoryProxy::CreateLoaderAndStart(
-    network::mojom::URLLoaderRequest loader,
+    mojo::PendingReceiver<network::mojom::URLLoader> loader,
     int32_t routing_id,
     int32_t request_id,
     uint32_t options,
     const network::ResourceRequest& request,
-    network::mojom::URLLoaderClientPtr client,
+    mojo::PendingRemote<network::mojom::URLLoaderClient> client,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  DevToolsURLLoaderInterceptor::Impl* interceptor = interceptor_.get();
-  if (!interceptor_) {
+  DevToolsURLLoaderInterceptor* interceptor = interceptor_.get();
+  if (!interceptor_ || request.url.SchemeIs(url::kDataScheme)) {
     target_factory_->CreateLoaderAndStart(
         std::move(loader), routing_id, request_id, options, request,
         std::move(client), traffic_annotation);
@@ -528,40 +544,21 @@ void DevToolsURLLoaderFactoryProxy::CreateLoaderAndStart(
   }
   auto creation_params = std::make_unique<CreateLoaderParameters>(
       routing_id, request_id, options, request, traffic_annotation);
-  network::mojom::URLLoaderFactoryPtr factory_clone;
-  target_factory_->Clone(MakeRequest(&factory_clone));
-  network::mojom::CookieManagerPtr cookie_manager_clone;
-  cookie_manager_->CloneInterface(mojo::MakeRequest(&cookie_manager_clone));
-  interceptor->CreateJob(frame_token_, process_id_, is_download_,
-                         std::move(creation_params), std::move(loader),
-                         std::move(client), std::move(factory_clone),
-                         std::move(cookie_manager_clone));
-}
-
-void DevToolsURLLoaderFactoryProxy::StartOnIO(
-    network::mojom::URLLoaderFactoryRequest loader_request,
-    network::mojom::URLLoaderFactoryPtrInfo target_factory_info,
-    network::mojom::CookieManagerPtrInfo cookie_manager) {
-  target_factory_.Bind(std::move(target_factory_info));
-  target_factory_.set_connection_error_handler(
-      base::BindOnce(&DevToolsURLLoaderFactoryProxy::OnTargetFactoryError,
-                     base::Unretained(this)));
-
-  bindings_.AddBinding(this, std::move(loader_request));
-  bindings_.set_connection_error_handler(
-      base::BindRepeating(&DevToolsURLLoaderFactoryProxy::OnProxyBindingError,
-                          base::Unretained(this)));
-
-  cookie_manager_.Bind(std::move(cookie_manager));
-  cookie_manager_.set_connection_error_handler(
-      base::BindOnce(&DevToolsURLLoaderFactoryProxy::OnTargetFactoryError,
-                     base::Unretained(this)));
+  mojo::PendingRemote<network::mojom::URLLoaderFactory> factory_clone;
+  target_factory_->Clone(factory_clone.InitWithNewPipeAndPassReceiver());
+  mojo::PendingRemote<network::mojom::CookieManager> cookie_manager_clone;
+  cookie_manager_->CloneInterface(
+      cookie_manager_clone.InitWithNewPipeAndPassReceiver());
+  interceptor->CreateJob(
+      frame_token_, process_id_, is_download_, request.devtools_request_id,
+      std::move(creation_params), std::move(loader), std::move(client),
+      std::move(factory_clone), std::move(cookie_manager_clone));
 }
 
 void DevToolsURLLoaderFactoryProxy::Clone(
-    network::mojom::URLLoaderFactoryRequest request) {
+    mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  bindings_.AddBinding(this, std::move(request));
+  receivers_.Add(this, std::move(receiver));
 }
 
 void DevToolsURLLoaderFactoryProxy::OnTargetFactoryError() {
@@ -569,7 +566,7 @@ void DevToolsURLLoaderFactoryProxy::OnTargetFactoryError() {
 }
 
 void DevToolsURLLoaderFactoryProxy::OnProxyBindingError() {
-  if (bindings_.empty())
+  if (receivers_.empty())
     delete this;
 }
 
@@ -578,7 +575,7 @@ void DevToolsURLLoaderInterceptor::HandleAuthRequest(
     int32_t process_id,
     int32_t routing_id,
     int32_t request_id,
-    const scoped_refptr<net::AuthChallengeInfo>& auth_info,
+    const net::AuthChallengeInfo& auth_info,
     HandleAuthRequestCallback callback) {
   GlobalRequestId req_id = std::make_tuple(process_id, routing_id, request_id);
   if (auto* job = InterceptionJob::FindByRequestId(req_id))
@@ -589,91 +586,87 @@ void DevToolsURLLoaderInterceptor::HandleAuthRequest(
 
 DevToolsURLLoaderInterceptor::DevToolsURLLoaderInterceptor(
     RequestInterceptedCallback callback)
-    : enabled_(false),
-      impl_(new DevToolsURLLoaderInterceptor::Impl(std::move(callback)),
-            base::OnTaskRunnerDeleter(
-                base::CreateSingleThreadTaskRunnerWithTraits(
-                    {BrowserThread::IO}))),
-      weak_impl_(impl_->AsWeakPtr()) {}
+    : request_intercepted_callback_(std::move(callback)), weak_factory_(this) {}
 
-DevToolsURLLoaderInterceptor::~DevToolsURLLoaderInterceptor() = default;
+DevToolsURLLoaderInterceptor::~DevToolsURLLoaderInterceptor() {
+  for (auto const& entry : jobs_)
+    entry.second->Detach();
+}
 
 void DevToolsURLLoaderInterceptor::SetPatterns(
-    std::vector<DevToolsNetworkInterceptor::Pattern> patterns,
+    std::vector<DevToolsURLLoaderInterceptor::Pattern> patterns,
     bool handle_auth) {
-  enabled_ = !!patterns.size();
-  DCHECK(enabled_ || !handle_auth);
-  base::PostTaskWithTraits(
-      FROM_HERE, {BrowserThread::IO},
-      base::BindOnce(&Impl::SetPatterns, base::Unretained(impl_.get()),
-                     std::move(patterns), handle_auth));
+  patterns_ = std::move(patterns);
+  handle_auth_ = handle_auth;
+  DCHECK(patterns_.size() || !handle_auth);
 }
 
 void DevToolsURLLoaderInterceptor::GetResponseBody(
     const std::string& interception_id,
-    std::unique_ptr<GetResponseBodyForInterceptionCallback> callback) {
-  base::PostTaskWithTraits(
-      FROM_HERE, {BrowserThread::IO},
-      base::BindOnce(&Impl::GetResponseBody, base::Unretained(impl_.get()),
-                     interception_id, std::move(callback)));
+    std::unique_ptr<GetResponseBodyCallback> callback) {
+  if (InterceptionJob* job = FindJob(interception_id, &callback))
+    job->GetResponseBody(std::move(callback));
 }
 
 void DevToolsURLLoaderInterceptor::TakeResponseBodyPipe(
     const std::string& interception_id,
-    DevToolsNetworkInterceptor::TakeResponseBodyPipeCallback callback) {
-  base::PostTaskWithTraits(
-      FROM_HERE, {BrowserThread::IO},
-      base::BindOnce(&Impl::TakeResponseBodyPipe, base::Unretained(impl_.get()),
-                     interception_id, std::move(callback)));
+    DevToolsURLLoaderInterceptor::TakeResponseBodyPipeCallback callback) {
+  auto it = jobs_.find(interception_id);
+  if (it == jobs_.end()) {
+    std::move(callback).Run(
+        protocol::Response::InvalidParams("Invalid InterceptionId."),
+        mojo::ScopedDataPipeConsumerHandle(), base::EmptyString());
+    return;
+  }
+  it->second->TakeResponseBodyPipe(std::move(callback));
 }
 
 void DevToolsURLLoaderInterceptor::ContinueInterceptedRequest(
     const std::string& interception_id,
     std::unique_ptr<Modifications> modifications,
     std::unique_ptr<ContinueInterceptedRequestCallback> callback) {
-  base::PostTaskWithTraits(
-      FROM_HERE, {BrowserThread::IO},
-      base::BindOnce(&Impl::ContinueInterceptedRequest,
-                     base::Unretained(impl_.get()), interception_id,
-                     std::move(modifications), std::move(callback)));
+  if (InterceptionJob* job = FindJob(interception_id, &callback)) {
+    job->ContinueInterceptedRequest(std::move(modifications),
+                                    std::move(callback));
+  }
 }
 
 bool DevToolsURLLoaderInterceptor::CreateProxyForInterception(
-    RenderFrameHostImpl* rfh,
+    RenderProcessHost* rph,
+    const base::UnguessableToken& frame_token,
     bool is_navigation,
     bool is_download,
-    network::mojom::URLLoaderFactoryRequest* request) const {
-  if (!enabled_)
+    mojo::PendingReceiver<network::mojom::URLLoaderFactory>* receiver) {
+  if (patterns_.empty())
     return false;
 
-  network::mojom::URLLoaderFactoryRequest original_request =
-      std::move(*request);
-  network::mojom::URLLoaderFactoryPtrInfo target_ptr_info;
-  *request = MakeRequest(&target_ptr_info);
-  network::mojom::CookieManagerPtrInfo cookie_manager;
-  int process_id = is_navigation ? 0 : rfh->GetProcess()->GetID();
-  rfh->GetProcess()
-      ->GetStoragePartition()
-      ->GetNetworkContext()
-      ->GetCookieManager(mojo::MakeRequest(&cookie_manager));
-  new DevToolsURLLoaderFactoryProxy(rfh->GetDevToolsFrameToken(), process_id,
-                                    is_download, std::move(original_request),
-                                    std::move(target_ptr_info),
-                                    std::move(cookie_manager), weak_impl_);
+  mojo::PendingReceiver<network::mojom::URLLoaderFactory> original_receiver =
+      std::move(*receiver);
+  mojo::PendingRemote<network::mojom::URLLoaderFactory> target_remote;
+  *receiver = target_remote.InitWithNewPipeAndPassReceiver();
+  mojo::PendingRemote<network::mojom::CookieManager> cookie_manager;
+  int process_id = is_navigation ? 0 : rph->GetID();
+  rph->GetStoragePartition()->GetNetworkContext()->GetCookieManager(
+      cookie_manager.InitWithNewPipeAndPassReceiver());
+  new DevToolsURLLoaderFactoryProxy(
+      frame_token, process_id, is_download, std::move(original_receiver),
+      std::move(target_remote), std::move(cookie_manager),
+      weak_factory_.GetWeakPtr());
   return true;
 }
 
 InterceptionJob::InterceptionJob(
-    DevToolsURLLoaderInterceptor::Impl* interceptor,
+    DevToolsURLLoaderInterceptor* interceptor,
     const std::string& id,
     const base::UnguessableToken& frame_token,
     int process_id,
+    const base::Optional<std::string>& renderer_request_id,
     std::unique_ptr<CreateLoaderParameters> create_loader_params,
     bool is_download,
-    network::mojom::URLLoaderRequest loader_request,
-    network::mojom::URLLoaderClientPtr client,
-    network::mojom::URLLoaderFactoryPtr target_factory,
-    network::mojom::CookieManagerPtr cookie_manager)
+    mojo::PendingReceiver<network::mojom::URLLoader> loader_receiver,
+    mojo::PendingRemote<network::mojom::URLLoaderClient> client,
+    mojo::PendingRemote<network::mojom::URLLoaderFactory> target_factory,
+    mojo::PendingRemote<network::mojom::CookieManager> cookie_manager)
     : id_prefix_(id),
       global_req_id_(
           std::make_tuple(process_id,
@@ -684,16 +677,15 @@ InterceptionJob::InterceptionJob(
       interceptor_(interceptor),
       create_loader_params_(std::move(create_loader_params)),
       is_download_(is_download),
-      client_binding_(this),
-      loader_binding_(this),
       client_(std::move(client)),
       target_factory_(std::move(target_factory)),
       cookie_manager_(std::move(cookie_manager)),
       state_(kNotStarted),
       waiting_for_resolution_(false),
-      redirect_count_(0) {
-  loader_binding_.Bind(std::move(loader_request));
-  loader_binding_.set_connection_error_handler(
+      redirect_count_(0),
+      renderer_request_id_(renderer_request_id) {
+  loader_receiver_.Bind(std::move(loader_receiver));
+  loader_receiver_.set_disconnect_handler(
       base::BindOnce(&InterceptionJob::Shutdown, base::Unretained(this)));
 
   auto& job_map = GetInterceptionJobMap();
@@ -709,6 +701,7 @@ InterceptionJob::InterceptionJob(
 }
 
 bool InterceptionJob::StartJobAndMaybeNotify() {
+  UpdateCORSFlag();
   start_ticks_ = base::TimeTicks::Now();
   start_time_ = base::Time::Now();
 
@@ -730,6 +723,42 @@ bool InterceptionJob::StartJobAndMaybeNotify() {
   return true;
 }
 
+// FIXME(caseq): The logic in the three methods below is borrowed from
+// CorsURLLoader as a matter of a quick and mergeable fix for crbug.com/1022173.
+// This logic should be unified with CorsURLLoader.
+network::mojom::FetchResponseType InterceptionJob::CalculateResponseTainting() {
+  if (fetch_cors_flag_)
+    return FetchResponseType::kCors;
+  if (create_loader_params_->request.mode ==
+          network::mojom::RequestMode::kNoCors &&
+      tainted_origin_) {
+    return FetchResponseType::kOpaque;
+  }
+  return FetchResponseType::kBasic;
+}
+
+network::ResourceRequest InterceptionJob::GetResourceRequestForCookies() {
+  FetchResponseType response_tainting =
+      fetch_cors_flag_ ? FetchResponseType::kCors : FetchResponseType::kBasic;
+
+  network::ResourceRequest result = create_loader_params_->request;
+  result.credentials_mode =
+      network::cors::CalculateCredentialsFlag(
+          create_loader_params_->request.credentials_mode, response_tainting)
+          ? CredentialsMode::kInclude
+          : CredentialsMode::kOmit;
+  return result;
+}
+
+void InterceptionJob::UpdateCORSFlag() {
+  if (fetch_cors_flag_)
+    return;
+
+  const network::ResourceRequest& request = create_loader_params_->request;
+  fetch_cors_flag_ = network::cors::ShouldCheckCors(
+      request.url, request.request_initiator, request.mode);
+}
+
 bool InterceptionJob::CanGetResponseBody(std::string* error_reason) {
   if (!(stage_ & InterceptionStage::RESPONSE)) {
     *error_reason =
@@ -747,20 +776,16 @@ bool InterceptionJob::CanGetResponseBody(std::string* error_reason) {
 }
 
 void InterceptionJob::GetResponseBody(
-    std::unique_ptr<GetResponseBodyForInterceptionCallback> callback) {
+    std::unique_ptr<GetResponseBodyCallback> callback) {
   std::string error_reason;
   if (!CanGetResponseBody(&error_reason)) {
-    base::PostTaskWithTraits(
-        FROM_HERE, {BrowserThread::UI},
-        base::BindOnce(&GetResponseBodyForInterceptionCallback::sendFailure,
-                       std::move(callback),
-                       Response::Error(std::move(error_reason))));
+    callback->sendFailure(Response::Error(std::move(error_reason)));
     return;
   }
   if (!body_reader_) {
     body_reader_ = std::make_unique<BodyReader>(base::BindOnce(
         &InterceptionJob::ResponseBodyComplete, base::Unretained(this)));
-    client_binding_.ResumeIncomingMethodCallProcessing();
+    client_receiver_.Resume();
     loader_->ResumeReadingBodyFromNet();
   }
   body_reader_->AddCallback(std::move(callback));
@@ -770,18 +795,16 @@ void InterceptionJob::TakeResponseBodyPipe(
     TakeResponseBodyPipeCallback callback) {
   std::string error_reason;
   if (!CanGetResponseBody(&error_reason)) {
-    base::PostTaskWithTraits(
-        FROM_HERE, {BrowserThread::UI},
-        base::BindOnce(std::move(callback),
-                       Response::Error(std::move(error_reason)),
-                       mojo::ScopedDataPipeConsumerHandle(), std::string()));
+    std::move(callback).Run(Response::Error(std::move(error_reason)),
+                            mojo::ScopedDataPipeConsumerHandle(),
+                            base::EmptyString());
     return;
   }
   DCHECK_EQ(state_, State::kResponseReceived);
   DCHECK(!!response_metadata_);
   state_ = State::kResponseTaken;
   pending_response_body_pipe_callback_ = std::move(callback);
-  client_binding_.ResumeIncomingMethodCallProcessing();
+  client_receiver_.Resume();
   loader_->ResumeReadingBodyFromNet();
 }
 
@@ -790,13 +813,10 @@ void InterceptionJob::ContinueInterceptedRequest(
     std::unique_ptr<ContinueInterceptedRequestCallback> callback) {
   Response response = InnerContinueRequest(std::move(modifications));
   // |this| may be destroyed at this point.
-  bool success = response.isSuccess();
-  base::OnceClosure task =
-      success ? base::BindOnce(&ContinueInterceptedRequestCallback::sendSuccess,
-                               std::move(callback))
-              : base::BindOnce(&ContinueInterceptedRequestCallback::sendFailure,
-                               std::move(callback), std::move(response));
-  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI}, std::move(task));
+  if (response.isSuccess())
+    callback->sendSuccess();
+  else
+    callback->sendFailure(std::move(response));
 }
 
 void InterceptionJob::Detach() {
@@ -901,7 +921,7 @@ Response InterceptionJob::InnerContinueRequest(
     client_->OnReceiveResponse(response_metadata_->head);
     response_metadata_.reset();
     loader_->ResumeReadingBodyFromNet();
-    client_binding_.ResumeIncomingMethodCallProcessing();
+    client_receiver_.Resume();
     return Response::OK();
   }
 
@@ -944,15 +964,16 @@ void InterceptionJob::ApplyModificationsToRequest(
 }
 
 void InterceptionJob::ProcessAuthResponse(
-    const DevToolsNetworkInterceptor::AuthChallengeResponse& response) {
+    const DevToolsURLLoaderInterceptor::AuthChallengeResponse& response) {
   switch (response.response_type) {
-    case DevToolsNetworkInterceptor::AuthChallengeResponse::kDefault:
+    case DevToolsURLLoaderInterceptor::AuthChallengeResponse::kDefault:
       std::move(pending_auth_callback_).Run(true, base::nullopt);
       break;
-    case DevToolsNetworkInterceptor::AuthChallengeResponse::kCancelAuth:
+    case DevToolsURLLoaderInterceptor::AuthChallengeResponse::kCancelAuth:
       std::move(pending_auth_callback_).Run(false, base::nullopt);
       break;
-    case DevToolsNetworkInterceptor::AuthChallengeResponse::kProvideCredentials:
+    case DevToolsURLLoaderInterceptor::AuthChallengeResponse::
+        kProvideCredentials:
       std::move(pending_auth_callback_).Run(false, response.credentials);
       break;
   }
@@ -1034,34 +1055,52 @@ Response InterceptionJob::ProcessResponseOverride(
 
 void InterceptionJob::ProcessSetCookies(const net::HttpResponseHeaders& headers,
                                         base::OnceClosure callback) {
-  if (create_loader_params_->request.load_flags &
-      net::LOAD_DO_NOT_SAVE_COOKIES) {
+  if (!GetResourceRequestForCookies().SavesCookies()) {
     std::move(callback).Run();
     return;
   }
 
+  std::vector<std::unique_ptr<net::CanonicalCookie>> cookies;
+  base::Time response_date;
+  base::Optional<base::Time> server_time = base::nullopt;
+  if (headers.GetDateValue(&response_date))
+    server_time = base::make_optional(response_date);
+  base::Time now = base::Time::Now();
+
   const base::StringPiece name("Set-Cookie");
   std::string cookie_line;
   size_t iter = 0;
-  net::CookieOptions options;
-  options.set_include_httponly();
-  std::vector<std::unique_ptr<net::CanonicalCookie>> cookies;
-  base::Time response_date;
-  if (headers.GetDateValue(&response_date))
-    options.set_server_time(response_date);
-  base::Time now = base::Time::Now();
   while (headers.EnumerateHeader(&iter, name, &cookie_line)) {
     std::unique_ptr<net::CanonicalCookie> cookie = net::CanonicalCookie::Create(
-        create_loader_params_->request.url, cookie_line, now, options);
+        create_loader_params_->request.url, cookie_line, now, server_time);
     if (cookie)
       cookies.emplace_back(std::move(cookie));
   }
+
+  net::CookieOptions options;
+  options.set_include_httponly();
+  bool should_treat_as_first_party =
+      GetContentClient()
+          ->browser()
+          ->ShouldIgnoreSameSiteCookieRestrictionsWhenTopLevel(
+              create_loader_params_->request.site_for_cookies.scheme_piece(),
+              create_loader_params_->request.url.SchemeIsCryptographic());
+  options.set_same_site_cookie_context(
+      net::cookie_util::ComputeSameSiteContextForResponse(
+          create_loader_params_->request.url,
+          create_loader_params_->request.site_for_cookies,
+          create_loader_params_->request.request_initiator,
+          (create_loader_params_->request.attach_same_site_cookies ||
+           should_treat_as_first_party)));
+
+  // |this| might be deleted here if |cookies| is empty!
   auto on_cookie_set = base::BindRepeating(
-      [](base::RepeatingClosure closure, bool) { closure.Run(); },
+      [](base::RepeatingClosure closure,
+         net::CanonicalCookie::CookieInclusionStatus) { closure.Run(); },
       base::BarrierClosure(cookies.size(), std::move(callback)));
   for (auto& cookie : cookies) {
     cookie_manager_->SetCanonicalCookie(
-        *cookie, create_loader_params_->request.url.scheme(), true,
+        *cookie, create_loader_params_->request.url.scheme(), options,
         on_cookie_set);
   }
 }
@@ -1080,8 +1119,8 @@ void InterceptionJob::ProcessRedirectByClient(const GURL& redirect_url) {
 
   response_metadata_->redirect_info = std::make_unique<net::RedirectInfo>(
       net::RedirectInfo::ComputeRedirectInfo(
-          request.method, request.url, request.site_for_cookies,
-          request.top_frame_origin, first_party_url_policy,
+          request.method, request.url, request.request_initiator,
+          request.site_for_cookies, first_party_url_policy,
           request.referrer_policy, request.referrer.spec(),
           headers.response_code(), redirect_url,
           net::RedirectUtil::GetReferrerPolicyHeader(&headers),
@@ -1094,8 +1133,9 @@ void InterceptionJob::ProcessRedirectByClient(const GURL& redirect_url) {
 void InterceptionJob::SendResponse(scoped_refptr<base::RefCountedMemory> body,
                                    size_t offset) {
   client_->OnReceiveResponse(response_metadata_->head);
-  if (!response_metadata_->cached_metadata.empty())
-    client_->OnReceiveCachedMetadata(response_metadata_->cached_metadata);
+  if (response_metadata_->cached_metadata.size() != 0)
+    client_->OnReceiveCachedMetadata(
+        std::move(response_metadata_->cached_metadata));
 
   if (body) {
     DCHECK_LE(offset, body->size());
@@ -1132,16 +1172,14 @@ void InterceptionJob::StartRequest() {
 
   state_ = State::kRequestSent;
 
-  network::mojom::URLLoaderClientPtr loader_client;
-  client_binding_.Bind(MakeRequest(&loader_client));
-  client_binding_.set_connection_error_handler(
-      base::BindOnce(&InterceptionJob::Shutdown, base::Unretained(this)));
-
   target_factory_->CreateLoaderAndStart(
       MakeRequest(&loader_), create_loader_params_->routing_id,
       create_loader_params_->request_id, create_loader_params_->options,
-      create_loader_params_->request, std::move(loader_client),
+      create_loader_params_->request,
+      client_receiver_.BindNewPipeAndPassRemote(),
       create_loader_params_->traffic_annotation);
+  client_receiver_.set_disconnect_handler(
+      base::BindOnce(&InterceptionJob::Shutdown, base::Unretained(this)));
 
   if (priority_)
     loader_->SetPriority(priority_->first, priority_->second);
@@ -1150,7 +1188,7 @@ void InterceptionJob::StartRequest() {
 void InterceptionJob::CancelRequest() {
   if (state_ == State::kNotStarted)
     return;
-  client_binding_.Close();
+  client_receiver_.reset();
   loader_.reset();
   if (body_reader_) {
     body_reader_->CancelWithError(
@@ -1161,15 +1199,17 @@ void InterceptionJob::CancelRequest() {
 }
 
 std::unique_ptr<InterceptedRequestInfo> InterceptionJob::BuildRequestInfo(
-    const network::ResourceResponseHead* head) {
+    const network::mojom::URLResponseHeadPtr& head) {
   auto result = std::make_unique<InterceptedRequestInfo>();
   result->interception_id = current_id_;
+  if (renderer_request_id_.has_value())
+    result->renderer_request_id = renderer_request_id_.value();
   result->frame_id = frame_token_;
   ResourceType resource_type =
       static_cast<ResourceType>(create_loader_params_->request.resource_type);
   result->resource_type = resource_type;
-  result->is_navigation = resource_type == RESOURCE_TYPE_MAIN_FRAME ||
-                          resource_type == RESOURCE_TYPE_SUB_FRAME;
+  result->is_navigation = resource_type == ResourceType::kMainFrame ||
+                          resource_type == ResourceType::kSubFrame;
 
   if (head && head->headers)
     result->response_headers = head->headers;
@@ -1177,11 +1217,9 @@ std::unique_ptr<InterceptedRequestInfo> InterceptionJob::BuildRequestInfo(
 }
 
 void InterceptionJob::FetchCookies(
-    base::OnceCallback<void(const std::vector<net::CanonicalCookie>&)>
-        callback) {
-  if (create_loader_params_->request.load_flags &
-      net::LOAD_DO_NOT_SEND_COOKIES) {
-    std::move(callback).Run({});
+    network::mojom::CookieManager::GetCookieListCallback callback) {
+  if (!GetResourceRequestForCookies().SendsCookies()) {
+    std::move(callback).Run({}, {});
     return;
   }
   net::CookieOptions options;
@@ -1190,10 +1228,17 @@ void InterceptionJob::FetchCookies(
 
   const network::ResourceRequest& request = create_loader_params_->request;
 
+  bool should_treat_as_first_party =
+      GetContentClient()
+          ->browser()
+          ->ShouldIgnoreSameSiteCookieRestrictionsWhenTopLevel(
+              request.site_for_cookies.scheme_piece(),
+              request.url.SchemeIsCryptographic());
   options.set_same_site_cookie_context(
       net::cookie_util::ComputeSameSiteContextForRequest(
           request.method, request.url, request.site_for_cookies,
-          request.request_initiator, request.attach_same_site_cookies));
+          request.request_initiator,
+          (request.attach_same_site_cookies || should_treat_as_first_party)));
 
   cookie_manager_->GetCookieList(request.url, options, std::move(callback));
 }
@@ -1206,21 +1251,21 @@ void InterceptionJob::NotifyClient(
 
 void InterceptionJob::NotifyClientWithCookies(
     std::unique_ptr<InterceptedRequestInfo> request_info,
-    const std::vector<net::CanonicalCookie>& cookie_list) {
+    const net::CookieStatusList& cookie_list_with_statuses,
+    const net::CookieStatusList& excluded_cookies) {
   if (!interceptor_)
     return;
   std::string cookie_line;
-  if (!cookie_list.empty())
-    cookie_line = net::CanonicalCookie::BuildCookieLine(cookie_list);
+  if (!cookie_list_with_statuses.empty()) {
+    cookie_line =
+        net::CanonicalCookie::BuildCookieLine(cookie_list_with_statuses);
+  }
   request_info->network_request =
       protocol::NetworkHandler::CreateRequestFromResourceRequest(
           create_loader_params_->request, cookie_line);
 
   waiting_for_resolution_ = true;
-  base::PostTaskWithTraits(
-      FROM_HERE, {BrowserThread::UI},
-      base::BindOnce(interceptor_->request_intercepted_callback_,
-                     std::move(request_info)));
+  interceptor_->request_intercepted_callback_.Run(std::move(request_info));
 }
 
 void InterceptionJob::Shutdown() {
@@ -1237,8 +1282,8 @@ void InterceptionJob::FollowRedirect(
   // TODO(arthursonzogni, juncai): This seems to be correctly implemented, but
   // not used nor tested so far. Add tests and remove this DCHECK to support
   // this feature if needed. See https://crbug.com/845683.
-  DCHECK(removed_headers.empty() && modified_headers.IsEmpty())
-      << "Redirect with removed or modified headers is not supported yet. See "
+  DCHECK(removed_headers.empty())
+      << "Redirect with removed headers is not supported yet. See "
          "https://crbug.com/845683";
   DCHECK(!new_url.has_value()) << "Redirect with modified url was not "
                                   "supported yet. crbug.com/845683";
@@ -1246,6 +1291,12 @@ void InterceptionJob::FollowRedirect(
 
   network::ResourceRequest* request = &create_loader_params_->request;
   const net::RedirectInfo& info = *response_metadata_->redirect_info;
+  const auto current_origin = url::Origin::Create(request->url);
+  if (request->request_initiator &&
+      (!url::Origin::Create(info.new_url).IsSameOriginWith(current_origin) &&
+       !request->request_initiator->IsSameOriginWith(current_origin))) {
+    tainted_origin_ = true;
+  }
 
   bool clear_body = false;
   net::RedirectUtil::UpdateHttpRequest(request->url, request->method, info,
@@ -1259,6 +1310,8 @@ void InterceptionJob::FollowRedirect(
   request->referrer_policy = info.new_referrer_policy;
   request->referrer = GURL(info.new_referrer);
   response_metadata_.reset();
+
+  UpdateCORSFlag();
 
   if (interceptor_) {
     // Pretend that each redirect hop is a new request -- this is for
@@ -1277,10 +1330,6 @@ void InterceptionJob::FollowRedirect(
 
   DCHECK_EQ(State::kNotStarted, state_);
   StartRequest();
-}
-
-void InterceptionJob::ProceedWithResponse() {
-  NOTREACHED();
 }
 
 void InterceptionJob::SetPriority(net::RequestPriority priority,
@@ -1303,30 +1352,30 @@ void InterceptionJob::ResumeReadingBodyFromNet() {
 
 // URLLoaderClient methods
 void InterceptionJob::OnReceiveResponse(
-    const network::ResourceResponseHead& head) {
+    network::mojom::URLResponseHeadPtr head) {
   state_ = State::kResponseReceived;
   DCHECK(!response_metadata_);
   if (!(stage_ & InterceptionStage::RESPONSE)) {
-    client_->OnReceiveResponse(head);
+    client_->OnReceiveResponse(std::move(head));
     return;
   }
   loader_->PauseReadingBodyFromNet();
-  client_binding_.PauseIncomingMethodCallProcessing();
+  client_receiver_.Pause();
 
   response_metadata_ = std::make_unique<ResponseMetadata>(head);
 
-  auto request_info = BuildRequestInfo(&head);
+  auto request_info = BuildRequestInfo(head);
   const network::ResourceRequest& request = create_loader_params_->request;
   request_info->is_download =
-      request_info->is_navigation && request.allow_download &&
+      request_info->is_navigation &&
       (is_download_ || download_utils::IsDownload(
-                           request.url, head.headers.get(), head.mime_type));
+                           request.url, head->headers.get(), head->mime_type));
   NotifyClient(std::move(request_info));
 }
 
 void InterceptionJob::OnReceiveRedirect(
     const net::RedirectInfo& redirect_info,
-    const network::ResourceResponseHead& head) {
+    network::mojom::URLResponseHeadPtr head) {
   DCHECK_EQ(State::kRequestSent, state_);
   state_ = State::kRedirectReceived;
   response_metadata_ = std::make_unique<ResponseMetadata>(head);
@@ -1334,12 +1383,11 @@ void InterceptionJob::OnReceiveRedirect(
       std::make_unique<net::RedirectInfo>(redirect_info);
 
   if (!(stage_ & InterceptionStage::RESPONSE)) {
-    client_->OnReceiveRedirect(redirect_info, head);
+    client_->OnReceiveRedirect(redirect_info, std::move(head));
     return;
   }
 
-  std::unique_ptr<InterceptedRequestInfo> request_info =
-      BuildRequestInfo(&head);
+  std::unique_ptr<InterceptedRequestInfo> request_info = BuildRequestInfo(head);
   request_info->redirect_url = redirect_info.new_url.spec();
   NotifyClient(std::move(request_info));
 }
@@ -1352,12 +1400,11 @@ void InterceptionJob::OnUploadProgress(int64_t current_position,
   client_->OnUploadProgress(current_position, total_size, std::move(callback));
 }
 
-void InterceptionJob::OnReceiveCachedMetadata(
-    const std::vector<uint8_t>& data) {
+void InterceptionJob::OnReceiveCachedMetadata(mojo_base::BigBuffer data) {
   if (ShouldBypassForResponse())
-    client_->OnReceiveCachedMetadata(data);
+    client_->OnReceiveCachedMetadata(std::move(data));
   else
-    response_metadata_->cached_metadata = data;
+    response_metadata_->cached_metadata = std::move(data);
 }
 
 void InterceptionJob::OnTransferSizeUpdated(int32_t transfer_size_diff) {
@@ -1372,11 +1419,9 @@ void InterceptionJob::OnStartLoadingResponseBody(
   if (pending_response_body_pipe_callback_) {
     DCHECK_EQ(State::kResponseTaken, state_);
     DCHECK(!body_reader_);
-    base::PostTaskWithTraits(
-        FROM_HERE, {BrowserThread::UI},
-        base::BindOnce(std::move(pending_response_body_pipe_callback_),
-                       Response::OK(), std::move(body),
-                       response_metadata_->head.mime_type));
+    std::move(pending_response_body_pipe_callback_)
+        .Run(Response::OK(), std::move(body),
+             response_metadata_->head.mime_type);
     return;
   }
   DCHECK_EQ(State::kResponseReceived, state_);
@@ -1396,14 +1441,14 @@ void InterceptionJob::OnComplete(
     return;
   }
   response_metadata_->status = status;
-  // No need to listen to the channel any more, so just close it, so if the pipe
+  // No need to listen to the channel any more, so just reset it, so if the pipe
   // is closed by the other end, |shutdown| isn't run.
-  client_binding_.Close();
+  client_receiver_.reset();
   loader_.reset();
 }
 
 void InterceptionJob::OnAuthRequest(
-    const scoped_refptr<net::AuthChallengeInfo>& auth_info,
+    const net::AuthChallengeInfo& auth_info,
     DevToolsURLLoaderInterceptor::HandleAuthRequestCallback callback) {
   DCHECK_EQ(kRequestSent, state_);
   DCHECK(pending_auth_callback_.is_null());
@@ -1416,24 +1461,25 @@ void InterceptionJob::OnAuthRequest(
   }
   state_ = State::kAuthRequired;
   auto request_info = BuildRequestInfo(nullptr);
-  request_info->auth_challenge = auth_info;
+  request_info->auth_challenge =
+      std::make_unique<net::AuthChallengeInfo>(auth_info);
   pending_auth_callback_ = std::move(callback);
   NotifyClient(std::move(request_info));
 }
 
 DevToolsURLLoaderFactoryAdapter::DevToolsURLLoaderFactoryAdapter(
-    network::mojom::URLLoaderFactoryPtr factory)
+    mojo::PendingRemote<network::mojom::URLLoaderFactory> factory)
     : factory_(std::move(factory)) {}
 
 DevToolsURLLoaderFactoryAdapter::~DevToolsURLLoaderFactoryAdapter() = default;
 
 void DevToolsURLLoaderFactoryAdapter::CreateLoaderAndStart(
-    network::mojom::URLLoaderRequest loader,
+    mojo::PendingReceiver<network::mojom::URLLoader> loader,
     int32_t routing_id,
     int32_t request_id,
     uint32_t options,
     const network::ResourceRequest& request,
-    network::mojom::URLLoaderClientPtr client,
+    mojo::PendingRemote<network::mojom::URLLoaderClient> client,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
   factory_->CreateLoaderAndStart(std::move(loader), routing_id, request_id,
                                  options, request, std::move(client),
@@ -1441,8 +1487,8 @@ void DevToolsURLLoaderFactoryAdapter::CreateLoaderAndStart(
 }
 
 void DevToolsURLLoaderFactoryAdapter::Clone(
-    network::mojom::URLLoaderFactoryRequest request) {
-  factory_->Clone(std::move(request));
+    mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver) {
+  factory_->Clone(std::move(receiver));
 }
 
 }  // namespace content

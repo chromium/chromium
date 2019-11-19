@@ -1,0 +1,1 @@
+{ "short_name": "Manifest", "start_url": "https://example.com/pwa/manifest_test_page.html", "icons": [ { "src": "launcher-icon-1x.png", "sizes": "48x48", "type": "image/png" }, { "src": "image-512px.png", "sizes": "512x512", "type": "image/png" } ], "display": "browser", "orientation": "portrait", "theme_color": "#000", "scope": "https://example.com/pwa/" }

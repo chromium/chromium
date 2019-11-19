@@ -13,6 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/extensions/users_private/users_private_delegate.h"
 #include "chrome/browser/chromeos/extensions/users_private/users_private_delegate_factory.h"
 #include "chrome/browser/chromeos/ownership/owner_settings_service_chromeos.h"
@@ -61,6 +62,11 @@ bool CanModifyWhitelistedUsers(Profile* profile) {
   return !IsEnterpriseManaged() && IsOwnerProfile(profile) && !IsChild(profile);
 }
 
+bool IsExistingWhitelistedUser(const std::string& username) {
+  return chromeos::CrosSettings::Get()->FindEmailInList(
+      chromeos::kAccountsPrefUsers, username, /*wildcard_match=*/nullptr);
+}
+
 // Creates User object for the exising user_manager::User .
 api::users_private::User CreateApiUser(const std::string& email,
                                        const user_manager::User& user) {
@@ -87,27 +93,13 @@ api::users_private::User CreateUnknownApiUser(const std::string& email) {
   return api_user;
 }
 
-}  // anonymous namespace
-
-////////////////////////////////////////////////////////////////////////////////
-// UsersPrivateGetWhitelistedUsersFunction
-
-UsersPrivateGetWhitelistedUsersFunction::
-    UsersPrivateGetWhitelistedUsersFunction()
-    : chrome_details_(this) {
-}
-
-UsersPrivateGetWhitelistedUsersFunction::
-    ~UsersPrivateGetWhitelistedUsersFunction() {
-}
-
-ExtensionFunction::ResponseAction
-UsersPrivateGetWhitelistedUsersFunction::Run() {
-  Profile* profile = chrome_details_.GetProfile();
+std::unique_ptr<base::ListValue> GetUsersList(Profile* profile,
+                                      content::BrowserContext* browser_context)
+{
   std::unique_ptr<base::ListValue> user_list(new base::ListValue);
 
   if (!CanModifyWhitelistedUsers(profile))
-    return RespondNow(OneArgument(std::move(user_list)));
+    return user_list;
 
   // Create one list to set. This is needed because user white list update is
   // asynchronous and sequential. Before previous write comes back, cached list
@@ -115,7 +107,7 @@ UsersPrivateGetWhitelistedUsersFunction::Run() {
   std::unique_ptr<base::ListValue> email_list;
 
   UsersPrivateDelegate* delegate =
-      UsersPrivateDelegateFactory::GetForBrowserContext(browser_context());
+      UsersPrivateDelegateFactory::GetForBrowserContext(browser_context);
   PrefsUtil* prefs_util = delegate->GetPrefsUtil();
 
   std::unique_ptr<api::settings_private::PrefObject> users_pref_object =
@@ -167,7 +159,52 @@ UsersPrivateGetWhitelistedUsersFunction::Run() {
             .ToValue());
   }
 
-  return RespondNow(OneArgument(std::move(user_list)));
+  return user_list;
+}
+
+}  // anonymous namespace
+
+////////////////////////////////////////////////////////////////////////////////
+// UsersPrivateGetWhitelistedUsersFunction
+
+UsersPrivateGetWhitelistedUsersFunction::
+    UsersPrivateGetWhitelistedUsersFunction()
+    : chrome_details_(this) {
+}
+
+UsersPrivateGetWhitelistedUsersFunction::
+    ~UsersPrivateGetWhitelistedUsersFunction() {
+}
+
+ExtensionFunction::ResponseAction
+UsersPrivateGetWhitelistedUsersFunction::Run() {
+  Profile* profile = chrome_details_.GetProfile();
+  return RespondNow(OneArgument(GetUsersList(profile, browser_context())));
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// UsersPrivateIsWhitelistedUserFunction
+
+UsersPrivateIsWhitelistedUserFunction::UsersPrivateIsWhitelistedUserFunction()
+    : chrome_details_(this) {
+}
+
+UsersPrivateIsWhitelistedUserFunction::
+    ~UsersPrivateIsWhitelistedUserFunction() {}
+
+ExtensionFunction::ResponseAction UsersPrivateIsWhitelistedUserFunction::Run() {
+  std::unique_ptr<api::users_private::IsWhitelistedUser::Params> parameters =
+      api::users_private::IsWhitelistedUser::Params::Create(*args_);
+  EXTENSION_FUNCTION_VALIDATE(parameters.get());
+
+  // GetUsersList called to clear the stale user name cache
+  GetUsersList(chrome_details_.GetProfile(), browser_context());
+
+  std::string username = gaia::CanonicalizeEmail(parameters->email);
+  if (IsExistingWhitelistedUser(username)) {
+    return RespondNow(OneArgument(std::make_unique<base::Value>(true)));
+  }
+  return RespondNow(OneArgument(std::make_unique<base::Value>(false)));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -193,8 +230,7 @@ UsersPrivateAddWhitelistedUserFunction::Run() {
   }
 
   std::string username = gaia::CanonicalizeEmail(parameters->email);
-  if (chromeos::CrosSettings::Get()->FindEmailInList(
-          chromeos::kAccountsPrefUsers, username, NULL)) {
+  if (IsExistingWhitelistedUser(username)) {
     return RespondNow(OneArgument(std::make_unique<base::Value>(false)));
   }
 

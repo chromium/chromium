@@ -143,7 +143,7 @@ ScriptValue EXTDisjointTimerQuery::getQueryEXT(ScriptState* script_state,
                                                GLenum pname) {
   WebGLExtensionScopedContext scoped(this);
   if (scoped.IsLost())
-    return ScriptValue::CreateNull(script_state);
+    return ScriptValue::CreateNull(script_state->GetIsolate());
 
   if (pname == GL_QUERY_COUNTER_BITS_EXT) {
     if (target == GL_TIMESTAMP_EXT || target == GL_TIME_ELAPSED_EXT) {
@@ -153,22 +153,22 @@ ScriptValue EXTDisjointTimerQuery::getQueryEXT(ScriptState* script_state,
     }
     scoped.Context()->SynthesizeGLError(GL_INVALID_ENUM, "getQuery",
                                         "invalid target/pname combination");
-    return ScriptValue::CreateNull(script_state);
+    return ScriptValue::CreateNull(script_state->GetIsolate());
   }
 
   if (target == GL_TIME_ELAPSED_EXT && pname == GL_CURRENT_QUERY) {
     return current_elapsed_query_
                ? WebGLAny(script_state, current_elapsed_query_)
-               : ScriptValue::CreateNull(script_state);
+               : ScriptValue::CreateNull(script_state->GetIsolate());
   }
 
   if (target == GL_TIMESTAMP_EXT && pname == GL_CURRENT_QUERY) {
-    return ScriptValue::CreateNull(script_state);
+    return ScriptValue::CreateNull(script_state->GetIsolate());
   }
 
   scoped.Context()->SynthesizeGLError(GL_INVALID_ENUM, "getQuery",
                                       "invalid target/pname combination");
-  return ScriptValue::CreateNull(script_state);
+  return ScriptValue::CreateNull(script_state->GetIsolate());
 }
 
 ScriptValue EXTDisjointTimerQuery::getQueryObjectEXT(ScriptState* script_state,
@@ -176,15 +176,15 @@ ScriptValue EXTDisjointTimerQuery::getQueryObjectEXT(ScriptState* script_state,
                                                      GLenum pname) {
   WebGLExtensionScopedContext scoped(this);
   if (scoped.IsLost())
-    return ScriptValue::CreateNull(script_state);
+    return ScriptValue::CreateNull(script_state->GetIsolate());
 
   if (!scoped.Context()->ValidateWebGLObject("getQueryObjectEXT", query))
-    return ScriptValue::CreateNull(script_state);
+    return ScriptValue::CreateNull(script_state->GetIsolate());
 
   if (current_elapsed_query_ == query) {
     scoped.Context()->SynthesizeGLError(
         GL_INVALID_OPERATION, "getQueryObjectEXT", "query is currently active");
-    return ScriptValue::CreateNull(script_state);
+    return ScriptValue::CreateNull(script_state->GetIsolate());
   }
 
   switch (pname) {
@@ -202,7 +202,7 @@ ScriptValue EXTDisjointTimerQuery::getQueryObjectEXT(ScriptState* script_state,
       break;
   }
 
-  return ScriptValue::CreateNull(script_state);
+  return ScriptValue::CreateNull(script_state->GetIsolate());
 }
 
 void EXTDisjointTimerQuery::Trace(blink::Visitor* visitor) {

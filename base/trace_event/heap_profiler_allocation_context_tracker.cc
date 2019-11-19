@@ -97,6 +97,7 @@ AllocationContextTracker::AllocationContextTracker()
     : thread_name_(nullptr), ignore_scope_depth_(0) {
   tracked_stack_.reserve(kMaxStackDepth);
   task_contexts_.reserve(kMaxTaskDepth);
+  task_contexts_.push_back("UntrackedTask");
 }
 AllocationContextTracker::~AllocationContextTracker() = default;
 
@@ -163,8 +164,8 @@ void AllocationContextTracker::PushCurrentTaskContext(const char* context) {
 void AllocationContextTracker::PopCurrentTaskContext(const char* context) {
   // Guard for stack underflow. If tracing was started with a TRACE_EVENT in
   // scope, the context was never pushed, so it is possible that pop is called
-  // on an empty stack.
-  if (task_contexts_.empty())
+  // on an empty stack. Note that the context always contains "UntrackedTask".
+  if (task_contexts_.size() == 1)
     return;
 
   DCHECK_EQ(context, task_contexts_.back())

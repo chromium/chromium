@@ -5,8 +5,8 @@
 #include "chrome/browser/android/oom_intervention/near_oom_monitor.h"
 
 #include "base/bind.h"
-#include "base/message_loop/message_loop.h"
 #include "base/sequenced_task_runner.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -82,7 +82,7 @@ class NearOomMonitorTest : public testing::Test {
 
  protected:
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
-  base::MessageLoop message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   std::unique_ptr<MockNearOomMonitor> monitor_;
 };
 

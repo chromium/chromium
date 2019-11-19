@@ -10,12 +10,14 @@ declare_args() {
   # resources.pak. It is still possible to load JS files from disk by passing
   # --debug-devtools cmdline switch.
   debug_devtools = false
+
+  # If external_devtools_frontend is set to true, use DevTools frontend that is
+  # pulled as external dependency.
+  external_devtools_frontend = true
 }
 
 # Unhandled Tap enable means Contextual Search aka Tap to Search.
 enable_unhandled_tap = is_android
-
-use_default_render_theme = use_aura
 
 # Use Minikin hyphenation engine.
 use_minikin_hyphenation = is_android

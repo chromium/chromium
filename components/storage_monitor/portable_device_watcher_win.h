@@ -141,7 +141,7 @@ class PortableDeviceWatcherWin {
   StorageMonitor::Receiver* storage_notifications_;
 
   // Used by |media_task_runner_| to create cancelable callbacks.
-  base::WeakPtrFactory<PortableDeviceWatcherWin> weak_ptr_factory_;
+  base::WeakPtrFactory<PortableDeviceWatcherWin> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PortableDeviceWatcherWin);
 };

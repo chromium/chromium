@@ -1,0 +1,75 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+"""Helpers to read GRD files and estimate resource ID usages.
+
+This module uses grit.grd_reader to estimate resource ID usages in GRD
+(and GRDP) files by counting the occurrences of {include, message, structure}
+tags. This approach avoids the complexties of conditional inclusions, but
+produces a conservative estimate of ID usages.
+"""
+
+from __future__ import print_function
+
+import collections
+import os
+
+from grit import grd_reader
+from grit.tool.update_resource_ids import common
+
+TAGS_OF_INTEREST = set(['include', 'message', 'structure'])
+
+
+def _CountResourceUsage(grd):
+  tag_name_to_count = {tag: set() for tag in TAGS_OF_INTEREST}
+  # Pass '_chromium', but '_google_chrome' would produce the same result.
+  root = grd_reader.Parse(grd, defines={'_chromium': True})
+  # Count all descendant tags, regardless of whether they're active.
+  for node in root.Preorder():
+    if node.name in TAGS_OF_INTEREST:
+      tag_name_to_count[node.name].add(node.attrs['name'])
+  return {k: len(v) for k, v in tag_name_to_count.iteritems() if v}
+
+
+def GenerateResourceUsages(item_list, src_dir, fake):
+  """Visits a list of ItemInfo to generate maps from tag name to usage.
+
+  Args:
+    root_obj: Root dict of a resource_ids file.
+    src_dir: Absolute directory of Chrome's src/ directory.
+    fake: For testing: Sets 10 as usages for all tags, to avoid reading GRD.
+  Yields:
+    Tuple (item, tag_name_to_usage), where |item| is from |item_list| and
+      |tag_name_to_usage| is a dict() mapping tag name to (int) usage.
+  """
+  if fake:
+    for item in item_list:
+      tag_name_to_usage = collections.Counter({t.name: 10 for t in item.tags})
+      yield item, tag_name_to_usage
+    return
+  for item in item_list:
+    supported_tag_names = set(tag.name for tag in item.tags)
+    if item.meta and 'sizes' in item.meta:
+      # If META has "sizes" field, use it instead of reading GRD.
+      tag_name_to_usage = collections.Counter()
+      for k, vlist in item.meta['sizes'].iteritems():
+        tag_name_to_usage[common.StripPlural(k.val)] = sum(v.val for v in vlist)
+      tag_names = set(tag_name_to_usage.keys())
+      if tag_names != supported_tag_names:
+        raise ValueError('META "sizes" field have identical fields as actual '
+                         '"sizes" field.')
+    else:
+      # Generated GRD start with '<(SHARED_INTERMEDIATE_DIR)'. Just check '<'.
+      if item.grd.startswith('<'):
+        raise ValueError('%s: Generated GRD must use META with "sizes" field '
+                         'to specify size bounds.' % item.grd)
+      grd_file = os.sep.join([src_dir, item.grd])
+      if not os.path.isfile(grd_file):
+        raise ValueError('Nonexistent GRD provided: %s' % item.grd)
+      tag_name_to_usage = _CountResourceUsage(grd_file)
+      tag_names = set(tag_name_to_usage.keys())
+      if not tag_names.issubset(supported_tag_names):
+        missing = [t + 's' for t in tag_names - supported_tag_names]
+        raise ValueError(
+            'Resource ids for %s needs entry for %s' % (item.grd, missing))
+    yield item, tag_name_to_usage

@@ -55,14 +55,13 @@ FrameReceiver::FrameReceiver(
               this,
               config.sender_ssrc,
               true,
-              static_cast<int>(
-                  config.rtp_max_delay_ms * config.target_frame_rate / 1000)),
+              static_cast<int>(config.rtp_max_delay_ms *
+                               config.target_frame_rate / 1000)),
       rtcp_(cast_environment_->Clock(),
             config.receiver_ssrc,
             config.sender_ssrc),
       is_waiting_for_consecutive_frame_(false),
-      lip_sync_drift_(ClockDriftSmoother::GetDefaultTimeConstant()),
-      weak_factory_(this) {
+      lip_sync_drift_(ClockDriftSmoother::GetDefaultTimeConstant()) {
   transport_->AddValidRtpReceiver(config.sender_ssrc, config.receiver_ssrc);
   DCHECK_GT(config.rtp_max_delay_ms, 0);
   DCHECK_GT(config.target_frame_rate, 0);

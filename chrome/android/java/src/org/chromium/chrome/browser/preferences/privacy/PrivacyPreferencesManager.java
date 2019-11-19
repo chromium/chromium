@@ -10,24 +10,30 @@ import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.VisibleForTesting;
+import org.chromium.base.annotations.NativeMethods;
+import org.chromium.base.library_loader.LibraryProcessType;
 import org.chromium.chrome.browser.ChromeSwitches;
 import org.chromium.chrome.browser.device.DeviceClassManager;
-import org.chromium.chrome.browser.preferences.PrefServiceBridge;
 import org.chromium.chrome.browser.survey.SurveyController;
 import org.chromium.components.minidump_uploader.util.CrashReportingPermissionManager;
 import org.chromium.components.minidump_uploader.util.NetworkPermissionUtil;
+import org.chromium.content_public.browser.BrowserStartupController;
 
 /**
  * Reads, writes, and migrates preferences related to network usage and privacy.
  */
 public class PrivacyPreferencesManager implements CrashReportingPermissionManager{
-    static final String DEPRECATED_PREF_CRASH_DUMP_UPLOAD = "crash_dump_upload";
-    static final String DEPRECATED_PREF_CRASH_DUMP_UPLOAD_NO_CELLULAR =
-            "crash_dump_upload_no_cellular";
-    private static final String DEPRECATED_PREF_CELLULAR_EXPERIMENT = "cellular_experiment";
+    // "crash_dump_upload", "crash_dump_upload_no_cellular" - Deprecated prefs used for
+    // 3-option setting for usage and crash reporting. Last used in M55, removed in M78.
+
+    // "cellular_experiment" - Deprecated pref corresponding to the finch experiment
+    // controlling migration from 3-option setting to ON/OFF toggle for usage and crash
+    // reporting. Last used in M55, removed in M78.
+
     private static final String DEPRECATED_PREF_PHYSICAL_WEB = "physical_web";
     private static final String DEPRECATED_PREF_PHYSICAL_WEB_SHARING = "physical_web_sharing";
     private static final String DEPRECATED_PREF_PHYSICAL_WEB_HAS_DEFERRED_METRICS_KEY =
@@ -80,7 +86,6 @@ public class PrivacyPreferencesManager implements CrashReportingPermissionManage
         mSharedPreferences = ContextUtils.getAppSharedPreferences();
 
         migratePhysicalWebPreferences();
-        migrateUsageAndCrashPreferences();
     }
 
     public static PrivacyPreferencesManager getInstance() {
@@ -113,46 +118,15 @@ public class PrivacyPreferencesManager implements CrashReportingPermissionManage
                 .apply();
     }
 
-    public void migrateUsageAndCrashPreferences() {
-        SharedPreferences.Editor editor = mSharedPreferences.edit();
-
-        if (mSharedPreferences.contains(DEPRECATED_PREF_CRASH_DUMP_UPLOAD)) {
-            String crashDumpNeverUpload = "crash_dump_never_upload";
-            setUsageAndCrashReporting(
-                    !mSharedPreferences
-                             .getString(DEPRECATED_PREF_CRASH_DUMP_UPLOAD, crashDumpNeverUpload)
-                             .equals(crashDumpNeverUpload));
-
-            // Remove both this preference and the related one. If the related one is not removed
-            // now, later migrations could read from it and clobber the state.
-            editor.remove(DEPRECATED_PREF_CRASH_DUMP_UPLOAD);
-            if (mSharedPreferences.contains(DEPRECATED_PREF_CRASH_DUMP_UPLOAD_NO_CELLULAR)) {
-                editor.remove(DEPRECATED_PREF_CRASH_DUMP_UPLOAD_NO_CELLULAR);
-            }
-        } else if (mSharedPreferences.contains(DEPRECATED_PREF_CRASH_DUMP_UPLOAD_NO_CELLULAR)) {
-            setUsageAndCrashReporting(mSharedPreferences.getBoolean(
-                    DEPRECATED_PREF_CRASH_DUMP_UPLOAD_NO_CELLULAR, false));
-            editor.remove(DEPRECATED_PREF_CRASH_DUMP_UPLOAD_NO_CELLULAR);
-        }
-
-        if (mSharedPreferences.contains(DEPRECATED_PREF_CELLULAR_EXPERIMENT)) {
-            editor.remove(DEPRECATED_PREF_CELLULAR_EXPERIMENT);
-        }
-        editor.apply();
-    }
-
     /**
      * Migrate and delete old preferences.  Note that migration has to happen in Android-specific
      * code because we need to access ALLOW_PRERENDER sharedPreference.
      * TODO(bnc) https://crbug.com/394845. This change is planned for M38. After a year or so, it
-     * would be worth considering removing this migration code (also removing accessors in
-     * PrefServiceBridge and pref_service_bridge), and reverting to default for users
+     * would be worth considering removing this migration code and reverting to default for users
      * who had set preferences but have not used Chrome for a year. This change would be subject to
      * privacy review.
      */
     public void migrateNetworkPredictionPreferences() {
-        PrefServiceBridge prefService = PrefServiceBridge.getInstance();
-
         // See if PREF_NETWORK_PREDICTIONS is an old boolean value.
         boolean predictionOptionIsBoolean = false;
         try {
@@ -163,8 +137,7 @@ public class PrivacyPreferencesManager implements CrashReportingPermissionManage
 
         // Nothing to do if the user or this migration code has already set the new
         // preference.
-        if (!predictionOptionIsBoolean
-                && prefService.obsoleteNetworkPredictionOptionsHasUserSetting()) {
+        if (!predictionOptionIsBoolean && obsoleteNetworkPredictionOptionsHasUserSetting()) {
             return;
         }
 
@@ -209,7 +182,7 @@ public class PrivacyPreferencesManager implements CrashReportingPermissionManage
                 }
             }
             // Save new value in Chrome PrefService.
-            prefService.setNetworkPredictionEnabled(newValue);
+            setNetworkPredictionEnabled(newValue);
         }
 
         // Delete old sharedPreferences.
@@ -250,8 +223,8 @@ public class PrivacyPreferencesManager implements CrashReportingPermissionManage
         // We cannot use ConnectivityManager#getAllNetworks() because that one only reports enabled
         // networks. See crbug.com/532455.
         @SuppressWarnings("deprecation")
-        NetworkInfo networkInfo = connectivityManager
-                .getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+        NetworkInfo networkInfo =
+                connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
         return networkInfo != null;
     }
 
@@ -262,7 +235,7 @@ public class PrivacyPreferencesManager implements CrashReportingPermissionManage
     public boolean shouldPrerender() {
         if (!DeviceClassManager.enablePrerendering()) return false;
         migrateNetworkPredictionPreferences();
-        return PrefServiceBridge.getInstance().canPrefetchAndPrerender();
+        return canPrefetchAndPrerender();
     }
 
     /**
@@ -283,10 +256,12 @@ public class PrivacyPreferencesManager implements CrashReportingPermissionManage
      * out of sync.
      */
     public void syncUsageAndCrashReportingPrefs() {
-        if (PrefServiceBridge.isInitialized()) {
-            PrefServiceBridge.getInstance().setMetricsReportingEnabled(
-                    isUsageAndCrashReportingPermittedByUser());
+        // Skip if native browser process is not yet fully initialized.
+        if (!BrowserStartupController.get(LibraryProcessType.PROCESS_BROWSER).isNativeStarted()) {
+            return;
         }
+
+        setMetricsReportingEnabled(isUsageAndCrashReportingPermittedByUser());
     }
 
     /**
@@ -352,5 +327,76 @@ public class PrivacyPreferencesManager implements CrashReportingPermissionManage
     public boolean isMetricsUploadPermitted() {
         return isNetworkAvailable()
                 && (isUsageAndCrashReportingPermittedByUser() || isUploadEnabledForTests());
+    }
+
+    /**
+     * @return Whether there is a user set value for kNetworkPredictionOptions.  This should only be
+     * used for preference migration. See http://crbug.com/334602
+     */
+    private boolean obsoleteNetworkPredictionOptionsHasUserSetting() {
+        return PrivacyPreferencesManagerJni.get().obsoleteNetworkPredictionOptionsHasUserSetting();
+    }
+
+    /**
+     * @return Network predictions preference.
+     */
+    public boolean getNetworkPredictionEnabled() {
+        return PrivacyPreferencesManagerJni.get().getNetworkPredictionEnabled();
+    }
+
+    /**
+     * Sets network predictions preference.
+     */
+    public void setNetworkPredictionEnabled(boolean enabled) {
+        PrivacyPreferencesManagerJni.get().setNetworkPredictionEnabled(enabled);
+    }
+
+    /**
+     * @return Whether Network Predictions is configured by policy.
+     */
+    public boolean isNetworkPredictionManaged() {
+        return PrivacyPreferencesManagerJni.get().getNetworkPredictionManaged();
+    }
+
+    /**
+     * Checks whether network predictions are allowed given preferences and current network
+     * connection type.
+     * @return Whether network predictions are allowed.
+     */
+    private boolean canPrefetchAndPrerender() {
+        return PrivacyPreferencesManagerJni.get().canPrefetchAndPrerender();
+    }
+
+    /**
+     * @return Whether usage and crash reporting pref is enabled.
+     */
+    public boolean isMetricsReportingEnabled() {
+        return PrivacyPreferencesManagerJni.get().isMetricsReportingEnabled();
+    }
+
+    /**
+     * Sets whether the usage and crash reporting pref should be enabled.
+     */
+    public void setMetricsReportingEnabled(boolean enabled) {
+        PrivacyPreferencesManagerJni.get().setMetricsReportingEnabled(enabled);
+    }
+
+    /**
+     * @return Whether usage and crash report pref is managed.
+     */
+    public boolean isMetricsReportingManaged() {
+        return PrivacyPreferencesManagerJni.get().isMetricsReportingManaged();
+    }
+
+    @NativeMethods
+    public interface Natives {
+        boolean canPrefetchAndPrerender();
+        boolean getNetworkPredictionManaged();
+        boolean obsoleteNetworkPredictionOptionsHasUserSetting();
+        boolean getNetworkPredictionEnabled();
+        void setNetworkPredictionEnabled(boolean enabled);
+        boolean isMetricsReportingEnabled();
+        void setMetricsReportingEnabled(boolean enabled);
+        boolean isMetricsReportingManaged();
     }
 }

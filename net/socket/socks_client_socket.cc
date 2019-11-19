@@ -62,8 +62,10 @@ static_assert(sizeof(SOCKS4ServerResponse) == kReadHeaderSize,
 SOCKSClientSocket::SOCKSClientSocket(
     std::unique_ptr<StreamSocket> transport_socket,
     const HostPortPair& destination,
+    const NetworkIsolationKey& network_isolation_key,
     RequestPriority priority,
     HostResolver* host_resolver,
+    bool disable_secure_dns,
     const NetworkTrafficAnnotationTag& traffic_annotation)
     : transport_socket_(std::move(transport_socket)),
       next_state_(STATE_NONE),
@@ -72,7 +74,9 @@ SOCKSClientSocket::SOCKSClientSocket(
       bytes_received_(0),
       was_ever_used_(false),
       host_resolver_(host_resolver),
+      disable_secure_dns_(disable_secure_dns),
       destination_(destination),
+      network_isolation_key_(network_isolation_key),
       priority_(priority),
       net_log_(transport_socket_->NetLog()),
       traffic_annotation_(traffic_annotation) {}
@@ -305,8 +309,10 @@ int SOCKSClientSocket::DoResolveHost() {
   HostResolver::ResolveHostParameters parameters;
   parameters.dns_query_type = DnsQueryType::A;
   parameters.initial_priority = priority_;
-  resolve_host_request_ =
-      host_resolver_->CreateRequest(destination_, net_log_, parameters);
+  if (disable_secure_dns_)
+    parameters.secure_dns_mode_override = DnsConfig::SecureDnsMode::OFF;
+  resolve_host_request_ = host_resolver_->CreateRequest(
+      destination_, network_isolation_key_, net_log_, parameters);
 
   return resolve_host_request_->Start(
       base::BindOnce(&SOCKSClientSocket::OnIOComplete, base::Unretained(this)));
@@ -371,7 +377,7 @@ int SOCKSClientSocket::DoHandshakeWrite() {
          handshake_buf_len);
   return transport_socket_->Write(
       handshake_buf_.get(), handshake_buf_len,
-      base::Bind(&SOCKSClientSocket::OnIOComplete, base::Unretained(this)),
+      base::BindOnce(&SOCKSClientSocket::OnIOComplete, base::Unretained(this)),
       traffic_annotation_);
 }
 
@@ -406,7 +412,7 @@ int SOCKSClientSocket::DoHandshakeRead() {
   handshake_buf_ = base::MakeRefCounted<IOBuffer>(handshake_buf_len);
   return transport_socket_->Read(
       handshake_buf_.get(), handshake_buf_len,
-      base::Bind(&SOCKSClientSocket::OnIOComplete, base::Unretained(this)));
+      base::BindOnce(&SOCKSClientSocket::OnIOComplete, base::Unretained(this)));
 }
 
 int SOCKSClientSocket::DoHandshakeReadComplete(int result) {

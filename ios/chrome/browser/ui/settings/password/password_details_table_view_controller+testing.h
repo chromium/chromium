@@ -7,7 +7,7 @@
 
 #import "ios/chrome/browser/ui/settings/password/password_details_table_view_controller.h"
 
-// TODO(crbug.com/894791): Refactor the PasswordTableViewController and
+// TODO(crbug.com/943523): Refactor the PasswordTableViewController and
 // PasswordsSettingsTestCase to remove this Category file.
 @interface PasswordDetailsTableViewController (Testing)
 

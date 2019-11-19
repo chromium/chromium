@@ -4,6 +4,8 @@
 
 """A module for the clobber command."""
 
+from __future__ import print_function
+
 import os
 
 import cr
@@ -30,6 +32,6 @@ class ClobberCommand(cr.Command):
     """Performs the clobber."""
     build_dir = cr.context.Get('CR_BUILD_DIR')
     clobber_path = os.path.join('{CR_SRC}', 'build', 'clobber.py')
-    print 'Clobbering output directory %s...' % build_dir
+    print('Clobbering output directory %s...' % build_dir)
     cr.Host.Execute(clobber_path, build_dir)
-    print 'Done'
+    print('Done')

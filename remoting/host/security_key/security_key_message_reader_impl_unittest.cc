@@ -10,8 +10,8 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
+#include "base/test/task_environment.h"
 #include "remoting/host/security_key/security_key_message.h"
 #include "remoting/host/setup/test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -61,7 +61,8 @@ class SecurityKeyMessageReaderImplTest : public testing::Test {
   std::vector<std::unique_ptr<SecurityKeyMessage>> messages_received_;
 
  private:
-  base::MessageLoopForIO message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
   std::unique_ptr<base::RunLoop> run_loop_;
 
   DISALLOW_COPY_AND_ASSIGN(SecurityKeyMessageReaderImplTest);

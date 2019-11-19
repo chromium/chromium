@@ -108,7 +108,6 @@ void ExpectTransformationMatrixEq(const gfx::Transform& expected,
 
 #define EXPECT_TRANSFORMATION_MATRIX_EQ(expected, actual) \
   do {                                                    \
-    SCOPED_TRACE("");                                     \
     ExpectTransformationMatrixEq(expected, actual);       \
   } while (false)
 
@@ -118,7 +117,6 @@ void ExpectTransformationMatrixNear(const gfx::Transform& expected,
 
 #define EXPECT_TRANSFORMATION_MATRIX_NEAR(expected, actual, abs_error) \
   do {                                                                 \
-    SCOPED_TRACE("");                                                  \
     ExpectTransformationMatrixNear(expected, actual, abs_error);       \
   } while (false)
 

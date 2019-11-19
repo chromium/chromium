@@ -8,7 +8,6 @@
   await TestRunner.loadModule('performance_test_runner');
   await TestRunner.showPanel('timeline');
   await TestRunner.loadHTML(`
-      <script src="../../resources/run-after-layout-and-paint.js"></script>
       <style>
       div.marker::before {
           content: url(resources/test.bmp);
@@ -16,6 +15,7 @@
       </style>
       <div id="marker"></div>
     `);
+  await TestRunner.addScriptTag('../../../resources/run-after-layout-and-paint.js');
   await TestRunner.evaluateInPagePromise(`
       function doActions()
       {

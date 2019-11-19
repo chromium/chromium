@@ -4,12 +4,8 @@
 
 /** @fileoverview Runs the Polymer Settings interactive UI tests. */
 
-/** @const {string} Path to source root. */
-const ROOT_PATH = '../../../../../';
-
 // Polymer BrowserTest fixture.
-GEN_INCLUDE(
-    [ROOT_PATH + 'chrome/test/data/webui/polymer_interactive_ui_test.js']);
+GEN_INCLUDE(['//chrome/test/data/webui/polymer_interactive_ui_test.js']);
 
 /**
  * Test fixture for interactive Polymer Settings elements.
@@ -25,9 +21,6 @@ CrSettingsInteractiveUITest.prototype = {
   get browsePreload() {
     throw 'this is abstract and should be overriden by subclasses';
   },
-
-  /** @override */
-  extraLibraries: PolymerTest.getLibraries(ROOT_PATH),
 
   /** @override */
   setUp: function() {

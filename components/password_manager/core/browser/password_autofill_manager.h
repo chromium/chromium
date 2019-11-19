@@ -6,13 +6,14 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_AUTOFILL_MANAGER_H_
 
 #include <map>
+#include <memory>
 
 #include "base/callback.h"
 #include "base/i18n/rtl.h"
 #include "base/macros.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "components/autofill/core/browser/autofill_client.h"
-#include "components/autofill/core/browser/autofill_popup_delegate.h"
+#include "components/autofill/core/browser/ui/autofill_popup_delegate.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "ui/gfx/image/image.h"
@@ -55,6 +56,7 @@ class PasswordAutofillManager : public autofill::AutofillPopupDelegate {
   void ClearPreviewedForm() override;
   autofill::PopupType GetPopupType() const override;
   autofill::AutofillDriver* GetAutofillDriver() override;
+  int32_t GetWebContentsPopupControllerAxId() const override;
   void RegisterDeletionCallback(base::OnceClosure deletion_callback) override;
 
   // Invoked when a password mapping is added.
@@ -84,7 +86,8 @@ class PasswordAutofillManager : public autofill::AutofillPopupDelegate {
   // and returns false.
   bool MaybeShowPasswordSuggestionsWithGeneration(
       const gfx::RectF& bounds,
-      base::i18n::TextDirection text_direction);
+      base::i18n::TextDirection text_direction,
+      bool show_password_suggestions);
 
   // Called when main frame navigates. Not called for in-page navigations.
   void DidNavigateMainFrame();
@@ -112,14 +115,14 @@ class PasswordAutofillManager : public autofill::AutofillPopupDelegate {
 
   // If |current_username| matches a username for one of the login mappings in
   // |fill_data|, returns true and assigns the password and the original signon
-  // realm to |password_and_realm|. Note that if the credential comes from the
-  // same realm as the one we're filling to, the |realm| field will be left
+  // realm to |password_and_meta_data|. Note that if the credential comes from
+  // the same realm as the one we're filling to, the |realm| field will be left
   // empty, as this is the behavior of |PasswordFormFillData|.
-  // Otherwise, returns false and leaves |password_and_realm| untouched.
-  bool GetPasswordAndRealmForUsername(
+  // Otherwise, returns false and leaves |password_and_meta_data| untouched.
+  bool GetPasswordAndMetadataForUsername(
       const base::string16& current_username,
       const autofill::PasswordFormFillData& fill_data,
-      autofill::PasswordAndRealm* password_and_realm);
+      autofill::PasswordAndMetadata* password_and_meta_data);
 
   // Makes a request to the favicon service for the icon of |url|.
   void RequestFavicon(const GURL& url);
@@ -147,7 +150,7 @@ class PasswordAutofillManager : public autofill::AutofillPopupDelegate {
   // Used to track a requested favicon.
   base::CancelableTaskTracker favicon_tracker_;
 
-  base::WeakPtrFactory<PasswordAutofillManager> weak_ptr_factory_;
+  base::WeakPtrFactory<PasswordAutofillManager> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PasswordAutofillManager);
 };

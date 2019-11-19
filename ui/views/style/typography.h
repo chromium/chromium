@@ -49,6 +49,9 @@ enum TextContext {
   // An editable text field. Usually matches CONTROL_LABEL.
   CONTEXT_TEXTFIELD,
 
+  // Text in a menu.
+  CONTEXT_MENU,
+
   // Text for the menu items that appear in the touch-selection context menu.
   CONTEXT_TOUCH_MENU,
 
@@ -71,6 +74,15 @@ enum TextStyle {
   // contexts (e.g. BUTTON_TEXT, FIELD).
   STYLE_PRIMARY = VIEWS_TEXT_STYLE_START,
 
+  // Secondary text: Appears near the primary text.
+  STYLE_SECONDARY,
+
+  // Style for text that is displayed in a selection.
+  STYLE_SELECTED,
+
+  // Style for text is part of a static highlight.
+  STYLE_HIGHLIGHTED,
+
   // Style for the default button on a dialog.
   STYLE_DIALOG_BUTTON_DEFAULT,
 
@@ -82,12 +94,6 @@ enum TextStyle {
 
   // Active tab in a tabbed pane.
   STYLE_TAB_ACTIVE,
-
-  // Hovered tab in a tabbed pane.
-  STYLE_TAB_HOVERED,
-
-  // Inactive tab in a tabbed pane.
-  STYLE_TAB_INACTIVE,
 
   // Embedders must start TextStyle enum values from here.
   VIEWS_TEXT_STYLE_END

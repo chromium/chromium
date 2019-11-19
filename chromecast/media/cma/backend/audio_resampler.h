@@ -19,10 +19,10 @@ class DecoderBufferBase;
 // The audio resampler allows us to apply small changes to the rate of audio
 // playback via (supposedly) imperceptible changes.
 //
-// Note: only works for 2-channel planar float data.
+// Note: only works for planar float data.
 class AudioResampler {
  public:
-  AudioResampler() = default;
+  explicit AudioResampler(size_t channel_count);
 
   // Sets the effective media clock rate.
   double SetMediaClockRate(double rate);
@@ -41,6 +41,7 @@ class AudioResampler {
   scoped_refptr<media::DecoderBufferBase> ShortenBuffer(
       scoped_refptr<media::DecoderBufferBase> buffer);
 
+  const size_t channel_count_;
   double media_clock_rate_ = 1.0;
   int64_t input_frames_for_clock_rate_ = 0;
   int64_t output_frames_for_clock_rate_ = 0;

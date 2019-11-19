@@ -12,6 +12,7 @@ import android.util.TypedValue;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -60,9 +61,10 @@ public class AndroidProtocolHandler {
         try {
             if (uri.getScheme().equals(FILE_SCHEME)) {
                 String path = uri.getPath();
-                if (path.startsWith(nativeGetAndroidAssetPath())) {
+                if (path.startsWith(AndroidProtocolHandlerJni.get().getAndroidAssetPath())) {
                     return openAsset(uri);
-                } else if (path.startsWith(nativeGetAndroidResourcePath())) {
+                } else if (path.startsWith(
+                                   AndroidProtocolHandlerJni.get().getAndroidResourcePath())) {
                     return openResource(uri);
                 }
             } else if (uri.getScheme().equals(CONTENT_SCHEME)) {
@@ -124,7 +126,7 @@ public class AndroidProtocolHandler {
     private static InputStream openResource(Uri uri) {
         assert uri.getScheme().equals(FILE_SCHEME);
         assert uri.getPath() != null;
-        assert uri.getPath().startsWith(nativeGetAndroidResourcePath());
+        assert uri.getPath().startsWith(AndroidProtocolHandlerJni.get().getAndroidResourcePath());
         // The path must be of the form "/android_res/asset_type/asset_name.ext".
         List<String> pathSegments = uri.getPathSegments();
         if (pathSegments.size() != 3) {
@@ -134,9 +136,12 @@ public class AndroidProtocolHandler {
         String assetPath = pathSegments.get(0);
         String assetType = pathSegments.get(1);
         String assetName = pathSegments.get(2);
-        if (!("/" + assetPath + "/").equals(nativeGetAndroidResourcePath())) {
-            Log.e(TAG, "Resource path does not start with " + nativeGetAndroidResourcePath()
-                    + ": " + uri);
+        if (!("/" + assetPath + "/")
+                        .equals(AndroidProtocolHandlerJni.get().getAndroidResourcePath())) {
+            Log.e(TAG,
+                    "Resource path does not start with "
+                            + AndroidProtocolHandlerJni.get().getAndroidResourcePath() + ": "
+                            + uri);
             return null;
         }
         // Drop the file extension.
@@ -165,8 +170,9 @@ public class AndroidProtocolHandler {
     private static InputStream openAsset(Uri uri) {
         assert uri.getScheme().equals(FILE_SCHEME);
         assert uri.getPath() != null;
-        assert uri.getPath().startsWith(nativeGetAndroidAssetPath());
-        String path = uri.getPath().replaceFirst(nativeGetAndroidAssetPath(), "");
+        assert uri.getPath().startsWith(AndroidProtocolHandlerJni.get().getAndroidAssetPath());
+        String path = uri.getPath().replaceFirst(
+                AndroidProtocolHandlerJni.get().getAndroidAssetPath(), "");
         try {
             AssetManager assets = ContextUtils.getApplicationContext().getAssets();
             return assets.open(path, AssetManager.ACCESS_STREAMING);
@@ -203,23 +209,50 @@ public class AndroidProtocolHandler {
             String path = uri.getPath();
             // The content URL type can be queried directly.
             if (uri.getScheme().equals(CONTENT_SCHEME)) {
-                return ContextUtils.getApplicationContext().getContentResolver().getType(uri);
+                String mimeType =
+                        ContextUtils.getApplicationContext().getContentResolver().getType(uri);
+                if (mimeType == null) {
+                    AwHistogramRecorder.recordMimeType(
+                            AwHistogramRecorder.MimeType.NULL_FROM_CONTENT_PROVIDER);
+                } else {
+                    AwHistogramRecorder.recordMimeType(
+                            AwHistogramRecorder.MimeType.NONNULL_FROM_CONTENT_PROVIDER);
+                }
+                return mimeType;
                 // Asset files may have a known extension.
             } else if (uri.getScheme().equals(FILE_SCHEME)
-                    && path.startsWith(nativeGetAndroidAssetPath())) {
+                    && path.startsWith(AndroidProtocolHandlerJni.get().getAndroidAssetPath())) {
                 String mimeType = URLConnection.guessContentTypeFromName(path);
-                if (mimeType != null) {
+                if (mimeType == null) {
+                    AwHistogramRecorder.recordMimeType(
+                            AwHistogramRecorder.MimeType.CANNOT_GUESS_FROM_ANDROID_ASSET_PATH);
+                    // Do not return yet, try guessing from the stream.
+                } else {
+                    AwHistogramRecorder.recordMimeType(
+                            AwHistogramRecorder.MimeType.GUESSED_FROM_ANDROID_ASSET_PATH);
                     return mimeType;
                 }
             }
         } catch (Exception ex) {
             Log.e(TAG, "Unable to get mime type" + url);
+            AwHistogramRecorder.recordMimeType(
+                    AwHistogramRecorder.MimeType.CANNOT_GUESS_DUE_TO_GENERIC_EXCEPTION);
             return null;
         }
         // Fall back to sniffing the type from the stream.
         try {
-            return URLConnection.guessContentTypeFromStream(stream);
+            String mimeType = URLConnection.guessContentTypeFromStream(stream);
+            if (mimeType == null) {
+                AwHistogramRecorder.recordMimeType(
+                        AwHistogramRecorder.MimeType.CANNOT_GUESS_FROM_ANDROID_ASSET_INPUT_STREAM);
+            } else {
+                AwHistogramRecorder.recordMimeType(
+                        AwHistogramRecorder.MimeType.GUESSED_FROM_ANDROID_ASSET_INPUT_STREAM);
+            }
+            return mimeType;
         } catch (IOException e) {
+            AwHistogramRecorder.recordMimeType(
+                    AwHistogramRecorder.MimeType.CANNOT_GUESS_DUE_TO_IO_EXCEPTION);
             return null;
         }
     }
@@ -230,23 +263,20 @@ public class AndroidProtocolHandler {
      * @return a Uri instance, or null if the URL was invalid.
      */
     private static Uri verifyUrl(String url) {
-        if (url == null) {
-            return null;
-        }
-        Uri uri = Uri.parse(url);
-        if (uri == null) {
-            Log.e(TAG, "Malformed URL: " + url);
-            return null;
-        }
+        if (url == null) return null;
+        if (url.isEmpty()) return null;
+        Uri uri = Uri.parse(url); // Never null. parse() doesn't actually parse or verify anything.
         String path = uri.getPath();
-        if (path == null || path.length() == 0) {
+        if (path == null || path.isEmpty() || path.equals("/")) {
             Log.e(TAG, "URL does not have a path: " + url);
             return null;
         }
         return uri;
     }
 
-    private static native String nativeGetAndroidAssetPath();
-
-    private static native String nativeGetAndroidResourcePath();
+    @NativeMethods
+    interface Natives {
+        String getAndroidAssetPath();
+        String getAndroidResourcePath();
+    }
 }

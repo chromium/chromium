@@ -23,12 +23,12 @@ var TEST_TARGETS = [];
        [fetchRejected]],
       [OTHER_BASE_URL + 'mode=cors&credentials=same-origin&method=' + method +
        '&headers=CUSTOM&ACAOrigin=*&ACAHeaders=x-serviceworker-test',
-       [fetchResolved, noContentLength, noServerHeader, hasBody, typeCors],
+       [fetchResolved, hasContentLength, noServerHeader, hasBody, typeCors],
        [checkMethod, hasCustomHeader]],
       [OTHER_BASE_URL + 'mode=cors&credentials=same-origin&method=' + method +
        '&headers=CUSTOM&ACAOrigin=' + BASE_ORIGIN +
        '&ACAHeaders=x-serviceworker-test',
-       [fetchResolved, noContentLength, noServerHeader, hasBody, typeCors],
+       [fetchResolved, hasContentLength, noServerHeader, hasBody, typeCors],
        [checkMethod, hasCustomHeader]],
       [OTHER_BASE_URL + 'mode=cors&credentials=same-origin&method=' + method +
        '&headers=CUSTOM&ACAOrigin=*&ACAHeaders=x-serviceworker-test' +
@@ -47,7 +47,7 @@ var TEST_TARGETS = [];
       [OTHER_BASE_URL + 'mode=cors&credentials=same-origin&method=' + method +
        '&headers=CUSTOM&ACAOrigin=*&PACAOrigin=*' +
        '&PACAHeaders=x-serviceworker-test&PreflightTest=200',
-       [fetchResolved, noContentLength, noServerHeader, hasBody, typeCors],
+       [fetchResolved, hasContentLength, noServerHeader, hasBody, typeCors],
        [checkMethod, hasCustomHeader]],
       [OTHER_BASE_URL + 'mode=cors&credentials=same-origin&method=' + method +
        '&headers=CUSTOM&ACAOrigin=*&PACAOrigin=*' +
@@ -68,14 +68,14 @@ var TEST_TARGETS = [];
       [OTHER_BASE_URL + 'mode=cors&credentials=same-origin&method=' + method +
        '&headers=CUSTOM&ACAOrigin=*&PACAOrigin=*' +
        '&PACAHeaders=x-serviceworker-test&PACEHeaders=Content-Length, X-ServiceWorker-ServerHeader&PreflightTest=200',
-       [fetchResolved, noContentLength, noServerHeader, hasBody, typeCors],
+       [fetchResolved, hasContentLength, noServerHeader, hasBody, typeCors],
        [checkMethod, hasCustomHeader]],
 
       // Test that CORS preflight with Status 2XX succeeds.
       [OTHER_BASE_URL + 'mode=cors&credentials=same-origin&method=' + method +
        '&headers=CUSTOM&ACAOrigin=*&PACAOrigin=*' +
        '&PACAHeaders=x-serviceworker-test&PreflightTest=201',
-       [fetchResolved, noContentLength, noServerHeader, hasBody, typeCors],
+       [fetchResolved, hasContentLength, noServerHeader, hasBody, typeCors],
        [checkMethod, hasCustomHeader]],
 
       // Test that CORS preflight with Status other than 2XX fails.
@@ -97,7 +97,7 @@ var TEST_TARGETS = [];
       [OTHER_BASE_URL + 'mode=cors&credentials=same-origin&method=' + method +
        '&headers=CUSTOM2&ACAOrigin=*' +
        '&PACAOrigin=*&PACAHeaders=x-servicEworker-u,x-servicEworker-ua,x-servicewOrker-test,x-sErviceworker-s,x-sErviceworker-v&PreflightTest=200',
-       [fetchResolved, noContentLength, noServerHeader, hasBody, typeCors],
+       [fetchResolved, hasContentLength, noServerHeader, hasBody, typeCors],
        [checkMethod, hasCustomHeader2]],
       [OTHER_BASE_URL + 'mode=cors&credentials=same-origin&method=' + method +
        '&headers=CUSTOM2&ACAOrigin=*&PACAOrigin=*' +
@@ -109,7 +109,7 @@ var TEST_TARGETS = [];
        '&headers=CUSTOM&ACAOrigin=*&PACAOrigin=*' +
        '&PACAHeaders=x-serviceworker-test&PACRMethod=' + method +
        '&PACRHeaders=x-serviceworker-test&PreflightTest=200',
-       [fetchResolved, noContentLength, noServerHeader, hasBody, typeCors],
+       [fetchResolved, hasContentLength, noServerHeader, hasBody, typeCors],
        [checkMethod, hasCustomHeader]],
       // Test Access-Control-Request-Headers is sorted https://crbug.com/452391
 
@@ -117,7 +117,7 @@ var TEST_TARGETS = [];
        '&headers=CUSTOM2&ACAOrigin=*&PACAOrigin=*' +
        '&PACAHeaders=x-servicEworker-u,x-servicEworker-ua,x-servicewOrker-test,x-sErviceworker-s,x-sErviceworker-v&PACRMethod=' + method +
        '&PACRHeaders=x-serviceworker-s,x-serviceworker-test,x-serviceworker-u,x-serviceworker-ua,x-serviceworker-v&PreflightTest=200',
-       [fetchResolved, noContentLength, noServerHeader, hasBody, typeCors],
+       [fetchResolved, hasContentLength, noServerHeader, hasBody, typeCors],
        [checkMethod, hasCustomHeader2]]);
   });
 

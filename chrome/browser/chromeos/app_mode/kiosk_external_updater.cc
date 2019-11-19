@@ -93,8 +93,7 @@ KioskExternalUpdater::KioskExternalUpdater(
     const base::FilePath& crx_unpack_dir)
     : backend_task_runner_(backend_task_runner),
       crx_cache_dir_(crx_cache_dir),
-      crx_unpack_dir_(crx_unpack_dir),
-      weak_factory_(this) {
+      crx_unpack_dir_(crx_unpack_dir) {
   // Subscribe to DiskMountManager.
   DCHECK(disks::DiskMountManager::GetInstance());
   disks::DiskMountManager::GetInstance()->AddObserver(this);

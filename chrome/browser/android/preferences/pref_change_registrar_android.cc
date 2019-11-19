@@ -7,9 +7,9 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/bind.h"
+#include "chrome/android/chrome_jni_headers/PrefChangeRegistrar_jni.h"
 #include "chrome/browser/android/preferences/pref_service_bridge.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "jni/PrefChangeRegistrar_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF8;

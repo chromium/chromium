@@ -14,6 +14,8 @@
 #include "device/bluetooth/bluetooth_gatt_connection.h"
 #include "device/bluetooth/public/mojom/adapter.mojom.h"
 #include "device/bluetooth/public/mojom/device.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace bluetooth {
 
@@ -32,7 +34,7 @@ class Adapter : public mojom::Adapter,
                        ConnectToDeviceCallback callback) override;
   void GetDevices(GetDevicesCallback callback) override;
   void GetInfo(GetInfoCallback callback) override;
-  void SetClient(mojom::AdapterClientPtr client) override;
+  void SetClient(mojo::PendingRemote<mojom::AdapterClient> client) override;
   void StartDiscoverySession(StartDiscoverySessionCallback callback) override;
 
   // device::BluetoothAdapter::Observer overrides:
@@ -69,9 +71,9 @@ class Adapter : public mojom::Adapter,
   scoped_refptr<device::BluetoothAdapter> adapter_;
 
   // The adapter client that listens to this service.
-  mojom::AdapterClientPtr client_;
+  mojo::Remote<mojom::AdapterClient> client_;
 
-  base::WeakPtrFactory<Adapter> weak_ptr_factory_;
+  base::WeakPtrFactory<Adapter> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(Adapter);
 };

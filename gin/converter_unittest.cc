@@ -10,6 +10,8 @@
 
 #include "base/compiler_specific.h"
 #include "base/stl_util.h"
+#include "base/strings/string16.h"
+#include "base/strings/utf_string_conversions.h"
 #include "gin/handle.h"
 #include "gin/public/isolate_holder.h"
 #include "gin/test/v8_test.h"
@@ -77,6 +79,31 @@ TEST_F(ConverterTest, Bool) {
                                         test_data[i].input, &result));
     EXPECT_EQ(test_data[i].expected, result);
   }
+}
+
+TEST_F(ConverterTest, String16) {
+  v8::Isolate* isolate = instance_->isolate();
+
+  HandleScope handle_scope(isolate);
+
+  EXPECT_TRUE(Converter<base::string16>::ToV8(isolate, base::ASCIIToUTF16(""))
+                  ->StrictEquals(StringToV8(isolate, "")));
+  EXPECT_TRUE(
+      Converter<base::string16>::ToV8(isolate, base::ASCIIToUTF16("hello"))
+          ->StrictEquals(StringToV8(isolate, "hello")));
+
+  base::string16 result;
+
+  ASSERT_FALSE(
+      Converter<base::string16>::FromV8(isolate, v8::False(isolate), &result));
+  ASSERT_FALSE(
+      Converter<base::string16>::FromV8(isolate, v8::True(isolate), &result));
+  ASSERT_TRUE(Converter<base::string16>::FromV8(
+      isolate, v8::String::Empty(isolate), &result));
+  EXPECT_EQ(result, base::string16());
+  ASSERT_TRUE(Converter<base::string16>::FromV8(
+      isolate, StringToV8(isolate, "hello"), &result));
+  EXPECT_EQ(result, base::ASCIIToUTF16("hello"));
 }
 
 TEST_F(ConverterTest, Int32) {

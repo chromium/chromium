@@ -20,8 +20,7 @@ constexpr int kRepeatIntervalMs = 50;
 EventAutoRepeatHandler::EventAutoRepeatHandler(Delegate* delegate)
     : repeat_delay_(base::TimeDelta::FromMilliseconds(kRepeatDelayMs)),
       repeat_interval_(base::TimeDelta::FromMilliseconds(kRepeatIntervalMs)),
-      delegate_(delegate),
-      weak_ptr_factory_(this) {
+      delegate_(delegate) {
   DCHECK(delegate_);
 }
 

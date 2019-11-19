@@ -26,7 +26,7 @@ URLRow::~URLRow() {
 }
 
 URLRow& URLRow::operator=(const URLRow& other) = default;
-URLRow& URLRow::operator=(URLRow&& other) = default;
+URLRow& URLRow::operator=(URLRow&& other) noexcept = default;
 
 void URLRow::Swap(URLRow* other) {
   std::swap(id_, other->id_);

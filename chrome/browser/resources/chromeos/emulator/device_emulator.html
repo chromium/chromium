@@ -2,30 +2,9 @@
 <head>
   <meta charset="utf-8">
   <title>Device Emulator</title>
-  <link rel="import" href="chrome://resources/html/polymer.html">
-
-  <link rel="import" href="chrome://resources/html/cr.html">
-  <link rel="import" href="chrome://resources/html/util.html">
-  <link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
-  <link rel="import" href="device_emulator_pages.html">
-
-  <link rel="stylesheet" href="chrome://resources/css/roboto.css">
   <link rel="stylesheet" href="device_emulator.css">
-  <custom-style>
-    <style is="custom-style" include="iron-flex iron-flex-alignment">
-      html,
-      body {
-        height: 100%;
-        width: 100%;
-      }
-
-      body {
-        font-family: Roboto;
-        margin: 0;
-      }
-    </style>
-  </custom-style>
 </head>
-<body unresolved class="fullbleed layout vertical">
-  <device-emulator-pages class="flex layout vertical"></device-emulator-pages>
+<body>
+  <device-emulator-pages></device-emulator-pages>
+  <script type="module" src="device_emulator_pages.js"></script>
 </body>

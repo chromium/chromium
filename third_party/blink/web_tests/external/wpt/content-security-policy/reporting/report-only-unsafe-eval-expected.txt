@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+PASS Eval is allowed because the CSP is report-only
+FAIL SPV event is still raised assert_unreached: SPV event has not been received Reached unreachable code
+FAIL Violation report status OK. assert_equals: No such report. expected "" but got "false"
+Harness: the test ran to completion.
+

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<!-- domSnapshot test for a document to include offsetRects, clientRects, and scrollRects.  -->
+<style>
+@font-face {
+  font-family: 'ahem';
+  src: url(../../resources/Ahem.ttf);
+}
+</style>
+<style>
+* {
+  margin: 0;
+  padding: 0;
+}
+div {
+  position: absolute;
+  top: 100px;
+  left: 100px;
+  width: 100px;
+  height: 100px;
+}
+</style>
+<!-- The div's box should have size and position of 100x100 to match the
+     computed style, even though it's visually scaled by the viewport. The
+     text's box should also be inside the div's box, not outside it. -->
+<div style='font-family: ahem;' id='100x100'>Boxes!</div>
+

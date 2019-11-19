@@ -20,6 +20,7 @@
 #include "components/safe_browsing/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/db/v4_update_protocol_manager.h"
 #include "components/safe_browsing/proto/webui.pb.h"
+#include "components/safe_browsing/realtime/url_lookup_service.h"
 #include "url/gurl.h"
 
 namespace safe_browsing {
@@ -67,6 +68,8 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
   bool CheckExtensionIDs(const std::set<FullHash>& extension_ids,
                          Client* client) override;
   bool CheckResourceUrl(const GURL& url, Client* client) override;
+  AsyncMatch CheckUrlForHighConfidenceAllowlist(const GURL& url,
+                                                Client* client) override;
   bool CheckUrlForSubresourceFilter(const GURL& url, Client* client) override;
   bool MatchDownloadWhitelistString(const std::string& str) override;
   bool MatchDownloadWhitelistUrl(const GURL& url) override;
@@ -74,6 +77,9 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
   safe_browsing::ThreatSource GetThreatSource() const override;
   bool IsDownloadProtectionEnabled() const override;
   bool IsSupported() const override;
+
+  RealTimeUrlLookupService* GetRealTimeUrlLookupService() override;
+
   void StartOnIOThread(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const V4ProtocolConfig& config) override;
@@ -101,7 +107,7 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
 
   ~V4LocalDatabaseManager() override;
 
-  enum class ClientCallbackType {
+  enum class ClientCallbackType : int {
     // This represents the case when we're trying to determine if a URL is
     // unsafe from the following perspectives: Malware, Phishing, UwS.
     CHECK_BROWSE_URL,
@@ -125,6 +131,9 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
     // This respresents the case when we're trying to determine if a URL is
     // part of the CSD whitelist.
     CHECK_CSD_WHITELIST,
+
+    // TODO(vakh): Explain this.
+    CHECK_HIGH_CONFIDENCE_ALLOWLIST,
 
     // This represents the other cases when a check is being performed
     // synchronously so a client callback isn't required. For instance, when
@@ -176,6 +185,15 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
     // length of |full_hash_threat_type| must always match |full_hashes|.
     std::vector<SBThreatType> full_hash_threat_types;
 
+    // List of full hashes of urls we are checking and corresponding store and
+    // hash prefixes that match it in the local database.
+    FullHashToStoreAndHashPrefixesMap full_hash_to_store_and_hash_prefixes;
+
+    // List of full hashes of urls we are checking and corresponding store and
+    // hash prefixes that match it in the artificial database.
+    FullHashToStoreAndHashPrefixesMap
+        artificial_full_hash_to_store_and_hash_prefixes;
+
     // The metadata associated with the full hash of the severest match found
     // for that URL.
     ThreatMetadata url_metadata;
@@ -213,11 +231,15 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
   // Delete any *.store files from disk that are no longer used.
   void DeleteUnusedStoreFiles();
 
+  // Matches the full_hashes for a |check| with the hashes stored in
+  // |artificially_marked_store_and_hash_prefixes_|. For each full hash match,
+  // it populates |full_hash_to_store_and_hash_prefixes| with the matched hash
+  // prefix and store.
+  void GetArtificialPrefixMatches(const std::unique_ptr<PendingCheck>& check);
+
   // Identifies the prefixes and the store they matched in, for a given |check|.
   // Returns true if one or more hash prefix matches are found; false otherwise.
-  bool GetPrefixMatches(
-      const std::unique_ptr<PendingCheck>& check,
-      FullHashToStoreAndHashPrefixesMap* full_hash_to_store_and_hash_prefixes);
+  bool GetPrefixMatches(const std::unique_ptr<PendingCheck>& check);
 
   // Goes over the |full_hash_infos| and stores the most severe SBThreatType in
   // |most_severe_threat_type|, the corresponding metadata in |metadata|, and
@@ -245,10 +267,13 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
   // partial hashes in the DB. Returns MATCH, NO_MATCH, or ASYNC.
   AsyncMatch HandleWhitelistCheck(std::unique_ptr<PendingCheck> check);
 
+  // Computes the hashes of URLs that have artificially been marked as unsafe
+  // using any of the following command line flags: "mark_as_phishing",
+  // "mark_as_malware", "mark_as_uws".
+  void PopulateArtificialDatabase();
+
   // Schedules a full-hash check for a given set of prefixes.
-  void ScheduleFullHashCheck(std::unique_ptr<PendingCheck> check,
-                             const FullHashToStoreAndHashPrefixesMap&
-                                 full_hash_to_store_and_hash_prefixes);
+  void ScheduleFullHashCheck(std::unique_ptr<PendingCheck> check);
 
   // Checks |stores_to_check| in database synchronously for hash prefixes
   // matching |hash|. Returns true if there's a match; false otherwise. This is
@@ -269,9 +294,7 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
                           const std::vector<FullHashInfo>& full_hash_infos);
 
   // Performs the full hash checking of the URL in |check|.
-  virtual void PerformFullHashCheck(std::unique_ptr<PendingCheck> check,
-                                    const FullHashToStoreAndHashPrefixesMap&
-                                        full_hash_to_store_and_hash_prefixes);
+  virtual void PerformFullHashCheck(std::unique_ptr<PendingCheck> check);
 
   // When the database is ready to use, process the checks that were queued
   // while the database was loading from disk.
@@ -288,6 +311,10 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
   // Instantiates and initializes |v4_database_| on the task runner. Sets up the
   // callback for |DatabaseReady| when the database is ready for use.
   void SetupDatabase();
+
+  // Instantiates and initializes |rt_url_lookup_service_|.
+  void SetupRealTimeUrlLookupService(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
   // Instantiates and initializes |v4_update_protocol_manager_|.
   void SetupUpdateProtocolManager(
@@ -311,6 +338,9 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
   // Return true if we're enabled and have loaded real data for any of
   // these stores.
   bool AreAnyStoresAvailableNow(const StoresToCheck& stores_to_check) const;
+
+  // Stores full hashes of URLs that have been artificially marked as unsafe.
+  StoreAndHashPrefixes artificially_marked_store_and_hash_prefixes_;
 
   // The base directory under which to create the files that contain hashes.
   const base::FilePath base_path_;
@@ -344,6 +374,8 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
   // use.
   QueuedChecks queued_checks_;
 
+  std::unique_ptr<RealTimeUrlLookupService> rt_url_lookup_service_;
+
   // The sequenced task runner for running safe browsing database operations.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
@@ -354,7 +386,7 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
   // The protocol manager that downloads the hash prefix updates.
   std::unique_ptr<V4UpdateProtocolManager> v4_update_protocol_manager_;
 
-  base::WeakPtrFactory<V4LocalDatabaseManager> weak_factory_;
+  base::WeakPtrFactory<V4LocalDatabaseManager> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(V4LocalDatabaseManager);
 };  // class V4LocalDatabaseManager

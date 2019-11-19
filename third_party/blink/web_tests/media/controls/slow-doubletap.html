@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<title>Test that player will not jump if the tap is too slow.</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../media-controls.js"></script>
+<video controls width=400 src="../content/60_sec_video.webm"></video>
+<script>
+async_test(t => {
+  const video = document.querySelector('video');
+
+  video.onplaying = t.step_func(() => {
+    // Double tap on the left side.
+    const coordinates = videoLeftEdgeCoordinates(video);
+    doubleTapAtCoordinates(
+        coordinates[0], coordinates[1], 400, t.done.bind(t));
+  });
+
+  video.addEventListener('webkitfullscreenchange', t.unreached_func());
+
+  video.play();
+});
+</script>
+</html>

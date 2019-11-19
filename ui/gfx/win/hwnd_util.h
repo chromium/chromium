@@ -11,7 +11,6 @@
 #include "ui/gfx/gfx_export.h"
 
 namespace gfx {
-class Point;
 class Size;
 
 // A version of the GetClassNameW API that returns the class name in an
@@ -39,10 +38,6 @@ GFX_EXPORT void CenterAndSizeWindow(HWND parent,
 // If |hwnd| is NULL logs various thing and CHECKs. Invoke right after calling
 // CreateWindow.
 GFX_EXPORT void CheckWindowCreated(HWND hwnd);
-
-// Shows |window|'s system menu (at a specified |point| in screen coordinates).
-GFX_EXPORT void ShowSystemMenu(HWND window);
-GFX_EXPORT void ShowSystemMenuAtPoint(HWND window, const gfx::Point& point);
 
 // Returns the window you can use to parent a top level window.
 // Note that in some cases we create child windows not parented to its final

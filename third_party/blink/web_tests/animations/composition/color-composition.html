@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<style>
+.target {
+  width: 40px;
+  height: 40px;
+  background-color: black;
+}
+.expected {
+  background-color: green;
+}
+</style>
+<body>
+<script src="../interpolation/resources/interpolation-test.js"></script>
+<script>
+assertComposition({
+  property: 'color',
+  underlying: 'rgb(50, 50, 50)',
+  addFrom: 'rgb(10, 10, 10)',
+  replaceTo: 'rgb(30, 30, 30)',
+}, [
+  {at: 0, is: 'rgb(60, 60, 60)'},
+  {at: 0.2, is: 'rgb(54, 54, 54)'},
+  {at: 1, is: 'rgb(30, 30, 30)'},
+  {at: 1.2, is: 'rgb(24, 24, 24)'},
+  {at: 1.5, is: 'rgb(15, 15, 15)'},
+]);
+
+assertComposition({
+  property: 'color',
+  underlying: 'rgb(60, 60, 60)',
+  addFrom: 'rgb(0, 0, 0)',
+  replaceTo: 'rgb(50, 50, 50)',
+}, [
+  {at: 0, is: 'rgb(60, 60, 60)'},
+  {at: 0.5, is: 'rgb(55, 55, 55)'},
+  {at: 1, is: 'rgb(50, 50, 50)'},
+  {at: 1.2, is: 'rgb(48, 48, 48)'},
+  {at: 1.5, is: 'rgb(45, 45, 45)'},
+]);
+</script>
+</body>

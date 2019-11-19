@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
@@ -15,6 +14,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_bar.h"
+#include "chrome/browser/ui/views/extensions/extension_context_menu_controller.h"
 #include "chrome/browser/ui/views/frame/app_menu_button_observer.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/tab_drag_controller_interactive_uitest.h"
@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/views/toolbar/extension_toolbar_menu_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/interactive_test_utils.h"
+#include "content/public/test/test_utils.h"
 #include "extensions/browser/notification_types.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/feature_switch.h"
@@ -96,7 +97,7 @@ void TestOverflowedToolbarAction(Browser* browser,
   ASSERT_TRUE(overflow_container);
   ToolbarActionView* action_view =
       overflow_container->GetToolbarActionViewAt(0);
-  EXPECT_TRUE(action_view->visible());
+  EXPECT_TRUE(action_view->GetVisible());
 
   // Click on the toolbar action to activate it.
   gfx::Point action_view_loc =
@@ -113,7 +114,9 @@ void TestOverflowedToolbarAction(Browser* browser,
 // Tests the context menu of an overflowed action.
 void TestWhileContextMenuOpen(Browser* browser,
                               ToolbarActionView* context_menu_action) {
-  views::MenuItemView* menu_root = context_menu_action->menu_for_testing();
+  views::MenuItemView* menu_root =
+      context_menu_action->context_menu_controller_for_testing()
+          ->menu_for_testing();
   ASSERT_TRUE(menu_root);
   ASSERT_TRUE(menu_root->GetSubmenu());
   EXPECT_TRUE(menu_root->GetSubmenu()->IsShowing());
@@ -124,7 +127,7 @@ void TestWhileContextMenuOpen(Browser* browser,
   // Make sure we're showing the right context menu.
   EXPECT_EQ(base::UTF8ToUTF16("Browser Action Popup"),
             first_menu_item->title());
-  EXPECT_TRUE(first_menu_item->enabled());
+  EXPECT_TRUE(first_menu_item->GetEnabled());
 
   // Get the overflow container.
   auto* app_menu_button = GetAppMenuButtonFromBrowser(browser);
@@ -144,8 +147,8 @@ void TestWhileContextMenuOpen(Browser* browser,
   ToolbarActionView* second_row_action =
       overflow_container->GetToolbarActionViewAt(second_row_index);
 
-  EXPECT_TRUE(second_row_action->visible());
-  EXPECT_TRUE(second_row_action->enabled());
+  EXPECT_TRUE(second_row_action->GetVisible());
+  EXPECT_TRUE(second_row_action->GetEnabled());
 
   gfx::Point action_view_loc =
       ui_test_utils::GetCenterInScreenCoordinates(second_row_action);
@@ -173,14 +176,15 @@ class ToolbarActionViewInteractiveUITest
     : public extensions::ExtensionBrowserTest {
  protected:
   ToolbarActionViewInteractiveUITest();
+  ToolbarActionViewInteractiveUITest(
+      const ToolbarActionViewInteractiveUITest&) = delete;
+  ToolbarActionViewInteractiveUITest& operator=(
+      const ToolbarActionViewInteractiveUITest&) = delete;
   ~ToolbarActionViewInteractiveUITest() override;
 
   // extensions::ExtensionBrowserTest:
   void SetUpCommandLine(base::CommandLine* command_line) override;
   void TearDownOnMainThread() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ToolbarActionViewInteractiveUITest);
 };
 
 ToolbarActionViewInteractiveUITest::ToolbarActionViewInteractiveUITest() {}
@@ -196,9 +200,20 @@ void ToolbarActionViewInteractiveUITest::TearDownOnMainThread() {
   ToolbarActionsBar::disable_animations_for_testing_ = false;
 }
 
+// TODO(crbug.com/963678): fails on ChromeOS as it's assuming SendMouseMove()
+// synchronously updates the location of the mouse (which is needed by
+// SendMouseClick()).
+#if defined(OS_CHROMEOS)
+// TODO(pkasting): https://crbug.com/911374 Menu controller thinks the mouse is
+// already down when handling the left click.
+#define MAYBE_TestClickingOnOverflowedAction \
+  DISABLED_TestClickingOnOverflowedAction
+#else
+#define MAYBE_TestClickingOnOverflowedAction TestClickingOnOverflowedAction
+#endif
 // Tests clicking on an overflowed extension action.
 IN_PROC_BROWSER_TEST_F(ToolbarActionViewInteractiveUITest,
-                       TestClickingOnOverflowedAction) {
+                       MAYBE_TestClickingOnOverflowedAction) {
   // Load an extension.
   ASSERT_TRUE(LoadExtension(
       test_data_dir_.AppendASCII("ui").AppendASCII("browser_action_popup")));
@@ -299,20 +314,8 @@ IN_PROC_BROWSER_TEST_F(ToolbarActionViewInteractiveUITest,
 
 // Tests that clicking on the toolbar action a second time when the action is
 // already open results in closing the popup, and doesn't re-open it.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || \
-    (defined(OS_WIN) && !defined(NDEBUG))
-// Flaky; see https://crbug.com/617056.
-#define MAYBE_DoubleClickToolbarActionToClose \
-    DISABLED_DoubleClickToolbarActionToClose
-#elif defined(OS_MACOSX)
-// Focusing or input is not completely working on Mac: http://crbug.com/824418
-#define MAYBE_DoubleClickToolbarActionToClose \
-    DISABLED_DoubleClickToolbarActionToClose
-#else
-#define MAYBE_DoubleClickToolbarActionToClose DoubleClickToolbarActionToClose
-#endif
 IN_PROC_BROWSER_TEST_F(ToolbarActionViewInteractiveUITest,
-                       MAYBE_DoubleClickToolbarActionToClose) {
+                       DoubleClickToolbarActionToClose) {
   ASSERT_TRUE(LoadExtension(
       test_data_dir_.AppendASCII("ui").AppendASCII("browser_action_popup")));
   base::RunLoop().RunUntilIdle();  // Ensure the extension is fully loaded.
@@ -361,8 +364,18 @@ IN_PROC_BROWSER_TEST_F(ToolbarActionViewInteractiveUITest,
   EXPECT_EQ(nullptr, toolbar_actions_bar->popup_owner());
 }
 
+// TODO(crbug.com/963678): fails on ChromeOS as it's assuming SendMouseMove()
+// synchronously updates the location of the mouse (which is needed by
+// SendMouseClick()).
+#if defined(OS_CHROMEOS)
+#define MAYBE_ActivateOverflowedToolbarActionWithKeyboard \
+  DISABLED_ActivateOverflowedToolbarActionWithKeyboard
+#else
+#define MAYBE_ActivateOverflowedToolbarActionWithKeyboard \
+  ActivateOverflowedToolbarActionWithKeyboard
+#endif
 IN_PROC_BROWSER_TEST_F(ToolbarActionViewInteractiveUITest,
-                       ActivateOverflowedToolbarActionWithKeyboard) {
+                       MAYBE_ActivateOverflowedToolbarActionWithKeyboard) {
   views::MenuController::TurnOffMenuSelectionHoldForTest();
   // Load an extension with an action.
   ASSERT_TRUE(LoadExtension(

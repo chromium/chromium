@@ -10,6 +10,7 @@
 
 #include "base/logging.h"
 #include "base/macros.h"
+#include "mojo/public/cpp/bindings/interface_endpoint_client.h"
 #include "mojo/public/cpp/bindings/lib/serialization.h"
 #include "mojo/public/cpp/bindings/lib/validation_util.h"
 #include "mojo/public/cpp/bindings/message.h"
@@ -61,9 +62,9 @@ bool ControlMessageHandler::IsControlMessage(const Message* message) {
          message->header()->name == interface_control::kRunOrClosePipeMessageId;
 }
 
-ControlMessageHandler::ControlMessageHandler(uint32_t interface_version)
-    : interface_version_(interface_version) {
-}
+ControlMessageHandler::ControlMessageHandler(InterfaceEndpointClient* owner,
+                                             uint32_t interface_version)
+    : owner_(owner), interface_version_(interface_version) {}
 
 ControlMessageHandler::~ControlMessageHandler() {
 }
@@ -138,7 +139,14 @@ bool ControlMessageHandler::RunOrClosePipe(Message* message) {
   auto& input = *params_ptr->input;
   if (input.is_require_version())
     return interface_version_ >= input.get_require_version()->version;
-
+  if (input.is_enable_idle_tracking()) {
+    return owner_->AcceptEnableIdleTracking(base::TimeDelta::FromMicroseconds(
+        input.get_enable_idle_tracking()->timeout_in_microseconds));
+  }
+  if (input.is_message_ack())
+    return owner_->AcceptMessageAck();
+  if (input.is_notify_idle())
+    return owner_->AcceptNotifyIdle();
   return false;
 }
 

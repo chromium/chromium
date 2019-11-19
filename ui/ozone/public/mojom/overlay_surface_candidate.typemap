@@ -1,0 +1,16 @@
+# Copyright 2017 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+mojom = "//ui/ozone/public/mojom/overlay_surface_candidate.mojom"
+public_headers = [ "//ui/ozone/public/overlay_surface_candidate.h" ]
+public_deps = [
+  "//ui/gfx/geometry/mojom:mojom_traits",
+  "//ui/ozone:ozone_base",
+]
+traits_headers =
+    [ "//ui/ozone/public/mojom/overlay_surface_candidate_mojom_traits.h" ]
+type_mappings = [
+  "ui.ozone.mojom.OverlaySurfaceCandidate=::ui::OverlaySurfaceCandidate",
+  "ui.ozone.mojom.OverlayStatus=::ui::OverlayStatus",
+]

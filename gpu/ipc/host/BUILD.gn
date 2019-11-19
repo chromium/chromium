@@ -8,8 +8,6 @@ source_set("host") {
   sources = [
     "gpu_memory_buffer_support.cc",
     "gpu_memory_buffer_support.h",
-    "gpu_switches.cc",
-    "gpu_switches.h",
     "shader_disk_cache.cc",
     "shader_disk_cache.h",
   ]

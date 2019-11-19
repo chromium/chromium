@@ -3,6 +3,7 @@
 if (window.testRunner) {
   testRunner.dumpAsText();
   testRunner.dumpChildFrames();
+  testRunner.setDumpConsoleMessages(false);
 }
 
 function runTest() {
@@ -10,7 +11,7 @@ function runTest() {
 }
 
 </script>
-<body onload="runTest()">
-<iframe src="http://localhost:8000/security/resources/localPage.html"></iframe>
+<body>
+<iframe onload="runTest()" src="http://localhost:8000/security/resources/localPage.html"></iframe>
 </body>
 </html>

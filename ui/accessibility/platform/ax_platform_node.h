@@ -9,7 +9,7 @@
 #include "base/lazy_instance.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
-#include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_export.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/ax_mode_observer.h"
@@ -57,22 +57,6 @@ class AX_EXPORT AXPlatformNode {
   // the addition of an AXMode flag.
   static void NotifyAddAXModeFlags(AXMode mode_flags);
 
-  // Must be called by native suggestion code when there are suggestions which
-  // could be presented in a popup, even if the popup is not presently visible.
-  // The availability of the popup changes the interactions that will occur
-  // (down arrow will move the focus into the suggestion popup). An example of a
-  // suggestion popup is seen in the Autofill feature.
-  // TODO(crbug.com/865101) Remove this once the autofill state works.
-  static void OnInputSuggestionsAvailable();
-  // Must be called when the system goes from a state of having an available
-  // suggestion popup to none available. If the suggestion popup is still
-  // available but just hidden, this method should not be called.
-  // TODO(crbug.com/865101) Remove this once the autofill state works.
-  static void OnInputSuggestionsUnavailable();
-
-  // TODO(crbug.com/865101) Remove this once the autofill state works.
-  static bool HasInputSuggestions();
-
   // Return the focused object in any UI popup overlaying content, or null.
   static gfx::NativeViewAccessible GetPopupFocusOverride();
 
@@ -96,11 +80,14 @@ class AX_EXPORT AXPlatformNode {
 
 #if defined(OS_MACOSX)
   // Fire a platform-specific notification to announce |text|.
-  virtual void AnnounceText(base::string16& text) = 0;
+  virtual void AnnounceText(const base::string16& text) = 0;
 #endif
 
   // Return this object's delegate.
   virtual AXPlatformNodeDelegate* GetDelegate() const = 0;
+
+  // Return true if this object is equal to or a descendant of |ancestor|.
+  virtual bool IsDescendantOf(AXPlatformNode* ancestor) const = 0;
 
   // Return the unique ID
   int32_t GetUniqueId() const;
@@ -118,8 +105,6 @@ class AX_EXPORT AXPlatformNode {
       native_window_handler_;
 
   static AXMode ax_mode_;
-
-  static bool has_input_suggestions_;
 
   // This allows UI menu popups like to act as if they are focused in the
   // exposed platform accessibility API, even though actual focus remains in

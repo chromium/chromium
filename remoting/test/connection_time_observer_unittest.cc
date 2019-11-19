@@ -7,8 +7,8 @@
 #include <utility>
 
 #include "base/macros.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -115,7 +115,8 @@ TEST_F(ConnectionTimeObserverTest, TestOnConnectionStateChangedWithoutTestMap) {
   connection_time_observer_->SetTransitionTimesMapForTest(
       std::map<protocol::ConnectionToHost::State, base::TimeTicks>());
 
-  base::MessageLoopForIO message_loop;
+  base::test::SingleThreadTaskEnvironment task_environment(
+      base::test::SingleThreadTaskEnvironment::MainThreadType::IO);
   base::RunLoop run_loop;
 
   // Should fail to find INITIALIZING in an empty map.

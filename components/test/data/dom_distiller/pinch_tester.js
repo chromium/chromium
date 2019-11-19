@@ -100,7 +100,7 @@ var pinchtest = (function() {
           preventDefault: function(){}
         };
       }
-    }
+    };
   });
 
   function testZoomOut() {

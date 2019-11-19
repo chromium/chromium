@@ -1,28 +1,29 @@
 rootWebArea
-++list
-++++listItem
-++++++listMarker name='• '
-++++++staticText name='tic'
-++++++++inlineTextBox name='tic'
-++++listItem
-++++++listMarker name='• '
-++++++staticText name='tac'
-++++++++inlineTextBox name='tac'
-++++listItem
-++++++listMarker name='• '
-++++++staticText name='toe'
-++++++++inlineTextBox name='toe'
-++list
-++++listItem
-++++++staticText name='tic'
-++++++++inlineTextBox name='tic'
-++++staticText name=' '
-++++++inlineTextBox name=' '
-++++listItem
-++++++staticText name='tac'
-++++++++inlineTextBox name='tac'
-++++staticText name=' '
-++++++inlineTextBox name=' '
-++++listItem
-++++++staticText name='toe'
-++++++++inlineTextBox name='toe'
+++genericContainer ignored
+++++list
+++++++listItem
+++++++++listMarker name='• '
+++++++++staticText name='tic'
+++++++++++inlineTextBox name='tic'
+++++++listItem
+++++++++listMarker name='• '
+++++++++staticText name='tac'
+++++++++++inlineTextBox name='tac'
+++++++listItem
+++++++++listMarker name='• '
+++++++++staticText name='toe'
+++++++++++inlineTextBox name='toe'
+++++list
+++++++listItem
+++++++++staticText name='tic'
+++++++++++inlineTextBox name='tic'
+++++++staticText name=' '
+++++++++inlineTextBox name=' '
+++++++listItem
+++++++++staticText name='tac'
+++++++++++inlineTextBox name='tac'
+++++++staticText name=' '
+++++++++inlineTextBox name=' '
+++++++listItem
+++++++++staticText name='toe'
+++++++++++inlineTextBox name='toe'

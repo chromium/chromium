@@ -14,7 +14,42 @@ namespace net {
 
 class CertPathErrors;
 class CertNetFetcher;
-struct CertificateTrust;
+struct OCSPVerifyResult;
+
+// Baseline Requirements 1.6.5, section 4.9.7:
+//     For the status of Subscriber Certificates: If the CA publishes a CRL,
+//     then the CA SHALL update and reissue CRLs at least once every seven
+//     days, and the value of the nextUpdate field MUST NOT be more than ten
+//     days beyond the value of the thisUpdate field.
+//
+// Baseline Requirements 1.6.5, section 4.9.10:
+//     For the status of Subscriber Certificates: The CA SHALL update
+//     information provided via an Online Certificate Status Protocol at least
+//     every four days.  OCSP responses from this service MUST have a maximum
+//     expiration time of ten days.
+//
+// Use 7 days as the max allowable leaf revocation status age, which is
+// sufficient for both CRL and OCSP, and which aligns with Microsoft policies.
+constexpr base::TimeDelta kMaxRevocationLeafUpdateAge =
+    base::TimeDelta::FromDays(7);
+
+// Baseline Requirements 1.6.5, section 4.9.7:
+//     For the status of Subordinate CA Certificates: The CA SHALL update and
+//     reissue CRLs at least (i) once every twelve months and (ii) within 24
+//     hours after revoking a Subordinate CA Certificate, and the value of the
+//     nextUpdate field MUST NOT be more than twelve months beyond the value of
+//     the thisUpdate field.
+//
+// Baseline Requirements 1.6.5, section 4.9.10:
+//     For the status of Subordinate CA Certificates: The CA SHALL update
+//     information provided via an Online Certificate Status Protocol at least
+//     (i) every twelve months and (ii) within 24 hours after revoking a
+//     Subordinate CA Certificate.
+//
+// Use 366 days to allow for leap years, though it is overly permissive in
+// other years.
+constexpr base::TimeDelta kMaxRevocationIntermediateUpdateAge =
+    base::TimeDelta::FromDays(366);
 
 // RevocationPolicy describes how revocation should be carried out for a
 // particular chain.
@@ -44,29 +79,39 @@ struct NET_EXPORT_PRIVATE RevocationPolicy {
   // mechanisms.
   bool allow_missing_info : 1;
 
-  // If set to true, failure to perform online revocation checks (due to a
-  // network level failure) is considered equivalent to a successful revocation
-  // check.
-  //
-  // TODO(649017): The "soft fail" expectations of consumers are more broad than
-  // this, and may also entail parsing failures and parsed non-success OCSP
-  // responses.
-  bool allow_network_failure : 1;
+  // If set to true, other failure to perform revocation checks (e.g. due to a
+  // network level failure, OCSP response error status, failure parsing or
+  // evaluating the OCSP/CRL response, etc) is considered equivalent to a
+  // successful revocation check.
+  bool allow_unable_to_check : 1;
 };
 
 // Checks the revocation status of |certs| according to |policy|, and adds
 // any failures to |errors|. On failure errors are added to |errors|. On success
 // no errors are added.
 //
+// |deadline|, if not null, will limit the overall amount of time spent doing
+// online revocation checks. If |base::TimeTicks::Now()| exceeds |deadline|, no
+// more revocation checks will be attempted. Note that this is not a hard
+// limit, the deadline may be exceeded by the individual request timetout of a
+// single CertNetFetcher.
+//
+// |certs| must be a successfully validated chain according to RFC 5280 section
+// 6.1, in order from leaf to trust anchor.
+//
 // |net_fetcher| may be null, however this may lead to failed revocation checks
 // depending on |policy|.
-NET_EXPORT_PRIVATE void CheckCertChainRevocation(
+//
+// |stapled_ocsp_verify_result|, if non-null, will be filled with the result of
+// checking the leaf certificate against |stapled_leaf_ocsp_response|.
+NET_EXPORT_PRIVATE void CheckValidatedChainRevocation(
     const ParsedCertificateList& certs,
-    const CertificateTrust& last_cert_trust,
     const RevocationPolicy& policy,
+    base::TimeTicks deadline,
     base::StringPiece stapled_leaf_ocsp_response,
     CertNetFetcher* net_fetcher,
-    CertPathErrors* errors);
+    CertPathErrors* errors,
+    OCSPVerifyResult* stapled_ocsp_verify_result);
 
 // Checks the revocation status of a certificate chain using the CRLSet and adds
 // revocation errors to |errors|.

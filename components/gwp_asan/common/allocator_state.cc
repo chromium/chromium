@@ -4,8 +4,11 @@
 
 #include "components/gwp_asan/common/allocator_state.h"
 
+#include <algorithm>
+
 #include "base/bits.h"
 #include "base/process/process_metrics.h"
+#include "base/strings/stringprintf.h"
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
 
@@ -13,7 +16,9 @@ namespace gwp_asan {
 namespace internal {
 
 // TODO: Delete out-of-line constexpr defininitons once C++17 is in use.
-constexpr size_t AllocatorState::kGpaMaxPages;
+constexpr size_t AllocatorState::kMaxMetadata;
+constexpr size_t AllocatorState::kMaxSlots;
+constexpr AllocatorState::MetadataIdx AllocatorState::kInvalidMetadataIdx;
 constexpr size_t AllocatorState::kMaxStackFrames;
 constexpr size_t AllocatorState::kMaxPackedTraceLength;
 
@@ -21,17 +26,38 @@ AllocatorState::AllocatorState() {}
 
 AllocatorState::GetMetadataReturnType AllocatorState::GetMetadataForAddress(
     uintptr_t exception_address,
-    uintptr_t* slot_address) const {
+    const SlotMetadata* metadata_arr,
+    const MetadataIdx* slot_to_metadata,
+    MetadataIdx* metadata_idx,
+    std::string* error) const {
   CHECK(IsValid());
+  CHECK(PointerIsMine(exception_address));
 
-  if (!PointerIsMine(exception_address))
-    return GetMetadataReturnType::kUnrelatedCrash;
-
-  size_t slot_idx = GetNearestSlot(exception_address);
-  if (slot_idx >= kGpaMaxPages)
+  AllocatorState::SlotIdx slot_idx = GetNearestSlot(exception_address);
+  if (slot_idx >= total_pages) {
+    *error =
+        base::StringPrintf("Bad slot index %u >= %zu", slot_idx, total_pages);
     return GetMetadataReturnType::kErrorBadSlot;
+  }
 
-  *slot_address = slot_metadata + (slot_idx * sizeof(SlotMetadata));
+  AllocatorState::MetadataIdx index = slot_to_metadata[slot_idx];
+  if (index == kInvalidMetadataIdx)
+    return GetMetadataReturnType::kGwpAsanCrashWithMissingMetadata;
+
+  if (index >= num_metadata) {
+    *error =
+        base::StringPrintf("Bad metadata index %u >= %zu", index, num_metadata);
+    return GetMetadataReturnType::kErrorBadMetadataIndex;
+  }
+
+  if (GetNearestSlot(metadata_arr[index].alloc_ptr) != slot_idx) {
+    *error = base::StringPrintf(
+        "Outdated metadata index %u: slot for %zx does not match %zx", index,
+        metadata_arr[index].alloc_ptr, exception_address);
+    return GetMetadataReturnType::kErrorOutdatedMetadataIndex;
+  }
+
+  *metadata_idx = index;
   return GetMetadataReturnType::kGwpAsanCrash;
 }
 
@@ -39,7 +65,10 @@ bool AllocatorState::IsValid() const {
   if (!page_size || page_size != base::GetPageSize())
     return false;
 
-  if (total_pages == 0 || total_pages > kGpaMaxPages)
+  if (total_pages == 0 || total_pages > kMaxSlots)
+    return false;
+
+  if (num_metadata == 0 || num_metadata > std::min(kMaxMetadata, total_pages))
     return false;
 
   if (pages_base_addr % page_size != 0 || pages_end_addr % page_size != 0 ||
@@ -53,7 +82,7 @@ bool AllocatorState::IsValid() const {
       pages_end_addr - pages_base_addr != page_size * (total_pages * 2 + 1))
     return false;
 
-  if (!slot_metadata)
+  if (!metadata_addr || !slot_to_metadata_addr)
     return false;
 
   return true;
@@ -84,19 +113,19 @@ uintptr_t AllocatorState::GetNearestValidPage(uintptr_t addr) const {
   return addr + kHalfPageSize;  // Round up.
 }
 
-size_t AllocatorState::GetNearestSlot(uintptr_t addr) const {
+AllocatorState::SlotIdx AllocatorState::GetNearestSlot(uintptr_t addr) const {
   return AddrToSlot(GetPageAddr(GetNearestValidPage(addr)));
 }
 
 AllocatorState::ErrorType AllocatorState::GetErrorType(uintptr_t addr,
                                                        bool allocated,
                                                        bool deallocated) const {
+  if (free_invalid_address)
+    return ErrorType::kFreeInvalidAddress;
   if (!allocated)
     return ErrorType::kUnknown;
   if (double_free_address)
     return ErrorType::kDoubleFree;
-  if (free_invalid_address)
-    return ErrorType::kFreeInvalidAddress;
   if (deallocated)
     return ErrorType::kUseAfterFree;
   if (addr < first_page_addr)
@@ -124,18 +153,18 @@ AllocatorState::ErrorType AllocatorState::GetErrorType(uintptr_t addr,
              : ErrorType::kBufferUnderflow;
 }
 
-uintptr_t AllocatorState::SlotToAddr(size_t slot) const {
-  DCHECK_LT(slot, kGpaMaxPages);
+uintptr_t AllocatorState::SlotToAddr(AllocatorState::SlotIdx slot) const {
+  DCHECK_LT(slot, kMaxSlots);
   return first_page_addr + 2 * slot * page_size;
 }
 
-size_t AllocatorState::AddrToSlot(uintptr_t addr) const {
+AllocatorState::SlotIdx AllocatorState::AddrToSlot(uintptr_t addr) const {
   DCHECK_EQ(addr % page_size, 0ULL);
   uintptr_t offset = addr - first_page_addr;
   DCHECK_EQ((offset >> base::bits::Log2Floor(page_size)) % 2, 0ULL);
   size_t slot = (offset >> base::bits::Log2Floor(page_size)) / 2;
-  DCHECK_LT(slot, kGpaMaxPages);
-  return slot;
+  DCHECK_LT(slot, kMaxSlots);
+  return static_cast<SlotIdx>(slot);
 }
 
 AllocatorState::SlotMetadata::SlotMetadata() {}

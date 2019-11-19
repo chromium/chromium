@@ -26,12 +26,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_IMAGE_GENERATOR_VALUE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_IMAGE_GENERATOR_VALUE_H_
 
-#include <map>
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/platform/geometry/float_size.h"
 #include "third_party/blink/renderer/platform/heap/self_keep_alive.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
 namespace blink {
@@ -41,26 +42,15 @@ class Image;
 class ComputedStyle;
 class ImageResourceObserver;
 
-struct FloatSizeCompare {
-  bool operator()(const FloatSize& lhs, const FloatSize& rhs) const {
-    if (lhs.Width() < rhs.Width())
-      return true;
-    if (lhs.Width() > rhs.Width())
-      return false;
-    return lhs.Height() < rhs.Height();
-  }
-};
-
-// Use std::map because the WTF versions require a hashing function, while
-// the stl maps require a weak comparison operator that can be defined for
-// FloatSize. These maps do not contain many objects because we do not expect
-// any particular CSSGeneratedImageValue to have clients at many different
+// These maps do not contain many objects because we do not expect any
+// particular CSSGeneratedImageValue to have clients at many different
 // sizes at any given time.
-using ImageSizeCountMap = std::map<FloatSize, unsigned, FloatSizeCompare>;
-using GeneratedImageMap =
-    std::map<FloatSize, scoped_refptr<Image>, FloatSizeCompare>;
+using ImageSizeCountMap = HashCountedSet<FloatSize>;
+using GeneratedImageMap = HashMap<FloatSize, scoped_refptr<Image>>;
 
 class GeneratedImageCache {
+  DISALLOW_NEW();
+
  public:
   void AddSize(const FloatSize&);
   void RemoveSize(const FloatSize&);
@@ -112,7 +102,11 @@ class CORE_EXPORT CSSImageGeneratorValue : public CSSValue {
 
   void LoadSubimages(const Document&);
 
-  CSSImageGeneratorValue* ValueWithURLsMadeAbsolute();
+  CSSImageGeneratorValue* ComputedCSSValue(const ComputedStyle&,
+                                           bool allow_visited_style);
+
+  bool IsUsingCustomProperty(const AtomicString& custom_property_name,
+                             const Document&) const;
 
   void TraceAfterDispatch(blink::Visitor* visitor) {
     CSSValue::TraceAfterDispatch(visitor);
@@ -138,7 +132,12 @@ class CORE_EXPORT CSSImageGeneratorValue : public CSSValue {
   SelfKeepAlive<CSSImageGeneratorValue> keep_alive_;
 };
 
-DEFINE_CSS_VALUE_TYPE_CASTS(CSSImageGeneratorValue, IsImageGeneratorValue());
+template <>
+struct DowncastTraits<CSSImageGeneratorValue> {
+  static bool AllowFrom(const CSSValue& value) {
+    return value.IsImageGeneratorValue();
+  }
+};
 
 }  // namespace blink
 

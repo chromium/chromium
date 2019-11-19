@@ -6,8 +6,9 @@
 
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/frame/use_counter.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/modules/battery/battery_manager.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
 
@@ -29,8 +30,8 @@ ScriptPromise NavigatorBattery::getBattery(ScriptState* script_state) {
     if (frame) {
       if (!context->IsSecureContext())
         UseCounter::Count(document, WebFeature::kBatteryStatusInsecureOrigin);
-      UseCounter::CountIfFeatureWouldBeBlockedByFeaturePolicy(
-          *frame, WebFeature::kBatteryStatusCrossOrigin,
+      frame->CountUseIfFeatureWouldBeBlockedByFeaturePolicy(
+          WebFeature::kBatteryStatusCrossOrigin,
           WebFeature::kBatteryStatusSameOriginABA);
     }
   }

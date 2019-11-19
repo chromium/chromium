@@ -26,7 +26,7 @@ class URLRequest;
 
 namespace android_webview {
 
-class AwWebResourceResponse;
+class AwWebResourceInterceptResponse;
 struct AwWebResourceRequest;
 
 // This class provides a means of calling Java methods on an instance that has
@@ -89,7 +89,7 @@ class AwContentsIoThreadClient {
   // This will attempt to fetch the AwContentsIoThreadClient for the given
   // |render_process_id|, |render_frame_id| pair.
   // This method can be called from any thread.
-  // An empty scoped_ptr is a valid return value.
+  // A null std::unique_ptr is a valid return value.
   static std::unique_ptr<AwContentsIoThreadClient> FromID(int render_process_id,
                                                           int render_frame_id);
 
@@ -99,7 +99,7 @@ class AwContentsIoThreadClient {
       int frame_tree_node_id);
 
   // Returns the global thread client for service worker related callbacks.
-  // An empty scoped_ptr is a valid return value.
+  // A null std::unique_ptr is a valid return value.
   static std::unique_ptr<AwContentsIoThreadClient>
   GetServiceWorkerIoThreadClient();
 
@@ -109,11 +109,11 @@ class AwContentsIoThreadClient {
                               int child_render_frame_id);
 
   // This method is called on the IO thread only.
-  using ShouldInterceptRequestResultCallback =
-      base::OnceCallback<void(std::unique_ptr<AwWebResourceResponse>)>;
+  using ShouldInterceptRequestResponseCallback =
+      base::OnceCallback<void(std::unique_ptr<AwWebResourceInterceptResponse>)>;
   void ShouldInterceptRequestAsync(
       AwWebResourceRequest request,
-      ShouldInterceptRequestResultCallback callback);
+      ShouldInterceptRequestResponseCallback callback);
 
   // Retrieve the AllowContentAccess setting value of this AwContents.
   // This method is called on the IO thread only.
@@ -138,7 +138,7 @@ class AwContentsIoThreadClient {
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
   base::android::ScopedJavaGlobalRef<jobject> bg_thread_client_object_;
   scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_ =
-      base::CreateSequencedTaskRunnerWithTraits({base::MayBlock()});
+      base::CreateSequencedTaskRunner({base::ThreadPool(), base::MayBlock()});
 
   DISALLOW_COPY_AND_ASSIGN(AwContentsIoThreadClient);
 };

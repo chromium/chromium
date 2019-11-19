@@ -3,6 +3,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import print_function
+
 import glob
 import os
 import subprocess
@@ -43,7 +45,7 @@ class ClangPluginTest(object):
 
     Returns: the number of failing tests.
     """
-    print 'Using clang %s...' % self._clang_path
+    print('Using clang %s...' % self._clang_path)
 
     os.chdir(self._test_base)
 
@@ -68,16 +70,16 @@ class ClangPluginTest(object):
 
       failure_message = self.RunOneTest(test_name, cmd)
       if failure_message:
-        print 'failed: %s' % failure_message
+        print('failed: %s' % failure_message)
         failing.append(test_name)
       else:
-        print 'passed!'
+        print('passed!')
         passing.append(test_name)
 
-    print 'Ran %d tests: %d succeeded, %d failed' % (
-        len(passing) + len(failing), len(passing), len(failing))
+    print('Ran %d tests: %d succeeded, %d failed' % (
+        len(passing) + len(failing), len(passing), len(failing)))
     for test in failing:
-      print '    %s' % test
+      print('    %s' % test)
     return len(failing)
 
   def RunOneTest(self, test_name, cmd):

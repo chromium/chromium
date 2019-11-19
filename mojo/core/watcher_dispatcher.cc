@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <limits>
 
+#include "base/compiler_specific.h"
 #include "base/debug/alias.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
@@ -58,6 +59,9 @@ void WatcherDispatcher::NotifyHandleClosed(Dispatcher* dispatcher) {
   watch->Cancel();
 }
 
+// handler_ may be address-taken in a different DSO, and hence incompatible with
+// CFI-icall.
+NO_SANITIZE("cfi-icall")
 void WatcherDispatcher::InvokeWatchCallback(uintptr_t context,
                                             MojoResult result,
                                             const HandleSignalsState& state,

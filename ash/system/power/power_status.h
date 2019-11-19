@@ -14,8 +14,8 @@
 #include "base/optional.h"
 #include "base/strings/string16.h"
 #include "base/time/time.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
-#include "chromeos/dbus/power_manager_client.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace gfx {

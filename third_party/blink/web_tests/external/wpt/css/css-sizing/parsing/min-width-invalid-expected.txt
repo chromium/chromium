@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+PASS e.style['min-width'] = "none" should not set the property value
+PASS e.style['min-width'] = "complex" should not set the property value
+PASS e.style['min-width'] = "-10%" should not set the property value
+PASS e.style['min-width'] = "-0.5em" should not set the property value
+PASS e.style['min-width'] = "60" should not set the property value
+PASS e.style['min-width'] = "10px 20%" should not set the property value
+PASS e.style['min-width'] = "max-content 10px" should not set the property value
+PASS e.style['min-width'] = "min-content max-content" should not set the property value
+PASS e.style['min-width'] = "available" should not set the property value
+PASS e.style['min-width'] = "10px border-box" should not set the property value
+PASS e.style['min-width'] = "content-box 20%" should not set the property value
+FAIL e.style['min-width'] = "fit-content" should not set the property value assert_equals: expected "" but got "fit-content"
+Harness: the test ran to completion.
+

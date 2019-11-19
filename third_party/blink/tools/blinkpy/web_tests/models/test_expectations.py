@@ -43,16 +43,13 @@ _log = logging.getLogger(__name__)
 #
 # FIXME: range() starts with 0 which makes if expectation checks harder
 # as PASS is 0.
-(PASS, FAIL, TEXT, IMAGE, IMAGE_PLUS_TEXT, AUDIO, TIMEOUT, CRASH, LEAK, SKIP, WONTFIX,
- SLOW, MISSING, FLAKY, NOW, NONE) = range(16)
+(PASS, FAIL, TIMEOUT, CRASH, SKIP, SLOW, FLAKY) = range(7)
 
 WEBKIT_BUG_PREFIX = 'webkit.org/b/'
 CHROMIUM_BUG_PREFIX = 'crbug.com/'
 SKIA_BUG_PREFIX = 'skbug.com/'
 V8_BUG_PREFIX = 'code.google.com/p/v8/issues/detail?id='
 NAMED_BUG_PREFIX = 'Bug('
-
-MISSING_KEYWORD = 'Missing'
 
 
 class ParseError(Exception):
@@ -71,6 +68,7 @@ class ParseError(Exception):
 _PLATFORM_TOKENS_LIST = [
     'Android',
     'Fuchsia',
+    'IOS', 'IOS12.2', 'IOS13.0',
     'Linux',
     'Mac', 'Mac10.10', 'Mac10.11', 'Retina', 'Mac10.12', 'Mac10.13',
     'Win', 'Win7', 'Win10'
@@ -86,6 +84,77 @@ _SPECIFIER_GROUPS = [
     set(s.upper() for s in _BUILD_TYPE_TOKEN_LIST)
 ]
 
+
+class AllTests(object):
+    """A class to query for path-prefix matches against the list of all tests."""
+    def __init__(self, list_of_tests):
+        self._tree = dict()
+        for test in list_of_tests:
+            assert not test.startswith('/')
+            assert not test.endswith('/')
+            assert test.replace('//', '/') == test
+            AllTests._add_path_to_tree(self._tree, test.split('/'))
+
+    def find_matching_tests(self, path_prefix):
+        assert not path_prefix.startswith('/')
+        assert path_prefix.replace('//', '/') == path_prefix
+
+        subtree = AllTests._find_subtree_with_prefix(self._tree, path_prefix.rstrip('/').split('/'))
+        if subtree is None:
+            # No match found.
+            return []
+        if not subtree:
+            # We found a leaf node, an exact match on |path_prefix|.
+            return [path_prefix]
+        return AllTests._all_paths_under_subtree(subtree, path_prefix)
+
+    @staticmethod
+    def _find_subtree_with_prefix(subtree, path_list):
+        # Reached the end of the path, we matched to this point in the
+        # dictionary tree.
+        if not path_list:
+            return subtree
+        path_component = path_list[0]
+        # A component of the path does not exist in the dictionary tree.
+        if not path_component in subtree:
+            return None
+        path_remainder = path_list[1:]
+        return AllTests._find_subtree_with_prefix(subtree[path_component], path_remainder)
+
+    @staticmethod
+    def _all_paths_under_subtree(subtree, prefix):
+        if not subtree:
+            return []
+
+        if prefix and not prefix.endswith('/'):
+            prefix = prefix + '/'
+
+        paths = []
+        for child_path, child_tree in subtree.iteritems():
+            if not child_tree:
+                paths.append(prefix + child_path)
+            else:
+                paths.extend(AllTests._all_paths_under_subtree(child_tree, prefix + child_path))
+        return paths
+
+    @staticmethod
+    def _add_path_to_tree(subtree, path_list):
+        # When |path_list| is empty, we reached the end of the path,
+        # so don't add anything more to |subtree|.
+        if not path_list:
+            # If subtree is not empty, then we have the same path listed
+            # twice in the initial list of tests.
+            assert len(subtree) == 0
+            return
+
+        path_component = path_list[0]
+        if not path_component in subtree:
+            subtree[path_component] = dict()
+
+        path_remainder = path_list[1:]
+        AllTests._add_path_to_tree(subtree[path_component], path_remainder)
+
+
 class TestExpectationParser(object):
     """Provides parsing facilities for lines in the test_expectation.txt file."""
 
@@ -94,7 +163,6 @@ class TestExpectationParser(object):
     PASS_EXPECTATION = 'pass'
     SKIP_MODIFIER = 'skip'
     SLOW_MODIFIER = 'slow'
-    WONTFIX_MODIFIER = 'wontfix'
 
     TIMEOUT_EXPECTATION = 'timeout'
 
@@ -104,12 +172,7 @@ class TestExpectationParser(object):
         self._port = port
         self._test_configuration_converter = TestConfigurationConverter(
             set(port.all_test_configurations()), port.configuration_specifier_macros())
-
-        if all_tests:
-            self._all_tests = set(all_tests)
-        else:
-            self._all_tests = set()
-
+        self._all_tests = AllTests(all_tests) if all_tests else None
         self._is_lint_mode = is_lint_mode
 
     def parse(self, filename, expectations_string):
@@ -117,7 +180,7 @@ class TestExpectationParser(object):
         line_number = 0
         for line in expectations_string.split('\n'):
             line_number += 1
-            test_expectation = TestExpectationLine.tokenize_line(filename, line, line_number)
+            test_expectation = TestExpectationLine.tokenize_line(filename, line, line_number, self._port)
             self._parse_line(test_expectation)
             expectation_lines.append(test_expectation)
 
@@ -155,7 +218,7 @@ class TestExpectationParser(object):
         if not self._port.test_exists(test_name):
             _log.warning('The following test %s from the Skipped list doesn\'t exist', test_name)
         expectation_line = self._create_expectation_line(test_name, [TestExpectationParser.PASS_EXPECTATION], '<Skipped file>')
-        expectation_line.expectations = [TestExpectationParser.SKIP_MODIFIER, TestExpectationParser.WONTFIX_MODIFIER]
+        expectation_line.expectations = [TestExpectationParser.SKIP_MODIFIER]
         expectation_line.is_extra_skipped_test = True
         self._parse_line(expectation_line)
         return expectation_line
@@ -191,8 +254,6 @@ class TestExpectationParser(object):
 
     def _lint_line(self, expectation_line):
         expectations = [expectation.lower() for expectation in expectation_line.expectations]
-        if not expectation_line.bugs and self.WONTFIX_MODIFIER not in expectations:
-            expectation_line.warnings.append(self.MISSING_BUG_WARNING)
         specifiers = [specifier.lower() for specifier in expectation_line.specifiers]
 
     def _parse_expectations(self, expectation_line):
@@ -225,16 +286,7 @@ class TestExpectationParser(object):
             expectation_line.matching_tests = [expectation_line.path]
             return
 
-        if not expectation_line.is_file:
-            # this is a test category, return all the tests of the category.
-            expectation_line.matching_tests = [test for test in self._all_tests if test.startswith(expectation_line.path)]
-            return
-
-        # this is a test file, do a quick check if it's in the
-        # full test suite.
-        if expectation_line.path in self._all_tests:
-            expectation_line.matching_tests.append(expectation_line.path)
-
+        expectation_line.matching_tests = self._all_tests.find_matching_tests(expectation_line.path)
 
 class TestExpectationLine(object):
     """Represents a line in test expectations file."""
@@ -311,22 +363,18 @@ class TestExpectationLine(object):
     # FIXME: Update the original specifiers list and remove this once the old syntax is gone.
     _expectation_tokens = {
         'Crash': 'CRASH',
-        'Leak': 'LEAK',
         'Failure': 'FAIL',
-        MISSING_KEYWORD: 'MISSING',
         'Pass': 'PASS',
         'Skip': 'SKIP',
         'Slow': 'SLOW',
-        'Timeout': 'TIMEOUT',
-        'WontFix': 'WONTFIX',
+        'Timeout': 'TIMEOUT'
     }
 
     inverted_expectation_tokens = dict(
-        [(value, name) for name, value in _expectation_tokens.iteritems()] +
-        [('TEXT', 'Failure'), ('IMAGE', 'Failure'), ('IMAGE+TEXT', 'Failure'), ('AUDIO', 'Failure')])
+        [(value, name) for name, value in _expectation_tokens.items()])
 
     @classmethod
-    def tokenize_line(cls, filename, expectation_string, line_number):
+    def tokenize_line(cls, filename, expectation_string, line_number, port):
         """Tokenizes a line from TestExpectations and returns an unparsed TestExpectationLine instance using the old format.
 
         The new format for a test expectation line is:
@@ -431,21 +479,19 @@ class TestExpectationLine(object):
             elif state not in ('name_found', 'done'):
                 warnings.append('Missing a "]"')
 
-        if 'WONTFIX' in expectations and 'SKIP' not in expectations:
-            expectations.append('SKIP')
-
-        if ('SKIP' in expectations or 'WONTFIX' in expectations) and len(set(expectations) - set(['SKIP', 'WONTFIX'])):
-            warnings.append('A test marked Skip or WontFix must not have other expectations.')
+        if 'SKIP' in expectations and len(set(expectations) - {'SKIP'}):
+            warnings.append('A test marked SKIP must not have other expectations.')
 
         if 'SLOW' in expectations and 'SlowTests' not in filename:
             warnings.append('SLOW tests should only be added to SlowTests and not to TestExpectations.')
 
-        if 'WONTFIX' in expectations and ('NeverFixTests' not in filename and 'StaleTestExpectations' not in filename):
-            warnings.append(
-                'WONTFIX tests should only be added to NeverFixTests or StaleTestExpectations and not to TestExpectations.')
+        if 'NeverFixTests' in filename and expectations != ['SKIP']:
+            warnings.append('Only SKIP expectations are allowed in NeverFixTests.')
 
-        if 'NeverFixTests' in filename and expectations != ['WONTFIX', 'SKIP']:
-            warnings.append('Only WONTFIX expectations are allowed in NeverFixTests')
+        if 'SlowTests' in filename and port.is_wpt_test(name):
+            warnings.append(
+                'WPT should not be added to SlowTests; they should be marked as '
+                'slow inside the test (see https://web-platform-tests.org/writing-tests/testharness-api.html#harness-timeout)')
 
         if 'SlowTests' in filename and expectations != ['SLOW']:
             warnings.append('Only SLOW expectations are allowed in SlowTests')
@@ -603,7 +649,6 @@ class TestExpectationsModel(object):
         self._test_to_expectation_line = {}
 
         self._expectation_to_tests = self._dict_of_sets(TestExpectations.EXPECTATIONS)
-        self._timeline_to_tests = self._dict_of_sets(TestExpectations.TIMELINES)
         self._result_type_to_tests = self._dict_of_sets(TestExpectations.RESULT_TYPES)
 
         self._shorten_filename = shorten_filename or (lambda x: x)
@@ -661,7 +706,6 @@ class TestExpectationsModel(object):
             self._test_to_expectation_line[test] = merged_line
 
         self._merge_dict_of_sets(self._expectation_to_tests, other._expectation_to_tests)
-        self._merge_dict_of_sets(self._timeline_to_tests, other._timeline_to_tests)
         self._merge_dict_of_sets(self._result_type_to_tests, other._result_type_to_tests)
 
     def _dict_of_sets(self, strings_to_constants):
@@ -691,9 +735,6 @@ class TestExpectationsModel(object):
     def get_tests_with_result_type(self, result_type):
         return self._result_type_to_tests[result_type]
 
-    def get_tests_with_timeline(self, timeline):
-        return self._timeline_to_tests[timeline]
-
     def has_test(self, test):
         return test in self._test_to_expectation_line
 
@@ -714,7 +755,7 @@ class TestExpectationsModel(object):
 
     def get_expectations_string(self, test):
         """Returns the expectations for the given test as an uppercase string.
-        If there are no expectations for the test, then "PASS" is returned.
+        If there are no expectations for the test, KeyError is raised.
         """
         if self.get_expectation_line(test).is_extra_skipped_test:
             return 'NOTRUN'
@@ -722,20 +763,10 @@ class TestExpectationsModel(object):
         expectations = self.get_expectations(test)
         retval = []
 
-        # FIXME: WontFix should cause the test to get skipped without artificially adding SKIP to the expectations list.
-        if WONTFIX in expectations and SKIP in expectations:
-            expectations.remove(SKIP)
-
         for expectation in expectations:
             retval.append(TestExpectations.expectation_to_string(expectation))
 
         return ' '.join(retval)
-
-    def remove_expectation_line(self, test):
-        if not self.has_test(test):
-            return
-        self._clear_expectations_for_test(test)
-        del self._test_to_expectation_line[test]
 
     def add_expectation_line(self, expectation_line,
                              model_all_expectations=False):
@@ -769,11 +800,6 @@ class TestExpectationsModel(object):
 
         self._test_to_specifiers[test] = expectation_line.specifiers
 
-        if WONTFIX in expectation_line.parsed_expectations:
-            self._timeline_to_tests[WONTFIX].add(test)
-        else:
-            self._timeline_to_tests[NOW].add(test)
-
         if SKIP in expectation_line.parsed_expectations:
             self._result_type_to_tests[SKIP].add(test)
         elif TIMEOUT in expectation_line.parsed_expectations:
@@ -794,7 +820,6 @@ class TestExpectationsModel(object):
         if self.has_test(test):
             self._test_to_expectations.pop(test, '')
             self._remove_from_sets(test, self._expectation_to_tests)
-            self._remove_from_sets(test, self._timeline_to_tests)
             self._remove_from_sets(test, self._result_type_to_tests)
 
     def _remove_from_sets(self, test, dict_of_sets_of_tests):
@@ -904,23 +929,15 @@ class TestExpectations(object):
       -A test cannot be both SLOW and TIMEOUT
       -A test can be included twice, but not via the same path.
       -If a test is included twice, then the more precise path wins.
-      -CRASH tests cannot be WONTFIX
     """
 
     # FIXME: Update to new syntax once the old format is no longer supported.
     EXPECTATIONS = {
         'pass': PASS,
-        'audio': AUDIO,
         'fail': FAIL,
-        'image': IMAGE,
-        'image+text': IMAGE_PLUS_TEXT,
-        'text': TEXT,
         'timeout': TIMEOUT,
         'crash': CRASH,
-        'leak': LEAK,
-        'missing': MISSING,
         TestExpectationParser.SKIP_MODIFIER: SKIP,
-        TestExpectationParser.WONTFIX_MODIFIER: WONTFIX,
         TestExpectationParser.SLOW_MODIFIER: SLOW,
     }
 
@@ -931,22 +948,11 @@ class TestExpectations(object):
         SKIP: 'skipped',
         PASS: 'passes',
         FAIL: 'failures',
-        IMAGE: 'image-only failures',
-        TEXT: 'text-only failures',
-        IMAGE_PLUS_TEXT: 'image and text failures',
-        AUDIO: 'audio failures',
         CRASH: 'crashes',
-        LEAK: 'leaks',
         TIMEOUT: 'timeouts',
-        MISSING: 'missing results',
     }
 
     BUILD_TYPES = ('debug', 'release')
-
-    TIMELINES = {
-        TestExpectationParser.WONTFIX_MODIFIER: WONTFIX,
-        'now': NOW,
-    }
 
     RESULT_TYPES = {
         'skip': SKIP,
@@ -977,64 +983,15 @@ class TestExpectations(object):
             expected_results: set of results listed in test_expectations
         """
         local_expected = set(expected_results)
-        if WONTFIX in local_expected:
-            # WontFix should be treated as if we expected a Skip.
-            local_expected.add(SKIP)
 
         # Make sure we have at least one result type that may actually happen.
-        local_expected.discard(WONTFIX)
         local_expected.discard(SLOW)
         if not local_expected:
             local_expected = {PASS}
 
         if result in local_expected:
             return True
-        if result in (TEXT, IMAGE, IMAGE_PLUS_TEXT, AUDIO) and FAIL in local_expected:
-            return True
         return False
-
-    @staticmethod
-    def remove_non_sanitizer_failures(expected_results):
-        """Returns a copy of the expected results for a test, except that we
-        drop any failures that the sanitizers don't care about.
-        """
-        expected_results = expected_results.copy()
-        for result in (IMAGE, FAIL, IMAGE_PLUS_TEXT):
-            if result in expected_results:
-                expected_results.remove(result)
-                expected_results.add(PASS)
-        return expected_results
-
-    @staticmethod
-    def suffixes_for_expectations(expectations):
-        suffixes = set()
-        if IMAGE in expectations:
-            suffixes.add('png')
-        if FAIL in expectations:
-            suffixes.add('txt')
-            suffixes.add('png')
-            suffixes.add('wav')
-        return set(suffixes)
-
-    @staticmethod
-    # test_result is an instance of blinkpy.common.net.web_test_results.WebTestResult
-    def suffixes_for_test_result(test_result):
-        suffixes = set()
-        actual_results = test_result.actual_results()
-        if 'TEXT' in actual_results:
-            suffixes.add('txt')
-        if 'IMAGE' in actual_results:
-            suffixes.add('png')
-        if 'AUDIO' in actual_results:
-            suffixes.add('wav')
-        if 'MISSING' in actual_results:
-            if test_result.is_missing_text():
-                suffixes.add('txt')
-            if test_result.is_missing_image():
-                suffixes.add('png')
-            if test_result.is_missing_audio():
-                suffixes.add('wav')
-        return suffixes
 
     # FIXME: This constructor does too much work. We should move the actual parsing of
     # the expectations into separate routines so that linting and handling overrides
@@ -1054,24 +1011,25 @@ class TestExpectations(object):
         if not expectations_dict:
             expectations_dict = port.expectations_dict()
 
-        # Always parse the generic expectations (the generic file is required
-        # to be the first one in the expectations_dict, which must be an OrderedDict).
-        generic_path, generic_exps = expectations_dict.items()[0]
-        expectations = self._parser.parse(generic_path, generic_exps)
-        self._add_expectations(expectations, self._model)
-        self._expectations += expectations
+        if expectations_dict:
+            # Always parse the generic expectations (the generic file is required
+            # to be the first one in the expectations_dict, which must be an OrderedDict).
+            generic_path, generic_exps = expectations_dict.items()[0]
+            expectations = self._parser.parse(generic_path, generic_exps)
+            self._add_expectations(expectations, self._model)
+            self._expectations += expectations
 
-        # Now add the overrides if so requested.
-        if include_overrides:
-            for path, contents in expectations_dict.items()[1:]:
-                expectations = self._parser.parse(path, contents)
-                model = TestExpectationsModel(self._shorten_filename)
-                self._add_expectations(expectations, model)
-                self._expectations += expectations
-                flag_specific_match = re.match('.*' + port.FLAG_EXPECTATIONS_PREFIX + '(.*)', path)
-                if flag_specific_match is not None:
-                    self._model.append_flag_name(flag_specific_match.group(1))
-                self._model.merge_model(model, flag_specific_match is not None)
+            # Now add the overrides if so requested.
+            if include_overrides:
+                for path, contents in expectations_dict.items()[1:]:
+                    expectations = self._parser.parse(path, contents)
+                    model = TestExpectationsModel(self._shorten_filename)
+                    self._add_expectations(expectations, model)
+                    self._expectations += expectations
+                    flag_specific_match = re.match('.*' + port.FLAG_EXPECTATIONS_PREFIX + '(.*)', path)
+                    if flag_specific_match is not None:
+                        self._model.append_flag_name(flag_specific_match.group(1))
+                    self._model.merge_model(model, flag_specific_match is not None)
 
         self.add_extra_skipped_tests(set(port.get_option('ignore_tests', [])))
         self.add_expectations_from_bot()
@@ -1100,17 +1058,11 @@ class TestExpectations(object):
     def get_test_set(self, expectation, include_skips=True):
         return self._model.get_test_set(expectation, include_skips)
 
-    # FIXME: Change the callsites to use TestExpectationsModel and remove.
-    def get_tests_with_timeline(self, timeline):
-        return self._model.get_tests_with_timeline(timeline)
-
     def get_expectations_string(self, test):
         return self._model.get_expectations_string(test)
 
-    def matches_an_expected_result(self, test, result, sanitizer_is_enabled):
+    def matches_an_expected_result(self, test, result):
         expected_results = self._model.get_expectations(test)
-        if sanitizer_is_enabled:
-            expected_results = self.remove_non_sanitizer_failures(expected_results)
         return self.result_was_expected(result, expected_results)
 
     def _shorten_filename(self, filename):
@@ -1197,18 +1149,6 @@ class TestExpectations(object):
             expectation_line = self._parser.expectation_for_skipped_test(test_name)
             model.add_expectation_line(expectation_line)
         self._model.merge_model(model)
-
-    def remove_tests_from_expectations(self, tests_to_remove):
-        for test in self._expectations:
-            if not test.name:
-                continue
-            if test.name not in tests_to_remove:
-                continue
-            self._expectations.remove(test)
-            if not self._model.has_test(test.name):
-                continue
-            line = self._model.get_expectation_line(test.name)
-            self._model.remove_expectation_line(line)
 
     def add_expectations_from_bot(self):
         # FIXME: With mode 'very-flaky' and 'maybe-flaky', this will show the expectations entry in the flakiness

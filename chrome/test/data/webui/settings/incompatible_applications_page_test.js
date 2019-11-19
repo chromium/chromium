@@ -173,7 +173,7 @@ suite('incompatibleApplicationsHandler', function() {
 
           // Retrieve the incompatible-application-item and tap it. It should be
           // visible.
-          let item = incompatibleApplicationsPage.$$(
+          const item = incompatibleApplicationsPage.$$(
               '.incompatible-application:not([hidden])');
           item.$$('.action-button').click();
 
@@ -199,7 +199,7 @@ suite('incompatibleApplicationsHandler', function() {
 
           // Retrieve the incompatible-application-item and tap it. It should be
           // visible.
-          let item = incompatibleApplicationsPage.$$(
+          const item = incompatibleApplicationsPage.$$(
               '.incompatible-application:not([hidden])');
           item.$$('.action-button').click();
 
@@ -223,7 +223,7 @@ suite('incompatibleApplicationsHandler', function() {
     return initPage(false /* hasAdminRights */).then(function() {
       validateList(eachTypeIncompatibleApplicationsTestList);
 
-      let items = incompatibleApplicationsPage.shadowRoot.querySelectorAll(
+      const items = incompatibleApplicationsPage.shadowRoot.querySelectorAll(
           '.incompatible-application:not([hidden])');
 
       assertEquals(items.length, 3);

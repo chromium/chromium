@@ -56,18 +56,20 @@ class TextFieldInputType : public InputType,
 
   void CreateShadowSubtree() override;
   void DestroyShadowSubtree() override;
-  void AttributeChanged() override;
+  void ValueAttributeChanged() override;
   void DisabledAttributeChanged() override;
   void ReadonlyAttributeChanged() override;
   bool SupportsReadOnly() const override;
-  void HandleBlurEvent() final;
+  void HandleBlurEvent() override;
+  void HandleBeforeTextInsertedEvent(BeforeTextInsertedEvent&) override;
   String SanitizeValue(const String&) const override;
   void SetValue(const String&,
                 bool value_changed,
                 TextFieldEventBehavior,
                 TextControlSetValueSelection) override;
   void UpdateView() override;
-  LayoutObject* CreateLayoutObject(const ComputedStyle&) const override;
+  LayoutObject* CreateLayoutObject(const ComputedStyle&,
+                                   LegacyLayout) const override;
 
   virtual bool NeedsContainer() const { return false; }
   virtual String ConvertFromVisibleValue(const String&) const;
@@ -83,7 +85,6 @@ class TextFieldInputType : public InputType,
   bool MayTriggerVirtualKeyboard() const final;
   bool IsTextField() const final;
   bool ValueMissing(const String&) const override;
-  void HandleBeforeTextInsertedEvent(BeforeTextInsertedEvent&) override;
   void ForwardEvent(Event&) final;
   bool ShouldSubmitImplicitly(const Event&) final;
   bool ShouldRespectListAttribute() override;

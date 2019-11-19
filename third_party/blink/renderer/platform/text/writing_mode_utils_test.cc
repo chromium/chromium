@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/text/writing_mode_utils.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
@@ -173,6 +174,8 @@ TEST(WritingModeUtilsTest, LogicalToPhysicalVrlRtl) {
 }
 
 class PhysicalValues {
+  STACK_ALLOCATED();
+
  public:
   int Top() const { return top_; }
   int Right() const { return right_; }
@@ -246,6 +249,8 @@ TEST(WritingModeUtilsTest, LogicalToPhysicalSetter) {
 }
 
 class LogicalValues {
+  STACK_ALLOCATED();
+
  public:
   int InlineStart() const { return inline_start_; }
   int InlineEnd() const { return inline_end_; }

@@ -11,6 +11,13 @@ GLES2InterfaceStub::GLES2InterfaceStub() = default;
 
 GLES2InterfaceStub::~GLES2InterfaceStub() = default;
 
+// InterfaceBase implementation.
+void GLES2InterfaceStub::GenSyncTokenCHROMIUM(GLbyte* sync_token) {}
+void GLES2InterfaceStub::GenUnverifiedSyncTokenCHROMIUM(GLbyte* sync_token) {}
+void GLES2InterfaceStub::VerifySyncTokensCHROMIUM(GLbyte** sync_tokens,
+                                                  GLsizei count) {}
+void GLES2InterfaceStub::WaitSyncTokenCHROMIUM(const GLbyte* sync_token) {}
+
 // Include the auto-generated part of this class. We split this because
 // it means we can easily edit the non-auto generated parts right here in
 // this file instead of having to edit some template or the code generator.

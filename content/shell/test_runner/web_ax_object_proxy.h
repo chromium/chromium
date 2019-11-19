@@ -76,6 +76,7 @@ class WebAXObjectProxy : public gin::Wrappable<WebAXObjectProxy> {
 
   // The following selection functions return global information about the
   // current selection and can be called on any object in the tree.
+  bool SelectionIsBackward();
   v8::Local<v8::Value> SelectionAnchorObject();
   int SelectionAnchorOffset();
   std::string SelectionAnchorAffinity();
@@ -90,8 +91,6 @@ class WebAXObjectProxy : public gin::Wrappable<WebAXObjectProxy> {
   // a textarea.
   int SelectionStart();
   int SelectionEnd();
-  int SelectionStartLineNumber();
-  int SelectionEndLineNumber();
 
   bool IsAtomic();
   bool IsAutofillAvailable();
@@ -117,6 +116,7 @@ class WebAXObjectProxy : public gin::Wrappable<WebAXObjectProxy> {
   bool IsCollapsed();
   bool IsValid();
   bool IsReadOnly();
+  bool IsIgnored();
   std::string Restriction();
   v8::Local<v8::Object> ActiveDescendant();
   unsigned int BackgroundColor();
@@ -135,11 +135,18 @@ class WebAXObjectProxy : public gin::Wrappable<WebAXObjectProxy> {
   std::string Relevant();
   std::string RoleDescription();
   std::string Sort();
+  std::string Url();
   int HierarchicalLevel();
   int PosInSet();
   int SetSize();
   int ClickPointX();
   int ClickPointY();
+  int32_t AriaColumnCount();
+  uint32_t AriaColumnIndex();
+  uint32_t AriaColumnSpan();
+  int32_t AriaRowCount();
+  uint32_t AriaRowIndex();
+  uint32_t AriaRowSpan();
   int32_t RowCount();
   int32_t RowHeadersCount();
   int32_t ColumnCount();
@@ -159,7 +166,6 @@ class WebAXObjectProxy : public gin::Wrappable<WebAXObjectProxy> {
   v8::Local<v8::Object> AriaOwnsElementAtIndex(unsigned index);
   std::string AllAttributes();
   std::string AttributesOfChildren();
-  int LineForIndex(int index);
   std::string BoundsForRange(int start, int end);
   v8::Local<v8::Object> ChildAtIndex(int index);
   v8::Local<v8::Object> ElementAtPoint(int x, int y);
@@ -193,6 +199,7 @@ class WebAXObjectProxy : public gin::Wrappable<WebAXObjectProxy> {
   void ScrollToGlobalPoint(int x, int y);
   int ScrollX();
   int ScrollY();
+  std::string ToString();
   int WordStart(int character_index);
   int WordEnd(int character_index);
   v8::Local<v8::Object> NextOnLine();

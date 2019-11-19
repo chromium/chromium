@@ -6,8 +6,8 @@
 
 #import "ios/chrome/browser/voice/text_to_speech_parser.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest_mac.h"
 #include "testing/platform_test.h"
-#import "third_party/google_toolbox_for_mac/src/Foundation/GTMStringEncoding.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -17,6 +17,7 @@
 NSData* ExtractVoiceSearchAudioDataFromPageHTML(NSString* pageHTML);
 
 namespace {
+const char kExpectedDecodedData[] = "testaudo32oio";
 NSString* const kValidVoiceSearchHTML =
     @"<script>(function(){var _a_tts='dGVzdGF1ZG8zMm9pbw==';var _m_tts= {}}";
 NSString* const kInvalidVoiceSearchHTML = @"no TTS data";
@@ -28,15 +29,16 @@ TEST_F(TextToSpeechParser, ExtractAudioDataValid) {
   NSData* result =
       ExtractVoiceSearchAudioDataFromPageHTML(kValidVoiceSearchHTML);
 
-  EXPECT_TRUE(result != nil);
+  EXPECT_NSNE(result, nil);
 
-  GTMStringEncoding* base64 = [GTMStringEncoding rfc4648Base64StringEncoding];
-  NSData* expectedData = [base64 decode:@"dGVzdGF1ZG8zMm9pbw==" error:nullptr];
-  EXPECT_TRUE([expectedData isEqualToData:result]);
+  NSData* expectedData =
+      [NSData dataWithBytes:&kExpectedDecodedData[0]
+                     length:sizeof(kExpectedDecodedData) - 1];
+  EXPECT_NSEQ(expectedData, result);
 }
 
 TEST_F(TextToSpeechParser, ExtractAudioDataNotFound) {
   NSData* result =
       ExtractVoiceSearchAudioDataFromPageHTML(kInvalidVoiceSearchHTML);
-  EXPECT_TRUE(result == nil);
+  EXPECT_NSEQ(result, nil);
 }

@@ -12,6 +12,7 @@
 #include "build/build_config.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_paths.h"
+#include "content/public/common/network_service_util.h"
 #include "content/public/test/test_content_client_initializer.h"
 #include "gpu/ipc/test_gpu_thread_holder.h"
 #include "media/base/media.h"
@@ -67,6 +68,8 @@ void ContentTestSuite::Initialize() {
 #if defined(OS_WIN)
   display::win::SetDefaultDeviceScaleFactor(1.0f);
 #endif
+
+  ForceInProcessNetworkService(true);
 
   ContentTestSuiteBase::Initialize();
   {

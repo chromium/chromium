@@ -45,7 +45,7 @@ HostContentSettingsMapFactory::BuildServiceInstanceFor(
   }
   return base::MakeRefCounted<HostContentSettingsMap>(
       browser_state->GetPrefs(), browser_state->IsOffTheRecord(),
-      false /* guest_profile */, false /* store_last_modified */,
+      false /* store_last_modified */,
       false /* migrate_requesting_and_top_level_origin_settings */);
 }
 

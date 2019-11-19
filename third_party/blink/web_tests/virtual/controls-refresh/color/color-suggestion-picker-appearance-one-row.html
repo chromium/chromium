@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+testRunner.waitUntilDone();
+</script>
+<script src='../../../fast/forms/resources/picker-common.js'></script>
+</head>
+<body>
+<input type='color' id='color' value='#ff0000' list='single'>
+<datalist id='single'>
+    <option>#000000</option>
+</datalist>
+<script>
+openPicker(document.getElementById('color'), () => testRunner.notifyDone(), () => testRunner.notifyDone());
+</script>
+</body>
+</html>

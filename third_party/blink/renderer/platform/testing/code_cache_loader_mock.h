@@ -14,13 +14,14 @@ namespace blink {
 // A simple class for mocking CodeCacheLoader.
 class CodeCacheLoaderMock : public CodeCacheLoader {
  public:
-  CodeCacheLoaderMock() : weak_ptr_factory_(this) {}
+  CodeCacheLoaderMock() {}
   ~CodeCacheLoaderMock() override = default;
 
   // CodeCacheLoader methods:
-  void FetchFromCodeCacheSynchronously(const GURL& url,
-                                       base::Time* response_time_out,
-                                       std::vector<uint8_t>* data_out) override;
+  void FetchFromCodeCacheSynchronously(
+      const GURL& url,
+      base::Time* response_time_out,
+      mojo_base::BigBuffer* buffer_out) override;
   void FetchFromCodeCache(
       blink::mojom::CodeCacheType cache_type,
       const GURL& url,
@@ -29,7 +30,7 @@ class CodeCacheLoaderMock : public CodeCacheLoader {
   base::WeakPtr<CodeCacheLoaderMock> GetWeakPtr();
 
  private:
-  base::WeakPtrFactory<CodeCacheLoaderMock> weak_ptr_factory_;
+  base::WeakPtrFactory<CodeCacheLoaderMock> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(CodeCacheLoaderMock);
 };

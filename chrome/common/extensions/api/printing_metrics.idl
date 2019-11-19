@@ -1,0 +1,147 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Use the <code>chrome.printingMetrics</code> API to fetch data about
+// printing usage.
+[platforms=("chromeos"),
+ implemented_in="chrome/browser/chromeos/extensions/printing_metrics/printing_metrics_api.h"]
+namespace printingMetrics {
+  // The source of the print job.
+  enum PrintJobSource {
+    // The job was created from the Print Preview page initiated by the user.
+    PRINT_PREVIEW,
+
+    // The job was created from an Android App.
+    ANDROID_APP
+  };
+
+  // The final status of the print job.
+  enum PrintJobStatus {
+    // Print job was interrupted due to some error.
+   FAILED,
+
+   // Print job was canceled by the user or via API.
+   CANCELED,
+
+   // Print job was printed without any errors.
+   PRINTED
+  };
+
+  // The source of the printer.
+  enum PrinterSource {
+    // Printer was added by user.
+    USER,
+
+    // Printer was added via policy.
+    POLICY
+  };
+
+  enum ColorMode {
+    // Black and white mode was used.
+    BLACK_AND_WHITE,
+
+    // Color mode was used.
+    COLOR
+  };
+
+  enum DuplexMode {
+    // One-sided printing was used.
+    ONE_SIDED,
+
+    // Two-sided printing was used, flipping on long edge.
+    TWO_SIDED_LONG_EDGE,
+
+    // Two-sided printing was used, flipping on short edge.
+    TWO_SIDED_SHORT_EDGE
+  };
+
+  // The size of requested media.
+  dictionary MediaSize {
+    // Width (in micrometers) of the media used for printing.
+    long width;
+
+    // Height (in micrometers) of the media used for printing.
+    long height;
+
+    // Vendor-provided ID, e.g. "iso_a3_297x420mm" or "na_index-3x5_3x5in".
+    // Possible values are values of "media" IPP attribute and can be found on
+    // <a href="https://www.iana.org/assignments/ipp-registrations/ipp-registrations.xhtml">
+    // IANA page</a> .
+    DOMString vendorId;
+  };
+
+  // The requested settings of print job.
+  dictionary PrintSettings {
+    // The requested color mode.
+    ColorMode color;
+
+    // The requested duplex mode.
+    DuplexMode duplex;
+
+    // The requested media size.
+    MediaSize mediaSize;
+
+    // The requested number of copies.
+    long copies;
+  };
+
+  // The printer info.
+  dictionary Printer {
+    // Displayed name of the printer.
+    DOMString name;
+
+    // The full path for the printer.
+    // Contains protocol, hostname, port, and queue.
+    DOMString uri;
+
+    // The source of the printer.
+    PrinterSource source;
+  };
+
+  // Print job information.
+  dictionary PrintJobInfo {
+    // The ID of the job.
+    DOMString id;
+
+    // The title of the document which was printed.
+    DOMString title;
+
+    // Source showing who initiated the print job.
+    PrintJobSource source;
+
+    // ID of source. Null if source is PRINT_PREVIEW or ANDROID_APP.
+    DOMString? sourceId;
+
+    // The final status of the job.
+    PrintJobStatus status;
+
+    // The job creation time (in milliseconds past the Unix epoch).
+    double creationTime;
+
+    // The job completion time (in milliseconds past the Unix epoch).
+    double completionTime;
+
+    // The info about the printer which printed the document.
+    Printer printer;
+
+    // The settings of the print job.
+    PrintSettings settings;
+
+    // The number of pages in the document.
+    long numberOfPages;
+  };
+
+  callback GetPrintJobsCallback = void(PrintJobInfo[] jobs);
+
+  interface Functions {
+    // Returns the list of the finished print jobs.
+    static void getPrintJobs(GetPrintJobsCallback callback);
+  };
+
+  interface Events {
+    // Event fired when the print job is finished.
+    // This includes any of termination statuses: FAILED, CANCELED and PRINTED.
+    static void onPrintJobFinished(PrintJobInfo jobInfo);
+  };
+};

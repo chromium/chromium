@@ -23,6 +23,25 @@ class PrefRegistrySyncable;
 
 namespace browser_sync {
 
+// Keep in sync with //chrome/browser/resources/history/constants.js.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class SyncedTabsHistogram {
+  INITIALIZED = 0,
+  SHOW_MENU_DEPRECATED = 1,
+  LINK_CLICKED = 2,
+  LINK_RIGHT_CLICKED = 3,
+  SESSION_NAME_RIGHT_CLICKED_DEPRECATED = 4,
+  SHOW_SESSION_MENU = 5,
+  COLLAPSE_SESSION = 6,
+  EXPAND_SESSION = 7,
+  OPEN_ALL = 8,
+  HAS_FOREIGN_DATA = 9,
+  HIDE_FOR_NOW = 10,
+  OPENED_LINK_VIA_CONTEXT_MENU = 11,
+  LIMIT = 12  // Should always be the last one.
+};
+
 class ForeignSessionHandler : public content::WebUIMessageHandler {
  public:
   // WebUIMessageHandler implementation.

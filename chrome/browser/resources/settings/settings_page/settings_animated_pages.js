@@ -79,36 +79,8 @@ Polymer({
       return;
     }
 
-    const subpagePaths = [];
-    if (settings.routes.SITE_SETTINGS_COOKIES) {
-      subpagePaths.push(settings.routes.SITE_SETTINGS_COOKIES.path);
-    }
-
-    if (settings.routes.SITE_SETTINGS_SITE_DATA) {
-      subpagePaths.push(settings.routes.SITE_SETTINGS_SITE_DATA.path);
-    }
-
-    if (settings.routes.SITE_SETTINGS_ALL) {
-      subpagePaths.push(settings.routes.SITE_SETTINGS_ALL.path);
-    }
-
-    // <if expr="chromeos">
-    if (settings.routes.INTERNET_NETWORKS) {
-      subpagePaths.push(settings.routes.INTERNET_NETWORKS.path);
-    }
-    // </if>
-
-    // Only handle iron-select events from div elements and the
-    // given whitelist of settings-subpage instances.
-    const whitelist = ['settings-subpage#site-settings', 'div[route-path]'];
-    whitelist.push.apply(
-        whitelist,
-        subpagePaths.map(path => `settings-subpage[route-path="${path}"]`));
-    const query = whitelist.join(', ');
-
-    if (!e.detail.item.matches(query)) {
-      return;
-    }
+    // Ensure focus-config was correctly specified as a Polymer property.
+    assert(this.focusConfig instanceof Map);
 
     let pathConfig = this.focusConfig.get(this.previousRoute_.path);
     if (pathConfig) {
@@ -189,25 +161,17 @@ Polymer({
    */
   ensureSubpageInstance_: function() {
     const routePath = settings.getCurrentRoute().path;
-    /* TODO(dpapad): Remove conditional logic once migration to Polymer 2 is
-     * completed. */
-    const domIf = this.querySelector(
-        (Polymer.DomIf ? 'dom-if' : 'template') +
-        `[route-path='${routePath}']`);
+    const domIf = this.querySelector(`dom-if[route-path='${routePath}']`);
 
-    // Nothing to do if the subpage isn't wrapped in a <dom-if>
-    // (or <template is="dom-if" for Poylmer 1) or the template is already
-    // stamped.
+    // Nothing to do if the subpage isn't wrapped in a <dom-if> or the template
+    // is already stamped.
     if (!domIf || domIf.if) {
       return;
     }
 
     // Set the subpage's id for use by neon-animated-pages.
-    // TODO(dpapad): Remove conditional logic once migration to Polymer 2 is
-    // completed.
-    const content = Polymer.DomIf ?
-        Polymer.DomIf._contentForTemplate(domIf.firstElementChild) :
-        /** @type {{_content: DocumentFragment}} */ (domIf)._content;
+    const content = Polymer.DomIf._contentForTemplate(
+        /** @type {!HTMLTemplateElement} */ (domIf.firstElementChild));
     const subpage = content.querySelector('settings-subpage');
     subpage.setAttribute('route-path', routePath);
 

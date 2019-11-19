@@ -90,6 +90,9 @@ class ChromeSubresourceFilterClient
     return did_show_ui_for_navigation_;
   }
 
+  const subresource_filter::ContentSubresourceFilterThrottleManager*
+  GetThrottleManager() const;
+
   static void LogAction(SubresourceFilterAction action);
 
  private:

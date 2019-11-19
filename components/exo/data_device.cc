@@ -4,9 +4,9 @@
 
 #include "components/exo/data_device.h"
 
-#include "base/logging.h"
 #include "components/exo/data_device_delegate.h"
 #include "components/exo/data_offer.h"
+#include "components/exo/data_source.h"
 #include "components/exo/seat.h"
 #include "components/exo/surface.h"
 #include "ui/base/clipboard/clipboard.h"
@@ -15,38 +15,6 @@
 #include "ui/base/dragdrop/drop_target_event.h"
 
 namespace exo {
-
-class ScopedDataOffer {
- public:
-  ScopedDataOffer(DataOffer* data_offer, DataOfferObserver* observer)
-      : data_offer_(data_offer), observer_(observer) {
-    data_offer_->AddObserver(observer_);
-  }
-  ~ScopedDataOffer() { data_offer_->RemoveObserver(observer_); }
-  DataOffer* get() { return data_offer_; }
-
- private:
-  DataOffer* const data_offer_;
-  DataOfferObserver* const observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedDataOffer);
-};
-
-class ScopedSurface {
- public:
-  ScopedSurface(Surface* surface, SurfaceObserver* observer)
-      : surface_(surface), observer_(observer) {
-    surface_->AddSurfaceObserver(observer_);
-  }
-  ~ScopedSurface() { surface_->RemoveSurfaceObserver(observer_); }
-  Surface* get() { return surface_; }
-
- private:
-  Surface* const surface_;
-  SurfaceObserver* const observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedSurface);
-};
 
 DataDevice::DataDevice(DataDeviceDelegate* delegate,
                        Seat* seat,
@@ -69,12 +37,11 @@ DataDevice::~DataDevice() {
   seat_->RemoveObserver(this);
 }
 
-void DataDevice::StartDrag(const DataSource* source_resource,
-                           Surface* origin_resource,
-                           Surface* icon_resource,
-                           uint32_t serial) {
-  // TODO(hirono): Check if serial is valid. crbug.com/746111
-  NOTIMPLEMENTED();
+void DataDevice::StartDrag(DataSource* source,
+                           Surface* origin,
+                           Surface* icon,
+                           ui::DragDropTypes::DragEventSource event_source) {
+  seat_->StartDrag(source, origin, icon, event_source);
 }
 
 void DataDevice::SetSelection(DataSource* source, uint32_t serial) {
@@ -100,8 +67,8 @@ void DataDevice::OnDragEntered(const ui::DropTargetEvent& event) {
     dnd_actions.insert(DndAction::kAsk);
   }
 
-  data_offer_ =
-      std::make_unique<ScopedDataOffer>(delegate_->OnDataOffer(), this);
+  data_offer_ = std::make_unique<ScopedDataOffer>(
+      delegate_->OnDataOffer(DataOffer::DRAG_DROP), this);
   data_offer_->get()->SetDropData(file_helper_, event.data());
   data_offer_->get()->SetSourceActions(dnd_actions);
   data_offer_->get()->SetActions(base::flat_set<DndAction>(), DndAction::kAsk);
@@ -195,7 +162,7 @@ Surface* DataDevice::GetEffectiveTargetForEvent(
 }
 
 void DataDevice::SetSelectionToCurrentClipboardData() {
-  DataOffer* data_offer = delegate_->OnDataOffer();
+  DataOffer* data_offer = delegate_->OnDataOffer(DataOffer::COPY_PASTE);
   data_offer->SetClipboardData(file_helper_,
                                *ui::Clipboard::GetForCurrentThread());
   delegate_->OnSelection(*data_offer);

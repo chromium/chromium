@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.CreditCardAccessoryInfoView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:gravity="top|start"
+    android:fillViewport="true"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:paddingStart="@dimen/keyboard_accessory_suggestion_padding"
+    android:paddingEnd="@dimen/keyboard_accessory_suggestion_padding"
+    android:layout_marginTop="@dimen/keyboard_accessory_sheet_top_margin"
+    android:layout_marginBottom="@dimen/keyboard_accessory_sheet_bottom_margin"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:gravity="center_vertical|start"
+        android:fillViewport="true"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:gravity="center_vertical|start"
+            android:fillViewport="true"
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <org.chromium.ui.widget.ChipView
+                android:id="@+id/cc_number"
+                android:gravity="center_vertical|start"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/InputChip" />
+
+            <LinearLayout
+                android:id="@+id/exp_group"
+                android:gravity="center_vertical|start"
+                android:fillViewport="true"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:orientation="horizontal">
+
+                <org.chromium.ui.widget.ChipView
+                    android:id="@+id/exp_month"
+                    android:gravity="center_vertical|start"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/InputChip" />
+
+                <TextView
+                    android:text="/"
+                    tools:ignore="HardcodedText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/keyboard_accessory_sheet_padding"
+                    android:layout_marginEnd="@dimen/keyboard_accessory_sheet_padding"
+                    android:textAppearance="@style/TextAppearance.DividerText"/>
+
+                <org.chromium.ui.widget.ChipView
+                    android:id="@+id/exp_year"
+                    android:gravity="center_vertical|start"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/InputChip" />
+
+            </LinearLayout>
+
+
+            <org.chromium.ui.widget.ChipView
+                android:id="@+id/cardholder"
+                android:gravity="center_vertical|start"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/InputChip" />
+
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/icon"
+            android:layout_marginTop="@dimen/keyboard_accessory_image_top_padding"
+            android:layout_width="@dimen/keyboard_accessory_bar_item_cc_icon_width"
+            android:layout_height="@dimen/keyboard_accessory_suggestion_icon_size"
+            android:layout_weight="0"
+            android:importantForAccessibility="no"
+            android:layout_gravity="top|end" />
+    </LinearLayout>
+
+    <View style="@style/HorizontalDivider"
+        android:layout_marginTop="@dimen/keyboard_accessory_sheet_divider_margin"
+        android:layout_marginBottom="0dp" />
+
+</org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.CreditCardAccessoryInfoView>

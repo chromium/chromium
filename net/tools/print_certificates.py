@@ -13,6 +13,7 @@ import os
 import re
 import subprocess
 import sys
+import traceback
 
 
 def read_file_to_string(path):
@@ -121,8 +122,7 @@ def decode_netlog_hexdump(netlog_text):
   lines = netlog_text.splitlines()
 
   # Skip the text preceeding the actual hexdump.
-  # TODO(eroman): New logs name this field "bytes" and it is Base64 encoded.
-  while lines and 'hex_encoded_bytes' not in lines[0]:
+  while lines and 'bytes =' not in lines[0]:
     del lines[0]
   if not lines:
     return None
@@ -156,6 +156,9 @@ class ByteReader:
     self.pos += 1
     return i
 
+  def consume_int16(self):
+    return ((self.consume_byte() << 8) + self.consume_byte())
+
   def consume_int24(self):
     return ((self.consume_byte() << 16) + (self.consume_byte() << 8) +
             self.consume_byte())
@@ -171,25 +174,18 @@ class ByteReader:
     return len(self.data) - self.pos
 
 
-def decode_tls_certificate_message(certificate_message):
-  reader = ByteReader(certificate_message)
-  if reader.consume_byte() != 11:
-    sys.stderr.write('HandshakeType != 11. Not a Certificate Message.\n')
-    return []
-
+def decode_tls10_certificate_message(reader):
   message_length = reader.consume_int24()
   if reader.remaining_byte_count() != message_length:
-    sys.stderr.write(
+    raise RuntimeError(
         'message_length(%d) != remaining_byte_count(%d)\n' % (
             message_length, reader.remaining_byte_count()))
-    return []
 
   certificate_list_length = reader.consume_int24()
   if reader.remaining_byte_count() != certificate_list_length:
-    sys.stderr.write(
+    raise RuntimeError(
         'certificate_list_length(%d) != remaining_byte_count(%d)\n' % (
             certificate_list_length, reader.remaining_byte_count()))
-    return []
 
   certificates_der = []
   while reader.remaining_byte_count():
@@ -197,6 +193,69 @@ def decode_tls_certificate_message(certificate_message):
     certificates_der.append(reader.consume_bytes(cert_len))
 
   return certificates_der
+
+
+def decode_tls13_certificate_message(reader):
+  message_length = reader.consume_int24()
+  if reader.remaining_byte_count() != message_length:
+    raise RuntimeError(
+        'message_length(%d) != remaining_byte_count(%d)\n' % (
+            message_length, reader.remaining_byte_count()))
+
+  # Ignore certificate_request_context.
+  certificate_request_context_length = reader.consume_byte()
+  reader.consume_bytes(certificate_request_context_length)
+
+  certificate_list_length = reader.consume_int24()
+  if reader.remaining_byte_count() != certificate_list_length:
+    raise RuntimeError(
+        'certificate_list_length(%d) != remaining_byte_count(%d)\n' % (
+            certificate_list_length, reader.remaining_byte_count()))
+
+  certificates_der = []
+  while reader.remaining_byte_count():
+    # Assume certificate_type is X.509.
+    cert_len = reader.consume_int24()
+    certificates_der.append(reader.consume_bytes(cert_len))
+    # Ignore extensions.
+    extension_len = reader.consume_int16()
+    reader.consume_bytes(extension_len)
+
+  return certificates_der
+
+
+def decode_tls_certificate_message(certificate_message):
+  reader = ByteReader(certificate_message)
+  if reader.consume_byte() != 11:
+    sys.stderr.write('HandshakeType != 11. Not a Certificate Message.\n')
+    return []
+
+  # The TLS certificate message encoding changed in TLS 1.3. Rather than
+  # require pasting in and parsing the whole handshake to discover the TLS
+  # version, just try parsing the message with both the old and new encodings.
+
+  # First try the old style certificate message:
+  try:
+    return decode_tls10_certificate_message(reader)
+  except (IndexError, RuntimeError):
+    tls10_traceback = traceback.format_exc()
+
+  # Restart the ByteReader and consume the HandshakeType byte again.
+  reader = ByteReader(certificate_message)
+  reader.consume_byte()
+  # Try the new style certificate message:
+  try:
+    return decode_tls13_certificate_message(reader)
+  except (IndexError, RuntimeError):
+    tls13_traceback = traceback.format_exc()
+
+  # Neither attempt succeeded, just dump some error info:
+  sys.stderr.write("Couldn't parse TLS certificate message\n")
+  sys.stderr.write("TLS1.0 parse attempt:\n%s\n" % tls10_traceback)
+  sys.stderr.write("TLS1.3 parse attempt:\n%s\n" % tls13_traceback)
+  sys.stderr.write("\n")
+
+  return []
 
 
 def extract_tls_certificate_message(netlog_text):

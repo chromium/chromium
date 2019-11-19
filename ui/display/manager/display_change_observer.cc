@@ -28,7 +28,7 @@
 #include "ui/display/types/display_snapshot.h"
 #include "ui/display/util/display_util.h"
 #include "ui/display/util/edid_parser.h"
-#include "ui/events/devices/input_device_manager.h"
+#include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/touchscreen_device.h"
 #include "ui/strings/grit/ui_strings.h"
 
@@ -45,8 +45,8 @@ struct DeviceScaleFactorDPIThreshold {
 // Update the list of zoom levels whenever a new device scale factor is added
 // here. See zoom level list in /ui/display/manager/display_util.cc
 const DeviceScaleFactorDPIThreshold kThresholdTableForInternal[] = {
-    {270.0f, 2.25f}, {220.0f, 2.0f}, {180.0f, 1.6f},
-    {150.0f, 1.25f}, {0.0f, 1.0f},
+    {300.f, 2.66666f}, {270.0f, 2.25f}, {230.0f, 2.0f}, {220.0f, 1.77777f},
+    {180.0f, 1.6f},    {150.0f, 1.25f}, {0.0f, 1.0f},
 };
 
 // Returns a list of display modes for the given |output| that doesn't exclude
@@ -161,11 +161,11 @@ DisplayChangeObserver::GetExternalManagedDisplayModeList(
 
 DisplayChangeObserver::DisplayChangeObserver(DisplayManager* display_manager)
     : display_manager_(display_manager) {
-  ui::InputDeviceManager::GetInstance()->AddObserver(this);
+  ui::DeviceDataManager::GetInstance()->AddObserver(this);
 }
 
 DisplayChangeObserver::~DisplayChangeObserver() {
-  ui::InputDeviceManager::GetInstance()->RemoveObserver(this);
+  ui::DeviceDataManager::GetInstance()->RemoveObserver(this);
 }
 
 MultipleDisplayState DisplayChangeObserver::GetStateForDisplayIds(
@@ -203,8 +203,7 @@ void DisplayChangeObserver::OnDisplayModeChanged(
   }
 
   display_manager_->touch_device_manager()->AssociateTouchscreens(
-      &displays,
-      ui::InputDeviceManager::GetInstance()->GetTouchscreenDevices());
+      &displays, ui::DeviceDataManager::GetInstance()->GetTouchscreenDevices());
   display_manager_->OnNativeDisplaysChanged(displays);
 
   // For the purposes of user activity detection, ignore synthetic mouse events
@@ -297,8 +296,9 @@ ManagedDisplayInfo DisplayChangeObserver::CreateManagedDisplayInfo(
   }
   new_info.set_year_of_manufacture(snapshot->year_of_manufacture());
 
+  new_info.set_panel_orientation(snapshot->panel_orientation());
   new_info.set_sys_path(snapshot->sys_path());
-  new_info.set_native(true);
+  new_info.set_from_native_platform(true);
 
   float device_scale_factor = 1.0f;
   // Sets dpi only if the screen size is not blacklisted.
@@ -309,8 +309,9 @@ ManagedDisplayInfo DisplayChangeObserver::CreateManagedDisplayInfo(
   constexpr gfx::Size k225DisplaySizeHack(3000, 2000);
 
   if (snapshot->type() == DISPLAY_CONNECTION_TYPE_INTERNAL) {
-    // TODO(oshima): This is a stopgap hack to deal with b/74845106.
-    // Remove this hack when it's resolved.
+    new_info.set_native(true);
+    // This is a stopgap hack to deal with b/74845106. Unfortunately, some old
+    // devices (like evt) does not have a firmware fix, so we need to keep this.
     if (mode_info->size() == k225DisplaySizeHack)
       device_scale_factor = 2.25f;
     else if (dpi)
@@ -332,6 +333,7 @@ ManagedDisplayInfo DisplayChangeObserver::CreateManagedDisplayInfo(
   if (dpi)
     new_info.set_device_dpi(dpi);
   new_info.set_color_space(snapshot->color_space());
+  new_info.set_bits_per_channel(snapshot->bits_per_channel());
 
   new_info.set_refresh_rate(mode_info->refresh_rate());
   new_info.set_is_interlaced(mode_info->is_interlaced());

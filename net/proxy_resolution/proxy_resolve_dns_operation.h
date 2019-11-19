@@ -7,6 +7,8 @@
 
 namespace net {
 
+// TODO(mmenke): Remove this enum in favor of
+// proxy_resolver.mojom.HostResolveOperation.
 enum class ProxyResolveDnsOperation {
   DNS_RESOLVE,
   DNS_RESOLVE_EX,

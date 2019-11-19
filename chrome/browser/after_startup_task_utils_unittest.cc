@@ -15,7 +15,7 @@
 #include "base/task_runner_util.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -70,10 +70,9 @@ class AfterStartupTaskTest : public testing::Test {
  public:
   AfterStartupTaskTest() {
     ui_thread_ = base::MakeRefCounted<WrappedTaskRunner>(
-        base::CreateSingleThreadTaskRunnerWithTraits(
-            {content::BrowserThread::UI}));
+        base::CreateSingleThreadTaskRunner({content::BrowserThread::UI}));
     background_sequence_ = base::MakeRefCounted<WrappedTaskRunner>(
-        base::CreateSequencedTaskRunnerWithTraits(base::TaskTraits()));
+        base::CreateSequencedTaskRunner(base::TaskTraits(base::ThreadPool())));
     AfterStartupTaskUtils::UnsafeResetForTesting();
   }
 
@@ -129,7 +128,7 @@ class AfterStartupTaskTest : public testing::Test {
     loop->Quit();
   }
 
-  content::TestBrowserThreadBundle browser_thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
 };
 
 TEST_F(AfterStartupTaskTest, IsStartupComplete) {

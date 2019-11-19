@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL importance attribute on module <script>s fetched by the preload scanner takes the correct effect on resource load priority assert_equals: low importance on module <script> lowers the priority to kLow expected 1 but got 3
-Harness: the test ran to completion.
-

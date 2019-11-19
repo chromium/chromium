@@ -29,12 +29,12 @@ const char kLocalConsentVersionKey[] = "version";
 const char kLocalConsentLocaleKey[] = "locale";
 
 std::unique_ptr<sync_pb::UserConsentSpecifics> CreateUserConsentSpecifics(
-    const std::string& account_id,
+    const CoreAccountId& account_id,
     const std::string& locale,
     base::Clock* clock) {
   std::unique_ptr<sync_pb::UserConsentSpecifics> specifics =
       std::make_unique<sync_pb::UserConsentSpecifics>();
-  specifics->set_account_id(account_id);
+  specifics->set_account_id(account_id.id);
   specifics->set_client_consent_time_usec(
       clock->Now().since_origin().InMicroseconds());
   specifics->set_locale(locale);
@@ -69,7 +69,7 @@ void ConsentAuditorImpl::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 }
 
 void ConsentAuditorImpl::RecordArcPlayConsent(
-    const std::string& account_id,
+    const CoreAccountId& account_id,
     const ArcPlayTermsOfServiceConsent& consent) {
   std::unique_ptr<sync_pb::UserConsentSpecifics> specifics =
       CreateUserConsentSpecifics(account_id, app_locale_, clock_);
@@ -81,7 +81,7 @@ void ConsentAuditorImpl::RecordArcPlayConsent(
 }
 
 void ConsentAuditorImpl::RecordArcGoogleLocationServiceConsent(
-    const std::string& account_id,
+    const CoreAccountId& account_id,
     const UserConsentTypes::ArcGoogleLocationServiceConsent& consent) {
   std::unique_ptr<sync_pb::UserConsentSpecifics> specifics =
       CreateUserConsentSpecifics(account_id, app_locale_, clock_);
@@ -94,7 +94,7 @@ void ConsentAuditorImpl::RecordArcGoogleLocationServiceConsent(
 }
 
 void ConsentAuditorImpl::RecordArcBackupAndRestoreConsent(
-    const std::string& account_id,
+    const CoreAccountId& account_id,
     const UserConsentTypes::ArcBackupAndRestoreConsent& consent) {
   std::unique_ptr<sync_pb::UserConsentSpecifics> specifics =
       CreateUserConsentSpecifics(account_id, app_locale_, clock_);
@@ -107,7 +107,7 @@ void ConsentAuditorImpl::RecordArcBackupAndRestoreConsent(
 }
 
 void ConsentAuditorImpl::RecordSyncConsent(
-    const std::string& account_id,
+    const CoreAccountId& account_id,
     const UserConsentTypes::SyncConsent& consent) {
   std::unique_ptr<sync_pb::UserConsentSpecifics> specifics =
       CreateUserConsentSpecifics(account_id, app_locale_, clock_);
@@ -118,20 +118,8 @@ void ConsentAuditorImpl::RecordSyncConsent(
   consent_sync_bridge_->RecordConsent(std::move(specifics));
 }
 
-void ConsentAuditorImpl::RecordUnifiedConsent(
-    const std::string& account_id,
-    const sync_pb::UserConsentTypes::UnifiedConsent& consent) {
-  std::unique_ptr<sync_pb::UserConsentSpecifics> specifics =
-      CreateUserConsentSpecifics(account_id, app_locale_, clock_);
-
-  sync_pb::UserConsentTypes::UnifiedConsent* unified_consent =
-      specifics->mutable_unified_consent();
-  unified_consent->CopyFrom(consent);
-  consent_sync_bridge_->RecordConsent(std::move(specifics));
-}
-
 void ConsentAuditorImpl::RecordAssistantActivityControlConsent(
-    const std::string& account_id,
+    const CoreAccountId& account_id,
     const sync_pb::UserConsentTypes::AssistantActivityControlConsent& consent) {
   std::unique_ptr<sync_pb::UserConsentSpecifics> specifics =
       CreateUserConsentSpecifics(account_id, app_locale_, clock_);

@@ -1,0 +1,32 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Use the <code>chrome.printing</code> API to send print jobs to printers
+// installed on Chromebook.
+[platforms=("chromeos")]
+namespace printing {
+  // Status of the print job.
+  enum JobStatus {
+    // Print job is received on Chrome side but was not processed yet.
+    PENDING,
+
+    // Print job is sent for printing.
+    IN_PROGRESS,
+
+    // Print job was interrupted due to some error.
+    FAILED,
+
+    // Print job was canceled by the user or via API.
+    CANCELED,
+
+    // Print job was printed without any errors.
+    PRINTED
+  };
+
+  interface Events {
+    // Event fired when the status of the job is changed.
+    // This is only fired for the jobs created by this extension.
+    static void onJobStatusChanged(DOMString jobId, JobStatus status);
+  };
+};

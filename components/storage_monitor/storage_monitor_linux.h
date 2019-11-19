@@ -48,9 +48,10 @@ class StorageMonitorLinux : public StorageMonitor {
 
  protected:
   // Gets device information given a |device_path| and |mount_point|.
-  using GetDeviceInfoCallback = base::Callback<std::unique_ptr<StorageInfo>(
-      const base::FilePath& device_path,
-      const base::FilePath& mount_point)>;
+  using GetDeviceInfoCallback =
+      base::RepeatingCallback<std::unique_ptr<StorageInfo>(
+          const base::FilePath& device_path,
+          const base::FilePath& mount_point)>;
 
   void SetGetDeviceInfoCallbackForTest(
       const GetDeviceInfoCallback& get_device_info_callback);
@@ -68,17 +69,17 @@ class StorageMonitorLinux : public StorageMonitor {
   };
 
   // Mapping of mount points to MountPointInfo.
-  typedef std::map<base::FilePath, MountPointInfo> MountMap;
+  using MountMap = std::map<base::FilePath, MountPointInfo>;
 
   // (mount point, priority)
   // For devices that are mounted to multiple mount points, this helps us track
   // which one we've notified system monitor about.
-  typedef std::map<base::FilePath, bool> ReferencedMountPoint;
+  using ReferencedMountPoint = std::map<base::FilePath, bool>;
 
   // (mount device, map of known mount points)
   // For each mount device, track the places it is mounted and which one (if
   // any) we have notified system monitor about.
-  typedef std::map<base::FilePath, ReferencedMountPoint> MountPriorityMap;
+  using MountPriorityMap = std::map<base::FilePath, ReferencedMountPoint>;
 
   // StorageMonitor implementation.
   bool GetStorageInfoForPath(const base::FilePath& path,
@@ -87,7 +88,7 @@ class StorageMonitorLinux : public StorageMonitor {
                    base::Callback<void(EjectStatus)> callback) override;
 
   // Called when the MtabWatcher has been created.
-  void OnMtabWatcherCreated(MtabWatcherLinux* watcher);
+  void OnMtabWatcherCreated(std::unique_ptr<MtabWatcherLinux> watcher);
 
   bool IsDeviceAlreadyMounted(const base::FilePath& mount_device) const;
 
@@ -125,7 +126,7 @@ class StorageMonitorLinux : public StorageMonitor {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::WeakPtrFactory<StorageMonitorLinux> weak_ptr_factory_;
+  base::WeakPtrFactory<StorageMonitorLinux> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(StorageMonitorLinux);
 };

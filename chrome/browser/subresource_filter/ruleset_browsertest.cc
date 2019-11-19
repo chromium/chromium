@@ -186,23 +186,41 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
                                       1);
 }
 
-IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest, LazyRulesetValidation) {
+class SubresourceFilterBrowserTestWithoutAdTagging
+    : public SubresourceFilterBrowserTest {
+ public:
+  SubresourceFilterBrowserTestWithoutAdTagging() {
+    feature_list_.InitAndDisableFeature(subresource_filter::kAdTagging);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTestWithoutAdTagging,
+                       LazyRulesetValidation) {
   // The ruleset shouldn't be validated until it's used, unless ad tagging is
   // enabled.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(subresource_filter::kAdTagging);
   SetRulesetToDisallowURLsWithPathSuffix("included_script.js");
   RulesetVerificationStatus dealer_status = GetRulesetVerification();
   EXPECT_EQ(RulesetVerificationStatus::kNotVerified, dealer_status);
 }
 
-IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
+class SubresourceFilterBrowserTestWithAdTagging
+    : public SubresourceFilterBrowserTest {
+ public:
+  SubresourceFilterBrowserTestWithAdTagging() {
+    feature_list_.InitAndEnableFeature(subresource_filter::kAdTagging);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTestWithAdTagging,
                        AdsTaggingImmediateRulesetValidation) {
   // When Ads Tagging is enabled, the ruleset should be validated as soon as
   // it's published.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(subresource_filter::kAdTagging);
-
   SetRulesetToDisallowURLsWithPathSuffix("included_script.js");
   RulesetVerificationStatus dealer_status = GetRulesetVerification();
   EXPECT_EQ(RulesetVerificationStatus::kIntact, dealer_status);

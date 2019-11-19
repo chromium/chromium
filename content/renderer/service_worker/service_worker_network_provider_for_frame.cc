@@ -9,30 +9,14 @@
 #include "content/common/service_worker/service_worker_utils.h"
 #include "content/public/common/origin_util.h"
 #include "content/public/renderer/render_frame_observer.h"
-#include "content/renderer/loader/request_extra_data.h"
+#include "content/renderer/loader/web_url_loader_impl.h"
 #include "content/renderer/render_frame_impl.h"
 #include "content/renderer/render_thread_impl.h"
 #include "content/renderer/service_worker/service_worker_provider_context.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
-#include "third_party/blink/public/common/service_worker/service_worker_utils.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 
 namespace content {
-
-namespace {
-// Returns whether it's possible for a document whose frame is a descendant of
-// |frame| to be a secure context, not considering scheme exceptions (since any
-// document can be a secure context if it has a scheme exception). See
-// Document::isSecureContextImpl for more details.
-bool IsFrameSecure(blink::WebFrame* frame) {
-  while (frame) {
-    if (!frame->GetSecurityOrigin().IsPotentiallyTrustworthy())
-      return false;
-    frame = frame->Parent();
-  }
-  return true;
-}
-}  // namespace
 
 class ServiceWorkerNetworkProviderForFrame::NewDocumentObserver
     : public RenderFrameObserver {
@@ -60,6 +44,10 @@ class ServiceWorkerNetworkProviderForFrame::NewDocumentObserver
     owner_->NotifyExecutionReady();
   }
 
+  void ReportFeatureUsage(blink::mojom::WebFeature feature) {
+    render_frame()->GetWebFrame()->BlinkFeatureUsageReport(feature);
+  }
+
   void OnDestruct() override {
     // Deletes |this|.
     owner_->observer_.reset();
@@ -73,48 +61,19 @@ class ServiceWorkerNetworkProviderForFrame::NewDocumentObserver
 std::unique_ptr<ServiceWorkerNetworkProviderForFrame>
 ServiceWorkerNetworkProviderForFrame::Create(
     RenderFrameImpl* frame,
-    int provider_id,
+    blink::mojom::ServiceWorkerProviderInfoForClientPtr provider_info,
     blink::mojom::ControllerServiceWorkerInfoPtr controller_info,
     scoped_refptr<network::SharedURLLoaderFactory> fallback_loader_factory) {
-  DCHECK(ServiceWorkerUtils::IsBrowserAssignedProviderId(provider_id));
-
-  // Ideally Document::IsSecureContext would be called here, but the document is
-  // not created yet, and due to redirects the URL may change. So pass
-  // is_parent_frame_secure to the browser process, so it can determine the
-  // context security when deciding whether to allow a service worker to control
-  // the document.
-  const bool is_parent_frame_secure =
-      IsFrameSecure(frame->GetWebFrame()->Parent());
+  DCHECK(provider_info);
 
   auto provider =
       base::WrapUnique(new ServiceWorkerNetworkProviderForFrame(frame));
-
-  auto host_info = blink::mojom::ServiceWorkerProviderHostInfo::New(
-      provider_id, frame->GetRoutingID(),
-      blink::mojom::ServiceWorkerProviderType::kForWindow,
-      is_parent_frame_secure, nullptr /* host_request */,
-      nullptr /* client_ptr_info */);
-  blink::mojom::ServiceWorkerContainerAssociatedRequest client_request =
-      mojo::MakeRequest(&host_info->client_ptr_info);
-  blink::mojom::ServiceWorkerContainerHostAssociatedPtrInfo host_ptr_info;
-  host_info->host_request = mojo::MakeRequest(&host_ptr_info);
-
   provider->context_ = base::MakeRefCounted<ServiceWorkerProviderContext>(
-      provider_id, blink::mojom::ServiceWorkerProviderType::kForWindow,
-      std::move(client_request), std::move(host_ptr_info),
-      std::move(controller_info), std::move(fallback_loader_factory));
+      blink::mojom::ServiceWorkerProviderType::kForWindow,
+      std::move(provider_info->client_receiver),
+      std::move(provider_info->host_remote), std::move(controller_info),
+      std::move(fallback_loader_factory));
 
-  if (ChildThreadImpl::current()) {
-    ChildThreadImpl::current()->channel()->GetRemoteAssociatedInterface(
-        &provider->dispatcher_host_);
-    provider->dispatcher_host_->OnProviderCreated(std::move(host_info));
-  } else {
-    // current() may be null in tests. Silently drop messages sent over
-    // ServiceWorkerContainerHost since we couldn't set it up correctly due to
-    // this test limitation. This way we don't crash when the associated
-    // interface ptr is used.
-    mojo::AssociateWithDisconnectedPipe(host_info->host_request.PassHandle());
-  }
   return provider;
 }
 
@@ -137,31 +96,7 @@ ServiceWorkerNetworkProviderForFrame::~ServiceWorkerNetworkProviderForFrame() {
 
 void ServiceWorkerNetworkProviderForFrame::WillSendRequest(
     blink::WebURLRequest& request) {
-  if (!request.GetExtraData())
-    request.SetExtraData(std::make_unique<RequestExtraData>());
-  auto* extra_data = static_cast<RequestExtraData*>(request.GetExtraData());
-  extra_data->set_service_worker_provider_id(provider_id());
-
-  // If the provider does not have a controller at this point, the renderer
-  // expects the request to never be handled by a service worker, so call
-  // SetSkipServiceWorker() with true to skip service workers here. Otherwise,
-  // a service worker that is in the process of becoming the controller (i.e.,
-  // via claim()) on the browser-side could handle the request and break the
-  // assumptions of the renderer.
-  if (request.GetFrameType() !=
-          network::mojom::RequestContextFrameType::kTopLevel &&
-      request.GetFrameType() !=
-          network::mojom::RequestContextFrameType::kNested &&
-      IsControlledByServiceWorker() ==
-          blink::mojom::ControllerServiceWorkerMode::kNoController) {
-    request.SetSkipServiceWorker(true);
-  }
-
-  // Inject this frame's fetch window id into the request. This is really only
-  // needed for subresource requests in S13nServiceWorker. For main resource
-  // requests or non-S13nSW case, the browser process sets the id on the
-  // request when dispatching the fetch event to the service worker. But it
-  // doesn't hurt to set it always.
+  // Inject this frame's fetch window id into the request.
   if (context())
     request.SetFetchWindowId(context()->fetch_request_window_id());
 }
@@ -173,11 +108,6 @@ ServiceWorkerNetworkProviderForFrame::CreateURLLoader(
         task_runner_handle) {
   // RenderThreadImpl is nullptr in some tests.
   if (!RenderThreadImpl::current())
-    return nullptr;
-
-  // S13nServiceWorker:
-  // We only install our own URLLoader if Servicification is enabled.
-  if (!blink::ServiceWorkerUtils::IsServicificationEnabled())
     return nullptr;
 
   // We need SubresourceLoaderFactory populated in order to create our own
@@ -199,22 +129,37 @@ ServiceWorkerNetworkProviderForFrame::CreateURLLoader(
   if (request.GetSkipServiceWorker())
     return nullptr;
 
+  // Record use counter for intercepting requests from opaque stylesheets.
+  // TODO(crbug.com/898497): Remove this feature usage once we have enough data.
+  if (observer_ && request.IsFromOriginDirtyStyleSheet()) {
+    observer_->ReportFeatureUsage(
+        blink::mojom::WebFeature::
+            kServiceWorkerInterceptedRequestFromOriginDirtyStyleSheet);
+  }
+
+  mojo::PendingRemote<mojom::KeepAliveHandle> keep_alive_handle;
+  if (request.GetKeepalive()) {
+    // This cast is safe because NewDocumentObserver is always created with a
+    // RenderFrameImpl.
+    auto* render_frame_impl =
+        static_cast<RenderFrameImpl*>(observer_->render_frame());
+    render_frame_impl->GetFrameHost()->IssueKeepAliveHandle(
+        keep_alive_handle.InitWithNewPipeAndPassReceiver());
+  }
+
   // Create our own SubresourceLoader to route the request to the controller
   // ServiceWorker.
-  // TODO(crbug.com/796425): Temporarily wrap the raw mojom::URLLoaderFactory
-  // pointer into SharedURLLoaderFactory.
   return std::make_unique<WebURLLoaderImpl>(
       RenderThreadImpl::current()->resource_dispatcher(),
-      std::move(task_runner_handle),
-      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-          context()->GetSubresourceLoaderFactory()));
+      std::move(task_runner_handle), context()->GetSubresourceLoaderFactory(),
+      std::move(keep_alive_handle));
 }
 
 blink::mojom::ControllerServiceWorkerMode
-ServiceWorkerNetworkProviderForFrame::IsControlledByServiceWorker() {
+ServiceWorkerNetworkProviderForFrame::GetControllerServiceWorkerMode() {
   if (!context())
     return blink::mojom::ControllerServiceWorkerMode::kNoController;
-  return context()->IsControlledByServiceWorker();
+  return context()->GetControllerServiceWorkerMode();
 }
 
 int64_t ServiceWorkerNetworkProviderForFrame::ControllerServiceWorkerID() {
@@ -227,12 +172,6 @@ void ServiceWorkerNetworkProviderForFrame::DispatchNetworkQuiet() {
   if (!context())
     return;
   context()->DispatchNetworkQuiet();
-}
-
-int ServiceWorkerNetworkProviderForFrame::provider_id() const {
-  if (!context_)
-    return kInvalidServiceWorkerProviderId;
-  return context_->provider_id();
 }
 
 void ServiceWorkerNetworkProviderForFrame::NotifyExecutionReady() {

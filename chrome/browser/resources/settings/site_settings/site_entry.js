@@ -115,8 +115,12 @@ Polymer({
    * @private
    */
   grouped_: function(siteGroup) {
-    if (siteGroup) {
-      return siteGroup.origins.length != 1;
+    if (!siteGroup) {
+      return false;
+    }
+    if (siteGroup.origins.length > 1 ||
+        siteGroup.numCookies > siteGroup.origins[0].numCookies) {
+      return true;
     }
     return false;
   },
@@ -164,7 +168,7 @@ Polymer({
       this.unlisten(this.button_, 'keydown', 'onButtonKeydown_');
     }
     this.button_ = /** @type Element */
-        (this.root.querySelector('#toggleButton *:not([hidden]) button'));
+        (this.root.querySelector('#toggleButton *:not([hidden])'));
     this.listen(assert(this.button_), 'keydown', 'onButtonKeydown_');
 
     if (!this.grouped_(siteGroup)) {
@@ -365,7 +369,7 @@ Polymer({
    */
   showOverflowMenu_: function(e) {
     this.fire('open-menu', {
-      target: Polymer.dom(e).localTarget,
+      target: e.target,
       index: this.listIndex,
       item: this.siteGroup,
     });

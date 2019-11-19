@@ -15,7 +15,6 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "components/data_use_measurement/core/data_use_user_data.h"
 #include "components/google/core/common/google_util.h"
 #include "components/prefs/pref_service.h"
 #include "net/base/load_flags.h"
@@ -26,9 +25,6 @@
 
 // No anonymous namespace, because const variables automatically get internal
 // linkage.
-const char kInvalidDataTypeError[] =
-    "Data from web resource server is missing or not valid JSON.";
-
 const char kUnexpectedJSONFormatError[] =
     "Data from web resource server does not have expected format.";
 
@@ -43,7 +39,6 @@ WebResourceService::WebResourceService(
     int cache_update_delay_ms,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const char* disable_network_switch,
-    const ParseJSONCallback& parse_json_callback,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     ResourceRequestAllowedNotifier::NetworkConnectionTrackerGetter
         network_connection_tracker_getter)
@@ -60,9 +55,7 @@ WebResourceService::WebResourceService(
       start_fetch_delay_ms_(start_fetch_delay_ms),
       cache_update_delay_ms_(cache_update_delay_ms),
       url_loader_factory_(url_loader_factory),
-      parse_json_callback_(parse_json_callback),
-      traffic_annotation_(traffic_annotation),
-      weak_ptr_factory_(this) {
+      traffic_annotation_(traffic_annotation) {
   resource_request_allowed_notifier_->Init(this, false /* leaky */);
   DCHECK(prefs);
 }
@@ -85,18 +78,17 @@ void WebResourceService::OnSimpleLoaderComplete(
     // (on Android in particular) we short-cut the full parsing in the case of
     // trivially "empty" JSONs.
     if (response_body->empty() || *response_body == "{}") {
-      OnUnpackFinished(std::make_unique<base::DictionaryValue>());
+      OnJsonParsed(data_decoder::DataDecoder::ValueOrError::Value(
+          base::Value(base::Value::Type::DICTIONARY)));
     } else {
-      parse_json_callback_.Run(*response_body,
-                               base::Bind(&WebResourceService::OnUnpackFinished,
-                                          weak_ptr_factory_.GetWeakPtr()),
-                               base::Bind(&WebResourceService::OnUnpackError,
-                                          weak_ptr_factory_.GetWeakPtr()));
+      data_decoder::DataDecoder::ParseJsonIsolated(
+          *response_body, base::BindOnce(&WebResourceService::OnJsonParsed,
+                                         weak_ptr_factory_.GetWeakPtr()));
     }
   } else {
     // Don't parse data if attempt to download was unsuccessful.
     // Stop loading new web resource data, and silently exit.
-    // We do not call parse_json_callback_, so we need to call EndFetch()
+    // We do not end up invoking OnJsonParsed(), so we need to call EndFetch()
     // ourselves.
     EndFetch();
   }
@@ -158,12 +150,8 @@ void WebResourceService::StartFetch() {
   resource_request->url = web_resource_server;
   // Do not let url fetcher affect existing state in system context
   // (by setting cookies, for example).
-  resource_request->load_flags = net::LOAD_DISABLE_CACHE |
-                                 net::LOAD_DO_NOT_SEND_COOKIES |
-                                 net::LOAD_DO_NOT_SAVE_COOKIES;
-  // TODO(https://crbug.com/808498): Re-add data use measurement once
-  // SimpleURLLoader supports it.
-  // ID=data_use_measurement::DataUseUserData::WEB_RESOURCE_SERVICE
+  resource_request->load_flags = net::LOAD_DISABLE_CACHE;
+  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   simple_url_loader_ = network::SimpleURLLoader::Create(
       std::move(resource_request), traffic_annotation_);
   simple_url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
@@ -176,24 +164,22 @@ void WebResourceService::EndFetch() {
   in_fetch_ = false;
 }
 
-void WebResourceService::OnUnpackFinished(std::unique_ptr<base::Value> value) {
-  if (!value) {
-    // Page information not properly read, or corrupted.
-    OnUnpackError(kInvalidDataTypeError);
+void WebResourceService::OnJsonParsed(
+    data_decoder::DataDecoder::ValueOrError result) {
+  if (!result.value) {
+    LOG(ERROR) << *result.error;
+    EndFetch();
     return;
   }
+
   const base::DictionaryValue* dict = nullptr;
-  if (!value->GetAsDictionary(&dict)) {
-    OnUnpackError(kUnexpectedJSONFormatError);
+  if (!result.value->GetAsDictionary(&dict)) {
+    LOG(ERROR) << kUnexpectedJSONFormatError;
+    EndFetch();
     return;
   }
   Unpack(*dict);
 
-  EndFetch();
-}
-
-void WebResourceService::OnUnpackError(const std::string& error_message) {
-  LOG(ERROR) << error_message;
   EndFetch();
 }
 

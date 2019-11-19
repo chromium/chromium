@@ -19,6 +19,7 @@
 
 #include "third_party/blink/renderer/core/layout/line/inline_box.h"
 
+#include "base/allocator/partition_allocator/partition_alloc.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_api_shim.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/hit_test_location.h"
@@ -29,10 +30,6 @@
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/platform/fonts/font_metrics.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
-
-#ifndef NDEBUG
-#include <stdio.h>
-#endif
 
 namespace blink {
 
@@ -95,15 +92,15 @@ String InlineBox::DebugName() const {
   return BoxName();
 }
 
-LayoutRect InlineBox::VisualRect() const {
+IntRect InlineBox::VisualRect() const {
   return GetLineLayoutItem().VisualRectForInlineBox();
 }
 
-LayoutRect InlineBox::PartialInvalidationVisualRect() const {
+IntRect InlineBox::PartialInvalidationVisualRect() const {
   return GetLineLayoutItem().PartialInvalidationVisualRectForInlineBox();
 }
 
-#ifndef NDEBUG
+#if DCHECK_IS_ON()
 void InlineBox::ShowTreeForThis() const {
   GetLineLayoutItem().ShowTreeForThis();
 }
@@ -131,9 +128,9 @@ void InlineBox::DumpLineTreeAndMark(StringBuilder& string_builder,
   if (this == marked_box2)
     string_inlinebox.Append(marked_label2);
   if (GetLineLayoutItem().IsEqual(obj))
-    string_inlinebox.Append("*");
+    string_inlinebox.Append('*');
   while ((int)string_inlinebox.length() < (depth * 2))
-    string_inlinebox.Append(" ");
+    string_inlinebox.Append(' ');
 
   DumpBox(string_inlinebox);
   string_builder.Append('\n');
@@ -141,18 +138,18 @@ void InlineBox::DumpLineTreeAndMark(StringBuilder& string_builder,
 }
 
 void InlineBox::DumpBox(StringBuilder& string_inlinebox) const {
-  string_inlinebox.Append(String::Format("%s %p", BoxName(), this));
+  string_inlinebox.AppendFormat("%s %p", BoxName(), this);
   while (string_inlinebox.length() < kShowTreeCharacterOffset)
-    string_inlinebox.Append(" ");
-  string_inlinebox.Append(
-      String::Format("\t%s %p {pos=%g,%g size=%g,%g} baseline=%i/%i",
-                     GetLineLayoutItem().DecoratedName().Ascii().data(),
-                     GetLineLayoutItem().DebugPointer(), X().ToFloat(),
-                     Y().ToFloat(), Width().ToFloat(), Height().ToFloat(),
-                     BaselinePosition(kAlphabeticBaseline).ToInt(),
-                     BaselinePosition(kIdeographicBaseline).ToInt()));
+    string_inlinebox.Append(' ');
+  string_inlinebox.AppendFormat(
+      "\t%s %p {pos=%g,%g size=%g,%g} baseline=%i/%i",
+      GetLineLayoutItem().DecoratedName().Ascii().c_str(),
+      GetLineLayoutItem().DebugPointer(), X().ToFloat(), Y().ToFloat(),
+      Width().ToFloat(), Height().ToFloat(),
+      BaselinePosition(kAlphabeticBaseline).ToInt(),
+      BaselinePosition(kIdeographicBaseline).ToInt());
 }
-#endif
+#endif  // DCHECK_IS_ON()
 
 LayoutUnit InlineBox::LogicalHeight() const {
   if (HasVirtualLogicalHeight())
@@ -243,22 +240,20 @@ void InlineBox::Paint(const PaintInfo& paint_info,
 }
 
 bool InlineBox::NodeAtPoint(HitTestResult& result,
-                            const HitTestLocation& location_in_container,
-                            const LayoutPoint& accumulated_offset,
+                            const HitTestLocation& hit_test_location,
+                            const PhysicalOffset& accumulated_offset,
                             LayoutUnit /* lineTop */,
                             LayoutUnit /* lineBottom */) {
   // Hit test all phases of replaced elements atomically, as though the replaced
   // element established its own stacking context. (See Appendix E.2, section
   // 6.4 on inline block/table elements in the CSS2.1 specification.)
-  LayoutPoint child_point = accumulated_offset;
-  // Faster than calling containingBlock().
-  if (Parent()->GetLineLayoutItem().HasFlippedBlocksWritingMode())
-    child_point =
-        GetLineLayoutItem().ContainingBlock().FlipForWritingModeForChild(
-            LineLayoutBox(GetLineLayoutItem()), child_point);
-
-  return GetLineLayoutItem().HitTestAllPhases(result, location_in_container,
-                                              child_point);
+  PhysicalOffset layout_item_accumulated_offset = accumulated_offset;
+  if (GetLineLayoutItem().IsBox()) {
+    layout_item_accumulated_offset +=
+        LineLayoutBox(GetLineLayoutItem()).PhysicalLocation();
+  }
+  return GetLineLayoutItem().HitTestAllPhases(result, hit_test_location,
+                                              layout_item_accumulated_offset);
 }
 
 const RootInlineBox& InlineBox::Root() const {
@@ -340,22 +335,10 @@ void InlineBox::ClearKnownToHaveNoOverflow() {
     Parent()->ClearKnownToHaveNoOverflow();
 }
 
-LayoutPoint InlineBox::PhysicalLocation() const {
+PhysicalOffset InlineBox::PhysicalLocation() const {
   LayoutRect rect(Location(), Size());
   FlipForWritingMode(rect);
-  return rect.Location();
-}
-
-void InlineBox::FlipForWritingMode(FloatRect& rect) const {
-  if (!UNLIKELY(GetLineLayoutItem().HasFlippedBlocksWritingMode()))
-    return;
-  Root().Block().FlipForWritingMode(rect);
-}
-
-FloatPoint InlineBox::FlipForWritingMode(const FloatPoint& point) const {
-  if (!UNLIKELY(GetLineLayoutItem().HasFlippedBlocksWritingMode()))
-    return point;
-  return Root().Block().FlipForWritingMode(point);
+  return PhysicalOffset(rect.Location());
 }
 
 void InlineBox::FlipForWritingMode(LayoutRect& rect) const {
@@ -370,13 +353,14 @@ LayoutPoint InlineBox::FlipForWritingMode(const LayoutPoint& point) const {
   return Root().Block().FlipForWritingMode(point);
 }
 
-void InlineBox::SetShouldDoFullPaintInvalidationRecursively() {
+void InlineBox::SetShouldDoFullPaintInvalidationForFirstLine() {
+  GetLineLayoutItem().StyleRef().ClearCachedPseudoElementStyles();
   GetLineLayoutItem().SetShouldDoFullPaintInvalidation();
   if (!IsInlineFlowBox())
     return;
   for (InlineBox* child = ToInlineFlowBox(this)->FirstChild(); child;
        child = child->NextOnLine())
-    child->SetShouldDoFullPaintInvalidationRecursively();
+    child->SetShouldDoFullPaintInvalidationForFirstLine();
 }
 
 void InlineBox::SetLineLayoutItemShouldDoFullPaintInvalidationIfNeeded() {
@@ -394,7 +378,7 @@ bool CanUseInlineBox(const LayoutObject& node) {
 
 }  // namespace blink
 
-#ifndef NDEBUG
+#if DCHECK_IS_ON()
 
 void showTree(const blink::InlineBox* b) {
   if (b)

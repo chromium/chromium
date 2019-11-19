@@ -47,6 +47,9 @@ class BluetoothDetailedView : public TrayDetailedView {
   // Sets the state of the toggle in the header.
   void SetToggleIsOn(bool is_on);
 
+  // views::View:
+  const char* GetClassName() const override;
+
  private:
   void CreateItems();
 

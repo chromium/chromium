@@ -27,8 +27,7 @@ BlobTaskProxy::BlobTaskProxy(
     BlobContextGetter blob_context_getter,
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner)
     : main_task_runner_(base::ThreadTaskRunnerHandle::Get()),
-      io_task_runner_(io_task_runner),
-      weak_ptr_factory_(this) {
+      io_task_runner_(io_task_runner) {
   // Unretained the raw pointer because owner on UI thread should destroy this
   // object on IO thread.
   io_task_runner_->PostTask(

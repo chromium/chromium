@@ -1,4 +1,10 @@
 <!DOCTYPE HTML>
+<script>
+if (window.internals) {
+    internals.useMockOverlayScrollbars();
+    internals.settings.setPreferCompositingToLCDTextEnabled(true);
+}
+</script>
 <style>
 #outer {
     position: absolute;
@@ -39,11 +45,6 @@
 }
 </style>
 <script>
-if (window.internals) {
-    internals.runtimeFlags.overlayScrollbarsEnabled = true;
-    internals.settings.setPreferCompositingToLCDTextEnabled(true);
-}
-
 if (window.testRunner)
     testRunner.dumpAsTextWithPixelResults();
 

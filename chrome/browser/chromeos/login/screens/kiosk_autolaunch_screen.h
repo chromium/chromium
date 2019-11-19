@@ -7,32 +7,40 @@
 
 #include <string>
 
+#include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "chrome/browser/chromeos/login/screens/base_screen.h"
-#include "chrome/browser/chromeos/login/screens/kiosk_autolaunch_screen_view.h"
 
 namespace chromeos {
 
+class KioskAutolaunchScreenView;
+
 // Representation independent class that controls screen showing auto launch
 // warning to users.
-class KioskAutolaunchScreen : public BaseScreen,
-                              public KioskAutolaunchScreenView::Delegate {
+class KioskAutolaunchScreen : public BaseScreen {
  public:
-  KioskAutolaunchScreen(BaseScreenDelegate* base_screen_delegate,
-                        KioskAutolaunchScreenView* view);
+  enum class Result { COMPLETED, CANCELED };
+
+  using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
+  KioskAutolaunchScreen(KioskAutolaunchScreenView* view,
+                        const ScreenExitCallback& exit_callback);
   ~KioskAutolaunchScreen() override;
+
+  // Called when screen is exited.
+  void OnExit(bool confirmed);
+
+  // This method is called, when view is being destroyed. Note, if Delegate
+  // is destroyed earlier then it has to call SetDelegate(nullptr).
+  void OnViewDestroyed(KioskAutolaunchScreenView* view);
 
   // BaseScreen implementation:
   void Show() override;
-  void Hide() override {}
-
-  // KioskAutolaunchScreenActor::Delegate implementation:
-  void OnExit(bool confirmed) override;
-  void OnViewDestroyed(KioskAutolaunchScreenView* view) override;
+  void Hide() override;
 
  private:
   KioskAutolaunchScreenView* view_;
+  ScreenExitCallback exit_callback_;
 
   DISALLOW_COPY_AND_ASSIGN(KioskAutolaunchScreen);
 };

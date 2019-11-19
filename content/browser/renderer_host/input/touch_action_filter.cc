@@ -104,7 +104,7 @@ TouchActionFilter::~TouchActionFilter() {}
 
 FilterGestureEventResult TouchActionFilter::FilterGestureEvent(
     WebGestureEvent* gesture_event) {
-  if (gesture_event->SourceDevice() != blink::kWebGestureDeviceTouchscreen)
+  if (gesture_event->SourceDevice() != blink::WebGestureDevice::kTouchscreen)
     return FilterGestureEventResult::kFilterGestureEventAllowed;
 
   if (compositor_touch_action_enabled_ && has_deferred_events_) {
@@ -138,11 +138,6 @@ FilterGestureEventResult TouchActionFilter::FilterGestureEvent(
             touch_action = white_listed_touch_action_;
           } else {
             gesture_sequence_.append("B");
-            static auto* crash_key = base::debug::AllocateCrashKeyString(
-                "scrollbegin-gestures", base::debug::CrashKeySize::Size256);
-            base::debug::SetCrashKeyString(crash_key, gesture_sequence_);
-            base::debug::DumpWithoutCrashing();
-            gesture_sequence_.clear();
             SetTouchAction(cc::kTouchActionAuto);
             touch_action = cc::kTouchActionAuto;
           }

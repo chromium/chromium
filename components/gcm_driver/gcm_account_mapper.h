@@ -75,7 +75,7 @@ class GCMAccountMapper : public GCMAppHandler {
   void CreateAndSendMessage(const AccountMapping& account_mapping);
 
   // Callback for sending a message.
-  void OnSendFinished(const std::string& account_id,
+  void OnSendFinished(const CoreAccountId& account_id,
                       const std::string& message_id,
                       GCMClient::Result result);
 
@@ -96,7 +96,7 @@ class GCMAccountMapper : public GCMAppHandler {
       const AccountMapping& account_mapping) const;
 
   // Finds an account mapping in |accounts_| by |account_id|.
-  AccountMapping* FindMappingByAccountId(const std::string& account_id);
+  AccountMapping* FindMappingByAccountId(const CoreAccountId& account_id);
   // Finds an account mapping in |accounts_| by |message_id|.
   // Returns iterator that can be used to delete the account.
   AccountMappings::iterator FindMappingByMessageId(
@@ -124,7 +124,7 @@ class GCMAccountMapper : public GCMAppHandler {
 
   bool initialized_;
 
-  base::WeakPtrFactory<GCMAccountMapper> weak_ptr_factory_;
+  base::WeakPtrFactory<GCMAccountMapper> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(GCMAccountMapper);
 };

@@ -20,6 +20,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/diagnostics/diagnostics_test.h"
 #include "chrome/common/channel_info.h"
@@ -296,9 +297,9 @@ class VersionTest : public DiagnosticsTest {
     std::string version_modifier = chrome::GetChannelName();
     if (!version_modifier.empty())
       current_version += " " + version_modifier;
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     current_version += " GCB";
-#endif  // defined(GOOGLE_CHROME_BUILD)
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
     RecordSuccess(current_version);
     return true;
   }

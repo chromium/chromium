@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/command_line.h"
 #include "base/json/json_reader.h"
 #include "components/payments/content/utility/payment_manifest_parser.h"
 #include "components/payments/content/web_app_manifest.h"
@@ -18,6 +19,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   std::string json_data(reinterpret_cast<const char*>(data), size);
   std::unique_ptr<base::Value> value =
       base::JSONReader::ReadDeprecated(json_data);
+
+  base::CommandLine::Init(0, nullptr);
 
   payments::ErrorLogger log;
   log.DisableInTest();

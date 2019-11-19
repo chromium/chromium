@@ -5,7 +5,8 @@
 package org.chromium.chrome.browser.widget.prefeditor;
 
 import android.content.Context;
-import android.support.annotation.Nullable;
+
+import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 
@@ -23,7 +24,7 @@ public abstract class EditorBase<T extends EditableOption> {
     /**
      * Sets the user interface to be used for editing contact information.
      *
-     * @param editorView The user interface to be used.
+     * @param editorDialog The user interface to be used.
      */
     public void setEditorDialog(EditorDialog editorDialog) {
         assert editorDialog != null;
@@ -36,11 +37,16 @@ public abstract class EditorBase<T extends EditableOption> {
      *
      * @param toEdit   The information to edit. Can be null if the user is adding new information
      *                 instead of editing an existing one.
-     * @param callback The callback to invoke with the complete and valid information. Can be
-     *                 invoked with null if the user clicked Cancel.
+     * @param doneCallback The callback to invoke when confirming the edit dialog, with the complete
+     *                     and valid information.
+     * @param cancelCallback The callback to invoke when cancelling the edit dialog. Can be called
+     *         with null (|toEdit| was null), incomplete information (|toEdit| was incomplete),
+     *         invalid information (|toEdit| was invalid), or even with complete and valid
+     *         information (|toEdit| was both complete and valid to begin with).
      */
-    protected void edit(@Nullable T toEdit, Callback<T> callback) {
-        assert callback != null;
+    protected void edit(@Nullable T toEdit, Callback<T> doneCallback, Callback<T> cancelCallback) {
+        assert doneCallback != null;
+        assert cancelCallback != null;
         assert mEditorDialog != null;
         assert mContext != null;
     }

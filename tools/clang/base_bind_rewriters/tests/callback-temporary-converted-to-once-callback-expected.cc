@@ -10,11 +10,18 @@ void Foo(base::OnceClosure) {}
 void Test() {
   base::OnceClosure cb = base::BindOnce([] {});
   Foo(base::BindOnce([] {}));
+  base::OnceClosure cb2 = base::BindOnce([] {});
+  Foo(base::BindOnce([] {}));
 
   using namespace base;
 
-  OnceClosure cb2 = BindOnce([] {});
+  OnceClosure cb3 = BindOnce([] {});
+  Foo(BindOnce([] {}));
+  OnceClosure cb4 = BindOnce([] {});
   Foo(BindOnce([] {}));
 
-  Closure cb3 = base::Bind([] {});
+  Closure cb5 = base::Bind([] {});
+  Closure cb6 = base::BindRepeating([] {});
+  RepeatingClosure cb7 = base::Bind([] {});
+  RepeatingClosure cb8 = base::BindRepeating([] {});
 }

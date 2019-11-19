@@ -6,12 +6,15 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <algorithm>
 
 #include <limits>
 
 #include "base/android/jni_android.h"
+#include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/stl_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -175,6 +178,21 @@ void CheckFloatConversion(
     env->GetFloatArrayRegion(floats.obj(), i, 1, &value);
     ASSERT_EQ(float_array[i], value);
   }
+}
+
+TEST(JniArray, ArrayOfStringArrayConversion) {
+  std::vector<std::vector<string16>> kArrays = {
+      {ASCIIToUTF16("a"), ASCIIToUTF16("f")},
+      {ASCIIToUTF16("a"), ASCIIToUTF16("")},
+      {},
+      {ASCIIToUTF16("")}};
+
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobjectArray> joa = ToJavaArrayOfStringArray(env, kArrays);
+
+  std::vector<std::vector<string16>> out;
+  Java2dStringArrayTo2dStringVector(env, joa, &out);
+  ASSERT_TRUE(kArrays == out);
 }
 
 TEST(JniArray, FloatConversions) {
@@ -350,6 +368,46 @@ TEST(JniArray, JavaArrayOfByteArrayToStringVector) {
     snprintf(text, sizeof text, "%d", i);
     EXPECT_STREQ(text, vec[i].c_str());
   }
+}
+
+TEST(JniArray, JavaArrayOfStringArrayToVectorOfStringVector) {
+  const std::vector<std::vector<string16>> kArrays = {
+      {ASCIIToUTF16("a"), ASCIIToUTF16("f")},
+      {ASCIIToUTF16("a"), ASCIIToUTF16("")},
+      {},
+      {ASCIIToUTF16("")}};
+
+  JNIEnv* env = AttachCurrentThread();
+
+  ScopedJavaLocalRef<jobjectArray> array(
+      env, env->NewObjectArray(kArrays.size(),
+                               env->FindClass("[Ljava/lang/String;"), NULL));
+  ASSERT_TRUE(array);
+
+  ScopedJavaLocalRef<jclass> string_clazz(env,
+                                          env->FindClass("java/lang/String"));
+  ASSERT_TRUE(string_clazz);
+
+  for (size_t i = 0; i < kArrays.size(); ++i) {
+    const std::vector<string16>& child_data = kArrays[i];
+
+    ScopedJavaLocalRef<jobjectArray> child_array(
+        env, env->NewObjectArray(child_data.size(), string_clazz.obj(), NULL));
+    ASSERT_TRUE(child_array);
+
+    for (size_t j = 0; j < child_data.size(); ++j) {
+      ScopedJavaLocalRef<jstring> item =
+          base::android::ConvertUTF16ToJavaString(env, child_data[j]);
+      env->SetObjectArrayElement(child_array.obj(), j, item.obj());
+      ASSERT_FALSE(HasException(env));
+    }
+    env->SetObjectArrayElement(array.obj(), i, child_array.obj());
+  }
+
+  std::vector<std::vector<string16>> vec;
+  Java2dStringArrayTo2dStringVector(env, array, &vec);
+
+  ASSERT_EQ(kArrays, vec);
 }
 
 TEST(JniArray, JavaArrayOfIntArrayToIntVector) {

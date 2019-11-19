@@ -57,8 +57,8 @@ void ClearMediaDrmLicenses(
   // Create a single thread task runner for MediaDrmBridge, for posting Java
   // callbacks immediately to avoid rentrancy issues.
   // TODO(yucliu): Remove task runner from MediaDrmBridge in this case.
-  base::CreateSingleThreadTaskRunnerWithTraits(
-      {base::TaskPriority::USER_VISIBLE, base::MayBlock()})
+  base::CreateSingleThreadTaskRunner(
+      {base::ThreadPool(), base::TaskPriority::USER_VISIBLE, base::MayBlock()})
       ->PostTaskAndReply(FROM_HERE,
                          base::BindOnce(&ClearMediaDrmLicensesBlocking,
                                         std::move(no_license_origin_ids)),

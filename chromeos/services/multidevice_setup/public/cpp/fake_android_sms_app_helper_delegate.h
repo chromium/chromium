@@ -24,6 +24,11 @@ class FakeAndroidSmsAppHelperDelegate
     return is_default_to_persist_cookie_set_;
   }
 
+  void set_has_app_been_manually_uninstalled(
+      bool has_app_been_manually_uninstalled) {
+    has_app_been_manually_uninstalled_ = has_app_been_manually_uninstalled;
+  }
+
   // Sets all booleans representing recorded actions to false.
   void Reset();
 
@@ -32,10 +37,12 @@ class FakeAndroidSmsAppHelperDelegate
   void SetUpAndroidSmsApp() override;
   void SetUpAndLaunchAndroidSmsApp() override;
   void TearDownAndroidSmsApp() override;
+  bool HasAppBeenManuallyUninstalledByUser() override;
 
   bool has_installed_app_ = false;
   bool has_launched_app_ = false;
   bool is_default_to_persist_cookie_set_ = false;
+  bool has_app_been_manually_uninstalled_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(FakeAndroidSmsAppHelperDelegate);
 };

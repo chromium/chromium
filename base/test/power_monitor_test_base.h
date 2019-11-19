@@ -14,7 +14,6 @@ class PowerMonitorTestSource : public PowerMonitorSource {
  public:
   PowerMonitorTestSource();
   ~PowerMonitorTestSource() override;
-  void Shutdown() override;
 
   void GeneratePowerStateEvent(bool on_battery_power);
   void GenerateSuspendEvent();

@@ -58,7 +58,7 @@ class EasyUnlockCreateKeysOperation {
 
   std::unique_ptr<ChallengeCreator> challenge_creator_;
 
-  base::WeakPtrFactory<EasyUnlockCreateKeysOperation> weak_ptr_factory_;
+  base::WeakPtrFactory<EasyUnlockCreateKeysOperation> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(EasyUnlockCreateKeysOperation);
 };

@@ -24,6 +24,7 @@ using offline_pages::TaskTestBase;
 namespace explore_sites {
 
 namespace {
+using InitializationStatus = ExploreSitesStore::InitializationStatus;
 
 const char kInsertActivitySql[] =
     "INSERT INTO activity (time, category_type, url) VALUES (?, ?, ?);";
@@ -151,7 +152,8 @@ void ClearActivitiesTaskTest::GetAllActivitiesDone(
 }
 
 TEST_F(ClearActivitiesTaskTest, StoreFailure) {
-  store()->SetInitializationStatusForTest(InitializationStatus::FAILURE);
+  store()->SetInitializationStatusForTesting(InitializationStatus::kFailure,
+                                             false);
   ClearActivities(kJanuary2017, kJune2017);
 
   // A database failure should be completed but return with an error.

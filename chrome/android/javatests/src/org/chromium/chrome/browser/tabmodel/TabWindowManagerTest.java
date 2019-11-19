@@ -20,6 +20,7 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.ChromeActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
+import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabWindowManager.TabModelSelectorFactory;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -294,7 +295,7 @@ public class TabWindowManagerTest {
         AsyncTabParamsManager.getAsyncTabParams().clear();
         final int asyncTabId = 123;
         final TabReparentingParams dummyParams =
-                new TabReparentingParams(new Tab(0, false, null), null, null);
+                new TabReparentingParams(new MockTab(0, false), null, null);
         Assert.assertFalse(manager.tabExistsInAnySelector(asyncTabId));
         AsyncTabParamsManager.add(asyncTabId, dummyParams);
         try {
@@ -329,7 +330,7 @@ public class TabWindowManagerTest {
         AsyncTabParamsManager.getAsyncTabParams().clear();
         final int asyncTabId = 123;
         final TabReparentingParams dummyParams =
-                new TabReparentingParams(new Tab(0, false, null), null, null);
+                new TabReparentingParams(new MockTab(0, false), null, null);
         Assert.assertNull(manager.getTabById(asyncTabId));
         AsyncTabParamsManager.add(asyncTabId, dummyParams);
         try {

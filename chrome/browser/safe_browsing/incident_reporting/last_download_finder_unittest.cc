@@ -45,7 +45,7 @@
 #include "components/safe_browsing/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/proto/csd.pb.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -286,7 +286,7 @@ class LastDownloadFinderTest : public testing::Test {
     callback.Run(std::unique_ptr<ClientIncidentReport_DownloadDetails>());
   }
 
-  content::TestBrowserThreadBundle browser_thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   int profile_number_;
 

@@ -5,9 +5,10 @@
 package org.chromium.chrome.browser.preferences.website;
 
 import android.net.Uri;
-import android.support.annotation.Nullable;
 
-import org.chromium.chrome.browser.UrlConstants;
+import androidx.annotation.Nullable;
+
+import org.chromium.chrome.browser.util.UrlConstants;
 import org.chromium.chrome.browser.util.UrlUtilities;
 import org.chromium.components.url_formatter.UrlFormatter;
 
@@ -103,8 +104,8 @@ public class WebsiteAddress implements Comparable<WebsiteAddress>, Serializable 
      * Returns true if {@code url} matches this WebsiteAddress's origin or host pattern.
      */
     public boolean matches(String url) {
-        return WebsitePreferenceBridge.nativeUrlMatchesContentSettingsPattern(url,
-                mOriginOrHostPattern);
+        return WebsitePreferenceBridgeJni.get().urlMatchesContentSettingsPattern(
+                url, mOriginOrHostPattern);
     }
 
     private String getDomainAndRegistry() {

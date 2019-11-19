@@ -5,6 +5,7 @@
 '''Constant definitions for GRIT.
 '''
 
+from __future__ import print_function
 
 # This is the Icelandic noun meaning "grit" and is used to check that our
 # input files are in the correct encoding.  The middle character gets encoded
@@ -15,3 +16,8 @@ ENCODING_CHECK = u'm\u00f6l'
 CONSTANT_LANGUAGE = 'x_constant'
 
 FAKE_BIDI = 'fake-bidi'
+
+# Magic number added to the header of resources brotli compressed by grit. Used
+# to easily identify resources as being brotli compressed. See
+# ui/base/resource/resource_bundle.h for decompression usage.
+BROTLI_CONST = b'\x1e\x9b'

@@ -19,7 +19,7 @@ class RelaunchNotificationControllerPlatformImpl
   RelaunchNotificationControllerPlatformImpl();
 
   // Shows the relaunch recommended notification if it is not already open.
-  void NotifyRelaunchRecommended(base::Time detection_time);
+  void NotifyRelaunchRecommended(base::Time detection_time, bool past_deadline);
 
   // Shows the relaunch required notification if it is not already open.
   void NotifyRelaunchRequired(base::Time deadline);

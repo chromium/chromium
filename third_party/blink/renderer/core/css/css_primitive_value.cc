@@ -21,15 +21,21 @@
 
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 
+#include <cmath>
+
 #include "build/build_config.h"
-#include "third_party/blink/renderer/core/css/css_calculation_value.h"
 #include "third_party/blink/renderer/core/css/css_markup.h"
+#include "third_party/blink/renderer/core/css/css_math_expression_node.h"
+#include "third_party/blink/renderer/core/css/css_math_function_value.h"
+#include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_resolution_units.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/css/css_value_pool.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
 
@@ -45,7 +51,6 @@ const int kMinValueForCssLength = INT_MIN / kFixedPointDenominator + 2;
 }  // namespace
 
 struct SameSizeAsCSSPrimitiveValue : CSSValue {
-  double num;
 };
 ASSERT_SIZE(CSSPrimitiveValue, SameSizeAsCSSPrimitiveValue);
 
@@ -89,181 +94,127 @@ CSSPrimitiveValue::UnitCategory CSSPrimitiveValue::UnitTypeToUnitCategory(
   }
 }
 
-CSSPrimitiveValue* CSSPrimitiveValue::Create(double value, UnitType type) {
-  // TODO(timloh): This looks wrong.
-  if (std::isinf(value))
-    value = 0;
-
-  if (value < 0 || value > CSSValuePool::kMaximumCacheableIntegerValue)
-    return MakeGarbageCollected<CSSPrimitiveValue>(value, type);
-
-  int int_value = clampTo<int>(value);
-  if (value != int_value)
-    return MakeGarbageCollected<CSSPrimitiveValue>(value, type);
-
-  CSSValuePool& pool = CssValuePool();
-  CSSPrimitiveValue* result = nullptr;
-  switch (type) {
-    case CSSPrimitiveValue::UnitType::kPixels:
-      result = pool.PixelCacheValue(int_value);
-      if (!result) {
-        result = pool.SetPixelCacheValue(
-            int_value, MakeGarbageCollected<CSSPrimitiveValue>(value, type));
-      }
-      return result;
-    case CSSPrimitiveValue::UnitType::kPercentage:
-      result = pool.PercentCacheValue(int_value);
-      if (!result) {
-        result = pool.SetPercentCacheValue(
-            int_value, MakeGarbageCollected<CSSPrimitiveValue>(value, type));
-      }
-      return result;
-    case CSSPrimitiveValue::UnitType::kNumber:
-    case CSSPrimitiveValue::UnitType::kInteger:
-      result = pool.NumberCacheValue(int_value);
-      if (!result)
-        result = pool.SetNumberCacheValue(
-            int_value, MakeGarbageCollected<CSSPrimitiveValue>(
-                           value, CSSPrimitiveValue::UnitType::kInteger));
-      return result;
-    default:
-      return MakeGarbageCollected<CSSPrimitiveValue>(value, type);
-  }
+bool CSSPrimitiveValue::IsCalculatedPercentageWithLength() const {
+  // TODO(crbug.com/979895): Move this function to |CSSMathFunctionValue|.
+  return IsCalculated() &&
+         To<CSSMathFunctionValue>(this)->Category() == kCalcPercentLength;
 }
 
-CSSPrimitiveValue::UnitType CSSPrimitiveValue::TypeWithCalcResolved() const {
-  if (GetType() != UnitType::kCalc)
-    return GetType();
-
-  switch (value_.calc->Category()) {
-    case kCalcAngle:
-      return UnitType::kDegrees;
-    case kCalcFrequency:
-      return UnitType::kHertz;
-    case kCalcNumber:
-      return UnitType::kNumber;
-    case kCalcPercent:
-      return UnitType::kPercentage;
-    case kCalcLength:
-      return UnitType::kPixels;
-    case kCalcPercentNumber:
-      return UnitType::kCalcPercentageWithNumber;
-    case kCalcPercentLength:
-      return UnitType::kCalcPercentageWithLength;
-    case kCalcLengthNumber:
-      return UnitType::kCalcLengthWithNumber;
-    case kCalcPercentLengthNumber:
-      return UnitType::kCalcPercentageWithLengthAndNumber;
-    case kCalcTime:
-      return UnitType::kMilliseconds;
-    case kCalcOther:
-      return UnitType::kUnknown;
-  }
-  return UnitType::kUnknown;
+bool CSSPrimitiveValue::IsResolution() const {
+  // TODO(crbug.com/983613): Either support math functions on resolutions; or
+  // provide a justification for not supporting it, and move this function to
+  // |CSSNumericLiteralValue|.
+  return IsNumericLiteralValue() &&
+         To<CSSNumericLiteralValue>(this)->IsResolution();
 }
 
-CSSPrimitiveValue::CSSPrimitiveValue(double num, UnitType type)
-    : CSSValue(kPrimitiveClass) {
-  Init(type);
-  DCHECK(std::isfinite(num));
-  value_.num = num;
+bool CSSPrimitiveValue::IsFlex() const {
+  // TODO(crbug.com/993136): Either support math functions on flexible lengths;
+  // or provide a justification for not supporting it, and move this function to
+  // |CSSNumericLiteralValue|.
+  return IsNumericLiteralValue() && To<CSSNumericLiteralValue>(this)->IsFlex();
 }
 
-CSSPrimitiveValue::CSSPrimitiveValue(const Length& length, float zoom)
-    : CSSValue(kPrimitiveClass) {
+bool CSSPrimitiveValue::IsAngle() const {
+  if (IsNumericLiteralValue())
+    return To<CSSNumericLiteralValue>(this)->IsAngle();
+  return To<CSSMathFunctionValue>(this)->IsAngle();
+}
+
+bool CSSPrimitiveValue::IsLength() const {
+  if (IsNumericLiteralValue())
+    return To<CSSNumericLiteralValue>(this)->IsLength();
+  return To<CSSMathFunctionValue>(this)->IsLength();
+}
+
+bool CSSPrimitiveValue::IsPx() const {
+  if (IsNumericLiteralValue())
+    return To<CSSNumericLiteralValue>(this)->IsPx();
+  return To<CSSMathFunctionValue>(this)->IsPx();
+}
+
+bool CSSPrimitiveValue::IsNumber() const {
+  if (IsNumericLiteralValue())
+    return To<CSSNumericLiteralValue>(this)->IsNumber();
+  return To<CSSMathFunctionValue>(this)->IsNumber();
+}
+
+bool CSSPrimitiveValue::IsInteger() const {
+  // TODO(crbug.com/931216): Support integer math functions properly.
+  return IsNumericLiteralValue() &&
+         To<CSSNumericLiteralValue>(this)->IsInteger();
+}
+
+bool CSSPrimitiveValue::IsPercentage() const {
+  if (IsNumericLiteralValue())
+    return To<CSSNumericLiteralValue>(this)->IsPercentage();
+  return To<CSSMathFunctionValue>(this)->IsPercentage();
+}
+
+bool CSSPrimitiveValue::IsTime() const {
+  if (IsNumericLiteralValue())
+    return To<CSSNumericLiteralValue>(this)->IsTime();
+  return To<CSSMathFunctionValue>(this)->IsTime();
+}
+
+bool CSSPrimitiveValue::IsComputationallyIndependent() const {
+  if (IsNumericLiteralValue())
+    return To<CSSNumericLiteralValue>(this)->IsComputationallyIndependent();
+  return To<CSSMathFunctionValue>(this)->IsComputationallyIndependent();
+}
+
+CSSPrimitiveValue::CSSPrimitiveValue(ClassType class_type)
+    : CSSValue(class_type) {}
+
+// static
+CSSPrimitiveValue* CSSPrimitiveValue::CreateFromLength(const Length& length,
+                                                       float zoom) {
   switch (length.GetType()) {
     case Length::kPercent:
-      Init(UnitType::kPercentage);
-      DCHECK(std::isfinite(length.Percent()));
-      value_.num = length.Percent();
-      break;
+      return CSSNumericLiteralValue::Create(length.Percent(),
+                                            UnitType::kPercentage);
     case Length::kFixed:
-      Init(UnitType::kPixels);
-      value_.num = length.Value() / zoom;
-      break;
+      return CSSNumericLiteralValue::Create(length.Value() / zoom,
+                                            UnitType::kPixels);
     case Length::kCalculated: {
       const CalculationValue& calc = length.GetCalculationValue();
-      if (calc.Pixels() && calc.Percent()) {
-        Init(CSSCalcValue::Create(CSSCalcValue::CreateExpressionNode(
-                                      calc.Pixels() / zoom, calc.Percent()),
-                                  calc.GetValueRange()));
-        break;
+      if (calc.IsExpression() || (calc.Pixels() && calc.Percent()))
+        return CSSMathFunctionValue::Create(length, zoom);
+      if (!calc.Pixels()) {
+        double num = calc.Percent();
+        if (num < 0 && calc.IsNonNegative())
+          num = 0;
+        return CSSNumericLiteralValue::Create(num, UnitType::kPercentage);
       }
-      if (calc.Percent()) {
-        Init(UnitType::kPercentage);
-        value_.num = calc.Percent();
-      } else {
-        Init(UnitType::kPixels);
-        value_.num = calc.Pixels() / zoom;
-      }
-      if (value_.num < 0 && calc.IsNonNegative())
-        value_.num = 0;
-      break;
+      double num = calc.Pixels() / zoom;
+      if (num < 0 && calc.IsNonNegative())
+        num = 0;
+      return CSSNumericLiteralValue::Create(num, UnitType::kPixels);
     }
-    case Length::kAuto:
-    case Length::kMinContent:
-    case Length::kMaxContent:
-    case Length::kFillAvailable:
-    case Length::kFitContent:
-    case Length::kExtendToZoom:
-    case Length::kDeviceWidth:
-    case Length::kDeviceHeight:
-    case Length::kMaxSizeNone:
-      NOTREACHED();
+    default:
       break;
   }
+  NOTREACHED();
+  return nullptr;
 }
-
-void CSSPrimitiveValue::Init(UnitType type) {
-  primitive_unit_type_ = static_cast<unsigned>(type);
-}
-
-void CSSPrimitiveValue::Init(CSSCalcValue* c) {
-  Init(UnitType::kCalc);
-  value_.calc = c;
-}
-
-CSSPrimitiveValue::~CSSPrimitiveValue() = default;
 
 double CSSPrimitiveValue::ComputeSeconds() const {
-  DCHECK(IsTime() ||
-         (IsCalculated() && CssCalcValue()->Category() == kCalcTime));
-  UnitType current_type =
-      IsCalculated() ? CssCalcValue()->ExpressionNode()->TypeWithCalcResolved()
-                     : GetType();
-  if (current_type == UnitType::kSeconds)
-    return GetDoubleValue();
-  if (current_type == UnitType::kMilliseconds)
-    return GetDoubleValue() / 1000;
-  NOTREACHED();
-  return 0;
+  if (IsCalculated())
+    return To<CSSMathFunctionValue>(this)->ComputeSeconds();
+  return To<CSSNumericLiteralValue>(this)->ComputeSeconds();
 }
 
 double CSSPrimitiveValue::ComputeDegrees() const {
-  DCHECK(IsAngle() ||
-         (IsCalculated() && CssCalcValue()->Category() == kCalcAngle));
-  UnitType current_type =
-      IsCalculated() ? CssCalcValue()->ExpressionNode()->TypeWithCalcResolved()
-                     : GetType();
-  switch (current_type) {
-    case UnitType::kDegrees:
-      return GetDoubleValue();
-    case UnitType::kRadians:
-      return rad2deg(GetDoubleValue());
-    case UnitType::kGradians:
-      return grad2deg(GetDoubleValue());
-    case UnitType::kTurns:
-      return turn2deg(GetDoubleValue());
-    default:
-      NOTREACHED();
-      return 0;
-  }
+  if (IsCalculated())
+    return To<CSSMathFunctionValue>(this)->ComputeDegrees();
+  return To<CSSNumericLiteralValue>(this)->ComputeDegrees();
 }
 
 double CSSPrimitiveValue::ComputeDotsPerPixel() const {
-  UnitType current_type = TypeWithCalcResolved();
-  DCHECK(IsResolution(current_type));
-  return GetDoubleValue() * ConversionToCanonicalUnitsScaleFactor(current_type);
+  // TODO(crbug.com/983613): Either support math functions on resolutions; or
+  // provide a justification for not supporting it.
+  DCHECK(IsNumericLiteralValue());
+  return To<CSSNumericLiteralValue>(this)->ComputeDotsPerPixel();
 }
 
 template <>
@@ -321,28 +272,28 @@ double CSSPrimitiveValue::ComputeLength(
 
 double CSSPrimitiveValue::ComputeLengthDouble(
     const CSSToLengthConversionData& conversion_data) const {
-  if (GetType() == UnitType::kCalc)
-    return value_.calc->ComputeLengthPx(conversion_data);
-  return conversion_data.ZoomedComputedPixels(GetDoubleValue(), GetType());
+  if (IsCalculated())
+    return To<CSSMathFunctionValue>(this)->ComputeLengthPx(conversion_data);
+  return To<CSSNumericLiteralValue>(this)->ComputeLengthPx(conversion_data);
 }
 
-void CSSPrimitiveValue::AccumulateLengthArray(CSSLengthArray& length_array,
+bool CSSPrimitiveValue::AccumulateLengthArray(CSSLengthArray& length_array,
                                               double multiplier) const {
   DCHECK_EQ(length_array.values.size(),
             static_cast<unsigned>(kLengthUnitTypeCount));
-
-  if (GetType() == UnitType::kCalc) {
-    CssCalcValue()->AccumulateLengthArray(length_array, multiplier);
-    return;
+  if (IsCalculated()) {
+    return To<CSSMathFunctionValue>(this)->AccumulateLengthArray(length_array,
+                                                                 multiplier);
   }
+  return To<CSSNumericLiteralValue>(this)->AccumulateLengthArray(length_array,
+                                                                 multiplier);
+}
 
-  LengthUnitType length_type;
-  bool conversion_success = UnitTypeToLengthUnitType(GetType(), length_type);
-  DCHECK(conversion_success);
-  length_array.values[length_type] +=
-      value_.num * ConversionToCanonicalUnitsScaleFactor(GetType()) *
-      multiplier;
-  length_array.type_flags.Set(length_type);
+void CSSPrimitiveValue::AccumulateLengthUnitTypes(
+    LengthTypeFlags& types) const {
+  if (IsCalculated())
+    return To<CSSMathFunctionValue>(this)->AccumulateLengthUnitTypes(types);
+  To<CSSNumericLiteralValue>(this)->AccumulateLengthUnitTypes(types);
 }
 
 double CSSPrimitiveValue::ConversionToCanonicalUnitsScaleFactor(
@@ -405,14 +356,24 @@ Length CSSPrimitiveValue::ConvertToLength(
     const CSSToLengthConversionData& conversion_data) const {
   if (IsLength())
     return ComputeLength<Length>(conversion_data);
-  if (IsPercentage())
-    return Length::Percent(GetDoubleValue());
+  if (IsPercentage()) {
+    if (IsNumericLiteralValue() ||
+        !To<CSSMathFunctionValue>(this)->AllowsNegativePercentageReference()) {
+      return Length::Percent(GetDoubleValue());
+    }
+  }
   DCHECK(IsCalculated());
-  return Length(CssCalcValue()->ToCalcValue(conversion_data));
+  return To<CSSMathFunctionValue>(this)->ConvertToLength(conversion_data);
 }
 
 double CSSPrimitiveValue::GetDoubleValue() const {
-  return GetType() != UnitType::kCalc ? value_.num : value_.calc->DoubleValue();
+  return IsCalculated() ? To<CSSMathFunctionValue>(this)->DoubleValue()
+                        : To<CSSNumericLiteralValue>(this)->DoubleValue();
+}
+
+bool CSSPrimitiveValue::IsZero() const {
+  return IsCalculated() ? To<CSSMathFunctionValue>(this)->IsZero()
+                        : To<CSSNumericLiteralValue>(this)->IsZero();
 }
 
 CSSPrimitiveValue::UnitType CSSPrimitiveValue::CanonicalUnitTypeForCategory(
@@ -516,17 +477,6 @@ CSSPrimitiveValue::UnitType CSSPrimitiveValue::LengthUnitTypeToUnitType(
   return CSSPrimitiveValue::UnitType::kUnknown;
 }
 
-static String FormatNumber(double number, const char* suffix) {
-#if defined(OS_WIN) && _MSC_VER < 1900
-  unsigned oldFormat = _set_output_format(_TWO_DIGIT_EXPONENT);
-#endif
-  String result = String::Format("%.6g%s", number, suffix);
-#if defined(OS_WIN) && _MSC_VER < 1900
-  _set_output_format(oldFormat);
-#endif
-  return result;
-}
-
 const char* CSSPrimitiveValue::UnitTypeToString(UnitType type) {
   switch (type) {
     case UnitType::kNumber:
@@ -590,134 +540,20 @@ const char* CSSPrimitiveValue::UnitTypeToString(UnitType type) {
       return "vmin";
     case UnitType::kViewportMax:
       return "vmax";
-    case UnitType::kUnknown:
-    case UnitType::kCalc:
-    case UnitType::kCalcPercentageWithNumber:
-    case UnitType::kCalcPercentageWithLength:
-    case UnitType::kCalcLengthWithNumber:
-    case UnitType::kCalcPercentageWithLengthAndNumber:
+    default:
       break;
-  };
+  }
   NOTREACHED();
   return "";
 }
 
 String CSSPrimitiveValue::CustomCSSText() const {
-  String text;
-  switch (GetType()) {
-    case UnitType::kUnknown:
-      // FIXME
-      break;
-    case UnitType::kInteger:
-      text = String::Format("%d", GetIntValue());
-      break;
-    case UnitType::kNumber:
-    case UnitType::kPercentage:
-    case UnitType::kEms:
-    case UnitType::kQuirkyEms:
-    case UnitType::kExs:
-    case UnitType::kRems:
-    case UnitType::kChs:
-    case UnitType::kPixels:
-    case UnitType::kCentimeters:
-    case UnitType::kDotsPerPixel:
-    case UnitType::kDotsPerInch:
-    case UnitType::kDotsPerCentimeter:
-    case UnitType::kMillimeters:
-    case UnitType::kQuarterMillimeters:
-    case UnitType::kInches:
-    case UnitType::kPoints:
-    case UnitType::kPicas:
-    case UnitType::kUserUnits:
-    case UnitType::kDegrees:
-    case UnitType::kRadians:
-    case UnitType::kGradians:
-    case UnitType::kMilliseconds:
-    case UnitType::kSeconds:
-    case UnitType::kHertz:
-    case UnitType::kKilohertz:
-    case UnitType::kTurns:
-    case UnitType::kFraction:
-    case UnitType::kViewportWidth:
-    case UnitType::kViewportHeight:
-    case UnitType::kViewportMin:
-    case UnitType::kViewportMax:
-      text = FormatNumber(value_.num, UnitTypeToString(GetType()));
-      break;
-    case UnitType::kCalc:
-      text = value_.calc->CustomCSSText();
-      break;
-    case UnitType::kCalcPercentageWithNumber:
-    case UnitType::kCalcPercentageWithLength:
-    case UnitType::kCalcLengthWithNumber:
-    case UnitType::kCalcPercentageWithLengthAndNumber:
-      NOTREACHED();
-      break;
-  }
-
-  return text;
-}
-
-bool CSSPrimitiveValue::Equals(const CSSPrimitiveValue& other) const {
-  if (GetType() != other.GetType())
-    return false;
-
-  switch (GetType()) {
-    case UnitType::kUnknown:
-      return false;
-    case UnitType::kNumber:
-    case UnitType::kInteger:
-    case UnitType::kPercentage:
-    case UnitType::kEms:
-    case UnitType::kExs:
-    case UnitType::kRems:
-    case UnitType::kPixels:
-    case UnitType::kCentimeters:
-    case UnitType::kDotsPerPixel:
-    case UnitType::kDotsPerInch:
-    case UnitType::kDotsPerCentimeter:
-    case UnitType::kMillimeters:
-    case UnitType::kQuarterMillimeters:
-    case UnitType::kInches:
-    case UnitType::kPoints:
-    case UnitType::kPicas:
-    case UnitType::kUserUnits:
-    case UnitType::kDegrees:
-    case UnitType::kRadians:
-    case UnitType::kGradians:
-    case UnitType::kMilliseconds:
-    case UnitType::kSeconds:
-    case UnitType::kHertz:
-    case UnitType::kKilohertz:
-    case UnitType::kTurns:
-    case UnitType::kViewportWidth:
-    case UnitType::kViewportHeight:
-    case UnitType::kViewportMin:
-    case UnitType::kViewportMax:
-    case UnitType::kFraction:
-      return value_.num == other.value_.num;
-    case UnitType::kCalc:
-      return value_.calc && other.value_.calc &&
-             value_.calc->Equals(*other.value_.calc);
-    case UnitType::kChs:
-    case UnitType::kCalcPercentageWithNumber:
-    case UnitType::kCalcPercentageWithLength:
-    case UnitType::kCalcLengthWithNumber:
-    case UnitType::kCalcPercentageWithLengthAndNumber:
-    case UnitType::kQuirkyEms:
-      return false;
-  }
-  return false;
+  if (IsCalculated())
+    return To<CSSMathFunctionValue>(this)->CustomCSSText();
+  return To<CSSNumericLiteralValue>(this)->CustomCSSText();
 }
 
 void CSSPrimitiveValue::TraceAfterDispatch(blink::Visitor* visitor) {
-  switch (GetType()) {
-    case UnitType::kCalc:
-      visitor->Trace(value_.calc);
-      break;
-    default:
-      break;
-  }
   CSSValue::TraceAfterDispatch(visitor);
 }
 

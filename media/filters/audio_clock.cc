@@ -51,13 +51,6 @@ void AudioClock::WroteAudio(int frames_written,
   PushBufferedAudioData(frames_requested - frames_written, 0.0);
   PopBufferedAudioData(frames_played);
 
-  // Trying to track down AudioClock crash, http://crbug.com/674856.
-  // It may be that we crash due to running out of memory. |buffered_| should
-  // never come close to 1000 elements in size. In most cases it should have
-  // just one entry, though additional entries are added when playback rate
-  // changes.
-  CHECK_LT(buffered_.size(), 1000U);
-
   // Update our front and back timestamps.  The back timestamp is considered the
   // authoritative source of truth, so base the front timestamp on range of data
   // buffered.  Doing so avoids accumulation errors on the front timestamp.

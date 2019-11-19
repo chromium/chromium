@@ -156,7 +156,7 @@ class MojoCdmVideoFrame : public VideoFrameImpl {
 
 }  // namespace
 
-MojoCdmAllocator::MojoCdmAllocator() : weak_ptr_factory_(this) {}
+MojoCdmAllocator::MojoCdmAllocator() {}
 
 MojoCdmAllocator::~MojoCdmAllocator() = default;
 

@@ -60,8 +60,6 @@ namespace blink {
 InternalSettings::Backup::Backup(Settings* settings)
     : original_csp_(RuntimeEnabledFeatures::
                         ExperimentalContentSecurityPolicyFeaturesEnabled()),
-      original_overlay_scrollbars_enabled_(
-          RuntimeEnabledFeatures::OverlayScrollbarsEnabled()),
       original_editing_behavior_(settings->GetEditingBehaviorType()),
       original_text_autosizing_enabled_(settings->TextAutosizingEnabled()),
       original_text_autosizing_window_size_override_(
@@ -70,7 +68,6 @@ InternalSettings::Backup::Backup(Settings* settings)
           settings->GetAccessibilityFontScaleFactor()),
       original_media_type_override_(settings->GetMediaTypeOverride()),
       original_display_mode_override_(settings->GetDisplayModeOverride()),
-      original_mock_scrollbars_enabled_(settings->MockScrollbarsEnabled()),
       original_mock_gesture_tap_highlights_enabled_(
           settings->GetMockGestureTapHighlightsEnabled()),
       lang_attribute_aware_form_control_ui_enabled_(
@@ -84,8 +81,6 @@ InternalSettings::Backup::Backup(Settings* settings)
 void InternalSettings::Backup::RestoreTo(Settings* settings) {
   RuntimeEnabledFeatures::SetExperimentalContentSecurityPolicyFeaturesEnabled(
       original_csp_);
-  RuntimeEnabledFeatures::SetOverlayScrollbarsEnabled(
-      original_overlay_scrollbars_enabled_);
   settings->SetEditingBehaviorType(original_editing_behavior_);
   settings->SetTextAutosizingEnabled(original_text_autosizing_enabled_);
   settings->SetTextAutosizingWindowSizeOverride(
@@ -94,7 +89,6 @@ void InternalSettings::Backup::RestoreTo(Settings* settings) {
       original_accessibility_font_scale_factor_);
   settings->SetMediaTypeOverride(original_media_type_override_);
   settings->SetDisplayModeOverride(original_display_mode_override_);
-  settings->SetMockScrollbarsEnabled(original_mock_scrollbars_enabled_);
   settings->SetMockGestureTapHighlightsEnabled(
       original_mock_gesture_tap_highlights_enabled_);
   RuntimeEnabledFeatures::SetLangAttributeAwareFormControlUIEnabled(
@@ -115,13 +109,12 @@ InternalSettings* InternalSettings::From(Page& page) {
   }
   return supplement;
 }
-const char InternalSettings::kSupplementName[] = "InternalSettings";
 
 InternalSettings::~InternalSettings() = default;
 
 InternalSettings::InternalSettings(Page& page)
     : InternalSettingsGenerated(&page),
-      Supplement<Page>(page),
+      InternalSettingsPageSupplementBase(page),
       backup_(&page.GetSettings()) {}
 
 void InternalSettings::ResetToConsistentState() {
@@ -137,13 +130,6 @@ Settings* InternalSettings::GetSettings() const {
   if (!GetPage())
     return nullptr;
   return &GetPage()->GetSettings();
-}
-
-void InternalSettings::setMockScrollbarsEnabled(
-    bool enabled,
-    ExceptionState& exception_state) {
-  InternalSettingsGuardForSettings();
-  GetSettings()->SetMockScrollbarsEnabled(enabled);
 }
 
 void InternalSettings::setHideScrollbars(bool enabled,
@@ -400,15 +386,15 @@ void InternalSettings::setDisplayModeOverride(const String& display_mode,
   InternalSettingsGuardForSettings();
   String token = display_mode.StripWhiteSpace();
 
-  WebDisplayMode mode = kWebDisplayModeBrowser;
+  auto mode = blink::mojom::DisplayMode::kBrowser;
   if (token == "browser") {
-    mode = kWebDisplayModeBrowser;
+    mode = blink::mojom::DisplayMode::kBrowser;
   } else if (token == "minimal-ui") {
-    mode = kWebDisplayModeMinimalUi;
+    mode = blink::mojom::DisplayMode::kMinimalUi;
   } else if (token == "standalone") {
-    mode = kWebDisplayModeStandalone;
+    mode = blink::mojom::DisplayMode::kStandalone;
   } else if (token == "fullscreen") {
-    mode = kWebDisplayModeFullscreen;
+    mode = blink::mojom::DisplayMode::kFullscreen;
   } else {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,
@@ -549,12 +535,11 @@ void InternalSettings::setAutoplayPolicy(const String& policy_str,
   GetSettings()->SetAutoplayPolicy(policy);
 }
 
-void InternalSettings::PrepareForLeakDetection() {
-  // Prepares for leak detection by removing all InternalSetting objects from
-  // Pages.
-  for (Page* page : Page::OrdinaryPages()) {
-    page->RemoveSupplement<InternalSettings>();
-  }
+void InternalSettings::setUniversalAccessFromFileURLs(
+    bool enabled,
+    ExceptionState& exception_state) {
+  InternalSettingsGuardForSettings();
+  GetSettings()->SetAllowUniversalAccessFromFileURLs(enabled);
 }
 
 }  // namespace blink

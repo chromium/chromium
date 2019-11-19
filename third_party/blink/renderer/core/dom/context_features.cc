@@ -42,7 +42,7 @@ const char ContextFeatures::kSupplementName[] = "ContextFeatures";
 ContextFeatures& ContextFeatures::DefaultSwitch() {
   DEFINE_STATIC_LOCAL(
       Persistent<ContextFeatures>, instance,
-      (ContextFeatures::Create(ContextFeaturesClient::Empty())));
+      (MakeGarbageCollected<ContextFeatures>(ContextFeaturesClient::Empty())));
   return *instance;
 }
 
@@ -62,7 +62,8 @@ bool ContextFeatures::MutationEventsEnabled(Document* document) {
 
 void ProvideContextFeaturesTo(Page& page,
                               std::unique_ptr<ContextFeaturesClient> client) {
-  Supplement<Page>::ProvideTo(page, ContextFeatures::Create(std::move(client)));
+  Supplement<Page>::ProvideTo(
+      page, MakeGarbageCollected<ContextFeatures>(std::move(client)));
 }
 
 void ProvideContextFeaturesToDocumentFrom(Document& document, Page& page) {

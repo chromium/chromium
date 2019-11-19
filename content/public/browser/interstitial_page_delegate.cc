@@ -5,8 +5,7 @@
 #include "content/public/browser/interstitial_page_delegate.h"
 
 namespace content {
-InterstitialPageDelegate::TypeID InterstitialPageDelegate::GetTypeForTesting()
-    const {
+InterstitialPageDelegate::TypeID InterstitialPageDelegate::GetTypeForTesting() {
   return nullptr;
 }
 

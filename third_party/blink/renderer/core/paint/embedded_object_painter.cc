@@ -26,7 +26,7 @@ static const float kReplacementTextTextOpacity = 0.55f;
 
 static Font ReplacementTextFont() {
   FontDescription font_description;
-  LayoutTheme::GetTheme().SystemFont(CSSValueWebkitSmallControl,
+  LayoutTheme::GetTheme().SystemFont(CSSValueID::kWebkitSmallControl,
                                      font_description);
   font_description.SetWeight(BoldWeightValue());
   font_description.SetComputedSize(font_description.SpecifiedSize());
@@ -36,7 +36,7 @@ static Font ReplacementTextFont() {
 }
 
 void EmbeddedObjectPainter::PaintReplaced(const PaintInfo& paint_info,
-                                          const LayoutPoint& paint_offset) {
+                                          const PhysicalOffset& paint_offset) {
   if (!layout_embedded_object_.ShowsUnavailablePluginIndicator()) {
     EmbeddedContentPainter(layout_embedded_object_)
         .PaintReplaced(paint_info, paint_offset);
@@ -51,8 +51,8 @@ void EmbeddedObjectPainter::PaintReplaced(const PaintInfo& paint_info,
           context, layout_embedded_object_, paint_info.phase))
     return;
 
-  LayoutRect content_rect(layout_embedded_object_.PhysicalContentBoxRect());
-  content_rect.MoveBy(paint_offset);
+  PhysicalRect content_rect = layout_embedded_object_.PhysicalContentBoxRect();
+  content_rect.Move(paint_offset);
   DrawingRecorder recorder(context, layout_embedded_object_, paint_info.phase);
 
   Font font = ReplacementTextFont();
@@ -65,13 +65,13 @@ void EmbeddedObjectPainter::PaintReplaced(const PaintInfo& paint_info,
   FloatSize text_geometry(font.Width(text_run),
                           font_data->GetFontMetrics().Height());
 
-  LayoutRect background_rect(
-      0, 0,
-      text_geometry.Width() +
-          2 * kReplacementTextRoundedRectLeftRightTextMargin,
-      kReplacementTextRoundedRectHeight);
-  background_rect.Move(content_rect.Center() - background_rect.Center());
-  background_rect = LayoutRect(PixelSnappedIntRect(background_rect));
+  PhysicalRect background_rect(
+      LayoutUnit(), LayoutUnit(),
+      LayoutUnit(text_geometry.Width() +
+                 2 * kReplacementTextRoundedRectLeftRightTextMargin),
+      LayoutUnit(kReplacementTextRoundedRectHeight));
+  background_rect.offset += content_rect.Center() - background_rect.Center();
+  background_rect = PhysicalRect(PixelSnappedIntRect(background_rect));
   Path rounded_background_rect;
   FloatRect float_background_rect(background_rect);
   rounded_background_rect.AddRoundedRect(

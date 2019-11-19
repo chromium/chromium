@@ -11,7 +11,7 @@
 #include "base/files/file_util.h"
 #include "base/run_loop.h"
 #include "base/test/bind_test_util.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -100,12 +100,11 @@ class MockPrivetURLLoaderDelegate : public PrivetURLLoader::Delegate {
 class PrivetURLLoaderTest : public ::testing::Test {
  public:
   PrivetURLLoaderTest()
-      : scoped_task_environment_(
-            base::test::ScopedTaskEnvironment::MainThreadType::IO),
+      : task_environment_(base::test::TaskEnvironment::MainThreadType::IO),
         test_shared_url_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_)),
-        delegate_(scoped_task_environment_.GetMainThreadTaskRunner()) {
+        delegate_(task_environment_.GetMainThreadTaskRunner()) {
     privet_url_loader_ = std::make_unique<PrivetURLLoader>(
         GURL(kSamplePrivetURL), "POST", test_shared_url_loader_factory_,
         TRAFFIC_ANNOTATION_FOR_TESTS, &delegate_);
@@ -126,7 +125,7 @@ class PrivetURLLoaderTest : public ::testing::Test {
     test_url_loader_factory_.SetInterceptor(base::NullCallback());
   }
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::WeakWrapperSharedURLLoaderFactory>
       test_shared_url_loader_factory_;

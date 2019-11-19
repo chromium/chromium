@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/material_components/activity_indicator.h"
 
+#include "build/branding_buildflags.h"
 #import "ios/chrome/browser/ui/colors/MDCPalette+CrAdditions.h"
 #import "ios/third_party/material_components_ios/src/components/Palettes/src/MaterialPalettes.h"
 
@@ -12,7 +13,7 @@
 #endif
 
 NSArray* ActivityIndicatorBrandedCycleColors() {
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return @[
     [[MDCPalette cr_bluePalette] tint500], [[MDCPalette cr_redPalette] tint500],
     [[MDCPalette cr_yellowPalette] tint500],

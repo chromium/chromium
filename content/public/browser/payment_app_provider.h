@@ -17,6 +17,10 @@
 
 class SkBitmap;
 
+namespace url {
+class Origin;
+}  // namespace url
+
 namespace content {
 
 class BrowserContext;
@@ -37,6 +41,8 @@ class CONTENT_EXPORT PaymentAppProvider {
 
   using PaymentApps = std::map<int64_t, std::unique_ptr<StoredPaymentApp>>;
   using GetAllPaymentAppsCallback = base::OnceCallback<void(PaymentApps)>;
+  using RegistrationIdCallback =
+      base::OnceCallback<void(int64_t registration_id)>;
   using InvokePaymentAppCallback =
       base::OnceCallback<void(payments::mojom::PaymentHandlerResponsePtr)>;
   using PaymentEventResultCallback = base::OnceCallback<void(bool)>;
@@ -47,6 +53,7 @@ class CONTENT_EXPORT PaymentAppProvider {
   virtual void InvokePaymentApp(
       BrowserContext* browser_context,
       int64_t registration_id,
+      const url::Origin& sw_origin,
       payments::mojom::PaymentRequestEventDataPtr event_data,
       InvokePaymentAppCallback callback) = 0;
   virtual void InstallAndInvokePaymentApp(
@@ -58,14 +65,20 @@ class CONTENT_EXPORT PaymentAppProvider {
       const std::string& sw_scope,
       bool sw_use_cache,
       const std::string& method,
+      const SupportedDelegations& supported_delegations,
+      RegistrationIdCallback registration_id_callback,
       InvokePaymentAppCallback callback) = 0;
   virtual void CanMakePayment(
       BrowserContext* browser_context,
       int64_t registration_id,
+      const url::Origin& sw_origin,
+      const std::string& payment_request_id,
       payments::mojom::CanMakePaymentEventDataPtr event_data,
       PaymentEventResultCallback callback) = 0;
   virtual void AbortPayment(BrowserContext* browser_context,
                             int64_t registration_id,
+                            const url::Origin& sw_origin,
+                            const std::string& payment_request_id,
                             PaymentEventResultCallback callback) = 0;
 
   // Set opened window for payment handler. Note that we maintain at most one
@@ -77,7 +90,9 @@ class CONTENT_EXPORT PaymentAppProvider {
 
   // Notify the opened payment handler window is closing or closed by user so as
   // to abort payment request.
-  virtual void OnClosingOpenedWindow(BrowserContext* browser_context) = 0;
+  virtual void OnClosingOpenedWindow(
+      BrowserContext* browser_context,
+      payments::mojom::PaymentEventResponseType reason) = 0;
 
   // Check whether given |sw_js_url| from |manifest_url| is allowed to register
   // with |sw_scope|.

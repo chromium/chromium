@@ -1,0 +1,130 @@
+PASS layerTree is internals.layerTreeAsText(document)
+PASS successfullyParsed is true
+
+TEST COMPLETE
+
+The layer trees before and after should be the same, except for the position of the 50x50 sized composited fixed position layer.
+BEFORE:
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [2008, 2016],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV class='positionedAndTransformed fixed'",
+      "bounds": [50, 50],
+      "contentsOpaque": true,
+      "backgroundColor": "#C0C0C0",
+      "transform": 2
+    },
+    {
+      "name": "ContentsLayer for Horizontal Scrollbar Layer",
+      "position": [0, 585],
+      "bounds": [785, 15],
+      "contentsOpaque": true
+    },
+    {
+      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "position": [785, 0],
+      "bounds": [15, 585],
+      "contentsOpaque": true
+    },
+    {
+      "name": "Scroll Corner Layer",
+      "position": [785, 585],
+      "bounds": [15, 15]
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [20, -80, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "parent": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [0, 100, 0, 1]
+      ]
+    }
+  ]
+}
+
+AFTER:
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [2008, 2016],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "transform": 1
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV class='positionedAndTransformed fixed'",
+      "bounds": [50, 50],
+      "contentsOpaque": true,
+      "backgroundColor": "#C0C0C0",
+      "transform": 3
+    },
+    {
+      "name": "ContentsLayer for Horizontal Scrollbar Layer",
+      "position": [0, 585],
+      "bounds": [785, 15],
+      "contentsOpaque": true
+    },
+    {
+      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "position": [785, 0],
+      "bounds": [15, 585],
+      "contentsOpaque": true
+    },
+    {
+      "name": "Scroll Corner Layer",
+      "position": [785, 585],
+      "bounds": [15, 15]
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [0, -10, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [20, -80, 0, 1]
+      ]
+    },
+    {
+      "id": 3,
+      "parent": 2,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [0, 100, 0, 1]
+      ]
+    }
+  ]
+}
+

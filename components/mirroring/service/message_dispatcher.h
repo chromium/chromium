@@ -11,7 +11,10 @@
 #include "base/macros.h"
 #include "components/mirroring/mojom/cast_message_channel.mojom.h"
 #include "components/mirroring/service/receiver_response.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace mirroring {
 
@@ -22,9 +25,10 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) MessageDispatcher final
     : public mojom::CastMessageChannel {
  public:
   using ErrorCallback = base::RepeatingCallback<void(const std::string&)>;
-  MessageDispatcher(mojom::CastMessageChannelPtr outbound_channel,
-                    mojom::CastMessageChannelRequest inbound_channel,
-                    ErrorCallback error_callback);
+  MessageDispatcher(
+      mojo::PendingRemote<mojom::CastMessageChannel> outbound_channel,
+      mojo::PendingReceiver<mojom::CastMessageChannel> inbound_channel,
+      ErrorCallback error_callback);
   ~MessageDispatcher() override;
 
   using ResponseCallback =
@@ -61,9 +65,9 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) MessageDispatcher final
   void Send(mojom::CastMessagePtr message) override;
 
   // Takes care of sending outbound messages.
-  const mojom::CastMessageChannelPtr outbound_channel_;
+  const mojo::Remote<mojom::CastMessageChannel> outbound_channel_;
 
-  const mojo::Binding<mojom::CastMessageChannel> binding_;
+  const mojo::Receiver<mojom::CastMessageChannel> receiver_;
 
   const ErrorCallback error_callback_;
 

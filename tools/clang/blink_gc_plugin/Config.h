@@ -29,7 +29,6 @@ extern const char kVisitorDispatcherName[];
 extern const char kVisitorVarName[];
 extern const char kAdjustAndMarkName[];
 extern const char kIsHeapObjectAliveName[];
-extern const char kIsEagerlyFinalizedName[];
 extern const char kConstIteratorName[];
 extern const char kIteratorName[];
 extern const char kConstReverseIteratorName[];
@@ -66,10 +65,6 @@ class Config {
 
   static bool IsUniquePtr(const std::string& name) {
     return name == "unique_ptr";
-  }
-
-  static bool IsTraceWrapperMember(const std::string& name) {
-    return name == "TraceWrapperMember";
   }
 
   static bool IsTraceWrapperV8Reference(const std::string& name) {
@@ -119,18 +114,16 @@ class Config {
            name == "ThreadSafeRefCounted";
   }
 
+  static bool IsGCSimpleBase(const std::string& name) {
+    return name == "GarbageCollected";
+  }
+
   static bool IsGCMixinBase(const std::string& name) {
     return name == "GarbageCollectedMixin";
   }
 
-  static bool IsGCFinalizedBase(const std::string& name) {
-    return name == "GarbageCollectedFinalized";
-  }
-
   static bool IsGCBase(const std::string& name) {
-    return name == "GarbageCollected" ||
-           IsGCFinalizedBase(name) ||
-           IsGCMixinBase(name);
+    return IsGCSimpleBase(name) || IsGCMixinBase(name);
   }
 
   static bool IsIterator(const std::string& name) {

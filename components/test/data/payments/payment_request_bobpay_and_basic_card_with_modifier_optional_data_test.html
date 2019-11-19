@@ -8,7 +8,7 @@ found in the LICENSE file.
 <head>
 <title>Bob Pay and basic-card with modifier optional data test</title>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1">
 <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 <body>
@@ -18,6 +18,9 @@ found in the LICENSE file.
 <button onclick="buyWithVisaDebitModifier()" id="buy_with_visa_debit_modifier">Visa debit card modifier test</button>
 <button onclick="buyWithCreditModifier()" id="buy_with_credit_modifier">Credit card modifier test</button>
 <button onclick="buyWithVisaModifier()" id="buy_with_visa_modifier">Visa card modifier test</button>
+<button onclick="buyWithShippingRequested()" id="buy_with_shipping_requested">Shipping requested test</button>
+<button onclick="buyWithContactRequested()" id="buy_with_contact_requested">Contact details requested test</button>
+<button onclick="buyWithShippingAndContactRequested()" id="buy_with_shipping_and_contact_requested">Shipping and contact details requested test</button>
 <pre id="result"></pre>
 <script src="util.js"></script>
 <script src="bobpay_and_basic_card_with_modifier_optional_data.js"></script>

@@ -23,13 +23,13 @@ class CSSPositionInterpolationType : public CSSLengthListInterpolationType {
   InterpolationValue MaybeConvertValue(const CSSValue& value,
                                        const StyleResolverState*,
                                        ConversionCheckers&) const final {
-    if (!value.IsValuePair()) {
+    const auto* pair = DynamicTo<CSSValuePair>(value);
+    if (!pair) {
       return nullptr;
     }
-    const CSSValuePair& pair = ToCSSValuePair(value);
-    return ListInterpolationFunctions::CreateList(2, [&pair](size_t index) {
+    return ListInterpolationFunctions::CreateList(2, [pair](size_t index) {
       return CSSPositionAxisListInterpolationType::ConvertPositionAxisCSSValue(
-          index == 0 ? pair.First() : pair.Second());
+          index == 0 ? pair->First() : pair->Second());
     });
   }
 };

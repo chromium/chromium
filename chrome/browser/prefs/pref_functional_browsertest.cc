@@ -99,7 +99,7 @@ IN_PROC_BROWSER_TEST_F(PrefsFunctionalTest, TestImageContentSettings) {
 
   browser()->profile()->GetPrefs()->SetInteger(
       content_settings::WebsiteSettingsRegistry::GetInstance()
-          ->Get(CONTENT_SETTINGS_TYPE_IMAGES)
+          ->Get(ContentSettingsType::IMAGES)
           ->default_value_pref_name(),
       CONTENT_SETTING_BLOCK);
 

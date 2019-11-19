@@ -15,7 +15,7 @@
 #include "content/public/app/content_main_delegate.h"
 
 #if !defined(CHROME_MULTIPLE_DLL_CHILD)
-#include "chrome/browser/metrics/chrome_feature_list_creator.h"
+#include "chrome/browser/startup_data.h"
 #endif
 
 namespace base {
@@ -27,6 +27,7 @@ class TracingSamplerProfiler;
 }
 
 class ChromeContentBrowserClient;
+class HeapProfilerController;
 
 // Chrome implementation of ContentMainDelegate.
 class ChromeMainDelegate : public content::ContentMainDelegate {
@@ -53,7 +54,6 @@ class ChromeMainDelegate : public content::ContentMainDelegate {
 #if defined(OS_MACOSX)
   bool ProcessRegistersWithSystemProcess(
       const std::string& process_type) override;
-  bool ShouldSendMachPort(const std::string& process_type) override;
   bool DelaySandboxInitialization(const std::string& process_type) override;
 #elif defined(OS_LINUX)
   void ZygoteStarting(
@@ -66,7 +66,7 @@ class ChromeMainDelegate : public content::ContentMainDelegate {
 #if !defined(CHROME_MULTIPLE_DLL_CHILD)
   void PostEarlyInitialization(bool is_running_tests) override;
   bool ShouldCreateFeatureList() override;
-#endif
+#endif  // !defined(CHROME_MULTIPLE_DLL_CHILD)
   void PostFieldTrialInitialization() override;
 
   content::ContentBrowserClient* CreateContentBrowserClient() override;
@@ -85,10 +85,14 @@ class ChromeMainDelegate : public content::ContentMainDelegate {
   std::unique_ptr<ChromeContentBrowserClient> chrome_content_browser_client_;
 
 #if !defined(CHROME_MULTIPLE_DLL_CHILD)
-  std::unique_ptr<ChromeFeatureListCreator> chrome_feature_list_creator_;
+  std::unique_ptr<StartupData> startup_data_;
 #endif
 
   std::unique_ptr<tracing::TracingSamplerProfiler> tracing_sampler_profiler_;
+
+  // The controller schedules UMA heap profiles collections and forwarding down
+  // the reporting pipeline.
+  std::unique_ptr<HeapProfilerController> heap_profiler_controller_;
 
   DISALLOW_COPY_AND_ASSIGN(ChromeMainDelegate);
 };

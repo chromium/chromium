@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "ash/session/session_controller.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/window_state.h"
@@ -93,8 +93,8 @@ TEST_F(VideoDetectorTest, ReportFullscreen) {
 
   std::unique_ptr<aura::Window> window =
       CreateTestWindow(gfx::Rect(0, 0, 1024, 768));
-  wm::WindowState* window_state = wm::GetWindowState(window.get());
-  const wm::WMEvent toggle_fullscreen_event(wm::WM_EVENT_TOGGLE_FULLSCREEN);
+  WindowState* window_state = WindowState::Get(window.get());
+  const WMEvent toggle_fullscreen_event(WM_EVENT_TOGGLE_FULLSCREEN);
   window_state->OnWMEvent(&toggle_fullscreen_event);
   ASSERT_TRUE(window_state->IsFullscreen());
   window->Focus();
@@ -116,7 +116,7 @@ TEST_F(VideoDetectorTest, ReportFullscreen) {
   observer_->reset();
   std::unique_ptr<aura::Window> other_window =
       CreateTestWindow(gfx::Rect(1024, 0, 1024, 768));
-  wm::WindowState* other_window_state = wm::GetWindowState(other_window.get());
+  WindowState* other_window_state = WindowState::Get(other_window.get());
   other_window_state->OnWMEvent(&toggle_fullscreen_event);
   ASSERT_TRUE(other_window_state->IsFullscreen());
   EXPECT_EQ(VideoDetector::State::PLAYING_FULLSCREEN, observer_->PopState());

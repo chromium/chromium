@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_database_error.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_name_and_version.h"
@@ -55,13 +56,11 @@ class IDBFactoryTest : public testing::Test {
 };
 
 TEST_F(IDBFactoryTest, WebIDBGetDBInfoCallbacksResolvesPromise) {
-  V8TestingScope scope;
-  scope.GetDocument().SetSecurityOrigin(
-      SecurityOrigin::Create(KURL("https://example.com")));
-  std::unique_ptr<MockWebIDBFactory> web_factory = MockWebIDBFactory::Create();
+  V8TestingScope scope(KURL("https://example.com"));
+  auto web_factory = std::make_unique<MockWebIDBFactory>();
   std::unique_ptr<WebIDBCallbacks> callbacks;
   web_factory->SetCallbacksPointer(&callbacks);
-  IDBFactory* factory = IDBFactory::CreateForTest(std::move(web_factory));
+  auto* factory = MakeGarbageCollected<IDBFactory>(std::move(web_factory));
 
   DummyExceptionStateForTesting exception_state;
   ScriptPromise promise =
@@ -88,13 +87,11 @@ TEST_F(IDBFactoryTest, WebIDBGetDBInfoCallbacksResolvesPromise) {
 }
 
 TEST_F(IDBFactoryTest, WebIDBGetDBNamesCallbacksRejectsPromise) {
-  V8TestingScope scope;
-  scope.GetDocument().SetSecurityOrigin(
-      SecurityOrigin::Create(KURL("https://example.com")));
-  std::unique_ptr<MockWebIDBFactory> web_factory = MockWebIDBFactory::Create();
+  V8TestingScope scope(KURL("https://example.com"));
+  auto web_factory = std::make_unique<MockWebIDBFactory>();
   std::unique_ptr<WebIDBCallbacks> callbacks;
   web_factory->SetCallbacksPointer(&callbacks);
-  IDBFactory* factory = IDBFactory::CreateForTest(std::move(web_factory));
+  auto* factory = MakeGarbageCollected<IDBFactory>(std::move(web_factory));
 
   DummyExceptionStateForTesting exception_state;
   ScriptPromise promise =
@@ -108,7 +105,7 @@ TEST_F(IDBFactoryTest, WebIDBGetDBNamesCallbacksRejectsPromise) {
   EXPECT_FALSE(on_fulfilled);
   EXPECT_FALSE(on_rejected);
 
-  callbacks->Error(0, String());
+  callbacks->Error(mojom::blink::IDBException::kNoError, String());
 
   EXPECT_FALSE(on_fulfilled);
   EXPECT_FALSE(on_rejected);

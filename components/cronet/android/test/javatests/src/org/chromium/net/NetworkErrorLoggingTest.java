@@ -12,6 +12,7 @@ import static org.chromium.net.CronetTestRule.SERVER_KEY_PKCS8_PEM;
 import static org.chromium.net.CronetTestRule.getContext;
 
 import android.support.test.filters.SmallTest;
+import android.support.test.runner.AndroidJUnit4;
 
 import org.junit.After;
 import org.junit.Before;
@@ -19,14 +20,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.net.CronetTestRule.OnlyRunNativeCronet;
 
 /**
  * Tests requests that generate Network Error Logging reports.
  */
-@RunWith(BaseJUnit4ClassRunner.class)
+@RunWith(AndroidJUnit4.class)
 public class NetworkErrorLoggingTest {
     @Rule
     public final CronetTestRule mTestRule = new CronetTestRule();

@@ -13,10 +13,6 @@
 #include "base/memory/ptr_util.h"
 #include "build/build_config.h"
 
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
-#include "ui/views/linux_ui/linux_ui.h"
-#endif
-
 namespace {
 
 // DownloadStatusUpdater::UpdateAppIconDownloadProgress() expects to only be
@@ -133,19 +129,9 @@ void DownloadStatusUpdater::OnDownloadUpdated(content::DownloadManager* manager,
   UpdateAppIconDownloadProgress(item);
 }
 
-#if defined(OS_ANDROID) || (defined(USE_AURA) && !defined(OS_WIN))
+#if defined(OS_ANDROID) || defined(OS_CHROMEOS)
 void DownloadStatusUpdater::UpdateAppIconDownloadProgress(
     download::DownloadItem* download) {
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
-  const views::LinuxUI* linux_ui = views::LinuxUI::instance();
-  if (linux_ui) {
-    float progress = 0;
-    int download_count = 0;
-    GetProgress(&progress, &download_count);
-    linux_ui->SetDownloadCount(download_count);
-    linux_ui->SetProgressFraction(progress);
-  }
-#endif
   // TODO(avi): Implement for Android?
 }
 #endif

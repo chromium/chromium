@@ -10,26 +10,117 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/stl_util.h"
 #include "components/prefs/pref_service.h"
-#include "components/signin/core/browser/signin_client.h"
-#include "components/signin/core/browser/signin_pref_names.h"
+#include "components/signin/public/base/signin_client.h"
+#include "components/signin/public/base/signin_pref_names.h"
+
+const base::Feature kUseMultiloginEndpoint{"UseMultiloginEndpoint",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
 namespace signin {
 
 DiceAccountReconcilorDelegate::DiceAccountReconcilorDelegate(
     SigninClient* signin_client,
-    AccountConsistencyMethod account_consistency)
-    : signin_client_(signin_client), account_consistency_(account_consistency) {
+    AccountConsistencyMethod account_consistency,
+    bool migration_completed)
+    : signin_client_(signin_client),
+      account_consistency_(account_consistency),
+      migration_completed_(migration_completed) {
   DCHECK(signin_client_);
   DCHECK(DiceMethodGreaterOrEqual(account_consistency_,
                                   AccountConsistencyMethod::kDiceMigration));
+  DCHECK(account_consistency == AccountConsistencyMethod::kDice ||
+         !migration_completed);
 }
 
 bool DiceAccountReconcilorDelegate::IsReconcileEnabled() const {
   return true;
 }
 
+bool DiceAccountReconcilorDelegate::IsMultiloginEndpointEnabled() const {
+  return base::FeatureList::IsEnabled(kUseMultiloginEndpoint);
+}
+
 bool DiceAccountReconcilorDelegate::IsAccountConsistencyEnforced() const {
   return account_consistency_ == AccountConsistencyMethod::kDice;
+}
+
+DiceAccountReconcilorDelegate::InconsistencyReason
+DiceAccountReconcilorDelegate::GetInconsistencyReason(
+    const CoreAccountId& primary_account,
+    const std::vector<CoreAccountId>& chrome_accounts,
+    const std::vector<gaia::ListedAccount>& gaia_accounts,
+    bool first_execution) const {
+  std::vector<CoreAccountId> valid_gaia_accounts_ids;
+  for (const gaia::ListedAccount& gaia_account : gaia_accounts) {
+    if (gaia_account.valid)
+      valid_gaia_accounts_ids.push_back(gaia_account.id);
+  }
+
+  bool primary_account_has_token = false;
+  if (!primary_account.empty()) {
+    primary_account_has_token =
+        base::Contains(chrome_accounts, primary_account);
+    bool primary_account_has_cookie =
+        base::Contains(valid_gaia_accounts_ids, primary_account);
+    if (primary_account_has_token && !primary_account_has_cookie)
+      return InconsistencyReason::kMissingSyncCookie;
+
+    if (!primary_account_has_token && primary_account_has_cookie)
+      return InconsistencyReason::kSyncAccountAuthError;
+  }
+
+  bool missing_first_web_account_token =
+      primary_account.empty() && !gaia_accounts.empty() &&
+      gaia_accounts[0].valid &&
+      !base::Contains(chrome_accounts, gaia_accounts[0].id);
+
+  if (missing_first_web_account_token)
+    return InconsistencyReason::kMissingFirstWebAccountToken;
+
+  std::sort(valid_gaia_accounts_ids.begin(), valid_gaia_accounts_ids.end());
+  std::vector<CoreAccountId> sorted_chrome_accounts(chrome_accounts);
+  std::sort(sorted_chrome_accounts.begin(), sorted_chrome_accounts.end());
+  bool missing_token =
+      !base::STLIncludes(sorted_chrome_accounts, valid_gaia_accounts_ids);
+  bool missing_cookie =
+      !base::STLIncludes(valid_gaia_accounts_ids, sorted_chrome_accounts);
+
+  if (missing_token && missing_cookie)
+    return InconsistencyReason::kCookieTokenMismatch;
+
+  if (missing_token)
+    return InconsistencyReason::kMissingSecondaryToken;
+
+  if (missing_cookie)
+    return InconsistencyReason::kMissingSecondaryCookie;
+
+  if (first_execution && primary_account_has_token &&
+      gaia_accounts[0].id != primary_account && gaia_accounts[0].valid)
+    return InconsistencyReason::kSyncCookieNotFirst;
+
+  return InconsistencyReason::kNone;
+}
+
+void DiceAccountReconcilorDelegate::MaybeLogInconsistencyReason(
+    const CoreAccountId& primary_account,
+    const std::vector<CoreAccountId>& chrome_accounts,
+    const std::vector<gaia::ListedAccount>& gaia_accounts,
+    bool first_execution) const {
+  if (account_consistency_ != AccountConsistencyMethod::kDiceMigration)
+    return;
+
+  InconsistencyReason inconsistency_reason = GetInconsistencyReason(
+      primary_account, chrome_accounts, gaia_accounts, first_execution);
+
+  if (first_execution) {
+    UMA_HISTOGRAM_ENUMERATION(
+        "Signin.DiceMigrationNotReady.Reason.FirstExecution",
+        inconsistency_reason);
+  } else {
+    UMA_HISTOGRAM_ENUMERATION(
+        "Signin.DiceMigrationNotReady.Reason.NotFirstExecution",
+        inconsistency_reason);
+  }
 }
 
 gaia::GaiaSource DiceAccountReconcilorDelegate::GetGaiaApiSource() const {
@@ -46,15 +137,15 @@ gaia::GaiaSource DiceAccountReconcilorDelegate::GetGaiaApiSource() const {
 //   2. The primary account
 //   3. The last known first Gaia account
 //   4. The first account in the token service
-std::string DiceAccountReconcilorDelegate::GetFirstGaiaAccountForReconcile(
-    const std::vector<std::string>& chrome_accounts,
+CoreAccountId DiceAccountReconcilorDelegate::GetFirstGaiaAccountForReconcile(
+    const std::vector<CoreAccountId>& chrome_accounts,
     const std::vector<gaia::ListedAccount>& gaia_accounts,
-    const std::string& primary_account,
+    const CoreAccountId& primary_account,
     bool first_execution,
     bool will_logout) const {
   bool primary_account_has_token =
       !primary_account.empty() &&
-      base::ContainsValue(chrome_accounts, primary_account);
+      base::Contains(chrome_accounts, primary_account);
 
   if (gaia_accounts.empty()) {
     if (primary_account_has_token)
@@ -62,22 +153,22 @@ std::string DiceAccountReconcilorDelegate::GetFirstGaiaAccountForReconcile(
 
     // Try the last known account. This happens when the cookies are cleared
     // while Sync is disabled.
-    if (base::ContainsValue(chrome_accounts, last_known_first_account_))
+    if (base::Contains(chrome_accounts, last_known_first_account_))
       return last_known_first_account_;
 
     // As a last resort, use the first Chrome account.
-    return chrome_accounts.empty() ? std::string() : chrome_accounts[0];
+    return chrome_accounts.empty() ? CoreAccountId() : chrome_accounts[0];
   }
 
-  const std::string& first_gaia_account = gaia_accounts[0].id;
+  const CoreAccountId& first_gaia_account = gaia_accounts[0].id;
   bool first_gaia_account_has_token =
-      base::ContainsValue(chrome_accounts, first_gaia_account);
+      base::Contains(chrome_accounts, first_gaia_account);
 
   if (!first_gaia_account_has_token &&
       (primary_account == first_gaia_account) && gaia_accounts[0].valid) {
     // The primary account is also the first Gaia account, and has no token.
     // Logout everything.
-    return std::string();
+    return CoreAccountId();
   }
 
   // If the primary Chrome account and the default Gaia account are both in
@@ -96,7 +187,7 @@ std::string DiceAccountReconcilorDelegate::GetFirstGaiaAccountForReconcile(
     if (first_gaia_account_has_token)
       return first_gaia_account;
     // As a last resort, use the first Chrome account.
-    return chrome_accounts.empty() ? std::string() : chrome_accounts[0];
+    return chrome_accounts.empty() ? CoreAccountId() : chrome_accounts[0];
   }
 
   // While Chrome is running, try the first Gaia account, and then the
@@ -108,12 +199,12 @@ std::string DiceAccountReconcilorDelegate::GetFirstGaiaAccountForReconcile(
 
   // Changing the first Gaia account while Chrome is running would be
   // confusing for the user. Logout everything.
-  return std::string();
+  return CoreAccountId();
 }
 
 gaia::MultiloginMode DiceAccountReconcilorDelegate::CalculateModeForReconcile(
     const std::vector<gaia::ListedAccount>& gaia_accounts,
-    const std::string primary_account,
+    const CoreAccountId& primary_account,
     bool first_execution,
     bool primary_has_error) const {
   const bool sync_enabled = !primary_account.empty();
@@ -125,10 +216,10 @@ gaia::MultiloginMode DiceAccountReconcilorDelegate::CalculateModeForReconcile(
              : gaia::MultiloginMode::MULTILOGIN_PRESERVE_COOKIE_ACCOUNTS_ORDER;
 }
 
-std::vector<std::string>
+std::vector<CoreAccountId>
 DiceAccountReconcilorDelegate::GetChromeAccountsForReconcile(
-    const std::vector<std::string>& chrome_accounts,
-    const std::string& primary_account,
+    const std::vector<CoreAccountId>& chrome_accounts,
+    const CoreAccountId& primary_account,
     const std::vector<gaia::ListedAccount>& gaia_accounts,
     const gaia::MultiloginMode mode) const {
   if (mode == gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER) {
@@ -136,7 +227,7 @@ DiceAccountReconcilorDelegate::GetChromeAccountsForReconcile(
                                              gaia_accounts);
   }
   if (gaia_accounts.empty() &&
-      base::ContainsValue(chrome_accounts, last_known_first_account_)) {
+      base::Contains(chrome_accounts, last_known_first_account_)) {
     // In PRESERVE mode in case accounts in cookies are accidentally lost we
     // should put cached first account first since Gaia has no information about
     // it.
@@ -156,9 +247,22 @@ DiceAccountReconcilorDelegate::ShouldRevokeSecondaryTokensBeforeReconcile(
     return RevokeTokenOption::kRevoke;
   }
 
-  return (account_consistency_ == AccountConsistencyMethod::kDice)
+  return account_consistency_ == AccountConsistencyMethod::kDice
              ? RevokeTokenOption::kRevokeIfInError
              : RevokeTokenOption::kDoNotRevoke;
+}
+
+bool DiceAccountReconcilorDelegate::ShouldRevokeTokensNotInCookies() const {
+  return account_consistency_ == AccountConsistencyMethod::kDice &&
+         !migration_completed_;
+}
+
+void DiceAccountReconcilorDelegate::OnRevokeTokensNotInCookiesCompleted(
+    RevokeTokenAction revoke_token_action) {
+  migration_completed_ = true;
+  signin_client_->SetDiceMigrationCompleted();
+  UMA_HISTOGRAM_ENUMERATION("ForceDiceMigration.RevokeTokenAction",
+                            revoke_token_action);
 }
 
 bool DiceAccountReconcilorDelegate::ShouldRevokeTokensOnCookieDeleted() {
@@ -166,7 +270,7 @@ bool DiceAccountReconcilorDelegate::ShouldRevokeTokensOnCookieDeleted() {
 }
 
 void DiceAccountReconcilorDelegate::OnReconcileFinished(
-    const std::string& first_account,
+    const CoreAccountId& first_account,
     bool reconcile_is_noop) {
   last_known_first_account_ = first_account;
 

@@ -6,7 +6,8 @@
 from blinkbuild.name_style_converter import NameStyleConverter
 from core.css.field_alias_expander import FieldAliasExpander
 import json5_generator
-from name_utilities import enum_for_css_property, enum_for_css_property_alias
+from name_utilities import enum_key_for_css_property, id_for_css_property
+from name_utilities import enum_key_for_css_property_alias, id_for_css_property_alias
 
 
 # These values are converted using CSSPrimitiveValue in the setter function,
@@ -49,6 +50,9 @@ def check_property_parameters(property_to_check):
     if property_to_check['mutable']:
         assert property_to_check['field_template'] == 'monotonic_flag', \
             'mutable keyword only implemented for monotonic_flag'
+    if property_to_check['alias_for']:
+        assert not property_to_check['is_internal'], \
+            'Internal aliases is not supported'
 
 
 class CSSProperties(object):
@@ -64,12 +68,13 @@ class CSSProperties(object):
         # CSSPropertyValueMetadata assumes that there are at most 1024
         # properties + aliases.
         self._alias_offset = 512
-        # 0: CSSPropertyInvalid
-        # 1: CSSPropertyVariable
+        # 0: CSSPropertyID::kInvalid
+        # 1: CSSPropertyID::kVariable
         self._first_enum_value = 2
         self._last_used_enum_value = self._first_enum_value
 
         self._properties_by_id = {}
+        self._properties_by_name = {}
         self._aliases = []
         self._longhands = []
         self._shorthands = []
@@ -100,6 +105,12 @@ class CSSProperties(object):
             self.expand_parameters(field)
 
     def add_properties(self, properties):
+        for property_ in properties:
+            self._properties_by_name[property_['name'].original] = property_
+
+        for property_ in properties:
+            self.expand_visited(property_)
+
         self._aliases = [
             property_ for property_ in properties if property_['alias_for']]
         self._shorthands = [
@@ -148,6 +159,19 @@ class CSSProperties(object):
         self._properties_including_aliases = self._longhands + \
             self._shorthands + self._aliases
 
+    def expand_visited(self, property_):
+        if not property_['visited_property_for']:
+            return
+        visited_property_for = property_['visited_property_for']
+        unvisited_property = self._properties_by_name[visited_property_for]
+        property_['visited'] = True
+        # The visited property needs a link to the unvisited counterpart.
+        property_['unvisited_property'] = unvisited_property
+        # The unvisited property needs a link to the visited counterpart.
+        assert 'visited_property' not in unvisited_property, \
+            'A property may not have multiple visited properties'
+        unvisited_property['visited_property'] = property_
+
     def expand_aliases(self):
         for i, alias in enumerate(self._aliases):
             assert not alias['runtime_flag'], \
@@ -155,15 +179,20 @@ class CSSProperties(object):
                 "but runtime flags do not currently work for aliases.".format(
                     alias['name'])
             aliased_property = self._properties_by_id[
-                enum_for_css_property(alias['alias_for'])]
+                id_for_css_property(alias['alias_for'])]
             updated_alias = aliased_property.copy()
             updated_alias['name'] = alias['name']
             updated_alias['alias_for'] = alias['alias_for']
             updated_alias['aliased_property'] = aliased_property['name'].to_upper_camel_case()
-            updated_alias['property_id'] = enum_for_css_property_alias(
+            updated_alias['property_id'] = id_for_css_property_alias(
+                alias['name'])
+            updated_alias['enum_key'] = enum_key_for_css_property_alias(
                 alias['name'])
             updated_alias['enum_value'] = aliased_property['enum_value'] + \
                 self._alias_offset
+            updated_alias['superclass'] = 'CSSUnresolvedProperty'
+            updated_alias['namespace_group'] = \
+                'Shorthand' if aliased_property['longhands'] else 'Longhand'
             self._aliases[i] = updated_alias
 
     def expand_parameters(self, property_):
@@ -173,15 +202,17 @@ class CSSProperties(object):
 
         # Basic info.
         name = property_['name']
-        property_['property_id'] = enum_for_css_property(name)
+        property_['property_id'] = id_for_css_property(name)
+        property_['enum_key'] = enum_key_for_css_property(name)
         property_['is_internal'] = name.original.startswith('-internal-')
         method_name = property_['name_for_methods']
         if not method_name:
             method_name = name.to_upper_camel_case().replace('Webkit', '')
         set_if_none(property_, 'inherited', False)
+        set_if_none(property_, 'affected_by_forced_colors', False)
 
         # Initial function, Getters and Setters for ComputedStyle.
-        property_['initial'] = 'Initial' + method_name
+        set_if_none(property_, 'initial', 'Initial' + method_name)
         simple_type_name = str(property_['type_name']).split('::')[-1]
         set_if_none(property_, 'name_for_methods', method_name)
         set_if_none(property_, 'type_name', 'E' + method_name)
@@ -193,16 +224,30 @@ class CSSProperties(object):
         if property_['inherited']:
             property_['is_inherited_setter'] = 'Set' + method_name + 'IsInherited'
 
+        # Figure out whether this property should have style builders at all.
+        # E.g. shorthands do not get style builders.
+        property_['style_builder_declare'] = (property_['is_property'] and
+                                              not property_['longhands'])
+
         # Figure out whether we should generate style builder implementations.
         for x in ['initial', 'inherit', 'value']:
             suppressed = x in property_['style_builder_custom_functions']
-            property_['style_builder_generate_%s' % x] = not suppressed
+            declared = property_['style_builder_declare']
+            property_['style_builder_generate_%s' % x] = declared and not suppressed
 
         # Expand StyleBuilderConverter params where necessary.
         if property_['type_name'] in PRIMITIVE_TYPES:
             set_if_none(property_, 'converter', 'CSSPrimitiveValue')
         else:
             set_if_none(property_, 'converter', 'CSSIdentifierValue')
+
+        assert not property_['alias_for'], 'Use expand_aliases to expand aliases'
+        if not property_['longhands']:
+            property_['superclass'] = 'Longhand'
+            property_['namespace_group'] = 'Longhand'
+        elif property_['longhands']:
+            property_['superclass'] = 'Shorthand'
+            property_['namespace_group'] = 'Shorthand'
 
         # Expand out field templates.
         if property_['field_template']:
@@ -237,8 +282,14 @@ class CSSProperties(object):
         set_if_none(property_, 'custom_compare', False)
         set_if_none(property_, 'mutable', False)
 
-        if property_['direction_aware_options'] and not property_['style_builder_template']:
-            property_['style_builder_template'] = 'direction_aware'
+        if property_['direction_aware_options']:
+            if not property_['style_builder_template']:
+                property_['style_builder_template'] = 'direction_aware'
+            options = property_['direction_aware_options']
+            assert 'resolver' in options, 'resolver option is required'
+            assert 'physical_group' in options, 'physical_group option is required'
+            options['resolver_name'] = NameStyleConverter(options['resolver'])
+            options['physical_group_name'] = NameStyleConverter(options['physical_group'])
 
     @property
     def default_parameters(self):
@@ -253,8 +304,16 @@ class CSSProperties(object):
         return self._shorthands
 
     @property
+    def shorthands_including_aliases(self):
+        return self._shorthands + [x for x in self._aliases if x['longhands']]
+
+    @property
     def longhands(self):
         return self._longhands
+
+    @property
+    def longhands_including_aliases(self):
+        return self._longhands + [x for x in self._aliases if not x['longhands']]
 
     @property
     def properties_by_id(self):

@@ -85,20 +85,20 @@ imageset("location_bar_secure") {
   ]
 }
 
-imageset("location_bar_dangerous") {
+imageset("location_bar_not_secure_warning") {
   sources = [
-    "location_bar_dangerous.imageset/Contents.json",
-    "location_bar_dangerous.imageset/location_bar_dangerous.png",
-    "location_bar_dangerous.imageset/location_bar_dangerous@2x.png",
-    "location_bar_dangerous.imageset/location_bar_dangerous@3x.png",
+    "location_bar_not_secure_warning.imageset/Contents.json",
+    "location_bar_not_secure_warning.imageset/location_bar_not_secure_warning.png",
+    "location_bar_not_secure_warning.imageset/location_bar_not_secure_warning@2x.png",
+    "location_bar_not_secure_warning.imageset/location_bar_not_secure_warning@3x.png",
   ]
 }
 
-imageset("location_bar_insecure") {
+imageset("location_bar_info") {
   sources = [
-    "location_bar_insecure.imageset/Contents.json",
-    "location_bar_insecure.imageset/location_bar_insecure.png",
-    "location_bar_insecure.imageset/location_bar_insecure@2x.png",
-    "location_bar_insecure.imageset/location_bar_insecure@3x.png",
+    "location_bar_info.imageset/Contents.json",
+    "location_bar_info.imageset/location_bar_info.png",
+    "location_bar_info.imageset/location_bar_info@2x.png",
+    "location_bar_info.imageset/location_bar_info@3x.png",
   ]
 }

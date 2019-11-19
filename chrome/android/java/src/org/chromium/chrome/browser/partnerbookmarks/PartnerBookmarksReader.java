@@ -8,6 +8,7 @@ import android.content.Context;
 
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.browser.AppHooks;
@@ -78,7 +79,7 @@ public class PartnerBookmarksReader {
      * A callback used to indicate success or failure of favicon fetching when retrieving favicons
      * from cache or server.
      */
-    private interface FetchFaviconCallback {
+    interface FetchFaviconCallback {
         @CalledByNative("FetchFaviconCallback")
         void onFaviconFetched(@FaviconFetchResult int result);
 
@@ -92,7 +93,8 @@ public class PartnerBookmarksReader {
      */
     public PartnerBookmarksReader(Context context) {
         mContext = context;
-        mNativePartnerBookmarksReader = nativeInit();
+        mNativePartnerBookmarksReader =
+                PartnerBookmarksReaderJni.get().init(PartnerBookmarksReader.this);
         initializeAndDisableEditingIfNecessary();
     }
 
@@ -121,7 +123,7 @@ public class PartnerBookmarksReader {
      */
     public void readBookmarks() {
         if (mNativePartnerBookmarksReader == 0) {
-            assert false : "readBookmarks called after nativeDestroy.";
+            assert false : "readBookmarks called after PartnerBookmarksReaderJni.get().destroy.";
             return;
         }
         new ReadBookmarksTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -151,7 +153,8 @@ public class PartnerBookmarksReader {
                         // this so we can refresh bookmarks when all favicons are fetched.
                         mFaviconsFetchedFromServer = true;
                         for (FaviconUpdateObserver observer : sFaviconUpdateObservers) {
-                            observer.onUpdateFavicon(nativeGetNativeUrlString(url));
+                            observer.onUpdateFavicon(
+                                    PartnerBookmarksReaderJni.get().getNativeUrlString(url));
                         }
                     }
                     mFaviconThrottle.onFaviconFetched(url, result);
@@ -169,8 +172,8 @@ public class PartnerBookmarksReader {
                 }
             }
         };
-        return nativeAddPartnerBookmark(mNativePartnerBookmarksReader, url, title, isFolder,
-                parentId, favicon, touchicon,
+        return PartnerBookmarksReaderJni.get().addPartnerBookmark(mNativePartnerBookmarksReader,
+                PartnerBookmarksReader.this, url, title, isFolder, parentId, favicon, touchicon,
                 mFaviconThrottle.shouldFetchFromServerIfNecessary(url),
                 ViewUtils.dpToPx(mContext, DESIRED_FAVICON_SIZE_DP), callback);
     }
@@ -180,7 +183,8 @@ public class PartnerBookmarksReader {
      * down the bookmark reader.
      */
     protected void onBookmarksRead() {
-        nativePartnerBookmarksCreationComplete(mNativePartnerBookmarksReader);
+        PartnerBookmarksReaderJni.get().partnerBookmarksCreationComplete(
+                mNativePartnerBookmarksReader, PartnerBookmarksReader.this);
         mFinishedReading = true;
         synchronized (mProgressLock) {
             if (mNumFaviconsInProgress == 0) {
@@ -207,7 +211,8 @@ public class PartnerBookmarksReader {
                     observer.onCompletedFaviconLoading();
                 }
             }
-            nativeDestroy(mNativePartnerBookmarksReader);
+            PartnerBookmarksReaderJni.get().destroy(
+                    mNativePartnerBookmarksReader, PartnerBookmarksReader.this);
             mNativePartnerBookmarksReader = 0;
             mShutDown = true;
         }
@@ -226,7 +231,7 @@ public class PartnerBookmarksReader {
             if (mFaviconThrottle == null) {
                 // Initialize the throttle here since we need to load shared preferences on the
                 // background thread as well.
-                mFaviconThrottle = new PartnerBookmarksFaviconThrottle(mContext);
+                mFaviconThrottle = new PartnerBookmarksFaviconThrottle();
             }
             PartnerBookmark.BookmarkIterator bookmarkIterator =
                     AppHooks.get().getPartnerBookmarkIterator();
@@ -357,7 +362,7 @@ public class PartnerBookmarksReader {
      */
     public static void disablePartnerBookmarksEditing() {
         sForceDisableEditing = true;
-        if (sInitialized) nativeDisablePartnerBookmarksEditing();
+        if (sInitialized) PartnerBookmarksReaderJni.get().disablePartnerBookmarksEditing();
     }
 
     private static void initializeAndDisableEditingIfNecessary() {
@@ -365,15 +370,19 @@ public class PartnerBookmarksReader {
         if (sForceDisableEditing) disablePartnerBookmarksEditing();
     }
 
-    // JNI
-    private native long nativeInit();
-    private native void nativeReset(long nativePartnerBookmarksReader);
-    private native void nativeDestroy(long nativePartnerBookmarksReader);
-    private native long nativeAddPartnerBookmark(long nativePartnerBookmarksReader, String url,
-            String title, boolean isFolder, long parentId, byte[] favicon, byte[] touchicon,
-            boolean fetchUncachedFaviconsFromServer, int desiredFaviconSizePx,
-            FetchFaviconCallback callback);
-    private native void nativePartnerBookmarksCreationComplete(long nativePartnerBookmarksReader);
-    private static native String nativeGetNativeUrlString(String url);
-    private static native void nativeDisablePartnerBookmarksEditing();
+    @NativeMethods
+    interface Natives {
+        long init(PartnerBookmarksReader caller);
+
+        void reset(long nativePartnerBookmarksReader, PartnerBookmarksReader caller);
+        void destroy(long nativePartnerBookmarksReader, PartnerBookmarksReader caller);
+        long addPartnerBookmark(long nativePartnerBookmarksReader, PartnerBookmarksReader caller,
+                String url, String title, boolean isFolder, long parentId, byte[] favicon,
+                byte[] touchicon, boolean fetchUncachedFaviconsFromServer, int desiredFaviconSizePx,
+                FetchFaviconCallback callback);
+        void partnerBookmarksCreationComplete(
+                long nativePartnerBookmarksReader, PartnerBookmarksReader caller);
+        String getNativeUrlString(String url);
+        void disablePartnerBookmarksEditing();
+    }
 }

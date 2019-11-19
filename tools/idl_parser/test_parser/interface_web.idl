@@ -77,7 +77,15 @@ interface mixin IFaceMixin {
  *    Arguments()
  *    Type()
  *      PrimitiveType(void)
+ *  Attribute(baz)
+ *    Type()
+ *      PrimitiveType(long)
+ *    ExtAttributes()
+ *      ExtAttribute(XAttr)
  *  Attribute(bar)
+ *    Type()
+ *      StringType(DOMString)
+ *  Attribute(readonlyAttr)
  *    READONLY: True
  *    Type()
  *      StringType(DOMString)
@@ -85,7 +93,9 @@ interface mixin IFaceMixin {
 interface mixin IFaceMixin {
   const double pi = 3.14159;
   void foo();
-  readonly attribute DOMString bar;
+  [XAttr] attribute long baz;
+  attribute DOMString bar;
+  readonly attribute DOMString readonlyAttr;
 };
 
 /** TREE
@@ -142,18 +152,34 @@ interface MyIFaceWrongRecordKeyType {
 };
 
 /** TREE
- *Interface(MyIFaceBig)
- *  Const(setString)
- *    StringType(DOMString)
- *      NULLABLE: True
- *    Value() = "NULL"
+ *Interface(IFaceAllowedKeywords)
+ *  Attribute(async)
+ *    Type()
+ *      PrimitiveType(long)
+ *  Operation(includes)
+ *    Arguments()
+ *      Argument(async)
+ *        Type()
+ *          PrimitiveType(long)
+ *      Argument(constructor)
+ *        Type()
+ *          PrimitiveType(long)
+ *    Type()
+ *      PrimitiveType(void)
+ *  Attribute(constructor)
+ *    Type()
+ *      PrimitiveType(long)
+ *  Error(Unexpected constructor.)
  */
-interface MyIFaceBig {
-  const DOMString? setString = null;
+interface IFaceAllowedKeywords {
+  attribute long async;
+  void includes(long async, long constructor);
+  attribute long _constructor;
+  attribute long constructor;
 };
 
 /** TREE
- *Interface(MyIfaceEmptySequenceDefalutValue)
+ *Interface(MyIfaceDefalutValue)
  *  Operation(foo)
  *    Arguments()
  *      Argument(arg)
@@ -165,9 +191,30 @@ interface MyIFaceBig {
  *        Default() = "[]"
  *    Type()
  *      PrimitiveType(void)
+ *  Operation(bar)
+ *    Arguments()
+ *      Argument(arg)
+ *        OPTIONAL: True
+ *        Type()
+ *          Typeref(MyDict)
+ *        Default() = "{}"
+ *    Type()
+ *      PrimitiveType(void)
+ *  Operation(baz)
+ *    Arguments()
+ *      Argument(arg)
+ *        OPTIONAL: True
+ *        Type()
+ *          NULLABLE: True
+ *          StringType(DOMString)
+ *        Default() = "NULL"
+ *    Type()
+ *      PrimitiveType(void)
  */
-interface MyIfaceEmptySequenceDefalutValue {
+interface MyIfaceDefalutValue {
   void foo(optional sequence<DOMString> arg = []);
+  void bar(optional MyDict arg = {});
+  void baz(optional DOMString? arg = null);
 };
 
 /** TREE
@@ -204,11 +251,7 @@ interface MyIfaceWithRecords {
 };
 
 /** TREE
- *Interface(MyIFaceBig2)
- *  Const(nullValue)
- *    StringType(DOMString)
- *      NULLABLE: True
- *    Value() = "NULL"
+ *Interface(MyIFaceBig)
  *  Const(longValue)
  *    PrimitiveType(long)
  *    Value() = "123"
@@ -242,8 +285,7 @@ interface MyIfaceWithRecords {
  *    Type()
  *      PrimitiveType(void)
  */
-interface MyIFaceBig2 {
-  const DOMString? nullValue = null;
+interface MyIFaceBig {
   const long longValue = 123;
   const long long longValue2 = 123;
   attribute DOMString myString;
@@ -256,7 +298,6 @@ interface MyIFaceBig2 {
 /** TREE
  *Interface(MyIFaceSpecials)
  *  Operation(set)
- *    CREATOR: True
  *    SETTER: True
  *    Arguments()
  *      Argument(property)
@@ -274,8 +315,44 @@ interface MyIFaceBig2 {
  *      PrimitiveType(double)
  */
 interface MyIFaceSpecials {
-  setter creator void set(DOMString property);
+  setter void set(DOMString property);
   getter double (DOMString property);
+};
+
+/** TREE
+ *Interface(MyIFaceConstructor)
+ *  Constructor()
+ *    Arguments()
+ *  Constructor()
+ *    Arguments()
+ *      Argument(str)
+ *        Type()
+ *          StringType(DOMString)
+ *      Argument(param)
+ *        OPTIONAL: True
+ *        Type()
+ *          PrimitiveType(long)
+ *  Constructor()
+ *    Arguments()
+ *      Argument(node)
+ *        Type()
+ *          Typeref(Node)
+ *    ExtAttributes()
+ *      ExtAttribute(Custom)
+ */
+interface MyIFaceConstructor {
+  constructor();
+  constructor(DOMString str, optional long param);
+  [Custom] constructor(Node node);
+};
+
+/** TREE
+ *Interface(PartialIFaceConstructor)
+ *  PARTIAL: True
+ *  Error(Unexpected keyword "constructor" after "{".)
+ */
+partial interface PartialIFaceConstructor {
+  constructor();
 };
 
 /** TREE
@@ -386,6 +463,11 @@ interface MyIfacePromise {
  *      PrimitiveType(long long)
  *      ExtAttributes()
  *        ExtAttribute(EnforceRange)
+ *  AsyncIterable()
+ *    Type()
+ *      PrimitiveType(double)
+ *    Type()
+ *      StringType(DOMString)
  */
 interface MyIfaceIterable {
   iterable<long>;
@@ -394,6 +476,7 @@ interface MyIfaceIterable {
   iterable<[TreatNullAs=EmptyString] DOMString>;
   iterable<[Clamp, XAttr] long>;
   iterable<[Clamp] long, [EnforceRange] long long>;
+  async iterable<double, DOMString>;
 };
 
 /** TREE
@@ -607,29 +690,7 @@ interface MyIFaceArgumentWithAnnotatedType2 {
 [ Exposed(Window, Worker) ] interface InterfaceExposedError { };
 
 /** TREE
- *Implements(Foo)
- *  REFERENCE: Bar
- */
-Foo implements Bar;
-
-/** TREE
  *Includes(Foo)
  *  REFERENCE: Bar
  */
 Foo includes Bar;
-
-/** TREE
- *Interface(IFaceWithKeyword)
- *  Operation(includes)
- *    Arguments()
- *      Argument(val)
- *        Type()
- *          StringType(DOMString)
- *    Type()
- *      PrimitiveType(void)
- */
-interface IFaceWithKeyword {
-  // '_' prefix needs to be removed in tokenization.
-  // https://heycam.github.io/webidl/#idl-names
-  void _includes(DOMString val);
-};

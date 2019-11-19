@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/version.h"
+#include "printing/printer_query_result_chromeos.h"
 #include "printing/printing_export.h"
 
 // This file contains a collection of functions used to query IPP printers or
@@ -135,6 +136,10 @@ struct PRINTING_EXPORT PrinterInfo {
 
   // Does ipp-features-supported contain 'ipp-everywhere'.
   bool ipp_everywhere = false;
+
+  // Does the printer have at least one resolution defined in the
+  // pwg-raster-document-resolution-supported IPP attribute.
+  bool supports_pwg_raster_resolution = false;
 };
 
 // Specifies classes of jobs.
@@ -142,6 +147,10 @@ enum JobCompletionState {
   COMPLETED,  // only completed jobs
   PROCESSING  // only jobs that are being processed
 };
+
+// Returns the uri for printer with |id| as served by CUPS. Assumes that |id| is
+// a valid CUPS printer name and performs no error checking or escaping.
+std::string PRINTING_EXPORT PrinterUriFromName(const std::string& id);
 
 // Extracts structured job information from the |response| for |printer_id|.
 // Extracted jobs are added to |jobs|.
@@ -155,11 +164,11 @@ void ParsePrinterStatus(ipp_t* response, PrinterStatus* printer_status);
 // Queries the printer at |address| on |port| with a Get-Printer-Attributes
 // request to populate |printer_info|. If |encrypted| is true, request is made
 // using ipps, otherwise, ipp is used. Returns false if the request failed.
-bool PRINTING_EXPORT GetPrinterInfo(const std::string& address,
-                                    const int port,
-                                    const std::string& resource,
-                                    bool encrypted,
-                                    PrinterInfo* printer_info);
+PrinterQueryResult PRINTING_EXPORT GetPrinterInfo(const std::string& address,
+                                                  const int port,
+                                                  const std::string& resource,
+                                                  bool encrypted,
+                                                  PrinterInfo* printer_info);
 
 // Attempts to retrieve printer status using connection |http| for |printer_id|.
 // Returns true if succcssful and updates the fields in |printer_status| as

@@ -1,0 +1,89 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "Squashing Layer (first squashed layer: LayoutBlockFlow (positioned) DIV class='item')",
+      "position": [7, 27],
+      "bounds": [100, 210],
+      "paintInvalidations": [
+        {
+          "object": "InlineTextBox 'ipsum'",
+          "rect": [0, 80, 40, 39],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'lorem'",
+          "rect": [0, 80, 40, 39],
+          "reason": "geometry"
+        }
+      ],
+      "transform": 1
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [8, 8, 0, 1]
+      ]
+    }
+  ]
+}
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "Squashing Layer (first squashed layer: LayoutBlockFlow (positioned) DIV class='item')",
+      "position": [7, 27],
+      "bounds": [100, 210],
+      "paintInvalidations": [
+        {
+          "object": "InlineTextBox 'ipsum'",
+          "rect": [0, 80, 42, 39],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'lorem'",
+          "rect": [0, 80, 42, 39],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'ipsum'",
+          "rect": [0, 160, 40, 39],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'lorem'",
+          "rect": [0, 160, 40, 39],
+          "reason": "geometry"
+        }
+      ],
+      "transform": 1
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [8, 8, 0, 1]
+      ]
+    }
+  ]
+}
+

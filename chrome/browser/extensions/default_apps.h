@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_EXTENSIONS_DEFAULT_APPS_H_
 
 #include "base/macros.h"
+#include "base/memory/scoped_refptr.h"
 #include "chrome/browser/extensions/external_provider_impl.h"
 #include "extensions/common/manifest.h"
 
@@ -43,7 +44,7 @@ class Provider : public extensions::ExternalProviderImpl {
  public:
   Provider(Profile* profile,
            VisitorInterface* service,
-           extensions::ExternalLoader* loader,
+           scoped_refptr<extensions::ExternalLoader> loader,
            extensions::Manifest::Location crx_location,
            extensions::Manifest::Location download_location,
            int creation_flags);

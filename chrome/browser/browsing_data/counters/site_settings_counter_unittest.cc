@@ -4,22 +4,30 @@
 
 #include "chrome/browser/browsing_data/counters/site_settings_counter.h"
 
+#include <memory>
+#include <string>
+#include <utility>
+
 #include "base/bind.h"
+#include "base/containers/flat_set.h"
 #include "base/test/simple_test_clock.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
+#include "chrome/browser/custom_handlers/test_protocol_handler_registry_delegate.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
 #include "components/browsing_data/core/pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if !defined(OS_ANDROID)
 #include "content/public/browser/host_zoom_map.h"
+#else
+#include "base/android/build_info.h"
 #endif
 
 namespace {
@@ -35,7 +43,7 @@ class SiteSettingsCounterTest : public testing::Test {
     zoom_map_ = nullptr;
 #endif
     handler_registry_ = std::make_unique<ProtocolHandlerRegistry>(
-        profile(), new ProtocolHandlerRegistry::Delegate());
+        profile(), std::make_unique<TestProtocolHandlerRegistryDelegate>());
 
     counter_ = std::make_unique<SiteSettingsCounter>(
         map(), zoom_map(), handler_registry(), profile_->GetPrefs());
@@ -83,7 +91,7 @@ class SiteSettingsCounterTest : public testing::Test {
   }
 
  private:
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
 
   scoped_refptr<HostContentSettingsMap> map_;
@@ -98,10 +106,10 @@ class SiteSettingsCounterTest : public testing::Test {
 TEST_F(SiteSettingsCounterTest, Count) {
   map()->SetContentSettingDefaultScope(
       GURL("http://www.google.com"), GURL("http://www.google.com"),
-      CONTENT_SETTINGS_TYPE_POPUPS, std::string(), CONTENT_SETTING_ALLOW);
+      ContentSettingsType::POPUPS, std::string(), CONTENT_SETTING_ALLOW);
   map()->SetContentSettingDefaultScope(
       GURL("http://maps.google.com"), GURL("http://maps.google.com"),
-      CONTENT_SETTINGS_TYPE_GEOLOCATION, std::string(), CONTENT_SETTING_ALLOW);
+      ContentSettingsType::GEOLOCATION, std::string(), CONTENT_SETTING_ALLOW);
 
   counter()->Restart();
   EXPECT_EQ(2, GetResult());
@@ -109,6 +117,14 @@ TEST_F(SiteSettingsCounterTest, Count) {
 
 // Test that the counter counts correctly when using a time period.
 TEST_F(SiteSettingsCounterTest, CountWithTimePeriod) {
+#if defined(OS_ANDROID)
+  // TODO(crbug.com/981972)
+  if (base::android::BuildInfo::GetInstance()->sdk_int() >=
+      base::android::SDK_VERSION_OREO) {
+    return;
+  }
+#endif
+
   base::SimpleTestClock test_clock;
   map()->SetClockForTesting(&test_clock);
 
@@ -116,20 +132,19 @@ TEST_F(SiteSettingsCounterTest, CountWithTimePeriod) {
   test_clock.SetNow(base::Time::Now() - base::TimeDelta::FromMinutes(90));
   map()->SetContentSettingDefaultScope(
       GURL("http://www.google.com"), GURL("http://www.google.com"),
-      CONTENT_SETTINGS_TYPE_POPUPS, std::string(), CONTENT_SETTING_ALLOW);
+      ContentSettingsType::POPUPS, std::string(), CONTENT_SETTING_ALLOW);
 
   // Create a setting at Now()-30min.
   test_clock.SetNow(base::Time::Now() - base::TimeDelta::FromMinutes(30));
   map()->SetContentSettingDefaultScope(
       GURL("http://maps.google.com"), GURL("http://maps.google.com"),
-      CONTENT_SETTINGS_TYPE_GEOLOCATION, std::string(), CONTENT_SETTING_ALLOW);
+      ContentSettingsType::GEOLOCATION, std::string(), CONTENT_SETTING_ALLOW);
 
   // Create a setting at Now()-31days.
   test_clock.SetNow(base::Time::Now() - base::TimeDelta::FromDays(31));
-  map()->SetContentSettingDefaultScope(GURL("http://www.google.com"),
-                                       GURL("http://www.google.com"),
-                                       CONTENT_SETTINGS_TYPE_NOTIFICATIONS,
-                                       std::string(), CONTENT_SETTING_ALLOW);
+  map()->SetContentSettingDefaultScope(
+      GURL("http://www.google.com"), GURL("http://www.google.com"),
+      ContentSettingsType::NOTIFICATIONS, std::string(), CONTENT_SETTING_ALLOW);
 
   test_clock.SetNow(base::Time::Now());
   // Only one of the settings was created in the last hour.
@@ -147,10 +162,10 @@ TEST_F(SiteSettingsCounterTest, CountWithTimePeriod) {
 TEST_F(SiteSettingsCounterTest, OnlyCountContentSettings) {
   map()->SetContentSettingDefaultScope(
       GURL("http://www.google.com"), GURL("http://www.google.com"),
-      CONTENT_SETTINGS_TYPE_POPUPS, std::string(), CONTENT_SETTING_ALLOW);
+      ContentSettingsType::POPUPS, std::string(), CONTENT_SETTING_ALLOW);
   map()->SetWebsiteSettingDefaultScope(
       GURL("http://maps.google.com"), GURL(),
-      CONTENT_SETTINGS_TYPE_SITE_ENGAGEMENT, std::string(),
+      ContentSettingsType::SITE_ENGAGEMENT, std::string(),
       std::make_unique<base::DictionaryValue>());
 
   counter()->Restart();
@@ -161,7 +176,7 @@ TEST_F(SiteSettingsCounterTest, OnlyCountContentSettings) {
 TEST_F(SiteSettingsCounterTest, CountWebUsbSettings) {
   map()->SetWebsiteSettingDefaultScope(
       GURL("http://www.google.com"), GURL("http://www.google.com"),
-      CONTENT_SETTINGS_TYPE_USB_CHOOSER_DATA, std::string(),
+      ContentSettingsType::USB_CHOOSER_DATA, std::string(),
       std::make_unique<base::DictionaryValue>());
 
   counter()->Restart();
@@ -173,10 +188,10 @@ TEST_F(SiteSettingsCounterTest, CountWebUsbSettings) {
 TEST_F(SiteSettingsCounterTest, OnlyCountPatternOnce) {
   map()->SetContentSettingDefaultScope(
       GURL("http://www.google.com"), GURL("http://www.google.com"),
-      CONTENT_SETTINGS_TYPE_POPUPS, std::string(), CONTENT_SETTING_ALLOW);
+      ContentSettingsType::POPUPS, std::string(), CONTENT_SETTING_ALLOW);
   map()->SetContentSettingDefaultScope(
       GURL("http://www.google.com"), GURL("http://www.google.com"),
-      CONTENT_SETTINGS_TYPE_GEOLOCATION, std::string(), CONTENT_SETTING_ALLOW);
+      ContentSettingsType::GEOLOCATION, std::string(), CONTENT_SETTING_ALLOW);
 
   counter()->Restart();
   EXPECT_EQ(1, GetResult());
@@ -188,7 +203,7 @@ TEST_F(SiteSettingsCounterTest, PrefChanged) {
   SetSiteSettingsDeletionPref(false);
   map()->SetContentSettingDefaultScope(
       GURL("http://www.google.com"), GURL("http://www.google.com"),
-      CONTENT_SETTINGS_TYPE_POPUPS, std::string(), CONTENT_SETTING_ALLOW);
+      ContentSettingsType::POPUPS, std::string(), CONTENT_SETTING_ALLOW);
 
   SetSiteSettingsDeletionPref(true);
   EXPECT_EQ(1, GetResult());
@@ -198,7 +213,7 @@ TEST_F(SiteSettingsCounterTest, PrefChanged) {
 TEST_F(SiteSettingsCounterTest, PeriodChanged) {
   map()->SetContentSettingDefaultScope(
       GURL("http://www.google.com"), GURL("http://www.google.com"),
-      CONTENT_SETTINGS_TYPE_POPUPS, std::string(), CONTENT_SETTING_ALLOW);
+      ContentSettingsType::POPUPS, std::string(), CONTENT_SETTING_ALLOW);
 
   SetDeletionPeriodPref(browsing_data::TimePeriod::LAST_HOUR);
   EXPECT_EQ(1, GetResult());
@@ -219,18 +234,18 @@ TEST_F(SiteSettingsCounterTest, AllSiteSettingsMixed) {
 
   map()->SetContentSettingDefaultScope(
       GURL("https://www.google.com"), GURL("https://www.google.com"),
-      CONTENT_SETTINGS_TYPE_POPUPS, std::string(), CONTENT_SETTING_ALLOW);
+      ContentSettingsType::POPUPS, std::string(), CONTENT_SETTING_ALLOW);
   map()->SetContentSettingDefaultScope(
       GURL("https://maps.google.com"), GURL("https://maps.google.com"),
-      CONTENT_SETTINGS_TYPE_POPUPS, std::string(), CONTENT_SETTING_ALLOW);
+      ContentSettingsType::POPUPS, std::string(), CONTENT_SETTING_ALLOW);
 
   base::Time now = base::Time::Now();
   handler_registry()->OnAcceptRegisterProtocolHandler(
-      ProtocolHandler("test1", GURL("http://www.google.com"), now));
+      ProtocolHandler("news", GURL("http://www.google.com"), now));
   handler_registry()->OnAcceptRegisterProtocolHandler(
-      ProtocolHandler("test1", GURL("http://docs.google.com"), now));
+      ProtocolHandler("news", GURL("http://docs.google.com"), now));
   handler_registry()->OnAcceptRegisterProtocolHandler(
-      ProtocolHandler("test1", GURL("http://slides.google.com"), now));
+      ProtocolHandler("news", GURL("http://slides.google.com"), now));
 
   auto translate_prefs =
       ChromeTranslateClient::CreateTranslatePrefs(profile()->GetPrefs());
@@ -246,12 +261,12 @@ TEST_F(SiteSettingsCounterTest, ProtocolHandlerCounting) {
   base::Time now = base::Time::Now();
 
   handler_registry()->OnAcceptRegisterProtocolHandler(
-      ProtocolHandler("test1", GURL("http://www.google.com"), now));
+      ProtocolHandler("news", GURL("http://www.google.com"), now));
   handler_registry()->OnAcceptRegisterProtocolHandler(
-      ProtocolHandler("test2", GURL("http://maps.google.com"),
+      ProtocolHandler("mailto", GURL("http://maps.google.com"),
                       now - base::TimeDelta::FromMinutes(90)));
-  EXPECT_TRUE(handler_registry()->IsHandledProtocol("test1"));
-  EXPECT_TRUE(handler_registry()->IsHandledProtocol("test2"));
+  EXPECT_TRUE(handler_registry()->IsHandledProtocol("news"));
+  EXPECT_TRUE(handler_registry()->IsHandledProtocol("mailto"));
 
   SetDeletionPeriodPref(browsing_data::TimePeriod::ALL_TIME);
   EXPECT_EQ(2, GetResult());

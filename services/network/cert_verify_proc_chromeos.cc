@@ -44,6 +44,7 @@ int CertVerifyProcChromeOS::VerifyInternal(
     net::X509Certificate* cert,
     const std::string& hostname,
     const std::string& ocsp_response,
+    const std::string& sct_list,
     int flags,
     net::CRLSet* crl_set,
     const net::CertificateList& additional_trust_anchors,

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+  <!-- Web time limit error page data -->
+   <message name="IDS_WEB_TIME_LIMIT_ERROR_PAGE_APP_HEADER" desc="A heading for the user when the web time limit has been reached and page is being shown in PWAs.">
+  <ph name="NAME">$1<ex>App</ex></ph> is paused
+  </message>
+
+  <message name="IDS_WEB_TIME_LIMIT_ERROR_PAGE_APP_MESSAGE" desc="A paragraph informing the user that web time limit has been reached and the error page is being shown in PWAs.">
+  The limit on <ph name="IDS_SHORT_PRODUCT_NAME">$1<ex>Chrome</ex></ph> or <ph name="IDS_SHORT_PRODUCT_NAME">$1<ex>Chrome</ex></ph> apps that your parent set ran out.
+  </message>
+
+  <message name="IDS_WEB_TIME_LIMIT_ERROR_PAGE_CHROME_HEADER" desc="A heading for the user when the web time limit has been reached.">
+  <ph name="IDS_SHORT_PRODUCT_NAME">$1<ex>Chrome</ex></ph> is paused
+  </message>
+
+  <message name="IDS_WEB_TIME_LIMIT_ERROR_PAGE_CHROME_MESSAGE" desc="A paragraph informing the user that web time limit has been reached.">
+  The limit on <ph name="IDS_SHORT_PRODUCT_NAME">$1<ex>Chrome</ex></ph> that your parent set ran out.
+  </message>
+
+  <message name="IDS_WEB_TIME_LIMIT_ERROR_PAGE_NEXT_ACCESS_TIME" desc="A paragraph informing the user the next time the user will be able to use chrome or PWA.">
+    You can use it for <ph name="TIME_LIMIT">$1<ex>1 hour and 30 minutes</ex></ph> tomorrow.
+  </message>
+
+  <message name="IDS_WEB_TIME_LIMIT_ERROR_PAGE_TITLE" desc="The title for the blocked page.">
+    <ph name="IDS_SHORT_PRODUCT_NAME">$1<ex>Chrome</ex></ph> is paused
+  </message>
+
+</grit-part>

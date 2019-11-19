@@ -2,6 +2,12 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
+html,
+body {
+  height: 100%;
+  width: 100%;
+}
+
 body {
   align-content: center;
   display: flex;

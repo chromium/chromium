@@ -1,0 +1,16 @@
+// Copyright 2014 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module network.mojom;
+
+import "services/network/public/mojom/http_raw_headers.mojom";
+
+struct HttpRawRequestResponseInfo {
+  int32 http_status_code;
+  string http_status_text;  // Not present in HTTP/2
+  array<HttpRawHeaderPair> request_headers;
+  array<HttpRawHeaderPair> response_headers;
+  string request_headers_text;
+  string response_headers_text;
+};

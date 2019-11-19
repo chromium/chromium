@@ -28,7 +28,7 @@ SANDBOX_INTERCEPT NtExports g_nt;
 extern void* volatile g_shared_policy_memory;
 SANDBOX_INTERCEPT size_t g_shared_policy_size;
 
-bool QueryBroker(int ipc_id, CountedParameterSetBase* params) {
+bool QueryBroker(IpcTag ipc_id, CountedParameterSetBase* params) {
   DCHECK_NT(static_cast<size_t>(ipc_id) < kMaxServiceCount);
   DCHECK_NT(g_shared_policy_memory);
   DCHECK_NT(g_shared_policy_size > 0);
@@ -39,14 +39,16 @@ bool QueryBroker(int ipc_id, CountedParameterSetBase* params) {
   PolicyGlobal* global_policy =
       reinterpret_cast<PolicyGlobal*>(g_shared_policy_memory);
 
-  if (!global_policy->entry[ipc_id])
+  if (!global_policy->entry[static_cast<size_t>(ipc_id)])
     return false;
 
   PolicyBuffer* policy = reinterpret_cast<PolicyBuffer*>(
       reinterpret_cast<char*>(g_shared_policy_memory) +
-      reinterpret_cast<size_t>(global_policy->entry[ipc_id]));
+      reinterpret_cast<size_t>(
+          global_policy->entry[static_cast<size_t>(ipc_id)]));
 
-  if ((reinterpret_cast<size_t>(global_policy->entry[ipc_id]) >
+  if ((reinterpret_cast<size_t>(
+           global_policy->entry[static_cast<size_t>(ipc_id)]) >
        global_policy->data_size) ||
       (g_shared_policy_size < global_policy->data_size)) {
     NOTREACHED_NT();

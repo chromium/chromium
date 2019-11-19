@@ -12,8 +12,6 @@
             return;
         }
 
-        testRunner.dumpAsTextWithPixelResults();
-
         testRunner.waitUntilDone();
         testRunner.setBackingScaleFactor(2, function () {
             var ctx1 = document.getElementById("c1").getContext("2d");

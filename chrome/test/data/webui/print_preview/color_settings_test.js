@@ -2,62 +2,69 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-cr.define('color_settings_test', function() {
-  suite('ColorSettingsTest', function() {
-    let colorSection = null;
+import 'chrome://print/print_preview.js';
 
-    /** @override */
-    setup(function() {
-      PolymerTest.clearBody();
-      colorSection = document.createElement('print-preview-color-settings');
-      colorSection.settings = {
-        color: {
-          value: true,
-          unavailableValue: false,
-          valid: true,
-          available: true,
-          setByPolicy: false,
-          key: 'isColorEnabled',
-        },
-      };
-      colorSection.disabled = false;
-      document.body.appendChild(colorSection);
-    });
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {isChromeOS} from 'chrome://resources/js/cr.m.js';
+import {selectOption} from 'chrome://test/print_preview/print_preview_test_utils.js';
+import {eventToPromise, fakeDataBind} from 'chrome://test/test_util.m.js';
 
-    // Tests that setting the setting updates the UI.
-    test('set setting', async () => {
-      const select = colorSection.$$('select');
-      assertEquals('color', select.value);
+suite('ColorSettingsTest', function() {
+  /** @type {?PrintPreviewColorSettingsElement} */
+  let colorSection = null;
 
-      colorSection.set('settings.color.value', false);
-      await test_util.eventToPromise('process-select-change', colorSection);
-      assertEquals('bw', select.value);
-    });
+  /** @type {?PrintPreviewModelElement} */
+  let model = null;
 
-    // Tests that selecting a new option in the dropdown updates the setting.
-    test('select option', async () => {
+  /** @override */
+  setup(function() {
+    PolymerTest.clearBody();
+    model = document.createElement('print-preview-model');
+    document.body.appendChild(model);
+
+    colorSection = document.createElement('print-preview-color-settings');
+    colorSection.settings = model.settings;
+    colorSection.disabled = false;
+    fakeDataBind(model, colorSection, 'settings');
+    model.set('settings.color.available', true);
+    document.body.appendChild(colorSection);
+  });
+
+  // Tests that setting the setting updates the UI.
+  test('set setting', async () => {
+    const select = colorSection.$$('select');
+    assertEquals('color', select.value);
+
+    colorSection.setSetting('color', false);
+    await eventToPromise('process-select-change', colorSection);
+    assertEquals('bw', select.value);
+  });
+
+  // Tests that selecting a new option in the dropdown updates the setting.
+  test('select option', async () => {
+    // Verify that the selected option and names are as expected.
+    const select = colorSection.$$('select');
+    assertEquals('color', select.value);
+    assertTrue(colorSection.getSettingValue('color'));
+    assertFalse(colorSection.getSetting('color').setFromUi);
+    assertEquals(2, select.options.length);
+
+    // Verify that selecting an new option in the dropdown sets the setting.
+    await selectOption(colorSection, 'bw');
+    assertFalse(colorSection.getSettingValue('color'));
+    assertTrue(colorSection.getSetting('color').setFromUi);
+  });
+
+  if (isChromeOS) {
+    // Tests that if the setting is enforced by enterprise policy it is
+    // disabled.
+    test('disabled by policy', function() {
       // Verify that the selected option and names are as expected.
       const select = colorSection.$$('select');
-      assertEquals('color', select.value);
-      assertTrue(colorSection.getSettingValue('color'));
-      assertEquals(2, select.options.length);
+      assertFalse(select.disabled);
 
-      // Verify that selecting an new option in the dropdown sets the setting.
-      await print_preview_test_utils.selectOption(colorSection, 'bw');
-      assertFalse(colorSection.getSettingValue('color'));
+      model.set('settings.color.setByPolicy', true);
+      assertTrue(select.disabled);
     });
-
-    if (cr.isChromeOS) {
-      // Tests that if the setting is enforced by enterprise policy it is
-      // disabled.
-      test('disabled by policy', function() {
-        // Verify that the selected option and names are as expected.
-        const select = colorSection.$$('select');
-        assertFalse(select.disabled);
-
-        colorSection.set('settings.color.setByPolicy', true);
-        assertTrue(select.disabled);
-      });
-    }
-  });
+  }
 });

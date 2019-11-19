@@ -15,12 +15,10 @@
 // Disable the whole test case when executing on a computer that has no printer
 // installed.
 // Note: Parent should be testing::Test or InProcessBrowserTest.
-template<typename Parent>
+template <typename Parent>
 class PrintingTest : public Parent {
  public:
-  static bool IsTestCaseDisabled() {
-    return GetDefaultPrinter().empty();
-  }
+  static bool IsTestCaseDisabled() { return GetDefaultPrinter().empty(); }
   static std::wstring GetDefaultPrinter() {
     wchar_t printer_name[MAX_PATH];
     DWORD size = base::size(printer_name);

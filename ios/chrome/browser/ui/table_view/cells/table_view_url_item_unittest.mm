@@ -78,21 +78,6 @@ TEST_F(TableViewURLItemTest, MetadataLabelIsVisibleWhenNonEmpty) {
   EXPECT_FALSE(URLCell.metadataLabel.hidden);
 }
 
-TEST_F(TableViewURLItemTest, ConfigureCellWithStyler) {
-  TableViewURLItem* item = [[TableViewURLItem alloc] initWithType:0];
-  TableViewURLCell* cell = [[[item cellClass] alloc] init];
-  ASSERT_TRUE([cell isMemberOfClass:[TableViewURLCell class]]);
-
-  ChromeTableViewStyler* styler = [[ChromeTableViewStyler alloc] init];
-  UIColor* testColor = [UIColor redColor];
-  styler.tableViewBackgroundColor = testColor;
-  [item configureCell:cell withStyler:styler];
-  EXPECT_NSEQ(testColor, cell.faviconContainerView.backgroundColor);
-  EXPECT_NSEQ(testColor, cell.titleLabel.backgroundColor);
-  EXPECT_NSEQ(testColor, cell.URLLabel.backgroundColor);
-  EXPECT_NSEQ(testColor, cell.metadataLabel.backgroundColor);
-}
-
 // Tests that the suppelemental URL text is appended to the hostname when there
 // is a title.
 TEST_F(TableViewURLItemTest, SupplementalURLTextWithTitle) {

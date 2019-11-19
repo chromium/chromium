@@ -11,32 +11,23 @@
 #include "ash/public/cpp/immersive/immersive_fullscreen_controller_delegate.h"
 #include "base/macros.h"
 #include "base/scoped_observer.h"
+#include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
+#include "chrome/browser/ui/exclusive_access/fullscreen_observer.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
+#include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/gfx/geometry/rect.h"
 
-namespace aura {
-class Window;
-}
-
-namespace ui {
-class EventRewriter;
-}
-
-// See ash/mus/frame/README.md for description of how immersive mode works in
-// mash. This code works with both classic ash, and mash.
 class ImmersiveModeControllerAsh
     : public ImmersiveModeController,
       public ash::ImmersiveFullscreenControllerDelegate,
-      public content::NotificationObserver,
+      public FullscreenObserver,
       public aura::WindowObserver {
  public:
   ImmersiveModeControllerAsh();
   ~ImmersiveModeControllerAsh() override;
 
-  ash::ImmersiveFullscreenController* controller() { return controller_.get(); }
+  ash::ImmersiveFullscreenController* controller() { return &controller_; }
 
   // ImmersiveModeController overrides:
   void Init(BrowserView* browser_view) override;
@@ -57,10 +48,6 @@ class ImmersiveModeControllerAsh
   // Updates the browser root view's layout including window caption controls.
   void LayoutBrowserRootView();
 
-  // See LocatedEventRetargeter.
-  void InstallEventRewriter();
-  void UninstallEventRewriter();
-
   // ImmersiveFullscreenController::Delegate overrides:
   void OnImmersiveRevealStarted() override;
   void OnImmersiveRevealEnded() override;
@@ -69,18 +56,16 @@ class ImmersiveModeControllerAsh
   void SetVisibleFraction(double visible_fraction) override;
   std::vector<gfx::Rect> GetVisibleBoundsInScreen() const override;
 
-  // content::NotificationObserver override:
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
+  // FullscreenObserver:
+  void OnFullscreenStateChanged() override;
 
-  // aura::WindowObserver override:
+  // aura::WindowObserver:
   void OnWindowPropertyChanged(aura::Window* window,
                                const void* key,
                                intptr_t old) override;
   void OnWindowDestroying(aura::Window* window) override;
 
-  std::unique_ptr<ash::ImmersiveFullscreenController> controller_;
+  ash::ImmersiveFullscreenController controller_;
 
   BrowserView* browser_view_ = nullptr;
 
@@ -92,10 +77,8 @@ class ImmersiveModeControllerAsh
   // the top-of-window views are not revealed.
   double visible_fraction_ = 1.0;
 
-  // See comment above LocatedEventRetargeter.
-  std::unique_ptr<ui::EventRewriter> event_rewriter_;
-
-  content::NotificationRegistrar registrar_;
+  ScopedObserver<FullscreenController, FullscreenObserver> fullscreen_observer_{
+      this};
 
   ScopedObserver<aura::Window, aura::WindowObserver> observed_windows_{this};
 

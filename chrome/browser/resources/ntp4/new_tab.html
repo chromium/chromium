@@ -18,15 +18,14 @@
 
 <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
 <link rel="stylesheet" href="../../../../ui/webui/resources/css/bubble.css">
-<link rel="stylesheet" href="../../../../ui/webui/resources/css/expandable_bubble.css">
 <link rel="stylesheet" href="../../../../ui/webui/resources/css/menu.css">
 <link rel="stylesheet" href="../../../../ui/webui/resources/css/menu_button.css">
-<link rel="stylesheet" href="../../../../ui/webui/resources/css/trash.css">
 <link rel="stylesheet" href="../../../../ui/webui/resources/css/widgets.css">
 <link rel="stylesheet" href="apps_page.css">
 <link rel="stylesheet" href="nav_dot.css">
 <link rel="stylesheet" href="new_tab.css">
 <link rel="stylesheet" href="tile_page.css">
+<link rel="stylesheet" href="trash.css">
 <script>
 // Until themes can clear the cache, force-reload the theme stylesheet.
 document.write('<link id="themecss" rel="stylesheet" ' +
@@ -43,14 +42,13 @@ document.write('<link id="themecss" rel="stylesheet" ' +
 <script src="../../../../ui/webui/resources/js/cr/ui/card_slider.js"></script>
 <script src="../../../../ui/webui/resources/js/cr/ui/context_menu_handler.js"></script>
 <script src="../../../../ui/webui/resources/js/cr/ui/drag_wrapper.js"></script>
-<script src="../../../../ui/webui/resources/js/cr/ui/expandable_bubble.js"></script>
 <script src="../../../../ui/webui/resources/js/cr/ui/focus_manager.js"></script>
 <script src="../../../../ui/webui/resources/js/cr/ui/menu_item.js"></script>
 <script src="../../../../ui/webui/resources/js/cr/ui/menu.js"></script>
 <script src="../../../../ui/webui/resources/js/cr/ui/position_util.js"></script>
 <script src="../../../../ui/webui/resources/js/cr/ui/menu_button.js"></script>
-<script src="../../../../ui/webui/resources/js/cr/ui/context_menu_button.js"></script>
 <script src="../../../../ui/webui/resources/js/cr/ui/touch_handler.js"></script>
+<script src="../../../../ui/webui/resources/js/icon.js"></script>
 
 <script src="tile_page.js"></script>
 <script src="apps_page.js"></script>
@@ -82,7 +80,7 @@ document.write('<link id="themecss" rel="stylesheet" ' +
     <div id="footer-border"></div>
     <div id="footer-content">
       <div id="logo-img">
-        <img alt="" src="chrome://theme/IDR_PRODUCT_LOGO">
+        <img alt="" src="chrome://theme/IDR_PRODUCT_LOGO_32">
       </div>
 
       <ul id="dot-list">
@@ -112,23 +110,6 @@ document.write('<link id="themecss" rel="stylesheet" ' +
 
 <!-- A div to hold all the templates, and in the darkness bind them. -->
 <div hidden>
-
-<!-- Login status bubble -->
-<div id="login-status-bubble-contents">
-  <div id="login-status-message-container">
-    <span>$i18n{login_status_message}</span>
-    <a id="login-status-learn-more" href="$i18nRaw{login_status_url}"
-        target="_blank">$i18n{learn_more}</a>
-  </div>
-  <div class="login-status-row">
-    <div id="login-status-advanced-container">
-      <a is="action-link" id="login-status-advanced">
-        $i18n{login_status_advanced}
-      </a>
-    </div>
-    <button id="login-status-dismiss">$i18n{login_status_dismiss}</button>
-  </div>
-</div>
 
 <!-- App Contents w/ Large Icon -->
 <div id="app-large-icon-template" class="app-contents">

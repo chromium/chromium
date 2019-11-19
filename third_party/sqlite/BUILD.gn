@@ -20,6 +20,10 @@ import("//third_party/protobuf/proto_library.gni")
 # https://www.sqlite.org/compile.html
 config("chromium_sqlite3_compile_options") {
   defines = [
+    # Skip writing transaction rollback journals on f2fs.
+    # f2fs tends to be used on Android, and may be used on ChromeOS.
+    "SQLITE_ENABLE_BATCH_ATOMIC_WRITE",
+
     "SQLITE_ENABLE_FTS3",
 
     # New unicode61 tokenizer with built-in tables.
@@ -80,8 +84,8 @@ config("chromium_sqlite3_compile_options") {
     # syntax, for instance SQLITE_OMIT_VIRTUALTABLE omits the virtual table
     # syntax entirely. Missing an item usually results in syntax working but
     # execution failing. Review:
-    #   src/src/parse.py
-    #   src/tool/mkkeywordhash.c
+    #   patched/src/parse.py
+    #   patched/tool/mkkeywordhash.c
 
     # The flags below are recommended in the SQLite documentation, and disable
     # features Chrome doesn't use.
@@ -166,6 +170,13 @@ config("chromium_sqlite3_compile_options") {
 
     # Uses isnan() in the C99 standard library.
     "SQLITE_HAVE_ISNAN",
+
+    # Forces SQLite to only store temporary data in memory.
+    #
+    # This is the only supported setting on Android. Using it everywhere removes
+    # a source of cross-platform variation, and saves us from having to reason
+    # about SQLite storing data in the operating system's temporary directory.
+    "SQLITE_TEMP_STORE=3",
   ]
 
   # On OSX, SQLite has extra logic for detecting the use of network
@@ -270,7 +281,7 @@ config("sqlite_warnings") {
     ]
   }
   if (is_win && !is_clang) {
-    cflags += [ "/wd4101" ]  # 'zTrace' unreferenced variable in src/vdbe.c
+    cflags += [ "/wd4101" ]  # 'zTrace' unreferenced variable in patched/vdbe.c
   }
 }
 
@@ -280,14 +291,11 @@ component("chromium_sqlite3") {
 
   public = [
     "sqlite3.h",
-    "src/src/recover.h",
   ]
 
   sources = [
     "amalgamation/sqlite3.h",
     "sqlite3_shim.c",
-    "src/src/recover.c",
-    "src/src/recover_varint.c",
   ]
 
   inputs = [
@@ -351,7 +359,6 @@ component("chromium_sqlite3") {
     defines += [
       "SQLITE_DEFAULT_JOURNAL_SIZE_LIMIT=1048576",
       "SQLITE_DEFAULT_AUTOVACUUM=1",
-      "SQLITE_TEMP_STORE=3",
     ]
   }
 
@@ -381,28 +388,21 @@ group("sqlite") {
 if (is_win || is_mac || is_linux) {
   executable("sqlite_shell") {
     include_dirs = [
-      # shell.c contains an '#include "sqlite3.h", which we want to be
-      # resolved to //third_party/sqlite/shell.h.
+      # SQLite's shell.c contains an '#include "sqlite3.h", which we want to be
+      # resolved to //third_party/sqlite/sqlite3.h.
       ".",
     ]
 
     sources = [
-      "amalgamation/shell/shell.c",
-
-      # Include a dummy c++ file to force linking of libstdc++.
-      "build_as_cpp.cc",
+      "sqlite_shell_icu_helper.cc",
+      "sqlite_shell_icu_helper.h",
+      "sqlite_shell_shim.c",
     ]
-
-    if (is_linux) {
-      sources += [ "src/src/shell_icu_linux.c" ]
-    }
-
-    if (is_win) {
-      sources += [ "src/src/shell_icu_win.c" ]
-    }
 
     deps = [
       ":sqlite",
+      "//base",
+      "//base:i18n",
       "//third_party/icu",
     ]
 
@@ -422,7 +422,7 @@ if (is_win || is_mac || is_linux) {
 fuzzer_test("sqlite3_ossfuzz_fuzzer") {
   include_dirs = [ "." ]
   sources = [
-    "src/test/ossfuzz.c",
+    "patched/test/ossfuzz.c",
   ]
   deps = [
     ":sqlite",
@@ -582,7 +582,7 @@ if (use_fuzzing_engine) {
   fuzzer_test("sqlite3_dbfuzz2_fuzzer") {
     include_dirs = [ "." ]
     sources = [
-      "src/test/dbfuzz2.c",
+      "patched/test/dbfuzz2.c",
     ]
     deps = [
       ":sqlite",

@@ -5,8 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_AD_TRACKER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_AD_TRACKER_H_
 
+#include "base/feature_list.h"
 #include "base/macros.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/probe/async_task_id.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
@@ -24,10 +26,18 @@ class CallFunction;
 class ExecuteScript;
 }  // namespace probe
 
+namespace features {
+CORE_EXPORT extern const base::Feature kAsyncStackAdTagging;
+CORE_EXPORT extern const base::Feature kTopOfStackAdTagging;
+}
+
 // Tracker for tagging resources as ads based on the call stack scripts.
 // The tracker is maintained per local root.
-class CORE_EXPORT AdTracker : public GarbageCollectedFinalized<AdTracker> {
+class CORE_EXPORT AdTracker : public GarbageCollected<AdTracker> {
  public:
+  // Finds an AdTracker for a given ExecutionContext.
+  static AdTracker* FromExecutionContext(ExecutionContext*);
+
   // Instrumenting methods.
   // Called when a script module or script gets executed from native code.
   void Will(const probe::ExecuteScript&);
@@ -47,6 +57,16 @@ class CORE_EXPORT AdTracker : public GarbageCollectedFinalized<AdTracker> {
                                         const ResourceRequest& request,
                                         ResourceType resource_type,
                                         bool known_ad);
+
+  // Called when an async task is created. Check at this point for ad script on
+  // the stack and annotate the task if so.
+  void DidCreateAsyncTask(probe::AsyncTaskId* task);
+
+  // Called when an async task is eventually run.
+  void DidStartAsyncTask(probe::AsyncTaskId* task);
+
+  // Called when the task has finished running.
+  void DidFinishAsyncTask(probe::AsyncTaskId* task);
 
   // Returns true if any script in the pseudo call stack has previously been
   // identified as an ad resource.
@@ -83,6 +103,12 @@ class CORE_EXPORT AdTracker : public GarbageCollectedFinalized<AdTracker> {
 
   // The set of ad scripts detected outside of ad-frame contexts.
   HeapHashMap<WeakMember<ExecutionContext>, HashSet<String>> known_ad_scripts_;
+
+  // The number of ad-related async tasks currently running in the stack.
+  uint32_t running_ad_async_tasks_ = 0;
+
+  const bool async_stack_enabled_;
+  const bool top_of_stack_only_;
 
   DISALLOW_COPY_AND_ASSIGN(AdTracker);
 };

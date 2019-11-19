@@ -9,24 +9,24 @@
 #include <stdint.h>
 #include <vector>
 
+#include "base/component_export.h"
 #include "ui/base/ime/ime_engine_handler_interface.h"
-#include "ui/base/ime/ui_base_ime_export.h"
 #include "ui/events/event.h"
 
 namespace chromeos {
 
-class UI_BASE_IME_EXPORT MockIMEEngineHandler
+class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) MockIMEEngineHandler
     : public ui::IMEEngineHandlerInterface {
  public:
   MockIMEEngineHandler();
   ~MockIMEEngineHandler() override;
 
+  // ui::IMEEngineHandlerInterface:
   void FocusIn(const InputContext& input_context) override;
   void FocusOut() override;
   void Enable(const std::string& component_id) override;
   void Disable() override;
   void Reset() override;
-  bool IsInterestedInKeyEvent() const override;
   void ProcessKeyEvent(const ui::KeyEvent& key_event,
                        KeyEventDoneCallback callback) override;
   void SetCompositionBounds(const std::vector<gfx::Rect>& bounds) override;

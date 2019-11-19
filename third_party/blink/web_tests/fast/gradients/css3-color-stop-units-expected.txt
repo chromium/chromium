@@ -1,8 +1,0 @@
-These should look the same
- 
-Green stop should coincide with the end of the black line
- 
-Should see a sharp green/yellow transition on the right, at the end of the line
- 
-Should see a sharp green/yellow transition in the right box
- 

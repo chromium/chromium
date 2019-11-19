@@ -12,7 +12,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "device/bluetooth/bluetooth_adapter.h"
-#include "device/bluetooth/bluetooth_uuid.h"
+#include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 #include "device/fido/fido_device_discovery.h"
 
 namespace device {
@@ -50,7 +50,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoBleDiscoveryBase
   scoped_refptr<BluetoothAdapter> adapter_;
   std::unique_ptr<BluetoothDiscoverySession> discovery_session_;
 
-  base::WeakPtrFactory<FidoBleDiscoveryBase> weak_factory_;
+  base::WeakPtrFactory<FidoBleDiscoveryBase> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FidoBleDiscoveryBase);
 };

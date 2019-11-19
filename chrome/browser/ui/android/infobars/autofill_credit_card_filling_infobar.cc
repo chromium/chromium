@@ -8,10 +8,10 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
+#include "chrome/android/chrome_jni_headers/AutofillCreditCardFillingInfoBar_jni.h"
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/infobars/infobar_service.h"
-#include "components/autofill/core/browser/autofill_credit_card_filling_infobar_delegate_mobile.h"
-#include "jni/AutofillCreditCardFillingInfoBar_jni.h"
+#include "components/autofill/core/browser/payments/autofill_credit_card_filling_infobar_delegate_mobile.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"

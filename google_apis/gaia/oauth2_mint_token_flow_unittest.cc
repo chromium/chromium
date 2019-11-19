@@ -16,7 +16,7 @@
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher.h"
 #include "net/base/net_errors.h"
-#include "services/network/public/cpp/resource_response.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -142,7 +142,8 @@ class MockMintTokenFlow : public OAuth2MintTokenFlow {
       : OAuth2MintTokenFlow(delegate, parameters) {}
   ~MockMintTokenFlow() override {}
 
-  MOCK_METHOD0(CreateAccessTokenFetcher, OAuth2AccessTokenFetcher*());
+  MOCK_METHOD0(CreateAccessTokenFetcher,
+               std::unique_ptr<OAuth2AccessTokenFetcher>());
 };
 
 }  // namespace
@@ -168,9 +169,9 @@ class OAuth2MintTokenFlowTest : public testing::Test {
     std::string ext_id = "ext1";
     std::string client_id = "client1";
     std::vector<std::string> scopes(CreateTestScopes());
-    flow_.reset(new MockMintTokenFlow(
+    flow_ = std::make_unique<MockMintTokenFlow>(
         delegate, OAuth2MintTokenFlow::Parameters(ext_id, client_id, scopes,
-                                                  device_id, mode)));
+                                                  device_id, mode));
   }
 
   // Helper to parse the given string to DictionaryValue.
@@ -296,58 +297,61 @@ TEST_F(OAuth2MintTokenFlowTest, ParseIssueAdviceResponse) {
 }
 
 TEST_F(OAuth2MintTokenFlowTest, ProcessApiCallSuccess) {
-  network::ResourceResponseHead head_200 =
-      network::CreateResourceResponseHead(net::HTTP_OK);
+  network::mojom::URLResponseHeadPtr head_200 =
+      network::CreateURLResponseHead(net::HTTP_OK);
 
   {  // No body.
     CreateFlow(OAuth2MintTokenFlow::MODE_MINT_TOKEN_NO_FORCE);
     EXPECT_CALL(delegate_, OnMintTokenFailure(_));
-    flow_->ProcessApiCallSuccess(&head_200, nullptr);
+    flow_->ProcessApiCallSuccess(head_200.get(), nullptr);
   }
   {  // Bad json.
     CreateFlow(OAuth2MintTokenFlow::MODE_MINT_TOKEN_NO_FORCE);
     EXPECT_CALL(delegate_, OnMintTokenFailure(_));
-    flow_->ProcessApiCallSuccess(&head_200,
+    flow_->ProcessApiCallSuccess(head_200.get(),
                                  std::make_unique<std::string>("foo"));
   }
   {  // Valid json: no access token.
     CreateFlow(OAuth2MintTokenFlow::MODE_MINT_TOKEN_NO_FORCE);
     EXPECT_CALL(delegate_, OnMintTokenFailure(_));
     flow_->ProcessApiCallSuccess(
-        &head_200, std::make_unique<std::string>(kTokenResponseNoAccessToken));
+        head_200.get(),
+        std::make_unique<std::string>(kTokenResponseNoAccessToken));
   }
   {  // Valid json: good token response.
     CreateFlow(OAuth2MintTokenFlow::MODE_MINT_TOKEN_NO_FORCE);
     EXPECT_CALL(delegate_, OnMintTokenSuccess("at1", 3600));
     flow_->ProcessApiCallSuccess(
-        &head_200, std::make_unique<std::string>(kValidTokenResponse));
+        head_200.get(), std::make_unique<std::string>(kValidTokenResponse));
   }
   {  // Valid json: no description.
     CreateFlow(OAuth2MintTokenFlow::MODE_ISSUE_ADVICE);
     EXPECT_CALL(delegate_, OnMintTokenFailure(_));
     flow_->ProcessApiCallSuccess(
-        &head_200,
+        head_200.get(),
         std::make_unique<std::string>(kIssueAdviceResponseNoDescription));
   }
   {  // Valid json: no detail.
     CreateFlow(OAuth2MintTokenFlow::MODE_ISSUE_ADVICE);
     EXPECT_CALL(delegate_, OnMintTokenFailure(_));
     flow_->ProcessApiCallSuccess(
-        &head_200, std::make_unique<std::string>(kIssueAdviceResponseNoDetail));
+        head_200.get(),
+        std::make_unique<std::string>(kIssueAdviceResponseNoDetail));
   }
   {  // Valid json: good issue advice response.
     CreateFlow(OAuth2MintTokenFlow::MODE_ISSUE_ADVICE);
     IssueAdviceInfo ia(CreateIssueAdvice());
     EXPECT_CALL(delegate_, OnIssueAdviceSuccess(ia));
     flow_->ProcessApiCallSuccess(
-        &head_200, std::make_unique<std::string>(kValidIssueAdviceResponse));
+        head_200.get(),
+        std::make_unique<std::string>(kValidIssueAdviceResponse));
   }
 }
 
 TEST_F(OAuth2MintTokenFlowTest, ProcessApiCallFailure) {
-  network::ResourceResponseHead head;
+  network::mojom::URLResponseHead head;
   {  // Null delegate should work fine.
-    CreateFlow(NULL, OAuth2MintTokenFlow::MODE_MINT_TOKEN_NO_FORCE, "");
+    CreateFlow(nullptr, OAuth2MintTokenFlow::MODE_MINT_TOKEN_NO_FORCE, "");
     flow_->ProcessApiCallFailure(net::ERR_FAILED, &head, nullptr);
   }
 

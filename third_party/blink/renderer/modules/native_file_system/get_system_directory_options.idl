@@ -1,0 +1,13 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://wicg.github.io/native-file-system/#enumdef-systemdirectorytype
+enum SystemDirectoryType {
+  "sandbox"
+};
+
+// https://wicg.github.io/native-file-system/#dictdef-getsystemdirectoryoptions
+dictionary GetSystemDirectoryOptions {
+  required SystemDirectoryType type;
+};

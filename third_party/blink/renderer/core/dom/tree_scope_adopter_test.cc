@@ -8,14 +8,15 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
 
 // TODO(hayato): It's hard to see what's happening in these tests.
 // It would be better to refactor these tests.
 TEST(TreeScopeAdopterTest, SimpleMove) {
-  Document* doc1 = Document::CreateForTest();
-  Document* doc2 = Document::CreateForTest();
+  auto* doc1 = MakeGarbageCollected<Document>();
+  auto* doc2 = MakeGarbageCollected<Document>();
 
   Element* html1 = doc1->CreateRawElement(html_names::kHTMLTag);
   doc1->AppendChild(html1);
@@ -42,8 +43,8 @@ TEST(TreeScopeAdopterTest, SimpleMove) {
 }
 
 TEST(TreeScopeAdopterTest, AdoptV1ShadowRootToV0Document) {
-  Document* doc1 = Document::CreateForTest();
-  Document* doc2 = Document::CreateForTest();
+  auto* doc1 = MakeGarbageCollected<Document>();
+  auto* doc2 = MakeGarbageCollected<Document>();
 
   Element* html1 = doc1->CreateRawElement(html_names::kHTMLTag);
   doc1->AppendChild(html1);
@@ -78,8 +79,8 @@ TEST(TreeScopeAdopterTest, AdoptV1ShadowRootToV0Document) {
 }
 
 TEST(TreeScopeAdopterTest, AdoptV0ShadowRootToV1Document) {
-  Document* doc1 = Document::CreateForTest();
-  Document* doc2 = Document::CreateForTest();
+  auto* doc1 = MakeGarbageCollected<Document>();
+  auto* doc2 = MakeGarbageCollected<Document>();
 
   Element* html1 = doc1->CreateRawElement(html_names::kHTMLTag);
   doc1->AppendChild(html1);
@@ -114,7 +115,7 @@ TEST(TreeScopeAdopterTest, AdoptV0ShadowRootToV1Document) {
 }
 
 TEST(TreeScopeAdopterTest, AdoptV0InV1ToNewDocument) {
-  Document* old_doc = Document::CreateForTest();
+  auto* old_doc = MakeGarbageCollected<Document>();
   Element* html = old_doc->CreateRawElement(html_names::kHTMLTag);
   old_doc->AppendChild(html);
   Element* host1 = old_doc->CreateRawElement(html_names::kDivTag);
@@ -133,7 +134,7 @@ TEST(TreeScopeAdopterTest, AdoptV0InV1ToNewDocument) {
   //                 └──/shadow-root-v0
   EXPECT_TRUE(old_doc->MayContainV0Shadow());
 
-  Document* new_doc = Document::CreateForTest();
+  auto* new_doc = MakeGarbageCollected<Document>();
   EXPECT_FALSE(new_doc->MayContainV0Shadow());
 
   TreeScopeAdopter adopter(*host1, *new_doc);

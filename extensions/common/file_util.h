@@ -18,6 +18,10 @@
 class ExtensionIconSet;
 class GURL;
 
+namespace extension_l10n_util {
+enum class GzippedMessagesPermission;
+}
+
 namespace extensions {
 class Extension;
 struct InstallWarning;
@@ -127,14 +131,18 @@ bool ValidateExtensionIconSet(const ExtensionIconSet& icon_set,
                               SkColor background_color,
                               std::string* error);
 
-// Loads extension message catalogs and returns message bundle.
-// Returns NULL on error or if the extension is not localized.
-MessageBundle* LoadMessageBundle(const base::FilePath& extension_path,
-                                 const std::string& default_locale,
-                                 std::string* error);
+// Loads extension message catalogs and returns message bundle. Passes
+// |gzip_permission| to extension_l10n_util::LoadMessageCatalogs for
+// trused sources (see extension_l10n_util.h for details).
+// Returns null on error or if the extension is not localized.
+MessageBundle* LoadMessageBundle(
+    const base::FilePath& extension_path,
+    const std::string& default_locale,
+    extension_l10n_util::GzippedMessagesPermission gzip_permission,
+    std::string* error);
 
 // Loads the extension message bundle substitution map. Contains at least
-// the extension_id item.
+// the extension_id item. Does not supported compressed locale files.
 MessageBundle::SubstitutionMap* LoadMessageBundleSubstitutionMap(
     const base::FilePath& extension_path,
     const std::string& extension_id,

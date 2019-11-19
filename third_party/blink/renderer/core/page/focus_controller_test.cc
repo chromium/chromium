@@ -20,7 +20,7 @@ class FocusControllerTest : public PageTestBase {
 
 TEST_F(FocusControllerTest, SetInitialFocus) {
   GetDocument().body()->SetInnerHTMLFromString("<input><textarea>");
-  Element* input = ToElement(GetDocument().body()->firstChild());
+  auto* input = To<Element>(GetDocument().body()->firstChild());
   // Set sequential focus navigation point before the initial focus.
   input->focus();
   input->blur();
@@ -35,12 +35,12 @@ TEST_F(FocusControllerTest, DoNotCrash1) {
       "<div id='host'></div>This test is for crbug.com/609012<p id='target' "
       "tabindex='0'></p>");
   // <div> with shadow root
-  Element* host = ToElement(GetDocument().body()->firstChild());
+  auto* host = To<Element>(GetDocument().body()->firstChild());
   host->AttachShadowRootInternal(ShadowRootType::kOpen);
   // "This test is for crbug.com/609012"
   Node* text = host->nextSibling();
   // <p>
-  Element* target = ToElement(text->nextSibling());
+  auto* target = To<Element>(text->nextSibling());
 
   // Set sequential focus navigation point at text node.
   GetDocument().SetSequentialFocusNavigationStartingPoint(text);
@@ -55,11 +55,11 @@ TEST_F(FocusControllerTest, DoNotCrash2) {
       "<p id='target' tabindex='0'></p>This test is for crbug.com/609012<div "
       "id='host'></div>");
   // <p>
-  Element* target = ToElement(GetDocument().body()->firstChild());
+  auto* target = To<Element>(GetDocument().body()->firstChild());
   // "This test is for crbug.com/609012"
   Node* text = target->nextSibling();
   // <div> with shadow root
-  Element* host = ToElement(text->nextSibling());
+  auto* host = To<Element>(text->nextSibling());
   host->AttachShadowRootInternal(ShadowRootType::kOpen);
 
   // Set sequential focus navigation point at text node.
@@ -90,9 +90,9 @@ TEST_F(FocusControllerTest, SVGFocusableElementInForm) {
       "<input id='last'>"
       "</form>");
 
-  Element* form = ToElement(GetDocument().body()->firstChild());
-  Element* first = ToElement(form->firstChild());
-  Element* last = ToElement(form->lastChild());
+  auto* form = To<Element>(GetDocument().body()->firstChild());
+  auto* first = To<Element>(form->firstChild());
+  auto* last = To<Element>(form->lastChild());
 
   Element* next = GetFocusController().NextFocusableElementInForm(
       first, kWebFocusTypeForward);

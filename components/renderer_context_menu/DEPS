@@ -7,5 +7,5 @@ include_rules = [
   "+ui/views",
   # This directory contains build flags and does not pull all of PPAPI in.
   "+ppapi/buildflags",
-  "+third_party/blink/public/web",
+  "+third_party/blink/public/common",
 ]

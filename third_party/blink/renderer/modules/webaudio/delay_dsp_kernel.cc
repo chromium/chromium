@@ -34,14 +34,10 @@ DelayDSPKernel::DelayDSPKernel(DelayProcessor* processor)
     : AudioDelayDSPKernel(processor, audio_utilities::kRenderQuantumFrames) {
   DCHECK(processor);
   DCHECK_GT(processor->SampleRate(), 0);
-  if (!(processor && processor->SampleRate() > 0))
-    return;
 
   max_delay_time_ = processor->MaxDelayTime();
   DCHECK_GE(max_delay_time_, 0);
   DCHECK(!std::isnan(max_delay_time_));
-  if (max_delay_time_ < 0 || std::isnan(max_delay_time_))
-    return;
 
   buffer_.Allocate(
       BufferLengthForDelay(max_delay_time_, processor->SampleRate()));

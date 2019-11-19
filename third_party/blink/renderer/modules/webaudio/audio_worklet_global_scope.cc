@@ -7,17 +7,18 @@
 #include <memory>
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/stl_util.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_object_parser.h"
 #include "third_party/blink/renderer/bindings/core/v8/worker_or_worklet_script_controller.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_param_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_worklet_processor.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_blink_audio_worklet_process_callback.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_blink_audio_worklet_processor_constructor.h"
 #include "third_party/blink/renderer/core/messaging/message_port.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/core/workers/global_scope_creation_params.h"
@@ -30,18 +31,9 @@
 #include "third_party/blink/renderer/modules/webaudio/cross_thread_audio_worklet_processor_info.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
-#include "third_party/blink/renderer/platform/bindings/v8_binding_macros.h"
-#include "third_party/blink/renderer/platform/bindings/v8_object_constructor.h"
-#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
+#include "third_party/blink/renderer/platform/bindings/callback_method_retriever.h"
 
 namespace blink {
-
-AudioWorkletGlobalScope* AudioWorkletGlobalScope::Create(
-    std::unique_ptr<GlobalScopeCreationParams> creation_params,
-    WorkerThread* thread) {
-  return MakeGarbageCollected<AudioWorkletGlobalScope>(
-      std::move(creation_params), thread);
-}
 
 AudioWorkletGlobalScope::AudioWorkletGlobalScope(
     std::unique_ptr<GlobalScopeCreationParams> creation_params,
@@ -60,7 +52,7 @@ void AudioWorkletGlobalScope::Dispose() {
 
 void AudioWorkletGlobalScope::registerProcessor(
     const String& name,
-    const ScriptValue& class_definition,
+    V8BlinkAudioWorkletProcessorConstructor* processor_ctor,
     ExceptionState& exception_state) {
   DCHECK(IsContextThread());
 
@@ -78,47 +70,52 @@ void AudioWorkletGlobalScope::registerProcessor(
     return;
   }
 
-  v8::Isolate* isolate = ScriptController()->GetScriptState()->GetIsolate();
-  v8::Local<v8::Context> context = ScriptController()->GetContext();
+  if (!processor_ctor->IsConstructor()) {
+    exception_state.ThrowTypeError(
+        "The provided callback is not a constructor.");
+    return;
+  }
 
-  DCHECK(class_definition.V8Value()->IsFunction());
-  v8::Local<v8::Function> constructor =
-      v8::Local<v8::Function>::Cast(class_definition.V8Value());
-
-  v8::Local<v8::Object> prototype;
-  if (!V8ObjectParser::ParsePrototype(context, constructor, &prototype,
-                                      &exception_state))
+  CallbackMethodRetriever retriever(processor_ctor);
+  retriever.GetPrototypeObject(exception_state);
+  if (exception_state.HadException())
     return;
 
-  v8::Local<v8::Function> process;
-  if (!V8ObjectParser::ParseFunction(context, prototype, "process", &process,
-                                     &exception_state))
+  v8::Local<v8::Function> v8_process =
+      retriever.GetMethodOrThrow("process", exception_state);
+  if (exception_state.HadException())
     return;
+  V8BlinkAudioWorkletProcessCallback* process =
+      V8BlinkAudioWorkletProcessCallback::Create(v8_process);
 
   // constructor() and process() functions are successfully parsed from the
   // script code, thus create the definition. The rest of parsing process
   // (i.e. parameterDescriptors) is optional.
   AudioWorkletProcessorDefinition* definition =
-      AudioWorkletProcessorDefinition::Create(isolate, name, constructor,
-                                              process);
-  DCHECK(definition);
+      AudioWorkletProcessorDefinition::Create(name, processor_ctor, process);
 
-  v8::Local<v8::Value> parameter_descriptors_value_local;
-  bool did_get_parameter_descriptor =
-      constructor->Get(context, V8AtomicString(isolate, "parameterDescriptors"))
-          .ToLocal(&parameter_descriptors_value_local);
+  v8::Isolate* isolate = processor_ctor->GetIsolate();
+  v8::Local<v8::Context> current_context = isolate->GetCurrentContext();
 
-  // If parameterDescriptor() is parsed and has a valid value, create a vector
-  // of |AudioParamDescriptor| and pass it to the definition.
-  if (did_get_parameter_descriptor &&
-      !parameter_descriptors_value_local->IsNullOrUndefined()) {
-    HeapVector<Member<AudioParamDescriptor>> audio_param_descriptors =
+  v8::Local<v8::Value> v8_parameter_descriptors;
+  {
+    v8::TryCatch try_catch(isolate);
+    if (!processor_ctor->CallbackObject()
+             ->Get(current_context,
+                   V8AtomicString(isolate, "parameterDescriptors"))
+             .ToLocal(&v8_parameter_descriptors)) {
+      exception_state.RethrowV8Exception(try_catch.Exception());
+      return;
+    }
+  }
+
+  if (!v8_parameter_descriptors->IsNullOrUndefined()) {
+    // Optional 'parameterDescriptors' property is found.
+    const HeapVector<Member<AudioParamDescriptor>>& audio_param_descriptors =
         NativeValueTraits<IDLSequence<AudioParamDescriptor>>::NativeValue(
-            isolate, parameter_descriptors_value_local, exception_state);
-
+            isolate, v8_parameter_descriptors, exception_state);
     if (exception_state.HadException())
       return;
-
     definition->SetAudioParamDescriptors(audio_param_descriptors);
   }
 
@@ -140,44 +137,33 @@ AudioWorkletProcessor* AudioWorkletGlobalScope::CreateProcessor(
   ScriptState::Scope scope(script_state);
 
   // V8 object instance construction: this construction process is here to make
-  // the AudioWorkletProcessor class a thin wrapper of V8::Object instance.
+  // the AudioWorkletProcessor class a thin wrapper of v8::Object instance.
   v8::Isolate* isolate = script_state->GetIsolate();
-  v8::TryCatch block(isolate);
-
-  // Routes errors/exceptions to the dev console.
-  block.SetVerbose(true);
+  v8::TryCatch try_catch(isolate);
+  try_catch.SetVerbose(true);  // Route errors/exceptions to the dev console.
 
   DCHECK(!processor_creation_params_);
-  processor_creation_params_ = std::make_unique<ProcessorCreationParams>(
-      name, std::move(message_port_channel));
+  // There is no way to pass additional constructor arguments that are not
+  // described in Web IDL, the static constructor will look up
+  // |processor_creation_params_| in the global scope to perform the
+  // construction properly.
+  base::AutoReset<std::unique_ptr<ProcessorCreationParams>>
+      processor_creation_extra_param(
+          &processor_creation_params_,
+          std::make_unique<ProcessorCreationParams>(
+              name, std::move(message_port_channel)));
 
-  v8::Local<v8::Value> argv[] = {
-    ToV8(node_options->Deserialize(isolate),
-         script_state->GetContext()->Global(),
-         isolate)
-  };
+  ScriptValue options(isolate,
+                      ToV8(node_options->Deserialize(isolate), script_state));
 
-  // This invokes the static constructor of AudioWorkletProcessor. There is no
-  // way to pass additional constructor arguments that are not described in
-  // WebIDL, the static constructor will look up |processor_creation_params_| in
-  // the global scope to perform the construction properly.
-  v8::Local<v8::Value> result;
-  bool did_construct =
-      V8ScriptRunner::CallAsConstructor(
-          isolate, definition->ConstructorLocal(isolate),
-          ExecutionContext::From(script_state), base::size(argv), argv)
-          .ToLocal(&result);
-  processor_creation_params_.reset();
-
-  // If 1) the attempt to call the constructor fails, 2) an error was thrown
-  // by the user-supplied constructor code. The invalid construction process
-  if (!did_construct || block.HasCaught()) {
+  ScriptValue instance;
+  if (!definition->ConstructorFunction()->Construct(options).To(&instance)) {
     return nullptr;
   }
 
   // ToImplWithTypeCheck() may return nullptr when the type does not match.
   AudioWorkletProcessor* processor =
-      V8AudioWorkletProcessor::ToImplWithTypeCheck(isolate, result);
+      V8AudioWorkletProcessor::ToImplWithTypeCheck(isolate, instance.V8Value());
 
   if (processor) {
     processor_instances_.push_back(processor);
@@ -203,8 +189,8 @@ bool AudioWorkletGlobalScope::Process(
       FindDefinition(processor->Name());
   DCHECK(definition);
 
-  v8::TryCatch block(isolate);
-  block.SetVerbose(true);
+  v8::TryCatch try_catch(isolate);
+  try_catch.SetVerbose(true);
 
   // Prepare arguments of JS callback (inputs, outputs and param_values) with
   // directly using V8 API because the overhead of
@@ -251,15 +237,15 @@ bool AudioWorkletGlobalScope::Process(
   // 2nd arg of JS callback: outputs
   v8::Local<v8::Array> outputs = v8::Array::New(isolate, output_buses->size());
   uint32_t output_bus_counter = 0;
-  // |js_output_raw_ptrs| stores raw pointers to underlying array buffers so
-  // that we can copy them back to |output_buses|. The raw pointers are valid
-  // as long as the v8::ArrayBuffers are alive, i.e. as long as |outputs| is
-  // holding v8::ArrayBuffers.
-  Vector<Vector<void*>> js_output_raw_ptrs;
-  js_output_raw_ptrs.ReserveInitialCapacity(output_buses->size());
+
+  // |output_array_buffers| stores underlying array buffers so that we can copy
+  // them back to |output_buses|.
+  Vector<Vector<v8::Local<v8::ArrayBuffer>>> output_array_buffers;
+  output_array_buffers.ReserveInitialCapacity(output_buses->size());
+
   for (auto* const output_bus : *output_buses) {
-    js_output_raw_ptrs.UncheckedAppend(Vector<void*>());
-    js_output_raw_ptrs.back().ReserveInitialCapacity(
+    output_array_buffers.UncheckedAppend(Vector<v8::Local<v8::ArrayBuffer>>());
+    output_array_buffers.back().ReserveInitialCapacity(
         output_bus->NumberOfChannels());
     v8::Local<v8::Array> channels =
         v8::Array::New(isolate, output_bus->NumberOfChannels());
@@ -282,8 +268,7 @@ bool AudioWorkletGlobalScope::Process(
                .To(&success)) {
         return false;
       }
-      const v8::ArrayBuffer::Contents& contents = array_buffer->GetContents();
-      js_output_raw_ptrs.back().UncheckedAppend(contents.Data());
+      output_array_buffers.back().UncheckedAppend(array_buffer);
     }
   }
 
@@ -320,45 +305,46 @@ bool AudioWorkletGlobalScope::Process(
     memcpy(contents.Data(), param_array->Data(), array_size * sizeof(float));
   }
 
-  v8::Local<v8::Value> argv[] = {inputs, outputs, param_values};
-
   // Perform JS function process() in AudioWorkletProcessor instance. The actual
   // V8 operation happens here to make the AudioWorkletProcessor class a thin
   // wrapper of v8::Object instance.
-  v8::Local<v8::Value> processor_handle = ToV8(processor, script_state);
-  v8::Local<v8::Value> local_result;
-  if (!V8ScriptRunner::CallFunction(definition->ProcessLocal(isolate),
-                                    ExecutionContext::From(script_state),
-                                    processor_handle, base::size(argv), argv,
-                                    isolate)
-           .ToLocal(&local_result) ||
-      block.HasCaught()) {
-    // process() method call method call failed for some reason or an exception
-    // was thrown by the user supplied code. Disable the processor to exclude
-    // it from the subsequent rendering task.
+  ScriptValue result;
+  if (!definition->ProcessFunction()
+           ->Invoke(processor, ScriptValue(isolate, inputs),
+                    ScriptValue(isolate, outputs),
+                    ScriptValue(isolate, param_values))
+           .To(&result)) {
+    // process() method call failed for some reason or an exception was thrown
+    // by the user supplied code. Disable the processor to exclude it from the
+    // subsequent rendering task.
     processor->SetErrorState(AudioWorkletProcessorErrorState::kProcessError);
     return false;
   }
 
-  // TODO(hongchan): Sanity check on length, number of channels, and object
-  // type.
-
   // Copy |sequence<sequence<Float32Array>>| back to the original
-  // |Vector<AudioBus*>|.
+  // |Vector<AudioBus*>|. While iterating, we also check if the size of backing
+  // array buffer is changed. When the size does not match, silence the buffer.
   for (uint32_t output_bus_index = 0; output_bus_index < output_buses->size();
        ++output_bus_index) {
     AudioBus* output_bus = (*output_buses)[output_bus_index];
     for (uint32_t channel_index = 0;
          channel_index < output_bus->NumberOfChannels(); ++channel_index) {
-      memcpy(output_bus->Channel(channel_index)->MutableData(),
-             js_output_raw_ptrs[output_bus_index][channel_index],
-             output_bus->length() * sizeof(float));
+      const v8::ArrayBuffer::Contents& contents =
+          output_array_buffers[output_bus_index][channel_index]->GetContents();
+      const size_t size = output_bus->length() * sizeof(float);
+      if (contents.ByteLength() == size) {
+        memcpy(output_bus->Channel(channel_index)->MutableData(),
+               contents.Data(), size);
+      } else {
+        memset(output_bus->Channel(channel_index)->MutableData(), 0, size);
+      }
     }
   }
 
   // Return the value from the user-supplied |process()| function. It is
   // used to maintain the lifetime of the node and the processor.
-  return local_result->IsTrue() && !block.HasCaught();
+  DCHECK(!try_catch.HasCaught());
+  return result.V8Value()->IsTrue();
 }
 
 AudioWorkletProcessorDefinition* AudioWorkletGlobalScope::FindDefinition(

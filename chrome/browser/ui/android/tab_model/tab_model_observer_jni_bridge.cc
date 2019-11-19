@@ -4,13 +4,14 @@
 
 #include "chrome/browser/ui/android/tab_model/tab_model_observer_jni_bridge.h"
 
+#include "chrome/android/chrome_jni_headers/TabModelObserverJniBridge_jni.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_jni_bridge.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_observer.h"
-#include "jni/TabModelObserverJniBridge_jni.h"
 
 using base::android::AttachCurrentThread;
+using base::android::JavaObjectArrayReader;
 using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
@@ -145,12 +146,10 @@ void TabModelObserverJniBridge::AllTabsPendingClosure(
 
   // |jtabs| is actually a Tab[]. Iterate over the array and convert it to
   // a vector of TabAndroid*.
-  jint size = env->GetArrayLength(jtabs.obj());
-  tabs.reserve(size);
-  for (jint i = 0; i < size; ++i) {
-    jobject jtab = env->GetObjectArrayElement(jtabs.obj(), 0);
-    TabAndroid* tab =
-        TabAndroid::GetNativeTab(env, JavaParamRef<jobject>(env, jtab));
+  JavaObjectArrayReader<jobject> jtabs_array(jtabs);
+  tabs.reserve(jtabs_array.size());
+  for (auto jtab : jtabs_array) {
+    TabAndroid* tab = TabAndroid::GetNativeTab(env, jtab);
     CHECK(tab);
     tabs.push_back(tab);
   }

@@ -16,6 +16,10 @@
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/associated_binding.h"
 
+namespace storage {
+class AsyncDomStorageDatabase;
+}
+
 namespace content {
 
 // Holds the StorageArea for a session storage data map. Every
@@ -38,18 +42,18 @@ class CONTENT_EXPORT SessionStorageDataMap final
     virtual void OnDataMapCreation(const std::vector<uint8_t>& map_id,
                                    SessionStorageDataMap* map) = 0;
     virtual void OnDataMapDestruction(const std::vector<uint8_t>& map_id) = 0;
-    virtual void OnCommitResult(leveldb::mojom::DatabaseError error) = 0;
+    virtual void OnCommitResult(leveldb::Status status) = 0;
   };
 
   static scoped_refptr<SessionStorageDataMap> CreateFromDisk(
       Listener* listener,
       scoped_refptr<SessionStorageMetadata::MapData> map_data,
-      leveldb::mojom::LevelDBDatabase* database);
+      storage::AsyncDomStorageDatabase* database);
 
   static scoped_refptr<SessionStorageDataMap> CreateEmpty(
       Listener* listener,
       scoped_refptr<SessionStorageMetadata::MapData> map_data,
-      leveldb::mojom::LevelDBDatabase* database);
+      storage::AsyncDomStorageDatabase* database);
 
   static scoped_refptr<SessionStorageDataMap> CreateClone(
       Listener* listener,
@@ -73,9 +77,7 @@ class CONTENT_EXPORT SessionStorageDataMap final
   // Note: this is irrelevant, as the parent area is handling binding.
   void OnNoBindings() override {}
 
-  std::vector<leveldb::mojom::BatchedOperationPtr> PrepareToCommit() override;
-
-  void DidCommit(leveldb::mojom::DatabaseError error) override;
+  void DidCommit(leveldb::Status status) override;
 
  private:
   friend class base::RefCounted<SessionStorageDataMap>;
@@ -83,7 +85,7 @@ class CONTENT_EXPORT SessionStorageDataMap final
   SessionStorageDataMap(
       Listener* listener,
       scoped_refptr<SessionStorageMetadata::MapData> map_entry,
-      leveldb::mojom::LevelDBDatabase* database,
+      storage::AsyncDomStorageDatabase* database,
       bool is_empty);
   SessionStorageDataMap(
       Listener* listener,
@@ -91,7 +93,7 @@ class CONTENT_EXPORT SessionStorageDataMap final
       scoped_refptr<SessionStorageDataMap> forking_from);
   ~SessionStorageDataMap() override;
 
-  void OnMapLoaded(leveldb::mojom::DatabaseError error) override;
+  void OnMapLoaded(leveldb::Status status) override;
 
   static StorageAreaImpl::Options GetOptions();
 

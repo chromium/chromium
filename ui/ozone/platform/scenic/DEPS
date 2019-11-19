@@ -1,5 +1,6 @@
 include_rules = [
+  "+gpu/ipc/common",
   "+mojo/public",
   "+third_party/skia/include",
-  "+ui/base/ime",
+  "+gpu/ipc/common",
 ]

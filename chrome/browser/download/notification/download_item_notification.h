@@ -13,6 +13,7 @@
 #include "chrome/browser/download/download_commands.h"
 #include "chrome/browser/download/download_ui_model.h"
 #include "chrome/browser/image_decoder.h"
+#include "chrome/browser/ui/browser.h"
 #include "components/download/public/common/download_item.h"
 #include "components/offline_items_collection/core/offline_item.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -147,7 +148,7 @@ class DownloadItemNotification : public ImageDecoder::ImageRequest,
   // Status of the preview image decode.
   ImageDecodeStatus image_decode_status_ = NOT_STARTED;
 
-  base::WeakPtrFactory<DownloadItemNotification> weak_factory_;
+  base::WeakPtrFactory<DownloadItemNotification> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DownloadItemNotification);
 };

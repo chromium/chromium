@@ -8,7 +8,7 @@
 
 #include "base/metrics/field_trial.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/variations/hashing.h"
@@ -30,9 +30,9 @@ std::string GetNumExperimentsCrashKey() {
 
 class VariationsCrashKeysTest : public ::testing::Test {
  public:
-  VariationsCrashKeysTest() : field_trial_list_(nullptr) {
+  VariationsCrashKeysTest() {
     crash_reporter::ResetCrashKeysForTesting();
-    crash_reporter::InitializeCrashKeys();
+    crash_reporter::InitializeCrashKeysForTesting();
   }
 
   ~VariationsCrashKeysTest() override {
@@ -42,22 +42,14 @@ class VariationsCrashKeysTest : public ::testing::Test {
   }
 
  private:
-  base::test::ScopedTaskEnvironment task_environment_;
-
-  base::FieldTrialList field_trial_list_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
 
   DISALLOW_COPY_AND_ASSIGN(VariationsCrashKeysTest);
 };
 
 }  // namespace
 
-// TODO(crbug.com/821162): Test fails on iOS. Re-enable after fixing.
-#if defined(OS_IOS)
-#define MAYBE_BasicFunctionality DISABLED_BasicFunctionality
-#else
-#define MAYBE_BasicFunctionality BasicFunctionality
-#endif
-TEST_F(VariationsCrashKeysTest, MAYBE_BasicFunctionality) {
+TEST_F(VariationsCrashKeysTest, BasicFunctionality) {
   SyntheticTrialRegistry registry;
   registry.AddSyntheticTrialObserver(
       SyntheticTrialsActiveGroupIdProvider::GetInstance());

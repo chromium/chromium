@@ -8,9 +8,8 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/message_loop/message_loop.h"
 #include "base/strings/string16.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/win/windows_version.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -108,8 +107,7 @@ class MockInputPane
 class OnScreenKeyboardTest : public ::testing::Test {
  protected:
   OnScreenKeyboardTest()
-      : scoped_task_environment_(
-            base::test::ScopedTaskEnvironment::MainThreadType::UI) {}
+      : task_environment_(base::test::TaskEnvironment::MainThreadType::UI) {}
 
   std::unique_ptr<OnScreenKeyboardDisplayManagerTabTip> CreateTabTip() {
     return std::unique_ptr<OnScreenKeyboardDisplayManagerTabTip>(
@@ -123,14 +121,14 @@ class OnScreenKeyboardTest : public ::testing::Test {
 
   void WaitForEventsWithTimeDelay(int64_t time_delta_ms = 10) {
     base::RunLoop run_loop;
-    scoped_task_environment_.GetMainThreadTaskRunner()->PostDelayedTask(
+    task_environment_.GetMainThreadTaskRunner()->PostDelayedTask(
         FROM_HERE, run_loop.QuitClosure(),
         base::TimeDelta::FromMilliseconds(time_delta_ms));
     run_loop.Run();
   }
 
  private:
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
 
   DISALLOW_COPY_AND_ASSIGN(OnScreenKeyboardTest);
 };
@@ -139,7 +137,7 @@ class OnScreenKeyboardTest : public ::testing::Test {
 // from the registry.
 TEST_F(OnScreenKeyboardTest, OSKPath) {
   // The on screen keyboard is only available on Windows 8+.
-  if (base::win::GetVersion() < base::win::VERSION_WIN8)
+  if (base::win::GetVersion() < base::win::Version::WIN8)
     return;
 
   std::unique_ptr<OnScreenKeyboardDisplayManagerTabTip>
@@ -160,32 +158,6 @@ TEST_F(OnScreenKeyboardTest, OSKPath) {
     osk_path = osk_path.substr(1, osk_path.size() - 2);
 
   EXPECT_TRUE(base::PathExists(base::FilePath(osk_path)));
-}
-
-TEST_F(OnScreenKeyboardTest, InputPane) {
-  // InputPane is supported only on RS1 and later.
-  if (base::win::GetVersion() < base::win::VERSION_WIN10_RS1)
-    return;
-  std::unique_ptr<OnScreenKeyboardDisplayManagerInputPane>
-      keyboard_display_manager = CreateInputPane();
-
-  std::unique_ptr<MockInputMethodKeyboardControllerObserver> observer =
-      std::make_unique<MockInputMethodKeyboardControllerObserver>();
-
-  Microsoft::WRL::ComPtr<MockInputPane> input_pane =
-      Microsoft::WRL::Make<MockInputPane>();
-  keyboard_display_manager->SetInputPaneForTesting(input_pane);
-
-  EXPECT_CALL(*observer, OnKeyboardVisible(testing::_)).Times(1);
-  keyboard_display_manager->AddObserver(observer.get());
-  keyboard_display_manager->DisplayVirtualKeyboard();
-  WaitForEventsWithTimeDelay(100);
-
-  testing::Mock::VerifyAndClearExpectations(observer.get());
-  EXPECT_CALL(*observer, OnKeyboardHidden()).Times(1);
-  keyboard_display_manager->DismissVirtualKeyboard();
-  WaitForEventsWithTimeDelay(100);
-  keyboard_display_manager->RemoveObserver(observer.get());
 }
 
 }  // namespace ui

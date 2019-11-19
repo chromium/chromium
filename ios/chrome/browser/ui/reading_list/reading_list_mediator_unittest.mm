@@ -10,6 +10,7 @@
 #include "base/test/simple_test_clock.h"
 #include "components/favicon/core/large_icon_service_impl.h"
 #include "components/favicon/core/test/mock_favicon_service.h"
+#include "components/favicon_base/favicon_types.h"
 #include "components/reading_list/core/reading_list_model_impl.h"
 #include "components/url_formatter/url_formatter.h"
 #import "ios/chrome/browser/favicon/favicon_loader.h"
@@ -18,7 +19,7 @@
 #import "ios/chrome/browser/ui/reading_list/reading_list_list_item_custom_action_factory.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_list_item_factory.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_table_view_item.h"
-#include "ios/web/public/test/test_web_thread_bundle.h"
+#include "ios/web/public/test/web_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
@@ -48,8 +49,14 @@ class ReadingListMediatorTest
     model_ = std::make_unique<ReadingListModelImpl>(nullptr, nullptr, &clock_);
     EXPECT_CALL(mock_favicon_service_,
                 GetLargestRawFaviconForPageURL(_, _, _, _, _))
-        .WillRepeatedly(
-            favicon::PostReply<5>(favicon_base::FaviconRawBitmapResult()));
+        .WillRepeatedly([](auto, auto, auto,
+                           favicon_base::FaviconRawBitmapCallback callback,
+                           base::CancelableTaskTracker* tracker) {
+          return tracker->PostTask(
+              base::ThreadTaskRunnerHandle::Get().get(), FROM_HERE,
+              base::BindOnce(std::move(callback),
+                             favicon_base::FaviconRawBitmapResult()));
+        });
 
     no_title_entry_url_ = GURL("http://chromium.org/unread3");
     // The first 3 have the same update time on purpose.
@@ -68,7 +75,11 @@ class ReadingListMediatorTest
                      reading_list::ADDED_VIA_CURRENT_APP);
     model_->SetReadStatus(GURL("http://chromium.org/read2"), true);
     large_icon_service_.reset(new favicon::LargeIconServiceImpl(
-        &mock_favicon_service_, /*image_fetcher=*/nullptr));
+        &mock_favicon_service_, /*image_fetcher=*/nullptr,
+        /*desired_size_in_dip_for_server_requests=*/24,
+        /*icon_type_for_server_requests=*/
+        favicon_base::IconType::kTouchIcon,
+        /*google_server_client_param=*/"test_chrome"));
 
     favicon_loader.reset(new FaviconLoader(large_icon_service_.get()));
     mediator_ = [[ReadingListMediator alloc]
@@ -87,7 +98,7 @@ class ReadingListMediatorTest
   std::unique_ptr<favicon::LargeIconServiceImpl> large_icon_service_;
 
  private:
-  web::TestWebThreadBundle thread_bundle_;
+  web::WebTaskEnvironment task_environment_;
   DISALLOW_COPY_AND_ASSIGN(ReadingListMediatorTest);
 };
 

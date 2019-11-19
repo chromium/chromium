@@ -334,10 +334,10 @@ TEST(PerformanceLogger, RecordTraceEvents) {
   auto trace_events = std::make_unique<base::ListValue>();
   auto event1 = std::make_unique<base::DictionaryValue>();
   event1->SetString("cat", "foo");
-  trace_events->GetList().push_back(event1->Clone());
+  trace_events->Append(event1->Clone());
   auto event2 = std::make_unique<base::DictionaryValue>();
   event2->SetString("cat", "bar");
-  trace_events->GetList().push_back(event2->Clone());
+  trace_events->Append(event2->Clone());
   params.Set("value", std::move(trace_events));
   ASSERT_EQ(kOk, client.TriggerEvent("Tracing.dataCollected", params).code());
 

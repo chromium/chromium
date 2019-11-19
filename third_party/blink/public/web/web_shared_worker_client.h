@@ -31,15 +31,12 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_SHARED_WORKER_CLIENT_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_SHARED_WORKER_CLIENT_H_
 
+#include "mojo/public/cpp/system/message_pipe.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom-shared.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/public/platform/web_worker_fetch_context.h"
 
 namespace blink {
-
-class WebApplicationCacheHost;
-class WebApplicationCacheHostClient;
-class WebServiceWorkerNetworkProvider;
 
 // Provides an interface back to the in-page script object for a worker.
 // All functions are expected to be called back on the thread that created
@@ -52,41 +49,16 @@ class WebSharedWorkerClient {
   virtual void CountFeature(mojom::WebFeature) = 0;
   virtual void WorkerContextClosed() = 0;
   virtual void WorkerContextDestroyed() = 0;
-  virtual void WorkerReadyForInspection() {}
-  virtual void WorkerScriptLoaded() = 0;
+  virtual void WorkerReadyForInspection(
+      mojo::ScopedMessagePipeHandle devtools_agent_ptr_info,
+      mojo::ScopedMessagePipeHandle devtools_agent_host_request) {}
   virtual void WorkerScriptLoadFailed() = 0;
   virtual void WorkerScriptEvaluated(bool success) = 0;
-  virtual void SelectAppCacheID(long long) = 0;
 
-  // Called on the main webkit thread in the worker process during
-  // initialization.
-  virtual std::unique_ptr<WebApplicationCacheHost> CreateApplicationCacheHost(
-      WebApplicationCacheHostClient*) = 0;
-
-  // Called on the main thread during initialization, before requesting the main
-  // script resource. Creates the WebServiceWorkerNetworkProvider which is used
-  // for script loading (i.e., the main script and importScripts). Other
-  // requests (e.g., fetch and XHR) go through WebWorkerFetchContext.
-  virtual std::unique_ptr<WebServiceWorkerNetworkProvider>
-  CreateServiceWorkerNetworkProvider() = 0;
-
-  // Called on the main thread during initialization, after the main script
-  // resource finished loading. Creates a new WebWorkerFetchContext for the
-  // shared worker. This is passed to the worker thread and used for non-script
-  // loading requests from the shared worker (e.g., fetch and XHR). Requests for
-  // script loading (i.e., the main script and importScripts) go through
-  // WebServiceWorkerNetworkProvider.
-  virtual scoped_refptr<WebWorkerFetchContext> CreateWorkerFetchContext(
-      WebServiceWorkerNetworkProvider*) = 0;
-
-  // Called on the main thread during initialization. The browser process is
-  // expected to send a SetController IPC before sending the script response if
-  // appropriate, but there is no ordering guarantee of the messages on the
-  // renderer. This waits for the SetController IPC to be received if it was
-  // sent.
-  virtual void WaitForServiceWorkerControllerInfo(
-      blink::WebServiceWorkerNetworkProvider* web_network_provider,
-      base::OnceClosure callback) = 0;
+  // Called on the main thread during initialization. Creates a new
+  // WebWorkerFetchContext for the shared worker. This is passed to the worker
+  // thread and used loading requests from the shared worker.
+  virtual scoped_refptr<WebWorkerFetchContext> CreateWorkerFetchContext() = 0;
 };
 
 }  // namespace blink

@@ -77,10 +77,15 @@ class TestContextSupport : public gpu::ContextSupport {
   void DeleteTransferCacheEntry(uint32_t entry_type,
                                 uint32_t entry_id) override;
   unsigned int GetTransferBufferFreeSize() const override;
+  bool IsJpegDecodeAccelerationSupported() const override;
+  bool IsWebPDecodeAccelerationSupported() const override;
+  bool CanDecodeWithHardwareAcceleration(
+      const cc::ImageHeaderMetadata* image_metadata) const override;
   bool HasGrContextSupport() const override;
   void SetGrContext(GrContext* gr) override;
   void WillCallGLFromSkia() override;
   void DidCallGLFromSkia() override;
+  void SetDisplayTransform(gfx::OverlayTransform transform) override {}
 
   void CallAllSyncPointCallbacks();
 
@@ -106,7 +111,7 @@ class TestContextSupport : public gpu::ContextSupport {
   ScheduleOverlayPlaneCallback schedule_overlay_plane_callback_;
   bool out_of_order_callbacks_;
 
-  base::WeakPtrFactory<TestContextSupport> weak_ptr_factory_;
+  base::WeakPtrFactory<TestContextSupport> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(TestContextSupport);
 };

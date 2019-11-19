@@ -27,36 +27,40 @@
 #include "third_party/blink/renderer/core/paint/clip_rect.h"
 
 #include "third_party/blink/renderer/core/layout/hit_test_location.h"
+#include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/graphics/paint/float_clip_rect.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
 ClipRect::ClipRect()
-    : rect_(LayoutRect::InfiniteIntRect()),
+    : rect_(PhysicalRect::InfiniteIntRect()),
       has_radius_(false),
       is_infinite_(true) {}
 
-ClipRect::ClipRect(const FloatClipRect& rect)
-    : rect_(rect.Rect()),
-      has_radius_(rect.HasRadius()),
-      is_infinite_(rect.IsInfinite()) {}
+ClipRect::ClipRect(const FloatClipRect& rect) {
+  SetRectInternal(rect);
+}
 
 void ClipRect::SetRect(const FloatClipRect& rect) {
   if (rect.IsInfinite() && IsInfinite())
     return;
-  rect_ = LayoutRect(rect.Rect());
-  has_radius_ = rect.HasRadius();
-  is_infinite_ = rect.IsInfinite();
+  SetRectInternal(rect);
 }
 
-void ClipRect::SetRect(const LayoutRect& rect) {
+void ClipRect::SetRectInternal(const FloatClipRect& rect) {
+  has_radius_ = rect.HasRadius();
+  is_infinite_ = rect.IsInfinite();
+  rect_ = PhysicalRect::FastAndLossyFromFloatRect(rect.Rect());
+}
+
+void ClipRect::SetRect(const PhysicalRect& rect) {
   rect_ = rect;
   has_radius_ = false;
   is_infinite_ = false;
 }
 
-void ClipRect::Intersect(const LayoutRect& other) {
+void ClipRect::Intersect(const PhysicalRect& other) {
   if (IsInfinite()) {
     rect_ = other;
     is_infinite_ = false;
@@ -84,7 +88,7 @@ void ClipRect::Reset() {
     return;
   has_radius_ = true;
   is_infinite_ = true;
-  rect_ = LayoutRect(LayoutRect::InfiniteIntRect());
+  rect_ = PhysicalRect(LayoutRect::InfiniteIntRect());
 }
 
 String ClipRect::ToString() const {

@@ -63,7 +63,7 @@ void AlternateNavInfoBarView::ElideLabels(Labels* labels, int available_width) {
   if (last_label_width < last_label->GetMinimumSize().width()) {
     last_label_width = 0;
     if (!labels->empty())
-      labels->back()->SetText(labels->back()->text() + gfx::kEllipsisUTF16);
+      labels->back()->SetText(labels->back()->GetText() + gfx::kEllipsisUTF16);
   }
   last_label->SetSize(gfx::Size(last_label_width, last_label->height()));
   if (!labels->empty())

@@ -1,0 +1,21 @@
+Verifies that cookies blocked for a request of a subdomain of the cookie's domain are included in the blocked cookies of Network.RequestWillBeSentExtraInfo events.
+
+requestWillBeSentExtraInfo blocked cookies: [
+  {
+    "blockedReasons": [
+      "DomainMismatch"
+    ],
+    "cookie": {
+      "name": "name",
+      "value": "value",
+      "domain": "cookie.test",
+      "path": "/inspector-protocol/network/resources",
+      "expires": -1,
+      "size": 9,
+      "httpOnly": false,
+      "secure": false,
+      "session": true
+    }
+  }
+]
+

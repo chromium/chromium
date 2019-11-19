@@ -35,6 +35,10 @@ std::string GetCrashKeyValue(const std::string& key_name) {
   return std::string();
 }
 
+void InitializeCrashKeysForTesting() {
+  InitializeCrashKeys();
+}
+
 void ResetCrashKeysForTesting() {
   // The AnnotationList should not be deleted because the static Annotation
   // object data still reference the link nodes.

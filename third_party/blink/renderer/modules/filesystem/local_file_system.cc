@@ -44,32 +44,20 @@
 #include "third_party/blink/renderer/core/fileapi/file_error.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
-#include "third_party/blink/renderer/core/workers/worker_global_scope.h"
-#include "third_party/blink/renderer/modules/filesystem/async_file_system_callbacks.h"
 #include "third_party/blink/renderer/modules/filesystem/dom_file_system.h"
-#include "third_party/blink/renderer/modules/filesystem/file_system_client.h"
+#include "third_party/blink/renderer/modules/filesystem/file_system_callbacks.h"
 #include "third_party/blink/renderer/modules/filesystem/file_system_dispatcher.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 namespace blink {
 
-namespace {
-
-void ReportFailure(std::unique_ptr<AsyncFileSystemCallbacks> callbacks,
-                   base::File::Error error) {
-  callbacks->DidFail(error);
-}
-
-}  // namespace
-
 LocalFileSystem::~LocalFileSystem() = default;
 
-void LocalFileSystem::ResolveURL(
-    ExecutionContext* context,
-    const KURL& file_system_url,
-    std::unique_ptr<AsyncFileSystemCallbacks> callbacks,
-    SynchronousType type) {
+void LocalFileSystem::ResolveURL(ExecutionContext* context,
+                                 const KURL& file_system_url,
+                                 std::unique_ptr<ResolveURICallbacks> callbacks,
+                                 SynchronousType type) {
   RequestFileSystemAccessInternal(
       context,
       WTF::Bind(&LocalFileSystem::ResolveURLCallback,
@@ -80,7 +68,7 @@ void LocalFileSystem::ResolveURL(
 void LocalFileSystem::ResolveURLCallback(
     ExecutionContext* context,
     const KURL& file_system_url,
-    std::unique_ptr<AsyncFileSystemCallbacks> callbacks,
+    std::unique_ptr<ResolveURICallbacks> callbacks,
     SynchronousType sync_type,
     bool allowed) {
   if (allowed) {
@@ -94,8 +82,8 @@ void LocalFileSystem::ResolveURLCallback(
 void LocalFileSystem::RequestFileSystem(
     ExecutionContext* context,
     mojom::blink::FileSystemType type,
-    long long size,
-    std::unique_ptr<AsyncFileSystemCallbacks> callbacks,
+    int64_t size,
+    std::unique_ptr<FileSystemCallbacks> callbacks,
     SynchronousType sync_type) {
   RequestFileSystemAccessInternal(
       context,
@@ -107,7 +95,7 @@ void LocalFileSystem::RequestFileSystem(
 void LocalFileSystem::RequestFileSystemCallback(
     ExecutionContext* context,
     mojom::blink::FileSystemType type,
-    std::unique_ptr<AsyncFileSystemCallbacks> callbacks,
+    std::unique_ptr<FileSystemCallbacks> callbacks,
     SynchronousType sync_type,
     bool allowed) {
   if (allowed) {
@@ -120,30 +108,50 @@ void LocalFileSystem::RequestFileSystemCallback(
 void LocalFileSystem::RequestFileSystemAccessInternal(
     ExecutionContext* context,
     base::OnceCallback<void(bool)> callback) {
-  if (!context->IsDocument()) {
-    if (!Client().RequestFileSystemAccessSync(context)) {
-      std::move(callback).Run(false);
-      return;
+  if (context->IsDocument()) {
+    auto* client =
+        To<Document>(context)->GetFrame()->GetContentSettingsClient();
+    if (!client) {
+      std::move(callback).Run(true);
+    } else {
+      client->RequestFileSystemAccessAsync(std::move(callback));
     }
-    std::move(callback).Run(true);
     return;
   }
-  Client().RequestFileSystemAccessAsync(context, std::move(callback));
+  if (context->IsWorkerGlobalScope()) {
+    auto* client = To<WorkerGlobalScope>(context)->ContentSettingsClient();
+    if (!client) {
+      std::move(callback).Run(true);
+    } else {
+      std::move(callback).Run(client->RequestFileSystemAccessSync());
+    }
+    return;
+  }
+  NOTREACHED();
 }
 
 void LocalFileSystem::FileSystemNotAllowedInternal(
     ExecutionContext* context,
-    std::unique_ptr<AsyncFileSystemCallbacks> callbacks) {
+    std::unique_ptr<FileSystemCallbacks> callbacks) {
   context->GetTaskRunner(TaskType::kFileReading)
-      ->PostTask(FROM_HERE,
-                 WTF::Bind(&ReportFailure, WTF::Passed(std::move(callbacks)),
-                           base::File::FILE_ERROR_ABORT));
+      ->PostTask(FROM_HERE, WTF::Bind(&FileSystemCallbacks::DidFail,
+                                      WTF::Passed(std::move(callbacks)),
+                                      base::File::FILE_ERROR_ABORT));
+}
+
+void LocalFileSystem::FileSystemNotAllowedInternal(
+    ExecutionContext* context,
+    std::unique_ptr<ResolveURICallbacks> callbacks) {
+  context->GetTaskRunner(TaskType::kFileReading)
+      ->PostTask(FROM_HERE, WTF::Bind(&ResolveURICallbacks::DidFail,
+                                      WTF::Passed(std::move(callbacks)),
+                                      base::File::FILE_ERROR_ABORT));
 }
 
 void LocalFileSystem::FileSystemAllowedInternal(
     ExecutionContext* context,
     mojom::blink::FileSystemType type,
-    std::unique_ptr<AsyncFileSystemCallbacks> callbacks,
+    std::unique_ptr<FileSystemCallbacks> callbacks,
     SynchronousType sync_type) {
   FileSystemDispatcher& dispatcher = FileSystemDispatcher::From(context);
   if (sync_type == kSynchronous) {
@@ -158,7 +166,7 @@ void LocalFileSystem::FileSystemAllowedInternal(
 void LocalFileSystem::ResolveURLInternal(
     ExecutionContext* context,
     const KURL& file_system_url,
-    std::unique_ptr<AsyncFileSystemCallbacks> callbacks,
+    std::unique_ptr<ResolveURICallbacks> callbacks,
     SynchronousType sync_type) {
   FileSystemDispatcher& dispatcher = FileSystemDispatcher::From(context);
   if (sync_type == kSynchronous) {
@@ -168,21 +176,15 @@ void LocalFileSystem::ResolveURLInternal(
   }
 }
 
-LocalFileSystem::LocalFileSystem(LocalFrame& frame,
-                                 std::unique_ptr<FileSystemClient> client)
-    : Supplement<LocalFrame>(frame), client_(std::move(client)) {
-  DCHECK(client_);
-}
+LocalFileSystem::LocalFileSystem(LocalFrame& frame)
+    : Supplement<LocalFrame>(frame) {}
 
-LocalFileSystem::LocalFileSystem(WorkerClients& worker_clients,
-                                 std::unique_ptr<FileSystemClient> client)
-    : Supplement<WorkerClients>(worker_clients), client_(std::move(client)) {
-  DCHECK(client_);
-}
+LocalFileSystem::LocalFileSystem(WorkerGlobalScope& worker_global_scope)
+    : Supplement<WorkerGlobalScope>(worker_global_scope) {}
 
 void LocalFileSystem::Trace(blink::Visitor* visitor) {
   Supplement<LocalFrame>::Trace(visitor);
-  Supplement<WorkerClients>::Trace(visitor);
+  Supplement<WorkerGlobalScope>::Trace(visitor);
 }
 
 const char LocalFileSystem::kSupplementName[] = "LocalFileSystem";
@@ -195,25 +197,21 @@ LocalFileSystem* LocalFileSystem::From(ExecutionContext& context) {
     return file_system;
   }
 
-  WorkerClients* clients = To<WorkerGlobalScope>(context).Clients();
-  DCHECK(clients);
   LocalFileSystem* file_system =
-      Supplement<WorkerClients>::From<LocalFileSystem>(clients);
+      Supplement<WorkerGlobalScope>::From<LocalFileSystem>(
+          To<WorkerGlobalScope>(context));
   DCHECK(file_system);
   return file_system;
 }
 
-void ProvideLocalFileSystemTo(LocalFrame& frame,
-                              std::unique_ptr<FileSystemClient> client) {
-  frame.ProvideSupplement(
-      MakeGarbageCollected<LocalFileSystem>(frame, std::move(client)));
+void ProvideLocalFileSystemTo(LocalFrame& frame) {
+  frame.ProvideSupplement(MakeGarbageCollected<LocalFileSystem>(frame));
 }
 
-void ProvideLocalFileSystemToWorker(WorkerClients* worker_clients,
-                                    std::unique_ptr<FileSystemClient> client) {
-  Supplement<WorkerClients>::ProvideTo(*worker_clients,
-                                       MakeGarbageCollected<LocalFileSystem>(
-                                           *worker_clients, std::move(client)));
+void ProvideLocalFileSystemToWorker(WorkerGlobalScope& worker_global_scope) {
+  Supplement<WorkerGlobalScope>::ProvideTo(
+      worker_global_scope,
+      MakeGarbageCollected<LocalFileSystem>(worker_global_scope));
 }
 
 }  // namespace blink

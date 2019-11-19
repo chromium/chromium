@@ -5,8 +5,6 @@
 package org.chromium.chrome.browser.download;
 
 import android.content.Context;
-import android.content.Intent;
-import android.os.Bundle;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.filters.SmallTest;
 import android.text.format.DateUtils;
@@ -18,19 +16,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.browser.download.ui.DownloadHistoryItemWrapper;
-import org.chromium.chrome.browser.download.ui.DownloadHistoryItemWrapper.OfflineItemWrapper;
+import org.chromium.chrome.browser.ChromeFeatureList;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.components.offline_items_collection.OfflineItem.Progress;
 import org.chromium.components.offline_items_collection.OfflineItemProgressUnit;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Tests of {@link DownloadUtils}.
@@ -47,12 +39,16 @@ public class DownloadUtilsTest {
     private static final String ITEM_ID = "42";
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         RecordHistogram.setDisabledForTests(true);
+
+        HashMap<String, Boolean> features = new HashMap<String, Boolean>();
+        features.put(ChromeFeatureList.DOWNLOAD_FILE_PROVIDER, false);
+        ChromeFeatureList.setTestFeatures(features);
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         RecordHistogram.setDisabledForTests(false);
     }
 
@@ -136,67 +132,5 @@ public class DownloadUtilsTest {
         progress = new Progress(5, Long.valueOf(5), OfflineItemProgressUnit.FILES);
         Assert.assertEquals(100, progress.getPercentage());
         Assert.assertEquals("0 files left", DownloadUtils.formatRemainingFiles(context, progress));
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Download"})
-    public void testCreateShareIntentHasTitle() {
-        // Create an item list with a single item.
-        List<DownloadHistoryItemWrapper> items = new ArrayList<DownloadHistoryItemWrapper>();
-        OfflineItem offlineItem = new OfflineItem();
-        offlineItem.title = OFFLINE_ITEM_TITLE;
-        offlineItem.description = OFFLINE_ITEM_DESCRIPTION;
-        offlineItem.filePath = FILE_PATH;
-        offlineItem.mimeType = MULTIPART_RELATED;
-        OfflineItemWrapper itemWrapper =
-                OfflineItemWrapper.createOfflineItemWrapperForTest(offlineItem);
-        items.add(itemWrapper);
-
-        // Create a map matching the id to a filename.
-        Map<String, String> offlineFilePathMap = new HashMap<String, String>();
-        offlineFilePathMap.put(ITEM_ID, FILE_PATH);
-
-        // Call the share function.
-        Intent shareIntent = DownloadUtils.createShareIntent(items, offlineFilePathMap);
-
-        // Check the resulting share intent.
-        Assert.assertEquals("multipart/related", shareIntent.getType());
-        Assert.assertEquals(Intent.ACTION_SEND, shareIntent.getAction());
-
-        // Check that the resulting share intent has extra subject set for the title.
-        Bundle extras = shareIntent.getExtras();
-        Assert.assertNotNull(extras);
-        String subject = extras.getString(Intent.EXTRA_SUBJECT);
-        Assert.assertEquals(OFFLINE_ITEM_TITLE, subject);
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Download"})
-    @CommandLineFlags.Add({"enable-features=OfflinePagesSharing"})
-    public void testCreateShareIntentOfflinePageWithContentUri() {
-        // Create an item list with a single item representing an offline page.
-        List<DownloadHistoryItemWrapper> items = new ArrayList<DownloadHistoryItemWrapper>();
-        // OfflineItem represents an offline page.
-        OfflineItem offlineItem = new OfflineItem();
-        offlineItem.title = OFFLINE_ITEM_TITLE;
-        offlineItem.description = OFFLINE_ITEM_DESCRIPTION;
-        offlineItem.filePath = TEMP_FILE_PATH;
-        offlineItem.mimeType = MULTIPART_RELATED;
-        offlineItem.isSuggested = true;
-        OfflineItemWrapper itemWrapper =
-                OfflineItemWrapper.createOfflineItemWrapperForTest(offlineItem);
-        items.add(itemWrapper);
-
-        // Create a map matching the id to a filename.
-        Map<String, String> offlineFilePathMap = new HashMap<String, String>();
-
-        // Call the share function.
-        Intent shareIntent = DownloadUtils.createShareIntent(items, offlineFilePathMap);
-
-        // Check the resulting share intent.
-        Assert.assertEquals("multipart/related", shareIntent.getType());
-        Assert.assertEquals(Intent.ACTION_SEND, shareIntent.getAction());
     }
 }

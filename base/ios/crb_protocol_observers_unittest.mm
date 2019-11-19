@@ -5,7 +5,6 @@
 #import "base/ios/crb_protocol_observers.h"
 #include "base/ios/weak_nsobject.h"
 #include "base/logging.h"
-#include "base/mac/scoped_nsautorelease_pool.h"
 #include "base/mac/scoped_nsobject.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
@@ -122,11 +121,10 @@ TEST_F(CRBProtocolObserversTest, WeakReference) {
 
   [observers_ addObserver:partial_observer_];
 
-  {
-    // Need an autorelease pool here, because
-    // -[CRBProtocolObservers forwardInvocation:] creates a temporary
-    // autoreleased array that holds all the observers.
-    base::mac::ScopedNSAutoreleasePool pool;
+  // Need an autorelease pool here, because
+  // -[CRBProtocolObservers forwardInvocation:] creates a temporary
+  // autoreleased array that holds all the observers.
+  @autoreleasepool {
     [observers_ requiredMethod];
     EXPECT_TRUE([partial_observer_ requiredMethodInvoked]);
   }

@@ -12,6 +12,7 @@
 #include "base/task/post_task.h"
 #include "base/time/default_tick_clock.h"
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/suggestions/blacklist_store.h"
 #include "components/suggestions/suggestions_service_impl.h"
 #include "components/suggestions/suggestions_store.h"
@@ -20,8 +21,7 @@
 #include "ios/chrome/browser/signin/identity_manager_factory.h"
 #include "ios/chrome/browser/sync/profile_sync_service_factory.h"
 #include "ios/web/public/browser_state.h"
-#include "ios/web/public/web_thread.h"
-#include "services/identity/public/cpp/identity_manager.h"
+#include "ios/web/public/thread/web_thread.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -59,7 +59,7 @@ SuggestionsServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
   ios::ChromeBrowserState* browser_state =
       ios::ChromeBrowserState::FromBrowserState(context);
-  identity::IdentityManager* identity_manager =
+  signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForBrowserState(browser_state);
   syncer::SyncService* sync_service =
       ProfileSyncServiceFactory::GetForBrowserState(browser_state);

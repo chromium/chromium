@@ -9,8 +9,8 @@
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power_manager/idle.pb.h"
-#include "chromeos/dbus/power_manager_client.h"
 #include "components/session_manager/core/session_manager_observer.h"
 
 namespace chromeos {

@@ -31,13 +31,13 @@ namespace views {
 namespace corewm {
 namespace {
 
-const int kDelayForTooltipUpdateInMs = 500;
-const int kDefaultTooltipShownTimeoutMs = 10000;
+constexpr int kDelayForTooltipUpdateInMs = 500;
+constexpr int kDefaultTooltipShownTimeoutMs = 10000;
 #if defined(OS_WIN)
 // Drawing a long word in tooltip is very slow on Windows. crbug.com/513693
-const size_t kMaxTooltipLength = 1024;
+constexpr size_t kMaxTooltipLength = 1024;
 #else
-const size_t kMaxTooltipLength = 2048;
+constexpr size_t kMaxTooltipLength = 2048;
 #endif
 
 // Returns true if |target| is a valid window to get the tooltip from.
@@ -64,14 +64,14 @@ aura::Window* GetTooltipTarget(const ui::MouseEvent& event,
     case ui::ET_MOUSE_CAPTURE_CHANGED:
       // On windows we can get a capture changed without an exit. We need to
       // reset state when this happens else the tooltip may incorrectly show.
-      return NULL;
+      return nullptr;
     case ui::ET_MOUSE_EXITED:
-      return NULL;
+      return nullptr;
     case ui::ET_MOUSE_MOVED:
     case ui::ET_MOUSE_DRAGGED: {
       aura::Window* event_target = static_cast<aura::Window*>(event.target());
       if (!event_target)
-        return NULL;
+        return nullptr;
 
       // If a window other than |event_target| has capture, ignore the event.
       // This can happen when RootWindow creates events when showing/hiding, or
@@ -87,7 +87,7 @@ aura::Window* GetTooltipTarget(const ui::MouseEvent& event,
             aura::Window* capture_window =
                 capture_client->GetGlobalCaptureWindow();
             if (capture_window && event_target != capture_window)
-              return NULL;
+              return nullptr;
           }
         }
         return event_target;
@@ -99,13 +99,13 @@ aura::Window* GetTooltipTarget(const ui::MouseEvent& event,
       display::Screen* screen = display::Screen::GetScreen();
       aura::Window* target = screen->GetWindowAtScreenPoint(screen_loc);
       if (!target)
-        return NULL;
+        return nullptr;
       gfx::Point target_loc(screen_loc);
       aura::client::GetScreenPositionClient(target->GetRootWindow())
           ->ConvertPointFromScreen(target, &target_loc);
       aura::Window* screen_target = target->GetEventHandlerForPoint(target_loc);
       if (!IsValidTarget(event_target, screen_target))
-        return NULL;
+        return nullptr;
 
       aura::Window::ConvertPointToTarget(screen_target, target, &target_loc);
       *location = target_loc;
@@ -115,7 +115,7 @@ aura::Window* GetTooltipTarget(const ui::MouseEvent& event,
       NOTREACHED();
       break;
   }
-  return NULL;
+  return nullptr;
 }
 
 }  // namespace
@@ -124,9 +124,9 @@ aura::Window* GetTooltipTarget(const ui::MouseEvent& event,
 // TooltipController public:
 
 TooltipController::TooltipController(std::unique_ptr<Tooltip> tooltip)
-    : tooltip_window_(NULL),
-      tooltip_id_(NULL),
-      tooltip_window_at_mouse_press_(NULL),
+    : tooltip_window_(nullptr),
+      tooltip_id_(nullptr),
+      tooltip_window_at_mouse_press_(nullptr),
       tooltip_(std::move(tooltip)),
       tooltips_enabled_(true),
       tooltip_show_delayed_(true) {}
@@ -152,7 +152,7 @@ void TooltipController::UpdateTooltip(aura::Window* target) {
   if (tooltip_window_at_mouse_press_ &&
       target == tooltip_window_at_mouse_press_ &&
       wm::GetTooltipText(target) != tooltip_text_at_mouse_press_) {
-    tooltip_window_at_mouse_press_ = NULL;
+    tooltip_window_at_mouse_press_ = nullptr;
   }
 }
 
@@ -193,7 +193,7 @@ void TooltipController::OnMouseEvent(ui::MouseEvent* event) {
     case ui::ET_MOUSE_MOVED:
     case ui::ET_MOUSE_DRAGGED: {
       curr_mouse_loc_ = event->location();
-      aura::Window* target = NULL;
+      aura::Window* target = nullptr;
       // Avoid a call to display::Screen::GetWindowAtScreenPoint() since it can
       // be very expensive on X11 in cases when the tooltip is hidden anyway.
       if (tooltips_enabled_ &&
@@ -232,13 +232,13 @@ void TooltipController::OnMouseEvent(ui::MouseEvent* event) {
 void TooltipController::OnTouchEvent(ui::TouchEvent* event) {
   // Hide the tooltip for touch events.
   tooltip_->Hide();
-  SetTooltipWindow(NULL);
+  SetTooltipWindow(nullptr);
   last_touch_loc_ = event->location();
 }
 
 void TooltipController::OnCancelMode(ui::CancelModeEvent* event) {
   tooltip_->Hide();
-  SetTooltipWindow(NULL);
+  SetTooltipWindow(nullptr);
 }
 
 void TooltipController::OnCursorVisibilityChanged(bool is_visible) {
@@ -249,7 +249,7 @@ void TooltipController::OnWindowDestroyed(aura::Window* window) {
   if (tooltip_window_ == window) {
     tooltip_->Hide();
     tooltip_shown_timeout_map_.erase(tooltip_window_);
-    tooltip_window_ = NULL;
+    tooltip_window_ = nullptr;
   }
 }
 
@@ -289,7 +289,7 @@ void TooltipController::UpdateIfRequired() {
       tooltip_->Hide();
       return;
     }
-    tooltip_window_at_mouse_press_ = NULL;
+    tooltip_window_at_mouse_press_ = nullptr;
   }
 
   // If the uniqueness indicator is different from the previously encountered

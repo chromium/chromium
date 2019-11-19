@@ -13,7 +13,7 @@
 #include "base/macros.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/windows_version.h"
 #include "services/shape_detection/face_detection_provider_win.h"
@@ -24,11 +24,11 @@
 namespace shape_detection {
 
 namespace {
-void DetectCallback(base::Closure quit_closure,
+void DetectCallback(base::OnceClosure quit_closure,
                     uint32_t* num_faces,
                     std::vector<mojom::FaceDetectionResultPtr> results) {
   *num_faces = results.size();
-  quit_closure.Run();
+  std::move(quit_closure).Run();
 }
 }  // namespace
 
@@ -83,14 +83,14 @@ class FaceDetectionImplWinTest : public testing::Test {
  private:
   std::unique_ptr<base::win::ScopedCOMInitializer> scoped_com_initializer_;
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
 
   DISALLOW_COPY_AND_ASSIGN(FaceDetectionImplWinTest);
 };
 
 TEST_F(FaceDetectionImplWinTest, ScanOneFace) {
   // FaceDetector not supported before Windows 10
-  if (base::win::GetVersion() < base::win::VERSION_WIN10)
+  if (base::win::GetVersion() < base::win::Version::WIN10)
     return;
 
   mojom::FaceDetectionPtr face_detector = ConnectToFaceDetector();

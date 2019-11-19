@@ -11,12 +11,10 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/incognito_view_controller.h"
 #import "ios/chrome/browser/url_loading/url_loading_service_factory.h"
-#import "ios/chrome/browser/web_state_list/web_state_list.h"
-#import "ios/web/public/navigation_item.h"
-#import "ios/web/public/navigation_manager.h"
-#import "ios/web/public/web_state/navigation_context.h"
-#import "ios/web/public/web_state/web_state.h"
-#import "ios/web/public/web_state/web_state_observer_bridge.h"
+#import "ios/web/public/navigation/navigation_context.h"
+#import "ios/web/public/navigation/navigation_item.h"
+#import "ios/web/public/navigation/navigation_manager.h"
+#import "ios/web/public/web_state_observer_bridge.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -46,7 +44,7 @@
     return;
 
   DCHECK(self.browserState);
-  DCHECK(self.webStateList);
+  DCHECK(self.webState);
   DCHECK(self.dispatcher);
   DCHECK(self.toolbarDelegate);
 
@@ -62,7 +60,7 @@
         [[ContentSuggestionsCoordinator alloc] initWithBaseViewController:nil];
     self.contentSuggestionsCoordinator.dispatcher = self.dispatcher;
     self.contentSuggestionsCoordinator.browserState = self.browserState;
-    self.contentSuggestionsCoordinator.webStateList = self.webStateList;
+    self.contentSuggestionsCoordinator.webState = self.webState;
     self.contentSuggestionsCoordinator.toolbarDelegate = self.toolbarDelegate;
     [self.contentSuggestionsCoordinator start];
     base::RecordAction(base::UserMetricsAction("MobileNTPShowMostVisited"));
@@ -94,13 +92,6 @@
 
 - (void)dismissModals {
   [self.contentSuggestionsCoordinator dismissModals];
-  [self.incognitoViewController dismissModals];
-}
-
-#pragma mark - NewTabPageOwning
-
-- (UIView*)view {
-  return self.viewController.view;
 }
 
 - (UIEdgeInsets)contentInset {
@@ -129,6 +120,10 @@
 
 - (void)focusFakebox {
   [self.contentSuggestionsCoordinator.headerController focusFakebox];
+}
+
+- (void)reload {
+  [self.contentSuggestionsCoordinator reload];
 }
 
 #pragma mark - LogoAnimationControllerOwnerOwner

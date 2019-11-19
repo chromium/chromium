@@ -32,13 +32,21 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PARSER_CSS_PARSER_IDIOMS_H_
 
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
+
+class CSSTokenizerInputStream;
 
 // Space characters as defined by the CSS specification.
 // http://www.w3.org/TR/css3-syntax/#whitespace
 inline bool IsCSSSpace(UChar c) {
   return c == ' ' || c == '\t' || c == '\n';
+}
+
+inline bool IsCSSNewLine(UChar cc) {
+  // We check \r and \f here, since we have no preprocessing stage
+  return (cc == '\r' || cc == '\n' || cc == '\f');
 }
 
 // https://drafts.csswg.org/css-syntax/#name-start-code-point
@@ -52,6 +60,28 @@ template <typename CharacterType>
 bool IsNameCodePoint(CharacterType c) {
   return IsNameStartCodePoint(c) || IsASCIIDigit(c) || c == '-';
 }
+
+// https://drafts.csswg.org/css-syntax/#check-if-two-code-points-are-a-valid-escape
+inline bool TwoCharsAreValidEscape(UChar first, UChar second) {
+  return first == '\\' && !IsCSSNewLine(second);
 }
 
-#endif
+// Consumes a single whitespace, if the stream is currently looking at a
+// whitespace. Note that \r\n counts as a single whitespace, as we don't do
+// input preprocessing as a separate step.
+//
+// See https://drafts.csswg.org/css-syntax-3/#input-preprocessing
+void ConsumeSingleWhitespaceIfNext(CSSTokenizerInputStream&);
+
+// https://drafts.csswg.org/css-syntax/#consume-an-escaped-code-point
+UChar32 ConsumeEscape(CSSTokenizerInputStream&);
+
+// http://www.w3.org/TR/css3-syntax/#consume-a-name
+String ConsumeName(CSSTokenizerInputStream&);
+
+// https://drafts.csswg.org/css-syntax/#would-start-an-identifier
+bool NextCharsAreIdentifier(UChar, const CSSTokenizerInputStream&);
+
+}  // namespace blink
+
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PARSER_CSS_PARSER_IDIOMS_H_

@@ -972,10 +972,6 @@ function setWindowBounds() {
   if (outerHeight > screen.availHeight) {
     outerHeight = screen.availHeight;
   }
-  if (appWindow.outerBounds.width == outerWidth &&
-      appWindow.outerBounds.height == outerHeight) {
-    return;
-  }
 
   appWindow.outerBounds.width = outerWidth;
   appWindow.outerBounds.height = outerHeight;

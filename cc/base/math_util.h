@@ -316,13 +316,16 @@ class CC_BASE_EXPORT MathUtil {
 class CC_BASE_EXPORT ScopedSubnormalFloatDisabler {
  public:
   ScopedSubnormalFloatDisabler();
+  ScopedSubnormalFloatDisabler(const ScopedSubnormalFloatDisabler&) = delete;
   ~ScopedSubnormalFloatDisabler();
 
- private:
+  ScopedSubnormalFloatDisabler& operator=(const ScopedSubnormalFloatDisabler&) =
+      delete;
+
 #if defined(ARCH_CPU_X86_FAMILY)
+ private:
   unsigned int orig_state_;
 #endif
-  DISALLOW_COPY_AND_ASSIGN(ScopedSubnormalFloatDisabler);
 };
 
 }  // namespace cc

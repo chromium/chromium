@@ -1,0 +1,21 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/samuelgoto/idle-detection
+
+
+[
+  SecureContext,
+  Exposed=(Window,DedicatedWorker),
+  ActiveScriptWrappable,
+  Constructor(optional IdleOptions options),
+  ConstructorCallWith=ScriptState,
+  RaisesException=Constructor,
+  RuntimeEnabled=IdleDetection
+] interface IdleDetector : EventTarget {
+  readonly attribute IdleState state;
+  attribute EventHandler onchange;
+  [CallWith=ScriptState, MeasureAs=IdleDetectionStart] Promise<void> start();
+  void stop();
+};

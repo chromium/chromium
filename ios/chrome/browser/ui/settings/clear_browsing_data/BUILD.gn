@@ -5,6 +5,8 @@
 source_set("clear_browsing_data") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
+    "browsing_data_counter_wrapper_producer.h",
+    "browsing_data_counter_wrapper_producer.mm",
     "clear_browsing_data_collection_view_controller.h",
     "clear_browsing_data_collection_view_controller.mm",
     "clear_browsing_data_consumer.h",
@@ -15,13 +17,20 @@ source_set("clear_browsing_data") {
     "clear_browsing_data_table_view_controller.mm",
     "clear_browsing_data_ui_constants.h",
     "clear_browsing_data_ui_constants.mm",
-    "time_range_selector_collection_view_controller.h",
-    "time_range_selector_collection_view_controller.mm",
+    "time_range_selector_table_view_controller.h",
+    "time_range_selector_table_view_controller.mm",
   ]
   deps = [
+    "resources:clear_browsing_data_autofill",
+    "resources:clear_browsing_data_cached_images",
+    "resources:clear_browsing_data_cookies",
+    "resources:clear_browsing_data_history",
+    "resources:clear_browsing_data_passwords",
     "//components/browsing_data/core",
     "//components/feature_engagement/public",
     "//components/history/core/browser",
+    "//components/prefs/ios",
+    "//components/signin/public/identity_manager",
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser",
@@ -32,6 +41,7 @@ source_set("clear_browsing_data") {
     "//ios/chrome/browser/history",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/sync",
+    "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/alert_coordinator",
     "//ios/chrome/browser/ui/collection_view",
     "//ios/chrome/browser/ui/colors",
@@ -46,9 +56,9 @@ source_set("clear_browsing_data") {
     "//ios/chrome/browser/ui/table_view:styler",
     "//ios/chrome/browser/ui/table_view/cells",
     "//ios/chrome/common",
+    "//ios/chrome/common/colors",
     "//ios/public/provider/chrome/browser",
     "//ios/public/provider/chrome/browser/images",
-    "//services/identity/public/cpp",
     "//ui/base",
   ]
 }
@@ -59,16 +69,18 @@ source_set("unit_tests") {
   sources = [
     "clear_browsing_data_collection_view_controller_unittest.mm",
     "clear_browsing_data_manager_unittest.mm",
-    "time_range_selector_collection_view_controller_unittest.mm",
+    "time_range_selector_table_view_controller_unittest.mm",
   ]
   deps = [
     ":clear_browsing_data",
+    ":test_support",
     "//base",
     "//base/test:test_support",
-    "//components/browser_sync:test_support",
     "//components/browsing_data/core",
     "//components/pref_registry",
     "//components/prefs",
+    "//components/signin/public/identity_manager:test_support",
+    "//components/sync:test_support",
     "//components/sync_preferences",
     "//components/sync_preferences:test_support",
     "//ios/chrome/app/strings",
@@ -76,19 +88,36 @@ source_set("unit_tests") {
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/browsing_data:counters",
     "//ios/chrome/browser/browsing_data:feature_flags",
+    "//ios/chrome/browser/browsing_data:test_support",
     "//ios/chrome/browser/prefs:browser_prefs",
+    "//ios/chrome/browser/signin",
     "//ios/chrome/browser/signin:test_support",
     "//ios/chrome/browser/sync",
     "//ios/chrome/browser/sync:test_support",
     "//ios/chrome/browser/ui/collection_view",
     "//ios/chrome/browser/ui/collection_view:test_support",
     "//ios/chrome/browser/ui/settings/cells",
+    "//ios/chrome/browser/ui/table_view",
+    "//ios/chrome/browser/ui/table_view:test_support",
     "//ios/chrome/common",
+    "//ios/public/provider/chrome/browser/signin:test_support",
     "//ios/web/public/test",
-    "//services/identity/public/cpp:test_support",
     "//testing/gtest",
     "//third_party/ocmock",
     "//ui/base",
+  ]
+}
+
+source_set("test_support") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [
+    "fake_browsing_data_counter_wrapper_producer.h",
+    "fake_browsing_data_counter_wrapper_producer.mm",
+  ]
+  deps = [
+    ":clear_browsing_data",
+    "//base",
   ]
 }
 
@@ -103,6 +132,7 @@ source_set("eg_tests") {
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/browsing_data:feature_flags",
+    "//ios/chrome/browser/ui/settings/cells",
     "//ios/chrome/test/earl_grey:test_support",
     "//ui/base",
   ]

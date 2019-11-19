@@ -10,6 +10,7 @@
 #include "base/containers/span.h"
 #include "base/optional.h"
 #include "base/time/time.h"
+#include "mojo/public/cpp/base/big_buffer.h"
 #include "third_party/blink/public/platform/web_url_error.h"
 
 namespace blink {
@@ -25,7 +26,7 @@ class BLINK_EXPORT WebNavigationBodyLoader {
 
     // Notifies about code cache if available. This method will
     // be called zero or one time.
-    virtual void BodyCodeCacheReceived(base::span<const uint8_t>) = 0;
+    virtual void BodyCodeCacheReceived(mojo_base::BigBuffer data) = 0;
 
     // Notifies about more data available. Called multiple times.
     // If main resource is empty, can be not called at all.

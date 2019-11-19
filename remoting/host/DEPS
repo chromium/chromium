@@ -20,6 +20,7 @@ include_rules = [
   "+services/device/public",
   "+services/device/wake_lock/power_save_blocker",
   "+services/network",
+  "+third_party/grpc",
   "+third_party/jsoncpp",
   "+third_party/skia",
   "+third_party/webrtc",
@@ -35,5 +36,8 @@ include_rules = [
 specific_include_rules = {
   ".*unittest\.cc": [
     "+mojo/core/test",
+  ],
+  ".*chromeos\.cc": [
+    "+ui/ozone/public",
   ],
 }

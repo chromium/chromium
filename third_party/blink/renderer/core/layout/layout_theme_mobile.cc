@@ -28,6 +28,7 @@
 #include "build/build_config.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_theme_engine.h"
+#include "third_party/blink/public/resources/grit/blink_resources.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/data_resource_helper.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
@@ -42,12 +43,13 @@ LayoutThemeMobile::~LayoutThemeMobile() = default;
 
 String LayoutThemeMobile::ExtraDefaultStyleSheet() {
   return LayoutThemeDefault::ExtraDefaultStyleSheet() +
-         GetDataResourceAsASCIIString("linux.css") +
-         GetDataResourceAsASCIIString("android.css");
+         UncompressResourceAsASCIIString(IDR_UASTYLE_THEME_CHROMIUM_LINUX_CSS) +
+         UncompressResourceAsASCIIString(
+             IDR_UASTYLE_THEME_CHROMIUM_ANDROID_CSS);
 }
 
 String LayoutThemeMobile::ExtraFullscreenStyleSheet() {
-  return GetDataResourceAsASCIIString("fullscreenAndroid.css");
+  return UncompressResourceAsASCIIString(IDR_UASTYLE_FULLSCREEN_ANDROID_CSS);
 }
 
 void LayoutThemeMobile::AdjustInnerSpinButtonStyle(ComputedStyle& style) const {
@@ -67,7 +69,7 @@ bool LayoutThemeMobile::ShouldUseFallbackTheme(
     const ComputedStyle& style) const {
 #if defined(OS_MACOSX)
   // Mac WebThemeEngine cannot handle these controls.
-  ControlPart part = style.Appearance();
+  ControlPart part = style.EffectiveAppearance();
   if (part == kCheckboxPart || part == kRadioPart)
     return true;
 #endif

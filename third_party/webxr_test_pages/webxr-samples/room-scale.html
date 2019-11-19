@@ -36,6 +36,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
     <!--The polyfill is not needed for browser that have native API support,
         but is linked by these samples for wider compatibility.-->
     <!--script src='https://cdn.jsdelivr.net/npm/webxr-polyfill@latest/build/webxr-polyfill.js'></script-->
+    <script src='js/xrray-polyfill.js' type='module'></script>
     <script src='js/webxr-polyfill.js'></script>
 
     <script src='js/webxr-button.js'></script>
@@ -47,8 +48,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
         <p>
           This sample demonstrates using a 'stage' frame of reference to provide
           room scale tracking. If stage bounds are provided by the XRDevice, they
-          will be represented as a green ground plane.
-          <a class="back" href="./">Back</a>
+          will be represented as a red ground plane.
+          <a class="back" href="./index.html">Back</a>
         </p>
       </summary>
     </header>
@@ -59,6 +60,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
       import {QueryArgs} from './js/cottontail/src/util/query-args.js';
       import {FallbackHelper} from './js/cottontail/src/util/fallback-helper.js';
       import {SkyboxNode} from './js/cottontail/src/nodes/skybox.js';
+      import {BoundsRenderer} from './js/cottontail/src/nodes/bounds-renderer.js';
+      import {vec3} from './js/cottontail/src/math/gl-matrix.js';
 
       // If requested, initialize the WebXR polyfill
       if (QueryArgs.getBool('allowPolyfill', false)) {
@@ -67,13 +70,13 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
       // XR globals.
       let xrButton = null;
-      let xrImmersiveRefSpace = null;
-      let xrNonImmersiveRefSpace = null;
+      let refSpaces = {};
 
       // WebGL scene globals.
       let gl = null;
       let renderer = null;
       let scene = new Scene();
+      let boundsRenderer = null;
       scene.addNode(new Gltf2Node({url: '../media/gltf/camp/camp.gltf'}));
       scene.addNode(new SkyboxNode({url: '../media/textures/eilenriede-park-2k.png'}));
       scene.standingStats(true);
@@ -81,16 +84,20 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
       function initXR() {
         xrButton = new XRDeviceButton({
           onRequestSession: onRequestSession,
-          onEndSession: onEndSession
+          onEndSession: onEndSession,
+          supportedSessionTypes: ['immersive-vr']
         });
         document.querySelector('header').appendChild(xrButton.domElement);
 
         if (navigator.xr) {
-          navigator.xr.supportsSessionMode('immersive-vr').then(() => {
-            xrButton.enabled = true;
+          requestInlineSession()
+          .then((session) => {
+            gl.canvas.addEventListener('touchend', () => {
+              session.end().then(() => {
+                requestInlineSession({ optionalFeatures: ['local-floor'] });
+              })
+            }, { once: true });
           });
-
-          navigator.xr.requestSession().then(onSessionStarted);
         } else {
           initFallback();
         }
@@ -98,16 +105,25 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
       function initFallback() {
         initGL();
-        document.body.appendChild(gl.canvas);
         let fallbackHelper = new FallbackHelper(scene, gl);
         fallbackHelper.emulateStage = true;
       }
 
       function onRequestSession() {
-        navigator.xr.requestSession({ mode: 'immersive-vr' }).then((session) => {
+        navigator.xr.requestSession('immersive-vr', {optionalFeatures: ['bounded-floor'], requiredFeatures: ['local-floor']})
+        .then((session) => {
+          session.mode = 'immersive-vr';
           xrButton.setSession(session);
           onSessionStarted(session);
         });
+      }
+
+      function requestInlineSession(options) {
+        return navigator.xr.requestSession('inline', options)
+          .then((session) => {
+            session.mode = 'inline';
+            return onSessionStarted(session);
+          });
       }
 
       function initGL() {
@@ -117,43 +133,102 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
         gl = createWebGLContext({
           xrCompatible: true
         });
+        document.body.appendChild(gl.canvas);
+
+        function onResize () {
+          gl.canvas.width = (gl.canvas.offsetWidth * window.devicePixelRatio);
+          gl.canvas.height = (gl.canvas.offsetHeight * window.devicePixelRatio);
+        }
+        window.addEventListener('resize', onResize);
+        onResize();
 
         renderer = new Renderer(gl);
-
         scene.setRenderer(renderer);
+
+        // Loads a generic controller mesh.
+        scene.inputRenderer.setControllerMesh(new Gltf2Node({url: '../media/gltf/controller/controller.gltf'}));
+      }
+
+      function updateBoundsRenderer(refSpace) {
+        if (!boundsRenderer) {
+          boundsRenderer = new BoundsRenderer(refSpace);
+          scene.addNode(boundsRenderer);
+        } else {
+          boundsRenderer.boundedRefSpace = refSpace;
+        }
       }
 
       function onSessionStarted(session) {
+        session.ended = false;
         session.addEventListener('end', onSessionEnded);
 
         initGL();
 
-        let outputCanvas = document.createElement('canvas');
-        document.body.appendChild(outputCanvas);
-
         session.updateRenderState({
-            baseLayer: new XRWebGLLayer(session, gl),
-            outputContext: outputCanvas.getContext('xrpresent')
+            baseLayer: new XRWebGLLayer(session, gl)
         });
 
-        // Get a stage frame of reference, which will align the user's physical
-        // floor with Y=0 and can provide boundaries that indicate where the
-        // user can safely walk. If the system can't natively provide stage
-        // coordinates (for example, with a 3DoF device) then it will return an
-        // emulated stage, where the view is translated up by a static height so
-        // that the scene still renders in approximately the right place.
-        session.requestReferenceSpace({ type: 'stationary', subtype: 'floor-level' }).then((refSpace) => {
-          if (session.mode.startsWith('immersive')) {
-            xrImmersiveRefSpace = refSpace;
-            let boundsRenderer = new BoundsRenderer();
-            boundsRenderer.stageBounds = refSpace.bounds;
-            scene.addNode(boundsRenderer);
-          } else {
-            xrNonImmersiveRefSpace = refSpace;
-          }
-
+        // Attempt to get a 'bounded' reference space, which will align the
+        // user's physical floor with Y=0 and provide boundaries that indicate
+        // where the user can safely walk.
+        session.requestReferenceSpace('bounded-floor').then((refSpace) => {
+          updateBoundsRenderer(refSpace);
+          return refSpace;
+        }).catch(() => {
+          // If a bounded reference space isn't supported, fall back to a
+          // stationary/floor-level reference space. This still provides a
+          // floor-relative space and will always be supported for
+          // immersive sessions if required. It will not, however, provide boundaries
+          // and generally expects the user to stand in one place.
+          // If the device doesn't have a way of determining the floor
+          // level (for example, with a 3DoF device) then it will return
+          // an emulated floor-level space, where the view is translated
+          // up by a static height so that the scene still renders in
+          // approximately the right place.
+          console.log('Falling back to floor-level reference space');
+          return session.requestReferenceSpace('local-floor').catch((e) => {
+            if (!session.mode.startsWith('immersive')) {
+              // If we're in inline mode, our underlying platform may not support
+              // the stationary reference space, but an identity space is guaranteed.
+              console.log('Falling back to identity reference space');
+              return session.requestReferenceSpace('viewer').then((refSpace) => {
+                // If we use an identity reference space we need to scoot the
+                // origin down a bit to put the camera at approximately the
+                // right level. (Here we're moving it 1.6 meters, which should
+                // *very* roughly align us with the eye height of an "average"
+                // adult human.)
+                return refSpace.getOffsetReferenceSpace(new XRRigidTransform({y: -1.6}));
+              });
+            } else {
+              throw e;
+            }
+          });
+        }).then((refSpace) => {
+          refSpaces[session.mode] = refSpace;
           session.requestAnimationFrame(onXRFrame);
+          if (session.mode.startsWith('immersive') && !boundsRenderer) {
+            pollBounds(session);
+          }
         });
+
+        return session;
+      }
+
+      function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+      }
+
+      function pollBounds(session) {
+        if (session.mode.startsWith('immersive') && !session.ended) {
+          session.requestReferenceSpace('bounded-floor').then((space) => {
+            updateBoundsRenderer(space);
+            refSpaces[session.mode] = space;
+            console.log(space.boundsGeometry);
+          }).catch(() => {
+            console.log("Failed to get bounded reference space. Trying again in 1 second.");
+            sleep(1000).then(() => pollBounds(session));
+          });
+        }
       }
 
       function onEndSession(session) {
@@ -164,22 +239,69 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
         if (event.session.mode.startsWith('immersive')) {
           xrButton.setSession(null);
         }
+        event.session.ended = true;
+      }
 
-        if (event.session.renderState.outputContext) {
-          document.body.removeChild(event.session.renderState.outputContext.canvas);
+      function updateInputSources(session, frame, refSpace) {
+        let inputSources = session.inputSources;
+
+        for (let inputSource of inputSources) {
+          // If we have a grip matrix use it to render a mesh showing the
+          // position of the controller.
+          // Based on https://github.com/immersive-web/webxr/blob/master/input-explainer.md#placing-renderable-models
+          if (inputSource.gripSpace) {
+            let pose = frame.getPose(inputSource.gripSpace, refSpace);
+            if (pose) {
+              scene.inputRenderer.addController(pose.transform.matrix);
+            }
+          }
+
+          // We may not get a pose back in cases where the input source has lost
+          // tracking or does not know where it is relative to the given frame
+          // of reference.
+          // Based on https://github.com/immersive-web/webxr/blob/master/input-explainer.md#targeting-ray-pose
+          let pose = frame.getPose(inputSource.targetRaySpace, refSpace);
+          if (pose) {
+            let targetRay = new XRRay(pose.transform);
+            if (inputSource.targetRayMode == 'tracked-pointer') {
+              // If we have a pointer matrix and the pointer origin is the users
+              // hand (as opposed to their head or the screen) use it to render
+              // a ray coming out of the input device to indicate the pointer
+              // direction.
+              scene.inputRenderer.addLaserPointer(targetRay);
+            }
+
+            // If we have a pointer matrix we can also use it to render a cursor
+            // for both handheld and gaze-based input sources.
+
+            // Statically render the cursor 2 meters down the ray since we're
+            // not calculating any intersections in this sample.
+            let cursorDistance = 2.0;
+            let cursorPos = vec3.fromValues(
+                targetRay.origin.x,
+                targetRay.origin.y,
+                targetRay.origin.z
+                );
+            vec3.add(cursorPos, cursorPos, [
+                targetRay.direction.x * cursorDistance,
+                targetRay.direction.y * cursorDistance,
+                targetRay.direction.z * cursorDistance,
+                ]);
+
+            scene.inputRenderer.addCursor(cursorPos);
+          }
         }
       }
 
       function onXRFrame(t, frame) {
         let session = frame.session;
-        let refSpace = session.mode.startsWith('immersive') ?
-                         xrImmersiveRefSpace :
-                         xrNonImmersiveRefSpace;
-        let pose = frame.getViewerPose(refSpace);
+        let pose = frame.getViewerPose(refSpaces[session.mode]);
 
         scene.startFrame();
 
         session.requestAnimationFrame(onXRFrame);
+
+        updateInputSources(session, frame, refSpaces[session.mode]);
 
         // Every XR frame uses basically the same render loop, so for the sake
         // of keeping the sample code focused on the interesting bits most

@@ -5,34 +5,25 @@
 import("//build/config/ui.gni")
 
 source_set("host") {
-  public = [
-    "external_begin_frame_controller_client_impl.h",
-  ]
-  sources = [
-    "external_begin_frame_controller_client_impl.cc",
-  ]
-
-  deps = [
-    "//mojo/public/cpp/bindings",
-    "//ui/compositor",
-  ]
-
-  public_deps = [
-    "//services/viz/privileged/interfaces/compositing",
-  ]
-
   if (use_aura || is_mac) {
-    public += [ "host_context_factory_private.h" ]
-    sources += [ "host_context_factory_private.cc" ]
+    public = [
+      "host_context_factory_private.h",
+    ]
+    sources = [
+      "host_context_factory_private.cc",
+    ]
 
-    deps += [
+    deps = [
       "//cc/mojo_embedder",
       "//components/viz/client",
       "//components/viz/common",
       "//components/viz/host",
+      "//ui/compositor",
       "//ui/gfx",
     ]
 
-    public_deps += [ "//services/viz/public/interfaces" ]
+    public_deps = [
+      "//services/viz/public/mojom",
+    ]
   }
 }

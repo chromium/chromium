@@ -13,8 +13,8 @@
 #import "ios/chrome/browser/web_state_list/web_state_list_observer.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_order_controller.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
-#import "ios/web/public/navigation_manager.h"
-#import "ios/web/public/web_state/web_state.h"
+#import "ios/web/public/navigation/navigation_manager.h"
+#import "ios/web/public/web_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -108,6 +108,10 @@ WebStateList::~WebStateList() {
 
 bool WebStateList::ContainsIndex(int index) const {
   return 0 <= index && index < count();
+}
+
+bool WebStateList::IsMutating() const {
+  return locked_;
 }
 
 web::WebState* WebStateList::GetActiveWebState() const {
@@ -289,10 +293,17 @@ std::unique_ptr<web::WebState> WebStateList::DetachWebStateAt(int index) {
   // as the active one but only send the WebStateActivatedAt notification after
   // the WebStateDetachedAt one.
   bool active_web_state_was_closed = (index == active_index_);
-  if (active_index_ > index)
+  if (active_index_ > index) {
     --active_index_;
-  else if (active_index_ == index)
-    active_index_ = new_active_index;
+  } else if (active_index_ == index) {
+    if (new_active_index != kInvalidIndex && !ContainsIndex(new_active_index)) {
+      // TODO(crbug.com/877792): This is a speculative fix for 877792 and short
+      // term fix for 960628.
+      active_index_ = count() - 1;
+    } else {
+      active_index_ = new_active_index;
+    }
+  }
 
   for (auto& observer : observers_)
     observer.WebStateDetachedAt(this, web_state, index);
@@ -322,8 +333,13 @@ void WebStateList::CloseWebStateAt(int index, int close_flags) {
 }
 
 void WebStateList::CloseAllWebStates(int close_flags) {
-  while (!empty())
-    CloseWebStateAt(count() - 1, close_flags);
+  PerformBatchOperation(base::BindOnce(
+      [](int close_flags, WebStateList* web_state_list) {
+        while (!web_state_list->empty())
+          web_state_list->CloseWebStateAt(web_state_list->count() - 1,
+                                          close_flags);
+      },
+      close_flags));
 }
 
 void WebStateList::ActivateWebStateAt(int index) {
@@ -340,6 +356,16 @@ void WebStateList::AddObserver(WebStateListObserver* observer) {
 
 void WebStateList::RemoveObserver(WebStateListObserver* observer) {
   observers_.RemoveObserver(observer);
+}
+
+void WebStateList::PerformBatchOperation(
+    base::OnceCallback<void(WebStateList*)> operation) {
+  for (auto& observer : observers_)
+    observer.WillBeginBatchOperation(this);
+  if (!operation.is_null())
+    std::move(operation).Run(this);
+  for (auto& observer : observers_)
+    observer.BatchOperationEnded(this);
 }
 
 void WebStateList::ClearOpenersReferencing(int index) {

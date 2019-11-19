@@ -1,0 +1,26 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Nothing outside //chrome/chrome_cleaner can depend on these targets.
+visibility = [ "//chrome/chrome_cleaner/*" ]
+
+# We need at least one non-executable to prevent an "unused visibility
+# declaration" warning.
+source_set("generate_test_uws_src") {
+  sources = [
+    "generate_test_uws.cc",
+  ]
+
+  deps = [
+    "//base:base",
+    "//chrome/chrome_cleaner/pup_data:test_uws",
+  ]
+}
+
+executable("generate_test_uws") {
+  deps = [
+    ":generate_test_uws_src",
+    "//build/win:default_exe_manifest",
+  ]
+}

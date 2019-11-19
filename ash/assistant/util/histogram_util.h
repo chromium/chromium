@@ -6,13 +6,13 @@
 #define ASH_ASSISTANT_UTIL_HISTOGRAM_UTIL_H_
 
 #include "base/component_export.h"
+#include "chromeos/services/assistant/public/mojom/assistant.mojom-forward.h"
 
 namespace ash {
 
 enum class AssistantButtonId;
 enum class AssistantEntryPoint;
 enum class AssistantExitPoint;
-enum class AssistantQuerySource;
 
 namespace assistant {
 namespace util {
@@ -35,7 +35,8 @@ void IncrementAssistantButtonClickCount(AssistantButtonId button_id);
 
 // Record the input source of each query (e.g. voice, typing).
 COMPONENT_EXPORT(ASSISTANT_UTIL)
-void RecordAssistantQuerySource(AssistantQuerySource source);
+void RecordAssistantQuerySource(
+    chromeos::assistant::mojom::AssistantQuerySource source);
 
 }  // namespace util
 }  // namespace assistant

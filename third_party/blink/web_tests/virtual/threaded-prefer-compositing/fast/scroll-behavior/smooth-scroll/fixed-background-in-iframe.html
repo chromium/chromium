@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<script src="../../../../../resources/js-test.js"></script>
+<style>
+#scroller {
+    position: absolute;
+    border: 0;
+    left: 100px;
+    top: 200px;
+    width: 300px;
+    height: 300px;
+}
+</style>
+<iframe id="scroller" srcdoc="
+  <style>
+    div {
+      background: radial-gradient(#aaf, white, #aaf) fixed;
+      background-size: 200px 200px;
+      height: 1000px;
+      width: 1000px;
+      will-change: transform;
+    }
+    body {
+      margin: 0;
+    }
+  </style>
+  <div></div>
+"></iframe>
+<script>
+var jsTestIsAsync = true;
+var iframeDoc;
+
+description("This test verifies that smooth scrolls run on the main thread " +
+            "when there are fixed backgrounds on the page.");
+
+// From ScrollAnimatorCompositorCoordinator::RunState.
+var RUNNING_ON_MAIN_THREAD = "RunningOnMainThread";
+function isScrollAnimatingOnMainThread(node) {
+    return internals.getScrollAnimationState(node) == RUNNING_ON_MAIN_THREAD;
+}
+
+onload = function() {
+    if (!window.eventSender || !window.internals) {
+        debug("This test requires window.eventSender.")
+        finishJSTest();
+        return;
+    }
+    internals.settings.setScrollAnimatorEnabled(true);
+
+    // Click in the scrollbar.
+    eventSender.mouseMoveTo(390, 300);
+    eventSender.mouseDown();
+    eventSender.mouseUp();
+
+    // EventSender updated the lifecycle to prepaint on mouseUp.
+    // When scrollbars inject scroll gestures, handling the mouse down queues a
+    // gesture scroll update, but the main thread has not yet yielded so there's
+    // nothing to update at this point in time. The queued gesture event will
+    // run once this thread yields - this will register/schedule the animation
+    // and put it in a WaitingForCompositorState until the next compositing
+    // lifecycle phase runs (which happens after rAF on the next frame).
+    // Updating the animation will cause it to recognize that it needs
+    // to run on the main thread and update the state accordingly.
+    // Therefore we need to requestAnimationFrame twice before checking
+    // the scroll animation state.
+    // When scrollbar gestures are not enabled, isScrollAnimatingOnMainThread
+    // will return true in the first rAF callback, so check there as well.
+    requestAnimationFrame(function() {
+        iframeDoc = document.querySelector("#scroller").contentDocument;
+        window.animatedOnMainThread = isScrollAnimatingOnMainThread(iframeDoc);
+        requestAnimationFrame(function() {
+            if (!animatedOnMainThread) {
+                animatedOnMainThread = isScrollAnimatingOnMainThread(iframeDoc);
+            }
+            shouldBeTrue("animatedOnMainThread");
+            finishJSTest();
+        });
+    });
+};
+
+</script>

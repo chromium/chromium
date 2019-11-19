@@ -4,29 +4,91 @@
 
 #include "third_party/blink/renderer/core/paint/image_element_timing.h"
 
+#include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
+#include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/layout/layout_image.h"
+#include "third_party/blink/renderer/core/layout/svg/layout_svg_image.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
-#include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
+#include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkSurface.h"
 
 namespace blink {
 
-class ImageElementTimingTest : public RenderingTest {
+namespace internal {
+
+extern bool IsExplicitlyRegisteredForTiming(const LayoutObject* layout_object);
+
+}
+
+class ImageElementTimingTest : public testing::Test {
  protected:
+  void SetUp() override {
+    web_view_helper_.Initialize();
+    frame_test_helpers::LoadFrame(
+        web_view_helper_.GetWebView()->MainFrameImpl(), "about:blank");
+    WebURL base_url_ = url_test_helpers::ToKURL("http://www.test.com/");
+    // Enable compositing on the page.
+    web_view_helper_.GetWebView()
+        ->GetPage()
+        ->GetSettings()
+        .SetAcceleratedCompositingEnabled(true);
+    GetDoc()->View()->SetParentVisible(true);
+    GetDoc()->View()->SetSelfVisible(true);
+  }
+
   // Sets an image resource for the LayoutImage with the given |id| and return
   // the LayoutImage.
   LayoutImage* SetImageResource(const char* id, int width, int height) {
     ImageResourceContent* content = CreateImageForTest(width, height);
-    auto* layout_image = ToLayoutImage(GetLayoutObjectByElementId(id));
+    auto* layout_image = ToLayoutImage(GetLayoutObjectById(id));
     layout_image->ImageResource()->SetImageResource(content);
     return layout_image;
   }
 
-  const ImageElementTiming& GetImageElementTiming() {
-    return ImageElementTiming::From(*GetDocument().domWindow());
+  // Similar to above but for a LayoutSVGImage.
+  LayoutSVGImage* SetSVGImageResource(const char* id, int width, int height) {
+    ImageResourceContent* content = CreateImageForTest(width, height);
+    auto* layout_image = ToLayoutSVGImage(GetLayoutObjectById(id));
+    layout_image->ImageResource()->SetImageResource(content);
+    return layout_image;
   }
+
+  bool ImagesNotifiedContains(
+      const std::pair<const LayoutObject*, const ImageResourceContent*>&
+          record_id) {
+    return ImageElementTiming::From(*GetDoc()->domWindow())
+        .images_notified_.Contains(record_id);
+  }
+
+  unsigned ImagesNotifiedSize() {
+    return ImageElementTiming::From(*GetDoc()->domWindow())
+        .images_notified_.size();
+  }
+
+  Document* GetDoc() {
+    return web_view_helper_.GetWebView()
+        ->MainFrameImpl()
+        ->GetFrame()
+        ->GetDocument();
+  }
+
+  LayoutObject* GetLayoutObjectById(const char* id) {
+    return GetDoc()->getElementById(id)->GetLayoutObject();
+  }
+
+  void UpdateAllLifecyclePhases() {
+    web_view_helper_.GetWebView()
+        ->MainFrameImpl()
+        ->GetFrame()
+        ->View()
+        ->UpdateAllLifecyclePhases(
+            DocumentLifecycle::LifecycleUpdateReason::kTest);
+  }
+
+  frame_test_helpers::WebViewHelper web_view_helper_;
+  WebURL base_url_;
 
  private:
   ImageResourceContent* CreateImageForTest(int width, int height) {
@@ -42,26 +104,137 @@ class ImageElementTimingTest : public RenderingTest {
   }
 };
 
+TEST_F(ImageElementTimingTest, TestIsExplicitlyRegisteredForTiming) {
+  frame_test_helpers::LoadHTMLString(
+      web_view_helper_.GetWebView()->MainFrameImpl(), R"HTML(
+    <img id="missing-attribute" style='width: 100px; height: 100px;'/>
+    <img id="unset-attribute" elementtiming style='width: 100px; height: 100px;'/>
+    <img id="empty-attribute" elementtiming="" style='width: 100px; height: 100px;'/>
+    <img id="valid-attribute" elementtiming="valid-id" style='width: 100px; height: 100px;'/>
+  )HTML",
+      base_url_);
+
+  LayoutObject* without_attribute = GetLayoutObjectById("missing-attribute");
+  bool actual = internal::IsExplicitlyRegisteredForTiming(without_attribute);
+  EXPECT_FALSE(actual) << "Nodes without an 'elementtiming' attribute should "
+                          "not be explicitly registered.";
+
+  LayoutObject* with_undefined_attribute =
+      GetLayoutObjectById("unset-attribute");
+  actual = internal::IsExplicitlyRegisteredForTiming(with_undefined_attribute);
+  EXPECT_TRUE(actual) << "Nodes with undefined 'elementtiming' attribute "
+                         "should be explicitly registered.";
+
+  LayoutObject* with_empty_attribute = GetLayoutObjectById("empty-attribute");
+  actual = internal::IsExplicitlyRegisteredForTiming(with_empty_attribute);
+  EXPECT_TRUE(actual) << "Nodes with an empty 'elementtiming' attribute "
+                         "should be explicitly registered.";
+
+  LayoutObject* with_explicit_element_timing =
+      GetLayoutObjectById("valid-attribute");
+  actual =
+      internal::IsExplicitlyRegisteredForTiming(with_explicit_element_timing);
+  EXPECT_TRUE(actual) << "Nodes with a non-empty 'elementtiming' attribute "
+                         "should be explicitly registered.";
+}
+
+TEST_F(ImageElementTimingTest, IgnoresUnmarkedElement) {
+  // Tests that, if the 'elementtiming' attribute is missing, the element isn't
+  // considered by ImageElementTiming.
+  frame_test_helpers::LoadHTMLString(
+      web_view_helper_.GetWebView()->MainFrameImpl(), R"HTML(
+    <img id="target" style='width: 100px; height: 100px;'/>
+  )HTML",
+      base_url_);
+  LayoutImage* layout_image = SetImageResource("target", 5, 5);
+  ASSERT_TRUE(layout_image);
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(ImagesNotifiedContains(
+      std::make_pair(layout_image, layout_image->CachedImage())));
+}
+
 TEST_F(ImageElementTimingTest, ImageInsideSVG) {
-  GetDocument().SetBaseURLOverride(KURL("http://test.com"));
-  SetBodyInnerHTML(R"HTML(
+  frame_test_helpers::LoadHTMLString(
+      web_view_helper_.GetWebView()->MainFrameImpl(), R"HTML(
     <svg mask="url(#mask)">
       <mask id="mask">
         <foreignObject width="100" height="100">
-          <img id="target" style='width: 100px; height: 100px;'/>
+          <img elementtiming="image-inside-svg" id="target" style='width: 100px; height: 100px;'/>
         </foreignObject>
       </mask>
       <rect width="100" height="100" fill="green"/>
     </svg>
-  )HTML");
+  )HTML",
+      base_url_);
   LayoutImage* layout_image = SetImageResource("target", 5, 5);
   ASSERT_TRUE(layout_image);
-  // Enable compositing and also update document lifecycle.
-  EnableCompositing();
+  UpdateAllLifecyclePhases();
 
-  const ImageElementTiming& timing = GetImageElementTiming();
   // |layout_image| should have had its paint notified to ImageElementTiming.
-  EXPECT_TRUE(timing.images_notified_.Contains(layout_image));
+  EXPECT_TRUE(ImagesNotifiedContains(
+      std::make_pair(layout_image, layout_image->CachedImage())));
+}
+
+TEST_F(ImageElementTimingTest, ImageRemoved) {
+  frame_test_helpers::LoadHTMLString(
+      web_view_helper_.GetWebView()->MainFrameImpl(), R"HTML(
+    <img elementtiming="will-be-removed" id="target" style='width: 100px; height: 100px;'/>
+  )HTML",
+      base_url_);
+  LayoutImage* layout_image = SetImageResource("target", 5, 5);
+  ASSERT_TRUE(layout_image);
+  UpdateAllLifecyclePhases();
+  EXPECT_TRUE(ImagesNotifiedContains(
+      std::make_pair(layout_image, layout_image->CachedImage())));
+
+  GetDoc()->getElementById("target")->remove();
+  // |layout_image| should no longer be part of |images_notified| since it will
+  // be destroyed.
+  EXPECT_EQ(ImagesNotifiedSize(), 0u);
+}
+
+TEST_F(ImageElementTimingTest, SVGImageRemoved) {
+  frame_test_helpers::LoadHTMLString(
+      web_view_helper_.GetWebView()->MainFrameImpl(), R"HTML(
+    <svg>
+      <image elementtiming="svg-will-be-removed" id="target" style='width: 100px; height: 100px;'/>
+    </svg>
+  )HTML",
+      base_url_);
+  LayoutSVGImage* layout_image = SetSVGImageResource("target", 5, 5);
+  ASSERT_TRUE(layout_image);
+  UpdateAllLifecyclePhases();
+  EXPECT_TRUE(ImagesNotifiedContains(std::make_pair(
+      layout_image, layout_image->ImageResource()->CachedImage())));
+
+  GetDoc()->getElementById("target")->remove();
+  // |layout_image| should no longer be part of |images_notified| since it will
+  // be destroyed.
+  EXPECT_EQ(ImagesNotifiedSize(), 0u);
+}
+
+TEST_F(ImageElementTimingTest, BackgroundImageRemoved) {
+  frame_test_helpers::LoadHTMLString(
+      web_view_helper_.GetWebView()->MainFrameImpl(), R"HTML(
+    <style>
+      #target {
+        width: 100px;
+        height: 100px;
+        background: url(data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==);
+      }
+    </style>
+    <div elementtiming="time-my-background-image" id="target"></div>
+  )HTML",
+      base_url_);
+  LayoutObject* object = GetLayoutObjectById("target");
+  ImageResourceContent* content =
+      object->Style()->BackgroundLayers().GetImage()->CachedImage();
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(ImagesNotifiedSize(), 1u);
+  EXPECT_TRUE(ImagesNotifiedContains(std::make_pair(object, content)));
+
+  GetDoc()->getElementById("target")->remove();
+  EXPECT_EQ(ImagesNotifiedSize(), 0u);
 }
 
 }  // namespace blink

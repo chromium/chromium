@@ -423,7 +423,7 @@ TEST_F(LayoutBoxModelObjectTest, StickyPositionConstraintInvalidation) {
                       .at(sticky->Layer())
                       .scroll_container_relative_sticky_box_rect.Location()
                       .X());
-  ToHTMLElement(target->GetNode())->classList().Add("hide");
+  To<HTMLElement>(target->GetNode())->classList().Add("hide");
   GetDocument().View()->UpdateLifecycleToLayoutClean();
   // Layout should invalidate the sticky constraints of the sticky element and
   // mark it as needing a compositing inputs update.
@@ -650,17 +650,17 @@ TEST_F(LayoutBoxModelObjectTest, StickyPositionNested) {
   // the top of the scrollable area. To achieve this the parent must offset on
   // the y-axis against its starting position. The child is offset relative to
   // its parent so should not move at all.
-  EXPECT_EQ(LayoutSize(0, 50), sticky_parent->StickyPositionOffset());
-  EXPECT_EQ(LayoutSize(0, 0), sticky_child->StickyPositionOffset());
+  EXPECT_EQ(PhysicalOffset(0, 50), sticky_parent->StickyPositionOffset());
+  EXPECT_EQ(PhysicalOffset(0, 0), sticky_child->StickyPositionOffset());
 
   sticky_parent->UpdateStickyPositionConstraints();
 
-  EXPECT_EQ(LayoutSize(0, 50), sticky_parent->StickyPositionOffset());
+  EXPECT_EQ(PhysicalOffset(0, 50), sticky_parent->StickyPositionOffset());
 
   sticky_child->UpdateStickyPositionConstraints();
 
-  EXPECT_EQ(LayoutSize(0, 50), sticky_parent->StickyPositionOffset());
-  EXPECT_EQ(LayoutSize(0, 0), sticky_child->StickyPositionOffset());
+  EXPECT_EQ(PhysicalOffset(0, 50), sticky_parent->StickyPositionOffset());
+  EXPECT_EQ(PhysicalOffset(0, 0), sticky_child->StickyPositionOffset());
 }
 
 // Verifies that the calculated position:sticky offsets are correct when the
@@ -693,17 +693,17 @@ TEST_F(LayoutBoxModelObjectTest, StickyPositionChildHasLargerTop) {
   // whilst the child is attempting to be 25 pixels from the top. To achieve
   // this both must offset on the y-axis against their starting positions, but
   // note the child is offset relative to the parent.
-  EXPECT_EQ(LayoutSize(0, 50), sticky_parent->StickyPositionOffset());
-  EXPECT_EQ(LayoutSize(0, 25), sticky_child->StickyPositionOffset());
+  EXPECT_EQ(PhysicalOffset(0, 50), sticky_parent->StickyPositionOffset());
+  EXPECT_EQ(PhysicalOffset(0, 25), sticky_child->StickyPositionOffset());
 
   sticky_parent->UpdateStickyPositionConstraints();
 
-  EXPECT_EQ(LayoutSize(0, 50), sticky_parent->StickyPositionOffset());
+  EXPECT_EQ(PhysicalOffset(0, 50), sticky_parent->StickyPositionOffset());
 
   sticky_child->UpdateStickyPositionConstraints();
 
-  EXPECT_EQ(LayoutSize(0, 50), sticky_parent->StickyPositionOffset());
-  EXPECT_EQ(LayoutSize(0, 25), sticky_child->StickyPositionOffset());
+  EXPECT_EQ(PhysicalOffset(0, 50), sticky_parent->StickyPositionOffset());
+  EXPECT_EQ(PhysicalOffset(0, 25), sticky_child->StickyPositionOffset());
 }
 
 // Verifies that the calculated position:sticky offsets are correct when the
@@ -736,17 +736,17 @@ TEST_F(LayoutBoxModelObjectTest, StickyPositionParentHasLargerTop) {
   // scrollable area, whilst the child is attempting to be at the top. However,
   // the child must stay contained within the parent, so it should be pushed
   // down to the same height. As always, the child offset is relative.
-  EXPECT_EQ(LayoutSize(0, 75), sticky_parent->StickyPositionOffset());
-  EXPECT_EQ(LayoutSize(0, 0), sticky_child->StickyPositionOffset());
+  EXPECT_EQ(PhysicalOffset(0, 75), sticky_parent->StickyPositionOffset());
+  EXPECT_EQ(PhysicalOffset(0, 0), sticky_child->StickyPositionOffset());
 
   sticky_parent->UpdateStickyPositionConstraints();
 
-  EXPECT_EQ(LayoutSize(0, 75), sticky_parent->StickyPositionOffset());
+  EXPECT_EQ(PhysicalOffset(0, 75), sticky_parent->StickyPositionOffset());
 
   sticky_child->UpdateStickyPositionConstraints();
 
-  EXPECT_EQ(LayoutSize(0, 75), sticky_parent->StickyPositionOffset());
-  EXPECT_EQ(LayoutSize(0, 0), sticky_child->StickyPositionOffset());
+  EXPECT_EQ(PhysicalOffset(0, 75), sticky_parent->StickyPositionOffset());
+  EXPECT_EQ(PhysicalOffset(0, 0), sticky_child->StickyPositionOffset());
 }
 
 // Verifies that the calculated position:sticky offsets are correct when the
@@ -779,17 +779,17 @@ TEST_F(LayoutBoxModelObjectTest, StickyPositionChildPushingOutsideParent) {
   // whilst the child is attempting to be 50 pixels from the top. However, there
   // is only 25 pixels of space for the child to move into, so it should be
   // capped by that offset. As always, the child offset is relative.
-  EXPECT_EQ(LayoutSize(0, 50), sticky_parent->StickyPositionOffset());
-  EXPECT_EQ(LayoutSize(0, 25), sticky_child->StickyPositionOffset());
+  EXPECT_EQ(PhysicalOffset(0, 50), sticky_parent->StickyPositionOffset());
+  EXPECT_EQ(PhysicalOffset(0, 25), sticky_child->StickyPositionOffset());
 
   sticky_parent->UpdateStickyPositionConstraints();
 
-  EXPECT_EQ(LayoutSize(0, 50), sticky_parent->StickyPositionOffset());
+  EXPECT_EQ(PhysicalOffset(0, 50), sticky_parent->StickyPositionOffset());
 
   sticky_child->UpdateStickyPositionConstraints();
 
-  EXPECT_EQ(LayoutSize(0, 50), sticky_parent->StickyPositionOffset());
-  EXPECT_EQ(LayoutSize(0, 25), sticky_child->StickyPositionOffset());
+  EXPECT_EQ(PhysicalOffset(0, 50), sticky_parent->StickyPositionOffset());
+  EXPECT_EQ(PhysicalOffset(0, 25), sticky_child->StickyPositionOffset());
 }
 
 // Verifies that the calculated position:sticky offsets are correct in the case
@@ -830,24 +830,24 @@ TEST_F(LayoutBoxModelObjectTest, StickyPositionTripleNestedDiv) {
   // this sticky offset calculation is quite simple, but internally the child
   // offset has to offset both its sticky box constraint rect and its containing
   // block constraint rect.
-  EXPECT_EQ(LayoutSize(0, 50), outmost_sticky->StickyPositionOffset());
-  EXPECT_EQ(LayoutSize(0, 0), middle_sticky->StickyPositionOffset());
-  EXPECT_EQ(LayoutSize(0, 25), inner_sticky->StickyPositionOffset());
+  EXPECT_EQ(PhysicalOffset(0, 50), outmost_sticky->StickyPositionOffset());
+  EXPECT_EQ(PhysicalOffset(0, 0), middle_sticky->StickyPositionOffset());
+  EXPECT_EQ(PhysicalOffset(0, 25), inner_sticky->StickyPositionOffset());
 
   outmost_sticky->UpdateStickyPositionConstraints();
 
-  EXPECT_EQ(LayoutSize(0, 50), outmost_sticky->StickyPositionOffset());
+  EXPECT_EQ(PhysicalOffset(0, 50), outmost_sticky->StickyPositionOffset());
 
   middle_sticky->UpdateStickyPositionConstraints();
 
-  EXPECT_EQ(LayoutSize(0, 50), outmost_sticky->StickyPositionOffset());
-  EXPECT_EQ(LayoutSize(0, 0), middle_sticky->StickyPositionOffset());
+  EXPECT_EQ(PhysicalOffset(0, 50), outmost_sticky->StickyPositionOffset());
+  EXPECT_EQ(PhysicalOffset(0, 0), middle_sticky->StickyPositionOffset());
 
   inner_sticky->UpdateStickyPositionConstraints();
 
-  EXPECT_EQ(LayoutSize(0, 50), outmost_sticky->StickyPositionOffset());
-  EXPECT_EQ(LayoutSize(0, 0), middle_sticky->StickyPositionOffset());
-  EXPECT_EQ(LayoutSize(0, 25), inner_sticky->StickyPositionOffset());
+  EXPECT_EQ(PhysicalOffset(0, 50), outmost_sticky->StickyPositionOffset());
+  EXPECT_EQ(PhysicalOffset(0, 0), middle_sticky->StickyPositionOffset());
+  EXPECT_EQ(PhysicalOffset(0, 25), inner_sticky->StickyPositionOffset());
 }
 
 // Verifies that the calculated position:sticky offsets are correct in the case
@@ -884,8 +884,8 @@ TEST_F(LayoutBoxModelObjectTest, StickyPositionNestedStickyTable) {
   // All sticky elements are attempting to stick to the top of the scrollable
   // area. For the root sticky div, this requires an offset. All the other
   // descendant sticky elements are positioned relatively so don't need offset.
-  EXPECT_EQ(LayoutSize(0, 100), sticky_div->StickyPositionOffset());
-  EXPECT_EQ(LayoutSize(0, 0), sticky_th->StickyPositionOffset());
+  EXPECT_EQ(PhysicalOffset(0, 100), sticky_div->StickyPositionOffset());
+  EXPECT_EQ(PhysicalOffset(0, 0), sticky_th->StickyPositionOffset());
 
   // If we now scroll to the point where the overall sticky div starts to move,
   // the table headers should continue to stick to the top of the scrollable
@@ -895,8 +895,8 @@ TEST_F(LayoutBoxModelObjectTest, StickyPositionNestedStickyTable) {
       FloatPoint(scrollable_area->ScrollPosition().X(), 275));
   ASSERT_EQ(275.0, scrollable_area->ScrollPosition().Y());
 
-  EXPECT_EQ(LayoutSize(0, 200), sticky_div->StickyPositionOffset());
-  EXPECT_EQ(LayoutSize(0, 25), sticky_th->StickyPositionOffset());
+  EXPECT_EQ(PhysicalOffset(0, 200), sticky_div->StickyPositionOffset());
+  EXPECT_EQ(PhysicalOffset(0, 25), sticky_th->StickyPositionOffset());
 
   // Finally, if we scroll so that the table is off the top of the page, the
   // sticky header should travel as far as it can (i.e. the table height) then
@@ -905,17 +905,17 @@ TEST_F(LayoutBoxModelObjectTest, StickyPositionNestedStickyTable) {
       FloatPoint(scrollable_area->ScrollPosition().X(), 350));
   ASSERT_EQ(350.0, scrollable_area->ScrollPosition().Y());
 
-  EXPECT_EQ(LayoutSize(0, 200), sticky_div->StickyPositionOffset());
-  EXPECT_EQ(LayoutSize(0, 100), sticky_th->StickyPositionOffset());
+  EXPECT_EQ(PhysicalOffset(0, 200), sticky_div->StickyPositionOffset());
+  EXPECT_EQ(PhysicalOffset(0, 100), sticky_th->StickyPositionOffset());
 
   sticky_div->UpdateStickyPositionConstraints();
 
-  EXPECT_EQ(LayoutSize(0, 200), sticky_div->StickyPositionOffset());
+  EXPECT_EQ(PhysicalOffset(0, 200), sticky_div->StickyPositionOffset());
 
   sticky_th->UpdateStickyPositionConstraints();
 
-  EXPECT_EQ(LayoutSize(0, 200), sticky_div->StickyPositionOffset());
-  EXPECT_EQ(LayoutSize(0, 100), sticky_th->StickyPositionOffset());
+  EXPECT_EQ(PhysicalOffset(0, 200), sticky_div->StickyPositionOffset());
+  EXPECT_EQ(PhysicalOffset(0, 100), sticky_th->StickyPositionOffset());
 }
 
 // Verifies that the calculated position:sticky offsets are correct in the case
@@ -954,17 +954,17 @@ TEST_F(LayoutBoxModelObjectTest, StickyPositionComplexTableNesting) {
       FloatPoint(scrollable_area->ScrollPosition().X(), 150));
   ASSERT_EQ(150.0, scrollable_area->ScrollPosition().Y());
 
-  EXPECT_EQ(LayoutSize(0, 100), outer_sticky_th->StickyPositionOffset());
-  EXPECT_EQ(LayoutSize(0, 25), inner_sticky_th->StickyPositionOffset());
+  EXPECT_EQ(PhysicalOffset(0, 100), outer_sticky_th->StickyPositionOffset());
+  EXPECT_EQ(PhysicalOffset(0, 25), inner_sticky_th->StickyPositionOffset());
 
   outer_sticky_th->UpdateStickyPositionConstraints();
 
-  EXPECT_EQ(LayoutSize(0, 100), outer_sticky_th->StickyPositionOffset());
+  EXPECT_EQ(PhysicalOffset(0, 100), outer_sticky_th->StickyPositionOffset());
 
   inner_sticky_th->UpdateStickyPositionConstraints();
 
-  EXPECT_EQ(LayoutSize(0, 100), outer_sticky_th->StickyPositionOffset());
-  EXPECT_EQ(LayoutSize(0, 25), inner_sticky_th->StickyPositionOffset());
+  EXPECT_EQ(PhysicalOffset(0, 100), outer_sticky_th->StickyPositionOffset());
+  EXPECT_EQ(PhysicalOffset(0, 25), inner_sticky_th->StickyPositionOffset());
 }
 
 // Verifies that the calculated position:sticky offsets are correct in the case
@@ -1004,8 +1004,8 @@ TEST_F(LayoutBoxModelObjectTest, StickyPositionNestedInlineElements) {
       FloatPoint(scrollable_area->ScrollPosition().X(), 50));
   ASSERT_EQ(50.0, scrollable_area->ScrollPosition().Y());
 
-  EXPECT_EQ(LayoutSize(0, 0), outer_inline->StickyPositionOffset());
-  EXPECT_EQ(LayoutSize(0, 25), inner_inline->StickyPositionOffset());
+  EXPECT_EQ(PhysicalOffset(0, 0), outer_inline->StickyPositionOffset());
+  EXPECT_EQ(PhysicalOffset(0, 25), inner_inline->StickyPositionOffset());
 }
 
 // Verifies that the calculated position:sticky offsets are correct in the case
@@ -1051,21 +1051,8 @@ TEST_F(LayoutBoxModelObjectTest, StickyPositionNestedFixedPos) {
   // TODO(smcgruer): Until http://crbug.com/686164 is fixed, the sticky position
   // offset of the inner sticky stays 75 instead of 25.
   // the constraints here before calculations will be correct.
-  EXPECT_EQ(LayoutSize(0, 100), outer_sticky->StickyPositionOffset());
-  EXPECT_EQ(LayoutSize(0, 75), inner_sticky->StickyPositionOffset());
-}
-
-TEST_F(LayoutBoxModelObjectTest, NoCrashStackingContextChangeNonRooted) {
-  SetBodyInnerHTML("<div id='target'></div>");
-  auto& object = *GetLayoutObjectByElementId("target");
-  auto* parent = object.Parent();
-  object.SetDangerousOneWayParent(nullptr);
-  EXPECT_FALSE(object.IsRooted());
-
-  auto style = ComputedStyle::Create();
-  style->SetIsStackingContext(true);
-  object.SetStyle(style);  // This should not crash.
-  object.SetDangerousOneWayParent(parent);
+  EXPECT_EQ(PhysicalOffset(0, 100), outer_sticky->StickyPositionOffset());
+  EXPECT_EQ(PhysicalOffset(0, 75), inner_sticky->StickyPositionOffset());
 }
 
 TEST_F(LayoutBoxModelObjectTest, InvalidatePaintLayerOnStackedChange) {
@@ -1093,8 +1080,8 @@ TEST_F(LayoutBoxModelObjectTest, InvalidatePaintLayerOnStackedChange) {
   GetDocument().View()->UpdateLifecycleToLayoutClean();
 
   EXPECT_FALSE(target->StyleRef().IsStacked());
-  EXPECT_TRUE(target->Layer()->NeedsRepaint());
-  EXPECT_TRUE(original_compositing_container->NeedsRepaint());
+  EXPECT_TRUE(target->Layer()->SelfNeedsRepaint());
+  EXPECT_TRUE(original_compositing_container->DescendantNeedsRepaint());
   auto* new_compositing_container = target->Layer()->CompositingContainer();
   EXPECT_EQ(parent, new_compositing_container->GetLayoutObject());
 
@@ -1103,8 +1090,8 @@ TEST_F(LayoutBoxModelObjectTest, InvalidatePaintLayerOnStackedChange) {
   GetDocument().View()->UpdateLifecycleToLayoutClean();
 
   EXPECT_TRUE(target->StyleRef().IsStacked());
-  EXPECT_TRUE(target->Layer()->NeedsRepaint());
-  EXPECT_TRUE(new_compositing_container->NeedsRepaint());
+  EXPECT_TRUE(target->Layer()->SelfNeedsRepaint());
+  EXPECT_TRUE(new_compositing_container->DescendantNeedsRepaint());
   EXPECT_EQ(original_compositing_container,
             target->Layer()->CompositingContainer());
 }
@@ -1139,8 +1126,8 @@ TEST_F(LayoutBoxModelObjectTest, StickyRemovedFromRootScrollableArea) {
   // Now make the scroller into an actual scroller. This will reparent the
   // sticky element to be a child of the scroller, and will set its previous
   // overflow layer to nullptr.
-  ToElement(scroller->GetNode())
-      ->SetInlineStyleProperty(CSSPropertyOverflow, "scroll");
+  To<Element>(scroller->GetNode())
+      ->SetInlineStyleProperty(CSSPropertyID::kOverflow, "scroll");
   UpdateAllLifecyclePhasesForTest();
 
   // The sticky element should no longer be viewport constrained.
@@ -1149,10 +1136,10 @@ TEST_F(LayoutBoxModelObjectTest, StickyRemovedFromRootScrollableArea) {
   // Making the scroller have visible overflow but still have a PaintLayer
   // (in this case by making it position: relative) will cause us to need to
   // recompute the sticky element's ancestor overflow layer.
-  ToElement(scroller->GetNode())
-      ->SetInlineStyleProperty(CSSPropertyPosition, "relative");
-  ToElement(scroller->GetNode())
-      ->SetInlineStyleProperty(CSSPropertyOverflow, "visible");
+  To<Element>(scroller->GetNode())
+      ->SetInlineStyleProperty(CSSPropertyID::kPosition, "relative");
+  To<Element>(scroller->GetNode())
+      ->SetInlineStyleProperty(CSSPropertyID::kOverflow, "visible");
 
   // Now try to scroll to the sticky element, this used to crash.
   GetDocument().GetFrame()->DomWindow()->scrollTo(0, 500);
@@ -1167,20 +1154,20 @@ TEST_F(LayoutBoxModelObjectTest, BackfaceVisibilityChange) {
   auto* target_layer =
       ToLayoutBoxModelObject(target->GetLayoutObject())->Layer();
   ASSERT_NE(nullptr, target_layer);
-  EXPECT_FALSE(target_layer->NeedsRepaint());
+  EXPECT_FALSE(target_layer->SelfNeedsRepaint());
 
   target->setAttribute(html_names::kStyleAttr,
                        base_style + "; backface-visibility: hidden");
   GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint();
-  EXPECT_TRUE(target_layer->NeedsRepaint());
+  EXPECT_TRUE(target_layer->SelfNeedsRepaint());
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(target_layer->NeedsRepaint());
+  EXPECT_FALSE(target_layer->SelfNeedsRepaint());
 
   target->setAttribute(html_names::kStyleAttr, base_style);
   GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint();
-  EXPECT_TRUE(target_layer->NeedsRepaint());
+  EXPECT_TRUE(target_layer->SelfNeedsRepaint());
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(target_layer->NeedsRepaint());
+  EXPECT_FALSE(target_layer->SelfNeedsRepaint());
 }
 
 TEST_F(LayoutBoxModelObjectTest, UpdateStackingContextForOption) {
@@ -1211,4 +1198,35 @@ TEST_F(LayoutBoxModelObjectTest, UpdateStackingContextForOption) {
   EXPECT_TRUE(option_layout->StyleRef().HasCurrentOpacityAnimation());
 }
 
+// Tests that contain: layout changes cause compositing inputs update.
+TEST_F(LayoutBoxModelObjectTest,
+       LayoutContainmentChangeCausesCompositingInputsUpdate) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    /* ensure we retain the paint layer after removing .contained class. */
+    div { position: relative; }
+    .contained { contain: layout; }
+    </style>
+    <div id=target class=contained></div>
+    <div id=unrelated class=contained></div>
+  )HTML");
+  LayoutBoxModelObject* target =
+      ToLayoutBoxModelObject(GetLayoutObjectByElementId("target"));
+  ASSERT_TRUE(target->Layer());
+
+  EXPECT_FALSE(target->Layer()->NeedsCompositingInputsUpdate());
+  EXPECT_EQ(target->Layer(), target->Layer()->NearestContainedLayoutLayer());
+
+  To<HTMLElement>(target->GetNode())->classList().Remove("contained");
+  GetDocument().View()->UpdateLifecycleToLayoutClean();
+
+  EXPECT_TRUE(target->Layer()->NeedsCompositingInputsUpdate());
+
+  // After updating compositing inputs we should have no contained layer
+  // ancestors.
+  UpdateAllLifecyclePhasesForTest();
+  ASSERT_TRUE(target->Layer());
+  EXPECT_FALSE(target->Layer()->NeedsCompositingInputsUpdate());
+  EXPECT_EQ(nullptr, target->Layer()->NearestContainedLayoutLayer());
+}
 }  // namespace blink

@@ -6,6 +6,7 @@
 #define COMPONENTS_VIZ_SERVICE_HIT_TEST_HIT_TEST_AGGREGATOR_H_
 
 #include "components/viz/common/hit_test/aggregated_hit_test_region.h"
+#include "components/viz/common/quads/render_pass.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "components/viz/service/hit_test/hit_test_manager.h"
 #include "components/viz/service/surfaces/surface_observer.h"
@@ -106,7 +107,7 @@ class VIZ_SERVICE_EXPORT HitTestAggregator {
 
   // Handles the case when this object is deleted after
   // the PostTaskAggregation call is scheduled but before invocation.
-  base::WeakPtrFactory<HitTestAggregator> weak_ptr_factory_;
+  base::WeakPtrFactory<HitTestAggregator> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(HitTestAggregator);
 };

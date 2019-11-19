@@ -11,7 +11,7 @@
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/components/multidevice/remote_device_cache.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
-#include "chromeos/constants/chromeos_switches.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/secure_channel/background_eid_generator.h"
 #include "chromeos/services/secure_channel/ble_advertisement_generator.h"
 #include "chromeos/services/secure_channel/ble_constants.h"
@@ -154,7 +154,7 @@ BleServiceDataHelperImpl::PerformIdentifyRemoteDevice(
 
   // If the device has not yet been identified, try identifying |service_data|
   // as a background advertisement.
-  if (switches::IsInstantTetheringBackgroundAdvertisingSupported() &&
+  if (features::IsInstantTetheringBackgroundAdvertisingSupported() &&
       identified_device_id.empty() &&
       service_data.size() >= kMinNumBytesInServiceData &&
       service_data.size() <= kMaxNumBytesInBackgroundServiceData) {

@@ -18,9 +18,6 @@
 // the histogram should take, see
 // https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
 
-// TODO(rkaplow): Link to proper documentation on metric creation once we have
-// it in a good state.
-
 // All of these macros must be called with |name| as a runtime constant - it
 // doesn't have to literally be a constant, but it must be the same string on
 // all calls from a particular call site. If this rule is violated, it is
@@ -126,11 +123,13 @@
   UMA_HISTOGRAM_EXACT_LINEAR(name, percent_as_int, 101)
 
 //------------------------------------------------------------------------------
-// Scaled Linear histograms.
+// Scaled linear histograms.
 
 // These take |count| and |scale| parameters to allow cumulative reporting of
-// large numbers. Only the scaled count is reported but the reminder is kept so
-// multiple calls will accumulate correctly.  Only "exact linear" is supported.
+// large numbers. For example, code might pass a count of 1825 bytes and a scale
+// of 1024 bytes to report values in kilobytes. Only the scaled count is
+// reported, but the remainder is tracked between calls, so that multiple calls
+// will accumulate correctly. Only "exact linear" is supported.
 // It'll be necessary to #include "base/lazy_instance.h" to use this macro.
 
 #define UMA_HISTOGRAM_SCALED_EXACT_LINEAR(name, sample, count, value_max, \
@@ -185,7 +184,7 @@
 // underflow bucket.
 
 // Sample usage:
-//   UMA_HISTOGRAM_CUSTOM_COUNTS("My.Histogram", 1, 100000000, 100);
+//   UMA_HISTOGRAM_CUSTOM_COUNTS("My.Histogram", sample, 1, 100000000, 50);
 #define UMA_HISTOGRAM_CUSTOM_COUNTS(name, sample, min, max, bucket_count)      \
     INTERNAL_HISTOGRAM_CUSTOM_COUNTS_WITH_FLAG(                                \
         name, sample, min, max, bucket_count,                                  \
@@ -310,6 +309,12 @@
 
 // For details on usage, see the documentation on the non-stability equivalents.
 
+#define UMA_STABILITY_HISTOGRAM_BOOLEAN(name, sample) \
+  STATIC_HISTOGRAM_POINTER_BLOCK(                     \
+      name, AddBoolean(sample),                       \
+      base::BooleanHistogram::FactoryGet(             \
+          name, base::HistogramBase::kUmaStabilityHistogramFlag))
+
 #define UMA_STABILITY_HISTOGRAM_COUNTS_100(name, sample)                       \
     UMA_STABILITY_HISTOGRAM_CUSTOM_COUNTS(name, sample, 1, 100, 50)
 
@@ -319,10 +324,24 @@
         name, sample, min, max, bucket_count,                                  \
         base::HistogramBase::kUmaStabilityHistogramFlag)
 
-#define UMA_STABILITY_HISTOGRAM_ENUMERATION(name, sample, enum_max)            \
-    INTERNAL_HISTOGRAM_ENUMERATION_WITH_FLAG(                                  \
-        name, sample, enum_max,                                                \
-        base::HistogramBase::kUmaStabilityHistogramFlag)
+#define UMA_STABILITY_HISTOGRAM_ENUMERATION(name, ...)                  \
+  INTERNAL_UMA_HISTOGRAM_ENUMERATION_GET_MACRO(                         \
+      __VA_ARGS__, INTERNAL_UMA_HISTOGRAM_ENUMERATION_SPECIFY_BOUNDARY, \
+      INTERNAL_UMA_HISTOGRAM_ENUMERATION_DEDUCE_BOUNDARY)               \
+  (name, __VA_ARGS__, base::HistogramBase::kUmaStabilityHistogramFlag)
+
+#define UMA_STABILITY_HISTOGRAM_LONG_TIMES(name, sample) \
+  STATIC_HISTOGRAM_POINTER_BLOCK(                        \
+      name, AddTimeMillisecondsGranularity(sample),      \
+      base::Histogram::FactoryTimeGet(                   \
+          name, base::TimeDelta::FromMilliseconds(1),    \
+          base::TimeDelta::FromHours(1), 50,             \
+          base::HistogramBase::kUmaStabilityHistogramFlag))
+
+#define UMA_STABILITY_HISTOGRAM_PERCENTAGE(name, percent_as_int) \
+  INTERNAL_HISTOGRAM_EXACT_LINEAR_WITH_FLAG(                     \
+      name, percent_as_int, 101,                                 \
+      base::HistogramBase::kUmaStabilityHistogramFlag)
 
 //------------------------------------------------------------------------------
 // Histogram instantiation helpers.

@@ -1,0 +1,29 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/html/i18n_behavior.html">
+<link rel="import" href="chrome://resources/cr_components/chromeos/cellular_setup/base_page.html">
+
+<dom-module id="final-page">
+  <template>
+    <style>
+      [slot='page-body'] {
+        background-image: -webkit-image-set(
+            url(final_page_success_1x.png) 1x,
+            url(final_page_success_2x.png) 2x);
+        background-position: center center;
+        background-repeat: no-repeat;
+      }
+
+      .error[slot='page-body'] {
+          background-image: -webkit-image-set(
+              url(error_1x.png) 1x,
+              url(error_2x.png) 2x);
+      }
+    </style>
+    <base-page title="[[getTitle_(showError)]]"
+        message="[[getMessage_(showError)]]">
+      <div class$="[[getPageBodyClass_(showError)]]" slot="page-body"></div>
+    </base-page>
+  </template>
+  <script src="final_page.js"></script>
+</dom-module>

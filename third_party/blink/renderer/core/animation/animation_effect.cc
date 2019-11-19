@@ -33,25 +33,11 @@
 #include "third_party/blink/renderer/core/animation/animation.h"
 #include "third_party/blink/renderer/core/animation/animation_input_helpers.h"
 #include "third_party/blink/renderer/core/animation/computed_effect_timing.h"
-#include "third_party/blink/renderer/core/animation/effect_timing.h"
 #include "third_party/blink/renderer/core/animation/optional_effect_timing.h"
 #include "third_party/blink/renderer/core/animation/timing_calculations.h"
 #include "third_party/blink/renderer/core/animation/timing_input.h"
 
 namespace blink {
-
-namespace {
-
-Timing::FillMode ResolvedFillMode(Timing::FillMode fill_mode,
-                                  bool is_animation) {
-  if (fill_mode != Timing::FillMode::AUTO)
-    return fill_mode;
-  if (is_animation)
-    return Timing::FillMode::NONE;
-  return Timing::FillMode::BOTH;
-}
-
-}  // namespace
 
 AnimationEffect::AnimationEffect(const Timing& timing,
                                  EventDelegate* event_delegate)
@@ -59,30 +45,8 @@ AnimationEffect::AnimationEffect(const Timing& timing,
       timing_(timing),
       event_delegate_(event_delegate),
       calculated_(),
-      needs_update_(true),
-      last_update_time_(NullValue()) {
+      needs_update_(true) {
   timing_.AssertValid();
-}
-
-AnimationTimeDelta AnimationEffect::IterationDuration() const {
-  AnimationTimeDelta result =
-      timing_.iteration_duration.value_or(IntrinsicIterationDuration());
-  DCHECK_GE(result, AnimationTimeDelta());
-  return result;
-}
-
-double AnimationEffect::RepeatedDuration() const {
-  const double result =
-      MultiplyZeroAlwaysGivesZero(IterationDuration(), timing_.iteration_count);
-  DCHECK_GE(result, 0);
-  return result;
-}
-
-double AnimationEffect::EndTimeInternal() const {
-  // Per the spec, the end time has a lower bound of 0.0:
-  // https://drafts.csswg.org/web-animations-1/#end-time
-  return std::max(timing_.start_delay + RepeatedDuration() + timing_.end_delay,
-                  0.0);
 }
 
 void AnimationEffect::UpdateSpecifiedTiming(const Timing& timing) {
@@ -92,69 +56,12 @@ void AnimationEffect::UpdateSpecifiedTiming(const Timing& timing) {
 }
 
 EffectTiming* AnimationEffect::getTiming() const {
-  EffectTiming* effect_timing = EffectTiming::Create();
-
-  effect_timing->setDelay(SpecifiedTiming().start_delay * 1000);
-  effect_timing->setEndDelay(SpecifiedTiming().end_delay * 1000);
-  effect_timing->setFill(Timing::FillModeString(SpecifiedTiming().fill_mode));
-  effect_timing->setIterationStart(SpecifiedTiming().iteration_start);
-  effect_timing->setIterations(SpecifiedTiming().iteration_count);
-  UnrestrictedDoubleOrString duration;
-  if (SpecifiedTiming().iteration_duration) {
-    duration.SetUnrestrictedDouble(
-        SpecifiedTiming().iteration_duration->InMillisecondsF());
-  } else {
-    duration.SetString("auto");
-  }
-  effect_timing->setDuration(duration);
-  effect_timing->setDirection(
-      Timing::PlaybackDirectionString(SpecifiedTiming().direction));
-  effect_timing->setEasing(SpecifiedTiming().timing_function->ToString());
-
-  return effect_timing;
+  return SpecifiedTiming().ConvertToEffectTiming();
 }
 
 ComputedEffectTiming* AnimationEffect::getComputedTiming() const {
-  ComputedEffectTiming* computed_timing = ComputedEffectTiming::Create();
-
-  // ComputedEffectTiming members.
-  computed_timing->setEndTime(EndTimeInternal() * 1000);
-  computed_timing->setActiveDuration(RepeatedDuration() * 1000);
-
-  if (IsNull(EnsureCalculated().local_time)) {
-    computed_timing->setLocalTimeToNull();
-  } else {
-    computed_timing->setLocalTime(EnsureCalculated().local_time * 1000);
-  }
-
-  if (EnsureCalculated().is_in_effect) {
-    computed_timing->setProgress(EnsureCalculated().progress.value());
-    computed_timing->setCurrentIteration(EnsureCalculated().current_iteration);
-  } else {
-    computed_timing->setProgressToNull();
-    computed_timing->setCurrentIterationToNull();
-  }
-
-  // For the EffectTiming members, getComputedTiming is equivalent to getTiming
-  // except that the fill and duration must be resolved.
-  //
-  // https://drafts.csswg.org/web-animations-1/#dom-animationeffect-getcomputedtiming
-  computed_timing->setDelay(SpecifiedTiming().start_delay * 1000);
-  computed_timing->setEndDelay(SpecifiedTiming().end_delay * 1000);
-  computed_timing->setFill(Timing::FillModeString(
-      ResolvedFillMode(SpecifiedTiming().fill_mode, IsKeyframeEffect())));
-  computed_timing->setIterationStart(SpecifiedTiming().iteration_start);
-  computed_timing->setIterations(SpecifiedTiming().iteration_count);
-
-  UnrestrictedDoubleOrString duration;
-  duration.SetUnrestrictedDouble(IterationDuration().InMillisecondsF());
-  computed_timing->setDuration(duration);
-
-  computed_timing->setDirection(
-      Timing::PlaybackDirectionString(SpecifiedTiming().direction));
-  computed_timing->setEasing(SpecifiedTiming().timing_function->ToString());
-
-  return computed_timing;
+  return SpecifiedTiming().getComputedTiming(EnsureCalculated(),
+                                             IsKeyframeEffect());
 }
 
 void AnimationEffect::updateTiming(OptionalEffectTiming* optional_timing,
@@ -166,122 +73,37 @@ void AnimationEffect::updateTiming(OptionalEffectTiming* optional_timing,
   InvalidateAndNotifyOwner();
 }
 
-void AnimationEffect::UpdateInheritedTime(double inherited_time,
+void AnimationEffect::UpdateInheritedTime(base::Optional<double> inherited_time,
                                           TimingUpdateReason reason) const {
-  bool needs_update =
-      needs_update_ ||
-      (last_update_time_ != inherited_time &&
-       !(IsNull(last_update_time_) && IsNull(inherited_time))) ||
-      (owner_ && owner_->EffectSuppressed());
+  base::Optional<double> playback_rate = base::nullopt;
+  if (GetAnimation())
+    playback_rate = GetAnimation()->playbackRate();
+  const Timing::AnimationDirection direction =
+      (playback_rate && playback_rate.value() < 0)
+          ? Timing::AnimationDirection::kBackwards
+          : Timing::AnimationDirection::kForwards;
+
+  bool needs_update = needs_update_ || last_update_time_ != inherited_time ||
+                      (owner_ && owner_->EffectSuppressed());
   needs_update_ = false;
   last_update_time_ = inherited_time;
 
-  const double local_time = inherited_time;
-  double time_to_next_iteration = std::numeric_limits<double>::infinity();
+  const double local_time = inherited_time.value_or(NullValue());
   if (needs_update) {
-    const double active_duration = RepeatedDuration();
-    // TODO(yigu): Direction of WorkletAnimation is always forwards based on
-    // the calculation. Need to unify the logic to handle it correctly.
-    // https://crbug.com/896249.
-    const AnimationDirection direction =
-        (GetAnimation() && GetAnimation()->playbackRate() < 0) ? kBackwards
-                                                               : kForwards;
+    Timing::CalculatedTiming calculated = SpecifiedTiming().CalculateTimings(
+        local_time, direction, IsKeyframeEffect(), playback_rate);
 
-    const Phase current_phase =
-        CalculatePhase(active_duration, local_time, direction, timing_);
-    // FIXME: parentPhase depends on groups being implemented.
-    const AnimationEffect::Phase kParentPhase = AnimationEffect::kPhaseActive;
-    const double active_time = CalculateActiveTime(
-        active_duration,
-        ResolvedFillMode(timing_.fill_mode, IsKeyframeEffect()), local_time,
-        kParentPhase, current_phase, timing_);
+    const bool was_canceled = calculated.phase != calculated_.phase &&
+                              calculated.phase == Timing::kPhaseNone;
 
-    double current_iteration;
-    base::Optional<double> progress;
-    if (!IterationDuration().is_zero()) {
-      const double iteration_duration = IterationDuration().InSecondsF();
-      const double start_offset = MultiplyZeroAlwaysGivesZero(
-          timing_.iteration_start, iteration_duration);
-      DCHECK_GE(start_offset, 0);
-      const double offset_active_time =
-          CalculateOffsetActiveTime(active_duration, active_time, start_offset);
-      const double iteration_time = CalculateIterationTime(
-          iteration_duration, active_duration, offset_active_time, start_offset,
-          current_phase, timing_);
-
-      current_iteration = CalculateCurrentIteration(
-          iteration_duration, iteration_time, offset_active_time, timing_);
-      const base::Optional<double> transformed_time = CalculateTransformedTime(
-          current_iteration, iteration_duration, iteration_time, timing_);
-
-      // The infinite iterationDuration case here is a workaround because
-      // the specified behaviour does not handle infinite durations well.
-      // There is an open issue against the spec to fix this:
-      // https://github.com/w3c/web-animations/issues/142
-      if (!std::isfinite(iteration_duration))
-        progress = fmod(timing_.iteration_start, 1.0);
-      else if (transformed_time)
-        progress = transformed_time.value() / iteration_duration;
-
-      if (!IsNull(iteration_time)) {
-        time_to_next_iteration = iteration_duration - iteration_time;
-        if (active_duration - active_time < time_to_next_iteration)
-          time_to_next_iteration = std::numeric_limits<double>::infinity();
-      }
-    } else {
-      const double kLocalIterationDuration = 1;
-      const double local_active_duration =
-          kLocalIterationDuration * timing_.iteration_count;
-      DCHECK_GE(local_active_duration, 0);
-      const double end_time = std::max(
-          timing_.start_delay + active_duration + timing_.end_delay, 0.0);
-      const double before_active_boundary_time =
-          std::max(std::min(timing_.start_delay, end_time), 0.0);
-      // local_local_time should be greater than or equal to the
-      // before_active_boundary_time once the local_time goes past the start
-      // delay.
-      const double local_local_time =
-          local_time < timing_.start_delay
-              ? local_time
-              : std::max(local_active_duration + timing_.start_delay,
-                         before_active_boundary_time);
-
-      const AnimationEffect::Phase local_current_phase = CalculatePhase(
-          local_active_duration, local_local_time, direction, timing_);
-      const double local_active_time = CalculateActiveTime(
-          local_active_duration,
-          ResolvedFillMode(timing_.fill_mode, IsKeyframeEffect()),
-          local_local_time, kParentPhase, local_current_phase, timing_);
-      const double start_offset =
-          timing_.iteration_start * kLocalIterationDuration;
-      DCHECK_GE(start_offset, 0);
-      const double offset_active_time = CalculateOffsetActiveTime(
-          local_active_duration, local_active_time, start_offset);
-      const double iteration_time = CalculateIterationTime(
-          kLocalIterationDuration, local_active_duration, offset_active_time,
-          start_offset, current_phase, timing_);
-
-      current_iteration = CalculateCurrentIteration(
-          kLocalIterationDuration, iteration_time, offset_active_time, timing_);
-      progress = CalculateTransformedTime(
-          current_iteration, kLocalIterationDuration, iteration_time, timing_);
+    // If the animation was canceled, we need to fire the event condition before
+    // updating the calculated timing so that the cancellation time can be
+    // determined.
+    if (was_canceled && event_delegate_) {
+      event_delegate_->OnEventCondition(*this, calculated.phase);
     }
 
-    const bool was_canceled = current_phase != calculated_.phase &&
-                              current_phase == AnimationEffect::kPhaseNone;
-    calculated_.phase = current_phase;
-    // If the animation was canceled, we need to fire the event condition before
-    // updating the timing so that the cancelation time can be determined.
-    if (was_canceled && event_delegate_)
-      event_delegate_->OnEventCondition(*this);
-
-    calculated_.current_iteration = current_iteration;
-    calculated_.progress = progress;
-
-    calculated_.is_in_effect = !IsNull(active_time);
-    calculated_.is_in_play = GetPhase() == kPhaseActive;
-    calculated_.is_current = GetPhase() == kPhaseBefore || IsInPlay();
-    calculated_.local_time = last_update_time_;
+    calculated_ = calculated;
   }
 
   // Test for events even if timing didn't need an update as the animation may
@@ -291,16 +113,16 @@ void AnimationEffect::UpdateInheritedTime(double inherited_time,
   if (reason == kTimingUpdateForAnimationFrame &&
       (!owner_ || owner_->IsEventDispatchAllowed())) {
     if (event_delegate_)
-      event_delegate_->OnEventCondition(*this);
+      event_delegate_->OnEventCondition(*this, calculated_.phase);
   }
 
   if (needs_update) {
     // FIXME: This probably shouldn't be recursive.
     UpdateChildrenAndEffects();
-    calculated_.time_to_forwards_effect_change =
-        CalculateTimeToEffectChange(true, local_time, time_to_next_iteration);
-    calculated_.time_to_reverse_effect_change =
-        CalculateTimeToEffectChange(false, local_time, time_to_next_iteration);
+    calculated_.time_to_forwards_effect_change = CalculateTimeToEffectChange(
+        true, local_time, calculated_.time_to_next_iteration);
+    calculated_.time_to_reverse_effect_change = CalculateTimeToEffectChange(
+        false, local_time, calculated_.time_to_next_iteration);
   }
 }
 
@@ -310,12 +132,9 @@ void AnimationEffect::InvalidateAndNotifyOwner() const {
     owner_->EffectInvalidated();
 }
 
-const AnimationEffect::CalculatedTiming& AnimationEffect::EnsureCalculated()
-    const {
-  if (!owner_)
-    return calculated_;
-
-  owner_->UpdateIfNecessary();
+const Timing::CalculatedTiming& AnimationEffect::EnsureCalculated() const {
+  if (owner_)
+    owner_->UpdateIfNecessary();
   return calculated_;
 }
 

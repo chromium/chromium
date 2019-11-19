@@ -1,35 +1,12 @@
-<iron-iconset-svg name="demo-setup-32" size="32">
-  <svg>
-    <defs>
-      <g id="computer" fill="none" fill-rule="evenodd">
-        <path d="M0-4h32v32H0z"></path>
-        <path fill="#1A73E8" fill-rule="nonzero"d="M29 20V0H3v20H0v3h32v-3h-3zm-10.333 0h-5.334v-1.333h5.334V20zM26 16H6V3h20v13z"></path>
-        <path fill="#1A73E8" d="M16.97 8.129L16 5l-.97 3.129H12l2.47 1.836L13.53 13 16 11.123 18.47 13l-.94-3.035L20 8.129z"></path>
-      </g>
-    </defs>
-  </svg>
-</iron-iconset-svg>
-
-<iron-iconset-svg name="demo-setup-64" size="64">
-  <svg>
-    <defs>
-      <g id="computer" fill="none" fill-rule="evenodd">
-        <path d="M0 0h64v64H0z"></path>
-        <path fill="#1A73E8" fill-rule="nonzero" d="M58 48V8H6v40H0v6h64v-6h-6zm-20.667 0H26.667v-2.667h10.666V48zM52 40H12V14h40v26z"></path>
-        <path fill="#1A73E8" d="M33.94 24.258L32 18l-1.94 6.258H24l4.94 3.672L27.06 34 32 30.245 36.94 34l-1.88-6.07L40 24.258z"></path>
-      </g>
-    </defs>
-  </svg>
-</iron-iconset-svg>
-
 <dom-module id="demo-setup-md">
   <template>
+    <link rel="stylesheet" href="oobe_dialog_host.css">
     <link rel="stylesheet" href="demo_setup.css">
     <link rel="stylesheet" href="oobe_flex_layout.css">
 
     <oobe-dialog id="demoSetupProgressDialog" role="dialog" has-buttons hidden>
       <hd-iron-icon slot="oobe-icon"
-          icon1x="demo-setup-32:computer" icon2x="demo-setup-64:computer">
+          icon1x="oobe-32:computer" icon2x="oobe-64:computer">
       </hd-iron-icon>
       <h1 slot="title">
         [[i18nDynamic(locale, 'demoSetupProgressScreenTitle')]]
@@ -42,7 +19,7 @@
     <oobe-dialog id="demoSetupErrorDialog" role="dialog" has-buttons hidden
         aria-label$="[[i18nDynamic(locale, 'demoSetupErrorScreenTitle')]]">
       <hd-iron-icon slot="oobe-icon"
-          icon1x="demo-setup-32:computer" icon2x="demo-setup-64:computer">
+          icon1x="oobe-32:computer" icon2x="oobe-64:computer">
       </hd-iron-icon>
       <h1 slot="title">[[i18nDynamic(locale, 'demoSetupErrorScreenTitle')]]</h1>
       <div slot="subtitle">[[errorMessage_]]</div>
@@ -51,7 +28,7 @@
             images/alert-illustration_2x.svg 2x">
       </div>
       <div slot="bottom-buttons" class="layout horizontal justified">
-        <oobe-back-button inverse on-tap="onCloseClicked_"
+        <oobe-back-button inverse on-click="onCloseClicked_"
             disabled="[[isPowerwashRequired_]]"></oobe-back-button>
         <oobe-text-button id="retryButton" on-tap="onRetryClicked_"
             inverse hidden="[[isPowerwashRequired_]]">

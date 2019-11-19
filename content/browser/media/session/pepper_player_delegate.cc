@@ -9,6 +9,7 @@
 #include "content/browser/media/session/pepper_playback_observer.h"
 #include "content/common/frame_messages.h"
 #include "media/base/media_switches.h"
+#include "services/media_session/public/cpp/media_position.h"
 
 namespace content {
 
@@ -61,6 +62,13 @@ void PepperPlayerDelegate::OnSetVolumeMultiplier(int player_id,
 
   DCHECK_EQ(player_id, kPlayerId);
   SetVolume(player_id, volume_multiplier);
+}
+
+base::Optional<media_session::MediaPosition> PepperPlayerDelegate::GetPosition(
+    int player_id) const {
+  // Pepper does not support position data.
+  DCHECK_EQ(player_id, kPlayerId);
+  return base::nullopt;
 }
 
 RenderFrameHost* PepperPlayerDelegate::render_frame_host() const {

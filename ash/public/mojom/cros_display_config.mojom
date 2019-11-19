@@ -1,0 +1,308 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.mojom;
+
+import "ui/gfx/geometry/mojom/geometry.mojom";
+import "ui/display/mojom/display.mojom";
+
+// This API is used for communication between Settings WebUI and Ash C++ code.
+
+// All points, bounds, and insets are in display pixels unless otherwise
+// sepcified.
+
+// SetDisplayLayoutInfo or SetDisplayProperties result.
+enum DisplayConfigResult {
+  kSuccess = 0,
+  kInvalidOperationError,
+  kInvalidDisplayIdError,
+  kUnifiedNotEnabledError,
+  kPropertyValueOutOfRangeError,
+  kNotSupportedOnInternalDisplayError,
+  kNegativeValueError,
+  kSetDisplayModeError,
+  kInvalidDisplayLayoutError,
+  kMirrorModeSingleDisplayError,
+  kMirrorModeSourceIdError,
+  kMirrorModeDestIdError,
+  kCalibrationNotAvailableError,
+  kCalibrationNotStartedError,
+  kCalibrationInProgressError,
+  kCalibrationInvalidDataError,
+  kCalibrationFailedError,
+};
+
+// Describes how the displays are laid out.
+enum DisplayLayoutMode {
+  // In normal mode displays are laid out as described by
+  // DisplayLayoutInfo.layouts.
+  kNormal = 0,
+  // In unified desktop mode, a single desktop will be stretched across all
+  // available displays.
+  kUnified,
+  // In mirrored mode, the display defined by DisplayLayoutInfo.mirrorSourceId
+  // will be mirrored in the displays defined by
+  // DisplayLayoutInfo.mirrorDestinationIds, or in all other displays if
+  // mirrorDestinationIds is empty.
+  kMirrored
+};
+
+// Describes a display edge.
+enum DisplayLayoutPosition {
+  kTop = 0,
+  kRight,
+  kBottom,
+  kLeft
+};
+
+// Describes an overscan or touch calibration operation.
+enum DisplayConfigOperation {
+  kStart = 0,
+  kAdjust,
+  kReset,
+  kComplete,
+  kShowNative,
+};
+
+// Describes who initiated configuration change.
+enum DisplayConfigSource {
+  kUser = 0,
+  kPolicy
+};
+
+// Describes the options the DisplayConfigProperties.rotation and
+// DisplayUnitInfo.rotation_options can be set to.
+enum DisplayRotationOptions {
+  // In physical tablet state, enables auto-rotation and clears the user
+  // rotation lock. Otherwise, it behaves the same as kZeroDegrees.
+  kAutoRotate,
+  // In physical tablet state, Sets the user rotation lock to 0 degrees.
+  // Otherwise, it sets the display rotation to 0.
+  kZeroDegrees,
+  // In physical tablet state, Sets the user rotation lock to 90 degrees.
+  // Otherwise, it sets the display rotation 90.
+  k90Degrees,
+  // In physical tablet state, Sets the user rotation lock to 180 degrees.
+  // Otherwise, it sets the display rotation 180.
+  k180Degrees,
+  // In physical tablet state, Sets the user rotation lock to 270 degrees.
+  // Otherwise, it sets the display rotation 270.
+  k270Degrees,
+};
+
+// Defines a pair of display + touch points used for touch calibration.
+struct TouchCalibrationPair {
+  // The coordinates of the display point.
+  gfx.mojom.Point display_point;
+  // The coordinates of the touch point corresponding to the display point.
+  gfx.mojom.Point touch_point;
+};
+
+// Defines the data required for touch calibration.
+struct TouchCalibration {
+  // Must contain exactly four pairs of touch calibration points.
+  array<TouchCalibrationPair> pairs;
+  // Width and height of the display area when the touch calibration was
+  // performed.
+  gfx.mojom.Size bounds;
+};
+
+// Defines the layout of a single display.
+struct DisplayLayout {
+  // The unique identifier of the display.
+  string id;
+  // The unique identifier of the parent display. Empty for the root display.
+  string parent_id;
+  // The edge of the display that is shared with the parent display. Ignored for
+  // the root display.
+  DisplayLayoutPosition position;
+  // The offset of the display along the connected edge. 0 indicates that
+  // the topmost or leftmost corner is aligned.
+  int32 offset;
+};
+
+// Defines the layout mode and details.
+struct DisplayLayoutInfo {
+  // The layout mode to use, see DisplayLayoutMode for details.
+  DisplayLayoutMode layout_mode;
+  // Ignored if If layout_mode is not kMirrored. Otherwise, if provided,
+  // specifies the unique identifier of the source display for mirroring. If
+  // not provided, mirror_destination_ids will be ignored and default ('normal')
+  // mirrored mode will be enabled.
+  string? mirror_source_id;
+  // Ignored if layout_mode is not kMirrored. Otherwise, if provided, specifies
+  // the unique identifiers of the displays to mirror the source display. If not
+  // provided or empty, all displays will mirror the source display.
+  array<string>? mirror_destination_ids;
+  // An array of layouts describing a directed graph of displays. Required if
+  // layout_mode is kNormal or kMirrored and not all displays are mirrored
+  // ('mixed' mode). Ignored if layout_mode is kUnified.
+  array<DisplayLayout>? layouts;
+};
+
+// EDID extracted parameters. Field description refers to "VESA ENHANCED
+// EXTENDED DISPLAY IDENTIFICATION DATA STANDARD (Defines EDID Structure
+// Version 1, Revision 4)" Release A, Revision 2 September 25, 2006.
+// https://www.vesa.org/vesa-standards
+struct Edid {
+  // Three character manufacturer code, Sec. 3.4.1 page 21.
+  string manufacturer_id;
+  // Two byte manufacturer-assigned code, Sec. 3.4.2 page 21.
+  string product_id;
+  // Year of manufacture. Sec. 3.4.4 page 22.
+  int32 year_of_manufacture;
+};
+
+// Struct wrapper so that the property can be optional.
+struct DisplayRotation {
+  DisplayRotationOptions rotation;
+};
+
+// Defines the properties for a display mode, i.e. a valid size and scale.
+struct DisplayMode {
+  // The display mode size in device independent (user visible) pixels.
+  gfx.mojom.Size size;
+  // The display mode size in native pixels.
+  gfx.mojom.Size size_in_native_pixels;
+  // The display mode device scale factor.
+  double device_scale_factor;
+  // The display mode refresh rate in hertz.
+  double refresh_rate;
+  // True if the mode is the display's native mode.
+  bool is_native;
+  // True if the mode is interlaced.
+  bool is_interlaced;
+};
+
+// Defines the properties of an individual display, returned by
+// GetDisplayLayoutInfo.
+struct DisplayUnitInfo {
+  // The unique identifier of the display.
+  string id;
+  // The user-friendly name (e.g. "Acme LCD monitor").
+  string name;
+  // EDID properties when available.
+  Edid? edid;
+  // True if this is the primary display.
+  bool is_primary;
+  // True if this is an internal display.
+  bool is_internal;
+  // True if this display is enabled.
+  bool is_enabled;
+  // True when the device is in tablet physical state.
+  bool is_in_tablet_physical_state;
+  // True if this display has a touch input device associated with it.
+  bool has_touch_support;
+  // True if this display has an accelerometer associated with it.
+  bool has_accelerometer_support;
+  // The number of pixels per inch along the x-axis.
+  double dpi_x;
+  // The number of pixels per inch along the y-axis.
+  double dpi_y;
+  // The display rotation options.
+  DisplayRotationOptions rotation_options;
+  // The display's logical bounds.
+  gfx.mojom.Rect bounds;
+  // The display's ovserscan insets within its screen's bounds.
+  gfx.mojom.Insets overscan;
+  // The usable work area of the display within the display bounds. Excludes
+  // areas of the display reserved for the OS, e.g. the taskbar and launcher.
+  gfx.mojom.Rect work_area;
+  // The index of the selected display mode.
+  int32 selected_display_mode_index;
+  // The list of available display modes.
+  array<DisplayMode> available_display_modes;
+  // The ratio between the display's current and default zoom. i.e. 1.0 is
+  // is equivalent to 100% zoom, and value 1.5 is equivalent to 150% zoom.
+  double display_zoom_factor;
+  // The list of allowed zoom factor values for the display.
+  array<double> available_display_zoom_factors;
+};
+
+// Properties for configuring an individual display, used in
+// SetDisplayProperties.
+struct DisplayConfigProperties {
+  // If true, makes the display primary. No-op if set to false.
+  bool set_primary;
+  // If provided, sets the display's overscan insets to the provided value.
+  // Note: overscan values may not be negative or larger than a half of the
+  // screen's size. Overscan cannot be changed on the internal monitor.
+  gfx.mojom.Insets? overscan;
+  // If provided updates the display's rotation, or if the device is in a
+  // physical tablet state, it can be used to set or clear the user rotation
+  // lock, enabling or disabling auto-rotation.
+  DisplayRotation? rotation;
+  // If provided, updates the display's logical bounds origin. Note: when
+  // updating the display origin, some constraints will be applied. so the final
+  // bounds origin may be different than the one set. The actual bounds will be
+  // reflected in DisplayUnitInfo. Cannot be changed on the primary display (or
+  // if set_primary is true).
+  gfx.mojom.Point? bounds_origin;
+  // If non zero, updates the zoom associated with the display. This zoom
+  // performs relayout and repaint thus resulting in a better quality zoom than
+  // just performing a pixel by pixel stretch enlargement.
+  double display_zoom_factor;
+  // Optional DisplayMode properties to set. This should match one of the
+  // modes listed in DisplayUnitInfo.available_display_modes. Other custom
+  // modes may or may not be valid.
+  DisplayMode? display_mode;
+};
+
+// Interface for configuring displays in Chrome OS. Currently this is
+// implemented in Ash through classes owned by ash::Shell, but the interface
+// should not have any Ash specific dependencies.
+interface CrosDisplayConfigController {
+  // Observers are notified when the display layout or any display properties
+  // change.
+  AddObserver(pending_associated_remote<CrosDisplayConfigObserver> observer);
+
+  // Returns the display layout info, including the list of layouts.
+  GetDisplayLayoutInfo() => (DisplayLayoutInfo info);
+
+  // Sets the layout mode, mirroring, and layouts. Returns kSuccess if the
+  // layout is valid or an error value otherwise.
+  SetDisplayLayoutInfo(DisplayLayoutInfo info) => (DisplayConfigResult result);
+
+  // Returns the properties for all displays. If |single_unified| is true, a
+  // single display will be returned if the display layout is in unifed mode.
+  GetDisplayUnitInfoList(bool single_unified) =>
+    (array<DisplayUnitInfo> info_list);
+
+  // Sets |properties| for individual display with identifier |id|. |source|
+  // should describe who initiated the change. Returns Success if the properties
+  // are valid or an error value otherwise.
+  SetDisplayProperties(string id,
+                       DisplayConfigProperties properties,
+                       DisplayConfigSource source) =>
+    (DisplayConfigResult result);
+
+  // Enables or disables unified desktop mode. If the current display mode is
+  // kMirrored the mode will not be changed, if it is kNormal then the mode will
+  // be set to kUnified.
+  SetUnifiedDesktopEnabled(bool enabled);
+
+  // Starts, updates, completes, or resets overscan calibration for the display
+  // with identifier |display_id|. If |op| is kAdjust, |delta| describes the
+  // amount to change the overscan value. Runs the callback after performing the
+  // operation or on error.
+  OverscanCalibration(string display_id,
+                      DisplayConfigOperation op,
+                      gfx.mojom.Insets? delta) => (DisplayConfigResult result);
+
+  // Starts, completes, or resets touch calibration for the display with
+  // identifier |display_id|. If |op| is kShowNative shows the native
+  // calibration UI. Runs the callback after performing the operation or on
+  // error.
+  TouchCalibration(string display_id,
+                   DisplayConfigOperation op,
+                   TouchCalibration? calibration) =>
+    (DisplayConfigResult result);
+};
+
+// Interface for clients needing to be informed when the display configuration
+// changes.
+interface CrosDisplayConfigObserver {
+  // Called any time the display configuration changes.
+  OnDisplayConfigChanged();
+};

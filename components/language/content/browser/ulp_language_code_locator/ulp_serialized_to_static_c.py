@@ -25,16 +25,20 @@ def ReadSerializedData(input_path):
   with open(input_path, 'rb') as input_file:
     data = input_file.read()
 
-  linebreak = data.index('\n')
+  linebreak = data.index(b'\n')
   # First line is comma-separated list of languages.
-  language_codes = data[:linebreak].strip().split(',')
+  language_codes = data[:linebreak].strip().split(b',')
   # Rest of the file is the serialized tree.
   tree_bytes = data[linebreak+1:]
+
+  # Strings are read in Python 2 so we need to use ord() to convert to bytes.
+  to_bytes = ord if sys.version_info.major == 2 else lambda x: x
+
   # We group the bytes in the string into 32 bits integers.
   tree_serialized = [
-    sum((ord(tree_bytes[i+b]) << (8*b)) if i+b < len(tree_bytes) else 0
-    for b in xrange(4))
-    for i in xrange(0, len(tree_bytes), 4)
+    sum((to_bytes(tree_bytes[i+b]) << (8*b)) if i+b < len(tree_bytes) else 0
+    for b in range(4))
+    for i in range(0, len(tree_bytes), 4)
   ]
   return language_codes, tree_serialized
 

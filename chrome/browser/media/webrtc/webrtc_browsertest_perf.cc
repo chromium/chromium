@@ -6,9 +6,12 @@
 
 #include <stddef.h>
 
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "testing/perf/perf_result_reporter.h"
 #include "testing/perf/perf_test.h"
 
 static std::string Statistic(const std::string& statistic,
@@ -260,6 +263,115 @@ void PrintMetricsForRecvStreams(const base::DictionaryValue& pc_dict,
     MaybePrintResultsForAudioReceive(ssrc, pc_dict, modifier);
     MaybePrintResultsForVideoReceive(ssrc, pc_dict, video_modifier);
   }
+}
+
+constexpr char kMetricPrefixVideoQualityTest[] =
+    "WebRtcVideoQualityBrowserTest.";
+constexpr char kMetricUniqueFramesCount[] = "Unique_frames_count";
+constexpr char kMetricPsnrUnitless[] = "PSNR";
+constexpr char kMetricSsimUnitless[] = "SSIM";
+constexpr char kMetricMaxRepeatedCount[] = "Max_repeated";
+constexpr char kMetricMaxSkippedCount[] = "Max_skipped";
+constexpr char kMetricTotalSkippedCount[] = "Total_skipped";
+constexpr char kMetricDecodeErrorsReferenceCount[] = "Decode_errors_reference";
+constexpr char kMetricDecodeErrorsTestCount[] = "Decode_errors_test";
+
+bool ParseDoubleFromOutput(const std::string& line,
+                           const char* expected_label,
+                           double* value) {
+  auto fields = base::SplitString(line, " ", base::TRIM_WHITESPACE,
+                                  base::SPLIT_WANT_NONEMPTY);
+  auto actual_label = std::string(expected_label) + ":";
+  if (fields.size() < 4 || fields[1] != actual_label) {
+    LOG(ERROR) << "Expected line with " << actual_label
+               << " and four or five space-separated fields, got " << line;
+    return false;
+  }
+  if (!base::StringToDouble(fields[3], value)) {
+    LOG(ERROR) << "Expected " << fields[3] << " to be an int";
+    return false;
+  }
+  return true;
+}
+
+bool ParseListFromOutput(const std::string& line,
+                         const char* expected_label,
+                         std::string* value) {
+  auto fields = base::SplitString(line, " ", base::TRIM_WHITESPACE,
+                                  base::SPLIT_WANT_NONEMPTY);
+  auto actual_label = std::string(expected_label) + ":";
+  if (fields.size() < 4 || fields[1] != actual_label) {
+    LOG(ERROR) << "Expected line with " << actual_label
+               << " and four or five space-separated fields, got " << line;
+    return false;
+  }
+
+  // Strip out [].
+  std::string values = fields[3];
+  if (values.length() < 2) {
+    LOG(ERROR) << "Malformed values, expected [val1, val2], got " << values;
+    return false;
+  }
+  *value = values.substr(1, values.length() - 2);
+  return true;
+}
+
+bool WriteCompareVideosOutputAsHistogram(const std::string& test_label,
+                                         const std::string& output) {
+  perf_test::PerfResultReporter reporter(kMetricPrefixVideoQualityTest,
+                                         test_label);
+
+  reporter.RegisterFyiMetric(kMetricUniqueFramesCount, "count");
+  reporter.RegisterFyiMetric(kMetricPsnrUnitless, "unitless");
+  reporter.RegisterFyiMetric(kMetricSsimUnitless, "unitless");
+  reporter.RegisterFyiMetric(kMetricMaxRepeatedCount, "count");
+  reporter.RegisterFyiMetric(kMetricMaxSkippedCount, "count");
+  reporter.RegisterFyiMetric(kMetricTotalSkippedCount, "count");
+  reporter.RegisterFyiMetric(kMetricDecodeErrorsReferenceCount, "count");
+  reporter.RegisterFyiMetric(kMetricDecodeErrorsTestCount, "count");
+  auto lines = base::SplitString(output, "\n", base::TRIM_WHITESPACE,
+                                 base::SPLIT_WANT_NONEMPTY);
+
+  if (lines.size() == 12) {
+    // Remove warning about colorspace conversion.
+    lines.erase(lines.begin(), lines.begin() + 4);
+  }
+
+  if (lines.size() != 8) {
+    LOG(ERROR) << "Expected 8 lines, got " << lines.size()
+               << " lines. Output:\n\n"
+               << output;
+    return false;
+  }
+
+  double value;
+  if (!ParseDoubleFromOutput(lines[0], kMetricUniqueFramesCount, &value))
+    return false;
+  reporter.AddResult(kMetricUniqueFramesCount, value);
+  std::string value_list;
+  if (!ParseListFromOutput(lines[1], kMetricPsnrUnitless, &value_list))
+    return false;
+  reporter.AddResultList(kMetricPsnrUnitless, value_list);
+  if (!ParseListFromOutput(lines[2], kMetricSsimUnitless, &value_list))
+    return false;
+  reporter.AddResultList(kMetricSsimUnitless, value_list);
+  if (!ParseDoubleFromOutput(lines[3], kMetricMaxRepeatedCount, &value))
+    return false;
+  reporter.AddResult(kMetricMaxRepeatedCount, value);
+  if (!ParseDoubleFromOutput(lines[4], kMetricMaxSkippedCount, &value))
+    return false;
+  reporter.AddResult(kMetricMaxSkippedCount, value);
+  if (!ParseDoubleFromOutput(lines[5], kMetricTotalSkippedCount, &value))
+    return false;
+  reporter.AddResult(kMetricTotalSkippedCount, value);
+  if (!ParseDoubleFromOutput(lines[6], kMetricDecodeErrorsReferenceCount,
+                             &value))
+    return false;
+  reporter.AddResult(kMetricDecodeErrorsReferenceCount, value);
+  if (!ParseDoubleFromOutput(lines[7], kMetricDecodeErrorsTestCount, &value))
+    return false;
+  reporter.AddResult(kMetricDecodeErrorsTestCount, value);
+  return true;
 }
 
 }  // namespace test

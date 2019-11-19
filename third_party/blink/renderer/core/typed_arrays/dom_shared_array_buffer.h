@@ -6,8 +6,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TYPED_ARRAYS_DOM_SHARED_ARRAY_BUFFER_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/typed_arrays/array_buffer/array_buffer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_base.h"
-#include "third_party/blink/renderer/platform/wtf/typed_arrays/array_buffer.h"
 
 namespace blink {
 
@@ -15,28 +15,27 @@ class CORE_EXPORT DOMSharedArrayBuffer final : public DOMArrayBufferBase {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static DOMSharedArrayBuffer* Create(scoped_refptr<WTF::ArrayBuffer> buffer) {
+  static DOMSharedArrayBuffer* Create(scoped_refptr<ArrayBuffer> buffer) {
     DCHECK(buffer->IsShared());
     return MakeGarbageCollected<DOMSharedArrayBuffer>(std::move(buffer));
   }
   static DOMSharedArrayBuffer* Create(unsigned num_elements,
                                       unsigned element_byte_size) {
-    return Create(
-        WTF::ArrayBuffer::CreateShared(num_elements, element_byte_size));
+    return Create(ArrayBuffer::CreateShared(num_elements, element_byte_size));
   }
   static DOMSharedArrayBuffer* Create(const void* source,
                                       unsigned byte_length) {
-    return Create(WTF::ArrayBuffer::CreateShared(source, byte_length));
+    return Create(ArrayBuffer::CreateShared(source, byte_length));
   }
-  static DOMSharedArrayBuffer* Create(WTF::ArrayBufferContents& contents) {
+  static DOMSharedArrayBuffer* Create(ArrayBufferContents& contents) {
     DCHECK(contents.IsShared());
-    return Create(WTF::ArrayBuffer::Create(contents));
+    return Create(ArrayBuffer::Create(contents));
   }
 
-  explicit DOMSharedArrayBuffer(scoped_refptr<WTF::ArrayBuffer> buffer)
+  explicit DOMSharedArrayBuffer(scoped_refptr<ArrayBuffer> buffer)
       : DOMArrayBufferBase(std::move(buffer)) {}
 
-  bool ShareContentsWith(WTF::ArrayBufferContents& result) {
+  bool ShareContentsWith(ArrayBufferContents& result) {
     return Buffer()->ShareContentsWith(result);
   }
 

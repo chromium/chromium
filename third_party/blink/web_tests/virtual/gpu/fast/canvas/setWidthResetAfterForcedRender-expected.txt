@@ -1,5 +1,0 @@
-BUG ID: Bugzilla bug 43341 Setting canvas width after canvas already rendered resets canvas data appropriately, but doesn't repaint immediately.
-
-TEST PASS: The canvas should go blank due to setting on the canvas width.
-
-Actual output: (blank canvas)

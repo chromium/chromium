@@ -43,7 +43,7 @@ class WaylandNotificationShellNotification {
                                        const std::string& notification_id,
                                        const std::vector<std::string>& buttons,
                                        wl_resource* resource)
-      : resource_(resource), weak_ptr_factory_(this) {
+      : resource_(resource) {
     notification_ = std::make_unique<Notification>(
         title, message, display_source, notification_id,
         kNotificationShellNotifierId, buttons,
@@ -70,7 +70,8 @@ class WaylandNotificationShellNotification {
   wl_resource* const resource_;
   std::unique_ptr<Notification> notification_;
 
-  base::WeakPtrFactory<WaylandNotificationShellNotification> weak_ptr_factory_;
+  base::WeakPtrFactory<WaylandNotificationShellNotification> weak_ptr_factory_{
+      this};
 
   DISALLOW_COPY_AND_ASSIGN(WaylandNotificationShellNotification);
 };

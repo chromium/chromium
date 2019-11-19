@@ -48,6 +48,10 @@ void SetAutofillWalletSpecificsFromPaymentsCustomerData(
     const PaymentsCustomerData& customer_data,
     sync_pb::AutofillWalletSpecifics* wallet_specifics);
 
+// Creates an AutofillProfile from the specified |address| specifics.
+AutofillProfile ProfileFromSpecifics(
+    const sync_pb::WalletPostalAddress& address);
+
 // TODO(sebsg): This should probably copy the converted state for the address
 // too.
 // Copies the metadata from the local cards (if present) to the corresponding

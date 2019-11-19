@@ -9,9 +9,11 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/ip_address.h"
 #include "net/base/net_errors.h"
+#include "net/base/network_isolation_key.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/public/dns_query_type.h"
 
@@ -25,9 +27,11 @@ class MojoHostResolverImpl::Job {
   Job(MojoHostResolverImpl* resolver_service,
       net::HostResolver* resolver,
       const std::string& hostname,
+      const net::NetworkIsolationKey& network_isolation_key,
       bool is_ex,
       const net::NetLogWithSource& net_log,
-      proxy_resolver::mojom::HostResolverRequestClientPtr client);
+      mojo::PendingRemote<proxy_resolver::mojom::HostResolverRequestClient>
+          client);
   ~Job();
 
   void set_iter(std::list<Job>::iterator iter) { iter_ = iter; }
@@ -38,14 +42,14 @@ class MojoHostResolverImpl::Job {
   // Completion callback for the HostResolver::Resolve request.
   void OnResolveDone(int result);
 
-  // Mojo error handler.
-  void OnConnectionError();
+  // Mojo disconnect handler.
+  void OnMojoDisconnect();
 
   MojoHostResolverImpl* resolver_service_;
   // This Job's iterator in |resolver_service_|, so the Job may be removed on
   // completion.
   std::list<Job>::iterator iter_;
-  proxy_resolver::mojom::HostResolverRequestClientPtr client_;
+  mojo::Remote<proxy_resolver::mojom::HostResolverRequestClient> client_;
   const std::string hostname_;
   std::unique_ptr<net::HostResolver::ResolveHostRequest> request_;
   base::ThreadChecker thread_checker_;
@@ -61,12 +65,14 @@ MojoHostResolverImpl::~MojoHostResolverImpl() {
 
 void MojoHostResolverImpl::Resolve(
     const std::string& hostname,
+    const net::NetworkIsolationKey& network_isolation_key,
     bool is_ex,
-    proxy_resolver::mojom::HostResolverRequestClientPtr client) {
+    mojo::PendingRemote<proxy_resolver::mojom::HostResolverRequestClient>
+        client) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  pending_jobs_.emplace_front(this, resolver_, hostname, is_ex, net_log_,
-                              std::move(client));
+  pending_jobs_.emplace_front(this, resolver_, hostname, network_isolation_key,
+                              is_ex, net_log_, std::move(client));
   auto job = pending_jobs_.begin();
   job->set_iter(job);
   job->Start();
@@ -81,20 +87,23 @@ MojoHostResolverImpl::Job::Job(
     MojoHostResolverImpl* resolver_service,
     net::HostResolver* resolver,
     const std::string& hostname,
+    const net::NetworkIsolationKey& network_isolation_key,
     bool is_ex,
     const net::NetLogWithSource& net_log,
-    proxy_resolver::mojom::HostResolverRequestClientPtr client)
+    mojo::PendingRemote<proxy_resolver::mojom::HostResolverRequestClient>
+        client)
     : resolver_service_(resolver_service),
       client_(std::move(client)),
       hostname_(hostname) {
-  client_.set_connection_error_handler(base::Bind(
-      &MojoHostResolverImpl::Job::OnConnectionError, base::Unretained(this)));
+  client_.set_disconnect_handler(base::Bind(
+      &MojoHostResolverImpl::Job::OnMojoDisconnect, base::Unretained(this)));
 
   net::HostResolver::ResolveHostParameters parameters;
   if (!is_ex)
     parameters.dns_query_type = net::DnsQueryType::A;
-  request_ = resolver->CreateRequest(net::HostPortPair(hostname_, 0), net_log,
-                                     parameters);
+  request_ =
+      resolver->CreateRequest(net::HostPortPair(hostname_, 0),
+                              network_isolation_key, net_log, parameters);
 }
 
 void MojoHostResolverImpl::Job::Start() {
@@ -133,11 +142,11 @@ void MojoHostResolverImpl::Job::OnResolveDone(int result) {
   resolver_service_->DeleteJob(iter_);
 }
 
-void MojoHostResolverImpl::Job::OnConnectionError() {
+void MojoHostResolverImpl::Job::OnMojoDisconnect() {
   DCHECK(thread_checker_.CalledOnValidThread());
   // |resolver_service_| should always outlive us.
   DCHECK(resolver_service_);
-  DVLOG(1) << "Connection error on request for " << hostname_;
+  DVLOG(1) << "Disconnection on request for " << hostname_;
   resolver_service_->DeleteJob(iter_);
 }
 

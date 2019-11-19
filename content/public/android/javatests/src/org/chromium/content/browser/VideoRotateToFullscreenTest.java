@@ -16,16 +16,15 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_shell_apk.ContentShellActivityTestRule;
 import org.chromium.media.MediaSwitches;
 import org.chromium.ui.test.util.UiRestriction;
@@ -38,8 +37,7 @@ import java.util.concurrent.TimeoutException;
  * is rotated whilst watching a video.
  */
 @RunWith(ContentJUnit4ClassRunner.class)
-@CommandLineFlags.
-Add({"enable-features=VideoRotateToFullscreen", MediaSwitches.AUTOPLAY_NO_GESTURE_REQUIRED_POLICY})
+@CommandLineFlags.Add({MediaSwitches.AUTOPLAY_NO_GESTURE_REQUIRED_POLICY})
 public class VideoRotateToFullscreenTest {
     @Rule
     public ContentShellActivityTestRule mRule = new ContentShellActivityTestRule();
@@ -51,7 +49,7 @@ public class VideoRotateToFullscreenTest {
         CriteriaHelper.pollInstrumentationThread(
                 Criteria.equals(fullscreenValue, new Callable<Boolean>() {
                     @Override
-                    public Boolean call() throws InterruptedException, TimeoutException {
+                    public Boolean call() throws TimeoutException {
                         return DOMUtils.isFullscreen(mRule.getWebContents());
                     }
                 }));
@@ -61,13 +59,13 @@ public class VideoRotateToFullscreenTest {
         CriteriaHelper.pollInstrumentationThread(
                 Criteria.equals(orientationValue, new Callable<String>() {
                     @Override
-                    public String call() throws InterruptedException, TimeoutException {
+                    public String call() throws TimeoutException {
                         return screenOrientation();
                     }
                 }));
     }
 
-    private String screenOrientation() throws InterruptedException, TimeoutException {
+    private String screenOrientation() throws TimeoutException {
         // Returns "\"portrait\"" or "\"landscape\"" (strips the "-primary" or "-secondary" suffix).
         return JavaScriptUtils.executeJavaScriptAndWaitForResult(
                 mRule.getWebContents(), "screen.orientation.type.split('-')[0]");
@@ -82,19 +80,15 @@ public class VideoRotateToFullscreenTest {
     }
 
     @After
-    public void tearDown() throws Exception {
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                mRule.getActivity().setRequestedOrientation(
-                        ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
-            }
+    public void tearDown() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mRule.getActivity().setRequestedOrientation(
+                    ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
         });
     }
 
     @Test
     @MediumTest
-    @Feature({"VideoRotateToFullscreen"})
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
     @DisabledTest(message = "crbug.com/726977")
     public void testPortraitToLandscapeAndBack() throws Exception {

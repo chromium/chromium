@@ -1,0 +1,4 @@
+mojom = "//components/arc/mojom/ime.mojom"
+public_headers = [ "//ui/base/ime/text_input_type.h" ]
+traits_headers = [ "//components/arc/mojom/ime_mojom_traits.h" ]
+type_mappings = [ "arc.mojom.TextInputType=::ui::TextInputType" ]

@@ -192,9 +192,10 @@ void DispatchOnCompleted(content::WebContents* web_contents,
 
 // Constructs and dispatches an onCreatedNavigationTarget event.
 void DispatchOnCreatedNavigationTarget(
-    content::WebContents* web_contents,
+    int source_tab_id,
+    int source_render_process_id,
+    int source_extension_frame_id,
     content::BrowserContext* browser_context,
-    content::RenderFrameHost* source_frame_host,
     content::WebContents* target_web_contents,
     const GURL& target_url) {
   // Check that the tab is already inserted into a tab strip model. This code
@@ -202,13 +203,12 @@ void DispatchOnCreatedNavigationTarget(
   DCHECK(ExtensionTabUtil::GetTabById(
       ExtensionTabUtil::GetTabId(target_web_contents),
       Profile::FromBrowserContext(target_web_contents->GetBrowserContext()),
-      false, NULL, NULL, NULL, NULL));
+      false, nullptr));
 
   web_navigation::OnCreatedNavigationTarget::Details details;
-  details.source_tab_id = ExtensionTabUtil::GetTabId(web_contents);
-  details.source_process_id = source_frame_host->GetProcess()->GetID();
-  details.source_frame_id =
-      ExtensionApiFrameIdMap::GetFrameId(source_frame_host);
+  details.source_tab_id = source_tab_id;
+  details.source_process_id = source_render_process_id;
+  details.source_frame_id = source_extension_frame_id;
   details.url = target_url.possibly_invalid_spec();
   details.tab_id = ExtensionTabUtil::GetTabId(target_web_contents);
   details.time_stamp = MilliSecondsFromTime(base::Time::Now());

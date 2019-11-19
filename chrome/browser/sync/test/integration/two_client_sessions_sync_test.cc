@@ -9,6 +9,7 @@
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "chrome/browser/sessions/session_service.h"
+#include "chrome/browser/sync/test/integration/encryption_helper.h"
 #include "chrome/browser/sync/test/integration/passwords_helper.h"
 #include "chrome/browser/sync/test/integration/profile_sync_service_harness.h"
 #include "chrome/browser/sync/test/integration/sessions_helper.h"
@@ -67,6 +68,7 @@ static const char* kURLTemplate =
 
 IN_PROC_BROWSER_TEST_F(TwoClientSessionsSyncTest,
                        E2E_ENABLED(SingleClientChanged)) {
+  ResetSyncForPrimaryAccount();
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
   // Open tab and access a url on client 0
@@ -94,15 +96,12 @@ IN_PROC_BROWSER_TEST_F(TwoClientSessionsSyncTest, SingleClientClosed) {
 
   std::vector<sync_pb::SyncEntity> entities =
       GetFakeServer()->GetSyncEntitiesByModelType(syncer::SESSIONS);
-  // Two header entities and two tab entities (one of the two has been closed
-  // but considered "free" for future recycling, i.e. not deleted).
-  ASSERT_EQ(4U, entities.size());
-  for (const auto& entity : entities) {
-    EXPECT_FALSE(entity.deleted());
-  }
+  // Two header entities and one tab entity (the other one has been deleted).
+  EXPECT_EQ(3U, entities.size());
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientSessionsSyncTest, E2E_ENABLED(AllChanged)) {
+  ResetSyncForPrimaryAccount();
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
   // Open tabs on all clients and retain window information.
@@ -121,45 +120,6 @@ IN_PROC_BROWSER_TEST_F(TwoClientSessionsSyncTest, E2E_ENABLED(AllChanged)) {
   for (int i = 0; i < num_clients(); ++i) {
     ASSERT_TRUE(ForeignSessionsMatchChecker(i, client_windows).Wait());
   }
-}
-
-IN_PROC_BROWSER_TEST_F(TwoClientSessionsSyncTest,
-                       SingleClientEnabledEncryption) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
-
-  ASSERT_TRUE(CheckInitialState(0));
-  ASSERT_TRUE(CheckInitialState(1));
-
-  ASSERT_TRUE(EnableEncryption(0));
-  ASSERT_TRUE(GetClient(0)->AwaitMutualSyncCycleCompletion(GetClient(1)));
-  ASSERT_TRUE(IsEncryptionComplete(0));
-  ASSERT_TRUE(IsEncryptionComplete(1));
-}
-
-IN_PROC_BROWSER_TEST_F(TwoClientSessionsSyncTest,
-                       SingleClientEnabledEncryptionAndChanged) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
-
-  ASSERT_TRUE(CheckInitialState(0));
-  ASSERT_TRUE(CheckInitialState(1));
-
-  ASSERT_TRUE(OpenTab(0, GURL(kURL1)));
-  ASSERT_TRUE(EnableEncryption(0));
-  WaitForForeignSessionsToSync(0, 1);
-}
-
-IN_PROC_BROWSER_TEST_F(TwoClientSessionsSyncTest,
-                       BothClientsEnabledEncryption) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
-
-  ASSERT_TRUE(CheckInitialState(0));
-  ASSERT_TRUE(CheckInitialState(1));
-
-  ASSERT_TRUE(EnableEncryption(0));
-  ASSERT_TRUE(EnableEncryption(1));
-  ASSERT_TRUE(AwaitQuiescence());
-  ASSERT_TRUE(IsEncryptionComplete(0));
-  ASSERT_TRUE(IsEncryptionComplete(1));
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientSessionsSyncTest, BothChanged) {
@@ -195,7 +155,6 @@ IN_PROC_BROWSER_TEST_F(TwoClientSessionsSyncTest, DeleteIdleSession) {
 
   // Client 1 now deletes client 0's tabs. This frees the memory of sessions1.
   DeleteForeignSession(1, sessions1[0]->session_tag);
-  ASSERT_TRUE(GetClient(1)->HasUnsyncedItems());
   ASSERT_TRUE(GetClient(1)->AwaitMutualSyncCycleCompletion(GetClient(0)));
   EXPECT_FALSE(GetSessionData(1, &sessions1));
 }
@@ -216,7 +175,6 @@ IN_PROC_BROWSER_TEST_F(TwoClientSessionsSyncTest, DeleteActiveSession) {
 
   // Client 1 now deletes client 0's tabs. This frees the memory of sessions1.
   DeleteForeignSession(1, sessions1[0]->session_tag);
-  ASSERT_TRUE(GetClient(1)->HasUnsyncedItems());
   ASSERT_TRUE(GetClient(1)->AwaitMutualSyncCycleCompletion(GetClient(0)));
   ASSERT_FALSE(GetSessionData(1, &sessions1));
 
@@ -250,11 +208,12 @@ IN_PROC_BROWSER_TEST_F(TwoClientSessionsSyncTest,
   ASSERT_TRUE(CheckInitialState(0));
   ASSERT_TRUE(CheckInitialState(1));
 
-  ASSERT_TRUE(EnableEncryption(0));
-  ASSERT_TRUE(EnableEncryption(1));
-  ASSERT_TRUE(AwaitQuiescence());
-  ASSERT_TRUE(IsEncryptionComplete(0));
-  ASSERT_TRUE(IsEncryptionComplete(1));
+  GetSyncService(0)->GetUserSettings()->SetEncryptionPassphrase("passphrase");
+  ASSERT_TRUE(
+      PassphraseRequiredStateChecker(GetSyncService(1), /*desired_state=*/true)
+          .Wait());
+  ASSERT_TRUE(GetSyncService(1)->GetUserSettings()->SetDecryptionPassphrase(
+      "passphrase"));
 
   EXPECT_TRUE(OpenTab(0, GURL(kURL1)));
   WaitForForeignSessionsToSync(0, 1);

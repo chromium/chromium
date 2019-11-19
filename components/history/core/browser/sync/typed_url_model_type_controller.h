@@ -22,7 +22,7 @@ class TypedURLModelTypeController : public syncer::ModelTypeController {
   ~TypedURLModelTypeController() override;
 
   // syncer::DataTypeController implementation.
-  bool ReadyForStart() const override;
+  PreconditionState GetPreconditionState() const override;
 
  private:
   void OnSavingBrowserHistoryDisabledChanged();

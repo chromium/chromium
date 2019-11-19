@@ -7,4 +7,5 @@
 [
     NoInterfaceObject
 ] interface ReportBody {
+    [CallWith=ScriptState] object toJSON();
 };

@@ -37,12 +37,6 @@ class Launchd {
   virtual bool GetJobInfo(const std::string& label,
                           mac::services::JobInfo* info);
 
-  // Checks in with launchd, retrieving |info| in the process. The |socket_key|
-  // argument is the name of a socket to extract from the job's sockets
-  // dictionary (see launchd.plist(5)).
-  virtual bool CheckIn(const std::string& socket_key,
-                       mac::services::JobCheckinInfo* info);
-
   // Remove a launchd process from launchd.
   virtual bool RemoveJob(const std::string& label);
 

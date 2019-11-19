@@ -122,10 +122,20 @@ static const int kMaxUDPSize = 512;
 // medium's MTU, and must be under 9000 bytes
 static const int kMaxMulticastSize = 9000;
 
+// RFC 1035, Section 4.1.3.
+// TYPE (2 bytes) + CLASS (2 bytes) + TTL (4 bytes) + RDLENGTH (2 bytes)
+static const int kResourceRecordSizeInBytesWithoutNameAndRData = 10;
+
 // DNS class types.
 //
 // https://www.iana.org/assignments/dns-parameters/dns-parameters.xhtml#dns-parameters-2
 static const uint16_t kClassIN = 1;
+// RFC 6762, Section 10.2.
+//
+// For resource records sent through mDNS, the top bit of the class field in a
+// resource record is repurposed to the cache-flush bit. This bit should only be
+// used in mDNS transactions.
+static const uint16_t kFlagCacheFlush = 0x8000;
 
 // DNS resource record types.
 //
@@ -141,6 +151,13 @@ static const uint16_t kTypeOPT = 41;
 static const uint16_t kTypeNSEC = 47;
 static const uint16_t kTypeANY = 255;
 
+// Experimental DNS record types pending IANA assignment.
+//
+// Record type proposed for TLS Encrypted Server Name Indication
+// (ESNI, draft 4) records:
+// https://tools.ietf.org/html/draft-ietf-tls-esni-04#section-8.3
+static const uint16_t kExperimentalTypeEsniDraft4 = 65439;
+
 // DNS reply codes (RCODEs).
 //
 // https://www.iana.org/assignments/dns-parameters/dns-parameters.xhtml#dns-parameters-6
@@ -150,6 +167,11 @@ static const uint8_t kRcodeSERVFAIL = 2;
 static const uint8_t kRcodeNXDOMAIN = 3;
 static const uint8_t kRcodeNOTIMP = 4;
 static const uint8_t kRcodeREFUSED = 5;
+
+// DNS EDNS(0) option codes (OPT)
+//
+// https://www.iana.org/assignments/dns-parameters/dns-parameters.xhtml#dns-parameters-11
+static const uint16_t kEdnsPadding = 12;
 
 // DNS header flags.
 //

@@ -124,7 +124,7 @@ class ASH_EXPORT TriView : public views::View {
  protected:
   // View:
   void ViewHierarchyChanged(
-      const views::View::ViewHierarchyChangedDetails& details) override;
+      const views::ViewHierarchyChangedDetails& details) override;
   const char* GetClassName() const override;
 
  private:

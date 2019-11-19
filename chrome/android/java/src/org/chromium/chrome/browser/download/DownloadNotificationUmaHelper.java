@@ -11,7 +11,7 @@ import static org.chromium.chrome.browser.download.DownloadNotificationService.A
 import static org.chromium.chrome.browser.download.DownloadNotificationService.ACTION_DOWNLOAD_PAUSE;
 import static org.chromium.chrome.browser.download.DownloadNotificationService.ACTION_DOWNLOAD_RESUME;
 
-import android.support.annotation.IntDef;
+import androidx.annotation.IntDef;
 
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
@@ -150,35 +150,6 @@ public final class DownloadNotificationUmaHelper {
     }
 
     /**
-     * Record the number of existing notifications when a new notification is being launched (more
-     * specifically the number of existing shared preference entries when a new shared preference
-     * entry is being recorded).
-     * @param count The number of existing notifications.
-     * @param withForeground Whether this is with foreground enabled or not.
-     */
-    static void recordExistingNotificationsCountHistogram(int count, boolean withForeground) {
-        if (!LibraryLoader.getInstance().isInitialized()) return;
-        if (withForeground) {
-            RecordHistogram.recordCountHistogram(
-                    "Android.DownloadManager.NotificationsCount.ForegroundEnabled", count);
-        } else {
-            RecordHistogram.recordCountHistogram(
-                    "Android.DownloadManager.NotificationsCount.ForegroundDisabled", count);
-        }
-    }
-
-    /**
-     * Record an instance when a notification is being launched for the first time or relaunched due
-     * to the need to dissociate the notification from the foreground (only on API < 24).
-     * @param launchType Whether it is a launch or a relaunch ({@link LaunchType}).
-     */
-    static void recordNotificationFlickerCountHistogram(@LaunchType int launchType) {
-        if (!LibraryLoader.getInstance().isInitialized()) return;
-        RecordHistogram.recordEnumeratedHistogram(
-                "Android.DownloadManager.NotificationLaunch", launchType, LaunchType.NUM_ENTRIES);
-    }
-
-    /**
      * Records the state of a request at user-initiated cancel.
      * @param isDownload True if the request is a download, false if it is an offline page.
      * @param state State of a request when cancelled (e.g. downloading, paused).
@@ -213,5 +184,20 @@ public final class DownloadNotificationUmaHelper {
     static void recordBackgroundDownloadHistogram(@UmaBackgroundDownload int type) {
         RecordHistogram.recordEnumeratedHistogram(
                 "MobileDownload.Background", type, UmaBackgroundDownload.NUM_ENTRIES);
+    }
+
+    /**
+     * Helper method to record the first background download resumption UMA.
+     * @param type UMA type to be recorded.
+     * @param interruptionCount Number of interruptions since process launch.
+     */
+    static void recordFirstBackgroundDownloadHistogram(
+            @UmaBackgroundDownload int type, int interruptionCount) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "MobileDownload.Background.FirstDownload", type, UmaBackgroundDownload.NUM_ENTRIES);
+        if (type != UmaBackgroundDownload.INTERRUPTED && type != UmaBackgroundDownload.STARTED) {
+            RecordHistogram.recordCountHistogram(
+                    "MobileDownload.FirstBackground.InterruptionCount", interruptionCount);
+        }
     }
 }

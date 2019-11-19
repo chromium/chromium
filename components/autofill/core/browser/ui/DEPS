@@ -1,5 +1,0 @@
-specific_include_rules = {
-  "save_card_bubble_controller\.h": [
-    "+components/signin/core/browser/account_info.h",
-  ]
-}

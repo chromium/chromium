@@ -22,7 +22,7 @@ import org.chromium.base.test.util.MetricsUtils.HistogramDelta;
 @RunWith(BaseJUnit4ClassRunner.class)
 public class RecordHistogramTest {
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         LibraryLoader.getInstance().ensureInitialized(LibraryProcessType.PROCESS_BROWSER);
     }
 

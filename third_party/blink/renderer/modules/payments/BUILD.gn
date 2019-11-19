@@ -37,6 +37,7 @@ blink_modules_sources("payments") {
     "payment_method_change_event.h",
     "payment_request.cc",
     "payment_request.h",
+    "payment_request_delegate.h",
     "payment_request_event.cc",
     "payment_request_event.h",
     "payment_request_respond_with_observer.cc",
@@ -46,10 +47,18 @@ blink_modules_sources("payments") {
     "payment_response.cc",
     "payment_response.h",
     "payment_state_resolver.h",
-    "payment_updater.h",
     "payments_validators.cc",
     "payments_validators.h",
+    "update_payment_details_function.cc",
+    "update_payment_details_function.h",
   ]
+
+  if (is_android) {
+    sources += [
+      "skip_to_gpay_utils.cc",
+      "skip_to_gpay_utils.h",
+    ]
+  }
 
   deps = [
     "//components/payments/mojom:mojom_blink",

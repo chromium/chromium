@@ -11,7 +11,6 @@ from core import cli_helpers
 from telemetry import decorators
 
 
-@decorators.Disabled('android', 'chromeos')
 class CLIHelpersTest(unittest.TestCase):
   def testUnsupportedColor(self):
     with self.assertRaises(AssertionError):

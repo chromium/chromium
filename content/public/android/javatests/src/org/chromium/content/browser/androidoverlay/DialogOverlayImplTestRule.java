@@ -12,8 +12,8 @@ import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
 import org.chromium.base.Callback;
-import org.chromium.base.ThreadUtils;
 import org.chromium.content.browser.framehost.RenderFrameHostImpl;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_shell_apk.ContentShellActivityTestRule;
 import org.chromium.media.mojom.AndroidOverlayClient;
 import org.chromium.media.mojom.AndroidOverlayConfig;
@@ -187,12 +187,12 @@ public class DialogOverlayImplTestRule extends ContentShellActivityTestRule {
     public Statement apply(final Statement base, Description desc) {
         return super.apply(new Statement() {
             @Override
-            public void evaluate() throws Throwable {
+            public void evaluate() {
                 launchContentShellWithUrl(getInitialUrl());
                 waitForActiveShellToBeDoneLoading(); // Do we need this?
 
                 // Fetch the routing token.
-                mRoutingToken = ThreadUtils.runOnUiThreadBlockingNoException(
+                mRoutingToken = TestThreadUtils.runOnUiThreadBlockingNoException(
                         new Callable<UnguessableToken>() {
                             @Override
                             public UnguessableToken call() {
@@ -235,7 +235,7 @@ public class DialogOverlayImplTestRule extends ContentShellActivityTestRule {
 
     // Create an overlay with the given parameters and return it.
     DialogOverlayImpl createOverlay(final int x, final int y, final int width, final int height) {
-        return ThreadUtils.runOnUiThreadBlockingNoException(new Callable<DialogOverlayImpl>() {
+        return TestThreadUtils.runOnUiThreadBlockingNoException(new Callable<DialogOverlayImpl>() {
             @Override
             public DialogOverlayImpl call() {
                 AndroidOverlayConfig config = new AndroidOverlayConfig();

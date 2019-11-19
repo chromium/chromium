@@ -4,30 +4,23 @@
 
 #include "third_party/blink/renderer/modules/peerconnection/rtc_dtls_transport.h"
 
-#include "third_party/blink/public/platform/platform.h"
+#include <memory>
+
+#include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/web/modules/peerconnection/peer_connection_dependency_factory.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/frame/deprecation.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/modules/peerconnection/adapters/dtls_transport_proxy.h"
-#include "third_party/blink/renderer/modules/peerconnection/adapters/ice_transport_adapter_cross_thread_factory.h"
-#include "third_party/blink/renderer/modules/peerconnection/adapters/ice_transport_adapter_impl.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_error_util.h"
-#include "third_party/blink/renderer/modules/peerconnection/rtc_ice_candidate.h"
-#include "third_party/blink/renderer/modules/peerconnection/rtc_ice_gather_options.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_ice_transport.h"
-#include "third_party/blink/renderer/modules/peerconnection/rtc_peer_connection_ice_event.h"
-#include "third_party/blink/renderer/modules/peerconnection/rtc_peer_connection_ice_event_init.h"
-#include "third_party/blink/renderer/modules/peerconnection/rtc_quic_transport.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
+#include "third_party/boringssl/src/include/openssl/ssl.h"
 #include "third_party/webrtc/api/dtls_transport_interface.h"
-#include "third_party/webrtc/api/jsep_ice_candidate.h"
 #include "third_party/webrtc/api/peer_connection_interface.h"
-#include "third_party/webrtc/p2p/base/port_allocator.h"
-#include "third_party/webrtc/p2p/base/transport_description.h"
-#include "third_party/webrtc/pc/ice_server_parsing.h"
-#include "third_party/webrtc/pc/webrtc_sdp.h"
 
 namespace blink {
 
@@ -64,7 +57,9 @@ std::unique_ptr<DtlsTransportProxy> CreateProxy(
   scoped_refptr<base::SingleThreadTaskRunner> proxy_thread =
       frame->GetTaskRunner(TaskType::kNetworking);
   scoped_refptr<base::SingleThreadTaskRunner> host_thread =
-      Platform::Current()->GetWebRtcWorkerThread();
+      PeerConnectionDependencyFactory::GetInstance()
+          ->GetWebRtcWorkerTaskRunner();
+
   return DtlsTransportProxy::Create(*frame, proxy_thread, host_thread,
                                     native_transport, delegate);
 }
@@ -84,6 +79,9 @@ RTCDtlsTransport::RTCDtlsTransport(
 RTCDtlsTransport::~RTCDtlsTransport() {}
 
 String RTCDtlsTransport::state() const {
+  if (closed_from_owner_) {
+    return TransportStateToString(webrtc::DtlsTransportState::kClosed);
+  }
   return TransportStateToString(current_state_.state());
 }
 
@@ -105,6 +103,14 @@ void RTCDtlsTransport::ChangeState(webrtc::DtlsTransportInformation info) {
   current_state_ = info;
 }
 
+void RTCDtlsTransport::Close() {
+  closed_from_owner_ = true;
+  if (current_state_.state() != webrtc::DtlsTransportState::kClosed) {
+    DispatchEvent(*Event::Create(event_type_names::kStatechange));
+  }
+  ice_transport_->stop();
+}
+
 // Implementation of DtlsTransportProxy::Delegate
 void RTCDtlsTransport::OnStartCompleted(webrtc::DtlsTransportInformation info) {
   current_state_ = info;
@@ -114,10 +120,58 @@ void RTCDtlsTransport::OnStateChange(webrtc::DtlsTransportInformation info) {
   // We depend on closed only happening once for safe garbage collection.
   DCHECK(current_state_.state() != webrtc::DtlsTransportState::kClosed);
   current_state_ = info;
-  DispatchEvent(*Event::Create(event_type_names::kStatechange));
-  // Make sure the ICE transport is also closed. This must happen prior
-  // to garbage collection.
-  ice_transport_->stop();
+
+  // DTLS 1.0 is deprecated, emit a console warning.
+  if (current_state_.state() == webrtc::DtlsTransportState::kConnected) {
+    if (current_state_.tls_version()) {
+      if (*current_state_.tls_version() == DTLS1_VERSION ||
+          *current_state_.tls_version() == SSL3_VERSION ||
+          *current_state_.tls_version() == TLS1_VERSION ||
+          *current_state_.tls_version() == TLS1_1_VERSION) {
+        Deprecation::CountDeprecation(GetExecutionContext(),
+                                      WebFeature::kObsoleteWebrtcTlsVersion);
+      }
+    }
+  }
+
+  // If the certificates have changed, copy them as DOMArrayBuffers.
+  // This makes sure that getRemoteCertificates() == getRemoteCertificates()
+  if (current_state_.remote_ssl_certificates()) {
+    const rtc::SSLCertChain* certs = current_state_.remote_ssl_certificates();
+    if (certs->GetSize() != remote_certificates_.size()) {
+      remote_certificates_.clear();
+      for (size_t i = 0; i < certs->GetSize(); i++) {
+        auto& cert = certs->Get(i);
+        rtc::Buffer der_cert;
+        cert.ToDER(&der_cert);
+        DOMArrayBuffer* dab_cert = DOMArrayBuffer::Create(
+            der_cert.data(), static_cast<unsigned int>(der_cert.size()));
+        remote_certificates_.push_back(dab_cert);
+      }
+    } else {
+      // Replace certificates that have changed, if any
+      for (WTF::wtf_size_t i = 0; i < certs->GetSize(); i++) {
+        auto& cert = certs->Get(i);
+        rtc::Buffer der_cert;
+        cert.ToDER(&der_cert);
+        DOMArrayBuffer* dab_cert = DOMArrayBuffer::Create(
+            der_cert.data(), static_cast<unsigned int>(der_cert.size()));
+        // Don't replace the certificate if it's unchanged.
+        // Should have been "if (*dab_cert != *remote_certificates_[i])"
+        if (dab_cert->ByteLengthAsSizeT() !=
+                remote_certificates_[i]->ByteLengthAsSizeT() ||
+            memcmp(dab_cert->Data(), remote_certificates_[i]->Data(),
+                   dab_cert->ByteLengthAsSizeT()) != 0) {
+          remote_certificates_[i] = dab_cert;
+        }
+      }
+    }
+  } else {
+    remote_certificates_.clear();
+  }
+  if (!closed_from_owner_) {
+    DispatchEvent(*Event::Create(event_type_names::kStatechange));
+  }
 }
 
 const AtomicString& RTCDtlsTransport::InterfaceName() const {
@@ -128,17 +182,10 @@ ExecutionContext* RTCDtlsTransport::GetExecutionContext() const {
   return ContextClient::GetExecutionContext();
 }
 
-bool RTCDtlsTransport::HasPendingActivity() const {
-  // We have to keep the RTCDtlsTransport alive while new notifications
-  // may arrive.
-  // The closed state is final, so no more events will happen after
-  // seeing that state.
-  return current_state_.state() != webrtc::DtlsTransportState::kClosed;
-}
-
 void RTCDtlsTransport::Trace(Visitor* visitor) {
   visitor->Trace(remote_certificates_);
   visitor->Trace(ice_transport_);
+  DtlsTransportProxy::Delegate::Trace(visitor);
   EventTargetWithInlineData::Trace(visitor);
   ContextClient::Trace(visitor);
 }

@@ -2,6 +2,12 @@
   Macro for enum definition, and the declaration of associated functions.
 ---#}
 
+{%- macro kythe_annotation(name) %}
+{%- if enable_kythe_annotations %}
+// @generated_from: {{name}}
+{%- endif %}
+{%- endmacro %}
+
 {%- macro enum_forward(enum) %}
 {%-   set enum_name = enum|get_name_for_kind(flatten_nested_kind=True) %}
 enum class {{enum_name}} : int32_t;
@@ -10,11 +16,15 @@ enum class {{enum_name}} : int32_t;
 {%- macro enum_decl(enum, export_attribute) %}
 {%-   set enum_name = enum|get_name_for_kind(flatten_nested_kind=True) %}
 
+{%- set full_enum_name = enum|get_full_mojom_name_for_kind() %}
+{{ kythe_annotation(full_enum_name) }}
 enum class {{enum_name}} : int32_t {
 {%-   for field in enum.fields %}
 {%-     if field.value %}
+  {{ kythe_annotation("%s.%s"|format(full_enum_name, field.name)) }}
   {{field.name}} = {{field.value|expression_to_text}},
 {%-     else %}
+  {{ kythe_annotation("%s.%s"|format(full_enum_name, field.name)) }}
   {{field.name}},
 {%-     endif %}
 {%-   endfor %}

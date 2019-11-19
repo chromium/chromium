@@ -126,7 +126,7 @@ class IpcDesktopEnvironmentFactory
   int next_id_ = 0;
 
   // Factory for weak pointers to DesktopSessionConnector interface.
-  base::WeakPtrFactory<DesktopSessionConnector> connector_factory_;
+  base::WeakPtrFactory<DesktopSessionConnector> connector_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(IpcDesktopEnvironmentFactory);
 };

@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL constructor-caching assert_equals: expected object "[object WebAssembly.Global]" but got object "[object WebAssembly.Global]"
+Harness: the test ran to completion.
+

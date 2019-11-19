@@ -59,7 +59,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothProfileServiceProvider {
     // The ConfirmationCallback is used for methods which require confirmation;
     // it should be called with one argument, the |status| of the request
     // (success, rejected or cancelled).
-    typedef base::Callback<void(Status)> ConfirmationCallback;
+    using ConfirmationCallback = base::OnceCallback<void(Status)>;
 
     // This method will be called when the profile is unregistered from the
     // Bluetooth daemon, generally at shutdown or at the applications' request.
@@ -80,14 +80,14 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothProfileServiceProvider {
     virtual void NewConnection(const dbus::ObjectPath& device_path,
                                base::ScopedFD fd,
                                const Options& options,
-                               const ConfirmationCallback& callback) = 0;
+                               ConfirmationCallback callback) = 0;
 
     // This method will be called when a profile connection to the device
     // with object path |device_path| is disconnected. Any file descriptors
     // owned by the service should be cleaned up and |callback| called to
     // confirm, or indicate rejection or cancellation of the disconnection.
     virtual void RequestDisconnection(const dbus::ObjectPath& device_path,
-                                      const ConfirmationCallback& callback) = 0;
+                                      ConfirmationCallback callback) = 0;
 
     // This method will be called by the Bluetooth daemon to indicate that
     // a profile request failed before a reply was returned from the device.

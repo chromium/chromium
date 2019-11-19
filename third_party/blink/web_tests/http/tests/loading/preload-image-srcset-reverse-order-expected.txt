@@ -5,6 +5,7 @@ main frame - didReceiveTitle:
 main frame - didFinishDocumentLoadForFrame
 main frame - didHandleOnloadEventsForFrame
 main frame - didFinishLoadForFrame
+main frame - BeginNavigation request to 'http://127.0.0.1:8000/loading/preload-image-srcset-reverse-order.html', http method GET
 main frame - DidStartNavigation
 main frame - ReadyToCommitNavigation
 main frame - didCommitLoadForFrame

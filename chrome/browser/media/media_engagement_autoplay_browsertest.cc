@@ -68,6 +68,13 @@ class MediaEngagementAutoplayBrowserTest
     http_server_.ServeFilesFromSourceDirectory(kMediaEngagementTestDataPath);
     http_server_origin2_.ServeFilesFromSourceDirectory(
         kMediaEngagementTestDataPath);
+
+    // Enable or disable MEI based on the test parameter.
+    if (GetParam()) {
+      scoped_feature_list_.InitWithFeatures(kFeatures, {});
+    } else {
+      scoped_feature_list_.InitWithFeatures({}, kFeatures);
+    }
   }
 
   ~MediaEngagementAutoplayBrowserTest() override = default;
@@ -81,13 +88,6 @@ class MediaEngagementAutoplayBrowserTest
   void SetUp() override {
     ASSERT_TRUE(http_server_.Start());
     ASSERT_TRUE(http_server_origin2_.Start());
-
-    // Enable or disable MEI based on the test parameter.
-    if (GetParam()) {
-      scoped_feature_list_.InitWithFeatures(kFeatures, {});
-    } else {
-      scoped_feature_list_.InitWithFeatures({}, kFeatures);
-    }
 
     InProcessBrowserTest::SetUp();
 
@@ -119,16 +119,20 @@ class MediaEngagementAutoplayBrowserTest
                               "\""));
   }
 
-  void SetScores(GURL url, int visits, int media_playbacks) {
-    MediaEngagementScore score = GetService()->CreateEngagementScore(url);
+  void SetScores(const url::Origin& origin, int visits, int media_playbacks) {
+    MediaEngagementScore score = GetService()->CreateEngagementScore(origin);
     score.SetVisits(visits);
     score.SetMediaPlaybacks(media_playbacks);
     score.Commit();
   }
 
-  GURL PrimaryOrigin() { return http_server_.GetURL("/"); }
+  url::Origin PrimaryOrigin() const {
+    return url::Origin::Create(http_server_.GetURL("/"));
+  }
 
-  GURL SecondaryOrigin() { return http_server_origin2_.GetURL("/"); }
+  url::Origin SecondaryOrigin() const {
+    return url::Origin::Create(http_server_origin2_.GetURL("/"));
+  }
 
   void ExpectAutoplayAllowedIfEnabled() {
     if (GetParam()) {
@@ -142,7 +146,7 @@ class MediaEngagementAutoplayBrowserTest
 
   void ExpectAutoplayDenied() { EXPECT_EQ(kDeniedTitle, WaitAndGetTitle()); }
 
-  void ApplyPreloadedOrigin(GURL url) {
+  void ApplyPreloadedOrigin(const url::Origin& origin) {
     base::ScopedAllowBlockingForTesting allow_blocking;
 
     // Get two temporary files.
@@ -153,7 +157,7 @@ class MediaEngagementAutoplayBrowserTest
 
     // Write JSON file with the server origin in it.
     base::ListValue list;
-    list.AppendString(url::Origin::Create(url).Serialize());
+    list.AppendString(origin.Serialize());
     std::string json_data;
     base::JSONWriter::Write(list, &json_data);
     EXPECT_TRUE(
@@ -363,6 +367,28 @@ IN_PROC_BROWSER_TEST_P(MediaEngagementAutoplayBrowserTest, TopFrameNavigation) {
   ExpectAutoplayAllowedIfEnabled();
 }
 
+class MediaEngagementAutoplayBrowserTestHttpsOnly
+    : public MediaEngagementAutoplayBrowserTest {
+ public:
+  MediaEngagementAutoplayBrowserTestHttpsOnly() {
+    feature_list_.InitAndEnableFeature(media::kMediaEngagementHTTPSOnly);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(MediaEngagementAutoplayBrowserTestHttpsOnly,
+                       BypassAutoplayHighEngagement) {
+  SetScores(PrimaryOrigin(), 20, 20);
+  LoadTestPage("engagement_autoplay_test.html");
+  ExpectAutoplayDenied();
+}
+
 INSTANTIATE_TEST_SUITE_P(/* no prefix */,
                          MediaEngagementAutoplayBrowserTest,
+                         testing::Bool());
+
+INSTANTIATE_TEST_SUITE_P(/* no prefix */,
+                         MediaEngagementAutoplayBrowserTestHttpsOnly,
                          testing::Bool());

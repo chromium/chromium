@@ -1,13 +1,24 @@
 ﻿<?xml version='1.0' encoding='utf-8' standalone='yes'?>
-<instrumentationManifest
-    xmlns="http://schemas.microsoft.com/win/2004/08/events"
-    xmlns:win="http://manifests.microsoft.com/win/2004/08/windows/events"
-    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+<assembly
+    xmlns="urn:schemas-microsoft-com:asm.v3"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://schemas.microsoft.com/win/2004/08/events eventman.xsd"
+    manifestVersion="1.0"
     >
-  <instrumentation>
-    <events>
+  <assemblyIdentity
+      buildType="$(build.buildType)"
+      language="neutral"
+      name="Chrome.ETW"
+      processorArchitecture="$(build.arch)"
+      publicKeyToken="$(Build.WindowsPublicKeyToken)"
+      version="$(build.version)"
+      versionScope="nonSxS"
+      />
+    <instrumentation
+      xmlns:win="http://manifests.microsoft.com/win/2004/08/windows/events"
+      buildFilter="not build.isWow"
+      >
+    <events xmlns="http://schemas.microsoft.com/win/2004/08/events">
       <provider
           guid="{D2D578D9-2936-45B6-A09f-30E32715F42D}"
           messageFileName="chrome.dll"
@@ -71,7 +82,7 @@
       </provider>
     </events>
   </instrumentation>
-  <localization xmlns="http://schemas.microsoft.com/win/2004/08/events">
+  <localization>
     <resources culture="en-US">
       <stringTable>
         <string
@@ -81,4 +92,4 @@
       </stringTable>
     </resources>
   </localization>
-</instrumentationManifest>
+</assembly>

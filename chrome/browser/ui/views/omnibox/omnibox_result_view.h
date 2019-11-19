@@ -14,14 +14,13 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/suggestion_answer.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/base/models/simple_menu_model.h"
 #include "ui/base/window_open_disposition.h"
-#include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/views/context_menu_controller.h"
+#include "ui/views/animation/animation_delegate_views.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/view.h"
 
@@ -30,27 +29,25 @@ class OmniboxPopupContentsView;
 class OmniboxTabSwitchButton;
 enum class OmniboxPart;
 enum class OmniboxPartState;
-enum class OmniboxTint;
 
 namespace gfx {
 class Image;
 }
 
-namespace views {
-class MenuRunner;
+namespace ui {
+class ThemeProvider;
 }
 
 class OmniboxResultView : public views::View,
-                          private gfx::AnimationDelegate,
-                          public views::ButtonListener,
-                          public views::ContextMenuController,
-                          public ui::SimpleMenuModel::Delegate {
+                          public views::AnimationDelegateViews,
+                          public views::ButtonListener {
  public:
   OmniboxResultView(OmniboxPopupContentsView* popup_contents_view,
-                    int model_index);
+                    size_t model_index,
+                    const ui::ThemeProvider* theme_provider);
   ~OmniboxResultView() override;
 
-  // Helper to get the color for |part| using the current state and tint.
+  // Helper to get the color for |part| using the current state.
   SkColor GetColor(OmniboxPart part) const;
 
   // Updates the match used to paint the contents of this result view. We copy
@@ -60,7 +57,7 @@ class OmniboxResultView : public views::View,
 
   void ShowKeyword(bool show_keyword);
 
-  void Invalidate();
+  void Invalidate(bool force_reapply_styles = false);
 
   // Invoked when this result view has been selected.
   void OnSelected();
@@ -69,7 +66,6 @@ class OmniboxResultView : public views::View,
   bool IsSelected() const;
 
   OmniboxPartState GetThemeState() const;
-  OmniboxTint GetTint() const;
 
   // Notification that the match icon has changed and schedules a repaint.
   void OnMatchIconUpdated();
@@ -85,6 +81,13 @@ class OmniboxResultView : public views::View,
   // Called to indicate tab switch button has been focused.
   void ProvideButtonFocusHint();
 
+  // Removes the shown |match_| from history, if possible.
+  void RemoveSuggestion() const;
+
+  // Helper to emit accessibility events (may only emit if conditions are met).
+  void EmitTextChangedAccessiblityEvent();
+  void EmitSelectedChildrenChangedAccessibilityEvent();
+
   // views::View:
   void Layout() override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
@@ -94,21 +97,9 @@ class OmniboxResultView : public views::View,
   void OnMouseExited(const ui::MouseEvent& event) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   gfx::Size CalculatePreferredSize() const override;
-  void OnNativeThemeChanged(const ui::NativeTheme* theme) override;
-
-  // views::ContextMenuController:
-  void ShowContextMenuForView(views::View* source,
-                              const gfx::Point& point,
-                              ui::MenuSourceType source_type) override;
-
-  // ui::SimpleMenuModel::Delegate overrides:
-  bool IsCommandIdEnabled(int command_id) const override;
-  void ExecuteCommand(int command_id, int event_flags) override;
+  void OnThemeChanged() override;
 
  private:
-  // TODO(tommycli): This will be removed once we get final strings from UX.
-  enum CommandID { COMMAND_REMOVE_SUGGESTION };
-
   // Returns the height of the text portion of the result view.
   int GetTextHeight() const;
 
@@ -126,7 +117,7 @@ class OmniboxResultView : public views::View,
   const char* GetClassName() const override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 
-  // gfx::AnimationDelegate:
+  // views::AnimationDelegateViews:
   void AnimationProgressed(const gfx::Animation* animation) override;
 
   // The parent view.
@@ -135,23 +126,34 @@ class OmniboxResultView : public views::View,
   // This result's model index.
   size_t model_index_;
 
-  // Whether this view is in the hovered state.
-  bool is_hovered_;
+  // The theme provider associated with this view.
+  const ui::ThemeProvider* theme_provider_;
+
+  // Whether this view is in the hovered state. Note: This is false when a
+  // child button is hovered, and therefore this is different from
+  // View::IsMouseHovered(). This is useful for a contrasting highlight between
+  // the tab-switch button and the row, but is a non-standard hover meaning.
+  //
+  // TODO(tommycli): Investigate if we can get the desired tab-switch button
+  // behavior while using just plain View::IsMouseHovered().
+  bool is_hovered_ = false;
 
   // The data this class is built to display (the "Omnibox Result").
   AutocompleteMatch match_;
 
+  // Accessible name (enables to emit certain events).
+  base::string16 accessible_name_;
+
   // For sliding in the keyword search.
   std::unique_ptr<gfx::SlideAnimation> animation_;
-
-  // Context menu related members.
-  ui::SimpleMenuModel context_menu_contents_{this};
-  std::unique_ptr<views::MenuRunner> context_menu_runner_;
 
   // Weak pointers for easy reference.
   OmniboxMatchCellView* suggestion_view_;  // The leading (or left) view.
   OmniboxMatchCellView* keyword_view_;     // The trailing (or right) view.
-  std::unique_ptr<OmniboxTabSwitchButton> suggestion_tab_switch_button_;
+  OmniboxTabSwitchButton* suggestion_tab_switch_button_;
+
+  // The "X" button at the end of the match cell, used to remove suggestions.
+  views::ImageButton* remove_suggestion_button_;
 
   base::WeakPtrFactory<OmniboxResultView> weak_factory_{this};
 

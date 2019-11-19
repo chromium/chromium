@@ -15,11 +15,11 @@
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/values.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/data_decoder/public/mojom/json_parser.mojom.h"
-#include "services/service_manager/public/cpp/service_filter.h"
 
-namespace service_manager {
-class Connector;
+namespace data_decoder {
+class DataDecoder;
 }
 
 namespace extensions {
@@ -48,19 +48,16 @@ class JsonFileSanitizer {
 
   // Creates a JsonFileSanitizer and starts the sanitization of the JSON files
   // in |file_paths|.
-  // |connector| should be a connector to the ServiceManager usable on the
-  // current thread. |identity| is used when accessing the data decoder service
-  // which is used internally to parse JSON. It lets callers indicate they'd
-  // like to use a sahred process for the data decoder service with some
-  // potentially unrelated data decoding operations.
+  // |decoder| should be a DataDecoder which can be used to talk to a Data
+  // Decoder service instance. It must be live on the calling sequence and
+  // it is not retained beyond the extent of this call.
   // |callback| is invoked asynchronously when all JSON files have been
   // sanitized or if an error occurred.
   // If the returned JsonFileSanitizer instance is deleted before |callback| was
   // invoked, then |callback| is never invoked and the sanitization stops
   // promptly (some background tasks may still run).
   static std::unique_ptr<JsonFileSanitizer> CreateAndStart(
-      service_manager::Connector* connector,
-      const service_manager::ServiceFilter& service_filter,
+      data_decoder::DataDecoder* decoder,
       const std::set<base::FilePath>& file_paths,
       Callback callback);
 
@@ -70,8 +67,7 @@ class JsonFileSanitizer {
   JsonFileSanitizer(const std::set<base::FilePath>& file_paths,
                     Callback callback);
 
-  void Start(service_manager::Connector* connector,
-             const service_manager::ServiceFilter& service_filter);
+  void Start(data_decoder::DataDecoder* decoder);
 
   void JsonFileRead(const base::FilePath& file_path,
                     std::tuple<std::string, bool, bool> read_and_delete_result);
@@ -90,8 +86,8 @@ class JsonFileSanitizer {
 
   std::set<base::FilePath> file_paths_;
   Callback callback_;
-  data_decoder::mojom::JsonParserPtr json_parser_ptr_;
-  base::WeakPtrFactory<JsonFileSanitizer> weak_factory_;
+  mojo::Remote<data_decoder::mojom::JsonParser> json_parser_;
+  base::WeakPtrFactory<JsonFileSanitizer> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(JsonFileSanitizer);
 };

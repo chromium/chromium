@@ -17,9 +17,9 @@ namespace media {
 VirtualAudioInputStream::VirtualAudioInputStream(
     const AudioParameters& params,
     const scoped_refptr<base::SingleThreadTaskRunner>& worker_task_runner,
-    const AfterCloseCallback& after_close_cb)
+    AfterCloseCallback after_close_cb)
     : worker_task_runner_(worker_task_runner),
-      after_close_cb_(after_close_cb),
+      after_close_cb_(std::move(after_close_cb)),
       callback_(NULL),
       params_(params),
       mixer_(params_, params_, false),
@@ -54,8 +54,8 @@ bool VirtualAudioInputStream::Open() {
 void VirtualAudioInputStream::Start(AudioInputCallback* callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
   callback_ = callback;
-  fake_worker_.Start(base::Bind(
-      &VirtualAudioInputStream::PumpAudio, base::Unretained(this)));
+  fake_worker_.Start(base::BindRepeating(&VirtualAudioInputStream::PumpAudio,
+                                         base::Unretained(this)));
 }
 
 void VirtualAudioInputStream::Stop() {
@@ -99,7 +99,8 @@ void VirtualAudioInputStream::RemoveInputProvider(
   DCHECK_LE(0, num_attached_output_streams_);
 }
 
-void VirtualAudioInputStream::PumpAudio() {
+void VirtualAudioInputStream::PumpAudio(base::TimeTicks ideal_time,
+                                        base::TimeTicks now) {
   DCHECK(worker_task_runner_->BelongsToCurrentThread());
 
   {
@@ -110,7 +111,7 @@ void VirtualAudioInputStream::PumpAudio() {
   }
   // Because the audio is being looped-back, the delay since since it was
   // recorded is zero.
-  callback_->OnData(audio_bus_.get(), base::TimeTicks::Now(), 1.0);
+  callback_->OnData(audio_bus_.get(), ideal_time, 1.0);
 }
 
 void VirtualAudioInputStream::Close() {
@@ -122,9 +123,7 @@ void VirtualAudioInputStream::Close() {
   // here.  The callback is moved to a stack-local first since |this| could be
   // destroyed during Run().
   if (after_close_cb_) {
-    const AfterCloseCallback cb = after_close_cb_;
-    after_close_cb_.Reset();
-    cb.Run(this);
+    std::move(after_close_cb_).Run(this);
   }
 }
 

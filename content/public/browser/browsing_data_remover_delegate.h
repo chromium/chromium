@@ -7,14 +7,16 @@
 
 #include "base/callback_forward.h"
 
-class GURL;
-
 namespace base {
 class Time;
 }
 
 namespace storage {
 class SpecialStoragePolicy;
+}
+
+namespace url {
+class Origin;
 }
 
 namespace content {
@@ -25,10 +27,10 @@ class BrowsingDataRemoverDelegate {
  public:
   // Determines whether |origin| matches |origin_type_mask| given
   // the |special_storage_policy|.
-  typedef base::Callback<bool(int origin_type_mask,
-                              const GURL& origin,
-                              storage::SpecialStoragePolicy* policy)>
-      EmbedderOriginTypeMatcher;
+  using EmbedderOriginTypeMatcher =
+      base::Callback<bool(int origin_type_mask,
+                          const url::Origin& origin,
+                          storage::SpecialStoragePolicy* policy)>;
 
   virtual ~BrowsingDataRemoverDelegate() {}
 
@@ -37,19 +39,18 @@ class BrowsingDataRemoverDelegate {
   // parameter containing ONLY embedder-defined origin types, and must be able
   // to handle ALL embedder-defined typed. It must be static and support
   // being called on the UI and IO thread.
-  virtual EmbedderOriginTypeMatcher GetOriginTypeMatcher() const = 0;
+  virtual EmbedderOriginTypeMatcher GetOriginTypeMatcher() = 0;
 
   // Whether the embedder allows the removal of download history.
-  virtual bool MayRemoveDownloadHistory() const = 0;
+  virtual bool MayRemoveDownloadHistory() = 0;
 
   // Removes embedder-specific data.
-  virtual void RemoveEmbedderData(
-      const base::Time& delete_begin,
-      const base::Time& delete_end,
-      int remove_mask,
-      const BrowsingDataFilterBuilder& filter_builder,
-      int origin_type_mask,
-      base::OnceClosure callback) = 0;
+  virtual void RemoveEmbedderData(const base::Time& delete_begin,
+                                  const base::Time& delete_end,
+                                  int remove_mask,
+                                  BrowsingDataFilterBuilder* filter_builder,
+                                  int origin_type_mask,
+                                  base::OnceClosure callback) = 0;
 };
 
 }  // namespace content

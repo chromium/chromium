@@ -58,6 +58,7 @@ public class BindingManagerTest {
 
     // Created in setUp() for convenience.
     BindingManager mManager;
+    BindingManager mVariableManager;
 
     List<ChildProcessConnection> mIterable;
 
@@ -68,7 +69,8 @@ public class BindingManagerTest {
         LauncherThread.setCurrentThreadAsLauncherThread();
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         mIterable = new ArrayList<>();
-        mManager = new BindingManager(mActivity, 4, mIterable, true);
+        mManager = new BindingManager(mActivity, 4, mIterable);
+        mVariableManager = new BindingManager(mActivity, mIterable);
     }
 
     @After
@@ -83,8 +85,16 @@ public class BindingManagerTest {
     @Test
     @Feature({"ProcessManagement"})
     public void testModerateBindingDropOnBackground() {
-        final BindingManager manager = mManager;
+        doTestModerateBindingDropOnBackground(mManager);
+    }
 
+    @Test
+    @Feature({"ProcessManagement"})
+    public void testModerateBindingDropOnBackgroundWithVariableSize() {
+        doTestModerateBindingDropOnBackground(mVariableManager);
+    }
+
+    private void doTestModerateBindingDropOnBackground(BindingManager manager) {
         ChildProcessConnection[] connections = new ChildProcessConnection[3];
         for (int i = 0; i < connections.length; i++) {
             connections[i] = createTestChildProcessConnection(i + 1 /* pid */, manager, mIterable);
@@ -134,8 +144,17 @@ public class BindingManagerTest {
     @Test
     @Feature({"ProcessManagement"})
     public void testModerateBindingDropOnLowMemory() {
+        doTestModerateBindingDropOnLowMemory(mManager);
+    }
+
+    @Test
+    @Feature({"ProcessManagement"})
+    public void testModerateBindingDropOnLowMemoryVariableSize() {
+        doTestModerateBindingDropOnLowMemory(mVariableManager);
+    }
+
+    private void doTestModerateBindingDropOnLowMemory(BindingManager manager) {
         final Application app = mActivity.getApplication();
-        final BindingManager manager = mManager;
 
         ChildProcessConnection[] connections = new ChildProcessConnection[4];
         for (int i = 0; i < connections.length; i++) {
@@ -159,9 +178,18 @@ public class BindingManagerTest {
     @Test
     @Feature({"ProcessManagement"})
     public void testModerateBindingDropOnTrimMemory() {
+        doTestModerateBindingDropOnTrimMemory(mManager);
+    }
+
+    @Test
+    @Feature({"ProcessManagement"})
+    public void testModerateBindingDropOnTrimMemoryWithVariableSize() {
+        doTestModerateBindingDropOnTrimMemory(mVariableManager);
+    }
+
+    private void doTestModerateBindingDropOnTrimMemory(BindingManager manager) {
         final Application app = mActivity.getApplication();
         // This test applies only to the moderate-binding manager.
-        final BindingManager manager = mManager;
 
         ArrayList<Pair<Integer, Integer>> levelAndExpectedVictimCountList = new ArrayList<>();
         levelAndExpectedVictimCountList.add(
@@ -202,8 +230,16 @@ public class BindingManagerTest {
     @Test
     @Feature({"ProcessManagement"})
     public void testModerateBindingTillBackgroundedSentToBackground() {
-        BindingManager manager = mManager;
+        doTestModerateBindingTillBackgroundedSentToBackground(mManager);
+    }
 
+    @Test
+    @Feature({"ProcessManagement"})
+    public void testModerateBindingTillBackgroundedSentToBackgroundWithVariableSize() {
+        doTestModerateBindingTillBackgroundedSentToBackground(mVariableManager);
+    }
+
+    private void doTestModerateBindingTillBackgroundedSentToBackground(BindingManager manager) {
         ChildProcessConnection connection = createTestChildProcessConnection(0, manager, mIterable);
         Assert.assertTrue(connection.isModerateBindingBound());
 
@@ -219,7 +255,16 @@ public class BindingManagerTest {
     @Test
     @Feature({"ProcessManagement"})
     public void testOneWaivedConnection() {
-        final BindingManager manager = mManager;
+        testOneWaivedConnection(mManager);
+    }
+
+    @Test
+    @Feature({"ProcessManagement"})
+    public void testOneWaivedConnectionWithVariableSize() {
+        testOneWaivedConnection(mVariableManager);
+    }
+
+    private void testOneWaivedConnection(BindingManager manager) {
         ChildProcessConnection[] connections = new ChildProcessConnection[3];
         for (int i = 0; i < connections.length; i++) {
             connections[i] = createTestChildProcessConnection(i + 1 /* pid */, manager, mIterable);

@@ -58,8 +58,9 @@ void DownloadManagerMediator::StartDowloading() {
   // "Start Download" button.
   [consumer_ setState:kDownloadManagerStateInProgress];
 
-  base::PostTaskWithTraitsAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+  base::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::USER_VISIBLE},
       base::BindOnce(&base::CreateDirectory, download_dir),
       base::BindOnce(&DownloadManagerMediator::DownloadWithDestinationDir,
                      weak_ptr_factory_.GetWeakPtr(), download_dir, task_));
@@ -79,8 +80,8 @@ void DownloadManagerMediator::DownloadWithDestinationDir(
     return;
   }
 
-  auto task_runner = base::CreateSequencedTaskRunnerWithTraits(
-      {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
+  auto task_runner = base::CreateSequencedTaskRunner(
+      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT});
   base::string16 file_name = task_->GetSuggestedFilename();
   base::FilePath path = destination_dir.Append(base::UTF16ToUTF8(file_name));
   auto writer = std::make_unique<net::URLFetcherFileWriter>(task_runner, path);

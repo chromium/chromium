@@ -18,6 +18,10 @@ public class SuggestionCommonProperties {
     /** The layout direction to be applied to the entire suggestion view. */
     public static final WritableIntPropertyKey LAYOUT_DIRECTION = new WritableIntPropertyKey();
 
+    /** Whether suggestion icons should be presented. */
+    public static final WritableBooleanPropertyKey SHOW_SUGGESTION_ICONS =
+            new WritableBooleanPropertyKey();
+
     public static final PropertyKey[] ALL_KEYS =
-            new PropertyKey[] {USE_DARK_COLORS, LAYOUT_DIRECTION};
+            new PropertyKey[] {USE_DARK_COLORS, LAYOUT_DIRECTION, SHOW_SUGGESTION_ICONS};
 }

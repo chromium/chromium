@@ -5,7 +5,7 @@ element.style { ()
     display: none;
 
 [expanded] 
-.foo { (styles-source-l…-helper.html:4 -> styles-source-lines-inline-helper.html:4:7)
+.foo { (styles-sour…lper.html:4 -> styles-source-lines-inline-helper.html:4:7)
     color: blue;
 
 [expanded] 

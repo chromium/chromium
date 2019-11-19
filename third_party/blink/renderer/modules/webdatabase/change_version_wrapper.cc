@@ -55,9 +55,10 @@ bool ChangeVersionWrapper::PerformPreflight(
   }
 
   if (actual_version != old_version_) {
-    sql_error_ = SQLErrorData::Create(SQLError::kVersionErr,
-                                      "current version of the database and "
-                                      "`oldVersion` argument do not match");
+    sql_error_ =
+        std::make_unique<SQLErrorData>(SQLError::kVersionErr,
+                                       "current version of the database and "
+                                       "`oldVersion` argument do not match");
     return false;
   }
 

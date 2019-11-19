@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/gc.js"></script>
+<script>
+test(() => {
+  assert_throws(new SyntaxError(), () => {
+    // window.gc() may return a value. This test expects the resolver
+    // function returns no value.
+    document.createExpression(
+        '(((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((' +
+        '(((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((' +
+        '(((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((' +
+        '(((((((((((((((((((((((((//a:a|b:b[b]|c:c)))))',
+        () => { window.gc(); });
+  });
+  // The test passes if createExpression() didn't crash.
+}, 'A deep XPath expression should not crash document.createExpression()');
+</script>

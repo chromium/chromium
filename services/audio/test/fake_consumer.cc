@@ -6,10 +6,18 @@
 
 #include <algorithm>
 #include <cmath>
+#include <memory>
+#include <utility>
 
+#include "base/files/file.h"
 #include "base/logging.h"
 #include "base/numerics/math_constants.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/test/task_environment.h"
+#include "media/audio/audio_debug_file_writer.h"
 #include "media/base/audio_bus.h"
+#include "media/base/audio_parameters.h"
+#include "media/base/channel_layout.h"
 
 namespace audio {
 
@@ -109,6 +117,32 @@ double FakeConsumer::ComputeAmplitudeAt(int channel,
   const double normalization_factor = 2.0 / analysis_length;
   return std::sqrt(real_part * real_part + img_part * img_part) *
          normalization_factor;
+}
+
+void FakeConsumer::SaveToFile(const base::FilePath& path) const {
+  // Not all tests set-up a full task environment. However, AudioDebugFileWriter
+  // requires one. Provide a temporary one here, if necessary.
+  std::unique_ptr<base::test::TaskEnvironment> task_environment;
+  if (!base::ThreadPoolInstance::Get()) {
+    task_environment = std::make_unique<base::test::TaskEnvironment>();
+  }
+
+  const media::AudioParameters params(
+      media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+      media::GuessChannelLayout(recorded_channel_data_.size()), sample_rate_,
+      recorded_channel_data_[0].size());
+  media::AudioDebugFileWriter writer(params);
+  base::File file(path, base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_READ |
+                            base::File::FLAG_WRITE);
+  CHECK(file.IsValid());
+  writer.Start(std::move(file));
+  auto bus = media::AudioBus::Create(params);
+  for (int i = 0; i < params.channels(); ++i) {
+    memcpy(bus->channel(i), recorded_channel_data_[i].data(),
+           sizeof(float) * recorded_channel_data_[i].size());
+  }
+  writer.Write(std::move(bus));
+  writer.Stop();
 }
 
 }  // namespace audio

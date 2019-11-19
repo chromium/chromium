@@ -4,15 +4,14 @@
 
 #include <memory>
 
-#include "base/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
-#include "build/build_config.h"
-#include "chromecast/base/task_runner_impl.h"
+#if defined(ENABLE_VIDEO_WITH_MIXED_AUDIO)
+#include "chromecast/media/cma/backend/media_pipeline_backend_for_mixer.h" // nogncheck
+#else
 #include "chromecast/media/cma/backend/desktop/media_pipeline_backend_desktop.h"
+#endif
 #include "chromecast/public/cast_media_shlib.h"
 #include "chromecast/public/graphics_types.h"
 #include "chromecast/public/media/media_capabilities_shlib.h"
-#include "chromecast/public/media/media_pipeline_device_params.h"
 #include "chromecast/public/video_plane.h"
 
 namespace chromecast {
@@ -27,7 +26,6 @@ class DesktopVideoPlane : public VideoPlane {
 };
 
 DesktopVideoPlane* g_video_plane = nullptr;
-base::ThreadTaskRunnerHandle* g_thread_task_runner_handle = nullptr;
 
 }  // namespace
 
@@ -38,8 +36,6 @@ void CastMediaShlib::Initialize(const std::vector<std::string>& argv) {
 void CastMediaShlib::Finalize() {
   delete g_video_plane;
   g_video_plane = nullptr;
-  delete g_thread_task_runner_handle;
-  g_thread_task_runner_handle = nullptr;
 }
 
 VideoPlane* CastMediaShlib::GetVideoPlane() {
@@ -48,18 +44,11 @@ VideoPlane* CastMediaShlib::GetVideoPlane() {
 
 MediaPipelineBackend* CastMediaShlib::CreateMediaPipelineBackend(
     const MediaPipelineDeviceParams& params) {
-  // Set up the static reference in base::ThreadTaskRunnerHandle::Get
-  // for the media thread in this shared library.  We can extract the
-  // SingleThreadTaskRunner passed in from cast_shell for this.
-  if (!base::ThreadTaskRunnerHandle::IsSet()) {
-    DCHECK(!g_thread_task_runner_handle);
-    const scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-        static_cast<TaskRunnerImpl*>(params.task_runner)->runner();
-    DCHECK(task_runner->BelongsToCurrentThread());
-    g_thread_task_runner_handle = new base::ThreadTaskRunnerHandle(task_runner);
-  }
-
+#if defined(ENABLE_VIDEO_WITH_MIXED_AUDIO)
+  return new MediaPipelineBackendForMixer(params);
+#else
   return new MediaPipelineBackendDesktop();
+#endif
 }
 
 double CastMediaShlib::GetMediaClockRate() {
@@ -71,7 +60,10 @@ double CastMediaShlib::MediaClockRatePrecision() {
 }
 
 void CastMediaShlib::MediaClockRateRange(double* minimum_rate,
-                                         double* maximum_rate) {}
+                                         double* maximum_rate) {
+  *minimum_rate = 0.0;
+  *maximum_rate = 1.0;
+}
 
 bool CastMediaShlib::SetMediaClockRate(double new_rate) {
   return false;

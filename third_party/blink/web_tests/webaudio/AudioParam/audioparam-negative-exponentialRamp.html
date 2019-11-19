@@ -143,16 +143,21 @@
               let actual = resultBuffer.getChannelData(0);
 
               // Since the start value of the exponential ramp is -1 and the end
-              // value is 1, the ramp should just propagate -1 from the end of
-              // the linear ramp "forever".
-              let endFrame = Math.ceil(linearRampEnd * sampleRate);
+              // value is 1, the ramp should just propagate -1 to the end of
+              // the exponential ramp, and then propagate the exponential ramp
+              // value "forever" afterwards.
+              const linearEndFrame = Math.ceil(linearRampEnd * sampleRate);
+              const expoEndFrame = Math.ceil(exponentialRampEnd * sampleRate);
               should(
-                  actual.slice(endFrame),
+                  actual.slice(linearEndFrame, expoEndFrame),
                   'Exponential ramp from -1 to 1 after the end of the linear ramp')
                   .beConstantValueOf(-1);
+              should(
+                  actual.slice(expoEndFrame),
+                  'Exponential ramp after end of ramp')
+                  .beConstantValueOf(1);
             })
             .then(() => task.done());
-
       });
 
       audit.run();

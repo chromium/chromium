@@ -22,6 +22,7 @@ class MockP2PQuicTransport : public testing::NiceMock<P2PQuicTransport> {
   MOCK_METHOD1(MockStart, void(const StartConfig&));
   MOCK_METHOD0(CreateStream, P2PQuicStream*());
   MOCK_CONST_METHOD0(GetStats, P2PQuicTransportStats());
+  MOCK_METHOD1(SendDatagram, void(Vector<uint8_t>));
 };
 
 }  // namespace blink

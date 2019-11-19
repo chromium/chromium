@@ -41,6 +41,7 @@ async_test(function(t) {
         ctx2.drawImage(video, 0, 0, video.videoWidth, video.videoHeight, 0, 0, width, height);
         compareTwoCanvases(ctx1, ctx2, width, height);
     });
+    video.preload = "auto";
     video.src = "../../compositing/resources/video.ogv";
 }, 'drawImage from a video should look differently with imageSmoothing enabled');
 </script>

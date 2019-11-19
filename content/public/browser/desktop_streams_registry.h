@@ -7,7 +7,9 @@
 
 #include "content/common/content_export.h"
 
-class GURL;
+namespace url {
+class Origin;
+}
 
 namespace content {
 
@@ -34,7 +36,7 @@ class CONTENT_EXPORT DesktopStreamsRegistry {
   // |render_frame_id| refers to the RenderFrame requesting the stream.
   virtual std::string RegisterStream(int render_process_id,
                                      int render_frame_id,
-                                     const GURL& origin,
+                                     const url::Origin& origin,
                                      const DesktopMediaID& source,
                                      const std::string& extension_name,
                                      const DesktopStreamRegistryType type) = 0;
@@ -48,7 +50,7 @@ class CONTENT_EXPORT DesktopStreamsRegistry {
       const std::string& id,
       int render_process_id,
       int render_frame_id,
-      const GURL& origin,
+      const url::Origin& origin,
       std::string* extension_name,
       const DesktopStreamRegistryType type) = 0;
 };

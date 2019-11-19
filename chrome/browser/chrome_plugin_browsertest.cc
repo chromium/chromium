@@ -16,6 +16,7 @@
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/plugins/plugin_prefs.h"
 #include "chrome/browser/profiles/profile.h"
@@ -112,9 +113,8 @@ class ChromePluginTest : public InProcessBrowserTest {
   static void CrashFlash() {
     scoped_refptr<content::MessageLoopRunner> runner =
         new content::MessageLoopRunner;
-    base::PostTaskWithTraits(
-        FROM_HERE, {BrowserThread::IO},
-        base::BindOnce(&CrashFlashInternal, runner->QuitClosure()));
+    base::PostTask(FROM_HERE, {BrowserThread::IO},
+                   base::BindOnce(&CrashFlashInternal, runner->QuitClosure()));
     runner->Run();
   }
 
@@ -142,7 +142,7 @@ class ChromePluginTest : public InProcessBrowserTest {
     int actual = 0;
     scoped_refptr<content::MessageLoopRunner> runner =
         new content::MessageLoopRunner;
-    base::PostTaskWithTraits(
+    base::PostTask(
         FROM_HERE, {BrowserThread::IO},
         base::BindOnce(&CountPluginProcesses, &actual, runner->QuitClosure()));
     runner->Run();
@@ -159,7 +159,7 @@ class ChromePluginTest : public InProcessBrowserTest {
       found = true;
     }
     ASSERT_TRUE(found) << "Didn't find Flash process!";
-    base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI}, quit_task);
+    base::PostTask(FROM_HERE, {BrowserThread::UI}, quit_task);
   }
 
   static void GetPluginsInfoCallback(
@@ -175,7 +175,7 @@ class ChromePluginTest : public InProcessBrowserTest {
       if (iter.GetData().process_type == content::PROCESS_TYPE_PPAPI_PLUGIN)
         (*count)++;
     }
-    base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI}, quit_task);
+    base::PostTask(FROM_HERE, {BrowserThread::UI}, quit_task);
   }
 };
 
@@ -214,7 +214,7 @@ IN_PROC_BROWSER_TEST_F(ChromePluginTest, DISABLED_Flash) {
   EnsureFlashProcessCount(1);
 }
 
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 // Verify that the official builds have the known set of plugins.
 IN_PROC_BROWSER_TEST_F(ChromePluginTest, InstalledPlugins) {
   const char* expected[] = {

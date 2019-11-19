@@ -159,4 +159,9 @@ Status ScrollElementRegionIntoView(
     const std::string& clickable_element_id,
     WebPoint* location);
 
+Status GetElementLocationInViewCenter(Session* session,
+                                      WebView* web_view,
+                                      const std::string& element_id,
+                                      WebPoint* location);
+
 #endif  // CHROME_TEST_CHROMEDRIVER_ELEMENT_UTIL_H_

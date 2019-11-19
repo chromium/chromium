@@ -5,6 +5,7 @@
 #include <stddef.h>
 
 #include "base/macros.h"
+#include "chrome/browser/sync/test/integration/os_sync_test.h"
 #include "chrome/browser/sync/test/integration/printers_helper.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
@@ -19,6 +20,8 @@ using printers_helper::GetPrinterCount;
 using printers_helper::GetPrinterStore;
 using printers_helper::ProfileContainsSamePrintersAsVerifier;
 using printers_helper::RemovePrinter;
+
+namespace {
 
 class SingleClientPrintersSyncTest : public SyncTest {
  public:
@@ -87,3 +90,26 @@ IN_PROC_BROWSER_TEST_F(SingleClientPrintersSyncTest, AddBeforeSetup) {
 
   EXPECT_TRUE(SetupSync()) << "SetupSync() failed.";
 }
+
+// Tests for SplitSettingsSync.
+class SingleClientPrintersOsSyncTest : public OsSyncTest {
+ public:
+  SingleClientPrintersOsSyncTest() : OsSyncTest(SINGLE_CLIENT) {}
+  ~SingleClientPrintersOsSyncTest() override = default;
+};
+
+IN_PROC_BROWSER_TEST_F(SingleClientPrintersOsSyncTest,
+                       DisablingOsSyncFeatureDisablesDataType) {
+  ASSERT_TRUE(SetupSync());
+  syncer::SyncService* service = GetSyncService(0);
+  syncer::SyncUserSettings* settings = service->GetUserSettings();
+
+  EXPECT_TRUE(settings->GetOsSyncFeatureEnabled());
+  EXPECT_TRUE(service->GetActiveDataTypes().Has(syncer::PRINTERS));
+
+  settings->SetOsSyncFeatureEnabled(false);
+  EXPECT_FALSE(settings->GetOsSyncFeatureEnabled());
+  EXPECT_FALSE(service->GetActiveDataTypes().Has(syncer::PRINTERS));
+}
+
+}  // namespace

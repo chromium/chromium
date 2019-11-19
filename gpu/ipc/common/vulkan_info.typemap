@@ -1,0 +1,16 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+mojom = "//gpu/ipc/common/vulkan_info.mojom"
+public_headers = [ "//gpu/config/vulkan_info.h" ]
+traits_headers = [ "//gpu/ipc/common/vulkan_info_mojom_traits.h" ]
+public_deps = [
+  # "//gpu/config",
+  "//gpu/ipc/common:vulkan_types",
+  "//gpu/ipc/common:vulkan_types_mojom_traits",
+]
+type_mappings = [
+  "gpu.mojom.VulkanPhysicalDeviceInfo=::gpu::VulkanPhysicalDeviceInfo",
+  "gpu.mojom.VulkanInfo=::gpu::VulkanInfo",
+]

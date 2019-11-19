@@ -1,0 +1,34 @@
+\bestrada\s+nacional\b	n
+\bviana\s+do\s+castelo\b	18
+\bcastelo\s+branco\b	09
+\bportalegre\b	08
+\bvila\s+real\b	15
+\bbraganca\b	14
+\bportugal\b	pt
+\bsantarem\b	03
+\bcoimbra\b	11
+\bsetubal\b	04
+\baveiro\b	12
+\bdoctor\b	dr
+\bdoutor\b	dr
+\bguarda\b	10
+\bleiria\b	02
+\blisbon\b	01
+\bbraga\b	17
+\bevora\b	07
+\bnorth\b	n
+\bporto\b	16
+\bsouth\b	s
+\bviseu\b	13
+\bbeja\b	05
+\bfaro\b	06
+\bwest\b	w
+\bdas\b	
+\bdos\b	
+\bsao\b	s
+\bda\b	
+\bde\b	
+\bdo\b	
+\bem\b	m
+\ben\b	n
+\be\b	

@@ -1,0 +1,417 @@
+// Copyright 2016 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+//
+// Next MinVersion: 14
+
+module arc.mojom;
+
+import "components/arc/mojom/bitmap.mojom";
+import "components/arc/mojom/intent_common.mojom";
+import "url/mojom/url.mojom";
+
+// Represents a document in Android DocumentsProvider.
+// See Android docs of DocumentsContract.Document for details.
+struct Document {
+  // Opaque ID of the document.
+  string document_id;
+
+  // Display name of the document.
+  string display_name;
+
+  // MIME type of the document.
+  // A directory is represented by a document having MIME_TYPE_DIR MIME type.
+  string mime_type;
+
+  // Size of the document in bytes. If the size is unknown, -1 is set.
+  int64 size;
+
+  // Timestamp when the document was modified last time, in milliseconds
+  // since UNIX epoch.
+  // TODO(crbug.com/672737): Use mojo_base.mojom.Time once the type is
+  // converted to a non-native type so that it can be used from Java.
+  uint64 last_modified;
+
+  // Path to a real file on the Android VFS corresponding to this document,
+  // e.g. "/storage/emulated/0/DCIM/kitten.jpg".
+  // This value is available in limited DocumentsProviders only. If the
+  // provider does not expose real VFS paths, this field is always set to null.
+  [MinVersion=5] string? android_file_system_path;
+
+  // Flag indicating that a document is deletable.
+  [MinVersion=12] bool supports_delete;
+
+  // Flag indicating that a document can be renamed.
+  [MinVersion=12] bool supports_rename;
+
+  // Flag indicating that a document supports writing.
+  [MinVersion=12] bool supports_write;
+
+  // Flag indicating that a document is a directory that supports creation of
+  // new files within it.
+  [MinVersion=12] bool dir_supports_create;
+
+  // Flag indicating that a document can be copied to another location within
+  // the same document provider.
+  [MinVersion=12] bool supports_copy;
+
+  // Flag indicating that a document can be moved to another location within
+  // the same document provider.
+  [MinVersion=12] bool supports_move;
+};
+
+// Represents a root in Android DocumentsProvider.
+// See Android docs of DocumentsContract.Root for details.
+struct Root {
+  // Authority for the root.
+  string authority;
+
+  // Opaque ID of the root.
+  string root_id;
+
+  // Opaque ID of the document which is a directory that represents the top
+  // directory of the root.
+  string document_id;
+
+  // Title for the root, which will be shown to a user.
+  string title;
+
+  // Summary for the root, which may be shown to a user.
+  string? summary;
+
+  // Icon for the root, represented in a ARGB_8888 bitmap.
+  ArcBitmap? icon;
+
+  // Flag indicating that at least one directory under this root supports
+  // creating contents.
+  [MinVersion=12] bool supports_create;
+
+  // Mime types supported by this root.
+  [MinVersion=12] array<string>? mime_types;
+};
+
+// Describes the type of a change made to a document.
+[Extensible]
+enum ChangeType {
+  // Indicates that the child document list of the watched directory was
+  // changed. Note that a watcher can be installed only on directory for now.
+  CHANGED = 0,
+
+  // Indicates that the watched document itself was deleted.
+  // Even if OnDocumentChanged() is called with this change type, the
+  // corresponding watcher is not uninstalled automatically. The host must
+  // call RemoveWatcher() to clean up an orphaned watcher.
+  DELETED = 1,
+};
+
+// Content URL associated with its MIME type.
+struct ContentUrlWithMimeType {
+  url.mojom.Url content_url;
+  string mime_type;
+};
+
+// Request for opening URLs by sending an intent to the specified activity.
+struct OpenUrlsRequest {
+  // Action type of the intent.
+  ActionType action_type;
+
+  // Target activity for the intent.
+  ActivityName activity_name;
+
+  // One or more URLs to open with the intent.
+  array<ContentUrlWithMimeType> urls;
+};
+
+// Supported action types for SelectFilesRequest.
+// Corresponds to Android intent actions described in
+// http://developer.android.com/reference/android/content/Intent.html
+[Extensible]
+enum SelectFilesActionType {
+  GET_CONTENT,        // Intent.ACTION_GET_CONTENT
+  OPEN_DOCUMENT,      // Intent.ACTION_OPEN_DOCUMENT
+  OPEN_DOCUMENT_TREE, // Intent.ACTION_OPEN_DOCUMENT_TREE
+  CREATE_DOCUMENT,    // Intent.ACTION_CREATE_DOCUMENT
+};
+
+// Request for having the user select files using ChromeOS file selector,
+// converted from an Android intent.
+struct SelectFilesRequest {
+  // Action type of the original Android intent.
+  SelectFilesActionType action_type;
+
+  // Acceptable document MIME types. Copied from Intent.EXTRA_MIME_TYPES if
+  // there are multiple disjoint MIME types (e.g. ["image/*", "video/*"]), or
+  // copied from Intent#getType if there is only one. Empty means ["*/*"].
+  array<string> mime_types;
+
+  // If true, only requests files that can be opened by Android ContentResolver.
+  // Corresponds to Intent.CATEGORY_OPENABLE.
+  bool openable_only;
+
+  // If true, allows the user to select multiple files.
+  // Corresponds to Intent.EXTRA_ALLOW_MULTIPLE.
+  bool allow_multiple;
+
+  // File name to be initially filled in the selector when creating a new file.
+  // Corresponds to Intent.EXTRA_TITLE.
+  string default_file_name;
+
+  // Directory path to be initially opened when the file selector is launched.
+  // Corresponds to DocumentsContract.EXTRA_INITIAL_URI.
+  string initial_content_uri;
+
+  // DocumentPath representation for initial URI.
+  // Filled only when DocumentsContract.EXTRA_INITIAL_URI points to a document
+  // served by a DocumentsProvider.
+  DocumentPath? initial_document_path;
+
+  // Android task ID of the request sender.
+  int32 task_id;
+};
+
+// Represents a path to a document served by a DocumentsProvider.
+struct DocumentPath {
+  // Authority of the document provider.
+  string authority;
+
+  // List of document ID from the root document to the child document.
+  // This should at least contain root document ID.
+  array<string> path;
+};
+
+// Result for SelectFilesRequest.
+struct SelectFilesResult {
+  // Content URLs of the selected files.
+  // Empty if the user closes the file selector without selecting any files.
+  array<url.mojom.Url> urls;
+
+  // Name of the selected Android picker activity.
+  // Filled only when the user selected an Android picker activity instead of
+  // selecting files. (e.g. "com.google.photos/.PickerActivity")
+  string? picker_activity;
+};
+
+// UI event to be dispatched to ChromeOS file selector.
+struct FileSelectorEvent {
+  // Type of the UI event.
+  FileSelectorEventType type;
+
+  // Specifies the target directory/file for CLICK_DIRECTORY/CLICK_FILE.
+  FileSelectorElement click_target;
+
+  // Android task ID of the activity that created the file selector by sending
+  // a SelectFilesRequest.
+  int32 creator_task_id;
+};
+
+// Types of UI events for FileSelectorEvent.
+[Extensible]
+enum FileSelectorEventType {
+  CLICK_OK,         // Clicks OK button.
+  CLICK_DIRECTORY,  // Clicks a directory in the left pane.
+  CLICK_FILE,       // Clicks a file in the right pane.
+  CLICK_CANCEL,     // Clicks Cancel button.
+};
+
+// Request for GetFileSelectorElements.
+struct GetFileSelectorElementsRequest {
+  // Android task ID of the activity that created the file selector by sending
+  // a SelectFilesRequest.
+  int32 creator_task_id;
+};
+
+// Represents a clickable UI element shown on ChromeOS file selector.
+struct FileSelectorElement {
+  // User-visible label of the element (e.g. button text).
+  // This is usually equivalent to accessibility label of the element.
+  string name;
+};
+
+// A subset of clickable UI elements shown on ChromeOS file selector.
+struct FileSelectorElements {
+  // List of directories in the left pane.
+  array<FileSelectorElement> directory_elements;
+
+  // List of files in the right pane.
+  array<FileSelectorElement> file_elements;
+};
+
+// Next method ID: 9
+interface FileSystemHost {
+  // Returns the name of the file specified by the URL.
+  // When an error occurs, returns null value.
+  [MinVersion=6] GetFileName@1(string url) => (string? name);
+
+  // Returns the size of the file specified by the URL.
+  // If the file does not exist or the size is unknown (e.g. directories and
+  // streams), -1 is returned.
+  [MinVersion=6] GetFileSize@2(string url) => (int64 size);
+
+  // Returns the MIME type of the file specified by the URL.
+  // When an error occurs, returns null value.
+  [MinVersion=6] GetFileType@3(string url) => (string? mime_type);
+
+  // Called when a watched document was changed.
+  // |type| describes the type of change made to the document.
+  [MinVersion=3] OnDocumentChanged@0(int64 watcher_id, ChangeType type);
+
+  // Called when the list of available roots or their metadata are changed.
+  [MinVersion=10] OnRootsChanged@6();
+
+  // Returns an FD for reading the file specified by the URL.
+  [MinVersion=6] OpenFileToRead@4(string url) => (handle? fd);
+
+  // Asks the user to select files using ChromeOS file selector.
+  [MinVersion=9] SelectFiles@5(SelectFilesRequest request) =>
+      (SelectFilesResult result);
+
+  // Dispatches a UI event to the ChromeOS file selector previously opened by
+  // SelectFiles@5. This exists for running Android UI tests (CTS) on ChromeOS
+  // file selector, and thus it is only allowed under test conditions.
+  [MinVersion=11] OnFileSelectorEvent@7(FileSelectorEvent event) => ();
+
+  // Returns UI elements shown on the ChromeOS file selector previously opened
+  // by SelectFiles@5. This exists for running Android UI tests (CTS) on
+  // ChromeOS file selector, and thus it is only allowed under test conditions.
+  [MinVersion=11] GetFileSelectorElements@8(
+      GetFileSelectorElementsRequest request) =>
+      (FileSelectorElements elements);
+};
+
+// Next method ID: 19
+interface FileSystemInstance {
+  // Notes about Android Documents Provider:
+  //
+  // In Android Storage Access Framework, a document is uniquely identified by
+  // a pair of "authority" and "document ID".
+  //
+  // - An authority specifies a Documents Provider that serves a document.
+  //   It is the origin part of a content:// URI used to access the Documents
+  //   Provider via Content Resolver protocol.
+  //   Example: "com.android.providers.media.documents"
+  // - A documents provider may provide one or more roots. Each root is identified
+  //   by a root ID.
+  // - A document ID is an opaque string that specifies a particular document
+  //   in a documents provider. Its format varies by providers. Roots also have
+  //   associated document IDs.
+  //
+  // See the following documents for details about Documents Provider:
+  // https://developer.android.com/guide/topics/providers/document-provider.html
+  // https://developer.android.com/reference/android/provider/DocumentsContract.html
+
+  // Installs a document watcher to watch updates of a document.
+  //
+  // Currently, watchers can be installed only on directories, and only
+  // directory content changes are notified.
+  //
+  // On success, a positive unique integer is returned as a watcher ID.
+  // FileSystemHost.OnDocumentChanged() will be called with the watcher ID
+  // on directory content changes.
+  // On failure, -1 is returned.
+  //
+  // It is allowed to install multiple watchers to the same directory. In that
+  // case, different watcher IDs are returned.
+  //
+  // Watchers are not persistent. When the Mojo connection is lost, all
+  // watchers are cleared. Also, after reconnecting, watcher IDs can be reused.
+  [MinVersion=3] AddWatcher@6(string authority, string document_id) =>
+      (int64 watcher_id);
+
+  // Queries child documents of the directory specified by |authority| and
+  // |parent_document_id| in Documents Provider.
+  // If such a directory does not exist, null is returned.
+  [MinVersion=2] GetChildDocuments@4(string authority,
+                                     string parent_document_id) =>
+      (array<Document>? documents);
+
+  // Queries the document specified by |authority| and |document_id| in
+  // Documents Provider.
+  // If such a document does not exist, null is returned.
+  [MinVersion=2] GetDocument@3(string authority, string document_id) =>
+      (Document? document);
+
+  // Asks the ContentResolver for the size of the file specified by the URL.
+  // If the file does not exist or the size is unknown (e.g. directories and
+  // streams), -1 is returned.
+  [MinVersion=1] GetFileSize@1(string url) => (int64 size);
+
+  // Asks the ContentResolver to get the MIME type of the file specified by the
+  // URL. When an error occurs, returns null value.
+  [MinVersion=4] GetMimeType@8(string url) => (string? mime_type);
+
+  // Queries recent documents of a root specified by |authority| and |root_id|.
+  // If the root exists and it supports recent document queries, a (possibly
+  // empty) list of documents is returned. Otherwise, null is returned.
+  [MinVersion=5] GetRecentDocuments@9(string authority, string root_id) =>
+      (array<Document>? documents);
+
+  // Queries available roots from all Documents Providers.
+  // If there is no root in ARC, an empty array is returned.
+  // If an error is found during GetRoots() methord processing in ARC, null
+  // value is returned.
+  [MinVersion=10] GetRoots@12() => (array<Root>? roots);
+
+  // Deletes the given document.
+  [MinVersion=12] DeleteDocument@13(string authority, string document_id) =>
+      (bool success);
+
+  // Changes the display name of an existing document.
+  [MinVersion=12] RenameDocument@14(string authority,
+                                    string document_id,
+                                    string display_name) =>
+                                        (Document? document);
+
+  // Creates a new document with given MIME type and display name.
+  [MinVersion=12] CreateDocument@15(string authority,
+                                    string parent_document_id,
+                                    string mime_type,
+                                    string display_name) =>
+                                        (Document? document);
+
+  // Copies the given document.
+  [MinVersion=12] CopyDocument@16(string authority,
+                                  string source_document_id,
+                                  string target_parent_document_id) =>
+                                      (Document? document);
+
+  // Moves the given document under a new parent.
+  [MinVersion=12] MoveDocument@17(string authority,
+                                  string source_document_id,
+                                  string source_parent_document_id,
+                                  string target_parent_document_id) =>
+                                      (Document? document);
+
+  // DEPRECATED: Please use Init@10 instead.
+  [MinVersion=3] InitDeprecated@5(FileSystemHost host_ptr);
+
+  // Establishes full-duplex communication with the host.
+  [MinVersion=7] Init@10(FileSystemHost host_ptr) => ();
+
+  // Asks the ContentResolver to get a FD to read the file specified by the
+  // URL.
+  [MinVersion=1] OpenFileToRead@2(string url) => (handle? fd);
+
+  // Asks the ContentResolver to get a FD to write the file specified by the
+  // URL.
+  [MinVersion=13] OpenFileToWrite@18(string url) => (handle? fd);
+
+  // Uninstalls a document watcher.
+  //
+  // After this method call returns, OnDocumentChanged() will never be called
+  // with the watcher ID. Whether OnDocumentChanged() is called or not after
+  // this method is called and before this method returns is undefined.
+  //
+  // It fails if the specified watcher does not exist.
+  [MinVersion=3] RemoveWatcher@7(int64 watcher_id) => (bool success);
+
+  // Requests MediaProvider to scan specified files.
+  // When the specified file does not exist, the corresponding entry in
+  // MediaProvider is removed.
+  RequestMediaScan@0(array<string> paths);
+
+  // Opens URLs by sending an intent to the specified activity.
+  // Since this grants read/write URL permissions to the activity, callers must
+  // ensure that the user is correctly aware of the URLs and the activity they
+  // are passing.
+  [MinVersion=8] OpenUrlsWithPermission@11(OpenUrlsRequest request) => ();
+};

@@ -5,24 +5,19 @@
 #import "ios/chrome/common/favicon/favicon_attributes.h"
 
 #include "base/logging.h"
-#import "ios/chrome/common/favicon/favicon_attributes+private.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
 @implementation FaviconAttributes
-@synthesize faviconImage = _faviconImage;
-@synthesize monogramString = _monogramString;
-@synthesize textColor = _textColor;
-@synthesize backgroundColor = _backgroundColor;
-@synthesize defaultBackgroundColor = _defaultBackgroundColor;
 
 - (instancetype)initWithImage:(UIImage*)image
                      monogram:(NSString*)monogram
                     textColor:(UIColor*)textColor
               backgroundColor:(UIColor*)backgroundColor
-       defaultBackgroundColor:(BOOL)defaultBackgroundColor {
+       defaultBackgroundColor:(BOOL)defaultBackgroundColor
+             usesDefaultImage:(BOOL)defaultImage {
   DCHECK(image || (monogram && textColor && backgroundColor));
   self = [super init];
   if (self) {
@@ -31,6 +26,7 @@
     _textColor = textColor;
     _backgroundColor = backgroundColor;
     _defaultBackgroundColor = defaultBackgroundColor;
+    _usesDefaultImage = defaultImage;
   }
 
   return self;
@@ -42,7 +38,8 @@
                             monogram:nil
                            textColor:nil
                      backgroundColor:nil
-              defaultBackgroundColor:NO];
+              defaultBackgroundColor:NO
+                    usesDefaultImage:NO];
 }
 
 + (instancetype)attributesWithMonogram:(NSString*)monogram
@@ -53,7 +50,18 @@
                             monogram:monogram
                            textColor:textColor
                      backgroundColor:backgroundColor
-              defaultBackgroundColor:defaultBackgroundColor];
+              defaultBackgroundColor:defaultBackgroundColor
+                    usesDefaultImage:NO];
+}
+
++ (instancetype)attributesWithDefaultImage {
+  return
+      [[self alloc] initWithImage:[UIImage imageNamed:@"default_world_favicon"]
+                         monogram:nil
+                        textColor:nil
+                  backgroundColor:nil
+           defaultBackgroundColor:NO
+                 usesDefaultImage:YES];
 }
 
 @end

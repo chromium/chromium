@@ -4,11 +4,10 @@
 
 #include "ash/system/ime_menu/ime_menu_tray.h"
 
-#include "ash/accelerators/accelerator_controller.h"
-#include "ash/accessibility/accessibility_controller.h"
+#include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/ime/ime_controller.h"
 #include "ash/ime/test_ime_controller_client.h"
-#include "ash/public/interfaces/ime_info.mojom.h"
+#include "ash/public/mojom/ime_info.mojom.h"
 #include "ash/shell.h"
 #include "ash/system/ime_menu/ime_list_view.h"
 #include "ash/system/status_area_widget.h"
@@ -16,6 +15,7 @@
 #include "ash/test/ash_test_base.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/ime/ime_bridge.h"
 #include "ui/base/ime/text_input_flags.h"
@@ -52,10 +52,10 @@ class ImeMenuTrayTest : public AshTestBase {
 
  protected:
   // Returns true if the IME menu tray is visible.
-  bool IsVisible() { return GetTray()->visible(); }
+  bool IsVisible() { return GetTray()->GetVisible(); }
 
   // Returns the label text of the tray.
-  const base::string16& GetTrayText() { return GetTray()->label_->text(); }
+  const base::string16& GetTrayText() { return GetTray()->label_->GetText(); }
 
   // Returns true if the background color of the tray is active.
   bool IsTrayBackgroundActive() { return GetTray()->is_active(); }
@@ -90,7 +90,7 @@ class ImeMenuTrayTest : public AshTestBase {
     }
     for (const auto& ime : ime_map) {
       // Tests that all the IMEs on the view is in the list of selected IMEs.
-      EXPECT_TRUE(base::ContainsValue(expected_ime_ids, ime.second));
+      EXPECT_TRUE(base::Contains(expected_ime_ids, ime.second));
 
       // Tests that the checked IME is the current IME.
       ui::AXNodeData node_data;
@@ -259,7 +259,7 @@ TEST_F(ImeMenuTrayTest, TestAccelerator) {
   ASSERT_FALSE(IsTrayBackgroundActive());
 
   Shell::Get()->accelerator_controller()->PerformActionIfEnabled(
-      SHOW_IME_MENU_BUBBLE);
+      SHOW_IME_MENU_BUBBLE, {});
   EXPECT_TRUE(IsTrayBackgroundActive());
   EXPECT_TRUE(IsBubbleShown());
 
@@ -282,7 +282,7 @@ TEST_F(ImeMenuTrayTest, ShowingEmojiKeysetHidesBubble) {
   EXPECT_TRUE(IsBubbleShown());
 
   TestImeControllerClient client;
-  Shell::Get()->ime_controller()->SetClient(client.CreateInterfacePtr());
+  Shell::Get()->ime_controller()->SetClient(client.CreateRemote());
   GetTray()->ShowKeyboardWithKeyset(
       chromeos::input_method::mojom::ImeKeyset::kEmoji);
 

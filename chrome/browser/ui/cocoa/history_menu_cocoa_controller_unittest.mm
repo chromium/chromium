@@ -43,7 +43,7 @@ class HistoryMenuCocoaControllerTest : public CocoaProfileTest {
     CocoaProfileTest::SetUp();
     ASSERT_TRUE(profile());
 
-    bridge_.reset(new HistoryMenuBridge(profile()));
+    bridge_ = std::make_unique<HistoryMenuBridge>(profile());
     bridge_->controller_.reset(
         [[FakeHistoryMenuController alloc] initWithBridge:bridge_.get()]);
     [controller() initTest];

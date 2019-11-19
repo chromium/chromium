@@ -7,6 +7,7 @@ import time
 from common import TestDriver
 from common import IntegrationTest
 from decorators import NotAndroid
+from decorators import ChromeVersionBeforeM
 from decorators import ChromeVersionEqualOrAfterM
 import json
 
@@ -26,6 +27,7 @@ class Smoke(IntegrationTest):
         self.assertNotHasChromeProxyViaHeader(response)
 
   # Ensure Chrome does not use DataSaver when holdback is enabled.
+  @ChromeVersionBeforeM(74)
   def testCheckPageWithHoldback(self):
     with TestDriver() as t:
       t.AddChromeArg('--enable-spdy-proxy-auth')
@@ -61,7 +63,7 @@ class Smoke(IntegrationTest):
       self.assertNotEqual(0, len(responses))
       num_chrome_proxy_request_headers = 0
       for response in responses:
-        self.assertHasChromeProxyViaHeader(response)
+        self.assertHasProxyHeaders(response)
         if ('chrome-proxy' in response.request_headers):
           num_chrome_proxy_request_headers += 1
       t.SleepUntilHistogramHasEntry('PageLoad.Clients.DataReductionProxy.'
@@ -69,6 +71,7 @@ class Smoke(IntegrationTest):
       self.assertGreater(num_chrome_proxy_request_headers, 0)
 
   # Ensure pageload metric pingback with DataSaver.
+  @ChromeVersionBeforeM(79)
   def testPingback(self):
     with TestDriver() as t:
       t.AddChromeArg('--enable-spdy-proxy-auth')
@@ -76,14 +79,16 @@ class Smoke(IntegrationTest):
       t.LoadURL('http://check.googlezip.net/test.html')
       t.LoadURL('http://check.googlezip.net/test.html')
       t.SleepUntilHistogramHasEntry("DataReductionProxy.Pingback.Succeeded")
+      t.SleepUntilHistogramHasEntry("DataReductionProxy.Pingback.Attempted")
       # Verify one pingback attempt that was successful.
-      attempted = t.GetHistogram('DataReductionProxy.Pingback.Attempted')
+      attempted = t.GetBrowserHistogram('DataReductionProxy.Pingback.Attempted')
       self.assertEqual(1, attempted['count'])
-      succeeded = t.GetHistogram('DataReductionProxy.Pingback.Succeeded')
+      succeeded = t.GetBrowserHistogram('DataReductionProxy.Pingback.Succeeded')
       self.assertEqual(1, succeeded['count'])
 
   # Ensure pageload metric pingback with DataSaver has the variations header.
   @ChromeVersionEqualOrAfterM(62)
+  @ChromeVersionBeforeM(79)
   def testPingbackHasVariations(self):
     with TestDriver() as t:
       t.AddChromeArg('--enable-spdy-proxy-auth')
@@ -127,7 +132,9 @@ class Smoke(IntegrationTest):
         pid_in_page_count = 0
         page_id = ''
         for response in responses:
-          self.assertHasChromeProxyViaHeader(response)
+          if not response.request_headers:
+            continue
+          self.assertHasProxyHeaders(response)
           self.assertEqual(200, response.status)
           chrome_proxy_header = response.request_headers['chrome-proxy']
           chrome_proxy_directives = chrome_proxy_header.split(',')
@@ -160,7 +167,7 @@ class Smoke(IntegrationTest):
       responses = t.GetHTTPResponses()
       self.assertNotEqual(0, len(responses))
       for response in responses:
-        self.assertHasChromeProxyViaHeader(response)
+        self.assertHasProxyHeaders(response)
 
 if __name__ == '__main__':
   IntegrationTest.RunAllTests()

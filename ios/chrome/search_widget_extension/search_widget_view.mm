@@ -53,13 +53,6 @@ const CGFloat kMaxContentSize = 421;
 
 @implementation SearchWidgetView
 
-@synthesize target = _target;
-@synthesize copiedURLSection = _copiedURLSection;
-@synthesize actionsSection = _actionsSection;
-@synthesize actionsContent = _actionsContent;
-@synthesize compactHeight = _compactHeight;
-@synthesize actionsSectionHeightConstraint = _actionsSectionHeightConstraint;
-
 - (instancetype)initWithActionTarget:(id<SearchWidgetViewActionTarget>)target
                        compactHeight:(CGFloat)compactHeight {
   self = [super initWithFrame:CGRectZero];

@@ -11,13 +11,13 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/android/chrome_jni_headers/LargeIconBridge_jni.h"
 #include "chrome/browser/favicon/large_icon_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_android.h"
 #include "components/favicon/core/large_icon_service.h"
 #include "components/favicon_base/fallback_icon_style.h"
 #include "components/favicon_base/favicon_types.h"
-#include "jni/LargeIconBridge_jni.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "ui/gfx/codec/png_codec.h"
@@ -65,13 +65,12 @@ LargeIconBridge::LargeIconBridge() {}
 
 LargeIconBridge::~LargeIconBridge() {}
 
-void LargeIconBridge::Destroy(JNIEnv* env, const JavaParamRef<jobject>& obj) {
+void LargeIconBridge::Destroy(JNIEnv* env) {
   delete this;
 }
 
 jboolean LargeIconBridge::GetLargeIconForURL(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     const JavaParamRef<jobject>& j_profile,
     const JavaParamRef<jstring>& j_page_url,
     jint min_source_size_px,
@@ -85,14 +84,15 @@ jboolean LargeIconBridge::GetLargeIconForURL(
   if (!large_icon_service)
     return false;
 
-  favicon_base::LargeIconCallback callback_runner = base::Bind(
+  favicon_base::LargeIconCallback callback_runner = base::BindOnce(
       &OnLargeIconAvailable, ScopedJavaGlobalRef<jobject>(env, j_callback));
 
   // Use desired_size = 0 for getting the icon from the cache (so that
   // the icon is not poorly rescaled by LargeIconService).
   large_icon_service->GetLargeIconRawBitmapOrFallbackStyleForPageUrl(
       GURL(ConvertJavaStringToUTF16(env, j_page_url)), min_source_size_px,
-      /*desired_size_in_pixel=*/0, callback_runner, &cancelable_task_tracker_);
+      /*desired_size_in_pixel=*/0, std::move(callback_runner),
+      &cancelable_task_tracker_);
 
   return true;
 }

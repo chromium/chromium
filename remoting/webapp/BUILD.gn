@@ -37,7 +37,7 @@ action("credits") {
 desktop_remoting_webapp("webapp") {
   output_dir = "$root_build_dir/remoting/remoting-webapp.v2"
   zip_path = "$root_build_dir/remoting-webapp.v2.zip"
-  extra_files = [ "crd/remoting_client_pnacl.nmf.jinja2" ]
+  extra_files = []
 }
 
 copy("browser_test_resources") {

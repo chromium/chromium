@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+[JavaPackage="org.chromium.url.internal.mojom"]
 module url.mojom;
 
 import "mojo/public/mojom/base/unguessable_token.mojom";

@@ -124,7 +124,7 @@ BoundsType GetBoundsType(const std::string& type_as_string) {
 
 bool AppCurrentWindowInternalExtensionFunction::PreRunValidation(
     std::string* error) {
-  if (!UIThreadExtensionFunction::PreRunValidation(error))
+  if (!ExtensionFunction::PreRunValidation(error))
     return false;
 
   AppWindowRegistry* registry = AppWindowRegistry::Get(browser_context());

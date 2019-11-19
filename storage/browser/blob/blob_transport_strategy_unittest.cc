@@ -13,10 +13,10 @@
 #include "base/run_loop.h"
 #include "base/sequenced_task_runner.h"
 #include "base/task/post_task.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_restrictions.h"
 #include "mojo/core/embedder/embedder.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "storage/browser/blob/blob_data_builder.h"
 #include "storage/browser/test/mock_bytes_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -40,9 +40,10 @@ const uint64_t kTestBlobStorageMaxFileSizeBytes = 100;
 
 const char kId[] = "blob-id";
 
-void BindBytesProvider(std::unique_ptr<MockBytesProvider> impl,
-                       blink::mojom::BytesProviderRequest request) {
-  mojo::MakeStrongBinding(std::move(impl), std::move(request));
+void BindBytesProvider(
+    std::unique_ptr<MockBytesProvider> impl,
+    mojo::PendingReceiver<blink::mojom::BytesProvider> receiver) {
+  mojo::MakeSelfOwnedReceiver(std::move(impl), std::move(receiver));
 }
 
 class BlobTransportStrategyTest : public testing::Test {
@@ -51,7 +52,7 @@ class BlobTransportStrategyTest : public testing::Test {
     ASSERT_TRUE(data_dir_.CreateUniqueTempDir());
 
     bytes_provider_runner_ =
-        base::CreateSequencedTaskRunnerWithTraits({base::MayBlock()});
+        base::CreateSequencedTaskRunner({base::ThreadPool(), base::MayBlock()});
     mock_time_ = base::Time::Now();
 
     limits_.max_ipc_memory_size = kTestBlobStorageIPCThresholdBytes;
@@ -81,22 +82,22 @@ class BlobTransportStrategyTest : public testing::Test {
     bad_messages_.push_back(error);
   }
 
-  blink::mojom::BytesProviderPtr CreateBytesProvider(
+  mojo::PendingRemote<blink::mojom::BytesProvider> CreateBytesProvider(
       const std::string& bytes,
       base::Optional<base::Time> time) {
-    blink::mojom::BytesProviderPtr result;
+    mojo::PendingRemote<blink::mojom::BytesProvider> result;
     auto provider = std::make_unique<MockBytesProvider>(
         std::vector<uint8_t>(bytes.begin(), bytes.end()), &reply_request_count_,
         &stream_request_count_, &file_request_count_, time);
     bytes_provider_runner_->PostTask(
         FROM_HERE, base::BindOnce(&BindBytesProvider, std::move(provider),
-                                  MakeRequest(&result)));
+                                  result.InitWithNewPipeAndPassReceiver()));
     return result;
   }
 
  protected:
   base::ScopedTempDir data_dir_;
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   scoped_refptr<base::SequencedTaskRunner> bytes_provider_runner_;
   base::Time mock_time_;
   storage::BlobStorageLimits limits_;
@@ -157,21 +158,27 @@ TEST_P(BasicTests, WithBytes) {
 
   std::string data = base::RandBytesAsString(7);
   blink::mojom::DataElementBytes bytes1(
-      data.size(), std::vector<uint8_t>(data.begin(), data.end()), nullptr);
-  auto bytes_provider1 = CreateBytesProvider(data, mock_time_);
+      data.size(), std::vector<uint8_t>(data.begin(), data.end()),
+      mojo::NullRemote());
+  mojo::Remote<blink::mojom::BytesProvider> bytes_provider1(
+      CreateBytesProvider(data, mock_time_));
   strategy->AddBytesElement(&bytes1, bytes_provider1);
   expected.AppendData(data);
 
   data = base::RandBytesAsString(3);
   blink::mojom::DataElementBytes bytes2(
-      data.size(), std::vector<uint8_t>(data.begin(), data.end()), nullptr);
-  auto bytes_provider2 = CreateBytesProvider(data, mock_time_);
+      data.size(), std::vector<uint8_t>(data.begin(), data.end()),
+      mojo::NullRemote());
+  mojo::Remote<blink::mojom::BytesProvider> bytes_provider2(
+      CreateBytesProvider(data, mock_time_));
   strategy->AddBytesElement(&bytes2, bytes_provider2);
   expected.AppendData(data);
 
   data = base::RandBytesAsString(10);
-  blink::mojom::DataElementBytes bytes3(data.size(), base::nullopt, nullptr);
-  auto bytes_provider3 = CreateBytesProvider(data, mock_time_);
+  blink::mojom::DataElementBytes bytes3(data.size(), base::nullopt,
+                                        mojo::NullRemote());
+  mojo::Remote<blink::mojom::BytesProvider> bytes_provider3(
+      CreateBytesProvider(data, mock_time_));
   if (GetParam() != MemoryStrategy::NONE_NEEDED) {
     strategy->AddBytesElement(&bytes3, bytes_provider3);
     expected.AppendData(data);
@@ -229,8 +236,10 @@ TEST_P(BasicErrorTests, NotEnoughBytesInProvider) {
       limits_);
 
   std::string data = base::RandBytesAsString(7);
-  blink::mojom::DataElementBytes bytes(data.size(), base::nullopt, nullptr);
-  auto bytes_provider = CreateBytesProvider(data.substr(0, 4), mock_time_);
+  blink::mojom::DataElementBytes bytes(data.size(), base::nullopt,
+                                       mojo::NullRemote());
+  mojo::Remote<blink::mojom::BytesProvider> bytes_provider(
+      CreateBytesProvider(data.substr(0, 4), mock_time_));
   strategy->AddBytesElement(&bytes, bytes_provider);
 
   strategy->BeginTransport(FileInfoVector());
@@ -257,8 +266,10 @@ TEST_P(BasicErrorTests, TooManyBytesInProvider) {
       limits_);
 
   std::string data = base::RandBytesAsString(4);
-  blink::mojom::DataElementBytes bytes(data.size(), base::nullopt, nullptr);
-  auto bytes_provider = CreateBytesProvider(data + "foobar", mock_time_);
+  blink::mojom::DataElementBytes bytes(data.size(), base::nullopt,
+                                       mojo::NullRemote());
+  mojo::Remote<blink::mojom::BytesProvider> bytes_provider(
+      CreateBytesProvider(data + "foobar", mock_time_));
   strategy->AddBytesElement(&bytes, bytes_provider);
 
   strategy->BeginTransport(FileInfoVector());
@@ -297,8 +308,10 @@ TEST_F(BlobTransportStrategyTest, DataStreamChunksData) {
 
   std::string data =
       base::RandBytesAsString(kTestBlobStorageMaxSharedMemoryBytes * 3 + 13);
-  blink::mojom::DataElementBytes bytes(data.size(), base::nullopt, nullptr);
-  auto bytes_provider = CreateBytesProvider(data, mock_time_);
+  blink::mojom::DataElementBytes bytes(data.size(), base::nullopt,
+                                       mojo::NullRemote());
+  mojo::Remote<blink::mojom::BytesProvider> bytes_provider(
+      CreateBytesProvider(data, mock_time_));
   strategy->AddBytesElement(&bytes, bytes_provider);
 
   size_t offset = 0;
@@ -363,8 +376,10 @@ TEST_F(BlobTransportStrategyTest, Files_WriteFailed) {
       limits_);
 
   std::string data = base::RandBytesAsString(kTestBlobStorageMaxFileSizeBytes);
-  blink::mojom::DataElementBytes bytes(data.size(), base::nullopt, nullptr);
-  auto bytes_provider = CreateBytesProvider(data, base::nullopt);
+  blink::mojom::DataElementBytes bytes(data.size(), base::nullopt,
+                                       mojo::NullRemote());
+  mojo::Remote<blink::mojom::BytesProvider> bytes_provider(
+      CreateBytesProvider(data, base::nullopt));
   strategy->AddBytesElement(&bytes, bytes_provider);
 
   FileInfoVector files(1);
@@ -405,8 +420,10 @@ TEST_F(BlobTransportStrategyTest, Files_ValidBytesOneElement) {
 
   std::string data =
       base::RandBytesAsString(kTestBlobStorageMaxBlobMemorySize + 42);
-  blink::mojom::DataElementBytes bytes(data.size(), base::nullopt, nullptr);
-  auto bytes_provider = CreateBytesProvider(data, mock_time_);
+  blink::mojom::DataElementBytes bytes(data.size(), base::nullopt,
+                                       mojo::NullRemote());
+  mojo::Remote<blink::mojom::BytesProvider> bytes_provider(
+      CreateBytesProvider(data, mock_time_));
   strategy->AddBytesElement(&bytes, bytes_provider);
 
   size_t expected_file_count =
@@ -459,17 +476,25 @@ TEST_F(BlobTransportStrategyTest, Files_ValidBytesMultipleElements) {
   std::string data =
       base::RandBytesAsString(kTestBlobStorageMaxBlobMemorySize / 3);
 
-  blink::mojom::DataElementBytes bytes1(data.size(), base::nullopt, nullptr);
-  auto bytes_provider1 = CreateBytesProvider(data, mock_time_);
+  blink::mojom::DataElementBytes bytes1(data.size(), base::nullopt,
+                                        mojo::NullRemote());
+  mojo::Remote<blink::mojom::BytesProvider> bytes_provider1(
+      CreateBytesProvider(data, mock_time_));
   strategy->AddBytesElement(&bytes1, bytes_provider1);
-  blink::mojom::DataElementBytes bytes2(data.size(), base::nullopt, nullptr);
-  auto bytes_provider2 = CreateBytesProvider(data, mock_time_);
+  blink::mojom::DataElementBytes bytes2(data.size(), base::nullopt,
+                                        mojo::NullRemote());
+  mojo::Remote<blink::mojom::BytesProvider> bytes_provider2(
+      CreateBytesProvider(data, mock_time_));
   strategy->AddBytesElement(&bytes2, bytes_provider2);
-  blink::mojom::DataElementBytes bytes3(data.size(), base::nullopt, nullptr);
-  auto bytes_provider3 = CreateBytesProvider(data, mock_time_);
+  blink::mojom::DataElementBytes bytes3(data.size(), base::nullopt,
+                                        mojo::NullRemote());
+  mojo::Remote<blink::mojom::BytesProvider> bytes_provider3(
+      CreateBytesProvider(data, mock_time_));
   strategy->AddBytesElement(&bytes3, bytes_provider3);
-  blink::mojom::DataElementBytes bytes4(data.size(), base::nullopt, nullptr);
-  auto bytes_provider4 = CreateBytesProvider(data, mock_time_);
+  blink::mojom::DataElementBytes bytes4(data.size(), base::nullopt,
+                                        mojo::NullRemote());
+  mojo::Remote<blink::mojom::BytesProvider> bytes_provider4(
+      CreateBytesProvider(data, mock_time_));
   strategy->AddBytesElement(&bytes4, bytes_provider4);
 
   size_t expected_file_count =

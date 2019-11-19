@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/macros.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/scripting_permissions_modifier.h"
 #include "chrome/browser/ui/browser.h"
@@ -16,7 +15,6 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_navigation_observer.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
 
@@ -26,12 +24,10 @@ class ExtensionBlockedActionsBubbleTest
   ExtensionBlockedActionsBubbleTest();
   ~ExtensionBlockedActionsBubbleTest() override;
 
-  void SetUpCommandLine(base::CommandLine* command_line) override;
   void SetUpOnMainThread() override;
   void ShowUi(const std::string& name) override;
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   base::AutoReset<bool> disable_toolbar_animations_;
 
   DISALLOW_COPY_AND_ASSIGN(ExtensionBlockedActionsBubbleTest);
@@ -43,13 +39,6 @@ ExtensionBlockedActionsBubbleTest::ExtensionBlockedActionsBubbleTest()
           true) {}
 ExtensionBlockedActionsBubbleTest::~ExtensionBlockedActionsBubbleTest() =
     default;
-
-void ExtensionBlockedActionsBubbleTest::SetUpCommandLine(
-    base::CommandLine* command_line) {
-  extensions::ExtensionBrowserTest::SetUpCommandLine(command_line);
-  scoped_feature_list_.InitAndEnableFeature(
-      extensions_features::kRuntimeHostPermissions);
-}
 
 void ExtensionBlockedActionsBubbleTest::SetUpOnMainThread() {
   extensions::ExtensionBrowserTest::SetUpOnMainThread();

@@ -1,0 +1,2 @@
+=== Start Continuation ===
+IA2_EVENT_TEXT_CARET_MOVED on role=ROLE_SYSTEM_STATICTEXT name="abcde"

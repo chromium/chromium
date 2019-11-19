@@ -12,70 +12,45 @@
 #include "net/base/host_port_pair.h"
 #include "net/base/ip_endpoint.h"
 #include "net/log/net_log_capture_mode.h"
+#include "net/log/net_log_with_source.h"
 
 namespace net {
 
-namespace {
-
-std::unique_ptr<base::Value> NetLogSocketErrorCallback(
-    int net_error,
-    int os_error,
-    NetLogCaptureMode /* capture_mode */) {
-  std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
-  dict->SetInteger("net_error", net_error);
-  dict->SetInteger("os_error", os_error);
-  return std::move(dict);
+base::Value NetLogSocketErrorParams(int net_error, int os_error) {
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetIntKey("net_error", net_error);
+  dict.SetIntKey("os_error", os_error);
+  return dict;
 }
 
-std::unique_ptr<base::Value> NetLogHostPortPairCallback(
-    const HostPortPair* host_and_port,
-    NetLogCaptureMode /* capture_mode */) {
-  std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
-  dict->SetString("host_and_port", host_and_port->ToString());
-  return std::move(dict);
+void NetLogSocketError(const NetLogWithSource& net_log,
+                       NetLogEventType type,
+                       int net_error,
+                       int os_error) {
+  net_log.AddEvent(
+      type, [&] { return NetLogSocketErrorParams(net_error, os_error); });
 }
 
-std::unique_ptr<base::Value> NetLogIPEndPointCallback(
-    const IPEndPoint* address,
-    NetLogCaptureMode /* capture_mode */) {
-  std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
-  dict->SetString("address", address->ToString());
-  return std::move(dict);
+base::Value CreateNetLogHostPortPairParams(const HostPortPair* host_and_port) {
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetStringKey("host_and_port", host_and_port->ToString());
+  return dict;
 }
 
-std::unique_ptr<base::Value> NetLogSourceAddressCallback(
-    const struct sockaddr* net_address,
-    socklen_t address_len,
-    NetLogCaptureMode /* capture_mode */) {
-  std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
+base::Value CreateNetLogIPEndPointParams(const IPEndPoint* address) {
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetStringKey("address", address->ToString());
+  return dict;
+}
+
+base::Value CreateNetLogSourceAddressParams(const struct sockaddr* net_address,
+                                            socklen_t address_len) {
+  base::Value dict(base::Value::Type::DICTIONARY);
   IPEndPoint ipe;
   bool result = ipe.FromSockAddr(net_address, address_len);
   DCHECK(result);
-  dict->SetString("source_address", ipe.ToString());
-  return std::move(dict);
-}
-
-}  // namespace
-
-NetLogParametersCallback CreateNetLogSocketErrorCallback(int net_error,
-                                                         int os_error) {
-  return base::Bind(&NetLogSocketErrorCallback, net_error, os_error);
-}
-
-NetLogParametersCallback CreateNetLogHostPortPairCallback(
-    const HostPortPair* host_and_port) {
-  return base::Bind(&NetLogHostPortPairCallback, host_and_port);
-}
-
-NetLogParametersCallback CreateNetLogIPEndPointCallback(
-    const IPEndPoint* address) {
-  return base::Bind(&NetLogIPEndPointCallback, address);
-}
-
-NetLogParametersCallback CreateNetLogSourceAddressCallback(
-    const struct sockaddr* net_address,
-    socklen_t address_len) {
-  return base::Bind(&NetLogSourceAddressCallback, net_address, address_len);
+  dict.SetStringKey("source_address", ipe.ToString());
+  return dict;
 }
 
 }  // namespace net

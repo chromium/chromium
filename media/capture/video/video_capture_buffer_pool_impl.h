@@ -12,7 +12,6 @@
 #include "base/files/file.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/memory/shared_memory.h"
 #include "base/process/process.h"
 #include "base/synchronization/lock.h"
 #include "build/build_config.h"
@@ -32,18 +31,18 @@ class CAPTURE_EXPORT VideoCaptureBufferPoolImpl
  public:
   explicit VideoCaptureBufferPoolImpl(
       std::unique_ptr<VideoCaptureBufferTrackerFactory> buffer_tracker_factory,
+      VideoCaptureBufferType buffer_type,
       int count);
 
   // VideoCaptureBufferPool implementation.
-  mojo::ScopedSharedBufferHandle GetHandleForInterProcessTransit(
-      int buffer_id,
-      bool read_only) override;
-  base::SharedMemoryHandle GetNonOwnedSharedMemoryHandleForLegacyIPC(
+  base::UnsafeSharedMemoryRegion DuplicateAsUnsafeRegion(
       int buffer_id) override;
+  mojo::ScopedSharedBufferHandle DuplicateAsMojoBuffer(int buffer_id) override;
   mojom::SharedMemoryViaRawFileDescriptorPtr
   CreateSharedMemoryViaRawFileDescriptorStruct(int buffer_id) override;
   std::unique_ptr<VideoCaptureBufferHandle> GetHandleForInProcessAccess(
       int buffer_id) override;
+  gfx::GpuMemoryBufferHandle GetGpuMemoryBufferHandle(int buffer_id) override;
   VideoCaptureDevice::Client::ReserveResult ReserveForProducer(
       const gfx::Size& dimensions,
       VideoPixelFormat format,
@@ -69,6 +68,9 @@ class CAPTURE_EXPORT VideoCaptureBufferPoolImpl
       int* tracker_id_to_drop);
 
   VideoCaptureBufferTracker* GetTracker(int buffer_id);
+
+  // The type of the buffer the pool serves.
+  VideoCaptureBufferType buffer_type_;
 
   // The max number of buffers that the pool is allowed to have at any moment.
   const int count_;

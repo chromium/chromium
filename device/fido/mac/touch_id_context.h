@@ -20,6 +20,8 @@ namespace device {
 namespace fido {
 namespace mac {
 
+struct AuthenticatorConfig;
+
 // TouchIdContext wraps a macOS Touch ID consent prompt for signing with a
 // secure enclave key. It is a essentially a simpler facade for the LAContext
 // class from the macOS LocalAuthentication framework (c.f.
@@ -40,9 +42,11 @@ class COMPONENT_EXPORT(DEVICE_FIDO)
   // Factory method for instantiating a TouchIdContext.
   static std::unique_ptr<TouchIdContext> Create();
 
-  // Returns whether Touch ID is supported on the current hardware and set up to
-  // be used.
-  static bool TouchIdAvailable();
+  // Returns whether Touch ID is available and enrolled on the
+  // current device and the current binary carries a
+  // keychain-access-groups entitlement that matches the one set
+  // in |config|.
+  static bool TouchIdAvailable(const AuthenticatorConfig& config);
 
   virtual ~TouchIdContext();
 
@@ -70,7 +74,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO)
   static TouchIdAvailableFuncPtr g_touch_id_available_;
 
   static std::unique_ptr<TouchIdContext> CreateImpl();
-  static bool TouchIdAvailableImpl();
+  static bool TouchIdAvailableImpl(const AuthenticatorConfig& config);
 
   void RunCallback(bool success);
 

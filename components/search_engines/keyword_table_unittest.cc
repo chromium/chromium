@@ -133,6 +133,8 @@ TEST_F(KeywordTableTest, Keywords) {
   EXPECT_EQ(keyword.last_visited.ToTimeT(),
             restored_keyword.last_visited.ToTimeT());
   EXPECT_EQ(keyword.created_by_policy, restored_keyword.created_by_policy);
+  EXPECT_EQ(keyword.created_from_play_api,
+            restored_keyword.created_from_play_api);
   EXPECT_EQ(keyword.usage_count, restored_keyword.usage_count);
   EXPECT_EQ(keyword.prepopulate_id, restored_keyword.prepopulate_id);
 
@@ -152,6 +154,7 @@ TEST_F(KeywordTableTest, UpdateKeyword) {
   keyword.originating_url = GURL("http://originating.url/");
   keyword.input_encodings.push_back("Shift_JIS");
   keyword.prepopulate_id = 5;
+  keyword.created_from_play_api = true;
   UpdateKeyword(keyword);
 
   KeywordTable::Keywords keywords(GetKeywords());
@@ -168,6 +171,8 @@ TEST_F(KeywordTableTest, UpdateKeyword) {
   EXPECT_EQ(keyword.input_encodings, restored_keyword.input_encodings);
   EXPECT_EQ(keyword.id, restored_keyword.id);
   EXPECT_EQ(keyword.prepopulate_id, restored_keyword.prepopulate_id);
+  EXPECT_EQ(keyword.created_from_play_api,
+            restored_keyword.created_from_play_api);
 }
 
 TEST_F(KeywordTableTest, KeywordWithNoFavicon) {

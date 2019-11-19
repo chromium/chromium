@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "ash/ash_export.h"
-#include "ash/public/interfaces/shelf.mojom.h"
 #include "base/macros.h"
 #include "ui/base/models/simple_menu_model.h"
 
@@ -21,40 +20,37 @@ class ShelfItemDelegate;
 class ASH_EXPORT ShelfContextMenuModel : public ui::SimpleMenuModel,
                                          public ui::SimpleMenuModel::Delegate {
  public:
-  // The command ids for locally-handled shelf and wallpaper context menu items.
+  // The command ids for Ash's shelf and wallpaper context menu items.
   // These are used in histograms, do not remove/renumber entries. Only add at
   // the end just before MENU_LOCAL_END. If you're adding to this enum with the
   // intention that it will be logged, add checks to ensure stability of the
   // enum and update the ChromeOSUICommands enum listing in
   // tools/metrics/histograms/enums.xml.
   enum CommandId {
-    MENU_LOCAL_START = 500,  // Offset to avoid conflicts with other menus.
-    MENU_AUTO_HIDE = MENU_LOCAL_START,
+    MENU_ASH_START = 500,  // Offset to avoid conflicts with other menus.
+    MENU_AUTO_HIDE = MENU_ASH_START,
     MENU_ALIGNMENT_MENU = 501,
     MENU_ALIGNMENT_LEFT = 502,
     MENU_ALIGNMENT_RIGHT = 503,
     MENU_ALIGNMENT_BOTTOM = 504,
     MENU_CHANGE_WALLPAPER = 505,
-    MENU_LOCAL_END
+    MENU_ASH_END
   };
 
-  // Creates a context menu model with |menu_items| from the given |delegate|.
-  // This menu appends and handles additional shelf and wallpaper menu items.
-  ShelfContextMenuModel(std::vector<mojom::MenuItemPtr> menu_items,
-                        ShelfItemDelegate* delegate,
-                        int64_t display_id);
+  ShelfContextMenuModel(ShelfItemDelegate* delegate, int64_t display_id);
   ~ShelfContextMenuModel() override;
 
   // ui::SimpleMenuModel::Delegate overrides:
   bool IsCommandIdChecked(int command_id) const override;
-  bool IsCommandIdEnabled(int command_id) const override;
   void ExecuteCommand(int command_id, int event_flags) override;
 
  private:
-  std::vector<mojom::MenuItemPtr> menu_items_;
+  // Add shelf auto-hide, shelf alignment, and wallpaper context menu items.
+  void AddShelfAndWallpaperItems();
+
   ShelfItemDelegate* delegate_;
-  std::vector<std::unique_ptr<ui::MenuModel>> submenus_;
   const int64_t display_id_;
+  std::unique_ptr<ui::SimpleMenuModel> alignment_submenu_;
 
   DISALLOW_COPY_AND_ASSIGN(ShelfContextMenuModel);
 };

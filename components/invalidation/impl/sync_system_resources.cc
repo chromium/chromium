@@ -4,7 +4,6 @@
 
 #include "components/invalidation/impl/sync_system_resources.h"
 
-#include <algorithm>
 #include <cstdlib>
 #include <cstring>
 #include <memory>
@@ -72,8 +71,7 @@ void SyncLogger::SetSystemResources(invalidation::SystemResources* resources) {
 SyncInvalidationScheduler::SyncInvalidationScheduler()
     : created_on_task_runner_(base::ThreadTaskRunnerHandle::Get()),
       is_started_(false),
-      is_stopped_(false),
-      weak_factory_(this) {
+      is_stopped_(false) {
   CHECK(!!created_on_task_runner_);
 }
 
@@ -133,11 +131,7 @@ void SyncInvalidationScheduler::SetSystemResources(
 void SyncInvalidationScheduler::RunPostedTask(invalidation::Closure* task) {
   CHECK(IsRunningOnThread());
   task->Run();
-  auto it =
-      std::find_if(posted_tasks_.begin(), posted_tasks_.end(),
-                   [task](const std::unique_ptr<invalidation::Closure>& ptr) {
-                     return ptr.get() == task;
-                   });
+  auto it = posted_tasks_.find(task);
   posted_tasks_.erase(it);
 }
 

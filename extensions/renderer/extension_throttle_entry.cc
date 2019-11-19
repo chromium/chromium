@@ -13,7 +13,6 @@
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
-#include "net/base/load_flags.h"
 
 namespace extensions {
 
@@ -44,34 +43,24 @@ const int ExtensionThrottleEntry::kDefaultMaximumBackoffMs = 15 * 60 * 1000;
 const int ExtensionThrottleEntry::kDefaultEntryLifetimeMs = 2 * 60 * 1000;
 
 ExtensionThrottleEntry::ExtensionThrottleEntry(const std::string& url_id)
-    : ExtensionThrottleEntry(url_id, false) {}
-
-ExtensionThrottleEntry::ExtensionThrottleEntry(
-    const std::string& url_id,
-    bool ignore_user_gesture_load_flag_for_tests)
     : sliding_window_period_(
           base::TimeDelta::FromMilliseconds(kDefaultSlidingWindowPeriodMs)),
       max_send_threshold_(kDefaultMaxSendThreshold),
       is_backoff_disabled_(false),
       backoff_entry_(&backoff_policy_),
-      url_id_(url_id),
-      ignore_user_gesture_load_flag_for_tests_(
-          ignore_user_gesture_load_flag_for_tests) {
+      url_id_(url_id) {
   Initialize();
 }
 
 ExtensionThrottleEntry::ExtensionThrottleEntry(
     const std::string& url_id,
-    const net::BackoffEntry::Policy* backoff_policy,
-    bool ignore_user_gesture_load_flag_for_tests)
+    const net::BackoffEntry::Policy* backoff_policy)
     : sliding_window_period_(
           base::TimeDelta::FromMilliseconds(kDefaultSlidingWindowPeriodMs)),
       max_send_threshold_(kDefaultMaxSendThreshold),
       is_backoff_disabled_(false),
       backoff_entry_(&backoff_policy_),
-      url_id_(url_id),
-      ignore_user_gesture_load_flag_for_tests_(
-          ignore_user_gesture_load_flag_for_tests) {
+      url_id_(url_id) {
   DCHECK_GE(backoff_policy->initial_delay_ms, 0);
   DCHECK_GT(backoff_policy->multiply_factor, 0);
   DCHECK_GE(backoff_policy->jitter_factor, 0.0);
@@ -97,15 +86,10 @@ void ExtensionThrottleEntry::DisableBackoffThrottling() {
   is_backoff_disabled_ = true;
 }
 
-bool ExtensionThrottleEntry::ShouldRejectRequest(int request_load_flags) const {
-  bool reject_request = false;
-  if (!is_backoff_disabled_ &&
-      (ignore_user_gesture_load_flag_for_tests_ ||
-       !ExplicitUserRequest(request_load_flags)) &&
-      GetBackoffEntry()->ShouldRejectRequest()) {
-    reject_request = true;
-  }
-  return reject_request;
+bool ExtensionThrottleEntry::ShouldRejectRequest() const {
+  if (is_backoff_disabled_)
+    return false;
+  return GetBackoffEntry()->ShouldRejectRequest();
 }
 
 int64_t ExtensionThrottleEntry::ReserveSendingTimeForNextRequest(
@@ -224,11 +208,6 @@ const net::BackoffEntry* ExtensionThrottleEntry::GetBackoffEntry() const {
 
 net::BackoffEntry* ExtensionThrottleEntry::GetBackoffEntry() {
   return &backoff_entry_;
-}
-
-// static
-bool ExtensionThrottleEntry::ExplicitUserRequest(const int load_flags) {
-  return (load_flags & net::LOAD_MAYBE_USER_GESTURE) != 0;
 }
 
 }  // namespace extensions

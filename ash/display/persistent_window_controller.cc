@@ -5,7 +5,7 @@
 #include "ash/display/persistent_window_controller.h"
 
 #include "ash/display/persistent_window_info.h"
-#include "ash/session/session_controller.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/window_state.h"
@@ -24,7 +24,7 @@ display::DisplayManager* GetDisplayManager() {
 }
 
 MruWindowTracker::WindowList GetWindowList() {
-  return Shell::Get()->mru_window_tracker()->BuildWindowForCycleList();
+  return Shell::Get()->mru_window_tracker()->BuildWindowForCycleList(kAllDesks);
 }
 
 // Returns true when window cycle list can be processed to perform save/restore
@@ -61,7 +61,7 @@ void PersistentWindowController::OnWillProcessDisplayChanges() {
     return;
 
   for (auto* window : GetWindowList()) {
-    wm::WindowState* window_state = wm::GetWindowState(window);
+    WindowState* window_state = WindowState::Get(window);
     // This implies that we keep the first persistent info until they're valid
     // to restore, or until they're cleared by user-invoked bounds change.
     if (window_state->persistent_window_info())
@@ -94,7 +94,7 @@ void PersistentWindowController::MaybeRestorePersistentWindowBounds() {
   display::Screen* screen = display::Screen::GetScreen();
   int window_restored_count = 0;
   for (auto* window : GetWindowList()) {
-    wm::WindowState* window_state = wm::GetWindowState(window);
+    WindowState* window_state = WindowState::Get(window);
     if (!window_state->persistent_window_info())
       continue;
     PersistentWindowInfo persistent_window_info =

@@ -20,19 +20,18 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.PathUtils;
 import org.chromium.base.StrictModeContext;
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.ChromeFeatureList;
 import org.chromium.chrome.browser.ChromeSwitches;
 import org.chromium.chrome.browser.download.DownloadTestRule.CustomMainActivityStart;
-import org.chromium.chrome.browser.preferences.PrefServiceBridge;
 import org.chromium.chrome.download.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 
 import java.util.ArrayList;
@@ -52,7 +51,7 @@ public class DownloadLocationChangeTest implements CustomMainActivityStart {
     private static final long STORAGE_SIZE = 1024000;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mTestServer = EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
 
         // Show the location dialog for the first time.
@@ -60,7 +59,7 @@ public class DownloadLocationChangeTest implements CustomMainActivityStart {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         mTestServer.stopAndDestroyServer();
     }
 
@@ -72,16 +71,15 @@ public class DownloadLocationChangeTest implements CustomMainActivityStart {
 
     /**
      * Ensures the default download location dialog is shown to the user with SD card inserted.
-     * @throws Exception
      */
     @Test
     @MediumTest
     @Feature({"Downloads"})
     @Features.EnableFeatures(ChromeFeatureList.DOWNLOADS_LOCATION_CHANGE)
-    public void testDefaultDialogPositiveButtonClickThrough() throws Exception {
-        ThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertEquals(DownloadPromptStatus.SHOW_INITIAL,
-                    PrefServiceBridge.getInstance().getPromptForDownloadAndroid());
+    public void testDefaultDialogPositiveButtonClickThrough() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Assert.assertEquals(
+                    DownloadPromptStatus.SHOW_INITIAL, DownloadUtils.getPromptForDownloadAndroid());
 
             simulateDownloadDirectories(true /* hasSDCard */);
 
@@ -108,18 +106,17 @@ public class DownloadLocationChangeTest implements CustomMainActivityStart {
 
     /**
      * Ensures no default download location dialog is shown to the user without SD card inserted.
-     * @throws Exception
      */
     @Test
     @MediumTest
     @Feature({"Downloads"})
     @Features.EnableFeatures(ChromeFeatureList.DOWNLOADS_LOCATION_CHANGE)
-    public void testNoDialogWithoutSDCard() throws Exception {
+    public void testNoDialogWithoutSDCard() {
         int currentCallCount = mDownloadTestRule.getChromeDownloadCallCount();
 
-        ThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertEquals(DownloadPromptStatus.SHOW_INITIAL,
-                    PrefServiceBridge.getInstance().getPromptForDownloadAndroid());
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Assert.assertEquals(
+                    DownloadPromptStatus.SHOW_INITIAL, DownloadUtils.getPromptForDownloadAndroid());
 
             simulateDownloadDirectories(false /* hasSDCard */);
 
@@ -142,7 +139,7 @@ public class DownloadLocationChangeTest implements CustomMainActivityStart {
     private void simulateDownloadDirectories(boolean hasSDCard) {
         ArrayList<DirectoryOption> dirs = new ArrayList<>();
 
-        try (StrictModeContext unused = StrictModeContext.allowDiskReads()) {
+        try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
             dirs.add(buildDirectoryOption(DirectoryOption.DownloadLocationDirectoryType.DEFAULT,
                     PathUtils.getExternalStorageDirectory()));
             if (hasSDCard) {
@@ -162,8 +159,7 @@ public class DownloadLocationChangeTest implements CustomMainActivityStart {
     }
 
     private void promptDownloadLocationDialog(@DownloadPromptStatus int promptStatus) {
-        ThreadUtils.runOnUiThreadBlocking(() -> {
-            PrefServiceBridge.getInstance().setPromptForDownloadAndroid(promptStatus);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { DownloadUtils.setPromptForDownloadAndroid(promptStatus); });
     }
 }

@@ -7,11 +7,13 @@
 #include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
 #include "third_party/blink/renderer/core/frame/frame_console.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
-#include "third_party/blink/renderer/core/frame/use_counter.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 using testing::ElementsAre;
 
@@ -23,7 +25,7 @@ class ConsoleCapturingChromeClient : public EmptyChromeClient {
 
   // ChromeClient methods:
   void AddMessageToConsole(LocalFrame*,
-                           MessageSource message_source,
+                           mojom::ConsoleMessageSource message_source,
                            mojom::ConsoleMessageLevel,
                            const String& message,
                            unsigned line_number,
@@ -34,14 +36,14 @@ class ConsoleCapturingChromeClient : public EmptyChromeClient {
   }
 
   // Expose console output.
-  const std::vector<String>& Messages() { return messages_; }
-  const std::vector<MessageSource>& MessageSources() {
+  const Vector<String>& Messages() { return messages_; }
+  const Vector<mojom::ConsoleMessageSource>& MessageSources() {
     return message_sources_;
   }
 
  private:
-  std::vector<String> messages_;
-  std::vector<MessageSource> message_sources_;
+  Vector<String> messages_;
+  Vector<mojom::ConsoleMessageSource> message_sources_;
 };
 
 class TouchEventTest : public PageTestBase {
@@ -55,8 +57,8 @@ class TouchEventTest : public PageTestBase {
     Page::InsertOrdinaryPageForTesting(&GetPage());
   }
 
-  const std::vector<String>& Messages() { return chrome_client_->Messages(); }
-  const std::vector<MessageSource>& MessageSources() {
+  const Vector<String>& Messages() { return chrome_client_->Messages(); }
+  const Vector<mojom::ConsoleMessageSource>& MessageSources() {
     return chrome_client_->MessageSources();
   }
 
@@ -89,7 +91,8 @@ TEST_F(TouchEventTest,
       ElementsAre("Unable to preventDefault inside passive event listener due "
                   "to target being treated as passive. See "
                   "https://www.chromestatus.com/features/5093566007214080"));
-  EXPECT_THAT(MessageSources(), ElementsAre(kInterventionMessageSource));
+  EXPECT_THAT(MessageSources(),
+              ElementsAre(mojom::ConsoleMessageSource::kIntervention));
 }
 
 class TouchEventTestNoFrame : public testing::Test {};

@@ -22,12 +22,11 @@
 #include "base/environment.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/message_loop/message_loop.h"
 #include "base/rand_util.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "extensions/renderer/extension_throttle_entry.h"
 #include "extensions/renderer/extension_throttle_test_support.h"
-#include "net/base/load_flags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::TimeDelta;
@@ -405,7 +404,7 @@ class Requester : public DiscreteTimeSimulation::Actor {
 
     if (throttler_entry_->ImplGetTimeNow() - time_of_last_attempt_ >
         effective_delay) {
-      if (!throttler_entry_->ShouldRejectRequest(net::LOAD_NORMAL)) {
+      if (!throttler_entry_->ShouldRejectRequest()) {
         int status_code = server_->HandleRequest();
         throttler_entry_->UpdateWithResponse(status_code);
 
@@ -507,7 +506,8 @@ void SimulateAttack(Server* server,
 }
 
 TEST(URLRequestThrottlerSimulation, HelpsInAttack) {
-  base::MessageLoopForIO message_loop;
+  base::test::SingleThreadTaskEnvironment task_environment(
+      base::test::SingleThreadTaskEnvironment::MainThreadType::IO);
   Server unprotected_server(30, 1.0);
   RequesterResults unprotected_attacker_results;
   RequesterResults unprotected_client_results;
@@ -587,7 +587,8 @@ double SimulateDowntime(const TimeDelta& duration,
 }
 
 TEST(URLRequestThrottlerSimulation, PerceivedDowntimeRatio) {
-  base::MessageLoopForIO message_loop;
+  base::test::SingleThreadTaskEnvironment task_environment(
+      base::test::SingleThreadTaskEnvironment::MainThreadType::IO);
   struct Stats {
     // Expected interval that we expect the ratio of downtime when anti-DDoS
     // is enabled and downtime when anti-DDoS is not enabled to fall within.

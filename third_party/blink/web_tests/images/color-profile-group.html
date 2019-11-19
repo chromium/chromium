@@ -1,7 +1,5 @@
 <!DOCTYPE html>
 <html>
-<script src="../resources/run-after-layout-and-paint.js"></script>
-
 <style>
   div {
     -webkit-border-image: url("resources/red-at-12-oclock-with-color-profile.jpg") 8 2 round;
@@ -21,19 +19,8 @@
     <rect width="800" height="130" style="fill: url(#pattern)"/>
   </svg>
   <div></div>
-  <iframe onload="load()" width="800px" height="185px" scrolling="no" frameborder="1"
+  <iframe width="800px" height="185px" scrolling="no" frameborder="1"
       src="resources/red-at-12-oclock-with-color-profile.jpg">
   </iframe>
 </body>
-
-<script>
-function load() {
-  runAfterLayoutAndPaint(function() { testRunner.notifyDone() });
-}
-
-if (window.testRunner) {
-  testRunner.dumpAsTextWithPixelResults();
-  testRunner.waitUntilDone();
-}
-</script>
 </html>

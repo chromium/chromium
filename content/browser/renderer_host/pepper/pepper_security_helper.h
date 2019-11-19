@@ -7,7 +7,7 @@
 
 #include "base/files/file_path.h"
 #include "content/common/content_export.h"
-#include "storage/browser/fileapi/file_system_url.h"
+#include "storage/browser/file_system/file_system_url.h"
 
 namespace content {
 

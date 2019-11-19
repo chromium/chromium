@@ -16,7 +16,7 @@ namespace blink {
 class LocalFrame;
 
 class CORE_EXPORT InspectedFrames final
-    : public GarbageCollectedFinalized<InspectedFrames> {
+    : public GarbageCollected<InspectedFrames> {
  public:
   class CORE_EXPORT Iterator {
     STACK_ALLOCATED();

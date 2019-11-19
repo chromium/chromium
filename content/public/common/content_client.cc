@@ -71,28 +71,26 @@ bool ContentClient::CanSendWhileSwappedOut(const IPC::Message* message) {
   return false;
 }
 
-base::string16 ContentClient::GetLocalizedString(int message_id) const {
+base::string16 ContentClient::GetLocalizedString(int message_id) {
   return base::string16();
 }
 
 base::string16 ContentClient::GetLocalizedString(
     int message_id,
-    const base::string16& replacement) const {
+    const base::string16& replacement) {
   return base::string16();
 }
 
-base::StringPiece ContentClient::GetDataResource(
-    int resource_id,
-    ui::ScaleFactor scale_factor) const {
+base::StringPiece ContentClient::GetDataResource(int resource_id,
+                                                 ui::ScaleFactor scale_factor) {
   return base::StringPiece();
 }
 
-base::RefCountedMemory* ContentClient::GetDataResourceBytes(
-    int resource_id) const {
+base::RefCountedMemory* ContentClient::GetDataResourceBytes(int resource_id) {
   return nullptr;
 }
 
-gfx::Image& ContentClient::GetNativeImageNamed(int resource_id) const {
+gfx::Image& ContentClient::GetNativeImageNamed(int resource_id) {
   static base::NoDestructor<gfx::Image> kEmptyImage;
   return *kEmptyImage;
 }
@@ -102,7 +100,7 @@ std::string ContentClient::GetProcessTypeNameInEnglish(int type) {
   return std::string();
 }
 
-base::DictionaryValue ContentClient::GetNetLogConstants() const {
+base::DictionaryValue ContentClient::GetNetLogConstants() {
   return base::DictionaryValue();
 }
 
@@ -125,7 +123,8 @@ media::MediaDrmBridgeClient* ContentClient::GetMediaDrmBridgeClient() {
 }
 #endif  // OS_ANDROID
 
-void ContentClient::OnServiceManagerConnected(
-    ServiceManagerConnection* connection) {}
+void ContentClient::ExposeInterfacesToBrowser(
+    scoped_refptr<base::SequencedTaskRunner> io_task_runner,
+    mojo::BinderMap* binders) {}
 
 }  // namespace content

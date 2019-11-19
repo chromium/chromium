@@ -35,9 +35,8 @@ class FakeVideoEncodeAccelerator : public VideoEncodeAccelerator {
 
   VideoEncodeAccelerator::SupportedProfiles GetSupportedProfiles() override;
   bool Initialize(const Config& config, Client* client) override;
-  void Encode(const scoped_refptr<VideoFrame>& frame,
-              bool force_keyframe) override;
-  void UseOutputBitstreamBuffer(const BitstreamBuffer& buffer) override;
+  void Encode(scoped_refptr<VideoFrame> frame, bool force_keyframe) override;
+  void UseOutputBitstreamBuffer(BitstreamBuffer buffer) override;
   void RequestEncodingParametersChange(uint32_t bitrate,
                                        uint32_t framerate) override;
   void RequestEncodingParametersChange(const VideoBitrateAllocation& bitrate,
@@ -84,7 +83,7 @@ class FakeVideoEncodeAccelerator : public VideoEncodeAccelerator {
   // A list of buffers available for putting fake encoded frames in.
   std::list<BitstreamBuffer> available_buffers_;
 
-  base::WeakPtrFactory<FakeVideoEncodeAccelerator> weak_this_factory_;
+  base::WeakPtrFactory<FakeVideoEncodeAccelerator> weak_this_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FakeVideoEncodeAccelerator);
 };

@@ -31,11 +31,12 @@
 #include "third_party/blink/renderer/core/exported/web_shared_worker_impl.h"
 
 #include <memory>
-#include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "services/network/public/mojom/fetch_api.mojom-blink.h"
-#include "third_party/blink/public/common/features.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "services/service_manager/public/mojom/interface_provider.mojom-blink.h"
+#include "third_party/blink/public/mojom/browser_interface_broker.mojom-blink.h"
 #include "third_party/blink/public/mojom/devtools/devtools_agent.mojom-blink.h"
 #include "third_party/blink/public/mojom/script/script_type.mojom-blink.h"
+#include "third_party/blink/public/mojom/worker/worker_content_settings_proxy.mojom-blink.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_network_provider.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
@@ -45,46 +46,31 @@
 #include "third_party/blink/public/platform/web_worker_fetch_context.h"
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_cache_options.h"
-#include "third_party/blink/renderer/core/core_initializer.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/events/message_event.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/inspector/worker_devtools_params.h"
-#include "third_party/blink/renderer/core/loader/appcache/application_cache_host.h"
-#include "third_party/blink/renderer/core/loader/document_loader.h"
-#include "third_party/blink/renderer/core/loader/frame_load_request.h"
-#include "third_party/blink/renderer/core/loader/frame_loader.h"
-#include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/script/script.h"
 #include "third_party/blink/renderer/core/workers/global_scope_creation_params.h"
 #include "third_party/blink/renderer/core/workers/parent_execution_context_task_runners.h"
 #include "third_party/blink/renderer/core/workers/shared_worker_content_settings_proxy.h"
 #include "third_party/blink/renderer/core/workers/shared_worker_global_scope.h"
 #include "third_party/blink/renderer/core/workers/shared_worker_thread.h"
-#include "third_party/blink/renderer/core/workers/worker_classic_script_loader.h"
-#include "third_party/blink/renderer/core/workers/worker_content_settings_client.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
-#include "third_party/blink/renderer/platform/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object_snapshot.h"
-#include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
-#include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher_properties.h"
-#include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/network/content_security_policy_parsers.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
 WebSharedWorkerImpl::WebSharedWorkerImpl(WebSharedWorkerClient* client)
-    : client_(client),
-      creation_address_space_(mojom::IPAddressSpace::kPublic),
-      parent_execution_context_task_runners_(
-          ParentExecutionContextTaskRunners::Create()),
-      weak_ptr_factory_(this) {
+    : client_(client) {
   DCHECK(IsMainThread());
 }
 
@@ -97,7 +83,8 @@ void WebSharedWorkerImpl::TerminateWorkerThread() {
   if (asked_to_terminate_)
     return;
   asked_to_terminate_ = true;
-  if (shadow_page_ && !shadow_page_->WasInitialized()) {
+
+  if (!worker_thread_) {
     client_->WorkerScriptLoadFailed();
     // The worker thread hasn't been started yet. Immediately notify the client
     // of worker termination.
@@ -105,79 +92,13 @@ void WebSharedWorkerImpl::TerminateWorkerThread() {
     // |this| is deleted at this point.
     return;
   }
-  if (main_script_loader_) {
-    main_script_loader_->Cancel();
-    main_script_loader_ = nullptr;
-    client_->WorkerScriptLoadFailed();
-    // The worker thread hasn't been started yet. Immediately notify the client
-    // of worker termination.
-    client_->WorkerContextDestroyed();
-    // |this| is deleted at this point.
-    return;
-  }
-  if (worker_thread_) {
-    worker_thread_->Terminate();
-    DevToolsAgent::WorkerThreadTerminated(shadow_page_->GetDocument(),
-                                          worker_thread_.get());
-  }
-}
-
-std::unique_ptr<WebApplicationCacheHost>
-WebSharedWorkerImpl::CreateApplicationCacheHost(
-    WebApplicationCacheHostClient* appcache_host_client) {
-  DCHECK(IsMainThread());
-  return client_->CreateApplicationCacheHost(appcache_host_client);
-}
-
-void WebSharedWorkerImpl::OnShadowPageInitialized() {
-  DCHECK(IsMainThread());
-  DCHECK(!main_script_loader_);
-  shadow_page_->DocumentLoader()->SetServiceWorkerNetworkProvider(
-      client_->CreateServiceWorkerNetworkProvider());
-
-  if (features::IsOffMainThreadSharedWorkerScriptFetchEnabled()) {
-    // Bypass main script loading on the main thread.
-    ContinueStartWorkerContext();
-    return;
-  }
-
-  main_script_loader_ = MakeGarbageCollected<WorkerClassicScriptLoader>();
-  main_script_loader_->LoadTopLevelScriptAsynchronously(
-      *shadow_page_->GetDocument(), shadow_page_->GetDocument()->Fetcher(),
-      script_request_url_, mojom::RequestContextType::SHARED_WORKER,
-      network::mojom::FetchRequestMode::kSameOrigin,
-      network::mojom::FetchCredentialsMode::kSameOrigin,
-      creation_address_space_,
-      Bind(&WebSharedWorkerImpl::DidReceiveScriptLoaderResponse,
-           WTF::Unretained(this)),
-      Bind(&WebSharedWorkerImpl::OnScriptLoaderFinished,
-           WTF::Unretained(this)));
-  // Do nothing here since OnScriptLoaderFinished() might have been already
-  // invoked and |this| might have been deleted at this point.
-}
-
-void WebSharedWorkerImpl::ResumeStartup() {
-  DCHECK(IsMainThread());
-  bool is_paused_on_start = is_paused_on_start_;
-  is_paused_on_start_ = false;
-  if (is_paused_on_start) {
-    // We'll continue in OnShadowPageInitialized().
-    shadow_page_->Initialize(script_request_url_);
-  }
-}
-
-const base::UnguessableToken& WebSharedWorkerImpl::GetDevToolsWorkerToken() {
-  return devtools_worker_token_;
+  worker_thread_->Terminate();
+  // DidTerminateWorkerThread() will be called asynchronously.
 }
 
 void WebSharedWorkerImpl::CountFeature(WebFeature feature) {
   DCHECK(IsMainThread());
   client_->CountFeature(feature);
-}
-
-void WebSharedWorkerImpl::DidFetchScript() {
-  DCHECK(IsMainThread());
-  client_->WorkerScriptLoaded();
 }
 
 void WebSharedWorkerImpl::DidFailToFetchClassicScript() {
@@ -196,6 +117,7 @@ void WebSharedWorkerImpl::DidCloseWorkerGlobalScope() {
   DCHECK(IsMainThread());
   client_->WorkerContextClosed();
   TerminateWorkerThread();
+  // DidTerminateWorkerThread() will be called asynchronously.
 }
 
 void WebSharedWorkerImpl::DidTerminateWorkerThread() {
@@ -206,14 +128,16 @@ void WebSharedWorkerImpl::DidTerminateWorkerThread() {
 
 void WebSharedWorkerImpl::Connect(MessagePortChannel web_channel) {
   DCHECK(IsMainThread());
+  if (asked_to_terminate_)
+    return;
   // The HTML spec requires to queue a connect event using the DOM manipulation
   // task source.
   // https://html.spec.whatwg.org/C/#shared-workers-and-the-sharedworker-interface
   PostCrossThreadTask(
       *GetWorkerThread()->GetTaskRunner(TaskType::kDOMManipulation), FROM_HERE,
-      CrossThreadBind(&WebSharedWorkerImpl::ConnectTaskOnWorkerThread,
-                      WTF::CrossThreadUnretained(this),
-                      WTF::Passed(std::move(web_channel))));
+      CrossThreadBindOnce(&WebSharedWorkerImpl::ConnectTaskOnWorkerThread,
+                          WTF::CrossThreadUnretained(this),
+                          WTF::Passed(std::move(web_channel))));
 }
 
 void WebSharedWorkerImpl::ConnectTaskOnWorkerThread(
@@ -228,250 +152,120 @@ void WebSharedWorkerImpl::ConnectTaskOnWorkerThread(
 void WebSharedWorkerImpl::StartWorkerContext(
     const WebURL& script_request_url,
     const WebString& name,
+    const WebString& user_agent,
     const WebString& content_security_policy,
-    mojom::ContentSecurityPolicyType policy_type,
-    mojom::IPAddressSpace creation_address_space,
+    network::mojom::ContentSecurityPolicyType policy_type,
+    network::mojom::IPAddressSpace creation_address_space,
+    const base::UnguessableToken& appcache_host_id,
     const base::UnguessableToken& devtools_worker_token,
-    PrivacyPreferences privacy_preferences,
-    scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
     mojo::ScopedMessagePipeHandle content_settings_handle,
-    mojo::ScopedMessagePipeHandle interface_provider) {
+    mojo::ScopedMessagePipeHandle interface_provider,
+    mojo::ScopedMessagePipeHandle browser_interface_broker,
+    bool pause_worker_context_on_start) {
   DCHECK(IsMainThread());
-  script_request_url_ = script_request_url;
-  name_ = name;
-  creation_address_space_ = creation_address_space;
-  // Chrome doesn't use interface versioning.
-  content_settings_info_ = mojom::blink::WorkerContentSettingsProxyPtrInfo(
-      std::move(content_settings_handle), 0u);
-  pending_interface_provider_.set_handle(std::move(interface_provider));
-
-  devtools_worker_token_ = devtools_worker_token;
-  // |shadow_page_| must be created after |devtools_worker_token_| because it
-  // triggers creation of a InspectorNetworkAgent that tries to access the
-  // token.
-  shadow_page_ =
-      std::make_unique<WorkerShadowPage>(this, std::move(loader_factory),
-                                         std::move(privacy_preferences));
-
-  // If we were asked to pause worker context on start and wait for debugger
-  // then now is a good time to do that.
-  client_->WorkerReadyForInspection();
-  if (pause_worker_context_on_start_) {
-    is_paused_on_start_ = true;
-    return;
-  }
-
-  // We'll continue in OnShadowPageInitialized().
-  shadow_page_->Initialize(script_request_url_);
-}
-
-void WebSharedWorkerImpl::DidReceiveScriptLoaderResponse() {
-  DCHECK(IsMainThread());
-  probe::DidReceiveScriptResponse(shadow_page_->GetDocument(),
-                                  main_script_loader_->Identifier());
-  client_->SelectAppCacheID(main_script_loader_->AppCacheID());
-}
-
-void WebSharedWorkerImpl::OnScriptLoaderFinished() {
-  DCHECK(IsMainThread());
-  DCHECK(main_script_loader_);
-  if (asked_to_terminate_)
-    return;
-  if (main_script_loader_->Failed()) {
-    main_script_loader_->Cancel();
-    main_script_loader_ = nullptr;
-    client_->WorkerScriptLoadFailed();
-    // The worker thread hasn't been started yet. Immediately notify the client
-    // of worker termination.
-    client_->WorkerContextDestroyed();
-    // |this| is deleted at this point.
-    return;
-  }
-  DidFetchScript();
-  probe::ScriptImported(shadow_page_->GetDocument(),
-                        main_script_loader_->Identifier(),
-                        main_script_loader_->SourceText());
-
-  // S13nServiceWorker: The browser process is expected to send a
-  // SetController IPC before sending the script response, but there is no
-  // guarantee of the ordering as the messages arrive on different message
-  // pipes. Wait for the SetController IPC to be received before starting the
-  // worker; otherwise fetches from the worker might not go through the
-  // appropriate controller.
-  //
-  // (For non-S13nServiceWorker, we don't need to do this step as the controller
-  // service worker isn't used directly by the renderer, but to minimize code
-  // differences between the flags just do it anyway.)
-  client_->WaitForServiceWorkerControllerInfo(
-      shadow_page_->DocumentLoader()->GetServiceWorkerNetworkProvider(),
-      WTF::Bind(&WebSharedWorkerImpl::ContinueStartWorkerContext,
-                weak_ptr_factory_.GetWeakPtr()));
-}
-
-void WebSharedWorkerImpl::ContinueStartWorkerContext() {
-  DCHECK(IsMainThread());
-  if (asked_to_terminate_)
-    return;
-
-  // FIXME: this document's origin is pristine and without any extra privileges
-  // (e.g. GrantUniversalAccess) that can be overriden in regular documents
-  // via WebPreference by embedders. (crbug.com/254993)
-  Document* document = shadow_page_->GetDocument();
 
   // Creates 'outside settings' used in the "Processing model" algorithm in the
   // HTML spec:
   // https://html.spec.whatwg.org/C/#worker-processing-model
   //
   // TODO(nhiroki): According to the spec, the 'outside settings' should
-  // correspond to the Document that called 'new SharedWorker()'. However,
-  // for now there is no way to pass the settings object over mojo IPCs, so as
-  // a stopgap the shadow page's Document is used here.
+  // correspond to the Document that called 'new SharedWorker()'. The browser
+  // process should pass it up to here.
+  scoped_refptr<const SecurityOrigin> starter_origin =
+      SecurityOrigin::Create(script_request_url);
   auto* outside_settings_object =
       MakeGarbageCollected<FetchClientSettingsObjectSnapshot>(
-          document->Fetcher()->GetProperties().GetFetchClientSettingsObject());
+          /*global_object_url=*/script_request_url,
+          /*base_url=*/script_request_url, starter_origin,
+          network::mojom::ReferrerPolicy::kDefault,
+          /*outgoing_referrer=*/String(),
+          CalculateHttpsState(starter_origin.get()),
+          AllowedByNosniff::MimeTypeCheck::kLaxForWorker,
+          creation_address_space,
+          /*insecure_request_policy=*/kBlockAllMixedContent,
+          FetchClientSettingsObject::InsecureNavigationsSet(),
+          /*mixed_autoupgrade_opt_out=*/false);
 
   scoped_refptr<WebWorkerFetchContext> web_worker_fetch_context =
-      client_->CreateWorkerFetchContext(
-          shadow_page_->DocumentLoader()->GetServiceWorkerNetworkProvider());
+      client_->CreateWorkerFetchContext();
   DCHECK(web_worker_fetch_context);
-  web_worker_fetch_context->SetApplicationCacheHostID(
-      document->Loader()->GetApplicationCacheHost()->GetHostID());
 
   // TODO(nhiroki); Set |script_type| to mojom::ScriptType::kModule for module
   // fetch (https://crbug.com/824646).
   mojom::ScriptType script_type = mojom::ScriptType::kClassic;
 
-  if (features::IsOffMainThreadSharedWorkerScriptFetchEnabled()) {
-    // Off-the-main-thread script fetch:
-    // Some params (e.g., referrer policy, CSP) passed to
-    // GlobalScopeCreationParams are dummy values. They will be updated after
-    // worker script fetch on the worker thread.
-    // TODO(nhiroki): Currently |address_space| and |origin_trial_tokens| are
-    // not updated after worker script fetch. Update them.
-    auto creation_params = std::make_unique<GlobalScopeCreationParams>(
-        script_request_url_, script_type,
-        OffMainThreadWorkerScriptFetchOption::kEnabled, name_,
-        document->UserAgent(), std::move(web_worker_fetch_context),
-        Vector<CSPHeaderAndType>(), network::mojom::ReferrerPolicy::kDefault,
-        outside_settings_object->GetSecurityOrigin(),
-        document->IsSecureContext(), outside_settings_object->GetHttpsState(),
-        CreateWorkerClients(), creation_address_space_,
-        nullptr /* origin_trial_tokens */, devtools_worker_token_,
-        std::make_unique<WorkerSettings>(document->GetFrame()->GetSettings()),
-        kV8CacheOptionsDefault, nullptr /* worklet_module_response_map */,
-        std::move(pending_interface_provider_));
-    StartWorkerThread(std::move(creation_params), script_request_url_,
-                      String() /* source_code */, *outside_settings_object);
-    return;
-  }
+  bool starter_secure_context =
+      starter_origin->IsPotentiallyTrustworthy() ||
+      SchemeRegistry::SchemeShouldBypassSecureContextCheck(
+          starter_origin->Protocol());
 
-  // On-the-main-thread script fetch:
-  DCHECK(main_script_loader_);
-  DCHECK(!main_script_loader_->Failed());
+  auto worker_settings = std::make_unique<WorkerSettings>(
+      false /* disable_reading_from_canvas */,
+      false /* strict_mixed_content_checking */,
+      true /* allow_running_of_insecure_content */,
+      false /* strictly_block_blockable_mixed_content */,
+      GenericFontFamilySettings());
 
-  WebURL script_response_url = main_script_loader_->ResponseURL();
-  DCHECK(script_request_url_ == script_response_url ||
-         SecurityOrigin::AreSameSchemeHostPort(script_request_url_,
-                                               script_response_url));
-  auto referrer_policy = network::mojom::ReferrerPolicy::kDefault;
-  if (!main_script_loader_->GetReferrerPolicy().IsNull()) {
-    SecurityPolicy::ReferrerPolicyFromHeaderValue(
-        main_script_loader_->GetReferrerPolicy(),
-        kDoNotSupportReferrerPolicyLegacyKeywords, &referrer_policy);
-  }
-  ContentSecurityPolicy* content_security_policy =
-      main_script_loader_->GetContentSecurityPolicy();
-
+  // Some params (e.g., referrer policy, address space, CSP) passed to
+  // GlobalScopeCreationParams are dummy values. They will be updated after
+  // worker script fetch on the worker thread.
   auto creation_params = std::make_unique<GlobalScopeCreationParams>(
-      script_response_url, script_type,
-      OffMainThreadWorkerScriptFetchOption::kDisabled, name_,
-      document->UserAgent(), std::move(web_worker_fetch_context),
-      content_security_policy ? content_security_policy->Headers()
-                              : Vector<CSPHeaderAndType>(),
-      referrer_policy, outside_settings_object->GetSecurityOrigin(),
-      document->IsSecureContext(), outside_settings_object->GetHttpsState(),
-      CreateWorkerClients(), main_script_loader_->ResponseAddressSpace(),
-      main_script_loader_->OriginTrialTokens(), devtools_worker_token_,
-      std::make_unique<WorkerSettings>(document->GetFrame()->GetSettings()),
-      kV8CacheOptionsDefault, nullptr /* worklet_module_response_map */,
-      std::move(pending_interface_provider_));
-  StartWorkerThread(std::move(creation_params), script_response_url,
-                    main_script_loader_->SourceText(),
-                    *outside_settings_object);
-  main_script_loader_ = nullptr;
-}
+      script_request_url, script_type,
+      OffMainThreadWorkerScriptFetchOption::kEnabled, name, user_agent,
+      std::move(web_worker_fetch_context), Vector<CSPHeaderAndType>(),
+      outside_settings_object->GetReferrerPolicy(),
+      outside_settings_object->GetSecurityOrigin(), starter_secure_context,
+      outside_settings_object->GetHttpsState(),
+      MakeGarbageCollected<WorkerClients>(),
+      std::make_unique<SharedWorkerContentSettingsProxy>(
+          mojo::PendingRemote<mojom::blink::WorkerContentSettingsProxy>(
+              std::move(content_settings_handle), 0u)),
+      base::nullopt /* response_address_space */,
+      nullptr /* origin_trial_tokens */, devtools_worker_token,
+      std::move(worker_settings), kV8CacheOptionsDefault,
+      nullptr /* worklet_module_response_map */,
+      service_manager::mojom::blink::InterfaceProviderPtrInfo(
+          std::move(interface_provider), 0u),
+      mojo::PendingRemote<mojom::blink::BrowserInterfaceBroker>(
+          std::move(browser_interface_broker),
+          mojom::blink::BrowserInterfaceBroker::Version_),
+      BeginFrameProviderParams(), nullptr /* parent_feature_policy */,
+      base::UnguessableToken());
 
-void WebSharedWorkerImpl::StartWorkerThread(
-    std::unique_ptr<GlobalScopeCreationParams> global_scope_creation_params,
-    const KURL& script_response_url,
-    const String& source_code,
-    const FetchClientSettingsObjectSnapshot& outside_settings_object) {
-  DCHECK(IsMainThread());
   reporting_proxy_ = MakeGarbageCollected<SharedWorkerReportingProxy>(
-      this, parent_execution_context_task_runners_);
-  worker_thread_ = std::make_unique<SharedWorkerThread>(*reporting_proxy_);
+      this, ParentExecutionContextTaskRunners::Create());
+  worker_thread_ =
+      std::make_unique<SharedWorkerThread>(*reporting_proxy_, appcache_host_id);
 
   auto thread_startup_data = WorkerBackingThreadStartupData::CreateDefault();
   thread_startup_data.atomics_wait_mode =
       WorkerBackingThreadStartupData::AtomicsWaitMode::kAllow;
-  auto devtools_params = DevToolsAgent::WorkerThreadCreated(
-      shadow_page_->GetDocument(), GetWorkerThread(), script_response_url,
-      name_);
 
-  GetWorkerThread()->Start(std::move(global_scope_creation_params),
-                           thread_startup_data, std::move(devtools_params),
-                           parent_execution_context_task_runners_);
-  // TODO(nhiroki): Support module workers (https://crbug.com/680046).
-  if (features::IsOffMainThreadSharedWorkerScriptFetchEnabled()) {
-    // The script has not yet been fetched. Fetch it now.
-    GetWorkerThread()->ImportClassicScript(script_request_url_,
-                                           outside_settings_object,
-                                           v8_inspector::V8StackTraceId());
-    // We continue in WorkerGlobalScope::EvaluateClassicScript() on the worker
-    // thread.
-  } else {
-    // The script was already fetched on the main thread. Evaluate it now.
-    GetWorkerThread()->EvaluateClassicScript(script_response_url, source_code,
-                                             nullptr /* cached_meta_data */,
-                                             v8_inspector::V8StackTraceId());
-  }
-}
+  auto devtools_params = std::make_unique<WorkerDevToolsParams>();
+  devtools_params->devtools_worker_token = devtools_worker_token;
+  devtools_params->wait_for_debugger = pause_worker_context_on_start;
+  mojo::PendingRemote<mojom::blink::DevToolsAgent> devtools_agent_remote;
+  devtools_params->agent_receiver =
+      devtools_agent_remote.InitWithNewPipeAndPassReceiver();
+  mojo::PendingReceiver<mojom::blink::DevToolsAgentHost>
+      devtools_agent_host_receiver =
+          devtools_params->agent_host_remote.InitWithNewPipeAndPassReceiver();
 
-WorkerClients* WebSharedWorkerImpl::CreateWorkerClients() {
-  WorkerClients* worker_clients = WorkerClients::Create();
-  CoreInitializer::GetInstance().ProvideLocalFileSystemToWorker(
-      *worker_clients);
-  CoreInitializer::GetInstance().ProvideIndexedDBClientToWorker(
-      *worker_clients);
-  ProvideContentSettingsClientToWorker(
-      worker_clients, std::make_unique<SharedWorkerContentSettingsProxy>(
-                          std::move(content_settings_info_)));
-  return worker_clients;
+  GetWorkerThread()->Start(std::move(creation_params), thread_startup_data,
+                           std::move(devtools_params));
+  GetWorkerThread()->FetchAndRunClassicScript(
+      script_request_url, outside_settings_object->CopyData(),
+      nullptr /* outside_resource_timing_notifier */,
+      v8_inspector::V8StackTraceId());
+
+  // We are now ready to inspect worker thread.
+  client_->WorkerReadyForInspection(devtools_agent_remote.PassPipe(),
+                                    devtools_agent_host_receiver.PassPipe());
 }
 
 void WebSharedWorkerImpl::TerminateWorkerContext() {
   DCHECK(IsMainThread());
   TerminateWorkerThread();
-}
-
-void WebSharedWorkerImpl::PauseWorkerContextOnStart() {
-  pause_worker_context_on_start_ = true;
-}
-
-void WebSharedWorkerImpl::BindDevToolsAgent(
-    mojo::ScopedInterfaceEndpointHandle devtools_agent_host_ptr_info,
-    mojo::ScopedInterfaceEndpointHandle devtools_agent_request) {
-  shadow_page_->DevToolsAgent()->BindRequest(
-      mojom::blink::DevToolsAgentHostAssociatedPtrInfo(
-          std::move(devtools_agent_host_ptr_info),
-          mojom::blink::DevToolsAgentHost::Version_),
-      mojom::blink::DevToolsAgentAssociatedRequest(
-          std::move(devtools_agent_request)));
-}
-
-scoped_refptr<base::SingleThreadTaskRunner> WebSharedWorkerImpl::GetTaskRunner(
-    TaskType task_type) {
-  return parent_execution_context_task_runners_->Get(task_type);
 }
 
 std::unique_ptr<WebSharedWorker> WebSharedWorker::Create(

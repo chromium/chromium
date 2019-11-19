@@ -5,81 +5,81 @@
 /**
  * Create a mock function that records function calls and validates against
  * expectations.
- * @constructor.
  */
-function MockMethod() {
-  var fn = function() {
-    var args = Array.prototype.slice.call(arguments);
-    var callbacks = args.filter(function(arg) {
-      return (typeof arg == 'function');
-    });
+/* #export */ class MockMethod {
+  constructor() {
+    var fn = function() {
+      var args = Array.prototype.slice.call(arguments);
+      var callbacks = args.filter(function(arg) {
+        return (typeof arg == 'function');
+      });
 
-    if (callbacks.length > 1) {
-      console.error('Only support mocking function with at most one callback.');
-      return;
-    }
+      if (callbacks.length > 1) {
+        console.error(
+            'Only support mocking function with at most one callback.');
+        return;
+      }
 
-    fn.recordCall(args);
-    if (callbacks.length == 1) {
-      callbacks[0].apply(undefined, fn.callbackData);
-      return;
-    }
-    return fn.returnValue;
-  };
+      fn.recordCall(args);
+      if (callbacks.length == 1) {
+        callbacks[0].apply(undefined, fn.callbackData);
+        return;
+      }
+      return fn.returnValue;
+    };
 
-  /**
-   * List of signatures for fucntion calls.
-   * @type {!Array<!Array>}
-   * @private
-   */
-  fn.calls_ = [];
+    /**
+     * List of signatures for function calls.
+     * @type {!Array<!Array>}
+     * @private
+     */
+    fn.calls_ = [];
 
-  /**
-   * List of expected call signatures.
-   * @type {!Array<!Array>}
-   * @private
-   */
-  fn.expectations_ = [];
+    /**
+     * List of expected call signatures.
+     * @type {!Array<!Array>}
+     * @private
+     */
+    fn.expectations_ = [];
 
-  /**
-   * Value returned from call to function.
-   * @type {*}
-   */
-  fn.returnValue = undefined;
+    /**
+     * Value returned from call to function.
+     * @type {*}
+     */
+    fn.returnValue = undefined;
 
-  /**
-   * List of arguments for callback function.
-   * @type {!Array<!Array>}
-   */
-  fn.callbackData = [];
+    /**
+     * List of arguments for callback function.
+     * @type {!Array<!Array>}
+     */
+    fn.callbackData = [];
 
-  fn.__proto__ = MockMethod.prototype;
-  return fn;
-}
+    Object.setPrototypeOf(fn, MockMethod.prototype);
+    return fn;
+  }
 
-MockMethod.prototype = {
   /**
    * Adds an expected call signature.
    * @param {...}  var_args Expected arguments for the function call.
    */
-  addExpectation: function() {
+  addExpectation() {
     var args = Array.prototype.slice.call(arguments);
     this.expectations_.push(args.filter(this.notFunction_));
-  },
+  }
 
   /**
    * Adds a call signature.
    * @param {!Array} args.
    */
-  recordCall: function(args) {
+  recordCall(args) {
     this.calls_.push(args.filter(this.notFunction_));
-  },
+  }
 
   /**
    * Verifies that the function is called the expected number of times and with
    * the correct signature for each call.
    */
-  verifyMock: function() {
+  verifyMock() {
     var errorMessage = 'Number of method calls did not match expectation.';
     if (this.functionName) {
       errorMessage = 'Error in ' + this.functionName + ':\n' + errorMessage;
@@ -88,7 +88,7 @@ MockMethod.prototype = {
     for (var i = 0; i < this.expectations_.length; i++) {
       this.validateCall(i, this.expectations_[i], this.calls_[i]);
     }
-  },
+  }
 
   /**
    * Verifies that the observed function arguments match expectations.
@@ -99,43 +99,42 @@ MockMethod.prototype = {
    * @param {!Array} expected The expected arguments.
    * @parma {!Array} observed The observed arguments.
    */
-  validateCall: function(index, expected, observed) {
+  validateCall(index, expected, observed) {
     assertDeepEquals(expected, observed);
-  },
+  }
 
   /**
    * Test if arg is a function.
    * @param {*} arg The argument to test.
    * @return True if arg is not function type.
    */
-  notFunction_: function(arg) {
+  notFunction_(arg) {
     return typeof arg != 'function';
   }
-};
+}
 
 /**
  * Controller for mocking methods. Tracks calls to mocked methods and verifies
  * that call signatures match expectations.
- * @constructor.
  */
-function MockController() {
-  /**
-   * Original functions implementations, which are restored when |reset| is
-   * called.
-   * @type {!Array<!Object>}
-   * @private
-   */
-  this.overrides_ = [];
+/* #export */ class MockController {
+  constructor() {
+    /**
+     * Original functions implementations, which are restored when |reset| is
+     * called.
+     * @type {!Array<!Object>}
+     * @private
+     */
+    this.overrides_ = [];
 
-  /**
-   * List of registered mocks.
-   * @type {!Array<!MockMethod>}
-   * @private
-   */
-  this.mocks_ = [];
-}
+    /**
+     * List of registered mocks.
+     * @type {!Array<!MockMethod>}
+     * @private
+     */
+    this.mocks_ = [];
+  }
 
-MockController.prototype = {
   /**
    * Creates a mock function.
    * @param {Object=} opt_parent Optional parent object for the function.
@@ -144,7 +143,7 @@ MockController.prototype = {
    *     mock is automatically substituted for the original and replaced on
    *     reset.
    */
-  createFunctionMock: function(opt_parent, opt_functionName) {
+  createFunctionMock(opt_parent, opt_functionName) {
     var fn = new MockMethod();
 
     // Register mock.
@@ -160,26 +159,25 @@ MockController.prototype = {
     this.mocks_.push(fn);
 
     return fn;
-  },
+  }
 
   /**
    * Validates all mocked methods. An exception is thrown if the
    * expected and actual calls to a mocked function to not align.
    */
-  verifyMocks: function() {
+  verifyMocks() {
     for (var i = 0; i < this.mocks_.length; i++) {
       this.mocks_[i].verifyMock();
     }
-  },
+  }
 
   /**
    * Discard mocks reestoring default behavior.
    */
-  reset: function() {
+  reset() {
     for (var i = 0; i < this.overrides_.length; i++) {
       var override = this.overrides_[i];
       override.parent[override.functionName] = override.originalFunction;
     }
-  },
-
-};
+  }
+}

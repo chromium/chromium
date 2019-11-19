@@ -34,6 +34,7 @@ include_rules = [
   "+components/embedder_support",
   "+components/crash",
   "+components/download",
+  "+components/keyed_service/core",
   "+components/url_formatter",
   "+components/network_session_configurator/browser",
   "+components/viz/common/resources",
@@ -42,9 +43,6 @@ include_rules = [
 
   # Access to the process specific switches.
   "+services/service_manager/embedder",
-
-  # Allows using test_ws for mash.
-  "+services/ws/test_ws",
 ]
 
 specific_include_rules = {

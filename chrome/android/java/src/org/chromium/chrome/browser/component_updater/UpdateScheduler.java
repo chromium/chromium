@@ -12,6 +12,7 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.components.background_task_scheduler.BackgroundTask.TaskFinishedCallback;
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
 import org.chromium.components.background_task_scheduler.TaskIds;
@@ -47,12 +48,12 @@ public class UpdateScheduler {
 
     /* package */ void onStartTaskWithNative() {
         assert mNativeScheduler != 0;
-        nativeOnStartTask(mNativeScheduler);
+        UpdateSchedulerJni.get().onStartTask(mNativeScheduler, UpdateScheduler.this);
     }
 
     /* package */ void onStopTask() {
         if (mNativeScheduler != 0) {
-            nativeOnStopTask(mNativeScheduler);
+            UpdateSchedulerJni.get().onStopTask(mNativeScheduler, UpdateScheduler.this);
         }
         mTaskFinishedCallback = null;
         scheduleInternal(mDelayMs);
@@ -106,6 +107,9 @@ public class UpdateScheduler {
                 ContextUtils.getApplicationContext(), TaskIds.COMPONENT_UPDATE_JOB_ID);
     }
 
-    private native void nativeOnStartTask(long nativeBackgroundTaskUpdateScheduler);
-    private native void nativeOnStopTask(long nativeBackgroundTaskUpdateScheduler);
+    @NativeMethods
+    interface Natives {
+        void onStartTask(long nativeBackgroundTaskUpdateScheduler, UpdateScheduler caller);
+        void onStopTask(long nativeBackgroundTaskUpdateScheduler, UpdateScheduler caller);
+    }
 }

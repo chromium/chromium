@@ -1,9 +1,10 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
 <link rel="import" href="chrome://resources/cr_elements/cr_action_menu/cr_action_menu.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
 <link rel="import" href="chrome://resources/html/assert.html">
 <link rel="import" href="chrome://resources/html/cr/ui/focus_without_ink.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-icon-button/paper-icon-button-light.html">
 <link rel="import" href="../i18n_setup.html">
 <link rel="import" href="../settings_shared_css.html">
 <link rel="import" href="../controls/extension_controlled_indicator.html">
@@ -46,12 +47,11 @@
     </template>
     <div class="settings-box continuation">
       <h2 class="start">$i18n{addresses}</h2>
-      <paper-button id="addAddress"
-          class="secondary-button header-aligned-button"
+      <cr-button id="addAddress" class="header-aligned-button"
           on-click="onAddAddressTap_"
           hidden$="[[!prefs.autofill.profile_enabled.value]]">
         $i18n{add}
-      </paper-button>
+      </cr-button>
     </div>
     <div class="list-frame">
       <div id="addressList" class="vertical-list">
@@ -68,16 +68,13 @@
               </span>
             </div>
             <template is="dom-if" if="[[item.metadata.isLocal]]">
-              <paper-icon-button-light class="icon-more-vert">
-                <button id="addressMenu"
-                    on-click="onAddressMenuTap_" title="$i18n{moreActions}">
-                </button>
-              </paper-icon-button-light>
+              <cr-icon-button class="icon-more-vert" id="addressMenu"
+                  on-click="onAddressMenuTap_" title="$i18n{moreActions}">
+              </cr-icon-button>
             </template>
             <template is="dom-if" if="[[!item.metadata.isLocal]]">
-              <paper-icon-button-light actionable class="icon-external">
-                <button on-click="onRemoteEditAddressTap_"></button>
-              </paper-icon-button-light>
+              <cr-icon-button class="icon-external"
+                  on-click="onRemoteEditAddressTap_"></cr-icon-button>
             </template>
           </div>
         </template>
@@ -87,7 +84,7 @@
         $i18n{noAddressesFound}
       </div>
     </div>
-    <cr-action-menu id="addressSharedMenu">
+    <cr-action-menu id="addressSharedMenu" role-description="$i18n{menu}">
       <button id="menuEditAddress" class="dropdown-item"
           on-click="onMenuEditAddressTap_">$i18n{edit}</button>
       <button id="menuRemoveAddress" class="dropdown-item"

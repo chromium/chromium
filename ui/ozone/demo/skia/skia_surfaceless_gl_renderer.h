@@ -13,12 +13,15 @@
 
 namespace ui {
 class OverlayCandidatesOzone;
+class PlatformWindowSurface;
 
 class SurfacelessSkiaGlRenderer : public SkiaGlRenderer {
  public:
-  SurfacelessSkiaGlRenderer(gfx::AcceleratedWidget widget,
-                            const scoped_refptr<gl::GLSurface>& surface,
-                            const gfx::Size& size);
+  SurfacelessSkiaGlRenderer(
+      gfx::AcceleratedWidget widget,
+      std::unique_ptr<PlatformWindowSurface> window_surface,
+      const scoped_refptr<gl::GLSurface>& gl_surface,
+      const gfx::Size& size);
   ~SurfacelessSkiaGlRenderer() override;
 
   // Renderer:
@@ -42,7 +45,7 @@ class SurfacelessSkiaGlRenderer : public SkiaGlRenderer {
 
   int back_buffer_ = 0;
 
-  base::WeakPtrFactory<SurfacelessSkiaGlRenderer> weak_ptr_factory_;
+  base::WeakPtrFactory<SurfacelessSkiaGlRenderer> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SurfacelessSkiaGlRenderer);
 };

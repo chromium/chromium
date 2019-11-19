@@ -1,2 +1,0 @@
-CONSOLE ERROR: line 6: The XSS Auditor refused to execute a script in 'http://localhost:8000/security/xssAuditor/resources/echo-dom-write-location.php?q=%3Cscript%3Ealert(String.fromCharCode(0x58,0x53,0x53))%3C/script%3E' because its source code was found within the request. The server sent an 'X-XSS-Protection' header requesting this behavior.
-

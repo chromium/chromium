@@ -22,7 +22,7 @@ function testPixels(actualPixels, refPixels, testScenario)
     //   P3/Rec2020. Red channel of the green pixel is R channel of the second
     //   pixel. All tests locally pass with a tolerance of 8 (uint8) and 0.035 (f16).
     if (testScenario.canvasColorParam.pixelFormat == 'uint8') {
-        let tolerance_color = 4;
+        let tolerance_color = 5;
         let tolerance_r_green = 8;
         for (let i = 0; i < actualPixels.length; i++) {
             // Alpha channel

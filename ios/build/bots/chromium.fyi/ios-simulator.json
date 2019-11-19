@@ -1,8 +1,8 @@
 {
   "comments": [
-    "Runs tests on FYI on the latest simulators."
+    "Runs tests on FYI on iOS12 simulators."
   ],
-  "xcode build version": "10b61",
+  "xcode build version": "11a1027",
   "gn_args": [
     "goma_dir=\"$(goma_dir)\"",
     "is_component_build=false",
@@ -20,9 +20,9 @@
         "--enable-features=SlimNavigationManager"
       ],
       "device type": "iPhone 6s",
-      "os": "12.1",
-      "host os": "Mac-10.13.6",
-      "pool": "Chrome"
+      "os": "12.2",
+      "host os": "Mac-10.14.6",
+      "pool":"chromium.tests"
     },
     {
       "app": "ios_chrome_integration_egtests",
@@ -30,10 +30,10 @@
         "--enable-features=CredentialManager"
       ],
       "device type": "iPhone 6s",
-      "os": "12.1",
+      "os": "12.2",
       "xctest": true,
-      "host os": "Mac-10.13.6",
-      "pool": "Chrome"
+      "host os": "Mac-10.14.6",
+      "pool":"chromium.tests"
     },
     {
       "app": "ios_chrome_integration_egtests",
@@ -41,10 +41,10 @@
         "--enable-features=CredentialManager"
       ],
       "device type": "iPad Air 2",
-      "os": "12.1",
+      "os": "12.2",
       "xctest": true,
-      "host os": "Mac-10.13.6",
-      "pool": "Chrome"
+      "host os": "Mac-10.14.6",
+      "pool":"chromium.tests"
     },
     {
       "app": "ios_chrome_integration_egtests",
@@ -52,10 +52,10 @@
         "--enable-features=SlimNavigationManager"
       ],
       "device type": "iPhone 6s",
-      "os": "12.1",
+      "os": "12.2",
       "xctest": true,
-      "host os": "Mac-10.13.6",
-      "pool": "Chrome"
+      "host os": "Mac-10.14.6",
+      "pool":"chromium.tests"
     },
     {
       "app": "ios_chrome_smoke_egtests",
@@ -63,10 +63,10 @@
         "--enable-features=SlimNavigationManager"
       ],
       "device type": "iPhone 6s",
-      "os": "12.1",
+      "os": "12.2",
       "xctest": true,
-      "host os": "Mac-10.13.6",
-      "pool": "Chrome"
+      "host os": "Mac-10.14.6",
+      "pool":"chromium.tests"
     },
     {
       "app": "ios_chrome_web_egtests",
@@ -74,10 +74,10 @@
         "--enable-features=SlimNavigationManager"
       ],
       "device type": "iPhone 6s",
-      "os": "12.1",
+      "os": "12.2",
       "xctest": true,
-      "host os": "Mac-10.13.6",
-      "pool": "Chrome"
+      "host os": "Mac-10.14.6",
+      "pool":"chromium.tests"
     },
     {
       "app": "ios_web_shell_egtests",
@@ -85,10 +85,10 @@
         "--enable-features=SlimNavigationManager"
       ],
       "device type": "iPhone 6s",
-      "os": "12.1",
+      "os": "12.2",
       "xctest": true,
-      "host os": "Mac-10.13.6",
-      "pool": "Chrome"
+      "host os": "Mac-10.14.6",
+      "pool":"chromium.tests"
     },
     {
       "app": "ios_chrome_ui_egtests",
@@ -96,10 +96,10 @@
         "--enable-features=SlimNavigationManager"
       ],
       "device type": "iPhone 6s",
-      "os": "12.1",
+      "os": "12.2",
       "xctest": true,
-      "host os": "Mac-10.13.6",
-      "pool": "Chrome"
+      "host os": "Mac-10.14.6",
+      "pool":"chromium.tests"
     }
   ]
 }

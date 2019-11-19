@@ -6,13 +6,15 @@
 #define SERVICES_NETWORK_CORS_CORS_URL_LOADER_FACTORY_H_
 
 #include <memory>
+#include <set>
 
 #include "base/callback_forward.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/macros.h"
-#include "mojo/public/cpp/bindings/strong_binding_set.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "services/network/cors/preflight_controller.h"
 #include "services/network/public/cpp/cors/origin_access_list.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
@@ -41,18 +43,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoaderFactory final
       NetworkContext* context,
       mojom::URLLoaderFactoryParamsPtr params,
       scoped_refptr<ResourceSchedulerClient> resource_scheduler_client,
-      mojom::URLLoaderFactoryRequest request,
+      mojo::PendingReceiver<mojom::URLLoaderFactory> receiver,
       const OriginAccessList* origin_access_list,
       std::unique_ptr<mojom::URLLoaderFactory>
           network_loader_factory_for_testing);
-  // Used by content::ResourceMessageFilter.
-  // TODO(yhirano): Remove this once when the network service is fully enabled.
-  CorsURLLoaderFactory(
-      bool disable_web_security,
-      std::unique_ptr<mojom::URLLoaderFactory> network_loader_factory,
-      const base::RepeatingCallback<void(int)>& preflight_finalizer,
-      const OriginAccessList* origin_access_list,
-      uint32_t process_id);
   ~CorsURLLoaderFactory() override;
 
   void OnLoaderCreated(std::unique_ptr<mojom::URLLoader> loader);
@@ -62,33 +56,45 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoaderFactory final
   // URLLoaders.
   void ClearBindings();
 
+  uint32_t process_id() const { return process_id_; }
+
+  // Set whether the factory allows CORS preflights. See IsSane.
+  static void SetAllowExternalPreflightsForTesting(bool allow) {
+    allow_external_preflights_for_testing_ = allow;
+  }
+
  private:
   // Implements mojom::URLLoaderFactory.
-  void CreateLoaderAndStart(mojom::URLLoaderRequest request,
+  void CreateLoaderAndStart(mojo::PendingReceiver<mojom::URLLoader> receiver,
                             int32_t routing_id,
                             int32_t request_id,
                             uint32_t options,
                             const ResourceRequest& resource_request,
-                            mojom::URLLoaderClientPtr client,
+                            mojo::PendingRemote<mojom::URLLoaderClient> client,
                             const net::MutableNetworkTrafficAnnotationTag&
                                 traffic_annotation) override;
-  void Clone(mojom::URLLoaderFactoryRequest request) override;
+  void Clone(mojo::PendingReceiver<mojom::URLLoaderFactory> receiver) override;
 
   void DeleteIfNeeded();
 
-  static bool IsSane(const NetworkContext* context,
-                     const ResourceRequest& request);
+  bool IsSane(const NetworkContext* context,
+              const ResourceRequest& request,
+              uint32_t options);
 
-  mojo::BindingSet<mojom::URLLoaderFactory> bindings_;
+  mojo::ReceiverSet<mojom::URLLoaderFactory> receivers_;
 
   // Used when constructed by NetworkContext.
   // The NetworkContext owns |this|.
   NetworkContext* const context_ = nullptr;
   scoped_refptr<ResourceSchedulerClient> resource_scheduler_client_;
 
-  const bool disable_web_security_;
+  // If false, ResourceRequests cannot have their |trusted_params| fields set.
+  bool is_trusted_;
 
-  const uint32_t process_id_;
+  // Retained from URLLoaderFactoryParams:
+  const bool disable_web_security_;
+  const uint32_t process_id_ = mojom::kInvalidProcessId;
+  const base::Optional<url::Origin> request_initiator_site_lock_;
 
   // Relative order of |network_loader_factory_| and |loaders_| matters -
   // URLLoaderFactory needs to live longer than URLLoaders created using the
@@ -96,9 +102,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoaderFactory final
   std::unique_ptr<mojom::URLLoaderFactory> network_loader_factory_;
   std::set<std::unique_ptr<mojom::URLLoader>, base::UniquePtrComparator>
       loaders_;
-
-  // Used when constructed by ResourceMessageFilter.
-  base::RepeatingCallback<void(int)> preflight_finalizer_;
 
   // Accessed by instances in |loaders_| too. Since the factory outlives them,
   // it's safe.
@@ -108,12 +111,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoaderFactory final
   // additional allowed access list.
   std::unique_ptr<OriginAccessList> factory_bound_origin_access_list_;
 
-  // Usually |preflight_controoler_| is owned by NetworkContext, but we create
-  // own one if NetworkContext is not provided, e.g. for legacy code path.
-  // TODO(toyoshim): Remove owned controller once the network service is fully
-  // enabled.
-  PreflightController* preflight_controller_;
-  std::unique_ptr<PreflightController> owned_preflight_controller_;
+  static bool allow_external_preflights_for_testing_;
 
   DISALLOW_COPY_AND_ASSIGN(CorsURLLoaderFactory);
 };

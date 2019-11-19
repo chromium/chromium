@@ -11,6 +11,7 @@
 #include "base/command_line.h"
 #include "base/location.h"
 #include "base/macros.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
@@ -72,6 +73,9 @@ namespace policy {
 const base::TimeDelta HeartbeatScheduler::kDefaultHeartbeatInterval =
     base::TimeDelta::FromMinutes(2);
 
+const char* const HeartbeatScheduler::kHeartbeatSignalHistogram =
+    "Enterprise.HeartbeatSignalSuccess";
+
 // Helper class used to manage GCM registration (handles retrying after
 // errors, etc).
 class HeartbeatRegistrationHelper {
@@ -103,7 +107,7 @@ class HeartbeatRegistrationHelper {
 
   // Should remain the last member so it will be destroyed first and
   // invalidate all weak pointers.
-  base::WeakPtrFactory<HeartbeatRegistrationHelper> weak_factory_;
+  base::WeakPtrFactory<HeartbeatRegistrationHelper> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(HeartbeatRegistrationHelper);
 };
@@ -111,10 +115,7 @@ class HeartbeatRegistrationHelper {
 HeartbeatRegistrationHelper::HeartbeatRegistrationHelper(
     gcm::GCMDriver* gcm_driver,
     const scoped_refptr<base::SequencedTaskRunner>& task_runner)
-    : gcm_driver_(gcm_driver),
-      task_runner_(task_runner),
-      weak_factory_(this) {
-}
+    : gcm_driver_(gcm_driver), task_runner_(task_runner) {}
 
 void HeartbeatRegistrationHelper::Register(
     const RegistrationHelperCallback& callback) {
@@ -190,8 +191,7 @@ HeartbeatScheduler::HeartbeatScheduler(
       heartbeat_enabled_(false),
       heartbeat_interval_(kDefaultHeartbeatInterval),
       cloud_policy_client_(cloud_policy_client),
-      gcm_driver_(driver),
-      weak_factory_(this) {
+      gcm_driver_(driver) {
   // If no GCMDriver (e.g. this is loaded as part of an unrelated unit test)
   // do nothing as no heartbeats can be sent.
   if (!gcm_driver_)
@@ -398,6 +398,10 @@ void HeartbeatScheduler::OnHeartbeatSent(const std::string& message_id,
   // heartbeat.
   DLOG_IF(ERROR, result != gcm::GCMClient::SUCCESS) <<
       "Error sending monitoring heartbeat: " << result;
+
+  UMA_HISTOGRAM_BOOLEAN(kHeartbeatSignalHistogram,
+                        result == gcm::GCMClient::SUCCESS);
+
   last_heartbeat_ = base::Time::NowFromSystemTime();
   ScheduleNextHeartbeat();
 }

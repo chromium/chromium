@@ -29,10 +29,6 @@ class SyncSessionsWebContentsRouterFactory
   // Get the singleton instance of the factory.
   static SyncSessionsWebContentsRouterFactory* GetInstance();
 
-  // Creates a SyncSessionsWebContentsRouter service for |context|.
-  static SyncSessionsWebContentsRouter* BuildSyncSessionsWebContentsRouter(
-      content::BrowserContext* context);
-
  private:
   friend struct base::DefaultSingletonTraits<
       SyncSessionsWebContentsRouterFactory>;

@@ -15,43 +15,20 @@
 #include "base/strings/stringprintf.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-TEST(PythonUtils, Clear) {
-  std::unique_ptr<base::Environment> env(base::Environment::Create());
-  env->SetVar(kPythonPathEnv, "foo");
-  EXPECT_TRUE(env->HasVar(kPythonPathEnv));
-
-  ClearPythonPath();
-  EXPECT_FALSE(env->HasVar(kPythonPathEnv));
-}
-
-TEST(PythonUtils, Append) {
-  const base::FilePath::CharType kAppendDir1[] =
-      FILE_PATH_LITERAL("test/path_append1");
-  const base::FilePath::CharType kAppendDir2[] =
-      FILE_PATH_LITERAL("test/path_append2");
-
-  std::unique_ptr<base::Environment> env(base::Environment::Create());
-
-  std::string python_path;
-  base::FilePath append_path1(kAppendDir1);
-  base::FilePath append_path2(kAppendDir2);
-
-  // Get a clean start
-  env->UnSetVar(kPythonPathEnv);
-
-  // Append the path
-  AppendToPythonPath(append_path1);
-  env->GetVar(kPythonPathEnv, &python_path);
-  ASSERT_EQ(python_path, "test/path_append1");
-
-  // Append the safe path again, nothing changes
-  AppendToPythonPath(append_path2);
-  env->GetVar(kPythonPathEnv, &python_path);
+TEST(PythonUtils, SetPythonPathInEnvironment) {
+  base::EnvironmentMap env;
+  SetPythonPathInEnvironment({base::FilePath(FILE_PATH_LITERAL("test/path1")),
+                              base::FilePath(FILE_PATH_LITERAL("test/path2"))},
+                             &env);
 #if defined(OS_WIN)
-  ASSERT_EQ(std::string("test/path_append1;test/path_append2"), python_path);
-#elif defined(OS_POSIX)
-  ASSERT_EQ(std::string("test/path_append1:test/path_append2"), python_path);
+  EXPECT_EQ(FILE_PATH_LITERAL("test/path1;test/path2"),
+            env[FILE_PATH_LITERAL("PYTHONPATH")]);
+#else
+  EXPECT_EQ("test/path1:test/path2", env["PYTHONPATH"]);
 #endif
+  EXPECT_NE(env.end(), env.find(FILE_PATH_LITERAL("VPYTHON_CLEAR_PYTHONPATH")));
+  EXPECT_EQ(base::NativeEnvironmentString(),
+            env[FILE_PATH_LITERAL("VPYTHON_CLEAR_PYTHONPATH")]);
 }
 
 TEST(PythonUtils, PythonRunTime) {

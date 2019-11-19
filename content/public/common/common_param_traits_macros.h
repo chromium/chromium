@@ -9,8 +9,7 @@
 #define CONTENT_PUBLIC_COMMON_COMMON_PARAM_TRAITS_MACROS_H_
 
 #include "build/build_config.h"
-#include "cc/input/touch_action.h"
-#include "content/public/common/console_message_level.h"
+#include "content/public/common/browser_controls_state.h"
 #include "content/public/common/drop_data.h"
 #include "content/public/common/referrer.h"
 #include "content/public/common/web_preferences.h"
@@ -18,15 +17,17 @@
 #include "ipc/ipc_message_macros.h"
 #include "services/network/public/cpp/network_ipc_param_traits.h"
 #include "services/network/public/mojom/referrer_policy.mojom.h"
+#include "third_party/blink/public/common/security/security_style.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
+#include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 #include "third_party/blink/public/mojom/renderer_preferences.mojom.h"
-#include "third_party/blink/public/platform/modules/permissions/permission_status.mojom.h"
+#include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 #include "third_party/blink/public/platform/web_drag_operation.h"
 #include "third_party/blink/public/platform/web_history_scroll_restoration_type.h"
 #include "third_party/blink/public/platform/web_point.h"
 #include "third_party/blink/public/platform/web_rect.h"
-#include "third_party/blink/public/platform/web_security_style.h"
 #include "third_party/blink/public/platform/web_url_request.h"
-#include "third_party/blink/public/web/window_features.mojom.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_event.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_relative_bounds.h"
@@ -42,20 +43,22 @@
 #undef IPC_MESSAGE_EXPORT
 #define IPC_MESSAGE_EXPORT CONTENT_EXPORT
 
+IPC_ENUM_TRAITS_MAX_VALUE(content::BrowserControlsState,
+                          content::BROWSER_CONTROLS_STATE_LAST)
+
 IPC_ENUM_TRAITS_VALIDATE(ui::PageTransition,
                          ((value &
                            ui::PageTransition::PAGE_TRANSITION_CORE_MASK) <=
                           ui::PageTransition::PAGE_TRANSITION_LAST_CORE))
-IPC_ENUM_TRAITS_MAX_VALUE(content::ConsoleMessageLevel,
-                          content::CONSOLE_MESSAGE_LEVEL_LAST)
+IPC_ENUM_TRAITS_MAX_VALUE(blink::mojom::ConsoleMessageLevel,
+                          blink::mojom::ConsoleMessageLevel::kError)
 IPC_ENUM_TRAITS_MAX_VALUE(network::mojom::ReferrerPolicy,
                           network::mojom::ReferrerPolicy::kMaxValue)
 IPC_ENUM_TRAITS_MAX_VALUE(blink::WebHistoryScrollRestorationType,
                           blink::kWebHistoryScrollRestorationManual)
-IPC_ENUM_TRAITS_MAX_VALUE(blink::WebSecurityStyle, blink::kWebSecurityStyleLast)
+IPC_ENUM_TRAITS_MAX_VALUE(blink::SecurityStyle, blink::SecurityStyle::kLast)
 IPC_ENUM_TRAITS_MAX_VALUE(blink::mojom::PermissionStatus,
                           blink::mojom::PermissionStatus::LAST)
-IPC_ENUM_TRAITS_MAX_VALUE(cc::TouchAction, cc::kTouchActionMax)
 IPC_ENUM_TRAITS_MAX_VALUE(content::EditingBehavior,
                           content::EDITING_BEHAVIOR_LAST)
 IPC_ENUM_TRAITS_MAX_VALUE(WindowOpenDisposition,
@@ -121,7 +124,6 @@ IPC_STRUCT_TRAITS_BEGIN(content::WebPreferences)
   IPC_STRUCT_TRAITS_MEMBER(remote_fonts_enabled)
   IPC_STRUCT_TRAITS_MEMBER(javascript_can_access_clipboard)
   IPC_STRUCT_TRAITS_MEMBER(xslt_enabled)
-  IPC_STRUCT_TRAITS_MEMBER(xss_auditor_enabled)
   IPC_STRUCT_TRAITS_MEMBER(dns_prefetching_enabled)
   IPC_STRUCT_TRAITS_MEMBER(data_saver_enabled)
   IPC_STRUCT_TRAITS_MEMBER(data_saver_holdback_web_api_enabled)
@@ -129,7 +131,6 @@ IPC_STRUCT_TRAITS_BEGIN(content::WebPreferences)
   IPC_STRUCT_TRAITS_MEMBER(databases_enabled)
   IPC_STRUCT_TRAITS_MEMBER(application_cache_enabled)
   IPC_STRUCT_TRAITS_MEMBER(tabs_to_links)
-  IPC_STRUCT_TRAITS_MEMBER(history_entry_requires_user_gesture)
   IPC_STRUCT_TRAITS_MEMBER(disable_ipc_flooding_protection)
   IPC_STRUCT_TRAITS_MEMBER(hyperlink_auditing_enabled)
   IPC_STRUCT_TRAITS_MEMBER(allow_universal_access_from_file_urls)
@@ -138,16 +139,13 @@ IPC_STRUCT_TRAITS_BEGIN(content::WebPreferences)
   IPC_STRUCT_TRAITS_MEMBER(webgl2_enabled)
   IPC_STRUCT_TRAITS_MEMBER(pepper_3d_enabled)
   IPC_STRUCT_TRAITS_MEMBER(record_whole_document)
-  IPC_STRUCT_TRAITS_MEMBER(use_solid_color_scrollbars)
   IPC_STRUCT_TRAITS_MEMBER(flash_3d_enabled)
   IPC_STRUCT_TRAITS_MEMBER(flash_stage3d_enabled)
   IPC_STRUCT_TRAITS_MEMBER(flash_stage3d_baseline_enabled)
   IPC_STRUCT_TRAITS_MEMBER(privileged_webgl_extensions_enabled)
   IPC_STRUCT_TRAITS_MEMBER(webgl_errors_to_console_enabled)
-  IPC_STRUCT_TRAITS_MEMBER(mock_scrollbars_enabled)
   IPC_STRUCT_TRAITS_MEMBER(hide_scrollbars)
   IPC_STRUCT_TRAITS_MEMBER(accelerated_2d_canvas_enabled)
-  IPC_STRUCT_TRAITS_MEMBER(minimum_accelerated_2d_canvas_size)
   IPC_STRUCT_TRAITS_MEMBER(antialiased_2d_canvas_disabled)
   IPC_STRUCT_TRAITS_MEMBER(antialiased_clips_2d_canvas_enabled)
   IPC_STRUCT_TRAITS_MEMBER(accelerated_2d_canvas_msaa_sample_count)
@@ -189,6 +187,7 @@ IPC_STRUCT_TRAITS_BEGIN(content::WebPreferences)
   IPC_STRUCT_TRAITS_MEMBER(cookie_enabled)
   IPC_STRUCT_TRAITS_MEMBER(navigate_on_drag_drop)
   IPC_STRUCT_TRAITS_MEMBER(spatial_navigation_enabled)
+  IPC_STRUCT_TRAITS_MEMBER(caret_browsing_enabled)
   IPC_STRUCT_TRAITS_MEMBER(v8_cache_options)
   IPC_STRUCT_TRAITS_MEMBER(accelerated_video_decode_enabled)
   IPC_STRUCT_TRAITS_MEMBER(animation_policy)
@@ -196,21 +195,28 @@ IPC_STRUCT_TRAITS_BEGIN(content::WebPreferences)
   IPC_STRUCT_TRAITS_MEMBER(text_track_background_color)
   IPC_STRUCT_TRAITS_MEMBER(text_track_margin_percentage)
   IPC_STRUCT_TRAITS_MEMBER(text_track_text_color)
+  IPC_STRUCT_TRAITS_MEMBER(text_track_text_size)
+  IPC_STRUCT_TRAITS_MEMBER(text_track_text_shadow)
+  IPC_STRUCT_TRAITS_MEMBER(text_track_font_family)
+  IPC_STRUCT_TRAITS_MEMBER(text_track_font_variant)
+  IPC_STRUCT_TRAITS_MEMBER(text_track_window_color)
+  IPC_STRUCT_TRAITS_MEMBER(text_track_window_padding)
+  IPC_STRUCT_TRAITS_MEMBER(text_track_window_radius)
   IPC_STRUCT_TRAITS_MEMBER(text_autosizing_enabled)
   IPC_STRUCT_TRAITS_MEMBER(double_tap_to_zoom_enabled)
+  IPC_STRUCT_TRAITS_MEMBER(dont_send_key_events_to_javascript)
   IPC_STRUCT_TRAITS_MEMBER(web_app_scope)
+  IPC_STRUCT_TRAITS_MEMBER(fullscreen_supported)
 #if defined(OS_ANDROID)
   IPC_STRUCT_TRAITS_MEMBER(font_scale_factor)
   IPC_STRUCT_TRAITS_MEMBER(device_scale_adjustment)
   IPC_STRUCT_TRAITS_MEMBER(force_enable_zoom)
-  IPC_STRUCT_TRAITS_MEMBER(fullscreen_supported)
   IPC_STRUCT_TRAITS_MEMBER(default_video_poster_url)
   IPC_STRUCT_TRAITS_MEMBER(support_deprecated_target_density_dpi)
   IPC_STRUCT_TRAITS_MEMBER(use_legacy_background_size_shorthand_behavior)
   IPC_STRUCT_TRAITS_MEMBER(wide_viewport_quirk)
   IPC_STRUCT_TRAITS_MEMBER(use_wide_viewport)
   IPC_STRUCT_TRAITS_MEMBER(force_zero_layout_height)
-  IPC_STRUCT_TRAITS_MEMBER(viewport_meta_layout_size_quirk)
   IPC_STRUCT_TRAITS_MEMBER(viewport_meta_merge_content_quirk)
   IPC_STRUCT_TRAITS_MEMBER(viewport_meta_non_user_scalable_quirk)
   IPC_STRUCT_TRAITS_MEMBER(viewport_meta_zero_values_quirk)
@@ -226,8 +232,11 @@ IPC_STRUCT_TRAITS_BEGIN(content::WebPreferences)
   IPC_STRUCT_TRAITS_MEMBER(immersive_mode_enabled)
   IPC_STRUCT_TRAITS_MEMBER(css_hex_alpha_color_enabled)
   IPC_STRUCT_TRAITS_MEMBER(scroll_top_left_interop_enabled)
-  IPC_STRUCT_TRAITS_MEMBER(force_dark_mode_enabled)
+  IPC_STRUCT_TRAITS_MEMBER(disable_features_depending_on_viz)
+  IPC_STRUCT_TRAITS_MEMBER(disable_accelerated_small_canvases)
+  IPC_STRUCT_TRAITS_MEMBER(reenable_web_components_v0)
 #endif  // defined(OS_ANDROID)
+  IPC_STRUCT_TRAITS_MEMBER(force_dark_mode_enabled)
   IPC_STRUCT_TRAITS_MEMBER(default_minimum_page_scale_factor)
   IPC_STRUCT_TRAITS_MEMBER(default_maximum_page_scale_factor)
   IPC_STRUCT_TRAITS_MEMBER(hide_download_ui)
@@ -242,6 +251,7 @@ IPC_STRUCT_TRAITS_BEGIN(content::WebPreferences)
   IPC_STRUCT_TRAITS_MEMBER(lazy_load_enabled)
   IPC_STRUCT_TRAITS_MEMBER(lazy_frame_loading_distance_thresholds_px)
   IPC_STRUCT_TRAITS_MEMBER(lazy_image_loading_distance_thresholds_px)
+  IPC_STRUCT_TRAITS_MEMBER(lazy_image_first_k_fully_load)
 IPC_STRUCT_TRAITS_END()
 
 IPC_STRUCT_TRAITS_BEGIN(blink::mojom::WindowFeatures)
@@ -304,10 +314,6 @@ IPC_STRUCT_TRAITS_BEGIN(blink::mojom::RendererPreferences)
   IPC_STRUCT_TRAITS_MEMBER(subpixel_rendering)
   IPC_STRUCT_TRAITS_MEMBER(use_subpixel_positioning)
   IPC_STRUCT_TRAITS_MEMBER(focus_ring_color)
-#if defined(OS_ANDROID)
-  IPC_STRUCT_TRAITS_MEMBER(minimum_stroke_width_for_focus_ring)
-  IPC_STRUCT_TRAITS_MEMBER(is_focus_ring_outset)
-#endif
   IPC_STRUCT_TRAITS_MEMBER(active_selection_bg_color)
   IPC_STRUCT_TRAITS_MEMBER(active_selection_fg_color)
   IPC_STRUCT_TRAITS_MEMBER(inactive_selection_bg_color)

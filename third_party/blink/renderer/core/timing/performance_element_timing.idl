@@ -2,11 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://docs.google.com/document/d/1blFeMVdqxB0V3BAJh60ptOBFY7cJSXnf7VyW3wspbZ8
-[OriginTrialEnabled=ElementTiming]
+// https://wicg.github.io/element-timing/#sec-performance-element-timing
+[Exposed=Window]
 interface PerformanceElementTiming : PerformanceEntry {
+    readonly attribute DOMHighResTimeStamp renderTime;
+    readonly attribute DOMHighResTimeStamp loadTime;
     readonly attribute DOMRectReadOnly intersectionRect;
+    readonly attribute DOMString identifier;
+    readonly attribute unsigned long naturalWidth;
+    readonly attribute unsigned long naturalHeight;
+    readonly attribute DOMString id;
+    readonly attribute Element? element;
+    readonly attribute DOMString url;
 
-    // TODO(peria): toJSON is not in spec. https://crbug.com/736332
     [CallWith=ScriptState, ImplementedAs=toJSONForBinding] object toJSON();
 };

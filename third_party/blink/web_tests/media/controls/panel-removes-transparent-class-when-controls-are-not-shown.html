@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<title>Test that the panel doesn't stay transparent when the controls are hidden.</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../media-controls.js"></script>
+<!-- video with native controls hidden -->
+<video width=500 preload=none src="../content/60_sec_video.webm"></video>
+<script>
+async_test(t => {
+  const video = document.querySelector('video');
+  const panel = panelElement(video);
+  enableTestMode(video);
+
+  video.addEventListener('canplaythrough', t.step_func(() => {
+    assert_false(isPanelTransparent(), 'panel should start opaque');
+    video.play();
+  }), { once: true });
+
+  video.addEventListener('playing', t.step_func(() => {
+    runAfterHideMediaControlsTimerFired(t.step_func(() => {
+      assert_true(isPanelTransparent(), 'panel should be transparent after hide timer fires');
+      video.pause();
+    }), video);
+  }), { once: true });
+
+  video.addEventListener('pause', t.step_func_done(() => {
+    assert_false(isPanelTransparent(), 'panel should now be opaque again');
+  }), { once: true });
+
+  function isPanelTransparent() {
+    return panel.classList.contains('transparent');
+  }
+
+  video.load();
+
+});
+</script>
+</html>

@@ -76,7 +76,8 @@ By default this build signs in with a stub user. To specify a real user:
     `--user-data-dir=/tmp/chrome --login-manager`
 *   Go through the out-of-the-box UX and sign in with a real Gmail account.
 *   For subsequent runs, add:
-    `--user-data-dir=/tmp/chrome --login-user=username@gmail.com`
+    `--user-data-dir=/tmp/chrome --login-user=username@gmail.com
+    --login-profile=username@gmail.com-hash`
 *   To run in guest mode instantly, add:
     `--user-data-dir=/tmp/chrome --bwsi --incognito --login-user='$guest'
     --login-profile=user`

@@ -19,6 +19,8 @@ enum UserPresence {
   USER_PRESENT,
   USER_ABSENT,
   USER_PRESENCE_UNKNOWN,
+  USER_PRESENCE_SECONDARY,
+  USER_PRESENCE_BACKGROUND,
 };
 
 // Corresponds to the possible values for the 'secure_screen_lock' status update

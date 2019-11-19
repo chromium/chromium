@@ -40,7 +40,7 @@ TEST_F(MruWindowTrackerTest, Basic) {
   wm::ActivateWindow(w1.get());
 
   MruWindowTracker::WindowList window_list =
-      mru_window_tracker()->BuildMruWindowList();
+      mru_window_tracker()->BuildMruWindowList(kActiveDesk);
   ASSERT_EQ(3u, window_list.size());
   EXPECT_EQ(w1.get(), window_list[0]);
   EXPECT_EQ(w2.get(), window_list[1]);
@@ -62,16 +62,16 @@ TEST_F(MruWindowTrackerTest, MinimizedWindowsAreLru) {
   wm::ActivateWindow(w2.get());
   wm::ActivateWindow(w1.get());
 
-  wm::GetWindowState(w1.get())->Minimize();
-  wm::GetWindowState(w4.get())->Minimize();
-  wm::GetWindowState(w5.get())->Minimize();
+  WindowState::Get(w1.get())->Minimize();
+  WindowState::Get(w4.get())->Minimize();
+  WindowState::Get(w5.get())->Minimize();
 
   // By minimizing the first window, we activate w2 which will move it to the
   // front of the MRU queue.
   EXPECT_TRUE(wm::IsActiveWindow(w2.get()));
 
   MruWindowTracker::WindowList window_list =
-      mru_window_tracker()->BuildMruWindowList();
+      mru_window_tracker()->BuildMruWindowList(kActiveDesk);
   EXPECT_EQ(w2.get(), window_list[0]);
   EXPECT_EQ(w1.get(), window_list[1]);
   EXPECT_EQ(w3.get(), window_list[2]);
@@ -86,12 +86,12 @@ TEST_F(MruWindowTrackerTest, DraggedWindowsInListOnlyOnce) {
   wm::ActivateWindow(w1.get());
 
   // Start dragging the window.
-  wm::GetWindowState(w1.get())->CreateDragDetails(
-      gfx::Point(), HTRIGHT, ::wm::WINDOW_MOVE_SOURCE_TOUCH);
+  WindowState::Get(w1.get())->CreateDragDetails(gfx::Point(), HTRIGHT,
+                                                ::wm::WINDOW_MOVE_SOURCE_TOUCH);
 
   // The dragged window should only be in the list once.
   MruWindowTracker::WindowList window_list =
-      mru_window_tracker()->BuildWindowListIgnoreModal();
+      mru_window_tracker()->BuildWindowListIgnoreModal(kActiveDesk);
   EXPECT_EQ(1, std::count(window_list.begin(), window_list.end(), w1.get()));
 }
 

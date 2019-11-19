@@ -20,6 +20,7 @@ class MockPermissionPrompt : public PermissionPrompt {
   // PermissionPrompt:
   void UpdateAnchorPosition() override;
   gfx::NativeWindow GetNativeWindow() override;
+  TabSwitchingBehavior GetTabSwitchingBehavior() override;
 
   bool IsVisible();
 

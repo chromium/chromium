@@ -63,13 +63,6 @@ cr.define('login', function() {
   var POD_SWITCH_ANIMATION_DURATION_MS = 180;
 
   /**
-   * Public session help topic identifier.
-   * @type {number}
-   * @const
-   */
-  var HELP_TOPIC_PUBLIC_SESSION = 3041033;
-
-  /**
    * Tab order for user pods. Update these when adding new controls.
    * @enum {number}
    * @const
@@ -870,18 +863,6 @@ cr.define('login', function() {
         this.setAttribute('is-active-directory', '');
 
       this.userClickAuthAllowed_ = false;
-
-      // Lazy load the assets needed for the polymer submit button.
-      var isLockScreen = (Oobe.getInstance().displayType == DISPLAY_TYPE.LOCK);
-      if (cr.isChromeOS && isLockScreen &&
-          !cr.ui.login.ResourceLoader.alreadyLoadedAssets(
-              'custom-elements-user-pod')) {
-        cr.ui.login.ResourceLoader.registerAssets({
-            id: 'custom-elements-user-pod',
-            html: [{ url: 'custom_elements_user_pod.html' }]
-         });
-        cr.ui.login.ResourceLoader.loadAssetsOnIdle('custom-elements-user-pod');
-      }
     },
 
     /**
@@ -1088,22 +1069,6 @@ cr.define('login', function() {
     },
 
     /**
-     * Gets the container holding the launch app button.
-     * @type {!HTMLButtonElement}
-     */
-    get launchAppButtonContainerElement() {
-      return this.querySelector('.launch-app-button-container');
-    },
-
-    /**
-     * Gets launch app button.
-     * @type {!HTMLButtonElement}
-     */
-    get launchAppButtonElement() {
-      return this.querySelector('.launch-app-button');
-    },
-
-    /**
      * Gets action box area.
      * @type {!HTMLInputElement}
      */
@@ -1289,7 +1254,7 @@ cr.define('login', function() {
     },
 
     updateActionBoxArea: function() {
-      if (this.user_.publicAccount || this.user_.isApp) {
+      if (this.user_.publicAccount) {
         this.actionBoxAreaElement.hidden = true;
         return;
       }
@@ -1326,8 +1291,6 @@ cr.define('login', function() {
         } else {
           this.querySelector('.mp-policy-not-allowed-msg').hidden = false;
         }
-      } else if (this.user_.isApp) {
-        this.setUserPodIconType('app');
       }
     },
 
@@ -2499,11 +2462,6 @@ cr.define('login', function() {
         }
       }).bind(this));
 
-      var learnMore = this.querySelector('.learn-more');
-      learnMore.addEventListener('mousedown', stopEventPropagation);
-      learnMore.addEventListener('click', this.handleLearnMoreEvent);
-      learnMore.addEventListener('keydown', this.handleLearnMoreEvent);
-
       var languageSelect = this.querySelector('.language-select');
       languageSelect.tabIndex = UserPodTabOrder.POD_INPUT;
       languageSelect.manuallyChanged = false;
@@ -2620,34 +2578,6 @@ cr.define('login', function() {
     setDisplayName: function(displayName) {
       this.user_.displayName = displayName;
       this.update();
-    },
-
-    /**
-     * Handle mouse and keyboard events for the learn more button. Triggering
-     * the button causes information about public sessions to be shown.
-     * @param {Event} event Mouse or keyboard event.
-     */
-    handleLearnMoreEvent: function(event) {
-      switch (event.type) {
-        // Show informaton on left click. Let any other clicks propagate.
-        case 'click':
-          if (event.button != 0)
-            return;
-          break;
-        // Show informaton when <Return> or <Space> is pressed. Let any other
-        // key presses propagate.
-        case 'keydown':
-          switch (event.keyCode) {
-            case 13:  // Return.
-            case 32:  // Space.
-              break;
-            default:
-              return;
-          }
-          break;
-      }
-      chrome.send('launchHelpApp', [HELP_TOPIC_PUBLIC_SESSION]);
-      stopEventPropagation(event);
     },
 
     /**
@@ -2906,115 +2836,6 @@ cr.define('login', function() {
   };
 
   /**
-   * Creates a user pod that represents kiosk app.
-   * @constructor
-   * @extends {UserPod}
-   */
-  var KioskAppPod = cr.ui.define(function() {
-    var node = UserPod();
-    return node;
-  });
-
-  KioskAppPod.prototype = {
-    __proto__: UserPod.prototype,
-
-    /** @override */
-    decorate: function() {
-      UserPod.prototype.decorate.call(this);
-      this.launchAppButtonElement.addEventListener('click',
-                                                   this.activate.bind(this));
-    },
-
-    /** @override */
-    update: function() {
-      this.imageElement.src = this.user.iconUrl;
-      this.imageElement.alt = this.user.label;
-      this.imageElement.title = this.user.label;
-      this.smallPodImageElement.src = this.user.iconUrl;
-      this.smallPodImageElement.alt = this.user.label;
-      this.smallPodImageElement.title = this.user.label;
-      this.passwordEntryContainerElement.hidden = true;
-      this.launchAppButtonContainerElement.hidden = false;
-      this.nameElement.textContent = this.user.label;
-      this.smallPodNameElement.textContent = this.user.label;
-      this.reauthNameHintElement.textContent = this.user.label;
-
-      UserPod.prototype.updateActionBoxArea.call(this);
-      UserPod.prototype.customizeUserPodPerUserType.call(this);
-    },
-
-    /** @override */
-    get mainInput() {
-      return this.launchAppButtonElement;
-    },
-
-    /** @override */
-    focusInput: function() {
-      // Move tabIndex from the whole pod to the main input.
-      this.tabIndex = -1;
-      this.mainInput.tabIndex = UserPodTabOrder.POD_INPUT;
-      this.mainInput.focus();
-    },
-
-    /** @override */
-    get forceOnlineSignin() {
-      return false;
-    },
-
-    /** @override */
-    activate: function(e) {
-      var diagnosticMode = e && e.ctrlKey;
-      this.launchApp_(this.user, diagnosticMode);
-      return true;
-    },
-
-    /** @override */
-    handleClickOnPod_: function(e) {
-      if (this.parentNode.disabled)
-        return;
-
-      if (this.getPodStyle() != UserPod.Style.LARGE) {
-        $('pod-row').switchMainPod(this);
-        return;
-      }
-
-      Oobe.clearErrors();
-      this.parentNode.lastFocusedPod_ = this;
-      this.activate(e);
-    },
-
-    /**
-     * Launch the app. If |diagnosticMode| is true, ask user to confirm.
-     * @param {Object} app App data.
-     * @param {boolean} diagnosticMode Whether to run the app in diagnostic
-     *     mode.
-     */
-    launchApp_: function(app, diagnosticMode) {
-      if (!diagnosticMode) {
-        chrome.send('launchKioskApp', [app.id, false]);
-        return;
-      }
-
-      var oobe = $('oobe');
-      if (!oobe.confirmDiagnosticMode_) {
-        oobe.confirmDiagnosticMode_ =
-            new cr.ui.dialogs.ConfirmDialog(document.body);
-        oobe.confirmDiagnosticMode_.setOkLabel(
-            loadTimeData.getString('confirmKioskAppDiagnosticModeYes'));
-        oobe.confirmDiagnosticMode_.setCancelLabel(
-            loadTimeData.getString('confirmKioskAppDiagnosticModeNo'));
-      }
-
-      oobe.confirmDiagnosticMode_.show(
-          loadTimeData.getStringF('confirmKioskAppDiagnosticModeFormat',
-                                  app.label),
-          function() {
-            chrome.send('launchKioskApp', [app.id, true]);
-          });
-    },
-  };
-
-  /**
    * Creates a new pod row element.
    * @constructor
    * @extends {HTMLDivElement}
@@ -3052,12 +2873,6 @@ cr.define('login', function() {
     userPodHeight_: 0,
     userPodWidth_: 0,
 
-    // Array of apps that are shown in addition to other user pods.
-    apps_: [],
-
-    // True to show app pods along with user pods.
-    shouldShowApps_: true,
-
     // Array of users that are shown (public/supervised/regular).
     users_: [],
 
@@ -3073,6 +2888,9 @@ cr.define('login', function() {
 
     // Whether we should add background behind user pods.
     showPodBackground_: false,
+
+    // Current UI state of the sign-in screen.
+    signinUIState_: SIGNIN_UI_STATE.HIDDEN,
 
     /** @override */
     decorate: function() {
@@ -3122,20 +2940,6 @@ cr.define('login', function() {
     },
 
     /**
-     * Returns pod with the given app id.
-     * @param {!string} app_id Application id to be matched.
-     * @return {Object} Pod with the given app id. null if pod hasn't been
-     *     found.
-     */
-    getPodWithAppId_: function(app_id) {
-      for (var i = 0, pod; pod = this.pods[i]; ++i) {
-        if (pod.user.isApp && pod.user.id == app_id)
-          return pod;
-      }
-      return null;
-    },
-
-    /**
      * Returns pod with the given username (null if there is no such pod).
      * @param {string} username Username to be matched.
      * @return {Object} Pod with the given username. null if pod hasn't been
@@ -3174,8 +2978,6 @@ cr.define('login', function() {
         userPod = new DesktopUserPod({user: user});
       else if (user.publicAccount)
         userPod = new PublicAccountUserPod({user: user});
-      else if (user.isApp)
-        userPod = new KioskAppPod({user: user});
       else
         userPod = new UserPod({user: user});
 
@@ -3209,23 +3011,6 @@ cr.define('login', function() {
     setFocusedPodPinVisibility: function(visible) {
       if (this.focusedPod_)
         this.focusedPod_.setPinVisibility(visible);
-    },
-
-    /**
-     * Runs app with a given id from the list of loaded apps.
-     * @param {!string} app_id of an app to run.
-     * @param {boolean=} opt_diagnosticMode Whether to run the app in
-     *     diagnostic mode. Default is false.
-     */
-    findAndRunAppForTesting: function(app_id, opt_diagnosticMode) {
-      var app = this.getPodWithAppId_(app_id);
-      if (app) {
-        var activationEvent = cr.doc.createEvent('MouseEvents');
-        var ctrlKey = opt_diagnosticMode;
-        activationEvent.initMouseEvent('click', true, true, null,
-            0, 0, 0, 0, 0, ctrlKey, false, false, false, 0, null);
-        app.dispatchEvent(activationEvent);
-      }
     },
 
     /**
@@ -3330,7 +3115,22 @@ cr.define('login', function() {
     },
 
     /**
-     * Rebuilds pod row using users_ and apps_ that were previously set or
+     * Current header bar UI / sign in state.
+     *
+     * @type {number} state Current state of the sign-in screen (see
+     *       SIGNIN_UI_STATE).
+     */
+    get signinUIState() {
+      return this.signinUIState_;
+    },
+
+    set signinUIState(state) {
+      this.signinUIState_ = state;
+      this.rebuildPods();
+    },
+
+    /**
+     * Rebuilds pod row using users_ that were previously set or
      * updated.
      */
     rebuildPods: function() {
@@ -3355,12 +3155,6 @@ cr.define('login', function() {
       for (var i = 0, pod; pod = this.pods[i]; ++i)
         this.podsWithPendingImages_.push(pod);
 
-      // TODO(nkostylev): Edge case handling when kiosk apps are not fitting.
-      if (this.shouldShowApps_) {
-        for (var i = 0; i < this.apps_.length; ++i)
-          this.addUserPod(this.apps_[i]);
-      }
-
       // Make sure we eventually show the pod row, even if some image is stuck.
       setTimeout(function() {
         $('pod-row').classList.remove('images-loading');
@@ -3369,8 +3163,8 @@ cr.define('login', function() {
         this.bottomMask.classList.remove('images-loading');
       }.bind(this), POD_ROW_IMAGES_LOAD_TIMEOUT_MS);
 
-      var isAccountPicker = $('login-header-bar').signinUIState ==
-          SIGNIN_UI_STATE.ACCOUNT_PICKER;
+      var isAccountPicker =
+          this.signinUIState_ == SIGNIN_UI_STATE.ACCOUNT_PICKER;
 
       // Immediately recalculate pods layout only when current UI is account
       // picker. Otherwise postpone it.
@@ -3385,14 +3179,6 @@ cr.define('login', function() {
         }, 0);
       } else {
         this.podPlacementPostponed_ = true;
-
-        // Update [Cancel] button state.
-        if ($('login-header-bar').signinUIState ==
-                SIGNIN_UI_STATE.GAIA_SIGNIN &&
-            emptyPodRow &&
-            this.pods.length > 0) {
-          login.GaiaSigninScreen.updateControlsState();
-        }
       }
     },
 
@@ -3418,33 +3204,6 @@ cr.define('login', function() {
      */
     get bottomMask() {
       return document.querySelector('.small-pod-container-mask.rotate');
-    },
-
-    /**
-     * Adds given apps to the pod row.
-     * @param {array} apps Array of apps.
-     */
-    setApps: function(apps) {
-      this.apps_ = apps;
-      this.rebuildPods();
-      chrome.send('kioskAppsLoaded');
-
-      // Check whether there's a pending kiosk app error.
-      window.setTimeout(function() {
-        chrome.send('checkKioskAppLaunchError');
-      }, 500);
-    },
-
-    /**
-     * Sets whether should show app pods.
-     * @param {boolean} shouldShowApps Whether app pods should be shown.
-     */
-    setShouldShowApps: function(shouldShowApps) {
-      if (this.shouldShowApps_ == shouldShowApps)
-        return;
-
-      this.shouldShowApps_ = shouldShowApps;
-      this.rebuildPods();
     },
 
     /**
@@ -3718,7 +3477,7 @@ cr.define('login', function() {
      */
     onWindowResize: function() {
       var isAccountPicker =
-          $('login-header-bar').signinUIState == SIGNIN_UI_STATE.ACCOUNT_PICKER;
+          this.signinUIState_ == SIGNIN_UI_STATE.ACCOUNT_PICKER;
       if (isAccountPicker) {
         // Redo pod placement if account picker is the current screen.
         this.placePods_();
@@ -4425,8 +4184,6 @@ cr.define('login', function() {
       var pods = this.pods;
       for (var pod of pods)
         pod.classList.toggle('show-pod-background', showPodBackground);
-      $('login-header-bar')
-          .classList.toggle('translucent-background', showPodBackground);
 
       var isShowingScrollList =
           this.smallPodsContainer.classList.contains('scroll');
@@ -4524,13 +4281,11 @@ cr.define('login', function() {
           podToFocus.focus();
         }
 
-        if (!podToFocus.user.isApp) {
-          // Only updates wallpaper when the focused pod is in large style.
-          chrome.send('focusPod', [
-            podToFocus.user.username,
-            podToFocus.getPodStyle() == UserPod.Style.LARGE
-          ]);
-        }
+        // Only updates wallpaper when the focused pod is in large style.
+        chrome.send('focusPod', [
+          podToFocus.user.username,
+          podToFocus.getPodStyle() == UserPod.Style.LARGE
+        ]);
         this.firstShown_ = false;
         this.lastFocusedPod_ = podToFocus;
         this.setUserPodFingerprintIcon(
@@ -4701,8 +4456,6 @@ cr.define('login', function() {
 
       // Return focus back to single pod.
       if (this.alwaysFocusSinglePod && !pod) {
-        if ($('login-header-bar').contains(e.target))
-          return;
         this.focusPod(this.focusedPod_, true /* force */);
         this.focusedPod_.userTypeBubbleElement.classList.remove('bubble-shown');
         this.focusedPod_.isActionBoxMenuHovered = false;
@@ -4929,12 +4682,6 @@ cr.define('login', function() {
         this.ownerDocument.addEventListener(
             event, this.listeners_[event][0], this.listeners_[event][1]);
       }
-      $('login-header-bar').buttonsTabIndex = UserPodTabOrder.HEADER_BAR;
-      // Header bar should be hidden when virtual keyboard is shown, or
-      // views-based shelf is shown.
-      Oobe.getInstance().headerHidden =
-          this.isScreenShrinked_() || Oobe.getInstance().showingViewsBasedShelf;
-
       if (this.podPlacementPostponed_) {
         this.podPlacementPostponed_ = false;
         this.placePods_();
@@ -4955,7 +4702,6 @@ cr.define('login', function() {
         this.ownerDocument.removeEventListener(
             event, this.listeners_[event][0], this.listeners_[event][1]);
       }
-      $('login-header-bar').buttonsTabIndex = 0;
 
       // Clear global states that should only applies to account picker.
       $('scroll-container').classList.remove('disable-scroll');

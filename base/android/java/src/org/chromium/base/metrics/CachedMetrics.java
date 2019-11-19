@@ -9,10 +9,14 @@ import org.chromium.base.library_loader.LibraryLoader;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.concurrent.GuardedBy;
+
 /**
  * Utility classes for recording UMA metrics before the native library
  * may have been loaded.  Metrics are cached until the library is known
  * to be loaded, then committed to the MetricsService all at once.
+ *
+ * NOTE: Currently supports recording metrics only in Browser/Webview/Renderer processes.
  */
 public class CachedMetrics {
     /**
@@ -21,6 +25,7 @@ public class CachedMetrics {
      * commit operation when the native library is loaded.
      */
     private abstract static class CachedMetric {
+        @GuardedBy("sMetrics")
         private static final List<CachedMetric> sMetrics = new ArrayList<CachedMetric>();
 
         protected final String mName;
@@ -39,6 +44,7 @@ public class CachedMetrics {
          * Note: The synchronization is not done inside this function because subclasses
          * need to increment their held values under lock to ensure thread-safety.
          */
+        @GuardedBy("sMetrics")
         protected final void addToCache() {
             assert Thread.holdsLock(sMetrics);
 
@@ -51,6 +57,7 @@ public class CachedMetrics {
          * Commits the metric. Expects the native library to be loaded.
          * Must be called while holding the synchronized(sMetrics) lock.
          */
+        @GuardedBy("sMetrics")
         protected abstract void commitAndClear();
     }
 
@@ -58,6 +65,7 @@ public class CachedMetrics {
      * Caches an action that will be recorded after native side is loaded.
      */
     public static class ActionEvent extends CachedMetric {
+        @GuardedBy("CachedMetric.sMetrics")
         private int mCount;
 
         public ActionEvent(String actionName) {
@@ -80,6 +88,7 @@ public class CachedMetrics {
         }
 
         @Override
+        @GuardedBy("CachedMetric.sMetrics")
         protected void commitAndClear() {
             while (mCount > 0) {
                 recordWithNative();
@@ -90,6 +99,7 @@ public class CachedMetrics {
 
     /** Caches a set of integer histogram samples. */
     public static class SparseHistogramSample extends CachedMetric {
+        @GuardedBy("CachedMetric.sMetrics")
         private final List<Integer> mSamples = new ArrayList<Integer>();
 
         public SparseHistogramSample(String histogramName) {
@@ -112,6 +122,7 @@ public class CachedMetrics {
         }
 
         @Override
+        @GuardedBy("CachedMetric.sMetrics")
         protected void commitAndClear() {
             for (Integer sample : mSamples) {
                 recordWithNative(sample);
@@ -146,6 +157,7 @@ public class CachedMetrics {
         }
 
         @Override
+        @GuardedBy("CachedMetric.sMetrics")
         protected void commitAndClear() {
             for (Integer sample : mSamples) {
                 recordWithNative(sample);
@@ -156,6 +168,7 @@ public class CachedMetrics {
 
     /** Caches a set of times histogram samples. */
     public static class TimesHistogramSample extends CachedMetric {
+        @GuardedBy("CachedMetric.sMetrics")
         private final List<Long> mSamples = new ArrayList<Long>();
 
         public TimesHistogramSample(String histogramName) {
@@ -178,6 +191,7 @@ public class CachedMetrics {
         }
 
         @Override
+        @GuardedBy("CachedMetric.sMetrics")
         protected void commitAndClear() {
             for (Long sample : mSamples) {
                 recordWithNative(sample);
@@ -203,6 +217,7 @@ public class CachedMetrics {
 
     /** Caches a set of boolean histogram samples. */
     public static class BooleanHistogramSample extends CachedMetric {
+        @GuardedBy("CachedMetric.sMetrics")
         private final List<Boolean> mSamples = new ArrayList<Boolean>();
 
         public BooleanHistogramSample(String histogramName) {
@@ -225,6 +240,7 @@ public class CachedMetrics {
         }
 
         @Override
+        @GuardedBy("CachedMetric.sMetrics")
         protected void commitAndClear() {
             for (Boolean sample : mSamples) {
                 recordWithNative(sample);
@@ -238,6 +254,7 @@ public class CachedMetrics {
      * Corresponds to UMA_HISTOGRAM_CUSTOM_COUNTS C++ macro.
      */
     public static class CustomCountHistogramSample extends CachedMetric {
+        @GuardedBy("CachedMetric.sMetrics")
         private final List<Integer> mSamples = new ArrayList<Integer>();
         private final int mMin;
         private final int mMax;
@@ -266,6 +283,7 @@ public class CachedMetrics {
         }
 
         @Override
+        @GuardedBy("CachedMetric.sMetrics")
         protected void commitAndClear() {
             for (Integer sample : mSamples) {
                 recordWithNative(sample);
@@ -306,7 +324,7 @@ public class CachedMetrics {
 
     /**
      * Calls out to native code to commit any cached histograms and events.
-     * Should be called once the native library has been loaded.
+     * Should be called once the native library has been initialized.
      */
     public static void commitCachedMetrics() {
         synchronized (CachedMetric.sMetrics) {

@@ -15,14 +15,15 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
-#include "base/message_loop/message_loop.h"
+#include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "base/task/task_scheduler/task_scheduler.h"
+#include "base/task/single_thread_task_executor.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/base/cache_type.h"
 #include "net/base/net_errors.h"
@@ -96,7 +97,8 @@ std::unique_ptr<Backend> CreateAndInitBackend(const CacheSpec& spec) {
       base::BindOnce(&SetSuccessCodeOnCompletion, &run_loop, &succeeded);
   const int net_error =
       CreateCacheBackend(spec.cache_type, spec.backend_type, spec.path, 0,
-                         false, nullptr, &backend, std::move(callback));
+                         disk_cache::ResetHandling::kNeverReset, nullptr,
+                         &backend, std::move(callback));
   if (net_error == net::OK)
     SetSuccessCodeOnCompletion(&run_loop, &succeeded, net::OK);
   else
@@ -113,12 +115,8 @@ std::unique_ptr<Backend> CreateAndInitBackend(const CacheSpec& spec) {
         &SetSuccessCodeOnCompletion, &index_run_loop, &succeeded);
     SimpleBackendImpl* simple_backend =
         static_cast<SimpleBackendImpl*>(backend.get());
-    const int index_net_error =
-        simple_backend->index()->ExecuteWhenReady(std::move(index_callback));
-    if (index_net_error == net::OK)
-      SetSuccessCodeOnCompletion(&index_run_loop, &succeeded, net::OK);
-    else
-      index_run_loop.Run();
+    simple_backend->index()->ExecuteWhenReady(std::move(index_callback));
+    index_run_loop.Run();
     if (!succeeded) {
       LOG(ERROR) << "Could not initialize Simple Cache in "
                  << spec.path.LossyDisplayName();
@@ -262,8 +260,8 @@ bool ParseAndStoreSpec(const std::string& spec_str,
 
 bool Main(int argc, char** argv) {
   base::AtExitManager at_exit_manager;
-  base::MessageLoopForIO message_loop;
-  base::TaskScheduler::CreateAndStartWithDefaultParams(
+  base::SingleThreadTaskExecutor executor(base::MessagePumpType::IO);
+  base::ThreadPoolInstance::CreateAndStartWithDefaultParams(
       "disk_cache_memory_test");
   base::CommandLine::Init(argc, argv);
   const base::CommandLine& command_line =

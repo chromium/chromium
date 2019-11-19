@@ -1,6 +1,6 @@
 include_rules = [
   "+components/viz/client",
   "+mojo/public/cpp/bindings",
-  "+services/viz/public/interfaces",
-  "+services/viz/privileged/interfaces/compositing",
+  "+services/viz/public/mojom",
+  "+services/viz/privileged/mojom/compositing",
 ]

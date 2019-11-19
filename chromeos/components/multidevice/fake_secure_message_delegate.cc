@@ -9,7 +9,7 @@
 #include <algorithm>
 
 #include "base/callback.h"
-#include "base/md5.h"
+#include "base/hash/md5.h"
 #include "base/strings/string_util.h"
 
 namespace chromeos {
@@ -195,6 +195,14 @@ void FakeSecureMessageDelegate::UnwrapSecureMessage(
 std::string FakeSecureMessageDelegate::GetPrivateKeyForPublicKey(
     const std::string& public_key) {
   return kPrivateKeyPrefix + public_key;
+}
+
+std::unique_ptr<multidevice::SecureMessageDelegate>
+FakeSecureMessageDelegateFactory::BuildInstance() {
+  auto instance = std::make_unique<multidevice::FakeSecureMessageDelegate>();
+  instance_ = instance.get();
+
+  return instance;
 }
 
 }  // namespace multidevice

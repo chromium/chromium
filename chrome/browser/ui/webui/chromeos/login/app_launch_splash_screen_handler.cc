@@ -9,8 +9,10 @@
 
 #include "base/values.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_app_manager.h"
+#include "chrome/browser/chromeos/login/app_launch_controller.h"
 #include "chrome/browser/chromeos/login/oobe_screen.h"
 #include "chrome/browser/chromeos/login/screens/network_error.h"
+#include "chrome/browser/ui/webui/chromeos/login/error_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/chromium_strings.h"
@@ -23,8 +25,6 @@
 #include "ui/base/webui/web_ui_util.h"
 
 namespace {
-
-const char kJsScreenPath[] = "login.AppLaunchSplashScreen";
 
 // Returns network name by service path.
 std::string GetNetworkName(const std::string& service_path) {
@@ -40,6 +40,8 @@ std::string GetNetworkName(const std::string& service_path) {
 
 namespace chromeos {
 
+constexpr StaticOobeScreenId AppLaunchSplashScreenView::kScreenId;
+
 AppLaunchSplashScreenHandler::AppLaunchSplashScreenHandler(
     JSCallsContainer* js_calls_container,
     const scoped_refptr<NetworkStateInformer>& network_state_informer,
@@ -47,7 +49,6 @@ AppLaunchSplashScreenHandler::AppLaunchSplashScreenHandler(
     : BaseScreenHandler(kScreenId, js_calls_container),
       network_state_informer_(network_state_informer),
       error_screen_(error_screen) {
-  set_call_js_prefix(kJsScreenPath);
   network_state_informer_->AddObserver(this);
 }
 
@@ -77,12 +78,11 @@ void AppLaunchSplashScreenHandler::DeclareLocalizedValues(
 void AppLaunchSplashScreenHandler::Initialize() {
   if (show_on_init_) {
     show_on_init_ = false;
-    Show(app_id_);
+    Show();
   }
 }
 
-void AppLaunchSplashScreenHandler::Show(const std::string& app_id) {
-  app_id_ = app_id;
+void AppLaunchSplashScreenHandler::Show() {
   if (!page_is_ready()) {
     show_on_init_ = true;
     return;
@@ -130,8 +130,7 @@ void AppLaunchSplashScreenHandler::UpdateAppLaunchState(AppLaunchState state) {
   UpdateState(NetworkError::ERROR_REASON_UPDATE);
 }
 
-void AppLaunchSplashScreenHandler::SetDelegate(
-    AppLaunchSplashScreenHandler::Delegate* delegate) {
+void AppLaunchSplashScreenHandler::SetDelegate(Delegate* delegate) {
   delegate_ = delegate;
 }
 
@@ -182,7 +181,7 @@ void AppLaunchSplashScreenHandler::ShowNetworkConfigureUI() {
       break;
   }
 
-  if (GetCurrentScreen() != OobeScreen::SCREEN_ERROR_MESSAGE)
+  if (GetCurrentScreen() != ErrorScreenView::kScreenId)
     error_screen_->SetParentScreen(kScreenId);
   error_screen_->Show();
 }
@@ -198,9 +197,8 @@ void AppLaunchSplashScreenHandler::OnNetworkReady() {
 
 void AppLaunchSplashScreenHandler::UpdateState(
     NetworkError::ErrorReason reason) {
-  if (!delegate_ ||
-      (state_ != APP_LAUNCH_STATE_PREPARING_NETWORK &&
-       state_ != APP_LAUNCH_STATE_NETWORK_WAIT_TIMEOUT)) {
+  if (!delegate_ || (state_ != APP_LAUNCH_STATE_PREPARING_NETWORK &&
+                     state_ != APP_LAUNCH_STATE_NETWORK_WAIT_TIMEOUT)) {
     return;
   }
 
@@ -213,8 +211,8 @@ void AppLaunchSplashScreenHandler::UpdateState(
 
 void AppLaunchSplashScreenHandler::PopulateAppInfo(
     base::DictionaryValue* out_info) {
-  KioskAppManager::App app;
-  KioskAppManager::Get()->GetApp(app_id_, &app);
+  DCHECK(delegate_);
+  KioskAppManagerBase::App app = delegate_->GetAppData();
 
   if (app.name.empty())
     app.name = l10n_util::GetStringUTF8(IDS_SHORT_PRODUCT_NAME);
@@ -268,7 +266,7 @@ void AppLaunchSplashScreenHandler::HandleNetworkConfigRequested() {
     return;
 
   network_config_requested_ = true;
-  delegate_->OnNetworkConfigRequested(true);
+  delegate_->OnNetworkConfigRequested();
 }
 
 void AppLaunchSplashScreenHandler::HandleContinueAppLaunch() {
@@ -276,8 +274,8 @@ void AppLaunchSplashScreenHandler::HandleContinueAppLaunch() {
   if (delegate_ && online_state_) {
     network_config_requested_ = false;
     network_config_done_ = true;
-    delegate_->OnNetworkConfigRequested(false);
-    Show(app_id_);
+    delegate_->OnNetworkConfigFinished();
+    Show();
   }
 }
 

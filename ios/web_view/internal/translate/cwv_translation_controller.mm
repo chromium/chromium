@@ -10,6 +10,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/strings/string16.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/time/time.h"
 #include "components/translate/core/browser/translate_download_manager.h"
 #import "ios/web_view/internal/cwv_web_view_configuration_internal.h"
 #import "ios/web_view/internal/translate/cwv_translation_language_internal.h"
@@ -74,6 +75,7 @@ CWVTranslationError CWVConvertTranslateError(
 @implementation CWVTranslationController {
   ios_web_view::WebViewTranslateClient* _translateClient;
   std::unique_ptr<translate::TranslatePrefs> _translatePrefs;
+  base::Time _languagesLastUpdatedTime;
 }
 
 @synthesize delegate = _delegate;
@@ -245,7 +247,10 @@ CWVTranslationError CWVConvertTranslateError(
 #pragma mark - Private Methods
 
 - (NSDictionary<NSString*, CWVTranslationLanguage*>*)supportedLanguagesByCode {
-  if (!_supportedLanguagesByCode) {
+  base::Time languagesLastUpdatedTime =
+      translate::TranslateDownloadManager::GetSupportedLanguagesLastUpdated();
+  if (!_supportedLanguagesByCode ||
+      _languagesLastUpdatedTime < languagesLastUpdatedTime) {
     NSMutableDictionary<NSString*, CWVTranslationLanguage*>*
         supportedLanguagesByCode = [NSMutableDictionary dictionary];
     std::vector<std::string> languageCodes;
@@ -265,7 +270,7 @@ CWVTranslationError CWVConvertTranslateError(
 
       supportedLanguagesByCode[language.languageCode] = language;
     }
-
+    _languagesLastUpdatedTime = languagesLastUpdatedTime;
     _supportedLanguagesByCode = [supportedLanguagesByCode copy];
   }
   return _supportedLanguagesByCode;

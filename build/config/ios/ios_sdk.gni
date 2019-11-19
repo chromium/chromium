@@ -3,7 +3,10 @@
 # found in the LICENSE file.
 
 import("//build/config/ios/ios_sdk_overrides.gni")
+import("//build/toolchain/goma.gni")
 import("//build/toolchain/toolchain.gni")
+
+assert(use_system_xcode, "Hermetic xcode doesn't work for ios.")
 
 declare_args() {
   # SDK path to use. When empty this will use the default SDK based on the
@@ -18,6 +21,12 @@ declare_args() {
   xcode_build = ""
   machine_os_build = ""
 
+  # Set DEVELOPER_DIR while running sdk_info.py.
+  # Due to https://crbug.com/1018739, the path must not contains filtered
+  # out patterns or the build will fail. In particular src/build/mac does
+  # not work (see build/BUILDCONFIG.gn for pattern that would cause issue).
+  ios_sdk_developer_dir = ""
+
   # The iOS Code signing identity to use
   # TODO(GYP), TODO(sdfresne): Consider having a separate
   # ios_enable_code_signing_flag=<bool> flag to make the invocation clearer.
@@ -29,12 +38,6 @@ declare_args() {
   # "Organization Identifier" in Xcode). Code signing will fail if no mobile
   # provisioning for the selected code signing identify support that prefix.
   ios_app_bundle_id_prefix = "org.chromium"
-
-  # If true, then allow using Xcode to automatically manage certificates. This
-  # requires loading a separate Xcode project and enable automatically managed
-  # certificates. When true, all test application will use the same bundle id
-  # to avoid running out of certificates if using a free account.
-  ios_automatically_manage_certs = false
 
   # If non-empty, this list must contain valid cpu architecture, and the final
   # build will be a multi-architecture build (aka fat build) supporting the
@@ -50,14 +53,20 @@ declare_args() {
   # You can also pass the value via "--args" parameter for "gn gen" command by
   # using the syntax --args='additional_target_cpus=["arm"] target_cpu="arm64"'.
   additional_target_cpus = []
+
+  # TODO(crbug.com/1015730): true if use_goma = true.
+  ios_enable_relative_sdk_path = false
 }
+
+# Official builds may not use goma.
+assert(!(use_goma && is_chrome_branded && is_official_build &&
+             target_cpu == "arm64"),
+       "goma use is forbidden for official iOS builds.")
 
 assert(custom_toolchain == "" || additional_target_cpus == [],
        "cannot define both custom_toolchain and additional_target_cpus")
 
 use_ios_simulator = current_cpu == "x86" || current_cpu == "x64"
-
-ios_generic_test_bundle_id_suffix = "generic-unit-test"
 
 # Initialize additional_toolchains from additional_target_cpus. Assert here
 # that the list does not contains $target_cpu nor duplicates as this would
@@ -88,19 +97,25 @@ if (ios_sdk_path == "") {
     ios_sdk_platform = "iPhoneOS"
   }
 
-  ios_sdk_info_args = []
-  if (!use_system_xcode) {
+  ios_sdk_info_args = [ "--get_sdk_info" ]
+  ios_sdk_info_args += [ ios_sdk_name ]
+  if (ios_sdk_developer_dir != "") {
     ios_sdk_info_args += [
       "--developer_dir",
-      hermetic_xcode_path,
+      ios_sdk_developer_dir,
     ]
   }
-  ios_sdk_info_args += [ ios_sdk_name ]
   script_name = "//build/config/mac/sdk_info.py"
   _ios_sdk_result = exec_script(script_name, ios_sdk_info_args, "scope")
-  ios_sdk_path = _ios_sdk_result.sdk_path
+  if (ios_enable_relative_sdk_path) {
+    ios_sdk_path = rebase_path(_ios_sdk_result.sdk_path, root_build_dir)
+    ios_sdk_platform_path =
+        rebase_path(_ios_sdk_result.sdk_platform_path, root_build_dir)
+  } else {
+    ios_sdk_path = _ios_sdk_result.sdk_path
+    ios_sdk_platform_path = _ios_sdk_result.sdk_platform_path
+  }
   ios_sdk_version = _ios_sdk_result.sdk_version
-  ios_sdk_platform_path = _ios_sdk_result.sdk_platform_path
   ios_sdk_build = _ios_sdk_result.sdk_build
   xcode_version = _ios_sdk_result.xcode_version
   xcode_version_int = _ios_sdk_result.xcode_version_int
@@ -120,12 +135,6 @@ if (ios_enable_code_signing && !use_ios_simulator) {
     "--identity-description",
     ios_code_signing_identity_description,
   ]
-  if (!use_system_xcode) {
-    find_signing_identity_args += [
-      "--developer_dir",
-      hermetic_xcode_path,
-    ]
-  }
 
   # If an identity is not provided, look for one on the host
   if (ios_code_signing_identity == "") {

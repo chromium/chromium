@@ -131,8 +131,8 @@ class PassedToMoveRewriter : public MatchFinder::MatchCallback,
   Replacements* replacements_;
 };
 
-// Replace base::Bind() to base::BindOnce() where resulting base::Callback is
-// implicitly converted into base::OnceCallback.
+// Replace base::Bind() and base::BindRepeating() to base::BindOnce() where
+// resulting callbacks are implicitly converted into base::OnceCallback.
 // Example:
 //   // Before
 //   base::PostTask(FROM_HERE, base::Bind(&Foo));
@@ -154,7 +154,9 @@ class BindOnceRewriter : public MatchFinder::MatchCallback, public Rewriter {
             hasName("::base::RepeatingCallback")))));
 
     auto bind_call =
-        callExpr(callee(namedDecl(hasName("::base::Bind")))).bind("target");
+        callExpr(callee(namedDecl(anyOf(hasName("::base::Bind"),
+                                        hasName("::base::BindRepeating")))))
+            .bind("target");
     auto parameter_construction =
         cxxConstructExpr(is_repeating_callback, argumentCountIs(1),
                          hasArgument(0, ignoringImplicit(bind_call)));
@@ -274,7 +276,7 @@ class AddStdMoveRewriter : public MatchFinder::MatchCallback, public Rewriter {
     if (!cfg)
       return false;
     if (!parent_map_)
-      parent_map_ = llvm::make_unique<clang::ParentMap>(stmt);
+      parent_map_ = std::make_unique<clang::ParentMap>(stmt);
     else
       parent_map_->addStmt(stmt);
 
@@ -667,25 +669,24 @@ int main(int argc, const char* argv[]) {
 
   std::unique_ptr<Rewriter> rewriter;
   if (rewriter_option == "remove_unneeded_passed") {
-    auto passed_to_move =
-        llvm::make_unique<PassedToMoveRewriter>(&replacements);
+    auto passed_to_move = std::make_unique<PassedToMoveRewriter>(&replacements);
     match_finder.addMatcher(passed_to_move->GetMatcher(), passed_to_move.get());
     rewriter = std::move(passed_to_move);
   } else if (rewriter_option == "bind_to_bind_once") {
-    auto bind_once = llvm::make_unique<BindOnceRewriter>(&replacements);
+    auto bind_once = std::make_unique<BindOnceRewriter>(&replacements);
     match_finder.addMatcher(bind_once->GetMatcher(), bind_once.get());
     rewriter = std::move(bind_once);
   } else if (rewriter_option == "pass_by_value") {
-    auto pass_by_value = llvm::make_unique<PassByValueRewriter>(&replacements);
+    auto pass_by_value = std::make_unique<PassByValueRewriter>(&replacements);
     match_finder.addMatcher(pass_by_value->GetMatcher(), pass_by_value.get());
     rewriter = std::move(pass_by_value);
   } else if (rewriter_option == "add_std_move") {
-    auto add_std_move = llvm::make_unique<AddStdMoveRewriter>(&replacements);
+    auto add_std_move = std::make_unique<AddStdMoveRewriter>(&replacements);
     match_finder.addMatcher(add_std_move->GetMatcher(), add_std_move.get());
     rewriter = std::move(add_std_move);
   } else if (rewriter_option == "remove_unneeded_adapt_callback") {
     auto remove_unneeded_adapt_callback =
-        llvm::make_unique<AdaptCallbackForRepeatingRewriter>(&replacements);
+        std::make_unique<AdaptCallbackForRepeatingRewriter>(&replacements);
     match_finder.addMatcher(remove_unneeded_adapt_callback->GetMatcher(),
                             remove_unneeded_adapt_callback.get());
     rewriter = std::move(remove_unneeded_adapt_callback);

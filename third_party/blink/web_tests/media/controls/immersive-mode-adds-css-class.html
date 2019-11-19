@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<title>Test that enabling immersive mode adds the immersive mode CSS class.</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/run-after-layout-and-paint.js"></script>
+<script src="../media-controls.js"></script>
+<video controls width=400 preload=metadata src="../content/60_sec_video.webm"></video>
+<script>
+async_test(t => {
+  const video = document.querySelector('video');
+  const controls = mediaControls(video);
+  const immersiveModeCSSClass = 'immersive-mode';
+
+  window.onload = t.step_func(() => {
+    assert_false(controls.classList.contains(immersiveModeCSSClass));
+    enableImmersiveMode(t);
+    assert_true(controls.classList.contains(immersiveModeCSSClass));
+    checkThatVRCSSRulesAreRespected();
+
+    // Make sure that we still respect immersive mode when enlarged.
+    video.width = 1000;
+    runAfterLayoutAndPaint(t.step_func_done(() => {
+      assert_true(controls.classList.contains(immersiveModeCSSClass));
+      checkThatVRCSSRulesAreRespected();
+    }));
+  });
+
+  function checkThatVRCSSRulesAreRespected() {
+    // Check a few styles to make sure VR rules are not being overridden.
+    const muteButtonStyle = getComputedStyle(muteButton(video));
+    const fullscreenButtonStyle = getComputedStyle(fullscreenButton(video));
+    const overflowButtonStyle = getComputedStyle(overflowButton(video));
+    const currentTimeStyle = getComputedStyle(currentTimeElement(video));
+    const buttonPanelStyle = getComputedStyle(buttonPanelElement(video));
+    const timelineStyle = getComputedStyle(timelineElement(video));
+    const thumbStyle = getComputedStyle(timelineThumb(video));
+
+    assert_equals('43px', muteButtonStyle.height, 'Mute button height is respected');
+    assert_equals('24px', fullscreenButtonStyle['background-size'], 'Fullscreen button background size is respected');
+    assert_equals('43px', overflowButtonStyle.width, 'Overflow button width is respected');
+    assert_equals('16px', currentTimeStyle['font-size'], 'Current time display font size is respected');
+    assert_equals('43px', buttonPanelStyle.height, 'Button panel height is respected');
+    assert_equals('535px', buttonPanelStyle['max-width'], 'Button panel max-width is respected');
+    assert_equals('5px', timelineStyle.height, 'Timeline height is respected');
+    assert_equals('471px', timelineStyle['max-width'], 'Timeline max-width is respected');
+    assert_equals('16px', thumbStyle.width, 'Thumb width is respected');
+
+    if (internals.runtimeFlags.mediaControlsOverlayPlayButtonEnabled) {
+      const overlayPlayButtonStyle = getComputedStyle(mediaControlsOverlayPlayButtonInternal(video));
+      assert_equals('64px', overlayPlayButtonStyle.height, 'Overlay play button height is respected');
+    }
+
+  }
+});
+</script>
+</html>

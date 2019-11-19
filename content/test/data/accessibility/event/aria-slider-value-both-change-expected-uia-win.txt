@@ -1,0 +1,2 @@
+AriaProperties changed on role=slider
+RangeValueValue changed on role=slider

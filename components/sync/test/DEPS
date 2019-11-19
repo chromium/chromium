@@ -3,7 +3,4 @@ include_rules = [
   "+components/sync",
   "+net",
   '+services/network/public/cpp',
-
-  # For generated JNI code.
-  "+jni",
 ]

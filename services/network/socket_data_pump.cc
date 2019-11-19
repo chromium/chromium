@@ -37,8 +37,7 @@ SocketDataPump::SocketDataPump(
       send_stream_(std::move(send_pipe_handle)),
       send_stream_watcher_(FROM_HERE,
                            mojo::SimpleWatcher::ArmingPolicy::MANUAL),
-      traffic_annotation_(traffic_annotation),
-      weak_factory_(this) {
+      traffic_annotation_(traffic_annotation) {
   send_stream_watcher_.Watch(
       send_stream_.get(),
       MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_PEER_CLOSED,

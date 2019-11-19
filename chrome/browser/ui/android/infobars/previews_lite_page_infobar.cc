@@ -8,7 +8,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
-#include "jni/PreviewsLitePageInfoBar_jni.h"
+#include "chrome/android/chrome_jni_headers/PreviewsLitePageInfoBar_jni.h"
 
 PreviewsLitePageInfoBar::PreviewsLitePageInfoBar(
     std::unique_ptr<PreviewsLitePageInfoBarDelegate> delegate)

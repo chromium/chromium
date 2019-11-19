@@ -1,0 +1,3 @@
+HTTP/1.1 200 OK
+Accept-CH: dpr,device-memory,viewport-width,rtt,downlink,ect,lang,ua,arch,platform,model
+Accept-CH-Lifetime: 1

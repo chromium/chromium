@@ -6,6 +6,7 @@
 #define SERVICES_SHAPE_DETECTION_FACE_DETECTION_PROVIDER_MAC_H_
 
 #include "base/macros.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/shape_detection/public/mojom/facedetection_provider.mojom.h"
 
 namespace shape_detection {
@@ -18,11 +19,12 @@ class FaceDetectionProviderMac
   FaceDetectionProviderMac();
   ~FaceDetectionProviderMac() override;
 
-  // Binds FaceDetection provider request to the implementation of
+  // Binds FaceDetection provider receiver to the implementation of
   // mojom::FaceDetectionProvider.
-  static void Create(mojom::FaceDetectionProviderRequest request);
+  static void Create(
+      mojo::PendingReceiver<mojom::FaceDetectionProvider> receiver);
 
-  void CreateFaceDetection(mojom::FaceDetectionRequest request,
+  void CreateFaceDetection(mojo::PendingReceiver<mojom::FaceDetection> receiver,
                            mojom::FaceDetectorOptionsPtr options) override;
 
  private:

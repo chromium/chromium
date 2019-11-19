@@ -28,43 +28,38 @@
     'groupEnd'
   ];
   const configs = [
-    undefined,
     pageContextId,
     frameContextId
   ];
 
   dp.Runtime.onConsoleAPICalled(result => testRunner.log(result));
 
-  for (const config of configs) {
-    for (const func of console_argsRequired)
-      await testConsoleFunctions(func, true, config);
+  for (const contextId of configs) {
+    for (const func of console_argsRequired) {
+      logConsoleTestMethod(func, true, contextId);
+      await dp.Runtime.evaluate({ expression: `console.${func}({a:3, b:"hello"})`, contextId });
+    }
 
-    for (const func of console_argsOptional)
-      await testConsoleFunctions(func, false, config);
+    for (const func of console_argsOptional) {
+      logConsoleTestMethod(func, false, contextId);
+      await dp.Runtime.evaluate({ expression: `console.${func}()`, contextId });
+    }
   }
 
   testRunner.completeTest();
 
-
-
-  async function testConsoleFunctions(func, required, contextId) {
-    logConsoleTestMethod(func, required, contextId);
-    await dp.Runtime.evaluate({ expression: `console.${func}(10, Infinity, {a:3, b:"hello"})`, contextId });
-    await dp.Runtime.evaluate({ expression: `console.${func}()`, contextId });
-  }
-
   function logConsoleTestMethod(func, required, contextId) {
     const context = getContextType(contextId);
     const contextString = context ? `inside ${context} context` : '';
-    const argType = required ? "required" : "optional";
+    const argType = required ? 'required' : 'optional';
     testRunner.log(`Testing console.${func} with ${argType} args ${contextString}`);
   }
 
   function getContextType(contextId) {
     if (contextId === pageContextId) {
-      return "page";
+      return 'page';
     } else if (contextId === frameContextId) {
-      return "frame";
+      return 'frame';
     }
   }
 });

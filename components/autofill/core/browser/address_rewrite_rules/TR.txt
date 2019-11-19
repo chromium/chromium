@@ -1,0 +1,2 @@
+\bturkiye\b	tr
+\bturkey\b	tr

@@ -12,28 +12,32 @@
 }
 
 .oobe-popup {
-  width: 640px;
+  max-width: 640px;
 }
 
 #webview-container {
-  width: 100%;
+  box-sizing: border-box;
+  padding: 16px;
 }
 
-#webview-container.overlay-loading > webview {
-  visibility: hidden;
+#webview-container.overlay-loading > webview,
+#webview-container:not(.overlay-loading) > div {
+  display: none;
 }
 
 #overlay-webview {
   border: 1px solid #d9d9d9;
   box-sizing: border-box;
+}
+
+#overlay-webview,
+#overlay-webview-loading {
   display: block;
   height: 300px;
-  margin: 16px;
-  width: 608px;
 }
 
 #overlay-close-button {
-  margin-right: 0;
+  margin-inline-end: 0;
 }
 
 #close-button-text {

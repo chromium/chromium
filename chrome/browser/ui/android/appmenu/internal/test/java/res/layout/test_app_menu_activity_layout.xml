@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent" >
+
+    <ImageButton
+        android:id="@+id/top_button"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        app:srcCompat="@drawable/test_ic_more_vert_black_24dp"
+        android:layout_gravity="top|end"
+        tools:ignore="ContentDescription" />
+
+    <ImageButton
+        android:id="@+id/bottom_button"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        app:srcCompat="@drawable/test_ic_more_vert_black_24dp"
+        android:layout_gravity="bottom|end"
+        tools:ignore="ContentDescription" />
+
+    <View
+        android:id="@+id/menu_anchor_stub"
+        android:layout_width="0px"
+        android:layout_height="0px"
+        android:layout_gravity="bottom|start" />
+</FrameLayout>

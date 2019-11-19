@@ -20,9 +20,7 @@ using content::WebContents;
 namespace prerender {
 
 PrerenderTabHelper::PrerenderTabHelper(content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents),
-      origin_(ORIGIN_NONE),
-      weak_factory_(this) {}
+    : content::WebContentsObserver(web_contents), origin_(ORIGIN_NONE) {}
 
 PrerenderTabHelper::~PrerenderTabHelper() {
 }

@@ -7,7 +7,7 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
-#include "jni/Callback_jni.h"
+#include "base/base_jni_headers/Callback_jni.h"
 
 namespace base {
 namespace android {

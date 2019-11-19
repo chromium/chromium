@@ -81,6 +81,22 @@ TEST_F(RasterFormatTest, DeleteQueriesEXTImmediate) {
   EXPECT_EQ(0, memcmp(ids, ImmediateDataAddress(&cmd), sizeof(ids)));
 }
 
+TEST_F(RasterFormatTest, QueryCounterEXT) {
+  cmds::QueryCounterEXT& cmd = *GetBufferAs<cmds::QueryCounterEXT>();
+  void* next_cmd = cmd.Set(&cmd, static_cast<GLuint>(11),
+                           static_cast<GLenum>(12), static_cast<uint32_t>(13),
+                           static_cast<uint32_t>(14), static_cast<GLuint>(15));
+  EXPECT_EQ(static_cast<uint32_t>(cmds::QueryCounterEXT::kCmdId),
+            cmd.header.command);
+  EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
+  EXPECT_EQ(static_cast<GLuint>(11), cmd.id);
+  EXPECT_EQ(static_cast<GLenum>(12), cmd.target);
+  EXPECT_EQ(static_cast<uint32_t>(13), cmd.sync_data_shm_id);
+  EXPECT_EQ(static_cast<uint32_t>(14), cmd.sync_data_shm_offset);
+  EXPECT_EQ(static_cast<GLuint>(15), cmd.submit_count);
+  CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
+}
+
 TEST_F(RasterFormatTest, BeginQueryEXT) {
   cmds::BeginQueryEXT& cmd = *GetBufferAs<cmds::BeginQueryEXT>();
   void* next_cmd =
@@ -120,17 +136,6 @@ TEST_F(RasterFormatTest, LoseContextCHROMIUM) {
   CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
 }
 
-TEST_F(RasterFormatTest, InsertFenceSyncCHROMIUM) {
-  cmds::InsertFenceSyncCHROMIUM& cmd =
-      *GetBufferAs<cmds::InsertFenceSyncCHROMIUM>();
-  void* next_cmd = cmd.Set(&cmd, static_cast<GLuint64>(11));
-  EXPECT_EQ(static_cast<uint32_t>(cmds::InsertFenceSyncCHROMIUM::kCmdId),
-            cmd.header.command);
-  EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
-  EXPECT_EQ(static_cast<GLuint64>(11), cmd.release_count());
-  CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
-}
-
 TEST_F(RasterFormatTest, BeginRasterCHROMIUMImmediate) {
   const int kSomeBaseValueToTestWith = 51;
   static GLbyte data[] = {
@@ -155,7 +160,7 @@ TEST_F(RasterFormatTest, BeginRasterCHROMIUMImmediate) {
       *GetBufferAs<cmds::BeginRasterCHROMIUMImmediate>();
   void* next_cmd =
       cmd.Set(&cmd, static_cast<GLuint>(11), static_cast<GLuint>(12),
-              static_cast<GLboolean>(13), static_cast<GLuint>(14), data);
+              static_cast<GLboolean>(13), data);
   EXPECT_EQ(static_cast<uint32_t>(cmds::BeginRasterCHROMIUMImmediate::kCmdId),
             cmd.header.command);
   EXPECT_EQ(sizeof(cmd) + RoundSizeToMultipleOfEntries(sizeof(data)),
@@ -163,7 +168,6 @@ TEST_F(RasterFormatTest, BeginRasterCHROMIUMImmediate) {
   EXPECT_EQ(static_cast<GLuint>(11), cmd.sk_color);
   EXPECT_EQ(static_cast<GLuint>(12), cmd.msaa_sample_count);
   EXPECT_EQ(static_cast<GLboolean>(13), cmd.can_use_lcd_text);
-  EXPECT_EQ(static_cast<GLuint>(14), cmd.color_space_transfer_cache_id);
   CheckBytesWrittenMatchesExpectedSize(
       next_cmd, sizeof(cmd) + RoundSizeToMultipleOfEntries(sizeof(data)));
 }

@@ -1,135 +1,124 @@
 {
   "layers": [
     {
-      "name": "LayoutView #document",
-      "bounds": [800, 600],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [800, 600],
-      "drawsContent": false
-    },
-    {
       "name": "Scrolling Contents Layer",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
       "paintInvalidations": [
         {
-          "object": "LayoutBlockFlow DIV",
-          "rect": [10, 138, 292, 160],
-          "reason": "geometry"
-        },
-        {
-          "object": "LayoutBlockFlow DIV",
+          "object": "LayoutNGBlockFlow DIV",
           "rect": [10, 303, 292, 50],
           "reason": "geometry"
         },
         {
-          "object": "InlineTextBox 'Curabitur pretium, quam quis semper'",
+          "object": "NGPhysicalTextFragment 'Curabitur pretium, quam quis semper'",
           "rect": [10, 138, 289, 159],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox 'laoreet non, suscipit sed, sapien. Phasellus'",
-          "rect": [10, 138, 289, 159],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox 'malesuada, est libero feugiat libero, vel fringilla'",
-          "rect": [10, 138, 289, 159],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox 'molestie accumsan. Etiam tellus urna, laoreet ac,'",
-          "rect": [10, 138, 289, 159],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox 'molestie nisl, nec ullamcorper lacus ante'",
-          "rect": [10, 138, 289, 159],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox 'orci nibh sed neque. Quisque eu nulla non nisi'",
-          "rect": [10, 138, 289, 159],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox 'vehicula, sem at posuere vehicula, augue nibh'",
-          "rect": [10, 138, 289, 159],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox 'vulputate pede.'",
-          "rect": [10, 138, 289, 159],
-          "reason": "disappeared"
-        },
-        {
-          "object": "LayoutBlockFlow DIV",
-          "rect": [10, 138, 242, 180],
           "reason": "geometry"
         },
         {
-          "object": "LayoutBlockFlow DIV",
+          "object": "NGPhysicalTextFragment 'fringilla orci nibh sed neque. Quisque eu'",
+          "rect": [10, 138, 289, 159],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'malesuada, est libero feugiat libero, vel'",
+          "rect": [10, 138, 289, 159],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'molestie nisl, nec ullamcorper lacus ante'",
+          "rect": [10, 138, 289, 159],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'nulla non nisi molestie accumsan. Etiam'",
+          "rect": [10, 138, 289, 159],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'sem at posuere vehicula, augue nibh'",
+          "rect": [10, 138, 289, 159],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'suscipit sed, sapien. Phasellus vehicula,'",
+          "rect": [10, 138, 289, 159],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'tellus urna, laoreet ac, laoreet non,'",
+          "rect": [10, 138, 289, 159],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutNGBlockFlow DIV",
           "rect": [10, 323, 242, 50],
           "reason": "geometry"
         },
         {
-          "object": "LayoutTableCell TD id='col1'",
+          "object": "LayoutNGTableCell TD id='col1'",
           "rect": [10, 353, 242, 20],
           "reason": "incremental"
         },
         {
-          "object": "InlineTextBox 'Curabitur pretium, quam quis semper'",
+          "object": "NGPhysicalBoxFragment LayoutNGBlockFlow DIV",
+          "rect": [10, 298, 242, 20],
+          "reason": "incremental"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'Curabitur pretium, quam quis semper'",
+          "rect": [10, 138, 239, 179],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'fringilla orci nibh sed neque. Quisque eu'",
+          "rect": [10, 138, 239, 179],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'malesuada, est libero feugiat libero, vel'",
+          "rect": [10, 138, 239, 179],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'molestie nisl, nec ullamcorper lacus ante'",
+          "rect": [10, 138, 239, 179],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'nulla non nisi molestie accumsan. Etiam'",
+          "rect": [10, 138, 239, 179],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'sem at posuere vehicula, augue nibh'",
+          "rect": [10, 138, 239, 179],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'suscipit sed, sapien. Phasellus vehicula,'",
+          "rect": [10, 138, 239, 179],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'tellus urna, laoreet ac, laoreet non,'",
+          "rect": [10, 138, 239, 179],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'vulputate pede.'",
           "rect": [10, 138, 239, 179],
           "reason": "appeared"
         },
         {
-          "object": "InlineTextBox 'fringilla orci nibh sed neque. Quisque eu'",
-          "rect": [10, 138, 239, 179],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox 'malesuada, est libero feugiat libero, vel'",
-          "rect": [10, 138, 239, 179],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox 'molestie nisl, nec ullamcorper lacus ante'",
-          "rect": [10, 138, 239, 179],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox 'nulla non nisi molestie accumsan. Etiam'",
-          "rect": [10, 138, 239, 179],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox 'sem at posuere vehicula, augue nibh'",
-          "rect": [10, 138, 239, 179],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox 'suscipit sed, sapien. Phasellus vehicula,'",
-          "rect": [10, 138, 239, 179],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox 'tellus urna, laoreet ac, laoreet non,'",
-          "rect": [10, 138, 239, 179],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox 'vulputate pede.'",
-          "rect": [10, 138, 239, 179],
-          "reason": "appeared"
-        },
-        {
-          "object": "LayoutTableCell TD id='col1'",
+          "object": "LayoutNGTableCell TD id='col1'",
           "rect": [252, 138, 50, 215],
+          "reason": "incremental"
+        },
+        {
+          "object": "NGPhysicalBoxFragment LayoutNGBlockFlow DIV",
+          "rect": [252, 138, 50, 160],
           "reason": "incremental"
         }
       ]

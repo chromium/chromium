@@ -37,16 +37,15 @@
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/modules/filesystem/file_system_dispatcher.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/wtf/time.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
 static const int kMaxRecursionDepth = 3;
-static const double kProgressNotificationIntervalMS = 50;
-
-FileWriter* FileWriter::Create(ExecutionContext* context) {
-  return MakeGarbageCollected<FileWriter>(context);
-}
+static const base::TimeDelta kProgressNotificationInterval =
+    base::TimeDelta::FromMilliseconds(50);
+static constexpr uint64_t kMaxTruncateLength =
+    std::numeric_limits<uint64_t>::max();
 
 FileWriter::FileWriter(ExecutionContext* context)
     : ContextLifecycleObserver(context),
@@ -55,10 +54,9 @@ FileWriter::FileWriter(ExecutionContext* context)
       queued_operation_(kOperationNone),
       bytes_written_(0),
       bytes_to_write_(0),
-      truncate_length_(-1),
+      truncate_length_(kMaxTruncateLength),
       num_aborts_(0),
       recursion_depth_(0),
-      last_progress_notification_time_ms_(0),
       request_id_(0) {}
 
 FileWriter::~FileWriter() {
@@ -82,7 +80,7 @@ void FileWriter::write(Blob* data, ExceptionState& exception_state) {
   if (!GetExecutionContext())
     return;
   DCHECK(data);
-  DCHECK_EQ(truncate_length_, -1);
+  DCHECK_EQ(truncate_length_, kMaxTruncateLength);
   if (ready_state_ == kWriting) {
     SetError(FileErrorCode::kInvalidStateErr, exception_state);
     return;
@@ -108,7 +106,7 @@ void FileWriter::write(Blob* data, ExceptionState& exception_state) {
   FireEvent(event_type_names::kWritestart);
 }
 
-void FileWriter::seek(long long position, ExceptionState& exception_state) {
+void FileWriter::seek(int64_t position, ExceptionState& exception_state) {
   if (!GetExecutionContext())
     return;
   if (ready_state_ == kWriting) {
@@ -116,15 +114,15 @@ void FileWriter::seek(long long position, ExceptionState& exception_state) {
     return;
   }
 
-  DCHECK_EQ(truncate_length_, -1);
+  DCHECK_EQ(truncate_length_, kMaxTruncateLength);
   DCHECK_EQ(queued_operation_, kOperationNone);
   SeekInternal(position);
 }
 
-void FileWriter::truncate(long long position, ExceptionState& exception_state) {
+void FileWriter::truncate(int64_t position, ExceptionState& exception_state) {
   if (!GetExecutionContext())
     return;
-  DCHECK_EQ(truncate_length_, -1);
+  DCHECK_EQ(truncate_length_, kMaxTruncateLength);
   if (ready_state_ == kWriting || position < 0) {
     SetError(FileErrorCode::kInvalidStateErr, exception_state);
     return;
@@ -166,7 +164,7 @@ void FileWriter::DidWriteImpl(int64_t bytes, bool complete) {
     return;
   }
   DCHECK_EQ(kWriting, ready_state_);
-  DCHECK_EQ(-1, truncate_length_);
+  DCHECK_EQ(kMaxTruncateLength, truncate_length_);
   DCHECK_EQ(kOperationWrite, operation_in_progress_);
   DCHECK(!bytes_to_write_ || bytes + bytes_written_ > 0);
   DCHECK(bytes + bytes_written_ <= bytes_to_write_);
@@ -180,14 +178,14 @@ void FileWriter::DidWriteImpl(int64_t bytes, bool complete) {
     operation_in_progress_ = kOperationNone;
   }
 
-  long long num_aborts = num_aborts_;
+  uint64_t num_aborts = num_aborts_;
   // We could get an abort in the handler for this event. If we do, it's
   // already handled the cleanup and signalCompletion call.
-  double now = CurrentTimeMS();
-  if (complete || !last_progress_notification_time_ms_ ||
-      (now - last_progress_notification_time_ms_ >
-       kProgressNotificationIntervalMS)) {
-    last_progress_notification_time_ms_ = now;
+  base::TimeTicks now = base::TimeTicks::Now();
+  if (complete || !last_progress_notification_time_.is_null() ||
+      (now - last_progress_notification_time_ >
+       kProgressNotificationInterval)) {
+    last_progress_notification_time_ = now;
     FireEvent(event_type_names::kProgress);
   }
 
@@ -203,7 +201,7 @@ void FileWriter::DidTruncateImpl() {
     return;
   }
   DCHECK_EQ(operation_in_progress_, kOperationTruncate);
-  DCHECK_GE(truncate_length_, 0);
+  DCHECK_NE(truncate_length_, kMaxTruncateLength);
   SetLength(truncate_length_);
   if (position() > length())
     SetPosition(length());
@@ -256,24 +254,25 @@ void FileWriter::CompleteAbort() {
 }
 
 void FileWriter::DoOperation(Operation operation) {
-  probe::AsyncTaskScheduled(GetExecutionContext(), "FileWriter", this);
+  probe::AsyncTaskScheduled(GetExecutionContext(), "FileWriter",
+                            &async_task_id_);
   switch (operation) {
     case kOperationWrite:
       DCHECK_EQ(kOperationNone, operation_in_progress_);
-      DCHECK_EQ(-1, truncate_length_);
+      DCHECK_EQ(kMaxTruncateLength, truncate_length_);
       DCHECK(blob_being_written_.Get());
       DCHECK_EQ(kWriting, ready_state_);
       Write(position(), blob_being_written_->Uuid());
       break;
     case kOperationTruncate:
       DCHECK_EQ(kOperationNone, operation_in_progress_);
-      DCHECK_GE(truncate_length_, 0);
+      DCHECK_NE(truncate_length_, kMaxTruncateLength);
       DCHECK_EQ(kWriting, ready_state_);
       Truncate(truncate_length_);
       break;
     case kOperationNone:
       DCHECK_EQ(kOperationNone, operation_in_progress_);
-      DCHECK_EQ(-1, truncate_length_);
+      DCHECK_EQ(kMaxTruncateLength, truncate_length_);
       DCHECK(!blob_being_written_.Get());
       DCHECK_EQ(kDone, ready_state_);
       break;
@@ -285,7 +284,7 @@ void FileWriter::DoOperation(Operation operation) {
         operation = kOperationNone;
       queued_operation_ = kOperationNone;
       blob_being_written_.Clear();
-      truncate_length_ = -1;
+      truncate_length_ = kMaxTruncateLength;
       break;
   }
   DCHECK_EQ(queued_operation_, kOperationNone);
@@ -294,7 +293,7 @@ void FileWriter::DoOperation(Operation operation) {
 
 void FileWriter::SignalCompletion(base::File::Error error) {
   ready_state_ = kDone;
-  truncate_length_ = -1;
+  truncate_length_ = kMaxTruncateLength;
   if (error != base::File::FILE_OK) {
     error_ = file_error::CreateDOMException(error);
     if (base::File::FILE_ERROR_ABORT == error)
@@ -306,16 +305,16 @@ void FileWriter::SignalCompletion(base::File::Error error) {
   }
   FireEvent(event_type_names::kWriteend);
 
-  probe::AsyncTaskCanceled(GetExecutionContext(), this);
+  probe::AsyncTaskCanceled(GetExecutionContext(), &async_task_id_);
 }
 
 void FileWriter::FireEvent(const AtomicString& type) {
-  probe::AsyncTask async_task(GetExecutionContext(), this);
+  probe::AsyncTask async_task(GetExecutionContext(), &async_task_id_);
   ++recursion_depth_;
   DispatchEvent(
       *ProgressEvent::Create(type, true, bytes_written_, bytes_to_write_));
+  DCHECK_GT(recursion_depth_, 0);
   --recursion_depth_;
-  DCHECK_GE(recursion_depth_, 0);
 }
 
 void FileWriter::SetError(FileErrorCode error_code,

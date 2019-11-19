@@ -13,7 +13,7 @@ async_test(t => {
   checkControlsHasClasses(video, ["phase-pre-ready", "state-no-source", "use-default-poster"]);
 
   video.onstalled = t.step_func(() => {
-    checkControlsHasClass(video, "state-loading-metadata");
+    checkControlsHasClass(video, "state-loading-metadata-playing");
   });
 
   video.onloadeddata = t.step_func(() => {

@@ -9,6 +9,11 @@
         "type": "android"
       },
       "gl_vendor": "Imagination.*",
+      "gl_type": "gles",
+      "gl_version": {
+        "op": "<",
+        "value": "3.0"
+      },
       "features": [
         "use_client_side_arrays_for_stream_buffers"
       ]
@@ -21,6 +26,11 @@
         "type": "android"
       },
       "gl_vendor": "ARM.*",
+      "gl_type": "gles",
+      "gl_version": {
+        "op": "<",
+        "value": "3.0"
+      },
       "features": [
         "use_client_side_arrays_for_stream_buffers"
       ]
@@ -160,10 +170,10 @@
     },
     {
       "id": 31,
-      "cr_bugs": [154715, 10068, 269829, 294779, 285292],
-      "description": "The Mali-Txxx driver does not guarantee flush ordering",
+      "cr_bugs": [154715, 10068, 269829, 294779, 285292, 1018528],
+      "description": "The Mali-3xx/4xx/Txxx driver does not guarantee flush ordering",
       "gl_vendor": "ARM.*",
-      "gl_renderer": "Mali-T.*",
+      "gl_renderer": "Mali-[T34].*",
       "features": [
         "use_virtualized_gl_contexts"
       ]
@@ -338,7 +348,7 @@
         "value": "2"
       },
       "features": [
-        "force_discrete_gpu"
+        "force_high_performance_gpu"
       ]
     },
     {
@@ -453,7 +463,7 @@
       "vendor_id": "0x10de",
       "driver_version": {
         "op": "<=",
-        "value": "269.73"
+        "value": "8.17.12.6973"
       },
       "features": [
         "disable_d3d11"
@@ -611,9 +621,9 @@
         "type": "win"
       },
       "vendor_id": "0x1002",
-      "driver_date": {
+      "driver_version": {
         "op": "<",
-        "value": "2011.1"
+        "value": "8.17.10.1070"
       },
       "features": [
         "disable_d3d11"
@@ -672,8 +682,8 @@
       },
       "vendor_id": "0x8086",
       "driver_version": {
-        "op": "<",
-        "value": "8.16"
+        "op": "<=",
+        "value": "9.18.0.0"
       },
       "features": [
         "disable_d3d11"
@@ -788,26 +798,13 @@
           "value": "10"
         }
       },
-      "driver_date": {
+      "driver_version": {
         "op": "<",
-        "value": "2016.6"
+        "value": "20.19.0.32837"
       },
       "multi_gpu_style": "amd_switchable",
       "features": [
         "disable_d3d11"
-      ]
-    },
-    {
-      "id": 101,
-      "description": "The Mali-Txxx driver hangs when reading from currently displayed buffer",
-      "cr_bugs": [457511],
-      "os": {
-        "type": "chromeos"
-      },
-      "gl_vendor": "ARM.*",
-      "gl_renderer": "Mali-T.*",
-      "features": [
-        "disable_non_empty_post_sub_buffers_for_onscreen_surfaces"
       ]
     },
     {
@@ -907,7 +904,10 @@
     {
       "id": 108,
       "cr_bugs": [449150],
-      "description": "Mali-4xx does not support GL_RGB format",
+      "description": "Mali-4xx on Linux does not support GL_RGB format",
+      "os": {
+        "type": "linux"
+      },
       "gl_vendor": "ARM.*",
       "gl_renderer": ".*Mali-4.*",
       "features": [
@@ -1599,29 +1599,6 @@
       ]
     },
     {
-      "id": 172,
-      "description": "Use GL_INTEL_framebuffer_CMAA on ChromeOS",
-      "cr_bugs": [535198],
-      "exceptions" : [
-        {
-          "os": {
-            "type" : "chromeos"
-          },
-          "vendor_id": "0x8086",
-          "driver_vendor": "Mesa",
-          "gl_vendor": "Intel.*",
-          "gl_type": "gles",
-          "gl_version": {
-            "op": ">=",
-            "value": "3.1"
-          }
-        }
-      ],
-      "features": [
-        "disable_framebuffer_cmaa"
-      ]
-    },
-    {
       "id": 174,
       "description": "Adreno 4xx support for EXT_multisampled_render_to_texture is buggy on Android 7.0",
       "cr_bugs": [612474],
@@ -1785,7 +1762,7 @@
       },
       "driver_version": {
         "op": "<",
-        "value": "375.76"
+        "value": "21.21.13.7576"
       },
       "vendor_id": "0x10de",
       "features": [
@@ -2218,12 +2195,16 @@
     },
     {
       "id": 219,
-      "description": "Zero-copy DXGI video hangs or displays incorrect colors on AMD drivers",
-      "cr_bugs": [623029],
+      "description": "Zero-copy DXGI video hangs or displays incorrect colors on older AMD drivers",
+      "cr_bugs": [623029, 1025427],
       "os": {
         "type": "win"
       },
       "vendor_id": "0x1002",
+      "driver_version": {
+        "op": "<",
+        "value": "23.20.826.5120"
+      },
       "features": [
         "disable_dxgi_zero_copy_video"
       ]
@@ -2297,7 +2278,7 @@
     },
     {
       "id": 225,
-      "description": "VPx decoding is too slow on Intel Broadwell, Skylake, and CherryView",
+      "description": "VPx decoding is too slow on Intel Broadwell, Skylake, and CherryTrail",
       "cr_bugs": [616318],
       "os": {
         "type": "win"
@@ -2305,7 +2286,7 @@
       "gpu_series": [
         "intel_broadwell",
         "intel_skylake",
-        "intel_cherryview"
+        "intel_cherrytrail"
       ],
       "features": [
         "disable_accelerated_vpx_decode"
@@ -2353,7 +2334,7 @@
       "device_id": ["0x0116", "0x0126"],
       "multi_gpu_style": "amd_switchable",
       "features": [
-        "force_discrete_gpu"
+        "force_high_performance_gpu"
       ]
     },
     {
@@ -2403,7 +2384,7 @@
     {
       "id": 233,
       "description": "Delayed copy NV12 displays incorrect colors on NVIDIA drivers.",
-      "cr_bugs": [727216],
+      "cr_bugs": [728670],
       "os": {
         "type": "win"
       },
@@ -2571,19 +2552,6 @@
       "gl_renderer": "Mali-T880",
       "disabled_extensions": [
         "GL_EXT_disjoint_timer_query"
-      ]
-    },
-    {
-      "id": 248,
-      "description": "Direct composition causes slow presents on Intel Sandybridge",
-      "cr_bugs": [775898, 785648],
-      "os": {
-        "type": "win"
-      },
-      "vendor_id": "0x8086",
-      "device_id": ["0x0116"],
-      "features": [
-        "disable_direct_composition"
       ]
     },
     {
@@ -2924,18 +2892,6 @@
       ]
     },
     {
-      "id":275,
-      "cr_bugs": [838725],
-      "description": "Disable AImageReader on ARM GPUs as its buggy.",
-      "os": {
-        "type": "android"
-      },
-      "gl_vendor": "ARM.*",
-      "features": [
-        "disable_aimagereader"
-      ]
-    },
-    {
       "id": 277,
       "description": "Direct composition path is buggy on certain AMD devices/drivers",
       "cr_bugs": [800950],
@@ -2945,7 +2901,7 @@
       "vendor_id": "0x1002",
       "driver_version": {
         "op": "=",
-        "value": "8.970.100.9001"
+        "value": "8.17.10.1129"
       },
       "features": [
         "disable_direct_composition"
@@ -3041,7 +2997,7 @@
     },
     {
       "id": 285,
-      "cr_bugs": [914976],
+      "cr_bugs": [914976, 1000113],
       "description": "Context flush ordering doesn't seem to work on AMD",
       "vendor_id": "0x1002",
       "os": {
@@ -3049,6 +3005,15 @@
       },
       "features": [
         "use_virtualized_gl_contexts"
+      ],
+      "exceptions": [
+        {
+          "driver_vendor": "Mesa",
+          "driver_version": {
+            "op": ">=",
+            "value": "19.0"
+          }
+        }
       ]
     },
     {
@@ -3067,41 +3032,6 @@
       "hardware_overlay": "unsupported",
       "features": [
         "disable_direct_composition"
-      ]
-    },
-    {
-      "id": 287,
-      "description": "glCopyTexImage2D on Adreno fails if source is GL_RGB10_A2 and destination is not.",
-      "cr_bugs": [925986],
-      "os": {
-        "type": "android",
-        "version": {
-          "op": ">=",
-          "value": "5.0.0"
-        }
-      },
-      "gl_vendor": "Qualcomm.*",
-      "gl_renderer": ".*4\\d\\d",
-      "gl_renderer": "Adreno \\(TM\\) [345].*",
-      "features": [
-        "disable_copy_tex_image_2d_rgb10_a2_adreno"
-      ]
-    },
-    {
-      "id": 288,
-      "description": "glCopyTexImage2D on NVIDIA Tegra fails in certain cases if source is GL_RGB10_A2.",
-      "cr_bugs": [925986],
-      "os": {
-        "type": "android"
-      },
-      "gl_vendor": "NVIDIA.*",
-      "gl_type": "gles",
-      "gl_version": {
-        "op": ">=",
-        "value": "3.0"
-      },
-      "features": [
-        "disable_copy_tex_image_2d_rgb10_a2_tegra"
       ]
     },
     {
@@ -3170,18 +3100,21 @@
     },
     {
       "id": 294,
-      "cr_bugs": [932879],
-      "description": "Hardware overlays result in black videos on non-Intel GPUs",
+      "cr_bugs": [932879, 1025427],
+      "description": "Hardware overlays are only supported on certain Intel/AMD gpus",
       "os": {
         "type": "win"
       },
       "exceptions": [
         {
           "vendor_id": "0x8086"
+        },
+        {
+          "vendor_id": "0x1002"
         }
       ],
       "features": [
-        "disable_direct_composition_layers"
+        "disable_direct_composition_video_overlays"
       ]
     },
     {
@@ -3206,6 +3139,338 @@
       "gl_vendor": "Broadcom.*",
       "features": [
         "rely_on_implicit_sync_for_swap_buffers"
+      ]
+    },
+    {
+      "id": 297,
+      "cr_bugs": [938678],
+      "description": "Needed to pass dEQP-EGL.functional.robustness.reset_context.shaders.infinite_loop.*",
+      "os": {
+        "type" : "chromeos"
+      },
+      "vendor_id": "0x1002",
+      "features": [
+        "exit_on_context_lost"
+      ]
+    },
+    {
+      "id": 299,
+      "description": "Context lost recovery often fails on PowerVR Rogue GE8* GPUs on Android.",
+      "cr_bugs": [942106],
+      "os": {
+        "type": "android"
+      },
+      "gl_vendor": "Imagination.*",
+      "gl_renderer": "PowerVR Rogue GE8.*",
+      "features": [
+        "exit_on_context_lost"
+      ]
+    },
+    {
+      "id": 300,
+      "cr_bugs": [775898, 785648, 9245627],
+      "description": "Direct composition causes rendering issues on Intel SandyBridge and IvyBridge GPUs",
+      "os": {
+        "type" : "win"
+      },
+      "gpu_series": [
+        "intel_sandybridge",
+        "intel_ivybridge"
+      ],
+      "features": [
+        "disable_direct_composition"
+      ]
+    },
+    {
+      "id": 301,
+      "description": "Mesa hangs the system when allocating large textures",
+      "cr_bugs": [927470],
+      "os": {
+        "type" : "linux",
+        "version": {
+          "op": "<",
+          "value": "5.0"
+        }
+      },
+      "vendor_id": "0x8086",
+      "features": [
+        "max_texture_size_limit_4096",
+        "max_3d_array_texture_size_1024"
+      ]
+    },
+    {
+      "id": 303,
+      "cr_bugs": [890227],
+      "description": "Dynamic texture map crashes on Intel drivers less than version 24",
+      "os": {
+        "type" : "win"
+      },
+      "vendor_id": "0x8086",
+      "driver_version": {
+        "op": "<",
+        "value": "24.0.0.0"
+      },
+      "features": [
+          "disable_nv12_dynamic_textures"
+      ]
+    },
+    {
+      "id": 304,
+      "cr_bugs": [911349],
+      "description": "Video processor blit to swap chain results in column of black pixels on older NVIDIA drivers at certain scaling factors",
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x10de",
+      "driver_version": {
+        "op": "<",
+        "value": "25.21.14.1900"
+      },
+      "features": [
+        "disable_direct_composition_video_overlays"
+      ]
+    },
+    {
+      "id": 306,
+      "description": "Program binaries don't contain transform feedback varyings on Mali GPUs",
+      "cr_bugs": [961950],
+      "os": {
+        "type": "android"
+      },
+      "gl_vendor": "ARM.*",
+      "gl_renderer": "Mali.*",
+      "features": [
+        "disable_program_caching_for_transform_feedback"
+      ]
+    },
+    {
+      "id": 307,
+      "cr_bugs": [833975],
+      "description": "Workaround for broken EGL_IMAGE_EXTERNAL_FLUSH_EXT implementation on NVIDIA",
+      "os": {
+        "type": "chromeos"
+      },
+      "gl_vendor": "NVIDIA.*",
+      "features": [
+        "force_gl_flush_on_swap_buffers"
+      ]
+    },
+    {
+      "id": 308,
+      "cr_bugs": [983787],
+      "description": "Delayed copy NV12 causes crashes on GPU main thread when DXVA video decoder runs on another thread",
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x1002",
+      "features": [
+        "disable_delayed_copy_nv12"
+      ]
+    },
+    {
+      "id": 309,
+      "cr_bugs": [993233],
+      "description": "Don't use video processor scaling on non-Intel GPUs.",
+      "os": {
+        "type" : "win"
+      },
+      "exceptions": [
+        {
+          "vendor_id": "0x8086"
+        }
+      ],
+      "features": [
+          "disable_vp_scaling"
+      ]
+    },
+    {
+      "id": 310,
+      "description": "Context lost recovery often fails on Mali on CrOS.",
+      "cr_bugs": [992286],
+      "os": {
+        "type": "chromeos"
+      },
+      "gl_vendor": "ARM.*",
+      "gl_renderer": ".*Mali-.*",
+      "features": [
+        "exit_on_context_lost"
+      ]
+    },
+    {
+      "id": 311,
+      "cr_bugs": [998038],
+      "description": "Don't use IOSurface backed GMBs for half float textures with swiftshader",
+      "os": {
+        "type" : "macosx"
+      },
+      "gl_renderer": "Google SwiftShader*",
+      "features": [
+          "disable_half_float_for_gmb"
+      ]
+    },
+    {
+      "id": 312,
+      "cr_bugs": [991869],
+      "description": "Crash on Mali-T8x when using glTexImage2D",
+      "os": {
+        "type": "android"
+      },
+      "gl_renderer": ".*Mali-T8.*",
+      "features": [
+        "prefer_draw_to_copy"
+      ]
+    },
+    {
+      "id": 313,
+      "description": "Context lost recovery often fails on PowerVR on CrOS.",
+      "cr_bugs": [1010121],
+      "os": {
+        "type": "chromeos"
+      },
+      "gl_vendor": "Imagination.*",
+      "gl_renderer": "PowerVR.*",
+      "features": [
+        "exit_on_context_lost"
+      ]
+    },
+    {
+      "id": 314,
+      "cr_bugs": [1010338],
+      "description": "Crash on Adreno when using GL_EXT_shader_framebuffer_fetch",
+      "os": {
+        "type": "android"
+      },
+      "gl_renderer": "Adreno.*",
+      "disabled_extensions": [
+        "GL_EXT_shader_framebuffer_fetch"
+      ]
+   },
+   {
+      "id": 315,
+      "cr_bugs": [964010],
+      "description": "Disable GL_MESA_framebuffer_flip_y for desktop GL",
+      "gl_type": "gl",
+      "disabled_extensions": [
+        "GL_MESA_framebuffer_flip_y"
+      ]
+    },
+    {
+      "id": 316,
+      "cr_bugs": [1003860],
+      "description": "Limit MSAA to 4x on ChromeOS for Intel",
+      "os": {
+        "type": "chromeos"
+      },
+      "intel_gpu_generation": {
+        "op": ">=",
+        "value": "9"
+      },
+      "driver_vendor": "Mesa",
+      "gl_vendor": "Intel.*",
+      "features": [
+        "max_msaa_sample_count_4"
+      ]
+    },
+    {
+      "id": 317,
+      "cr_bugs": [1003860],
+      "description": "Limit MSAA to 2x on older Intel GPU generations on ChromeOS",
+      "os": {
+        "type": "chromeos"
+      },
+      "intel_gpu_generation": {
+        "op": "<",
+        "value": "9"
+      },
+      "driver_vendor": "Mesa",
+      "gl_vendor": "Intel.*",
+      "features": [
+        "max_msaa_sample_count_2"
+      ]
+    },
+    {
+      "id": 318,
+      "cr_bugs": [995396],
+      "description": "Direct composition caused performance issues on AMD GPUs",
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x1002",
+      "device_id": ["0x694c"],
+      "features": [
+        "disable_direct_composition"
+      ]
+    },
+    {
+      "id": 319,
+      "cr_bugs": [709351],
+      "description": "Remove dynamic indexing for swizzled vectors on Mac",
+      "os": {
+        "type": "macosx"
+      },
+      "features": [
+        "remove_dynamic_indexing_of_swizzled_vector"
+      ]
+    },
+    {
+      "id": 320,
+      "cr_bugs": [709351],
+      "description": "Remove dynamic indexing for swizzled vectors on Android",
+      "os": {
+        "type": "android"
+      },
+      "features": [
+        "remove_dynamic_indexing_of_swizzled_vector"
+      ]
+    },
+    {
+      "id": 321,
+      "description": "Zero-copy DXGI video hangs or displays incorrect colors on older AMD drivers",
+      "cr_bugs": [623029, 1025427],
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x1002",
+      "device_id": ["0x9870", "0x9874", "0x98E4"],
+      "driver_version": {
+        "op": "<",
+        "value": "26.20.15000.37"
+      },
+      "features": [
+        "disable_dxgi_zero_copy_video"
+      ]
+    },
+    {
+      "id": 322,
+      "cr_bugs": [932879, 1025427],
+      "description": "Hardware overlays fail to work on older AMD drivers",
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x1002",
+      "driver_version": {
+        "op": "<",
+        "value": "23.20.826.5120"
+      },
+      "features": [
+        "disable_direct_composition_video_overlays"
+      ]
+    },
+    {
+      "id": 323,
+      "cr_bugs": [932879, 1025427],
+      "description": "Hardware overlays fail to work on older AMD drivers",
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x1002",
+      "device_id": ["0x9870", "0x9874", "0x98E4"],
+      "driver_version": {
+        "op": "<",
+        "value": "26.20.15000.37"
+      },
+      "features": [
+        "disable_direct_composition_video_overlays"
       ]
     }
   ]

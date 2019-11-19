@@ -4,7 +4,7 @@
 
 #include "ui/base/clipboard/clipboard.h"
 
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if defined(USE_AURA)
@@ -15,7 +15,7 @@ namespace ui {
 
 namespace {
 
-base::test::ScopedTaskEnvironment* g_task_environment = nullptr;
+base::test::TaskEnvironment* g_task_environment = nullptr;
 
 }  // namespace
 
@@ -28,8 +28,8 @@ struct PlatformClipboardTraits {
 
   static Clipboard* Create() {
     DCHECK(!g_task_environment);
-    g_task_environment = new base::test::ScopedTaskEnvironment(
-        base::test::ScopedTaskEnvironment::MainThreadType::UI);
+    g_task_environment = new base::test::TaskEnvironment(
+        base::test::TaskEnvironment::MainThreadType::UI);
     return Clipboard::GetForCurrentThread();
   }
 

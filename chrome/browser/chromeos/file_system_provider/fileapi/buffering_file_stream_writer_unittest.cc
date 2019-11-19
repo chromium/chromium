@@ -15,7 +15,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -112,7 +112,7 @@ class FileSystemProviderBufferingFileStreamWriterTest : public testing::Test {
 
   ~FileSystemProviderBufferingFileStreamWriterTest() override {}
 
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   scoped_refptr<net::StringIOBuffer> short_text_buffer_;
   scoped_refptr<net::StringIOBuffer> long_text_buffer_;
 };

@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.searchwidget;
 
-import android.support.annotation.ColorRes;
+import android.content.res.Resources;
+
+import androidx.annotation.ColorInt;
+import androidx.annotation.ColorRes;
 
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.chrome.browser.ntp.NewTabPage;
@@ -12,10 +15,19 @@ import org.chromium.chrome.browser.omnibox.UrlBarData;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
+import org.chromium.chrome.browser.ui.styles.ChromeColors;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 
 class SearchBoxDataProvider implements ToolbarDataProvider {
+    private final @ColorInt int mPrimaryColor;
     private Tab mTab;
+
+    /**
+     * @param resources The {@link Resources} for accessing colors.
+     */
+    SearchBoxDataProvider(Resources resources) {
+        mPrimaryColor = ChromeColors.getPrimaryBackgroundColor(resources, isIncognito());
+    }
 
     /**
      * Called when native library is loaded and a tab has been initialized.
@@ -35,6 +47,16 @@ class SearchBoxDataProvider implements ToolbarDataProvider {
     public boolean isIncognito() {
         if (mTab == null) return false;
         return mTab.isIncognito();
+    }
+
+    @Override
+    public boolean isInOverviewAndShowingOmnibox() {
+        return false;
+    }
+
+    @Override
+    public boolean shouldShowLocationBarInOverviewMode() {
+        return false;
     }
 
     @Override
@@ -65,7 +87,7 @@ class SearchBoxDataProvider implements ToolbarDataProvider {
 
     @Override
     public int getPrimaryColor() {
-        return 0;
+        return mPrimaryColor;
     }
 
     @Override
@@ -101,10 +123,5 @@ class SearchBoxDataProvider implements ToolbarDataProvider {
     @Override
     public @ColorRes int getSecurityIconColorStateList() {
         return 0;
-    }
-
-    @Override
-    public boolean shouldDisplaySearchTerms() {
-        return false;
     }
 }

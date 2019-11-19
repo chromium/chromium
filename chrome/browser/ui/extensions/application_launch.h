@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_EXTENSIONS_APPLICATION_LAUNCH_H_
 #define CHROME_BROWSER_UI_EXTENSIONS_APPLICATION_LAUNCH_H_
 
-#include "chrome/browser/ui/extensions/app_launch_params.h"
+#include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "url/gurl.h"
 
 class Browser;
@@ -19,24 +19,32 @@ namespace extensions {
 class Extension;
 }
 
+enum class WindowOpenDisposition;
+
 // Opens the application, possibly prompting the user to re-enable it.
-void OpenApplicationWithReenablePrompt(const AppLaunchParams& params);
+void OpenApplicationWithReenablePrompt(Profile* profile,
+                                       const apps::AppLaunchParams& params);
 
 // Open the application in a way specified by |params|.
-content::WebContents* OpenApplication(const AppLaunchParams& params);
+content::WebContents* OpenApplication(Profile* profile,
+                                      const apps::AppLaunchParams& params);
 
 // Create the application in a way specified by |params| in a new window but
 // delaying activating and showing it.
-Browser* CreateApplicationWindow(const AppLaunchParams& params,
+Browser* CreateApplicationWindow(Profile* profile,
+                                 const apps::AppLaunchParams& params,
                                  const GURL& url);
 
 // Show the application window that's already created.
-content::WebContents* ShowApplicationWindow(const AppLaunchParams& params,
+content::WebContents* ShowApplicationWindow(Profile* profile,
+                                            const apps::AppLaunchParams& params,
                                             const GURL& url,
-                                            Browser* browser);
+                                            Browser* browser,
+                                            WindowOpenDisposition disposition);
 
 // Open the application in a way specified by |params| in a new window.
-content::WebContents* OpenApplicationWindow(const AppLaunchParams& params,
+content::WebContents* OpenApplicationWindow(Profile* profile,
+                                            const apps::AppLaunchParams& params,
                                             const GURL& url);
 
 // Open |url| in an app shortcut window.
@@ -50,15 +58,5 @@ content::WebContents* OpenAppShortcutWindow(Profile* profile,
 // Whether the extension can be launched by sending a
 // chrome.app.runtime.onLaunched event.
 bool CanLaunchViaEvent(const extensions::Extension* extension);
-
-// Reparents |contents| into a new app browser for |extension|.
-Browser* ReparentWebContentsIntoAppBrowser(
-    content::WebContents* contents,
-    const extensions::Extension* extension);
-
-// Reparents the active tab into a new app browser for the PWA that has the
-// tab's URL in its scope. Does nothing if the tab is not secure or there is no
-// applicable PWA.
-Browser* ReparentSecureActiveTabIntoPwaWindow(Browser* browser);
 
 #endif  // CHROME_BROWSER_UI_EXTENSIONS_APPLICATION_LAUNCH_H_

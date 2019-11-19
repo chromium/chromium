@@ -9,21 +9,28 @@
 
 <div id="first" class="box"></div>
 <div id="second" class="box"></div>
+<div id="third" class="box"></div>
 
 <script type="text/worklet">
 registerAnimator("first_animator", class {
   animate(currentTime, effect) {
-    // Unset effect.localTime is equivalent to 'undefined'
+    // Unset effect.localTime is equivalent to 'null'
   }
 });
 
 registerAnimator("second_animator", class {
   animate(currentTime, effect) {
-    // explicitly set the localtime to undefined
-    effect.localTime = undefined;
+    // explicitly set the localtime to null.
+    effect.localTime = null;
   }
 });
 
+registerAnimator("third_animator", class {
+  animate(currentTime, effect) {
+    // Here to ensure we actually are producing frames.
+    effect.localTime = 500;
+  }
+});
 </script>
 
 <script src="resources/animation-worklet-tests.js"></script>
@@ -36,13 +43,12 @@ if (window.testRunner)
 runInAnimationWorklet(
   document.querySelector('script[type*=worklet]').textContent
 ).then(_ => {
-
-  for (let testcase of ['first', 'second']) {
+  for (let testcase of ['first', 'second', 'third']) {
     const animation = new WorkletAnimation(`${testcase}_animator`,
       new KeyframeEffect(document.getElementById(testcase),
         [
           { transform: 'translateY(200px)' },
-          { transform: 'translateY(0px)' }
+          { transform: 'translateY(100px)' }
         ], {
           duration: 1000,
         }

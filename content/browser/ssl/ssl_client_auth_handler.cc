@@ -14,27 +14,23 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/client_certificate_delegate.h"
 #include "content/public/browser/content_browser_client.h"
-#include "content/public/browser/resource_request_info.h"
+#include "content/public/common/content_client.h"
 #include "net/ssl/client_cert_store.h"
 #include "net/ssl/ssl_private_key.h"
 #include "net/url_request/url_request.h"
 
 namespace content {
 
-namespace {
-
-class ClientCertificateDelegateImpl : public ClientCertificateDelegate {
+class SSLClientAuthHandler::ClientCertificateDelegateImpl
+    : public ClientCertificateDelegate {
  public:
   explicit ClientCertificateDelegateImpl(
-      const base::WeakPtr<SSLClientAuthHandler>& handler)
-      : handler_(handler), continue_called_(false) {}
+      base::WeakPtr<SSLClientAuthHandler> handler)
+      : handler_(std::move(handler)) {}
 
   ~ClientCertificateDelegateImpl() override {
-    if (!continue_called_) {
-      base::PostTaskWithTraits(
-          FROM_HERE, {BrowserThread::IO},
-          base::BindOnce(&SSLClientAuthHandler::CancelCertificateSelection,
-                         handler_));
+    if (!continue_called_ && handler_) {
+      handler_->delegate_->CancelCertificateSelection();
     }
   }
 
@@ -43,42 +39,24 @@ class ClientCertificateDelegateImpl : public ClientCertificateDelegate {
                                scoped_refptr<net::SSLPrivateKey> key) override {
     DCHECK(!continue_called_);
     continue_called_ = true;
-    base::PostTaskWithTraits(
-        FROM_HERE, {BrowserThread::IO},
-        base::BindOnce(&SSLClientAuthHandler::ContinueWithCertificate, handler_,
-                       std::move(cert), std::move(key)));
+    if (handler_) {
+      handler_->delegate_->ContinueWithCertificate(std::move(cert),
+                                                   std::move(key));
+    }
   }
 
  private:
   base::WeakPtr<SSLClientAuthHandler> handler_;
-  bool continue_called_;
+  bool continue_called_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(ClientCertificateDelegateImpl);
 };
 
-void SelectCertificateOnUIThread(
-    const ResourceRequestInfo::WebContentsGetter& wc_getter,
-    net::SSLCertRequestInfo* cert_request_info,
-    net::ClientCertIdentityList client_certs,
-    const base::WeakPtr<SSLClientAuthHandler>& handler) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  std::unique_ptr<ClientCertificateDelegate> delegate(
-      new ClientCertificateDelegateImpl(handler));
-
-  WebContents* web_contents = wc_getter.Run();
-  if (!web_contents)
-    return;
-
-  GetContentClient()->browser()->SelectClientCertificate(
-      web_contents, cert_request_info, std::move(client_certs),
-      std::move(delegate));
-}
-
-}  // namespace
-
 // A reference-counted core to allow the ClientCertStore and SSLCertRequestInfo
 // to outlive SSLClientAuthHandler if needbe.
+//
+// TODO(davidben): Fix ClientCertStore's lifetime contract. See
+// https://crbug.com/1011579.
 class SSLClientAuthHandler::Core : public base::RefCountedThreadSafe<Core> {
  public:
   Core(const base::WeakPtr<SSLClientAuthHandler>& handler,
@@ -98,7 +76,7 @@ class SSLClientAuthHandler::Core : public base::RefCountedThreadSafe<Core> {
       // callback.
       client_cert_store_->GetClientCerts(
           *cert_request_info_,
-          base::Bind(&SSLClientAuthHandler::Core::DidGetClientCerts, this));
+          base::BindOnce(&SSLClientAuthHandler::Core::DidGetClientCerts, this));
     } else {
       DidGetClientCerts(net::ClientCertIdentityList());
     }
@@ -111,8 +89,11 @@ class SSLClientAuthHandler::Core : public base::RefCountedThreadSafe<Core> {
 
   // Called when |client_cert_store_| is done retrieving the cert list.
   void DidGetClientCerts(net::ClientCertIdentityList client_certs) {
-    if (handler_)
-      handler_->DidGetClientCerts(std::move(client_certs));
+    // Run this on a PostTask to avoid reentrancy problems.
+    base::PostTask(
+        FROM_HERE, {BrowserThread::UI},
+        base::BindOnce(&SSLClientAuthHandler::DidGetClientCerts,
+                       std::move(handler_), std::move(client_certs)));
   }
 
   base::WeakPtr<SSLClientAuthHandler> handler_;
@@ -122,73 +103,63 @@ class SSLClientAuthHandler::Core : public base::RefCountedThreadSafe<Core> {
 
 SSLClientAuthHandler::SSLClientAuthHandler(
     std::unique_ptr<net::ClientCertStore> client_cert_store,
-    ResourceRequestInfo::WebContentsGetter web_contents_getter,
+    WebContents::Getter web_contents_getter,
     net::SSLCertRequestInfo* cert_request_info,
     Delegate* delegate)
-    : web_contents_getter_(web_contents_getter),
+    : web_contents_getter_(std::move(web_contents_getter)),
       cert_request_info_(cert_request_info),
-      delegate_(delegate),
-      weak_factory_(this) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+      delegate_(delegate) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   core_ = new Core(weak_factory_.GetWeakPtr(), std::move(client_cert_store),
                    cert_request_info_.get());
 }
 
 SSLClientAuthHandler::~SSLClientAuthHandler() {
+  if (cancellation_callback_) {
+    std::move(cancellation_callback_).Run();
+  }
 }
 
 void SSLClientAuthHandler::SelectCertificate() {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // |core_| will call DidGetClientCerts when done.
   core_->GetClientCerts();
 }
 
-// static
-void SSLClientAuthHandler::ContinueWithCertificate(
-    const base::WeakPtr<SSLClientAuthHandler>& handler,
-    scoped_refptr<net::X509Certificate> cert,
-    scoped_refptr<net::SSLPrivateKey> key) {
-  if (handler)
-    handler->delegate_->ContinueWithCertificate(std::move(cert),
-                                                std::move(key));
-}
-
-// static
-void SSLClientAuthHandler::CancelCertificateSelection(
-    const base::WeakPtr<SSLClientAuthHandler>& handler) {
-  if (handler)
-    handler->delegate_->CancelCertificateSelection();
-}
-
 void SSLClientAuthHandler::DidGetClientCerts(
     net::ClientCertIdentityList client_certs) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  WebContents* web_contents = web_contents_getter_.Run();
+  if (!web_contents) {
+    delegate_->CancelCertificateSelection();
+    return;
+  }
 
   // Note that if |client_cert_store_| is NULL, we intentionally fall through to
-  // SelectCertificateOnUIThread. This is for platforms where the client cert
+  // SelectClientCertificate(). This is for platforms where the client cert
   // matching is not performed by Chrome. Those platforms handle the cert
   // matching before showing the dialog.
   if (core_->has_client_cert_store() && client_certs.empty()) {
     // No need to query the user if there are no certs to choose from.
-    //
-    // TODO(davidben): The WebContents-less check on the UI thread should come
-    // before checking ClientCertStore; ClientCertStore itself should probably
-    // be handled by the embedder (https://crbug.com/394131), especially since
-    // this doesn't work on Android (https://crbug.com/345641).
-    base::PostTaskWithTraits(
-        FROM_HERE, {BrowserThread::IO},
-        base::BindOnce(&SSLClientAuthHandler::ContinueWithCertificate,
-                       weak_factory_.GetWeakPtr(), nullptr, nullptr));
+    delegate_->ContinueWithCertificate(nullptr, nullptr);
     return;
   }
 
-  base::PostTaskWithTraits(
-      FROM_HERE, {BrowserThread::UI},
-      base::BindOnce(&SelectCertificateOnUIThread, web_contents_getter_,
-                     base::RetainedRef(cert_request_info_),
-                     std::move(client_certs), weak_factory_.GetWeakPtr()));
+  // SelectClientCertificate() may call back into |delegate_| synchronously and
+  // destroy this object, so guard the cancellation callback logic by a WeakPtr.
+  base::WeakPtr<SSLClientAuthHandler> weak_self = weak_factory_.GetWeakPtr();
+  base::OnceClosure cancellation_callback =
+      GetContentClient()->browser()->SelectClientCertificate(
+          web_contents, cert_request_info_.get(), std::move(client_certs),
+          std::make_unique<ClientCertificateDelegateImpl>(weak_self));
+  if (weak_self) {
+    cancellation_callback_ = std::move(cancellation_callback);
+  } else if (!cancellation_callback.is_null()) {
+    std::move(cancellation_callback).Run();
+  }
 }
 
 }  // namespace content

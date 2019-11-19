@@ -10,6 +10,7 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ui/bookmarks/bookmark_stats.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/gfx/native_widget_types.h"
@@ -57,6 +58,7 @@ class BookmarkContextMenuController
       Browser* browser,
       Profile* profile,
       content::PageNavigator* navigator,
+      BookmarkLaunchLocation opened_from,
       const bookmarks::BookmarkNode* parent,
       const std::vector<const bookmarks::BookmarkNode*>& selection);
   ~BookmarkContextMenuController() override;
@@ -96,12 +98,13 @@ class BookmarkContextMenuController
   Browser* const browser_;
   Profile* profile_;
   content::PageNavigator* navigator_;
+  const BookmarkLaunchLocation opened_from_;
   const bookmarks::BookmarkNode* parent_;
   std::vector<const bookmarks::BookmarkNode*> selection_;
   bookmarks::BookmarkModel* model_;
   std::unique_ptr<ui::SimpleMenuModel> menu_model_;
   // Used to detect deletion of |this| executing a command.
-  base::WeakPtrFactory<BookmarkContextMenuController> weak_factory_;
+  base::WeakPtrFactory<BookmarkContextMenuController> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(BookmarkContextMenuController);
 };

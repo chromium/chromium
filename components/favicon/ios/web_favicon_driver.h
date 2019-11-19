@@ -8,8 +8,8 @@
 #include "base/macros.h"
 #include "components/favicon/core/favicon_driver_impl.h"
 #import "components/image_fetcher/ios/ios_image_data_fetcher_wrapper.h"
-#include "ios/web/public/web_state/web_state_observer.h"
-#include "ios/web/public/web_state/web_state_user_data.h"
+#include "ios/web/public/web_state_observer.h"
+#import "ios/web/public/web_state_user_data.h"
 
 namespace web {
 class WebState;

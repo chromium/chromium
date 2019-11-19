@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grit latest_public_release="0" current_release="1" output_all_resource_defines="false">
+  <outputs>
+    <output filename="grit/tab_strip_resources.h" type="rc_header">
+      <emit emit_type='prepend'></emit>
+    </output>
+    <output filename="grit/tab_strip_resources_map.cc"
+            type="resource_file_map_source" />
+    <output filename="grit/tab_strip_resources_map.h"
+            type="resource_map_header" />
+    <output filename="tab_strip_resources.pak" type="data_package" />
+  </outputs>
+  <release seq="1">
+    <structures>
+      <structure
+          name="IDR_TAB_STRIP_HTML"
+          file="tab_strip.html"
+          type="chrome_html"
+          compress="gzip"/>
+      <structure
+          name="IDR_TAB_STRIP_TABS_API_PROXY_JS"
+          file="tabs_api_proxy.js"
+          type="chrome_html"
+          compress="gzip"/>
+      <structure
+          name="IDR_TAB_STRIP_CUSTOM_ELEMENT_JS"
+          file="custom_element.js"
+          type="chrome_html"
+          compress="gzip"/>
+      <structure
+          name="IDR_TAB_STRIP_TAB_LIST_JS"
+          file="${root_gen_dir}/chrome/browser/resources/tab_strip/tab_list.js"
+          use_base_dir="false"
+          type="chrome_html"
+          compress="gzip"/>
+      <structure
+          name="IDR_TAB_STRIP_TAB_JS"
+          file="${root_gen_dir}/chrome/browser/resources/tab_strip/tab.js"
+          use_base_dir="false"
+          type="chrome_html"
+          compress="gzip"/>
+      <structure
+          name="IDR_TAB_STRIP_ALERT_INDICATOR_JS"
+          file="${root_gen_dir}/chrome/browser/resources/tab_strip/alert_indicator.js"
+          use_base_dir="false"
+          type="chrome_html"
+          compress="gzip"/>
+      <structure
+          name="IDR_TAB_STRIP_ALERT_INDICATORS_JS"
+          file="${root_gen_dir}/chrome/browser/resources/tab_strip/alert_indicators.js"
+          use_base_dir="false"
+          type="chrome_html"
+          compress="gzip"/>
+      <structure
+          name="IDR_TAB_STRIP_EMBEDDER_PROXY_JS"
+          file="tab_strip_embedder_proxy.js"
+          type="chrome_html"
+          compress="gzip"/>
+      <structure
+          name="IDR_TAB_STRIP_OPTIONS_JS"
+          file="tab_strip_options.js"
+          type="chrome_html"
+          compress="gzip"/>
+      <structure
+          name="IDR_TAB_STRIP_TAB_SWIPER_JS"
+          file="tab_swiper.js"
+          type="chrome_html"
+          compress="gzip"/>
+    </structures>
+
+    <includes>
+      <!-- Alert indicators -->
+      <include
+          name="IDR_TAB_STRIP_PICTURE_IN_PICTURE_ALT_SVG"
+          file="alert_indicators/picture_in_picture_alt.svg"
+          type="BINDATA"
+          compress="gzip" />
+      <include
+          name="IDR_TAB_STRIP_SERIAL_PORT_SVG"
+          file="alert_indicators/serial_port.svg"
+          type="BINDATA"
+          compress="gzip" />
+      <include
+          name="IDR_TAB_STRIP_TAB_AUDIO_MUTING_ROUNDED_SVG"
+          file="alert_indicators/tab_audio_muting_rounded.svg"
+          type="BINDATA"
+          compress="gzip" />
+      <include
+          name="IDR_TAB_STRIP_TAB_AUDIO_ROUNDED_SVG"
+          file="alert_indicators/tab_audio_rounded.svg"
+          type="BINDATA"
+          compress="gzip" />
+      <include
+          name="IDR_TAB_STRIP_TAB_BLUETOOTH_CONNECTED_SVG"
+          file="alert_indicators/tab_bluetooth_connected.svg"
+          type="BINDATA"
+          compress="gzip" />
+      <include
+          name="IDR_TAB_STRIP_TAB_MEDIA_CAPTURING_WITH_ARROW_SVG"
+          file="alert_indicators/tab_media_capturing_with_arrow.svg"
+          type="BINDATA"
+          compress="gzip" />
+      <include
+          name="IDR_TAB_STRIP_TAB_MEDIA_RECORING_SVG"
+          file="alert_indicators/tab_media_recording.svg"
+          type="BINDATA"
+          compress="gzip" />
+      <include
+          name="IDR_TAB_STRIP_TAB_USB_CONNECTED_SVG"
+          file="alert_indicators/tab_usb_connected.svg"
+          type="BINDATA"
+          compress="gzip" />
+      <include
+          name="IDR_TAB_STRIP_VR_HEADSET_SVG"
+          file="alert_indicators/vr_headset.svg"
+          type="BINDATA"
+          compress="gzip" />
+    </includes>
+  </release>
+</grit>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<script src='../../resources/gesture-util.js'></script>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<style>
+#blue {
+    background-color: rgb(0, 0, 255);
+    position: absolute;
+    left: 75px;
+    top: 75px;
+    height: 100px;
+    width: 100px;
+}
+#blue:hover {
+    background-color: rgb(255, 255, 0);
+}
+</style>
+<div id="blue"></div>
+<script>
+var x = 100;
+var y = 100;
+var blue = document.getElementById('blue');
+
+window.onload = async () => {
+  if (window.internals) {
+    internals.runtimeFlags.updateHoverAtBeginFrameEnabled = true;
+  }
+
+  promise_test(async () => {
+    await mouseMoveTo(x, y);
+    await raf();
+    assert_true(blue.matches(':hover'), "Hover on the element blue");
+    // Move the element blue away from the mouse cursor.
+    blue.style.top = y + 500 + 'px';
+    // Force a layout change.
+    assert_equals(blue.offsetTop, 600, "Check that the blue element is moved by 600px");
+    assert_true(blue.matches(':hover'), "The hover state is not yet updated");
+    await raf();
+    assert_false(blue.matches(':hover'), "The hover state is updated after the begin frame");
+  }, 'The hover state is updated at the begin frame after the layout changes.');
+
+}
+</script>

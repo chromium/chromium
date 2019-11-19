@@ -27,6 +27,7 @@
 
 #include "third_party/blink/renderer/core/html/list_item_ordinal.h"
 
+#include "base/numerics/clamped_math.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 #include "third_party/blink/renderer/core/html/html_olist_element.h"
 #include "third_party/blink/renderer/core/layout/layout_list_item.h"
@@ -38,7 +39,7 @@ ListItemOrdinal::ListItemOrdinal()
     : type_(kNeedsUpdate), not_in_list_(false), not_in_list_changed_(false) {}
 
 bool ListItemOrdinal::IsList(const Node& node) {
-  return IsHTMLUListElement(node) || IsHTMLOListElement(node);
+  return IsA<HTMLUListElement>(node) || IsA<HTMLOListElement>(node);
 }
 
 bool ListItemOrdinal::IsListItem(const LayoutObject* layout_object) {
@@ -161,7 +162,7 @@ int ListItemOrdinal::CalcValue(const Node& item_node) const {
     return value_;
 
   Node* list = EnclosingList(&item_node);
-  HTMLOListElement* o_list_element = ToHTMLOListElementOrNull(list);
+  auto* o_list_element = DynamicTo<HTMLOListElement>(list);
   int value_step = 1;
   if (o_list_element && o_list_element->IsReversed())
     value_step = -1;
@@ -169,7 +170,7 @@ int ListItemOrdinal::CalcValue(const Node& item_node) const {
   // FIXME: This recurses to a possible depth of the length of the list.
   // That's not good -- we need to change this to an iterative algorithm.
   if (NodeAndOrdinal previous = PreviousListItem(list, &item_node))
-    return ClampAdd(previous.ordinal->Value(*previous.node), value_step);
+    return base::ClampAdd(previous.ordinal->Value(*previous.node), value_step);
 
   if (o_list_element)
     return o_list_element->StartConsideringItemCount();
@@ -295,7 +296,7 @@ void ListItemOrdinal::ItemInsertedOrRemoved(
   CHECK(list_node);
 
   bool is_list_reversed = false;
-  if (auto* o_list_element = ToHTMLOListElementOrNull(list_node)) {
+  if (auto* o_list_element = DynamicTo<HTMLOListElement>(list_node)) {
     o_list_element->ItemCountChanged();
     is_list_reversed = o_list_element->IsReversed();
   }

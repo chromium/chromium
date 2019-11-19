@@ -5,8 +5,8 @@
 module ax.mojom;
 
 import "mojo/public/mojom/base/string16.mojom";
-import "ui/gfx/geometry/mojo/geometry.mojom";
-import "ui/gfx/range/mojo/range.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+import "ui/gfx/range/mojom/range.mojom";
 import "url/mojom/url.mojom";
 
 // Tree structure for assistant. The tree is represented as a flat array of

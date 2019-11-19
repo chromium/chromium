@@ -19,7 +19,7 @@ CloudPrinterHandler::~CloudPrinterHandler() {}
 void CloudPrinterHandler::Reset() {}
 
 void CloudPrinterHandler::StartGetPrinters(
-    const AddedPrintersCallback& added_printers_callback,
+    AddedPrintersCallback added_printers_callback,
     GetPrintersDoneCallback done_callback) {
   // TODO(https://crbug.com/829414): Actually retrieve the printers
   std::move(done_callback).Run();

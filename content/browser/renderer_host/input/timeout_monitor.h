@@ -16,7 +16,7 @@ namespace content {
 // Utility class for handling a timeout callback with periodic starts and stops.
 class CONTENT_EXPORT TimeoutMonitor {
  public:
-  typedef base::Closure TimeoutHandler;
+  typedef base::RepeatingClosure TimeoutHandler;
 
   explicit TimeoutMonitor(const TimeoutHandler& timeout_handler);
   ~TimeoutMonitor();

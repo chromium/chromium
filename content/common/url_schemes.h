@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "content/common/content_export.h"
-#include "url/origin.h"
 
 namespace content {
 
@@ -28,11 +27,6 @@ CONTENT_EXPORT void RegisterContentSchemes(bool lock_schemes);
 // See comment in ContentClient::AddAdditionalSchemes for explanations. These
 // getters can be invoked on any thread.
 const std::vector<std::string>& GetSavableSchemes();
-// Contains serialized canonicalized origins as well as hostname patterns such
-// as "*.foo.com". An origin should be considered secure if it matches an origin
-// in this list or if its hostname matches one of the hostname patterns. The
-// hostname patterns are canonicalized by component.
-const std::vector<std::string>& GetSecureOriginsAndPatterns();
 const std::vector<std::string>& GetServiceWorkerSchemes();
 
 }  // namespace content

@@ -5,14 +5,18 @@
 #ifndef ANDROID_WEBVIEW_BROWSER_SAFE_BROWSING_AW_SAFE_BROWSING_BLOCKING_PAGE_H_
 #define ANDROID_WEBVIEW_BROWSER_SAFE_BROWSING_AW_SAFE_BROWSING_BLOCKING_PAGE_H_
 
+#include <memory>
+
 #include "components/safe_browsing/base_blocking_page.h"
 #include "components/security_interstitials/core/base_safe_browsing_error_ui.h"
-
-class PrefService;
 
 namespace security_interstitials {
 struct UnsafeResource;
 }  // namespace security_interstitials
+
+namespace content {
+class WebContents;
+}  // namespace content
 
 namespace android_webview {
 
@@ -23,8 +27,13 @@ class AwSafeBrowsingBlockingPage : public safe_browsing::BaseBlockingPage {
   typedef security_interstitials::UnsafeResource UnsafeResource;
 
   static void ShowBlockingPage(AwSafeBrowsingUIManager* ui_manager,
-                               const UnsafeResource& unsafe_resource,
-                               PrefService* pref_service);
+                               const UnsafeResource& unsafe_resource);
+
+  static AwSafeBrowsingBlockingPage* CreateBlockingPage(
+      AwSafeBrowsingUIManager* ui_manager,
+      content::WebContents* web_contents,
+      const GURL& main_frame_url,
+      const UnsafeResource& unsafe_resource);
 
  protected:
   // Used to specify which BaseSafeBrowsingErrorUI to instantiate, and

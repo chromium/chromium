@@ -23,6 +23,7 @@
 #include "base/files/file.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "base/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -95,12 +96,19 @@ class CAPTURE_EXPORT VideoCaptureDevice
       class CAPTURE_EXPORT HandleProvider {
        public:
         virtual ~HandleProvider() {}
-        virtual mojo::ScopedSharedBufferHandle GetHandleForInterProcessTransit(
-            bool read_only) = 0;
-        virtual base::SharedMemoryHandle
-        GetNonOwnedSharedMemoryHandleForLegacyIPC() = 0;
+
+        // Duplicate as an writable (unsafe) shared memory region.
+        virtual base::UnsafeSharedMemoryRegion DuplicateAsUnsafeRegion() = 0;
+
+        // Duplicate as a writable (unsafe) mojo buffer.
+        virtual mojo::ScopedSharedBufferHandle DuplicateAsMojoBuffer() = 0;
+
+        // Access a |VideoCaptureBufferHandle| for local, writable memory.
         virtual std::unique_ptr<VideoCaptureBufferHandle>
         GetHandleForInProcessAccess() = 0;
+
+        // Clone a |GpuMemoryBufferHandle| for IPC.
+        virtual gfx::GpuMemoryBufferHandle GetGpuMemoryBufferHandle() = 0;
       };
 
       Buffer();
@@ -144,10 +152,13 @@ class CAPTURE_EXPORT VideoCaptureDevice
     // OnConsumerReportingUtilization(). This identifier is needed because
     // frames are consumed asynchronously and multiple frames can be "in flight"
     // at the same time.
+    // TODO(crbug.com/978143): remove |frame_feedback_id| default value.
     virtual void OnIncomingCapturedData(const uint8_t* data,
                                         int length,
                                         const VideoCaptureFormat& frame_format,
+                                        const gfx::ColorSpace& color_space,
                                         int clockwise_rotation,
+                                        bool flip_y,
                                         base::TimeTicks reference_time,
                                         base::TimeDelta timestamp,
                                         int frame_feedback_id = 0) = 0;
@@ -160,6 +171,7 @@ class CAPTURE_EXPORT VideoCaptureDevice
     // |buffer| when creating the content of the output buffer.
     // |clockwise_rotation|, |reference_time|, |timestamp|, and
     // |frame_feedback_id| serve the same purposes as in OnIncomingCapturedData.
+    // TODO(crbug.com/978143): remove |frame_feedback_id| default value.
     virtual void OnIncomingCapturedGfxBuffer(
         gfx::GpuMemoryBuffer* buffer,
         const VideoCaptureFormat& frame_format,
@@ -199,6 +211,7 @@ class CAPTURE_EXPORT VideoCaptureDevice
     virtual void OnIncomingCapturedBufferExt(
         Buffer buffer,
         const VideoCaptureFormat& format,
+        const gfx::ColorSpace& color_space,
         base::TimeTicks reference_time,
         base::TimeDelta timestamp,
         gfx::Rect visible_rect,

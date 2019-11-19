@@ -17,7 +17,7 @@ class CastContentUtilityClient : public content::ContentUtilityClient {
  public:
   static std::unique_ptr<CastContentUtilityClient> Create();
 
-  CastContentUtilityClient() {}
+  CastContentUtilityClient();
 
  private:
   DISALLOW_COPY_AND_ASSIGN(CastContentUtilityClient);

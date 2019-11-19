@@ -7,7 +7,7 @@
 
 #include "base/macros.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
 
@@ -179,47 +179,10 @@ class PLATFORM_EXPORT GarbageCollectedMixin {
 
 // Base class for objects allocated in the Blink garbage-collected heap.
 //
-// Defines a 'new' operator that allocates the memory in the heap.  'delete'
-// should not be called on objects that inherit from GarbageCollected.
-//
-// Instances of GarbageCollected will *NOT* get finalized.  Their destructor
-// will not be called.  Therefore, only classes that have trivial destructors
-// with no semantic meaning (including all their subclasses) should inherit from
-// GarbageCollected.  If there are non-trival destructors in a given class or
-// any of its subclasses, GarbageCollectedFinalized should be used which
-// guarantees that the destructor is called on an instance when the garbage
-// collector determines that it is no longer reachable.
+// Instances of GarbageCollected will be finalized if they are non-trivially
+// destructible.
 template <typename T>
 class GarbageCollected;
-
-// Base class for objects allocated in the Blink garbage-collected heap.
-//
-// Defines a 'new' operator that allocates the memory in the heap.  'delete'
-// should not be called on objects that inherit from GarbageCollected.
-//
-// Instances of GarbageCollectedFinalized will have their destructor called when
-// the garbage collector determines that the object is no longer reachable.
-template <typename T>
-class GarbageCollectedFinalized : public GarbageCollected<T> {
- protected:
-  // finalizeGarbageCollectedObject is called when the object is freed from
-  // the heap.  By default finalization means calling the destructor on the
-  // object.  finalizeGarbageCollectedObject can be overridden to support
-  // calling the destructor of a subclass.  This is useful for objects without
-  // vtables that require explicit dispatching.  The name is intentionally a
-  // bit long to make name conflicts less likely.
-  void FinalizeGarbageCollectedObject() { static_cast<T*>(this)->~T(); }
-
-  GarbageCollectedFinalized() = default;
-  ~GarbageCollectedFinalized() = default;
-
-  template <typename U>
-  friend struct HasFinalizer;
-  template <typename U, bool>
-  friend struct FinalizerTraitImpl;
-
-  DISALLOW_COPY_AND_ASSIGN(GarbageCollectedFinalized);
-};
 
 template <typename T,
           bool = WTF::IsSubclassOfTemplate<typename std::remove_const<T>::type,

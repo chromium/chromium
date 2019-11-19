@@ -158,6 +158,7 @@ test("remoting_unittests") {
     "//remoting/client:unit_tests",
     "//remoting/client/audio:unit_tests",
     "//remoting/client/input:unit_tests",
+    "//remoting/client/notification:unit_tests",
     "//remoting/client/ui:unit_tests",
     "//remoting/protocol:unit_tests",
     "//remoting/signaling:unit_tests",
@@ -174,7 +175,7 @@ test("remoting_unittests") {
     ]
   }
 
-  deps += [ "//third_party/webrtc_overrides:init_webrtc" ]
+  deps += [ "//third_party/webrtc_overrides:webrtc_component" ]
 
   if (is_android) {
     deps += [ "//net/android:net_java" ]
@@ -193,9 +194,7 @@ test("remoting_unittests") {
   }
 
   if (!is_chromeos) {
-    deps += [
-      "//remoting/client/display:unit_tests",
-    ]
+    deps += [ "//remoting/client/display:unit_tests" ]
   }
 }
 
@@ -219,11 +218,8 @@ if (enable_remoting_host) {
       "//net:test_support",
       "//remoting/base",
       "//testing/gtest",
-      "//third_party/webrtc/modules/desktop_capture",
-      "//third_party/webrtc_overrides",
+      "//third_party/webrtc_overrides:webrtc_component",
     ]
-
-    deps += [ "//third_party/webrtc_overrides:init_webrtc" ]
 
     if (is_win) {
       defines += [ "_ALT_NO_EXCEPTIONS" ]

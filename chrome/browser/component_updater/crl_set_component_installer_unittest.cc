@@ -9,7 +9,8 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/test_data_directory.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -24,7 +25,7 @@ namespace component_updater {
 class CRLSetComponentInstallerTest : public PlatformTest {
  public:
   CRLSetComponentInstallerTest()
-      : thread_bundle_(content::TestBrowserThreadBundle::IO_MAINLOOP),
+      : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP),
         test_server_(net::EmbeddedTestServer::TYPE_HTTPS),
         network_service_(std::make_unique<network::NetworkService>(nullptr)) {}
 
@@ -55,18 +56,18 @@ class CRLSetComponentInstallerTest : public PlatformTest {
     request.request_initiator = url::Origin();
 
     client_ = std::make_unique<network::TestURLLoaderClient>();
-    network::mojom::URLLoaderFactoryPtr loader_factory;
+    mojo::Remote<network::mojom::URLLoaderFactory> loader_factory;
     network::mojom::URLLoaderFactoryParamsPtr params =
         network::mojom::URLLoaderFactoryParams::New();
     params->process_id = 0;
     params->is_corb_enabled = false;
-    network_context_->CreateURLLoaderFactory(mojo::MakeRequest(&loader_factory),
-                                             std::move(params));
+    network_context_->CreateURLLoaderFactory(
+        loader_factory.BindNewPipeAndPassReceiver(), std::move(params));
     loader_factory->CreateLoaderAndStart(
         mojo::MakeRequest(&loader_), 1, 1,
         network::mojom::kURLLoadOptionSendSSLInfoWithResponse |
             network::mojom::kURLLoadOptionSendSSLInfoForCertificateError,
-        request, client_->CreateInterfacePtr(),
+        request, client_->CreateRemote(),
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
     client_->RunUntilComplete();
   }
@@ -77,17 +78,17 @@ class CRLSetComponentInstallerTest : public PlatformTest {
                                             temp_dir_.GetPath()));
     policy_->ComponentReady(base::Version("1.0"), temp_dir_.GetPath(),
                             std::make_unique<base::DictionaryValue>());
-    thread_bundle_.RunUntilIdle();
+    task_environment_.RunUntilIdle();
   }
 
  protected:
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   net::EmbeddedTestServer test_server_;
 
   std::unique_ptr<CRLSetPolicy> policy_;
   std::unique_ptr<network::TestURLLoaderClient> client_;
   std::unique_ptr<network::NetworkService> network_service_;
-  network::mojom::NetworkContextPtr network_context_;
+  mojo::Remote<network::mojom::NetworkContext> network_context_;
   network::mojom::URLLoaderPtr loader_;
   base::ScopedTempDir temp_dir_;
 
@@ -97,7 +98,7 @@ class CRLSetComponentInstallerTest : public PlatformTest {
 
 TEST_F(CRLSetComponentInstallerTest, ConfiguresOnInstall) {
   network_service_->CreateNetworkContext(
-      mojo::MakeRequest(&network_context_),
+      network_context_.BindNewPipeAndPassReceiver(),
       network::mojom::NetworkContextParams::New());
 
   // Ensure the test server can load by default.
@@ -119,7 +120,7 @@ TEST_F(CRLSetComponentInstallerTest, ConfiguresOnInstall) {
 
 TEST_F(CRLSetComponentInstallerTest, ReconfiguresAfterRestartWithCRLSet) {
   network_service_->CreateNetworkContext(
-      mojo::MakeRequest(&network_context_),
+      network_context_.BindNewPipeAndPassReceiver(),
       network::mojom::NetworkContextParams::New());
 
   // Ensure the test server can load by default.
@@ -141,10 +142,11 @@ TEST_F(CRLSetComponentInstallerTest, ReconfiguresAfterRestartWithCRLSet) {
   // Simulate a Network Service crash
   SimulateCrash();
   CRLSetPolicy::ReconfigureAfterNetworkRestart();
-  thread_bundle_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
+  network_context_.reset();
   network_service_->CreateNetworkContext(
-      mojo::MakeRequest(&network_context_),
+      network_context_.BindNewPipeAndPassReceiver(),
       network::mojom::NetworkContextParams::New());
 
   // Ensure the test server is still blocked even with a new context and
@@ -159,7 +161,7 @@ TEST_F(CRLSetComponentInstallerTest, ReconfiguresAfterRestartWithCRLSet) {
 
 TEST_F(CRLSetComponentInstallerTest, ReconfiguresAfterRestartWithNoCRLSet) {
   network_service_->CreateNetworkContext(
-      mojo::MakeRequest(&network_context_),
+      network_context_.BindNewPipeAndPassReceiver(),
       network::mojom::NetworkContextParams::New());
 
   // Ensure the test server can load by default.
@@ -169,10 +171,11 @@ TEST_F(CRLSetComponentInstallerTest, ReconfiguresAfterRestartWithNoCRLSet) {
   // Simulate a Network Service crash
   SimulateCrash();
   CRLSetPolicy::ReconfigureAfterNetworkRestart();
-  thread_bundle_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
+  network_context_.reset();
   network_service_->CreateNetworkContext(
-      mojo::MakeRequest(&network_context_),
+      network_context_.BindNewPipeAndPassReceiver(),
       network::mojom::NetworkContextParams::New());
 
   // Ensure the test server can still load.

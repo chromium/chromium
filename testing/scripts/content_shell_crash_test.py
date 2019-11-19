@@ -37,6 +37,8 @@ def main(argv):
   parser.add_argument(
       '--isolated-script-test-filter', type=str,
       required=False)
+  parser.add_argument(
+      '--platform', type=str, default=sys.platform, required=False)
 
   args = parser.parse_args(argv)
 
@@ -47,9 +49,9 @@ def main(argv):
   env[CHROME_SANDBOX_ENV] = CHROME_SANDBOX_PATH
 
   additional_args = []
-  if sys.platform == 'win32':
+  if args.platform == 'win32':
     exe = os.path.join('.', 'content_shell.exe')
-  elif sys.platform == 'darwin':
+  elif args.platform == 'darwin':
     exe = os.path.join('.', 'Content Shell.app', 'Contents', 'MacOS',
                        'Content Shell')
     # The Content Shell binary does not directly link against
@@ -61,6 +63,9 @@ def main(argv):
                      'Content Shell Framework.framework', 'Versions',
                      'Current', 'Content Shell Framework')
     ]
+  elif args.platform == 'android':
+    exe = os.path.join('.', 'lib.unstripped',
+                       'libcontent_shell_content_view.so')
   else:
     exe = os.path.join('.', 'content_shell')
 
@@ -73,7 +78,8 @@ def main(argv):
         '--verbose',
         '--build-dir', '.',
         '--binary', exe,
-        '--json', tempfile_path
+        '--json', tempfile_path,
+        '--platform', args.platform,
     ] + additional_args, env)
 
     with open(tempfile_path) as f:

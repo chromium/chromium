@@ -2,15 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-window.onload = function() {
-  chrome.contextMenus.create({
-    id: 'id1',
-    title: 'Menu item 1',
-    onclick: function() {
-      chrome.test.sendMessage('onclick1-unexpected');
-    }
-  }, onCreatedFirstMenu);
-};
+chrome.contextMenus.create({
+  id: 'id1',
+  title: 'Menu item 1',
+  onclick: function() {
+    chrome.test.sendMessage('onclick1-unexpected');
+  }
+}, onCreatedFirstMenu);
 
 function onCreatedFirstMenu() {
   chrome.contextMenus.update('id1', {

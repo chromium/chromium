@@ -30,10 +30,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/vector.h"
-
-#include <algorithm>
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
@@ -43,61 +40,15 @@ class CORE_EXPORT TimeRanges final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  // We consider all the Ranges to be semi-bounded as follow: [start, end[
-  struct Range {
-    DISALLOW_NEW();
-
-   public:
-    Range() = default;
-    Range(double start, double end) {
-      start_ = start;
-      end_ = end;
-    }
-    double start_;
-    double end_;
-
-    inline bool isPointInRange(double point) const {
-      return start_ <= point && point < end_;
-    }
-
-    inline bool IsOverlappingRange(const Range& range) const {
-      return isPointInRange(range.start_) || isPointInRange(range.end_) ||
-             range.isPointInRange(start_);
-    }
-
-    inline bool IsContiguousWithRange(const Range& range) const {
-      return range.start_ == end_ || range.end_ == start_;
-    }
-
-    inline Range UnionWithOverlappingOrContiguousRange(
-        const Range& range) const {
-      Range ret;
-
-      ret.start_ = std::min(start_, range.start_);
-      ret.end_ = std::max(end_, range.end_);
-
-      return ret;
-    }
-
-    inline bool IsBeforeRange(const Range& range) const {
-      return range.start_ >= end_;
-    }
-  };
-
-  static TimeRanges* Create() { return MakeGarbageCollected<TimeRanges>(); }
-  static TimeRanges* Create(double start, double end) {
-    return MakeGarbageCollected<TimeRanges>(start, end);
-  }
-  static TimeRanges* Create(const WebTimeRanges&);
-
   TimeRanges() = default;
   TimeRanges(double start, double end);
+  TimeRanges(const WebTimeRanges&);
 
   TimeRanges* Copy() const;
   void IntersectWith(const TimeRanges*);
   void UnionWith(const TimeRanges*);
 
-  unsigned length() const { return ranges_.size(); }
+  unsigned length() const { return static_cast<unsigned>(ranges_.size()); }
   double start(unsigned index, ExceptionState&) const;
   double end(unsigned index, ExceptionState&) const;
 
@@ -109,9 +60,7 @@ class CORE_EXPORT TimeRanges final : public ScriptWrappable {
                  double current_playback_position) const;
 
  private:
-  void Invert();
-
-  Vector<Range> ranges_;
+  WebTimeRanges ranges_;
 };
 
 }  // namespace blink

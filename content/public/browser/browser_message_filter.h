@@ -11,6 +11,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/process/process.h"
+#include "base/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_thread.h"
@@ -19,10 +20,6 @@
 #if defined(OS_WIN)
 #include "base/synchronization/lock.h"
 #endif
-
-namespace base {
-class TaskRunner;
-}
 
 namespace IPC {
 class MessageFilter;
@@ -75,7 +72,7 @@ class CONTENT_EXPORT BrowserMessageFilter
   // return a non-null task runner which will target tasks accordingly.
   // Note: To target the UI thread, please use OverrideThreadForMessage
   // since that has extra checks to avoid deadlocks.
-  virtual base::TaskRunner* OverrideTaskRunnerForMessage(
+  virtual scoped_refptr<base::SequencedTaskRunner> OverrideTaskRunnerForMessage(
       const IPC::Message& message);
 
   // Override this to receive messages.

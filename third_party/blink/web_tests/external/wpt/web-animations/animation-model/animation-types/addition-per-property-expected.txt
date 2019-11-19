@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 556 tests; 524 PASS, 32 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 556 tests; 538 PASS, 18 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Setup
 PASS align-content (type: discrete) has testAddition function
 PASS align-content: "flex-end" onto "flex-start"
@@ -54,21 +54,12 @@ PASS border-bottom-width: length of rem
 PASS border-collapse (type: discrete) has testAddition function
 PASS border-collapse: "separate" onto "collapse"
 PASS border-collapse: "collapse" onto "separate"
-PASS border-image-outset (type: discrete) has testAddition function
-FAIL border-image-outset: "5 6 7 8" onto "1 2 3 4" assert_equals: The value should be 5 6 7 8 at 0ms expected "5 6 7 8" but got "6 8 10 12"
-FAIL border-image-outset: "1 2 3 4" onto "5 6 7 8" assert_equals: The value should be 1 2 3 4 at 0ms expected "1 2 3 4" but got "6 8 10 12"
 PASS border-image-repeat (type: discrete) has testAddition function
 PASS border-image-repeat: "round space" onto "stretch repeat"
 PASS border-image-repeat: "stretch repeat" onto "round space"
-PASS border-image-slice (type: discrete) has testAddition function
-FAIL border-image-slice: "5 6 7 8" onto "1 2 3 4" assert_equals: The value should be 5 6 7 8 at 0ms expected "5 6 7 8" but got "6 8 10 12"
-FAIL border-image-slice: "1 2 3 4" onto "5 6 7 8" assert_equals: The value should be 1 2 3 4 at 0ms expected "1 2 3 4" but got "6 8 10 12"
 PASS border-image-source (type: discrete) has testAddition function
 PASS border-image-source: "url("http://localhost/test-2")" onto "url("http://localhost/test-1")"
 PASS border-image-source: "url("http://localhost/test-1")" onto "url("http://localhost/test-2")"
-PASS border-image-width (type: discrete) has testAddition function
-FAIL border-image-width: "5 6 7 8" onto "1 2 3 4" assert_equals: The value should be 5 6 7 8 at 0ms expected "5 6 7 8" but got "6 8 10 12"
-FAIL border-image-width: "1 2 3 4" onto "5 6 7 8" assert_equals: The value should be 1 2 3 4 at 0ms expected "1 2 3 4" but got "6 8 10 12"
 PASS border-left-color (type: color) has testAddition function
 PASS border-left-color supports animating as color of rgb() with overflowed  from and to values
 PASS border-left-color supports animating as color of #RGB
@@ -185,9 +176,6 @@ PASS column-width: length of rem
 PASS column-width (type: discrete) has testAddition function
 PASS column-width: "1px" onto "auto"
 PASS column-width: "auto" onto "1px"
-PASS content (type: discrete) has testAddition function
-PASS content: ""b"" onto ""a""
-PASS content: ""a"" onto ""b""
 PASS counter-increment (type: discrete) has testAddition function
 PASS counter-increment: "ident-2 2" onto "ident-1 1"
 PASS counter-increment: "ident-1 1" onto "ident-2 2"
@@ -210,8 +198,8 @@ PASS fill-rule (type: discrete) has testAddition function
 PASS fill-rule: "nonzero" onto "evenodd"
 PASS fill-rule: "evenodd" onto "nonzero"
 PASS filter (type: filterList) has testAddition function
-FAIL filter: blur on blur assert_equals: The value should be blur(10px) blur(20px) at 0ms expected "blur(10px) blur(20px)" but got "blur(30px)"
-FAIL filter: different filter functions assert_equals: The value should be blur(10px) brightness(0.8) at 0ms expected "blur(10px) brightness(0.8)" but got "brightness(0.8)"
+PASS filter: blur on blur
+PASS filter: different filter functions
 PASS flex-basis (type: lengthPercentageOrCalc) has testAddition function
 PASS flex-basis: length
 PASS flex-basis: length of rem
@@ -365,6 +353,18 @@ PASS mix-blend-mode: "multiply" onto "screen"
 PASS object-fit (type: discrete) has testAddition function
 PASS object-fit: "contain" onto "fill"
 PASS object-fit: "fill" onto "contain"
+PASS offset-distance (type: lengthPercentageOrCalc) has testAddition function
+PASS offset-distance: length
+PASS offset-distance: length of rem
+PASS offset-distance: percentage
+PASS offset-distance: units "%" onto "px"
+PASS offset-distance: units "px" onto "%"
+PASS offset-distance: units "rem" onto "%"
+PASS offset-distance: units "%" onto "rem"
+PASS offset-distance: units "rem" onto "em"
+PASS offset-distance: units "em" onto "rem"
+PASS offset-distance: units "calc" onto "px"
+PASS offset-distance: calc
 PASS order (type: integer) has testAddition function
 PASS order: integer
 PASS outline-color (type: color) has testAddition function
@@ -443,10 +443,10 @@ PASS stop-opacity (type: opacity) has testAddition function
 PASS stop-opacity: [0, 1] number
 PASS stop-opacity: [0, 1] number (clamped)
 PASS stroke-dasharray (type: dasharray) has testAddition function
-FAIL stroke-dasharray: dasharray assert_equals: The value should be 1, 2, 3, 4, 5 at 0ms expected "1, 2, 3, 4, 5" but got "7px, calc(30% + 2px), 5px, 10px, calc(30% + 5px), 3px, 8px, calc(30% + 3px), 6px, 11px, calc(30% + 1px), 4px, 9px, calc(30% + 4px), 7px"
+FAIL stroke-dasharray: dasharray assert_equals: The value should be 1px, 2px, 3px, 4px, 5px at 0ms expected "1px, 2px, 3px, 4px, 5px" but got "7px, calc(30% + 2px), 5px, 10px, calc(30% + 5px), 3px, 8px, calc(30% + 3px), 6px, 11px, calc(30% + 1px), 4px, 9px, calc(30% + 4px), 7px"
 PASS stroke-dasharray (type: discrete) has testAddition function
-FAIL stroke-dasharray: "10, 20" onto "none" assert_equals: The value should be 10, 20 at 0ms expected "10, 20" but got "10px, 20px"
-PASS stroke-dasharray: "none" onto "10, 20"
+PASS stroke-dasharray: "10px, 20px" onto "none"
+PASS stroke-dasharray: "none" onto "10px, 20px"
 PASS stroke-linecap (type: discrete) has testAddition function
 PASS stroke-linecap: "square" onto "round"
 PASS stroke-linecap: "round" onto "square"
@@ -522,21 +522,21 @@ PASS transform-style: "preserve-3d" onto "flat"
 PASS transform-style: "flat" onto "preserve-3d"
 PASS rotate (type: rotateList) has testAddition function
 PASS rotate without rotation axes
-FAIL rotate with underlying transform assert_equals: The value should be y 45deg at 0ms expected "y 45deg" but got "0 1 0 45deg"
+PASS rotate with underlying transform
 FAIL rotate with different rotation axes assert_approx_equals: expected 0.57735 0.57735 0.57735 135deg but got 1 1 1 135deg: The value should be 0.57735 0.57735 0.57735 135deg at 500ms but got 1 1 1 135deg expected 0.57735 +/- 0.0001 but got 1
 PASS translate (type: translateList) has testAddition function
 PASS translate
 PASS translate with underlying transform
-FAIL translate with underlying percentage value assert_equals: The value should be calc(50% - 200px) at 0ms expected "calc(50% - 200px)" but got "calc(50% + -200px)"
+PASS translate with underlying percentage value
 PASS scale (type: scaleList) has testAddition function
-FAIL scale with two unspecified values assert_equals: The value should be -6 at 0ms expected "-6" but got "-6 2"
-FAIL scale with one unspecified value assert_equals: The value should be -6 at 0ms expected "-6" but got "-6 -6"
+PASS scale with two unspecified values
+PASS scale with one unspecified value
 PASS scale
 PASS vector-effect (type: discrete) has testAddition function
 PASS vector-effect: "non-scaling-stroke" onto "none"
 PASS vector-effect: "none" onto "non-scaling-stroke"
 PASS visibility (type: visibility) has testAddition function
-FAIL visibility: onto "visible" assert_equals: The value should be visible at 1000ms expected "visible" but got "hidden"
+PASS visibility: onto "visible"
 PASS visibility: onto "hidden"
 PASS white-space (type: discrete) has testAddition function
 PASS white-space: "nowrap" onto "pre"

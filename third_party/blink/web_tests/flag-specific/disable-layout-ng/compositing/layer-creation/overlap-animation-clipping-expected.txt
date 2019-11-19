@@ -1,0 +1,148 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [785, 812],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutBlockFlow (relative positioned) DIV id='to-animate1' class='box animating1'",
+      "bounds": [100, 100],
+      "contentsOpaque": true,
+      "backgroundColor": "#0000FF",
+      "transform": 2
+    },
+    {
+      "name": "LayoutBlockFlow (relative positioned) DIV class='container'",
+      "bounds": [122, 462],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "transform": 3
+    },
+    {
+      "name": "LayoutBlockFlow (relative positioned) DIV class='box gray force-layer'",
+      "bounds": [100, 100],
+      "contentsOpaque": true,
+      "backgroundColor": "#808080",
+      "transform": 5
+    },
+    {
+      "name": "LayoutBlockFlow (relative positioned) DIV id='to-animate2' class='box animating2'",
+      "bounds": [100, 100],
+      "contentsOpaque": true,
+      "backgroundColor": "#0000FF",
+      "transform": 7
+    },
+    {
+      "name": "LayoutBlockFlow (relative positioned) DIV class='box yellow'",
+      "bounds": [100, 100],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFF00",
+      "transform": 8
+    },
+    {
+      "name": "LayoutBlockFlow (relative positioned) DIV class='box yellow'",
+      "bounds": [100, 100],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFF00",
+      "transform": 9
+    },
+    {
+      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "position": [785, 0],
+      "bounds": [15, 600],
+      "contentsOpaque": true
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [...],
+        [...],
+        [...],
+        [...]
+      ]
+    },
+    {
+      "id": 2,
+      "parent": 1,
+      "transform": [
+        [...],
+        [...],
+        [...],
+        [...]
+      ]
+    },
+    {
+      "id": 3,
+      "transform": [
+        [...],
+        [...],
+        [...],
+        [...]
+      ]
+    },
+    {
+      "id": 4,
+      "parent": 3,
+      "transform": [
+        [...],
+        [...],
+        [...],
+        [...]
+      ]
+    },
+    {
+      "id": 5,
+      "parent": 4,
+      "transform": [
+        [...],
+        [...],
+        [...],
+        [...]
+      ]
+    },
+    {
+      "id": 6,
+      "parent": 3,
+      "transform": [
+        [...],
+        [...],
+        [...],
+        [...]
+      ]
+    },
+    {
+      "id": 7,
+      "parent": 6,
+      "transform": [
+        [...],
+        [...],
+        [...],
+        [...]
+      ]
+    },
+    {
+      "id": 8,
+      "parent": 3,
+      "transform": [
+        [...],
+        [...],
+        [...],
+        [...]
+      ]
+    },
+    {
+      "id": 9,
+      "transform": [
+        [...],
+        [...],
+        [...],
+        [...]
+      ]
+    }
+  ]
+}
+

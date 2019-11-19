@@ -6,6 +6,7 @@ package org.chromium.chromoting;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,6 +29,8 @@ public class NavigationMenuAdapter extends ArrayAdapter<NavigationMenuAdapter.Na
      * Defines a menu item.
      */
     public static class NavigationMenuItem {
+        public static final NavigationMenuItem SEPARATOR = new NavigationMenuItem(null, null, null);
+
         private String mText;
         private Drawable mIcon;
         private Runnable mCallback;
@@ -45,23 +48,25 @@ public class NavigationMenuAdapter extends ArrayAdapter<NavigationMenuAdapter.Na
 
         NavigationMenuItem feedbackItem = new NavigationMenuItem(
                 chromoting.getResources().getString(R.string.actionbar_send_feedback),
-                getIcon(chromoting, R.drawable.ic_announcement), new Runnable() {
-                    @Override
-                    public void run() {
-                        chromoting.launchFeedback();
-                    }
+                getIcon(chromoting, R.drawable.ic_announcement), chromoting::launchFeedback);
+
+        NavigationMenuItem helpItem =
+                new NavigationMenuItem(chromoting.getResources().getString(R.string.actionbar_help),
+                        getIcon(chromoting, R.drawable.ic_help),
+                        () -> chromoting.launchHelp(HelpContext.HOST_LIST));
+
+        NavigationMenuItem tosItem = new NavigationMenuItem(
+                chromoting.getResources().getString(R.string.terms_of_service), null, () -> {
+                    chromoting.startActivity(new Intent(chromoting, TermsOfServiceActivity.class));
                 });
 
-        NavigationMenuItem helpItem = new NavigationMenuItem(
-                chromoting.getResources().getString(R.string.actionbar_help),
-                getIcon(chromoting, R.drawable.ic_help), new Runnable() {
-                    @Override
-                    public void run() {
-                        chromoting.launchHelp(HelpContext.HOST_LIST);
-                    }
+        NavigationMenuItem privacyPolicyItem = new NavigationMenuItem(
+                chromoting.getResources().getString(R.string.privacy_policy), null, () -> {
+                    chromoting.startActivity(new Intent(chromoting, PrivacyPolicyActivity.class));
                 });
 
-        NavigationMenuItem[] navigationMenuItems = { feedbackItem, helpItem };
+        NavigationMenuItem[] navigationMenuItems = {
+                feedbackItem, helpItem, NavigationMenuItem.SEPARATOR, tosItem, privacyPolicyItem};
         NavigationMenuAdapter adapter = new NavigationMenuAdapter(chromoting, navigationMenuItems);
         navigationMenu.setAdapter(adapter);
         navigationMenu.setOnItemClickListener(adapter);
@@ -82,13 +87,21 @@ public class NavigationMenuAdapter extends ArrayAdapter<NavigationMenuAdapter.Na
     /** Generates a View corresponding to the particular navigation item. */
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        if (convertView == null) {
-            LayoutInflater inflater =
-                    (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = inflater.inflate(R.layout.navigation_list_item, parent, false);
-        }
-        TextView textView = (TextView) convertView.findViewById(R.id.navigation_item_label);
         NavigationMenuItem item = getItem(position);
+        Preconditions.notNull(item);
+        if (item == NavigationMenuItem.SEPARATOR) {
+            if (convertView == null || convertView instanceof TextView) {
+                convertView =
+                        getInflater().inflate(R.layout.navigation_list_separator, parent, false);
+            }
+            Preconditions.notNull(convertView);
+            return convertView;
+        }
+        if (convertView == null || !(convertView instanceof TextView)) {
+            convertView = getInflater().inflate(R.layout.navigation_list_item, parent, false);
+        }
+        Preconditions.notNull(convertView);
+        TextView textView = convertView.findViewById(R.id.navigation_item_label);
         textView.setCompoundDrawables(item.mIcon, null, null, null);
         textView.setText(item.mText);
         return convertView;
@@ -99,5 +112,9 @@ public class NavigationMenuAdapter extends ArrayAdapter<NavigationMenuAdapter.Na
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         getItem(position).mCallback.run();
+    }
+
+    private LayoutInflater getInflater() {
+        return (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 }

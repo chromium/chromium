@@ -9,12 +9,13 @@
 #include "base/memory/ptr_util.h"
 #include "base/stl_util.h"
 #include "base/trace_event/trace_event.h"
+#include "components/signin/public/identity_manager/access_token_info.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace gcm {
 
 AccountTracker::AccountTracker(
-    identity::IdentityManager* identity_manager,
+    signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : identity_manager_(identity_manager),
       url_loader_factory_(std::move(url_loader_factory)),
@@ -45,7 +46,7 @@ void AccountTracker::RemoveObserver(Observer* observer) {
 }
 
 std::vector<AccountIds> AccountTracker::GetAccounts() const {
-  const std::string active_account_id =
+  const CoreAccountId active_account_id =
       identity_manager_->GetPrimaryAccountId();
   std::vector<AccountIds> accounts;
 
@@ -69,7 +70,7 @@ std::vector<AccountIds> AccountTracker::GetAccounts() const {
 void AccountTracker::OnRefreshTokenUpdatedForAccount(
     const CoreAccountInfo& account_info) {
   TRACE_EVENT1("identity", "AccountTracker::OnRefreshTokenUpdatedForAccount",
-               "account_id", account_info.account_id);
+               "account_id", account_info.account_id.id);
 
   // Ignore refresh tokens if there is no active account ID at all.
   if (!identity_manager_->HasPrimaryAccount())
@@ -80,9 +81,9 @@ void AccountTracker::OnRefreshTokenUpdatedForAccount(
 }
 
 void AccountTracker::OnRefreshTokenRemovedForAccount(
-    const std::string& account_id) {
+    const CoreAccountId& account_id) {
   TRACE_EVENT1("identity", "AccountTracker::OnRefreshTokenRemovedForAccount",
-               "account_id", account_id);
+               "account_id", account_id.id);
 
   DVLOG(1) << "REVOKED " << account_id;
   UpdateSignInState(account_id, /*is_signed_in=*/false);
@@ -92,12 +93,12 @@ void AccountTracker::OnPrimaryAccountSet(
     const CoreAccountInfo& primary_account_info) {
   TRACE_EVENT0("identity", "AccountTracker::OnPrimaryAccountSet");
 
-  std::vector<AccountInfo> accounts =
+  std::vector<CoreAccountInfo> accounts =
       identity_manager_->GetAccountsWithRefreshTokens();
 
   DVLOG(1) << "LOGIN " << accounts.size() << " accounts available.";
 
-  for (const AccountInfo& account_info : accounts) {
+  for (const CoreAccountInfo& account_info : accounts) {
     UpdateSignInState(account_info.account_id, /*is_signed_in=*/true);
   }
 }
@@ -115,7 +116,7 @@ void AccountTracker::NotifySignInChanged(const AccountState& account) {
     observer.OnAccountSignInChanged(account.ids, account.is_signed_in);
 }
 
-void AccountTracker::UpdateSignInState(const std::string& account_key,
+void AccountTracker::UpdateSignInState(const CoreAccountId& account_key,
                                        bool is_signed_in) {
   StartTrackingAccount(account_key);
   AccountState& account = accounts_[account_key];
@@ -130,20 +131,20 @@ void AccountTracker::UpdateSignInState(const std::string& account_key,
     NotifySignInChanged(account);
 }
 
-void AccountTracker::StartTrackingAccount(const std::string& account_key) {
-  if (!base::ContainsKey(accounts_, account_key)) {
+void AccountTracker::StartTrackingAccount(const CoreAccountId& account_key) {
+  if (!base::Contains(accounts_, account_key)) {
     DVLOG(1) << "StartTracking " << account_key;
     AccountState account_state;
     account_state.ids.account_key = account_key;
-    account_state.ids.email = account_key;
+    account_state.ids.email = account_key.id;
     account_state.is_signed_in = false;
-    accounts_.insert(make_pair(account_key, account_state));
+    accounts_.insert(std::make_pair(account_key, account_state));
   }
 }
 
-void AccountTracker::StopTrackingAccount(const std::string account_key) {
+void AccountTracker::StopTrackingAccount(const CoreAccountId account_key) {
   DVLOG(1) << "StopTracking " << account_key;
-  if (base::ContainsKey(accounts_, account_key)) {
+  if (base::Contains(accounts_, account_key)) {
     AccountState& account = accounts_[account_key];
     if (!account.ids.gaia.empty()) {
       UpdateSignInState(account_key, /*is_signed_in=*/false);
@@ -151,7 +152,7 @@ void AccountTracker::StopTrackingAccount(const std::string account_key) {
     accounts_.erase(account_key);
   }
 
-  if (base::ContainsKey(user_info_requests_, account_key))
+  if (base::Contains(user_info_requests_, account_key))
     DeleteFetcher(user_info_requests_[account_key].get());
 }
 
@@ -160,8 +161,8 @@ void AccountTracker::StopTrackingAllAccounts() {
     StopTrackingAccount(accounts_.begin()->first);
 }
 
-void AccountTracker::StartFetchingUserInfo(const std::string& account_key) {
-  if (base::ContainsKey(user_info_requests_, account_key)) {
+void AccountTracker::StartFetchingUserInfo(const CoreAccountId& account_key) {
+  if (base::Contains(user_info_requests_, account_key)) {
     DeleteFetcher(user_info_requests_[account_key].get());
   }
 
@@ -174,8 +175,8 @@ void AccountTracker::StartFetchingUserInfo(const std::string& account_key) {
 
 void AccountTracker::OnUserInfoFetchSuccess(AccountIdFetcher* fetcher,
                                             const std::string& gaia_id) {
-  const std::string& account_key = fetcher->account_key();
-  DCHECK(base::ContainsKey(accounts_, account_key));
+  const CoreAccountId& account_key = fetcher->account_key();
+  DCHECK(base::Contains(accounts_, account_key));
   AccountState& account = accounts_[account_key];
 
   account.ids.gaia = gaia_id;
@@ -188,30 +189,30 @@ void AccountTracker::OnUserInfoFetchSuccess(AccountIdFetcher* fetcher,
 
 void AccountTracker::OnUserInfoFetchFailure(AccountIdFetcher* fetcher) {
   LOG(WARNING) << "Failed to get UserInfo for " << fetcher->account_key();
-  std::string key = fetcher->account_key();
+  CoreAccountId key = fetcher->account_key();
   DeleteFetcher(fetcher);
   StopTrackingAccount(key);
 }
 
 void AccountTracker::DeleteFetcher(AccountIdFetcher* fetcher) {
   DVLOG(1) << "DeleteFetcher " << fetcher->account_key();
-  const std::string& account_key = fetcher->account_key();
-  DCHECK(base::ContainsKey(user_info_requests_, account_key));
+  const CoreAccountId& account_key = fetcher->account_key();
+  DCHECK(base::Contains(user_info_requests_, account_key));
   DCHECK_EQ(fetcher, user_info_requests_[account_key].get());
   user_info_requests_.erase(account_key);
 }
 
 AccountIdFetcher::AccountIdFetcher(
-    identity::IdentityManager* identity_manager,
+    signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     AccountTracker* tracker,
-    const std::string& account_key)
+    const CoreAccountId& account_key)
     : identity_manager_(identity_manager),
       url_loader_factory_(std::move(url_loader_factory)),
       tracker_(tracker),
       account_key_(account_key) {
   TRACE_EVENT_ASYNC_BEGIN1("identity", "AccountIdFetcher", this, "account_key",
-                           account_key);
+                           account_key.id);
 }
 
 AccountIdFetcher::~AccountIdFetcher() {
@@ -225,12 +226,12 @@ void AccountIdFetcher::Start() {
       account_key_, "gaia_account_tracker", scopes,
       base::BindOnce(&AccountIdFetcher::AccessTokenFetched,
                      base::Unretained(this)),
-      identity::AccessTokenFetcher::Mode::kImmediate);
+      signin::AccessTokenFetcher::Mode::kImmediate);
 }
 
 void AccountIdFetcher::AccessTokenFetched(
     GoogleServiceAuthError error,
-    identity::AccessTokenInfo access_token_info) {
+    signin::AccessTokenInfo access_token_info) {
   access_token_fetcher_.reset();
 
   if (error != GoogleServiceAuthError::AuthErrorNone()) {

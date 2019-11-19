@@ -7,14 +7,14 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
-#include "base/message_loop/message_loop.h"
-#include "base/message_loop/message_loop_current.h"
 #include "base/process/process_metrics.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/perf_time_logger.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "ipc/ipc_channel_mojo.h"
 #include "ipc/ipc_perftest_messages.h"
@@ -25,9 +25,14 @@
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/core/test/mojo_test_base.h"
 #include "mojo/core/test/multiprocess_test_helper.h"
-#include "mojo/public/cpp/bindings/associated_binding_set.h"
-#include "mojo/public/cpp/bindings/binding.h"
-#include "mojo/public/cpp/bindings/binding_set.h"
+#include "mojo/public/cpp/bindings/associated_receiver_set.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 
 namespace IPC {
@@ -284,7 +289,8 @@ class MojoInterfacePerfTest : public mojo::core::test::MojoTestBase {
 
     mojo::MessagePipeHandle mp_handle(mp);
     mojo::ScopedMessagePipeHandle scoped_mp(mp_handle);
-    ping_receiver_.Bind(IPC::mojom::ReflectorPtrInfo(std::move(scoped_mp), 0u));
+    ping_receiver_.Bind(
+        mojo::PendingRemote<IPC::mojom::Reflector>(std::move(scoped_mp), 0u));
 
     LockThreadAffinity thread_locker(kSharedCore);
     std::vector<PingPongTestParams> params = GetDefaultTestParams();
@@ -299,7 +305,7 @@ class MojoInterfacePerfTest : public mojo::core::test::MojoTestBase {
 
     ping_receiver_->Quit();
 
-    ignore_result(ping_receiver_.PassInterface().PassHandle().release());
+    ignore_result(ping_receiver_.Unbind().PassPipe().release());
   }
 
   void OnPong(const std::string& value) {
@@ -356,7 +362,7 @@ class MojoInterfacePerfTest : public mojo::core::test::MojoTestBase {
   int count_down_;
   std::string label_;
   std::string payload_;
-  IPC::mojom::ReflectorPtr ping_receiver_;
+  mojo::Remote<IPC::mojom::Reflector> ping_receiver_;
   std::unique_ptr<base::PerfTimeLogger> perf_logger_;
 
   DISALLOW_COPY_AND_ASSIGN(MojoInterfacePerfTest);
@@ -367,31 +373,34 @@ class InterfacePassingTestDriverImpl : public mojom::InterfacePassingTestDriver,
  public:
   InterfacePassingTestDriverImpl(mojo::ScopedMessagePipeHandle handle,
                                  const base::Closure& quit_closure)
-      : binding_(this,
-                 mojom::InterfacePassingTestDriverRequest(std::move(handle))),
+      : receiver_(this,
+                  mojo::PendingReceiver<mojom::InterfacePassingTestDriver>(
+                      std::move(handle))),
         quit_closure_(quit_closure) {}
   ~InterfacePassingTestDriverImpl() override {
-    ignore_result(binding_.Unbind().PassMessagePipe().release());
+    ignore_result(receiver_.Unbind().PassPipe().release());
   }
 
  private:
   // mojom::InterfacePassingTestDriver implementation:
   void Init(InitCallback callback) override { std::move(callback).Run(); }
 
-  void GetPingReceiver(std::vector<mojom::PingReceiverRequest> requests,
-                       GetPingReceiverCallback callback) override {
-    for (auto& request : requests)
-      ping_receiver_bindings_.AddBinding(this, std::move(request));
-    ping_receiver_bindings_.CloseAllBindings();
+  void GetPingReceiver(
+      std::vector<mojo::PendingReceiver<mojom::PingReceiver>> receivers,
+      GetPingReceiverCallback callback) override {
+    for (auto& receiver : receivers)
+      ping_receiver_receivers_.Add(this, std::move(receiver));
+    ping_receiver_receivers_.Clear();
     std::move(callback).Run();
   }
 
   void GetAssociatedPingReceiver(
-      std::vector<mojom::PingReceiverAssociatedRequest> requests,
+      std::vector<mojo::PendingAssociatedReceiver<mojom::PingReceiver>>
+          receivers,
       GetAssociatedPingReceiverCallback callback) override {
-    for (auto& request : requests)
-      ping_receiver_associated_bindings_.AddBinding(this, std::move(request));
-    ping_receiver_associated_bindings_.CloseAllBindings();
+    for (auto& receiver : receivers)
+      ping_receiver_associated_receivers_.Add(this, std::move(receiver));
+    ping_receiver_associated_receivers_.Clear();
     std::move(callback).Run();
   }
 
@@ -403,10 +412,10 @@ class InterfacePassingTestDriverImpl : public mojom::InterfacePassingTestDriver,
   // mojom::PingReceiver implementation:
   void Ping(PingCallback callback) override { std::move(callback).Run(); }
 
-  mojo::BindingSet<mojom::PingReceiver> ping_receiver_bindings_;
-  mojo::AssociatedBindingSet<mojom::PingReceiver>
-      ping_receiver_associated_bindings_;
-  mojo::Binding<mojom::InterfacePassingTestDriver> binding_;
+  mojo::ReceiverSet<mojom::PingReceiver> ping_receiver_receivers_;
+  mojo::AssociatedReceiverSet<mojom::PingReceiver>
+      ping_receiver_associated_receivers_;
+  mojo::Receiver<mojom::InterfacePassingTestDriver> receiver_;
 
   base::Closure quit_closure_;
 };
@@ -424,14 +433,14 @@ class MojoInterfacePassingPerfTest : public mojo::core::test::MojoTestBase {
 
     mojo::MessagePipeHandle mp_handle(mp);
     mojo::ScopedMessagePipeHandle scoped_mp(mp_handle);
-    driver_ptr_.Bind(
-        mojom::InterfacePassingTestDriverPtrInfo(std::move(scoped_mp), 0u));
+    driver_remote_.Bind(mojo::PendingRemote<mojom::InterfacePassingTestDriver>(
+        std::move(scoped_mp), 0u));
 
     auto params = GetDefaultInterfacePassingTestParams();
 
     LockThreadAffinity thread_locker(kSharedCore);
     for (size_t i = 0; i < params.size(); ++i) {
-      driver_ptr_->Init(
+      driver_remote_->Init(
           base::Bind(&MojoInterfacePassingPerfTest::OnInitCallback,
                      base::Unretained(this)));
       rounds_ = count_down_ = params[i].rounds();
@@ -442,9 +451,9 @@ class MojoInterfacePassingPerfTest : public mojo::core::test::MojoTestBase {
       run_loop.Run();
     }
 
-    driver_ptr_->Quit();
+    driver_remote_->Quit();
 
-    ignore_result(driver_ptr_.PassInterface().PassHandle().release());
+    ignore_result(driver_remote_.Unbind().PassPipe().release());
   }
 
   void OnInitCallback() {
@@ -458,33 +467,34 @@ class MojoInterfacePassingPerfTest : public mojo::core::test::MojoTestBase {
 
   void DoNextRound() {
     if (associated_) {
-      std::vector<mojom::PingReceiverAssociatedPtr> associated_interfaces(
-          num_interfaces_);
+      std::vector<mojo::AssociatedRemote<mojom::PingReceiver>>
+          associated_remotes(num_interfaces_);
 
-      std::vector<mojom::PingReceiverAssociatedRequest> requests(
-          num_interfaces_);
+      std::vector<mojo::PendingAssociatedReceiver<mojom::PingReceiver>>
+          receivers(num_interfaces_);
       for (size_t i = 0; i < num_interfaces_; ++i) {
-        requests[i] = mojo::MakeRequest(&associated_interfaces[i]);
+        receivers[i] = associated_remotes[i].BindNewEndpointAndPassReceiver();
         // Force the interface pointer to do full initialization.
-        associated_interfaces[i].get();
+        associated_remotes[i].get();
       }
 
-      driver_ptr_->GetAssociatedPingReceiver(
-          std::move(requests),
+      driver_remote_->GetAssociatedPingReceiver(
+          std::move(receivers),
           base::Bind(&MojoInterfacePassingPerfTest::OnGetReceiverCallback,
                      base::Unretained(this)));
     } else {
-      std::vector<mojom::PingReceiverPtr> interfaces(num_interfaces_);
+      std::vector<mojo::Remote<mojom::PingReceiver>> remotes(num_interfaces_);
 
-      std::vector<mojom::PingReceiverRequest> requests(num_interfaces_);
+      std::vector<mojo::PendingReceiver<mojom::PingReceiver>> receivers(
+          num_interfaces_);
       for (size_t i = 0; i < num_interfaces_; ++i) {
-        requests[i] = mojo::MakeRequest(&interfaces[i]);
+        receivers[i] = remotes[i].BindNewPipeAndPassReceiver();
         // Force the interface pointer to do full initialization.
-        interfaces[i].get();
+        remotes[i].get();
       }
 
-      driver_ptr_->GetPingReceiver(
-          std::move(requests),
+      driver_remote_->GetPingReceiver(
+          std::move(receivers),
           base::Bind(&MojoInterfacePassingPerfTest::OnGetReceiverCallback,
                      base::Unretained(this)));
     }
@@ -526,7 +536,7 @@ class MojoInterfacePassingPerfTest : public mojo::core::test::MojoTestBase {
   bool associated_ = false;
   std::unique_ptr<base::PerfTimeLogger> perf_logger_;
 
-  mojom::InterfacePassingTestDriverPtr driver_ptr_;
+  mojo::Remote<mojom::InterfacePassingTestDriver> driver_remote_;
 
   base::Closure quit_closure_;
 
@@ -536,7 +546,7 @@ class MojoInterfacePassingPerfTest : public mojo::core::test::MojoTestBase {
 DEFINE_TEST_CLIENT_WITH_PIPE(InterfacePassingClient,
                              MojoInterfacePassingPerfTest,
                              h) {
-  base::MessageLoop main_message_loop;
+  base::test::SingleThreadTaskEnvironment task_environment;
   return RunInterfacePassingClient(h);
 }
 
@@ -571,7 +581,7 @@ using MojoInProcessInterfacePassingPerfTest =
     InProcessPerfTest<MojoInterfacePassingPerfTest>;
 
 DEFINE_TEST_CLIENT_WITH_PIPE(PingPongClient, MojoInterfacePerfTest, h) {
-  base::MessageLoop main_message_loop;
+  base::test::SingleThreadTaskEnvironment task_environment;
   return RunPingPongClient(h);
 }
 
@@ -579,7 +589,7 @@ DEFINE_TEST_CLIENT_WITH_PIPE(PingPongClient, MojoInterfacePerfTest, h) {
 // raw IPC::Messages.
 TEST_F(MojoInterfacePerfTest, MultiprocessPingPong) {
   RunTestClient("PingPongClient", [&](MojoHandle h) {
-    base::MessageLoop main_message_loop;
+    base::test::SingleThreadTaskEnvironment task_environment;
     RunPingPongServer(h, "Multiprocess");
   });
 }
@@ -587,21 +597,21 @@ TEST_F(MojoInterfacePerfTest, MultiprocessPingPong) {
 TEST_F(MojoInterfacePerfTest, MultiprocessSyncPing) {
   sync_ = true;
   RunTestClient("PingPongClient", [&](MojoHandle h) {
-    base::MessageLoop main_message_loop;
+    base::test::SingleThreadTaskEnvironment task_environment;
     RunPingPongServer(h, "MultiprocessSync");
   });
 }
 
 TEST_F(MojoInterfacePassingPerfTest, MultiprocessInterfacePassing) {
   RunTestClient("InterfacePassingClient", [&](MojoHandle h) {
-    base::MessageLoop main_message_loop;
+    base::test::SingleThreadTaskEnvironment task_environment;
     RunInterfacePassingServer(h, "InterfacePassing", false /* associated */);
   });
 }
 
 TEST_F(MojoInterfacePassingPerfTest, MultiprocessAssociatedInterfacePassing) {
   RunTestClient("InterfacePassingClient", [&](MojoHandle h) {
-    base::MessageLoop main_message_loop;
+    base::test::SingleThreadTaskEnvironment task_environment;
     RunInterfacePassingServer(h, "AssociatedInterfacePassing",
                               true /* associated*/);
   });
@@ -618,7 +628,7 @@ TEST_P(MojoInProcessInterfacePerfTest, MultiThreadPingPong) {
       FROM_HERE,
       base::BindOnce(base::IgnoreResult(&RunPingPongClient), client_handle));
 
-  base::MessageLoop main_message_loop;
+  base::test::SingleThreadTaskEnvironment task_environment;
   RunPingPongServer(server_handle, "SingleProcess");
 }
 
@@ -626,7 +636,7 @@ TEST_P(MojoInProcessInterfacePerfTest, SingleThreadPingPong) {
   MojoHandle server_handle, client_handle;
   CreateMessagePipe(&server_handle, &client_handle);
 
-  base::MessageLoop main_message_loop;
+  base::test::SingleThreadTaskEnvironment task_environment;
   mojo::MessagePipeHandle mp_handle(client_handle);
   mojo::ScopedMessagePipeHandle scoped_mp(mp_handle);
   LockThreadAffinity thread_locker(kSharedCore);
@@ -650,7 +660,7 @@ TEST_P(MojoInProcessInterfacePassingPerfTest, MultiThreadInterfacePassing) {
       FROM_HERE, base::BindOnce(base::IgnoreResult(&RunInterfacePassingClient),
                                 client_handle));
 
-  base::MessageLoop main_message_loop;
+  base::test::SingleThreadTaskEnvironment task_environment;
   RunInterfacePassingServer(server_handle, "SingleProcess",
                             false /* associated */);
 }
@@ -666,7 +676,7 @@ TEST_P(MojoInProcessInterfacePassingPerfTest,
       FROM_HERE, base::BindOnce(base::IgnoreResult(&RunInterfacePassingClient),
                                 client_handle));
 
-  base::MessageLoop main_message_loop;
+  base::test::SingleThreadTaskEnvironment task_environment;
   RunInterfacePassingServer(server_handle, "SingleProcess",
                             true /* associated */);
 }
@@ -675,7 +685,7 @@ TEST_P(MojoInProcessInterfacePassingPerfTest, SingleThreadInterfacePassing) {
   MojoHandle server_handle, client_handle;
   CreateMessagePipe(&server_handle, &client_handle);
 
-  base::MessageLoop main_message_loop;
+  base::test::SingleThreadTaskEnvironment task_environment;
   mojo::MessagePipeHandle mp_handle(client_handle);
   mojo::ScopedMessagePipeHandle scoped_mp(mp_handle);
   LockThreadAffinity thread_locker(kSharedCore);
@@ -690,7 +700,7 @@ TEST_P(MojoInProcessInterfacePassingPerfTest,
   MojoHandle server_handle, client_handle;
   CreateMessagePipe(&server_handle, &client_handle);
 
-  base::MessageLoop main_message_loop;
+  base::test::SingleThreadTaskEnvironment task_environment;
   mojo::MessagePipeHandle mp_handle(client_handle);
   mojo::ScopedMessagePipeHandle scoped_mp(mp_handle);
   LockThreadAffinity thread_locker(kSharedCore);
@@ -729,7 +739,7 @@ class CallbackPerfTest : public testing::Test {
   }
 
   void Ping(const std::string& value) {
-    main_message_loop_.task_runner()->PostTask(
+    task_environment_.GetMainThreadTaskRunner()->PostTask(
         FROM_HERE, base::BindOnce(&CallbackPerfTest::OnPong,
                                   base::Unretained(this), value));
   }
@@ -794,7 +804,7 @@ class CallbackPerfTest : public testing::Test {
     std::vector<PingPongTestParams> params = GetDefaultTestParams();
     for (size_t i = 0; i < params.size(); i++) {
       std::string hello("hello");
-      base::MessageLoopCurrent::Get()->task_runner()->PostTask(
+      base::ThreadTaskRunnerHandle::Get()->PostTask(
           FROM_HERE, base::BindOnce(&CallbackPerfTest::SingleThreadPingPostTask,
                                     base::Unretained(this), hello));
       message_count_ = count_down_ = params[i].message_count();
@@ -805,7 +815,7 @@ class CallbackPerfTest : public testing::Test {
   }
 
   void SingleThreadPingPostTask(const std::string& value) {
-    base::MessageLoopCurrent::Get()->task_runner()->PostTask(
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(&CallbackPerfTest::SingleThreadPongPostTask,
                                   base::Unretained(this), value));
   }
@@ -829,14 +839,14 @@ class CallbackPerfTest : public testing::Test {
       }
     }
 
-    base::MessageLoopCurrent::Get()->task_runner()->PostTask(
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(&CallbackPerfTest::SingleThreadPingPostTask,
                                   base::Unretained(this), payload_));
   }
 
  private:
   base::Thread client_thread_;
-  base::MessageLoop main_message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   int message_count_;
   int count_down_;
   std::string payload_;

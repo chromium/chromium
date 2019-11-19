@@ -9,22 +9,26 @@
 #include <string>
 #include <vector>
 
+#include "chrome/browser/chromeos/login/ui/kiosk_app_menu_controller.h"
 #include "chrome/browser/chromeos/login/ui/login_display_host.h"
+#include "chrome/browser/ui/browser_list_observer.h"
+#include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
 
 class AccountId;
-class ScopedKeepAlive;
 
 namespace chromeos {
 
 class ArcKioskController;
 class DemoAppLauncher;
+class WebKioskController;
 
 // LoginDisplayHostCommon contains code which is not specific to a particular UI
 // implementation - the goal is to reduce code duplication between
 // LoginDisplayHostMojo and LoginDisplayHostWebUI.
 class LoginDisplayHostCommon : public LoginDisplayHost,
+                               public BrowserListObserver,
                                public content::NotificationObserver {
  public:
   LoginDisplayHostCommon();
@@ -42,6 +46,7 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
                       bool is_auto_launch) final;
   void StartDemoAppLaunch() final;
   void StartArcKiosk(const AccountId& account_id) final;
+  void StartWebKiosk(const AccountId& account_id) final;
   void CompleteLogin(const UserContext& user_context) final;
   void OnGaiaScreenReady() final;
   void SetDisplayEmail(const std::string& email) final;
@@ -54,6 +59,9 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
   void MigrateUserData(const std::string& old_password) final;
   void ResyncUserData() final;
 
+  // BrowserListObserver:
+  void OnBrowserAdded(Browser* browser) override;
+
   // content::NotificationObserver:
   void Observe(int type,
                const content::NotificationSource& source,
@@ -63,6 +71,7 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
   virtual void OnStartSignInScreen(const LoginScreenContext& context) = 0;
   virtual void OnStartAppLaunch() = 0;
   virtual void OnStartArcKiosk() = 0;
+  virtual void OnStartWebKiosk() = 0;
   virtual void OnBrowserCreated() = 0;
   virtual void OnStartUserAdding() = 0;
   virtual void OnFinalize() = 0;
@@ -73,6 +82,12 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
 
   // Marks display host for deletion.
   void ShutdownDisplayHost();
+
+  // Common code for OnStartSignInScreen() call above.
+  void OnStartSignInScreenCommon();
+
+  // Common code for ShowGaiaDialog() call above.
+  void ShowGaiaDialogCommon(const AccountId& prefilled_account);
 
   // Active instance of authentication prewarmer.
   std::unique_ptr<AuthPrewarmer> auth_prewarmer_;
@@ -85,6 +100,9 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
 
   // ARC kiosk controller.
   std::unique_ptr<ArcKioskController> arc_kiosk_controller_;
+
+  // Web app launch controller.
+  std::unique_ptr<WebKioskController> web_kiosk_controller_;
 
   content::NotificationRegistrar registrar_;
 
@@ -101,12 +119,14 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
   bool is_finalizing_ = false;
 
   // Make sure chrome won't exit while we are at login/oobe screen.
-  std::unique_ptr<ScopedKeepAlive> keep_alive_;
+  ScopedKeepAlive keep_alive_;
 
   // Called after host deletion.
   std::vector<base::OnceClosure> completion_callbacks_;
 
-  base::WeakPtrFactory<LoginDisplayHostCommon> weak_factory_;
+  KioskAppMenuController kiosk_app_menu_controller_;
+
+  base::WeakPtrFactory<LoginDisplayHostCommon> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(LoginDisplayHostCommon);
 };

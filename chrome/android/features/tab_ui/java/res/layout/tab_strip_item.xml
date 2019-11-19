@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+<org.chromium.ui.widget.ViewLookupCachingFrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+    <ImageButton
+        android:id="@+id/tab_strip_item_button"
+        style="@style/BottomToolbarButton"
+        android:contentDescription="@string/accessibility_tabstrip_btn_close_tab" />
+</org.chromium.ui.widget.ViewLookupCachingFrameLayout>

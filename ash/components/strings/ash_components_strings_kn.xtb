@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="kn">
+<translation id="1036550831858290950">ನಿಮ್ಮ ಪ್ರಸ್ತುತ ಟ್ಯಾಬ್ ಅನ್ನು ಬುಕ್‌ಮಾರ್ಕ್‌ ಆಗಿ ಉಳಿಸಿ</translation>
 <translation id="104962181688258143">ಫೈಲ್‌ಗಳ ಅಪ್ಲಿಕೇಶನ್ ತೆರೆಯಿರಿ</translation>
 <translation id="1122869341872663659"><ph name="QUERY" /> ಗಾಗಿ <ph name="N" /> ಹುಡುಕಾಟ ಫಲಿತಾಂಶಗಳನ್ನು ಪ್ರದರ್ಶಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="1195667586424773550">ಟ್ಯಾಬ್‌ನ ವಿಳಾಸ ಪಟ್ಟಿಗೆ ಲಿಂಕ್‌ ಅನ್ನು ಡ್ರ್ಯಾಗ್ ಮಾಡಿ</translation>
@@ -12,6 +13,7 @@
 <translation id="1383876407941801731">ಹುಡುಕಾಟ</translation>
 <translation id="1454364489140280055"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT1" /><ph name="SEPARATOR2" /><ph name="G" /> ಅಥವಾ <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="ENTER" /></translation>
 <translation id="1477442857810932985">ಸಾಲಿನ ಅಂತ್ಯಕ್ಕೆ ಹೋಗಿ</translation>
+<translation id="1499072997694708844">ತೆರೆದಿರುವ ಹುಡುಕಾಟ ವಿಂಡೋವನ್ನು ಮುಚ್ಚಿ ಅಥವಾ ನಿಮ್ಮ ಪ್ರಸ್ತುತ ಪುಟದ ಲೋಡ್ ಮಾಡುವಿಕೆಯನ್ನು ನಿಲ್ಲಿಸಿ</translation>
 <translation id="1510238584712386396">ಲಾಂಚರ್</translation>
 <translation id="152892567002884378">ವಾಲ್ಯೂಮ್ ಹೆಚ್ಚು ಮಾಡಿ</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, ನಂತರ <ph name="ESC" /></translation>
@@ -21,6 +23,7 @@
 <translation id="169515659049020177">Shift</translation>
 <translation id="1732295673545939435"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="KEY" /></translation>
 <translation id="1733525068429116555">ವಿಳಾಸ ಪಟ್ಟಿಯಲ್ಲಿ ನಿಮ್ಮ ಇನ್‌ಪುಟ್‌ಗೆ www. ಮತ್ತು .com ಅನ್ನು ಸೇರಿಸಿ, ನಂತರ ಪುಟವನ್ನು ತೆರೆಯಿರಿ</translation>
+<translation id="1872219238824176091">ಪ್ರಸ್ತುತ ಡೆಸ್ಕ್ ಅನ್ನು ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="1920446759863417809"><ph name="SHIFT1" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, ನಂತರ <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="TAB" /> ಅಥವಾ <ph name="LEFT" /></translation>
 <translation id="1996162290124031907">ಮುಂದಿನ ಟ್ಯಾಬ್‌ಗೆ ಹೋಗಿ</translation>
 <translation id="2010818616644390445">ವಿಂಡೋದಲ್ಲಿ ಕೊನೆಯ ಟ್ಯಾಬ್‌ಗೆ ಹೋಗಿ</translation>
@@ -33,20 +36,23 @@
 <translation id="2185166372312820725">ಹಿಂದಿನ ಟ್ಯಾಬ್‌ಗೆ ಹೋಗಿ</translation>
 <translation id="2194790690264064655"><ph name="CTRL" /> ಅನ್ನು ಒತ್ತಿರಿ ಮತ್ತು ಲಿಂಕ್‌ ಅನ್ನು ಕ್ಲಿಕ್‌ ಮಾಡಿ</translation>
 <translation id="2246352309084894470">ಪೂರ್ಣಪರದೆಯ ಲಾಂಚರ್ ತೆರೆಯಿರಿ/ಮುಚ್ಚಿ</translation>
+<translation id="2354531887393764880">ಅವಧಿ</translation>
 <translation id="2382644247745281995">ಪ್ರಸ್ತುತ ಕೀಬೋರ್ಡ್ ವಿನ್ಯಾಸದೊಂದಿಗೆ ಬೆಂಬಲಿತವಾಗಿಲ್ಲ</translation>
 <translation id="2397416548179033562">Chrome ಮೆನು ತೋರಿಸು</translation>
 <translation id="2424073332829844142">Caps Lock ಆನ್‌ ಅಥವಾ ಆಫ್‌ ಮಾಡಿ</translation>
 <translation id="2441202986792279177">ವಿಂಡೋಗಳ ನಡುವೆ ತ್ವರಿತವಾಗಿ ಬದಲಿಸಿ</translation>
 <translation id="2454251766545114447">ಡಿಸ್‌ಪ್ಲೇ ಅನ್ನು ಝೂಮ್ ಔಟ್ ಮಾಡಿ</translation>
 <translation id="2478303094958140141">ChromeVox (ಮಾತಿನ ಪ್ರತಿಕ್ರಿಯೆ) ಆನ್‌ ಅಥವಾ ಆಫ್‌ ಮಾಡಿ</translation>
+<translation id="2480851840841871861">Google ಅಸಿಸ್ಟೆಂಟ್‌ ಅನ್ನು ತೆರೆಯಿರಿ</translation>
+<translation id="2488661730534396940">ಎಡಭಾಗದಲ್ಲಿರುವ ಡೆಸ್ಕ್ ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2530339807289914946">ವೆಬ್‌ ಪುಟವನ್ನು ಸ್ಕ್ರಾಲ್ ಡೌನ್ ಮಾಡಿ</translation>
 <translation id="2574014812750545982">ಪುಟದಲ್ಲಿನ ಝೂಮ್ ಮಟ್ಟವನ್ನು ಮರುಹೊಂದಿಸಿ</translation>
 <translation id="2596078834055697711">ವಿಂಡೋ ಸ್ಕ್ರೀನ್‌ಶಾಟ್ ತೆಗೆದುಕೊಳ್ಳಿ</translation>
 <translation id="2685170433750953446"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, ನಂತರ <ph name="TAB" /> ಅಥವಾ <ph name="RIGHT" /></translation>
-<translation id="2699509451653686398">ನಿಮ್ಮ ಪ್ರಸ್ತುತ ವೆಬ್‌ಪುಟವನ್ನು ಬುಕ್‌ಮಾರ್ಕ್‌ನಂತೆ ಉಳಿಸಿ</translation>
 <translation id="2750942583782703988">ನಿಮ್ಮ ಪ್ರಸ್ತುತ ಪುಟವನ್ನು ಮರುಲೋಡ್ ಮಾಡಿ</translation>
 <translation id="2764005613199379871">ಹುಡುಕಾಟ ವಿಳಾಸ ಪಟ್ಟಿಯಲ್ಲಿ ಫೋಕಸ್ ಇರಿಸಿ</translation>
+<translation id="2774822903829597107">ಹೊಸ ಡೆಸ್ಕ್ ಒಂದನ್ನು ರಚಿಸಿ</translation>
 <translation id="2789868185375229787">ಪುಟದಲ್ಲಿ ಝೂಮ್ ಔಟ್ ಮಾಡಿ</translation>
 <translation id="2804480015716812239"><ph name="ALT" /> ಅನ್ನು ಒತ್ತಿರಿ ಮತ್ತು ಲಿಂಕ್‌ ಅನ್ನು ಕ್ಲಿಕ್‌ ಮಾಡಿ</translation>
 <translation id="2830827904629746450">ಬಲಭಾಗದಲ್ಲಿ ವಿಂಡೋವನ್ನು ಡಾಕ್‌ ಮಾಡಿ</translation>
@@ -78,6 +84,7 @@
 <translation id="3792178297143798024">ನಿಮ್ಮ ಶೆಲ್ಫ್‌ನಲ್ಲಿ ಹೈಲೈಟ್ ಮಾಡಿರುವ ಐಟಂ ಅನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="379295446891231126"><ph name="CTRL" /><ph name="SEPARATOR" /> 1 ರಿಂದ 8 ರವರೆಗೆ</translation>
 <translation id="3837047332182291558">ಕೀಬೋರ್ಡ್ ಅನ್ನು ಪ್ರಕಾಶಮಾನವಾಗಿ ಮಾಡಿ (ಬ್ಯಾಕ್‌‌ಲಿಟ್‌‌ ಕೀಬೋರ್ಡ್‌ಗಳಿಗಾಗಿ ಮಾತ್ರ)</translation>
+<translation id="3949671998904569433">ಅಲ್ಪವಿರಾಮ</translation>
 <translation id="3976863468609830880">ನಿಮ್ಮ ಶೆಲ್ಫ್‌ನಲ್ಲಿರುವ ಕೊನೆಯ ಐಕಾನ್ ಅನ್ನು ಕ್ಲಿಕ್‌ ಮಾಡಿ</translation>
 <translation id="3994783594793697310">ಡಿಸ್‌ಪ್ಲೇ ಝೂಮ್‌ ಮಟ್ಟವನ್ನು ಮರುಹೊಂದಿಸಿ</translation>
 <translation id="4026843240379844265">ಸಕ್ರಿಯ ವಿಂಡೋವನ್ನು ಡಿಸ್‌ಪ್ಲೇಗಳ ನಡುವೆ ಸರಿಸಿ</translation>
@@ -85,7 +92,7 @@
 <translation id="4060703249685950734">ನೀವು ಮುಚ್ಚಿದ ಕೊನೆಯ ಟ್ಯಾಬ್‌ ಅಥವಾ ವಿಂಡೋವನ್ನು ಮರುತೆರೆಯಿರಿ</translation>
 <translation id="4090342722461256974"><ph name="ALT" /><ph name="SEPARATOR" /><ph name="SHIFT" /> ಅನ್ನು ಒತ್ತಿ ಹಿಡಿದುಕೊಳ್ಳಿ, ನೀವು ತೆರೆಯಲು ಬಯಸುವ ವಿಂಡೋವನ್ನು ಪಡೆಯುವವರೆಗೂ <ph name="TAB" /> ಅನ್ನು ಟ್ಯಾಪ್‌ ಮಾಡುತ್ತ ಇರಿ ನಂತರ ಬಿಡುಗಡೆಗೊಳಿಸಿ.</translation>
 <translation id="4092538597492297615">ಕ್ಲಿಪ್‌ಬೋರ್ಡ್‌‌ಗೆ ಆಯ್ಕೆ ಮಾಡಲಾದ ವಿಷಯವನ್ನು ನಕಲಿಸಿ</translation>
-<translation id="4101772068965291327">ಮುಖ ಪುಟವನ್ನು ತೆರೆಯಿರಿ</translation>
+<translation id="4101772068965291327">ಹೋಮ್ ಅನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="4123108089450197101">ಬುಕ್‌ಮಾರ್ಕ್‌ನಂತೆ ಲಿಂಕ್ ಉಳಿಸಿ</translation>
 <translation id="4141203561740478845">ವಿಳಾಸ ಪಟ್ಟಿ ಹೊಂದಿರುವ ಸಾಲನ್ನು ಹೈಲೈಟ್ ಮಾಡಿ</translation>
 <translation id="4148761611071495477"><ph name="CTRL" /><ph name="SEPARATOR" /><ph name="G" /> ಅಥವಾ <ph name="ENTER" /></translation>
@@ -97,6 +104,7 @@
 <translation id="4642092649622328492">ಭಾಗಶಃ ಸ್ಕ್ರೀನ್‌ಶಾಟ್ ಅನ್ನು ತೆಗೆದುಕೊಳ್ಳಿ</translation>
 <translation id="4698850295812410683">ಸ್ಟೈಲಸ್‌ ಪರಿಕರಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="4801989101741319327">ಮುಂದಿನ ಅಕ್ಷರದ ಕೊನೆಗೆ ಸರಿಸಿ</translation>
+<translation id="4866066940972151697">ಬಲಭಾಗದಲ್ಲಿರುವ ಡೆಸ್ಕ್ ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="4916163929714267752">ಹೊಸ ವಿಂಡೋದಲ್ಲಿ ಲಿಂಕ್ ತೆರೆಯಿರಿ</translation>
 <translation id="5030659775136592441">ಬುಕ್‌ಮಾರ್ಕ್ ನಿರ್ವಾಹಕವನ್ನು ತೋರಿಸಿ</translation>
 <translation id="5034421018520995080">ಪುಟದ ಮೇಲಿನ ಭಾಗಕ್ಕೆ ಹೋಗಿ</translation>
@@ -112,6 +120,7 @@
 <translation id="5554139136362089836">ಪ್ರಸ್ತುತ ಪುಟವನ್ನು ಹುಡುಕಿ</translation>
 <translation id="5563050856984839829"><ph name="CTRL" /><ph name="SEPARATOR" /><ph name="SHIFT" /> ಒತ್ತಿರಿ ಮತ್ತು ಲಿಂಕ್‌ ಅನ್ನು ಕ್ಲಿಕ್‌ ಮಾಡಿ</translation>
 <translation id="561814908794220892">ಹೊಸ ಟ್ಯಾಬ್‌ನಲ್ಲಿ ವೆಬ್‌ಪುಟವನ್ನು ತೆರೆಯಿರಿ</translation>
+<translation id="5620219513321115856">ಸಕ್ರಿಯ ವಿಂಡೋವನ್ನು, ಬಲಬದಿಯಲ್ಲಿರುವ ಡೆಸ್ಕ್‌ಗೆ ಸರಿಸಿ</translation>
 <translation id="5710621673935162997"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="L" /> ಅಥವಾ <ph name="ALT" /><ph name="SEPARATOR2" /><ph name="D" /></translation>
 <translation id="5757111373163288447">ಟ್ಯಾಬ್‌ನಲ್ಲಿ ಲಿಂಕ್ ತೆರೆಯಿರಿ</translation>
 <translation id="5757474750054631686">ಮಂದ ಕೀಬೋರ್ಡ್(ಬ್ಯಾಕ್‌‌ಲಿಟ್‌‌ ಕೀಬೋರ್ಡ್‌ಗಳಿಗಾಗಿ ಮಾತ್ರ)</translation>
@@ -122,7 +131,6 @@
 <translation id="6045998054441862242">ಅಧಿಕ ಕಾಂಟ್ರಾಸ್ಟ್ ಮೋಡ್ ಅನ್ನು ಆನ್‌ ಮಾಡಿ</translation>
 <translation id="6052614013050385269">ಲಿಂಕ್‌ ಅನ್ನು ರೈಟ್ ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
 <translation id="6129953537138746214">ಸ್ಪೇಸ್</translation>
-<translation id="613146727819833328">ವಿಂಡೋವನ್ನು ಮಧ್ಯಭಾಗಕ್ಕೆ ಸರಿಸಿ</translation>
 <translation id="6143669479988153888">ಪುಟದಲ್ಲಿ ಝೂಮ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="6185696379715117369">Page up</translation>
 <translation id="6228457605945141550">ಪ್ರಖರತೆ ಕಡಿಮೆ ಮಾಡುವಿಕೆಯನ್ನು ಆನ್‌ ಮಾಡಿ</translation>
@@ -160,18 +168,20 @@
 <translation id="7422707470576323858">ಮುಂದಿನ ಲಭ್ಯವಿರುವ ಇನ್‌ಪುಟ್‌ ವಿಧಾನಕ್ಕೆ ಬದಲಿಸಿ</translation>
 <translation id="743754632698445141">ಅಪ್ಲಿಕೇಶನ್‌ ಅನ್ನು ಅನ್‌ಪಿನ್‌ ಮಾಡಿ</translation>
 <translation id="7439718573248533901">ನಿಮ್ಮ ಮುಂದಿನ ಅಕ್ಷರವನ್ನು ಅಳಿಸಿ (ಫಾರ್ವಡ್ ಅಳಿಸಿ)</translation>
+<translation id="7500368597227394048">ಹೈಫನ್</translation>
 <translation id="7611271430932669992">ಫೋಕಸ್ ಅನ್ನು ಪಾಪ್‌ಅಪ್‌ಗಳಿಗೆ ಮತ್ತು ಸಂವಾದಗಳಿಗೆ ಸರಿಸಿ</translation>
 <translation id="766326951329901120">ಖಾಲಿ ಪಠ್ಯದಂತೆ ಕ್ಲಿಪ್‌ಬೋರ್ಡ್‌ನಿಂದ ವಿಷಯವನ್ನು ಅಂಟಿಸಿ</translation>
+<translation id="7703010453515335249">ಎಡ ಆವರಣ</translation>
 <translation id="7724603315864178912">ಕತ್ತರಿಸು</translation>
 <translation id="7730490981846175479"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, ನಂತರ <ph name="SPACE" /> ಅಥವಾ <ph name="ENTER" /></translation>
 <translation id="7787242579016742662">ಬ್ರೌಸರ್‌ನಲ್ಲಿ ಫೈಲ್ ತೆರೆಯಿರಿ</translation>
-<translation id="7917881398263220094">ನಿಮ್ಮ ಪ್ರಸ್ತುತ ಪುಟದ ಲೋಡ್ ಮಾಡುವಿಕೆಯನ್ನು ನಿಲ್ಲಿಸಿ</translation>
 <translation id="7952165122793773711">1 ರಿಂದ 8 ರವರೆಗಿನ ಟ್ಯಾಬ್‌ಗಳಿಗೆ ಹೋಗಿ</translation>
 <translation id="8026334261755873520">ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು ತೆರವುಗೊಳಿಸಿ</translation>
 <translation id="8130528849632411619">ಡಾಕ್ಯುಮೆಂಟ್‌ನ ಪ್ರಾರಂಭಕ್ಕೆ ಹೋಗಿ</translation>
 <translation id="8147954207400281792"><ph name="CTRL" /><ph name="SEPARATOR" /><ph name="K" /> ಅಥವಾ <ph name="E" /></translation>
 <translation id="8232835244134740473">ಇವುಗಳ ನಡುವೆ ಫೋಕಸ್ ಅನ್ನು ಬದಲಾಯಿಸಿ: ಸ್ಥಿತಿ ಪ್ರದೇಶ (ನಿಮ್ಮ ಖಾತೆಯ ಚಿತ್ರ ಕಾಣಿಸಿಕೊಳ್ಳುವ ಸ್ಥಳ), ಲಾಂಚರ್ ವಿಳಾಸ ಪಟ್ಟಿ, ಬುಕ್‌ಮಾರ್ಕ್‌‌ಗಳ ಪಟ್ಟಿ (ಗೋಚರಿಸಿದರೆ), ತೆರೆದಿರುವ ವೆಬ್‍ಪುಟ, ಡೌನ್‍ಲೋಡ್‍ಗಳ ಪಟ್ಟಿ (ಗೋಚರಿಸಿದರೆ)</translation>
 <translation id="8234414138295101081">ಪರದೆಯನ್ನು 90 ಡಿಗ್ರಿಗಳಲ್ಲಿ ತಿರುಗಿಸಿ</translation>
+<translation id="8241665785394195545">ಬಲ ಆವರಣ</translation>
 <translation id="8264941229485248811">ಡೆವಲಪರ್ ಪರಿಕರಗಳ ಪರೀಕ್ಷಕವನ್ನು ತೋರಿಸಿ ಅಥವಾ ಮರೆಮಾಡಿ</translation>
 <translation id="836869401750819675">ಡೌನ್‌ಲೋಡ್‌ಗಳ ಪುಟ ತೆರೆಯಿರಿ</translation>
 <translation id="8388247778047144397">ಟ್ಯಾಬ್ ಪಟ್ಟಿಯಲ್ಲಿನ ಖಾಲಿ ವಲಯಕ್ಕೆ ಲಿಂಕ್ ಎಳೆಯಿರಿ</translation>
@@ -184,6 +194,7 @@
 <translation id="8717459106217102612">ಹಿಂದಿನ ಪದ ಅಥವಾ ಅಕ್ಷರವನ್ನು ಆಯ್ಕೆ ಮಾಡಿ</translation>
 <translation id="8727232706774971183">ನಿಮ್ಮ ಅಧಿಸೂಚನೆಗಳನ್ನು ನೋಡಿ</translation>
 <translation id="8855885154700222542">ಪೂರ್ಣಪರದೆ ಕೀ</translation>
+<translation id="8881584919399569791">ಸಕ್ರಿಯ ವಿಂಡೋವನ್ನು, ಎಡಬದಿಯಲ್ಲಿರುವ ಡೆಸ್ಕ್‌ಗೆ ಸರಿಸಿ</translation>
 <translation id="88986195241502842">Page down</translation>
 <translation id="8924883688469390268">ಹಿಂದಿನ ಬಳಕೆದಾರರಿಗೆ ಬದಲಿಸಿ</translation>
 <translation id="8977648847395357314">ವಿಳಾಸದ ಪಟ್ಟಿಯಲ್ಲಿರುವ ವಿಷಯವನ್ನು ಆಯ್ಕೆ ಮಾಡಿ</translation>
@@ -195,7 +206,7 @@
 <translation id="906458777597946297">ವಿಂಡೋ ಹಿರಿದಾಗಿಸಿ</translation>
 <translation id="9091855755813503076">ಸಾಲಿನ ಪ್ರಾರಂಭಕ್ಕೆ ಹೋಗಿ</translation>
 <translation id="9106898733795143799">ಪುಟ ಮತ್ತು ವೆಬ್ ಬ್ರೌಸರ್</translation>
-<translation id="9162942292291287644"><ph name="QUERY" /> ಗಾಗಿ ಯಾವುದೇ ಫಲಿತಾಂಶಗಳಿಲ್ಲ</translation>
+<translation id="9162942292291287644"><ph name="QUERY" /> ಕುರಿತು ಯಾವುದೇ ಫಲಿತಾಂಶಗಳಿಲ್ಲ</translation>
 <translation id="9179672198516322668">ಜನಪ್ರಿಯ ಶಾರ್ಟ್‌ಕಟ್‌ಗಳು</translation>
 <translation id="93603345341560814"><ph name="SHIFT" /> ಅನ್ನು ಒತ್ತಿರಿ ಮತ್ತು ಲಿಂಕ್‌ ಅನ್ನು ಕ್ಲಿಕ್‌ ಮಾಡಿ</translation>
 <translation id="945383118875625837">ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳ ಪಟ್ಟಿಗೆ ಲಿಂಕ್‌ ಅನ್ನು ಡ್ರ್ಯಾಗ್ ಮಾಡಿ</translation>

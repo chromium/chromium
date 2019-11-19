@@ -1,0 +1,79 @@
+<!--
+Copyright 2015 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Supervised User Internals</title>
+<link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
+<link rel="stylesheet" href="chrome://resources/css/list.css">
+<link rel="stylesheet" href="supervised_user_internals.css">
+<script src="chrome://resources/js/cr.js"></script>
+<script src="chrome://resources/js/util.js"></script>
+</head>
+
+<body>
+<div id='info'>
+  <div id='basic-info' class="section" jsselect="sections">
+    <h2 jscontent="title"></h2>
+    <table class="section-details">
+      <tr jsselect="data"
+            jsvalues="class:$this.is_valid ? '' : 'uninitialized'"
+            jseval='chrome.supervised_user_internals.highlightIfChanged(
+                this, this.children[1].innerText, stat_value)'>
+        <td class="detail" jscontent="stat_name" width=50%></td>
+        <td class="value" jscontent="stat_value" width=50%></td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="section" jsskip="true">
+    <h2>Try a URL</h2>
+    <form id="try-url">
+      <input id="try-url-input" type="text">
+    </form>
+    <table class="section-details">
+      <tr>
+        <td class="detail">Result</td>
+        <td id="try-url-result" class="value"></td>
+      </tr>
+      <tr>
+        <td class="detail">Manually whitelisted</td>
+        <td id="manual-whitelist" class="value"></td>
+      </tr>
+      <tr>
+        <td class="detail">Part of third party whitelists</td>
+        <td id="whitelists" class="value"></td>
+      </tr>
+    </table>
+  </div>
+
+  <div id='user-settings' class="section">
+    <h2>Supervised User Settings</h2>
+    <table class="section-details">
+      <tr jsselect="settings">
+        <td jscontent="key"></td>
+        <td><pre jscontent="value"></pre></td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="section" id="filtering-results-container-wrapper" jsskip="true">
+    <h2>Filtering Results</h2>
+    <div id="filtering-results-container">
+      <div class="filtering-results-entry" jsselect="results">
+        <div class="url" jscontent="url"></div>
+        <span class="result" jscontent="result"></span>
+        <span class="reason" jscontent="reason"></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="chrome://resources/js/jstemplate_compiled.js"></script>
+<script src="supervised_user_internals.js"></script>
+</body>
+</html>

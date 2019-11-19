@@ -5,7 +5,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#      http://www.apache.org/licenses/LICENSE-2.0
+#      https://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -114,6 +114,8 @@ absl_cc_library(
     span
   HDRS
     "span.h"
+  SRCS
+    "internal/span.h"
   COPTS
     ${ABSL_DEFAULT_COPTS}
   DEPS
@@ -173,11 +175,12 @@ absl_cc_library(
   HDRS
     "optional.h"
   SRCS
-    "optional.cc"
+    "internal/optional.h"
   COPTS
     ${ABSL_DEFAULT_COPTS}
   DEPS
     absl::bad_optional_access
+    absl::base_internal
     absl::config
     absl::core_headers
     absl::memory
@@ -296,8 +299,35 @@ absl_cc_test(
     gmock_main
 )
 
+absl_cc_library(
+  NAME
+    compare
+  HDRS
+    "compare.h"
+  COPTS
+    ${ABSL_DEFAULT_COPTS}
+  DEPS
+    absl::core_headers
+    absl::type_traits
+  PUBLIC
+)
+
+absl_cc_test(
+  NAME
+    compare_test
+  SRCS
+    "compare_test.cc"
+  COPTS
+    ${ABSL_TEST_COPTS}
+  DEPS
+    absl::base
+    absl::compare
+    gmock_main
+)
+
 # TODO(cohenjon,zhangxy) Figure out why this test is failing on gcc 4.8
-if(CMAKE_COMPILER_IS_GNUCC AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 4.9)
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.9)
+else()
 absl_cc_test(
   NAME
     variant_exception_safety_test

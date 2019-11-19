@@ -8,6 +8,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/tcp_socket.mojom.h"
 
 namespace content {
@@ -22,11 +23,12 @@ class CONTENT_EXPORT VizDevToolsConnector {
   void ConnectVizDevTools();
 
  private:
-  void OnVizDevToolsSocketCreated(network::mojom::TCPServerSocketPtrInfo socket,
-                                  int result,
-                                  int port);
+  void OnVizDevToolsSocketCreated(
+      mojo::PendingRemote<network::mojom::TCPServerSocket> socket,
+      int result,
+      int port);
 
-  base::WeakPtrFactory<VizDevToolsConnector> weak_ptr_factory_;
+  base::WeakPtrFactory<VizDevToolsConnector> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(VizDevToolsConnector);
 };

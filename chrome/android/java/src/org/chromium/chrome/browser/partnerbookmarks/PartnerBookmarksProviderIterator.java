@@ -10,7 +10,7 @@ import android.net.Uri;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
-import org.chromium.chrome.browser.UrlConstants;
+import org.chromium.chrome.browser.util.UrlConstants;
 
 import java.util.NoSuchElementException;
 
@@ -18,7 +18,7 @@ import java.util.NoSuchElementException;
  * Imports bookmarks from partner content provider using the private provider API.
  */
 public class PartnerBookmarksProviderIterator implements PartnerBookmark.BookmarkIterator {
-    private static final String TAG = "cr_PartnerBookmarks";
+    private static final String TAG = "PartnerBookmarks";
     private static final String PROVIDER_AUTHORITY = "com.android.partnerbookmarks";
     private static final Uri CONTENT_URI = new Uri.Builder()
                                                    .scheme(UrlConstants.CONTENT_SCHEME)

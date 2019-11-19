@@ -11,8 +11,8 @@
 #include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_monitor_source.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_task_environment.h"
 #include "base/test/simple_test_clock.h"
+#include "base/test/task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -27,7 +27,6 @@ class StubPowerMonitorSource : public base::PowerMonitorSource {
   void Suspend() { ProcessPowerEvent(SUSPEND_EVENT); }
 
   // base::PowerMonitorSource:
-  void Shutdown() override {}
   bool IsOnBatteryPowerImpl() override { return false; }
 };
 
@@ -36,18 +35,17 @@ class StubPowerMonitorSource : public base::PowerMonitorSource {
 class WallClockTimerTest : public ::testing::Test {
  protected:
   WallClockTimerTest()
-      : task_environment_(
-            base::test::ScopedTaskEnvironment::MainThreadType::MOCK_TIME) {
+      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     auto mock_power_monitor_source = std::make_unique<StubPowerMonitorSource>();
     mock_power_monitor_source_ = mock_power_monitor_source.get();
-    power_monitor_ = std::make_unique<base::PowerMonitor>(
-        std::move(mock_power_monitor_source));
+    base::PowerMonitor::Initialize(std::move(mock_power_monitor_source));
   }
 
-  std::unique_ptr<base::PowerMonitor> power_monitor_;
+  ~WallClockTimerTest() override { base::PowerMonitor::ShutdownForTesting(); }
+
   // Owned by power_monitor_. Use this to simulate a power suspend and resume.
   StubPowerMonitorSource* mock_power_monitor_source_ = nullptr;
-  base::test::ScopedTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(WallClockTimerTest);

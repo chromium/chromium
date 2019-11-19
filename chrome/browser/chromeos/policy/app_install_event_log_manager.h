@@ -216,16 +216,16 @@ class AppInstallEventLogManager : public AppInstallEventLogger::Delegate,
   // After successful upload, uploaded log entries are cleared and the log is
   // stored to disk. If a store task is scheduled, this factory's weak pointers
   // are invalidated to cancel it and avoid unnecessary I/O.
-  base::WeakPtrFactory<AppInstallEventLogManager> store_weak_factory_;
+  base::WeakPtrFactory<AppInstallEventLogManager> store_weak_factory_{this};
 
   // Invalidated to cancel a pending upload when the log becomes empty after
   // upload or an expedited upload is needed instead of a previously scheduled
   // regular upload.
-  base::WeakPtrFactory<AppInstallEventLogManager> upload_weak_factory_;
+  base::WeakPtrFactory<AppInstallEventLogManager> upload_weak_factory_{this};
 
   // Used by |log_| to access |this|. Invalidated when |this| is destroyed as
   // |log_| outlives it.
-  base::WeakPtrFactory<AppInstallEventLogManager> log_weak_factory_;
+  base::WeakPtrFactory<AppInstallEventLogManager> log_weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AppInstallEventLogManager);
 };

@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.customtabs;
 
-import static org.chromium.chrome.browser.init.ChromeBrowserInitializer.PRIVATE_DATA_DIRECTORY_SUFFIX;
-
 import android.app.Activity;
 import android.app.Instrumentation;
 import android.content.Context;
@@ -13,14 +11,15 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
-import android.support.annotation.Nullable;
-import android.support.customtabs.CustomTabsIntent;
-import android.support.customtabs.CustomTabsSessionToken;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.filters.SmallTest;
 import android.util.Pair;
 import android.view.View;
 import android.widget.ImageView;
+
+import androidx.annotation.Nullable;
+import androidx.browser.customtabs.CustomTabsIntent;
+import androidx.browser.customtabs.CustomTabsSessionToken;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -30,8 +29,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.CommandLine;
-import org.chromium.base.PathUtils;
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryProcessType;
 import org.chromium.base.task.PostTask;
@@ -60,6 +57,7 @@ import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.net.test.util.TestWebServer;
@@ -113,9 +111,8 @@ public class TrustedCdnPublisherUrlTest {
 
     @Before
     public void setUp() throws Exception {
-        ThreadUtils.runOnUiThreadBlocking(() -> FirstRunStatus.setFirstRunFlowComplete(true));
+        TestThreadUtils.runOnUiThreadBlocking(() -> FirstRunStatus.setFirstRunFlowComplete(true));
 
-        PathUtils.setPrivateDataDirectorySuffix(PRIVATE_DATA_DIRECTORY_SUFFIX);
         LibraryLoader.getInstance().ensureInitialized(LibraryProcessType.PROCESS_BROWSER);
         mWebServer = TestWebServer.start();
         if (mOverrideTrustedCdn.isEnabled()) {
@@ -125,8 +122,8 @@ public class TrustedCdnPublisherUrlTest {
     }
 
     @After
-    public void tearDown() throws Exception {
-        ThreadUtils.runOnUiThreadBlocking(() -> FirstRunStatus.setFirstRunFlowComplete(false));
+    public void tearDown() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> FirstRunStatus.setFirstRunFlowComplete(false));
 
         mWebServer.shutdown();
     }
@@ -283,7 +280,8 @@ public class TrustedCdnPublisherUrlTest {
         final Tab tab = customTabActivity.getActivityTab();
         PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> {
             Assert.assertEquals(publisherUrl, TrustedCdn.getPublisherUrl(tab));
-            customTabActivity.openCurrentUrlInBrowser(true);
+            customTabActivity.getComponent().resolveNavigationController()
+                    .openCurrentUrlInBrowser(true);
             Assert.assertNull(customTabActivity.getActivityTab());
         });
 
@@ -298,7 +296,7 @@ public class TrustedCdnPublisherUrlTest {
         final ChromeActivity newActivity = (ChromeActivity) activity;
         CriteriaHelper.pollUiThread(() -> newActivity.getActivityTab() == tab, "Tab did not load");
 
-        ThreadUtils.runOnUiThreadBlocking(
+        TestThreadUtils.runOnUiThreadBlocking(
                 () -> { Assert.assertNull(TrustedCdn.getPublisherUrl(tab)); });
 
         String testUrl = mWebServer.getResponseUrl("/test.html");
@@ -317,19 +315,20 @@ public class TrustedCdnPublisherUrlTest {
     @Features.EnableFeatures(ChromeFeatureList.SHOW_TRUSTED_PUBLISHER_URL)
     @OverrideTrustedCdn
     @DisabledTest // Disabled for flakiness! See http://crbug.com/847341
-    public void testOfflinePage() throws TimeoutException, InterruptedException {
+    public void testOfflinePage() throws TimeoutException {
         String publisherUrl = "https://example.com/test";
         runTrustedCdnPublisherUrlTest(
                 publisherUrl, "com.example.test", "example.com", R.drawable.omnibox_https_valid);
 
-        OfflinePageBridge offlinePageBridge = ThreadUtils.runOnUiThreadBlockingNoException(() -> {
-            Profile profile = Profile.getLastUsedProfile();
-            return OfflinePageBridge.getForProfile(profile);
-        });
+        OfflinePageBridge offlinePageBridge =
+                TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+                    Profile profile = Profile.getLastUsedProfile();
+                    return OfflinePageBridge.getForProfile(profile);
+                });
 
         // Wait until the offline page model has been loaded.
         CallbackHelper callback = new CallbackHelper();
-        ThreadUtils.runOnUiThread(() -> {
+        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
             if (offlinePageBridge.isOfflinePageModelLoaded()) {
                 callback.notifyCalled();
                 return;
@@ -345,7 +344,7 @@ public class TrustedCdnPublisherUrlTest {
         callback.waitForCallback(0);
 
         CallbackHelper callback2 = new CallbackHelper();
-        ThreadUtils.runOnUiThread(() -> {
+        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
             CustomTabActivity customTabActivity = mCustomTabActivityTestRule.getActivity();
             Tab tab = customTabActivity.getActivityTab();
             String pageUrl = tab.getUrl();
@@ -360,7 +359,7 @@ public class TrustedCdnPublisherUrlTest {
         });
         callback2.waitForCallback(0);
 
-        ThreadUtils.runOnUiThreadBlocking(
+        TestThreadUtils.runOnUiThreadBlocking(
                 () -> { NetworkChangeNotifier.forceConnectivityState(false); });
 
         // Load the URL in the same tab. With no connectivity, loading the offline page should
@@ -368,12 +367,11 @@ public class TrustedCdnPublisherUrlTest {
         String testUrl = mWebServer.getResponseUrl("/test.html");
         mCustomTabActivityTestRule.loadUrl(testUrl);
         verifyUrl(UrlFormatter.formatUrlForSecurityDisplayOmitScheme(testUrl));
-        verifySecurityIcon(R.drawable.offline_pin_round);
+        verifySecurityIcon(R.drawable.ic_offline_pin_24dp);
     }
 
     private void runTrustedCdnPublisherUrlTest(@Nullable String publisherUrl, String clientPackage,
-            @Nullable String expectedPublisher, int expectedSecurityIcon)
-            throws InterruptedException, TimeoutException {
+            @Nullable String expectedPublisher, int expectedSecurityIcon) throws TimeoutException {
         final List<Pair<String, String>> headers;
         if (publisherUrl != null) {
             headers = Collections.singletonList(Pair.create("X-AMP-Cache", publisherUrl));

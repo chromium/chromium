@@ -5,21 +5,19 @@
 #ifndef CC_ANIMATION_ANIMATION_ID_PROVIDER_H_
 #define CC_ANIMATION_ANIMATION_ID_PROVIDER_H_
 
-#include "base/macros.h"
 #include "cc/animation/animation_export.h"
 
 namespace cc {
 
 class CC_ANIMATION_EXPORT AnimationIdProvider {
  public:
+  AnimationIdProvider() = delete;
+
   // These functions each return monotonically increasing values.
   static int NextKeyframeModelId();
   static int NextGroupId();
   static int NextTimelineId();
   static int NextAnimationId();
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(AnimationIdProvider);
 };
 
 }  // namespace cc

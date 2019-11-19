@@ -16,7 +16,7 @@ import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelAnimation;
 
 /**
  * Controls the image shown in the Bar. Owns animating between the search provider icon and
- * custom image (either a thumbnail or quick action icon) for the current query.
+ * custom image (either a thumbnail or card icon) for the current query.
  */
 public class ContextualSearchImageControl {
     /** The {@link OverlayPanel} that this class belongs to. */
@@ -36,46 +36,46 @@ public class ContextualSearchImageControl {
     public void onUpdateFromPeekToExpand(float percentage) {
         mExpandedPercentage = percentage;
 
-        if (mQuickActionIconVisible || mThumbnailVisible) {
+        if (mCardIconVisible || mThumbnailVisible) {
             mCustomImageVisibilityPercentage = 1.f - percentage;
         }
     }
 
     // ============================================================================================
-    // Quick Action Icon
+    // Card Icon
     // ============================================================================================
 
     /**
-     * The resource id of the quick action icon to display.
+     * The resource id of the card icon to display.
      */
-    private int mQuickActionIconResourceId;
+    private int mCardIconResourceId;
 
     /**
-     * Whether the quick action icon is visible.
+     * Whether the card icon is visible.
      */
-    private boolean mQuickActionIconVisible;
+    private boolean mCardIconVisible;
 
     /**
-     * @param resId The resource id of the quick action icon to display.
+     * @param resId The resource id of the card icon to display.
      */
-    public void setQuickActionIconResourceId(int resId) {
-        mQuickActionIconResourceId = resId;
-        mQuickActionIconVisible = true;
+    public void setCardIconResourceId(int resId) {
+        mCardIconResourceId = resId;
+        mCardIconVisible = true;
         animateCustomImageVisibility(true);
     }
 
     /**
-     * @return The resource id of the quick action icon to display.
+     * @return The resource id of the card icon to display.
      */
-    public int getQuickActionIconResourceId() {
-        return mQuickActionIconResourceId;
+    public int getCardIconResourceId() {
+        return mCardIconResourceId;
     }
 
     /**
-     * @return Whether the quick action icon is visible.
+     * @return Whether the card icon is visible.
      */
-    public boolean getQuickActionIconVisible() {
-        return mQuickActionIconVisible;
+    public boolean getCardIconVisible() {
+        return mCardIconVisible;
     }
 
     // ============================================================================================
@@ -96,8 +96,8 @@ public class ContextualSearchImageControl {
      * @param thumbnailUrl The URL of the thumbnail to display
      */
     public void setThumbnailUrl(String thumbnailUrl) {
-        // If a quick action icon is showing, the thumbnail should not be shown.
-        if (mQuickActionIconVisible) return;
+        // If a card icon is showing, the thumbnail should not be shown.
+        if (mCardIconVisible) return;
 
         mThumbnailUrl = thumbnailUrl;
     }
@@ -131,7 +131,7 @@ public class ContextualSearchImageControl {
     }
 
     // ============================================================================================
-    // Custom image -- either a thumbnail or quick action icon
+    // Custom image -- either a thumbnail or card icon
     // ============================================================================================
 
     /** The height and width of the image displayed at the start of the bar in px. */
@@ -144,12 +144,12 @@ public class ContextualSearchImageControl {
     private float mCustomImageVisibilityPercentage;
 
     /**
-     * Hides the custom image if it is visible. Also resets the thumbnail URL and quick action icon
+     * Hides the custom image if it is visible. Also resets the thumbnail URL and card icon
      * resource id.
      * @param animate Whether hiding the thumbnail should be animated.
      */
     public void hideCustomImage(boolean animate) {
-        if ((mThumbnailVisible || mQuickActionIconVisible) && animate) {
+        if ((mThumbnailVisible || mCardIconVisible) && animate) {
             animateCustomImageVisibility(false);
         } else {
             if (mImageVisibilityAnimator != null) mImageVisibilityAnimator.cancel();
@@ -171,18 +171,18 @@ public class ContextualSearchImageControl {
     /**
      * @return The custom image visibility percentage, which dictates how and where to draw the
      *         custom image. The custom image is not visible at all at 0.f and completely visible at
-     *         1.f. The custom image may be either a thumbnail or quick action icon.
+     *         1.f. The custom image may be either a thumbnail or card icon.
      */
     public float getCustomImageVisibilityPercentage() {
         return mCustomImageVisibilityPercentage;
     }
 
     /**
-     * Called when the custom image finishes hiding to reset thumbnail and quick action icon values.
+     * Called when the custom image finishes hiding to reset thumbnail and card icon values.
      */
     private void onCustomImageHidden() {
-        mQuickActionIconResourceId = 0;
-        mQuickActionIconVisible = false;
+        mCardIconResourceId = 0;
+        mCardIconVisible = false;
 
         mThumbnailUrl = "";
         mThumbnailVisible = false;
@@ -209,14 +209,13 @@ public class ContextualSearchImageControl {
 
         if (mImageVisibilityAnimator != null) mImageVisibilityAnimator.cancel();
 
-        mImageVisibilityAnimator = new CompositorAnimator(mPanel.getAnimationHandler());
-        mImageVisibilityAnimator.setDuration(OverlayPanelAnimation.BASE_ANIMATION_DURATION_MS);
+        mImageVisibilityAnimator = CompositorAnimator.ofFloat(mPanel.getAnimationHandler(),
+                mCustomImageVisibilityPercentage, visible ? 1.f : 0.f,
+                OverlayPanelAnimation.BASE_ANIMATION_DURATION_MS, animator -> {
+                    if (mExpandedPercentage > 0.f) return;
+                    mCustomImageVisibilityPercentage = animator.getAnimatedValue();
+                });
         mImageVisibilityAnimator.setInterpolator(mCustomImageVisibilityInterpolator);
-        mImageVisibilityAnimator.setValues(mCustomImageVisibilityPercentage, visible ? 1.f : 0.f);
-        mImageVisibilityAnimator.addUpdateListener(animator -> {
-            if (mExpandedPercentage > 0.f) return;
-            mCustomImageVisibilityPercentage = animator.getAnimatedValue();
-        });
         mImageVisibilityAnimator.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {

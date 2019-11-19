@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_DBUS_IMAGE_LOADER_CLIENT_H_
 #define CHROMEOS_DBUS_IMAGE_LOADER_CLIENT_H_
 
+#include <memory>
 #include <string>
 
 #include "base/callback.h"
@@ -56,7 +57,7 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) ImageLoaderClient : public DBusClient {
 
   // Factory function, creates a new instance and returns ownership.
   // For normal usage, access the singleton via DBusThreadManager::Get().
-  static ImageLoaderClient* Create();
+  static std::unique_ptr<ImageLoaderClient> Create();
 
  protected:
   // Create() should be used instead.

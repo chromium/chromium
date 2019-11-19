@@ -22,6 +22,12 @@ namespace wayland {
 ////////////////////////////////////////////////////////////////////////////////
 // wl_output_interface:
 
+void output_release(wl_client* client, wl_resource* resource) {
+  wl_resource_destroy(resource);
+}
+
+const struct wl_output_interface output_implementation = {output_release};
+
 void bind_output(wl_client* client, void* data, uint32_t version, uint32_t id) {
   WaylandDisplayOutput* output = static_cast<WaylandDisplayOutput*>(data);
 
@@ -29,7 +35,7 @@ void bind_output(wl_client* client, void* data, uint32_t version, uint32_t id) {
       client, &wl_output_interface, std::min(version, kWlOutputVersion), id);
 
   SetImplementation(
-      resource, nullptr,
+      resource, &output_implementation,
       std::make_unique<WaylandDisplayObserver>(output->id(), resource));
 }
 

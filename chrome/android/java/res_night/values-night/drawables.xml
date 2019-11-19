@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+<resources>
+    <drawable name="badge_update">@drawable/badge_update_light</drawable>
+    <drawable name="ic_error_24dp_filled">@drawable/ic_error_white_24dp_filled</drawable>
+    <drawable name="ic_more_vert_24dp">@drawable/ic_more_vert_24dp_on_dark_bg</drawable>
+    <drawable name="ic_offline_pin_24dp">@drawable/ic_offline_pin_24dp_on_dark_bg</drawable>
+    <drawable name="ic_play_circle_filled_24dp">
+        @drawable/ic_play_circle_filled_24dp_on_dark_bg
+    </drawable>
+    <drawable name="password_check_warning"> @drawable/password_check_warning_dark_mode</drawable>
+    <drawable name="password_manager_onboarding_illustration01">@drawable/password_manager_onboarding_illustration01_dark_mode</drawable>
+    <drawable name="password_manager_onboarding_illustration02">@drawable/password_manager_onboarding_illustration02_dark_mode</drawable>
+    <drawable name="password_manager_onboarding_illustration03">@drawable/password_manager_onboarding_illustration03_dark_mode</drawable>
+    <drawable name="shared_clipboard_zero_state">@drawable/shared_clipboard_zero_state_dark</drawable>
+</resources>

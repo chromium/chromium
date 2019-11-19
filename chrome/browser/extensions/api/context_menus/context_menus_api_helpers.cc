@@ -21,9 +21,11 @@ const char kDuplicateIDError[] =
 const char kGeneratedIdKey[] = "generatedId";
 const char kLauncherNotAllowedError[] =
     "Only packaged apps are allowed to use 'launcher' context";
-const char kOnclickDisallowedError[] = "Extensions using event pages cannot "
-    "pass an onclick parameter to chrome.contextMenus.create. Instead, use "
-    "the chrome.contextMenus.onClicked event.";
+const char kOnclickDisallowedError[] =
+    "Extensions using event pages or "
+    "Service Workers cannot pass an onclick parameter to "
+    "chrome.contextMenus.create. Instead, use the "
+    "chrome.contextMenus.onClicked event.";
 const char kParentsMustBeNormalError[] =
     "Parent items must have type \"normal\"";
 const char kTitleNeededError[] =
@@ -119,6 +121,11 @@ MenuItem::Type GetType(extensions::api::context_menus::ItemType type,
       return extensions::MenuItem::SEPARATOR;
   }
   return extensions::MenuItem::NORMAL;
+}
+
+bool HasLazyContext(const Extension* extension) {
+  return BackgroundInfo::HasLazyBackgroundPage(extension) ||
+         BackgroundInfo::IsServiceWorkerBased(extension);
 }
 
 }  // namespace context_menus_api_helpers

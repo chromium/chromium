@@ -103,7 +103,7 @@ bool GetFixedStorageInfo(const Disk& disk, StorageInfo* info) {
 
 }  // namespace
 
-StorageMonitorCros::StorageMonitorCros() : weak_ptr_factory_(this) {}
+StorageMonitorCros::StorageMonitorCros() {}
 
 StorageMonitorCros::~StorageMonitorCros() {
   DiskMountManager* manager = DiskMountManager::GetInstance();
@@ -121,8 +121,8 @@ void StorageMonitorCros::Init() {
   if (!mtp_device_manager_) {
     // Set up the connection with mojofied MtpManager.
     DCHECK(GetConnector());
-    GetConnector()->BindInterface(device::mojom::kServiceName,
-                                  mojo::MakeRequest(&mtp_device_manager_));
+    GetConnector()->Connect(device::mojom::kServiceName,
+                            mtp_device_manager_.BindNewPipeAndPassReceiver());
   }
   // |mtp_manager_client_| needs to be initialized for both tests and
   // production code, so keep it out of the if condition.
@@ -141,8 +141,8 @@ void StorageMonitorCros::CheckExistingMountPoints() {
   }
 
   scoped_refptr<base::SequencedTaskRunner> blocking_task_runner =
-      base::CreateSequencedTaskRunnerWithTraits(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
+      base::CreateSequencedTaskRunner({base::ThreadPool(), base::MayBlock(),
+                                       base::TaskPriority::BEST_EFFORT});
 
   for (const auto& it : DiskMountManager::GetInstance()->mount_points()) {
     base::PostTaskAndReplyWithResult(
@@ -211,12 +211,14 @@ void StorageMonitorCros::OnMountEvent(
 
   switch (event) {
     case DiskMountManager::MOUNTING: {
-      if (base::ContainsKey(mount_map_, mount_info.mount_path)) {
+      if (base::Contains(mount_map_, mount_info.mount_path)) {
         return;
       }
 
-      base::PostTaskWithTraitsAndReplyWithResult(
-          FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      base::PostTaskAndReplyWithResult(
+          FROM_HERE,
+          {base::ThreadPool(), base::MayBlock(),
+           base::TaskPriority::BEST_EFFORT},
           base::Bind(&MediaStorageUtil::HasDcim,
                      base::FilePath(mount_info.mount_path)),
           base::Bind(&StorageMonitorCros::AddMountedPath,
@@ -235,9 +237,9 @@ void StorageMonitorCros::OnMountEvent(
 }
 
 void StorageMonitorCros::SetMediaTransferProtocolManagerForTest(
-    device::mojom::MtpManagerPtr test_manager) {
+    mojo::PendingRemote<device::mojom::MtpManager> test_manager) {
   DCHECK(!mtp_device_manager_);
-  mtp_device_manager_ = std::move(test_manager);
+  mtp_device_manager_.Bind(std::move(test_manager));
 }
 
 bool StorageMonitorCros::GetStorageInfoForPath(
@@ -253,7 +255,7 @@ bool StorageMonitorCros::GetStorageInfoForPath(
     return false;
 
   base::FilePath current = path;
-  while (!base::ContainsKey(mount_map_, current.value()) &&
+  while (!base::Contains(mount_map_, current.value()) &&
          current != current.DirName()) {
     current = current.DirName();
   }
@@ -309,7 +311,7 @@ void StorageMonitorCros::EjectDevice(
     return;
   }
 
-  manager->UnmountPath(mount_path, chromeos::UNMOUNT_OPTIONS_NONE,
+  manager->UnmountPath(mount_path,
                        base::BindOnce(NotifyUnmountResult, callback));
 }
 
@@ -323,7 +325,7 @@ void StorageMonitorCros::AddMountedPath(
     bool has_dcim) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (base::ContainsKey(mount_map_, mount_info.mount_path)) {
+  if (base::Contains(mount_map_, mount_info.mount_path)) {
     // CheckExistingMountPoints() added the mount point information in the map
     // before the device attached handler is called. Therefore, an entry for
     // the device already exists in the map.
@@ -351,7 +353,7 @@ void StorageMonitorCros::AddFixedStorageDisk(const Disk& disk) {
   if (!GetFixedStorageInfo(disk, &info))
     return;
 
-  if (base::ContainsKey(mount_map_, disk.mount_path()))
+  if (base::Contains(mount_map_, disk.mount_path()))
     return;
 
   mount_map_.insert(std::make_pair(disk.mount_path(), info));

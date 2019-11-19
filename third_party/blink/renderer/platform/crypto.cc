@@ -4,67 +4,77 @@
 
 #include "third_party/blink/renderer/platform/crypto.h"
 
-#include <memory>
-#include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/public/platform/web_crypto.h"
-#include "third_party/blink/public/platform/web_crypto_algorithm.h"
+#include "base/numerics/safe_conversions.h"
+#include "crypto/openssl_util.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 
 namespace blink {
 
-static WebCryptoAlgorithmId ToWebCryptoAlgorithmId(HashAlgorithm algorithm) {
+Digestor::Digestor(HashAlgorithm algorithm) {
+  crypto::EnsureOpenSSLInit();
+  crypto::OpenSSLErrStackTracer err_tracer(FROM_HERE);
+
+  const EVP_MD* evp_md = nullptr;
   switch (algorithm) {
     case kHashAlgorithmSha1:
-      return kWebCryptoAlgorithmIdSha1;
+      evp_md = EVP_sha1();
+      break;
     case kHashAlgorithmSha256:
-      return kWebCryptoAlgorithmIdSha256;
+      evp_md = EVP_sha256();
+      break;
     case kHashAlgorithmSha384:
-      return kWebCryptoAlgorithmIdSha384;
+      evp_md = EVP_sha384();
+      break;
     case kHashAlgorithmSha512:
-      return kWebCryptoAlgorithmIdSha512;
-  };
+      evp_md = EVP_sha512();
+      break;
+  }
 
-  NOTREACHED();
-  return kWebCryptoAlgorithmIdSha256;
+  has_failed_ =
+      !evp_md || !EVP_DigestInit_ex(digest_context_.get(), evp_md, nullptr);
+}
+
+Digestor::~Digestor() = default;
+
+bool Digestor::Update(base::span<const uint8_t> data) {
+  if (has_failed_)
+    return false;
+
+  crypto::OpenSSLErrStackTracer err_tracer(FROM_HERE);
+  has_failed_ =
+      !EVP_DigestUpdate(digest_context_.get(), data.data(), data.size());
+  return !has_failed_;
+}
+
+bool Digestor::UpdateUtf8(const String& string, WTF::UTF8ConversionMode mode) {
+  StringUTF8Adaptor utf8(string, mode);
+  return Update(base::as_bytes(base::make_span(utf8)));
+}
+
+bool Digestor::Finish(DigestValue& digest_result) {
+  if (has_failed_)
+    return false;
+
+  crypto::OpenSSLErrStackTracer err_tracer(FROM_HERE);
+  const size_t expected_size = EVP_MD_CTX_size(digest_context_.get());
+  DCHECK_LE(expected_size, static_cast<size_t>(EVP_MAX_MD_SIZE));
+  digest_result.resize(base::checked_cast<wtf_size_t>(expected_size));
+
+  unsigned result_size;
+  has_failed_ = !EVP_DigestFinal_ex(digest_context_.get(), digest_result.data(),
+                                    &result_size) ||
+                result_size != expected_size;
+  return !has_failed_;
 }
 
 bool ComputeDigest(HashAlgorithm algorithm,
                    const char* digestable,
                    size_t length,
                    DigestValue& digest_result) {
-  WebCryptoAlgorithmId algorithm_id = ToWebCryptoAlgorithmId(algorithm);
-  WebCrypto* crypto = Platform::Current()->Crypto();
-  unsigned char* result;
-  unsigned result_size;
-
-  DCHECK(crypto);
-
-  std::unique_ptr<WebCryptoDigestor> digestor =
-      crypto->CreateDigestor(algorithm_id);
-  DCHECK(digestor);
-  if (!digestor->Consume(reinterpret_cast<const unsigned char*>(digestable),
-                         length) ||
-      !digestor->Finish(result, result_size))
-    return false;
-
-  digest_result.Append(static_cast<uint8_t*>(result), result_size);
-  return true;
-}
-
-std::unique_ptr<WebCryptoDigestor> CreateDigestor(HashAlgorithm algorithm) {
-  return Platform::Current()->Crypto()->CreateDigestor(
-      ToWebCryptoAlgorithmId(algorithm));
-}
-
-void FinishDigestor(WebCryptoDigestor* digestor, DigestValue& digest_result) {
-  unsigned char* result = nullptr;
-  unsigned result_size = 0;
-
-  if (!digestor->Finish(result, result_size))
-    return;
-
-  DCHECK(result);
-
-  digest_result.Append(static_cast<uint8_t*>(result), result_size);
+  Digestor digestor(algorithm);
+  digestor.Update(base::as_bytes(base::make_span(digestable, length)));
+  digestor.Finish(digest_result);
+  return !digestor.has_failed();
 }
 
 }  // namespace blink

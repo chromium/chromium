@@ -5,15 +5,17 @@
 #include "content/child/webthemeengine_impl_default.h"
 
 #include "build/build_config.h"
+#include "content/child/webthemeengine_impl_conversions.h"
 #include "skia/ext/platform_canvas.h"
 #include "third_party/blink/public/platform/web_rect.h"
 #include "third_party/blink/public/platform/web_size.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/native_theme/overlay_scrollbar_constants_aura.h"
 
+using blink::WebColorScheme;
 using blink::WebRect;
-using blink::WebThemeEngine;
 using blink::WebScrollbarOverlayColorTheme;
+using blink::WebThemeEngine;
 
 namespace content {
 namespace {
@@ -34,78 +36,6 @@ int32_t g_horizontal_arrow_bitmap_width;
 
 }  // namespace
 
-static ui::NativeTheme::Part NativeThemePart(
-    WebThemeEngine::Part part) {
-  switch (part) {
-    case WebThemeEngine::kPartScrollbarDownArrow:
-      return ui::NativeTheme::kScrollbarDownArrow;
-    case WebThemeEngine::kPartScrollbarLeftArrow:
-      return ui::NativeTheme::kScrollbarLeftArrow;
-    case WebThemeEngine::kPartScrollbarRightArrow:
-      return ui::NativeTheme::kScrollbarRightArrow;
-    case WebThemeEngine::kPartScrollbarUpArrow:
-      return ui::NativeTheme::kScrollbarUpArrow;
-    case WebThemeEngine::kPartScrollbarHorizontalThumb:
-      return ui::NativeTheme::kScrollbarHorizontalThumb;
-    case WebThemeEngine::kPartScrollbarVerticalThumb:
-      return ui::NativeTheme::kScrollbarVerticalThumb;
-    case WebThemeEngine::kPartScrollbarHorizontalTrack:
-      return ui::NativeTheme::kScrollbarHorizontalTrack;
-    case WebThemeEngine::kPartScrollbarVerticalTrack:
-      return ui::NativeTheme::kScrollbarVerticalTrack;
-    case WebThemeEngine::kPartScrollbarCorner:
-      return ui::NativeTheme::kScrollbarCorner;
-    case WebThemeEngine::kPartCheckbox:
-      return ui::NativeTheme::kCheckbox;
-    case WebThemeEngine::kPartRadio:
-      return ui::NativeTheme::kRadio;
-    case WebThemeEngine::kPartButton:
-      return ui::NativeTheme::kPushButton;
-    case WebThemeEngine::kPartTextField:
-      return ui::NativeTheme::kTextField;
-    case WebThemeEngine::kPartMenuList:
-      return ui::NativeTheme::kMenuList;
-    case WebThemeEngine::kPartSliderTrack:
-      return ui::NativeTheme::kSliderTrack;
-    case WebThemeEngine::kPartSliderThumb:
-      return ui::NativeTheme::kSliderThumb;
-    case WebThemeEngine::kPartInnerSpinButton:
-      return ui::NativeTheme::kInnerSpinButton;
-    case WebThemeEngine::kPartProgressBar:
-      return ui::NativeTheme::kProgressBar;
-    default:
-      return ui::NativeTheme::kScrollbarDownArrow;
-  }
-}
-
-static ui::NativeTheme::ScrollbarOverlayColorTheme
-NativeThemeScrollbarOverlayColorTheme(WebScrollbarOverlayColorTheme theme) {
-  switch (theme) {
-    case WebScrollbarOverlayColorTheme::kWebScrollbarOverlayColorThemeLight:
-      return ui::NativeTheme::ScrollbarOverlayColorThemeLight;
-    case WebScrollbarOverlayColorTheme::kWebScrollbarOverlayColorThemeDark:
-      return ui::NativeTheme::ScrollbarOverlayColorThemeDark;
-    default:
-      return ui::NativeTheme::ScrollbarOverlayColorThemeDark;
-  }
-}
-
-static ui::NativeTheme::State NativeThemeState(
-    WebThemeEngine::State state) {
-  switch (state) {
-    case WebThemeEngine::kStateDisabled:
-      return ui::NativeTheme::kDisabled;
-    case WebThemeEngine::kStateHover:
-      return ui::NativeTheme::kHovered;
-    case WebThemeEngine::kStateNormal:
-      return ui::NativeTheme::kNormal;
-    case WebThemeEngine::kStatePressed:
-      return ui::NativeTheme::kPressed;
-    default:
-      return ui::NativeTheme::kDisabled;
-  }
-}
-
 static void GetNativeThemeExtraParams(
     WebThemeEngine::Part part,
     WebThemeEngine::State state,
@@ -117,6 +47,8 @@ static void GetNativeThemeExtraParams(
   switch (part) {
     case WebThemeEngine::kPartScrollbarHorizontalTrack:
     case WebThemeEngine::kPartScrollbarVerticalTrack:
+      native_theme_extra_params->scrollbar_track.is_upper =
+          extra_params->scrollbar_track.is_back;
       native_theme_extra_params->scrollbar_track.track_x =
           extra_params->scrollbar_track.track_x;
       native_theme_extra_params->scrollbar_track.track_y =
@@ -130,13 +62,12 @@ static void GetNativeThemeExtraParams(
       native_theme_extra_params->button.checked = extra_params->button.checked;
       native_theme_extra_params->button.indeterminate =
           extra_params->button.indeterminate;
+      native_theme_extra_params->button.zoom = extra_params->button.zoom;
       break;
     case WebThemeEngine::kPartRadio:
       native_theme_extra_params->button.checked = extra_params->button.checked;
       break;
     case WebThemeEngine::kPartButton:
-      native_theme_extra_params->button.is_default =
-          extra_params->button.is_default;
       native_theme_extra_params->button.has_border =
           extra_params->button.has_border;
       // Native buttons have a different focus style.
@@ -169,6 +100,12 @@ static void GetNativeThemeExtraParams(
           extra_params->menu_list.background_color;
       break;
     case WebThemeEngine::kPartSliderTrack:
+      native_theme_extra_params->slider.thumb_x = extra_params->slider.thumb_x;
+      native_theme_extra_params->slider.thumb_y = extra_params->slider.thumb_y;
+      native_theme_extra_params->slider.zoom = extra_params->slider.zoom;
+      FALLTHROUGH;
+      // vertical and in_drag properties are used by both slider track and
+      // slider thumb.
     case WebThemeEngine::kPartSliderThumb:
       native_theme_extra_params->slider.vertical =
           extra_params->slider.vertical;
@@ -198,12 +135,23 @@ static void GetNativeThemeExtraParams(
           NativeThemeScrollbarOverlayColorTheme(
               extra_params->scrollbar_thumb.scrollbar_theme);
       break;
+    case WebThemeEngine::kPartScrollbarDownArrow:
+    case WebThemeEngine::kPartScrollbarLeftArrow:
+    case WebThemeEngine::kPartScrollbarRightArrow:
+    case WebThemeEngine::kPartScrollbarUpArrow:
+      native_theme_extra_params->scrollbar_arrow.zoom =
+          extra_params->scrollbar_button.zoom;
+      native_theme_extra_params->scrollbar_arrow.right_to_left =
+          extra_params->scrollbar_button.right_to_left;
+      break;
     default:
       break;  // Parts that have no extra params get here.
   }
 }
 
-blink::WebSize WebThemeEngineImpl::GetSize(WebThemeEngine::Part part) {
+WebThemeEngineDefault::~WebThemeEngineDefault() = default;
+
+blink::WebSize WebThemeEngineDefault::GetSize(WebThemeEngine::Part part) {
   ui::NativeTheme::ExtraParams extra;
   ui::NativeTheme::Part native_theme_part = NativeThemePart(part);
 #if defined(OS_WIN)
@@ -228,21 +176,22 @@ blink::WebSize WebThemeEngineImpl::GetSize(WebThemeEngine::Part part) {
       native_theme_part, ui::NativeTheme::kNormal, extra);
 }
 
-void WebThemeEngineImpl::Paint(
+void WebThemeEngineDefault::Paint(
     cc::PaintCanvas* canvas,
     WebThemeEngine::Part part,
     WebThemeEngine::State state,
     const blink::WebRect& rect,
-    const WebThemeEngine::ExtraParams* extra_params) {
+    const WebThemeEngine::ExtraParams* extra_params,
+    blink::WebColorScheme color_scheme) {
   ui::NativeTheme::ExtraParams native_theme_extra_params;
   GetNativeThemeExtraParams(
       part, state, extra_params, &native_theme_extra_params);
   ui::NativeTheme::GetInstanceForWeb()->Paint(
       canvas, NativeThemePart(part), NativeThemeState(state), gfx::Rect(rect),
-      native_theme_extra_params);
+      native_theme_extra_params, NativeColorScheme(color_scheme));
 }
 
-void WebThemeEngineImpl::GetOverlayScrollbarStyle(ScrollbarStyle* style) {
+void WebThemeEngineDefault::GetOverlayScrollbarStyle(ScrollbarStyle* style) {
   style->fade_out_delay = ui::kOverlayScrollbarFadeDelay;
   style->fade_out_duration = ui::kOverlayScrollbarFadeDuration;
   // The other fields in this struct are used only on Android to draw solid
@@ -250,24 +199,30 @@ void WebThemeEngineImpl::GetOverlayScrollbarStyle(ScrollbarStyle* style) {
   // NativeTheme so these fields are unused.
 }
 
-bool WebThemeEngineImpl::SupportsNinePatch(Part part) const {
+bool WebThemeEngineDefault::SupportsNinePatch(Part part) const {
   return ui::NativeTheme::GetInstanceForWeb()->SupportsNinePatch(
       NativeThemePart(part));
 }
 
-blink::WebSize WebThemeEngineImpl::NinePatchCanvasSize(Part part) const {
+blink::WebSize WebThemeEngineDefault::NinePatchCanvasSize(Part part) const {
   return ui::NativeTheme::GetInstanceForWeb()->GetNinePatchCanvasSize(
       NativeThemePart(part));
 }
 
-blink::WebRect WebThemeEngineImpl::NinePatchAperture(Part part) const {
+blink::WebRect WebThemeEngineDefault::NinePatchAperture(Part part) const {
   return ui::NativeTheme::GetInstanceForWeb()->GetNinePatchAperture(
       NativeThemePart(part));
 }
 
+base::Optional<SkColor> WebThemeEngineDefault::GetSystemColor(
+    blink::WebThemeEngine::SystemThemeColor system_theme_color) const {
+  return ui::NativeTheme::GetInstanceForWeb()->GetSystemThemeColor(
+      NativeSystemThemeColor(system_theme_color));
+}
+
 #if defined(OS_WIN)
 // static
-void WebThemeEngineImpl::cacheScrollBarMetrics(
+void WebThemeEngineDefault::cacheScrollBarMetrics(
     int32_t vertical_scroll_bar_width,
     int32_t horizontal_scroll_bar_height,
     int32_t vertical_arrow_bitmap_height,
@@ -278,5 +233,30 @@ void WebThemeEngineImpl::cacheScrollBarMetrics(
   g_horizontal_arrow_bitmap_width = horizontal_arrow_bitmap_width;
 }
 #endif
+
+blink::ForcedColors WebThemeEngineDefault::GetForcedColors() const {
+  return ui::NativeTheme::GetInstanceForWeb()->UsesHighContrastColors()
+             ? blink::ForcedColors::kActive
+             : blink::ForcedColors::kNone;
+}
+
+void WebThemeEngineDefault::SetForcedColors(
+    const blink::ForcedColors forced_colors) {
+  ui::NativeTheme::GetInstanceForWeb()->set_high_contrast(
+      forced_colors == blink::ForcedColors::kActive);
+}
+
+blink::PreferredColorScheme WebThemeEngineDefault::PreferredColorScheme()
+    const {
+  ui::NativeTheme::PreferredColorScheme preferred_color_scheme =
+      ui::NativeTheme::GetInstanceForWeb()->GetPreferredColorScheme();
+  return WebPreferredColorScheme(preferred_color_scheme);
+}
+
+void WebThemeEngineDefault::SetPreferredColorScheme(
+    const blink::PreferredColorScheme preferred_color_scheme) {
+  ui::NativeTheme::GetInstanceForWeb()->set_preferred_color_scheme(
+      NativePreferredColorScheme(preferred_color_scheme));
+}
 
 }  // namespace content

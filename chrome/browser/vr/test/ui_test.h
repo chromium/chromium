@@ -90,13 +90,8 @@ class UiTest : public testing::Test {
   bool RunForMs(float milliseconds);
   bool RunForSeconds(float seconds);
 
-  // A wrapper to call scene_->OnBeginFrame.
-  bool OnBeginFrame() const;
-
-  // Also wraps scene_->OnBeginFrame, but advances the current time by the given
-  // delta before making the call. This is useful for simulating slow frames.
-  // Generally, don't use this to simulate delay - use RunFor() instead.
-  bool OnDelayedFrame(base::TimeDelta delta);
+  // Advances time by one frame (16 ms) and calls 'OnBeginFrame()'
+  bool AdvanceFrame();
 
   void GetBackgroundColor(SkColor* background_color) const;
 
@@ -114,6 +109,7 @@ class UiTest : public testing::Test {
 
  private:
   bool RunFor(base::TimeDelta delta);
+  bool OnBeginFrame() const;
 
   base::TimeTicks current_time_;
 };

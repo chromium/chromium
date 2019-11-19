@@ -422,9 +422,10 @@ struct NativeValueTraits<IDLSequence<T>>
     }
 
     ImplType result;
-    // TODO(rakuco): Checking for IsArray() may not be enough. Other engines
-    // also prefer regular array iteration over a custom @@iterator when the
-    // latter is defined, but it is not clear if this is a valid optimization.
+    // TODO(https://crbug.com/715122): Checking for IsArray() may not be
+    // enough. Other engines also prefer regular array iteration over a custom
+    // @@iterator when the latter is defined, but it is not clear if this is a
+    // valid optimization.
     if (value->IsArray()) {
       ConvertSequenceFast(isolate, value.As<v8::Array>(), exception_state,
                           result);
@@ -452,13 +453,14 @@ struct NativeValueTraits<IDLSequence<T>>
     }
     result.ReserveInitialCapacity(length);
     v8::TryCatch block(isolate);
-    for (uint32_t i = 0; i < length; ++i) {
+    // Array length may change if array is mutated during iteration.
+    for (uint32_t i = 0; i < v8_array->Length(); ++i) {
       v8::Local<v8::Value> element;
       if (!v8_array->Get(isolate->GetCurrentContext(), i).ToLocal(&element)) {
         exception_state.RethrowV8Exception(block.Exception());
         return;
       }
-      result.UncheckedAppend(
+      result.push_back(
           NativeValueTraits<T>::NativeValue(isolate, element, exception_state));
       if (exception_state.HadException())
         return;
@@ -516,7 +518,7 @@ struct NativeValueTraits<IDLSequence<T>>
       }
       if (done->BooleanValue(isolate))
         break;
-      result.emplace_back(
+      result.push_back(
           NativeValueTraits<T>::NativeValue(isolate, element, exception_state));
       if (exception_state.HadException())
         return;

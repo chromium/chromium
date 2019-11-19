@@ -22,12 +22,12 @@ AutofillTabHelper::~AutofillTabHelper() = default;
 // static
 void AutofillTabHelper::CreateForWebState(
     web::WebState* web_state,
-    password_manager::PasswordGenerationManager* password_generation_manager) {
+    password_manager::PasswordManager* password_manager) {
   DCHECK(web_state);
   if (!FromWebState(web_state)) {
-    web_state->SetUserData(UserDataKey(),
-                           base::WrapUnique(new AutofillTabHelper(
-                               web_state, password_generation_manager)));
+    web_state->SetUserData(
+        UserDataKey(),
+        base::WrapUnique(new AutofillTabHelper(web_state, password_manager)));
   }
 }
 
@@ -42,7 +42,7 @@ id<FormSuggestionProvider> AutofillTabHelper::GetSuggestionProvider() {
 
 AutofillTabHelper::AutofillTabHelper(
     web::WebState* web_state,
-    password_manager::PasswordGenerationManager* password_generation_manager)
+    password_manager::PasswordManager* password_manager)
     : browser_state_(ios::ChromeBrowserState::FromBrowserState(
           web_state->GetBrowserState())),
       autofill_agent_([[AutofillAgent alloc]
@@ -55,7 +55,7 @@ AutofillTabHelper::AutofillTabHelper(
   DCHECK(infobar_manager);
   autofill_client_ = std::make_unique<autofill::ChromeAutofillClientIOS>(
       browser_state_, web_state, infobar_manager, autofill_agent_,
-      password_generation_manager);
+      password_manager);
 
   autofill::AutofillDriverIOS::PrepareForWebStateWebFrameAndDelegate(
       web_state, autofill_client_.get(), autofill_agent_,

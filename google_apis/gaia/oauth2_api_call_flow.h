@@ -11,10 +11,10 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "url/gurl.h"
 
 namespace network {
-struct ResourceResponseHead;
 class SimpleURLLoader;
 class SharedURLLoaderFactory;
 }
@@ -49,13 +49,15 @@ class OAuth2ApiCallFlow {
   // Sub-classes can expose an appropriate observer interface by implementing
   // these template methods.
   // Called when the API call finished successfully. |body| may be null.
-  virtual void ProcessApiCallSuccess(const network::ResourceResponseHead* head,
-                                     std::unique_ptr<std::string> body) = 0;
+  virtual void ProcessApiCallSuccess(
+      const network::mojom::URLResponseHead* head,
+      std::unique_ptr<std::string> body) = 0;
 
   // Called when the API call failed. |head| or |body| might be null.
-  virtual void ProcessApiCallFailure(int net_error,
-                                     const network::ResourceResponseHead* head,
-                                     std::unique_ptr<std::string> body) = 0;
+  virtual void ProcessApiCallFailure(
+      int net_error,
+      const network::mojom::URLResponseHead* head,
+      std::unique_ptr<std::string> body) = 0;
 
   virtual net::PartialNetworkTrafficAnnotationTag
   GetNetworkTrafficAnnotationTag() = 0;

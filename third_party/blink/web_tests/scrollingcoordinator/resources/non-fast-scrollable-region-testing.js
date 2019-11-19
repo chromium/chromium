@@ -1,9 +1,3 @@
-// setMockScrollbarsEnabled doesn't actually invalidate scrollbars
-// so if we don't set it immediately, they won't repaint/relayout
-// correctly!  http://crbug.com/365509
-if (window.internals)
-    internals.settings.setMockScrollbarsEnabled(true);
-
 // Draws green overlays for non-fast scrollable regions. This provides a visual
 // feedback that is useful when running the test interactively.
 function drawNonFastScrollableRegionOverlays() {

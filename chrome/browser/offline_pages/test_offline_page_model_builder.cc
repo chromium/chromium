@@ -12,11 +12,11 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_clock.h"
 #include "chrome/common/chrome_constants.h"
+#include "components/keyed_service/core/simple_factory_key.h"
 #include "components/offline_pages/core/archive_manager.h"
 #include "components/offline_pages/core/model/offline_page_model_taskified.h"
 #include "components/offline_pages/core/offline_page_metadata_store.h"
-#include "components/offline_pages/core/stub_system_download_manager.h"
-#include "content/public/browser/browser_context.h"
+#include "components/offline_pages/core/offline_page_test_archive_publisher.h"
 
 namespace {
 const int64_t kDownloadId = 42LL;
@@ -24,18 +24,17 @@ const int64_t kDownloadId = 42LL;
 
 namespace offline_pages {
 
-std::unique_ptr<KeyedService> BuildTestOfflinePageModel(
-    content::BrowserContext* context) {
+std::unique_ptr<KeyedService> BuildTestOfflinePageModel(SimpleFactoryKey* key) {
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
       base::ThreadTaskRunnerHandle::Get();
 
   base::FilePath store_path =
-      context->GetPath().Append(chrome::kOfflinePageMetadataDirname);
+      key->GetPath().Append(chrome::kOfflinePageMetadataDirname);
   std::unique_ptr<OfflinePageMetadataStore> metadata_store(
       new OfflinePageMetadataStore(task_runner, store_path));
 
   base::FilePath private_archives_dir =
-      context->GetPath().Append(chrome::kOfflinePageArchivesDirname);
+      key->GetPath().Append(chrome::kOfflinePageArchivesDirname);
   base::FilePath public_archives_dir("/sdcard/Download");
   // If base::PathService::Get returns false, the temporary_archives_dir will be
   // empty, and no temporary pages will be saved during this chrome lifecycle.
@@ -44,15 +43,15 @@ std::unique_ptr<KeyedService> BuildTestOfflinePageModel(
     temporary_archives_dir =
         temporary_archives_dir.Append(chrome::kOfflinePageArchivesDirname);
   }
-  std::unique_ptr<ArchiveManager> archive_manager(
-      new ArchiveManager(temporary_archives_dir, private_archives_dir,
-                         public_archives_dir, task_runner));
-  std::unique_ptr<SystemDownloadManager> stub_download_manager(
-      new StubSystemDownloadManager(kDownloadId, true));
+  auto archive_manager = std::make_unique<ArchiveManager>(
+      temporary_archives_dir, private_archives_dir, public_archives_dir,
+      task_runner);
+  auto publisher = std::make_unique<OfflinePageTestArchivePublisher>(
+      archive_manager.get(), kDownloadId);
 
   return std::unique_ptr<KeyedService>(new OfflinePageModelTaskified(
       std::move(metadata_store), std::move(archive_manager),
-      std::move(stub_download_manager), task_runner));
+      std::move(publisher), task_runner));
 }
 
 }  // namespace offline_pages

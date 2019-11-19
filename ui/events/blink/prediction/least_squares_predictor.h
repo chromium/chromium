@@ -35,9 +35,11 @@ class LeastSquaresPredictor : public InputPredictor {
 
   // Generate the prediction based on stored points and given time_stamp.
   // Return false if no prediction available.
-  bool GeneratePrediction(base::TimeTicks predict_time,
-                          bool is_resampling,
-                          InputData* result) const override;
+  std::unique_ptr<InputData> GeneratePrediction(
+      base::TimeTicks predict_time) const override;
+
+  // Return the averaged value of time intervals.
+  base::TimeDelta TimeInterval() const override;
 
  private:
   // Generate X matrix from time_ queue.

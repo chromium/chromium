@@ -37,12 +37,11 @@ class HTMLOptionsCollection final : public HTMLCollection {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static HTMLOptionsCollection* Create(ContainerNode&, CollectionType);
-
   explicit HTMLOptionsCollection(ContainerNode&);
+  HTMLOptionsCollection(ContainerNode&, CollectionType);
 
   HTMLOptionElement* item(unsigned offset) const {
-    return ToHTMLOptionElement(HTMLCollection::item(offset));
+    return To<HTMLOptionElement>(HTMLCollection::item(offset));
   }
 
   void add(const HTMLOptionElementOrHTMLOptGroupElement&,
@@ -70,14 +69,15 @@ DEFINE_TYPE_CASTS(HTMLOptionsCollection,
 
 inline bool HTMLOptionsCollection::ElementMatches(
     const HTMLElement& element) const {
-  if (!IsHTMLOptionElement(element))
+  if (!IsA<HTMLOptionElement>(element))
     return false;
   Node* parent = element.parentNode();
   if (!parent)
     return false;
   if (parent == &RootNode())
     return true;
-  return IsHTMLOptGroupElement(*parent) && parent->parentNode() == &RootNode();
+  return IsA<HTMLOptGroupElement>(*parent) &&
+         parent->parentNode() == &RootNode();
 }
 
 }  // namespace blink

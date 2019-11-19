@@ -1,9 +1,0 @@
-Tests that preflight OPTIONS is always sent if 'Disable cache' is checked, and that network instrumentation does not produce errors for redirected preflights.
-
-OPTIONS: http://localhost:8080/devtools/network/resources/cors-redirect.cgi
-OPTIONS: http://localhost:8080/devtools/network/resources/cors-redirect.cgi
-OPTIONS: http://localhost:8000/devtools/network/resources/cors.cgi
-POST: http://localhost:8000/devtools/network/resources/cors.cgi
-OPTIONS: http://localhost:8000/devtools/network/resources/cors.cgi
-POST: http://localhost:8000/devtools/network/resources/cors.cgi
-

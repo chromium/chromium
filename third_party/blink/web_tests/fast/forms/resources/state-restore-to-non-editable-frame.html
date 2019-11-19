@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<body>
+<input id=emptyOnFirstVisit name="state">
+
+<form action="../../../resources/back.html" id="form1">
+<input id="enabled" value="initial">
+<input id="disabled" disabled value="initial">
+<input id="readonly" readonly value="initial">
+<fieldset disabled><input id="fieldset-disabled" value="initial"></fieldset>
+<input id="enabled2" value="initial">
+</form>
+
+<script>
+let $ = document.querySelector.bind(document);
+function runTest() {
+  let state = $('#emptyOnFirstVisit');
+  if (!state.value) {
+    // First visit
+    state.value = 'visited';
+
+    $('#enabled').value = 'edit1';
+    $('#disabled').value = 'edit2';
+    $('#readonly').value = 'edit3';
+    $('#fieldset-disabled').value = 'edit4';
+    $('#enabled2').value = 'edit5';
+    $('form').submit();
+  } else {
+    // Second visit
+    parent.doneTest();
+  }
+}
+
+window.onload = () => {
+  setTimeout(runTest, 1);
+};
+</script>
+</body>

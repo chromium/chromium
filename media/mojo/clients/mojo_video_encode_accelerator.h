@@ -11,8 +11,10 @@
 
 #include "base/sequence_checker.h"
 #include "gpu/config/gpu_info.h"
-#include "media/mojo/interfaces/video_encode_accelerator.mojom.h"
+#include "media/mojo/mojom/video_encode_accelerator.mojom.h"
 #include "media/video/video_encode_accelerator.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace media {
 class VideoFrame;
@@ -29,15 +31,14 @@ namespace media {
 class MojoVideoEncodeAccelerator : public VideoEncodeAccelerator {
  public:
   MojoVideoEncodeAccelerator(
-      mojom::VideoEncodeAcceleratorPtr vea,
+      mojo::PendingRemote<mojom::VideoEncodeAccelerator> vea,
       const gpu::VideoEncodeAcceleratorSupportedProfiles& supported_profiles);
 
   // VideoEncodeAccelerator implementation.
   SupportedProfiles GetSupportedProfiles() override;
   bool Initialize(const Config& config, Client* client) override;
-  void Encode(const scoped_refptr<VideoFrame>& frame,
-              bool force_keyframe) override;
-  void UseOutputBitstreamBuffer(const BitstreamBuffer& buffer) override;
+  void Encode(scoped_refptr<VideoFrame> frame, bool force_keyframe) override;
+  void UseOutputBitstreamBuffer(BitstreamBuffer buffer) override;
   void RequestEncodingParametersChange(uint32_t bitrate,
                                        uint32_t framerate_num) override;
   void RequestEncodingParametersChange(const VideoBitrateAllocation& bitrate,
@@ -48,7 +49,7 @@ class MojoVideoEncodeAccelerator : public VideoEncodeAccelerator {
   // Only Destroy() should be deleting |this|.
   ~MojoVideoEncodeAccelerator() override;
 
-  mojom::VideoEncodeAcceleratorPtr vea_;
+  mojo::Remote<mojom::VideoEncodeAccelerator> vea_;
 
   // Constructed during Initialize().
   std::unique_ptr<mojom::VideoEncodeAcceleratorClient> vea_client_;

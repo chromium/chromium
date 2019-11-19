@@ -27,7 +27,6 @@ bool FakePluginService::GetPluginInfoArray(
 
 bool FakePluginService::GetPluginInfo(int render_process_id,
                                       int render_frame_id,
-                                      ResourceContext* context,
                                       const GURL& url,
                                       const url::Origin& main_frame_origin,
                                       const std::string& mime_type,

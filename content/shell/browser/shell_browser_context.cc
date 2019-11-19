@@ -16,6 +16,9 @@
 #include "base/threading/thread.h"
 #include "build/build_config.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/keyed_service/core/simple_dependency_manager.h"
+#include "components/keyed_service/core/simple_factory_key.h"
+#include "components/keyed_service/core/simple_key_map.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -23,6 +26,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/shell/browser/shell_download_manager_delegate.h"
 #include "content/shell/browser/shell_permission_manager.h"
+#include "content/shell/browser/web_test/web_test_content_index_provider.h"
 #include "content/shell/common/shell_switches.h"
 #include "content/test/mock_background_sync_controller.h"
 
@@ -44,12 +48,10 @@ ShellBrowserContext::ShellResourceContext::~ShellResourceContext() {
 }
 
 ShellBrowserContext::ShellBrowserContext(bool off_the_record,
-                                         net::NetLog* net_log,
                                          bool delay_services_creation)
     : resource_context_(new ShellResourceContext),
       ignore_certificate_errors_(false),
       off_the_record_(off_the_record),
-      net_log_(net_log),
       guest_manager_(nullptr) {
   InitWhileIOAllowed();
   if (!delay_services_creation) {
@@ -61,23 +63,25 @@ ShellBrowserContext::ShellBrowserContext(bool off_the_record,
 ShellBrowserContext::~ShellBrowserContext() {
   NotifyWillBeDestroyed(this);
 
-  BrowserContextDependencyManager::GetInstance()->
-      DestroyBrowserContextServices(this);
+  // The SimpleDependencyManager should always be passed after the
+  // BrowserContextDependencyManager. This is because the KeyedService instances
+  // in the BrowserContextDependencyManager's dependency graph can depend on the
+  // ones in the SimpleDependencyManager's graph.
+  DependencyManager::PerformInterlockedTwoPhaseShutdown(
+      BrowserContextDependencyManager::GetInstance(), this,
+      SimpleDependencyManager::GetInstance(), key_.get());
+
+  SimpleKeyMap::GetInstance()->Dissociate(this);
+
   // Need to destruct the ResourceContext before posting tasks which may delete
   // the URLRequestContext because ResourceContext's destructor will remove any
   // outstanding request while URLRequestContext's destructor ensures that there
   // are no more outstanding requests.
   if (resource_context_) {
-    BrowserThread::DeleteSoon(
-      BrowserThread::IO, FROM_HERE, resource_context_.release());
+    base::DeleteSoon(FROM_HERE, {BrowserThread::IO},
+                     resource_context_.release());
   }
   ShutdownStoragePartitions();
-  if (url_request_getter_) {
-    base::PostTaskWithTraits(
-        FROM_HERE, {BrowserThread::IO},
-        base::BindOnce(&ShellURLRequestContextGetter::NotifyContextShuttingDown,
-                       url_request_getter_));
-  }
 }
 
 void ShellBrowserContext::InitWhileIOAllowed() {
@@ -92,7 +96,7 @@ void ShellBrowserContext::InitWhileIOAllowed() {
       if (!path_.IsAbsolute())
         path_ = base::MakeAbsoluteFilePath(path_);
       if (!path_.empty()) {
-        BrowserContext::Initialize(this, path_);
+        FinishInitWhileIOAllowed();
         return;
       }
     } else {
@@ -125,7 +129,14 @@ void ShellBrowserContext::InitWhileIOAllowed() {
 
   if (!base::PathExists(path_))
     base::CreateDirectory(path_);
+
+  FinishInitWhileIOAllowed();
+}
+
+void ShellBrowserContext::FinishInitWhileIOAllowed() {
   BrowserContext::Initialize(this, path_);
+  key_ = std::make_unique<SimpleFactoryKey>(path_, off_the_record_);
+  SimpleKeyMap::GetInstance()->Associate(this, key_.get());
 }
 
 #if !defined(OS_ANDROID)
@@ -135,11 +146,11 @@ std::unique_ptr<ZoomLevelDelegate> ShellBrowserContext::CreateZoomLevelDelegate(
 }
 #endif  // !defined(OS_ANDROID)
 
-base::FilePath ShellBrowserContext::GetPath() const {
+base::FilePath ShellBrowserContext::GetPath() {
   return path_;
 }
 
-bool ShellBrowserContext::IsOffTheRecord() const {
+bool ShellBrowserContext::IsOffTheRecord() {
   return off_the_record_;
 }
 
@@ -151,53 +162,6 @@ DownloadManagerDelegate* ShellBrowserContext::GetDownloadManagerDelegate()  {
   }
 
   return download_manager_delegate_.get();
-}
-
-ShellURLRequestContextGetter*
-ShellBrowserContext::CreateURLRequestContextGetter(
-    ProtocolHandlerMap* protocol_handlers,
-    URLRequestInterceptorScopedVector request_interceptors) {
-  return new ShellURLRequestContextGetter(
-      ignore_certificate_errors_, off_the_record_, GetPath(),
-      base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::IO}),
-      protocol_handlers, std::move(request_interceptors), net_log_);
-}
-
-net::URLRequestContextGetter* ShellBrowserContext::CreateRequestContext(
-    ProtocolHandlerMap* protocol_handlers,
-    URLRequestInterceptorScopedVector request_interceptors) {
-  DCHECK(!url_request_getter_.get());
-  url_request_getter_ = CreateURLRequestContextGetter(
-      protocol_handlers, std::move(request_interceptors));
-  return url_request_getter_.get();
-}
-
-net::URLRequestContextGetter*
-ShellBrowserContext::CreateRequestContextForStoragePartition(
-    const base::FilePath& partition_path,
-    bool in_memory,
-    ProtocolHandlerMap* protocol_handlers,
-    URLRequestInterceptorScopedVector request_interceptors) {
-  scoped_refptr<ShellURLRequestContextGetter>& context_getter =
-      isolated_url_request_getters_[partition_path];
-  if (!context_getter) {
-    context_getter = CreateURLRequestContextGetter(
-        protocol_handlers, std::move(request_interceptors));
-  }
-  return context_getter.get();
-}
-
-net::URLRequestContextGetter*
-    ShellBrowserContext::CreateMediaRequestContext()  {
-  DCHECK(url_request_getter_.get());
-  return url_request_getter_.get();
-}
-
-net::URLRequestContextGetter*
-    ShellBrowserContext::CreateMediaRequestContextForStoragePartition(
-        const base::FilePath& partition_path,
-        bool in_memory) {
-  return nullptr;
 }
 
 ResourceContext* ShellBrowserContext::GetResourceContext()  {
@@ -213,6 +177,11 @@ storage::SpecialStoragePolicy* ShellBrowserContext::GetSpecialStoragePolicy() {
 }
 
 PushMessagingService* ShellBrowserContext::GetPushMessagingService() {
+  return nullptr;
+}
+
+StorageNotificationService*
+ShellBrowserContext::GetStorageNotificationService() {
   return nullptr;
 }
 
@@ -245,6 +214,12 @@ BackgroundSyncController* ShellBrowserContext::GetBackgroundSyncController() {
 BrowsingDataRemoverDelegate*
 ShellBrowserContext::GetBrowsingDataRemoverDelegate() {
   return nullptr;
+}
+
+ContentIndexProvider* ShellBrowserContext::GetContentIndexProvider() {
+  if (!content_index_provider_)
+    content_index_provider_ = std::make_unique<WebTestContentIndexProvider>();
+  return content_index_provider_.get();
 }
 
 }  // namespace content

@@ -11,7 +11,7 @@ namespace prefs {
 const char kUkmClientId[] = "ukm.client_id";
 
 // Preference which stores serialized UKM logs to be uploaded.
-const char kUkmPersistedLogs[] = "ukm.persisted_logs";
+const char kUkmUnsentLogStore[] = "ukm.persisted_logs";
 
 // Preference which stores the UKM session id.
 const char kUkmSessionId[] = "ukm.session_id";

@@ -10,16 +10,20 @@
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
+#include "chrome/browser/extensions/extension_browsertest.h"
+#include "chrome/browser/permissions/permission_request_manager.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/permission_bubble/mock_permission_prompt_factory.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "third_party/blink/public/web/web_context_menu_data.h"
+#include "third_party/blink/public/common/context_menu_data/media_type.h"
 
 using content::WebContents;
 
@@ -29,7 +33,7 @@ class RegisterProtocolHandlerBrowserTest : public InProcessBrowserTest {
 
   TestRenderViewContextMenu* CreateContextMenu(GURL url) {
     content::ContextMenuParams params;
-    params.media_type = blink::WebContextMenuData::kMediaTypeNone;
+    params.media_type = blink::ContextMenuDataMediaType::kNone;
     params.link_url = url;
     params.unfiltered_link_url = url;
     WebContents* web_contents =
@@ -48,8 +52,7 @@ class RegisterProtocolHandlerBrowserTest : public InProcessBrowserTest {
     return menu;
   }
 
-  void AddProtocolHandler(const std::string& protocol,
-                          const GURL& url) {
+  void AddProtocolHandler(const std::string& protocol, const GURL& url) {
     ProtocolHandler handler = ProtocolHandler::CreateProtocolHandler(protocol,
                                                                      url);
     ProtocolHandlerRegistry* registry =
@@ -116,19 +119,47 @@ IN_PROC_BROWSER_TEST_F(RegisterProtocolHandlerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(RegisterProtocolHandlerBrowserTest, CustomHandler) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  GURL handler_url = embedded_test_server()->GetURL("/custom_handler_foo.html");
-  AddProtocolHandler("foo", handler_url);
+  GURL handler_url = embedded_test_server()->GetURL("/custom_handler.html");
+  AddProtocolHandler("news", handler_url);
 
-  ui_test_utils::NavigateToURL(browser(), GURL("foo:test"));
+  ui_test_utils::NavigateToURL(browser(), GURL("news:test"));
 
   ASSERT_EQ(handler_url,
             browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
 
   // Also check redirects.
   GURL redirect_url =
-      embedded_test_server()->GetURL("/server-redirect?foo:test");
+      embedded_test_server()->GetURL("/server-redirect?news:test");
   ui_test_utils::NavigateToURL(browser(), redirect_url);
 
   ASSERT_EQ(handler_url,
+            browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
+}
+
+using RegisterProtocolHandlerExtensionBrowserTest =
+    extensions::ExtensionBrowserTest;
+
+IN_PROC_BROWSER_TEST_F(RegisterProtocolHandlerExtensionBrowserTest, Basic) {
+  PermissionRequestManager* manager = PermissionRequestManager::FromWebContents(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  auto prompt_factory = std::make_unique<MockPermissionPromptFactory>(manager);
+  prompt_factory->set_response_type(PermissionRequestManager::ACCEPT_ALL);
+
+  const extensions::Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII("protocol_handler"));
+  ASSERT_NE(nullptr, extension);
+
+  std::string handler_url =
+      "chrome-extension://" + extension->id() + "/test.html";
+
+  // Register the handler.
+  ui_test_utils::NavigateToURL(browser(), GURL(handler_url));
+  ASSERT_TRUE(content::ExecuteScript(
+      browser()->tab_strip_model()->GetActiveWebContents(),
+      "navigator.registerProtocolHandler('geo', 'test.html?%s', 'test');"));
+
+  // Test the handler.
+  ui_test_utils::NavigateToURL(browser(), GURL("geo:test"));
+  ASSERT_EQ(GURL(handler_url + "?geo%3Atest"),
             browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
 }

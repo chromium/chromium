@@ -3,7 +3,6 @@
 <body>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 
 <style>
 button {
@@ -14,7 +13,7 @@ button {
 <button id="cake">Button with image of <img alt="cake" src="resources/cake.png" width="40px"></button>
 
 <script>
-test_after_layout_and_paint((t) => {
+test((t) => {
     var button = document.getElementById('cake');
     button.focus();
     assert_equals(document.activeElement == button, true);

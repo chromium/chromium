@@ -1,0 +1,91 @@
+// Copyright 2016 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "third_party/blink/public/mojom/notifications/notification.mojom";
+import "third_party/blink/public/mojom/permissions/permission_status.mojom";
+
+// Interface for receiving events relating to non-persistent notifications.
+interface NonPersistentNotificationListener {
+  // Called when the notification has been shown.
+  OnShow();
+
+  // Called when the notification was clicked upon.
+  OnClick() => ();
+
+  // Called when the notification was closed; either programatically, or by the
+  // developer calling Notification.close().
+  OnClose() => ();
+};
+
+// Possible things that can go wrong when displaying a notification created by
+// a service worker, which we may wish to distinguish between on the renderer
+// side to provide a more useful error message to developers.
+enum PersistentNotificationError {
+  NONE,
+  INTERNAL_ERROR,
+  PERMISSION_DENIED,
+};
+
+// Service through which Blink can request notifications to be shown, closed or
+// retrieved from the embedder.
+interface NotificationService {
+  // Synchronously retrieves the permission status for the origin associated
+  // with the interface connection. Required to be synchronous due to the
+  // Notification.permission JavaScript getter.
+  [Sync] GetPermissionStatus() => (PermissionStatus status);
+
+  // Shows a notification that is not associated with a service worker.
+  // Notifies |event_listener| when the notification is shown/clicked/closed.
+  // Calling this again with the same |token| from the same origin will cause
+  // the original notification to be replaced with the new data and resources.
+  // |token| must be non-empty, and the same token should be passed to
+  // CloseNonPersistentNotification to close this notification programmatically.
+  DisplayNonPersistentNotification(
+        string token,
+        NotificationData notification_data,
+        NotificationResources notification_resources,
+        pending_remote<NonPersistentNotificationListener> event_listener);
+
+  // Closes a notification that is not associated with a service worker.
+  // |token| identifies which notification should be closed (must be non-empty).
+  // Calling this without previously calling DisplayNonPersistentNotification
+  // with the same token is a no-op.
+  CloseNonPersistentNotification(string token);
+
+  // Shows a notification that *is* associated with a service worker.
+  // The service worker identified by |service_worker_registration_id| will be
+  // notified when the notification is clicked/closed.
+  // Responds once the notification is successfully processed or rejected.
+  DisplayPersistentNotification(
+        int64 service_worker_registration_id,
+        NotificationData notification_data,
+        NotificationResources notification_resources)
+                => (PersistentNotificationError error);
+
+  // Closes the notification identified by |notification_id|.
+  // TODO(https://crbug.com/834045): Instead identify it via a token from which
+  // the notification ID can be calculated, as per non-persistent notifications,
+  ClosePersistentNotification(string notification_id);
+
+  // Retrieves currently-displayed or scheduled persistent notifications for a
+  // given service worker registration (i.e. notifications shown via
+  // DisplayPersistentNotification which were not yet closed or replaced).
+  //
+  // If |filter_tag| is non-empty an exact-match filter is applied against
+  // the notification tag, so 0 or 1 notifications will be returned (because
+  // notifications with the same tag replace each other).
+  //
+  // If |include_triggered| is true the returned list of notifications will
+  // include matching notifications that are still scheduled to be shown.
+  //
+  // Returns parallel lists of notification ids and their corresponding data.
+  GetNotifications(
+        int64 service_worker_registration_id,
+        string filter_tag,
+        bool include_triggered)
+                => (array<string> notification_ids,
+                    array<NotificationData> notification_datas);
+};

@@ -12,9 +12,6 @@
 
 namespace feature_engagement {
 namespace {
-// Corresponds to a UMA suffix "LevelDBOpenResults" in histograms.xml.
-// Please do not change.
-const char kDBUMAName[] = "FeatureEngagementTrackerEventStore";
 
 using KeyEventPair = std::pair<std::string, Event>;
 using KeyEventList = std::vector<KeyEventPair>;
@@ -27,15 +24,14 @@ void NoopUpdateCallback(bool success) {
 
 PersistentEventStore::PersistentEventStore(
     std::unique_ptr<leveldb_proto::ProtoDatabase<Event>> db)
-    : db_(std::move(db)), ready_(false), weak_ptr_factory_(this) {}
+    : db_(std::move(db)), ready_(false) {}
 
 PersistentEventStore::~PersistentEventStore() = default;
 
 void PersistentEventStore::Load(const OnLoadedCallback& callback) {
   DCHECK(!ready_);
 
-  db_->Init(kDBUMAName,
-            base::BindOnce(&PersistentEventStore::OnInitComplete,
+  db_->Init(base::BindOnce(&PersistentEventStore::OnInitComplete,
                            weak_ptr_factory_.GetWeakPtr(), callback));
 }
 

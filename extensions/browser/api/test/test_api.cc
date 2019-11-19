@@ -38,7 +38,7 @@ namespace WaitForRoundTrip = api::test::WaitForRoundTrip;
 TestExtensionFunction::~TestExtensionFunction() {}
 
 bool TestExtensionFunction::PreRunValidation(std::string* error) {
-  if (!UIThreadExtensionFunction::PreRunValidation(error))
+  if (!ExtensionFunction::PreRunValidation(error))
     return false;
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kTestType)) {
     *error = kNotTestProcessError;

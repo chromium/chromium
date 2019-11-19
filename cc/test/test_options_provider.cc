@@ -40,7 +40,7 @@ TestOptionsProvider::TestOptionsProvider()
                          &client_paint_cache_,
                          &canvas_,
                          &strike_server_,
-                         color_space_.get(),
+                         color_space_,
                          can_use_lcd_text_,
                          context_supports_distance_field_text_,
                          max_texture_size_,

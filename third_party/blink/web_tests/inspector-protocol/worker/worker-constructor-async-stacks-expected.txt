@@ -2,9 +2,7 @@ Async stack trace in worker constructor.
 Setup page session
 Set breakpoint before worker created
 Run stepInto with breakOnAsyncCall flag
-Get scheduledAsyncStackId
 Setup worker session
-Request pause on async task and run worker
 (anonymous) at worker.js:0:0
 --Worker Created--
 (anonymous) at test.js:2:13

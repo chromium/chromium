@@ -20,6 +20,7 @@ FORWARD_DECLARE_TEST(WorkletAnimationTest, NonImplInstanceDoesNotTickKeyframe);
 }  // namespace
 
 class AnimationOptions;
+class AnimationEffectTimings;
 class ScrollTimeline;
 
 // A WorkletAnimation is an animation that allows its animation
@@ -42,13 +43,15 @@ class CC_ANIMATION_EXPORT WorkletAnimation final
                    double playback_rate,
                    std::unique_ptr<ScrollTimeline> scroll_timeline,
                    std::unique_ptr<AnimationOptions> options,
+                   std::unique_ptr<AnimationEffectTimings> effect_timings,
                    bool is_controlling_instance);
   static scoped_refptr<WorkletAnimation> Create(
       WorkletAnimationId worklet_animation_id,
       const std::string& name,
       double playback_rate,
       std::unique_ptr<ScrollTimeline> scroll_timeline,
-      std::unique_ptr<AnimationOptions> options);
+      std::unique_ptr<AnimationOptions> options,
+      std::unique_ptr<AnimationEffectTimings> effect_timings);
   scoped_refptr<Animation> CreateImplInstance() const override;
 
   WorkletAnimationId worklet_animation_id() { return worklet_animation_id_; }
@@ -60,6 +63,9 @@ class CC_ANIMATION_EXPORT WorkletAnimation final
   bool IsWorkletAnimation() const override;
 
   void Tick(base::TimeTicks monotonic_time) override;
+
+  void UpdateState(bool start_ready_animations,
+                   AnimationEvents* events) override;
 
   void UpdateInputState(MutatorInputState* input_state,
                         base::TimeTicks monotonic_time,
@@ -86,6 +92,9 @@ class CC_ANIMATION_EXPORT WorkletAnimation final
   }
 
   void RemoveKeyframeModel(int keyframe_model_id) override;
+  void NotifyLocalTimeUpdated(const AnimationEvent& event);
+
+  void ReleasePendingTreeLock() { has_pending_tree_lock_ = false; }
 
  private:
   FRIEND_TEST_ALL_PREFIXES(WorkletAnimationTest,
@@ -96,16 +105,19 @@ class CC_ANIMATION_EXPORT WorkletAnimation final
                    double playback_rate,
                    std::unique_ptr<ScrollTimeline> scroll_timeline,
                    std::unique_ptr<AnimationOptions> options,
+                   std::unique_ptr<AnimationEffectTimings> effect_timings,
                    bool is_controlling_instance,
                    std::unique_ptr<KeyframeEffect> effect);
 
   ~WorkletAnimation() override;
 
   // Returns the current time to be passed into the underlying AnimationWorklet.
-  // The current time is based on the timeline associated with the animation.
-  double CurrentTime(base::TimeTicks monotonic_time,
-                     const ScrollTree& scroll_tree,
-                     bool is_active_tree);
+  // The current time is based on the timeline associated with the animation and
+  // in case of scroll timeline it may be nullopt when the associated scrolling
+  // node is not available in the particular ScrollTree.
+  base::Optional<base::TimeDelta> CurrentTime(base::TimeTicks monotonic_time,
+                                              const ScrollTree& scroll_tree,
+                                              bool is_active_tree);
 
   // Returns true if the worklet animation needs to be updated which happens iff
   // its current time is going to be different from last time given these input.
@@ -117,9 +129,16 @@ class CC_ANIMATION_EXPORT WorkletAnimation final
     return options_ ? options_->Clone() : nullptr;
   }
 
+  std::unique_ptr<AnimationEffectTimings> CloneEffectTimings() const {
+    return effect_timings_ ? effect_timings_->Clone() : nullptr;
+  }
+
   // Updates the playback rate of the Impl thread instance.
-  // Called by the UI thread WorletAnimation instance during commit.
+  // Called by the UI thread WorkletAnimation instance during commit.
   void SetPlaybackRate(double playback_rate);
+
+  bool IsTimelineActive(const ScrollTree& scroll_tree,
+                        bool is_active_tree) const;
 
   WorkletAnimationId worklet_animation_id_;
   std::string name_;
@@ -142,16 +161,29 @@ class CC_ANIMATION_EXPORT WorkletAnimation final
   double playback_rate_;
 
   std::unique_ptr<AnimationOptions> options_;
+  std::unique_ptr<AnimationEffectTimings> effect_timings_;
 
   // Local time is used as an input to the keyframe effect of this animation.
   // The value comes from the user script that runs inside the animation worklet
   // global scope.
   base::Optional<base::TimeDelta> local_time_;
+  // Local time passed to the main thread worklet animation to update its
+  // keyframe effect. We only set the most recent local time, meaning that if
+  // there are multiple compositor frames without a single main frame only
+  // the local time associated with the latest frame is sent to the main thread.
+  base::Optional<base::TimeDelta> last_synced_local_time_;
 
   base::Optional<base::TimeTicks> start_time_;
-  // Last current time used for updatig. We use this to skip updating if current
-  // time has not changed since last update.
-  base::Optional<double> last_current_time_;
+
+  // Last current time used for updating. We use this to skip updating if
+  // current time has not changed since last update.
+  base::Optional<base::TimeDelta> last_current_time_;
+
+  // To ensure that 'time' progresses forward for scroll animations, we guard
+  // against allowing active tree mutations while the pending tree has a
+  // lock in the worklet. The lock is established when updating the input state
+  // for the pending tree and release on pending tree activation.
+  bool has_pending_tree_lock_;
 
   State state_;
 

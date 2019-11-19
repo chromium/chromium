@@ -21,11 +21,9 @@ class PLATFORM_EXPORT PropertyTreeState {
                     const ClipPaintPropertyNode& clip,
                     const EffectPaintPropertyNode& effect)
       : transform_(&transform), clip_(&clip), effect_(&effect) {
-    // TODO(crbug.com/923729): These CHECKs are temporary to determine the cause
-    // of the referenced bug.
-    CHECK(transform_);
-    CHECK(clip_);
-    CHECK(effect_);
+    DCHECK(transform_);
+    DCHECK(clip_);
+    DCHECK(effect_);
   }
 
   static const PropertyTreeState& Root();
@@ -49,9 +47,7 @@ class PLATFORM_EXPORT PropertyTreeState {
   }
   void SetTransform(const TransformPaintPropertyNode& node) {
     transform_ = &node;
-    // TODO(crbug.com/923729): This CHECK is temporary to determine the cause
-    // of the referenced bug.
-    CHECK(transform_);
+    DCHECK(transform_);
   }
 
   const ClipPaintPropertyNode& Clip() const {
@@ -60,9 +56,7 @@ class PLATFORM_EXPORT PropertyTreeState {
   }
   void SetClip(const ClipPaintPropertyNode& node) {
     clip_ = &node;
-    // TODO(crbug.com/923729): This CHECK is temporary to determine the cause
-    // of the referenced bug.
-    CHECK(clip_);
+    DCHECK(clip_);
   }
 
   const EffectPaintPropertyNode& Effect() const {
@@ -71,9 +65,7 @@ class PLATFORM_EXPORT PropertyTreeState {
   }
   void SetEffect(const EffectPaintPropertyNode& node) {
     effect_ = &node;
-    // TODO(crbug.com/923729): This CHECK is temporary to determine the cause
-    // of the referenced bug.
-    CHECK(effect_);
+    DCHECK(effect_);
   }
 
   void ClearChangedToRoot() const {

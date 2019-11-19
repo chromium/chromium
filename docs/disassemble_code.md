@@ -1,5 +1,7 @@
 # Dumping the compiled code from a chrome binary
 
+[Rendered](https://chromium.googlesource.com/chromium/src/+/master/docs/disassemble_code.md)
+
 ## Background
 
 Sometimes you want to look at the disassembled code of a method,

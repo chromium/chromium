@@ -48,8 +48,7 @@ class CloudPrintTestsDelegate {
   virtual std::vector<std::string> GetPrinters() = 0;
 };
 
-class CloudPrintPrivateSetupConnectorFunction
-    : public UIThreadExtensionFunction {
+class CloudPrintPrivateSetupConnectorFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("cloudPrintPrivate.setupConnector",
                              CLOUDPRINTPRIVATE_SETUPCONNECTOR)
@@ -63,7 +62,7 @@ class CloudPrintPrivateSetupConnectorFunction
   ResponseAction Run() override;
 };
 
-class CloudPrintPrivateGetHostNameFunction : public UIThreadExtensionFunction {
+class CloudPrintPrivateGetHostNameFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("cloudPrintPrivate.getHostName",
                              CLOUDPRINTPRIVATE_GETHOSTNAME)
@@ -77,7 +76,7 @@ class CloudPrintPrivateGetHostNameFunction : public UIThreadExtensionFunction {
   ResponseAction Run() override;
 };
 
-class CloudPrintPrivateGetPrintersFunction : public UIThreadExtensionFunction {
+class CloudPrintPrivateGetPrintersFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("cloudPrintPrivate.getPrinters",
                              CLOUDPRINTPRIVATE_GETPRINTERS)
@@ -94,7 +93,7 @@ class CloudPrintPrivateGetPrintersFunction : public UIThreadExtensionFunction {
   ResponseAction Run() override;
 };
 
-class CloudPrintPrivateGetClientIdFunction : public UIThreadExtensionFunction {
+class CloudPrintPrivateGetClientIdFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("cloudPrintPrivate.getClientId",
                              CLOUDPRINTPRIVATE_GETCLIENTID)

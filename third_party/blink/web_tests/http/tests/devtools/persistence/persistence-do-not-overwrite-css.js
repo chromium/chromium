@@ -25,7 +25,7 @@
           .then(uiSourceCode => uiSourceCode.requestContent())
           .then(onCSSContent);
 
-      function onCSSContent(content) {
+      function onCSSContent({ content, error, isEncoded }) {
         fs = new BindingsTestRunner.TestFileSystem('file:///var/www');
         BindingsTestRunner.addFiles(fs, {
           'simple.css': {content: content},
@@ -43,7 +43,7 @@
         fsUISourceCode.requestContent().then(onContent);
       }
 
-      function onContent(content) {
+      function onContent({ content, error, isEncoded }) {
         TestRunner.addResult('Initial content of file:///var/www/simple.css');
         TestRunner.addResult('----\n' + content + '\n----');
         next();

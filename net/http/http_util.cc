@@ -11,6 +11,7 @@
 
 #include "base/logging.h"
 #include "base/stl_util.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
@@ -18,6 +19,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
+#include "net/base/features.h"
 #include "net/base/url_util.h"
 
 namespace net {
@@ -81,9 +83,8 @@ std::string GetBaseLanguageCode(const std::string& language_code) {
 
 // static
 std::string HttpUtil::SpecForRequest(const GURL& url) {
-  // We may get ftp scheme when fetching ftp resources through proxy.
-  DCHECK(url.is_valid() && (url.SchemeIsHTTPOrHTTPS() || url.SchemeIs("ftp") ||
-                            url.SchemeIsWSOrWSS()));
+  DCHECK(url.is_valid() &&
+         (url.SchemeIsHTTPOrHTTPS() || url.SchemeIsWSOrWSS()));
   return SimplifyUrlForRequest(url).spec();
 }
 
@@ -249,33 +250,30 @@ bool HttpUtil::ParseRangeHeader(const std::string& ranges_specifier,
     return false;
 
   // Try to extract bytes-unit part.
-  std::string::const_iterator bytes_unit_begin = ranges_specifier.begin();
-  std::string::const_iterator bytes_unit_end = bytes_unit_begin +
-                                               equal_char_offset;
-  std::string::const_iterator byte_range_set_begin = bytes_unit_end + 1;
-  std::string::const_iterator byte_range_set_end = ranges_specifier.end();
+  base::StringPiece bytes_unit =
+      base::StringPiece(ranges_specifier).substr(0, equal_char_offset);
 
-  TrimLWS(&bytes_unit_begin, &bytes_unit_end);
   // "bytes" unit identifier is not found.
-  if (!base::LowerCaseEqualsASCII(
-          base::StringPiece(bytes_unit_begin, bytes_unit_end), "bytes")) {
+  bytes_unit = TrimLWS(bytes_unit);
+  if (!base::LowerCaseEqualsASCII(bytes_unit, "bytes")) {
     return false;
   }
+
+  std::string::const_iterator byte_range_set_begin =
+      ranges_specifier.begin() + equal_char_offset + 1;
+  std::string::const_iterator byte_range_set_end = ranges_specifier.end();
 
   ValuesIterator byte_range_set_iterator(byte_range_set_begin,
                                          byte_range_set_end, ',');
   while (byte_range_set_iterator.GetNext()) {
-    size_t minus_char_offset = byte_range_set_iterator.value().find('-');
+    base::StringPiece value = byte_range_set_iterator.value_piece();
+    size_t minus_char_offset = value.find('-');
     // If '-' character is not found, reports failure.
     if (minus_char_offset == std::string::npos)
       return false;
 
-    std::string::const_iterator first_byte_pos_begin =
-        byte_range_set_iterator.value_begin();
-    std::string::const_iterator first_byte_pos_end =
-        first_byte_pos_begin +  minus_char_offset;
-    TrimLWS(&first_byte_pos_begin, &first_byte_pos_end);
-    std::string first_byte_pos(first_byte_pos_begin, first_byte_pos_end);
+    base::StringPiece first_byte_pos = value.substr(0, minus_char_offset);
+    first_byte_pos = TrimLWS(first_byte_pos);
 
     HttpByteRange range;
     // Try to obtain first-byte-pos.
@@ -286,12 +284,8 @@ bool HttpUtil::ParseRangeHeader(const std::string& ranges_specifier,
       range.set_first_byte_position(first_byte_position);
     }
 
-    std::string::const_iterator last_byte_pos_begin =
-        byte_range_set_iterator.value_begin() + minus_char_offset + 1;
-    std::string::const_iterator last_byte_pos_end =
-        byte_range_set_iterator.value_end();
-    TrimLWS(&last_byte_pos_begin, &last_byte_pos_end);
-    std::string last_byte_pos(last_byte_pos_begin, last_byte_pos_end);
+    base::StringPiece last_byte_pos = value.substr(minus_char_offset + 1);
+    last_byte_pos = TrimLWS(last_byte_pos);
 
     // We have last-byte-pos or suffix-byte-range-spec in this case.
     if (!last_byte_pos.empty()) {
@@ -392,67 +386,67 @@ bool HttpUtil::ParseRetryAfterHeader(const std::string& retry_after_string,
 namespace {
 
 // A header string containing any of the following fields will cause
-// an error. The list comes from the XMLHttpRequest standard.
-// http://www.w3.org/TR/XMLHttpRequest/#the-setrequestheader-method
+// an error. The list comes from the fetch standard.
 const char* const kForbiddenHeaderFields[] = {
-  "accept-charset",
-  "accept-encoding",
-  "access-control-request-headers",
-  "access-control-request-method",
-  "connection",
-  "content-length",
-  "cookie",
-  "cookie2",
-  "content-transfer-encoding",
-  "date",
-  "expect",
-  "host",
-  "keep-alive",
-  "origin",
-  "referer",
-  "te",
-  "trailer",
-  "transfer-encoding",
-  "upgrade",
-  "user-agent",
-  "via",
+    "accept-charset",
+    "accept-encoding",
+    "access-control-request-headers",
+    "access-control-request-method",
+    "connection",
+    "content-length",
+    "cookie",
+    "cookie2",
+    "date",
+    "dnt",
+    "expect",
+    "host",
+    "keep-alive",
+    "origin",
+    "referer",
+    "te",
+    "trailer",
+    "transfer-encoding",
+    "upgrade",
+    // TODO(mmenke): This is no longer banned, but still here due to issues
+    // mentioned in https://crbug.com/571722.
+    "user-agent",
+    "via",
 };
 
 }  // namespace
 
 // static
-bool HttpUtil::IsMethodSafe(const std::string& method) {
+bool HttpUtil::IsMethodSafe(base::StringPiece method) {
   return method == "GET" || method == "HEAD" || method == "OPTIONS" ||
          method == "TRACE";
 }
 
 // static
-bool HttpUtil::IsMethodIdempotent(const std::string& method) {
+bool HttpUtil::IsMethodIdempotent(base::StringPiece method) {
   return IsMethodSafe(method) || method == "PUT" || method == "DELETE";
 }
 
 // static
-bool HttpUtil::IsSafeHeader(const std::string& name) {
-  std::string lower_name(base::ToLowerASCII(name));
-  if (base::StartsWith(lower_name, "proxy-", base::CompareCase::SENSITIVE) ||
-      base::StartsWith(lower_name, "sec-", base::CompareCase::SENSITIVE))
+bool HttpUtil::IsSafeHeader(base::StringPiece name) {
+  if (base::StartsWith(name, "proxy-", base::CompareCase::INSENSITIVE_ASCII) ||
+      base::StartsWith(name, "sec-", base::CompareCase::INSENSITIVE_ASCII))
     return false;
 
   for (const char* field : kForbiddenHeaderFields) {
-    if (lower_name == field)
+    if (base::LowerCaseEqualsASCII(name, field))
       return false;
   }
   return true;
 }
 
 // static
-bool HttpUtil::IsValidHeaderName(const base::StringPiece& name) {
+bool HttpUtil::IsValidHeaderName(base::StringPiece name) {
   // Check whether the header name is RFC 2616-compliant.
   return HttpUtil::IsToken(name);
 }
 
 // static
-bool HttpUtil::IsValidHeaderValue(const base::StringPiece& value) {
+bool HttpUtil::IsValidHeaderValue(base::StringPiece value) {
   // Just a sanity check: disallow NUL, CR and LF.
   for (char c : value) {
     if (c == '\0' || c == '\r' || c == '\n')
@@ -462,8 +456,7 @@ bool HttpUtil::IsValidHeaderValue(const base::StringPiece& value) {
 }
 
 // static
-bool HttpUtil::IsNonCoalescingHeader(std::string::const_iterator name_begin,
-                                     std::string::const_iterator name_end) {
+bool HttpUtil::IsNonCoalescingHeader(base::StringPiece name) {
   // NOTE: "set-cookie2" headers do not support expires attributes, so we don't
   // have to list them here.
   const char* const kNonCoalescingHeaders[] = {
@@ -483,8 +476,7 @@ bool HttpUtil::IsNonCoalescingHeader(std::string::const_iterator name_begin,
   };
 
   for (const char* header : kNonCoalescingHeaders) {
-    if (base::LowerCaseEqualsASCII(base::StringPiece(name_begin, name_end),
-                                   header)) {
+    if (base::LowerCaseEqualsASCII(name, header)) {
       return true;
     }
   }
@@ -518,7 +510,7 @@ bool HttpUtil::IsTokenChar(char c) {
 }
 
 // See RFC 7230 Sec 3.2.6 for the definition of |token|.
-bool HttpUtil::IsToken(const base::StringPiece& string) {
+bool HttpUtil::IsToken(base::StringPiece string) {
   if (string.empty())
     return false;
   for (char c : string) {
@@ -529,12 +521,10 @@ bool HttpUtil::IsToken(const base::StringPiece& string) {
 }
 
 // See RFC 5987 Sec 3.2.1 for the definition of |parmname|.
-bool HttpUtil::IsParmName(std::string::const_iterator begin,
-                          std::string::const_iterator end) {
-  if (begin == end)
+bool HttpUtil::IsParmName(base::StringPiece str) {
+  if (str.empty())
     return false;
-  for (std::string::const_iterator iter = begin; iter != end; ++iter) {
-    unsigned char c = *iter;
+  for (char c : str) {
     if (!IsTokenChar(c) || c == '*' || c == '\'' || c == '%')
       return false;
   }
@@ -547,31 +537,26 @@ bool IsQuote(char c) {
   return c == '"';
 }
 
-bool UnquoteImpl(std::string::const_iterator begin,
-                 std::string::const_iterator end,
-                 bool strict_quotes,
-                 std::string* out) {
-  // Empty string
-  if (begin == end)
+bool UnquoteImpl(base::StringPiece str, bool strict_quotes, std::string* out) {
+  if (str.empty())
     return false;
 
   // Nothing to unquote.
-  if (!IsQuote(*begin))
+  if (!IsQuote(str[0]))
     return false;
 
   // No terminal quote mark.
-  if (end - begin < 2 || *begin != *(end - 1))
+  if (str.size() < 2 || str.front() != str.back())
     return false;
 
   // Strip quotemarks
-  ++begin;
-  --end;
+  str.remove_prefix(1);
+  str.remove_suffix(1);
 
   // Unescape quoted-pair (defined in RFC 2616 section 2.2)
   bool prev_escape = false;
   std::string unescaped;
-  for (; begin != end; ++begin) {
-    char c = *begin;
+  for (char c : str) {
     if (c == '\\' && !prev_escape) {
       prev_escape = true;
       continue;
@@ -592,45 +577,29 @@ bool UnquoteImpl(std::string::const_iterator begin,
 
 }  // anonymous namespace
 
-std::string HttpUtil::Unquote(std::string::const_iterator begin,
-                              std::string::const_iterator end) {
+// static
+std::string HttpUtil::Unquote(base::StringPiece str) {
   std::string result;
-  if (!UnquoteImpl(begin, end, false, &result))
-    return std::string(begin, end);
+  if (!UnquoteImpl(str, false, &result))
+    return str.as_string();
 
   return result;
 }
 
 // static
-std::string HttpUtil::Unquote(const std::string& str) {
-  return Unquote(str.begin(), str.end());
+bool HttpUtil::StrictUnquote(base::StringPiece str, std::string* out) {
+  return UnquoteImpl(str, true, out);
 }
 
 // static
-bool HttpUtil::StrictUnquote(std::string::const_iterator begin,
-                             std::string::const_iterator end,
-                             std::string* out) {
-  return UnquoteImpl(begin, end, true, out);
-}
-
-// static
-bool HttpUtil::StrictUnquote(const std::string& str, std::string* out) {
-  return StrictUnquote(str.begin(), str.end(), out);
-}
-
-// static
-std::string HttpUtil::Quote(const std::string& str) {
+std::string HttpUtil::Quote(base::StringPiece str) {
   std::string escaped;
   escaped.reserve(2 + str.size());
-
-  std::string::const_iterator begin = str.begin();
-  std::string::const_iterator end = str.end();
 
   // Esape any backslashes or quotemarks within the string, and
   // then surround with quotes.
   escaped.push_back('"');
-  for (; begin != end; ++begin) {
-    char c = *begin;
+  for (char c : str) {
     if (c == '"' || c == '\\')
       escaped.push_back('\\');
     escaped.push_back(c);
@@ -698,89 +667,87 @@ size_t HttpUtil::LocateEndOfHeaders(const char* buf, size_t buf_len, size_t i) {
 // In order for a line to be continuable, it must specify a
 // non-blank header-name. Line continuations are specifically for
 // header values -- do not allow headers names to span lines.
-static bool IsLineSegmentContinuable(const char* begin, const char* end) {
-  if (begin == end)
+static bool IsLineSegmentContinuable(base::StringPiece line) {
+  if (line.empty())
     return false;
 
-  const char* colon = std::find(begin, end, ':');
-  if (colon == end)
+  size_t colon = line.find(':');
+  if (colon == base::StringPiece::npos)
     return false;
 
-  const char* name_begin = begin;
-  const char* name_end = colon;
+  base::StringPiece name = line.substr(0, colon);
 
   // Name can't be empty.
-  if (name_begin == name_end)
+  if (name.empty())
     return false;
 
   // Can't start with LWS (this would imply the segment is a continuation)
-  if (HttpUtil::IsLWS(*name_begin))
+  if (HttpUtil::IsLWS(name[0]))
     return false;
 
   return true;
 }
 
 // Helper used by AssembleRawHeaders, to find the end of the status line.
-static const char* FindStatusLineEnd(const char* begin, const char* end) {
-  size_t i = base::StringPiece(begin, end - begin).find_first_of("\r\n");
+static size_t FindStatusLineEnd(base::StringPiece str) {
+  size_t i = str.find_first_of("\r\n");
   if (i == base::StringPiece::npos)
-    return end;
-  return begin + i;
+    return str.size();
+  return i;
 }
 
 // Helper used by AssembleRawHeaders, to skip past leading LWS.
-static const char* FindFirstNonLWS(const char* begin, const char* end) {
-  for (const char* cur = begin; cur != end; ++cur) {
-    if (!HttpUtil::IsLWS(*cur))
-      return cur;
+static base::StringPiece RemoveLeadingNonLWS(base::StringPiece str) {
+  for (size_t i = 0; i < str.size(); i++) {
+    if (!HttpUtil::IsLWS(str[i]))
+      return str.substr(i);
   }
-  return end;  // Not found.
+  return base::StringPiece();  // Remove everything.
 }
 
-std::string HttpUtil::AssembleRawHeaders(const char* input_begin,
-                                         size_t input_len) {
+std::string HttpUtil::AssembleRawHeaders(base::StringPiece input) {
   std::string raw_headers;
-  raw_headers.reserve(input_len);
-
-  const char* input_end = input_begin + input_len;
+  raw_headers.reserve(input.size());
 
   // Skip any leading slop, since the consumers of this output
   // (HttpResponseHeaders) don't deal with it.
-  size_t status_begin_offset = LocateStartOfStatusLine(input_begin, input_len);
+  size_t status_begin_offset =
+      LocateStartOfStatusLine(input.data(), input.size());
   if (status_begin_offset != std::string::npos)
-    input_begin += status_begin_offset;
+    input.remove_prefix(status_begin_offset);
 
   // Copy the status line.
-  const char* status_line_end = FindStatusLineEnd(input_begin, input_end);
-  raw_headers.append(input_begin, status_line_end);
+  size_t status_line_end = FindStatusLineEnd(input);
+  input.substr(0, status_line_end).AppendToString(&raw_headers);
+  input.remove_prefix(status_line_end);
 
   // After the status line, every subsequent line is a header line segment.
   // Should a segment start with LWS, it is a continuation of the previous
   // line's field-value.
 
   // TODO(ericroman): is this too permissive? (delimits on [\r\n]+)
-  base::CStringTokenizer lines(status_line_end, input_end, "\r\n");
+  base::CStringTokenizer lines(input.data(), input.data() + input.size(),
+                               "\r\n");
 
   // This variable is true when the previous line was continuable.
   bool prev_line_continuable = false;
 
   while (lines.GetNext()) {
-    const char* line_begin = lines.token_begin();
-    const char* line_end = lines.token_end();
+    base::StringPiece line = lines.token_piece();
 
-    if (prev_line_continuable && IsLWS(*line_begin)) {
+    if (prev_line_continuable && IsLWS(line[0])) {
       // Join continuation; reduce the leading LWS to a single SP.
       raw_headers.push_back(' ');
-      raw_headers.append(FindFirstNonLWS(line_begin, line_end), line_end);
+      RemoveLeadingNonLWS(line).AppendToString(&raw_headers);
     } else {
       // Terminate the previous line.
       raw_headers.push_back('\n');
 
       // Copy the raw data to output.
-      raw_headers.append(line_begin, line_end);
+      line.AppendToString(&raw_headers);
 
       // Check if the current line can be continued.
-      prev_line_continuable = IsLineSegmentContinuable(line_begin, line_end);
+      prev_line_continuable = IsLineSegmentContinuable(line);
     }
   }
 
@@ -800,7 +767,7 @@ std::string HttpUtil::ConvertHeadersBackToHTTPResponse(const std::string& str) {
   std::string disassembled_headers;
   base::StringTokenizer tokenizer(str, std::string(1, '\0'));
   while (tokenizer.GetNext()) {
-    disassembled_headers.append(tokenizer.token_begin(), tokenizer.token_end());
+    tokenizer.token_piece().AppendToString(&disassembled_headers);
     disassembled_headers.append("\r\n");
   }
   disassembled_headers.append("\r\n");
@@ -998,7 +965,7 @@ bool HttpUtil::HeadersIterator::GetNext() {
 }
 
 bool HttpUtil::HeadersIterator::AdvanceTo(const char* name) {
-  DCHECK(name != NULL);
+  DCHECK(name != nullptr);
   DCHECK_EQ(0, base::ToLowerASCII(name).compare(name))
       << "the header name must be in all lower case";
 
@@ -1126,7 +1093,8 @@ bool HttpUtil::NameValuePairsIterator::GetNext() {
     value_is_quoted_ = true;
 
     if (strict_quotes_) {
-      if (!HttpUtil::StrictUnquote(value_begin_, value_end_, &unquoted_value_))
+      if (!HttpUtil::StrictUnquote(base::StringPiece(value_begin_, value_end_),
+                                   &unquoted_value_))
         return valid_ = false;
       return true;
     }
@@ -1142,7 +1110,8 @@ bool HttpUtil::NameValuePairsIterator::GetNext() {
       ++value_begin_;  // Gracefully recover from mismatching quotes.
     } else {
       // Do not store iterators into this. See declaration of unquoted_value_.
-      unquoted_value_ = HttpUtil::Unquote(value_begin_, value_end_);
+      unquoted_value_ =
+          HttpUtil::Unquote(base::StringPiece(value_begin_, value_end_));
     }
   }
 

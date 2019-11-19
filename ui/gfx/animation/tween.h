@@ -28,8 +28,6 @@ class ANIMATION_EXPORT Tween {
     EASE_IN_2,           // Variant of EASE_IN that starts out slower than
                          // EASE_IN.
     EASE_IN_OUT,         // Slow in and out, fast in the middle.
-    FAST_IN_OUT,         // Fast in and out, slow in the middle.
-    EASE_OUT_SNAP,       // Fast in, slow out, snap to final value.
     SMOOTH_IN_OUT,       // Smooth, consistent speeds in and out (sine wave).
     FAST_OUT_SLOW_IN,    // Variant of EASE_IN_OUT which should be used in most
                          // cases.
@@ -82,9 +80,13 @@ class ANIMATION_EXPORT Tween {
                                               const gfx::Transform& start,
                                               const gfx::Transform& target);
 
-  static gfx::SizeF SizeValueBetween(double value,
-                                     const gfx::SizeF& start,
-                                     const gfx::SizeF& target);
+  static gfx::Size SizeValueBetween(double value,
+                                    const gfx::Size& start,
+                                    const gfx::Size& target);
+
+  static gfx::SizeF SizeFValueBetween(double value,
+                                      const gfx::SizeF& start,
+                                      const gfx::SizeF& target);
 
  private:
   Tween();

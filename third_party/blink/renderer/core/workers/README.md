@@ -79,6 +79,101 @@ Note that, where off-the-main-thread top-level fetch is NOT enabled
 (e.g. classic workers), the worker scripts are fetched on the main thread and
 thus WorkerOrWorkletGlobalScope and the worker thread are not involved.
 
+# Metrics
+
+## UseCounter
+
+[UseCounter](https://cs.chromium.org/chromium/src/third_party/blink/renderer/platform/instrumentation/use_counter.h)
+is available in all workers and worklets. The count mechanism varies based on
+worker and worklet types as follows.
+
+- Dedicated Workers and Worklets: A feature use in a dedicated worker or worklet
+is propagated to the parent document, and then recorded in the document's
+UseCounter. For nested dedicated workers, a feature use is propagated up to the
+ancestor document via parent workers.
+- Shared Workers: A feature use in a shared worker is propagated to all
+documents connected to the shared worker via mojo calls, and then recorded in
+their UseCounter.
+- Service Workers: A feature use in a service worker is propagated to all
+documents and workers being controlled by the service worker via mojo calls, and
+then recorded in their UseCounter. When a feature use occurs before the service
+worker finishes installing, the feature use is stored in service worker storage.
+It is read whenever the installed service worker is started. See
+[content/browser/service_worker/README.md](/content/browser/service_worker/README.md)
+for details.
+
+`WorkerOrWorkletGlobalScope::CountUse()` is the common entry point. For more
+details, see [Design of UseCounter for
+workers](https://docs.google.com/document/d/1VyYZnhjBdk-MzCRAcX37TM5-yjwTY40U_J9rWnEAo8c/edit?usp=sharing)
+and [crbug 376039](https://bugs.chromium.org/p/chromium/issues/detail?id=376039).
+
+There are some fundamental metrics.
+
+- [WorkerStart](https://www.chromestatus.com/metrics/feature/timeline/popularity/4)
+: Counts of `new DedicatedWorker()` calls in `Document` and
+`DedicatedWorkerGlobalScope`.
+- [ClassicDedicatedWorker](https://www.chromestatus.com/metrics/feature/timeline/popularity/3084)
+: Counts of new DedicatedWorker() calls with `{ type: 'classic' }` or without `WorkerOptions#type` argument.
+- [ModuleDedicatedWorker](https://www.chromestatus.com/metrics/feature/timeline/popularity/3085)
+: Counts of new DedicatedWorker() calls with `{ type: 'module' }`.
+- [NestedDedicatedWorker](https://www.chromestatus.com/metrics/feature/timeline/popularity/2499)
+: Counts of `new DedicatedWorker()` calls in `DedicatedWorkerGlobalScope`.
+- [SharedWorkerStart](https://www.chromestatus.com/metrics/feature/timeline/popularity/5)
+: Counts of `new SharedWorker()` calls in `Document`.
+- [WorkletAddModule](https://www.chromestatus.com/metrics/feature/timeline/popularity/2364)
+: Counts of `Worklet#addModule()` calls in `Document`. This includes all worklet
+types. Each worklet type has its own counter, too.
+
+## UMA
+
+The UMA data is internal-only.
+
+- WorkerThread.ExitCode : Records the exit code of `WorkerThread`.
+
+# Tests
+
+When you add a new worker or worklet type, please consider adding tests in
+following files and directories to check integration with the underlying worker
+and worklet infrastructure.
+
+- Web Platform Tests
+  - [workers/](https://cs.chromium.org/chromium/src/third_party/blink/web_tests/external/wpt/workers/)
+  - [worklets/](https://cs.chromium.org/chromium/src/third_party/blink/web_tests/external/wpt/worklets/)
+- Web tests
+  - [webexposed/](https://cs.chromium.org/chromium/src/third_party/blink/web_tests/webexposed/)
+  - [workers/](https://cs.chromium.org/chromium/src/third_party/blink/web_tests/http/tests/workers/)
+  - [worklet/](https://cs.chromium.org/chromium/src/third_party/blink/web_tests/http/tests/worklet/)
+- Unit tests
+  - [content/browser/worker_host/](https://cs.chromium.org/chromium/src/content/browser/worker_host/)
+  - [content/renderer/worker/](https://cs.chromium.org/chromium/src/content/renderer/worker/)
+  - [third_party/blink/renderer/core/workers/](https://cs.chromium.org/chromium/src/third_party/blink/renderer/core/workers/)
+- Browser tests
+  - [chrome/browser/chrome_worker_browsertest.cc](https://cs.chromium.org/chromium/src/chrome/browser/chrome_worker_browsertest.cc)
+  - [content/browser/worker_host/worker_browsertest.cc](https://cs.chromium.org/chromium/src/content/browser/worker_host/worker_browsertest.cc)
+
+Workers and worklets interact with various features. You should also add tests
+in the following files and directories to avoid breakage.
+
+- Web Platform Tests
+  - [content-security-policy/](https://cs.chromium.org/chromium/src/third_party/blink/web_tests/external/wpt/content-security-policy/)
+  - [fetch/](https://cs.chromium.org/chromium/src/third_party/blink/web_tests/external/wpt/fetch/)
+  - [mixed-content/](https://cs.chromium.org/chromium/src/third_party/blink/web_tests/external/wpt/mixed-content/)
+  - [performance-timeline/](https://cs.chromium.org/chromium/src/third_party/blink/web_tests/external/wpt/performance-timeline/)
+  - [referrer-policy/](https://cs.chromium.org/chromium/src/third_party/blink/web_tests/external/wpt/referrer-policy/)
+  - [resource-timing/](https://cs.chromium.org/chromium/src/third_party/blink/web_tests/external/wpt/resource-timing/)
+  - [secure-contexts/](https://cs.chromium.org/chromium/src/third_party/blink/web_tests/external/wpt/secure-contexts/)
+  - [service-workers/service-worker/](https://cs.chromium.org/chromium/src/third_party/blink/web_tests/external/wpt/service-workers/service-worker/)
+  - [upgrade-insecure-requests/](https://cs.chromium.org/chromium/src/third_party/blink/web_tests/external/wpt/upgrade-insecure-requests/)
+  - [websockets/](https://cs.chromium.org/chromium/src/third_party/blink/web_tests/external/wpt/websockets/)
+- Browser tests
+  - [chrome/browser/chrome_do_not_track_browsertest.cc](https://cs.chromium.org/chromium/src/chrome/browser/chrome_do_not_track_browsertest.cc)
+  - [chrome/browser/chrome_worker_browsertest.cc](https://cs.chromium.org/chromium/src/chrome/browser/chrome_worker_browsertest.cc)
+  - [chrome/browser/extensions/api/web_request/web_request_apitest.cc](https://cs.chromium.org/chromium/src/chrome/browser/extensions/api/web_request/web_request_apitest.cc)
+  - [chrome/browser/ssl/ssl_browsertest.cc](https://cs.chromium.org/chromium/src/chrome/browser/ssl/ssl_browsertest.cc)
+  - [chrome/browser/subresource_filter/subresource_filter_browsertest.cc](https://cs.chromium.org/chromium/src/chrome/browser/subresource_filter/subresource_filter_browsertest.cc)
+
 # References
 
+- [WorkerGlobalScope Initialization](https://docs.google.com/document/d/1JCv8TD2nPLNC2iRCp_D1OM4I3uTS0HoEobuTymaMqgw/edit?usp=sharing) (April 1, 2019)
 - [Worker / Worklet Internals](https://docs.google.com/presentation/d/1GZJ3VnLIO_Pw0jr9nRw6_-trg68ol-AkliMxJ6jo6Bo/edit?usp=sharing) (April 19, 2018)
+- [Design of UseCounter for workers](https://docs.google.com/document/d/1VyYZnhjBdk-MzCRAcX37TM5-yjwTY40U_J9rWnEAo8c/edit?usp=sharing) (Feb 14, 2017)

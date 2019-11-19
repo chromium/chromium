@@ -45,7 +45,7 @@ class IOHandler : public DevToolsDomainHandler,
   DevToolsIOContext* io_context_;
   BrowserContext* browser_context_;
   StoragePartition* storage_partition_;
-  base::WeakPtrFactory<IOHandler> weak_factory_;
+  base::WeakPtrFactory<IOHandler> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(IOHandler);
 };

@@ -13,7 +13,12 @@
 
 namespace blink {
 
-using LayoutSVGRootTest = RenderingTest;
+class LayoutSVGRootTest : public RenderingTest {
+  void SetUp() override {
+    EnableCompositing();
+    RenderingTest::SetUp();
+  }
+};
 
 TEST_F(LayoutSVGRootTest, VisualRectMappingWithoutViewportClipWithBorder) {
   SetBodyInnerHTML(R"HTML(
@@ -28,23 +33,21 @@ TEST_F(LayoutSVGRootTest, VisualRectMappingWithoutViewportClipWithBorder) {
   const LayoutSVGShape& svg_rect =
       *ToLayoutSVGShape(GetLayoutObjectByElementId("rect"));
 
-  LayoutRect rect = SVGLayoutSupport::VisualRectInAncestorSpace(svg_rect, root);
+  auto rect = SVGLayoutSupport::VisualRectInAncestorSpace(svg_rect, root);
   // (80, 80, 100, 100) added by root's content rect offset from border rect,
   // not clipped.
-  EXPECT_EQ(LayoutRect(90, 90, 100, 100), rect);
+  EXPECT_EQ(PhysicalRect(90, 90, 100, 100), rect);
 
-  LayoutRect root_visual_rect =
+  auto root_visual_rect =
       static_cast<const LayoutObject&>(root).LocalVisualRect();
   // SVG root's local overflow does not include overflow from descendants.
-  EXPECT_EQ(LayoutRect(0, 0, 220, 120), root_visual_rect);
+  EXPECT_EQ(PhysicalRect(0, 0, 220, 120), root_visual_rect);
 
-  rect = root_visual_rect;
-  EXPECT_TRUE(root.MapToVisualRectInAncestorSpace(&root, rect));
-  EXPECT_EQ(LayoutRect(0, 0, 220, 120), rect);
+  EXPECT_TRUE(root.MapToVisualRectInAncestorSpace(&root, root_visual_rect));
+  EXPECT_EQ(PhysicalRect(0, 0, 220, 120), root_visual_rect);
 }
 
 TEST_F(LayoutSVGRootTest, VisualOverflowExpandsLayer) {
-  EnableCompositing();
   SetBodyInnerHTML(R"HTML(
     <svg id='root' style='width: 100px; will-change: transform; height:
     100px; overflow: visible; position: absolute;'>
@@ -79,19 +82,18 @@ TEST_F(LayoutSVGRootTest, VisualRectMappingWithViewportClipAndBorder) {
   const LayoutSVGShape& svg_rect =
       *ToLayoutSVGShape(GetLayoutObjectByElementId("rect"));
 
-  LayoutRect rect = SVGLayoutSupport::VisualRectInAncestorSpace(svg_rect, root);
-  EXPECT_EQ(LayoutRect(90, 90, 100, 20), rect);
+  auto rect = SVGLayoutSupport::VisualRectInAncestorSpace(svg_rect, root);
+  EXPECT_EQ(PhysicalRect(90, 90, 100, 20), rect);
 
-  LayoutRect root_visual_rect =
+  auto root_visual_rect =
       static_cast<const LayoutObject&>(root).LocalVisualRect();
   // SVG root with overflow:hidden doesn't include overflow from children, just
   // border box rect.
-  EXPECT_EQ(LayoutRect(0, 0, 220, 120), root_visual_rect);
+  EXPECT_EQ(PhysicalRect(0, 0, 220, 120), root_visual_rect);
 
-  rect = root_visual_rect;
-  EXPECT_TRUE(root.MapToVisualRectInAncestorSpace(&root, rect));
+  EXPECT_TRUE(root.MapToVisualRectInAncestorSpace(&root, root_visual_rect));
   // LayoutSVGRoot should not apply overflow clip on its own rect.
-  EXPECT_EQ(LayoutRect(0, 0, 220, 120), rect);
+  EXPECT_EQ(PhysicalRect(0, 0, 220, 120), root_visual_rect);
 }
 
 TEST_F(LayoutSVGRootTest,
@@ -145,7 +147,7 @@ TEST_F(LayoutSVGRootTest, RectBasedHitTestPartialOverlap) {
 
   // The center of this rect does not overlap the SVG element, but the
   // rect itself does.
-  auto results = RectBasedHitTest(LayoutRect(0, 0, 300, 300));
+  auto results = RectBasedHitTest(PhysicalRect(0, 0, 300, 300));
   int count = 0;
   EXPECT_EQ(2u, results.size());
   for (auto result : results) {

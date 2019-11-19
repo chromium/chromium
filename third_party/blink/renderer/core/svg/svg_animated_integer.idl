@@ -25,6 +25,7 @@
 
 // https://svgwg.org/svg2-draft/types.html#InterfaceSVGAnimatedInteger
 
+[Exposed=Window]
 interface SVGAnimatedInteger {
     [RaisesException=Setter] attribute long baseVal;
     readonly attribute long animVal;

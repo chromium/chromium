@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "content/browser/web_contents/web_drag_source_mac.h"
+#import "content/app_shim_remote_cocoa/web_drag_source_mac.h"
 
 #include "base/memory/ref_counted.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -26,7 +26,7 @@ TEST_F(WebDragSourceMacTest, DragInvalidlyEscapedBookmarklet) {
 
   scoped_refptr<ui::UniquePasteboard> pasteboard1 = new ui::UniquePasteboard;
   base::scoped_nsobject<WebDragSource> source([[WebDragSource alloc]
-         initWithClient:nullptr
+           initWithHost:nullptr
                    view:view
                dropData:dropData.get()
                   image:nil

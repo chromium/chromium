@@ -1,0 +1,22 @@
+# Copyright 2018 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+mojom = "//media/mojo/mojom/content_decryption_module.mojom"
+
+public_headers = [ "//media/base/cdm_key_information.h" ]
+
+traits_headers = [ "//media/mojo/mojom/cdm_key_information_mojom_traits.h" ]
+
+sources = [
+  "//media/mojo/mojom/cdm_key_information_mojom_traits.cc",
+]
+
+public_deps = [
+  "//media",
+]
+
+type_mappings = [
+  "media.mojom.CdmKeyInformation=::std::unique_ptr<::media::CdmKeyInformation>[move_only]",
+  "media.mojom.CdmKeyStatus=::media::CdmKeyInformation::KeyStatus",
+]

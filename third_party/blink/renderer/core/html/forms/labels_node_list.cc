@@ -36,11 +36,16 @@ LabelsNodeList::LabelsNodeList(ContainerNode& owner_node)
                    kInvalidateForFormControls,
                    NodeListSearchRoot::kTreeScope) {}
 
+LabelsNodeList::LabelsNodeList(ContainerNode& owner_node, CollectionType type)
+    : LabelsNodeList(owner_node) {
+  DCHECK_EQ(type, kLabelsNodeListType);
+}
+
 LabelsNodeList::~LabelsNodeList() = default;
 
 bool LabelsNodeList::ElementMatches(const Element& element) const {
-  return IsHTMLLabelElement(element) &&
-         ToHTMLLabelElement(element).control() == ownerNode();
+  auto* html_label_element = DynamicTo<HTMLLabelElement>(element);
+  return html_label_element && html_label_element->control() == ownerNode();
 }
 
 }  // namespace blink

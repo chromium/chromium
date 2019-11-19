@@ -12,10 +12,9 @@
 <translation id="2159915644201199628">ಚಿತ್ರವನ್ನು ಡಿಕೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">ಲೋಕಲೈಜೇಷನ್ ಬಳಸಲಾಗಿದೆ, ಆದರೆ ಡಿಫಾಲ್ಟ್ _ಲೋಕಲ್ ಅನ್ನು ಮ್ಯಾನಿಫಾಸ್ಟ್‌ನಲ್ಲಿ ನಿರ್ದಿಷ್ಟಪಡಿಸಲಾಗಿಲ್ಲ.</translation>
 <translation id="2576842806987913196">ಪ್ರಸ್ತುತ ಈ ಹೆಸರಿನೊಂದಿಗೆ ಈಗಾಗಲೇ CRX ಫೈಲ್ ಅಸ್ತಿತ್ವದಲ್ಲಿದೆ.</translation>
-<translation id="2753617847762399167">ಕಾನೂನು ಬಾಹಿರ ಪಾಥ್ ('..' ರೊಂದಿಗೆ ಸಮಗ್ರ ಅಥವಾ ಸಂಬಂಧಿತ... ): '<ph name="IMAGE_PATH" />'</translation>
 <translation id="2785530881066938471">'<ph name="RELATIVE_PATH" />' ಫೈಲ್ ಅನ್ನು ವಿಷಯ ಸ್ಕ್ರಿಪ್ಟ್‌ಗಾಗಿ ಲೋಡ್ ಮಾಡಲು ಆಗುವುದಿಲ್ಲ. ಇದು UTF-8 ಎನ್‌ಕೋಡ್ ಆಗಿಲ್ಲ.</translation>
 <translation id="2903070246402204397">ನಿರ್ವಾಹಕರಿಂದ <ph name="EXTENSION_NAME" /> (ವಿಸ್ತರಣೆ ಐಡಿ "<ph name="EXTENSION_ID" />") ಅನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ. <ph name="ADMIN_INFO" /></translation>
-<translation id="2988488679308982380">ಪ್ಯಾಕೇಜ್ ಅನ್ನು ಸ್ಥಾಪಿಸಲಾಗುವುದಿಲ್ಲ: '<ph name="ERROR_CODE" />'</translation>
+<translation id="2988488679308982380">ಪ್ಯಾಕೇಜ್ ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲಾಗುವುದಿಲ್ಲ: '<ph name="ERROR_CODE" />'</translation>
 <translation id="3115238746683532089"><ph name="VENDOR_ID" /> ಮಾರಾಟಗಾರರಿಂದ <ph name="PRODUCT_ID" /> ಅಪರಿಚಿತ ಉತ್ಪನ್ನ (ಕ್ರಮ ಸಂಖ್ಯೆ <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">crx ಫೈಲ್ ಅನ್ನು ಸ್ಥಾನಾಂತರಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ. ಫೈಲ್ ಬಳಕೆಯಲ್ಲಿದೆಯೆ ಎಂದು ಪರಿಶೀಲಿಸಿ.</translation>
 <translation id="3163201441334626963"><ph name="VENDOR_ID" /> ಮಾರಾಟಗಾರರಿಂದ <ph name="PRODUCT_ID" /> ಅಪರಿಚಿತ ಉತ್ಪನ್ನ</translation>
@@ -30,7 +29,7 @@
 <translation id="4115165561519362854">ಈ ಮೆಷಿನ್‌ನ ನಿರ್ವಾಹಕರಿಗೆ <ph name="EXTENSION_VERSION" /> ನ ಕನಿಷ್ಠ ಆವೃತಿಯನ್ನು <ph name="EXTENSION_NAME" /> ಹೊಂದಬೇಕಾದ ಅಗತ್ಯವಿದೆ. ಅದು ಹೊಸ ಆವೃತ್ತಿಗೆ (ಅಥವಾ ಹೆಚ್ಚಿನ) ನವೀಕರಣಗೊಳ್ಳುವವರೆಗೂ ಇದನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲಾಗುವುದಿಲ್ಲ.</translation>
 <translation id="4233778200880751280">'<ph name="ABOUT_PAGE" />' ಪುಟದ ಕುರಿತು ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ.</translation>
 <translation id="471800408830181311">ಖಾಸಗಿ ಕೀಲಿಯನ್ನು ಔಟ್‌ಪುಟ್ ಮಾಡಲು ವಿಫಲವಾಗಿದೆ.</translation>
-<translation id="4811956658694082538">ಉಪಯುಕ್ತತೆಯ ಪ್ರಕ್ರಿಯೆಯು ಹಾಳಾಗಿರುವ ಕಾರಣ ಪ್ಯಾಕೇಜ್ ಅನ್ನು ಸ್ಥಾಪಿಸಲಾಗುವುದಿಲ್ಲ. Chrome ಮರುಪ್ರಾರಂಭಿಸಲು ಪ್ರಯತ್ನಿಸಿ ಹಾಗೂ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.</translation>
+<translation id="4811956658694082538">ಉಪಯುಕ್ತತೆಯ ಪ್ರಕ್ರಿಯೆಯು ಹಾಳಾಗಿರುವ ಕಾರಣ ಪ್ಯಾಕೇಜ್ ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲಾಗುವುದಿಲ್ಲ. Chrome ಮರುಪ್ರಾರಂಭಿಸಲು ಪ್ರಯತ್ನಿಸಿ ಹಾಗೂ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="4988792151665380515">ಸಾರ್ವಜನಿಕ ಕೀಲಿಯನ್ನು ರಫ್ತು ಮಾಡಲು ವಿಫಲವಾಗಿದೆ.</translation>
 <translation id="5026754133087629784">ವೆಬ್‌ವೀಕ್ಷಣೆ: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">ಡೈರೆಕ್ಟರಿಗೆ ಪ್ಯಾಕ್ ಮಾಡಲು ಸರಿಯಾದ ಪಥವನ್ನು ಹುಡುಕಲಾಗಲಿಲ್ಲ.</translation>
@@ -38,8 +37,6 @@
 <translation id="5436430103864390185">ಆಕಾರಗೊಳಿಸಿದ ವಿಂಡೋಗಳಿಗೆ ಬೆಂಬಲವಿಲ್ಲ.</translation>
 <translation id="5456409301717116725">ಈ ವಿಸ್ತರಣೆಯು ಕೀ ಫೈಲ್ '<ph name="KEY_PATH" />' ಅನ್ನು ಒಳಗೊಂಡಿದೆ. ನೀವು ಸಾಮಾನ್ಯವಾಗಿ ಹಾಗೆ ಮಾಡಲು ಬಯಸುವುದಿಲ್ಲ.</translation>
 <translation id="5486326529110362464">ಖಾಸಗಿ ಕೀಲಿಗಾಗಿ ಇನ್‌ಪುಟ್ ಮೌಲ್ಯ ಅಸ್ತಿತ್ವದಲ್ಲಿರಬೇಕು.</translation>
-<translation id="5627523580512561598">ವಿಸ್ತರಣೆ<ph name="EXTENSION_NAME" /></translation>
-<translation id="5960890139610307736">ವಿಸ್ತರಣೆವೀಕ್ಷಣೆ: <ph name="EXTENSIONVIEW_TAG_NAME" /></translation>
 <translation id="5972529113578162692">ಈ ಯಂತ್ರದ ನಿರ್ವಾಹಕರಿಗೆ <ph name="EXTENSION_NAME" /> ಸ್ಥಾಪಿಸಲು ಅಗತ್ಯವಿದೆ. ಇದನ್ನು ಅಸ್ಥಾಪಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ.</translation>
 <translation id="6027032947578871493"><ph name="VENDOR_NAME" /> ಅವರಿಂದ <ph name="PRODUCT_ID" /> ಅಪರಿಚಿತ ಉತ್ಪನ್ನ (ಕ್ರಮ ಸಂಖ್ಯೆ <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="VENDOR_ID" /> ಮಾರಾಟಗಾರರಿಂದ <ph name="PRODUCT_NAME" /></translation>
@@ -51,7 +48,6 @@
 <translation id="6542618148162044354">"<ph name="APP_NAME" />" ನಿಮ್ಮ ಸಾಧನಗಳಲ್ಲಿ ಒಂದು ಅಥವಾ ಹೆಚ್ಚಿನ ಸಾಧನಗಳಿಗೆ ಪ್ರವೇಶವನ್ನು ವಿನಂತಿಸುತ್ತಿದೆ:</translation>
 <translation id="657064425229075395">'<ph name="BACKGROUND_SCRIPT" />' ಹಿನ್ನೆಲೆ ಪುಟವನ್ನು ಲೋಡ್ ಮಾಡಲಾಗುವುದಿಲ್ಲ.</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" /> ದಿಂದ <ph name="VENDOR_NAME" /> (ಕ್ರಮಸಂಖ್ಯೆ <ph name="SERIAL_NUMBER" />)</translation>
-<translation id="6731255991101203740">ಅನ್ ಜಿಪ್ ಮಾಡುವುದಕ್ಕಾಗಿ ಡೈರೆಕ್ಟರಿ ರಚಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ: '<ph name="DIRECTORY_PATH" />'</translation>
 <translation id="677806580227005219">ಮೈಮ್‌ಹ್ಯಾಂಡ್ಲರ್: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
 <translation id="6840444547062817500">ಈ ವಿಸ್ತರಣೆಯು ತಾನಾಗಿಯೇ ಪದೇ ಪದೇ ಮರು ಲೋಡ್ ಆಗುತ್ತಿದೆ.</translation>
 <translation id="7003844668372540529"><ph name="VENDOR_NAME" /> ಅವರಿಂದ <ph name="PRODUCT_ID" /> ಅಪರಿಚಿತ ಉತ್ಪನ್ನ</translation>

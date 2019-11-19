@@ -33,20 +33,21 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/dom_token_list.h"
+#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
+#include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/core/html/forms/form_controller.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
+#include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/layout/layout_text_control_single_line.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
-
-InputType* PasswordInputType::Create(HTMLInputElement& element) {
-  return MakeGarbageCollected<PasswordInputType>(element);
-}
 
 void PasswordInputType::CountUsage() {
   CountUsageIfVisible(WebFeature::kInputTypePassword);
@@ -77,4 +78,126 @@ bool PasswordInputType::ShouldRespectListAttribute() {
   return false;
 }
 
+bool PasswordInputType::NeedsContainer() const {
+  return RuntimeEnabledFeatures::PasswordRevealEnabled();
+}
+
+void PasswordInputType::CreateShadowSubtree() {
+  BaseTextInputType::CreateShadowSubtree();
+
+  if (RuntimeEnabledFeatures::PasswordRevealEnabled()) {
+    Element* container = ContainerElement();
+    Element* view_port = GetElement().UserAgentShadowRoot()->getElementById(
+        shadow_element_names::EditingViewPort());
+    DCHECK(container);
+    DCHECK(view_port);
+    container->InsertBefore(MakeGarbageCollected<PasswordRevealButtonElement>(
+                                GetElement().GetDocument()),
+                            view_port->nextSibling());
+  }
+}
+
+void PasswordInputType::DidSetValueByUserEdit() {
+  if (RuntimeEnabledFeatures::PasswordRevealEnabled()) {
+    // If the last character is deleted, we hide the reveal button.
+    if (GetElement().value().IsEmpty()) {
+      should_show_reveal_button_ = false;
+    }
+    UpdatePasswordRevealButton();
+  }
+  BaseTextInputType::DidSetValueByUserEdit();
+}
+
+void PasswordInputType::DidSetValue(const String& string, bool value_changed) {
+  if (RuntimeEnabledFeatures::PasswordRevealEnabled()) {
+    if (value_changed) {
+      // Hide the password if the value is changed by script.
+      should_show_reveal_button_ = false;
+      UpdatePasswordRevealButton();
+    }
+  }
+  BaseTextInputType::DidSetValue(string, value_changed);
+}
+
+void PasswordInputType::UpdateView() {
+  BaseTextInputType::UpdateView();
+
+  if (RuntimeEnabledFeatures::PasswordRevealEnabled())
+    UpdatePasswordRevealButton();
+}
+
+void PasswordInputType::UpdatePasswordRevealButton() {
+  Element* button = GetElement().UserAgentShadowRoot()->getElementById(
+      shadow_element_names::PasswordRevealButton());
+
+  // Update the glyph.
+  const AtomicString reveal("reveal");
+  if (GetElement().ShouldRevealPassword())
+    button->classList().Add(reveal);
+  else
+    button->classList().Remove(reveal);
+
+  // Update the visibility.
+  if (should_show_reveal_button_) {
+    // Show the reveal button only when the width is enough for the reveal
+    // button plus a few characters. (The number of characters slightly varies
+    // based on the font size/family).
+    const float kRevealButtonWidthEm = 1.3;  // 1.3em
+    const float kPasswordMinWidthEm =
+        0.7;                       // 0.7em which is enough for ~2 chars.
+    const int kLeftMarginPx = 3;   // 3px
+    const int kRightMarginPx = 3;  // 3px
+    float current_width = GetElement().getBoundingClientRect()->width();
+    float width_needed = GetElement().ComputedStyleRef().FontSize() *
+                             (kRevealButtonWidthEm + kPasswordMinWidthEm) +
+                         kLeftMarginPx + kRightMarginPx;
+
+    if (current_width >= width_needed) {
+      button->RemoveInlineStyleProperty(CSSPropertyID::kDisplay);
+    }
+  } else {
+    button->SetInlineStyleProperty(CSSPropertyID::kDisplay, CSSValueID::kNone);
+    // Always obscure password when the reveal button is hidden.
+    // (ex. out of focus)
+    GetElement().SetShouldRevealPassword(false);
+  }
+}
+
+void PasswordInputType::HandleBlurEvent() {
+  if (RuntimeEnabledFeatures::PasswordRevealEnabled()) {
+    should_show_reveal_button_ = false;
+    UpdatePasswordRevealButton();
+  }
+
+  BaseTextInputType::HandleBlurEvent();
+}
+
+void PasswordInputType::HandleBeforeTextInsertedEvent(
+    BeforeTextInsertedEvent& event) {
+  if (RuntimeEnabledFeatures::PasswordRevealEnabled()) {
+    // This is the only scenario we go from no reveal button to showing the
+    // reveal button: the password is empty and we have some user input.
+    if (GetElement().value().IsEmpty())
+      should_show_reveal_button_ = true;
+  }
+
+  TextFieldInputType::HandleBeforeTextInsertedEvent(event);
+}
+
+void PasswordInputType::HandleKeydownEvent(KeyboardEvent& event) {
+  if (RuntimeEnabledFeatures::PasswordRevealEnabled()) {
+    if (should_show_reveal_button_) {
+      // Alt-F8 to reveal/obscure password
+      if (event.getModifierState("Alt") && event.key() == "F8") {
+        GetElement().SetShouldRevealPassword(
+            !GetElement().ShouldRevealPassword());
+        UpdatePasswordRevealButton();
+        event.SetDefaultHandled();
+      }
+    }
+  }
+
+  if (!event.DefaultHandled())
+    BaseTextInputType::HandleKeydownEvent(event);
+}
 }  // namespace blink

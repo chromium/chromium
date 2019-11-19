@@ -15,6 +15,8 @@
 #include "handler/fuchsia/crash_report_exception_handler.h"
 
 #include <lib/zx/thread.h>
+#include <zircon/errors.h>
+#include <zircon/status.h>
 #include <zircon/syscalls/exception.h>
 
 #include "base/fuchsia/fuchsia_logging.h"
@@ -23,41 +25,15 @@
 #include "minidump/minidump_user_extension_stream_data_source.h"
 #include "snapshot/fuchsia/process_snapshot_fuchsia.h"
 #include "util/fuchsia/koid_utilities.h"
+#include "util/fuchsia/scoped_task_suspend.h"
 
 namespace crashpad {
-
-namespace {
-
-class ScopedThreadResumeAfterException {
- public:
-  ScopedThreadResumeAfterException(const zx::thread& thread,
-                                   const zx::unowned_port& exception_port)
-      : thread_(thread), exception_port_(exception_port) {}
-  ~ScopedThreadResumeAfterException() {
-    DCHECK(thread_->is_valid());
-    // Resuming with ZX_RESUME_TRY_NEXT chains to the next handler. In normal
-    // operation, there won't be another beyond this one, which will result in
-    // the kernel terminating the process.
-    zx_status_t status =
-        thread_->resume_from_exception(*exception_port_, ZX_RESUME_TRY_NEXT);
-    ZX_LOG_IF(ERROR, status != ZX_OK, status)
-        << "zx_task_resume_from_exception";
-  }
-
- private:
-  zx::unowned_thread thread_;
-  const zx::unowned_port& exception_port_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedThreadResumeAfterException);
-};
-
-}  // namespace
 
 CrashReportExceptionHandler::CrashReportExceptionHandler(
     CrashReportDatabase* database,
     CrashReportUploadThread* upload_thread,
     const std::map<std::string, std::string>* process_annotations,
-    const std::map<std::string, base::FilePath>* process_attachments,
+    const std::map<std::string, fuchsia::mem::Buffer>* process_attachments,
     const UserStreamDataSources* user_stream_data_sources)
     : database_(database),
       upload_thread_(upload_thread),
@@ -67,39 +43,10 @@ CrashReportExceptionHandler::CrashReportExceptionHandler(
 
 CrashReportExceptionHandler::~CrashReportExceptionHandler() {}
 
-bool CrashReportExceptionHandler::HandleException(
-    uint64_t process_id,
-    uint64_t thread_id,
-    const zx::unowned_port& exception_port,
-    UUID* local_report_id) {
-  // TODO(scottmg): This function needs to be instrumented with metrics calls,
-  // https://crashpad.chromium.org/bug/230.
-
-  zx::process process(GetProcessFromKoid(process_id));
-  if (!process.is_valid()) {
-    // There's no way to resume the thread if the process retrieval fails.
-    // Assume that the process has been already killed, and bail.
-    return false;
-  }
-
-  zx::thread thread(GetThreadHandleByKoid(process, thread_id));
-  if (!thread.is_valid()) {
-    return false;
-  }
-
-  return HandleExceptionHandles(
-      process, thread, exception_port, local_report_id);
-}
-
-bool CrashReportExceptionHandler::HandleExceptionHandles(
-    const zx::process& process,
-    const zx::thread& thread,
-    const zx::unowned_port& exception_port,
-    UUID* local_report_id) {
-  // Now that the thread has been successfully retrieved, it is possible to
-  // correctly call zx_task_resume_from_exception() to continue exception
-  // processing, even if something else during this function fails.
-  ScopedThreadResumeAfterException resume(thread, exception_port);
+bool CrashReportExceptionHandler::HandleException(const zx::process& process,
+                                                  const zx::thread& thread,
+                                                  UUID* local_report_id) {
+  ScopedTaskSuspend suspend(process);
 
   ProcessSnapshotFuchsia process_snapshot;
   if (!process_snapshot.Initialize(process)) {
@@ -162,19 +109,25 @@ bool CrashReportExceptionHandler::HandleExceptionHandles(
 
   if (process_attachments_) {
     // Note that attachments are read at this point each time rather than once
-    // so that if the contents of the file has changed it will be re-read for
+    // so that if the contents of the VMO has changed it will be re-read for
     // each upload (e.g. in the case of a log file).
     for (const auto& it : *process_attachments_) {
+      // TODO(frousseau): make FileWriter VMO-aware.
       FileWriter* writer = new_report->AddAttachment(it.first);
-      if (writer) {
-        std::string contents;
-        if (!LoggingReadEntireFile(it.second, &contents)) {
-          // Not being able to read the file isn't considered fatal, and
-          // should not prevent the report from being processed.
-          continue;
-        }
-        writer->Write(contents.data(), contents.size());
+      if (!writer) {
+        continue;
       }
+      auto data = std::make_unique<uint8_t[]>(it.second.size);
+      const zx_status_t read_status =
+          it.second.vmo.read(data.get(), 0u, it.second.size);
+      if (read_status != ZX_OK) {
+        ZX_LOG(ERROR, read_status)
+            << "could not read VMO for attachment " << it.first;
+        // Not being able to read the VMO isn't considered fatal, and
+        // should not prevent the report from being processed.
+        continue;
+      }
+      writer->Write(data.get(), it.second.size);
     }
   }
 

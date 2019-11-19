@@ -5,18 +5,20 @@
 package org.chromium.chrome.browser.preferences;
 
 import android.os.Bundle;
-import android.preference.PreferenceFragment;
+import android.support.v4.app.ListFragment;
+import android.view.View;
 import android.widget.ListView;
 
-import org.chromium.base.VisibleForTesting;
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.chrome.R;
 
 /**
-* A preference fragment for selecting a default search engine.
-*/
-public class SearchEnginePreference extends PreferenceFragment {
-    private ListView mListView;
-
+ * A preference fragment for selecting a default search engine.
+ *
+ * TODO(crbug.com/988877): Add on scroll shadow to action bar.
+ */
+public class SearchEnginePreference extends ListFragment {
     private SearchEngineAdapter mSearchEngineAdapter;
 
     @VisibleForTesting
@@ -39,15 +41,15 @@ public class SearchEnginePreference extends PreferenceFragment {
         super.onCreate(savedInstanceState);
         getActivity().setTitle(R.string.prefs_search_engine);
         mSearchEngineAdapter = new SearchEngineAdapter(getActivity());
+        setListAdapter(mSearchEngineAdapter);
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        mListView = (ListView) getView().findViewById(android.R.id.list);
-        mListView.setAdapter(mSearchEngineAdapter);
-        mListView.setDivider(null);
-        mListView.setItemsCanFocus(true);
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        ListView listView = getListView();
+        listView.setDivider(null);
+        listView.setItemsCanFocus(true);
     }
 
     @Override

@@ -13,7 +13,8 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "services/device/public/mojom/battery_monitor.mojom.h"
 #include "services/device/public/mojom/battery_status.mojom.h"
 #include "services/device/public/mojom/constants.mojom.h"
@@ -25,12 +26,12 @@ namespace {
 
 class MockBatteryMonitor : public device::mojom::BatteryMonitor {
  public:
-  MockBatteryMonitor() : binding_(this) {}
+  MockBatteryMonitor() = default;
   ~MockBatteryMonitor() override = default;
 
-  void Bind(device::mojom::BatteryMonitorRequest request) {
-    DCHECK(!binding_.is_bound());
-    binding_.Bind(std::move(request));
+  void Bind(mojo::PendingReceiver<device::mojom::BatteryMonitor> receiver) {
+    DCHECK(!receiver_.is_bound());
+    receiver_.Bind(std::move(receiver));
   }
 
   void DidChange(const device::mojom::BatteryStatus& battery_status) {
@@ -46,7 +47,7 @@ class MockBatteryMonitor : public device::mojom::BatteryMonitor {
   void QueryNextStatus(QueryNextStatusCallback callback) override {
     if (!callback_.is_null()) {
       DVLOG(1) << "Overlapped call to QueryNextStatus!";
-      binding_.Close();
+      receiver_.reset();
       return;
     }
     callback_ = std::move(callback);
@@ -63,7 +64,7 @@ class MockBatteryMonitor : public device::mojom::BatteryMonitor {
   QueryNextStatusCallback callback_;
   device::mojom::BatteryStatus status_;
   bool status_to_report_ = false;
-  mojo::Binding<device::mojom::BatteryMonitor> binding_;
+  mojo::Receiver<device::mojom::BatteryMonitor> receiver_{this};
 
   DISALLOW_COPY_AND_ASSIGN(MockBatteryMonitor);
 };
@@ -77,8 +78,8 @@ class BatteryMonitorTest : public ContentBrowserTest {
     // it.
     service_manager::ServiceBinding::OverrideInterfaceBinderForTesting(
         device::mojom::kServiceName,
-        base::Bind(&MockBatteryMonitor::Bind,
-                   base::Unretained(mock_battery_monitor_.get())));
+        base::BindRepeating(&MockBatteryMonitor::Bind,
+                            base::Unretained(mock_battery_monitor_.get())));
   }
 
   ~BatteryMonitorTest() override {

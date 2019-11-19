@@ -7,10 +7,14 @@
 
 #include "base/logging.h"
 
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+
 namespace WTF {
 
 // Copyable and immutable object representing number parsing flags.
 class NumberParsingOptions {
+  STACK_ALLOCATED();
+
  public:
   static constexpr unsigned kNone = 0;
   static constexpr unsigned kAcceptTrailingGarbage = 1;

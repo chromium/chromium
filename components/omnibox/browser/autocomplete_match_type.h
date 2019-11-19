@@ -98,10 +98,6 @@ struct AutocompleteMatchType {
       const base::string16& match_text,
       bool is_tab_switch_button_focused,
       int* label_prefix_length = nullptr);
-
-  // Used for tab switch button message when reverse logic feature is selected.
-  static const char kAlternateTabSwitchButtonMessage[];
-  static const char kAlternateTabSwitchMessage[];
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_AUTOCOMPLETE_MATCH_TYPE_H_

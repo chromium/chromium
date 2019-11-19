@@ -5,11 +5,15 @@
 package org.chromium.chrome.browser.compositor.bottombar;
 
 import android.content.Context;
-import android.support.annotation.Nullable;
+import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 import android.view.ViewGroup;
 
+import androidx.annotation.ColorInt;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.ApiCompatibilityUtils;
-import org.chromium.base.VisibleForTesting;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeActivity;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.PanelState;
@@ -24,6 +28,9 @@ import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 abstract class OverlayPanelBase {
     /** The side padding of Bar icons in dps. */
     private static final float BAR_ICON_SIDE_PADDING_DP = 12.f;
+
+    /** The top padding of Bar icons in dps. */
+    private static final float BAR_ICON_TOP_PADDING_DP = 10.f;
 
     /** The height of the Bar's border in dps. */
     private static final float BAR_BORDER_HEIGHT_DP = 1.f;
@@ -56,12 +63,22 @@ abstract class OverlayPanelBase {
 
     /** The opacity of the arrow icon when the Panel is expanded. */
     private static final float ARROW_ICON_OPACITY_STATE_EXPANDED = 0.f;
+    private static final float ARROW_ICON_OPACITY_TRANSPARENT = 0.f;
 
     /** The opacity of the arrow icon when the Panel is maximized. */
     private static final float ARROW_ICON_OPACITY_STATE_MAXIMIZED = 0.f;
 
     /** The rotation of the arrow icon. */
     private static final float ARROW_ICON_ROTATION = -90.f;
+
+    /** The opacity of the Open-Tab icon when the Panel is peeking. */
+    private static final float OPEN_TAB_ICON_OPACITY_STATE_PEEKED = 1.f;
+
+    /** The opacity of the Open-Tab icon when the Panel is expanded. */
+    private static final float OPEN_TAB_ICON_OPACITY_STATE_EXPANDED = 0.f;
+
+    /** The opacity of the Open-Tab icon when the Panel is maximized. */
+    private static final float OPEN_TAB_ICON_OPACITY_STATE_MAXIMIZED = 0.f;
 
     /** The opacity of the close icon when the Panel is peeking. */
     private static final float CLOSE_ICON_OPACITY_STATE_PEEKED = 0.f;
@@ -93,14 +110,14 @@ abstract class OverlayPanelBase {
     /** The height of the Toolbar in dps. */
     private float mToolbarHeight;
 
-    /** The height of the Bar when the Panel is peeking, in dps. */
-    private final float mBarHeightPeeking;
+    /** The background color of the Bar. */
+    private final @ColorInt int mBarBackgroundColor;
 
-    /** The height of the Bar when the Panel is expanded, in dps. */
-    private final float mBarHeightExpanded;
+    /** The tint used for icons (e.g. close icon, etc). */
+    private final @ColorInt int mIconColor;
 
-    /** The height of the Bar when the Panel is maximized, in dps. */
-    private final float mBarHeightMaximized;
+    /** The tint used for drag handlebar. */
+    private final @ColorInt int mDragHandlebarColor;
 
     /**
      * The Y coordinate to apply to the Base Page in order to keep the selection
@@ -114,6 +131,9 @@ abstract class OverlayPanelBase {
     /** The current state of the Overlay Panel. */
     private @PanelState int mPanelState = PanelState.UNDEFINED;
 
+    /** The padding on each side of the close and open-tab icons. */
+    protected final int mButtonPaddingDps;
+
     // ============================================================================================
     // Constructor
     // ============================================================================================
@@ -125,17 +145,23 @@ abstract class OverlayPanelBase {
         mContext = context;
         mPxToDp = 1.f / mContext.getResources().getDisplayMetrics().density;
 
-        mBarHeightPeeking =
-                mContext.getResources().getDimension(R.dimen.overlay_panel_bar_height) * mPxToDp;
-        mBarHeightMaximized =
-                mContext.getResources().getDimension(R.dimen.toolbar_height_no_shadow) * mPxToDp;
-        mBarHeightExpanded = Math.round((mBarHeightPeeking + mBarHeightMaximized) / 2.f);
-
         mBarMarginSide = BAR_ICON_SIDE_PADDING_DP;
+        mBarMarginTop = BAR_ICON_TOP_PADDING_DP;
         mProgressBarHeight = PROGRESS_BAR_HEIGHT_DP;
         mBarBorderHeight = BAR_BORDER_HEIGHT_DP;
 
-        mBarHeight = mBarHeightPeeking;
+        int bar_height_dimen = OverlayPanel.isNewLayout() ? R.dimen.overlay_panel_bar_height
+                                                          : R.dimen.overlay_panel_bar_height_legacy;
+        mBarHeight = mContext.getResources().getDimension(bar_height_dimen) * mPxToDp;
+
+        final Resources resources = mContext.getResources();
+        mBarBackgroundColor = ApiCompatibilityUtils.getColor(
+                resources, R.color.overlay_panel_bar_background_color);
+        mIconColor = ApiCompatibilityUtils.getColor(resources, R.color.default_icon_color);
+        mDragHandlebarColor =
+                ApiCompatibilityUtils.getColor(resources, R.color.drag_handlebar_color);
+        mButtonPaddingDps =
+                (int) (mPxToDp * resources.getDimension(R.dimen.overlay_panel_button_padding));
     }
 
     // ============================================================================================
@@ -149,6 +175,9 @@ abstract class OverlayPanelBase {
         return mContext;
     }
 
+    /** Tracks whether the panel has been hidden. {@See #showPanel, #hidePanel}.  */
+    protected boolean mPanelHidden;
+
     /**
      * Animates the Overlay Panel to its closed state.
      * @param reason The reason for the change of panel state.
@@ -161,6 +190,12 @@ abstract class OverlayPanelBase {
      * @param reason The reason the panel is closing.
      */
     protected abstract void onClosed(@StateChangeReason int reason);
+
+    /** Temporarily hides a peeking panel for the given reason.  Does nothing if not peeking. */
+    public abstract void hidePanel(@StateChangeReason int reason);
+
+    /** Shows a previously hidden panel again.  {@See #hidePanel}. */
+    public abstract void showPanel(@StateChangeReason int reason);
 
     /**
      * TODO(mdjones): This method should be removed from this class.
@@ -188,7 +223,7 @@ abstract class OverlayPanelBase {
     private float mMaximumHeight;
 
     private boolean mIsFullWidthSizePanelForTesting;
-    protected boolean mOverrideIsFullWidthSizePanelForTesting;
+    private boolean mOverrideIsFullWidthSizePanelForTesting;
 
     /**
      * Called when the layout has changed.
@@ -227,9 +262,8 @@ abstract class OverlayPanelBase {
      * @return Whether the given width matches the criteria required for a full width Panel.
      */
     protected boolean doesMatchFullWidthCriteria(float containerWidth) {
-        if (mOverrideIsFullWidthSizePanelForTesting) {
-            return mIsFullWidthSizePanelForTesting;
-        }
+        if (mOverrideIsFullWidthSizePanelForTesting) return mIsFullWidthSizePanelForTesting;
+
         return containerWidth <= SMALL_PANEL_WIDTH_THRESHOLD_DP;
     }
 
@@ -308,18 +342,19 @@ abstract class OverlayPanelBase {
         return getBarHeight();
     }
 
-    /**
-     * @return The width of the Overlay Panel Content View in pixels.
-     */
+    /** @return The width of the Overlay Panel Content View in pixels. */
     public int getContentViewWidthPx() {
         return getMaximumWidthPx();
     }
 
-    /**
-     * @return The height of the Overlay Panel Content View in pixels.
-     */
+    /** @return The height of the Overlay Panel Content View in pixels. */
     public int getContentViewHeightPx() {
         return Math.round(mMaximumHeight / mPxToDp);
+    }
+
+    /** @return The offset for the page content in DPs. */
+    protected float getLayoutOffsetYDps() {
+        return mLayoutYOffset * mPxToDp;
     }
 
     // ============================================================================================
@@ -336,14 +371,14 @@ abstract class OverlayPanelBase {
     private boolean mIsMaximized;
 
     /**
-     * @return The vertical offset of the Overlay Panel.
+     * @return The horizontal offset of the Overlay Panel in DPs.
      */
     public float getOffsetX() {
         return mOffsetX;
     }
 
     /**
-     * @return The vertical offset of the Overlay Panel.
+     * @return The vertical offset of the Overlay Panel in DPs.
      */
     public float getOffsetY() {
         return mOffsetY;
@@ -373,24 +408,32 @@ abstract class OverlayPanelBase {
     // --------------------------------------------------------------------------------------------
     // Panel Bar states
     // --------------------------------------------------------------------------------------------
-    private float mBarMarginSide;
+    private final float mBarMarginSide;
+    private final float mBarMarginTop;
+
     private float mBarHeight;
     private boolean mIsBarBorderVisible;
     private float mBarBorderHeight;
-
-    private boolean mBarShadowVisible;
-    private float mBarShadowOpacity;
 
     private float mArrowIconOpacity;
 
     private float mCloseIconOpacity;
     private float mCloseIconWidth;
 
+    private float mOpenTabIconWidth;
+
     /**
      * @return The side margin of the Bar.
      */
     public float getBarMarginSide() {
         return mBarMarginSide;
+    }
+
+    /**
+     * @return The top margin of the Bar.
+     */
+    public float getBarMarginTop() {
+        return mBarMarginTop;
     }
 
     /**
@@ -415,24 +458,37 @@ abstract class OverlayPanelBase {
     }
 
     /**
-     * @return Whether the Bar shadow is visible.
+     * @return The background color of the Bar.
      */
-    public boolean getBarShadowVisible() {
-        return mBarShadowVisible;
+    public int getBarBackgroundColor() {
+        return mBarBackgroundColor;
     }
 
     /**
-     * @return The opacity of the Bar shadow.
+     * @return The tint used for icons.
      */
-    public float getBarShadowOpacity() {
-        return mBarShadowOpacity;
+    public int getIconColor() {
+        return mIconColor;
+    }
+
+    /**
+     * @return The tint used for drag handlebar.
+     */
+    public int getDragHandlebarColor() {
+        return mDragHandlebarColor;
+    }
+
+    /** @return the color to use to draw the separator between the Bar and Content. */
+    public int getSeparatorLineColor() {
+        return ApiCompatibilityUtils.getColor(
+                mContext.getResources(), R.color.overlay_panel_separator_line_color);
     }
 
     /**
      * @return The opacity of the arrow icon.
      */
     public float getArrowIconOpacity() {
-        return mArrowIconOpacity;
+        return OverlayPanel.isNewLayout() ? ARROW_ICON_OPACITY_TRANSPARENT : mArrowIconOpacity;
     }
 
     /**
@@ -471,6 +527,30 @@ abstract class OverlayPanelBase {
         }
     }
 
+    /**
+     * @return The width/height of the open tab icon in DPs.
+     */
+    public float getOpenTabIconDimension() {
+        if (mOpenTabIconWidth == 0) {
+            Drawable icon = ApiCompatibilityUtils.getDrawable(
+                    mContext.getResources(), R.drawable.open_in_new_tab);
+            mOpenTabIconWidth = icon.getIntrinsicWidth() * mPxToDp;
+        }
+        return mOpenTabIconWidth;
+    }
+
+    /**
+     * @return The left X coordinate of the open new tab icon in DPs.
+     */
+    public float getOpenTabIconX() {
+        float offset = getCloseIconDimension() + 2 * mButtonPaddingDps;
+        if (LocalizationUtils.isLayoutRtl()) {
+            return getCloseIconX() + offset;
+        } else {
+            return getCloseIconX() - offset;
+        }
+    }
+
     // --------------------------------------------------------------------------------------------
     // Base Page states
     // --------------------------------------------------------------------------------------------
@@ -499,7 +579,7 @@ abstract class OverlayPanelBase {
     private float mProgressBarOpacity;
     private boolean mIsProgressBarVisible;
     private float mProgressBarHeight;
-    private int mProgressBarCompletion;
+    private float mProgressBarCompletion;
 
     /**
      * @return Whether the Progress Bar is visible.
@@ -532,14 +612,14 @@ abstract class OverlayPanelBase {
     /**
      * @return The completion percentage of the Progress Bar.
      */
-    public int getProgressBarCompletion() {
+    public float getProgressBarCompletion() {
         return mProgressBarCompletion;
     }
 
     /**
-     * @param completion The completion percentage to be set.
+     * @param completion The completion to be set.
      */
-    protected void setProgressBarCompletion(int completion) {
+    protected void setProgressBarCompletion(float completion) {
         mProgressBarCompletion = completion;
     }
 
@@ -560,6 +640,8 @@ abstract class OverlayPanelBase {
      * @param reason The reason for a change in the panel's state.
      */
     protected void setPanelState(@PanelState int state, @StateChangeReason int reason) {
+        if (mPanelHidden) return;
+
         if (state == PanelState.CLOSED) {
             mHeight = 0;
             onClosed(reason);
@@ -653,7 +735,7 @@ abstract class OverlayPanelBase {
      * @return The peeked height of the panel in dps.
      */
     protected float getPeekedHeight() {
-        return mBarHeightPeeking;
+        return getBarHeight();
     }
 
     /**
@@ -714,7 +796,8 @@ abstract class OverlayPanelBase {
         int nextState = PanelState.UNDEFINED;
         @PanelState
         int prevState = nextState;
-        for (@PanelState int state = 0; state < PanelState.NUM_ENTRIES; state++) {
+        for (@PanelState int state = PanelState.UNDEFINED; state < PanelState.NUM_ENTRIES;
+                state++) {
             if (!isValidUiState(state)) continue;
             prevState = nextState;
             nextState = state;
@@ -828,7 +911,8 @@ abstract class OverlayPanelBase {
 
         // Iterate over all states and find the largest one which is being
         // transitioned to/from.
-        for (@PanelState int state = 0; state < PanelState.NUM_ENTRIES; state++) {
+        for (@PanelState int state = PanelState.UNDEFINED; state < PanelState.NUM_ENTRIES;
+                state++) {
             if (!isValidUiState(state)) continue;
             if (panelHeight <= getPanelHeightFromState(state)) {
                 stateFound = state;
@@ -879,9 +963,6 @@ abstract class OverlayPanelBase {
         // Base page brightness.
         mBasePageBrightness = BASE_PAGE_BRIGHTNESS_STATE_PEEKED;
 
-        // Bar height.
-        mBarHeight = mBarHeightPeeking;
-
         // Bar border.
         mIsBarBorderVisible = false;
 
@@ -893,9 +974,6 @@ abstract class OverlayPanelBase {
 
         // Progress Bar.
         mProgressBarOpacity = 0.f;
-
-        // Update the Bar Shadow.
-        updateBarShadow();
     }
 
     /**
@@ -920,12 +998,6 @@ abstract class OverlayPanelBase {
                 BASE_PAGE_BRIGHTNESS_STATE_PEEKED,
                 BASE_PAGE_BRIGHTNESS_STATE_EXPANDED,
                 percentage);
-
-        // Bar height.
-        mBarHeight = Math.round(MathUtils.interpolate(
-                mBarHeightPeeking,
-                getBarHeightExpanded(),
-                percentage));
 
         // Bar border.
         mIsBarBorderVisible = true;
@@ -955,9 +1027,6 @@ abstract class OverlayPanelBase {
         // Fades the Progress Bar the closer it gets to the bottom of the
         // screen.
         mProgressBarOpacity = MathUtils.interpolate(0.f, 1.f, diff / threshold);
-
-        // Update the Bar Shadow.
-        updateBarShadow();
     }
 
     /**
@@ -984,14 +1053,6 @@ abstract class OverlayPanelBase {
                 BASE_PAGE_BRIGHTNESS_STATE_MAXIMIZED,
                 percentage);
 
-        // Bar height.
-        float startBarHeight = supportsExpandedState
-                ? getBarHeightExpanded() : getBarHeightPeeking();
-        mBarHeight = Math.round(MathUtils.interpolate(
-                startBarHeight,
-                getBarHeightMaximized(),
-                percentage));
-
         // Bar border.
         mIsBarBorderVisible = true;
 
@@ -1003,9 +1064,6 @@ abstract class OverlayPanelBase {
 
         // Progress Bar.
         mProgressBarOpacity = 1.f;
-
-        // Update the Bar Shadow.
-        updateBarShadow();
     }
 
     /** Updates the Status Bar. */
@@ -1021,43 +1079,6 @@ abstract class OverlayPanelBase {
         return BASE_PAGE_BRIGHTNESS_STATE_MAXIMIZED;
     }
 
-    private float getBarHeightExpanded() {
-        return isFullWidthSizePanel() ? mBarHeightExpanded : mBarHeightPeeking;
-    }
-
-    private float getBarHeightMaximized() {
-        return isFullWidthSizePanel() ? mBarHeightMaximized : mBarHeightPeeking;
-    }
-
-    /**
-     * @return The peeking height of the panel's bar in dp.
-     */
-    protected float getBarHeightPeeking() {
-        return mBarHeightPeeking;
-    }
-
-    /**
-     * Updates the UI state for Bar Shadow.
-     */
-    protected void updateBarShadow() {
-        float barShadowOpacity = calculateBarShadowOpacity();
-
-        if (barShadowOpacity > 0.f) {
-            mBarShadowVisible = true;
-            mBarShadowOpacity = barShadowOpacity;
-        } else {
-            mBarShadowVisible = false;
-            mBarShadowOpacity = 0.f;
-        }
-    }
-
-    /**
-     * @return The new opacity value for the Bar Shadow.
-     */
-    protected float calculateBarShadowOpacity() {
-        return 0.f;
-    }
-
     // ============================================================================================
     // Base Page Offset
     // ============================================================================================
@@ -1068,7 +1089,7 @@ abstract class OverlayPanelBase {
      * portion of the Base Page visible when a Panel is in expanded state. To facilitate the
      * calculation, the first argument contains the height of the Panel in the expanded state.
      *
-     * @return The desired offset for the Base Page
+     * @return The desired offset for the Base Page in DPs
      */
     protected float calculateBasePageDesiredOffset() {
         return 0.f;
@@ -1090,7 +1111,7 @@ abstract class OverlayPanelBase {
      * consideration the Toolbar height, and adjust the offset accordingly, in order to
      * move the Toolbar out of the view as the Panel expands.
      *
-     * @return The target offset Y.
+     * @return The target offset Y in DPs.
      */
     private float calculateBasePageTargetY() {
         // Only a fullscreen wide Panel should offset the base page. A small panel should
@@ -1099,7 +1120,7 @@ abstract class OverlayPanelBase {
 
         // Start with the desired offset taking viewport offset into consideration and make sure
         // the result is <= 0 so the page moves up and not down.
-        float offset = Math.min(calculateBasePageDesiredOffset() - mLayoutYOffset, 0.0f);
+        float offset = Math.min(calculateBasePageDesiredOffset() - getLayoutOffsetYDps(), 0.0f);
 
         // Make sure the offset is not greater than the expanded height, because
         // there's nothing to render below the Page.

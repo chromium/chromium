@@ -5,6 +5,7 @@
 
 '''Unit tests for grit.format.html_inline'''
 
+from __future__ import print_function
 
 import os
 import re
@@ -101,7 +102,7 @@ class HtmlInlineUnittest(unittest.TestCase):
 
     with self.assertRaises(Exception) as cm:
       html_inline.GetResourceFilenames(tmp_dir.GetPath('index.html'), None)
-    self.failUnlessEqual(cm.exception.message, 'Unmatched </if>')
+    self.failUnlessEqual(str(cm.exception), 'Unmatched </if>')
     tmp_dir.CleanUp()
 
   def testCompressedJavaScript(self):
@@ -537,7 +538,7 @@ class HtmlInlineUnittest(unittest.TestCase):
       'other.js': '// Copyright somebody\nalert(1);',
     }
 
-    expected_inlined = '// // Copyright somebody\nalert(1);'
+    expected_inlined = '// Copyright somebody\nalert(1);'
 
     source_resources = set()
     tmp_dir = util.TempDir(files)
@@ -596,7 +597,8 @@ class HtmlInlineUnittest(unittest.TestCase):
   def testImgSrcset(self):
     '''Tests that img srcset="" attributes are converted.'''
 
-    # Note that there is no space before "img10.png"
+    # Note that there is no space before "img10.png" and that
+    # "img11.png" has no descriptor.
     files = {
       'index.html': '''
       <html>
@@ -605,6 +607,9 @@ class HtmlInlineUnittest(unittest.TestCase):
       <img src="chrome://theme/img11.png" srcset="img7.png 1x, '''\
           '''chrome://theme/img13.png 2x">
       <img srcset="img8.png 300w, img9.png 11E-2w,img10.png -1e2w">
+      <img srcset="img11.png">
+      <img srcset="img11.png, img2.png 1x">
+      <img srcset="img2.png 1x, img11.png">
       </html>
       ''',
       'img1.png': '''a1''',
@@ -617,6 +622,7 @@ class HtmlInlineUnittest(unittest.TestCase):
       'img8.png': '''a8''',
       'img9.png': '''a9''',
       'img10.png': '''a10''',
+      'img11.png': '''a11''',
     }
 
     expected_inlined = '''
@@ -629,6 +635,9 @@ class HtmlInlineUnittest(unittest.TestCase):
           '''YTc= 1x,chrome://theme/img13.png 2x">
       <img srcset="data:image/png;base64,YTg= 300w,data:image/png;base64,'''\
           '''YTk= 11E-2w,data:image/png;base64,YTEw -1e2w">
+      <img srcset="data:image/png;base64,YTEx">
+      <img srcset="data:image/png;base64,YTEx,data:image/png;base64,YTI= 1x">
+      <img srcset="data:image/png;base64,YTI= 1x,data:image/png;base64,YTEx">
       </html>
       '''
 
@@ -641,6 +650,95 @@ class HtmlInlineUnittest(unittest.TestCase):
     result = html_inline.DoInline(
         tmp_dir.GetPath('index.html'),
         None)
+    resources = result.inlined_files
+    resources.add(tmp_dir.GetPath('index.html'))
+    self.failUnlessEqual(resources, source_resources)
+    self.failUnlessEqual(expected_inlined,
+                         util.FixLineEnd(result.inlined_data, '\n'))
+    tmp_dir.CleanUp()
+
+  def testImgSrcsetIgnoresI18n(self):
+    '''Tests that $i18n{...} strings are ignored when inlining.
+    '''
+
+    src_html = '''
+      <html>
+      <head></head>
+      <body>
+        <img srcset="$i18n{foo}">
+      </body>
+      </html>
+      '''
+
+    files = {
+      'index.html': src_html,
+    }
+
+    expected_inlined = src_html
+
+    source_resources = set()
+    tmp_dir = util.TempDir(files)
+    for filename in files:
+      source_resources.add(tmp_dir.GetPath(util.normpath(filename)))
+
+    result = html_inline.DoInline(tmp_dir.GetPath('index.html'), None)
+    resources = result.inlined_files
+    resources.add(tmp_dir.GetPath('index.html'))
+    self.failUnlessEqual(resources, source_resources)
+    self.failUnlessEqual(expected_inlined,
+                         util.FixLineEnd(result.inlined_data, '\n'))
+    tmp_dir.CleanUp()
+
+  def testSourceSrcset(self):
+    '''Tests that source srcset="" attributes are converted.'''
+
+    # Note that there is no space before "img10.png" and that
+    # "img11.png" has no descriptor.
+    files = {
+      'index.html': '''
+      <html>
+      <source src="img1.png" srcset="img2.png 1x, img3.png 2x">
+      <source src="img4.png" srcset=" img5.png   1x , img6.png 2x ">
+      <source src="chrome://theme/img11.png" srcset="img7.png 1x, '''\
+          '''chrome://theme/img13.png 2x">
+      <source srcset="img8.png 300w, img9.png 11E-2w,img10.png -1e2w">
+      <source srcset="img11.png">
+      </html>
+      ''',
+      'img1.png': '''a1''',
+      'img2.png': '''a2''',
+      'img3.png': '''a3''',
+      'img4.png': '''a4''',
+      'img5.png': '''a5''',
+      'img6.png': '''a6''',
+      'img7.png': '''a7''',
+      'img8.png': '''a8''',
+      'img9.png': '''a9''',
+      'img10.png': '''a10''',
+      'img11.png': '''a11''',
+    }
+
+    expected_inlined = '''
+      <html>
+      <source src="data:image/png;base64,YTE=" srcset="data:image/png;'''\
+          '''base64,YTI= 1x,data:image/png;base64,YTM= 2x">
+      <source src="data:image/png;base64,YTQ=" srcset="data:image/png;'''\
+          '''base64,YTU= 1x,data:image/png;base64,YTY= 2x">
+      <source src="chrome://theme/img11.png" srcset="data:image/png;'''\
+          '''base64,YTc= 1x,chrome://theme/img13.png 2x">
+      <source srcset="data:image/png;base64,YTg= 300w,data:image/png;'''\
+          '''base64,YTk= 11E-2w,data:image/png;base64,YTEw -1e2w">
+      <source srcset="data:image/png;base64,YTEx">
+      </html>
+      '''
+
+    source_resources = set()
+    tmp_dir = util.TempDir(files)
+    for filename in files:
+      source_resources.add(tmp_dir.GetPath(filename))
+
+    # Test normal inlining.
+    result = html_inline.DoInline(tmp_dir.GetPath('index.html'), None)
     resources = result.inlined_files
     resources.add(tmp_dir.GetPath('index.html'))
     self.failUnlessEqual(resources, source_resources)

@@ -14,6 +14,7 @@
 /////////////////////////////////////////////////////////////////////////////
 #undef APSTUDIO_READONLY_SYMBOLS
 
+#include "build/branding_buildflags.h"
 #include "chrome/installer/setup/buildflags.h"
 
 /////////////////////////////////////////////////////////////////////////////
@@ -58,7 +59,7 @@ IDI_SETUP               ICON                    "setup.ico"
 #endif    // English (U.S.) resources
 /////////////////////////////////////////////////////////////////////////////
 
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -115,7 +116,7 @@ IDR_OEMPG_VI.HTML       HTML   "eula\\oem_vi.html"
 IDR_OEMPG_ZH_CN.HTML    HTML   "eula\\oem_zh-CN.html"
 IDR_OEMPG_ZH_TW.HTML    HTML   "eula\\oem_zh-TW.html"
 
-#endif  // defined(GOOGLE_CHROME_BUILD)
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 #ifndef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////

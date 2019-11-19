@@ -28,6 +28,25 @@ struct DnsOverHttpsServer {
   bool use_post = false;
 };
 
+// The secure DNS mode specifies what types of lookups (secure/insecure) should
+// be performed and in what order when resolving a specific query. This is
+// an expanded version of DnsConfig::SecureDnsMode that includes representation
+// of an optional SecureDnsMode. Needed because Mojo does not support optional
+// enums.
+enum OptionalSecureDnsMode {
+  NO_OVERRIDE,
+  OFF,
+  AUTOMATIC,
+  SECURE,
+};
+
+// This enum corresponds to DnsConfig::SecureDnsMode.
+enum SecureDnsMode {
+  OFF,
+  AUTOMATIC,
+  SECURE,
+};
+
 // Overridable DNS configuration values for host resolution. All fields default
 // to a non-overriding state where the relevant value will be used from system
 // DNS configuration.
@@ -79,6 +98,17 @@ struct DnsConfigOverrides {
   // List of servers to query over HTTPS, queried in order
   // (https://tools.ietf.org/id/draft-ietf-doh-dns-over-https-12.txt).
   array<DnsOverHttpsServer>? dns_over_https_servers;
+
+  // The default SecureDnsMode to use when resolving queries. It can be
+  // for individual requests such as requests to resolve a DoH server hostname.
+  OptionalSecureDnsMode secure_dns_mode = OptionalSecureDnsMode.NO_OVERRIDE;
+
+  // Whether automatic upgrade to DNS over HTTPS servers is permitted.
+  Tristate allow_dns_over_https_upgrade = Tristate.NO_OVERRIDE;
+
+  // List of providers to exclude from upgrade mapping. See the
+  // mapping in net/dns/dns_util.cc for provider ids.
+  array<string>? disabled_upgrade_providers;
 };
 
 // Control handle used to control outstanding NetworkContext::ResolveHost
@@ -175,7 +205,7 @@ struct ResolveHostParameters {
 
   // If set, the outstanding request can be controlled, eg cancelled, via the
   // handle.
-  ResolveHostHandle&? control_handle;
+  pending_receiver<ResolveHostHandle>? control_handle;
 
   // If |true|, requests that the resolver include AddressList::canonical_name
   // in the results. If the resolver can do so without significant performance
@@ -192,6 +222,10 @@ struct ResolveHostParameters {
   // will receive special logging/observer treatment, and
   // ResolveHostClient::OnComplete will not receive any addresses.
   bool is_speculative = false;
+
+  // Set to override the resolver's default secure dns mode for this request.
+  OptionalSecureDnsMode secure_dns_mode_override =
+      OptionalSecureDnsMode.NO_OVERRIDE;
 };
 
 // Response interface used to receive notifications from
@@ -242,7 +276,7 @@ interface HostResolver {
   // |response_client|.
   ResolveHost(HostPortPair host,
               ResolveHostParameters? optional_parameters,
-              ResolveHostClient response_client);
+              pending_remote<ResolveHostClient> response_client);
 
   // Starts a listener to watch for updates to a multicast DNS result. Result is
   // a network error code indicating the success of starting the listener. On
@@ -253,19 +287,21 @@ interface HostResolver {
   // notifications if the HostResolver or parent NetworkContext are destroyed.
   MdnsListen(HostPortPair host,
              DnsQueryType query_type,
-             MdnsListenClient response_client) => (int32 result);
+             pending_remote<MdnsListenClient> response_client)
+      => (int32 result);
 };
 
 // A client interface that subscribes to DNS config change events from
 // DnsConfigChangeManager.
 interface DnsConfigChangeManagerClient {
-  // Notifies that a potential change has been detected in the DNS settings of
-  // the system that may affect results of host resolution.
-  OnSystemDnsConfigChanged();
+  // Notifies that a potential change has been detected in the DNS configuration
+  // that may affect results of host resolution. May be a change in system DNS
+  // settings or effective changes added on top by Chrome net code.
+  OnDnsConfigChanged();
 };
 
 // An interface that broadcasts DNS config change events.
 interface DnsConfigChangeManager {
   // Requests to receive notification when there is a DNS config change.
-  RequestNotifications(DnsConfigChangeManagerClient client_ptr);
+  RequestNotifications(pending_remote<DnsConfigChangeManagerClient> client);
 };

@@ -6,11 +6,9 @@
 
 namespace switches {
 
-const char kWebViewSandboxedRenderer[] = "webview-sandboxed-renderer";
+const char kWebViewLogJsConsoleMessages[] = "webview-log-js-console-messages";
 
-// used to enable safebrowsing functionality in webview
-const char kWebViewEnableSafeBrowsingSupport[] =
-    "webview-enable-safebrowsing-support";
+const char kWebViewSandboxedRenderer[] = "webview-sandboxed-renderer";
 
 // used to disable safebrowsing functionality in webview
 const char kWebViewDisableSafeBrowsingSupport[] =
@@ -18,5 +16,8 @@ const char kWebViewDisableSafeBrowsingSupport[] =
 
 // Used to enable shared image API for webview.
 const char kWebViewEnableSharedImage[] = "webview-enable-shared-image";
+
+// Used to enable vulkan draw mode instead of interop draw mode for webview.
+const char kWebViewEnableVulkan[] = "webview-enable-vulkan";
 
 }  // namespace switches

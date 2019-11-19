@@ -5,6 +5,7 @@
 #include "chrome/browser/chromeos/first_run/goodies_displayer.h"
 
 #include "base/command_line.h"
+#include "base/run_loop.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -13,7 +14,6 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/test_launcher_utils.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
 
 namespace chromeos {
@@ -31,11 +31,8 @@ class GoodiesDisplayerBrowserTest : public InProcessBrowserTest,
   // Set up windowless browser and GoodiesDisplayer.  |delta_days| is +/- delta
   // in days from kMaxDaysAfterOobeForGoodies; <= 0: "show", > 0: "don't show".
   Browser* CreateBrowserAndDisplayer(int delta_days) {
-    // Create a new browser and wait for completion.
-    ui_test_utils::BrowserAddedObserver browser_added_observer;
     Browser* browser = new Browser(
         Browser::CreateParams(ProfileManager::GetActiveUserProfile(), true));
-    browser_added_observer.WaitForSingleNewBrowser();
 
     // Set up Goodies Displayer and set fake age of device.
     setup_info_.days_since_oobe =
@@ -74,10 +71,9 @@ class GoodiesDisplayerBrowserTest : public InProcessBrowserTest,
 
     // Wait for GoodiesDisplayer setup completion.  The completion callback will
     // shut down the message loop.
-    scoped_refptr<content::MessageLoopRunner> message_loop_runner =
-        new content::MessageLoopRunner;
-    setup_info_.on_setup_complete_callback = message_loop_runner->QuitClosure();
-    message_loop_runner->Run();
+    base::RunLoop run_loop;
+    setup_info_.on_setup_complete_callback = run_loop.QuitClosure();
+    run_loop.Run();
     setup_info_.on_setup_complete_callback.Reset();
     EXPECT_TRUE(setup_info_.setup_complete);
   }

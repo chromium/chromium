@@ -106,10 +106,9 @@ Node* NodeTraversal::LastWithin(const ContainerNode& current) {
 }
 
 Node& NodeTraversal::LastWithinOrSelf(Node& current) {
+  auto* curr_node = DynamicTo<ContainerNode>(current);
   Node* last_descendant =
-      current.IsContainerNode()
-          ? NodeTraversal::LastWithin(ToContainerNode(current))
-          : nullptr;
+      curr_node ? NodeTraversal::LastWithin(*curr_node) : nullptr;
   return last_descendant ? *last_descendant : current;
 }
 

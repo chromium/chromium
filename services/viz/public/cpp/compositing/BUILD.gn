@@ -6,23 +6,24 @@ source_set("tests") {
   testonly = true
 
   sources = [
-    "struct_traits_unittest.cc",
+    "mojom_traits_unittest.cc",
   ]
 
   deps = [
     "//base/test:test_support",
     "//components/viz/common:common",
     "//components/viz/test:test_support",
-    "//gpu/ipc/common:struct_traits",
+    "//gpu/ipc/common:mojom_traits",
+    "//ipc",
     "//media/capture/mojom:video_capture",
     "//mojo/public/cpp/test_support:test_utils",
     "//services/service_manager/public/cpp",
-    "//services/viz/public/interfaces",
-    "//skia/public/interfaces",
+    "//services/viz/public/mojom",
+    "//skia/public/mojom",
     "//testing/gtest",
     "//ui/gfx:test_support",
-    "//ui/gfx/geometry/mojo:struct_traits",
-    "//ui/gfx/ipc/color:color",
+    "//ui/gfx/geometry/mojom:mojom_traits",
+    "//ui/gfx/mojom",
   ]
 }
 
@@ -30,7 +31,7 @@ source_set("perftests") {
   testonly = true
 
   sources = [
-    "struct_traits_perftest.cc",
+    "mojom_traits_perftest.cc",
   ]
 
   deps = [
@@ -38,14 +39,14 @@ source_set("perftests") {
     "//base/test:test_support",
     "//components/viz/common",
     "//components/viz/test:test_support",
-    "//gpu/ipc/common:struct_traits",
+    "//gpu/ipc/common:mojom_traits",
     "//mojo/public/cpp/bindings",
-    "//services/viz/public/interfaces",
+    "//services/viz/public/mojom",
     "//skia",
     "//testing/perf",
     "//ui/gfx",
     "//ui/gfx:test_support",
     "//ui/gfx/geometry",
-    "//ui/gfx/geometry/mojo:struct_traits",
+    "//ui/gfx/geometry/mojom:mojom_traits",
   ]
 }

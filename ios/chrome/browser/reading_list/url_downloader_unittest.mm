@@ -11,7 +11,7 @@
 #include "base/path_service.h"
 #include "base/stl_util.h"
 #import "base/test/ios/wait_util.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "components/reading_list/core/offline_url_utils.h"
 #include "ios/chrome/browser/chrome_paths.h"
 #include "ios/chrome/browser/dom_distiller/distiller_viewer.h"
@@ -165,7 +165,7 @@ class URLDownloaderTest : public PlatformTest {
   }
 
  protected:
-  base::test::ScopedTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
 
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::WeakWrapperSharedURLLoaderFactory>
@@ -224,11 +224,11 @@ TEST_F(URLDownloaderTest, SingleDownloadPDF) {
   task_environment_.RunUntilIdle();
 
   auto* pending_request = test_url_loader_factory_.GetPendingRequest(0);
-  auto response_info = network::CreateResourceResponseHead(net::HTTP_OK);
-  response_info.mime_type = "application/pdf";
+  auto response_info = network::CreateURLResponseHead(net::HTTP_OK);
+  response_info->mime_type = "application/pdf";
   test_url_loader_factory_.SimulateResponseForPendingRequest(
       pending_request->request.url, network::URLLoaderCompletionStatus(net::OK),
-      response_info, std::string("123456789"));
+      std::move(response_info), std::string("123456789"));
 
   // Wait for all asynchronous tasks to complete.
   task_environment_.RunUntilIdle();
@@ -253,7 +253,7 @@ TEST_F(URLDownloaderTest, DownloadAndRemove) {
   // Wait for all asynchronous tasks to complete.
   task_environment_.RunUntilIdle();
 
-  ASSERT_TRUE(!base::ContainsValue(downloader_->downloaded_files_, url));
+  ASSERT_TRUE(!base::Contains(downloader_->downloaded_files_, url));
   ASSERT_EQ(1ul, downloader_->downloaded_files_.size());
   ASSERT_EQ(1ul, downloader_->removed_files_.size());
   ASSERT_FALSE(downloader_->CheckExistenceOfOfflineURLPagePath(url));
@@ -272,8 +272,8 @@ TEST_F(URLDownloaderTest, DownloadAndRemoveAndRedownload) {
   // Wait for all asynchronous tasks to complete.
   task_environment_.RunUntilIdle();
 
-  ASSERT_TRUE(base::ContainsValue(downloader_->downloaded_files_, url));
-  ASSERT_TRUE(base::ContainsValue(downloader_->removed_files_, url));
+  ASSERT_TRUE(base::Contains(downloader_->downloaded_files_, url));
+  ASSERT_TRUE(base::Contains(downloader_->removed_files_, url));
   ASSERT_TRUE(downloader_->CheckExistenceOfOfflineURLPagePath(url));
 }
 

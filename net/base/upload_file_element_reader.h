@@ -37,7 +37,7 @@ class NET_EXPORT UploadFileElementReader : public UploadElementReader {
   // only used as the return value for path().
   // |task_runner| is used to perform file operations. It must not be NULL.
   //
-  // TODO(mmenke): Remove |task_runner| argument, and use the TaskScheduler
+  // TODO(mmenke): Remove |task_runner| argument, and use the ThreadPool
   // instead.
   UploadFileElementReader(base::TaskRunner* task_runner,
                           base::File file,
@@ -129,7 +129,7 @@ class NET_EXPORT UploadFileElementReader : public UploadElementReader {
   // True if Init() was called while an async operation was in progress.
   bool init_called_while_operation_pending_;
 
-  base::WeakPtrFactory<UploadFileElementReader> weak_ptr_factory_;
+  base::WeakPtrFactory<UploadFileElementReader> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(UploadFileElementReader);
 };

@@ -12,7 +12,7 @@ the constructors for that object in platform order.
 Example Output: ./ui/ozone/generate_constructor_list.py \
                     --platform test \
                     --platform dri \
-                    --export OZONE_EXPORT \
+                    --export OZONE \
                     --namespace ui \
                     --typename OzonePlatform \
                     --include '"ui/ozone/ozone_platform.h"'
@@ -40,7 +40,7 @@ Example Output: ./ui/ozone/generate_constructor_list.py \
     &ui::CreateOzonePlatformDri,
   };
 
-  template class OZONE_EXPORT PlatformObject<ui::OzonePlatform>;
+  template class COMPONENT_EXPORT(OZONE) PlatformObject<ui::OzonePlatform>;
 
   }  // namespace ui
 """
@@ -129,7 +129,8 @@ def GenerateConstructorList(out, namespace, export, typenames, platforms,
 
   # Exported template instantiation.
   for typename in typenames:
-    out.write('template class %(export)s PlatformObject<%(typename)s>;\n'
+    out.write('template class COMPONENT_EXPORT(%(export)s)' \
+              ' PlatformObject<%(typename)s>;\n'
               % {'export': export, 'typename': typename})
   out.write('\n')
 
@@ -140,7 +141,7 @@ def GenerateConstructorList(out, namespace, export, typenames, platforms,
 def main(argv):
   parser = optparse.OptionParser()
   parser.add_option('--namespace', default='ozone')
-  parser.add_option('--export', default='OZONE_EXPORT')
+  parser.add_option('--export', default='OZONE')
   parser.add_option('--platform_list')
   parser.add_option('--output_cc')
   parser.add_option('--include', action='append', default=[])

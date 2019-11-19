@@ -10,71 +10,92 @@ namespace device_sync {
 
 namespace prefs {
 
-// Whether the system is scheduling device_syncs more aggressively to recover
-// from the previous device_sync failure.
+// (CryptAuth v1) Whether the system is scheduling device_syncs more
+// aggressively to recover from the previous device_sync failure.
 const char kCryptAuthDeviceSyncIsRecoveringFromFailure[] =
     "cryptauth.device_sync.is_recovering_from_failure";
 
-// The timestamp of the last successful CryptAuth device_sync in seconds.
+// (CryptAuth v1) The timestamp of the last successful CryptAuth device_sync in
+// seconds.
 const char kCryptAuthDeviceSyncLastSyncTimeSeconds[] =
     "cryptauth.device_sync.last_device_sync_time_seconds";
 
-// The reason that the next device_sync is performed. This should be one of the
-// enum values of cryptauth::InvocationReason in
+// (CryptAuth v1) The reason that the next device_sync is performed. This should
+// be one of the enum values of cryptauth::InvocationReason in
 // chromeos/services/device_sync/proto/cryptauth_api.proto.
 const char kCryptAuthDeviceSyncReason[] = "cryptauth.device_sync.reason";
 
-// A list of unlock keys (stored as dictionaries) synced from CryptAuth. Unlock
-// Keys are phones belonging to the user that can unlock other devices, such as
-// desktop PCs.
+// (CryptAuth v1) A list of unlock keys (stored as dictionaries) synced from
+// CryptAuth. Unlock Keys are phones belonging to the user that can unlock other
+// devices, such as desktop PCs.
 const char kCryptAuthDeviceSyncUnlockKeys[] =
     "cryptauth.device_sync.unlock_keys";
 
-// Whether the system is scheduling enrollments more aggressively to recover
-// from the previous enrollment failure.
+// (CryptAuth v1) Whether the system is scheduling enrollments more aggressively
+// to recover from the previous enrollment failure.
 const char kCryptAuthEnrollmentIsRecoveringFromFailure[] =
     "cryptauth.enrollment.is_recovering_from_failure";
 
-// The timestamp of the last successful CryptAuth enrollment in seconds.
+// (CryptAuth v1) The timestamp of the last successful CryptAuth enrollment in
+// seconds.
 const char kCryptAuthEnrollmentLastEnrollmentTimeSeconds[] =
     "cryptauth.enrollment.last_enrollment_time_seconds";
 
-// The reason that the next enrollment is performed. This should be one of the
-// enum values of cryptauth::InvocationReason in
+// (CryptAuth v1) The reason that the next enrollment is performed. This should
+// be one of the enum values of cryptauth::InvocationReason in
 // chromeos/services/device_sync/proto/cryptauth_api.proto.
 const char kCryptAuthEnrollmentReason[] = "cryptauth.enrollment.reason";
 
-// The most recent ClientDirective--serialized to a string and base64
-// encoded--sent to the CryptAuthEnrollmentScheduler.
-const char kCryptAuthEnrollmentSchedulerClientDirective[] =
-    "cryptauth.enrollment.scheduler_client_directive";
-
-// The time of the last enrollment attempt.
-const char kCryptAuthEnrollmentSchedulerLastEnrollmentAttemptTime[] =
-    "cryptauth.enrollment.scheduler_last_enrollment_attempt_time";
-
-// The time of the last successful enrollment.
-const char kCryptAuthEnrollmentSchedulerLastSuccessfulEnrollmentTime[] =
-    "cryptauth.enrollment.scheduler_last_successful_enrollment_time";
-
-// The number of failed enrollments since the last successful enrollment.
-const char kCryptAuthEnrollmentSchedulerNumConsecutiveFailures[] =
-    "cryptauth.enrollment.scheduler_num_consecutive_failures";
-
-// The public key of the user and device enrolled with CryptAuth.
+// (CryptAuth v1 and during migration to v2) The public key of the user and
+// device enrolled with CryptAuth.
 const char kCryptAuthEnrollmentUserPublicKey[] =
     "cryptauth.enrollment.user_public_key";
 
-// The private key of the user and device enrolled with CryptAuth.
+// (CryptAuth v1 and during migration to v2) The private key of the user and
+// device enrolled with CryptAuth.
 const char kCryptAuthEnrollmentUserPrivateKey[] =
     "cryptauth.enrollment.user_private_key";
 
-// The GCM registration id used for receiving push messages from CryptAuth.
+// (CryptAuth v1 and v2) The GCM registration id used for receiving push
+// messages from CryptAuth.
 const char kCryptAuthGCMRegistrationId[] = "cryptauth.gcm_registration_id";
 
-// The dictionary of key bundles enrolled with CryptAuth, used to populate and
-// persist the CryptAuthKeyRegistry.
+// (CryptAuth v2) The dictionary of devices synced from CryptAuth, used to
+// populate and persist the CryptAuthDeviceRegistry.
+const char kCryptAuthDeviceRegistry[] = "cryptauth.device_registry";
+
+// (CryptAuth v2) The dictionary of key bundles enrolled with CryptAuth, used to
+// populate and persist the CryptAuthKeyRegistry.
 const char kCryptAuthKeyRegistry[] = "cryptauth.key_registry";
+
+// (CryptAuth v2) The most recent ClientDirective sent to the
+// CryptAuthScheduler.
+const char kCryptAuthSchedulerClientDirective[] =
+    "cryptauth.scheduler.client_directive";
+
+// (CryptAuth v2) The ClientMetadata of the last scheduled enrollment request.
+const char kCryptAuthSchedulerNextEnrollmentRequestClientMetadata[] =
+    "cryptauth.scheduler.next_enrollment_request_client_metadata";
+
+// (CryptAuth v2) The ClientMetadata of the last scheduled DeviceSync request.
+const char kCryptAuthSchedulerNextDeviceSyncRequestClientMetadata[] =
+    "cryptauth.scheduler.next_device_sync_request_client_metadata";
+
+// (CryptAuth v2) The time of the last enrollment attempt.
+const char kCryptAuthSchedulerLastEnrollmentAttemptTime[] =
+    "cryptauth.scheduler.last_enrollment_attempt_time";
+
+// (CryptAuth v2) The time of the last DeviceSync attempt.
+const char kCryptAuthSchedulerLastDeviceSyncAttemptTime[] =
+    "cryptauth.scheduler.last_device_sync_attempt_time";
+
+// (CryptAuth v2) The time of the last successful enrollment.
+const char kCryptAuthSchedulerLastSuccessfulEnrollmentTime[] =
+    "cryptauth.scheduler.last_successful_enrollment_time";
+
+// (CryptAuth v2) The time of the last successful DeviceSync.
+const char kCryptAuthSchedulerLastSuccessfulDeviceSyncTime[] =
+    "cryptauth.scheduler.last_device_sync_enrollment_time";
 
 }  // namespace prefs
 

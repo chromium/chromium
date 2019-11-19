@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/optional.h"
 #include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "ui/gfx/gfx_export.h"
@@ -35,10 +36,16 @@ class GFX_EXPORT StringSlicer {
  public:
   // Warning: Retains a reference to |text| and |ellipsis|. They must have a
   // longer lifetime than the StringSlicer.
+  //
+  // Note: if |elide_whitespace| is base::nullopt, the default whitespace
+  // elision strategy for the type of elision being done will be chosen.
+  // Defaults are to trim for beginning and end elision; no trimming for middle
+  // elision.
   StringSlicer(const base::string16& text,
                const base::string16& ellipsis,
                bool elide_in_middle,
-               bool elide_at_beginning);
+               bool elide_at_beginning,
+               base::Optional<bool> elide_whitespace = base::nullopt);
 
   // Cuts |text_| to be at most |length| UTF-16 code units long. If
   // |elide_in_middle_| is true, the middle of the string is removed to leave
@@ -59,10 +66,13 @@ class GFX_EXPORT StringSlicer {
   const base::string16& ellipsis_;
 
   // If true, the middle of the string will be elided.
-  bool elide_in_middle_;
+  const bool elide_in_middle_;
 
   // If true, the beginning of the string will be elided.
-  bool elide_at_beginning_;
+  const bool elide_at_beginning_;
+
+  // How whitespace around an elision point is handled.
+  const bool elide_whitespace_;
 
   DISALLOW_COPY_AND_ASSIGN(StringSlicer);
 };
@@ -140,17 +150,6 @@ GFX_EXPORT int ElideRectangleText(const base::string16& text,
                                   int available_pixel_height,
                                   WordWrapBehavior wrap_behavior,
                                   std::vector<base::string16>* lines);
-
-#if defined(OS_MACOSX)
-// As above, but uses the native platform typesetter (CoreText on Mac).
-GFX_EXPORT int ElideRectangleTextForNativeUi(
-    const base::string16& input,
-    const FontList& font_list,
-    float available_pixel_width,
-    int available_pixel_height,
-    WordWrapBehavior wrap_behavior,
-    std::vector<base::string16>* lines);
-#endif  // OS_MACOSX
 
 // Truncates |string| to |length| characters. This breaks the string according
 // to the specified |break_type|, which must be either WORD_BREAK or

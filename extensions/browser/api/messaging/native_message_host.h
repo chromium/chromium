@@ -11,6 +11,10 @@
 #include "base/single_thread_task_runner.h"
 #include "ui/gfx/native_widget_types.h"
 
+namespace content {
+class BrowserContext;
+}  // namespace content
+
 namespace extensions {
 
 // An interface for receiving messages from MessageService (Chrome) using the
@@ -38,6 +42,7 @@ class NativeMessageHost {
 
   // Creates the NativeMessageHost based on the |native_host_name|.
   static std::unique_ptr<NativeMessageHost> Create(
+      content::BrowserContext* browser_context,
       gfx::NativeView native_view,
       const std::string& source_extension_id,
       const std::string& native_host_name,

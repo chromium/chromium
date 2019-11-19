@@ -11,11 +11,15 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/ui/exclusive_access/fullscreen_controller_test.h"
+#include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/guest_view/browser/test_guest_view_manager.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test_utils.h"
@@ -26,6 +30,7 @@
 #include "extensions/browser/guest_view/mime_handler_view/test_mime_handler_view_guest.h"
 #include "extensions/test/result_catcher.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/blink/public/platform/web_pointer_properties.h"
 
 using guest_view::GuestViewManager;
 using guest_view::GuestViewManagerDelegate;
@@ -66,10 +71,10 @@ class MimeHandlerViewTest : public ExtensionApiTest,
     bool use_cross_process_frames_for_guests = GetParam();
     if (use_cross_process_frames_for_guests) {
       scoped_feature_list_.InitAndEnableFeature(
-          features::kGuestViewCrossProcessFrames);
+          features::kMimeHandlerViewInCrossProcessFrame);
     } else {
       scoped_feature_list_.InitAndDisableFeature(
-          features::kGuestViewCrossProcessFrames);
+          features::kMimeHandlerViewInCrossProcessFrame);
     }
   }
 
@@ -141,6 +146,75 @@ INSTANTIATE_TEST_SUITE_P(MimeHandlerViewTests,
 #endif
 IN_PROC_BROWSER_TEST_P(MimeHandlerViewTest, MAYBE_Fullscreen) {
   RunTest("testFullscreen.csv");
+}
+
+namespace {
+
+void WaitForFullscreenAnimation() {
+#if defined(OS_MACOSX)
+  const int delay_in_ms = 1500;
+#else
+  const int delay_in_ms = 100;
+#endif
+  // Wait for Mac OS fullscreen animation.
+  base::RunLoop run_loop;
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE, run_loop.QuitClosure(),
+      base::TimeDelta::FromMilliseconds(delay_in_ms));
+  run_loop.Run();
+}
+
+}  // namespace
+
+IN_PROC_BROWSER_TEST_P(MimeHandlerViewTest, EscapeExitsFullscreen) {
+  // Only run this test in cross-process mode.
+  if (!GetParam())
+    return;
+
+  // Use the testing subclass of MimeHandlerViewGuest.
+  GetGuestViewManager()->RegisterTestGuestViewType<MimeHandlerViewGuest>(
+      base::BindRepeating(&TestMimeHandlerViewGuest::Create));
+
+  const Extension* extension = LoadTestExtension();
+  ASSERT_TRUE(extension);
+
+  ResultCatcher catcher;
+
+  // Set observer to watch for fullscreen.
+  FullscreenNotificationObserver fullscreen_waiter(browser());
+
+  ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/testFullscreenEscape.csv"));
+
+  // Make sure we have a guestviewmanager.
+  auto* embedder_contents = browser()->tab_strip_model()->GetWebContentsAt(0);
+  auto* guest_contents = GetGuestViewManager()->WaitForSingleGuestCreated();
+  auto* guest_rwh =
+      guest_contents->GetRenderWidgetHostView()->GetRenderWidgetHost();
+
+  // Wait for fullscreen mode.
+  fullscreen_waiter.Wait();
+  WaitForFullscreenAnimation();
+
+  // Send a touch to focus the guest. We can't directly test that the correct
+  // RenderWidgetHost got focus, but the wait seems to work.
+  SimulateMouseClick(guest_contents, 0, blink::WebMouseEvent::Button::kLeft);
+  while (!IsRenderWidgetHostFocused(guest_rwh)) {
+    base::RunLoop run_loop;
+    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
+    run_loop.Run();
+  }
+  EXPECT_EQ(guest_contents, content::GetFocusedWebContents(embedder_contents));
+
+  // Send <esc> to exit fullscreen.
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_ESCAPE, false,
+                                              false, false, false));
+  WaitForFullscreenAnimation();
+
+  // Now wait for the test to succeed, or timeout.
+  if (!catcher.GetNextResult())
+    FAIL() << catcher.message();
 }
 
 }  // namespace extensions

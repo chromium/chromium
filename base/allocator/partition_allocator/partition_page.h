@@ -11,6 +11,7 @@
 #include "base/allocator/partition_allocator/partition_bucket.h"
 #include "base/allocator/partition_allocator/partition_cookie.h"
 #include "base/allocator/partition_allocator/partition_freelist_entry.h"
+#include "base/allocator/partition_allocator/random.h"
 #include "base/logging.h"
 
 namespace base {
@@ -217,17 +218,14 @@ ALWAYS_INLINE void PartitionPage::Free(void* ptr) {
 #endif
 
   DCHECK(this->num_allocated_slots);
-  // TODO(palmer): See if we can afford to make this a CHECK.
-  // FIX FIX FIX
-  //  DCHECK(!freelist_head || PartitionRootBase::IsValidPage(
-  //                               PartitionPage::FromPointer(freelist_head)));
-  CHECK(ptr != freelist_head);  // Catches an immediate double free.
+  // Catches an immediate double free.
+  CHECK(ptr != freelist_head);
   // Look for double free one level deeper in debug.
-  DCHECK(!freelist_head || ptr != internal::PartitionFreelistEntry::Transform(
-                                      freelist_head->next));
+  DCHECK(!freelist_head ||
+         ptr != EncodedPartitionFreelistEntry::Decode(freelist_head->next));
   internal::PartitionFreelistEntry* entry =
       static_cast<internal::PartitionFreelistEntry*>(ptr);
-  entry->next = internal::PartitionFreelistEntry::Transform(freelist_head);
+  entry->next = internal::PartitionFreelistEntry::Encode(freelist_head);
   freelist_head = entry;
   --this->num_allocated_slots;
   if (UNLIKELY(this->num_allocated_slots <= 0)) {

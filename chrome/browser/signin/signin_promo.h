@@ -8,8 +8,7 @@
 #include <string>
 
 #include "build/build_config.h"
-#include "chrome/browser/ui/profile_chooser_constants.h"
-#include "components/signin/core/browser/signin_metrics.h"
+#include "components/signin/public/base/signin_metrics.h"
 
 class GURL;
 
@@ -24,11 +23,6 @@ extern const char kSignInPromoQueryKeyAccessPoint[];
 extern const char kSignInPromoQueryKeyAutoClose[];
 extern const char kSignInPromoQueryKeyForceKeepData[];
 extern const char kSignInPromoQueryKeyReason[];
-extern const char kSignInPromoQueryKeySource[];
-extern const char kSigninPromoLandingURLSuccessPage[];
-
-// Gets the sign in landing page URL.
-GURL GetLandingURL(signin_metrics::AccessPoint access_point);
 
 #if !defined(OS_CHROMEOS)
 // These functions are only used to unlock the profile from the desktop user

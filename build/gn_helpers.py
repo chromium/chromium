@@ -19,6 +19,9 @@ To use in a random python file in the build:
 Where the sequence of parameters to join is the relative path from your source
 file to the build directory."""
 
+import sys
+
+
 class GNException(Exception):
   pass
 
@@ -29,14 +32,14 @@ def ToGNString(value, allow_dicts = True):
   allow_dicts indicates if this function will allow converting dictionaries
   to GN scopes. This is only possible at the top level, you can't nest a
   GN scope in a list, so this should be set to False for recursive calls."""
-  if isinstance(value, basestring):
+  if isinstance(value, str):
     if value.find('\n') >= 0:
       raise GNException("Trying to print a string with a newline in it.")
     return '"' + \
         value.replace('\\', '\\\\').replace('"', '\\"').replace('$', '\\$') + \
         '"'
 
-  if isinstance(value, unicode):
+  if sys.version_info.major < 3 and isinstance(value, unicode):
     return ToGNString(value.encode('utf-8'))
 
   if isinstance(value, bool):
@@ -52,7 +55,7 @@ def ToGNString(value, allow_dicts = True):
       raise GNException("Attempting to recursively print a dictionary.")
     result = ""
     for key in sorted(value):
-      if not isinstance(key, basestring):
+      if not isinstance(key, str) and not isinstance(key, unicode):
         raise GNException("Dictionary key is not a string.")
       result += "%s = %s\n" % (key, ToGNString(value[key], False))
     return result

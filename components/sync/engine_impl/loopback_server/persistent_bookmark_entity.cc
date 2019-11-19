@@ -4,8 +4,9 @@
 
 #include "components/sync/engine_impl/loopback_server/persistent_bookmark_entity.h"
 
+#include <memory>
+
 #include "base/guid.h"
-#include "base/memory/ptr_util.h"
 
 using std::string;
 
@@ -37,11 +38,11 @@ std::unique_ptr<LoopbackServerEntity> PersistentBookmarkEntity::CreateNew(
   const string originator_cache_guid = client_guid;
   const string originator_client_item_id = client_entity.id_string();
 
-  return base::WrapUnique(new PersistentBookmarkEntity(
+  return std::make_unique<PersistentBookmarkEntity>(
       id, 0, client_entity.name(), originator_cache_guid,
       originator_client_item_id, client_entity.unique_position(),
       client_entity.specifics(), client_entity.folder(), parent_id,
-      client_entity.ctime(), client_entity.mtime()));
+      client_entity.ctime(), client_entity.mtime());
 }
 
 // static
@@ -68,11 +69,11 @@ PersistentBookmarkEntity::CreateUpdatedVersion(
 
   // Using a version of 0 is okay here as it'll be updated before this entity is
   // actually saved.
-  return base::WrapUnique(new PersistentBookmarkEntity(
+  return std::make_unique<PersistentBookmarkEntity>(
       client_entity.id_string(), 0, client_entity.name(), originator_cache_guid,
       originator_client_item_id, client_entity.unique_position(),
       client_entity.specifics(), client_entity.folder(), parent_id,
-      client_entity.ctime(), client_entity.mtime()));
+      client_entity.ctime(), client_entity.mtime());
 }
 
 // static
@@ -84,13 +85,13 @@ PersistentBookmarkEntity::CreateFromEntity(
     return nullptr;
   }
 
-  return base::WrapUnique(new PersistentBookmarkEntity(
+  return std::make_unique<PersistentBookmarkEntity>(
       client_entity.id_string(), client_entity.version(), client_entity.name(),
       client_entity.originator_cache_guid(),
       client_entity.originator_client_item_id(),
       client_entity.unique_position(), client_entity.specifics(),
       client_entity.folder(), client_entity.parent_id_string(),
-      client_entity.ctime(), client_entity.mtime()));
+      client_entity.ctime(), client_entity.mtime());
 }
 PersistentBookmarkEntity::PersistentBookmarkEntity(
     const string& id,

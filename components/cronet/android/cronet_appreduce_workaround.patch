@@ -1,0 +1,34 @@
+This patchfile is a stop-gap solution to accomodate differences in syntax for
+AppReduce, which is used internally in place of ProGuard. See crbug.com/1004516.
+
+This patches base/android/proguard/chromium_code.flags.
+
+It can be re-generated using these steps:
+
+cd src
+export ORIG_FLAGS="base/android/proguard/chromium_code.flags"
+cp $ORIG_FLAGS modified.flags
+$EDITOR modified.flags
+diff -u "$ORIG_FLAGS" modified.flags > "components/cronet/android/cronet_appreduce_workaround.patch"
+
+To test whether the patch applies cleanly use:
+
+autoninja -C out/Release cronet_combine_proguard_flags
+
+--- base/android/proguard/chromium_code.flags	2019-09-16 16:39:21.108477065 -0700
++++ modified.flags	2019-09-17 12:12:17.487606737 -0700
+@@ -50,9 +50,12 @@
+ -assumenosideeffects class ** {
+   # Remove @RemovableInRelease methods so long as return values are unused.
+   @org.chromium.base.annotations.RemovableInRelease <methods>;
++}
++
++-assumevalues class ** {
+   # Remove object @RemovableInRelease methods even when return value is used.
+-  # Note: * in return type does not match primitives.
+-  @org.chromium.base.annotations.RemovableInRelease * *(...) return null;
++  # Note: ** in return type does not match primitives.
++  @org.chromium.base.annotations.RemovableInRelease ** *(...) return null;
+   # Remove boolean @RemovableInRelease methods even when return value is used.
+   @org.chromium.base.annotations.RemovableInRelease boolean *(...) return false;
+ }

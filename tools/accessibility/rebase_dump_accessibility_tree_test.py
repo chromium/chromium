@@ -18,6 +18,8 @@ of the changes look reasonable, then upload the change for code review.
 Optional argument: patchset number, otherwise will default to latest patchset
 """
 
+from __future__ import print_function
+
 import json
 import os
 import re
@@ -82,7 +84,7 @@ def ParseLog(logdata):
       fp = open(dst_fullpath, 'w')
       fp.write('\n'.join(actual))
       fp.close()
-      print "* %s" % os.path.relpath(dst_fullpath)
+      print("* %s" % os.path.relpath(dst_fullpath))
       completed_files.add(dst_fullpath)
       start = None
       test_file = None
@@ -96,13 +98,13 @@ def Run():
     patchSetArg = '';
 
   (_, tmppath) = tempfile.mkstemp()
-  print 'Temp file: %s' % tmppath
+  print('Temp file: %s' % tmppath)
   os.system('git cl try-results --json %s %s' % (tmppath, patchSetArg))
 
   try_result = open(tmppath).read()
   if len(try_result) < 1000:
-    print 'Did not seem to get try bot data.'
-    print try_result
+    print('Did not seem to get try bot data.')
+    print(try_result)
     return
 
   data = json.loads(try_result)
@@ -111,7 +113,7 @@ def Run():
   #print(json.dumps(data, indent=4))
 
   for builder in data:
-    print builder['builder_name'], builder['result']
+    print(builder['builder_name'], builder['result'])
     if builder['result'] == 'FAILURE':
       logdog_tokens = [
           'chromium',
@@ -123,7 +125,7 @@ def Run():
           '**']
       logdog_path = '/'.join(logdog_tokens)
       logdog_query = 'cit logdog query -results 999 -path "%s"' % logdog_path
-      print (BRIGHT_COLOR + '=> %s' + NORMAL_COLOR) % logdog_query
+      print((BRIGHT_COLOR + '=> %s' + NORMAL_COLOR) % logdog_query)
       steps = os.popen(logdog_query).readlines()
       a11y_step = None
       for step in steps:
@@ -137,11 +139,11 @@ def Run():
           a11y_step = step.rstrip()
           logdog_cat = 'cit logdog cat -raw "chromium%s"' % a11y_step
           # A bit noisy but useful for debugging.
-          # print (BRIGHT_COLOR + '=> %s' + NORMAL_COLOR) % logdog_cat
+          # print((BRIGHT_COLOR + '=> %s' + NORMAL_COLOR) % logdog_cat)
           output = os.popen(logdog_cat).read()
           ParseLog(output)
       if not a11y_step:
-        print 'No content_browsertests (with patch) step found'
+        print('No content_browsertests (with patch) step found')
         continue
 
 if __name__ == '__main__':

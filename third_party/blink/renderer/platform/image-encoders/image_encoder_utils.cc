@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/platform/image-encoders/image_encoder_utils.h"
 
-#include "third_party/blink/renderer/platform/histogram.h"
+#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/network/mime/mime_type_registry.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
 

@@ -28,7 +28,7 @@ class CastNavigationUIData : public content::NavigationUIData {
 
   const std::string& session_id() const { return session_id_; }
 
-  std::unique_ptr<content::NavigationUIData> Clone() const override;
+  std::unique_ptr<content::NavigationUIData> Clone() override;
 
  private:
   std::string session_id_;

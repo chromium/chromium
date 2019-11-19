@@ -5,6 +5,21 @@
 
 # Runs run-webkit-tests and attaches a debugger to the single renderer process.
 
+DEFAULT_TARGET_FLAGS=(--jobs=1 --time-out-ms=100000000 --additional-driver-flag=--no-sandbox --additional-driver-flag=--renderer-startup-dialog)
+
+SAW_DISABLE_FEATURES=false
+for TARGET_FLAG in "$@"; do
+  if [[ "$TARGET_FLAG" == "--additional-driver-flag=--disable-features="* ]]; then
+    TARGET_FLAG="$TARGET_FLAG,SpareRendererForSitePerProcess"
+    SAW_DISABLE_FEATURES=true
+  fi
+  TARGET_FLAGS+=("$TARGET_FLAG")
+done
+if [ $SAW_DISABLE_FEATURES != true ]; then
+  DEFAULT_TARGET_FLAGS+=(--additional-driver-flag=--disable-features=SpareRendererForSitePerProcess)
+fi
+TARGET_FLAGS=(${DEFAULT_TARGET_FLAGS[@]} ${TARGET_FLAGS[@]})
+
 if [ $# -eq 0 ]; then
   echo "usage: $(basename $0) [run_web_tests.py args...] test-path/test-name.html"
   exit 1
@@ -35,11 +50,14 @@ if [ -z "$DEBUGGER" ]; then
   fi
 fi
 
+# Kill existing wpt serve scripts which may have hung from previous runs.
+pkill -f "wpt serve"
+
 # Kill existing matching renderers before we begin to ensure a clean run.
 pkill -f "$RENDERER_REGEX"
 
 # Run with a single child process as this script attaches only to the first renderer.
-$SCRIPTS_DIR/run_web_tests.py --jobs=1 --time-out-ms=100000000 --additional-driver-flag=--no-sandbox --additional-driver-flag=--renderer-startup-dialog $* &
+$SCRIPTS_DIR/run_web_tests.py ${TARGET_FLAGS[@]} &
 
 wait_renderer_pid() {
   for i in {1..200}; do

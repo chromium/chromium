@@ -12,6 +12,7 @@
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/button/checkbox.h"
+#include "ui/views/controls/scroll_view.h"
 #include "ui/views/layout/grid_layout.h"
 
 using base::ASCIIToUTF16;
@@ -31,31 +32,17 @@ ui::TableColumn TestTableColumn(int id, const std::string& title) {
 
 }  // namespace
 
-TableExample::TableExample() : ExampleBase("Table") , table_(NULL) {
-}
+TableExample::TableExample() : ExampleBase("Table") {}
 
 TableExample::~TableExample() {
   // Delete the view before the model.
   delete table_;
-  table_ = NULL;
+  table_ = nullptr;
 }
 
 void TableExample::CreateExampleView(View* container) {
-  column1_visible_checkbox_ =
-      new Checkbox(ASCIIToUTF16("Fruit column visible"), this);
-  column1_visible_checkbox_->SetChecked(true);
-  column2_visible_checkbox_ =
-      new Checkbox(ASCIIToUTF16("Color column visible"), this);
-  column2_visible_checkbox_->SetChecked(true);
-  column3_visible_checkbox_ =
-      new Checkbox(ASCIIToUTF16("Origin column visible"), this);
-  column3_visible_checkbox_->SetChecked(true);
-  column4_visible_checkbox_ =
-      new Checkbox(ASCIIToUTF16("Price column visible"), this);
-  column4_visible_checkbox_->SetChecked(true);
-
-  GridLayout* layout = container->SetLayoutManager(
-      std::make_unique<views::GridLayout>(container));
+  GridLayout* layout =
+      container->SetLayoutManager(std::make_unique<views::GridLayout>());
 
   std::vector<ui::TableColumn> columns;
   columns.push_back(TestTableColumn(0, "Fruit"));
@@ -64,9 +51,9 @@ void TableExample::CreateExampleView(View* container) {
   columns.push_back(TestTableColumn(2, "Origin"));
   columns.push_back(TestTableColumn(3, "Price"));
   columns.back().alignment = ui::TableColumn::RIGHT;
-  table_ = new TableView(this, columns, ICON_AND_TEXT, true);
-  table_->SetGrouper(this);
-  table_->set_observer(this);
+  auto table = std::make_unique<TableView>(this, columns, ICON_AND_TEXT, true);
+  table->SetGrouper(this);
+  table->set_observer(this);
   icon1_.allocN32Pixels(16, 16);
   SkCanvas canvas1(icon1_);
   canvas1.drawColor(SK_ColorRED);
@@ -79,7 +66,8 @@ void TableExample::CreateExampleView(View* container) {
   column_set->AddColumn(GridLayout::FILL, GridLayout::FILL, 1,
                         GridLayout::USE_PREF, 0, 0);
   layout->StartRow(1 /* expand */, 0);
-  layout->AddView(table_->CreateParentIfNecessary());
+  table_ = table.get();
+  layout->AddView(TableView::CreateScrollViewWithTable(std::move(table)));
 
   column_set = layout->AddColumnSet(1);
   column_set->AddColumn(GridLayout::FILL, GridLayout::FILL,
@@ -93,10 +81,21 @@ void TableExample::CreateExampleView(View* container) {
 
   layout->StartRow(0 /* no expand */, 1);
 
-  layout->AddView(column1_visible_checkbox_);
-  layout->AddView(column2_visible_checkbox_);
-  layout->AddView(column3_visible_checkbox_);
-  layout->AddView(column4_visible_checkbox_);
+  auto make_checkbox =
+      [this](base::string16 text) -> std::unique_ptr<Checkbox> {
+    auto result = std::make_unique<Checkbox>(text, this);
+    result->SetChecked(true);
+    return result;
+  };
+
+  column1_visible_checkbox_ =
+      layout->AddView(make_checkbox(ASCIIToUTF16("Fruit column visible")));
+  column2_visible_checkbox_ =
+      layout->AddView(make_checkbox(ASCIIToUTF16("Color column visible")));
+  column3_visible_checkbox_ =
+      layout->AddView(make_checkbox(ASCIIToUTF16("Origin column visible")));
+  column4_visible_checkbox_ =
+      layout->AddView(make_checkbox(ASCIIToUTF16("Price column visible")));
 }
 
 int TableExample::RowCount() {
@@ -120,6 +119,20 @@ base::string16 TableExample::GetText(int row, int column_id) {
 gfx::ImageSkia TableExample::GetIcon(int row) {
   SkBitmap row_icon = row % 2 ? icon1_ : icon2_;
   return gfx::ImageSkia::CreateFrom1xBitmap(row_icon);
+}
+
+base::string16 TableExample::GetTooltip(int row) {
+  if (row == -1)
+    return base::string16();
+
+  const char* const tooltips[5] = {
+      "Orange - Orange you glad I didn't say banana?",
+      "Apple - An apple a day keeps the doctor away",
+      "Blue berries - Bet you can't eat just one",
+      "Strawberries - Always better when homegrown",
+      "Cantaloupe - So nice when perfectly ripe"};
+
+  return ASCIIToUTF16(tooltips[row % 5]);
 }
 
 void TableExample::SetObserver(ui::TableModelObserver* observer) {}
@@ -158,16 +171,16 @@ void TableExample::ButtonPressed(Button* sender, const ui::Event& event) {
   bool show = true;
   if (sender == column1_visible_checkbox_) {
     index = 0;
-    show = column1_visible_checkbox_->checked();
+    show = column1_visible_checkbox_->GetChecked();
   } else if (sender == column2_visible_checkbox_) {
     index = 1;
-    show = column2_visible_checkbox_->checked();
+    show = column2_visible_checkbox_->GetChecked();
   } else if (sender == column3_visible_checkbox_) {
     index = 2;
-    show = column3_visible_checkbox_->checked();
+    show = column3_visible_checkbox_->GetChecked();
   } else if (sender == column4_visible_checkbox_) {
     index = 3;
-    show = column4_visible_checkbox_->checked();
+    show = column4_visible_checkbox_->GetChecked();
   }
   table_->SetColumnVisibility(index, show);
 }

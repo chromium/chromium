@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/task/post_task.h"
 #include "chrome/browser/chromeos/drive/drive_integration_service.h"
@@ -14,18 +15,34 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
-#include "storage/browser/fileapi/file_system_context.h"
-#include "storage/browser/fileapi/file_system_operation.h"
-#include "storage/browser/fileapi/file_system_operation_context.h"
-#include "storage/browser/fileapi/file_system_url.h"
-#include "storage/browser/fileapi/local_file_util.h"
-#include "storage/common/fileapi/file_system_util.h"
+#include "storage/browser/file_system/file_system_context.h"
+#include "storage/browser/file_system/file_system_operation.h"
+#include "storage/browser/file_system/file_system_operation_context.h"
+#include "storage/browser/file_system/file_system_url.h"
+#include "storage/browser/file_system/local_file_util.h"
+#include "storage/browser/file_system/native_file_util.h"
+#include "storage/common/file_system/file_system_util.h"
 
 namespace drive {
 namespace internal {
 namespace {
 
 constexpr char kTrashDirectoryName[] = ".Trash";
+
+class DriveFsFileUtil : public storage::LocalFileUtil {
+ public:
+  DriveFsFileUtil() = default;
+  ~DriveFsFileUtil() override = default;
+
+ protected:
+  bool IsHiddenItem(const base::FilePath& local_file_path) const override {
+    // DriveFS is a trusted filesystem, allow symlinks.
+    return false;
+  }
+
+ private:
+  DISALLOW_COPY_AND_ASSIGN(DriveFsFileUtil);
+};
 
 class CopyOperation {
  public:
@@ -188,9 +205,7 @@ class DeleteOperation {
 }  // namespace
 
 DriveFsAsyncFileUtil::DriveFsAsyncFileUtil(Profile* profile)
-    : AsyncFileUtilAdapter(new storage::LocalFileUtil),
-      profile_(profile),
-      weak_factory_(this) {}
+    : AsyncFileUtilAdapter(new DriveFsFileUtil), profile_(profile) {}
 
 DriveFsAsyncFileUtil::~DriveFsAsyncFileUtil() = default;
 
@@ -201,7 +216,7 @@ void DriveFsAsyncFileUtil::CopyFileLocal(
     CopyOrMoveOption option,
     CopyFileProgressCallback progress_callback,
     StatusCallback callback) {
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {content::BrowserThread::UI},
       base::BindOnce(
           &CopyOperation::Start,
@@ -216,13 +231,12 @@ void DriveFsAsyncFileUtil::DeleteRecursively(
     std::unique_ptr<storage::FileSystemOperationContext> context,
     const storage::FileSystemURL& url,
     StatusCallback callback) {
-  base::PostTaskWithTraits(
-      FROM_HERE, {content::BrowserThread::UI},
-      base::BindOnce(&DeleteOperation::Start,
-                     base::Unretained(new DeleteOperation(
-                         profile_, url.path(), std::move(callback),
-                         base::SequencedTaskRunnerHandle::Get(),
-                         context->task_runner()))));
+  base::PostTask(FROM_HERE, {content::BrowserThread::UI},
+                 base::BindOnce(&DeleteOperation::Start,
+                                base::Unretained(new DeleteOperation(
+                                    profile_, url.path(), std::move(callback),
+                                    base::SequencedTaskRunnerHandle::Get(),
+                                    context->task_runner()))));
 }
 
 }  // namespace internal

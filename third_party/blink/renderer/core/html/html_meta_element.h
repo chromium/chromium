@@ -43,8 +43,6 @@ class CORE_EXPORT HTMLMetaElement final : public HTMLElement {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  DECLARE_NODE_FACTORY(HTMLMetaElement);
-
   static void GetViewportDescriptionFromContentAttribute(
       const String& content,
       ViewportDescription&,
@@ -75,6 +73,7 @@ class CORE_EXPORT HTMLMetaElement final : public HTMLElement {
 
   void ParseAttribute(const AttributeModificationParams&) override;
   InsertionNotificationRequest InsertedInto(ContainerNode&) override;
+  void RemovedFrom(ContainerNode&) override;
   void DidNotifySubtreeInsertionsToDocument() override;
 
   static float ParsePositiveNumber(Document*,
@@ -113,10 +112,12 @@ class CORE_EXPORT HTMLMetaElement final : public HTMLElement {
                                     const String& replacement1,
                                     const String& replacement2);
 
-  void Process();
+  void ProcessContent();
+  void ProcessHttpEquiv();
+  void NameRemoved(const AtomicString& name_value);
   void ProcessViewportContentAttribute(const String& content,
                                        ViewportDescription::Type origin);
-  void ProcessSupportedColorSchemes(const AtomicString& content);
+  void ProcessColorScheme(const AtomicString& content);
 };
 
 }  // namespace blink

@@ -19,7 +19,7 @@ namespace offline_pages {
 // context, then calls the ResultCallback with the expression value.
 class ScriptInjector {
  public:
-  using ResultCallback = base::OnceCallback<void(const base::Value&)>;
+  using ResultCallback = base::OnceCallback<void(base::Value)>;
 
   virtual ~ScriptInjector() = default;
 

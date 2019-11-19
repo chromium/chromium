@@ -5,7 +5,6 @@
 #ifndef CC_ANIMATION_SCROLL_OFFSET_ANIMATIONS_IMPL_H_
 #define CC_ANIMATION_SCROLL_OFFSET_ANIMATIONS_IMPL_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "cc/animation/animation_delegate.h"
 #include "cc/animation/scroll_offset_animation_curve.h"
@@ -27,8 +26,17 @@ class CC_ANIMATION_EXPORT ScrollOffsetAnimationsImpl
     : public AnimationDelegate {
  public:
   explicit ScrollOffsetAnimationsImpl(AnimationHost* animation_host);
-
+  ScrollOffsetAnimationsImpl(const ScrollOffsetAnimationsImpl&) = delete;
   ~ScrollOffsetAnimationsImpl() override;
+
+  ScrollOffsetAnimationsImpl& operator=(const ScrollOffsetAnimationsImpl&) =
+      delete;
+
+  void AutoScrollAnimationCreate(ElementId element_id,
+                                 const gfx::ScrollOffset& target_offset,
+                                 const gfx::ScrollOffset& current_offset,
+                                 float autoscroll_velocity,
+                                 base::TimeDelta animation_start_offset);
 
   // |delayed_by| shrinks the duration of the
   // animation. |animation_start_offset| causes us to start the animation
@@ -67,8 +75,16 @@ class CC_ANIMATION_EXPORT ScrollOffsetAnimationsImpl
                                base::TimeTicks animation_start_time,
                                std::unique_ptr<AnimationCurve> curve) override {
   }
+  void NotifyLocalTimeUpdated(
+      base::Optional<base::TimeDelta> local_time) override {}
+
+  bool IsAnimating() const;
 
  private:
+  void ScrollAnimationCreateInternal(ElementId element_id,
+                                     std::unique_ptr<AnimationCurve> curve,
+                                     base::TimeDelta animation_start_offset);
+
   void ReattachScrollOffsetAnimationIfNeeded(ElementId element_id);
 
   AnimationHost* animation_host_;
@@ -78,8 +94,6 @@ class CC_ANIMATION_EXPORT ScrollOffsetAnimationsImpl
   // I.e. only one element can have an impl-only scroll offset animation at
   // any given time.
   scoped_refptr<SingleKeyframeEffectAnimation> scroll_offset_animation_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScrollOffsetAnimationsImpl);
 };
 
 }  // namespace cc

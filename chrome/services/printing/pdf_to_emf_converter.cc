@@ -13,6 +13,7 @@
 #include "base/lazy_instance.h"
 #include "base/stl_util.h"
 #include "mojo/public/cpp/base/shared_memory_utils.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "pdf/pdf.h"
 #include "printing/emf_win.h"
 #include "ui/gfx/gdi_util.h"
@@ -21,8 +22,8 @@ namespace printing {
 
 namespace {
 
-base::LazyInstance<std::vector<mojom::PdfToEmfConverterClientPtr>>::Leaky
-    g_converter_clients = LAZY_INSTANCE_INITIALIZER;
+base::LazyInstance<std::vector<mojo::Remote<mojom::PdfToEmfConverterClient>>>::
+    Leaky g_converter_clients = LAZY_INSTANCE_INITIALIZER;
 
 void PreCacheFontCharacters(const LOGFONT* logfont,
                             const wchar_t* text,
@@ -43,23 +44,25 @@ void PreCacheFontCharacters(const LOGFONT* logfont,
 }
 
 void OnConvertedClientDisconnected() {
-  // We have no direct way of tracking which PdfToEmfConverterClientPtr got
-  // disconnected as it is a movable type, short of using a wrapper.
-  // Just traverse the list of clients and remove the ones that are not bound.
+  // We have no direct way of tracking which
+  // mojo::Remote<PdfToEmfConverterClient> got disconnected as it is a movable
+  // type, short of using a wrapper. Just traverse the list of clients and
+  // remove the ones that are not bound.
   base::EraseIf(g_converter_clients.Get(),
-                [](const mojom::PdfToEmfConverterClientPtr& client) {
+                [](const mojo::Remote<mojom::PdfToEmfConverterClient>& client) {
                   return !client.is_bound();
                 });
 }
 
-void RegisterConverterClient(mojom::PdfToEmfConverterClientPtr client) {
+void RegisterConverterClient(
+    mojo::PendingRemote<mojom::PdfToEmfConverterClient> client_remote) {
   if (!g_converter_clients.IsCreated()) {
     // First time this method is called.
     chrome_pdf::SetPDFEnsureTypefaceCharactersAccessible(
         PreCacheFontCharacters);
   }
-  client.set_connection_error_handler(
-      base::BindOnce(&OnConvertedClientDisconnected));
+  mojo::Remote<mojom::PdfToEmfConverterClient> client(std::move(client_remote));
+  client.set_disconnect_handler(base::BindOnce(&OnConvertedClientDisconnected));
   g_converter_clients.Get().push_back(std::move(client));
 }
 
@@ -68,7 +71,7 @@ void RegisterConverterClient(mojom::PdfToEmfConverterClientPtr client) {
 PdfToEmfConverter::PdfToEmfConverter(
     base::ReadOnlySharedMemoryRegion pdf_region,
     const PdfRenderSettings& pdf_render_settings,
-    mojom::PdfToEmfConverterClientPtr client)
+    mojo::PendingRemote<mojom::PdfToEmfConverterClient> client)
     : pdf_render_settings_(pdf_render_settings) {
   RegisterConverterClient(std::move(client));
   SetPrintMode();

@@ -6,20 +6,21 @@
 
 #include <memory>
 
-#include "base/values.h"
 #include "base/syslog_logging.h"
+#include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/common/pref_names.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_value_map.h"
-#include "components/signin/core/browser/signin_pref_names.h"
+#include "components/signin/public/base/signin_pref_names.h"
 
 namespace policy {
 BrowserSigninPolicyHandler::BrowserSigninPolicyHandler(Schema chrome_schema)
     : SchemaValidatingPolicyHandler(
           key::kBrowserSignin,
           chrome_schema.GetKnownProperty(key::kBrowserSignin),
-          SCHEMA_STRICT) {}
+          SCHEMA_ALLOW_UNKNOWN) {}
 
 BrowserSigninPolicyHandler::~BrowserSigninPolicyHandler() {}
 
@@ -38,7 +39,9 @@ void BrowserSigninPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
     }
     switch (static_cast<BrowserSigninMode>(int_value)) {
       case BrowserSigninMode::kForced:
+#if !defined(OS_LINUX)
         prefs->SetValue(prefs::kForceBrowserSignin, base::Value(true));
+#endif
         FALLTHROUGH;
       case BrowserSigninMode::kEnabled:
         prefs->SetValue(

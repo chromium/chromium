@@ -9,7 +9,7 @@ PASS Property break-after value 'recto' computes to 'recto'
 PASS Property break-after value 'verso' computes to 'verso'
 PASS Property break-after value 'avoid-column' computes to 'avoid-column'
 PASS Property break-after value 'column' computes to 'column'
-FAIL Property break-after value 'avoid-region' computes to 'avoid-region' assert_equals: expected "avoid-region" but got "auto"
-FAIL Property break-after value 'region' computes to 'region' assert_equals: expected "region" but got "auto"
+FAIL Property break-after value 'avoid-region' computes to 'avoid-region' assert_true: 'avoid-region' is a supported value for break-after. expected true got false
+FAIL Property break-after value 'region' computes to 'region' assert_true: 'region' is a supported value for break-after. expected true got false
 Harness: the test ran to completion.
 

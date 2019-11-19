@@ -48,6 +48,8 @@ class CONTENT_EXPORT PaymentAppDatabase {
       base::OnceCallback<void(payments::mojom::PaymentHandlerStatus)>;
   using SetPaymentAppInfoCallback =
       base::OnceCallback<void(payments::mojom::PaymentHandlerStatus)>;
+  using EnableDelegationsCallback =
+      base::OnceCallback<void(payments::mojom::PaymentHandlerStatus)>;
 
   explicit PaymentAppDatabase(
       scoped_refptr<ServiceWorkerContextWrapper> service_worker_context);
@@ -77,12 +79,17 @@ class CONTENT_EXPORT PaymentAppDatabase {
   void ClearPaymentInstruments(const GURL& scope,
                                ClearPaymentInstrumentsCallback callback);
   void SetPaymentAppUserHint(const GURL& scope, const std::string& user_hint);
+  void EnablePaymentAppDelegations(
+      const GURL& scope,
+      const std::vector<payments::mojom::PaymentDelegation>& delegations,
+      EnableDelegationsCallback callback);
   void SetPaymentAppInfoForRegisteredServiceWorker(
       int64_t registration_id,
       const std::string& instrument_key,
       const std::string& name,
       const std::string& icon,
       const std::string& method,
+      const SupportedDelegations& supported_delegations,
       SetPaymentAppInfoCallback callback);
 
  private:
@@ -205,12 +212,29 @@ class CONTENT_EXPORT PaymentAppDatabase {
                                          blink::ServiceWorkerStatusCode status);
   void DidSetPaymentAppUserHint(blink::ServiceWorkerStatusCode status);
 
+  // EnablePaymentAppDelegations callbacks.
+  void DidFindRegistrationToEnablePaymentAppDelegations(
+      const std::vector<payments::mojom::PaymentDelegation>& delegations,
+      EnableDelegationsCallback callback,
+      blink::ServiceWorkerStatusCode status,
+      scoped_refptr<ServiceWorkerRegistration> registration);
+  void DidGetPaymentAppInfoToEnableDelegations(
+      const std::vector<payments::mojom::PaymentDelegation>& delegations,
+      EnableDelegationsCallback callback,
+      int64_t registration_id,
+      const GURL& pattern,
+      const std::vector<std::string>& data,
+      blink::ServiceWorkerStatusCode status);
+  void DidEnablePaymentAppDelegations(EnableDelegationsCallback callback,
+                                      blink::ServiceWorkerStatusCode status);
+
   // SetPaymentAppInfoForRegisteredServiceWorker callbacks.
   void DidFindRegistrationToSetPaymentApp(
       const std::string& instrument_key,
       const std::string& name,
       const std::string& icon,
       const std::string& method,
+      const SupportedDelegations& supported_delegations,
       SetPaymentAppInfoCallback callback,
       blink::ServiceWorkerStatusCode status,
       scoped_refptr<ServiceWorkerRegistration> registration);
@@ -225,7 +249,7 @@ class CONTENT_EXPORT PaymentAppDatabase {
       blink::ServiceWorkerStatusCode status);
 
   scoped_refptr<ServiceWorkerContextWrapper> service_worker_context_;
-  base::WeakPtrFactory<PaymentAppDatabase> weak_ptr_factory_;
+  base::WeakPtrFactory<PaymentAppDatabase> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PaymentAppDatabase);
 };

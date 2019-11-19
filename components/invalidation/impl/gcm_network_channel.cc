@@ -8,16 +8,15 @@
 
 #include "base/base64url.h"
 #include "base/bind.h"
+#include "base/hash/sha1.h"
 #include "base/i18n/time_formatting.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/sha1.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
-#include "components/data_use_measurement/core/data_use_user_data.h"
 #include "components/invalidation/impl/gcm_network_channel_delegate.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/load_flags.h"
@@ -124,8 +123,7 @@ GCMNetworkChannel::GCMNetworkChannel(
       register_backoff_entry_(new net::BackoffEntry(&kRegisterBackoffPolicy)),
       gcm_channel_online_(false),
       http_channel_online_(false),
-      diagnostic_info_(this),
-      weak_factory_(this) {
+      diagnostic_info_(this) {
   network_connection_tracker_->AddNetworkConnectionObserver(this);
   delegate_->Initialize(
       base::Bind(&GCMNetworkChannel::OnConnectionStateChanged,
@@ -264,8 +262,7 @@ void GCMNetworkChannel::OnGetTokenComplete(
 
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = BuildUrl(registration_id_);
-  resource_request->load_flags =
-      net::LOAD_DO_NOT_SEND_COOKIES | net::LOAD_DO_NOT_SAVE_COOKIES;
+  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   resource_request->method = "POST";
   resource_request->headers.SetHeader(net::HttpRequestHeaders::kAuthorization,
                                       "Bearer " + access_token_);
@@ -276,9 +273,6 @@ void GCMNetworkChannel::OnGetTokenComplete(
       std::move(resource_request), traffic_annotation);
   simple_url_loader_->AttachStringForUpload(cached_message_,
                                             "application/x-protobuffer");
-  // TODO(https://crbug.com/808498): Re-add data use measurement once
-  // SimpleURLLoader supports it.
-  // ID=data_use_measurement::DataUseUserData::INVALIDATION
   simple_url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory_.get(),
       base::BindOnce(&GCMNetworkChannel::OnSimpleLoaderComplete,
@@ -440,7 +434,7 @@ void GCMNetworkChannel::RequestDetailedStatus(
   callback.Run(*diagnostic_info_.CollectDebugData());
 }
 
-void GCMNetworkChannel::UpdateCredentials(const std::string& email,
+void GCMNetworkChannel::UpdateCredentials(const CoreAccountId& account_id,
                                           const std::string& token) {
   // Do nothing. We get access token by requesting it for every message.
 }

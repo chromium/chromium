@@ -5,6 +5,10 @@
 #include "content/public/browser/web_contents_view_delegate.h"
 
 #include <stddef.h>
+#include <utility>
+
+#include "base/callback.h"
+#include "content/public/common/drop_data.h"
 
 namespace content {
 
@@ -45,6 +49,11 @@ void* WebContentsViewDelegate::CreateRenderWidgetHostViewDelegate(
     RenderWidgetHost* render_widget_host,
     bool is_popup) {
   return nullptr;
+}
+
+void WebContentsViewDelegate::OnPerformDrop(const DropData& drop_data,
+                                            DropCompletionCallback callback) {
+  return std::move(callback).Run(DropCompletionResult::kContinue);
 }
 
 }  // namespace content

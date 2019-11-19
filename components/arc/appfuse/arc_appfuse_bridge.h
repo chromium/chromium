@@ -8,7 +8,7 @@
 #include <stdint.h>
 
 #include "base/macros.h"
-#include "components/arc/common/appfuse.mojom.h"
+#include "components/arc/mojom/appfuse.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace content {

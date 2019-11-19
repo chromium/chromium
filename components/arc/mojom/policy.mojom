@@ -1,0 +1,114 @@
+// Copyright 2016 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+//
+// Next MinVersion: 6
+
+module arc.mojom;
+
+import "mojo/public/mojom/base/time.mojom";
+
+[Extensible]
+//See depot/google3/wireless/android/enterprise/clouddps/proto/clouddps.proto
+enum InstallErrorReason {
+    // If the reason is unspecified, this error should be treated as a
+    // non-transient error.
+    REASON_UNSPECIFIED = 0,
+
+    // The server didn't get a response from Play in time. The install may
+    // still succeed or may fail with any error.
+    TIMEOUT = 1,
+
+    // A potentially transient error, for example, the device is not found (due
+    // to replication delay), or Play was unavailable. A retry in a short amount
+    // of time is likely to succeed.
+    TRANSIENT_ERROR = 2,
+
+    // The app was not found in Play.
+    NOT_FOUND = 3,
+
+    // The app is incompatible with the device.
+    NOT_COMPATIBLE_WITH_DEVICE = 4,
+
+    // The app has not been approved by the admin.
+    NOT_APPROVED = 5,
+
+    // The app has new permissions that have not been accepted by the admin.
+    PERMISSIONS_NOT_ACCEPTED = 6,
+
+    // The app is not available in the user's country.
+    NOT_AVAILABLE_IN_COUNTRY = 7,
+
+    // There are no more licenses to assign to the user.
+    NO_LICENSES_REMAINING = 8,
+
+    // The enterprise is no longer enrolled with Play for Work or CloudDPC is
+    // not enabled for the enterprise.
+    NOT_ENROLLED = 9,
+
+    // The user is no longer valid. The user may have been deleted or disabled.
+    USER_INVALID = 10,
+};
+
+// Should be kept in sync with device_management_backend.proto/
+// RemoteCommandResult/ResultType.
+[Extensible]
+enum CommandResultType {
+  IGNORED = 0,  // The command was ignored as obsolete.
+  FAILURE = 1,  // The command could not be executed.
+  SUCCESS = 2,  // The command was successfully executed.
+};
+
+// Next Method ID: 7
+interface PolicyHost {
+  // Get policies from Chrome OS, as JSON-encoded dictionary with the policies'
+  // names as keys and their values as values. The list of possible policies can
+  // be found in components/policy/resources/policy_templates.json
+  GetPolicies@0() => (string policies);
+
+  // Pass a JSON with policy compliance details that reference fields in
+  // CloudDps NonComplianceReason. Should return ChromeOS response to the report
+  // in JSON format as in CloudDps PolicyComplianceReportResponse.
+  // ChromeOS always returns that it's compliant with the report.
+  [MinVersion=1] ReportCompliance@1(string request) => (string response);
+
+  // Reports that request was sent to CloudDPS for set of packages.
+  [MinVersion=3] ReportCloudDpsRequested@2(mojo_base.mojom.Time time,
+                                         array<string> package_names);
+  // Reports that successful response was received from CloudDPS for set of
+  // packages.
+  [MinVersion=3] ReportCloudDpsSucceeded@3(mojo_base.mojom.Time time,
+                                         array<string> package_names);
+  // Reports that CloudDPS reports an error for packages.
+  [MinVersion=3] ReportCloudDpsFailed@4(mojo_base.mojom.Time time,
+                                      string package_name,
+                                      InstallErrorReason reason);
+
+  // Reports that packages were scheduled for force installing
+  // via Play Store directly.
+  [MinVersion=5] ReportDirectInstall@5(mojo_base.mojom.Time time,
+                                     array<string> package_names);
+
+  // Reports that CloudDPC is giving up after several retries to
+  // force install the packages.
+  [MinVersion=5] ReportForceInstallMainLoopFailed@6(mojo_base.mojom.Time time,
+                                          array<string> package_names);
+};
+
+// Next Method ID: 4
+interface PolicyInstance {
+  // DEPRECATED: Please use Init@2 instead.
+  InitDeprecated@0(PolicyHost host_ptr);
+
+  // Establishes full-duplex communication with the host.
+  [MinVersion=2] Init@2(PolicyHost host_ptr) => ();
+
+  // Indicates some policies have changed
+  OnPolicyUpdated@1();
+
+  // Forwards a command received from the management server. The payload is
+  // opaque to Chrome (it contains JSON from the RemoteCommand.payload field for
+  // the USER_ARC_COMMAND RemoteCommand - cf. device_management_backend.proto).
+  [MinVersion=4] OnCommandReceived@3(string command)
+      => (CommandResultType result);
+};

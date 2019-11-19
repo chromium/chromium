@@ -41,9 +41,6 @@ class COMPONENT_EXPORT(CHROMEOS_SETTINGS) SystemSettingsProvider
   // Code common to both constructors.
   void Init();
 
-  // CrosSettingsProvider implementation.
-  void DoSet(const std::string& path, const base::Value& in_value) override;
-
   std::unique_ptr<base::Value> timezone_value_;
   std::unique_ptr<base::Value> per_user_timezone_enabled_value_;
   std::unique_ptr<base::Value> fine_grained_time_zone_enabled_value_;

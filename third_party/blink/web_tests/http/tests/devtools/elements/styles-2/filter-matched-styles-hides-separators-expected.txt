@@ -21,7 +21,6 @@ div {
    display: block
 }
 html {
-   display: block
    color: -internal-root-color
 }
 #third::before {
@@ -52,7 +51,7 @@ Running: testDisplayProperty
 Filtering styles by: display
 [ HIDDEN ]  Inherited from div#second
 [ VISIBLE ] Inherited from div#first
-[ VISIBLE ] Inherited from html
+[ HIDDEN ]  Inherited from html
 [ HIDDEN ]  Pseudo ::before element
 [ VISIBLE ] Pseudo ::after element
 

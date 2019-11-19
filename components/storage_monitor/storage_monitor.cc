@@ -167,7 +167,7 @@ void StorageMonitor::MarkInitialized() {
 void StorageMonitor::ProcessAttach(const StorageInfo& info) {
   {
     base::AutoLock lock(storage_lock_);
-    if (base::ContainsKey(storage_map_, info.device_id())) {
+    if (base::Contains(storage_map_, info.device_id())) {
       // This can happen if our unique id scheme fails. Ignore the incoming
       // non-unique attachment.
       return;

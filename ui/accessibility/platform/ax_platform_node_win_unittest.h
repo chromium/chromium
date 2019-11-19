@@ -7,7 +7,11 @@
 
 #include "ui/accessibility/platform/ax_platform_node_unittest.h"
 
+#include <memory>
 #include <unordered_set>
+
+#include "ui/accessibility/platform/ax_fragment_root_delegate_win.h"
+#include "ui/base/win/accessibility_misc_utils.h"
 
 struct IAccessible;
 struct IAccessible2;
@@ -27,6 +31,19 @@ class ScopedVariant;
 namespace ui {
 
 class AXFragmentRootWin;
+class AXPlatformNode;
+
+class TestFragmentRootDelegate : public AXFragmentRootDelegateWin {
+ public:
+  TestFragmentRootDelegate();
+  virtual ~TestFragmentRootDelegate();
+  gfx::NativeViewAccessible GetChildOfAXFragmentRoot() override;
+  gfx::NativeViewAccessible GetParentOfAXFragmentRoot() override;
+  bool IsAXFragmentRootAControlElement() override;
+  gfx::NativeViewAccessible child_ = nullptr;
+  gfx::NativeViewAccessible parent_ = nullptr;
+  bool is_control_element_ = true;
+};
 
 class AXPlatformNodeWinTest : public ui::AXPlatformNodeTest {
  public:
@@ -38,14 +55,19 @@ class AXPlatformNodeWinTest : public ui::AXPlatformNodeTest {
   void TearDown() override;
 
  protected:
+  AXPlatformNode* AXPlatformNodeFromNode(AXNode* node);
   template <typename T>
   Microsoft::WRL::ComPtr<T> QueryInterfaceFromNodeId(int32_t id);
   template <typename T>
   Microsoft::WRL::ComPtr<T> QueryInterfaceFromNode(AXNode* node);
   Microsoft::WRL::ComPtr<IRawElementProviderSimple>
   GetRootIRawElementProviderSimple();
+  Microsoft::WRL::ComPtr<IRawElementProviderSimple>
+  GetIRawElementProviderSimpleFromChildIndex(int child_index);
   Microsoft::WRL::ComPtr<IRawElementProviderFragment>
   GetRootIRawElementProviderFragment();
+  Microsoft::WRL::ComPtr<IRawElementProviderFragment>
+  IRawElementProviderFragmentFromNode(AXNode* node);
   Microsoft::WRL::ComPtr<IAccessible> IAccessibleFromNode(AXNode* node);
   Microsoft::WRL::ComPtr<IAccessible> GetRootIAccessible();
   Microsoft::WRL::ComPtr<IAccessible2> ToIAccessible2(
@@ -54,23 +76,23 @@ class AXPlatformNodeWinTest : public ui::AXPlatformNodeTest {
       Microsoft::WRL::ComPtr<IAccessible> accessible);
   Microsoft::WRL::ComPtr<IAccessible2_2> ToIAccessible2_2(
       Microsoft::WRL::ComPtr<IAccessible> accessible);
-  void CheckVariantHasName(base::win::ScopedVariant& variant,
+  void CheckVariantHasName(const base::win::ScopedVariant& variant,
                            const wchar_t* expected_name);
   void CheckIUnknownHasName(Microsoft::WRL::ComPtr<IUnknown> unknown,
                             const wchar_t* expected_name);
   Microsoft::WRL::ComPtr<IAccessibleTableCell> GetCellInTable();
 
   void InitFragmentRoot();
+  AXFragmentRootWin* InitNodeAsFragmentRoot(AXNode* node,
+                                            TestFragmentRootDelegate* delegate);
   Microsoft::WRL::ComPtr<IRawElementProviderFragmentRoot> GetFragmentRoot();
 
-  void InitListBox(bool option_1_is_selected,
-                   bool option_2_is_selected,
-                   bool option_3_is_selected,
-                   ax::mojom::State additional_state);
-
-  using PatternSet = std::unordered_set<long>;
+  using PatternSet = std::unordered_set<LONG>;
   PatternSet GetSupportedPatternsFromNodeId(int32_t id);
+
   std::unique_ptr<AXFragmentRootWin> ax_fragment_root_;
+
+  std::unique_ptr<TestFragmentRootDelegate> test_fragment_root_delegate_;
 };
 
 }  // namespace ui

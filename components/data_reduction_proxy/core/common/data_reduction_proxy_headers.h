@@ -14,6 +14,7 @@
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
 #include "net/proxy_resolution/proxy_resolution_service.h"
+#include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "url/gurl.h"
 
 class GURL;
@@ -22,10 +23,6 @@ namespace net {
 class HttpResponseHeaders;
 }  // namespace net
 
-namespace network {
-struct ResourceResponseHead;
-}  // namespace network
-
 namespace data_reduction_proxy {
 
 // Transform directives that may be parsed out of http headers.
@@ -33,9 +30,7 @@ enum TransformDirective {
   TRANSFORM_UNKNOWN,
   TRANSFORM_NONE,
   TRANSFORM_LITE_PAGE,
-  TRANSFORM_EMPTY_IMAGE,
   TRANSFORM_COMPRESSED_VIDEO,
-  TRANSFORM_PAGE_POLICIES_EMPTY_IMAGE,
   TRANSFORM_IDENTITY,
 };
 
@@ -49,23 +44,9 @@ enum DataReductionProxyBypassType {
 #undef BYPASS_EVENT_TYPE
 };
 
-// Values for the bypass actions that can be specified by the Data Reduction
-// Proxy in response to a client request. These are explicit bypass actions
-// specified by the Data Reduction Proxy in the Chrome-Proxy header, block-once,
-// bypass=1, block=300, etc. These are not used for Chrome initiated bypasses
-// due to a server error, missing Via header, etc.
-enum DataReductionProxyBypassAction {
-#define BYPASS_ACTION_TYPE(label, value) BYPASS_ACTION_TYPE_##label = value,
-#include "components/data_reduction_proxy/core/common/data_reduction_proxy_bypass_action_list.h"
-#undef BYPASS_ACTION_TYPE
-};
-
 // Contains instructions contained in the Chrome-Proxy header.
 struct DataReductionProxyInfo {
-  DataReductionProxyInfo()
-      : bypass_all(false),
-        mark_proxies_as_bad(false),
-        bypass_action(BYPASS_ACTION_TYPE_NONE) {}
+  DataReductionProxyInfo() : bypass_all(false), mark_proxies_as_bad(false) {}
 
   // True if Chrome should bypass all available data reduction proxies. False
   // if only the currently connected data reduction proxy should be bypassed.
@@ -78,9 +59,6 @@ struct DataReductionProxyInfo {
   // Amount of time to bypass the data reduction proxy or proxies. This value is
   // ignored if |mark_proxies_as_bad| is false.
   base::TimeDelta bypass_duration;
-
-  // The bypass action specified by the data reduction proxy.
-  DataReductionProxyBypassAction bypass_action;
 };
 
 // Gets the header used for data reduction proxy requests and responses.
@@ -196,7 +174,7 @@ int64_t GetDataReductionProxyOFCL(const net::HttpResponseHeaders* headers);
 // used to compute the ratio, and headers are excluded, since this is only an
 // estimate for response that is beginning to arrive.
 double EstimateCompressionRatioFromHeaders(
-    const network::ResourceResponseHead* response_head);
+    const network::mojom::URLResponseHead* response_head);
 
 }  // namespace data_reduction_proxy
 #endif  // COMPONENTS_DATA_REDUCTION_PROXY_CORE_COMMON_DATA_REDUCTION_PROXY_HEADERS_H_

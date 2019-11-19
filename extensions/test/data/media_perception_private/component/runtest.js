@@ -5,21 +5,22 @@
 function setAnalyticsComponentLight() {
   chrome.mediaPerceptionPrivate.setAnalyticsComponent({
     type: 'LIGHT',
-  }, chrome.test.callbackPass(function(component_state) {
-    chrome.test.assertEq('INSTALLED', component_state.status);
-    chrome.test.assertEq('1.0', component_state.version);
+  }, chrome.test.callbackPass(function(componentState) {
+    chrome.test.assertEq('INSTALLED', componentState.status);
+    chrome.test.assertEq('1.0', componentState.version);
   }));
 }
 
 function setAnalyticsComponentFullExpectFailure() {
   chrome.mediaPerceptionPrivate.setAnalyticsComponent({
     type: 'FULL',
-  }, chrome.test.callbackPass(function(component_state) {
-    chrome.test.assertEq('FAILED_TO_INSTALL', component_state.status);
+  }, chrome.test.callbackPass(function(componentState) {
+    chrome.test.assertEq('FAILED_TO_INSTALL', componentState.status);
+    chrome.test.assertEq('NOT_FOUND', componentState.installationErrorCode);
   }));
 }
 
-function setAnalyticsComponentWithProcessRunningFailure() {
+function setAnalyticsComponentWithProcessRunningSuccess() {
   chrome.mediaPerceptionPrivate.setState({
     status: 'RUNNING',
     deviceContext: 'device_context'
@@ -29,13 +30,14 @@ function setAnalyticsComponentWithProcessRunningFailure() {
 
   chrome.mediaPerceptionPrivate.setAnalyticsComponent({
     type: 'LIGHT',
-  }, chrome.test.callbackPass(function(component_state) {
-    chrome.test.assertEq('FAILED_TO_INSTALL', component_state.status);
+  }, chrome.test.callbackPass(function(componentState) {
+    chrome.test.assertEq('INSTALLED', componentState.status);
+    chrome.test.assertEq('1.0', componentState.version);
   }));
 }
 
 chrome.test.runTests([
     setAnalyticsComponentLight,
     setAnalyticsComponentFullExpectFailure,
-    setAnalyticsComponentWithProcessRunningFailure]);
+    setAnalyticsComponentWithProcessRunningSuccess]);
 

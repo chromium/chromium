@@ -44,9 +44,9 @@
 #include "third_party/blink/renderer/core/editing/visible_selection.h"
 #include "third_party/blink/renderer/core/frame/deprecation.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
-#include "third_party/blink/renderer/core/frame/use_counter.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -452,9 +452,9 @@ void DOMSelection::modify(const String& alter_string,
   else
     return;
 
-  // TODO(editing-dev): The use of updateStyleAndLayoutIgnorePendingStylesheets
+  // TODO(editing-dev): The use of UpdateStyleAndLayout
   // needs to be audited.  See http://crbug.com/590369 for more details.
-  GetFrame()->GetDocument()->UpdateStyleAndLayoutIgnorePendingStylesheets();
+  GetFrame()->GetDocument()->UpdateStyleAndLayout();
 
   Element* focused_element = GetFrame()->GetDocument()->FocusedElement();
   GetFrame()->Selection().Modify(alter, direction, granularity,
@@ -669,7 +669,7 @@ void DOMSelection::addRange(Range* new_range) {
   // TODO(tkent): "Merge the ranges if they intersect" was removed. We show a
   // warning message for a while, and continue to collect the usage data.
   // <https://code.google.com/p/chromium/issues/detail?id=353069>.
-  Deprecation::CountDeprecation(GetFrame(),
+  Deprecation::CountDeprecation(tree_scope_->GetDocument(),
                                 WebFeature::kSelectionAddRangeIntersect);
 }
 
@@ -686,9 +686,9 @@ void DOMSelection::deleteFromDocument() {
     return;
   }
 
-  // TODO(editing-dev): The use of updateStyleAndLayoutIgnorePendingStylesheets
+  // TODO(editing-dev): The use of UpdateStyleAndLayout
   // needs to be audited.  See http://crbug.com/590369 for more details.
-  GetFrame()->GetDocument()->UpdateStyleAndLayoutIgnorePendingStylesheets();
+  GetFrame()->GetDocument()->UpdateStyleAndLayout();
 
   // The following code is necessary for
   // editing/selection/deleteFromDocument-crash.html, which assumes
@@ -721,10 +721,10 @@ bool DOMSelection::containsNode(const Node* n, bool allow_partial) const {
 
   unsigned node_index = n->NodeIndex();
 
-  // TODO(editing-dev): The use of updateStyleAndLayoutIgnorePendingStylesheets
+  // TODO(editing-dev): The use of UpdateStyleAndLayout
   // needs to be audited.  See http://crbug.com/590369 for more details.
   // |VisibleSelection::toNormalizedEphemeralRange| requires clean layout.
-  GetFrame()->GetDocument()->UpdateStyleAndLayoutIgnorePendingStylesheets();
+  GetFrame()->GetDocument()->UpdateStyleAndLayout();
 
   FrameSelection& selection = GetFrame()->Selection();
   const EphemeralRange selected_range =
@@ -782,9 +782,9 @@ String DOMSelection::toString() {
   if (!IsAvailable())
     return String();
 
-  // TODO(editing-dev): The use of updateStyleAndLayoutIgnorePendingStylesheets
+  // TODO(editing-dev): The use of UpdateStyleAndLayout
   // needs to be audited.  See http://crbug.com/590369 for more details.
-  GetFrame()->GetDocument()->UpdateStyleAndLayoutIgnorePendingStylesheets();
+  GetFrame()->GetDocument()->UpdateStyleAndLayout();
 
   DocumentLifecycle::DisallowTransitionScope disallow_transition(
       GetFrame()->GetDocument()->Lifecycle());
@@ -841,8 +841,9 @@ bool DOMSelection::IsValidForPosition(Node* node) const {
 
 void DOMSelection::AddConsoleWarning(const String& message) {
   if (tree_scope_) {
-    tree_scope_->GetDocument().AddConsoleMessage(ConsoleMessage::Create(
-        kJSMessageSource, mojom::ConsoleMessageLevel::kWarning, message));
+    tree_scope_->GetDocument().AddConsoleMessage(
+        ConsoleMessage::Create(mojom::ConsoleMessageSource::kJavaScript,
+                               mojom::ConsoleMessageLevel::kWarning, message));
   }
 }
 

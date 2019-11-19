@@ -1,0 +1,40 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module cros.mojom;
+
+import "media/capture/video/chromeos/mojom/camera_metadata_tags.mojom";
+
+enum EntryType {
+  TYPE_BYTE = 0,
+  TYPE_INT32 = 1,
+  TYPE_FLOAT = 2,
+  TYPE_INT64 = 3,
+  TYPE_DOUBLE = 4,
+  TYPE_RATIONAL = 5,
+  NUM_TYPES
+};
+
+// CameraMetadataEntry is a translation of the camera_metadata_entry_t in
+// Android camera HAL v3 API (https://goo.gl/OC8sOH).  A CameraMetadataEntry
+// holds the values of one type of metadata specified by |tag|.
+struct CameraMetadataEntry {
+  uint32 index;
+  CameraMetadataTag tag;
+  EntryType type;
+  uint32 count;  // The number of data entries as |type| in |data|.
+  array<uint8> data;
+};
+
+// CameraMetadata is a translation of the camera_metadata struct in Android
+// camera HAL v3 API (https://goo.gl/G7ligz).  A CameraMetadata holds a
+// collection of metadata tags and their values.
+struct CameraMetadata {
+  uint32 size;
+  uint32 entry_count;
+  uint32 entry_capacity;
+  uint32 data_count;
+  uint32 data_capacity;
+  array<CameraMetadataEntry>? entries;
+};

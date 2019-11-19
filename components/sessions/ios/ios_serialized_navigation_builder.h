@@ -12,6 +12,8 @@ namespace web {
 class NavigationItem;
 }
 
+@class CRWNavigationItemStorage;
+
 namespace sessions {
 class SerializedNavigationEntry;
 
@@ -23,6 +25,12 @@ class IOSSerializedNavigationBuilder {
   // NavigationItem.
   static SerializedNavigationEntry FromNavigationItem(
       int index, const web::NavigationItem& item);
+
+  // Construct a SerializedNavigationEntry for a particular index from the given
+  // CRWNavigationItemStorage.
+  static SerializedNavigationEntry FromNavigationStorageItem(
+      int index,
+      CRWNavigationItemStorage* item);
 
   // Convert the given SerializedNavigationEntry into a NavigationItem. The
   // NavigationItem will have a transition type of

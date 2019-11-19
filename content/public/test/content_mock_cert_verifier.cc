@@ -5,16 +5,14 @@
 #include "content/public/test/content_mock_cert_verifier.h"
 
 #include "base/command_line.h"
+#include "content/public/browser/network_service_instance.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/network_service_util.h"
-#include "content/public/common/service_manager_connection.h"
-#include "content/public/common/service_names.mojom.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/network_service_test_helper.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "services/network/network_context.h"
 #include "services/network/public/cpp/features.h"
-#include "services/service_manager/public/cpp/connector.h"
 
 namespace content {
 
@@ -28,10 +26,15 @@ void ContentMockCertVerifier::CertVerifier::set_default_result(
     int default_result) {
   verifier_->set_default_result(default_result);
 
-  if (!base::FeatureList::IsEnabled(network::features::kNetworkService) ||
-      IsInProcessNetworkService()) {
+  // Set the default result as a flag in case the FeatureList has not been
+  // initialized yet and we don't know if network service will run out of
+  // process.
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kMockCertVerifierDefaultResultForTesting,
+      base::NumberToString(default_result));
+
+  if (IsInProcessNetworkService())
     return;
-  }
 
   EnsureNetworkServiceTestInitialized();
   mojo::ScopedAllowSyncCallForTesting allow_sync_call;
@@ -52,10 +55,8 @@ void ContentMockCertVerifier::CertVerifier::AddResultForCertAndHost(
     int rv) {
   verifier_->AddResultForCertAndHost(cert, host_pattern, verify_result, rv);
 
-  if (!base::FeatureList::IsEnabled(network::features::kNetworkService) ||
-      IsInProcessNetworkService()) {
+  if (IsInProcessNetworkService())
     return;
-  }
 
   EnsureNetworkServiceTestInitialized();
   mojo::ScopedAllowSyncCallForTesting allow_sync_call;
@@ -65,9 +66,10 @@ void ContentMockCertVerifier::CertVerifier::AddResultForCertAndHost(
 
 void ContentMockCertVerifier::CertVerifier::
     EnsureNetworkServiceTestInitialized() {
-  if (!network_service_test_) {
-    ServiceManagerConnection::GetForProcess()->GetConnector()->BindInterface(
-        mojom::kNetworkServiceName, &network_service_test_);
+  if (!network_service_test_ || !network_service_test_.is_connected()) {
+    network_service_test_.reset();
+    GetNetworkService()->BindTestInterface(
+        network_service_test_.BindNewPipeAndPassReceiver());
   }
   // TODO(crbug.com/901026): Make sure the network process is started to avoid a
   // deadlock on Android.
@@ -82,13 +84,6 @@ ContentMockCertVerifier::~ContentMockCertVerifier() {}
 
 void ContentMockCertVerifier::SetUpCommandLine(
     base::CommandLine* command_line) {
-  // Check here instead of the constructor since some tests may set the feature
-  // flag in their constructor.
-  if (!base::FeatureList::IsEnabled(network::features::kNetworkService) ||
-      IsInProcessNetworkService()) {
-    return;
-  }
-
   // Enable the MockCertVerifier in the network process via a switch. This is
   // because it's too early to call the service manager at this point (it's not
   // created yet), and by the time we can call the service manager in
@@ -97,15 +92,11 @@ void ContentMockCertVerifier::SetUpCommandLine(
 }
 
 void ContentMockCertVerifier::SetUpInProcessBrowserTestFixture() {
-  if (IsInProcessNetworkService()) {
-    network::NetworkContext::SetCertVerifierForTesting(
-        mock_cert_verifier_.get());
-  }
+  network::NetworkContext::SetCertVerifierForTesting(mock_cert_verifier_.get());
 }
 
 void ContentMockCertVerifier::TearDownInProcessBrowserTestFixture() {
-  if (IsInProcessNetworkService())
-    network::NetworkContext::SetCertVerifierForTesting(nullptr);
+  network::NetworkContext::SetCertVerifierForTesting(nullptr);
 }
 
 ContentMockCertVerifier::CertVerifier*

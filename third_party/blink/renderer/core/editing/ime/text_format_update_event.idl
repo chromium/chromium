@@ -1,0 +1,21 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// The textformatupdate event is fired when the input method desires a specific
+// region to be styled in a certain fashion, limited to the style properties
+// that correspond with the properties that are exposed on TextFormatUpdateEvent
+// (e.g. backgroundColor, textDecoration, etc.).
+// Explainer: https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/master/EditContext/explainer.md
+[
+    Constructor(optional TextFormatUpdateEventInit options),
+    Exposed=Window,
+    RuntimeEnabled=EditContext
+] interface TextFormatUpdateEvent : Event {
+    readonly attribute unsigned long formatRangeStart;
+    readonly attribute unsigned long formatRangeEnd;
+    readonly attribute DOMString underlineColor;
+    readonly attribute DOMString backgroundColor;
+    readonly attribute DOMString textDecorationColor;
+    readonly attribute DOMString textUnderlineStyle;
+};

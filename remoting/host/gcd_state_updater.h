@@ -40,7 +40,7 @@ class GcdStateUpdater : public SignalStrategy::Listener {
                   std::unique_ptr<GcdRestClient> gcd_client);
   ~GcdStateUpdater() override;
 
-  // See HeartbeatSender::SetHostOfflineReason.
+  // See XmppHeartbeatSender::SetHostOfflineReason.
   void SetHostOfflineReason(
       const std::string& host_offline_reason,
       const base::TimeDelta& timeout,

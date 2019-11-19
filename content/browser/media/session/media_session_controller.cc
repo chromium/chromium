@@ -14,7 +14,7 @@
 namespace content {
 
 MediaSessionController::MediaSessionController(
-    const WebContentsObserver::MediaPlayerId& id,
+    const MediaPlayerId& id,
     MediaWebContentsObserver* media_web_contents_observer)
     : id_(id),
       media_web_contents_observer_(media_web_contents_observer),
@@ -23,19 +23,21 @@ MediaSessionController::MediaSessionController(
 }
 
 MediaSessionController::~MediaSessionController() {
-  if (!has_session_)
-    return;
   media_session_->RemovePlayer(this, player_id_);
 }
 
 bool MediaSessionController::Initialize(
     bool has_audio,
     bool is_remote,
-    media::MediaContentType media_content_type) {
+    media::MediaContentType media_content_type,
+    media_session::MediaPosition* position) {
   // Store these as we will need them later.
   is_remote_ = is_remote;
   has_audio_ = has_audio;
   media_content_type_ = media_content_type;
+
+  if (position)
+    position_ = *position;
 
   // Don't generate a new id if one has already been set.
   if (!has_session_) {
@@ -62,10 +64,8 @@ bool MediaSessionController::Initialize(
   // we already have a session from a previous call, release it.
   if (!has_audio_ || is_remote ||
       media_web_contents_observer_->web_contents()->IsAudioMuted()) {
-    if (has_session_) {
-      has_session_ = false;
-      media_session_->RemovePlayer(this, player_id_);
-    }
+    has_session_ = false;
+    media_session_->RemovePlayer(this, player_id_);
     return true;
   }
 
@@ -83,8 +83,11 @@ bool MediaSessionController::Initialize(
 
 void MediaSessionController::OnSuspend(int player_id) {
   DCHECK_EQ(player_id_, player_id);
+  // TODO(crbug.com/953645): Set triggered_by_user to true ONLY if that action
+  // was actually triggered by user as this will create a WebUserGestureToken.
   id_.render_frame_host->Send(new MediaPlayerDelegateMsg_Pause(
-      id_.render_frame_host->GetRoutingID(), id_.delegate_id));
+      id_.render_frame_host->GetRoutingID(), id_.delegate_id,
+      true /* triggered_by_user */));
 }
 
 void MediaSessionController::OnResume(int player_id) {
@@ -119,6 +122,12 @@ RenderFrameHost* MediaSessionController::render_frame_host() const {
   return id_.render_frame_host;
 }
 
+base::Optional<media_session::MediaPosition>
+MediaSessionController::GetPosition(int player_id) const {
+  DCHECK_EQ(player_id_, player_id);
+  return position_;
+}
+
 void MediaSessionController::OnPlaybackPaused() {
   // We check for suspension here since the renderer may issue its own pause
   // in response to or while a pause from the browser is in flight.
@@ -135,10 +144,16 @@ void MediaSessionController::WebContentsMutedStateChanged(bool muted) {
   if (!muted && !has_session_) {
     if (media_session_->AddPlayer(this, player_id_, media_content_type_))
       has_session_ = true;
-  } else if (muted && has_session_) {
+  } else if (muted) {
     has_session_ = false;
     media_session_->RemovePlayer(this, player_id_);
   }
+}
+
+void MediaSessionController::OnMediaPositionStateChanged(
+    const media_session::MediaPosition& position) {
+  position_ = position;
+  media_session_->RebuildAndNotifyMediaPositionChanged();
 }
 
 }  // namespace content

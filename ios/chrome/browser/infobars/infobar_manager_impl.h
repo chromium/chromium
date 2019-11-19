@@ -9,8 +9,8 @@
 
 #include "base/macros.h"
 #include "components/infobars/core/infobar_manager.h"
-#include "ios/web/public/web_state/web_state_observer.h"
-#import "ios/web/public/web_state/web_state_user_data.h"
+#include "ios/web/public/web_state_observer.h"
+#import "ios/web/public/web_state_user_data.h"
 
 namespace infobars {
 class InfoBar;

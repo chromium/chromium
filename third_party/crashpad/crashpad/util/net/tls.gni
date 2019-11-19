@@ -18,5 +18,6 @@ declare_args() {
   # TODO(scottmg): https://crbug.com/crashpad/266 fuchsia:DX-690: BoringSSL
   # was removed from the Fuchsia SDK. Re-enable it when we have a way to acquire
   # a BoringSSL lib again.
-  crashpad_use_boringssl_for_http_transport_socket = crashpad_is_in_fuchsia
+  crashpad_use_boringssl_for_http_transport_socket =
+      crashpad_is_in_fuchsia || (crashpad_is_linux && crashpad_is_in_chromium)
 }

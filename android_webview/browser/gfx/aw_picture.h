@@ -21,7 +21,7 @@ class AwPicture {
   ~AwPicture();
 
   // Methods called from Java.
-  void Destroy(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
+  void Destroy(JNIEnv* env);
   jint GetWidth(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
   jint GetHeight(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
   void Draw(JNIEnv* env,

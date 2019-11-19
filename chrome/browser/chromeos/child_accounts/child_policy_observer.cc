@@ -4,16 +4,25 @@
 
 #include "chrome/browser/chromeos/child_accounts/child_policy_observer.h"
 
+#include "base/optional.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/chromeos/policy/user_cloud_policy_manager_chromeos.h"
-#include "chrome/browser/chromeos/policy/user_policy_manager_factory_chromeos.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 
 namespace chromeos {
 
 ChildPolicyObserver::ChildPolicyObserver(Profile* profile) : profile_(profile) {
-  GetUserCloudPolicyManager()->core()->service()->AddObserver(this);
+  policy::CloudPolicyService* cloud_policy_service =
+      GetUserCloudPolicyManager()->core()->service();
+  base::Optional<bool> initial_policy_refresh_result =
+      cloud_policy_service->initial_policy_refresh_result();
+  if (initial_policy_refresh_result) {
+    OnPolicyReady(*initial_policy_refresh_result
+                      ? InitialPolicyRefreshResult::kPolicyRefreshed
+                      : InitialPolicyRefreshResult::kPolicyRefreshError);
+  }
+  cloud_policy_service->AddObserver(this);
 }
 
 ChildPolicyObserver::~ChildPolicyObserver() {
@@ -53,11 +62,11 @@ bool ChildPolicyObserver::IsChildPolicyReady() const {
 void ChildPolicyObserver::OnPolicyReady(
     InitialPolicyRefreshResult refresh_result) {
   DCHECK_NE(InitialPolicyRefreshResult::kUnknown, refresh_result);
-  DCHECK_EQ(InitialPolicyRefreshResult::kUnknown, refresh_result_);
 
   refresh_timeout_timer_.reset();
 
-  refresh_result_ = refresh_result;
+  if (refresh_result_ == InitialPolicyRefreshResult::kUnknown)
+    refresh_result_ = refresh_result;
 
   if (on_policy_ready_)
     std::move(on_policy_ready_).Run(profile_, refresh_result_);
@@ -66,8 +75,7 @@ void ChildPolicyObserver::OnPolicyReady(
 policy::UserCloudPolicyManagerChromeOS*
 ChildPolicyObserver::GetUserCloudPolicyManager() {
   policy::UserCloudPolicyManagerChromeOS* user_cloud_policy_manager =
-      policy::UserPolicyManagerFactoryChromeOS::GetCloudPolicyManagerForProfile(
-          profile_);
+      profile_->GetUserCloudPolicyManagerChromeOS();
   DCHECK(user_cloud_policy_manager);
   return user_cloud_policy_manager;
 }

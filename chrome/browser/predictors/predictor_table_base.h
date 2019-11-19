@@ -7,7 +7,7 @@
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/synchronization/cancellation_flag.h"
+#include "base/synchronization/atomic_flag.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -47,7 +47,7 @@ class PredictorTableBase
   bool CantAccessDatabase();
 
  private:
-  base::CancellationFlag cancelled_;
+  base::AtomicFlag cancelled_;
 
   friend class base::RefCountedThreadSafe<PredictorTableBase>;
 

@@ -7,7 +7,7 @@
 #include <string>
 
 #include "base/feature_list.h"
-#include "components/feature_engagement/internal/configuration.h"
+#include "components/feature_engagement/public/configuration.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace feature_engagement {

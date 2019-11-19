@@ -6,8 +6,7 @@ config("wtl_includes") {
   include_dirs = [ "include" ]
 
   if (is_clang) {
-    # Suppress no override warning for overridden functions.
-    cflags = [ "-Wno-inconsistent-missing-override" ]
+    defines = [ "_WTL_NO_AUTOMATIC_NAMESPACE"]
   }
 }
 

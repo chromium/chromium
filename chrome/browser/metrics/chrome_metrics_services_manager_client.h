@@ -97,7 +97,7 @@ class ChromeMetricsServicesManagerClient
   std::unique_ptr<metrics::EnabledStateProvider> enabled_state_provider_;
 
   // Ensures that all functions are called from the same thread.
-  base::ThreadChecker thread_checker_;
+  THREAD_CHECKER(thread_checker_);
 
   // Weak pointer to the local state prefs store.
   PrefService* const local_state_;

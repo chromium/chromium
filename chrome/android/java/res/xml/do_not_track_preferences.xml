@@ -10,10 +10,10 @@
     <org.chromium.chrome.browser.preferences.ChromeSwitchPreference
         android:key="do_not_track_switch"
         android:summaryOn="@string/text_on"
-        android:summaryOff="@string/text_off"
-        app:drawDivider="true" />
+        android:summaryOff="@string/text_off" />
 
     <org.chromium.chrome.browser.preferences.TextMessagePreference
-        android:title="@string/do_not_track_description" />
+        android:title="@string/do_not_track_description"
+        app:allowDividerBelow="false" />
 
 </PreferenceScreen>

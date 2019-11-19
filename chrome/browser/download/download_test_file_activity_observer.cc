@@ -28,8 +28,7 @@ class DownloadTestFileActivityObserver::MockDownloadManagerDelegate
   explicit MockDownloadManagerDelegate(Profile* profile)
       : ChromeDownloadManagerDelegate(profile),
         file_chooser_enabled_(false),
-        file_chooser_displayed_(false),
-        weak_ptr_factory_(this) {
+        file_chooser_displayed_(false) {
     if (!profile->IsOffTheRecord())
       GetDownloadIdReceiverCallback().Run(download::DownloadItem::kInvalidId +
                                           1);
@@ -73,7 +72,7 @@ class DownloadTestFileActivityObserver::MockDownloadManagerDelegate
  private:
   bool file_chooser_enabled_;
   bool file_chooser_displayed_;
-  base::WeakPtrFactory<MockDownloadManagerDelegate> weak_ptr_factory_;
+  base::WeakPtrFactory<MockDownloadManagerDelegate> weak_ptr_factory_{this};
 };
 
 DownloadTestFileActivityObserver::DownloadTestFileActivityObserver(

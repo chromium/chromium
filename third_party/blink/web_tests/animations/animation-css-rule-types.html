@@ -1,23 +1,17 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <html>
 <head>
-<script src="../resources/js-test.js"></script>
+<title>This test checks that the CSSRule RuleTypes for keyframe-related rules are what we expect</title>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
 </head>
 <body>
-<p id="description"></p>
-<div id="console"></div>
 <script>
-description(
-'This test checks that the CSSRule RuleTypes for keyframe-related rules are what we expect.'
-);
-
 var ruleType = window.CSSRule.KEYFRAMES_RULE;
-shouldBe("ruleType", "7");
+assert_equals(ruleType, 7);
 ruleType = window.CSSRule.KEYFRAME_RULE;
-shouldBe("ruleType", "8");
-
-debug('If we got to this point then we did not crash and the test has passed.');
-var successfullyParsed = true;
+assert_equals(ruleType, 8);
+done();
 </script>
 </body>
 </html>

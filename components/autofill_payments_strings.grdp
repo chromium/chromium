@@ -1,0 +1,484 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+
+  <message name="IDS_AUTOFILL_SIGNIN_PROMO_MESSAGE" desc="Promo message for Sign-in Promo bubble (shown after a local save) to get people to sign in.">
+    To use your cards on all devices, sign in and turn on sync.
+  </message>
+  <message name="IDS_AUTOFILL_SYNC_PROMO_MESSAGE" desc="Promo message for Sign-in Promo bubble (shown after a local save) to get people to sync.">
+    To use your cards on all devices, turn on sync.
+  </message>
+  <message name="IDS_AUTOFILL_SIGNIN_PROMO_MESSAGE_DICE_DISABLED" desc="Text of the sign in promo bubble and manage cards footnote.">
+    To use your cards on all your devices, <ph name="SIGN_IN_LINK">$1<ex>sign in</ex></ph>.
+  </message>
+  <message name="IDS_AUTOFILL_SIGNIN_PROMO_LINK_DICE_DISABLED" desc="Text of the link to sign in from the save card sync promo.">
+    sign in to Chrome
+  </message>
+
+  <if expr="not use_titlecase">
+    <message name="IDS_AUTOFILL_NO_THANKS_DESKTOP_LOCAL_SAVE" desc="The label for cancel button used in autofill credit card local save bubble on desktop.">
+      No thanks
+    </message>
+    <message name="IDS_AUTOFILL_NO_THANKS_DESKTOP_UPLOAD_SAVE" desc="The label for cancel button used in autofill credit card upload save bubble on desktop.">
+      No thanks
+    </message>
+  </if>
+  <if expr="use_titlecase">
+    <message name="IDS_AUTOFILL_NO_THANKS_DESKTOP_LOCAL_SAVE" desc="In Title Case: The label for cancel button used in autofill credit card local save bubble on desktop.">
+      No Thanks
+    </message>
+    <message name="IDS_AUTOFILL_NO_THANKS_DESKTOP_UPLOAD_SAVE" desc="In Title Case: The label for cancel button used in autofill credit card upload save bubble on desktop.">
+      No Thanks
+    </message>
+  </if>
+
+  <if expr="is_android or is_ios">
+    <if expr="not use_titlecase">
+      <message name="IDS_AUTOFILL_NO_THANKS_MOBILE_LOCAL_SAVE" desc="The label for cancel button used in autofill credit card local save infobar on mobile.">
+        No thanks
+      </message>
+      <message name="IDS_AUTOFILL_NO_THANKS_MOBILE_UPLOAD_SAVE" desc="The label for cancel button used in autofill credit card upload save infobar on mobile.">
+        No thanks
+      </message>
+    </if>
+    <if expr="use_titlecase">
+      <message name="IDS_AUTOFILL_NO_THANKS_MOBILE_LOCAL_SAVE" desc="In Title Case: The label for cancel button used in autofill credit card local save infobar on mobile.">
+        No Thanks
+      </message>
+      <message name="IDS_AUTOFILL_NO_THANKS_MOBILE_UPLOAD_SAVE" desc="In Title Case: The label for cancel button used in autofill credit card upload save infobar on mobile.">
+        No Thanks
+      </message>
+    </if>
+  </if>
+
+  <!-- Autofill Credit Card Assisted Filling Infobar -->
+  <if expr="is_android">
+    <message name="IDS_AUTOFILL_CREDIT_CARD_FILLING_INFOBAR_TITLE" desc="Title text for the Autofill Credit Card Assisted Filling Infobar">
+      Do you want to fill in your card info?
+    </message>
+  </if>
+  <if expr="is_ios">
+    <message name="IDS_AUTOFILL_CREDIT_CARD_FILLING_INFOBAR_FORMATTED_TITLE" desc="Title text for the Autofill Credit Card Assisted Filling Infobar, which contains the card description in it.">
+      Do you want to fill in your <ph name="CARD_DETAIL">$1<ex>Visa - 1234</ex></ph>?
+    </message>
+  </if>
+  <if expr="is_android or is_ios">
+    <message name="IDS_AUTOFILL_CREDIT_CARD_FILLING_INFOBAR_ACCEPT" desc="Text to show for the Autofill credit card Assisted Filling infobar accept button.">
+      Fill in
+    </message>
+    <if expr="not use_titlecase">
+      <message name="IDS_AUTOFILL_CREDIT_CARD_FILLING_INFOBAR_NO_THANKS" desc="Text to show for the Autofill credit card Assisted Filling infobar cancel button.">
+        No thanks
+      </message>
+    </if>
+    <if expr="use_titlecase">
+      <message name="IDS_AUTOFILL_CREDIT_CARD_FILLING_INFOBAR_NO_THANKS" desc="In Title Case: Text to show for the Autofill credit card Assisted Filling infobar cancel button.">
+        No Thanks
+      </message>
+    </if>
+  </if>
+
+  <if expr="not is_android">
+    <message name="IDS_AUTOFILL_FIELD_LABEL_PHONE" desc="The label of the Phone entry in a settings-like UI to enter a phone number.">
+      Phone
+    </message>
+    <message name="IDS_AUTOFILL_FIELD_LABEL_BILLING_ADDRESS" desc="Title of the field representing the billing address of a credit card.">
+      Billing Address
+    </message>
+  </if>
+
+  <!-- Autofill save credit card bubble or infobar prompt -->
+  <if expr="is_android or is_ios">
+    <then>
+      <message name="IDS_AUTOFILL_SAVE_CARD_INFOBAR_ACCEPT" desc="Text to show for the Autofill save credit card infobar accept button.">
+        Save
+      </message>
+    </then>
+    <else>
+      <message name="IDS_AUTOFILL_SAVE_CARD_BUBBLE_LOCAL_SAVE_ACCEPT" desc="Text to show for the Autofill save credit card local save bubble accept button.">
+        Save
+      </message>
+      <message name="IDS_AUTOFILL_SAVE_CARD_BUBBLE_UPLOAD_SAVE_ACCEPT" desc="Text to show for the Autofill save credit card upload save bubble accept button.">
+        Save
+      </message>
+    </else>
+  </if>
+  <if expr="is_android">
+    <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_CONFIRM" desc="Text to show for the Autofill upload save credit card prompt accept button when more information (e.g., CVC) was needed in order to save the card and was entered." formatter_data="android_java">
+      Confirm
+    </message>
+  </if>
+  <if expr="is_ios">
+    <then>
+      <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_CONTINUE" desc="Text to show for the Autofill upload save credit card prompt accept button when more information (e.g., CVC) was needed in order to save the card and was entered.">
+        Save...
+      </message>
+    </then>
+    <else>
+      <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_CONTINUE" desc="Text to show for the Autofill upload save credit card prompt accept button when more information (e.g., CVC) was needed in order to save the card and was entered.">
+        Continue
+      </message>
+    </else>
+  </if>
+  <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_LOCAL" desc="Title text for the Autofill save card prompt when the card is to be saved locally. The prompt can be either a bubble or an infobar.">
+    Save card?
+  </message>
+  <message name="IDS_AUTOFILL_FIX_FLOW_PROMPT_SAVE_CARD_LABEL" desc="Text to show on the button to save the card to Google when the fix flow dialog is shown after the Autofill save card prompt." formatter_data="android_java">
+    Save card
+  </message>
+  <if expr="is_linux and not chromeos">
+    <then>
+      <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD" desc="Title text for the Autofill save card prompt when the card is to be saved by uploading it to Google Payments and also saved locally. The prompt can be either a bubble or an infobar.">
+        Do you want to save this card to your Google Account?
+      </message>
+    </then>
+    <else>
+      <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD" desc="Title text for the Autofill save card prompt when the card is to be saved by uploading it to Google Payments and also saved locally. The prompt can be either a bubble or an infobar.">
+        Do you want to save this card to your Google Account and on this device?
+      </message>
+    </else>
+  </if>
+  <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_V3" desc="Title text for the Autofill save card prompt when the card is to be saved by uploading it to Google Payments, according to January 2018 UI guidelines. The prompt can be either a bubble or an infobar.">
+    Save card?
+  </message>
+  <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_V4" desc="Title text for the Autofill save card prompt when the card is to be saved by uploading it to Google Payments, according to November 2018 UI guidelines. The prompt can be either a bubble or an infobar.">
+    Save card to Google Account?
+  </message>
+  <message name="IDS_AUTOFILL_CARD_SAVED" desc="Title text for the Autofill save card manager bubble when the card has been saved either locally or to Google Payments. Also label for icon animation.">
+    Card saved
+  </message>
+  <message name="IDS_AUTOFILL_MANAGE_CARDS" desc="Text to show for the button in the save card manager bubble when the card has been saved either locally or to Google Payments.">
+    Manage cards
+  </message>
+  <message name="IDS_AUTOFILL_DONE" desc="Text to show for the button in the save card manager bubble when the card has been saved either locally or to Google Payments.">
+    Done
+  </message>
+  <message name="IDS_AUTOFILL_FAILURE_BUBBLE_TITLE" desc="Title text for the Autofill credit card upload failure bubble.">
+    Can't save card
+  </message>
+  <message name="IDS_AUTOFILL_FAILURE_BUBBLE_EXPLANATION" desc="Explanation text for the Autofill credit card upload failure bubble main content. Shown as user-facing descripion.">
+    Your card can't be saved right now
+  </message>
+  <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION" desc="Explanation of the effect of the Autofill save card prompt when the card is to be saved by uploading it to Google Payments and also saved locally. The prompt can be either a bubble or an infobar.">
+    Pay quickly on sites and apps across devices using cards you have saved with Google.
+  </message>
+  <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_V3" desc="Explanation of the effect of the Autofill save card prompt when the card is to be saved by uploading it to Google Payments, according to April 2018 UI guidelines. The prompt will be shown in a bubble below the omnibox.">
+    To pay faster next time, save your card and billing address to your Google Account.
+  </message>
+  <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_V3_WITH_DEVICE" desc="Explanation of the effect of the Autofill save card prompt when the card is to be saved by uploading it to Google Payments and also saved locally, according to April 2018 UI guidelines. The prompt can be either a bubble or an infobar.">
+    To pay faster next time, save your card and billing address to your Google Account and to this device.
+  </message>
+  <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_V3_WITH_NAME" desc="Explanation of the effect of the Autofill save card prompt when the card is to be saved by uploading it to Google Payments, according to April 2018 UI guidelines. The prompt will be shown in a bubble below the omnibox.">
+    To pay faster next time, save your card, name, and billing address to your Google Account.
+  </message>
+  <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_V3_WITH_NAME_AND_DEVICE" desc="Explanation of the effect of the Autofill save card prompt when the card is to be saved by uploading it to Google Payments and also saved locally, according to April 2018 UI guidelines. The prompt can be either a bubble or an infobar.">
+    To pay faster next time, save your card, name, and billing address to your Google Account and to this device.
+  </message>
+
+  <if expr="is_ios">
+    <then>
+      <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_CARDHOLDER_NAME" desc="The label text for the cardholder name textfield.">
+        Name on Card
+      </message>
+    </then>
+    <else>
+      <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_CARDHOLDER_NAME" desc="The label text for the cardholder name textfield.">
+        Cardholder name
+      </message>
+    </else>
+  </if>
+  <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_CARDHOLDER_NAME_TOOLTIP" desc="The tooltip text for the cardholder name textfield. Note that the translation should not have period" formatter_data="android_java">
+    This name is from your Google Account
+  </message>
+  <message name="IDS_AUTOFILL_SAVE_CARD_CARDHOLDER_NAME_FIX_FLOW_HEADER" desc="Header for the cardholder name fix flow.">
+    Confirm name
+  </message>
+  <message name="IDS_AUTOFILL_SAVE_CARD_UPDATE_EXPIRATION_DATE_TITLE" desc="Title for the dialog requesting the user to fill in the expiration date of the credit card during the save card to google flow.">
+    Enter expiration date
+  </message>
+  <if expr="is_android or is_ios">
+    <message name="IDS_AUTOFILL_SAVE_CARD_UPDATE_EXPIRATION_DATE_TOOLTIP" desc="The tooltip text for the credit card expiration date textfield. Note that the translation should not have period.">
+      Expiration date
+    </message>
+    <message name="IDS_AUTOFILL_SAVE_CARD_UPDATE_EXPIRATION_DATE_ERROR_TRY_AGAIN" desc="Error message that encourages the user to try to re-enter their credit card expiration date after selecting an invalid expiration date.">
+      Enter an expiration date in the future and try again
+    </message>
+  </if>
+  <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_TOOLTIP" desc="The tooltip hover text that explains why credit card upload to Google Payments is being offered.">
+    Chrome is offering to save your cards in your Google Account because you are signed in. You can change this behavior in settings.
+  </message>
+  <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_AND_CARDHOLDER_NAME_TOOLTIP" desc="The tooltip hover text that explains why credit card upload to Google Account is being offered and where the suggested cardholder name came from.">
+    Chrome is offering to save your cards in your Google Account because you are signed in. You can change this behavior in settings. The cardholder name comes from your account.
+  </message>
+
+  <!-- Autofill Local card migration bubble or dialog -->
+  <if expr="not is_ios and not is_android">
+    <message name="IDS_AUTOFILL_GOOGLE_PAY_LOGO_ACCESSIBLE_NAME" desc="The accessible name for the Google Pay logo in the local card migration bubble or dialog.">
+      Google Pay logo
+    </message>
+    <message name="IDS_AUTOFILL_LOCAL_CARD_MIGRATION_ANIMATION_LABEL" desc="The text displayed in the migration pending animation in the omnibox. The animation will be triggered after the user consented to the migration offer.">
+      Saving cards...
+    </message>
+    <message name="IDS_AUTOFILL_LOCAL_CARD_MIGRATION_BUBBLE_TITLE" desc="The title text for a bubble that offers users to start the process of migrating local cards to cloud.">
+      Use your cards on all your devices?
+    </message>
+    <message name="IDS_AUTOFILL_LOCAL_CARD_MIGRATION_BUBBLE_BUTTON_LABEL" desc="The text in the OK button of a bubble that offers users to start the process of migration local cards to cloud.">
+      Continue
+    </message>
+    <message name="IDS_AUTOFILL_LOCAL_CARD_MIGRATION_BUBBLE_BODY_TEXT" desc="The body text for a bubble that offers users to start the process of migrating local cards to cloud.">
+      Right now, you have cards that can only be used on this device. Click Continue to review cards.
+    </message>
+    <message name="IDS_AUTOFILL_LOCAL_CARD_MIGRATION_DIALOG_TITLE_OFFER" desc="The title text for a dialog that offers to migrate local cards into the cloud.
+    [ICU Syntax]">
+      {NUM_CARDS, plural,
+      =1 {Save card in your Google Account}
+      other {Save cards in your Google Account}}
+    </message>
+    <message name="IDS_AUTOFILL_LOCAL_CARD_MIGRATION_DIALOG_TITLE_DONE" desc="The title text for a dialog shown after the user accepts another dialog that offers to migrate local cards into the cloud and all cards are successfully migrated.">
+      You're all set!
+    </message>
+    <message name="IDS_AUTOFILL_LOCAL_CARD_MIGRATION_DIALOG_TITLE_FIX" desc="The title text for a dialog shown after the user accepts another dialog that offers to migrate local cards into the cloud but there are errors with the cards that they need to address.">
+      Almost done
+    </message>
+    <message name="IDS_AUTOFILL_LOCAL_CARD_MIGRATION_DIALOG_CHECKBOX_UNCHECK_WARNING" desc="The warning text, after the user unchecks the checkbox, to indicate this card will still be saved on this device only, not to Google account.">
+      Saved on this device only
+    </message>
+    <message name="IDS_AUTOFILL_LOCAL_CARD_MIGRATION_DIALOG_MESSAGE_OFFER" desc="The body text for a dialog that offers to migrate local cards into the cloud. [CHAR-LIMIT=NONE] [ICU Syntax]">
+      {NUM_CARDS, plural,
+      =1 {This card and its billing address will be saved. You'll be able to use it when signed in to <ph name="USER_EMAIL">$1<ex>user@gmail.com</ex></ph>.}
+      other {These cards and their billing addresses will be saved. You'll be able to use them when signed in to <ph name="USER_EMAIL">$1<ex>user@gmail.com</ex></ph>.}}
+    </message>
+    <message name="IDS_AUTOFILL_LOCAL_CARD_MIGRATION_DIALOG_MESSAGE_DONE" desc="The body text for a dialog shown after the user accepts another dialog that offers to migrate local cards into the cloud and all cards are successfully migrated. [ICU Syntax]">
+      {NUM_CARDS, plural,
+      =1 {This card has been saved in your Google Account}
+      other {These cards have been saved in your Google Account}}
+    </message>
+    <message name="IDS_AUTOFILL_LOCAL_CARD_MIGRATION_DIALOG_MESSAGE_ERROR" desc="The body text shown on a dialog when the user attempts to migrate their cards to Google Payments, but all migrations fail. [ICU Syntax]">
+      {NUM_CARDS, plural,
+      =1 {This card can't be saved right now}
+      other {These cards can't be saved right now}}
+    </message>
+    <message name="IDS_AUTOFILL_LOCAL_CARD_MIGRATION_DIALOG_MESSAGE_FIX" desc="The body text shown on a dialog after the user accepts another dialog that offers to migrate local cards into the cloud but there are errors with the cards that they need to address.">
+      Check the info below and delete any invalid cards
+    </message>
+    <message name="IDS_AUTOFILL_LOCAL_CARD_MIGRATION_DIALOG_MESSAGE_INVALID_CARD_REMOVED" desc="The body text for a dialog shown after the user has deleted all invalid cards from browser local storage.">
+      The invalid cards have been removed
+    </message>
+    <message name="IDS_AUTOFILL_LOCAL_CARD_MIGRATION_DIALOG_BUTTON_LABEL_SAVE" desc="The text in the OK button of a dialog that offers to migrate local cards into the cloud.">
+      Save
+    </message>
+    <message name="IDS_AUTOFILL_LOCAL_CARD_MIGRATION_DIALOG_BUTTON_LABEL_CANCEL" desc="The text in the cancel button of a dialog that offers to migrate local cards into the cloud.">
+      Cancel
+    </message>
+    <message name="IDS_AUTOFILL_LOCAL_CARD_MIGRATION_DIALOG_BUTTON_LABEL_DONE" desc="The text in the OK button a dialog shown after the user accepts another dialog that offers to migrate local cards into the cloud.">
+      Done
+    </message>
+    <message name="IDS_AUTOFILL_LOCAL_CARD_MIGRATION_DIALOG_BUTTON_LABEL_VIEW_CARDS" desc="The text in the cancel button a dialog shown after the user accepts another dialog that offers to migrate local cards into the cloud.">
+      View cards
+    </message>
+    <message name="IDS_AUTOFILL_LOCAL_CARD_MIGRATION_DIALOG_LABEL_INVALID_CARDS" desc="The label text shown when a card is invalid and could not be migrated.">
+      Invalid
+    </message>
+    <message name="IDS_AUTOFILL_LOCAL_CARD_MIGRATION_DIALOG_TRASH_CAN_BUTTON_TOOLTIP" desc="The tooltip for the trash can button in the card list that allows user to delete this particular credit card from Chrome.">
+      Remove card
+    </message>
+  </if>
+
+  <!-- Autofill credit card unmask prompt -->
+  <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_ERROR_TRY_AGAIN_CVC" desc="Error message that encourages the user to try to re-enter their credit card CVC after a previous failed attempt." formatter_data="android_java">
+    Check your CVC and try again
+  </message>
+  <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_ERROR_TRY_AGAIN_CVC_AND_EXPIRATION_V2" desc="Error message that encourages the user to try to re-enter their credit card CVC or update the expiration dates after a previous failed attempt, according to August 2019 UI guidelines.">
+    Check your CVC and try again or update the expiration date
+  </message>
+  <if expr="is_android">
+    <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_ERROR_TRY_AGAIN_EXPIRATION_DATE" desc="Error message that encourages the user to try to re-enter their credit card expiration date after a previous failed attempt." formatter_data="android_java">
+      Check your expiration date and try again
+    </message>
+    <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_ERROR_TRY_AGAIN_CVC_AND_EXPIRATION" desc="Error message that encourages the user to try to re-enter their credit card expiration date and CVC after a previous failed attempt." formatter_data="android_java">
+      Check your expiration date and CVC and try again
+    </message>
+    <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_ERROR_TRY_AGAIN_EXPIRATION_MONTH" desc="Error message that encourages the user to try to re-enter their credit card expiration month after a previous failed attempt." formatter_data="android_java">
+      Check your expiration month and try again
+    </message>
+    <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_ERROR_TRY_AGAIN_EXPIRATION_YEAR" desc="Error message that encourages the user to try to re-enter their credit card expiration year after a previous failed attempt." formatter_data="android_java">
+      Check your expiration year and try again
+    </message>
+  </if>
+  <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_ERROR_PERMANENT" desc="Error message to show when a credit card cannot be verified and the user isn't allowed to retry.">
+    This card can't be verified right now
+  </message>
+  <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_ERROR_NETWORK" desc="Error message to show when a credit card cannot be verified because Wallet servers can't be reached.">
+    There was a problem confirming your card. Check your internet connection and try again.
+  </message>
+  <if expr="not is_ios">
+    <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_TITLE" desc="Title for the credit card unmasking dialog.">
+      Enter the CVC for <ph name="CREDIT_CARD">$1<ex>Visa - 5679</ex></ph>
+    </message>
+    <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_TITLE_V2" desc="Title for the credit card unmasking dialog, according to August 2019 UI guidelines.">
+      Verify your card
+    </message>
+    <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_EXPIRED_TITLE" desc="Title for the credit card unmasking dialog when the credit card is expired.">
+      Enter the expiration date and CVC for <ph name="CREDIT_CARD">$1<ex>Visa - 5679</ex></ph>
+    </message>
+    <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_INSTRUCTIONS" desc="Text explaining what the user should do in the card unmasking dialog.">
+      After you confirm, card details from your Google Account will be shared with this site.
+    </message>
+    <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_INSTRUCTIONS_LOCAL_CARD" desc="Text explaining what the user should do in the card unmasking dialog.  Appears specifically for local cards already stored on the device.">
+      Once you confirm, your card details will be shared with this site.
+    </message>
+    <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_INSTRUCTIONS_V2" desc="Text explaining what the user should do in the card unmasking dialog, according to August 2019 UI guidelines.">
+      Confirm the security code to share your card details with this site
+    </message>
+    <message name="IDS_AUTOFILL_CARD_UNMASK_CVC_IMAGE_DESCRIPTION" desc="Accessible description for the CVC image. It should describe where to find the CVC on a credit card.">
+      The CVC is located behind your card.
+    </message>
+  </if>
+  <if expr="is_ios">
+    <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_TITLE" desc="Title for the credit card unmasking dialog.">
+      Confirm Card
+    </message>
+    <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_INSTRUCTIONS" desc="Text explaining what the user should do in the card unmasking dialog.">
+      Enter the CVC for <ph name="CREDIT_CARD">$1<ex>Visa - 5679</ex></ph>. After you confirm, card details from your Google Account will be shared with this site.
+    </message>
+    <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_INSTRUCTIONS_LOCAL_CARD" desc="Text explaining what the user should do in the card unmasking dialog.  Appears specifically for local cards already stored on the device.">
+      Enter the CVC for <ph name="CREDIT_CARD">$1<ex>Visa - 5679</ex></ph>. Once you confirm, your card details will be shared with this site.
+    </message>
+    <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_INSTRUCTIONS_EXPIRED" desc="Text explaining what the user should do in the card unmasking dialog to update an expired card.">
+      Enter the expiration date and CVC for <ph name="CREDIT_CARD">$1<ex>Visa - 5679</ex></ph> to update your card details. After you confirm, card details from your Google Account will be shared with this site.
+    </message>
+    <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_INSTRUCTIONS_EXPIRED_LOCAL_CARD" desc="Text explaining what the user should do in the card unmasking dialog to update an expired card.  Appears specifically for local cards already stored on the device.">
+      Enter the expiration date and CVC for <ph name="CREDIT_CARD">$1<ex>Visa - 5679</ex></ph> to update your card details. Once you confirm, your card details will be shared with this site.
+    </message>
+  </if>
+  <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_STORAGE_CHECKBOX" desc="Text for checkbox in card unmasking dialog that allows user to store a Wallet card on their local device. If checked, the dialog won't show up again for the given credit card." formatter_data="android_java">
+    Keep a copy of this card on this device
+  </message>
+  <if expr="is_android">
+    <if expr="_google_chrome">
+      <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_STORAGE_TOOLTIP" desc="Text that provides further explanation for checkbox in card unmasking dialog that allows user to store a Wallet card on their local device." formatter_data="android_java">
+        If checked, Chrome will store a copy of your card on this device for faster form filling.
+      </message>
+    </if>
+    <if expr="not _google_chrome">
+      <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_STORAGE_TOOLTIP" desc="Text that provides further explanation for checkbox in card unmasking dialog that allows user to store a Wallet card on their local device." formatter_data="android_java">
+        If checked, Chromium will store a copy of your card on this device for faster form filling.
+      </message>
+    </if>
+  </if>
+  <if expr="is_ios">
+    <if expr="_google_chrome">
+      <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_STORAGE_TOOLTIP" desc="Text that provides further explanation on iOS for the option in the card unmasking dialog that allows user to store a Wallet card on their local device.">
+        If enabled, Chrome will store a copy of your card on this device for faster form filling.
+      </message>
+    </if>
+    <if expr="not _google_chrome">
+      <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_STORAGE_TOOLTIP" desc="Text that provides further explanation on iOS for the option in the card unmasking dialog that allows user to store a Wallet card on their local device.">
+        If enabled, Chromium will store a copy of your card on this device for faster form filling.
+      </message>
+    </if>
+  </if>
+  <if expr="is_android">
+    <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_ENABLE_FIDO_AUTH_CHECKBOX" desc="Text for checkbox in card unmasking dialog that allows the use of fingerprint to unmask cards starting next time. If checked, then a fingerprint prompt will immediately follow." formatter_data="android_java">
+      Use fingerprint to verify this card next time.
+    </message>
+  </if>
+  <message name="IDS_AUTOFILL_CARD_UNMASK_CONFIRM_BUTTON" desc="Text for button that confirms the credit card CVC entry dialog.">
+    Confirm
+  </message>
+  <message name="IDS_AUTOFILL_CARD_UNMASK_VERIFY_BUTTON" desc="Label text for the ok button in the credit card CVC entry dialog.">
+    Verify
+  </message>
+  <message name="IDS_AUTOFILL_CARD_UNMASK_EXPIRATION_MONTH" desc="Accessible name for card expiry month field.">
+    Month
+  </message>
+  <message name="IDS_AUTOFILL_CARD_UNMASK_EXPIRATION_YEAR" desc="Accessible name for card expiry year field.">
+    Year
+  </message>
+  <message name="IDS_AUTOFILL_CARD_UNMASK_VERIFICATION_IN_PROGRESS" desc="Message displayed while credit card is being verified." formatter_data="android_java">
+    Confirming card...
+  </message>
+  <message name="IDS_AUTOFILL_CARD_UNMASK_VERIFICATION_SUCCESS" desc="Message displayed after successful verification of credit card CVC." formatter_data="android_java">
+    Your card is confirmed
+  </message>
+  <message name="IDS_AUTOFILL_CARD_UNMASK_INVALID_EXPIRATION_DATE" desc="Error message to show when a user has input an invalid or old expiration date.">
+    The card is expired
+  </message>
+  <message name="IDS_AUTOFILL_EXPIRATION_DATE_SEPARATOR" desc="Separator for a credit card expiration date, e.g. the slash in 05/16." formatter_data="android_java">
+    /
+  </message>
+  <message name="IDS_AUTOFILL_CARD_UNMASK_NEW_CARD_LINK" desc="Text for link that prompts user to update their credit card after it may have been re-issued." formatter_data="android_java">
+    Update card
+  </message>
+  <message name="IDS_AUTOFILL_DIALOG_PLACEHOLDER_CVC" desc="The placeholder/label text for credit card verification code in the requestAutocomplete dialog. The text field where this is presented can be very narrow, so please prefer to translate this to the most common abbreviated form. [CHAR-LIMIT=4]" meaning="Placeholder label for a very narrow CVC field that should preferably be translated to an abbreviated form.">
+    CVC
+  </message>
+
+  <!-- WebAuthn fingerprint opt-in dialog -->
+  <!-- Desktop only -->
+  <if expr="not is_ios and not is_android">
+    <if expr="is_macosx">
+      <message name="IDS_AUTOFILL_WEBAUTHN_OPT_IN_DIALOG_TITLE" desc="Headline asking the user if they want to use their device's platform authenticator to confirm their cards in the future instead of CVC.">
+        Use Touch ID instead of CVC?
+      </message>
+      <message name="IDS_AUTOFILL_WEBAUTHN_OPT_IN_DIALOG_TITLE_ERROR" desc="Headline explaining to users there were errors in the attempt to opt in using platform's authenticator.">
+        Couldn't use Touch ID
+      </message>
+      <message name="IDS_AUTOFILL_WEBAUTHN_OPT_IN_DIALOG_OK_BUTTON_LABEL" desc="Button that allows the user to use their device's platform authenticator to confirm card use in the future.">
+        Use Touch ID
+      </message>
+    </if>
+    <if expr="is_win">
+      <message name="IDS_AUTOFILL_WEBAUTHN_OPT_IN_DIALOG_TITLE" desc="Headline asking the user if they want to use their device's platform authenticator to confirm their cards in the future instead of CVC.">
+        Use Windows Hello instead of CVC?
+      </message>
+      <message name="IDS_AUTOFILL_WEBAUTHN_OPT_IN_DIALOG_TITLE_ERROR" desc="Headline explaining to users there were errors in the attempt to opt in using platform's authenticator.">
+        Couldn't use Windows Hello
+      </message>
+      <message name="IDS_AUTOFILL_WEBAUTHN_OPT_IN_DIALOG_OK_BUTTON_LABEL" desc="Button that allows the user to use their device's platform authenticator to confirm card use in the future.">
+        Use Windows Hello
+      </message>
+    </if>
+    <if expr="not is_win and not is_macosx">
+      <message name="IDS_AUTOFILL_WEBAUTHN_OPT_IN_DIALOG_TITLE" desc="Headline asking the user if they want to use their device's platform authenticator to confirm their cards in the future instead of CVC.">
+        Use WebAuthn instead of CVC?
+      </message>
+      <message name="IDS_AUTOFILL_WEBAUTHN_OPT_IN_DIALOG_TITLE_ERROR" desc="Headline explaining to users there were errors in the attempt to opt in using platform's authenticator.">
+        Couldn't use WebAuthn
+      </message>
+      <message name="IDS_AUTOFILL_WEBAUTHN_OPT_IN_DIALOG_OK_BUTTON_LABEL" desc="Button that allows the user to use their device's platform authenticator to confirm card use in the future.">
+        Use WebAuthn
+      </message>
+    </if>
+    <message name="IDS_AUTOFILL_WEBAUTHN_OPT_IN_DIALOG_INSTRUCTION" desc="Subheading that appears below the headline explaining to the user that they won't have to enter their card's security code if they decide to use their device's platform authenticator in the future.">
+      You won't need to enter a card security code from now on
+    </message>
+    <message name="IDS_AUTOFILL_WEBAUTHN_OPT_IN_DIALOG_INSTRUCTION_ERROR" desc="Subheading that appears below the headline, acknowledging the current error and encouraging users to retry later.">
+      Please try again next time
+    </message>
+    <message name="IDS_AUTOFILL_WEBAUTHN_OPT_IN_DIALOG_CANCEL_BUTTON_LABEL" desc="Button that allows the user to decline the option of using their device's platform authenticator for card confirmation.">
+      Not now
+    </message>
+    <message name="IDS_AUTOFILL_WEBAUTHN_OPT_IN_DIALOG_CANCEL_BUTTON_LABEL_ERROR" desc="Button that allows the user to close the dialog.">
+      Close
+    </message>
+  </if>
+
+
+  <!-- Verify pending dialog (Desktop only) -->
+  <if expr="not is_ios and not is_android">
+    <message name="IDS_AUTOFILL_VERIFY_PENDING_DIALOG_TITLE" desc="Headline showing the card verification is in progress.">
+        Verifying your identity...
+    </message>
+    <message name="IDS_AUTOFILL_VERIFY_PENDING_DIALOG_CANCEL_BUTTON_LABEL" desc="Button that allows the user to cancel the card verification.">
+        Cancel
+    </message>
+  </if>
+
+  <message name="IDS_AUTOFILL_WALLET_MANAGEMENT_LINK_TEXT" desc="Text for link that allows users to see and edit their Wallet information." formatter_data="android_java">
+    Edit
+  </message>
+  <message name="IDS_AUTOFILL_FROM_GOOGLE_ACCOUNT_LONG" desc="Text that indicates an address or credit card came from Google Pay. 'Google Pay' should not be translated as it is the product name." formatter_data="android_java">
+    From Google Pay
+  </message>
+
+</grit-part>

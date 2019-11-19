@@ -27,7 +27,7 @@
 
 [
     Constructor(DOMString type, optional DeviceMotionEventInit eventInitDict),
-    Exposed=Window, SecureContext=RestrictDeviceSensorEventsToSecureContexts
+    Exposed=Window, SecureContext
 ] interface DeviceMotionEvent : Event {
     readonly attribute DeviceMotionEventAcceleration? acceleration;
     readonly attribute DeviceMotionEventAcceleration? accelerationIncludingGravity;

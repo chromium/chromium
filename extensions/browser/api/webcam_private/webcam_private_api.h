@@ -71,7 +71,7 @@ class WebcamPrivateAPI : public BrowserContextKeyedAPI {
   content::BrowserContext* const browser_context_;
   std::unique_ptr<ApiResourceManager<WebcamResource>> webcam_resource_manager_;
 
-  base::WeakPtrFactory<WebcamPrivateAPI> weak_ptr_factory_;
+  base::WeakPtrFactory<WebcamPrivateAPI> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(WebcamPrivateAPI);
 };
@@ -80,7 +80,7 @@ template <>
 void BrowserContextKeyedAPIFactory<WebcamPrivateAPI>
     ::DeclareFactoryDependencies();
 
-class WebcamPrivateOpenSerialWebcamFunction : public UIThreadExtensionFunction {
+class WebcamPrivateOpenSerialWebcamFunction : public ExtensionFunction {
  public:
   WebcamPrivateOpenSerialWebcamFunction();
   DECLARE_EXTENSION_FUNCTION("webcamPrivate.openSerialWebcam",
@@ -89,7 +89,7 @@ class WebcamPrivateOpenSerialWebcamFunction : public UIThreadExtensionFunction {
  protected:
   ~WebcamPrivateOpenSerialWebcamFunction() override;
 
-  // UIThreadExtensionFunction:
+  // ExtensionFunction:
   ResponseAction Run() override;
 
  private:
@@ -98,7 +98,7 @@ class WebcamPrivateOpenSerialWebcamFunction : public UIThreadExtensionFunction {
   DISALLOW_COPY_AND_ASSIGN(WebcamPrivateOpenSerialWebcamFunction);
 };
 
-class WebcamPrivateCloseWebcamFunction : public UIThreadExtensionFunction {
+class WebcamPrivateCloseWebcamFunction : public ExtensionFunction {
  public:
   WebcamPrivateCloseWebcamFunction();
   DECLARE_EXTENSION_FUNCTION("webcamPrivate.closeWebcam",
@@ -107,14 +107,14 @@ class WebcamPrivateCloseWebcamFunction : public UIThreadExtensionFunction {
  protected:
   ~WebcamPrivateCloseWebcamFunction() override;
 
-  // UIThreadExtensionFunction:
+  // ExtensionFunction:
   ResponseAction Run() override;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(WebcamPrivateCloseWebcamFunction);
 };
 
-class WebcamPrivateSetFunction : public UIThreadExtensionFunction {
+class WebcamPrivateSetFunction : public ExtensionFunction {
  public:
   WebcamPrivateSetFunction();
   DECLARE_EXTENSION_FUNCTION("webcamPrivate.set", WEBCAMPRIVATE_SET)
@@ -122,7 +122,7 @@ class WebcamPrivateSetFunction : public UIThreadExtensionFunction {
  protected:
   ~WebcamPrivateSetFunction() override;
 
-  // UIThreadExtensionFunction:
+  // ExtensionFunction:
   ResponseAction Run() override;
 
  private:
@@ -134,7 +134,7 @@ class WebcamPrivateSetFunction : public UIThreadExtensionFunction {
   DISALLOW_COPY_AND_ASSIGN(WebcamPrivateSetFunction);
 };
 
-class WebcamPrivateGetFunction : public UIThreadExtensionFunction {
+class WebcamPrivateGetFunction : public ExtensionFunction {
  public:
   WebcamPrivateGetFunction();
   DECLARE_EXTENSION_FUNCTION("webcamPrivate.get", WEBCAMPRIVATE_GET)
@@ -142,7 +142,7 @@ class WebcamPrivateGetFunction : public UIThreadExtensionFunction {
  protected:
   ~WebcamPrivateGetFunction() override;
 
-  // UIThreadExtensionFunction:
+  // ExtensionFunction:
   ResponseAction Run() override;
 
  private:
@@ -176,16 +176,16 @@ class WebcamPrivateGetFunction : public UIThreadExtensionFunction {
   int min_focus_;
   int max_focus_;
   int focus_;
-  bool get_pan_;
-  bool get_tilt_;
-  bool get_zoom_;
-  bool get_focus_;
+  bool got_pan_;
+  bool got_tilt_;
+  bool got_zoom_;
+  bool got_focus_;
   bool success_;
 
   DISALLOW_COPY_AND_ASSIGN(WebcamPrivateGetFunction);
 };
 
-class WebcamPrivateResetFunction : public UIThreadExtensionFunction {
+class WebcamPrivateResetFunction : public ExtensionFunction {
  public:
   WebcamPrivateResetFunction();
   DECLARE_EXTENSION_FUNCTION("webcamPrivate.reset", WEBCAMPRIVATE_RESET)
@@ -193,7 +193,7 @@ class WebcamPrivateResetFunction : public UIThreadExtensionFunction {
  protected:
   ~WebcamPrivateResetFunction() override;
 
-  // UIThreadExtensionFunction:
+  // ExtensionFunction:
   ResponseAction Run() override;
 
  private:

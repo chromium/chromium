@@ -146,7 +146,18 @@ class CC_PAINT_EXPORT PaintFlags {
   bool IsSimpleOpacity() const;
   bool SupportsFoldingAlpha() const;
 
+  // SkPaint does not support loopers, so callers of SkToPaint need
+  // to check for loopers manually (see getLooper()).
   SkPaint ToSkPaint() const;
+
+  template <typename Proc>
+  void DrawToSk(SkCanvas* canvas, Proc proc) const {
+    SkPaint paint = ToSkPaint();
+    if (const sk_sp<SkDrawLooper>& looper = getLooper())
+      looper->apply(canvas, paint, proc);
+    else
+      proc(canvas, paint);
+  }
 
   bool IsValid() const;
   bool operator==(const PaintFlags& other) const;

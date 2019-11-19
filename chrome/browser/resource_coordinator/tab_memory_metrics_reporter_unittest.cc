@@ -12,10 +12,9 @@
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_contents_factory.h"
 #include "content/public/test/web_contents_tester.h"
-#include "services/resource_coordinator/public/cpp/resource_coordinator_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -115,7 +114,7 @@ class TabMemoryMetricsReporterTest : public testing::Test {
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
 
   std::unique_ptr<content::TestWebContentsFactory> test_web_contents_factory_;
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   TestingProfile testing_profile_;
   content::WebContents* contents1_;
   content::WebContents* contents2_;

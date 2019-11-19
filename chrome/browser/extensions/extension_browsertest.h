@@ -24,7 +24,9 @@
 #include "extensions/browser/extension_creator.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_protocols.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/sandboxed_unpacker.h"
 #include "extensions/browser/scoped_ignore_content_verifier_for_test.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/feature_switch.h"
@@ -43,6 +45,17 @@ class ProcessManager;
 // Base class for extension browser tests. Provides utilities for loading,
 // unloading, and installing extensions.
 class ExtensionBrowserTest : virtual public InProcessBrowserTest {
+ public:
+  // Different types of extension's lazy background contexts used in some tests.
+  enum class ContextType {
+    // A non-persistent background page/JS based extension.
+    kEventPage,
+    // A Service Worker based extension.
+    kServiceWorker,
+    // An extension with a persistent background page.
+    kPersistentBackground,
+  };
+
  protected:
   // Flags used to configure how the tests are run.
   enum Flags {
@@ -61,6 +74,13 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest {
     // Allow older manifest versions (typically these can't be loaded - we allow
     // them for testing).
     kFlagAllowOldManifestVersions = 1 << 3,
+
+    // Pass the FOR_LOGIN_SCREEN flag when loading the extension. This flag is
+    // usually provided for force-installed extension on the login screen.
+    kFlagLoadForLoginScreen = 1 << 4,
+
+    // Load the provided extension as Service Worker based extension.
+    kFlagRunAsServiceWorkerBasedExtension = 1 << 5,
   };
 
   ExtensionBrowserTest();
@@ -69,6 +89,10 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest {
   // Useful accessors.
   ExtensionService* extension_service() {
     return ExtensionSystem::Get(profile())->extension_service();
+  }
+
+  ExtensionRegistry* extension_registry() {
+    return ExtensionRegistry::Get(profile());
   }
 
   const std::string& last_loaded_extension_id() {
@@ -89,6 +113,11 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest {
   // verification; this should be overridden by derived tests which care
   // about install verification.
   virtual bool ShouldEnableInstallVerification();
+
+  // Returns the path of the directory from which to serve resources when they
+  // are prefixed with "_test_resources/".
+  // The default is chrome/test/data/extensions/.
+  virtual base::FilePath GetTestResourcesParentDir();
 
   static const Extension* GetExtensionByPath(const ExtensionSet& extensions,
                                              const base::FilePath& path);
@@ -115,6 +144,16 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest {
       const base::FilePath& path,
       int flags,
       const std::string& install_param);
+
+  // Converts an extension from |path| to a Service Worker based extension and
+  // returns true on success.
+  // If successful, |out_path| contains path of the converted extension.
+  //
+  // NOTE: The conversion works only for extensions with background.scripts and
+  // background.persistent = false; persistent background pages and
+  // background.page are not supported.
+  bool CreateServiceWorkerBasedExtension(const base::FilePath& path,
+                                         base::FilePath* out_path);
 
   // Loads unpacked extension from |path| with manifest |manifest_relative_path|
   // and imitates that it is a component extension.
@@ -418,6 +457,10 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest {
   // Conditionally disable install verification.
   std::unique_ptr<ScopedInstallVerifierBypassForTest>
       ignore_install_verification_;
+
+  // Used to disable CRX publisher signature checking.
+  SandboxedUnpacker::ScopedVerifierFormatOverrideForTest
+      verifier_format_override_;
 
   ExtensionUpdater::ScopedSkipScheduledCheckForTest skip_scheduled_check_;
 

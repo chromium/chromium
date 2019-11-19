@@ -42,6 +42,7 @@ namespace blink {
 
 class ComputedStyle;
 class FontDescription;
+class PseudoElement;
 
 // A per-element object which wraps an ElementResolveContext. It collects state
 // throughout the process of computing the style. It also gives convenient
@@ -51,13 +52,14 @@ class CORE_EXPORT StyleResolverState {
 
  public:
   StyleResolverState(Document&,
-                     const ElementResolveContext&,
-                     const ComputedStyle* parent_style,
-                     const ComputedStyle* layout_parent_style);
-  StyleResolverState(Document&,
-                     Element*,
+                     Element&,
                      const ComputedStyle* parent_style = nullptr,
                      const ComputedStyle* layout_parent_style = nullptr);
+  StyleResolverState(Document&,
+                     Element&,
+                     PseudoId,
+                     const ComputedStyle* parent_style,
+                     const ComputedStyle* layout_parent_style);
   ~StyleResolverState();
 
   // In FontFaceSet and CanvasRenderingContext2D, we don't have an element to
@@ -65,7 +67,7 @@ class CORE_EXPORT StyleResolverState {
   // separately.
   Document& GetDocument() const { return *document_; }
   // These are all just pass-through methods to ElementResolveContext.
-  Element* GetElement() const { return element_context_.GetElement(); }
+  Element& GetElement() const { return element_context_.GetElement(); }
   TreeScope& GetTreeScope() const;
   const ContainerNode* ParentNode() const {
     return element_context_.ParentNode();
@@ -126,31 +128,14 @@ class CORE_EXPORT StyleResolverState {
     is_animating_custom_properties_ = value;
   }
 
+  const Element* GetAnimatingElement() const;
+
   void SetParentStyle(scoped_refptr<const ComputedStyle>);
   const ComputedStyle* ParentStyle() const { return parent_style_.get(); }
 
   void SetLayoutParentStyle(scoped_refptr<const ComputedStyle>);
   const ComputedStyle* LayoutParentStyle() const {
     return layout_parent_style_.get();
-  }
-
-  // FIXME: These are effectively side-channel "out parameters" for the various
-  // map functions. When we map from CSS to style objects we use this state
-  // object to track various meta-data about that mapping (e.g. if it's
-  // cache-able).  We need to move this data off of StyleResolverState and
-  // closer to the objects it applies to. Possibly separating (immutable) inputs
-  // from (mutable) outputs.
-  void SetApplyPropertyToRegularStyle(bool is_apply) {
-    apply_property_to_regular_style_ = is_apply;
-  }
-  void SetApplyPropertyToVisitedLinkStyle(bool is_apply) {
-    apply_property_to_visited_link_style_ = is_apply;
-  }
-  bool ApplyPropertyToRegularStyle() const {
-    return apply_property_to_regular_style_;
-  }
-  bool ApplyPropertyToVisitedLinkStyle() const {
-    return apply_property_to_visited_link_style_;
   }
 
   void CacheUserAgentBorderAndBackground();
@@ -189,11 +174,34 @@ class CORE_EXPORT StyleResolverState {
   void SetHasDirAutoAttribute(bool value) { has_dir_auto_attribute_ = value; }
   bool HasDirAutoAttribute() const { return has_dir_auto_attribute_; }
 
+  const CSSValue* GetCascadedColorValue() const {
+    return cascaded_color_value_;
+  }
+  const CSSValue* GetCascadedVisitedColorValue() const {
+    return cascaded_visited_color_value_;
+  }
+
+  void SetCascadedColorValue(const CSSValue* color) {
+    cascaded_color_value_ = color;
+  }
+  void SetCascadedVisitedColorValue(const CSSValue* color) {
+    cascaded_visited_color_value_ = color;
+  }
+
   HeapHashMap<CSSPropertyID, Member<const CSSValue>>&
   ParsedPropertiesForPendingSubstitutionCache(
-      const CSSPendingSubstitutionValue&) const;
+      const cssvalue::CSSPendingSubstitutionValue&) const;
 
  private:
+  enum class AnimatingElementType { kElement, kPseudoElement };
+
+  StyleResolverState(Document&,
+                     Element&,
+                     PseudoElement*,
+                     AnimatingElementType,
+                     const ComputedStyle* parent_style,
+                     const ComputedStyle* layout_parent_style);
+
   CSSToLengthConversionData UnzoomedLengthConversionData(
       const ComputedStyle* font_style) const;
 
@@ -217,18 +225,21 @@ class CORE_EXPORT StyleResolverState {
   bool is_animation_interpolation_map_ready_;
   bool is_animating_custom_properties_;
 
-  bool apply_property_to_regular_style_;
-  bool apply_property_to_visited_link_style_;
   bool has_dir_auto_attribute_;
+
+  Member<const CSSValue> cascaded_color_value_;
+  Member<const CSSValue> cascaded_visited_color_value_;
 
   FontBuilder font_builder_;
 
   std::unique_ptr<CachedUAStyle> cached_ua_style_;
 
   ElementStyleResources element_style_resources_;
+  Member<Element> pseudo_element_;
+  AnimatingElementType animating_element_type_;
 
   mutable HeapHashMap<
-      Member<const CSSPendingSubstitutionValue>,
+      Member<const cssvalue::CSSPendingSubstitutionValue>,
       Member<HeapHashMap<CSSPropertyID, Member<const CSSValue>>>>
       parsed_properties_for_pending_substitution_cache_;
   DISALLOW_COPY_AND_ASSIGN(StyleResolverState);

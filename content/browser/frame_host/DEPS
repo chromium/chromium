@@ -20,4 +20,7 @@ specific_include_rules = {
     "+content/browser/web_contents",
     "+content/public/browser/web_contents_delegate.h",
   ],
+  "popup_menu_helper_mac.mm": [
+    "+content/app_shim_remote_cocoa/render_widget_host_view_cocoa.h",
+  ]
 }

@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<script src="../../../resources/run-after-layout-and-paint.js"></script>
+<script src="../resources/text-based-repaint.js"></script>
+<div id="target" style="width: 100px; height: 100px; background: gray;
+                        will-change: transform; transition: 0.2s">
+</div>
+<script>
+window.testIsAsync = true;
+function repaintTest() {
+  target.addEventListener('transitionend', finishRepaintTest);
+  target.style.transform = 'translateX(100px)';
+}
+onload = runRepaintAndPixelTest;
+</script>

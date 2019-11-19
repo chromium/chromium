@@ -252,14 +252,13 @@ struct GotVideoFrameOutput {
   std::vector<double> ssim;
 };
 
-void GotVideoFrame(
-    GotVideoFrameOutput* metrics_output,
-    const base::FilePath& yuv_output,
-    EncodedVideoFrameTracker* video_frame_tracker,
-    CastReceiver* cast_receiver,
-    const scoped_refptr<media::VideoFrame>& video_frame,
-    const base::TimeTicks& render_time,
-    bool continuous) {
+void GotVideoFrame(GotVideoFrameOutput* metrics_output,
+                   const base::FilePath& yuv_output,
+                   EncodedVideoFrameTracker* video_frame_tracker,
+                   CastReceiver* cast_receiver,
+                   scoped_refptr<media::VideoFrame> video_frame,
+                   base::TimeTicks render_time,
+                   bool continuous) {
   ++metrics_output->counter;
   cast_receiver->RequestDecodedVideoFrame(
       base::Bind(&GotVideoFrame, metrics_output, yuv_output,
@@ -270,19 +269,19 @@ void GotVideoFrame(
   if (video_frame_tracker) {
     scoped_refptr<media::VideoFrame> src_frame =
         video_frame_tracker->PopOldestEncodedFrame();
-    metrics_output->psnr.push_back(I420PSNR(src_frame, video_frame));
-    metrics_output->ssim.push_back(I420SSIM(src_frame, video_frame));
+    metrics_output->psnr.push_back(I420PSNR(*src_frame, *video_frame));
+    metrics_output->ssim.push_back(I420SSIM(*src_frame, *video_frame));
   }
 
   if (!yuv_output.empty()) {
-    AppendYuvToFile(yuv_output, video_frame);
+    AppendYuvToFile(yuv_output, std::move(video_frame));
   }
 }
 
 void GotAudioFrame(int* counter,
                    CastReceiver* cast_receiver,
                    std::unique_ptr<AudioBus> audio_bus,
-                   const base::TimeTicks& playout_time,
+                   base::TimeTicks playout_time,
                    bool is_continuous) {
   ++*counter;
   cast_receiver->RequestDecodedAudioFrame(

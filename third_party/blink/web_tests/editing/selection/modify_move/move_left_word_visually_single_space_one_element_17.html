@@ -1,0 +1,116 @@
+<!doctype html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../assert_selection.js"></script>
+<script>
+if (window.internals)
+  internals.settings.setEditingBehavior('win');
+
+selection_test(
+  '<div contenteditable dir="ltr">|abc \u202Bבאד def\u202C xyz</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">|abc \u202Bבאד def\u202C xyz</div>',
+  '17-0 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">a|bc \u202Bבאד def\u202C xyz</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">|abc \u202Bבאד def\u202C xyz</div>',
+  '17-1 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">ab|c \u202Bבאד def\u202C xyz</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">|abc \u202Bבאד def\u202C xyz</div>',
+  '17-2 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc| \u202Bבאד def\u202C xyz</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">|abc \u202Bבאד def\u202C xyz</div>',
+  '17-3 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc |\u202Bבאד def\u202C xyz</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">|abc \u202Bבאד def\u202C xyz</div>',
+  '17-4 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc \u202B|באד def\u202C xyz</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">|abc \u202B\u05D1\u05D0\u05D3 def\u202C xyz</div>',
+  '17-5 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc \u202Bב|אד def\u202C xyz</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">abc \u202B|\u05D1\u05D0\u05D3 def\u202C xyz</div>',
+  '17-6 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc \u202Bבא|ד def\u202C xyz</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">abc \u202B|\u05D1\u05D0\u05D3 def\u202C xyz</div>',
+  '17-7 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc \u202Bבאד| def\u202C xyz</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">abc \u202B|\u05D1\u05D0\u05D3 def\u202C xyz</div>',
+  '17-8 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc \u202Bבאד |def\u202C xyz</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">abc \u202B|\u05D1\u05D0\u05D3 def\u202C xyz</div>',
+  '17-9 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc \u202Bבאד d|ef\u202C xyz</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">abc \u202Bבאד |def\u202C xyz</div>',
+  '17-10 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc \u202Bבאד de|f\u202C xyz</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">abc \u202Bבאד |def\u202C xyz</div>',
+  '17-11 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc \u202Bבאד def|\u202C xyz</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">abc \u202B\u05D1\u05D0\u05D3 |def\u202C xyz</div>',
+  '17-12 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc \u202Bבאד def\u202C| xyz</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">abc \u202B\u05D1\u05D0\u05D3 |def\u202C xyz</div>',
+  '17-13 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc \u202Bבאד def\u202C |xyz</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">abc \u202B\u05D1\u05D0\u05D3 |def\u202C xyz</div>',
+  '17-14 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc \u202Bבאד def\u202C x|yz</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">abc \u202Bבאד def\u202C |xyz</div>',
+  '17-15 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc \u202Bבאד def\u202C xy|z</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">abc \u202Bבאד def\u202C |xyz</div>',
+  '17-16 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc \u202Bבאד def\u202C xyz|</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">abc \u202Bבאד def\u202C |xyz</div>',
+  '17-17 left word');
+</script>

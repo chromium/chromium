@@ -38,24 +38,10 @@
 
 #if defined(OS_MACOSX)
 #include <asl.h>
-#endif  // defined(OS_MACOSX)
-
-#if defined(COMPILER_MSVC)
-#include <crtdbg.h>
-#endif
-
-#if defined(OS_WIN)
-#include <windows.h>
-#endif
-
-#if defined(OS_MACOSX) || (defined(OS_LINUX) && !defined(__UCLIBC__))
-#include <cxxabi.h>
-#include <dlfcn.h>
-#include <execinfo.h>
-#endif
-
-#if defined(OS_ANDROID)
+#elif defined(OS_ANDROID)
 #include <android/log.h>
+#elif defined(OS_WIN)
+#include <windows.h>
 #endif
 
 PRINTF_FORMAT(1, 0)
@@ -89,12 +75,3 @@ void vprintf_stderr_common(const char* format, va_list args) {
 #endif
   vfprintf(stderr, format, args);
 }
-
-#if defined(COMPILER_GCC)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wformat-nonliteral"
-#endif
-
-#if defined(COMPILER_GCC)
-#pragma GCC diagnostic pop
-#endif

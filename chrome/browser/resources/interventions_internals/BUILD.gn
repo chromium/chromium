@@ -1,0 +1,20 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+
+js_type_check("closure_compile") {
+  deps = [
+    ":index",
+  ]
+}
+
+js_library("index") {
+  deps = [
+    "//chrome/browser/ui/webui/interventions_internals:mojo_bindings_js_library_for_compile",
+    "//ui/webui/resources/js:assert",
+    "//ui/webui/resources/js:cr",
+    "//ui/webui/resources/js:util",
+  ]
+}

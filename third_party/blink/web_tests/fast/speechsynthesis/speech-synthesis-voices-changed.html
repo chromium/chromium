@@ -8,18 +8,25 @@
 <div id="console"></div>
 
 <script>
-    speechSynthesis.onvoiceschanged = function() {
-        debug('Got onvoiceschanged event.');
-    }
+    if (window.internals)
+        internals.enableMockSpeechSynthesizer(window);
+
+    if (window.testRunner)
+        testRunner.waitUntilDone();
+
+    window.jsTestIsAsync = true;
 
     var list = speechSynthesis.getVoices();
     debug('Initially, there are ' + list.length + ' voices.');
 
-    if (window.internals)
-        internals.enableMockSpeechSynthesizer(window);
+    speechSynthesis.onvoiceschanged = function() {
+        debug('Got onvoiceschanged event.');
 
-    list = speechSynthesis.getVoices();
-    debug('Now there are ' + list.length + ' voices.');
+        list = speechSynthesis.getVoices();
+        debug('Now there are ' + list.length + ' voices.');
+
+        finishJSTest();
+    }
 
 </script>
 

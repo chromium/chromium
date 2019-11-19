@@ -1,3 +1,4 @@
+CONSOLE WARNING: Application Cache API manifest selection is deprecated and will be removed in M82, around April 2020. See https://www.chromestatus.com/features/6192449487634432 for more details.
 Test for bug 44406: Application Cache crash when a fallback document has a manifest URL.
 
 PASS

@@ -21,6 +21,7 @@
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/visitedlink/browser/visitedlink_delegate.h"
 #include "components/visitedlink/browser/visitedlink_event_listener.h"
@@ -63,11 +64,10 @@ namespace {
 // Fills the given salt structure with some quasi-random values
 // It is not necessary to generate a cryptographically strong random string,
 // only that it be reasonably different for different users.
-void GenerateSalt(uint8_t salt[LINK_SALT_LENGTH]) {
-  static_assert(LINK_SALT_LENGTH == 8,
-                "This code assumes the length of the salt");
+void GenerateSalt(uint8_t (&salt)[LINK_SALT_LENGTH]) {
   uint64_t randval = base::RandUint64();
-  memcpy(salt, &randval, 8);
+  static_assert(sizeof(salt) == sizeof(randval), "Salt size mismatch");
+  memcpy(salt, &randval, sizeof(salt));
 }
 
 // Opens file on a background thread to not block UI thread.
@@ -224,8 +224,7 @@ VisitedLinkMaster::VisitedLinkMaster(content::BrowserContext* browser_context,
     : browser_context_(browser_context),
       delegate_(delegate),
       listener_(std::make_unique<VisitedLinkEventListener>(browser_context)),
-      persist_to_disk_(persist_to_disk),
-      weak_ptr_factory_(this) {}
+      persist_to_disk_(persist_to_disk) {}
 
 VisitedLinkMaster::VisitedLinkMaster(Listener* listener,
                                      VisitedLinkDelegate* delegate,
@@ -233,9 +232,7 @@ VisitedLinkMaster::VisitedLinkMaster(Listener* listener,
                                      bool suppress_rebuild,
                                      const base::FilePath& filename,
                                      int32_t default_table_size)
-    : delegate_(delegate),
-      persist_to_disk_(persist_to_disk),
-      weak_ptr_factory_(this) {
+    : delegate_(delegate), persist_to_disk_(persist_to_disk) {
   listener_.reset(listener);
   DCHECK(listener_);
 
@@ -343,6 +340,7 @@ void VisitedLinkMaster::PostIOTask(const base::Location& from_here,
 }
 
 void VisitedLinkMaster::AddURL(const GURL& url) {
+  TRACE_EVENT0("browser", "VisitedLinkMaster::AddURL");
   Hash index = TryToAddURL(url);
   if (!table_builder_ && !table_is_loading_from_file_ && index != null_hash_) {
     // Not rebuilding, so we want to keep the file on disk up to date.
@@ -355,6 +353,7 @@ void VisitedLinkMaster::AddURL(const GURL& url) {
 }
 
 void VisitedLinkMaster::AddURLs(const std::vector<GURL>& urls) {
+  TRACE_EVENT0("browser", "VisitedLinkMaster::AddURLs");
   for (const GURL& url : urls) {
     Hash index = TryToAddURL(url);
     if (!table_builder_ && !table_is_loading_from_file_ && index != null_hash_)
@@ -620,9 +619,8 @@ void VisitedLinkMaster::LoadFromFile(
   scoped_refptr<LoadFromFileResult> load_from_file_result;
   bool success = LoadApartFromFile(filename, &load_from_file_result);
 
-  base::PostTaskWithTraits(
-      FROM_HERE, {BrowserThread::UI},
-      base::BindOnce(callback, success, load_from_file_result));
+  base::PostTask(FROM_HERE, {BrowserThread::UI},
+                 base::BindOnce(callback, success, load_from_file_result));
 }
 
 // static
@@ -1144,9 +1142,8 @@ void VisitedLinkMaster::TableBuilder::OnComplete(bool success) {
 
   // Marshal to the main thread to notify the VisitedLinkMaster that the
   // rebuild is complete.
-  base::PostTaskWithTraits(
-      FROM_HERE, {BrowserThread::UI},
-      base::BindOnce(&TableBuilder::OnCompleteMainThread, this));
+  base::PostTask(FROM_HERE, {BrowserThread::UI},
+                 base::BindOnce(&TableBuilder::OnCompleteMainThread, this));
 }
 
 void VisitedLinkMaster::TableBuilder::OnCompleteMainThread() {

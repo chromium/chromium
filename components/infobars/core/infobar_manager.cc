@@ -6,9 +6,7 @@
 
 #include <utility>
 
-#include "base/command_line.h"
 #include "components/infobars/core/infobar.h"
-#include "components/infobars/core/infobars_switches.h"
 
 namespace infobars {
 
@@ -38,8 +36,6 @@ void InfoBarManager::Observer::OnManagerShuttingDown(InfoBarManager* manager) {
 InfoBar* InfoBarManager::AddInfoBar(std::unique_ptr<InfoBar> infobar,
                                     bool replace_existing) {
   DCHECK(infobar);
-  if (!infobars_enabled_)
-    return nullptr;
 
   for (InfoBars::const_iterator i(infobars_.begin()); i != infobars_.end();
        ++i) {
@@ -72,8 +68,6 @@ void InfoBarManager::RemoveAllInfoBars(bool animate) {
 InfoBar* InfoBarManager::ReplaceInfoBar(InfoBar* old_infobar,
                                         std::unique_ptr<InfoBar> new_infobar) {
   DCHECK(old_infobar);
-  if (!infobars_enabled_)
-    return AddInfoBar(std::move(new_infobar));  // Deletes the infobar.
   DCHECK(new_infobar);
 
   auto i(std::find(infobars_.begin(), infobars_.end(), old_infobar));
@@ -102,13 +96,9 @@ void InfoBarManager::RemoveObserver(Observer* obs) {
   observer_list_.RemoveObserver(obs);
 }
 
-InfoBarManager::InfoBarManager() {
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kDisableInfoBars))
-    infobars_enabled_ = false;
-}
+InfoBarManager::InfoBarManager() = default;
 
-InfoBarManager::~InfoBarManager() {}
+InfoBarManager::~InfoBarManager() = default;
 
 void InfoBarManager::ShutDown() {
   // Destroy all remaining InfoBars.  It's important to not animate here so that
@@ -132,10 +122,6 @@ void InfoBarManager::OnNavigation(
 
 void InfoBarManager::RemoveInfoBarInternal(InfoBar* infobar, bool animate) {
   DCHECK(infobar);
-  if (!infobars_enabled_) {
-    DCHECK(infobars_.empty());
-    return;
-  }
 
   auto i(std::find(infobars_.begin(), infobars_.end(), infobar));
   DCHECK(i != infobars_.end());

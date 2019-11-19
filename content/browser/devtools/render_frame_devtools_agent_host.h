@@ -23,12 +23,13 @@
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 
 #if defined(OS_ANDROID)
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/wake_lock.mojom.h"
 #include "ui/android/view_android.h"
 #endif  // OS_ANDROID
 
-namespace viz {
-class CompositorFrameMetadata;
+namespace cc {
+class RenderFrameMetadata;
 }
 
 namespace content {
@@ -36,7 +37,7 @@ namespace content {
 class BrowserContext;
 class DevToolsFrameTraceRecorder;
 class FrameTreeNode;
-class NavigationHandleImpl;
+class NavigationRequest;
 class RenderFrameHostImpl;
 
 class CONTENT_EXPORT RenderFrameDevToolsAgentHost
@@ -48,23 +49,30 @@ class CONTENT_EXPORT RenderFrameDevToolsAgentHost
   // Returns appropriate agent host for given frame tree node, traversing
   // up to local root as needed.
   static DevToolsAgentHostImpl* GetFor(FrameTreeNode* frame_tree_node);
+  // Returns appropriate agent host for given render frame host, traversing
+  // up to local root as needed. This will have an effect different from
+  // calling the above overload as GetFor(rfh->frame_tree_node()) when
+  // given RFH is a pending local root.
+  static DevToolsAgentHostImpl* GetFor(RenderFrameHostImpl* rfh);
+
   // Similar to GetFor(), but creates a host if it doesn't exist yet.
   static scoped_refptr<DevToolsAgentHost> GetOrCreateFor(
       FrameTreeNode* frame_tree_node);
 
-  // This method does not climb up to the suitable parent frame,
-  // so only use it when we are sure the frame will be a local root.
-  // Prefer GetOrCreateFor instead.
-  static scoped_refptr<DevToolsAgentHost> GetOrCreateForDangling(
-      FrameTreeNode* frame_tree_node);
+  // This method is called when new frame is created during cross process
+  // navigation.
+  static scoped_refptr<DevToolsAgentHost> CreateForCrossProcessNavigation(
+      NavigationRequest* request);
   static scoped_refptr<DevToolsAgentHost> FindForDangling(
       FrameTreeNode* frame_tree_node);
 
   static void WebContentsCreated(WebContents* web_contents);
 
+#if defined(OS_ANDROID)
   static void SignalSynchronousSwapCompositorFrame(
       RenderFrameHost* frame_host,
-      viz::CompositorFrameMetadata frame_metadata);
+      const cc::RenderFrameMetadata& frame_metadata);
+#endif
 
   FrameTreeNode* frame_tree_node() { return frame_tree_node_; }
 
@@ -94,7 +102,7 @@ class CONTENT_EXPORT RenderFrameDevToolsAgentHost
   static void UpdateRawHeadersAccess(RenderFrameHostImpl* old_rfh,
                                      RenderFrameHostImpl* new_rfh);
 
-  explicit RenderFrameDevToolsAgentHost(FrameTreeNode*);
+  RenderFrameDevToolsAgentHost(FrameTreeNode*, RenderFrameHostImpl*);
   ~RenderFrameDevToolsAgentHost() override;
 
   // DevToolsAgentHostImpl overrides.
@@ -119,7 +127,6 @@ class CONTENT_EXPORT RenderFrameDevToolsAgentHost
 
   bool IsChildFrame();
 
-  void OnSwapCompositorFrame(const IPC::Message& message);
   void DestroyOnRenderFrameGone();
   void UpdateFrameHost(RenderFrameHostImpl* frame_host);
   void SetFrameTreeNode(FrameTreeNode* frame_tree_node);
@@ -128,23 +135,27 @@ class CONTENT_EXPORT RenderFrameDevToolsAgentHost
 
 #if defined(OS_ANDROID)
   device::mojom::WakeLock* GetWakeLock();
+  void SynchronousSwapCompositorFrame(
+      const cc::RenderFrameMetadata& frame_metadata);
 #endif
 
-  void SynchronousSwapCompositorFrame(
-      viz::CompositorFrameMetadata frame_metadata);
+  void UpdateResourceLoaderFactories();
 
-  std::unique_ptr<DevToolsFrameTraceRecorder> frame_trace_recorder_;
 #if defined(OS_ANDROID)
-  device::mojom::WakeLockPtr wake_lock_;
+  std::unique_ptr<DevToolsFrameTraceRecorder> frame_trace_recorder_;
+  mojo::Remote<device::mojom::WakeLock> wake_lock_;
 #endif
 
   // The active host we are talking to.
   RenderFrameHostImpl* frame_host_ = nullptr;
-  base::flat_set<NavigationHandleImpl*> navigation_handles_;
+  base::flat_set<NavigationRequest*> navigation_requests_;
   bool render_frame_alive_ = false;
+  void* active_file_chooser_interceptor_ = nullptr;
 
   // The FrameTreeNode associated with this agent.
   FrameTreeNode* frame_tree_node_;
+
+  double page_scale_factor_ = 1;
 
   DISALLOW_COPY_AND_ASSIGN(RenderFrameDevToolsAgentHost);
 };

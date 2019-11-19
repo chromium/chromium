@@ -55,7 +55,7 @@ public class ChannelsUpdaterTest {
     public NativeLibraryTestRule mNativeLibraryTestRule = new NativeLibraryTestRule();
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         // Not initializing the browser process is safe because
         // UrlFormatter.formatUrlForSecurityDisplay() is stand-alone.
         mNativeLibraryTestRule.loadNativeLibraryNoBrowserProcess();
@@ -82,7 +82,7 @@ public class ChannelsUpdaterTest {
     @SmallTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
     @TargetApi(Build.VERSION_CODES.O)
-    public void testShouldUpdateChannels_returnsFalsePreO() throws Exception {
+    public void testShouldUpdateChannels_returnsFalsePreO() {
         ChannelsUpdater updater = new ChannelsUpdater(
                 false /* isAtLeastO */, mMockSharedPreferences, mChannelsInitializer, 0);
         assertThat(updater.shouldUpdateChannels(), is(false));
@@ -92,7 +92,7 @@ public class ChannelsUpdaterTest {
     @SmallTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
     @TargetApi(Build.VERSION_CODES.O)
-    public void testShouldUpdateChannels_returnsTrueIfOAndNoSavedVersionInPrefs() throws Exception {
+    public void testShouldUpdateChannels_returnsTrueIfOAndNoSavedVersionInPrefs() {
         ChannelsUpdater updater = new ChannelsUpdater(
                 true /* isAtLeastO */, mMockSharedPreferences, mChannelsInitializer, 0);
         assertThat(updater.shouldUpdateChannels(), is(true));
@@ -102,8 +102,7 @@ public class ChannelsUpdaterTest {
     @SmallTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
     @TargetApi(Build.VERSION_CODES.O)
-    public void testShouldUpdateChannels_returnsTrueIfOAndDifferentVersionInPrefs()
-            throws Exception {
+    public void testShouldUpdateChannels_returnsTrueIfOAndDifferentVersionInPrefs() {
         mMockSharedPreferences.edit().putInt(ChannelsUpdater.CHANNELS_VERSION_KEY, 4).apply();
         ChannelsUpdater updater = new ChannelsUpdater(
                 true /* isAtLeastO */, mMockSharedPreferences, mChannelsInitializer, 5);
@@ -114,7 +113,7 @@ public class ChannelsUpdaterTest {
     @SmallTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
     @TargetApi(Build.VERSION_CODES.O)
-    public void testShouldUpdateChannels_returnsFalseIfOAndSameVersionInPrefs() throws Exception {
+    public void testShouldUpdateChannels_returnsFalseIfOAndSameVersionInPrefs() {
         mMockSharedPreferences.edit().putInt(ChannelsUpdater.CHANNELS_VERSION_KEY, 3).apply();
         ChannelsUpdater updater = new ChannelsUpdater(
                 true /* isAtLeastO */, mMockSharedPreferences, mChannelsInitializer, 3);
@@ -125,7 +124,7 @@ public class ChannelsUpdaterTest {
     @SmallTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
     @TargetApi(Build.VERSION_CODES.O)
-    public void testUpdateChannels_noopPreO() throws Exception {
+    public void testUpdateChannels_noopPreO() {
         ChannelsUpdater updater = new ChannelsUpdater(
                 false /* isAtLeastO */, mMockSharedPreferences, mChannelsInitializer, 21);
         updater.updateChannels();
@@ -138,7 +137,7 @@ public class ChannelsUpdaterTest {
     @SmallTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
     @TargetApi(Build.VERSION_CODES.O)
-    public void testUpdateChannels_createsExpectedChannelsAndUpdatesPref() throws Exception {
+    public void testUpdateChannels_createsExpectedChannelsAndUpdatesPref() {
         ChannelsUpdater updater = new ChannelsUpdater(
                 true /* isAtLeastO */, mMockSharedPreferences, mChannelsInitializer, 21);
         updater.updateChannels();
@@ -156,7 +155,7 @@ public class ChannelsUpdaterTest {
     @SmallTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
     @TargetApi(Build.VERSION_CODES.O)
-    public void testUpdateChannels_deletesLegacyChannelsAndCreatesExpectedOnes() throws Exception {
+    public void testUpdateChannels_deletesLegacyChannelsAndCreatesExpectedOnes() {
         // Set up any legacy channels.
         mNotificationManagerProxy.createNotificationChannelGroup(
                 ChannelDefinitions.getChannelGroup(ChannelDefinitions.ChannelGroupId.GENERAL)

@@ -37,8 +37,10 @@ LocalPresentationManager::GetOrCreateLocalPresentation(
 void LocalPresentationManager::RegisterLocalPresentationController(
     const PresentationInfo& presentation_info,
     const content::GlobalFrameRoutingId& render_frame_host_id,
-    content::PresentationConnectionPtr controller_connection_ptr,
-    content::PresentationConnectionRequest receiver_connection_request,
+    mojo::PendingRemote<blink::mojom::PresentationConnection>
+        controller_connection_remote,
+    mojo::PendingReceiver<blink::mojom::PresentationConnection>
+        receiver_connection_receiver,
     const MediaRoute& route) {
   DVLOG(2) << __func__ << " [presentation_id]: " << presentation_info.id
            << ", [render_frame_host_id]: "
@@ -47,8 +49,8 @@ void LocalPresentationManager::RegisterLocalPresentationController(
 
   auto* presentation = GetOrCreateLocalPresentation(presentation_info);
   presentation->RegisterController(
-      render_frame_host_id, std::move(controller_connection_ptr),
-      std::move(receiver_connection_request), route);
+      render_frame_host_id, std::move(controller_connection_remote),
+      std::move(receiver_connection_receiver), route);
 }
 
 void LocalPresentationManager::UnregisterLocalPresentationController(
@@ -91,7 +93,7 @@ void LocalPresentationManager::OnLocalPresentationReceiverTerminated(
 
 bool LocalPresentationManager::IsLocalPresentation(
     const std::string& presentation_id) {
-  return base::ContainsKey(local_presentations_, presentation_id);
+  return base::Contains(local_presentations_, presentation_id);
 }
 
 const MediaRoute* LocalPresentationManager::GetRoute(
@@ -111,18 +113,20 @@ LocalPresentationManager::LocalPresentation::~LocalPresentation() {}
 
 void LocalPresentationManager::LocalPresentation::RegisterController(
     const content::GlobalFrameRoutingId& render_frame_host_id,
-    content::PresentationConnectionPtr controller_connection_ptr,
-    content::PresentationConnectionRequest receiver_connection_request,
+    mojo::PendingRemote<blink::mojom::PresentationConnection>
+        controller_connection_remote,
+    mojo::PendingReceiver<blink::mojom::PresentationConnection>
+        receiver_connection_receiver,
     const MediaRoute& route) {
   if (!receiver_callback_.is_null()) {
     receiver_callback_.Run(PresentationInfo::New(presentation_info_),
-                           std::move(controller_connection_ptr),
-                           std::move(receiver_connection_request));
+                           std::move(controller_connection_remote),
+                           std::move(receiver_connection_receiver));
   } else {
     pending_controllers_.insert(std::make_pair(
         render_frame_host_id, std::make_unique<ControllerConnection>(
-                                  std::move(controller_connection_ptr),
-                                  std::move(receiver_connection_request))));
+                                  std::move(controller_connection_remote),
+                                  std::move(receiver_connection_receiver))));
   }
 
   route_ = route;
@@ -140,8 +144,8 @@ void LocalPresentationManager::LocalPresentation::RegisterReceiver(
   for (auto& controller : pending_controllers_) {
     receiver_callback.Run(
         PresentationInfo::New(presentation_info_),
-        std::move(controller.second->controller_connection_ptr),
-        std::move(controller.second->receiver_connection_request));
+        std::move(controller.second->controller_connection_remote),
+        std::move(controller.second->receiver_connection_receiver));
   }
   receiver_callback_ = receiver_callback;
   pending_controllers_.clear();
@@ -153,10 +157,12 @@ bool LocalPresentationManager::LocalPresentation::IsValid() const {
 
 LocalPresentationManager::LocalPresentation::ControllerConnection::
     ControllerConnection(
-        content::PresentationConnectionPtr controller_connection_ptr,
-        content::PresentationConnectionRequest receiver_connection_request)
-    : controller_connection_ptr(std::move(controller_connection_ptr)),
-      receiver_connection_request(std::move(receiver_connection_request)) {}
+        mojo::PendingRemote<blink::mojom::PresentationConnection>
+            controller_connection_remote,
+        mojo::PendingReceiver<blink::mojom::PresentationConnection>
+            receiver_connection_receiver)
+    : controller_connection_remote(std::move(controller_connection_remote)),
+      receiver_connection_receiver(std::move(receiver_connection_receiver)) {}
 
 LocalPresentationManager::LocalPresentation::ControllerConnection::
     ~ControllerConnection() {}

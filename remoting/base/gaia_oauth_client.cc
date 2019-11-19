@@ -4,7 +4,8 @@
 
 #include "remoting/base/gaia_oauth_client.h"
 
-#include "base/callback_helpers.h"
+#include <utility>
+
 #include "base/logging.h"
 
 namespace {
@@ -57,7 +58,7 @@ void GaiaOAuthClient::OnRefreshTokenResponse(const std::string& access_token,
 
 void GaiaOAuthClient::SendResponse(const std::string& user_email,
                                    const std::string& refresh_token) {
-  base::ResetAndReturn(&on_done_).Run(user_email, refresh_token);
+  std::move(on_done_).Run(user_email, refresh_token);
 
   // Process the next request in the queue.
   if (pending_requests_.size()) {

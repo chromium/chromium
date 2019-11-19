@@ -1,0 +1,22 @@
+Simple text path
+
+string「あ、変っ！」。
+string「あ、変っ！」。
+string「あ、変っ！」。
+
+
+
+Complex text path
+
+string「あ、変っ！」。
+string「あ、変っ！」。
+string「あ、変っ！」。
+
+
+
+width=172
+width=28
+width=28
+width=172
+width=28
+width=28

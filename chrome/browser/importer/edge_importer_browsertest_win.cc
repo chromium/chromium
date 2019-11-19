@@ -158,7 +158,7 @@ class EdgeImporterBrowserTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(EdgeImporterBrowserTest, EdgeImporter) {
   // Only verified to work with ESE library on Windows 8.1 and above.
-  if (base::win::GetVersion() < base::win::VERSION_WIN8_1)
+  if (base::win::GetVersion() < base::win::Version::WIN8_1)
     return;
 
   const BookmarkInfo kEdgeBookmarks[] = {
@@ -232,8 +232,8 @@ IN_PROC_BROWSER_TEST_F(EdgeImporterBrowserTest, EdgeImporter) {
 }
 
 IN_PROC_BROWSER_TEST_F(EdgeImporterBrowserTest, EdgeImporterLegacyFallback) {
-  // We only do legacy fallback on versions < VERSION_WIN10_TH2.
-  if (base::win::GetVersion() >= base::win::VERSION_WIN10_TH2)
+  // We only do legacy fallback on versions < Version::WIN10_TH2.
+  if (base::win::GetVersion() >= base::win::Version::WIN10_TH2)
     return;
 
   const BookmarkInfo kEdgeBookmarks[] = {
@@ -281,7 +281,7 @@ IN_PROC_BROWSER_TEST_F(EdgeImporterBrowserTest, EdgeImporterLegacyFallback) {
 
 IN_PROC_BROWSER_TEST_F(EdgeImporterBrowserTest, EdgeImporterNoDatabase) {
   // Only verified to work with ESE library on Windows 8.1 and above.
-  if (base::win::GetVersion() < base::win::VERSION_WIN8_1)
+  if (base::win::GetVersion() < base::win::Version::WIN8_1)
     return;
 
   std::vector<BookmarkInfo> bookmark_entries;

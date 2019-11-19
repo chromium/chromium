@@ -2,6 +2,37 @@
 <script src=../resources/testharness.js></script>
 <script src=../resources/testharnessreport.js></script>
 
+<script>
+const priority_tests = [
+  {
+    promise: internals.getResourcePriority(new URL('../resources/dummy.js', location), document),
+    expected_priority: kHigh,
+    description: 'high importance on module <script> has no effect'
+  },
+  {
+    promise: internals.getResourcePriority(new URL('../resources/dummy.js?1', location), document),
+    expected_priority: kLow,
+    description: 'low importance on module <script> lowers the priority to kLow'
+  },
+  {
+    promise: internals.getResourcePriority(new URL('../resources/dummy.js?2', location), document),
+    expected_priority: kHigh,
+    description: 'auto importance on module <script> has no effect'
+  },
+  {
+    promise: internals.getResourcePriority(new URL('../resources/dummy.js?3', location), document),
+    expected_priority: kHigh,
+    description: 'invalid importance on module <script> has no effect'
+  },
+  {
+    promise: internals.getResourcePriority(new URL('../resources/dummy.js?3', location), document),
+    expected_priority: kHigh,
+    description: 'missing importance on module <script> has no effect'
+  }
+];
+
+</script>
+
 <script id=script1 type=module importance=high src=../resources/dummy.js></script>
 <script id=script2 type=module importance=low src=../resources/dummy.js?1></script>
 <script id=script3 type=module importance=auto src=../resources/dummy.js?2></script>
@@ -9,28 +40,24 @@
 <script id=script5 type=module src=../resources/dummy.js?4></script>
 
 <script>
-  async_test(t => {
-    addEventListener('DOMContentLoaded', t.step_func(() => {
-      const msg = 'all scripts were fetched by the preload scanner';
-      assert_true(internals.isPreloaded(script1.src), msg);
-      assert_true(internals.isPreloaded(script2.src), msg);
-      assert_true(internals.isPreloaded(script3.src), msg);
-      assert_true(internals.isPreloaded(script4.src), msg);
-      assert_true(internals.isPreloaded(script5.src), msg);
+  promise_test(async (t) => {
+    await new Promise(resolve => {
+      addEventListener('DOMContentLoaded', resolve);
+    });
 
-      assert_equals(getPriority(script1.src), kHigh,
-                    'high importance on module <script> has no effect');
-      assert_equals(getPriority(script2.src), kLow,
-                    'low importance on module <script> lowers the priority to kLow');
-      assert_equals(getPriority(script3.src), kHigh,
-                    'auto importance on module <script> has no effect');
-      assert_equals(getPriority(script4.src), kHigh,
-                    'invalid importance on module <script> has no effect');
-      assert_equals(getPriority(script5.src), kHigh,
-                    'missing importance on module <script> has no effect');
+    const base_msg = ' was fetched by the preload scanner';
+    assert_true(internals.isPreloaded(script1.src), script1.src + base_msg);
+    assert_true(internals.isPreloaded(script2.src), script2.src + base_msg);
+    assert_true(internals.isPreloaded(script3.src), script3.src + base_msg);
+    assert_true(internals.isPreloaded(script4.src), script4.src + base_msg);
+    assert_true(internals.isPreloaded(script5.src), script5.src + base_msg);
+  }, 'all scripts were fetched by the preload scanner');
 
-      t.done();
-    }));
-  }, 'importance attribute on module <script>s fetched by the ' +
-     'preload scanner takes the correct effect on resource load priority');
+  // Setup the tests described by |priority_tests|.
+  for (test of priority_tests) {
+    promise_test(async () => {
+      const priority = await test.promise;
+      assert_equals(priority, test.expected_priority);
+    }, test.description);
+  }
 </script>

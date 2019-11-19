@@ -232,7 +232,7 @@ bool MinidumpFileWriter::WriteEverything(FileWriterInterface* file_writer) {
   // it as a valid minidump file.
   header_.Signature = MINIDUMP_SIGNATURE;
 
-  if (file_writer->Seek(start_offset, SEEK_SET) != 0) {
+  if (file_writer->Seek(start_offset, SEEK_SET) < 0) {
     return false;
   }
 

@@ -12,8 +12,9 @@ import android.content.Context;
 import android.os.Build;
 import android.view.accessibility.AccessibilityManager;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.ContextUtils;
-import org.chromium.base.VisibleForTesting;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.notifications.ChromeNotificationBuilder;
 import org.chromium.chrome.browser.notifications.NotificationBuilderFactory;
@@ -109,8 +110,9 @@ public class TracingNotificationManager {
         // selecting the stop button, so choose a different message.
         AccessibilityManager am =
                 (AccessibilityManager) context.getSystemService(Context.ACCESSIBILITY_SERVICE);
-        if (am.isEnabled() && am.isTouchExplorationEnabled())
+        if (am.isEnabled() && am.isTouchExplorationEnabled()) {
             message = MSG_ACTIVE_NOTIFICATION_ACCESSIBILITY_MESSAGE;
+        }
 
         sTracingActiveNotificationBuilder =
                 createNotificationBuilder()

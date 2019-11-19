@@ -17,13 +17,12 @@
 #include "net/log/net_log_source.h"
 #include "net/log/net_log_with_source.h"
 #include "net/log/test_net_log.h"
-#include "net/log/test_net_log_entry.h"
 #include "net/log/test_net_log_util.h"
 #include "net/socket/client_socket_factory.h"
 #include "net/socket/tcp_client_socket.h"
 #include "net/socket/tcp_server_socket.h"
 #include "net/test/gtest_util.h"
-#include "net/test/test_with_scoped_task_environment.h"
+#include "net/test/test_with_task_environment.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -44,7 +43,7 @@ enum ClientSocketTestTypes { TCP, SCTP };
 
 class TransportClientSocketTest
     : public ::testing::TestWithParam<ClientSocketTestTypes>,
-      public WithScopedTaskEnvironment {
+      public WithTaskEnvironment {
  public:
   TransportClientSocketTest()
       : listen_port_(0),
@@ -106,19 +105,20 @@ void TransportClientSocketTest::SetUp() {
   ::testing::TestWithParam<ClientSocketTestTypes>::SetUp();
 
   // Open a server socket on an ephemeral port.
-  listen_sock_.reset(new TCPServerSocket(NULL, NetLogSource()));
+  listen_sock_.reset(new TCPServerSocket(nullptr, NetLogSource()));
   IPEndPoint local_address(IPAddress::IPv4Localhost(), 0);
   ASSERT_THAT(listen_sock_->Listen(local_address, 1), IsOk());
   // Get the server's address (including the actual port number).
   ASSERT_THAT(listen_sock_->GetLocalAddress(&local_address), IsOk());
   listen_port_ = local_address.port();
-  listen_sock_->Accept(&connected_sock_,
-                       base::Bind(&TransportClientSocketTest::AcceptCallback,
-                                  base::Unretained(this)));
+  listen_sock_->Accept(
+      &connected_sock_,
+      base::BindOnce(&TransportClientSocketTest::AcceptCallback,
+                     base::Unretained(this)));
 
   AddressList addr = AddressList::CreateFromIPAddress(
       IPAddress::IPv4Localhost(), listen_port_);
-  sock_ = socket_factory_->CreateTransportClientSocket(addr, NULL, &net_log_,
+  sock_ = socket_factory_->CreateTransportClientSocket(addr, nullptr, &net_log_,
                                                        NetLogSource());
 }
 
@@ -236,8 +236,7 @@ TEST_P(TransportClientSocketTest, Connect) {
   // Wait for |listen_sock_| to accept a connection.
   connect_loop_.Run();
 
-  TestNetLogEntry::List net_log_entries;
-  net_log_.GetEntries(&net_log_entries);
+  auto net_log_entries = net_log_.GetEntries();
   EXPECT_TRUE(
       LogContainsBeginEvent(net_log_entries, 0, NetLogEventType::SOCKET_ALIVE));
   EXPECT_TRUE(
@@ -250,7 +249,7 @@ TEST_P(TransportClientSocketTest, Connect) {
   }
 
   EXPECT_TRUE(sock_->IsConnected());
-  net_log_.GetEntries(&net_log_entries);
+  net_log_entries = net_log_.GetEntries();
   EXPECT_TRUE(
       LogContainsEndEvent(net_log_entries, -1, NetLogEventType::TCP_CONNECT));
 
@@ -422,8 +421,7 @@ TEST_P(TransportClientSocketTest, FullDuplex_ReadFirst) {
   EXPECT_GE(rv, 0);
 }
 
-// FLaky on Win 10 Tests x64 builder: http://crbug/552053
-TEST_P(TransportClientSocketTest, DISABLED_FullDuplex_WriteFirst) {
+TEST_P(TransportClientSocketTest, FullDuplex_WriteFirst) {
   TestCompletionCallback callback;
   EstablishConnection(&callback);
 

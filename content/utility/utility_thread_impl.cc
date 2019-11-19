@@ -4,61 +4,122 @@
 
 #include "content/utility/utility_thread_impl.h"
 
+#include <set>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/command_line.h"
+#include "base/containers/unique_ptr_adapters.h"
+#include "base/debug/crash_logging.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/optional.h"
+#include "base/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "content/child/child_process.h"
-#include "content/public/common/service_manager_connection.h"
-#include "content/public/common/simple_connection_filter.h"
 #include "content/public/utility/content_utility_client.h"
+#include "content/utility/browser_exposed_utility_interfaces.h"
+#include "content/utility/services.h"
 #include "content/utility/utility_blink_platform_with_sandbox_support_impl.h"
 #include "content/utility/utility_service_factory.h"
 #include "ipc/ipc_sync_channel.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
-#include "services/service_manager/public/cpp/binder_registry.h"
-#include "services/service_manager/sandbox/switches.h"
-
-#if !defined(OS_ANDROID)
-#include "content/public/common/resource_usage_reporter.mojom.h"
-#include "net/proxy_resolution/proxy_resolver_v8.h"
-#endif
+#include "mojo/public/cpp/bindings/binder_map.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/system/simple_watcher.h"
 
 namespace content {
 
-#if !defined(OS_ANDROID)
-class ResourceUsageReporterImpl : public mojom::ResourceUsageReporter {
- public:
-  ResourceUsageReporterImpl() {}
-  ~ResourceUsageReporterImpl() override {}
+namespace {
 
- private:
-  void GetUsageData(GetUsageDataCallback callback) override {
-    mojom::ResourceUsageDataPtr data = mojom::ResourceUsageData::New();
-    size_t total_heap_size = net::ProxyResolverV8::GetTotalHeapSize();
-    if (total_heap_size) {
-      data->reports_v8_stats = true;
-      data->v8_bytes_allocated = total_heap_size;
-      data->v8_bytes_used = net::ProxyResolverV8::GetUsedHeapSize();
-    }
-    std::move(callback).Run(std::move(data));
+class ServiceBinderImpl {
+ public:
+  explicit ServiceBinderImpl(
+      scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner)
+      : main_thread_task_runner_(std::move(main_thread_task_runner)) {}
+  ~ServiceBinderImpl() = default;
+
+  void BindServiceInterface(mojo::GenericPendingReceiver* receiver) {
+    // Set a crash key so utility process crash reports indicate which service
+    // was running in the process.
+    static auto* service_name_crash_key = base::debug::AllocateCrashKeyString(
+        "service-name", base::debug::CrashKeySize::Size32);
+    base::debug::SetCrashKeyString(service_name_crash_key,
+                                   receiver->interface_name().value());
+
+    // We watch for and terminate on PEER_CLOSED, but we also terminate if the
+    // watcher is cancelled (meaning the local endpoint was closed rather than
+    // the peer). Hence any breakage of the service pipe leads to termination.
+    auto watcher = std::make_unique<mojo::SimpleWatcher>(
+        FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::AUTOMATIC);
+    watcher->Watch(receiver->pipe(), MOJO_HANDLE_SIGNAL_PEER_CLOSED,
+                   MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
+                   base::BindRepeating(&ServiceBinderImpl::OnServicePipeClosed,
+                                       base::Unretained(this), watcher.get()));
+    service_pipe_watchers_.insert(std::move(watcher));
+    HandleServiceRequestOnIOThread(std::move(*receiver),
+                                   main_thread_task_runner_.get());
   }
 
-  DISALLOW_COPY_AND_ASSIGN(ResourceUsageReporterImpl);
+  static base::Optional<ServiceBinderImpl>& GetInstanceStorage() {
+    static base::NoDestructor<base::Optional<ServiceBinderImpl>> storage;
+    return *storage;
+  }
+
+ private:
+  void OnServicePipeClosed(mojo::SimpleWatcher* which,
+                           MojoResult result,
+                           const mojo::HandleSignalsState& state) {
+    // NOTE: It doesn't matter whether this was peer closure or local closure,
+    // and those are the only two ways this method can be invoked.
+
+    auto it = service_pipe_watchers_.find(which);
+    DCHECK(it != service_pipe_watchers_.end());
+    service_pipe_watchers_.erase(it);
+
+    // No more services running in this process.
+    if (service_pipe_watchers_.empty()) {
+      main_thread_task_runner_->PostTask(
+          FROM_HERE, base::BindOnce(&ServiceBinderImpl::ShutDownProcess));
+    }
+  }
+
+  static void ShutDownProcess() {
+    // Ensure that shutdown also tears down |this|. This is necessary to support
+    // multiple tests in the same test suite using out-of-process services via
+    // the InProcessUtilityThreadHelper.
+    GetInstanceStorage().reset();
+    UtilityThread::Get()->ReleaseProcess();
+  }
+
+  const scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner_;
+
+  // These trap signals on any (unowned) primordial service pipes. We don't
+  // actually care about the signals so these never get armed. We only watch for
+  // cancellation, because that means the service's primordial pipe handle was
+  // closed locally and we treat that as the service calling it quits.
+  std::set<std::unique_ptr<mojo::SimpleWatcher>, base::UniquePtrComparator>
+      service_pipe_watchers_;
+
+  DISALLOW_COPY_AND_ASSIGN(ServiceBinderImpl);
 };
 
-void CreateResourceUsageReporter(mojom::ResourceUsageReporterRequest request) {
-  mojo::MakeStrongBinding(std::make_unique<ResourceUsageReporterImpl>(),
-                          std::move(request));
+ChildThreadImpl::Options::ServiceBinder GetServiceBinder() {
+  auto& storage = ServiceBinderImpl::GetInstanceStorage();
+  // NOTE: This may already be initialized from a previous call if we're in
+  // single-process mode.
+  if (!storage)
+    storage.emplace(base::ThreadTaskRunnerHandle::Get());
+  return base::BindRepeating(&ServiceBinderImpl::BindServiceInterface,
+                             base::Unretained(&storage.value()));
 }
-#endif  // !defined(OS_ANDROID)
+
+}  // namespace
 
 UtilityThreadImpl::UtilityThreadImpl(base::RepeatingClosure quit_closure)
     : ChildThreadImpl(std::move(quit_closure),
                       ChildThreadImpl::Options::Builder()
-                          .AutoStartServiceManagerConnection(false)
+                          .ServiceBinder(GetServiceBinder())
+                          .ExposesInterfacesToBrowser()
                           .Build()) {
   Init();
 }
@@ -66,8 +127,9 @@ UtilityThreadImpl::UtilityThreadImpl(base::RepeatingClosure quit_closure)
 UtilityThreadImpl::UtilityThreadImpl(const InProcessChildThreadParams& params)
     : ChildThreadImpl(base::DoNothing(),
                       ChildThreadImpl::Options::Builder()
-                          .AutoStartServiceManagerConnection(false)
                           .InBrowserProcess(params)
+                          .ServiceBinder(GetServiceBinder())
+                          .ExposesInterfacesToBrowser()
                           .Build()) {
   Init();
 }
@@ -114,8 +176,7 @@ void UtilityThreadImpl::EnsureBlinkInitializedInternal(bool sandbox_support) {
 
   blink_platform_impl_ =
       sandbox_support
-          ? std::make_unique<UtilityBlinkPlatformWithSandboxSupportImpl>(
-                GetConnector())
+          ? std::make_unique<UtilityBlinkPlatformWithSandboxSupportImpl>()
           : std::make_unique<blink::Platform>();
   blink::Platform::CreateMainThreadAndInitialize(blink_platform_impl_.get());
 }
@@ -123,48 +184,27 @@ void UtilityThreadImpl::EnsureBlinkInitializedInternal(bool sandbox_support) {
 void UtilityThreadImpl::Init() {
   ChildProcess::current()->AddRefProcess();
 
-  auto registry = std::make_unique<service_manager::BinderRegistry>();
-  registry->AddInterface(
-      base::Bind(&UtilityThreadImpl::BindServiceFactoryRequest,
-                 base::Unretained(this)),
-      base::ThreadTaskRunnerHandle::Get());
-#if !defined(OS_ANDROID)
-  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-          service_manager::switches::kNoneSandboxAndElevatedPrivileges)) {
-    registry->AddInterface(base::BindRepeating(CreateResourceUsageReporter),
-                           base::ThreadTaskRunnerHandle::Get());
-  }
-#endif  // !defined(OS_ANDROID)
-
-  content::ServiceManagerConnection* connection = GetServiceManagerConnection();
-  if (connection) {
-    connection->AddConnectionFilter(
-        std::make_unique<SimpleConnectionFilter>(std::move(registry)));
-  }
-
   GetContentClient()->utility()->UtilityThreadStarted();
 
+  // NOTE: Do not add new interfaces directly within this method. Instead,
+  // modify the definition of |ExposeUtilityInterfacesToBrowser()| to ensure
+  // security review coverage.
+  mojo::BinderMap binders;
+  content::ExposeUtilityInterfacesToBrowser(&binders);
+  ExposeInterfacesToBrowser(std::move(binders));
+
   service_factory_.reset(new UtilityServiceFactory);
-
-  if (connection) {
-    GetContentClient()->OnServiceManagerConnected(connection);
-
-    // NOTE: You must register any ConnectionFilter instances on |connection|
-    // *before* this call to |Start()|, otherwise incoming interface requests
-    // may race with the registration.
-    connection->Start();
-  }
 }
 
 bool UtilityThreadImpl::OnControlMessageReceived(const IPC::Message& msg) {
   return GetContentClient()->utility()->OnMessageReceived(msg);
 }
 
-void UtilityThreadImpl::BindServiceFactoryRequest(
-    service_manager::mojom::ServiceFactoryRequest request) {
+void UtilityThreadImpl::RunService(
+    const std::string& service_name,
+    mojo::PendingReceiver<service_manager::mojom::Service> receiver) {
   DCHECK(service_factory_);
-  service_factory_bindings_.AddBinding(service_factory_.get(),
-                                       std::move(request));
+  service_factory_->RunService(service_name, std::move(receiver));
 }
 
 }  // namespace content

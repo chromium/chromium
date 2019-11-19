@@ -228,8 +228,25 @@ InputSuggester::StringCanonicalizer::StringCanonicalizer()
   UErrorCode error_code = U_ZERO_ERROR;
   collator_.reset(
       icu::Collator::createInstance(icu::Locale::getRoot(), error_code));
+  if (!collator_ || !U_SUCCESS(error_code)) {
+    // On some systems, the default locale is invalid to the eyes of the ICU
+    // library. This could be due to a device-specific issue (has been seen in
+    // the wild on Android and iOS devices). In the failure case, |collator_|
+    // will be null. See http://crbug.com/558625.
+
+    // Attempt to load the English locale.
+    error_code = U_ZERO_ERROR;
+    collator_.reset(
+        icu::Collator::createInstance(icu::Locale::getEnglish(), error_code));
+    if (!collator_) {
+      LOG(ERROR) << "Failed to initialize the ICU Collator with the English "
+                 << "locale.";
+    }
+  }
+
   DCHECK(U_SUCCESS(error_code));
-  collator_->setStrength(icu::Collator::PRIMARY);
+  if (collator_ && U_SUCCESS(error_code))
+    collator_->setStrength(icu::Collator::PRIMARY);
 }
 
 InputSuggester::StringCanonicalizer::~StringCanonicalizer() {}
@@ -240,8 +257,9 @@ const std::vector<uint8_t>& InputSuggester::StringCanonicalizer::Canonicalize(
 
   icu::UnicodeString icu_str(original.c_str(),
                              static_cast<int32_t>(original.length()));
-  int32_t sort_key_size =
-      collator_->getSortKey(icu_str, &buffer_[0], buffer_size());
+  int32_t sort_key_size = 0;
+  if (collator_)
+    collator_->getSortKey(icu_str, &buffer_[0], buffer_size());
   DCHECK_LT(0, sort_key_size);
 
   if (sort_key_size > buffer_size()) {

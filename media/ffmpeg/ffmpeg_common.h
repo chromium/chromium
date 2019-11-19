@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "media/base/audio_codecs.h"
 #include "media/base/channel_layout.h"
+#include "media/base/encryption_scheme.h"
 #include "media/base/media_export.h"
 #include "media/base/sample_format.h"
 #include "media/base/video_codecs.h"
@@ -32,6 +33,7 @@ MSVC_PUSH_DISABLE_WARNING(4244)
 #include <libavutil/avutil.h>
 #include <libavutil/imgutils.h>
 #include <libavutil/log.h>
+#include <libavutil/mastering_display_metadata.h>
 #include <libavutil/mathematics.h>
 #include <libavutil/opt.h>
 MSVC_POP_WARNING()
@@ -42,7 +44,6 @@ namespace media {
 constexpr int64_t kNoFFmpegTimestamp = static_cast<int64_t>(AV_NOPTS_VALUE);
 
 class AudioDecoderConfig;
-class EncryptionScheme;
 class VideoDecoderConfig;
 
 // The following implement the deleters declared in ffmpeg_deleters.h (which
@@ -113,7 +114,7 @@ void VideoDecoderConfigToAVCodecContext(
 // is not modified.
 MEDIA_EXPORT bool AVCodecContextToAudioDecoderConfig(
     const AVCodecContext* codec_context,
-    const EncryptionScheme& encryption_scheme,
+    EncryptionScheme encryption_scheme,
     AudioDecoderConfig* config);
 
 // Converts FFmpeg's channel layout to chrome's ChannelLayout.  |channels| can
@@ -133,9 +134,6 @@ AVSampleFormatToSampleFormat(AVSampleFormat sample_format, AVCodecID codec_id);
 // Converts FFmpeg's pixel formats to its corresponding supported video format.
 MEDIA_EXPORT VideoPixelFormat
 AVPixelFormatToVideoPixelFormat(AVPixelFormat pixel_format);
-
-// Converts video formats to its corresponding FFmpeg's pixel formats.
-AVPixelFormat VideoPixelFormatToAVPixelFormat(VideoPixelFormat video_format);
 
 VideoColorSpace AVColorSpaceToColorSpace(AVColorSpace color_space,
                                          AVColorRange color_range);

@@ -14,6 +14,8 @@
 #include "extensions/browser/api/socket/socket.h"
 #include "extensions/browser/api/socket/socket_api.h"
 #include "extensions/browser/api/socket/tcp_socket.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "services/network/public/mojom/tls_socket.mojom.h"
 
@@ -33,7 +35,7 @@ class MojoDataPump;
 // touch any socket state.
 class TLSSocket : public ResumableTCPSocket {
  public:
-  TLSSocket(network::mojom::TLSClientSocketPtr tls_socket,
+  TLSSocket(mojo::PendingRemote<network::mojom::TLSClientSocket> tls_socket,
             const net::IPEndPoint& local_addr,
             const net::IPEndPoint& peer_addr,
             mojo::ScopedDataPipeConsumerHandle receive_stream,
@@ -71,11 +73,11 @@ class TLSSocket : public ResumableTCPSocket {
  private:
   int WriteImpl(net::IOBuffer* io_buffer,
                 int io_buffer_size,
-                const net::CompletionCallback& callback) override;
-  void OnWriteComplete(const net::CompletionCallback& callback, int result);
+                net::CompletionOnceCallback callback) override;
+  void OnWriteComplete(net::CompletionOnceCallback callback, int result);
   void OnReadComplete(int result, scoped_refptr<net::IOBuffer> io_buffer);
 
-  network::mojom::TLSClientSocketPtr tls_socket_;
+  mojo::Remote<network::mojom::TLSClientSocket> tls_socket_;
   base::Optional<net::IPEndPoint> local_addr_;
   base::Optional<net::IPEndPoint> peer_addr_;
   std::unique_ptr<MojoDataPump> mojo_data_pump_;
@@ -87,4 +89,3 @@ class TLSSocket : public ResumableTCPSocket {
 }  // namespace extensions
 
 #endif  // EXTENSIONS_BROWSER_API_SOCKET_TLS_SOCKET_H_
-

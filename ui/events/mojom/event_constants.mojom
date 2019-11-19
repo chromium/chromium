@@ -1,0 +1,105 @@
+// Copyright 2014 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ui.mojom;
+
+// AcceleratorPhase specifies which phase of event matching the matcher should
+// be considered for. See WindowTree for details on how it handles the
+// AcceleratorPhase.
+enum AcceleratorPhase {
+  PRE_TARGET,
+  POST_TARGET,
+};
+
+enum EventType {
+  UNKNOWN,
+  KEY_PRESSED,
+  KEY_RELEASED,
+  GESTURE_TAP,
+  GESTURE_SWIPE,
+  GESTURE_PINCH_BEGIN,
+  GESTURE_PINCH_END,
+  GESTURE_PINCH_UPDATE,
+  SCROLL,
+  SCROLL_FLING_START,
+  SCROLL_FLING_CANCEL,
+  CANCEL_MODE,
+  // MOUSE_MOVED has a naming conflict in Windows, where there is a
+  // #define MOUSE_MOVED. Therefore we had to add the suffix, _EVENT. for
+  // consistency, all other mouse event types also were given this suffix.
+  MOUSE_PRESSED_EVENT,
+  MOUSE_DRAGGED_EVENT,
+  MOUSE_RELEASED_EVENT,
+  MOUSE_MOVED_EVENT,
+  MOUSE_ENTERED_EVENT,
+  MOUSE_EXITED_EVENT,
+  MOUSE_WHEEL_EVENT,
+  MOUSE_CAPTURE_CHANGED_EVENT,
+  TOUCH_RELEASED,
+  TOUCH_PRESSED,
+  TOUCH_MOVED,
+  TOUCH_CANCELLED,
+};
+
+// This mirrors ui::EventFlags
+// TODO(morrita): Use shift operator once it is available.
+const int32 kEventFlagNone               = 0x00000;
+const int32 kEventFlagIsSynthesized      = 0x00001;
+const int32 kEventFlagShiftDown          = 0x00002;
+const int32 kEventFlagControlDown        = 0x00004;
+const int32 kEventFlagAltDown            = 0x00008;
+const int32 kEventFlagCommandDown        = 0x00010;
+const int32 kEventFlagAltgrDown          = 0x00020;
+const int32 kEventFlagMod3Down           = 0x00040;
+const int32 kEventFlagNumLockOn          = 0x00080;
+const int32 kEventFlagCapsLockOn         = 0x00100;
+const int32 kEventFlagScrollLockOn       = 0x00200;
+const int32 kEventFlagLeftMouseButton    = 0x00400;
+const int32 kEventFlagMiddleMouseButton  = 0x00800;
+const int32 kEventFlagRightMouseButton   = 0x01000;
+const int32 kEventFlagBackMouseButton    = 0x02000;
+const int32 kEventFlagForwardMouseButton = 0x04000;
+
+const int32 kMouseEventFlagIsDoubleClick = 0x08000;
+const int32 kMouseEventFlagIsTripleClick = 0x10000;
+const int32 kMouseEventFlagIsNonClient   = 0x20000;
+
+// TODO(erg): Move accessibility flags and maybe synthetic touch events here.
+
+// TODO(sky): rename EventPointerType.
+enum PointerKind {
+  UNKNOWN,
+  MOUSE,
+  PEN,
+  TOUCH,
+  ERASER,
+};
+
+// Phase information used for a ScrollEvent.
+// These values match ui::ScrollEventPhase in ui/events/event_constants.h
+enum ScrollEventPhase {
+  kNone,
+  kBegan,
+  kUpdate,
+  kEnd,
+};
+
+// Momentum phase information used for a ScrollEvent.
+// These values match ui::EventMomentumPhase in ui/events/event_constants.h
+enum EventMomentumPhase {
+  NONE,
+  BEGAN,
+  MAY_BEGIN,
+  INERTIAL_UPDATE,
+  END,
+  BLOCKED,
+};
+
+// Device type for gesture events.
+// These values match ui::GestureDeviceType in ui/events/event_constants.h
+enum GestureDeviceType {
+  DEVICE_UNKNOWN,
+  DEVICE_TOUCHPAD,
+  DEVICE_TOUCHSCREEN,
+};

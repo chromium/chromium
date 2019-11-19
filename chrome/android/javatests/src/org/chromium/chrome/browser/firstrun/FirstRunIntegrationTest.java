@@ -23,7 +23,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ThreadUtils;
+import org.chromium.base.task.PostTask;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
@@ -31,10 +31,11 @@ import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.locale.DefaultSearchEngineDialogHelperUtils;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.locale.LocaleManager.SearchEnginePromoType;
-import org.chromium.chrome.browser.search_engines.TemplateUrl;
-import org.chromium.chrome.browser.search_engines.TemplateUrlService;
+import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.MultiActivityTestRule;
+import org.chromium.components.search_engines.TemplateUrl;
+import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
 
@@ -53,12 +54,12 @@ public class FirstRunIntegrationTest {
     private Activity mActivity;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         FirstRunActivity.setObserverForTest(mTestObserver);
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         if (mActivity != null) mActivity.finish();
     }
 
@@ -161,7 +162,7 @@ public class FirstRunIntegrationTest {
 
             @Override
             public List<TemplateUrl> getSearchEnginesForPromoDialog(int promoType) {
-                return TemplateUrlService.getInstance().getTemplateUrls();
+                return TemplateUrlServiceFactory.get().getTemplateUrls();
             }
         };
         LocaleManager.setInstanceForTest(mockManager);
@@ -250,7 +251,7 @@ public class FirstRunIntegrationTest {
             }
         });
 
-        ThreadUtils.runOnUiThread(() -> {
+        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
             Button button = (Button) activity.findViewById(id);
             Assert.assertNotNull(message, button);
             button.performClick();

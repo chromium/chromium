@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="uk">
+<translation id="1036550831858290950">Зробити закладку для поточної вкладки</translation>
 <translation id="104962181688258143">Відкрити додаток Файли</translation>
 <translation id="1122869341872663659">Показано результати пошуку (<ph name="N" />) за запитом "<ph name="QUERY" />"</translation>
 <translation id="1195667586424773550">Перетягніть посилання в адресний рядок вкладки</translation>
@@ -12,6 +13,7 @@
 <translation id="1383876407941801731">Пошук</translation>
 <translation id="1454364489140280055"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT1" /><ph name="SEPARATOR2" /><ph name="G" /> або <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="ENTER" /></translation>
 <translation id="1477442857810932985">Перейти в кінець рядка</translation>
+<translation id="1499072997694708844">Закрити всі вікна пошуку або припинити завантаження поточної сторінки</translation>
 <translation id="1510238584712386396">Панель запуску</translation>
 <translation id="152892567002884378">Збільшити гучність</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, а тоді <ph name="ESC" /></translation>
@@ -21,6 +23,7 @@
 <translation id="169515659049020177">Shift</translation>
 <translation id="1732295673545939435"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="KEY" /></translation>
 <translation id="1733525068429116555">Додати www. та .com до тексту в адресному рядку й відкрити сторінку</translation>
+<translation id="1872219238824176091">Видалити поточний робочий стіл</translation>
 <translation id="1920446759863417809"><ph name="SHIFT1" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, а тоді <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="TAB" /> або <ph name="LEFT" /></translation>
 <translation id="1996162290124031907">Перейти на наступну вкладку</translation>
 <translation id="2010818616644390445">Перейти на останню вкладку у вікні</translation>
@@ -33,20 +36,23 @@
 <translation id="2185166372312820725">Перейти на попередню вкладку</translation>
 <translation id="2194790690264064655">Натисніть <ph name="CTRL" /> і посилання</translation>
 <translation id="2246352309084894470">Відкрити або закрити повноекранну панель запуску</translation>
+<translation id="2354531887393764880">період</translation>
 <translation id="2382644247745281995">Не підтримується поточною розкладкою клавіатури</translation>
 <translation id="2397416548179033562">Показати меню Chrome</translation>
 <translation id="2424073332829844142">Увімкнути або вимкнути Caps Lock</translation>
 <translation id="2441202986792279177">Швидко переходити між вікнами</translation>
 <translation id="2454251766545114447">Віддаляє екран</translation>
 <translation id="2478303094958140141">Увімкнути або вимкнути ChromeVox (голосові підказки)</translation>
+<translation id="2480851840841871861">Відкрити Google Асистент</translation>
+<translation id="2488661730534396940">Активувати робочий стіл ліворуч</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2530339807289914946">Прокрутити веб-сторінку вниз</translation>
 <translation id="2574014812750545982">Скидає масштабування на сторінці</translation>
 <translation id="2596078834055697711">Зробити знімок екрана вікна</translation>
 <translation id="2685170433750953446"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, а тоді <ph name="TAB" /> або <ph name="RIGHT" /></translation>
-<translation id="2699509451653686398">Зберегти поточну веб-сторінку як закладку</translation>
 <translation id="2750942583782703988">Оновити поточну сторінку</translation>
 <translation id="2764005613199379871">Перейти в адресний рядок пошуку</translation>
+<translation id="2774822903829597107">Створити новий робочий стіл</translation>
 <translation id="2789868185375229787">Зменшити масштаб сторінки</translation>
 <translation id="2804480015716812239">Натисніть <ph name="ALT" /> і посилання</translation>
 <translation id="2830827904629746450">Закріпити вікно праворуч</translation>
@@ -78,6 +84,7 @@
 <translation id="3792178297143798024">Відкрити виділений елемент на полиці</translation>
 <translation id="379295446891231126"><ph name="CTRL" /><ph name="SEPARATOR" /> від 1 до 8</translation>
 <translation id="3837047332182291558">Збільшити яскравість клавіатури (лише для клавіатур із підсвічуванням)</translation>
+<translation id="3949671998904569433">кома</translation>
 <translation id="3976863468609830880">Натиснути останній значок на полиці</translation>
 <translation id="3994783594793697310">Скидає рівень масштабування екрана</translation>
 <translation id="4026843240379844265">Перемістити активне вікно між дисплеями.</translation>
@@ -97,6 +104,7 @@
 <translation id="4642092649622328492">Зробити частковий знімок екрана</translation>
 <translation id="4698850295812410683">Показати інструменти стилуса</translation>
 <translation id="4801989101741319327">Перейти в кінець наступного слова</translation>
+<translation id="4866066940972151697">Активувати робочий стіл праворуч</translation>
 <translation id="4916163929714267752">Відкрити посилання в новому вікні</translation>
 <translation id="5030659775136592441">Показати диспетчер закладок</translation>
 <translation id="5034421018520995080">Перейти вгору сторінки</translation>
@@ -112,6 +120,7 @@
 <translation id="5554139136362089836">Шукати на поточній сторінці</translation>
 <translation id="5563050856984839829">Натисніть <ph name="CTRL" /><ph name="SEPARATOR" /><ph name="SHIFT" /> і посилання</translation>
 <translation id="561814908794220892">Відкрити веб-сторінку в новій вкладці</translation>
+<translation id="5620219513321115856">Перемістити активне вікно на робочий стіл праворуч</translation>
 <translation id="5710621673935162997"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="L" /> або <ph name="ALT" /><ph name="SEPARATOR2" /><ph name="D" /></translation>
 <translation id="5757111373163288447">Відкрити посилання в поточній вкладці</translation>
 <translation id="5757474750054631686">Зменшити яскравість клавіатури (лише для клавіатур із підсвічуванням)</translation>
@@ -122,7 +131,6 @@
 <translation id="6045998054441862242">Увімкнути режим високого контрасту</translation>
 <translation id="6052614013050385269">Відкрити контекстне меню посилання</translation>
 <translation id="6129953537138746214">Пробіл</translation>
-<translation id="613146727819833328">Перемістити вікно в центр</translation>
 <translation id="6143669479988153888">Збільшити масштаб сторінки</translation>
 <translation id="6185696379715117369">Сторінка вгору</translation>
 <translation id="6228457605945141550">Зменшити яскравість</translation>
@@ -160,18 +168,20 @@
 <translation id="7422707470576323858">Вибрати наступний доступний метод введення</translation>
 <translation id="743754632698445141">Відкріпити додаток</translation>
 <translation id="7439718573248533901">Видалити наступну літеру (видалення вперед)</translation>
+<translation id="7500368597227394048">дефіс</translation>
 <translation id="7611271430932669992">Виділити спливаючі або діалогові вікна</translation>
 <translation id="766326951329901120">Вставити вміст із буфера обміну як простий текст</translation>
+<translation id="7703010453515335249">ліва квадратна дужка</translation>
 <translation id="7724603315864178912">Вирізати</translation>
 <translation id="7730490981846175479"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, а тоді <ph name="SPACE" /> або <ph name="ENTER" /></translation>
 <translation id="7787242579016742662">Відкрити файл у веб-переглядачі</translation>
-<translation id="7917881398263220094">Припинити завантаження поточної сторінки</translation>
 <translation id="7952165122793773711">Перейти на вкладки 1–8</translation>
-<translation id="8026334261755873520">Очистити дані веб-перегляду</translation>
+<translation id="8026334261755873520">Очистити історію</translation>
 <translation id="8130528849632411619">Перейти на початок документа</translation>
 <translation id="8147954207400281792"><ph name="CTRL" /><ph name="SEPARATOR" /><ph name="K" /> або <ph name="E" /></translation>
 <translation id="8232835244134740473">Перейти між панеллю стану (де розташоване зображення облікового запису), панеллю запуску, адресним рядком, панеллю закладок (якщо її видно), відкритою сторінкою та панеллю завантажень (якщо її видно).</translation>
 <translation id="8234414138295101081">Обернути екран на 90 градусів</translation>
+<translation id="8241665785394195545">права квадратна дужка</translation>
 <translation id="8264941229485248811">Показати чи сховати інспектор Інструментів розробника</translation>
 <translation id="836869401750819675">Відкрити сторінку завантажень</translation>
 <translation id="8388247778047144397">Перетягніть посилання на порожнє місце на панелі вкладок</translation>
@@ -184,6 +194,7 @@
 <translation id="8717459106217102612">Виділити попереднє слово або літеру</translation>
 <translation id="8727232706774971183">Переглянути сповіщення</translation>
 <translation id="8855885154700222542">Клавіша повноекранного режиму</translation>
+<translation id="8881584919399569791">Перемістити активне вікно на робочий стіл ліворуч</translation>
 <translation id="88986195241502842">Сторінка вниз</translation>
 <translation id="8924883688469390268">Перейти в попередній профіль користувача</translation>
 <translation id="8977648847395357314">Виділити вміст в адресному рядку</translation>

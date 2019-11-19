@@ -99,11 +99,6 @@ void SharedMemory::CloseHandle(const SharedMemoryHandle& handle) {
 }
 
 // static
-size_t SharedMemory::GetHandleLimit() {
-  return GetMaxFds();
-}
-
-// static
 SharedMemoryHandle SharedMemory::DuplicateHandle(
     const SharedMemoryHandle& handle) {
   return handle.Duplicate();

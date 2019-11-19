@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
+<script src="/gen/content/test/data/mojo_web_test_helper_test.mojom.js"></script>
+<body>
+<script>
+
+function frameLoaded(frame) {
+  return new Promise(resolve => {
+    let eventHandler = e => {
+      frame.removeEventListener('load', eventHandler);
+      resolve();
+    };
+    frame.addEventListener('load', eventHandler);
+  });
+}
+
+promise_test(async () => {
+  let frame = document.createElement("iframe");
+  let promise = frameLoaded(frame);
+  document.body.appendChild(frame);
+  await promise;
+
+  // Save a reference to the Mojo object from the child frame so that we can
+  // make calls to it after the context has been destroyed.
+  let frameMojo = frame.contentWindow.Mojo;
+  document.body.removeChild(frame);
+
+  let helper = new content.mojom.MojoWebTestHelperPtr;
+  frameMojo.bindInterface(content.mojom.MojoWebTestHelper.name,
+                          mojo.makeRequest(helper).handle);
+
+  try {
+    let reply = await helper.reverse("hello world.");
+    assert_unreached();
+  } catch (e) {
+    // Connection failure expected.
+  }
+}, "Mojo object is safe to use after its frame has been detached");
+
+promise_test(async () => {
+  let frame = document.createElement("iframe");
+  let promise = frameLoaded(frame);
+  document.body.appendChild(frame);
+  await promise;
+
+  // Save a reference to the MojoInterfaceInterceptor constructor from the child
+  // frame so that we can be used after the context has been destroyed.
+  let frameMojoInterfaceInterceptor =
+      frame.contentWindow.MojoInterfaceInterceptor;
+  document.body.removeChild(frame);
+
+  let interceptor = new frameMojoInterfaceInterceptor(
+      content.mojom.MojoWebTestHelper.name);
+  try {
+    interceptor.start();
+    assert_unreached();
+  } catch (e) {
+    // Failure expected.
+  }
+}, "MojoInterfaceInterceptor constructor is safe to use after its frame has been detached");
+
+promise_test(async () => {
+  let frame = document.createElement("iframe");
+  let promise = frameLoaded(frame);
+  document.body.appendChild(frame);
+  await promise;
+
+  // Create the interceptor while the frame is attached so that it is associated
+  // with the frame's execution context.
+  let interceptor = new frame.contentWindow.MojoInterfaceInterceptor(
+      content.mojom.MojoWebTestHelper.name);
+  document.body.removeChild(frame);
+
+  try {
+    interceptor.start();
+    assert_unreached();
+  } catch (e) {
+    // Failure expected.
+  }
+}, "MojoInterfaceInterceptor can't be started after its frame has been detached");
+
+promise_test(async () => {
+  let frame = document.createElement("iframe");
+  let promise = frameLoaded(frame);
+  document.body.appendChild(frame);
+  await promise;
+
+  // Create the interceptor and start it while the frame is attached.
+  let interceptor = new frame.contentWindow.MojoInterfaceInterceptor(
+      content.mojom.MojoWebTestHelper.name);
+  interceptor.start();
+  document.body.removeChild(frame);
+
+  // stop() will succeed because it is implicitly called when the execution
+  // context is destroyed.
+  interceptor.stop();
+}, "MojoInterfaceInterceptor is stopped on frame destruction");
+
+</script>
+</body>

@@ -68,6 +68,10 @@ bool SessionManager::IsSessionStarted() const {
 
 void SessionManager::SessionStarted() {
   session_started_ = true;
+
+  bool is_primary = sessions_.size() == 1;
+  for (auto& observer : observers_)
+    observer.OnUserSessionStarted(is_primary);
 }
 
 bool SessionManager::HasSessionForAccountId(
@@ -96,6 +100,11 @@ void SessionManager::AddObserver(SessionManagerObserver* observer) {
 
 void SessionManager::RemoveObserver(SessionManagerObserver* observer) {
   observers_.RemoveObserver(observer);
+}
+
+void SessionManager::NotifyUserProfileLoaded(const AccountId& account_id) {
+  for (auto& observer : observers_)
+    observer.OnUserProfileLoaded(account_id);
 }
 
 void SessionManager::NotifyUserLoggedIn(const AccountId& user_account_id,

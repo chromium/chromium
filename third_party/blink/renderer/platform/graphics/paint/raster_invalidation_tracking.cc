@@ -4,8 +4,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/paint/raster_invalidation_tracking.h"
 
-#include "SkImageFilter.h"
-#include "base/trace_event/traced_value.h"
+#include "cc/layers/layer.h"
 #include "third_party/blink/renderer/platform/geometry/geometry_as_json.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
@@ -14,6 +13,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
+#include "third_party/skia/include/core/SkImageFilter.h"
 
 namespace blink {
 
@@ -24,9 +24,11 @@ void RasterInvalidationTracking::SimulateRasterUnderInvalidations(bool enable) {
 }
 
 bool RasterInvalidationTracking::ShouldAlwaysTrack() {
-  if (RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled())
-    return true;
+  return RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled() ||
+         IsTracingRasterInvalidations();
+}
 
+bool RasterInvalidationTracking::IsTracingRasterInvalidations() {
   bool tracing_enabled;
   TRACE_EVENT_CATEGORY_GROUP_ENABLED(
       TRACE_DISABLED_BY_DEFAULT("blink.invalidation"), &tracing_enabled);
@@ -69,20 +71,23 @@ static bool CompareRasterInvalidationInfo(const RasterInvalidationInfo& a,
 
   // Then compare clientDebugName, in alphabetic order.
   int name_compare_result =
-      CodePointCompare(a.client_debug_name, b.client_debug_name);
+      CodeUnitCompare(a.client_debug_name, b.client_debug_name);
   if (name_compare_result != 0)
     return name_compare_result < 0;
 
   return a.reason < b.reason;
 }
 
-void RasterInvalidationTracking::AsJSON(JSONObject* json) {
+void RasterInvalidationTracking::AsJSON(JSONObject* json) const {
   if (!invalidations_.IsEmpty()) {
-    std::sort(invalidations_.begin(), invalidations_.end(),
+    // Sort to make the output more readable and easier to see the differences
+    // by a human.
+    auto sorted_invalidations = invalidations_;
+    std::sort(sorted_invalidations.begin(), sorted_invalidations.end(),
               &CompareRasterInvalidationInfo);
-    std::unique_ptr<JSONArray> paint_invalidations_json = JSONArray::Create();
-    for (auto& info : invalidations_) {
-      std::unique_ptr<JSONObject> info_json = JSONObject::Create();
+    auto paint_invalidations_json = std::make_unique<JSONArray>();
+    for (auto& info : sorted_invalidations) {
+      auto info_json = std::make_unique<JSONObject>();
       info_json->SetString("object", info.client_debug_name);
       if (!info.rect.IsEmpty()) {
         if (info.rect == LayoutRect::InfiniteIntRect())
@@ -98,11 +103,9 @@ void RasterInvalidationTracking::AsJSON(JSONObject* json) {
   }
 
   if (!under_invalidations_.IsEmpty()) {
-    std::unique_ptr<JSONArray> under_paint_invalidations_json =
-        JSONArray::Create();
+    auto under_paint_invalidations_json = std::make_unique<JSONArray>();
     for (auto& under_paint_invalidation : under_invalidations_) {
-      std::unique_ptr<JSONObject> under_paint_invalidation_json =
-          JSONObject::Create();
+      auto under_paint_invalidation_json = std::make_unique<JSONObject>();
       under_paint_invalidation_json->SetDouble("x", under_paint_invalidation.x);
       under_paint_invalidation_json->SetDouble("y", under_paint_invalidation.y);
       under_paint_invalidation_json->SetString(
@@ -119,36 +122,17 @@ void RasterInvalidationTracking::AsJSON(JSONObject* json) {
   }
 }
 
-void RasterInvalidationTracking::AddToTracedValue(
-    base::trace_event::TracedValue& traced_value) {
-  if (!ShouldAlwaysTrack())
-    return;
-
-  // The names should be kept consistent with (except the intentional naming
-  // style difference: 'naming_style' here vs 'namingStyle' in trace viewer)
-  // third_party/catapult/tracing/tracing/extras/chrome/cc/layer_impl.html.
-  // Note that the difference between naming style is intentional.
-  traced_value.BeginArray("annotated_invalidation_rects");
-  std::sort(invalidations_.begin(), invalidations_.end(),
-            &CompareRasterInvalidationInfo);
+void RasterInvalidationTracking::AddToLayerDebugInfo(
+    cc::LayerDebugInfo& debug_info) const {
+  // This is not sorted because the output is for client programs, and the
+  // invalidations may be accumulated in debug_info.
   for (auto& info : invalidations_) {
     if (info.rect.IsEmpty())
       continue;
-    traced_value.BeginDictionary();
-    traced_value.BeginArray("geometry_rect");
-    traced_value.AppendInteger(info.rect.X());
-    traced_value.AppendInteger(info.rect.Y());
-    traced_value.AppendInteger(info.rect.Width());
-    traced_value.AppendInteger(info.rect.Height());
-    traced_value.EndArray();
-    traced_value.SetString("reason",
-                           PaintInvalidationReasonToString(info.reason));
-    traced_value.SetString(
-        "client",
-        WTF::StringUTF8Adaptor(info.client_debug_name).AsStringPiece());
-    traced_value.EndDictionary();
+    debug_info.invalidations.push_back(
+        {gfx::Rect(info.rect), PaintInvalidationReasonToString(info.reason),
+         info.client_debug_name.Utf8()});
   }
-  traced_value.EndArray();
 }
 
 static bool PixelComponentsDiffer(int c1, int c2) {

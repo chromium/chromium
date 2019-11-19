@@ -23,7 +23,7 @@ using content::BrowserThread;
 
 namespace extensions {
 
-BlacklistStateFetcher::BlacklistStateFetcher() : weak_ptr_factory_(this) {}
+BlacklistStateFetcher::BlacklistStateFetcher() {}
 
 BlacklistStateFetcher::~BlacklistStateFetcher() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -43,7 +43,7 @@ void BlacklistStateFetcher::Request(const std::string& id,
     }
   }
 
-  bool request_already_sent = base::ContainsKey(callbacks_, id);
+  bool request_already_sent = base::Contains(callbacks_, id);
   callbacks_.insert(std::make_pair(id, callback));
   if (request_already_sent)
     return;

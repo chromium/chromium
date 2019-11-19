@@ -6,10 +6,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_ANCHOR_ELEMENT_METRICS_H_
 
 #include "base/optional.h"
-#include "third_party/blink/public/mojom/loader/navigation_predictor.mojom-blink.h"
+#include "third_party/blink/public/mojom/loader/navigation_predictor.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
@@ -31,6 +31,12 @@ class CORE_EXPORT AnchorElementMetrics {
   // Gets anchor elements from |document|, extracts features of valid anchor
   // elements and sends to the browser process.
   static void MaybeReportViewportMetricsOnLoad(Document& document);
+
+  // Called when OnLoad occurs. Subscribes |document|'s
+  // AnchorElementMetricsSender to document lifecycle events until the layout is
+  // clean. The sender is expected to call |MaybeReportViewportMetricsOnLoad()|
+  // one time.
+  static void NotifyOnLoad(Document& document);
 
   // Getters of anchor element features.
   float GetRatioArea() const { return ratio_area_; }

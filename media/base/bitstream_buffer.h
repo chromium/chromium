@@ -9,8 +9,9 @@
 #include <stdint.h>
 
 #include "base/macros.h"
+#include "base/memory/platform_shared_memory_region.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/memory/shared_memory.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "base/time/time.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/decrypt_config.h"
@@ -37,32 +38,57 @@ class MEDIA_EXPORT BitstreamBuffer {
   // When not provided, |presentation_timestamp| will be
   // |media::kNoTimestamp|.
   BitstreamBuffer(int32_t id,
-                  base::SharedMemoryHandle handle,
+                  base::subtle::PlatformSharedMemoryRegion region,
                   size_t size,
                   off_t offset = 0,
                   base::TimeDelta presentation_timestamp = kNoTimestamp);
 
-  BitstreamBuffer(const BitstreamBuffer& other);
+  // As above, creating by unwrapping a base::UnsafeSharedMemoryRegion.
+  BitstreamBuffer(int32_t id,
+                  base::UnsafeSharedMemoryRegion region,
+                  size_t size,
+                  off_t offset = 0,
+                  base::TimeDelta presentation_timestamp = kNoTimestamp);
+
+  // Move operations are allowed.
+  BitstreamBuffer(BitstreamBuffer&&);
+  BitstreamBuffer& operator=(BitstreamBuffer&&);
 
   ~BitstreamBuffer();
 
-  // Produce an equivalent DecoderBuffer. This consumes handle(), even if
+  // Produce an equivalent DecoderBuffer. This consumes region(), even if
   // nullptr is returned.
   //
   // This method is only intended to be used by VDAs that are being converted to
   // use DecoderBuffer.
   //
   // TODO(sandersd): Remove once all VDAs are converted.
-  scoped_refptr<DecoderBuffer> ToDecoderBuffer() const;
+  scoped_refptr<DecoderBuffer> ToDecoderBuffer();
 
   // TODO(crbug.com/813845): As this is only used by Android, include
-  // EncryptionMode and optional EncryptionPattern when updating for Android.
+  // EncryptionScheme and optional EncryptionPattern when updating for Android.
   void SetDecryptionSettings(const std::string& key_id,
                              const std::string& iv,
                              const std::vector<SubsampleEntry>& subsamples);
 
+  // Taking the region invalides the one in this BitstreamBuffer.
+  base::subtle::PlatformSharedMemoryRegion TakeRegion() {
+    return std::move(region_);
+  }
+
+  // If a region needs to be taken from a const BitstreamBuffer, it must be
+  // duplicated. This function makes that explicit.
+  // TODO(crbug.com/793446): this is probably only needed by legacy IPC, and can
+  // be removed once that is converted to the new shared memory API.
+  base::subtle::PlatformSharedMemoryRegion DuplicateRegion() const {
+    return region_.Duplicate();
+  }
+
+  const base::subtle::PlatformSharedMemoryRegion& region() const {
+    return region_;
+  }
+
   int32_t id() const { return id_; }
-  base::SharedMemoryHandle handle() const { return handle_; }
 
   // The number of bytes of the actual bitstream data. It is the size of the
   // content instead of the whole shared memory.
@@ -76,7 +102,9 @@ class MEDIA_EXPORT BitstreamBuffer {
     return presentation_timestamp_;
   }
 
-  void set_handle(const base::SharedMemoryHandle& handle) { handle_ = handle; }
+  void set_region(base::subtle::PlatformSharedMemoryRegion region) {
+    region_ = std::move(region);
+  }
 
   // The following methods come from SetDecryptionSettings().
   const std::string& key_id() const { return key_id_; }
@@ -85,13 +113,11 @@ class MEDIA_EXPORT BitstreamBuffer {
 
  private:
   int32_t id_;
-  base::SharedMemoryHandle handle_;
+  base::subtle::PlatformSharedMemoryRegion region_;
   size_t size_;
   off_t offset_;
 
-  // This is only set when necessary. For example, AndroidVideoDecodeAccelerator
-  // needs the timestamp because the underlying decoder may require it to
-  // determine the output order.
+  // Note: Not set by all clients.
   base::TimeDelta presentation_timestamp_;
 
   // Note that BitstreamBuffer uses the settings in Audio/VideoDecoderConfig
@@ -105,7 +131,7 @@ class MEDIA_EXPORT BitstreamBuffer {
 
   friend struct IPC::ParamTraits<media::BitstreamBuffer>;
 
-  // Allow compiler-generated copy & assign constructors.
+  DISALLOW_COPY_AND_ASSIGN(BitstreamBuffer);
 };
 
 }  // namespace media

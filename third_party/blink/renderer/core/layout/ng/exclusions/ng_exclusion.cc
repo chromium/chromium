@@ -7,7 +7,8 @@
 namespace blink {
 
 bool NGExclusion::operator==(const NGExclusion& other) const {
-  return std::tie(other.rect, other.type) == std::tie(rect, type);
+  return type == other.type && rect == other.rect &&
+         shape_data == other.shape_data;
 }
 
 }  // namespace blink

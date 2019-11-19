@@ -5,7 +5,10 @@
 #include "storage/browser/blob/blob_storage_registry.h"
 
 #include "base/callback.h"
+#include "base/run_loop.h"
+#include "base/test/task_environment.h"
 #include "storage/browser/blob/blob_entry.h"
+#include "storage/browser/test/fake_blob.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -35,46 +38,57 @@ TEST(BlobStorageRegistry, UUIDRegistration) {
   EXPECT_EQ(1u, registry.blob_count());
 }
 
+std::string UUIDFromBlob(mojo::PendingRemote<blink::mojom::Blob> pending_blob) {
+  mojo::Remote<blink::mojom::Blob> blob(std::move(pending_blob));
+
+  base::RunLoop loop;
+  std::string received_uuid;
+  blob->GetInternalUUID(base::BindOnce(
+      [](base::OnceClosure quit_closure, std::string* uuid_out,
+         const std::string& uuid) {
+        *uuid_out = uuid;
+        std::move(quit_closure).Run();
+      },
+      loop.QuitClosure(), &received_uuid));
+  loop.Run();
+  return received_uuid;
+}
+
 TEST(BlobStorageRegistry, URLRegistration) {
-  const std::string kBlob = "Blob1";
+  const std::string kBlobId1 = "Blob1";
   const std::string kType = "type1";
   const std::string kDisposition = "disp1";
-  const std::string kBlob2 = "Blob2";
+  const std::string kBlobId2 = "Blob2";
   const GURL kURL = GURL("blob://Blob1");
   const GURL kURL2 = GURL("blob://Blob2");
+
+  base::test::SingleThreadTaskEnvironment task_environment_;
+
+  FakeBlob blob1(kBlobId1);
+  FakeBlob blob2(kBlobId2);
+
   BlobStorageRegistry registry;
-
   EXPECT_FALSE(registry.IsURLMapped(kURL));
-  EXPECT_EQ(nullptr, registry.GetEntryFromURL(kURL, nullptr));
-  EXPECT_FALSE(registry.DeleteURLMapping(kURL, nullptr));
-  EXPECT_FALSE(registry.CreateUrlMapping(kURL, kBlob));
+  EXPECT_FALSE(registry.GetBlobFromURL(kURL));
+  EXPECT_FALSE(registry.DeleteURLMapping(kURL));
   EXPECT_EQ(0u, registry.url_count());
-  BlobEntry* entry = registry.CreateEntry(kBlob, kType, kDisposition);
 
-  EXPECT_FALSE(registry.IsURLMapped(kURL));
-  EXPECT_TRUE(registry.CreateUrlMapping(kURL, kBlob));
-  EXPECT_FALSE(registry.CreateUrlMapping(kURL, kBlob2));
+  EXPECT_TRUE(registry.CreateUrlMapping(kURL, blob1.Clone()));
+  EXPECT_FALSE(registry.CreateUrlMapping(kURL, blob2.Clone()));
 
   EXPECT_TRUE(registry.IsURLMapped(kURL));
-  EXPECT_EQ(entry, registry.GetEntryFromURL(kURL, nullptr));
-  std::string uuid;
-  EXPECT_EQ(entry, registry.GetEntryFromURL(kURL, &uuid));
-  EXPECT_EQ(kBlob, uuid);
+  EXPECT_EQ(kBlobId1, UUIDFromBlob(registry.GetBlobFromURL(kURL)));
   EXPECT_EQ(1u, registry.url_count());
 
-  registry.CreateEntry(kBlob2, kType, kDisposition);
-  EXPECT_TRUE(registry.CreateUrlMapping(kURL2, kBlob2));
+  EXPECT_TRUE(registry.CreateUrlMapping(kURL2, blob2.Clone()));
   EXPECT_EQ(2u, registry.url_count());
-  EXPECT_TRUE(registry.DeleteURLMapping(kURL2, &uuid));
-  EXPECT_EQ(kBlob2, uuid);
+  EXPECT_TRUE(registry.DeleteURLMapping(kURL2));
   EXPECT_FALSE(registry.IsURLMapped(kURL2));
 
   // Both urls point to the same blob.
-  EXPECT_TRUE(registry.CreateUrlMapping(kURL2, kBlob));
-  std::string uuid2;
-  EXPECT_EQ(registry.GetEntryFromURL(kURL, &uuid),
-            registry.GetEntryFromURL(kURL2, &uuid2));
-  EXPECT_EQ(uuid, uuid2);
+  EXPECT_TRUE(registry.CreateUrlMapping(kURL2, blob1.Clone()));
+  EXPECT_EQ(UUIDFromBlob(registry.GetBlobFromURL(kURL)),
+            UUIDFromBlob(registry.GetBlobFromURL(kURL2)));
 }
 
 }  // namespace

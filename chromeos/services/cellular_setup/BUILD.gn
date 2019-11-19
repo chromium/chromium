@@ -1,0 +1,64 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
+
+static_library("cellular_setup") {
+  sources = [
+    "cellular_setup_base.cc",
+    "cellular_setup_base.h",
+    "cellular_setup_impl.cc",
+    "cellular_setup_impl.h",
+    "ota_activator.cc",
+    "ota_activator.h",
+    "ota_activator_impl.cc",
+    "ota_activator_impl.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chromeos/dbus/shill",
+    "//chromeos/network",
+    "//chromeos/services/cellular_setup/public/mojom",
+    "//dbus",
+    "//url",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "fake_ota_activator.cc",
+    "fake_ota_activator.h",
+  ]
+
+  deps = [
+    ":cellular_setup",
+    "//base",
+    "//chromeos/services/cellular_setup/public/cpp:test_support",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "cellular_setup_impl_unittest.cc",
+    "cellular_setup_service_unittest.cc",
+    "ota_activator_impl_unittest.cc",
+  ]
+
+  deps = [
+    ":cellular_setup",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//chromeos/dbus/shill",
+    "//chromeos/network:test_support",
+    "//chromeos/services/cellular_setup/public/cpp:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

@@ -1,8 +1,6 @@
 #ifndef _RAR_DATAHASH_
 #define _RAR_DATAHASH_
 
-namespace third_party_unrar {
-
 enum HASH_TYPE {HASH_NONE,HASH_RAR14,HASH_CRC32,HASH_BLAKE2};
 
 struct HashValue
@@ -50,7 +48,5 @@ class DataHash
     bool Cmp(HashValue *CmpValue,byte *Key);
     HASH_TYPE Type() {return HashType;}
 };
-
-}  // namespace third_party_unrar
 
 #endif

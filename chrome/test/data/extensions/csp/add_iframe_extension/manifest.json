@@ -1,0 +1,12 @@
+{
+    "name": "Add iframe",
+    "version": "1",
+    "manifest_version": 2,
+    "content_scripts": [{
+        "js": ["content_script.js"],
+        "matches": ["*://*/*"]
+    }],
+    "permissions": [
+        "*://*/*"
+    ]
+}

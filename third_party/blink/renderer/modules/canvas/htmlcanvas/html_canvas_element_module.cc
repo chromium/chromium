@@ -5,11 +5,12 @@
 #include "third_party/blink/renderer/modules/canvas/htmlcanvas/html_canvas_element_module.h"
 
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
 #include "third_party/blink/renderer/core/offscreencanvas/offscreen_canvas.h"
 #include "third_party/blink/renderer/modules/canvas/htmlcanvas/canvas_context_creation_attributes_helpers.h"
 #include "third_party/blink/renderer/modules/canvas/htmlcanvas/canvas_context_creation_attributes_module.h"
-#include "third_party/blink/renderer/platform/histogram.h"
+#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 
 namespace blink {
 
@@ -36,6 +37,7 @@ void HTMLCanvasElementModule::getContext(
 }
 
 OffscreenCanvas* HTMLCanvasElementModule::transferControlToOffscreen(
+    ExecutionContext* execution_context,
     HTMLCanvasElement& canvas,
     ExceptionState& exception_state) {
   OffscreenCanvas* offscreen_canvas = nullptr;
@@ -45,8 +47,8 @@ OffscreenCanvas* HTMLCanvasElementModule::transferControlToOffscreen(
         "Cannot transfer control from a canvas for more than one time.");
   } else {
     canvas.CreateLayer();
-    offscreen_canvas =
-        TransferControlToOffscreenInternal(canvas, exception_state);
+    offscreen_canvas = TransferControlToOffscreenInternal(
+        execution_context, canvas, exception_state);
   }
 
   UMA_HISTOGRAM_BOOLEAN("Blink.OffscreenCanvas.TransferControlToOffscreen",
@@ -55,6 +57,7 @@ OffscreenCanvas* HTMLCanvasElementModule::transferControlToOffscreen(
 }
 
 OffscreenCanvas* HTMLCanvasElementModule::TransferControlToOffscreenInternal(
+    ExecutionContext* execution_context,
     HTMLCanvasElement& canvas,
     ExceptionState& exception_state) {
   if (canvas.RenderingContext()) {
@@ -63,12 +66,19 @@ OffscreenCanvas* HTMLCanvasElementModule::TransferControlToOffscreenInternal(
         "Cannot transfer control from a canvas that has a rendering context.");
     return nullptr;
   }
-  OffscreenCanvas* offscreen_canvas =
-      OffscreenCanvas::Create(canvas.width(), canvas.height());
+  OffscreenCanvas* offscreen_canvas = OffscreenCanvas::Create(
+      execution_context, canvas.width(), canvas.height());
+  offscreen_canvas->SetFilterQuality(canvas.FilterQuality());
+
+  // If this canvas is cross-origin, then the associated offscreen canvas
+  // should prefer using the low-power GPU.
+  LocalFrame* frame = canvas.GetDocument().GetFrame();
+  if (!(frame && frame->IsCrossOriginSubframe()))
+    offscreen_canvas->AllowHighPerformancePowerPreference();
 
   DOMNodeId canvas_id = DOMNodeIds::IdForNode(&canvas);
+  canvas.RegisterPlaceholderCanvas(static_cast<int>(canvas_id));
   offscreen_canvas->SetPlaceholderCanvasId(canvas_id);
-  canvas.RegisterPlaceholder(static_cast<int>(canvas_id));
 
   SurfaceLayerBridge* bridge = canvas.SurfaceLayerBridge();
   if (bridge) {

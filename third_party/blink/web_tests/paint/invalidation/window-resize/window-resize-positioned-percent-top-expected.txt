@@ -1,24 +1,13 @@
 {
   "layers": [
     {
-      "name": "LayoutView #document",
-      "bounds": [600, 250],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [600, 250],
-      "drawsContent": false
-    },
-    {
       "name": "Scrolling Contents Layer",
       "bounds": [600, 250],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
       "paintInvalidations": [
         {
-          "object": "LayoutBlockFlow (positioned) DIV",
+          "object": "LayoutNGBlockFlow (positioned) DIV",
           "rect": [0, 125, 20, 20],
           "reason": "geometry"
         }
@@ -29,17 +18,6 @@
 {
   "layers": [
     {
-      "name": "LayoutView #document",
-      "bounds": [400, 250],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [400, 250],
-      "drawsContent": false
-    },
-    {
       "name": "Scrolling Contents Layer",
       "bounds": [400, 250],
       "contentsOpaque": true,
@@ -49,17 +27,6 @@
 }
 {
   "layers": [
-    {
-      "name": "LayoutView #document",
-      "bounds": [400, 600],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [400, 600],
-      "drawsContent": false
-    },
     {
       "name": "Scrolling Contents Layer",
       "bounds": [400, 600],
@@ -72,12 +39,12 @@
           "reason": "incremental"
         },
         {
-          "object": "LayoutBlockFlow (positioned) DIV",
+          "object": "LayoutNGBlockFlow (positioned) DIV",
           "rect": [0, 300, 20, 20],
           "reason": "geometry"
         },
         {
-          "object": "LayoutBlockFlow (positioned) DIV",
+          "object": "LayoutNGBlockFlow (positioned) DIV",
           "rect": [0, 125, 20, 20],
           "reason": "geometry"
         }
@@ -87,17 +54,6 @@
 }
 {
   "layers": [
-    {
-      "name": "LayoutView #document",
-      "bounds": [800, 600],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [800, 600],
-      "drawsContent": false
-    },
     {
       "name": "Scrolling Contents Layer",
       "bounds": [800, 600],

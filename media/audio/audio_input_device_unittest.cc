@@ -7,15 +7,13 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
-#include "base/memory/shared_memory.h"
-#include "base/message_loop/message_loop.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "base/process/process_handle.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/sync_socket.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "testing/gmock_mutant.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::CancelableSyncSocket;
@@ -55,7 +53,7 @@ class MockCaptureCallback : public AudioCapturerSource::CaptureCallback {
   MOCK_METHOD0(OnCaptureStarted, void());
   MOCK_METHOD4(Capture,
                void(const AudioBus* audio_source,
-                    int audio_delay_milliseconds,
+                    base::TimeTicks audio_capture_time,
                     double volume,
                     bool key_pressed));
 
@@ -67,7 +65,8 @@ class MockCaptureCallback : public AudioCapturerSource::CaptureCallback {
 
 // Regular construction.
 TEST(AudioInputDeviceTest, Noop) {
-  base::MessageLoopForIO io_loop;
+  base::test::SingleThreadTaskEnvironment task_environment(
+      base::test::SingleThreadTaskEnvironment::MainThreadType::IO);
   MockAudioInputIPC* input_ipc = new MockAudioInputIPC();
   scoped_refptr<AudioInputDevice> device(new AudioInputDevice(
       base::WrapUnique(input_ipc), AudioInputDevice::Purpose::kUserInput));
@@ -117,7 +116,7 @@ TEST(AudioInputDeviceTest, CreateStream) {
       shared_memory.region.Duplicate();
   ASSERT_TRUE(duplicated_shared_memory_region.IsValid());
 
-  base::test::ScopedTaskEnvironment ste;
+  base::test::TaskEnvironment ste;
   MockCaptureCallback callback;
   MockAudioInputIPC* input_ipc = new MockAudioInputIPC();
   scoped_refptr<AudioInputDevice> device(new AudioInputDevice(

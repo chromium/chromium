@@ -9,20 +9,23 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
+#include "chrome/chrome_cleaner/mojom/zip_archiver.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 
 namespace chrome_cleaner {
 
 namespace {
 
-void BindZipArchiverPtr(mojom::ZipArchiverPtr* zip_archiver_ptr,
-                        mojo::ScopedMessagePipeHandle pipe_handle,
-                        base::OnceClosure connection_error_handler) {
-  DCHECK(zip_archiver_ptr);
+void BindZipArchiverRemote(mojo::Remote<mojom::ZipArchiver>* zip_archiver,
+                           mojo::ScopedMessagePipeHandle pipe_handle,
+                           base::OnceClosure connection_error_handler) {
+  DCHECK(zip_archiver);
 
-  zip_archiver_ptr->Bind(mojom::ZipArchiverPtrInfo(std::move(pipe_handle), 0));
-  zip_archiver_ptr->set_connection_error_handler(
-      std::move(connection_error_handler));
+  zip_archiver->Bind(
+      mojo::PendingRemote<mojom::ZipArchiver>(std::move(pipe_handle), 0));
+  zip_archiver->set_disconnect_handler(std::move(connection_error_handler));
 }
 
 }  // namespace
@@ -34,8 +37,8 @@ ZipArchiverSandboxSetupHooks::ZipArchiverSandboxSetupHooks(
       connection_error_handler_(std::move(connection_error_handler)),
       // Manually use |new| here because |make_unique| doesn't work with
       // custom deleter.
-      zip_archiver_ptr_(new mojom::ZipArchiverPtr(),
-                        base::OnTaskRunnerDeleter(mojo_task_runner_)) {}
+      zip_archiver_(new mojo::Remote<mojom::ZipArchiver>(),
+                    base::OnTaskRunnerDeleter(mojo_task_runner_)) {}
 
 ZipArchiverSandboxSetupHooks::~ZipArchiverSandboxSetupHooks() = default;
 
@@ -48,16 +51,16 @@ ResultCode ZipArchiverSandboxSetupHooks::UpdateSandboxPolicy(
   // Unretained pointer of |zip_archiver_ptr_| is safe because its deleter is
   // run on the same task runner. So it won't be deleted before this task.
   mojo_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(BindZipArchiverPtr,
-                                base::Unretained(zip_archiver_ptr_.get()),
+      FROM_HERE, base::BindOnce(BindZipArchiverRemote,
+                                base::Unretained(zip_archiver_.get()),
                                 SetupSandboxMessagePipe(policy, command_line),
                                 std::move(connection_error_handler_)));
 
   return RESULT_CODE_SUCCESS;
 }
 
-UniqueZipArchiverPtr ZipArchiverSandboxSetupHooks::TakeZipArchiverPtr() {
-  return std::move(zip_archiver_ptr_);
+RemoteZipArchiverPtr ZipArchiverSandboxSetupHooks::TakeZipArchiverRemote() {
+  return std::move(zip_archiver_);
 }
 
 }  // namespace chrome_cleaner

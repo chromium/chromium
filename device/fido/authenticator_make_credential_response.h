@@ -81,8 +81,13 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorMakeCredentialResponse
   DISALLOW_COPY_AND_ASSIGN(AuthenticatorMakeCredentialResponse);
 };
 
+// Through cbor::Writer, produces a CTAP style CBOR-encoded byte array
+// that conforms to the format CTAP2 devices sends to the client as a response.
+// {01: attestation format name,
+//  02: authenticator data bytes,
+//  03: attestation statement bytes }
 COMPONENT_EXPORT(DEVICE_FIDO)
-std::vector<uint8_t> GetSerializedCtapDeviceResponse(
+std::vector<uint8_t> AsCTAPStyleCBORBytes(
     const AuthenticatorMakeCredentialResponse& response);
 
 }  // namespace device

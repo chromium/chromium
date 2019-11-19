@@ -46,13 +46,20 @@ HRESULT GetGlobalFlag(const base::string16& name,
                       wchar_t* value,
                       ULONG* length);
 
+// Gets global string flag.  Returns |default_value| if no value is set or there
+// was an error fetching the flag.
+base::string16 GetGlobalFlagOrDefault(const base::string16& reg_key,
+                                      const base::string16& default_value);
+
+// Gets global DWORD flag.  Returns |default_value| if no value is set or there
+// was an error fetching the flag.
+DWORD GetGlobalFlagOrDefault(const base::string16& reg_key,
+                             const DWORD& default_value);
+
 // Sets global flag. Used for testing purposes only.
 HRESULT SetGlobalFlagForTesting(const base::string16& name,
                                 const base::string16& value);
 HRESULT SetGlobalFlagForTesting(const base::string16& name, DWORD value);
-
-// Gets the number of users assoicated with this credential provider.
-HRESULT GetUserCount(DWORD* count);
 
 // Gets DWORD property set for the given user.
 HRESULT GetUserProperty(const base::string16& sid,
@@ -124,6 +131,14 @@ HRESULT GetAccountPictureRegString(const base::string16& user_sid,
 HRESULT SetAccountPictureRegString(const base::string16& user_sid,
                                    int image_size,
                                    const base::string16& value);
+
+// Retrieves an identifier that is stored under
+// HKLM\SOFTWARE\Microsoft\Cryptography\MachineGuid registry.
+HRESULT GetMachineGuid(base::string16* machine_guid);
+
+// Sets  HKLM\SOFTWARE\Microsoft\Cryptography\MachineGuid registry for testing.
+HRESULT SetMachineGuidForTesting(const base::string16& machine_guid);
+
 }  // namespace credential_provider
 
 #endif  // CHROME_CREDENTIAL_PROVIDER_GAIACP_REG_UTILS_H_

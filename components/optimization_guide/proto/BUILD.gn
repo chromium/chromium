@@ -6,6 +6,10 @@ import("//third_party/protobuf/proto_library.gni")
 
 proto_library("optimization_guide_proto") {
   sources = [
+    "common_types.proto",
+    "hint_cache.proto",
     "hints.proto",
+    "models.proto",
+    "previews_metadata.proto",
   ]
 }

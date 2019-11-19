@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/app_list/crostini/crostini_app_model_builder.h"
-
 #include <utility>
 #include <vector>
 
+#include "base/run_loop.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/chromeos/crostini/crostini_registry_service.h"
 #include "chrome/browser/chromeos/crostini/crostini_registry_service_factory.h"
 #include "chrome/browser/chromeos/crostini/crostini_test_helper.h"
@@ -15,11 +15,10 @@
 #include "chrome/browser/ui/app_list/app_list_test_util.h"
 #include "chrome/browser/ui/app_list/chrome_app_list_item.h"
 #include "chrome/browser/ui/app_list/test/fake_app_list_model_updater.h"
-#include "chrome/browser/ui/app_list/test/test_app_list_controller_delegate.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
-#include "extensions/browser/extension_system.h"
+#include "chromeos/dbus/dbus_thread_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -30,9 +29,9 @@ using ::testing::Matcher;
 namespace {
 
 constexpr char kRootFolderName[] = "Linux apps";
-constexpr char kDummpyApp1Name[] = "dummy1";
-constexpr char kDummpyApp2Id[] = "dummy2";
-constexpr char kDummpyApp2Name[] = "dummy2";
+constexpr char kDummyApp1Name[] = "dummy1";
+constexpr char kDummyApp2Id[] = "dummy2";
+constexpr char kDummyApp2Name[] = "dummy2";
 constexpr char kAppNewName[] = "new name";
 constexpr char kBananaAppId[] = "banana";
 constexpr char kBananaAppName[] = "banana app name";
@@ -76,7 +75,8 @@ class CrostiniAppModelBuilderTest : public AppListTestBase {
 
   void SetUp() override {
     AppListTestBase::SetUp();
-    test_helper_ = std::make_unique<CrostiniTestHelper>(profile());
+    test_helper_ = std::make_unique<CrostiniTestHelper>(testing_profile());
+    test_helper_->ReInitializeAppServiceIntegration();
     CreateBuilder();
   }
 
@@ -92,6 +92,8 @@ class CrostiniAppModelBuilderTest : public AppListTestBase {
   }
 
   size_t GetModelItemCount() const {
+    // Pump the Mojo IPCs.
+    base::RunLoop().RunUntilIdle();
     return sync_service_->GetModelUpdater()->ItemCount();
   }
 
@@ -111,17 +113,14 @@ class CrostiniAppModelBuilderTest : public AppListTestBase {
               return std::make_unique<FakeAppListModelUpdater>(profile);
             },
             profile()));
-    controller_ = std::make_unique<test::TestAppListControllerDelegate>();
-    sync_service_ = std::make_unique<app_list::AppListSyncableService>(
-        profile_.get(), extensions::ExtensionSystem::Get(profile_.get()));
-    builder_ = std::make_unique<CrostiniAppModelBuilder>(controller_.get());
+    // The AppListSyncableService creates the CrostiniAppModelBuilder.
+    sync_service_ =
+        std::make_unique<app_list::AppListSyncableService>(profile_.get());
     RemoveNonCrostiniApps(sync_service_.get());
   }
 
   void ResetBuilder() {
-    builder_.reset();
     sync_service_.reset();
-    controller_.reset();
     model_updater_factory_scope_.reset();
   }
 
@@ -133,9 +132,7 @@ class CrostiniAppModelBuilderTest : public AppListTestBase {
     return l10n_util::GetStringUTF8(IDS_CROSTINI_TERMINAL_APP_NAME);
   }
 
-  std::unique_ptr<test::TestAppListControllerDelegate> controller_;
   std::unique_ptr<app_list::AppListSyncableService> sync_service_;
-  std::unique_ptr<CrostiniAppModelBuilder> builder_;
   std::unique_ptr<CrostiniTestHelper> test_helper_;
 
  private:
@@ -152,18 +149,18 @@ TEST_F(CrostiniAppModelBuilderTest, EnableAndDisableCrostini) {
   ResetBuilder();
   test_helper_.reset();
   test_helper_ = std::make_unique<CrostiniTestHelper>(
-      profile(), /*enable_crostini=*/false);
+      testing_profile(), /*enable_crostini=*/false);
   CreateBuilder();
 
   EXPECT_EQ(0u, GetModelItemCount());
 
-  CrostiniTestHelper::EnableCrostini(profile());
+  CrostiniTestHelper::EnableCrostini(testing_profile());
   EXPECT_THAT(GetAllApps(),
               testing::UnorderedElementsAre(
                   IsChromeApp(crostini::kCrostiniTerminalId, TerminalAppName(),
                               crostini::kCrostiniFolderId)));
 
-  CrostiniTestHelper::DisableCrostini(profile());
+  CrostiniTestHelper::DisableCrostini(testing_profile());
   EXPECT_THAT(GetAllApps(), testing::IsEmpty());
 }
 
@@ -178,8 +175,8 @@ TEST_F(CrostiniAppModelBuilderTest, AppInstallation) {
       testing::UnorderedElementsAre(
           IsChromeApp(crostini::kCrostiniTerminalId, TerminalAppName(),
                       crostini::kCrostiniFolderId),
-          IsChromeApp(_, kDummpyApp1Name, crostini::kCrostiniFolderId),
-          IsChromeApp(_, kDummpyApp2Name, crostini::kCrostiniFolderId)));
+          IsChromeApp(_, kDummyApp1Name, crostini::kCrostiniFolderId),
+          IsChromeApp(_, kDummyApp2Name, crostini::kCrostiniFolderId)));
 
   test_helper_->AddApp(
       CrostiniTestHelper::BasicApp(kBananaAppId, kBananaAppName));
@@ -187,8 +184,8 @@ TEST_F(CrostiniAppModelBuilderTest, AppInstallation) {
               testing::UnorderedElementsAre(
                   IsChromeApp(crostini::kCrostiniTerminalId, TerminalAppName(),
                               crostini::kCrostiniFolderId),
-                  IsChromeApp(_, kDummpyApp1Name, crostini::kCrostiniFolderId),
-                  IsChromeApp(_, kDummpyApp2Name, crostini::kCrostiniFolderId),
+                  IsChromeApp(_, kDummyApp1Name, crostini::kCrostiniFolderId),
+                  IsChromeApp(_, kDummyApp2Name, crostini::kCrostiniFolderId),
                   IsChromeApp(_, kBananaAppName, crostini::kCrostiniFolderId)));
 }
 
@@ -206,7 +203,7 @@ TEST_F(CrostiniAppModelBuilderTest, UpdateApps) {
       GetAllApps(),
       testing::UnorderedElementsAre(
           IsChromeApp(crostini::kCrostiniTerminalId, _, _),
-          IsChromeApp(CrostiniTestHelper::GenerateAppId(kDummpyApp2Name), _,
+          IsChromeApp(CrostiniTestHelper::GenerateAppId(kDummyApp2Name), _,
                       _)));
 
   // Setting NoDisplay to false should unhide an app.
@@ -216,21 +213,21 @@ TEST_F(CrostiniAppModelBuilderTest, UpdateApps) {
       GetAllApps(),
       testing::UnorderedElementsAre(
           IsChromeApp(crostini::kCrostiniTerminalId, _, _),
-          IsChromeApp(CrostiniTestHelper::GenerateAppId(kDummpyApp1Name), _, _),
-          IsChromeApp(CrostiniTestHelper::GenerateAppId(kDummpyApp2Name), _,
+          IsChromeApp(CrostiniTestHelper::GenerateAppId(kDummyApp1Name), _, _),
+          IsChromeApp(CrostiniTestHelper::GenerateAppId(kDummyApp2Name), _,
                       _)));
 
   // Changes to app names should be detected.
   vm_tools::apps::App dummy2 =
-      CrostiniTestHelper::BasicApp(kDummpyApp2Id, kAppNewName);
+      CrostiniTestHelper::BasicApp(kDummyApp2Id, kAppNewName);
   test_helper_->AddApp(dummy2);
   EXPECT_THAT(
       GetAllApps(),
       testing::UnorderedElementsAre(
           IsChromeApp(crostini::kCrostiniTerminalId, _, _),
-          IsChromeApp(CrostiniTestHelper::GenerateAppId(kDummpyApp1Name),
-                      kDummpyApp1Name, _),
-          IsChromeApp(CrostiniTestHelper::GenerateAppId(kDummpyApp2Name),
+          IsChromeApp(CrostiniTestHelper::GenerateAppId(kDummyApp1Name),
+                      kDummyApp1Name, _),
+          IsChromeApp(CrostiniTestHelper::GenerateAppId(kDummyApp2Name),
                       kAppNewName, _)));
 }
 
@@ -258,8 +255,7 @@ TEST_F(CrostiniAppModelBuilderTest, CreatesFolder) {
 
   // We simulate ash creating the crostini folder and calling back into chrome
   // (rather than use a full browser test).
-  ash::mojom::AppListItemMetadataPtr metadata =
-      ash::mojom::AppListItemMetadata::New();
+  auto metadata = std::make_unique<ash::AppListItemMetadata>();
   metadata->id = crostini::kCrostiniFolderId;
   GetModelUpdater()->OnFolderCreated(std::move(metadata));
 
@@ -281,6 +277,6 @@ TEST_F(CrostiniAppModelBuilderTest, DisableCrostini) {
   // The uninstall flow removes all apps before setting the CrostiniEnabled pref
   // to false, so we need to do that explicitly too.
   RegistryService()->ClearApplicationList(crostini::kCrostiniDefaultVmName, "");
-  CrostiniTestHelper::DisableCrostini(profile());
+  CrostiniTestHelper::DisableCrostini(testing_profile());
   EXPECT_EQ(0u, GetModelItemCount());
 }

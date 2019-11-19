@@ -26,12 +26,15 @@ bool ReadUTF8FromVMOAsUTF16(const fuchsia::mem::Buffer& buffer,
   return base::UTF8ToUTF16(&output_utf8.front(), output_utf8.size(), output);
 }
 
-fuchsia::mem::Buffer MemBufferFromString(const base::StringPiece& data) {
+fuchsia::mem::Buffer MemBufferFromString(base::StringPiece data,
+                                         base::StringPiece name) {
   fuchsia::mem::Buffer buffer;
 
-  zx_status_t status =
-      zx::vmo::create(data.size(), ZX_VMO_NON_RESIZABLE, &buffer.vmo);
+  zx_status_t status = zx::vmo::create(data.size(), 0, &buffer.vmo);
   ZX_CHECK(status == ZX_OK, status) << "zx_vmo_create";
+
+  status = buffer.vmo.set_property(ZX_PROP_NAME, name.data(), name.size());
+  ZX_DCHECK(status == ZX_OK, status);
 
   status = buffer.vmo.write(data.data(), 0, data.size());
   ZX_CHECK(status == ZX_OK, status) << "zx_vmo_write";
@@ -40,10 +43,12 @@ fuchsia::mem::Buffer MemBufferFromString(const base::StringPiece& data) {
   return buffer;
 }
 
-fuchsia::mem::Buffer MemBufferFromString16(const base::StringPiece16& data) {
+fuchsia::mem::Buffer MemBufferFromString16(const base::StringPiece16& data,
+                                           base::StringPiece name) {
   return MemBufferFromString(
       base::StringPiece(reinterpret_cast<const char*>(data.data()),
-                        data.size() * sizeof(base::char16)));
+                        data.size() * sizeof(base::char16)),
+      name);
 }
 
 bool StringFromMemBuffer(const fuchsia::mem::Buffer& buffer,
@@ -75,13 +80,17 @@ fuchsia::mem::Buffer MemBufferFromFile(base::File file) {
   return output;
 }
 
-fuchsia::mem::Buffer CloneBuffer(const fuchsia::mem::Buffer& buffer) {
+fuchsia::mem::Buffer CloneBuffer(const fuchsia::mem::Buffer& buffer,
+                                 base::StringPiece name) {
   fuchsia::mem::Buffer output;
   output.size = buffer.size;
-  zx_status_t status =
-      buffer.vmo.clone(ZX_VMO_CLONE_COPY_ON_WRITE | ZX_VMO_CLONE_NON_RESIZEABLE,
-                       0, buffer.size, &output.vmo);
-  ZX_CHECK(status == ZX_OK, status) << "zx_vmo_clone";
+  zx_status_t status = buffer.vmo.create_child(ZX_VMO_CHILD_COPY_ON_WRITE, 0,
+                                               buffer.size, &output.vmo);
+  ZX_CHECK(status == ZX_OK, status) << "zx_vmo_create_child";
+
+  status = output.vmo.set_property(ZX_PROP_NAME, name.data(), name.size());
+  ZX_DCHECK(status == ZX_OK, status);
+
   return output;
 }
 

@@ -2,22 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import <EarlGrey/EarlGrey.h>
 #import <XCTest/XCTest.h>
 
 #include "base/strings/sys_string_conversions.h"
-#include "components/infobars/core/infobar.h"
-#include "components/infobars/core/infobar_manager.h"
-#import "ios/chrome/app/main_controller.h"
-#include "ios/chrome/browser/infobars/infobar_manager_impl.h"
-#import "ios/chrome/browser/tabs/tab.h"
-#import "ios/chrome/browser/tabs/tab_model.h"
-#import "ios/chrome/browser/ui/infobars/test_infobar_delegate.h"
-#import "ios/chrome/test/app/chrome_test_util.h"
-#import "ios/chrome/test/app/tab_test_util.h"
+#import "ios/chrome/browser/ui/infobars/infobar_manager_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/web/public/test/http_server/http_server.h"
 #include "ios/web/public/test/http_server/http_server_util.h"
 #include "url/gurl.h"
@@ -27,30 +19,19 @@
 #error "This file requires ARC support."
 #endif
 
+#if defined(CHROME_EARL_GREY_2)
+// TODO(crbug.com/1015113): The EG2 macro is breaking indexing for some reason
+// without the trailing semicolon.  For now, disable the extra semi warning
+// so Xcode indexing works for the egtest.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wc++98-compat-extra-semi"
+GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(InfobarManagerAppInterface);
+#endif  // defined(CHROME_EARL_GREY_2)
+
 namespace {
 
 // Timeout for how long to wait for an infobar to appear or disapper.
 const CFTimeInterval kTimeout = 4.0;
-
-// Returns the InfoBarManager for the current tab.  Only works in normal
-// (non-incognito) mode.
-infobars::InfoBarManager* GetCurrentInfoBarManager() {
-  MainController* main_controller = chrome_test_util::GetMainController();
-  id<BrowserInterface> interface =
-      main_controller.interfaceProvider.mainInterface;
-  web::WebState* web_state = interface.tabModel.currentTab.webState;
-  if (web_state) {
-    return InfoBarManagerImpl::FromWebState(web_state);
-  }
-  return nullptr;
-}
-
-// Adds a TestInfoBar with |message| to the current tab.
-bool AddTestInfoBarToCurrentTabWithMessage(NSString* message) {
-  infobars::InfoBarManager* manager = GetCurrentInfoBarManager();
-  TestInfoBarDelegate* test_infobar_delegate = new TestInfoBarDelegate(message);
-  return test_infobar_delegate->Create(manager);
-}
 
 // Verifies that a single TestInfoBar with |message| is either present or absent
 // on the current tab.
@@ -60,6 +41,7 @@ void VerifyTestInfoBarVisibleForCurrentTab(bool visible, NSString* message) {
   NSString* condition_name =
       visible ? @"Waiting for infobar to show" : @"Waiting for infobar to hide";
 
+#if defined(CHROME_EARL_GREY_1)
   [[GREYCondition
       conditionWithName:condition_name
                   block:^BOOL {
@@ -71,14 +53,24 @@ void VerifyTestInfoBarVisibleForCurrentTab(bool visible, NSString* message) {
                                                       error:&error];
                     return error == nil;
                   }] waitWithTimeout:kTimeout];
-}
-
-// Verifies the number of Infobar currently in the InfobarManager (Thus in the
-// InfobarContainer) is |number_of_infobars|.
-void VerifyNumberOfInfobarsInManager(size_t number_of_infobars) {
-  infobars::InfoBarManager* manager = GetCurrentInfoBarManager();
-  GREYAssertEqual(number_of_infobars, manager->infobar_count(),
-                  @"Incorrect number of infobars.");
+#elif defined(CHROME_EARL_GREY_2)
+  GREYAssertTrue(
+      [[GREYCondition
+          conditionWithName:condition_name
+                      block:^BOOL {
+                        NSError* error = nil;
+                        [[EarlGrey
+                            selectElementWithMatcher:
+                                chrome_test_util::
+                                    StaticTextWithAccessibilityLabel(message)]
+                            assertWithMatcher:expected_visibility
+                                        error:&error];
+                        return error == nil;
+                      }] waitWithTimeout:kTimeout],
+      condition_name);
+#else
+#error Must define either CHROME_EARL_GREY_1 or CHROME_EARL_GREY_2.
+#endif
 }
 
 }  // namespace
@@ -104,16 +96,19 @@ void VerifyNumberOfInfobarsInManager(size_t number_of_infobars) {
 
   // Add a test infobar to the current tab. Verify that the infobar is present
   // in the model and that the infobar view is visible on screen.
-  GREYAssert(AddTestInfoBarToCurrentTabWithMessage(infoBarMessage),
-             @"Failed to add infobar to test tab.");
+  GREYAssertTrue([InfobarManagerAppInterface
+                     addTestInfoBarToCurrentTabWithMessage:infoBarMessage],
+                 @"Failed to add infobar to test tab.");
   VerifyTestInfoBarVisibleForCurrentTab(true, infoBarMessage);
-  VerifyNumberOfInfobarsInManager(1);
+  GREYAssertTrue([InfobarManagerAppInterface verifyInfobarCount:1],
+                 @"Incorrect number of infobars.");
 
   // Navigate to a different page.  Verify that the infobar is dismissed and no
   // longer visible on screen.
   [ChromeEarlGrey loadURL:GURL(url::kAboutBlankURL)];
   VerifyTestInfoBarVisibleForCurrentTab(false, infoBarMessage);
-  VerifyNumberOfInfobarsInManager(0);
+  GREYAssertTrue([InfobarManagerAppInterface verifyInfobarCount:0],
+                 @"Incorrect number of infobars.");
 }
 
 // Tests that page infobars persist only on the tabs they are opened on, and
@@ -137,16 +132,20 @@ void VerifyNumberOfInfobarsInManager(size_t number_of_infobars) {
   [ChromeEarlGrey loadURL:ponyURL];
   [ChromeEarlGrey waitForMainTabCount:2];
   VerifyTestInfoBarVisibleForCurrentTab(false, infoBarMessage);
-  VerifyNumberOfInfobarsInManager(0);
-  GREYAssert(AddTestInfoBarToCurrentTabWithMessage(infoBarMessage),
-             @"Failed to add infobar to second tab.");
+  GREYAssertTrue([InfobarManagerAppInterface verifyInfobarCount:0],
+                 @"Incorrect number of infobars.");
+  GREYAssertTrue([InfobarManagerAppInterface
+                     addTestInfoBarToCurrentTabWithMessage:infoBarMessage],
+                 @"Failed to add infobar to second tab.");
   VerifyTestInfoBarVisibleForCurrentTab(true, infoBarMessage);
-  VerifyNumberOfInfobarsInManager(1);
+  GREYAssertTrue([InfobarManagerAppInterface verifyInfobarCount:1],
+                 @"Incorrect number of infobars.");
 
   // Switch back to the first tab and make sure no infobar is visible.
-  chrome_test_util::SelectTabAtIndexInCurrentMode(0U);
+  [ChromeEarlGrey selectTabAtIndex:0U];
   VerifyTestInfoBarVisibleForCurrentTab(false, infoBarMessage);
-  VerifyNumberOfInfobarsInManager(0);
+  GREYAssertTrue([InfobarManagerAppInterface verifyInfobarCount:0],
+                 @"Incorrect number of infobars.");
 
   // Navigate to a different URL in the first tab, to verify that this
   // navigation does not hide the infobar in the second tab.
@@ -157,7 +156,8 @@ void VerifyNumberOfInfobarsInManager(size_t number_of_infobars) {
   [ChromeEarlGrey closeCurrentTab];
   [ChromeEarlGrey waitForMainTabCount:1];
   VerifyTestInfoBarVisibleForCurrentTab(true, infoBarMessage);
-  VerifyNumberOfInfobarsInManager(1);
+  GREYAssertTrue([InfobarManagerAppInterface verifyInfobarCount:1],
+                 @"Incorrect number of infobars.");
 }
 
 // Tests that the Infobar dissapears once the "OK" button is tapped.
@@ -175,10 +175,12 @@ void VerifyNumberOfInfobarsInManager(size_t number_of_infobars) {
 
   // Add a test infobar to the current tab. Verify that the infobar is present
   // in the model and that the infobar view is visible on screen.
-  GREYAssert(AddTestInfoBarToCurrentTabWithMessage(infoBarMessage),
-             @"Failed to add infobar to test tab.");
+  GREYAssertTrue([InfobarManagerAppInterface
+                     addTestInfoBarToCurrentTabWithMessage:infoBarMessage],
+                 @"Failed to add infobar to test tab.");
   VerifyTestInfoBarVisibleForCurrentTab(true, infoBarMessage);
-  VerifyNumberOfInfobarsInManager(1);
+  GREYAssertTrue([InfobarManagerAppInterface verifyInfobarCount:1],
+                 @"Incorrect number of infobars.");
 
   // Tap on "OK" which should dismiss the Infobar.
   [[EarlGrey
@@ -186,7 +188,8 @@ void VerifyNumberOfInfobarsInManager(size_t number_of_infobars) {
                                           grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
   VerifyTestInfoBarVisibleForCurrentTab(false, infoBarMessage);
-  VerifyNumberOfInfobarsInManager(0);
+  GREYAssertTrue([InfobarManagerAppInterface verifyInfobarCount:0],
+                 @"Incorrect number of infobars.");
 }
 
 // Tests adding an Infobar on top of an existing one.
@@ -204,10 +207,12 @@ void VerifyNumberOfInfobarsInManager(size_t number_of_infobars) {
 
   // Add a test infobar to the current tab. Verify that the infobar is present
   // in the model and that the infobar view is visible on screen.
-  GREYAssert(AddTestInfoBarToCurrentTabWithMessage(firstInfoBarMessage),
-             @"Failed to add infobar to test tab.");
+  GREYAssertTrue([InfobarManagerAppInterface
+                     addTestInfoBarToCurrentTabWithMessage:firstInfoBarMessage],
+                 @"Failed to add infobar to test tab.");
   VerifyTestInfoBarVisibleForCurrentTab(true, firstInfoBarMessage);
-  VerifyNumberOfInfobarsInManager(1);
+  GREYAssertTrue([InfobarManagerAppInterface verifyInfobarCount:1],
+                 @"Incorrect number of infobars.");
 
   // Second Infobar Message
   NSString* secondInfoBarMessage = @"TestSecondInfoBar";
@@ -215,11 +220,14 @@ void VerifyNumberOfInfobarsInManager(size_t number_of_infobars) {
   // Add a second test infobar to the current tab. Verify that the infobar is
   // present in the model, and that only this second infobar is now visible on
   // screen.
-  GREYAssert(AddTestInfoBarToCurrentTabWithMessage(secondInfoBarMessage),
-             @"Failed to add infobar to test tab.");
+  GREYAssertTrue(
+      [InfobarManagerAppInterface
+          addTestInfoBarToCurrentTabWithMessage:secondInfoBarMessage],
+      @"Failed to add infobar to test tab.");
   VerifyTestInfoBarVisibleForCurrentTab(true, secondInfoBarMessage);
   VerifyTestInfoBarVisibleForCurrentTab(false, firstInfoBarMessage);
-  VerifyNumberOfInfobarsInManager(2);
+  GREYAssertTrue([InfobarManagerAppInterface verifyInfobarCount:2],
+                 @"Incorrect number of infobars.");
 }
 
 // Tests that a taller Infobar layout is correct and the OK button is tappable.
@@ -240,10 +248,12 @@ void VerifyNumberOfInfobarsInManager(size_t number_of_infobars) {
 
   // Add a test infobar to the current tab. Verify that the infobar is present
   // in the model and that the infobar view is visible on screen.
-  GREYAssert(AddTestInfoBarToCurrentTabWithMessage(firstInfoBarMessage),
-             @"Failed to add infobar to test tab.");
+  GREYAssertTrue([InfobarManagerAppInterface
+                     addTestInfoBarToCurrentTabWithMessage:firstInfoBarMessage],
+                 @"Failed to add infobar to test tab.");
   VerifyTestInfoBarVisibleForCurrentTab(true, firstInfoBarMessage);
-  VerifyNumberOfInfobarsInManager(1);
+  GREYAssertTrue([InfobarManagerAppInterface verifyInfobarCount:1],
+                 @"Incorrect number of infobars.");
 
   // Dismiss the Infobar.
   [[EarlGrey
@@ -251,7 +261,8 @@ void VerifyNumberOfInfobarsInManager(size_t number_of_infobars) {
                                           grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
   VerifyTestInfoBarVisibleForCurrentTab(false, firstInfoBarMessage);
-  VerifyNumberOfInfobarsInManager(0);
+  GREYAssertTrue([InfobarManagerAppInterface verifyInfobarCount:0],
+                 @"Incorrect number of infobars.");
 }
 
 // Tests that adding an Infobar of lower height on top of a taller Infobar only
@@ -274,10 +285,12 @@ void VerifyNumberOfInfobarsInManager(size_t number_of_infobars) {
 
   // Add a test infobar to the current tab. Verify that the infobar is present
   // in the model and that the infobar view is visible on screen.
-  GREYAssert(AddTestInfoBarToCurrentTabWithMessage(firstInfoBarMessage),
-             @"Failed to add infobar to test tab.");
+  GREYAssertTrue([InfobarManagerAppInterface
+                     addTestInfoBarToCurrentTabWithMessage:firstInfoBarMessage],
+                 @"Failed to add infobar to test tab.");
   VerifyTestInfoBarVisibleForCurrentTab(true, firstInfoBarMessage);
-  VerifyNumberOfInfobarsInManager(1);
+  GREYAssertTrue([InfobarManagerAppInterface verifyInfobarCount:1],
+                 @"Incorrect number of infobars.");
 
   // Second Infobar Message
   NSString* secondInfoBarMessage = @"TestSecondInfoBar";
@@ -285,11 +298,14 @@ void VerifyNumberOfInfobarsInManager(size_t number_of_infobars) {
   // Add a second test infobar to the current tab. Verify that the infobar is
   // present in the model, and that only this second infobar is now visible on
   // screen.
-  GREYAssert(AddTestInfoBarToCurrentTabWithMessage(secondInfoBarMessage),
-             @"Failed to add infobar to test tab.");
+  GREYAssertTrue(
+      [InfobarManagerAppInterface
+          addTestInfoBarToCurrentTabWithMessage:secondInfoBarMessage],
+      @"Failed to add infobar to test tab.");
   VerifyTestInfoBarVisibleForCurrentTab(true, secondInfoBarMessage);
   VerifyTestInfoBarVisibleForCurrentTab(false, firstInfoBarMessage);
-  VerifyNumberOfInfobarsInManager(2);
+  GREYAssertTrue([InfobarManagerAppInterface verifyInfobarCount:2],
+                 @"Incorrect number of infobars.");
 
   // Dismiss the second Infobar.
   [[EarlGrey
@@ -298,7 +314,8 @@ void VerifyNumberOfInfobarsInManager(size_t number_of_infobars) {
       performAction:grey_tap()];
   VerifyTestInfoBarVisibleForCurrentTab(false, secondInfoBarMessage);
   VerifyTestInfoBarVisibleForCurrentTab(true, firstInfoBarMessage);
-  VerifyNumberOfInfobarsInManager(1);
+  GREYAssertTrue([InfobarManagerAppInterface verifyInfobarCount:1],
+                 @"Incorrect number of infobars.");
 }
 
 @end

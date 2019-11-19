@@ -1,0 +1,15 @@
+<html>
+<head>
+<script>
+window.onload = function() {
+  if (typeof chrome.setSyncEncryptionKeys == "undefined") {
+    document.title = "UNDEFINED";
+  } else {
+    chrome.setSyncEncryptionKeys([location.hash.substring(1)],
+                                 location.search.substring(1),
+                                 () => { document.title = "OK"; });
+  }
+}
+</script>
+</head>
+</html>

@@ -49,7 +49,7 @@ LeveldbScopedDatabase::~LeveldbScopedDatabase() {}
 ValueStore::Status LeveldbScopedDatabase::Read(
     const std::string& scope,
     const std::string& key,
-    std::unique_ptr<base::Value>* value) {
+    base::Optional<base::Value>* value) {
   ValueStore::Status status = EnsureDbIsOpen();
   if (!status.ok())
     return status;
@@ -72,14 +72,13 @@ ValueStore::Status LeveldbScopedDatabase::Read(const std::string& scope,
 
   std::unique_ptr<leveldb::Iterator> it(db()->NewIterator(read_options()));
 
-  base::JSONReader json_reader;
   std::unique_ptr<base::DictionaryValue> settings(new base::DictionaryValue());
 
   for (it->Seek(prefix); it->Valid() && it->key().starts_with(prefix);
        it->Next()) {
     leveldb::Slice descoped_key(it->key());
     descoped_key.remove_prefix(prefix.size());
-    std::unique_ptr<base::Value> value = json_reader.ReadDeprecated(
+    base::Optional<base::Value> value = base::JSONReader::Read(
         base::StringPiece(it->value().data(), it->value().size()));
     if (!value) {
       return ValueStore::Status(ValueStore::CORRUPTION,
@@ -88,7 +87,7 @@ ValueStore::Status LeveldbScopedDatabase::Read(const std::string& scope,
                                     : ValueStore::VALUE_RESTORE_DELETE_FAILURE,
                                 kInvalidJson);
     }
-    values->SetWithoutPathExpansion(descoped_key.ToString(), std::move(value));
+    values->SetKey(descoped_key.ToString(), std::move(*value));
   }
 
   return status;

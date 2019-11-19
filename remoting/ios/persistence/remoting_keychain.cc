@@ -9,6 +9,7 @@
 #include "base/logging.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/no_destructor.h"
+#include "base/strings/sys_string_conversions.h"
 
 namespace remoting {
 
@@ -18,19 +19,10 @@ using ScopedMutableDictionary = base::ScopedCFTypeRef<CFMutableDictionaryRef>;
 
 const char kServicePrefix[] = "com.google.ChromeRemoteDesktop.";
 
-base::ScopedCFTypeRef<CFStringRef> WrapStdString(const std::string& str) {
-  // Note that kCFAllocatorDefault as allocator will not do anything, but
-  // kCFAllocatorDefault as deallocator will release the buffer, which leads to
-  // double-free because it's owned by the std::string.
-  return base::ScopedCFTypeRef<CFStringRef>(
-      CFStringCreateWithCStringNoCopy(kCFAllocatorDefault, str.c_str(),
-                                      kCFStringEncodingUTF8, kCFAllocatorNull));
-}
-
-base::ScopedCFTypeRef<CFDataRef> WrapStringToData(const std::string& data) {
+base::ScopedCFTypeRef<CFDataRef> CFDataFromStdString(const std::string& data) {
   const UInt8* data_pointer = reinterpret_cast<const UInt8*>(data.data());
-  return base::ScopedCFTypeRef<CFDataRef>(CFDataCreateWithBytesNoCopy(
-      kCFAllocatorDefault, data_pointer, data.size(), kCFAllocatorNull));
+  return base::ScopedCFTypeRef<CFDataRef>(
+      CFDataCreate(kCFAllocatorDefault, data_pointer, data.size()));
 }
 
 ScopedMutableDictionary CreateScopedMutableDictionary() {
@@ -43,10 +35,12 @@ ScopedMutableDictionary CreateQueryForUpdate(const std::string& service,
                                              const std::string& account) {
   ScopedMutableDictionary dictionary = CreateScopedMutableDictionary();
   CFDictionarySetValue(dictionary.get(), kSecClass, kSecClassGenericPassword);
-  CFDictionarySetValue(dictionary.get(), kSecAttrService,
-                       WrapStdString(service).get());
-  CFDictionarySetValue(dictionary.get(), kSecAttrAccount,
-                       WrapStdString(account).get());
+  base::ScopedCFTypeRef<CFStringRef> service_cf(
+      base::SysUTF8ToCFStringRef(service));
+  CFDictionarySetValue(dictionary.get(), kSecAttrService, service_cf.get());
+  base::ScopedCFTypeRef<CFStringRef> account_cf(
+      base::SysUTF8ToCFStringRef(account));
+  CFDictionarySetValue(dictionary.get(), kSecAttrAccount, account_cf.get());
 
   return dictionary;
 }
@@ -64,7 +58,7 @@ ScopedMutableDictionary CreateDictionaryForInsertion(const std::string& service,
                                                      const std::string& data) {
   ScopedMutableDictionary dictionary = CreateQueryForUpdate(service, account);
   CFDictionarySetValue(dictionary.get(), kSecValueData,
-                       WrapStringToData(data).get());
+                       CFDataFromStdString(data).get());
   return dictionary;
 }
 
@@ -97,7 +91,7 @@ void RemotingKeychain::SetData(Key key,
     ScopedMutableDictionary updated_attributes =
         CreateScopedMutableDictionary();
     CFDictionarySetValue(updated_attributes.get(), kSecValueData,
-                         WrapStringToData(data).get());
+                         CFDataFromStdString(data).get());
     OSStatus status = SecItemUpdate(update_query, updated_attributes);
     if (status != errSecSuccess) {
       LOG(FATAL) << "Failed to update keychain item. Status: " << status;

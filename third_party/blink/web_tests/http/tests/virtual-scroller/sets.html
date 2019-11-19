@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<title>Test the sets.mjs functions.</title>
+
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script type="module">
+  import * as sets from '/gen/third_party/blink/renderer/core/script/resources/layered_api/elements/virtual-scroller/sets.mjs';
+  import * as helpers from './resources/helpers.mjs';
+
+  test(() => {
+    const s1 = new Set([1, 2, 3]);
+    const s2 = new Set([1, 2, 3]);
+    helpers.assertElementsEqual(sets.difference(s1, s2), []);
+  }, 'diff self is empty');
+
+  test(() => {
+    const s1 = new Set([1, 2, 3, 4]);
+    const s2 = new Set([3, 4, 5, 6]);
+    helpers.assertElementsEqual(sets.difference(s1, s2), [1, 2]);
+    helpers.assertElementsEqual(sets.difference(s2, s1), [5, 6]);
+  }, 'two overlapping');
+
+  test(() => {
+    const s1 = new Set([3, 4]);
+    const s2 = new Set([3, 4, 5, 6]);
+    helpers.assertElementsEqual(sets.difference(s1, s2), []);
+    helpers.assertElementsEqual(sets.difference(s2, s1), [5, 6]);
+  }, 'one-sided overlapping');
+
+  test(() => {
+    const s1 = new Set([]);
+    const s2 = new Set([3, 4]);
+    helpers.assertElementsEqual(sets.difference(s1, s2), []);
+    helpers.assertElementsEqual(sets.difference(s2, s1), [3, 4]);
+  }, 'empty set');
+</script>

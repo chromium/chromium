@@ -41,9 +41,9 @@ source_set("updater") {
   ]
 
   deps = [
+    "//components/signin/public/identity_manager",
     "//extensions/common",
     "//extensions/strings",
     "//services/data_decoder/public/cpp",
-    "//services/identity/public/cpp",
   ]
 }

@@ -18,8 +18,7 @@ FakeVideoEncodeAccelerator::FakeVideoEncodeAccelerator(
     : task_runner_(task_runner),
       will_initialization_succeed_(true),
       client_(NULL),
-      next_frame_is_first_frame_(true),
-      weak_this_factory_(this) {}
+      next_frame_is_first_frame_(true) {}
 
 FakeVideoEncodeAccelerator::~FakeVideoEncodeAccelerator() {
   weak_this_factory_.InvalidateWeakPtrs();
@@ -58,17 +57,16 @@ bool FakeVideoEncodeAccelerator::Initialize(const Config& config,
   return true;
 }
 
-void FakeVideoEncodeAccelerator::Encode(
-    const scoped_refptr<VideoFrame>& frame,
-    bool force_keyframe) {
+void FakeVideoEncodeAccelerator::Encode(scoped_refptr<VideoFrame> frame,
+                                        bool force_keyframe) {
   DCHECK(client_);
   queued_frames_.push(force_keyframe);
   EncodeTask();
 }
 
 void FakeVideoEncodeAccelerator::UseOutputBitstreamBuffer(
-    const BitstreamBuffer& buffer) {
-  available_buffers_.push_back(buffer);
+    BitstreamBuffer buffer) {
+  available_buffers_.push_back(std::move(buffer));
   EncodeTask();
 }
 

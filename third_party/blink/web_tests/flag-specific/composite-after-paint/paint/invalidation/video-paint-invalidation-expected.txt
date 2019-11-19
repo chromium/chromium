@@ -1,0 +1,22 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutVideo VIDEO id='video'",
+      "position": [8, 8],
+      "bounds": [320, 240]
+    },
+    {
+      "name": "LayoutFlexibleBox DIV",
+      "position": [8, 8],
+      "bounds": [320, 240],
+      "backgroundColor": "#000000"
+    }
+  ]
+}
+

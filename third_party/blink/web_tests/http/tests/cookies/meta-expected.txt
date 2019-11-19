@@ -1,6 +1,0 @@
-CONSOLE WARNING: Setting cookies via `<meta http-equiv='Set-Cookie' ...>` no longer works, as of M65. Consider switching to  `document.cookie = ...`, or to `Set-Cookie` HTTP headers instead. See https://www.chromestatus.com/feature/6170540112871424 for more details.
-CONSOLE ERROR: line 3: Blocked setting the `meta-set-cookie=1` cookie from a `<meta>` tag.
-This is a testharness.js-based test.
-PASS Cookie is not set from `<meta>`.
-Harness: the test ran to completion.
-

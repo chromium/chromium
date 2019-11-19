@@ -8,7 +8,7 @@ layer at (0,0) size 800x600
       LayoutBlockFlow {P} at (0,0) size 784x20
         LayoutText {#text} at (0,0) size 126x19
           text run at (0,0) width 126: "Test case for fix for "
-        LayoutInline {A} at (0,0) size 343x19 [color=#0000EE]
+        LayoutInline {A} at (126,0) size 343x19 [color=#0000EE]
           LayoutText {#text} at (126,0) size 343x19
             text run at (126,0) width 343: "http://bugzilla.opendarwin.org/show_bug.cgi?id=5354"
         LayoutText {#text} at (469,0) size 4x19

@@ -18,7 +18,8 @@ class MethodCall;
 
 namespace chromeos {
 
-// This class exports D-Bus methods for querying PluginVm information.
+// This class exports D-Bus methods for querying PluginVm information,
+// and to show the PluginVm settings page.
 //
 // GetLicenseData:
 // % dbus-send --system --type=method_call --print-reply
@@ -32,6 +33,13 @@ namespace chromeos {
 //  string device_id = 2; // If it is available, this contains the
 //                        // directory API ID, if not, this contains
 //                        // the empty string.
+//
+// ShowSettingsPage:
+// % dbus-send --system --type=method_call --print-reply
+//     --dest=org.chromium.PluginVmService /org/chromium/PluginVmService
+//     org.chromium.PluginVmServiceInterface.ShowSettingsPage
+//     array:byte:0x0a,0x10,0x70,0x6c,0x75,0x67,0x69,0x6e,0x56,0x6d,0x2f,0x64,
+//     0x65,0x74,0x61,0x69,0x6c,0x73
 // })
 class PluginVmServiceProvider
     : public CrosDBusService::ServiceProviderInterface {
@@ -53,9 +61,13 @@ class PluginVmServiceProvider
   void GetLicenseData(dbus::MethodCall* method_call,
                       dbus::ExportedObject::ResponseSender response_sender);
 
+  // Called from PluginVm process to show the settings page.
+  void ShowSettingsPage(dbus::MethodCall* method_call,
+                        dbus::ExportedObject::ResponseSender response_sender);
+
   // Keep this last so that all weak pointers will be invalidated at the
   // beginning of destruction.
-  base::WeakPtrFactory<PluginVmServiceProvider> weak_ptr_factory_;
+  base::WeakPtrFactory<PluginVmServiceProvider> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PluginVmServiceProvider);
 };

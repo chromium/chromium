@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
-#include "third_party/blink/renderer/core/animation/animatable/animatable_value.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -24,59 +23,83 @@ class CORE_EXPORT InterpolableValue {
  public:
   virtual ~InterpolableValue() = default;
 
-  virtual bool IsNumber() const { return false; }
-  virtual bool IsBool() const { return false; }
-  virtual bool IsList() const { return false; }
-
-  virtual bool Equals(const InterpolableValue&) const = 0;
-  virtual std::unique_ptr<InterpolableValue> Clone() const = 0;
-  virtual std::unique_ptr<InterpolableValue> CloneAndZero() const = 0;
-  virtual void Scale(double scale) = 0;
-  virtual void ScaleAndAdd(double scale, const InterpolableValue& other) = 0;
-
- private:
+  // Interpolates from |this| InterpolableValue towards |to| at the given
+  // |progress|, placing the output in |result|. That is:
+  //
+  //   result = this * (1 - progress) + to * progress
+  //
+  // Callers must make sure that |this|, |to|, and |result| are all of the same
+  // concrete subclass.
   virtual void Interpolate(const InterpolableValue& to,
                            const double progress,
                            InterpolableValue& result) const = 0;
 
-  friend class LegacyStyleInterpolation;
-  friend class TransitionInterpolation;
-  friend class PairwisePrimitiveInterpolation;
+  virtual bool IsNumber() const { return false; }
+  virtual bool IsBool() const { return false; }
+  virtual bool IsList() const { return false; }
+  virtual bool IsLength() const { return false; }
+  virtual bool IsShadow() const { return false; }
+  virtual bool IsFilter() const { return false; }
+  virtual bool IsTransformList() const { return false; }
 
-  // Keep interpolate private, but allow calls within the hierarchy without
-  // knowledge of type.
-  friend class InterpolableNumber;
-  friend class InterpolableList;
+  // TODO(alancutter): Remove Equals().
+  virtual bool Equals(const InterpolableValue&) const = 0;
+  virtual void Scale(double scale) = 0;
+  virtual void Add(const InterpolableValue& other) = 0;
+  // The default implementation should be sufficient for most types, but
+  // subclasses can override this to be more efficient if they chose.
+  virtual void ScaleAndAdd(double scale, const InterpolableValue& other) {
+    Scale(scale);
+    Add(other);
+  }
+  virtual void AssertCanInterpolateWith(
+      const InterpolableValue& other) const = 0;
 
-  friend class AnimationInterpolableValueTest;
+  // Clone this value, optionally zeroing out the components at the same time.
+  // These are not virtual to allow for covariant return types; see
+  // documentation on RawClone/RawCloneAndZero.
+  std::unique_ptr<InterpolableValue> Clone() const {
+    return std::unique_ptr<InterpolableValue>(RawClone());
+  }
+  std::unique_ptr<InterpolableValue> CloneAndZero() const {
+    return std::unique_ptr<InterpolableValue>(RawCloneAndZero());
+  }
+
+ private:
+  // Helper methods to allow covariant Clone/CloneAndZero methods. Concrete
+  // subclasses should not expose these methods publically, but instead should
+  // declare their own version of Clone/CloneAndZero with a concrete return type
+  // if it is useful for their clients.
+  virtual InterpolableValue* RawClone() const = 0;
+  virtual InterpolableValue* RawCloneAndZero() const = 0;
 };
 
 class CORE_EXPORT InterpolableNumber final : public InterpolableValue {
  public:
-  static std::unique_ptr<InterpolableNumber> Create(double value) {
-    return base::WrapUnique(new InterpolableNumber(value));
-  }
+  explicit InterpolableNumber(double value) : value_(value) {}
 
-  bool IsNumber() const final { return true; }
   double Value() const { return value_; }
-  bool Equals(const InterpolableValue& other) const final;
-  std::unique_ptr<InterpolableValue> Clone() const final {
-    return Create(value_);
-  }
-  std::unique_ptr<InterpolableValue> CloneAndZero() const final {
-    return Create(0);
-  }
-  void Scale(double scale) final;
-  void ScaleAndAdd(double scale, const InterpolableValue& other) final;
   void Set(double value) { value_ = value; }
 
- private:
+  // InterpolableValue
   void Interpolate(const InterpolableValue& to,
                    const double progress,
                    InterpolableValue& result) const final;
-  double value_;
+  bool IsNumber() const final { return true; }
+  bool Equals(const InterpolableValue& other) const final;
+  void Scale(double scale) final;
+  void Add(const InterpolableValue& other) final;
+  void AssertCanInterpolateWith(const InterpolableValue& other) const final;
 
-  explicit InterpolableNumber(double value) : value_(value) {}
+ private:
+  InterpolableNumber* RawClone() const final {
+    return new InterpolableNumber(value_);
+  }
+  InterpolableNumber* RawCloneAndZero() const final {
+    return new InterpolableNumber(0);
+  }
+
+  double value_;
 };
 
 class CORE_EXPORT InterpolableList : public InterpolableValue {
@@ -89,19 +112,13 @@ class CORE_EXPORT InterpolableList : public InterpolableValue {
   // has its own copy constructor. So just delete operator= here.
   InterpolableList& operator=(const InterpolableList&) = delete;
 
-  static std::unique_ptr<InterpolableList> Create(
-      const InterpolableList& other) {
-    return base::WrapUnique(new InterpolableList(other));
+  explicit InterpolableList(wtf_size_t size) : values_(size) {}
+
+  InterpolableList(const InterpolableList& other) : values_(other.length()) {
+    for (wtf_size_t i = 0; i < length(); i++)
+      Set(i, other.values_[i]->Clone());
   }
 
-  static std::unique_ptr<InterpolableList> Create(wtf_size_t size) {
-    return base::WrapUnique(new InterpolableList(size));
-  }
-
-  bool IsList() const final { return true; }
-  void Set(wtf_size_t position, std::unique_ptr<InterpolableValue> value) {
-    values_[position] = std::move(value);
-  }
   const InterpolableValue* Get(wtf_size_t position) const {
     return values_[position].get();
   }
@@ -109,24 +126,27 @@ class CORE_EXPORT InterpolableList : public InterpolableValue {
     return values_[position];
   }
   wtf_size_t length() const { return values_.size(); }
-  bool Equals(const InterpolableValue& other) const final;
-  std::unique_ptr<InterpolableValue> Clone() const final {
-    return Create(*this);
+  void Set(wtf_size_t position, std::unique_ptr<InterpolableValue> value) {
+    values_[position] = std::move(value);
   }
-  std::unique_ptr<InterpolableValue> CloneAndZero() const final;
-  void Scale(double scale) final;
-  void ScaleAndAdd(double scale, const InterpolableValue& other) final;
 
- private:
+  // InterpolableValue
   void Interpolate(const InterpolableValue& to,
                    const double progress,
                    InterpolableValue& result) const final;
-  explicit InterpolableList(wtf_size_t size) : values_(size) {}
+  bool IsList() const final { return true; }
+  bool Equals(const InterpolableValue& other) const final;
+  void Scale(double scale) final;
+  void Add(const InterpolableValue& other) final;
+  // We override this to avoid two passes on the list from the base version.
+  void ScaleAndAdd(double scale, const InterpolableValue& other) final;
+  void AssertCanInterpolateWith(const InterpolableValue& other) const final;
 
-  InterpolableList(const InterpolableList& other) : values_(other.length()) {
-    for (wtf_size_t i = 0; i < length(); i++)
-      Set(i, other.values_[i]->Clone());
+ private:
+  InterpolableList* RawClone() const final {
+    return new InterpolableList(*this);
   }
+  InterpolableList* RawCloneAndZero() const final;
 
   Vector<std::unique_ptr<InterpolableValue>> values_;
 };

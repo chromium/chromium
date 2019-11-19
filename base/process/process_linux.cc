@@ -124,7 +124,7 @@ bool Process::SetProcessBackgrounded(bool background) {
 
 #if defined(OS_CHROMEOS)
   if (CGroups::Get().enabled) {
-    std::string pid = IntToString(process_);
+    std::string pid = NumberToString(process_);
     const base::FilePath file = background ? CGroups::Get().background_file
                                            : CGroups::Get().foreground_file;
     return base::WriteFile(file, pid.c_str(), pid.size()) > 0;
@@ -173,7 +173,7 @@ ProcessId Process::GetPidInNamespace() const {
     // Synchronously reading files in /proc does not hit the disk.
     ThreadRestrictions::ScopedAllowIO allow_io;
     FilePath status_file =
-        FilePath("/proc").Append(IntToString(process_)).Append("status");
+        FilePath("/proc").Append(NumberToString(process_)).Append("status");
     if (!ReadFileToString(status_file, &status)) {
       return kNullProcessId;
     }

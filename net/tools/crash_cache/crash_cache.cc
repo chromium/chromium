@@ -13,7 +13,7 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/message_loop/message_loop.h"
+#include "base/message_loop/message_pump_type.h"
 #include "base/path_service.h"
 #include "base/process/kill.h"
 #include "base/process/launch.h"
@@ -21,6 +21,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_executor.h"
 #include "base/threading/thread.h"
 #include "net/base/net_errors.h"
 #include "net/base/net_export.h"
@@ -143,9 +144,8 @@ bool CreateCache(const base::FilePath& path,
   int size = 1024 * 1024;
   disk_cache::BackendImpl* backend = new disk_cache::BackendImpl(
       path, /* cleanup_tracker = */ nullptr, thread->task_runner().get(),
-      /* net_log = */ nullptr);
+      net::DISK_CACHE, /* net_log = */ nullptr);
   backend->SetMaxSize(size);
-  backend->SetType(net::DISK_CACHE);
   backend->SetFlags(disk_cache::kNoRandom);
   int rv = backend->Init(cb->callback());
   *cache = backend;
@@ -167,20 +167,22 @@ int SimpleInsert(const base::FilePath& path, RankCrashes action,
     disk_cache::g_rankings_crash = action;
   }
 
-  disk_cache::Entry* entry;
-  int rv = cache->CreateEntry(test_name, net::HIGHEST, &entry, cb.callback());
-  if (cb.GetResult(rv) != net::OK)
+  TestEntryResultCompletionCallback cb_create;
+  disk_cache::EntryResult result = cb_create.GetResult(
+      cache->CreateEntry(test_name, net::HIGHEST, cb_create.callback()));
+  if (result.net_error() != net::OK)
     return GENERIC;
 
-  entry->Close();
+  result.ReleaseEntry()->Close();
   FlushQueue(cache);
 
   DCHECK(action <= disk_cache::INSERT_ONE_3);
   disk_cache::g_rankings_crash = action;
   test_name = kCrashEntryName;
 
-  rv = cache->CreateEntry(test_name, net::HIGHEST, &entry, cb.callback());
-  if (cb.GetResult(rv) != net::OK)
+  result = cb_create.GetResult(
+      cache->CreateEntry(test_name, net::HIGHEST, cb_create.callback()));
+  if (result.net_error() != net::OK)
     return GENERIC;
 
   return NOT_REACHED;
@@ -197,30 +199,32 @@ int SimpleRemove(const base::FilePath& path, RankCrashes action,
   if (!CreateCache(path, cache_thread, &cache, &cb))
     return GENERIC;
 
-  disk_cache::Entry* entry;
-  int rv =
-      cache->CreateEntry(kCrashEntryName, net::HIGHEST, &entry, cb.callback());
-  if (cb.GetResult(rv) != net::OK)
+  TestEntryResultCompletionCallback cb_create;
+  disk_cache::EntryResult result = cb_create.GetResult(
+      cache->CreateEntry(kCrashEntryName, net::HIGHEST, cb_create.callback()));
+  if (result.net_error() != net::OK)
     return GENERIC;
 
-  entry->Close();
+  result.ReleaseEntry()->Close();
   FlushQueue(cache);
 
   if (action >= disk_cache::REMOVE_TAIL_1) {
-    rv = cache->CreateEntry("some other key", net::HIGHEST, &entry,
-                            cb.callback());
-    if (cb.GetResult(rv) != net::OK)
+    result = cb_create.GetResult(cache->CreateEntry(
+        "some other key", net::HIGHEST, cb_create.callback()));
+    if (result.net_error() != net::OK)
       return GENERIC;
 
-    entry->Close();
+    result.ReleaseEntry()->Close();
     FlushQueue(cache);
   }
 
-  rv = cache->OpenEntry(kCrashEntryName, net::HIGHEST, &entry, cb.callback());
-  if (cb.GetResult(rv) != net::OK)
+  result = cb_create.GetResult(
+      cache->OpenEntry(kCrashEntryName, net::HIGHEST, cb_create.callback()));
+  if (result.net_error() != net::OK)
     return GENERIC;
 
   disk_cache::g_rankings_crash = action;
+  disk_cache::Entry* entry = result.ReleaseEntry();
   entry->Doom();
   entry->Close();
   FlushQueue(cache);
@@ -238,26 +242,29 @@ int HeadRemove(const base::FilePath& path, RankCrashes action,
   if (!CreateCache(path, cache_thread, &cache, &cb))
     return GENERIC;
 
-  disk_cache::Entry* entry;
-  int rv =
-      cache->CreateEntry("some other key", net::HIGHEST, &entry, cb.callback());
-  if (cb.GetResult(rv) != net::OK)
+  TestEntryResultCompletionCallback cb_create;
+  disk_cache::EntryResult result = cb_create.GetResult(
+      cache->CreateEntry("some other key", net::HIGHEST, cb_create.callback()));
+  if (result.net_error() != net::OK)
     return GENERIC;
 
-  entry->Close();
+  result.ReleaseEntry()->Close();
   FlushQueue(cache);
-  rv = cache->CreateEntry(kCrashEntryName, net::HIGHEST, &entry, cb.callback());
-  if (cb.GetResult(rv) != net::OK)
+  result = cb_create.GetResult(
+      cache->CreateEntry(kCrashEntryName, net::HIGHEST, cb_create.callback()));
+  if (result.net_error() != net::OK)
     return GENERIC;
 
-  entry->Close();
+  result.ReleaseEntry()->Close();
   FlushQueue(cache);
 
-  rv = cache->OpenEntry(kCrashEntryName, net::HIGHEST, &entry, cb.callback());
-  if (cb.GetResult(rv) != net::OK)
+  result = cb_create.GetResult(
+      cache->OpenEntry(kCrashEntryName, net::HIGHEST, cb_create.callback()));
+  if (result.net_error() != net::OK)
     return GENERIC;
 
   disk_cache::g_rankings_crash = action;
+  disk_cache::Entry* entry = result.ReleaseEntry();
   entry->Doom();
   entry->Close();
   FlushQueue(cache);
@@ -272,7 +279,7 @@ int LoadOperations(const base::FilePath& path, RankCrashes action,
 
   // Work with a tiny index table (16 entries).
   disk_cache::BackendImpl* cache = new disk_cache::BackendImpl(
-      path, 0xf, cache_thread->task_runner().get(), NULL);
+      path, 0xf, cache_thread->task_runner().get(), net::DISK_CACHE, nullptr);
   if (!cache->SetMaxSize(0x100000))
     return GENERIC;
 
@@ -286,20 +293,21 @@ int LoadOperations(const base::FilePath& path, RankCrashes action,
   int seed = static_cast<int>(Time::Now().ToInternalValue());
   srand(seed);
 
-  disk_cache::Entry* entry;
+  TestEntryResultCompletionCallback cb_create;
   for (int i = 0; i < 100; i++) {
     std::string key = GenerateKey(true);
-    rv = cache->CreateEntry(key, net::HIGHEST, &entry, cb.callback());
-    if (cb.GetResult(rv) != net::OK)
+    disk_cache::EntryResult result = cb_create.GetResult(
+        cache->CreateEntry(key, net::HIGHEST, cb_create.callback()));
+    if (result.net_error() != net::OK)
       return GENERIC;
-    entry->Close();
+    result.ReleaseEntry()->Close();
     FlushQueue(cache);
     if (50 == i && action >= disk_cache::REMOVE_LOAD_1) {
-      rv = cache->CreateEntry(kCrashEntryName, net::HIGHEST, &entry,
-                              cb.callback());
-      if (cb.GetResult(rv) != net::OK)
+      result = cb_create.GetResult(cache->CreateEntry(
+          kCrashEntryName, net::HIGHEST, cb_create.callback()));
+      if (result.net_error() != net::OK)
         return GENERIC;
-      entry->Close();
+      result.ReleaseEntry()->Close();
       FlushQueue(cache);
     }
   }
@@ -307,18 +315,21 @@ int LoadOperations(const base::FilePath& path, RankCrashes action,
   if (action <= disk_cache::INSERT_LOAD_2) {
     disk_cache::g_rankings_crash = action;
 
-    rv = cache->CreateEntry(kCrashEntryName, net::HIGHEST, &entry,
-                            cb.callback());
-    if (cb.GetResult(rv) != net::OK)
+    disk_cache::EntryResult result = cb_create.GetResult(cache->CreateEntry(
+        kCrashEntryName, net::HIGHEST, cb_create.callback()));
+    if (result.net_error() != net::OK)
       return GENERIC;
+    result.ReleaseEntry();  // leaks.
   }
 
-  rv = cache->OpenEntry(kCrashEntryName, net::HIGHEST, &entry, cb.callback());
-  if (cb.GetResult(rv) != net::OK)
+  disk_cache::EntryResult result = cb_create.GetResult(
+      cache->OpenEntry(kCrashEntryName, net::HIGHEST, cb_create.callback()));
+  if (result.net_error() != net::OK)
     return GENERIC;
 
   disk_cache::g_rankings_crash = action;
 
+  disk_cache::Entry* entry = result.ReleaseEntry();
   entry->Doom();
   entry->Close();
   FlushQueue(cache);
@@ -328,7 +339,7 @@ int LoadOperations(const base::FilePath& path, RankCrashes action,
 
 // Main function on the child process.
 int SlaveCode(const base::FilePath& path, RankCrashes action) {
-  base::MessageLoopForIO message_loop;
+  base::SingleThreadTaskExecutor io_task_executor(base::MessagePumpType::IO);
 
   base::FilePath full_path;
   if (!CreateTargetFolder(path, action, &full_path)) {
@@ -338,7 +349,7 @@ int SlaveCode(const base::FilePath& path, RankCrashes action) {
 
   base::Thread cache_thread("CacheThread");
   if (!cache_thread.StartWithOptions(
-          base::Thread::Options(base::MessageLoop::TYPE_IO, 0)))
+          base::Thread::Options(base::MessagePumpType::IO, 0)))
     return GENERIC;
 
   if (action <= disk_cache::INSERT_ONE_3)

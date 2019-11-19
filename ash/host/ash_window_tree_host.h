@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "ash/ash_export.h"
-#include "services/ws/public/mojom/ime/ime.mojom.h"
 #include "ui/display/display.h"
 
 namespace aura {
@@ -62,11 +61,6 @@ class ASH_EXPORT AshWindowTreeHost {
   virtual void SetCursorConfig(const display::Display& display,
                                display::Display::Rotation rotation) = 0;
   virtual void ClearCursorConfig() = 0;
-
-  // Updates IME of underlying PlatformWindow.
-  virtual void UpdateTextInputState(ui::mojom::TextInputStatePtr state) {}
-  virtual void UpdateImeVisibility(bool visible,
-                                   ui::mojom::TextInputStatePtr state) {}
 
  protected:
   // Returns true if cursor confinement should be allowed. For development

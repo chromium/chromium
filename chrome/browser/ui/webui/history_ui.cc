@@ -18,11 +18,12 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/webui/browsing_history_handler.h"
-#include "chrome/browser/ui/webui/dark_mode_handler.h"
 #include "chrome/browser/ui/webui/foreign_session_handler.h"
 #include "chrome/browser/ui/webui/history_login_handler.h"
+#include "chrome/browser/ui/webui/localized_string.h"
 #include "chrome/browser/ui/webui/managed_ui_handler.h"
 #include "chrome/browser/ui/webui/metrics_handler.h"
+#include "chrome/browser/ui/webui/navigation_handler.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/browser_resources.h"
@@ -30,11 +31,10 @@
 #include "chrome/grit/locale_settings.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
-#include "content/public/common/content_features.h"
-#include "services/identity/public/cpp/identity_manager.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -43,7 +43,7 @@ constexpr char kIsUserSignedInKey[] = "isUserSignedIn";
 constexpr char kShowMenuPromoKey[] = "showMenuPromo";
 
 bool IsUserSignedIn(Profile* profile) {
-  identity::IdentityManager* identity_manager =
+  signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
   return identity_manager && identity_manager->HasPrimaryAccount();
 }
@@ -56,53 +56,47 @@ content::WebUIDataSource* CreateHistoryUIHTMLSource(Profile* profile) {
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(chrome::kChromeUIHistoryHost);
 
-  // Localized strings (alphabetical order).
-  source->AddLocalizedString("actionMenuDescription",
-                             IDS_HISTORY_ACTION_MENU_DESCRIPTION);
-  source->AddLocalizedString("bookmarked", IDS_HISTORY_ENTRY_BOOKMARKED);
-  source->AddLocalizedString("cancel", IDS_CANCEL);
-  source->AddLocalizedString("clearBrowsingData",
-                             IDS_CLEAR_BROWSING_DATA_TITLE);
-  source->AddLocalizedString("clearSearch", IDS_HISTORY_CLEAR_SEARCH);
-  source->AddLocalizedString("closeMenuPromo", IDS_HISTORY_CLOSE_MENU_PROMO);
-  source->AddLocalizedString("collapseSessionButton",
-                             IDS_HISTORY_OTHER_SESSIONS_COLLAPSE_SESSION);
-  source->AddLocalizedString("delete", IDS_HISTORY_DELETE);
-  source->AddLocalizedString("deleteConfirm",
-                             IDS_HISTORY_DELETE_PRIOR_VISITS_CONFIRM_BUTTON);
-  source->AddLocalizedString("deleteSession",
-                             IDS_HISTORY_OTHER_SESSIONS_HIDE_FOR_NOW);
-  source->AddLocalizedString("deleteWarning",
-                             IDS_HISTORY_DELETE_PRIOR_VISITS_WARNING);
-  source->AddLocalizedString("entrySummary", IDS_HISTORY_ENTRY_SUMMARY);
-  source->AddLocalizedString("expandSessionButton",
-                             IDS_HISTORY_OTHER_SESSIONS_EXPAND_SESSION);
-  source->AddLocalizedString("foundSearchResults",
-                             IDS_HISTORY_FOUND_SEARCH_RESULTS);
-  source->AddLocalizedString("historyMenuButton",
-                             IDS_HISTORY_HISTORY_MENU_DESCRIPTION);
-  source->AddLocalizedString("historyMenuItem", IDS_HISTORY_HISTORY_MENU_ITEM);
-  source->AddLocalizedString("itemsSelected", IDS_HISTORY_ITEMS_SELECTED);
-  source->AddLocalizedString("loading", IDS_HISTORY_LOADING);
-  source->AddLocalizedString("menuPromo", IDS_HISTORY_MENU_PROMO);
-  source->AddLocalizedString("moreFromSite", IDS_HISTORY_MORE_FROM_SITE);
-  source->AddLocalizedString("openAll", IDS_HISTORY_OTHER_SESSIONS_OPEN_ALL);
-  source->AddLocalizedString("openTabsMenuItem",
-                             IDS_HISTORY_OPEN_TABS_MENU_ITEM);
-  source->AddLocalizedString("noResults", IDS_HISTORY_NO_RESULTS);
-  source->AddLocalizedString("noSearchResults", IDS_HISTORY_NO_SEARCH_RESULTS);
-  source->AddLocalizedString("noSyncedResults", IDS_HISTORY_NO_SYNCED_RESULTS);
-  source->AddLocalizedString("removeBookmark", IDS_HISTORY_REMOVE_BOOKMARK);
-  source->AddLocalizedString("removeFromHistory", IDS_HISTORY_REMOVE_PAGE);
-  source->AddLocalizedString("removeSelected",
-                             IDS_HISTORY_REMOVE_SELECTED_ITEMS);
-  source->AddLocalizedString("searchPrompt", IDS_HISTORY_SEARCH_PROMPT);
-  source->AddLocalizedString("searchResult", IDS_HISTORY_SEARCH_RESULT);
-  source->AddLocalizedString("searchResults", IDS_HISTORY_SEARCH_RESULTS);
-  source->AddLocalizedString("signInButton", IDS_HISTORY_SIGN_IN_BUTTON);
-  source->AddLocalizedString("signInPromo", IDS_HISTORY_SIGN_IN_PROMO);
-  source->AddLocalizedString("signInPromoDesc", IDS_HISTORY_SIGN_IN_PROMO_DESC);
-  source->AddLocalizedString("title", IDS_HISTORY_TITLE);
+  static constexpr LocalizedString kStrings[] = {
+      // Localized strings (alphabetical order).
+      {"actionMenuDescription", IDS_HISTORY_ACTION_MENU_DESCRIPTION},
+      {"ariaRoleDescription", IDS_HISTORY_ARIA_ROLE_DESCRIPTION},
+      {"bookmarked", IDS_HISTORY_ENTRY_BOOKMARKED},
+      {"cancel", IDS_CANCEL},
+      {"clearBrowsingData", IDS_CLEAR_BROWSING_DATA_TITLE},
+      {"clearSearch", IDS_HISTORY_CLEAR_SEARCH},
+      {"closeMenuPromo", IDS_HISTORY_CLOSE_MENU_PROMO},
+      {"collapseSessionButton", IDS_HISTORY_OTHER_SESSIONS_COLLAPSE_SESSION},
+      {"delete", IDS_HISTORY_DELETE},
+      {"deleteConfirm", IDS_HISTORY_DELETE_PRIOR_VISITS_CONFIRM_BUTTON},
+      {"deleteSession", IDS_HISTORY_OTHER_SESSIONS_HIDE_FOR_NOW},
+      {"deleteWarning", IDS_HISTORY_DELETE_PRIOR_VISITS_WARNING},
+      {"entrySummary", IDS_HISTORY_ENTRY_SUMMARY},
+      {"expandSessionButton", IDS_HISTORY_OTHER_SESSIONS_EXPAND_SESSION},
+      {"foundSearchResults", IDS_HISTORY_FOUND_SEARCH_RESULTS},
+      {"historyMenuButton", IDS_HISTORY_HISTORY_MENU_DESCRIPTION},
+      {"historyMenuItem", IDS_HISTORY_HISTORY_MENU_ITEM},
+      {"itemsSelected", IDS_HISTORY_ITEMS_SELECTED},
+      {"loading", IDS_HISTORY_LOADING},
+      {"menu", IDS_MENU},
+      {"menuPromo", IDS_HISTORY_MENU_PROMO},
+      {"moreFromSite", IDS_HISTORY_MORE_FROM_SITE},
+      {"openAll", IDS_HISTORY_OTHER_SESSIONS_OPEN_ALL},
+      {"openTabsMenuItem", IDS_HISTORY_OPEN_TABS_MENU_ITEM},
+      {"noResults", IDS_HISTORY_NO_RESULTS},
+      {"noSearchResults", IDS_HISTORY_NO_SEARCH_RESULTS},
+      {"noSyncedResults", IDS_HISTORY_NO_SYNCED_RESULTS},
+      {"removeBookmark", IDS_HISTORY_REMOVE_BOOKMARK},
+      {"removeFromHistory", IDS_HISTORY_REMOVE_PAGE},
+      {"removeSelected", IDS_HISTORY_REMOVE_SELECTED_ITEMS},
+      {"searchPrompt", IDS_HISTORY_SEARCH_PROMPT},
+      {"searchResult", IDS_HISTORY_SEARCH_RESULT},
+      {"searchResults", IDS_HISTORY_SEARCH_RESULTS},
+      {"signInButton", IDS_HISTORY_SIGN_IN_BUTTON},
+      {"signInPromo", IDS_HISTORY_SIGN_IN_PROMO},
+      {"signInPromoDesc", IDS_HISTORY_SIGN_IN_PROMO_DESC},
+      {"title", IDS_HISTORY_TITLE},
+  };
+  AddLocalizedStringsBulk(source, kStrings, base::size(kStrings));
 
   source->AddString(
       "sidebarFooter",
@@ -121,11 +115,10 @@ content::WebUIDataSource* CreateHistoryUIHTMLSource(Profile* profile) {
 
   source->AddBoolean(kIsUserSignedInKey, IsUserSignedIn(profile));
 
-  struct UncompressedResource {
+  const struct {
     const char* path;
     int idr;
-  };
-  const UncompressedResource uncompressed_resources[] = {
+  } unbundled_resources[] = {
     {"constants.html", IDR_HISTORY_CONSTANTS_HTML},
     {"constants.js", IDR_HISTORY_CONSTANTS_JS},
     {"history.js", IDR_HISTORY_HISTORY_JS},
@@ -162,34 +155,21 @@ content::WebUIDataSource* CreateHistoryUIHTMLSource(Profile* profile) {
 #endif
   };
 
-  std::vector<std::string> exclude_from_gzip;
-  for (const auto& resource : uncompressed_resources) {
+  for (const auto& resource : unbundled_resources) {
     source->AddResourcePath(resource.path, resource.idr);
-    exclude_from_gzip.push_back(resource.path);
   }
-  source->UseGzip(base::BindRepeating(
-      [](const std::vector<std::string> excluded_paths,
-         const std::string& path) {
-        return !base::ContainsValue(excluded_paths, path);
-      },
-      std::move(exclude_from_gzip)));
 
 #if BUILDFLAG(OPTIMIZE_WEBUI)
-  const bool use_polymer_2 =
-      base::FeatureList::IsEnabled(features::kWebUIPolymer2);
-  source->AddResourcePath("app.html", use_polymer_2
-                                          ? IDR_HISTORY_APP_VULCANIZED_P2_HTML
-                                          : IDR_HISTORY_APP_VULCANIZED_HTML);
+  source->AddResourcePath("app.html", IDR_HISTORY_APP_VULCANIZED_HTML);
   source->AddResourcePath("app.crisper.js", IDR_HISTORY_APP_CRISPER_JS);
-  source->AddResourcePath(
-      "lazy_load.html", use_polymer_2 ? IDR_HISTORY_LAZY_LOAD_VULCANIZED_P2_HTML
-                                      : IDR_HISTORY_LAZY_LOAD_VULCANIZED_HTML);
+  source->AddResourcePath("lazy_load.html",
+                          IDR_HISTORY_LAZY_LOAD_VULCANIZED_HTML);
   source->AddResourcePath("lazy_load.crisper.js",
                           IDR_HISTORY_LAZY_LOAD_CRISPER_JS);
 #endif
 
   source->SetDefaultResource(IDR_HISTORY_HISTORY_HTML);
-  source->SetJsonPath("strings.js");
+  source->UseStringsJs();
 
   return source;
 }
@@ -199,10 +179,10 @@ content::WebUIDataSource* CreateHistoryUIHTMLSource(Profile* profile) {
 HistoryUI::HistoryUI(content::WebUI* web_ui) : WebUIController(web_ui) {
   Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource* data_source = CreateHistoryUIHTMLSource(profile);
-  DarkModeHandler::Initialize(web_ui, data_source);
   ManagedUIHandler::Initialize(web_ui, data_source);
   content::WebUIDataSource::Add(profile, data_source);
 
+  web_ui->AddMessageHandler(std::make_unique<webui::NavigationHandler>());
   web_ui->AddMessageHandler(std::make_unique<BrowsingHistoryHandler>());
   web_ui->AddMessageHandler(std::make_unique<MetricsHandler>());
 

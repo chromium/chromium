@@ -94,7 +94,7 @@ class HostVerifierImpl : public HostVerifier,
   base::Clock* clock_;
   std::unique_ptr<base::OneShotTimer> retry_timer_;
   std::unique_ptr<base::OneShotTimer> sync_timer_;
-  base::WeakPtrFactory<HostVerifierImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<HostVerifierImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(HostVerifierImpl);
 };

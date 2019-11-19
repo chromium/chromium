@@ -1,5 +1,3 @@
-namespace third_party_unrar {
-
 void CryptData::SetKey30(bool Encrypt,SecPassword *Password,const wchar *PwdW,const byte *Salt)
 {
   byte AESKey[16],AESInit[16];
@@ -7,8 +5,8 @@ void CryptData::SetKey30(bool Encrypt,SecPassword *Password,const wchar *PwdW,co
   bool Cached=false;
   for (uint I=0;I<ASIZE(KDF3Cache);I++)
     if (KDF3Cache[I].Pwd==*Password &&
-        ((Salt==NULL && !KDF3Cache[I].SaltPresent) || (Salt!=NULL &&
-        KDF3Cache[I].SaltPresent && memcmp(KDF3Cache[I].Salt,Salt,SIZE_SALT30)==0)))
+        (Salt==NULL && !KDF3Cache[I].SaltPresent || Salt!=NULL &&
+        KDF3Cache[I].SaltPresent && memcmp(KDF3Cache[I].Salt,Salt,SIZE_SALT30)==0))
     {
       memcpy(AESKey,KDF3Cache[I].Key,sizeof(AESKey));
       SecHideData(AESKey,sizeof(AESKey),false,false);
@@ -30,8 +28,8 @@ void CryptData::SetKey30(bool Encrypt,SecPassword *Password,const wchar *PwdW,co
     sha1_context c;
     sha1_init(&c);
 
-    const int HashRounds=0x40000;
-    for (int I=0;I<HashRounds;I++)
+    const uint HashRounds=0x40000;
+    for (uint I=0;I<HashRounds;I++)
     {
       sha1_process_rar29( &c, RawPsw, RawLength );
       byte PswNum[3];
@@ -49,8 +47,8 @@ void CryptData::SetKey30(bool Encrypt,SecPassword *Password,const wchar *PwdW,co
     }
     uint32 digest[5];
     sha1_done( &c, digest );
-    for (int I=0;I<4;I++)
-      for (int J=0;J<4;J++)
+    for (uint I=0;I<4;I++)
+      for (uint J=0;J<4;J++)
         AESKey[I*4+J]=(byte)(digest[I]>>(J*8));
 
     KDF3Cache[KDF3CachePos].Pwd=*Password;
@@ -68,4 +66,3 @@ void CryptData::SetKey30(bool Encrypt,SecPassword *Password,const wchar *PwdW,co
   cleandata(AESInit,sizeof(AESInit));
 }
 
-}  // namespace third_party_unrar

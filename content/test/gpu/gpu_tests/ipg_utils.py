@@ -4,10 +4,10 @@
 
 """This script implements a few IntelPowerGadget related helper functions.
 
-This script only works on Windows with Intel CPU. Intel Power Gadget needs to
-be installed on the machine before this script works. The software can be
+This script only works on Windows/Mac with Intel CPU. Intel Power Gadget needs
+to be installed on the machine before this script works. The software can be
 downloaded from:
-  https://software.intel.com/en-us/articles/intel-power-gadget-20
+  https://software.intel.com/en-us/articles/intel-power-gadget
 
 An easy way to use the APIs are:
 1) Launch your program.
@@ -24,15 +24,21 @@ import json
 import logging
 import os
 import subprocess
+import sys
 
 def LocateIPG():
-  ipg_dir = os.getenv('IPG_Dir')
-  if not ipg_dir:
-    raise Exception("No env IPG_Dir")
-  gadget_path = os.path.join(ipg_dir, "PowerLog3.0.exe")
-  if not os.path.isfile(gadget_path):
-    raise Exception("Can't locate Intel Power Gadget at " + gadget_path)
-  return gadget_path
+  if sys.platform == 'win32':
+    ipg_dir = os.getenv('IPG_Dir')
+    if not ipg_dir:
+      raise Exception("No env IPG_Dir")
+    gadget_path = os.path.join(ipg_dir, "PowerLog3.0.exe")
+    if not os.path.isfile(gadget_path):
+      raise Exception("Can't locate Intel Power Gadget at " + gadget_path)
+    return gadget_path
+  if sys.platform == 'darwin':
+    return '/Applications/Intel Power Gadget/PowerLog'
+  raise Exception("Only supported on Windows/Mac")
+
 
 def GenerateIPGLogFilename(log_prefix='PowerLog', log_dir=None, current_run=1,
                            total_runs=1, timestamp=False):
@@ -46,6 +52,7 @@ def GenerateIPGLogFilename(log_prefix='PowerLog', log_dir=None, current_run=1,
     log_prefix = "%s_%s" % (log_prefix, now.strftime('%Y%m%d%H%M%S'))
   return os.path.join(log_dir, log_prefix + '.csv')
 
+
 def RunIPG(duration_in_s=60, resolution_in_ms=100, logfile=None):
   intel_power_gadget_path = LocateIPG()
   command = ('"%s" -duration %d -resolution %d' %
@@ -55,9 +62,10 @@ def RunIPG(duration_in_s=60, resolution_in_ms=100, logfile=None):
     logfile = GenerateIPGLogFilename()
   command = command + (' -file %s' %logfile)
   logging.debug("Running: " + command)
-  output = subprocess.check_output(command)
+  output = subprocess.check_output(command, shell=True)
   logging.debug("Running: DONE")
   logging.debug(output)
+
 
 def AnalyzeIPGLogFile(logfile=None, skip_in_sec=0):
   if not logfile:
@@ -72,16 +80,17 @@ def AnalyzeIPGLogFile(logfile=None, skip_in_sec=0):
   sums = []
   col_time = None
   for line in open(logfile):
-    tokens = line.split(',')
+    tokens = [token.strip('" ') for token in line.split(',')]
     if first_line:
       first_line = False
       cols = len(tokens)
       for ii in range(0, cols):
-        if tokens[ii].startswith('Elapsed Time'):
+        token = tokens[ii]
+        if token.startswith('Elapsed Time'):
           col_time = ii
-        elif tokens[ii].endswith('(Watt)'):
+        elif token.endswith('(Watt)'):
           indices.append(ii)
-          labels.append(tokens[ii][:-len('(Watt)')])
+          labels.append(token[:-len('(Watt)')])
           sums.append(0.0)
       assert col_time
       assert cols > 0
@@ -100,6 +109,7 @@ def AnalyzeIPGLogFile(logfile=None, skip_in_sec=0):
     for ii in range(0, len(indices)):
       results[labels[ii]] = sums[ii] / samples
   return results
+
 
 def ProcessResultsFromMultipleIPGRuns(logfiles, skip_in_seconds=0,
                                       outliers=0, output_json=None):

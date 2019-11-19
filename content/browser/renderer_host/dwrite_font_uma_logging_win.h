@@ -7,8 +7,6 @@
 
 namespace content {
 
-namespace dwrite_font_uma_logging {
-
 // This enum is used to define the buckets for an enumerated UMA histogram.
 // Hence,
 //   (a) existing enumerated constants should never be deleted or reordered, and
@@ -53,7 +51,6 @@ void LogLastResortFontFileCount(size_t count);
 
 void LogMessageFilterError(MessageFilterError error);
 
-}  // namespace dwrite_font_uma_logging
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_RENDERER_HOST_DWRITE_FONT_UMA_LOGGING_WIN_H_

@@ -14,7 +14,6 @@ namespace features {
 extern const base::Feature kContentCaptureEnabled;
 
 bool IsContentCaptureEnabled();
-bool ShouldUseNodeID();
 
 int TaskLongDelayInMilliseconds();
 int TaskShortDelayInMilliseconds();

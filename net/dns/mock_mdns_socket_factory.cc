@@ -108,7 +108,7 @@ void MockMDnsSocketFactory::SimulateReceive(const uint8_t* packet, int size) {
   DCHECK(!recv_callback_.is_null());
 
   memcpy(recv_buffer_->data(), packet, size);
-  base::ResetAndReturn(&recv_callback_).Run(size);
+  std::move(recv_callback_).Run(size);
 }
 
 int MockMDnsSocketFactory::RecvFromInternal(

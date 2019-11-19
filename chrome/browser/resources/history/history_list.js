@@ -5,6 +5,8 @@
 Polymer({
   is: 'history-list',
 
+  behaviors: [I18nBehavior],
+
   properties: {
     // The search term for the current query. Set when the query returns.
     searchedTerm: {
@@ -60,6 +62,10 @@ Polymer({
     actionMenuModel_: Object,
   },
 
+  hostAttributes: {
+    role: 'application',
+  },
+
   listeners: {
     'history-checkbox-select': 'onItemSelected_',
     'open-menu': 'onOpenMenu_',
@@ -74,6 +80,7 @@ Polymer({
     /** @type {IronListElement} */ (this.$['infinite-list']).notifyResize();
     this.$['infinite-list'].scrollTarget = this;
     this.$['scroll-threshold'].scrollTarget = this;
+    this.setAttribute('aria-roledescription', this.i18n('ariaRoleDescription'));
   },
 
   /////////////////////////////////////////////////////////////////////////////
@@ -385,6 +392,13 @@ Polymer({
       if (index == undefined) {
         return;
       }
+      setTimeout(() => {
+        this.$['infinite-list'].focusItem(index);
+        const item = getDeepActiveElement();
+        if (item) {
+          item.focusOnMenuButton();
+        }
+      });
 
       const browserService = history.BrowserService.getInstance();
       browserService.recordHistogram(

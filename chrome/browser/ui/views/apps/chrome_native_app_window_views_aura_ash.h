@@ -8,17 +8,15 @@
 #include <memory>
 #include <vector>
 
-#include "ash/public/interfaces/ash_window_manager.mojom.h"
-#include "ash/public/interfaces/menu.mojom.h"
-#include "ash/wm/window_state_observer.h"  // mash-ok
+#include "ash/public/cpp/tablet_mode_observer.h"
+#include "ash/wm/window_state.h"
+#include "ash/wm/window_state_observer.h"
 #include "base/gtest_prod_util.h"
 #include "base/scoped_observer.h"
-#include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_client.h"
-#include "chrome/browser/ui/ash/tablet_mode_client_observer.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/views/apps/chrome_native_app_window_views_aura.h"
 #include "chrome/browser/ui/views/exclusive_access_bubble_views_context.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/views/context_menu_controller.h"
@@ -39,14 +37,12 @@ class ExclusiveAccessManager;
 class ChromeNativeAppWindowViewsAuraAsh
     : public ChromeNativeAppWindowViewsAura,
       public views::ContextMenuController,
-      public TabletModeClientObserver,
+      public ash::TabletModeObserver,
       public ui::AcceleratorProvider,
       public ExclusiveAccessContext,
       public ExclusiveAccessBubbleViewsContext,
-      public ash::wm::WindowStateObserver,
-      public aura::WindowObserver,
-      public MultiUserWindowManagerClient::Observer,
-      public ash::mojom::MenuDelegate {
+      public ash::WindowStateObserver,
+      public aura::WindowObserver {
  public:
   ChromeNativeAppWindowViewsAuraAsh();
   ~ChromeNativeAppWindowViewsAuraAsh() override;
@@ -68,12 +64,12 @@ class ChromeNativeAppWindowViewsAuraAsh
   // ui::BaseWindow:
   gfx::Rect GetRestoredBounds() const override;
   ui::WindowShowState GetRestoredState() const override;
-  bool IsAlwaysOnTop() const override;
+  ui::ZOrderLevel GetZOrderLevel() const override;
 
   // views::ContextMenuController:
-  void ShowContextMenuForView(views::View* source,
-                              const gfx::Point& p,
-                              ui::MenuSourceType source_type) override;
+  void ShowContextMenuForViewImpl(views::View* source,
+                                  const gfx::Point& p,
+                                  ui::MenuSourceType source_type) override;
 
   // WidgetDelegate:
   views::NonClientFrameView* CreateNonClientFrameView(
@@ -82,12 +78,11 @@ class ChromeNativeAppWindowViewsAuraAsh
 
   // NativeAppWindow:
   void SetFullscreen(int fullscreen_types) override;
-  void UpdateDraggableRegions(
-      const std::vector<extensions::DraggableRegion>& regions) override;
   void SetActivateOnPointer(bool activate_on_pointer) override;
 
-  // ash:TabletModeObserver:
-  void OnTabletModeToggled(bool enabled) override;
+  // ash::TabletModeObserver:
+  void OnTabletModeStarted() override;
+  void OnTabletModeEnded() override;
 
   // ui::AcceleratorProvider:
   bool GetAcceleratorForCommandId(int command_id,
@@ -125,23 +120,15 @@ class ChromeNativeAppWindowViewsAuraAsh
   // WidgetObserver:
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
 
-  // ash::wm::WindowStateObserver
-  void OnPostWindowStateTypeChange(
-      ash::wm::WindowState* window_state,
-      ash::mojom::WindowStateType old_type) override;
+  // ash::WindowStateObserver:
+  void OnPostWindowStateTypeChange(ash::WindowState* window_state,
+                                   ash::WindowStateType old_type) override;
 
   // aura::WindowObserver:
   void OnWindowPropertyChanged(aura::Window* window,
                                const void* key,
                                intptr_t old) override;
   void OnWindowDestroying(aura::Window* window) override;
-
-  // MultiUserWindowManagerClient::Observer:
-  void OnOwnerEntryAdded(aura::Window* window) override;
-  void OnOwnerEntryChanged(aura::Window* window) override;
-
-  // ash::mojom::MenuDelegate:
-  void MenuItemActivated(int command_id) override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ChromeNativeAppWindowViewsAuraAshBrowserTest,
@@ -165,11 +152,11 @@ class ChromeNativeAppWindowViewsAuraAsh
   FRIEND_TEST_ALL_PREFIXES(ShapedAppWindowTargeterTest,
                            ResizeInsetsWithinBounds);
 
+  // Invoked to handle tablet mode change.
+  void OnTabletModeToggled(bool enabled);
+
   // Callback for MenuRunner
   void OnMenuClosed();
-
-  // Callback for Ash-controlled context menus, invoked over Mojo.
-  void ExecuteContextMenuItem(int command_id);
 
   // Whether immersive mode should be enabled.
   bool ShouldEnableImmersiveMode() const;
@@ -178,7 +165,7 @@ class ChromeNativeAppWindowViewsAuraAsh
   // app's and window manager's state.
   void UpdateImmersiveMode();
 
-  // Used to show the system menu. Only used in !Mash.
+  // Used to show the system menu.
   std::unique_ptr<ui::MenuModel> menu_model_;
   std::unique_ptr<views::MenuRunner> menu_runner_;
 
@@ -187,13 +174,10 @@ class ChromeNativeAppWindowViewsAuraAsh
   std::unique_ptr<ExclusiveAccessBubbleViews> exclusive_access_bubble_;
 
   bool tablet_mode_enabled_ = false;
-
-  // Only used in mash.
-  ash::mojom::AshWindowManagerAssociatedPtr ash_window_manager_;
-  mojo::Binding<ash::mojom::MenuDelegate> binding_{this};
+  bool draggable_regions_sent_ = false;
 
   ScopedObserver<aura::Window, aura::WindowObserver> observed_window_{this};
-  ScopedObserver<ash::wm::WindowState, ash::wm::WindowStateObserver>
+  ScopedObserver<ash::WindowState, ash::WindowStateObserver>
       observed_window_state_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ChromeNativeAppWindowViewsAuraAsh);

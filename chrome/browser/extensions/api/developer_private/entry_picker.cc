@@ -37,13 +37,13 @@ EntryPicker::EntryPicker(EntryPickerClient* client,
     : client_(client) {
   if (g_skip_picker_for_test) {
     if (g_path_to_be_picked_for_test) {
-      base::PostTaskWithTraits(
+      base::PostTask(
           FROM_HERE, {content::BrowserThread::UI},
           base::BindOnce(&EntryPicker::FileSelected, base::Unretained(this),
                          *g_path_to_be_picked_for_test, 1,
                          static_cast<void*>(nullptr)));
     } else {
-      base::PostTaskWithTraits(
+      base::PostTask(
           FROM_HERE, {content::BrowserThread::UI},
           base::BindOnce(&EntryPicker::FileSelectionCanceled,
                          base::Unretained(this), static_cast<void*>(nullptr)));

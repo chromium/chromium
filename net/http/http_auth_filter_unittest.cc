@@ -15,16 +15,10 @@ namespace net {
 
 namespace {
 
-static const char* const server_whitelist_array[] = {
-  "google.com",
-  "linkedin.com",
-  "book.com",
-  ".chromium.org",
-  ".gag",
-  "gog"
-};
+static const char* const server_allowlist_array[] = {
+    "google.com", "linkedin.com", "book.com", ".chromium.org", ".gag", "gog"};
 
-enum { ALL_SERVERS_MATCH = (1 << base::size(server_whitelist_array)) - 1 };
+enum { ALL_SERVERS_MATCH = (1 << base::size(server_allowlist_array)) - 1 };
 
 struct UrlData {
   GURL url;
@@ -71,7 +65,7 @@ static const UrlData urls[] = {
 
 TEST(HttpAuthFilterTest, EmptyFilter) {
   // Create an empty filter
-  HttpAuthFilterWhitelist filter((std::string()));
+  HttpAuthFilterAllowlist filter((std::string()));
   for (size_t i = 0; i < base::size(urls); i++) {
     EXPECT_EQ(urls[i].target == HttpAuth::AUTH_PROXY,
               filter.IsValid(urls[i].url, urls[i].target))
@@ -81,14 +75,14 @@ TEST(HttpAuthFilterTest, EmptyFilter) {
 
 TEST(HttpAuthFilterTest, NonEmptyFilter) {
   // Create an non-empty filter
-  std::string server_whitelist_filter_string;
-  for (size_t i = 0; i < base::size(server_whitelist_array); ++i) {
-    if (!server_whitelist_filter_string.empty())
-      server_whitelist_filter_string += ",";
-    server_whitelist_filter_string += "*";
-    server_whitelist_filter_string += server_whitelist_array[i];
+  std::string server_allowlist_filter_string;
+  for (size_t i = 0; i < base::size(server_allowlist_array); ++i) {
+    if (!server_allowlist_filter_string.empty())
+      server_allowlist_filter_string += ",";
+    server_allowlist_filter_string += "*";
+    server_allowlist_filter_string += server_allowlist_array[i];
   }
-  HttpAuthFilterWhitelist filter(server_whitelist_filter_string);
+  HttpAuthFilterAllowlist filter(server_allowlist_filter_string);
   for (size_t i = 0; i < base::size(urls); i++) {
     EXPECT_EQ(urls[i].matches, filter.IsValid(urls[i].url, urls[i].target))
         << " " << i << ": " << urls[i].url;

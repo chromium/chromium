@@ -47,7 +47,8 @@ class DrmThreadMessageProxy : public IPC::MessageFilter,
  private:
   ~DrmThreadMessageProxy() override;
 
-  void OnCreateWindow(gfx::AcceleratedWidget widget);
+  void OnCreateWindow(gfx::AcceleratedWidget widget,
+                      const gfx::Rect& initial_bounds);
   void OnDestroyWindow(gfx::AcceleratedWidget widget);
   void OnWindowBoundsChanged(gfx::AcceleratedWidget widget,
                              const gfx::Rect& bounds);
@@ -98,7 +99,7 @@ class DrmThreadMessageProxy : public IPC::MessageFilter,
 
   IPC::Sender* sender_ = nullptr;
 
-  base::WeakPtrFactory<DrmThreadMessageProxy> weak_ptr_factory_;
+  base::WeakPtrFactory<DrmThreadMessageProxy> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DrmThreadMessageProxy);
 };

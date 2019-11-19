@@ -135,7 +135,7 @@ Chrome has a single browser process which handles starting and configuring other
 processes, tab management, and navigation, among other things, and multiple
 child processes, which are generally sandboxed and have no network access
 themselves, apart from the network service (Which either runs in its own
-process, or potentially in the browser process to preserve RAM). There are
+process, or potentially in the browser process to conserve RAM). There are
 multiple types of child processes (renderer, GPU, plugin, network, etc). The
 renderer processes are the ones that layout webpages and run HTML.
 
@@ -152,7 +152,7 @@ network::mojom::URLLoader to use to talk back to it, and then passes them to
 the URLLoaderFactory, which returns a URLLoader object that it can use to
 manage the network request.
 
-### network::URLLoaderFactory sets up the request in the browser process
+### network::URLLoaderFactory sets up the request in the network service
 
 Summary:
 
@@ -305,7 +305,7 @@ socket slot.
 ### Object Relationships and Ownership
 
 A sample of the object relationships involved in the above process is
-diagramed here: 
+diagramed here:
 
 ![Object Relationship Diagram for URLRequest lifetime](url_request.png)
 
@@ -319,7 +319,7 @@ clear visually:
 * HttpTransactions of different types are layered; i.e. a
   HttpCache::Transaction contains a pointer to an HttpTransaction, but
   that pointed-to HttpTransaction generally is an
-  HttpNetworkTransaction. 
+  HttpNetworkTransaction.
 
 # Additional Topics
 
@@ -329,9 +329,9 @@ The HttpCache::Transaction sits between the URLRequestHttpJob and the
 HttpNetworkTransaction, and implements the HttpTransaction interface, just like
 the HttpNetworkTransaction. The HttpCache::Transaction checks if a request can
 be served out of the cache. If a request needs to be revalidated, it handles
-sending a 204 revalidation request over the network. It may also break a range
-request into multiple cached and non-cached contiguous chunks, and may issue
-multiple network requests for a single range URLRequest.
+sending a conditional revalidation request over the network. It may also break a
+range request into multiple cached and non-cached contiguous chunks, and may
+issue multiple network requests for a single range URLRequest.
 
 The HttpCache::Transaction uses one of three disk_cache::Backends to actually
 store the cache's index and files: The in memory backend, the blockfile cache
@@ -347,7 +347,7 @@ this problem to some extent.
 
 It's also worth noting that each renderer process also has its own in-memory
 cache, which has no relation to the cache implemented in net/, which lives in
-the browser process.
+the network service.
 
 ## Cancellation
 
@@ -368,7 +368,7 @@ concerned, it only has a partial response.
 ## Redirects
 
 The URLRequestHttpJob checks if headers indicate a redirect when it receives
-them from the next layer down (Typically the HttpCache::Transaction). If they
+them from the next layer down (typically the HttpCache::Transaction). If they
 indicate a redirect, it tells the cache the response is complete, ignoring the
 body, so the cache only has the headers. The cache then treats it as a complete
 entry, even if the headers indicated there will be a body.
@@ -390,8 +390,8 @@ drain the socket for reuse, as discussed in the previous section.
 
 In some cases, the consumer may choose to handle a redirect itself, like
 passing off the redirect to a ServiceWorker. In this case, the consumer cancels
-the request and then call into some other network::mojom::URLLoaderFactory
-the new URL to continue the request.
+the request and then calls into some other network::mojom::URLLoaderFactory
+with the new URL to continue the request.
 
 ## Filters (gzip, deflate, brotli, etc)
 
@@ -451,26 +451,26 @@ TcpClientSocketPool, which the SSLClientSocketPool sits on top of.
 
 The relationships between the important classes in the socket pools is
 shown diagrammatically for the lowest layer socket pool
-(TransportSocketPool) below. 
+(TransportSocketPool) below.
 
 ![Object Relationship Diagram for Socket Pools](pools.png)
 
 The ClientSocketPoolBase is a template class templatized on the class
 containing the parameters for the appropriate type of socket (in this
-case TransportSocketParams).  It contains a pointer to the
+case TransportSocketParams). It contains a pointer to the
 ClientSocketPoolBaseHelper, which contains all the type-independent
-machinery of the socket pool.  
+machinery of the socket pool.
 
 When socket pools are initialized, they in turn initialize their
 templatized ClientSocketPoolBase member with an object with which it
-should create connect jobs.  That object must derive from
+should create connect jobs. That object must derive from
 ClientSocketPoolBase::ConnectJobFactory templatized by the same type
-as the ClientSocketPoolBase.  (In the case of the diagram above, that
+as the ClientSocketPoolBase. (In the case of the diagram above, that
 object is a TransportConnectJobFactory, which derives from
 ClientSocketPoolBase::ConnectJobFactory&lt;TransportSocketParams&gt;.)
 Internally, that object is wrapped in a type-unsafe wrapper
 (ClientSocketPoolBase::ConnectJobFactoryAdaptor) so that it can be
-passed to the initialization of the ClientSocketPoolBaseHelper.  This
+passed to the initialization of the ClientSocketPoolBaseHelper. This
 allows the helper to create connect jobs while preserving a type-safe
 API to the initialization of the socket pool.
 
@@ -500,7 +500,7 @@ destination server, layered on top of each other.
 The first step the HttpStreamFactory::Job performs, just before calling
 into the ClientSocketPoolManager to create a socket, is to pass the URL to the
 Proxy service to get an ordered list of proxies (if any) that should be tried
-for that URL.  Then when the ClientSocketPoolManager tries to get a socket for
+for that URL. Then when the ClientSocketPoolManager tries to get a socket for
 the Job, it uses that list of proxies to direct the request to the right socket
 pool.
 
@@ -531,7 +531,7 @@ HttpServerProperties then tracks servers that have advertised QUIC support.
 When a new request comes in to HttpStreamFactory for a connection to a
 server that has advertised QUIC support in the past, it will create a second
 HttpStreamFactory::Job for QUIC, which returns an QuicHttpStream on success.
-The two Jobs (One for QUIC, one for all versions of HTTP) will be raced against
+The two Jobs (one for QUIC, one for all versions of HTTP) will be raced against
 each other, and whichever successfully creates an HttpStream first will be used.
 
 As with HTTP/2, once a QUIC connection is established, it will be shared with
@@ -548,7 +548,7 @@ low priority requests on a per-tab basis.
 * DNS lookups are initiated based on the highest priority request for a lookup.
 * Socket pools hand out and create sockets based on prioritization. However,
 when a socket becomes idle, it will be assigned to the highest priority request
-for the server its connected to, even if there's a higher priority request to
+for the server it's connected to, even if there's a higher priority request to
 another server that's waiting on a free socket slot.
 * HTTP/2 and QUIC both support sending priorities over-the-wire.
 
@@ -562,11 +562,11 @@ priority socket request.
 
 The URLRequestJobFactory has a ProtocolHander for ftp, http, https, and data
 URLs, though most data URLs are handled directly in the renderer. For other
-schemes, and non-network code that can intercept HTTP/HTTPS requests (Like
+schemes, and non-network code that can intercept HTTP/HTTPS requests (like
 ServiceWorker, or extensions), there's typically another
 network::mojom::URLLoaderFactory class that is used instead of
-network::URLLoaderFactory.  These URLLoaderFactories are not part of the
+network::URLLoaderFactory. These URLLoaderFactories are not part of the
 network service. Some of these are web standards and handled in content/
-code (Like blob:// and file:// URLs), while other of these are
-chrome-specific, and implemented in chrome/ (like chrome:// and
+code (like blob:// and file:// URLs), while other of these are
+Chrome-specific, and implemented in chrome/ (like chrome:// and
 chrome-extension:// URLs).

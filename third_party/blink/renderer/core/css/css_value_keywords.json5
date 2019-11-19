@@ -131,9 +131,10 @@
     "large",
     "x-large",
     "xx-large",
-    "-webkit-xxx-large",
+    "xxx-large",
     "smaller",
     "larger",
+    "-webkit-xxx-large",
 
     //
     // font-family (<generic-family> in CSS 2.1)
@@ -181,13 +182,18 @@
     "-webkit-activelink",
     "activeborder",
     "activecaption",
+    "activetext",
     "appworkspace",
     "background",
     "buttonface",
     "buttonhighlight",
     "buttonshadow",
     "buttontext",
+    "canvas",
+    "canvastext",
     "captiontext",
+    "field",
+    "fieldtext",
     "graytext",
     "highlight",
     "highlighttext",
@@ -196,6 +202,7 @@
     "inactivecaptiontext",
     "infobackground",
     "infotext",
+    "linktext",
     "menutext",
     "scrollbar",
     "threeddarkshadow",
@@ -203,6 +210,7 @@
     "threedhighlight",
     "threedlightshadow",
     "threedshadow",
+    "visitedtext",
     "window",
     "windowframe",
     "windowtext",
@@ -640,6 +648,7 @@
     // normal
     "strict",
     "after-white-space",
+    "anywhere",
 
     // hyphens
     "manual",
@@ -654,38 +663,21 @@
     "push-button",
     "square-button",
     "button",
-    "button-bevel",
     "inner-spin-button",
     "listbox",
-    "listitem",
-    "media-enter-fullscreen-button",
-    "media-exit-fullscreen-button",
-    "media-mute-button",
-    "media-play-button",
-    "media-overlay-play-button",
-    "media-toggle-closed-captions-button",
     "media-slider",
     "media-sliderthumb",
-    "media-volume-slider-container",
     "media-volume-slider",
     "media-volume-sliderthumb",
-    "media-controls-background",
-    "media-controls-fullscreen-background",
-    "media-current-time-display",
-    "media-time-remaining-display",
     "-internal-media-control",
     "menulist",
     "menulist-button",
-    "menulist-text",
-    "menulist-textfield",
     "meter",
     "progress-bar",
-    "progress-bar-value",
     "slider-horizontal",
     "slider-vertical",
     "sliderthumb-horizontal",
     "sliderthumb-vertical",
-    "caret",
     "searchfield",
     "searchfield-cancel-button",
     "textfield",
@@ -771,6 +763,10 @@
     "ease-in",
     "ease-out",
     "ease-in-out",
+    "jump-both",
+    "jump-end",
+    "jump-none",
+    "jump-start",
     "step-start",
     "step-end",
     "steps",
@@ -950,10 +946,6 @@
     // column-fill
     "balance",
 
-    // overflow
-    "-webkit-paged-x",
-    "-webkit-paged-y",
-
     // -webkit-app-region
     "drag",
     "no-drag",
@@ -1089,6 +1081,7 @@
     "rgba",
     "hsl",
     "hsla",
+    "-internal-light-dark-color",
 
     // transform
     "matrix",
@@ -1123,8 +1116,13 @@
     "ray",
     "sides",
 
+    // math functions
+    // https://drafts.csswg.org/css-values-4/#math
     "calc",
     "-webkit-calc",
+    "min",
+    "max",
+    "clamp",
 
     // scroll-snap-type
     // none
@@ -1192,6 +1190,10 @@
     // pan-down
     // none
 
+    // @property
+    "true",
+    "false",
+
     // (prefers-*:) media features
     "no-preference",
 
@@ -1199,7 +1201,23 @@
     "dark",
     "light",
 
+    // color-scheme
+    "only",
+
     // (prefers-reduced-motion:) media feature
     "reduce",
+
+    // (forced-colors:) media feature
+    // none
+    "active",
+
+    // (navigation-controls) media feature
+    // none
+    "back-button",
+
+    // render-subtree
+    "invisible",
+    "skip-activation",
+    "skip-viewport-activation",
   ],
 }

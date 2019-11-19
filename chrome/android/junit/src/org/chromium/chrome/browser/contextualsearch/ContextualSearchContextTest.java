@@ -9,13 +9,19 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.BlockJUnit4ClassRunner;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.JniMocker;
 
 /**
  * Tests parts of the ContextualSearchContext class.
@@ -27,11 +33,30 @@ public class ContextualSearchContextTest {
     private static final String SAMPLE_TEXT =
             "Now Barack Obama is not the best example.  And Clinton is ambiguous.";
     private static final String HOME_COUNTRY = "unused";
+    private static final long NATIVE_PTR = 1;
 
-    private ContextualSearchContextForTest mContext;
+    private ContextualSearchContext mContext;
+    private boolean mDidSelectionChange;
+
+    private class ContextualSearchContextForTest extends ContextualSearchContext {
+        @Override
+        void onSelectionChanged() {
+            mDidSelectionChange = true;
+        }
+    }
+
+    @Rule
+    public JniMocker mocker = new JniMocker();
+
+    @Mock
+    private ContextualSearchContext.Natives mContextJniMock;
 
     @Before
     public void setup() {
+        MockitoAnnotations.initMocks(this);
+        mocker.mock(ContextualSearchContextJni.TEST_HOOKS, mContextJniMock);
+        when(mContextJniMock.init(any())).thenReturn(NATIVE_PTR);
+        mDidSelectionChange = false;
         mContext = new ContextualSearchContextForTest();
     }
 
@@ -98,7 +123,7 @@ public class ContextualSearchContextTest {
         assertTrue(mContext.getSelectionStartOffset() >= 0);
         assertTrue(mContext.getSelectionEndOffset() >= 0);
         assertNotNull(mContext.getEncoding());
-        assertTrue(mContext.getDidSelectionChange());
+        assertTrue(mDidSelectionChange);
     }
 
     @Test
@@ -114,13 +139,13 @@ public class ContextualSearchContextTest {
         assertTrue(mContext.getSelectionEndOffset() >= 0);
         assertNotNull(mContext.getEncoding());
         assertNull(mContext.getInitialSelectedWord());
-        assertFalse(mContext.getDidSelectionChange());
+        assertFalse(mDidSelectionChange);
 
         simulateSelectWordAroundCaret(-"Ba".length(), "rack".length());
         assertEquals("Barack", mContext.getInitialSelectedWord());
         assertEquals("Barack".length(),
                 mContext.getSelectionEndOffset() - mContext.getSelectionStartOffset());
-        assertTrue(mContext.getDidSelectionChange());
+        assertTrue(mDidSelectionChange);
         assertTrue(mContext.hasValidSelection());
     }
 

@@ -1,0 +1,68 @@
+This is a testharness.js-based test.
+Found 64 tests; 63 PASS, 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS Property background-attachment has initial value scroll
+PASS Property background-attachment does not inherit
+PASS Property background-clip has initial value border-box
+PASS Property background-clip does not inherit
+PASS Property background-color has initial value rgba(0, 0, 0, 0)
+PASS Property background-color does not inherit
+PASS Property background-image has initial value none
+PASS Property background-image does not inherit
+PASS Property background-origin has initial value padding-box
+PASS Property background-origin does not inherit
+PASS Property background-position has initial value 0% 0%
+PASS Property background-position does not inherit
+PASS Property background-position-x has initial value 0%
+PASS Property background-position-x does not inherit
+PASS Property background-position-y has initial value 0%
+PASS Property background-position-y does not inherit
+PASS Property background-repeat has initial value repeat
+PASS Property background-repeat does not inherit
+PASS Property background-size has initial value auto
+PASS Property background-size does not inherit
+PASS Property border-bottom-color has initial value rgb(2, 3, 4)
+PASS Property border-bottom-color does not inherit
+PASS Property border-bottom-left-radius has initial value 0px
+PASS Property border-bottom-left-radius does not inherit
+PASS Property border-bottom-right-radius has initial value 0px
+PASS Property border-bottom-right-radius does not inherit
+PASS Property border-bottom-style has initial value none
+PASS Property border-bottom-style does not inherit
+PASS Property border-bottom-width has initial value 3px
+PASS Property border-bottom-width does not inherit
+FAIL Property border-image-outset has initial value 0 assert_equals: expected "0" but got "0px"
+PASS Property border-image-outset does not inherit
+PASS Property border-image-repeat has initial value stretch
+PASS Property border-image-repeat does not inherit
+PASS Property border-image-slice has initial value 100%
+PASS Property border-image-slice does not inherit
+PASS Property border-image-source has initial value none
+PASS Property border-image-source does not inherit
+PASS Property border-image-width has initial value 1
+PASS Property border-image-width does not inherit
+PASS Property border-left-color has initial value rgb(2, 3, 4)
+PASS Property border-left-color does not inherit
+PASS Property border-left-style has initial value none
+PASS Property border-left-style does not inherit
+PASS Property border-left-width has initial value 3px
+PASS Property border-left-width does not inherit
+PASS Property border-right-color has initial value rgb(2, 3, 4)
+PASS Property border-right-color does not inherit
+PASS Property border-right-style has initial value none
+PASS Property border-right-style does not inherit
+PASS Property border-right-width has initial value 3px
+PASS Property border-right-width does not inherit
+PASS Property border-top-color has initial value rgb(2, 3, 4)
+PASS Property border-top-color does not inherit
+PASS Property border-top-left-radius has initial value 0px
+PASS Property border-top-left-radius does not inherit
+PASS Property border-top-right-radius has initial value 0px
+PASS Property border-top-right-radius does not inherit
+PASS Property border-top-style has initial value none
+PASS Property border-top-style does not inherit
+PASS Property border-top-width has initial value 3px
+PASS Property border-top-width does not inherit
+PASS Property box-shadow has initial value none
+PASS Property box-shadow does not inherit
+Harness: the test ran to completion.
+

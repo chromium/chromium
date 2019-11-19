@@ -1,4 +1,5 @@
-description('Tests that computed style is not affected by the zoom value');
+'use strict';
+// Tests that computed style is not affected by the zoom value.
 
 function testProperty(data)
 {
@@ -13,28 +14,29 @@ function testProperty(data)
 
 function testPropertyValue(prop, value)
 {
-    var el = document.createElement('div');
-    el.style.cssText = 'position: absolute; width: 100px; height: 100px;' +
-                       'overflow: hidden; border: 20px solid red;' +
-                       'outline: 20px solid blue;-webkit-column-rule: 20px solid red';
-    el.style.setProperty(prop, value, '');
+    test(() => {
+        var el = document.createElement('div');
+        el.style.cssText = 'position: absolute; width: 100px; height: 100px;' +
+                           'overflow: hidden; border: 20px solid red;' +
+                           'outline: 20px solid blue;-webkit-column-rule: 20px solid red';
+        el.style.setProperty(prop, value, '');
 
-    document.body.style.zoom = '';
-    document.body.appendChild(el);
+        document.body.style.zoom = '';
+        document.body.appendChild(el);
 
-    var value1 = getComputedStyle(el, null).getPropertyValue(prop);
-    document.body.style.zoom = 2;
-    var value2 = getComputedStyle(el, null).getPropertyValue(prop);
-    document.body.style.zoom = .5;
-    var value3 = getComputedStyle(el, null).getPropertyValue(prop);
+        var value1 = getComputedStyle(el, null).getPropertyValue(prop);
+        document.body.style.zoom = 2;
+        var value2 = getComputedStyle(el, null).getPropertyValue(prop);
+        document.body.style.zoom = .5;
+        var value3 = getComputedStyle(el, null).getPropertyValue(prop);
 
-    document.body.removeChild(el);
-    document.body.style.zoom = '';
+        document.body.removeChild(el);
+        document.body.style.zoom = '';
 
-    if (typeof value1 === 'string' && value1 === value2 && value2 == value3)
-        testPassed(prop + ', value: "' + value1 + '"');
-    else
-        testFailed(prop + ', value1: "' + value1 + '", value2: "' + value2 + '", value3: "' + value3 + '"');
+        assert_equals(typeof value1, 'string');
+        assert_equals(value1, value2);
+        assert_equals(value2, value3);
+    }, prop + ': ' + value);
 }
 
 var testData = [

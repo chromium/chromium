@@ -26,9 +26,7 @@
 
 // https://svgwg.org/svg2-draft/types.html#InterfaceSVGZoomAndPan
 
-[
-    NoInterfaceObject // Always used on target of 'implements'
-] interface SVGZoomAndPan {
+interface mixin SVGZoomAndPan {
 
     // Zoom and Pan Types
     const unsigned short SVG_ZOOMANDPAN_UNKNOWN = 0;

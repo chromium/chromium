@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 <style>
   h1 {
     overflow: hidden;
@@ -22,15 +21,3 @@
   </h1>
 </body>
 
-<script>
-window.onload = function() {
-  if (window.testRunner)
-    runAfterLayoutAndPaint(function() { testRunner.notifyDone() });
-};
-
-if (window.testRunner) {
-  testRunner.dumpAsTextWithPixelResults();
-  testRunner.waitUntilDone();
-}
-</script>
-</html>

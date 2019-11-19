@@ -27,16 +27,16 @@ class CORE_EXPORT HostsUsingFeatures {
 
   // Features for RAPPOR. Do not reorder or remove!
   enum class Feature {
-    kElementCreateShadowRoot,
-    kDocumentRegisterElement,
-    kEventPath,
-    kDeviceMotionInsecureHost,
-    kDeviceOrientationInsecureHost,
+    kElementCreateShadowRoot_Unused,
+    kDocumentRegisterElement_Unused,
+    kEventPath_Unused,
+    kDeviceMotionInsecureHost_Unused,
+    kDeviceOrientationInsecureHost_Unused,
     kFullscreenInsecureHost,
     kGeolocationInsecureHost,
     kGetUserMediaInsecureHost,
     kGetUserMediaSecureHost,
-    kElementAttachShadow,
+    kElementAttachShadow_Unused,
     kApplicationCacheManifestSelectInsecureHost,
     kApplicationCacheAPIInsecureHost,
     kRTCPeerConnectionAudio,
@@ -72,15 +72,12 @@ class CORE_EXPORT HostsUsingFeatures {
 
     void Aggregate(Value);
     void RecordHostToRappor(const String& host);
-    void RecordNameToRappor(const String& name);
     void RecordETLDPlus1ToRappor(const KURL&);
 
    private:
     unsigned count_bits_ : static_cast<unsigned>(Feature::kNumberOfFeatures);
   };
 
-  void CountName(Feature, const String&);
-  HashMap<String, Value>& ValueByName() { return value_by_name_; }
   void Clear();
 
  private:
@@ -89,7 +86,6 @@ class CORE_EXPORT HostsUsingFeatures {
   void RecordETLDPlus1ToRappor();
 
   Vector<std::pair<KURL, HostsUsingFeatures::Value>, 1> url_and_values_;
-  HashMap<String, HostsUsingFeatures::Value> value_by_name_;
 };
 
 }  // namespace blink

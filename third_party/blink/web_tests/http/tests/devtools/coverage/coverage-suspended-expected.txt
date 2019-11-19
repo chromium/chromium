@@ -1,0 +1,11 @@
+Tests the coverage list view after suspending the coverage model.
+
+Initial
+.../devtools/coverage/resources/coverage.js JS (per block) used: 360 unused: 208 total: 568
+.../devtools/coverage/resources/highlight-in-source.css CSS used: 67 unused: 142 total: 209
+After second session
+.../devtools/coverage/resources/coverage.js JS (per block) used: 360 unused: 208 total: 568
+.../devtools/coverage/resources/highlight-in-source.css CSS used: 67 unused: 142 total: 209
+After clear
+.../devtools/coverage/resources/highlight-in-source.css CSS used: 67 unused: 142 total: 209
+

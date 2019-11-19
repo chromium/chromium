@@ -25,7 +25,6 @@ found in the LICENSE file.
     <script src="../../../../../ui/webui/resources/js/util.js"></script>
     <script src="../../../../../ui/webui/resources/js/cr/ui.js"></script>
     <script src="../../../../../ui/webui/resources/js/cr/event_target.js"></script>
-    <script src="../../../../../ui/webui/resources/js/cr/ui/touch_handler.js"></script>
     <script src="../../../../../ui/webui/resources/js/cr/ui/array_data_model.js"></script>
     <script src="../../../../../ui/webui/resources/js/cr/ui/list_item.js"></script>
     <script src="../../../../../ui/webui/resources/js/cr/ui/list_selection_model.js"></script>
@@ -33,6 +32,7 @@ found in the LICENSE file.
     <script src="../../../../../ui/webui/resources/js/cr/ui/list_selection_controller.js"></script>
     <script src="../../../../../ui/webui/resources/js/cr/ui/list.js"></script>
     <script src="../../../../../ui/webui/resources/js/cr/ui/grid.js"></script>
+    <script src="../../../../../ui/webui/resources/js/cr/ui/keyboard_shortcut_list.js"></script>
     <script src="../../../../../ui/webui/resources/js/cr/ui/command.js"></script>
     <script src="../../../../../ui/webui/resources/js/cr/ui/position_util.js"></script>
     <script src="../../../../../ui/webui/resources/js/cr/ui/menu_item.js"></script>
@@ -105,6 +105,7 @@ found in the LICENSE file.
               <div id="current-wallpaper-title"></div>
               <div id="current-wallpaper-description"></div>
             </div>
+            <div class="spacer"></div>
             <div id="current-wallpaper-more-options">
               <div id="refresh">
                 <div class="icon"></div>
@@ -157,29 +158,37 @@ found in the LICENSE file.
       </div>
     </div>
   </div>
-  <div id="top-header">
-    <div class="top-header-contents">
-      <div id="cancel-preview-wallpaper" class="preview-option"></div>
-      <div id="image-title"></div>
-      <div class="divider"></div>
-      <div id="wallpaper-description"></div>
-      <div class="more-options">
-        <div class="center-button custom-option">
-          <div class="icon"></div>
-          <div class="text" i18n-content="centerLayout"></div>
+  <div id="top-header-container">
+    <div id="top-header">
+      <div class="top-header-contents">
+        <div id="cancel-preview-wallpaper" i18n-values="title:backButton"
+            class="preview-option"></div>
+        <div id="image-title"></div>
+        <div class="divider"></div>
+        <div id="wallpaper-description"></div>
+        <div class="more-options">
+          <div id="centering-options" class="custom-option">
+            <div id="center-button">
+              <div class="icon"></div>
+              <div class="text" i18n-content="centerLayout"></div>
+            </div>
+            <div id="center-cropped-button">
+              <div class="icon"></div>
+              <div class="text" i18n-content="centerCroppedLayout"></div>
+            </div>
+          </div>
+          <div id="refresh-wallpaper" class="daily-option"
+              i18n-content="refreshLabel"></div>
+          <div id="confirm-preview-wallpaper" class="preview-option"
+              i18n-content="confirmPreviewLabel"></div>
         </div>
-        <div class="center-cropped-button custom-option">
-          <div class="icon"></div>
-          <div class="text" i18n-content="centerCroppedLayout"></div>
-        </div>
-        <div id="refresh-wallpaper" class="daily-option"
-            i18n-content="refreshLabel"></div>
-        <div id="confirm-preview-wallpaper" class="preview-option"
-            i18n-content="confirmPreviewLabel"></div>
       </div>
     </div>
   </div>
-  <div id="message-container" i18n-content="connectionFailed"></div>
+  <div id="message-container">
+    <div id="message-content" i18n-content="connectionFailed">
+    </div>
+  </div>
   <div id="preview-canvas"></div>
   <div id="preview-spinner" hidden></div>
   <div id="daily-refresh-banner-template" hidden>

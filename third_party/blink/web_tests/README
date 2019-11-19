@@ -1,0 +1,8 @@
+This folder is for Chrome-specific tests only. Tests that should work across
+browsers should be placed in third_party/blink/web_tests/external/wpt.
+
+For more information about blink tests in general, please see:
+https://chromium.googlesource.com/chromium/src/+/master/docs/testing/web_tests.md
+
+For more information about web platform tests, please see:
+https://chromium.googlesource.com/chromium/src/+/master/docs/testing/web_platform_tests.md

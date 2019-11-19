@@ -13,7 +13,7 @@
 class SkCanvas;
 
 namespace base {
-class SharedMemory;
+class UnsafeSharedMemoryRegion;
 }  // namespace base
 
 namespace ppapi {
@@ -28,8 +28,8 @@ class PPB_ImageData_API {
   virtual void Unmap() = 0;
 
   // Trusted inteface.
-  virtual int32_t GetSharedMemory(base::SharedMemory** shm,
-                                  uint32_t* byte_count) = 0;
+  virtual int32_t GetSharedMemoryRegion(
+      base::UnsafeSharedMemoryRegion** region) = 0;
 
   // Get the canvas that backs this ImageData, if there is one.
   // The canvas will be NULL:

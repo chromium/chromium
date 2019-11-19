@@ -42,7 +42,8 @@ chrome.passwordsPrivate.UrlCollection;
  *   username: string,
  *   numCharactersInPassword: number,
  *   federationText: (string|undefined),
- *   id: number
+ *   id: number,
+ *   fromAccountStore: boolean
  * }}
  */
 chrome.passwordsPrivate.PasswordUiEntry;
@@ -50,7 +51,8 @@ chrome.passwordsPrivate.PasswordUiEntry;
 /**
  * @typedef {{
  *   urls: !chrome.passwordsPrivate.UrlCollection,
- *   id: number
+ *   id: number,
+ *   fromAccountStore: boolean
  * }}
  */
 chrome.passwordsPrivate.ExceptionEntry;
@@ -75,8 +77,7 @@ chrome.passwordsPrivate.recordPasswordsPageAccessInSettings = function() {};
  * @param {string} new_username The new username.
  * @param {string=} new_password The new password.
  */
-chrome.passwordsPrivate.changeSavedPassword = function(
-    id, new_username, new_password) {};
+chrome.passwordsPrivate.changeSavedPassword = function(id, new_username, new_password) {};
 
 /**
  * Removes the saved password corresponding to |id|. If no saved password for

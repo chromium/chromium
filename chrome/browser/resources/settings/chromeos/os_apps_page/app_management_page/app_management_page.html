@@ -1,0 +1,23 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="actions.html">
+<link rel="import" href="browser_proxy.html">
+<link rel="import" href="main_view.html">
+<link rel="import" href="store_client.html">
+<link rel="import" href="store.html">
+<link rel="import" href="../../../settings_shared_css.html">
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<!-- Load api_listener after other assets have initialized. -->
+<link rel="import" href="api_listener.html">
+
+<dom-module id="settings-app-management-page">
+  <template>
+    <style include="settings-shared"></style>
+    <div id="main-container">
+      <app-management-main-view search-term="[[searchTerm]]">
+      </app-management-main-view>
+    </div>
+  </template>
+  <script src="app_management_page.js"></script>
+</dom-module>

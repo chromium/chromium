@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "third_party/blink/public/common/indexeddb/web_idb_types.h"
-#include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink.h"
+#include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
@@ -24,11 +24,6 @@ class IDBObservation final : public ScriptWrappable {
 
  public:
   static mojom::IDBOperationType StringToOperationType(const String&);
-
-  static IDBObservation* Create(int64_t object_store_id,
-                                mojom::IDBOperationType type,
-                                IDBKeyRange* key_range,
-                                std::unique_ptr<IDBValue> value);
 
   IDBObservation(int64_t object_store_id,
                  mojom::IDBOperationType type,

@@ -1,0 +1,8 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+mojom = "//cc/mojom/touch_action.mojom"
+public_headers = [ "//cc/input/touch_action.h" ]
+traits_headers = [ "//cc/ipc/cc_param_traits_macros.h" ]
+type_mappings = [ "cc.mojom.TouchAction=::cc::TouchAction" ]

@@ -4,7 +4,9 @@
 
 // https://w3c.github.io/requestidlecallback/#window_extensions
 
-interface IdleDeadline {
+[
+    Exposed=Window
+] interface IdleDeadline {
     double timeRemaining();
     readonly attribute boolean didTimeout;
 };

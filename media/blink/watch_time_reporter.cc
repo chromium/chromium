@@ -4,8 +4,13 @@
 
 #include "media/blink/watch_time_reporter.h"
 
+#include <numeric>
+
 #include "base/bind.h"
 #include "base/power_monitor/power_monitor.h"
+#include "base/time/time.h"
+#include "media/base/pipeline_status.h"
+#include "media/base/timestamp_constants.h"
 #include "media/base/watch_time_keys.h"
 
 namespace media {
@@ -14,8 +19,8 @@ namespace media {
 constexpr gfx::Size kMinimumVideoSize = gfx::Size(200, 140);
 
 static bool IsOnBatteryPower() {
-  if (base::PowerMonitor* pm = base::PowerMonitor::Get())
-    return pm->IsOnBatteryPower();
+  if (base::PowerMonitor::IsInitialized())
+    return base::PowerMonitor::IsOnBatteryPower();
   return false;
 }
 
@@ -41,16 +46,18 @@ PropertyAction HandlePropertyChange(T new_value,
 
 WatchTimeReporter::WatchTimeReporter(
     mojom::PlaybackPropertiesPtr properties,
-    const gfx::Size& initial_natural_size,
+    const gfx::Size& natural_size,
     GetMediaTimeCB get_media_time_cb,
+    GetPipelineStatsCB get_pipeline_stats_cb,
     mojom::MediaMetricsProvider* provider,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     const base::TickClock* tick_clock)
     : WatchTimeReporter(std::move(properties),
                         false /* is_background */,
                         false /* is_muted */,
-                        initial_natural_size,
+                        natural_size,
                         std::move(get_media_time_cb),
+                        std::move(get_pipeline_stats_cb),
                         provider,
                         task_runner,
                         tick_clock) {}
@@ -59,18 +66,21 @@ WatchTimeReporter::WatchTimeReporter(
     mojom::PlaybackPropertiesPtr properties,
     bool is_background,
     bool is_muted,
-    const gfx::Size& initial_natural_size,
+    const gfx::Size& natural_size,
     GetMediaTimeCB get_media_time_cb,
+    GetPipelineStatsCB get_pipeline_stats_cb,
     mojom::MediaMetricsProvider* provider,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     const base::TickClock* tick_clock)
     : properties_(std::move(properties)),
       is_background_(is_background),
       is_muted_(is_muted),
-      initial_natural_size_(initial_natural_size),
       get_media_time_cb_(std::move(get_media_time_cb)),
-      reporting_timer_(tick_clock) {
+      get_pipeline_stats_cb_(std::move(get_pipeline_stats_cb)),
+      reporting_timer_(tick_clock),
+      natural_size_(natural_size) {
   DCHECK(get_media_time_cb_);
+  DCHECK(get_pipeline_stats_cb_);
   DCHECK(properties_->has_audio || properties_->has_video);
   DCHECK_EQ(is_background, properties_->is_background);
 
@@ -84,11 +94,10 @@ WatchTimeReporter::WatchTimeReporter(
   if (is_muted_)
     DCHECK_EQ(volume_, 1.0);
 
-  if (base::PowerMonitor* pm = base::PowerMonitor::Get())
-    pm->AddObserver(this);
+  base::PowerMonitor::AddObserver(this);
 
   provider->AcquireWatchTimeRecorder(properties_->Clone(),
-                                     mojo::MakeRequest(&recorder_));
+                                     recorder_.BindNewPipeAndPassReceiver());
 
   reporting_timer_.SetTaskRunner(task_runner);
 
@@ -100,9 +109,8 @@ WatchTimeReporter::WatchTimeReporter(
       display_type_component_ = CreateDisplayTypeComponent();
   }
 
-  // If this is a sub-reporter or we shouldn't report watch time, we're done. We
-  // don't support muted+background reporting currently.
-  if (is_background_ || is_muted_ || !ShouldReportWatchTime())
+  // If this is a sub-reporter we're done.
+  if (is_background_ || is_muted_)
     return;
 
   // Background watch time is reported by creating an background only watch time
@@ -112,8 +120,8 @@ WatchTimeReporter::WatchTimeReporter(
   prop_copy->is_background = true;
   background_reporter_.reset(new WatchTimeReporter(
       std::move(prop_copy), true /* is_background */, false /* is_muted */,
-      initial_natural_size_, get_media_time_cb_, provider, task_runner,
-      tick_clock));
+      natural_size_, get_media_time_cb_, get_pipeline_stats_cb_, provider,
+      task_runner, tick_clock));
 
   // Muted watch time is only reported for audio+video playback.
   if (!properties_->has_video || !properties_->has_audio)
@@ -125,8 +133,8 @@ WatchTimeReporter::WatchTimeReporter(
   prop_copy->is_muted = true;
   muted_reporter_.reset(new WatchTimeReporter(
       std::move(prop_copy), false /* is_background */, true /* is_muted */,
-      initial_natural_size_, get_media_time_cb_, provider, task_runner,
-      tick_clock));
+      natural_size_, get_media_time_cb_, get_pipeline_stats_cb_, provider,
+      task_runner, tick_clock));
 }
 
 WatchTimeReporter::~WatchTimeReporter() {
@@ -136,8 +144,7 @@ WatchTimeReporter::~WatchTimeReporter() {
   // This is our last chance, so finalize now if there's anything remaining.
   in_shutdown_ = true;
   MaybeFinalizeWatchTime(FinalizeTime::IMMEDIATELY);
-  if (base::PowerMonitor* pm = base::PowerMonitor::Get())
-    pm->RemoveObserver(this);
+  base::PowerMonitor::RemoveObserver(this);
 }
 
 void WatchTimeReporter::OnPlaying() {
@@ -241,10 +248,35 @@ void WatchTimeReporter::OnUnderflow() {
   if (!reporting_timer_.IsRunning())
     return;
 
+  if (!pending_underflow_events_.empty())
+    DCHECK_NE(pending_underflow_events_.back().duration, kNoTimestamp);
+
   // In the event of a pending finalize, we don't want to count underflow events
   // that occurred after the finalize time. Yet if the finalize is canceled we
   // want to ensure they are all recorded.
-  pending_underflow_events_.push_back(get_media_time_cb_.Run());
+  pending_underflow_events_.push_back(
+      {false, get_media_time_cb_.Run(), kNoTimestamp});
+}
+
+void WatchTimeReporter::OnUnderflowComplete(base::TimeDelta elapsed) {
+  if (background_reporter_)
+    background_reporter_->OnUnderflowComplete(elapsed);
+  if (muted_reporter_)
+    muted_reporter_->OnUnderflowComplete(elapsed);
+
+  if (!reporting_timer_.IsRunning())
+    return;
+
+  // Drop this underflow completion if we don't have a corresponding underflow
+  // start event; this can happen if a finalize occurs between the underflow and
+  // the completion.
+  if (pending_underflow_events_.empty())
+    return;
+
+  // There should only ever be one outstanding underflow, so stick the duration
+  // in the last underflow event.
+  DCHECK_EQ(pending_underflow_events_.back().duration, kNoTimestamp);
+  pending_underflow_events_.back().duration = elapsed;
 }
 
 void WatchTimeReporter::OnNativeControlsEnabled() {
@@ -280,7 +312,19 @@ void WatchTimeReporter::UpdateSecondaryProperties(
         secondary_properties.Clone());
   }
   if (muted_reporter_)
-    muted_reporter_->UpdateSecondaryProperties(std::move(secondary_properties));
+    muted_reporter_->UpdateSecondaryProperties(secondary_properties.Clone());
+
+  // A change in resolution may affect ShouldReportingTimerRun().
+  bool original_should_run = ShouldReportingTimerRun();
+  natural_size_ = secondary_properties->natural_size;
+  bool should_run = ShouldReportingTimerRun();
+  if (original_should_run != should_run) {
+    if (should_run) {
+      MaybeStartReportingTimer(get_media_time_cb_.Run());
+    } else {
+      MaybeFinalizeWatchTime(FinalizeTime::ON_NEXT_UPDATE);
+    }
+  }
 }
 
 void WatchTimeReporter::SetAutoplayInitiated(bool autoplay_initiated) {
@@ -332,8 +376,8 @@ void WatchTimeReporter::OnDisplayTypeChanged(DisplayType display_type) {
 bool WatchTimeReporter::ShouldReportWatchTime() const {
   // Report listen time or watch time for videos of sufficient size.
   return properties_->has_video
-             ? (initial_natural_size_.height() >= kMinimumVideoSize.height() &&
-                initial_natural_size_.width() >= kMinimumVideoSize.width())
+             ? (natural_size_.height() >= kMinimumVideoSize.height() &&
+                natural_size_.width() >= kMinimumVideoSize.width())
              : properties_->has_audio;
 }
 
@@ -341,13 +385,19 @@ bool WatchTimeReporter::ShouldReportingTimerRun() const {
   // TODO(dalecurtis): We should only consider |volume_| when there is actually
   // an audio track; requires updating lots of tests to fix.
   return ShouldReportWatchTime() && is_playing_ && volume_ && is_visible_ &&
-         !in_shutdown_ && !is_seeking_;
+         !in_shutdown_ && !is_seeking_ && has_valid_start_timestamp_;
 }
 
 void WatchTimeReporter::MaybeStartReportingTimer(
     base::TimeDelta start_timestamp) {
-  DCHECK_NE(start_timestamp, kInfiniteDuration);
   DCHECK_GE(start_timestamp, base::TimeDelta());
+
+  // It's possible for |current_time| to be kInfiniteDuration here if the page
+  // seeks to kInfiniteDuration (2**64 - 1) when Duration() is infinite. There
+  // is no possible elapsed watch time when this occurs, so don't start the
+  // WatchTimeReporter at this time. If a later seek puts us earlier in the
+  // stream this method will be called again after OnSeeking().
+  has_valid_start_timestamp_ = start_timestamp != kInfiniteDuration;
 
   // Don't start the timer if our state indicates we shouldn't; this check is
   // important since the various event handlers do not have to care about the
@@ -362,9 +412,12 @@ void WatchTimeReporter::MaybeStartReportingTimer(
   if (!should_start)
     return;
 
-  underflow_count_ = 0;
-  pending_underflow_events_.clear();
+  if (properties_->has_video) {
+    initial_stats_ = get_pipeline_stats_cb_.Run();
+    last_stats_ = PipelineStatistics();
+  }
 
+  ResetUnderflowState();
   base_component_->OnReportingStarted(start_timestamp);
   power_component_->OnReportingStarted(start_timestamp);
 
@@ -410,19 +463,64 @@ void WatchTimeReporter::RecordWatchTime() {
 
   // Pass along any underflow events which have occurred since the last report.
   if (!pending_underflow_events_.empty()) {
-    if (!base_component_->NeedsFinalize()) {
-      // The maximum value here per period is ~5 events, so int cast is okay.
-      underflow_count_ += static_cast<int>(pending_underflow_events_.size());
-    } else {
-      // Only count underflow events prior to finalize.
-      for (auto& ts : pending_underflow_events_) {
-        if (ts <= base_component_->end_timestamp())
-          underflow_count_++;
+    const int last_underflow_count = total_underflow_count_;
+    const int last_completed_underflow_count = total_completed_underflow_count_;
+
+    for (auto& ufe : pending_underflow_events_) {
+      // Since the underflow occurred after finalize, ignore the event and mark
+      // it for deletion.
+      if (ufe.timestamp > current_timestamp) {
+        ufe.reported = true;
+        ufe.duration = base::TimeDelta();
+        continue;
+      }
+
+      if (!ufe.reported) {
+        ufe.reported = true;
+        ++total_underflow_count_;
+      }
+
+      // Drop any rebuffer completions that took more than a minute. For our
+      // purposes these are considered as timeouts. We want a maximum since
+      // rebuffer duration is in real time and not media time, which means if
+      // the rebuffer spans a suspend/resume the time can be arbitrarily long.
+      constexpr base::TimeDelta kMaximumRebufferDuration =
+          base::TimeDelta::FromMinutes(1);
+      if (ufe.duration != kNoTimestamp &&
+          ufe.duration <= kMaximumRebufferDuration) {
+        ++total_completed_underflow_count_;
+        total_underflow_duration_ += ufe.duration;
       }
     }
 
-    recorder_->UpdateUnderflowCount(underflow_count_);
-    pending_underflow_events_.clear();
+    base::EraseIf(pending_underflow_events_, [](const UnderflowEvent& ufe) {
+      return ufe.reported && ufe.duration != kNoTimestamp;
+    });
+
+    if (last_underflow_count != total_underflow_count_)
+      recorder_->UpdateUnderflowCount(total_underflow_count_);
+    if (last_completed_underflow_count != total_completed_underflow_count_) {
+      recorder_->UpdateUnderflowDuration(total_completed_underflow_count_,
+                                         total_underflow_duration_);
+    }
+  }
+
+  if (properties_->has_video) {
+    auto stats = get_pipeline_stats_cb_.Run();
+    DCHECK_GE(stats.video_frames_decoded, initial_stats_.video_frames_decoded);
+    DCHECK_GE(stats.video_frames_dropped, initial_stats_.video_frames_dropped);
+
+    // Offset the stats based on where they were when we started reporting.
+    stats.video_frames_decoded -= initial_stats_.video_frames_decoded;
+    stats.video_frames_dropped -= initial_stats_.video_frames_dropped;
+
+    // Only send updates.
+    if (last_stats_.video_frames_decoded != stats.video_frames_decoded ||
+        last_stats_.video_frames_dropped != stats.video_frames_dropped) {
+      recorder_->UpdateVideoDecodeStats(stats.video_frames_decoded,
+                                        stats.video_frames_dropped);
+      last_stats_ = stats;
+    }
   }
 
   // Record watch time for all components.
@@ -432,11 +530,12 @@ void WatchTimeReporter::RecordWatchTime() {
     display_type_component_->RecordWatchTime(current_timestamp);
   if (controls_component_)
     controls_component_->RecordWatchTime(current_timestamp);
+
+  // Update the last timestamp with the current timestamp.
+  recorder_->OnCurrentTimestampChanged(current_timestamp);
 }
 
 void WatchTimeReporter::UpdateWatchTime() {
-  DCHECK(ShouldReportWatchTime());
-
   // First record watch time.
   RecordWatchTime();
 
@@ -462,8 +561,14 @@ void WatchTimeReporter::UpdateWatchTime() {
   recorder_->FinalizeWatchTime({});
 
   // Stop the timer if this is supposed to be our last tick.
-  underflow_count_ = 0;
+  ResetUnderflowState();
   reporting_timer_.Stop();
+}
+
+void WatchTimeReporter::ResetUnderflowState() {
+  total_underflow_count_ = total_completed_underflow_count_ = 0;
+  total_underflow_duration_ = base::TimeDelta();
+  pending_underflow_events_.clear();
 }
 
 #define NORMAL_KEY(key)                                                     \

@@ -41,11 +41,9 @@ OpenTabsUIDelegateImpl::OpenTabsUIDelegateImpl(
 
 OpenTabsUIDelegateImpl::~OpenTabsUIDelegateImpl() {}
 
-bool OpenTabsUIDelegateImpl::GetSyncedFaviconForPageURL(
-    const std::string& page_url,
-    scoped_refptr<base::RefCountedMemory>* favicon_png) const {
-  return favicon_cache_->GetSyncedFaviconForPageURL(GURL(page_url),
-                                                    favicon_png);
+favicon_base::FaviconRawBitmapResult
+OpenTabsUIDelegateImpl::GetSyncedFaviconForPageURL(const GURL& page_url) const {
+  return favicon_cache_->GetSyncedFaviconForPageURL(page_url);
 }
 
 bool OpenTabsUIDelegateImpl::GetAllForeignSessions(
@@ -104,6 +102,10 @@ bool OpenTabsUIDelegateImpl::GetLocalSession(
     const SyncedSession** local_session) {
   *local_session = session_tracker_->LookupLocalSession();
   return *local_session != nullptr;
+}
+
+GURL OpenTabsUIDelegateImpl::GetIconUrlForPageUrl(const GURL& page_url) {
+  return favicon_cache_->GetIconUrlForPageUrl(page_url);
 }
 
 }  // namespace sync_sessions

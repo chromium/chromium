@@ -1,4 +1,11 @@
 (async function(testRunner) {
+  function normalizedName(node) {
+    if (node.name().includes("::"))
+      return "Detached InternalNode";
+    if (node.name().startsWith("Window /"))
+      return "Window";
+    return node.name();
+  }
   var {page, session, dp} = await testRunner.startBlank(
       `Test retaining path for an event listener.`);
 
@@ -28,8 +35,7 @@
   else
     return testRunner.fail('cannot find myEventListener node');
 
-  var retainers = helper.firstRetainingPath(node).map(
-      node => (node.name().includes("::")) ? "InternalNode" : node.name());
+  var retainers = helper.firstRetainingPath(node).map(normalizedName);
   var actual = retainers.join(', ');
   testRunner.log(`SUCCESS: retaining path = [${actual}]`);
   testRunner.completeTest();

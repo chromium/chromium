@@ -8,6 +8,8 @@ it for review so that the CL will land automatically if it passes the
 commit-queue's checks.
 """
 
+from __future__ import print_function
+
 import logging
 import optparse
 import os
@@ -23,7 +25,7 @@ import subprocess2
 
 
 def die_with_error(msg):
-  print >> sys.stderr, msg
+  print(msg, file=sys.stderr)
   sys.exit(1)
 
 
@@ -52,7 +54,7 @@ class PrintSubprocess(object):
   """Wrapper for subprocess2 which prints out every command."""
   def __getattr__(self, attr):
     def _run_subprocess2(cmd, *args, **kwargs):
-      print cmd
+      print(cmd)
       sys.stdout.flush()
       return getattr(subprocess2, attr)(cmd, *args, **kwargs)
     return _run_subprocess2
@@ -130,7 +132,7 @@ def main():
   try:
     old_rev = process_deps(os.path.join(root_dir, 'DEPS'), project, new_rev,
                            options.dry_run)
-    print '%s roll %s:%s' % (project.title(), old_rev, new_rev)
+    print('%s roll %s:%s' % (project.title(), old_rev, new_rev))
 
     review_field = 'TBR' if options.commit else 'R'
     commit_msg = options.message or '%s roll %s:%s\n' % (project.title(),
@@ -138,7 +140,7 @@ def main():
     commit_msg += '\n%s=%s\n' % (review_field, options.reviewers)
 
     if options.dry_run:
-      print 'Commit message: ' + commit_msg
+      print('Commit message: ' + commit_msg)
       return 0
 
     prnt_subprocess.check_output(['git', 'commit', '-m', commit_msg, 'DEPS'])

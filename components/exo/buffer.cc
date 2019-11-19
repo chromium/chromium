@@ -4,9 +4,6 @@
 
 #include "components/exo/buffer.h"
 
-#include <GLES2/gl2.h>
-#include <GLES2/gl2ext.h>
-#include <GLES2/gl2extchromium.h>
 #include <stdint.h>
 
 #include <algorithm>
@@ -22,14 +19,17 @@
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "components/exo/frame_sink_resource_manager.h"
-#include "components/exo/wm_helper.h"
+#include "components/viz/common/gpu/context_lost_observer.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "components/viz/common/resources/resource_format.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/common/resources/single_release_callback.h"
+#include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/context_support.h"
-#include "gpu/command_buffer/client/gles2_interface.h"
+#include "gpu/command_buffer/client/raster_interface.h"
+#include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/mailbox.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "ui/aura/env.h"
 #include "ui/compositor/compositor.h"
@@ -44,290 +44,255 @@ const int kWaitForReleaseDelayMs = 500;
 
 constexpr char kBufferInUse[] = "BufferInUse";
 
-GLenum GLInternalFormat(gfx::BufferFormat format) {
-  const GLenum kGLInternalFormats[] = {
-      GL_R8_EXT,                           // R_8
-      GL_R16_EXT,                          // R_16
-      GL_RG8_EXT,                          // RG_88
-      GL_RGB,                              // BGR_565
-      GL_RGBA,                             // RGBA_4444
-      GL_RGB,                              // RGBX_8888
-      GL_RGBA,                             // RGBA_8888
-      GL_RGB,                              // BGRX_8888
-      GL_RGB10_A2_EXT,                     // BGRX_1010102
-      GL_RGB10_A2_EXT,                     // RGBX_1010102
-      GL_BGRA_EXT,                         // BGRA_8888
-      GL_RGBA,                             // RGBA_F16
-      GL_RGB_YCRCB_420_CHROMIUM,           // YVU_420
-      GL_RGB_YCBCR_420V_CHROMIUM,          // YUV_420_BIPLANAR
-      GL_RGB_YCBCR_422_CHROMIUM,           // UYVY_422
-  };
-  static_assert(base::size(kGLInternalFormats) ==
-                    (static_cast<int>(gfx::BufferFormat::LAST) + 1),
-                "BufferFormat::LAST must be last value of kGLInternalFormats");
-
-  DCHECK(format <= gfx::BufferFormat::LAST);
-  return kGLInternalFormats[static_cast<int>(format)];
-}
-
-unsigned CreateGLTexture(gpu::gles2::GLES2Interface* gles2, GLenum target) {
-  unsigned texture_id = 0;
-  gles2->GenTextures(1, &texture_id);
-  gles2->ActiveTexture(GL_TEXTURE0);
-  gles2->BindTexture(target, texture_id);
-  gles2->TexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  gles2->TexParameteri(target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  gles2->TexParameteri(target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-  gles2->TexParameteri(target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-  return texture_id;
-}
-
 }  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
 // Buffer::Texture
 
-// Encapsulates the state and logic needed to bind a buffer to a GLES2 texture.
-class Buffer::Texture : public ui::ContextFactoryObserver {
+// Encapsulates the state and logic needed to bind a buffer to a SharedImage.
+class Buffer::Texture : public viz::ContextLostObserver {
  public:
-  Texture(ui::ContextFactory* context_factory,
-          viz::ContextProvider* context_provider);
-  Texture(ui::ContextFactory* context_factory,
-          viz::ContextProvider* context_provider,
+  Texture(scoped_refptr<viz::RasterContextProvider> context_provider,
+          const gfx::Size& size);
+  Texture(scoped_refptr<viz::RasterContextProvider> context_provider,
+          gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
           gfx::GpuMemoryBuffer* gpu_memory_buffer,
           unsigned texture_target,
           unsigned query_type,
           base::TimeDelta wait_for_release_time);
   ~Texture() override;
 
-  // Overridden from ui::ContextFactoryObserver:
-  void OnLostSharedContext() override;
-  void OnLostVizProcess() override;
+  // Overridden from viz::ContextLostObserver:
+  void OnContextLost() override;
 
-  // Returns true if GLES2 resources for texture have been lost.
+  // Returns true if the RasterInterface context has been lost.
   bool IsLost();
 
   // Allow texture to be reused after |sync_token| has passed and runs
   // |callback|.
-  void Release(const base::Closure& callback,
+  void Release(base::OnceClosure callback,
                const gpu::SyncToken& sync_token,
                bool is_lost);
 
-  // Binds the contents referenced by |image_id_| to the texture returned by
-  // mailbox(). Returns a sync token that can be used when accessing texture
-  // from a different context.
-  gpu::SyncToken BindTexImage();
+  // Updates the contents referenced by |gpu_memory_buffer_| returned by
+  // mailbox().
+  // Returns a sync token that can be used when accessing the SharedImage from a
+  // different context.
+  gpu::SyncToken UpdateSharedImage(
+      std::unique_ptr<gfx::GpuFence> acquire_fence);
 
-  // Releases the contents referenced by |image_id_| after |sync_token| has
+  // Releases the contents referenced by |mailbox_| after |sync_token| has
   // passed and runs |callback| when completed.
-  void ReleaseTexImage(const base::Closure& callback,
-                       const gpu::SyncToken& sync_token,
-                       bool is_lost);
+  void ReleaseSharedImage(base::OnceClosure callback,
+                          const gpu::SyncToken& sync_token,
+                          bool is_lost);
 
   // Copy the contents of texture to |destination| and runs |callback| when
   // completed. Returns a sync token that can be used when accessing texture
   // from a different context.
-  gpu::SyncToken CopyTexImage(Texture* destination,
-                              const base::Closure& callback);
+  gpu::SyncToken CopyTexImage(std::unique_ptr<gfx::GpuFence> acquire_fence,
+                              Texture* destination,
+                              base::OnceClosure callback);
 
   // Returns the mailbox for this texture.
   gpu::Mailbox mailbox() const { return mailbox_; }
 
  private:
   void DestroyResources();
-  void ReleaseWhenQueryResultIsAvailable(const base::Closure& callback);
+  void ReleaseWhenQueryResultIsAvailable(base::OnceClosure callback);
   void Released();
   void ScheduleWaitForRelease(base::TimeDelta delay);
   void WaitForRelease();
 
   gfx::GpuMemoryBuffer* const gpu_memory_buffer_;
-  ui::ContextFactory* context_factory_;
-  scoped_refptr<viz::ContextProvider> context_provider_;
+  const gfx::Size size_;
+  scoped_refptr<viz::RasterContextProvider> context_provider_;
   const unsigned texture_target_;
   const unsigned query_type_;
-  const GLenum internalformat_;
-  unsigned image_id_ = 0;
   unsigned query_id_ = 0;
-  unsigned texture_id_ = 0;
   gpu::Mailbox mailbox_;
-  base::Closure release_callback_;
+  base::OnceClosure release_callback_;
   const base::TimeDelta wait_for_release_delay_;
   base::TimeTicks wait_for_release_time_;
   bool wait_for_release_pending_ = false;
-  base::WeakPtrFactory<Texture> weak_ptr_factory_;
+  base::WeakPtrFactory<Texture> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(Texture);
 };
 
-Buffer::Texture::Texture(ui::ContextFactory* context_factory,
-                         viz::ContextProvider* context_provider)
+Buffer::Texture::Texture(
+    scoped_refptr<viz::RasterContextProvider> context_provider,
+    const gfx::Size& size)
     : gpu_memory_buffer_(nullptr),
-      context_factory_(context_factory),
-      context_provider_(context_provider),
+      size_(size),
+      context_provider_(std::move(context_provider)),
       texture_target_(GL_TEXTURE_2D),
-      query_type_(GL_COMMANDS_COMPLETED_CHROMIUM),
-      internalformat_(GL_RGBA),
-      weak_ptr_factory_(this) {
-  gpu::gles2::GLES2Interface* gles2 = context_provider_->ContextGL();
-  texture_id_ = CreateGLTexture(gles2, texture_target_);
-  // Generate a crypto-secure random mailbox name.
-  gles2->ProduceTextureDirectCHROMIUM(texture_id_, mailbox_.name);
+      query_type_(GL_COMMANDS_COMPLETED_CHROMIUM) {
+  gpu::SharedImageInterface* sii = context_provider_->SharedImageInterface();
+  const uint32_t usage =
+      gpu::SHARED_IMAGE_USAGE_RASTER | gpu::SHARED_IMAGE_USAGE_DISPLAY;
+
+  mailbox_ = sii->CreateSharedImage(viz::ResourceFormat::RGBA_8888, size,
+                                    gfx::ColorSpace(), usage);
+  DCHECK(!mailbox_.IsZero());
+  gpu::raster::RasterInterface* ri = context_provider_->RasterInterface();
+  ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
+
   // Provides a notification when |context_provider_| is lost.
-  context_factory_->AddObserver(this);
+  context_provider_->AddObserver(this);
 }
 
-Buffer::Texture::Texture(ui::ContextFactory* context_factory,
-                         viz::ContextProvider* context_provider,
-                         gfx::GpuMemoryBuffer* gpu_memory_buffer,
-                         unsigned texture_target,
-                         unsigned query_type,
-                         base::TimeDelta wait_for_release_delay)
+Buffer::Texture::Texture(
+    scoped_refptr<viz::RasterContextProvider> context_provider,
+    gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
+    gfx::GpuMemoryBuffer* gpu_memory_buffer,
+    unsigned texture_target,
+    unsigned query_type,
+    base::TimeDelta wait_for_release_delay)
     : gpu_memory_buffer_(gpu_memory_buffer),
-      context_factory_(context_factory),
-      context_provider_(context_provider),
+      size_(gpu_memory_buffer->GetSize()),
+      context_provider_(std::move(context_provider)),
       texture_target_(texture_target),
       query_type_(query_type),
-      internalformat_(GLInternalFormat(gpu_memory_buffer->GetFormat())),
-      wait_for_release_delay_(wait_for_release_delay),
-      weak_ptr_factory_(this) {
-  gpu::gles2::GLES2Interface* gles2 = context_provider_->ContextGL();
-  gfx::Size size = gpu_memory_buffer->GetSize();
-  image_id_ =
-      gles2->CreateImageCHROMIUM(gpu_memory_buffer->AsClientBuffer(),
-                                 size.width(), size.height(), internalformat_);
-  DLOG_IF(WARNING, !image_id_) << "Failed to create GLImage";
+      wait_for_release_delay_(wait_for_release_delay) {
+  gpu::SharedImageInterface* sii = context_provider_->SharedImageInterface();
+  const uint32_t usage = gpu::SHARED_IMAGE_USAGE_RASTER |
+                         gpu::SHARED_IMAGE_USAGE_DISPLAY |
+                         gpu::SHARED_IMAGE_USAGE_SCANOUT;
 
-  gles2->GenQueriesEXT(1, &query_id_);
-  texture_id_ = CreateGLTexture(gles2, texture_target_);
+  mailbox_ = sii->CreateSharedImage(
+      gpu_memory_buffer_, gpu_memory_buffer_manager, gfx::ColorSpace(), usage);
+  DCHECK(!mailbox_.IsZero());
+  gpu::raster::RasterInterface* ri = context_provider_->RasterInterface();
+  ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
+  ri->GenQueriesEXT(1, &query_id_);
+
   // Provides a notification when |context_provider_| is lost.
-  context_factory_->AddObserver(this);
+  context_provider_->AddObserver(this);
 }
 
 Buffer::Texture::~Texture() {
   DestroyResources();
   if (context_provider_)
-    context_factory_->RemoveObserver(this);
+    context_provider_->RemoveObserver(this);
 }
 
-void Buffer::Texture::OnLostSharedContext() {
+void Buffer::Texture::OnContextLost() {
   DestroyResources();
-  context_factory_->RemoveObserver(this);
-  context_provider_ = nullptr;
-  context_factory_ = nullptr;
+  context_provider_->RemoveObserver(this);
+  context_provider_.reset();
 }
-
-void Buffer::Texture::OnLostVizProcess() {}
 
 bool Buffer::Texture::IsLost() {
   if (context_provider_) {
-    gpu::gles2::GLES2Interface* gles2 = context_provider_->ContextGL();
-    return gles2->GetGraphicsResetStatusKHR() != GL_NO_ERROR;
+    gpu::raster::RasterInterface* ri = context_provider_->RasterInterface();
+    return ri->GetGraphicsResetStatusKHR() != GL_NO_ERROR;
   }
   return true;
 }
 
-void Buffer::Texture::Release(const base::Closure& callback,
+void Buffer::Texture::Release(base::OnceClosure callback,
                               const gpu::SyncToken& sync_token,
                               bool is_lost) {
   if (context_provider_) {
-    gpu::gles2::GLES2Interface* gles2 = context_provider_->ContextGL();
-    if (sync_token.HasData())
-      gles2->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
+    if (sync_token.HasData()) {
+      gpu::raster::RasterInterface* ri = context_provider_->RasterInterface();
+      ri->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
+    }
   }
 
   // Run callback as texture can be reused immediately after waiting for sync
   // token.
-  callback.Run();
+  std::move(callback).Run();
 }
 
-gpu::SyncToken Buffer::Texture::BindTexImage() {
+gpu::SyncToken Buffer::Texture::UpdateSharedImage(
+    std::unique_ptr<gfx::GpuFence> acquire_fence) {
   gpu::SyncToken sync_token;
   if (context_provider_) {
-    gpu::gles2::GLES2Interface* gles2 = context_provider_->ContextGL();
-    gles2->ActiveTexture(GL_TEXTURE0);
-    gles2->BindTexture(texture_target_, texture_id_);
-    DCHECK_NE(image_id_, 0u);
-    gles2->BindTexImage2DCHROMIUM(texture_target_, image_id_);
-    // Generate a crypto-secure random mailbox name if not already done.
-    if (mailbox_.IsZero())
-      gles2->ProduceTextureDirectCHROMIUM(texture_id_, mailbox_.name);
-    // Create and return a sync token that can be used to ensure that the
-    // BindTexImage2DCHROMIUM call is processed before issuing any commands
-    // that will read from the texture on a different context.
-    gles2->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
+    gpu::SharedImageInterface* sii = context_provider_->SharedImageInterface();
+    DCHECK(!mailbox_.IsZero());
+    // UpdateSharedImage gets called only after |mailbox_| can be reused.
+    // A buffer can be reattached to a surface only after it has been returned
+    // to wayland clients. We return buffers to clients only after the query
+    // |query_type_| is available.
+    sii->UpdateSharedImage(gpu::SyncToken(), std::move(acquire_fence),
+                           mailbox_);
+    sync_token = sii->GenUnverifiedSyncToken();
     TRACE_EVENT_ASYNC_STEP_INTO0("exo", kBufferInUse, gpu_memory_buffer_,
                                  "bound");
   }
   return sync_token;
 }
 
-void Buffer::Texture::ReleaseTexImage(const base::Closure& callback,
-                                      const gpu::SyncToken& sync_token,
-                                      bool is_lost) {
+void Buffer::Texture::ReleaseSharedImage(base::OnceClosure callback,
+                                         const gpu::SyncToken& sync_token,
+                                         bool is_lost) {
   if (context_provider_) {
-    gpu::gles2::GLES2Interface* gles2 = context_provider_->ContextGL();
+    gpu::raster::RasterInterface* ri = context_provider_->RasterInterface();
     if (sync_token.HasData())
-      gles2->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
-    gles2->ActiveTexture(GL_TEXTURE0);
-    gles2->BindTexture(texture_target_, texture_id_);
-    DCHECK_NE(query_id_, 0u);
-    gles2->BeginQueryEXT(query_type_, query_id_);
-    gles2->ReleaseTexImage2DCHROMIUM(texture_target_, image_id_);
-    gles2->EndQueryEXT(query_type_);
-    // Run callback when query result is available and ReleaseTexImage has been
-    // handled if sync token has data and buffer has been used. If buffer was
-    // never used then run the callback immediately.
+      ri->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
+    ri->BeginQueryEXT(query_type_, query_id_);
+    ri->EndQueryEXT(query_type_);
+    // Run callback when query result is available (i.e., when all operations on
+    // the shared image have completed and it's ready to be reused) if sync
+    // token has data and buffer has been used. If buffer was never used then
+    // run the callback immediately.
     if (sync_token.HasData()) {
-      ReleaseWhenQueryResultIsAvailable(callback);
+      ReleaseWhenQueryResultIsAvailable(std::move(callback));
       return;
     }
   }
-  callback.Run();
+  std::move(callback).Run();
 }
 
-gpu::SyncToken Buffer::Texture::CopyTexImage(Texture* destination,
-                                             const base::Closure& callback) {
+gpu::SyncToken Buffer::Texture::CopyTexImage(
+    std::unique_ptr<gfx::GpuFence> acquire_fence,
+    Texture* destination,
+    base::OnceClosure callback) {
   gpu::SyncToken sync_token;
   if (context_provider_) {
-    gpu::gles2::GLES2Interface* gles2 = context_provider_->ContextGL();
-    gles2->ActiveTexture(GL_TEXTURE0);
-    gles2->BindTexture(texture_target_, texture_id_);
-    DCHECK_NE(image_id_, 0u);
-    gles2->BindTexImage2DCHROMIUM(texture_target_, image_id_);
-    gles2->CopyTextureCHROMIUM(texture_id_, 0, destination->texture_target_,
-                               destination->texture_id_, 0, internalformat_,
-                               GL_UNSIGNED_BYTE, false, false, false);
+    DCHECK(!mailbox_.IsZero());
+    gpu::SharedImageInterface* sii = context_provider_->SharedImageInterface();
+    sii->UpdateSharedImage(gpu::SyncToken(), std::move(acquire_fence),
+                           mailbox_);
+    sync_token = sii->GenUnverifiedSyncToken();
+
+    gpu::raster::RasterInterface* ri = context_provider_->RasterInterface();
+    ri->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
     DCHECK_NE(query_id_, 0u);
-    gles2->BeginQueryEXT(query_type_, query_id_);
-    gles2->ReleaseTexImage2DCHROMIUM(texture_target_, image_id_);
-    gles2->EndQueryEXT(query_type_);
-    // Run callback when query result is available and ReleaseTexImage has been
-    // handled.
-    ReleaseWhenQueryResultIsAvailable(callback);
+    ri->BeginQueryEXT(query_type_, query_id_);
+    ri->CopySubTexture(mailbox_, destination->mailbox_,
+                       destination->texture_target_, 0, 0, 0, 0, size_.width(),
+                       size_.height());
+    ri->EndQueryEXT(query_type_);
+    // Run callback when query result is available.
+    ReleaseWhenQueryResultIsAvailable(std::move(callback));
     // Create and return a sync token that can be used to ensure that the
-    // CopyTextureCHROMIUM call is processed before issuing any commands
+    // CopySubTexture call is processed before issuing any commands
     // that will read from the target texture on a different context.
-    gles2->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
+    ri->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
   }
   return sync_token;
 }
 
 void Buffer::Texture::DestroyResources() {
   if (context_provider_) {
-    gpu::gles2::GLES2Interface* gles2 = context_provider_->ContextGL();
-    gles2->DeleteTextures(1, &texture_id_);
-    if (query_id_)
-      gles2->DeleteQueriesEXT(1, &query_id_);
-    if (image_id_)
-      gles2->DestroyImageCHROMIUM(image_id_);
+    if (query_id_) {
+      gpu::raster::RasterInterface* ri = context_provider_->RasterInterface();
+      ri->DeleteQueriesEXT(1, &query_id_);
+      query_id_ = 0;
+    }
+    gpu::SharedImageInterface* sii = context_provider_->SharedImageInterface();
+    sii->DestroySharedImage(gpu::SyncToken(), mailbox_);
   }
 }
 
 void Buffer::Texture::ReleaseWhenQueryResultIsAvailable(
-    const base::Closure& callback) {
+    base::OnceClosure callback) {
   DCHECK(context_provider_);
   DCHECK(release_callback_.is_null());
-  release_callback_ = callback;
+  release_callback_ = std::move(callback);
   wait_for_release_time_ = base::TimeTicks::Now() + wait_for_release_delay_;
   ScheduleWaitForRelease(wait_for_release_delay_);
   TRACE_EVENT_ASYNC_STEP_INTO0("exo", kBufferInUse, gpu_memory_buffer_,
@@ -339,7 +304,7 @@ void Buffer::Texture::ReleaseWhenQueryResultIsAvailable(
 
 void Buffer::Texture::Released() {
   if (!release_callback_.is_null())
-    base::ResetAndReturn(&release_callback_).Run();
+    std::move(release_callback_).Run();
 }
 
 void Buffer::Texture::ScheduleWaitForRelease(base::TimeDelta delay) {
@@ -367,7 +332,7 @@ void Buffer::Texture::WaitForRelease() {
     return;
   }
 
-  base::Closure callback = base::ResetAndReturn(&release_callback_);
+  base::OnceClosure callback = std::move(release_callback_);
 
   if (context_provider_) {
     TRACE_EVENT0("exo", "Buffer::Texture::WaitForQueryResult");
@@ -376,11 +341,11 @@ void Buffer::Texture::WaitForRelease() {
     // the query implies waiting for it to become available. The actual result
     // is unimportant and also not well defined.
     unsigned result = 0;
-    gpu::gles2::GLES2Interface* gles2 = context_provider_->ContextGL();
-    gles2->GetQueryObjectuivEXT(query_id_, GL_QUERY_RESULT_EXT, &result);
+    gpu::raster::RasterInterface* ri = context_provider_->RasterInterface();
+    ri->GetQueryObjectuivEXT(query_id_, GL_QUERY_RESULT_EXT, &result);
   }
 
-  callback.Run();
+  std::move(callback).Run();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -413,6 +378,7 @@ Buffer::~Buffer() {}
 
 bool Buffer::ProduceTransferableResource(
     FrameSinkResourceManager* resource_manager,
+    std::unique_ptr<gfx::GpuFence> acquire_fence,
     bool secure_output_only,
     viz::TransferableResource* resource) {
   TRACE_EVENT1("exo", "Buffer::ProduceTransferableResource", "buffer_id",
@@ -426,10 +392,10 @@ bool Buffer::ProduceTransferableResource(
     texture_.reset();
 
   ui::ContextFactory* context_factory =
-      WMHelper::GetInstance()->env()->context_factory();
+      aura::Env::GetInstance()->context_factory();
   // Note: This can fail if GPU acceleration has been disabled.
-  scoped_refptr<viz::ContextProvider> context_provider =
-      context_factory->SharedMainThreadContextProvider();
+  scoped_refptr<viz::RasterContextProvider> context_provider =
+      context_factory->SharedMainThreadRasterContextProvider();
   if (!context_provider) {
     DLOG(WARNING) << "Failed to acquire a context provider";
     resource->id = 0;
@@ -447,8 +413,9 @@ bool Buffer::ProduceTransferableResource(
   // |texture| using a call to CopyTexImage.
   if (!contents_texture_) {
     contents_texture_ = std::make_unique<Texture>(
-        context_factory, context_provider.get(), gpu_memory_buffer_.get(),
-        texture_target_, query_type_, wait_for_release_delay_);
+        context_provider, context_factory->GetGpuMemoryBufferManager(),
+        gpu_memory_buffer_.get(), texture_target_, query_type_,
+        wait_for_release_delay_);
   }
   Texture* contents_texture = contents_texture_.get();
 
@@ -458,12 +425,13 @@ bool Buffer::ProduceTransferableResource(
 
   // Cancel pending contents release callback.
   release_contents_callback_.Reset(
-      base::Bind(&Buffer::ReleaseContents, base::Unretained(this)));
+      base::BindOnce(&Buffer::ReleaseContents, base::Unretained(this)));
 
   // Zero-copy means using the contents texture directly.
   if (use_zero_copy_) {
     // This binds the latest contents of this buffer to |contents_texture|.
-    gpu::SyncToken sync_token = contents_texture->BindTexImage();
+    gpu::SyncToken sync_token =
+        contents_texture->UpdateSharedImage(std::move(acquire_fence));
     resource->mailbox_holder = gpu::MailboxHolder(contents_texture->mailbox(),
                                                   sync_token, texture_target_);
     resource->is_overlay_candidate = is_overlay_candidate_;
@@ -473,18 +441,18 @@ bool Buffer::ProduceTransferableResource(
     // compositor.
     resource_manager->SetResourceReleaseCallback(
         resource->id,
-        base::BindOnce(&Buffer::Texture::ReleaseTexImage,
+        base::BindOnce(&Buffer::Texture::ReleaseSharedImage,
                        base::Unretained(contents_texture),
-                       base::Bind(&Buffer::ReleaseContentsTexture, AsWeakPtr(),
-                                  base::Passed(&contents_texture_),
-                                  release_contents_callback_.callback())));
+                       base::BindOnce(&Buffer::ReleaseContentsTexture,
+                                      AsWeakPtr(), std::move(contents_texture_),
+                                      release_contents_callback_.callback())));
     return true;
   }
 
   // Create a mailbox texture that we copy the buffer contents to.
   if (!texture_) {
-    texture_ =
-        std::make_unique<Texture>(context_factory, context_provider.get());
+    texture_ = std::make_unique<Texture>(context_provider,
+                                         gpu_memory_buffer_->GetSize());
   }
   Texture* texture = texture_.get();
 
@@ -492,9 +460,10 @@ bool Buffer::ProduceTransferableResource(
   // texture mailbox from the result in |texture|. The contents texture will
   // be released when copy has completed.
   gpu::SyncToken sync_token = contents_texture->CopyTexImage(
-      texture, base::Bind(&Buffer::ReleaseContentsTexture, AsWeakPtr(),
-                          base::Passed(&contents_texture_),
-                          release_contents_callback_.callback()));
+      std::move(acquire_fence), texture,
+      base::BindOnce(&Buffer::ReleaseContentsTexture, AsWeakPtr(),
+                     std::move(contents_texture_),
+                     release_contents_callback_.callback()));
   resource->mailbox_holder =
       gpu::MailboxHolder(texture->mailbox(), sync_token, GL_TEXTURE_2D);
   resource->is_overlay_candidate = false;
@@ -504,8 +473,8 @@ bool Buffer::ProduceTransferableResource(
   resource_manager->SetResourceReleaseCallback(
       resource->id,
       base::BindOnce(&Buffer::Texture::Release, base::Unretained(texture),
-                     base::Bind(&Buffer::ReleaseTexture, AsWeakPtr(),
-                                base::Passed(&texture_))));
+                     base::BindOnce(&Buffer::ReleaseTexture, AsWeakPtr(),
+                                    std::move(texture_))));
   return true;
 }
 
@@ -553,9 +522,9 @@ void Buffer::ReleaseTexture(std::unique_ptr<Texture> texture) {
 }
 
 void Buffer::ReleaseContentsTexture(std::unique_ptr<Texture> texture,
-                                    const base::Closure& callback) {
+                                    base::OnceClosure callback) {
   contents_texture_ = std::move(texture);
-  callback.Run();
+  std::move(callback).Run();
 }
 
 void Buffer::ReleaseContents() {

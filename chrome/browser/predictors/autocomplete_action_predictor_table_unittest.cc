@@ -14,7 +14,7 @@
 #include "chrome/browser/predictors/predictor_database.h"
 #include "chrome/browser/predictors/predictor_database_factory.h"
 #include "chrome/test/base/testing_profile.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "sql/statement.h"
 
@@ -54,7 +54,7 @@ class AutocompleteActionPredictorTableTest : public testing::Test {
   AutocompleteActionPredictorTable::Rows test_db_;
 
  private:
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
   std::unique_ptr<PredictorDatabase> db_;
 };

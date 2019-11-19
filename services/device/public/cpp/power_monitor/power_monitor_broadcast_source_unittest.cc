@@ -5,9 +5,9 @@
 #include "services/device/public/cpp/power_monitor/power_monitor_broadcast_source.h"
 
 #include "base/macros.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
 #include "base/test/power_monitor_test_base.h"
+#include "base/test/task_environment.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -22,13 +22,12 @@ class PowerMonitorBroadcastSourceTest : public testing::Test {
     auto power_monitor_source = std::make_unique<PowerMonitorBroadcastSource>(
         base::SequencedTaskRunnerHandle::Get());
     power_monitor_source_ptr_ = power_monitor_source.get();
-    power_monitor_ =
-        std::make_unique<base::PowerMonitor>(std::move(power_monitor_source));
-    power_monitor_source_ptr_->Init(nullptr);
+    base::PowerMonitor::Initialize(std::move(power_monitor_source));
+    power_monitor_source_ptr_->Init(mojo::NullRemote());
   }
 
   void TearDown() override {
-    power_monitor_.reset();
+    base::PowerMonitor::ShutdownForTesting();
     base::RunLoop().RunUntilIdle();
   }
 
@@ -36,20 +35,17 @@ class PowerMonitorBroadcastSourceTest : public testing::Test {
     return power_monitor_source_ptr_->client_for_testing();
   }
 
-  base::PowerMonitor* monitor() { return power_monitor_.get(); }
-
-  base::MessageLoop message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
 
  private:
   PowerMonitorBroadcastSource* power_monitor_source_ptr_;
-  std::unique_ptr<base::PowerMonitor> power_monitor_;
 
   DISALLOW_COPY_AND_ASSIGN(PowerMonitorBroadcastSourceTest);
 };
 
 TEST_F(PowerMonitorBroadcastSourceTest, PowerMessageReceiveBroadcast) {
   base::PowerMonitorTestObserver observer;
-  monitor()->AddObserver(&observer);
+  base::PowerMonitor::AddObserver(&observer);
 
   // Sending resume when not suspended should have no effect.
   client()->Resume();
@@ -97,6 +93,7 @@ TEST_F(PowerMonitorBroadcastSourceTest, PowerMessageReceiveBroadcast) {
   client()->PowerStateChange(false);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(observer.power_state_changes(), 2);
+  base::PowerMonitor::RemoveObserver(&observer);
 }
 
 }  // namespace device

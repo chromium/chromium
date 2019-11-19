@@ -26,8 +26,10 @@
 #include "third_party/blink/renderer/core/html/forms/color_chooser_popup_ui_controller.h"
 
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/html/forms/chooser_resource_loader.h"
 #include "third_party/blink/renderer/core/html/forms/color_chooser_client.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page_popup.h"
@@ -65,7 +67,8 @@ void ColorChooserPopupUIController::Trace(Visitor* visitor) {
 }
 
 void ColorChooserPopupUIController::OpenUI() {
-  if (client_->ShouldShowSuggestions())
+  if (client_->ShouldShowSuggestions() ||
+      RuntimeEnabledFeatures::FormControlsRefreshEnabled())
     OpenPopup();
   else
     OpenColorChooser();
@@ -81,6 +84,46 @@ AXObject* ColorChooserPopupUIController::RootAXObject() {
 }
 
 void ColorChooserPopupUIController::WriteDocument(SharedBuffer* data) {
+  if (client_->ShouldShowSuggestions()) {
+    WriteColorSuggestionPickerDocument(data);
+  } else {
+    WriteColorPickerDocument(data);
+  }
+}
+
+void ColorChooserPopupUIController::WriteColorPickerDocument(
+    SharedBuffer* data) {
+  DCHECK(RuntimeEnabledFeatures::FormControlsRefreshEnabled());
+
+  IntRect anchor_rect_in_screen = chrome_client_->ViewportToScreen(
+      client_->ElementRectRelativeToViewport(), frame_->View());
+
+  PagePopupClient::AddString(
+      "<!DOCTYPE html><head><meta charset='UTF-8'><style>\n", data);
+  data->Append(ChooserResourceLoader::GetPickerCommonStyleSheet());
+  data->Append(ChooserResourceLoader::GetColorPickerStyleSheet());
+
+  PagePopupClient::AddString(
+      "</style></head><body>\n"
+      "<div id='main'>Loading...</div><script>\n"
+      "window.dialogArguments = {\n",
+      data);
+  PagePopupClient::AddProperty("selectedColor",
+                               client_->CurrentColor().Serialized(), data);
+  AddProperty("anchorRectInScreen", anchor_rect_in_screen, data);
+  AddProperty("zoomFactor", ScaledZoomFactor(), data);
+  AddProperty("shouldShowColorSuggestionPicker", false, data);
+  PagePopupClient::AddString("};\n", data);
+  data->Append(ChooserResourceLoader::GetPickerCommonJS());
+  data->Append(ChooserResourceLoader::GetColorPickerJS());
+  data->Append(ChooserResourceLoader::GetColorPickerCommonJS());
+  PagePopupClient::AddString("</script></body>\n", data);
+}
+
+void ColorChooserPopupUIController::WriteColorSuggestionPickerDocument(
+    SharedBuffer* data) {
+  DCHECK(client_->ShouldShowSuggestions());
+
   Vector<String> suggestion_values;
   for (auto& suggestion : client_->Suggestions())
     suggestion_values.push_back(Color(suggestion->color).Serialized());
@@ -89,23 +132,35 @@ void ColorChooserPopupUIController::WriteDocument(SharedBuffer* data) {
 
   PagePopupClient::AddString(
       "<!DOCTYPE html><head><meta charset='UTF-8'><style>\n", data);
-  data->Append(Platform::Current()->GetDataResource("pickerCommon.css"));
-  data->Append(
-      Platform::Current()->GetDataResource("colorSuggestionPicker.css"));
+  data->Append(ChooserResourceLoader::GetPickerCommonStyleSheet());
+  data->Append(ChooserResourceLoader::GetColorSuggestionPickerStyleSheet());
+  if (RuntimeEnabledFeatures::FormControlsRefreshEnabled())
+    data->Append(ChooserResourceLoader::GetColorPickerStyleSheet());
+
   PagePopupClient::AddString(
-      "</style></head><body><div id=main>Loading...</div><script>\n"
+      "</style></head><body>\n"
+      "<div id='main'>Loading...</div><script>\n"
       "window.dialogArguments = {\n",
       data);
   PagePopupClient::AddProperty("values", suggestion_values, data);
   PagePopupClient::AddProperty(
-      "otherColorLabel",
-      GetLocale().QueryString(WebLocalizedString::kOtherColorLabel), data);
+      "otherColorLabel", GetLocale().QueryString(IDS_FORM_OTHER_COLOR_LABEL),
+      data);
+  if (RuntimeEnabledFeatures::FormControlsRefreshEnabled()) {
+    PagePopupClient::AddProperty("selectedColor",
+                                 client_->CurrentColor().Serialized(), data);
+  }
   AddProperty("anchorRectInScreen", anchor_rect_in_screen, data);
-  AddProperty("zoomFactor", ZoomFactor(), data);
+  AddProperty("zoomFactor", ScaledZoomFactor(), data);
+  AddProperty("shouldShowColorSuggestionPicker", true, data);
+  AddProperty("isFormControlsRefreshEnabled",
+              RuntimeEnabledFeatures::FormControlsRefreshEnabled(), data);
   PagePopupClient::AddString("};\n", data);
-  data->Append(Platform::Current()->GetDataResource("pickerCommon.js"));
-  data->Append(
-      Platform::Current()->GetDataResource("colorSuggestionPicker.js"));
+  data->Append(ChooserResourceLoader::GetPickerCommonJS());
+  data->Append(ChooserResourceLoader::GetColorSuggestionPickerJS());
+  if (RuntimeEnabledFeatures::FormControlsRefreshEnabled())
+    data->Append(ChooserResourceLoader::GetColorPickerJS());
+  data->Append(ChooserResourceLoader::GetColorPickerCommonJS());
   PagePopupClient::AddString("</script></body>\n", data);
 }
 
@@ -120,8 +175,10 @@ void ColorChooserPopupUIController::SetValueAndClosePopup(
   DCHECK(client_);
   if (num_value == kColorPickerPopupActionSetValue)
     SetValue(string_value);
-  if (num_value == kColorPickerPopupActionChooseOtherColor)
+  if (num_value == kColorPickerPopupActionChooseOtherColor) {
+    DCHECK(!RuntimeEnabledFeatures::FormControlsRefreshEnabled());
     OpenColorChooser();
+  }
   CancelPopup();
 }
 
@@ -142,6 +199,10 @@ void ColorChooserPopupUIController::DidClosePopup() {
 
 Element& ColorChooserPopupUIController::OwnerElement() {
   return client_->OwnerElement();
+}
+
+ChromeClient& ColorChooserPopupUIController::GetChromeClient() {
+  return *chrome_client_;
 }
 
 void ColorChooserPopupUIController::OpenPopup() {

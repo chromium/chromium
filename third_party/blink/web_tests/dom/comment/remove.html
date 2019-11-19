@@ -1,17 +1,16 @@
 <!DOCTYPE html>
-<script src="../../resources/js-test.js"></script>
+<title>This tests the DOM 4 remove method on a Comment</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
 <div id="test"></div>
 <script>
-
-description('This tests the DOM 4 remove method on a Comment.');
-
 var testDiv = document.getElementById('test');
 var comment = document.createComment('Comment');
 testDiv.appendChild(comment);
-shouldBe('testDiv.childNodes.length', '1');
+assert_equals(testDiv.childNodes.length, 1);
 comment.remove();
-shouldBe('testDiv.childNodes.length', '0');
+assert_equals(testDiv.childNodes.length, 0);
 comment.remove();
-shouldBe('testDiv.childNodes.length', '0');
-
+assert_equals(testDiv.childNodes.length, 0);
+done();
 </script>

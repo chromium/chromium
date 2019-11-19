@@ -7,9 +7,12 @@
 
 #include <wrl/client.h>
 
+#include <string>
+
 #include "base/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/optional.h"
 #include "base/strings/string16.h"
 #include "google_update/google_update_idl.h"
 #include "ui/gfx/native_widget_types.h"
@@ -99,6 +102,34 @@ void BeginUpdateCheck(
     bool install_update_if_possible,
     gfx::AcceleratedWidget elevation_window,
     const base::WeakPtr<UpdateCheckDelegate>& delegate);
+
+// The state from a completed update check.
+struct UpdateState {
+  UpdateState();
+  UpdateState(const UpdateState&);
+  UpdateState(UpdateState&&);
+  UpdateState& operator=(UpdateState&&);
+  ~UpdateState();
+
+  // GOOGLE_UPDATE_NO_ERROR if the last check or update succeeded; otherwise,
+  // the nature of the failure.
+  GoogleUpdateErrorCode error_code = GOOGLE_UPDATE_NO_ERROR;
+
+  // The next version available or an empty string if either no update is
+  // available or an error occurred before the new version was discovered.
+  base::string16 new_version;
+
+  // S_OK if the last check or update succeeded; otherwise, the failing error
+  // from Google Update or COM.
+  HRESULT hresult = S_OK;
+
+  // If present, the process exit code from the failed run of the installer.
+  base::Optional<int> installer_exit_code;
+};
+
+// Returns the state from the most recent completed update check or no value if
+// no such check has taken place.
+base::Optional<UpdateState> GetLastUpdateState();
 
 // A type of callback supplied by tests to provide a custom IGoogleUpdate3Web
 // implementation (see src/google_update/google_update_idl.idl).

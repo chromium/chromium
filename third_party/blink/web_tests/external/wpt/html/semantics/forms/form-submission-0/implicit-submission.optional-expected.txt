@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+FAIL Submit event with a submit button promise_test: Unhandled rejection with value: object "Error: No support for this code: U+e007"
+FAIL Submit event with no submit button promise_test: Unhandled rejection with value: object "Error: No support for this code: U+e007"
+Harness: the test ran to completion.
+

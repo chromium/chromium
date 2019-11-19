@@ -18,6 +18,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/no_renderer_crashes_assertion.h"
 #include "headless/lib/browser/headless_web_contents_impl.h"
 #include "headless/public/devtools/domains/browser.h"
 #include "headless/public/devtools/domains/dom.h"
@@ -473,6 +474,9 @@ class HeadlessCrashObserverTest : public HeadlessAsyncDevTooledBrowserTest,
     EXPECT_EQ(base::TERMINATION_STATUS_ABNORMAL_TERMINATION, status);
 #endif
   }
+
+ private:
+  content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes_;
 };
 
 HEADLESS_ASYNC_DEVTOOLED_TEST_F(HeadlessCrashObserverTest);

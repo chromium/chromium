@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/platform/modules/service_worker/web_service_worker_clients_info.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_provider.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
@@ -26,6 +25,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "v8/include/v8.h"
 
@@ -46,6 +46,7 @@ struct StubScriptFunction {
 
   size_t CallCount() { return call_count_; }
   ScriptValue Arg() { return arg_; }
+  void Trace(blink::Visitor* visitor) { visitor->Trace(arg_); }
 
  private:
   size_t call_count_;
@@ -77,7 +78,7 @@ struct StubScriptFunction {
 class ScriptValueTest {
  public:
   virtual ~ScriptValueTest() = default;
-  virtual void operator()(ScriptValue) const = 0;
+  virtual void operator()(ScriptState*, ScriptValue) const = 0;
 };
 
 // Runs microtasks and expects |promise| to be rejected. Calls
@@ -92,7 +93,7 @@ void ExpectRejected(ScriptState* script_state,
   EXPECT_EQ(0ul, resolved.CallCount());
   EXPECT_EQ(1ul, rejected.CallCount());
   if (rejected.CallCount())
-    value_test(rejected.Arg());
+    value_test(script_state, rejected.Arg());
 }
 
 // DOM-related test support.
@@ -106,9 +107,9 @@ class ExpectDOMException : public ScriptValueTest {
 
   ~ExpectDOMException() override = default;
 
-  void operator()(ScriptValue value) const override {
+  void operator()(ScriptState* script_state, ScriptValue value) const override {
     DOMException* exception = V8DOMException::ToImplWithTypeCheck(
-        value.GetIsolate(), value.V8Value());
+        script_state->GetIsolate(), value.V8Value());
     EXPECT_TRUE(exception) << "the value should be a DOMException";
     if (!exception)
       return;
@@ -129,9 +130,9 @@ class ExpectTypeError : public ScriptValueTest {
 
   ~ExpectTypeError() override = default;
 
-  void operator()(ScriptValue value) const override {
-    v8::Isolate* isolate = value.GetIsolate();
-    v8::Local<v8::Context> context = value.GetContext();
+  void operator()(ScriptState* script_state, ScriptValue value) const override {
+    v8::Isolate* isolate = script_state->GetIsolate();
+    v8::Local<v8::Context> context = script_state->GetContext();
     v8::Local<v8::Object> error_object =
         value.V8Value()->ToObject(context).ToLocalChecked();
     v8::Local<v8::Value> name =
@@ -161,6 +162,7 @@ class NotReachedWebServiceWorkerProvider : public WebServiceWorkerProvider {
       const WebURL& script_url,
       blink::mojom::ScriptType script_type,
       mojom::ServiceWorkerUpdateViaCache update_via_cache,
+      const WebFetchClientSettingsObject& fetch_client_settings_object,
       std::unique_ptr<WebServiceWorkerRegistrationCallbacks> callbacks)
       override {
     ADD_FAILURE()
@@ -188,11 +190,7 @@ class ServiceWorkerContainerTest : public PageTestBase {
   }
 
   void SetPageURL(const String& url) {
-    // For URL completion.
-    GetDocument().SetURL(KURL(NullURL(), url));
-
-    // The basis for security checks.
-    GetDocument().SetSecurityOrigin(SecurityOrigin::CreateFromString(url));
+    NavigateTo(KURL(NullURL(), url));
 
     if (url.StartsWith("https://") || url.StartsWith("http://localhost/")) {
       GetDocument().SetSecureContextStateForTesting(
@@ -276,6 +274,8 @@ TEST_F(ServiceWorkerContainerTest, GetRegistration_CrossOriginURLIsRejected) {
 }
 
 class StubWebServiceWorkerProvider {
+  DISALLOW_NEW();
+
  public:
   StubWebServiceWorkerProvider()
       : register_call_count_(0),
@@ -314,6 +314,7 @@ class StubWebServiceWorkerProvider {
         const WebURL& script_url,
         blink::mojom::ScriptType script_type,
         mojom::ServiceWorkerUpdateViaCache update_via_cache,
+        const WebFetchClientSettingsObject& fetch_client_settings_object,
         std::unique_ptr<WebServiceWorkerRegistrationCallbacks> callbacks)
         override {
       owner_.register_call_count_++;

@@ -38,10 +38,6 @@ class CORE_EXPORT CSSStyleRule final : public CSSRule {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static CSSStyleRule* Create(StyleRule* rule, CSSStyleSheet* sheet) {
-    return MakeGarbageCollected<CSSStyleRule>(rule, sheet);
-  }
-
   CSSStyleRule(StyleRule*, CSSStyleSheet*);
   ~CSSStyleRule() override;
 

@@ -20,7 +20,8 @@ void VideoHoleDrawQuad::SetNew(const SharedQuadState* shared_quad_state,
                                const gfx::Rect& rect,
                                const gfx::Rect& visible_rect,
                                const base::UnguessableToken& overlay_plane_id) {
-  DrawQuad::SetAll(shared_quad_state, DrawQuad::VIDEO_HOLE, rect, visible_rect,
+  DrawQuad::SetAll(shared_quad_state, DrawQuad::Material::kVideoHole, rect,
+                   visible_rect,
                    /*needs_blending=*/false);
   this->overlay_plane_id = overlay_plane_id;
 }
@@ -30,13 +31,13 @@ void VideoHoleDrawQuad::SetAll(const SharedQuadState* shared_quad_state,
                                const gfx::Rect& visible_rect,
                                bool needs_blending,
                                const base::UnguessableToken& overlay_plane_id) {
-  DrawQuad::SetAll(shared_quad_state, DrawQuad::VIDEO_HOLE, rect, visible_rect,
-                   needs_blending);
+  DrawQuad::SetAll(shared_quad_state, DrawQuad::Material::kVideoHole, rect,
+                   visible_rect, needs_blending);
   this->overlay_plane_id = overlay_plane_id;
 }
 
 const VideoHoleDrawQuad* VideoHoleDrawQuad::MaterialCast(const DrawQuad* quad) {
-  DCHECK(quad->material == DrawQuad::VIDEO_HOLE);
+  DCHECK(quad->material == DrawQuad::Material::kVideoHole);
   return static_cast<const VideoHoleDrawQuad*>(quad);
 }
 

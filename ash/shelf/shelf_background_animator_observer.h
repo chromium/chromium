@@ -16,6 +16,9 @@ class ASH_EXPORT ShelfBackgroundAnimatorObserver {
   // Called when the Shelf's background should be updated.
   virtual void UpdateShelfBackground(SkColor color) {}
 
+  // Called when the ShelfBackgroundAnimator's animation is ended.
+  virtual void OnShelfBackgroundAnimationEnded() {}
+
  protected:
   virtual ~ShelfBackgroundAnimatorObserver() {}
 };

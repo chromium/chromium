@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_MEDIA_ROUTER_PROVIDERS_CAST_CAST_SESSION_TRACKER_H_
 #define CHROME_BROWSER_MEDIA_ROUTER_PROVIDERS_CAST_CAST_SESSION_TRACKER_H_
 
+#include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
@@ -38,6 +39,8 @@ class CastSessionTracker : public MediaSinkServiceBase::Observer,
                                       base::Optional<int> request_id) = 0;
   };
 
+  ~CastSessionTracker() override;
+
   // Must be called on UI thread.
   // TODO(https://crbug.com/904016): The UI/IO thread split makes this class
   // confusing to use.  If we can directly access CastMediaSinkServiceImpl
@@ -55,6 +58,7 @@ class CastSessionTracker : public MediaSinkServiceBase::Observer,
 
  private:
   friend class CastSessionTrackerTest;
+  friend class CastActivityRecordTest;
   friend class CastActivityManagerTest;
   friend class CastMediaRouteProviderTest;
 
@@ -63,8 +67,6 @@ class CastSessionTracker : public MediaSinkServiceBase::Observer,
       MediaSinkServiceBase* media_sink_service,
       cast_channel::CastMessageHandler* message_handler,
       const scoped_refptr<base::SequencedTaskRunner>& task_runner);
-
-  ~CastSessionTracker() override;
 
   void InitOnIoThread();
   void HandleReceiverStatusMessage(const MediaSinkInternal& sink,
@@ -100,6 +102,7 @@ class CastSessionTracker : public MediaSinkServiceBase::Observer,
 
   SEQUENCE_CHECKER(sequence_checker_);
   DISALLOW_COPY_AND_ASSIGN(CastSessionTracker);
+  FRIEND_TEST_ALL_PREFIXES(CastActivityRecordTest, SendAppMessageToReceiver);
   FRIEND_TEST_ALL_PREFIXES(CastSessionTrackerTest, RemoveSession);
   FRIEND_TEST_ALL_PREFIXES(CastSessionTrackerTest,
                            HandleMediaStatusMessageBasic);

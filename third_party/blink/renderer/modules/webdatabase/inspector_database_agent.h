@@ -46,10 +46,6 @@ class Page;
 class MODULES_EXPORT InspectorDatabaseAgent final
     : public InspectorBaseAgent<protocol::Database::Metainfo> {
  public:
-  static InspectorDatabaseAgent* Create(Page* page) {
-    return MakeGarbageCollected<InspectorDatabaseAgent>(page);
-  }
-
   explicit InspectorDatabaseAgent(Page*);
   ~InspectorDatabaseAgent() override;
   void Trace(blink::Visitor*) override;

@@ -5,9 +5,10 @@
 package org.chromium.chrome.browser.vr;
 
 import android.graphics.drawable.Drawable;
-import android.support.annotation.IntDef;
 import android.view.Surface;
 import android.view.View;
+
+import androidx.annotation.IntDef;
 
 import org.chromium.chrome.browser.compositor.CompositorSurfaceManager;
 

@@ -5,7 +5,11 @@
 #ifndef IOS_CHROME_BROWSER_UI_NTP_NTP_UTIL_H_
 #define IOS_CHROME_BROWSER_UI_NTP_NTP_UTIL_H_
 
-#import "ios/web/public/web_state/web_state.h"
+class GURL;
+
+namespace web {
+class WebState;
+}
 
 // Returns whether the |url| is currently a NewTabPage url.
 bool IsURLNewTabPage(const GURL& url);

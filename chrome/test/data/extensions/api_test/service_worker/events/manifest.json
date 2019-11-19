@@ -1,6 +1,0 @@
-{
-  "name": "Service worker events test (chrome.tabs.onUpdated)",
-  "version": "1.0",
-  "manifest_version": 2,
-  "permissions": [ "tabs" ]
-}

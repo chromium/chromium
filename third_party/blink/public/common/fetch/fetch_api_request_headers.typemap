@@ -9,4 +9,4 @@ public_headers = [
   "//third_party/blink/public/common/fetch/fetch_api_request_headers_map.h",
 ]
 traits_headers = [ "//third_party/blink/public/common/fetch/fetch_api_request_headers_mojom_traits.h" ]
-type_mappings = [ "blink.mojom.FetchAPIRequestHeaders=blink::FetchAPIRequestHeadersMap[move_only]" ]
+type_mappings = [ "blink.mojom.FetchAPIRequestHeaders=::blink::FetchAPIRequestHeadersMap[move_only]" ]

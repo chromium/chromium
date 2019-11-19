@@ -36,7 +36,6 @@ class USB_MIDI_EXPORT UsbMidiDeviceAndroid : public UsbMidiDevice {
 
   // Called by the Java world.
   void OnData(JNIEnv* env,
-              const base::android::JavaParamRef<jobject>& caller,
               jint endpoint_number,
               const base::android::JavaParamRef<jbyteArray>& data);
 

@@ -1,42 +1,43 @@
 rootWebArea
-++heading name='Level 2' hierarchicalLevel=2
-++++staticText name='Level 2'
-++++++inlineTextBox name='Level 2'
-++heading name='Level 9' hierarchicalLevel=9
-++++staticText name='Level 9'
-++++++inlineTextBox name='Level 9'
-++heading name='Level 1' hierarchicalLevel=1
-++++staticText name='Level 1'
-++++++inlineTextBox name='Level 1'
-++heading name='Level 3' hierarchicalLevel=3
-++++staticText name='Level 3'
-++++++inlineTextBox name='Level 3'
-++heading name='Level 3' hierarchicalLevel=3
-++++staticText name='Level 3'
-++++++inlineTextBox name='Level 3'
-++heading name='Level 4' hierarchicalLevel=4
-++++staticText name='Level 4'
-++++++inlineTextBox name='Level 4'
-++heading name='Level 5' hierarchicalLevel=5
-++++staticText name='Level 5'
-++++++inlineTextBox name='Level 5'
-++tree
-++++treeItem name='Tree item at level 1' hierarchicalLevel=1 selected=false
-++++++staticText name='Tree item at level 1'
-++++++++inlineTextBox name='Tree item at level 1'
-++++++group
-++++++++treeItem name='Tree item at level 2' hierarchicalLevel=2 selected=false
-++++++++++staticText name='Tree item at level 2'
-++++++++++++inlineTextBox name='Tree item at level 2'
-++++treeItem name='Tree item at level 3' hierarchicalLevel=3 selected=false
-++++++staticText name='Tree item at level 3'
-++++++++inlineTextBox name='Tree item at level 3'
-++treeGrid
-++++row hierarchicalLevel=1 selected=false
-++++++cell name='Cell at level 1' selected=false
-++++++++staticText name='Cell at level 1'
-++++++++++inlineTextBox name='Cell at level 1'
-++++row hierarchicalLevel=2 selected=false
-++++++cell name='Cell at level 2' selected=false
-++++++++staticText name='Cell at level 2'
-++++++++++inlineTextBox name='Cell at level 2'
+++genericContainer ignored
+++++heading name='Level 2' hierarchicalLevel=2
+++++++staticText name='Level 2'
+++++++++inlineTextBox name='Level 2'
+++++heading name='Level 9' hierarchicalLevel=9
+++++++staticText name='Level 9'
+++++++++inlineTextBox name='Level 9'
+++++heading name='Level 1' hierarchicalLevel=1
+++++++staticText name='Level 1'
+++++++++inlineTextBox name='Level 1'
+++++heading name='Level 3' hierarchicalLevel=3
+++++++staticText name='Level 3'
+++++++++inlineTextBox name='Level 3'
+++++heading name='Level 3' hierarchicalLevel=3
+++++++staticText name='Level 3'
+++++++++inlineTextBox name='Level 3'
+++++heading name='Level 4' hierarchicalLevel=4
+++++++staticText name='Level 4'
+++++++++inlineTextBox name='Level 4'
+++++heading name='Level 5' hierarchicalLevel=5
+++++++staticText name='Level 5'
+++++++++inlineTextBox name='Level 5'
+++++tree
+++++++treeItem name='Tree item at level 1' hierarchicalLevel=1 selected=false
+++++++++staticText name='Tree item at level 1'
+++++++++++inlineTextBox name='Tree item at level 1'
+++++++++group
+++++++++++treeItem name='Tree item at level 2' hierarchicalLevel=2 selected=false
+++++++++++++staticText name='Tree item at level 2'
+++++++++++++++inlineTextBox name='Tree item at level 2'
+++++++treeItem name='Tree item at level 3' hierarchicalLevel=3 selected=false
+++++++++staticText name='Tree item at level 3'
+++++++++++inlineTextBox name='Tree item at level 3'
+++++treeGrid
+++++++row hierarchicalLevel=1 selected=false
+++++++++cell name='Cell at level 1' selected=false
+++++++++++staticText name='Cell at level 1'
+++++++++++++inlineTextBox name='Cell at level 1'
+++++++row hierarchicalLevel=2 selected=false
+++++++++cell name='Cell at level 2' selected=false
+++++++++++staticText name='Cell at level 2'
+++++++++++++inlineTextBox name='Cell at level 2'

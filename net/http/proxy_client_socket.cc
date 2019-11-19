@@ -52,7 +52,7 @@ int ProxyClientSocket::HandleProxyAuthChallenge(
   DCHECK(response->headers.get());
   int rv = auth->HandleAuthChallenge(response->headers, response->ssl_info,
                                      false, true, net_log);
-  response->auth_challenge = auth->auth_info();
+  auth->TakeAuthInfo(&response->auth_challenge);
   if (rv == OK)
     return ERR_PROXY_AUTH_REQUESTED;
   return rv;
@@ -93,30 +93,6 @@ bool ProxyClientSocket::SanitizeProxyAuth(HttpResponseInfo* response) {
   }
 
   response->headers->RemoveHeaders(headers_to_remove);
-
-  return true;
-}
-
-// static
-bool ProxyClientSocket::SanitizeProxyRedirect(HttpResponseInfo* response) {
-  DCHECK(response && response->headers.get());
-
-  std::string location;
-  if (!response->headers->IsRedirect(&location))
-    return false;
-
-  // Return minimal headers; set "Content-Length: 0" to ignore response body.
-  std::string fake_response_headers = base::StringPrintf(
-      "HTTP/1.0 302 Found\n"
-      "Location: %s\n"
-      "Content-Length: 0\n"
-      "Connection: close\n"
-      "\n",
-      location.c_str());
-  std::string raw_headers =
-      HttpUtil::AssembleRawHeaders(fake_response_headers.data(),
-                                   fake_response_headers.length());
-  response->headers = new HttpResponseHeaders(raw_headers);
 
   return true;
 }

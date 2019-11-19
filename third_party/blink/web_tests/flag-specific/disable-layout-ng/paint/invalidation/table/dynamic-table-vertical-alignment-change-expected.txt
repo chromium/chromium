@@ -1,0 +1,24 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [808, 585],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "LayoutBlockFlow (floating) DIV id='target'",
+          "rect": [11, 75, 100, 100],
+          "reason": "appeared"
+        }
+      ]
+    },
+    {
+      "name": "ContentsLayer for Horizontal Scrollbar Layer",
+      "position": [0, 585],
+      "bounds": [800, 15],
+      "contentsOpaque": true
+    }
+  ]
+}
+

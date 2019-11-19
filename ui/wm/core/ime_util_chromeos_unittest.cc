@@ -6,9 +6,12 @@
 
 #include "base/command_line.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/aura_test_base.h"
+#include "ui/aura/test/test_screen.h"
 #include "ui/aura/test/test_windows.h"
 #include "ui/base/ui_base_switches.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/wm/core/default_screen_position_client.h"
 
 namespace wm {
@@ -48,7 +51,7 @@ TEST_F(ImeUtilChromeosTest, RestoreWindowBounds) {
   EXPECT_EQ(bounds, window->bounds());
 
   gfx::Rect r1(40, 50, 150, 200);
-  window->SetProperty(kVirtualKeyboardRestoreBoundsKey, new gfx::Rect(r1));
+  window->SetProperty(kVirtualKeyboardRestoreBoundsKey, r1);
   RestoreWindowBoundsOnClientFocusLost(window);
   EXPECT_EQ(r1, window->bounds());
   EXPECT_EQ(nullptr, window->GetProperty(kVirtualKeyboardRestoreBoundsKey));
@@ -102,6 +105,17 @@ TEST_F(ImeUtilChromeosTest, EnsureWindowNotInRect_MoveToTop) {
   EnsureWindowNotInRect(window, rect);
   EXPECT_EQ(gfx::Rect(10, 0, 100, 100), window->bounds());
   EXPECT_EQ(gfx::Rect(10, 0, 100, 100), window->GetBoundsInScreen());
+  RestoreWindowBoundsOnClientFocusLost(window);
+
+  // Sets a workspace insets to simulate that something (such as docked
+  // magnifier) occupies some space on top. Original bounds must be inside
+  // the new work area.
+  constexpr int kOccupiedTopHeight = 5;
+  ASSERT_GE(original_bounds.y(), kOccupiedTopHeight);
+
+  test_screen()->SetWorkAreaInsets(gfx::Insets(kOccupiedTopHeight, 0, 0, 0));
+  EnsureWindowNotInRect(window, rect);
+  EXPECT_EQ(gfx::Rect(10, kOccupiedTopHeight, 100, 100), window->bounds());
 }
 
 TEST_F(ImeUtilChromeosTest, MoveUpThenRestore) {
@@ -134,6 +148,25 @@ TEST_F(ImeUtilChromeosTest, MoveUpThenRestore) {
   EnsureWindowNotInRect(window, rect);
   EXPECT_EQ(original_bounds, window->bounds());
   EXPECT_EQ(original_bounds, window->GetBoundsInScreen());
+}
+
+// Tests that setting/clearing kEmbeddedWindowEnsureNotInRect window property
+// triggers the relevant top level to be moved/restored.
+TEST_F(ImeUtilChromeosTest, EnsureWindowNotInRectHelper) {
+  const gfx::Rect original_bounds(10, 10, 100, 100);
+  aura::Window* top_level = aura::test::CreateTestWindow(
+      SK_ColorWHITE, 1, original_bounds, root_window());
+  aura::Window* embedding_root = aura::test::CreateTestWindowWithBounds(
+      gfx::Rect(original_bounds.size()), top_level);
+  EnsureWindowNotInRectHelper helper(embedding_root);
+
+  gfx::Rect occluded_rect(50, 50, 200, 200);
+  embedding_root->SetProperty(aura::client::kEmbeddedWindowEnsureNotInRect,
+                              new gfx::Rect(occluded_rect));
+  EXPECT_EQ(gfx::Rect(10, 0, 100, 100), top_level->bounds());
+
+  embedding_root->ClearProperty(aura::client::kEmbeddedWindowEnsureNotInRect);
+  EXPECT_EQ(original_bounds, top_level->bounds());
 }
 
 }  // namespace wm

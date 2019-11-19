@@ -5,7 +5,7 @@
 module apps.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
-import "ui/gfx/image/mojo/image.mojom";
+import "ui/gfx/image/mojom/image.mojom";
 
 // Information about an app. See chrome/services/app_service/README.md.
 struct App {
@@ -17,6 +17,14 @@ struct App {
   Readiness readiness;
   string? name;
   string? short_name;
+
+  // The publisher-specific ID for this app, e.g. for Android apps, this field
+  // contains the Android package name. May be empty if AppId() should be
+  // considered as the canonical publisher ID.
+  string? publisher_id;
+
+  string? description;
+  string? version;
   array<string> additional_search_terms;
   IconKey? icon_key;
   mojo_base.mojom.Time? last_launch_time;
@@ -30,7 +38,7 @@ struct App {
   array<Permission> permissions;
 
   // Whether the app was installed by sync, policy or as a default app.
-  OptionalBool installed_internally;
+  InstallSource install_source;
 
   // Whether the app is an extensions::Extensions where is_platform_app()
   // returns true.
@@ -38,9 +46,21 @@ struct App {
 
   // TODO(nigeltao): be more principled, instead of ad hoc show_in_xxx and
   // show_in_yyy fields?
+  OptionalBool recommendable;
+  OptionalBool searchable;
   OptionalBool show_in_launcher;
   OptionalBool show_in_search;
   OptionalBool show_in_management;
+
+  // Paused apps cannot be launched, and any running apps that become paused
+  // will be stopped. This is independent of whether or not the app is ready to
+  // be launched (defined by the Readiness field).
+  OptionalBool paused;
+
+  // This vector stores all the intent filters defined in this app. Each
+  // intent filter defines a matching criteria for whether an intent can
+  // be handled by this app. One app can have multiple intent filters.
+  array<IntentFilter> intent_filters;
 
   // When adding new fields, also update the Merge method and other helpers in
   // chrome/services/app_service/public/cpp/app_update.*
@@ -54,6 +74,8 @@ struct Permission {
   PermissionValueType value_type;
   // The semantics of value depends on the value_type.
   uint32 value;
+  // If the permission is managed by an enterprise policy.
+  bool is_managed;
 };
 
 // The types of apps available in the registry.
@@ -61,9 +83,10 @@ enum AppType {
   kUnknown = 0,
   kArc,        // Android app.
   kBuiltIn,    // Built-in app.
-  kCrostini,   // Linux app.
+  kCrostini,   // Linux (via Crostini) app.
   kExtension,  // Extension-backed app.
   kWeb,        // Web app.
+  kMacNative,  // Native Mac app.
 };
 
 // Whether an app is ready to launch, i.e. installed.
@@ -77,6 +100,17 @@ enum Readiness {
   kUninstalledByUser,
 };
 
+// How the app was installed.
+enum InstallSource {
+  kUnknown = 0,
+  kSystem,     // Installed with the system and is considered a part of the OS.
+  kPolicy,     // Installed by policy.
+  kOem,        // Installed by an OEM.
+  kDefault,    // Preinstalled by default, but is not considered a system app.
+  kSync,       // Installed by sync.
+  kUser,       // Installed by user action.
+};
+
 // Augments a bool to include an 'unknown' value.
 enum OptionalBool {
   kUnknown = 0,
@@ -85,10 +119,37 @@ enum OptionalBool {
 };
 
 struct IconKey {
-  AppType app_type;
-  // The semantics of u_key and s_key depend on the app_type.
-  uint64 u_key;
-  string s_key;
+  // A timeline value for icons that do not change.
+  const uint64 kDoesNotChangeOverTime = 0;
+
+  const int32 kInvalidResourceId = 0;
+
+  // A monotonically increasing number so that, after an icon update, a new
+  // IconKey, one that is different in terms of field-by-field equality, can be
+  // broadcast by a Publisher.
+  //
+  // The exact value of the number isn't important, only that newer IconKey's
+  // (those that were created more recently) have a larger timeline than older
+  // IconKey's.
+  //
+  // This is, in some sense, *a* version number, but the field is not called
+  // "version", to avoid any possible confusion that it encodes *the* app's
+  // version number, e.g. the "2.3.5" in "FooBar version 2.3.5 is installed".
+  //
+  // For example, if an app is disabled for some reason (so that its icon is
+  // grayed out), this would result in a different timeline even though the
+  // app's version is unchanged.
+  uint64 timeline;
+  // If non-zero (or equivalently, not equal to kInvalidResourceId), the
+  // compressed icon is compiled into the Chromium binary as a statically
+  // available, int-keyed resource.
+  int32 resource_id;
+  // A bitmask of icon post-processing effects, such as desaturation to gray
+  // and rounding the corners.
+  uint32 icon_effects;
+
+  // When adding new fields, also update the IconLoader::Key type in
+  // chrome/services/app_service/public/cpp/icon_loader.*
 };
 
 enum IconCompression {
@@ -111,6 +172,11 @@ enum LaunchSource {
   kFromAppListQuery,             // Query-dependent results (larger icons).
   kFromAppListQueryContextMenu,  // Query-dependent results; context menu.
   kFromAppListRecommendation,    // Query-less recommendations (smaller icons).
+  kFromParentalControls,         // Parental Controls Settings Section.
+  kFromShelf,                    // Shelf.
+  kFromFileManager,              // FileManager.
+  kFromLink,                     // Left-licking on links in the browser.
+  kFromOmnibox,                  // Enter URL in the Omnibox in the browser.
 };
 
 enum TriState {
@@ -122,4 +188,51 @@ enum TriState {
 enum PermissionValueType {
   kBool,                       // Permission.value is a Bool (either 0 or 1).
   kTriState,                   // Permission.value is a TriState.
+};
+
+// The intent filter matching condition types.
+enum ConditionType {
+  kScheme,    // Matches the URL scheme (e.g. https, tel).
+  kHost,      // Matches the URL host (e.g. www.google.com).
+  kPattern,   // Matches the URL pattern (e.g. /abc/*).
+};
+
+// The pattern match type for intent filter pattern condition.
+enum PatternMatchType {
+  kNone = 0,
+  kLiteral,
+  kPrefix,
+  kGlob,
+};
+
+// For pattern type of condition, the value match will be based on the pattern
+// match type. If the match_type is kNone, then an exact match with the value
+// will be required.
+struct ConditionValue {
+  string value;
+  PatternMatchType match_type; // This will be None for non pattern conditions.
+};
+
+// The condition for an intent filter. It matches if the intent contains this
+// condition type and the corresponding value matches with any of the
+// condition_values.
+struct Condition {
+  ConditionType condition_type;
+  array<ConditionValue> condition_values;
+};
+
+// An intent filter is defined by an app, and contains a list of conditions that
+// an intent needs to match. If all conditions match, then this intent filter
+// matches against an intent.
+struct IntentFilter {
+  array<Condition> conditions;
+};
+
+// Action and resource handling request. This includes the scheme and URL at
+// the moment, and will be extended to handle MIME type and file extensions in
+// the future.
+struct Intent {
+  string? scheme; // URL scheme. e.g. https.
+  string? host;   // URL host. e.g. www.google.com.
+  string? path;   // URL path. e.g. /abc.
 };

@@ -164,7 +164,7 @@ def main():
 
   # Create the output directory if it does not exist.
   out_directory = os.path.dirname(out_file)
-  if out_directory is not '' and not os.path.exists(out_directory):
+  if out_directory and not os.path.exists(out_directory):
     os.makedirs(out_directory)
 
   # Generate the main HTML file from the templates.

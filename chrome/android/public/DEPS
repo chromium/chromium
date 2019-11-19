@@ -1,0 +1,7 @@
+include_rules = [
+  "-chrome/android/java",
+  "-chrome/android/features",
+
+  "-content/public/android",
+  "+content/public/android/java/src/org/chromium/content_public",
+]

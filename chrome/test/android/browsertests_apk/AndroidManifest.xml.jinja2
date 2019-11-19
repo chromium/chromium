@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file.
+ -->
+
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="org.chromium.android_browsertests_apk">
+
+    <uses-sdk android:minSdkVersion="19" android:targetSdkVersion="23" />
+    <uses-feature android:glEsVersion="0x00020000" />
+
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
+    <uses-permission android:name="android.permission.READ_SYNC_SETTINGS"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+
+    <application android:name="ChromeBrowserTestsApplication"
+            android:label="ChromeBrowserTests">
+        <activity android:name="ChromeBrowserTestsActivity"
+                  android:launchMode="singleTask"
+                  android:theme="@style/Theme.Chromium.TabbedMode"
+                  android:configChanges="orientation|keyboardHidden|keyboard|screenSize"
+                  android:hardwareAccelerated="true"
+                  android:process=":test_process">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+
+        <activity android:name="org.chromium.chrome.browser.media.MediaLauncherActivity"
+                  android:theme="@android:style/Theme.NoDisplay"
+                  android:excludeFromRecents="true"
+                  android:exported="true"
+                  android:enabled="false"><!-- This will be selectively enabled at runtime. -->
+          <intent-filter tools:ignore="AppLinkUrlError">
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.DEFAULT" />
+            <!-- TODO(https://crbug.com/800875): Limit these to
+                 supported MIME types. -->
+            <data android:mimeType="image/*" />
+            <data android:mimeType="video/*" />
+            <data android:scheme="file" />
+            <data android:scheme="content" />
+          </intent-filter>
+        </activity>
+        <activity-alias android:name="org.chromium.chrome.browser.media.AudioLauncherActivity"
+                        android:targetActivity="org.chromium.chrome.browser.media.MediaLauncherActivity"
+                        android:theme="@android:style/Theme.NoDisplay"
+                        android:excludeFromRecents="true"
+                        android:exported="true"
+                        android:enabled="false"><!-- This will be selectively enabled at runtime. -->
+          <intent-filter tools:ignore="AppLinkUrlError">
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.DEFAULT" />
+            <!-- TODO(https://crbug.com/800875): Limit these to supported MIME types. -->
+            <data android:mimeType="audio/*" />
+            <data android:scheme="file" />
+            <data android:scheme="content" />
+          </intent-filter>
+        </activity-alias>
+
+        <activity android:name="org.chromium.chrome.browser.incognito.IncognitoTabLauncher"
+                  android:theme="@android:style/Theme.NoDisplay"
+                  android:taskAffinity=""
+                  android:enabled="false"
+                  android:excludeFromRecents="true"
+                  android:exported="true">
+          <intent-filter>
+            <action android:name="org.chromium.chrome.browser.incognito.OPEN_PRIVATE_TAB" />
+            <category android:name="android.intent.category.DEFAULT" />
+          </intent-filter>
+        </activity>
+
+        <activity
+          android:name="org.chromium.chrome.browser.sharing.shared_clipboard.SharedClipboardShareActivity"
+          android:icon="@drawable/ic_devices_48dp"
+          android:label="@string/shared_clipboard_share_activity_title"
+          android:enabled="false"
+          android:excludeFromRecents="true"
+          android:exported="true"
+          android:noHistory="true"
+          android:theme="@style/Theme.Chromium.Activity.TranslucentNoAnimations"
+          android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize" >
+          <intent-filter>
+              <action android:name="android.intent.action.SEND" />
+              <category android:name="android.intent.category.DEFAULT" />
+              <data android:mimeType="text/plain" />
+          </intent-filter>
+        </activity>
+
+        <service android:name="org.chromium.components.background_task_scheduler.BackgroundTaskJobService"
+                 android:exported="false"
+                 android:permission="android.permission.BIND_JOB_SERVICE"/>
+
+        <service android:name="org.chromium.chrome.browser.crash.ChromeMinidumpUploadJobService"
+                 android:permission="android.permission.BIND_JOB_SERVICE"
+                 android:exported="false"/>
+
+        <!-- The following service entries exist in order to allow us
+             to start more than one sandboxed process. -->
+
+        <!-- NOTE: If you change the values of "android:process" for any of the below services,
+             you also need to update kHelperProcessExecutableName in chrome_constants.cc. -->
+        {% set num_sandboxed_services = 40 %}
+        <meta-data android:name="org.chromium.content.browser.NUM_SANDBOXED_SERVICES"
+                   android:value="{{ num_sandboxed_services }}"/>
+
+        {% for i in range(num_sandboxed_services) %}
+        <service android:name="org.chromium.content.app.SandboxedProcessService{{ i }}"
+                 android:process=":sandboxed_process{{ i }}"
+                 android:isolatedProcess="true"
+                 android:exported="false" />
+        {% endfor %}
+
+        {% set num_privileged_services = 5 %}
+        <meta-data android:name="org.chromium.content.browser.NUM_PRIVILEGED_SERVICES"
+                   android:value="{{ num_privileged_services }}"/>
+
+        {% for i in range(num_privileged_services) %}
+        <service android:name="org.chromium.content.app.PrivilegedProcessService{{ i }}"
+                 android:process=":privileged_process{{ i }}"
+                 android:isolatedProcess="false"
+                 android:exported="false" />
+        {% endfor %}
+    </application>
+
+    <instrumentation android:name="org.chromium.native_test.NativeTestInstrumentationTestRunner"
+            android:label="ChromeBrowserTests"
+            android:targetPackage="org.chromium.android_browsertests_apk"
+            chromium-junit3="true"/>
+</manifest>

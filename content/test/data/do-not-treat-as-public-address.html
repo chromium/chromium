@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<head><title>WAITING</title></head>
+<body>
+  <script>
+    let total_loads = 0;
+    function loaded() {
+      total_loads++;
+      if (total_loads == 5)
+        document.title = "LOADED";
+    }
+
+    let b = new Blob(["Blob!"], {type: "text/html"});
+    let i = document.createElement('iframe');
+    i.src = URL.createObjectURL(b);
+    i.onload = loaded;
+    document.body.appendChild(i);
+
+    window.webkitRequestFileSystem(
+      window.TEMPORARY,
+      1024*1024,
+      fs => {
+        fs.root.getFile('hello.html', {create:true}, file => {
+          file.createWriter(writer => {
+            writer.onwriteend = _ => {
+              let i = document.createElement('iframe');
+              i.src = file.toURL();
+              i.onload = loaded;
+              document.body.appendChild(i);
+            };
+
+            let b = new Blob(["Filesystem!"], {type: "text/html"});
+            writer.write(b);
+          });
+        },
+        _ = {});
+      },
+      _ => {});
+  </script>
+  <iframe id="data" src="data:text/html,Data!" onload="loaded()"></iframe>
+  <iframe id="about-blank" src="about:blank" onload="loaded()"></iframe>
+  <iframe id="srcdoc" srcdoc="Srcdoc!" onload="loaded()"></iframe>
+</body>

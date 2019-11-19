@@ -9,10 +9,11 @@
 #include <string>
 
 #include "media/base/audio_renderer_sink.h"
-#include "media/mojo/interfaces/audio_output_stream.mojom.h"
+#include "media/mojo/mojom/audio_output_stream.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/audio/public/mojom/audio_processing.mojom.h"
 #include "services/audio/public/mojom/stream_factory.mojom.h"
-#include "services/service_manager/public/cpp/connector.h"
 
 namespace media {
 class AudioDeviceThread;
@@ -24,7 +25,7 @@ namespace audio {
 class OutputDevice {
  public:
   // media::AudioRendererSink::RenderCallback must outlive |this|.
-  OutputDevice(std::unique_ptr<service_manager::Connector> connector,
+  OutputDevice(mojo::PendingRemote<mojom::StreamFactory> stream_factory,
                const media::AudioParameters& params,
                media::AudioRendererSink::RenderCallback* callback,
                const std::string& device_id);
@@ -47,10 +48,10 @@ class OutputDevice {
   std::unique_ptr<media::AudioDeviceThread> audio_thread_;
   media::AudioParameters audio_parameters_;
   media::AudioRendererSink::RenderCallback* render_callback_;
-  media::mojom::AudioOutputStreamPtr stream_;
-  audio::mojom::StreamFactoryPtr stream_factory_;
+  mojo::Remote<media::mojom::AudioOutputStream> stream_;
+  mojo::Remote<audio::mojom::StreamFactory> stream_factory_;
 
-  base::WeakPtrFactory<OutputDevice> weak_factory_;
+  base::WeakPtrFactory<OutputDevice> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(OutputDevice);
 };

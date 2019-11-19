@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/html/forms/file_input_type.h"
 
+#include "base/run_loop.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/clipboard/data_object.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -15,6 +16,7 @@
 #include "third_party/blink/renderer/core/page/drag_data.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/platform/file_metadata.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/wtf/date_math.h"
 
 namespace blink {
@@ -61,9 +63,10 @@ TEST(FileInputTypeTest, createFileList) {
 }
 
 TEST(FileInputTypeTest, ignoreDroppedNonNativeFiles) {
-  Document* document = Document::CreateForTest();
-  auto* input = HTMLInputElement::Create(*document, CreateElementFlags());
-  InputType* file_input = FileInputType::Create(*input);
+  auto* document = MakeGarbageCollected<Document>();
+  auto* input =
+      MakeGarbageCollected<HTMLInputElement>(*document, CreateElementFlags());
+  InputType* file_input = MakeGarbageCollected<FileInputType>(*input);
 
   DataObject* native_file_raw_drag_data = DataObject::Create();
   const DragData native_file_drag_data(native_file_raw_drag_data, FloatPoint(),
@@ -93,9 +96,10 @@ TEST(FileInputTypeTest, ignoreDroppedNonNativeFiles) {
 }
 
 TEST(FileInputTypeTest, setFilesFromPaths) {
-  Document* document = Document::CreateForTest();
-  auto* input = HTMLInputElement::Create(*document, CreateElementFlags());
-  InputType* file_input = FileInputType::Create(*input);
+  auto* document = MakeGarbageCollected<Document>();
+  auto* input =
+      MakeGarbageCollected<HTMLInputElement>(*document, CreateElementFlags());
+  InputType* file_input = MakeGarbageCollected<FileInputType>(*input);
   Vector<String> paths;
   paths.push_back("/native/path");
   paths.push_back("/native/path2");
@@ -129,14 +133,15 @@ TEST(FileInputTypeTest, DropTouchesNoPopupOpeningObserver) {
   FillWithEmptyClients(page_clients);
   auto* chrome_client = MakeGarbageCollected<WebKitDirectoryChromeClient>();
   page_clients.chrome_client = chrome_client;
-  auto page_holder = DummyPageHolder::Create(IntSize(), &page_clients);
+  auto page_holder =
+      std::make_unique<DummyPageHolder>(IntSize(), &page_clients);
   Document& doc = page_holder->GetDocument();
 
   doc.body()->SetInnerHTMLFromString("<input type=file webkitdirectory>");
   auto& input = *ToHTMLInputElement(doc.body()->firstChild());
 
   base::RunLoop run_loop;
-  MockFileChooser chooser(&doc.GetFrame()->GetInterfaceProvider(),
+  MockFileChooser chooser(doc.GetFrame()->GetBrowserInterfaceBroker(),
                           run_loop.QuitClosure());
   DragData drag_data(DataObject::Create(), FloatPoint(), FloatPoint(),
                      kDragOperationCopy);

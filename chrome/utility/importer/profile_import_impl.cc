@@ -4,6 +4,9 @@
 
 #include "chrome/utility/importer/profile_import_impl.h"
 
+#include <string>
+#include <utility>
+
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
@@ -11,29 +14,43 @@
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "chrome/common/importer/profile_import.mojom.h"
 #include "chrome/utility/importer/external_process_importer_bridge.h"
 #include "chrome/utility/importer/importer.h"
 #include "chrome/utility/importer/importer_creator.h"
 #include "content/public/utility/utility_thread.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/shared_remote.h"
 
-using chrome::mojom::ThreadSafeProfileImportObserverPtr;
+#if defined(OS_MACOSX)
+#include <stdlib.h>
+
+#include "chrome/common/importer/firefox_importer_utils.h"
+#endif
 
 ProfileImportImpl::ProfileImportImpl(
-    std::unique_ptr<service_manager::ServiceContextRef> service_ref)
-    : service_ref_(std::move(service_ref)) {}
+    mojo::PendingReceiver<chrome::mojom::ProfileImport> receiver)
+    : receiver_(this, std::move(receiver)) {
+#if defined(OS_MACOSX)
+  std::string dylib_path = GetFirefoxDylibPath().value();
+  if (!dylib_path.empty())
+    ::setenv("DYLD_FALLBACK_LIBRARY_PATH", dylib_path.c_str(),
+             1 /* overwrite */);
+#endif
+}
 
-ProfileImportImpl::~ProfileImportImpl() {}
+ProfileImportImpl::~ProfileImportImpl() = default;
 
 void ProfileImportImpl::StartImport(
     const importer::SourceProfile& source_profile,
     uint16_t items,
     const base::flat_map<uint32_t, std::string>& localized_strings,
-    chrome::mojom::ProfileImportObserverPtr observer) {
+    mojo::PendingRemote<chrome::mojom::ProfileImportObserver> observer) {
   content::UtilityThread::Get()->EnsureBlinkInitialized();
   importer_ = importer::CreateImporterByType(source_profile.importer_type);
   if (!importer_.get()) {
-    observer->OnImportFinished(false, "Importer could not be created.");
+    mojo::Remote<chrome::mojom::ProfileImportObserver>(std::move(observer))
+        ->OnImportFinished(false, "Importer could not be created.");
     return;
   }
 
@@ -50,7 +67,8 @@ void ProfileImportImpl::StartImport(
   }
   bridge_ = new ExternalProcessImporterBridge(
       localized_strings,
-      ThreadSafeProfileImportObserverPtr::Create(std::move(observer)));
+      mojo::SharedRemote<chrome::mojom::ProfileImportObserver>(
+          std::move(observer)));
   import_thread_->task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(&Importer::StartImport, importer_, source_profile, items,
@@ -70,7 +88,7 @@ void ProfileImportImpl::ReportImportItemFinished(importer::ImportItem item) {
 
 void ProfileImportImpl::ImporterCleanup() {
   importer_->Cancel();
-  importer_ = NULL;
-  bridge_ = NULL;
+  importer_.reset();
+  bridge_.reset();
   import_thread_.reset();
 }

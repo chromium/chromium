@@ -5,6 +5,7 @@
 module blink.mojom;
 
 import "third_party/blink/public/mojom/script/script_type.mojom";
+import "third_party/blink/public/mojom/loader/fetch_client_settings_object.mojom";
 import "third_party/blink/public/mojom/service_worker/navigation_preload_state.mojom";
 import "third_party/blink/public/mojom/service_worker/service_worker_error_type.mojom";
 import "third_party/blink/public/mojom/service_worker/service_worker_object.mojom";
@@ -47,12 +48,11 @@ struct ServiceWorkerRegistrationObjectInfo {
 
   // Holds one mojo connection to browser process, acts as a reference count to
   // control lifetime of ServiceWorkerRegistration in the browser process.
-  associated ServiceWorkerRegistrationObjectHost host_ptr_info;
+  pending_associated_remote<ServiceWorkerRegistrationObjectHost> host_remote;
 
-  // |request| is expected to be bound on the implementation of interface
-  // ServiceWorkerRegistrationObject in the renderer process. The other end
+  // |receiver| is expected to be bound in the renderer process. The other end
   // point of this Mojo connection is held by the browser process.
-  associated ServiceWorkerRegistrationObject& request;
+  pending_associated_receiver<ServiceWorkerRegistrationObject> receiver;
 
   // Corresponds to ServiceWorkerRegistration#{installing,waiting,active}.
   // Null value means the corresponding object does not exist.
@@ -69,7 +69,8 @@ interface ServiceWorkerRegistrationObjectHost {
   // Corresponds to ServiceWorkerRegistration#update().
   // On success, |error| is kNone without |error_msg| set.
   // Otherwise, |error| and |error_msg| describe the failure.
-  Update() => (ServiceWorkerErrorType error, string? error_msg);
+  Update(FetchClientSettingsObject outside_fetch_client_settings_object)
+    => (ServiceWorkerErrorType error, string? error_msg);
 
   // Corresponds to ServiceWorkerRegistration#unregister().
   // On success, |error| is kNone without |error_msg| set.

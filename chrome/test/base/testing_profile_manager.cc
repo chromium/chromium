@@ -36,8 +36,9 @@ class ProfileManager : public ::ProfileManagerWithoutInit {
       : ::ProfileManagerWithoutInit(user_data_dir) {}
 
  protected:
-  Profile* CreateProfileHelper(const base::FilePath& file_path) override {
-    return new TestingProfile(file_path);
+  std::unique_ptr<Profile> CreateProfileHelper(
+      const base::FilePath& path) override {
+    return std::make_unique<TestingProfile>(path);
   }
 };
 
@@ -76,7 +77,8 @@ TestingProfile* TestingProfileManager::CreateTestingProfile(
     const base::string16& user_name,
     int avatar_id,
     const std::string& supervised_user_id,
-    TestingProfile::TestingFactories testing_factories) {
+    TestingProfile::TestingFactories testing_factories,
+    base::Optional<bool> override_new_profile) {
   DCHECK(called_set_up_);
 
   // Create a path for the profile based on the name.
@@ -101,13 +103,16 @@ TestingProfile* TestingProfileManager::CreateTestingProfile(
   builder.SetPrefService(std::move(prefs));
   builder.SetSupervisedUserId(supervised_user_id);
   builder.SetProfileName(profile_name);
+  if (override_new_profile)
+    builder.OverrideIsNewProfile(*override_new_profile);
 
   for (TestingProfile::TestingFactories::value_type& pair : testing_factories)
     builder.AddTestingFactory(pair.first, std::move(pair.second));
   testing_factories.clear();
 
-  TestingProfile* profile = builder.Build().release();
-  profile_manager_->AddProfile(profile);  // Takes ownership.
+  std::unique_ptr<TestingProfile> profile = builder.Build();
+  TestingProfile* profile_ptr = profile.get();
+  profile_manager_->AddProfile(std::move(profile));
 
   // Update the user metadata.
   ProfileAttributesEntry* entry;
@@ -116,11 +121,11 @@ TestingProfile* TestingProfileManager::CreateTestingProfile(
   DCHECK(success);
   entry->SetAvatarIconIndex(avatar_id);
   entry->SetSupervisedUserId(supervised_user_id);
-  entry->SetName(user_name);
+  entry->SetLocalProfileName(user_name);
 
-  testing_profiles_.insert(std::make_pair(profile_name, profile));
+  testing_profiles_.insert(std::make_pair(profile_name, profile_ptr));
 
-  return profile;
+  return profile_ptr;
 }
 
 TestingProfile* TestingProfileManager::CreateTestingProfile(
@@ -141,20 +146,21 @@ TestingProfile* TestingProfileManager::CreateGuestProfile() {
   builder.SetPath(ProfileManager::GetGuestProfilePath());
 
   // Add the guest profile to the profile manager, but not to the info cache.
-  TestingProfile* profile = builder.Build().release();
-  profile->set_profile_name(kGuestProfileName);
+  std::unique_ptr<TestingProfile> profile = builder.Build();
+  TestingProfile* profile_ptr = profile.get();
+  profile_ptr->set_profile_name(kGuestProfileName);
 
   // Set up a profile with an off the record profile.
   TestingProfile::Builder off_the_record_builder;
   off_the_record_builder.SetGuestSession();
-  off_the_record_builder.BuildIncognito(profile);
+  off_the_record_builder.BuildIncognito(profile_ptr);
 
-  profile_manager_->AddProfile(profile);  // Takes ownership.
-  profile_manager_->SetNonPersonalProfilePrefs(profile);
+  profile_manager_->AddProfile(std::move(profile));
+  profile_manager_->SetNonPersonalProfilePrefs(profile_ptr);
 
-  testing_profiles_.insert(std::make_pair(kGuestProfileName, profile));
+  testing_profiles_.insert(std::make_pair(kGuestProfileName, profile_ptr));
 
-  return profile;
+  return profile_ptr;
 }
 
 TestingProfile* TestingProfileManager::CreateSystemProfile() {
@@ -165,14 +171,15 @@ TestingProfile* TestingProfileManager::CreateSystemProfile() {
   builder.SetPath(ProfileManager::GetSystemProfilePath());
 
   // Add the system profile to the profile manager, but not to the info cache.
-  TestingProfile* profile = builder.Build().release();
-  profile->set_profile_name(kSystemProfileName);
+  std::unique_ptr<TestingProfile> profile = builder.Build();
+  TestingProfile* profile_ptr = profile.get();
+  profile_ptr->set_profile_name(kSystemProfileName);
 
-  profile_manager_->AddProfile(profile);  // Takes ownership.
+  profile_manager_->AddProfile(std::move(profile));
 
-  testing_profiles_.insert(std::make_pair(kSystemProfileName, profile));
+  testing_profiles_.insert(std::make_pair(kSystemProfileName, profile_ptr));
 
-  return profile;
+  return profile_ptr;
 }
 
 void TestingProfileManager::DeleteTestingProfile(const std::string& name) {
@@ -224,10 +231,6 @@ void TestingProfileManager::DeleteSystemProfile() {
 
 void TestingProfileManager::DeleteProfileInfoCache() {
   profile_manager_->profile_info_cache_.reset(NULL);
-}
-
-void TestingProfileManager::SetLoggedIn(bool logged_in) {
-  profile_manager_->logged_in_ = logged_in;
 }
 
 void TestingProfileManager::UpdateLastUser(Profile* last_active) {

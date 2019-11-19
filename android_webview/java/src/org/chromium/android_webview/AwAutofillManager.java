@@ -12,8 +12,9 @@ import android.view.View;
 import android.view.autofill.AutofillManager;
 import android.view.autofill.AutofillValue;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.Log;
-import org.chromium.base.VisibleForTesting;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -141,8 +142,9 @@ public class AwAutofillManager {
 
     public void addInputUIObserver(InputUIObserver observer) {
         if (observer == null) return;
-        if (mInputUIObservers == null)
+        if (mInputUIObservers == null) {
             mInputUIObservers = new ArrayList<WeakReference<InputUIObserver>>();
+        }
         mInputUIObservers.add(new WeakReference<InputUIObserver>(observer));
     }
 

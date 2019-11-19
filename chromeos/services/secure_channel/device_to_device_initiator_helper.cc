@@ -30,8 +30,7 @@ const int kD2DProtocolVersion = 1;
 
 }  // namespace
 
-DeviceToDeviceInitiatorHelper::DeviceToDeviceInitiatorHelper()
-    : weak_ptr_factory_(this) {}
+DeviceToDeviceInitiatorHelper::DeviceToDeviceInitiatorHelper() {}
 
 DeviceToDeviceInitiatorHelper::~DeviceToDeviceInitiatorHelper() {}
 

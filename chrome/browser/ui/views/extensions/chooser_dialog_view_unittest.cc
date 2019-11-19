@@ -15,7 +15,6 @@
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/table/table_view.h"
 #include "ui/views/widget/widget.h"
-#include "ui/views/window/dialog_client_view.h"
 
 class ChooserDialogViewTest : public ChromeViewsTestBase {
  public:
@@ -34,7 +33,7 @@ class ChooserDialogViewTest : public ChromeViewsTestBase {
         CreateParams(views::Widget::InitParams::TYPE_WINDOW);
     params.bounds = gfx::Rect(10, 11, 200, 200);
     params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
-    parent_widget_.Init(params);
+    parent_widget_.Init(std::move(params));
 
     widget_ = views::DialogDelegate::CreateDialogWidget(
         dialog_, GetContext(), parent_widget_.GetNativeView());
@@ -63,12 +62,13 @@ class ChooserDialogViewTest : public ChromeViewsTestBase {
   }
 
   views::TableView* table_view() {
-    return dialog_->device_chooser_content_view_for_test()->table_view_;
+    return dialog_->device_chooser_content_view_for_test()
+        ->table_view_for_testing();
   }
 
   views::LabelButton* re_scan_button() {
     return dialog_->device_chooser_content_view_for_test()
-        ->bluetooth_status_container_->re_scan_button();
+        ->ReScanButtonForTesting();
   }
 
   void AddDevice() {
@@ -133,8 +133,8 @@ TEST_F(ChooserDialogViewTest, CancelButtonFocusedWhenReScanIsPressed) {
   re_scan_button()->OnMousePressed(event);
   re_scan_button()->OnMouseReleased(event);
 
-  EXPECT_FALSE(re_scan_button()->visible());
-  EXPECT_EQ(dialog_->GetDialogClientView()->cancel_button(),
+  EXPECT_FALSE(re_scan_button()->GetVisible());
+  EXPECT_EQ(dialog_->GetCancelButton(),
             dialog_->GetFocusManager()->GetFocusedView());
 }
 

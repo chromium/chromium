@@ -28,6 +28,14 @@ class InvalidationObjectId;
 
 namespace syncer {
 
+// FCMInvalidationService and deprecated TiclInvalidationService uses ObjectId
+// to keep track of objects to invalidate. There are 2 fields in ObjectId:
+// source and name. TiclInvalidationService expects both of them, while
+// FCMInvalidationService only works with the name. So InvalidationService
+// assigns the value of source to kDeprecatedSourceForFCM when FCM (Firebase
+// Cloud Messaging) is enabled.
+extern const int kDeprecatedSourceForFCM;
+
 // Used by UMA histogram, so entries shouldn't be reordered or removed.
 enum class HandlerOwnerType {
   kCloud = 0,
@@ -45,13 +53,7 @@ enum class HandlerOwnerType {
 };
 
 class Invalidation;
-
-// TODO(https://crbug.com/842655): Convert Repeating to Once.
-using ParseJSONCallback = base::RepeatingCallback<void(
-    const std::string& unsafe_json,
-    const base::RepeatingCallback<void(std::unique_ptr<base::Value>)>&
-        success_callback,
-    const base::RepeatingCallback<void(const std::string&)>& error_callback)>;
+class InvalidationHandler;
 
 struct INVALIDATION_EXPORT ObjectIdLessThan {
   bool operator()(const invalidation::ObjectId& lhs,
@@ -70,6 +72,15 @@ typedef std::map<invalidation::ObjectId, int, ObjectIdLessThan>
 using Topic = std::string;
 // It should be std::set, since std::set_difference is used for it.
 using TopicSet = std::set<std::string>;
+
+INVALIDATION_EXPORT struct TopicMetadata {
+  // Whether the topic is public.
+  bool is_public;
+};
+
+INVALIDATION_EXPORT bool operator==(const TopicMetadata&, const TopicMetadata&);
+
+using Topics = std::map<std::string, TopicMetadata>;
 
 // Caller owns the returned DictionaryValue.
 std::unique_ptr<base::DictionaryValue> ObjectIdToValue(
@@ -108,11 +119,19 @@ bool DeserializeInvalidationObjectId(const std::string& serialized,
 INVALIDATION_EXPORT std::string InvalidationObjectIdToString(
     const invalidation::InvalidationObjectId& object_id);
 
-TopicSet ConvertIdsToTopics(ObjectIdSet ids);
 ObjectIdSet ConvertTopicsToIds(TopicSet topics);
+ObjectIdSet ConvertTopicsToIds(Topics topics);
 invalidation::ObjectId ConvertTopicToId(const Topic& topic);
+Topics ConvertIdsToTopics(ObjectIdSet ids, InvalidationHandler* handler);
 
 HandlerOwnerType OwnerNameToHandlerType(const std::string& owner_name);
+
+// Returns a |Topic| contained within both |lhs| and |rhs| or null if |lhs| and
+// |rhs| are disjoint.
+const Topic* FindMatchingTopic(const Topics& lhs, const Topics& rhs);
+
+// Returns a vector of Topics in |lhs| but not |rhs|.
+std::vector<Topic> FindRemovedTopics(const Topics& lhs, const Topics& rhs);
 
 }  // namespace syncer
 

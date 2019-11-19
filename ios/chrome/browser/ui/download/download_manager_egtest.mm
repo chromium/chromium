@@ -2,23 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import <EarlGrey/EarlGrey.h>
-
 #include "base/bind.h"
 #import "base/test/ios/wait_util.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
 #include "ios/chrome/grit/ios_strings.h"
-#import "ios/chrome/test/app/chrome_test_util.h"
-#import "ios/chrome/test/app/tab_test_util.h"
-#include "ios/chrome/test/earl_grey/accessibility_util.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
+#import "ios/testing/earl_grey/earl_grey_test.h"
 #include "ios/testing/embedded_test_server_handlers.h"
-#import "ios/web/public/test/earl_grey/web_view_matchers.h"
+#include "ios/web/public/test/element_selector.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
@@ -28,21 +24,14 @@
 #endif
 
 using chrome_test_util::ButtonWithAccessibilityLabelId;
-using chrome_test_util::GetCurrentWebState;
 using chrome_test_util::OpenLinkInNewTabButton;
-using web::test::ElementSelector;
-using web::WebViewInWebState;
+using chrome_test_util::WebViewMatcher;
 
 namespace {
 
 // Matcher for "Download" button on Download Manager UI.
 id<GREYMatcher> DownloadButton() {
   return ButtonWithAccessibilityLabelId(IDS_IOS_DOWNLOAD_MANAGER_DOWNLOAD);
-}
-
-// Matcher for "Open In..." button on Download Manager UI.
-id<GREYMatcher> OpenInButton() {
-  return ButtonWithAccessibilityLabelId(IDS_IOS_OPEN_IN);
 }
 
 // Provides downloads landing page with download link.
@@ -61,7 +50,7 @@ bool WaitForOpenInButton() {
   const NSTimeInterval kLongDownloadTimeout = 35;
   return base::test::ios::WaitUntilConditionOrTimeout(kLongDownloadTimeout, ^{
     NSError* error = nil;
-    [[EarlGrey selectElementWithMatcher:OpenInButton()]
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::OpenInButton()]
         assertWithMatcher:grey_notNil()
                     error:&error];
     return (error == nil);
@@ -108,8 +97,8 @@ bool WaitForDownloadButton() {
 // is run in a separate process.
 - (void)testSucessfullDownload {
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
-  [ChromeEarlGrey waitForWebViewContainingText:"Download"];
-  [ChromeEarlGrey tapWebViewElementWithID:@"download"];
+  [ChromeEarlGrey waitForWebStateContainingText:"Download"];
+  [ChromeEarlGrey tapWebStateElementWithID:@"download"];
 
   GREYAssert(WaitForDownloadButton(), @"Download button did not show up");
   [[EarlGrey selectElementWithMatcher:DownloadButton()]
@@ -124,8 +113,8 @@ bool WaitForDownloadButton() {
 - (void)testSucessfullDownloadInIncognito {
   [ChromeEarlGrey openNewIncognitoTab];
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
-  [ChromeEarlGrey waitForWebViewContainingText:"Download"];
-  [ChromeEarlGrey tapWebViewElementWithID:@"download"];
+  [ChromeEarlGrey waitForWebStateContainingText:"Download"];
+  [ChromeEarlGrey tapWebStateElementWithID:@"download"];
 
   GREYAssert(WaitForDownloadButton(), @"Download button did not show up");
   [[EarlGrey selectElementWithMatcher:DownloadButton()]
@@ -137,8 +126,8 @@ bool WaitForDownloadButton() {
 // Tests cancelling download UI.
 - (void)testCancellingDownload {
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
-  [ChromeEarlGrey waitForWebViewContainingText:"Download"];
-  [ChromeEarlGrey tapWebViewElementWithID:@"download"];
+  [ChromeEarlGrey waitForWebStateContainingText:"Download"];
+  [ChromeEarlGrey tapWebStateElementWithID:@"download"];
 
   GREYAssert(WaitForDownloadButton(), @"Download button did not show up");
   [[EarlGrey selectElementWithMatcher:DownloadButton()]
@@ -158,8 +147,8 @@ bool WaitForDownloadButton() {
 // the download completion.
 - (void)testDownloadWhileBrowsing {
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
-  [ChromeEarlGrey waitForWebViewContainingText:"Download"];
-  [ChromeEarlGrey tapWebViewElementWithID:@"download"];
+  [ChromeEarlGrey waitForWebStateContainingText:"Download"];
+  [ChromeEarlGrey tapWebStateElementWithID:@"download"];
 
   GREYAssert(WaitForDownloadButton(), @"Download button did not show up");
   [[EarlGrey selectElementWithMatcher:DownloadButton()]
@@ -176,7 +165,7 @@ bool WaitForDownloadButton() {
   // Load a URL in a separate Tab and close that tab.
   [ChromeEarlGrey loadURL:GURL(kChromeUITermsURL)];
   const char kTermsText[] = "Google Chrome Terms of Service";
-  [ChromeEarlGrey waitForWebViewContainingText:kTermsText];
+  [ChromeEarlGrey waitForWebStateContainingText:kTermsText];
   [ChromeEarlGrey closeCurrentTab];
   GREYAssert(WaitForOpenInButton(), @"Open in... button did not show up");
 }
@@ -184,12 +173,12 @@ bool WaitForDownloadButton() {
 // Tests "Open in New Tab" on download link.
 - (void)testDownloadInNewTab {
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
-  [ChromeEarlGrey waitForWebViewContainingText:"Download"];
+  [ChromeEarlGrey waitForWebStateContainingText:"Download"];
 
   // Open context menu for download link.
-  [[EarlGrey selectElementWithMatcher:WebViewInWebState(GetCurrentWebState())]
+  [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
       performAction:chrome_test_util::LongPressElementForContextMenu(
-                        ElementSelector::ElementSelectorId("download"),
+                        [ElementSelector selectorWithElementID:"download"],
                         /*menu_should_appear=*/true)];
 
   // Tap "Open In New Tab".
@@ -200,7 +189,7 @@ bool WaitForDownloadButton() {
 
   // Wait until the new tab is open and switch to that tab.
   [ChromeEarlGrey waitForMainTabCount:2];
-  chrome_test_util::SelectTabAtIndexInCurrentMode(1U);
+  [ChromeEarlGrey selectTabAtIndex:1U];
   GREYAssert(WaitForDownloadButton(), @"Download button did not show up");
 
   // Proceed with download.
@@ -212,21 +201,21 @@ bool WaitForDownloadButton() {
 // Tests accessibility on Download Manager UI when download is not started.
 - (void)testAccessibilityOnNotStartedDownloadToolbar {
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
-  [ChromeEarlGrey waitForWebViewContainingText:"Download"];
-  [ChromeEarlGrey tapWebViewElementWithID:@"download"];
+  [ChromeEarlGrey waitForWebStateContainingText:"Download"];
+  [ChromeEarlGrey tapWebStateElementWithID:@"download"];
 
   GREYAssert(WaitForDownloadButton(), @"Download button did not show up");
   [[EarlGrey selectElementWithMatcher:DownloadButton()]
       assertWithMatcher:grey_notNil()];
 
-  chrome_test_util::VerifyAccessibilityForCurrentScreen();
+  [ChromeEarlGrey verifyAccessibilityForCurrentScreen];
 }
 
 // Tests accessibility on Download Manager UI when download is complete.
 - (void)testAccessibilityOnCompletedDownloadToolbar {
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
-  [ChromeEarlGrey waitForWebViewContainingText:"Download"];
-  [ChromeEarlGrey tapWebViewElementWithID:@"download"];
+  [ChromeEarlGrey waitForWebStateContainingText:"Download"];
+  [ChromeEarlGrey tapWebStateElementWithID:@"download"];
 
   GREYAssert(WaitForDownloadButton(), @"Download button did not show up");
   [[EarlGrey selectElementWithMatcher:DownloadButton()]
@@ -234,7 +223,7 @@ bool WaitForDownloadButton() {
 
   GREYAssert(WaitForOpenInButton(), @"Open in... button did not show up");
 
-  chrome_test_util::VerifyAccessibilityForCurrentScreen();
+  [ChromeEarlGrey verifyAccessibilityForCurrentScreen];
 }
 
 @end

@@ -58,10 +58,6 @@ class OfflinePageTabHelper
  public:
   ~OfflinePageTabHelper() override;
 
-  // Creates the Mojo service that can listen to the renderer's archive events.
-  void CreateMhtmlPageNotifier(
-      offline_pages::mojom::MhtmlPageNotifierRequest request);
-
   // MhtmlPageNotifier overrides.
   void NotifyMhtmlPageLoadAttempted(blink::mojom::MHTMLLoadResult result,
                                     const GURL& main_frame_url,
@@ -211,17 +207,12 @@ class OfflinePageTabHelper
   // Service, outlives this object.
   PrefetchService* prefetch_service_ = nullptr;
 
-  // Table of OfflinePages policies.
-  // TODO(dimich): When we only have one shared version of PolicyController,
-  // replace this instance with access to a shared one.
-  ClientPolicyController policy_controller_;
-
   // TODO(crbug.com/827215): We only really want interface messages for the main
   // frame but this is not easily done with the current helper classes.
   content::WebContentsFrameBindingSet<mojom::MhtmlPageNotifier>
       mhtml_page_notifier_bindings_;
 
-  base::WeakPtrFactory<OfflinePageTabHelper> weak_ptr_factory_;
+  base::WeakPtrFactory<OfflinePageTabHelper> weak_ptr_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 

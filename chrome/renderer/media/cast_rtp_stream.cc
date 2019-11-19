@@ -12,7 +12,6 @@
 
 #include "base/bind.h"
 #include "base/bind_helpers.h"
-#include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
@@ -24,7 +23,6 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/renderer/media/cast_session.h"
 #include "chrome/renderer/media/cast_udp_transport.h"
-#include "content/public/renderer/media_stream_utils.h"
 #include "content/public/renderer/render_thread.h"
 #include "content/public/renderer/video_encode_accelerator.h"
 #include "media/base/audio_bus.h"
@@ -40,6 +38,7 @@
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_audio_sink.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_sink.h"
 #include "third_party/blink/public/platform/web_media_stream_source.h"
+#include "third_party/blink/public/web/modules/mediastream/web_media_stream_utils.h"
 #include "ui/gfx/geometry/size.h"
 
 using media::cast::FrameSenderConfig;
@@ -180,7 +179,7 @@ class CastVideoSink : public base::SupportsWeakPtr<CastVideoSink>,
 
   ~CastVideoSink() override {
     if (is_connected_to_track_)
-      content::RemoveSinkFromMediaStreamTrack(track_, this);
+      blink::RemoveSinkFromMediaStreamTrack(track_, this);
   }
 
   // Attach this sink to a video track represented by |track_|.
@@ -195,7 +194,7 @@ class CastVideoSink : public base::SupportsWeakPtr<CastVideoSink>,
         base::TimeDelta::FromMilliseconds(kRefreshIntervalMilliseconds),
         base::Bind(&CastVideoSink::OnRefreshTimerFired,
                    base::Unretained(this)));
-    content::AddSinkToMediaStreamTrack(
+    blink::AddSinkToMediaStreamTrack(
         track_, this, base::BindRepeating(&Deliverer::OnVideoFrame, deliverer_),
         is_sink_secure);
     is_connected_to_track_ = true;
@@ -216,7 +215,7 @@ class CastVideoSink : public base::SupportsWeakPtr<CastVideoSink>,
       frame_input_ = std::move(frame_input);
     }
 
-    void OnVideoFrame(const scoped_refptr<media::VideoFrame>& video_frame,
+    void OnVideoFrame(scoped_refptr<media::VideoFrame> video_frame,
                       base::TimeTicks estimated_capture_time) {
       main_task_runner_->PostTask(
           FROM_HERE, base::BindOnce(&CastVideoSink::DidReceiveFrame, sink_));
@@ -234,14 +233,14 @@ class CastVideoSink : public base::SupportsWeakPtr<CastVideoSink>,
       scoped_refptr<media::VideoFrame> frame = video_frame;
       // Drop alpha channel since we do not support it yet.
       if (frame->format() == media::PIXEL_FORMAT_I420A)
-        frame = media::WrapAsI420VideoFrame(video_frame);
+        frame = media::WrapAsI420VideoFrame(std::move(video_frame));
 
       // Used by chrome/browser/extension/api/cast_streaming/performance_test.cc
       TRACE_EVENT_INSTANT2("cast_perf_test", "ConsumeVideoFrame",
                            TRACE_EVENT_SCOPE_THREAD, "timestamp",
                            (timestamp - base::TimeTicks()).InMicroseconds(),
                            "time_delta", frame->timestamp().InMicroseconds());
-      frame_input_->InsertRawVideoFrame(frame, timestamp);
+      frame_input_->InsertRawVideoFrame(std::move(frame), timestamp);
     }
 
    private:
@@ -269,7 +268,7 @@ class CastVideoSink : public base::SupportsWeakPtr<CastVideoSink>,
     DVLOG(1) << "CastVideoSink is requesting another refresh frame "
                 "(consecutive count=" << consecutive_refresh_count_ << ").";
     expecting_a_refresh_frame_ = true;
-    content::RequestRefreshFrameFromVideoTrack(track_);
+    blink::RequestRefreshFrameFromVideoTrack(track_);
   }
 
   void DidReceiveFrame() {
@@ -475,12 +474,11 @@ CastRtpStream::CastRtpStream(const blink::WebMediaStreamTrack& track,
     : track_(track),
       cast_session_(session),
       is_audio_(track_.Source().GetType() ==
-                blink::WebMediaStreamSource::kTypeAudio),
-      weak_factory_(this) {}
+                blink::WebMediaStreamSource::kTypeAudio) {}
 
 CastRtpStream::CastRtpStream(bool is_audio,
                              const scoped_refptr<CastSession>& session)
-    : cast_session_(session), is_audio_(is_audio), weak_factory_(this) {}
+    : cast_session_(session), is_audio_(is_audio) {}
 
 CastRtpStream::~CastRtpStream() {
   Stop();
@@ -543,7 +541,7 @@ void CastRtpStream::Stop() {
   error_callback_.Reset();
   audio_sink_.reset();
   video_sink_.reset();
-  base::ResetAndReturn(&stop_callback_).Run();
+  std::move(stop_callback_).Run();
 }
 
 void CastRtpStream::ToggleLogging(bool enable) {

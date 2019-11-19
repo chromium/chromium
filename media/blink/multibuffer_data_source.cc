@@ -10,6 +10,7 @@
 #include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/macros.h"
+#include "base/numerics/ranges.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/single_thread_task_runner.h"
 #include "media/base/media_log.h"
@@ -67,11 +68,6 @@ constexpr base::TimeDelta kSeekDelay = base::TimeDelta::FromMilliseconds(20);
 }  // namespace
 
 namespace media {
-
-template <typename T>
-T clamp(T value, T min, T max) {
-  return std::max(std::min(value, max), min);
-}
 
 class MultibufferDataSource::ReadOperation {
  public:
@@ -139,8 +135,7 @@ MultibufferDataSource::MultibufferDataSource(
       playback_rate_(0.0),
       media_log_(media_log),
       host_(host),
-      downloading_cb_(downloading_cb),
-      weak_factory_(this) {
+      downloading_cb_(downloading_cb) {
   weak_ptr_ = weak_factory_.GetWeakPtr();
   DCHECK(host_);
   DCHECK(downloading_cb_);
@@ -289,14 +284,17 @@ bool MultibufferDataSource::IsCorsCrossOrigin() const {
   return url_data_->is_cors_cross_origin();
 }
 
+bool MultibufferDataSource::HasAccessControl() const {
+  return url_data_->has_access_control();
+}
+
 UrlData::CorsMode MultibufferDataSource::cors_mode() const {
   return url_data_->cors_mode();
 }
 
 void MultibufferDataSource::MediaPlaybackRateChanged(double playback_rate) {
   DCHECK(render_task_runner_->BelongsToCurrentThread());
-
-  if (playback_rate < 0.0)
+  if (playback_rate < 0 || playback_rate == playback_rate_)
     return;
 
   playback_rate_ = playback_rate;
@@ -306,8 +304,16 @@ void MultibufferDataSource::MediaPlaybackRateChanged(double playback_rate) {
 
 void MultibufferDataSource::MediaIsPlaying() {
   DCHECK(render_task_runner_->BelongsToCurrentThread());
-  media_has_played_ = true;
+
+  // Always clear this since it can be set by OnBufferingHaveEnough() calls at
+  // any point in time.
   cancel_on_defer_ = false;
+
+  if (media_has_played_)
+    return;
+
+  media_has_played_ = true;
+
   // Once we start playing, we need preloading.
   preload_ = AUTO;
   UpdateBufferSizes();
@@ -699,7 +705,7 @@ void MultibufferDataSource::UpdateBufferSizes() {
   buffer_size_update_counter_ = kUpdateBufferSizeFrequency;
 
   // Use a default bit rate if unknown and clamp to prevent overflow.
-  int64_t bitrate = clamp<int64_t>(bitrate_, 0, kMaxBitrate);
+  int64_t bitrate = base::ClampToRange<int64_t>(bitrate_, 0, kMaxBitrate);
   if (bitrate == 0)
     bitrate = kDefaultBitrate;
 
@@ -713,8 +719,9 @@ void MultibufferDataSource::UpdateBufferSizes() {
   int64_t bytes_per_second = (bitrate / 8.0) * playback_rate;
 
   // Preload 10 seconds of data, clamped to some min/max value.
-  int64_t preload = clamp(kTargetSecondsBufferedAhead * bytes_per_second,
-                          kMinBufferPreload, kMaxBufferPreload);
+  int64_t preload =
+      base::ClampToRange(kTargetSecondsBufferedAhead * bytes_per_second,
+                         kMinBufferPreload, kMaxBufferPreload);
 
   // Increase buffering slowly at a rate of 10% of data downloaded so
   // far, maxing out at the preload size.
@@ -728,8 +735,9 @@ void MultibufferDataSource::UpdateBufferSizes() {
   int64_t preload_high = preload + kPreloadHighExtra;
 
   // We pin a few seconds of data behind the current reading position.
-  int64_t pin_backward = clamp(kTargetSecondsBufferedBehind * bytes_per_second,
-                               kMinBufferPreload, kMaxBufferPreload);
+  int64_t pin_backward =
+      base::ClampToRange(kTargetSecondsBufferedBehind * bytes_per_second,
+                         kMinBufferPreload, kMaxBufferPreload);
 
   // We always pin at least kDefaultPinSize ahead of the read position.
   // Normally, the extra space between preload_high and kDefaultPinSize will

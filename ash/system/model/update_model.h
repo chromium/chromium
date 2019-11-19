@@ -5,7 +5,7 @@
 #ifndef ASH_SYSTEM_MODEL_UPDATE_MODEL_H_
 #define ASH_SYSTEM_MODEL_UPDATE_MODEL_H_
 
-#include "ash/public/interfaces/update.mojom.h"
+#include "ash/public/cpp/update_types.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/strings/string16.h"
@@ -32,16 +32,16 @@ class UpdateModel {
   // until reboot. Based on |severity|, |factory_reset_required| and |rollback|,
   // the observer views can indicate the severity of the update to users by
   // changing the icon, color, and tooltip.
-  void SetUpdateAvailable(mojom::UpdateSeverity severity,
+  void SetUpdateAvailable(UpdateSeverity severity,
                           bool factory_reset_required,
                           bool rollback,
-                          mojom::UpdateType update_type);
+                          UpdateType update_type);
 
   // Store the state of the notification according to the RelaunchNotification
   // policy. State persists until reboot or another call to this function.
   // The |notification_body| changes the text of the notification, as it
   // contains a countdown until the required reboot.
-  void SetUpdateNotificationState(mojom::NotificationStyle style,
+  void SetUpdateNotificationState(NotificationStyle style,
                                   const base::string16& notification_title,
                                   const base::string16& notification_body);
 
@@ -51,15 +51,13 @@ class UpdateModel {
   // granted.
   void SetUpdateOverCellularAvailable(bool available);
 
-  mojom::UpdateSeverity GetSeverity() const;
+  UpdateSeverity GetSeverity() const;
 
   bool update_required() const { return update_required_; }
   bool factory_reset_required() const { return factory_reset_required_; }
   bool rollback() const { return rollback_; }
-  mojom::UpdateType update_type() const { return update_type_; }
-  mojom::NotificationStyle notification_style() const {
-    return notification_style_;
-  }
+  UpdateType update_type() const { return update_type_; }
+  NotificationStyle notification_style() const { return notification_style_; }
   const base::string16& notification_title() const {
     return notification_title_;
   }
@@ -72,12 +70,11 @@ class UpdateModel {
   void NotifyUpdateAvailable();
 
   bool update_required_ = false;
-  mojom::UpdateSeverity severity_ = mojom::UpdateSeverity::NONE;
+  UpdateSeverity severity_ = UpdateSeverity::kNone;
   bool factory_reset_required_ = false;
   bool rollback_ = false;
-  mojom::UpdateType update_type_ = mojom::UpdateType::SYSTEM;
-  mojom::NotificationStyle notification_style_ =
-      mojom::NotificationStyle::DEFAULT;
+  UpdateType update_type_ = UpdateType::kSystem;
+  NotificationStyle notification_style_ = NotificationStyle::kDefault;
   base::string16 notification_title_;
   base::string16 notification_body_;
   bool update_over_cellular_available_ = false;

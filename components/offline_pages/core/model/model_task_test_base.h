@@ -12,7 +12,6 @@
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/offline_pages/core/archive_manager.h"
-#include "components/offline_pages/core/client_policy_controller.h"
 #include "components/offline_pages/core/model/offline_page_item_generator.h"
 #include "components/offline_pages/core/offline_page_item.h"
 #include "components/offline_pages/core/offline_page_metadata_store_test_util.h"
@@ -51,7 +50,6 @@ class ModelTaskTestBase : public TaskTestBase,
   OfflinePageMetadataStore* store() { return store_test_util_.store(); }
   OfflinePageItemGenerator* generator() { return &generator_; }
   ArchiveManager* archive_manager() { return archive_manager_.get(); }
-  ClientPolicyController* policy_controller() { return &policy_controller_; }
 
  private:
   OfflinePageMetadataStoreTestUtil store_test_util_;
@@ -60,7 +58,6 @@ class ModelTaskTestBase : public TaskTestBase,
   base::ScopedTempDir private_dir_;
   base::ScopedTempDir public_dir_;
   std::unique_ptr<ArchiveManager> archive_manager_;
-  ClientPolicyController policy_controller_;
 };
 
 }  // namespace offline_pages

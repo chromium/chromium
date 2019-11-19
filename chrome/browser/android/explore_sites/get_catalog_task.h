@@ -54,7 +54,7 @@ class GetCatalogTask : public Task {
   bool update_current_;
   CatalogCallback callback_;
 
-  base::WeakPtrFactory<GetCatalogTask> weak_ptr_factory_;
+  base::WeakPtrFactory<GetCatalogTask> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(GetCatalogTask);
 };

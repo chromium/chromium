@@ -71,6 +71,8 @@ const char kArcTosAutoAccept[] = "arcTosAutoAccept";
 // == Update screen:
 
 // Boolean value, indicating that all non-critical updates should be skipped.
+// This should be used only during rollback scenario, when Chrome version is
+// known not to have any critical issues.
 const char kUpdateSkipUpdate[] = "updateSkipNonCritical";
 
 // == Wizard controller:
@@ -128,7 +130,7 @@ constexpr struct {
      ConfigurationHandlerSide::HANDLER_JS},
     {kEULAAutoAccept, ValueType::BOOLEAN, ConfigurationHandlerSide::HANDLER_JS},
     {kUpdateSkipUpdate, ValueType::BOOLEAN,
-     ConfigurationHandlerSide::HANDLER_JS},
+     ConfigurationHandlerSide::HANDLER_CPP},
     {kWizardAutoEnroll, ValueType::BOOLEAN,
      ConfigurationHandlerSide::HANDLER_CPP},
     {kRestoreAfterRollback, ValueType::BOOLEAN,

@@ -5,11 +5,9 @@
 #include "chrome/browser/chromeos/login/screens/demo_preferences_screen.h"
 
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/login/screens/base_screen_delegate.h"
-#include "chrome/browser/chromeos/login/screens/demo_preferences_screen_view.h"
-#include "chrome/browser/chromeos/login/screens/screen_exit_code.h"
 #include "chrome/browser/chromeos/login/screens/welcome_screen.h"
 #include "chrome/browser/chromeos/login/wizard_controller.h"
+#include "chrome/browser/ui/webui/chromeos/login/demo_preferences_screen_handler.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/ime/chromeos/input_method_descriptor.h"
@@ -20,10 +18,6 @@ namespace {
 
 constexpr char kUserActionContinue[] = "continue-setup";
 constexpr char kUserActionClose[] = "close-setup";
-
-constexpr char kContextKeyLocale[] = "locale";
-constexpr char kContextKeyInputMethod[] = "input-method";
-constexpr char kContextKeyDemoModeCountry[] = "demo-mode-country";
 
 WelcomeScreen* GetWelcomeScreen() {
   const WizardController* wizard_controller =
@@ -44,12 +38,11 @@ void SetApplicationLocaleAndInputMethod(const std::string& locale,
 }  // namespace
 
 DemoPreferencesScreen::DemoPreferencesScreen(
-    BaseScreenDelegate* base_screen_delegate,
-    DemoPreferencesScreenView* view)
-    : BaseScreen(base_screen_delegate,
-                 OobeScreen::SCREEN_OOBE_DEMO_PREFERENCES),
-      input_manager_observer_(this),
-      view_(view) {
+    DemoPreferencesScreenView* view,
+    const ScreenExitCallback& exit_callback)
+    : BaseScreen(DemoPreferencesScreenView::kScreenId),
+      view_(view),
+      exit_callback_(exit_callback) {
   DCHECK(view_);
   view_->Bind(this);
 
@@ -65,6 +58,19 @@ DemoPreferencesScreen::~DemoPreferencesScreen() {
 
   if (view_)
     view_->Bind(nullptr);
+}
+
+void DemoPreferencesScreen::SetLocale(const std::string& locale) {
+  SetApplicationLocaleAndInputMethod(locale, std::string());
+}
+
+void DemoPreferencesScreen::SetInputMethod(const std::string& input_method) {
+  SetApplicationLocaleAndInputMethod(std::string(), input_method);
+}
+
+void DemoPreferencesScreen::SetDemoModeCountry(const std::string& country_id) {
+  g_browser_process->local_state()->SetString(prefs::kDemoModeCountry,
+                                              country_id);
 }
 
 void DemoPreferencesScreen::Show() {
@@ -88,27 +94,13 @@ void DemoPreferencesScreen::Hide() {
 
 void DemoPreferencesScreen::OnUserAction(const std::string& action_id) {
   if (action_id == kUserActionContinue) {
-    Finish(ScreenExitCode::DEMO_MODE_PREFERENCES_CONTINUED);
+    exit_callback_.Run(Result::COMPLETED);
   } else if (action_id == kUserActionClose) {
     // Restore initial locale and input method if the user pressed back button.
     SetApplicationLocaleAndInputMethod(initial_locale_, initial_input_method_);
-    Finish(ScreenExitCode::DEMO_MODE_PREFERENCES_CANCELED);
+    exit_callback_.Run(Result::CANCELED);
   } else {
     BaseScreen::OnUserAction(action_id);
-  }
-}
-
-void DemoPreferencesScreen::OnContextKeyUpdated(
-    const ::login::ScreenContext::KeyType& key) {
-  if (key == kContextKeyLocale) {
-    SetApplicationLocaleAndInputMethod(context_.GetString(key), std::string());
-  } else if (key == kContextKeyInputMethod) {
-    SetApplicationLocaleAndInputMethod(std::string(), context_.GetString(key));
-  } else if (key == kContextKeyDemoModeCountry) {
-    g_browser_process->local_state()->SetString(prefs::kDemoModeCountry,
-                                                context_.GetString(key));
-  } else {
-    BaseScreen::OnContextKeyUpdated(key);
   }
 }
 
@@ -126,9 +118,11 @@ void DemoPreferencesScreen::InputMethodChanged(
 
 void DemoPreferencesScreen::UpdateInputMethod(
     input_method::InputMethodManager* input_manager) {
-  const input_method::InputMethodDescriptor input_method =
-      input_manager->GetActiveIMEState()->GetCurrentInputMethod();
-  GetContextEditor().SetString(kContextKeyInputMethod, input_method.id());
+  if (view_) {
+    const input_method::InputMethodDescriptor input_method =
+        input_manager->GetActiveIMEState()->GetCurrentInputMethod();
+    view_->SetInputMethodId(input_method.id());
+  }
 }
 
 }  // namespace chromeos

@@ -11,10 +11,7 @@ chrome.management.onInstalled.addListener(function(extensionInfo) {
   console.log("Launch " + extensionInfo.name + " (" +
               extensionInfo.id + ")");
 
-  chrome.management.launchApp(extensionInfo.id, function() {
-    chrome.test.sendMessage("launched app");
-  });
-
+  chrome.management.launchApp(extensionInfo.id);
 });
 
 chrome.test.sendMessage("launcher loaded");

@@ -30,11 +30,11 @@ void PaymentRequestWebContentsManager::CreatePaymentRequest(
     content::RenderFrameHost* render_frame_host,
     content::WebContents* web_contents,
     std::unique_ptr<ContentPaymentRequestDelegate> delegate,
-    mojo::InterfaceRequest<payments::mojom::PaymentRequest> request,
+    mojo::PendingReceiver<payments::mojom::PaymentRequest> receiver,
     PaymentRequest::ObserverForTest* observer_for_testing) {
   auto new_request = std::make_unique<PaymentRequest>(
       render_frame_host, web_contents, std::move(delegate), this,
-      delegate->GetDisplayManager(), std::move(request), observer_for_testing);
+      delegate->GetDisplayManager(), std::move(receiver), observer_for_testing);
   PaymentRequest* request_ptr = new_request.get();
   payment_requests_.insert(std::make_pair(request_ptr, std::move(new_request)));
 }

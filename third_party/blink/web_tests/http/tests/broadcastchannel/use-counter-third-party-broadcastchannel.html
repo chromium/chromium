@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<!-- Tests UseCounter for 'new BroadcastChannel()' in third party context. This
+  cannot be upstreamed to WPT because it tests Chrome's UseCounter mechanism.
+-->
+<meta charset="utf-8">
+<title>Test UseCounter for 'new BroadcastChannel()' in third party context.</title>
+<body></body>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/get-host-info.js"></script>
+<script>
+
+function with_iframe(url) {
+  return new Promise(function(resolve) {
+      var frame = document.createElement('iframe');
+      frame.src = url;
+      frame.onload = function() { resolve(frame); };
+      document.body.appendChild(frame);
+    });
+}
+
+function child_frame_has_verified_use_counter() {
+  return new Promise(function(resolve, reject) {
+      window.onmessage = (msg) => {
+        if (msg.data == 'verified_has_use_counter')
+          resolve();
+        else
+          reject(msg.data);
+      };
+    });
+}
+
+promise_test(async t => {
+  const remote_origin_url = get_host_info().HTTPS_REMOTE_ORIGIN +
+        '/broadcastchannel/resources/create-broadcastchannel-verify-third-party-use-counter.html';
+  const frame1 = await with_iframe(remote_origin_url);
+  await child_frame_has_verified_use_counter();
+}, "Test UseCounter for 'new BroadcastChannel()' in third party context.");
+</script>

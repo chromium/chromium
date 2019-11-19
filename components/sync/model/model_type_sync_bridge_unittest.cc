@@ -36,7 +36,7 @@ class ModelTypeSyncBridgeTest : public ::testing::Test {
   StubModelTypeSyncBridge bridge_;
 };
 
-// ResolveConflicts should return USE_REMOTE unless the remote data is deleted.
+// ResolveConflicts should return kUseRemote unless the remote data is deleted.
 TEST_F(ModelTypeSyncBridgeTest, DefaultConflictResolution) {
   EntityData local_data;
   EntityData remote_data;
@@ -46,20 +46,23 @@ TEST_F(ModelTypeSyncBridgeTest, DefaultConflictResolution) {
   local_data.specifics.mutable_preference()->set_value("value");
   EXPECT_FALSE(local_data.is_deleted());
   EXPECT_TRUE(remote_data.is_deleted());
-  EXPECT_EQ(ConflictResolution::USE_LOCAL,
-            bridge()->ResolveConflict(local_data, remote_data).type());
+  EXPECT_EQ(
+      ConflictResolution::kUseLocal,
+      bridge()->ResolveConflict(/*storage_key=*/std::string(), remote_data));
 
   remote_data.specifics.mutable_preference()->set_value("value");
   EXPECT_FALSE(local_data.is_deleted());
   EXPECT_FALSE(remote_data.is_deleted());
-  EXPECT_EQ(ConflictResolution::USE_REMOTE,
-            bridge()->ResolveConflict(local_data, remote_data).type());
+  EXPECT_EQ(
+      ConflictResolution::kUseRemote,
+      bridge()->ResolveConflict(/*storage_key=*/std::string(), remote_data));
 
   local_data.specifics.clear_preference();
   EXPECT_TRUE(local_data.is_deleted());
   EXPECT_FALSE(remote_data.is_deleted());
-  EXPECT_EQ(ConflictResolution::USE_REMOTE,
-            bridge()->ResolveConflict(local_data, remote_data).type());
+  EXPECT_EQ(
+      ConflictResolution::kUseRemote,
+      bridge()->ResolveConflict(/*storage_key=*/std::string(), remote_data));
 }
 
 }  // namespace

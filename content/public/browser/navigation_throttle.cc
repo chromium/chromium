@@ -4,7 +4,7 @@
 
 #include "content/public/browser/navigation_throttle.h"
 
-#include "content/browser/frame_host/navigation_handle_impl.h"
+#include "content/browser/frame_host/navigation_request.h"
 
 namespace content {
 
@@ -85,7 +85,7 @@ void NavigationThrottle::Resume() {
     resume_callback_.Run();
     return;
   }
-  static_cast<NavigationHandleImpl*>(navigation_handle_)->Resume(this);
+  NavigationRequest::From(navigation_handle_)->Resume(this);
 }
 
 void NavigationThrottle::CancelDeferredNavigation(
@@ -94,7 +94,7 @@ void NavigationThrottle::CancelDeferredNavigation(
     cancel_deferred_navigation_callback_.Run(result);
     return;
   }
-  static_cast<NavigationHandleImpl*>(navigation_handle_)
+  NavigationRequest::From(navigation_handle_)
       ->CancelDeferredNavigation(this, result);
 }
 

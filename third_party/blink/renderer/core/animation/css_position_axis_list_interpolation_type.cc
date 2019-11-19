@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/core/animation/css_position_axis_list_interpolation_type.h"
 
-#include "third_party/blink/renderer/core/animation/length_interpolation_functions.h"
+#include "third_party/blink/renderer/core/animation/interpolable_length.h"
 #include "third_party/blink/renderer/core/animation/list_interpolation_functions.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
@@ -15,32 +15,33 @@ namespace blink {
 InterpolationValue
 CSSPositionAxisListInterpolationType::ConvertPositionAxisCSSValue(
     const CSSValue& value) {
-  if (value.IsValuePair()) {
-    const CSSValuePair& pair = ToCSSValuePair(value);
-    InterpolationValue result =
-        LengthInterpolationFunctions::MaybeConvertCSSValue(pair.Second());
-    CSSValueID side = ToCSSIdentifierValue(pair.First()).GetValueID();
-    if (side == CSSValueRight || side == CSSValueBottom)
-      LengthInterpolationFunctions::SubtractFromOneHundredPercent(result);
+  if (const auto* pair = DynamicTo<CSSValuePair>(value)) {
+    InterpolationValue result(
+        InterpolableLength::MaybeConvertCSSValue(pair->Second()));
+    CSSValueID side = To<CSSIdentifierValue>(pair->First()).GetValueID();
+    if (side == CSSValueID::kRight || side == CSSValueID::kBottom) {
+      To<InterpolableLength>(*result.interpolable_value)
+          .SubtractFromOneHundredPercent();
+    }
     return result;
   }
 
   if (value.IsPrimitiveValue())
-    return LengthInterpolationFunctions::MaybeConvertCSSValue(value);
+    return InterpolationValue(InterpolableLength::MaybeConvertCSSValue(value));
 
-  if (!value.IsIdentifierValue())
+  const auto* ident = DynamicTo<CSSIdentifierValue>(value);
+  if (!ident)
     return nullptr;
 
-  const CSSIdentifierValue& ident = ToCSSIdentifierValue(value);
-  switch (ident.GetValueID()) {
-    case CSSValueLeft:
-    case CSSValueTop:
-      return LengthInterpolationFunctions::CreateInterpolablePercent(0);
-    case CSSValueRight:
-    case CSSValueBottom:
-      return LengthInterpolationFunctions::CreateInterpolablePercent(100);
-    case CSSValueCenter:
-      return LengthInterpolationFunctions::CreateInterpolablePercent(50);
+  switch (ident->GetValueID()) {
+    case CSSValueID::kLeft:
+    case CSSValueID::kTop:
+      return InterpolationValue(InterpolableLength::CreatePercent(0));
+    case CSSValueID::kRight:
+    case CSSValueID::kBottom:
+      return InterpolationValue(InterpolableLength::CreatePercent(100));
+    case CSSValueID::kCenter:
+      return InterpolationValue(InterpolableLength::CreatePercent(50));
     default:
       NOTREACHED();
       return nullptr;
@@ -56,7 +57,7 @@ InterpolationValue CSSPositionAxisListInterpolationType::MaybeConvertValue(
         1, [&value](size_t) { return ConvertPositionAxisCSSValue(value); });
   }
 
-  const CSSValueList& list = ToCSSValueList(value);
+  const auto& list = To<CSSValueList>(value);
   return ListInterpolationFunctions::CreateList(
       list.length(), [&list](wtf_size_t index) {
         return ConvertPositionAxisCSSValue(list.Item(index));

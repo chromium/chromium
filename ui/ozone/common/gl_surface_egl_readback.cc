@@ -62,10 +62,6 @@ gfx::SwapResult GLSurfaceEglReadback::SwapBuffers(
   return swap_result;
 }
 
-bool GLSurfaceEglReadback::SupportsPresentationCallback() {
-  return true;
-}
-
 bool GLSurfaceEglReadback::FlipsVertically() const {
   return true;
 }

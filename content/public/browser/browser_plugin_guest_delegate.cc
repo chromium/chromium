@@ -12,7 +12,7 @@ WebContents* BrowserPluginGuestDelegate::CreateNewGuestWindow(
   return nullptr;
 }
 
-WebContents* BrowserPluginGuestDelegate::GetOwnerWebContents() const {
+WebContents* BrowserPluginGuestDelegate::GetOwnerWebContents() {
   return nullptr;
 }
 
@@ -29,6 +29,11 @@ RenderWidgetHost* BrowserPluginGuestDelegate::GetOwnerRenderWidgetHost() {
 }
 
 SiteInstance* BrowserPluginGuestDelegate::GetOwnerSiteInstance() {
+  return nullptr;
+}
+
+RenderFrameHost* BrowserPluginGuestDelegate::GetEmbedderFrame() {
+  NOTREACHED();
   return nullptr;
 }
 

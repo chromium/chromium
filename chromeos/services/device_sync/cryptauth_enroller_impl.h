@@ -99,7 +99,7 @@ class CryptAuthEnrollerImpl : public CryptAuthEnroller {
   // The derived ephemeral symmetric key.
   std::string symmetric_key_;
 
-  base::WeakPtrFactory<CryptAuthEnrollerImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<CryptAuthEnrollerImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(CryptAuthEnrollerImpl);
 };

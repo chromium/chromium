@@ -11,9 +11,12 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/command_line.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/string_number_conversions.h"
+#include "build/build_config.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 #include "net/socket/client_socket_handle.h"
@@ -68,7 +71,12 @@ const uint64_t kMaxControlFramePayload = 125;
 //     around
 //  4. We would like to hit any sweet-spots that might exist in terms of network
 //     packet sizes / encryption block sizes / IPC alignment issues, etc.
+#if defined(OS_ANDROID)
 const int kReadBufferSize = 32 * 1024;
+#else
+// |2^n - delta| is better than 2^n on Linux. See crrev.com/c/1792208.
+const int kReadBufferSize = 131000;
+#endif
 
 // Returns the total serialized size of |frames|. This function assumes that
 // |frames| will be serialized with mask field. This function forces the
@@ -94,21 +102,40 @@ int CalculateSerializedSizeAndTurnOnMaskBit(
 
 }  // namespace
 
+// Overrides default read buffer size for WebSocket. This flag will be used to
+// investigate the performance issue of crbug.com/865001 and be deleted later
+// on.
+const char kWebSocketReadBufferSize[] = "websocket-read-buffer-size";
+
 WebSocketBasicStream::WebSocketBasicStream(
     std::unique_ptr<Adapter> connection,
     const scoped_refptr<GrowableIOBuffer>& http_read_buffer,
     const std::string& sub_protocol,
     const std::string& extensions)
-    : read_buffer_(base::MakeRefCounted<IOBufferWithSize>(kReadBufferSize)),
-      connection_(std::move(connection)),
+    : connection_(std::move(connection)),
       http_read_buffer_(http_read_buffer),
       sub_protocol_(sub_protocol),
       extensions_(extensions),
       generate_websocket_masking_key_(&GenerateWebSocketMaskingKey) {
   // http_read_buffer_ should not be set if it contains no data.
   if (http_read_buffer_.get() && http_read_buffer_->offset() == 0)
-    http_read_buffer_ = NULL;
+    http_read_buffer_ = nullptr;
   DCHECK(connection_->is_initialized());
+  base::CommandLine* const command_line =
+      base::CommandLine::ForCurrentProcess();
+  DCHECK(command_line);
+  int websocket_buffer_size = kReadBufferSize;
+  if (command_line->HasSwitch(kWebSocketReadBufferSize)) {
+    std::string size_string =
+        command_line->GetSwitchValueASCII(kWebSocketReadBufferSize);
+    if (!base::StringToInt(size_string, &websocket_buffer_size) ||
+        websocket_buffer_size <= 0) {
+      websocket_buffer_size = kReadBufferSize;
+    }
+  }
+  DVLOG(1) << "WebSocketReadBufferSize is " << websocket_buffer_size;
+  read_buffer_ =
+      (base::MakeRefCounted<IOBufferWithSize>(websocket_buffer_size));
 }
 
 WebSocketBasicStream::~WebSocketBasicStream() { Close(); }
@@ -117,7 +144,10 @@ int WebSocketBasicStream::ReadFrames(
     std::vector<std::unique_ptr<WebSocketFrame>>* frames,
     CompletionOnceCallback callback) {
   read_callback_ = std::move(callback);
-
+  complete_control_frame_body_.clear();
+  if (http_read_buffer_ && is_http_read_buffer_decoded_) {
+    http_read_buffer_.reset();
+  }
   return ReadEverything(frames);
 }
 
@@ -151,7 +181,7 @@ int WebSocketBasicStream::WriteFrames(
              static_cast<uint64_t>(remaining_size));
     const int frame_size = static_cast<int>(frame->header.payload_length);
     if (frame_size > 0) {
-      const char* const frame_data = frame->data->data();
+      const char* const frame_data = frame->payload;
       std::copy(frame_data, frame_data + frame_size, dest);
       MaskWebSocketFramePayload(mask, 0, dest, frame_size);
       dest += frame_size;
@@ -197,16 +227,12 @@ int WebSocketBasicStream::ReadEverything(
 
   // If there is data left over after parsing the HTTP headers, attempt to parse
   // it as WebSocket frames.
-  if (http_read_buffer_.get()) {
+  if (http_read_buffer_.get() && !is_http_read_buffer_decoded_) {
     DCHECK_GE(http_read_buffer_->offset(), 0);
-    // We cannot simply copy the data into read_buffer_, as it might be too
-    // large.
-    scoped_refptr<GrowableIOBuffer> buffered_data;
-    buffered_data.swap(http_read_buffer_);
-    DCHECK(!http_read_buffer_);
+    is_http_read_buffer_decoded_ = true;
     std::vector<std::unique_ptr<WebSocketFrameChunk>> frame_chunks;
-    if (!parser_.Decode(buffered_data->StartOfBuffer(), buffered_data->offset(),
-                        &frame_chunks))
+    if (!parser_.Decode(http_read_buffer_->StartOfBuffer(),
+                        http_read_buffer_->offset(), &frame_chunks))
       return WebSocketErrorToNetError(parser_.websocket_error());
     if (!frame_chunks.empty()) {
       int result = ConvertChunksToFrames(&frame_chunks, frames);
@@ -305,8 +331,11 @@ int WebSocketBasicStream::ConvertChunksToFrames(
     std::vector<std::unique_ptr<WebSocketFrameChunk>>* frame_chunks,
     std::vector<std::unique_ptr<WebSocketFrame>>* frames) {
   for (size_t i = 0; i < frame_chunks->size(); ++i) {
+    auto& chunk = (*frame_chunks)[i];
+    DCHECK(chunk == frame_chunks->back() || chunk->final_chunk)
+        << "Only last chunk can have |final_chunk| set to be false.";
     std::unique_ptr<WebSocketFrame> frame;
-    int result = ConvertChunkToFrame(std::move((*frame_chunks)[i]), &frame);
+    int result = ConvertChunkToFrame(std::move(chunk), &frame);
     if (result != OK)
       return result;
     if (frame)
@@ -321,22 +350,19 @@ int WebSocketBasicStream::ConvertChunksToFrames(
 int WebSocketBasicStream::ConvertChunkToFrame(
     std::unique_ptr<WebSocketFrameChunk> chunk,
     std::unique_ptr<WebSocketFrame>* frame) {
-  DCHECK(frame->get() == NULL);
+  DCHECK(frame->get() == nullptr);
   bool is_first_chunk = false;
   if (chunk->header) {
-    DCHECK(current_frame_header_ == NULL)
+    DCHECK(current_frame_header_ == nullptr)
         << "Received the header for a new frame without notification that "
         << "the previous frame was complete (bug in WebSocketFrameParser?)";
     is_first_chunk = true;
     current_frame_header_.swap(chunk->header);
   }
-  const int chunk_size = chunk->data.get() ? chunk->data->size() : 0;
   DCHECK(current_frame_header_) << "Unexpected header-less chunk received "
                                 << "(final_chunk = " << chunk->final_chunk
-                                << ", data size = " << chunk_size
+                                << ", payload size = " << chunk->payload.size()
                                 << ") (bug in WebSocketFrameParser?)";
-  scoped_refptr<IOBufferWithSize> data_buffer;
-  data_buffer.swap(chunk->data);
   const bool is_final_chunk = chunk->final_chunk;
   const WebSocketFrameHeader::OpCode opcode = current_frame_header_->opcode;
   if (WebSocketFrameHeader::IsKnownControlOpCode(opcode)) {
@@ -356,37 +382,20 @@ int WebSocketBasicStream::ConvertChunkToFrame(
       current_frame_header_.reset();
       return ERR_WS_PROTOCOL_ERROR;
     }
+
     if (!is_final_chunk) {
       DVLOG(2) << "Encountered a split control frame, opcode " << opcode;
-      if (incomplete_control_frame_body_.get()) {
-        DVLOG(3) << "Appending to an existing split control frame.";
-        AddToIncompleteControlFrameBody(data_buffer);
-      } else {
-        DVLOG(3) << "Creating new storage for an incomplete control frame.";
-        incomplete_control_frame_body_ =
-            base::MakeRefCounted<GrowableIOBuffer>();
-        // This method checks for oversize control frames above, so as long as
-        // the frame parser is working correctly, this won't overflow. If a bug
-        // does cause it to overflow, it will CHECK() in
-        // AddToIncompleteControlFrameBody() without writing outside the buffer.
-        incomplete_control_frame_body_->SetCapacity(kMaxControlFramePayload);
-        AddToIncompleteControlFrameBody(data_buffer);
-      }
+      AddToIncompleteControlFrameBody(chunk->payload);
       return OK;
     }
-    if (incomplete_control_frame_body_.get()) {
+
+    if (!incomplete_control_frame_body_.empty()) {
       DVLOG(2) << "Rejoining a split control frame, opcode " << opcode;
-      AddToIncompleteControlFrameBody(data_buffer);
-      const int body_size = incomplete_control_frame_body_->offset();
-      DCHECK_EQ(body_size,
-                static_cast<int>(current_frame_header_->payload_length));
-      auto body = base::MakeRefCounted<IOBufferWithSize>(body_size);
-      memcpy(body->data(),
-             incomplete_control_frame_body_->StartOfBuffer(),
-             body_size);
-      incomplete_control_frame_body_ = NULL;  // Frame now complete.
+      AddToIncompleteControlFrameBody(chunk->payload);
       DCHECK(is_final_chunk);
-      *frame = CreateFrame(is_final_chunk, body);
+      DCHECK(complete_control_frame_body_.empty());
+      complete_control_frame_body_ = std::move(incomplete_control_frame_body_);
+      *frame = CreateFrame(is_final_chunk, complete_control_frame_body_);
       return OK;
     }
   }
@@ -395,34 +404,33 @@ int WebSocketBasicStream::ConvertChunkToFrame(
   // header. A check for exact equality can only be used when the whole frame
   // arrives in one chunk.
   DCHECK_GE(current_frame_header_->payload_length,
-            base::checked_cast<uint64_t>(chunk_size));
+            base::checked_cast<uint64_t>(chunk->payload.size()));
   DCHECK(!is_first_chunk || !is_final_chunk ||
          current_frame_header_->payload_length ==
-             base::checked_cast<uint64_t>(chunk_size));
+             base::checked_cast<uint64_t>(chunk->payload.size()));
 
   // Convert the chunk to a complete frame.
-  *frame = CreateFrame(is_final_chunk, data_buffer);
+  *frame = CreateFrame(is_final_chunk, chunk->payload);
   return OK;
 }
 
 std::unique_ptr<WebSocketFrame> WebSocketBasicStream::CreateFrame(
     bool is_final_chunk,
-    const scoped_refptr<IOBufferWithSize>& data) {
+    base::span<const char> data) {
   std::unique_ptr<WebSocketFrame> result_frame;
   const bool is_final_chunk_in_message =
       is_final_chunk && current_frame_header_->final;
-  const int data_size = data.get() ? data->size() : 0;
   const WebSocketFrameHeader::OpCode opcode = current_frame_header_->opcode;
   // Empty frames convey no useful information unless they are the first frame
   // (containing the type and flags) or have the "final" bit set.
-  if (is_final_chunk_in_message || data_size > 0 ||
+  if (is_final_chunk_in_message || data.size() > 0 ||
       current_frame_header_->opcode !=
           WebSocketFrameHeader::kOpCodeContinuation) {
     result_frame = std::make_unique<WebSocketFrame>(opcode);
     result_frame->header.CopyFrom(*current_frame_header_);
     result_frame->header.final = is_final_chunk_in_message;
-    result_frame->header.payload_length = data_size;
-    result_frame->data = data;
+    result_frame->header.payload_length = data.size();
+    result_frame->payload = data.data();
     // Ensure that opcodes Text and Binary are only used for the first frame in
     // the message. Also clear the reserved bits.
     // TODO(ricea): If a future extension requires the reserved bits to be
@@ -443,18 +451,19 @@ std::unique_ptr<WebSocketFrame> WebSocketBasicStream::CreateFrame(
 }
 
 void WebSocketBasicStream::AddToIncompleteControlFrameBody(
-    const scoped_refptr<IOBufferWithSize>& data_buffer) {
-  if (!data_buffer.get())
+    base::span<const char> data) {
+  if (data.empty()) {
     return;
-  const int new_offset =
-      incomplete_control_frame_body_->offset() + data_buffer->size();
-  CHECK_GE(incomplete_control_frame_body_->capacity(), new_offset)
+  }
+  incomplete_control_frame_body_.insert(incomplete_control_frame_body_.end(),
+                                        data.begin(), data.end());
+  // This method checks for oversize control frames above, so as long as
+  // the frame parser is working correctly, this won't overflow. If a bug
+  // does cause it to overflow, it will CHECK() in
+  // AddToIncompleteControlFrameBody() without writing outside the buffer.
+  CHECK_LE(incomplete_control_frame_body_.size(), kMaxControlFramePayload)
       << "Control frame body larger than frame header indicates; frame parser "
          "bug?";
-  memcpy(incomplete_control_frame_body_->data(),
-         data_buffer->data(),
-         data_buffer->size());
-  incomplete_control_frame_body_->set_offset(new_offset);
 }
 
 }  // namespace net

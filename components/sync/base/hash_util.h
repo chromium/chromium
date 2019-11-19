@@ -7,13 +7,7 @@
 
 #include <string>
 
-#include "components/sync/base/model_type.h"
-
 namespace syncer {
-
-// Generates a fixed-length tag for the given string under the given model_type.
-std::string GenerateSyncableHash(ModelType model_type,
-                                 const std::string& client_tag);
 
 // A helper for generating the bookmark type's tag.  This is required in more
 // than one place, so we define the algorithm here to make sure the

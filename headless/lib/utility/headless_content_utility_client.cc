@@ -6,12 +6,15 @@
 
 #include "base/bind.h"
 #include "base/lazy_instance.h"
+#include "base/no_destructor.h"
 #include "content/public/utility/utility_thread.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/service_factory.h"
 #include "printing/buildflags/buildflags.h"
 
-#if BUILDFLAG(ENABLE_PRINTING)
-#include "components/services/pdf_compositor/public/cpp/pdf_compositor_service_factory.h"
-#include "components/services/pdf_compositor/public/interfaces/pdf_compositor.mojom.h"
+#if BUILDFLAG(ENABLE_PRINTING) && !defined(CHROME_MULTIPLE_DLL_BROWSER)
+#include "components/services/pdf_compositor/pdf_compositor_impl.h"
+#include "components/services/pdf_compositor/public/mojom/pdf_compositor.mojom.h"
 #endif
 
 namespace headless {
@@ -21,6 +24,15 @@ namespace {
 base::LazyInstance<
     HeadlessContentUtilityClient::NetworkBinderCreationCallback>::Leaky
     g_network_binder_creation_callback = LAZY_INSTANCE_INITIALIZER;
+
+#if BUILDFLAG(ENABLE_PRINTING) && !defined(CHROME_MULTIPLE_DLL_BROWSER)
+auto RunPdfCompositor(
+    mojo::PendingReceiver<printing::mojom::PdfCompositor> receiver) {
+  return std::make_unique<printing::PdfCompositorImpl>(
+      std::move(receiver), true /* initialize_environment */,
+      content::UtilityThread::Get()->GetIOTaskRunner());
+}
+#endif
 
 }  // namespace
 
@@ -36,20 +48,14 @@ HeadlessContentUtilityClient::HeadlessContentUtilityClient(
 
 HeadlessContentUtilityClient::~HeadlessContentUtilityClient() = default;
 
-bool HeadlessContentUtilityClient::HandleServiceRequest(
-    const std::string& service_name,
-    service_manager::mojom::ServiceRequest request) {
+mojo::ServiceFactory*
+HeadlessContentUtilityClient::GetMainThreadServiceFactory() {
+  static base::NoDestructor<mojo::ServiceFactory> factory {
 #if BUILDFLAG(ENABLE_PRINTING) && !defined(CHROME_MULTIPLE_DLL_BROWSER)
-  if (service_name == printing::mojom::kServiceName) {
-    service_manager::Service::RunAsyncUntilTermination(
-        printing::CreatePdfCompositorService(std::move(request)),
-        base::BindOnce(
-            [] { content::UtilityThread::Get()->ReleaseProcess(); }));
-    return true;
-  }
+    RunPdfCompositor,
 #endif
-
-  return false;
+  };
+  return factory.get();
 }
 
 void HeadlessContentUtilityClient::RegisterNetworkBinders(

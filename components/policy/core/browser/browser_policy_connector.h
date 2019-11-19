@@ -69,6 +69,9 @@ class POLICY_EXPORT BrowserPolicyConnector : public BrowserPolicyConnectorBase {
   // Returns the URL for the device management service endpoint.
   static std::string GetDeviceManagementUrl();
 
+  // Returns the URL for the realtime reporting service endpoint.
+  static std::string GetRealtimeReportingUrl();
+
   // Registers refresh rate prefs.
   static void RegisterPrefs(PrefRegistrySimple* registry);
 

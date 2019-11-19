@@ -5,7 +5,7 @@
 #include "ui/platform_window/platform_window_handler/wm_drop_handler.h"
 
 #include "ui/base/class_property.h"
-#include "ui/platform_window/platform_window.h"
+#include "ui/platform_window/platform_window_base.h"
 
 DEFINE_UI_CLASS_PROPERTY_TYPE(ui::WmDropHandler*)
 
@@ -13,12 +13,12 @@ namespace ui {
 
 DEFINE_UI_CLASS_PROPERTY_KEY(WmDropHandler*, kWmDropHandlerKey, nullptr)
 
-void SetWmDropHandler(PlatformWindow* platform_window,
+void SetWmDropHandler(PlatformWindowBase* platform_window,
                       WmDropHandler* drop_handler) {
   platform_window->SetProperty(kWmDropHandlerKey, drop_handler);
 }
 
-WmDropHandler* GetWmDropHandler(const PlatformWindow& platform_window) {
+WmDropHandler* GetWmDropHandler(const PlatformWindowBase& platform_window) {
   return platform_window.GetProperty(kWmDropHandlerKey);
 }
 

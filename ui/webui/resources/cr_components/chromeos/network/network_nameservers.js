@@ -8,23 +8,13 @@
 Polymer({
   is: 'network-nameservers',
 
-  behaviors: [I18nBehavior, CrPolicyNetworkBehavior],
+  behaviors: [I18nBehavior, CrPolicyNetworkBehaviorMojo],
 
   properties: {
-    /**
-     * The network properties dictionary containing the nameserver properties to
-     * display and modify.
-     * @type {!CrOnc.NetworkProperties|undefined}
-     */
-    networkProperties: {
+    /** @private {!chromeos.networkConfig.mojom.ManagedProperties|undefined} */
+    managedProperties: {
       type: Object,
-      observer: 'networkPropertiesChanged_',
-    },
-
-    /** Whether or not the nameservers can be edited. */
-    editable: {
-      type: Boolean,
-      value: false,
+      observer: 'managedPropertiesChanged_',
     },
 
     /**
@@ -59,7 +49,7 @@ Polymer({
     /** @private */
     canChangeConfigType_: {
       type: Boolean,
-      computed: 'computeCanChangeConfigType_(editable, networkProperties)',
+      computed: 'computeCanChangeConfigType_(managedProperties)',
     }
   },
 
@@ -70,6 +60,9 @@ Polymer({
   ],
 
   /** @const */
+  EMPTY_NAMESERVER: '0.0.0.0',
+
+  /** @const */
   MAX_NAMESERVERS: 4,
 
   /**
@@ -78,31 +71,64 @@ Polymer({
    */
   savedNameservers_: [],
 
+  /**
+   * Returns true if |nameservers| contains any all google nameserver entries
+   * and only google nameserver entries or empty entries.
+   * @param {!Array<string>} nameservers
+   * @private
+   */
+  isGoogleNameservers_: function(nameservers) {
+    const matches = [];
+    for (let i = 0; i < nameservers.length; ++i) {
+      const nameserver = nameservers[i];
+      if (nameserver == this.EMPTY_NAMESERVER) {
+        continue;
+      }
+      let valid = false;
+      for (let j = 0; j < this.GOOGLE_NAMESERVERS.length; ++j) {
+        if (nameserver == this.GOOGLE_NAMESERVERS[j]) {
+          valid = true;
+          matches[j] = true;
+          break;
+        }
+      }
+      if (!valid) {
+        return false;
+      }
+    }
+    for (let j = 0; j < this.GOOGLE_NAMESERVERS.length; ++j) {
+      if (!matches[j]) {
+        return false;
+      }
+    }
+    return true;
+  },
+
   /** @private */
-  networkPropertiesChanged_: function(newValue, oldValue) {
-    if (!this.networkProperties) {
+  managedPropertiesChanged_: function(newValue, oldValue) {
+    if (!this.managedProperties) {
       return;
     }
 
-    if (!oldValue || newValue.GUID != oldValue.GUID) {
+    if (!oldValue || newValue.guid != oldValue.guid) {
       this.savedNameservers_ = [];
     }
 
     // Update the 'nameservers' property.
     let nameservers = [];
-    const ipv4 =
-        CrOnc.getIPConfigForType(this.networkProperties, CrOnc.IPType.IPV4);
-    if (ipv4 && ipv4.NameServers) {
-      nameservers = ipv4.NameServers;
+    const ipv4 = OncMojo.getIPConfigForType(this.managedProperties, 'IPv4');
+    if (ipv4 && ipv4.nameServers) {
+      nameservers = ipv4.nameServers;
     }
 
     // Update the 'nameserversType' property.
     const configType =
-        CrOnc.getActiveValue(this.networkProperties.NameServersConfigType);
+        OncMojo.getActiveValue(this.managedProperties.nameServersConfigType);
     let type;
-    if (configType == CrOnc.IPConfigType.STATIC) {
-      if (nameservers.join(',') == this.GOOGLE_NAMESERVERS.join(',')) {
+    if (configType == 'Static') {
+      if (this.isGoogleNameservers_(nameservers)) {
         type = 'google';
+        nameservers = this.GOOGLE_NAMESERVERS;  // Use consistent order.
       } else {
         type = 'custom';
       }
@@ -124,9 +150,11 @@ Polymer({
     if (nameserversType == 'custom') {
       // Add empty entries for unset custom nameservers.
       for (let i = nameservers.length; i < this.MAX_NAMESERVERS; ++i) {
-        nameservers[i] = '';
+        nameservers[i] = this.EMPTY_NAMESERVER;
       }
-      this.savedNameservers_ = nameservers.slice();
+      if (!this.isGoogleNameservers_(nameservers)) {
+        this.savedNameservers_ = nameservers.slice();
+      }
     }
     this.nameservers_ = nameservers;
     // Set nameserversType_ after dom-repeat has been stamped.
@@ -139,37 +167,51 @@ Polymer({
   },
 
   /**
-   * @param {boolean} editable
-   * @param {!CrOnc.NetworkProperties} networkProperties
+   * @param {!chromeos.networkConfig.mojom.ManagedProperties} managedProperties
    * @return {boolean} True if the nameservers config type type can be changed.
    * @private
    */
-  computeCanChangeConfigType_: function(editable, networkProperties) {
-    if (!editable) {
+  computeCanChangeConfigType_: function(managedProperties) {
+    if (!managedProperties) {
       return false;
     }
-
-    return !this.isNetworkPolicyPathEnforced(
-               networkProperties, 'NameServersConfigType') &&
-        !this.isNetworkPolicyPathEnforced(
-            networkProperties, 'StaticIPConfig.NameServers');
+    if (managedProperties.nameServersConfigType &&
+        this.isNetworkPolicyEnforced(managedProperties.nameServersConfigType)) {
+      return false;
+    }
+    if (managedProperties.staticIpConfig &&
+        managedProperties.staticIpConfig.nameServers &&
+        this.isNetworkPolicyEnforced(
+            managedProperties.staticIpConfig.nameServers)) {
+      return false;
+    }
+    return true;
   },
 
   /**
-   * @param {boolean} editable
    * @param {string} nameserversType
-   * @param {!CrOnc.NetworkProperties} networkProperties
+   * @param {!chromeos.networkConfig.mojom.ManagedProperties} managedProperties
    * @return {boolean} True if the nameservers are editable.
    * @private
    */
-  canEditCustomNameServers_: function(
-      editable, nameserversType, networkProperties) {
-    return editable && nameserversType == 'custom' &&
-        !this.isNetworkPolicyEnforced(
-            networkProperties.NameServersConfigType) &&
-        !!networkProperties.StaticIPConfig &&
-        !this.isNetworkPolicyEnforced(
-            networkProperties.StaticIPConfig.NameServers);
+  canEditCustomNameServers_: function(nameserversType, managedProperties) {
+    if (!managedProperties) {
+      return false;
+    }
+    if (nameserversType != 'custom') {
+      return false;
+    }
+    if (managedProperties.nameServersConfigType &&
+        this.isNetworkPolicyEnforced(managedProperties.nameServersConfigType)) {
+      return false;
+    }
+    if (managedProperties.staticIpConfig &&
+        managedProperties.staticIpConfig.nameServers &&
+        this.isNetworkPolicyEnforced(
+            managedProperties.staticIpConfig.nameServers)) {
+      return false;
+    }
+    return true;
   },
 
   /**
@@ -240,27 +282,27 @@ Polymer({
       this.nameservers_ = nameservers;
       this.savedNameservers_ = nameservers.slice();
       this.fire('nameservers-change', {
-        field: 'NameServers',
+        field: 'nameServers',
         value: nameservers,
       });
     } else if (type == 'google') {
       this.nameservers_ = this.GOOGLE_NAMESERVERS;
       this.fire('nameservers-change', {
-        field: 'NameServers',
+        field: 'nameServers',
         value: this.GOOGLE_NAMESERVERS,
       });
     } else {  // type == automatic
       // If not connected, properties will clear. Otherwise they may or may not
       // change so leave them as-is.
-      if (this.networkProperties.ConnectionState !=
-          CrOnc.ConnectionState.CONNECTED) {
+      if (!OncMojo.connectionStateIsConnected(
+              this.managedProperties.connectionState)) {
         this.nameservers_ = [];
       } else {
         this.nameservers_ = this.clearEmptyNameServers_(this.nameservers_);
       }
       this.fire('nameservers-change', {
-        field: 'NameServersConfigType',
-        value: CrOnc.IPConfigType.DHCP,
+        field: 'nameServersConfigType',
+        value: 'DHCP',
       });
     }
   },
@@ -280,5 +322,14 @@ Polymer({
    */
   doNothing_: function(event) {
     event.stopPropagation();
+  },
+
+  /**
+   * @param {number} index
+   * @return {string} Accessibility label for nameserver input with given index.
+   * @private
+   */
+  getCustomNameServerInputA11yLabel_: function(index) {
+    return this.i18n('networkNameserversCustomInputA11yLabel', index + 1);
   },
 });

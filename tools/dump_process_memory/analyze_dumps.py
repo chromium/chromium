@@ -8,17 +8,33 @@
 its content.
 """
 
+from __future__ import print_function
+
+import argparse
 import array
 import collections
 import hashlib
 import logging
 import os
-import struct
-import sys
 import zlib
 
 
 PAGE_SIZE = 1 << 12
+
+
+# These are typically only populated with DCHECK() on.
+FREED_PATTERNS = {
+    0xcccccccc: 'V8',
+    0xcdcdcdcd: 'PartitionAlloc zapped',
+    0xabababab: 'PartitionAlloc uninitialized',
+    0xdeadbeef: 'V8 zapped',
+    0x0baddeaf: 'V8 zapped handles',
+    0x0baffedf: 'V8 zapped global handles',
+    0x0beefdaf: 'V8 zapped from space',
+    0xbeefdeef: 'V8 zapped slots',
+    0xbadbaddb: 'V8 debug zapped',
+    0xfeed1eaf: 'V8 zapped freelist'
+}
 
 
 def _ReadPage(f):
@@ -45,7 +61,7 @@ def _PrettyPrintSize(x):
     (str) Pretty printed version, 2 decimal places.
   """
   if x < 1e3:
-    return str(x)
+    return '%dB' % x
   elif 1e3 <= x < 1e6:
     return '%.2fkB' % (x / 1e3)
   elif 1e6 <= x < 1e9:
@@ -67,9 +83,11 @@ class MappingStats(object):
     is_swapped: ([bool]) For each page, whether it has been swapped out.
     compressed_size: ([int]) If a page is not zero, its compressed size.
     hashes: ([str]) If a page is not zero, its SHA1 hash.
+    freed: ({'description (str)': size (int)}) Size of freed data, per type.
   """
   __slots__ = ('filename', 'start', 'end', 'pages', 'is_zero', 'is_present',
                'is_swapped', 'compressed_size', 'hashes', 'freed')
+
   def __init__(self, filename, start, end):
     """Init.
 
@@ -82,12 +100,12 @@ class MappingStats(object):
     self.start = start
     self.end = end
     self.pages = (end - start) / PAGE_SIZE
-    self.is_zero = [False for i in range(self.pages)]
-    self.is_present = [False for i in range(self.pages)]
-    self.is_swapped = [False for i in range(self.pages)]
-    self.compressed_size = [0 for i in range(self.pages)]
-    self.hashes = [None for i in range(self.pages)]
-    self.freed = 0
+    self.is_zero = [False for _ in range(self.pages)]
+    self.is_present = [False for _ in range(self.pages)]
+    self.is_swapped = [False for _ in range(self.pages)]
+    self.compressed_size = [0 for _ in range(self.pages)]
+    self.hashes = [None for _ in range(self.pages)]
+    self.freed = collections.defaultdict(int)
 
 
 def _GetStatsFromFileDump(filename):
@@ -99,17 +117,6 @@ def _GetStatsFromFileDump(filename):
   Returns:
     MappingStats for the mapping.
   """
-  # These are typically only populated with DCHECK() on.
-  FREED_PATTERNS = (0xcccccccc,  # V8
-                    0xcdcdcdcd,  # PartitionAlloc "zapped"
-                    0xabababab,  # PartitionAlloc "uninitialized"
-                    0xdeadbeef,  # V8 "zapped"
-                    0x0baddeaf,  # V8 zapped handles
-                    0x0baffedf,  # V8 zapped global handles
-                    0x0beefdaf,  # V8 zapped from space
-                    0xbeefdeef,  # V8 zapped slots
-                    0xbadbaddb,  # V8 debug zapped
-                    0xfeed1eaf)  # V8 zapped freelist
   # Dump integrity checks.
   metadata_filename = filename + '.metadata'
   pid_start_end = os.path.basename(filename)[:-len('.dump')]
@@ -127,7 +134,9 @@ def _GetStatsFromFileDump(filename):
     for i in range(result.pages):
       page = _ReadPage(f)
       assert len(page) == 1024
-      result.freed += 4 * sum(x in FREED_PATTERNS for x in page)
+      for x in page:
+        if x in FREED_PATTERNS:
+          result.freed[FREED_PATTERNS[x]] += 4
       is_zero = max(page) == 0
       present, swapped = (bool(int(x)) for x in metadata_f.readline().strip())
       # Not present, not swapped private anonymous == lazily initialized zero
@@ -172,18 +181,26 @@ def _FindPageFromHash(mappings, page_hash):
 def _PrintPage(page):
   """Prints the content of a page."""
   for i, x in enumerate(page):
-    print '{:08x}'.format(x),
+    print('{:08x}'.format(x), end=' ')
     if i % 16 == 15:
-      print
+      print()
 
 
-def PrintStats(dumps):
-  """Logs statistics about a process mappings dump.
+AggregateStats = collections.namedtuple(
+    'AggregateStats', ('content_to_count', 'pages', 'zero_pages',
+                       'compressed_size', 'swapped_pages',
+                       'not_present_pages', 'present_zero_pages', 'freed'))
+
+
+def _AggregateStats(dump_stats):
+  """Aggreates statistics across dumps.
 
   Args:
-    dumps: ([str]) List of dumps.
+    dump_stats: ([MappingStats]) Stats from all mappings.
+
+  Returns:
+    An instance of AggregateStats.
   """
-  dump_stats = [_GetStatsFromFileDump(filename) for filename in dumps]
   content_to_count = collections.defaultdict(int)
   total_pages = sum(stats.pages for stats in dump_stats)
   total_zero_pages = sum(sum(stats.is_zero) for stats in dump_stats)
@@ -195,7 +212,10 @@ def PrintStats(dumps):
   total_present_zero_pages = sum(
       sum(x == (True, True) for x in zip(stats.is_zero, stats.is_present))
       for stats in dump_stats)
-  total_freed_space = sum(stats.freed for stats in dump_stats)
+  total_freed_space = {x: 0 for x in FREED_PATTERNS.values()}
+  for dump in dump_stats:
+    for (freed_data_type, value) in dump.freed.items():
+      total_freed_space[freed_data_type] += value
 
   content_to_count = collections.defaultdict(int)
   for stats in dump_stats:
@@ -203,50 +223,85 @@ def PrintStats(dumps):
       if page_hash:
         content_to_count[page_hash] += 1
 
-  print 'Total pages = %d (%s)' % (total_pages,
-                                   _PrettyPrintSize(total_pages * PAGE_SIZE))
-  print 'Total zero pages = %d (%.02f%%)' % (
-      total_zero_pages, (100. * total_zero_pages) / total_pages)
-  print 'Total present zero pages = %d (%s)' % (
-      total_present_zero_pages,
-      _PrettyPrintSize(total_present_zero_pages * PAGE_SIZE))
-  total_size_non_zero_pages = (total_pages - total_zero_pages) * PAGE_SIZE
-  print 'Total size of non-zero pages = %d (%s)' % (
-      total_size_non_zero_pages, _PrettyPrintSize(total_size_non_zero_pages))
-  print 'Total compressed size = %d (%.02f%%)' % (
-      total_compressed_size,
-      (100. * total_compressed_size) / total_size_non_zero_pages)
-  duplicated_pages = sum(x - 1 for x in content_to_count.values())
-  print 'Duplicated non-zero pages = %d' % duplicated_pages
-  count_and_hashes = sorted(((v, k) for k, v in content_to_count.items()),
+  return AggregateStats(
+      content_to_count=content_to_count, pages=total_pages,
+      zero_pages=total_zero_pages, compressed_size=total_compressed_size,
+      swapped_pages=total_swapped_pages,
+      not_present_pages=total_not_present_pages,
+      present_zero_pages=total_present_zero_pages,
+      freed=total_freed_space)
+
+
+def PrintStats(dumps, verbose):
+  """Logs statistics about a process mappings dump.
+
+  Args:
+    dumps: ([str]) List of dumps.
+    verbose: (bool) Verbose output.
+  """
+  dump_stats = [_GetStatsFromFileDump(filename) for filename in dumps]
+  total = _AggregateStats(dump_stats)
+  duplicated_pages = sum(x - 1 for x in total.content_to_count.values())
+  count_and_hashes = sorted(((v, k) for k, v in total.content_to_count.items()),
                             reverse=True)
   max_common_pages = count_and_hashes[0][0] - 1
-  print 'Max non-zero pages with the same content = %d' % max_common_pages
-  print 'Swapped pages = %d (%s)' % (
-      total_swapped_pages, _PrettyPrintSize(total_swapped_pages * PAGE_SIZE))
-  print 'Non-present pages = %d (%s)' % (
-      total_not_present_pages,
-      _PrettyPrintSize(total_not_present_pages * PAGE_SIZE))
-  print 'Freed = %d (%s)' % (
-      total_freed_space, _PrettyPrintSize(total_freed_space))
-  print 'Top Duplicated Pages:'
-  for i in range(10):
-    count, page_hash = count_and_hashes[i]
-    print '%d common pages' % count
-    page = _FindPageFromHash(dump_stats, page_hash)
-    _PrintPage(page)
-    print
+  total_size_non_zero_pages = (total.pages - total.zero_pages) * PAGE_SIZE
+
+  print('Total pages = %d (%s)' % (total.pages,
+                                   _PrettyPrintSize(total.pages * PAGE_SIZE)))
+  print('Total zero pages = %d (%.02f%%)' %
+        (total.zero_pages, (100. * total.zero_pages) / total.pages))
+  print('Total present zero pages = %d (%s)' %
+        (total.present_zero_pages,
+         _PrettyPrintSize(total.present_zero_pages * PAGE_SIZE)))
+  print(
+      'Total size of non-zero pages = %d (%s)' %
+      (total_size_non_zero_pages, _PrettyPrintSize(total_size_non_zero_pages)))
+  print('Total compressed size = %d (%.02f%%)' %
+        (total.compressed_size,
+         (100. * total.compressed_size) / total_size_non_zero_pages))
+  print('Duplicated non-zero pages = %d' % duplicated_pages)
+  print('Max non-zero pages with the same content = %d' % max_common_pages)
+  print(
+      'Swapped pages = %d (%s)' %
+      (total.swapped_pages, _PrettyPrintSize(total.swapped_pages * PAGE_SIZE)))
+  print('Non-present pages = %d (%s)' %
+        (total.not_present_pages,
+         _PrettyPrintSize(total.not_present_pages * PAGE_SIZE)))
+  print('Freed: ')
+  for k in total.freed:
+    print('  %s = %d (%s)' % (k, total.freed[k], _PrettyPrintSize(
+        total.freed[k])))
+
+  if verbose:
+    print('Top Duplicated Pages:')
+    for i in range(10):
+      count, page_hash = count_and_hashes[i]
+      print('%d common pages' % count)
+      page = _FindPageFromHash(dump_stats, page_hash)
+      _PrintPage(page)
+      print()
+
+
+def _CreateArgumentParser():
+  parser = argparse.ArgumentParser()
+  parser.add_argument('--directory', type=str, required=True,
+                      help='Dumps directory')
+  parser.add_argument('--verbose', action='store_true', help='Dumps directory')
+  return parser
 
 
 def main():
   logging.basicConfig(level=logging.INFO)
-  if len(sys.argv) != 2:
-    logging.error('Usage: %s <dumps_directory>', sys.argv[0])
-    sys.exit(1)
-  directory = sys.argv[1]
-  dumps = [os.path.join(directory, f) for f in os.listdir(directory)
-           if f.endswith('.dump')]
-  PrintStats(dumps)
+  parser = _CreateArgumentParser()
+  args = parser.parse_args()
+
+  dumps = []
+  for f in os.listdir(args.directory):
+    if f.endswith('.dump'):
+      dumps.append(os.path.join(args.directory, f))
+
+  PrintStats(dumps, args.verbose)
 
 
 if __name__ == '__main__':

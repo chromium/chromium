@@ -85,7 +85,7 @@ HICON ViewsDelegate::GetSmallWindowIcon() const {
 bool ViewsDelegate::IsWindowInMetro(gfx::NativeWindow window) const {
   return false;
 }
-#elif defined(OS_LINUX) && !defined(OS_CHROMEOS)
+#elif defined(OS_LINUX) && BUILDFLAG(ENABLE_DESKTOP_AURA)
 gfx::ImageSkia* ViewsDelegate::GetDefaultWindowIcon() const {
   return nullptr;
 }
@@ -94,6 +94,10 @@ gfx::ImageSkia* ViewsDelegate::GetDefaultWindowIcon() const {
 NonClientFrameView* ViewsDelegate::CreateDefaultNonClientFrameView(
     Widget* widget) {
   return nullptr;
+}
+
+bool ViewsDelegate::IsShuttingDown() const {
+  return false;
 }
 
 void ViewsDelegate::AddRef() {}
@@ -123,7 +127,7 @@ std::string ViewsDelegate::GetApplicationName() {
 
 #if defined(OS_WIN)
 int ViewsDelegate::GetAppbarAutohideEdges(HMONITOR monitor,
-                                          const base::Closure& callback) {
+                                          base::OnceClosure callback) {
   return EDGE_BOTTOM;
 }
 #endif

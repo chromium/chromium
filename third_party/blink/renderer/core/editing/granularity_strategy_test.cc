@@ -11,13 +11,13 @@
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/local_caret_rect.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
+#include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
 #include "third_party/blink/renderer/core/editing/visible_position.h"
 #include "third_party/blink/renderer/core/editing/visible_selection.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
 #include "third_party/blink/renderer/core/html/html_span_element.h"
-#include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
@@ -25,7 +25,7 @@
 namespace blink {
 
 #define EXPECT_EQ_SELECTED_TEXT(text) \
-  EXPECT_EQ(text, WebString(Selection().SelectedText()).Utf8())
+  EXPECT_EQ(text, Selection().SelectedText().Utf8())
 
 IntPoint VisiblePositionToContentsPoint(const VisiblePosition& pos) {
   IntPoint result = AbsoluteSelectionBoundsOf(pos).MinXMaxYCorner();
@@ -37,7 +37,7 @@ IntPoint VisiblePositionToContentsPoint(const VisiblePosition& pos) {
 
 using TextNodeVector = HeapVector<Member<Text>>;
 
-class GranularityStrategyTest : public PageTestBase {
+class GranularityStrategyTest : public EditingTestBase {
  protected:
   void SetUp() override;
 
@@ -220,7 +220,7 @@ void GranularityStrategyTest::SetupTextSpan(String str1,
   Text* text1 = GetDocument().createTextNode(str1);
   Text* text2 = GetDocument().createTextNode(str2);
   Text* text3 = GetDocument().createTextNode(str3);
-  Element* span = HTMLSpanElement::Create(GetDocument());
+  auto* span = MakeGarbageCollected<HTMLSpanElement>(GetDocument());
   Element* div = GetDocument().getElementById("mytext");
   div->AppendChild(text1);
   div->AppendChild(span);
@@ -772,6 +772,25 @@ TEST_F(GranularityStrategyTest, UpdateExtentWithNullPositionForDirectional) {
   Selection().MoveRangeSelectionExtent(IntPoint(0, 0));
 
   EXPECT_EQ(selection_in_dom_tree, Selection().GetSelectionInDOMTree());
+}
+
+// For http://crbug.com/974728
+TEST_F(GranularityStrategyTest, UpdateExtentWithNullNextWordBound) {
+  const SelectionInDOMTree selection = SetSelectionTextToBody(
+      "<style>body { margin: 0; padding: 0; font: 10px monospace; }</style>"
+      "<div contenteditable id=target></div>|def^");
+  Selection().SetSelection(selection, SetSelectionOptions());
+
+  // Move inside content editable
+  ASSERT_EQ(
+      Position(*GetDocument().getElementById("target"), 0),
+      CreateVisiblePosition(PositionForContentsPointRespectingEditingBoundary(
+                                IntPoint(0, 0), &GetFrame()))
+          .DeepEquivalent())
+      << "We extend selection inside content editable.";
+  Selection().MoveRangeSelectionExtent(IntPoint(0, 0));
+
+  EXPECT_EQ(selection, Selection().GetSelectionInDOMTree());
 }
 
 }  // namespace blink

@@ -28,6 +28,7 @@ const char* kOriginNames[] = {
     "[Deprecated] Link Rel Next",
     "External Request Forced Cellular",
     "[Deprecated] Offline",
+    "Navigation Predictor",
     "Max",
 };
 static_assert(base::size(kOriginNames) == ORIGIN_MAX + 1,

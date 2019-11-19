@@ -23,15 +23,15 @@ class AboutUIHTMLSource : public content::URLDataSource {
   ~AboutUIHTMLSource() override;
 
   // content::URLDataSource implementation.
-  std::string GetSource() const override;
+  std::string GetSource() override;
   void StartDataRequest(
-      const std::string& path,
-      const content::ResourceRequestInfo::WebContentsGetter& wc_getter,
+      const GURL& url,
+      const content::WebContents::Getter& wc_getter,
       const content::URLDataSource::GotDataCallback& callback) override;
-  std::string GetMimeType(const std::string& path) const override;
-  bool ShouldAddContentSecurityPolicy() const override;
+  std::string GetMimeType(const std::string& path) override;
+  bool ShouldAddContentSecurityPolicy() override;
   std::string GetAccessControlAllowOriginForOrigin(
-      const std::string& origin) const override;
+      const std::string& origin) override;
 
   // Send the response data.
   void FinishDataRequest(

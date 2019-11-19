@@ -16,10 +16,16 @@ TextResourceDecoderOptions::TextResourceDecoderOptions(
                                  nullptr,
                                  KURL()) {}
 
-TextResourceDecoderOptions
-TextResourceDecoderOptions::CreateAlwaysUseUTF8ForText() {
+TextResourceDecoderOptions TextResourceDecoderOptions::CreateUTF8Decode() {
   return TextResourceDecoderOptions(kAlwaysUseUTF8ForText, kPlainTextContent,
                                     UTF8Encoding(), nullptr, NullURL());
+}
+
+TextResourceDecoderOptions
+TextResourceDecoderOptions::CreateUTF8DecodeWithoutBOM() {
+  TextResourceDecoderOptions options = CreateUTF8Decode();
+  options.no_bom_decoding_ = true;
+  return options;
 }
 
 TextResourceDecoderOptions TextResourceDecoderOptions::CreateWithAutoDetection(
@@ -41,6 +47,7 @@ TextResourceDecoderOptions::TextResourceDecoderOptions(
     : encoding_detection_option_(encoding_detection_option),
       content_type_(content_type),
       default_encoding_(default_encoding),
+      no_bom_decoding_(false),
       use_lenient_xml_decoding_(false),
       hint_encoding_(hint_encoding),
       hint_url_(hint_url) {

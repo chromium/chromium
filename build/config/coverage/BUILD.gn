@@ -8,42 +8,26 @@ config("default_coverage") {
   if (use_clang_coverage) {
     ldflags = []
     if (!is_win) {
-      ldflags += [ "-fprofile-instr-generate" ]
-    } else {
       # Windows directly calls link.exe instead of the compiler driver when
-      # linking.  Hence, pass the runtime libraries instead of
-      # -fsanitize=address.
-      # TODO(rnk): Come up with a more uniform approach for linking against
-      # compiler-rt for sanitizers and coverage.
-      if (target_cpu == "x64") {
-        ldflags += [ "clang_rt.profile-x86_64.lib" ]
-      } else if (target_cpu == "x86") {
-        ldflags += [ "clang_rt.profile-i386.lib" ]
-      } else {
-        assert(false &&
-               "use_clang_coverage=true not supported yet for this target_cpu")
-      }
+      # linking, and embeds the path to the profile runtime library as
+      # dependent library into each object file.
+      ldflags += [ "-fprofile-instr-generate" ]
     }
 
-    # Coverage flags are only on by default when instrument all source files.
-    # Otherwise, coverage flags are dynamically passed to the compile command
-    # via the //build/toolchain/clang_code_coverage_wrapper.py script.
-    if (coverage_instrumentation_input_file == "") {
-      cflags = [
-        "-fprofile-instr-generate",
-        "-fcoverage-mapping",
+    cflags = [
+      "-fprofile-instr-generate",
+      "-fcoverage-mapping",
 
-        # Following experimental flags removes unused header functions from the
-        # coverage mapping data embedded in the test binaries, and the reduction
-        # of binary size enables building Chrome's large unit test targets on
-        # MacOS. Please refer to crbug.com/796290 for more details.
-        "-mllvm",
-        "-limited-coverage-experimental=true",
-      ]
+      # Following experimental flags removes unused header functions from the
+      # coverage mapping data embedded in the test binaries, and the reduction
+      # of binary size enables building Chrome's large unit test targets on
+      # MacOS. Please refer to crbug.com/796290 for more details.
+      "-mllvm",
+      "-limited-coverage-experimental=true",
+    ]
 
-      if (!is_win) {
-        cflags += [ "-fno-use-cxa-atexit" ]
-      }
+    if (!is_win) {
+      cflags += [ "-fno-use-cxa-atexit" ]
     }
   }
 }

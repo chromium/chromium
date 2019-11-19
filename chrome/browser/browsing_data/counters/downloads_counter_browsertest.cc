@@ -24,6 +24,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/download_manager.h"
 #include "extensions/buildflags/buildflags.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/common/extension.h"
@@ -122,8 +123,8 @@ class DownloadsCounterTest : public InProcessBrowserTest,
         guid, download::DownloadItem::kInvalidId + (++items_count_),
         base::FilePath(FILE_PATH_LITERAL("current/path")),
         base::FilePath(FILE_PATH_LITERAL("target/path")), url_chain, GURL(),
-        GURL(), GURL(), GURL(), mime_type, std::string(), time_, time_,
-        std::string(), std::string(), 1, 1, std::string(), state, danger,
+        GURL(), GURL(), GURL(), url::Origin(), mime_type, std::string(), time_,
+        time_, std::string(), std::string(), 1, 1, std::string(), state, danger,
         reason, false, time_, false,
         std::vector<download::DownloadItem::ReceivedSlice>());
 

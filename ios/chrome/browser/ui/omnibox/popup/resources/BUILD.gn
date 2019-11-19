@@ -4,6 +4,30 @@
 
 import("//build/config/ios/asset_catalog.gni")
 
+colorset("omnibox_suggestion_answer_icon_color") {
+  sources = [
+    "omnibox_suggestion_answer_icon_color.colorset/Contents.json",
+  ]
+}
+
+colorset("omnibox_suggestion_answer_icon_dark_color") {
+  sources = [
+    "omnibox_suggestion_answer_icon_dark_color.colorset/Contents.json",
+  ]
+}
+
+colorset("omnibox_suggestion_icon_color") {
+  sources = [
+    "omnibox_suggestion_icon_color.colorset/Contents.json",
+  ]
+}
+
+colorset("omnibox_suggestion_icon_dark_color") {
+  sources = [
+    "omnibox_suggestion_icon_dark_color.colorset/Contents.json",
+  ]
+}
+
 imageset("omnibox_popup_tab_match") {
   sources = [
     "omnibox_popup_tab_match.imageset/Contents.json",

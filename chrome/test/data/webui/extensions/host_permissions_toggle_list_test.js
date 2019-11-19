@@ -2,9 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://extensions/extensions.js';
+
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {TestService} from './test_service.js';
+
 suite('HostPermissionsToggleList', function() {
-  /** @type {extensions.HostPermissionsToggleListElement} */ let element;
-  /** @type {extensions.TestService} */ let delegate;
+  /** @type {HostPermissionsToggleListElement} */ let element;
+  /** @type {TestService} */ let delegate;
 
   const HostAccess = chrome.developerPrivate.HostAccess;
   const ITEM_ID = 'a'.repeat(32);
@@ -15,7 +20,7 @@ suite('HostPermissionsToggleList', function() {
   setup(function() {
     PolymerTest.clearBody();
     element = document.createElement('extensions-host-permissions-toggle-list');
-    delegate = new extensions.TestService();
+    delegate = new TestService();
     element.delegate = delegate;
     element.itemId = ITEM_ID;
 
@@ -39,7 +44,7 @@ suite('HostPermissionsToggleList', function() {
     };
 
     element.permissions = permissions;
-    Polymer.dom.flush();
+    flush();
 
     assertTrue(!!element.$);
     const allSites = element.$.allHostsToggle;
@@ -77,7 +82,7 @@ suite('HostPermissionsToggleList', function() {
     };
 
     element.permissions = permissions;
-    Polymer.dom.flush();
+    flush();
 
     assertTrue(!!element.$);
     const allSites = element.$.allHostsToggle;
@@ -116,7 +121,7 @@ suite('HostPermissionsToggleList', function() {
     };
 
     element.permissions = permissions;
-    Polymer.dom.flush();
+    flush();
 
     assertTrue(!!element.$);
     const allSites = element.$.allHostsToggle;
@@ -153,7 +158,7 @@ suite('HostPermissionsToggleList', function() {
       ],
     };
     element.permissions = permissions;
-    Polymer.dom.flush();
+    flush();
 
     assertTrue(!!element.$);
     const allSites = element.$.allHostsToggle;
@@ -178,7 +183,7 @@ suite('HostPermissionsToggleList', function() {
     };
 
     element.permissions = permissions;
-    Polymer.dom.flush();
+    flush();
 
     const hostToggles = element.shadowRoot.querySelectorAll('.host-toggle');
     assertEquals(3, hostToggles.length);

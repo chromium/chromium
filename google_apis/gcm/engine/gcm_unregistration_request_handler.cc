@@ -52,19 +52,10 @@ UnregistrationRequest::Status GCMUnregistrationRequestHandler::ParseResponse(
 }
 
 void GCMUnregistrationRequestHandler::ReportUMAs(
-    UnregistrationRequest::Status status,
-    int retry_count,
-    base::TimeDelta complete_time) {
+    UnregistrationRequest::Status status) {
   UMA_HISTOGRAM_ENUMERATION("GCM.UnregistrationRequestStatus",
                             status,
                             UnregistrationRequest::UNREGISTRATION_STATUS_COUNT);
-
-  // Other UMAs are only reported when the request succeeds.
-  if (status != UnregistrationRequest::SUCCESS)
-    return;
-
-  UMA_HISTOGRAM_COUNTS_1M("GCM.UnregistrationRetryCount", retry_count);
-  UMA_HISTOGRAM_TIMES("GCM.UnregistrationCompleteTime", complete_time);
 }
 
 }  // namespace gcm

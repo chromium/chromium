@@ -7,9 +7,9 @@
 
 #include <memory>
 
-#include "base/callback_forward.h"
+#include "base/callback.h"
+#include "base/hash/md5.h"
 #include "base/macros.h"
-#include "base/md5.h"
 #include "base/memory/ref_counted.h"
 #include "net/base/io_buffer.h"
 
@@ -24,7 +24,7 @@ namespace util {
 // stream.
 class FileStreamMd5Digester {
  public:
-  typedef base::Callback<void(const std::string&)> ResultCallback;
+  using ResultCallback = base::OnceCallback<void(std::string)>;
 
   FileStreamMd5Digester();
   ~FileStreamMd5Digester();
@@ -35,18 +35,19 @@ class FileStreamMd5Digester {
   // Only one stream can be processed at a time by each digester.  Do not call
   // GetMd5Digest before the results of a previous call have been returned.
   void GetMd5Digest(std::unique_ptr<storage::FileStreamReader> stream_reader,
-                    const ResultCallback& callback);
+                    ResultCallback callback);
 
  private:
   // Kicks off a read of the next chunk from the stream.
-  void ReadNextChunk(const ResultCallback& callback);
+  void ReadNextChunk();
   // Handles the incoming chunk of data from a stream read.
-  void OnChunkRead(const ResultCallback& callback, int bytes_read);
+  void OnChunkRead(int bytes_read);
 
   // Maximum chunk size for read operations.
   std::unique_ptr<storage::FileStreamReader> reader_;
   scoped_refptr<net::IOBuffer> buffer_;
   base::MD5Context md5_context_;
+  ResultCallback callback_;
 
   DISALLOW_COPY_AND_ASSIGN(FileStreamMd5Digester);
 };

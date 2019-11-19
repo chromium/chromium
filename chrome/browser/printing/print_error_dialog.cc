@@ -28,6 +28,6 @@ void ShowPrintErrorDialogTask() {
 
 void ShowPrintErrorDialog() {
   // Nested loop may destroy caller.
-  base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::UI},
-                           base::BindOnce(&ShowPrintErrorDialogTask));
+  base::PostTask(FROM_HERE, {content::BrowserThread::UI},
+                 base::BindOnce(&ShowPrintErrorDialogTask));
 }

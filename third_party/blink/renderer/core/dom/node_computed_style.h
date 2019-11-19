@@ -33,11 +33,11 @@
 
 namespace blink {
 
-inline const ComputedStyle* Node::GetComputedStyle() const {
-  return MutableComputedStyle();
+inline ComputedStyle* Node::MutableComputedStyleForEditingDeprecated() const {
+  return const_cast<ComputedStyle*>(GetComputedStyle());
 }
 
-inline ComputedStyle* Node::MutableComputedStyle() const {
+inline const ComputedStyle* Node::GetComputedStyle() const {
   if (IsElementNode()) {
     return HasRareData()
                ? data_.rare_data_->GetNodeRenderingData()->GetComputedStyle()
@@ -45,7 +45,7 @@ inline ComputedStyle* Node::MutableComputedStyle() const {
   }
   // Text nodes and Document.
   if (LayoutObject* layout_object = GetLayoutObject())
-    return layout_object->MutableStyle();
+    return layout_object->Style();
   return nullptr;
 }
 

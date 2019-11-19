@@ -3,7 +3,9 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" android:orderingFromXml="true">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orderingFromXml="true">
     <Preference
         android:fragment="org.chromium.chrome.browser.preferences.developer.TracingCategoriesPreferences"
         android:key="default_categories"
@@ -12,7 +14,7 @@
         android:fragment="org.chromium.chrome.browser.preferences.developer.TracingCategoriesPreferences"
         android:key="non_default_categories"
         android:title="Disabled-by-default categories"/>
-    <org.chromium.chrome.browser.preferences.ChromeBaseListPreference
+    <ListPreference
         android:key="mode"
         android:title="Tracing mode"
         android:persistent="false"/>
@@ -21,5 +23,7 @@
     <org.chromium.chrome.browser.preferences.TextMessagePreference
         android:key="tracing_status"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        app:allowDividerAbove="false"
+        app:allowDividerBelow="false" />
 </PreferenceScreen>

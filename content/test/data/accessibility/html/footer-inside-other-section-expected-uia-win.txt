@@ -1,0 +1,13 @@
+document
+++article
+++++group LocalizedControlType='footer'
+++++++group
+++++++++description Name='footer inside article.'
+++group
+++++group LocalizedControlType='footer'
+++++++group
+++++++++description Name='footer inside section.'
+++main
+++++group LocalizedControlType='footer'
+++++++group
+++++++++description Name='footer inside main.'

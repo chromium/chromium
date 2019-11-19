@@ -29,8 +29,8 @@ BOOL CALLBACK MonitorEnumCallback(HMONITOR monitor,
                                   HDC hdc_monitor,
                                   LPRECT rect_monitor,
                                   LPARAM data) {
-  std::map<HMONITOR, base::string16>& monitors =
-      *reinterpret_cast<std::map<HMONITOR, base::string16>*>(data);
+  std::map<HMONITOR, std::wstring>& monitors =
+      *reinterpret_cast<std::map<HMONITOR, std::wstring>*>(data);
   MONITORINFOEXW monitor_info = {};
   monitor_info.cbSize = sizeof(monitor_info);
 
@@ -41,8 +41,8 @@ BOOL CALLBACK MonitorEnumCallback(HMONITOR monitor,
   return true;
 }
 
-std::map<HMONITOR, base::string16> EnumerateMonitors() {
-  std::map<HMONITOR, base::string16> result;
+std::map<HMONITOR, std::wstring> EnumerateMonitors() {
+  std::map<HMONITOR, std::wstring> result;
   ::EnumDisplayMonitors(nullptr, nullptr, MonitorEnumCallback,
                         reinterpret_cast<LPARAM>(&result));
   return result;
@@ -52,8 +52,8 @@ std::map<HMONITOR, base::string16> EnumerateMonitors() {
   result[reinterpret_cast<HMONITOR>(monitor)] = \
       base::StringPrintf(L"\\\\.\\DISPLAY%X", monitor)
 
-std::map<HMONITOR, base::string16> GetTestMonitors() {
-  std::map<HMONITOR, base::string16> result;
+std::map<HMONITOR, std::wstring> GetTestMonitors() {
+  std::map<HMONITOR, std::wstring> result;
 
   HMONITOR_ENTRY(0x11111111);
   HMONITOR_ENTRY(0x22222222);
@@ -62,15 +62,15 @@ std::map<HMONITOR, base::string16> GetTestMonitors() {
   return result;
 }
 
-base::string16 UnicodeStringToString(PUNICODE_STRING name) {
-  return base::string16(
-      name->Buffer, name->Buffer + (name->Length / sizeof(name->Buffer[0])));
+std::wstring UnicodeStringToString(PUNICODE_STRING name) {
+  return std::wstring(name->Buffer,
+                      name->Buffer + (name->Length / sizeof(name->Buffer[0])));
 }
 
 // Returns an index 1, 2, 4 or 8 depening on the device. 0 on error.
 DWORD GetTestDeviceMonitorIndex(PUNICODE_STRING device_name) {
-  base::string16 name = UnicodeStringToString(device_name);
-  std::map<HMONITOR, base::string16> monitors = GetTestMonitors();
+  std::wstring name = UnicodeStringToString(device_name);
+  std::map<HMONITOR, std::wstring> monitors = GetTestMonitors();
   for (const auto& monitor : monitors) {
     if (name == monitor.second)
       return static_cast<DWORD>(reinterpret_cast<uintptr_t>(monitor.first)) &
@@ -261,7 +261,7 @@ bool WINAPI EnumDisplayMonitorsTest(HDC hdc,
 }
 
 bool WINAPI GetMonitorInfoWTest(HMONITOR monitor, LPMONITORINFO monitor_info) {
-  std::map<HMONITOR, base::string16> monitors = GetTestMonitors();
+  std::map<HMONITOR, std::wstring> monitors = GetTestMonitors();
   if (monitor_info->cbSize != sizeof(MONITORINFO) &&
       monitor_info->cbSize != sizeof(MONITORINFOEXW))
     return false;
@@ -523,8 +523,8 @@ namespace sandbox {
 //------------------------------------------------------------------------------
 
 SBOX_TESTS_COMMAND int CheckWin8MonitorsRedirection(int argc, wchar_t** argv) {
-  std::map<HMONITOR, base::string16> monitors = EnumerateMonitors();
-  std::map<HMONITOR, base::string16> monitors_to_test = GetTestMonitors();
+  std::map<HMONITOR, std::wstring> monitors = EnumerateMonitors();
+  std::map<HMONITOR, std::wstring> monitors_to_test = GetTestMonitors();
   if (monitors.size() != monitors_to_test.size())
     return SBOX_TEST_FIRST_ERROR;
 
@@ -539,12 +539,12 @@ SBOX_TESTS_COMMAND int CheckWin8MonitorsRedirection(int argc, wchar_t** argv) {
 }
 
 SBOX_TESTS_COMMAND int CheckWin8MonitorInfo(int argc, wchar_t** argv) {
-  std::map<HMONITOR, base::string16> monitors_to_test = GetTestMonitors();
+  std::map<HMONITOR, std::wstring> monitors_to_test = GetTestMonitors();
   MONITORINFO monitor_info = {};
   MONITORINFOEXW monitor_info_exw = {};
   MONITORINFOEXA monitor_info_exa = {};
   HMONITOR valid_monitor = monitors_to_test.begin()->first;
-  base::string16 valid_device = monitors_to_test.begin()->second;
+  std::wstring valid_device = monitors_to_test.begin()->second;
   monitor_info.cbSize = sizeof(MONITORINFO);
   if (!::GetMonitorInfoW(valid_monitor, &monitor_info))
     return SBOX_TEST_FIRST_ERROR;
@@ -560,7 +560,7 @@ SBOX_TESTS_COMMAND int CheckWin8MonitorInfo(int argc, wchar_t** argv) {
   monitor_info_exa.cbSize = sizeof(MONITORINFOEXA);
   if (!::GetMonitorInfoA(valid_monitor,
                          reinterpret_cast<MONITORINFO*>(&monitor_info_exa)) ||
-      valid_device != base::ASCIIToUTF16(monitor_info_exa.szDevice)) {
+      valid_device != base::UTF8ToWide(monitor_info_exa.szDevice)) {
     return SBOX_TEST_FOURTH_ERROR;
   }
 
@@ -582,7 +582,7 @@ SBOX_TESTS_COMMAND int CheckWin8MonitorInfo(int argc, wchar_t** argv) {
 }
 
 SBOX_TESTS_COMMAND int CheckWin8OPMApis(int argc, wchar_t** argv) {
-  std::map<HMONITOR, base::string16> monitors = GetTestMonitors();
+  std::map<HMONITOR, std::wstring> monitors = GetTestMonitors();
   for (const auto& monitor : monitors) {
     ULONG output_count = 0;
     IOPMVideoOutput** outputs = nullptr;
@@ -618,10 +618,10 @@ SBOX_TESTS_COMMAND int CheckWin8OPMApis(int argc, wchar_t** argv) {
 // the target process causes the launch to fail in process initialization.
 // The test process itself links against user32/gdi32.
 TEST(ProcessMitigationsWin32kTest, CheckWin8LockDownFailure) {
-  if (base::win::GetVersion() < base::win::VERSION_WIN8)
+  if (base::win::GetVersion() < base::win::Version::WIN8)
     return;
 
-  base::string16 test_policy_command = L"CheckPolicy ";
+  std::wstring test_policy_command = L"CheckPolicy ";
   test_policy_command += std::to_wstring(TESTPOLICY_WIN32K);
 
   TestRunner runner;
@@ -638,10 +638,10 @@ TEST(ProcessMitigationsWin32kTest, CheckWin8LockDownFailure) {
 // The test process itself links against user32/gdi32.
 
 TEST(ProcessMitigationsWin32kTest, CheckWin8LockDownSuccess) {
-  if (base::win::GetVersion() < base::win::VERSION_WIN8)
+  if (base::win::GetVersion() < base::win::Version::WIN8)
     return;
 
-  base::string16 test_policy_command = L"CheckPolicy ";
+  std::wstring test_policy_command = L"CheckPolicy ";
   test_policy_command += std::to_wstring(TESTPOLICY_WIN32K);
 
   TestRunner runner;
@@ -665,10 +665,10 @@ TEST(ProcessMitigationsWin32kTest, CheckWin8LockDownSuccess) {
 // we can use the IPC redirection to enumerate the list of monitors.
 // Flaky. https://crbug.com/840335
 TEST(ProcessMitigationsWin32kTest, CheckWin8Redirection) {
-  if (base::win::GetVersion() < base::win::VERSION_WIN8)
+  if (base::win::GetVersion() < base::win::Version::WIN8)
     return;
 
-  base::string16 test_policy_command = L"CheckPolicy ";
+  std::wstring test_policy_command = L"CheckPolicy ";
   test_policy_command += std::to_wstring(TESTPOLICY_WIN32K);
 
   TestRunner runner;

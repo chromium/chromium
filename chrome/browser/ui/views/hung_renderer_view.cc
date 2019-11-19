@@ -31,9 +31,7 @@
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
-#include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/result_codes.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -42,6 +40,7 @@
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/scroll_view.h"
 #include "ui/views/layout/grid_layout.h"
 #include "ui/views/widget/widget.h"
 
@@ -64,7 +63,7 @@ HungRendererDialogView* HungRendererDialogView::g_instance_ = nullptr;
 // HungPagesTableModel, public:
 
 HungPagesTableModel::HungPagesTableModel(Delegate* delegate)
-    : delegate_(delegate), process_observer_(this), widget_observer_(this) {}
+    : delegate_(delegate) {}
 
 HungPagesTableModel::~HungPagesTableModel() {}
 
@@ -271,6 +270,11 @@ bool HungRendererDialogView::IsFrameActive(WebContents* contents) {
 
 HungRendererDialogView::HungRendererDialogView()
     : info_label_(nullptr), hung_pages_table_(nullptr), initialized_(false) {
+#if defined(OS_WIN)
+  // Never use the custom frame when Aero Glass is disabled. See
+  // https://crbug.com/323278
+  DialogDelegate::set_use_custom_frame(ui::win::IsAeroGlassEnabled());
+#endif
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
       views::TEXT, views::CONTROL));
   chrome::RecordDialogCreation(chrome::DialogIdentifier::HUNG_RENDERER);
@@ -365,20 +369,6 @@ void HungRendererDialogView::WindowClosing() {
   g_instance_ = nullptr;
 }
 
-int HungRendererDialogView::GetDialogButtons() const {
-  return ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL;
-}
-
-base::string16 HungRendererDialogView::GetDialogButtonLabel(
-    ui::DialogButton button) const {
-  if (button == ui::DIALOG_BUTTON_CANCEL) {
-    return l10n_util::GetPluralStringFUTF16(
-        IDS_BROWSER_HANGMONITOR_RENDERER_END,
-        hung_pages_table_model_->RowCount());
-  }
-  return l10n_util::GetStringUTF16(IDS_BROWSER_HANGMONITOR_RENDERER_WAIT);
-}
-
 bool HungRendererDialogView::Cancel() {
   auto* render_widget_host = hung_pages_table_model_->GetRenderWidgetHost();
   bool currently_unresponsive =
@@ -389,9 +379,15 @@ bool HungRendererDialogView::Cancel() {
   content::RenderProcessHost* rph =
       hung_pages_table_model_->GetRenderWidgetHost()->GetProcess();
   if (rph) {
+#if defined(OS_LINUX)
+    // A generic |CrashDumpHungChildProcess()| is not implemented for Linux.
+    // Instead we send an explicit IPC to crash on the renderer's IO thread.
+    rph->ForceCrash();
+#else
     // Try to generate a crash report for the hung process.
     CrashDumpHungChildProcess(rph->GetProcess().Handle());
     rph->Shutdown(content::RESULT_CODE_HUNG);
+#endif
   }
   return true;
 }
@@ -403,16 +399,6 @@ bool HungRendererDialogView::Accept() {
 
 bool HungRendererDialogView::Close() {
   return Accept();
-}
-
-bool HungRendererDialogView::ShouldUseCustomFrame() const {
-#if defined(OS_WIN)
-  // Use the old dialog style without Aero glass, otherwise the dialog will be
-  // visually constrained to browser window bounds. See http://crbug.com/323278
-  return ui::win::IsAeroGlassEnabled();
-#else
-  return views::DialogDelegateView::ShouldUseCustomFrame();
-#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -430,7 +416,7 @@ void HungRendererDialogView::TabDestroyed() {
 // HungRendererDialogView, views::View overrides:
 
 void HungRendererDialogView::ViewHierarchyChanged(
-    const ViewHierarchyChangedDetails& details) {
+    const views::ViewHierarchyChangedDetails& details) {
   views::DialogDelegateView::ViewHierarchyChanged(details);
   if (!initialized_ && details.is_add && details.child == this && GetWidget())
     Init();
@@ -440,19 +426,29 @@ void HungRendererDialogView::ViewHierarchyChanged(
 // HungRendererDialogView, private:
 
 void HungRendererDialogView::Init() {
-  info_label_ = new views::Label(base::string16(), CONTEXT_BODY_TEXT_LARGE,
-                                 STYLE_SECONDARY);
-  info_label_->SetMultiLine(true);
-  info_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  auto info_label = std::make_unique<views::Label>(
+      base::string16(), CONTEXT_BODY_TEXT_LARGE, views::style::STYLE_SECONDARY);
+  info_label->SetMultiLine(true);
+  info_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 
-  hung_pages_table_model_.reset(new HungPagesTableModel(this));
+  hung_pages_table_model_ = std::make_unique<HungPagesTableModel>(this);
   std::vector<ui::TableColumn> columns;
   columns.push_back(ui::TableColumn());
-  hung_pages_table_ = new views::TableView(
+  auto hung_pages_table = std::make_unique<views::TableView>(
       hung_pages_table_model_.get(), columns, views::ICON_AND_TEXT, true);
+  hung_pages_table_ = hung_pages_table.get();
+
+  DialogDelegate::set_button_label(
+      ui::DIALOG_BUTTON_CANCEL,
+      l10n_util::GetPluralStringFUTF16(IDS_BROWSER_HANGMONITOR_RENDERER_END,
+                                       hung_pages_table_model_->RowCount()));
+  DialogDelegate::set_button_label(
+      ui::DIALOG_BUTTON_OK,
+      l10n_util::GetStringUTF16(IDS_BROWSER_HANGMONITOR_RENDERER_WAIT));
+  DialogModelChanged();
 
   views::GridLayout* layout =
-      SetLayoutManager(std::make_unique<views::GridLayout>(this));
+      SetLayoutManager(std::make_unique<views::GridLayout>());
   ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
 
   constexpr int kColumnSetId = 0;
@@ -461,16 +457,17 @@ void HungRendererDialogView::Init() {
                         views::GridLayout::USE_PREF, 0, 0);
 
   layout->StartRow(views::GridLayout::kFixedSize, kColumnSetId);
-  layout->AddView(info_label_);
+  info_label_ = layout->AddView(std::move(info_label));
 
   layout->AddPaddingRow(
       views::GridLayout::kFixedSize,
       provider->GetDistanceMetric(views::DISTANCE_UNRELATED_CONTROL_VERTICAL));
 
   layout->StartRow(1.0, kColumnSetId);
-  layout->AddView(hung_pages_table_->CreateParentIfNecessary(), 1, 1,
-                  views::GridLayout::FILL, views::GridLayout::FILL,
-                  kTableViewWidth, kTableViewHeight);
+  layout->AddView(
+      views::TableView::CreateScrollViewWithTable(std::move(hung_pages_table)),
+      1, 1, views::GridLayout::FILL, views::GridLayout::FILL, kTableViewWidth,
+      kTableViewHeight);
 
   initialized_ = true;
 }

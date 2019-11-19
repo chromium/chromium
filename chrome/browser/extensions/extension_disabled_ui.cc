@@ -127,7 +127,9 @@ class ExtensionDisabledGlobalError : public GlobalErrorWithStandardBubble,
   content::NotificationRegistrar registrar_;
 
   ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      registry_observer_;
+      registry_observer_{this};
+
+  DISALLOW_COPY_AND_ASSIGN(ExtensionDisabledGlobalError);
 };
 
 // TODO(yoz): create error at startup for disabled extensions.
@@ -140,8 +142,7 @@ ExtensionDisabledGlobalError::ExtensionDisabledGlobalError(
       extension_(extension),
       is_remote_install_(is_remote_install),
       icon_(icon),
-      user_response_(IGNORED),
-      registry_observer_(this) {
+      user_response_(IGNORED) {
   if (icon_.IsEmpty()) {
     icon_ = gfx::Image(gfx::ImageSkiaOperations::CreateResizedImage(
         extension_->is_app() ? util::GetDefaultAppIcon()
@@ -219,8 +220,8 @@ ExtensionDisabledGlobalError::GetBubbleViewMessages() {
       messages.push_back(
           l10n_util::GetStringUTF16(IDS_EXTENSION_PROMPT_WILL_HAVE_ACCESS_TO));
   } else {
-    // TODO(treib): If NeedCustodianApprovalForPermissionIncrease, add an extra
-    // message for supervised users. crbug.com/461261
+    // TODO(crbug.com/461261): If NeedCustodianApprovalForPermissionIncrease,
+    // add an extra message for supervised users.
     messages.push_back(
         l10n_util::GetStringUTF16(IDS_EXTENSION_DISABLED_ERROR_LABEL));
   }
@@ -232,11 +233,6 @@ ExtensionDisabledGlobalError::GetBubbleViewMessages() {
 }
 
 base::string16 ExtensionDisabledGlobalError::GetBubbleViewAcceptButtonLabel() {
-  if (util::IsExtensionSupervised(extension_, service_->profile())) {
-    // TODO(treib): Probably use a new string here once we get UX design.
-    // For now, just use "OK". crbug.com/461261
-    return l10n_util::GetStringUTF16(IDS_OK);
-  }
   if (is_remote_install_) {
     return l10n_util::GetStringUTF16(
         extension_->is_app()
@@ -248,12 +244,6 @@ base::string16 ExtensionDisabledGlobalError::GetBubbleViewAcceptButtonLabel() {
 }
 
 base::string16 ExtensionDisabledGlobalError::GetBubbleViewCancelButtonLabel() {
-  if (util::IsExtensionSupervised(extension_, service_->profile())) {
-    // The supervised user can't approve the update, and hence there is no
-    // "cancel" button. Return an empty string such that the "cancel" button
-    // is not shown in the dialog.
-    return base::string16();
-  }
   return l10n_util::GetStringUTF16(IDS_EXTENSION_PROMPT_UNINSTALL_BUTTON);
 }
 
@@ -275,9 +265,6 @@ void ExtensionDisabledGlobalError::OnBubbleViewDidClose(Browser* browser) {
 
 void ExtensionDisabledGlobalError::BubbleViewAcceptButtonPressed(
     Browser* browser) {
-  if (util::IsExtensionSupervised(extension_, service_->profile())) {
-    return;
-  }
   user_response_ = REENABLE;
   // Delay extension reenabling so this bubble closes properly.
   base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -288,10 +275,6 @@ void ExtensionDisabledGlobalError::BubbleViewAcceptButtonPressed(
 
 void ExtensionDisabledGlobalError::BubbleViewCancelButtonPressed(
     Browser* browser) {
-  // For custodian-installed extensions, this button should not exist because
-  // there is only an "OK" button.
-  // Supervised users may never remove custodian-installed extensions.
-  DCHECK(!util::IsExtensionSupervised(extension_, service_->profile()));
   uninstall_dialog_ = ExtensionUninstallDialog::Create(
       service_->profile(), browser->window()->GetNativeWindow(), this);
   user_response_ = UNINSTALL;
@@ -370,7 +353,9 @@ void AddExtensionDisabledErrorWithIcon(base::WeakPtr<ExtensionService> service,
                                        const gfx::Image& icon) {
   if (!service.get())
     return;
-  const Extension* extension = service->GetInstalledExtension(extension_id);
+  const ExtensionRegistry* registry =
+      ExtensionRegistry::Get(service->profile());
+  const Extension* extension = registry->GetInstalledExtension(extension_id);
   if (extension) {
     GlobalErrorServiceFactory::GetForProfile(service->profile())
         ->AddGlobalError(std::make_unique<ExtensionDisabledGlobalError>(

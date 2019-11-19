@@ -130,7 +130,7 @@ class ModelTest(unittest.TestCase):
       'bar_': 'bar',
       'bar_baz_': 'barBaz',
       }
-    for testcase, expected in expectations.iteritems():
+    for testcase, expected in expectations.items():
       self.assertEquals(expected, model.CamelName(testcase))
 
   def testPlatforms(self):

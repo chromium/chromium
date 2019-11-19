@@ -16,8 +16,8 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/common/referrer.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_thread.h"
-#include "content/public/test/test_browser_thread_bundle.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -47,7 +47,7 @@ class BrowserAboutHandlerTest : public testing::Test {
   }
 
  private:
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
 };
 
 TEST_F(BrowserAboutHandlerTest, WillHandleBrowserAboutURL) {
@@ -83,11 +83,15 @@ TEST_F(BrowserAboutHandlerTest, WillHandleBrowserAboutURLForMDSettings) {
 }
 
 TEST_F(BrowserAboutHandlerTest, WillHandleBrowserAboutURLForHistory) {
+  GURL::Replacements replace_foo_query;
+  replace_foo_query.SetQueryStr("foo");
+  GURL history_foo_url(
+      GURL(chrome::kChromeUIHistoryURL).ReplaceComponents(replace_foo_query));
   TestWillHandleBrowserAboutURL(std::vector<AboutURLTestCase>({
-      {GURL("about:history"), GURL("chrome://history/")},
-      {GURL("chrome://history"), GURL("chrome://history/")},
-      {GURL("chrome://history/"), GURL("chrome://history/")},
-      {GURL("chrome://history/?q=foo"), GURL("chrome://history/?q=foo")},
+      {GURL("about:history"), GURL(chrome::kChromeUIHistoryURL)},
+      {GURL(chrome::kChromeUIHistoryURL), GURL(chrome::kChromeUIHistoryURL)},
+      {GURL(chrome::kChromeUIHistoryURL), GURL(chrome::kChromeUIHistoryURL)},
+      {history_foo_url, history_foo_url},
   }));
 }
 
@@ -107,8 +111,8 @@ TEST_F(BrowserAboutHandlerTest, NoVirtualURLForFixup) {
   TestingProfile profile;
   std::unique_ptr<NavigationEntry> entry(
       NavigationController::CreateNavigationEntry(
-          url, Referrer(), ui::PAGE_TRANSITION_RELOAD, false, std::string(),
-          &profile, nullptr /* blob_url_loader_factory */));
+          url, Referrer(), base::nullopt, ui::PAGE_TRANSITION_RELOAD, false,
+          std::string(), &profile, nullptr /* blob_url_loader_factory */));
   EXPECT_EQ(fixed_url, entry->GetVirtualURL());
   EXPECT_EQ(rewritten_url, entry->GetURL());
 }

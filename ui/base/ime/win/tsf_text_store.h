@@ -10,11 +10,11 @@
 #include <deque>
 
 #include "base/compiler_specific.h"
+#include "base/component_export.h"
 #include "base/macros.h"
 #include "base/strings/string16.h"
 #include "ui/base/ime/ime_text_span.h"
 #include "ui/base/ime/input_method_delegate.h"
-#include "ui/base/ime/ui_base_ime_export.h"
 #include "ui/events/event_utils.h"
 #include "ui/gfx/range/range.h"
 
@@ -99,10 +99,11 @@ class TextInputClient;
 //
 // More information about TSF can be found here:
 //   http://msdn.microsoft.com/en-us/library/ms629032
-class UI_BASE_IME_EXPORT TSFTextStore : public ITextStoreACP,
-                                        public ITfContextOwnerCompositionSink,
-                                        public ITfKeyTraceEventSink,
-                                        public ITfTextEditSink {
+class COMPONENT_EXPORT(UI_BASE_IME_WIN) TSFTextStore
+    : public ITextStoreACP,
+      public ITfContextOwnerCompositionSink,
+      public ITfKeyTraceEventSink,
+      public ITfTextEditSink {
  public:
   TSFTextStore();
   virtual ~TSFTextStore();
@@ -233,6 +234,10 @@ class UI_BASE_IME_EXPORT TSFTextStore : public ITextStoreACP,
   STDMETHOD(OnKeyTraceUp)
   (WPARAM wParam, LPARAM lParam) override;
 
+  // Called after |TSFBridgeImpl::CreateDocumentManager| to tell that the
+  // text-store is successfully associated with a Context.
+  void OnContextInitialized(ITfContext* context);
+
   // Sets currently focused TextInputClient.
   void SetFocusedTextInputClient(HWND focused_window,
                                  TextInputClient* text_input_client);
@@ -254,9 +259,14 @@ class UI_BASE_IME_EXPORT TSFTextStore : public ITextStoreACP,
   // Sends OnLayoutChange() via |text_store_acp_sink_|.
   void SendOnLayoutChange();
 
+  void SetInputPanelPolicy(bool input_panel_policy_manual);
+
  private:
   friend class TSFTextStoreTest;
   friend class TSFTextStoreTestCallback;
+
+  // Terminate an active composition for this text store.
+  bool TerminateComposition();
 
   // Compare our cached text buffer and selection with the up-to-date
   // text buffer and selection from TextInputClient. We also update
@@ -331,10 +341,23 @@ class UI_BASE_IME_EXPORT TSFTextStore : public ITextStoreACP,
   bool has_composition_range_ = false;
   gfx::Range composition_range_;
 
+  // |on_start_composition_called_| indicates that OnStartComposition() is
+  // called duriing current edit session.
+  bool on_start_composition_called_ = false;
+
   // |previous_composition_string_| indicicates composition string in last
-  // edit session during same composition. If RequestLock() is called during two
-  // edit sessions, we don't want to set same composition string twice.
+  // edit session during same composition. |previous_composition_start_|
+  // indicates composition start in last session during same composition. If
+  // RequestLock() is called during two edit sessions, we don't want to set same
+  // composition string twice. |previous_composition_selection_range_| indicates
+  // the selection range during composition. We want to send the selection
+  // change to blink if IME only change the selection range but not the
+  // composition text. |previous_text_spans_| saves the IME spans in previous
+  // edit session during same composition.
   base::string16 previous_composition_string_;
+  size_t previous_composition_start_ = 0;
+  gfx::Range previous_composition_selection_range_ = gfx::Range::InvalidRange();
+  ImeTextSpans previous_text_spans_;
 
   // |new_text_inserted_| indicates there is text to be inserted
   // into blink during ITextStoreACP::SetText().
@@ -401,6 +424,16 @@ class UI_BASE_IME_EXPORT TSFTextStore : public ITextStoreACP,
   // attributes of the composition string.
   Microsoft::WRL::ComPtr<ITfCategoryMgr> category_manager_;
   Microsoft::WRL::ComPtr<ITfDisplayAttributeMgr> display_attribute_manager_;
+  Microsoft::WRL::ComPtr<ITfContext> context_;
+
+  // input_panel_policy_manual_ equals to false would make the SIP policy
+  // to automatic meaning TSF would raise/dismiss the SIP based on TSFTextStore
+  // focus and other heuristics that input service have added on Windows to
+  // provide a consistent behavior across all apps on Windows.
+  // input_panel_policy_manual_ equals to true would make the SIP policy to
+  // manual meaning TSF wouldn't raise/dismiss the SIP automatically. This is
+  // used to control the SIP behavior based on user interaction with the page.
+  bool input_panel_policy_manual_ = true;
 
   DISALLOW_COPY_AND_ASSIGN(TSFTextStore);
 };

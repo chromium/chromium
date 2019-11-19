@@ -45,7 +45,7 @@ class LayerTreeHostDamageTestSetNeedsRedraw
     switch (layer_tree_host()->SourceFrameNumber()) {
       case 1:
         layer_tree_host()->SetNeedsRedrawRect(
-            gfx::Rect(layer_tree_host()->device_viewport_size()));
+            layer_tree_host()->device_viewport_rect());
         break;
     }
   }
@@ -56,7 +56,7 @@ class LayerTreeHostDamageTestSetNeedsRedraw
     EXPECT_EQ(DRAW_SUCCESS, draw_result);
 
     RenderSurfaceImpl* root_surface =
-        GetRenderSurface(impl->active_tree()->root_layer_for_testing());
+        GetRenderSurface(impl->active_tree()->root_layer());
     gfx::Rect root_damage;
     EXPECT_TRUE(
         root_surface->damage_tracker()->GetDamageRectIfValid(&root_damage));
@@ -79,16 +79,14 @@ class LayerTreeHostDamageTestSetNeedsRedraw
     return draw_result;
   }
 
-  void AfterTest() override {}
-
   int draw_count_;
   FakeContentLayerClient client_;
 };
 
 SINGLE_AND_MULTI_THREAD_TEST_F(LayerTreeHostDamageTestSetNeedsRedraw);
 
-// LayerTreeHost::SetViewportSizeAndScale should damage the whole viewport.
-class LayerTreeHostDamageTestSetViewportSizeAndScale
+// LayerTreeHost::SetViewportRectAndScale should damage the whole viewport.
+class LayerTreeHostDamageTestSetViewportRectAndScale
     : public LayerTreeHostDamageTest {
   void SetupTree() override {
     // Viewport is 10x10.
@@ -108,8 +106,8 @@ class LayerTreeHostDamageTestSetViewportSizeAndScale
   void DidCommitAndDrawFrame() override {
     switch (layer_tree_host()->SourceFrameNumber()) {
       case 1:
-        layer_tree_host()->SetViewportSizeAndScale(
-            gfx::Size(15, 15), 1.f, viz::LocalSurfaceIdAllocation());
+        layer_tree_host()->SetViewportRectAndScale(
+            gfx::Rect(15, 15), 1.f, GetCurrentLocalSurfaceIdAllocation());
         break;
     }
   }
@@ -120,7 +118,7 @@ class LayerTreeHostDamageTestSetViewportSizeAndScale
     EXPECT_EQ(DRAW_SUCCESS, draw_result);
 
     RenderSurfaceImpl* root_surface =
-        GetRenderSurface(impl->active_tree()->root_layer_for_testing());
+        GetRenderSurface(impl->active_tree()->root_layer());
     gfx::Rect root_damage;
     EXPECT_TRUE(
         root_surface->damage_tracker()->GetDamageRectIfValid(&root_damage));
@@ -143,13 +141,11 @@ class LayerTreeHostDamageTestSetViewportSizeAndScale
     return draw_result;
   }
 
-  void AfterTest() override {}
-
   int draw_count_;
   FakeContentLayerClient client_;
 };
 
-SINGLE_AND_MULTI_THREAD_TEST_F(LayerTreeHostDamageTestSetViewportSizeAndScale);
+SINGLE_AND_MULTI_THREAD_TEST_F(LayerTreeHostDamageTestSetViewportRectAndScale);
 
 class LayerTreeHostDamageTestNoDamageDoesNotSwap
     : public LayerTreeHostDamageTest {
@@ -216,7 +212,7 @@ class LayerTreeHostDamageTestNoDamageDoesNotSwap
       case 2:
         // Cause visible damage.
         content_->SetNeedsDisplayRect(
-            gfx::Rect(layer_tree_host()->device_viewport_size()));
+            layer_tree_host()->device_viewport_rect());
         break;
       case 3:
         // Cause non-visible damage.
@@ -262,7 +258,7 @@ class LayerTreeHostDamageTestForcedFullDamage : public LayerTreeHostDamageTest {
     EXPECT_EQ(DRAW_SUCCESS, draw_result);
 
     RenderSurfaceImpl* root_surface =
-        GetRenderSurface(host_impl->active_tree()->root_layer_for_testing());
+        GetRenderSurface(host_impl->active_tree()->root_layer());
     gfx::Rect root_damage;
     EXPECT_TRUE(
         root_surface->damage_tracker()->GetDamageRectIfValid(&root_damage));
@@ -323,8 +319,6 @@ class LayerTreeHostDamageTestForcedFullDamage : public LayerTreeHostDamageTest {
     }
   }
 
-  void AfterTest() override {}
-
   FakeContentLayerClient client_;
   scoped_refptr<FakePictureLayer> root_;
   scoped_refptr<FakePictureLayer> child_;
@@ -384,7 +378,7 @@ class LayerTreeHostDamageTestScrollbarDoesDamage
                                    DrawResult draw_result) override {
     EXPECT_EQ(DRAW_SUCCESS, draw_result);
     RenderSurfaceImpl* root_surface =
-        GetRenderSurface(host_impl->active_tree()->root_layer_for_testing());
+        GetRenderSurface(host_impl->active_tree()->root_layer());
     gfx::Rect root_damage;
     EXPECT_TRUE(
         root_surface->damage_tracker()->GetDamageRectIfValid(&root_damage));
@@ -470,7 +464,7 @@ class LayerTreeHostDamageTestScrollbarCommitDoesNoDamage
                                    DrawResult draw_result) override {
     EXPECT_EQ(DRAW_SUCCESS, draw_result);
     RenderSurfaceImpl* root_surface =
-        GetRenderSurface(host_impl->active_tree()->root_layer_for_testing());
+        GetRenderSurface(host_impl->active_tree()->root_layer());
     gfx::Rect root_damage;
     EXPECT_TRUE(
         root_surface->damage_tracker()->GetDamageRectIfValid(&root_damage));

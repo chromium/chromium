@@ -9,38 +9,23 @@ GEN_INCLUDE(['net_internals_test.js']);
 (function() {
 
 /**
- * A Task that adds a hostname to the cache and waits for it to appear in the
- * data we receive from the cache.
- * @param {string} hostname Name of host address we're waiting for.
- * @param {string} ipAddress IP address we expect it to have.  Null if we expect
- *     a net error other than OK.
- * @param {int} netError The expected network error code.
- * @param {bool} expired True if we expect the entry to be expired.  The added
- *     entry will have an expiration time far enough away from the current time
- *     that there will be no chance of any races.
+ * A Task that performs a DNS lookup.
+ * @param {string} hostname The host address to attempt to look up.
+ * @param {bool} local True if the lookup should be strictly local.
  * @extends {NetInternalsTest.Task}
  */
-function AddCacheEntryTask(hostname, ipAddress, netError, expired) {
+function DnsLookupTask(hostname, local) {
   this.hostname_ = hostname;
-  this.ipAddress_ = ipAddress;
-  this.netError_ = netError;
-  this.expired_ = expired;
+  this.local_ = local;
   NetInternalsTest.Task.call(this);
 }
 
-AddCacheEntryTask.prototype = {
+DnsLookupTask.prototype = {
   __proto__: NetInternalsTest.Task.prototype,
 
-  /**
-   * Adds an entry to the cache and starts waiting to received the results from
-   * the browser process.
-   */
   start: function() {
-    var addCacheEntryParams = [
-      this.hostname_, this.ipAddress_, this.netError_, this.expired_ ? -2 : 2
-    ];
-    chrome.send('addCacheEntry', addCacheEntryParams);
-    this.onTaskDone();
+    NetInternalsTest.setCallback(this.onTaskDone.bind(this));
+    chrome.send('dnsLookup', [this.hostname_, this.local_]);
   },
 };
 
@@ -67,11 +52,26 @@ ClearCacheTask.prototype = {
 TEST_F('NetInternalsTest', 'netInternalsDnsViewClearCache', function() {
   NetInternalsTest.switchToView('dns');
   var taskQueue = new NetInternalsTest.TaskQueue(true);
-  taskQueue.addTask(
-      new AddCacheEntryTask('somewhere.com', '1.2.3.4', 0, false));
-  taskQueue.addTask(new ClearCacheTask());
-  // TODO(mattm): verify that it was actually cleared.
-  taskQueue.run(true);
-});
 
+  // Perform an initial local lookup to make sure somewhere.com isn't cached.
+  taskQueue.addTask(new DnsLookupTask('somewhere.com', true));
+  taskQueue.addFunctionTask(expectEquals.bind(null, 'net::ERR_DNS_CACHE_MISS'));
+
+  // Perform a non-local lookup to get somewhere.com added to the cache.
+  taskQueue.addTask(new DnsLookupTask('somewhere.com', false));
+  taskQueue.addFunctionTask(expectEquals.bind(null, '127.0.0.1'));
+
+  // Perform another local lookup that should be cached this time.
+  taskQueue.addTask(new DnsLookupTask('somewhere.com', true));
+  taskQueue.addFunctionTask(expectEquals.bind(null, '127.0.0.1'));
+
+  // Clear the cache
+  taskQueue.addTask(new ClearCacheTask());
+
+  // One more local lookup to make sure somewhere.com is no longer cached.
+  taskQueue.addTask(new DnsLookupTask('somewhere.com', true));
+  taskQueue.addFunctionTask(expectEquals.bind(null, 'net::ERR_DNS_CACHE_MISS'));
+
+  taskQueue.run();
+});
 })();  // Anonymous namespace

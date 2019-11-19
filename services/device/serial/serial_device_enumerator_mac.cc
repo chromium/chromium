@@ -24,12 +24,17 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
 
 namespace device {
 
 namespace {
+
+std::string HexErrorCode(IOReturn error_code) {
+  return base::StringPrintf("0x%08x", error_code);
+}
 
 // Searches a service and all ancestor services for a property with the
 // specified key, returning NULL if no such key was found.
@@ -97,11 +102,6 @@ bool GetUInt16Property(io_service_t service,
   return false;
 }
 
-// Returns value clamped to the range of [min, max].
-int Clamp(int value, int min, int max) {
-  return std::min(std::max(value, min), max);
-}
-
 }  // namespace
 
 // static
@@ -109,76 +109,98 @@ std::unique_ptr<SerialDeviceEnumerator> SerialDeviceEnumerator::Create() {
   return std::make_unique<SerialDeviceEnumeratorMac>();
 }
 
-SerialDeviceEnumeratorMac::SerialDeviceEnumeratorMac() {}
+SerialDeviceEnumeratorMac::SerialDeviceEnumeratorMac() {
+  notify_port_.reset(IONotificationPortCreate(kIOMasterPortDefault));
+  CFRunLoopAddSource(CFRunLoopGetMain(),
+                     IONotificationPortGetRunLoopSource(notify_port_.get()),
+                     kCFRunLoopDefaultMode);
+
+  IOReturn result = IOServiceAddMatchingNotification(
+      notify_port_.get(), kIOFirstMatchNotification,
+      IOServiceMatching(kIOSerialBSDServiceValue), FirstMatchCallback, this,
+      devices_added_iterator_.InitializeInto());
+  if (result != kIOReturnSuccess) {
+    DLOG(ERROR) << "Failed to listen for device arrival: "
+                << HexErrorCode(result);
+    return;
+  }
+
+  // Drain |devices_added_iterator_| to arm the notification.
+  AddDevices();
+
+  result = IOServiceAddMatchingNotification(
+      notify_port_.get(), kIOTerminatedNotification,
+      IOServiceMatching(kIOSerialBSDServiceValue), TerminatedCallback, this,
+      devices_removed_iterator_.InitializeInto());
+  if (result != kIOReturnSuccess) {
+    DLOG(ERROR) << "Failed to listen for device removal: "
+                << HexErrorCode(result);
+    return;
+  }
+
+  // Drain |devices_removed_iterator_| to arm the notification.
+  RemoveDevices();
+}
 
 SerialDeviceEnumeratorMac::~SerialDeviceEnumeratorMac() {}
 
 std::vector<mojom::SerialPortInfoPtr> SerialDeviceEnumeratorMac::GetDevices() {
-  std::vector<mojom::SerialPortInfoPtr> devices = GetDevicesNew();
-  std::vector<mojom::SerialPortInfoPtr> old_devices = GetDevicesOld();
-
-  base::UmaHistogramSparse("Hardware.Serial.NewMinusOldDeviceListSize",
-                           Clamp(devices.size() - old_devices.size(), -10, 10));
-
-  // Add devices found from both the new and old methods of enumeration. If a
-  // device is found using both the new and the old enumeration method, then we
-  // take the device from the new enumeration method because it's able to
-  // collect more information. We do this by inserting the new devices first,
-  // because insertions are ignored if the key already exists.
-  std::unordered_set<base::FilePath> devices_seen;
-  for (const auto& device : devices) {
-    bool inserted = devices_seen.insert(device->path).second;
-    DCHECK(inserted);
-  }
-  for (auto& device : old_devices) {
-    if (devices_seen.insert(device->path).second)
-      devices.push_back(std::move(device));
-  }
-  return devices;
+  std::vector<mojom::SerialPortInfoPtr> ports;
+  ports.reserve(ports_.size());
+  for (const auto& map_entry : ports_)
+    ports.push_back(map_entry.second->Clone());
+  return ports;
 }
 
-// Returns an array of devices as retrieved through the new method of
-// enumerating serial devices (IOKit).  This new method gives more information
-// about the devices than the old method.
-std::vector<mojom::SerialPortInfoPtr>
-SerialDeviceEnumeratorMac::GetDevicesNew() {
-  std::vector<mojom::SerialPortInfoPtr> devices;
+base::Optional<base::FilePath> SerialDeviceEnumeratorMac::GetPathFromToken(
+    const base::UnguessableToken& token) {
+  auto it = ports_.find(token);
+  if (it == ports_.end())
+    return base::nullopt;
+  return it->second->path;
+}
 
-  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
-                                                base::BlockingType::MAY_BLOCK);
-  // Make a service query to find all serial devices.
-  CFMutableDictionaryRef matchingDict =
-      IOServiceMatching(kIOSerialBSDServiceValue);
-  if (!matchingDict)
-    return devices;
+// static
+void SerialDeviceEnumeratorMac::FirstMatchCallback(void* context,
+                                                   io_iterator_t iterator) {
+  auto* enumerator = static_cast<SerialDeviceEnumeratorMac*>(context);
+  DCHECK_EQ(enumerator->devices_added_iterator_, iterator);
+  enumerator->AddDevices();
+}
 
-  io_iterator_t it;
-  kern_return_t kr =
-      IOServiceGetMatchingServices(kIOMasterPortDefault, matchingDict, &it);
-  if (kr != KERN_SUCCESS)
-    return devices;
+// static
+void SerialDeviceEnumeratorMac::TerminatedCallback(void* context,
+                                                   io_iterator_t iterator) {
+  auto* enumerator = static_cast<SerialDeviceEnumeratorMac*>(context);
+  DCHECK_EQ(enumerator->devices_removed_iterator_, iterator);
+  enumerator->RemoveDevices();
+}
 
-  base::mac::ScopedIOObject<io_iterator_t> scoped_it(it);
-  base::mac::ScopedIOObject<io_service_t> scoped_device;
-  while (scoped_device.reset(IOIteratorNext(scoped_it.get())), scoped_device) {
+void SerialDeviceEnumeratorMac::AddDevices() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  base::mac::ScopedIOObject<io_service_t> device;
+  while (device.reset(IOIteratorNext(devices_added_iterator_)), device) {
+    uint64_t entry_id;
+    IOReturn result = IORegistryEntryGetRegistryEntryID(device, &entry_id);
+    if (result != kIOReturnSuccess)
+      continue;
+
     auto callout_info = mojom::SerialPortInfo::New();
-
     uint16_t vendorId;
-    if (GetUInt16Property(scoped_device.get(), CFSTR(kUSBVendorID),
-                          &vendorId)) {
+    if (GetUInt16Property(device.get(), CFSTR(kUSBVendorID), &vendorId)) {
       callout_info->has_vendor_id = true;
       callout_info->vendor_id = vendorId;
     }
 
     uint16_t productId;
-    if (GetUInt16Property(scoped_device.get(), CFSTR(kUSBProductID),
-                          &productId)) {
+    if (GetUInt16Property(device.get(), CFSTR(kUSBProductID), &productId)) {
       callout_info->has_product_id = true;
       callout_info->product_id = productId;
     }
 
     std::string display_name;
-    if (GetStringProperty(scoped_device.get(), CFSTR(kUSBProductString),
+    if (GetStringProperty(device.get(), CFSTR(kUSBProductString),
                           &display_name)) {
       callout_info->display_name = std::move(display_name);
     }
@@ -187,68 +209,49 @@ SerialDeviceEnumeratorMac::GetDevicesNew() {
     // "dialin" path starting with "tty" and a "callout" path starting with
     // "cu". Each of these is considered a different device from Chrome's
     // standpoint, but both should share the device's USB properties.
-    std::string dialinDevice;
-    if (GetStringProperty(scoped_device.get(), CFSTR(kIODialinDeviceKey),
-                          &dialinDevice)) {
+    std::string dialin_device;
+    if (GetStringProperty(device.get(), CFSTR(kIODialinDeviceKey),
+                          &dialin_device)) {
+      auto token = base::UnguessableToken::Create();
       mojom::SerialPortInfoPtr dialin_info = callout_info.Clone();
-      dialin_info->path = base::FilePath(dialinDevice);
-      dialin_info->token = GetTokenFromPath(dialin_info->path);
-      devices.push_back(std::move(dialin_info));
+      dialin_info->path = base::FilePath(dialin_device);
+      dialin_info->token = token;
+      ports_.insert(std::make_pair(token, std::move(dialin_info)));
+      entries_[entry_id].first = token;
     }
 
-    std::string calloutDevice;
-    if (GetStringProperty(scoped_device.get(), CFSTR(kIOCalloutDeviceKey),
-                          &calloutDevice)) {
-      callout_info->path = base::FilePath(calloutDevice);
-      callout_info->token = GetTokenFromPath(callout_info->path);
-      devices.push_back(std::move(callout_info));
+    std::string callout_device;
+    if (GetStringProperty(device.get(), CFSTR(kIOCalloutDeviceKey),
+                          &callout_device)) {
+      auto token = base::UnguessableToken::Create();
+      callout_info->path = base::FilePath(callout_device);
+      callout_info->token = token;
+      ports_.insert(std::make_pair(token, std::move(callout_info)));
+      entries_[entry_id].second = token;
     }
   }
-
-  return devices;
 }
 
-// Returns an array of devices as retrieved through the old method of
-// enumerating serial devices (pattern matching in /dev/). This old method gives
-// less information about the devices than the new method.
-std::vector<mojom::SerialPortInfoPtr>
-SerialDeviceEnumeratorMac::GetDevicesOld() {
-  const base::FilePath kDevRoot("/dev");
-  const int kFilesAndSymLinks =
-      base::FileEnumerator::FILES | base::FileEnumerator::SHOW_SYM_LINKS;
+void SerialDeviceEnumeratorMac::RemoveDevices() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  std::set<std::string> valid_patterns;
-  valid_patterns.insert("/dev/*Bluetooth*");
-  valid_patterns.insert("/dev/*Modem*");
-  valid_patterns.insert("/dev/*bluetooth*");
-  valid_patterns.insert("/dev/*modem*");
-  valid_patterns.insert("/dev/*serial*");
-  valid_patterns.insert("/dev/tty.*");
-  valid_patterns.insert("/dev/cu.*");
+  base::mac::ScopedIOObject<io_service_t> device;
+  while (device.reset(IOIteratorNext(devices_removed_iterator_)), device) {
+    uint64_t entry_id;
+    IOReturn result = IORegistryEntryGetRegistryEntryID(device, &entry_id);
+    if (result != kIOReturnSuccess)
+      continue;
 
-  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
-                                                base::BlockingType::MAY_BLOCK);
-  std::vector<mojom::SerialPortInfoPtr> devices;
-  base::FileEnumerator enumerator(kDevRoot, false, kFilesAndSymLinks);
-  do {
-    const base::FilePath next_device_path(enumerator.Next());
-    const std::string next_device = next_device_path.value();
-    if (next_device.empty())
-      break;
+    auto it = entries_.find(entry_id);
+    if (it == entries_.end())
+      continue;
 
-    std::set<std::string>::const_iterator i = valid_patterns.begin();
-    for (; i != valid_patterns.end(); ++i) {
-      if (base::MatchPattern(next_device, *i)) {
-        auto info = mojom::SerialPortInfo::New();
-
-        info->path = base::FilePath(next_device);
-        info->token = GetTokenFromPath(info->path);
-        devices.push_back(std::move(info));
-        break;
-      }
-    }
-  } while (true);
-  return devices;
+    if (it->second.first)
+      ports_.erase(it->second.first);
+    if (it->second.second)
+      ports_.erase(it->second.second);
+    entries_.erase(it);
+  }
 }
 
 }  // namespace device

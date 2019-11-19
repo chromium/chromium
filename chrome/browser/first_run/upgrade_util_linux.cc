@@ -21,7 +21,7 @@ double saved_last_modified_time_of_exe = 0;
 
 namespace upgrade_util {
 
-bool RelaunchChromeBrowser(const base::CommandLine& command_line) {
+bool RelaunchChromeBrowserImpl(const base::CommandLine& command_line) {
   base::LaunchOptions options;
   // Don't set NO_NEW_PRIVS on the relaunched browser process.
   options.allow_new_privs = true;

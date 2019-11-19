@@ -31,7 +31,6 @@
 #include "net/http/http_util.h"
 #include "net/ssl/ssl_info.h"
 #include "net/third_party/quiche/src/spdy/core/spdy_header_block.h"
-#include "net/url_request/http_user_agent_settings.h"
 #include "net/url_request/url_request_context.h"
 #include "url/gurl.h"
 

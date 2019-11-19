@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "components/contextual_search/content/renderer/contextual_search_wrapper.h"
 #include "content/public/renderer/render_frame.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/platform/web_url.h"
@@ -21,7 +20,7 @@ namespace contextual_search {
 OverlayJsRenderFrameObserver::OverlayJsRenderFrameObserver(
     content::RenderFrame* render_frame,
     service_manager::BinderRegistry* registry)
-    : RenderFrameObserver(render_frame), weak_factory_(this) {}
+    : RenderFrameObserver(render_frame) {}
 
 OverlayJsRenderFrameObserver::~OverlayJsRenderFrameObserver() {}
 
@@ -47,7 +46,7 @@ void OverlayJsRenderFrameObserver::EnableJsApi(bool should_enable) {
 bool OverlayJsRenderFrameObserver::EnsureServiceConnected() {
   if (render_frame() && !contextual_search_js_api_service_) {
     render_frame()->GetRemoteInterfaces()->GetInterface(
-        &contextual_search_js_api_service_);
+        contextual_search_js_api_service_.BindNewPipeAndPassReceiver());
     return true;
   }
   return false;

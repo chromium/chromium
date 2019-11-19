@@ -38,6 +38,7 @@ config("using_proto") {
 }
 
 protobuf_lite_sources = [
+  "src/google/protobuf/any_lite.cc",
   "src/google/protobuf/arena.cc",
   "src/google/protobuf/arena.h",
   "src/google/protobuf/arena_impl.h",
@@ -45,6 +46,8 @@ protobuf_lite_sources = [
   "src/google/protobuf/arenastring.h",
   "src/google/protobuf/extension_set.cc",
   "src/google/protobuf/extension_set.h",
+  "src/google/protobuf/generated_enum_util.cc",
+  "src/google/protobuf/generated_enum_util.h",
   "src/google/protobuf/generated_message_table_driven_lite.cc",
   "src/google/protobuf/generated_message_table_driven_lite.h",
   "src/google/protobuf/generated_message_util.cc",
@@ -56,8 +59,14 @@ protobuf_lite_sources = [
   "src/google/protobuf/io/coded_stream.cc",
   "src/google/protobuf/io/coded_stream.h",
   "src/google/protobuf/io/coded_stream_inl.h",
+  "src/google/protobuf/io/io_win32.cc",
+  "src/google/protobuf/io/io_win32.h",
+  "src/google/protobuf/io/strtod.cc",
+  "src/google/protobuf/io/strtod.h",
   "src/google/protobuf/io/zero_copy_stream.cc",
   "src/google/protobuf/io/zero_copy_stream.h",
+  "src/google/protobuf/io/zero_copy_stream_impl.cc",
+  "src/google/protobuf/io/zero_copy_stream_impl.h",
   "src/google/protobuf/io/zero_copy_stream_impl_lite.cc",
   "src/google/protobuf/io/zero_copy_stream_impl_lite.h",
   "src/google/protobuf/map.h",
@@ -78,13 +87,10 @@ protobuf_lite_sources = [
   "src/google/protobuf/stubs/hash.h",
   "src/google/protobuf/stubs/int128.cc",
   "src/google/protobuf/stubs/int128.h",
-  "src/google/protobuf/stubs/io_win32.cc",
-  "src/google/protobuf/stubs/io_win32.h",
   "src/google/protobuf/stubs/logging.h",
   "src/google/protobuf/stubs/macros.h",
   "src/google/protobuf/stubs/map_util.h",
   "src/google/protobuf/stubs/mutex.h",
-  "src/google/protobuf/stubs/once.cc",
   "src/google/protobuf/stubs/once.h",
   "src/google/protobuf/stubs/platform_macros.h",
   "src/google/protobuf/stubs/port.h",
@@ -106,7 +112,6 @@ protobuf_lite_sources = [
   "src/google/protobuf/stubs/time.h",
   "src/google/protobuf/wire_format_lite.cc",
   "src/google/protobuf/wire_format_lite.h",
-  "src/google/protobuf/wire_format_lite_inl.h",
 ]
 
 protobuf_lite_cflags = []
@@ -216,12 +221,18 @@ static_library("protobuf_full") {
     "//libassistant/*",
 
     # Perfetto uses the full library for testing.
-    "//third_party/perfetto/protos/ftrace:full",
-    "//third_party/perfetto/gn:protobuf_full_deps",
+    "//third_party/perfetto/gn:protobuf_full",
 
-    # The SQLite fuzzer's corpus generator needs protobuf_full and is not
+    # Some tests inside ChromeOS need reflection to parse golden files.
+    # Not included in production code.
+    "//chrome/test:usage_time_limit_unittests",
+
+    # The protobuf-based SQLite and GPU fuzzers need protobuf_full and are not
     # included in Chrome.
     "//third_party/sqlite:sqlite3_lpm_corpus_gen",
+    "//gpu:gl_lpm_fuzzer_proto",
+    "//gpu:gl_lpm_fuzzer_proto_gen",
+    "//gpu:gl_lpm_shader_to_string_unittest",
   ]
 
   sources = protobuf_lite_sources + [
@@ -251,19 +262,14 @@ static_library("protobuf_full") {
               "src/google/protobuf/field_mask.pb.cc",
               "src/google/protobuf/field_mask.pb.h",
               "src/google/protobuf/generated_enum_reflection.h",
-              "src/google/protobuf/generated_enum_util.h",
               "src/google/protobuf/generated_message_reflection.cc",
               "src/google/protobuf/generated_message_reflection.h",
               "src/google/protobuf/io/gzip_stream.cc",
               "src/google/protobuf/io/gzip_stream.h",
               "src/google/protobuf/io/printer.cc",
               "src/google/protobuf/io/printer.h",
-              "src/google/protobuf/io/strtod.cc",
-              "src/google/protobuf/io/strtod.h",
               "src/google/protobuf/io/tokenizer.cc",
               "src/google/protobuf/io/tokenizer.h",
-              "src/google/protobuf/io/zero_copy_stream_impl.cc",
-              "src/google/protobuf/io/zero_copy_stream_impl.h",
               "src/google/protobuf/map_entry.h",
               "src/google/protobuf/map_field.cc",
               "src/google/protobuf/map_field.h",
@@ -284,7 +290,6 @@ static_library("protobuf_full") {
               "src/google/protobuf/stubs/mathlimits.cc",
               "src/google/protobuf/stubs/mathlimits.h",
               "src/google/protobuf/stubs/mathutil.h",
-              "src/google/protobuf/stubs/singleton.h",
               "src/google/protobuf/stubs/substitute.cc",
               "src/google/protobuf/stubs/substitute.h",
               "src/google/protobuf/text_format.cc",
@@ -485,10 +490,6 @@ if (current_toolchain == host_toolchain) {
       "src/google/protobuf/compiler/java/java_generator_factory.h",
       "src/google/protobuf/compiler/java/java_helpers.cc",
       "src/google/protobuf/compiler/java/java_helpers.h",
-      "src/google/protobuf/compiler/java/java_lazy_message_field.cc",
-      "src/google/protobuf/compiler/java/java_lazy_message_field.h",
-      "src/google/protobuf/compiler/java/java_lazy_message_field_lite.cc",
-      "src/google/protobuf/compiler/java/java_lazy_message_field_lite.h",
       "src/google/protobuf/compiler/java/java_map_field.cc",
       "src/google/protobuf/compiler/java/java_map_field.h",
       "src/google/protobuf/compiler/java/java_map_field_lite.cc",
@@ -603,15 +604,6 @@ if (current_toolchain == host_toolchain) {
       "//build/win:default_exe_manifest",
     ]
   }
-
-  executable("js_embed") {
-    sources = [
-      "src/google/protobuf/compiler/js/embed.cc",
-    ]
-
-    configs -= [ "//build/config/compiler:chromium_code" ]
-    configs += [ "//build/config/compiler:no_chromium_code" ]
-  }
 }
 
 google_python_dir = "$root_out_dir/pyproto/google"
@@ -672,6 +664,7 @@ copy("copy_google_protobuf_internal") {
     "python/google/protobuf/internal/decoder.py",
     "python/google/protobuf/internal/encoder.py",
     "python/google/protobuf/internal/enum_type_wrapper.py",
+    "python/google/protobuf/internal/extension_dict.py",
     "python/google/protobuf/internal/message_listener.py",
     "python/google/protobuf/internal/python_message.py",
     "python/google/protobuf/internal/type_checkers.py",
@@ -683,12 +676,20 @@ copy("copy_google_protobuf_internal") {
   ]
 }
 
+# Build time dependency for action rules.
 group("py_proto") {
   public_deps = [
     ":copy_google",
     ":copy_google_protobuf",
     ":copy_google_protobuf_internal",
     ":copy_six",
+  ]
+}
+
+# Runtime dependency if the target needs the python scripts.
+group("py_proto_runtime") {
+  deps = [
+    ":py_proto",
   ]
 
   # Targets that depend on this should depend on the copied data files.

@@ -5,10 +5,11 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/android/unguessable_token_android.h"
 #include "content/browser/android/scoped_surface_request_manager.h"
+#include "content/common/android/surface_wrapper.h"
 #include "content/public/browser/browser_thread.h"
 #include "gpu/ipc/common/gpu_surface_tracker.h"
 
-#include "jni/GpuProcessCallback_jni.h"
+#include "content/public/android/content_jni_headers/GpuProcessCallback_jni.h"
 
 namespace content {
 
@@ -36,9 +37,14 @@ base::android::ScopedJavaLocalRef<jobject>
 JNI_GpuProcessCallback_GetViewSurface(
     JNIEnv* env,
     jint surface_id) {
+  bool can_be_used_with_surface_control = false;
   gl::ScopedJavaSurface surface_view =
-      gpu::GpuSurfaceTracker::GetInstance()->AcquireJavaSurface(surface_id);
-  return base::android::ScopedJavaLocalRef<jobject>(surface_view.j_surface());
+      gpu::GpuSurfaceTracker::GetInstance()->AcquireJavaSurface(
+          surface_id, &can_be_used_with_surface_control);
+  if (surface_view.IsEmpty())
+    return nullptr;
+  return JNI_SurfaceWrapper_create(env, surface_view.j_surface(),
+                                   can_be_used_with_surface_control);
 }
 
 }  // namespace content

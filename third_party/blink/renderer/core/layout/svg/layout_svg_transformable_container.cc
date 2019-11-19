@@ -21,7 +21,7 @@
 
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_transformable_container.h"
 
-#include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
+#include "third_party/blink/renderer/core/layout/svg/transform_helper.h"
 #include "third_party/blink/renderer/core/svg/svg_g_element.h"
 #include "third_party/blink/renderer/core/svg/svg_graphics_element.h"
 #include "third_party/blink/renderer/core/svg/svg_use_element.h"
@@ -35,7 +35,8 @@ LayoutSVGTransformableContainer::LayoutSVGTransformableContainer(
 static bool HasValidPredecessor(const Node* node) {
   DCHECK(node);
   for (node = node->previousSibling(); node; node = node->previousSibling()) {
-    if (node->IsSVGElement() && ToSVGElement(node)->IsValid())
+    auto* svg_element = DynamicTo<SVGElement>(node);
+    if (svg_element && svg_element->IsValid())
       return true;
   }
   return false;
@@ -48,8 +49,8 @@ bool LayoutSVGTransformableContainer::IsChildAllowed(
   Node* child_node = child->GetNode();
   if (IsSVGSwitchElement(*GetElement())) {
     // Reject non-SVG/non-valid elements.
-    if (!child_node || !child_node->IsSVGElement() ||
-        !ToSVGElement(child_node)->IsValid()) {
+    auto* svg_element = DynamicTo<SVGElement>(child_node);
+    if (!svg_element || !svg_element->IsValid()) {
       return false;
     }
     // Reject this child if it isn't the first valid node.

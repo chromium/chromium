@@ -17,18 +17,18 @@ using blink::WebTouchPoint;
 
 namespace content {
 
-MockWidgetInputHandler::MockWidgetInputHandler() : binding_(this) {}
+MockWidgetInputHandler::MockWidgetInputHandler() = default;
 
 MockWidgetInputHandler::MockWidgetInputHandler(
-    mojom::WidgetInputHandlerRequest request,
-    mojom::WidgetInputHandlerHostPtr host)
-    : binding_(this, std::move(request)), host_(std::move(host)) {}
+    mojo::PendingReceiver<mojom::WidgetInputHandler> receiver,
+    mojo::PendingRemote<mojom::WidgetInputHandlerHost> host)
+    : receiver_(this, std::move(receiver)), host_(std::move(host)) {}
 
 MockWidgetInputHandler::~MockWidgetInputHandler() {
   // We explicitly close the binding before the tearing down the vector of
   // messages, as some of them may spin a RunLoop on destruction and we don't
   // want to accept more messages beyond this point.
-  binding_.Close();
+  receiver_.reset();
 }
 
 void MockWidgetInputHandler::SetFocus(bool focused) {
@@ -50,6 +50,11 @@ void MockWidgetInputHandler::SetEditCommandsForNextKeyEvent(
 void MockWidgetInputHandler::CursorVisibilityChanged(bool visible) {
   dispatched_messages_.emplace_back(
       std::make_unique<DispatchedMessage>("CursorVisibilityChanged"));
+}
+
+void MockWidgetInputHandler::FallbackCursorModeToggled(bool is_on) {
+  dispatched_messages_.emplace_back(
+      std::make_unique<DispatchedMessage>("FallbackCursorModeToggled"));
 }
 
 void MockWidgetInputHandler::ImeSetComposition(
@@ -117,9 +122,10 @@ MockWidgetInputHandler::GetAndResetDispatchedMessages() {
 }
 
 void MockWidgetInputHandler::AttachSynchronousCompositor(
-    mojom::SynchronousCompositorControlHostPtr control_host,
-    mojom::SynchronousCompositorHostAssociatedPtrInfo host,
-    mojom::SynchronousCompositorAssociatedRequest compositor_request) {}
+    mojo::PendingRemote<mojom::SynchronousCompositorControlHost> control_host,
+    mojo::PendingAssociatedRemote<mojom::SynchronousCompositorHost> host,
+    mojo::PendingAssociatedReceiver<mojom::SynchronousCompositor>
+        compositor_request) {}
 
 MockWidgetInputHandler::DispatchedMessage::DispatchedMessage(
     const std::string& name)

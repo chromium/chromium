@@ -12,7 +12,7 @@ The fact that CUPS supports many printing modalities means that we have a
 mishmash of ways we could print.  Within ChromeOS, we divide CUPS printers into
 4 categories:
 
-*  *Configured* printers - These are printers that are saved as a part of a users'
+*  *Saved* printers - These are printers that are saved as a part of a users'
    settings and are synced across devices.  They show up in the list of printers
    in printer settings.
 
@@ -28,7 +28,7 @@ mishmash of ways we could print.  Within ChromeOS, we divide CUPS printers into
    do not need a PPD or for which we have identified with high confidence an
    available PPD that can be installed if the user wants to print to this
    device.  If a user uses one of these printers, we automatically migrate it to
-   be a Configured printer, as the user has shown that this is a printer of
+   be a Saved printer, as the user has shown that this is a printer of
    interest to them.
 
 *  *Discovered* printers - Printers that have been detected, but that we believe
@@ -45,12 +45,12 @@ In terms of usage, the categories combine in these ways:
 *Automatic* and *Discovered* printers appear in the settings Discovery dialog as
 available printers to be added.
 
-*Configured* printers appear in the list of printers in the settings dialog. The
+*Saved* printers appear in the list of printers in the settings dialog. The
 plan of record is that we do *not* support user-configurability for *Enterprise*
 printers, which means these will either not appear in settings, or appear there
 in an uneditable way.
 
-*Configured*, *Enterprise*, and *Automatic* printers appear in the print preview
+*Saved*, *Enterprise*, and *Automatic* printers appear in the print preview
 dialog as available targets for printing.
 
 
@@ -99,8 +99,8 @@ sites.
 `chome/browser/chromeos/printing/printers_sync_manager.[cc|h]`.
 `SyncedPrintersManager` manages the persistent data about printers that is
 synced across devices.  It serves as a two-way bridge between the sync systems
-and `CupsPrintersManager` for both Configured and Enterprise printers.
-Essentially, when the user changes their Configured printers list,
+and `CupsPrintersManager` for both Saved and Enterprise printers.
+Essentially, when the user changes their Saved printers list,
 `SyncedPrintersManager` is what makes sure that propagates upstream, and when
 changes from upstream come in, `SyncedPrintersManager` is responsible for
 notifying `CupsPrintersManager` of the changes.
@@ -117,12 +117,7 @@ Additionally, although recreating the same print queue with the same options is
 theoretically a null operation, cupsd can get somewhat unhappy if you attempt to
 create the same destination too many times quickly.  Thus, we need to cache
 which destinations have been created in the current session.
-
-This responsibility is given to `SyncedPrintersManager` because it is the only
-long-lived piece of the printer management system.  (NOTE: Is there any sort of
-session-persistent key-value store that can be used in the browser?  If so, we
-can and should shift this responsibility to `CupsPrintersManager` directly.  It
-appears the KeyedService is the preferred way to do this sort of thing.)
+This responsibility is given to  `CupsPrintersManager`.
 
 ### PrinterDetectors
 
@@ -131,13 +126,9 @@ provides an interface implemented by subsystems that can automatically detect
 the existence of printers.
 
 These detections are used in two ways.  First, detected printers that are not
-previously-known Configured printers become either Automatic or Discovered
+previously-known Saved printers become either Automatic or Discovered
 printers, depending on whether or not we believe they can be configured
 automatically.
-
-Second, `CupsPrintersManager` uses the detectors to determine whether or not
-certain Configured printers are currently available.  This impacts whether or
-not they appear as print targets in the print UI.
 
 Details for the existing PrinterDetector implementations follow.
 

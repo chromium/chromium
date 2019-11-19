@@ -15,6 +15,7 @@
 
 namespace history {
 class HistoryService;
+struct VisibleVisitCountToHostResult;
 }
 
 namespace security_interstitials {
@@ -99,7 +100,7 @@ class MetricsHelper {
  private:
   // Used to query the HistoryService to see if the URL is in history.  It will
   // only be invoked if the constructor received |history_service|.
-  void OnGotHistoryCount(bool success, int num_visits, base::Time first_visit);
+  void OnGotHistoryCount(history::VisibleVisitCountToHostResult result);
 
   void RecordUserDecisionToMetrics(Decision decision,
                                    const std::string& histogram_name);

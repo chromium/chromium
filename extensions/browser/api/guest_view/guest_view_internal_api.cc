@@ -11,8 +11,6 @@
 #include "components/guest_view/browser/guest_view_manager.h"
 #include "components/guest_view/browser/guest_view_manager_delegate.h"
 #include "components/guest_view/common/guest_view_constants.h"
-#include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/render_process_host.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/common/api/guest_view_internal.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -90,8 +88,8 @@ ExtensionFunction::ResponseAction GuestViewInternalDestroyGuestFunction::Run() {
   std::unique_ptr<guest_view_internal::DestroyGuest::Params> params(
       guest_view_internal::DestroyGuest::Params::Create(*args_));
   EXTENSION_FUNCTION_VALIDATE(params.get());
-  GuestViewBase* guest = GuestViewBase::From(
-      render_frame_host()->GetProcess()->GetID(), params->instance_id);
+  GuestViewBase* guest =
+      GuestViewBase::From(source_process_id(), params->instance_id);
   if (!guest)
     return RespondNow(Error(kUnknownErrorDoNotUse));
   guest->Destroy(true);
@@ -108,8 +106,8 @@ ExtensionFunction::ResponseAction GuestViewInternalSetSizeFunction::Run() {
   std::unique_ptr<guest_view_internal::SetSize::Params> params(
       guest_view_internal::SetSize::Params::Create(*args_));
   EXTENSION_FUNCTION_VALIDATE(params.get());
-  GuestViewBase* guest = GuestViewBase::From(
-      render_frame_host()->GetProcess()->GetID(), params->instance_id);
+  GuestViewBase* guest =
+      GuestViewBase::From(source_process_id(), params->instance_id);
   if (!guest)
     return RespondNow(Error(kUnknownErrorDoNotUse));
 

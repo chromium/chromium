@@ -111,8 +111,9 @@ ErrorInfo ErrorInfo::CreateError(ErrorType error_type,
           l10n_util::GetStringUTF16(IDS_CERT_ERROR_CONTAINS_ERRORS_DESCRIPTION);
       break;
     case CERT_NO_REVOCATION_MECHANISM:
-      details = l10n_util::GetStringUTF16(
-          IDS_CERT_ERROR_NO_REVOCATION_MECHANISM_DETAILS);
+      details = l10n_util::GetStringFUTF16(
+          IDS_CERT_ERROR_NO_REVOCATION_MECHANISM_DETAILS,
+          UTF8ToUTF16(request_url.host()));
       short_description = l10n_util::GetStringUTF16(
           IDS_CERT_ERROR_NO_REVOCATION_MECHANISM_DESCRIPTION);
       break;
@@ -162,8 +163,9 @@ ErrorInfo ErrorInfo::CreateError(ErrorType error_type,
           IDS_CERT_ERROR_SUMMARY_PINNING_FAILURE_DESCRIPTION);
       break;
     case CERT_UNABLE_TO_CHECK_REVOCATION:
-      details = l10n_util::GetStringUTF16(
-          IDS_CERT_ERROR_UNABLE_TO_CHECK_REVOCATION_DETAILS);
+      details = l10n_util::GetStringFUTF16(
+          IDS_CERT_ERROR_UNABLE_TO_CHECK_REVOCATION_DETAILS,
+          UTF8ToUTF16(request_url.host()));
       short_description = l10n_util::GetStringUTF16(
           IDS_CERT_ERROR_UNABLE_TO_CHECK_REVOCATION_DESCRIPTION);
       break;

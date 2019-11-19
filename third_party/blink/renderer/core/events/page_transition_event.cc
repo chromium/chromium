@@ -35,6 +35,13 @@ PageTransitionEvent::PageTransitionEvent(const AtomicString& type,
                                          bool persisted)
     : Event(type, Bubbles::kYes, Cancelable::kYes), persisted_(persisted) {}
 
+PageTransitionEvent::PageTransitionEvent(base::TimeTicks navigation_start)
+    : Event(event_type_names::kPageshow,
+            Bubbles::kYes,
+            Cancelable::kYes,
+            navigation_start),
+      persisted_(true) {}
+
 PageTransitionEvent::PageTransitionEvent(
     const AtomicString& type,
     const PageTransitionEventInit* initializer)

@@ -5,14 +5,11 @@
 package org.chromium.chrome.browser.preferences.download;
 
 import android.content.Context;
-import android.preference.DialogPreference;
+import android.support.v7.preference.DialogPreference;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.StyleSpan;
 import android.util.AttributeSet;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.ListView;
 
 import org.chromium.chrome.browser.download.DirectoryOption;
 import org.chromium.chrome.download.R;
@@ -29,16 +26,11 @@ public class DownloadLocationPreference
     private DownloadLocationPreferenceAdapter mAdapter;
 
     /**
-     * The view contains the list of download directories.
-     */
-    private ListView mListView;
-
-    /**
      * Constructor for DownloadLocationPreference.
      */
     public DownloadLocationPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
-
+        setDialogLayoutResource(R.layout.download_location_preference);
         mAdapter = new DownloadLocationPreferenceAdapter(getContext(), this);
         mAdapter.update();
     }
@@ -61,15 +53,6 @@ public class DownloadLocationPreference
         setSummary(summaryBuilder);
     }
 
-    @Override
-    protected View onCreateDialogView() {
-        View view = LayoutInflater.from(getContext())
-                            .inflate(R.layout.download_location_preference, null);
-        mListView = (ListView) (view.findViewById(R.id.location_preference_list_view));
-        mListView.setAdapter(mAdapter);
-        return view;
-    }
-
     // DownloadDirectoryAdapter.Delegate implementation.
     @Override
     public void onDirectoryOptionsUpdated() {
@@ -83,5 +66,9 @@ public class DownloadLocationPreference
     @Override
     public void onDirectorySelectionChanged() {
         updateSummary();
+    }
+
+    DownloadLocationPreferenceAdapter getAdapter() {
+        return mAdapter;
     }
 }

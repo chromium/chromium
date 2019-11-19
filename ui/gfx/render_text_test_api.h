@@ -85,13 +85,19 @@ class RenderTextTestApi {
   // Callers must ensure that the underlying RenderText object is a
   // RenderTextHarfBuzz instance.
   void SetGlyphWidth(float test_width) {
-    render_text_->SetGlyphWidthForTest(test_width);
+    render_text_->set_glyph_width_for_test(test_width);
   }
 
   static gfx::Rect ExpandToBeVerticallySymmetric(
       const gfx::Rect& rect,
       const gfx::Rect& display_rect) {
     return RenderText::ExpandToBeVerticallySymmetric(rect, display_rect);
+  }
+
+  void reset_cached_cursor_x() { render_text_->reset_cached_cursor_x(); }
+
+  int GetLineContainingYCoord(float text_y) {
+    return render_text_->GetLineContainingYCoord(text_y);
   }
 
  private:

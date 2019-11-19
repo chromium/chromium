@@ -5,18 +5,15 @@
 #ifndef CHROME_BROWSER_CHROMEOS_PRINTING_SYNCED_PRINTERS_MANAGER_H_
 #define CHROME_BROWSER_CHROMEOS_PRINTING_SYNCED_PRINTERS_MANAGER_H_
 
-#include <map>
 #include <memory>
 #include <string>
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "chrome/browser/chromeos/printing/printers_sync_bridge.h"
 #include "chromeos/printing/printer_configuration.h"
 #include "chromeos/printing/printer_translator.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/prefs/pref_change_registrar.h"
 
 class Profile;
 
@@ -26,7 +23,9 @@ class PrefRegistrySyncable;
 
 namespace chromeos {
 
-// Manages information about synced local printers classes (CONFIGURED
+class PrintersSyncBridge;
+
+// Manages information about synced local printers classes (SAVED
 // and ENTERPRISE).  Provides an interface to a user's printers and
 // printers provided by policy.  User printers are backed by the
 // PrintersSyncBridge.
@@ -36,10 +35,8 @@ class SyncedPrintersManager : public KeyedService {
  public:
   class Observer {
    public:
-    virtual void OnConfiguredPrintersChanged(
-        const std::vector<Printer>& printers) = 0;
-    virtual void OnEnterprisePrintersChanged(
-        const std::vector<Printer>& printers) = 0;
+    virtual void OnSavedPrintersChanged() = 0;
+    virtual void OnEnterprisePrintersChanged() {}
   };
 
   static std::unique_ptr<SyncedPrintersManager> Create(
@@ -51,24 +48,25 @@ class SyncedPrintersManager : public KeyedService {
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   // Returns the printers that are saved in preferences.
-  virtual std::vector<Printer> GetConfiguredPrinters() const = 0;
+  virtual std::vector<Printer> GetSavedPrinters() const = 0;
 
-  // Returns printers from enterprise policy.
-  virtual std::vector<Printer> GetEnterprisePrinters() const = 0;
+  // Replaces given vector with vector of printers from enterprise policy.
+  // Returns true if the enterprise policy was loaded and is valid.
+  virtual bool GetEnterprisePrinters(std::vector<Printer>* printers) const = 0;
 
   // Returns the printer with id |printer_id|, or nullptr if no such printer
-  // exists.  Searches both Configured and Enterprise printers.
+  // exists.  Searches both Saved and Enterprise printers.
   virtual std::unique_ptr<Printer> GetPrinter(
       const std::string& printer_id) const = 0;
 
-  // Adds or updates a printer in profile preferences.  The |printer| is
-  // identified by its id field.  Those with an empty id are treated as new
-  // printers.
-  virtual void UpdateConfiguredPrinter(const Printer& printer) = 0;
+  // Updates a printer in profile preferences.  The |printer| is
+  // identified by its id field. If |printer| is *not* a saved printer,
+  // |printer| will become a saved printer.
+  virtual void UpdateSavedPrinter(const Printer& printer) = 0;
 
   // Remove printer from preferences with the id |printer_id|.  Returns true if
   // the printer was successfully removed.
-  virtual bool RemoveConfiguredPrinter(const std::string& printer_id) = 0;
+  virtual bool RemoveSavedPrinter(const std::string& printer_id) = 0;
 
   // Attach |observer| for notification of events.  |observer| is expected to
   // live on the same thread (UI) as this object.  OnPrinter* methods are
@@ -83,14 +81,6 @@ class SyncedPrintersManager : public KeyedService {
   // Returns a ModelTypeSyncBridge for the sync client.
   virtual PrintersSyncBridge* GetSyncBridge() = 0;
 
-  // Registers that the printer was installed in CUPS.  If |printer| is not an
-  // already known printer (either a configured printer or an enterprise
-  // printer), this will have the side effect of saving |printer| as a
-  // configured printer.
-  virtual void PrinterInstalled(const Printer& printer) = 0;
-
-  // Returns true if |printer| is currently installed in CUPS.
-  virtual bool IsConfigurationCurrent(const Printer& printer) const = 0;
 };
 
 }  // namespace chromeos

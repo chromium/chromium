@@ -18,8 +18,6 @@ MockExtensionSystem::~MockExtensionSystem() {
 
 void MockExtensionSystem::InitForRegularProfile(bool extensions_enabled) {}
 
-void MockExtensionSystem::InitForIncognitoProfile() {}
-
 ExtensionService* MockExtensionSystem::extension_service() {
   return nullptr;
 }
@@ -64,7 +62,7 @@ AppSorting* MockExtensionSystem::app_sorting() {
   return nullptr;
 }
 
-const OneShotEvent& MockExtensionSystem::ready() const {
+const base::OneShotEvent& MockExtensionSystem::ready() const {
   return ready_;
 }
 

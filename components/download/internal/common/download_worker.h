@@ -11,16 +11,14 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/download/public/common/download_export.h"
-#include "components/download/public/common/download_request_handle_interface.h"
 #include "components/download/public/common/download_url_parameters.h"
 #include "components/download/public/common/url_download_handler.h"
 
-namespace net {
-class URLRequestContextGetter;
-}
+namespace service_manager {
+class Connector;
+}  // namespace service_manager
 
 namespace download {
-class DownloadURLLoaderFactoryGetter;
 
 // Helper class used to send subsequent range requests to fetch slices of the
 // file after handling response of the original non-range request.
@@ -40,20 +38,15 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadWorker
         std::unique_ptr<DownloadCreateInfo> download_create_info) = 0;
   };
 
-  DownloadWorker(DownloadWorker::Delegate* delegate,
-                 int64_t offset,
-                 int64_t length);
+  DownloadWorker(DownloadWorker::Delegate* delegate, int64_t offset);
   virtual ~DownloadWorker();
 
   int64_t offset() const { return offset_; }
-  int64_t length() const { return length_; }
 
   // Send network request to ask for a download.
-  void SendRequest(
-      std::unique_ptr<DownloadUrlParameters> params,
-      scoped_refptr<download::DownloadURLLoaderFactoryGetter>
-          url_loader_factory_getter,
-      scoped_refptr<net::URLRequestContextGetter> url_request_context_getter);
+  void SendRequest(std::unique_ptr<DownloadUrlParameters> params,
+                   URLLoaderFactoryProvider* url_loader_factory_provider,
+                   service_manager::Connector* connector);
 
   // Download operations.
   void Pause();
@@ -65,9 +58,10 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadWorker
   void OnUrlDownloadStarted(
       std::unique_ptr<DownloadCreateInfo> create_info,
       std::unique_ptr<InputStream> input_stream,
-      scoped_refptr<download::DownloadURLLoaderFactoryGetter>
-          url_loader_factory_getter,
-      const DownloadUrlParameters::OnStartedCallback& callback) override;
+      URLLoaderFactoryProvider::URLLoaderFactoryProviderPtr
+          url_loader_factory_provider,
+      UrlDownloadHandler* downloader,
+      DownloadUrlParameters::OnStartedCallback callback) override;
   void OnUrlDownloadStopped(UrlDownloadHandler* downloader) override;
   void OnUrlDownloadHandlerCreated(
       UrlDownloadHandler::UniqueUrlDownloadHandlerPtr downloader) override;
@@ -77,21 +71,14 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadWorker
   // The starting position of the content for this worker to download.
   int64_t offset_;
 
-  // The length of the request. May be 0 to fetch to the end of the file.
-  int64_t length_;
-
   // States of the worker.
   bool is_paused_;
   bool is_canceled_;
-  bool is_user_cancel_;
-
-  // Used to control the network request. Live on UI thread.
-  std::unique_ptr<DownloadRequestHandleInterface> request_handle_;
 
   // Used to handle the url request. Live and die on IO thread.
   UrlDownloadHandler::UniqueUrlDownloadHandlerPtr url_download_handler_;
 
-  base::WeakPtrFactory<DownloadWorker> weak_factory_;
+  base::WeakPtrFactory<DownloadWorker> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DownloadWorker);
 };

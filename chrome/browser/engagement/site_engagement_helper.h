@@ -10,6 +10,7 @@
 #include "base/macros.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/engagement/site_engagement_service.h"
+#include "content/public/browser/media_player_id.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -137,13 +138,13 @@ class SiteEngagementService::Helper
     // content::WebContentsObserver overrides.
     void DidFinishNavigation(content::NavigationHandle* handle) override;
     void MediaStartedPlaying(const MediaPlayerInfo& media_info,
-                             const MediaPlayerId& id) override;
+                             const content::MediaPlayerId& id) override;
     void MediaStoppedPlaying(
         const MediaPlayerInfo& media_info,
-        const MediaPlayerId& id,
+        const content::MediaPlayerId& id,
         WebContentsObserver::MediaStoppedReason reason) override;
 
-    std::vector<MediaPlayerId> active_media_players_;
+    std::vector<content::MediaPlayerId> active_media_players_;
 
     DISALLOW_COPY_AND_ASSIGN(MediaTracker);
   };

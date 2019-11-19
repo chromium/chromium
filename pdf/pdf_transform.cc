@@ -105,8 +105,7 @@ void CalculateScaledClipBoxOffset(const gfx::Rect& content_rect,
               source_clip_box.bottom;
 }
 
-void CalculateNonScaledClipBoxOffset(const gfx::Rect& content_rect,
-                                     int rotation,
+void CalculateNonScaledClipBoxOffset(int rotation,
                                      int page_width,
                                      int page_height,
                                      const PdfRectangle& source_clip_box,

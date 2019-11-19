@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//      http://www.apache.org/licenses/LICENSE-2.0
+//      https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -634,6 +634,19 @@ TEST(MutatingTest, Move) {
   EXPECT_THAT(src, Each(IsNull()));
   EXPECT_THAT(dest, ElementsAre(Pointee(1), Pointee(2), Pointee(3), Pointee(4),
                                 Pointee(5)));
+}
+
+TEST(MutatingTest, MoveBackward) {
+  std::vector<std::unique_ptr<int>> actual;
+  actual.emplace_back(absl::make_unique<int>(1));
+  actual.emplace_back(absl::make_unique<int>(2));
+  actual.emplace_back(absl::make_unique<int>(3));
+  actual.emplace_back(absl::make_unique<int>(4));
+  actual.emplace_back(absl::make_unique<int>(5));
+  auto subrange = absl::MakeSpan(actual.data(), 3);
+  absl::c_move_backward(subrange, actual.end());
+  EXPECT_THAT(actual, ElementsAre(IsNull(), IsNull(), Pointee(1), Pointee(2),
+                                  Pointee(3)));
 }
 
 TEST(MutatingTest, MoveWithRvalue) {

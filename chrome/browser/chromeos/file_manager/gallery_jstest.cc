@@ -12,7 +12,7 @@ class GalleryJsTest : public FileManagerJsTestBase {
 };
 
 IN_PROC_BROWSER_TEST_F(GalleryJsTest, ImageEncoderTest) {
-  RunGeneratedTest("/image_editor/image_encoder_unittest.html");
+  RunTestURL("image_editor/image_encoder_unittest_gen.html");
 }
 
 // Disabled on ASan builds due to a consistent failure. https://crbug.com/762831
@@ -22,37 +22,37 @@ IN_PROC_BROWSER_TEST_F(GalleryJsTest, ImageEncoderTest) {
 #define MAYBE_ExifEncoderTest ExifEncoderTest
 #endif
 IN_PROC_BROWSER_TEST_F(GalleryJsTest, MAYBE_ExifEncoderTest) {
-  RunGeneratedTest("/image_editor/exif_encoder_unittest.html");
+  RunTestURL("image_editor/exif_encoder_unittest_gen.html");
 }
 
 IN_PROC_BROWSER_TEST_F(GalleryJsTest, ImageViewTest) {
-  RunGeneratedTest("/image_editor/image_view_unittest.html");
+  RunTestURL("image_editor/image_view_unittest_gen.html");
 }
 
 IN_PROC_BROWSER_TEST_F(GalleryJsTest, EntryListWatcherTest) {
-  RunGeneratedTest("/entry_list_watcher_unittest.html");
+  RunTestURL("entry_list_watcher_unittest_gen.html");
 }
 
 IN_PROC_BROWSER_TEST_F(GalleryJsTest, GalleryUtilTest) {
-  RunGeneratedTest("/gallery_util_unittest.html");
+  RunTestURL("gallery_util_unittest_gen.html");
 }
 
 IN_PROC_BROWSER_TEST_F(GalleryJsTest, GalleryItemTest) {
-  RunGeneratedTest("/gallery_item_unittest.html");
+  RunTestURL("gallery_item_unittest_gen.html");
 }
 
 IN_PROC_BROWSER_TEST_F(GalleryJsTest, GalleryDataModelTest) {
-  RunGeneratedTest("/gallery_data_model_unittest.html");
+  RunTestURL("gallery_data_model_unittest_gen.html");
 }
 
 IN_PROC_BROWSER_TEST_F(GalleryJsTest, RibbonTest) {
-  RunGeneratedTest("/ribbon_unittest.html");
+  RunTestURL("ribbon_unittest_gen.html");
 }
 
 IN_PROC_BROWSER_TEST_F(GalleryJsTest, SlideModeTest) {
-  RunGeneratedTest("/slide_mode_unittest.html");
+  RunTestURL("slide_mode_unittest_gen.html");
 }
 
 IN_PROC_BROWSER_TEST_F(GalleryJsTest, DimmableUIControllerTest) {
-  RunGeneratedTest("/dimmable_ui_controller_unittest.html");
+  RunTestURL("dimmable_ui_controller_unittest_gen.html");
 }

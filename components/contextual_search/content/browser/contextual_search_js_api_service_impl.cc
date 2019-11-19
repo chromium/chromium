@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "components/contextual_search/content/browser/contextual_search_js_api_handler.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 namespace contextual_search {
 
@@ -39,10 +39,11 @@ void ContextualSearchJsApiServiceImpl::HandleChangeOverlayPosition(
 // static
 void CreateContextualSearchJsApiService(
     ContextualSearchJsApiHandler* contextual_search_js_api_handler,
-    mojom::ContextualSearchJsApiServiceRequest request) {
-  mojo::MakeStrongBinding(std::make_unique<ContextualSearchJsApiServiceImpl>(
-                              contextual_search_js_api_handler),
-                          std::move(request));
+    mojo::PendingReceiver<mojom::ContextualSearchJsApiService> receiver) {
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<ContextualSearchJsApiServiceImpl>(
+          contextual_search_js_api_handler),
+      std::move(receiver));
 }
 
 }  // namespace contextual_search

@@ -8,7 +8,7 @@
 #include "chrome/browser/ui/views/payments/payment_request_browsertest_base.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view_ids.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/credit_card.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/payments/core/features.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test_utils.h"
@@ -24,10 +24,7 @@ constexpr auto UNKNOWN = ::autofill::CreditCard::CardType::CARD_TYPE_UNKNOWN;
 class PaymentRequestDebitTest : public PaymentRequestBrowserTestBase {
  protected:
   PaymentRequestDebitTest() {
-    std::vector<base::Feature> enabled_features = {
-        features::kReturnGooglePayInBasicCard,
-        ::features::kPaymentRequestHasEnrolledInstrument};
-    features_.InitWithFeatures(enabled_features, /*disabled_feautres=*/{});
+    features_.InitAndEnableFeature(features::kReturnGooglePayInBasicCard);
   }
 
   const std::string& GetOrCreateBillingAddressId() {

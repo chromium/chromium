@@ -18,6 +18,21 @@ function cloneNotification(notification) {
     return deepCopy(notification);
 }
 
+// Deserializes a trigger object sent via postMessage.
+function deserializeTrigger(trigger) {
+    if (trigger && trigger.timestamp)
+        return new TimestampTrigger(trigger.timestamp);
+    return trigger;
+}
+
+// Deserializes notification options sent via postMessage.
+function deserializeOptions(options) {
+    return {
+        ...options,
+        showTrigger: deserializeTrigger(options.showTrigger),
+    };
+}
+
 // Allows a document to exercise the Notifications API within a service worker by sending commands.
 var messagePort = null;
 
@@ -47,7 +62,7 @@ addEventListener('message', workerEvent => {
                 break;
 
             case 'show':
-                registration.showNotification(event.data.title, event.data.options).then(() => {
+                registration.showNotification(event.data.title, deserializeOptions(event.data.options)).then(() => {
                     messagePort.postMessage({ command: event.data.command,
                                               success: true });
                 }, error => {

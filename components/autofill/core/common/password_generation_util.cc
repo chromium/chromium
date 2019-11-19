@@ -8,42 +8,42 @@
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/autofill/core/common/autofill_features.h"
-#include "ui/base/ui_base_features.h"
 
 namespace autofill {
 namespace password_generation {
-
 
 PasswordGenerationUIData::PasswordGenerationUIData(
     const gfx::RectF& bounds,
     int max_length,
     const base::string16& generation_element,
+    uint32_t generation_element_id,
+    bool is_generation_element_password_type,
     base::i18n::TextDirection text_direction,
     const autofill::PasswordForm& password_form)
     : bounds(bounds),
       max_length(max_length),
       generation_element(generation_element),
+      generation_element_id(generation_element_id),
+      is_generation_element_password_type(is_generation_element_password_type),
       text_direction(text_direction),
       password_form(password_form) {}
 
 PasswordGenerationUIData::PasswordGenerationUIData() = default;
+PasswordGenerationUIData::PasswordGenerationUIData(
+    const PasswordGenerationUIData& rhs) = default;
+PasswordGenerationUIData::PasswordGenerationUIData(
+    PasswordGenerationUIData&& rhs) = default;
+
+PasswordGenerationUIData& PasswordGenerationUIData::operator=(
+    const PasswordGenerationUIData& rhs) = default;
+PasswordGenerationUIData& PasswordGenerationUIData::operator=(
+    PasswordGenerationUIData&& rhs) = default;
 
 PasswordGenerationUIData::~PasswordGenerationUIData() = default;
 
 void LogPasswordGenerationEvent(PasswordGenerationEvent event) {
   UMA_HISTOGRAM_ENUMERATION("PasswordGeneration.Event",
                             event, EVENT_ENUM_COUNT);
-}
-
-bool IsPasswordGenerationEnabled() {
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutomaticPasswordGeneration))
-    return true;
-
-  if (base::FeatureList::IsEnabled(::features::kExperimentalUi))
-    return true;
-
-  return false;
 }
 
 }  // namespace password_generation

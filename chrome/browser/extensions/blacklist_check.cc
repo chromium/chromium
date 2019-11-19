@@ -12,7 +12,7 @@ namespace extensions {
 
 BlacklistCheck::BlacklistCheck(Blacklist* blacklist,
                                scoped_refptr<const Extension> extension)
-    : PreloadCheck(extension), blacklist_(blacklist), weak_ptr_factory_(this) {}
+    : PreloadCheck(extension), blacklist_(blacklist) {}
 
 BlacklistCheck::~BlacklistCheck() {}
 

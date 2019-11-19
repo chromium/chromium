@@ -4,12 +4,16 @@
 
 #include "android_webview/browser/aw_pdf_exporter.h"
 
+#include <memory>
+#include <utility>
+#include <vector>
+
 #include "android_webview/browser/aw_print_manager.h"
+#include "android_webview/browser_jni_headers/AwPdfExporter_jni.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/bind.h"
 #include "content/public/browser/browser_thread.h"
-#include "jni/AwPdfExporter_jni.h"
 #include "printing/print_settings.h"
 #include "printing/units.h"
 
@@ -60,13 +64,12 @@ void AwPdfExporter::ExportToPdf(JNIEnv* env,
                                 const JavaParamRef<jintArray>& pages,
                                 const JavaParamRef<jobject>& cancel_signal) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  printing::PrintSettings print_settings;
   printing::PageRanges page_ranges;
   JNI_AwPdfExporter_GetPageRanges(env, pages, &page_ranges);
-  InitPdfSettings(env, obj, page_ranges, print_settings);
   AwPrintManager* print_manager = AwPrintManager::CreateForWebContents(
-      web_contents_, print_settings, fd,
-      base::Bind(&AwPdfExporter::DidExportPdf, base::Unretained(this)));
+      web_contents_, CreatePdfSettings(env, obj, page_ranges), fd,
+      base::BindRepeating(&AwPdfExporter::DidExportPdf,
+                          base::Unretained(this)));
 
   if (!print_manager->PrintNow())
     DidExportPdf(0);
@@ -79,10 +82,11 @@ int MilsToDots(int val, int dpi) {
 }
 }  // namespace
 
-void AwPdfExporter::InitPdfSettings(JNIEnv* env,
-                                    const JavaRef<jobject>& obj,
-                                    const printing::PageRanges& page_ranges,
-                                    printing::PrintSettings& settings) {
+std::unique_ptr<printing::PrintSettings> AwPdfExporter::CreatePdfSettings(
+    JNIEnv* env,
+    const JavaRef<jobject>& obj,
+    const printing::PageRanges& page_ranges) {
+  auto settings = std::make_unique<printing::PrintSettings>();
   int dpi = Java_AwPdfExporter_getDpi(env, obj);
   int width = Java_AwPdfExporter_getPageWidth(env, obj);
   int height = Java_AwPdfExporter_getPageHeight(env, obj);
@@ -96,13 +100,13 @@ void AwPdfExporter::InitPdfSettings(JNIEnv* env,
   printable_area_device_units.SetRect(0, 0, width_in_dots, height_in_dots);
 
   if (!page_ranges.empty())
-    settings.set_ranges(page_ranges);
+    settings->set_ranges(page_ranges);
 
-  settings.set_dpi(dpi);
+  settings->set_dpi(dpi);
   // TODO(sgurun) verify that the value for newly added parameter for
   // (i.e. landscape_needs_flip) is correct.
-  settings.SetPrinterPrintableArea(physical_size_device_units,
-                                   printable_area_device_units, true);
+  settings->SetPrinterPrintableArea(physical_size_device_units,
+                                    printable_area_device_units, true);
 
   printing::PageMargins margins;
   margins.left = MilsToDots(Java_AwPdfExporter_getLeftMargin(env, obj), dpi);
@@ -110,8 +114,9 @@ void AwPdfExporter::InitPdfSettings(JNIEnv* env,
   margins.top = MilsToDots(Java_AwPdfExporter_getTopMargin(env, obj), dpi);
   margins.bottom =
       MilsToDots(Java_AwPdfExporter_getBottomMargin(env, obj), dpi);
-  settings.SetCustomMargins(margins);
-  settings.set_should_print_backgrounds(true);
+  settings->SetCustomMargins(margins);
+  settings->set_should_print_backgrounds(true);
+  return settings;
 }
 
 void AwPdfExporter::DidExportPdf(int page_count) {

@@ -55,6 +55,8 @@ class TranslateCompactInfoBar
   // The function will be called when the translate infobar is dismissed.
   // If it's true, we will record a declined event.
   bool IsDeclinedByUser() override;
+  void OnTranslateInfoBarDelegateDestroyed(
+      translate::TranslateInfoBarDelegate* delegate) override;
 
  private:
   // InfoBarAndroid:

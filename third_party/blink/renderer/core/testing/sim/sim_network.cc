@@ -6,7 +6,6 @@
 
 #include <memory>
 #include <utility>
-#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_url_error.h"
 #include "third_party/blink/public/platform/web_url_loader.h"
 #include "third_party/blink/public/platform/web_url_loader_client.h"
@@ -16,22 +15,23 @@
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/platform/loader/static_data_navigation_body_loader.h"
+#include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 
 namespace blink {
 
 static SimNetwork* g_network = nullptr;
 
 SimNetwork::SimNetwork() : current_request_(nullptr) {
-  Platform::Current()->GetURLLoaderMockFactory()->SetLoaderDelegate(this);
+  url_test_helpers::SetLoaderDelegate(this);
   DCHECK(!g_network);
   g_network = this;
 }
 
 SimNetwork::~SimNetwork() {
-  Platform::Current()->GetURLLoaderMockFactory()->SetLoaderDelegate(nullptr);
-  Platform::Current()
-      ->GetURLLoaderMockFactory()
-      ->UnregisterAllURLsAndClearMemoryCache();
+  url_test_helpers::SetLoaderDelegate(nullptr);
+  // TODO(crbug.com/751425): We should use the mock functionality
+  // via |SimTest::web_frame_client_| and/or |SimTest::web_view_helper_|.
+  url_test_helpers::UnregisterAllURLsAndClearMemoryCache();
   g_network = nullptr;
 }
 
@@ -41,7 +41,9 @@ SimNetwork& SimNetwork::Current() {
 }
 
 void SimNetwork::ServePendingRequests() {
-  Platform::Current()->GetURLLoaderMockFactory()->ServeAsynchronousRequests();
+  // TODO(crbug.com/751425): We should use the mock functionality
+  // via |SimTest::web_frame_client_| and/or |SimTest::web_view_helper_|.
+  url_test_helpers::ServeAsynchronousRequests();
 }
 
 void SimNetwork::DidReceiveResponse(WebURLLoaderClient* client,
@@ -77,47 +79,57 @@ void SimNetwork::DidFail(WebURLLoaderClient* client,
 }
 
 void SimNetwork::DidFinishLoading(WebURLLoaderClient* client,
-                                  TimeTicks finish_time,
+                                  base::TimeTicks finish_time,
                                   int64_t total_encoded_data_length,
                                   int64_t total_encoded_body_length,
                                   int64_t total_decoded_body_length) {
   if (!current_request_) {
     client->DidFinishLoading(finish_time, total_encoded_data_length,
                              total_encoded_body_length,
-                             total_decoded_body_length, false,
-                             std::vector<network::cors::PreflightTimingInfo>());
+                             total_decoded_body_length, false);
     return;
   }
   current_request_ = nullptr;
 }
 
 void SimNetwork::AddRequest(SimRequestBase& request) {
+  DCHECK(!requests_.Contains(request.url_.GetString()));
   requests_.insert(request.url_.GetString(), &request);
   WebURLResponse response(request.url_);
-  response.SetMIMEType(request.mime_type_);
+  response.SetMimeType(request.mime_type_);
 
   if (request.redirect_url_.IsEmpty()) {
-    response.SetHttpStatusCode(200);
+    response.SetHttpStatusCode(request.response_http_status_);
   } else {
     response.SetHttpStatusCode(302);
-    response.AddHTTPHeaderField("Location", request.redirect_url_);
+    response.AddHttpHeaderField("Location", request.redirect_url_);
   }
 
-  Platform::Current()->GetURLLoaderMockFactory()->RegisterURL(request.url_,
-                                                              response, "");
+  for (const auto& http_header : request.response_http_headers_)
+    response.AddHttpHeaderField(http_header.key, http_header.value);
+
+  // TODO(crbug.com/751425): We should use the mock functionality
+  // via |SimTest::web_frame_client_| and/or |SimTest::web_view_helper_|.
+  url_test_helpers::RegisterMockedURLLoadWithCustomResponse(request.url_, "",
+                                                            response);
 }
 
 void SimNetwork::RemoveRequest(SimRequestBase& request) {
   requests_.erase(request.url_);
-  Platform::Current()->GetURLLoaderMockFactory()->UnregisterURL(request.url_);
+  // TODO(crbug.com/751425): We should use the mock functionality
+  // via |SimTest::web_frame_client_| and/or |SimTest::web_view_helper_|.
+  url_test_helpers::RegisterMockedURLUnregister(request.url_);
 }
 
 bool SimNetwork::FillNavigationParamsResponse(WebNavigationParams* params) {
   auto it = requests_.find(params->url.GetString());
   SimRequestBase* request = it->value;
   params->response = WebURLResponse(params->url);
-  params->response.SetMIMEType(request->mime_type_);
-  params->response.SetHttpStatusCode(200);
+  params->response.SetMimeType(request->mime_type_);
+  params->response.SetHttpStatusCode(request->response_http_status_);
+  for (const auto& http_header : request->response_http_headers_)
+    params->response.AddHttpHeaderField(http_header.key, http_header.value);
+
   auto body_loader = std::make_unique<StaticDataNavigationBodyLoader>();
   request->UsedForNavigation(body_loader.get());
   params->body_loader = std::move(body_loader);

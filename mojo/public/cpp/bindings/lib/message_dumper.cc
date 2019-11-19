@@ -76,8 +76,9 @@ bool MessageDumper::Accept(mojo::Message* message) {
                      message->interface_name(), message->method_name());
 
   static base::NoDestructor<scoped_refptr<base::TaskRunner>> task_runner(
-      base::CreateSequencedTaskRunnerWithTraits(
-          {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
+      base::CreateSequencedTaskRunner(
+          {base::ThreadPool(), base::MayBlock(),
+           base::TaskPriority::USER_BLOCKING,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN}));
 
   (*task_runner)

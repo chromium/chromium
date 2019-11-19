@@ -4,9 +4,9 @@
 
 #include "base/android/jni_string.h"
 #include "base/logging.h"
+#include "chrome/android/chrome_jni_headers/CertificateViewer_jni.h"
 #include "chrome/browser/certificate_viewer.h"
 #include "chrome/grit/generated_resources.h"
-#include "jni/CertificateViewer_jni.h"
 #include "net/cert/x509_certificate.h"
 #include "ui/base/l10n/l10n_util.h"
 

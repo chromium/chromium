@@ -1,0 +1,5 @@
+Provides the chrome://media-app WebUI and supporting interfaces that allow the
+Media App to integrate with ChromeOS.
+
+The bulk of the UI is provided by an internal CIPD package via DEPS, which is
+then served via the resource bundle. See go/media-app for the internal source.

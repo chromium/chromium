@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/stl_util.h"
 #include "mojo/public/cpp/bindings/binding.h"
 #include "mojo/public/cpp/bindings/connection_error_callback.h"
 #include "mojo/public/cpp/bindings/interface_ptr.h"
@@ -65,13 +66,12 @@ class BindingSetBase {
  public:
   using ContextTraits = BindingSetContextTraits<ContextType>;
   using Context = typename ContextTraits::Type;
-  using PreDispatchCallback = base::Callback<void(const Context&)>;
   using Traits = BindingSetTraits<BindingType>;
   using ProxyType = typename Traits::ProxyType;
   using RequestType = typename Traits::RequestType;
   using ImplPointerType = typename Traits::ImplPointerType;
 
-  BindingSetBase() : weak_ptr_factory_(this) {}
+  BindingSetBase() {}
 
   void set_connection_error_handler(base::RepeatingClosure error_handler) {
     error_handler_ = std::move(error_handler);
@@ -82,15 +82,6 @@ class BindingSetBase {
       RepeatingConnectionErrorWithReasonCallback error_handler) {
     error_with_reason_handler_ = std::move(error_handler);
     error_handler_.Reset();
-  }
-
-  // Sets a callback to be invoked immediately before dispatching any message or
-  // error received by any of the bindings in the set. This may only be used
-  // with a non-void |ContextType|.
-  void set_pre_dispatch_handler(const PreDispatchCallback& handler) {
-    static_assert(ContextTraits::SupportsContext(),
-                  "Pre-dispatch handler usage requires non-void context type.");
-    pre_dispatch_handler_ = handler;
   }
 
   // Adds a new binding to the set which binds |request| to |impl| with no
@@ -128,6 +119,11 @@ class BindingSetBase {
     bindings_.erase(it);
     return true;
   }
+
+  // Predicate to test if a binding exists in the set.
+  //
+  // Returns |true| if the binding is in the set and |false| if not.
+  bool HasBinding(BindingId id) const { return base::Contains(bindings_, id); }
 
   // Swaps the interface implementation with a different one, to allow tests
   // to modify behavior.
@@ -228,7 +224,7 @@ class BindingSetBase {
           binding_set_(binding_set),
           binding_id_(binding_id),
           context_(std::move(context)) {
-      binding_.AddFilter(std::make_unique<DispatchFilter>(this));
+      binding_.SetFilter(std::make_unique<DispatchFilter>(this));
       binding_.set_connection_error_with_reason_handler(
           base::BindOnce(&Entry::OnConnectionError, base::Unretained(this)));
     }
@@ -240,17 +236,19 @@ class BindingSetBase {
     }
 
    private:
-    class DispatchFilter : public MessageReceiver {
+    class DispatchFilter : public MessageFilter {
      public:
       explicit DispatchFilter(Entry* entry) : entry_(entry) {}
       ~DispatchFilter() override {}
 
      private:
-      // MessageReceiver:
-      bool Accept(Message* message) override {
+      // MessageFilter:
+      bool WillDispatch(Message* message) override {
         entry_->WillDispatch();
         return true;
       }
+
+      void DidDispatchOrReject(Message* message, bool accepted) override {}
 
       Entry* entry_;
 
@@ -278,8 +276,6 @@ class BindingSetBase {
   void SetDispatchContext(const Context* context, BindingId binding_id) {
     dispatch_context_ = context;
     dispatch_binding_ = binding_id;
-    if (!pre_dispatch_handler_.is_null())
-      pre_dispatch_handler_.Run(*context);
   }
 
   BindingId AddBindingImpl(
@@ -316,13 +312,12 @@ class BindingSetBase {
 
   base::RepeatingClosure error_handler_;
   RepeatingConnectionErrorWithReasonCallback error_with_reason_handler_;
-  PreDispatchCallback pre_dispatch_handler_;
   BindingId next_binding_id_ = 0;
   std::map<BindingId, std::unique_ptr<Entry>> bindings_;
   bool is_flushing_ = false;
   const Context* dispatch_context_ = nullptr;
   BindingId dispatch_binding_;
-  base::WeakPtrFactory<BindingSetBase> weak_ptr_factory_;
+  base::WeakPtrFactory<BindingSetBase> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(BindingSetBase);
 };

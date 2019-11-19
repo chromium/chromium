@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/bind_helpers.h"
+#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -37,11 +38,9 @@ TestPersistentCookieStore::~TestPersistentCookieStore() = default;
 
 void TestPersistentCookieStore::RunLoadedCallback() {
   std::vector<std::unique_ptr<net::CanonicalCookie>> cookies;
-  net::CookieOptions options;
-  options.set_include_httponly();
-
-  std::unique_ptr<net::CanonicalCookie> cookie(net::CanonicalCookie::Create(
-      kTestCookieURL, "a=b", base::Time::Now(), options));
+  std::unique_ptr<net::CanonicalCookie> cookie(
+      net::CanonicalCookie::Create(kTestCookieURL, "a=b", base::Time::Now(),
+                                   base::nullopt /* server_time */));
   cookies.push_back(std::move(cookie));
 
   std::unique_ptr<net::CanonicalCookie> bad_canonical_cookie(
@@ -52,9 +51,9 @@ void TestPersistentCookieStore::RunLoadedCallback() {
           base::Time(),  // last accessed
           false,         // secure
           false,         // httponly
-          net::CookieSameSite::DEFAULT_MODE, net::COOKIE_PRIORITY_DEFAULT));
+          net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_DEFAULT));
   cookies.push_back(std::move(bad_canonical_cookie));
-  loaded_callback_.Run(std::move(cookies));
+  std::move(loaded_callback_).Run(std::move(cookies));
 }
 
 bool TestPersistentCookieStore::flushed() {
@@ -64,15 +63,15 @@ bool TestPersistentCookieStore::flushed() {
 #pragma mark -
 #pragma mark Private methods
 
-void TestPersistentCookieStore::Load(const LoadedCallback& loaded_callback,
+void TestPersistentCookieStore::Load(LoadedCallback loaded_callback,
                                      const NetLogWithSource& /* net_log */) {
-  loaded_callback_ = loaded_callback;
+  loaded_callback_ = std::move(loaded_callback);
 }
 
 void TestPersistentCookieStore::LoadCookiesForKey(
     const std::string& key,
-    const LoadedCallback& loaded_callback) {
-  loaded_callback_ = loaded_callback;
+    LoadedCallback loaded_callback) {
+  loaded_callback_ = std::move(loaded_callback);
 }
 
 void TestPersistentCookieStore::AddCookie(const net::CanonicalCookie& cc) {}
@@ -84,7 +83,7 @@ void TestPersistentCookieStore::DeleteCookie(const net::CanonicalCookie& cc) {}
 
 void TestPersistentCookieStore::SetForceKeepSessionState() {}
 
-void TestPersistentCookieStore::SetBeforeFlushCallback(
+void TestPersistentCookieStore::SetBeforeCommitCallback(
     base::RepeatingClosure callback) {}
 
 void TestPersistentCookieStore::Flush(base::OnceClosure callback) {
@@ -122,12 +121,11 @@ ScopedTestingCookieStoreIOSClient::~ScopedTestingCookieStoreIOSClient() {
 
 void RecordCookieChanges(std::vector<net::CanonicalCookie>* out_cookies,
                          std::vector<bool>* out_removes,
-                         const net::CanonicalCookie& cookie,
-                         net::CookieChangeCause cause) {
+                         const net::CookieChangeInfo& change) {
   DCHECK(out_cookies);
-  out_cookies->push_back(cookie);
+  out_cookies->push_back(change.cookie);
   if (out_removes)
-    out_removes->push_back(net::CookieChangeCauseIsDeletion(cause));
+    out_removes->push_back(net::CookieChangeCauseIsDeletion(change.cause));
 }
 
 void SetCookie(const std::string& cookie_line,
@@ -135,8 +133,11 @@ void SetCookie(const std::string& cookie_line,
                net::CookieStore* store) {
   net::CookieOptions options;
   options.set_include_httponly();
-  store->SetCookieWithOptionsAsync(url, cookie_line, options,
-                                   base::DoNothing());
+  auto canonical_cookie = net::CanonicalCookie::Create(
+      url, cookie_line, base::Time::Now(), base::nullopt /* server_time */);
+  ASSERT_TRUE(canonical_cookie);
+  store->SetCanonicalCookieAsync(std::move(canonical_cookie), url.scheme(),
+                                 options, base::DoNothing());
   net::CookieStoreIOS::NotifySystemCookiesChanged();
   // Wait until the flush is posted.
   base::RunLoop().RunUntilIdle();

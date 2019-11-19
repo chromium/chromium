@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/polymer.gni")
 
 js_type_check("closure_compile") {
   deps = [
@@ -12,8 +13,39 @@ js_type_check("closure_compile") {
 
 js_library("managed_footnote") {
   deps = [
-    "//ui/webui/resources/js:cr",
     "//ui/webui/resources/js:i18n_behavior",
     "//ui/webui/resources/js:load_time_data",
+    "//ui/webui/resources/js:web_ui_listener_behavior",
   ]
+}
+
+polymer_modulizer("managed_footnote") {
+  js_file = "managed_footnote.js"
+  html_file = "managed_footnote.html"
+  html_type = "dom-module"
+  auto_imports = [
+    "ui/webui/resources/html/web_ui_listener_behavior.html|WebUIListenerBehavior",
+    "ui/webui/resources/html/i18n_behavior.html|I18nBehavior",
+    "ui/webui/resources/html/load_time_data.html|loadTimeData",
+  ]
+}
+
+js_type_check("closure_compile_module") {
+  is_polymer3 = true
+  deps = [
+    ":managed_footnote.m",
+  ]
+}
+
+js_library("managed_footnote.m") {
+  sources = [
+    "$root_gen_dir/ui/webui/resources/cr_components/managed_footnote/managed_footnote.m.js",
+  ]
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/js:load_time_data.m",
+    "//ui/webui/resources/js:web_ui_listener_behavior.m",
+  ]
+  extra_deps = [ ":managed_footnote_module" ]
 }

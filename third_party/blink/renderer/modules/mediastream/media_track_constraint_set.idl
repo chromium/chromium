@@ -17,12 +17,9 @@ dictionary MediaTrackConstraintSet {
     ConstrainDouble frameRate;
     ConstrainDOMString facingMode;
     ConstrainDOMString resizeMode;
-    ConstrainDouble volume;
     ConstrainLong sampleRate;
     ConstrainLong sampleSize;
     ConstrainBoolean echoCancellation;
-    // See http://crbug.com/846270.
-    [OriginTrialEnabled=ExperimentalHardwareEchoCancellation] ConstrainDOMString echoCancellationType;
     ConstrainBoolean autoGainControl;
     ConstrainBoolean noiseSuppression;
     ConstrainDouble latency;
@@ -31,14 +28,9 @@ dictionary MediaTrackConstraintSet {
     ConstrainDOMString groupId;
     // Media Capture Depth Stream Extensions
     // https://w3c.github.io/mediacapture-depth/#mediatrackconstraints
-    // TODO(aleksandar.stojiljkovic): videoKind, depthNear, depthFar,
-    // focalLengthX and focalLengthY attributes should be declared as partial
+    // TODO(riju): videoKind attribute should be declared as partial
     // dictionary but IDL parser can't support it yet. http://crbug.com/579896.
     [RuntimeEnabled=MediaCaptureDepthVideoKind] ConstrainDOMString videoKind;
-    [RuntimeEnabled=MediaCaptureDepth] ConstrainDouble depthNear;
-    [RuntimeEnabled=MediaCaptureDepth] ConstrainDouble depthFar;
-    [RuntimeEnabled=MediaCaptureDepth] ConstrainDouble focalLengthX;
-    [RuntimeEnabled=MediaCaptureDepth] ConstrainDouble focalLengthY;
     // W3C Image Capture API
     // https://w3c.github.io/mediacapture-image/#mediatrackconstraintset-section
     // TODO(mcasas) move out when partial dictionaries are supported
@@ -56,6 +48,8 @@ dictionary MediaTrackConstraintSet {
     ConstrainDouble    saturation;
     ConstrainDouble    sharpness;
     ConstrainDouble    focusDistance;
+    [RuntimeEnabled=MediaCapturePanTilt] ConstrainDouble    pan;
+    [RuntimeEnabled=MediaCapturePanTilt] ConstrainDouble    tilt;
     ConstrainDouble    zoom;
     ConstrainBoolean   torch;
     // The "mandatory" and "_optional" members are retained for conformance

@@ -1,0 +1,2091 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        
+        <title>
+            
+    
+                Changelog
+             &mdash;
+    Mako 1.0.14 Documentation
+
+        </title>
+
+        
+            <!-- begin iterate through site-imported + sphinx environment css_files -->
+                <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+                <link rel="stylesheet" href="_static/changelog.css" type="text/css" />
+                <link rel="stylesheet" href="_static/sphinx_paramlinks.css" type="text/css" />
+                <link rel="stylesheet" href="_static/docs.css" type="text/css" />
+            <!-- end iterate through site-imported + sphinx environment css_files -->
+        
+
+        
+    
+
+    <!-- begin layout.mako headers -->
+
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="top" title="Mako 1.0.14 Documentation" href="index.html" />
+        <link rel="prev" title="Caching" href="caching.html" />
+    <!-- end layout.mako headers -->
+
+
+    </head>
+    <body>
+        
+
+
+
+
+
+
+
+
+
+
+<div id="docs-container">
+
+
+
+<div id="docs-header">
+    <h1>Mako 1.0.14 Documentation</h1>
+
+    <div id="docs-search">
+    Search:
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" size="18" /> <input type="submit" value="Search" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+
+    <div id="docs-version-header">
+        Release: <span class="version-num">1.0.14</span>
+
+    </div>
+
+</div>
+
+<div id="docs-top-navigation">
+    <div id="docs-top-page-control" class="docs-navigation-links">
+        <ul>
+            <li>Prev:
+            <a href="caching.html" title="previous chapter">Caching</a>
+            </li>
+
+        <li>
+            <a href="index.html">Table of Contents</a> |
+            <a href="genindex.html">Index</a>
+        </li>
+        </ul>
+    </div>
+
+    <div id="docs-navigation-banner">
+        <a href="index.html">Mako 1.0.14 Documentation</a>
+        » 
+                Changelog
+            
+
+        <h2>
+            
+                Changelog
+            
+        </h2>
+    </div>
+
+</div>
+
+<div id="docs-body-container">
+
+
+    <div id="docs-sidebar">
+    <div id="sidebar-banner">
+        
+    </div>
+
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Changelog</a><ul>
+<li><a class="reference internal" href="#id1">1.0</a><ul>
+<li><a class="reference internal" href="#change-1.0.14">1.0.14</a></li>
+<li><a class="reference internal" href="#change-1.0.13">1.0.13</a></li>
+<li><a class="reference internal" href="#change-1.0.12">1.0.12</a></li>
+<li><a class="reference internal" href="#change-1.0.11">1.0.11</a></li>
+<li><a class="reference internal" href="#change-1.0.10">1.0.10</a></li>
+<li><a class="reference internal" href="#change-1.0.9">1.0.9</a></li>
+<li><a class="reference internal" href="#change-1.0.8">1.0.8</a></li>
+<li><a class="reference internal" href="#change-1.0.7">1.0.7</a></li>
+<li><a class="reference internal" href="#change-1.0.6">1.0.6</a></li>
+<li><a class="reference internal" href="#change-1.0.5">1.0.5</a></li>
+<li><a class="reference internal" href="#change-1.0.4">1.0.4</a></li>
+<li><a class="reference internal" href="#change-1.0.3">1.0.3</a></li>
+<li><a class="reference internal" href="#change-1.0.2">1.0.2</a></li>
+<li><a class="reference internal" href="#change-1.0.1">1.0.1</a></li>
+<li><a class="reference internal" href="#change-1.0.0">1.0.0</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id2">0.9</a><ul>
+<li><a class="reference internal" href="#change-0.9.1">0.9.1</a></li>
+<li><a class="reference internal" href="#change-0.9.0">0.9.0</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id3">0.8</a><ul>
+<li><a class="reference internal" href="#change-0.8.1">0.8.1</a></li>
+<li><a class="reference internal" href="#change-0.8.0">0.8.0</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id4">0.7</a><ul>
+<li><a class="reference internal" href="#change-0.7.3">0.7.3</a></li>
+<li><a class="reference internal" href="#change-0.7.2">0.7.2</a></li>
+<li><a class="reference internal" href="#change-0.7.1">0.7.1</a></li>
+<li><a class="reference internal" href="#change-0.7.0">0.7.0</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#older-versions">Older Versions</a><ul>
+<li><a class="reference internal" href="#change-0.6.2">0.6.2</a></li>
+<li><a class="reference internal" href="#change-0.6.1">0.6.1</a></li>
+<li><a class="reference internal" href="#change-0.6.0">0.6.0</a></li>
+<li><a class="reference internal" href="#change-0.5.0">0.5.0</a></li>
+<li><a class="reference internal" href="#change-0.4.2">0.4.2</a></li>
+<li><a class="reference internal" href="#change-0.4.1">0.4.1</a></li>
+<li><a class="reference internal" href="#change-0.4.0">0.4.0</a></li>
+<li><a class="reference internal" href="#change-0.3.6">0.3.6</a></li>
+<li><a class="reference internal" href="#change-0.3.5">0.3.5</a></li>
+<li><a class="reference internal" href="#change-0.3.4">0.3.4</a></li>
+<li><a class="reference internal" href="#change-0.3.3">0.3.3</a></li>
+<li><a class="reference internal" href="#change-0.3.2">0.3.2</a></li>
+<li><a class="reference internal" href="#change-0.3.1">0.3.1</a></li>
+<li><a class="reference internal" href="#change-0.3.0">0.3.0</a></li>
+<li><a class="reference internal" href="#change-0.2.6">0.2.6</a></li>
+<li><a class="reference internal" href="#change-0.2.5">0.2.5</a></li>
+<li><a class="reference internal" href="#change-0.2.4">0.2.4</a></li>
+<li><a class="reference internal" href="#change-0.2.3">0.2.3</a></li>
+<li><a class="reference internal" href="#change-0.2.2">0.2.2</a></li>
+<li><a class="reference internal" href="#change-0.2.1">0.2.1</a></li>
+<li><a class="reference internal" href="#change-0.2.0">0.2.0</a></li>
+<li><a class="reference internal" href="#change-0.1.10">0.1.10</a></li>
+<li><a class="reference internal" href="#change-0.1.9">0.1.9</a></li>
+<li><a class="reference internal" href="#change-0.1.8">0.1.8</a></li>
+<li><a class="reference internal" href="#change-0.1.7">0.1.7</a></li>
+<li><a class="reference internal" href="#change-0.1.6">0.1.6</a></li>
+<li><a class="reference internal" href="#change-0.1.5">0.1.5</a></li>
+<li><a class="reference internal" href="#change-0.1.4">0.1.4</a></li>
+<li><a class="reference internal" href="#change-0.1.3">0.1.3</a></li>
+<li><a class="reference internal" href="#change-0.1.2">0.1.2</a></li>
+<li><a class="reference internal" href="#change-0.1.1">0.1.1</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+
+    <h4>Previous Topic</h4>
+    <p>
+    <a href="caching.html" title="previous chapter">Caching</a>
+    </p>
+
+    <h4>Quick Search</h4>
+    <p>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" size="18" /> <input type="submit" value="Search" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </p>
+
+    </div>
+
+    <div id="docs-body" class="withsidebar" >
+        
+<div class="section" id="changelog">
+<h1>Changelog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="id1">
+<h2>1.0<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="change-1.0.14">
+<h3>1.0.14<a class="headerlink" href="#change-1.0.14" title="Permalink to this headline">¶</a></h3>
+Released: Sat Jul 20 2019<ul class="simple">
+<li><p id="change-1.0.14-0"><span class="target" id="change-1591877700fd8523662d8a3494e99b0c"><strong>[feature] [template] </strong></span><p>The <code class="docutils literal notranslate"><span class="pre">n</span></code> filter is now supported in the <code class="docutils literal notranslate"><span class="pre">&lt;%page&gt;</span></code> tag.  This allows a
+template to omit the default expression filters throughout a whole
+template, for those cases where a template-wide filter needs to have
+default filtering disabled.  Pull request courtesy Martin von Gagern.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="filtering.html#expression-filtering-nfilter"><span class="std std-ref">Turning off Filtering with the n Filter</span></a></p>
+</div>
+<a class="changeset-link headerlink reference internal" href="#change-1591877700fd8523662d8a3494e99b0c">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-1.0.14-1"><span class="target" id="change-0698bc3cc55123a08f1da73c5cc7d8c3"><strong>[bug] [exceptions] </strong></span><p>Fixed issue where the correct file URI would not be shown in the
+template-formatted exception traceback if the template filename were not
+known.  Additionally fixes an issue where stale filenames would be
+displayed if a stack trace alternated between different templates.  Pull
+request courtesy Martin von Gagern.</p>
+<a class="changeset-link headerlink reference internal" href="#change-0698bc3cc55123a08f1da73c5cc7d8c3">¶</a><p></p>
+</p>
+</li>
+</ul>
+</div>
+<div class="section" id="change-1.0.13">
+<h3>1.0.13<a class="headerlink" href="#change-1.0.13" title="Permalink to this headline">¶</a></h3>
+Released: Mon Jul 1 2019<ul class="simple">
+<li><p id="change-1.0.13-0"><span class="target" id="change-936d44c09a4e19aed6e0f50386fb14d8"><strong>[bug] [exceptions] </strong></span><p>Improved the line-number tracking for source lines inside of Python  <code class="docutils literal notranslate"><span class="pre">&lt;%</span>
+<span class="pre">...</span> <span class="pre">%&gt;</span></code> blocks, such that text- and HTML-formatted exception traces such
+as that of  <a class="reference internal" href="usage.html#mako.exceptions.html_error_template" title="mako.exceptions.html_error_template"><code class="xref py py-func docutils literal notranslate"><span class="pre">html_error_template()</span></code></a> now report the correct source line
+inside the block, rather than the first line of the block itself.
+Exceptions in <code class="docutils literal notranslate"><span class="pre">&lt;%!</span> <span class="pre">...</span> <span class="pre">%&gt;</span></code> blocks which get raised while loading the
+module are still not reported correctly, as these are handled before the
+Mako code is generated.  Pull request courtesy Martin von Gagern.</p>
+<a class="changeset-link headerlink reference internal" href="#change-936d44c09a4e19aed6e0f50386fb14d8">¶</a><p></p>
+</p>
+</li>
+</ul>
+</div>
+<div class="section" id="change-1.0.12">
+<h3>1.0.12<a class="headerlink" href="#change-1.0.12" title="Permalink to this headline">¶</a></h3>
+Released: Wed Jun 5 2019<ul class="simple">
+<li><p id="change-1.0.12-0"><span class="target" id="change-d789f9385416200220c8ae6a4921d8cd"><strong>[bug] [py3k] </strong></span><p>Fixed regression where import refactors in Mako 1.0.11 caused broken
+imports on Python 3.8.</p>
+<a class="changeset-link headerlink reference internal" href="#change-d789f9385416200220c8ae6a4921d8cd">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/296">#296</a></p>
+</p>
+</li>
+</ul>
+</div>
+<div class="section" id="change-1.0.11">
+<h3>1.0.11<a class="headerlink" href="#change-1.0.11" title="Permalink to this headline">¶</a></h3>
+Released: Fri May 31 2019<ul class="simple">
+<li><p id="change-1.0.11-0"><span class="target" id="change-ddf4199ea402d6338c0fd37db40b37c3"><strong>[change] </strong></span><p>Updated for additional project metadata in setup.py.   Additionally,
+the code has been reformatted using Black and zimports.</p>
+<a class="changeset-link headerlink reference internal" href="#change-ddf4199ea402d6338c0fd37db40b37c3">¶</a><p></p>
+</p>
+</li>
+</ul>
+</div>
+<div class="section" id="change-1.0.10">
+<h3>1.0.10<a class="headerlink" href="#change-1.0.10" title="Permalink to this headline">¶</a></h3>
+Released: Fri May 10 2019<ul class="simple">
+<li><p id="change-1.0.10-0"><span class="target" id="change-5cb52ab7e79764e97e2562d939f68cbf"><strong>[bug] [py3k] </strong></span><p>Added a default encoding of “utf-8” when the <a class="reference internal" href="usage.html#mako.exceptions.RichTraceback" title="mako.exceptions.RichTraceback"><code class="xref py py-class docutils literal notranslate"><span class="pre">RichTraceback</span></code></a>
+object retrieves Python source lines from a Python traceback; as these
+are bytes in Python 3 they need to be decoded so that they can be
+formatted in the template.</p>
+<a class="changeset-link headerlink reference internal" href="#change-5cb52ab7e79764e97e2562d939f68cbf">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/293">#293</a></p>
+</p>
+</li>
+</ul>
+</div>
+<div class="section" id="change-1.0.9">
+<h3>1.0.9<a class="headerlink" href="#change-1.0.9" title="Permalink to this headline">¶</a></h3>
+Released: Mon Apr 15 2019<ul class="simple">
+<li><p id="change-1.0.9-0"><span class="target" id="change-93c86f7c375b8505ff6c28ce4f40ed34"><strong>[bug] </strong></span><p>Further corrected the previous fix for <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/287">#287</a> as it relied upon
+an attribute that is monkeypatched by Python’s <code class="docutils literal notranslate"><span class="pre">ast</span></code> module for some
+reason, which fails if <code class="docutils literal notranslate"><span class="pre">ast</span></code> hasn’t been imported; the correct
+attribute <code class="docutils literal notranslate"><span class="pre">Constant.value</span></code> is now used.   Also note the issue
+was mis-numbered in the previous changelog note.</p>
+<a class="changeset-link headerlink reference internal" href="#change-93c86f7c375b8505ff6c28ce4f40ed34">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/287">#287</a></p>
+</p>
+</li>
+</ul>
+</div>
+<div class="section" id="change-1.0.8">
+<h3>1.0.8<a class="headerlink" href="#change-1.0.8" title="Permalink to this headline">¶</a></h3>
+Released: Wed Mar 20 2019<ul class="simple">
+<li><p id="change-1.0.8-0"><span class="target" id="change-ee8aabc71dd9f97ffd13bbd017da1920"><strong>[bug] </strong></span><p>Fixed an element in the AST Python generator which changed
+for Python 3.8, causing expression generation to fail.</p>
+<a class="changeset-link headerlink reference internal" href="#change-ee8aabc71dd9f97ffd13bbd017da1920">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/287">#287</a></p>
+</p>
+</li>
+<li><p id="change-1.0.8-1"><span class="target" id="change-5c5f66915e537125bd4a0f5e76fa6486"><strong>[feature] </strong></span><p>Added <code class="docutils literal notranslate"><span class="pre">--output-encoding</span></code> flag to the mako-render script.
+Pull request courtesy lacsaP.</p>
+<a class="changeset-link headerlink reference internal" href="#change-5c5f66915e537125bd4a0f5e76fa6486">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/271">#271</a></p>
+</p>
+</li>
+<li><p id="change-1.0.8-2"><span class="target" id="change-311d5820d86dd3ed4e3b0d2fd8643a7a"><strong>[bug] </strong></span><p>Removed unnecessary “usage” prefix from mako-render script.
+Pull request courtesy Hugo.</p>
+<a class="changeset-link headerlink reference internal" href="#change-311d5820d86dd3ed4e3b0d2fd8643a7a">¶</a><p></p>
+</p>
+</li>
+</ul>
+</div>
+<div class="section" id="change-1.0.7">
+<h3>1.0.7<a class="headerlink" href="#change-1.0.7" title="Permalink to this headline">¶</a></h3>
+Released: Thu Jul 13 2017<ul class="simple">
+<li><p id="change-1.0.7-0"><span class="target" id="change-50698bda8346f71d565b22949ec42fa6"><strong>[bug] </strong></span><p>Changed the “print” in the mako-render command to
+sys.stdout.write(), avoiding the extra newline at the end
+of the template output.  Pull request courtesy
+Yves Chevallier.</p>
+<a class="changeset-link headerlink reference internal" href="#change-50698bda8346f71d565b22949ec42fa6">¶</a><p></p>
+</p>
+</li>
+</ul>
+</div>
+<div class="section" id="change-1.0.6">
+<h3>1.0.6<a class="headerlink" href="#change-1.0.6" title="Permalink to this headline">¶</a></h3>
+Released: Wed Nov 9 2016<ul class="simple">
+<li><p id="change-1.0.6-0"><span class="target" id="change-1ab45bb9f44f0ac0c491437d7cd278d1"><strong>[feature] </strong></span><p>Added new parameter <a class="reference internal" href="usage.html#mako.template.Template.params.include_error_handler" title="mako.template.Template"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">Template.include_error_handler</span></code></a> .
+This works like <a class="reference internal" href="usage.html#mako.template.Template.params.error_handler" title="mako.template.Template"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">Template.error_handler</span></code></a> but indicates the
+handler should take place when this template is included within another
+template via the <code class="docutils literal notranslate"><span class="pre">&lt;%include&gt;</span></code> tag.  Pull request courtesy
+Huayi Zhang.</p>
+<a class="changeset-link headerlink reference internal" href="#change-1ab45bb9f44f0ac0c491437d7cd278d1">¶</a><p></p>
+</p>
+</li>
+</ul>
+</div>
+<div class="section" id="change-1.0.5">
+<h3>1.0.5<a class="headerlink" href="#change-1.0.5" title="Permalink to this headline">¶</a></h3>
+Released: Wed Nov 2 2016<ul class="simple">
+<li><p id="change-1.0.5-0"><span class="target" id="change-a888b5e8bb3335eb6b79287ee7e3e65e"><strong>[bug] </strong></span><p>Updated the Sphinx documentation builder to work with recent
+versions of Sphinx.</p>
+<a class="changeset-link headerlink reference internal" href="#change-a888b5e8bb3335eb6b79287ee7e3e65e">¶</a><p></p>
+</p>
+</li>
+</ul>
+</div>
+<div class="section" id="change-1.0.4">
+<h3>1.0.4<a class="headerlink" href="#change-1.0.4" title="Permalink to this headline">¶</a></h3>
+Released: Thu Mar 10 2016<ul class="simple">
+<li><p id="change-1.0.4-0"><span class="target" id="change-a0f9819d8082887201784fd7fe175897"><strong>[feature] [test] </strong></span><p>The default test runner is now py.test.  Running “python setup.py test”
+will make use of py.test instead of nose.  nose still works as a test
+runner as well, however.</p>
+<a class="changeset-link headerlink reference internal" href="#change-a0f9819d8082887201784fd7fe175897">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-1.0.4-1"><span class="target" id="change-5a254376fcfe88072601688a7fd34bb2"><strong>[bug] [lexer] </strong></span><p>Major improvements to lexing of intricate Python sections which may
+contain complex backslash sequences, as well as support for the bitwise
+operator (e.g. pipe symbol) inside of expression sections distinct
+from the Mako “filter” operator, provided the operator is enclosed
+within parentheses or brackets.  Pull request courtesy Daniel Martin.</p>
+<a class="changeset-link headerlink reference internal" href="#change-5a254376fcfe88072601688a7fd34bb2">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/pull/19">pull request github:19</a></p>
+</p>
+</li>
+<li><p id="change-1.0.4-2"><span class="target" id="change-159bcf8ab71d37b6e32321c2d62b7fa5"><strong>[feature] </strong></span><p>Added new method <a class="reference internal" href="usage.html#mako.template.Template.list_defs" title="mako.template.Template.list_defs"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Template.list_defs()</span></code></a>.   Pull request courtesy
+Jonathan Vanasco.</p>
+<a class="changeset-link headerlink reference internal" href="#change-159bcf8ab71d37b6e32321c2d62b7fa5">¶</a><p></p>
+</p>
+</li>
+</ul>
+</div>
+<div class="section" id="change-1.0.3">
+<h3>1.0.3<a class="headerlink" href="#change-1.0.3" title="Permalink to this headline">¶</a></h3>
+Released: Tue Oct 27 2015<ul class="simple">
+<li><p id="change-1.0.3-0"><span class="target" id="change-a8691815262bf7a1a4857ab58b59972d"><strong>[babel] [bug] </strong></span><p>Fixed an issue where the Babel plugin would not handle a translation
+symbol that contained non-ascii characters.  Pull request courtesy
+Roman Imankulov.</p>
+<a class="changeset-link headerlink reference internal" href="#change-a8691815262bf7a1a4857ab58b59972d">¶</a><p></p>
+</p>
+</li>
+</ul>
+</div>
+<div class="section" id="change-1.0.2">
+<h3>1.0.2<a class="headerlink" href="#change-1.0.2" title="Permalink to this headline">¶</a></h3>
+Released: Wed Aug 26 2015<ul class="simple">
+<li><p id="change-1.0.2-0"><span class="target" id="change-7a886c9ddff2888de5388a76c07f5fb1"><strong>[bug] [installation] </strong></span><p>The “universal wheel” marker is removed from setup.cfg, because
+our setup.py currently makes use of conditional dependencies.
+In <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/249">#249</a>, the discussion is ongoing on how to correct our
+setup.cfg / setup.py fully so that we can handle the per-version
+dependency changes while still maintaining optimal wheel settings,
+so this issue is not yet fully resolved.</p>
+<a class="changeset-link headerlink reference internal" href="#change-7a886c9ddff2888de5388a76c07f5fb1">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/249">#249</a></p>
+</p>
+</li>
+<li><p id="change-1.0.2-1"><span class="target" id="change-d512dee8244e65df20387799e2bf1c3e"><strong>[bug] [py3k] </strong></span><p>Repair some calls within the ast module that no longer work on Python3.5;
+additionally replace the use of <code class="docutils literal notranslate"><span class="pre">inspect.getargspec()</span></code> under
+Python 3 (seems to be called from the TG plugin) to avoid deprecation
+warnings.</p>
+<a class="changeset-link headerlink reference internal" href="#change-d512dee8244e65df20387799e2bf1c3e">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/250">#250</a></p>
+</p>
+</li>
+<li><p id="change-1.0.2-2"><span class="target" id="change-821f277b7de91a50393a39180bedba19"><strong>[bug] </strong></span><p>Update the Lingua translation extraction plugin to correctly
+handle templates mixing Python control statements (such as if,
+for and while) with template fragments. Pull request courtesy
+Laurent Daverio.</p>
+<a class="changeset-link headerlink reference internal" href="#change-821f277b7de91a50393a39180bedba19">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-1.0.2-3"><span class="target" id="change-5198757b33888a7f8f96e2cee5db8f62"><strong>[feature] </strong></span><p>Added <code class="docutils literal notranslate"><span class="pre">STOP_RENDERING</span></code> keyword for returning/exiting from a
+template early, which is a synonym for an empty string <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code>.
+Previously, the docs suggested a bare
+<code class="docutils literal notranslate"><span class="pre">return</span></code>, but this could cause <code class="docutils literal notranslate"><span class="pre">None</span></code> to appear in the
+rendered template result.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="syntax.html#syntax-exiting-early"><span class="std std-ref">Exiting Early from a Template</span></a></p>
+</div>
+<a class="changeset-link headerlink reference internal" href="#change-5198757b33888a7f8f96e2cee5db8f62">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/236">#236</a></p>
+</p>
+</li>
+</ul>
+</div>
+<div class="section" id="change-1.0.1">
+<h3>1.0.1<a class="headerlink" href="#change-1.0.1" title="Permalink to this headline">¶</a></h3>
+Released: Thu Jan 22 2015<ul class="simple">
+<li><p id="change-1.0.1-0"><span class="target" id="change-1975c829883f2b542d5cde07b22d03ed"><strong>[feature] </strong></span><p>Added support for Lingua, a translation extraction system as an
+alternative to Babel.  Pull request courtesy Wichert Akkerman.</p>
+<a class="changeset-link headerlink reference internal" href="#change-1975c829883f2b542d5cde07b22d03ed">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-1.0.1-1"><span class="target" id="change-32bb4d6d81d803d8fcce430daf6fe6c6"><strong>[bug] [py3k] </strong></span><p>Modernized the examples/wsgi/run_wsgi.py file for Py3k.
+Pull requset courtesy Cody Taylor.</p>
+<a class="changeset-link headerlink reference internal" href="#change-32bb4d6d81d803d8fcce430daf6fe6c6">¶</a><p></p>
+</p>
+</li>
+</ul>
+</div>
+<div class="section" id="change-1.0.0">
+<h3>1.0.0<a class="headerlink" href="#change-1.0.0" title="Permalink to this headline">¶</a></h3>
+Released: Sun Jun 8 2014<ul class="simple">
+<li><p id="change-1.0.0-0"><span class="target" id="change-a1b32dcfac59fb3d94194cc23d05eec4"><strong>[bug] [py2k] </strong></span><p>Improved the error re-raise operation when a custom
+<a class="reference internal" href="usage.html#mako.template.Template.params.error_handler" title="mako.template.Template"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">Template.error_handler</span></code></a> is used that does not handle
+the exception; the original stack trace etc. is now preserved.
+Pull request courtesy Manfred Haltner.</p>
+<a class="changeset-link headerlink reference internal" href="#change-a1b32dcfac59fb3d94194cc23d05eec4">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-1.0.0-1"><span class="target" id="change-7f76f6ca5487a165840d3f1634e26b5f"><strong>[bug] [filters] [py2k] </strong></span><p>Added an html_escape filter that works in “non unicode” mode.
+Previously, when using <code class="docutils literal notranslate"><span class="pre">disable_unicode=True</span></code>, the <code class="docutils literal notranslate"><span class="pre">u</span></code> filter
+would fail to handle non-ASCII bytes properly.  Pull request
+courtesy George Xie.</p>
+<a class="changeset-link headerlink reference internal" href="#change-7f76f6ca5487a165840d3f1634e26b5f">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-1.0.0-2"><span class="target" id="change-b602a175c0ec26eaa4f42962d23cca96"><strong>[general] </strong></span><p>Compatibility changes; in order to modernize the codebase, Mako
+is now dropping support for Python 2.4 and Python 2.5 altogether.
+The source base is now targeted at Python 2.6 and forwards.</p>
+<a class="changeset-link headerlink reference internal" href="#change-b602a175c0ec26eaa4f42962d23cca96">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-1.0.0-3"><span class="target" id="change-ac6c8e7df6c612e92bf81577c4c96276"><strong>[feature] </strong></span><p>Template modules now generate a JSON “metadata” structure at the bottom
+of the source file which includes parseable information about the
+templates’ source file, encoding etc. as well as a mapping of module
+source lines to template lines, thus replacing the “# SOURCE LINE”
+markers throughout the source code.  The structure also indicates those
+lines that are explicitly not part of the template’s source; the goal
+here is to allow better integration with coverage and other tools.</p>
+<a class="changeset-link headerlink reference internal" href="#change-ac6c8e7df6c612e92bf81577c4c96276">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-1.0.0-4"><span class="target" id="change-48f95a70e6b509811d3c6c208b3bbafc"><strong>[bug] [py3k] </strong></span><p>Fixed bug in <code class="docutils literal notranslate"><span class="pre">decode.&lt;encoding&gt;</span></code> filter where a non-string object
+would not be correctly interpreted in Python 3.</p>
+<a class="changeset-link headerlink reference internal" href="#change-48f95a70e6b509811d3c6c208b3bbafc">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-1.0.0-5"><span class="target" id="change-7638baccf1cc95230c98f9475713aff4"><strong>[bug] [py3k] </strong></span><p>Fixed bug in Python parsing logic which would fail on Python 3
+when a “try/except” targeted a tuple of exception types, rather
+than a single exception.</p>
+<a class="changeset-link headerlink reference internal" href="#change-7638baccf1cc95230c98f9475713aff4">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/227">#227</a></p>
+</p>
+</li>
+<li><p id="change-1.0.0-6"><span class="target" id="change-4ed767c704faafcfcaa96c993b6c3ce8"><strong>[feature] </strong></span><p>mako-render is now implemented as a setuptools entrypoint script;
+a standalone mako.cmd.cmdline() callable is now available, and the
+system also uses argparse now instead of optparse.  Pull request
+courtesy Derek Harland.</p>
+<a class="changeset-link headerlink reference internal" href="#change-4ed767c704faafcfcaa96c993b6c3ce8">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-1.0.0-7"><span class="target" id="change-b514d619be9c65cb0abb149be8b3a1a2"><strong>[feature] </strong></span><p>The mako-render script will now catch exceptions and run them
+into the text error handler, and exit with a non-zero exit code.
+Pull request courtesy Derek Harland.</p>
+<a class="changeset-link headerlink reference internal" href="#change-b514d619be9c65cb0abb149be8b3a1a2">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-1.0.0-8"><span class="target" id="change-a328a21ec5123a69caf9021bbf70b90a"><strong>[bug] </strong></span><p>A rework of the mako-render script allows the script to run
+correctly when given a file pathname that is outside of the current
+directory, e.g. <code class="docutils literal notranslate"><span class="pre">mako-render</span> <span class="pre">../some_template.mako</span></code>.  In this case,
+the “template root” defaults to the directory in which the template
+is located, instead of “.”.  The script also accepts a new argument
+<code class="docutils literal notranslate"><span class="pre">--template-dir</span></code> which can be specified multiple times to establish
+template lookup directories.  Standard input for templates also works
+now too.  Pull request courtesy Derek Harland.</p>
+<a class="changeset-link headerlink reference internal" href="#change-a328a21ec5123a69caf9021bbf70b90a">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-1.0.0-9"><span class="target" id="change-e39fabd3e579af9dd730204a7692c76f"><strong>[feature] [py3k] </strong></span><p>Support is added for Python 3 “keyword only” arguments, as used in
+defs.  Pull request courtesy Eevee.</p>
+<a class="changeset-link headerlink reference internal" href="#change-e39fabd3e579af9dd730204a7692c76f">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/pull/7">pull request github:7</a></p>
+</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="id2">
+<h2>0.9<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="change-0.9.1">
+<h3>0.9.1<a class="headerlink" href="#change-0.9.1" title="Permalink to this headline">¶</a></h3>
+Released: Thu Dec 26 2013<ul class="simple">
+<li><p id="change-0.9.1-0"><span class="target" id="change-8b4011d90ed7ddc770e03ef8ade6e6dc"><strong>[bug] </strong></span><p>Fixed bug in Babel plugin where translator comments
+would be lost if intervening text nodes were encountered.
+Fix courtesy Ned Batchelder.</p>
+<a class="changeset-link headerlink reference internal" href="#change-8b4011d90ed7ddc770e03ef8ade6e6dc">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/225">#225</a></p>
+</p>
+</li>
+<li><p id="change-0.9.1-1"><span class="target" id="change-a7b4b7fb4a7bf5e4c0ca7c2a7b072eca"><strong>[bug] </strong></span><p>Fixed TGPlugin.render method to support unicode template
+names in Py2K - courtesy Vladimir Magamedov.</p>
+<a class="changeset-link headerlink reference internal" href="#change-a7b4b7fb4a7bf5e4c0ca7c2a7b072eca">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-0.9.1-2"><span class="target" id="change-c3dd59728d365b33fe9fcbf8ea96f9ab"><strong>[bug] </strong></span><p>Fixed an AST issue that was preventing correct operation
+under alpha versions of Python 3.4.  Pullreq courtesy Zer0-.</p>
+<a class="changeset-link headerlink reference internal" href="#change-c3dd59728d365b33fe9fcbf8ea96f9ab">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-0.9.1-3"><span class="target" id="change-166e48714e8db96013d1a6038e54aff4"><strong>[bug] </strong></span><p>Changed the format of the “source encoding” header output
+by the code generator to use the format <code class="docutils literal notranslate"><span class="pre">#</span> <span class="pre">-*-</span> <span class="pre">coding:%s</span> <span class="pre">-*-</span></code>
+instead of <code class="docutils literal notranslate"><span class="pre">#</span> <span class="pre">-*-</span> <span class="pre">encoding:%s</span> <span class="pre">-*-</span></code>; the former is more common
+and compatible with emacs.  Courtesy Martin Geisler.</p>
+<a class="changeset-link headerlink reference internal" href="#change-166e48714e8db96013d1a6038e54aff4">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-0.9.1-4"><span class="target" id="change-9a88fa8f596546fb451bfcbfa7ce6274"><strong>[bug] </strong></span><p>Fixed issue where an old lexer rule prevented a template line
+which looked like “#*” from being correctly parsed.</p>
+<a class="changeset-link headerlink reference internal" href="#change-9a88fa8f596546fb451bfcbfa7ce6274">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/224">#224</a></p>
+</p>
+</li>
+</ul>
+</div>
+<div class="section" id="change-0.9.0">
+<h3>0.9.0<a class="headerlink" href="#change-0.9.0" title="Permalink to this headline">¶</a></h3>
+Released: Tue Aug 27 2013<ul class="simple">
+<li><p id="change-0.9.0-0"><span class="target" id="change-f529d0d5bf50c9e01e436ee12672a7f8"><strong>[bug] </strong></span><p>The Context.locals_() method becomes a private underscored
+method, as this method has a specific internal use. The purpose
+of Context.kwargs has been clarified, in that it only delivers
+top level keyword arguments originally passed to template.render().</p>
+<a class="changeset-link headerlink reference internal" href="#change-f529d0d5bf50c9e01e436ee12672a7f8">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/219">#219</a></p>
+</p>
+</li>
+<li><p id="change-0.9.0-1"><span class="target" id="change-41a0ced688ee0a615dcddf766d267241"><strong>[bug] </strong></span><p>Fixed the babel plugin to properly interpret ${} sections
+inside of a “call” tag, i.e. &lt;%self:some_tag attr=”${_(‘foo’)}”/&gt;.
+Code that’s subject to babel escapes in here needs to be
+specified as a Python expression, not a literal.  This change
+is backwards incompatible vs. code that is relying upon a _(‘’)
+translation to be working within a call tag.</p>
+<a class="changeset-link headerlink reference internal" href="#change-41a0ced688ee0a615dcddf766d267241">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-0.9.0-2"><span class="target" id="change-ac972a0d002a412c4a92175229d7444f"><strong>[bug] </strong></span><p>The Babel plugin has been repaired to work on Python 3.</p>
+<a class="changeset-link headerlink reference internal" href="#change-ac972a0d002a412c4a92175229d7444f">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/187">#187</a></p>
+</p>
+</li>
+<li><p id="change-0.9.0-3"><span class="target" id="change-dbf6f29e5e76133b9dd779baacb24818"><strong>[bug] </strong></span><p>Using &lt;%namespace import=”*” module=”somemodule”/&gt; now
+skips over module elements that are not explcitly callable,
+avoiding TypeError when trying to produce partials.</p>
+<a class="changeset-link headerlink reference internal" href="#change-dbf6f29e5e76133b9dd779baacb24818">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/207">#207</a></p>
+</p>
+</li>
+<li><p id="change-0.9.0-4"><span class="target" id="change-693045b580eddfdc7e464ba0426b3495"><strong>[bug] </strong></span><p>Fixed Py3K bug where a “lambda” expression was not
+interpreted correctly within a template tag; also
+fixed in Py2.4.</p>
+<a class="changeset-link headerlink reference internal" href="#change-693045b580eddfdc7e464ba0426b3495">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/190">#190</a></p>
+</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="id3">
+<h2>0.8<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="change-0.8.1">
+<h3>0.8.1<a class="headerlink" href="#change-0.8.1" title="Permalink to this headline">¶</a></h3>
+Released: Fri May 24 2013<ul class="simple">
+<li><p id="change-0.8.1-0"><span class="target" id="change-bd4b9d8ffbf32fc1b15161268eefa4d3"><strong>[bug] </strong></span><p>Changed setup.py to skip installing markupsafe
+if Python version is &lt; 2.6 or is between 3.0 and
+less than 3.3, as Markupsafe now only supports 2.6-&gt;2.X,
+3.3-&gt;3.X.</p>
+<a class="changeset-link headerlink reference internal" href="#change-bd4b9d8ffbf32fc1b15161268eefa4d3">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/216">#216</a></p>
+</p>
+</li>
+<li><p id="change-0.8.1-1"><span class="target" id="change-422ca71aa24f94eb264fc0d653dc726e"><strong>[bug] </strong></span><p>Fixed regression where “entity” filter wasn’t
+converted for py3k properly (added tests.)</p>
+<a class="changeset-link headerlink reference internal" href="#change-422ca71aa24f94eb264fc0d653dc726e">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/214">#214</a></p>
+</p>
+</li>
+<li><p id="change-0.8.1-2"><span class="target" id="change-32c8f2eaa85fc02c7f1908ade43391a6"><strong>[bug] </strong></span><p>Fixed bug where mako-render script wasn’t
+compatible with Py3k.</p>
+<a class="changeset-link headerlink reference internal" href="#change-32c8f2eaa85fc02c7f1908ade43391a6">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/212">#212</a></p>
+</p>
+</li>
+<li><p id="change-0.8.1-3"><span class="target" id="change-3493666706cc97f02aa1454a0bfa8b05"><strong>[bug] </strong></span><p>Cleaned up all the various deprecation/
+file warnings when running the tests under
+various Pythons with warnings turned on.</p>
+<a class="changeset-link headerlink reference internal" href="#change-3493666706cc97f02aa1454a0bfa8b05">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/213">#213</a></p>
+</p>
+</li>
+</ul>
+</div>
+<div class="section" id="change-0.8.0">
+<h3>0.8.0<a class="headerlink" href="#change-0.8.0" title="Permalink to this headline">¶</a></h3>
+Released: Wed Apr 10 2013<ul class="simple">
+<li><p id="change-0.8.0-0"><span class="target" id="change-6b0ea675bf69869d3082ead0019268ac"><strong>[feature] </strong></span><p>Performance improvement to the
+“legacy” HTML escape feature, used for XML
+escaping and when markupsafe isn’t present,
+courtesy George Xie.</p>
+<a class="changeset-link headerlink reference internal" href="#change-6b0ea675bf69869d3082ead0019268ac">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-0.8.0-1"><span class="target" id="change-9a75951207d1a79183ecde188ec6dc0f"><strong>[bug] </strong></span><p>Fixed bug whereby an exception in Python 3
+against a module compiled to the filesystem would
+fail trying to produce a RichTraceback due to the
+content being in bytes.</p>
+<a class="changeset-link headerlink reference internal" href="#change-9a75951207d1a79183ecde188ec6dc0f">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/209">#209</a></p>
+</p>
+</li>
+<li><p id="change-0.8.0-2"><span class="target" id="change-c3d6a16577c7159388068ce214713af5"><strong>[bug] </strong></span><p>Change default for compile()-&gt;reserved_names
+from tuple to frozenset, as this is expected to be
+a set by default.</p>
+<a class="changeset-link headerlink reference internal" href="#change-c3d6a16577c7159388068ce214713af5">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/208">#208</a></p>
+</p>
+</li>
+<li><p id="change-0.8.0-3"><span class="target" id="change-eaf9d70768b7b2e3bf37574dc5776ddb"><strong>[feature] </strong></span><p>Code has been reworked to support Python 2.4-&gt;
+Python 3.xx in place.  2to3 no longer needed.</p>
+<a class="changeset-link headerlink reference internal" href="#change-eaf9d70768b7b2e3bf37574dc5776ddb">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-0.8.0-4"><span class="target" id="change-26eea0f7e4b73fcb7f112ad6fff7181d"><strong>[feature] </strong></span><p>Added lexer_cls argument to Template,
+TemplateLookup, allows alternate Lexer classes
+to be used.</p>
+<a class="changeset-link headerlink reference internal" href="#change-26eea0f7e4b73fcb7f112ad6fff7181d">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-0.8.0-5"><span class="target" id="change-b7ef07a547af42dd2677a0ee710a88d8"><strong>[feature] </strong></span><p>Added future_imports parameter to Template
+and TemplateLookup, renders the __future__ header
+with desired capabilities at the top of the generated
+template module.  Courtesy Ben Trofatter.</p>
+<a class="changeset-link headerlink reference internal" href="#change-b7ef07a547af42dd2677a0ee710a88d8">¶</a><p></p>
+</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="id4">
+<h2>0.7<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="change-0.7.3">
+<h3>0.7.3<a class="headerlink" href="#change-0.7.3" title="Permalink to this headline">¶</a></h3>
+Released: Wed Nov 7 2012<ul class="simple">
+<li><p id="change-0.7.3-0"><span class="target" id="change-5b7ac5083658b50ef3156f602a6fbc7f"><strong>[bug] </strong></span><p>legacy_html_escape function, used when
+Markupsafe isn’t installed, was using an inline-compiled
+regexp which causes major slowdowns on Python 3.3;
+is now precompiled.</p>
+<a class="changeset-link headerlink reference internal" href="#change-5b7ac5083658b50ef3156f602a6fbc7f">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-0.7.3-1"><span class="target" id="change-591582542cc9469802a12b959ae762fa"><strong>[bug] </strong></span><p>AST supporting now supports tuple-packed
+function arguments inside pure-python def
+or lambda expressions.</p>
+<a class="changeset-link headerlink reference internal" href="#change-591582542cc9469802a12b959ae762fa">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/201">#201</a></p>
+</p>
+</li>
+<li><p id="change-0.7.3-2"><span class="target" id="change-3b3a50e075d4d15358ec199aa7c10fa0"><strong>[bug] </strong></span><p>Fixed Py3K bug in the Babel extension.</p>
+<a class="changeset-link headerlink reference internal" href="#change-3b3a50e075d4d15358ec199aa7c10fa0">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-0.7.3-3"><span class="target" id="change-535675bd3ae6ed887cfebf09a83d4311"><strong>[bug] </strong></span><p>Fixed the “filter” attribute of the
+&lt;%text&gt; tag so that it pulls locally specified
+identifiers from the context the same
+way as that of &lt;%block&gt; and &lt;%filter&gt;.</p>
+<a class="changeset-link headerlink reference internal" href="#change-535675bd3ae6ed887cfebf09a83d4311">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-0.7.3-4"><span class="target" id="change-618340e118c47998e9a6a21d3dfeab3c"><strong>[bug] </strong></span><p>Fixed bug in plugin loader to correctly
+raise exception when non-existent plugin
+is specified.</p>
+<a class="changeset-link headerlink reference internal" href="#change-618340e118c47998e9a6a21d3dfeab3c">¶</a><p></p>
+</p>
+</li>
+</ul>
+</div>
+<div class="section" id="change-0.7.2">
+<h3>0.7.2<a class="headerlink" href="#change-0.7.2" title="Permalink to this headline">¶</a></h3>
+Released: Fri Jul 20 2012<ul class="simple">
+<li><p id="change-0.7.2-0"><span class="target" id="change-24885c510552de270fdab999df4d3ee3"><strong>[bug] </strong></span><p>Fixed regression in 0.7.1 where AST
+parsing for Py2.4 was broken.</p>
+<a class="changeset-link headerlink reference internal" href="#change-24885c510552de270fdab999df4d3ee3">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/193">#193</a></p>
+</p>
+</li>
+</ul>
+</div>
+<div class="section" id="change-0.7.1">
+<h3>0.7.1<a class="headerlink" href="#change-0.7.1" title="Permalink to this headline">¶</a></h3>
+Released: Sun Jul 8 2012<ul class="simple">
+<li><p id="change-0.7.1-0"><span class="target" id="change-52ee3c2b0c1b4d4444ec4e93c7aafa2b"><strong>[feature] </strong></span><p>Control lines with no bodies will
+now succeed, as “pass” is added for these
+when no statements are otherwise present.
+Courtesy Ben Trofatter</p>
+<a class="changeset-link headerlink reference internal" href="#change-52ee3c2b0c1b4d4444ec4e93c7aafa2b">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/146">#146</a></p>
+</p>
+</li>
+<li><p id="change-0.7.1-1"><span class="target" id="change-149cdf4c14f9bacfe6dfa61ce8379d4e"><strong>[bug] </strong></span><p>Fixed some long-broken scoping behavior
+involving variables declared in defs and such,
+which only became apparent when
+the strict_undefined flag was turned on.</p>
+<a class="changeset-link headerlink reference internal" href="#change-149cdf4c14f9bacfe6dfa61ce8379d4e">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/192">#192</a></p>
+</p>
+</li>
+<li><p id="change-0.7.1-2"><span class="target" id="change-28b06199f79ad5944ce27c6ca795912e"><strong>[bug] </strong></span><p>Can now use strict_undefined at the
+same time args passed to def() are used
+by other elements of the &lt;%def&gt; tag.</p>
+<a class="changeset-link headerlink reference internal" href="#change-28b06199f79ad5944ce27c6ca795912e">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/191">#191</a></p>
+</p>
+</li>
+</ul>
+</div>
+<div class="section" id="change-0.7.0">
+<h3>0.7.0<a class="headerlink" href="#change-0.7.0" title="Permalink to this headline">¶</a></h3>
+Released: Fri Mar 30 2012<ul class="simple">
+<li><p id="change-0.7.0-0"><span class="target" id="change-99281e61032772527b9b88fa8420e86a"><strong>[feature] </strong></span><p>Added new “loop” variable to templates,
+is provided within a % for block to provide
+info about the loop such as index, first/last,
+odd/even, etc.  A migration path is also provided
+for legacy templates via the “enable_loop” argument
+available on Template, TemplateLookup, and &lt;%page&gt;.
+Thanks to Ben Trofatter for all
+the work on this</p>
+<a class="changeset-link headerlink reference internal" href="#change-99281e61032772527b9b88fa8420e86a">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/125">#125</a></p>
+</p>
+</li>
+<li><p id="change-0.7.0-1"><span class="target" id="change-7e9210f880731443d88f862a56ff6279"><strong>[feature] </strong></span><p>Added a real check for “reserved”
+names, that is names which are never pulled
+from the context and cannot be passed to
+the template.render() method.  Current names
+are “context”, “loop”, “UNDEFINED”.</p>
+<a class="changeset-link headerlink reference internal" href="#change-7e9210f880731443d88f862a56ff6279">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-0.7.0-2"><span class="target" id="change-e3c973cf437f4220015f2d5107b90685"><strong>[feature] </strong></span><p>The html_error_template() will now
+apply Pygments highlighting to the source
+code displayed in the traceback, if Pygments
+if available.  Courtesy Ben Trofatter</p>
+<a class="changeset-link headerlink reference internal" href="#change-e3c973cf437f4220015f2d5107b90685">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/95">#95</a></p>
+</p>
+</li>
+<li><p id="change-0.7.0-3"><span class="target" id="change-3fe398b17c8a48c37534222a31cb6e95"><strong>[feature] </strong></span><p>Added support for context managers,
+i.e. “% with x as e:/ % endwith” support.
+Courtesy Ben Trofatter</p>
+<a class="changeset-link headerlink reference internal" href="#change-3fe398b17c8a48c37534222a31cb6e95">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/147">#147</a></p>
+</p>
+</li>
+<li><p id="change-0.7.0-4"><span class="target" id="change-4071228d8de4b33e68b6655b7e55324b"><strong>[feature] </strong></span><p>Added class-level flag to CacheImpl
+“pass_context”; when True, the keyword argument
+‘context’ will be passed to get_or_create()
+containing the Mako Context object.</p>
+<a class="changeset-link headerlink reference internal" href="#change-4071228d8de4b33e68b6655b7e55324b">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/185">#185</a></p>
+</p>
+</li>
+<li><p id="change-0.7.0-5"><span class="target" id="change-9992c56ef372da93242c0408fde81739"><strong>[bug] </strong></span><p>Fixed some Py3K resource warnings due
+to filehandles being implicitly closed.</p>
+<a class="changeset-link headerlink reference internal" href="#change-9992c56ef372da93242c0408fde81739">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/182">#182</a></p>
+</p>
+</li>
+<li><p id="change-0.7.0-6"><span class="target" id="change-99f0e301249bf150b6a9aa25f7271be5"><strong>[bug] </strong></span><p>Fixed endless recursion bug when
+nesting multiple def-calls with content.
+Thanks to Jeff Dairiki.</p>
+<a class="changeset-link headerlink reference internal" href="#change-99f0e301249bf150b6a9aa25f7271be5">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/186">#186</a></p>
+</p>
+</li>
+<li><p id="change-0.7.0-7"><span class="target" id="change-5a11b79be7c693f1faf8601f7f61ddfe"><strong>[feature] </strong></span><p>Added Jinja2 to the example
+benchmark suite, courtesy Vincent Férotin</p>
+<a class="changeset-link headerlink reference internal" href="#change-5a11b79be7c693f1faf8601f7f61ddfe">¶</a><p></p>
+</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="older-versions">
+<h2>Older Versions<a class="headerlink" href="#older-versions" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="change-0.6.2">
+<h3>0.6.2<a class="headerlink" href="#change-0.6.2" title="Permalink to this headline">¶</a></h3>
+Released: Thu Feb 2 2012<ul class="simple">
+<li><p id="change-0.6.2-0"><span class="target" id="change-9b201e18db55b80dfdde3ccedde47930"><strong>[bug] </strong></span><p>The ${{“foo”:”bar”}} parsing issue is fixed!!
+The legendary Eevee has slain the dragon!.  Also fixes quoting issue
+at.</p>
+<a class="changeset-link headerlink reference internal" href="#change-9b201e18db55b80dfdde3ccedde47930">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/20">#20</a>, <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/86">#86</a></p>
+</p>
+</li>
+</ul>
+</div>
+<div class="section" id="change-0.6.1">
+<h3>0.6.1<a class="headerlink" href="#change-0.6.1" title="Permalink to this headline">¶</a></h3>
+Released: Sat Jan 28 2012<ul class="simple">
+<li><p id="change-0.6.1-0"><span class="target" id="change-cfec33b6e59137a9512e1f1395305774"><strong>[bug] </strong></span><p>Added special compatibility for the 0.5.0
+Cache() constructor, which was preventing file
+version checks and not allowing Mako 0.6 to
+recompile the module files.</p>
+<a class="changeset-link headerlink reference internal" href="#change-cfec33b6e59137a9512e1f1395305774">¶</a><p></p>
+</p>
+</li>
+</ul>
+</div>
+<div class="section" id="change-0.6.0">
+<h3>0.6.0<a class="headerlink" href="#change-0.6.0" title="Permalink to this headline">¶</a></h3>
+Released: Sat Jan 21 2012<ul class="simple">
+<li><p id="change-0.6.0-0"><span class="target" id="change-2b9d5caf9d33544a386cc21b37a81524"><strong>[feature] </strong></span><p>Template caching has been converted into a plugin
+system, whereby the usage of Beaker is just the
+default plugin.   Template and TemplateLookup
+now accept a string “cache_impl” parameter which
+refers to the name of a cache plugin, defaulting
+to the name ‘beaker’.  New plugins can be
+registered as pkg_resources entrypoints under
+the group “mako.cache”, or registered directly
+using mako.cache.register_plugin().  The
+core plugin is the mako.cache.CacheImpl
+class.</p>
+<a class="changeset-link headerlink reference internal" href="#change-2b9d5caf9d33544a386cc21b37a81524">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-0.6.0-1"><span class="target" id="change-6296089f9cbb6d381f1307e8c87903b3"><strong>[feature] </strong></span><p>Added support for Beaker cache regions
+in templates.   Usage of regions should be considered
+as superseding the very obsolete idea of passing in
+backend options, timeouts, etc. within templates.</p>
+<a class="changeset-link headerlink reference internal" href="#change-6296089f9cbb6d381f1307e8c87903b3">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-0.6.0-2"><span class="target" id="change-0843fd024a1d50547e36cb04a4e8b78a"><strong>[feature] </strong></span><p>The ‘put’ method on Cache is now
+‘set’.  ‘put’ is there for backwards compatibility.</p>
+<a class="changeset-link headerlink reference internal" href="#change-0843fd024a1d50547e36cb04a4e8b78a">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-0.6.0-3"><span class="target" id="change-4f115c692e6156a01ef13450ebbd33dc"><strong>[feature] </strong></span><p>The &lt;%def&gt;, &lt;%block&gt; and &lt;%page&gt; tags now accept
+any argument named “cache_*”, and the key
+minus the “<a href="#id11"><span class="problematic" id="id12">cache_</span></a>” prefix will be passed as keyword
+arguments to the CacheImpl methods.</p>
+<a class="changeset-link headerlink reference internal" href="#change-4f115c692e6156a01ef13450ebbd33dc">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-0.6.0-4"><span class="target" id="change-7a7b3c617612239ebce8bf870d937090"><strong>[feature] </strong></span><p>Template and TemplateLookup now accept an argument
+cache_args, which refers to a dictionary containing
+cache parameters.  The cache_dir, cache_url, cache_type,
+cache_timeout arguments are deprecated (will probably
+never be removed, however) and can be passed
+now as cache_args={‘url’:&lt;some url&gt;, ‘type’:’memcached’,
+‘timeout’:50, ‘dir’:’/path/to/some/directory’}</p>
+<a class="changeset-link headerlink reference internal" href="#change-7a7b3c617612239ebce8bf870d937090">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-0.6.0-5"><span class="target" id="change-d114a1d74a7437b6c3aabe27990a6ed2"><strong>[feature/bug] </strong></span><p>Can now refer to context variables
+within extra arguments to &lt;%block&gt;, &lt;%def&gt;, i.e.
+&lt;%block name=”foo” cache_key=”${somekey}”&gt;.
+Filters can also be used in this way, i.e.
+&lt;%def name=”foo()” filter=”myfilter”&gt;
+then template.render(myfilter=some_callable)</p>
+<a class="changeset-link headerlink reference internal" href="#change-d114a1d74a7437b6c3aabe27990a6ed2">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/180">#180</a></p>
+</p>
+</li>
+<li><p id="change-0.6.0-6"><span class="target" id="change-9f5fae46c69a1c75f7490adf375f8050"><strong>[feature] </strong></span><p>Added “–var name=value” option to the mako-render
+script, allows passing of kw to the template from
+the command line.</p>
+<a class="changeset-link headerlink reference internal" href="#change-9f5fae46c69a1c75f7490adf375f8050">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/178">#178</a></p>
+</p>
+</li>
+<li><p id="change-0.6.0-7"><span class="target" id="change-ee72323bae6ecd6f7f0412b687fea6b1"><strong>[feature] </strong></span><p>Added module_writer argument to Template,
+TemplateLookup, allows a callable to be passed which
+takes over the writing of the template’s module source
+file, so that special environment-specific steps
+can be taken.</p>
+<a class="changeset-link headerlink reference internal" href="#change-ee72323bae6ecd6f7f0412b687fea6b1">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/181">#181</a></p>
+</p>
+</li>
+<li><p id="change-0.6.0-8"><span class="target" id="change-460448904caed525985e90d2fe23dc6f"><strong>[bug] </strong></span><p>The exception message in the html_error_template
+is now escaped with the HTML filter.</p>
+<a class="changeset-link headerlink reference internal" href="#change-460448904caed525985e90d2fe23dc6f">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/142">#142</a></p>
+</p>
+</li>
+<li><p id="change-0.6.0-9"><span class="target" id="change-0f53470e3d2ace00fedfec05980570bf"><strong>[bug] </strong></span><p>Added “white-space:pre” style to html_error_template()
+for code blocks so that indentation is preserved</p>
+<a class="changeset-link headerlink reference internal" href="#change-0f53470e3d2ace00fedfec05980570bf">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/173">#173</a></p>
+</p>
+</li>
+<li><p id="change-0.6.0-10"><span class="target" id="change-a268e715c3a48b1d2e6651948d9f6739"><strong>[bug] </strong></span><p>The “benchmark” example is now Python 3 compatible
+(even though several of those old template libs aren’t
+available on Py3K, so YMMV)</p>
+<a class="changeset-link headerlink reference internal" href="#change-a268e715c3a48b1d2e6651948d9f6739">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/175">#175</a></p>
+</p>
+</li>
+</ul>
+</div>
+<div class="section" id="change-0.5.0">
+<h3>0.5.0<a class="headerlink" href="#change-0.5.0" title="Permalink to this headline">¶</a></h3>
+Released: Wed Sep 28 2011<ul class="simple">
+<li><p id="change-0.5.0-0"><span class="target" id="change-d25af015b75fa0212ca7997ee8f85ee1"></span><p>A Template is explicitly disallowed
+from having a url that normalizes to relative outside
+of the root.   That is, if the Lookup is based
+at /home/mytemplates, an include that would place
+the ultimate template at
+/home/mytemplates/../some_other_directory,
+i.e. outside of /home/mytemplates,
+is disallowed.   This usage was never intended
+despite the lack of an explicit check.
+The main issue this causes
+is that module files can be written outside
+of the module root (or raise an error, if file perms aren’t
+set up), and can also lead to the same template being
+cached in the lookup under multiple, relative roots.
+TemplateLookup instead has always supported multiple
+file roots for this purpose.</p>
+<a class="changeset-link headerlink reference internal" href="#change-d25af015b75fa0212ca7997ee8f85ee1">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/174">#174</a></p>
+</p>
+</li>
+</ul>
+</div>
+<div class="section" id="change-0.4.2">
+<h3>0.4.2<a class="headerlink" href="#change-0.4.2" title="Permalink to this headline">¶</a></h3>
+Released: Fri Aug 5 2011<ul class="simple">
+<li><p id="change-0.4.2-0"><span class="target" id="change-0d5b25f911cea09b48a3cea73dc8b0ad"></span><p>Fixed bug regarding &lt;%call&gt;/def calls w/ content
+whereby the identity of the “caller” callable
+inside the &lt;%def&gt; would be corrupted by the
+presence of another &lt;%call&gt; in the same block.</p>
+<a class="changeset-link headerlink reference internal" href="#change-0d5b25f911cea09b48a3cea73dc8b0ad">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/170">#170</a></p>
+</p>
+</li>
+<li><p id="change-0.4.2-1"><span class="target" id="change-131badc51e07746b68123281fa7380a3"></span><p>Fixed the babel plugin to accommodate &lt;%block&gt;</p>
+<a class="changeset-link headerlink reference internal" href="#change-131badc51e07746b68123281fa7380a3">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/169">#169</a></p>
+</p>
+</li>
+</ul>
+</div>
+<div class="section" id="change-0.4.1">
+<h3>0.4.1<a class="headerlink" href="#change-0.4.1" title="Permalink to this headline">¶</a></h3>
+Released: Wed Apr 6 2011<ul class="simple">
+<li><p id="change-0.4.1-0"><span class="target" id="change-464bf94bda97d9dfacb13c327c30f669"></span><p>New tag: &lt;%block&gt;.  A variant on &lt;%def&gt; that
+evaluates its contents in-place.
+Can be named or anonymous,
+the named version is intended for inheritance
+layouts where any given section can be
+surrounded by the &lt;%block&gt; tag in order for
+it to become overrideable by inheriting
+templates, without the need to specify a
+top-level &lt;%def&gt; plus explicit call.
+Modified scoping and argument rules as well as a
+more strictly enforced usage scheme make it ideal
+for this purpose without at all replacing most
+other things that defs are still good for.
+Lots of new docs.</p>
+<a class="changeset-link headerlink reference internal" href="#change-464bf94bda97d9dfacb13c327c30f669">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/164">#164</a></p>
+</p>
+</li>
+<li><p id="change-0.4.1-1"><span class="target" id="change-e5f029ea7d0f9f821c25e308c354006c"></span><p>a slight adjustment to the “highlight” logic
+for generating template bound stacktraces.
+Will stick to known template source lines
+without any extra guessing.</p>
+<a class="changeset-link headerlink reference internal" href="#change-e5f029ea7d0f9f821c25e308c354006c">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/165">#165</a></p>
+</p>
+</li>
+</ul>
+</div>
+<div class="section" id="change-0.4.0">
+<h3>0.4.0<a class="headerlink" href="#change-0.4.0" title="Permalink to this headline">¶</a></h3>
+Released: Sun Mar 6 2011<ul class="simple">
+<li><p id="change-0.4.0-0"><span class="target" id="change-24faf88ef298503c8544d93f64092984"></span><p>A 20% speedup for a basic two-page
+inheritance setup rendering
+a table of escaped data
+(see <a class="reference external" href="http://techspot.zzzeek.org/2010/11/19/quick-mako-vs.-jinja-speed-test/">http://techspot.zzzeek.org/2010/11/19/quick-mako-vs.-jinja-speed-test/</a>).
+A few configurational changes which
+affect those in the I-don’t-do-unicode
+camp should be noted below.</p>
+<a class="changeset-link headerlink reference internal" href="#change-24faf88ef298503c8544d93f64092984">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-0.4.0-1"><span class="target" id="change-4e7e70e466a6b372ba2085724f0c0dcc"></span><p>The FastEncodingBuffer is now used
+by default instead of cStringIO or StringIO,
+regardless of whether output_encoding
+is set to None or not.  FEB is faster than
+both.  Only StringIO allows bytestrings
+of unknown encoding to pass right
+through, however - while it is of course
+not recommended to send bytestrings of unknown
+encoding to the output stream, this
+mode of usage can be re-enabled by
+setting the flag bytestring_passthrough
+to True.</p>
+<a class="changeset-link headerlink reference internal" href="#change-4e7e70e466a6b372ba2085724f0c0dcc">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-0.4.0-2"><span class="target" id="change-b23a68d0fccb2b8b34d1a727397669a5"></span><p>disable_unicode mode requires that
+output_encoding be set to None - it also
+forces the bytestring_passthrough flag
+to True.</p>
+<a class="changeset-link headerlink reference internal" href="#change-b23a68d0fccb2b8b34d1a727397669a5">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-0.4.0-3"><span class="target" id="change-0237ae4dc8e41beca5fe6392fbd68f4e"></span><p>the &lt;%namespace&gt; tag raises an error
+if the ‘template’ and ‘module’ attributes
+are specified at the same time in
+one tag.  A different class is used
+for each case which allows a reduction in
+runtime conditional logic and function
+call overhead.</p>
+<a class="changeset-link headerlink reference internal" href="#change-0237ae4dc8e41beca5fe6392fbd68f4e">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/156">#156</a></p>
+</p>
+</li>
+<li><p id="change-0.4.0-4"><span class="target" id="change-a23ec787ca226d13d1115300493de625"></span><p>the keys() in the Context, as well as
+it’s internal _data dictionary, now
+include just what was specified to
+render() as well as Mako builtins
+‘caller’, ‘capture’.  The contents
+of __builtin__ are no longer copied.
+Thanks to Daniel Lopez for pointing
+this out.</p>
+<a class="changeset-link headerlink reference internal" href="#change-a23ec787ca226d13d1115300493de625">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/159">#159</a></p>
+</p>
+</li>
+</ul>
+</div>
+<div class="section" id="change-0.3.6">
+<h3>0.3.6<a class="headerlink" href="#change-0.3.6" title="Permalink to this headline">¶</a></h3>
+Released: Sat Nov 13 2010<ul class="simple">
+<li><p id="change-0.3.6-0"><span class="target" id="change-ba90f64b03241356193e4e9fef913f63"></span><p>Documentation is on Sphinx.</p>
+<a class="changeset-link headerlink reference internal" href="#change-ba90f64b03241356193e4e9fef913f63">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/126">#126</a></p>
+</p>
+</li>
+<li><p id="change-0.3.6-1"><span class="target" id="change-6fa26d3bfceaff55a258fb53794e6313"></span><p>Beaker is now part of “extras” in
+setup.py instead of “install_requires”.
+This to produce a lighter weight install
+for those who don’t use the caching
+as well as to conform to Pyramid
+deployment practices.</p>
+<a class="changeset-link headerlink reference internal" href="#change-6fa26d3bfceaff55a258fb53794e6313">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/154">#154</a></p>
+</p>
+</li>
+<li><p id="change-0.3.6-2"><span class="target" id="change-add98954fc4473f31b998fd2931c0c2c"></span><p>The Beaker import (or attempt thereof)
+is delayed until actually needed;
+this to remove the performance penalty
+from startup, particularly for
+“single execution” environments
+such as shell scripts.</p>
+<a class="changeset-link headerlink reference internal" href="#change-add98954fc4473f31b998fd2931c0c2c">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/153">#153</a></p>
+</p>
+</li>
+<li><p id="change-0.3.6-3"><span class="target" id="change-6f50239252b9579a5a952a529cce3c8f"></span><p>Patch to lexer to not generate an empty
+‘’ write in the case of backslash-ended
+lines.</p>
+<a class="changeset-link headerlink reference internal" href="#change-6f50239252b9579a5a952a529cce3c8f">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/155">#155</a></p>
+</p>
+</li>
+<li><p id="change-0.3.6-4"><span class="target" id="change-9007a381dea9bd8a980aaf646712fa95"></span><p>Fixed missing <a href="#id5"><span class="problematic" id="id6">**</span></a>extra collection in
+setup.py which prevented setup.py
+from running 2to3 on install.</p>
+<a class="changeset-link headerlink reference internal" href="#change-9007a381dea9bd8a980aaf646712fa95">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/148">#148</a></p>
+</p>
+</li>
+<li><p id="change-0.3.6-5"><span class="target" id="change-d94085d95e60f190e30871ff1c472781"></span><p>New flag on Template, TemplateLookup -
+strict_undefined=True, will cause
+variables not found in the context to
+raise a NameError immediately, instead of
+defaulting to the UNDEFINED value.</p>
+<a class="changeset-link headerlink reference internal" href="#change-d94085d95e60f190e30871ff1c472781">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-0.3.6-6"><span class="target" id="change-c7f4bd0543dcd61c301325887e5e868f"></span><p>The range of Python identifiers that
+are considered “undefined”, meaning they
+are pulled from the context, has been
+trimmed back to not include variables
+declared inside of expressions (i.e. from
+list comprehensions), as well as
+in the argument list of lambdas.  This
+to better support the strict_undefined
+feature.  The change should be
+fully backwards-compatible but involved
+a little bit of tinkering in the AST code,
+which hadn’t really been touched for
+a couple of years, just FYI.</p>
+<a class="changeset-link headerlink reference internal" href="#change-c7f4bd0543dcd61c301325887e5e868f">¶</a><p></p>
+</p>
+</li>
+</ul>
+</div>
+<div class="section" id="change-0.3.5">
+<h3>0.3.5<a class="headerlink" href="#change-0.3.5" title="Permalink to this headline">¶</a></h3>
+Released: Sun Oct 24 2010<ul class="simple">
+<li><p id="change-0.3.5-0"><span class="target" id="change-4f131130d9a9c7503c1285d76453772e"></span><p>The &lt;%namespace&gt; tag allows expressions
+for the <cite>file</cite> argument, i.e. with ${}.
+The <cite>context</cite> variable, if needed,
+must be referenced explicitly.</p>
+<a class="changeset-link headerlink reference internal" href="#change-4f131130d9a9c7503c1285d76453772e">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/141">#141</a></p>
+</p>
+</li>
+<li><p id="change-0.3.5-1"><span class="target" id="change-9260777204b90b5d2ef50591a9321f7f"></span><p>${} expressions embedded in tags,
+such as &lt;%foo:bar x=”${…}”&gt;, now
+allow multiline Python expressions.</p>
+<a class="changeset-link headerlink reference internal" href="#change-9260777204b90b5d2ef50591a9321f7f">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-0.3.5-2"><span class="target" id="change-b17753b5fc8d7a350d6c9d07d9e8698b"></span><p>Fixed previously non-covered regular
+expression, such that using a ${} expression
+inside of a tag element that doesn’t allow
+them raises a CompileException instead of
+silently failing.</p>
+<a class="changeset-link headerlink reference internal" href="#change-b17753b5fc8d7a350d6c9d07d9e8698b">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-0.3.5-3"><span class="target" id="change-26a430536a4ef0aea275166c8ffead73"></span><p>Added a try/except around “import markupsafe”.
+This to support GAE which can’t run markupsafe. No idea whatsoever if the
+install_requires in setup.py also breaks GAE,
+couldn’t get an answer on this.</p>
+<a class="changeset-link headerlink reference internal" href="#change-26a430536a4ef0aea275166c8ffead73">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/151">#151</a></p>
+</p>
+</li>
+</ul>
+</div>
+<div class="section" id="change-0.3.4">
+<h3>0.3.4<a class="headerlink" href="#change-0.3.4" title="Permalink to this headline">¶</a></h3>
+Released: Tue Jun 22 2010<ul class="simple">
+<li><p id="change-0.3.4-0"><span class="target" id="change-42a2094bdc5fa56af96f16ead2ea7a85"></span><p>Now using MarkupSafe for HTML escaping,
+i.e. in place of cgi.escape().  Faster
+C-based implementation and also escapes
+single quotes for additional security.
+Supports the __html__ attribute for
+the given expression as well.</p>
+<p>When using “disable_unicode” mode,
+a pure Python HTML escaper function
+is used which also quotes single quotes.</p>
+<p>Note that Pylons by default doesn’t
+use Mako’s filter - check your
+environment.py file.</p>
+<a class="changeset-link headerlink reference internal" href="#change-42a2094bdc5fa56af96f16ead2ea7a85">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-0.3.4-1"><span class="target" id="change-c6b3b30f351cb6e68140eb7ff8ec9339"></span><p>Fixed call to “unicode.strip” in
+exceptions.text_error_template which
+is not Py3k compatible.</p>
+<a class="changeset-link headerlink reference internal" href="#change-c6b3b30f351cb6e68140eb7ff8ec9339">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/137">#137</a></p>
+</p>
+</li>
+</ul>
+</div>
+<div class="section" id="change-0.3.3">
+<h3>0.3.3<a class="headerlink" href="#change-0.3.3" title="Permalink to this headline">¶</a></h3>
+Released: Mon May 31 2010<ul class="simple">
+<li><p id="change-0.3.3-0"><span class="target" id="change-bc6d3046e00861b0a815a3373dc21489"></span><p>Added conditional to RichTraceback
+such that if no traceback is passed
+and sys.exc_info() has been reset,
+the formatter just returns blank
+for the “traceback” portion.</p>
+<a class="changeset-link headerlink reference internal" href="#change-bc6d3046e00861b0a815a3373dc21489">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/135">#135</a></p>
+</p>
+</li>
+<li><p id="change-0.3.3-1"><span class="target" id="change-7398285484aa0b44f7cb4314d635343f"></span><p>Fixed sometimes incorrect usage of
+exc.__class__.__name__
+in html/text error templates when using
+Python 2.4</p>
+<a class="changeset-link headerlink reference internal" href="#change-7398285484aa0b44f7cb4314d635343f">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/131">#131</a></p>
+</p>
+</li>
+<li><p id="change-0.3.3-2"><span class="target" id="change-fc38c54c185a03815b882ae0235dd0ec"></span><p>Fixed broken &#64;property decorator on
+template.last_modified</p>
+<a class="changeset-link headerlink reference internal" href="#change-fc38c54c185a03815b882ae0235dd0ec">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-0.3.3-3"><span class="target" id="change-e351477ece87f96ce3b8dcbe2093927e"></span><p>Fixed error formatting when a stacktrace
+line contains no line number, as in when
+inside an eval/exec-generated function.</p>
+<a class="changeset-link headerlink reference internal" href="#change-e351477ece87f96ce3b8dcbe2093927e">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/132">#132</a></p>
+</p>
+</li>
+<li><p id="change-0.3.3-4"><span class="target" id="change-8465d2f035b94270f61add8d37b484b6"></span><p>When a .py is being created, the tempfile
+where the source is stored temporarily is
+now made in the same directory as that of
+the .py file.  This ensures that the two
+files share the same filesystem, thus
+avoiding cross-filesystem synchronization
+issues.  Thanks to Charles Cazabon.</p>
+<a class="changeset-link headerlink reference internal" href="#change-8465d2f035b94270f61add8d37b484b6">¶</a><p></p>
+</p>
+</li>
+</ul>
+</div>
+<div class="section" id="change-0.3.2">
+<h3>0.3.2<a class="headerlink" href="#change-0.3.2" title="Permalink to this headline">¶</a></h3>
+Released: Thu Mar 11 2010<ul class="simple">
+<li><p id="change-0.3.2-0"><span class="target" id="change-99967455a3839ef3b397981de9a7b95e"></span><p>Calling a def from the top, via
+template.get_def(…).render() now checks the
+argument signature the same way as it did in
+0.2.5, so that TypeError is not raised.
+reopen of</p>
+<a class="changeset-link headerlink reference internal" href="#change-99967455a3839ef3b397981de9a7b95e">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/116">#116</a></p>
+</p>
+</li>
+</ul>
+</div>
+<div class="section" id="change-0.3.1">
+<h3>0.3.1<a class="headerlink" href="#change-0.3.1" title="Permalink to this headline">¶</a></h3>
+Released: Sun Mar 7 2010<ul class="simple">
+<li><p id="change-0.3.1-0"><span class="target" id="change-10954fab107bd4f83df29f01b7a1db1a"></span><p>Fixed incorrect dir name in setup.py</p>
+<a class="changeset-link headerlink reference internal" href="#change-10954fab107bd4f83df29f01b7a1db1a">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/129">#129</a></p>
+</p>
+</li>
+</ul>
+</div>
+<div class="section" id="change-0.3.0">
+<h3>0.3.0<a class="headerlink" href="#change-0.3.0" title="Permalink to this headline">¶</a></h3>
+Released: Fri Mar 5 2010<ul class="simple">
+<li><p id="change-0.3.0-0"><span class="target" id="change-6696642b595c45f48c676d4321c80f4e"></span><p>Python 2.3 support is dropped.</p>
+<a class="changeset-link headerlink reference internal" href="#change-6696642b595c45f48c676d4321c80f4e">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/123">#123</a></p>
+</p>
+</li>
+<li><p id="change-0.3.0-1"><span class="target" id="change-4ac95d25798d0af74fcbbda6805f4117"></span><p>Python 3 support is added ! See README.py3k
+for installation and testing notes.</p>
+<a class="changeset-link headerlink reference internal" href="#change-4ac95d25798d0af74fcbbda6805f4117">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/119">#119</a></p>
+</p>
+</li>
+<li><p id="change-0.3.0-2"><span class="target" id="change-580b71306f06a35525d94dbbc866dff5"></span><p>Unit tests now run with nose.</p>
+<a class="changeset-link headerlink reference internal" href="#change-580b71306f06a35525d94dbbc866dff5">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/127">#127</a></p>
+</p>
+</li>
+<li><p id="change-0.3.0-3"><span class="target" id="change-254948cdd845470bc120bd9537620480"></span><p>Source code escaping has been simplified.
+In particular, module source files are now
+generated with the Python “magic encoding
+comment”, and source code is passed through
+mostly unescaped, except for that code which
+is regenerated from parsed Python source.
+This fixes usage of unicode in
+&lt;%namespace:defname&gt; tags.</p>
+<a class="changeset-link headerlink reference internal" href="#change-254948cdd845470bc120bd9537620480">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/99">#99</a></p>
+</p>
+</li>
+<li><p id="change-0.3.0-4"><span class="target" id="change-b8d940f383df524cbcb09a4aa8785055"></span><p>RichTraceback(), html_error_template().render(),
+text_error_template().render() now accept “error”
+and “traceback” as optional arguments, and
+these are now actually used.</p>
+<a class="changeset-link headerlink reference internal" href="#change-b8d940f383df524cbcb09a4aa8785055">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/122">#122</a></p>
+</p>
+</li>
+<li><p id="change-0.3.0-5"><span class="target" id="change-c8b4a5c26a15e967ede79e6b3fc12673"></span><p>The exception output generated when
+format_exceptions=True will now be as a Python
+unicode if it occurred during render_unicode(),
+or an encoded string if during render().</p>
+<a class="changeset-link headerlink reference internal" href="#change-c8b4a5c26a15e967ede79e6b3fc12673">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-0.3.0-6"><span class="target" id="change-3685f613780a1778275c5a1c06ffd14d"></span><p>A percent sign can be emitted as the first
+non-whitespace character on a line by escaping
+it as in “%%”.</p>
+<a class="changeset-link headerlink reference internal" href="#change-3685f613780a1778275c5a1c06ffd14d">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/112">#112</a></p>
+</p>
+</li>
+<li><p id="change-0.3.0-7"><span class="target" id="change-0b344165d32f9da5eebc93d2e36b751d"></span><p>Template accepts empty control structure, i.e.
+% if: %endif, etc.</p>
+<a class="changeset-link headerlink reference internal" href="#change-0b344165d32f9da5eebc93d2e36b751d">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/94">#94</a></p>
+</p>
+</li>
+<li><p id="change-0.3.0-8"><span class="target" id="change-4e41287388f6da51881b95c2fc27ff9d"></span><p>The &lt;%page args&gt; tag can now be used in a base
+inheriting template - the full set of render()
+arguments are passed down through the inherits
+chain.  Undeclared arguments go into <a href="#id7"><span class="problematic" id="id8">**</span></a>pageargs
+as usual.</p>
+<a class="changeset-link headerlink reference internal" href="#change-4e41287388f6da51881b95c2fc27ff9d">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/116">#116</a></p>
+</p>
+</li>
+<li><p id="change-0.3.0-9"><span class="target" id="change-8f84b7484a62925c50f48334ee6a9756"></span><p>defs declared within a &lt;%namespace&gt; section, an
+uncommon feature, have been improved.  The defs
+no longer get doubly-rendered in the body() scope,
+and now allow local variable assignment without
+breakage.</p>
+<a class="changeset-link headerlink reference internal" href="#change-8f84b7484a62925c50f48334ee6a9756">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/109">#109</a></p>
+</p>
+</li>
+<li><p id="change-0.3.0-10"><span class="target" id="change-b282c56c8f7389792db2e50b26f4d871"></span><p>Windows paths are handled correctly if a Template
+is passed only an absolute filename (i.e. with c:
+drive etc.)  and no URI - the URI is converted
+to a forward-slash path and module_directory
+is treated as a windows path.</p>
+<a class="changeset-link headerlink reference internal" href="#change-b282c56c8f7389792db2e50b26f4d871">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/128">#128</a></p>
+</p>
+</li>
+<li><p id="change-0.3.0-11"><span class="target" id="change-5ea16c786c94f8e04c3e8f5ea3a3b423"></span><p>TemplateLookup raises TopLevelLookupException for
+a given path that is a directory, not a filename,
+instead of passing through to the template to
+generate IOError.</p>
+<a class="changeset-link headerlink reference internal" href="#change-5ea16c786c94f8e04c3e8f5ea3a3b423">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/73">#73</a></p>
+</p>
+</li>
+</ul>
+</div>
+<div class="section" id="change-0.2.6">
+<h3>0.2.6<a class="headerlink" href="#change-0.2.6" title="Permalink to this headline">¶</a></h3>
+no release date<ul class="simple">
+<li><p id="change-0.2.6-0"><span class="target" id="change-d1e4c26171841e1c4fbc0e3f56d0bf96"></span><p>Fix mako function decorators to preserve the
+original function’s name in all cases. Patch
+from Scott Torborg.</p>
+<a class="changeset-link headerlink reference internal" href="#change-d1e4c26171841e1c4fbc0e3f56d0bf96">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-0.2.6-1"><span class="target" id="change-d1851b428e06541460cbd70bd5c6131f"></span><p>Support the &lt;%namespacename:defname&gt; syntax in
+the babel extractor.</p>
+<a class="changeset-link headerlink reference internal" href="#change-d1851b428e06541460cbd70bd5c6131f">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/118">#118</a></p>
+</p>
+</li>
+<li><p id="change-0.2.6-2"><span class="target" id="change-398bff9c71f24a9ff6c180d0a05018b4"></span><p>Further fixes to unicode handling of .py files with the
+html_error_template.</p>
+<a class="changeset-link headerlink reference internal" href="#change-398bff9c71f24a9ff6c180d0a05018b4">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/88">#88</a></p>
+</p>
+</li>
+</ul>
+</div>
+<div class="section" id="change-0.2.5">
+<h3>0.2.5<a class="headerlink" href="#change-0.2.5" title="Permalink to this headline">¶</a></h3>
+Released: Mon Sep  7 2009<ul class="simple">
+<li><p id="change-0.2.5-0"><span class="target" id="change-c79258c92155abe15ab0f249e56d36f8"></span><p>Added a “decorator” kw argument to &lt;%def&gt;,
+allows custom decoration functions to wrap
+rendering callables.  Mainly intended for
+custom caching algorithms, not sure what
+other uses there may be (but there may be).
+Examples are in the “filtering” docs.</p>
+<a class="changeset-link headerlink reference internal" href="#change-c79258c92155abe15ab0f249e56d36f8">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-0.2.5-1"><span class="target" id="change-4807d411f1e3cfa18c32decd089cab90"></span><p>When Mako creates subdirectories in which
+to store templates, it uses the more
+permissive mode of 0775 instead of 0750,
+helping out with certain multi-process
+scenarios. Note that the mode is always
+subject to the restrictions of the existing
+umask.</p>
+<a class="changeset-link headerlink reference internal" href="#change-4807d411f1e3cfa18c32decd089cab90">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/101">#101</a></p>
+</p>
+</li>
+<li><p id="change-0.2.5-2"><span class="target" id="change-8af1bb98b05bf16f832aaea1707f20fb"></span><p>Fixed namespace.__getattr__() to raise
+AttributeError on attribute not found
+instead of RuntimeError.</p>
+<a class="changeset-link headerlink reference internal" href="#change-8af1bb98b05bf16f832aaea1707f20fb">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/104">#104</a></p>
+</p>
+</li>
+<li><p id="change-0.2.5-3"><span class="target" id="change-ca99b7588c54e67a73569aad8e06c0ce"></span><p>Added last_modified accessor to Template,
+returns the time.time() when the module
+was created.</p>
+<a class="changeset-link headerlink reference internal" href="#change-ca99b7588c54e67a73569aad8e06c0ce">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/97">#97</a></p>
+</p>
+</li>
+<li><p id="change-0.2.5-4"><span class="target" id="change-d18e860647e39ec0f72eeb38740111cb"></span><p>Fixed lexing support for whitespace
+around ‘=’ sign in defs.</p>
+<a class="changeset-link headerlink reference internal" href="#change-d18e860647e39ec0f72eeb38740111cb">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/102">#102</a></p>
+</p>
+</li>
+<li><p id="change-0.2.5-5"><span class="target" id="change-602d7edb91f7f94638496e5544c0b8ee"></span><p>Removed errant “lower()” in the lexer which
+was causing tags to compile with
+case-insensitive names, thus messing up
+custom &lt;%call&gt; names.</p>
+<a class="changeset-link headerlink reference internal" href="#change-602d7edb91f7f94638496e5544c0b8ee">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/108">#108</a></p>
+</p>
+</li>
+<li><p id="change-0.2.5-6"><span class="target" id="change-9980854809a31d4b404208e286a70d41"></span><p>added “mako.__version__” attribute to
+the base module.</p>
+<a class="changeset-link headerlink reference internal" href="#change-9980854809a31d4b404208e286a70d41">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/110">#110</a></p>
+</p>
+</li>
+</ul>
+</div>
+<div class="section" id="change-0.2.4">
+<h3>0.2.4<a class="headerlink" href="#change-0.2.4" title="Permalink to this headline">¶</a></h3>
+Released: Tue Dec 23 2008<ul class="simple">
+<li><p id="change-0.2.4-0"><span class="target" id="change-4854b3f9b6cb5776937ab0695fff1435"></span><p>Fixed compatibility with Jython 2.5b1.</p>
+<a class="changeset-link headerlink reference internal" href="#change-4854b3f9b6cb5776937ab0695fff1435">¶</a><p></p>
+</p>
+</li>
+</ul>
+</div>
+<div class="section" id="change-0.2.3">
+<h3>0.2.3<a class="headerlink" href="#change-0.2.3" title="Permalink to this headline">¶</a></h3>
+Released: Sun Nov 23 2008<ul class="simple">
+<li><p id="change-0.2.3-0"><span class="target" id="change-37bce8b359a8e44e7b91c12652eee2b8"></span><p>the &lt;%namespacename:defname&gt; syntax described at
+<a class="reference external" href="http://techspot.zzzeek.org/?p=28">http://techspot.zzzeek.org/?p=28</a> has now
+been added as a built in syntax, and is recommended
+as a more modern syntax versus &lt;%call expr=”expression”&gt;.
+The %call tag itself will always remain,
+with &lt;%namespacename:defname&gt; presenting a more HTML-like
+alternative to calling defs, both plain and
+nested.  Many examples of the new syntax are in the
+“Calling a def with embedded content” section
+of the docs.</p>
+<a class="changeset-link headerlink reference internal" href="#change-37bce8b359a8e44e7b91c12652eee2b8">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-0.2.3-1"><span class="target" id="change-35a6c7b85a04372530f2be1805959799"></span><p>added support for Jython 2.5.</p>
+<a class="changeset-link headerlink reference internal" href="#change-35a6c7b85a04372530f2be1805959799">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-0.2.3-2"><span class="target" id="change-f8334ef0e1678c06e374ba1a0d3931cd"></span><p>cache module now uses Beaker’s CacheManager
+object directly, so that all cache types are included.
+memcached is available as both “ext:memcached” and
+“memcached”, the latter for backwards compatibility.</p>
+<a class="changeset-link headerlink reference internal" href="#change-f8334ef0e1678c06e374ba1a0d3931cd">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-0.2.3-3"><span class="target" id="change-ed3a6c17f2cbd83a593de4d2724a6a84"></span><p>added “cache” accessor to Template, Namespace.
+e.g.  ${local.cache.get(‘somekey’)} or
+template.cache.invalidate_body()</p>
+<a class="changeset-link headerlink reference internal" href="#change-ed3a6c17f2cbd83a593de4d2724a6a84">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-0.2.3-4"><span class="target" id="change-70e586f7cde0ac7b344e8e8986c58b9a"></span><p>added “cache_enabled=True” flag to Template,
+TemplateLookup.  Setting this to False causes cache
+operations to “pass through” and execute every time;
+this flag should be integrated in Pylons with its own
+cache_enabled configuration setting.</p>
+<a class="changeset-link headerlink reference internal" href="#change-70e586f7cde0ac7b344e8e8986c58b9a">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-0.2.3-5"><span class="target" id="change-fe9e64fb24df2528a185b3317fce35fb"></span><p>the Cache object now supports invalidate_def(name),
+invalidate_body(), invalidate_closure(name),
+invalidate(key), which will remove the given key
+from the cache, if it exists.  The cache arguments
+(i.e. storage type) are derived from whatever has
+been already persisted for that template.</p>
+<a class="changeset-link headerlink reference internal" href="#change-fe9e64fb24df2528a185b3317fce35fb">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/92">#92</a></p>
+</p>
+</li>
+<li><p id="change-0.2.3-6"><span class="target" id="change-fc8e53f27e96f1442a8e85b52988d4c4"></span><p>For cache changes to work fully, Beaker 1.1 is required.
+1.0.1 and up will work as well with the exception of
+cache expiry.  Note that Beaker 1.1 is <strong>required</strong>
+for applications which use dynamically generated keys,
+since previous versions will permanently store state in memory
+for each individual key, thus consuming all available
+memory for an arbitrarily large number of distinct
+keys.</p>
+<a class="changeset-link headerlink reference internal" href="#change-fc8e53f27e96f1442a8e85b52988d4c4">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-0.2.3-7"><span class="target" id="change-6215a523e4a44009dd085141f89bb1ea"></span><p>fixed bug whereby an &lt;%included&gt; template with
+&lt;%page&gt; args named the same as a __builtin__ would not
+honor the default value specified in &lt;%page&gt;</p>
+<a class="changeset-link headerlink reference internal" href="#change-6215a523e4a44009dd085141f89bb1ea">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/93">#93</a></p>
+</p>
+</li>
+<li><p id="change-0.2.3-8"><span class="target" id="change-c269853926ff7f52a94ddf94c705cff7"></span><p>fixed the html_error_template not handling tracebacks from
+normal .py files with a magic encoding comment</p>
+<a class="changeset-link headerlink reference internal" href="#change-c269853926ff7f52a94ddf94c705cff7">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/88">#88</a></p>
+</p>
+</li>
+<li><p id="change-0.2.3-9"><span class="target" id="change-87c44d844a042343e22d55e2a2b8d4e9"></span><p>RichTraceback() now accepts an optional traceback object
+to be used in place of sys.exc_info()[2].  html_error_template()
+and text_error_template() accept an optional
+render()-time argument “traceback” which is passed to the
+RichTraceback object.</p>
+<a class="changeset-link headerlink reference internal" href="#change-87c44d844a042343e22d55e2a2b8d4e9">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-0.2.3-10"><span class="target" id="change-7a562520a57d62460f54fadac0d94100"></span><p>added ModuleTemplate class, which allows the construction
+of a Template given a Python module generated by a previous
+Template.   This allows Python modules alone to be used
+as templates with no compilation step.   Source code
+and template source are optional but allow error reporting
+to work correctly.</p>
+<a class="changeset-link headerlink reference internal" href="#change-7a562520a57d62460f54fadac0d94100">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-0.2.3-11"><span class="target" id="change-6e699add881ad62aa72c44efa3899ae5"></span><p>fixed Python 2.3 compat. in mako.pyparser</p>
+<a class="changeset-link headerlink reference internal" href="#change-6e699add881ad62aa72c44efa3899ae5">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/90">#90</a></p>
+</p>
+</li>
+<li><p id="change-0.2.3-12"><span class="target" id="change-54c464fa5c94b0aba86b2b99d13f9eb4"></span><p>fix Babel 0.9.3 compatibility; stripping comment tags is now
+optional (and enabled by default).</p>
+<a class="changeset-link headerlink reference internal" href="#change-54c464fa5c94b0aba86b2b99d13f9eb4">¶</a><p></p>
+</p>
+</li>
+</ul>
+</div>
+<div class="section" id="change-0.2.2">
+<h3>0.2.2<a class="headerlink" href="#change-0.2.2" title="Permalink to this headline">¶</a></h3>
+Released: Mon Jun 23 2008<ul class="simple">
+<li><p id="change-0.2.2-0"><span class="target" id="change-df54b04a766bd7511f1b92e438573fdf"></span><p>cached blocks now use the current context when rendering
+an expired section, instead of the original context
+passed in</p>
+<a class="changeset-link headerlink reference internal" href="#change-df54b04a766bd7511f1b92e438573fdf">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/87">#87</a></p>
+</p>
+</li>
+<li><p id="change-0.2.2-1"><span class="target" id="change-c6f8379cfe314e3a5a202e256699d586"></span><p>fixed a critical issue regarding caching, whereby
+a cached block would raise an error when called within a
+cache-refresh operation that was initiated after the
+initiating template had completed rendering.</p>
+<a class="changeset-link headerlink reference internal" href="#change-c6f8379cfe314e3a5a202e256699d586">¶</a><p></p>
+</p>
+</li>
+</ul>
+</div>
+<div class="section" id="change-0.2.1">
+<h3>0.2.1<a class="headerlink" href="#change-0.2.1" title="Permalink to this headline">¶</a></h3>
+Released: Mon Jun 16 2008<ul class="simple">
+<li><p id="change-0.2.1-0"><span class="target" id="change-908eed7e4807846bda8b7883b98f4a02"></span><p>fixed bug where ‘output_encoding’ parameter would prevent
+render_unicode() from returning a unicode object.</p>
+<a class="changeset-link headerlink reference internal" href="#change-908eed7e4807846bda8b7883b98f4a02">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-0.2.1-1"><span class="target" id="change-765658fae385e8c30cafd7372f7da000"></span><p>bumped magic number, which forces template recompile for
+this version (fixes incompatible compile symbols from 0.1
+series).</p>
+<a class="changeset-link headerlink reference internal" href="#change-765658fae385e8c30cafd7372f7da000">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-0.2.1-2"><span class="target" id="change-00ae3ce99ec2767e28b645a85815d1f9"></span><p>added a few docs for cache options, specifically those that
+help with memcached.</p>
+<a class="changeset-link headerlink reference internal" href="#change-00ae3ce99ec2767e28b645a85815d1f9">¶</a><p></p>
+</p>
+</li>
+</ul>
+</div>
+<div class="section" id="change-0.2.0">
+<h3>0.2.0<a class="headerlink" href="#change-0.2.0" title="Permalink to this headline">¶</a></h3>
+Released: Tue Jun  3 2008<ul class="simple">
+<li><p id="change-0.2.0-0"><span class="target" id="change-7df2aeab716d6fcf91429566949d3297"></span><p>Speed improvements (as though we needed them, but people
+contributed and there you go):</p>
+<a class="changeset-link headerlink reference internal" href="#change-7df2aeab716d6fcf91429566949d3297">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-0.2.0-1"><span class="target" id="change-d9c6b2b32a4d7d52614f9557a59dd57d"></span><p>added “bytestring passthru” mode, via
+<cite>disable_unicode=True</cite> argument passed to Template or
+TemplateLookup. All unicode-awareness and filtering is
+turned off, and template modules are generated with
+the appropriate magic encoding comment. In this mode,
+template expressions can only receive raw bytestrings
+or Unicode objects which represent straight ASCII, and
+render_unicode() may not be used if multibyte
+characters are present. When enabled, speed
+improvement around 10-20%. (courtesy
+anonymous guest)</p>
+<a class="changeset-link headerlink reference internal" href="#change-d9c6b2b32a4d7d52614f9557a59dd57d">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/77">#77</a></p>
+</p>
+</li>
+<li><p id="change-0.2.0-2"><span class="target" id="change-1e1d8d3bf89815e481535914ac54e954"></span><p>inlined the “write” function of Context into a local
+template variable. This affords a 12-30% speedup in
+template render time. (idea courtesy same anonymous
+guest)</p>
+<a class="changeset-link headerlink reference internal" href="#change-1e1d8d3bf89815e481535914ac54e954">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/76">#76</a></p>
+</p>
+</li>
+<li><p id="change-0.2.0-3"><span class="target" id="change-4425ad7ea582f24d81e9ca7ef4f92e6e"></span><p>New Features, API changes:</p>
+<a class="changeset-link headerlink reference internal" href="#change-4425ad7ea582f24d81e9ca7ef4f92e6e">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-0.2.0-4"><span class="target" id="change-9da04566e35e386418120e4d29572595"></span><p>added “attr” accessor to namespaces. Returns
+attributes configured as module level attributes, i.e.
+within &lt;%! %&gt; sections.  i.e.:</p>
+<p># somefile.html
+&lt;%!</p>
+<blockquote>
+<div><p>foo = 27</p>
+</div></blockquote>
+<p>%&gt;</p>
+<p># some other template
+&lt;%namespace name=”myns” file=”somefile.html”/&gt;
+${myns.attr.foo}</p>
+<p>The slight backwards incompatibility here is, you
+can’t have namespace defs named “attr” since the
+“attr” descriptor will occlude it.</p>
+<a class="changeset-link headerlink reference internal" href="#change-9da04566e35e386418120e4d29572595">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/62">#62</a></p>
+</p>
+</li>
+<li><p id="change-0.2.0-5"><span class="target" id="change-47006dc7aa8160f70e0ed126113f0f5a"></span><p>cache_key argument can now render arguments passed
+directly to the %page or %def, i.e. &lt;%def
+name=”foo(x)” cached=”True” cache_key=”${x}”/&gt;</p>
+<a class="changeset-link headerlink reference internal" href="#change-47006dc7aa8160f70e0ed126113f0f5a">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/78">#78</a></p>
+</p>
+</li>
+<li><p id="change-0.2.0-6"><span class="target" id="change-d5e0803b1807eb8f0128d3ccd973525f"></span><p>some functions on Context are now private:
+_push_buffer(), _pop_buffer(),
+caller_stack._push_frame(), caller_stack._pop_frame().</p>
+<a class="changeset-link headerlink reference internal" href="#change-d5e0803b1807eb8f0128d3ccd973525f">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-0.2.0-7"><span class="target" id="change-c53f2fb7206af6bed4a266fc8e39da44"></span><p>added a runner script “mako-render” which renders
+standard input as a template to stdout</p>
+<a class="changeset-link headerlink reference internal" href="#change-c53f2fb7206af6bed4a266fc8e39da44">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/56">#56</a>, <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/81">#81</a></p>
+</p>
+</li>
+<li><p id="change-0.2.0-8"><span class="target" id="change-1cf0feb7e1a86092b97d375978dba60d"><strong>[bugfixes] </strong></span><p>can now use most names from __builtins__ as variable
+names without explicit declaration (i.e. ‘id’,
+‘exception’, ‘range’, etc.)</p>
+<a class="changeset-link headerlink reference internal" href="#change-1cf0feb7e1a86092b97d375978dba60d">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/83">#83</a>, <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/84">#84</a></p>
+</p>
+</li>
+<li><p id="change-0.2.0-9"><span class="target" id="change-b42dffceb4d5586db34c320d5368a1a0"><strong>[bugfixes] </strong></span><p>can also use builtin names as local variable names
+(i.e. dict, locals) (came from fix for)</p>
+<a class="changeset-link headerlink reference internal" href="#change-b42dffceb4d5586db34c320d5368a1a0">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/84">#84</a></p>
+</p>
+</li>
+<li><p id="change-0.2.0-10"><span class="target" id="change-66d96bea88684ee0d97467bfe1ccbd28"><strong>[bugfixes] </strong></span><p>fixed bug in python generation when variable names are
+used with identifiers like “else”, “finally”, etc.
+inside them</p>
+<a class="changeset-link headerlink reference internal" href="#change-66d96bea88684ee0d97467bfe1ccbd28">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/68">#68</a></p>
+</p>
+</li>
+<li><p id="change-0.2.0-11"><span class="target" id="change-7482fbd47334f3c223597fc27ed61291"><strong>[bugfixes] </strong></span><p>fixed codegen bug which occurred when using &lt;%page&gt;
+level caching, combined with an expression-based
+cache_key, combined with the usage of &lt;%namespace
+import=”*”/&gt; - fixed lexer exceptions not cleaning up
+temporary files, which could lead to a maximum number
+of file descriptors used in the process</p>
+<a class="changeset-link headerlink reference internal" href="#change-7482fbd47334f3c223597fc27ed61291">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/69">#69</a></p>
+</p>
+</li>
+<li><p id="change-0.2.0-12"><span class="target" id="change-f7edc331eeedd9d0e4e390279db7f1c6"><strong>[bugfixes] </strong></span><p>fixed issue with inline format_exceptions that was
+producing blank exception pages when an inheriting
+template is present</p>
+<a class="changeset-link headerlink reference internal" href="#change-f7edc331eeedd9d0e4e390279db7f1c6">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/71">#71</a></p>
+</p>
+</li>
+<li><p id="change-0.2.0-13"><span class="target" id="change-c380b62194e7806f2ba96a72cf35f4a5"><strong>[bugfixes] </strong></span><p>format_exceptions will apply the encoding options of
+html_error_template() to the buffered output</p>
+<a class="changeset-link headerlink reference internal" href="#change-c380b62194e7806f2ba96a72cf35f4a5">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-0.2.0-14"><span class="target" id="change-aaa77e397a4d5a128ee8ead89aca6552"><strong>[bugfixes] </strong></span><p>rewrote the “whitespace adjuster” function to work
+with more elaborate combinations of quotes and
+comments</p>
+<a class="changeset-link headerlink reference internal" href="#change-aaa77e397a4d5a128ee8ead89aca6552">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/75">#75</a></p>
+</p>
+</li>
+</ul>
+</div>
+<div class="section" id="change-0.1.10">
+<h3>0.1.10<a class="headerlink" href="#change-0.1.10" title="Permalink to this headline">¶</a></h3>
+no release date<ul class="simple">
+<li><p id="change-0.1.10-0"><span class="target" id="change-35446d7c963081d4cb4420f1a2b68beb"></span><p>fixed propagation of ‘caller’ such that nested %def calls
+within a &lt;%call&gt; tag’s argument list propigates ‘caller’
+to the %call function itself (propigates to the inner
+calls too, this is a slight side effect which previously
+existed anyway)</p>
+<a class="changeset-link headerlink reference internal" href="#change-35446d7c963081d4cb4420f1a2b68beb">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-0.1.10-1"><span class="target" id="change-60935107d31e2d12b8725bfa98a4e15e"></span><p>fixed bug where local.get_namespace() could put an
+incorrect “self” in the current context</p>
+<a class="changeset-link headerlink reference internal" href="#change-60935107d31e2d12b8725bfa98a4e15e">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-0.1.10-2"><span class="target" id="change-a03b9e4773bb4ad04e67baf857946095"></span><p>fixed another namespace bug where the namespace functions
+did not have access to the correct context containing
+their ‘self’ and ‘parent’</p>
+<a class="changeset-link headerlink reference internal" href="#change-a03b9e4773bb4ad04e67baf857946095">¶</a><p></p>
+</p>
+</li>
+</ul>
+</div>
+<div class="section" id="change-0.1.9">
+<h3>0.1.9<a class="headerlink" href="#change-0.1.9" title="Permalink to this headline">¶</a></h3>
+no release date<ul class="simple">
+<li><p id="change-0.1.9-0"><span class="target" id="change-b6be8d8f9ba7a78451926e2e5a00168a"></span><p>filters.Decode filter can also accept a non-basestring
+object and will call str() + unicode() on it</p>
+<a class="changeset-link headerlink reference internal" href="#change-b6be8d8f9ba7a78451926e2e5a00168a">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/47">#47</a></p>
+</p>
+</li>
+<li><p id="change-0.1.9-1"><span class="target" id="change-80d0f355df4c2e0e2044d9b34ba8ffe6"></span><p>comments can be placed at the end of control lines,
+i.e. if foo: # a comment,, thanks to
+Paul Colomiets</p>
+<a class="changeset-link headerlink reference internal" href="#change-80d0f355df4c2e0e2044d9b34ba8ffe6">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/53">#53</a></p>
+</p>
+</li>
+<li><p id="change-0.1.9-2"><span class="target" id="change-4a1a251233e66deb83ebbca806c75e7e"></span><p>fixed expressions and page tag arguments and with embedded
+newlines in CRLF templates, follow up to, thanks
+Eric Woroshow</p>
+<a class="changeset-link headerlink reference internal" href="#change-4a1a251233e66deb83ebbca806c75e7e">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/16">#16</a></p>
+</p>
+</li>
+<li><p id="change-0.1.9-3"><span class="target" id="change-b3479ae6d58bd0ac59439c4b81428d3e"></span><p>added an IOError catch for source file not found in RichTraceback
+exception reporter</p>
+<a class="changeset-link headerlink reference internal" href="#change-b3479ae6d58bd0ac59439c4b81428d3e">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/51">#51</a></p>
+</p>
+</li>
+</ul>
+</div>
+<div class="section" id="change-0.1.8">
+<h3>0.1.8<a class="headerlink" href="#change-0.1.8" title="Permalink to this headline">¶</a></h3>
+Released: Tue Jun 26 2007<ul class="simple">
+<li><p id="change-0.1.8-0"><span class="target" id="change-bbc10b00b2959f71e6703161fe1a45a1"></span><p>variable names declared in render methods by internal
+codegen prefixed by “__M_” to prevent name collisions
+with user code</p>
+<a class="changeset-link headerlink reference internal" href="#change-bbc10b00b2959f71e6703161fe1a45a1">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-0.1.8-1"><span class="target" id="change-12a94b4bec51562504cc0951143d7b14"></span><p>added a Babel (<a class="reference external" href="http://babel.edgewall.org/">http://babel.edgewall.org/</a>) extractor entry
+point, allowing extraction of gettext messages directly from
+mako templates via Babel</p>
+<a class="changeset-link headerlink reference internal" href="#change-12a94b4bec51562504cc0951143d7b14">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/45">#45</a></p>
+</p>
+</li>
+<li><p id="change-0.1.8-2"><span class="target" id="change-ff313c4aec5d1b008cf8253396b514d6"></span><p>fix to turbogears plugin to work with dot-separated names
+(i.e. load_template(‘foo.bar’)).  also takes file extension
+as a keyword argument (default is ‘mak’).</p>
+<a class="changeset-link headerlink reference internal" href="#change-ff313c4aec5d1b008cf8253396b514d6">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-0.1.8-3"><span class="target" id="change-7f4b2edc94747c2be57aebfd1f725cf9"></span><p>more tg fix:  fixed, allowing string-based
+templates with tgplugin even if non-compatible args were sent</p>
+<a class="changeset-link headerlink reference internal" href="#change-7f4b2edc94747c2be57aebfd1f725cf9">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/35">#35</a></p>
+</p>
+</li>
+</ul>
+</div>
+<div class="section" id="change-0.1.7">
+<h3>0.1.7<a class="headerlink" href="#change-0.1.7" title="Permalink to this headline">¶</a></h3>
+Released: Wed Jun 13 2007<ul class="simple">
+<li><p id="change-0.1.7-0"><span class="target" id="change-f9d399621cbe00065331cffcfd726aaf"></span><p>one small fix to the unit tests to support python 2.3</p>
+<a class="changeset-link headerlink reference internal" href="#change-f9d399621cbe00065331cffcfd726aaf">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-0.1.7-1"><span class="target" id="change-d54e6f740ac7e3c9302f434352c6ad24"></span><p>a slight hack to how cache.py detects Beaker’s memcached,
+works around unexplained import behavior observed on some
+python 2.3 installations</p>
+<a class="changeset-link headerlink reference internal" href="#change-d54e6f740ac7e3c9302f434352c6ad24">¶</a><p></p>
+</p>
+</li>
+</ul>
+</div>
+<div class="section" id="change-0.1.6">
+<h3>0.1.6<a class="headerlink" href="#change-0.1.6" title="Permalink to this headline">¶</a></h3>
+Released: Fri May 18 2007<ul class="simple">
+<li><p id="change-0.1.6-0"><span class="target" id="change-52836ef58904a858efff55a21272a3aa"></span><p>caching is now supplied directly by Beaker, which has
+all of MyghtyUtils merged into it now.  The latest Beaker
+(0.7.1) also fixes a bug related to how Mako was using the
+cache API.</p>
+<a class="changeset-link headerlink reference internal" href="#change-52836ef58904a858efff55a21272a3aa">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-0.1.6-1"><span class="target" id="change-7bc90d84523c2290a3350c133e269c20"></span><p>fix to module_directory path generation when the path is “./”</p>
+<a class="changeset-link headerlink reference internal" href="#change-7bc90d84523c2290a3350c133e269c20">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/34">#34</a></p>
+</p>
+</li>
+<li><p id="change-0.1.6-2"><span class="target" id="change-ea6d95d606ab7dd8f3b3f8b49bc0ca99"></span><p>TGPlugin passes options to string-based templates</p>
+<a class="changeset-link headerlink reference internal" href="#change-ea6d95d606ab7dd8f3b3f8b49bc0ca99">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/35">#35</a></p>
+</p>
+</li>
+<li><p id="change-0.1.6-3"><span class="target" id="change-31e1248422bcd0c78c13b47b458a9085"></span><p>added an explicit stack frame step to template runtime, which
+allows much simpler and hopefully bug-free tracking of ‘caller’,
+fixes</p>
+<a class="changeset-link headerlink reference internal" href="#change-31e1248422bcd0c78c13b47b458a9085">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/28">#28</a></p>
+</p>
+</li>
+<li><p id="change-0.1.6-4"><span class="target" id="change-54a970a9cf864a6c262da7b7d9216109"></span><p>if plain Python defs are used with &lt;%call&gt;, a decorator
+&#64;runtime.supports_callable exists to ensure that the “caller”
+stack is properly handled for the def.</p>
+<a class="changeset-link headerlink reference internal" href="#change-54a970a9cf864a6c262da7b7d9216109">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-0.1.6-5"><span class="target" id="change-d2cd0326db0e6586eabcce097caf31ff"></span><p>fix to RichTraceback and exception reporting to get template
+source code as a unicode object</p>
+<a class="changeset-link headerlink reference internal" href="#change-d2cd0326db0e6586eabcce097caf31ff">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/37">#37</a></p>
+</p>
+</li>
+<li><p id="change-0.1.6-6"><span class="target" id="change-dc0199630744815964c1e6174ea78785"></span><p>html_error_template includes options “full=True”, “css=True”
+which control generation of HTML tags, CSS</p>
+<a class="changeset-link headerlink reference internal" href="#change-dc0199630744815964c1e6174ea78785">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/39">#39</a></p>
+</p>
+</li>
+<li><p id="change-0.1.6-7"><span class="target" id="change-b0a96b76069cee8cd44ba31774b27fa2"></span><p>added the ‘encoding_errors’ parameter to Template/TemplateLookup
+for specifying the error handler associated with encoding to
+‘output_encoding’</p>
+<a class="changeset-link headerlink reference internal" href="#change-b0a96b76069cee8cd44ba31774b27fa2">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/40">#40</a></p>
+</p>
+</li>
+<li><p id="change-0.1.6-8"><span class="target" id="change-528e7eeb36e454ad6679969c443b951c"></span><p>the Template returned by html_error_template now defaults to
+output_encoding=sys.getdefaultencoding(),
+encoding_errors=’htmlentityreplace’</p>
+<a class="changeset-link headerlink reference internal" href="#change-528e7eeb36e454ad6679969c443b951c">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/37">#37</a></p>
+</p>
+</li>
+<li><p id="change-0.1.6-9"><span class="target" id="change-87df4540a9078340f98f18122437d6dd"></span><p>control lines, i.e. % lines, support backslashes to continue long
+lines (#32)</p>
+<a class="changeset-link headerlink reference internal" href="#change-87df4540a9078340f98f18122437d6dd">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-0.1.6-10"><span class="target" id="change-5a582713c17cb4654879f3adb098f00f"></span><p>fixed codegen bug when defining &lt;%def&gt; within &lt;%call&gt; within &lt;%call&gt;</p>
+<a class="changeset-link headerlink reference internal" href="#change-5a582713c17cb4654879f3adb098f00f">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-0.1.6-11"><span class="target" id="change-e80dc8f529838d0f39320706a515d3fa"></span><p>leading utf-8 BOM in template files is honored according to pep-0263</p>
+<a class="changeset-link headerlink reference internal" href="#change-e80dc8f529838d0f39320706a515d3fa">¶</a><p></p>
+</p>
+</li>
+</ul>
+</div>
+<div class="section" id="change-0.1.5">
+<h3>0.1.5<a class="headerlink" href="#change-0.1.5" title="Permalink to this headline">¶</a></h3>
+Released: Sat Mar 31 2007<ul class="simple">
+<li><p id="change-0.1.5-0"><span class="target" id="change-f55f1eaaa360047ad0dbf07496beae9c"></span><p>AST expression generation - added in just about everything
+expression-wise from the AST module</p>
+<a class="changeset-link headerlink reference internal" href="#change-f55f1eaaa360047ad0dbf07496beae9c">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/26">#26</a></p>
+</p>
+</li>
+<li><p id="change-0.1.5-1"><span class="target" id="change-038f363f37ffb6f6e1d81aaeb32d371d"></span><p>AST parsing, properly detects imports of the form “import foo.bar”</p>
+<a class="changeset-link headerlink reference internal" href="#change-038f363f37ffb6f6e1d81aaeb32d371d">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/27">#27</a></p>
+</p>
+</li>
+<li><p id="change-0.1.5-2"><span class="target" id="change-fe4577a3f1111e2f31098302811ed765"></span><p>fix to lexing of &lt;%docs&gt; tag nested in other tags</p>
+<a class="changeset-link headerlink reference internal" href="#change-fe4577a3f1111e2f31098302811ed765">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-0.1.5-3"><span class="target" id="change-895781e7f1f9e56da8e1f7d84a2d75e8"></span><p>fix to context-arguments inside of &lt;%include&gt; tag which broke
+during 0.1.4</p>
+<a class="changeset-link headerlink reference internal" href="#change-895781e7f1f9e56da8e1f7d84a2d75e8">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/29">#29</a></p>
+</p>
+</li>
+<li><p id="change-0.1.5-4"><span class="target" id="change-f4a4e7c2e333277389fa0febf1b94548"></span><p>added “n” filter, disables <em>all</em> filters normally applied to an expression
+via &lt;%page&gt; or default_filters (but not those within the filter)</p>
+<a class="changeset-link headerlink reference internal" href="#change-f4a4e7c2e333277389fa0febf1b94548">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-0.1.5-5"><span class="target" id="change-1373f4756af28d08dc3d0c42b55ba89f"></span><p>added buffer_filters argument, defines filters applied to the return value
+of buffered/cached/filtered %defs, after all filters defined with the %def
+itself have been applied.  allows the creation of default expression filters
+that let the output of return-valued %defs “opt out” of that filtering
+via passing special attributes or objects.</p>
+<a class="changeset-link headerlink reference internal" href="#change-1373f4756af28d08dc3d0c42b55ba89f">¶</a><p></p>
+</p>
+</li>
+</ul>
+</div>
+<div class="section" id="change-0.1.4">
+<h3>0.1.4<a class="headerlink" href="#change-0.1.4" title="Permalink to this headline">¶</a></h3>
+Released: Sat Mar 10 2007<ul class="simple">
+<li><p id="change-0.1.4-0"><span class="target" id="change-d9a3f08eba0431ad7fcc2c4a44ebbae6"></span><p>got defs-within-defs to be cacheable</p>
+<a class="changeset-link headerlink reference internal" href="#change-d9a3f08eba0431ad7fcc2c4a44ebbae6">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-0.1.4-1"><span class="target" id="change-810513a0fe251b003785e47c73c05d6b"></span><p>fixes to code parsing/whitespace adjusting where plain python comments
+may contain quote characters</p>
+<a class="changeset-link headerlink reference internal" href="#change-810513a0fe251b003785e47c73c05d6b">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/23">#23</a></p>
+</p>
+</li>
+<li><p id="change-0.1.4-2"><span class="target" id="change-02205b506bd613a4038f90d3894ff1e4"></span><p>fix to variable scoping for identifiers only referenced within
+functions</p>
+<a class="changeset-link headerlink reference internal" href="#change-02205b506bd613a4038f90d3894ff1e4">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-0.1.4-3"><span class="target" id="change-dffdf2c7b62fa47b54cac838b32b5a15"></span><p>added a path normalization step to lookup so URIs like
+“/foo/bar/../etc/../foo” pre-process the “..” tokens before checking
+the filesystem</p>
+<a class="changeset-link headerlink reference internal" href="#change-dffdf2c7b62fa47b54cac838b32b5a15">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-0.1.4-4"><span class="target" id="change-2a6fb9feefccb0dc5a6a53f4a1145389"></span><p>fixed/improved “caller” semantics so that undefined caller is
+“UNDEFINED”, propigates __nonzero__ method so it evaulates to False if
+not present, True otherwise. this way you can say % if caller:n
+${caller.body()}n% endif</p>
+<a class="changeset-link headerlink reference internal" href="#change-2a6fb9feefccb0dc5a6a53f4a1145389">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-0.1.4-5"><span class="target" id="change-7969cae88e43d5ccd928a0e231e9d242"></span><p>&lt;%include&gt; has an “args” attribute that can pass arguments to the
+called template (keyword arguments only, must be declared in that
+page’s &lt;%page&gt; tag.)</p>
+<a class="changeset-link headerlink reference internal" href="#change-7969cae88e43d5ccd928a0e231e9d242">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-0.1.4-6"><span class="target" id="change-4b7deb2ea46de8d9db7b502ced7728dd"></span><p>&lt;%include&gt; plus arguments is also programmatically available via
+self.include_file(&lt;filename&gt;, <a href="#id9"><span class="problematic" id="id10">**</span></a>kwargs)</p>
+<a class="changeset-link headerlink reference internal" href="#change-4b7deb2ea46de8d9db7b502ced7728dd">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-0.1.4-7"><span class="target" id="change-5e3d31c7ecde9769cc0daf0a545e50da"></span><p>further escaping added for multibyte expressions in %def, %call
+attributes</p>
+<a class="changeset-link headerlink reference internal" href="#change-5e3d31c7ecde9769cc0daf0a545e50da">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/24">#24</a></p>
+</p>
+</li>
+</ul>
+</div>
+<div class="section" id="change-0.1.3">
+<h3>0.1.3<a class="headerlink" href="#change-0.1.3" title="Permalink to this headline">¶</a></h3>
+Released: Wed Feb 21 2007<ul class="simple">
+<li><p id="change-0.1.3-0"><span class="target" id="change-18db551453b5679b3f20ea5bdb7bdc52"></span><p><strong>*Small Syntax Change*</strong> - the single line comment character is now
+<em>two</em> hash signs, i.e. “## this is a comment”.  This avoids a common
+collection with CSS selectors.</p>
+<a class="changeset-link headerlink reference internal" href="#change-18db551453b5679b3f20ea5bdb7bdc52">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-0.1.3-1"><span class="target" id="change-e30c3dbf8c63dae51878e95465b46c4b"></span><p>the magic “coding” comment (i.e. # coding:utf-8) will still work with
+either one “#” sign or two for now; two is preferred going forward, i.e.
+## coding:&lt;someencoding&gt;.</p>
+<a class="changeset-link headerlink reference internal" href="#change-e30c3dbf8c63dae51878e95465b46c4b">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-0.1.3-2"><span class="target" id="change-722a3aa892f188f6c474fbe157b52980"></span><p>new multiline comment form: “&lt;%doc&gt; a comment &lt;/%doc&gt;”</p>
+<a class="changeset-link headerlink reference internal" href="#change-722a3aa892f188f6c474fbe157b52980">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-0.1.3-3"><span class="target" id="change-d38fba282e33819ce79a8f8f93bfd42c"></span><p>UNDEFINED evaluates to False</p>
+<a class="changeset-link headerlink reference internal" href="#change-d38fba282e33819ce79a8f8f93bfd42c">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-0.1.3-4"><span class="target" id="change-921044895d61328452e3a335bad34172"></span><p>improvement to scoping of “caller” variable when using &lt;%call&gt; tag</p>
+<a class="changeset-link headerlink reference internal" href="#change-921044895d61328452e3a335bad34172">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-0.1.3-5"><span class="target" id="change-8be7ad08f79e900b80f8c291c23e7fe1"></span><p>added lexer error for unclosed control-line (%) line</p>
+<a class="changeset-link headerlink reference internal" href="#change-8be7ad08f79e900b80f8c291c23e7fe1">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-0.1.3-6"><span class="target" id="change-85b846c5476142b1c2506c5a32d50817"></span><p>added “preprocessor” argument to Template, TemplateLookup - is a single
+callable or list of callables which will be applied to the template text
+before lexing.  given the text as an argument, returns the new text.</p>
+<a class="changeset-link headerlink reference internal" href="#change-85b846c5476142b1c2506c5a32d50817">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-0.1.3-7"><span class="target" id="change-43d0af8d5e881c09c61799065df23349"></span><p>added mako.ext.preprocessors package, contains one preprocessor so far:
+‘convert_comments’, which will convert single # comments to the new ##
+format</p>
+<a class="changeset-link headerlink reference internal" href="#change-43d0af8d5e881c09c61799065df23349">¶</a><p></p>
+</p>
+</li>
+</ul>
+</div>
+<div class="section" id="change-0.1.2">
+<h3>0.1.2<a class="headerlink" href="#change-0.1.2" title="Permalink to this headline">¶</a></h3>
+Released: Thu Feb  1 2007<ul class="simple">
+<li><p id="change-0.1.2-0"><span class="target" id="change-e5e97c09505aa0d25c29ce1e158d4a8f"></span><p>fix to parsing of code/expression blocks to insure that non-ascii
+characters, combined with a template that indicates a non-standard
+encoding, are expanded into backslash-escaped glyphs before being AST
+parsed</p>
+<a class="changeset-link headerlink reference internal" href="#change-e5e97c09505aa0d25c29ce1e158d4a8f">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/11">#11</a></p>
+</p>
+</li>
+<li><p id="change-0.1.2-1"><span class="target" id="change-3ff8d6c650379a6f712a25b5d9f0f67f"></span><p>all template lexing converts the template to unicode first, to
+immediately catch any encoding issues and ensure internal unicode
+representation.</p>
+<a class="changeset-link headerlink reference internal" href="#change-3ff8d6c650379a6f712a25b5d9f0f67f">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-0.1.2-2"><span class="target" id="change-0b29735786156418071800fe54aa64cd"></span><p>added module_filename argument to Template to allow specification of a
+specific module file</p>
+<a class="changeset-link headerlink reference internal" href="#change-0b29735786156418071800fe54aa64cd">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-0.1.2-3"><span class="target" id="change-6904da36fbdded623dc4b3ee751d5674"></span><p>added modulename_callable to TemplateLookup to allow a function to
+determine module filenames (takes filename, uri arguments). used for</p>
+<a class="changeset-link headerlink reference internal" href="#change-6904da36fbdded623dc4b3ee751d5674">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/14">#14</a></p>
+</p>
+</li>
+<li><p id="change-0.1.2-4"><span class="target" id="change-ecf4eb2962f40391b75f8ce8f2a94a08"></span><p>added optional input_encoding flag to Template, to allow sending a
+unicode() object with no magic encoding comment</p>
+<a class="changeset-link headerlink reference internal" href="#change-ecf4eb2962f40391b75f8ce8f2a94a08">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-0.1.2-5"><span class="target" id="change-5ea31cc5e58c79c774aaa9458928f827"></span><p>“expression_filter” argument in &lt;%page&gt; applies only to expressions</p>
+<a class="changeset-link headerlink reference internal" href="#change-5ea31cc5e58c79c774aaa9458928f827">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-0.1.2-6"><span class="target" id="change-84beefcbcdc568675b6e3fefd7940957"><strong>[“unicode”] </strong></span><p>added “default_filters” argument to Template, TemplateLookup. applies only
+to expressions, gets prepended to “expression_filter” arg from &lt;%page&gt;.
+defaults to, so that all expressions get stringified into u’’
+by default (this is what Mako already does). By setting to [], expressions
+are passed through raw.</p>
+<a class="changeset-link headerlink reference internal" href="#change-84beefcbcdc568675b6e3fefd7940957">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-0.1.2-7"><span class="target" id="change-fd580f1d839dc719fa1f0563b46ba474"></span><p>added “imports” argument to Template, TemplateLookup. so you can predefine
+a list of import statements at the top of the template. can be used in
+conjunction with default_filters.</p>
+<a class="changeset-link headerlink reference internal" href="#change-fd580f1d839dc719fa1f0563b46ba474">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-0.1.2-8"><span class="target" id="change-817d592b540ba64129e24055c5f8ec27"></span><p>support for CRLF templates…whoops ! welcome to all the windows users.</p>
+<a class="changeset-link headerlink reference internal" href="#change-817d592b540ba64129e24055c5f8ec27">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/16">#16</a></p>
+</p>
+</li>
+<li><p id="change-0.1.2-9"><span class="target" id="change-5976a1e5691f501b38fc485209ec52a1"></span><p>small fix to local variable propigation for locals that are conditionally
+declared</p>
+<a class="changeset-link headerlink reference internal" href="#change-5976a1e5691f501b38fc485209ec52a1">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-0.1.2-10"><span class="target" id="change-e51de8d14422e4b2b7fb4d583f5fb5f3"></span><p>got “top level” def calls to work, i.e. template.get_def(“somedef”).render()</p>
+<a class="changeset-link headerlink reference internal" href="#change-e51de8d14422e4b2b7fb4d583f5fb5f3">¶</a><p></p>
+</p>
+</li>
+</ul>
+</div>
+<div class="section" id="change-0.1.1">
+<h3>0.1.1<a class="headerlink" href="#change-0.1.1" title="Permalink to this headline">¶</a></h3>
+Released: Sun Jan 14 2007<ul class="simple">
+<li><p id="change-0.1.1-0"><span class="target" id="change-05b7c1f3eb0cb4630b5ebbd1a172f5d5"></span><p>buffet plugin supports string-based templates, allows ToscaWidgets to work</p>
+<a class="changeset-link headerlink reference internal" href="#change-05b7c1f3eb0cb4630b5ebbd1a172f5d5">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/8">#8</a></p>
+</p>
+</li>
+<li><p id="change-0.1.1-1"><span class="target" id="change-20940aacb7e79ba6e20a4826ed237c0b"></span><p>AST parsing fixes: fixed TryExcept identifier parsing</p>
+<a class="changeset-link headerlink reference internal" href="#change-20940aacb7e79ba6e20a4826ed237c0b">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-0.1.1-2"><span class="target" id="change-eb9efa2f093687fd2d4f5f7ac4e51c3c"></span><p>removed textmate tmbundle from contrib and into separate SVN location;
+windows users cant handle those files, setuptools not very good at
+“pruning” certain directories</p>
+<a class="changeset-link headerlink reference internal" href="#change-eb9efa2f093687fd2d4f5f7ac4e51c3c">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-0.1.1-3"><span class="target" id="change-e1142489a6eb32082650995d95b37a71"></span><p>fix so that “cache_timeout” parameter is propigated</p>
+<a class="changeset-link headerlink reference internal" href="#change-e1142489a6eb32082650995d95b37a71">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-0.1.1-4"><span class="target" id="change-603cfb5b4987686ea04bebe62aa32b24"></span><p>fix to expression filters so that string conversion (actually unicode)
+properly occurs before filtering</p>
+<a class="changeset-link headerlink reference internal" href="#change-603cfb5b4987686ea04bebe62aa32b24">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-0.1.1-5"><span class="target" id="change-b07fbe08a504a4fa5f2d9827be99693a"></span><p>better error message when a lookup is attempted with a template that has no
+lookup</p>
+<a class="changeset-link headerlink reference internal" href="#change-b07fbe08a504a4fa5f2d9827be99693a">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-0.1.1-6"><span class="target" id="change-bf10710d0a3d4e00b23e4c12739df8d8"></span><p>implemented “module” attribute for namespace</p>
+<a class="changeset-link headerlink reference internal" href="#change-bf10710d0a3d4e00b23e4c12739df8d8">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-0.1.1-7"><span class="target" id="change-d2a20975eda94230da878d7b2bc53081"></span><p>fix to code generation to correctly track multiple defs with the same name</p>
+<a class="changeset-link headerlink reference internal" href="#change-d2a20975eda94230da878d7b2bc53081">¶</a><p></p>
+</p>
+</li>
+<li><p id="change-0.1.1-8"><span class="target" id="change-8e234744095c72fc80b927b7a27b3d4e"></span><p>“directories” can be passed to TemplateLookup as a scalar in which case it
+gets converted to a list</p>
+<a class="changeset-link headerlink reference internal" href="#change-8e234744095c72fc80b927b7a27b3d4e">¶</a><p>References: <a class="reference external" href="https://github.com/sqlalchemy/mako/issues/9">#9</a></p>
+</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+    </div>
+
+</div>
+
+<div id="docs-bottom-navigation" class="docs-navigation-links">
+        Previous:
+        <a href="caching.html" title="previous chapter">Caching</a>
+
+    <div id="docs-copyright">
+        &copy; Copyright the Mako authors and contributors.
+        Documentation generated using <a href="http://sphinx.pocoo.org/">Sphinx</a> 2.1.2
+        with Mako templates.
+    </div>
+</div>
+
+</div>
+
+
+
+        
+        
+
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+          URL_ROOT:    './',
+          VERSION:     '1.0.14',
+          COLLAPSE_MODINDEX: false,
+          FILE_SUFFIX: '.html'
+      };
+    </script>
+
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+
+    <!-- begin iterate through sphinx environment script_files -->
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    <!-- end iterate through sphinx environment script_files -->
+
+    <script type="text/javascript" src="_static/detectmobile.js"></script>
+    <script type="text/javascript" src="_static/init.js"></script>
+
+
+    </body>
+</html>
+
+

@@ -12,8 +12,6 @@ namespace ui {
 
 struct _AXPlatformAtkHyperlinkPrivate {
   AXPlatformNodeAuraLinux* platform_node = nullptr;
-  base::Optional<int> end_index;
-  base::Optional<int> start_index;
 };
 
 static gpointer kAXPlatformAtkHyperlinkParentClass = nullptr;
@@ -84,13 +82,17 @@ static gboolean AXPlatformAtkHyperlinkIsSelectedLink(
 static int AXPlatformAtkHyperlinkGetStartIndex(AtkHyperlink* atk_hyperlink) {
   g_return_val_if_fail(IS_AX_PLATFORM_ATK_HYPERLINK(atk_hyperlink), 0);
   AXPlatformAtkHyperlink* link = AX_PLATFORM_ATK_HYPERLINK(atk_hyperlink);
-  return link->priv->start_index ? *link->priv->start_index : 0;
+  base::Optional<std::pair<int, int>> indices =
+      link->priv->platform_node->GetEmbeddedObjectIndices();
+  return indices.has_value() ? indices->first : 0;
 }
 
 static int AXPlatformAtkHyperlinkGetEndIndex(AtkHyperlink* atk_hyperlink) {
   g_return_val_if_fail(IS_AX_PLATFORM_ATK_HYPERLINK(atk_hyperlink), 0);
   AXPlatformAtkHyperlink* link = AX_PLATFORM_ATK_HYPERLINK(atk_hyperlink);
-  return link->priv->end_index ? *link->priv->end_index : 0;
+  base::Optional<std::pair<int, int>> indices =
+      link->priv->platform_node->GetEmbeddedObjectIndices();
+  return indices.has_value() ? indices->second : 0;
 }
 
 static void AXPlatformAtkHyperlinkClassInit(AtkHyperlinkClass* klass) {
@@ -229,14 +231,6 @@ void ax_platform_atk_hyperlink_set_object(
     AXPlatformNodeAuraLinux* platform_node) {
   g_return_if_fail(AX_PLATFORM_ATK_HYPERLINK(atk_hyperlink));
   atk_hyperlink->priv->platform_node = platform_node;
-}
-
-void ax_platform_atk_hyperlink_set_indices(
-    AXPlatformAtkHyperlink* atk_hyperlink,
-    int start_index,
-    int end_index) {
-  atk_hyperlink->priv->start_index = start_index;
-  atk_hyperlink->priv->end_index = end_index;
 }
 
 static void AXPlatformAtkHyperlinkInit(AXPlatformAtkHyperlink* self, gpointer) {

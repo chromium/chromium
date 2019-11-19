@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/hash.h"
+#include "base/hash/hash.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "components/viz/service/viz_service_export.h"
 

@@ -7,6 +7,7 @@
 #include "base/memory/weak_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/scheduler/test/fake_task_runner.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
@@ -21,8 +22,10 @@ void GetIsActive(bool* is_active, TaskHandle* handle) {
 }
 
 class CancellationTestHelper {
+  DISALLOW_NEW();
+
  public:
-  CancellationTestHelper() : weak_ptr_factory_(this) {}
+  CancellationTestHelper() {}
 
   base::WeakPtr<CancellationTestHelper> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -34,7 +37,7 @@ class CancellationTestHelper {
 
  private:
   int counter_ = 0;
-  base::WeakPtrFactory<CancellationTestHelper> weak_ptr_factory_;
+  base::WeakPtrFactory<CancellationTestHelper> weak_ptr_factory_{this};
 };
 
 }  // namespace
@@ -63,10 +66,58 @@ TEST(WebTaskRunnerTest, PostCancellableTaskTest) {
   EXPECT_EQ(1, count);
   EXPECT_FALSE(handle.IsActive());
 
+  count = 0;
+  handle = PostNonNestableCancellableTask(
+      *task_runner, FROM_HERE, WTF::Bind(&Increment, WTF::Unretained(&count)));
+  EXPECT_EQ(0, count);
+  EXPECT_TRUE(handle.IsActive());
+  task_runner->RunUntilIdle();
+  EXPECT_EQ(1, count);
+  EXPECT_FALSE(handle.IsActive());
+
+  count = 0;
+  handle = PostNonNestableDelayedCancellableTask(
+      *task_runner, FROM_HERE, WTF::Bind(&Increment, WTF::Unretained(&count)),
+      base::TimeDelta::FromMilliseconds(1));
+  EXPECT_EQ(0, count);
+  EXPECT_TRUE(handle.IsActive());
+  task_runner->RunUntilIdle();
+  EXPECT_EQ(1, count);
+  EXPECT_FALSE(handle.IsActive());
+
   // Cancel a task.
   count = 0;
   handle = PostCancellableTask(*task_runner, FROM_HERE,
                                WTF::Bind(&Increment, WTF::Unretained(&count)));
+  handle.Cancel();
+  EXPECT_EQ(0, count);
+  EXPECT_FALSE(handle.IsActive());
+  task_runner->RunUntilIdle();
+  EXPECT_EQ(0, count);
+
+  count = 0;
+  handle = PostDelayedCancellableTask(
+      *task_runner, FROM_HERE, WTF::Bind(&Increment, WTF::Unretained(&count)),
+      base::TimeDelta::FromMilliseconds(1));
+  handle.Cancel();
+  EXPECT_EQ(0, count);
+  EXPECT_FALSE(handle.IsActive());
+  task_runner->RunUntilIdle();
+  EXPECT_EQ(0, count);
+
+  count = 0;
+  handle = PostNonNestableCancellableTask(
+      *task_runner, FROM_HERE, WTF::Bind(&Increment, WTF::Unretained(&count)));
+  handle.Cancel();
+  EXPECT_EQ(0, count);
+  EXPECT_FALSE(handle.IsActive());
+  task_runner->RunUntilIdle();
+  EXPECT_EQ(0, count);
+
+  count = 0;
+  handle = PostNonNestableDelayedCancellableTask(
+      *task_runner, FROM_HERE, WTF::Bind(&Increment, WTF::Unretained(&count)),
+      base::TimeDelta::FromMilliseconds(1));
   handle.Cancel();
   EXPECT_EQ(0, count);
   EXPECT_FALSE(handle.IsActive());

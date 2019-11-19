@@ -6,15 +6,14 @@
 
 #include <algorithm>
 #include <utility>
-#include <vector>
 
 #include "base/files/file.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/timer/elapsed_timer.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/blink/public/mojom/hyphenation/hyphenation.mojom-blink.h"
 #include "third_party/blink/public/platform/interface_provider.h"
-#include "third_party/blink/public/platform/modules/hyphenation/hyphenation.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/text/character.h"
 #include "third_party/blink/renderer/platform/text/hyphenation/hyphenator_aosp.h"
@@ -50,26 +49,23 @@ StringView SkipLeadingSpaces(const StringView& text,
 
 using Hyphenator = android::Hyphenator;
 
-static mojom::blink::HyphenationPtr ConnectToRemoteService() {
-  mojom::blink::HyphenationPtr service;
+static mojo::Remote<mojom::blink::Hyphenation> ConnectToRemoteService() {
+  mojo::Remote<mojom::blink::Hyphenation> service;
   Platform::Current()->GetInterfaceProvider()->GetInterface(
-      mojo::MakeRequest(&service));
+      service.BindNewPipeAndPassReceiver());
   return service;
 }
 
-static const mojom::blink::HyphenationPtr& GetService() {
-  DEFINE_STATIC_LOCAL(mojom::blink::HyphenationPtr, service,
+static mojom::blink::Hyphenation* GetService() {
+  DEFINE_STATIC_LOCAL(mojo::Remote<mojom::blink::Hyphenation>, service,
                       (ConnectToRemoteService()));
-  return service;
+  return service.get();
 }
 
 bool HyphenationMinikin::OpenDictionary(const AtomicString& locale) {
-  const mojom::blink::HyphenationPtr& service = GetService();
+  mojom::blink::Hyphenation* service = GetService();
   base::File file;
-  base::ElapsedTimer timer;
   service->OpenDictionary(locale, &file);
-  UMA_HISTOGRAM_TIMES("Hyphenation.Open", timer.Elapsed());
-
   return OpenDictionary(std::move(file));
 }
 
@@ -86,9 +82,8 @@ bool HyphenationMinikin::OpenDictionary(base::File file) {
   return true;
 }
 
-std::vector<uint8_t> HyphenationMinikin::Hyphenate(
-    const StringView& text) const {
-  std::vector<uint8_t> result;
+Vector<uint8_t> HyphenationMinikin::Hyphenate(const StringView& text) const {
+  Vector<uint8_t> result;
   if (text.Is8Bit()) {
     String text16_bit = text.ToString();
     text16_bit.Ensure16Bit();
@@ -114,7 +109,7 @@ wtf_size_t HyphenationMinikin::LastHyphenLocation(
       before_index <= kMinimumPrefixLength)
     return 0;
 
-  std::vector<uint8_t> result = Hyphenate(word);
+  Vector<uint8_t> result = Hyphenate(word);
   CHECK_LE(before_index, result.size());
   CHECK_GE(before_index, 1u);
   static_assert(kMinimumPrefixLength >= 1, "|beforeIndex - 1| can underflow");
@@ -134,7 +129,7 @@ Vector<wtf_size_t, 8> HyphenationMinikin::HyphenLocations(
   if (word.length() < kMinimumPrefixLength + kMinimumSuffixLength)
     return hyphen_locations;
 
-  std::vector<uint8_t> result = Hyphenate(word);
+  Vector<uint8_t> result = Hyphenate(word);
   static_assert(kMinimumPrefixLength >= 1,
                 "Change the 'if' above if this fails");
   for (wtf_size_t i = word.length() - kMinimumSuffixLength - 1;

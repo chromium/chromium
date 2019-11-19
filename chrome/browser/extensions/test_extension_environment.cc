@@ -13,7 +13,7 @@
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/sessions/session_tab_helper.h"
 #include "chrome/test/base/testing_profile.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/web_contents_tester.h"
 #include "extensions/browser/extension_prefs.h"
@@ -94,9 +94,10 @@ ExtensionService* TestExtensionEnvironment::CreateExtensionServiceForProfile(
 }
 
 TestExtensionEnvironment::TestExtensionEnvironment(Type type)
-    : thread_bundle_(type == Type::kWithTaskEnvironment
-                         ? std::make_unique<content::TestBrowserThreadBundle>()
-                         : nullptr),
+    : task_environment_(
+          type == Type::kWithTaskEnvironment
+              ? std::make_unique<content::BrowserTaskEnvironment>()
+              : nullptr),
 #if defined(OS_CHROMEOS)
       chromeos_env_(chromeos::DeviceSettingsService::IsInitialized()
                         ? nullptr
@@ -164,7 +165,7 @@ scoped_refptr<const Extension> TestExtensionEnvironment::MakePackagedApp(
 std::unique_ptr<content::WebContents> TestExtensionEnvironment::MakeTab()
     const {
   std::unique_ptr<content::WebContents> contents(
-      content::WebContentsTester::CreateTestWebContents(profile(), NULL));
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
   // Create a tab id.
   SessionTabHelper::CreateForWebContents(contents.get());
   return contents;

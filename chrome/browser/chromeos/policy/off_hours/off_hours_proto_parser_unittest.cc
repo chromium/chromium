@@ -114,7 +114,7 @@ TEST_F(ConvertOffHoursProtoToValueTest, Test) {
   off_hours_expected.SetList("intervals", std::move(intervals_value));
   auto ignored_policies_value = std::make_unique<base::ListValue>();
   for (const auto& policy : kDefaultIgnoredPolicies)
-    ignored_policies_value->GetList().emplace_back(policy);
+    ignored_policies_value->Append(policy);
   off_hours_expected.SetList("ignored_policy_proto_tags",
                              std::move(ignored_policies_value));
 

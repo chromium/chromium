@@ -75,7 +75,7 @@ namespace chromeos {
 EnterpriseEnrollmentHelperImpl::EnterpriseEnrollmentHelperImpl() {
   // Init the TPM if it has not been done until now (in debug build we might
   // have not done that yet).
-  DBusThreadManager::Get()->GetCryptohomeClient()->TpmCanAttemptOwnership(
+  CryptohomeClient::Get()->TpmCanAttemptOwnership(
       EmptyVoidDBusMethodCallback());
 }
 
@@ -96,8 +96,7 @@ void EnterpriseEnrollmentHelperImpl::Setup(
 }
 
 void EnterpriseEnrollmentHelperImpl::EnrollUsingAuthCode(
-    const std::string& auth_code,
-    bool fetch_additional_token) {
+    const std::string& auth_code) {
   DCHECK(oauth_status_ == OAUTH_NOT_STARTED);
   oauth_status_ = OAUTH_STARTED_WITH_AUTH_CODE;
   oauth_fetcher_ = policy::PolicyOAuth2TokenFetcher::CreateInstance();
@@ -106,8 +105,7 @@ void EnterpriseEnrollmentHelperImpl::EnrollUsingAuthCode(
       g_browser_process->system_network_context_manager()
           ->GetSharedURLLoaderFactory(),
       base::Bind(&EnterpriseEnrollmentHelperImpl::OnTokenFetched,
-                 weak_ptr_factory_.GetWeakPtr(),
-                 fetch_additional_token /* is_additional_token */));
+                 weak_ptr_factory_.GetWeakPtr()));
 }
 
 void EnterpriseEnrollmentHelperImpl::EnrollUsingToken(
@@ -208,11 +206,6 @@ void EnterpriseEnrollmentHelperImpl::OnDeviceAccountClientError(
 
 void EnterpriseEnrollmentHelperImpl::ClearAuth(base::OnceClosure callback) {
   if (oauth_status_ != OAUTH_NOT_STARTED) {
-    // Do not revoke the additional token if enrollment has finished
-    // successfully.
-    if (!success_ && additional_token_.length())
-      (new TokenRevoker())->Start(additional_token_);
-
     if (oauth_fetcher_) {
       if (!oauth_fetcher_->OAuth2AccessToken().empty())
         (new TokenRevoker())->Start(oauth_fetcher_->OAuth2AccessToken());
@@ -336,7 +329,6 @@ void EnterpriseEnrollmentHelperImpl::UpdateDeviceAttributes(
 }
 
 void EnterpriseEnrollmentHelperImpl::OnTokenFetched(
-    bool is_additional_token,
     const std::string& token,
     const GoogleServiceAuthError& error) {
   if (error.state() != GoogleServiceAuthError::NONE) {
@@ -346,21 +338,7 @@ void EnterpriseEnrollmentHelperImpl::OnTokenFetched(
     return;
   }
 
-  if (!is_additional_token) {
-    EnrollUsingToken(token);
-    return;
-  }
-
-  additional_token_ = token;
-  std::string refresh_token = oauth_fetcher_->OAuth2RefreshToken();
-  oauth_fetcher_ = policy::PolicyOAuth2TokenFetcher::CreateInstance();
-  oauth_fetcher_->StartWithRefreshToken(
-      refresh_token,
-      g_browser_process->system_network_context_manager()
-          ->GetSharedURLLoaderFactory(),
-      base::Bind(&EnterpriseEnrollmentHelperImpl::OnTokenFetched,
-                 weak_ptr_factory_.GetWeakPtr(),
-                 false /* is_additional_token */));
+  EnrollUsingToken(token);
 }
 
 void EnterpriseEnrollmentHelperImpl::OnEnrollmentFinished(
@@ -416,13 +394,10 @@ void EnterpriseEnrollmentHelperImpl::ReportAuthStatus(
     const GoogleServiceAuthError& error) {
   switch (error.state()) {
     case GoogleServiceAuthError::NONE:
-    case GoogleServiceAuthError::CAPTCHA_REQUIRED:
-    case GoogleServiceAuthError::TWO_FACTOR:
     case GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS:
     case GoogleServiceAuthError::REQUEST_CANCELED:
     case GoogleServiceAuthError::UNEXPECTED_SERVICE_RESPONSE:
     case GoogleServiceAuthError::SERVICE_ERROR:
-    case GoogleServiceAuthError::WEB_LOGIN_REQUIRED:
       UMA(policy::kMetricEnrollmentLoginFailed);
       LOG(ERROR) << "Auth error " << error.state();
       break;
@@ -430,20 +405,11 @@ void EnterpriseEnrollmentHelperImpl::ReportAuthStatus(
       UMA(policy::kMetricEnrollmentAccountNotSignedUp);
       LOG(ERROR) << "Account not signed up " << error.state();
       break;
-    case GoogleServiceAuthError::ACCOUNT_DELETED:
-      UMA(policy::kMetricEnrollmentAccountDeleted);
-      LOG(ERROR) << "Account deleted " << error.state();
-      break;
-    case GoogleServiceAuthError::ACCOUNT_DISABLED:
-      UMA(policy::kMetricEnrollmentAccountDisabled);
-      LOG(ERROR) << "Account disabled " << error.state();
-      break;
     case GoogleServiceAuthError::CONNECTION_FAILED:
     case GoogleServiceAuthError::SERVICE_UNAVAILABLE:
       UMA(policy::kMetricEnrollmentNetworkFailed);
       LOG(WARNING) << "Network error " << error.state();
       break;
-    case GoogleServiceAuthError::HOSTED_NOT_ALLOWED_DEPRECATED:
     case GoogleServiceAuthError::NUM_STATES:
       NOTREACHED();
       break;
@@ -487,6 +453,7 @@ void EnterpriseEnrollmentHelperImpl::ReportEnrollmentStatus(
           UMA(policy::kMetricEnrollmentRegisterPolicyTempUnavailable);
           break;
         case policy::DM_STATUS_HTTP_STATUS_ERROR:
+        case policy::DM_STATUS_REQUEST_TOO_LARGE:
           UMA(policy::kMetricEnrollmentRegisterPolicyHttpError);
           break;
         case policy::DM_STATUS_RESPONSE_DECODING_ERROR:

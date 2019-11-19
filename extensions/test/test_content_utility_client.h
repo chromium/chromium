@@ -13,9 +13,6 @@ class TestContentUtilityClient : public content::ContentUtilityClient {
  public:
   TestContentUtilityClient();
   ~TestContentUtilityClient() override;
-
-  // content::ContentUtilityClient:
-  void UtilityThreadStarted() override;
 };
 
 }  // namespace extensions

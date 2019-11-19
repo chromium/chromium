@@ -1,0 +1,125 @@
+Test
+Test
+Test
+
+This test checks getBoundingClientRect() on zoomed HTML and SVG elements
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+Gray rectangles: 100x50
+Green rectangles: 100x50, zoom=200%
+Blue rectangles: 200x100, zoom=50%
+
+
+Checking HTML elements:
+
+
+PASS div1.left is 0.00
+PASS div1.top is 0.00
+PASS div1.width is 100.00
+PASS div1.height is 50.00
+PASS div1.right is 100.00
+PASS div1.bottom is 50.00
+
+
+PASS div2.left is 0.00
+PASS div2.top is 25.00
+PASS div2.width is 100.00
+PASS div2.height is 50.00
+PASS div2.right is 100.00
+PASS div2.bottom is 75.00
+
+
+PASS div3.left is 0.00
+PASS div3.top is 300.00
+PASS div3.width is 200.00
+PASS div3.height is 100.00
+PASS div3.right is 200.00
+PASS div3.bottom is 400.00
+
+
+Checking SVG elements:
+
+
+PASS svg1.left is 0.00
+PASS svg1.top is 250.00
+PASS svg1.width is 150.00
+PASS svg1.height is 50.00
+PASS svg1.right is 150.00
+PASS svg1.bottom is 300.00
+PASS rect1.left is 0.00
+PASS rect1.top is 250.00
+PASS rect1.width is 100.00
+PASS rect1.height is 50.00
+PASS rect1.right is 100.00
+PASS rect1.bottom is 300.00
+PASS image1.left is 100.00
+PASS image1.top is 250.00
+PASS image1.width is 50.00
+PASS image1.height is 25.00
+PASS image1.right is 150.00
+PASS image1.bottom is 275.00
+PASS text1.left is 100.00
+PASS text1.top is 282.66
+FAIL text1.width should be 47.98. Was 48.000003814697266.
+PASS text1.height is 6.16
+FAIL text1.right should be 147.98. Was 148.00000381469727.
+PASS text1.bottom is 288.82
+
+
+PASS svg2.left is 75.00
+PASS svg2.top is 100.00
+PASS svg2.width is 150.00
+PASS svg2.height is 50.00
+PASS svg2.right is 225.00
+PASS svg2.bottom is 150.00
+PASS rect2.left is 75.00
+PASS rect2.top is 100.00
+PASS rect2.width is 100.00
+PASS rect2.height is 50.00
+PASS rect2.right is 175.00
+PASS rect2.bottom is 150.00
+PASS image2.left is 175.00
+PASS image2.top is 100.00
+PASS image2.width is 50.00
+PASS image2.height is 25.00
+PASS image2.right is 225.00
+PASS image2.bottom is 125.00
+PASS text2.left is 175.00
+PASS text2.top is 132.66
+PASS text2.width is 47.98
+PASS text2.height is 6.02
+PASS text2.right is 222.98
+PASS text2.bottom is 138.70
+
+
+PASS svg3.left is 900.00
+PASS svg3.top is 500.00
+PASS svg3.width is 300.00
+PASS svg3.height is 100.00
+PASS svg3.right is 1200.00
+PASS svg3.bottom is 600.00
+PASS rect3.left is 900.00
+PASS rect3.top is 500.00
+PASS rect3.width is 200.00
+PASS rect3.height is 100.00
+PASS rect3.right is 1100.00
+PASS rect3.bottom is 600.00
+PASS image3.left is 1100.00
+PASS image3.top is 500.00
+PASS image3.width is 100.00
+PASS image3.height is 50.00
+PASS image3.right is 1200.00
+PASS image3.bottom is 550.00
+PASS text3.left is 1100.00
+PASS text3.top is 565.33
+FAIL text3.width should be 95.97. Was 95.99999237060547.
+PASS text3.height is 12.31
+FAIL text3.right should be 1195.97. Was 1195.9999923706055.
+PASS text3.bottom is 577.64
+
+
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

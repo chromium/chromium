@@ -14,9 +14,6 @@
            BECAUSE YOUR RESOURCES ARE FUNCTIONALLY RELATED OR FALL UNDER THE
            SAME CONDITIONALS. -->
       <structure type="chrome_scaled_image" name="IDR_APP_LIST_FOLDER_BACK_NORMAL" file="common/app_list_folder_back_normal.png" />
-      <structure type="chrome_scaled_image" name="IDR_APP_LIST_SPEECH_MIC_ON" file="common/app_list_mic_on.png" />
-      <structure type="chrome_scaled_image" name="IDR_APP_LIST_SPEECH_MIC_OFF" file="common/app_list_mic_off.png" />
-      <structure type="chrome_scaled_image" name="IDR_APP_LIST_SPEECH_MIC_RECORDING" file="common/app_list_mic_recording.png" />
     </structures>
   </release>
 </grit>

@@ -174,6 +174,16 @@ bool ReadCertChainFromFile(const std::string& file_path_ascii,
   return true;
 }
 
+scoped_refptr<ParsedCertificate> ReadCertFromFile(
+    const std::string& file_path_ascii) {
+  ParsedCertificateList chain;
+  if (!ReadCertChainFromFile(file_path_ascii, &chain))
+    return nullptr;
+  if (chain.size() != 1)
+    return nullptr;
+  return chain[0];
+}
+
 bool ReadVerifyCertChainTestFromFile(const std::string& file_path_ascii,
                                      VerifyCertChainTest* test) {
   // Reset all the out parameters to their defaults.

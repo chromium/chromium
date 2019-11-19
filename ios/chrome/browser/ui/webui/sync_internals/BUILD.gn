@@ -13,13 +13,13 @@ source_set("sync_internals") {
     "//base",
     "//components/browser_sync",
     "//components/resources",
-    "//components/signin/core/browser",
     "//components/sync",
+    "//components/sync/driver:resources",
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/sync",
     "//ios/chrome/common",
-    "//ios/web",
+    "//ios/web/public/webui",
   ]
 }

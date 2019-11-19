@@ -1,9 +1,13 @@
 # Prefer tapted@ for mac specific changes.
 
+kylixrd@chromium.org
 msw@chromium.org
-sadrul@chromium.org
+pbos@chromium.org
+pkasting@chromium.org
+robliao@chromium.org
 sky@chromium.org
 tapted@chromium.org
+weili@chromium.org
 
 # Prefer ellyjones@ for any changes to these files.
 per-file *_mac.*=ellyjones@chromium.org

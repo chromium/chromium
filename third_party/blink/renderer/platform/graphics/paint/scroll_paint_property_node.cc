@@ -32,7 +32,7 @@ const ScrollPaintPropertyNode& ScrollPaintPropertyNode::Root() {
 }
 
 std::unique_ptr<JSONObject> ScrollPaintPropertyNode::ToJSON() const {
-  auto json = JSONObject::Create();
+  auto json = std::make_unique<JSONObject>();
   if (Parent())
     json->SetString("parent", String::Format("%p", Parent()));
   if (state_.container_rect != IntRect())
@@ -77,7 +77,7 @@ std::unique_ptr<JSONObject> ScrollPaintPropertyNode::ToJSON() const {
     json->SetString("snap_container_rect",
                     state_.snap_container_data->rect().ToString().c_str());
     if (state_.snap_container_data->size()) {
-      auto area_rects_json = JSONArray::Create();
+      auto area_rects_json = std::make_unique<JSONArray>();
       for (size_t i = 0; i < state_.snap_container_data->size(); ++i) {
         area_rects_json->PushString(
             state_.snap_container_data->at(i).rect.ToString().c_str());

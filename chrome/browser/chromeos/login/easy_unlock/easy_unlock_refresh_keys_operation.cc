@@ -17,8 +17,7 @@ EasyUnlockRefreshKeysOperation::EasyUnlockRefreshKeysOperation(
     : user_context_(user_context),
       tpm_public_key_(tpm_public_key),
       devices_(devices),
-      callback_(callback),
-      weak_ptr_factory_(this) {}
+      callback_(callback) {}
 
 EasyUnlockRefreshKeysOperation::~EasyUnlockRefreshKeysOperation() {}
 

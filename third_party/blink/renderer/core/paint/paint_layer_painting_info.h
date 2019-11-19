@@ -46,9 +46,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_PAINT_LAYER_PAINTING_INFO_H_
 
 #include "base/logging.h"
+#include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
 #include "third_party/blink/renderer/core/paint/paint_phase.h"
 #include "third_party/blink/renderer/platform/graphics/paint/cull_rect.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 #if DCHECK_IS_ON()
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -62,16 +63,13 @@ class PaintLayer;
 enum PaintLayerFlag {
   kPaintLayerNoFlag = 0,
   kPaintLayerHaveTransparency = 1,
-  kPaintLayerUncachedClipRects = 1 << 2,
-  kPaintLayerPaintingOverlayScrollbars = 1 << 3,
+  kPaintLayerPaintingOverlayOverflowControls = 1 << 3,
   kPaintLayerPaintingCompositingBackgroundPhase = 1 << 4,
   kPaintLayerPaintingCompositingForegroundPhase = 1 << 5,
   kPaintLayerPaintingCompositingMaskPhase = 1 << 6,
   kPaintLayerPaintingCompositingScrollingPhase = 1 << 7,
   kPaintLayerPaintingOverflowContents = 1 << 8,
   kPaintLayerPaintingSkipRootBackground = 1 << 10,
-  kPaintLayerPaintingChildClippingMaskPhase = 1 << 11,
-  kPaintLayerPaintingAncestorClippingMaskPhase = 1 << 12,
   kPaintLayerPaintingRenderingClipPathAsMask = 1 << 13,
   kPaintLayerPaintingCompositingDecorationPhase = 1 << 14,
   kPaintLayerPaintingRenderingResourceSubtree = 1 << 15,
@@ -91,7 +89,7 @@ struct PaintLayerPaintingInfo {
   PaintLayerPaintingInfo(PaintLayer* root_layer,
                          const CullRect& cull_rect,
                          GlobalPaintFlags global_paint_flags,
-                         const LayoutSize& sub_pixel_accumulation)
+                         const PhysicalOffset& sub_pixel_accumulation)
       : root_layer(root_layer),
         cull_rect(cull_rect),
         sub_pixel_accumulation(sub_pixel_accumulation),
@@ -102,7 +100,7 @@ struct PaintLayerPaintingInfo {
   // TODO(jchaffraix): We should encapsulate all these fields.
   const PaintLayer* root_layer;
   CullRect cull_rect;  // relative to rootLayer;
-  LayoutSize sub_pixel_accumulation;
+  PhysicalOffset sub_pixel_accumulation;
 
  private:
   const GlobalPaintFlags global_paint_flags_;
@@ -138,20 +136,14 @@ inline String PaintLayerFlagsToDebugString(PaintLayerFlags flags) {
 
   if (flags & kPaintLayerHaveTransparency)
     append("kPaintLayerHaveTransparency");
-  if (flags & kPaintLayerUncachedClipRects)
-    append("kPaintLayerUncachedClipRects");
-  if (flags & kPaintLayerPaintingOverlayScrollbars)
-    append("kPaintLayerPaintingOverlayScrollbars");
+  if (flags & kPaintLayerPaintingOverlayOverflowControls)
+    append("kPaintLayerPaintingOverlayOverflowControls");
   if (flags & kPaintLayerPaintingCompositingScrollingPhase)
     append("kPaintLayerPaintingCompositingScrollingPhase");
   if (flags & kPaintLayerPaintingOverflowContents)
     append("kPaintLayerPaintingOverflowContents");
   if (flags & kPaintLayerPaintingSkipRootBackground)
     append("kPaintLayerPaintingSkipRootBackground");
-  if (flags & kPaintLayerPaintingChildClippingMaskPhase)
-    append("kPaintLayerPaintingChildClippingMaskPhase");
-  if (flags & kPaintLayerPaintingAncestorClippingMaskPhase)
-    append("kPaintLayerPaintingAncestorClippingMaskPhase");
   if (flags & kPaintLayerPaintingRenderingClipPathAsMask)
     append("kPaintLayerPaintingRenderingClipPathAsMask");
   if (flags & kPaintLayerPaintingRenderingResourceSubtree)

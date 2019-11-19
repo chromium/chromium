@@ -12,14 +12,14 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "components/signin/core/browser/account_consistency_method.h"
+#include "components/signin/public/base/account_consistency_method.h"
 #include "content/public/browser/web_contents_observer.h"
 
 namespace content {
 class WebContents;
 }
 
-namespace identity {
+namespace signin {
 class IdentityManager;
 }
 
@@ -29,7 +29,7 @@ class ProcessDiceHeaderDelegateImpl : public ProcessDiceHeaderDelegate,
   // Callback starting Sync.
   using EnableSyncCallback =
       base::OnceCallback<void(content::WebContents*,
-                              const std::string& /* account_id */)>;
+                              const CoreAccountId& /* account_id */)>;
 
   // Callback showing a signin error UI.
   using ShowSigninErrorCallback =
@@ -42,7 +42,7 @@ class ProcessDiceHeaderDelegateImpl : public ProcessDiceHeaderDelegate,
   ProcessDiceHeaderDelegateImpl(
       content::WebContents* web_contents,
       signin::AccountConsistencyMethod account_consistency,
-      identity::IdentityManager* identity_manager,
+      signin::IdentityManager* identity_manager,
       bool is_sync_signin_tab,
       EnableSyncCallback enable_sync_callback,
       ShowSigninErrorCallback show_signin_error_callback,
@@ -50,7 +50,7 @@ class ProcessDiceHeaderDelegateImpl : public ProcessDiceHeaderDelegate,
   ~ProcessDiceHeaderDelegateImpl() override;
 
   // ProcessDiceHeaderDelegate:
-  void EnableSync(const std::string& account_id) override;
+  void EnableSync(const CoreAccountId& account_id) override;
   void HandleTokenExchangeFailure(const std::string& email,
                                   const GoogleServiceAuthError& error) override;
 
@@ -59,7 +59,7 @@ class ProcessDiceHeaderDelegateImpl : public ProcessDiceHeaderDelegate,
   bool ShouldEnableSync();
 
   signin::AccountConsistencyMethod account_consistency_;
-  identity::IdentityManager* identity_manager_;
+  signin::IdentityManager* identity_manager_;
   EnableSyncCallback enable_sync_callback_;
   ShowSigninErrorCallback show_signin_error_callback_;
   bool is_sync_signin_tab_;

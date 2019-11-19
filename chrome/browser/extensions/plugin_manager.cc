@@ -15,9 +15,9 @@
 #include "chrome/common/chrome_paths.h"
 #include "content/public/browser/plugin_service.h"
 #include "content/public/common/pepper_plugin_info.h"
-#include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handlers/mime_types_handler.h"
+#include "net/base/mime_util.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
 
@@ -30,8 +30,7 @@ using content::PluginService;
 namespace extensions {
 
 PluginManager::PluginManager(content::BrowserContext* context)
-    : profile_(Profile::FromBrowserContext(context)),
-      extension_registry_observer_(this) {
+    : profile_(Profile::FromBrowserContext(context)) {
   extension_registry_observer_.Add(ExtensionRegistry::Get(profile_));
 }
 
@@ -126,14 +125,13 @@ void PluginManager::OnExtensionUnloaded(
 #if BUILDFLAG(ENABLE_NACL)
 
 void PluginManager::RegisterNaClModule(const NaClModuleInfo& info) {
-  DCHECK(FindNaClModule(info.url) == nacl_module_list_.end());
   nacl_module_list_.push_front(info);
 }
 
 void PluginManager::UnregisterNaClModule(const NaClModuleInfo& info) {
   auto iter = FindNaClModule(info.url);
-  DCHECK(iter != nacl_module_list_.end());
-  nacl_module_list_.erase(iter);
+  if (iter != nacl_module_list_.end())
+    nacl_module_list_.erase(iter);
 }
 
 void PluginManager::UpdatePluginListWithNaClModules() {

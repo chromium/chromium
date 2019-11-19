@@ -22,7 +22,6 @@
 #include "net/base/host_port_pair.h"
 #include "net/base/proxy_server.h"
 #include "net/http/http_status_code.h"
-#include "services/network/public/cpp/features.h"
 #include "url/url_constants.h"
 
 #if defined(OS_ANDROID)
@@ -34,14 +33,12 @@ namespace {
 const char kEnabled[] = "Enabled";
 const char kControl[] = "Control";
 const char kDisabled[] = "Disabled";
-const char kExperimentsOption[] = "exp";
 const char kDefaultSecureProxyCheckUrl[] = "http://check.googlezip.net/connect";
 const char kDefaultWarmupUrl[] = "http://check.googlezip.net/e2e_probe";
 
 const char kQuicFieldTrial[] = "DataReductionProxyUseQuic";
 
-const char kLoFiFieldTrial[] = "DataCompressionProxyLoFi";
-const char kLoFiFlagFieldTrial[] = "DataCompressionProxyLoFiFlag";
+const char kLitePageFieldTrial[] = "DataCompressionProxyLoFi";
 
 // Default URL for retrieving the Data Reduction Proxy configuration.
 const char kClientConfigURL[] =
@@ -51,16 +48,10 @@ const char kClientConfigURL[] =
 const char kPingbackURL[] =
     "https://datasaver.googleapis.com/v1/metrics:recordPageloadMetrics";
 
-// The name of the server side experiment field trial.
-const char kServerExperimentsFieldTrial[] =
-    "DataReductionProxyServerExperiments";
-
 // LitePage black list version.
 const char kLitePageBlackListVersion[] = "lite-page-blacklist-version";
 
-const char kWarmupFetchCallbackEnabledParam[] = "warmup_fetch_callback_enabled";
-const char kMissingViaBypassDisabledParam[] = "bypass_missing_via_disabled";
-const char kDiscardCanaryCheckResultParam[] = "store_canary_check_result";
+const char kExperimentsOption[] = "exp";
 
 bool IsIncludedInFieldTrial(const std::string& name) {
   return base::StartsWith(base::FieldTrialList::FindFullName(name), kEnabled,
@@ -109,55 +100,26 @@ bool IsIncludedInFREPromoFieldTrial() {
 }
 
 bool IsIncludedInHoldbackFieldTrial() {
-  return IsIncludedInFieldTrial("DataCompressionProxyHoldback");
-}
-
-bool IsIncludedInSecureProxyHoldbackFieldTrial() {
-  return base::StartsWith(
-      base::FieldTrialList::FindFullName("DataCompressionProxyHoldback"),
-      "SecureProxy_Disabled", base::CompareCase::SENSITIVE);
+  // For now, DRP can be disabled using either the field trial or the feature.
+  // New server configs should use the feature capability.
+  // TODO(tbansal): Remove the field trial code.
+  return base::FeatureList::IsEnabled(
+             data_reduction_proxy::features::kDataReductionProxyHoldback) ||
+         IsIncludedInFieldTrial("DataCompressionProxyHoldback");
 }
 
 std::string HoldbackFieldTrialGroup() {
   return base::FieldTrialList::FindFullName("DataCompressionProxyHoldback");
 }
 
-const char* GetLoFiFieldTrialName() {
-  return kLoFiFieldTrial;
-}
-
-const char* GetLoFiFlagFieldTrialName() {
-  return kLoFiFlagFieldTrial;
-}
-
-const char* GetMissingViaBypassParamName() {
-  return kMissingViaBypassDisabledParam;
-}
-
-const char* GetDiscardCanaryCheckResultParam() {
-  return kDiscardCanaryCheckResultParam;
-}
-
-bool ShouldDiscardCanaryCheckResult() {
+bool ForceEnableClientConfigServiceForAllDataSaverUsers() {
+  // Client config is enabled for all data users that are not in the
+  // kDataReductionProxyHoldback. Users that have kDataReductionProxyHoldback
+  // enabled have config service client enabled only if
+  // |force_enable_config_service_fetches| is set to true.
   return GetFieldTrialParamByFeatureAsBool(
-      features::kDataReductionProxyRobustConnection,
-      GetDiscardCanaryCheckResultParam(), false);
-}
-
-bool IsIncludedInServerExperimentsFieldTrial() {
-  return !base::CommandLine::ForCurrentProcess()->HasSwitch(
-             data_reduction_proxy::switches::
-                 kDataReductionProxyServerExperimentsDisabled) &&
-         base::FieldTrialList::FindFullName(kServerExperimentsFieldTrial)
-                 .find(kDisabled) != 0;
-}
-
-bool IsIncludedInOnDeviceSafeBrowsingFieldTrial() {
-  if (!params::IsIncludedInServerExperimentsFieldTrial())
-    return false;
-  std::string server_experiment = variations::GetVariationParamValue(
-      params::GetServerExperimentsFieldTrialName(), kExperimentsOption);
-  return server_experiment == "disable_server_safebrowsing";
+      data_reduction_proxy::features::kDataReductionProxyHoldback,
+      "force_enable_config_service_fetches", false);
 }
 
 bool FetchWarmupProbeURLEnabled() {
@@ -179,11 +141,6 @@ bool IsWarmupURLFetchCallbackEnabled() {
     return false;
   }
 
-  if (!GetFieldTrialParamByFeatureAsBool(
-          features::kDataReductionProxyRobustConnection,
-          kWarmupFetchCallbackEnabledParam, true)) {
-    return false;
-  }
   return true;
 }
 
@@ -234,14 +191,6 @@ bool IsIncludedInQuicFieldTrial() {
   return true;
 }
 
-bool IsQuicEnabledForNonCoreProxies() {
-  DCHECK(IsIncludedInQuicFieldTrial());
-  std::map<std::string, std::string> params;
-  variations::GetVariationParams(GetQuicFieldTrialName(), &params);
-  return GetStringValueForVariationParamWithDefaultValue(
-             params, "enable_quic_non_core_proxies", "true") != "false";
-}
-
 const char* GetQuicFieldTrialName() {
   return kQuicFieldTrial;
 }
@@ -286,15 +235,9 @@ GURL GetPingbackURL() {
   return GURL(kPingbackURL);
 }
 
-bool ShouldForceEnableDataReductionProxy() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      data_reduction_proxy::switches::kEnableDataReductionProxy);
-}
-
 int LitePageVersion() {
-  return GetFieldTrialParameterAsInteger(
-      data_reduction_proxy::params::GetLoFiFieldTrialName(),
-      kLitePageBlackListVersion, 0, 0);
+  return GetFieldTrialParameterAsInteger(kLitePageFieldTrial,
+                                         kLitePageBlackListVersion, 0, 0);
 }
 
 int GetFieldTrialParameterAsInteger(const std::string& group,
@@ -340,9 +283,8 @@ bool GetOverrideProxiesForHttpFromCommandLine(
       DCHECK(proxy_server.is_valid());
       DCHECK(!proxy_server.is_direct());
 
-      // Overriding proxies have type UNSPECIFIED_TYPE.
-      override_proxies_for_http->push_back(DataReductionProxyServer(
-          std::move(proxy_server), ProxyServer::UNSPECIFIED_TYPE));
+      override_proxies_for_http->push_back(
+          DataReductionProxyServer(std::move(proxy_server)));
     }
 
     return true;
@@ -361,30 +303,58 @@ bool GetOverrideProxiesForHttpFromCommandLine(
 
   override_proxies_for_http->clear();
 
-  // Overriding proxies have type UNSPECIFIED_TYPE.
   if (!origin.empty()) {
     net::ProxyServer primary_proxy =
         net::ProxyServer::FromURI(origin, net::ProxyServer::SCHEME_HTTP);
     DCHECK(primary_proxy.is_valid());
     DCHECK(!primary_proxy.is_direct());
-    override_proxies_for_http->push_back(DataReductionProxyServer(
-        std::move(primary_proxy), ProxyServer::UNSPECIFIED_TYPE));
+    override_proxies_for_http->push_back(
+        DataReductionProxyServer(std::move(primary_proxy)));
   }
   if (!fallback_origin.empty()) {
     net::ProxyServer fallback_proxy = net::ProxyServer::FromURI(
         fallback_origin, net::ProxyServer::SCHEME_HTTP);
     DCHECK(fallback_proxy.is_valid());
     DCHECK(!fallback_proxy.is_direct());
-    override_proxies_for_http->push_back(DataReductionProxyServer(
-        std::move(fallback_proxy), ProxyServer::UNSPECIFIED_TYPE));
+    override_proxies_for_http->push_back(
+        DataReductionProxyServer(std::move(fallback_proxy)));
   }
 
   return true;
 }
 
-const char* GetServerExperimentsFieldTrialName() {
-  return kServerExperimentsFieldTrial;
+std::string GetDataSaverServerExperimentsOptionName() {
+  return kExperimentsOption;
 }
+
+std::string GetDataSaverServerExperiments() {
+  const std::string cmd_line_experiment =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          data_reduction_proxy::switches::kDataReductionProxyExperiment);
+
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          data_reduction_proxy::switches::
+              kDataReductionProxyServerExperimentsDisabled)) {
+    // Both kDataReductionProxyExperiment and
+    // kDataReductionProxyServerExperimentsDisabled switches can't be set at the
+    // same time.
+    DCHECK(cmd_line_experiment.empty());
+    return std::string();
+  }
+
+  // Experiment set using command line overrides field trial.
+  if (!cmd_line_experiment.empty())
+    return cmd_line_experiment;
+
+  // First check if the feature is enabled.
+  if (!base::FeatureList::IsEnabled(
+          features::kDataReductionProxyServerExperiments)) {
+    return std::string();
+  }
+  return base::GetFieldTrialParamValueByFeature(
+      features::kDataReductionProxyServerExperiments, kExperimentsOption);
+}
+
 
 GURL GetSecureProxyCheckURL() {
   std::string secure_proxy_check_url =
@@ -396,17 +366,10 @@ GURL GetSecureProxyCheckURL() {
   return GURL(secure_proxy_check_url);
 }
 
-bool IsDataSaverSiteBreakdownUsingPLMEnabled() {
-  return base::FeatureList::IsEnabled(
-      data_reduction_proxy::features::
-          kDataSaverSiteBreakdownUsingPageLoadMetrics);
-}
-
 bool IsEnabledWithNetworkService() {
   return base::FeatureList::IsEnabled(
-             data_reduction_proxy::features::
-                 kDataReductionProxyEnabledWithNetworkService) &&
-         base::FeatureList::IsEnabled(network::features::kNetworkService);
+      data_reduction_proxy::features::
+          kDataReductionProxyEnabledWithNetworkService);
 }
 
 base::Optional<DataReductionProxyTypeInfo> FindConfiguredProxyInVector(
@@ -443,14 +406,12 @@ DataReductionProxyParams::DataReductionProxyParams() {
 
   if (!use_override_proxies_for_http) {
     DCHECK(proxies_for_http_.empty());
-    proxies_for_http_.push_back(DataReductionProxyServer(
-        net::ProxyServer::FromURI("https://proxy.googlezip.net:443",
-                                  net::ProxyServer::SCHEME_HTTP),
-        ProxyServer::CORE));
-    proxies_for_http_.push_back(DataReductionProxyServer(
-        net::ProxyServer::FromURI("compress.googlezip.net:80",
-                                  net::ProxyServer::SCHEME_HTTP),
-        ProxyServer::CORE));
+    proxies_for_http_.push_back(
+        DataReductionProxyServer(net::ProxyServer::FromURI(
+            "https://proxy.googlezip.net:443", net::ProxyServer::SCHEME_HTTP)));
+    proxies_for_http_.push_back(
+        DataReductionProxyServer(net::ProxyServer::FromURI(
+            "compress.googlezip.net:80", net::ProxyServer::SCHEME_HTTP)));
   }
 
   DCHECK(std::all_of(proxies_for_http_.begin(), proxies_for_http_.end(),

@@ -81,7 +81,8 @@ std::unique_ptr<base::Value> LoadJSONFile(const std::string& relative_path) {
 
   std::string error;
   JSONFileValueDeserializer deserializer(path);
-  std::unique_ptr<base::Value> value = deserializer.Deserialize(NULL, &error);
+  std::unique_ptr<base::Value> value =
+      deserializer.Deserialize(nullptr, &error);
   LOG_IF(WARNING, !value.get()) << "Failed to parse " << path.value()
                                 << ": " << error;
   return value;

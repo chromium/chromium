@@ -131,6 +131,22 @@ class FileWriter : public FileWriterInterface {
             FileWriteMode write_mode,
             FilePermissions permissions);
 
+#if defined(OS_LINUX)
+  //! \brief Wraps LoggingOpenMemFileForWrite().
+  //!
+  //! \return `true` if the operation succeeded, `false` if it failed, with an
+  //!     error message logged.
+  //!
+  //! \note After a successful call, this method or Open() cannot be called
+  //      again until after Close().
+  bool OpenMemfd(const base::FilePath& path);
+
+  //! \brief Returns the underlying file descriptor.
+  //!
+  //! \note This is used when this writes to a Memfd.
+  int fd();
+#endif
+
   //! \brief Wraps CheckedCloseHandle().
   //!
   //! \note It is only valid to call this method on an object that has had a

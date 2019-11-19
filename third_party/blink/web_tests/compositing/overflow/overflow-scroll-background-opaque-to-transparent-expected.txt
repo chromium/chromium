@@ -1,5 +1,0 @@
-Scroller background should be white
-
-Should have opaque composited scrolling contents layer: Pass.
-
-Should not have opaque composited scrolling contents layer: Pass.

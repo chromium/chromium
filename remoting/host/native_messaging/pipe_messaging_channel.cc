@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
+#include "base/process/process_info.h"
 #include "base/values.h"
 #include "build/build_config.h"
 
@@ -17,6 +18,10 @@
 #include <unistd.h>
 
 #include "base/posix/eintr_wrapper.h"
+#endif
+
+#if defined(OS_WIN)
+#include <windows.h>
 #endif
 
 namespace {
@@ -51,8 +56,7 @@ PipeMessagingChannel::PipeMessagingChannel(base::File input, base::File output)
     : native_messaging_reader_(DuplicatePlatformFile(std::move(input))),
       native_messaging_writer_(
           new NativeMessagingWriter(DuplicatePlatformFile(std::move(output)))),
-      event_handler_(nullptr),
-      weak_factory_(this) {
+      event_handler_(nullptr) {
   weak_ptr_ = weak_factory_.GetWeakPtr();
 }
 

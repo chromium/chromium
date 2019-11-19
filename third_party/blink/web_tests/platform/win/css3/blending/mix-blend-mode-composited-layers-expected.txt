@@ -1,37 +1,17 @@
 {
   "layers": [
     {
-      "name": "LayoutView #document",
-      "bounds": [800, 600],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
+      "name": "LayoutNGBlockFlow HTML",
+      "bounds": [800, 70]
     },
     {
-      "name": "Scrolling Layer",
-      "bounds": [800, 600],
-      "drawsContent": false
-    },
-    {
-      "name": "Scrolling Contents Layer",
-      "bounds": [800, 600],
-      "contentsOpaque": true,
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "LayoutBlockFlow HTML",
-      "bounds": [800, 70],
-      "isolate": true
-    },
-    {
-      "name": "LayoutBlockFlow DIV",
-      "position": [8, 18],
+      "name": "LayoutNGBlockFlow DIV",
       "bounds": [10, 10],
-      "blendMode": "multiply",
-      "backgroundColor": "#0000FF"
+      "backgroundColor": "#0000FF",
+      "transform": 1
     },
     {
-      "name": "LayoutBlockFlow DIV",
+      "name": "LayoutNGBlockFlow DIV",
       "bounds": [10, 10],
       "contentsOpaque": true,
       "backgroundColor": "#FFFF00",

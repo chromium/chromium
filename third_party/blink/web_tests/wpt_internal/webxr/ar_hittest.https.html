@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>let additionalChromiumResources = ["resources/xr-internal-device-mocking.js"];</script>
+<script src="/webxr/resources/webxr_util.js"></script>
+<script src="/webxr/resources/webxr_test_constants.js"></script>
+<script src="/webxr/resources/webxr_test_asserts.js"></script>
+<canvas />
+
+<script>
+// Because AR is not yet in the core webxr spec, this is an internal-chrome only test.
+let testName = "Ensures hit-test returns expected mock results";
+
+let fakeDeviceInitParams = { supportsImmersive: true,
+                             views: VALID_VIEWS,
+                             supportsEnvironmentIntegration: true,
+                             supportedFeatures: ALL_FEATURES };
+
+let expectedHitMatrix = [1, 0, 0, 1,
+                         0, 1, 0, 2,
+                         0, 0, 1, 3,
+                         0, 0, 0, 1];
+
+let testFunction = function(session, fakeDeviceController, t) {
+  assert_equals(session.mode, 'immersive-ar');
+  assert_not_equals(session.environmentBlendMode, 'opaque');
+  return session.requestReferenceSpace('local').then((referenceSpace) => {
+    let ray = new XRRay({x : 0.0, y : 0.0, z : 0.0}, {x : 1.0, y : 0.0, z: 0.0});
+
+    let hit = new device.mojom.XRHitResult();
+    hit.hitMatrix = new gfx.mojom.Transform();
+    hit.hitMatrix.matrix = expectedHitMatrix;
+
+    fakeDeviceController.setHitTestResults({ results: [hit] });
+
+    return session.requestHitTest(ray, referenceSpace).then(
+        (hitResults) => {
+          t.step(() => {
+            // Test that hit results are what we expected.
+            assert_equals(hitResults.length, 1);
+            assert_equals(hitResults[0].hitMatrix.length, 16);
+            assert_matrix_approx_equals(
+              hitResults[0].hitMatrix,
+              expectedHitMatrix,
+              FLOAT_EPSILON,
+              "Hit test matrix does not equals input test matrix");
+          });
+        });
+    });
+};
+
+xr_session_promise_test(
+  testName, testFunction, fakeDeviceInitParams, 'immersive-ar');
+
+</script>

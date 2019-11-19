@@ -1,0 +1,29 @@
+CONSOLE MESSAGE: line 53: Testing main world. Request should be blocked by main world CSP.
+CONSOLE ERROR: line 10: Refused to connect to 'http://127.0.0.1:8000/security/isolatedWorld/resources/access_control_allow_origin.php' because it violates the following Content Security Policy directive: "connect-src 'none'".
+
+CONSOLE ERROR: line 10: Refused to connect to 'http://127.0.0.1:8000/security/isolatedWorld/resources/access_control_allow_origin.php' because it violates the document's Content Security Policy.
+CONSOLE MESSAGE: line 30: PASS: Request blocked by CSP as expected.
+CONSOLE MESSAGE: line 58: Testing isolated world with no csp. Request should be blocked by main world CSP.
+CONSOLE ERROR: Refused to connect to 'http://127.0.0.1:8000/security/isolatedWorld/resources/access_control_allow_origin.php' because it violates the following Content Security Policy directive: "connect-src 'none'".
+
+CONSOLE ERROR: Refused to connect to 'http://127.0.0.1:8000/security/isolatedWorld/resources/access_control_allow_origin.php' because it violates the document's Content Security Policy.
+CONSOLE MESSAGE: PASS: Request blocked by CSP as expected.
+CONSOLE MESSAGE: line 65: Testing isolated world with permissive csp.
+CONSOLE MESSAGE: PASS: Request succeeded as expected.
+CONSOLE MESSAGE: line 71: Testing fetch redirect in isolated world with permissive csp.
+CONSOLE ERROR: Refused to connect to 'http://127.0.0.1:8000/security/isolatedWorld/resources/access_control_allow_origin.php' because it violates the following Content Security Policy directive: "connect-src 'none'".
+
+CONSOLE MESSAGE: FAIL: Request failed unexpectedly.
+CONSOLE MESSAGE: line 78: Testing isolated world with strict csp.
+CONSOLE MESSAGE: line 79: internals.runtimeFlags.isolatedWorldCSPEnabled is true
+CONSOLE ERROR: Refused to connect to 'http://127.0.0.1:8000/security/isolatedWorld/resources/access_control_allow_origin.php' because it violates the following Content Security Policy directive: "connect-src 'self'".
+
+CONSOLE ERROR: Refused to connect to 'http://127.0.0.1:8000/security/isolatedWorld/resources/access_control_allow_origin.php' because it violates the document's Content Security Policy.
+CONSOLE MESSAGE: PASS: Request blocked by CSP as expected.
+CONSOLE MESSAGE: line 91: Testing fetch redirect in isolated world with strict csp.
+CONSOLE MESSAGE: line 92: internals.runtimeFlags.isolatedWorldCSPEnabled is true
+CONSOLE ERROR: Refused to connect to 'http://127.0.0.1:8000/resources/redirect.php?url=http://127.0.0.1:8000/security/isolatedWorld/resources/access_control_allow_origin.php&cors_allow_origin=*&delay=100' because it violates the following Content Security Policy directive: "connect-src 'self'".
+
+CONSOLE ERROR: Refused to connect to 'http://127.0.0.1:8000/resources/redirect.php?url=http://127.0.0.1:8000/security/isolatedWorld/resources/access_control_allow_origin.php&cors_allow_origin=*&delay=100' because it violates the document's Content Security Policy.
+CONSOLE MESSAGE: PASS: Request blocked by CSP as expected.
+This tests the interaction of the fetch API run in the isolated world with the isolated world CSP.

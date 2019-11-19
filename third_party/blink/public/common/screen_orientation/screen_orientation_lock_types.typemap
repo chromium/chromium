@@ -6,3 +6,6 @@ mojom = "//services/device/public/mojom/screen_orientation_lock_types.mojom"
 public_headers = [ "//third_party/blink/public/common/screen_orientation/web_screen_orientation_lock_type.h" ]
 traits_headers = [ "//third_party/blink/public/common/screen_orientation/web_screen_orientation_mojom_traits.h" ]
 type_mappings = [ "device.mojom.ScreenOrientationLockType=::blink::WebScreenOrientationLockType" ]
+deps = [
+  "//third_party/blink/public/common:headers",
+]

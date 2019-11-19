@@ -12,8 +12,10 @@
 #include "base/feature_list.h"
 #include "base/linux_util.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
+#include "base/strings/string_util.h"
 #include "base/version.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/chromeos/cryptauth/cryptauth_device_id_provider_impl.h"
@@ -88,6 +90,11 @@ cryptauthv2::ApplicationSpecificMetadata GenerateApplicationSpecificMetadata(
   return metadata;
 }
 
+void LogInstanceIdTokenFetchRetries(int count) {
+  base::UmaHistogramExactLinear(
+      "CryptAuth.ClientAppMetadataInstanceIdTokenFetch.Retries", count, 2);
+}
+
 }  // namespace
 
 // static
@@ -123,9 +130,7 @@ ClientAppMetadataProviderService::ClientAppMetadataProviderService(
     instance_id::InstanceIDProfileService* instance_id_profile_service)
     : pref_service_(pref_service),
       network_state_handler_(network_state_handler),
-      instance_id_(instance_id_profile_service->driver()->GetInstanceID(
-          device_sync::kCryptAuthGcmAppId)),
-      weak_ptr_factory_(this) {}
+      instance_id_profile_service_(instance_id_profile_service) {}
 
 ClientAppMetadataProviderService::~ClientAppMetadataProviderService() {
   // If there are any pending callbacks, invoke them before this object is
@@ -151,10 +156,10 @@ void ClientAppMetadataProviderService::GetClientAppMetadata(
     return;
   }
 
-  // If |instance_id_| is null, Shutdown() has been called and there should be
-  // no further attempt to calculate the ClientAppMetadata, since this could
-  // result in touching deleted memory.
-  if (!instance_id_) {
+  // If |instance_id_profile_service_| is null, Shutdown() has been called and
+  // there should be no further attempt to calculate the ClientAppMetadata,
+  // since this could result in touching deleted memory.
+  if (!instance_id_profile_service_) {
     InvokePendingCallbacks();
     return;
   }
@@ -174,8 +179,9 @@ void ClientAppMetadataProviderService::GetClientAppMetadata(
 }
 
 void ClientAppMetadataProviderService::Shutdown() {
-  // Null out |instance_id_| to signify that it should no longer be used.
-  instance_id_ = nullptr;
+  // Null out |instance_id_profile_service_| to signify that it should no longer
+  // be used.
+  instance_id_profile_service_ = nullptr;
 
   // If the ClientAppMetadata is currently being computed and this class is
   // waiting for an asynchronous operation to return, stop the computation now
@@ -196,7 +202,7 @@ void ClientAppMetadataProviderService::OnBluetoothAdapterFetched(
 void ClientAppMetadataProviderService::OnHardwareInfoFetched(
     scoped_refptr<device::BluetoothAdapter> bluetooth_adapter,
     base::SysInfo::HardwareInfo hardware_info) {
-  instance_id_->GetID(base::Bind(
+  GetInstanceId()->GetID(base::Bind(
       &ClientAppMetadataProviderService::OnInstanceIdFetched,
       weak_ptr_factory_.GetWeakPtr(), bluetooth_adapter, hardware_info));
 }
@@ -206,11 +212,11 @@ void ClientAppMetadataProviderService::OnInstanceIdFetched(
     const base::SysInfo::HardwareInfo& hardware_info,
     const std::string& instance_id) {
   DCHECK(!instance_id.empty());
-  instance_id_->GetToken(
+  GetInstanceId()->GetToken(
       device_sync::
-          kCryptAuthGcmInstanceIdAuthorizedEntity /* authorized_entity */,
+          kCryptAuthV2EnrollmentAuthorizedEntity /* authorized_entity */,
       kInstanceIdScope /* scope */,
-      std::map<std::string, std::string>() /* options */, false /* is_lazy */,
+      std::map<std::string, std::string>() /* options */, {} /* flags */,
       base::Bind(&ClientAppMetadataProviderService::OnInstanceIdTokenFetched,
                  weak_ptr_factory_.GetWeakPtr(), bluetooth_adapter,
                  hardware_info, instance_id));
@@ -222,8 +228,21 @@ void ClientAppMetadataProviderService::OnInstanceIdTokenFetched(
     const std::string& instance_id,
     const std::string& token,
     instance_id::InstanceID::Result result) {
+  // If the |token| doesn't begin with the |instance_id|, we have to re-create
+  // the entire InstanceID and remove the old one from storage.
+  if (token.find(':') != std::string::npos &&
+      !base::StartsWith(token, instance_id,
+                        base::CompareCase::INSENSITIVE_ASCII)) {
+    GetInstanceId()->DeleteID(base::BindOnce(
+        &ClientAppMetadataProviderService::OnInstanceIdDeleted,
+        weak_ptr_factory_.GetWeakPtr(), bluetooth_adapter, hardware_info));
+    return;
+  }
+  LogInstanceIdTokenFetchRetries(instance_id_recreated_ ? 1 : 0);
+
   std::string gcm_registration_id = *pending_gcm_registration_id_;
   pending_gcm_registration_id_.reset();
+  instance_id_recreated_ = false;
 
   UMA_HISTOGRAM_ENUMERATION(
       "CryptAuth.ClientAppMetadataInstanceIdTokenFetch.Result", result,
@@ -306,6 +325,35 @@ void ClientAppMetadataProviderService::OnInstanceIdTokenFetched(
 
   client_app_metadata_ = metadata;
   InvokePendingCallbacks();
+}
+
+void ClientAppMetadataProviderService::OnInstanceIdDeleted(
+    scoped_refptr<device::BluetoothAdapter> bluetooth_adapter,
+    const base::SysInfo::HardwareInfo& hardware_info,
+    instance_id::InstanceID::Result result) {
+  instance_id_profile_service_->driver()->RemoveInstanceID(
+      device_sync::kCryptAuthGcmAppId);
+
+  if (instance_id_recreated_) {
+    LogInstanceIdTokenFetchRetries(2);
+    PA_LOG(WARNING) << "ClientAppMetadataProviderService::"
+                    << "OnInstanceIdDeleted(): Instance Id deleted twice in a "
+                    << "row, aborting; result: " << result << ".";
+    pending_gcm_registration_id_.reset();
+    instance_id_recreated_ = false;
+    InvokePendingCallbacks();
+    return;
+  }
+
+  instance_id_recreated_ = true;
+  OnHardwareInfoFetched(bluetooth_adapter, hardware_info);
+}
+
+instance_id::InstanceID* ClientAppMetadataProviderService::GetInstanceId() {
+  DCHECK(instance_id_profile_service_);
+  DCHECK(instance_id_profile_service_->driver());
+  return instance_id_profile_service_->driver()->GetInstanceID(
+      device_sync::kCryptAuthGcmAppId);
 }
 
 int64_t ClientAppMetadataProviderService::SoftwareVersionCodeAsInt64() {

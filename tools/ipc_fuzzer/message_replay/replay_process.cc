@@ -13,6 +13,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "chrome/common/chrome_switches.h"
@@ -112,14 +113,14 @@ bool ReplayProcess::Initialize(int argc, const char** argv) {
   logging::SetMinLogLevel(logging::LOG_ERROR);
   logging::LoggingSettings settings;
   settings.logging_dest = logging::LOG_TO_ALL;
-  settings.log_file = FILE_PATH_LITERAL("ipc_replay.log");
+  settings.log_file_path = FILE_PATH_LITERAL("ipc_replay.log");
   logging::InitLogging(settings);
 
   // Make sure to initialize Mojo before starting the IO thread.
   InitializeMojo();
 
   io_thread_.StartWithOptions(
-      base::Thread::Options(base::MessageLoop::TYPE_IO, 0));
+      base::Thread::Options(base::MessagePumpType::IO, 0));
 
 #if defined(OS_POSIX)
   base::GlobalDescriptors* g_fds = base::GlobalDescriptors::GetInstance();

@@ -11,49 +11,49 @@ var $CustomElementRegistry =
 var $EventTarget = require('safeMethods').SafeMethods.$EventTarget;
 var GuestViewInternalNatives = requireNative('guest_view_internal');
 
-var ERROR_MESSAGE = 'You do not have permission to use the %1 element.' +
-    ' Be sure to declare the "%1" permission in your manifest file.';
+// Once the document has loaded, expose the error-providing element's
+// constructor to user code via |window|.
+// GuestView elements used to be defined only once the document had loaded (see
+// https://crbug.com/810012). This has been fixed, but as seen in
+// https://crbug.com/1014385, user code that does not have permission for a
+// GuestView could be using the same name for another purpose. In order to avoid
+// potential name collisions with user code, we preserve the previous
+// asynchronous behaviour for exposing the constructor of the error-providing
+// element via |window|.
+function asyncProvideElementConstructor(viewType, elementConstructor) {
+  let useCapture = true;
+  window.addEventListener('readystatechange', function listener(event) {
+    if (document.readyState == 'loading')
+      return;
 
-// A list of view types that will have custom elements registered if they are
-// not already registered by the time this module is loaded.
-var VIEW_TYPES = [
-  'AppView',
-  'ExtensionOptions',
-  'ExtensionView',
-  'WebView'
-];
+    // If user code did use the name, we won't overwrite with the
+    // error-providing element.
+    if (!$Object.hasOwnProperty(window, viewType)) {
+      $Object.defineProperty(window, viewType, {
+        value: elementConstructor,
+      });
+    }
 
-// Registers a GuestView custom element.
-function registerGuestViewElement(viewType) {
+    $EventTarget.removeEventListener(window, event.type, listener, useCapture);
+  }, useCapture);
+}
+
+// Registers an error-providing GuestView custom element.
+function registerDeniedElement(viewType, permissionName) {
   GuestViewInternalNatives.AllowGuestViewElementDefinition(() => {
     var DeniedElement = class extends HTMLElement {
       constructor() {
         super();
-        window.console.error($String.replace(
-            ERROR_MESSAGE, /%1/g, $String.toLowerCase(viewType)));
+        window.console.error(`You do not have permission to use the ${
+            viewType} element. Be sure to declare the "${
+            permissionName}" permission in your manifest file.`);
       }
     }
     $CustomElementRegistry.define(
         window.customElements, $String.toLowerCase(viewType), DeniedElement);
-    $Object.defineProperty(window, viewType, {
-      value: DeniedElement,
-    });
+    asyncProvideElementConstructor(viewType, DeniedElement);
   });
 }
 
-var useCapture = true;
-window.addEventListener('readystatechange', function listener(event) {
-  if (document.readyState == 'loading')
-    return;
-
-  for (var viewType of VIEW_TYPES) {
-    // Register the error-providing custom element only for those view types
-    // that have not already been registered. Since this module is always loaded
-    // last, all the view types that are available (i.e. have the proper
-    // permissions) will have already been registered on |window|.
-    if (!$Object.hasOwnProperty(window, viewType))
-      registerGuestViewElement(viewType);
-  }
-
-  $EventTarget.removeEventListener(window, event.type, listener, useCapture);
-}, useCapture);
+// Exports.
+exports.$set('registerDeniedElement', registerDeniedElement);

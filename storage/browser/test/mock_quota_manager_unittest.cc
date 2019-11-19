@@ -12,7 +12,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "storage/browser/test/mock_special_storage_policy.h"
 #include "storage/browser/test/mock_storage_client.h"
@@ -39,10 +39,7 @@ const QuotaClient::ID kClientDB = QuotaClient::kIndexedDatabase;
 
 class MockQuotaManagerTest : public testing::Test {
  public:
-  MockQuotaManagerTest()
-    : deletion_callback_count_(0),
-      weak_factory_(this) {
-  }
+  MockQuotaManagerTest() : deletion_callback_count_(0) {}
 
   void SetUp() override {
     ASSERT_TRUE(data_dir_.CreateUniqueTempDir());
@@ -100,7 +97,7 @@ class MockQuotaManagerTest : public testing::Test {
   }
 
  private:
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir data_dir_;
   scoped_refptr<MockQuotaManager> manager_;
   scoped_refptr<MockSpecialStoragePolicy> policy_;
@@ -110,7 +107,7 @@ class MockQuotaManagerTest : public testing::Test {
   std::set<url::Origin> origins_;
   StorageType type_;
 
-  base::WeakPtrFactory<MockQuotaManagerTest> weak_factory_;
+  base::WeakPtrFactory<MockQuotaManagerTest> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(MockQuotaManagerTest);
 };

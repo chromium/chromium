@@ -11,13 +11,15 @@
 #include "base/observer_list.h"
 #include "build/build_config.h"
 #include "cc/test/fake_layer_tree_frame_sink.h"
-#include "cc/test/test_image_factory.h"
 #include "cc/test/test_task_graph_runner.h"
 #include "components/viz/common/display/renderer_settings.h"
 #include "components/viz/common/surfaces/frame_sink_id_allocator.h"
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "components/viz/test/test_gpu_memory_buffer_manager.h"
+#include "components/viz/test/test_image_factory.h"
 #include "content/browser/compositor/image_transport_factory.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "services/viz/privileged/mojom/compositing/vsync_parameter_observer.mojom.h"
 #include "ui/compositor/compositor.h"
 
 namespace viz {
@@ -47,6 +49,9 @@ class TestImageTransportFactory : public ui::ContextFactory,
       base::WeakPtr<ui::Compositor> compositor) override;
   scoped_refptr<viz::ContextProvider> SharedMainThreadContextProvider()
       override;
+  scoped_refptr<viz::RasterContextProvider>
+  SharedMainThreadRasterContextProvider() override;
+
   void RemoveCompositor(ui::Compositor* compositor) override {}
   gpu::GpuMemoryBufferManager* GetGpuMemoryBufferManager() override;
   cc::TaskGraphRunner* GetTaskGraphRunner() override;
@@ -66,21 +71,27 @@ class TestImageTransportFactory : public ui::ContextFactory,
   void DisableSwapUntilResize(ui::Compositor* compositor) override {}
   void SetDisplayColorMatrix(ui::Compositor* compositor,
                              const SkMatrix44& matrix) override {}
-  void SetDisplayColorSpace(
-      ui::Compositor* compositor,
-      const gfx::ColorSpace& blending_color_space,
-      const gfx::ColorSpace& output_color_space) override {}
+  void SetDisplayColorSpace(ui::Compositor* compositor,
+                            const gfx::ColorSpace& output_color_space,
+                            float sdr_white_level) override {}
   void SetDisplayVSyncParameters(ui::Compositor* compositor,
                                  base::TimeTicks timebase,
                                  base::TimeDelta interval) override {}
-  void IssueExternalBeginFrame(ui::Compositor* compositor,
-                               const viz::BeginFrameArgs& args) override {}
+  void IssueExternalBeginFrame(
+      ui::Compositor* compositor,
+      const viz::BeginFrameArgs& args,
+      bool force,
+      base::OnceCallback<void(const viz::BeginFrameAck&)> callback) override {}
   void SetOutputIsSecure(ui::Compositor* compositor, bool secure) override {}
-  viz::FrameSinkManagerImpl* GetFrameSinkManager() override;
+  void AddVSyncParameterObserver(
+      ui::Compositor* compositor,
+      mojo::PendingRemote<viz::mojom::VSyncParameterObserver> observer)
+      override {}
+  void SetDisplayTransformHint(ui::Compositor* compositor,
+                               gfx::OverlayTransform transform) override {}
 
   // ImageTransportFactory implementation.
   void DisableGpuCompositing() override;
-  bool IsGpuCompositingDisabled() override;
   ui::ContextFactory* GetContextFactory() override;
   ui::ContextFactoryPrivate* GetContextFactoryPrivate() override;
 
@@ -88,7 +99,7 @@ class TestImageTransportFactory : public ui::ContextFactory,
   const bool enable_viz_;
 
   cc::TestTaskGraphRunner task_graph_runner_;
-  cc::TestImageFactory image_factory_;
+  viz::TestImageFactory image_factory_;
   viz::TestGpuMemoryBufferManager gpu_memory_buffer_manager_;
   viz::RendererSettings renderer_settings_;
   viz::FrameSinkIdAllocator frame_sink_id_allocator_;

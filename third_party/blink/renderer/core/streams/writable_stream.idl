@@ -5,8 +5,7 @@
 // https://streams.spec.whatwg.org/#ws-class
 [
     Exposed=(Window,Worker,Worklet),
-    // TODO(yhirano): Remove CustomConstructor. See https://crbug.com/906476.
-    CustomConstructor(optional any underlyingSink, optional any strategy),
+    Constructor(optional any underlyingSink, optional any strategy),
     MeasureAs=WritableStreamConstructor,
     RaisesException=Constructor,
     ConstructorCallWith=ScriptState

@@ -53,20 +53,19 @@ void CSSImageSetValue::FillImageSet() {
   wtf_size_t length = this->length();
   wtf_size_t i = 0;
   while (i < length) {
-    const CSSImageValue& image_value = ToCSSImageValue(Item(i));
+    const auto& image_value = To<CSSImageValue>(Item(i));
     String image_url = image_value.Url();
 
     ++i;
     SECURITY_DCHECK(i < length);
     const CSSValue& scale_factor_value = Item(i);
     float scale_factor =
-        ToCSSPrimitiveValue(scale_factor_value).GetFloatValue();
+        To<CSSPrimitiveValue>(scale_factor_value).GetFloatValue();
 
     ImageWithScale image;
     image.image_url = image_url;
-    image.referrer = SecurityPolicy::GenerateReferrer(
-        image_value.GetReferrer().referrer_policy, KURL(image_url),
-        image_value.GetReferrer().referrer);
+    image.referrer.referrer = image_value.GetReferrer().referrer;
+    image.referrer.referrer_policy = image_value.GetReferrer().referrer_policy;
     image.scale_factor = scale_factor;
     images_in_set_.push_back(image);
     ++i;
@@ -114,7 +113,9 @@ StyleImage* CSSImageSetValue::CacheImage(
     // transforms. https://bugs.webkit.org/show_bug.cgi?id=81698
     ImageWithScale image = BestImageForScaleFactor(device_scale_factor);
     ResourceRequest resource_request(document.CompleteURL(image.image_url));
-    resource_request.SetHTTPReferrer(image.referrer);
+    resource_request.SetReferrerPolicy(
+        ReferrerPolicyResolveDefault(image.referrer.referrer_policy));
+    resource_request.SetReferrerString(image.referrer.referrer);
     ResourceLoaderOptions options;
     options.initiator_info.name = parser_mode_ == kUASheetMode
                                       ? fetch_initiator_type_names::kUacss
@@ -126,13 +127,7 @@ StyleImage* CSSImageSetValue::CacheImage(
                                          cross_origin);
     }
 
-    if (document.GetFrame() &&
-        image_request_optimization == FetchParameters::kAllowPlaceholder &&
-        document.GetFrame()->IsClientLoFiAllowed(params.GetResourceRequest())) {
-      params.SetClientLoFiPlaceholder();
-    }
-
-    cached_image_ = StyleFetchedImageSet::Create(
+    cached_image_ = MakeGarbageCollected<StyleFetchedImageSet>(
         ImageResourceContent::Fetch(params, document.Fetcher()),
         image.scale_factor, this, params.Url());
     cached_scale_factor_ = device_scale_factor;
@@ -185,11 +180,12 @@ void CSSImageSetValue::TraceAfterDispatch(blink::Visitor* visitor) {
 }
 
 CSSImageSetValue* CSSImageSetValue::ValueWithURLsMadeAbsolute() {
-  CSSImageSetValue* value = CSSImageSetValue::Create(parser_mode_);
-  for (auto& item : *this)
-    item->IsImageValue()
-        ? value->Append(*ToCSSImageValue(*item).ValueWithURLMadeAbsolute())
-        : value->Append(*item);
+  auto* value = MakeGarbageCollected<CSSImageSetValue>(parser_mode_);
+  for (auto& item : *this) {
+    auto* image_value = DynamicTo<CSSImageValue>(item.Get());
+    image_value ? value->Append(*image_value->ValueWithURLMadeAbsolute())
+                : value->Append(*item);
+  }
   return value;
 }
 

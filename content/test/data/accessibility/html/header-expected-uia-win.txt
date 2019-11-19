@@ -1,0 +1,3 @@
+document
+++banner LocalizedControlType='header'
+++++description Name='Chromium Browser'

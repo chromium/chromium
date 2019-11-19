@@ -41,7 +41,7 @@ using base::UserMetricsAction;
 namespace {
 
 base::string16 GetInfoBarMessage(const PluginMetadata& metadata) {
-  return l10n_util::GetStringFUTF16(metadata.IsPluginDeprecated()
+  return l10n_util::GetStringFUTF16(metadata.plugin_is_deprecated()
                                         ? IDS_PLUGIN_DEPRECATED_PROMPT
                                         : IDS_PLUGIN_OUTDATED_PROMPT,
                                     metadata.name());
@@ -115,7 +115,7 @@ base::string16 OutdatedPluginInfoBarDelegate::GetMessageText() const {
 }
 
 int OutdatedPluginInfoBarDelegate::GetButtons() const {
-  if (plugin_metadata_->IsPluginDeprecated())
+  if (plugin_metadata_->plugin_is_deprecated())
     return BUTTON_CANCEL;
 
   return BUTTON_OK | BUTTON_CANCEL;

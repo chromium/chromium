@@ -9,7 +9,7 @@
 #include "base/test/bind_test_util.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/constants/chromeos_switches.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
 #include "net/url_request/url_request_status.h"
@@ -70,19 +70,18 @@ class AttestationCAClientTest : public ::testing::Test {
 
   void SendResponse(net::Error error, net::HttpStatusCode response_code) {
     CHECK(test_url_loader_factory_.NumPending() == 1);
-    auto resource_response_head =
-        network::CreateResourceResponseHead(response_code);
+    auto url_response_head = network::CreateURLResponseHead(response_code);
     network::URLLoaderCompletionStatus completion_status(error);
     std::string response =
         network::GetUploadData(last_resource_request_) + "_response";
 
     test_url_loader_factory_.AddResponse(last_resource_request_.url,
-                                         resource_response_head, response,
+                                         std::move(url_response_head), response,
                                          completion_status);
     base::RunLoop().RunUntilIdle();
   }
 
-  content::TestBrowserThreadBundle test_browser_thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
 
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory>

@@ -13,18 +13,11 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "components/services/heap_profiling/backtrace_storage.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/os_metrics.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace heap_profiling {
-
 namespace {
-
-const size_t kNoSizeThreshold = 0;
-const size_t kNoCountThreshold = 0;
-const size_t kSizeThreshold = 1500;
-const size_t kCountThreshold = 1000;
 
 using MemoryMap = std::vector<memory_instrumentation::mojom::VmRegionPtr>;
 
@@ -128,47 +121,41 @@ bool IsBacktraceInList(const base::Value* backtraces, int id, int parent) {
   return false;
 }
 
+void InsertAllocation(AllocationMap* allocs,
+                      AllocatorType type,
+                      size_t size,
+                      std::vector<Address> stack,
+                      int context_id) {
+  AllocationMetrics& metrics =
+      allocs
+          ->emplace(std::piecewise_construct,
+                    std::forward_as_tuple(type, std::move(stack), context_id),
+                    std::forward_as_tuple())
+          .first->second;
+  metrics.size += size;
+  metrics.count++;
+}
+
 }  // namespace
 
 TEST(ProfilingJsonExporterTest, Simple) {
-  BacktraceStorage backtrace_storage;
-
-  std::vector<Address> stack1;
-  stack1.push_back(Address(0x5678));
-  stack1.push_back(Address(0x1234));
-  const Backtrace* bt1 = backtrace_storage.Insert(std::move(stack1));
-
-  std::vector<Address> stack2;
-  stack2.push_back(Address(0x9013));
-  stack2.push_back(Address(0x9012));
-  stack2.push_back(Address(0x1234));
-  const Backtrace* bt2 = backtrace_storage.Insert(std::move(stack2));
-
-  AllocationEventSet events;
-  events.insert(
-      AllocationEvent(AllocatorType::kMalloc, Address(0x1), 20, bt1, 0));
-  events.insert(
-      AllocationEvent(AllocatorType::kMalloc, Address(0x2), 32, bt2, 0));
-  events.insert(
-      AllocationEvent(AllocatorType::kMalloc, Address(0x3), 20, bt1, 0));
-  events.insert(AllocationEvent(AllocatorType::kPartitionAlloc, Address(0x4),
-                                20, bt1, 0));
-  events.insert(
-      AllocationEvent(AllocatorType::kMalloc, Address(0x5), 12, bt2, 0));
-
-  std::ostringstream stream;
+  std::vector<Address> stack1{Address(0x5678), Address(0x1234)};
+  std::vector<Address> stack2{Address(0x9013), Address(0x9012),
+                              Address(0x1234)};
+  AllocationMap allocs;
+  InsertAllocation(&allocs, AllocatorType::kMalloc, 20, stack1, 0);
+  InsertAllocation(&allocs, AllocatorType::kMalloc, 32, stack2, 0);
+  InsertAllocation(&allocs, AllocatorType::kMalloc, 20, stack1, 0);
+  InsertAllocation(&allocs, AllocatorType::kPartitionAlloc, 20, stack1, 0);
+  InsertAllocation(&allocs, AllocatorType::kMalloc, 12, stack2, 0);
 
   ExportParams params;
-  params.allocs = AllocationEventSetToCountMap(events);
-  params.min_size_threshold = kNoSizeThreshold;
-  params.min_count_threshold = kNoCountThreshold;
-  ExportMemoryMapsAndV2StackTraceToJSON(&params, stream);
-  std::string json = stream.str();
+  params.allocs = std::move(allocs);
+  std::string json = ExportMemoryMapsAndV2StackTraceToJSON(&params);
 
   // JSON should parse.
   base::JSONReader reader(base::JSON_PARSE_RFC);
-  std::unique_ptr<base::Value> root =
-      reader.ReadToValueDeprecated(stream.str());
+  std::unique_ptr<base::Value> root = reader.ReadToValueDeprecated(json);
   ASSERT_EQ(base::JSONReader::JSON_NO_ERROR, reader.error_code())
       << reader.GetErrorMessage();
   ASSERT_TRUE(root);
@@ -294,180 +281,21 @@ TEST(ProfilingJsonExporterTest, Simple) {
   EXPECT_EQ(1u, sizes->GetList().size());
 }
 
-TEST(ProfilingJsonExporterTest, Sampling) {
-  size_t allocation_size = 20;
-  int sampling_rate = 1000;
-  int expected_count = static_cast<int>(sampling_rate / allocation_size);
-
-  BacktraceStorage backtrace_storage;
-
-  std::vector<Address> stack1;
-  stack1.push_back(Address(0x5678));
-  const Backtrace* bt1 = backtrace_storage.Insert(std::move(stack1));
-
-  AllocationEventSet events;
-  events.insert(AllocationEvent(AllocatorType::kMalloc, Address(0x1),
-                                allocation_size, bt1, 0));
-
-  std::ostringstream stream;
-
-  ExportParams params;
-  params.allocs = AllocationEventSetToCountMap(events);
-  params.min_size_threshold = kNoSizeThreshold;
-  params.min_count_threshold = kNoCountThreshold;
-  params.sampling_rate = sampling_rate;
-  ExportMemoryMapsAndV2StackTraceToJSON(&params, stream);
-  std::string json = stream.str();
-
-  // JSON should parse.
-  base::JSONReader reader(base::JSON_PARSE_RFC);
-  std::unique_ptr<base::Value> root =
-      reader.ReadToValueDeprecated(stream.str());
-  ASSERT_EQ(base::JSONReader::JSON_NO_ERROR, reader.error_code())
-      << reader.GetErrorMessage();
-  ASSERT_TRUE(root);
-
-  // Validate the allocators summary.
-  const base::Value* malloc_summary = root->FindPath({"allocators", "malloc"});
-  ASSERT_TRUE(malloc_summary);
-  const base::Value* malloc_size =
-      malloc_summary->FindPath({"attrs", "size", "value"});
-  ASSERT_TRUE(malloc_size);
-  EXPECT_EQ("3e8", malloc_size->GetString());
-
-  const base::Value* heaps_v2 = root->FindKey("heaps_v2");
-  ASSERT_TRUE(heaps_v2);
-
-  // Retrieve the allocations and validate their structure.
-  const base::Value* sizes =
-      heaps_v2->FindPath({"allocators", "malloc", "sizes"});
-
-  ASSERT_TRUE(sizes);
-  EXPECT_EQ(1u, sizes->GetList().size());
-  EXPECT_EQ(sampling_rate, sizes->GetList()[0].GetInt());
-
-  const base::Value* counts =
-      heaps_v2->FindPath({"allocators", "malloc", "counts"});
-  ASSERT_TRUE(counts);
-  EXPECT_EQ(1u, counts->GetList().size());
-  EXPECT_EQ(expected_count, counts->GetList()[0].GetInt());
-}
-
-TEST(ProfilingJsonExporterTest, SimpleWithFilteredAllocations) {
-  BacktraceStorage backtrace_storage;
-
-  std::vector<Address> stack1;
-  stack1.push_back(Address(0x1234));
-  const Backtrace* bt1 = backtrace_storage.Insert(std::move(stack1));
-
-  std::vector<Address> stack2;
-  stack2.push_back(Address(0x5678));
-  const Backtrace* bt2 = backtrace_storage.Insert(std::move(stack2));
-
-  std::vector<Address> stack3;
-  stack3.push_back(Address(0x9999));
-  const Backtrace* bt3 = backtrace_storage.Insert(std::move(stack3));
-
-  AllocationEventSet events;
-  events.insert(
-      AllocationEvent(AllocatorType::kMalloc, Address(0x1), 16, bt1, 0));
-  events.insert(
-      AllocationEvent(AllocatorType::kMalloc, Address(0x2), 32, bt1, 0));
-  events.insert(
-      AllocationEvent(AllocatorType::kMalloc, Address(0x3), 1000, bt2, 0));
-  events.insert(
-      AllocationEvent(AllocatorType::kMalloc, Address(0x4), 1000, bt2, 0));
-  for (size_t i = 0; i < kCountThreshold + 1; ++i) {
-    events.insert(
-        AllocationEvent(AllocatorType::kMalloc, Address(0x5 + i), 1, bt3, 0));
-  }
-
-  // Validate filtering by size and count.
-  std::ostringstream stream;
-
-  ExportParams params;
-  params.allocs = AllocationEventSetToCountMap(events);
-  params.min_size_threshold = kSizeThreshold;
-  params.min_count_threshold = kCountThreshold;
-  ExportMemoryMapsAndV2StackTraceToJSON(&params, stream);
-  std::string json = stream.str();
-
-  // JSON should parse.
-  base::JSONReader reader(base::JSON_PARSE_RFC);
-  std::unique_ptr<base::Value> root =
-      reader.ReadToValueDeprecated(stream.str());
-  ASSERT_EQ(base::JSONReader::JSON_NO_ERROR, reader.error_code())
-      << reader.GetErrorMessage();
-  ASSERT_TRUE(root);
-
-  const base::Value* heaps_v2 = root->FindKey("heaps_v2");
-  ASSERT_TRUE(heaps_v2);
-  const base::Value* nodes = heaps_v2->FindPath({"maps", "nodes"});
-  const base::Value* strings = heaps_v2->FindPath({"maps", "strings"});
-  ASSERT_TRUE(nodes);
-  ASSERT_TRUE(strings);
-
-  // Validate the strings table.
-  EXPECT_EQ(3u, strings->GetList().size());
-  int sid_unknown = GetIdFromStringTable(strings, "[unknown]");
-  int sid_1234 = GetIdFromStringTable(strings, "pc:1234");
-  int sid_5678 = GetIdFromStringTable(strings, "pc:5678");
-  int sid_9999 = GetIdFromStringTable(strings, "pc:9999");
-  EXPECT_NE(-1, sid_unknown);
-  EXPECT_EQ(-1, sid_1234);  // Must be filtered.
-  EXPECT_NE(-1, sid_5678);
-  EXPECT_NE(-1, sid_9999);
-
-  // Validate the nodes table.
-  // Nodes should be a list with 4 items.
-  //   [0] => address: 5678  parent: none
-  //   [1] => address: 9999  parent: none
-  EXPECT_EQ(2u, nodes->GetList().size());
-  int id0 = GetNodeWithNameID(nodes, sid_5678);
-  int id1 = GetNodeWithNameID(nodes, sid_9999);
-  EXPECT_NE(-1, id0);
-  EXPECT_NE(-1, id1);
-  EXPECT_TRUE(IsBacktraceInList(nodes, id0, kNoParent));
-  EXPECT_TRUE(IsBacktraceInList(nodes, id1, kNoParent));
-
-  // Counts should be a list with one item. Items with |bt1| are filtered.
-  // For |stack2|, there are two allocations of 1000 bytes. which is above the
-  // 1500 bytes threshold. For |stack3|, there are 1001 allocations of 1 bytes,
-  // which is above the 1000 allocations threshold.
-  const base::Value* backtraces =
-      heaps_v2->FindPath({"allocators", "malloc", "nodes"});
-  ASSERT_TRUE(backtraces);
-  EXPECT_EQ(2u, backtraces->GetList().size());
-
-  int node_bt2 = GetOffsetForBacktraceID(backtraces, id0);
-  int node_bt3 = GetOffsetForBacktraceID(backtraces, id1);
-  EXPECT_NE(-1, node_bt2);
-  EXPECT_NE(-1, node_bt3);
-}
-
 // GetProcessMemoryMaps iterates through every memory region, making allocations
 // for each one. ASAN will potentially, for each allocation, make memory
 // regions. This will cause the test to time out.
 #if !defined(ADDRESS_SANITIZER)
 TEST(ProfilingJsonExporterTest, MemoryMaps) {
-  AllocationEventSet events;
   ExportParams params;
   params.maps = memory_instrumentation::OSMetrics::GetProcessMemoryMaps(
       base::Process::Current().Pid());
   ASSERT_GT(params.maps.size(), 2u);
 
-  std::ostringstream stream;
-
-  params.allocs = AllocationEventSetToCountMap(events);
-  params.min_size_threshold = kNoSizeThreshold;
-  params.min_count_threshold = kNoCountThreshold;
-  ExportMemoryMapsAndV2StackTraceToJSON(&params, stream);
-  std::string json = stream.str();
+  std::string json = ExportMemoryMapsAndV2StackTraceToJSON(&params);
 
   // JSON should parse.
   base::JSONReader reader(base::JSON_PARSE_RFC);
-  std::unique_ptr<base::Value> root =
-      reader.ReadToValueDeprecated(stream.str());
+  std::unique_ptr<base::Value> root = reader.ReadToValueDeprecated(json);
   ASSERT_EQ(base::JSONReader::JSON_NO_ERROR, reader.error_code())
       << reader.GetErrorMessage();
   ASSERT_TRUE(root);
@@ -490,12 +318,9 @@ TEST(ProfilingJsonExporterTest, MemoryMaps) {
 #endif  // !defined(ADDRESS_SANITIZER)
 
 TEST(ProfilingJsonExporterTest, Context) {
-  BacktraceStorage backtrace_storage;
   ExportParams params;
 
-  std::vector<Address> stack;
-  stack.push_back(Address(0x1234));
-  const Backtrace* bt = backtrace_storage.Insert(std::move(stack));
+  std::vector<Address> stack{Address(0x1234)};
 
   std::string context_str1("Context 1");
   int context_id1 = 1;
@@ -507,28 +332,21 @@ TEST(ProfilingJsonExporterTest, Context) {
   // Make 4 events, all with identical metadata except context. Two share the
   // same context so should get folded, one has unique context, and one has no
   // context.
-  AllocationEventSet events;
-  events.insert(AllocationEvent(AllocatorType::kPartitionAlloc, Address(0x1),
-                                16, bt, context_id1));
-  events.insert(AllocationEvent(AllocatorType::kPartitionAlloc, Address(0x2),
-                                16, bt, context_id2));
-  events.insert(
-      AllocationEvent(AllocatorType::kPartitionAlloc, Address(0x3), 16, bt, 0));
-  events.insert(AllocationEvent(AllocatorType::kPartitionAlloc, Address(0x4),
-                                16, bt, context_id1));
+  AllocationMap allocs;
+  InsertAllocation(&allocs, AllocatorType::kPartitionAlloc, 16, stack,
+                   context_id1);
+  InsertAllocation(&allocs, AllocatorType::kPartitionAlloc, 16, stack,
+                   context_id2);
+  InsertAllocation(&allocs, AllocatorType::kPartitionAlloc, 16, stack, 0);
+  InsertAllocation(&allocs, AllocatorType::kPartitionAlloc, 16, stack,
+                   context_id1);
+  params.allocs = std::move(allocs);
 
-  std::ostringstream stream;
-
-  params.allocs = AllocationEventSetToCountMap(events);
-  params.min_size_threshold = kNoSizeThreshold;
-  params.min_count_threshold = kNoCountThreshold;
-  ExportMemoryMapsAndV2StackTraceToJSON(&params, stream);
-  std::string json = stream.str();
+  std::string json = ExportMemoryMapsAndV2StackTraceToJSON(&params);
 
   // JSON should parse.
   base::JSONReader reader(base::JSON_PARSE_RFC);
-  std::unique_ptr<base::Value> root =
-      reader.ReadToValueDeprecated(stream.str());
+  std::unique_ptr<base::Value> root = reader.ReadToValueDeprecated(json);
   ASSERT_EQ(base::JSONReader::JSON_NO_ERROR, reader.error_code())
       << reader.GetErrorMessage();
   ASSERT_TRUE(root);
@@ -602,5 +420,44 @@ TEST(ProfilingJsonExporterTest, Context) {
   ASSERT_TRUE(found_single_context);
   ASSERT_TRUE(found_no_context);
 }
+
+#if defined(ARCH_CPU_64_BITS)
+TEST(ProfilingJsonExporterTest, LargeAllocation) {
+  std::vector<Address> stack1{Address(0x5678), Address(0x1234)};
+  AllocationMap allocs;
+  InsertAllocation(&allocs, AllocatorType::kMalloc,
+                   static_cast<size_t>(0x9876543210ul), stack1, 0);
+
+  ExportParams params;
+  params.allocs = std::move(allocs);
+  std::string json = ExportMemoryMapsAndV2StackTraceToJSON(&params);
+
+  // JSON should parse.
+  base::JSONReader json_reader(base::JSON_PARSE_RFC);
+  base::Optional<base::Value> result = json_reader.ReadToValue(json);
+  ASSERT_TRUE(result.has_value()) << json_reader.GetErrorMessage();
+
+  // Validate the allocators summary.
+  const base::Value* malloc_summary =
+      result.value().FindPath({"allocators", "malloc"});
+  ASSERT_TRUE(malloc_summary);
+  const base::Value* malloc_size =
+      malloc_summary->FindPath({"attrs", "size", "value"});
+  ASSERT_TRUE(malloc_size);
+  EXPECT_EQ("9876543210", malloc_size->GetString());
+  const base::Value* malloc_virtual_size =
+      malloc_summary->FindPath({"attrs", "virtual_size", "value"});
+  ASSERT_TRUE(malloc_virtual_size);
+  EXPECT_EQ("9876543210", malloc_virtual_size->GetString());
+
+  // Validate allocators details.
+  // heaps_v2.allocators.malloc.sizes.reduce((a,s)=>a+s,0).
+  const base::Value* malloc =
+      result.value().FindPath({"heaps_v2", "allocators", "malloc"});
+  const base::Value* malloc_sizes = malloc->FindKey("sizes");
+  EXPECT_EQ(1u, malloc_sizes->GetList().size());
+  EXPECT_EQ(0x9876543210ul, malloc_sizes->GetList()[0].GetDouble());
+}
+#endif
 
 }  // namespace heap_profiling

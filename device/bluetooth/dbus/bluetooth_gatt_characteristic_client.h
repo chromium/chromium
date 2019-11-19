@@ -76,9 +76,11 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattCharacteristicClient
   };
 
   // Callbacks used to report the result of asynchronous methods.
-  typedef base::Callback<void(const std::string& error_name,
-                              const std::string& error_message)> ErrorCallback;
-  typedef base::Callback<void(const std::vector<uint8_t>& value)> ValueCallback;
+  using ErrorCallback =
+      base::OnceCallback<void(const std::string& error_name,
+                              const std::string& error_message)>;
+  using ValueCallback =
+      base::OnceCallback<void(const std::vector<uint8_t>& value)>;
 
   ~BluetoothGattCharacteristicClient() override;
 
@@ -99,24 +101,24 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattCharacteristicClient
   // |object_path| and returns the value in |callback| on success. On error,
   // invokes |error_callback|.
   virtual void ReadValue(const dbus::ObjectPath& object_path,
-                         const ValueCallback& callback,
-                         const ErrorCallback& error_callback) = 0;
+                         ValueCallback callback,
+                         ErrorCallback error_callback) = 0;
 
   // Issues a request to write the value of GATT characteristic with object path
   // |object_path| with value |value|. Invokes |callback| on success and
   // |error_callback| on failure.
   virtual void WriteValue(const dbus::ObjectPath& object_path,
                           const std::vector<uint8_t>& value,
-                          const base::Closure& callback,
-                          const ErrorCallback& error_callback) = 0;
+                          base::OnceClosure callback,
+                          ErrorCallback error_callback) = 0;
 
   // Issues a request to prepare write the value of GATT characteristic with
   // object path |object_path| with value |value|.
   // Invokes |callback| on success and |error_callback| on failure.
   virtual void PrepareWriteValue(const dbus::ObjectPath& object_path,
                                  const std::vector<uint8_t>& value,
-                                 const base::Closure& callback,
-                                 const ErrorCallback& error_callback) = 0;
+                                 base::OnceClosure callback,
+                                 ErrorCallback error_callback) = 0;
 
   // Starts a notification session from this characteristic with object path
   // |object_path| if it supports value notifications or indications. Invokes
@@ -125,20 +127,20 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattCharacteristicClient
   virtual void StartNotify(
       const dbus::ObjectPath& object_path,
       device::BluetoothGattCharacteristic::NotificationType notification_type,
-      const base::Closure& callback,
-      const ErrorCallback& error_callback) = 0;
+      base::OnceClosure callback,
+      ErrorCallback error_callback) = 0;
 #else
   virtual void StartNotify(const dbus::ObjectPath& object_path,
-                           const base::Closure& callback,
-                           const ErrorCallback& error_callback) = 0;
+                           base::OnceClosure callback,
+                           ErrorCallback error_callback) = 0;
 #endif
 
   // Cancels any previous StartNotify transaction for characteristic with
   // object path |object_path|. Invokes |callback| on success and
   // |error_callback| on failure.
   virtual void StopNotify(const dbus::ObjectPath& object_path,
-                          const base::Closure& callback,
-                          const ErrorCallback& error_callback) = 0;
+                          base::OnceClosure callback,
+                          ErrorCallback error_callback) = 0;
 
   // Creates the instance.
   static BluetoothGattCharacteristicClient* Create();

@@ -1,0 +1,29 @@
+# The test configuration used by most policy tests.
+# It consists of one domain controller and one client.
+network {
+  name: 'primary'
+}
+
+# An ActiveDirectory domain.
+ad_domain {
+  name: 'test1.com'
+  netbios_name: 'example'
+
+  domain_controller {
+    windows_machine: 'win2012-dc'
+  }
+}
+
+# the domain controller.
+windows_machine {
+  name: 'win2012-dc'
+  machine_type: 'win2012r2'
+  network_interface { network: 'primary' }
+}
+
+windows_machine {
+  name: 'client2012'
+  machine_type: 'win2012r2'
+  network_interface { network: 'primary' }
+  container { ad_domain: 'test1.com' }
+}

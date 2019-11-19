@@ -11,18 +11,22 @@ Polymer({
   is: 'site-favicon',
 
   properties: {
-    url: {
-      type: String,
-      value: '',
-      observer: 'urlChanged_',
-    }
+    faviconUrl: String,
+    url: String,
   },
 
   /** @private */
-  urlChanged_: function() {
-    let url = this.removePatternWildcard_(this.url);
-    url = this.ensureUrlHasScheme_(url);
-    this.style.backgroundImage = cr.icon.getFavicon(url || '');
+  getBackgroundImage_: function() {
+    let backgroundImage = cr.icon.getFavicon('');
+    if (this.faviconUrl) {
+      const url = this.ensureUrlHasScheme_(this.faviconUrl);
+      backgroundImage = cr.icon.getFavicon(url);
+    } else if (this.url) {
+      let url = this.removePatternWildcard_(this.url);
+      url = this.ensureUrlHasScheme_(url);
+      backgroundImage = cr.icon.getFaviconForPageURL(url || '', false);
+    }
+    return backgroundImage;
   },
 
   /**

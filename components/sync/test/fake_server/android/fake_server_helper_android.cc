@@ -15,13 +15,13 @@
 #include "base/time/time.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/time.h"
-#include "components/sync/engine/net/network_resources.h"
+#include "components/sync/driver/profile_sync_service.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "components/sync/test/fake_server/bookmark_entity_builder.h"
 #include "components/sync/test/fake_server/fake_server.h"
+#include "components/sync/test/fake_server/fake_server_jni/FakeServerHelper_jni.h"
 #include "components/sync/test/fake_server/fake_server_network_resources.h"
 #include "components/sync/test/fake_server/fake_server_verifier.h"
-#include "jni/FakeServerHelper_jni.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -40,25 +40,24 @@ static jlong JNI_FakeServerHelper_Init(JNIEnv* env,
 
 jlong FakeServerHelperAndroid::CreateFakeServer(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
-  fake_server::FakeServer* fake_server = new fake_server::FakeServer();
-  return reinterpret_cast<intptr_t>(fake_server);
-}
-
-jlong FakeServerHelperAndroid::CreateNetworkResources(
-    JNIEnv* env,
     const JavaParamRef<jobject>& obj,
-    jlong fake_server) {
-  fake_server::FakeServer* fake_server_ptr =
-      reinterpret_cast<fake_server::FakeServer*>(fake_server);
-  syncer::NetworkResources* resources =
-      new fake_server::FakeServerNetworkResources(fake_server_ptr->AsWeakPtr());
-  return reinterpret_cast<intptr_t>(resources);
+    jlong profile_sync_service) {
+  fake_server::FakeServer* fake_server = new fake_server::FakeServer();
+  syncer::ProfileSyncService* sync_service =
+      reinterpret_cast<syncer::ProfileSyncService*>(profile_sync_service);
+  sync_service->OverrideNetworkForTest(
+      fake_server::CreateFakeServerHttpPostProviderFactory(
+          fake_server->AsWeakPtr()));
+  return reinterpret_cast<intptr_t>(fake_server);
 }
 
 void FakeServerHelperAndroid::DeleteFakeServer(JNIEnv* env,
                                                const JavaParamRef<jobject>& obj,
-                                               jlong fake_server) {
+                                               jlong fake_server,
+                                               jlong profile_sync_service) {
+  syncer::ProfileSyncService* sync_service =
+      reinterpret_cast<syncer::ProfileSyncService*>(profile_sync_service);
+  sync_service->OverrideNetworkForTest(syncer::CreateHttpPostProviderFactory());
   fake_server::FakeServer* fake_server_ptr =
       reinterpret_cast<fake_server::FakeServer*>(fake_server);
   delete fake_server_ptr;
@@ -91,9 +90,7 @@ jboolean FakeServerHelperAndroid::VerifySessions(
     jlong fake_server,
     const JavaParamRef<jobjectArray>& url_array) {
   std::multiset<std::string> tab_urls;
-  for (int i = 0; i < env->GetArrayLength(url_array); i++) {
-    base::android::ScopedJavaLocalRef<jstring> j_string(
-        env, static_cast<jstring>(env->GetObjectArrayElement(url_array, i)));
+  for (auto j_string : url_array.ReadElements<jstring>()) {
     tab_urls.insert(base::android::ConvertJavaStringToUTF8(env, j_string));
   }
   fake_server::SessionsHierarchy expected_sessions;
@@ -323,13 +320,12 @@ void FakeServerHelperAndroid::DeleteEntity(
     const JavaParamRef<jobject>& obj,
     jlong fake_server,
     const JavaParamRef<jstring>& id,
-    const base::android::JavaParamRef<jstring>& client_defined_unique_tag) {
+    const base::android::JavaParamRef<jstring>& client_tag_hash) {
   fake_server::FakeServer* fake_server_ptr =
       reinterpret_cast<fake_server::FakeServer*>(fake_server);
   std::string native_id = base::android::ConvertJavaStringToUTF8(env, id);
   fake_server_ptr->InjectEntity(syncer::PersistentTombstoneEntity::CreateNew(
-      native_id,
-      base::android::ConvertJavaStringToUTF8(env, client_defined_unique_tag)));
+      native_id, base::android::ConvertJavaStringToUTF8(env, client_tag_hash)));
 }
 
 void FakeServerHelperAndroid::ClearServerData(JNIEnv* env,

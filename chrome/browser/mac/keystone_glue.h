@@ -14,6 +14,7 @@
 
 #include "base/mac/scoped_authorizationref.h"
 #import "base/mac/scoped_nsobject.h"
+#include "chrome/common/mac/staging_watcher.h"
 
 // Possible outcomes of various operations.  A version may accompany some of
 // these, but beware: a version is never required.  For statuses that can be
@@ -97,9 +98,8 @@ extern NSString* const kAutoupdateStatusErrorMessages;
   // YES if an update was ever successfully installed by -installUpdate.
   BOOL updateSuccessfullyInstalled_;
 
-  // Profile count information.
-  uint32_t numProfiles_;
-  uint32_t numSignedInProfiles_;
+  // The object to use to watch for the staging key.
+  base::scoped_nsobject<CrStagingKeyWatcher> stagingKeyWatcher_;
 }
 
 // Return the default Keystone Glue object.
@@ -172,15 +172,12 @@ extern NSString* const kAutoupdateStatusErrorMessages;
 // asynchronous mode.
 - (void)promoteTicket;
 
+// Set the registration active.
+- (void)setRegistrationActive;
+
 // Sets a new value for appPath.  Used during installation to point a ticket
 // at the installed copy.
 - (void)setAppPath:(NSString*)appPath;
-
-// Sets the total number of profiles and the number of signed in profiles.
-// Passing zeroes sets the application as active, but does not update
-// profile metrics.
-- (void)updateProfileCountsWithNumProfiles:(uint32_t)profiles
-                       numSignedInProfiles:(uint32_t)signedInProfiles;
 
 @end  // @interface KeystoneGlue
 

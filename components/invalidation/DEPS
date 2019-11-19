@@ -5,4 +5,5 @@ include_rules = [
   "+components/prefs",
   "+google/cacheinvalidation",
   "+google_apis/gaia",
+  "+mojo/public",
 ]

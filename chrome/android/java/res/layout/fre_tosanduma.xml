@@ -80,8 +80,8 @@
     <org.chromium.ui.widget.ButtonCompat
         android:id="@+id/terms_accept"
         android:layout_width="wrap_content"
-        android:layout_height="36dp"
-        android:layout_marginBottom="16dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
         android:layout_gravity="bottom|center_horizontal"
         android:paddingStart="@dimen/fre_button_padding"
         android:paddingEnd="@dimen/fre_button_padding"

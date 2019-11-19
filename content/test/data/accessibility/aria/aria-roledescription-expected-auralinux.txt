@@ -1,0 +1,4 @@
+[document web]
+++[push button] name='Native button'
+++[push button] name='ARIA button'
+++[push button] name='Clicky button' roledescription:Clicky

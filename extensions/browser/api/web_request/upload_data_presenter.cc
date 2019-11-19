@@ -114,7 +114,7 @@ void ParsedDataPresenter::FeedBytes(base::StringPiece bytes) {
   FormDataParser::Result result;
   while (parser_->GetNextNameValue(&result)) {
     base::Value* list = GetOrCreateList(dictionary_.get(), result.name());
-    list->GetList().emplace_back(result.take_value());
+    list->Append(result.take_value());
   }
 }
 

@@ -1,8 +1,0 @@
-This test verifies that updating the slider for an input element with type=range fires a change event.
-
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-PASS Change event fired.
-PASS slider.value is "0"

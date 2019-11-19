@@ -41,7 +41,7 @@
     TestRunner.addResult('resources count = ' + requests.length);
     for (i = 0; i < requests.length; i++) {
       TestRunner.addResult(requests[i].url());
-      var content = await requests[i].requestContent();
+      var { content, error, isEncoded } = await requests[i].requestContent();
       TestRunner.addResult('resource.content after requesting content: ' + content);
     }
 

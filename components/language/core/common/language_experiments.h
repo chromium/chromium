@@ -17,9 +17,6 @@ extern const base::Feature kUseHeuristicLanguageModel;
 // Android.
 extern const base::Feature kExplicitLanguageAsk;
 
-// The feature that enables the use of improved geo-language data from ULP.
-extern const base::Feature kImprovedGeoLanguageData;
-
 // This feature controls the activation of the experiment to trigger Translate
 // in India on English pages independent of the user's UI language. The params
 // associated with the experiment dictate which model is used to determine the
@@ -33,10 +30,31 @@ extern const char kOverrideModelGeoValue[];
 extern const char kOverrideModelDefaultValue[];
 extern const char kBackoffThresholdKey[];
 
+// Notify sync to update data on language determined.
+extern const base::Feature kNotifySyncOnLanguageDetermined;
+
+// This feature uses the existing UI for translate bubble.
+extern const base::Feature kUseButtonTranslateBubbleUi;
+
+// These feature params controls what translate bubble UI to display.
+extern const char kTranslateUIBubbleKey[];
+extern const char kTranslateUIBubbleButtonValue[];
+extern const char kTranslateUIBubbleTabValue[];
+extern const char kTranslateUIBubbleButtonGM2Value[];
+
 enum class OverrideLanguageModel {
   DEFAULT,
+  FLUENT,
   HEURISTIC,
   GEO,
+};
+
+// Options for the translate desktop UI experiment.
+enum class TranslateUIBubbleModel {
+  DEFAULT,
+  BUTTON,
+  TAB,
+  BUTTON_GM2,
 };
 
 // Returns which language model to use depending on the state of all Language
@@ -59,6 +77,9 @@ bool ShouldPreventRankerEnforcementInIndia(int force_trigger_count);
 // should stop being taken into account.
 bool IsForceTriggerBackoffThresholdReached(int force_trigger_count);
 
+// Returns which translate bubble UI to use depending on selection in
+// kTranslateUIBubbleKey.
+TranslateUIBubbleModel GetTranslateUiBubbleModel();
 }  // namespace language
 
 #endif  // COMPONENTS_LANGUAGE_CORE_COMMON_LANGUAGE_EXPERIMENTS_H_

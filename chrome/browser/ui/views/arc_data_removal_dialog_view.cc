@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/app_list/arc/arc_data_removal_dialog.h"
 
 #include "base/macros.h"
-#include "chrome/browser/chromeos/arc/arc_session_manager.h"
+#include "chrome/browser/chromeos/arc/session/arc_session_manager.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_icon_loader.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/browser_dialogs.h"
@@ -50,7 +50,6 @@ class DataRemovalConfirmationDialog : public views::DialogDelegateView,
   ui::ModalType GetModalType() const override;
 
   // views::DialogDelegate:
-  base::string16 GetDialogButtonLabel(ui::DialogButton button) const override;
   bool Accept() override;
   bool Cancel() override;
 
@@ -83,27 +82,31 @@ DataRemovalConfirmationDialog::DataRemovalConfirmationDialog(
     Profile* profile,
     DataRemovalConfirmationCallback confirm_callback)
     : profile_(profile), confirm_callback_(std::move(confirm_callback)) {
+  DialogDelegate::set_button_label(
+      ui::DIALOG_BUTTON_OK,
+      l10n_util::GetStringUTF16(IDS_ARC_DATA_REMOVAL_CONFIRMATION_OK_BUTTON));
+
   ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
 
   std::unique_ptr<views::BoxLayout> layout = std::make_unique<views::BoxLayout>(
-      views::BoxLayout::kHorizontal,
+      views::BoxLayout::Orientation::kHorizontal,
       provider->GetDialogInsetsForContentType(views::TEXT, views::TEXT),
       provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_HORIZONTAL));
   layout->set_cross_axis_alignment(
-      views::BoxLayout::CROSS_AXIS_ALIGNMENT_START);
+      views::BoxLayout::CrossAxisAlignment::kStart);
   SetLayoutManager(std::move(layout));
 
-  icon_view_ = new views::ImageView();
-  icon_view_->SetPreferredSize(gfx::Size(kArcAppIconSize, kArcAppIconSize));
-  AddChildView(icon_view_);
+  auto icon_view = std::make_unique<views::ImageView>();
+  icon_view->SetPreferredSize(gfx::Size(kArcAppIconSize, kArcAppIconSize));
+  icon_view_ = AddChildView(std::move(icon_view));
 
   // UI hierarchy owned.
-  views::Label* label = new views::Label(
+  auto label = std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(IDS_ARC_DATA_REMOVAL_CONFIRMATION_HEADING),
       views::style::CONTEXT_MESSAGE_BOX_BODY_TEXT);
   label->SetMultiLine(true);
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  AddChildView(label);
+  AddChildView(std::move(label));
 
   icon_loader_ =
       std::make_unique<ArcAppIconLoader>(profile_, kArcAppIconSize, this);
@@ -129,15 +132,6 @@ base::string16 DataRemovalConfirmationDialog::GetWindowTitle() const {
 
 ui::ModalType DataRemovalConfirmationDialog::GetModalType() const {
   return ui::MODAL_TYPE_WINDOW;
-}
-
-base::string16 DataRemovalConfirmationDialog::GetDialogButtonLabel(
-    ui::DialogButton button) const {
-  if (button == ui::DIALOG_BUTTON_OK) {
-    return l10n_util::GetStringUTF16(
-        IDS_ARC_DATA_REMOVAL_CONFIRMATION_OK_BUTTON);
-  }
-  return views::DialogDelegate::GetDialogButtonLabel(button);
 }
 
 bool DataRemovalConfirmationDialog::Accept() {

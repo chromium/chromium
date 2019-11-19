@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL TextTrack's addCue and removeCue assert_object_equals: value is null, expected object
-Harness: the test ran to completion.
-

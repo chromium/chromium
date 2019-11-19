@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/i18n/rtl.h"
+#include "base/lazy_instance.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/chrome_notification_types.h"
@@ -21,6 +22,9 @@ using bookmarks::BookmarkNode;
 using content::PageNavigator;
 
 namespace {
+
+base::LazyInstance<base::OnceClosure>::Leaky pre_run_callback =
+    LAZY_INSTANCE_INITIALIZER;
 
 // Returns true if |command_id| corresponds to a command that causes one or more
 // bookmarks to be removed.
@@ -38,6 +42,7 @@ BookmarkContextMenu::BookmarkContextMenu(
     Browser* browser,
     Profile* profile,
     PageNavigator* page_navigator,
+    BookmarkLaunchLocation opened_from,
     const BookmarkNode* parent,
     const std::vector<const BookmarkNode*>& selection,
     bool close_on_remove)
@@ -47,6 +52,7 @@ BookmarkContextMenu::BookmarkContextMenu(
           browser,
           profile,
           page_navigator,
+          opened_from,
           parent,
           selection)),
       parent_widget_(parent_widget),
@@ -67,19 +73,23 @@ BookmarkContextMenu::BookmarkContextMenu(
 BookmarkContextMenu::~BookmarkContextMenu() {
 }
 
+void BookmarkContextMenu::InstallPreRunCallback(base::OnceClosure callback) {
+  DCHECK(pre_run_callback.Get().is_null());
+  pre_run_callback.Get() = std::move(callback);
+}
+
 void BookmarkContextMenu::RunMenuAt(const gfx::Point& point,
                                     ui::MenuSourceType source_type) {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kKioskMode))
     return;
 
-  content::NotificationService::current()->Notify(
-      chrome::NOTIFICATION_BOOKMARK_CONTEXT_MENU_SHOWN,
-      content::Source<BookmarkContextMenu>(this),
-      content::NotificationService::NoDetails());
+  if (!pre_run_callback.Get().is_null())
+    std::move(pre_run_callback.Get()).Run();
+
   // width/height don't matter here.
   menu_runner_->RunMenuAt(parent_widget_, nullptr,
                           gfx::Rect(point.x(), point.y(), 0, 0),
-                          views::MENU_ANCHOR_TOPLEFT, source_type);
+                          views::MenuAnchorPosition::kTopLeft, source_type);
 }
 
 void BookmarkContextMenu::SetPageNavigator(PageNavigator* navigator) {

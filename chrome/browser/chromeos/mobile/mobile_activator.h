@@ -271,7 +271,7 @@ class MobileActivator : public NetworkStateHandlerObserver {
   base::Time cellular_plan_payment_time_;
 
   base::ObserverList<Observer>::Unchecked observers_;
-  base::WeakPtrFactory<MobileActivator> weak_ptr_factory_;
+  base::WeakPtrFactory<MobileActivator> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(MobileActivator);
 };

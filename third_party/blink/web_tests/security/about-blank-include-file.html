@@ -1,0 +1,71 @@
+<!--
+  The about:blank iframe should be local to its initiator and inherit the
+  subresources loaders. In particular, it inherits the ability to load local
+  files.
+-->
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<!-- A simple producer-consumer queue -->
+<script>
+  let pendingReaders = [];
+  let pendingMessages= [];
+
+  let receive = function() {
+    return new Promise(resolve => {
+      if (pendingMessages.length != 0)
+        resolve(pendingMessages.shift());
+      else
+        pendingReaders.push(resolve);
+    });
+  }
+
+  let send = function(message) {
+    if (pendingReaders.length != 0)
+      pendingReaders.shift()(message);
+    else
+      pendingMessages.push(message)
+  }
+</script>
+
+<iframe name="theiframe" onload="send('iframe-load')"
+                         onerror="send('iframe-error')"
+                         ></iframe>
+<script>
+  let iframe = document.querySelector("iframe");
+
+  let addScript = function() {
+    let iframeDocument = iframe.contentWindow.document;
+    let script = iframeDocument.createElement("script");
+    script.src = "./resources/script.js";
+    script.onload = () => send("script-load");
+    script.onerror = () => send("script-error");
+    iframeDocument.body.appendChild(script);
+  };
+
+  async function test() {
+    // 1. Test from the initial empty document.
+    assert_equals(await receive(), "iframe-load");
+    addScript();
+    assert_equals(await receive(), "script-load");
+
+    // 2. Test after a manual about:blank navigation using iframe.src.
+    iframe.src = "about:blank"
+    assert_equals(await receive(), "iframe-load");
+    addScript();
+    assert_equals(await receive(), "script-load");
+
+    // 3. Navigate cross-process (e.g. not about:blank).
+    iframe.src="http://127.0.0.1:8000/resources/dummy.html";
+    assert_equals(await receive(), "iframe-load");
+
+    // 4. Retry step 2.
+    iframe.src = "about:blank"
+    assert_equals(await receive(), "iframe-load");
+    addScript();
+    assert_equals(await receive(), "script-load", "https://crbug.com/981819.");
+
+    done();
+  };
+  test();
+</script>

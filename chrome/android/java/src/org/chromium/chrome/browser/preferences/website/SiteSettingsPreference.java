@@ -6,8 +6,8 @@ package org.chromium.chrome.browser.preferences.website;
 
 import android.content.Context;
 import android.support.v4.view.ViewCompat;
+import android.support.v7.preference.PreferenceViewHolder;
 import android.util.AttributeSet;
-import android.view.View;
 import android.widget.ImageView;
 
 import org.chromium.chrome.R;
@@ -25,11 +25,11 @@ public class SiteSettingsPreference extends ChromeBasePreference {
     }
 
     @Override
-    protected void onBindView(View view) {
-        super.onBindView(view);
+    public void onBindViewHolder(PreferenceViewHolder holder) {
+        super.onBindViewHolder(holder);
 
         int padding = getContext().getResources().getDimensionPixelSize(R.dimen.pref_icon_padding);
-        ImageView icon = (ImageView) view.findViewById(android.R.id.icon);
+        ImageView icon = (ImageView) holder.findViewById(android.R.id.icon);
         ViewCompat.setPaddingRelative(
                 icon, padding, icon.getPaddingTop(), 0, icon.getPaddingBottom());
     }

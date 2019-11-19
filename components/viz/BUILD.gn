@@ -47,6 +47,8 @@ viz_test("viz_perftests") {
     "//components/viz/common:perf_tests",
     "//components/viz/service:perf_tests",
     "//components/viz/test:test_suite",
+    "//mojo/core/embedder",
+    "//skia",
   ]
 
   # This target should not require the Chrome executable to run.

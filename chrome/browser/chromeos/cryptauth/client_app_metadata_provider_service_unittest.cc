@@ -4,13 +4,6 @@
 
 #include "chrome/browser/chromeos/cryptauth/client_app_metadata_provider_service.h"
 
-#include "base/macros.h"
-#include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
-#include "chromeos/network/network_state_handler.h"
-#include "chromeos/network/network_state_test_helper.h"
-#include "chromeos/services/device_sync/fake_cryptauth_enrollment_scheduler.h"
-#include "chromeos/services/device_sync/persistent_enrollment_scheduler.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {

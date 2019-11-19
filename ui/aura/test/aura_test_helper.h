@@ -8,8 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "ui/aura/env.h"
-#include "ui/aura/mus/window_tree_client.h"
+#include "build/build_config.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/aura/window_tree_host.h"
 
@@ -26,12 +25,7 @@ class WMState;
 namespace aura {
 class Env;
 class TestScreen;
-class TestWindowTree;
-class TestWindowTreeClientDelegate;
-class TestWindowTreeClientSetup;
 class Window;
-class WindowTreeClient;
-class WindowTreeClientDelegate;
 
 namespace client {
 class CaptureClient;
@@ -39,7 +33,6 @@ class DefaultCaptureClient;
 class FocusClient;
 }
 namespace test {
-class EnvWindowTreeClientSetter;
 class TestWindowParentingClient;
 
 // A helper class owned by tests that does common initialization required for
@@ -53,20 +46,6 @@ class AuraTestHelper {
 
   // Returns the current AuraTestHelper, or nullptr if it's not alive.
   static AuraTestHelper* GetInstance();
-
-  // Makes aura target mus with a mock WindowTree (TestWindowTree). Must be
-  // called before SetUp().
-  void EnableMusWithTestWindowTree(
-      WindowTreeClientDelegate* window_tree_delegate);
-
-  // Makes aura target mus with the specified WindowTreeClient. Must be called
-  // before SetUp().
-  void EnableMusWithWindowTreeClient(WindowTreeClient* window_tree_client);
-
-  // Deletes the WindowTreeClient now. Normally the WindowTreeClient is deleted
-  // at the right time and there is no need to call this. This is provided for
-  // testing shutdown ordering.
-  void DeleteWindowTreeClient();
 
   // Creates and initializes (shows and sizes) the RootWindow for use in tests.
   void SetUp(ui::ContextFactory* context_factory,
@@ -85,49 +64,22 @@ class AuraTestHelper {
 
   TestScreen* test_screen() { return test_screen_.get(); }
 
-  // This function only returns a valid value if EnableMusWithTestWindowTree()
-  // was called.
-  TestWindowTree* window_tree();
-
-  // Returns a WindowTreeClient only if one of the EnableMus functions is
-  // called.
-  WindowTreeClient* window_tree_client();
-
   client::FocusClient* focus_client() { return focus_client_.get(); }
   client::CaptureClient* capture_client();
 
   Env* GetEnv();
 
  private:
-  enum class Mode {
-    // Classic aura.
-    LOCAL,
+#if defined(OS_WIN)
+  // Deletes existing NativeWindowOcclusionTrackerWin instance.
+  void DeleteNativeWindowOcclusionTrackerWin();
+#endif  // defined(OS_WIN)
 
-    // Mus with a test WindowTree implementation that does not target the real
-    // service:ui.
-    MUS_CREATE_WINDOW_TREE_CLIENT,
-
-    // Mus without creating a WindowTree and WindowTreeHost. This is used when
-    // the test wants to create the WindowTreeClient itself. This mode is
-    // enabled by way of EnableMusWithWindowTreeClient().
-    MUS_DONT_CREATE_WINDOW_TREE_CLIENT,
-  };
-
-  // Initializes a WindowTreeClient with a test WindowTree.
-  void InitWindowTreeClient();
-
-  Mode mode_ = Mode::LOCAL;
-  bool setup_called_;
-  bool teardown_called_;
+  bool setup_called_ = false;
+  bool teardown_called_ = false;
   ui::ContextFactory* context_factory_to_restore_ = nullptr;
   ui::ContextFactoryPrivate* context_factory_private_to_restore_ = nullptr;
-  std::unique_ptr<EnvWindowTreeClientSetter> env_window_tree_client_setter_;
-  // This is only created if Env has already been created and it's Mode is MUS.
-  std::unique_ptr<TestWindowTreeClientDelegate>
-      test_window_tree_client_delegate_;
-  std::unique_ptr<TestWindowTreeClientSetup> window_tree_client_setup_;
-  Env::Mode env_mode_to_restore_ = Env::Mode::LOCAL;
-  std::unique_ptr<aura::Env> env_;
+  std::unique_ptr<Env> env_;
   std::unique_ptr<wm::WMState> wm_state_;
   std::unique_ptr<WindowTreeHost> host_;
   std::unique_ptr<TestWindowParentingClient> parenting_client_;
@@ -135,9 +87,6 @@ class AuraTestHelper {
   std::unique_ptr<client::FocusClient> focus_client_;
   std::unique_ptr<TestScreen> test_screen_;
   std::unique_ptr<ui::ScopedAnimationDurationScaleMode> zero_duration_mode_;
-  WindowTreeClientDelegate* window_tree_delegate_ = nullptr;
-
-  WindowTreeClient* window_tree_client_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(AuraTestHelper);
 };

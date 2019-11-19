@@ -19,15 +19,16 @@
 #import "ios/chrome/browser/ui/authentication/signin_earlgrey_utils.h"
 #import "ios/chrome/browser/ui/history/history_ui_constants.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
+#import "ios/chrome/browser/ui/settings/cells/clear_browsing_data_constants.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_url_item.h"
+#import "ios/chrome/browser/ui/table_view/feature_flags.h"
 #import "ios/chrome/browser/ui/table_view/table_view_navigation_controller_constants.h"
 #import "ios/chrome/browser/ui/util/transparent_link_button.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
 #include "ios/chrome/common/string_util.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
-#import "ios/chrome/test/earl_grey/accessibility_util.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -196,7 +197,7 @@ id<GREYMatcher> OpenInNewIncognitoTabButton() {
   // Tap a history entry and assert that navigation to that entry's URL occurs.
   [[EarlGrey selectElementWithMatcher:HistoryEntry(_URL1, kTitle1)]
       performAction:grey_tap()];
-  [ChromeEarlGrey waitForWebViewContainingText:kResponse1];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
 }
 
 // Tests that history is not changed after performing back navigation.
@@ -206,7 +207,7 @@ id<GREYMatcher> OpenInNewIncognitoTabButton() {
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::BackButton()]
       performAction:grey_tap()];
-  [ChromeEarlGrey waitForWebViewContainingText:kResponse1];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
 
   [self openHistoryPanel];
 
@@ -220,7 +221,7 @@ id<GREYMatcher> OpenInNewIncognitoTabButton() {
 - (void)testSearchHistory {
   // TODO(crbug.com/753098): Re-enable this test on iPad once grey_typeText
   // works on iOS 11.
-  if (IsIPadIdiom()) {
+  if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_DISABLED(@"Test disabled on iPad.");
   }
 
@@ -336,6 +337,42 @@ id<GREYMatcher> OpenInNewIncognitoTabButton() {
   [ChromeEarlGreyUI assertHistoryHasNoEntries];
 }
 
+// Tests clear browsing history.
+- (void)testClearBrowsingHistorySwipeDownDismiss {
+  if (!base::ios::IsRunningOnOrLater(13, 0, 0)) {
+    EARL_GREY_TEST_SKIPPED(@"Test disabled on iOS 12 and lower.");
+  }
+  if (!IsCollectionsCardPresentationStyleEnabled()) {
+    EARL_GREY_TEST_SKIPPED(@"Test disabled on when feature flag is off.");
+  }
+
+  [self loadTestURLs];
+  [self openHistoryPanel];
+
+  // Open Clear Browsing Data
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          HistoryClearBrowsingDataButton()]
+      performAction:grey_tap()];
+
+  // Check that the TableView is presented.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kClearBrowsingDataViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_notNil()];
+
+  // Swipe TableView down.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kClearBrowsingDataViewAccessibilityIdentifier)]
+      performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
+
+  // Check that the TableView has been dismissed.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kClearBrowsingDataViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_nil()];
+}
+
 // Tests display and selection of 'Open in New Tab' in a context menu on a
 // history entry.
 - (void)testContextMenuOpenInNewTab {
@@ -405,11 +442,73 @@ id<GREYMatcher> OpenInNewIncognitoTabButton() {
                  _URL1.spec().c_str());
 }
 
+// Tests that the VC can be dismissed by swiping down.
+- (void)testSwipeDownDismiss {
+  if (!base::ios::IsRunningOnOrLater(13, 0, 0)) {
+    EARL_GREY_TEST_SKIPPED(@"Test disabled on iOS 12 and lower.");
+  }
+  if (!IsCollectionsCardPresentationStyleEnabled()) {
+    EARL_GREY_TEST_SKIPPED(@"Test disabled on when feature flag is off.");
+  }
+  [self loadTestURLs];
+  [self openHistoryPanel];
+
+  // Check that the TableView is presented.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kHistoryTableViewIdentifier)]
+      assertWithMatcher:grey_notNil()];
+
+  // Swipe TableView down.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kHistoryTableViewIdentifier)]
+      performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
+
+  // Check that the TableView has been dismissed.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kHistoryTableViewIdentifier)]
+      assertWithMatcher:grey_nil()];
+}
+
+// Tests that the VC can be dismissed by swiping down while its searching.
+- (void)testSwipeDownDismissWhileSearching {
+  if (!base::ios::IsRunningOnOrLater(13, 0, 0)) {
+    EARL_GREY_TEST_SKIPPED(@"Test disabled on iOS 12 and lower.");
+  }
+  if (!IsCollectionsCardPresentationStyleEnabled()) {
+    EARL_GREY_TEST_SKIPPED(@"Test disabled on when feature flag is off.");
+  }
+  [self loadTestURLs];
+  [self openHistoryPanel];
+
+  // Check that the TableView is presented.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kHistoryTableViewIdentifier)]
+      assertWithMatcher:grey_notNil()];
+
+  // Search for the first URL.
+  [[EarlGrey selectElementWithMatcher:SearchIconButton()]
+      performAction:grey_tap()];
+  NSString* searchString =
+      [NSString stringWithFormat:@"%s", _URL1.path().c_str()];
+  [[EarlGrey selectElementWithMatcher:SearchIconButton()]
+      performAction:grey_typeText(searchString)];
+
+  // Swipe TableView down.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kHistoryTableViewIdentifier)]
+      performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
+
+  // Check that the TableView has been dismissed.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kHistoryTableViewIdentifier)]
+      assertWithMatcher:grey_nil()];
+}
+
 // Navigates to history and checks elements for accessibility.
 - (void)testAccessibilityOnHistory {
   [self loadTestURLs];
   [self openHistoryPanel];
-  chrome_test_util::VerifyAccessibilityForCurrentScreen();
+  [ChromeEarlGrey verifyAccessibilityForCurrentScreen];
   // Close history.
     id<GREYMatcher> exitMatcher =
         grey_accessibilityID(kHistoryNavigationControllerDoneButtonIdentifier);
@@ -420,13 +519,13 @@ id<GREYMatcher> OpenInNewIncognitoTabButton() {
 
 - (void)loadTestURLs {
   [ChromeEarlGrey loadURL:_URL1];
-  [ChromeEarlGrey waitForWebViewContainingText:kResponse1];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
 
   [ChromeEarlGrey loadURL:_URL2];
-  [ChromeEarlGrey waitForWebViewContainingText:kResponse2];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse2];
 
   [ChromeEarlGrey loadURL:_URL3];
-  [ChromeEarlGrey waitForWebViewContainingText:kResponse3];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse3];
 }
 
 - (void)openHistoryPanel {

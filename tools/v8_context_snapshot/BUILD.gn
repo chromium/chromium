@@ -11,7 +11,7 @@ import("//tools/v8_context_snapshot/v8_context_snapshot.gni")
 
 import("//build/config/c++/c++.gni")
 import("//build/config/compiler/compiler.gni")
-import("//v8/snapshot_toolchain.gni")
+import("//v8/gni/snapshot_toolchain.gni")
 
 if (is_android) {
   import("//build/config/android/rules.gni")
@@ -42,9 +42,6 @@ if (use_v8_context_snapshot) {
       deps = [
         ":v8_context_snapshot",
       ]
-      sources = [
-        "$root_out_dir/natives_blob.bin",
-      ]
       renaming_sources = [ "$root_out_dir/v8_context_snapshot.bin" ]
       if (current_cpu == "arm" || current_cpu == "x86" ||
           current_cpu == "mipsel") {
@@ -70,12 +67,23 @@ if (use_v8_context_snapshot) {
       "--output_file=$output_path",
     ]
 
-    outputs = [
-      output_file,
-    ]
-
     deps = [
       ":v8_context_snapshot_generator($v8_snapshot_toolchain)",
+    ]
+
+    if (is_component_build) {
+      # In component builds, this forces the generator to rerun whenever the v8
+      # shared library is rebuilt. Without it would only regenerate if the
+      # generator itself was rebuilt.
+      inputs = [
+        "$root_out_dir/${shlib_prefix}v8${shlib_extension}",
+      ]
+
+      deps += [ "//v8" ]
+    }
+
+    outputs = [
+      output_file,
     ]
   }
 

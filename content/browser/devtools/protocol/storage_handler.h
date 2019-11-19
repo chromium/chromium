@@ -70,7 +70,7 @@ class StorageHandler : public DevToolsDomainHandler,
   std::unique_ptr<CacheStorageObserver> cache_storage_observer_;
   std::unique_ptr<IndexedDBObserver> indexed_db_observer_;
 
-  base::WeakPtrFactory<StorageHandler> weak_ptr_factory_;
+  base::WeakPtrFactory<StorageHandler> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(StorageHandler);
 };

@@ -5,6 +5,7 @@
 #include "components/dom_distiller/content/browser/distillability_driver.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/bind.h"
 #include "content/public/browser/navigation_handle.h"
@@ -12,7 +13,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 namespace dom_distiller {
 
@@ -31,8 +32,13 @@ class DistillabilityServiceImpl : public mojom::DistillabilityService {
                            bool is_mobile_friendly) override {
     if (!distillability_driver_)
       return;
-    distillability_driver_->OnDistillability(is_distillable, is_last_update,
-                                             is_mobile_friendly);
+    DistillabilityResult result;
+    result.is_distillable = is_distillable;
+    result.is_last = is_last_update;
+    result.is_mobile_friendly = is_mobile_friendly;
+    DVLOG(1) << "Notifying observers of distillability service result: "
+             << result;
+    distillability_driver_->OnDistillability(result);
   }
 
  private:
@@ -40,12 +46,10 @@ class DistillabilityServiceImpl : public mojom::DistillabilityService {
 };
 
 DistillabilityDriver::DistillabilityDriver(content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents), weak_factory_(this) {
+    : content::WebContentsObserver(web_contents),
+      latest_result_(base::nullopt) {
   if (!web_contents)
     return;
-  frame_interfaces_.AddInterface(
-      base::BindRepeating(&DistillabilityDriver::CreateDistillabilityService,
-                          base::Unretained(this)));
 }
 
 DistillabilityDriver::~DistillabilityDriver() {
@@ -53,31 +57,17 @@ DistillabilityDriver::~DistillabilityDriver() {
 }
 
 void DistillabilityDriver::CreateDistillabilityService(
-    mojom::DistillabilityServiceRequest request) {
-  mojo::MakeStrongBinding(
+    mojo::PendingReceiver<mojom::DistillabilityService> receiver) {
+  mojo::MakeSelfOwnedReceiver(
       std::make_unique<DistillabilityServiceImpl>(weak_factory_.GetWeakPtr()),
-      std::move(request));
+      std::move(receiver));
 }
 
-void DistillabilityDriver::SetDelegate(
-    const base::RepeatingCallback<void(bool, bool, bool)>& delegate) {
-  m_delegate_ = delegate;
-}
-
-void DistillabilityDriver::OnDistillability(bool distillable,
-                                            bool is_last,
-                                            bool is_mobile_friendly) {
-  if (m_delegate_.is_null())
-    return;
-
-  m_delegate_.Run(distillable, is_last, is_mobile_friendly);
-}
-
-void DistillabilityDriver::OnInterfaceRequestFromFrame(
-    content::RenderFrameHost* render_frame_host,
-    const std::string& interface_name,
-    mojo::ScopedMessagePipeHandle* interface_pipe) {
-  frame_interfaces_.TryBindInterface(interface_name, interface_pipe);
+void DistillabilityDriver::OnDistillability(
+    const DistillabilityResult& result) {
+  latest_result_ = result;
+  for (auto& observer : observers_)
+    observer.OnResult(result);
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(DistillabilityDriver)

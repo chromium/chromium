@@ -4,19 +4,21 @@
 
 package org.chromium.chrome.browser.offlinepages;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import org.junit.Assert;
 
 import org.chromium.base.Callback;
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.task.PostTask;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.download.items.OfflineContentAggregatorFactory;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge.OfflinePageModelObserver;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.offline_items_collection.OfflineItem;
+import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,15 +31,14 @@ import java.util.concurrent.atomic.AtomicReference;
 public class OfflineTestUtil {
     // Forces request coordinator to process the requests in the queue.
     public static void startRequestCoordinatorProcessing() {
-        ThreadUtils.runOnUiThreadBlocking(() -> nativeStartRequestCoordinatorProcessing());
+        TestThreadUtils.runOnUiThreadBlocking(() -> nativeStartRequestCoordinatorProcessing());
     }
 
     // Gets all the URLs in the request queue.
-    public static SavePageRequest[] getRequestsInQueue()
-            throws TimeoutException, InterruptedException {
+    public static SavePageRequest[] getRequestsInQueue() throws TimeoutException {
         final AtomicReference<SavePageRequest[]> result = new AtomicReference<>();
         final CallbackHelper callbackHelper = new CallbackHelper();
-        ThreadUtils.runOnUiThreadBlocking(() -> {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
             nativeGetRequestsInQueue((SavePageRequest[] requests) -> {
                 result.set(requests);
                 callbackHelper.notifyCalled();
@@ -48,12 +49,11 @@ public class OfflineTestUtil {
     }
 
     // Gets all available offline pages.
-    public static List<OfflinePageItem> getAllPages()
-            throws TimeoutException, InterruptedException {
+    public static List<OfflinePageItem> getAllPages() throws TimeoutException {
         final AtomicReference<List<OfflinePageItem>> result =
                 new AtomicReference<List<OfflinePageItem>>();
         final CallbackHelper callbackHelper = new CallbackHelper();
-        ThreadUtils.runOnUiThreadBlocking(() -> {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
             nativeGetAllPages(new ArrayList<OfflinePageItem>(), (List<OfflinePageItem> items) -> {
                 result.set(items);
                 callbackHelper.notifyCalled();
@@ -65,11 +65,10 @@ public class OfflineTestUtil {
 
     // Returns a string representation of the requests contained in the RequestCoordinator.
     // For logging out to debug test failures.
-    public static String dumpRequestCoordinatorState()
-            throws TimeoutException, InterruptedException {
+    public static String dumpRequestCoordinatorState() throws TimeoutException {
         final CallbackHelper callbackHelper = new CallbackHelper();
         final AtomicReference<String> result = new AtomicReference<String>();
-        ThreadUtils.runOnUiThreadBlocking(() -> {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
             nativeDumpRequestCoordinatorState((String dump) -> {
                 result.set(dump);
                 callbackHelper.notifyCalled();
@@ -81,7 +80,7 @@ public class OfflineTestUtil {
 
     // Returns the OfflinePageItem with the given clientId, or null if one doesn't exist.
     public static @Nullable OfflinePageItem getPageByClientId(ClientId clientId)
-            throws TimeoutException, InterruptedException {
+            throws TimeoutException {
         ArrayList<OfflinePageItem> result = new ArrayList<OfflinePageItem>();
         for (OfflinePageItem item : getAllPages()) {
             if (item.getClientId().equals(clientId)) {
@@ -92,29 +91,38 @@ public class OfflineTestUtil {
     }
 
     // Returns all OfflineItems provided by the OfflineContentProvider.
-    public static List<OfflineItem> getOfflineItems()
-            throws TimeoutException, InterruptedException {
+    public static List<OfflineItem> getOfflineItems() throws TimeoutException {
         CallbackHelper finished = new CallbackHelper();
         final AtomicReference<ArrayList<OfflineItem>> result =
                 new AtomicReference<ArrayList<OfflineItem>>();
-        ThreadUtils.runOnUiThreadBlocking(() -> {
-            OfflineContentAggregatorFactory
-                    .forProfile(Profile.getLastUsedProfile().getOriginalProfile())
-                    .getAllItems(items -> {
-                        result.set(items);
-                        finished.notifyCalled();
-                    });
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            OfflineContentAggregatorFactory.get().getAllItems(items -> {
+                result.set(items);
+                finished.notifyCalled();
+            });
         });
         finished.waitForCallback(0);
         return result.get();
     }
 
+    public static byte[] getRawThumbnail(long offlineId) throws TimeoutException {
+        final AtomicReference<byte[]> result = new AtomicReference<>();
+        final CallbackHelper callbackHelper = new CallbackHelper();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            nativeGetRawThumbnail(offlineId, (byte[] rawThumbnail) -> {
+                result.set(rawThumbnail);
+                callbackHelper.notifyCalled();
+            });
+        });
+        callbackHelper.waitForCallback(0);
+        return result.get();
+    }
+
     // Waits for the offline model to initialize and returns an OfflinePageBridge.
-    public static OfflinePageBridge getOfflinePageBridge()
-            throws TimeoutException, InterruptedException {
+    public static OfflinePageBridge getOfflinePageBridge() throws TimeoutException {
         final CallbackHelper ready = new CallbackHelper();
         final AtomicReference<OfflinePageBridge> result = new AtomicReference<OfflinePageBridge>();
-        ThreadUtils.runOnUiThread(() -> {
+        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
             OfflinePageBridge bridge =
                     OfflinePageBridge.getForProfile(Profile.getLastUsedProfile());
             if (bridge == null || bridge.isOfflinePageModelLoaded()) {
@@ -137,10 +145,9 @@ public class OfflineTestUtil {
     }
 
     // Intercepts future HTTP requests for |url| with an offline net error.
-    public static void interceptWithOfflineError(String url)
-            throws TimeoutException, InterruptedException {
+    public static void interceptWithOfflineError(String url) throws TimeoutException {
         final CallbackHelper callbackHelper = new CallbackHelper();
-        ThreadUtils.runOnUiThreadBlocking(() -> {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
             nativeInterceptWithOfflineError(url, () -> callbackHelper.notifyCalled());
         });
         callbackHelper.waitForCallback(0);
@@ -148,23 +155,37 @@ public class OfflineTestUtil {
 
     // Clears all previous intercepts installed by interceptWithOfflineError.
     public static void clearIntercepts() {
-        ThreadUtils.runOnUiThreadBlocking(() -> nativeClearIntercepts());
+        TestThreadUtils.runOnUiThreadBlocking(() -> nativeClearIntercepts());
     }
 
     // Waits for the connectivity state to change in the native network change notifier.
     public static void waitForConnectivityState(boolean connected) {
         AtomicBoolean done = new AtomicBoolean();
-        ThreadUtils.runOnUiThreadBlocking(
+        TestThreadUtils.runOnUiThreadBlocking(
                 () -> nativeWaitForConnectivityState(connected, () -> done.set(true)));
         CriteriaHelper.pollInstrumentationThread(() -> done.get());
+    }
+
+    // Set the offline_pages.enabled_by_server pref for testing. If |enabled| is false,
+    // also ensures that the server-enabled check is due.
+    public static void setPrefetchingEnabledByServer(boolean enabled) {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { nativeSetPrefetchingEnabledByServer(enabled); });
+    }
+
+    public static void setGCMTokenForTesting(String gcmToken) {
+        TestThreadUtils.runOnUiThreadBlocking(() -> { nativeSetGCMTokenForTesting(gcmToken); });
     }
 
     private static native void nativeGetRequestsInQueue(Callback<SavePageRequest[]> callback);
     private static native void nativeGetAllPages(
             List<OfflinePageItem> offlinePages, final Callback<List<OfflinePageItem>> callback);
+    private static native void nativeGetRawThumbnail(long offlineId, Callback<byte[]> callback);
     private static native void nativeStartRequestCoordinatorProcessing();
     private static native void nativeInterceptWithOfflineError(String url, Runnable readyRunnable);
     private static native void nativeClearIntercepts();
     private static native void nativeDumpRequestCoordinatorState(Callback<String> callback);
     private static native void nativeWaitForConnectivityState(boolean connected, Runnable callback);
+    private static native void nativeSetPrefetchingEnabledByServer(boolean enabled);
+    private static native void nativeSetGCMTokenForTesting(String gcmToken);
 }

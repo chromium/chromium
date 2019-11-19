@@ -11,10 +11,6 @@
 
 namespace blink {
 
-LinkManifest* LinkManifest::Create(HTMLLinkElement* owner) {
-  return MakeGarbageCollected<LinkManifest>(owner);
-}
-
 LinkManifest::LinkManifest(HTMLLinkElement* owner) : LinkResource(owner) {}
 
 LinkManifest::~LinkManifest() = default;

@@ -222,7 +222,7 @@ void SVGTransform::Add(SVGPropertyBase*, SVGElement*) {
   NOTREACHED();
 }
 
-void SVGTransform::CalculateAnimatedValue(SVGAnimationElement*,
+void SVGTransform::CalculateAnimatedValue(const SVGAnimateElement&,
                                           float,
                                           unsigned,
                                           SVGPropertyBase*,

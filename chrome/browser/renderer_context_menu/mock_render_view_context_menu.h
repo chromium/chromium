@@ -52,11 +52,25 @@ class MockRenderViewContextMenu : public ui::SimpleMenuModel::Delegate,
 
   // RenderViewContextMenuProxy implementation.
   void AddMenuItem(int command_id, const base::string16& title) override;
+  void AddMenuItemWithIcon(int command_id,
+                           const base::string16& title,
+                           const gfx::ImageSkia& image) override;
+  void AddMenuItemWithIcon(int command_id,
+                           const base::string16& title,
+                           const gfx::VectorIcon& icon) override;
   void AddCheckItem(int command_id, const base::string16& title) override;
   void AddSeparator() override;
   void AddSubMenu(int command_id,
                   const base::string16& label,
                   ui::MenuModel* model) override;
+  void AddSubMenuWithStringIdAndIcon(int command_id,
+                                     int message_id,
+                                     ui::MenuModel* model,
+                                     const gfx::ImageSkia& image) override;
+  void AddSubMenuWithStringIdAndIcon(int command_id,
+                                     int message_id,
+                                     ui::MenuModel* model,
+                                     const gfx::VectorIcon& icon) override;
   void UpdateMenuItem(int command_id,
                       bool enabled,
                       bool hidden,
@@ -82,7 +96,15 @@ class MockRenderViewContextMenu : public ui::SimpleMenuModel::Delegate,
   // Returns the writable profile used in this test.
   PrefService* GetPrefs();
 
+  // Sets a WebContents to be returned by GetWebContents().
+  void set_web_contents(content::WebContents* web_contents) {
+    web_contents_ = web_contents;
+  }
+
  private:
+  // Helper function to append items in sub menu from |model|.
+  void AppendSubMenuItems(ui::MenuModel* model);
+
   // An observer used for initializing the status of menu items added in this
   // test. This is owned by our owner and the owner is responsible for its
   // lifetime.
@@ -94,6 +116,10 @@ class MockRenderViewContextMenu : public ui::SimpleMenuModel::Delegate,
 
   // Either |original_profile_| or its incognito profile.
   Profile* profile_;
+
+  // The WebContents returned by GetWebContents(). This is owned by our owner
+  // and the owner is responsible for its lifetime.
+  content::WebContents* web_contents_ = nullptr;
 
   // A list of menu items added.
   std::vector<MockMenuItem> items_;

@@ -5,7 +5,7 @@
 #include "base/trace_event/blame_context.h"
 
 #include "base/json/json_writer.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/test/trace_event_analyzer.h"
 #include "base/trace_event/traced_value.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -58,7 +58,7 @@ class DisabledTestBlameContext : public BlameContext {
 
 class BlameContextTest : public testing::Test {
  protected:
-  test::ScopedTaskEnvironment scoped_task_environment_;
+  test::TaskEnvironment task_environment_;
 };
 
 TEST_F(BlameContextTest, EnterAndLeave) {

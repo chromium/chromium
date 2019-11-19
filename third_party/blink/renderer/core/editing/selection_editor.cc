@@ -171,9 +171,17 @@ static Position ComputePositionForChildrenRemoval(const Position& position,
   if (!node)
     return position;
 #endif
-  if (container.ContainsIncludingHostElements(*node))
-    return Position::FirstPositionInNode(container);
-  return position;
+  if (!container.ContainsIncludingHostElements(*node))
+    return position;
+  if (auto* element = DynamicTo<Element>(container)) {
+    if (auto* shadow_root = element->GetShadowRoot()) {
+      // Removal of light children does not affect position in the
+      // shadow tree.
+      if (shadow_root->ContainsIncludingHostElements(*node))
+        return position;
+    }
+  }
+  return Position::FirstPositionInNode(container);
 }
 
 void SelectionEditor::NodeChildrenWillBeRemoved(ContainerNode& container) {
@@ -336,7 +344,8 @@ static Position UpdatePostionAfterAdoptingTextNodeSplit(
   unsigned old_length = old_node.length();
   if (position_offset <= old_length)
     return position;
-  return Position(ToText(old_node.nextSibling()), position_offset - old_length);
+  return Position(To<Text>(old_node.nextSibling()),
+                  position_offset - old_length);
 }
 
 void SelectionEditor::DidSplitTextNode(const Text& old_node) {

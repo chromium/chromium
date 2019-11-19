@@ -10,7 +10,7 @@
 #include "cc/paint/paint_flags.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/display/display.h"
-#include "ui/gfx/animation/animation_delegate.h"
+#include "ui/views/animation/animation_delegate_views.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -38,7 +38,7 @@ class CircularThrobberView;
 // |TouchCalibratorView| acts as a state machine and has an API to toggle its
 // state or get the current state.
 class ASH_EXPORT TouchCalibratorView : public views::View,
-                                       public gfx::AnimationDelegate,
+                                       public views::AnimationDelegateViews,
                                        public ui::LayerAnimationObserver {
  public:
   // Different states of |TouchCalibratorView| in order.
@@ -70,11 +70,11 @@ class ASH_EXPORT TouchCalibratorView : public views::View,
                       bool is_primary_view);
   ~TouchCalibratorView() override;
 
-  // views::View overrides:
+  // views::View:
   void OnPaint(gfx::Canvas* canvas) override;
   void OnPaintBackground(gfx::Canvas* canvas) override;
 
-  // gfx::AnimationDelegate overrides:
+  // views::AnimationDelegateViews:
   void AnimationEnded(const gfx::Animation* animation) override;
   void AnimationProgressed(const gfx::Animation* animation) override;
   void AnimationCanceled(const gfx::Animation* animation) override;

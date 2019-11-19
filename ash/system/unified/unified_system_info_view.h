@@ -22,6 +22,7 @@ class ASH_EXPORT UnifiedSystemInfoView : public views::View {
   // views::View:
   void ChildPreferredSizeChanged(views::View* child) override;
   void ChildVisibilityChanged(views::View* child) override;
+  const char* GetClassName() const override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(UnifiedSystemInfoViewTest, EnterpriseManagedVisible);
@@ -30,10 +31,12 @@ class ASH_EXPORT UnifiedSystemInfoView : public views::View {
   FRIEND_TEST_ALL_PREFIXES(UnifiedSystemInfoViewNoSessionTest,
                            SupervisedVisible);
 
-  // EnterpriseManagedView for unit testing. Unowned.
-  views::View* const enterprise_managed_;
-  // SupervisedUserView for unit testing. Unowned.
-  views::View* const supervised_;
+  // EnterpriseManagedView for unit testing. Owned by this view. Null if
+  // kManagedDeviceUIRedesign is enabled.
+  views::View* enterprise_managed_ = nullptr;
+  // SupervisedUserView for unit testing. Owned by this view . Null if
+  // kManagedDeviceUIRedesign is enabled.
+  views::View* supervised_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(UnifiedSystemInfoView);
 };

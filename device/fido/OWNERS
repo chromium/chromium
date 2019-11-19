@@ -11,6 +11,12 @@ martinkr@chromium.org
 # Attestation and legacy U2F implementation.
 agl@chromium.org
 
+# Bluetooth.
+kenrb@chromium.org
+
+# chrome/ UI and VirtualAuthenticator environment.
+nsatragno@chromium.org
+
 # Emeriti; for occasional reviews
 # esp. view & frame lifetimes
 engedy@chromium.org

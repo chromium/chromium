@@ -11,7 +11,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * This includes (1) a {@link BatchListModel} implementation and (2) exposing a
  * {@link PropertyModel} for shared item properties and general list information.
  */
-class ListItemModel extends BatchListModel<ListItem> {
+public class ListItemModel extends BatchListModel<ListItem> {
     private final PropertyModel mListProperties = new PropertyModel(ListProperties.ALL_KEYS);
 
     /**

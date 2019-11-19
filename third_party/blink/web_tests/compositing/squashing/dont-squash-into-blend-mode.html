@@ -1,17 +1,16 @@
 <!doctype HTML>
-Any errors will show below this line.
 <div id="target" style="position: absolute; width: 200px; height: 200px; will-change: transform; background: lightblue; mix-blend-mode: overlay;"></div>
-<div style="position: absolute; width: 200px; height: 200px; top: 100px; left: 100px; background: lightgray"></div>
+<div id="affected" style="position: absolute; width: 200px; height: 200px; top: 100px; left: 100px; background: lightgray"></div>
 <script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
 <script>
-if (window.testRunner)
-    testRunner.dumpAsText();
 onload = function() {
-    if (window.internals) {
-        var layers = JSON.parse(internals.layerTreeAsText(document, internals.LAYER_TREE_INCLUDES_DEBUG_INFO))["layers"];
-        var nonBlendDIVlayer = layers[5];
-        assert_true(nonBlendDIVlayer.compositingReasons[1] == "Layer was separately composited because it could not be squashed.");
-        assert_true(nonBlendDIVlayer.squashingDisallowedReasons[0] == "Squashing a layer with blending is not supported.");
-    }
+    test(function() {
+        if (window.internals) {
+            var layer_tree = internals.layerTreeAsText(document);
+            assert_true(layer_tree.includes("id='affected'"), 'should not be squashed into the layer with blend mode');
+            assert_true(layer_tree.includes("id='target'"), 'composited layer with blend mode');
+        }
+    });
 };
 </script>

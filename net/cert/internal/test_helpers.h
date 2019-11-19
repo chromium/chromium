@@ -124,6 +124,11 @@ bool ReadVerifyCertChainTestFromFile(const std::string& file_path_ascii,
 bool ReadCertChainFromFile(const std::string& file_path_ascii,
                            ParsedCertificateList* chain);
 
+// Reads a certificate from |file_path_ascii|. Returns nullptr if the file
+// contained more that one certificate.
+scoped_refptr<ParsedCertificate> ReadCertFromFile(
+    const std::string& file_path_ascii);
+
 // Reads a data file relative to the src root directory.
 std::string ReadTestFileToString(const std::string& file_path_ascii);
 

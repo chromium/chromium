@@ -8,6 +8,8 @@
 </head>
 <body>
     <script>
+        test(t => { assert_equals(document.addressSpace, "local"); }, "Sanity check: locality.");
+
         async_test(function (t) {
             var xhr = new XMLHttpRequest;
             xhr.responseType = "json";

@@ -376,7 +376,7 @@ function plotLineGraph(
     }
 
     if (width == size) {
-      drawTimeGuide(x - xOrigin);
+      drawTimeGuide(Math.round(x - xOrigin));
     } else {
       drawTimeGuide(Math.round((x - xOrigin) / (width - 1) * (size - 1)));
     }

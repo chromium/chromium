@@ -17,24 +17,22 @@ navigator.webkitGetUserMedia(options, (stream1) => {
         assert_false(stream1.id === stream2.id);
 
         pc = new RTCPeerConnection();
+        testRTC.add_cleanup(() => pc.close());
 
         pc.onnegotiationneeded = (event) => {
             assert_array_equals(pc.getLocalStreams(), [stream1]);
 
-            pc.onnegotiationneeded = () => {
+            pc.onnegotiationneeded = testRTC.step_func(() => {
                 assert_unreached('onErroneousNegotiationNeeded was called.');
-            };
+            });
 
             pc.addStream(stream1);
             assert_equals(pc.getLocalStreams().length, 1);
             pc.removeStream(stream2);
             assert_equals(pc.getLocalStreams().length, 1);
 
-            pc.onnegotiationneeded = (event) => {
-                assert_equals(pc.getLocalStreams().length, 0);
-                testRTC.done();
-            };
             pc.removeStream(stream1);
+            setTimeout(() => testRTC.done());
         };
 
         pc.addStream(stream1);

@@ -1,0 +1,70 @@
+<!doctype HTML>
+<html>
+<meta charset="utf8">
+<title>Display Locking: getBoundingClientRect on block layout</title>
+<link rel="author" title="Rakina Zata Amni" href="mailto:rakina@chromium.org">
+<link rel="help" href="https://github.com/WICG/display-locking">
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../resources/utils.js"></script>
+
+<style>
+#container {
+  intrinsic-size: 123px 234px;
+}
+#frame {
+  padding: 0;
+  margin: 0;
+  width: 500px;
+  height: 500px;
+}
+div:not([rendersubtree~="invisible"]) {
+  intrinsic-size: legacy !important;
+}
+</style>
+<body>
+<div id="container">
+  <iframe id="frame" frameborder=0 srcdoc='
+    <style>
+      body {
+        padding: 0;
+        margin: 0;
+      }
+      #target {
+        background: lightgreen;
+        width: 50%;
+        height: 50px;
+      }
+    </style>
+    <div id="target"></div>
+  '></iframe>
+</div>
+
+<script>
+let load_promise = new Promise((resolve) => {
+  window.onload = resolve;
+});
+
+async_test(async(t) => {
+  await load_promise;
+
+  const container = document.getElementById("container");
+  await setInvisible(container);
+
+  const frame = document.getElementById("frame");
+  frame.style.width = "224px";
+  frame.style.height = "248px";
+
+  const target = frame.contentDocument.getElementById("target");
+  t.step(() => assert_true(!!target, "sanity check that target exists"));
+  let rect = target.getBoundingClientRect();
+  t.step(() => assert_equals(rect.width, 112, "target uses update frame size for width"));
+  t.step(() => assert_equals(rect.height, 50, "target uses set size for height"));
+
+  t.done();
+}, "getBoundingClientRect in iframe");
+
+</script>
+</body>
+</html>

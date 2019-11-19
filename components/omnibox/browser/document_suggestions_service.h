@@ -10,26 +10,25 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "services/identity/public/cpp/access_token_info.h"
+#include "components/signin/public/identity_manager/access_token_info.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "url/gurl.h"
 
-namespace identity {
+namespace signin {
 class IdentityManager;
 class PrimaryAccountAccessTokenFetcher;
-}  // namespace identity
+}  // namespace signin
 
 class GoogleServiceAuthError;
-class TemplateURLService;
 
 // A service to fetch suggestions from a remote endpoint given a URL.
 class DocumentSuggestionsService : public KeyedService {
  public:
   // null may be passed for params, but no request will be issued.
   DocumentSuggestionsService(
-      identity::IdentityManager* identity_manager,
+      signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
   ~DocumentSuggestionsService() override;
@@ -43,11 +42,10 @@ class DocumentSuggestionsService : public KeyedService {
 
   // Creates and starts a document suggestion request for |query|.
   // May obtain an OAuth2 token for the signed-in user.
-  void CreateDocumentSuggestionsRequest(
-      const base::string16& query,
-      const TemplateURLService* template_url_service,
-      StartCallback start_callback,
-      CompletionCallback completion_callback);
+  void CreateDocumentSuggestionsRequest(const base::string16& query,
+                                        bool is_incognito,
+                                        StartCallback start_callback,
+                                        CompletionCallback completion_callback);
 
   // Advises the service to stop any process that creates a suggestion request.
   void StopCreatingDocumentSuggestionsRequest();
@@ -60,7 +58,7 @@ class DocumentSuggestionsService : public KeyedService {
                             StartCallback start_callback,
                             CompletionCallback completion_callback,
                             GoogleServiceAuthError error,
-                            identity::AccessTokenInfo access_token_info);
+                            signin::AccessTokenInfo access_token_info);
 
   // Activates a loader for |request|, wiring it up to |completion_callback|,
   // and calls |start_callback|. If |request_body| isn't empty, it will be
@@ -74,11 +72,11 @@ class DocumentSuggestionsService : public KeyedService {
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
-  identity::IdentityManager* identity_manager_;
+  signin::IdentityManager* identity_manager_;
 
   // Helper for fetching OAuth2 access tokens. Non-null when we have a token
   // available, or while a token fetch is in progress.
-  std::unique_ptr<identity::PrimaryAccountAccessTokenFetcher> token_fetcher_;
+  std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher> token_fetcher_;
 
   DISALLOW_COPY_AND_ASSIGN(DocumentSuggestionsService);
 };

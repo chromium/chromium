@@ -44,7 +44,7 @@ PopunderPreventer::PopunderPreventer(content::WebContents* activating_contents)
   // that it can be re-activated once the dialog (or whatever is causing the
   // activation) is closed.
   Browser* active_browser = BrowserList::GetInstance()->GetLastActive();
-  if (!active_browser || !active_browser->is_type_popup())
+  if (!active_browser || active_browser->is_type_normal())
     return;
 
   content::WebContents* active_popup =

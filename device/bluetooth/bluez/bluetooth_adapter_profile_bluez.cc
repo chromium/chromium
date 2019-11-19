@@ -13,10 +13,10 @@
 #include "base/strings/string_util.h"
 #include "dbus/bus.h"
 #include "dbus/object_path.h"
-#include "device/bluetooth/bluetooth_uuid.h"
 #include "device/bluetooth/bluez/bluetooth_adapter_bluez.h"
 #include "device/bluetooth/dbus/bluetooth_profile_service_provider.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
+#include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 
 namespace bluez {
 
@@ -40,7 +40,7 @@ void BluetoothAdapterProfileBlueZ::Register(
 
 BluetoothAdapterProfileBlueZ::BluetoothAdapterProfileBlueZ(
     const device::BluetoothUUID& uuid)
-    : uuid_(uuid), weak_ptr_factory_(this) {
+    : uuid_(uuid) {
   std::string uuid_path;
   base::ReplaceChars(uuid.canonical_value(), ":-", "_", &uuid_path);
   object_path_ =
@@ -114,7 +114,7 @@ void BluetoothAdapterProfileBlueZ::NewConnection(
     const dbus::ObjectPath& device_path,
     base::ScopedFD fd,
     const bluez::BluetoothProfileServiceProvider::Delegate::Options& options,
-    const ConfirmationCallback& callback) {
+    ConfirmationCallback callback) {
   dbus::ObjectPath delegate_path = device_path;
 
   if (delegates_.find(device_path.value()) == delegates_.end())
@@ -123,17 +123,17 @@ void BluetoothAdapterProfileBlueZ::NewConnection(
   if (delegates_.find(delegate_path.value()) == delegates_.end()) {
     VLOG(1) << object_path_.value() << ": New connection for device "
             << device_path.value() << " which has no delegates!";
-    callback.Run(REJECTED);
+    std::move(callback).Run(REJECTED);
     return;
   }
 
-  delegates_[delegate_path.value()]->NewConnection(device_path, std::move(fd),
-                                                   options, callback);
+  delegates_[delegate_path.value()]->NewConnection(
+      device_path, std::move(fd), options, std::move(callback));
 }
 
 void BluetoothAdapterProfileBlueZ::RequestDisconnection(
     const dbus::ObjectPath& device_path,
-    const ConfirmationCallback& callback) {
+    ConfirmationCallback callback) {
   dbus::ObjectPath delegate_path = device_path;
 
   if (delegates_.find(device_path.value()) == delegates_.end())
@@ -146,7 +146,7 @@ void BluetoothAdapterProfileBlueZ::RequestDisconnection(
   }
 
   delegates_[delegate_path.value()]->RequestDisconnection(device_path,
-                                                          callback);
+                                                          std::move(callback));
 }
 
 void BluetoothAdapterProfileBlueZ::Cancel() {

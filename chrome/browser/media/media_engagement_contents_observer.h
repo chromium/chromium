@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_MEDIA_MEDIA_ENGAGEMENT_CONTENTS_OBSERVER_H_
 
 #include "base/timer/timer.h"
+#include "content/public/browser/media_player_id.h"
 #include "content/public/browser/web_contents_observer.h"
 
 namespace base {
@@ -30,15 +31,18 @@ class MediaEngagementContentsObserver : public content::WebContentsObserver {
       content::NavigationHandle* navigation_handle) override;
   void ReadyToCommitNavigation(
       content::NavigationHandle* navigation_handle) override;
-  void MediaStartedPlaying(const MediaPlayerInfo& media_player_info,
-                           const MediaPlayerId& media_player_id) override;
+  void MediaStartedPlaying(
+      const MediaPlayerInfo& media_player_info,
+      const content::MediaPlayerId& media_player_id) override;
   void MediaStoppedPlaying(
       const MediaPlayerInfo& media_player_info,
-      const MediaPlayerId& media_player_id,
+      const content::MediaPlayerId& media_player_id,
       WebContentsObserver::MediaStoppedReason reason) override;
   void DidUpdateAudioMutingState(bool muted) override;
-  void MediaMutedStatusChanged(const MediaPlayerId& id, bool muted) override;
-  void MediaResized(const gfx::Size& size, const MediaPlayerId& id) override;
+  void MediaMutedStatusChanged(const content::MediaPlayerId& id,
+                               bool muted) override;
+  void MediaResized(const gfx::Size& size,
+                    const content::MediaPlayerId& id) override;
   void AudioContextPlaybackStarted(
       const AudioContextId& audio_context_id) override;
   void AudioContextPlaybackStopped(
@@ -98,11 +102,12 @@ class MediaEngagementContentsObserver : public content::WebContentsObserver {
     kPlayerRemoved,
   };
 
-  void OnSignificantMediaPlaybackTimeForPlayer(const MediaPlayerId& id);
+  void OnSignificantMediaPlaybackTimeForPlayer(
+      const content::MediaPlayerId& id);
   void OnSignificantMediaPlaybackTimeForPage();
   void OnSignificantAudioContextPlaybackTimeForPage();
 
-  void UpdatePlayerTimer(const MediaPlayerId&);
+  void UpdatePlayerTimer(const content::MediaPlayerId&);
   void UpdatePageTimer();
   void UpdateAudioContextTimer();
 
@@ -121,7 +126,7 @@ class MediaEngagementContentsObserver : public content::WebContentsObserver {
   // Set of active players that can produce a significant playback. In other
   // words, whether this set is empty can be used to know if there is a
   // significant playback.
-  std::set<MediaPlayerId> significant_players_;
+  std::set<content::MediaPlayerId> significant_players_;
 
   // Timer that will fire when the playback time of any audio context reaches
   // the minimum for significant media playback.
@@ -177,13 +182,13 @@ class MediaEngagementContentsObserver : public content::WebContentsObserver {
 
     DISALLOW_COPY_AND_ASSIGN(PlayerState);
   };
-  std::map<MediaPlayerId, PlayerState> player_states_;
-  PlayerState& GetPlayerState(const MediaPlayerId& id);
+  std::map<content::MediaPlayerId, PlayerState> player_states_;
+  PlayerState& GetPlayerState(const content::MediaPlayerId& id);
   void ClearPlayerStates();
 
   // Inserts/removes players from significant_players_ based on whether
   // they are considered significant by GetInsignificantPlayerReason.
-  void MaybeInsertRemoveSignificantPlayer(const MediaPlayerId& id);
+  void MaybeInsertRemoveSignificantPlayer(const content::MediaPlayerId& id);
 
   // Returns a vector containing InsignificantPlaybackReason's why a player
   // would not be considered significant.
@@ -203,7 +208,7 @@ class MediaEngagementContentsObserver : public content::WebContentsObserver {
   // Returns whether the player is considered to be significant and record
   // any reasons why not to a histogram.
   bool IsSignificantPlayerAndRecord(
-      const MediaPlayerId& id,
+      const content::MediaPlayerId& id,
       MediaEngagementContentsObserver::InsignificantHistogram histogram);
 
   static const char* const kHistogramSignificantNotAddedAfterFirstTimeName;
@@ -215,7 +220,8 @@ class MediaEngagementContentsObserver : public content::WebContentsObserver {
 
   // Records the engagement score for the current origin to a histogram so we
   // can identify whether the playback would have been blocked.
-  void RecordEngagementScoreToHistogramAtPlayback(const MediaPlayerId& id);
+  void RecordEngagementScoreToHistogramAtPlayback(
+      const content::MediaPlayerId& id);
 
   // Clears out players that are ignored because they are too short and register
   // the result as significant/audible players with the `session_`.
@@ -227,14 +233,13 @@ class MediaEngagementContentsObserver : public content::WebContentsObserver {
   // Find the appropriate media engagement session if any or create a new one to
   // be used. Will return nullptr if no session should be used.
   scoped_refptr<MediaEngagementSession> GetOrCreateSession(
-      const url::Origin& origin,
-      content::WebContents* opener,
-      bool was_restored) const;
+      content::NavigationHandle* navigation_handle,
+      content::WebContents* opener) const;
 
   // Stores the ids of the players that were audible. The boolean will be true
   // if the player was significant.
   using AudiblePlayerRow = std::pair<bool, std::unique_ptr<base::OneShotTimer>>;
-  std::map<MediaPlayerId, AudiblePlayerRow> audible_players_;
+  std::map<content::MediaPlayerId, AudiblePlayerRow> audible_players_;
 
   // The task runner to use when creating timers. It is used only for testing.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;

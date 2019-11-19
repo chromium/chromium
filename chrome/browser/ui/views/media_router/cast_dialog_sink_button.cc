@@ -4,7 +4,11 @@
 
 #include "chrome/browser/ui/views/media_router/cast_dialog_sink_button.h"
 
+#include <memory>
+
+#include "base/debug/stack_trace.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/branding_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
@@ -12,6 +16,7 @@
 #include "chrome/common/media_router/issue.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
+#include "content/public/browser/browser_thread.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/color_palette.h"
@@ -23,7 +28,7 @@
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/vector_icons.h"
 
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "chrome/browser/ui/media_router/internal/vector_icons/vector_icons.h"
 #endif
 
@@ -48,14 +53,14 @@ gfx::ImageSkia CreateSinkIcon(SinkIconType icon_type, bool enabled = true) {
       break;
 // Use proprietary icons only in Chrome builds. The default TV icon is used
 // instead for these sink types in Chromium builds.
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     case SinkIconType::MEETING:
       vector_icon = &vector_icons::kMeetIcon;
       break;
     case SinkIconType::HANGOUT:
       vector_icon = &vector_icons::kHangoutIcon;
       break;
-#endif  // defined(GOOGLE_CHROME_BUILD)
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
     case SinkIconType::CAST:
     case SinkIconType::GENERIC:
     default:
@@ -74,8 +79,7 @@ std::unique_ptr<views::ImageView> CreatePrimaryIconView(
     const gfx::ImageSkia& image) {
   auto icon_view = std::make_unique<views::ImageView>();
   icon_view->SetImage(image);
-  icon_view->SetBorder(
-      views::CreateEmptyBorder(gfx::Insets(kPrimaryIconBorderWidth)));
+  icon_view->SetBorder(views::CreateEmptyBorder(kPrimaryIconBorder));
   return icon_view;
 }
 
@@ -144,7 +148,7 @@ void CastDialogSinkButton::OverrideStatusText(
     const base::string16& status_text) {
   if (subtitle()) {
     if (!saved_status_text_)
-      saved_status_text_ = subtitle()->text();
+      saved_status_text_ = subtitle()->GetText();
     subtitle()->SetText(status_text);
   }
 }
@@ -170,10 +174,9 @@ void CastDialogSinkButton::OnMouseReleased(const ui::MouseEvent& event) {
 }
 
 void CastDialogSinkButton::OnEnabledChanged() {
-  HoverButton::OnEnabledChanged();
   // Prevent a DCHECK failure seen at https://crbug.com/912687 by not having an
   // InkDrop if the button is disabled.
-  SetInkDropMode(enabled() ? InkDropMode::ON : InkDropMode::OFF);
+  SetInkDropMode(GetEnabled() ? InkDropMode::ON : InkDropMode::OFF);
   // If the button has a state other than AVAILABLE (e.g. CONNECTED), there is
   // no need to change the status or the icon.
   if (sink_.state != UIMediaSinkState::AVAILABLE)
@@ -181,7 +184,7 @@ void CastDialogSinkButton::OnEnabledChanged() {
 
   SkColor background_color = GetNativeTheme()->GetSystemColor(
       ui::NativeTheme::kColorId_ProminentButtonColor);
-  if (enabled()) {
+  if (GetEnabled()) {
     SetTitleTextStyle(views::style::STYLE_PRIMARY, background_color);
     if (saved_status_text_)
       RestoreStatusText();
@@ -199,13 +202,23 @@ void CastDialogSinkButton::OnEnabledChanged() {
 }
 
 void CastDialogSinkButton::RequestFocus() {
-  if (enabled()) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  static bool requesting_focus = false;
+  if (requesting_focus) {
+    // TODO(jrw): Figure out why this happens.
+    DLOG(ERROR) << "Recursive call to RequestFocus\n"
+                << base::debug::StackTrace();
+    return;
+  }
+  requesting_focus = true;
+  if (GetEnabled()) {
     HoverButton::RequestFocus();
   } else {
     // The sink button is disabled, but the icon within it may be enabled and
     // want focus.
     icon_view()->RequestFocus();
   }
+  requesting_focus = false;
 }
 
 void CastDialogSinkButton::OnFocus() {

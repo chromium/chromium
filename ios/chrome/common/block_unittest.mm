@@ -66,7 +66,14 @@ TEST_F(BlockTest, BlockAndCPlusPlus) {
         EXPECT_EQ(object_void_ptr, object_ptr.get());
         EXPECT_EQ(expected, object_ptr.get()->refcount());
       };
+#ifdef XCODE_CLANG
+      // TODO(crbug.com/939749): With newer Clang versions, the expected value
+      // is 3. Remove this ifdef when moving to a newer xcode. Note:
+      // XCODE_CLANG is a Chromium-specific define local to this build target.
       stack_block(4);
+#else
+      stack_block(3);
+#endif
       heap_block = [stack_block copy];
       stack_block(4);
     }

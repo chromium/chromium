@@ -15,9 +15,10 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/sys_byteorder.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "content/browser/speech/audio_buffer.h"
 #include "content/browser/speech/proto/google_streaming_api.pb.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"
@@ -100,11 +101,11 @@ class SpeechRecognitionEngineTest
   std::string ConsumeChunkedUploadData();
   void CloseMockDownstream(DownstreamError error);
 
-  base::test::ScopedTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
 
   network::TestURLLoaderFactory url_loader_factory_;
   mojo::ScopedDataPipeProducerHandle downstream_data_pipe_;
-  network::mojom::ChunkedDataPipeGetterPtr chunked_data_pipe_getter_;
+  mojo::Remote<network::mojom::ChunkedDataPipeGetter> chunked_data_pipe_getter_;
   mojo::ScopedDataPipeConsumerHandle upstream_data_pipe_;
 
   std::unique_ptr<SpeechRecognitionEngine> engine_under_test_;
@@ -563,8 +564,8 @@ void SpeechRecognitionEngineTest::ProvideMockResponseStartDownstreamIfNeeded() {
 
   network::ResourceResponseHead head;
   std::string headers("HTTP/1.1 200 OK\n\n");
-  head.headers = new net::HttpResponseHeaders(
-      net::HttpUtil::AssembleRawHeaders(headers.c_str(), headers.size()));
+  head.headers = base::MakeRefCounted<net::HttpResponseHeaders>(
+      net::HttpUtil::AssembleRawHeaders(headers));
   downstream_request->client->OnReceiveResponse(head);
 
   mojo::DataPipe data_pipe;
@@ -631,8 +632,8 @@ void SpeechRecognitionEngineTest::CloseMockDownstream(
     ASSERT_TRUE(downstream_request);
     network::ResourceResponseHead head;
     std::string headers("HTTP/1.1 500 Server Sad\n\n");
-    head.headers = new net::HttpResponseHeaders(
-        net::HttpUtil::AssembleRawHeaders(headers.c_str(), headers.size()));
+    head.headers = base::MakeRefCounted<net::HttpResponseHeaders>(
+        net::HttpUtil::AssembleRawHeaders(headers));
     downstream_request->client->OnReceiveResponse(head);
     // Wait for the response to be handled.
     base::RunLoop().RunUntilIdle();

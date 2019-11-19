@@ -1,57 +1,36 @@
 {
   "layers": [
     {
-      "name": "LayoutView #document",
-      "bounds": [800, 600],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [800, 600],
-      "drawsContent": false
-    },
-    {
       "name": "Scrolling Contents Layer",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutBlockFlow DIV",
+      "name": "LayoutNGBlockFlow DIV",
       "bounds": [240, 240],
-      "drawsContent": false,
       "transform": 2
     },
     {
-      "name": "LayoutBlockFlow DIV",
-      "bounds": [240, 240],
-      "opacity": 0.899999976158142,
-      "transform": 2
-    },
-    {
-      "name": "LayoutBlockFlow DIV",
-      "position": [20, 20],
+      "name": "LayoutNGBlockFlow DIV",
       "bounds": [400, 400],
       "contentsOpaque": true,
       "backgroundColor": "#0000FF",
-      "transform": 2
+      "transform": 3
     },
     {
-      "name": "LayoutBlockFlow (positioned) DIV",
-      "position": [20, 0],
+      "name": "LayoutNGBlockFlow (positioned) DIV",
       "bounds": [400, 100],
       "contentsOpaque": true,
       "backgroundColor": "#00FFFF",
-      "transform": 2
+      "transform": 4
     },
     {
-      "name": "LayoutBlockFlow (relative positioned) DIV",
-      "position": [20, 20],
+      "name": "LayoutNGBlockFlow (relative positioned) DIV",
       "bounds": [100, 400],
       "contentsOpaque": true,
       "backgroundColor": "#FF00FF",
-      "transform": 2
+      "transform": 5
     }
   ],
   "transforms": [
@@ -74,6 +53,36 @@
         [0, 0, 0, 1]
       ],
       "origin": [120, 120]
+    },
+    {
+      "id": 3,
+      "parent": 2,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [20, 20, 0, 1]
+      ]
+    },
+    {
+      "id": 4,
+      "parent": 2,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [20, 0, 0, 1]
+      ]
+    },
+    {
+      "id": 5,
+      "parent": 2,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [20, 20, 0, 1]
+      ]
     }
   ]
 }

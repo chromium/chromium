@@ -5,7 +5,7 @@
 #include "ios/web/public/test/web_test.h"
 
 #include "base/memory/ptr_util.h"
-#include "ios/web/public/web_state/global_web_state_observer.h"
+#include "ios/web/public/deprecated/global_web_state_observer.h"
 #import "ios/web/public/test/fakes/test_web_client.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -24,13 +24,13 @@ class WebTestRenderProcessCrashObserver : public GlobalWebStateObserver {
   }
 };
 
-WebTest::WebTest(TestWebThreadBundle::Options options)
+WebTest::WebTest(WebTaskEnvironment::Options options)
     : WebTest(base::WrapUnique(new TestWebClient), options) {}
 
 WebTest::WebTest(std::unique_ptr<web::WebClient> web_client,
-                 TestWebThreadBundle::Options options)
+                 WebTaskEnvironment::Options options)
     : web_client_(std::move(web_client)),
-      thread_bundle_(options),
+      task_environment_(options),
       crash_observer_(std::make_unique<WebTestRenderProcessCrashObserver>()) {}
 
 WebTest::~WebTest() {}

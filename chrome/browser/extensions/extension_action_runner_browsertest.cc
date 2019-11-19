@@ -14,7 +14,6 @@
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/extension_action.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/scripting_permissions_modifier.h"
@@ -28,7 +27,6 @@
 #include "extensions/common/extension_features.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/test_extension_dir.h"
-#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
@@ -92,7 +90,6 @@ class ExtensionActionRunnerBrowserTest : public ExtensionBrowserTest {
  public:
   ExtensionActionRunnerBrowserTest() {}
 
-  void SetUpCommandLine(base::CommandLine* command_line) override;
   void TearDownOnMainThread() override;
 
   // Returns an extension with the given |host_type| and |injection_type|. If
@@ -112,15 +109,7 @@ class ExtensionActionRunnerBrowserTest : public ExtensionBrowserTest {
  private:
   std::vector<std::unique_ptr<TestExtensionDir>> test_extension_dirs_;
   std::vector<const Extension*> extensions_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
-
-void ExtensionActionRunnerBrowserTest::SetUpCommandLine(
-    base::CommandLine* command_line) {
-  ExtensionBrowserTest::SetUpCommandLine(command_line);
-  scoped_feature_list_.InitAndEnableFeature(
-      extensions_features::kRuntimeHostPermissions);
-}
 
 void ExtensionActionRunnerBrowserTest::TearDownOnMainThread() {
   test_extension_dirs_.clear();

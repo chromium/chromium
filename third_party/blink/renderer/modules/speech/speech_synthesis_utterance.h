@@ -26,18 +26,21 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_SPEECH_SPEECH_SYNTHESIS_UTTERANCE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SPEECH_SPEECH_SYNTHESIS_UTTERANCE_H_
 
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "third_party/blink/public/mojom/speech/speech_synthesis.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/execution_context/context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/speech/speech_synthesis_voice.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/speech/platform_speech_synthesis_utterance.h"
+#include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
 namespace blink {
+class SpeechSynthesis;
 
 class SpeechSynthesisUtterance final
     : public EventTargetWithInlineData,
       public ContextClient,
-      public PlatformSpeechSynthesisUtteranceClient {
+      public mojom::blink::SpeechSynthesisClient {
   DEFINE_WRAPPERTYPEINFO();
   USING_GARBAGE_COLLECTED_MIXIN(SpeechSynthesisUtterance);
 
@@ -47,28 +50,32 @@ class SpeechSynthesisUtterance final
   SpeechSynthesisUtterance(ExecutionContext*, const String&);
   ~SpeechSynthesisUtterance() override;
 
-  const String& text() const { return platform_utterance_->GetText(); }
-  void setText(const String& text) { platform_utterance_->SetText(text); }
+  const String& text() const { return mojom_utterance_->text; }
+  void setText(const String& text) { mojom_utterance_->text = text; }
 
-  const String& lang() const { return platform_utterance_->Lang(); }
-  void setLang(const String& lang) { platform_utterance_->SetLang(lang); }
+  const String& lang() const { return mojom_utterance_->lang; }
+  void setLang(const String& lang) { mojom_utterance_->lang = lang; }
 
   SpeechSynthesisVoice* voice() const;
   void setVoice(SpeechSynthesisVoice*);
 
-  float volume() const { return platform_utterance_->Volume(); }
-  void setVolume(float volume) { platform_utterance_->SetVolume(volume); }
-
-  float rate() const { return platform_utterance_->Rate(); }
-  void setRate(float rate) { platform_utterance_->SetRate(rate); }
-
-  float pitch() const { return platform_utterance_->Pitch(); }
-  void setPitch(float pitch) { platform_utterance_->SetPitch(pitch); }
-
-  double StartTime() const { return platform_utterance_->StartTime(); }
-  void SetStartTime(double start_time) {
-    platform_utterance_->SetStartTime(start_time);
+  float volume() const { return mojom_utterance_->volume; }
+  void setVolume(float volume) {
+    mojom_utterance_->volume = clampTo(volume, 0.0f, 1.0f);
   }
+
+  float rate() const { return mojom_utterance_->rate; }
+  void setRate(float rate) {
+    mojom_utterance_->rate = clampTo(rate, 0.1f, 10.0f);
+  }
+
+  float pitch() const { return mojom_utterance_->pitch; }
+  void setPitch(float pitch) {
+    mojom_utterance_->pitch = clampTo(pitch, 0.0f, 2.0f);
+  }
+
+  double StartTime() const { return start_time_; }
+  void SetStartTime(double start_time) { start_time_ = start_time; }
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(start, kStart)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(end, kEnd)
@@ -82,18 +89,33 @@ class SpeechSynthesisUtterance final
     return ContextClient::GetExecutionContext();
   }
 
-  PlatformSpeechSynthesisUtterance* PlatformUtterance() const {
-    return platform_utterance_;
-  }
-
   void Trace(blink::Visitor*) override;
 
+  // mojom::blink::SpeechSynthesisClient
+  void OnStartedSpeaking() override;
+  void OnFinishedSpeaking() override;
+  void OnPausedSpeaking() override;
+  void OnResumedSpeaking() override;
+  void OnEncounteredWordBoundary(uint32_t char_index,
+                                 uint32_t char_length) override;
+  void OnEncounteredSentenceBoundary(uint32_t char_index,
+                                     uint32_t char_length) override;
+  void OnEncounteredSpeakingError() override;
+
+  void Start(SpeechSynthesis* synthesis);
+
  private:
+  void OnDisconnected();
+
   // EventTarget
   const AtomicString& InterfaceName() const override;
 
-  Member<PlatformSpeechSynthesisUtterance> platform_utterance_;
+  mojo::Receiver<mojom::blink::SpeechSynthesisClient> receiver_{this};
+  mojom::blink::SpeechSynthesisUtterancePtr mojom_utterance_;
+  Member<SpeechSynthesis> synthesis_;
   Member<SpeechSynthesisVoice> voice_;
+  double start_time_ = 0.0;
+  bool finished_ = false;
 };
 
 }  // namespace blink

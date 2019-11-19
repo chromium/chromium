@@ -17,6 +17,7 @@
 #include "base/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "components/spellcheck/browser/spellcheck_dictionary.h"
+#include "components/spellcheck/spellcheck_buildflags.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 
 class GURL;
@@ -134,6 +135,10 @@ class SpellcheckHunspellDictionary
   void InitializeDictionaryLocationComplete(DictionaryFile file);
 #endif
 
+#if BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+  void SpellCheckPlatformSetLanguageCompleted(bool result);
+#endif
+
   // The reply point for PostTaskAndReplyWithResult, called after the dictionary
   // file has been saved.
   void SaveDictionaryDataComplete(bool dictionary_saved);
@@ -173,7 +178,7 @@ class SpellcheckHunspellDictionary
   // Dictionary file path and descriptor.
   DictionaryFile dictionary_file_;
 
-  base::WeakPtrFactory<SpellcheckHunspellDictionary> weak_ptr_factory_;
+  base::WeakPtrFactory<SpellcheckHunspellDictionary> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SpellcheckHunspellDictionary);
 };

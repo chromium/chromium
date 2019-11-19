@@ -34,7 +34,7 @@ const double BaseRenderingContext2D::kCDeviceScaleFactor = 1.0;
 
 BaseRenderingContext2D::BaseRenderingContext2D()
     : clip_antialiasing_(kNotAntiAliased), origin_tainted_by_content_(false) {
-  state_stack_.push_back(CanvasRenderingContext2DState::Create());
+  state_stack_.push_back(MakeGarbageCollected<CanvasRenderingContext2DState>());
 }
 
 BaseRenderingContext2D::~BaseRenderingContext2D() = default;
@@ -51,7 +51,7 @@ void BaseRenderingContext2D::RealizeSaves() {
     // Reduce the current state's unrealized count by one now,
     // to reflect the fact we are saving one state.
     state_stack_.back()->Restore();
-    state_stack_.push_back(CanvasRenderingContext2DState::Create(
+    state_stack_.push_back(MakeGarbageCollected<CanvasRenderingContext2DState>(
         GetState(), CanvasRenderingContext2DState::kDontCopyClipList));
     // Set the new state's unrealized count to 0, because it has no outstanding
     // saves.
@@ -69,6 +69,7 @@ void BaseRenderingContext2D::RealizeSaves() {
 
 void BaseRenderingContext2D::save() {
   state_stack_.back()->Save();
+  ValidateStateStack();
 }
 
 void BaseRenderingContext2D::restore() {
@@ -130,7 +131,7 @@ void BaseRenderingContext2D::Reset() {
   ValidateStateStack();
   UnwindStateStack();
   state_stack_.resize(1);
-  state_stack_.front() = CanvasRenderingContext2DState::Create();
+  state_stack_.front() = MakeGarbageCollected<CanvasRenderingContext2DState>();
   path_.Clear();
   if (cc::PaintCanvas* c = ExistingDrawingCanvas()) {
     // The canvas should always have an initial/unbalanced save frame, which
@@ -235,8 +236,6 @@ void BaseRenderingContext2D::setFillStyle(
     if (!origin_tainted_by_content_ && !canvas_pattern->OriginClean()) {
       SetOriginTaintedByContent();
     }
-    if (canvas_pattern->GetPattern()->IsTextureBacked())
-      DisableDeferral(kDisableDeferralReasonUsingTextureBackedPattern);
     canvas_style = CanvasStyle::CreateFromPattern(canvas_pattern);
   }
 
@@ -411,9 +410,9 @@ void BaseRenderingContext2D::setFilter(
     return;
 
   const CSSValue* filter_value = CSSParser::ParseSingleValue(
-      CSSPropertyFilter, filter_string,
-      CSSParserContext::Create(kHTMLStandardMode,
-                               execution_context->GetSecureContextMode()));
+      CSSPropertyID::kFilter, filter_string,
+      MakeGarbageCollected<CSSParserContext>(
+          kHTMLStandardMode, execution_context->GetSecureContextMode()));
 
   if (!filter_value || filter_value->IsCSSWideKeyword())
     return;
@@ -599,30 +598,6 @@ void BaseRenderingContext2D::beginPath() {
   path_.Clear();
 }
 
-static bool ValidateRectForCanvas(double& x,
-                                  double& y,
-                                  double& width,
-                                  double& height) {
-  if (!std::isfinite(x) || !std::isfinite(y) || !std::isfinite(width) ||
-      !std::isfinite(height))
-    return false;
-
-  if (!width && !height)
-    return false;
-
-  if (width < 0) {
-    width = -width;
-    x -= width;
-  }
-
-  if (height < 0) {
-    height = -height;
-    y -= height;
-  }
-
-  return true;
-}
-
 bool BaseRenderingContext2D::IsFullCanvasCompositeMode(SkBlendMode op) {
   // See 4.8.11.1.3 Compositing
   // CompositeSourceAtop and CompositeDestinationOut are not listed here as the
@@ -700,11 +675,21 @@ void BaseRenderingContext2D::fillRect(double x,
     return;
 
   // clamp to float to avoid float cast overflow when used as SkScalar
+  AdjustRectForCanvas(x, y, width, height);
   float fx = clampTo<float>(x);
   float fy = clampTo<float>(y);
   float fwidth = clampTo<float>(width);
   float fheight = clampTo<float>(height);
 
+  // We are assuming that if the pattern is not accelerated and the current
+  // canvas is accelerated, the texture of the pattern will not be able to be
+  // moved to the texture of the canvas receiving the pattern (because if the
+  // pattern was unaccelerated is because it was not possible to hold that image
+  // in an accelerated texture - that is, into the GPU). That's why we disable
+  // the acceleration to be sure that it will work.
+  if (IsAccelerated() && GetState().HasPattern() &&
+      !GetState().PatternIsAccelerated())
+    DisableAcceleration();
   SkRect rect = SkRect::MakeXYWH(fx, fy, fwidth, fheight);
   Draw([&rect](cc::PaintCanvas* c, const PaintFlags* flags)  // draw lambda
        { c->drawRect(rect, *flags); },
@@ -740,6 +725,7 @@ void BaseRenderingContext2D::strokeRect(double x,
     return;
 
   // clamp to float to avoid float cast overflow when used as SkScalar
+  AdjustRectForCanvas(x, y, width, height);
   float fx = clampTo<float>(x);
   float fy = clampTo<float>(y);
   float fwidth = clampTo<float>(width);
@@ -748,6 +734,11 @@ void BaseRenderingContext2D::strokeRect(double x,
   SkRect rect = SkRect::MakeXYWH(fx, fy, fwidth, fheight);
   FloatRect bounds = rect;
   InflateStrokeRect(bounds);
+
+  if (!ValidateRectForCanvas(bounds.X(), bounds.Y(), bounds.Width(),
+                             bounds.Height()))
+    return;
+
   Draw([&rect](cc::PaintCanvas* c, const PaintFlags* flags)  // draw lambda
        { StrokeRectOnCanvas(rect, c, flags); },
        [](const SkIRect& clip_bounds)  // overdraw test lambda
@@ -876,6 +867,7 @@ void BaseRenderingContext2D::clearRect(double x,
   clear_flags.setStyle(PaintFlags::kFill_Style);
 
   // clamp to float to avoid float cast overflow when used as SkScalar
+  AdjustRectForCanvas(x, y, width, height);
   float fx = clampTo<float>(x);
   float fy = clampTo<float>(y);
   float fwidth = clampTo<float>(width);
@@ -1125,28 +1117,9 @@ void BaseRenderingContext2D::DrawImageInternal(cc::PaintCanvas* c,
         c,
         IntRect(IntPoint(), IntSize(video->videoWidth(), video->videoHeight())),
         &image_flags);
-  }
+  };
 
   c->restoreToCount(initial_save_count);
-}
-
-bool ShouldDisableDeferral(CanvasImageSource* image_source,
-                           DisableDeferralReason* reason) {
-  DCHECK(reason);
-  DCHECK_EQ(*reason, kDisableDeferralReasonUnknown);
-
-  if (image_source->IsVideoElement()) {
-    *reason = kDisableDeferralReasonDrawImageOfVideo;
-    return true;
-  }
-  if (image_source->IsCanvasElement()) {
-    HTMLCanvasElement* canvas = static_cast<HTMLCanvasElement*>(image_source);
-    if (canvas->IsAnimated2d()) {
-      *reason = kDisableDeferralReasonDrawImageOfAnimated2dCanvas;
-      return true;
-    }
-  }
-  return false;
 }
 
 void BaseRenderingContext2D::SetOriginTaintedByContent() {
@@ -1219,41 +1192,9 @@ void BaseRenderingContext2D::drawImage(ScriptState* script_state,
   if (src_rect.IsEmpty())
     return;
 
-  DisableDeferralReason reason = kDisableDeferralReasonUnknown;
-  if (ShouldDisableDeferral(image_source, &reason))
-    DisableDeferral(reason);
-  else if (image->IsTextureBacked())
-    DisableDeferral(kDisableDeferralDrawImageWithTextureBackedSourceImage);
-
   ValidateStateStack();
 
   WillDrawImage(image_source);
-
-  ValidateStateStack();
-
-  // Heuristic for disabling acceleration based on anticipated texture upload
-  // overhead.
-  // See comments in canvas_heuristic_parameters.h for explanation.
-  if (CanCreateCanvas2dResourceProvider() && IsAccelerated() &&
-      !image_source->IsAccelerated() &&
-      !base::FeatureList::IsEnabled(features::kAlwaysAccelerateCanvas)) {
-    float src_area = src_rect.Width() * src_rect.Height();
-    if (src_area >
-        canvas_heuristic_parameters::kDrawImageTextureUploadHardSizeLimit) {
-      this->DisableAcceleration();
-    } else if (src_area > canvas_heuristic_parameters::
-                              kDrawImageTextureUploadSoftSizeLimit) {
-      SkRect bounds = dst_rect;
-      SkMatrix ctm = DrawingCanvas()->getTotalMatrix();
-      ctm.mapRect(&bounds);
-      float dst_area = dst_rect.Width() * dst_rect.Height();
-      if (src_area >
-          dst_area * canvas_heuristic_parameters::
-                         kDrawImageTextureUploadSoftSizeLimitScaleThreshold) {
-        this->DisableAcceleration();
-      }
-    }
-  }
 
   ValidateStateStack();
 
@@ -1313,8 +1254,11 @@ void BaseRenderingContext2D::drawImage(ScriptState* script_state,
       duration_histogram_name.append(".CPU");
     }
 
-    base::TimeDelta elapsed = TimeTicks::Now() - start_time;
-    base::UmaHistogramMicrosecondsTimes(duration_histogram_name, elapsed);
+    base::TimeDelta elapsed = base::TimeTicks::Now() - start_time;
+
+    // TODO(crbug.com/983261) Change this to use UmaHistogramMicrosecondsTimes.
+    base::UmaHistogramMicrosecondsTimesUnderTenMilliseconds(
+        duration_histogram_name, elapsed);
 
     float sqrt_pixels_float =
         std::sqrt(dst_rect.Width()) * std::sqrt(dst_rect.Height());
@@ -1361,8 +1305,8 @@ CanvasGradient* BaseRenderingContext2D::createLinearGradient(double x0,
   float fx1 = clampTo<float>(x1);
   float fy1 = clampTo<float>(y1);
 
-  CanvasGradient* gradient =
-      CanvasGradient::Create(FloatPoint(fx0, fy0), FloatPoint(fx1, fy1));
+  auto* gradient = MakeGarbageCollected<CanvasGradient>(FloatPoint(fx0, fy0),
+                                                        FloatPoint(fx1, fy1));
   return gradient;
 }
 
@@ -1394,8 +1338,8 @@ CanvasGradient* BaseRenderingContext2D::createRadialGradient(
   float fy1 = clampTo<float>(y1);
   float fr1 = clampTo<float>(r1);
 
-  CanvasGradient* gradient = CanvasGradient::Create(FloatPoint(fx0, fy0), fr0,
-                                                    FloatPoint(fx1, fy1), fr1);
+  auto* gradient = MakeGarbageCollected<CanvasGradient>(
+      FloatPoint(fx0, fy0), fr0, FloatPoint(fx1, fy1), fr1);
   return gradient;
 }
 
@@ -1464,8 +1408,8 @@ CanvasPattern* BaseRenderingContext2D::createPattern(
 
   bool origin_clean = !WouldTaintOrigin(image_source);
 
-  return CanvasPattern::Create(std::move(image_for_rendering), repeat_mode,
-                               origin_clean);
+  return MakeGarbageCollected<CanvasPattern>(std::move(image_for_rendering),
+                                             repeat_mode, origin_clean);
 }
 
 bool BaseRenderingContext2D::ComputeDirtyRect(const FloatRect& local_rect,
@@ -1634,24 +1578,43 @@ ImageData* BaseRenderingContext2D::getImageData(
     return result;
   }
 
-  WTF::ArrayBufferContents contents;
-
   const CanvasColorParams& color_params = ColorParams();
+  // Deferred offscreen canvases might have recorded commands, make sure
+  // that those get drawn here
+  FinalizeFrame();
   scoped_refptr<StaticBitmapImage> snapshot = GetImage(kPreferNoAcceleration);
 
-  if (!StaticBitmapImage::ConvertToArrayBufferContents(
-          snapshot, contents, image_data_rect, color_params, IsAccelerated())) {
+  // GetImagedata is faster in Unaccelerated canvases
+  if (IsAccelerated())
+    DisableAcceleration();
+
+  size_t size_in_bytes =
+      StaticBitmapImage::GetSizeInBytes(image_data_rect, color_params);
+  if (size_in_bytes > v8::TypedArray::kMaxLength)
+    return nullptr;
+
+  bool may_have_stray_area =
+      IsAccelerated()  // GPU readback may fail silently.
+      || StaticBitmapImage::MayHaveStrayArea(snapshot, image_data_rect);
+  ArrayBufferContents::InitializationPolicy initialization_policy =
+      may_have_stray_area ? ArrayBufferContents::kZeroInitialize
+                          : ArrayBufferContents::kDontInitialize;
+
+  ArrayBufferContents contents(
+      size_in_bytes, 1, ArrayBufferContents::kNotShared, initialization_policy);
+  if (contents.DataLength() != size_in_bytes) {
     exception_state.ThrowRangeError("Out of memory at ImageData creation");
     return nullptr;
   }
 
-  if (!!snapshot) {
-    // If source image is not null, the ConvertToArrayBufferContents function
-    // must have invoked SkImage::readPixels.
-    DidInvokeGPUReadbackInCurrentFrame();
+  if (!StaticBitmapImage::CopyToByteArray(
+          snapshot,
+          base::span<uint8_t>(reinterpret_cast<uint8_t*>(contents.Data()),
+                              contents.DataLength()),
+          image_data_rect, color_params)) {
+    exception_state.ThrowRangeError("Failed to copy image data");
+    return nullptr;
   }
-
-  NeedsFinalizeFrame();
 
   // Convert pixels to proper storage format if needed
   if (PixelFormat() != kRGBA8CanvasPixelFormat) {
@@ -1669,7 +1632,7 @@ ImageData* BaseRenderingContext2D::getImageData(
   ImageData* imageData = ImageData::Create(
       image_data_rect.Size(),
       NotShared<DOMUint8ClampedArray>(DOMUint8ClampedArray::Create(
-          array_buffer, 0, array_buffer->ByteLength())),
+          array_buffer, 0, array_buffer->DeprecatedByteLengthAsUnsigned())),
       color_settings);
 
   if (!IsPaint2D()) {
@@ -1724,9 +1687,9 @@ void BaseRenderingContext2D::putImageData(ImageData* data,
   usage_counters_.num_put_image_data_calls++;
   usage_counters_.area_put_image_data_calls += dirty_width * dirty_height;
 
-  if (data->BufferBase()->IsNeutered()) {
+  if (data->BufferBase()->IsDetached()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "The source data has been neutered.");
+                                      "The source data has been detached.");
     return;
   }
 
@@ -1735,14 +1698,23 @@ void BaseRenderingContext2D::putImageData(ImageData* data,
     return;
 
   if (dirty_width < 0) {
-    dirty_x += dirty_width;
-    dirty_width = base::saturated_cast<int>(base::SafeUnsignedAbs(dirty_width));
+    if (dirty_x < 0) {
+      dirty_x = dirty_width = 0;
+    } else {
+      dirty_x += dirty_width;
+      dirty_width =
+          base::saturated_cast<int>(base::SafeUnsignedAbs(dirty_width));
+    }
   }
 
   if (dirty_height < 0) {
-    dirty_y += dirty_height;
-    dirty_height =
-        base::saturated_cast<int>(base::SafeUnsignedAbs(dirty_height));
+    if (dirty_y < 0) {
+      dirty_y = dirty_height = 0;
+    } else {
+      dirty_y += dirty_height;
+      dirty_height =
+          base::saturated_cast<int>(base::SafeUnsignedAbs(dirty_height));
+    }
   }
 
   IntRect dest_rect(dirty_x, dirty_y, dirty_width, dirty_height);
@@ -1766,7 +1738,8 @@ void BaseRenderingContext2D::putImageData(ImageData* data,
   // additional swizzling is needed.
   CanvasColorParams data_color_params = data->GetCanvasColorParams();
   CanvasColorParams context_color_params =
-      CanvasColorParams(ColorParams().ColorSpace(), PixelFormat(), kNonOpaque);
+      CanvasColorParams(ColorParams().ColorSpace(), PixelFormat(), kNonOpaque,
+                        CanvasForceRGBA::kNotForced);
   if (data_color_params.NeedsColorConversion(context_color_params) ||
       PixelFormat() == kF16CanvasPixelFormat) {
     size_t data_length;

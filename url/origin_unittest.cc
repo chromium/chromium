@@ -55,7 +55,7 @@ class OriginTest : public ::testing::Test {
     AddStandardScheme("standard-but-noaccess", SchemeType::SCHEME_WITH_HOST);
     AddNoAccessScheme("standard-but-noaccess");
   }
-  void TearDown() override { url::Shutdown(); }
+  void TearDown() override { url::ResetForTests(); }
 
   ::testing::AssertionResult DoEqualityComparisons(const url::Origin& a,
                                                    const url::Origin& b,
@@ -304,7 +304,6 @@ TEST_F(OriginTest, ConstructFromGURL) {
 
       // Registered URLs
       {"ftp://example.com/", "ftp", "example.com", 21},
-      {"gopher://example.com/", "gopher", "example.com", 70},
       {"ws://example.com/", "ws", "example.com", 80},
       {"wss://example.com/", "wss", "example.com", 443},
       {"wss://user:pass@example.com/", "wss", "example.com", 443},
@@ -354,9 +353,6 @@ TEST_F(OriginTest, ConstructFromGURL) {
        123},
       {"blob:https://example.com/guid-goes-here", "https", "example.com", 443},
       {"blob:http://u:p@example.com/guid-goes-here", "http", "example.com", 80},
-
-      // Gopher:
-      {"gopher://8u.9.Vx6", "gopher", "8u.9.vx6", 70},
   };
 
   for (const auto& test_case : cases) {
@@ -667,7 +663,7 @@ TEST_F(OriginTest, NonStandardSchemeWithAndroidWebViewHack) {
   EXPECT_EQ("cow", origin.scheme());
   EXPECT_EQ("", origin.host());
   EXPECT_EQ(0, origin.port());
-  Shutdown();
+  ResetForTests();
 }
 
 TEST_F(OriginTest, CanBeDerivedFrom) {

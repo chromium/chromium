@@ -41,12 +41,6 @@ class IDBCursorWithValue final : public IDBCursor {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static IDBCursorWithValue* Create(std::unique_ptr<WebIDBCursor>,
-                                    mojom::IDBCursorDirection,
-                                    IDBRequest*,
-                                    const Source&,
-                                    IDBTransaction*);
-
   IDBCursorWithValue(std::unique_ptr<WebIDBCursor>,
                      mojom::IDBCursorDirection,
                      IDBRequest*,

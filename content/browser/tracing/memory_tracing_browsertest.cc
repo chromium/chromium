@@ -27,6 +27,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 
 using base::trace_event::MemoryDumpArgs;
+using base::trace_event::MemoryDumpDeterminism;
 using base::trace_event::MemoryDumpLevelOfDetail;
 using base::trace_event::MemoryDumpManager;
 using base::trace_event::MemoryDumpType;
@@ -80,15 +81,17 @@ class MemoryTracingTest : public ContentBrowserTest {
         &MemoryTracingTest::OnGlobalMemoryDumpDone, base::Unretained(this),
         base::ThreadTaskRunnerHandle::Get(), closure, request_index);
     if (from_renderer_thread) {
-      PostTaskToInProcessRendererAndWait(base::Bind(
+      PostTaskToInProcessRendererAndWait(base::BindOnce(
           &memory_instrumentation::MemoryInstrumentation::
               RequestGlobalDumpAndAppendToTrace,
           base::Unretained(
               memory_instrumentation::MemoryInstrumentation::GetInstance()),
-          dump_type, level_of_detail, std::move(callback)));
+          dump_type, level_of_detail, MemoryDumpDeterminism::NONE,
+          std::move(callback)));
     } else {
       memory_instrumentation::MemoryInstrumentation::GetInstance()
           ->RequestGlobalDumpAndAppendToTrace(dump_type, level_of_detail,
+                                              MemoryDumpDeterminism::NONE,
                                               std::move(callback));
     }
   }
@@ -134,10 +137,9 @@ class MemoryTracingTest : public ContentBrowserTest {
   void DisableTracing() {
     base::RunLoop run_loop;
     bool success = TracingController::GetInstance()->StopTracing(
-        TracingControllerImpl::CreateCallbackEndpoint(base::BindRepeating(
-            [](base::Closure quit_closure,
-               std::unique_ptr<const base::DictionaryValue> metadata,
-               base::RefCountedString* trace_str) {
+        TracingControllerImpl::CreateCallbackEndpoint(base::BindOnce(
+            [](base::OnceClosure quit_closure,
+               std::unique_ptr<std::string> trace_str) {
               std::move(quit_closure).Run();
             },
             run_loop.QuitClosure())));
@@ -163,7 +165,7 @@ class MemoryTracingTest : public ContentBrowserTest {
   }
 
   void Navigate(Shell* shell) {
-    NavigateToURL(shell, GetTestUrl("", "title1.html"));
+    EXPECT_TRUE(NavigateToURL(shell, GetTestUrl("", "title1.html")));
   }
 
   MOCK_METHOD2(OnMemoryDumpDone, void(uint32_t request_index, bool successful));

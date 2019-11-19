@@ -8,7 +8,7 @@
 #include "base/bind.h"
 #include "base/sequenced_task_runner.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "media/audio/alive_checker.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -159,7 +159,7 @@ class AliveCheckerTest : public testing::Test {
   }
 
   // The test task environment.
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
 
   // The thread the checker is run on.
   base::Thread alive_checker_thread_;

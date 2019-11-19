@@ -1,0 +1,58 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
+
+import("//third_party/protobuf/proto_library.gni")
+
+component("account_manager") {
+  sources = [
+    "account_manager.cc",
+    "account_manager.h",
+    "account_manager_factory.cc",
+    "account_manager_factory.h",
+  ]
+
+  public_deps = [
+    ":account_manager_proto",
+  ]
+
+  deps = [
+    "//base",
+    "//chromeos/constants",
+    "//components/prefs:prefs",
+    "//google_apis",
+    "//net",
+    "//services/network/public/cpp:cpp",
+  ]
+
+  defines = [ "IS_ACCOUNT_MANAGER_IMPL" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "account_manager_unittest.cc",
+  ]
+
+  deps = [
+    ":account_manager",
+    "//base",
+    "//base/test:test_support",
+    "//components/prefs:test_support",
+    "//net",
+    "//services/network:test_support",
+    "//services/network/public/cpp:cpp",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+proto_library("account_manager_proto") {
+  sources = [
+    "tokens.proto",
+  ]
+
+  proto_out_dir = "chromeos/components/account_manager"
+}

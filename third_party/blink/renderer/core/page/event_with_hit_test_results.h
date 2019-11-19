@@ -43,7 +43,7 @@ class EventWithHitTestResults {
 
   const EventType& Event() const { return event_; }
   const HitTestResult& GetHitTestResult() const { return hit_test_result_; }
-  LayoutPoint LocalPoint() const { return hit_test_result_.LocalPoint(); }
+  PhysicalOffset LocalPoint() const { return hit_test_result_.LocalPoint(); }
   Scrollbar* GetScrollbar() const { return hit_test_result_.GetScrollbar(); }
   bool IsOverLink() const { return hit_test_result_.IsOverLink(); }
   bool IsOverEmbeddedContentView() const {

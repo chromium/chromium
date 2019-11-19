@@ -30,6 +30,12 @@ namespace {{variant}} {
 {%-   endfor %}
 {%- endmacro %}
 
+{%- macro kythe_annotation(name) %}
+{%- if enable_kythe_annotations %}
+// @generated_from: {{name}}
+{%- endif %}
+{%- endmacro %}
+
 #ifndef {{header_guard}}
 #define {{header_guard}}
 
@@ -91,12 +97,11 @@ namespace {{variant}} {
    every use of {Inlined}StructPtr. #}
 #include "mojo/public/cpp/bindings/lib/wtf_clone_equals_util.h"
 #include "mojo/public/cpp/bindings/lib/wtf_hash_util.h"
-#include "third_party/blink/renderer/platform/mojo/revocable_interface_ptr.h"
 #include "third_party/blink/renderer/platform/wtf/hash_functions.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 {%- endif %}
 
-{% if not disallow_interfaces -%}
+{% if not disallow_interfaces and uses_interfaces -%}
 #include "mojo/public/cpp/bindings/associated_interface_ptr.h"
 #include "mojo/public/cpp/bindings/associated_interface_ptr_info.h"
 #include "mojo/public/cpp/bindings/associated_interface_request.h"
@@ -105,12 +110,9 @@ namespace {{variant}} {
 #include "mojo/public/cpp/bindings/lib/control_message_handler.h"
 #include "mojo/public/cpp/bindings/raw_ptr_impl_ref_traits.h"
 #include "mojo/public/cpp/bindings/thread_safe_interface_ptr.h"
-{%-   if for_blink %}
-#include "third_party/blink/renderer/platform/mojo/revocable_interface_ptr.h"
-{%-   endif %}
 {%- endif %}
 
-{% if not disallow_native_types %}
+{% if not disallow_native_types and uses_native_types %}
 #include "mojo/public/cpp/bindings/lib/native_enum_serialization.h"
 #include "mojo/public/cpp/bindings/lib/native_struct_serialization.h"
 {%- endif %}
@@ -121,6 +123,12 @@ namespace {{variant}} {
 
 {%- if export_header %}
 #include "{{export_header}}"
+{%- endif %}
+
+{% if enable_kythe_annotations -%}
+#ifdef KYTHE_IS_RUNNING
+#pragma kythe_inline_metadata "Metadata comment"
+#endif
 {%- endif %}
 
 {#--- WTF enum hashing #}
@@ -134,6 +142,8 @@ namespace {{variant}} {
 {%- endif %}
 
 {{namespace_begin()}}
+
+{%- set module_prefix = "%s"|format(namespaces_as_array|join(".")) %}
 
 {#--- Interfaces -#}
 {%  for interface in interfaces %}

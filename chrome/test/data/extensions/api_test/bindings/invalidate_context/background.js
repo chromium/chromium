@@ -16,7 +16,7 @@ function createFrame() {
   });
 }
 
-function testPort(port) {
+function testPort(port, expectEventsValid) {
   var result = {
     disconnectThrow: false,
     postMessageThrow: false,
@@ -39,7 +39,7 @@ function testPort(port) {
   }
 
   try {
-    result.onDisconnect = port.onDisconnect;
+    result.onDisconnectEvent = port.onDisconnect;
   } catch (e) {
     result.getOnDisconnectThrow = true;
   }
@@ -52,10 +52,18 @@ function testPort(port) {
 
   chrome.test.assertTrue(result.postMessageThrow);
   chrome.test.assertTrue(result.disconnectThrow);
-  chrome.test.assertTrue(result.getOnMessageThrow);
-  chrome.test.assertTrue(result.getOnDisconnectThrow);
-  chrome.test.assertFalse(!!result.onMessageEvent);
-  chrome.test.assertFalse(!!result.onDisconnectEvent);
+
+  if (expectEventsValid) {
+    chrome.test.assertFalse(result.getOnMessageThrow);
+    chrome.test.assertFalse(result.getOnDisconnectThrow);
+    chrome.test.assertTrue(!!result.onMessageEvent);
+    chrome.test.assertTrue(!!result.onDisconnectEvent);
+  } else {
+    chrome.test.assertTrue(result.getOnMessageThrow);
+    chrome.test.assertTrue(result.getOnDisconnectThrow);
+    chrome.test.assertEq(undefined, result.onMessageEvent);
+    chrome.test.assertEq(undefined, result.onDisconnectEvent);
+  }
 }
 
 chrome.test.runTests([
@@ -104,7 +112,7 @@ chrome.test.runTests([
       port.postMessage;
       document.body.removeChild(frame);
 
-      testPort(port);
+      testPort(port, false);
       chrome.test.succeed();
     });
   },
@@ -117,7 +125,7 @@ chrome.test.runTests([
       port.disconnect();
       document.body.removeChild(frame);
 
-      testPort(port);
+      testPort(port, false);
       chrome.test.succeed();
     });
   },
@@ -131,7 +139,7 @@ chrome.test.runTests([
       port.onDisconnect;
       document.body.removeChild(frame);
 
-      testPort(port);
+      testPort(port, true);
       chrome.test.succeed();
     });
   },

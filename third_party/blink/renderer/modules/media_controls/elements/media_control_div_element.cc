@@ -19,10 +19,9 @@ void MediaControlDivElement::MaybeRecordDisplayed() {
 }
 
 MediaControlDivElement::MediaControlDivElement(
-    MediaControlsImpl& media_controls,
-    MediaControlElementType display_type)
+    MediaControlsImpl& media_controls)
     : HTMLDivElement(media_controls.GetDocument()),
-      MediaControlElementBase(media_controls, display_type, this) {}
+      MediaControlElementBase(media_controls, this) {}
 
 bool MediaControlDivElement::IsMediaControlElement() const {
   return true;

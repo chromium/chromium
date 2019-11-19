@@ -50,5 +50,9 @@ interface PerformanceResourceTiming : PerformanceEntry {
     [MeasureAs=PerformanceResourceTimingSizes] readonly attribute unsigned long long encodedBodySize;
     [MeasureAs=PerformanceResourceTimingSizes] readonly attribute unsigned long long decodedBodySize;
     readonly attribute FrozenArray<PerformanceServerTiming> serverTiming;
+    // PerformanceResourceTiming#workerTiming
+    // See: https://github.com/wanderview/fetchevent-worker-timing/blob/master/explainer.md
+    [RuntimeEnabled=ServiceWorkerFetchEventWorkerTiming]
+        readonly attribute FrozenArray<PerformanceEntry> workerTiming;
     [CallWith=ScriptState, ImplementedAs=toJSONForBinding] object toJSON();
 };

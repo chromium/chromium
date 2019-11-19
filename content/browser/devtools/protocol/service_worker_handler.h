@@ -56,6 +56,9 @@ class ServiceWorkerHandler : public DevToolsDomainHandler,
                              const std::string& registration_id,
                              const std::string& tag,
                              bool last_chance) override;
+  Response DispatchPeriodicSyncEvent(const std::string& origin,
+                                     const std::string& registration_id,
+                                     const std::string& tag) override;
 
  private:
   void OnWorkerRegistrationUpdated(
@@ -76,7 +79,7 @@ class ServiceWorkerHandler : public DevToolsDomainHandler,
   BrowserContext* browser_context_;
   StoragePartitionImpl* storage_partition_;
 
-  base::WeakPtrFactory<ServiceWorkerHandler> weak_factory_;
+  base::WeakPtrFactory<ServiceWorkerHandler> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ServiceWorkerHandler);
 };

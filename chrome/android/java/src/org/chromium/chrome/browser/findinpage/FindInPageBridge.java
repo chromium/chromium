@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.findinpage;
 
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.content_public.browser.WebContents;
 
 /**
@@ -16,14 +17,15 @@ public class FindInPageBridge {
     public FindInPageBridge(WebContents webContents) {
         assert webContents != null;
         mWebContents = webContents;
-        mNativeFindInPageBridge = nativeInit(webContents);
+        mNativeFindInPageBridge =
+                FindInPageBridgeJni.get().init(FindInPageBridge.this, webContents);
     }
 
     /**
      * Destroys this instance so no further calls can be executed.
      */
     public void destroy() {
-        nativeDestroy(mNativeFindInPageBridge);
+        FindInPageBridgeJni.get().destroy(mNativeFindInPageBridge, FindInPageBridge.this);
         mNativeFindInPageBridge = 0;
     }
 
@@ -34,7 +36,8 @@ public class FindInPageBridge {
      */
     public void startFinding(String searchString, boolean forwardDirection, boolean caseSensitive) {
         assert mNativeFindInPageBridge != 0;
-        nativeStartFinding(mNativeFindInPageBridge, searchString, forwardDirection, caseSensitive);
+        FindInPageBridgeJni.get().startFinding(mNativeFindInPageBridge, FindInPageBridge.this,
+                searchString, forwardDirection, caseSensitive);
     }
 
     /**
@@ -43,7 +46,8 @@ public class FindInPageBridge {
      */
     public void activateFindInPageResultForAccessibility() {
         assert mNativeFindInPageBridge != 0;
-        nativeActivateFindInPageResultForAccessibility(mNativeFindInPageBridge);
+        FindInPageBridgeJni.get().activateFindInPageResultForAccessibility(
+                mNativeFindInPageBridge, FindInPageBridge.this);
     }
 
     /**
@@ -52,19 +56,22 @@ public class FindInPageBridge {
      * */
     public void stopFinding(boolean clearSelection) {
         assert mNativeFindInPageBridge != 0;
-        nativeStopFinding(mNativeFindInPageBridge, clearSelection);
+        FindInPageBridgeJni.get().stopFinding(
+                mNativeFindInPageBridge, FindInPageBridge.this, clearSelection);
     }
 
     /** Returns the most recent find text before the current one. */
     public String getPreviousFindText() {
         assert mNativeFindInPageBridge != 0;
-        return nativeGetPreviousFindText(mNativeFindInPageBridge);
+        return FindInPageBridgeJni.get().getPreviousFindText(
+                mNativeFindInPageBridge, FindInPageBridge.this);
     }
 
     /** Asks the renderer to send the bounding boxes of current find matches. */
     public void requestFindMatchRects(int currentVersion) {
         assert mNativeFindInPageBridge != 0;
-        nativeRequestFindMatchRects(mNativeFindInPageBridge, currentVersion);
+        FindInPageBridgeJni.get().requestFindMatchRects(
+                mNativeFindInPageBridge, FindInPageBridge.this, currentVersion);
     }
 
     /**
@@ -73,26 +80,24 @@ public class FindInPageBridge {
      */
     public void activateNearestFindResult(float x, float y) {
         assert mNativeFindInPageBridge != 0;
-        nativeActivateNearestFindResult(mNativeFindInPageBridge, x, y);
+        FindInPageBridgeJni.get().activateNearestFindResult(
+                mNativeFindInPageBridge, FindInPageBridge.this, x, y);
     }
 
-    private native long nativeInit(WebContents webContents);
-
-    private native void nativeDestroy(long nativeFindInPageBridge);
-
-    private native void nativeStartFinding(long nativeFindInPageBridge, String searchString,
-            boolean forwardDirection, boolean caseSensitive);
-
-    private native void nativeStopFinding(long nativeFindInPageBridge, boolean clearSelection);
-
-    private native String nativeGetPreviousFindText(long nativeFindInPageBridge);
-
-    private native void nativeRequestFindMatchRects(
-            long nativeFindInPageBridge, int currentVersion);
-
-    private native void nativeActivateNearestFindResult(
-            long nativeFindInPageBridge, float x, float y);
-
-    private native void nativeActivateFindInPageResultForAccessibility(
-            long nativeFindInPageBridge);
+    @NativeMethods
+    interface Natives {
+        long init(FindInPageBridge caller, WebContents webContents);
+        void destroy(long nativeFindInPageBridge, FindInPageBridge caller);
+        void startFinding(long nativeFindInPageBridge, FindInPageBridge caller, String searchString,
+                boolean forwardDirection, boolean caseSensitive);
+        void stopFinding(
+                long nativeFindInPageBridge, FindInPageBridge caller, boolean clearSelection);
+        String getPreviousFindText(long nativeFindInPageBridge, FindInPageBridge caller);
+        void requestFindMatchRects(
+                long nativeFindInPageBridge, FindInPageBridge caller, int currentVersion);
+        void activateNearestFindResult(
+                long nativeFindInPageBridge, FindInPageBridge caller, float x, float y);
+        void activateFindInPageResultForAccessibility(
+                long nativeFindInPageBridge, FindInPageBridge caller);
+    }
 }

@@ -5,9 +5,10 @@
 module content.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
-import "services/viz/public/interfaces/compositing/local_surface_id_allocation.mojom";
-import "services/viz/public/interfaces/compositing/selection.mojom";
-import "ui/gfx/geometry/mojo/geometry.mojom";
+import "services/viz/public/mojom/compositing/local_surface_id_allocation.mojom";
+import "services/viz/public/mojom/compositing/selection.mojom";
+import "services/viz/public/mojom/compositing/vertical_scroll_direction.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
 
 // See components/viz/service/quads/render_frame_metadata.h
 struct RenderFrameMetadata {
@@ -58,6 +59,8 @@ struct RenderFrameMetadata {
 
   float top_controls_shown_ratio;
 
+  viz.mojom.VerticalScrollDirection new_vertical_scroll_direction;
+
   // Used to position Android bottom bar, whose position is computed by the
   // renderer compositor.
   [EnableIf=is_android]
@@ -85,17 +88,26 @@ struct RenderFrameMetadata {
   bool has_transparent_background;
 };
 
-// This interface is provided by the renderer. It can optionally enable
-// notifications for all frame submissions.
+// This interface is provided by the renderer. It impacts the frequency with
+// which a fully populated RenderFrameMetadata object (above) is delivered to
+// the RenderFrameMetadataObserverClient.
 interface RenderFrameMetadataObserver {
-  // When |enabled| is set to true, this will notify the associated client of
-  // all frame submissions.
+  // When |enabled| is set to true, this will send RenderFrameMetadata to
+  // the RenderFrameMetadataObserverClient for any frame in which the root
+  // scroll changes. Used only on Android for accessibility cases.
+  [EnableIf=is_android]
+  ReportAllRootScrollsForAccessibility(bool enabled);
+  // When |enabled| is set to true, this will send RenderFrameMetadata to
+  // the RenderFrameMetadataObserverClient for all frames. Only used for
+  // tests.
   ReportAllFrameSubmissionsForTesting(bool enabled);
 };
 
-// This interface is provided by the browser. It is notified of all changes to
+// This interface is provided by the browser. It is notified of changes to
 // RenderFrameMetadata. It can be notified of all frame submissions, via
-// RenderFrameMetadataObserver::ReportAllFrameSubmissionsForTesting.
+// RenderFrameMetadataObserver::ReportAllFrameSubmissionsForTesting, or of
+// additional frames with root scroll offset changes via
+// RenderFrameMetadataObserver::ReportAllRootScrollsForAccessibility.
 interface RenderFrameMetadataObserverClient {
   // Notified when RenderFrameMetadata has changed.
   OnRenderFrameMetadataChanged(uint32 frame_token, RenderFrameMetadata metadata);

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/assistant/util/assistant_util.h"
 #include "ash/system/palette/palette_tool_manager.h"
 #include "ash/system/palette/palette_utils.h"
 #include "ash/system/palette/tools/capture_region_mode.h"
@@ -14,7 +15,6 @@
 #include "ash/system/palette/tools/laser_pointer_mode.h"
 #include "ash/system/palette/tools/magnifier_mode.h"
 #include "ash/system/palette/tools/metalayer_mode.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "ui/gfx/paint_vector_icon.h"
 
 namespace ash {
@@ -24,9 +24,8 @@ void PaletteTool::RegisterToolInstances(PaletteToolManager* tool_manager) {
   tool_manager->AddTool(std::make_unique<CaptureRegionMode>(tool_manager));
   tool_manager->AddTool(std::make_unique<CaptureScreenAction>(tool_manager));
   tool_manager->AddTool(std::make_unique<CreateNoteAction>(tool_manager));
-  if (chromeos::switches::IsAssistantEnabled()) {
+  if (assistant::util::IsGoogleDevice())
     tool_manager->AddTool(std::make_unique<MetalayerMode>(tool_manager));
-  }
   tool_manager->AddTool(std::make_unique<LaserPointerMode>(tool_manager));
   tool_manager->AddTool(std::make_unique<MagnifierMode>(tool_manager));
 }

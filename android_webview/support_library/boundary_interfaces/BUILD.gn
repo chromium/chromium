@@ -9,6 +9,7 @@ android_library("boundary_interface_java") {
   java_files = [
     "src/org/chromium/support_lib_boundary/FeatureFlagHolderBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/IsomorphicObjectBoundaryInterface.java",
+    "src/org/chromium/support_lib_boundary/JsReplyProxyBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/ProxyControllerBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/SafeBrowsingResponseBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/ServiceWorkerClientBoundaryInterface.java",
@@ -17,9 +18,9 @@ android_library("boundary_interface_java") {
     "src/org/chromium/support_lib_boundary/StaticsBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/TracingControllerBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/VisualStateCallbackBoundaryInterface.java",
-    "src/org/chromium/support_lib_boundary/WebkitToCompatConverterBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/WebMessageBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/WebMessageCallbackBoundaryInterface.java",
+    "src/org/chromium/support_lib_boundary/WebMessageListenerBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/WebMessagePortBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/WebResourceErrorBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/WebResourceRequestBoundaryInterface.java",
@@ -29,17 +30,24 @@ android_library("boundary_interface_java") {
     "src/org/chromium/support_lib_boundary/WebViewProviderFactoryBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/WebViewRendererBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/WebViewRendererClientBoundaryInterface.java",
+    "src/org/chromium/support_lib_boundary/WebkitToCompatConverterBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/util/BoundaryInterfaceReflectionUtil.java",
     "src/org/chromium/support_lib_boundary/util/Features.java",
   ]
 
   proguard_configs = [ "proguard.flags" ]
 
-  # We can't use ANY deps here, the support library should be able to build
-  # these interfaces without any other chromium dependencies.
-  deps = []
+  # Our choice of deps is limited, because boundary_interfaces/ must continue to
+  # build when we mirror this into AndroidX. We are only permitted to depend on
+  # core Android classes and other AndroidX classes (must be in the androidx.*
+  # package name).
+  deps = [
+    "//third_party/android_deps:androidx_annotation_annotation_java",
+  ]
 
   # This is to verify the boundary interfaces compile and lint correctly against
-  # the minSdkVersion of the webkit support library module.
-  android_manifest_for_lint = "AndroidManifest.xml"
+  # the minSdkVersion of the webkit support library module. As the minSdkVersion
+  # of the support library increases, so should this value. See
+  # http://crbug.com/828184 for more details.
+  min_sdk_version = 14
 }

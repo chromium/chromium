@@ -97,27 +97,17 @@ bool ViewStack::CanProcessEventsWithinSubtree() const {
          !slide_out_animator_->IsAnimating();
 }
 
-void ViewStack::Layout() {
-  views::View::Layout();
-
-  // If this view's bounds changed since the beginning of an animation, the
-  // animator's targets have to be changed as well.
-  gfx::Rect in_new_destination = bounds();
-  in_new_destination.set_origin(gfx::Point(0, 0));
-  UpdateAnimatorBounds(slide_in_animator_.get(), in_new_destination);
-
-
-  gfx::Rect out_new_destination = bounds();
-  out_new_destination.set_origin(gfx::Point(width(), 0));
-  UpdateAnimatorBounds(slide_out_animator_.get(), out_new_destination);
-}
-
 void ViewStack::RequestFocus() {
   // The view can only be focused if it has a widget already. It's possible that
   // this isn't the case if some views are pushed before the stack is added to a
   // hierarchy that has a widget.
   if (top()->GetWidget())
     top()->RequestFocus();
+}
+
+void ViewStack::OnBoundsChanged(const gfx::Rect& previous_bounds) {
+  UpdateAnimatorBounds(slide_in_animator_.get(), GetLocalBounds());
+  UpdateAnimatorBounds(slide_out_animator_.get(), {{width(), 0}, View::size()});
 }
 
 void ViewStack::HideCoveredViews() {

@@ -30,7 +30,7 @@ class ViewsContentClient;
 class ViewsContentClientMainParts : public content::BrowserMainParts {
  public:
   // Platform-specific create function.
-  static ViewsContentClientMainParts* Create(
+  static std::unique_ptr<ViewsContentClientMainParts> Create(
       const content::MainFunctionParams& content_params,
       ViewsContentClient* views_content_client);
 

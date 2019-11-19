@@ -1,0 +1,32 @@
+<!doctype html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/cookies/resources/testharness-helpers.js"></script>
+<script>
+// Set cookies on ORIGINAL_HOST, then move ourselves to TEST_ROOT so
+// we can verify cross-origin behavior.
+if (window.location.hostname == "127.0.0.1") {
+    window.location.hostname = ORIGINAL_HOST;
+} else if (window.location.hostname == ORIGINAL_HOST) {
+    clearKnownCookies();
+    document.cookie = STRICT_DOM + "=1; SameSite=Strict; Max-Age=100; path=/";
+    document.cookie = LAX_DOM + "=1; SameSite=Lax; Max-Age=100; path=/";
+    document.cookie = UNSPECIFIED_DOM + "=1; Max-Age=100; path=/";
+    // SameSite=None cookies must be Secure.
+    document.cookie = NONE_DOM + "=1; SameSite=None; Secure; Max-Age=100; path=/";
+    window.location.hostname = TEST_HOST;
+} else {
+    async_test(t => {
+        // https so that the SameSite=None Secure cookie shows up.
+        var i = window.open("https://" + ORIGINAL_HOST + ":8443/cookies/resources/post-cookies-to-opener.php");
+        window.addEventListener("message", t.step_func_done(e => {
+            assert_equals(e.data.http[STRICT_DOM], undefined, "strict");
+            assert_equals(e.data.http[LAX_DOM], "1", "lax");
+            assert_equals(e.data.http[UNSPECIFIED_DOM], "1", "unspecified");
+            assert_equals(e.data.http[NONE_DOM], "1", "none");
+            // TODO(mkwst): This should exclude the strict cookie.
+            assert_equals(e.data.document, STRICT_DOM + "=1; " + LAX_DOM + "=1; " + UNSPECIFIED_DOM + "=1; " + NONE_DOM + "=1");
+        }));
+    }, "'" + ORIGINAL_HOST + "' is not same-site with '" + TEST_HOST + "', so strict samesite cookies are not sent.");
+}
+</script>

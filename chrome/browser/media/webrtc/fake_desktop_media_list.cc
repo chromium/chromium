@@ -4,7 +4,10 @@
 
 #include "chrome/browser/media/webrtc/fake_desktop_media_list.h"
 
+#include <utility>
+
 #include "base/strings/string_number_conversions.h"
+#include "chrome/browser/media/webrtc/desktop_media_list.h"
 #include "chrome/browser/media/webrtc/desktop_media_list_observer.h"
 #include "ui/gfx/skia_util.h"
 
@@ -67,7 +70,13 @@ void FakeDesktopMediaList::StartUpdating(DesktopMediaListObserver* observer) {
   thumbnail_ = gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
 }
 
-int FakeDesktopMediaList::GetSourceCount() const { return sources_.size(); }
+void FakeDesktopMediaList::Update(UpdateCallback callback) {
+  std::move(callback).Run();
+}
+
+int FakeDesktopMediaList::GetSourceCount() const {
+  return sources_.size();
+}
 
 const DesktopMediaList::Source& FakeDesktopMediaList::GetSource(
     int index) const {

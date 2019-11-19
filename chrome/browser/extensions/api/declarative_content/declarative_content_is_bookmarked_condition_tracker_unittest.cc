@@ -82,7 +82,7 @@ class DeclarativeContentIsBookmarkedConditionTrackerTest
 
     // ContentPredicateEvaluator::Delegate:
     void RequestEvaluation(content::WebContents* contents) override {
-      EXPECT_FALSE(base::ContainsKey(evaluation_requests_, contents));
+      EXPECT_FALSE(base::Contains(evaluation_requests_, contents));
       evaluation_requests_.insert(contents);
     }
 

@@ -24,7 +24,6 @@ class ChromeHistoryBackendClient : public history::HistoryBackendClient {
   // history::HistoryBackendClient implementation.
   bool IsPinnedURL(const GURL& url) override;
   std::vector<history::URLAndTitle> GetPinnedURLs() override;
-  bool ShouldReportDatabaseError() override;
   bool IsWebSafe(const GURL& url) override;
 #if defined(OS_ANDROID)
   void OnHistoryBackendInitialized(

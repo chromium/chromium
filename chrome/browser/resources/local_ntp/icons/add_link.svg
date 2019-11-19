@@ -1,6 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
-  <g fill="none" fill-rule="evenodd">
-    <rect width="2" height="12" x="7" y="2" fill="#202124"/>
-    <rect width="2" height="12" x="7" y="2" fill="#202124" transform="rotate(-90 8 8)"/>
-  </g>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><g fill="#202124" fill-rule="evenodd"><path d="M7 2h2v12H7z"/><path d="M2 9V7h12v2z"/></g></svg>

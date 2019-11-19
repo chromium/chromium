@@ -47,6 +47,10 @@ class VisibleUnitsLineTest : public EditingTestBase {
       TextAffinity affinity = TextAffinity::kDownstream) {
     return CreateVisiblePosition(PositionInFlatTree(&anchor, offset), affinity);
   }
+
+  static bool LayoutNGEnabled() {
+    return RuntimeEnabledFeatures::LayoutNGEnabled();
+  }
 };
 
 class ParameterizedVisibleUnitsLineTest
@@ -64,10 +68,11 @@ INSTANTIATE_TEST_SUITE_P(All,
                          ::testing::Bool());
 
 TEST_F(VisibleUnitsLineTest, endOfLine) {
-  // TODO(crbug.com/922407): This test fails with LayoutNG.
-  if (RuntimeEnabledFeatures::LayoutNGEnabled())
-    return;
-
+  // Test case:
+  // 5555522
+  // 666666
+  // 117777777
+  // 3334444
   const char* body_content =
       "<a id=host><b id=one>11</b><b id=two>22</b></a><i id=three>333</i><i "
       "id=four>4444</i><br>";
@@ -107,17 +112,17 @@ TEST_F(VisibleUnitsLineTest, endOfLine) {
       PositionInFlatTree(two, 2),
       EndOfLine(CreateVisiblePositionInFlatTree(*two, 0)).DeepEquivalent());
 
-  // TODO(yosin) endOfLine(two, 1) -> (five, 5) is a broken result. We keep
-  // it as a marker for future change.
   EXPECT_EQ(
-      Position(five, 5),
+      // The result on legacy layout is broken and not worth fixing.
+      LayoutNGEnabled() ? Position(two, 2) : Position(five, 5),
       EndOfLine(CreateVisiblePositionInDOMTree(*two, 1)).DeepEquivalent());
   EXPECT_EQ(
       PositionInFlatTree(two, 2),
       EndOfLine(CreateVisiblePositionInFlatTree(*two, 1)).DeepEquivalent());
 
   EXPECT_EQ(
-      Position(five, 5),
+      // The result on legacy layout is broken and not worth fixing.
+      LayoutNGEnabled() ? Position(two, 2) : Position(five, 5),
       EndOfLine(CreateVisiblePositionInDOMTree(*three, 0)).DeepEquivalent());
   EXPECT_EQ(
       PositionInFlatTree(four, 4),
@@ -131,7 +136,8 @@ TEST_F(VisibleUnitsLineTest, endOfLine) {
       EndOfLine(CreateVisiblePositionInFlatTree(*four, 1)).DeepEquivalent());
 
   EXPECT_EQ(
-      Position(five, 5),
+      // The result on legacy layout is broken and not worth fixing.
+      LayoutNGEnabled() ? Position(two, 2) : Position(five, 5),
       EndOfLine(CreateVisiblePositionInDOMTree(*five, 1)).DeepEquivalent());
   EXPECT_EQ(
       PositionInFlatTree(two, 2),
@@ -153,10 +159,11 @@ TEST_F(VisibleUnitsLineTest, endOfLine) {
 }
 
 TEST_F(VisibleUnitsLineTest, isEndOfLine) {
-  // TODO(crbug.com/922407): This test fails with LayoutNG.
-  if (RuntimeEnabledFeatures::LayoutNGEnabled())
-    return;
-
+  // Test case:
+  // 5555522
+  // 666666
+  // 117777777
+  // 3334444
   const char* body_content =
       "<a id=host><b id=one>11</b><b id=two>22</b></a><i id=three>333</i><i "
       "id=four>4444</i><br>";
@@ -181,7 +188,11 @@ TEST_F(VisibleUnitsLineTest, isEndOfLine) {
   EXPECT_FALSE(IsEndOfLine(CreateVisiblePositionInDOMTree(*one, 1)));
   EXPECT_FALSE(IsEndOfLine(CreateVisiblePositionInFlatTree(*one, 1)));
 
-  EXPECT_FALSE(IsEndOfLine(CreateVisiblePositionInDOMTree(*two, 2)));
+  // The result on legacy layout is broken and not worth fixing.
+  if (LayoutNGEnabled())
+    EXPECT_TRUE(IsEndOfLine(CreateVisiblePositionInFlatTree(*two, 2)));
+  else
+    EXPECT_FALSE(IsEndOfLine(CreateVisiblePositionInDOMTree(*two, 2)));
   EXPECT_TRUE(IsEndOfLine(CreateVisiblePositionInFlatTree(*two, 2)));
 
   EXPECT_FALSE(IsEndOfLine(CreateVisiblePositionInDOMTree(*three, 3)));
@@ -190,7 +201,11 @@ TEST_F(VisibleUnitsLineTest, isEndOfLine) {
   EXPECT_TRUE(IsEndOfLine(CreateVisiblePositionInDOMTree(*four, 4)));
   EXPECT_TRUE(IsEndOfLine(CreateVisiblePositionInFlatTree(*four, 4)));
 
-  EXPECT_TRUE(IsEndOfLine(CreateVisiblePositionInDOMTree(*five, 5)));
+  // The result on legacy layout is broken and not worth fixing.
+  if (LayoutNGEnabled())
+    EXPECT_FALSE(IsEndOfLine(CreateVisiblePositionInFlatTree(*five, 5)));
+  else
+    EXPECT_TRUE(IsEndOfLine(CreateVisiblePositionInDOMTree(*five, 5)));
   EXPECT_FALSE(IsEndOfLine(CreateVisiblePositionInFlatTree(*five, 5)));
 
   EXPECT_TRUE(IsEndOfLine(CreateVisiblePositionInDOMTree(*six, 6)));
@@ -201,10 +216,11 @@ TEST_F(VisibleUnitsLineTest, isEndOfLine) {
 }
 
 TEST_F(VisibleUnitsLineTest, isLogicalEndOfLine) {
-  // TODO(crbug.com/922407): This test fails with LayoutNG.
-  if (RuntimeEnabledFeatures::LayoutNGEnabled())
-    return;
-
+  // Test case:
+  // 5555522
+  // 666666
+  // 117777777
+  // 3334444
   const char* body_content =
       "<a id=host><b id=one>11</b><b id=two>22</b></a><i id=three>333</i><i "
       "id=four>4444</i><br>";
@@ -229,7 +245,11 @@ TEST_F(VisibleUnitsLineTest, isLogicalEndOfLine) {
   EXPECT_FALSE(IsLogicalEndOfLine(CreateVisiblePositionInDOMTree(*one, 1)));
   EXPECT_FALSE(IsLogicalEndOfLine(CreateVisiblePositionInFlatTree(*one, 1)));
 
-  EXPECT_FALSE(IsLogicalEndOfLine(CreateVisiblePositionInDOMTree(*two, 2)));
+  // The result in legacy layout is broken and not worth fixing.
+  if (LayoutNGEnabled())
+    EXPECT_TRUE(IsLogicalEndOfLine(CreateVisiblePositionInDOMTree(*two, 2)));
+  else
+    EXPECT_FALSE(IsLogicalEndOfLine(CreateVisiblePositionInDOMTree(*two, 2)));
   EXPECT_TRUE(IsLogicalEndOfLine(CreateVisiblePositionInFlatTree(*two, 2)));
 
   EXPECT_FALSE(IsLogicalEndOfLine(CreateVisiblePositionInDOMTree(*three, 3)));
@@ -238,7 +258,11 @@ TEST_F(VisibleUnitsLineTest, isLogicalEndOfLine) {
   EXPECT_TRUE(IsLogicalEndOfLine(CreateVisiblePositionInDOMTree(*four, 4)));
   EXPECT_TRUE(IsLogicalEndOfLine(CreateVisiblePositionInFlatTree(*four, 4)));
 
-  EXPECT_TRUE(IsLogicalEndOfLine(CreateVisiblePositionInDOMTree(*five, 5)));
+  // The result in legacy layout is broken and not worth fixing.
+  if (LayoutNGEnabled())
+    EXPECT_FALSE(IsLogicalEndOfLine(CreateVisiblePositionInDOMTree(*five, 5)));
+  else
+    EXPECT_TRUE(IsLogicalEndOfLine(CreateVisiblePositionInDOMTree(*five, 5)));
   EXPECT_FALSE(IsLogicalEndOfLine(CreateVisiblePositionInFlatTree(*five, 5)));
 
   EXPECT_TRUE(IsLogicalEndOfLine(CreateVisiblePositionInDOMTree(*six, 6)));
@@ -313,10 +337,6 @@ TEST_P(ParameterizedVisibleUnitsLineTest, inSameLine) {
 }
 
 TEST_F(VisibleUnitsLineTest, isStartOfLine) {
-  // TODO(crbug.com/922407): This test fails with LayoutNG.
-  if (RuntimeEnabledFeatures::LayoutNGEnabled())
-    return;
-
   const char* body_content =
       "<a id=host><b id=one>11</b><b id=two>22</b></a><i id=three>333</i><i "
       "id=four>4444</i><br>";
@@ -361,10 +381,11 @@ TEST_F(VisibleUnitsLineTest, isStartOfLine) {
 }
 
 TEST_F(VisibleUnitsLineTest, logicalEndOfLine) {
-  // TODO(crbug.com/922407): This test fails with LayoutNG.
-  if (RuntimeEnabledFeatures::LayoutNGEnabled())
-    return;
-
+  // Test case:
+  // 5555522
+  // 666666
+  // 117777777
+  // 3334444
   const char* body_content =
       "<a id=host><b id=one>11</b><b id=two>22</b></a><i id=three>333</i><i "
       "id=four>4444</i><br>";
@@ -404,16 +425,17 @@ TEST_F(VisibleUnitsLineTest, logicalEndOfLine) {
             LogicalEndOfLine(CreateVisiblePositionInFlatTree(*two, 0))
                 .DeepEquivalent());
 
-  // TODO(yosin) logicalEndOfLine(two, 1) -> (five, 5) is a broken result. We
-  // keep it as a marker for future change.
-  EXPECT_EQ(Position(five, 5),
+  // The result on legacy layout is broken and not worth fixing.
+  EXPECT_EQ(LayoutNGEnabled() ? Position(two, 2) : Position(five, 5),
             LogicalEndOfLine(CreateVisiblePositionInDOMTree(*two, 1))
                 .DeepEquivalent());
   EXPECT_EQ(PositionInFlatTree(two, 2),
             LogicalEndOfLine(CreateVisiblePositionInFlatTree(*two, 1))
                 .DeepEquivalent());
 
-  EXPECT_EQ(Position(five, 5),
+  // DOM VisiblePosition canonicalization moves input position to (two, 2),
+  // which yields wrong results in both legacy layout and LayoutNG.
+  EXPECT_EQ(LayoutNGEnabled() ? Position(two, 2) : Position(five, 5),
             LogicalEndOfLine(CreateVisiblePositionInDOMTree(*three, 0))
                 .DeepEquivalent());
   EXPECT_EQ(PositionInFlatTree(four, 4),
@@ -427,7 +449,8 @@ TEST_F(VisibleUnitsLineTest, logicalEndOfLine) {
             LogicalEndOfLine(CreateVisiblePositionInFlatTree(*four, 1))
                 .DeepEquivalent());
 
-  EXPECT_EQ(Position(five, 5),
+  // The result on legacy layout is broken and not worth fixing.
+  EXPECT_EQ(LayoutNGEnabled() ? Position(two, 2) : Position(five, 5),
             LogicalEndOfLine(CreateVisiblePositionInDOMTree(*five, 1))
                 .DeepEquivalent());
   EXPECT_EQ(PositionInFlatTree(two, 2),
@@ -450,10 +473,6 @@ TEST_F(VisibleUnitsLineTest, logicalEndOfLine) {
 }
 
 TEST_F(VisibleUnitsLineTest, logicalStartOfLine) {
-  // TODO(crbug.com/922407): This test fails with LayoutNG.
-  if (RuntimeEnabledFeatures::LayoutNGEnabled())
-    return;
-
   const char* body_content =
       "<a id=host><b id=one>11</b><b id=two>22</b></a><i id=three>333</i><i "
       "id=four>4444</i><br>";
@@ -539,10 +558,11 @@ TEST_F(VisibleUnitsLineTest, logicalStartOfLine) {
 }
 
 TEST_F(VisibleUnitsLineTest, startOfLine) {
-  // TODO(crbug.com/922407): This test fails with LayoutNG.
-  if (RuntimeEnabledFeatures::LayoutNGEnabled())
-    return;
-
+  // Test case:
+  // 5555522
+  // 666666
+  // 117777777
+  // 3334444
   const char* body_content =
       "<a id=host><b id=one>11</b><b id=two>22</b></a><i id=three>333</i><i "
       "id=four>4444</i><br>";
@@ -627,22 +647,6 @@ TEST_F(VisibleUnitsLineTest, startOfLine) {
       StartOfLine(CreateVisiblePositionInFlatTree(*seven, 1)).DeepEquivalent());
 }
 
-TEST_F(VisibleUnitsLineTest,
-       PreviousRootInlineBoxCandidatePositionWithDisplayNone) {
-  SetBodyContent(
-      "<div contenteditable>"
-      "<div id=one>one abc</div>"
-      "<div id=two>two <b id=none style=display:none>def</b> ghi</div>"
-      "</div>");
-  Element* const one = GetDocument().getElementById("one");
-  Element* const two = GetDocument().getElementById("two");
-  const VisiblePosition& visible_position =
-      CreateVisiblePosition(Position::LastPositionInNode(*two));
-  EXPECT_EQ(Position(one->firstChild(), 7),
-            PreviousRootInlineBoxCandidatePosition(
-                two->lastChild(), visible_position, kContentIsEditable));
-}
-
 TEST_P(ParameterizedVisibleUnitsLineTest, InSameLineSkippingEmptyEditableDiv) {
   // This test records the InSameLine() results in
   // editing/selection/skip-over-contenteditable.html
@@ -677,6 +681,28 @@ TEST_P(ParameterizedVisibleUnitsLineTest, InSameLineWithMixedEditability) {
   // TODO(editing-dev): Make sure this test doesn't fail when we stop wrapping
   // inline contenteditables with inline blocks.
   EXPECT_FALSE(InSameLine(position1, position2));
+}
+
+// https://crbug.com/947462
+TEST_F(VisibleUnitsLineTest, TextOverflowEllipsis) {
+  LoadAhem();
+  InsertStyleElement(R"HTML(
+    div {
+      width: 40px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font: 10px/10px Ahem;
+    })HTML");
+  SetBodyContent("<div>foo foo</div>");
+  Element* div = GetDocument().QuerySelector("div");
+  Node* text = div->firstChild();
+  EXPECT_EQ(
+      Position(text, 0),
+      StartOfLine(CreateVisiblePositionInDOMTree(*text, 6)).DeepEquivalent());
+  EXPECT_EQ(
+      Position(text, 7),
+      EndOfLine(CreateVisiblePositionInDOMTree(*text, 6)).DeepEquivalent());
 }
 
 }  // namespace blink

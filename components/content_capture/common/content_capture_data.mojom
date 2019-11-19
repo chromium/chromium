@@ -5,7 +5,7 @@
 module content_capture.mojom;
 
 import "mojo/public/mojom/base/string16.mojom";
-import "ui/gfx/geometry/mojo/geometry.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
 
 // The mojom definition of content_capture::ContentCaptureData.
 struct ContentCaptureData {

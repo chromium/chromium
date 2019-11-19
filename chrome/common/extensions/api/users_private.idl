@@ -41,10 +41,15 @@ namespace usersPrivate {
   callback ManagedCallback = void (boolean managed);
   callback UserCallback = void (User user);
   callback LoginStatusCallback = void (LoginStatusDict status);
+  callback IsWhiteListedUserCallback = void (boolean found);
 
   interface Functions {
     // Gets a list of the currently whitelisted users.
     static void getWhitelistedUsers(UsersCallback callback);
+
+    // Checks to see if the user is already present as a whitelisted user.
+    static void isWhitelistedUser(DOMString email,
+                                  IsWhiteListedUserCallback callback);
 
     // Adds a new user with the given email to the whitelist.
     // The callback is called with true if the user was added succesfully, or

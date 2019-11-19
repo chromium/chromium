@@ -8,6 +8,7 @@
 #include "base/memory/singleton.h"
 
 namespace content {
+enum class PictureInPictureResult;
 class PictureInPictureWindowController;
 class WebContents;
 }  // namespace content
@@ -34,9 +35,9 @@ class PictureInPictureWindowManager {
   // controller directly.
   void EnterPictureInPictureWithController(
       content::PictureInPictureWindowController* pip_window_controller);
-  gfx::Size EnterPictureInPicture(content::WebContents*,
-                                  const viz::SurfaceId&,
-                                  const gfx::Size&);
+  content::PictureInPictureResult EnterPictureInPicture(content::WebContents*,
+                                                        const viz::SurfaceId&,
+                                                        const gfx::Size&);
   void ExitPictureInPicture();
 
   content::WebContents* GetWebContents();
@@ -54,7 +55,7 @@ class PictureInPictureWindowManager {
   // Closes the active Picture-in-Picture window.
   // There MUST be a window open.
   // This is suffixed with "Internal" to keep consistency with the method above.
-  void CloseWindowInternal(bool should_reset_pip_player);
+  void CloseWindowInternal();
 
   PictureInPictureWindowManager();
   ~PictureInPictureWindowManager();

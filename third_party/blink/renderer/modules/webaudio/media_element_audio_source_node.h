@@ -136,8 +136,12 @@ class MediaElementAudioSourceNode final : public AudioNode,
   void unlock() override
       UNLOCK_FUNCTION(GetMediaElementAudioSourceHandler().GetProcessLock());
 
+  // InspectorHelperMixin
+  void ReportDidCreate() final;
+  void ReportWillBeDestroyed() final;
+
  private:
-  TraceWrapperMember<HTMLMediaElement> media_element_;
+  Member<HTMLMediaElement> media_element_;
 };
 
 }  // namespace blink

@@ -77,11 +77,8 @@ class TestRunResults(object):
         self.failures_by_name = {}
 
         self.tests_by_expectation = {}
-        self.tests_by_timeline = {}
         for expectation in test_expectations.TestExpectations.EXPECTATIONS.values():
             self.tests_by_expectation[expectation] = set()
-        for timeline in test_expectations.TestExpectations.TIMELINES.values():
-            self.tests_by_timeline[timeline] = expectations.get_tests_with_timeline(timeline)
 
         self.slow_tests = set()
         self.interrupted = False
@@ -89,8 +86,6 @@ class TestRunResults(object):
 
     def add(self, test_result, expected, test_is_slow):
         result_type_for_stats = test_result.type
-        if test_expectations.WONTFIX in self.expectations.model().get_expectations(test_result.test_name):
-            result_type_for_stats = test_expectations.WONTFIX
         self.tests_by_expectation[result_type_for_stats].add(test_result.test_name)
 
         self.results_by_name[test_result.test_name] = test_result
@@ -170,10 +165,8 @@ def summarize_results(port_obj, expectations, initial_results,
     all_retry_results = all_retry_results or []
 
     tbe = initial_results.tests_by_expectation
-    tbt = initial_results.tests_by_timeline
-    results['fixable'] = len(tbt[test_expectations.NOW] - tbe[test_expectations.PASS])
-    # FIXME: Remove this. It is redundant with results['num_failures_by_type'].
-    results['skipped'] = len(tbt[test_expectations.NOW] & tbe[test_expectations.SKIP])
+
+    results['skipped'] = len(tbe[test_expectations.SKIP])
 
     # TODO(dpranke): Some or all of these counters can be removed.
     num_passes = 0
@@ -186,8 +179,6 @@ def summarize_results(port_obj, expectations, initial_results,
     num_failures_by_type = {}
     for expectation in initial_results.tests_by_expectation:
         tests = initial_results.tests_by_expectation[expectation]
-        if expectation != test_expectations.WONTFIX:
-            tests &= tbt[test_expectations.NOW]
         num_failures_by_type[keywords[expectation]] = len(tests)
     results['num_failures_by_type'] = num_failures_by_type
 
@@ -315,8 +306,7 @@ def summarize_results(port_obj, expectations, initial_results,
                     break
 
         def is_expected(actual_result):
-            return expectations.matches_an_expected_result(test_name, actual_result,
-                                                           port_obj.get_option('enable_sanitizer'))
+            return expectations.matches_an_expected_result(test_name, actual_result)
 
         # Note: is_unexpected and is_regression are intended to reflect the
         # *last* result. In the normal use case (stop retrying failures
@@ -336,6 +326,11 @@ def summarize_results(port_obj, expectations, initial_results,
             # TODO(robertma): Why do we only update unexpected retry failures?
             if is_unexpected:
                 test_dict.update(_interpret_test_failures(retry_result.failures))
+
+        for test_result, _ in merged_results:
+            for artifact_name, artifacts in test_result.artifacts.artifacts.items():
+                artifact_dict = test_dict.setdefault('artifacts', {})
+                artifact_dict.setdefault(artifact_name, []).extend(artifacts)
 
         # Store test hierarchically by directory. e.g.
         # foo/bar/baz.html: test_dict

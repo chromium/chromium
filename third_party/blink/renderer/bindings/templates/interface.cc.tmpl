@@ -402,12 +402,12 @@ void {{v8_class_or_partial}}::IndexedPropertyDefinerCallback(
 static void NamedPropertyGetter(const AtomicString& name,
                                 const v8::PropertyCallbackInfo<v8::Value>& info) {
   {% if getter.is_raises_exception %}
-  const CString& name_in_utf8 = name.Utf8();
+  const std::string& name_in_utf8 = name.Utf8();
   ExceptionState exception_state(
       info.GetIsolate(),
       ExceptionState::kGetterContext,
       "{{interface_name}}",
-      name_in_utf8.data());
+      name_in_utf8.c_str());
   {% endif %}
   {% if getter.is_call_with_script_state %}
   ScriptState* script_state = ScriptState::ForRelevantRealm(info);
@@ -461,12 +461,12 @@ static void NamedPropertySetter(
     v8::Local<v8::Value> v8_value,
     const v8::PropertyCallbackInfo<v8::Value>& info) {
   {% if setter.has_exception_state %}
-  const CString& name_in_utf8 = name.Utf8();
+  const std::string& name_in_utf8 = name.Utf8();
   ExceptionState exception_state(
       info.GetIsolate(),
       ExceptionState::kSetterContext,
       "{{interface_name}}",
-      name_in_utf8.data());
+      name_in_utf8.c_str());
   {% endif %}
   {% if setter.is_ce_reactions %}
   CEReactionsScope ce_reactions_scope;
@@ -539,12 +539,12 @@ void {{v8_class_or_partial}}::NamedPropertySetterCallback(
 static void NamedPropertyDeleter(
     const AtomicString& name, const v8::PropertyCallbackInfo<v8::Boolean>& info) {
   {% if deleter.is_raises_exception %}
-  const CString& name_in_utf8 = name.Utf8();
+  const std::string& name_in_utf8 = name.Utf8();
   ExceptionState exception_state(
       info.GetIsolate(),
       ExceptionState::kDeletionContext,
       "{{interface_name}}",
-      name_in_utf8.data());
+      name_in_utf8.c_str());
   {% endif %}
   {% if deleter.is_ce_reactions %}
   CEReactionsScope ce_reactions_scope;
@@ -619,12 +619,12 @@ template <typename T>
 static void NamedPropertyQuery(
     const AtomicString& name, const v8::PropertyCallbackInfo<T>& info) {
 {% endif %}
-  const CString& name_in_utf8 = name.Utf8();
+  const std::string& name_in_utf8 = name.Utf8();
   ExceptionState exception_state(
       info.GetIsolate(),
       ExceptionState::kGetterContext,
       "{{interface_name}}",
-      name_in_utf8.data());
+      name_in_utf8.c_str());
   {% if getter.is_call_with_script_state %}
   ScriptState* script_state = ScriptState::ForRelevantRealm(info);
   {% endif %}
@@ -722,58 +722,6 @@ void {{v8_class_or_partial}}::NamedPropertyEnumeratorCallback(
 
 
 {##############################################################################}
-{# TODO(dcheng): Currently, bindings must create a function object for each
-   realm as a hack to support the incumbent realm. Remove this when Blink
-   properly supports the incumbent realm. #}
-{% block origin_safe_method_setter %}
-{% if has_origin_safe_method_setter %}
-static void {{cpp_class}}OriginSafeMethodSetter(
-    v8::Local<v8::Name> name,
-    v8::Local<v8::Value> v8_value,
-    const v8::PropertyCallbackInfo<void>& info) {
-  if (!name->IsString())
-    return;
-  v8::Local<v8::Object> holder =
-      {{v8_class}}::FindInstanceInPrototypeChain(info.Holder(), info.GetIsolate());
-  if (holder.IsEmpty())
-    return;
-  {{cpp_class}}* impl = {{v8_class}}::ToImpl(holder);
-  v8::String::Utf8Value name_in_utf8(info.GetIsolate(), name);
-  ExceptionState exception_state(
-      info.GetIsolate(),
-      ExceptionState::kSetterContext,
-      "{{interface_name}}",
-      *name_in_utf8);
-  if (!BindingSecurity::ShouldAllowAccessTo(
-          CurrentDOMWindow(info.GetIsolate()), impl, exception_state)) {
-    return;
-  }
-
-  {# The findInstanceInPrototypeChain() call above only returns a non-empty handle if info.Holder() is an Object. #}
-  {% raw %}
-  // |methodName| must be same with {{method.name}} in
-  // {{method.name}}OriginSafeMethodGetter{{world_suffix}} defined in
-  // methods.cc.tmpl
-  {% endraw %}
-  V8PrivateProperty::GetSymbol(info.GetIsolate(), *name_in_utf8)
-      .Set(v8::Local<v8::Object>::Cast(info.Holder()), v8_value);
-}
-{% endif %}
-{% endblock %}
-
-{% block origin_safe_method_setter_callback %}
-{% if has_origin_safe_method_setter %}
-void {{v8_class_or_partial}}::{{cpp_class}}OriginSafeMethodSetterCallback(
-    v8::Local<v8::Name> name,
-    v8::Local<v8::Value> v8_value,
-    const v8::PropertyCallbackInfo<void>& info) {
-  {{internal_namespace}}::{{cpp_class}}OriginSafeMethodSetter(name, v8_value, info);
-}
-{% endif %}
-{% endblock %}
-
-
-{##############################################################################}
 {% block named_constructor %}
 {% from 'methods.cc.tmpl' import generate_constructor with context %}
 {% if named_constructor %}
@@ -834,8 +782,10 @@ void {{v8_class}}Constructor::NamedConstructorAttributeGetter(
       per_context_data->ConstructorForType({{v8_class}}Constructor::GetWrapperTypeInfo());
 
   // Set the prototype of named constructors to the regular constructor.
+  static const V8PrivateProperty::SymbolKey kPrivatePropertyInitialized;
   auto private_property =
-      V8PrivateProperty::GetNamedConstructorInitialized(info.GetIsolate());
+      V8PrivateProperty::GetSymbol(
+          info.GetIsolate(), kPrivatePropertyInitialized);
   v8::Local<v8::Context> current_context = info.GetIsolate()->GetCurrentContext();
   v8::Local<v8::Value> private_value;
 
@@ -954,34 +904,58 @@ static void Constructor(const v8::FunctionCallbackInfo<v8::Value>& info) {
 
 
 {##############################################################################}
-{% macro install_origin_safe_method(method, instance_template, prototype_template) %}
+{% macro install_origin_safe_method(method, instance_template, prototype_template, interface_template, signature) %}
 {% from 'utilities.cc.tmpl' import property_location %}
 {# TODO(dcheng): Currently, bindings must create a function object for each
    realm as a hack to support the incumbent realm. Clean this up when Blink
    properly supports the incumbent realm. #}
-{% set getter_callback =
-       '%s::%sOriginSafeMethodGetterCallback' %
-       (v8_class_or_partial, method.camel_case_name) %}
-{% set setter_callback =
-       '%s::%sOriginSafeMethodSetterCallback' % (v8_class_or_partial, cpp_class)
-       if not method.is_unforgeable else 'nullptr' %}
+{% set function_callback =
+       '%s::%sMethodCallback' % (v8_class_or_partial, method.camel_case_name) %}
 {% set property_attribute =
        'static_cast<v8::PropertyAttribute>(%s)' %
        ' | '.join(method.property_attributes or ['v8::None']) %}
 {% set holder_check = 'V8DOMConfiguration::kCheckHolder' %}
-static const V8DOMConfiguration::AttributeConfiguration {{method.name}}OriginSafeAttributeConfiguration[] = {
+static const V8DOMConfiguration::MethodConfiguration k{{method.camel_case_name}}OriginSafeMethodConfiguration[] = {
 {% if method.is_per_world_bindings %}
-{% set getter_callback_for_main_world = '%sForMainWorld' % getter_callback %}
-{% set setter_callback_for_main_world = '%sForMainWorld' % setter_callback
-       if not method.is_unforgeable else 'nullptr' %}
-    {"{{method.name}}", {{getter_callback_for_main_world}}, {{setter_callback_for_main_world}}, {{property_attribute}}, {{property_location(method)}}, {{holder_check}}, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAlwaysCallGetter, V8DOMConfiguration::MainWorld},
-    {"{{method.name}}", {{getter_callback}}, {{setter_callback}}, {{property_attribute}}, {{property_location(method)}}, {{holder_check}}, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAlwaysCallGetter, V8DOMConfiguration::NonMainWorlds}}
+{% set function_callback_for_main_world = '%sForMainWorld' % function_callback %}
+    {
+        "{{method.name}}",
+        {{function_callback_for_main_world}},
+        {{method.length}},
+        {{property_attribute}},
+        {{property_location(method)}},
+        {{holder_check}},
+        V8DOMConfiguration::kCheckAccess,
+        V8DOMConfiguration::kHasSideEffect,
+        V8DOMConfiguration::MainWorld,
+    },
+    {
+        "{{method.name}}",
+        {{function_callback}},
+        {{method.length}},
+        {{property_attribute}},
+        {{property_location(method)}},
+        {{holder_check}},
+        V8DOMConfiguration::kCheckAccess,
+        V8DOMConfiguration::kHasSideEffect,
+        V8DOMConfiguration::NonMainWorlds,
+    }
 {% else %}
-    {"{{method.name}}", {{getter_callback}}, {{setter_callback}}, {{property_attribute}}, {{property_location(method)}}, {{holder_check}}, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAlwaysCallGetter, V8DOMConfiguration::kAllWorlds}
+    {
+        "{{method.name}}",
+        {{function_callback}},
+        {{method.length}},
+        {{property_attribute}},
+        {{property_location(method)}},
+        {{holder_check}},
+        V8DOMConfiguration::kCheckAccess,
+        V8DOMConfiguration::kHasSideEffect,
+        V8DOMConfiguration::kAllWorlds,
+    }
 {% endif %}
 };
- for (const auto& attributeConfig : {{method.name}}OriginSafeAttributeConfiguration)
-  V8DOMConfiguration::InstallAttribute(isolate, world, {{instance_template}}, {{prototype_template}}, attributeConfig);
+for (const auto& method_config : k{{method.camel_case_name}}OriginSafeMethodConfiguration)
+  V8DOMConfiguration::InstallMethod(isolate, world, {{instance_template}}, {{prototype_template}}, {{interface_template}}, {{signature}}, method_config);
 {%- endmacro %}
 
 
@@ -1126,6 +1100,9 @@ v8::Local<v8::Object> {{v8_class}}::FindInstanceInPrototypeChain(
 {{cpp_class}}* V8{{interface_name}}::ToImpl(v8::Local<v8::Object> object) {
   DCHECK(object->Is{{interface_name}}());
   v8::Local<v8::{{interface_name}}> v8buffer = object.As<v8::{{interface_name}}>();
+  // TODO(ahaas): The use of IsExternal is wrong here. Instead we should call
+  // ToScriptWrappable(object)->ToImpl<ArrayBuffer>() and check for nullptr.
+  // We can then also avoid the call to Externalize below.
   if (v8buffer->IsExternal()) {
     const WrapperTypeInfo* wrapper_type = ToWrapperTypeInfo(object);
     CHECK(wrapper_type);
@@ -1135,12 +1112,9 @@ v8::Local<v8::Object> {{v8_class}}::FindInstanceInPrototypeChain(
 
   // Transfer the ownership of the allocated memory to an {{interface_name}} without
   // copying.
-  v8::{{interface_name}}::Contents v8_contents = v8buffer->Externalize();
-  WTF::ArrayBufferContents::DataHandle data(v8_contents.Data(),
-                                            v8_contents.ByteLength(),
-                                            v8_contents.Deleter(),
-                                            v8_contents.DeleterData());
-  WTF::ArrayBufferContents contents(std::move(data), WTF::ArrayBufferContents::k{% if interface_name == 'ArrayBuffer' %}Not{% endif %}Shared);
+  auto backing_store = v8buffer->GetBackingStore();
+  v8buffer->Externalize(backing_store);
+  ArrayBufferContents contents(std::move(backing_store));
   {{cpp_class}}* buffer = {{cpp_class}}::Create(contents);
   v8::Local<v8::Object> associatedWrapper = buffer->AssociateWithWrapper(v8::Isolate::GetCurrent(), buffer->GetWrapperTypeInfo(), object);
   DCHECK(associatedWrapper == object);

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/download/download_shelf.h"
 
+#include <utility>
+
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/location.h"
@@ -24,6 +26,7 @@
 #include "chrome/browser/offline_items_collection/offline_content_aggregator_factory.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -93,7 +96,7 @@ void GetDownload(Profile* profile,
     std::move(callback).Run(std::move(model));
   } else {
     offline_items_collection::OfflineContentAggregator* aggregator =
-        OfflineContentAggregatorFactory::GetForBrowserContext(profile);
+        OfflineContentAggregatorFactory::GetForKey(profile->GetProfileKey());
     if (!aggregator)
       return;
 
@@ -102,13 +105,10 @@ void GetDownload(Profile* profile,
   }
 }
 
-} // namespace
+}  // namespace
 
 DownloadShelf::DownloadShelf()
-    : should_show_on_unhide_(false),
-      is_hidden_(false),
-      weak_ptr_factory_(this) {
-}
+    : should_show_on_unhide_(false), is_hidden_(false) {}
 
 DownloadShelf::~DownloadShelf() {}
 

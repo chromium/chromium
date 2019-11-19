@@ -15,10 +15,10 @@
 #include "base/command_line.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ptr_util.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/simple_test_clock.h"
+#include "base/test/task_environment.h"
 #include "base/timer/timer.h"
 #include "google_apis/gcm/base/fake_encryptor.h"
 #include "google_apis/gcm/base/mcs_util.h"
@@ -90,10 +90,15 @@ class TestMCSClient : public MCSClient {
   TestMCSClient(base::Clock* clock,
                 ConnectionFactory* connection_factory,
                 GCMStore* gcm_store,
+                scoped_refptr<base::SequencedTaskRunner> io_task_runner,
                 gcm::GCMStatsRecorder* recorder)
-    : MCSClient("", clock, connection_factory, gcm_store, recorder),
-      next_id_(0) {
-  }
+      : MCSClient("",
+                  clock,
+                  connection_factory,
+                  gcm_store,
+                  io_task_runner,
+                  recorder),
+        next_id_(0) {}
 
   std::string GetNextPersistentId() override {
     return base::NumberToString(++next_id_);
@@ -168,7 +173,7 @@ class MCSClientTest : public testing::Test {
   base::SimpleTestClock clock_;
 
   base::ScopedTempDir temp_directory_;
-  base::MessageLoop message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   std::unique_ptr<base::RunLoop> run_loop_;
   std::unique_ptr<GCMStore> gcm_store_;
 
@@ -204,13 +209,12 @@ void MCSClientTest::SetUp() {
 }
 
 void MCSClientTest::BuildMCSClient() {
-  gcm_store_.reset(
-      new GCMStoreImpl(temp_directory_.GetPath(), message_loop_.task_runner(),
-                       base::WrapUnique<Encryptor>(new FakeEncryptor)));
-  mcs_client_.reset(new TestMCSClient(&clock_,
-                                      &connection_factory_,
-                                      gcm_store_.get(),
-                                      &recorder_));
+  gcm_store_.reset(new GCMStoreImpl(
+      temp_directory_.GetPath(), task_environment_.GetMainThreadTaskRunner(),
+      base::WrapUnique<Encryptor>(new FakeEncryptor)));
+  mcs_client_.reset(
+      new TestMCSClient(&clock_, &connection_factory_, gcm_store_.get(),
+                        base::ThreadTaskRunnerHandle::Get(), &recorder_));
 }
 
 void MCSClientTest::InitializeClient() {

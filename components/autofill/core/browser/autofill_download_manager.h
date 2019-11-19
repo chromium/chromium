@@ -17,6 +17,7 @@
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/variations/variations_http_header_provider.h"
@@ -30,6 +31,9 @@ namespace autofill {
 
 class AutofillDriver;
 class FormStructure;
+class LogManager;
+
+const size_t kMaxAPIQueryGetSize = 10240;  // 10 KiB
 
 // A helper to make sure that tests which modify the set of active autofill
 // experiments do not interfere with one another.
@@ -79,7 +83,8 @@ class AutofillDownloadManager {
   //   effect if using API.
   AutofillDownloadManager(AutofillDriver* driver,
                           Observer* observer,
-                          const std::string& api_key);
+                          const std::string& api_key,
+                          LogManager* log_manager);
   virtual ~AutofillDownloadManager();
 
   // Starts a query request to Autofill servers. The observer is called with the
@@ -113,6 +118,12 @@ class AutofillDownloadManager {
   // download manager from uploading a multiple votes for a given form/event
   // pair.
   static void ClearUploadHistory(PrefService* pref_service);
+
+ protected:
+  // Gets the length of the payload from request data. Used to simulate
+  // different payload sizes when testing without the need for data. Do not use
+  // this when the length is needed to read/write a buffer.
+  virtual size_t GetPayloadLength(base::StringPiece payload) const;
 
  private:
   friend class AutofillDownloadManagerTest;
@@ -185,6 +196,9 @@ class AutofillDownloadManager {
   // Callback function to retrieve API key.
   const std::string api_key_;
 
+  // Access to leave log messages for chrome://autofill-internals, may be null.
+  LogManager* const log_manager_;  // WEAK
+
   // The autofill server URL root: scheme://host[:port]/path excluding the
   // final path component for the request and the query params.
   const GURL autofill_server_url_;
@@ -205,7 +219,7 @@ class AutofillDownloadManager {
   // Used for exponential backoff of requests.
   net::BackoffEntry loader_backoff_;
 
-  base::WeakPtrFactory<AutofillDownloadManager> weak_factory_;
+  base::WeakPtrFactory<AutofillDownloadManager> weak_factory_{this};
 };
 
 }  // namespace autofill

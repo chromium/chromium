@@ -11,9 +11,9 @@
 
 #include "components/prefs/pref_change_registrar.h"
 #import "ios/chrome/browser/net/connection_type_observer_bridge.h"
-#include "ios/web/public/referrer.h"
-#import "ios/web/public/web_state/ui/crw_native_content_provider.h"
-#import "ios/web/public/web_state/web_state_delegate_bridge.h"
+#import "ios/web/public/deprecated/crw_native_content_provider.h"
+#include "ios/web/public/navigation/referrer.h"
+#import "ios/web/public/web_state_delegate_bridge.h"
 #import "net/url_request/url_fetcher.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
@@ -31,13 +31,16 @@ class WebState;
 // PreloadController owns and manages a Tab that contains a prerendered
 // webpage.  This class contains methods to queue and cancel prerendering for a
 // given URL as well as a method to return the prerendered Tab.
-@interface PreloadController : NSObject<CRWNativeContentProvider,
-                                        CRWWebStateDelegate,
-                                        CRConnectionTypeObserverBridge>
+@interface PreloadController : NSObject
+
+@property(nonatomic, weak) id<PreloadControllerDelegate> delegate;
+
 // The URL of the currently prerendered Tab.  Empty if there is no prerendered
 // Tab.
 @property(nonatomic, readonly, assign) GURL prerenderedURL;
-@property(nonatomic, weak) id<PreloadControllerDelegate> delegate;
+
+// Whether prerendering is currently enabled.
+@property(nonatomic, readonly, getter=isEnabled) BOOL enabled;
 
 // Designated initializer.
 - (instancetype)initWithBrowserState:(ios::ChromeBrowserState*)browserState;

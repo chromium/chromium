@@ -12,135 +12,163 @@
 
 namespace policy {
 
-PrintingAllowedColorModesPolicyHandler::PrintingAllowedColorModesPolicyHandler()
-    : TypeCheckingPolicyHandler(key::kPrintingAllowedColorModes,
-                                base::Value::Type::STRING) {}
+template <class Mode>
+PrintingEnumPolicyHandler<Mode>::PrintingEnumPolicyHandler(
+    const char* policy_name,
+    const char* pref_name,
+    const base::flat_map<std::string, Mode>& policy_value_to_mode)
+    : TypeCheckingPolicyHandler(policy_name, base::Value::Type::STRING),
+      policy_name_(policy_name),
+      pref_name_(pref_name),
+      policy_value_to_mode_(policy_value_to_mode) {}
 
-PrintingAllowedColorModesPolicyHandler::
-    ~PrintingAllowedColorModesPolicyHandler() {}
+template <class Mode>
+PrintingEnumPolicyHandler<Mode>::~PrintingEnumPolicyHandler() = default;
 
-bool PrintingAllowedColorModesPolicyHandler::GetValue(
-    const PolicyMap& policies,
-    PolicyErrorMap* errors,
-    printing::ColorModeRestriction* result) {
-  const base::Value* value;
-  if (CheckAndGetValue(policies, errors, &value) && value) {
-    base::Optional<printing::ColorModeRestriction> mode =
-        printing::GetAllowedColorModesForName(value->GetString());
-    if (mode.has_value()) {
-      if (result)
-        *result = mode.value();
-
-      return true;
-    } else if (errors) {
-      errors->AddError(key::kPrintingAllowedColorModes,
-                       IDS_POLICY_VALUE_FORMAT_ERROR);
-    }
-  }
-  return false;
-}
-
-bool PrintingAllowedColorModesPolicyHandler::CheckPolicySettings(
+template <class Mode>
+bool PrintingEnumPolicyHandler<Mode>::CheckPolicySettings(
     const PolicyMap& policies,
     PolicyErrorMap* errors) {
   return GetValue(policies, errors, nullptr);
 }
 
-void PrintingAllowedColorModesPolicyHandler::ApplyPolicySettings(
+template <class Mode>
+void PrintingEnumPolicyHandler<Mode>::ApplyPolicySettings(
     const PolicyMap& policies,
     PrefValueMap* prefs) {
-  printing::ColorModeRestriction value;
+  Mode value;
   if (GetValue(policies, nullptr, &value)) {
-    prefs->SetInteger(prefs::kPrintingAllowedColorModes,
-                      static_cast<int>(value));
+    prefs->SetInteger(pref_name_, static_cast<int>(value));
   }
 }
+
+template <class Mode>
+bool PrintingEnumPolicyHandler<Mode>::GetValue(const PolicyMap& policies,
+                                               PolicyErrorMap* errors,
+                                               Mode* result) {
+  const base::Value* value;
+  if (CheckAndGetValue(policies, errors, &value) && value) {
+    base::Optional<Mode> mode;
+    auto it = policy_value_to_mode_.find(value->GetString());
+    if (it != policy_value_to_mode_.end())
+      mode = it->second;
+    if (mode.has_value()) {
+      if (result)
+        *result = mode.value();
+      return true;
+    }
+    if (errors)
+      errors->AddError(policy_name_, IDS_POLICY_VALUE_FORMAT_ERROR);
+  }
+  return false;
+}
+
+PrintingAllowedColorModesPolicyHandler::PrintingAllowedColorModesPolicyHandler()
+    : PrintingEnumPolicyHandler<printing::ColorModeRestriction>(
+          key::kPrintingAllowedColorModes,
+          prefs::kPrintingAllowedColorModes,
+          {
+              {"any", printing::ColorModeRestriction::kUnset},
+              {"monochrome", printing::ColorModeRestriction::kMonochrome},
+              {"color", printing::ColorModeRestriction::kColor},
+          }) {}
+
+PrintingAllowedColorModesPolicyHandler::
+    ~PrintingAllowedColorModesPolicyHandler() = default;
 
 PrintingAllowedDuplexModesPolicyHandler::
     PrintingAllowedDuplexModesPolicyHandler()
-    : TypeCheckingPolicyHandler(key::kPrintingAllowedDuplexModes,
-                                base::Value::Type::STRING) {}
+    : PrintingEnumPolicyHandler<printing::DuplexModeRestriction>(
+          key::kPrintingAllowedDuplexModes,
+          prefs::kPrintingAllowedDuplexModes,
+          {
+              {"any", printing::DuplexModeRestriction::kUnset},
+              {"simplex", printing::DuplexModeRestriction::kSimplex},
+              {"duplex", printing::DuplexModeRestriction::kDuplex},
+          }) {}
 
 PrintingAllowedDuplexModesPolicyHandler::
-    ~PrintingAllowedDuplexModesPolicyHandler() {}
-
-bool PrintingAllowedDuplexModesPolicyHandler::GetValue(
-    const PolicyMap& policies,
-    PolicyErrorMap* errors,
-    printing::DuplexModeRestriction* result) {
-  const base::Value* value;
-  if (CheckAndGetValue(policies, errors, &value) && value) {
-    base::Optional<printing::DuplexModeRestriction> mode =
-        printing::GetAllowedDuplexModesForName(value->GetString());
-    if (mode.has_value()) {
-      if (result)
-        *result = mode.value();
-
-      return true;
-    } else if (errors) {
-      errors->AddError(key::kPrintingAllowedDuplexModes,
-                       IDS_POLICY_VALUE_FORMAT_ERROR);
-    }
-  }
-  return false;
-}
-
-bool PrintingAllowedDuplexModesPolicyHandler::CheckPolicySettings(
-    const PolicyMap& policies,
-    PolicyErrorMap* errors) {
-  return GetValue(policies, errors, nullptr);
-}
-
-void PrintingAllowedDuplexModesPolicyHandler::ApplyPolicySettings(
-    const PolicyMap& policies,
-    PrefValueMap* prefs) {
-  printing::DuplexModeRestriction value;
-  if (GetValue(policies, nullptr, &value)) {
-    prefs->SetInteger(prefs::kPrintingAllowedDuplexModes,
-                      static_cast<int>(value));
-  }
-}
+    ~PrintingAllowedDuplexModesPolicyHandler() = default;
 
 PrintingAllowedPinModesPolicyHandler::PrintingAllowedPinModesPolicyHandler()
-    : TypeCheckingPolicyHandler(key::kPrintingAllowedPinModes,
-                                base::Value::Type::STRING) {}
+    : PrintingEnumPolicyHandler<printing::PinModeRestriction>(
+          key::kPrintingAllowedPinModes,
+          prefs::kPrintingAllowedPinModes,
+          {
+              {"any", printing::PinModeRestriction::kUnset},
+              {"pin", printing::PinModeRestriction::kPin},
+              {"no_pin", printing::PinModeRestriction::kNoPin},
+          }) {}
 
-PrintingAllowedPinModesPolicyHandler::~PrintingAllowedPinModesPolicyHandler() {}
+PrintingAllowedPinModesPolicyHandler::~PrintingAllowedPinModesPolicyHandler() =
+    default;
 
-bool PrintingAllowedPinModesPolicyHandler::GetValue(
-    const PolicyMap& policies,
-    PolicyErrorMap* errors,
-    printing::PinModeRestriction* result) {
-  const base::Value* value;
-  if (CheckAndGetValue(policies, errors, &value) && value) {
-    base::Optional<printing::PinModeRestriction> mode =
-        printing::GetAllowedPinModesForName(value->GetString());
-    if (mode.has_value()) {
-      if (result)
-        *result = mode.value();
+PrintingAllowedBackgroundGraphicsModesPolicyHandler::
+    PrintingAllowedBackgroundGraphicsModesPolicyHandler()
+    : PrintingEnumPolicyHandler<printing::BackgroundGraphicsModeRestriction>(
+          key::kPrintingAllowedBackgroundGraphicsModes,
+          prefs::kPrintingAllowedBackgroundGraphicsModes,
+          {
+              {"any", printing::BackgroundGraphicsModeRestriction::kUnset},
+              {"enabled",
+               printing::BackgroundGraphicsModeRestriction::kEnabled},
+              {"disabled",
+               printing::BackgroundGraphicsModeRestriction::kDisabled},
+          }) {}
 
-      return true;
-    } else if (errors) {
-      errors->AddError(key::kPrintingAllowedPinModes,
-                       IDS_POLICY_VALUE_FORMAT_ERROR);
-    }
-  }
-  return false;
-}
+PrintingAllowedBackgroundGraphicsModesPolicyHandler::
+    ~PrintingAllowedBackgroundGraphicsModesPolicyHandler() = default;
 
-bool PrintingAllowedPinModesPolicyHandler::CheckPolicySettings(
-    const PolicyMap& policies,
-    PolicyErrorMap* errors) {
-  return GetValue(policies, errors, nullptr);
-}
+PrintingColorDefaultPolicyHandler::PrintingColorDefaultPolicyHandler()
+    : PrintingEnumPolicyHandler<printing::ColorModeRestriction>(
+          key::kPrintingColorDefault,
+          prefs::kPrintingColorDefault,
+          {
+              {"monochrome", printing::ColorModeRestriction::kMonochrome},
+              {"color", printing::ColorModeRestriction::kColor},
+          }) {}
 
-void PrintingAllowedPinModesPolicyHandler::ApplyPolicySettings(
-    const PolicyMap& policies,
-    PrefValueMap* prefs) {
-  printing::PinModeRestriction value;
-  if (GetValue(policies, nullptr, &value))
-    prefs->SetInteger(prefs::kPrintingAllowedPinModes, static_cast<int>(value));
-}
+PrintingColorDefaultPolicyHandler::~PrintingColorDefaultPolicyHandler() =
+    default;
+
+PrintingDuplexDefaultPolicyHandler::PrintingDuplexDefaultPolicyHandler()
+    : PrintingEnumPolicyHandler<printing::DuplexModeRestriction>(
+          key::kPrintingDuplexDefault,
+          prefs::kPrintingDuplexDefault,
+          {
+              {"simplex", printing::DuplexModeRestriction::kSimplex},
+              {"long-edge", printing::DuplexModeRestriction::kLongEdge},
+              {"short-edge", printing::DuplexModeRestriction::kShortEdge},
+          }) {}
+
+PrintingDuplexDefaultPolicyHandler::~PrintingDuplexDefaultPolicyHandler() =
+    default;
+
+PrintingPinDefaultPolicyHandler::PrintingPinDefaultPolicyHandler()
+    : PrintingEnumPolicyHandler<printing::PinModeRestriction>(
+          key::kPrintingPinDefault,
+          prefs::kPrintingPinDefault,
+          {
+              {"pin", printing::PinModeRestriction::kPin},
+              {"no_pin", printing::PinModeRestriction::kNoPin},
+          }) {}
+
+PrintingPinDefaultPolicyHandler::~PrintingPinDefaultPolicyHandler() = default;
+
+PrintingBackgroundGraphicsDefaultPolicyHandler::
+    PrintingBackgroundGraphicsDefaultPolicyHandler()
+    : PrintingEnumPolicyHandler<printing::BackgroundGraphicsModeRestriction>(
+          key::kPrintingBackgroundGraphicsDefault,
+          prefs::kPrintingBackgroundGraphicsDefault,
+          {
+              {"enabled",
+               printing::BackgroundGraphicsModeRestriction::kEnabled},
+              {"disabled",
+               printing::BackgroundGraphicsModeRestriction::kDisabled},
+          }) {}
+
+PrintingBackgroundGraphicsDefaultPolicyHandler::
+    ~PrintingBackgroundGraphicsDefaultPolicyHandler() = default;
 
 PrintingAllowedPageSizesPolicyHandler::PrintingAllowedPageSizesPolicyHandler()
     : ListPolicyHandler(key::kPrintingAllowedPageSizes,
@@ -166,133 +194,11 @@ void PrintingAllowedPageSizesPolicyHandler::ApplyList(
                   base::Value::FromUniquePtrValue(std::move(filtered_list)));
 }
 
-PrintingColorDefaultPolicyHandler::PrintingColorDefaultPolicyHandler()
-    : TypeCheckingPolicyHandler(key::kPrintingColorDefault,
-                                base::Value::Type::STRING) {}
-
-PrintingColorDefaultPolicyHandler::~PrintingColorDefaultPolicyHandler() {}
-
-bool PrintingColorDefaultPolicyHandler::GetValue(
-    const PolicyMap& policies,
-    PolicyErrorMap* errors,
-    printing::ColorModeRestriction* result) {
-  const base::Value* value;
-  if (CheckAndGetValue(policies, errors, &value) && value) {
-    base::Optional<printing::ColorModeRestriction> mode =
-        printing::GetColorModeForName(value->GetString());
-    if (mode.has_value()) {
-      if (result)
-        *result = mode.value();
-
-      return true;
-    } else if (errors) {
-      errors->AddError(key::kPrintingColorDefault,
-                       IDS_POLICY_VALUE_FORMAT_ERROR);
-    }
-  }
-  return false;
-}
-
-bool PrintingColorDefaultPolicyHandler::CheckPolicySettings(
-    const PolicyMap& policies,
-    PolicyErrorMap* errors) {
-  return GetValue(policies, errors, nullptr);
-}
-
-void PrintingColorDefaultPolicyHandler::ApplyPolicySettings(
-    const PolicyMap& policies,
-    PrefValueMap* prefs) {
-  printing::ColorModeRestriction value;
-  if (GetValue(policies, nullptr, &value))
-    prefs->SetInteger(prefs::kPrintingColorDefault, static_cast<int>(value));
-}
-
-PrintingDuplexDefaultPolicyHandler::PrintingDuplexDefaultPolicyHandler()
-    : TypeCheckingPolicyHandler(key::kPrintingDuplexDefault,
-                                base::Value::Type::STRING) {}
-
-PrintingDuplexDefaultPolicyHandler::~PrintingDuplexDefaultPolicyHandler() {}
-
-bool PrintingDuplexDefaultPolicyHandler::GetValue(
-    const PolicyMap& policies,
-    PolicyErrorMap* errors,
-    printing::DuplexModeRestriction* result) {
-  const base::Value* value;
-  if (CheckAndGetValue(policies, errors, &value) && value) {
-    base::Optional<printing::DuplexModeRestriction> mode =
-        printing::GetDuplexModeForName(value->GetString());
-    if (mode.has_value()) {
-      if (result)
-        *result = mode.value();
-
-      return true;
-    } else if (errors) {
-      errors->AddError(key::kPrintingDuplexDefault,
-                       IDS_POLICY_VALUE_FORMAT_ERROR);
-    }
-  }
-  return false;
-}
-
-bool PrintingDuplexDefaultPolicyHandler::CheckPolicySettings(
-    const PolicyMap& policies,
-    PolicyErrorMap* errors) {
-  return GetValue(policies, errors, nullptr);
-}
-
-void PrintingDuplexDefaultPolicyHandler::ApplyPolicySettings(
-    const PolicyMap& policies,
-    PrefValueMap* prefs) {
-  printing::DuplexModeRestriction value;
-  if (GetValue(policies, nullptr, &value))
-    prefs->SetInteger(prefs::kPrintingDuplexDefault, static_cast<int>(value));
-}
-
-PrintingPinDefaultPolicyHandler::PrintingPinDefaultPolicyHandler()
-    : TypeCheckingPolicyHandler(key::kPrintingPinDefault,
-                                base::Value::Type::STRING) {}
-
-PrintingPinDefaultPolicyHandler::~PrintingPinDefaultPolicyHandler() {}
-
-bool PrintingPinDefaultPolicyHandler::GetValue(
-    const PolicyMap& policies,
-    PolicyErrorMap* errors,
-    printing::PinModeRestriction* result) {
-  const base::Value* value;
-  if (CheckAndGetValue(policies, errors, &value) && value) {
-    base::Optional<printing::PinModeRestriction> mode =
-        printing::GetPinModeForName(value->GetString());
-    if (mode.has_value()) {
-      if (result)
-        *result = mode.value();
-
-      return true;
-    } else if (errors) {
-      errors->AddError(key::kPrintingPinDefault, IDS_POLICY_VALUE_FORMAT_ERROR);
-    }
-  }
-  return false;
-}
-
-bool PrintingPinDefaultPolicyHandler::CheckPolicySettings(
-    const PolicyMap& policies,
-    PolicyErrorMap* errors) {
-  return GetValue(policies, errors, nullptr);
-}
-
-void PrintingPinDefaultPolicyHandler::ApplyPolicySettings(
-    const PolicyMap& policies,
-    PrefValueMap* prefs) {
-  printing::PinModeRestriction value;
-  if (GetValue(policies, nullptr, &value))
-    prefs->SetInteger(prefs::kPrintingPinDefault, static_cast<int>(value));
-}
-
 PrintingSizeDefaultPolicyHandler::PrintingSizeDefaultPolicyHandler()
     : TypeCheckingPolicyHandler(key::kPrintingSizeDefault,
                                 base::Value::Type::DICTIONARY) {}
 
-PrintingSizeDefaultPolicyHandler::~PrintingSizeDefaultPolicyHandler() {}
+PrintingSizeDefaultPolicyHandler::~PrintingSizeDefaultPolicyHandler() = default;
 
 bool PrintingSizeDefaultPolicyHandler::CheckIntSubkey(const base::Value* dict,
                                                       const std::string& key,

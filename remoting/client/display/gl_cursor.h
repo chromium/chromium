@@ -62,7 +62,7 @@ class GlCursor : public Drawable {
   float cursor_y_ = 0;
 
   base::ThreadChecker thread_checker_;
-  base::WeakPtrFactory<Drawable> weak_factory_;
+  base::WeakPtrFactory<Drawable> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(GlCursor);
 };

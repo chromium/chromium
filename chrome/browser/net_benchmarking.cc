@@ -18,7 +18,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
 using content::BrowserThread;
@@ -51,11 +51,12 @@ NetBenchmarking::~NetBenchmarking() {
 void NetBenchmarking::Create(
     base::WeakPtr<predictors::LoadingPredictor> loading_predictor,
     int render_process_id,
-    chrome::mojom::NetBenchmarkingRequest request) {
+    mojo::PendingReceiver<chrome::mojom::NetBenchmarking> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  mojo::MakeStrongBinding(std::make_unique<NetBenchmarking>(
-                              std::move(loading_predictor), render_process_id),
-                          std::move(request));
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<NetBenchmarking>(std::move(loading_predictor),
+                                        render_process_id),
+      std::move(receiver));
 }
 
 // static

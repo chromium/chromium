@@ -11,7 +11,7 @@
 #include <string>
 
 #include "base/format_macros.h"
-#include "base/hash.h"
+#include "base/hash/hash.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "components/viz/common/viz_common_export.h"
@@ -71,6 +71,9 @@ class VIZ_COMMON_EXPORT SurfaceId {
   // Returns the smallest valid SurfaceId with the same FrameSinkId and embed
   // token as this SurfaceId.
   SurfaceId ToSmallestId() const;
+
+  // Returns whether this SurfaceId has the same embed token as |other|.
+  bool HasSameEmbedTokenAs(const SurfaceId& other) const;
 
   bool operator==(const SurfaceId& other) const {
     return frame_sink_id_ == other.frame_sink_id_ &&

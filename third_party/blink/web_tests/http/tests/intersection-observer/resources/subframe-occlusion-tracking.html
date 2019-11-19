@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<div id='target'>Hello, world!</div>
+
+<script>
+let observer = null;
+let trackVisibility = true;
+
+addEventListener("message", event => {
+  if (observer) {
+    observer.disconnect();
+    observer = null;
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        event.source.postMessage({expected: false}, "*");
+      });
+    });
+  } else {
+    observer = new IntersectionObserver(
+      entries => {}, {trackVisibility: trackVisibility, delay: 100});
+    observer.observe(document.getElementById('target'));
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        event.source.postMessage({expected: trackVisibility}, "*");
+        trackVisibility = !trackVisibility;
+      });
+    });
+  }
+});
+</script>

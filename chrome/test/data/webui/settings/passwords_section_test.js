@@ -66,75 +66,12 @@ cr.define('settings_passwords_section', function() {
   }
 
   /**
-   * Helper method used to create a password section for the given lists.
-   * @param {!PasswordManagerProxy} passwordManager
-   * @param {!Array<!chrome.passwordsPrivate.PasswordUiEntry>} passwordList
-   * @param {!Array<!chrome.passwordsPrivate.ExceptionEntry>} exceptionList
-   * @return {!Object}
-   * @private
+   * Extracts the first password-list-item in the a password-section element.
+   * @param {!Element} passwordsSection
    */
-  function createPasswordsSection(
-      passwordManager, passwordList, exceptionList) {
-    // Override the PasswordManagerProxy data for testing.
-    passwordManager.data.passwords = passwordList;
-    passwordManager.data.exceptions = exceptionList;
-
-    // Create a passwords-section to use for testing.
-    const passwordsSection = document.createElement('passwords-section');
-    document.body.appendChild(passwordsSection);
-    Polymer.dom.flush();
-    return passwordsSection;
-  }
-
-  /**
-   * Helper method used to create a password list item.
-   * @param {!chrome.passwordsPrivate.PasswordUiEntry} passwordItem
-   * @return {!Object}
-   * @private
-   */
-  function createPasswordListItem(passwordItem) {
-    const passwordListItem = document.createElement('password-list-item');
-    passwordListItem.item = {entry: passwordItem, password: ''};
-    document.body.appendChild(passwordListItem);
-    Polymer.dom.flush();
-    return passwordListItem;
-  }
-
-  /**
-   * Helper method used to create a password editing dialog.
-   * @param {!chrome.passwordsPrivate.PasswordUiEntry} passwordItem
-   * @return {!Object}
-   * @private
-   */
-  function createPasswordDialog(passwordItem) {
-    const passwordDialog = document.createElement('password-edit-dialog');
-    passwordDialog.item = {entry: passwordItem, password: ''};
-    document.body.appendChild(passwordDialog);
-    Polymer.dom.flush();
-    return passwordDialog;
-  }
-
-  /**
-   * Helper method used to create an export passwords dialog.
-   * @return {!Object}
-   * @private
-   */
-  function createExportPasswordsDialog(passwordManager) {
-    passwordManager.requestExportProgressStatus = callback => {
-      callback(chrome.passwordsPrivate.ExportProgressStatus.NOT_STARTED);
-    };
-    passwordManager.addPasswordsFileExportProgressListener = callback => {
-      passwordManager.progressCallback = callback;
-    };
-    passwordManager.removePasswordsFileExportProgressListener = () => {};
-    passwordManager.exportPasswords = (callback) => {
-      callback();
-    };
-
-    const dialog = document.createElement('passwords-export-dialog');
-    document.body.appendChild(dialog);
-    Polymer.dom.flush();
-    return dialog;
+  function getFirstPasswordListItem(passwordsSection) {
+    // The first child is a template, skip and get the real 'first child'.
+    return Polymer.dom(passwordsSection.$.passwordList).children[1];
   }
 
   /**
@@ -169,17 +106,24 @@ cr.define('settings_passwords_section', function() {
     /** @type {TestPasswordManagerProxy} */
     let passwordManager = null;
 
+    /** @type {PasswordSectionElementFactory} */
+    let elementFactory = null;
+
     setup(function() {
       PolymerTest.clearBody();
       // Override the PasswordManagerImpl for testing.
       passwordManager = new TestPasswordManagerProxy();
       PasswordManagerImpl.instance_ = passwordManager;
+      elementFactory = new PasswordSectionElementFactory(document);
     });
 
     test('testPasswordsExtensionIndicator', function() {
       // Initialize with dummy prefs.
       const element = document.createElement('passwords-section');
-      element.prefs = {credentials_enable_service: {}};
+      element.prefs = {
+        credentials_enable_service: {},
+        profile: {password_manager_leak_detection: {}},
+      };
       document.body.appendChild(element);
 
       assertFalse(!!element.$$('#passwordsExtensionIndicator'));
@@ -190,7 +134,8 @@ cr.define('settings_passwords_section', function() {
     });
 
     test('verifyNoSavedPasswords', function() {
-      const passwordsSection = createPasswordsSection(passwordManager, [], []);
+      const passwordsSection =
+          elementFactory.createPasswordsSection(passwordManager, [], []);
 
       validatePasswordList(passwordsSection.$.passwordList, []);
 
@@ -208,8 +153,8 @@ cr.define('settings_passwords_section', function() {
         FakeDataMaker.passwordEntry('site2.com', 'luigi', 8),
       ];
 
-      const passwordsSection =
-          createPasswordsSection(passwordManager, passwordList, []);
+      const passwordsSection = elementFactory.createPasswordsSection(
+          passwordManager, passwordList, []);
 
       // Assert that the data is passed into the iron list. If this fails,
       // then other expectations will also fail.
@@ -225,14 +170,14 @@ cr.define('settings_passwords_section', function() {
 
     // Test verifies that removing a password will update the elements.
     test('verifyPasswordListRemove', function() {
-      let passwordList = [
+      const passwordList = [
         FakeDataMaker.passwordEntry('anotherwebsite.com', 'luigi', 1, 0),
         FakeDataMaker.passwordEntry('longwebsite.com', 'peach', 7, 1),
         FakeDataMaker.passwordEntry('website.com', 'mario', 70, 2)
       ];
 
-      const passwordsSection =
-          createPasswordsSection(passwordManager, passwordList, []);
+      const passwordsSection = elementFactory.createPasswordsSection(
+          passwordManager, passwordList, []);
 
       validatePasswordList(passwordsSection.$.passwordList, passwordList);
       // Simulate 'longwebsite.com' being removed from the list.
@@ -251,13 +196,13 @@ cr.define('settings_passwords_section', function() {
 
     // Test verifies that adding a password will update the elements.
     test('verifyPasswordListAdd', function() {
-      let passwordList = [
+      const passwordList = [
         FakeDataMaker.passwordEntry('anotherwebsite.com', 'luigi', 1, 0),
         FakeDataMaker.passwordEntry('longwebsite.com', 'peach', 7, 1),
       ];
 
-      const passwordsSection =
-          createPasswordsSection(passwordManager, passwordList, []);
+      const passwordsSection = elementFactory.createPasswordsSection(
+          passwordManager, passwordList, []);
 
       validatePasswordList(passwordsSection.$.passwordList, passwordList);
       // Simulate 'website.com' being added to the list.
@@ -273,7 +218,8 @@ cr.define('settings_passwords_section', function() {
     // Test verifies that removing one out of two passwords for the same website
     // will update the elements.
     test('verifyPasswordListRemoveSameWebsite', function() {
-      const passwordsSection = createPasswordsSection(passwordManager, [], []);
+      const passwordsSection =
+          elementFactory.createPasswordsSection(passwordManager, [], []);
 
       // Set-up initial list.
       let passwordList = [
@@ -313,12 +259,10 @@ cr.define('settings_passwords_section', function() {
         FakeDataMaker.passwordEntry('six', 'one', 6),
       ];
 
-      const passwordsSection =
-          createPasswordsSection(passwordManager, passwordList, []);
+      const passwordsSection = elementFactory.createPasswordsSection(
+          passwordManager, passwordList, []);
 
-      // The first child is a template, skip and get the real 'first child'.
-      const firstNode =
-          Polymer.dom(passwordsSection.$.passwordList).children[1];
+      const firstNode = getFirstPasswordListItem(passwordsSection);
       assert(firstNode);
       const firstPassword = passwordList[0];
 
@@ -347,8 +291,8 @@ cr.define('settings_passwords_section', function() {
         FakeDataMaker.passwordEntry('six-show.com', 'one', 6),
       ];
 
-      const passwordsSection =
-          createPasswordsSection(passwordManager, passwordList, []);
+      const passwordsSection = elementFactory.createPasswordsSection(
+          passwordManager, passwordList, []);
       passwordsSection.filter = 'SHow';
       Polymer.dom.flush();
 
@@ -363,7 +307,7 @@ cr.define('settings_passwords_section', function() {
     });
 
     test('verifyFilterPasswordsWithRemoval', function() {
-      let passwordList = [
+      const passwordList = [
         FakeDataMaker.passwordEntry('one.com', 'SHOW', 5, 0),
         FakeDataMaker.passwordEntry('two.com', 'shower', 3, 1),
         FakeDataMaker.passwordEntry('three.com/show', 'four', 1, 2),
@@ -372,8 +316,8 @@ cr.define('settings_passwords_section', function() {
         FakeDataMaker.passwordEntry('six-show.com', 'one', 6, 5),
       ];
 
-      const passwordsSection =
-          createPasswordsSection(passwordManager, passwordList, []);
+      const passwordsSection = elementFactory.createPasswordsSection(
+          passwordManager, passwordList, []);
       passwordsSection.filter = 'SHow';
       Polymer.dom.flush();
 
@@ -411,8 +355,8 @@ cr.define('settings_passwords_section', function() {
         FakeDataMaker.exceptionEntry('plus.google.comshow'),
       ];
 
-      const passwordsSection =
-          createPasswordsSection(passwordManager, [], exceptionList);
+      const passwordsSection = elementFactory.createPasswordsSection(
+          passwordManager, [], exceptionList);
       passwordsSection.filter = 'shOW';
       Polymer.dom.flush();
 
@@ -429,7 +373,8 @@ cr.define('settings_passwords_section', function() {
     });
 
     test('verifyNoPasswordExceptions', function() {
-      const passwordsSection = createPasswordsSection(passwordManager, [], []);
+      const passwordsSection =
+          elementFactory.createPasswordsSection(passwordManager, [], []);
 
       validateExceptionList(
           getDomRepeatChildren(passwordsSection.$.passwordExceptionsList), []);
@@ -447,8 +392,8 @@ cr.define('settings_passwords_section', function() {
         FakeDataMaker.exceptionEntry('plus.google.com'),
       ];
 
-      const passwordsSection =
-          createPasswordsSection(passwordManager, [], exceptionList);
+      const passwordsSection = elementFactory.createPasswordsSection(
+          passwordManager, [], exceptionList);
 
       validateExceptionList(
           getDomRepeatChildren(passwordsSection.$.passwordExceptionsList),
@@ -468,8 +413,8 @@ cr.define('settings_passwords_section', function() {
         FakeDataMaker.exceptionEntry('plus.google.com'),
       ];
 
-      const passwordsSection =
-          createPasswordsSection(passwordManager, [], exceptionList);
+      const passwordsSection = elementFactory.createPasswordsSection(
+          passwordManager, [], exceptionList);
 
       validateExceptionList(
           getDomRepeatChildren(passwordsSection.$.passwordExceptionsList),
@@ -499,8 +444,8 @@ cr.define('settings_passwords_section', function() {
         FakeDataMaker.exceptionEntry('plus.google.com'),
       ];
 
-      const passwordsSection =
-          createPasswordsSection(passwordManager, [], exceptionList);
+      const passwordsSection = elementFactory.createPasswordsSection(
+          passwordManager, [], exceptionList);
 
       const exceptions =
           getDomRepeatChildren(passwordsSection.$.passwordExceptionsList);
@@ -534,23 +479,23 @@ cr.define('settings_passwords_section', function() {
     test('verifyFederatedPassword', function() {
       const item = FakeDataMaker.passwordEntry('goo.gl', 'bart', 0);
       item.federationText = 'with chromium.org';
-      const passwordDialog = createPasswordDialog(item);
+      const passwordDialog = elementFactory.createPasswordEditDialog(item);
 
       Polymer.dom.flush();
 
       assertEquals(item.federationText, passwordDialog.$.passwordInput.value);
       // Text should be readable.
       assertEquals('text', passwordDialog.$.passwordInput.type);
-      assertTrue(passwordDialog.$.showPasswordButtonContainer.hidden);
+      assertTrue(passwordDialog.$.showPasswordButton.hidden);
     });
 
     test('showSavedPasswordEditDialog', function() {
       const PASSWORD = 'bAn@n@5';
       const item =
           FakeDataMaker.passwordEntry('goo.gl', 'bart', PASSWORD.length);
-      const passwordDialog = createPasswordDialog(item);
+      const passwordDialog = elementFactory.createPasswordEditDialog(item);
 
-      assertFalse(passwordDialog.$.showPasswordButtonContainer.hidden);
+      assertFalse(passwordDialog.$.showPasswordButton.hidden);
 
       passwordDialog.set('item.password', PASSWORD);
       Polymer.dom.flush();
@@ -558,14 +503,14 @@ cr.define('settings_passwords_section', function() {
       assertEquals(PASSWORD, passwordDialog.$.passwordInput.value);
       // Password should be visible.
       assertEquals('text', passwordDialog.$.passwordInput.type);
-      assertFalse(passwordDialog.$.showPasswordButtonContainer.hidden);
+      assertFalse(passwordDialog.$.showPasswordButton.hidden);
     });
 
     test('showSavedPasswordListItem', function() {
       const PASSWORD = 'bAn@n@5';
       const item =
           FakeDataMaker.passwordEntry('goo.gl', 'bart', PASSWORD.length);
-      const passwordListItem = createPasswordListItem(item);
+      const passwordListItem = elementFactory.createPasswordListItem(item);
       // Hidden passwords should be disabled.
       assertTrue(passwordListItem.$$('#password').disabled);
 
@@ -579,7 +524,7 @@ cr.define('settings_passwords_section', function() {
       assertFalse(passwordListItem.$$('#password').disabled);
 
       // Hide Password Button should be shown.
-      assertTrue(passwordListItem.$$('#showPasswordButtonContainer')
+      assertTrue(passwordListItem.$$('#showPasswordButton')
                      .classList.contains('icon-visibility-off'));
     });
 
@@ -587,7 +532,8 @@ cr.define('settings_passwords_section', function() {
     // password.
     test('onShowSavedPasswordEditDialog', function() {
       const expectedItem = FakeDataMaker.passwordEntry('goo.gl', 'bart', 8, 1);
-      const passwordDialog = createPasswordDialog(expectedItem);
+      const passwordDialog =
+          elementFactory.createPasswordEditDialog(expectedItem);
       assertEquals('', passwordDialog.item.password);
 
       passwordManager.setPlaintextPassword('password');
@@ -600,7 +546,8 @@ cr.define('settings_passwords_section', function() {
 
     test('onShowSavedPasswordListItem', function() {
       const expectedItem = FakeDataMaker.passwordEntry('goo.gl', 'bart', 8, 1);
-      const passwordListItem = createPasswordListItem(expectedItem);
+      const passwordListItem =
+          elementFactory.createPasswordListItem(expectedItem);
       assertEquals('', passwordListItem.item.password);
 
       passwordManager.setPlaintextPassword('password');
@@ -613,21 +560,20 @@ cr.define('settings_passwords_section', function() {
 
     test('closingPasswordsSectionHidesUndoToast', function(done) {
       const passwordEntry = FakeDataMaker.passwordEntry('goo.gl', 'bart', 1);
-      const passwordsSection =
-          createPasswordsSection(passwordManager, [passwordEntry], []);
+      const passwordsSection = elementFactory.createPasswordsSection(
+          passwordManager, [passwordEntry], []);
+      const toastManager = cr.toastManager.getInstance();
 
       // Click the remove button on the first password and assert that an undo
       // toast is shown.
-      const firstNode =
-          Polymer.dom(passwordsSection.$.passwordList).children[1];
-      firstNode.$$('#passwordMenu').click();
+      getFirstPasswordListItem(passwordsSection).$$('#passwordMenu').click();
       passwordsSection.$.menuRemovePassword.click();
-      assertTrue(passwordsSection.$.undoToast.open);
+      assertTrue(toastManager.isToastOpen);
 
       // Remove the passwords section from the DOM and check that this closes
       // the undo toast.
       document.body.removeChild(passwordsSection);
-      assertFalse(passwordsSection.$.undoToast.open);
+      assertFalse(toastManager.isToastOpen);
 
       done();
     });
@@ -637,8 +583,8 @@ cr.define('settings_passwords_section', function() {
       const passwordList = [
         FakeDataMaker.passwordEntry('googoo.com', 'Larry', 1),
       ];
-      const passwordsSection =
-          createPasswordsSection(passwordManager, passwordList, []);
+      const passwordsSection = elementFactory.createPasswordsSection(
+          passwordManager, passwordList, []);
 
       validatePasswordList(passwordsSection.$.passwordList, passwordList);
       assertFalse(passwordsSection.$.menuExportPassword.hidden);
@@ -649,8 +595,8 @@ cr.define('settings_passwords_section', function() {
     // passwords.
     test('noExportIfNoPasswords', function(done) {
       const passwordList = [];
-      const passwordsSection =
-          createPasswordsSection(passwordManager, passwordList, []);
+      const passwordsSection = elementFactory.createPasswordsSection(
+          passwordManager, passwordList, []);
 
       validatePasswordList(passwordsSection.$.passwordList, passwordList);
       assertTrue(passwordsSection.$.menuExportPassword.hidden);
@@ -663,8 +609,8 @@ cr.define('settings_passwords_section', function() {
       const passwordList = [
         FakeDataMaker.passwordEntry('googoo.com', 'Larry', 1),
       ];
-      const passwordsSection =
-          createPasswordsSection(passwordManager, passwordList, []);
+      const passwordsSection = elementFactory.createPasswordsSection(
+          passwordManager, passwordList, []);
 
       // The export dialog calls requestExportProgressStatus() when opening.
       passwordManager.requestExportProgressStatus = (callback) => {
@@ -675,9 +621,10 @@ cr.define('settings_passwords_section', function() {
       passwordsSection.$.menuExportPassword.click();
     });
 
-    // Test that tapping "Export passwords..." notifies the browser accordingly
+    // Test that tapping "Export passwords..." notifies the browser.
     test('startExport', function(done) {
-      const exportDialog = createExportPasswordsDialog(passwordManager);
+      const exportDialog =
+          elementFactory.createExportPasswordsDialog(passwordManager);
 
       passwordManager.exportPasswords = (callback) => {
         callback();
@@ -690,11 +637,12 @@ cr.define('settings_passwords_section', function() {
     // Test the export flow. If exporting is fast, we should skip the
     // in-progress view altogether.
     test('exportFlowFast', function(done) {
-      const exportDialog = createExportPasswordsDialog(passwordManager);
+      const exportDialog =
+          elementFactory.createExportPasswordsDialog(passwordManager);
       const progressCallback = passwordManager.progressCallback;
 
       // Use this to freeze the delayed progress bar and avoid flakiness.
-      let mockTimer = new MockTimer();
+      const mockTimer = new MockTimer();
       mockTimer.install();
 
       assertTrue(exportDialog.$$('#dialog_start').open);
@@ -717,11 +665,12 @@ cr.define('settings_passwords_section', function() {
 
     // The error view is shown when an error occurs.
     test('exportFlowError', function(done) {
-      const exportDialog = createExportPasswordsDialog(passwordManager);
+      const exportDialog =
+          elementFactory.createExportPasswordsDialog(passwordManager);
       const progressCallback = passwordManager.progressCallback;
 
       // Use this to freeze the delayed progress bar and avoid flakiness.
-      let mockTimer = new MockTimer();
+      const mockTimer = new MockTimer();
       mockTimer.install();
 
       assertTrue(exportDialog.$$('#dialog_start').open);
@@ -749,42 +698,50 @@ cr.define('settings_passwords_section', function() {
 
     // The error view allows to retry.
     test('exportFlowErrorRetry', function(done) {
-      const exportDialog = createExportPasswordsDialog(passwordManager);
+      const exportDialog =
+          elementFactory.createExportPasswordsDialog(passwordManager);
       const progressCallback = passwordManager.progressCallback;
-
       // Use this to freeze the delayed progress bar and avoid flakiness.
-      let mockTimer = new MockTimer();
-      mockTimer.install();
+      const mockTimer = new MockTimer();
 
-      exportDialog.$$('#exportPasswordsButton').click();
-      progressCallback(
-          {status: chrome.passwordsPrivate.ExportProgressStatus.IN_PROGRESS});
-      progressCallback({
-        status:
-            chrome.passwordsPrivate.ExportProgressStatus.FAILED_WRITE_FAILED,
-        folderName: 'tmp',
+      new Promise(resolve => {
+        mockTimer.install();
+
+        passwordManager.exportPasswords = resolve;
+        exportDialog.$$('#exportPasswordsButton').click();
+      }).then(() => {
+        // This wait allows the BlockingRequestManager to process the click if
+        // the test is running in ChromeOS.
+        progressCallback(
+            {status: chrome.passwordsPrivate.ExportProgressStatus.IN_PROGRESS});
+        progressCallback({
+          status:
+              chrome.passwordsPrivate.ExportProgressStatus.FAILED_WRITE_FAILED,
+          folderName: 'tmp',
+        });
+
+        Polymer.dom.flush();
+        // Test that the error dialog is shown.
+        assertTrue(exportDialog.$$('#dialog_error').open);
+        // Test that clicking retry will start a new export.
+        passwordManager.exportPasswords = (callback) => {
+          callback();
+          done();
+        };
+        exportDialog.$$('#tryAgainButton').click();
+
+        mockTimer.uninstall();
       });
-
-      Polymer.dom.flush();
-      // Test that the error dialog is shown.
-      assertTrue(exportDialog.$$('#dialog_error').open);
-      // Test that clicking retry will start a new export.
-      passwordManager.exportPasswords = (callback) => {
-        callback();
-        done();
-      };
-      exportDialog.$$('#tryAgainButton').click();
-
-      mockTimer.uninstall();
     });
 
     // Test the export flow. If exporting is slow, Chrome should show the
     // in-progress dialog for at least 1000ms.
     test('exportFlowSlow', function(done) {
-      const exportDialog = createExportPasswordsDialog(passwordManager);
+      const exportDialog =
+          elementFactory.createExportPasswordsDialog(passwordManager);
       const progressCallback = passwordManager.progressCallback;
 
-      let mockTimer = new MockTimer();
+      const mockTimer = new MockTimer();
       mockTimer.install();
 
       // The initial dialog remains open for 100ms after export enters the
@@ -825,14 +782,15 @@ cr.define('settings_passwords_section', function() {
     // Test that canceling the dialog while exporting will also cancel the
     // export on the browser.
     test('cancelExport', function(done) {
-      const exportDialog = createExportPasswordsDialog(passwordManager);
+      const exportDialog =
+          elementFactory.createExportPasswordsDialog(passwordManager);
       const progressCallback = passwordManager.progressCallback;
 
       passwordManager.cancelExportPasswords = () => {
         done();
       };
 
-      let mockTimer = new MockTimer();
+      const mockTimer = new MockTimer();
       mockTimer.install();
 
       // The initial dialog remains open for 100ms after export enters the
@@ -857,7 +815,8 @@ cr.define('settings_passwords_section', function() {
 
     // The export dialog is dismissable.
     test('exportDismissable', function(done) {
-      const exportDialog = createExportPasswordsDialog(passwordManager);
+      const exportDialog =
+          elementFactory.createExportPasswordsDialog(passwordManager);
 
       assertTrue(exportDialog.$$('#dialog_start').open);
       exportDialog.$$('#cancelButton').click();
@@ -868,7 +827,8 @@ cr.define('settings_passwords_section', function() {
     });
 
     test('fires close event when canceled', () => {
-      const exportDialog = createExportPasswordsDialog(passwordManager);
+      const exportDialog =
+          elementFactory.createExportPasswordsDialog(passwordManager);
       const wait = test_util.eventToPromise(
           'passwords-export-dialog-close', exportDialog);
       exportDialog.$$('#cancelButton').click();
@@ -876,7 +836,8 @@ cr.define('settings_passwords_section', function() {
     });
 
     test('fires close event after export complete', () => {
-      const exportDialog = createExportPasswordsDialog(passwordManager);
+      const exportDialog =
+          elementFactory.createExportPasswordsDialog(passwordManager);
       const wait = test_util.eventToPromise(
           'passwords-export-dialog-close', exportDialog);
       exportDialog.$$('#exportPasswordsButton').click();
@@ -885,6 +846,153 @@ cr.define('settings_passwords_section', function() {
       passwordManager.progressCallback(
           {status: chrome.passwordsPrivate.ExportProgressStatus.SUCCEEDED});
       return wait;
+    });
+
+    test('hideLinkToPasswordManagerWhenEncrypted', function() {
+      const passwordsSection =
+          elementFactory.createPasswordsSection(passwordManager, [], []);
+      const syncPrefs = sync_test_util.getSyncAllPrefs();
+      syncPrefs.encryptAllData = true;
+      cr.webUIListenerCallback('sync-prefs-changed', syncPrefs);
+      sync_test_util.simulateSyncStatus({signedIn: true});
+      Polymer.dom.flush();
+      assertTrue(passwordsSection.$.manageLink.hidden);
+    });
+
+    test('showLinkToPasswordManagerWhenNotEncrypted', function() {
+      const passwordsSection =
+          elementFactory.createPasswordsSection(passwordManager, [], []);
+      const syncPrefs = sync_test_util.getSyncAllPrefs();
+      syncPrefs.encryptAllData = false;
+      cr.webUIListenerCallback('sync-prefs-changed', syncPrefs);
+      Polymer.dom.flush();
+      assertFalse(passwordsSection.$.manageLink.hidden);
+    });
+
+    test('showLinkToPasswordManagerWhenNotSignedIn', function() {
+      const passwordsSection =
+          elementFactory.createPasswordsSection(passwordManager, [], []);
+      const syncPrefs = sync_test_util.getSyncAllPrefs();
+      sync_test_util.simulateSyncStatus({signedIn: false});
+      cr.webUIListenerCallback('sync-prefs-changed', syncPrefs);
+      Polymer.dom.flush();
+      assertFalse(passwordsSection.$.manageLink.hidden);
+    });
+
+    test('leakDetectionToggleSignedOutWithFalsePref', function() {
+      const passwordsSection =
+          elementFactory.createPasswordsSection(passwordManager, [], []);
+      const syncPrefs = sync_test_util.getSyncAllPrefs();
+
+      passwordsSection.set(
+          'prefs.profile.password_manager_leak_detection.value', false);
+      sync_test_util.simulateSyncStatus({signedIn: false});
+      sync_test_util.simulateStoredAccounts([]);
+      cr.webUIListenerCallback('sync-prefs-changed', syncPrefs);
+      Polymer.dom.flush();
+
+      assertTrue(passwordsSection.$.passwordsLeakDetectionCheckbox.disabled);
+      assertFalse(passwordsSection.$.passwordsLeakDetectionCheckbox.checked);
+      assertEquals(
+          '', passwordsSection.$.passwordsLeakDetectionCheckbox.subLabel);
+    });
+
+    test('leakDetectionToggleSignedOutWithTruePref', function() {
+      const passwordsSection =
+          elementFactory.createPasswordsSection(passwordManager, [], []);
+      const syncPrefs = sync_test_util.getSyncAllPrefs();
+
+      sync_test_util.simulateSyncStatus({signedIn: false});
+      sync_test_util.simulateStoredAccounts([]);
+      cr.webUIListenerCallback('sync-prefs-changed', syncPrefs);
+      Polymer.dom.flush();
+
+      assertTrue(passwordsSection.$.passwordsLeakDetectionCheckbox.disabled);
+      assertFalse(passwordsSection.$.passwordsLeakDetectionCheckbox.checked);
+      assertEquals(
+          loadTimeData.getString(
+              'passwordsLeakDetectionSignedOutEnabledDescription'),
+          passwordsSection.$.passwordsLeakDetectionCheckbox.subLabel);
+    });
+
+    if (!cr.isChromeOS) {
+      test('leakDetectionToggleSignedInNotSyncingWithFalsePref', function() {
+        const passwordsSection =
+            elementFactory.createPasswordsSection(passwordManager, [], []);
+        const syncPrefs = sync_test_util.getSyncAllPrefs();
+
+        passwordsSection.set(
+            'prefs.profile.password_manager_leak_detection.value', false);
+        sync_test_util.simulateSyncStatus({signedIn: false});
+        sync_test_util.simulateStoredAccounts([
+          {
+            fullName: 'testName',
+            givenName: 'test',
+            email: 'test@test.com',
+          },
+        ]);
+        cr.webUIListenerCallback('sync-prefs-changed', syncPrefs);
+        Polymer.dom.flush();
+
+        assertFalse(passwordsSection.$.passwordsLeakDetectionCheckbox.disabled);
+        assertFalse(passwordsSection.$.passwordsLeakDetectionCheckbox.checked);
+        assertEquals(
+            '', passwordsSection.$.passwordsLeakDetectionCheckbox.subLabel);
+      });
+
+      test('leakDetectionToggleSignedInNotSyncingWithTruePref', function() {
+        const passwordsSection =
+            elementFactory.createPasswordsSection(passwordManager, [], []);
+        const syncPrefs = sync_test_util.getSyncAllPrefs();
+
+        sync_test_util.simulateSyncStatus({signedIn: false});
+        sync_test_util.simulateStoredAccounts([
+          {
+            fullName: 'testName',
+            givenName: 'test',
+            email: 'test@test.com',
+          },
+        ]);
+        cr.webUIListenerCallback('sync-prefs-changed', syncPrefs);
+        Polymer.dom.flush();
+
+        assertFalse(passwordsSection.$.passwordsLeakDetectionCheckbox.disabled);
+        assertTrue(passwordsSection.$.passwordsLeakDetectionCheckbox.checked);
+        assertEquals(
+            '', passwordsSection.$.passwordsLeakDetectionCheckbox.subLabel);
+      });
+    }
+
+    test('leakDetectionToggleSignedInAndSyncingWithFalsePref', function() {
+      const passwordsSection =
+          elementFactory.createPasswordsSection(passwordManager, [], []);
+      const syncPrefs = sync_test_util.getSyncAllPrefs();
+
+      passwordsSection.set(
+          'prefs.profile.password_manager_leak_detection.value', false);
+      sync_test_util.simulateSyncStatus({signedIn: true});
+      cr.webUIListenerCallback('sync-prefs-changed', syncPrefs);
+      Polymer.dom.flush();
+
+      assertFalse(passwordsSection.$.passwordsLeakDetectionCheckbox.disabled);
+      assertFalse(passwordsSection.$.passwordsLeakDetectionCheckbox.checked);
+      assertEquals(
+          '', passwordsSection.$.passwordsLeakDetectionCheckbox.subLabel);
+    });
+
+    test('leakDetectionToggleSignedInAndSyncingWithTruePref', function() {
+      const passwordsSection =
+          elementFactory.createPasswordsSection(passwordManager, [], []);
+      const syncPrefs = sync_test_util.getSyncAllPrefs();
+
+      sync_test_util.simulateSyncStatus({signedIn: true});
+      cr.webUIListenerCallback('sync-prefs-changed', syncPrefs);
+      Polymer.dom.flush();
+
+      assertFalse(passwordsSection.$.passwordsLeakDetectionCheckbox.disabled);
+      assertTrue(passwordsSection.$.passwordsLeakDetectionCheckbox.checked);
+      assertEquals(
+          '', passwordsSection.$.passwordsLeakDetectionCheckbox.subLabel);
     });
   });
 });

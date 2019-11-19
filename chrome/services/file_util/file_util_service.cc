@@ -8,9 +8,10 @@
 
 #include "base/bind.h"
 #include "build/build_config.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
+#include "components/safe_browsing/buildflags.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
-#if defined(FULL_SAFE_BROWSING)
+#if BUILDFLAG(FULL_SAFE_BROWSING)
 #include "chrome/services/file_util/safe_archive_analyzer.h"
 #endif
 
@@ -18,49 +19,24 @@
 #include "chrome/services/file_util/zip_file_creator.h"
 #endif
 
-namespace {
-
-#if defined(FULL_SAFE_BROWSING)
-void OnSafeArchiveAnalyzerRequest(
-    service_manager::ServiceKeepalive* keepalive,
-    chrome::mojom::SafeArchiveAnalyzerRequest request) {
-  mojo::MakeStrongBinding(
-      std::make_unique<SafeArchiveAnalyzer>(keepalive->CreateRef()),
-      std::move(request));
-}
-#endif
-
-#if defined(OS_CHROMEOS)
-void OnZipFileCreatorRequest(service_manager::ServiceKeepalive* keepalive,
-                             chrome::mojom::ZipFileCreatorRequest request) {
-  mojo::MakeStrongBinding(
-      std::make_unique<chrome::ZipFileCreator>(keepalive->CreateRef()),
-      std::move(request));
-}
-#endif
-
-}  // namespace
-
-FileUtilService::FileUtilService(service_manager::mojom::ServiceRequest request)
-    : service_binding_(this, std::move(request)),
-      service_keepalive_(&service_binding_, base::TimeDelta()) {}
+FileUtilService::FileUtilService(
+    mojo::PendingReceiver<chrome::mojom::FileUtilService> receiver)
+    : receiver_(this, std::move(receiver)) {}
 
 FileUtilService::~FileUtilService() = default;
 
-void FileUtilService::OnStart() {
 #if defined(OS_CHROMEOS)
-  registry_.AddInterface(
-      base::BindRepeating(&OnZipFileCreatorRequest, &service_keepalive_));
-#endif
-#if defined(FULL_SAFE_BROWSING)
-  registry_.AddInterface(
-      base::BindRepeating(&OnSafeArchiveAnalyzerRequest, &service_keepalive_));
-#endif
+void FileUtilService::BindZipFileCreator(
+    mojo::PendingReceiver<chrome::mojom::ZipFileCreator> receiver) {
+  mojo::MakeSelfOwnedReceiver(std::make_unique<chrome::ZipFileCreator>(),
+                              std::move(receiver));
 }
+#endif
 
-void FileUtilService::OnBindInterface(
-    const service_manager::BindSourceInfo& source_info,
-    const std::string& interface_name,
-    mojo::ScopedMessagePipeHandle interface_pipe) {
-  registry_.BindInterface(interface_name, std::move(interface_pipe));
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+void FileUtilService::BindSafeArchiveAnalyzer(
+    mojo::PendingReceiver<chrome::mojom::SafeArchiveAnalyzer> receiver) {
+  mojo::MakeSelfOwnedReceiver(std::make_unique<SafeArchiveAnalyzer>(),
+                              std::move(receiver));
 }
+#endif

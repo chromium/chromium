@@ -38,4 +38,23 @@ assertCSSResponsive({
     ],
   }],
 });
+
+assertCSSResponsive({
+  property: 'backdrop-filter',
+  from: neutralKeyframe,
+  to: 'blur(10px)',
+  configurations: [{
+    state: {underlying: 'blur(50px)'},
+    expect: [
+      {at: 0.25, is: 'blur(40px)'},
+      {at: 0.75, is: 'blur(20px)'},
+    ],
+  }, {
+    state: {underlying: 'blur(30px)'},
+    expect: [
+      {at: 0.25, is: 'blur(25px)'},
+      {at: 0.75, is: 'blur(15px)'},
+    ],
+  }],
+});
 </script>

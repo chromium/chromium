@@ -14,7 +14,7 @@
 
 #include "base/files/file.h"
 #include "base/files/file_util.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/process/memory.h"
 #include "base/process/process.h"
 #include "base/strings/string16.h"
@@ -86,8 +86,8 @@ bool BufferExtensionStreamDataSource::ReadStreamData(Delegate* delegate) {
 bool CollectStabilityReport(const base::FilePath& path,
                             StabilityReport* report) {
   CollectionStatus status = Extract(path, report);
-  UMA_HISTOGRAM_ENUMERATION("ActivityTracker.CollectCrash.Status", status,
-                            COLLECTION_STATUS_MAX);
+  base::UmaHistogramEnumeration("ActivityTracker.CollectCrash.Status", status,
+                                COLLECTION_STATUS_MAX);
   if (status != SUCCESS)
     return false;
 

@@ -1,0 +1,50 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("send_tab_to_self") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "send_tab_to_self_coordinator.h",
+    "send_tab_to_self_coordinator.mm",
+  ]
+  deps = [
+    ":send_tab_to_self_ui",
+    "//base",
+    "//components/send_tab_to_self",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/main",
+    "//ios/chrome/browser/sync",
+    "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/browser/ui/infobars/presentation",
+  ]
+}
+source_set("send_tab_to_self_ui") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "send_tab_to_self_image_detail_text_item.h",
+    "send_tab_to_self_image_detail_text_item.mm",
+    "send_tab_to_self_modal_delegate.h",
+    "send_tab_to_self_modal_positioner.h",
+    "send_tab_to_self_modal_presentation_controller.h",
+    "send_tab_to_self_modal_presentation_controller.mm",
+    "send_tab_to_self_table_view_controller.h",
+    "send_tab_to_self_table_view_controller.mm",
+  ]
+  deps = [
+    "resources:send_tab_to_self_devices",
+    "resources:send_tab_to_self_laptop",
+    "resources:send_tab_to_self_smartphone",
+    "resources:send_tab_to_self_tablet",
+    "//base",
+    "//components/send_tab_to_self",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/ui/settings/cells",
+    "//ios/chrome/browser/ui/table_view",
+    "//ios/chrome/browser/ui/table_view:styler",
+    "//ios/chrome/browser/ui/table_view/cells",
+    "//ios/chrome/common/colors",
+    "//ui/base",
+  ]
+}

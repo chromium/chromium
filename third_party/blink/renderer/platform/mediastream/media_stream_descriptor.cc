@@ -32,7 +32,8 @@
 #include "third_party/blink/renderer/platform/mediastream/media_stream_descriptor.h"
 
 #include "third_party/blink/public/platform/web_media_stream.h"
-#include "third_party/blink/renderer/platform/uuid.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/wtf/uuid.h"
 
 namespace blink {
 
@@ -45,28 +46,6 @@ static int g_unique_media_stream_descriptor_id = 0;
 // static
 int MediaStreamDescriptor::GenerateUniqueId() {
   return ++g_unique_media_stream_descriptor_id;
-}
-
-MediaStreamDescriptor* MediaStreamDescriptor::Create(
-    const MediaStreamSourceVector& audio_sources,
-    const MediaStreamSourceVector& video_sources) {
-  return MakeGarbageCollected<MediaStreamDescriptor>(
-      CreateCanonicalUUIDString(), audio_sources, video_sources);
-}
-
-MediaStreamDescriptor* MediaStreamDescriptor::Create(
-    const MediaStreamComponentVector& audio_components,
-    const MediaStreamComponentVector& video_components) {
-  return MakeGarbageCollected<MediaStreamDescriptor>(
-      CreateCanonicalUUIDString(), audio_components, video_components);
-}
-
-MediaStreamDescriptor* MediaStreamDescriptor::Create(
-    const String& id,
-    const MediaStreamComponentVector& audio_components,
-    const MediaStreamComponentVector& video_components) {
-  return MakeGarbageCollected<MediaStreamDescriptor>(id, audio_components,
-                                                     video_components);
 }
 
 void MediaStreamDescriptor::AddComponent(MediaStreamComponent* component) {
@@ -145,17 +124,35 @@ void MediaStreamDescriptor::RemoveObserver(WebMediaStreamObserver* observer) {
 }
 
 MediaStreamDescriptor::MediaStreamDescriptor(
+    const MediaStreamSourceVector& audio_sources,
+    const MediaStreamSourceVector& video_sources)
+    : MediaStreamDescriptor(WTF::CreateCanonicalUUIDString(),
+                            audio_sources,
+                            video_sources) {}
+
+MediaStreamDescriptor::MediaStreamDescriptor(
     const String& id,
     const MediaStreamSourceVector& audio_sources,
     const MediaStreamSourceVector& video_sources)
     : client_(nullptr), id_(id), unique_id_(GenerateUniqueId()), active_(true) {
   DCHECK(id_.length());
-  for (MediaStreamSource* source : audio_sources)
-    audio_components_.push_back(MediaStreamComponent::Create(source));
+  for (MediaStreamSource* source : audio_sources) {
+    audio_components_.push_back(
+        MakeGarbageCollected<MediaStreamComponent>(source));
+  }
 
-  for (MediaStreamSource* source : video_sources)
-    video_components_.push_back(MediaStreamComponent::Create(source));
+  for (MediaStreamSource* source : video_sources) {
+    video_components_.push_back(
+        MakeGarbageCollected<MediaStreamComponent>(source));
+  }
 }
+
+MediaStreamDescriptor::MediaStreamDescriptor(
+    const MediaStreamComponentVector& audio_components,
+    const MediaStreamComponentVector& video_components)
+    : MediaStreamDescriptor(WTF::CreateCanonicalUUIDString(),
+                            audio_components,
+                            video_components) {}
 
 MediaStreamDescriptor::MediaStreamDescriptor(
     const String& id,

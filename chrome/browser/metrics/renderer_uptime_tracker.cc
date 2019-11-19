@@ -38,7 +38,7 @@ RendererUptimeTracker* RendererUptimeTracker::SetMockRendererUptimeTracker(
 
 // static
 RendererUptimeTracker* RendererUptimeTracker::Get() {
-  DCHECK(g_renderer_uptime_tracker_instance);
+  // This can return null in unit tests.
   return g_renderer_uptime_tracker_instance;
 }
 

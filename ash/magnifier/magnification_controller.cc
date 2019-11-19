@@ -9,11 +9,12 @@
 #include <utility>
 #include <vector>
 
-#include "ash/accelerators/accelerator_controller.h"
+#include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/accessibility/accessibility_delegate.h"
 #include "ash/display/root_window_transformers.h"
 #include "ash/host/ash_window_tree_host.h"
 #include "ash/host/root_window_transformer.h"
+#include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/magnifier/magnifier_utils.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/root_window_controller.h"
@@ -36,7 +37,6 @@
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/rect_conversions.h"
-#include "ui/keyboard/keyboard_controller.h"
 #include "ui/wm/core/compound_event_filter.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
@@ -177,11 +177,11 @@ void MagnificationController::SetEnabled(bool enabled) {
   // Keyboard overscroll creates layout issues with fullscreen magnification
   // so it needs to be disabled when magnification is enabled.
   // TODO(spqchan): Fix the keyboard overscroll issues.
-  auto config = keyboard::KeyboardController::Get()->keyboard_config();
+  auto config = keyboard::KeyboardUIController::Get()->keyboard_config();
   config.overscroll_behavior =
-      is_enabled_ ? keyboard::mojom::KeyboardOverscrollBehavior::kDisabled
-                  : keyboard::mojom::KeyboardOverscrollBehavior::kDefault;
-  keyboard::KeyboardController::Get()->UpdateKeyboardConfig(config);
+      is_enabled_ ? keyboard::KeyboardOverscrollBehavior::kDisabled
+                  : keyboard::KeyboardOverscrollBehavior::kDefault;
+  keyboard::KeyboardUIController::Get()->UpdateKeyboardConfig(config);
 }
 
 bool MagnificationController::IsEnabled() const {
@@ -636,7 +636,7 @@ bool MagnificationController::RedrawDIP(const gfx::PointF& position_in_dip,
   display::Display display =
       display::Screen::GetScreen()->GetDisplayNearestWindow(root_window_);
   std::unique_ptr<RootWindowTransformer> transformer(
-      CreateRootWindowTransformerForDisplay(root_window_, display));
+      CreateRootWindowTransformerForDisplay(display));
 
   // Inverse the transformation on the keyboard container so the keyboard will
   // remain zoomed out. Apply the same animation settings to it.
@@ -725,7 +725,7 @@ void MagnificationController::OnMouseMove(const gfx::Point& location) {
 
   // Reduce the bottom margin if the keyboard is visible.
   bool reduce_bottom_margin =
-      keyboard::KeyboardController::Get()->IsKeyboardVisible();
+      keyboard::KeyboardUIController::Get()->IsKeyboardVisible();
 
   MoveMagnifierWindowFollowPoint(mouse, margin, margin, margin, margin,
                                  reduce_bottom_margin);
@@ -903,8 +903,8 @@ void MagnificationController::MoveMagnifierWindowCenterPoint(
   gfx::Rect window_rect = GetViewportRect();
 
   // Reduce the viewport bounds if the keyboard is up.
-  if (keyboard::KeyboardController::Get()->IsEnabled()) {
-    gfx::Rect keyboard_rect = keyboard::KeyboardController::Get()
+  if (keyboard::KeyboardUIController::Get()->IsEnabled()) {
+    gfx::Rect keyboard_rect = keyboard::KeyboardUIController::Get()
                                   ->GetKeyboardWindow()
                                   ->GetBoundsInScreen();
     window_rect.set_height(window_rect.height() -

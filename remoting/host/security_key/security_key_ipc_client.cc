@@ -5,10 +5,10 @@
 #include "remoting/host/security_key/security_key_ipc_client.h"
 
 #include <string>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/callback_helpers.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "ipc/ipc_channel.h"
 #include "ipc/ipc_listener.h"
@@ -21,8 +21,7 @@
 namespace remoting {
 
 SecurityKeyIpcClient::SecurityKeyIpcClient()
-    : named_channel_handle_(remoting::GetSecurityKeyIpcChannel()),
-      weak_factory_(this) {}
+    : named_channel_handle_(remoting::GetSecurityKeyIpcChannel()) {}
 
 SecurityKeyIpcClient::~SecurityKeyIpcClient() {
   DCHECK(thread_checker_.CalledOnValidThread());
@@ -115,7 +114,7 @@ void SecurityKeyIpcClient::OnChannelConnected(int32_t peer_pid) {
   DWORD peer_session_id;
   if (!ProcessIdToSessionId(peer_pid, &peer_session_id)) {
     PLOG(ERROR) << "ProcessIdToSessionId failed";
-    base::ResetAndReturn(&connection_error_callback_).Run();
+    std::move(connection_error_callback_).Run();
     return;
   }
 
@@ -123,7 +122,7 @@ void SecurityKeyIpcClient::OnChannelConnected(int32_t peer_pid) {
     LOG(ERROR)
         << "Cannot establish connection with IPC server running in session: "
         << peer_session_id;
-    base::ResetAndReturn(&connection_error_callback_).Run();
+    std::move(connection_error_callback_).Run();
     return;
   }
 #endif  // defined(OS_WIN)
@@ -133,7 +132,7 @@ void SecurityKeyIpcClient::OnChannelError() {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   if (connection_error_callback_) {
-    base::ResetAndReturn(&connection_error_callback_).Run();
+    std::move(connection_error_callback_).Run();
   }
 }
 
@@ -142,11 +141,11 @@ void SecurityKeyIpcClient::OnSecurityKeyResponse(
   DCHECK(thread_checker_.CalledOnValidThread());
 
   if (!response_data.empty()) {
-    base::ResetAndReturn(&response_callback_).Run(response_data);
+    std::move(response_callback_).Run(response_data);
   } else {
     LOG(ERROR) << "Invalid response received";
     if (connection_error_callback_) {
-      base::ResetAndReturn(&connection_error_callback_).Run();
+      std::move(connection_error_callback_).Run();
     }
   }
 }
@@ -157,12 +156,12 @@ void SecurityKeyIpcClient::OnConnectionReady() {
   if (!connected_callback_) {
     LOG(ERROR) << "Unexpected ConnectionReady message received.";
     if (connection_error_callback_) {
-      base::ResetAndReturn(&connection_error_callback_).Run();
+      std::move(connection_error_callback_).Run();
     }
     return;
   }
 
-  base::ResetAndReturn(&connected_callback_).Run(/*connection_usable=*/true);
+  std::move(connected_callback_).Run(/*connection_usable=*/true);
 }
 
 void SecurityKeyIpcClient::OnInvalidSession() {
@@ -171,12 +170,12 @@ void SecurityKeyIpcClient::OnInvalidSession() {
   if (!connected_callback_) {
     LOG(ERROR) << "Unexpected InvalidSession message received.";
     if (connection_error_callback_) {
-      base::ResetAndReturn(&connection_error_callback_).Run();
+      std::move(connection_error_callback_).Run();
     }
     return;
   }
 
-  base::ResetAndReturn(&connected_callback_).Run(/*connection_usable=*/false);
+  std::move(connected_callback_).Run(/*connection_usable=*/false);
 }
 
 void SecurityKeyIpcClient::ConnectToIpcChannel() {
@@ -187,7 +186,7 @@ void SecurityKeyIpcClient::ConnectToIpcChannel() {
 
   if (!channel_handle_.is_valid() && !CheckForSecurityKeyIpcServerChannel()) {
     if (connection_error_callback_) {
-      base::ResetAndReturn(&connection_error_callback_).Run();
+      std::move(connection_error_callback_).Run();
     }
     return;
   }
@@ -201,7 +200,7 @@ void SecurityKeyIpcClient::ConnectToIpcChannel() {
   ipc_channel_.reset();
 
   if (connection_error_callback_) {
-    base::ResetAndReturn(&connection_error_callback_).Run();
+    std::move(connection_error_callback_).Run();
   }
 }
 

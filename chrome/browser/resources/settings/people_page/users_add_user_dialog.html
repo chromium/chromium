@@ -1,35 +1,36 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_input/cr_input.html">
 <link rel="import" href="chrome://resources/html/assert.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-button/paper-button.html">
 <link rel="import" href="../settings_shared_css.html">
 <link rel="import" href="../settings_vars_css.html">
 
 <dom-module id="settings-users-add-user-dialog">
   <template>
     <style include="settings-shared">
-      cr-input {
-        width: var(--settings-input-max-width);
-        --cr-input-error-display: none;
+      cr-dialog::part(dialog) {
+        width: 320px;
       }
     </style>
     <cr-dialog id="dialog" close-text="$i18n{close}">
       <div slot="title">$i18n{addUsers}</div>
       <div slot="body">
-        <cr-input id="addUserInput" label="$i18n{addUsersEmail}" autofocus
-            on-input="validate_" invalid="[[!isValid_]]">
+        <cr-input id="addUserInput" label="$i18n{addUsersEmail}"
+            invalid="[[shouldShowError_(errorCode_)]]"
+            on-value-changed="onInput_"
+            error-message="[[getErrorString_(errorCode_)]]" autofocus>
         </cr-input>
       </div>
       <div slot="button-container">
-        <paper-button class="cancel-button" on-click="onCancelTap_">
+        <cr-button class="cancel-button" on-click="onCancelTap_">
           $i18n{cancel}
-        </paper-button>
-        <paper-button on-click="addUser_" class="action-button"
-            disabled$="[[!isValid_]]">
+        </cr-button>
+        <cr-button on-click="addUser_" class="action-button"
+            disabled$="[[!canAddUser_(isEmail_, isEmpty_)]]">
           $i18n{add}
-        </paper-button>
+        </cr-button>
       </div>
     </cr-dialog>
   </template>

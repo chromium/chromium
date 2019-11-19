@@ -64,7 +64,7 @@ class FakeSafeBrowsingDatabaseManager
   bool simulate_timeout_ = false;
   bool synchronous_failure_ = false;
 
-  base::WeakPtrFactory<FakeSafeBrowsingDatabaseManager> weak_factory_;
+  base::WeakPtrFactory<FakeSafeBrowsingDatabaseManager> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FakeSafeBrowsingDatabaseManager);
 };

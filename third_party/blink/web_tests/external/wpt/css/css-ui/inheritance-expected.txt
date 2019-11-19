@@ -1,20 +1,20 @@
 This is a testharness.js-based test.
-PASS Property appearance has initial value auto
-PASS Property appearance does not inherit
+FAIL Property appearance has initial value auto assert_true: appearance doesn't seem to be supported in the computed style expected true got false
+FAIL Property appearance does not inherit assert_true: expected true got false
 PASS Property caret-color has initial value rgb(0, 255, 0)
 PASS Property caret-color inherits
-PASS Property caret-shape has initial value auto
-PASS Property caret-shape inherits
+FAIL Property caret-shape has initial value auto assert_true: caret-shape doesn't seem to be supported in the computed style expected true got false
+FAIL Property caret-shape inherits assert_true: caret-shape doesn't seem to be supported in the computed style expected true got false
 PASS Property cursor has initial value auto
 PASS Property cursor inherits
-PASS Property nav-down has initial value auto
-PASS Property nav-down does not inherit
-PASS Property nav-left has initial value auto
-PASS Property nav-left does not inherit
-PASS Property nav-right has initial value auto
-PASS Property nav-right does not inherit
-PASS Property nav-up has initial value auto
-PASS Property nav-up does not inherit
+FAIL Property nav-down has initial value auto assert_true: nav-down doesn't seem to be supported in the computed style expected true got false
+FAIL Property nav-down does not inherit assert_true: expected true got false
+FAIL Property nav-left has initial value auto assert_true: nav-left doesn't seem to be supported in the computed style expected true got false
+FAIL Property nav-left does not inherit assert_true: expected true got false
+FAIL Property nav-right has initial value auto assert_true: nav-right doesn't seem to be supported in the computed style expected true got false
+FAIL Property nav-right does not inherit assert_true: expected true got false
+FAIL Property nav-up has initial value auto assert_true: nav-up doesn't seem to be supported in the computed style expected true got false
+FAIL Property nav-up does not inherit assert_true: expected true got false
 PASS Property outline-color has initial value rgb(0, 255, 0)
 PASS Property outline-color does not inherit
 PASS Property outline-offset has initial value 0px

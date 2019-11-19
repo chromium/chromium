@@ -7,9 +7,10 @@
 #include <memory>
 #include <string>
 
+#include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
 #include "base/test/bind_test_util.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -26,8 +27,7 @@ namespace {
 class TransitionalURLLoaderFactoryOwnerTest : public ::testing::Test {
  public:
   TransitionalURLLoaderFactoryOwnerTest()
-      : scoped_task_environment_(
-            base::test::ScopedTaskEnvironment::MainThreadType::IO) {}
+      : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {}
 
   void SetUp() override {
     net::test_server::RegisterDefaultHandlers(&test_server_);
@@ -67,14 +67,14 @@ class TransitionalURLLoaderFactoryOwnerTest : public ::testing::Test {
   }
 
  protected:
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   net::EmbeddedTestServer test_server_;
 };
 
 TEST_F(TransitionalURLLoaderFactoryOwnerTest, CrossThread) {
   base::Thread io_thread("IO");
   base::Thread::Options options;
-  options.message_loop_type = base::MessageLoop::TYPE_IO;
+  options.message_pump_type = base::MessagePumpType::IO;
   ASSERT_TRUE(io_thread.StartWithOptions(options));
 
   TestOnTaskRunner(io_thread.task_runner(), base::BindLambdaForTesting([&]() {
@@ -83,9 +83,9 @@ TEST_F(TransitionalURLLoaderFactoryOwnerTest, CrossThread) {
 }
 
 TEST_F(TransitionalURLLoaderFactoryOwnerTest, SameThread) {
-  TestOnTaskRunner(scoped_task_environment_.GetMainThreadTaskRunner(),
-                   base::BindLambdaForTesting(
-                       [&]() { scoped_task_environment_.RunUntilIdle(); }));
+  TestOnTaskRunner(
+      task_environment_.GetMainThreadTaskRunner(),
+      base::BindLambdaForTesting([&]() { task_environment_.RunUntilIdle(); }));
 }
 
 }  // namespace

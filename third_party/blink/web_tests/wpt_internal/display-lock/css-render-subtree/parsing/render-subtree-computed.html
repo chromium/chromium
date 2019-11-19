@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>CSS RenderSubtree Test: render-subtree with computed values</title>
+<link rel="author" title="Vladimir Levin" href="mailto:vmpstr@chromium.org">
+<meta name="assert" content="render-subtree supports the full grammar 'none | [invisible || skip-activation || skip-viewport-activation]'.">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/css/support/computed-testcommon.js"></script>
+</head>
+<body>
+<div id=target></div>
+<div id=scratch></div>
+<script>
+
+test_computed_value("render-subtree", "none");
+test_computed_value("render-subtree", "invisible");
+test_computed_value("render-subtree", "skip-activation");
+test_computed_value("render-subtree", "skip-viewport-activation");
+test_computed_value("render-subtree", "invisible skip-activation");
+test_computed_value("render-subtree", "invisible skip-viewport-activation");
+test_computed_value("render-subtree", "skip-activation skip-viewport-activation");
+test_computed_value("render-subtree", "invisible skip-activation skip-viewport-activation");
+</script>
+</body>
+</html>
+

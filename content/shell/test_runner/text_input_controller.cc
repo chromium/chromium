@@ -197,7 +197,7 @@ void TextInputControllerBindings::ForceTextInputStateUpdate() {
 // TextInputController ---------------------------------------------------------
 
 TextInputController::TextInputController(WebViewTestProxy* web_view_test_proxy)
-    : web_view_test_proxy_(web_view_test_proxy), weak_factory_(this) {}
+    : web_view_test_proxy_(web_view_test_proxy) {}
 
 TextInputController::~TextInputController() {}
 
@@ -273,12 +273,12 @@ void TextInputController::SetMarkedText(const std::string& text,
     ime_text_span.start_offset = start;
     ime_text_span.end_offset = start + length;
   }
-  ime_text_span.thickness = ws::mojom::ImeTextSpanThickness::kThick;
+  ime_text_span.thickness = ui::mojom::ImeTextSpanThickness::kThick;
   ime_text_spans.push_back(ime_text_span);
   if (start + length < static_cast<int>(web_text.length())) {
     ime_text_span.start_offset = ime_text_span.end_offset;
     ime_text_span.end_offset = web_text.length();
-    ime_text_span.thickness = ws::mojom::ImeTextSpanThickness::kThin;
+    ime_text_span.thickness = ui::mojom::ImeTextSpanThickness::kThin;
     ime_text_spans.push_back(ime_text_span);
   }
 
@@ -385,7 +385,7 @@ void TextInputController::SetComposition(const std::string& text) {
   std::vector<blink::WebImeTextSpan> ime_text_spans;
   ime_text_spans.push_back(blink::WebImeTextSpan(
       blink::WebImeTextSpan::Type::kComposition, 0, textLength,
-      ws::mojom::ImeTextSpanThickness::kThin, SK_ColorTRANSPARENT));
+      ui::mojom::ImeTextSpanThickness::kThin, SK_ColorTRANSPARENT));
   if (auto* controller = GetInputMethodController()) {
     controller->SetComposition(
         newText, blink::WebVector<blink::WebImeTextSpan>(ime_text_spans),

@@ -266,7 +266,7 @@ You would expect:
 * `fast/html/article-element.html` to fail with a text diff (since it is in the
   fast/html directory).
 * `fast/html/keygen.html` to pass (since the exact match on the test name).
-* `fast/html/submit.html` to pass (since the configuration parameters don't
+* `fast/forms/submit.html` to pass (since the configuration parameters don't
   match).
 * `fast/html/section-element.html` to either crash or produce a text (or image
   and text) failure, but not time out or pass.

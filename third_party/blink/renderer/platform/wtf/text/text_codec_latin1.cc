@@ -27,7 +27,6 @@
 
 #include <memory>
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
-#include "third_party/blink/renderer/platform/wtf/text/cstring.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_codec_ascii_fast_path.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -203,9 +202,9 @@ upConvertTo16Bit:
 }
 
 template <typename CharType>
-static CString EncodeComplexWindowsLatin1(const CharType* characters,
-                                          wtf_size_t length,
-                                          UnencodableHandling handling) {
+static std::string EncodeComplexWindowsLatin1(const CharType* characters,
+                                              wtf_size_t length,
+                                              UnencodableHandling handling) {
   DCHECK_NE(handling, kNoUnencodables);
   wtf_size_t target_length = length;
   Vector<char> result(target_length);
@@ -249,43 +248,40 @@ static CString EncodeComplexWindowsLatin1(const CharType* characters,
     bytes[result_length++] = b;
   }
 
-  return CString(bytes, result_length);
+  return std::string(bytes, result_length);
 }
 
 template <typename CharType>
-CString TextCodecLatin1::EncodeCommon(const CharType* characters,
-                                      wtf_size_t length,
-                                      UnencodableHandling handling) {
-  {
-    char* bytes;
-    CString string = CString::CreateUninitialized(length, bytes);
+std::string TextCodecLatin1::EncodeCommon(const CharType* characters,
+                                          wtf_size_t length,
+                                          UnencodableHandling handling) {
+  std::string string(length, '\0');
 
-    // Convert the string a fast way and simultaneously do an efficient check to
-    // see if it's all ASCII.
-    UChar ored = 0;
-    for (wtf_size_t i = 0; i < length; ++i) {
-      UChar c = characters[i];
-      bytes[i] = static_cast<char>(c);
-      ored |= c;
-    }
-
-    if (!(ored & 0xFF80))
-      return string;
+  // Convert the string a fast way and simultaneously do an efficient check to
+  // see if it's all ASCII.
+  UChar ored = 0;
+  for (wtf_size_t i = 0; i < length; ++i) {
+    UChar c = characters[i];
+    string[i] = static_cast<char>(c);
+    ored |= c;
   }
+
+  if (!(ored & 0xFF80))
+    return string;
 
   // If it wasn't all ASCII, call the function that handles more-complex cases.
   return EncodeComplexWindowsLatin1(characters, length, handling);
 }
 
-CString TextCodecLatin1::Encode(const UChar* characters,
-                                wtf_size_t length,
-                                UnencodableHandling handling) {
+std::string TextCodecLatin1::Encode(const UChar* characters,
+                                    wtf_size_t length,
+                                    UnencodableHandling handling) {
   return EncodeCommon(characters, length, handling);
 }
 
-CString TextCodecLatin1::Encode(const LChar* characters,
-                                wtf_size_t length,
-                                UnencodableHandling handling) {
+std::string TextCodecLatin1::Encode(const LChar* characters,
+                                    wtf_size_t length,
+                                    UnencodableHandling handling) {
   return EncodeCommon(characters, length, handling);
 }
 

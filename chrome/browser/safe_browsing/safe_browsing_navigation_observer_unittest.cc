@@ -18,12 +18,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/window_open_disposition.h"
 
-namespace {
-
-const char kNavigationEventCleanUpHistogramName[] =
-    "SafeBrowsing.NavigationObserver.NavigationEventCleanUpCount";
-}  // namespace
-
 namespace safe_browsing {
 
 class SBNavigationObserverTest : public BrowserWithTestWindowTest {
@@ -231,9 +225,6 @@ TEST_F(SBNavigationObserverTest, TestCleanUpStaleNavigationEvents) {
       CreateNavigationEventUniquePtr(url_0, now));
   ASSERT_EQ(6U, navigation_event_list()->Size());
 
-  base::HistogramTester histograms;
-  histograms.ExpectTotalCount(kNavigationEventCleanUpHistogramName, 0);
-
   // Cleans up navigation events.
   CleanUpNavigationEvents();
 
@@ -242,8 +233,6 @@ TEST_F(SBNavigationObserverTest, TestCleanUpStaleNavigationEvents) {
   EXPECT_EQ(nullptr,
             navigation_event_list()->FindNavigationEvent(
                 base::Time::Now(), url_1, GURL(), SessionID::InvalidValue()));
-  EXPECT_THAT(histograms.GetAllSamples(kNavigationEventCleanUpHistogramName),
-              testing::ElementsAre(base::Bucket(4, 1)));
 }
 
 TEST_F(SBNavigationObserverTest, TestCleanUpStaleUserGestures) {
@@ -353,7 +342,7 @@ TEST_F(SBNavigationObserverTest, TestContentSettingChange) {
   // Simulate content setting change via page info UI.
   navigation_observer_->OnContentSettingChanged(
       ContentSettingsPattern::FromURL(web_content->GetLastCommittedURL()),
-      ContentSettingsPattern::Wildcard(), CONTENT_SETTINGS_TYPE_NOTIFICATIONS,
+      ContentSettingsPattern::Wildcard(), ContentSettingsType::NOTIFICATIONS,
       std::string());
 
   // A user gesture should be recorded.
@@ -366,7 +355,7 @@ TEST_F(SBNavigationObserverTest, TestContentSettingChange) {
   // Simulate content setting change that cannot be changed via page info UI.
   navigation_observer_->OnContentSettingChanged(
       ContentSettingsPattern::FromURL(web_content->GetLastCommittedURL()),
-      ContentSettingsPattern::Wildcard(), CONTENT_SETTINGS_TYPE_SITE_ENGAGEMENT,
+      ContentSettingsPattern::Wildcard(), ContentSettingsType::SITE_ENGAGEMENT,
       std::string());
   // No user gesture should be recorded.
   EXPECT_EQ(0U, user_gesture_map()->size());

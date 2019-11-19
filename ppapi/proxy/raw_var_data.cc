@@ -6,6 +6,7 @@
 
 #include "base/containers/stack.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "base/stl_util.h"
 #include "ipc/ipc_message.h"
 #include "ppapi/proxy/ppapi_param_traits.h"
@@ -412,22 +413,23 @@ bool ArrayBufferRawVarData::Init(const PP_Var& var,
   if (buffer_var->ByteLength() >= g_minimum_array_buffer_size_for_shmem &&
       instance != 0) {
     int host_handle_id;
-    base::SharedMemoryHandle plugin_handle;
+    base::UnsafeSharedMemoryRegion plugin_handle;
     using_shmem = buffer_var->CopyToNewShmem(instance,
                                              &host_handle_id,
                                              &plugin_handle);
     if (using_shmem) {
       if (host_handle_id != -1) {
-        DCHECK(!base::SharedMemory::IsHandleValid(plugin_handle));
+        DCHECK(!plugin_handle.IsValid());
         DCHECK(PpapiGlobals::Get()->IsPluginGlobals());
         type_ = ARRAY_BUFFER_SHMEM_HOST;
         host_shm_handle_id_ = host_handle_id;
       } else {
-        DCHECK(base::SharedMemory::IsHandleValid(plugin_handle));
+        DCHECK(plugin_handle.IsValid());
         DCHECK(PpapiGlobals::Get()->IsHostGlobals());
         type_ = ARRAY_BUFFER_SHMEM_PLUGIN;
-        plugin_shm_handle_ = SerializedHandle(plugin_handle,
-                                              buffer_var->ByteLength());
+        plugin_shm_handle_ = SerializedHandle(
+            base::UnsafeSharedMemoryRegion::TakeHandleForSerialization(
+                std::move(plugin_handle)));
       }
     }
   }
@@ -444,16 +446,14 @@ PP_Var ArrayBufferRawVarData::CreatePPVar(PP_Instance instance) {
   PP_Var result = PP_MakeUndefined();
   switch (type_) {
     case ARRAY_BUFFER_SHMEM_HOST: {
-      base::SharedMemoryHandle host_handle;
+      base::UnsafeSharedMemoryRegion host_handle;
       uint32_t size_in_bytes;
-      bool ok = PpapiGlobals::Get()->GetVarTracker()->
-          StopTrackingSharedMemoryHandle(host_shm_handle_id_,
-                                         instance,
-                                         &host_handle,
-                                         &size_in_bytes);
+      bool ok =
+          PpapiGlobals::Get()->GetVarTracker()->StopTrackingSharedMemoryRegion(
+              host_shm_handle_id_, instance, &host_handle, &size_in_bytes);
       if (ok) {
         result = PpapiGlobals::Get()->GetVarTracker()->MakeArrayBufferPPVar(
-            size_in_bytes, host_handle);
+            size_in_bytes, std::move(host_handle));
       } else {
         LOG(ERROR) << "Couldn't find array buffer id: " << host_shm_handle_id_;
         return PP_MakeUndefined();
@@ -461,9 +461,10 @@ PP_Var ArrayBufferRawVarData::CreatePPVar(PP_Instance instance) {
       break;
     }
     case ARRAY_BUFFER_SHMEM_PLUGIN: {
+      auto region_size = plugin_shm_handle_.shmem_region().GetSize();
       result = PpapiGlobals::Get()->GetVarTracker()->MakeArrayBufferPPVar(
-          plugin_shm_handle_.size(),
-          plugin_shm_handle_.shmem());
+          region_size, base::UnsafeSharedMemoryRegion::Deserialize(
+                           plugin_shm_handle_.TakeSharedMemoryRegion()));
       break;
     }
     case ARRAY_BUFFER_NO_SHMEM: {
@@ -529,9 +530,9 @@ bool ArrayBufferRawVarData::Read(PP_VarType type,
 }
 
 SerializedHandle* ArrayBufferRawVarData::GetHandle() {
-  if (type_ == ARRAY_BUFFER_SHMEM_PLUGIN && plugin_shm_handle_.size() != 0)
+  if (type_ == ARRAY_BUFFER_SHMEM_PLUGIN && plugin_shm_handle_.IsHandleValid())
     return &plugin_shm_handle_;
-  return NULL;
+  return nullptr;
 }
 
 // ArrayRawVarData -------------------------------------------------------------

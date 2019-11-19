@@ -4,10 +4,10 @@
 
 #include "base/android/jni_string.h"
 #include "base/stl_util.h"
+#include "chrome/browser/android/metrics/jni_headers/UkmUtilsForTest_jni.h"
 #include "chrome/browser/browser_process.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/ukm/ukm_service.h"
-#include "jni/UkmUtilsForTest_jni.h"
 
 #include "chrome/browser/android/metrics/ukm_utils_for_test.h"
 
@@ -27,7 +27,7 @@ bool UkmUtilsForTest::HasSourceWithId(SourceId source_id) {
   auto* service =
       g_browser_process->GetMetricsServicesManager()->GetUkmService();
   DCHECK(service);
-  return base::ContainsKey(service->sources(), source_id);
+  return base::Contains(service->sources(), source_id);
 }
 
 // static

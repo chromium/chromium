@@ -5,6 +5,8 @@
 #ifndef UI_ACCESSIBILITY_PLATFORM_AX_PLATFORM_NODE_TEST_HELPER_H_
 #define UI_ACCESSIBILITY_PLATFORM_AX_PLATFORM_NODE_TEST_HELPER_H_
 
+#include <string>
+
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
 

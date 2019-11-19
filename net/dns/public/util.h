@@ -13,15 +13,8 @@
 
 namespace net {
 
-// Basic utility functions for interaction with DNS, MDNS, and host resolution.
+// Basic utility functions for interaction with MDNS and host resolution.
 namespace dns_util {
-
-// Returns true if the URI template is acceptable for sending requests via the
-// given method. The template must be properly formatted, GET requests require
-// the template to contain a "dns" variable, an expanded template must parse
-// to a valid HTTPS URL, and the "dns" variable may not be part of the hostname.
-NET_EXPORT bool IsValidDoHTemplate(const std::string& server_template,
-                                   const std::string& server_method);
 
 // Gets the endpoint for the multicast group a socket should join to receive
 // MDNS messages. Such sockets should also bind to the endpoint from

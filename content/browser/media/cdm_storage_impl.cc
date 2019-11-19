@@ -17,12 +17,14 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "ppapi/shared_impl/ppapi_constants.h"
-#include "storage/browser/fileapi/file_system_context.h"
-#include "storage/browser/fileapi/file_system_operation_context.h"
-#include "storage/browser/fileapi/isolated_context.h"
-#include "storage/common/fileapi/file_system_types.h"
-#include "storage/common/fileapi/file_system_util.h"
+#include "storage/browser/file_system/file_system_context.h"
+#include "storage/browser/file_system/file_system_operation_context.h"
+#include "storage/browser/file_system/isolated_context.h"
+#include "storage/common/file_system/file_system_types.h"
+#include "storage/common/file_system/file_system_util.h"
 #include "url/origin.h"
 
 // Currently this uses the PluginPrivateFileSystem as the previous CDMs ran
@@ -33,9 +35,10 @@
 namespace content {
 
 // static
-void CdmStorageImpl::Create(RenderFrameHost* render_frame_host,
-                            const std::string& cdm_file_system_id,
-                            media::mojom::CdmStorageRequest request) {
+void CdmStorageImpl::Create(
+    RenderFrameHost* render_frame_host,
+    const std::string& cdm_file_system_id,
+    mojo::PendingReceiver<media::mojom::CdmStorage> receiver) {
   DVLOG(3) << __func__;
   DCHECK(!render_frame_host->GetLastCommittedOrigin().opaque())
       << "Invalid origin specified for CdmStorageImpl::Create";
@@ -47,9 +50,9 @@ void CdmStorageImpl::Create(RenderFrameHost* render_frame_host,
   if (storage_partition)
     file_system_context = storage_partition->GetFileSystemContext();
 
-  // The created object is bound to (and owned by) |request|.
+  // The created object is bound to (and owned by) |receiver|.
   new CdmStorageImpl(render_frame_host, cdm_file_system_id,
-                     std::move(file_system_context), std::move(request));
+                     std::move(file_system_context), std::move(receiver));
 }
 
 // static
@@ -73,12 +76,11 @@ CdmStorageImpl::CdmStorageImpl(
     RenderFrameHost* render_frame_host,
     const std::string& cdm_file_system_id,
     scoped_refptr<storage::FileSystemContext> file_system_context,
-    media::mojom::CdmStorageRequest request)
-    : FrameServiceBase(render_frame_host, std::move(request)),
+    mojo::PendingReceiver<media::mojom::CdmStorage> receiver)
+    : FrameServiceBase(render_frame_host, std::move(receiver)),
       cdm_file_system_id_(cdm_file_system_id),
       file_system_context_(std::move(file_system_context)),
-      child_process_id_(render_frame_host->GetProcess()->GetID()),
-      weak_factory_(this) {}
+      child_process_id_(render_frame_host->GetProcess()->GetID()) {}
 
 CdmStorageImpl::~CdmStorageImpl() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -90,20 +92,20 @@ void CdmStorageImpl::Open(const std::string& file_name, OpenCallback callback) {
 
   if (!IsValidCdmFileSystemId(cdm_file_system_id_)) {
     DVLOG(1) << "CdmStorageImpl not initialized properly.";
-    std::move(callback).Run(Status::kFailure, base::File(), nullptr);
+    std::move(callback).Run(Status::kFailure, mojo::NullAssociatedRemote());
     return;
   }
 
   if (file_name.empty()) {
     DVLOG(1) << "No file specified.";
-    std::move(callback).Run(Status::kFailure, base::File(), nullptr);
+    std::move(callback).Run(Status::kFailure, mojo::NullAssociatedRemote());
     return;
   }
 
   // The file system should only be opened once. If it has been attempted and
   // failed, we can't create the CdmFile objects.
   if (file_system_state_ == FileSystemState::kError) {
-    std::move(callback).Run(Status::kFailure, base::File(), nullptr);
+    std::move(callback).Run(Status::kFailure, mojo::NullAssociatedRemote());
     return;
   }
 
@@ -159,7 +161,8 @@ void CdmStorageImpl::OnFileSystemOpened(base::File::Error error) {
     file_system_state_ = FileSystemState::kError;
     // All pending calls will fail.
     for (auto& pending : pending_open_calls_) {
-      std::move(pending.second).Run(Status::kFailure, base::File(), nullptr);
+      std::move(pending.second)
+          .Run(Status::kFailure, mojo::NullAssociatedRemote());
     }
     pending_open_calls_.clear();
     return;
@@ -181,38 +184,28 @@ void CdmStorageImpl::CreateCdmFile(const std::string& file_name,
   DCHECK_EQ(FileSystemState::kOpened, file_system_state_);
 
   // File system opened successfully, so create an CdmFileImpl object and
-  // initialize it (which actually opens the file for reading).
+  // initialize it (which only grabs the lock to prevent any other access to the
+  // file except through this object).
+  if (!CdmFileImpl::IsValidName(file_name)) {
+    std::move(callback).Run(Status::kFailure, mojo::NullAssociatedRemote());
+    return;
+  }
+
   auto cdm_file_impl = std::make_unique<CdmFileImpl>(
       file_name, origin(), cdm_file_system_id_, file_system_root_uri_,
       file_system_context_);
-  auto* cdm_file_ptr = cdm_file_impl.get();
-  cdm_file_ptr->Initialize(base::BindOnce(
-      &CdmStorageImpl::OnCdmFileInitialized, weak_factory_.GetWeakPtr(),
-      std::move(cdm_file_impl), std::move(callback)));
-}
 
-void CdmStorageImpl::OnCdmFileInitialized(
-    std::unique_ptr<CdmFileImpl> cdm_file_impl,
-    OpenCallback callback,
-    base::File file) {
-  DVLOG(3) << __func__;
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
-  if (!file.IsValid()) {
-    // Unable to open the file requested. Return an appropriate error.
-    Status status = (file.error_details() == base::File::FILE_ERROR_IN_USE)
-                        ? Status::kInUse
-                        : Status::kFailure;
-    std::move(callback).Run(status, base::File(), nullptr);
+  if (!cdm_file_impl->Initialize()) {
+    // Unable to initialize with the file requested.
+    std::move(callback).Run(Status::kInUse, mojo::NullAssociatedRemote());
     return;
   }
 
   // File was opened successfully, so create the binding and return success.
-  media::mojom::CdmFileAssociatedPtrInfo cdm_file;
-  cdm_file_bindings_.AddBinding(std::move(cdm_file_impl),
-                                mojo::MakeRequest(&cdm_file));
-  std::move(callback).Run(Status::kSuccess, std::move(file),
-                          std::move(cdm_file));
+  mojo::PendingAssociatedRemote<media::mojom::CdmFile> cdm_file;
+  cdm_file_receivers_.Add(std::move(cdm_file_impl),
+                          cdm_file.InitWithNewEndpointAndPassReceiver());
+  std::move(callback).Run(Status::kSuccess, std::move(cdm_file));
 }
 
 }  // namespace content

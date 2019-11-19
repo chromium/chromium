@@ -13,10 +13,12 @@
 namespace policy {
 
 class CRDHostDelegate;
+class DeviceCloudPolicyManagerChromeOS;
 
 class DeviceCommandsFactoryChromeOS : public RemoteCommandsFactory {
  public:
-  DeviceCommandsFactoryChromeOS();
+  explicit DeviceCommandsFactoryChromeOS(
+      DeviceCloudPolicyManagerChromeOS* policy_manager);
   ~DeviceCommandsFactoryChromeOS() override;
 
   // RemoteCommandsFactory:
@@ -25,6 +27,7 @@ class DeviceCommandsFactoryChromeOS : public RemoteCommandsFactory {
       RemoteCommandsService* service) override;
 
  private:
+  DeviceCloudPolicyManagerChromeOS* policy_manager_;
   std::unique_ptr<CRDHostDelegate> crd_host_delegate_;
 
   CRDHostDelegate* GetCRDHostDelegate();

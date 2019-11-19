@@ -17,7 +17,7 @@ namespace blink {
 std::unique_ptr<CachedDocumentParameters> CachedDocumentParametersForFuzzing(
     FuzzedDataProvider& fuzzed_data) {
   std::unique_ptr<CachedDocumentParameters> document_parameters =
-      CachedDocumentParameters::Create();
+      std::make_unique<CachedDocumentParameters>();
   document_parameters->do_html_preload_scanning = fuzzed_data.ConsumeBool();
   // TODO(csharrison): How should this be fuzzed?
   document_parameters->default_viewport_min_width = Length();
@@ -32,8 +32,7 @@ std::unique_ptr<CachedDocumentParameters> CachedDocumentParametersForFuzzing(
 }
 
 class MockResourcePreloader : public ResourcePreloader {
-  void Preload(std::unique_ptr<PreloadRequest>,
-               const NetworkHintsInterface&) override {}
+  void Preload(std::unique_ptr<PreloadRequest>) override {}
 };
 
 int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
@@ -62,16 +61,17 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   media_data.three_d_enabled = true;
   media_data.media_type = media_type_names::kScreen;
   media_data.strict_mode = true;
-  media_data.display_mode = kWebDisplayModeBrowser;
+  media_data.display_mode = blink::mojom::DisplayMode::kBrowser;
 
   MockResourcePreloader preloader;
 
-  std::unique_ptr<HTMLPreloadScanner> scanner = HTMLPreloadScanner::Create(
-      options, document_url, std::move(document_parameters), media_data,
-      TokenPreloadScanner::ScannerType::kMainDocument);
+  std::unique_ptr<HTMLPreloadScanner> scanner =
+      std::make_unique<HTMLPreloadScanner>(
+          options, document_url, std::move(document_parameters), media_data,
+          TokenPreloadScanner::ScannerType::kMainDocument);
 
   TextResourceDecoderForFuzzing decoder(fuzzed_data);
-  CString bytes = fuzzed_data.ConsumeRemainingBytes();
+  std::string bytes = fuzzed_data.ConsumeRemainingBytes();
   String decoded_bytes = decoder.Decode(bytes.data(), bytes.length());
   scanner->AppendToEnd(decoded_bytes);
   bool has_csp_meta_tag_unused = false;

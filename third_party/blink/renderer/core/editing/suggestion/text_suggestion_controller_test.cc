@@ -13,7 +13,7 @@
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
 #include "third_party/blink/renderer/core/editing/visible_selection.h"
 
-using ws::mojom::ImeTextSpanThickness;
+using ui::mojom::ImeTextSpanThickness;
 
 namespace blink {
 
@@ -27,7 +27,7 @@ class TextSuggestionControllerTest : public EditingTestBase {
   }
 
   void ShowSuggestionMenu(
-      const HeapVector<std::pair<Member<Node>, Member<DocumentMarker>>>&
+      const HeapVector<std::pair<Member<const Text>, Member<DocumentMarker>>>&
           node_suggestion_marker_pairs,
       size_t max_number_of_suggestions) {
     GetDocument().GetFrame()->GetTextSuggestionController().ShowSuggestionMenu(
@@ -84,7 +84,7 @@ TEST_F(TextSuggestionControllerTest, ApplyTextSuggestion) {
       "word1 word2 word3 word4"
       "</div>");
   Element* div = GetDocument().QuerySelector("div");
-  Text* text = ToText(div->firstChild());
+  auto* text = To<Text>(div->firstChild());
 
   // Add marker on "word1". This marker should *not* be cleared by the
   // replace operation.
@@ -169,8 +169,7 @@ TEST_F(TextSuggestionControllerTest, ApplyTextSuggestion) {
   EXPECT_EQ(6u, markers[2]->StartOffset());
   EXPECT_EQ(13u, markers[2]->EndOffset());
 
-  const SuggestionMarker* const suggestion_marker =
-      ToSuggestionMarker(markers[2]);
+  const auto* const suggestion_marker = To<SuggestionMarker>(markers[2].Get());
   EXPECT_EQ(1u, suggestion_marker->Suggestions().size());
   EXPECT_EQ(String("word2 word3"), suggestion_marker->Suggestions()[0]);
 
@@ -196,7 +195,7 @@ TEST_F(TextSuggestionControllerTest,
       "mispelled"
       "</div>");
   Element* div = GetDocument().QuerySelector("div");
-  Text* text = ToText(div->firstChild());
+  auto* text = To<Text>(div->firstChild());
 
   // Add marker on "mispelled". This marker should be cleared by the replace
   // operation.
@@ -210,7 +209,8 @@ TEST_F(TextSuggestionControllerTest,
   // Check the tag for the marker that was just added (the current tag value is
   // not reset between test cases).
   int32_t marker_tag =
-      ToSuggestionMarker(GetDocument().Markers().MarkersFor(*text)[0])->Tag();
+      To<SuggestionMarker>(GetDocument().Markers().MarkersFor(*text)[0].Get())
+          ->Tag();
 
   // Select immediately before "mispelled".
   GetDocument().GetFrame()->Selection().SetSelectionAndEndTyping(
@@ -472,7 +472,7 @@ TEST_F(TextSuggestionControllerTest, SuggestionMarkerWithEmptySuggestion) {
       "hello"
       "</div>");
   Element* div = GetDocument().QuerySelector("div");
-  Text* text = ToText(div->firstChild());
+  auto* text = To<Text>(div->firstChild());
 
   // Set suggestion marker with empty suggestion list.
   GetDocument().Markers().AddSuggestionMarker(
@@ -504,7 +504,7 @@ TEST_F(TextSuggestionControllerTest, SuggestionMarkerWithEmptySuggestion) {
   const EphemeralRangeInFlatTree& range_to_check =
       ComputeRangeSurroundingCaret(selection.Start());
 
-  const HeapVector<std::pair<Member<Node>, Member<DocumentMarker>>>&
+  const HeapVector<std::pair<Member<const Text>, Member<DocumentMarker>>>&
       node_suggestion_marker_pairs =
           GetFrame().GetDocument()->Markers().MarkersIntersectingRange(
               range_to_check, DocumentMarker::MarkerTypes::Suggestion());
@@ -521,7 +521,7 @@ TEST_F(TextSuggestionControllerTest, SuggestionMarkerWithSuggestion) {
       "hello"
       "</div>");
   Element* div = GetDocument().QuerySelector("div");
-  Text* text = ToText(div->firstChild());
+  auto* text = To<Text>(div->firstChild());
 
   // Set suggestion marker with two suggestions.
   GetDocument().Markers().AddSuggestionMarker(

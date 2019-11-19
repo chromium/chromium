@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "net/base/net_export.h"
-#include "net/log/net_log_parameters_callback.h"
 #include "net/log/net_log_source_type.h"
 
 namespace base {
@@ -30,17 +29,17 @@ struct NET_EXPORT NetLogSource {
 
   // Adds the source to a DictionaryValue containing event parameters,
   // using the name "source_dependency".
-  void AddToEventParameters(base::DictionaryValue* event_params) const;
+  void AddToEventParameters(base::Value* event_params) const;
 
-  // Returns a callback that returns a dictionary with a single entry
-  // named "source_dependency" that describes |this|.
-  NetLogParametersCallback ToEventParametersCallback() const;
+  // Returns a dictionary with a single entry named "source_dependency" that
+  // describes |this|.
+  base::Value ToEventParameters() const;
 
   // Attempts to extract a NetLogSource from a set of event parameters.  Returns
   // true and writes the result to |source| on success.  Returns false and
   // makes |source| an invalid source on failure.
   // TODO(mmenke):  Long term, we want to remove this.
-  static bool FromEventParameters(base::Value* event_params,
+  static bool FromEventParameters(const base::Value* event_params,
                                   NetLogSource* source);
 
   NetLogSourceType type;

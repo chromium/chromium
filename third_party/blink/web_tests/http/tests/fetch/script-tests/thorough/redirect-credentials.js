@@ -34,13 +34,13 @@ var TEST_TARGETS = [
   [REDIRECT_URL +
    encodeURIComponent(OTHER_BASE_URL + '&ACAOrigin=' + BASE_ORIGIN + '') +
    '&mode=cors&credentials=omit&method=GET',
-   [fetchResolved, noContentLength, noServerHeader, hasBody, typeCors],
+   [fetchResolved, hasContentLength, noServerHeader, hasBody, typeCors],
    [methodIsGET, authCheckNone]],
   [REDIRECT_URL +
    encodeURIComponent(OTHER_BASE_URL +
                       '&ACAOrigin=' + BASE_ORIGIN + '&ACACredentials=true') +
    '&mode=cors&credentials=omit&method=GET',
-   [fetchResolved, noContentLength, noServerHeader, hasBody, typeCors],
+   [fetchResolved, hasContentLength, noServerHeader, hasBody, typeCors],
    [methodIsGET, authCheckNone]],
 
   [REDIRECT_URL +
@@ -51,51 +51,51 @@ var TEST_TARGETS = [
    encodeURIComponent(OTHER_BASE_URL +
                       '&ACAOrigin=' + BASE_ORIGIN + '&ACACredentials=true') +
    '&mode=cors&credentials=include&method=GET',
-   [fetchResolved, noContentLength, noServerHeader, hasBody, typeCors],
-   [methodIsGET, authCheck2]],
+   [fetchResolved, hasContentLength, noServerHeader, hasBody, typeCors],
+   [methodIsGET, onlyForCrossSiteCookieTest(authCheck2)]],
 
   [REDIRECT_URL +
    encodeURIComponent(OTHER_BASE_URL + '&ACAOrigin=' + BASE_ORIGIN + '') +
    '&mode=cors&credentials=same-origin&method=GET',
-   [fetchResolved, noContentLength, noServerHeader, hasBody, typeCors],
+   [fetchResolved, hasContentLength, noServerHeader, hasBody, typeCors],
    [methodIsGET, authCheckNone]],
   [REDIRECT_URL +
    encodeURIComponent(OTHER_BASE_URL +
                       '&ACAOrigin=' + BASE_ORIGIN + '&ACACredentials=true') +
    '&mode=cors&credentials=same-origin&method=GET',
-   [fetchResolved, noContentLength, noServerHeader, hasBody, typeCors],
+   [fetchResolved, hasContentLength, noServerHeader, hasBody, typeCors],
    [methodIsGET, authCheckNone]],
 
   // Redirect: other origin -> same origin
   // Credentials test
   [OTHER_REDIRECT_URL + encodeURIComponent(BASE_URL + 'ACAOrigin=*') +
    '&mode=cors&credentials=omit&method=GET&ACAOrigin=*',
-   [fetchResolved, noContentLength, noServerHeader, hasBody, typeCors],
+   [fetchResolved, hasContentLength, noServerHeader, hasBody, typeCors],
    [methodIsGET, authCheckNone]],
   [OTHER_REDIRECT_URL + encodeURIComponent(BASE_URL + 'ACAOrigin=*') +
    '&mode=cors&credentials=include&method=GET&ACAOrigin=*',
    [fetchRejected]],
   [OTHER_REDIRECT_URL + encodeURIComponent(BASE_URL + 'ACAOrigin=*') +
    '&mode=cors&credentials=same-origin&method=GET&ACAOrigin=*',
-   [fetchResolved, noContentLength, noServerHeader, hasBody, typeCors],
+   [fetchResolved, hasContentLength, noServerHeader, hasBody, typeCors],
    [methodIsGET, authCheckNone]],
   [OTHER_REDIRECT_URL +
    encodeURIComponent(BASE_URL + 'ACAOrigin=null&ACACredentials=true') +
    '&mode=cors&credentials=omit&method=GET' +
    '&ACAOrigin=' + BASE_ORIGIN + '&ACACredentials=true',
-   [fetchResolved, noContentLength, noServerHeader, hasBody, typeCors],
+   [fetchResolved, hasContentLength, noServerHeader, hasBody, typeCors],
    [methodIsGET, authCheckNone]],
   [OTHER_REDIRECT_URL +
    encodeURIComponent(BASE_URL + 'ACAOrigin=null&ACACredentials=true') +
    '&mode=cors&credentials=include&method=GET' +
    '&ACAOrigin=' + BASE_ORIGIN + '&ACACredentials=true',
-   [fetchResolved, noContentLength, noServerHeader, hasBody, typeCors],
+   [fetchResolved, hasContentLength, noServerHeader, hasBody, typeCors],
    [methodIsGET, authCheck1]],
   [OTHER_REDIRECT_URL +
    encodeURIComponent(BASE_URL + 'ACAOrigin=null&ACACredentials=true') +
    '&mode=cors&credentials=same-origin&method=GET' +
    '&ACAOrigin=' + BASE_ORIGIN + '&ACACredentials=true',
-   [fetchResolved, noContentLength, noServerHeader, hasBody, typeCors],
+   [fetchResolved, hasContentLength, noServerHeader, hasBody, typeCors],
    [methodIsGET, authCheckNone]],
 ];
 

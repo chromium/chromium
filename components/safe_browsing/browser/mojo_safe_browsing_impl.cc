@@ -8,13 +8,14 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/supports_user_data.h"
 #include "components/safe_browsing/browser/safe_browsing_url_checker_impl.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/resource_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/resource_type.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/load_flags.h"
 
 namespace safe_browsing {
@@ -35,17 +36,17 @@ content::WebContents* GetWebContentsFromID(int render_process_id,
 // if it hasn't been run yet.
 class CheckUrlCallbackWrapper {
  public:
-  using Callback =
-      base::OnceCallback<void(mojom::UrlCheckNotifierRequest, bool, bool)>;
+  using Callback = base::OnceCallback<
+      void(mojo::PendingReceiver<mojom::UrlCheckNotifier>, bool, bool)>;
 
   explicit CheckUrlCallbackWrapper(Callback callback)
       : callback_(std::move(callback)) {}
   ~CheckUrlCallbackWrapper() {
     if (callback_)
-      Run(nullptr, true, false);
+      Run(mojo::NullReceiver(), true, false);
   }
 
-  void Run(mojom::UrlCheckNotifierRequest slow_check_notifier,
+  void Run(mojo::PendingReceiver<mojom::UrlCheckNotifier> slow_check_notifier,
            bool proceed,
            bool showed_interstitial) {
     std::move(callback_).Run(std::move(slow_check_notifier), proceed,
@@ -54,6 +55,22 @@ class CheckUrlCallbackWrapper {
 
  private:
   Callback callback_;
+};
+
+// UserData object that owns MojoSafeBrowsingImpl. This is used rather than
+// having MojoSafeBrowsingImpl directly extend base::SupportsUserData::Data to
+// avoid naming conflicts between Data::Clone() and
+// mojom::SafeBrowsing::Clone().
+class SafeBrowserUserData : public base::SupportsUserData::Data {
+ public:
+  explicit SafeBrowserUserData(std::unique_ptr<MojoSafeBrowsingImpl> impl)
+      : impl_(std::move(impl)) {}
+  ~SafeBrowserUserData() override = default;
+
+ private:
+  std::unique_ptr<MojoSafeBrowsingImpl> impl_;
+
+  DISALLOW_COPY_AND_ASSIGN(SafeBrowserUserData);
 };
 
 }  // namespace
@@ -67,10 +84,10 @@ MojoSafeBrowsingImpl::MojoSafeBrowsingImpl(
       resource_context_(resource_context) {
   DCHECK(resource_context_);
 
-  // It is safe to bind |this| as Unretained because |bindings_| is owned by
+  // It is safe to bind |this| as Unretained because |receivers_| is owned by
   // |this| and will not call this callback after it is destroyed.
-  bindings_.set_connection_error_handler(base::Bind(
-      &MojoSafeBrowsingImpl::OnConnectionError, base::Unretained(this)));
+  receivers_.set_disconnect_handler(base::Bind(
+      &MojoSafeBrowsingImpl::OnMojoDisconnect, base::Unretained(this)));
 }
 
 MojoSafeBrowsingImpl::~MojoSafeBrowsingImpl() {
@@ -81,8 +98,8 @@ MojoSafeBrowsingImpl::~MojoSafeBrowsingImpl() {
 void MojoSafeBrowsingImpl::MaybeCreate(
     int render_process_id,
     content::ResourceContext* resource_context,
-    const base::Callback<UrlCheckerDelegate*()>& delegate_getter,
-    mojom::SafeBrowsingRequest request) {
+    const base::Callback<scoped_refptr<UrlCheckerDelegate>()>& delegate_getter,
+    mojo::PendingReceiver<mojom::SafeBrowsing> receiver) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
   scoped_refptr<UrlCheckerDelegate> delegate = delegate_getter.Run();
@@ -93,18 +110,18 @@ void MojoSafeBrowsingImpl::MaybeCreate(
 
   std::unique_ptr<MojoSafeBrowsingImpl> impl(new MojoSafeBrowsingImpl(
       std::move(delegate), render_process_id, resource_context));
-  impl->Clone(std::move(request));
+  impl->Clone(std::move(receiver));
 
-  // Need to store the value of |impl.get()| in a temp variable instead of
-  // getting the value on the same line as |std::move(impl)|, because the
-  // evalution order is unspecified.
-  const void* key = impl.get();
-  resource_context->SetUserData(key, std::move(impl));
+  MojoSafeBrowsingImpl* raw_impl = impl.get();
+  std::unique_ptr<SafeBrowserUserData> user_data =
+      std::make_unique<SafeBrowserUserData>(std::move(impl));
+  raw_impl->user_data_key_ = user_data.get();
+  resource_context->SetUserData(raw_impl->user_data_key_, std::move(user_data));
 }
 
 void MojoSafeBrowsingImpl::CreateCheckerAndCheck(
     int32_t render_frame_id,
-    mojom::SafeBrowsingUrlCheckerRequest request,
+    mojo::PendingReceiver<mojom::SafeBrowsingUrlChecker> receiver,
     const GURL& url,
     const std::string& method,
     const net::HttpRequestHeaders& headers,
@@ -119,32 +136,44 @@ void MojoSafeBrowsingImpl::CreateCheckerAndCheck(
                                         -1 /* frame_tree_node_id */,
                                         render_process_id_, render_frame_id,
                                         originated_from_service_worker)) {
-    // This will drop |request|. The result is that the renderer side will
-    // consider all URLs in the redirect chain of this request as safe.
+    // Ensure that we don't destroy an uncalled CreateCheckerAndCheckCallback
+    if (callback) {
+      std::move(callback).Run(mojo::NullReceiver(), true /* proceed */,
+                              false /* showed_interstitial */);
+    }
+
+    // This will drop |receiver|. The result is that the renderer side will
+    // consider all URLs in the redirect chain of this receiver as safe.
     return;
   }
 
+  // This is not called for frame resources, and real time URL checks currently
+  // only support frame resources. If we extend real time URL checks to support
+  // non-main frames, we will need to provide the user preferences regarding
+  // real time lookup here.
   auto checker_impl = std::make_unique<SafeBrowsingUrlCheckerImpl>(
       headers, static_cast<int>(load_flags), resource_type, has_user_gesture,
       delegate_,
       base::Bind(&GetWebContentsFromID, render_process_id_,
-                 static_cast<int>(render_frame_id)));
+                 static_cast<int>(render_frame_id)),
+      /*real_time_lookup_enabled=*/false);
 
   checker_impl->CheckUrl(
       url, method,
       base::BindOnce(
           &CheckUrlCallbackWrapper::Run,
           base::Owned(new CheckUrlCallbackWrapper(std::move(callback)))));
-  mojo::MakeStrongBinding(std::move(checker_impl), std::move(request));
+  mojo::MakeSelfOwnedReceiver(std::move(checker_impl), std::move(receiver));
 }
 
-void MojoSafeBrowsingImpl::Clone(mojom::SafeBrowsingRequest request) {
-  bindings_.AddBinding(this, std::move(request));
+void MojoSafeBrowsingImpl::Clone(
+    mojo::PendingReceiver<mojom::SafeBrowsing> receiver) {
+  receivers_.Add(this, std::move(receiver));
 }
 
-void MojoSafeBrowsingImpl::OnConnectionError() {
-  if (bindings_.empty()) {
-    resource_context_->RemoveUserData(this);
+void MojoSafeBrowsingImpl::OnMojoDisconnect() {
+  if (receivers_.empty()) {
+    resource_context_->RemoveUserData(user_data_key_);
     // This object is destroyed.
   }
 }

@@ -8,6 +8,8 @@ component("x") {
     "events_x_export.h",
     "events_x_utils.cc",
     "events_x_utils.h",
+    "x11_window_event_manager.cc",
+    "x11_window_event_manager.h",
   ]
   defines = [ "EVENTS_X_IMPLEMENTATION" ]
   deps = [

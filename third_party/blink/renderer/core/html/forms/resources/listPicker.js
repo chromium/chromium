@@ -44,16 +44,24 @@ function ListPicker(element, config) {
   this._delayedChildrenConfig = null;
   this._delayedChildrenConfigIndex = 0;
   this._layout();
-  this._selectElement.addEventListener('mouseup', this._handleMouseUp.bind(this), false);
-  this._selectElement.addEventListener('touchstart', this._handleTouchStart.bind(this), false);
-  this._selectElement.addEventListener('keydown', this._handleKeyDown.bind(this), false);
-  this._selectElement.addEventListener('change', this._handleChange.bind(this), false);
-  window.addEventListener('message', this._handleWindowMessage.bind(this), false);
-  window.addEventListener('mousemove', this._handleWindowMouseMove.bind(this), false);
-  window.addEventListener('mouseover', this._handleWindowMouseOver.bind(this), false);
+  this._selectElement.addEventListener(
+      'mouseup', this._handleMouseUp.bind(this), false);
+  this._selectElement.addEventListener(
+      'touchstart', this._handleTouchStart.bind(this), false);
+  this._selectElement.addEventListener(
+      'keydown', this._handleKeyDown.bind(this), false);
+  this._selectElement.addEventListener(
+      'change', this._handleChange.bind(this), false);
+  window.addEventListener(
+      'message', this._handleWindowMessage.bind(this), false);
+  window.addEventListener(
+      'mousemove', this._handleWindowMouseMove.bind(this), false);
+  window.addEventListener(
+      'mouseover', this._handleWindowMouseOver.bind(this), false);
   this._handleWindowTouchMoveBound = this._handleWindowTouchMove.bind(this);
   this._handleWindowTouchEndBound = this._handleWindowTouchEnd.bind(this);
-  this._handleTouchSelectModeScrollBound = this._handleTouchSelectModeScroll.bind(this);
+  this._handleTouchSelectModeScrollBound =
+      this._handleTouchSelectModeScroll.bind(this);
   this.lastMousePositionX = Infinity;
   this.lastMousePositionY = Infinity;
   this._selectionSetByMouseHover = false;
@@ -68,7 +76,8 @@ ListPicker.prototype = Object.create(Picker.prototype);
 
 ListPicker.prototype._handleWindowDidHide = function() {
   this._fixWindowSize();
-  var selectedOption = this._selectElement.options[this._selectElement.selectedIndex];
+  var selectedOption =
+      this._selectElement.options[this._selectElement.selectedIndex];
   if (selectedOption)
     selectedOption.scrollIntoView(false);
   window.removeEventListener('didHide', this._handleWindowDidHideBound, false);
@@ -80,10 +89,14 @@ ListPicker.prototype._handleWindowMessage = function(event) {
     this._config.baseStyle = window.updateData.baseStyle;
     this._config.children = window.updateData.children;
     this._update();
-    if (this._config.anchorRectInScreen.x !== window.updateData.anchorRectInScreen.x ||
-        this._config.anchorRectInScreen.y !== window.updateData.anchorRectInScreen.y ||
-        this._config.anchorRectInScreen.width !== window.updateData.anchorRectInScreen.width ||
-        this._config.anchorRectInScreen.height !== window.updateData.anchorRectInScreen.height) {
+    if (this._config.anchorRectInScreen.x !==
+            window.updateData.anchorRectInScreen.x ||
+        this._config.anchorRectInScreen.y !==
+            window.updateData.anchorRectInScreen.y ||
+        this._config.anchorRectInScreen.width !==
+            window.updateData.anchorRectInScreen.width ||
+        this._config.anchorRectInScreen.height !==
+            window.updateData.anchorRectInScreen.height) {
       // TODO(tkent): Don't fix window size here due to a bug of Aura or
       // compositor. crbug.com/863770
       if (!navigator.platform.startsWith('Win')) {
@@ -101,7 +114,8 @@ ListPicker.ListboxSelectBorder = 1;
 
 ListPicker.prototype._handleWindowMouseMove = function(event) {
   var visibleTop = ListPicker.ListboxSelectBorder;
-  var visibleBottom = this._selectElement.offsetHeight - ListPicker.ListboxSelectBorder;
+  var visibleBottom =
+      this._selectElement.offsetHeight - ListPicker.ListboxSelectBorder;
   var optionBounds = event.target.getBoundingClientRect();
   if (optionBounds.height >= 1.0) {
     // If the height of the visible part of event.target is less than 1px,
@@ -128,7 +142,8 @@ ListPicker.prototype._handleWindowMouseOver = function(event) {
 ListPicker.prototype._handleMouseUp = function(event) {
   if (event.target.tagName !== 'OPTION')
     return;
-  window.pagePopupController.setValueAndClosePopup(0, this._selectElement.value);
+  window.pagePopupController.setValueAndClosePopup(
+      0, this._selectElement.value);
 };
 
 ListPicker.prototype._handleTouchStart = function(event) {
@@ -140,7 +155,8 @@ ListPicker.prototype._handleTouchStart = function(event) {
   this._trackingTouchId = touch.identifier;
   this._highlightOption(touch.target);
   this._selectionSetByMouseHover = false;
-  this._selectElement.addEventListener('scroll', this._handleTouchSelectModeScrollBound, false);
+  this._selectElement.addEventListener(
+      'scroll', this._handleTouchSelectModeScrollBound, false);
   window.addEventListener('touchmove', this._handleWindowTouchMoveBound, false);
   window.addEventListener('touchend', this._handleWindowTouchEndBound, false);
 };
@@ -151,9 +167,12 @@ ListPicker.prototype._handleTouchSelectModeScroll = function(event) {
 
 ListPicker.prototype._exitTouchSelectMode = function(event) {
   this._trackingTouchId = null;
-  this._selectElement.removeEventListener('scroll', this._handleTouchSelectModeScrollBound, false);
-  window.removeEventListener('touchmove', this._handleWindowTouchMoveBound, false);
-  window.removeEventListener('touchend', this._handleWindowTouchEndBound, false);
+  this._selectElement.removeEventListener(
+      'scroll', this._handleTouchSelectModeScrollBound, false);
+  window.removeEventListener(
+      'touchmove', this._handleWindowTouchMoveBound, false);
+  window.removeEventListener(
+      'touchend', this._handleWindowTouchEndBound, false);
 };
 
 ListPicker.prototype._handleWindowTouchMove = function(event) {
@@ -162,7 +181,8 @@ ListPicker.prototype._handleWindowTouchMove = function(event) {
   var touch = this._getTouchForId(event.touches, this._trackingTouchId);
   if (!touch)
     return;
-  this._highlightOption(document.elementFromPoint(touch.clientX, touch.clientY));
+  this._highlightOption(
+      document.elementFromPoint(touch.clientX, touch.clientY));
   this._selectionSetByMouseHover = false;
 };
 
@@ -174,7 +194,8 @@ ListPicker.prototype._handleWindowTouchEnd = function(event) {
     return;
   var target = document.elementFromPoint(touch.clientX, touch.clientY);
   if (target.tagName === 'OPTION' && !target.disabled)
-    window.pagePopupController.setValueAndClosePopup(0, this._selectElement.value);
+    window.pagePopupController.setValueAndClosePopup(
+        0, this._selectElement.value);
   this._exitTouchSelectMode();
 };
 
@@ -207,7 +228,8 @@ ListPicker.prototype._handleKeyDown = function(event) {
     window.pagePopupController.closePopup();
     event.preventDefault();
   } else if (key === 'Tab' || key === 'Enter') {
-    window.pagePopupController.setValueAndClosePopup(0, this._selectElement.value);
+    window.pagePopupController.setValueAndClosePopup(
+        0, this._selectElement.value);
     event.preventDefault();
   } else if (event.altKey && (key === 'ArrowDown' || key === 'ArrowUp')) {
     // We need to add a delay here because, if we do it immediately the key
@@ -224,7 +246,8 @@ ListPicker.prototype._fixWindowSize = function() {
   this._selectElement.style.height = '';
   var scale = this._config.scaleFactor;
   var maxHeight = this._selectElement.offsetHeight;
-  var noScrollHeight = (this._calculateScrollHeight() + ListPicker.ListboxSelectBorder * 2);
+  var noScrollHeight =
+      (this._calculateScrollHeight() + ListPicker.ListboxSelectBorder * 2);
   var scrollbarWidth = getScrollbarWidth();
   var elementOffsetWidth = this._selectElement.offsetWidth;
   var desiredWindowHeight = noScrollHeight;
@@ -241,13 +264,17 @@ ListPicker.prototype._fixWindowSize = function() {
     expectingScrollbar = true;
   }
   // Screen coordinate for anchorRectInScreen and windowRect is DIP.
-  desiredWindowWidth = Math.max(this._config.anchorRectInScreen.width * scale, desiredWindowWidth);
-  var windowRect =
-      adjustWindowRect(desiredWindowWidth / scale, desiredWindowHeight / scale, elementOffsetWidth / scale, 0);
+  desiredWindowWidth = Math.max(
+      this._config.anchorRectInScreen.width * scale, desiredWindowWidth);
+  var windowRect = adjustWindowRect(
+      desiredWindowWidth / scale, desiredWindowHeight / scale,
+      elementOffsetWidth / scale, 0);
   // If the available screen space is smaller than maxHeight, we will get an unexpected scrollbar.
   if (!expectingScrollbar && windowRect.height < noScrollHeight / scale) {
     desiredWindowWidth = windowRect.width * scale + scrollbarWidth;
-    windowRect = adjustWindowRect(desiredWindowWidth / scale, windowRect.height, windowRect.width, windowRect.height);
+    windowRect = adjustWindowRect(
+        desiredWindowWidth / scale, windowRect.height, windowRect.width,
+        windowRect.height);
   }
   this._selectElement.style.width = (windowRect.width * scale) + 'px';
   this._selectElement.style.height = (windowRect.height * scale) + 'px';
@@ -279,11 +306,14 @@ ListPicker.prototype._listItemCount = function() {
 ListPicker.prototype._layout = function() {
   if (this._config.isRTL)
     this._element.classList.add('rtl');
-  this._selectElement.style.backgroundColor = this._config.baseStyle.backgroundColor;
+  this._selectElement.style.backgroundColor =
+      this._config.baseStyle.backgroundColor;
   this._selectElement.style.color = this._config.baseStyle.color;
-  this._selectElement.style.textTransform = this._config.baseStyle.textTransform;
+  this._selectElement.style.textTransform =
+      this._config.baseStyle.textTransform;
   this._selectElement.style.fontSize = this._config.baseStyle.fontSize + 'px';
-  this._selectElement.style.fontFamily = this._config.baseStyle.fontFamily.map(s => '"' + s + '"').join(',');
+  this._selectElement.style.fontFamily =
+      this._config.baseStyle.fontFamily.map(s => '"' + s + '"').join(',');
   this._selectElement.style.fontStyle = this._config.baseStyle.fontStyle;
   this._selectElement.style.fontVariant = this._config.baseStyle.fontVariant;
   this._updateChildren(this._selectElement, this._config);
@@ -297,7 +327,8 @@ ListPicker.prototype._update = function() {
   this._selectElement.scrollTop = scrollPosition;
   var optionUnderMouse = null;
   if (this._selectionSetByMouseHover) {
-    var elementUnderMouse = document.elementFromPoint(this.lastMousePositionX, this.lastMousePositionY);
+    var elementUnderMouse = document.elementFromPoint(
+        this.lastMousePositionX, this.lastMousePositionY);
     optionUnderMouse = elementUnderMouse && elementUnderMouse.closest('option');
   }
   if (optionUnderMouse)
@@ -319,13 +350,15 @@ ListPicker.prototype._updateChildren = function(parent, config) {
   var fragment = null;
   var inGroup = parent.tagName === 'OPTGROUP';
   var lastListIndex = -1;
-  var limit = Math.max(this._config.selectedIndex, ListPicker.DelayedLayoutThreshold);
+  var limit =
+      Math.max(this._config.selectedIndex, ListPicker.DelayedLayoutThreshold);
   var i;
   for (i = 0; i < config.children.length; ++i) {
     if (!inGroup && lastListIndex >= limit)
       break;
     var childConfig = config.children[i];
-    var item = this._findReusableItem(parent, childConfig, outOfDateIndex) || this._createItemElement(childConfig);
+    var item = this._findReusableItem(parent, childConfig, outOfDateIndex) ||
+        this._createItemElement(childConfig);
     this._configureItem(item, childConfig, inGroup);
     lastListIndex = item.value ? Number(item.value) : -1;
     if (outOfDateIndex < parent.children.length) {
@@ -361,8 +394,10 @@ ListPicker.prototype._updateChildrenLater = function(timeStamp) {
     return;
   var fragment = document.createDocumentFragment();
   var startIndex = this._delayedChildrenConfigIndex;
-  for (; this._delayedChildrenConfigIndex < this._delayedChildrenConfig.length; ++this._delayedChildrenConfigIndex) {
-    var childConfig = this._delayedChildrenConfig[this._delayedChildrenConfigIndex];
+  for (; this._delayedChildrenConfigIndex < this._delayedChildrenConfig.length;
+       ++this._delayedChildrenConfigIndex) {
+    var childConfig =
+        this._delayedChildrenConfig[this._delayedChildrenConfigIndex];
     var item = this._createItemElement(childConfig);
     this._configureItem(item, childConfig, false);
     fragment.appendChild(item);
@@ -409,13 +444,17 @@ ListPicker.prototype._applyItemStyle = function(element, styleConfig) {
   style.direction = styleConfig.direction ? styleConfig.direction : '';
   style.unicodeBidi = styleConfig.unicodeBidi ? styleConfig.unicodeBidi : '';
   style.color = styleConfig.color ? styleConfig.color : '';
-  style.backgroundColor = styleConfig.backgroundColor ? styleConfig.backgroundColor : '';
+  style.backgroundColor =
+      styleConfig.backgroundColor ? styleConfig.backgroundColor : '';
   style.fontSize = styleConfig.fontSize ? styleConfig.fontSize + 'px' : '';
   style.fontWeight = styleConfig.fontWeight ? styleConfig.fontWeight : '';
-  style.fontFamily = styleConfig.fontFamily ? styleConfig.fontFamily.map(s => '"' + s + '"').join(',') : '';
+  style.fontFamily = styleConfig.fontFamily ?
+      styleConfig.fontFamily.map(s => '"' + s + '"').join(',') :
+      '';
   style.fontStyle = styleConfig.fontStyle ? styleConfig.fontStyle : '';
   style.fontVariant = styleConfig.fontVariant ? styleConfig.fontVariant : '';
-  style.textTransform = styleConfig.textTransform ? styleConfig.textTransform : '';
+  style.textTransform =
+      styleConfig.textTransform ? styleConfig.textTransform : '';
 };
 
 ListPicker.prototype._configureItem = function(element, config, inGroup) {

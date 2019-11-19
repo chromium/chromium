@@ -10,7 +10,6 @@
 #include "base/files/scoped_file.h"
 #include "base/macros.h"
 #include "base/memory/read_only_shared_memory_region.h"
-#include "base/memory/shared_memory.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/process/process.h"
 #include "build/build_config.h"
@@ -62,9 +61,6 @@ class PPAPI_PROXY_EXPORT ProxyChannel
     // because both sides of the channel may not have sufficient permission to
     // duplicate handles directly. The implementation must provide the same
     // guarantees as ProxyChannel::ShareSharedMemoryHandleWithRemote below.
-    virtual base::SharedMemoryHandle ShareSharedMemoryHandleWithRemote(
-        const base::SharedMemoryHandle& handle,
-        base::ProcessId remote_pid) = 0;
     virtual base::UnsafeSharedMemoryRegion
     ShareUnsafeSharedMemoryRegionWithRemote(
         const base::UnsafeSharedMemoryRegion& region,
@@ -98,8 +94,6 @@ class PPAPI_PROXY_EXPORT ProxyChannel
   // side then owns that handle. Note: if sending the message fails, the
   // returned handle is properly closed by the IPC system. The original handle
   // is not closed by this operation.
-  base::SharedMemoryHandle ShareSharedMemoryHandleWithRemote(
-      const base::SharedMemoryHandle& handle);
   base::UnsafeSharedMemoryRegion ShareUnsafeSharedMemoryRegionWithRemote(
       const base::UnsafeSharedMemoryRegion& region);
   base::ReadOnlySharedMemoryRegion ShareReadOnlySharedMemoryRegionWithRemote(

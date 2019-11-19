@@ -26,7 +26,6 @@
 #include "build/build_config.h"
 #include "gtest/gtest.h"
 #include "test/errors.h"
-#include "test/gtest_disabled.h"
 #include "test/scoped_temp_dir.h"
 #include "test/test_paths.h"
 #include "test/win/child_launcher.h"
@@ -38,6 +37,7 @@
 #include "util/win/get_function.h"
 #include "util/win/handle.h"
 #include "util/win/scoped_handle.h"
+#include "util/win/scoped_registry_key.h"
 
 namespace crashpad {
 namespace test {
@@ -202,7 +202,7 @@ TEST(ProcessInfo, OtherProcess) {
 #if defined(ARCH_CPU_64_BITS)
 TEST(ProcessInfo, OtherProcessWOW64) {
   if (!TestPaths::Has32BitBuildArtifacts()) {
-    DISABLED_TEST();
+    GTEST_SKIP();
   }
 
   TestOtherProcess(TestPaths::Architecture::k32Bit);
@@ -527,18 +527,6 @@ TEST(ProcessInfo, ReadableRanges) {
                                  kBlockSize * 6,
                                  &bytes_read));
 }
-
-struct ScopedRegistryKeyCloseTraits {
-  static HKEY InvalidValue() {
-    return nullptr;
-  }
-  static void Free(HKEY key) {
-    RegCloseKey(key);
-  }
-};
-
-using ScopedRegistryKey =
-    base::ScopedGeneric<HKEY, ScopedRegistryKeyCloseTraits>;
 
 TEST(ProcessInfo, Handles) {
   ScopedTempDir temp_dir;

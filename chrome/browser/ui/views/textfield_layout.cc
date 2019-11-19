@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/textfield_layout.h"
 
+#include <utility>
+
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "ui/base/models/combobox_model.h"
 #include "ui/views/controls/combobox/combobox.h"
@@ -16,7 +18,7 @@ namespace {
 
 void AddLabelAndField(views::GridLayout* layout,
                       const base::string16& label_text,
-                      views::View* field,
+                      std::unique_ptr<views::View> field,
                       int column_set_id,
                       const gfx::FontList& field_font) {
   constexpr int kFontContext = views::style::CONTEXT_LABEL;
@@ -25,8 +27,9 @@ void AddLabelAndField(views::GridLayout* layout,
   int row_height = views::LayoutProvider::GetControlHeightForFont(
       kFontContext, kFontStyle, field_font);
   layout->StartRow(views::GridLayout::kFixedSize, column_set_id, row_height);
-  layout->AddView(new views::Label(label_text, kFontContext, kFontStyle));
-  layout->AddView(field);
+  layout->AddView(
+      std::make_unique<views::Label>(label_text, kFontContext, kFontStyle));
+  layout->AddView(std::move(field));
 }
 
 }  // namespace
@@ -58,11 +61,12 @@ views::ColumnSet* ConfigureTextfieldStack(views::GridLayout* layout,
 views::Textfield* AddFirstTextfieldRow(views::GridLayout* layout,
                                        const base::string16& label,
                                        int column_set_id) {
-  views::Textfield* textfield = new views::Textfield();
+  auto textfield = std::make_unique<views::Textfield>();
   textfield->SetAccessibleName(label);
-  AddLabelAndField(layout, label, textfield, column_set_id,
-                   textfield->GetFontList());
-  return textfield;
+  auto* textfield_ptr = textfield.get();
+  AddLabelAndField(layout, label, std::move(textfield), column_set_id,
+                   textfield_ptr->GetFontList());
+  return textfield_ptr;
 }
 
 views::Textfield* AddTextfieldRow(views::GridLayout* layout,
@@ -78,12 +82,13 @@ views::Combobox* AddComboboxRow(views::GridLayout* layout,
                                 const base::string16& label,
                                 std::unique_ptr<ui::ComboboxModel> model,
                                 int column_set_id) {
-  views::Combobox* combobox = new views::Combobox(std::move(model));
+  auto combobox = std::make_unique<views::Combobox>(std::move(model));
   combobox->SetAccessibleName(label);
+  auto* combobox_ptr = combobox.get();
   layout->AddPaddingRow(views::GridLayout::kFixedSize,
                         ChromeLayoutProvider::Get()->GetDistanceMetric(
                             DISTANCE_CONTROL_LIST_VERTICAL));
-  AddLabelAndField(layout, label, combobox, column_set_id,
-                   combobox->GetFontList());
-  return combobox;
+  AddLabelAndField(layout, label, std::move(combobox), column_set_id,
+                   combobox_ptr->GetFontList());
+  return combobox_ptr;
 }

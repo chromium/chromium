@@ -13,7 +13,7 @@
 
 namespace gpu {
 
-// A collection of tests that exercise the GL_EXT_srgb extension.
+// A collection of tests that exercise the GL_EXT_window_rectangles extension.
 class GLEXTWindowRectanglesTest : public testing::Test {
  protected:
   void SetUp() override {

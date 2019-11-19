@@ -82,6 +82,10 @@ class GainNode final : public AudioNode {
 
   AudioParam* gain() const;
 
+  // InspectorHelperMixin
+  void ReportDidCreate() final;
+  void ReportWillBeDestroyed() final;
+
  private:
   Member<AudioParam> gain_;
 };

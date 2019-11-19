@@ -38,37 +38,40 @@ SNAPSHOT_EXPORT bool GrabViewSnapshot(gfx::NativeView view,
 // These functions take a snapshot of |source_rect|, specified in layer space
 // coordinates (DIP for desktop, physical pixels for Android), and scale the
 // snapshot to |target_size| (in physical pixels), asynchronously.
-typedef base::Callback<void(gfx::Image snapshot)>
-    GrabWindowSnapshotAsyncCallback;
+using GrabWindowSnapshotAsyncCallback =
+    base::OnceCallback<void(gfx::Image snapshot)>;
+
 SNAPSHOT_EXPORT void GrabWindowSnapshotAndScaleAsync(
     gfx::NativeWindow window,
     const gfx::Rect& source_rect,
     const gfx::Size& target_size,
-    const GrabWindowSnapshotAsyncCallback& callback);
+    GrabWindowSnapshotAsyncCallback callback);
 
 SNAPSHOT_EXPORT void GrabWindowSnapshotAsync(
     gfx::NativeWindow window,
     const gfx::Rect& source_rect,
-    const GrabWindowSnapshotAsyncCallback& callback);
+    GrabWindowSnapshotAsyncCallback callback);
 
 SNAPSHOT_EXPORT void GrabViewSnapshotAsync(
     gfx::NativeView view,
     const gfx::Rect& source_rect,
-    const GrabWindowSnapshotAsyncCallback& callback);
+    GrabWindowSnapshotAsyncCallback callback);
 
 using GrabWindowSnapshotAsyncPNGCallback =
-    base::Callback<void(scoped_refptr<base::RefCountedMemory> data)>;
+    base::OnceCallback<void(scoped_refptr<base::RefCountedMemory> data)>;
+
 SNAPSHOT_EXPORT void GrabWindowSnapshotAsyncPNG(
     gfx::NativeWindow window,
     const gfx::Rect& source_rect,
-    const GrabWindowSnapshotAsyncPNGCallback& callback);
+    GrabWindowSnapshotAsyncPNGCallback callback);
 
 using GrabWindowSnapshotAsyncJPEGCallback =
-    base::Callback<void(scoped_refptr<base::RefCountedMemory> data)>;
+    base::OnceCallback<void(scoped_refptr<base::RefCountedMemory> data)>;
+
 SNAPSHOT_EXPORT void GrabWindowSnapshotAsyncJPEG(
     gfx::NativeWindow window,
     const gfx::Rect& source_rect,
-    const GrabWindowSnapshotAsyncJPEGCallback& callback);
+    GrabWindowSnapshotAsyncJPEGCallback callback);
 
 }  // namespace ui
 

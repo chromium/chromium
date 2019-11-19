@@ -22,7 +22,7 @@
 #include "chrome/common/safe_browsing/client_model.pb.h"
 #include "components/safe_browsing/proto/csd.pb.h"
 #include "components/variations/variations_associated_data.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "crypto/sha2.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -31,7 +31,7 @@
 #include "url/gurl.h"
 
 #if defined(OS_CHROMEOS)
-#include "chrome/browser/chromeos/settings/stub_install_attributes.h"
+#include "chromeos/tpm/stub_install_attributes.h"
 #endif
 
 using ::testing::Invoke;
@@ -58,7 +58,7 @@ class MockModelLoader : public ModelLoader {
 
 class MockClientSideDetectionService : public ClientSideDetectionService {
  public:
-  MockClientSideDetectionService() : ClientSideDetectionService(NULL) {}
+  MockClientSideDetectionService() : ClientSideDetectionService(nullptr) {}
 
   ~MockClientSideDetectionService() override {}
 
@@ -127,7 +127,7 @@ class ClientSideDetectionServiceTest : public testing::Test {
                    int net_error) {
     if (net_error != net::OK) {
       test_url_loader_factory_.AddResponse(
-          url, network::ResourceResponseHead(), std::string(),
+          url, network::mojom::URLResponseHead::New(), std::string(),
           network::URLLoaderCompletionStatus(net_error));
       return;
     }
@@ -238,7 +238,7 @@ class ClientSideDetectionServiceTest : public testing::Test {
   }
 
  protected:
-  content::TestBrowserThreadBundle browser_thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<ClientSideDetectionService> csd_service_;
 
   network::TestURLLoaderFactory test_url_loader_factory_;
@@ -347,35 +347,30 @@ TEST_F(ClientSideDetectionServiceTest, SendClientReportMalwareRequest) {
 
   base::Time before = base::Time::Now();
   // Invalid response body from the server.
-  SetClientReportMalwareResponse("invalid proto response",
-                                 net::URLRequestStatus::SUCCESS);
+  SetClientReportMalwareResponse("invalid proto response", net::OK);
   EXPECT_FALSE(SendClientReportMalwareRequest(url));
 
   // Missing bad_url.
   ClientMalwareResponse response;
   response.set_blacklist(true);
-  SetClientReportMalwareResponse(response.SerializeAsString(),
-                                 net::URLRequestStatus::SUCCESS);
+  SetClientReportMalwareResponse(response.SerializeAsString(), net::OK);
   EXPECT_FALSE(SendClientReportMalwareRequest(url));
 
   // Normal behavior.
   response.set_blacklist(true);
   response.set_bad_url("http://response-bad.com/");
-  SetClientReportMalwareResponse(response.SerializeAsString(),
-                                 net::URLRequestStatus::SUCCESS);
+  SetClientReportMalwareResponse(response.SerializeAsString(), net::OK);
   EXPECT_TRUE(SendClientReportMalwareRequest(url));
   CheckConfirmedMalwareUrl(GURL("http://response-bad.com/"));
 
   // This request will fail
   response.set_blacklist(false);
-  SetClientReportMalwareResponse(response.SerializeAsString(),
-                                 net::URLRequestStatus::FAILED);
+  SetClientReportMalwareResponse(response.SerializeAsString(), net::ERR_FAILED);
   EXPECT_FALSE(SendClientReportMalwareRequest(url));
 
   // Server blacklist decision is false, and response is successful
   response.set_blacklist(false);
-  SetClientReportMalwareResponse(response.SerializeAsString(),
-                                 net::URLRequestStatus::SUCCESS);
+  SetClientReportMalwareResponse(response.SerializeAsString(), net::OK);
   EXPECT_FALSE(SendClientReportMalwareRequest(url));
 
   // Check that we have recorded all 5 requests within the correct time range.

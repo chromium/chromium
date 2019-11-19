@@ -25,6 +25,7 @@
 #include "base/test/test_shortcut_win.h"
 #include "base/version.h"
 #include "base/win/shortcut.h"
+#include "build/branding_buildflags.h"
 #include "chrome/install_static/install_details.h"
 #include "chrome/install_static/install_modes.h"
 #include "chrome/install_static/test/scoped_install_details.h"
@@ -141,7 +142,7 @@ constexpr char kExpectedPrimaryManifest[] =
     "      BackgroundColor='#5F6368'/>\r\n"
     "</Application>\r\n";
 
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 constexpr char kExpectedBetaManifest[] =
     "<Application xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'>\r\n"
     "  <VisualElements\r\n"

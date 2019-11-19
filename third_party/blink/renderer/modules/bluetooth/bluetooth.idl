@@ -5,9 +5,11 @@
 // https://webbluetoothcg.github.io/web-bluetooth/#bluetooth
 
 [
+    Exposed=Window,
     RuntimeEnabled=WebBluetooth,
     SecureContext
 ] interface Bluetooth : EventTarget {
+    [CallWith=ScriptState] Promise<boolean> getAvailability();
     [CallWith=ScriptState, RaisesException, MeasureAs=WebBluetoothRequestDevice] Promise<BluetoothDevice> requestDevice (optional RequestDeviceOptions options);
 
     // https://webbluetoothcg.github.io/web-bluetooth/scanning.html#dom-bluetooth-requestlescan
@@ -15,4 +17,4 @@
     Promise<BluetoothLEScan> requestLEScan (optional BluetoothLEScanOptions options);
 
     [RuntimeEnabled=WebBluetoothScanning] attribute EventHandler onadvertisementreceived;
-}; 
+};

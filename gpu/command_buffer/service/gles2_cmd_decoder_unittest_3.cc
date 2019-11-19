@@ -29,8 +29,6 @@ using ::testing::StrEq;
 namespace gpu {
 namespace gles2 {
 
-using namespace cmds;
-
 class GLES2DecoderTest3 : public GLES2DecoderTestBase {
  public:
   GLES2DecoderTest3() = default;
@@ -53,85 +51,97 @@ INSTANTIATE_TEST_SUITE_P(Service, GLES2DecoderTest3, ::testing::Bool());
 INSTANTIATE_TEST_SUITE_P(Service, GLES3DecoderTest3, ::testing::Bool());
 
 template <>
+void GLES2DecoderTestBase::SpecializedSetup<cmds::Uniform4fvImmediate, 0>(
+    bool /* valid */) {
+  SetupShaderForUniform(GL_FLOAT_VEC4);
+}
+
+template <>
+void GLES2DecoderTestBase::SpecializedSetup<cmds::Uniform4i, 0>(
+    bool /* valid */) {
+  SetupShaderForUniform(GL_INT_VEC4);
+}
+
+template <>
 void GLES2DecoderTestBase::SpecializedSetup<cmds::Uniform4ivImmediate, 0>(
     bool /* valid */) {
   SetupShaderForUniform(GL_INT_VEC4);
 }
 
 template <>
-void GLES2DecoderTestBase::SpecializedSetup<UniformMatrix3fvImmediate, 0>(
+void GLES2DecoderTestBase::SpecializedSetup<cmds::UniformMatrix3fvImmediate, 0>(
     bool /* valid */) {
   SetupShaderForUniform(GL_FLOAT_MAT3);
 }
 
 template <>
-void GLES2DecoderTestBase::SpecializedSetup<UniformMatrix4fvImmediate, 0>(
+void GLES2DecoderTestBase::SpecializedSetup<cmds::UniformMatrix4fvImmediate, 0>(
     bool /* valid */) {
   SetupShaderForUniform(GL_FLOAT_MAT4);
 }
 
 template <>
-void GLES2DecoderTestBase::SpecializedSetup<UniformMatrix2x3fvImmediate, 0>(
-    bool /* valid */) {
+void GLES2DecoderTestBase::SpecializedSetup<cmds::UniformMatrix2x3fvImmediate,
+                                            0>(bool /* valid */) {
   SetupShaderForUniform(GL_FLOAT_MAT2x3);
 }
 
 template <>
-void GLES2DecoderTestBase::SpecializedSetup<
-    UniformMatrix2x4fvImmediate, 0>(bool /* valid */) {
+void GLES2DecoderTestBase::SpecializedSetup<cmds::UniformMatrix2x4fvImmediate,
+                                            0>(bool /* valid */) {
   SetupShaderForUniform(GL_FLOAT_MAT2x4);
 }
 
 template <>
-void GLES2DecoderTestBase::SpecializedSetup<
-    UniformMatrix3x2fvImmediate, 0>(bool /* valid */) {
+void GLES2DecoderTestBase::SpecializedSetup<cmds::UniformMatrix3x2fvImmediate,
+                                            0>(bool /* valid */) {
   SetupShaderForUniform(GL_FLOAT_MAT3x2);
 }
 
 template <>
-void GLES2DecoderTestBase::SpecializedSetup<
-    UniformMatrix3x4fvImmediate, 0>(bool /* valid */) {
+void GLES2DecoderTestBase::SpecializedSetup<cmds::UniformMatrix3x4fvImmediate,
+                                            0>(bool /* valid */) {
   SetupShaderForUniform(GL_FLOAT_MAT3x4);
 }
 
 template <>
-void GLES2DecoderTestBase::SpecializedSetup<
-    UniformMatrix4x2fvImmediate, 0>(bool /* valid */) {
+void GLES2DecoderTestBase::SpecializedSetup<cmds::UniformMatrix4x2fvImmediate,
+                                            0>(bool /* valid */) {
   SetupShaderForUniform(GL_FLOAT_MAT4x2);
 }
 
 template <>
-void GLES2DecoderTestBase::SpecializedSetup<
-    UniformMatrix4x3fvImmediate, 0>(bool /* valid */) {
+void GLES2DecoderTestBase::SpecializedSetup<cmds::UniformMatrix4x3fvImmediate,
+                                            0>(bool /* valid */) {
   SetupShaderForUniform(GL_FLOAT_MAT4x3);
 }
 
 template <>
-void GLES2DecoderTestBase::SpecializedSetup<UseProgram, 0>(
+void GLES2DecoderTestBase::SpecializedSetup<cmds::UseProgram, 0>(
     bool /* valid */) {
   // Needs the same setup as LinkProgram.
-  SpecializedSetup<LinkProgram, 0>(false);
+  SpecializedSetup<cmds::LinkProgram, 0>(false);
 
   EXPECT_CALL(*gl_, LinkProgram(kServiceProgramId))
       .Times(1)
       .RetiresOnSaturation();
 
-  LinkProgram link_cmd;
+  cmds::LinkProgram link_cmd;
   link_cmd.Init(client_program_id_);
   EXPECT_EQ(error::kNoError, ExecuteCmd(link_cmd));
 }
 
 template <>
-void GLES2DecoderTestBase::SpecializedSetup<ValidateProgram, 0>(
+void GLES2DecoderTestBase::SpecializedSetup<cmds::ValidateProgram, 0>(
     bool /* valid */) {
   // Needs the same setup as LinkProgram.
-  SpecializedSetup<LinkProgram, 0>(false);
+  SpecializedSetup<cmds::LinkProgram, 0>(false);
 
   EXPECT_CALL(*gl_, LinkProgram(kServiceProgramId))
       .Times(1)
       .RetiresOnSaturation();
 
-  LinkProgram link_cmd;
+  cmds::LinkProgram link_cmd;
   link_cmd.Init(client_program_id_);
   EXPECT_EQ(error::kNoError, ExecuteCmd(link_cmd));
 
@@ -149,14 +159,14 @@ TEST_P(GLES2DecoderTest3, TraceBeginCHROMIUM) {
   SetBucketAsCString(kCategoryBucketId, kCategory);
   SetBucketAsCString(kNameBucketId, kName);
 
-  TraceBeginCHROMIUM begin_cmd;
+  cmds::TraceBeginCHROMIUM begin_cmd;
   begin_cmd.Init(kCategoryBucketId, kNameBucketId);
   EXPECT_EQ(error::kNoError, ExecuteCmd(begin_cmd));
 }
 
 TEST_P(GLES2DecoderTest3, TraceEndCHROMIUM) {
   // Test end fails if no begin.
-  TraceEndCHROMIUM end_cmd;
+  cmds::TraceEndCHROMIUM end_cmd;
   end_cmd.Init();
   EXPECT_EQ(error::kNoError, ExecuteCmd(end_cmd));
   EXPECT_EQ(GL_INVALID_OPERATION, GetGLError());
@@ -169,7 +179,7 @@ TEST_P(GLES2DecoderTest3, TraceEndCHROMIUM) {
   SetBucketAsCString(kCategoryBucketId, kCategory);
   SetBucketAsCString(kNameBucketId, kName);
 
-  TraceBeginCHROMIUM begin_cmd;
+  cmds::TraceBeginCHROMIUM begin_cmd;
   begin_cmd.Init(kCategoryBucketId, kNameBucketId);
   EXPECT_EQ(error::kNoError, ExecuteCmd(begin_cmd));
 

@@ -6,7 +6,7 @@
 
 #include "base/macros.h"
 #include "chrome/browser/chromeos/arc/kiosk/arc_kiosk_bridge.h"
-#include "components/arc/arc_bridge_service.h"
+#include "components/arc/session/arc_bridge_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

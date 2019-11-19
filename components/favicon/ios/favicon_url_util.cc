@@ -9,7 +9,7 @@
 
 #include "components/favicon/core/favicon_url.h"
 #include "components/favicon_base/favicon_types.h"
-#include "ios/web/public/favicon_url.h"
+#include "ios/web/public/favicon/favicon_url.h"
 
 namespace favicon {
 namespace {

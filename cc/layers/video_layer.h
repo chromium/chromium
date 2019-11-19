@@ -6,10 +6,9 @@
 #define CC_LAYERS_VIDEO_LAYER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "cc/cc_export.h"
 #include "cc/layers/layer.h"
-#include "media/base/video_rotation.h"
+#include "media/base/video_transformation.h"
 
 namespace media { class VideoFrame; }
 
@@ -23,6 +22,9 @@ class CC_EXPORT VideoLayer : public Layer {
  public:
   static scoped_refptr<VideoLayer> Create(VideoFrameProvider* provider,
                                           media::VideoRotation video_rotation);
+
+  VideoLayer(const VideoLayer&) = delete;
+  VideoLayer& operator=(const VideoLayer&) = delete;
 
   std::unique_ptr<LayerImpl> CreateLayerImpl(LayerTreeImpl* tree_impl) override;
 
@@ -40,8 +42,6 @@ class CC_EXPORT VideoLayer : public Layer {
   VideoFrameProvider* provider_;
 
   media::VideoRotation video_rotation_;
-
-  DISALLOW_COPY_AND_ASSIGN(VideoLayer);
 };
 
 }  // namespace cc

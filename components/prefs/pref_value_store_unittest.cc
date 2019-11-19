@@ -122,8 +122,8 @@ class PrefValueStoreTest : public testing::Test {
                            &pref_notifier_));
 
     pref_value_store_->set_callback(
-        base::Bind(&MockPrefModelAssociator::ProcessPrefChange,
-                   base::Unretained(sync_associator_.get())));
+        base::BindRepeating(&MockPrefModelAssociator::ProcessPrefChange,
+                            base::Unretained(sync_associator_.get())));
   }
 
   void CreateManagedPrefs() {

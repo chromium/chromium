@@ -13,8 +13,8 @@ namespace blink {
 class CompositedLayerAssignerTest : public RenderingTest {
  private:
   void SetUp() override {
-    RenderingTest::SetUp();
     EnableCompositing();
+    RenderingTest::SetUp();
   }
 };
 
@@ -57,6 +57,36 @@ TEST_F(CompositedLayerAssignerTest, SquashingAcrossMaskDisallowed) {
     )HTML");
   // #squashed should not be squashed after all, because of the mask above
   // #squashing.
+  PaintLayer* squashed =
+      ToLayoutBoxModelObject(GetLayoutObjectByElementId("squashed"))->Layer();
+  EXPECT_EQ(kPaintsIntoOwnBacking, squashed->GetCompositingState());
+}
+
+TEST_F(CompositedLayerAssignerTest,
+       SquashingAcrossLayoutContainmentDisallowed) {
+  SetBodyInnerHTML(R"HTML(
+    <div style="contain: layout">
+      <div style="width: 20px; height: 20px; will-change: transform"></div>
+    </div>
+    <div id="squashed" style="position: absolute; top: 0; width: 100px;
+        height: 100px; background: green"></div>
+    )HTML");
+  // #squashed should not be squashed after all, because of 'contain: layout' on
+  // #squashing.
+  PaintLayer* squashed =
+      ToLayoutBoxModelObject(GetLayoutObjectByElementId("squashed"))->Layer();
+  EXPECT_EQ(kPaintsIntoOwnBacking, squashed->GetCompositingState());
+}
+
+TEST_F(CompositedLayerAssignerTest,
+       SquashingAcrossSelfLayoutContainmentDisallowed) {
+  SetBodyInnerHTML(R"HTML(
+    <div style="width: 20px; height: 20px; will-change: transform"></div>
+    <div id="squashed" style="contain: layout; position: absolute; top: 0; width: 100px;
+        height: 100px; background: green"></div>
+    )HTML");
+  // #squashed should not be squashed after all, because of 'contain: layout' on
+  // #squahed.
   PaintLayer* squashed =
       ToLayoutBoxModelObject(GetLayoutObjectByElementId("squashed"))->Layer();
   EXPECT_EQ(kPaintsIntoOwnBacking, squashed->GetCompositingState());

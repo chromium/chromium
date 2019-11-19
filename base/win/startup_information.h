@@ -5,6 +5,8 @@
 #ifndef BASE_WIN_STARTUP_INFORMATION_H_
 #define BASE_WIN_STARTUP_INFORMATION_H_
 
+#include <memory>
+
 #include <windows.h>
 #include <stddef.h>
 
@@ -41,6 +43,7 @@ class BASE_EXPORT StartupInformation {
   }
 
  private:
+  std::unique_ptr<char[]> attribute_list_;
   STARTUPINFOEXW startup_info_;
   DISALLOW_COPY_AND_ASSIGN(StartupInformation);
 };

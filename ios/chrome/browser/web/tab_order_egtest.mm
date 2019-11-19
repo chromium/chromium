@@ -4,24 +4,20 @@
 
 #import <XCTest/XCTest.h>
 
-#import "ios/chrome/test/app/chrome_test_util.h"
-#import "ios/chrome/test/app/tab_test_util.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
-#import "ios/web/public/test/earl_grey/web_view_matchers.h"
+#import "ios/testing/earl_grey/earl_grey_test.h"
+#import "ios/web/public/test/element_selector.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-@class Tab;
-
-using chrome_test_util::GetCurrentWebState;
 using chrome_test_util::OpenLinkInNewTabButton;
-using web::test::ElementSelector;
-using web::WebViewInWebState;
+using chrome_test_util::WebViewMatcher;
 
 namespace {
 
@@ -57,83 +53,84 @@ const char kLinksTestURL2Text[] = "arrived";
 
   // Create a tab that will act as the parent tab.
   [ChromeEarlGrey loadURL:URL1];
-  [ChromeEarlGrey waitForWebViewContainingText:kLinksTestURL1Text];
-  Tab* parentTab = chrome_test_util::GetCurrentTab();
-
+  [ChromeEarlGrey waitForWebStateContainingText:kLinksTestURL1Text];
+  NSString* parentTabID = [ChromeEarlGrey currentTabID];
   // Child tab should be inserted after the parent.
-  [[EarlGrey selectElementWithMatcher:WebViewInWebState(GetCurrentWebState())]
+  [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
       performAction:chrome_test_util::LongPressElementForContextMenu(
-                        ElementSelector::ElementSelectorId(kLinkSelectorID),
+                        [ElementSelector selectorWithElementID:kLinkSelectorID],
                         true /* menu should appear */)];
   [[EarlGrey selectElementWithMatcher:OpenLinkInNewTabButton()]
       performAction:grey_tap()];
   [ChromeEarlGrey waitForMainTabCount:2U];
-  Tab* childTab1 = chrome_test_util::GetNextTab();
+  NSString* childTab1ID = [ChromeEarlGrey nextTabID];
 
-  // New child tab should be inserted AFTER |childTab1|.
-  [[EarlGrey selectElementWithMatcher:WebViewInWebState(GetCurrentWebState())]
+  // New child tab should be inserted after the tab with |childTab1ID|.
+  [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
       performAction:chrome_test_util::LongPressElementForContextMenu(
-                        ElementSelector::ElementSelectorId(kLinkSelectorID),
+                        [ElementSelector selectorWithElementID:kLinkSelectorID],
                         true /* menu should appear */)];
   [[EarlGrey selectElementWithMatcher:OpenLinkInNewTabButton()]
       performAction:grey_tap()];
   [ChromeEarlGrey waitForMainTabCount:3U];
-  GREYAssertEqual(childTab1, chrome_test_util::GetNextTab(),
-                  @"Unexpected next tab");
+  GREYAssertEqualObjects(childTab1ID, [ChromeEarlGrey nextTabID],
+                         @"Unexpected next tab");
 
   // Navigate the parent tab away and again to |kLinksTestURL1| to break
   // grouping with the current child tabs. Total number of tabs should not
   // change.
   const GURL URL2 = self.testServer->GetURL(kLinksTestURL2);
   [ChromeEarlGrey loadURL:URL2];
-  [ChromeEarlGrey waitForWebViewContainingText:kLinksTestURL2Text];
-  GREYAssertEqual(3U, chrome_test_util::GetMainTabCount(),
+  [ChromeEarlGrey waitForWebStateContainingText:kLinksTestURL2Text];
+  GREYAssertEqual(3U, [ChromeEarlGrey mainTabCount],
                   @"Unexpected number of tabs");
 
   [ChromeEarlGrey loadURL:URL1];
-  [ChromeEarlGrey waitForWebViewContainingText:kLinksTestURL1Text];
-  GREYAssertEqual(3U, chrome_test_util::GetMainTabCount(),
+  [ChromeEarlGrey waitForWebStateContainingText:kLinksTestURL1Text];
+  GREYAssertEqual(3U, [ChromeEarlGrey mainTabCount],
                   @"Unexpected number of tabs");
 
-  // New child tab should be inserted BEFORE |childTab1|.
-  [[EarlGrey selectElementWithMatcher:WebViewInWebState(GetCurrentWebState())]
+  // New child tab should be inserted before the tab with |childTab1ID|.
+  [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
       performAction:chrome_test_util::LongPressElementForContextMenu(
-                        ElementSelector::ElementSelectorId(kLinkSelectorID),
+                        [ElementSelector selectorWithElementID:kLinkSelectorID],
                         true /* menu should appear */)];
   [[EarlGrey selectElementWithMatcher:OpenLinkInNewTabButton()]
       performAction:grey_tap()];
   [ChromeEarlGrey waitForMainTabCount:4U];
-  Tab* childTab3 = chrome_test_util::GetNextTab();
-  GREYAssertNotEqual(childTab1, childTab3, @"Unexpected next tab");
+  NSString* childTab3ID = [ChromeEarlGrey nextTabID];
 
-  // New child tab should be inserted AFTER |childTab3|.
-  [[EarlGrey selectElementWithMatcher:WebViewInWebState(GetCurrentWebState())]
+  GREYAssertNotEqualObjects(childTab1ID, childTab3ID, @"Unexpected next tab");
+
+  // New child tab should be inserted after the tab with |childTab3ID|.
+  [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
       performAction:chrome_test_util::LongPressElementForContextMenu(
-                        ElementSelector::ElementSelectorId(kLinkSelectorID),
+                        [ElementSelector selectorWithElementID:kLinkSelectorID],
                         true /* menu should appear */)];
   [[EarlGrey selectElementWithMatcher:OpenLinkInNewTabButton()]
       performAction:grey_tap()];
   [ChromeEarlGrey waitForMainTabCount:5U];
-  GREYAssertEqual(childTab3, chrome_test_util::GetNextTab(),
-                  @"Unexpected next tab");
+  GREYAssertEqualObjects(childTab3ID, [ChromeEarlGrey nextTabID],
+                         @"Unexpected next web state");
 
-  // Verify that |childTab1| is now at index 3.
-  chrome_test_util::SelectTabAtIndexInCurrentMode(3);
-  GREYAssertEqual(childTab1, chrome_test_util::GetCurrentTab(),
-                  @"Unexpected current tab");
+  // Verify that tab with |childTab1ID| is now at index 3.
+  [ChromeEarlGrey selectTabAtIndex:3];
+  GREYAssertEqualObjects(childTab1ID, [ChromeEarlGrey currentTabID],
+                         @"Unexpected current web state");
 
   // Add a non-owned tab. It should be added at the end and marked as the
-  // current tab. Next tab should wrap back to index 0, the original parent tab.
+  // current web state. Next web state should wrap back to index 0, the original
+  // parent web state.
   [ChromeEarlGrey openNewTab];
   [ChromeEarlGrey waitForMainTabCount:6U];
-  GREYAssertEqual(parentTab, chrome_test_util::GetNextTab(),
-                  @"Unexpected next tab");
+  GREYAssertEqualObjects(parentTabID, [ChromeEarlGrey nextTabID],
+                         @"Unexpected next web state");
 
-  // Verify that |anotherTab| is at index 5.
-  Tab* anotherTab = chrome_test_util::GetCurrentTab();
-  chrome_test_util::SelectTabAtIndexInCurrentMode(5);
-  GREYAssertEqual(anotherTab, chrome_test_util::GetCurrentTab(),
-                  @"Unexpected current tab");
+  // Verify that tab with |anotherTabID| is at index 5.
+  NSString* anotherTabID = [ChromeEarlGrey currentTabID];
+  [ChromeEarlGrey selectTabAtIndex:5];
+  GREYAssertEqualObjects(anotherTabID, [ChromeEarlGrey currentTabID],
+                         @"Unexpected current web state");
 }
 
 @end

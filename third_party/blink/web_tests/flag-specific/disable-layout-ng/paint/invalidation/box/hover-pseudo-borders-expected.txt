@@ -1,0 +1,23 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "LayoutBlockFlow (positioned) \u003Cpseudo:after\u003E",
+          "rect": [138, 8, 100, 100],
+          "reason": "style change"
+        },
+        {
+          "object": "LayoutBlockFlow DIV class='hitregion'",
+          "rect": [8, 8, 100, 100],
+          "reason": "background"
+        }
+      ]
+    }
+  ]
+}
+

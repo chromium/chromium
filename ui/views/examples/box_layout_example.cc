@@ -30,7 +30,7 @@ namespace examples {
 
 BoxLayoutExample::BoxLayoutExample() : LayoutExampleBase("Box Layout") {}
 
-BoxLayoutExample::~BoxLayoutExample() {}
+BoxLayoutExample::~BoxLayoutExample() = default;
 
 void BoxLayoutExample::CreateAdditionalControls(int vertical_pos) {
   static const char* orientation_values[2] = {"Horizontal", "Vertical"};
@@ -52,7 +52,7 @@ void BoxLayoutExample::CreateAdditionalControls(int vertical_pos) {
   min_cross_axis_size_ =
       CreateTextfield(base::ASCIIToUTF16("Min cross axis"), &vertical_pos);
 
-  CreateMarginsTextFields(base::ASCIIToUTF16("Insets"), border_insets_,
+  CreateMarginsTextFields(base::ASCIIToUTF16("Insets"), &border_insets_,
                           &vertical_pos);
 
   collapse_margins_ =
@@ -72,11 +72,11 @@ void BoxLayoutExample::OnPerformAction(Combobox* combobox) {
     UpdateLayoutManager();
   } else if (combobox == main_axis_alignment_) {
     layout_->set_main_axis_alignment(static_cast<BoxLayout::MainAxisAlignment>(
-        main_axis_alignment_->selected_index()));
+        main_axis_alignment_->GetSelectedIndex()));
   } else if (combobox == cross_axis_alignment_) {
     layout_->set_cross_axis_alignment(
         static_cast<BoxLayout::CrossAxisAlignment>(
-            cross_axis_alignment_->selected_index()));
+            cross_axis_alignment_->GetSelectedIndex()));
   }
   RefreshLayoutPanel(false);
 }
@@ -87,14 +87,16 @@ void BoxLayoutExample::ContentsChanged(Textfield* textfield,
     UpdateLayoutManager();
   } else if (textfield == default_flex_) {
     int default_flex;
-    base::StringToInt(default_flex_->text(), &default_flex);
+    base::StringToInt(default_flex_->GetText(), &default_flex);
     layout_->SetDefaultFlex(default_flex);
   } else if (textfield == min_cross_axis_size_) {
     int min_cross_size;
-    base::StringToInt(min_cross_axis_size_->text(), &min_cross_size);
+    base::StringToInt(min_cross_axis_size_->GetText(), &min_cross_size);
     layout_->set_minimum_cross_axis_size(min_cross_size);
-  } else if (textfield == border_insets_[0] || textfield == border_insets_[1] ||
-             textfield == border_insets_[2] || textfield == border_insets_[3]) {
+  } else if (textfield == border_insets_.left ||
+             textfield == border_insets_.top ||
+             textfield == border_insets_.right ||
+             textfield == border_insets_.bottom) {
     UpdateBorderInsets();
   }
   RefreshLayoutPanel(false);
@@ -108,24 +110,25 @@ void BoxLayoutExample::UpdateLayoutManager() {
   int child_spacing;
   int default_flex;
   int min_cross_size;
-  base::StringToInt(between_child_spacing_->text(), &child_spacing);
-  base::StringToInt(default_flex_->text(), &default_flex);
-  base::StringToInt(min_cross_axis_size_->text(), &min_cross_size);
+  base::StringToInt(between_child_spacing_->GetText(), &child_spacing);
+  base::StringToInt(default_flex_->GetText(), &default_flex);
+  base::StringToInt(min_cross_axis_size_->GetText(), &min_cross_size);
   auto layout = std::make_unique<BoxLayout>(
-      orientation_->selected_index() == 0 ? BoxLayout::Orientation::kHorizontal
-                                          : BoxLayout::Orientation::kVertical,
-      gfx::Insets(0, 0), child_spacing, collapse_margins_->checked());
+      orientation_->GetSelectedIndex() == 0
+          ? BoxLayout::Orientation::kHorizontal
+          : BoxLayout::Orientation::kVertical,
+      gfx::Insets(0, 0), child_spacing, collapse_margins_->GetChecked());
   layout->set_cross_axis_alignment(static_cast<BoxLayout::CrossAxisAlignment>(
-      cross_axis_alignment_->selected_index()));
+      cross_axis_alignment_->GetSelectedIndex()));
   layout->set_main_axis_alignment(static_cast<BoxLayout::MainAxisAlignment>(
-      main_axis_alignment_->selected_index()));
+      main_axis_alignment_->GetSelectedIndex()));
   layout->SetDefaultFlex(default_flex);
   layout->set_minimum_cross_axis_size(min_cross_size);
   View* const panel = layout_panel();
   layout_ = panel->SetLayoutManager(std::move(layout));
   UpdateBorderInsets();
-  for (int i = 0; i < panel->child_count(); ++i) {
-    ChildPanel* child_panel = static_cast<ChildPanel*>(panel->child_at(i));
+  for (View* child : panel->children()) {
+    ChildPanel* child_panel = static_cast<ChildPanel*>(child);
     int flex = child_panel->GetFlex();
     if (flex < 0)
       layout_->ClearFlexForView(child_panel);

@@ -35,13 +35,26 @@ from blinkpy.web_tests.builder_list import BuilderList
 
 class BotTestExpectationsFactoryTest(unittest.TestCase):
 
+    # pylint: disable=protected-access
+
     def fake_builder_list(self):
         return BuilderList({
-            'Dummy builder name': {'port_name': 'dummy-port', 'specifiers': ['dummy', 'release']},
+            'Dummy builder name': {
+                'master': 'dummy.master',
+                'port_name': 'dummy-port',
+                'specifiers': ['dummy', 'release'],
+            },
         })
 
     def fake_results_json_for_builder(self, builder):
         return bot_test_expectations.ResultsJSON(builder, 'Dummy content')
+
+    def test_results_url_for_builder(self):
+        factory = bot_test_expectations.BotTestExpectationsFactory(self.fake_builder_list())
+
+        self.assertEqual(factory._results_url_for_builder('Dummy builder name'),
+                         'https://test-results.appspot.com/testfile?testtype=webkit_layout_tests'
+                         '&name=results-small.json&master=dummy.master&builder=Dummy%20builder%20name')
 
     def test_expectations_for_builder(self):
         factory = bot_test_expectations.BotTestExpectationsFactory(self.fake_builder_list())
@@ -59,8 +72,8 @@ class BotTestExpectationsFactoryTest(unittest.TestCase):
 @unittest.skipIf(sys.platform == 'win32', 'fails on Windows')
 class BotTestExpectationsTest(unittest.TestCase):
     # FIXME: Find a way to import this map from Tools/TestResultServer/model/jsonresults.py.
-    FAILURE_MAP = {'A': 'AUDIO', 'C': 'CRASH', 'F': 'TEXT', 'I': 'IMAGE', 'O': 'MISSING',
-                   'N': 'NO DATA', 'P': 'PASS', 'T': 'TIMEOUT', 'Y': 'NOTRUN', 'X': 'SKIP', 'Z': 'IMAGE+TEXT', 'K': 'LEAK'}
+    FAILURE_MAP = {'C': 'CRASH', 'F': 'FAIL', 'N': 'NO DATA', 'P': 'PASS', 'T': 'TIMEOUT',
+                   'Y': 'NOTRUN', 'X': 'SKIP'}
 
     # All result_string's in this file represent retries from a single run.
     # The left-most entry is the first try, the right-most is the last.
@@ -73,7 +86,8 @@ class BotTestExpectationsTest(unittest.TestCase):
         if expected:
             results_entry[bot_test_expectations.ResultsJSON.EXPECTATIONS_KEY] = expected
 
-        num_actual_results = len(expectations._flaky_types_in_results(results_entry, only_ignore_very_flaky))
+        num_actual_results = len(expectations._flaky_types_in_results(  # pylint: disable=protected-access
+            results_entry, only_ignore_very_flaky))
         if should_be_flaky:
             self.assertGreater(num_actual_results, 1)
         else:
@@ -123,10 +137,10 @@ class BotTestExpectationsTest(unittest.TestCase):
             'tests': {
                 'foo': {
                     'multiple_pass.html': {'results': [[4, 'P'], [1, 'P'], [2, 'P']]},
-                    'fail.html': {'results': [[2, 'Z']]},
+                    'fail.html': {'results': [[2, 'F']]},
                     'all_types.html': {
-                        'results': [[2, 'A'], [1, 'C'], [2, 'F'], [1, 'I'], [1, 'O'], [1, 'N'], [1, 'P'], [1, 'T'],
-                                    [1, 'Y'], [10, 'X'], [1, 'Z'], [1, 'K']]
+                        'results': [[1, 'C'], [2, 'F'],[1, 'N'], [1, 'P'], [1, 'T'],
+                                    [1, 'Y'], [10, 'X']]
                     },
                     'not_run.html': {'results': []},
                 }
@@ -139,8 +153,8 @@ class BotTestExpectationsTest(unittest.TestCase):
 
         expected_output = {
             'foo/multiple_pass.html': ['PASS'],
-            'foo/fail.html': ['IMAGE+TEXT'],
-            'foo/all_types.html': ['AUDIO', 'CRASH', 'IMAGE', 'IMAGE+TEXT', 'LEAK', 'MISSING', 'PASS', 'TEXT', 'TIMEOUT']
+            'foo/fail.html': ['FAIL'],
+            'foo/all_types.html': ['CRASH', 'FAIL', 'PASS', 'TIMEOUT']
         }
 
         self.assertEqual(results_by_path, expected_output)
@@ -163,13 +177,13 @@ class BotTestExpectationsTest(unittest.TestCase):
             }
         }
         self._assert_expectations(test_data, {
-            'foo/veryflaky.html': sorted(['TEXT', 'PASS']),
+            'foo/veryflaky.html': sorted(['FAIL', 'PASS']),
         }, only_ignore_very_flaky=True)
 
         self._assert_expectations(test_data, {
-            'foo/veryflaky.html': sorted(['TEXT', 'PASS']),
-            'foo/notverflakynoexpected.html': ['TEXT', 'TIMEOUT'],
-            'foo/maybeflaky.html': sorted(['TEXT', 'PASS']),
+            'foo/veryflaky.html': sorted(['FAIL', 'PASS']),
+            'foo/notverflakynoexpected.html': ['FAIL', 'TIMEOUT'],
+            'foo/maybeflaky.html': sorted(['FAIL', 'PASS']),
         }, only_ignore_very_flaky=False)
 
     def test_unexpected_results_no_unexpected(self):
@@ -177,10 +191,10 @@ class BotTestExpectationsTest(unittest.TestCase):
             'tests': {
                 'foo': {
                     'pass1.html': {'results': [[4, 'P']]},
-                    'pass2.html': {'results': [[2, 'Z']], 'expected': 'PASS FAIL'},
+                    'pass2.html': {'results': [[2, 'F']], 'expected': 'PASS FAIL'},
                     'fail.html': {'results': [[2, 'P'], [1, 'F']], 'expected': 'PASS FAIL'},
                     'not_run.html': {'results': []},
-                    'crash.html': {'results': [[2, 'F'], [1, 'C']], 'expected': 'CRASH FAIL WONTFIX'},
+                    'crash.html': {'results': [[2, 'F'], [1, 'C']], 'expected': 'CRASH FAIL SKIP'},
                 }
             }
         }
@@ -191,24 +205,22 @@ class BotTestExpectationsTest(unittest.TestCase):
             'tests': {
                 'foo': {
                     'pass1.html': {'results': [[4, 'P']], 'expected': 'FAIL'},
-                    'pass2.html': {'results': [[2, 'P']], 'expected': 'IMAGE'},
+                    'pass2.html': {'results': [[2, 'P']], 'expected': 'FAIL'},
                     'fail.html': {'results': [[4, 'F']]},
                     'f_p.html': {'results': [[1, 'F'], [2, 'P']]},
-                    'crash.html': {'results': [[2, 'F'], [1, 'C']], 'expected': 'WONTFIX'},
-                    'image.html': {'results': [[2, 'F'], [1, 'I']], 'expected': 'CRASH TEXT'},
-                    'i_f.html': {'results': [[1, 'F'], [5, 'I']], 'expected': 'PASS'},
-                    'all.html': self._results_from_string('FPFPCNCNTXTXIZIZOCOCYKYK'),
+                    'crash.html': {'results': [[2, 'F'], [1, 'C']], 'expected': 'SKIP'},
+                    'image.html': {'results': [[3, 'F']], 'expected': 'CRASH FAIL'},
+                    'i_f.html': {'results': [[6, 'F']], 'expected': 'PASS'},
+                    'all.html': self._results_from_string('FPFPCNCNTXTXFFFFFCFCYY'),
                 }
             }
         }
-        self.maxDiff = None
         self._assert_unexpected_results(test_data, {
             'foo/pass1.html': sorted(['FAIL', 'PASS']),
-            'foo/pass2.html': sorted(['IMAGE', 'PASS']),
-            'foo/fail.html': sorted(['TEXT', 'PASS']),
-            'foo/f_p.html': sorted(['TEXT', 'PASS']),
-            'foo/crash.html': sorted(['WONTFIX', 'CRASH', 'TEXT']),
-            'foo/image.html': sorted(['CRASH', 'TEXT', 'IMAGE']),
-            'foo/i_f.html': sorted(['PASS', 'IMAGE', 'TEXT']),
-            'foo/all.html': sorted(['TEXT', 'PASS', 'IMAGE+TEXT', 'TIMEOUT', 'CRASH', 'IMAGE', 'MISSING', 'LEAK']),
+            'foo/pass2.html': sorted(['FAIL', 'PASS']),
+            'foo/fail.html': sorted(['FAIL', 'PASS']),
+            'foo/f_p.html': sorted(['FAIL', 'PASS']),
+            'foo/crash.html': sorted(['SKIP', 'CRASH', 'FAIL']),
+            'foo/i_f.html': sorted(['FAIL', 'PASS']),
+            'foo/all.html': sorted(['PASS', 'FAIL', 'TIMEOUT', 'CRASH']),
         })

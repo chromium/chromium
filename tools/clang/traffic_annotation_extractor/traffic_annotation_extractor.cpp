@@ -32,6 +32,7 @@
 #include "clang/Basic/SourceManager.h"
 #include "clang/Frontend/FrontendActions.h"
 #include "clang/Lex/Lexer.h"
+#include "clang/Tooling/ArgumentsAdjusters.h"
 #include "clang/Tooling/CommonOptionsParser.h"
 #include "clang/Tooling/Refactoring.h"
 #include "clang/Tooling/Tooling.h"
@@ -46,17 +47,6 @@ namespace {
 struct Location {
   std::string file_path;
   int line_number = -1;
-
-  // Name of the function including this line. E.g., in the following code,
-  // |function_name| will be 'foo' for all |line_number| values 101-103.
-  //
-  // 100 void foo() {
-  // 101   NetworkTrafficAnnotationTag baz =
-  // 102       net::DefineNetworkTrafficAnnotation(...); }
-  // 103   bar(baz);
-  // 104 }
-  // If no function is found, 'Global Namespace' will be returned.
-  std::string function_name;
 };
 
 // An instance of a call to either of the 4 network traffic annotation
@@ -157,19 +147,12 @@ class NetworkAnnotationTagCallback : public MatchFinder::MatchCallback {
   void GetInstanceLocation(const MatchFinder::MatchResult& result,
                            const clang::Expr* expr,
                            Location* location) {
-    clang::SourceLocation source_location = expr->getLocStart();
+    clang::SourceLocation source_location = expr->getBeginLoc();
     if (source_location.isMacroID())
       source_location = result.SourceManager->getExpansionLoc(source_location);
     location->file_path = result.SourceManager->getFilename(source_location);
     location->line_number =
         result.SourceManager->getSpellingLineNumber(source_location);
-
-    const clang::FunctionDecl* ancestor =
-        result.Nodes.getNodeAs<clang::FunctionDecl>("function_context");
-    if (ancestor)
-      location->function_name = ancestor->getQualifiedNameAsString();
-    else
-      location->function_name = "Global Namespace";
 
     std::replace(location->file_path.begin(), location->file_path.end(), '\\',
                  '/');
@@ -195,45 +178,20 @@ class NetworkAnnotationTagCallback : public MatchFinder::MatchCallback {
     collector_->calls.push_back(instance);
   }
 
-  // Tests if the given function name belongs to the network traffic annotation
-  // API. These functions are all defined in
-  // 'net/traffic_annotation/network_traffic_annotation.h'.
-  bool IsAPIFunction(const std::string& function_name) {
-    return function_name == "net::NetworkTrafficAnnotationTag::NotReached" ||
-           function_name == "net::DefineNetworkTrafficAnnotation" ||
-           function_name == "net::DefinePartialNetworkTrafficAnnotation" ||
-           function_name == "net::CompleteNetworkTrafficAnnotation" ||
-           function_name == "net::BranchedCompleteNetworkTrafficAnnotation" ||
-           function_name ==
-               "net::MutableNetworkTrafficAnnotationTag::operator "
-               "NetworkTrafficAnnotationTag" ||
-           function_name ==
-               "net::MutablePartialNetworkTrafficAnnotationTag::operator "
-               "PartialNetworkTrafficAnnotationTag";
-  }
-
   // Stores an annotation constructor called with list expression.
   void AddConstructor(const clang::CXXConstructExpr* constructor_expr,
                       const MatchFinder::MatchResult& result) {
     Location instance;
-
     GetInstanceLocation(result, constructor_expr, &instance);
-    // Only report if the constructor is not in one of the API functions for
-    // network traffic annotations.
-    if (!IsAPIFunction(instance.function_name))
-      collector_->assignments.push_back(instance);
+    collector_->assignments.push_back(instance);
   }
 
   // Stores a value assignment to |unique_id_hash_code| of a mutable annotaton.
   void AddAssignment(const clang::MemberExpr* member_expr,
                      const MatchFinder::MatchResult& result) {
     Location instance;
-
     GetInstanceLocation(result, member_expr, &instance);
-    // Only report if the assignment is not in one of the API functions for
-    // network traffic annotations.
-    if (!IsAPIFunction(instance.function_name))
-      collector_->assignments.push_back(instance);
+    collector_->assignments.push_back(instance);
   }
 
   // Stores an annotation.
@@ -398,6 +356,7 @@ int main(int argc, const char* argv[]) {
   clang::tooling::CommonOptionsParser options(argc, argv, ToolCategory);
   clang::tooling::ClangTool tool(options.getCompilations(),
                                  options.getSourcePathList());
+  tool.appendArgumentsAdjuster(clang::tooling::getStripPluginsAdjuster());
   Collector collector;
 
   llvm::InitializeNativeTarget();
@@ -412,7 +371,6 @@ int main(int argc, const char* argv[]) {
   for (const NetworkAnnotationInstance& instance : collector.annotations) {
     llvm::outs() << "==== NEW ANNOTATION ====\n";
     llvm::outs() << instance.location.file_path << "\n";
-    llvm::outs() << instance.location.function_name << "\n";
     llvm::outs() << instance.location.line_number << "\n";
     llvm::outs() << instance.GetTypeName() << "\n";
     llvm::outs() << instance.annotation.unique_id << "\n";
@@ -425,7 +383,6 @@ int main(int argc, const char* argv[]) {
   for (const CallInstance& instance : collector.calls) {
     llvm::outs() << "==== NEW CALL ====\n";
     llvm::outs() << instance.location.file_path << "\n";
-    llvm::outs() << instance.location.function_name << "\n";
     llvm::outs() << instance.location.line_number << "\n";
     llvm::outs() << instance.called_function_name << "\n";
     llvm::outs() << instance.has_annotation << "\n";
@@ -436,7 +393,6 @@ int main(int argc, const char* argv[]) {
   for (const Location& instance : collector.assignments) {
     llvm::outs() << "==== NEW ASSIGNMENT ====\n";
     llvm::outs() << instance.file_path << "\n";
-    llvm::outs() << instance.function_name << "\n";
     llvm::outs() << instance.line_number << "\n";
     llvm::outs() << "==== ASSIGNMENT ENDS ====\n";
   }

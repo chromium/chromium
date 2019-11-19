@@ -1,0 +1,13 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+extra_icu_module_desc = {
+  name = "extra_icu"
+  android_manifest =
+      "//chrome/android/modules/extra_icu/internal/java/AndroidManifest.xml"
+  java_deps = [
+    "//third_party/icu:icu_extra_assets",
+    "//chrome/android/modules/extra_icu/internal:java",
+  ]
+}

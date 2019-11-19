@@ -34,6 +34,8 @@ class WebrtcTransport : public Transport {
  public:
   class EventHandler {
    public:
+    virtual ~EventHandler() = default;
+
     // Called after |peer_connection| has been created but before handshake. The
     // handler should create data channels and media streams. Renegotiation will
     // be required in two cases after this method returns:
@@ -58,9 +60,6 @@ class WebrtcTransport : public Transport {
         scoped_refptr<webrtc::MediaStreamInterface> stream) = 0;
     virtual void OnWebrtcTransportMediaStreamRemoved(
         scoped_refptr<webrtc::MediaStreamInterface> stream) = 0;
-
-   protected:
-    virtual ~EventHandler() {}
   };
 
   WebrtcTransport(rtc::Thread* worker_thread,
@@ -87,6 +86,14 @@ class WebrtcTransport : public Transport {
   void Close(ErrorCode error);
 
   void ApplySessionOptions(const SessionOptions& options);
+
+  // Called when a new audio transceiver has been created by the PeerConnection.
+  void OnAudioTransceiverCreated(
+      rtc::scoped_refptr<webrtc::RtpTransceiverInterface> transceiver);
+
+  // Called when a new video transceiver has been created by the PeerConnection.
+  void OnVideoTransceiverCreated(
+      rtc::scoped_refptr<webrtc::RtpTransceiverInterface> transceiver);
 
  private:
   // PeerConnectionWrapper is responsible for PeerConnection creation,
@@ -121,6 +128,20 @@ class WebrtcTransport : public Transport {
   void OnIceCandidate(const webrtc::IceCandidateInterface* candidate);
   void OnStatsDelivered(
       const rtc::scoped_refptr<const webrtc::RTCStatsReport>& report);
+
+  // Returns the max bitrate to set for this connection, taking into
+  // account any relay bitrate cap. If the relay status is unknown, this
+  // returns the default maximum bitrate.
+  int MaxBitrateForConnection();
+
+  // Sets bitrates on the PeerConnection.
+  // Called after SetRemoteDescription(), but also called if the relay status
+  // changes.
+  void SetPeerConnectionBitrates(int max_bitrate_bps);
+
+  // Sets bitrates on the (video) sender. Called when the sender is created, but
+  // also called if the relay status changes.
+  void SetSenderBitrates(int max_bitrate_bps);
 
   void RequestRtcStats();
   void RequestNegotiation();
@@ -161,7 +182,9 @@ class WebrtcTransport : public Transport {
 
   std::string preferred_video_codec_;
 
-  base::WeakPtrFactory<WebrtcTransport> weak_factory_;
+  rtc::scoped_refptr<webrtc::RtpTransceiverInterface> video_transceiver_;
+
+  base::WeakPtrFactory<WebrtcTransport> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(WebrtcTransport);
 };

@@ -1,0 +1,38 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "LayoutBlockFlow DIV id='div'",
+          "rect": [8, 108, 300, 300],
+          "reason": "geometry"
+        },
+        {
+          "object": "HorizontalScrollbar",
+          "rect": [8, 393, 285, 15],
+          "reason": "scroll control"
+        },
+        {
+          "object": "HorizontalScrollbar",
+          "rect": [8, 193, 85, 15],
+          "reason": "scroll control"
+        },
+        {
+          "object": "VerticalScrollbar",
+          "rect": [293, 108, 15, 285],
+          "reason": "scroll control"
+        },
+        {
+          "object": "VerticalScrollbar",
+          "rect": [93, 108, 15, 85],
+          "reason": "scroll control"
+        }
+      ]
+    }
+  ]
+}
+

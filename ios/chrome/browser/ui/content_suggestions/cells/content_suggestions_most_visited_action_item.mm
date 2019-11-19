@@ -49,6 +49,11 @@
   cell.titleLabel.text = self.title;
   cell.accessibilityLabel =
       self.accessibilityLabel.length ? self.accessibilityLabel : self.title;
+  if (@available(iOS 13, *)) {
+    // The accessibilityUserInputLabel should just be the title, with nothing
+    // extra from the accessibilityLabel.
+    cell.accessibilityUserInputLabels = @[ self.title ];
+  }
   cell.iconView.image = ImageForCollectionShortcutType(_collectionShortcutType);
   if (self.count != 0) {
     cell.countLabel.text = [@(self.count) stringValue];
@@ -79,7 +84,9 @@
   }
 
   self.accessibilityLabel =
-      AccessibilityLabelForReadingListCellWithCount(self.count);
+      [NSString stringWithFormat:@"%@, %@", self.title,
+                                 AccessibilityLabelForReadingListCellWithCount(
+                                     self.count)];
   DCHECK(self.accessibilityLabel.length);
 }
 

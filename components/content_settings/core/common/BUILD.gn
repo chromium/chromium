@@ -9,6 +9,8 @@ jumbo_static_library("common") {
   sources = [
     "content_settings.cc",
     "content_settings.h",
+    "content_settings_param_traits.cc",
+    "content_settings_param_traits.h",
     "content_settings_pattern.cc",
     "content_settings_pattern.h",
     "content_settings_pattern_parser.cc",
@@ -24,8 +26,13 @@ jumbo_static_library("common") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
+  public_deps = [
+    ":features",
+  ]
+
   deps = [
     "//base",
+    "//ipc",
     "//mojo/public/cpp/base",
     "//mojo/public/cpp/bindings:struct_traits",
     "//net",
@@ -52,11 +59,27 @@ jumbo_source_set("unit_tests") {
 }
 
 mojom("mojo_bindings") {
+  generate_java = true
   sources = [
     "content_settings.mojom",
   ]
 
   public_deps = [
     "//mojo/public/mojom/base",
+  ]
+}
+
+component("features") {
+  output_name = "content_settings_features"
+
+  defines = [ "IS_CONTENT_SETTINGS_FEATURES_IMPL" ]
+
+  sources = [
+    "features.cc",
+    "features.h",
+  ]
+
+  deps = [
+    "//base",
   ]
 }

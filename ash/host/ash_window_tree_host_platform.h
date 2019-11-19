@@ -10,16 +10,7 @@
 #include "ash/ash_export.h"
 #include "ash/host/ash_window_tree_host.h"
 #include "ash/host/transformer_helper.h"
-#include "ui/aura/mus/input_method_mus_delegate.h"
 #include "ui/aura/window_tree_host_platform.h"
-
-namespace aura {
-class InputMethodMus;
-}
-
-namespace ws {
-class EventQueue;
-}
 
 namespace ui {
 struct PlatformWindowInitProperties;
@@ -30,8 +21,7 @@ class ExtendedMouseWarpControllerTest;
 
 class ASH_EXPORT AshWindowTreeHostPlatform
     : public AshWindowTreeHost,
-      public aura::WindowTreeHostPlatform,
-      public aura::InputMethodMusDelegate {
+      public aura::WindowTreeHostPlatform {
  public:
   explicit AshWindowTreeHostPlatform(
       ui::PlatformWindowInitProperties properties);
@@ -57,9 +47,6 @@ class ASH_EXPORT AshWindowTreeHostPlatform
   void SetCursorConfig(const display::Display& display,
                        display::Display::Rotation rotation) override;
   void ClearCursorConfig() override;
-  void UpdateTextInputState(ui::mojom::TextInputStatePtr state) override;
-  void UpdateImeVisibility(bool visible,
-                           ui::mojom::TextInputStatePtr state) override;
 
   // aura::WindowTreeHostPlatform:
   void SetRootTransform(const gfx::Transform& transform) override;
@@ -68,17 +55,8 @@ class ASH_EXPORT AshWindowTreeHostPlatform
   gfx::Rect GetTransformedRootWindowBoundsInPixels(
       const gfx::Size& host_size_in_pixels) const override;
   void OnCursorVisibilityChangedNative(bool show) override;
-  void SetBoundsInPixels(const gfx::Rect& bounds,
-                         const viz::LocalSurfaceIdAllocation&
-                             local_surface_id_allocation) override;
-  bool ShouldSendKeyEventToIme() override;
+  void SetBoundsInPixels(const gfx::Rect& bounds) override;
   void DispatchEvent(ui::Event* event) override;
-  ui::EventDispatchDetails DeliverEventToSink(ui::Event* event) override;
-
-  // aura::InputMethodMusDelegate:
-  void SetTextInputState(ui::mojom::TextInputStatePtr state) override;
-  void SetImeVisibility(bool visible,
-                        ui::mojom::TextInputStatePtr state) override;
 
  private:
   // All constructors call into this.
@@ -90,15 +68,6 @@ class ASH_EXPORT AshWindowTreeHostPlatform
   TransformerHelper transformer_helper_;
 
   gfx::Rect last_cursor_confine_bounds_in_pixels_;
-
-  // Use InputMethodMus as the InputMethod implementation. InputMethodMus ends
-  // up connection to the UI Service over mojo, which is in process, but
-  // simplifies things. In particular, even though the WindowService is in
-  // process, parts of ime live in it's own process, so by using InputMethodMus
-  // those connections are correctly established.
-  std::unique_ptr<aura::InputMethodMus> input_method_;
-
-  ws::EventQueue* event_queue_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(AshWindowTreeHostPlatform);
 };

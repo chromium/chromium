@@ -18,7 +18,7 @@
 #include "base/timer/timer.h"
 #include "content/common/content_export.h"
 #include "content/public/renderer/render_frame_observer.h"
-#include "media/blink/webmediaplayer_delegate.h"
+#include "third_party/blink/public/platform/media/webmediaplayer_delegate.h"
 
 #if defined(OS_ANDROID)
 #include "base/time/time.h"
@@ -36,7 +36,7 @@ enum class MediaContentType;
 // the MediaPlayerDelegateHost.
 class CONTENT_EXPORT RendererWebMediaPlayerDelegate
     : public content::RenderFrameObserver,
-      public WebMediaPlayerDelegate,
+      public blink::WebMediaPlayerDelegate,
       public base::SupportsWeakPtr<RendererWebMediaPlayerDelegate> {
  public:
   explicit RendererWebMediaPlayerDelegate(content::RenderFrame* render_frame);
@@ -45,7 +45,7 @@ class CONTENT_EXPORT RendererWebMediaPlayerDelegate
   // Returns true if this RenderFrame has ever seen media playback before.
   bool has_played_media() const { return has_played_media_; }
 
-  // WebMediaPlayerDelegate implementation.
+  // blink::WebMediaPlayerDelegate implementation.
   bool IsFrameHidden() override;
   bool IsFrameClosed() override;
   int AddObserver(Observer* observer) override;
@@ -65,6 +65,9 @@ class CONTENT_EXPORT RendererWebMediaPlayerDelegate
       blink::WebFullscreenVideoStatus fullscreen_video_status) override;
   void DidPlayerSizeChange(int delegate_id, const gfx::Size& size) override;
   void DidPlayerMutedStatusChange(int delegate_id, bool muted) override;
+  void DidPlayerMediaPositionStateChange(
+      int delegate_id,
+      const media_session::MediaPosition& position) override;
 
   // content::RenderFrameObserver overrides.
   void WasHidden() override;
@@ -73,12 +76,12 @@ class CONTENT_EXPORT RendererWebMediaPlayerDelegate
   void OnDestruct() override;
 
   // Zeros out |idle_cleanup_interval_|, sets |idle_timeout_| to |idle_timeout|,
-  // and |is_jelly_bean_| to |is_jelly_bean|. A zero cleanup interval
+  // and |is_low_end_| to |is_low_end|. A zero cleanup interval
   // will cause the idle timer to run with each run of the message loop.
   void SetIdleCleanupParamsForTesting(base::TimeDelta idle_timeout,
                                       base::TimeDelta idle_cleanup_interval,
                                       const base::TickClock* tick_clock,
-                                      bool is_jelly_bean);
+                                      bool is_low_end);
   bool IsIdleCleanupTimerRunningForTesting() const;
 
   // Note: Does not call OnFrameHidden()/OnFrameShown().
@@ -87,7 +90,7 @@ class CONTENT_EXPORT RendererWebMediaPlayerDelegate
   friend class RendererWebMediaPlayerDelegateTest;
 
  private:
-  void OnMediaDelegatePause(int player_id);
+  void OnMediaDelegatePause(int player_id, bool triggered_by_user);
   void OnMediaDelegatePlay(int player_id);
   void OnMediaDelegateMuted(int player_id, bool muted);
   void OnMediaDelegateSeekForward(int player_id, base::TimeDelta seek_time);
@@ -95,7 +98,6 @@ class CONTENT_EXPORT RendererWebMediaPlayerDelegate
   void OnMediaDelegateSuspendAllMediaPlayers();
   void OnMediaDelegateVolumeMultiplierUpdate(int player_id, double multiplier);
   void OnMediaDelegateBecamePersistentVideo(int player_id, bool value);
-  void OnPictureInPictureModeEnded(int player_id);
 
   // Schedules UpdateTask() to run soon.
   void ScheduleUpdateTask();
@@ -160,7 +162,7 @@ class CONTENT_EXPORT RendererWebMediaPlayerDelegate
 
   // Determined at construction time based on system information; determines
   // when the idle cleanup timer should be fired more aggressively.
-  bool is_jelly_bean_;
+  bool is_low_end_;
 
   DISALLOW_COPY_AND_ASSIGN(RendererWebMediaPlayerDelegate);
 };

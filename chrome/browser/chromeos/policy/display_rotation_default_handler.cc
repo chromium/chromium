@@ -9,6 +9,48 @@
 
 namespace policy {
 
+namespace {
+
+display::Display::Rotation DisplayRotationFromRotationOptions(
+    ash::mojom::DisplayRotationOptions option) {
+  switch (option) {
+    case ash::mojom::DisplayRotationOptions::kAutoRotate:
+      // Auto rotation is ignored and considered as a 0-degrees rotation.
+      return display::Display::ROTATE_0;
+
+    case ash::mojom::DisplayRotationOptions::kZeroDegrees:
+      return display::Display::ROTATE_0;
+
+    case ash::mojom::DisplayRotationOptions::k90Degrees:
+      return display::Display::ROTATE_90;
+
+    case ash::mojom::DisplayRotationOptions::k180Degrees:
+      return display::Display::ROTATE_180;
+
+    case ash::mojom::DisplayRotationOptions::k270Degrees:
+      return display::Display::ROTATE_270;
+  }
+}
+
+ash::mojom::DisplayRotationOptions RotationOptionsFromDisplayRotation(
+    display::Display::Rotation rotation) {
+  switch (rotation) {
+    case display::Display::ROTATE_0:
+      return ash::mojom::DisplayRotationOptions::kZeroDegrees;
+
+    case display::Display::ROTATE_90:
+      return ash::mojom::DisplayRotationOptions::k90Degrees;
+
+    case display::Display::ROTATE_180:
+      return ash::mojom::DisplayRotationOptions::k180Degrees;
+
+    case display::Display::ROTATE_270:
+      return ash::mojom::DisplayRotationOptions::k270Degrees;
+  }
+}
+
+}  // namespace
+
 DisplayRotationDefaultHandler::DisplayRotationDefaultHandler() = default;
 
 DisplayRotationDefaultHandler::~DisplayRotationDefaultHandler() = default;
@@ -58,17 +100,19 @@ void DisplayRotationDefaultHandler::ApplyChanges(
       continue;
 
     rotated_display_ids_.insert(display_id);
-    display::Display::Rotation rotation(display_unit_info->rotation);
+    display::Display::Rotation rotation =
+        DisplayRotationFromRotationOptions(display_unit_info->rotation_options);
     if (rotation == display_rotation_default_)
       continue;
 
     // The following sets only the |rotation| property of the display
     // configuration; no other properties will be affected.
     auto config_properties = ash::mojom::DisplayConfigProperties::New();
-    config_properties->rotation =
-        ash::mojom::DisplayRotation::New(display_rotation_default_);
+    config_properties->rotation = ash::mojom::DisplayRotation::New(
+        RotationOptionsFromDisplayRotation(display_rotation_default_));
     cros_display_config->SetDisplayProperties(
-        display_unit_info->id, std::move(config_properties), base::DoNothing());
+        display_unit_info->id, std::move(config_properties),
+        ash::mojom::DisplayConfigSource::kPolicy, base::DoNothing());
   }
 }
 

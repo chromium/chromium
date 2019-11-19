@@ -1,0 +1,8 @@
+AXWebArea
+++AXGroup
+++++AXStaticText AXValue='before selection'
+++AXGroup
+++++AXStaticText AXValue='this text is not ignored'
+++AXGroup
+++++AXStaticText AXValue='after selection'
+++AXStaticText AXValue='Done'

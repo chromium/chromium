@@ -8,11 +8,15 @@
 #import <UIKit/UIKit.h>
 
 #include "base/macros.h"
-#include "ios/web/public/web_state/web_state_observer.h"
-#import "ios/web/public/web_state/web_state_user_data.h"
+#import "ios/chrome/browser/ui/elements/top_aligned_image_view.h"
+#include "ios/web/public/web_state_observer.h"
+#import "ios/web/public/web_state_user_data.h"
 
 // Displays placeholder to cover what WebState is actually displaying. Can be
 // used to display the cached image of the web page during the Tab restoration.
+// The placeholder is added as a subview on the WebState's view. Properly
+// positioning the placeholder requires that the WebState's view is in a view
+// hierarchy that has the Content Area named guide.
 class PagePlaceholderTabHelper
     : public web::WebStateUserData<PagePlaceholderTabHelper>,
       public web::WebStateObserver {
@@ -21,7 +25,8 @@ class PagePlaceholderTabHelper
 
   // Displays placeholder between DidStartNavigation and PageLoaded
   // WebStateObserver callbacks. If navigation takes too long, then placeholder
-  // will be removed before navigation is finished.
+  // will be removed before navigation is finished. The placeholder is only ever
+  // displayed when the tab is visible.
   void AddPlaceholderForNextNavigation();
 
   // Cancels displaying placeholder during the next navigation. If placeholder
@@ -55,11 +60,16 @@ class PagePlaceholderTabHelper
   void AddPlaceholder();
   void RemovePlaceholder();
 
+  // Adds the given |snapshot| image to the |web_state_|'s view. The
+  // |web_state_|'s view must be visible, and it must be in a view hierarchy
+  // that has the Content Area named guide.
+  void DisplaySnapshotImage(UIImage* snapshot);
+
   // WebState this tab helper is attached to.
   web::WebState* web_state_ = nullptr;
 
   // View used to display the placeholder.
-  UIImageView* placeholder_view_ = nil;
+  TopAlignedImageView* placeholder_view_ = nil;
 
   // true if placeholder is currently being displayed.
   bool displaying_placeholder_ = false;

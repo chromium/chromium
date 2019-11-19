@@ -1,0 +1,61 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+package mach_fuzzer;
+
+// Specifies a type of Mach port right to create.
+enum MachPortType {
+  // Create a receive right and move it to the peer, while holding
+  // a send right.
+  RECEIVE = 0;
+  // Create a receive right and make a send right during mach_msg.
+  SEND = 1;
+  // Create a receive right and vend a send-once right during mach_msg.
+  SEND_ONCE = 2;
+  // Create a dead name right and give a send right to it to the peer.
+  DEAD_NAME = 3;
+  // Create a receive right with no senders and move the receive right
+  // to the peer.
+  RECEIVE_NO_SENDERS = 4;
+}
+
+// Data to send in an out-of-line memory region in Mach message descriptor.
+message OutOfLineMemory {
+  required bytes data = 1;
+}
+
+// Models a mach_msg_descriptor_t.
+message Descriptor {
+  oneof descriptor_oneof {
+    MachPortType port = 1;
+    OutOfLineMemory ool = 2;
+  }
+}
+
+// Models a Mach message structure including the header, optional body,
+// and inline data.
+message MachMessage {
+  // Creates an optional port to put in msgh_local_port. If this is a receive
+  // right, it will be dropped.
+  optional MachPortType local_port = 1;
+
+  // The msgh_id field.
+  optional uint32 id = 2;
+
+  // Optional Descriptors to carry in the message.
+  repeated Descriptor descriptors = 3;
+
+  // If no Descriptors are present, whether or not to include a mach_msg_body_t
+  // in the message.
+  required bool include_body_if_not_complex = 4;
+
+  // Raw data bytes to send inline with the message.
+  optional bytes data = 5;
+
+  // Extensions can be used by clients to express structured message data,
+  // which can be converted into bytes and placed in |data|.
+  extensions 100 to 199;
+}

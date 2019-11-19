@@ -174,7 +174,7 @@ function returnSystemInfo(systemInfo) {
   updateLogEntries(systemInfo);
   const spinner = $('loadingIndicator');
   spinner.style.display = 'none';
-  spinner.style.webkitAnimationPlayState = 'paused';
+  spinner.style.animationPlayState = 'paused';
 }
 
 /**

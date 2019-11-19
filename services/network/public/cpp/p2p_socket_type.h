@@ -56,10 +56,10 @@ struct P2PSendPacketMetrics {
   P2PSendPacketMetrics() {}
   P2PSendPacketMetrics(uint64_t packet_id,
                        int32_t rtc_packet_id,
-                       base::TimeTicks send_time)
+                       int64_t send_time_ms)
       : packet_id(packet_id),
         rtc_packet_id(rtc_packet_id),
-        send_time(send_time) {}
+        send_time_ms(send_time_ms) {}
 
   uint64_t packet_id = 0;
   // rtc_packet_id is a sequential packet counter written in the RTP header and
@@ -67,7 +67,10 @@ struct P2PSendPacketMetrics {
   // corresponding send time to WebRTC in the browser process so that it can be
   // combined with ACKs to compute inter-packet delay variations.
   int32_t rtc_packet_id = -1;
-  base::TimeTicks send_time;
+
+  // The time the packet was sent. Should be set using the webrtc clock
+  // rtc::TimeMillis()
+  int64_t send_time_ms = -1;
 };
 
 // Struct that carries a port range.

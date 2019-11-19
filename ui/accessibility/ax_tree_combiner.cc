@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/accessibility/ax_tree.h"
 #include "ui/accessibility/ax_tree_combiner.h"
+
+#include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_tree.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace ui {
@@ -52,6 +54,8 @@ bool AXTreeCombiner::Combine() {
     focused_tree = tree_id_map_[focused_tree_id];
   combined_.tree_data.focus_id =
       MapId(focused_tree_id, focused_tree->tree_data.focus_id);
+  combined_.tree_data.sel_is_backward =
+      MapId(focused_tree_id, focused_tree->tree_data.sel_is_backward);
   combined_.tree_data.sel_anchor_object_id =
       MapId(focused_tree_id, focused_tree->tree_data.sel_anchor_object_id);
   combined_.tree_data.sel_focus_object_id =

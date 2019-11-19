@@ -68,13 +68,12 @@ void BrowserTabStripTracker::MaybeTrackBrowser(Browser* browser) {
   TabStripModel* tab_strip_model = browser->tab_strip_model();
   tab_strip_model->AddObserver(tab_strip_model_observer_);
 
-  std::vector<TabStripModelChange::Delta> deltas;
+  TabStripModelChange::Insert insert;
   for (int i = 0; i < tab_strip_model->count(); ++i) {
-    deltas.push_back(TabStripModelChange::CreateInsertDelta(
-        tab_strip_model->GetWebContentsAt(i), i));
+    insert.contents.push_back({tab_strip_model->GetWebContentsAt(i), i});
   }
 
-  TabStripModelChange change(TabStripModelChange::kInserted, deltas);
+  TabStripModelChange change(std::move(insert));
   TabStripSelectionChange selection(tab_strip_model->GetActiveWebContents(),
                                     tab_strip_model->selection_model());
   tab_strip_model_observer_->OnTabStripModelChanged(tab_strip_model, change,

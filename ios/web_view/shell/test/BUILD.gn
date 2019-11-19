@@ -38,6 +38,7 @@ source_set("earl_grey_test_support") {
   deps = [
     "//base",
     "//base/test:test_support",
+    "//ios/third_party/webkit",
     "//ios/web_view/shell",
   ]
 
@@ -46,10 +47,7 @@ source_set("earl_grey_test_support") {
     "//ios/third_party/earl_grey:earl_grey+link",
   ]
 
-  libs = [
-    "WebKit.framework",
-    "XCTest.framework",
-  ]
+  libs = [ "XCTest.framework" ]
 
   sources = [
     "earl_grey/web_view_shell_matchers.h",

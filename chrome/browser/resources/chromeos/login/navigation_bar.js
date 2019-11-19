@@ -12,12 +12,17 @@ Polymer({
     disabled: {type: Boolean, value: false}
   },
 
+  /** @private */
   onBack_: function() {
     this.fire('back');
   },
+
+  /** @private */
   onClose_: function() {
     this.fire('close');
   },
+
+  /** @private */
   onRefresh_: function() {
     this.fire('refresh');
   }

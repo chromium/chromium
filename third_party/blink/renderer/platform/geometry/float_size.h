@@ -32,9 +32,14 @@
 
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/geometry/int_point.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/geometry/int_size.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
+#include "third_party/blink/renderer/platform/wtf/hash_traits.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
+#include "third_party/skia/include/core/SkSize.h"
+#include "ui/gfx/geometry/size_f.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 #if defined(OS_MACOSX)
 typedef struct CGSize CGSize;
@@ -44,17 +49,7 @@ typedef struct CGSize CGSize;
 #endif
 #endif
 
-struct SkSize;
-
-namespace gfx {
-class SizeF;
-class Vector2dF;
-}  // namespace gfx
-
 namespace blink {
-
-class IntSize;
-class LayoutSize;
 
 class PLATFORM_EXPORT FloatSize {
   DISALLOW_NEW();
@@ -63,11 +58,12 @@ class PLATFORM_EXPORT FloatSize {
   constexpr FloatSize() : width_(0), height_(0) {}
   constexpr FloatSize(float width, float height)
       : width_(width), height_(height) {}
-  explicit FloatSize(const gfx::SizeF&);
-  explicit FloatSize(const IntSize& size)
-      : width_(size.Width()), height_(size.Height()) {}
-  FloatSize(const SkSize&);
-  explicit FloatSize(const LayoutSize&);
+  constexpr explicit FloatSize(const IntSize& s)
+      : FloatSize(s.Width(), s.Height()) {}
+  constexpr explicit FloatSize(const gfx::SizeF& s)
+      : FloatSize(s.width(), s.height()) {}
+  explicit FloatSize(const SkSize& s) : FloatSize(s.width(), s.height()) {}
+  // We also have conversion operator to FloatSize defined in LayoutSize.
 
   static FloatSize NarrowPrecision(double width, double height);
 
@@ -84,6 +80,10 @@ class PLATFORM_EXPORT FloatSize {
            width_ < std::numeric_limits<float>::epsilon() &&
            -std::numeric_limits<float>::epsilon() < height_ &&
            height_ < std::numeric_limits<float>::epsilon();
+  }
+  bool IsValid() const {
+    return width_ != -std::numeric_limits<float>::infinity() &&
+           height_ != -std::numeric_limits<float>::infinity();
   }
   bool IsExpressibleAsIntSize() const;
 
@@ -139,18 +139,25 @@ class PLATFORM_EXPORT FloatSize {
   operator CGSize() const;
 #endif
 
-  operator SkSize() const;
+  explicit operator SkSize() const { return SkSize::Make(width_, height_); }
   // Use this only for logical sizes, which can not be negative. Things that are
   // offsets instead, and can be negative, should use a gfx::Vector2dF.
-  explicit operator gfx::SizeF() const;
+  constexpr explicit operator gfx::SizeF() const {
+    return gfx::SizeF(width_, height_);
+  }
   // FloatSize is used as an offset, which can be negative, but gfx::SizeF can
   // not. The Vector2dF type is used for offsets instead.
-  explicit operator gfx::Vector2dF() const;
+  constexpr explicit operator gfx::Vector2dF() const {
+    return gfx::Vector2dF(width_, height_);
+  }
 
   String ToString() const;
 
  private:
   float width_, height_;
+
+  friend struct ::WTF::DefaultHash<blink::FloatSize>;
+  friend struct ::WTF::HashTraits<blink::FloatSize>;
 };
 
 inline FloatSize& operator+=(FloatSize& a, const FloatSize& b) {
@@ -220,5 +227,44 @@ PLATFORM_EXPORT WTF::TextStream& operator<<(WTF::TextStream&, const FloatSize&);
 
 // Allows this class to be stored in a HeapVector.
 WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::FloatSize)
+
+namespace WTF {
+
+template <>
+struct DefaultHash<blink::FloatSize> {
+  STATIC_ONLY(DefaultHash);
+  struct Hash {
+    STATIC_ONLY(Hash);
+    typedef typename IntTypes<sizeof(float)>::UnsignedType Bits;
+    static unsigned GetHash(const blink::FloatSize& key) {
+      return HashInts(bit_cast<Bits>(key.Width()),
+                      bit_cast<Bits>(key.Height()));
+    }
+    static bool Equal(const blink::FloatSize& a, const blink::FloatSize& b) {
+      return bit_cast<Bits>(a.Width()) == bit_cast<Bits>(b.Width()) &&
+             bit_cast<Bits>(a.Height()) == bit_cast<Bits>(b.Height());
+    }
+    static const bool safe_to_compare_to_empty_or_deleted = true;
+  };
+};
+
+template <>
+struct HashTraits<blink::FloatSize> : GenericHashTraits<blink::FloatSize> {
+  STATIC_ONLY(HashTraits);
+  static const bool kEmptyValueIsZero = false;
+  static blink::FloatSize EmptyValue() {
+    return blink::FloatSize(std::numeric_limits<float>::infinity(),
+                            std::numeric_limits<float>::infinity());
+  }
+  static void ConstructDeletedValue(blink::FloatSize& slot, bool) {
+    slot = blink::FloatSize(-std::numeric_limits<float>::infinity(),
+                            -std::numeric_limits<float>::infinity());
+  }
+  static bool IsDeletedValue(const blink::FloatSize& value) {
+    return !value.IsValid();
+  }
+};
+
+}  // namespace WTF
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_FLOAT_SIZE_H_

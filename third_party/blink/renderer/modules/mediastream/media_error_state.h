@@ -33,7 +33,7 @@
 
 #include "third_party/blink/renderer/bindings/modules/v8/dom_exception_or_overconstrained_error.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 

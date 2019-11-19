@@ -9,4 +9,4 @@ public_deps = [
   "//mojo/public/cpp/base:shared_typemap_traits",
 ]
 
-type_mappings = [ "mojo_base.mojom.UnguessableToken=base::UnguessableToken" ]
+type_mappings = [ "mojo_base.mojom.UnguessableToken=::base::UnguessableToken" ]

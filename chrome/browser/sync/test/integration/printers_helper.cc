@@ -74,18 +74,18 @@ chromeos::SyncedPrintersManager* GetPrinterStore(
 
 void AddPrinter(chromeos::SyncedPrintersManager* manager,
                 const chromeos::Printer& printer) {
-  manager->UpdateConfiguredPrinter(printer);
+  manager->UpdateSavedPrinter(printer);
 }
 
 void RemovePrinter(chromeos::SyncedPrintersManager* manager, int index) {
   chromeos::Printer testPrinter(CreateTestPrinter(index));
-  manager->RemoveConfiguredPrinter(testPrinter.id());
+  manager->RemoveSavedPrinter(testPrinter.id());
 }
 
 bool EditPrinterDescription(chromeos::SyncedPrintersManager* manager,
                             int index,
                             const std::string& description) {
-  PrinterList printers = manager->GetConfiguredPrinters();
+  PrinterList printers = manager->GetSavedPrinters();
   std::string printer_id = PrinterId(index);
   auto found =
       std::find_if(printers.begin(), printers.end(),
@@ -97,7 +97,7 @@ bool EditPrinterDescription(chromeos::SyncedPrintersManager* manager,
     return false;
 
   found->set_description(description);
-  manager->UpdateConfiguredPrinter(*found);
+  manager->UpdateSavedPrinter(*found);
 
   return true;
 }
@@ -108,6 +108,16 @@ chromeos::Printer CreateTestPrinter(int index) {
   printer.set_uri(base::StringPrintf("ipp://192.168.1.%d", index));
 
   return printer;
+}
+
+std::unique_ptr<sync_pb::PrinterSpecifics> CreateTestPrinterSpecifics(
+    int index) {
+  auto specifics = std::make_unique<sync_pb::PrinterSpecifics>();
+  specifics->set_id(PrinterId(index));
+  specifics->set_description("Description");
+  specifics->set_uri(base::StringPrintf("ipp://192.168.1.%d", index));
+
+  return specifics;
 }
 
 void WaitForPrinterStoreToLoad(content::BrowserContext* context) {
@@ -136,17 +146,17 @@ chromeos::SyncedPrintersManager* GetPrinterStore(int index) {
 }
 
 int GetVerifierPrinterCount() {
-  return GetVerifierPrinterStore()->GetConfiguredPrinters().size();
+  return GetVerifierPrinterStore()->GetSavedPrinters().size();
 }
 
 int GetPrinterCount(int index) {
-  return GetPrinterStore(index)->GetConfiguredPrinters().size();
+  return GetPrinterStore(index)->GetSavedPrinters().size();
 }
 
 bool AllProfilesContainSamePrinters() {
-  auto reference_printers = GetPrinterStore(0)->GetConfiguredPrinters();
+  auto reference_printers = GetPrinterStore(0)->GetSavedPrinters();
   for (int i = 1; i < test()->num_clients(); ++i) {
-    auto printers = GetPrinterStore(i)->GetConfiguredPrinters();
+    auto printers = GetPrinterStore(i)->GetSavedPrinters();
     if (!ListsContainTheSamePrinters(reference_printers, printers)) {
       VLOG(1) << "Printers in client [" << i << "] don't match client 0";
       return false;
@@ -158,8 +168,8 @@ bool AllProfilesContainSamePrinters() {
 
 bool ProfileContainsSamePrintersAsVerifier(int index) {
   return ListsContainTheSamePrinters(
-      GetVerifierPrinterStore()->GetConfiguredPrinters(),
-      GetPrinterStore(index)->GetConfiguredPrinters());
+      GetVerifierPrinterStore()->GetSavedPrinters(),
+      GetPrinterStore(index)->GetSavedPrinters());
 }
 
 PrintersMatchChecker::PrintersMatchChecker()

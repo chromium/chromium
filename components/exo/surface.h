@@ -27,10 +27,18 @@
 
 class SkPath;
 
+namespace ash {
+class OutputProtectionDelegate;
+}
+
 namespace base {
 namespace trace_event {
 class TracedValue;
 }
+}
+
+namespace gfx {
+class GpuFence;
 }
 
 namespace viz {
@@ -41,7 +49,6 @@ namespace exo {
 class Buffer;
 class FrameSinkResourceManager;
 class SurfaceObserver;
-class Surface;
 
 namespace subtle {
 class PropertyHelper;
@@ -50,6 +57,9 @@ class PropertyHelper;
 // Counter-clockwise rotations.
 enum class Transform { NORMAL, ROTATE_90, ROTATE_180, ROTATE_270 };
 
+// A property key to store the surface Id set by the client.
+extern const ui::ClassProperty<int32_t>* const kClientSurfaceIdKey;
+
 // This class represents a rectangular area that is displayed on the screen.
 // It has a location, size and pixel contents.
 class Surface final : public ui::PropertyHandler {
@@ -57,7 +67,7 @@ class Surface final : public ui::PropertyHandler {
   using PropertyDeallocator = void (*)(int64_t value);
 
   Surface();
-  ~Surface();
+  ~Surface() override;
 
   // Type-checking downcast routine.
   static Surface* AsSurface(const aura::Window* window);
@@ -67,6 +77,12 @@ class Surface final : public ui::PropertyHandler {
   // Set a buffer as the content of this surface. A buffer can only be attached
   // to one surface at a time.
   void Attach(Buffer* buffer);
+  void Attach(Buffer* buffer, gfx::Vector2d offset);
+
+  gfx::Vector2d GetBufferOffset();
+
+  // Returns whether the surface has an uncommitted attached buffer.
+  bool HasPendingAttachedBuffer() const;
 
   // Describe the regions where the pending buffer is different from the
   // current surface contents, and where the surface therefore needs to be
@@ -153,6 +169,18 @@ class Surface final : public ui::PropertyHandler {
   // Request that surface should have a specific ID assigned by client.
   void SetClientSurfaceId(int32_t client_surface_id);
   int32_t GetClientSurfaceId() const;
+
+  // Enable embedding of an arbitrary viz surface in this exo surface.
+  // If the callback is valid, a SurfaceDrawQuad will be emitted targeting
+  // the returned SurfaceId each frame.
+  void SetEmbeddedSurfaceId(
+      base::RepeatingCallback<viz::SurfaceId()> surface_id_callback);
+
+  // Request that the attached surface buffer at the next commit is associated
+  // with a gpu fence to be signaled when the buffer is ready for use.
+  void SetAcquireFence(std::unique_ptr<gfx::GpuFence> gpu_fence);
+  // Returns whether the surface has an uncommitted acquire fence.
+  bool HasPendingAcquireFence() const;
 
   // Surface state (damage regions, attached buffers, etc.) is double-buffered.
   // A Commit() call atomically applies all pending state, replacing the
@@ -244,6 +272,12 @@ class Surface final : public ui::PropertyHandler {
   // Triggers sending an occlusion update to observers.
   void OnWindowOcclusionChanged();
 
+  // True if the window for this surface has its occlusion tracked.
+  bool is_tracking_occlusion() const { return is_tracking_occlusion_; }
+
+  // Sets the |surface_hierarchy_content_bounds_|.
+  void SetSurfaceHierarchyContentBoundsForTest(const gfx::Rect& content_bounds);
+
  private:
   struct State {
     State();
@@ -262,6 +296,7 @@ class Surface final : public ui::PropertyHandler {
     bool only_visible_on_secure_output = false;
     SkBlendMode blend_mode = SkBlendMode::kSrcOver;
     float alpha = 1.0f;
+    gfx::Vector2d offset;
   };
   class BufferAttachment {
    public:
@@ -375,6 +410,12 @@ class Surface final : public ui::PropertyHandler {
   // Whether the last resource that was sent to a surface has an alpha channel.
   bool current_resource_has_alpha_ = false;
 
+  // The acquire gpu fence to associate with the surface buffer when Commit()
+  // is called.
+  std::unique_ptr<gfx::GpuFence> pending_acquire_fence_;
+  // The acquire gpu fence that is currently associated with the surface buffer.
+  std::unique_ptr<gfx::GpuFence> acquire_fence_;
+
   // This is true if a call to Commit() as been made but
   // CommitSurfaceHierarchy() has not yet been called.
   bool needs_commit_surface_ = false;
@@ -401,7 +442,28 @@ class Surface final : public ui::PropertyHandler {
   // Whether this surface is tracking occlusion for the client.
   bool is_tracking_occlusion_ = false;
 
+#if defined(OS_CHROMEOS)
+  std::unique_ptr<ash::OutputProtectionDelegate> output_protection_;
+#endif  // defined(OS_CHROMEOS)
+
+  viz::SurfaceId first_embedded_surface_id_;
+  viz::SurfaceId latest_embedded_surface_id_;
+  base::RepeatingCallback<viz::SurfaceId()> get_current_surface_id_;
+
   DISALLOW_COPY_AND_ASSIGN(Surface);
+};
+
+class ScopedSurface {
+ public:
+  ScopedSurface(Surface* surface, SurfaceObserver* observer);
+  ~ScopedSurface();
+  Surface* get() { return surface_; }
+
+ private:
+  Surface* const surface_;
+  SurfaceObserver* const observer_;
+
+  DISALLOW_COPY_AND_ASSIGN(ScopedSurface);
 };
 
 }  // namespace exo

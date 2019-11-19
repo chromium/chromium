@@ -152,25 +152,24 @@ std::string UploadJobImpl::RandomMimeBoundaryGenerator::GenerateBoundary()
 UploadJobImpl::UploadJobImpl(
     const GURL& upload_url,
     const std::string& account_id,
-    OAuth2TokenService* token_service,
+    OAuth2AccessTokenManager* access_token_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     Delegate* delegate,
     std::unique_ptr<MimeBoundaryGenerator> boundary_generator,
     net::NetworkTrafficAnnotationTag traffic_annotation,
     scoped_refptr<base::SequencedTaskRunner> task_runner)
-    : OAuth2TokenService::Consumer("cros_upload_job"),
+    : OAuth2AccessTokenManager::Consumer("cros_upload_job"),
       upload_url_(upload_url),
       account_id_(account_id),
-      token_service_(token_service),
+      access_token_manager_(access_token_manager),
       url_loader_factory_(std::move(url_loader_factory)),
       delegate_(delegate),
       boundary_generator_(std::move(boundary_generator)),
       traffic_annotation_(traffic_annotation),
       state_(IDLE),
       retry_(0),
-      task_runner_(task_runner),
-      weak_factory_(this) {
-  DCHECK(token_service_);
+      task_runner_(task_runner) {
+  DCHECK(access_token_manager_);
   DCHECK(url_loader_factory_);
   DCHECK(delegate_);
   SYSLOG(INFO) << "Upload job created.";
@@ -229,10 +228,10 @@ void UploadJobImpl::RequestAccessToken() {
 
   state_ = ACQUIRING_TOKEN;
 
-  OAuth2TokenService::ScopeSet scope_set;
+  OAuth2AccessTokenManager::ScopeSet scope_set;
   scope_set.insert(GaiaConstants::kDeviceManagementServiceOAuth);
   access_token_request_ =
-      token_service_->StartRequest(account_id_, scope_set, this);
+      access_token_manager_->StartRequest(account_id_, scope_set, this);
 }
 
 bool UploadJobImpl::SetUpMultipart() {
@@ -340,7 +339,7 @@ void UploadJobImpl::StartUpload() {
 }
 
 void UploadJobImpl::OnGetTokenSuccess(
-    const OAuth2TokenService::Request* request,
+    const OAuth2AccessTokenManager::Request* request,
     const OAuth2AccessTokenConsumer::TokenResponse& token_response) {
   DCHECK_EQ(ACQUIRING_TOKEN, state_);
   DCHECK_EQ(access_token_request_.get(), request);
@@ -353,7 +352,7 @@ void UploadJobImpl::OnGetTokenSuccess(
 }
 
 void UploadJobImpl::OnGetTokenFailure(
-    const OAuth2TokenService::Request* request,
+    const OAuth2AccessTokenManager::Request* request,
     const GoogleServiceAuthError& error) {
   DCHECK_EQ(ACQUIRING_TOKEN, state_);
   DCHECK_EQ(access_token_request_.get(), request);
@@ -382,10 +381,10 @@ void UploadJobImpl::HandleError(ErrorCode error_code) {
     if (error_code == AUTHENTICATION_ERROR) {
       SYSLOG(ERROR) << "Retrying upload with a new token.";
       // Request new token and retry.
-      OAuth2TokenService::ScopeSet scope_set;
+      OAuth2AccessTokenManager::ScopeSet scope_set;
       scope_set.insert(GaiaConstants::kDeviceManagementServiceOAuth);
-      token_service_->InvalidateAccessToken(account_id_, scope_set,
-                                            access_token_);
+      access_token_manager_->InvalidateAccessToken(account_id_, scope_set,
+                                                   access_token_);
       access_token_.clear();
       task_runner_->PostDelayedTask(
           FROM_HERE,

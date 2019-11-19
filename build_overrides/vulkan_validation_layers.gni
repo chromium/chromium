@@ -1,0 +1,8 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build_overrides/vulkan_common.gni")
+
+vvl_spirv_tools_dir = "//third_party/SPIRV-Tools/src"
+vvl_glslang_dir = "//third_party/glslang/src"

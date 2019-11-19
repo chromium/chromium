@@ -43,15 +43,6 @@
 
 namespace blink {
 
-IDBCursor* IDBCursor::Create(std::unique_ptr<WebIDBCursor> backend,
-                             mojom::IDBCursorDirection direction,
-                             IDBRequest* request,
-                             const Source& source,
-                             IDBTransaction* transaction) {
-  return MakeGarbageCollected<IDBCursor>(std::move(backend), direction, request,
-                                         source, transaction);
-}
-
 IDBCursor::IDBCursor(std::unique_ptr<WebIDBCursor> backend,
                      mojom::IDBCursorDirection direction,
                      IDBRequest* request,
@@ -87,8 +78,9 @@ v8::Local<v8::Object> IDBCursor::AssociateWithWrapper(
   wrapper =
       ScriptWrappable::AssociateWithWrapper(isolate, wrapper_type, wrapper);
   if (!wrapper.IsEmpty()) {
-    V8PrivateProperty::GetIDBCursorRequest(isolate).Set(
-        wrapper, ToV8(request_.Get(), wrapper, isolate));
+    static const V8PrivateProperty::SymbolKey kPrivatePropertyRequest;
+    V8PrivateProperty::GetSymbol(isolate, kPrivatePropertyRequest)
+        .Set(wrapper, ToV8(request_.Get(), wrapper, isolate));
   }
   return wrapper;
 }
@@ -278,9 +270,9 @@ void IDBCursor::Continue(std::unique_ptr<IDBKey> key,
   const IDBKey* current_primary_key = IdbPrimaryKey();
 
   if (!key)
-    key = IDBKey::CreateNull();
+    key = IDBKey::CreateNone();
 
-  if (key->GetType() != mojom::IDBKeyType::Null) {
+  if (key->GetType() != mojom::IDBKeyType::None) {
     DCHECK(key_);
     if (direction_ == mojom::IDBCursorDirection::Next ||
         direction_ == mojom::IDBCursorDirection::NextNoDuplicate) {
@@ -308,7 +300,7 @@ void IDBCursor::Continue(std::unique_ptr<IDBKey> key,
   }
 
   if (!primary_key)
-    primary_key = IDBKey::CreateNull();
+    primary_key = IDBKey::CreateNone();
 
   // FIXME: We're not using the context from when continue was called, which
   // means the callback will be on the original context openCursor was called

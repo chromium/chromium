@@ -66,9 +66,8 @@ void ParseLpOptions(const base::FilePath& filepath,
   const size_t kDestLen = sizeof(kDest) - 1;
   const size_t kDefaultLen = sizeof(kDefault) - 1;
 
-  for (base::StringPiece line :
-       base::SplitStringPiece(content, "\n", base::KEEP_WHITESPACE,
-                              base::SPLIT_WANT_NONEMPTY)) {
+  for (base::StringPiece line : base::SplitStringPiece(
+           content, "\n", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
     if (base::StartsWith(line, base::StringPiece(kDefault, kDefaultLen),
                          base::CompareCase::INSENSITIVE_ASCII) &&
         isspace(line[kDefaultLen])) {
@@ -235,8 +234,8 @@ bool GetPrintOutModeColorSettings(ppd_file_t* ppd,
   // value.
   ppd_choice_t* printout_mode_choice = ppdFindMarkedChoice(ppd, kPrintoutMode);
   if (!printout_mode_choice) {
-      printout_mode_choice = ppdFindChoice(printout_mode,
-                                           printout_mode->defchoice);
+    printout_mode_choice =
+        ppdFindChoice(printout_mode, printout_mode->defchoice);
   }
   if (printout_mode_choice) {
     if (EqualsCaseInsensitiveASCII(printout_mode_choice->choice, kNormalGray) ||
@@ -270,8 +269,8 @@ bool GetColorModeSettings(ppd_file_t* ppd,
 
   ppd_choice_t* mode_choice = ppdFindMarkedChoice(ppd, kColorMode);
   if (!mode_choice) {
-    mode_choice = ppdFindChoice(color_mode_option,
-                                color_mode_option->defchoice);
+    mode_choice =
+        ppdFindChoice(color_mode_option, color_mode_option->defchoice);
   }
 
   if (mode_choice) {
@@ -333,8 +332,8 @@ bool GetHPColorSettings(ppd_file_t* ppd,
 
   ppd_choice_t* mode_choice = ppdFindMarkedChoice(ppd, kColorMode);
   if (!mode_choice) {
-    mode_choice = ppdFindChoice(color_mode_option,
-                                color_mode_option->defchoice);
+    mode_choice =
+        ppdFindChoice(color_mode_option, color_mode_option->defchoice);
   }
   if (mode_choice) {
     *color_is_default = EqualsCaseInsensitiveASCII(mode_choice->choice, kColor);
@@ -347,7 +346,7 @@ bool GetProcessColorModelSettings(ppd_file_t* ppd,
                                   ColorModel* color_model_for_color,
                                   bool* color_is_default) {
   // Canon printers use "ProcessColorModel" attribute in their PPDs.
-  ppd_option_t* color_mode_option =  ppdFindOption(ppd, kProcessColorModel);
+  ppd_option_t* color_mode_option = ppdFindOption(ppd, kProcessColorModel);
   if (!color_mode_option)
     return false;
 
@@ -361,8 +360,8 @@ bool GetProcessColorModelSettings(ppd_file_t* ppd,
 
   ppd_choice_t* mode_choice = ppdFindMarkedChoice(ppd, kProcessColorModel);
   if (!mode_choice) {
-    mode_choice = ppdFindChoice(color_mode_option,
-                                color_mode_option->defchoice);
+    mode_choice =
+        ppdFindChoice(color_mode_option, color_mode_option->defchoice);
   }
 
   if (mode_choice) {
@@ -422,7 +421,7 @@ HttpConnectionCUPS::~HttpConnectionCUPS() {
 }
 
 void HttpConnectionCUPS::SetBlocking(bool blocking) {
-  httpBlocking(http_, blocking ?  1 : 0);
+  httpBlocking(http_, blocking ? 1 : 0);
 }
 
 http_t* HttpConnectionCUPS::http() {
@@ -437,10 +436,8 @@ bool ParsePpdCapabilities(base::StringPiece printer_name,
     return false;
 
   int data_size = printer_capabilities.length();
-  if (data_size != base::WriteFile(
-                       ppd_file_path,
-                       printer_capabilities.data(),
-                       data_size)) {
+  if (data_size !=
+      base::WriteFile(ppd_file_path, printer_capabilities.data(), data_size)) {
     base::DeleteFile(ppd_file_path, false);
     return false;
   }
@@ -469,9 +466,9 @@ bool ParsePpdCapabilities(base::StringPiece printer_name,
     VLOG(1) << "Unknown printer color model";
   }
 
-  caps.color_changeable = ((cm_color != UNKNOWN_COLOR_MODEL) &&
-                           (cm_black != UNKNOWN_COLOR_MODEL) &&
-                           (cm_color != cm_black));
+  caps.color_changeable =
+      ((cm_color != UNKNOWN_COLOR_MODEL) && (cm_black != UNKNOWN_COLOR_MODEL) &&
+       (cm_color != cm_black));
   caps.color_default = is_color;
   caps.color_model = cm_color;
   caps.bw_model = cm_black;

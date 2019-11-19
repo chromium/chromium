@@ -30,11 +30,11 @@ void GrantMediaStreamRequest(content::WebContents* web_contents,
                              const Extension* extension);
 
 // Verifies that the extension has permission for |type|. If not, crash.
-void VerifyMediaAccessPermission(blink::MediaStreamType type,
+void VerifyMediaAccessPermission(blink::mojom::MediaStreamType type,
                                  const Extension* extension);
 
 // Check if the extension has permission for |type|.
-bool CheckMediaAccessPermission(blink::MediaStreamType type,
+bool CheckMediaAccessPermission(blink::mojom::MediaStreamType type,
                                 const Extension* extension);
 
 }  // namespace media_capture_util

@@ -261,7 +261,6 @@ class URLFetcherCore : public base::RefCountedThreadSafe<URLFetcherCore>,
   HttpRequestHeaders extra_request_headers_;
   scoped_refptr<HttpResponseHeaders> response_headers_;
   ProxyServer proxy_server_;
-  bool was_fetched_via_proxy_;
   bool was_cached_;
   int64_t received_response_content_length_;
   int64_t total_received_bytes_;

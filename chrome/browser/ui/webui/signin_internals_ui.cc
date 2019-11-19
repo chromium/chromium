@@ -8,16 +8,16 @@
 #include <string>
 #include <vector>
 
-#include "base/hash.h"
+#include "base/hash/hash.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/about_signin_internals_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/url_constants.h"
 #include "components/grit/components_resources.h"
-#include "components/signin/core/browser/about_signin_internals.h"
+#include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
-#include "services/identity/public/cpp/identity_manager.h"
 
 namespace {
 
@@ -27,10 +27,9 @@ content::WebUIDataSource* CreateSignInInternalsHTMLSource() {
   source->OverrideContentSecurityPolicyScriptSrc(
       "script-src chrome://resources 'self' 'unsafe-eval';");
 
-  source->SetJsonPath("strings.js");
+  source->UseStringsJs();
   source->AddResourcePath("signin_internals.js", IDR_SIGNIN_INTERNALS_INDEX_JS);
   source->SetDefaultResource(IDR_SIGNIN_INTERNALS_INDEX_HTML);
-  source->UseGzip();
   return source;
 }
 
@@ -79,9 +78,9 @@ bool SignInInternalsUI::OverrideHandleWebUIMessage(
           "chrome.signin.getSigninInfo.handleReply",
           *about_signin_internals->GetSigninStatus());
 
-      identity::IdentityManager* identity_manager =
+      signin::IdentityManager* identity_manager =
           IdentityManagerFactory::GetForProfile(profile);
-      identity::AccountsInCookieJarInfo accounts_in_cookie_jar =
+      signin::AccountsInCookieJarInfo accounts_in_cookie_jar =
           identity_manager->GetAccountsInCookieJar();
       if (accounts_in_cookie_jar.accounts_are_fresh) {
         about_signin_internals->OnAccountsInCookieUpdated(

@@ -40,15 +40,17 @@ void ProxyTabsDataTypeController::LoadModels(
     const syncer::ConfigureContext& configure_context,
     const ModelLoadCallback& model_load_callback) {
   DCHECK(CalledOnValidThread());
-  DCHECK_EQ(configure_context.storage_option, syncer::STORAGE_ON_DISK);
+  DCHECK_EQ(configure_context.sync_mode, syncer::SyncMode::kFull);
   state_ = MODEL_LOADED;
   state_changed_cb_.Run(state_);
   model_load_callback.Run(type(), syncer::SyncError());
 }
 
-void ProxyTabsDataTypeController::RegisterWithBackend(
-    base::OnceCallback<void(bool)> set_downloaded,
-    syncer::ModelTypeConfigurer* configurer) {}
+syncer::DataTypeController::RegisterWithBackendResult
+ProxyTabsDataTypeController::RegisterWithBackend(
+    syncer::ModelTypeConfigurer* configurer) {
+  return REGISTRATION_IGNORED;
+}
 
 void ProxyTabsDataTypeController::StartAssociating(
     StartCallback start_callback) {

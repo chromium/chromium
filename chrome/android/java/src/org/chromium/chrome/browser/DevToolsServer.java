@@ -5,11 +5,13 @@
 package org.chromium.chrome.browser;
 
 import android.content.pm.PackageManager;
-import android.support.annotation.IntDef;
+
+import androidx.annotation.IntDef;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.NativeMethods;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -34,32 +36,29 @@ public class DevToolsServer {
     }
 
     public DevToolsServer(String socketNamePrefix) {
-        mNativeDevToolsServer = nativeInitRemoteDebugging(socketNamePrefix);
+        mNativeDevToolsServer =
+                DevToolsServerJni.get().initRemoteDebugging(DevToolsServer.this, socketNamePrefix);
     }
 
     public void destroy() {
-        nativeDestroyRemoteDebugging(mNativeDevToolsServer);
+        DevToolsServerJni.get().destroyRemoteDebugging(DevToolsServer.this, mNativeDevToolsServer);
         mNativeDevToolsServer = 0;
     }
 
     public boolean isRemoteDebuggingEnabled() {
-        return nativeIsRemoteDebuggingEnabled(mNativeDevToolsServer);
+        return DevToolsServerJni.get().isRemoteDebuggingEnabled(
+                DevToolsServer.this, mNativeDevToolsServer);
     }
 
     public void setRemoteDebuggingEnabled(boolean enabled, @Security int security) {
         boolean allowDebugPermission = security == Security.ALLOW_DEBUG_PERMISSION;
-        nativeSetRemoteDebuggingEnabled(mNativeDevToolsServer, enabled, allowDebugPermission);
+        DevToolsServerJni.get().setRemoteDebuggingEnabled(
+                DevToolsServer.this, mNativeDevToolsServer, enabled, allowDebugPermission);
     }
 
     public void setRemoteDebuggingEnabled(boolean enabled) {
         setRemoteDebuggingEnabled(enabled, Security.DEFAULT);
     }
-
-    private native long nativeInitRemoteDebugging(String socketNamePrefix);
-    private native void nativeDestroyRemoteDebugging(long devToolsServer);
-    private native boolean nativeIsRemoteDebuggingEnabled(long devToolsServer);
-    private native void nativeSetRemoteDebuggingEnabled(
-            long devToolsServer, boolean enabled, boolean allowDebugPermission);
 
     @CalledByNative
     private static boolean checkDebugPermission(int pid, int uid) {
@@ -68,5 +67,14 @@ public class DevToolsServer {
         return ApiCompatibilityUtils.checkPermission(
                        ContextUtils.getApplicationContext(), debugPermissionName, pid, uid)
                 == PackageManager.PERMISSION_GRANTED;
+    }
+
+    @NativeMethods
+    interface Natives {
+        long initRemoteDebugging(DevToolsServer caller, String socketNamePrefix);
+        void destroyRemoteDebugging(DevToolsServer caller, long devToolsServer);
+        boolean isRemoteDebuggingEnabled(DevToolsServer caller, long devToolsServer);
+        void setRemoteDebuggingEnabled(DevToolsServer caller, long devToolsServer, boolean enabled,
+                boolean allowDebugPermission);
     }
 }

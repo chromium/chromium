@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_coalesced_input_event.h"
 #include "third_party/blink/public/platform/web_url_loader_mock_factory.h"
 #include "third_party/blink/public/web/web_document.h"
@@ -46,21 +45,19 @@ class ImeOnFocusTest : public testing::Test {
   ImeOnFocusTest() : base_url_("http://www.test.com/") {}
 
   void TearDown() override {
-    Platform::Current()
-        ->GetURLLoaderMockFactory()
-        ->UnregisterAllURLsAndClearMemoryCache();
+    url_test_helpers::UnregisterAllURLsAndClearMemoryCache();
   }
 
  protected:
   void SendGestureTap(WebView*, IntPoint);
   void Focus(const AtomicString& element);
-  void RunImeOnFocusTest(std::string file_name,
+  void RunImeOnFocusTest(String file_name,
                          int,
                          IntPoint tap_point = IntPoint(-1, -1),
                          const AtomicString& focus_element = g_null_atom,
-                         std::string frame = "");
+                         String frame = "");
 
-  std::string base_url_;
+  String base_url_;
   frame_test_helpers::WebViewHelper web_view_helper_;
   Persistent<Document> document_;
 };
@@ -69,7 +66,7 @@ void ImeOnFocusTest::SendGestureTap(WebView* web_view, IntPoint client_point) {
   WebGestureEvent web_gesture_event(WebInputEvent::kGestureTap,
                                     WebInputEvent::kNoModifiers,
                                     WebInputEvent::GetStaticTimeStampForTests(),
-                                    kWebGestureDeviceTouchscreen);
+                                    WebGestureDevice::kTouchscreen);
   // GestureTap is only ever from touch screens.
   web_gesture_event.SetPositionInWidget(FloatPoint(client_point));
   web_gesture_event.SetPositionInScreen(FloatPoint(client_point));
@@ -87,19 +84,18 @@ void ImeOnFocusTest::Focus(const AtomicString& element) {
 }
 
 void ImeOnFocusTest::RunImeOnFocusTest(
-    std::string file_name,
+    String file_name,
     int expected_virtual_keyboard_request_count,
     IntPoint tap_point,
     const AtomicString& focus_element,
-    std::string frame) {
+    String frame) {
   ImeRequestTrackingWebWidgetClient client;
-  RegisterMockedURLLoadFromBase(WebString::FromUTF8(base_url_),
-                                test::CoreTestDataPath(),
-                                WebString::FromUTF8(file_name));
+  RegisterMockedURLLoadFromBase(WebString(base_url_), test::CoreTestDataPath(),
+                                WebString(file_name));
   WebViewImpl* web_view =
       web_view_helper_.Initialize(nullptr, nullptr, &client);
   web_view->MainFrameWidget()->Resize(WebSize(800, 1200));
-  LoadFrame(web_view->MainFrameImpl(), base_url_ + file_name);
+  LoadFrame(web_view->MainFrameImpl(), base_url_.Utf8() + file_name.Utf8());
   document_ = web_view_helper_.GetWebView()
                   ->MainFrameImpl()
                   ->GetDocument()
@@ -112,13 +108,12 @@ void ImeOnFocusTest::RunImeOnFocusTest(
   if (tap_point.X() >= 0 && tap_point.Y() >= 0)
     SendGestureTap(web_view, tap_point);
 
-  if (!frame.empty()) {
-    RegisterMockedURLLoadFromBase(WebString::FromUTF8(base_url_),
-                                  test::CoreTestDataPath(),
-                                  WebString::FromUTF8(frame));
+  if (!frame.IsEmpty()) {
+    RegisterMockedURLLoadFromBase(WebString(base_url_),
+                                  test::CoreTestDataPath(), WebString(frame));
     WebLocalFrame* child_frame =
         web_view->MainFrame()->FirstChild()->ToWebLocalFrame();
-    LoadFrame(child_frame, base_url_ + frame);
+    LoadFrame(child_frame, base_url_.Utf8() + frame.Utf8());
   }
 
   if (!focus_element.IsNull())

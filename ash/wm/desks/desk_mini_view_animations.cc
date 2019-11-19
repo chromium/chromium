@@ -90,7 +90,7 @@ void PerformNewDeskMiniViewAnimation(
     int shift_x,
     bool first_time_mini_views) {
   if (first_time_mini_views) {
-    ui::Layer* layer = bar_view->backgroud_view()->layer();
+    ui::Layer* layer = bar_view->background_view()->layer();
     ui::ScopedLayerAnimationSettings settings{layer->GetAnimator()};
     InitScopedAnimationSettings(&settings, kBarBackgroundDuration);
     layer->SetOpacity(1);
@@ -101,7 +101,7 @@ void PerformNewDeskMiniViewAnimation(
 
     layer->SetTransform(gfx::Transform());
     auto* controller = Shell::Get()->overview_controller();
-    DCHECK(controller->IsSelecting());
+    DCHECK(controller->InOverviewSession());
     controller->overview_session()->PositionWindows(true);
   }
 
@@ -109,7 +109,7 @@ void PerformNewDeskMiniViewAnimation(
   begin_transform.Translate(shift_x, 0);
 
   for (const auto& mini_view : bar_view->mini_views()) {
-    const bool is_new = base::ContainsValue(new_mini_views, mini_view.get());
+    const bool is_new = base::Contains(new_mini_views, mini_view.get());
 
     ui::Layer* layer = mini_view->layer();
     if (is_new)

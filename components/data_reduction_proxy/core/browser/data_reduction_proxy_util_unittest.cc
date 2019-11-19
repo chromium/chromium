@@ -10,8 +10,6 @@
 
 #include "base/time/time.h"
 #include "components/data_reduction_proxy/proto/client_config.pb.h"
-#include "net/proxy_resolution/proxy_config.h"
-#include "net/proxy_resolution/proxy_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace data_reduction_proxy {
@@ -93,22 +91,6 @@ TEST_F(DataReductionProxyClientProtobufParserTest, TimeStampToFromTime) {
     EXPECT_EQ(test.time, protobuf_parser::TimestampToTime(timestamp))
         << test.test_name;
   }
-}
-
-TEST(DataReductionProxyUtilTest, AllProxiesBad) {
-  net::ProxyConfig config;
-  config.proxy_rules().ParseFromString("http=foo");
-
-  net::ProxyInfo result;
-  result.UseDirect();
-  net::ProxyRetryInfoMap retry_map;
-  net::ProxyRetryInfo& info = retry_map["foo:80"];
-  info.try_while_bad = false;
-  info.bad_until = base::TimeTicks::Now() + base::TimeDelta::FromDays(2);
-  EXPECT_FALSE(util::ApplyProxyConfigToProxyInfo(
-      config, retry_map, GURL("http://foo.com"), &result));
-
-  EXPECT_TRUE(result.is_empty());
 }
 
 }  // namespace data_reduction_proxy

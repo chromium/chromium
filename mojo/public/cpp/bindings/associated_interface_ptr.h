@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <cstddef>
 #include <string>
 #include <utility>
 
@@ -36,7 +37,7 @@ class AssociatedInterfacePtr {
 
   // Constructs an unbound AssociatedInterfacePtr.
   AssociatedInterfacePtr() {}
-  AssociatedInterfacePtr(decltype(nullptr)) {}
+  AssociatedInterfacePtr(std::nullptr_t) {}
 
   AssociatedInterfacePtr(AssociatedInterfacePtr&& other) {
     internal_state_.Swap(&other.internal_state_);
@@ -52,7 +53,7 @@ class AssociatedInterfacePtr {
 
   // Assigning nullptr to this class causes it to closes the associated
   // interface (if any) and returns the pointer to the unbound state.
-  AssociatedInterfacePtr& operator=(decltype(nullptr)) {
+  AssociatedInterfacePtr& operator=(std::nullptr_t) {
     reset();
     return *this;
   }
@@ -94,8 +95,8 @@ class AssociatedInterfacePtr {
   // Queries the max version that the remote side supports. On completion, the
   // result will be returned as the input of |callback|. The version number of
   // this object will also be updated.
-  void QueryVersion(const base::Callback<void(uint32_t)>& callback) {
-    internal_state_.QueryVersion(callback);
+  void QueryVersion(base::OnceCallback<void(uint32_t)> callback) {
+    internal_state_.QueryVersion(std::move(callback));
   }
 
   // If the remote side doesn't support the specified version, it will close the

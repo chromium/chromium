@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.dom_distiller;
 
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.PrefServiceBridge;
@@ -30,7 +31,7 @@ public class DomDistillerTabUtils {
      * @param webContents the WebContents to distill.
      */
     public static void distillCurrentPageAndView(WebContents webContents) {
-        nativeDistillCurrentPageAndView(webContents);
+        DomDistillerTabUtilsJni.get().distillCurrentPageAndView(webContents);
     }
 
     /**
@@ -40,7 +41,7 @@ public class DomDistillerTabUtils {
      * @param webContents the WebContents to distill.
      */
     public static void distillCurrentPage(WebContents webContents) {
-        nativeDistillCurrentPage(webContents);
+        DomDistillerTabUtilsJni.get().distillCurrentPage(webContents);
     }
 
     /**
@@ -53,7 +54,7 @@ public class DomDistillerTabUtils {
      */
     public static void distillAndView(
             WebContents sourceWebContents, WebContents destinationWebContents) {
-        nativeDistillAndView(sourceWebContents, destinationWebContents);
+        DomDistillerTabUtilsJni.get().distillAndView(sourceWebContents, destinationWebContents);
     }
 
     /**
@@ -63,7 +64,7 @@ public class DomDistillerTabUtils {
      * @return the formatted URL of the original page.
      */
     public static String getFormattedUrlFromOriginalDistillerUrl(String url) {
-        return nativeGetFormattedUrlFromOriginalDistillerUrl(url);
+        return DomDistillerTabUtilsJni.get().getFormattedUrlFromOriginalDistillerUrl(url);
     }
 
     /**
@@ -97,11 +98,11 @@ public class DomDistillerTabUtils {
     }
 
     /**
-     * Cached version of nativeGetDistillerHeuristics().
+     * Cached version of DomDistillerTabUtilsJni.get().getDistillerHeuristics().
      */
     public static @DistillerHeuristicsType int getDistillerHeuristics() {
         if (sHeuristics == null) {
-            sHeuristics = nativeGetDistillerHeuristics();
+            sHeuristics = DomDistillerTabUtilsJni.get().getDistillerHeuristics();
         }
         return sHeuristics;
     }
@@ -123,15 +124,17 @@ public class DomDistillerTabUtils {
      */
     public static void setInterceptNavigationDelegate(
             InterceptNavigationDelegate delegate, WebContents webContents) {
-        nativeSetInterceptNavigationDelegate(delegate, webContents);
+        DomDistillerTabUtilsJni.get().setInterceptNavigationDelegate(delegate, webContents);
     }
 
-    private static native void nativeDistillCurrentPageAndView(WebContents webContents);
-    private static native void nativeDistillCurrentPage(WebContents webContents);
-    private static native void nativeDistillAndView(
-            WebContents sourceWebContents, WebContents destinationWebContents);
-    private static native String nativeGetFormattedUrlFromOriginalDistillerUrl(String url);
-    private static native int nativeGetDistillerHeuristics();
-    private static native void nativeSetInterceptNavigationDelegate(
-            InterceptNavigationDelegate delegate, WebContents webContents);
+    @NativeMethods
+    interface Natives {
+        void distillCurrentPageAndView(WebContents webContents);
+        void distillCurrentPage(WebContents webContents);
+        void distillAndView(WebContents sourceWebContents, WebContents destinationWebContents);
+        String getFormattedUrlFromOriginalDistillerUrl(String url);
+        int getDistillerHeuristics();
+        void setInterceptNavigationDelegate(
+                InterceptNavigationDelegate delegate, WebContents webContents);
+    }
 }

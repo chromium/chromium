@@ -7,11 +7,11 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <string>
 
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/macros.h"
-#include "base/strings/string_piece.h"
 #include "mojo/public/cpp/bindings/lib/bindings_internal.h"
 
 static const int kMaxRecursionDepth = 100;
@@ -26,6 +26,12 @@ namespace internal {
 // indices in the payload of incoming messages.
 class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) ValidationContext {
  public:
+  enum ValidatorType {
+    kUnspecifiedValidator,
+    kRequestValidator,
+    kResponseValidator
+  };
+
   // [data, data + data_num_bytes) specifies the initial valid memory range.
   // [0, num_handles) specifies the initial valid range of handle indices.
   // [0, num_associated_endpoint_handles) specifies the initial valid range of
@@ -40,8 +46,15 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) ValidationContext {
                     size_t num_handles,
                     size_t num_associated_endpoint_handles,
                     Message* message = nullptr,
-                    const base::StringPiece& description = "",
-                    int stack_depth = 0);
+                    const char* description = "",
+                    int stack_depth = 0,
+                    ValidatorType validator_type = kUnspecifiedValidator);
+
+  // As above, but infers most of the parameters from the Message payload.
+  // Used heavily in generated code and so affects binary size.
+  ValidationContext(Message* message,
+                    const char* description,
+                    ValidatorType validator_type);
 
   ~ValidationContext();
 
@@ -135,7 +148,8 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) ValidationContext {
   }
 
   Message* message() const { return message_; }
-  const base::StringPiece& description() const { return description_; }
+  const char* description() const { return description_; }
+  std::string GetFullDescription() const;
 
  private:
   bool InternalIsValidRange(uintptr_t begin, uintptr_t end) const {
@@ -143,7 +157,8 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) ValidationContext {
   }
 
   Message* const message_;
-  const base::StringPiece description_;
+  const char* const description_;
+  const ValidatorType validator_type_;
 
   // [data_begin_, data_end_) is the valid memory range.
   uintptr_t data_begin_;

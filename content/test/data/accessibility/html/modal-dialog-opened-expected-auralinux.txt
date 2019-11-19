@@ -1,6 +1,6 @@
 [document web]
 ++[section]
 ++[dialog] modal
-++++[text] name='The dialog subtree should be the only text content in the accessibility tree. '
+++++[static] name='The dialog subtree should be the only text content in the accessibility tree. '
 ++++[link] name='Link inside the dialog.'
-++++++[text] name='Link inside the dialog.'
+++++++[static] name='Link inside the dialog.'

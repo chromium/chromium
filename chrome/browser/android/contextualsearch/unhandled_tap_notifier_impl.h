@@ -7,6 +7,7 @@
 
 #include "base/macros.h"
 #include "chrome/browser/android/contextualsearch/unhandled_tap_web_contents_observer.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/unhandled_tap_notifier/unhandled_tap_notifier.mojom.h"
 
 namespace contextual_search {
@@ -42,7 +43,7 @@ class UnhandledTapNotifierImpl : public blink::mojom::UnhandledTapNotifier {
 void CreateUnhandledTapNotifierImpl(
     float device_scale_factor,
     UnhandledTapCallback callback,
-    blink::mojom::UnhandledTapNotifierRequest request);
+    mojo::PendingReceiver<blink::mojom::UnhandledTapNotifier> receiver);
 
 }  // namespace contextual_search
 

@@ -338,42 +338,31 @@ int GetTouchIdForTrackingId(uint32_t tracking_id) {
 }
 
 TEST_F(EventsXTest, TouchEventNotRemovingFromNativeMapping) {
-  std::vector<int> devices;
-  devices.push_back(0);
+  const int kTrackingId = 5;
+  const int kDeviceId = 0;
+
+  std::vector<int> devices{kDeviceId};
   ui::SetUpTouchDevicesForTest(devices);
   std::vector<Valuator> valuators;
 
-  const int kTrackingId = 5;
-
   // Two touch presses with the same tracking id.
   ui::ScopedXI2Event xpress0;
-  xpress0.InitTouchEvent(
-      0, XI_TouchBegin, kTrackingId, gfx::Point(10, 10), valuators);
+  xpress0.InitTouchEvent(kDeviceId, XI_TouchBegin, kTrackingId,
+                         gfx::Point(10, 10), valuators);
   std::unique_ptr<ui::TouchEvent> upress0(new ui::TouchEvent(xpress0));
-  EXPECT_EQ(0, GetTouchIdForTrackingId(kTrackingId));
+  EXPECT_EQ(kDeviceId, GetTouchIdForTrackingId(kTrackingId));
 
   ui::ScopedXI2Event xpress1;
-  xpress1.InitTouchEvent(
-      0, XI_TouchBegin, kTrackingId, gfx::Point(20, 20), valuators);
+  xpress1.InitTouchEvent(kDeviceId, XI_TouchBegin, kTrackingId,
+                         gfx::Point(20, 20), valuators);
   ui::TouchEvent upress1(xpress1);
-  EXPECT_EQ(0, GetTouchIdForTrackingId(kTrackingId));
-
-  // The first touch release shouldn't clear the mapping from the
-  // tracking id.
-  ui::ScopedXI2Event xrelease0;
-  xrelease0.InitTouchEvent(
-      0, XI_TouchEnd, kTrackingId, gfx::Point(10, 10), valuators);
-  {
-    ui::TouchEvent urelease0(xrelease0);
-    urelease0.set_should_remove_native_touch_id_mapping(false);
-  }
-  EXPECT_EQ(0, GetTouchIdForTrackingId(kTrackingId));
+  EXPECT_EQ(kDeviceId, GetTouchIdForTrackingId(kTrackingId));
 
   // The second touch release should clear the mapping from the
   // tracking id.
   ui::ScopedXI2Event xrelease1;
-  xrelease1.InitTouchEvent(
-      0, XI_TouchEnd, kTrackingId, gfx::Point(10, 10), valuators);
+  xrelease1.InitTouchEvent(kDeviceId, XI_TouchEnd, kTrackingId,
+                           gfx::Point(10, 10), valuators);
   {
     ui::TouchEvent urelease1(xrelease1);
   }

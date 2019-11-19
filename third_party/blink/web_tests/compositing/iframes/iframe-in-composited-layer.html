@@ -14,8 +14,8 @@
     }
 </script>
 
-<div style="transform: translateZ(0); width: 400px; height: 400px; background-color: lightyellow;">
-    <iframe id="frame"  onload="runTest()" style="width: 380px; height: 380px; border: solid; margin: 7px" src="data:text/html,
+<div style="will-change: transform; width: 400px; height: 400px; background-color: lightyellow;">
+    <iframe id="frame"  onload="runTest()" style="width: 380px; height: 380px; border: solid; margin: 7px" srcdoc="
         <html style='height: 900px; width: 900px; position: relative;'>
             <body>
                 <div style='position: absolute; width: 100px; height: 100px; background-color: red; left: 0; top: 0;'></div>

@@ -35,7 +35,7 @@ def UseJinja(path_to_template, **kwargs):
     def GeneratorInternal(*args, **kwargs2):
       parameters = generator(*args, **kwargs2)
       return ApplyTemplate(args[0], path_to_template, parameters, **kwargs)
-    GeneratorInternal.func_name = generator.func_name
+    GeneratorInternal.__name__ = generator.__name__
     return GeneratorInternal
   return RealDecorator
 

@@ -131,6 +131,18 @@ TEST_F(CoreAudioUtilWinTest, CreateDeviceEnumerator) {
   EXPECT_TRUE(enumerator.Get());
 }
 
+TEST_F(CoreAudioUtilWinTest, GetDefaultDeviceIDs) {
+  ABORT_AUDIO_TEST_IF_NOT(DevicesAvailable());
+  std::string default_device_id = CoreAudioUtil::GetDefaultInputDeviceID();
+  EXPECT_FALSE(default_device_id.empty());
+  default_device_id = CoreAudioUtil::GetDefaultOutputDeviceID();
+  EXPECT_FALSE(default_device_id.empty());
+  default_device_id = CoreAudioUtil::GetCommunicationsInputDeviceID();
+  EXPECT_FALSE(default_device_id.empty());
+  default_device_id = CoreAudioUtil::GetCommunicationsOutputDeviceID();
+  EXPECT_FALSE(default_device_id.empty());
+}
+
 TEST_F(CoreAudioUtilWinTest, CreateDefaultDevice) {
   ABORT_AUDIO_TEST_IF_NOT(DevicesAvailable());
 
@@ -171,7 +183,7 @@ TEST_F(CoreAudioUtilWinTest, CreateDevice) {
   EXPECT_TRUE(SUCCEEDED(CoreAudioUtil::GetDeviceName(
       default_render_device.Get(), &default_render_name)));
 
-  // Use the uniqe ID as input to CreateDevice() and create a corresponding
+  // Use the unique ID as input to CreateDevice() and create a corresponding
   // IMMDevice.
   ComPtr<IMMDevice> audio_device = CoreAudioUtil::CreateDevice(
       default_render_name.unique_id, EDataFlow(), ERole());
@@ -383,10 +395,17 @@ TEST_F(CoreAudioUtilWinTest, GetPreferredAudioParameters) {
   // and capture devices.
   for (size_t i = 0; i < base::size(data); ++i) {
     AudioParameters params;
+    const bool is_output_device = (data[i] == eRender);
     EXPECT_TRUE(SUCCEEDED(CoreAudioUtil::GetPreferredAudioParameters(
-        AudioDeviceDescription::kDefaultDeviceId, data[i] == eRender,
-        &params)));
+        AudioDeviceDescription::kDefaultDeviceId, is_output_device, &params)));
     EXPECT_TRUE(params.IsValid());
+    if (!is_output_device) {
+      // Loopack devices are supported for input streams.
+      EXPECT_TRUE(SUCCEEDED(CoreAudioUtil::GetPreferredAudioParameters(
+          AudioDeviceDescription::kLoopbackInputDeviceId, is_output_device,
+          &params)));
+      EXPECT_TRUE(params.IsValid());
+    }
   }
 }
 
@@ -396,10 +415,22 @@ TEST_F(CoreAudioUtilWinTest, GetChannelConfig) {
   EDataFlow data_flows[] = {eRender, eCapture};
 
   for (auto data_flow : data_flows) {
-    ChannelConfig config =
+    ChannelConfig config1 =
         CoreAudioUtil::GetChannelConfig(std::string(), data_flow);
-    EXPECT_NE(config, CHANNEL_LAYOUT_NONE);
-    EXPECT_NE(config, CHANNEL_LAYOUT_UNSUPPORTED);
+    EXPECT_NE(config1, CHANNEL_LAYOUT_NONE);
+    EXPECT_NE(config1, CHANNEL_LAYOUT_UNSUPPORTED);
+    ChannelConfig config2 = CoreAudioUtil::GetChannelConfig(
+        AudioDeviceDescription::kDefaultDeviceId, data_flow);
+    EXPECT_EQ(config1, config2);
+    // For loopback input devices, verify that the channel configuration is
+    // same as for the default output device.
+    if (data_flow == eCapture) {
+      config1 = CoreAudioUtil::GetChannelConfig(
+          AudioDeviceDescription::kLoopbackInputDeviceId, data_flow);
+      config2 = CoreAudioUtil::GetChannelConfig(
+          AudioDeviceDescription::kDefaultDeviceId, eRender);
+      EXPECT_EQ(config1, config2);
+    }
   }
 }
 
@@ -581,13 +612,6 @@ TEST_F(CoreAudioUtilWinTest, GetMatchingOutputDeviceID) {
   }
 
   EXPECT_TRUE(found_a_pair);
-}
-
-TEST_F(CoreAudioUtilWinTest, GetDefaultOutputDeviceID) {
-  ABORT_AUDIO_TEST_IF_NOT(DevicesAvailable());
-
-  std::string default_device_id(CoreAudioUtil::GetDefaultOutputDeviceID());
-  EXPECT_FALSE(default_device_id.empty());
 }
 
 TEST_F(CoreAudioUtilWinTest, CheckGetPreferredAudioParametersUMAStats) {

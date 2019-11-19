@@ -156,6 +156,11 @@
   99CAD8       FC (3)       FC sinh
  1401788       A4 (2) -------- thinlto-cache/Thin-826b9f.tmp.o:(.text._ZNK4$_21clEP10FamilyDataPKcPS3_)
  1401788       A4 (3)       A4 $_21::operator()(FamilyData*, char const*, char const**) const
+ 1401820       10 (2) -------- thinlto-cache/Thin-826b9f.tmp.o:(.text.unlikely.UnlikelyFunc)
+ 1401820       10 (3)       10 UnlikelyFunc
+ 1401830       10 (3)        0 UnlikelyFunc2
+ 1401850       10 (2) -------- thinlto-cache/Thin-826b9f.tmp.o:(.text.startup)
+ 1401850       10 (3)       10 StartUpFunc
  2D4A7F0     17D0 (1) -------- .plt
  2D4A7F0     17D0 (2) -------- <internal>:(.plt)
  2D4C000    1CFC8 (1) -------- .data
@@ -221,6 +226,40 @@
  2F56008        4 (3)        0 WebRtcSpl_MaxAbsValueW16
  2F56008        4 (3)        0 WebRtcSpl_MaxAbsValueW16
  2F56008        4 (3)        4 WebRtcSpl_MaxAbsValueW16
+ 34BE000       34 (1) -------- vr_partition
+ 34BE000       34 (2) -------- <internal>:(vr_partition)
+ 34BE034      140 (1) -------- .phdrs
+ 34BE034      140 (2) -------- <internal>:(.phdrs)
+ 34BE174       13 (1) -------- .interp
+ 34BE174       13 (2) -------- <internal>:(.interp)
+ 34BE188       1C (1) -------- .note.crashpad.info
+ 34BE188       1C (2) -------- obj/third_party/crashpad/crashpad/client/libclient.a(client/crashpad_info_note.o):(.note.crashpad.info)
+ 34BE1A4       98 (1) -------- .note.android.ident
+ 34BE1A4       98 (2) -------- ../../third_party/android_ndk/platforms/android-16/arch-arm/usr/lib/crtbegin_so.o:(.note.android.ident)
+ 34BE23C       24 (1) -------- .note.gnu.build-id
+ 34BE23C       24 (2) -------- <internal>:(.note.gnu.build-id)
+ 34BE260       20 (1) -------- .dynsym
+ 34BE260       20 (2) -------- <internal>:(.dynsym)
+ 34BE280        4 (1) -------- .gnu.version
+ 34BE280        4 (2) -------- <internal>:(.gnu.version)
+ 34BE284       60 (1) -------- .gnu.version_r
+ 34BE284       60 (2) -------- <internal>:(.gnu.version_r)
+ 34BE2E4       1C (1) -------- .gnu.hash
+ 34BE2E4       1C (2) -------- <internal>:(.gnu.hash)
+ 34BE300       6C (1) -------- .dynstr
+ 34BE300       6C (2) -------- <internal>:(.dynstr)
+ 34BE36C      257 (1) -------- .rel.dyn
+ 34BE36C      257 (2) -------- <internal>:(.rel.dyn)
+ 34BE5C4       10 (1) -------- .ARM.exidx
+ 34BE5C4       10 (2) -------- <internal>:(.ARM.exidx)
+ 34BE5D8     2428 (1) -------- .rodata
+ 34BE5D8       10 (2) -------- thinlto-cache/Thin-5e976b.tmp.o:(.rodata._ZN2vrL17kRepositionIconIdE)
+ 34BE5D8       10 (3)       10 vr::kRepositionIconId
+ 34C0A00    2C9EC (1) -------- .text
+ 34C0A00       18 (2) -------- thinlto-cache/Thin-ec84a4.tmp.o:(.text._ZN6SkFont7setSizeEf)
+ 34C0A00       18 (3)       18 SkFont::setSize(float)
+       0     1000 (1) -------- .part.end
+       0     1000 (2) -------- <internal>:(.part.end)
        0       23 (1) -------- .ARM.attributes
        0       23 (2) -------- obj/third_party/boringssl/boringssl_asm/chacha-armv4.o:(.ARM.attributes)
        0       A8 (1) -------- .comment

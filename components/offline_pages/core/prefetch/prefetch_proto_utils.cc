@@ -132,6 +132,9 @@ std::string ParseOperationResponse(const std::string& data,
   }
 
   std::string name = operation.name();
+  if (name == "operations/empty")
+    return name;
+
   bool success = operation.done()
                      ? ParseDoneOperationResponse(operation, pages)
                      : ParsePendingOperationResponse(operation, pages);

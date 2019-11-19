@@ -5,15 +5,18 @@
 #include "chrome/browser/chromeos/policy/remote_commands/device_commands_factory_chromeos.h"
 
 #include "base/logging.h"
+#include "chrome/browser/chromeos/policy/device_cloud_policy_manager_chromeos.h"
 #include "chrome/browser/chromeos/policy/remote_commands/crd_host_delegate.h"
 #include "chrome/browser/chromeos/policy/remote_commands/device_command_fetch_status_job.h"
 #include "chrome/browser/chromeos/policy/remote_commands/device_command_reboot_job.h"
+#include "chrome/browser/chromeos/policy/remote_commands/device_command_refresh_machine_certificate_job.h"
+#include "chrome/browser/chromeos/policy/remote_commands/device_command_remote_powerwash_job.h"
 #include "chrome/browser/chromeos/policy/remote_commands/device_command_screenshot_job.h"
 #include "chrome/browser/chromeos/policy/remote_commands/device_command_set_volume_job.h"
 #include "chrome/browser/chromeos/policy/remote_commands/device_command_start_crd_session_job.h"
 #include "chrome/browser/chromeos/policy/remote_commands/device_command_wipe_users_job.h"
 #include "chrome/browser/chromeos/policy/remote_commands/screenshot_delegate.h"
-#include "chromeos/dbus/power_manager_client.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "components/policy/core/common/remote_commands/remote_command_job.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 
@@ -21,7 +24,9 @@ namespace em = enterprise_management;
 
 namespace policy {
 
-DeviceCommandsFactoryChromeOS::DeviceCommandsFactoryChromeOS() = default;
+DeviceCommandsFactoryChromeOS::DeviceCommandsFactoryChromeOS(
+    DeviceCloudPolicyManagerChromeOS* policy_manager)
+    : policy_manager_(policy_manager) {}
 
 DeviceCommandsFactoryChromeOS::~DeviceCommandsFactoryChromeOS() = default;
 
@@ -44,6 +49,11 @@ DeviceCommandsFactoryChromeOS::BuildJobForType(em::RemoteCommand_Type type,
       return std::make_unique<DeviceCommandFetchStatusJob>();
     case em::RemoteCommand_Type_DEVICE_WIPE_USERS:
       return std::make_unique<DeviceCommandWipeUsersJob>(service);
+    case em::RemoteCommand_Type_DEVICE_REFRESH_ENTERPRISE_MACHINE_CERTIFICATE:
+      return std::make_unique<DeviceCommandRefreshMachineCertificateJob>(
+          policy_manager_->GetMachineCertificateUploader());
+    case em::RemoteCommand_Type_DEVICE_REMOTE_POWERWASH:
+      return std::make_unique<DeviceCommandRemotePowerwashJob>(service);
     default:
       // Other types of commands should be sent to UserCommandsFactoryChromeOS
       // instead of here.

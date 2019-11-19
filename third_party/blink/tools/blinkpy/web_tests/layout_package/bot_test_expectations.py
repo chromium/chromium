@@ -110,9 +110,9 @@ class ResultsJSON(object):
 
 
 class BotTestExpectationsFactory(object):
-    RESULTS_URL_PREFIX = (
-        'https://test-results.appspot.com/testfile?master=chromium.webkit&'
-        'testtype=webkit_tests&name=results-small.json&builder=')
+    RESULTS_URL_FORMAT = (
+        'https://test-results.appspot.com/testfile?testtype=webkit_layout_tests'
+        '&name=results-small.json&master=%s&builder=%s')
 
     def __init__(self, builders):
         self.builders = builders
@@ -123,10 +123,14 @@ class BotTestExpectationsFactory(object):
             return None
         return self._results_json_for_builder(builder)
 
+    def _results_url_for_builder(self, builder):
+        return self.RESULTS_URL_FORMAT % (
+            urllib.quote(self.builders.master_for_builder(builder)), urllib.quote(builder))
+
     def _results_json_for_builder(self, builder):
-        results_url = self.RESULTS_URL_PREFIX + urllib.quote(builder)
+        results_url = self._results_url_for_builder(builder)
         try:
-            _log.debug('Fetching flakiness data from appengine.')
+            _log.debug('Fetching flakiness data from appengine: %s', results_url)
             return ResultsJSON(builder, json.load(urllib2.urlopen(results_url)))
         except urllib2.URLError as error:
             _log.warning('Could not retrieve flakiness data from the bot.  url: %s', results_url)

@@ -89,7 +89,7 @@ class JniGlDisplayHandler {
   base::android::ScopedJavaGlobalRef<jobject> java_display_;
 
   // Used on UI thread.
-  base::WeakPtrFactory<JniGlDisplayHandler> weak_factory_;
+  base::WeakPtrFactory<JniGlDisplayHandler> weak_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(JniGlDisplayHandler);
 };
 

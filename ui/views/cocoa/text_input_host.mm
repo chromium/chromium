@@ -4,11 +4,11 @@
 
 #include "ui/views/cocoa/text_input_host.h"
 
+#include "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
 #include "ui/accelerated_widget_mac/window_resize_helper_mac.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/events/keycodes/dom/dom_code.h"
-#include "ui/views/cocoa/bridged_native_widget_host_impl.h"
-#include "ui/views_bridge_mac/bridged_native_widget_impl.h"
+#include "ui/views/cocoa/native_widget_mac_ns_window_host.h"
 
 namespace {
 
@@ -124,22 +124,23 @@ base::string16 AttributedSubstringForRangeHelper(
   return substring;
 }
 
-}
+}  // namespace
 
 namespace views {
 
 ////////////////////////////////////////////////////////////////////////////////
 // TextInputHost, public:
 
-TextInputHost::TextInputHost(BridgedNativeWidgetHostImpl* host_impl)
-    : host_impl_(host_impl), mojo_binding_(this) {}
+TextInputHost::TextInputHost(NativeWidgetMacNSWindowHost* host_impl)
+    : host_impl_(host_impl) {}
 
-TextInputHost::~TextInputHost() {}
+TextInputHost::~TextInputHost() = default;
 
-void TextInputHost::BindRequest(
-    views_bridge_mac::mojom::TextInputHostAssociatedRequest request) {
-  mojo_binding_.Bind(std::move(request),
-                     ui::WindowResizeHelperMac::Get()->task_runner());
+void TextInputHost::BindReceiver(
+    mojo::PendingAssociatedReceiver<remote_cocoa::mojom::TextInputHost>
+        receiver) {
+  mojo_receiver_.Bind(std::move(receiver),
+                      ui::WindowResizeHelperMac::Get()->task_runner());
 }
 
 ui::TextInputClient* TextInputHost::GetTextInputClient() const {
@@ -175,8 +176,8 @@ void TextInputHost::SetTextInputClient(
   text_input_client_ = new_text_input_client;
   pending_text_input_client_ = new_text_input_client;
 
-  if (host_impl_->bridge_impl_ &&
-      host_impl_->bridge_impl_->NeedsUpdateWindows()) {
+  if (host_impl_->in_process_ns_window_bridge_ &&
+      host_impl_->in_process_ns_window_bridge_->NeedsUpdateWindows()) {
     text_input_client_ = old_text_input_client;
     [NSApp updateWindows];
     // Note: |pending_text_input_client_| (and therefore +[NSTextInputContext
@@ -186,7 +187,7 @@ void TextInputHost::SetTextInputClient(
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// TextInputHost, views_bridge_mac::mojom::TextInputHost:
+// TextInputHost, remote_cocoa::mojom::TextInputHost:
 
 bool TextInputHost::HasClient(bool* out_has_client) {
   *out_has_client = text_input_client_ != nullptr;
@@ -245,8 +246,7 @@ bool TextInputHost::GetSelectionText(bool* out_result,
   gfx::Range selection_range;
   if (!text_input_client_->GetEditableSelectionRange(&selection_range))
     return true;
-  base::string16 text;
-  *out_result = text_input_client_->GetTextFromRange(selection_range, &text);
+  *out_result = text_input_client_->GetTextFromRange(selection_range, out_text);
   return true;
 }
 
@@ -288,9 +288,9 @@ void TextInputHost::SetCompositionText(const base::string16& text,
   // Add an underline with text color and a transparent background to the
   // composition text. TODO(karandeepb): On Cocoa textfields, the target clause
   // of the composition has a thick underlines. The composition text also has
-  // discontinous underlines for different clauses. This is also supported in
+  // discontinuous underlines for different clauses. This is also supported in
   // the Chrome renderer. Add code to extract underlines from |text| once our
-  // render text implementation supports thick underlines and discontinous
+  // render text implementation supports thick underlines and discontinuous
   // underlines for consecutive characters. See http://crbug.com/612675.
   composition.ime_text_spans.push_back(
       ui::ImeTextSpan(ui::ImeTextSpan::Type::kComposition, 0, text.length(),
@@ -301,7 +301,7 @@ void TextInputHost::SetCompositionText(const base::string16& text,
 void TextInputHost::ConfirmCompositionText() {
   if (!text_input_client_)
     return;
-  text_input_client_->ConfirmCompositionText();
+  text_input_client_->ConfirmCompositionText(/* keep_selection */ false);
 }
 
 bool TextInputHost::HasCompositionText(bool* out_has_composition_text) {
@@ -341,7 +341,7 @@ bool TextInputHost::GetFirstRectForRange(const gfx::Range& requested_range,
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// TextInputHost, views_bridge_mac::mojom::TextInputHost synchronous methods:
+// TextInputHost, remote_cocoa::mojom::TextInputHost synchronous methods:
 
 void TextInputHost::HasClient(HasClientCallback callback) {
   bool has_client = false;

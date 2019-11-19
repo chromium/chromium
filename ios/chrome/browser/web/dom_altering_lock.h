@@ -6,7 +6,7 @@
 #define IOS_CHROME_BROWSER_WEB_DOM_ALTERING_LOCK_H_
 
 #include "base/ios/block_types.h"
-#import "ios/web/public/web_state/web_state_user_data.h"
+#import "ios/web/public/web_state_user_data.h"
 
 namespace web {
 class WebState;

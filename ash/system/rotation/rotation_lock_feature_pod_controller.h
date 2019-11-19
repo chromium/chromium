@@ -7,8 +7,8 @@
 
 #include "ash/ash_export.h"
 #include "ash/display/screen_orientation_controller.h"
+#include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/system/unified/feature_pod_controller_base.h"
-#include "ash/wm/tablet_mode/tablet_mode_observer.h"
 #include "base/macros.h"
 
 namespace ash {
@@ -28,8 +28,7 @@ class ASH_EXPORT RotationLockFeaturePodController
   SystemTrayItemUmaType GetUmaType() const override;
 
   // TabletModeObserver:
-  void OnTabletModeStarted() override;
-  void OnTabletModeEnded() override;
+  void OnTabletPhysicalStateChanged() override;
 
   // ScreenOrientationController::Observer:
   void OnUserRotationLockChanged() override;

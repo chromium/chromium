@@ -1,0 +1,25 @@
+<!doctype HTML>
+<html>
+<meta charset="utf8">
+<title>Display Locking: display none ancestor (reference)</title>
+<link rel="author" title="Rakina Zata Amni" href="mailto:rakina@chromium.org">
+<link rel="help" href="https://github.com/WICG/display-locking">
+
+<style>
+#container {
+  width: 200px;
+  height: 200px;
+  background: green;
+}
+
+#locked {
+  contain: style layout;
+  width: 150px;
+  height: 150px;
+  background: lightblue;
+}
+</style>
+
+<div id="log">PASS</div>
+<div id="container"><div id="locked"></div></div>
+</html>

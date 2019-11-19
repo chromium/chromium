@@ -9,10 +9,10 @@
 #include "base/android/scoped_java_ref.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/web_contents/web_contents_view_android.h"
+#include "content/public/android/content_jni_headers/SelectPopup_jni.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/menu_item.h"
 #include "content/public/common/use_zoom_for_dsf_policy.h"
-#include "jni/SelectPopup_jni.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 using base::android::AttachCurrentThread;

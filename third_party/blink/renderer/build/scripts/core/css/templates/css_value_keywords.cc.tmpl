@@ -44,7 +44,7 @@ struct Value;
 %enum
 %%
 {% for keyword in value_keywords %}
-{{keyword.lower_name}}, {{keyword.enum_name}}
+{{keyword.lower_name}}, static_cast<int>(CSSValueID::{{keyword.enum_name}})
 {% endfor %}
 %%
 
@@ -53,19 +53,19 @@ const Value* FindValue(const char* str, unsigned int len) {
 }
 
 const char* getValueName(CSSValueID id) {
-  DCHECK_GT(id, 0);
-  DCHECK_LT(id, numCSSValueKeywords);
-  return valueListStringPool + valueListStringOffsets[id - 1];
+  DCHECK_GT(id, CSSValueID::kInvalid);
+  DCHECK_LT(static_cast<int>(id), numCSSValueKeywords);
+  return valueListStringPool + valueListStringOffsets[static_cast<int>(id) - 1];
 }
 
-bool isValueAllowedInMode(uint16_t id, CSSParserMode mode) {
+bool isValueAllowedInMode(CSSValueID id, CSSParserMode mode) {
   switch (id) {
 {% for ua_keyword in ua_sheet_mode_values_keywords %}
-    case {{ua_keyword.enum_name}}:
+    case CSSValueID::{{ua_keyword.enum_name}}:
 {% endfor %}
       return IsUASheetBehavior(mode);
 {% for quirks_or_ua_keyword in quirks_mode_or_ua_sheet_mode_values_keywords %}
-    case {{quirks_or_ua_keyword.enum_name}}:
+    case CSSValueID::{{quirks_or_ua_keyword.enum_name}}:
 {% endfor %}
       return IsUASheetBehavior(mode) || IsQuirksModeBehavior(mode);
     default:

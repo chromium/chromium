@@ -5,15 +5,11 @@
 import("//third_party/blink/renderer/core/core.gni")
 
 blink_core_sources("svg") {
-  # Split into multiple static libraries on Windows official builds, where we
-  # run into a 2GB max size limit.
-  if (is_win && is_official_build) {
-    split_count = 5
-  } else {
-    split_count = 1
-  }
-
   sources = [
+    "animation/priority_queue.h",
+    "animation/smil_animation_sandwich.cc",
+    "animation/smil_animation_sandwich.h",
+    "animation/smil_repeat_count.h",
     "animation/smil_time.cc",
     "animation/smil_time.h",
     "animation/smil_time_container.cc",

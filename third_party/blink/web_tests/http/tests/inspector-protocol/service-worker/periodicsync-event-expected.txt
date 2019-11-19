@@ -1,0 +1,3 @@
+Tests delivery of a periodicsync event to the service worker.
+Got periodicsync event with tag: test-tag-from-devtools
+

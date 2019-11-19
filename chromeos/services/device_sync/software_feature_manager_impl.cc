@@ -67,8 +67,7 @@ SoftwareFeatureManagerImpl::Request::~Request() = default;
 
 SoftwareFeatureManagerImpl::SoftwareFeatureManagerImpl(
     CryptAuthClientFactory* cryptauth_client_factory)
-    : crypt_auth_client_factory_(cryptauth_client_factory),
-      weak_ptr_factory_(this) {}
+    : crypt_auth_client_factory_(cryptauth_client_factory) {}
 
 SoftwareFeatureManagerImpl::~SoftwareFeatureManagerImpl() = default;
 

@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <memory>
 #include <string>
 
 #include "base/callback_forward.h"
@@ -33,7 +34,7 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) VirtualFileProviderClient
 
   // Factory function, creates a new instance and returns ownership.
   // For normal usage, access the singleton via DBusThreadManager::Get().
-  static VirtualFileProviderClient* Create();
+  static std::unique_ptr<VirtualFileProviderClient> Create();
 
   // Creates a new file descriptor and returns it with a unique ID.
   // |size| will be used to perform boundary check when FD is seeked.

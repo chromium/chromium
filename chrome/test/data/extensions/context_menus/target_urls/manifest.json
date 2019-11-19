@@ -3,7 +3,5 @@
   "version" : "0.1",
   "manifest_version": 2,
   "permissions": [ "contextMenus", "tabs" ],
-  "background": {
-    "page": "background.html"
-  }
+  "background": { "scripts": ["test.js"] }
 }

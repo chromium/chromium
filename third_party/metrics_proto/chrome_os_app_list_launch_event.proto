@@ -1,0 +1,76 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package metrics;
+
+// Provides information about the launch of an item (such as an app or a file)
+// from the ChromeOS launcher. One event is recorded for every launch
+// originating from any launcher UI component, and this is the only circumstance
+// that records events. All fields prefixed with "hashed_" are hashed-and-
+// peppered values: the value is concatenated with a user-specific secret value,
+// and then hashed. For privacy reasons this process is designed to be one-way,
+// so that the server cannot easily recover the original values.
+//
+// Next tag: 10
+message ChromeOSAppListLaunchEventProto {
+  // A per-user, per-client ID that is used only for app list launch event
+  // logging.
+  optional fixed64 recurrence_ranker_user_id = 1;
+
+  // Enumerates the different UI components of the launcher that a user can
+  // perform a launch from.
+  enum LaunchType {
+    // No launch type specified. This is invalid and will cause the event to be
+    // dropped.
+    LAUNCH_TYPE_UNSPECIFIED = 0;
+    // Launches from the zero-state suggested apps chips or app search result
+    // tiles.
+    APP_TILES = 1;
+    // Launches from the non-apps search result list.
+    RESULTS_LIST = 2;
+  }
+  optional LaunchType launch_type = 2;
+
+  // Hour of the day from 0 to 23 inclusive. This is the user's local time
+  // rounded to the nearest hour.
+  optional int32 hour = 3;
+
+  // String length of the search query associated with this launch. If there was
+  // no query, this is zero.
+  optional int32 search_query_length = 4;
+
+  // Below here, all fields are hashed data.
+
+  // The hashed target item of the launch, eg. an app ID, filepath, or omnibox
+  // suggestion.
+  optional fixed64 hashed_target = 5;
+
+  // The hashed search query associated with the launch. Before hashing, the
+  // query is the empty string if there is no search query for this launch.
+  optional fixed64 hashed_query = 6;
+
+  // Hashed of the most-recently-visited domain when this launch occurred.
+  optional fixed64 hashed_domain = 7;
+
+  // Hash of the app ID of the most-recently-opened app when this launch
+  // occurred. This can be an app ID of a Chrome app, Arc++ app, or PWA.
+  optional fixed64 hashed_app = 8;
+
+  // Which search provider produced the launched item.
+  enum SearchProviderType {
+    // No result type specified.
+    PROVIDER_UNSPECIFIED = 0;
+    // Recent queries from the Omnibox provider.
+    OMNIBOX = 1;
+    // Zero-state files provider.
+    ZERO_STATE_FILE = 2;
+    // Drive QuickAccess provider.
+    DRIVE_QUICK_ACCESS = 3;
+  }
+  optional SearchProviderType search_provider_type = 9;
+}

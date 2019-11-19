@@ -1,0 +1,160 @@
+<!-- Copyright 2015 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<link rel="import" href="chrome://oobe/custom_elements.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
+<link rel="stylesheet" href="gaia_card_parameters.css">
+
+<dom-module id="enterprise-enrollment">
+  <template>
+    <div id="oauth-enroll-step-contents">
+      <link rel="stylesheet" href="oobe_flex_layout.css">
+      <link rel="stylesheet" href="oobe_dialog_host.css">
+      <link rel="stylesheet" href="enterprise_enrollment.css">
+      <div id="step-signin" hidden$="[[!eq_(currentStep_, 'signin')]]">
+        <oobe-dialog class="gaia-dialog" role="dialog"
+                     id="enrollment-gaia-dialog" has-buttons no-header
+                     no-footer-padding
+                     show-buttons-overlay="[[authenticatorDialogDisplayed_]]">
+          <div slot="footer" class="flex layout vertical">
+            <webview id="oauth-enroll-auth-view"
+                     name="oauth-enroll-auth-view">
+            </webview>
+          </div>
+          <div slot="bottom-buttons" class="layout horizontal start-justified">
+            <oobe-back-button id="oobe-signin-back-button"
+                disabled="[[authenticatorDialogDisplayed_]]"
+                on-click="onBackButtonClicked_"></oobe-back-button>
+          </div>
+        </oobe-dialog>
+      </div>
+      <div id="step-working" hidden$="[[!eq_(currentStep_, 'working')]]">
+          <oobe-dialog id="oauth-enroll-working">
+            <hd-iron-icon slot="oobe-icon"
+                icon1x="oobe-32:briefcase" icon2x="oobe-64:briefcase">
+            </hd-iron-icon>
+            <h1 slot="title">
+              [[i18nDynamic(locale, 'oauthEnrollScreenTitle')]]
+            </h1>
+            <paper-progress slot="progress" indeterminate>
+            </paper-progress>
+
+            <div slot="footer" class="flex layout vertical" role="alert">
+              <div class="oauth-enroll-step-message">
+                [[i18nDynamic(locale, 'oauthEnrollWorking')]]
+              </div>
+            </div>
+          </oobe-dialog>
+      </div>
+      <div id="step-license" hidden$="[[!eq_(currentStep_, 'license')]]">
+        <enrollment-license-card id="oauth-enroll-license-ui"
+                                 i18n-values="button-text:oauthEnrollNextBtn">
+        </enrollment-license-card>
+      </div>
+      <div id="step-ad-join" hidden$="[[!eq_(currentStep_, 'ad-join')]]">
+        <offline-ad-login id="oauth-enroll-ad-join-ui" is-domain-join
+            class="fit" i18n-values=
+                "ad-welcome-message:oauthEnrollAdDomainJoinWelcomeMessage">
+        </offline-ad-login>
+      </div>
+      <div id="step-error" role="alert"
+          hidden$="[[!isErrorStep_(currentStep_)]]">
+        <notification-card id="oauth-enroll-error-card" type="fail"
+            button-label=
+                "[[errorAction_(locale, currentStep_, canRetryAfterError_)]]"
+            i18n-values="button-label:oauthEnrollRetry"
+            on-buttonclick="onErrorButtonPressed_">
+          [[errorText_]]
+        </notification-card>
+      </div>
+      <div id="step-success" hidden$="[[!eq_(currentStep_, 'success')]]"
+          role="alert">
+        <oobe-dialog id="oauth-enroll-success-card" has-buttons>
+          <hd-iron-icon slot="oobe-icon"
+              icon1x="oobe-32:briefcase" icon2x="oobe-64:briefcase">
+          </hd-iron-icon>
+          <h1 slot="title">
+            [[i18nDynamic(locale, 'oauthEnrollSuccessTitle')]]
+          </h1>
+          <div slot="subtitle">
+            <div hidden="[[!isEmpty_(enrolledDomain_)]]">
+              [[i18nDynamic(locale,'oauthEnrollSuccessTitle')]]
+            </div>
+            <div hidden="[[isEmpty_(enrolledDomain_)]]">
+              <html-echo content=
+                  "[[successText_(locale, deviceName_, enrolledDomain_)]]">
+              </html-echo>
+              <div>[[i18nDynamic(locale, 'oauthEnrollAbeSuccessSupport')]]</div>
+            </div>
+          </div>
+          <div slot="footer" class="flex layout vertical center end-justified">
+            <img srcset="images/enrollment_success_illustration_1x.png 1x,
+                    images/enrollment_success_illustration_2x.png 2x"
+                 i18n-values="alt:enrollmentSuccessIllustrationTitle"
+                 class="oobe-illustration">
+          </div>
+          <div slot="bottom-buttons" class="layout horizontal end-justified">
+            <oobe-text-button inverse id="success-done-button"
+                on-tap="onEnrollmentFinished_"
+                class="focus-on-show">
+              <div>[[i18nDynamic(locale, 'oauthEnrollDone')]]</div>
+            </oobe-text-button>
+          </div>
+        </oobe-dialog>
+      </div>
+      <div id="step-attribute-prompt"
+          hidden$="[[!eq_(currentStep_, 'attribute-prompt')]]">
+        <oobe-dialog id="oauth-enroll-attribute-prompt-card" has-buttons>
+          <hd-iron-icon slot="oobe-icon"
+              icon1x="oobe-32:briefcase" icon2x="oobe-64:briefcase">
+          </hd-iron-icon>
+          <h1 slot="title">
+            [[i18nDynamic(locale, 'oauthEnrollScreenTitle')]]
+          </h1>
+          <div slot="subtitle">
+            [[i18nDynamic(locale, 'oauthEnrollDeviceInformation')]]
+          </div>
+          <div slot="footer" class="layout vertical start">
+            <div class="oauth-enroll-step-message">
+              <span id="oauth-enroll-attribute-prompt-message">
+                [[i18nDynamic(locale, 'oauthEnrollAttributeExplanation')]]
+              </span>
+              <a href="#" id="oauth-enroll-learn-more-link"
+                 class="oauth-enroll-link">
+                [[i18nDynamic(locale, 'oauthEnrollExplainAttributeLink')]]
+              </a>
+            </div>
+            <gaia-input id="oauth-enroll-asset-id" type="text"
+                        class="focus-on-show">
+              <div slot="label">
+                [[i18nDynamic(locale, 'oauthEnrollAssetIdLabel')]]
+              </div>
+            </gaia-input>
+            <gaia-input id="oauth-enroll-location" type="text">
+              <div slot="label">
+                [[i18nDynamic(locale, 'oauthEnrollLocationLabel')]]
+              </div>
+            </gaia-input>
+          </div>
+          <div slot="bottom-buttons" class="layout horizontal end-justified">
+            <oobe-text-button id="attributes-skip" on-tap="skipAttributes_">
+              <div>
+                [[i18nDynamic(locale, 'oauthEnrollSkip')]]
+              </div>
+            </oobe-text-button>
+            <div class="flex"></div>
+            <oobe-next-button id="attributes-submit"
+                on-tap="submitAttributes_"></oobe-next-button>
+          </div>
+        </oobe-dialog>
+      </div>
+    </div>
+    <div id="oauth-saml-notice-container">
+      <span id="oauth-saml-notice-message"></span>
+    </div>
+    <navigation-bar id="oauth-enroll-navigation"
+        disabled="[[authenticatorDialogDisplayed_]]"
+        on-close="cancel" on-refresh="cancel"></navigation-bar>
+  </template>
+</dom-module>

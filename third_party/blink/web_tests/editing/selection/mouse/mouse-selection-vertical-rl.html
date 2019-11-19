@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<script src="../../../resources/ahem.js"></script>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../resources/mouse-selection.js"></script>
+<style>
+html {
+  writing-mode: vertical-rl;
+  font: 20px/20px Ahem;
+  word-wrap: break-word;
+}
+body {
+  margin: 0;
+}
+div {
+  height: 200px;
+  margin: 200px;
+}
+</style>
+<!-- 40 Xs, 4 lines -->
+<div id="div">XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX</div>
+<script>
+// The expectations are based on windows editing behavior.
+if (window.internals)
+  internals.settings.setEditingBehavior('win');
+
+var node = div.firstChild;
+testMouseSelection(590, 310, 530, 310, node, 5, node, 35,
+                   'Middle of the first line -> Middle of the last line');
+testMouseSelection(590, 310, 550, 500, node, 5, node, 30,
+                   'Middle of the first line -> Outside below the third line');
+testMouseSelection(590, 310, 550, 100, node, 5, node, 20,
+                   'Middel of the first line -> Outside above the third line');
+testMouseSelection(590, 310, 300, 310, node, 5, node, 35,
+                   'Middle of the first line -> Outside left, vertical middle');
+testMouseSelection(590, 310, 300, 500, node, 5, node, 40,
+                   'Middle of the first line -> Outside left, below');
+testMouseSelection(530, 310, 700, 310, node, 5, node, 35,
+                   'Middle of the last line -> Outside right, vertical middle');
+testMouseSelection(530, 310, 570, 100, node, 10, node, 35,
+                   'Middle of the last line -> Outside above the second line');
+testMouseSelection(530, 310, 570, 500, node, 20, node, 35,
+                   'Middle of the last line -> Outside below the second line');
+</script>

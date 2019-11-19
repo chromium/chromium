@@ -34,6 +34,13 @@ HEADER_DELIMETER = """\
   //-------------------------------------------------------------------------
 """
 
+MESSAGES = '''
+  {
+    'doc_schema_description_link': {
+      'text': 'See $6'
+    },
+  }'''
+
 
 class JsonWriterUnittest(writer_unittest_common.WriterUnittestCommon):
   '''Unit tests for JsonWriter.'''
@@ -55,6 +62,7 @@ class JsonWriterUnittest(writer_unittest_common.WriterUnittestCommon):
     policy_json = '''
         {
           "policy_definitions": [],
+          "policy_atomic_group_definitions": [],
           "placeholders": [],
           "messages": {},
         }'''
@@ -67,6 +75,7 @@ class JsonWriterUnittest(writer_unittest_common.WriterUnittestCommon):
     policy_json = '''
         {
           "policy_definitions": [],
+          "policy_atomic_group_definitions": [],
           "placeholders": [],
           "messages": {},
         }'''
@@ -91,6 +100,7 @@ class JsonWriterUnittest(writer_unittest_common.WriterUnittestCommon):
               "example_value": True
             },
           ],
+          "policy_atomic_group_definitions": [],
           "placeholders": [],
           "messages": {},
         }'''
@@ -120,6 +130,7 @@ class JsonWriterUnittest(writer_unittest_common.WriterUnittestCommon):
               "example_value": True
             },
           ],
+          "policy_atomic_group_definitions": [],
           "placeholders": [],
           "messages": {},
         }'''
@@ -149,6 +160,7 @@ class JsonWriterUnittest(writer_unittest_common.WriterUnittestCommon):
               "example_value": "hello, world!"
             },
           ],
+          "policy_atomic_group_definitions": [],
           "placeholders": [],
           "messages": {},
         }'''
@@ -174,6 +186,7 @@ class JsonWriterUnittest(writer_unittest_common.WriterUnittestCommon):
               "example_value": 15
             },
           ],
+          "policy_atomic_group_definitions": [],
           "placeholders": [],
           "messages": {},
         }'''
@@ -203,6 +216,7 @@ class JsonWriterUnittest(writer_unittest_common.WriterUnittestCommon):
               "example_value": 1
             },
           ],
+          "policy_atomic_group_definitions": [],
           "placeholders": [],
           "messages": {},
         }'''
@@ -234,6 +248,7 @@ class JsonWriterUnittest(writer_unittest_common.WriterUnittestCommon):
               "example_value": "one"
             },
           ],
+          "policy_atomic_group_definitions": [],
           "placeholders": [],
           "messages": {},
         }'''
@@ -259,6 +274,7 @@ class JsonWriterUnittest(writer_unittest_common.WriterUnittestCommon):
               "example_value": ["foo", "bar"]
             },
           ],
+          "policy_atomic_group_definitions": [],
           "placeholders": [],
           "messages": {},
         }'''
@@ -290,6 +306,7 @@ class JsonWriterUnittest(writer_unittest_common.WriterUnittestCommon):
               "example_value": ["one", "two"]
             },
           ],
+          "policy_atomic_group_definitions": [],
           "placeholders": [],
           "messages": {},
         }'''
@@ -325,13 +342,16 @@ class JsonWriterUnittest(writer_unittest_common.WriterUnittestCommon):
               "example_value": ''' + str(example) + '''
             },
           ],
+          "policy_atomic_group_definitions": [],
           "placeholders": [],
-          "messages": {},
-        }'''
+          "messages": %s,
+        }''' % MESSAGES
     output = self.GetOutput(policy_json, {'_chromium': '1'}, 'json')
     expected_output = (
         TEMPLATE_HEADER + '  // Example Dictionary Policy\n' + HEADER_DELIMETER
-        + '  // Example Dictionary Policy\n\n'
+        + '  // Example Dictionary Policy See '
+        'https://cloud.google.com/docs/chrome-\n'
+        '  // enterprise/policies/?policy=DictionaryPolicy\n\n'
         '  //"DictionaryPolicy": {"bool": true, "dict": {"a": 1, '
         '"b": 2}, "int": 10, "list": [1, 2, 3], "string": "abc"}\n\n'
         '}')
@@ -355,13 +375,16 @@ class JsonWriterUnittest(writer_unittest_common.WriterUnittestCommon):
               "example_value": %s
             },
           ],
+          "policy_atomic_group_definitions": [],
           "placeholders": [],
-          "messages": {},
-        }''' % str(example)
+          "messages": %s,
+        }''' % (str(example), MESSAGES)
     output = self.GetOutput(policy_json, {'_chromium': '1'}, 'json')
     expected_output = (
         TEMPLATE_HEADER + '  // Example External Policy\n' + HEADER_DELIMETER +
-        '  // Example External Policy\n\n'
+        '  // Example External Policy See '
+        'https://cloud.google.com/docs/chrome-\n'
+        '  // enterprise/policies/?policy=ExternalPolicy\n\n'
         '  //"ExternalPolicy": {"hash": "deadbeef", "url": "https://example.com/avatar.jpg"}\n\n'
         '}')
     self.CompareOutputs(output, expected_output)
@@ -381,6 +404,7 @@ class JsonWriterUnittest(writer_unittest_common.WriterUnittestCommon):
               "example_value": ["a"]
             },
           ],
+          "policy_atomic_group_definitions": [],
           "placeholders": [],
           "messages": {},
         }'''
@@ -417,6 +441,7 @@ class JsonWriterUnittest(writer_unittest_common.WriterUnittestCommon):
               "example_value": "c"
             },
           ],
+          "policy_atomic_group_definitions": [],
           "placeholders": [],
           "messages": {},
         }'''

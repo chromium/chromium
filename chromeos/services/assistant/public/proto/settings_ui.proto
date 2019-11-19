@@ -12,11 +12,13 @@ import "about_me_settings_ui.proto";
 import "assistant_device_settings_ui.proto";
 import "consent_flow_ui.proto";
 import "email_opt_in_ui.proto";
+import "gaia_user_context_ui.proto";
 
 message SettingsUi {
   optional AboutMeSettingsUi about_me_settings = 5;
   optional ConsentFlowUi consent_flow_ui = 27;
   optional EmailOptInUi email_opt_in_ui = 33;
+  optional GaiaUserContextUi gaia_user_context_ui = 43;
 }
 
 message SettingsUiUpdate {
@@ -37,4 +39,5 @@ message SettingsUiSelector {
   optional bool about_me_settings = 5;
   optional ConsentFlowUiSelector consent_flow_ui_selector = 35;
   optional bool email_opt_in = 43;
+  optional bool gaia_user_context_ui = 54;
 }

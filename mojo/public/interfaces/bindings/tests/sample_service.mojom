@@ -101,12 +101,13 @@ interface Service {
     EXTRA
   };
   const uint8 kFavoriteBaz = 1;
-  Frobinate@0(Foo? foo@0, BazOptions baz@1, Port? port@2) => (int32 result@0);
-  GetPort@1(Port& port @0);
+  Frobinate@0(Foo? foo@0, BazOptions baz@1, pending_remote<Port>? port@2)
+      => (int32 result@0);
+  GetPort@1(pending_receiver<Port> receiver @0);
 };
 
 // This interface is referenced above where it is defined. It also refers to
 // itself from a method.
 interface Port {
-  PostMessageToPort@0(string message_text@0, Port port@1);
+  PostMessageToPort@0(string message_text@0, pending_remote<Port> port@1);
 };

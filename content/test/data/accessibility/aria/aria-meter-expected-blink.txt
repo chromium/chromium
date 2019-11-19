@@ -1,0 +1,8 @@
+rootWebArea
+++genericContainer ignored
+++++meter name='funding' value='half-way' valueForRange=50.00 minValueForRange=0.00 maxValueForRange=100.00
+++++++staticText name='We're getting there!'
+++++++++inlineTextBox name='We're getting there!'
+++++meter name='funding' valueForRange=10.00 minValueForRange=0.00 maxValueForRange=100.00
+++++++staticText name='Not so great.'
+++++++++inlineTextBox name='Not so great.'

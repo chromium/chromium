@@ -19,29 +19,22 @@ don't need to build Chrome, android checkouts of Chromium download an archive
 containing only the APIs we currently need in Chrome, and in a single version.
 
 The up to date list of clients and version used can be seen in
-[//build/android/play_services/config.json][config_json_rel_path].
+[//tools/android/roll/android_deps/build.gradle][build.gradle].
 
-**Note**: If you are working on a feature that requires different or more recent
-APIs, you will need to locally download the Google Play services SDK repository.
-
-The simplest way to download the latest SDK is to run:
-
-```
-$CHROMIUM_SRC/build/android/play_services/update.py sdk
-```
-
-Check out the help of that script for more info.
+To update play services, change the gmsVersion variable in
+[//tools/android/roll/android_deps/build.gradle][build.gradle], then run
+[//tools/android/roll/android_deps/fetch_all.py][fetch_all.py].
 
 [play_store]: https://play.google.com/store/apps/details?id=com.google.android.gms
 [dev_doc]: https://developers.google.com/android/guides/overview
-[config_json_rel_path]: ../build/android/play_services/config.json
+[build.gradle]: ../tools/android/roll/android_deps/build.gradle
 
 ## Adding a dependency on new APIs
 
 As explained above, the default checkout has access to only a specific set of
 APIs during builds. If your CL depends on some APIs that are not included in the
-build, you will need [file an issue][bug_link] to request an update of our
-dependencies.
+build, you will need to add an entry in
+[//tools/android/roll/android_deps/build.gradle][build.gradle].
 
 Not doing so could make the CL fail on the trybots and commit queue. Even if it
 passes, it might fail on the internal bots and result in the CL getting

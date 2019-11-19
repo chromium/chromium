@@ -38,7 +38,7 @@ class BluetoothPolicyHandler {
   std::unique_ptr<chromeos::CrosSettings::ObserverSubscription>
       bluetooth_policy_subscription_;
   scoped_refptr<device::BluetoothAdapter> adapter_;
-  base::WeakPtrFactory<BluetoothPolicyHandler> weak_factory_;
+  base::WeakPtrFactory<BluetoothPolicyHandler> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(BluetoothPolicyHandler);
 };

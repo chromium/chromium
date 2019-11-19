@@ -5,15 +5,13 @@
 #ifndef ASH_SHELL_EXAMPLE_FACTORY_H_
 #define ASH_SHELL_EXAMPLE_FACTORY_H_
 
-namespace app_list {
-class AppListViewDelegate;
-}
-
 namespace views {
 class View;
 }
 
 namespace ash {
+class AppListViewDelegate;
+
 namespace shell {
 
 void CreatePointyBubble(views::View* anchor_view);
@@ -23,7 +21,7 @@ void CreateLockScreen();
 // Creates a window showing samples of commonly used widgets.
 void CreateWidgetsWindow();
 
-app_list::AppListViewDelegate* CreateAppListViewDelegate();
+AppListViewDelegate* CreateAppListViewDelegate();
 
 }  // namespace shell
 }  // namespace ash

@@ -25,14 +25,15 @@ namespace test {
 
 class MultiprocessTestHelper {
  public:
-  using HandlerCallback = base::Callback<void(ScopedMessagePipeHandle)>;
-
   enum class LaunchType {
     // Launch the child process as a child in the mojo system.
     CHILD,
 
     // Launch the child process as an unrelated peer process in the mojo system.
     PEER,
+
+    // Same as CHILD but uses the newer async channel handshake.
+    ASYNC,
 
 #if !defined(OS_FUCHSIA)
     // Launch the child process as a child in the mojo system, using a named
@@ -82,9 +83,9 @@ class MultiprocessTestHelper {
   // Used by macros in mojo/core/test/mojo_test_base.h to support multiprocess
   // test client initialization.
   static void ChildSetup();
-  static int RunClientMain(const base::Callback<int(MojoHandle)>& main,
+  static int RunClientMain(base::OnceCallback<int(MojoHandle)> main,
                            bool pass_pipe_ownership_to_main = false);
-  static int RunClientTestMain(const base::Callback<void(MojoHandle)>& main);
+  static int RunClientTestMain(base::OnceCallback<void(MojoHandle)> main);
 
   // For use (and only valid) in the child process:
   static mojo::ScopedMessagePipeHandle primordial_pipe;

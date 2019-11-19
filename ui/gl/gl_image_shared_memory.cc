@@ -28,7 +28,7 @@ bool GLImageSharedMemory::Initialize(
   if (!region.IsValid())
     return false;
 
-  if (NumberOfPlanesForBufferFormat(format) != 1)
+  if (NumberOfPlanesForLinearBufferFormat(format) != 1)
     return false;
 
   base::CheckedNumeric<size_t> checked_size = stride;

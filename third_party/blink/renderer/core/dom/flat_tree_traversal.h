@@ -34,7 +34,7 @@
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/traversal_range.h"
 #include "third_party/blink/renderer/core/dom/v0_insertion_point.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
@@ -56,6 +56,13 @@ class CORE_EXPORT FlatTreeTraversal {
  public:
   typedef LayoutTreeBuilderTraversal::ParentDetails ParentTraversalDetails;
   using TraversalNodeType = Node;
+
+#if DCHECK_IS_ON()
+  static void AssertFlatTreeNodeDataUpdated(
+      const Node& root,
+      int& assigned_nodes_in_slot_count,
+      int& nodes_which_have_assigned_slot_count);
+#endif
 
   static Node* Next(const Node&);
   static Node* Next(const Node&, const Node* stay_within);
@@ -200,8 +207,7 @@ inline ContainerNode* FlatTreeTraversal::Parent(
 }
 
 inline Element* FlatTreeTraversal::ParentElement(const Node& node) {
-  ContainerNode* parent = FlatTreeTraversal::Parent(node);
-  return parent && parent->IsElementNode() ? ToElement(parent) : nullptr;
+  return DynamicTo<Element>(FlatTreeTraversal::Parent(node));
 }
 
 inline Node* FlatTreeTraversal::NextSibling(const Node& node) {

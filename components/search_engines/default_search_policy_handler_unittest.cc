@@ -133,7 +133,7 @@ TEST_F(DefaultSearchPolicyHandlerTest, Invalid) {
   const char bad_search_url[] = "http://test.com/noSearchTerms";
   policy.Set(key::kDefaultSearchProviderSearchURL, POLICY_LEVEL_MANDATORY,
              POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
-             base::WrapUnique(new base::Value(bad_search_url)), nullptr);
+             std::make_unique<base::Value>(bad_search_url), nullptr);
   UpdateProviderPolicy(policy);
 
   const base::Value* temp = nullptr;
@@ -249,11 +249,10 @@ TEST_F(DefaultSearchPolicyHandlerTest, DisabledByPolicy) {
   PolicyMap policy;
   policy.Set(key::kDefaultSearchProviderEnabled, POLICY_LEVEL_MANDATORY,
              POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
-             base::WrapUnique(new base::Value(false)), nullptr);
+             std::make_unique<base::Value>(false), nullptr);
   policy.Set(key::kDefaultSearchProviderSearchURL, POLICY_LEVEL_MANDATORY,
              POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
-             base::WrapUnique(new base::Value("http://a/?{searchTerms}")),
-             nullptr);
+             std::make_unique<base::Value>("http://a/?{searchTerms}"), nullptr);
   UpdateProviderPolicy(policy);
   const base::Value* temp = nullptr;
   // Ignore any other search provider related policy in this case.
@@ -275,8 +274,7 @@ TEST_F(DefaultSearchPolicyHandlerTest, DisabledByPolicyNotSet) {
   PolicyMap policy;
   policy.Set(key::kDefaultSearchProviderSearchURL, POLICY_LEVEL_MANDATORY,
              POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
-             base::WrapUnique(new base::Value("http://a/?{searchTerms}")),
-             nullptr);
+             std::make_unique<base::Value>("http://a/?{searchTerms}"), nullptr);
   UpdateProviderPolicy(policy);
   const base::Value* temp = nullptr;
   EXPECT_FALSE(store_->GetValue(
@@ -290,10 +288,10 @@ TEST_F(DefaultSearchPolicyHandlerTest, MinimallyDefined) {
   PolicyMap policy;
   policy.Set(key::kDefaultSearchProviderEnabled, POLICY_LEVEL_MANDATORY,
              POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
-             base::WrapUnique(new base::Value(true)), nullptr);
+             std::make_unique<base::Value>(true), nullptr);
   policy.Set(key::kDefaultSearchProviderSearchURL, POLICY_LEVEL_MANDATORY,
              POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
-             base::WrapUnique(new base::Value(kSearchURL)), nullptr);
+             std::make_unique<base::Value>(kSearchURL), nullptr);
   UpdateProviderPolicy(policy);
 
   const base::Value* temp = nullptr;
@@ -343,10 +341,10 @@ TEST_F(DefaultSearchPolicyHandlerTest, FileURL) {
   PolicyMap policy;
   policy.Set(key::kDefaultSearchProviderEnabled, POLICY_LEVEL_MANDATORY,
              POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
-             base::WrapUnique(new base::Value(true)), nullptr);
+             std::make_unique<base::Value>(true), nullptr);
   policy.Set(key::kDefaultSearchProviderSearchURL, POLICY_LEVEL_MANDATORY,
              POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
-             base::WrapUnique(new base::Value(kFileSearchURL)), nullptr);
+             std::make_unique<base::Value>(kFileSearchURL), nullptr);
   UpdateProviderPolicy(policy);
 
   const base::Value* temp = nullptr;

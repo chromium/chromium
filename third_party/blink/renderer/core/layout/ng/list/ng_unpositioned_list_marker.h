@@ -9,7 +9,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_box_strut.h"
 #include "third_party/blink/renderer/platform/fonts/font_baseline.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
@@ -22,7 +22,8 @@ class NGBoxFragmentBuilder;
 class NGLayoutResult;
 class NGPhysicalFragment;
 
-struct NGLogicalOffset;
+struct LogicalOffset;
+struct NGLineHeightMetrics;
 
 // Represents an unpositioned list marker.
 //
@@ -33,6 +34,19 @@ struct NGLogicalOffset;
 // To handle these two cases consistently, when list markers appear in these
 // algorithm, they are set as "unpositioned", and are propagated to ancestors
 // through NGLayoutResult until they meet the corresponding list items.
+//
+// In order to adjust with the other content of LI, marker will be handled
+// after other children.
+// First, try to find the adjusted content_metrics for the marker. See
+// |CanAddToBox()| for details.
+// If found, layout marker, compute the content adjusted offset and float
+// intuded offset. See |AddToBox()| for details.
+// If not, layout marker and deal with it in |AddToBoxWithoutLineBoxes()|.
+//
+// In addition, marker makes LI non self-collapsing. If the BFC block-offset of
+// LI isn't resolved after layout marker, we'll resolve it. See
+// |NGBlockLayoutAlgorithm::PositionOrPropagateListMarker()| and
+// |NGBlockLayoutAlgorithm::PositionListMarkerWithoutLineBoxes()| for details.
 class CORE_EXPORT NGUnpositionedListMarker final {
   DISALLOW_NEW();
 
@@ -43,32 +57,49 @@ class CORE_EXPORT NGUnpositionedListMarker final {
 
   explicit operator bool() const { return marker_layout_object_; }
 
-  // Add a fragment for an outside list marker.
-  // Returns true if the list marker was successfully added. False indicates
+  // Returns true if the list marker can be added to box. False indicates
   // that the child content does not have a baseline to align to, and that
   // caller should try next child, or "WithoutLineBoxes" version.
-  bool AddToBox(const NGConstraintSpace&,
+  bool CanAddToBox(const NGConstraintSpace&,
+                   FontBaseline,
+                   const NGPhysicalFragment& content,
+                   NGLineHeightMetrics* content_metrics) const;
+  // Add a fragment for an outside list marker.
+  void AddToBox(const NGConstraintSpace&,
                 FontBaseline,
                 const NGPhysicalFragment& content,
-                NGLogicalOffset* content_offset,
-                NGBoxFragmentBuilder*,
-                const NGBoxStrut&) const;
+                const NGBoxStrut&,
+                const NGLineHeightMetrics& content_metrics,
+                const NGLayoutResult& marker_layout_result,
+                LogicalOffset* content_offset,
+                NGBoxFragmentBuilder*) const;
 
   // Add a fragment for an outside list marker when the list item has no line
   // boxes.
   // Returns the block size of the list marker.
-  LayoutUnit AddToBoxWithoutLineBoxes(const NGConstraintSpace&,
-                                      FontBaseline,
-                                      NGBoxFragmentBuilder*) const;
+  LayoutUnit AddToBoxWithoutLineBoxes(
+      const NGConstraintSpace&,
+      FontBaseline,
+      const NGLayoutResult& marker_layout_result,
+      NGBoxFragmentBuilder*) const;
   LayoutUnit InlineOffset(const LayoutUnit marker_inline_size) const;
 
- private:
-  bool IsImage() const;
+  bool operator==(const NGUnpositionedListMarker& other) const {
+    return marker_layout_object_ == other.marker_layout_object_;
+  }
 
   scoped_refptr<const NGLayoutResult> Layout(
       const NGConstraintSpace& parent_space,
       const ComputedStyle& parent_style,
       FontBaseline) const;
+
+#if DCHECK_IS_ON()
+  void CheckMargin() const;
+#endif
+
+ private:
+  bool IsImage() const;
+
   LayoutUnit ComputeIntrudedFloatOffset(const NGConstraintSpace&,
                                         const NGBoxFragmentBuilder*,
                                         const NGBoxStrut&,

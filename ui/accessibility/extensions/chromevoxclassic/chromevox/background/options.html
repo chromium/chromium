@@ -1,0 +1,127 @@
+<!-- Copyright 2014 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+<html>
+
+<head>
+<title class="i18n" msgid="options_page_title">ChromeVox Options</title>
+<link rel="stylesheet" type="text/css" href="chrome_shared2.css" />
+<link rel="stylesheet" type="text/css" href="options_widgets.css" />
+<link rel="stylesheet" type="text/css" href="options.css" />
+
+
+<script type="text/javascript" src="../../closure/base.js"></script>
+<script type="text/javascript" src="../../deps.js"></script>
+<script type="text/javascript" src="options_loader.js"></script>
+<script type="text/javascript" src="../../chromeVoxChromeOptionsScript.js">
+</script>
+</head>
+
+<html>
+
+<body>
+<div>
+  <!-- The "with dev msgs" in the title helps when debugging problems with the message
+       replacer. -->
+  <h1 class="i18n" msgid="options_page_title">ChromeVox (with dev msgs)</h1>
+  <p id="version"></p>
+
+
+  <div class="option">
+    <input id="useVerboseMode" type="checkbox" class="checkbox pref" name="useVerboseMode" />
+    <label for="useVerboseMode" class="i18n" msgid="options_verbosity_verbose">
+      Enable verbose descriptions.
+    </label>
+  </div>
+
+  <div class="option">
+    <input id="useIBeamCursor" type="checkbox" class="checkbox pref" name="useIBeamCursor" />
+    <label for="useIBeamCursor" class="i18n" msgid="options_cursor_between_characters">
+      Place cursor between characters when editing text (like Mac OS X).
+    </label>
+  </div>
+
+  <div class="option">
+    <input id="focusFollowsMouse" type="checkbox" class="checkbox pref" name="focusFollowsMouse" />
+    <label for="focusFollowsMouse" class="i18n" msgid="options_mouse_focus_follows">
+      Use the mouse to change focus.
+    </label>
+  </div>
+
+  <div class="option">
+    <input id="siteSpecificEnhancements" type="checkbox" class="checkbox pref" name="siteSpecificEnhancements" />
+    <label for="siteSpecificEnhancements" class="i18n" msgid="options_site_specific_enhancements">
+      Enhance specific sites (like Google Search).
+    </label>
+  </div>
+
+  <div class="option">
+    <input id="outputContextFirst" aria-labelledby="outputContextFirstLabel" type="checkbox" class="checkbox pref" name="outputContextFirst"></input>
+    <label id="outputContextFirstLabel" class="i18n" msgid="options_output_context_first">
+      Display an item's context before other information (such as its name).
+    </label>
+  </div>
+
+  <h2 class="i18n" msgid="options_voices">Voices</h2>
+  <p class="i18n description" msgid="options_voices_description" id="voices_description">
+    Change the current voice by selecting an option from the list below.
+  </p>
+
+  <div>
+    <select class="pref" id="voices" aria-labelledby="voices_description"></select>
+    <br><br>
+  </div>
+
+
+  <h2 class="chromeos i18n" msgid="options_braille">Braille</h2>
+  <div class="chromeos">
+    <p class="i18n description" msgid="options_braille_description_6" id="braille_description_6">
+      Change the current 6 dot braille table by selecting an option from the list below.
+    </p>
+    <select class="pref" id="brailleTable6" aria-labelledby="braille_description_6"></select>
+    <p class="i18n description" msgid="options_braille_description_8" id="braille_description_8">
+      Change the current 8 dot braille table by selecting an option from the list below.
+    </p>
+    <select class="pref" id="brailleTable8" aria-labelledby="braille_description_8"></select>
+    <button id="brailleTableType"></button>
+    <div class="option">
+      <label>
+        <input id="brailleWordWrap" type="checkbox" class="checkbox pref" name="brailleWordWrap" />
+        <span class="i18n" msgid="options_braille_word_wrap">
+          Enable word wrap
+        </span>
+      </label>
+    </div>
+  
+    <br><br>
+  </div>
+
+
+  <h2 class="i18n" msgid="options_keyboard_shortcuts">Keyboard shortcuts</h2>
+  <p class="i18n description" msgid="options_keymap_description" id="keymap_description">
+    Change the current keymap by selecting an option from the list below.
+  </p>
+
+  <div>
+    <select class="pref" id="cvox_keymaps" aria-labelledby="keymap_description">
+    </select>
+    <button id="selectKeys" class="i18n" msgid="options_select_keys">
+      Select keymap
+    </button>
+    <br><br>
+  </div>
+
+  <p class="i18n description" msgid="options_shortcuts_description"
+     id="shortcuts_description">
+    Customize keyboard shortcuts for frequently used commands by typing them into the 
+    corresponding fields below.
+  </p>
+
+  <div id="keysContainer">
+
+  </div>
+  <div id="status" role="live" aria-live="assertive">
+  </div>
+</div>
+</body>
+</html>

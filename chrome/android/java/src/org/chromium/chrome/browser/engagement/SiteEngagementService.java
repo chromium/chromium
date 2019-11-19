@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.engagement;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.profiles.Profile;
 
 /**
@@ -25,7 +26,7 @@ public class SiteEngagementService {
      */
     public static SiteEngagementService getForProfile(Profile profile) {
         assert ThreadUtils.runningOnUiThread();
-        return nativeSiteEngagementServiceForProfile(profile);
+        return SiteEngagementServiceJni.get().siteEngagementServiceForProfile(profile);
     }
 
     /**
@@ -35,7 +36,8 @@ public class SiteEngagementService {
     public double getScore(String url) {
         assert ThreadUtils.runningOnUiThread();
         if (mNativePointer == 0) return 0.0;
-        return nativeGetScore(mNativePointer, url);
+        return SiteEngagementServiceJni.get().getScore(
+                mNativePointer, SiteEngagementService.this, url);
     }
 
     /**
@@ -45,14 +47,15 @@ public class SiteEngagementService {
     public void resetBaseScoreForUrl(String url, double score) {
         assert ThreadUtils.runningOnUiThread();
         if (mNativePointer == 0) return;
-        nativeResetBaseScoreForURL(mNativePointer, url, score);
+        SiteEngagementServiceJni.get().resetBaseScoreForURL(
+                mNativePointer, SiteEngagementService.this, url, score);
     }
 
     /**
      * Sets site engagement param values to constants for testing.
      */
     public static void setParamValuesForTesting() {
-        nativeSetParamValuesForTesting();
+        SiteEngagementServiceJni.get().setParamValuesForTesting();
     }
 
     @CalledByNative
@@ -70,10 +73,13 @@ public class SiteEngagementService {
         mNativePointer = 0;
     }
 
-    private static native SiteEngagementService nativeSiteEngagementServiceForProfile(
-            Profile profile);
-    private static native void nativeSetParamValuesForTesting();
-    private native double nativeGetScore(long nativeSiteEngagementServiceAndroid, String url);
-    private native void nativeResetBaseScoreForURL(
-            long nativeSiteEngagementServiceAndroid, String url, double score);
+    @NativeMethods
+    interface Natives {
+        SiteEngagementService siteEngagementServiceForProfile(Profile profile);
+        void setParamValuesForTesting();
+        double getScore(
+                long nativeSiteEngagementServiceAndroid, SiteEngagementService caller, String url);
+        void resetBaseScoreForURL(long nativeSiteEngagementServiceAndroid,
+                SiteEngagementService caller, String url, double score);
+    }
 }

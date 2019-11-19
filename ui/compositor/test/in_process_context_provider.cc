@@ -12,12 +12,12 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/gpu/context_cache_controller.h"
+#include "components/viz/test/test_gpu_service_holder.h"
 #include "gpu/command_buffer/client/gles2_implementation.h"
 #include "gpu/command_buffer/client/raster_implementation_gles.h"
 #include "gpu/command_buffer/client/shared_memory_limits.h"
 #include "gpu/command_buffer/common/skia_utils.h"
 #include "gpu/ipc/gl_in_process_context.h"
-#include "gpu/ipc/test_gpu_thread_holder.h"
 #include "gpu/skia_bindings/grcontext_for_gles2_interface.h"
 #include "third_party/skia/include/gpu/GrContext.h"
 #include "third_party/skia/include/gpu/gl/GrGLInterface.h"
@@ -99,10 +99,11 @@ gpu::ContextResult InProcessContextProvider::BindToCurrentThread() {
 
   context_ = std::make_unique<gpu::GLInProcessContext>();
   bind_result_ = context_->Initialize(
-      gpu::GetTestGpuThreadHolder()->GetTaskExecutor(), nullptr, /* surface */
-      !window_, /* is_offscreen */
-      window_, attribs_, gpu::SharedMemoryLimits(), gpu_memory_buffer_manager_,
-      image_factory_, base::ThreadTaskRunnerHandle::Get());
+      viz::TestGpuServiceHolder::GetInstance()->task_executor(),
+      /*surface=*/nullptr,
+      /*is_offscreen=*/!window_, window_, attribs_, gpu::SharedMemoryLimits(),
+      gpu_memory_buffer_manager_, image_factory_,
+      base::ThreadTaskRunnerHandle::Get());
 
   if (bind_result_ != gpu::ContextResult::kSuccess)
     return bind_result_;
@@ -158,9 +159,9 @@ class GrContext* InProcessContextProvider::GrContext() {
   size_t max_glyph_cache_texture_bytes;
   gpu::raster::DefaultGrCacheLimitsForTests(&max_resource_cache_bytes,
                                             &max_glyph_cache_texture_bytes);
-  gr_context_.reset(new skia_bindings::GrContextForGLES2Interface(
+  gr_context_ = std::make_unique<skia_bindings::GrContextForGLES2Interface>(
       ContextGL(), ContextSupport(), ContextCapabilities(),
-      max_resource_cache_bytes, max_glyph_cache_texture_bytes));
+      max_resource_cache_bytes, max_glyph_cache_texture_bytes);
   cache_controller_->SetGrContext(gr_context_->get());
 
   return gr_context_->get();
@@ -182,11 +183,11 @@ base::Lock* InProcessContextProvider::GetLock() {
 }
 
 void InProcessContextProvider::AddObserver(viz::ContextLostObserver* obs) {
-  // Pixel tests do not test lost context.
+  observers_.AddObserver(obs);
 }
 
 void InProcessContextProvider::RemoveObserver(viz::ContextLostObserver* obs) {
-  // Pixel tests do not test lost context.
+  observers_.RemoveObserver(obs);
 }
 
 uint32_t InProcessContextProvider::GetCopyTextureInternalFormat() {
@@ -196,6 +197,11 @@ uint32_t InProcessContextProvider::GetCopyTextureInternalFormat() {
   DCHECK_NE(attribs_.green_size, 0);
   DCHECK_NE(attribs_.blue_size, 0);
   return GL_RGB;
+}
+
+void InProcessContextProvider::SendOnContextLost() {
+  for (auto& observer : observers_)
+    observer.OnContextLost();
 }
 
 }  // namespace ui

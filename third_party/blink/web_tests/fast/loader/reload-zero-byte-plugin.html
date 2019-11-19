@@ -8,7 +8,7 @@ if (window.testRunner) {
 }
 
 setTimeout(function() {
-    document.getElementById("f").contentWindow.location.reload()
+    document.getElementById("f").contentWindow.location.replace('data:application/x-blink-test-plugin,');
     setTimeout(function() {
         if (window.testRunner)
             testRunner.notifyDone();

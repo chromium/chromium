@@ -5,8 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SCRIPT_MODULE_SCRIPT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SCRIPT_MODULE_SCRIPT_H_
 
-#include "third_party/blink/renderer/bindings/core/v8/script_module.h"
+#include "third_party/blink/renderer/bindings/core/v8/module_record.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/bindings/core/v8/world_safe_v8_reference.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/script/modulator.h"
 #include "third_party/blink/renderer/core/script/script.h"
@@ -25,38 +26,9 @@ namespace blink {
 
 // ModuleScript is a model object for the "module script" spec concept.
 // https://html.spec.whatwg.org/C/#module-script
-class CORE_EXPORT ModuleScript final : public Script, public NameClient {
+class CORE_EXPORT ModuleScript : public Script {
  public:
-  // https://html.spec.whatwg.org/C/#creating-a-module-script
-  static ModuleScript* Create(
-      const ParkableString& source_text,
-      SingleCachedMetadataHandler*,
-      ScriptSourceLocationType,
-      Modulator*,
-      const KURL& source_url,
-      const KURL& base_url,
-      const ScriptFetchOptions&,
-      const TextPosition& start_position = TextPosition::MinimumPosition());
-
-  // Mostly corresponds to Create() but accepts ScriptModule as the argument
-  // and allows null ScriptModule.
-  static ModuleScript* CreateForTest(
-      Modulator*,
-      ScriptModule,
-      const KURL& base_url,
-      const ScriptFetchOptions& = ScriptFetchOptions());
-
-  ModuleScript(Modulator* settings_object,
-               ScriptModule record,
-               const KURL& source_url,
-               const KURL& base_url,
-               const ScriptFetchOptions&,
-               const ParkableString& source_text,
-               const TextPosition& start_position,
-               ScriptModuleProduceCacheData*);
-  ~ModuleScript() override = default;
-
-  ScriptModule Record() const;
+  v8::Local<v8::Module> V8Module() const;
   bool HasEmptyRecord() const;
 
   // Note: ParseError-related methods should only be used from ModuleTreeLinker
@@ -73,36 +45,32 @@ class CORE_EXPORT ModuleScript final : public Script, public NameClient {
   bool HasErrorToRethrow() const { return !error_to_rethrow_.IsEmpty(); }
   ScriptValue CreateErrorToRethrow() const;
 
-  const TextPosition& StartPosition() const { return start_position_; }
-
   // Resolves a module specifier with the module script's base URL.
   KURL ResolveModuleSpecifier(const String& module_request,
                               String* failure_reason = nullptr) const;
 
-  void Trace(blink::Visitor*) override;
-  const char* NameInHeapSnapshot() const override { return "ModuleScript"; }
+  void Trace(Visitor*) override;
 
-  void ProduceCache();
+  virtual void ProduceCache() {}
+  const KURL& SourceURL() const { return source_url_; }
+
+ protected:
+  ModuleScript(Modulator*,
+               v8::Local<v8::Module>,
+               const KURL& source_url,
+               const KURL& base_url,
+               const ScriptFetchOptions&);
+
+  Modulator* SettingsObject() const { return settings_object_; }
 
  private:
-  static ModuleScript* CreateInternal(const ParkableString& source_text,
-                                      Modulator*,
-                                      ScriptModule,
-                                      const KURL& source_url,
-                                      const KURL& base_url,
-                                      const ScriptFetchOptions&,
-                                      const TextPosition&,
-                                      ScriptModuleProduceCacheData*);
-
   mojom::ScriptType GetScriptType() const override {
     return mojom::ScriptType::kModule;
   }
   void RunScript(LocalFrame*, const SecurityOrigin*) override;
-  String InlineSourceTextForCSP() const override;
+  void RunScriptOnWorker(WorkerGlobalScope&) override;
 
-  friend class ModulatorImplBase;
   friend class ModuleTreeLinkerTestModulator;
-  friend class ModuleScriptTest;
 
   // https://html.spec.whatwg.org/C/#settings-object
   Member<Modulator> settings_object_;
@@ -135,7 +103,7 @@ class CORE_EXPORT ModuleScript final : public Script, public NameClient {
   //   Document -> ScriptRunner -> ScriptLoader -> ModulePendingScript
   //   -> ModulePendingScriptTreeClient -> ModuleScript.
   // All the classes/references on the graphs above should be
-  // TraceWrapperMember<>/etc.,
+  // Member<>/etc.,
   //
   // A parse error and an error to rethrow belong to a script, not to a
   // |parse_error_| and |error_to_rethrow_| should belong to a script (i.e.
@@ -148,29 +116,13 @@ class CORE_EXPORT ModuleScript final : public Script, public NameClient {
   //   https://github.com/whatwg/html/pull/2991. This shouldn't cause any
   //   observable functional changes, and updating the classic script handling
   //   will require moderate code changes (e.g. to move compilation timing).
-  TraceWrapperV8Reference<v8::Value> parse_error_;
+  WorldSafeV8Reference<v8::Value> parse_error_;
 
   // https://html.spec.whatwg.org/C/#concept-script-error-to-rethrow
-  TraceWrapperV8Reference<v8::Value> error_to_rethrow_;
+  WorldSafeV8Reference<v8::Value> error_to_rethrow_;
 
-  // For CSP check.
-  const ParkableString source_text_;
-
-  const TextPosition start_position_;
   mutable HashMap<String, KURL> specifier_to_url_cache_;
   KURL source_url_;
-
-  // Only for ProduceCache(). ModuleScript keeps |produce_cache_data| because:
-  // - CompileModule() and ProduceCache() should be called at different
-  //   timings, and
-  // - There are no persistent object that can hold this in
-  //   bindings/core/v8 side. ScriptModule should be short-lived and is
-  //   constructed every time in ModuleScript::Record().
-  //
-  // Cleared once ProduceCache() is called, to avoid
-  // calling V8CodeCache::ProduceCache() multiple times, as a ModuleScript
-  // can appear multiple times in multiple module graphs.
-  Member<ScriptModuleProduceCacheData> produce_cache_data_;
 };
 
 CORE_EXPORT std::ostream& operator<<(std::ostream&, const ModuleScript&);

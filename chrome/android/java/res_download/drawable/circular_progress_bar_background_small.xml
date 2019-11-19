@@ -7,7 +7,10 @@
     <item>
         <shape
             android:shape="oval">
-            <solid android:color="@color/modern_grey_300"  />
+            <solid android:color="@color/circular_progress_inner_background_color_small"/>
+            <stroke
+                android:color="@color/circular_progress_outer_circle_background_color_small"
+                android:width="2dp" />
             <size android:width="36dp"
                 android:height="36dp" />
         </shape>

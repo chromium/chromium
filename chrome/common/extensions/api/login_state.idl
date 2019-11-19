@@ -1,0 +1,51 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Use the <code>chrome.loginState</code> API to read and monitor the login
+// state.
+[platforms=("chromeos"),
+ implemented_in="chrome/browser/chromeos/extensions/login_screen/login_state/login_state_api.h"]
+namespace loginState {
+  enum ProfileType {
+    // The extension is in the signin profile.
+    SIGNIN_PROFILE,
+
+    // The extension is in the user profile.
+    USER_PROFILE
+  };
+
+  enum SessionState {
+    // The session state is unknown.
+    UNKNOWN,
+
+    // The user is in the out-of-box-experience screen.
+    IN_OOBE_SCREEN,
+
+    // The user is in the login screen.
+    IN_LOGIN_SCREEN,
+
+    // The user is in the session.
+    IN_SESSION,
+
+    // The user is in the lock screen.
+    IN_LOCK_SCREEN
+  };
+
+  callback ProfileTypeCallback = void (ProfileType result);
+  callback SessionStateCallback = void (SessionState result);
+
+  interface Functions {
+    // Gets the type of the profile the extension is in.
+    static void getProfileType(ProfileTypeCallback callback);
+
+    // Gets the current session state.
+    static void getSessionState(SessionStateCallback callback);
+  };
+
+  interface Events {
+    // Dispatched when the session state changes. <code>sessionState</code>
+    // is the new session state.
+    static void onSessionStateChanged(SessionState sessionState);
+  };
+};

@@ -27,7 +27,7 @@ SyncCycleSnapshot SyncCycle::TakeSnapshot() const {
 SyncCycleSnapshot SyncCycle::TakeSnapshotWithOrigin(
     sync_pb::SyncEnums::GetUpdatesOrigin get_updates_origin) const {
   ProgressMarkerMap download_progress_markers;
-  for (int i = FIRST_REAL_MODEL_TYPE; i < MODEL_TYPE_COUNT; ++i) {
+  for (int i = FIRST_REAL_MODEL_TYPE; i < ModelType::NUM_ENTRIES; ++i) {
     ModelType type(ModelTypeFromInt(i));
     const UpdateHandler* update_handler =
         context_->model_type_registry()->GetUpdateHandler(type);
@@ -43,12 +43,13 @@ SyncCycleSnapshot SyncCycle::TakeSnapshotWithOrigin(
   // an issue with USS types.
   syncable::Directory* dir = context_->directory();
 
-  std::vector<int> num_entries_by_type(MODEL_TYPE_COUNT, 0);
-  std::vector<int> num_to_delete_entries_by_type(MODEL_TYPE_COUNT, 0);
+  std::vector<int> num_entries_by_type(ModelType::NUM_ENTRIES, 0);
+  std::vector<int> num_to_delete_entries_by_type(ModelType::NUM_ENTRIES, 0);
   dir->CollectMetaHandleCounts(&num_entries_by_type,
                                &num_to_delete_entries_by_type);
 
   SyncCycleSnapshot snapshot(
+      context_->birthday(), context_->bag_of_chips(),
       status_controller_->model_neutral_state(), download_progress_markers,
       delegate_->IsAnyThrottleOrBackoff(),
       status_controller_->num_encryption_conflicts(),
@@ -58,7 +59,7 @@ SyncCycleSnapshot SyncCycle::TakeSnapshotWithOrigin(
       status_controller_->sync_start_time(),
       status_controller_->poll_finish_time(), num_entries_by_type,
       num_to_delete_entries_by_type, get_updates_origin,
-      context_->short_poll_interval(), context_->long_poll_interval(),
+      context_->poll_interval(),
       context_->model_type_registry()->HasUnsyncedItems());
 
   return snapshot;

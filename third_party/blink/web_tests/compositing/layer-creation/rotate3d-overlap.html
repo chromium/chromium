@@ -16,15 +16,17 @@
     }
 
     .translateZ {
-      transform: translateZ(0);
+      will-change: transform;
     }
 
     .rotate15 {
       transform: rotate3d(0, 0, 1, 15deg);
+      will-change: transform;
     }
 
     .rotate45 {
       transform: rotate3d(0, 0, 1, 45deg);
+      will-change: transform;
     }
   </style>
   <script type="text/javascript" charset="utf-8">

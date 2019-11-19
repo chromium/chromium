@@ -22,9 +22,13 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#define INITGUID
 #include <config.h>
 #include <windows.h>
+#include <cfgmgr32.h>
 #include <setupapi.h>
+#include <usbioctl.h>
+#include <winusb.h>
 #include <ctype.h>
 #include <errno.h>
 #include <fcntl.h>
@@ -99,9 +103,6 @@ volatile LONG request_count[2] = {0, 1};	// last one must be > 0
 HANDLE timer_request[2] = { NULL, NULL };
 HANDLE timer_response = NULL;
 // API globals
-#define CHECK_WINUSBX_AVAILABLE(sub_api) do { if (sub_api == SUB_API_NOTSET) sub_api = priv->sub_api; \
-	if (!WinUSBX[sub_api].initialized) return LIBUSB_ERROR_ACCESS; } while(0)
-static struct winusb_interface WinUSBX[SUB_API_MAX];
 const char* sub_api_name[SUB_API_MAX] = WINUSBX_DRV_NAMES;
 
 static inline BOOLEAN guid_eq(const GUID *guid1, const GUID *guid2) {
@@ -206,30 +207,6 @@ static char* sanitize_path(const char* path)
 }
 
 /*
- * Cfgmgr32, OLE32 and SetupAPI DLL functions
- */
-static int init_dlls(void)
-{
-	DLL_LOAD(Cfgmgr32.dll, CM_Get_Parent, TRUE);
-	DLL_LOAD(Cfgmgr32.dll, CM_Get_Child, TRUE);
-	DLL_LOAD(Cfgmgr32.dll, CM_Get_Sibling, TRUE);
-	DLL_LOAD(Cfgmgr32.dll, CM_Get_Device_IDA, TRUE);
-	// Prefixed to avoid conflict with header files
-	DLL_LOAD_PREFIXED(OLE32.dll, p, CLSIDFromString, TRUE);
-	DLL_LOAD_PREFIXED(SetupAPI.dll, p, SetupDiGetClassDevsA, TRUE);
-	DLL_LOAD_PREFIXED(SetupAPI.dll, p, SetupDiEnumDeviceInfo, TRUE);
-	DLL_LOAD_PREFIXED(SetupAPI.dll, p, SetupDiEnumDeviceInterfaces, TRUE);
-	DLL_LOAD_PREFIXED(SetupAPI.dll, p, SetupDiGetDeviceInterfaceDetailA, TRUE);
-	DLL_LOAD_PREFIXED(SetupAPI.dll, p, SetupDiDestroyDeviceInfoList, TRUE);
-	DLL_LOAD_PREFIXED(SetupAPI.dll, p, SetupDiOpenDevRegKey, TRUE);
-	DLL_LOAD_PREFIXED(SetupAPI.dll, p, SetupDiGetDeviceRegistryPropertyA, TRUE);
-	DLL_LOAD_PREFIXED(SetupAPI.dll, p, SetupDiOpenDeviceInterfaceRegKey, TRUE);
-	DLL_LOAD_PREFIXED(AdvAPI32.dll, p, RegQueryValueExW, TRUE);
-	DLL_LOAD_PREFIXED(AdvAPI32.dll, p, RegCloseKey, TRUE);
-	return LIBUSB_SUCCESS;
-}
-
-/*
  * enumerate interfaces for the whole USB class
  *
  * Parameters:
@@ -246,19 +223,19 @@ static bool get_devinfo_data(struct libusb_context *ctx,
 	HDEVINFO *dev_info, SP_DEVINFO_DATA *dev_info_data, const char* usb_class, unsigned _index)
 {
 	if (_index <= 0) {
-		*dev_info = pSetupDiGetClassDevsA(NULL, usb_class, NULL, DIGCF_PRESENT|DIGCF_ALLCLASSES);
+		*dev_info = SetupDiGetClassDevsA(NULL, usb_class, NULL, DIGCF_PRESENT|DIGCF_ALLCLASSES);
 		if (*dev_info == INVALID_HANDLE_VALUE) {
 			return false;
 		}
 	}
 
 	dev_info_data->cbSize = sizeof(SP_DEVINFO_DATA);
-	if (!pSetupDiEnumDeviceInfo(*dev_info, _index, dev_info_data)) {
+	if (!SetupDiEnumDeviceInfo(*dev_info, _index, dev_info_data)) {
 		if (GetLastError() != ERROR_NO_MORE_ITEMS) {
 			usbi_err(ctx, "Could not obtain device info data for index %u: %s",
 				_index, windows_error_str(0));
 		}
-		pSetupDiDestroyDeviceInfoList(*dev_info);
+		SetupDiDestroyDeviceInfoList(*dev_info);
 		*dev_info = INVALID_HANDLE_VALUE;
 		return false;
 	}
@@ -286,35 +263,35 @@ static SP_DEVICE_INTERFACE_DETAIL_DATA_A *get_interface_details(struct libusb_co
 	DWORD size;
 
 	if (_index <= 0) {
-		*dev_info = pSetupDiGetClassDevsA(guid, NULL, NULL, DIGCF_PRESENT|DIGCF_DEVICEINTERFACE);
+		*dev_info = SetupDiGetClassDevsA(guid, NULL, NULL, DIGCF_PRESENT|DIGCF_DEVICEINTERFACE);
 	}
 
 	if (dev_info_data != NULL) {
 		dev_info_data->cbSize = sizeof(SP_DEVINFO_DATA);
-		if (!pSetupDiEnumDeviceInfo(*dev_info, _index, dev_info_data)) {
+		if (!SetupDiEnumDeviceInfo(*dev_info, _index, dev_info_data)) {
 			if (GetLastError() != ERROR_NO_MORE_ITEMS) {
 				usbi_err(ctx, "Could not obtain device info data for index %u: %s",
 					_index, windows_error_str(0));
 			}
-			pSetupDiDestroyDeviceInfoList(*dev_info);
+			SetupDiDestroyDeviceInfoList(*dev_info);
 			*dev_info = INVALID_HANDLE_VALUE;
 			return NULL;
 		}
 	}
 
 	dev_interface_data.cbSize = sizeof(SP_DEVICE_INTERFACE_DATA);
-	if (!pSetupDiEnumDeviceInterfaces(*dev_info, NULL, guid, _index, &dev_interface_data)) {
+	if (!SetupDiEnumDeviceInterfaces(*dev_info, NULL, guid, _index, &dev_interface_data)) {
 		if (GetLastError() != ERROR_NO_MORE_ITEMS) {
 			usbi_err(ctx, "Could not obtain interface data for index %u: %s",
 				_index, windows_error_str(0));
 		}
-		pSetupDiDestroyDeviceInfoList(*dev_info);
+		SetupDiDestroyDeviceInfoList(*dev_info);
 		*dev_info = INVALID_HANDLE_VALUE;
 		return NULL;
 	}
 
 	// Read interface data (dummy + actual) to access the device path
-	if (!pSetupDiGetDeviceInterfaceDetailA(*dev_info, &dev_interface_data, NULL, 0, &size, NULL)) {
+	if (!SetupDiGetDeviceInterfaceDetailA(*dev_info, &dev_interface_data, NULL, 0, &size, NULL)) {
 		// The dummy call should fail with ERROR_INSUFFICIENT_BUFFER
 		if (GetLastError() != ERROR_INSUFFICIENT_BUFFER) {
 			usbi_err(ctx, "could not access interface data (dummy) for index %u: %s",
@@ -332,7 +309,7 @@ static SP_DEVICE_INTERFACE_DETAIL_DATA_A *get_interface_details(struct libusb_co
 	}
 
 	dev_interface_details->cbSize = sizeof(SP_DEVICE_INTERFACE_DETAIL_DATA_A);
-	if (!pSetupDiGetDeviceInterfaceDetailA(*dev_info, &dev_interface_data,
+	if (!SetupDiGetDeviceInterfaceDetailA(*dev_info, &dev_interface_data,
 		dev_interface_details, size, &size, NULL)) {
 		usbi_err(ctx, "could not access interface data (actual) for index %u: %s",
 			_index, windows_error_str(0));
@@ -341,7 +318,7 @@ static SP_DEVICE_INTERFACE_DETAIL_DATA_A *get_interface_details(struct libusb_co
 	return dev_interface_details;
 
 err_exit:
-	pSetupDiDestroyDeviceInfoList(*dev_info);
+	SetupDiDestroyDeviceInfoList(*dev_info);
 	*dev_info = INVALID_HANDLE_VALUE;
 	return NULL;
 }
@@ -353,32 +330,32 @@ static SP_DEVICE_INTERFACE_DETAIL_DATA_A *get_interface_details_filter(struct li
 	SP_DEVICE_INTERFACE_DETAIL_DATA_A *dev_interface_details = NULL;
 	DWORD size;
 	if (_index <= 0) {
-		*dev_info = pSetupDiGetClassDevsA(guid, NULL, NULL, DIGCF_PRESENT|DIGCF_DEVICEINTERFACE);
+		*dev_info = SetupDiGetClassDevsA(guid, NULL, NULL, DIGCF_PRESENT|DIGCF_DEVICEINTERFACE);
 	}
 	if (dev_info_data != NULL) {
 		dev_info_data->cbSize = sizeof(SP_DEVINFO_DATA);
-		if (!pSetupDiEnumDeviceInfo(*dev_info, _index, dev_info_data)) {
+		if (!SetupDiEnumDeviceInfo(*dev_info, _index, dev_info_data)) {
 			if (GetLastError() != ERROR_NO_MORE_ITEMS) {
 				usbi_err(ctx, "Could not obtain device info data for index %u: %s",
 					_index, windows_error_str(0));
 			}
-			pSetupDiDestroyDeviceInfoList(*dev_info);
+			SetupDiDestroyDeviceInfoList(*dev_info);
 			*dev_info = INVALID_HANDLE_VALUE;
 			return NULL;
 		}
 	}
 	dev_interface_data.cbSize = sizeof(SP_DEVICE_INTERFACE_DATA);
-	if (!pSetupDiEnumDeviceInterfaces(*dev_info, NULL, guid, _index, &dev_interface_data)) {
+	if (!SetupDiEnumDeviceInterfaces(*dev_info, NULL, guid, _index, &dev_interface_data)) {
 		if (GetLastError() != ERROR_NO_MORE_ITEMS) {
 			usbi_err(ctx, "Could not obtain interface data for index %u: %s",
 				_index, windows_error_str(0));
 		}
-		pSetupDiDestroyDeviceInfoList(*dev_info);
+		SetupDiDestroyDeviceInfoList(*dev_info);
 		*dev_info = INVALID_HANDLE_VALUE;
 		return NULL;
 	}
 	// Read interface data (dummy + actual) to access the device path
-	if (!pSetupDiGetDeviceInterfaceDetailA(*dev_info, &dev_interface_data, NULL, 0, &size, NULL)) {
+	if (!SetupDiGetDeviceInterfaceDetailA(*dev_info, &dev_interface_data, NULL, 0, &size, NULL)) {
 		// The dummy call should fail with ERROR_INSUFFICIENT_BUFFER
 		if (GetLastError() != ERROR_INSUFFICIENT_BUFFER) {
 			usbi_err(ctx, "could not access interface data (dummy) for index %u: %s",
@@ -394,20 +371,20 @@ static SP_DEVICE_INTERFACE_DETAIL_DATA_A *get_interface_details_filter(struct li
 		goto err_exit;
 	}
 	dev_interface_details->cbSize = sizeof(SP_DEVICE_INTERFACE_DETAIL_DATA_A);
-	if (!pSetupDiGetDeviceInterfaceDetailA(*dev_info, &dev_interface_data,
+	if (!SetupDiGetDeviceInterfaceDetailA(*dev_info, &dev_interface_data,
 		dev_interface_details, size, &size, NULL)) {
 		usbi_err(ctx, "could not access interface data (actual) for index %u: %s",
 			_index, windows_error_str(0));
 	}
 	// [trobinso] lookup the libusb0 symbolic index.
 	if (dev_interface_details) {
-		HKEY hkey_device_interface=pSetupDiOpenDeviceInterfaceRegKey(*dev_info,&dev_interface_data,0,KEY_READ);
+		HKEY hkey_device_interface=SetupDiOpenDeviceInterfaceRegKey(*dev_info,&dev_interface_data,0,KEY_READ);
 		if (hkey_device_interface != INVALID_HANDLE_VALUE) {
 			DWORD libusb0_symboliclink_index=0;
 			DWORD value_length=sizeof(DWORD);
 			DWORD value_type=0;
 			LONG status;
-			status = pRegQueryValueExW(hkey_device_interface, L"LUsb0", NULL, &value_type,
+			status = RegQueryValueExW(hkey_device_interface, L"LUsb0", NULL, &value_type,
 				(LPBYTE) &libusb0_symboliclink_index, &value_length);
 			if (status == ERROR_SUCCESS) {
 				if (libusb0_symboliclink_index < 256) {
@@ -419,12 +396,12 @@ static SP_DEVICE_INTERFACE_DETAIL_DATA_A *get_interface_details_filter(struct li
 					// libusb0.sys was connected to this device instance at one time; but not anymore.
 				}
 			}
-			pRegCloseKey(hkey_device_interface);
+			RegCloseKey(hkey_device_interface);
 		}
 	}
 	return dev_interface_details;
 err_exit:
-	pSetupDiDestroyDeviceInfoList(*dev_info);
+	SetupDiDestroyDeviceInfoList(*dev_info);
 	*dev_info = INVALID_HANDLE_VALUE;
 	return NULL;}
 
@@ -836,12 +813,6 @@ static int windows_init(struct libusb_context *ctx)
 		// Initialize pollable file descriptors
 		init_polling();
 
-		// Load DLL imports
-		if (init_dlls() != LIBUSB_SUCCESS) {
-			usbi_err(ctx, "could not resolve DLL functions");
-			return LIBUSB_ERROR_NOT_FOUND;
-		}
-
 		// Initialize the low level APIs (we don't care about errors at this stage)
 		for (i=0; i<USB_API_MAX; i++) {
 			usb_api_backend[i].init(SUB_API_NOTSET, ctx);
@@ -1194,7 +1165,7 @@ static void get_api_type(struct libusb_context *ctx, HDEVINFO *dev_info,
 	*sub_api = SUB_API_NOTSET;
 	// Check the service & filter names to know the API we should use
 	for (k=0; k<3; k++) {
-		if (pSetupDiGetDeviceRegistryPropertyA(*dev_info, dev_info_data, lookup[k].reg_prop,
+		if (SetupDiGetDeviceRegistryPropertyA(*dev_info, dev_info_data, lookup[k].reg_prop,
 			&reg_type, (BYTE*)lookup[k].list, MAX_KEY_LENGTH, &size)) {
 			// Turn the REG_SZ SPDRP_SERVICE into REG_MULTI_SZ
 			if (lookup[k].reg_prop == SPDRP_SERVICE) {
@@ -1399,7 +1370,7 @@ static int windows_get_device_list(struct libusb_context *ctx, struct discovered
 			// The SPDRP_ADDRESS for USB devices is the device port number on the hub
 			port_nr = 0;
 			if ((pass >= HUB_PASS) && (pass <= GEN_PASS)) {
-				if ( (!pSetupDiGetDeviceRegistryPropertyA(dev_info, &dev_info_data, SPDRP_ADDRESS,
+				if ( (!SetupDiGetDeviceRegistryPropertyA(dev_info, &dev_info_data, SPDRP_ADDRESS,
 					&reg_type, (BYTE*)&port_nr, 4, &size))
 				  || (size != 4) ) {
 					usbi_warn(ctx, "could not retrieve port number for device '%s', skipping: %s",
@@ -1417,18 +1388,18 @@ static int windows_get_device_list(struct libusb_context *ctx, struct discovered
 			case GEN_PASS:
 				// We use the GEN pass to detect driverless devices...
 				size = sizeof(strbuf);
-				if (!pSetupDiGetDeviceRegistryPropertyA(dev_info, &dev_info_data, SPDRP_DRIVER,
+				if (!SetupDiGetDeviceRegistryPropertyA(dev_info, &dev_info_data, SPDRP_DRIVER,
 					&reg_type, (BYTE*)strbuf, size, &size)) {
 						usbi_info(ctx, "The following device has no driver: '%s'", dev_id_path);
 						usbi_info(ctx, "libusbx will not be able to access it.");
 				}
 				// ...and to add the additional device interface GUIDs
-				key = pSetupDiOpenDevRegKey(dev_info, &dev_info_data, DICS_FLAG_GLOBAL, 0, DIREG_DEV, KEY_READ);
+				key = SetupDiOpenDevRegKey(dev_info, &dev_info_data, DICS_FLAG_GLOBAL, 0, DIREG_DEV, KEY_READ);
 				if (key != INVALID_HANDLE_VALUE) {
 					size = sizeof(guid_string_w);
-					s = pRegQueryValueExW(key, L"DeviceInterfaceGUIDs", NULL, &reg_type,
+					s = RegQueryValueExW(key, L"DeviceInterfaceGUIDs", NULL, &reg_type,
 						(BYTE*)guid_string_w, &size);
-					pRegCloseKey(key);
+					RegCloseKey(key);
 					if (s == ERROR_SUCCESS) {
 						if (nb_guids >= MAX_ENUM_GUIDS) {
 							// If this assert is ever reported, grow a GUID table dynamically
@@ -1436,7 +1407,7 @@ static int windows_get_device_list(struct libusb_context *ctx, struct discovered
 							LOOP_BREAK(LIBUSB_ERROR_OVERFLOW);
 						}
 						if_guid = (GUID*) calloc(1, sizeof(GUID));
-						pCLSIDFromString(guid_string_w, if_guid);
+						CLSIDFromString(guid_string_w, if_guid);
 						guid[nb_guids++] = if_guid;
 						usbi_dbg("extra GUID: %s", guid_to_string(if_guid));
 					}
@@ -1444,7 +1415,7 @@ static int windows_get_device_list(struct libusb_context *ctx, struct discovered
 				break;
 			default:
 				// Get the API type (after checking that the driver installation is OK)
-				if ( (!pSetupDiGetDeviceRegistryPropertyA(dev_info, &dev_info_data, SPDRP_INSTALL_STATE,
+				if ( (!SetupDiGetDeviceRegistryPropertyA(dev_info, &dev_info_data, SPDRP_INSTALL_STATE,
 					&reg_type, (BYTE*)&install_state, 4, &size))
 				  || (size != 4) ){
 					usbi_warn(ctx, "could not detect installation state of driver for '%s': %s",
@@ -2405,79 +2376,9 @@ const struct windows_usb_api_backend usb_api_backend[USB_API_MAX] = {
 /*
  * WinUSB-like (WinUSB, libusb0/libusbK through libusbk DLL) API functions
  */
-#define WinUSBX_Set(fn) do { if (native_winusb) WinUSBX[i].fn = (WinUsb_##fn##_t) GetProcAddress(h, "WinUsb_" #fn); \
-	else pLibK_GetProcAddress((PVOID*)&WinUSBX[i].fn, i, KUSB_FNID_##fn); } while (0)
 
 static int winusbx_init(int sub_api, struct libusb_context *ctx)
 {
-	HMODULE h = NULL;
-	bool native_winusb = false;
-	int i;
-	KLIB_VERSION LibK_Version;
-	LibK_GetProcAddress_t pLibK_GetProcAddress = NULL;
-	LibK_GetVersion_t pLibK_GetVersion = NULL;
-
-	h = GetModuleHandleA("libusbK");
-	if (h == NULL) {
-		h = LoadLibraryA("libusbK");
-	}
-	if (h == NULL) {
-		usbi_info(ctx, "libusbK DLL is not available, will use native WinUSB");
-		h = GetModuleHandleA("WinUSB");
-		if (h == NULL) {
-			h = LoadLibraryA("WinUSB");
-		}		if (h == NULL) {
-			usbi_warn(ctx, "WinUSB DLL is not available either,\n"
-				"you will not be able to access devices outside of enumeration");
-			return LIBUSB_ERROR_NOT_FOUND;
-		}
-	} else {
-		usbi_dbg("using libusbK DLL for universal access");
-		pLibK_GetVersion = (LibK_GetVersion_t) GetProcAddress(h, "LibK_GetVersion");
-		if (pLibK_GetVersion != NULL) {
-			pLibK_GetVersion(&LibK_Version);
-			usbi_dbg("libusbK version: %d.%d.%d.%d", LibK_Version.Major, LibK_Version.Minor,
-				LibK_Version.Micro, LibK_Version.Nano);
-		}
-		pLibK_GetProcAddress = (LibK_GetProcAddress_t) GetProcAddress(h, "LibK_GetProcAddress");
-		if (pLibK_GetProcAddress == NULL) {
-			usbi_err(ctx, "LibK_GetProcAddress() not found in libusbK DLL");
-			return LIBUSB_ERROR_NOT_FOUND;
-		}
-	}
-	native_winusb = (pLibK_GetProcAddress == NULL);
-	for (i=SUB_API_LIBUSBK; i<SUB_API_MAX; i++) {
-		WinUSBX_Set(AbortPipe);
-		WinUSBX_Set(ControlTransfer);
-		WinUSBX_Set(FlushPipe);
-		WinUSBX_Set(Free);
-		WinUSBX_Set(GetAssociatedInterface);
-		WinUSBX_Set(GetCurrentAlternateSetting);
-		WinUSBX_Set(GetDescriptor);
-		WinUSBX_Set(GetOverlappedResult);
-		WinUSBX_Set(GetPipePolicy);
-		WinUSBX_Set(GetPowerPolicy);
-		WinUSBX_Set(Initialize);
-		WinUSBX_Set(QueryDeviceInformation);
-		WinUSBX_Set(QueryInterfaceSettings);
-		WinUSBX_Set(QueryPipe);
-		WinUSBX_Set(ReadPipe);
-		WinUSBX_Set(ResetPipe);
-		WinUSBX_Set(SetCurrentAlternateSetting);
-		WinUSBX_Set(SetPipePolicy);
-		WinUSBX_Set(SetPowerPolicy);
-		WinUSBX_Set(WritePipe);
-		if (!native_winusb) {
-			WinUSBX_Set(ResetDevice);
-		}
-		if (WinUSBX[i].Initialize != NULL) {
-			WinUSBX[i].initialized = true;
-			usbi_dbg("initalized sub API %s", sub_api_name[i]);
-		} else {
-			usbi_warn(ctx, "Failed to initalize sub API %s", sub_api_name[i]);
-			WinUSBX[i].initialized = false;
-		}
-	}
 	return LIBUSB_SUCCESS;
 }
 
@@ -2497,8 +2398,6 @@ static int winusbx_open(int sub_api, struct libusb_device_handle *dev_handle)
 
 	HANDLE file_handle;
 	int i;
-
-	CHECK_WINUSBX_AVAILABLE(sub_api);
 
 	// WinUSB requires a seperate handle for each interface
 	for (i = 0; i < USB_MAXINTERFACES; i++) {
@@ -2533,8 +2432,6 @@ static void winusbx_close(int sub_api, struct libusb_device_handle *dev_handle)
 
 	if (sub_api == SUB_API_NOTSET)
 		sub_api = priv->sub_api;
-	if (!WinUSBX[sub_api].initialized)
-		return;
 
 	for (i = 0; i < USB_MAXINTERFACES; i++) {
 		if (priv->usb_interface[i].apib->id == USB_API_WINUSBX) {
@@ -2556,13 +2453,11 @@ static int winusbx_configure_endpoints(int sub_api, struct libusb_device_handle 
 	uint8_t endpoint_address;
 	int i;
 
-	CHECK_WINUSBX_AVAILABLE(sub_api);
-
 	// With handle and enpoints set (in parent), we can setup the default pipe properties
 	// see http://download.microsoft.com/download/D/1/D/D1DD7745-426B-4CC3-A269-ABBBE427C0EF/DVC-T705_DDC08.pptx
 	for (i=-1; i<priv->usb_interface[iface].nb_endpoints; i++) {
 		endpoint_address =(i==-1)?0:priv->usb_interface[iface].endpoint[i];
-		if (!WinUSBX[sub_api].SetPipePolicy(winusb_handle, endpoint_address,
+		if (!WinUsb_SetPipePolicy(winusb_handle, endpoint_address,
 			PIPE_TRANSFER_TIMEOUT, sizeof(ULONG), &timeout)) {
 			usbi_dbg("failed to set PIPE_TRANSFER_TIMEOUT for control endpoint %02X", endpoint_address);
 		}
@@ -2570,22 +2465,22 @@ static int winusbx_configure_endpoints(int sub_api, struct libusb_device_handle 
 			continue;	// Other policies don't apply to control endpoint or libusb0
 		}
 		policy = false;
-		if (!WinUSBX[sub_api].SetPipePolicy(winusb_handle, endpoint_address,
+		if (!WinUsb_SetPipePolicy(winusb_handle, endpoint_address,
 			SHORT_PACKET_TERMINATE, sizeof(UCHAR), &policy)) {
 			usbi_dbg("failed to disable SHORT_PACKET_TERMINATE for endpoint %02X", endpoint_address);
 		}
-		if (!WinUSBX[sub_api].SetPipePolicy(winusb_handle, endpoint_address,
+		if (!WinUsb_SetPipePolicy(winusb_handle, endpoint_address,
 			IGNORE_SHORT_PACKETS, sizeof(UCHAR), &policy)) {
 			usbi_dbg("failed to disable IGNORE_SHORT_PACKETS for endpoint %02X", endpoint_address);
 		}
 		policy = true;
 		/* ALLOW_PARTIAL_READS must be enabled due to likely libusbK bug. See:
 		   https://sourceforge.net/mailarchive/message.php?msg_id=29736015 */
-		if (!WinUSBX[sub_api].SetPipePolicy(winusb_handle, endpoint_address,
+		if (!WinUsb_SetPipePolicy(winusb_handle, endpoint_address,
 			ALLOW_PARTIAL_READS, sizeof(UCHAR), &policy)) {
 			usbi_dbg("failed to enable ALLOW_PARTIAL_READS for endpoint %02X", endpoint_address);
 		}
-		if (!WinUSBX[sub_api].SetPipePolicy(winusb_handle, endpoint_address,
+		if (!WinUsb_SetPipePolicy(winusb_handle, endpoint_address,
 			AUTO_CLEAR_STALL, sizeof(UCHAR), &policy)) {
 			usbi_dbg("failed to enable AUTO_CLEAR_STALL for endpoint %02X", endpoint_address);
 		}
@@ -2610,8 +2505,6 @@ static int winusbx_claim_interface(int sub_api, struct libusb_device_handle *dev
 	char filter_path[] = "\\\\.\\libusb0-0000";
 	bool found_filter = false;
 
-	CHECK_WINUSBX_AVAILABLE(sub_api);
-
 	// If the device is composite, but using the default Windows composite parent driver (usbccgp)
 	// or if it's the first WinUSB-like interface, we get a handle through Initialize().
 	if ((is_using_usbccgp) || (iface == 0)) {
@@ -2621,7 +2514,7 @@ static int winusbx_claim_interface(int sub_api, struct libusb_device_handle *dev
 			return LIBUSB_ERROR_NOT_FOUND;
 		}
 
-		if (!WinUSBX[sub_api].Initialize(file_handle, &winusb_handle)) {
+		if (!WinUsb_Initialize(file_handle, &winusb_handle)) {
 			handle_priv->interface_handle[iface].api_handle = INVALID_HANDLE_VALUE;
 			err = GetLastError();
 			switch(err) {
@@ -2647,8 +2540,8 @@ static int winusbx_claim_interface(int sub_api, struct libusb_device_handle *dev
 						if (file_handle == INVALID_HANDLE_VALUE) {
 							usbi_err(ctx, "could not open device %s: %s", filter_path, windows_error_str(0));
 						} else {
-							WinUSBX[sub_api].Free(winusb_handle);
-							if (!WinUSBX[sub_api].Initialize(file_handle, &winusb_handle)) {
+							WinUsb_Free(winusb_handle);
+							if (!WinUsb_Initialize(file_handle, &winusb_handle)) {
 								continue;
 							}
 							found_filter = true;
@@ -2670,7 +2563,7 @@ static int winusbx_claim_interface(int sub_api, struct libusb_device_handle *dev
 		// must first claim the first interface before you claim the others
 		if ((winusb_handle == 0) || (winusb_handle == INVALID_HANDLE_VALUE)) {
 			file_handle = handle_priv->interface_handle[0].dev_handle;
-			if (WinUSBX[sub_api].Initialize(file_handle, &winusb_handle)) {
+			if (WinUsb_Initialize(file_handle, &winusb_handle)) {
 				handle_priv->interface_handle[0].api_handle = winusb_handle;
 				usbi_warn(ctx, "auto-claimed interface 0 (required to claim %d with WinUSB)", iface);
 			} else {
@@ -2678,7 +2571,7 @@ static int winusbx_claim_interface(int sub_api, struct libusb_device_handle *dev
 				return LIBUSB_ERROR_ACCESS;
 			}
 		}
-		if (!WinUSBX[sub_api].GetAssociatedInterface(winusb_handle, (UCHAR)(iface-1),
+		if (!WinUsb_GetAssociatedInterface(winusb_handle, (UCHAR)(iface-1),
 			&handle_priv->interface_handle[iface].api_handle)) {
 			handle_priv->interface_handle[iface].api_handle = INVALID_HANDLE_VALUE;
 			switch(GetLastError()) {
@@ -2706,14 +2599,12 @@ static int winusbx_release_interface(int sub_api, struct libusb_device_handle *d
 	struct windows_device_priv *priv = _device_priv(dev_handle->dev);
 	HANDLE winusb_handle;
 
-	CHECK_WINUSBX_AVAILABLE(sub_api);
-
 	winusb_handle = handle_priv->interface_handle[iface].api_handle;
 	if ((winusb_handle == 0) || (winusb_handle == INVALID_HANDLE_VALUE)) {
 		return LIBUSB_ERROR_NOT_FOUND;
 	}
 
-	WinUSBX[sub_api].Free(winusb_handle);
+	WinUsb_Free(winusb_handle);
 	handle_priv->interface_handle[iface].api_handle = INVALID_HANDLE_VALUE;
 
 	return LIBUSB_SUCCESS;
@@ -2782,8 +2673,6 @@ static int winusbx_submit_control_transfer(int sub_api, struct usbi_transfer *it
 	int current_interface;
 	struct winfd wfd;
 
-	CHECK_WINUSBX_AVAILABLE(sub_api);
-
 	transfer_priv->pollable_fd = INVALID_WINFD;
 	size = transfer->length - LIBUSB_CONTROL_SETUP_SIZE;
 
@@ -2807,9 +2696,9 @@ static int winusbx_submit_control_transfer(int sub_api, struct usbi_transfer *it
 	}
 
 	// Sending of set configuration control requests from WinUSB creates issues
-	if ( ((setup->request_type & (0x03 << 5)) == LIBUSB_REQUEST_TYPE_STANDARD)
-	  && (setup->request == LIBUSB_REQUEST_SET_CONFIGURATION) ) {
-		if (setup->value != priv->active_config) {
+	if ( ((setup->RequestType & (0x03 << 5)) == LIBUSB_REQUEST_TYPE_STANDARD)
+	  && (setup->Request == LIBUSB_REQUEST_SET_CONFIGURATION) ) {
+		if (setup->Value != priv->active_config) {
 			usbi_warn(ctx, "cannot set configuration other than the default one");
 			usbi_free_fd(&wfd);
 			return LIBUSB_ERROR_INVALID_PARAM;
@@ -2817,7 +2706,7 @@ static int winusbx_submit_control_transfer(int sub_api, struct usbi_transfer *it
 		wfd.overlapped->Internal = STATUS_COMPLETED_SYNCHRONOUSLY;
 		wfd.overlapped->InternalHigh = 0;
 	} else {
-		if (!WinUSBX[sub_api].ControlTransfer(wfd.handle, *setup, transfer->buffer + LIBUSB_CONTROL_SETUP_SIZE, size, NULL, wfd.overlapped)) {
+		if (!WinUsb_ControlTransfer(wfd.handle, *setup, transfer->buffer + LIBUSB_CONTROL_SETUP_SIZE, size, NULL, wfd.overlapped)) {
 			if(GetLastError() != ERROR_IO_PENDING) {
 				usbi_warn(ctx, "ControlTransfer failed: %s", windows_error_str(0));
 				usbi_free_fd(&wfd);
@@ -2843,8 +2732,6 @@ static int winusbx_set_interface_altsetting(int sub_api, struct libusb_device_ha
 	struct windows_device_priv *priv = _device_priv(dev_handle->dev);
 	HANDLE winusb_handle;
 
-	CHECK_WINUSBX_AVAILABLE(sub_api);
-
 	if (altsetting > 255) {
 		return LIBUSB_ERROR_INVALID_PARAM;
 	}
@@ -2855,7 +2742,7 @@ static int winusbx_set_interface_altsetting(int sub_api, struct libusb_device_ha
 		return LIBUSB_ERROR_NOT_FOUND;
 	}
 
-	if (!WinUSBX[sub_api].SetCurrentAlternateSetting(winusb_handle, (UCHAR)altsetting)) {
+	if (!WinUsb_SetCurrentAlternateSetting(winusb_handle, (UCHAR)altsetting)) {
 		usbi_err(ctx, "SetCurrentAlternateSetting failed: %s", windows_error_str(0));
 		return LIBUSB_ERROR_IO;
 	}
@@ -2874,8 +2761,6 @@ static int winusbx_submit_bulk_transfer(int sub_api, struct usbi_transfer *itran
 	bool ret;
 	int current_interface;
 	struct winfd wfd;
-
-	CHECK_WINUSBX_AVAILABLE(sub_api);
 
 	transfer_priv->pollable_fd = INVALID_WINFD;
 
@@ -2897,10 +2782,10 @@ static int winusbx_submit_bulk_transfer(int sub_api, struct usbi_transfer *itran
 
 	if (IS_XFERIN(transfer)) {
 		usbi_dbg("reading %d bytes", transfer->length);
-		ret = WinUSBX[sub_api].ReadPipe(wfd.handle, transfer->endpoint, transfer->buffer, transfer->length, NULL, wfd.overlapped);
+		ret = WinUsb_ReadPipe(wfd.handle, transfer->endpoint, transfer->buffer, transfer->length, NULL, wfd.overlapped);
 	} else {
 		usbi_dbg("writing %d bytes", transfer->length);
-		ret = WinUSBX[sub_api].WritePipe(wfd.handle, transfer->endpoint, transfer->buffer, transfer->length, NULL, wfd.overlapped);
+		ret = WinUsb_WritePipe(wfd.handle, transfer->endpoint, transfer->buffer, transfer->length, NULL, wfd.overlapped);
 	}
 	if (!ret) {
 		if(GetLastError() != ERROR_IO_PENDING) {
@@ -2927,8 +2812,6 @@ static int winusbx_clear_halt(int sub_api, struct libusb_device_handle *dev_hand
 	HANDLE winusb_handle;
 	int current_interface;
 
-	CHECK_WINUSBX_AVAILABLE(sub_api);
-
 	current_interface = interface_by_endpoint(priv, handle_priv, endpoint);
 	if (current_interface < 0) {
 		usbi_err(ctx, "unable to match endpoint to an open interface - cannot clear");
@@ -2938,7 +2821,7 @@ static int winusbx_clear_halt(int sub_api, struct libusb_device_handle *dev_hand
 	usbi_dbg("matched endpoint %02X with interface %d", endpoint, current_interface);
 	winusb_handle = handle_priv->interface_handle[current_interface].api_handle;
 
-	if (!WinUSBX[sub_api].ResetPipe(winusb_handle, endpoint)) {
+	if (!WinUsb_ResetPipe(winusb_handle, endpoint)) {
 		usbi_err(ctx, "ResetPipe failed: %s", windows_error_str(0));
 		return LIBUSB_ERROR_NO_DEVICE;
 	}
@@ -2968,8 +2851,6 @@ static int winusbx_abort_transfers(int sub_api, struct usbi_transfer *itransfer)
 	HANDLE winusb_handle;
 	int current_interface;
 
-	CHECK_WINUSBX_AVAILABLE(sub_api);
-
 	current_interface = transfer_priv->interface_number;
 	if ((current_interface < 0) || (current_interface >= USB_MAXINTERFACES)) {
 		usbi_err(ctx, "program assertion failed: invalid interface_number");
@@ -2979,7 +2860,7 @@ static int winusbx_abort_transfers(int sub_api, struct usbi_transfer *itransfer)
 
 	winusb_handle = handle_priv->interface_handle[current_interface].api_handle;
 
-	if (!WinUSBX[sub_api].AbortPipe(winusb_handle, transfer->endpoint)) {
+	if (!WinUsb_AbortPipe(winusb_handle, transfer->endpoint)) {
 		usbi_err(ctx, "AbortPipe failed: %s", windows_error_str(0));
 		return LIBUSB_ERROR_NO_DEVICE;
 	}
@@ -3005,8 +2886,6 @@ static int winusbx_reset_device(int sub_api, struct libusb_device_handle *dev_ha
 	HANDLE winusb_handle;
 	int i, j;
 
-	CHECK_WINUSBX_AVAILABLE(sub_api);
-
 	// Reset any available pipe (except control)
 	for (i=0; i<USB_MAXINTERFACES; i++) {
 		winusb_handle = handle_priv->interface_handle[i].api_handle;
@@ -3021,17 +2900,17 @@ static int winusbx_reset_device(int sub_api, struct libusb_device_handle *dev_ha
 		if ( (winusb_handle != 0) && (winusb_handle != INVALID_HANDLE_VALUE)) {
 			for (j=0; j<priv->usb_interface[i].nb_endpoints; j++) {
 				usbi_dbg("resetting ep %02X", priv->usb_interface[i].endpoint[j]);
-				if (!WinUSBX[sub_api].AbortPipe(winusb_handle, priv->usb_interface[i].endpoint[j])) {
+				if (!WinUsb_AbortPipe(winusb_handle, priv->usb_interface[i].endpoint[j])) {
 					usbi_err(ctx, "AbortPipe (pipe address %02X) failed: %s",
 						priv->usb_interface[i].endpoint[j], windows_error_str(0));
 				}
 				// FlushPipe seems to fail on OUT pipes
 				if (IS_EPIN(priv->usb_interface[i].endpoint[j])
-				  && (!WinUSBX[sub_api].FlushPipe(winusb_handle, priv->usb_interface[i].endpoint[j])) ) {
+				  && (!WinUsb_FlushPipe(winusb_handle, priv->usb_interface[i].endpoint[j])) ) {
 					usbi_err(ctx, "FlushPipe (pipe address %02X) failed: %s",
 						priv->usb_interface[i].endpoint[j], windows_error_str(0));
 				}
-				if (!WinUSBX[sub_api].ResetPipe(winusb_handle, priv->usb_interface[i].endpoint[j])) {
+				if (!WinUsb_ResetPipe(winusb_handle, priv->usb_interface[i].endpoint[j])) {
 					usbi_err(ctx, "ResetPipe (pipe address %02X) failed: %s",
 						priv->usb_interface[i].endpoint[j], windows_error_str(0));
 				}
@@ -3039,13 +2918,6 @@ static int winusbx_reset_device(int sub_api, struct libusb_device_handle *dev_ha
 		}
 	}
 
-	// libusbK & libusb0 have the ability to issue an actual device reset
-	if (WinUSBX[sub_api].ResetDevice != NULL) {
-		winusb_handle = handle_priv->interface_handle[0].api_handle;
-		if ( (winusb_handle != 0) && (winusb_handle != INVALID_HANDLE_VALUE)) {
-			WinUSBX[sub_api].ResetDevice(winusb_handle);
-		}
-	}
 	return LIBUSB_SUCCESS;
 }
 

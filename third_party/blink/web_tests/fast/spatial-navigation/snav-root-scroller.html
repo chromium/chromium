@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="resources/snav-testharness.js"></script>
+
+<style>
+  ::-webkit-scrollbar {
+    display:none;
+  }
+
+  .box {
+    width: 100px;
+    height: 100px;
+    background-color: green;
+    margin: 5px;
+    border: 1px solid black;
+  }
+
+  #scroller {
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+  }
+
+  body,html {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+  }
+
+  html {
+    overflow: hidden;
+  }
+
+  #spacer {
+    height: 2000px;
+  }
+</style>
+
+<div id="scroller">
+  <div id="spacer"></div>
+  <div id="A" class="box" tabindex="0"></div>
+  <div id="B" class="box" tabindex="0"></div>
+</div>
+
+<script>
+  // This test ensures that spatial navigation from the root scroller correctly
+  // affects the visual viewport when zoomed in.
+  if (window.internals)
+    window.internals.runtimeFlags.implicitRootScrollerEnabled = true;
+
+  const scroller = document.getElementById("scroller");
+  const a = document.getElementById("A");
+  const b = document.getElementById("B");
+
+  snav.assertSnavEnabledAndTestable();
+
+  // Fully scroll the scroller.
+  scroller.scrollTop = 100000;
+
+  // Start with |B| interested.
+  b.focus();
+
+  t = async_test("Spatial Navigation within a root scroller");
+
+  // We need two frames before we can be sure the root scroller is activated
+  // (since script will run before the frame lifecycle is updated).
+  requestAnimationFrame( () => {
+    requestAnimationFrame( () => {
+      t.step(() => {
+          assert_equals(window.internals.effectiveRootScroller(document), scroller);
+          assert_equals(window.internals.interestedElement,
+                        b,
+                        "|B| starts off interested.");
+
+          // Down should scroll the visual viewport, since there's no targets
+          // availabe on screen.
+          snav.triggerMove('Up');
+
+          assert_equals(window.internals.interestedElement,
+                        a,
+                        "Navigation should move interest to |A|");
+          t.done();
+      });
+    });
+  });
+</script>

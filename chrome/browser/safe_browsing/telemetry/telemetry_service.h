@@ -22,7 +22,7 @@ class TelemetryService {
   }
 
  private:
-  base::WeakPtrFactory<TelemetryService> weak_factory_;
+  base::WeakPtrFactory<TelemetryService> weak_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(TelemetryService);
 };
 

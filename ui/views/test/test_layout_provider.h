@@ -19,8 +19,7 @@ namespace views {
 namespace test {
 
 // Helper to test LayoutProvider overrides.
-class TestLayoutProvider : public LayoutProvider,
-                           public DefaultTypographyProvider {
+class TestLayoutProvider : public LayoutProvider, public TypographyProvider {
  public:
   TestLayoutProvider();
   ~TestLayoutProvider() override;

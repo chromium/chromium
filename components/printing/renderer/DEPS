@@ -4,7 +4,6 @@ include_rules = [
   "+content/public/renderer",
   "+mojo/public",
   "+net/base",
-  "+services/service_manager/public/cpp",
   "+third_party/skia",
   "+ui/base",
 ]

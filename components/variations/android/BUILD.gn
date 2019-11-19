@@ -7,8 +7,10 @@ import("//build/config/android/rules.gni")
 android_library("variations_java") {
   deps = [
     "//base:base_java",
-    "//third_party/android_deps:android_support_core_utils_java",
+    "//base:jni_java",
+    "//third_party/android_deps:com_android_support_support_core_utils_java",
   ]
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   java_files = [
     "java/src/org/chromium/components/variations/VariationsAssociatedData.java",
     "java/src/org/chromium/components/variations/firstrun/VariationsSeedBridge.java",

@@ -11,6 +11,7 @@
   P(ScriptPromise, kClosed##__VA_ARGS__)        \
   P(ScriptPromise, kFinished##__VA_ARGS__)      \
   P(ScriptPromise, kLoaded##__VA_ARGS__)        \
+  P(ScriptPromise, kLost##__VA_ARGS__)          \
   P(ScriptPromise, kReleased##__VA_ARGS__)      \
   P(ScriptPromise, kResponseReady##__VA_ARGS__) \
   P(ScriptPromise, kUserChoice##__VA_ARGS__)    \

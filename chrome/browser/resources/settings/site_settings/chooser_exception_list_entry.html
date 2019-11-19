@@ -21,11 +21,14 @@
       <iron-list items="[[exception.sites]]" preserve-focus risk-selection>
         <template>
           <site-list-entry model="[[item]]"
-              tabindex$="[[tabIndex]]" first$="[[!index]]"
+              tabindex$="[[tabIndex]]"
+              first$="[[!index]]"
+              focus-row-index="[[index]]"
               iron-list-tab-index="[[tabIndex]]"
               last-focused="{{lastFocused_}}"
               chooser-type="[[exception.chooserType]]"
-              chooser-object="[[exception.object]]" read-only-list>
+              chooser-object="[[exception.object]]"
+              read-only-list>
           </site-list-entry>
         </template>
       </iron-list>

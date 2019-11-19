@@ -1,0 +1,13 @@
+Tests fetch interceptor respects cross-frame boundaries of out-of-process iframes.
+
+Loading in-process iframe (script should be present)
+Request to http://127.0.0.1:8000/inspector-protocol/fetch/resources/frame-with-subresource.html, type: Document
+Request to http://127.0.0.1:8000/inspector-protocol/resources/dummy.js, type: Script
+
+Loading out-of-process iframe (script should be absent)
+Request to http://devtools.oopif-a.test:8000/inspector-protocol/fetch/resources/frame-with-subresource.html, type: Document
+
+Loading out-of-process iframe with interception (script should be present)
+Request to http://devtools.oopif-a.test:8000/inspector-protocol/fetch/resources/frame-with-subresource.html, type: Document
+[subframe] Request to http://devtools.oopif-a.test:8000/inspector-protocol/resources/dummy.js, type: Script
+

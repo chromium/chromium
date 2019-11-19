@@ -36,11 +36,12 @@ Polymer({
    * Wrap the icon as a image into a html snippet.
    *
    * @param {string} iconUri the icon uri to be wrapped.
+   * @param {string} imageLabel the aria label of the image.
    * @return {string} wrapped html snippet.
    *
    * @private
    */
-  getWrappedIcon: function(iconUri) {
+  getWrappedIcon: function(iconUri, imageLabel) {
     return String.raw`
     <html>
       <style>
@@ -50,9 +51,10 @@ Polymer({
         #icon {
           width: 20px;
           height: 20px;
+          user-select: none;
         }
       </style>
-    <body><img id='icon' src="` +
-        iconUri + '"></body></html>';
+    <body><img id="icon" aria-label="` +
+        imageLabel + `" src="` + iconUri + '"></body></html>';
   },
 });

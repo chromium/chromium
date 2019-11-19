@@ -2,18 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# Args for all uses of the closure compiler
-common_closure_args = [
-  "extra_annotation_name=attribute",
-  "extra_annotation_name=demo",
-  "extra_annotation_name=element",
-  "extra_annotation_name=group",
-  "extra_annotation_name=hero",
-  "extra_annotation_name=homepage",
-  "extra_annotation_name=status",
-  "extra_annotation_name=submodule",
-]
-
 strict_error_checking_closure_args = [
   "jscomp_error=accessControls",
   "jscomp_error=ambiguousFunctionDecl",
@@ -24,6 +12,7 @@ strict_error_checking_closure_args = [
   "jscomp_error=externsValidation",
   "jscomp_error=globalThis",
   "jscomp_error=invalidCasts",
+  "jscomp_error=misplacedTypeAnnotation",
   "jscomp_error=missingProperties",
   "jscomp_error=missingReturn",
   "jscomp_error=nonStandardJsDocs",
@@ -36,30 +25,44 @@ strict_error_checking_closure_args = [
 ]
 
 # Additional closure args for performing full checks.
-checking_closure_args = strict_error_checking_closure_args + [
-                          "compilation_level=SIMPLE_OPTIMIZATIONS",
+default_closure_args = strict_error_checking_closure_args + [
+  "compilation_level=SIMPLE_OPTIMIZATIONS",
 
-                          "language_in=ECMASCRIPT_2017",
-                          "language_out=ECMASCRIPT5_STRICT",
+  "extra_annotation_name=attribute",
+  "extra_annotation_name=demo",
+  "extra_annotation_name=element",
 
-                          "chrome_pass",
-                          "polymer_pass",
+  "language_in=ECMASCRIPT_2017",
+  "language_out=ECMASCRIPT5_STRICT",
 
-                          "jscomp_off=duplicate",
-                        ]
+  "chrome_pass",
+  "polymer_pass",
 
-# Additional closure arguments for minifying
-minifying_closure_args = [
-  "compilation_level=WHITESPACE_ONLY",
+  "jscomp_off=duplicate",
 
-  "language_in=ECMASCRIPT_NEXT",
-  "language_out=ECMASCRIPT_2017",
+  "js_module_root=../../ui/webui/resources/",
+  "js_module_root=gen/ui/webui/resources/",
 
-  # TODO(wychen): turn on 'use strict'. crbug.com/729689
-  "emit_use_strict=false",
+  # chrome://resources maps to root, since both ../../ui/webui/resources and
+  # gen/ui/webui/resources are js_module_roots.
+  "module_resolution=BROWSER_WITH_TRANSFORMED_PREFIXES",
+  "browser_resolver_prefix_replacements=\"chrome://resources/=./\"",
 ]
 
-# For compatibility with old uses.
-default_closure_args = common_closure_args + checking_closure_args
+polymer3_args = [
+  "browser_resolver_prefix_replacements=\"../polymer/polymer_bundled.min.js=../polymer/polymer_bundled.js\"",
+  "browser_resolver_prefix_replacements=\"chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js=../../third_party/polymer/v3_0/components-chromium/polymer/polymer_bundled.js\"",
+  "browser_resolver_prefix_replacements=\"chrome://resources/polymer/v3_0/=../../third_party/polymer/v3_0/components-chromium/\"",
+
+  # Turn off, primarily because cr.define() should not be used in any
+  # Polymer3/JS module code, but also because of b/133333578.
+  "chrome_pass=false",
+  "hide_warnings_for=externs.zip",
+  "hide_warnings_for=../../third_party/polymer/v3_0/components-chromium/",
+  "polymer_pass=false",
+
+  # Note: "2" is counter-intuitively the correct value to use for Polymer 3.
+  "polymer_version=2",
+]
 
 default_disabled_closure_args = [ "jscomp_off=duplicate" ]

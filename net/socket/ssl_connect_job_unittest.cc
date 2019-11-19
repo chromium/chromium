@@ -12,11 +12,12 @@
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "net/base/auth.h"
 #include "net/base/load_timing_info.h"
 #include "net/base/net_errors.h"
+#include "net/base/network_isolation_key.h"
 #include "net/cert/ct_policy_enforcer.h"
 #include "net/cert/mock_cert_verifier.h"
 #include "net/cert/multi_log_ct_verifier.h"
@@ -26,34 +27,28 @@
 #include "net/http/http_proxy_connect_job.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
-#include "net/http/http_server_properties_impl.h"
+#include "net/http/http_server_properties.h"
 #include "net/http/transport_security_state.h"
 #include "net/log/net_log_source.h"
 #include "net/log/net_log_with_source.h"
 #include "net/proxy_resolution/proxy_resolution_service.h"
-#include "net/socket/client_socket_handle.h"
+#include "net/quic/quic_context.h"
 #include "net/socket/connect_job_test_util.h"
+#include "net/socket/connection_attempts.h"
 #include "net/socket/next_proto.h"
 #include "net/socket/socket_tag.h"
 #include "net/socket/socket_test_util.h"
 #include "net/socket/socks_connect_job.h"
-#include "net/socket/transport_client_socket_pool.h"
 #include "net/socket/transport_connect_job.h"
 #include "net/ssl/ssl_config_service_defaults.h"
 #include "net/test/gtest_util.h"
 #include "net/test/test_certificate_data.h"
-#include "net/test/test_with_scoped_task_environment.h"
+#include "net/test/test_with_task_environment.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace net {
 namespace {
-
-const int kMaxSockets = 32;
-const int kMaxSocketsPerGroup = 6;
-constexpr base::TimeDelta kUnusedIdleSocketTimeout =
-    base::TimeDelta::FromSeconds(10);
-const char kGroupName[] = "a";
 
 // Just check that all connect times are set to base::TimeTicks::Now(), for
 // tests that don't update the mocked out time.
@@ -79,74 +74,40 @@ void CheckConnectTimesExceptDnsSet(
   EXPECT_EQ(base::TimeTicks::Now(), connect_timing.connect_end);
 }
 
-class SSLConnectJobTest : public WithScopedTaskEnvironment,
-                          public testing::Test {
+class SSLConnectJobTest : public WithTaskEnvironment, public testing::Test {
  public:
   SSLConnectJobTest()
-      : WithScopedTaskEnvironment(
-            base::test::ScopedTaskEnvironment::MainThreadType::MOCK_TIME,
-            base::test::ScopedTaskEnvironment::NowSource::
-                MAIN_THREAD_MOCK_TIME),
+      : WithTaskEnvironment(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         proxy_resolution_service_(ProxyResolutionService::CreateDirect()),
         ssl_config_service_(new SSLConfigServiceDefaults),
         http_auth_handler_factory_(HttpAuthHandlerFactory::CreateDefault()),
         session_(CreateNetworkSession()),
-        ssl_client_socket_context_(&cert_verifier_,
-                                   nullptr /* channel_id_service_arg */,
-                                   &transport_security_state_,
-                                   &ct_verifier_,
-                                   &ct_policy_enforcer_,
-                                   nullptr /* ssl_client_session_cache */),
         direct_transport_socket_params_(
             new TransportSocketParams(HostPortPair("host", 443),
-                                      false,
+                                      NetworkIsolationKey(),
+                                      false /* disable_secure_dns */,
                                       OnHostResolutionCallback())),
         proxy_transport_socket_params_(
             new TransportSocketParams(HostPortPair("proxy", 443),
-                                      false,
+                                      NetworkIsolationKey(),
+                                      false /* disable_secure_dns */,
                                       OnHostResolutionCallback())),
         socks_socket_params_(
             new SOCKSSocketParams(proxy_transport_socket_params_,
                                   true,
                                   HostPortPair("sockshost", 443),
+                                  NetworkIsolationKey(),
                                   TRAFFIC_ANNOTATION_FOR_TESTS)),
         http_proxy_socket_params_(
             new HttpProxySocketParams(proxy_transport_socket_params_,
                                       nullptr /* ssl_params */,
-                                      quic::QUIC_VERSION_UNSUPPORTED,
-                                      std::string(),
+                                      false /* is_quic */,
                                       HostPortPair("host", 80),
-                                      session_->http_auth_cache(),
-                                      session_->http_auth_handler_factory(),
-                                      session_->spdy_session_pool(),
-                                      session_->quic_stream_factory(),
                                       /*is_trusted_proxy=*/false,
                                       /*tunnel=*/true,
-                                      TRAFFIC_ANNOTATION_FOR_TESTS)),
-        http_proxy_socket_pool_(
-            kMaxSockets,
-            kMaxSocketsPerGroup,
-            kUnusedIdleSocketTimeout,
-            &socket_factory_,
-            &host_resolver_,
-            nullptr /* proxy_delegate */,
-            nullptr /* cert_verifier */,
-            nullptr /* channel_id_server */,
-            nullptr /* transport_security_state */,
-            nullptr /* cert_transparency_verifier */,
-            nullptr /* ct_policy_enforcer */,
-            nullptr /* ssl_client_session_cache */,
-            nullptr /* ssl_client_session_cache_privacy_mode */,
-            nullptr /* ssl_config_service */,
-            nullptr /* socket_performance_watcher_factory */,
-            nullptr /* network_quality_estimator */,
-            nullptr /* net_log */) {
-    ssl_config_service_->GetSSLConfig(&ssl_config_);
-
-    // Set an initial delay to ensure that the first call to TimeTicks::Now()
-    // before incrementing the counter does not return a null value.
-    FastForwardBy(base::TimeDelta::FromSeconds(1));
-  }
+                                      TRAFFIC_ANNOTATION_FOR_TESTS,
+                                      NetworkIsolationKey())),
+        common_connect_job_params_(session_->CreateCommonConnectJobParams()) {}
 
   ~SSLConnectJobTest() override = default;
 
@@ -155,14 +116,7 @@ class SSLConnectJobTest : public WithScopedTaskEnvironment,
       ProxyServer::Scheme proxy_scheme = ProxyServer::SCHEME_DIRECT,
       RequestPriority priority = DEFAULT_PRIORITY) {
     return std::make_unique<SSLConnectJob>(
-        priority,
-        CommonConnectJobParams(
-            kGroupName, SocketTag(), &socket_factory_, &host_resolver_,
-            nullptr /* proxy_delegate */, ssl_client_socket_context_,
-            ssl_client_socket_context_,
-            nullptr /* socket_performance_watcher */,
-            nullptr /* network_quality_estimator */, nullptr /* net_log */,
-            nullptr /* websocket_lock_endpoint_manager */),
+        priority, SocketTag(), &common_connect_job_params_,
         SSLParams(proxy_scheme), test_delegate, nullptr /* net_log */);
   }
 
@@ -172,14 +126,16 @@ class SSLConnectJobTest : public WithScopedTaskEnvironment,
                                             : nullptr,
         proxy == ProxyServer::SCHEME_SOCKS5 ? socks_socket_params_ : nullptr,
         proxy == ProxyServer::SCHEME_HTTP ? http_proxy_socket_params_ : nullptr,
-        HostPortPair("host", 443), ssl_config_, PRIVACY_MODE_DISABLED);
+        HostPortPair("host", 443), SSLConfig(), PRIVACY_MODE_DISABLED,
+        NetworkIsolationKey());
   }
 
   void AddAuthToCache() {
     const base::string16 kFoo(base::ASCIIToUTF16("foo"));
     const base::string16 kBar(base::ASCIIToUTF16("bar"));
     session_->http_auth_cache()->Add(
-        GURL("http://proxy:443/"), "MyRealm1", HttpAuth::AUTH_SCHEME_BASIC,
+        GURL("http://proxy:443/"), HttpAuth::AUTH_PROXY, "MyRealm1",
+        HttpAuth::AUTH_SCHEME_BASIC, NetworkIsolationKey(),
         "Basic realm=MyRealm1", AuthCredentials(kFoo, kBar), "/");
   }
 
@@ -196,6 +152,7 @@ class SSLConnectJobTest : public WithScopedTaskEnvironment,
     session_context.http_auth_handler_factory =
         http_auth_handler_factory_.get();
     session_context.http_server_properties = &http_server_properties_;
+    session_context.quic_context = &quic_context_;
     return new HttpNetworkSession(HttpNetworkSession::Params(),
                                   session_context);
   }
@@ -210,9 +167,9 @@ class SSLConnectJobTest : public WithScopedTaskEnvironment,
   const std::unique_ptr<ProxyResolutionService> proxy_resolution_service_;
   const std::unique_ptr<SSLConfigService> ssl_config_service_;
   const std::unique_ptr<HttpAuthHandlerFactory> http_auth_handler_factory_;
-  HttpServerPropertiesImpl http_server_properties_;
+  HttpServerProperties http_server_properties_;
+  QuicContext quic_context_;
   const std::unique_ptr<HttpNetworkSession> session_;
-  SSLClientSocketContext ssl_client_socket_context_;
 
   scoped_refptr<TransportSocketParams> direct_transport_socket_params_;
 
@@ -220,9 +177,7 @@ class SSLConnectJobTest : public WithScopedTaskEnvironment,
   scoped_refptr<SOCKSSocketParams> socks_socket_params_;
   scoped_refptr<HttpProxySocketParams> http_proxy_socket_params_;
 
-  TransportClientSocketPool http_proxy_socket_pool_;
-
-  SSLConfig ssl_config_;
+  const CommonConnectJobParams common_connect_job_params_;
 };
 
 TEST_F(SSLConnectJobTest, TCPFail) {
@@ -239,13 +194,103 @@ TEST_F(SSLConnectJobTest, TCPFail) {
     test_delegate.StartJobExpectingResult(
         ssl_connect_job.get(), ERR_CONNECTION_FAILED, io_mode == SYNCHRONOUS);
     EXPECT_FALSE(test_delegate.socket());
-    ClientSocketHandle handle;
-    ssl_connect_job->GetAdditionalErrorState(&handle);
-    EXPECT_FALSE(handle.is_ssl_error());
-    ASSERT_EQ(1u, handle.connection_attempts().size());
-    EXPECT_THAT(handle.connection_attempts()[0].result,
+    EXPECT_FALSE(ssl_connect_job->IsSSLError());
+    ConnectionAttempts connection_attempts =
+        ssl_connect_job->GetConnectionAttempts();
+    ASSERT_EQ(1u, connection_attempts.size());
+    EXPECT_THAT(connection_attempts[0].result,
                 test::IsError(ERR_CONNECTION_FAILED));
   }
+}
+
+TEST_F(SSLConnectJobTest, TCPTimeout) {
+  const base::TimeDelta kTinyTime = base::TimeDelta::FromMicroseconds(1);
+
+  // Make request hang.
+  host_resolver_.set_ondemand_mode(true);
+
+  TestConnectJobDelegate test_delegate;
+  std::unique_ptr<ConnectJob> ssl_connect_job =
+      CreateConnectJob(&test_delegate);
+  ASSERT_THAT(ssl_connect_job->Connect(), test::IsError(ERR_IO_PENDING));
+
+  // Right up until just before the TCP connection timeout, the job does not
+  // time out.
+  FastForwardBy(TransportConnectJob::ConnectionTimeout() - kTinyTime);
+  EXPECT_FALSE(test_delegate.has_result());
+
+  // But at the exact time of TCP connection timeout, the job fails.
+  FastForwardBy(kTinyTime);
+  EXPECT_TRUE(test_delegate.has_result());
+  EXPECT_THAT(test_delegate.WaitForResult(), test::IsError(ERR_TIMED_OUT));
+}
+
+TEST_F(SSLConnectJobTest, SSLTimeoutSyncConnect) {
+  const base::TimeDelta kTinyTime = base::TimeDelta::FromMicroseconds(1);
+
+  // DNS lookup and transport connect complete synchronously, but SSL
+  // negotiation hangs.
+  host_resolver_.set_synchronous_mode(true);
+  StaticSocketDataProvider data;
+  data.set_connect_data(MockConnect(SYNCHRONOUS, OK));
+  socket_factory_.AddSocketDataProvider(&data);
+  SSLSocketDataProvider ssl(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_factory_.AddSSLSocketDataProvider(&ssl);
+
+  // Make request hang.
+  TestConnectJobDelegate test_delegate;
+  std::unique_ptr<ConnectJob> ssl_connect_job =
+      CreateConnectJob(&test_delegate);
+  ASSERT_THAT(ssl_connect_job->Connect(), test::IsError(ERR_IO_PENDING));
+
+  // Right up until just before the SSL handshake timeout, the job does not time
+  // out.
+  FastForwardBy(SSLConnectJob::HandshakeTimeoutForTesting() - kTinyTime);
+  EXPECT_FALSE(test_delegate.has_result());
+
+  // But at the exact SSL handshake timeout time, the job fails.
+  FastForwardBy(kTinyTime);
+  EXPECT_TRUE(test_delegate.has_result());
+  EXPECT_THAT(test_delegate.WaitForResult(), test::IsError(ERR_TIMED_OUT));
+}
+
+TEST_F(SSLConnectJobTest, SSLTimeoutAsyncTcpConnect) {
+  const base::TimeDelta kTinyTime = base::TimeDelta::FromMicroseconds(1);
+
+  // DNS lookup is asynchronous, and later SSL negotiation hangs.
+  host_resolver_.set_ondemand_mode(true);
+  StaticSocketDataProvider data;
+  data.set_connect_data(MockConnect(SYNCHRONOUS, OK));
+  socket_factory_.AddSocketDataProvider(&data);
+  SSLSocketDataProvider ssl(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_factory_.AddSSLSocketDataProvider(&ssl);
+
+  TestConnectJobDelegate test_delegate;
+  std::unique_ptr<ConnectJob> ssl_connect_job =
+      CreateConnectJob(&test_delegate);
+  // Connecting should hand on the TransportConnectJob connect.
+  ASSERT_THAT(ssl_connect_job->Connect(), test::IsError(ERR_IO_PENDING));
+
+  // Right up until just before the TCP connection timeout, the job does not
+  // time out.
+  FastForwardBy(TransportConnectJob::ConnectionTimeout() - kTinyTime);
+  EXPECT_FALSE(test_delegate.has_result());
+
+  // The DNS lookup completes, and a TCP connection is immediately establshed,
+  // which cancels the TCP connection timer. The SSL handshake timer is started,
+  // and the SSL handshake hangs.
+  host_resolver_.ResolveOnlyRequestNow();
+  EXPECT_FALSE(test_delegate.has_result());
+
+  // Right up until just before the SSL handshake timeout, the job does not time
+  // out.
+  FastForwardBy(SSLConnectJob::HandshakeTimeoutForTesting() - kTinyTime);
+  EXPECT_FALSE(test_delegate.has_result());
+
+  // But at the exact SSL handshake timeout time, the job fails.
+  FastForwardBy(kTinyTime);
+  EXPECT_TRUE(test_delegate.has_result());
+  EXPECT_THAT(test_delegate.WaitForResult(), test::IsError(ERR_TIMED_OUT));
 }
 
 TEST_F(SSLConnectJobTest, BasicDirectSync) {
@@ -264,9 +309,9 @@ TEST_F(SSLConnectJobTest, BasicDirectSync) {
                                         true /* expect_sync_result */);
   EXPECT_EQ(MEDIUM, host_resolver_.last_request_priority());
 
-  ClientSocketHandle handle;
-  ssl_connect_job->GetAdditionalErrorState(&handle);
-  EXPECT_EQ(0u, handle.connection_attempts().size());
+  ConnectionAttempts connection_attempts =
+      ssl_connect_job->GetConnectionAttempts();
+  EXPECT_EQ(0u, connection_attempts.size());
   CheckConnectTimesSet(ssl_connect_job->connect_timing());
 }
 
@@ -291,9 +336,9 @@ TEST_F(SSLConnectJobTest, BasicDirectAsync) {
   host_resolver_.ResolveAllPending();
   EXPECT_THAT(test_delegate.WaitForResult(), test::IsOk());
 
-  ClientSocketHandle handle;
-  ssl_connect_job->GetAdditionalErrorState(&handle);
-  EXPECT_EQ(0u, handle.connection_attempts().size());
+  ConnectionAttempts connection_attempts =
+      ssl_connect_job->GetConnectionAttempts();
+  EXPECT_EQ(0u, connection_attempts.size());
 
   // Check times. Since time is mocked out, all times will be the same, except
   // |dns_start|, which is the only one recorded before the FastForwardBy()
@@ -345,10 +390,6 @@ TEST_F(SSLConnectJobTest, DirectHasEstablishedConnection) {
 
 TEST_F(SSLConnectJobTest, RequestPriority) {
   host_resolver_.set_ondemand_mode(true);
-  // Make resolution eventually fail, so old jobs can easily be removed from the
-  // socket pool.
-  host_resolver_.rules()->AddSimulatedFailure(
-      direct_transport_socket_params_->destination().host());
   for (int initial_priority = MINIMUM_PRIORITY;
        initial_priority <= MAXIMUM_PRIORITY; ++initial_priority) {
     SCOPED_TRACE(initial_priority);
@@ -373,12 +414,30 @@ TEST_F(SSLConnectJobTest, RequestPriority) {
       ssl_connect_job->ChangePriority(
           static_cast<RequestPriority>(initial_priority));
       EXPECT_EQ(initial_priority, host_resolver_.request_priority(request_id));
+    }
+  }
+}
 
-      // Complete the resolution, which should result in destroying the
-      // connecting socket.
-      host_resolver_.ResolveAllPending();
-      ASSERT_THAT(test_delegate.WaitForResult(),
-                  test::IsError(ERR_NAME_NOT_RESOLVED));
+TEST_F(SSLConnectJobTest, DisableSecureDns) {
+  for (bool disable_secure_dns : {false, true}) {
+    TestConnectJobDelegate test_delegate;
+    direct_transport_socket_params_ =
+        base::MakeRefCounted<TransportSocketParams>(
+            HostPortPair("host", 443), NetworkIsolationKey(),
+            disable_secure_dns, OnHostResolutionCallback());
+    auto common_connect_job_params = session_->CreateCommonConnectJobParams();
+    std::unique_ptr<ConnectJob> ssl_connect_job =
+        std::make_unique<SSLConnectJob>(DEFAULT_PRIORITY, SocketTag(),
+                                        &common_connect_job_params,
+                                        SSLParams(ProxyServer::SCHEME_DIRECT),
+                                        &test_delegate, nullptr /* net_log */);
+
+    EXPECT_THAT(ssl_connect_job->Connect(), test::IsError(ERR_IO_PENDING));
+    EXPECT_EQ(disable_secure_dns,
+              host_resolver_.last_secure_dns_mode_override().has_value());
+    if (disable_secure_dns) {
+      EXPECT_EQ(net::DnsConfig::SecureDnsMode::OFF,
+                host_resolver_.last_secure_dns_mode_override().value());
     }
   }
 }
@@ -397,11 +456,11 @@ TEST_F(SSLConnectJobTest, DirectCertError) {
   test_delegate.StartJobExpectingResult(ssl_connect_job.get(),
                                         ERR_CERT_COMMON_NAME_INVALID,
                                         false /* expect_sync_result */);
-  ClientSocketHandle handle;
-  ssl_connect_job->GetAdditionalErrorState(&handle);
-  EXPECT_TRUE(handle.is_ssl_error());
-  ASSERT_EQ(1u, handle.connection_attempts().size());
-  EXPECT_THAT(handle.connection_attempts()[0].result,
+  EXPECT_TRUE(ssl_connect_job->IsSSLError());
+  ConnectionAttempts connection_attempts =
+      ssl_connect_job->GetConnectionAttempts();
+  ASSERT_EQ(1u, connection_attempts.size());
+  EXPECT_THAT(connection_attempts[0].result,
               test::IsError(ERR_CERT_COMMON_NAME_INVALID));
   CheckConnectTimesSet(ssl_connect_job->connect_timing());
 }
@@ -419,11 +478,10 @@ TEST_F(SSLConnectJobTest, DirectSSLError) {
   test_delegate.StartJobExpectingResult(ssl_connect_job.get(),
                                         ERR_SSL_PROTOCOL_ERROR,
                                         false /* expect_sync_result */);
-  ClientSocketHandle handle;
-  ssl_connect_job->GetAdditionalErrorState(&handle);
-  EXPECT_TRUE(handle.is_ssl_error());
-  ASSERT_EQ(1u, handle.connection_attempts().size());
-  EXPECT_THAT(handle.connection_attempts()[0].result,
+  ConnectionAttempts connection_attempts =
+      ssl_connect_job->GetConnectionAttempts();
+  ASSERT_EQ(1u, connection_attempts.size());
+  EXPECT_THAT(connection_attempts[0].result,
               test::IsError(ERR_SSL_PROTOCOL_ERROR));
 }
 
@@ -476,11 +534,11 @@ TEST_F(SSLConnectJobTest, SOCKSFail) {
     test_delegate.StartJobExpectingResult(ssl_connect_job.get(),
                                           ERR_PROXY_CONNECTION_FAILED,
                                           io_mode == SYNCHRONOUS);
+    EXPECT_FALSE(ssl_connect_job->IsSSLError());
 
-    ClientSocketHandle handle;
-    ssl_connect_job->GetAdditionalErrorState(&handle);
-    EXPECT_FALSE(handle.is_ssl_error());
-    EXPECT_EQ(0u, handle.connection_attempts().size());
+    ConnectionAttempts connection_attempts =
+        ssl_connect_job->GetConnectionAttempts();
+    EXPECT_EQ(0u, connection_attempts.size());
   }
 }
 
@@ -577,10 +635,6 @@ TEST_F(SSLConnectJobTest, SOCKSHasEstablishedConnection) {
 
 TEST_F(SSLConnectJobTest, SOCKSRequestPriority) {
   host_resolver_.set_ondemand_mode(true);
-  // Make resolution eventually fail, so old jobs can easily be removed from the
-  // socket pool.
-  host_resolver_.rules()->AddSimulatedFailure(
-      socks_socket_params_->transport_params()->destination().host());
   for (int initial_priority = MINIMUM_PRIORITY;
        initial_priority <= MAXIMUM_PRIORITY; ++initial_priority) {
     SCOPED_TRACE(initial_priority);
@@ -605,12 +659,6 @@ TEST_F(SSLConnectJobTest, SOCKSRequestPriority) {
       ssl_connect_job->ChangePriority(
           static_cast<RequestPriority>(initial_priority));
       EXPECT_EQ(initial_priority, host_resolver_.request_priority(request_id));
-
-      // Complete the resolution, which should result in destroying the
-      // connecting socket.
-      host_resolver_.ResolveAllPending();
-      ASSERT_THAT(test_delegate.WaitForResult(),
-                  test::IsError(ERR_PROXY_CONNECTION_FAILED));
     }
   }
 }
@@ -630,10 +678,10 @@ TEST_F(SSLConnectJobTest, HttpProxyFail) {
                                           ERR_PROXY_CONNECTION_FAILED,
                                           io_mode == SYNCHRONOUS);
 
-    ClientSocketHandle handle;
-    ssl_connect_job->GetAdditionalErrorState(&handle);
-    EXPECT_FALSE(handle.is_ssl_error());
-    EXPECT_EQ(0u, handle.connection_attempts().size());
+    EXPECT_FALSE(ssl_connect_job->IsSSLError());
+    ConnectionAttempts connection_attempts =
+        ssl_connect_job->GetConnectionAttempts();
+    EXPECT_EQ(0u, connection_attempts.size());
   }
 }
 
@@ -660,9 +708,6 @@ TEST_F(SSLConnectJobTest, HttpProxyAuthChallenge) {
   socket_factory_.AddSocketDataProvider(&data);
   SSLSocketDataProvider ssl(ASYNC, OK);
   socket_factory_.AddSSLSocketDataProvider(&ssl);
-
-  ClientSocketHandle handle;
-  TestCompletionCallback callback;
 
   TestConnectJobDelegate test_delegate;
   std::unique_ptr<ConnectJob> ssl_connect_job =
@@ -722,10 +767,6 @@ TEST_F(SSLConnectJobTest, HttpProxyAuthWithCachedCredentials) {
 
 TEST_F(SSLConnectJobTest, HttpProxyRequestPriority) {
   host_resolver_.set_ondemand_mode(true);
-  // Make resolution eventually fail, so old jobs can easily be removed from the
-  // socket pool.
-  host_resolver_.rules()->AddSimulatedFailure(
-      socks_socket_params_->transport_params()->destination().host());
   for (int initial_priority = MINIMUM_PRIORITY;
        initial_priority <= MAXIMUM_PRIORITY; ++initial_priority) {
     SCOPED_TRACE(initial_priority);
@@ -750,12 +791,6 @@ TEST_F(SSLConnectJobTest, HttpProxyRequestPriority) {
       ssl_connect_job->ChangePriority(
           static_cast<RequestPriority>(initial_priority));
       EXPECT_EQ(initial_priority, host_resolver_.request_priority(request_id));
-
-      // Complete the resolution, which should result in destroying the
-      // connecting socket.
-      host_resolver_.ResolveAllPending();
-      ASSERT_THAT(test_delegate.WaitForResult(),
-                  test::IsError(ERR_PROXY_CONNECTION_FAILED));
     }
   }
 }
@@ -788,9 +823,6 @@ TEST_F(SSLConnectJobTest, HttpProxyAuthHasEstablishedConnection) {
   socket_factory_.AddSocketDataProvider(&data);
   SSLSocketDataProvider ssl(ASYNC, OK);
   socket_factory_.AddSSLSocketDataProvider(&ssl);
-
-  ClientSocketHandle handle;
-  TestCompletionCallback callback;
 
   TestConnectJobDelegate test_delegate;
   std::unique_ptr<ConnectJob> ssl_connect_job =
@@ -884,9 +916,6 @@ TEST_F(SSLConnectJobTest,
   socket_factory_.AddSocketDataProvider(&data2);
   SSLSocketDataProvider ssl(ASYNC, OK);
   socket_factory_.AddSSLSocketDataProvider(&ssl);
-
-  ClientSocketHandle handle;
-  TestCompletionCallback callback;
 
   TestConnectJobDelegate test_delegate;
   std::unique_ptr<ConnectJob> ssl_connect_job =

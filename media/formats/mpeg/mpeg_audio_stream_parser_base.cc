@@ -211,7 +211,7 @@ int MPEGAudioStreamParserBase::ParseFrame(const uint8_t* data,
 
   if (!config_.IsValidConfig()) {
     config_.Initialize(audio_codec_, kSampleFormatF32, channel_layout,
-                       sample_rate, extra_data, Unencrypted(),
+                       sample_rate, extra_data, EncryptionScheme::kUnencrypted,
                        base::TimeDelta(), codec_delay_);
     if (audio_codec_ == kCodecAAC)
       config_.disable_discard_decoder_delay();
@@ -225,7 +225,9 @@ int MPEGAudioStreamParserBase::ParseFrame(const uint8_t* data,
 
     std::unique_ptr<MediaTracks> media_tracks(new MediaTracks());
     if (config_.IsValidConfig()) {
-      media_tracks->AddAudioTrack(config_, kMpegAudioTrackId, "main", "", "");
+      media_tracks->AddAudioTrack(config_, kMpegAudioTrackId,
+                                  MediaTrack::Kind("main"), MediaTrack::Label(),
+                                  MediaTrack::Language());
     }
     if (!config_cb_.Run(std::move(media_tracks), TextTrackConfigMap()))
       return -1;

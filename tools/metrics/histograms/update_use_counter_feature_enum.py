@@ -9,6 +9,8 @@ snippet to put in uma.py of Chromium Dashboard. Make sure that you review the
 output for correctness.
 """
 
+from __future__ import print_function
+
 import optparse
 import os
 import sys
@@ -20,7 +22,7 @@ from update_histogram_enum import UpdateHistogramEnum
 def PrintEnumForDashboard(enum_dict):
   """Prints enum_items formatted for use in uma.py of Chromium dashboard."""
   for key in sorted(enum_dict.iterkeys()):
-    print '  %d: \'%s\',' % (key, enum_dict[key])
+    print('  %d: \'%s\',' % (key, enum_dict[key]))
 
 
 if __name__ == '__main__':

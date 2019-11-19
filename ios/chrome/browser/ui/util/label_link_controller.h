@@ -52,6 +52,12 @@ class GURL;
 
 // Adds a link to the controlled label at |range| in the label's text, which
 // will call the receiver's action block when tapped, passing in |url|.
+// |accessibilityID| is set to the button over the link.
+- (void)addLinkWithRange:(NSRange)range
+                     url:(GURL)url
+         accessibilityID:(NSString*)accessibilityID;
+
+// Calls |[self addLinkWithRange:range url:url accessibilityID:nil]|.
 - (void)addLinkWithRange:(NSRange)range url:(GURL)url;
 
 @end

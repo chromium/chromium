@@ -1,0 +1,68 @@
+This is a testharness.js-based test.
+Found 64 tests; 60 PASS, 4 FAIL, 0 TIMEOUT, 0 NOTRUN.
+FAIL The ApplicationCache interface object should be exposed assert_true: expected true got false
+PASS The WorkerGlobalScope interface object should be exposed
+PASS The SharedWorkerGlobalScope interface object should be exposed
+FAIL The Worker interface object should be exposed assert_true: expected true got false
+FAIL The SharedWorker interface object should be exposed assert_true: expected true got false
+PASS The MessagePort interface object should be exposed
+PASS The MessageEvent interface object should be exposed
+PASS The WorkerNavigator interface object should be exposed
+PASS The MessageChannel interface object should be exposed
+PASS The WorkerLocation interface object should be exposed
+PASS The ImageData interface object should be exposed
+PASS The ImageBitmap interface object should be exposed
+PASS The CanvasGradient interface object should be exposed
+PASS The CanvasPattern interface object should be exposed
+FAIL The CanvasPath interface object should be exposed assert_true: expected true got false
+PASS The Path2D interface object should be exposed
+PASS The PromiseRejectionEvent interface object should be exposed
+PASS The EventSource interface object should be exposed
+PASS The WebSocket interface object should be exposed
+PASS The CloseEvent interface object should be exposed
+PASS The BroadcastChannel interface object should be exposed
+PASS The ArrayBuffer interface object should be exposed
+PASS The Int8Array interface object should be exposed
+PASS The Uint8Array interface object should be exposed
+PASS The Uint8ClampedArray interface object should be exposed
+PASS The Int16Array interface object should be exposed
+PASS The Uint16Array interface object should be exposed
+PASS The Int32Array interface object should be exposed
+PASS The Uint32Array interface object should be exposed
+PASS The Float32Array interface object should be exposed
+PASS The Float64Array interface object should be exposed
+PASS The DataView interface object should be exposed
+PASS The XMLHttpRequestEventTarget interface object should be exposed
+PASS The XMLHttpRequestUpload interface object should be exposed
+PASS The XMLHttpRequest interface object should be exposed
+PASS The ProgressEvent interface object should be exposed
+PASS The FormData interface object should be exposed
+PASS The URL interface object should be exposed
+PASS The URLSearchParams interface object should be exposed
+PASS The File interface object should be exposed
+PASS The Blob interface object should be exposed
+PASS The FileList interface object should be exposed
+PASS The FileReader interface object should be exposed
+PASS The FileReaderSync interface object should be exposed
+PASS The EventTarget interface object should be exposed
+PASS The ErrorEvent interface object should be exposed
+PASS The Event interface object should be exposed
+PASS The CustomEvent interface object should be exposed
+PASS The DOMException interface object should be exposed
+PASS The ReadableStream interface object should be exposed
+PASS The WritableStream interface object should be exposed
+PASS The ByteLengthQueuingStrategy interface object should be exposed
+PASS The CountQueuingStrategy interface object should be exposed
+PASS The IDBRequest interface object should be exposed
+PASS The IDBOpenDBRequest interface object should be exposed
+PASS The IDBVersionChangeEvent interface object should be exposed
+PASS The IDBFactory interface object should be exposed
+PASS The IDBDatabase interface object should be exposed
+PASS The IDBObjectStore interface object should be exposed
+PASS The IDBIndex interface object should be exposed
+PASS The IDBKeyRange interface object should be exposed
+PASS The IDBCursor interface object should be exposed
+PASS The IDBCursorWithValue interface object should be exposed
+PASS The IDBTransaction interface object should be exposed
+Harness: the test ran to completion.
+

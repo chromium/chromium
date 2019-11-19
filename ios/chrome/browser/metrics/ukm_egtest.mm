@@ -17,12 +17,10 @@
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui.h"
 #import "ios/chrome/browser/ui/authentication/signin_earlgrey_utils.h"
-#import "ios/chrome/browser/ui/tab_grid/tab_grid_egtest_util.h"
+#import "ios/chrome/browser/ui/settings/google_services/google_services_settings_view_controller.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
-#import "ios/chrome/test/app/sync_test_util.h"
-#import "ios/chrome/test/app/tab_test_util.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -30,7 +28,6 @@
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
-#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -40,14 +37,13 @@
 using chrome_test_util::AccountsSyncButton;
 using chrome_test_util::ButtonWithAccessibilityLabel;
 using chrome_test_util::ButtonWithAccessibilityLabelId;
-using chrome_test_util::ClearBrowsingDataCollectionView;
-using chrome_test_util::GetIncognitoTabCount;
-using chrome_test_util::IsIncognitoMode;
-using chrome_test_util::IsSyncInitialized;
+using chrome_test_util::ClearBrowsingDataButton;
+using chrome_test_util::ClearBrowsingDataCell;
+using chrome_test_util::ConfirmClearBrowsingDataButton;
+using chrome_test_util::GoogleServicesSettingsButton;
 using chrome_test_util::SettingsAccountButton;
 using chrome_test_util::SettingsDoneButton;
 using chrome_test_util::SettingsMenuPrivacyButton;
-using chrome_test_util::SignOutAccountsButton;
 using chrome_test_util::SyncSwitchCell;
 using chrome_test_util::TurnSyncSwitchOn;
 
@@ -70,7 +66,7 @@ class UkmEGTestHelper {
 
   static bool HasDummySource(ukm::SourceId source_id) {
     auto* service = ukm_service();
-    return service && base::ContainsKey(service->sources(), source_id);
+    return service && base::Contains(service->sources(), source_id);
   }
 
   static void RecordDummySource(ukm::SourceId source_id) {
@@ -98,15 +94,6 @@ bool g_metrics_enabled = false;
 // Constant for timeout while waiting for asynchronous sync and UKM operations.
 const NSTimeInterval kSyncUKMOperationsTimeout = 10.0;
 
-void AssertSyncInitialized(bool is_initialized) {
-  ConditionBlock condition = ^{
-    return IsSyncInitialized() == is_initialized;
-  };
-  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
-                 kSyncUKMOperationsTimeout, condition),
-             @"Failed to assert whether Sync was initialized or not.");
-}
-
 void AssertUKMEnabled(bool is_enabled) {
   ConditionBlock condition = ^{
     return metrics::UkmEGTestHelper::ukm_enabled() == is_enabled;
@@ -116,41 +103,32 @@ void AssertUKMEnabled(bool is_enabled) {
              @"Failed to assert whether UKM was enabled or not.");
 }
 
-// Matcher for the Clear Browsing Data cell on the Privacy screen.
-id<GREYMatcher> ClearBrowsingDataCell() {
-  return ButtonWithAccessibilityLabelId(IDS_IOS_CLEAR_BROWSING_DATA_TITLE);
-}
-// Matcher for the clear browsing data button on the clear browsing data panel.
-id<GREYMatcher> ClearBrowsingDataButton() {
-  return ButtonWithAccessibilityLabelId(IDS_IOS_CLEAR_BUTTON);
-}
-
 void ClearBrowsingData() {
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGreyUI tapSettingsMenuButton:SettingsMenuPrivacyButton()];
   [ChromeEarlGreyUI tapPrivacyMenuButton:ClearBrowsingDataCell()];
   [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:ClearBrowsingDataButton()];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                          ConfirmClearBrowsingDataButton()]
+  [[EarlGrey selectElementWithMatcher:ConfirmClearBrowsingDataButton()]
       performAction:grey_tap()];
 
-  // Before returning, make sure that the top of the Clear Browsing Data
-  // settings screen is visible to match the state at the start of the method.
-  [[EarlGrey selectElementWithMatcher:ClearBrowsingDataCollectionView()]
-      performAction:grey_scrollToContentEdge(kGREYContentEdgeTop)];
+  // Wait until activity indicator modal is cleared, meaning clearing browsing
+  // data has been finished.
+  [[GREYUIThreadExecutor sharedInstance] drainUntilIdle];
+
   [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
       performAction:grey_tap()];
 }
 
 void OpenNewIncognitoTab() {
-  NSUInteger incognito_tab_count = GetIncognitoTabCount();
+  NSUInteger incognito_tab_count = [ChromeEarlGrey incognitoTabCount];
   [ChromeEarlGrey openNewIncognitoTab];
   [ChromeEarlGrey waitForIncognitoTabCount:(incognito_tab_count + 1)];
-  GREYAssert(IsIncognitoMode(), @"Failed to switch to incognito mode.");
+  GREYAssert([ChromeEarlGrey isIncognitoMode],
+             @"Failed to switch to incognito mode.");
 }
 
 void CloseCurrentIncognitoTab() {
-  NSUInteger incognito_tab_count = GetIncognitoTabCount();
+  NSUInteger incognito_tab_count = [ChromeEarlGrey incognitoTabCount];
   [ChromeEarlGrey closeCurrentTab];
   [ChromeEarlGrey waitForIncognitoTabCount:(incognito_tab_count - 1)];
 }
@@ -166,11 +144,12 @@ void CloseAllIncognitoTabs() {
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridDoneButton()]
       performAction:grey_tap()];
-  GREYAssert(!IsIncognitoMode(), @"Failed to switch to normal mode.");
+  GREYAssert(![ChromeEarlGrey isIncognitoMode],
+             @"Failed to switch to normal mode.");
 }
 
 void OpenNewRegularTab() {
-  NSUInteger tab_count = chrome_test_util::GetMainTabCount();
+  NSUInteger tab_count = [ChromeEarlGrey mainTabCount];
   [ChromeEarlGrey openNewTab];
   [ChromeEarlGrey waitForMainTabCount:(tab_count + 1)];
 }
@@ -199,7 +178,7 @@ void SignOut() {
   [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
       performAction:grey_tap()];
 
-  [SigninEarlGreyUtils assertSignedOut];
+  [SigninEarlGreyUtils checkSignedOut];
 }
 
 }  // namespace
@@ -213,7 +192,7 @@ void SignOut() {
 
 + (void)setUp {
   [super setUp];
-  if (!base::FeatureList::IsEnabled(ukm::kUkmFeature)) {
+  if (![ChromeEarlGrey isUKMEnabled]) {
     // ukm::kUkmFeature feature is not enabled. You need to pass
     // --enable-features=Ukm command line argument in order to run this test.
     DCHECK(false);
@@ -223,12 +202,18 @@ void SignOut() {
 - (void)setUp {
   [super setUp];
 
-  AssertSyncInitialized(false);
+  [ChromeEarlGrey waitForSyncInitialized:NO
+                             syncTimeout:kSyncUKMOperationsTimeout];
   AssertUKMEnabled(false);
 
-  // Enable sync.
+  // Sign in to Chrome and turn sync on.
+  //
+  // Note: URL-keyed anonymized data collection is turned on as part of the
+  // flow to Sign in to Chrome and Turn sync on. This matches the main user
+  // flow that enables UKM.
   [SigninEarlGreyUI signinWithIdentity:[SigninEarlGreyUtils fakeIdentity1]];
-  AssertSyncInitialized(true);
+  [ChromeEarlGrey waitForSyncInitialized:YES
+                             syncTimeout:kSyncUKMOperationsTimeout];
 
   // Grant metrics consent and update MetricsServicesManager.
   GREYAssert(!g_metrics_enabled, @"Unpaired set/reset of user consent.");
@@ -241,7 +226,8 @@ void SignOut() {
 }
 
 - (void)tearDown {
-  AssertSyncInitialized(true);
+  [ChromeEarlGrey waitForSyncInitialized:YES
+                             syncTimeout:kSyncUKMOperationsTimeout];
   AssertUKMEnabled(true);
 
   // Revoke metrics consent and update MetricsServicesManager.
@@ -253,10 +239,15 @@ void SignOut() {
       nullptr);
   AssertUKMEnabled(false);
 
-  // Disable sync.
+  // Sign out of Chrome and Turn sync off.
+  //
+  // Note: URL-keyed anonymized data collection is turned off as part of the
+  // flow to Sign out of Chrome and Turn sync off. This matchers the main user
+  // flow that disables UKM.
   SignOut();
-  AssertSyncInitialized(false);
-  chrome_test_util::ClearSyncServerData();
+  [ChromeEarlGrey waitForSyncInitialized:NO
+                             syncTimeout:kSyncUKMOperationsTimeout];
+  [ChromeEarlGrey clearSyncServerData];
 
   [super tearDown];
 }
@@ -292,8 +283,8 @@ void SignOut() {
 // Make sure opening a real tab after Incognito doesn't enable UKM.
 - (void)testIncognitoPlusRegular {
   uint64_t original_client_id = metrics::UkmEGTestHelper::client_id();
-  chrome_test_util::CloseAllTabs();
-  [ChromeEarlGrey waitForMainTabCount:(0)];
+  [ChromeEarlGrey closeAllTabs];
+  [ChromeEarlGrey waitForMainTabCount:0];
 
   OpenNewIncognitoTab();
   AssertUKMEnabled(false);
@@ -347,36 +338,26 @@ void SignOut() {
   uint64_t original_client_id = metrics::UkmEGTestHelper::client_id();
 
   [ChromeEarlGreyUI openSettingsMenu];
-  // Open accounts settings, then sync settings.
-  [[EarlGrey selectElementWithMatcher:SettingsAccountButton()]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:AccountsSyncButton()]
-      performAction:grey_tap()];
-  // Toggle "Sync Everything" then "History" switches off.
-  [[EarlGrey selectElementWithMatcher:SyncSwitchCell(
-                                          l10n_util::GetNSString(
-                                              IDS_IOS_SYNC_EVERYTHING_TITLE),
-                                          YES)]
-      performAction:TurnSyncSwitchOn(NO)];
-  [[EarlGrey
-      selectElementWithMatcher:SyncSwitchCell(l10n_util::GetNSString(
-                                                  IDS_SYNC_DATATYPE_TYPED_URLS),
-                                              YES)]
-      performAction:TurnSyncSwitchOn(NO)];
+    // Open Sync and Google services settings
+    [ChromeEarlGreyUI tapSettingsMenuButton:GoogleServicesSettingsButton()];
+    // Toggle "Make searches and browsing better" switch off.
+
+    [[[EarlGrey
+        selectElementWithMatcher:chrome_test_util::SettingsSwitchCell(
+                                     @"betterSearchAndBrowsingItem_switch",
+                                     YES)]
+           usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
+        onElementWithMatcher:grey_accessibilityID(
+                                 kGoogleServicesSettingsViewIdentifier)]
+        performAction:chrome_test_util::TurnSettingsSwitchOn(NO)];
 
   AssertUKMEnabled(false);
 
-  // Toggle "History" then "Sync Everything" switches on.
-  [[EarlGrey
-      selectElementWithMatcher:SyncSwitchCell(l10n_util::GetNSString(
-                                                  IDS_SYNC_DATATYPE_TYPED_URLS),
-                                              NO)]
-      performAction:TurnSyncSwitchOn(YES)];
-  [[EarlGrey selectElementWithMatcher:SyncSwitchCell(
-                                          l10n_util::GetNSString(
-                                              IDS_IOS_SYNC_EVERYTHING_TITLE),
-                                          NO)]
-      performAction:TurnSyncSwitchOn(YES)];
+    // Toggle "Make searches and browsing better" switch on.
+    [[EarlGrey
+        selectElementWithMatcher:chrome_test_util::SettingsSwitchCell(
+                                     @"betterSearchAndBrowsingItem_switch", NO)]
+        performAction:chrome_test_util::TurnSettingsSwitchOn(YES)];
 
   AssertUKMEnabled(true);
   // Client ID should have been reset.
@@ -388,49 +369,6 @@ void SignOut() {
 }
 
 // testMultiDisableSync not needed, since there can't be multiple profiles.
-
-// Make sure that UKM is disabled when a secondary passphrase is used.
-- (void)testSecondaryPassphrase {
-  uint64_t original_client_id = metrics::UkmEGTestHelper::client_id();
-
-  [ChromeEarlGreyUI openSettingsMenu];
-  // Open accounts settings, then sync settings.
-  [[EarlGrey selectElementWithMatcher:SettingsAccountButton()]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:AccountsSyncButton()]
-      performAction:grey_tap()];
-  // Open sync encryption menu.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"kSettingsSyncId")]
-      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(
-                                          l10n_util::GetNSStringWithFixup(
-                                              IDS_IOS_SYNC_ENCRYPTION_TITLE))]
-      performAction:grey_tap()];
-  // Select passphrase encryption.
-  [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabelId(
-                                          IDS_SYNC_FULL_ENCRYPTION_DATA)]
-      performAction:grey_tap()];
-  // Type and confirm passphrase, then submit.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityValue(@"Passphrase")]
-      performAction:grey_replaceText(@"mypassphrase")];
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityValue(@"Confirm passphrase")]
-      performAction:grey_replaceText(@"mypassphrase")];
-
-  AssertUKMEnabled(false);
-  // Client ID should have been reset.
-  GREYAssert(original_client_id != metrics::UkmEGTestHelper::client_id(),
-             @"Client ID was not reset.");
-
-  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
-      performAction:grey_tap()];
-
-  // Reset sync back to original state.
-  SignOut();
-  chrome_test_util::ClearSyncServerData();
-  [SigninEarlGreyUI signinWithIdentity:[SigninEarlGreyUtils fakeIdentity1]];
-  AssertUKMEnabled(true);
-}
 
 // Make sure that UKM is disabled when sync is not enabled.
 - (void)testSingleSyncSignout {

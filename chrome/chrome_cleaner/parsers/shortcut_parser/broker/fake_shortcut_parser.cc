@@ -10,7 +10,7 @@
 #include "base/strings/string16.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/win/scoped_handle.h"
-#include "chrome/chrome_cleaner/interfaces/parser_interface.mojom.h"
+#include "chrome/chrome_cleaner/mojom/parser_interface.mojom.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 
 namespace chrome_cleaner {

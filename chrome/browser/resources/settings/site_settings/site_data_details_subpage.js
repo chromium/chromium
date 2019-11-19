@@ -8,7 +8,6 @@
 const categoryLabels = {
   app_cache: loadTimeData.getString('cookieAppCache'),
   cache_storage: loadTimeData.getString('cookieCacheStorage'),
-  channel_id: loadTimeData.getString('cookieChannelId'),
   database: loadTimeData.getString('cookieDatabaseStorage'),
   file_system: loadTimeData.getString('cookieFileSystem'),
   flash_lso: loadTimeData.getString('cookieFlashLso'),

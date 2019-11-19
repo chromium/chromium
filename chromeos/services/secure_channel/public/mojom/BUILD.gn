@@ -6,7 +6,6 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
   sources = [
-    "constants.mojom",
     "secure_channel.mojom",
   ]
 

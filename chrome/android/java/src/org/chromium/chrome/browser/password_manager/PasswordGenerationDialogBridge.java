@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.password_manager;
 
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.ChromeActivity;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -49,14 +50,22 @@ public class PasswordGenerationDialogBridge {
         if (mNativePasswordGenerationDialogViewAndroid == 0) return;
 
         if (accepted) {
-            nativePasswordAccepted(mNativePasswordGenerationDialogViewAndroid, mGeneratedPassword);
+            PasswordGenerationDialogBridgeJni.get().passwordAccepted(
+                    mNativePasswordGenerationDialogViewAndroid, PasswordGenerationDialogBridge.this,
+                    mGeneratedPassword);
         } else {
-            nativePasswordRejected(mNativePasswordGenerationDialogViewAndroid);
+            PasswordGenerationDialogBridgeJni.get().passwordRejected(
+                    mNativePasswordGenerationDialogViewAndroid,
+                    PasswordGenerationDialogBridge.this);
         }
         mPasswordGenerationDialog.dismissDialog(DialogDismissalCause.ACTION_ON_CONTENT);
     }
 
-    private native void nativePasswordAccepted(
-            long nativePasswordGenerationDialogViewAndroid, String generatedPassword);
-    private native void nativePasswordRejected(long nativePasswordGenerationDialogViewAndroid);
+    @NativeMethods
+    interface Natives {
+        void passwordAccepted(long nativePasswordGenerationDialogViewAndroid,
+                PasswordGenerationDialogBridge caller, String generatedPassword);
+        void passwordRejected(long nativePasswordGenerationDialogViewAndroid,
+                PasswordGenerationDialogBridge caller);
+    }
 }

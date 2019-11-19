@@ -15,7 +15,7 @@
   padding-top: 4px;
 }
 
-.content[popupStyle] {
+#description {
   padding: 4px 0 16px 0;
 }
 
@@ -35,6 +35,8 @@
 
 cr-expand-button {
   padding-inline-end: 8px;
+  /* Overrides default value 12px for cr-icon-button */
+  --cr-section-vertical-padding: 0;
 }
 
 .toggle {

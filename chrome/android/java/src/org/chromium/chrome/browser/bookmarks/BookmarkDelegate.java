@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.bookmarks;
 
 import org.chromium.chrome.browser.favicon.LargeIconBridge;
+import org.chromium.chrome.browser.ui.widget.dragreorder.DragStateDelegate;
 import org.chromium.chrome.browser.widget.selection.SelectableListLayout;
 import org.chromium.chrome.browser.widget.selection.SelectionDelegate;
 import org.chromium.components.bookmarks.BookmarkId;
@@ -98,4 +99,35 @@ interface BookmarkDelegate {
      * @return LargeIconBridge instance. By sharing the instance, we can also share the cache.
      */
     LargeIconBridge getLargeIconBridge();
+
+    /**
+     * @return The drag state delegate that is associated with this list of bookmarks.
+     */
+    DragStateDelegate getDragStateDelegate();
+
+    /**
+     * Move a bookmark one position down within its folder.
+     *
+     * @param bookmarkId The bookmark to move.
+     */
+    void moveDownOne(BookmarkId bookmarkId);
+
+    /**
+     * Move a bookmark one position up within its folder.
+     *
+     * @param bookmarkId The bookmark to move.
+     */
+    void moveUpOne(BookmarkId bookmarkId);
+
+    /**
+     * Notified when the menu is opened for a bookmark row displayed in the UI.
+     */
+    void onBookmarkItemMenuOpened();
+
+    /**
+     * Scroll the bookmarks list such that bookmarkId is shown in the view, and highlight it.
+     *
+     * @param bookmarkId The BookmarkId of the bookmark of interest.
+     */
+    void highlightBookmark(BookmarkId bookmarkId);
 }

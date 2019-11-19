@@ -6,8 +6,6 @@ console-format-classes.js:30 Error: custom error with link www.chromium.org
     source-code
       console-message-anchor
         devtools-link
-      hidden console-message-badge
-        hide-badge-title
       console-message-text
         object-value-error source-code
           devtools-link
@@ -17,8 +15,6 @@ console-format-classes.js:30 (6) [1, empty × 2, 2, (...), empty]
     source-code
       console-message-anchor
         devtools-link
-      hidden console-message-badge
-        hide-badge-title
       console-message-text
         console-view-object-properties-section object-value-array source-code
           tree-outline-disclosure tree-outline-disclosure-hide-overflow
@@ -40,8 +36,6 @@ console-format-classes.js:30 {a: 1}
     source-code
       console-message-anchor
         devtools-link
-      hidden console-message-badge
-        hide-badge-title
       console-message-text
         console-view-object-properties-section object-value-object source-code
           tree-outline-disclosure tree-outline-disclosure-hide-overflow
@@ -59,8 +53,6 @@ console-format-classes.js:30 {str: "", nan: NaN, posInf: Infinity, negInf: -Infi
     source-code
       console-message-anchor
         devtools-link
-      hidden console-message-badge
-        hide-badge-title
       console-message-text
         console-view-object-properties-section object-value-object source-code
           tree-outline-disclosure tree-outline-disclosure-hide-overflow
@@ -86,8 +78,6 @@ console-format-classes.js:30 {null: null, undef: undefined, regexp: /^[regexp]$/
     source-code
       console-message-anchor
         devtools-link
-      hidden console-message-badge
-        hide-badge-title
       console-message-text
         console-view-object-properties-section object-value-object source-code
           tree-outline-disclosure tree-outline-disclosure-hide-overflow
@@ -111,8 +101,6 @@ console-format-classes.js:30 Proxy {a: 1}
     source-code
       console-message-anchor
         devtools-link
-      hidden console-message-badge
-        hide-badge-title
       console-message-text
         console-view-object-properties-section object-value-proxy source-code
           tree-outline-disclosure tree-outline-disclosure-hide-overflow
@@ -131,8 +119,6 @@ console-format-classes.js:30 HTMLAllCollection(4) [html, head, base, body]
     source-code
       console-message-anchor
         devtools-link
-      hidden console-message-badge
-        hide-badge-title
       console-message-text
         console-view-object-properties-section object-value-array source-code
           tree-outline-disclosure tree-outline-disclosure-hide-overflow
@@ -158,8 +144,6 @@ console-format-classes.js:34 (7) [Error: custom error with link www.chromium.or
     source-code
       console-message-anchor
         devtools-link
-      hidden console-message-badge
-        hide-badge-title
       console-message-text
         console-view-object-properties-section object-value-array source-code
           tree-outline-disclosure tree-outline-disclosure-hide-overflow

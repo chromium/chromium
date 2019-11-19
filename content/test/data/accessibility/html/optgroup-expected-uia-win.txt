@@ -1,0 +1,13 @@
+document
+++group
+++++listbox Selection.CanSelectMultiple=false Selection.IsSelectionRequired=false Value.IsReadOnly=false
+++++++group Name='Enabled'
+++++++option Name='One' SelectionItem.IsSelected=false
+++++++option Name='Two' SelectionItem.IsSelected=false
+++++++option Name='Three' SelectionItem.IsSelected=false
+++++++option Name='Four' SelectionItem.IsSelected=false
+++++++group Name='Disabled'
+++++++option Name='One' IsEnabled=false
+++++++option Name='Two' IsEnabled=false
+++++++option Name='Three' IsEnabled=false
+++++++option Name='Four' IsEnabled=false

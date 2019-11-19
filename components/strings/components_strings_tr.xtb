@@ -7,7 +7,9 @@
 <translation id="1021110881106174305">Kabul edilen kartlar</translation>
 <translation id="1032854598605920125">Saat yönünde döndür</translation>
 <translation id="1035334672863811645">Chrome'da oturum açın</translation>
+<translation id="1036348656032585052">Kapat</translation>
 <translation id="1038842779957582377">bilinmeyen ad</translation>
+<translation id="1039626062703039346">Chrome, Google Hesabınızı korumanıza ve şifrenizi değiştirmenize yardımcı olabilir. Bu işlem, Google'ın bu siteyle ilgili bilgilendirilmesini sağlar.</translation>
 <translation id="1050038467049342496">Diğer uygulamaları kapatın</translation>
 <translation id="1055184225775184556">Eklemeyi &amp;Geri Al</translation>
 <translation id="1056898198331236512">Uyarı</translation>
@@ -20,11 +22,11 @@
 <translation id="1086953900555227778">Index-5x8</translation>
 <translation id="1088860948719068836">Kart Üzerindeki Adı Ekleyin</translation>
 <translation id="1089439967362294234">Şifreyi Değiştir</translation>
+<translation id="1096545575934602868">Bu alanda en çok <ph name="MAX_ITEMS_LIMIT" /> giriş olabilir. Diğer tüm girişler silinecektir.</translation>
 <translation id="109743633954054152">Şifreleri Chrome ayarlarından yönetin</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> dilini daima çevir</translation>
 <translation id="1107591249535594099">İşaretlenirse Chrome, formları daha hızlı doldurma amacıyla kartınızın bir kopyasını bu cihazda depolar.</translation>
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> için izin seçin</translation>
-<translation id="1111153019813902504">Son yer işaretleri</translation>
 <translation id="1113869188872983271">Sıralama değişikliğini &amp;geri al</translation>
 <translation id="1125573121925420732">Web siteleri güvenliklerini güncellerken uyarılar yaygın olarak görülebilir. Yakında bu işlev iyileştirilecektir.</translation>
 <translation id="1126551341858583091">Yerel depolama alanındaki boyut <ph name="CRASH_SIZE" />.</translation>
@@ -35,10 +37,14 @@
 <translation id="1152921474424827756"><ph name="URL" /> sitesinin <ph name="BEGIN_LINK" />önbelleğe alınmış bir kopyasına<ph name="END_LINK" /> erişin</translation>
 <translation id="1156303062776767266">Yerel veya paylaşılan bir dosyayı görüntülüyorsunuz</translation>
 <translation id="1158211211994409885"><ph name="HOST_NAME" /> bağlantıyı beklenmedik şekilde kapattı.</translation>
+<translation id="115926840831309955">CVC'nizi kontrol edip tekrar deneyin veya son kullanma tarihini güncelleyin</translation>
 <translation id="1161325031994447685">Kablosuz ağa yeniden bağlanma</translation>
 <translation id="1165039591588034296">Hata</translation>
 <translation id="1175364870820465910">Ya&amp;zdır...</translation>
+<translation id="1175875016430184367">Sağda üçlü zımba</translation>
+<translation id="1178581264944972037">Duraklat</translation>
 <translation id="1181037720776840403">Kaldır</translation>
+<translation id="1186201132766001848">Şifreleri Kontrol Et</translation>
 <translation id="1197088940767939838">Turuncu</translation>
 <translation id="1201402288615127009">İleri</translation>
 <translation id="1201895884277373915">Bu siteden daha çok</translation>
@@ -49,8 +55,7 @@
 <translation id="1227224963052638717">Bilinmeyen politika.</translation>
 <translation id="1228893227497259893">Yanlış varlık tanımlayıcı</translation>
 <translation id="1232569758102978740">Adsız</translation>
-<translation id="124116460088058876">Diğer diller</translation>
-<translation id="1246987714874202335">Bitiş tarihini güncelleyin</translation>
+<translation id="1240347957665416060">Cihazınızın adı</translation>
 <translation id="1250759482327835220">Bir dahaki sefere daha hızlı ödeme yapmak için kartınızı ve fatura adresinizi Google Hesabınıza kaydedin.</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (senkronize edildi)</translation>
 <translation id="1256368399071562588">&lt;p&gt;Bir web sitesini ziyaret etmeye çalıştığınızda site açılmıyorsa sorunu düzeltmek için ilk olarak aşağıdaki sorun giderme adımlarını deneyin:&lt;/p&gt;
@@ -67,11 +72,15 @@
 <translation id="1292701964462482250">"Bilgisayarınızdaki yazılım, Chrome'un web'e güvenli bir şekilde bağlanmasını engelliyor" (yalnızca Windows bilgisayarlar)</translation>
 <translation id="1294154142200295408">Komut satırı varyasyonları</translation>
 <translation id="129553762522093515">Son kapatılan</translation>
+<translation id="1298536327547837046">Kötü Amaçlı Yazılım Tarama</translation>
 <translation id="129863573139666797"><ph name="BEGIN_LINK" />Çerezlerinizi temizlemeyi deneyin<ph name="END_LINK" /></translation>
+<translation id="1307966114820526988">Kullanımdan Kaldırılan Özellikler</translation>
+<translation id="1314509827145471431">Sağdan bağlı</translation>
 <translation id="1320233736580025032">Prc1 (Zarf)</translation>
 <translation id="132301787627749051">Panoda resmi ara</translation>
 <translation id="1323433172918577554">Daha Fazla Göster</translation>
 <translation id="132390688737681464">Adresleri Kaydet ve Doldur</translation>
+<translation id="1330449323196174374">Sola doğru iki kırımlı katlama</translation>
 <translation id="1333989956347591814">Etkinliğiniz şunlar tarafından <ph name="BEGIN_EMPHASIS" />yine de görülebilir<ph name="END_EMPHASIS" />:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />Ziyaret ettiğiniz web siteleri
@@ -82,37 +91,44 @@
 <translation id="1340482604681802745">Alınacağı adres</translation>
 <translation id="1348198688976932919">Girmekte olduğunuz site tehlikeli uygulamalar içeriyor</translation>
 <translation id="1348779747280417563">Adı onaylayın</translation>
+<translation id="1357195169723583938">Cihazı son zamanlarda kimin ne zaman kullandığı</translation>
+<translation id="1364822246244961190">Bu politika engellendiği için politikanın değeri yoksayılacak.</translation>
 <translation id="1374468813861204354">öneriler</translation>
 <translation id="1374692235857187091">Index-4x6 (Kartpostal)</translation>
 <translation id="1375198122581997741">Sürüm Hakkında</translation>
 <translation id="1376836354785490390">Daha Az Göster</translation>
 <translation id="1377321085342047638">Kart Numarası</translation>
+<translation id="1380591466760231819">Mektup katlama</translation>
 <translation id="138218114945450791">Açık Mavi</translation>
 <translation id="1382194467192730611">Yöneticiniz USB cihaza izin veriyor</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> hiç veri göndermedi.</translation>
-<translation id="140316286225361634"><ph name="ORIGIN" /> sitesi tüm istekleri için bir güvenlik politikasının
-    geçerli olmasını talep etti ve bu politika şu anda sitenin güvenli olmadığını
-    belirtiyor.</translation>
 <translation id="1405567553485452995">Açık Yeşil</translation>
 <translation id="1407135791313364759">Tümünü aç</translation>
+<translation id="1408787208417187241">Üstte üçlü tel zımba</translation>
 <translation id="1413809658975081374">Gizlilik hatası</translation>
-<translation id="14171126816530869"><ph name="LOCALITY" /> konumundaki <ph name="ORGANIZATION" /> kuruluşunun kimliği <ph name="ISSUER" /> tarafından doğrulandı.</translation>
 <translation id="1426410128494586442">Evet</translation>
 <translation id="1430915738399379752">Yazdır</translation>
+<translation id="1442386063175183758">Sağa doğru iki kırımlı katlama</translation>
+<translation id="1442987760062738829">Delik</translation>
 <translation id="1455413310270022028">Silgi</translation>
+<translation id="1462245070427461050">JIS B9</translation>
 <translation id="1463543813647160932">5x7</translation>
 <translation id="1472675084647422956">Daha fazla göster</translation>
+<translation id="1473183651233018052">JIS B10</translation>
 <translation id="147358896496811705">2A0</translation>
 <translation id="1484290072879560759">Gönderim Adresi Seç</translation>
+<translation id="1492194039220927094">Politikalar aktarılabilir:</translation>
 <translation id="1501859676467574491">Google Hesabımdaki kartları göster</translation>
 <translation id="1507202001669085618">&lt;p&gt;İnternete girmek için oturum açmanızı gerektiren bir kablosuz portal kullanıyorsanız bu hatayı görürsünüz.&lt;/p&gt;
     &lt;p&gt;Hatayı gidermek için, açmaya çalıştığınız sayfada &lt;strong&gt;Bağlan&lt;/strong&gt;'ı tıklayın.&lt;/p&gt;</translation>
+<translation id="1513706915089223971">Geçmiş girişlerin listesi</translation>
 <translation id="1517433312004943670">Telefon numarası gerekli</translation>
 <translation id="1517500485252541695">Kabul edilen kredi ve banka kartları</translation>
 <translation id="1519264250979466059">Oluşturma Tarihi</translation>
 <translation id="1521655867290435174">Google E-Tablolar</translation>
 <translation id="1527263332363067270">Bağlantı bekleniyor…</translation>
 <translation id="1529521330346880926">10x15 (Zarf)</translation>
+<translation id="1530707389502320859">Az önce girmeye çalıştığınız site sahte görünüyor. Saldırganlar bazen URL'de görülmesi zor ufak değişiklikler yaparak siteleri taklit ederler.</translation>
 <translation id="1531205177818805254">Exec</translation>
 <translation id="1532118530259321453">Bu sayfanın mesajı</translation>
 <translation id="153384715582417236">Şimdilik hepsi bu</translation>
@@ -124,21 +140,23 @@
 <translation id="1559572115229829303">&lt;p&gt;Cihazınızın tarih ve saati (<ph name="DATE_AND_TIME" />) yanlış olduğundan <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> alan adına gizli bir bağlantı kurulamadı.&lt;/p&gt;
 
       &lt;p&gt;Lütfen &lt;strong&gt;Ayarlar&lt;/strong&gt; uygulamasının &lt;strong&gt;Genel&lt;/strong&gt; bölümünden tarih ve saati ayarlayın.&lt;/p&gt;</translation>
+<translation id="1569487616857761740">Son kullanma tarihi girin</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">Bu web sayfasını görüntülerken bir hata oluştu.</translation>
+<translation id="1588438908519853928">Normal</translation>
 <translation id="1592005682883173041">Yerel Veri Erişimi</translation>
 <translation id="1594030484168838125">Seç</translation>
 <translation id="161042844686301425">Camgöbeği</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1623104350909869708">Bu sayfanın daha fazla iletişim kutusu oluşturmasını önle</translation>
 <translation id="16338877384480380">Architecture-B</translation>
-<translation id="1634051627998691300">Oturumu sonlandır</translation>
+<translation id="1638780421120290329">Kart kaydedilemiyor</translation>
 <translation id="1639239467298939599">Yükleniyor</translation>
 <translation id="1640180200866533862">Kullanıcı politikaları</translation>
 <translation id="1640244768702815859"><ph name="BEGIN_LINK" />Sitenin ana sayfasını ziyaret etmeyi deneyin<ph name="END_LINK" />.</translation>
 <translation id="1644574205037202324">Geçmiş</translation>
 <translation id="1645368109819982629">Desteklenmeyen protokol</translation>
-<translation id="1655462015569774233">{1,plural, =1{Bu sunucu, <ph name="DOMAIN" /> olduğunu kanıtlayamadı. Güvenlik sertifikasının süresi dün sona erdi. Bu durum, bir yanlış yapılandırmadan veya bağlantınıza müdahale eden bir saldırgandan kaynaklanıyor olabilir. Bilgisayarınızın saati geçerli olarak <ph name="CURRENT_DATE" /> tarihine ayarlı. Bu ayar doğru görünüyor mu? Değilse, sisteminizin saatini düzeltmeli ve sonra bu sayfayı yenilemelisiniz.}other{Bu sunucu, <ph name="DOMAIN" /> olduğunu kanıtlayamadı. Güvenlik sertifikası # gün önce sona erdi. Bu durum, bir yanlış yapılandırmadan veya bağlantınıza müdahale eden bir saldırgandan kaynaklanıyor olabilir. Bilgisayarınızın saati geçerli olarak <ph name="CURRENT_DATE" /> tarihine ayarlı. Bu ayar doğru görünüyor mu? Değilse, sisteminizin saatini düzeltmeli ve sonra bu sayfayı yenilemelisiniz.}}</translation>
+<translation id="1652415888492971589">JIS B8</translation>
 <translation id="1656489000284462475">Alma</translation>
 <translation id="1662550410081243962">Ödeme yöntemlerini kaydet ve doldur</translation>
 <translation id="1663943134801823270">Kartlar ve adresler Chrome'dan alınmaktadır. Bu bilgileri <ph name="BEGIN_LINK" />Ayarlar<ph name="END_LINK" />'dan yönetebilirsiniz.</translation>
@@ -151,27 +169,33 @@
 <translation id="1710259589646384581">OS</translation>
 <translation id="1715874602234207">F</translation>
 <translation id="1718029547804390981">Doküman, ek açıklama ilave edilemeyecek kadar büyük</translation>
-<translation id="1721312023322545264">Bu siteyi ziyaret etmek için <ph name="NAME" /> size izin vermelidir</translation>
 <translation id="1721424275792716183">* Zorunlu alan</translation>
 <translation id="1727741090716970331">Geçerli Kart Numarası Ekleyin</translation>
 <translation id="1728677426644403582">Bir web sayfasının kaynak kodunu görüntülüyorsunuz</translation>
 <translation id="173080396488393970">Bu kart türü desteklenmiyor</translation>
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Sistem yöneticisiyle iletişime geçmeyi deneyin.</translation>
+<translation id="1739107442478692187">Kullandığınız bir site veya uygulamada veri ihlali oluştu. Chrome, kayıtlı şifrelerinizi hemen kontrol etmenizi ve <ph name="ORIGIN" /> şifrenizi değiştirmenizi öneriyor.</translation>
 <translation id="1740951997222943430">Geçerli bir son kullanma ayı girin</translation>
+<translation id="1741613555002899862">DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" /> olduğunda, DnsOverHttpsTemplate belirtilmeli ve geçerli bir dize olmalıdır.</translation>
 <translation id="1743520634839655729">Gelecek sefer daha hızlı ödeme yapabilmek için kartınızı, adınızı ve fatura adresinizi Google hesabınıza kaydedin.</translation>
+<translation id="1743570585616704562">Tanınmadı</translation>
+<translation id="1745880797583122200">Tarayıcınız yönetilmektedir</translation>
 <translation id="17513872634828108">Açık sekmeler</translation>
 <translation id="1753706481035618306">Sayfa numarası</translation>
 <translation id="1763864636252898013">Bu sunucu <ph name="DOMAIN" /> olduğunu kanıtlayamadı. cihazınızın işletim sistemi, sunucunun güvenlik sertifikasına güvenmiyor. Bu durum, bir yanlış yapılandırmadan veya bağlantıya müdahale eden bir saldırgandan kaynaklanıyor olabilir.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Windows Ağ Teşhislerini çalıştırmayı deneyin<ph name="END_LINK" />.</translation>
+<translation id="1778646502362731194">JIS B0</translation>
 <translation id="1783075131180517613">Lütfen senkronizasyon parolanızı güncelleyin.</translation>
 <translation id="1787142507584202372">Açık sekmeleriniz burada görünür</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1803264062614276815">Kart Sahibinin Adı</translation>
 <translation id="1821930232296380041">Geçersiz istek veya istek parametreleri</translation>
+<translation id="1822540298136254167">Ziyaret ettiğiniz web siteleri ve bu sitelerde geçirdiğiniz zaman</translation>
 <translation id="1826516787628120939">Kontrol ediliyor</translation>
 <translation id="1834321415901700177">Bu site zararlı programlar içeriyor</translation>
+<translation id="1838374766361614909">Aramayı temizle</translation>
 <translation id="1839551713262164453">Politika değerlerini doğrulama işlemi hatalarla başarısız oldu</translation>
 <translation id="1842969606798536927">Ödeme</translation>
 <translation id="1871208020102129563">Proxy, bir .pac komut dosyası URL'sini değil, sabit proxy sunucuları kullanacak şekilde ayarlanır.</translation>
@@ -181,6 +205,9 @@
 <translation id="187918866476621466">Başlangıç sayfalarını aç</translation>
 <translation id="1883255238294161206">Listeyi daralt</translation>
 <translation id="1898423065542865115">Filtreleme</translation>
+<translation id="1901443836186977402">{1,plural, =1{Bu sunucu <ph name="DOMAIN" /> olduğunu kanıtlayamadı. Güvenlik sertifikasının süresi son bir gün içinde sona ermiş. Bu durum, yanlış yapılandırmadan veya bağlantınıza müdahale eden bir saldırgandan kaynaklanıyor olabilir. Bilgisayarınızın saati şu anda <ph name="CURRENT_DATE" /> olarak ayarlanmış. Doğru görünüyor mu? Görünmüyorsa sisteminizin saatini düzeltip ardından bu sayfayı yenilemelisiniz.}other{Bu sunucu <ph name="DOMAIN" /> olduğunu kanıtlayamadı. Güvenlik sertifikasının süresi # gün önce sona ermiş. Bu durum, yanlış yapılandırmadan veya bağlantınıza müdahale eden bir saldırgandan kaynaklanıyor olabilir. Bilgisayarınızın saati şu anda <ph name="CURRENT_DATE" /> olarak ayarlanmış. Doğru görünüyor mu? Görünmüyorsa sisteminizin saatini düzeltmeli ve sonra bu sayfayı yenilemelisiniz.}}</translation>
+<translation id="1914326953223720820">Sıkıştırma Açma Hizmeti</translation>
+<translation id="1915697529809968049">CVC yerine Touch ID kullanılsın mı?</translation>
 <translation id="1916770123977586577">Güncellenen ayarlarınızı bu siteye uygulamak için sayfayı yeniden yükleyin</translation>
 <translation id="1919345977826869612">Reklamlar</translation>
 <translation id="1919367280705858090">Belirli bir hata mesajıyla ilgili yardım alma</translation>
@@ -188,25 +215,24 @@
 <translation id="1927235823738766038">Kabul Edilen Kredi ve Banka Kartları</translation>
 <translation id="194030505837763158"><ph name="LINK" /> adresine git</translation>
 <translation id="1945968466830820669">Kuruluşunuzun hesabına erişimi kaybedebilir veya kimlik hırsızlığına maruz kalabilirsiniz. Chromium, şifrenizi hemen değiştirmenizi önerir.</translation>
+<translation id="1947454675006758438">Sağ üstte tel zımba</translation>
 <translation id="1948773908305951926">Kabul edilen ön ödemeli kartlar</translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> Yer İşaretleri</translation>
 <translation id="1973335181906896915">Serileştirme hatası</translation>
 <translation id="1974060860693918893">Gelişmiş</translation>
+<translation id="1974883374937189061">Google'a <ph name="BEGIN_WHITEPAPER_LINK" />ziyaret ettiğiniz bazı sitelerin URL'lerini, sınırlı sistem bilgisini ve bazı sayfa içeriklerini<ph name="END_WHITEPAPER_LINK" /> göndererek Chrome güvenliğini iyileştirmeye yardımcı olun. <ph name="PRIVACY_PAGE_LINK" /></translation>
 <translation id="1978555033938440688">Donanım Yazılımı Sürümü</translation>
 <translation id="1981206234434200693">Chrome'un tarama geçmişi verilerini temizleyin</translation>
+<translation id="1992331125980284532">JIS B3</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{ve 1 uygulama daha}other{ve # uygulama daha}}</translation>
 <translation id="2003709556000175978">Şifrenizi şimdi sıfırlayın</translation>
-<translation id="20053308747750172">Gittiğiniz sunucu (<ph name="ORIGIN" />) kendisine gelen tüm isteklere
-    bir güvenlik politikasının uygulanmasını talep etmişti. Ancak şimdi
-    geçersiz bir politika sunduğu için tarayıcı, <ph name="SITE" /> sitesiyle ilgili
-    isteğinizi yerine getiremiyor.</translation>
+<translation id="2003775180883135320">Üstte dörtlü delik</translation>
 <translation id="2025186561304664664">Proxy, otomatik yapılandırıldı değerine ayarlandı.</translation>
 <translation id="2030481566774242610">Şunu mu demek istediniz?: <ph name="LINK" /></translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Proxy'yi ve güvenlik duvarını kontrol etme<ph name="END_LINK" /></translation>
 <translation id="2053111141626950936"><ph name="LANGUAGE" /> dilindeki sayfalar çevrilmeyecek.</translation>
 <translation id="2053553514270667976">Posta kodu</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 öneri}other{# öneri}}</translation>
-<translation id="2068124040035837596">Hesabınız <ph name="ENROLLMENT_DOMAIN" /> tarafından yönetiliyor. Bu durumda yöneticiniz hesabınızı uzaktan yapılandırabilir.</translation>
 <translation id="2068663545051464999">Yüklenen Kilitlenme Raporu Kimliği <ph name="CRASH_ID" /> (Yerel Bağlam: <ph name="CRASH_LOCAL_ID" />)</translation>
 <translation id="2079545284768500474">Geri al</translation>
 <translation id="20817612488360358">Sistem proxy ayarları kullanılmak üzere ayarlandı, ancak açık bir proxy yapılandırması da belirtildi.</translation>
@@ -214,11 +240,18 @@
 <translation id="2091887806945687916">Ses</translation>
 <translation id="2094505752054353250">Alan adı uyuşmazlığı</translation>
 <translation id="2096368010154057602">Bölüm</translation>
+<translation id="2099652385553570808">Solda üçlü tel zımba</translation>
+<translation id="2100280972184758440">Şifrenizin güvenliği ihlal edildi</translation>
 <translation id="2102134110707549001">Güçlü Şifre Öner…</translation>
 <translation id="2108755909498034140">Bilgisayarınızı yeniden başlatın</translation>
 <translation id="2111256659903765347">Super-A</translation>
 <translation id="2113977810652731515">Kart</translation>
 <translation id="2114841414352855701"><ph name="POLICY_NAME" /> tarafından geçersiz kılındığı için yoksayıldı.</translation>
+<translation id="2119505898009119320">Verildiği kuruluş: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
+<translation id="2119867082804433120">Sağ altta delik</translation>
+<translation id="2124528555835617522">Kullandığınız bir site veya uygulamada veri ihlali oluştu. Chrome, kayıtlı şifrelerinizi hemen kontrol etmenizi öneriyor.</translation>
+<translation id="2129079103035905234">Hareket Sensörleri</translation>
+<translation id="2130448033692577677">Belirttiğiniz şablonlar, DnsOverHttpsMode politikası ayarlanmadığı için uygulanamayabilir.</translation>
 <translation id="213826338245044447">Mobil Yer İşaretleri</translation>
 <translation id="214556005048008348">Ödemeyi iptal et</translation>
 <translation id="2147827593068025794">Arka Plan Senkronizasyonu</translation>
@@ -232,29 +265,37 @@
 <translation id="2183608646556468874">Telefon Numarası</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 adres}other{# adres}}</translation>
 <translation id="2187317261103489799">Algıla (varsayılan)</translation>
+<translation id="2188375229972301266">Altta çoklu zımba</translation>
 <translation id="2202020181578195191">Geçerli bir son kullanma yılı girin</translation>
 <translation id="2212735316055980242">Politika bulunamadı</translation>
 <translation id="2213606439339815911">Girişler getiriliyor...</translation>
+<translation id="2215727959747642672">Dosya düzenleme</translation>
 <translation id="2218879909401188352">Şu anda <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> öğesini kullanan saldırganlar cihazınıza zarar verebilecek uygulamalar yükleyebilir, sizden habersiz mobil faturanıza ücretler ekleyebilir veya kişisel bilgilerinizi çalabilirler. <ph name="BEGIN_LEARN_MORE_LINK" />Daha fazla bilgi<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2224337661447660594">İnternet bağlantısı yok</translation>
 <translation id="2230458221926704099"><ph name="BEGIN_LINK" />Tanılama uygulamasını<ph name="END_LINK" /> kullanarak bağlantınızı düzeltin</translation>
 <translation id="2239100178324503013">Şimdi gönder</translation>
+<translation id="2248949050832152960">WebAuthn'u kullan</translation>
+<translation id="2250931979407627383">Solda kenar dikişi</translation>
 <translation id="225207911366869382">Bu değer bu politika için kullanımdan kaldırıldı.</translation>
+<translation id="2257315177824333709">Maalesef kartınız şu anda kaydedilemiyor</translation>
+<translation id="2258928405015593961">Gelecekte olan bir son kullanma tarihi girip tekrar deneyin</translation>
 <translation id="2262243747453050782">HTTP hatası</translation>
 <translation id="2263079731045660823">Kredi kartı otomatik doldurma bilgilerini Chrome ayarlarından güncelleyin</translation>
+<translation id="2267047181501709434">Kimliğiniz doğrulanıyor...</translation>
 <translation id="2270484714375784793">Telefon numarası</translation>
+<translation id="2277103315734023688">İleri Sar</translation>
 <translation id="2283340219607151381">Adresleri kaydet ve doldur</translation>
+<translation id="2289385804009217824">Kırp</translation>
 <translation id="2292556288342944218">İnternet erişiminiz engellendi</translation>
-<translation id="2294558542833290837">Başta açtığınız bağlantı normal değil</translation>
 <translation id="2297722699537546652">B5 (Zarf)</translation>
 <translation id="2310021320168182093">Chou2 (Zarf)</translation>
+<translation id="2315864634253056100">Bu sitenin adı <ph name="LOOKALIKE_DOMAIN" /> sitesinin adına benziyor. Saldırganlar bazen web adresinde görülmesi zor değişiklikler yaparak siteleri taklit ederler.</translation>
 <translation id="2316887270356262533">1 MB'tan az yer açar. Bir sonraki ziyaretinizde bazı siteler daha yavaş yüklenebilir.</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> için kullanıcı adı ve şifre gerekiyor.</translation>
 <translation id="2317583587496011522">Banka kartları kabul edilir.</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" /> için kullanım süresi sonu: <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337852623177822836">Ayar yöneticinizin kontrolü altındadır</translation>
 <translation id="2346319942568447007">Kopyalanan resim</translation>
-<translation id="2349790679044093737">VR oturumu etkin</translation>
 <translation id="2354001756790975382">Diğer yer işaretleri</translation>
 <translation id="2354430244986887761">Google Güvenli Tarama son zamanlarda <ph name="SITE" /> sitesinde <ph name="BEGIN_LINK" />zararlı uygulamalar buldu<ph name="END_LINK" />.</translation>
 <translation id="2355395290879513365">Saldırganlar bu sitede baktığınız resimleri görebilir ve bu resimler üzerinde değişiklik yaparak sizi kandırabilirler.</translation>
@@ -264,24 +305,22 @@
 <translation id="2360873523816792727">Kartlarınızı tüm cihazlarınızda kullanmak için senkronizasyonu etkinleştirin.</translation>
 <translation id="2365563543831475020">Yakalanan kilitlenme raporu (<ph name="CRASH_TIME" />) yüklenmedi</translation>
 <translation id="2367567093518048410">Düzey</translation>
-<translation id="2378238891085281592">Gizli moda geçtiniz</translation>
 <translation id="2380886658946992094">Hukuk</translation>
 <translation id="2384307209577226199">Kuruluşun varsayılan ayarı</translation>
 <translation id="2386255080630008482">Sunucunun sertifikası iptal edildi.</translation>
 <translation id="2392959068659972793">Hiçbir değer ayarlanmamış politikaları göster</translation>
 <translation id="239429038616798445">Bu gönderim yöntemi kullanılamıyor. Farklı bir yöntem deneyin.</translation>
 <translation id="2396249848217231973">Silmeyi &amp;geri al</translation>
+<translation id="2409589295040002961">Yöneticiniz, tarayıcınızın kurulumunu uzaktan değiştirebilir. Bu cihazdaki etkinlikler Chrome dışında da yönetilebilir. <ph name="BEGIN_LINK" />Daha Fazla Bilgi<ph name="END_LINK" /></translation>
 <translation id="2410754574180102685">Government-Legal</translation>
 <translation id="2413528052993050574">Bu sunucu <ph name="DOMAIN" /> olduğunu kanıtlayamadı. Güvenlik sertifikası iptal edilmiş olabilir. Bu durum, bir yanlış yapılandırmadan veya bağlantıya müdahale eden bir saldırgandan kaynaklanıyor olabilir.</translation>
-<translation id="2418081434543109369">Gittiğiniz sunucu (<ph name="ORIGIN" />) kendisine gelen tüm isteklere
-    bir güvenlik politikasının uygulanmasını talep etmişti. Ancak şimdi
-    politika sunamadığı için tarayıcı, <ph name="SITE" /> sitesiyle ilgili isteğinizi
-    yerine getiremiyor.</translation>
-<translation id="244665789865330679">Cihazınız ve hesabınız <ph name="ENROLLMENT_DOMAIN" /> tarafından yönetiliyor. Bu durumda yöneticiniz cihazınızı ve hesabınızı uzaktan yapılandırabilir.</translation>
+<translation id="2438874542388153331">Sağda dörtlü delik</translation>
+<translation id="245044156129055925">Az önce şifrenizi yanıltıcı bir sitede girdiniz. Chromium, şifrenizi hemen değiştirmenizi önerir.</translation>
 <translation id="2463193859425327265">Ana Sayfayı değiştir</translation>
 <translation id="2463739503403862330">Doldur</translation>
 <translation id="2465402087343596252">Architecture-E</translation>
 <translation id="2465655957518002998">Teslimat Yöntemi Seç</translation>
+<translation id="2465688316154986572">Tel zımba</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />Ağ Teşhislerini Çalıştırma<ph name="END_LINK" /></translation>
 <translation id="2473195200299095979">Bu sayfayı çevir</translation>
 <translation id="2479410451996844060">Geçersiz arama URL'si.</translation>
@@ -292,30 +331,43 @@
 <translation id="2495083838625180221">JSON Ayrıştırıcı</translation>
 <translation id="2495093607237746763">İşaretlenirse Chromium, formları daha hızlı doldurma amacıyla kartınızın bir kopyasını bu cihazda depolar.</translation>
 <translation id="2498091847651709837">Yeni kart tara</translation>
+<translation id="249825481377667906">Chromium, Google Hesabınızı korumanıza ve şifrenizi değiştirmenize yardımcı olabilir. Bu işlem, Google'ın bu siteyle ilgili bilgilendirilmesini sağlar.</translation>
 <translation id="2501278716633472235">Geri dön</translation>
 <translation id="2503184589641749290">Kabul edilen banka ve ön ödemeli kartlar</translation>
+<translation id="2505268675989099013">Hesabı Koru</translation>
 <translation id="2515629240566999685">Bulunduğunuz bölgedeki sinyali kontrol etme</translation>
-<translation id="2516852381693169964"><ph name="SEARCH_ENGINE" /> içinde Resim ara</translation>
+<translation id="2521385132275182522">Sağ altta tel zımba</translation>
 <translation id="2523886232349826891">Yalnızca bu cihazda kaydedildi</translation>
 <translation id="2524461107774643265">Daha Fazla Bilgi Ekleyin</translation>
+<translation id="2535659140340599600">{COUNT,plural, =1{ve 1 tane daha}other{ve # tane daha}}</translation>
 <translation id="2536110899380797252">Adres Ekle</translation>
 <translation id="2539524384386349900">Algıla</translation>
+<translation id="254947805923345898">Politika değeri geçerli değil.</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> geçersiz bir yanıt gönderdi.</translation>
 <translation id="2556876185419854533">Düzenlemeyi &amp;Geri Al</translation>
 <translation id="2586657967955657006">Pano</translation>
 <translation id="2587730715158995865"><ph name="ARTICLE_PUBLISHER" /> adlı yayıncıdan. Bunu ve diğer <ph name="OTHER_ARTICLE_COUNT" /> haberi okuyun.</translation>
 <translation id="2587841377698384444">Dizin API'sı Kimliği:</translation>
+<translation id="2595719060046994702">Bu cihaz ve hesap bir şirket veya başka kuruluş tarafından yönetilmiyor.</translation>
 <translation id="2597378329261239068">Doküman şifre korumalı. Lütfen şifreyi girin.</translation>
 <translation id="2609632851001447353">Varyasyonlar</translation>
 <translation id="2618023639789766142">C10 (Zarf)</translation>
 <translation id="2625385379895617796">Saatiniz ileri</translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" /> ana makinesinin sunucu IP adresi bulunamadı.</translation>
+<translation id="2638745661847473633">Gittiğiniz sunucu (<ph name="ORIGIN" />) kendisine gelen tüm isteklere bir kaynak politikası uygulanmasını talep etmişti. Ancak şimdi
+    geçersiz bir politika sunduğu için tarayıcı <ph name="SITE" /> sitesiyle ilgili isteğinizi
+    yerine getiremiyor. Kaynak politikaları
+    site operatörleri tarafından sitenin güvenliğini ve diğer mülklerini yapılandırmak için kullanılabilir.</translation>
 <translation id="2639739919103226564">Durum:</translation>
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
 <translation id="2650446666397867134">Dosyaya erişim reddedildi</translation>
 <translation id="2653659639078652383">Gönder</translation>
+<translation id="2660650542324841986">Gittiğiniz sunucu (<ph name="ORIGIN" />) kendisine gelen tüm isteklere bir kaynak politikası uygulanmasını talep etmişti. Ancak şimdi
+    politika sunamadığı için tarayıcı, <ph name="SITE" /> sitesiyle ilgili isteğinizi
+    yerine getiremiyor. Kaynak politikaları
+    site operatörleri tarafından sitenin güvenliğini ve diğer mülklerini yapılandırmak için kullanılabilir.</translation>
+<translation id="2664887757054927933">{COUNT,plural, =0{Yok}=1{1 şifre (<ph name="DOMAIN_LIST" /> için)}=2{2 şifre (<ph name="DOMAIN_LIST" /> için)}other{# şifre (<ph name="DOMAIN_LIST" /> için)}}</translation>
 <translation id="2666117266261740852">Diğer sekmeleri veya uygulamaları kapatın</translation>
-<translation id="267371737713284912">işlemi geri almak için <ph name="MODIFIER_KEY_DESCRIPTION" /> tuşuna basın</translation>
 <translation id="2674170444375937751">Bu sayfaları geçmişinizden silmek istediğinizden emin misiniz?</translation>
 <translation id="2676271551327853224">Roc-8K</translation>
 <translation id="2677748264148917807">Çık</translation>
@@ -325,12 +377,14 @@
 <translation id="2704283930420550640">Değer, biçimle eşleşmiyor.</translation>
 <translation id="2705137772291741111">Bu sitenin kaydedilen (önbelleğe alınan) kopyası okunamadı.</translation>
 <translation id="2709516037105925701">Otomatik doldurma</translation>
-<translation id="2712173769900027643">İzin iste</translation>
 <translation id="2713444072780614174">Beyaz</translation>
 <translation id="2720342946869265578">Etrafımda</translation>
 <translation id="2721148159707890343">İstek başarılı oldu</translation>
+<translation id="272451190272506600">Ödeme için sensöre dokunun</translation>
 <translation id="2728127805433021124">Sunucunun sertifikası, zayıf bir imza algoritması kullanılarak imzalanmış.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Bağlantı Teşhislerini Çalıştırma<ph name="END_LINK" /></translation>
+<translation id="2734544361860335147">Bu özellikleri etkinleştirdiğinizde tarayıcı verilerinizi kaybedebilir veya güvenliğinizden ya da gizliliğinizden ödün verebilirsiniz. Etkinleştirilen özellikler, bu tarayıcının tüm kullanıcıları için geçerli olur.</translation>
+<translation id="2735043616039983645">Bu politikada, birbiriyle çelişen değerler içeren birden fazla kaynak bulunuyor.</translation>
 <translation id="2738330467931008676">Alınacağı Adres Seç</translation>
 <translation id="2740531572673183784">Tamam</translation>
 <translation id="2742870351467570537">Seçilen öğeleri kaldır</translation>
@@ -339,7 +393,7 @@
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2784949926578158345">Bağlantı sıfırlandı.</translation>
 <translation id="2788784517760473862">Kabul edilen kredi kartları</translation>
-<translation id="2794233252405721443">Site engellenmiş</translation>
+<translation id="2792012897584536778">Bu cihazın yöneticileri, ziyaret ettiğiniz web sitelerinin içeriğini görmelerine izin verebilecek güvenlik sertifikaları ayarladı.</translation>
 <translation id="2799020568854403057">Girmekte olduğunuz site zararlı uygulamalar içeriyor</translation>
 <translation id="2799223571221894425">Yeniden başlat</translation>
 <translation id="2803306138276472711">Google Güvenli Tarama yakın bir zamanda <ph name="SITE" /> sitesinde <ph name="BEGIN_LINK" />kötü amaçlı yazılım<ph name="END_LINK" /> tespit etti. Normalde güvenli olan web sitelerine bazen kötü amaçlı yazılımlar bulaşır.</translation>
@@ -348,21 +402,25 @@
 <translation id="2835170189407361413">Formu temizle</translation>
 <translation id="2847118875340931228">Gizli Pencereyi Aç</translation>
 <translation id="2850739647070081192">Invite (Zarf)</translation>
-<translation id="2851634818064021665">Bu siteyi ziyaret etmek için izninizin olması gerekir</translation>
 <translation id="2856444702002559011">Saldırganlar <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> üzerinden bilgilerinizi çalmaya çalışıyor olabilir (örneğin, şifreler, mesajlar veya kredi kartları). <ph name="BEGIN_LEARN_MORE_LINK" />Daha fazla bilgi<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="2878197950673342043">Poster katlama</translation>
 <translation id="2878424575911748999">A1</translation>
 <translation id="2881276955470682203">Kart kaydedilsin mi?</translation>
+<translation id="2882949212241984732">İki kırımlı katlama</translation>
 <translation id="2903493209154104877">Adresler</translation>
 <translation id="290376772003165898">Sayfa <ph name="LANGUAGE" /> dilinde değil mi?</translation>
 <translation id="2909946352844186028">Bir ağ değişikliği algılandı.</translation>
+<translation id="2910133103376701357">Cihazınız ve hesap <ph name="ENROLLMENT_DOMAIN" /> tarafından yönetiliyor.</translation>
 <translation id="2916038427272391327">Diğer programları kapatın</translation>
 <translation id="2922350208395188000">Sunucunun sertifikası kontrol edilemiyor.</translation>
 <translation id="2925673989565098301">Teslimat Yöntemi</translation>
 <translation id="2928905813689894207">Fatura Adresi</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> ve <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> adres daha}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> ve <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> adres daha}}</translation>
+<translation id="2930577230479659665">Her kopyadan sonra kırp</translation>
 <translation id="2934466151127459956">Government-Letter</translation>
 <translation id="2941952326391522266">Bu sunucu <ph name="DOMAIN" /> olduğunu kanıtlayamadı. Güvenlik sertifikası <ph name="DOMAIN2" /> alan adından geliyor. Bu durum, bir yanlış yapılandırmadan veya bağlantıya müdahale eden bir saldırgandan kaynaklanıyor olabilir.</translation>
 <translation id="2948083400971632585">Ayarlar sayfasından, bir bağlantı için yapılandırılmış proxy'leri devre dışı bırakabilirsiniz.</translation>
+<translation id="295526156371527179">Uyarı: Bu politika, bir sözlük olmadığından politika tarafından belirtildiği gibi bir sözlük olarak birleştirilmedi.</translation>
 <translation id="2955913368246107853">Bulma çubuğunu kapat</translation>
 <translation id="2969319727213777354">Güvenli bir bağlantı kurmak için saatinizin doğru ayarlanmış olması gerekir. Bunun sebebi, web sitelerinin kendilerini tanımlamak için kullandıkları sertifikaların sadece belli süreler için geçerli olmasıdır. Cihazınızın saati yanlış olduğundan, Google Chrome bu sertifikaları doğrulayamıyor.</translation>
 <translation id="2972581237482394796">&amp;Yinele</translation>
@@ -371,6 +429,8 @@
 <translation id="2985306909656435243">Bu seçenek etkinleştirildiğinde Chromium, formları daha hızlı doldurmak için kartınızın bir kopyasını bu cihazda saklar.</translation>
 <translation id="2985398929374701810">Geçerli bir adres girin</translation>
 <translation id="2986368408720340940">Bu alım yöntemi kullanılamıyor. Farklı bir yöntem deneyin.</translation>
+<translation id="2987034854559945715">Eşleşen özellik yok</translation>
+<translation id="2989742184762224133">Üstte ikili tel zımba</translation>
 <translation id="2991174974383378012">Web Siteleriyle Paylaşma</translation>
 <translation id="2991571918955627853"><ph name="SITE" /> web sitesi HSTS kullandığından şu anda siteyi ziyaret edemezsiniz. Ağ hataları ve saldırılar genellikle geçici olduğundan bu sayfa muhtemelen daha sonra çalışacaktır.</translation>
 <translation id="3005723025932146533">Kaydedilen kopyayı göster</translation>
@@ -381,15 +441,18 @@
 <translation id="3024663005179499861">Yanlış politika türü</translation>
 <translation id="3037605927509011580">Hay aksi!</translation>
 <translation id="3041612393474885105">Sertifika Bilgileri</translation>
+<translation id="3057676462092457419">DnsOverHttps modu <ph name="SECURE_DNS_MODE_SECURE" /> henüz desteklenmiyor. Mod <ph name="SECURE_DNS_MODE_OFF" /> olarak ayarlandı.</translation>
 <translation id="3060227939791841287">C9 (Zarf)</translation>
+<translation id="3061707000357573562">Yama Hizmeti</translation>
 <translation id="3064966200440839136">Harici bir uygulama üzerinden ödeme gerçekleştirmek için gizli moddan çıkılacak. Devam edilsin mi?</translation>
-<translation id="3083099961703215236">{COUNT,plural, =0{Yok}=1{1 şifre}other{# şifre}}</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3096100844101284527">Alınacağı Adres Ekle</translation>
 <translation id="3105172416063519923">Öğe Kimliği:</translation>
 <translation id="3109728660330352905">Bu sayfayı görüntüleme yetkiniz yok.</translation>
+<translation id="3116158981186517402">Lamine</translation>
 <translation id="3120730422813725195">Elo</translation>
 <translation id="31207688938192855"><ph name="BEGIN_LINK" />Bağlantı Teşhislerini çalıştırmayı deneyin<ph name="END_LINK" />.</translation>
+<translation id="3121994479408824897">Git: <ph name="DOMAIN" /></translation>
 <translation id="3137507986424712703">{COUNT,plural, =0{Yok}=1{1 hesaba ait oturum açma verileri}other{# hesaba ait oturum açma verileri}}</translation>
 <translation id="3145945101586104090">Yanıtın kodu çözülemedi</translation>
 <translation id="3150653042067488994">Geçici sunucu hatası</translation>
@@ -403,34 +466,35 @@
     proxy ayarlarınızı kontrol edin veya ağ yöneticinize danışın. Proxy sunucu
     kullanmamanız gerektiğini düşünüyorsanız:
     <ph name="PLATFORM_TEXT" /></translation>
+<translation id="3188393374551744535">Hesap bakiyesi</translation>
 <translation id="3195213714973468956"><ph name="SERVER_NAME" /> üzerinde <ph name="PRINTER_NAME" /></translation>
 <translation id="320323717674993345">Ödemeyi iptal et</translation>
 <translation id="3207960819495026254">Yer işareti koyuldu</translation>
-<translation id="321912867715453276">Uyarı: Bu politikada birden fazla kaynak var, ancak değerler aynı.</translation>
+<translation id="3209034400446768650">Sayfa sizden ücret alabilir</translation>
+<translation id="3209080785413271048">Kayıtlı ödeme yöntemlerinizi doğrulamak için Windows Hello'yu kullanın.</translation>
+<translation id="3215092763954878852">WebAuthn kullanılamadı</translation>
 <translation id="3225919329040284222">Sunucu, yerleşik beklentilerle eşleşmeyen bir sertifika sundu. Bu beklentiler sizi korumak amacıyla bazı yüksek güvenlikli web sitelerinde bulunur.</translation>
 <translation id="3226128629678568754">Sayfayı yüklemek üzere gereken verileri tekrar göndermek için yeniden yükle düğmesine basın.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3228969707346345236">Sayfa zaten <ph name="LANGUAGE" /> dilinde olduğundan çeviri işlemi başarısız oldu.</translation>
+<translation id="3229041911291329567">Cihazınız ve tarayıcınızla ilgili sürüm bilgileri</translation>
 <translation id="323107829343500871"><ph name="CREDIT_CARD" /> numaralı kartın CVC kodunu girin</translation>
 <translation id="3234666976984236645">Her zaman bu sitedeki önemli içeriği algıla</translation>
-<translation id="3254409185687681395">Bu sayfaya yer işareti koy</translation>
+<translation id="3262069459091978471"><ph name="LOOKALIKE_DOMAIN" /> sitesi <ph name="SUGGESTED_DOMAIN" /> sitesine benziyor. Saldırganlar bazen benzer URL'ler kullanarak siteleri taklit ederler.</translation>
 <translation id="3270847123878663523">Sıralama Değişikliğini &amp;Geri Al</translation>
 <translation id="3274521967729236597">Pa-Kai</translation>
+<translation id="3281668902344226640">Kayıtlı ödeme yöntemlerinizi doğrulamak için Touch ID'yi kullanın.</translation>
 <translation id="3282497668470633863">Kart üzerindeki ismi ekle</translation>
 <translation id="3287510313208355388">Çevrimiçi olduğunda indir</translation>
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> politikası ile ilgili daha fazla bilgi edinin</translation>
+<translation id="3295439534709115864">Kullandığınız bir site veya uygulamada veri ihlali oluştu. Chrome, <ph name="ORIGIN" /> şifrenizi hemen değiştirmenizi öneriyor.</translation>
 <translation id="3303855915957856445">Arama sonucu bulunamadı</translation>
 <translation id="3320021301628644560">Fatura adresi ekle</translation>
 <translation id="3324983252691184275">Kızıl</translation>
 <translation id="3338095232262050444">Güvenli</translation>
-<translation id="3345135638360864351">Bu siteye erişim isteğiniz <ph name="NAME" /> adlı kullanıcıya gönderilemedi. Lütfen tekrar deneyin.</translation>
 <translation id="3355823806454867987">Proxy ayarlarını değiştir...</translation>
-<translation id="3361596688432910856">Chrome aşağıdaki bilgileri <ph name="BEGIN_EMPHASIS" />kaydetmez<ph name="END_EMPHASIS" />:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Tarama geçmişiniz
-          <ph name="LIST_ITEM" />Çerezler ve site verileri
-          <ph name="LIST_ITEM" />Formlara girilen bilgiler
-        <ph name="END_LIST" /></translation>
+<translation id="3360103848165129075">Ödeme işleyici sayfası</translation>
+<translation id="3362968246557010467">Bu politika, kullanımdan kaldırılmış <ph name="OLD_POLICY" /> politikasından otomatik olarak kopyalanmıştır. Onun yerine bu politikayı kullanmalısınız.</translation>
 <translation id="3366477098757335611">Kartları göster</translation>
 <translation id="3369192424181595722">Saat hatası</translation>
 <translation id="337363190475750230">Temel hazırlık iptal edildi</translation>
@@ -446,6 +510,7 @@
 <translation id="3427092606871434483">İzin ver (varsayılan)</translation>
 <translation id="3427342743765426898">&amp;Düzenlemeyi Yeniden Yap</translation>
 <translation id="342781501876943858">Chromium, şifrenizi başka sitelerde kullandıysanız sıfırlamanızı önerir.</translation>
+<translation id="3428151540071562330">DnsOverHttpsTemplates sunucu şablonu URI'larından biri veya daha fazlası geçersiz olduğundan kullanılmayacak.</translation>
 <translation id="3431636764301398940">Bu kartı bu cihaza kaydet</translation>
 <translation id="3443726618221119081">Juuro-Ku-Kai</translation>
 <translation id="3447661539832366887">Bu cihazın sahibi dinozor oyununu kapattı.</translation>
@@ -456,17 +521,15 @@
 <translation id="3462200631372590220">Gelişmiş bilgileri gizle</translation>
 <translation id="3467763166455606212">Kart sahibinin adı zorunludur</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />, şu anda açık, açık Sekmeye geçmek için Sekmeye ve sonra enter tuşuna basın</translation>
-<translation id="3479539252931486093">Bu beklenmedik bir durum mu? <ph name="BEGIN_LINK" />Bize bildirin<ph name="END_LINK" /></translation>
 <translation id="3479552764303398839">Şimdi değil</translation>
 <translation id="3484560055331845446">Google Hesabınıza erişimi kaybedebilirsiniz. Chrome, şifrenizi hemen değiştirmenizi önerir. Oturum açmanız istenecektir.</translation>
 <translation id="3495081129428749620">Şu sayfada bul:
     <ph name="PAGE_TITLE" /></translation>
-<translation id="3498215018399854026">Şu anda ebeveyninize erişemedik. Lütfen tekrar deneyin.</translation>
+<translation id="3512163584740124171">Aynı politika grubundan farklı bir politika daha yüksek önceliği sahip olduğundan bu politika yok sayılır.</translation>
 <translation id="3528171143076753409">Sunucunun sertifikasına güvenilmiyor.</translation>
 <translation id="3528485271872257980">Koyu Kahverengi</translation>
 <translation id="3530944546672790857">{COUNT,plural, =0{Senkronize edilmiş cihazlarda en az 1 öğe}=1{1 öğe (ve senkronize edilmiş cihazlarda daha fazlası)}other{# öğe (ve senkronize edilmiş cihazlarda daha fazlası)}}</translation>
 <translation id="3539171420378717834">Bu kartın bir kopyasını bu cihazda tut</translation>
-<translation id="3556433843310711081">Yöneticiniz engellemeyi kaldırabilir</translation>
 <translation id="3566021033012934673">Bağlantınız gizli değil</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
 <translation id="3576616784287504635"><ph name="SITE" /> web sitesindeki yerleşik bir sayfanın mesajı</translation>
@@ -474,33 +537,42 @@
 <translation id="358285529439630156">Kredi ve ön ödemeli kartlar kabul edilir.</translation>
 <translation id="3582930987043644930">Ad ekleyin</translation>
 <translation id="3583757800736429874">Taşımayı &amp;Yeniden Yap</translation>
-<translation id="35866233670761917">Yöneticileriniz, ziyaret ettiğiniz web sitelerinin içeriğini göremezler</translation>
+<translation id="3584299510153766161">Altta ikili delik</translation>
 <translation id="3586931643579894722">Ayrıntıları gizle</translation>
 <translation id="3592413004129370115">Italian (Zarf)</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3614103345592970299">Boyut 2</translation>
+<translation id="361438452008624280">Liste girişi "<ph name="LANGUAGE_ID" />": Bilinmeyen veya desteklenmeyen dil.</translation>
 <translation id="3615877443314183785">Geçerli bir son kullanma tarihi girin</translation>
 <translation id="36224234498066874">Göz Atma Verilerini Temizle...</translation>
 <translation id="362276910939193118">Tam Geçmişi Göster</translation>
 <translation id="3630155396527302611">Ağa erişmesine izin verilmiş bir program olarak zaten listeleniyorsa,
     listeden kaldırıp tekrar eklemeyi deneyin.</translation>
+<translation id="3631244953324577188">Biyometri</translation>
 <translation id="3640766068866876100">Index-4x6-Ext</translation>
 <translation id="3650584904733503804">Doğrulama başarılı</translation>
 <translation id="3655670868607891010">Bunu çok sık görüyorsanız, şunları deneyin: <ph name="HELP_LINK" />.</translation>
 <translation id="3658742229777143148">Düzeltme</translation>
 <translation id="366077651725703012">Kredi Kartını Güncelle</translation>
 <translation id="3676592649209844519">Cihaz kimliği:</translation>
+<translation id="3677008721441257057">&lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt; adresine gitmek mi istemiştiniz?</translation>
 <translation id="3678029195006412963">İstek imzalanamadı</translation>
 <translation id="3678529606614285348">Sayfayı yeni Gizli pencerede açın (Ctrl-Üst Karakter-N)</translation>
 <translation id="3679803492151881375">Kilitlenme raporunun oluşturulma zamanı: <ph name="CRASH_TIME" />, raporun yüklenme zamanı: <ph name="UPLOAD_TIME" /></translation>
 <translation id="3681007416295224113">Sertifika bilgileri</translation>
+<translation id="3688109723158850780">Gittiğiniz sunucu (<ph name="ORIGIN" />) kendisine gelen tüm isteklere bir kaynak politikası uygulanmasını talep etmişti. Ancak bir politika
+    sunmak yerine tarayıcıyı başka bir yere yönlendirdiği için tarayıcı, <ph name="SITE" />
+    sitesiyle ilgili isteğinizi yerine getiremiyor. Kaynak
+    politikaları site operatörleri tarafından sitenin güvenliğini ve diğer
+    mülklerini yapılandırmak için kullanılabilir.</translation>
+<translation id="3701427423622901115">Sıfırlama işlemi onaylandı.</translation>
 <translation id="3704162925118123524">Kullandığınız ağ bir giriş sayfasını ziyaret etmenizi gerektiriyor olabilir.</translation>
 <translation id="3704609568417268905"><ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
 <translation id="370665806235115550">Yükleniyor...</translation>
 <translation id="3709599264800900598">Kopyalanan Metin</translation>
 <translation id="3712624925041724820">Lisanslar bitti</translation>
 <translation id="3714780639079136834">Mobil veriyi veya kablosuz bağlantıyı açma</translation>
-<translation id="3715597595485130451">Kablosuz Ağa Bağlanma</translation>
+<translation id="3715597595485130451">Kablosuz Ağ Bağlantısı</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Proxy, güvenlik duvarı ve DNS yapılandırmasını kontrol etme<ph name="END_LINK" /></translation>
 <translation id="372429172604983730">Bu hataya neden olabilecek uygulamalar arasında virüsten korunma programları, güvenlik duvarları ve web filtreleme veya proxy yazılımları sayılabilir.</translation>
 <translation id="373042150751172459">B4 (Zarf)</translation>
@@ -510,6 +582,7 @@
 <translation id="3748148204939282805"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> sitesine saldıranlar sizi yanıltarak yazılım yüklemek veya kişisel bilgilerinizi (örneğin, şifreler, telefon numaraları veya kredi kartları) ifşa etmek gibi tehlikeli bir şey yapmanızı sağlayabilirler. <ph name="BEGIN_LEARN_MORE_LINK" />Daha fazla bilgi<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="375403751935624634">Çeviri, bir sunucu hatası nedeniyle başarısız oldu.</translation>
 <translation id="3759461132968374835">Son zamanda herhangi bir kilitlenme bildirmediniz. Kilitlenme bildirme özelliği devre dışıyken oluşan kilitlenmeler burada görünmez.</translation>
+<translation id="3760561303380396507">CVC yerine Windows Hello kullanılsın mı?</translation>
 <translation id="3761718714832595332">Durumu gizle</translation>
 <translation id="3765032636089507299">Güvenli Tarama sayfası yapım aşamasında.</translation>
 <translation id="3778403066972421603">Bu kartı Google Hesabınıza ve bu cihaza kaydetmek istiyor musunuz?</translation>
@@ -519,44 +592,61 @@
 <translation id="3789155188480882154">Boyut 16</translation>
 <translation id="3797522431967816232">Prc3 (Zarf)</translation>
 <translation id="3807873520724684969">Zararlı içerik engellendi.</translation>
+<translation id="3808375843007691220">Uyarı: Deneysel özellikler!</translation>
 <translation id="3810973564298564668">Yönet</translation>
 <translation id="382518646247711829">Proxy sunucu kullanıyorsanız...</translation>
 <translation id="3828924085048779000">Boş parolaya izin verilmez.</translation>
+<translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" /> diğer işlevler için uzantılar yüklemiş. Söz konusu uzantıların bazı verilerinize erişimi bulunuyor.</translation>
+<translation id="3832522519263485449">Solda çoklu delik</translation>
 <translation id="385051799172605136">Geri</translation>
 <translation id="3858027520442213535">Tarih ve saati güncelle</translation>
 <translation id="3884278016824448484">Çakışan cihaz tanımlayıcısı</translation>
 <translation id="3885155851504623709">İl</translation>
-<translation id="3886446263141354045">Bu siteye erişim isteğiniz şu kişiye gönderildi: <ph name="NAME" /></translation>
 <translation id="3890664840433101773">E-posta adresi ekle</translation>
+<translation id="3897092660631435901">Menü</translation>
 <translation id="3901925938762663762">Kartın kullanım süresi doldu</translation>
 <translation id="3906600011954732550">B5-Extra</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3939773374150895049">CVC yerine WebAuthn kullanılsın mı?</translation>
 <translation id="3946209740501886391">Bu sitede her zaman sor</translation>
 <translation id="3949571496842715403">Bu sunucu <ph name="DOMAIN" /> olduğunu kanıtlayamadı. Güvenlik sertifikasında Konu Diğer Adları belirtilmiyor. Bu durum, bir yanlış yapılandırmadan veya bağlantınıza müdahale eden bir saldırgandan kaynaklanıyor olabilir.</translation>
 <translation id="3949601375789751990">Göz atma geçmişiniz burada görünür</translation>
+<translation id="3949870428812919180">Kayıtlı ödeme yöntemi yok</translation>
 <translation id="3950820424414687140">Oturum açın</translation>
-<translation id="3963721102035795474">Okuyucu Modu</translation>
+<translation id="3961148744525529027">Ödeme işleyici sayfası yarım olarak açıldı</translation>
+<translation id="3962859241508114581">Önceki Parça</translation>
 <translation id="3963837677003247395">Manuel olarak devam edilsin mi?</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Yok}=1{1 siteden }other{# siteden }}</translation>
 <translation id="397105322502079400">Hesaplanııyor...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> engellendi</translation>
+<translation id="3981540111851280311"><ph name="ENROLLMENT_DOMAIN" />, tarayıcınızda Chrome Enterprise Threat Protection özelliğini etkinleştirdi. Chrome Enterprise Threat Protection özelliğinin verilerinizin bir kısmına erişimi vardır.</translation>
+<translation id="3987405730340719549">Chrome, bu sitenin taklit veya sahte olduğunu belirledi.
+
+    Bu mesajın yanlışlıkla gösterildiğini düşünüyorsanız lütfen https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals adresini ziyaret edin.</translation>
 <translation id="3987940399970879459">1 MB'tan az</translation>
-<translation id="4008849406247176967">Uyarı: Bu politikada, birbiriyle çelişen değerler içeren birden fazla kaynak bulunuyor.</translation>
+<translation id="3990250421422698716">Jog ofset</translation>
 <translation id="40103911065039147">{URL_count,plural, =1{Yakındaki 1 web sayfası}other{Yakındaki # web sayfası}}</translation>
 <translation id="4030383055268325496">Eklemeyi &amp;geri al</translation>
+<translation id="4032320456957708163">Tarayıcınız <ph name="ENROLLMENT_DOMAIN" /> tarafından yönetilmektedir</translation>
 <translation id="4058922952496707368">"<ph name="SUBKEY" />" anahtarı: <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (Zarf)</translation>
 <translation id="4067947977115446013">Geçerli Adres Ekleyin</translation>
 <translation id="4072486802667267160">Ödemeniz işlenirken bir hata oluştu. Lütfen tekrar deneyin.</translation>
 <translation id="4075732493274867456">İstemci ve sunucu, ortak bir SSL protokolü sürümünü veya şifre setini desteklemiyor.</translation>
+<translation id="4075941231477579656">Touch ID</translation>
 <translation id="4079302484614802869">Proxy yapılandırması sabit proxy sunucuları değil, bir .pac komut dosyası URL'sini kullanmak üzere ayarlandı.</translation>
+<translation id="4082393374666368382">Ayarlar - Yönetim</translation>
 <translation id="4098354747657067197">Yanıltıcı bir siteye girmek üzeresiniz</translation>
 <translation id="4103249731201008433">Cihazın seri numarası geçersiz</translation>
 <translation id="410351446219883937">Otomatik oynatma</translation>
 <translation id="4103763322291513355">Kara listeye alınmış URL'lerin ve sistem yöneticinizin zorunlu tuttuğu diğer politikaların listesini görmek için &lt;strong&gt;chrome://policy&lt;/strong&gt; adresini ziyaret edin.</translation>
+<translation id="4108231218301530806">Bu kartı doğrulamak için bir dahaki sefere parmak izi kullan.</translation>
 <translation id="4110652170750985508">Ödemenizi inceleyin</translation>
+<translation id="4112140312785995938">Geri Sar</translation>
 <translation id="4116663294526079822">Bu sitede her zaman izin ver</translation>
+<translation id="4116701314593212016">JIS B7</translation>
 <translation id="4117700440116928470">Politika kapsamı desteklenmiyor.</translation>
+<translation id="4123572138124678573">Altta üçlü delik</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 öğe daha}other{# öğe daha}}</translation>
 <translation id="4130226655945681476">Ağ kabloları, modem ve yönlendirici kontrol ediliyor</translation>
 <translation id="413544239732274901">Daha fazla bilgi</translation>
@@ -567,6 +657,7 @@
 <translation id="4171400957073367226">Geçersiz doğrulama imzası</translation>
 <translation id="4173315687471669144">Foolscap</translation>
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{<ph name="ITEM_COUNT" /> öğe daha}other{<ph name="ITEM_COUNT" /> öğe daha}}</translation>
+<translation id="4176463684765177261">Devre dışı</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4196861286325780578">Taşımayı &amp;yeniden yap</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Güvenlik duvarı ve virüsten korunma yapılandırmalarını kontrol etme<ph name="END_LINK" /></translation>
@@ -591,7 +682,9 @@
     &lt;h4&gt;5. Adım: Daha fazla yardım alın&lt;/h4&gt;
     &lt;p&gt;Hatayı görmeye devam ederseniz web sitesinin sahibiyle iletişime geçin.&lt;/p&gt;</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />Ağ Teşhislerini çalıştırmayı deneyin<ph name="END_LINK" />.</translation>
+<translation id="4234495348042597185"><ph name="BEGIN_LINK" /><ph name="SITE" /> sitesine git<ph name="END_LINK" /></translation>
 <translation id="4235360514405112390">Geçerli</translation>
+<translation id="4248776159690739358">Chrome Enterprise Threat Protection tarafından işaretlenen güvenlik işlemleri hakkında Yöneticiniz ile veri paylaşın. Bu veriler ziyaret ettiğiniz sayfaların URL'leri, dosya adları veya meta verilerinin yanı sıra cihazınızda ve Chrome'da oturum açmak için kullandığınız kullanıcı adını içerebilir.</translation>
 <translation id="4250431568374086873">Bu siteye bağlantınız tam olarak güvenli değil</translation>
 <translation id="4250680216510889253">Hayır</translation>
 <translation id="425582637250725228">Yaptığınız değişiklikler kaydedilmemiş olabilir.</translation>
@@ -600,12 +693,16 @@
 <translation id="4265872034478892965">Yöneticiniz tarafından izin verildi</translation>
 <translation id="4275830172053184480">Cihazınızı yeniden başlatın</translation>
 <translation id="4277028893293644418">Şifreyi sıfırla</translation>
-<translation id="4280429058323657511">, son kullanma tarihi <ph name="EXPIRATION_DATE_ABBR" /></translation>
+<translation id="4279811152705618813"><ph name="DEVICE_TYPE" /> cihazınız <ph name="ENROLLMENT_DOMAIN" /> tarafından yönetiliyor.</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Bu kart Google Hesabınıza kaydedildi}other{Bu kartlar Google Hesabınıza kaydedildi}}</translation>
+<translation id="428847186335018806">Chrome'da indirdiğiniz veya yüklediğiniz dosyaları tarama.</translation>
+<translation id="42981349822642051">Genişlet</translation>
+<translation id="4300675098767811073">Sağda çoklu delik</translation>
 <translation id="4302965934281694568">Chou3 (Zarf)</translation>
 <translation id="4305817255990598646">Anahtar</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Engelle (varsayılan)</translation>
+<translation id="4318566738941496689">Cihazınızın adı ve ağ adresi</translation>
 <translation id="4325863107915753736">Makale bulunamadı</translation>
 <translation id="4326324639298822553">Son kullanma tarihini kontrol edip tekrar deneyin</translation>
 <translation id="4331708818696583467">Güvenli Değil</translation>
@@ -613,12 +710,15 @@
 <translation id="4346197816712207223">Kabul Edilen Kredi Kartları</translation>
 <translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4356973930735388585">Bu sitedeki saldırganlar, bilgilerinizi (örneğin fotoğraflar, şifreler, mesajlar ve kredi kartları) çalacak veya silecek tehlikeli programları bilgisayarınıza yüklemeyi deneyebilir.</translation>
+<translation id="4358059973562876591">Belirttiğiniz şablonlar, DnsOverHttpsMode politikasındaki bir hata nedeniyle uygulanamayabilir.</translation>
 <translation id="4358461427845829800">Ödeme yöntemlerini yönet...</translation>
 <translation id="4367563149485757821">Number-12 (Zarf)</translation>
+<translation id="437058704415269440">Hesap Bakiyesi</translation>
 <translation id="4372516964750095882">Fanfold-Us</translation>
 <translation id="4372948949327679948">Beklenen <ph name="VALUE_TYPE" /> değeri.</translation>
 <translation id="4377125064752653719"><ph name="DOMAIN" /> adresine ulaşmayı denediniz, ancak sunucunun sağladığı sertifika, sertifikayı veren tarafından iptal edildi. Bu, sunucunun sağladığı güvenlik kimlik bilgilerine kesinlikle güvenilmemesi gerektiği anlamına gelir. Bir saldırganla irtibat kuruyor olabilirsiniz.</translation>
 <translation id="4378154925671717803">Telefon</translation>
+<translation id="4398334096870680409">Bu özellik cihazınızda kullanılamıyor.</translation>
 <translation id="4406896451731180161">arama sonuçları</translation>
 <translation id="4408413947728134509"><ph name="NUM_COOKIES" /> çerez</translation>
 <translation id="4415426530740016218">Alınacağı Adres</translation>
@@ -629,12 +729,17 @@
 <translation id="4435702339979719576">Kartpostal)</translation>
 <translation id="443673843213245140">Proxy kullanımı devre dışı, ancak açık bir proxy yapılandırması belirtildi.</translation>
 <translation id="445100540951337728">Kabul edilen banka kartları</translation>
+<translation id="4466881336512663640">Formda yaptığınız değişiklikler kaybolacak. Devam etmek istediğinizden emin misiniz?</translation>
+<translation id="4477350412780666475">Sonraki Parça</translation>
 <translation id="4482953324121162758">Bu site çevrilmeyecek.</translation>
 <translation id="4490717597759821841">A7</translation>
+<translation id="4492519888999857993">Bu özellikler varsayılan olarak devre dışı bırakılmıştır. Chrome'un gelecek sürümlerinde kullanılamayacaktır.</translation>
+<translation id="4493480324863638523">Geçersiz URL. Standart şemaya sahip bir URL olmalıdır. Ör. http://example.com veya https://example.com.</translation>
 <translation id="4503882053543859973">Architecture-D</translation>
 <translation id="4506176782989081258">Doğrulama hatası: <ph name="VALIDATION_ERROR" /></translation>
 <translation id="4506599922270137252">Sistem yöneticisiyle iletişime geçme</translation>
 <translation id="450710068430902550">Yöneticiyle Paylaşma</translation>
+<translation id="4508814173490746936">Touch ID kullanılamadı</translation>
 <translation id="4510487217173779431">Chou4 (Zarf)</translation>
 <translation id="4515275063822566619">Kart ve adres bilgileri Chrome'dan ve Google Hesabınızdan (<ph name="ACCOUNT_EMAIL" />) alınmaktadır. Bunları <ph name="BEGIN_LINK" />Ayarlar<ph name="END_LINK" />'dan yönetebilirsiniz.</translation>
 <translation id="4517607026994743406">Comm-10 (Zarf)</translation>
@@ -652,7 +757,11 @@
 <translation id="4594403342090139922">Silmeyi &amp;Geri Al</translation>
 <translation id="4597348597567598915">Boyut 8</translation>
 <translation id="4600854749408232102">C6/C5 (Zarf)</translation>
+<translation id="4635654612248442824"><ph name="ORIGIN" /> sitesi bir kaynak politikasının
+    tüm isteklerine uygulanmasını istedi, ancak bu politika şu anda uygulanamaz.</translation>
+<translation id="464342062220857295">Özellik ara</translation>
 <translation id="4646534391647090355">İndirilenlere git</translation>
+<translation id="4658638640878098064">Sol üstte tel zımba</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="467662567472608290">Bu sunucu <ph name="DOMAIN" /> olduğunu kanıtlayamadı. Güvenlik sertifikasında hatalar var. Bu durum, bir yanlış yapılandırmadan veya bağlantıya müdahale eden bir saldırgandan kaynaklanıyor olabilir.</translation>
 <translation id="467809019005607715">Google Slaytlar</translation>
@@ -660,7 +769,7 @@
 <translation id="4691835149146451662">Architecture-A (Zarf)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4708268264240856090">Bağlantınız kesildi</translation>
-<translation id="471880041731876836">Bu siteyi ziyaret etmek için izniniz yok</translation>
+<translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Windows Ağ Teşhislerini Çalıştırma<ph name="END_LINK" /></translation>
 <translation id="4726672564094551039">Politikaları yeniden yükle</translation>
 <translation id="4728558894243024398">Platform</translation>
@@ -670,14 +779,15 @@
 <translation id="4738601419177586157"><ph name="TEXT" /> arama önerisi</translation>
 <translation id="4742407542027196863">Şifreleri yönet…</translation>
 <translation id="4744603770635761495">Çalıştırılabilir Yol</translation>
-<translation id="4746351372139058112">Mesajlar</translation>
 <translation id="4750917950439032686">Bilgileriniz (örneğin şifreler veya kredi kartı numaraları), bu siteye gönderilirken gizli olur.</translation>
 <translation id="4756388243121344051">&amp;Geçmiş</translation>
 <translation id="4758311279753947758">İletişim bilgilerinizi ekleyin</translation>
-<translation id="4759118997339041434">Ödeme bilgilerini otomatik doldurma devre dışı</translation>
 <translation id="4764776831041365478"><ph name="URL" /> adresindeki web sayfası, geçici olarak kullanılamıyor veya kalıcı olarak yeni bir web adresine taşınmış olabilir.</translation>
+<translation id="4766713847338118463">Altta ikili tel zımba</translation>
 <translation id="4771973620359291008">Bilinmeyen bir hata oluştu.</translation>
+<translation id="4780900888022378816">Cihazınız <ph name="ENROLLMENT_DOMAIN" /> tarafından, hesabınız ise <ph name="ACCOUNT_DOMAIN" /> tarafından yönetiliyor.</translation>
 <translation id="4785689107224900852">Bu sekmeye geç</translation>
+<translation id="4791134497475588553">Yüklü Linux uygulamaları ve son kullanılma zamanları</translation>
 <translation id="4798078619018708837">Kart bilgilerinizi güncellemek için <ph name="CREDIT_CARD" /> numaralı karta ait son kullanma tarihini ve CVC kodunu girin. Onayladığınızda Googe Hesabınızdaki kart bilgileriniz bu siteyle paylaşılır.</translation>
 <translation id="4800132727771399293">Son kullanma tarihinizi ve CVC'nizi kontrol edip tekrar deneyin</translation>
 <translation id="480334179571489655">Kaynak Politikası Hatası</translation>
@@ -687,13 +797,16 @@
 <translation id="4816492930507672669">Sayfaya sığdır</translation>
 <translation id="4850886885716139402">Görüntüle</translation>
 <translation id="4854362297993841467">Bu teslimat yöntemi kullanılamıyor. Farklı bir yöntem deneyin.</translation>
-<translation id="4858792381671956233">Ebeveynlerinize bu siteyi ziyaret etmenizin uygun olup olmadığını sordunuz</translation>
+<translation id="4876188919622883022">Basitleştirilmiş görünüm</translation>
 <translation id="4876305945144899064">Kullanıcı adı yok</translation>
+<translation id="4877083676943085827">{COUNT,plural, =0{Yok}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831"><ph name="TEXT" /> araması</translation>
 <translation id="4879491255372875719">Otomatik (varsayılan)</translation>
 <translation id="4880827082731008257">Geçmişte ara</translation>
 <translation id="4881695831933465202">Aç</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
+<translation id="4901778704868714008">Kaydet...</translation>
+<translation id="4913987521957242411">Sol üstte delik</translation>
 <translation id="4914479371620770914">{URL_count,plural, =1{ve 1 web sayfası daha}other{ve # web sayfası daha}}</translation>
 <translation id="4923417429809017348">Bu sayfa, bilinmeyen bir dilden <ph name="LANGUAGE_LANGUAGE" /> diline çevrildi</translation>
 <translation id="4923459931733593730">Ödeme</translation>
@@ -705,12 +818,14 @@
 <translation id="495170559598752135">İşlemler</translation>
 <translation id="4955242332710481440">A5-Extra</translation>
 <translation id="4958444002117714549">Listeyi genişlet</translation>
+<translation id="4973922308112707173">Üstte ikili delik</translation>
 <translation id="4974590756084640048">Uyarıları yeniden etkinleştir</translation>
 <translation id="4984339528288761049">Prc5 (Zarf)</translation>
 <translation id="4989163558385430922">Tümünü göster</translation>
+<translation id="4989542687859782284">Kullanılamıyor</translation>
 <translation id="4989809363548539747">Bu eklenti desteklenmiyor</translation>
+<translation id="4995216769782533993">Kart ayrıntılarınızı bu siteyle paylaşmak için güvenlik kodunu doğrulayın</translation>
 <translation id="5002932099480077015">Bu seçenek etkinleştirildiğinde Chrome, formları daha hızlı doldurmak için kartınızın bir kopyasını bu cihazda saklar.</translation>
-<translation id="5014174725590676422">Chrome'da Google Asistan'ın ilk kez çalışma ekranı aşağıda gösterilmiştir</translation>
 <translation id="5015510746216210676">Makine Adı:</translation>
 <translation id="5017554619425969104">Kopyalanan metin</translation>
 <translation id="5018422839182700155">Bu sayfa açılamıyor</translation>
@@ -725,24 +840,29 @@
 <translation id="5043480802608081735">Kopyalanan Bağlantı</translation>
 <translation id="5045550434625856497">Hatalı parola</translation>
 <translation id="5056549851600133418">Size uygun makaleler</translation>
+<translation id="5061227663725596739">Şunu mu demek istediniz: <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5068524481479508725">A10</translation>
+<translation id="5068778127327928576">{NUM_COOKIES,plural, =1{(1 çerez kullanımda)}other{(# çerez kullanımda)}}</translation>
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />Proxy adresini kontrol etme<ph name="END_LINK" /></translation>
 <translation id="5087286274860437796">Sunucu sertifikası şu anda geçerli değil.</translation>
 <translation id="5087580092889165836">Kart ekle</translation>
 <translation id="5089810972385038852">Eyalet</translation>
+<translation id="5093232627742069661">Z katlama</translation>
 <translation id="5094747076828555589">Bu sunucu <ph name="DOMAIN" /> olduğunu kanıtlayamadı; Chromium, sunucunun güvenlik sertifikasına güvenmiyor. Bu durum, bir yanlış yapılandırmadan veya bağlantıya müdahale eden bir saldırgandan kaynaklanıyor olabilir.</translation>
 <translation id="5095208057601539847">Eyalet</translation>
+<translation id="5097099694988056070">CPU/RAM kullanımı gibi cihaz istatistikleri</translation>
 <translation id="5097501891273180634">A2</translation>
-<translation id="5098222253617183465">Cihazınız <ph name="ENROLLMENT_DOMAIN" /> tarafından, hesabınız ise <ph name="ACCOUNT_DOMAIN" /> tarafından yönetiliyor. Bu durumda yöneticileriniz cihazınızı ve hesabınızı uzaktan yapılandırabilir.</translation>
 <translation id="5112422516732747637">A5</translation>
 <translation id="5115216390227830982">European-Edp</translation>
 <translation id="5115563688576182185">(64 bit)</translation>
 <translation id="5125394840236832993">B-Plus</translation>
+<translation id="5126510351761255129">Kartınızı doğrulayın</translation>
 <translation id="5135404736266831032">Adresleri yönet...</translation>
 <translation id="5138227688689900538">Daha az göster</translation>
-<translation id="5141240743006678641">Senkronize edilen şifreleri Google kimlik bilgilerinizle şifreleyin</translation>
+<translation id="5141240743006678641">Senkronize edilen şifreleri Google kimlik bilgileriyle şifrele</translation>
 <translation id="5145883236150621069">Politika yanıtında hata kodu var</translation>
 <translation id="515292512908731282">C4 (Zarf)</translation>
+<translation id="5158275234811857234">Kapak</translation>
 <translation id="5159010409087891077">Sayfayı yeni Gizli pencerede açın (⇧⌘N)</translation>
 <translation id="516920405563544094"><ph name="CREDIT_CARD" /> numaralı kartın CVC kodunu girin. Onayladığınızda Google Hesabınızdaki kart bilgileriniz bu siteyle paylaşılır.</translation>
 <translation id="5169827969064885044">Kuruluşunuzun hesabına erişimi kaybedebilir veya kimlik hırsızlığına maruz kalabilirsiniz. Chrome, şifrenizi hemen değiştirmenizi önerir.</translation>
@@ -751,6 +871,7 @@
 <translation id="5172758083709347301">Makine</translation>
 <translation id="5179510805599951267"><ph name="ORIGINAL_LANGUAGE" /> dilinde değil mi? Bu hatayı bildirin</translation>
 <translation id="5190835502935405962">Yer İşareti Çubuğu</translation>
+<translation id="519422657042045905">Ek açıklama kullanılamıyor</translation>
 <translation id="5201306358585911203">Bu sayfadaki yerleşik bir sayfanın mesajı</translation>
 <translation id="5205222826937269299">Ad gerekli</translation>
 <translation id="5215116848420601511">Google Pay'i kullanan ödeme yöntemleri ve adresler</translation>
@@ -763,19 +884,31 @@
 <translation id="5251803541071282808">Bulut</translation>
 <translation id="5252000469029418751">C7 (Zarf)</translation>
 <translation id="5254958791078852567">E1</translation>
+<translation id="5261548214279761072">Ödeme Tamamlandı</translation>
+<translation id="5266128565379329178">Üstten bağlı</translation>
+<translation id="5269225904387178860">Altta dörtlü delik</translation>
+<translation id="5269999699920406580">Tüm sistem için geçerli olan özellikler sadece sahibi <ph name="OWNER_EMAIL" /> tarafından ayarlanabilir</translation>
+<translation id="5273658854610202413">Uyarı: Bu politika, birleştirilebilecek sözlük politikalarının parçası olmadığından PolicyDictionaryMultipleSourceMergeList politikasında belirtildiği gibi birleştirilmemiştir.</translation>
 <translation id="5283044957620376778">B1</translation>
+<translation id="528468243742722775">Son</translation>
+<translation id="5284909709419567258">Ağ adresleri</translation>
 <translation id="5285570108065881030">Tüm kayıtlı şifreleri göster</translation>
 <translation id="5287240709317226393">Çerezleri göster</translation>
+<translation id="5287456746628258573">Bu site, eski bir güvenlik yapılandırması kullanıyor. Bu siteye gönderildiğinde bilgileriniz (ör. şifreler veya kredi kartı numaraları) gösterilebilir.</translation>
 <translation id="5288108484102287882">Politika değerlerini doğrulama işlemi uyarılarla sonuçlandı</translation>
 <translation id="5299298092464848405">Politika ayrıştırma hatası</translation>
 <translation id="5300589172476337783">Göster</translation>
 <translation id="5308380583665731573">Bağlan</translation>
 <translation id="5308689395849655368">Kilitlenme bildirme devre dışı.</translation>
+<translation id="5314967030527622926">Kitapçık yapıcı</translation>
 <translation id="5317780077021120954">Kaydet</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="NUM_MATCHES" /> eşleşme arasında <ph name="MATCH_POSITION" />. sırada</translation>
 <translation id="5324080437450482387">İletişim Bilgisi Seç</translation>
 <translation id="5327248766486351172">Ad</translation>
+<translation id="5329858041417644019">Tarayıcınız yönetilmemektedir</translation>
 <translation id="5332219387342487447">Gönderim Yöntemi</translation>
+<translation id="5334013548165032829">Ayrıntılı sistem günlükleri</translation>
+<translation id="534295439873310000">NFC cihazları</translation>
 <translation id="5344579389779391559">Bu sayfa sizden para almaya çalışabilir</translation>
 <translation id="5355557959165512791">Sertifikası iptal edildiği için <ph name="SITE" /> sitesini şu anda ziyaret edemezsiniz. Ağ hataları ve saldırılar genellikle geçici olduğundan, bu sayfa muhtemelen daha sonra çalışacaktır.</translation>
 <translation id="536296301121032821">Politika ayarları saklanamadı</translation>
@@ -784,6 +917,7 @@
 <translation id="5384855140246857529">Kartlarınızı tüm cihazlarınızda kullanmak için oturum açın ve senkronizasyonu etkinleştirin.</translation>
 <translation id="5386426401304769735">Bu sitenin sertifika zinciri, SHA-1 kullanılarak imzalanmış bir sertifika içeriyor.</translation>
 <translation id="538659543871111977">A4-Tab</translation>
+<translation id="5396631636586785122">Sağda kenar dikişi</translation>
 <translation id="540969355065856584">Bu sunucu <ph name="DOMAIN" /> olduğunu kanıtlayamadı. Güvenlik sertifikası şu anda geçerli değil. Bu durum, bir yanlış yapılandırmadan veya bağlantıya müdahale eden bir saldırgandan kaynaklanıyor olabilir.</translation>
 <translation id="5421136146218899937">Tarama verilerini temizle...</translation>
 <translation id="5430298929874300616">Yer işaretini kaldır</translation>
@@ -807,6 +941,7 @@
 <translation id="5510766032865166053">Taşınmış veya silinmiş olabilir.</translation>
 <translation id="5523118979700054094">Politika adı</translation>
 <translation id="552553974213252141">Metin doğru bir şekilde çıkarıldı mı?</translation>
+<translation id="55293785478302737">Kenar dikişi</translation>
 <translation id="553484882784876924">Prc6 (Zarf)</translation>
 <translation id="5540224163453853">İstenen makale bulunamadı.</translation>
 <translation id="5541546772353173584">E-posta Adresi Ekleyin</translation>
@@ -814,9 +949,8 @@
 <translation id="5556459405103347317">Yeniden Yükle</translation>
 <translation id="5560088892362098740">Son Kullanma Tarihi</translation>
 <translation id="5565735124758917034">Etkin</translation>
+<translation id="5570825185877910964">Hesabı koru</translation>
 <translation id="5571083550517324815">Bu adresten alım yapılamıyor. Farklı bir adres seçin.</translation>
-<translation id="5571347317547569613">({NUM_COOKIES,plural, =1{1 çerez kullanımda}other{# çerez kullanımda}})</translation>
-<translation id="5572851009514199876">Chrome'un bu siteye erişmenize izin verilip verilmediğini kontrol edebilmesi için lütfen Chrome'u başlatıp oturum açın.</translation>
 <translation id="5580958916614886209">Son kullanma tarihinin ayını kontrol edip tekrar deneyin</translation>
 <translation id="5586446728396275693">Kaydedilmiş adres yok</translation>
 <translation id="5595485650161345191">Adresi düzenle</translation>
@@ -824,6 +958,7 @@
 <translation id="560412284261940334">Yönetim desteklenmiyor</translation>
 <translation id="5605670050355397069">Ana Defter</translation>
 <translation id="5607240918979444548">Architecture-C</translation>
+<translation id="5608165884683734521">Bu site taklit veya sahte olabilir. Chrome siteden çıkmanızı önerir.</translation>
 <translation id="5610142619324316209">Bağlantınızı kontrol etme</translation>
 <translation id="5610807607761827392">Kartları ve adresleri <ph name="BEGIN_LINK" />Ayarlar<ph name="END_LINK" />'da yönetebilirsiniz.</translation>
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> sizi çok fazla kez yönlendirdi.</translation>
@@ -834,11 +969,13 @@
 <translation id="563324245173044180">Yanıltıcı içerik engellendi.</translation>
 <translation id="5659593005791499971">E-posta</translation>
 <translation id="5663614846592581799">9x11 (Zarf)</translation>
+<translation id="5663955426505430495">Bu cihazın yöneticisi diğer işlevler için uzantılar yüklemiş. Söz konusu uzantıların bazı verilerinize erişimi bulunuyor.</translation>
 <translation id="5675650730144413517">Bu sayfa çalışmıyor</translation>
 <translation id="5684874026226664614">Hata! Bu sayfa çevrilemedi.</translation>
 <translation id="5685654322157854305">Gönderim Adresi Ekle</translation>
 <translation id="5689199277474810259">JSON'a aktar</translation>
 <translation id="5689516760719285838">Konum</translation>
+<translation id="569000877158168851">DnsOverHttpsTemplates değeri alakalı olmadığından kullanılmayacak. Bu durum DnsOverHttpsMode politikası <ph name="SECURE_DNS_MODE_AUTOMATIC" /> veya <ph name="SECURE_DNS_MODE_SECURE" /> olarak ayarlanmadığı sürece geçerlidir.</translation>
 <translation id="570530837424789914">Yönet...</translation>
 <translation id="57094364128775171">Güçlü şifre öner…</translation>
 <translation id="5710435578057952990">Bu web sitesinin kimliği doğrulanmadı.</translation>
@@ -846,45 +983,59 @@
 <translation id="5720705177508910913">Geçerli kullanıcı</translation>
 <translation id="5728056243719941842">C5 (Zarf)</translation>
 <translation id="5730040223043577876">Chrome, şifrenizi başka sitelerde kullandıysanız sıfırlamanızı önerir.</translation>
-<translation id="5732392974455271431">Ebeveynleriniz engellemeyi kaldırabilir</translation>
 <translation id="5737183892635480227">{NUM_CARDS,plural, =1{Kartı Google Hesabınıza kaydedin}other{Kartları Google Hesabınıza kaydedin}}</translation>
 <translation id="5763042198335101085">Geçerli bir e-posta adresi girin</translation>
 <translation id="5765072501007116331">Teslimat yöntemlerini ve gereksinimleri görmek için bir adres seçin</translation>
 <translation id="5778550464785688721">MIDI cihazları tam denetimi</translation>
+<translation id="5781136890105823427">Deneme etkin</translation>
 <translation id="578305955206182703">Kehribar rengi</translation>
 <translation id="57838592816432529">Sesi kapat</translation>
 <translation id="5784606427469807560">Kartınız onaylanırken bir sorun oluştu. İnternet bağlantınızı kontrol edip tekrar deneyin.</translation>
 <translation id="5785756445106461925">Ayrıca, bu sayfa güvenli olmayan başka kaynaklar içeriyor. Bu kaynaklar, aktarım sırasında başkaları tarafından görülebilir ve bir saldırgan tarafından sayfanın görünüşünü değiştirmek üzere kullanılabilir.</translation>
 <translation id="5786044859038896871">Kart bilgilerinizin doldurulmasını istiyor musunuz?</translation>
+<translation id="5798290721819630480">Değişiklikler silinsin mi?</translation>
 <translation id="5798683403665926540">Ana sayfayı Chrome ayarlarından değiştirin</translation>
 <translation id="5803412860119678065"><ph name="CARD_DETAIL" /> kartınıza ait bilgilerin doldurulmasını istiyor musunuz?</translation>
 <translation id="5804241973901381774">İzinler</translation>
 <translation id="5810442152076338065"><ph name="DOMAIN" /> ile olan bağlantınız eski bir şifre seti kullanılarak şifrelendi.</translation>
 <translation id="5813119285467412249">Eklemeyi &amp;Yeniden Yap</translation>
+<translation id="583281660410589416">Bilinmiyor</translation>
 <translation id="5838278095973806738">Bu sitede hiçbir hassas bilginizi (örneğin şifrelerinizi veya kredi kartı bilgilerinizi) girmemelisiniz. Aksi takdirde bu bilgiler saldırganlar tarafından çalınabilir.</translation>
+<translation id="5851548754964597211">Sekme listesi</translation>
+<translation id="5855253129151731373">Bu sitenin ana makine adı <ph name="LOOKALIKE_DOMAIN" /> sitesinin adına benziyor. Saldırganlar bazen alan adında görülmesi zor ufak değişiklikler yaparak siteleri taklit ederler.
+
+    Bu mesajın yanlışlıkla gösterildiğini düşünüyorsanız lütfen https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals adresini ziyaret edin.</translation>
+<translation id="5860033963881614850">Kapalı</translation>
 <translation id="5863847714970149516">Gireceğiniz sayfa sizden para almaya çalışabilir</translation>
 <translation id="5866257070973731571">Telefon Numarası Ekleyin</translation>
+<translation id="5866898949289125849">Geliştirici araçları sayfasını görüntülüyorsunuz</translation>
 <translation id="5869405914158311789">Bu siteye ulaşılamıyor</translation>
 <translation id="5869522115854928033">Kayıtlı şifreler</translation>
 <translation id="5887400589839399685">Kart kaydedildi</translation>
 <translation id="5893752035575986141">Kredi kartları kabul edilir.</translation>
+<translation id="5895138241574237353">Yeniden başlat</translation>
 <translation id="5901630391730855834">Sarı</translation>
+<translation id="5905445707201418379"><ph name="ORIGIN" /> sitesinin kaynak politikası uyarınca engellendi.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (senkronize edildi)</translation>
+<translation id="5916664084637901428">Açık</translation>
+<translation id="59174027418879706">Etkin</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921639886840618607">Kart Google Hesabı'na kaydedilsin mi?</translation>
 <translation id="5922853866070715753">Tamamlanmak üzere</translation>
 <translation id="5932224571077948991">Site, araya giren veya yanıltıcı reklamlar gösteriyor</translation>
+<translation id="5939847200023027600">PDF Birleştirme Hizmeti</translation>
 <translation id="5946937721014915347"><ph name="SITE_NAME" /> açılıyor…</translation>
 <translation id="5951495562196540101">Tüketici hesabına kaydedilemiyor (paket lisans mevcut).</translation>
 <translation id="5967592137238574583">İletişim Bilgilerini Düzenleyin</translation>
 <translation id="5967867314010545767">Geçmişten kaldır.</translation>
 <translation id="5975083100439434680">Uzaklaştır</translation>
-<translation id="5977489021191000276">Cihazınız bir yönetici tarafından yönetilmiyor.</translation>
-<translation id="5977976211062815271">Bu cihazda</translation>
+<translation id="5979084224081478209">Şifreleri kontrol et</translation>
 <translation id="5980920751713728343">Index-3x5</translation>
 <translation id="598637245381783098">Ödeme uygulaması açılamıyor</translation>
 <translation id="5989320800837274978">Sabit proxy sunucular veya bir .pac komut dosyası URL'si belirtilmedi.</translation>
 <translation id="5990559369517809815">Sunucuya gönderilen istekler bir uzantı tarafından engellendi.</translation>
+<translation id="5992691462791905444">Yarım Z katlama</translation>
+<translation id="6000758707621254961">"<ph name="SEARCH_TEXT" />" için bulunan <ph name="RESULT_COUNT" /> sonuç gösteriliyor</translation>
 <translation id="6008256403891681546">JCB</translation>
 <translation id="6015796118275082299">Yıl</translation>
 <translation id="6016158022840135739">{COUNT,plural, =1{1. sayfa}other{#. sayfa}}</translation>
@@ -892,31 +1043,40 @@
 <translation id="6017850046339264347"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> öğesini kullanan saldırganlar başka bir şeyi taklit eden aldatıcı uygulamalar yükleyebilir veya sizi izlemek için kullanılabilecek veriler toplayabilirler. <ph name="BEGIN_LEARN_MORE_LINK" />Daha fazla bilgi<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (senkronize edildi)</translation>
 <translation id="6027201098523975773">Bir ad girin</translation>
+<translation id="603068602130820122">Sağ üstte tel zımba</translation>
+<translation id="6032955021262906325">Soldan bağlı</translation>
 <translation id="6034000775414344507">Açık Gri</translation>
 <translation id="6034283069659657473">10x14 (Zarf)</translation>
+<translation id="6034514109191629503">Akordeon katlama</translation>
 <translation id="6039846035001940113">Sorun devam ederse site sahibiyle iletişime geçin.</translation>
 <translation id="6040143037577758943">Kapat</translation>
 <translation id="6044573915096792553">Boyut 12</translation>
 <translation id="6047233362582046994">Güvenliğinize ilişkin riskleri anladıysanız zararlı programlar kaldırılmadan önce <ph name="BEGIN_LINK" />bu siteyi ziyaret edebilirsiniz<ph name="END_LINK" />.</translation>
 <translation id="6047927260846328439">Bu içerik sizi kandırarak yazılım yüklemenizi veya kişisel bilgilerinizi ifşa etmenizi sağlamaya çalışabilir. <ph name="BEGIN_LINK" />Yine de göster<ph name="END_LINK" /></translation>
 <translation id="6051221802930200923"><ph name="SITE" /> sitesi sertifika sabitleme yöntemi kullandığından siteyi şu anda ziyaret edemezsiniz. Ağ hataları ve saldırılar genellikle geçici olduğundan bu sayfa muhtemelen daha sonra çalışacaktır.</translation>
+<translation id="6052284303005792909">•</translation>
 <translation id="6058977677006700226">Kartlarınızı tüm cihazlarınızda kullanmak istiyor musunuz?</translation>
 <translation id="6059925163896151826">USB cihazları</translation>
+<translation id="6060009363608157444">Geçersiz DnsOverHttps modu.</translation>
+<translation id="6064217302520318294">Ekran kilidi</translation>
 <translation id="6080696365213338172">Yönetici tarafından sağlanmış bir sertifika kullanan içeriğe eriştiniz. <ph name="DOMAIN" /> alan adına sağladığınız verileri yöneticiniz görebilir ve bunlara müdahale edebilir.</translation>
 <translation id="6094273045989040137">Ek açıklama ekle</translation>
+<translation id="6104072995492677441">JIS B6</translation>
 <translation id="610911394827799129">Google Hesabınızın <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> adresinde başka biçimlerde tarama geçmişi olabilir</translation>
-<translation id="6144381551823904650">{COUNT,plural, =0{Yok}=1{1 şifre (senkronize edildi)}other{# şifre (senkronize edildi)}}</translation>
+<translation id="6132597952260690497">Yüklü uzantılar ve eklentiler hakkında bilgi</translation>
 <translation id="6146055958333702838">Kabloları kontrol edin ve kullandığınız yönlendiricileri, modemleri
     veya diğer ağ cihazlarını yeniden başlatın.</translation>
 <translation id="614940544461990577">Aşağıdakileri deneyin:</translation>
+<translation id="6150036310511284407">Solda üçlü delik</translation>
 <translation id="6151417162996330722">Sunucu sertifikasının geçerlilik dönemi çok uzun.</translation>
 <translation id="6157877588268064908">Gönderim yöntemlerini ve gereksinimlerini görmek için bir adres seçin</translation>
 <translation id="6165508094623778733">Daha fazla bilgi edinin</translation>
-<translation id="6169916984152623906">Artık gizli olarak göz atabilirsiniz ve bu cihazı kullanan diğer kişiler etkinliğinizi görmez. Yine de indirdikleriniz ve yer işaretleri kaydedilir.</translation>
 <translation id="6177128806592000436">Bu siteye bağlantınız güvenli değil</translation>
 <translation id="6203231073485539293">İnternet bağlantınızı kontrol edin</translation>
 <translation id="6218753634732582820">Adres Chromium'dan kaldırılsın mı?</translation>
+<translation id="622039917539443112">Paralel katlama</translation>
 <translation id="6221345481584921695">Google Güvenli Tarama yakın bir zamanda <ph name="SITE" /> sitesinde <ph name="BEGIN_LINK" />kötü amaçlı yazılım tespit etti<ph name="END_LINK" />. Normalde güvenli olan web sitelerine bazen kötü amaçlı yazılımlar bulaşır. Kötü amaçlı içerik, kötü amaçlı yazılım dağıtımcısı olduğu bilinen <ph name="SUBRESOURCE_HOST" /> kaynağından gelmektedir.</translation>
+<translation id="6234122620015464377">Her dokümandan sonra kırp</translation>
 <translation id="6240447795304464094">Google Pay logosu</translation>
 <translation id="6251924700383757765">Gizlilik politikası</translation>
 <translation id="6254436959401408446">Bu sayfayı açmaya yetecek kadar bellek yok</translation>
@@ -927,84 +1087,117 @@
 <translation id="6266934640124581640">Açık Turkuaz</translation>
 <translation id="6276112860590028508">Okuma listenize ait sayfalar burada görünür</translation>
 <translation id="627746635834430766">Bir dahaki sefere daha hızlı ödeme yapmak için kartınızı ve fatura adresinizi Google Hesabınıza kaydedin.</translation>
+<translation id="6279516281132775660">Chrome aşağıdaki bilgileri <ph name="BEGIN_EMPHASIS" />kaydetmez<ph name="END_EMPHASIS" />:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Tarama geçmişiniz
+          <ph name="LIST_ITEM" />Çerezler ve site verileri
+          <ph name="LIST_ITEM" />Formlara girilen bilgiler
+        <ph name="END_LIST" /></translation>
 <translation id="6280223929691119688">Bu adrese teslimat yapılamıyor. Farklı bir adres seçin.</translation>
 <translation id="6282194474023008486">Posta kodu</translation>
 <translation id="6290238015253830360">Önerilen makaleler burada görünür</translation>
+<translation id="6293309776179964942">JIS B5</translation>
 <translation id="6302269476990306341">Chrome'da Google Asistan durduruluyor</translation>
 <translation id="6305205051461490394"><ph name="URL" /> adresine ulaşılamıyor.</translation>
 <translation id="6321917430147971392">DNS ayarlarınızı kontrol edin</translation>
+<translation id="6322182122604171028">Windows Hello kullanılamadı</translation>
 <translation id="6328639280570009161">Ağ tahmin özelliğini devre dışı bırakmayı deneyin</translation>
 <translation id="6328784461820205019">"Bağlantınız gizli değil", "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;", "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;", "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;", "&lt;span class="error-code"&gt;ERR_CERT_SYMANTEC_LEGACY&lt;/span&gt;" veya "SSL sertifika hatası"</translation>
 <translation id="6328786501058569169">Bu site yanıltıcıdır</translation>
 <translation id="6337133576188860026"><ph name="SIZE" /> boyutundan daha az yer açar. Bir sonraki ziyaretinizde bazı siteler daha yavaş yüklenebilir.</translation>
 <translation id="6337534724793800597">Politikalara ada göre filtre uygula</translation>
+<translation id="6353505687280762741">{COUNT,plural, =0{Yok}=1{1 şifre (<ph name="DOMAIN_LIST" /> için, senkronize edildi)}=2{2 şifre (<ph name="DOMAIN_LIST" /> için, senkronize edildi)}other{# şifre (<ph name="DOMAIN_LIST" /> için, senkronize edildi)}}</translation>
 <translation id="6358450015545214790">Bunlar ne anlama geliyor?</translation>
 <translation id="6361757823711327522">B7</translation>
+<translation id="6366710531182496394">Solda ikili tel zımba</translation>
+<translation id="6377268785556383139">"<ph name="SEARCH_TEXT" />" için bulunan 1 sonuç gösteriliyor</translation>
 <translation id="6380497234672085559">A0</translation>
 <translation id="6383221683286411806">Devam etmeniz halinde ödeme yapmanız gerekebilir.</translation>
 <translation id="6386120369904791316">{COUNT,plural, =1{1 öneri daha}other{# öneri daha}}</translation>
 <translation id="6387754724289022810">Gelecek sefer daha hızlı ödeme yapabilmek için kartınızı ve fatura adresinizi Google hesabınıza kaydedin.</translation>
+<translation id="6389470377220713856">Karttaki Ad</translation>
+<translation id="6390200185239044127">Yarım Z katlama</translation>
 <translation id="6390662030813198813">Engineering-E</translation>
+<translation id="6401136357288658127">Bu politika kullanımdan kaldırılmıştır. Onun yerine <ph name="NEW_POLICY" /> politikasını kullanmalısınız.</translation>
 <translation id="6404511346730675251">Yer işaretini düzenle</translation>
 <translation id="6406765186087300643">C0 (Zarf)</translation>
+<translation id="6409754798200046165">Az önce şifrenizi yanıltıcı bir sitede girdiniz. Chrome, şifrenizi hemen değiştirmenizi önerir.</translation>
 <translation id="6410264514553301377"><ph name="CREDIT_CARD" /> numaralı kartın son kullanma tarihini ve CVC kodunu girin</translation>
-<translation id="6414888972213066896">Ebeveyninize bu siteyi ziyaret etmenizin uygun olup olmadığını sordunuz</translation>
-<translation id="6417515091412812850">Sertifikanın iptal edilip edilmediği kontrol edilemiyor.</translation>
+<translation id="6415778972515849510">Chromium, Google Hesabınızı korumanıza ve şifrenizi değiştirmenize yardımcı olabilir.</translation>
+<translation id="6427730057873428458">İki kırımlı katlama</translation>
 <translation id="6433490469411711332">İletişim bilgilerini düzenle</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> bağlanmayı reddetti.</translation>
 <translation id="6434309073475700221">Sil</translation>
+<translation id="6440503408713884761">Yoksayıldı</translation>
 <translation id="6446163441502663861">Kahu (Zarf)</translation>
 <translation id="6446608382365791566">Daha fazla bilgi ekleyin</translation>
 <translation id="6447842834002726250">Çerezler</translation>
 <translation id="6451458296329894277">Yeniden Form Gönderme İşlemini Onayla</translation>
+<translation id="6457206614190510200">Ortada tel zımba</translation>
 <translation id="6465306955648956876">Şifreleri yönet...</translation>
 <translation id="647261751007945333">Cihaz politikaları</translation>
-<translation id="6477321094435799029">Chrome, bu sayfada olağan dışı kod tespit etti ve kişisel bilgilerinizi (örneğin, şifreler, telefon numaraları ve kredi kartları) korumak için sayfayı engelledi.</translation>
+<translation id="6476284679642588870">Ödeme yöntemlerini yönetin</translation>
 <translation id="6489534406876378309">Kilitlenmeleri yüklemeye başla</translation>
 <translation id="6499038740797743453">Şifre sıfırlansın mı?</translation>
 <translation id="6507833130742554667">Kredi ve banka kartları kabul edilir.</translation>
 <translation id="6508722015517270189">Chrome'u yeniden başlatın</translation>
+<translation id="6517596291481585650">Uyarı: Bu politika bir liste olmadığından politikada belirtildiği gibi bir liste olarak birleştirilmemiştir.</translation>
+<translation id="6518133107902771759">Doğrula</translation>
+<translation id="6521745193039995384">Etkin değil</translation>
 <translation id="6529602333819889595">Silmeyi &amp;Yeniden Yap</translation>
 <translation id="6534179046333460208">Fiziksel Web önerileri</translation>
-<translation id="6563469144985748109">Yöneticiniz henüz onaylamadı</translation>
+<translation id="6545864417968258051">Bluetooth taraması</translation>
+<translation id="6547208576736763147">Solda ikili delik</translation>
+<translation id="6554795675067793129">Hesabınız <ph name="ENROLLMENT_DOMAIN" /> tarafından yönetiliyor.</translation>
+<translation id="6556866813142980365">Yeniden Yap</translation>
 <translation id="6569060085658103619">Bir uzantı sayfası görüntülüyorsunuz</translation>
+<translation id="6573200754375280815">Sağda ikili delik</translation>
 <translation id="6578796323535178455">C2 (Zarf)</translation>
 <translation id="6579990219486187401">Açık Pembe</translation>
 <translation id="6583674473685352014">B6 (Zarf)</translation>
 <translation id="6587923378399804057">Kopyalanan bağlantı</translation>
+<translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> cihazınız yönetilmemektedir</translation>
 <translation id="6596325263575161958">Şifreleme seçenekleri</translation>
 <translation id="6604181099783169992">Hareket veya Işık Sensörleri</translation>
 <translation id="6609880536175561541">Prc7 (Zarf)</translation>
+<translation id="6612358246767739896">Korunan içerik</translation>
 <translation id="6624427990725312378">İletişim Bilgileri</translation>
 <translation id="6626291197371920147">Geçerli kart numarası ekle</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> Arama</translation>
 <translation id="6630809736994426279">Şu anda <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> sitesindeki saldırganlar bilgilerinizi (örneğin, fotoğraflar, şifreler, mesajlar ve kredi kartları) çalabilecek veya silebilecek tehlikeli programları Mac'inize yüklemeye çalışabilir. <ph name="BEGIN_LEARN_MORE_LINK" />Daha fazla bilgi<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="6631202559048444592">Bu politikada birden fazla kaynak var, ancak değerler aynı.</translation>
+<translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">Temizle</translation>
 <translation id="6644283850729428850">Bu politika uygun bulunmadı.</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{Yok}=1{1 siteden (Google Hesabınızdan çıkış yapılmaz)}other{# siteden (Google Hesabınızdan çıkış yapılmaz)}}</translation>
+<translation id="6652101503459149953">Windows Hello'yu kullan</translation>
 <translation id="6657585470893396449">Şifre</translation>
+<translation id="6665553082534466207">Sağda üçlü delik</translation>
 <translation id="6670613747977017428">Güvenliğe dön.</translation>
 <translation id="6671697161687535275">Form önerisi Chromium'dan kaldırılsın mı?</translation>
 <translation id="6685834062052613830">Çıkış yapın ve kurulumu tamamlayın</translation>
+<translation id="6689271823431384964">Chrome, oturumunuz açık olduğu için kartlarınızı Google Hesabınıza kaydetmeyi öneriyor. Bu davranışı ayarlardan değiştirebilirsiniz. Kart sahibinin adı hesabınızdan gelir.</translation>
+<translation id="6704582573942289642">Bu doğru site mi?</translation>
+<translation id="6707256370811247129">Önbelleğin içeriğini ve Chrome'da indirdiğiniz veya yüklediğiniz dosyaları tarama.</translation>
 <translation id="6710213216561001401">Önceki</translation>
 <translation id="6710594484020273272">&lt;Arama terimini yazın&gt;</translation>
 <translation id="671076103358959139">Kayıt Jetonu:</translation>
 <translation id="6711464428925977395">Proxy sunucusunda bir sorun var veya adres yanlış.</translation>
-<translation id="6723740634201835758">Google Hesabınızda</translation>
 <translation id="6738516213925468394">Verileriniz <ph name="TIME" /> tarihinde <ph name="BEGIN_LINK" />senkronizasyon parolanızla<ph name="END_LINK" /> şifrelendi. Senkronizasyonu başlatmak için senkronizasyon parolanızı girin.</translation>
 <translation id="674375294223700098">Bilinmeyen sunucu sertifikası hatası.</translation>
 <translation id="6744009308914054259">Bağlantı kurulmasını beklerken çevrimdışı makaleleri okumak için İndirilenler bölümünü ziyaret edebilirsiniz.</translation>
 <translation id="6753269504797312559">Politika değeri</translation>
 <translation id="6757797048963528358">Cihazınız uyku moduna geçti.</translation>
 <translation id="6768213884286397650">Hagaki (Kartpostal)</translation>
-<translation id="6778737459546443941">Ebeveyniniz henüz onaylamadı</translation>
+<translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Mor</translation>
 <translation id="6786747875388722282">Uzantılar</translation>
+<translation id="6790428901817661496">Oynat</translation>
 <translation id="679355240208270552">Varsayılan arama motoru politika tarafından etkinleştirilmediği için yoksayıldı.</translation>
 <translation id="681021252041861472">Gerekli Alan</translation>
 <translation id="6810899417690483278">Özelleştirme Kimliği</translation>
-<translation id="6824266427216888781">Bölge verileri yüklenemedi</translation>
 <translation id="6825578344716086703"><ph name="DOMAIN" /> alanına erişme girişiminde bulundunuz ancak sunucu SHA-1 gibi zayıf bir imza algoritması kullanılarak imzalanmış bir sertifika sağladı. Bu, sunucunun sağladığı güvenlik bilgilerinin sahte olabileceği anlamına gelir ve sunucu sizin beklediğiniz sunucu olmayabilir (bir saldırgan ile irtibat kuruyor olabilirsiniz).</translation>
+<translation id="6826370046007623921">Veri Kaybını Önleme</translation>
 <translation id="6831043979455480757">Çevir</translation>
 <translation id="6839929833149231406">Bölge</translation>
 <translation id="6852204201400771460">Uygulama yeniden yüklensin mi?</translation>
@@ -1016,25 +1209,22 @@
 <translation id="6891596781022320156">Politika düzeyi desteklenmiyor.</translation>
 <translation id="6895330447102777224">Kartınız onaylandı</translation>
 <translation id="6897140037006041989">Kullanıcı Aracısı</translation>
-<translation id="6903319715792422884">Google'a bazı <ph name="BEGIN_WHITEPAPER_LINK" />sistem bilgilerini ve sayfa içeriklerini<ph name="END_WHITEPAPER_LINK" /> göndererek Güvenli Tarama'nın iyileştirilmesine yardımcı olabilirsiniz. <ph name="PRIVACY_PAGE_LINK" /></translation>
 <translation id="6915804003454593391">Kullanıcı:</translation>
 <translation id="6934672428414710184">Bu ad Google Hesabınızdan gelmektedir</translation>
-<translation id="6939583532829045966">Cihazınız <ph name="ENROLLMENT_DOMAIN" /> tarafından yönetiliyor. Bu durumda yöneticiniz cihazınızı uzaktan yapılandırabilir.</translation>
 <translation id="6944692733090228304">Şifrenizi <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> tarafından yönetilmeyen bir sitede girdiniz. Hesabınızı korumak için şifrenizi başka uygulama ve sitelerde tekrar kullanmayın.</translation>
 <translation id="6945221475159498467">Seç</translation>
 <translation id="6948701128805548767">Alım yöntemlerini ve gereksinimlerini görmek için bir adres seçin</translation>
 <translation id="6949872517221025916">Şifreyi Sıfırla</translation>
 <translation id="6950684638814147129">JSON değeri ayrıştırılırken hata oluştu: <ph name="ERROR" /></translation>
-<translation id="6957624206566198865">Sayfayı yeni bir Gizli sekmede aç</translation>
 <translation id="6957887021205513506">Sunucunun sertifikası sahte görünüyor.</translation>
 <translation id="6964255747740675745">Ağ yapılandırması ayrıştırılamadı (geçersiz JSON).</translation>
 <translation id="6965382102122355670">Tamam</translation>
 <translation id="6965978654500191972">Cihaz</translation>
 <translation id="6970216967273061347">Bölge</translation>
 <translation id="6973656660372572881">Hem sabit proxy sunucular hem de bir .pac komut dosyası URL'si belirtildi.</translation>
+<translation id="6973932557599545801">Maalesef daha fazla yardımcı olamıyorum, lütfen kendiniz devam edin.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">Sesi kapat (varsayılan)</translation>
-<translation id="6984479912851154518">Harici bir uygulama üzerinden ödeme gerçekleştirmek için gizli moddan çıkılacak. Devam edilsin mi?</translation>
 <translation id="6989763994942163495">Gelişmiş ayarları göster...</translation>
 <translation id="6993898126790112050">6x9 (Zarf)</translation>
 <translation id="6996312675313362352"><ph name="ORIGINAL_LANGUAGE" /> dilini daima çevir</translation>
@@ -1044,8 +1234,9 @@
 <translation id="7050187094878475250"><ph name="DOMAIN" /> alan adına erişmeyi denediniz, ancak sunucu, geçerlilik dönemi güvenilir olmayacak kadar uzun olan bir sertifika sundu.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Bu kart şu anda kaydedilemiyor}other{Bu kartlar şu anda kaydedilemiyor}}</translation>
 <translation id="7053983685419859001">Engelle</translation>
-<translation id="7062635574500127092">Turkuvaz</translation>
+<translation id="7062635574500127092">Turkuaz</translation>
 <translation id="7064851114919012435">İletişim bilgileri</translation>
+<translation id="7075452647191940183">İstek çok büyük</translation>
 <translation id="7079718277001814089">Bu site kötü amaçlı yazılım içeriyor</translation>
 <translation id="7087282848513945231">Ülke</translation>
 <translation id="7090678807593890770">Google'da <ph name="LINK" /> araması yapın</translation>
@@ -1061,19 +1252,16 @@
 <translation id="7152423860607593928">Number-14 (Zarf)</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> ve <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> yöntem daha}other{<ph name="PAYMENT_METHOD_PREVIEW" /> ve <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> yöntem daha}}</translation>
 <translation id="7153618581592392745">Lavanta</translation>
-<translation id="7158980942472052083">Geçersiz URL. URL'nin standart düzende olması gerekir.</translation>
 <translation id="717330890047184534">Gaia Kimliği:</translation>
+<translation id="7174545416324379297">Birleştirildi</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> ve <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> seçenek daha}other{<ph name="SHIPPING_OPTION_PREVIEW" /> ve <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> seçenek daha}}</translation>
-<translation id="7177397715882417099">Gittiğiniz sunucu (<ph name="ORIGIN" />) kendisine gelen tüm isteklere
-    bir güvenlik politikasının uygulanmasını talep etmişti. Ancak bir politika
-    sunmak yerine tarayıcıyı başka bir yere yönlendirdiği için tarayıcı, <ph name="SITE" />
-    sitesiyle ilgili isteğinizi yerine getiremiyor.</translation>
 <translation id="7179323680825933600">Ödeme Yöntemlerini Kaydet ve Doldur</translation>
 <translation id="7180611975245234373">Yenile</translation>
 <translation id="7182878459783632708">Hiçbir politika ayarlanmamış</translation>
 <translation id="7186367841673660872">Bu sayfa,<ph name="ORIGINAL_LANGUAGE" />dilinden<ph name="LANGUAGE_LANGUAGE" />diline çevrilmiştir</translation>
 <translation id="7192203810768312527"><ph name="SIZE" /> yer açar. Bir sonraki ziyaretinizde bazı siteler daha yavaş yüklenebilir.</translation>
 <translation id="719464814642662924">Visa</translation>
+<translation id="7201591969684833065">Yöneticiniz şunları görebilir:</translation>
 <translation id="7202346780273620635">Letter-Extra</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> güvenlik standartlarına uymuyor.</translation>
 <translation id="721197778055552897">Bu sorun hakkında <ph name="BEGIN_LINK" />daha fazla<ph name="END_LINK" /> bilgi edinin.</translation>
@@ -1092,21 +1280,27 @@ Ek ayrıntılar:
 <translation id="7298195798382681320">Önerilenler</translation>
 <translation id="7300012071106347854">Çini Mavisi</translation>
 <translation id="7302712225291570345">"<ph name="TEXT" />"</translation>
+<translation id="7304030187361489308">İnce</translation>
 <translation id="7309308571273880165">Kilitlenme raporu yakalandı (<ph name="CRASH_TIME" />) (yükleme kullanıcı tarafından istendi, ancak henüz yüklenmedi)</translation>
+<translation id="7313965965371928911"><ph name="BEGIN_LINK" />Güvenli Tarama<ph name="END_LINK" /> uyarıları</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Bağlantı Yardımı</translation>
+<translation id="733354035281974745">Cihaz yerel hesabını geçersiz kıl</translation>
 <translation id="7334320624316649418">Sıralama değişikliğini &amp;yeniden yap</translation>
+<translation id="7337706099755338005">Platformunuzda kullanılamıyor.</translation>
 <translation id="733923710415886693">Sunucunun sertifikası, Sertifika Şeffaflığı aracılığıyla açıklanmadı.</translation>
 <translation id="734600844861828519">11x15</translation>
+<translation id="7346048084945669753">İlişkili olma durumu:</translation>
 <translation id="7349430561505560861">A4-Extra</translation>
 <translation id="7353601530677266744">Komut Satırı</translation>
 <translation id="7372973238305370288">arama sonucu</translation>
 <translation id="7377249249140280793"><ph name="RELATIVE_DATE" /> - <ph name="FULL_DATE" /></translation>
+<translation id="7378594059915113390">Medya Denetimleri</translation>
 <translation id="7378627244592794276">Hayır</translation>
 <translation id="7378810950367401542">/</translation>
-<translation id="7381288752349550461">Yönetilen oturum tarafından geçersiz kılındı</translation>
 <translation id="7390545607259442187">Kartı Onayla</translation>
 <translation id="7400418766976504921">URL</translation>
+<translation id="7403591733719184120"><ph name="DEVICE_NAME" /> adlı cihazınız yönetilmektedir</translation>
 <translation id="7407424307057130981">&lt;p&gt;Windows bilgisayarınızda Superfish yazılımı varsa bu hatayı görürsünüz.&lt;/p&gt;
       &lt;p&gt;Web'e ulaşabilmeniz amacıyla yazılımı geçici olarak devre dışı bırakmak için bu adımları uygulayın. Bu adımları gerçekleştirmek için yönetici ayrıcalıklarınızın olması gerekir.&lt;/p&gt;
       &lt;ol&gt;
@@ -1124,14 +1318,15 @@ Ek ayrıntılar:
 <translation id="7440140511386898319">Çevrimdışıyken keşfetme</translation>
 <translation id="7441627299479586546">Politika konusu yanlış</translation>
 <translation id="7442725080345379071">Açık Turuncu</translation>
-<translation id="7444046173054089907">Bu site engellenmiş</translation>
 <translation id="7445762425076701745">Bağlı olduğunuz sunucunun kimliği tam olarak doğrulanamıyor. Sunucuya yalnızca ağınızın içinde geçerli olan ve dış sertifika yetkilisi tarafından hiçbir şekilde sahipliği doğrulanamayacak bir ad kullanarak bağlandınız. Bazı sertifika yetkilileri bu adlar için sertifikalar yayınlasa da, bir saldırgana değil, hedeflenen web sitesine bağlandığınızdan emin olmanın herhangi bir yolu yoktur.</translation>
 <translation id="7451311239929941790">Bu sorun hakkında <ph name="BEGIN_LINK" />daha fazla<ph name="END_LINK" /> bilgi edinme.</translation>
 <translation id="7455133967321480974">Genel varsayılanı kullan (Engelle)</translation>
 <translation id="7460618730930299168">Filtreleme sizin seçiminizden farklı. Devam etmek istiyor musunuz?</translation>
 <translation id="7473891865547856676">Hayır, Teşekkürler</translation>
 <translation id="7481312909269577407">İleri</translation>
+<translation id="748406663033922918">Kayıtlı ödeme yöntemlerinizi doğrulamak için ekran kilidini kullanın.</translation>
 <translation id="7485870689360869515">Hiçbir veri bulunamadı.</translation>
+<translation id="7498234416455752244">Düzenlemeye devam et</translation>
 <translation id="7508255263130623398">Döndürülen politika cihaz kimliği boş veya mevcut cihaz kimliğiyle eşleşmiyor</translation>
 <translation id="7508870219247277067">Avokado Yeşili</translation>
 <translation id="7511955381719512146">Kullandığınız kablosuz bağlantı ağı, <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> adresini ziyaret etmenizi gerektiriyor olabilir.</translation>
@@ -1145,9 +1340,9 @@ Ek ayrıntılar:
 <translation id="7538364083937897561">A2 (Zarf)</translation>
 <translation id="7542403920425041731">Onayladığınızda kart ayrıntılarınız bu siteyle paylaşılacaktır.</translation>
 <translation id="7542995811387359312">Bu form güvenli bağlantı kullanmadığından kredi kartı bilgilerini otomatik doldurma özelliği devre dışı bırakıldı.</translation>
-<translation id="7543525346216957623">Ebeveyninize sorun</translation>
 <translation id="7548892272833184391">Bağlantı hatalarını düzeltme</translation>
 <translation id="7549584377607005141">Bu Web sayfasının düzgün şekilde görüntülenmesi için, önceden girdiğiniz veriler gerekiyor. Bu verileri tekrar gönderebilirsiniz, ancak bunu yaptığınızda bu sayfanın daha önce gerçekleştirdiği işlemler de tekrar edilir.</translation>
+<translation id="7550637293666041147">Cihaz kullanıcı adınız ve Chrome kullanıcı adınız</translation>
 <translation id="7552846755917812628">Aşağıdaki ipuçlarını deneyin:</translation>
 <translation id="7554791636758816595">Yeni Sekme</translation>
 <translation id="7564049878696755256"><ph name="ORG_NAME" /> hesabınıza erişimi kaybedebilir veya kimlik hırsızlığına maruz kalabilirsiniz. Chrome, şifrenizi hemen değiştirmenizi önerir.</translation>
@@ -1162,9 +1357,12 @@ Ek ayrıntılar:
 <translation id="7610193165460212391">Değer aralık dışında: <ph name="VALUE" />.</translation>
 <translation id="7613889955535752492">Son kullanım tarihi: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7615602087246926389">Google Hesabı şifrenizin farklı bir sürümü kullanılarak şifrelenmiş verileriniz zaten var. Lütfen bu şifreyi aşağıya girin.</translation>
+<translation id="7625784245512586808">Chrome Enterprise Threat Protection</translation>
 <translation id="7633909222644580952">Performans verileri ve kilitlenme raporları</translation>
 <translation id="7637571805876720304">Kredi kartı Chromium'dan kaldırılsın mı?</translation>
+<translation id="7638605456503525968">Seri bağlantı noktaları</translation>
 <translation id="7639968568612851608">Koyu Gri</translation>
+<translation id="7653957176542370971">Ödeme işleyici sayfası kapatıldı</translation>
 <translation id="765676359832457558">Gelişmiş ayarları gizle...</translation>
 <translation id="7658239707568436148">İptal</translation>
 <translation id="7662298039739062396">Ayar bir uzantının kontrolü altında</translation>
@@ -1187,7 +1385,6 @@ Ek ayrıntılar:
 <translation id="7723047071702270851">Kartı Düzenleyin</translation>
 <translation id="774634243536837715">Tehlikeli içerik engellendi.</translation>
 <translation id="7752995774971033316">Yönetimden kaldırıldı</translation>
-<translation id="7755287808199759310">Ebeveyniniz engellemeyi sizin için kaldırabilir</translation>
 <translation id="7757555340166475417">Dai-Pa-Kai</translation>
 <translation id="7758069387465995638">Bağlantıyı güvenlik duvarı veya virüsten korunma yazılımı engellemiş olabilir.</translation>
 <translation id="7759163816903619567">Görünen alan:</translation>
@@ -1196,8 +1393,8 @@ Ek ayrıntılar:
 <translation id="7764225426217299476">Adres ekle</translation>
 <translation id="7770259615151589601">Designated-Long</translation>
 <translation id="777702478322588152">Bölge</translation>
+<translation id="7791196057686275387">Balya</translation>
 <translation id="7791543448312431591">Ekle</translation>
-<translation id="7793809570500803535"><ph name="SITE" /> adresindeki Web sayfası geçici olarak kullanılamıyor veya kalıcı olarak yeni bir Web adresine taşınmış olabilir.</translation>
 <translation id="7800304661137206267">Bağlantı, ileti kimlik doğrulaması için <ph name="MAC" /> ve anahtar değişim mekanizması olarak <ph name="KX" /> kullanılan <ph name="CIPHER" /> ile şifrelenmiştir.</translation>
 <translation id="7802523362929240268">Site meşrudur</translation>
 <translation id="780301667611848630">Hayır, teşekkürler</translation>
@@ -1217,34 +1414,43 @@ Ek ayrıntılar:
 <translation id="7882421473871500483">Kahverengi</translation>
 <translation id="7887683347370398519">CVC'nizi kontrol edin ve tekrar deneyin</translation>
 <translation id="7904208859782148177">C3 (Zarf)</translation>
+<translation id="7932579305932748336">Kaplama</translation>
 <translation id="79338296614623784">Geçerli bir telefon numarası girin</translation>
+<translation id="7934052535022478634">Ödeme tamamlandı</translation>
+<translation id="7935031712718413217">Olası adres sahteciliği URL'si</translation>
 <translation id="7935318582918952113">DOM Ayrıştırıcı</translation>
 <translation id="7937554595067888181">Süre sonu: <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">Sunucunun sertifikası henüz geçerli değil.</translation>
 <translation id="7942349550061667556">Kırmızı</translation>
 <translation id="7947285636476623132">Son kullanma tarihinin yılını kontrol edip tekrar deneyin</translation>
 <translation id="7951415247503192394">(32 bit)</translation>
+<translation id="7953569069500808819">Üstte kenar dikişi</translation>
 <translation id="7956713633345437162">Mobil yer işaretleri</translation>
 <translation id="7961015016161918242">Hiçbir Zaman</translation>
 <translation id="7977894662897852582">Edp</translation>
+<translation id="799149739215780103">Bağlama</translation>
 <translation id="7995512525968007366">Belirtilmedi</translation>
 <translation id="800218591365569300">Bellekte yer açmak için diğer sekmeleri veya programları kapatmayı deneyin.</translation>
 <translation id="8004582292198964060">Tarayıcı</translation>
 <translation id="8009225694047762179">Şifreleri Yönet</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Aşağıdaki kart ve ona ait fatura adresi kaydedilecektir. Kaydettiğiniz kartı <ph name="USER_EMAIL" /> hesabında oturumunuz açıkken kullanabilirsiniz.}other{Aşağıdaki kartlar ve onlara ait fatura adresleri kaydedilecektir. Kaydettiğiniz kartları <ph name="USER_EMAIL" /> hesabında oturumunuz açıkken kullanabilirsiniz.}}</translation>
-<translation id="8012647001091218357">Şu anda ebeveynlerinize erişemedik. Lütfen tekrar deneyin.</translation>
 <translation id="8025119109950072390">Bu sitedeki saldırganlar sizi kandırarak yazılım yükleme veya kişisel bilgilerinizi (örneğin şifreler, telefon numaraları veya kredi kartları) ifşa etme gibi tehlikeli şeyler yaptırabilir.</translation>
+<translation id="8028960012888758725">İşten sonra kırp</translation>
 <translation id="8034522405403831421">Bu sayfa <ph name="SOURCE_LANGUAGE" /> dilinde. <ph name="TARGET_LANGUAGE" /> diline çevrilsin mi?</translation>
 <translation id="8035152190676905274">Kalem</translation>
+<translation id="8037117624646282037">Cihazı son zamanlarda kullananlar</translation>
 <translation id="8037357227543935929">Sor (varsayılan)</translation>
 <translation id="803771048473350947">Dosya</translation>
 <translation id="8041089156583427627">Görüş bildirin</translation>
 <translation id="8041940743680923270">Genel varsayılanı kullan (Sor)</translation>
 <translation id="8042918947222776840">Alma Yöntemi Seç</translation>
 <translation id="8057711352706143257">"<ph name="SOFTWARE_NAME" />" doğru şekilde yapılandırılmamış. Genellikle "<ph name="SOFTWARE_NAME" />" kaldırıldığında sorun çözülür. <ph name="FURTHER_EXPLANATION" /></translation>
+<translation id="8062224330780487419">Bundan böyle bir kart güvenlik kodu girmeniz gerekmeyecek</translation>
+<translation id="8066955247577885446">Maalesef bir hata oluştu.</translation>
 <translation id="8074253406171541171">10x13 (Zarf)</translation>
 <translation id="8078141288243656252">Doküman döndürüldüğünde ek açıklama özelliği kullanılamaz</translation>
 <translation id="8079031581361219619">Site yeniden yüklensin mi?</translation>
+<translation id="8086971161893892807">Taslak</translation>
 <translation id="8088680233425245692">Makale görüntülenemedi.</translation>
 <translation id="808894953321890993">Şifreyi değiştir</translation>
 <translation id="8090403583893450254">Boyut 20</translation>
@@ -1254,11 +1460,14 @@ Ek ayrıntılar:
 <translation id="809898108652741896">A6</translation>
 <translation id="8100588592594801589">Geçersiz kartlar kaldırıldı</translation>
 <translation id="8103161714697287722">Ödeme Yöntemi</translation>
+<translation id="8105368624971345109">Kapat</translation>
 <translation id="8118489163946903409">Ödeme yöntemi</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" yazılımı bilgisayarınıza veya ağa düzgün şekilde yüklenmemiş. BT yöneticinizden sorunu çözmesini isteyin.</translation>
 <translation id="8131740175452115882">Onayla</translation>
 <translation id="8149426793427495338">Bilgisayarınız uyku moduna geçti.</translation>
 <translation id="8150722005171944719"><ph name="URL" /> konumundaki dosya okunamıyor. Kaldırılmış ya da taşınmış olabilir veya dosya izinleri erişimi önlüyordur.</translation>
+<translation id="8157295877370077682">Siteden çık</translation>
+<translation id="8163866351304776260">Solda dörtlü delik</translation>
 <translation id="8175796834047840627">Chrome, oturumunuz açık olduğu için kartlarınızı Google Hesabınıza kaydetmeyi öneriyor. Bu davranışı ayarlardan değiştirebilirsiniz.</translation>
 <translation id="8184538546369750125">Genel varsayılanı kullan (İzin ver)</translation>
 <translation id="8194797478851900357">Taşımayı &amp;Geri Al</translation>
@@ -1270,6 +1479,7 @@ Ek ayrıntılar:
 <translation id="8211406090763984747">Bağlantı güvenli</translation>
 <translation id="8218327578424803826">Atanan Konum:</translation>
 <translation id="8220146938470311105">C7/C6 (Zarf)</translation>
+<translation id="8220639454292072926">Kurumsal Raporlama</translation>
 <translation id="8225771182978767009">Bu bilgisayarı kuran kişi bu siteyi engellemeyi seçmiş.</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8238581221633243064">Sayfayı yeni bir Gizli sekmede aç</translation>
@@ -1280,7 +1490,10 @@ Ek ayrıntılar:
 <translation id="8253091569723639551">Fatura adresi gerekli</translation>
 <translation id="825929999321470778">Tüm Kayıtlı Şifreleri Göster</translation>
 <translation id="8261506727792406068">Sil</translation>
+<translation id="8262952874573525464">Altta kenar dikişi</translation>
 <translation id="8267698848189296333"><ph name="USERNAME" /> olarak oturum açılıyor</translation>
+<translation id="8269981117540303696">Artık gizli olarak göz atabilirsiniz. Bu cihazı kullanan diğer kişiler etkinliğinizi görmez. Yine de indirdikleriniz ve yer işaretleri kaydedilir.</translation>
+<translation id="8277900682056760511">Ödeme işleyici sayfası açıldı</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
 <translation id="8286036467436129157">Oturum Aç</translation>
 <translation id="8288807391153049143">Sertifikayı göster</translation>
@@ -1288,8 +1501,10 @@ Ek ayrıntılar:
 <translation id="8293206222192510085">Yer İşareti Ekle</translation>
 <translation id="8294431847097064396">Kaynak</translation>
 <translation id="8298115750975731693">Kullandığınız kablosuz bağlantı ağı (<ph name="WIFI_NAME" />) <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> adresini ziyaret etmenizi gerektiriyor olabilir.</translation>
+<translation id="830498451218851433">Ortadan katlama</translation>
 <translation id="8307358339886459768">Small-Photo</translation>
 <translation id="8308427013383895095">Ağ bağlantısıyla ilgili bir sorun nedeniyle çeviri başarısız oldu.</translation>
+<translation id="831207732689920588">Bu sayfa şüpheli (Chrome tarafından işaretlendi).</translation>
 <translation id="8332188693563227489"><ph name="HOST_NAME" /> ana makinesine erişim reddedildi</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="834457929814110454">Güvenliğinize ilişkin riskleri anladıysanız <ph name="BEGIN_LINK" />bu siteyi<ph name="END_LINK" /> zararlı programlar kaldırılmadan önce ziyaret edebilirsiniz.</translation>
@@ -1300,7 +1515,6 @@ Ek ayrıntılar:
 <translation id="8371889962595521444">Özel kök sertifikalar</translation>
 <translation id="8380941800586852976">Tehlikeli</translation>
 <translation id="8381674639488873545">Bu ödemeler bir defalık alınabileceği gibi yinelenen ödemeler de olabilir ve bu durum açıkça belli olmayabilir. <ph name="BEGIN_LINK" />Yine de göster<ph name="END_LINK" /></translation>
-<translation id="8382348898565613901">Son ziyaret ettiğiniz yer işaretleri burada görünür</translation>
 <translation id="8398259832188219207">Kilitlenme raporunun yüklenme zamanı: <ph name="UPLOAD_TIME" /></translation>
 <translation id="8412145213513410671">Kilitlenme Sayısı (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Aynı parolayı iki kez girmelisiniz.</translation>
@@ -1312,17 +1526,20 @@ Ek ayrıntılar:
 <translation id="8428213095426709021">Ayarlar</translation>
 <translation id="8433057134996913067">Bu işlem, çoğu web sitesinden çıkış yapmanıza neden olacak.</translation>
 <translation id="8437238597147034694">Taşımayı &amp;geri al</translation>
-<translation id="8461694314515752532">Senkronize edilen verileri kendi senkronizasyon parolanızla şifreleyin</translation>
+<translation id="8461694314515752532">Senkronize edilen verileri senkronizasyon parolanızı kullanarak şifrele</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 kredi kartı}other{# kredi kartı}}</translation>
 <translation id="8473863474539038330">Adresler ve daha fazlası</translation>
+<translation id="8479754468255770962">Sol altta tel zımba</translation>
+<translation id="8481133456511676116">Şunu mu demek istediniz: <ph name="DOMAIN" />?</translation>
 <translation id="8483780878231876732">Google Hesabınızda kayıtlı kartları kullanmak için Chrome'da oturum açın</translation>
 <translation id="8488350697529856933">Uygulandığı yer</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> ana makinesinin yanıt vermesi çok uzun sürdü.</translation>
 <translation id="8503559462189395349">Chrome Şifreleri</translation>
 <translation id="8503813439785031346">Kullanıcı adı</translation>
 <translation id="8508648098325802031">Arama simgesi</translation>
+<translation id="8522552481199248698">Chrome, Google Hesabınızı korumanıza ve şifrenizi değiştirmenize yardımcı olabilir.</translation>
+<translation id="8542014550340843547">Altta üçlü tel zımba</translation>
 <translation id="8543181531796978784"><ph name="BEGIN_ERROR_LINK" />Bir tespit sorununu bildirebilir<ph name="END_ERROR_LINK" /> veya güvenliğiniz açısından riskleri anlıyorsanız <ph name="BEGIN_LINK" />güvenli olmayan bu siteyi ziyaret edebilirsiniz<ph name="END_LINK" />.</translation>
-<translation id="8543556556237226809">Sorularınız mı var? Profilinizi denetleyen kişiyle iletişime geçin.</translation>
 <translation id="8553075262323480129">Sayfanın dili belirlenemediğinden çeviri başarısız oldu.</translation>
 <translation id="8557066899867184262">CVC, kartınızın arkasında bulunur.</translation>
 <translation id="8559762987265718583">Cihazınızın tarih ve saati (<ph name="DATE_AND_TIME" />) yanlış olduğundan <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> alan adına gizli bir bağlantı kurulamıyor.</translation>
@@ -1330,24 +1547,29 @@ Ek ayrıntılar:
 <translation id="8571890674111243710">Sayfa <ph name="LANGUAGE" /> diline çevriliyor...</translation>
 <translation id="858637041960032120">Telefon no ekle
 </translation>
-<translation id="859285277496340001">Sertifika, iptal edilip edilmediğinin denetlenebileceği bir mekanizma belirtmiyor.</translation>
 <translation id="860043288473659153">Kart sahibinin adı</translation>
+<translation id="8616822740383114808">Bu ayar, "<ph name="SETTINGS_PAGE" />" sayfasında "<ph name="ENFORCING_SETTING" />" tarafından zorunlu kılındı.</translation>
 <translation id="861775596732816396">Boyut 4</translation>
-<translation id="8620436878122366504">Ebeveynleriniz henüz onaylamadı</translation>
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8625384913736129811">Bu Kartı Bu Cihaza Kaydet</translation>
+<translation id="8647750283161643317">Tümünü varsayılan değerlere sıfırla</translation>
 <translation id="8663226718884576429">Sipariş Özeti, <ph name="TOTAL_LABEL" />, Daha Fazla Ayrıntı</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, yanıt, <ph name="ANSWER" /></translation>
 <translation id="8685155993131031756">Prc-16K</translation>
+<translation id="8688672835843460752">Kullanılabilir</translation>
+<translation id="869891660844655955">Son kullanma tarihi</translation>
 <translation id="8703575177326907206"><ph name="DOMAIN" /> bağlantınız şifrelenmedi.</translation>
 <translation id="8718314106902482036">Ödeme işlemi tamamlanmadı</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, arama önerisi</translation>
+<translation id="8719528812645237045">Üstte çoklu delik</translation>
 <translation id="8725066075913043281">Yeniden dene</translation>
 <translation id="8728672262656704056">Gizli moda geçtiniz</translation>
 <translation id="8730621377337864115">Bitti</translation>
 <translation id="8738058698779197622">Güvenli bir bağlantı kurmak için saatinizin doğru ayarlanmış olması gerekir. Bunun sebebi, web sitelerinin kendilerini tanımlamak için kullandıkları sertifikaların sadece belli süreler için geçerli olmasıdır. Cihazınızın saati yanlış olduğundan, Chromium bu sertifikaları doğrulayamaz.</translation>
 <translation id="8740359287975076522"><ph name="HOST_NAME" /> ana makinesinin &lt;abbr id="dnsDefinition"&gt;DNS adresi&lt;/abbr&gt; bulunamadı. Sorun teşhis ediliyor.</translation>
 <translation id="874846938927089722">Kabul Edilen Kredi Kartları ve Ön Ödemeli Kartlar</translation>
+<translation id="874918643257405732">Bu sekmeye yer işareti koy</translation>
+<translation id="8751426954251315517">Lütfen bir dahaki sefer tekrar deneyin</translation>
 <translation id="8759274551635299824">Bu kartın kullanım süresi doldu</translation>
 <translation id="8761567432415473239">Google Güvenli Tarama, yakın zamanda <ph name="SITE" /> sitesinde <ph name="BEGIN_LINK" />zararlı programlar buldu<ph name="END_LINK" />.</translation>
 <translation id="8763927697961133303">USB cihaz</translation>
@@ -1356,6 +1578,8 @@ Ek ayrıntılar:
 <translation id="8790007591277257123">Silmeyi &amp;yeniden yap</translation>
 <translation id="8792621596287649091"><ph name="ORG_NAME" /> hesabınıza erişimi kaybedebilir veya kimlik hırsızlığına maruz kalabilirsiniz. Chromium, şifrenizi hemen değiştirmenizi önerir.</translation>
 <translation id="8800988563907321413">Yakın çevrenizle ilgili öneriler burada görünür</translation>
+<translation id="8805819170075074995">Liste girişi "<ph name="LANGUAGE_ID" />": Giriş, SpellcheckLanguage politikasında da yer aldığı için yoksayıldı.</translation>
+<translation id="8807160976559152894">Her sayfadan sonra kırp</translation>
 <translation id="8820817407110198400">Favoriler</translation>
 <translation id="883848425547221593">Diğer Yer İşaretleri</translation>
 <translation id="884264119367021077">Gönderim adresi</translation>
@@ -1363,23 +1587,28 @@ Ek ayrıntılar:
 <translation id="885730110891505394">Google ile Paylaşma</translation>
 <translation id="8858065207712248076">Chrome, <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> şifrenizi başka sitelerde kullandıysanız sıfırlamanızı önerir.</translation>
 <translation id="8866481888320382733">Politika ayarlarını ayrıştırma hatası</translation>
+<translation id="8866928039507595380">Kat</translation>
 <translation id="886872106311861689">B3</translation>
 <translation id="8870413625673593573">Son Kapatılan</translation>
 <translation id="8874824191258364635">Geçerli bir kart numarası girin</translation>
 <translation id="8891727572606052622">Geçersiz proxy modu.</translation>
 <translation id="8903921497873541725">Yakınlaştır</translation>
 <translation id="890485472659500557">Engineering-C</translation>
+<translation id="8910670906166981838">Gizli sekme açtınız</translation>
+<translation id="8912362522468806198">Google Hesabı</translation>
+<translation id="8918231688545606538">Bu sayfa şüpheli</translation>
+<translation id="892588693504540538">Sağ üstte delik</translation>
 <translation id="8931333241327730545">Bu kartı Google Hesabınıza kaydetmek istiyor musunuz?</translation>
 <translation id="8932102934695377596">Saatiniz geri</translation>
 <translation id="893332455753468063">Ad Ekleyin</translation>
 <translation id="8938939909778640821">Kabul edilen kredi kartları ve ön ödemeli kartlar</translation>
-<translation id="894185898663964645">Yöneticiniz, ziyaret ettiğiniz web sitelerinin içeriğinin yönetici tarafından görülmesini sağlayabilen özel kök sertifikalar yapılandırmış.</translation>
 <translation id="8943282376843390568">Küf yeşili</translation>
 <translation id="8957210676456822347">Giriş Portalı Yetkilendirmesi</translation>
-<translation id="8966619695390250636">Bunu mu arıyordunuz?</translation>
+<translation id="8962950042226115166">Şüpheli site</translation>
 <translation id="8968766641738584599">Kartı kaydet</translation>
 <translation id="8971063699422889582">Sunucu sertifikasının süresi doldu.</translation>
 <translation id="8975012916872825179">Telefon numaraları, e-posta adresleri ve gönderim adresleri gibi bilgileri içerir</translation>
+<translation id="8975263830901772334">Yazdırdığınız dosyaların adları</translation>
 <translation id="8978053250194585037">Google Güvenli Tarama yakın bir zamanda <ph name="SITE" /> sitesinde <ph name="BEGIN_LINK" />kimlik avı yapıldığını tespit etti<ph name="END_LINK" />. Kimlik avı siteleri sizi aldatmak için başka web siteleri gibi görünür.</translation>
 <translation id="8983003182662520383">Google Pay'i Kullanan Ödeme Yöntemleri ve Adresler</translation>
 <translation id="8987927404178983737">Ay</translation>
@@ -1387,6 +1616,7 @@ Ek ayrıntılar:
 <translation id="8996941253935762404">Girmekte olduğunuz site zararlı programlar içermektedir</translation>
 <translation id="8997023839087525404">Sunucu, Sertifika Şeffaflığı politikası kullanılarak herkese açık bir şekilde açıklanmayan bir sertifika sundu. Güvenilir olduklarından emin olmak ve saldırganlara karşı koruma sağlamak için bazı sertifikalarda bu zorunludur.</translation>
 <translation id="9001074447101275817"><ph name="DOMAIN" /> proxy'si için kullanıcı adı ve şifre gerekiyor.</translation>
+<translation id="9004367719664099443">VR oturumu devam ediyor</translation>
 <translation id="9005998258318286617">PDF dokümanı yüklenemedi.</translation>
 <translation id="9008201768610948239">Yoksay</translation>
 <translation id="9011424611726486705">Site ayarlarını aç</translation>
@@ -1397,22 +1627,25 @@ Ek ayrıntılar:
 <translation id="9035022520814077154">Güvenlik hatası</translation>
 <translation id="9038649477754266430">Sayfaları daha hızlı yüklemek için bir tahmin hizmeti kullan</translation>
 <translation id="9039213469156557790">Ayrıca, bu sayfa güvenli olmayan başka kaynaklar içeriyor. Bu kaynaklar, aktarım sırasında başkaları tarafından görülebilir ve bir saldırgan tarafından sayfanın davranışını değiştirmek üzere kullanılabilir.</translation>
+<translation id="9044359186343685026">Touch ID'yi kullan</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9049981332609050619"><ph name="DOMAIN" /> alan adına erişmeye çalıştınız, ancak sunucu geçersiz bir sertifika sağladı.</translation>
 <translation id="9050666287014529139">Parola</translation>
 <translation id="9065203028668620118">Düzenle</translation>
 <translation id="9065745800631924235">geçmişteki <ph name="TEXT" /> araması</translation>
 <translation id="9069693763241529744">Bir uzantı tarafından engellendi</translation>
-<translation id="9076283476770535406">Yetişkin içeriği bulunabilir</translation>
+<translation id="9076630408993835509">Bu tarayıcı bir şirket veya başka bir kuruluş tarafından yönetilmemektedir. Bu cihazdaki etkinlikler Chrome dışında yönetilebilir. <ph name="BEGIN_LINK" />Daha Fazla Bilgi<ph name="END_LINK" /></translation>
 <translation id="9078964945751709336">Daha fazla bilgi gerekli</translation>
 <translation id="9080712759204168376">Sipariş Özeti</translation>
+<translation id="9089260154716455634">Mesai Dışı Saatler Politikası:</translation>
+<translation id="9095388113577226029">Diğer diller...</translation>
+<translation id="9098981495403789647">Yöneticiniz, tarayıcınızda Chrome Enterprise Threat Protection özelliğini etkinleştirdi. Chrome Enterprise Threat Protection özelliğinin verilerinizin bir kısmına erişimi vardır.</translation>
 <translation id="9103872766612412690"><ph name="SITE" /> normalde bilgilerinizi korumak için şifreleme kullanmaktadır. Chromium bu sefer <ph name="SITE" /> sitesine bağlanmayı denediğinde, web sitesi sıra dışı ve yanlış kimlik bilgileri döndürdü. Bir saldırgan <ph name="SITE" /> gibi davranmaya çalışıyor olabilir ya da bir Kablosuz oturum açma ekranı bağlantıyı kesmiştir. Chromium herhangi bir veri alışverişinden önce bağlantıyı durdurduğu için bilgileriniz hâlâ güvendedir.</translation>
 <translation id="9106062320799175032">Fatura Adresi Ekleyin</translation>
-<translation id="9110718169272311511">Chrome'da Google Asistan ekranın altına yakın bir bölümde bulunur</translation>
 <translation id="9114524666733003316">Kart onaylanıyor...</translation>
 <translation id="9128870381267983090">Ağa bağlan</translation>
 <translation id="9137013805542155359">Orijinali göster</translation>
-<translation id="9137248913990643158">Lütfen bu uygulamayı kullanmadan önce Chrome'u başlatıp oturum açın.</translation>
+<translation id="9141013498910525015">Adresleri yönet</translation>
 <translation id="9148088599418889305">Gönderim Yöntemi Seç</translation>
 <translation id="9148507642005240123">Düzenlemeyi &amp;geri al</translation>
 <translation id="9154194610265714752">Güncellendi</translation>
@@ -1426,6 +1659,7 @@ Ek ayrıntılar:
 <translation id="9174917557437862841">Sekme değiştirme düğmesi, bu sekmeye geçmek için Enter tuşuna basın</translation>
 <translation id="9183302530794969518">Google Dokümanlar</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> desteklenmeyen bir protokol kullanıyor.</translation>
+<translation id="9191834167571392248">Sol altta delik</translation>
 <translation id="9205078245616868884">Verileriniz senkronizasyon parolanızla şifrelendi. Senkronizasyonu başlatmak için senkronizasyon parolanızı girin.</translation>
 <translation id="9207861905230894330">Makale eklenemedi.</translation>
 <translation id="9215416866750762878">Bir uygulama, Chrome'un bu siteye güvenli bir şekilde bağlanmasını engelliyor</translation>
@@ -1436,8 +1670,9 @@ Ek ayrıntılar:
 <translation id="936602727769022409">Google Hesabınıza erişimi kaybedebilirsiniz. Chromium, şifrenizi hemen değiştirmenizi önerir. Oturum açmanız istenecektir.</translation>
 <translation id="939736085109172342">Yeni klasör</translation>
 <translation id="945855313015696284">Aşağıdaki bilgileri kontrol edin ve geçersiz kartları silin</translation>
+<translation id="950736567201356821">Üstte üçlü delik</translation>
 <translation id="951104842009476243">Kabul Edilen Banka ve Ön Ödemeli Kartlar</translation>
-<translation id="958202389743790697"><ph name="ORIGIN" /> sitesinin güvenlik politikası uyarınca engellendi.</translation>
+<translation id="961663415146723894">Alttan bağlı</translation>
 <translation id="962484866189421427">Bu içerik başka bir şeyi taklit eden aldatıcı uygulamalar yükleyebilir veya sizi izlemek için kullanılabilecek veriler toplayabilir. <ph name="BEGIN_LINK" />Yine de göster<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">Resmi Derleme</translation>
 <translation id="973773823069644502">Teslimat Adresi Ekle</translation>
@@ -1455,6 +1690,7 @@ Ek ayrıntılar:
     &lt;li&gt;"<ph name="SOFTWARE_NAME" />" yazılımının yüklemesini kaldırmayı veya devre dışı bırakmayı deneyin&lt;/li&gt;
     &lt;li&gt;Başka bir kablosuz ağa bağlanmayı deneyin&lt;/li&gt;
     &lt;/ul&gt;</translation>
+<translation id="994346157028146140">JIS B1</translation>
 <translation id="997986563973421916">Google Pay'den</translation>
 <translation id="998893882640184078">Yeni Chrome gizli penceresi açın</translation>
 </translationbundle>

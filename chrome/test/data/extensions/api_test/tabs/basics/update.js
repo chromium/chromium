@@ -19,14 +19,16 @@ chrome.test.runTests([
   },
 
   function testBasicSetup() {
-    chrome.tabs.get(tabIds[0], pass(function(tab) {
-      assertEq(pageUrl("a"), tab.url);
-    }));
-    chrome.tabs.get(tabIds[1], pass(function(tab) {
-      assertEq(pageUrl("b"), tab.url);
-    }));
-    chrome.tabs.get(tabIds[2], pass(function(tab) {
-      assertEq(pageUrl("c"), tab.url);
+    waitForAllTabs(pass(function() {
+      chrome.tabs.get(tabIds[0], pass(function(tab) {
+        assertEq(pageUrl("a"), tab.url);
+      }));
+      chrome.tabs.get(tabIds[1], pass(function(tab) {
+        assertEq(pageUrl("b"), tab.url);
+      }));
+      chrome.tabs.get(tabIds[2], pass(function(tab) {
+        assertEq(pageUrl("c"), tab.url);
+      }));
     }));
   },
 
@@ -39,11 +41,13 @@ chrome.test.runTests([
           undefined,
           {"url": pageUrl("d")},
           pass(function(tab) {
-            chrome.tabs.get(
-              tabIds[1],
-              pass(function(tab) {
-                assertEq(pageUrl("d"), tab.url);
-              }));
+            waitForAllTabs(pass(function() {
+              chrome.tabs.get(
+                tabIds[1],
+                pass(function(tab) {
+                  assertEq(pageUrl("d"), tab.url);
+                }));
+            }));
           }));
       }));
   },
@@ -57,11 +61,13 @@ chrome.test.runTests([
           null,
           {"url": pageUrl("e")},
           pass(function(tab) {
+            waitForAllTabs(pass(function() {
             chrome.tabs.get(
               tabIds[2],
               pass(function(tab) {
                 assertEq(pageUrl("e"), tab.url);
               }));
+            }));
           }));
       }));
   },
@@ -69,7 +75,7 @@ chrome.test.runTests([
   function testUpdatingWithPermissionReturnsTabInfo() {
     chrome.tabs.update(
       undefined, {"url": pageUrl("neutrinos")}, pass(function(tab) {
-        assertEq(pageUrl("neutrinos"), tab.url);
+        assertEq(pageUrl("neutrinos"), tab.pendingUrl);
     }));
   }
 ]);

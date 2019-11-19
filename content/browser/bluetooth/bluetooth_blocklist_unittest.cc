@@ -4,7 +4,7 @@
 
 #include "content/browser/bluetooth/bluetooth_blocklist.h"
 
-#include "device/bluetooth/bluetooth_uuid.h"
+#include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using device::BluetoothUUID;

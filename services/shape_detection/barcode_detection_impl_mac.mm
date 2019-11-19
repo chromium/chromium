@@ -47,9 +47,16 @@ void BarcodeDetectionImplMac::Detect(const SkBitmap& bitmap,
     result->corner_points.emplace_back(f.bottomLeft.x, height - f.bottomLeft.y);
 
     result->raw_value = base::SysNSStringToUTF8(f.messageString);
+    result->format = mojom::BarcodeFormat::QR_CODE;
     results.push_back(std::move(result));
   }
   std::move(callback).Run(std::move(results));
+}
+
+// static
+std::vector<shape_detection::mojom::BarcodeFormat>
+BarcodeDetectionImplMac::GetSupportedSymbologies() {
+  return {mojom::BarcodeFormat::QR_CODE};
 }
 
 }  // namespace shape_detection

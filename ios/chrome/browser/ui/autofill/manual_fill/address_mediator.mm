@@ -7,14 +7,14 @@
 #include <vector>
 
 #include "base/metrics/user_metrics.h"
-#include "components/autofill/core/browser/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/action_cell.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/address.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/address_consumer.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/address_form.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/address_list_delegate.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_address_cell.h"
-#import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_content_delegate.h"
+#import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_content_injector.h"
 #import "ios/chrome/browser/ui/list_model/list_model.h"
 #import "ios/chrome/browser/ui/table_view/table_view_model.h"
 #include "ios/chrome/grit/ios_strings.h"
@@ -77,7 +77,7 @@ NSString* const ManageAddressAccessibilityIdentifier =
   for (ManualFillAddress* address in self.addresses) {
     auto item =
         [[ManualFillAddressItem alloc] initWithAddress:address
-                                              delegate:self.contentDelegate];
+                                       contentInjector:self.contentInjector];
     [items addObject:item];
   }
 

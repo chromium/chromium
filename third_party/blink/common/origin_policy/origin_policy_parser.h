@@ -31,6 +31,8 @@ class OriginPolicyParser {
   bool ParseContentSecurityPolicy(const base::Value&);
   bool ParseFeaturePolicies(const base::Value&);
   bool ParseFeaturePolicy(const base::Value&);
+  bool ParseFirstPartySet(const base::Value&);
+  bool ParseFirstPartyOrigin(const base::Value&);
 
   std::unique_ptr<OriginPolicy> policy_;
 

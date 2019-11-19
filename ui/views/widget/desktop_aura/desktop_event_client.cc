@@ -8,11 +8,9 @@
 
 namespace views {
 
-DesktopEventClient::DesktopEventClient() {
-}
+DesktopEventClient::DesktopEventClient() = default;
 
-DesktopEventClient::~DesktopEventClient() {
-}
+DesktopEventClient::~DesktopEventClient() = default;
 
 bool DesktopEventClient::CanProcessEventsWithinSubtree(
     const aura::Window* window) const {

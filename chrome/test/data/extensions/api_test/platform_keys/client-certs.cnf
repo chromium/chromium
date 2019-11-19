@@ -1,0 +1,47 @@
+CA_DIR=out
+
+[ca]
+default_ca = ca_settings
+
+[ca_settings]
+database        = $CA_DIR/${ENV::ID}-index.txt
+new_certs_dir   = $CA_DIR
+serial          = $CA_DIR/${ENV::ID}-serial
+certificate     = $CA_DIR/${ENV::ID}.pem
+private_key     = $CA_DIR/${ENV::ID}.key
+default_md      = sha256
+default_days    = 3650
+policy          = policy_anything
+unique_subject  = no
+copy_extensions = copy
+
+[policy_anything]
+# Default signing policy
+countryName            = optional
+stateOrProvinceName    = optional
+localityName           = optional
+organizationName       = optional
+organizationalUnitName = optional
+commonName             = optional
+emailAddress           = optional
+
+[req]
+default_bits       = 2048
+default_md         = sha256
+string_mask        = utf8only
+prompt             = no
+encrypt_key        = no
+distinguished_name = req_env_dn
+
+[user_cert]
+# Extensions to add when signing a request for an EE cert
+basicConstraints = critical, CA:false
+extendedKeyUsage = serverAuth,clientAuth
+
+[ca_cert]
+# Extensions to add when signing a request for an intermediate/CA cert
+basicConstraints = critical, CA:true
+keyUsage         = critical, keyCertSign, cRLSign
+
+[req_env_dn]
+CN = ${ENV::COMMON_NAME}

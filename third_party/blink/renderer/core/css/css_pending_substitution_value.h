@@ -8,8 +8,10 @@
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/css/css_variable_reference_value.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
+namespace cssvalue {
 
 class CSSPendingSubstitutionValue : public CSSValue {
  public:
@@ -44,8 +46,14 @@ class CSSPendingSubstitutionValue : public CSSValue {
   Member<CSSVariableReferenceValue> shorthand_value_;
 };
 
-DEFINE_CSS_VALUE_TYPE_CASTS(CSSPendingSubstitutionValue,
-                            IsPendingSubstitutionValue());
+}  // namespace cssvalue
+
+template <>
+struct DowncastTraits<cssvalue::CSSPendingSubstitutionValue> {
+  static bool AllowFrom(const CSSValue& value) {
+    return value.IsPendingSubstitutionValue();
+  }
+};
 
 }  // namespace blink
 

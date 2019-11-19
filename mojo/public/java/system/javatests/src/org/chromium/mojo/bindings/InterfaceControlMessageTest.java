@@ -4,7 +4,7 @@
 
 package org.chromium.mojo.bindings;
 
-import android.support.test.filters.SmallTest;
+import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Assert;

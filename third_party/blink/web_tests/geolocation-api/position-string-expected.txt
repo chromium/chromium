@@ -5,8 +5,8 @@ On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE
 PASS position.coords.latitude is mockLatitude
 PASS position.coords.longitude is mockLongitude
 PASS position.coords.accuracy is mockAccuracy
-PASS position.toString() is "[object Position]"
-PASS position.coords.toString() is "[object Coordinates]"
+PASS position.toString() is "[object GeolocationPosition]"
+PASS position.coords.toString() is "[object GeolocationCoordinates]"
 PASS successfullyParsed is true
 
 TEST COMPLETE

@@ -81,9 +81,6 @@ testcase.driveOpenSidebarOffline = async () => {
  * "shared-with-me" should be shown.
  */
 testcase.driveOpenSidebarSharedWithMe = async () => {
-  const isDriveFsEnabled =
-      await sendTestMessage({name: 'getDriveFsEnabled'}) === 'true';
-
   // Open Files app on Drive containing "Shared with me" file entries.
   const appId = await setupAndWaitUntilReady(
       RootPath.DRIVE, [], BASIC_DRIVE_ENTRY_SET.concat([
@@ -111,9 +108,7 @@ testcase.driveOpenSidebarSharedWithMe = async () => {
 
   // Wait until the breadcrumb path is updated.
   await remoteCall.waitUntilCurrentDirectoryIsChanged(
-      appId,
-      isDriveFsEnabled ? '/Shared with me/Shared Directory' :
-                         '/My Drive/Shared Directory');
+      appId, '/Shared with me/Shared Directory');
 
   // Verify the file list.
   await remoteCall.waitForFiles(
@@ -143,6 +138,12 @@ testcase.driveClickFirstSearchResult = async () => {
 
   await remoteCall.waitForFiles(
       appId, TestEntryInfo.getExpectedRows(SEARCH_RESULTS_ENTRY_SET));
+
+  // Fetch A11y messages.
+  const a11yMessages =
+      await remoteCall.callRemoteTestUtil('getA11yAnnounces', appId, []);
+  chrome.test.assertEq(1, a11yMessages.length, 'Missing a11y message');
+  chrome.test.assertEq('Showing results for hello.', a11yMessages[0]);
 };
 
 /**
@@ -158,6 +159,36 @@ testcase.drivePressEnterToSearch = async () => {
       ['#search-box cr-input', 'Enter', false, false, false]));
   await remoteCall.waitForFiles(
       appId, TestEntryInfo.getExpectedRows(SEARCH_RESULTS_ENTRY_SET));
+
+  // Fetch A11y messages.
+  const a11yMessages =
+      await remoteCall.callRemoteTestUtil('getA11yAnnounces', appId, []);
+  chrome.test.assertEq(1, a11yMessages.length, 'Missing a11y message');
+  chrome.test.assertEq('Showing results for hello.', a11yMessages[0]);
+
+  return appId;
+};
+
+/**
+ * Tests that pressing the clear search button announces an a11y message and
+ * shows all files/folders.
+ */
+testcase.drivePressClearSearch = async () => {
+  const appId = await testcase.drivePressEnterToSearch();
+
+  // Click on the clear search button.
+  await remoteCall.waitAndClickElement(appId, '#search-box cr-input .clear');
+
+  // Wait for fil list to display all files.
+  await remoteCall.waitForFiles(
+      appId, TestEntryInfo.getExpectedRows(BASIC_DRIVE_ENTRY_SET));
+
+  // Check that a11y message for clearing the search term has been issued.
+  const a11yMessages =
+      await remoteCall.callRemoteTestUtil('getA11yAnnounces', appId, []);
+  chrome.test.assertEq(2, a11yMessages.length, 'Missing a11y message');
+  chrome.test.assertEq(
+      'Search text cleared, showing all files and folders.', a11yMessages[1]);
 };
 
 /**
@@ -177,14 +208,26 @@ testcase.drivePinFileMobileNetwork = async () => {
   chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
       'fakeMouseRightClick', appId, ['.table-row[selected]']));
 
+  // Wait menu to appear and click on toggle pinned.
   await remoteCall.waitForElement(appId, '#file-context-menu:not([hidden])');
-  await remoteCall.waitForElement(appId, ['[command="#toggle-pinned"]']);
-  await remoteCall.callRemoteTestUtil(
-      'fakeMouseClick', appId, ['[command="#toggle-pinned"]']);
+  await remoteCall.waitAndClickElement(
+      appId, '[command="#toggle-pinned"]:not([hidden]):not([disabled])');
+
+  // Wait the toggle pinned async action to finish, so the next call to display
+  // context menu is after the action has finished.
   await remoteCall.waitForElement(appId, '#file-context-menu[hidden]');
+
+  // Wait the pinned action to finish, it's flagged in the file list by
+  // removing CSS class "dim-offline".
+  await remoteCall.waitForElementLost(
+      appId, '#file-list .dim-offline[file-name="hello.txt"]');
+
+
+  // Open context menu again.
   chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
       'fakeEvent', appId, ['#file-list', 'contextmenu']));
 
+  // Check: File is pinned.
   await remoteCall.waitForElement(appId, '[command="#toggle-pinned"][checked]');
   await repeatUntil(async () => {
     const idSet =
@@ -230,42 +273,6 @@ testcase.drivePressCtrlAFromSearch = async () => {
 
   // Check we didn't enter check-select mode.
   await remoteCall.waitForElement(appId, ['body:not(.check-select)']);
-};
-
-/**
- * Pin hello.txt in the old Drive client.
- */
-testcase.PRE_driveMigratePinnedFile = async () => {
-  const appId = await setupAndWaitUntilReady(RootPath.DRIVE);
-  await remoteCall.callRemoteTestUtil('selectFile', appId, ['hello.txt']);
-  await remoteCall.waitForElement(appId, ['.table-row[selected]']);
-  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-      'fakeMouseRightClick', appId, ['.table-row[selected]']));
-
-  await remoteCall.waitForElement(appId, '#file-context-menu:not([hidden])');
-  await remoteCall.waitForElement(appId, ['[command="#toggle-pinned"]']);
-  await remoteCall.callRemoteTestUtil(
-      'fakeMouseClick', appId, ['[command="#toggle-pinned"]']);
-  await remoteCall.waitForElement(appId, '#file-context-menu[hidden]');
-  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-      'fakeEvent', appId, ['#file-list', 'contextmenu']));
-
-  await remoteCall.waitForElement(appId, '[command="#toggle-pinned"][checked]');
-};
-
-/**
- * Verify hello.txt is still pinned after migrating to DriveFS.
- */
-testcase.driveMigratePinnedFile = async () => {
-  // After enabling DriveFS, ensure the file is still pinned.
-  const appId = await setupAndWaitUntilReady(RootPath.DRIVE);
-  await remoteCall.callRemoteTestUtil('selectFile', appId, ['hello.txt']);
-  await remoteCall.waitForElement(appId, ['.table-row[selected]']);
-  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-      'fakeMouseRightClick', appId, ['.table-row[selected]']));
-
-  await remoteCall.waitForElement(appId, '#file-context-menu:not([hidden])');
-  await remoteCall.waitForElement(appId, '[command="#toggle-pinned"][checked]');
 };
 
 // Match the way the production version formats dates.
@@ -326,100 +333,6 @@ testcase.driveBackupPhotos = async () => {
   // DCIM in the removable storage.
   const files = TestEntryInfo.getExpectedRows([ENTRIES.image3]);
   await remoteCall.waitForFiles(appId, files, {ignoreLastModifiedTime: true});
-};
-
-/**
- * Create some dirty files in Drive.
- *
- * Create /root/never-sync.txt and /root/A/never-sync.txt. These files will
- * never complete syncing to the fake drive service so will remain dirty
- * forever.
- */
-testcase.PRE_driveRecoverDirtyFiles = async () => {
-  // Open Files app on downloads.
-  const appId = await setupAndWaitUntilReady(
-      RootPath.DOWNLOADS, [ENTRIES.neverSync], [ENTRIES.directoryA]);
-
-  // Select never-sync.txt.
-  chrome.test.assertTrue(
-      await remoteCall.callRemoteTestUtil(
-          'selectFile', appId, ['never-sync.txt']),
-      'selectFile failed');
-
-  // Copy it.
-  chrome.test.assertTrue(
-      await remoteCall.callRemoteTestUtil(
-          'fakeKeyDown', appId, ['#file-list', 'c', true, false, false]),
-      'copy failed');
-
-  // Navigate to My Drive.
-  await remoteCall.navigateWithDirectoryTree(
-      appId, '/root', 'My Drive', 'drive');
-
-  // Paste.
-  chrome.test.assertTrue(
-      await remoteCall.callRemoteTestUtil(
-          'fakeKeyDown', appId, ['#file-list', 'v', true, false, false]),
-      'paste failed');
-
-  // Wait for the paste to complete.
-  let expectedEntryRows = [
-    ENTRIES.neverSync.getExpectedRow(),
-    ENTRIES.directoryA.getExpectedRow(),
-  ];
-  await remoteCall.waitForFiles(
-      appId, expectedEntryRows, {ignoreLastModifiedTime: true});
-
-  // Navigate to My Drive/A.
-  await remoteCall.navigateWithDirectoryTree(
-      appId, '/root/A', 'My Drive', 'drive');
-
-  // Paste.
-  chrome.test.assertTrue(
-      await remoteCall.callRemoteTestUtil(
-          'fakeKeyDown', appId, ['#file-list', 'v', true, false, false]),
-      'paste failed');
-
-  // Wait for the paste to complete.
-  expectedEntryRows = [ENTRIES.neverSync.getExpectedRow()];
-  await remoteCall.waitForFiles(
-      appId, expectedEntryRows, {ignoreLastModifiedTime: true});
-};
-
-/**
- * Verify that when enabling DriveFS, the dirty files are recovered to
- * Downloads/Recovered files from Google Drive. The directory structure should
- * be flattened with uniquified names:
- * - never-sync.txt
- * - never-sync (1).txt
- */
-testcase.driveRecoverDirtyFiles = async () => {
-  // After enabling DriveFS, ensure the dirty files have been
-  // recovered into Downloads.
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, [], []);
-
-  // Wait for the Recovered files directory to be in Downloads.
-  let expectedEntryRows = [
-    ENTRIES.neverSync.getExpectedRow(),
-    ['Recovered files from Google Drive', '--', 'Folder'],
-  ];
-  await remoteCall.waitForFiles(
-      appId, expectedEntryRows, {ignoreLastModifiedTime: true});
-
-  // Navigate to the recovered files directory.
-  await remoteCall.navigateWithDirectoryTree(
-      appId, RootPath.DOWNLOADS_PATH + '/Recovered files from Google Drive',
-      'My files/Downloads');
-
-  // Ensure it contains never-sync.txt and never-sync (1).txt.
-  const uniquifiedNeverSync = ENTRIES.neverSync.getExpectedRow();
-  uniquifiedNeverSync[0] = 'never-sync (1).txt';
-  expectedEntryRows = [
-    ENTRIES.neverSync.getExpectedRow(),
-    uniquifiedNeverSync,
-  ];
-  await remoteCall.waitForFiles(
-      appId, expectedEntryRows, {ignoreLastModifiedTime: true});
 };
 
 /**
@@ -490,4 +403,104 @@ testcase.driveAvailableOfflineDirectoryGearMenu = async () => {
 
   // Check that "Available Offline" is shown in the menu.
   await remoteCall.waitForElement(appId, pinnedMenuQuery);
+};
+
+/**
+ * Tests following links to folders.
+ */
+testcase.driveLinkToDirectory = async () => {
+  const appId = await setupAndWaitUntilReady(
+      RootPath.DRIVE, [], BASIC_DRIVE_ENTRY_SET.concat([
+        ENTRIES.directoryA,
+        ENTRIES.directoryB,
+        ENTRIES.directoryC,
+        ENTRIES.deeplyBurriedSmallJpeg,
+        ENTRIES.linkGtoB,
+        ENTRIES.linkHtoFile,
+        ENTRIES.linkTtoTransitiveDirectory,
+      ]));
+
+  // Select the link
+  chrome.test.assertTrue(
+      !!await remoteCall.callRemoteTestUtil('selectFile', appId, ['G']),
+      'selectFile failed');
+  await remoteCall.waitForElement(appId, '.table-row[selected]');
+
+  // Open the link
+  chrome.test.assertTrue(
+      await remoteCall.callRemoteTestUtil('openFile', appId, ['G']));
+
+  // Check the contents of current directory.
+  await remoteCall.waitForFiles(appId, [ENTRIES.directoryC.getExpectedRow()]);
+};
+
+/**
+ * Tests opening files through folder links.
+ */
+testcase.driveLinkOpenFileThroughLinkedDirectory = async () => {
+  const appId = await setupAndWaitUntilReady(
+      RootPath.DRIVE, [], BASIC_DRIVE_ENTRY_SET.concat([
+        ENTRIES.directoryA,
+        ENTRIES.directoryB,
+        ENTRIES.directoryC,
+        ENTRIES.deeplyBurriedSmallJpeg,
+        ENTRIES.linkGtoB,
+        ENTRIES.linkHtoFile,
+        ENTRIES.linkTtoTransitiveDirectory,
+      ]));
+
+  // Navigate through link.
+  chrome.test.assertTrue(
+      await remoteCall.callRemoteTestUtil('openFile', appId, ['G']));
+  await remoteCall.waitForFiles(appId, [ENTRIES.directoryC.getExpectedRow()]);
+  chrome.test.assertTrue(
+      await remoteCall.callRemoteTestUtil('openFile', appId, ['C']));
+  await remoteCall.waitForFiles(
+      appId, [ENTRIES.deeplyBurriedSmallJpeg.getExpectedRow()]);
+
+  await sendTestMessage(
+      {name: 'expectFileTask', fileNames: ['deep.jpg'], openType: 'launch'});
+  chrome.test.assertTrue(
+      await remoteCall.callRemoteTestUtil('openFile', appId, ['deep.jpg']));
+
+  // The Gallery window should open with the image in it.
+  const galleryAppId = await galleryApp.waitForWindow('gallery.html');
+  await galleryApp.waitForSlideImage(galleryAppId, 100, 100, 'deep');
+  chrome.test.assertTrue(
+      await galleryApp.closeWindowAndWait(galleryAppId),
+      'Failed to close Gallery window');
+};
+
+/**
+ * Tests opening files through transitive links.
+ */
+testcase.driveLinkOpenFileThroughTransitiveLink = async () => {
+  const appId = await setupAndWaitUntilReady(
+      RootPath.DRIVE, [], BASIC_DRIVE_ENTRY_SET.concat([
+        ENTRIES.directoryA,
+        ENTRIES.directoryB,
+        ENTRIES.directoryC,
+        ENTRIES.deeplyBurriedSmallJpeg,
+        ENTRIES.linkGtoB,
+        ENTRIES.linkHtoFile,
+        ENTRIES.linkTtoTransitiveDirectory,
+      ]));
+
+  // Navigate through link.
+  chrome.test.assertTrue(
+      await remoteCall.callRemoteTestUtil('openFile', appId, ['T']));
+  await remoteCall.waitForFiles(
+      appId, [ENTRIES.deeplyBurriedSmallJpeg.getExpectedRow()]);
+
+  await sendTestMessage(
+      {name: 'expectFileTask', fileNames: ['deep.jpg'], openType: 'launch'});
+  chrome.test.assertTrue(
+      await remoteCall.callRemoteTestUtil('openFile', appId, ['deep.jpg']));
+
+  // The Gallery window should open with the image in it.
+  const galleryAppId = await galleryApp.waitForWindow('gallery.html');
+  await galleryApp.waitForSlideImage(galleryAppId, 100, 100, 'deep');
+  chrome.test.assertTrue(
+      await galleryApp.closeWindowAndWait(galleryAppId),
+      'Failed to close Gallery window');
 };

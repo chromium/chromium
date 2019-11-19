@@ -129,7 +129,7 @@
     testGridDefinitionsSetJSValues("[first nav] minmax(min-content, max-content) [last]", "[first nav] minmax(max-content, min-content) [last]", "[first nav] 0px [last]", "[first nav] 0px [last]", "[first nav] minmax(min-content, max-content) [last]", "[first nav] minmax(max-content, min-content) [last]");
     testGridDefinitionsSetJSValues("[first nav] minmax(min-content, max-content) [nav] auto [last]", "[first nav2] minmax(max-content, min-content) [nav2] minmax(10px, 15px) [last]", "[first nav] 0px [nav] 0px [last]", "[first nav2] 0px [nav2] 15px [last]", "[first nav] minmax(min-content, max-content) [nav] auto [last]", "[first nav2] minmax(max-content, min-content) [nav2] minmax(10px, 15px) [last]");
     testGridDefinitionsSetJSValues("[foo bar] auto [foo] auto [bar]", "[foo bar] auto [foo] auto [bar]", "[foo bar] 0px [foo] 0px [bar]", "[foo bar] 0px [foo] 0px [bar]", "[foo bar] auto [foo] auto [bar]", "[foo bar] auto [foo] auto [bar]");
-    testGridDefinitionsSetJSValues("[first] auto repeat(2, [foo bar] 20px)", "220px [foo] repeat(1, 50% [baz]", "[first] 0px [foo bar] 20px [foo bar] 20px", "220px [foo] 300px [baz]", "[first] auto [foo bar] 20px [foo bar] 20px", "220px [foo] 50% [baz]");
+    testGridDefinitionsSetJSValues("[first] auto repeat(2, [foo bar] 20px)", "220px [foo] repeat(1, 50% [baz]", "[first] 0px [foo bar] 20px [foo bar] 20px", "220px [foo] 300px [baz]", "[first] auto repeat(2, [foo bar] 20px)", "220px [foo] repeat(1, 50% [baz])");
 
     debug("");
     debug("Test getting invalid grid-template-columns and grid-template-rows set through CSS");

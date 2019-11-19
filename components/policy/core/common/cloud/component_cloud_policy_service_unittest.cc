@@ -16,7 +16,7 @@
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/stl_util.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
@@ -142,8 +142,9 @@ class ComponentCloudPolicyServiceTest : public testing::Test {
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &loader_factory_));
     service_.reset(new ComponentCloudPolicyService(
-        dm_protocol::kChromeExtensionPolicyType, &delegate_, &registry_, &core_,
-        client_, std::move(owned_cache_), base::ThreadTaskRunnerHandle::Get()));
+        dm_protocol::kChromeExtensionPolicyType, POLICY_SOURCE_CLOUD,
+        &delegate_, &registry_, &core_, client_, std::move(owned_cache_),
+        base::ThreadTaskRunnerHandle::Get()));
 
     client_->SetDMToken(ComponentCloudPolicyBuilder::kFakeToken);
     EXPECT_EQ(1u, client_->types_to_fetch_.size());
@@ -221,7 +222,7 @@ class ComponentCloudPolicyServiceTest : public testing::Test {
   const PolicyNamespace kTestExtensionNS2 =
       PolicyNamespace(POLICY_DOMAIN_EXTENSIONS, kTestExtension2);
 
-  base::test::ScopedTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
   network::TestURLLoaderFactory loader_factory_;
   MockComponentCloudPolicyDelegate delegate_;
@@ -301,8 +302,8 @@ TEST_F(ComponentCloudPolicyServiceTest, InitializeWithCachedPolicy) {
   std::map<std::string, std::string> contents;
   cache_->LoadAllSubkeys("extension-policy", &contents);
   ASSERT_EQ(2u, contents.size());
-  EXPECT_TRUE(base::ContainsKey(contents, kTestExtension));
-  EXPECT_TRUE(base::ContainsKey(contents, kTestExtension2));
+  EXPECT_TRUE(base::Contains(contents, kTestExtension));
+  EXPECT_TRUE(base::Contains(contents, kTestExtension2));
 
   // Only policy for extension 1 is now being served, as the registry contains
   // only its schema.
@@ -466,8 +467,8 @@ TEST_F(ComponentCloudPolicyServiceTest, LoadCacheAndDeleteExtensions) {
   std::map<std::string, std::string> contents;
   cache_->LoadAllSubkeys("extension-policy", &contents);
   EXPECT_EQ(2u, contents.size());
-  EXPECT_TRUE(base::ContainsKey(contents, kTestExtension));
-  EXPECT_TRUE(base::ContainsKey(contents, kTestExtension2));
+  EXPECT_TRUE(base::Contains(contents, kTestExtension));
+  EXPECT_TRUE(base::Contains(contents, kTestExtension2));
 }
 
 TEST_F(ComponentCloudPolicyServiceTest, SignInAfterStartup) {
@@ -601,8 +602,8 @@ TEST_F(ComponentCloudPolicyServiceTest, PurgeWhenServerRemovesPolicy) {
   std::map<std::string, std::string> contents;
   cache_->LoadAllSubkeys("extension-policy", &contents);
   ASSERT_EQ(2u, contents.size());
-  EXPECT_TRUE(base::ContainsKey(contents, kTestExtension));
-  EXPECT_TRUE(base::ContainsKey(contents, kTestExtension2));
+  EXPECT_TRUE(base::Contains(contents, kTestExtension));
+  EXPECT_TRUE(base::Contains(contents, kTestExtension2));
 
   PolicyBundle expected_bundle;
   expected_bundle.Get(kTestExtensionNS).CopyFrom(expected_policy_);
@@ -623,8 +624,8 @@ TEST_F(ComponentCloudPolicyServiceTest, PurgeWhenServerRemovesPolicy) {
   contents.clear();
   cache_->LoadAllSubkeys("extension-policy", &contents);
   ASSERT_EQ(1u, contents.size());
-  EXPECT_TRUE(base::ContainsKey(contents, kTestExtension));
-  EXPECT_FALSE(base::ContainsKey(contents, kTestExtension2));
+  EXPECT_TRUE(base::Contains(contents, kTestExtension));
+  EXPECT_FALSE(base::Contains(contents, kTestExtension2));
 
   // And the service isn't publishing policy for the second extension anymore.
   expected_bundle.Clear();

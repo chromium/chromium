@@ -12,7 +12,7 @@
 #include "third_party/blink/renderer/platform/fonts/shaping/run_segmenter.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 #include <unicode/ubidi.h>
 #include <unicode/uscript.h>
@@ -138,7 +138,7 @@ class CORE_EXPORT NGInlineItemSegments {
                         unsigned item_index) const;
 
   // Shape runs in the range and return the concatenated |ShapeResult|.
-  scoped_refptr<ShapeResult> ShapeText(HarfBuzzShaper* shaper,
+  scoped_refptr<ShapeResult> ShapeText(const HarfBuzzShaper* shaper,
                                        const Font* font,
                                        TextDirection direction,
                                        unsigned start_offset,

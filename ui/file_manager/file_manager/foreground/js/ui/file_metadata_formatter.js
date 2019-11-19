@@ -73,9 +73,11 @@ class FileMetadataFormatter extends cr.EventTarget {
    * Generates a formatted filesize text.
    * @param {number=} size
    * @param {boolean=} hosted
+   * @param {boolean=} addPrecision addPrecision used to optionally add more
+   *     precision digits to the formatted filesize text.
    * @return {string} A string that represents a file size.
    */
-  formatSize(size, hosted) {
+  formatSize(size, hosted, addPrecision = false) {
     if (size === null || size === undefined) {
       return '...';
     } else if (size === -1) {
@@ -83,7 +85,7 @@ class FileMetadataFormatter extends cr.EventTarget {
     } else if (size === 0 && hosted) {
       return '--';
     } else {
-      return util.bytesToString(size);
+      return util.bytesToString(size, addPrecision ? 1 : 0);
     }
   }
 }

@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-[
-    NoInterfaceObject
-] interface WebGL2ComputeRenderingContextBase {
+interface mixin WebGL2ComputeRenderingContextBase {
     // TODO(jiajia.qin@intel.com): add more enums and apis
     const GLenum COMPUTE_SHADER                         = 0x91B9;
+    const GLenum DISPATCH_INDIRECT_BUFFER               = 0x90EE;
+    const GLenum DISPATCH_INDIRECT_BUFFER_BINDING       = 0x90EF;
+    const GLenum DRAW_INDIRECT_BUFFER                   = 0x8F3F;
+    const GLenum DRAW_INDIRECT_BUFFER_BINDING           = 0x8F43;
     const GLenum UNIFORM                                = 0x92E1;
     const GLenum UNIFORM_BLOCK                          = 0x92E2;
     const GLenum PROGRAM_INPUT                          = 0x92E3;
@@ -48,8 +50,7 @@
     const GLenum TRANSFORM_FEEDBACK_BARRIER_BIT         = 0x00000800;
     const GLenum ATOMIC_COUNTER_BARRIER_BIT             = 0x00001000;
     const GLenum SHADER_STORAGE_BARRIER_BIT             = 0x00002000;
-    const GLenum FALSE = 0;
-    const GLenum TRUE = 1;
+    const GLenum ALL_BARRIER_BITS                       = 0xFFFFFFFF;
     const GLenum READ_ONLY                              = 0x88B8;
     const GLenum WRITE_ONLY                             = 0x88B9;
     const GLenum READ_WRITE                             = 0x88BA;
@@ -91,6 +92,11 @@
     const GLenum UNSIGNED_INT_ATOMIC_COUNTER            = 0x92DB;
 
     void dispatchCompute(GLuint numGroupsX, GLuint numGroupsY, GLuint numGroupsZ);
+    void dispatchComputeIndirect(GLintptr offset);
+
+    /* Draw indirect */
+    void drawArraysIndirect(GLenum mode, GLintptr offset);
+    void drawElementsIndirect(GLenum mode, GLenum type, GLintptr offset);
 
     /* Program interface query */
     [CallWith=ScriptState] any getProgramInterfaceParameter(WebGLProgram program, GLenum programInterface, GLenum pname);
@@ -103,5 +109,5 @@
     void memoryBarrier(GLbitfield barriers);
     void memoryBarrierByRegion(GLbitfield barriers);
 };
-WebGL2ComputeRenderingContextBase implements WebGLRenderingContextBase;
-WebGL2ComputeRenderingContextBase implements WebGL2RenderingContextBase;
+WebGL2ComputeRenderingContextBase includes WebGLRenderingContextBase;
+WebGL2ComputeRenderingContextBase includes WebGL2RenderingContextBase;

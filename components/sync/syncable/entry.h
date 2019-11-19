@@ -249,7 +249,7 @@ class Entry {
 
   // Dumps all entry info into a DictionaryValue and returns it.
   std::unique_ptr<base::DictionaryValue> ToValue(
-      Cryptographer* cryptographer) const;
+      const Cryptographer* cryptographer) const;
 
  protected:  // Don't allow creation on heap, except by sync API wrappers.
   void* operator new(size_t size) { return (::operator new)(size); }

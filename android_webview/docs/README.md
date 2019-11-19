@@ -13,18 +13,8 @@ Please see the markdown files in this directory for detailed developer guides.
 
 ## What is Android WebView?
 
-Android WebView is an Android system component for display web content. This
-(and the related Android classes) are implemented by the code in the
-`//android_webview/` folder.
-
-Android WebView is a content embedder, meaning it depends on code in
-`//content/` and lower layers (ex. `//net/`, `//base/`), but does not depend on
-sibling layers such as `//chrome/`.
+See [//android\_webview/README.md](/android\_webview/README.md).
 
 ## Want to use WebView in an Android app?
 
-Please consult https://developer.android.com/reference/android/webkit/WebView,
-and the related classes in the `android.webkit` package. You may also be
-interested in out
-[`androidx.webkit`](https://developer.android.com/reference/androidx/webkit/WebViewCompat)
-API documentation.
+See [//android\_webview/README.md](/android\_webview/README.md).

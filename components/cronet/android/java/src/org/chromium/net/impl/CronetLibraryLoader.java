@@ -11,11 +11,13 @@ import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Process;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
-import org.chromium.base.VisibleForTesting;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.net.NetworkChangeNotifier;
 
 /**
@@ -69,10 +71,10 @@ public class CronetLibraryLoader {
                     System.loadLibrary(LIBRARY_NAME);
                 }
                 String implVersion = ImplVersion.getCronetVersion();
-                if (!implVersion.equals(nativeGetCronetVersion())) {
+                if (!implVersion.equals(CronetLibraryLoaderJni.get().getCronetVersion())) {
                     throw new RuntimeException(String.format("Expected Cronet version number %s, "
                                     + "actual version number %s.",
-                            implVersion, nativeGetCronetVersion()));
+                            implVersion, CronetLibraryLoaderJni.get().getCronetVersion()));
                 }
                 Log.i(TAG, "Cronet version: %s, arch: %s", implVersion,
                         System.getProperty("os.arch"));
@@ -117,7 +119,7 @@ public class CronetLibraryLoader {
         // NetworkChangeNotifierAndroid is created, so as to avoid receiving
         // the undesired initial network change observer notification, which
         // will cause active requests to fail with ERR_NETWORK_CHANGED.
-        nativeCronetInitOnInitThread();
+        CronetLibraryLoaderJni.get().cronetInitOnInitThread();
         sInitThreadInitDone = true;
     }
 
@@ -180,7 +182,11 @@ public class CronetLibraryLoader {
         Process.setThreadPriority(priority);
     }
 
-    // Native methods are implemented in cronet_library_loader.cc.
-    private static native void nativeCronetInitOnInitThread();
-    private static native String nativeGetCronetVersion();
+    @NativeMethods
+    interface Natives {
+        // Native methods are implemented in cronet_library_loader.cc.
+        void cronetInitOnInitThread();
+
+        String getCronetVersion();
+    }
 }

@@ -71,7 +71,7 @@ class ModelConfigLoaderImpl : public ModelConfigLoader {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::WeakPtrFactory<ModelConfigLoaderImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<ModelConfigLoaderImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ModelConfigLoaderImpl);
 };

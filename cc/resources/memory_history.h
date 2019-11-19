@@ -11,7 +11,6 @@
 #include <memory>
 
 #include "base/containers/ring_buffer.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 
 namespace cc {
@@ -20,6 +19,9 @@ namespace cc {
 class MemoryHistory {
  public:
   static std::unique_ptr<MemoryHistory> Create();
+
+  MemoryHistory(const MemoryHistory&) = delete;
+  MemoryHistory& operator=(const MemoryHistory&) = delete;
 
   size_t HistorySize() const { return ring_buffer_.BufferSize(); }
 
@@ -44,8 +46,6 @@ class MemoryHistory {
   MemoryHistory();
 
   RingBufferType ring_buffer_;
-
-  DISALLOW_COPY_AND_ASSIGN(MemoryHistory);
 };
 
 }  // namespace cc

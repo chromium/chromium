@@ -38,16 +38,17 @@ class DISPLAY_TYPES_EXPORT DisplaySnapshot {
                   bool has_color_correction_matrix,
                   bool color_correction_in_linear_space,
                   const gfx::ColorSpace& color_space,
+                  uint32_t bits_per_channel,
                   std::string display_name,
                   const base::FilePath& sys_path,
                   DisplayModeList modes,
+                  PanelOrientation panel_orientation,
                   const std::vector<uint8_t>& edid,
                   const DisplayMode* current_mode,
                   const DisplayMode* native_mode,
                   int64_t product_code,
                   int32_t year_of_manufacture,
-                  const gfx::Size& maximum_cursor_size,
-                  bool has_associated_crtc);
+                  const gfx::Size& maximum_cursor_size);
   virtual ~DisplaySnapshot();
 
   int64_t display_id() const { return display_id_; }
@@ -67,9 +68,11 @@ class DISPLAY_TYPES_EXPORT DisplaySnapshot {
   }
   const gfx::ColorSpace& color_space() const { return color_space_; }
   void reset_color_space() { color_space_ = gfx::ColorSpace(); }
+  uint32_t bits_per_channel() const { return bits_per_channel_; }
   const std::string& display_name() const { return display_name_; }
   const base::FilePath& sys_path() const { return sys_path_; }
   const DisplayModeList& modes() const { return modes_; }
+  PanelOrientation panel_orientation() const { return panel_orientation_; }
   const std::vector<uint8_t>& edid() const { return edid_; }
   const DisplayMode* current_mode() const { return current_mode_; }
   void set_current_mode(const DisplayMode* mode) { current_mode_ = mode; }
@@ -77,7 +80,6 @@ class DISPLAY_TYPES_EXPORT DisplaySnapshot {
   int64_t product_code() const { return product_code_; }
   int32_t year_of_manufacture() const { return year_of_manufacture_; }
   const gfx::Size& maximum_cursor_size() const { return maximum_cursor_size_; }
-  bool has_associated_crtc() const { return has_associated_crtc_; }
 
   void add_mode(const DisplayMode* mode) { modes_.push_back(mode->Clone()); }
 
@@ -116,11 +118,16 @@ class DISPLAY_TYPES_EXPORT DisplaySnapshot {
 
   gfx::ColorSpace color_space_;
 
+  uint32_t bits_per_channel_;
+
   const std::string display_name_;
 
   const base::FilePath sys_path_;
 
   DisplayModeList modes_;
+
+  // The orientation of the panel in respect to the natural device orientation.
+  PanelOrientation panel_orientation_;
 
   // The display's EDID. It can be empty if nothing extracted such as in the
   // case of a virtual display.
@@ -139,9 +146,6 @@ class DISPLAY_TYPES_EXPORT DisplaySnapshot {
 
   // Maximum supported cursor size on this display.
   const gfx::Size maximum_cursor_size_;
-
-  // Indicates whether the display has an associated crtc.
-  const bool has_associated_crtc_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(DisplaySnapshot);

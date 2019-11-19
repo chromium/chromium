@@ -11,6 +11,7 @@ import org.chromium.base.BuildConfig;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.PathUtils;
 import org.chromium.base.multidex.ChromiumMultiDexInstaller;
+import org.chromium.ui.base.ResourceBundle;
 
 /**
  * Application for testing the Chromium Linker
@@ -25,6 +26,7 @@ public class ChromiumLinkerTestApplication extends Application {
             ChromiumMultiDexInstaller.install(this);
         }
         ContextUtils.initApplicationContext(this);
+        ResourceBundle.setNoAvailableLocalePaks();
     }
 
     @Override

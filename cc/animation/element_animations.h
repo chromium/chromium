@@ -8,12 +8,12 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "cc/animation/animation_export.h"
 #include "cc/animation/animation_target.h"
-#include "cc/trees/element_id.h"
+#include "cc/paint/element_id.h"
+#include "cc/paint/paint_worklet_input.h"
 #include "cc/trees/property_animation_state.h"
 #include "cc/trees/target_property.h"
 #include "ui/gfx/geometry/scroll_offset.h"
@@ -41,6 +41,9 @@ class CC_ANIMATION_EXPORT ElementAnimations
   static scoped_refptr<ElementAnimations> Create(AnimationHost* host,
                                                  ElementId element_id);
 
+  ElementAnimations(const ElementAnimations&) = delete;
+  ElementAnimations& operator=(const ElementAnimations&) = delete;
+
   bool AnimationHostIs(AnimationHost* host) const {
     return animation_host_ == host;
   }
@@ -50,8 +53,11 @@ class CC_ANIMATION_EXPORT ElementAnimations
 
   void ClearAffectedElementTypes(const PropertyToElementIdMap& element_id_map);
 
-  void ElementRegistered(ElementId element_id, ElementListType list_type);
-  void ElementUnregistered(ElementId element_id, ElementListType list_type);
+  // Called when |element_id| is available to animate in |list_type|.
+  void ElementIdRegistered(ElementId element_id, ElementListType list_type);
+
+  // Called when |element_id| is no longer avialable to animate in |list_type|.
+  void ElementIdUnregistered(ElementId element_id, ElementListType list_type);
 
   void AddKeyframeEffect(KeyframeEffect* keyframe_effect);
   void RemoveKeyframeEffect(KeyframeEffect* keyframe_effect);
@@ -105,26 +111,31 @@ class CC_ANIMATION_EXPORT ElementAnimations
     has_element_in_pending_list_ = has_element_in_pending_list;
   }
 
-  bool HasOnlyTranslationTransforms(ElementListType list_type) const;
-
   bool AnimationsPreserveAxisAlignment() const;
 
-  // Sets |start_scale| to the maximum of starting animation scale along any
-  // dimension at any destination in active animations. Returns false if the
-  // starting scale cannot be computed.
-  bool AnimationStartScale(ElementListType list_type, float* start_scale) const;
-
-  // Sets |max_scale| to the maximum scale along any dimension at any
-  // destination in active animations. Returns false if the maximum scale cannot
-  // be computed.
-  bool MaximumTargetScale(ElementListType list_type, float* max_scale) const;
+  // Gets scales transform animations. On return, |maximum_scale| is the maximum
+  // scale along any dimension at any destination in active scale animations,
+  // and |starting_scale| is the maximum of starting animation scale along any
+  // dimension at any destination in active scale animations. They are set to
+  // kNotScaled if there is no active scale animation or the scales cannot be
+  // computed.
+  void GetAnimationScales(ElementListType list_type,
+                          float* maximum_scale,
+                          float* starting_scale) const;
 
   bool ScrollOffsetAnimationWasInterrupted() const;
 
   void SetNeedsPushProperties();
+
+  // Initializes client animation state by calling client's
+  // ElementIsAnimatingChanged() method with the current animation state.
+  void InitClientAnimationState();
+  // Updates client animation state by calling client's
+  // ElementIsAnimatingChanged() method with the state containing properties
+  // that have changed since the last update.
   void UpdateClientAnimationState();
 
-  void NotifyClientFloatAnimated(float opacity,
+  void NotifyClientFloatAnimated(float value,
                                  int target_property_id,
                                  KeyframeModel* keyframe_model) override;
   void NotifyClientFilterAnimated(const FilterOperations& filter,
@@ -135,7 +146,7 @@ class CC_ANIMATION_EXPORT ElementAnimations
                                 KeyframeModel* keyframe_model) override {}
   void NotifyClientColorAnimated(SkColor color,
                                  int target_property_id,
-                                 KeyframeModel* keyframe_model) override {}
+                                 KeyframeModel* keyframe_model) override;
   void NotifyClientTransformOperationsAnimated(
       const TransformOperations& operations,
       int target_property_id,
@@ -170,9 +181,15 @@ class CC_ANIMATION_EXPORT ElementAnimations
   void OnFilterAnimated(ElementListType list_type,
                         const FilterOperations& filters,
                         KeyframeModel* keyframe_model);
+  void OnBackdropFilterAnimated(ElementListType list_type,
+                                const FilterOperations& backdrop_filters,
+                                KeyframeModel* keyframe_model);
   void OnOpacityAnimated(ElementListType list_type,
                          float opacity,
                          KeyframeModel* keyframe_model);
+  void OnCustomPropertyAnimated(
+      PaintWorkletInput::PropertyValue custom_prop_value,
+      KeyframeModel* keyframe_model);
   void OnTransformAnimated(ElementListType list_type,
                            const gfx::Transform& transform,
                            KeyframeModel* keyframe_model);
@@ -199,8 +216,10 @@ class CC_ANIMATION_EXPORT ElementAnimations
 
   PropertyAnimationState active_state_;
   PropertyAnimationState pending_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(ElementAnimations);
+  float active_maximum_scale_;
+  float active_starting_scale_;
+  float pending_maximum_scale_;
+  float pending_starting_scale_;
 };
 
 }  // namespace cc

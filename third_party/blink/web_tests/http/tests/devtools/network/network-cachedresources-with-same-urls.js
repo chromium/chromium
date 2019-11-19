@@ -47,7 +47,7 @@
 
     TestRunner.addResult(request1.url());
     TestRunner.addResult(request2.url());
-    TestRunner.assertTrue(request1Content !== request2Content);
+    TestRunner.assertTrue(request1Content.content !== request2Content.content);
     TestRunner.completeTest();
   }
 })();

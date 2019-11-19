@@ -18,7 +18,10 @@
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "media/base/audio_parameters.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/audio/public/mojom/audio_processing.mojom.h"
 #include "services/audio/snoopable.h"
 #include "services/audio/stream_monitor.h"
@@ -186,9 +189,10 @@ class InputController final : public StreamMonitor {
   class ProcessingHelper final : public mojom::AudioProcessorControls,
                                  public Snoopable::Snooper {
    public:
-    ProcessingHelper(const media::AudioParameters& params,
-                     media::AudioProcessingSettings processing_settings,
-                     mojom::AudioProcessorControlsRequest controls_request);
+    ProcessingHelper(
+        const media::AudioParameters& params,
+        media::AudioProcessingSettings processing_settings,
+        mojo::PendingReceiver<mojom::AudioProcessorControls> controls_receiver);
     ~ProcessingHelper() final;
 
     // Snoopable::Snooper implementation
@@ -221,11 +225,12 @@ class InputController final : public StreamMonitor {
 
     THREAD_CHECKER(owning_thread_);
 
-    const mojo::Binding<mojom::AudioProcessorControls> binding_;
+    const mojo::Receiver<mojom::AudioProcessorControls> receiver_;
     const media::AudioParameters params_;
     const std::unique_ptr<media::AudioProcessor> audio_processor_;
     media::AudioParameters output_params_;
     Snoopable* monitored_output_stream_ = nullptr;
+    std::unique_ptr<media::AudioBus> clamped_bus_;
   };
 #endif  // defined(AUDIO_PROCESSING_IN_AUDIO_SERVICE)
 
@@ -353,7 +358,7 @@ class InputController final : public StreamMonitor {
   // the error notification is pending and then make a callback from an
   // InputController that has already been closed.
   // All outstanding weak pointers, are invalidated at the end of DoClose.
-  base::WeakPtrFactory<InputController> weak_ptr_factory_;
+  base::WeakPtrFactory<InputController> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(InputController);
 };

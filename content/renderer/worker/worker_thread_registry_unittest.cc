@@ -5,7 +5,8 @@
 #include "content/renderer/worker/worker_thread_registry.h"
 
 #include "base/logging.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "content/public/renderer/worker_thread.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -19,7 +20,7 @@ class WorkerThreadRegistryTest : public testing::Test {
   WorkerThreadRegistry task_runner_;
 
  private:
-  base::test::ScopedTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
 };
 
 class MockObserver : public WorkerThread::Observer {

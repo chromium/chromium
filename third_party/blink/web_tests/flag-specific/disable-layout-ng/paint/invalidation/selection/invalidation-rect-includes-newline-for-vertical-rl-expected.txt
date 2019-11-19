@@ -1,0 +1,23 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "InlineTextBox 'xx'",
+          "rect": [7, 8, 33, 48],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'y'",
+          "rect": [7, 8, 33, 48],
+          "reason": "geometry"
+        }
+      ]
+    }
+  ]
+}
+

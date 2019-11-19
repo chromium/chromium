@@ -14,7 +14,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
@@ -24,11 +23,11 @@ import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.net.test.EmbeddedTestServer;
 
 import java.util.concurrent.Callable;
-import java.util.concurrent.TimeoutException;
 
 /** Integration tests for the Last 1 feature of Offline Pages. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -47,14 +46,11 @@ public class RecentTabsTest {
     @Before
     public void setUp() throws Exception {
         mActivityTestRule.startMainActivityOnBlankPage();
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                // Ensure we start in an offline state.
-                NetworkChangeNotifier.forceConnectivityState(false);
-                if (!NetworkChangeNotifier.isInitialized()) {
-                    NetworkChangeNotifier.init();
-                }
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            // Ensure we start in an offline state.
+            NetworkChangeNotifier.forceConnectivityState(false);
+            if (!NetworkChangeNotifier.isInitialized()) {
+                NetworkChangeNotifier.init();
             }
         });
 
@@ -64,7 +60,7 @@ public class RecentTabsTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         mTestServer.stopAndDestroyServer();
     }
 
@@ -107,7 +103,7 @@ public class RecentTabsTest {
                 new ClientId(OfflinePageBridge.LAST_N_NAMESPACE, Integer.toString(tab.getId()));
 
         // The tab should be foreground and so no snapshot should exist.
-        TabModelSelector tabModelSelector = tab.getTabModelSelector();
+        TabModelSelector tabModelSelector = TabModelSelector.from(tab);
         Assert.assertEquals(tabModelSelector.getCurrentTab(), tab);
         Assert.assertFalse(tab.isHidden());
         Assert.assertNull(OfflineTestUtil.getPageByClientId(firstTabClientId));
@@ -117,12 +113,13 @@ public class RecentTabsTest {
         Assert.assertTrue(tabModel.supportsPendingClosures());
 
         // Requests closing of the tab allowing for closure undo and checks it's actually closing.
-        boolean closeTabReturnValue = ThreadUtils.runOnUiThreadBlocking(new Callable<Boolean>() {
-            @Override
-            public Boolean call() {
-                return tabModel.closeTab(tab, false, false, true);
-            }
-        });
+        boolean closeTabReturnValue =
+                TestThreadUtils.runOnUiThreadBlocking(new Callable<Boolean>() {
+                    @Override
+                    public Boolean call() {
+                        return tabModel.closeTab(tab, false, false, true);
+                    }
+                });
         Assert.assertTrue(closeTabReturnValue);
         Assert.assertTrue(tab.isHidden());
         Assert.assertTrue(tab.isClosing());
@@ -132,13 +129,10 @@ public class RecentTabsTest {
         Assert.assertNull(OfflineTestUtil.getPageByClientId(firstTabClientId));
 
         // Undo the closure and make sure the tab is again the current one on foreground.
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                tabModel.cancelTabClosure(tab.getId());
-                int tabIndex = TabModelUtils.getTabIndexById(tabModel, tab.getId());
-                TabModelUtils.setIndex(tabModel, tabIndex);
-            }
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            tabModel.cancelTabClosure(tab.getId());
+            int tabIndex = TabModelUtils.getTabIndexById(tabModel, tab.getId());
+            TabModelUtils.setIndex(tabModel, tabIndex);
         });
         Assert.assertFalse(tab.isHidden());
         Assert.assertFalse(tab.isClosing());
@@ -151,8 +145,7 @@ public class RecentTabsTest {
         waitForPageWithClientId(firstTabClientId);
     }
 
-    private void waitForPageWithClientId(final ClientId clientId)
-            throws TimeoutException, InterruptedException {
+    private void waitForPageWithClientId(final ClientId clientId) {
         CriteriaHelper.pollInstrumentationThread(
                 () -> { return OfflineTestUtil.getPageByClientId(clientId) != null; });
     }

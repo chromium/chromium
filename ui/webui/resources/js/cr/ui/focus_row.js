@@ -2,6 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import {assert, assertInstanceof} from 'chrome://resources/js/assert.m.js'
+// #import {EventTracker} from 'chrome://resources/js/event_tracker.m.js'
+// #import {hasKeyModifiers, isRTL} from 'chrome://resources/js/util.m.js'
+// clang-format on
+
 cr.define('cr.ui', function() {
   /**
    * A class to manage focus between given horizontally arranged elements.
@@ -15,7 +21,7 @@ cr.define('cr.ui', function() {
    * changes to a node inside |this.boundary_|. If |boundary| isn't specified,
    * any focus change deactivates the row.
    */
-  class FocusRow {
+  /* #export */ class FocusRow {
     /**
      * @param {!Element} root The root of this focus row. Focus classes are
      *     applied to |root| and all added elements must live within |root|.
@@ -140,7 +146,7 @@ cr.define('cr.ui', function() {
      * @protected
      */
     getCustomEquivalent(sampleElement) {
-      return assert(this.getFirstFocusable());
+      return /** @type {!Element} */ (assert(this.getFirstFocusable()));
     }
 
     /**
@@ -266,7 +272,8 @@ cr.define('cr.ui', function() {
      */
     onKeydown_(e) {
       const elements = this.getFocusableElements();
-      const currentElement = /** @type {!Element} */ (e.currentTarget);
+      const currentElement = cr.ui.FocusRow.getFocusableElement(
+          /** @type {!Element} */ (e.currentTarget));
       const elementIndex = elements.indexOf(currentElement);
       assert(elementIndex >= 0);
 
@@ -303,7 +310,7 @@ cr.define('cr.ui', function() {
 
 
   /** @interface */
-  class FocusRowDelegate {
+  /* #export */ class FocusRowDelegate {
     /**
      * Called when a key is pressed while on a FocusRow's item. If true is
      * returned, further processing is skipped.
@@ -327,6 +334,7 @@ cr.define('cr.ui', function() {
     getCustomEquivalent(sampleElement) {}
   }
 
+  // #cr_define_end
   return {
     FocusRow,
     FocusRowDelegate,

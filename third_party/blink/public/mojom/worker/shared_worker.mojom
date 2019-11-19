@@ -4,8 +4,6 @@
 
 module blink.mojom;
 
-import "third_party/blink/public/mojom/devtools/devtools_agent.mojom";
-
 // Interface used by the host to control the shared worker.
 interface SharedWorker {
   // Called to establish a new client connection to the shared worker.  The
@@ -16,9 +14,4 @@ interface SharedWorker {
   // Called to terminate the shared worker. This results in the shared worker
   // closing its end of the mojo connection.
   Terminate();
-
-  // Binds a DevToolsAgent interface for this shared worker, used for
-  // remote debugging. See DevToolsAgent for details.
-  BindDevToolsAgent(associated DevToolsAgentHost agent_host,
-                    associated DevToolsAgent& agent);
 };

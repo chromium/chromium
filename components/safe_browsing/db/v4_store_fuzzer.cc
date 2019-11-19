@@ -65,7 +65,6 @@ class V4StoreFuzzer {
   // * First uint8_t is the |prefix_size| to be added.
   // * Next uint8_t is the length of the list of prefixes.
   //  * It is adjusted to be no greater than the remaining size of |data|.
-  //  * It is adjusted to be a multiple of |prefix_size|.
   //  * It is called as |prefixes_list_size|.
   // * Next |prefixes_list_size| bytes are added to |hash_prefix_map|
   //   as a list of prefixes of size |prefix_size|.
@@ -86,16 +85,12 @@ class V4StoreFuzzer {
 
     if (!GetDatum(data, size, &datum))
       return;
-    // This |datum| tells us how long should the list of prefixes be.
-    // It can't be larger than the remaining buffer.
-    if (*size < datum) {
-      datum = *size;
+    size_t prefixes_list_size = datum;
+    // This |prefixes_list_size| is the length of the list of prefixes to be
+    // added. It can't be larger than the remaining buffer.
+    if (*size < prefixes_list_size) {
+      prefixes_list_size = *size;
     }
-    // For the list of prefixes to be inserted into |hash_prefix_map|, its size
-    // needs to be a multiple of |prefix_size|. Otherwise
-    // |V4Store::AddUnlumpedHashes| would simply discard the input and it'll
-    // never reach |MergeUpdate|.
-    size_t prefixes_list_size = (datum / prefix_size) * prefix_size;
     std::string prefixes(*data, *data + prefixes_list_size);
     *size -= prefixes_list_size;
     *data += prefixes_list_size;

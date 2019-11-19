@@ -1,0 +1,68 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "LayoutNGBlockFlow (relative positioned) (floating) DIV",
+          "rect": [128, 28, 80, 80],
+          "reason": "chunk appeared"
+        },
+        {
+          "object": "LayoutNGBlockFlow (relative positioned) (floating) DIV",
+          "rect": [28, 28, 80, 80],
+          "reason": "chunk disappeared"
+        },
+        {
+          "object": "LayoutNGBlockFlow (floating) DIV",
+          "rect": [348, 48, 60, 60],
+          "reason": "paint property change"
+        },
+        {
+          "object": "LayoutNGBlockFlow (relative positioned) (floating) DIV id='fourth'",
+          "rect": [328, 28, 60, 60],
+          "reason": "chunk appeared"
+        },
+        {
+          "object": "LayoutNGBlockFlow HTML",
+          "rect": [328, 28, 60, 60],
+          "reason": "chunk disappeared"
+        },
+        {
+          "object": "LayoutNGBlockFlow (floating) DIV id='third'",
+          "rect": [248, 48, 60, 60],
+          "reason": "paint property change"
+        },
+        {
+          "object": "LayoutNGBlockFlow (relative positioned) (floating) DIV",
+          "rect": [228, 28, 60, 60],
+          "reason": "paint property change"
+        },
+        {
+          "object": "LayoutNGBlockFlow (floating) DIV id='second'",
+          "rect": [148, 48, 60, 60],
+          "reason": "chunk disappeared"
+        },
+        {
+          "object": "LayoutNGBlockFlow (relative positioned) (floating) DIV",
+          "rect": [128, 28, 60, 60],
+          "reason": "chunk disappeared"
+        },
+        {
+          "object": "LayoutNGBlockFlow (floating) DIV id='first'",
+          "rect": [48, 48, 60, 60],
+          "reason": "chunk appeared"
+        },
+        {
+          "object": "LayoutNGBlockFlow (relative positioned) (floating) DIV",
+          "rect": [28, 28, 60, 60],
+          "reason": "chunk appeared"
+        }
+      ]
+    }
+  ]
+}
+

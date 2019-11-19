@@ -32,6 +32,7 @@ const char* kRelevantKeywords[] = {
     "DefinePartialNetworkTrafficAnnotation",
     "CompleteNetworkTrafficAnnotation",
     "BranchedCompleteNetworkTrafficAnnotation",
+    "CreateMutableNetworkTrafficAnnotationTag",
     "NO_TRAFFIC_ANNOTATION_YET",
     "NO_PARTIAL_TRAFFIC_ANNOTATION_YET",
     "MISSING_TRAFFIC_ANNOTATION",

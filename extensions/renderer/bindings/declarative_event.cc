@@ -191,22 +191,19 @@ void DeclarativeEvent::HandleFunction(const std::string& signature_name,
                        {gin::StringToSymbol(isolate, event_name_),
                         v8::Integer::New(isolate, webview_instance_id_)});
 
-  std::unique_ptr<base::ListValue> converted_arguments;
-  v8::Local<v8::Function> callback;
-  std::string error;
   const APISignature* signature =
       type_refs_->GetTypeMethodSignature(signature_name);
   DCHECK(signature);
-  if (!signature->ParseArgumentsToJSON(context, argument_list, *type_refs_,
-                                       &converted_arguments, &callback,
-                                       &error)) {
+  APISignature::JSONParseResult parse_result =
+      signature->ParseArgumentsToJSON(context, argument_list, *type_refs_);
+  if (!parse_result.succeeded()) {
     arguments->ThrowTypeError("Invalid invocation");
     return;
   }
 
   request_handler_->StartRequest(
-      context, request_name, std::move(converted_arguments), callback,
-      v8::Local<v8::Function>(), binding::RequestThread::UI);
+      context, request_name, std::move(parse_result.arguments),
+      parse_result.callback, v8::Local<v8::Function>());
 }
 
 }  // namespace extensions

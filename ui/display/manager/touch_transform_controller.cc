@@ -16,7 +16,7 @@
 #include "ui/display/screen.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/display/types/display_snapshot.h"
-#include "ui/events/devices/input_device_manager.h"
+#include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/touch_device_transform.h"
 
 namespace display {
@@ -26,7 +26,7 @@ namespace {
 ui::TouchscreenDevice FindTouchscreenByIdentifier(
     const TouchDeviceIdentifier& identifier) {
   const std::vector<ui::TouchscreenDevice>& touchscreens =
-      ui::InputDeviceManager::GetInstance()->GetTouchscreenDevices();
+      ui::DeviceDataManager::GetInstance()->GetTouchscreenDevices();
   for (const auto& touchscreen : touchscreens) {
     if (TouchDeviceIdentifier::FromDevice(touchscreen) == identifier)
       return touchscreen;

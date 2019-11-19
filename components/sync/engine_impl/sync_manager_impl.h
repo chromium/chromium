@@ -16,7 +16,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/sequence_checker.h"
-#include "components/sync/base/cryptographer.h"
 #include "components/sync/base/time.h"
 #include "components/sync/engine/sync_manager.h"
 #include "components/sync/engine_impl/all_status.h"
@@ -27,16 +26,15 @@
 #include "components/sync/engine_impl/js_sync_manager_observer.h"
 #include "components/sync/engine_impl/net/server_connection_manager.h"
 #include "components/sync/engine_impl/nudge_handler.h"
-#include "components/sync/engine_impl/sync_encryption_handler_impl.h"
 #include "components/sync/engine_impl/sync_engine_event_listener.h"
 #include "components/sync/js/js_backend.h"
 #include "components/sync/syncable/change_reorder_buffer.h"
 #include "components/sync/syncable/directory_change_delegate.h"
-#include "components/sync/syncable/user_share.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 
 namespace syncer {
 
+class Cryptographer;
 class ModelTypeRegistry;
 class SyncCycleContext;
 class TypeDebugInfoObserver;
@@ -95,8 +93,9 @@ class SyncManagerImpl
   UserShare* GetUserShare() override;
   ModelTypeConnector* GetModelTypeConnector() override;
   std::unique_ptr<ModelTypeConnector> GetModelTypeConnectorProxy() override;
-  const std::string cache_guid() override;
-  bool ReceivedExperiment(Experiments* experiments) override;
+  std::string cache_guid() override;
+  std::string birthday() override;
+  std::string bag_of_chips() override;
   bool HasUnsyncedItemsForTest() override;
   SyncEncryptionHandler* GetEncryptionHandler() override;
   std::vector<std::unique_ptr<ProtocolEvent>> GetBufferedProtocolEvents()
@@ -118,12 +117,15 @@ class SyncManagerImpl
       const KeyDerivationParams& key_derivation_params,
       const sync_pb::EncryptedData& pending_keys) override;
   void OnPassphraseAccepted() override;
+  void OnTrustedVaultKeyRequired() override;
+  void OnTrustedVaultKeyAccepted() override;
   void OnBootstrapTokenUpdated(const std::string& bootstrap_token,
                                BootstrapTokenType type) override;
   void OnEncryptedTypesChanged(ModelTypeSet encrypted_types,
                                bool encrypt_everything) override;
   void OnEncryptionComplete() override;
-  void OnCryptographerStateChanged(Cryptographer* cryptographer) override;
+  void OnCryptographerStateChanged(Cryptographer* cryptographer,
+                                   bool has_pending_keys) override;
   void OnPassphraseTypeChanged(PassphraseType type,
                                base::Time explicit_passphrase_time) override;
 
@@ -170,11 +172,8 @@ class SyncManagerImpl
   // NudgeHandler implementation.
   void NudgeForInitialDownload(ModelType type) override;
   void NudgeForCommit(ModelType type) override;
-  void NudgeForRefresh(ModelType type) override;
 
-  const SyncScheduler* scheduler() const;
-
-  bool GetHasInvalidAuthTokenForTest() const;
+  static std::string GenerateCacheGUIDForTest();
 
  protected:
   // Helper functions.  Virtual for testing.
@@ -198,8 +197,6 @@ class SyncManagerImpl
     base::DictionaryValue* ToValue() const;
   };
 
-  base::TimeDelta GetNudgeDelayTimeDelta(const ModelType& model_type);
-
   using NotificationInfoMap = std::map<ModelType, NotificationInfo>;
 
   // Determine if the parents or predecessors differ between the old and new
@@ -214,10 +211,10 @@ class SyncManagerImpl
   // differ between the versions of an entry stored in |a| and |b|. A return
   // value of false means that it should be OK to ignore this change.
   bool VisiblePropertiesDiffer(const syncable::EntryKernelMutation& mutation,
-                               Cryptographer* cryptographer) const;
+                               const Cryptographer* cryptographer) const;
 
   // Opens the directory.
-  bool OpenDirectory(const InitArgs* args);
+  bool OpenDirectory(InitArgs* args);
 
   void RequestNudgeForDataTypes(const base::Location& nudge_location,
                                 ModelTypeSet type);
@@ -228,7 +225,7 @@ class SyncManagerImpl
   void SetExtraChangeRecordData(int64_t id,
                                 ModelType type,
                                 ChangeReorderBuffer* buffer,
-                                Cryptographer* cryptographer,
+                                const Cryptographer* cryptographer,
                                 const syncable::EntryKernel& original,
                                 bool existed_before,
                                 bool exists_now);
@@ -256,7 +253,7 @@ class SyncManagerImpl
 
   // We give a handle to share_ to clients of the API for use when constructing
   // any transaction type.
-  UserShare share_;
+  UserShare* share_;
 
   // This can be called from any thread, but only between calls to
   // OpenDirectory() and ShutdownOnSyncThread().
@@ -316,12 +313,11 @@ class SyncManagerImpl
 
   base::Closure report_unrecoverable_error_function_;
 
-  // Sync's encryption handler. It tracks the set of encrypted types, manages
-  // changing passphrases, and in general handles sync-specific interactions
-  // with the cryptographer.
-  std::unique_ptr<SyncEncryptionHandlerImpl> sync_encryption_handler_;
+  SyncEncryptionHandler* sync_encryption_handler_;
 
-  base::WeakPtrFactory<SyncManagerImpl> weak_ptr_factory_;
+  std::unique_ptr<SyncEncryptionHandler::Observer> encryption_observer_proxy_;
+
+  base::WeakPtrFactory<SyncManagerImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SyncManagerImpl);
 };

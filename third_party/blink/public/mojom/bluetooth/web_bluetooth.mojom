@@ -1,0 +1,313 @@
+// Copyright 2016 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "device/bluetooth/public/mojom/uuid.mojom";
+
+// Bluetooth Terminology:
+//
+// https://en.wikipedia.org/wiki/Bluetooth_low_energy is a good resource
+// describing the Bluetooth concepts used in this file:
+// Generic Attribute Profile (GATT), device, services, characteristics,
+// descriptors, and UUIDs.
+
+// Instance ID Note:
+//
+// Structs and parameters use 'instance_id' string values as unique identifiers
+// for Bluetooth GATT object instances. UUIDs are used to refer to e.g. a type
+// of service (such as a battery service), while the instance ID refers to the
+// unique instance of that service (there may be more than one).
+//
+// Subsequent calls from and to the client code use the ids to refer to
+// previously disclosed objects.
+//
+// Device IDs are exposed to web content, valid to persist, and have a dedicated
+// type, WebBluetoothDeviceId. See comments on that struct.
+//
+// Service, characteristic, and descriptor IDs are simply strings not exposed to
+// web content and use platform specific values. They are only used for
+// comparison and not intended to be parsed by code, serialized, or exposed to
+// web content.
+//
+// For example:
+// RemoteServerGetPrimaryServices() may return a struct of type
+// WebBluetoothRemoteGATTService with an instance_id of "service1".
+// To retrieve characteristics of that service use that id when calling
+// RemoteServiceGetCharacteristics("service1", ...).
+
+// Result codes that can occur during Web Bluetooth execution.
+// Transformed to a DOMException in Source/modules/bluetooth/BluetoothError.cpp.
+//
+// These errors all produce constant message strings. If a particular message
+// needs a dynamic component, we should add a separate enum so type-checking the
+// IPC ensures the dynamic component is passed.
+enum WebBluetoothResult {
+  SUCCESS,
+  // AbortError:
+  // InvalidModificationError:
+  GATT_INVALID_ATTRIBUTE_LENGTH,
+  // InvalidStateError:
+  SERVICE_NO_LONGER_EXISTS,
+  CHARACTERISTIC_NO_LONGER_EXISTS,
+  PROMPT_CANCELED,
+  // NetworkError:
+  CONNECT_ALREADY_IN_PROGRESS,
+  CONNECT_AUTH_CANCELED,
+  CONNECT_AUTH_FAILED,
+  CONNECT_AUTH_REJECTED,
+  CONNECT_AUTH_TIMEOUT,
+  CONNECT_UNKNOWN_ERROR,
+  CONNECT_UNKNOWN_FAILURE,
+  CONNECT_UNSUPPORTED_DEVICE,
+  DEVICE_NO_LONGER_IN_RANGE,
+  GATT_NOT_PAIRED,
+  GATT_OPERATION_IN_PROGRESS,
+  // NotFoundError:
+  NO_BLUETOOTH_ADAPTER,
+  CHOSEN_DEVICE_VANISHED,
+  CHOOSER_CANCELLED,
+  CHOOSER_NOT_SHOWN_API_GLOBALLY_DISABLED,
+  CHOOSER_NOT_SHOWN_API_LOCALLY_DISABLED,
+  CHOOSER_NOT_SHOWN_USER_DENIED_PERMISSION_TO_SCAN,
+  SERVICE_NOT_FOUND,
+  NO_SERVICES_FOUND,
+  CHARACTERISTIC_NOT_FOUND,
+  NO_CHARACTERISTICS_FOUND,
+  DESCRIPTOR_NOT_FOUND,
+  NO_DESCRIPTORS_FOUND,
+  WEB_BLUETOOTH_NOT_SUPPORTED,
+  BLUETOOTH_LOW_ENERGY_NOT_AVAILABLE,
+  // NotSupportedError:
+  GATT_UNKNOWN_ERROR,
+  GATT_UNKNOWN_FAILURE,
+  GATT_NOT_PERMITTED,
+  GATT_NOT_SUPPORTED,
+  GATT_UNTRANSLATED_ERROR_CODE,
+  // SecurityError:
+  GATT_NOT_AUTHORIZED,
+  BLOCKLISTED_DESCRIPTOR_UUID,
+  BLOCKLISTED_CHARACTERISTIC_UUID,
+  BLOCKLISTED_READ,
+  BLOCKLISTED_WRITE,
+  NOT_ALLOWED_TO_ACCESS_ANY_SERVICE,
+  NOT_ALLOWED_TO_ACCESS_SERVICE,
+  REQUEST_DEVICE_WITH_BLOCKLISTED_UUID,
+  REQUEST_DEVICE_FROM_CROSS_ORIGIN_IFRAME,
+  DESCRIPTOR_NO_LONGER_EXISTS,
+  // NotAllowedError:
+  SCANNING_BLOCKED,
+};
+
+struct WebBluetoothLeScanFilter {
+  array<bluetooth.mojom.UUID>? services;
+  string? name;
+  string? name_prefix;
+};
+
+struct WebBluetoothRequestDeviceOptions {
+  array<WebBluetoothLeScanFilter>? filters;
+  array<bluetooth.mojom.UUID> optional_services;
+  bool accept_all_devices;
+};
+
+struct WebBluetoothRequestLEScanOptions {
+  array<WebBluetoothLeScanFilter>? filters;
+  bool keep_repeated_devices;
+  bool accept_all_advertisements;
+};
+
+// Indicates if the function will return a single or multiple
+// GATT objects.
+enum WebBluetoothGATTQueryQuantity {
+  SINGLE,
+  MULTIPLE
+};
+
+// An identifier uniquely identifying a Bluetooth device. This identifier is
+// safe to provide to web content and is unique per origin, even if referring
+// to a common device. Web content may persist this identifier for future
+// sessions to identify the same device.
+struct WebBluetoothDeviceId {
+  string device_id;
+};
+
+struct WebBluetoothDevice {
+  WebBluetoothDeviceId id;
+  string? name;
+};
+
+struct WebBluetoothRemoteGATTService {
+  string instance_id; // See Instance ID Note above.
+  bluetooth.mojom.UUID uuid;
+};
+
+struct WebBluetoothRemoteGATTCharacteristic {
+  string instance_id; // See Instance ID Note above.
+  bluetooth.mojom.UUID uuid;
+  uint32 properties;
+};
+
+// On success, |options| contains the values used for the scan request. On
+// error, |result| will indicate the failure type.
+union RequestScanningStartResult {
+  WebBluetoothResult error_result;
+  WebBluetoothRequestLEScanOptions options;
+};
+
+struct WebBluetoothScanResult {
+  WebBluetoothDevice device;
+  string? name;
+  array<bluetooth.mojom.UUID> uuids;
+  bool appearance_is_set;
+  uint16 appearance;
+  bool tx_power_is_set;
+  uint8 tx_power;
+  bool rssi_is_set;
+  uint8 rssi;
+  map<uint16, array<uint8>> manufacturer_data;
+  map<string, array<uint8>> service_data;
+};
+
+struct WebBluetoothRemoteGATTDescriptor {
+  string instance_id; // See Instance ID Note above.
+  bluetooth.mojom.UUID uuid;
+};
+
+// Web Bluetooth Interface that Blink can use to perform
+// Bluetooth GATT Operations on Bluetooth Devices.
+interface WebBluetoothService {
+  // Checks if Web Bluetooth is allowed and if a Bluetooth radio is available.
+  GetAvailability() => (bool is_available);
+
+  RequestDevice(WebBluetoothRequestDeviceOptions options)
+    => (WebBluetoothResult result, WebBluetoothDevice? device);
+
+  // Creates a GATT Connection to a Bluetooth Device identified by |device_id|
+  // if a connection to the device didn't exist already. If a GATT connection
+  // existed already then this function increases the ref count to keep that
+  // connection alive.
+  // Returns the result of the connection request.
+  RemoteServerConnect(
+    WebBluetoothDeviceId device_id,
+    pending_associated_remote<WebBluetoothServerClient> client) => (
+    WebBluetoothResult result);
+
+  // If a GATT connection exists for Device identified by |device_id| then
+  // decreases the ref count for that connection.
+  RemoteServerDisconnect(WebBluetoothDeviceId device_id);
+
+  // Returns the Services of a GATT Device identified by |device_id|.
+  // If |services_uuid| is present, filters services by |services_uuid|.
+  // Otherwise returns all non-blocklisted services.
+  // If |quantity| == WebBluetoothGATTQueryQuantity::SINGLE, at most one
+  // service will be returned.
+  RemoteServerGetPrimaryServices(
+    WebBluetoothDeviceId device_id,
+    WebBluetoothGATTQueryQuantity quantity,
+    bluetooth.mojom.UUID? services_uuid) => (
+      WebBluetoothResult result,
+      array<WebBluetoothRemoteGATTService>? services);
+
+  // Returns the Characteristics of a GATT Service identified by
+  // |service_instance_id|.
+  // If |characteristics_uuid| is present, filters characteristics by
+  // |characteristics_uuid|. Otherwise returns all non-blocklisted services.
+  // If |quantity| == WebBluetoothGATTQueryQuantity::SINGLE, at most one
+  // characteristic will be returned.
+  RemoteServiceGetCharacteristics(
+    string service_instance_id,
+    WebBluetoothGATTQueryQuantity quantity,
+    bluetooth.mojom.UUID? characteristics_uuid) => (
+      WebBluetoothResult result,
+      array<WebBluetoothRemoteGATTCharacteristic>? characteristics);
+
+  // Reads the value for the characteristic identified by
+  // |characteristic_instance_id|. If the value is successfully read the
+  // callback will be run with WebBluetoothResult::SUCCESS and the
+  // characteristic's value. If the value is not successfully read the
+  // callback with be run with the corresponding error and nullptr for value.
+  RemoteCharacteristicReadValue(
+    string characteristic_instance_id) => (
+    WebBluetoothResult result,
+    array<uint8>? value);
+
+  // Writes a value to the characteristic identified by
+  // |characteristic_instance_id|. The callback is run with
+  // WebBluetoothResult::SUCCESS if the value was successfully
+  // written.
+  RemoteCharacteristicWriteValue(
+    string characteristic_instance_id,
+    array<uint8> value) => (WebBluetoothResult result);
+
+  // Starts notifications for the characteristic identified by
+  // |characteristic_instance_id|.
+  // Returns the result of the connection request.
+  RemoteCharacteristicStartNotifications(
+    string characteristic_instance_id,
+    pending_associated_remote<WebBluetoothCharacteristicClient> client) => (
+      WebBluetoothResult result);
+
+  // Stops notifications for the characteristic identified by
+  // |characteristic_instance_id|.
+  RemoteCharacteristicStopNotifications(
+    string characteristic_instance_id) => ();
+
+  // Returns the Descriptors of a GATT Characteristic identified by
+  // |characteristics_instance_id|.
+  // If |descriptor_uuid| is present, filters descriptors by
+  // |descriptor_uuid|. Otherwise returns all non-blocklisted descriptors.
+  // If |quantity| == WebBluetoothGATTQueryQuantity::SINGLE, at most one
+  // characteristic will be returned.
+  RemoteCharacteristicGetDescriptors(
+    string characteristics_instance_id,
+    WebBluetoothGATTQueryQuantity quantity,
+    bluetooth.mojom.UUID? descriptor_uuid) => (
+      WebBluetoothResult result,
+      array<WebBluetoothRemoteGATTDescriptor>? descriptors);
+
+  // Reads the value for the descriptor identified by
+  // |descriptor_instance_id|. If the value is successfully read the callback
+  // will be run with WebBluetoothResult::SUCCESS and the descriptor's value. If
+  // the value is not successfully read the callback with be run with the
+  // corresponding error and nullptr for value
+  RemoteDescriptorReadValue(
+    string descriptor_instance_id) => (
+    WebBluetoothResult result,
+    array<uint8>? value);
+
+  // Writes a value to the descriptor identified by
+  // |descriptor_instance_id|. The callback is run with
+  // WebBluetoothResult::SUCCESS if the value was successfully
+  // written.
+  RemoteDescriptorWriteValue(
+    string descriptor_instance_id,
+    array<uint8> value) => (WebBluetoothResult result);
+
+  // Starts scanning for low energy devices.
+  RequestScanningStart(
+    pending_associated_remote<WebBluetoothScanClient> client,
+    WebBluetoothRequestLEScanOptions options) => (
+    RequestScanningStartResult result);
+};
+
+// Classes that implement this interface will be notified of device events.
+interface WebBluetoothServerClient {
+  // Called when a device disconnects.
+  GATTServerDisconnected();
+};
+
+// Classes that implement this interface will be notified of characteristic
+// events.
+interface WebBluetoothCharacteristicClient {
+  // Called when we receive a notification for the characteristic.
+  RemoteCharacteristicValueChanged(array<uint8> value);
+};
+
+// Classes that implement this interface will be notified of scan
+// events.
+interface WebBluetoothScanClient {
+  // Called when we receive a notification for the characteristic.
+  ScanEvent(WebBluetoothScanResult result);
+};

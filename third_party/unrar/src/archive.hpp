@@ -1,8 +1,6 @@
 #ifndef _RAR_ARCHIVE_
 #define _RAR_ARCHIVE_
 
-namespace third_party_unrar {
-
 class PPack;
 class RawRead;
 class RawWrite;
@@ -39,8 +37,7 @@ class Archive:public File
     void RequestArcPassword();
     void UnexpEndArcMsg();
     void BrokenHeaderMsg();
-    void UnkEncVerMsg(const wchar *Name);
-    void UnkEncVerMsg();
+    void UnkEncVerMsg(const wchar *Name,const wchar *Info);
     bool ReadCommentData(Array<wchar> *CmtData);
 
 #if !defined(RAR_NOCRYPT)
@@ -160,6 +157,5 @@ class Archive:public File
     wchar FirstVolumeName[NM];
 };
 
-}  // namespace third_party_unrar
 
 #endif

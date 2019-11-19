@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/testing/scoped_main_thread_overrider.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
@@ -16,6 +17,8 @@ namespace blink {
 // Overrider. Multi-thread is not supported.
 
 class ScopedSchedulerOverrider final {
+  USING_FAST_MALLOC(ScopedSchedulerOverrider);
+
  public:
   // |scheduler| must be owned by the caller.
   explicit ScopedSchedulerOverrider(ThreadScheduler* scheduler);

@@ -6,8 +6,8 @@
 
 #include "base/strings/sys_string_conversions.h"
 #include "components/url_formatter/url_formatter.h"
-#include "ios/web/public/referrer_util.h"
-#import "ios/web/public/web_state/context_menu_params.h"
+#include "ios/web/common/referrer_util.h"
+#import "ios/web/public/ui/context_menu_params.h"
 #import "ios/web/web_state/context_menu_constants.h"
 #import "net/base/mac/url_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"

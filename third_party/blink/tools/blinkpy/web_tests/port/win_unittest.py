@@ -53,6 +53,10 @@ class WinPortTest(port_testcase.PortTestCase):
         port = self.make_port(port_name=port_name, os_version=os_version_string)
         self.assertEqual(expected, port.name())
 
+    def test_get_platform_tags(self):
+        port = self.make_port()
+        self.assertEqual(port.get_platform_tags(), {'win', 'win7', 'x86', 'release'})
+
     def test_versions(self):
         port = self.make_port()
         self.assertIn(port.name(), ('win-win7', 'win-win10'))

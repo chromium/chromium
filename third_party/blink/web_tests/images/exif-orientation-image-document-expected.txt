@@ -1,7 +1,0 @@
-The images should be rotated respecting their EXIF orientation. In image documents, this happens independent of WebKitShouldRespectImageOrientation.
-
-   
-   
-
-
-PASS

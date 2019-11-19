@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 package org.chromium.components.language;
+import org.chromium.base.annotations.NativeMethods;
 
 /**
  * A bridge to language metrics functions that require access to native code.
@@ -15,9 +16,12 @@ public class AndroidLanguageMetricsBridge {
      * @param added True if the language was added, false if it was removed.
      */
     public static void reportExplicitLanguageAskStateChanged(String language, boolean added) {
-        nativeReportExplicitLanguageAskStateChanged(language, added);
+        AndroidLanguageMetricsBridgeJni.get().reportExplicitLanguageAskStateChanged(
+                language, added);
     }
 
-    private static native void nativeReportExplicitLanguageAskStateChanged(
-            String language, boolean added);
+    @NativeMethods
+    interface Natives {
+        void reportExplicitLanguageAskStateChanged(String language, boolean added);
+    }
 }

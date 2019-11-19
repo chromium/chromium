@@ -1,0 +1,23 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "LayoutNGBlockFlow DIV",
+          "rect": [15, 60, 100, 100],
+          "reason": "disappeared"
+        },
+        {
+          "object": "LayoutNGBlockFlow DIV id='target'",
+          "rect": [15, 60, 100, 100],
+          "reason": "appeared"
+        }
+      ]
+    }
+  ]
+}
+

@@ -31,14 +31,11 @@ void AudioWorkletMessagingProxy::CreateProcessor(
   DCHECK(IsMainThread());
   PostCrossThreadTask(
       *GetWorkerThread()->GetTaskRunner(TaskType::kMiscPlatformAPI), FROM_HERE,
-      CrossThreadBind(
+      CrossThreadBindOnce(
           &AudioWorkletMessagingProxy::CreateProcessorOnRenderingThread,
           WrapCrossThreadPersistent(this),
-          CrossThreadUnretained(GetWorkerThread()),
-          handler,
-          handler->Name(),
-          std::move(message_port_channel),
-          std::move(node_options)));
+          CrossThreadUnretained(GetWorkerThread()), handler, handler->Name(),
+          std::move(message_port_channel), std::move(node_options)));
 }
 
 void AudioWorkletMessagingProxy::CreateProcessorOnRenderingThread(

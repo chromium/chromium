@@ -11,6 +11,8 @@ run.
 Usage: remove_duplicate_includes.py --dry-run components/foo components/bar
 """
 
+from __future__ import print_function
+
 import argparse
 import collections
 import logging
@@ -45,8 +47,8 @@ def FindIncludeSet(input_lines, h_path_to_include_set, cc_file_name):
     if match:
       h_file_path = os.path.join(os.getcwd(), match.group(2))
       if h_file_path not in h_path_to_include_set:
-        print 'First include did not match to a known .h file, skipping ' + \
-          cc_file_name + ', line: ' + match.group(1)
+        print('First include did not match to a known .h file, skipping ' + \
+          cc_file_name + ', line: ' + match.group(1))
         return None
       return h_path_to_include_set[h_file_path]
 
@@ -64,10 +66,10 @@ def WithoutDuplicates(input_lines, include_set, cc_file_name):
   for line in input_lines:
       match = INCLUDE_REGEX.search(line)
       if match and match.group(2) in include_set:
-        print 'Removed ' + match.group(1) + ' from ' + cc_file_name
+        print('Removed ' + match.group(1) + ' from ' + cc_file_name)
         lastLineWasOmitted = True
       elif lastCopiedLineWasEmpty and lastLineWasOmitted and IsEmpty(line):
-        print 'Removed empty line from ' + cc_file_name
+        print('Removed empty line from ' + cc_file_name)
         lastLineWasOmitted = True
       else:
         lastCopiedLineWasEmpty = IsEmpty(line)

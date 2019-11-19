@@ -36,7 +36,7 @@ source_set("display") {
   deps = [
     "//third_party/libyuv",
     "//third_party/protobuf:protobuf_lite",
-    "//third_party/webrtc/rtc_base:rtc_base_approved",
+    "//third_party/webrtc_overrides:webrtc_component",
   ]
 
   public_configs = [ "//third_party/khronos:khronos_headers" ]
@@ -58,6 +58,9 @@ source_set("display") {
       "GLKit.framework",
       "OpenGLES.framework",
     ]
+
+    # TODO(crbug.com/875022) fix for OpenGLES deprecation.
+    defines = [ "GLES_SILENCE_DEPRECATION" ]
   }
 
   if (is_win) {
@@ -91,7 +94,7 @@ if (is_win) {
       "//remoting/proto",
       "//testing/gmock",
       "//testing/gtest",
-      "//third_party/webrtc/rtc_base:rtc_base_approved",
+      "//third_party/webrtc_overrides:webrtc_component",
     ]
   }
 }

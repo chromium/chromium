@@ -6,18 +6,15 @@ package org.chromium.chrome.browser.download.home.list;
 
 import android.view.View;
 
-import org.chromium.base.VisibleForTesting;
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.chrome.browser.download.home.StableIds;
 import org.chromium.components.offline_items_collection.OfflineItem;
 
-import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 
 /** An abstract class that represents a variety of possible list items to show in downloads home. */
 public abstract class ListItem {
-    private static final long DATE_SEPARATOR_HASH_CODE_OFFSET = 10;
-    private static final long SECTION_SEPARATOR_HASH_CODE_OFFSET = 100;
     private static final long SECTION_HEADER_HASH_CODE_OFFSET = 1000;
 
     public final long stableId;
@@ -44,6 +41,14 @@ public abstract class ListItem {
         }
     }
 
+    /** A {@link ListItem} representing a pagination header. */
+    public static class PaginationListItem extends ListItem {
+        /** Creates a {@link PaginationListItem} instance. */
+        public PaginationListItem() {
+            super(StableIds.PAGINATION_HEADER);
+        }
+    }
+
     /** A {@link ListItem} that involves a {@link Date}. */
     private abstract static class DateListItem extends ListItem {
         public final Date date;
@@ -56,51 +61,27 @@ public abstract class ListItem {
             super(stableId);
             this.date = date;
         }
-
-        /**
-         * Creates a {@link DateListItem} instance around a particular calendar day.  This will
-         * automatically generate the {@link ListItem#stableId} from {@code calendar}.
-         * @param calendar
-         */
-        public DateListItem(Calendar calendar) {
-            this(generateStableIdForDayOfYear(calendar), calendar.getTime());
-        }
-
-        @VisibleForTesting
-        static long generateStableIdForDayOfYear(Calendar calendar) {
-            return (calendar.get(Calendar.YEAR) << 16) + calendar.get(Calendar.DAY_OF_YEAR);
-        }
     }
 
     /** A {@link ListItem} representing a section header. */
     public static class SectionHeaderListItem extends DateListItem {
-        public final int filter;
-        public boolean showDate;
-        public boolean showTitle;
-        public boolean showMenu;
         public boolean isJustNow;
         public boolean showDivider;
-        public List<OfflineItem> items;
 
         /**
-         * Creates a {@link SectionHeaderListItem} instance for a given {@code filter} and
-         * {@code timestamp}.
+         * Creates a {@link SectionHeaderListItem} instance for a given {@code timestamp}.
          */
-        public SectionHeaderListItem(int filter, long timestamp, boolean showDate,
-                boolean isJustNow, boolean showDivider) {
-            super(isJustNow && showDate ? StableIds.JUST_NOW_SECTION
-                                        : generateStableId(timestamp, filter),
+        public SectionHeaderListItem(long timestamp, boolean isJustNow, boolean showDivider) {
+            super(isJustNow ? StableIds.JUST_NOW_SECTION : generateStableId(timestamp),
                     new Date(timestamp));
-            this.filter = filter;
-            this.showDate = showDate;
             this.isJustNow = isJustNow;
             this.showDivider = showDivider;
         }
 
         @VisibleForTesting
-        static long generateStableId(long timestamp, int filter) {
+        static long generateStableId(long timestamp) {
             long hash = new Date(timestamp).hashCode();
-            return hash + filter + SECTION_HEADER_HASH_CODE_OFFSET;
+            return hash + SECTION_HEADER_HASH_CODE_OFFSET;
         }
     }
 

@@ -36,8 +36,8 @@
 // //       8 July, 2015, and after that all instances will be in "StandardMem".
 // scoped_refptr<base::FieldTrial> trial(
 //     base::FieldTrialList::FactoryGetFieldTrial(
-//         "MemoryExperiment", 1000, "StandardMem", 2015, 7, 8,
-//         base::FieldTrial::ONE_TIME_RANDOMIZED, NULL));
+//         "MemoryExperiment", 1000, "StandardMem",
+//         base::FieldTrial::ONE_TIME_RANDOMIZED, nullptr));
 //
 // const int high_mem_group =
 //     trial->AppendGroup("HighMem", 20);  // 2% in HighMem group.
@@ -67,7 +67,6 @@
 #include "base/base_export.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
-#include "base/files/file.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/memory/read_only_shared_memory_region.h"
@@ -79,7 +78,6 @@
 #include "base/process/launch.h"
 #include "base/strings/string_piece.h"
 #include "base/synchronization/lock.h"
-#include "base/time/time.h"
 #include "build/build_config.h"
 
 #if defined(OS_MACOSX) && !defined(OS_IOS)
@@ -324,12 +322,11 @@ class BASE_EXPORT FieldTrial : public RefCounted<FieldTrial> {
 
   // Returns the trial name and selected group name for this field trial via
   // the output parameter |field_trial_state| for all the studies when
-  // |bool include_expired| is true. In case when |bool include_expired| is
-  // false, if the trial has not been disabled true is returned and
-  // |field_trial_state| is filled in; otherwise, the result is false and
-  // |field_trial_state| is left untouched.
-  // This function is deadlock-free if the caller is holding a lock.
-  bool GetStateWhileLocked(State* field_trial_state, bool include_expired);
+  // |include_disabled| is true. In case when |include_disabled| is false, if
+  // the trial has not been disabled true is returned and |field_trial_state|
+  // is filled in; otherwise, the result is false and |field_trial_state| is
+  // left untouched.
+  bool GetStateWhileLocked(State* field_trial_state, bool include_disabled);
 
   // Returns the group_name. A winner need not have been chosen.
   std::string group_name_internal() const { return group_name_; }
@@ -401,10 +398,6 @@ class BASE_EXPORT FieldTrialList {
   // special characters from |input|.
   typedef std::string (*EscapeDataFunc)(const std::string& input);
 
-  // Year that is guaranteed to not be expired when instantiating a field trial
-  // via |FactoryGetFieldTrial()|.  Set to two years from the build date.
-  static int kNoExpirationYear;
-
   // Observer is notified when a FieldTrial's group is selected.
   class BASE_EXPORT Observer {
    public:
@@ -437,12 +430,10 @@ class BASE_EXPORT FieldTrialList {
   // |default_group_number| can receive the group number of the default group as
   // AppendGroup returns the number of the subsequence groups. |trial_name| and
   // |default_group_name| may not be empty but |default_group_number| can be
-  // NULL if the value is not needed.
+  // null if the value is not needed.
   //
   // Group probabilities that are later supplied must sum to less than or equal
-  // to the |total_probability|. Arguments |year|, |month| and |day_of_month|
-  // specify the expiration time. If the build time is after the expiration time
-  // then the field trial reverts to the 'default' group.
+  // to the |total_probability|.
   //
   // Use this static method to get a startup-randomized FieldTrial or a
   // previously created forced FieldTrial.
@@ -450,9 +441,6 @@ class BASE_EXPORT FieldTrialList {
       const std::string& trial_name,
       FieldTrial::Probability total_probability,
       const std::string& default_group_name,
-      const int year,
-      const int month,
-      const int day_of_month,
       FieldTrial::RandomizationType randomization_type,
       int* default_group_number);
 
@@ -471,9 +459,6 @@ class BASE_EXPORT FieldTrialList {
       const std::string& trial_name,
       FieldTrial::Probability total_probability,
       const std::string& default_group_name,
-      const int year,
-      const int month,
-      const int day_of_month,
       FieldTrial::RandomizationType randomization_type,
       uint32_t randomization_seed,
       int* default_group_number,
@@ -515,20 +500,20 @@ class BASE_EXPORT FieldTrialList {
   // resurrection in another process. This allows randomization to be done in
   // one process, and secondary processes can be synchronized on the result.
   // The resulting string contains the name and group name pairs of all
-  // registered FieldTrials including disabled based on |include_expired|,
+  // registered FieldTrials including disabled based on |include_disabled|,
   // with "/" used to separate all names and to terminate the string. All
   // activated trials have their name prefixed with "*". This string is parsed
   // by |CreateTrialsFromString()|.
-  static void AllStatesToString(std::string* output, bool include_expired);
+  static void AllStatesToString(std::string* output, bool include_disabled);
 
   // Creates a persistent representation of all FieldTrial params for
   // resurrection in another process. The returned string contains the trial
   // name and group name pairs of all registered FieldTrials including disabled
-  // based on |include_expired| separated by '.'. The pair is followed by ':'
+  // based on |include_disabled| separated by '.'. The pair is followed by ':'
   // separator and list of param name and values separated by '/'. It also takes
   // |encode_data_func| function pointer for encodeing special charactors.
   // This string is parsed by |AssociateParamsFromString()|.
-  static std::string AllParamsToString(bool include_expired,
+  static std::string AllParamsToString(bool include_disabled,
                                        EscapeDataFunc encode_data_func);
 
   // Fills in the supplied vector |active_groups| (which must be empty when
@@ -548,7 +533,7 @@ class BASE_EXPORT FieldTrialList {
   // holding field trial information.
   // Must be called only after a call to CreateTrialsFromCommandLine().
   static void GetInitiallyActiveFieldTrials(
-      const base::CommandLine& command_line,
+      const CommandLine& command_line,
       FieldTrial::ActiveGroups* active_groups);
 
   // Use a state string (re: StatesToString()) to augment the current list of
@@ -572,24 +557,22 @@ class BASE_EXPORT FieldTrialList {
   // contain the shared memory handle that contains the field trial allocator.
   // We need the |field_trial_handle_switch| and |fd_key| arguments to be passed
   // in since base/ can't depend on content/.
-  static void CreateTrialsFromCommandLine(const base::CommandLine& cmd_line,
+  static void CreateTrialsFromCommandLine(const CommandLine& cmd_line,
                                           const char* field_trial_handle_switch,
                                           int fd_key);
 
   // Creates base::Feature overrides from the command line by first trying to
   // use shared memory and then falling back to the command line if it fails.
-  static void CreateFeaturesFromCommandLine(
-      const base::CommandLine& command_line,
-      const char* enable_features_switch,
-      const char* disable_features_switch,
-      FeatureList* feature_list);
+  static void CreateFeaturesFromCommandLine(const CommandLine& command_line,
+                                            const char* enable_features_switch,
+                                            const char* disable_features_switch,
+                                            FeatureList* feature_list);
 
 #if defined(OS_WIN)
   // On Windows, we need to explicitly pass down any handles to be inherited.
   // This function adds the shared memory handle to field trial state to the
   // list of handles to be inherited.
-  static void AppendFieldTrialHandleIfNeeded(
-      base::HandlesToInheritVector* handles);
+  static void AppendFieldTrialHandleIfNeeded(HandlesToInheritVector* handles);
 #elif defined(OS_FUCHSIA)
   // TODO(fuchsia): Implement shared-memory configuration (crbug.com/752368).
 #elif defined(OS_MACOSX) && !defined(OS_IOS)
@@ -604,8 +587,7 @@ class BASE_EXPORT FieldTrialList {
   // descriptor.
   static int GetFieldTrialDescriptor();
 #endif
-  static base::ReadOnlySharedMemoryRegion
-  DuplicateFieldTrialSharedMemoryForTesting();
+  static ReadOnlySharedMemoryRegion DuplicateFieldTrialSharedMemoryForTesting();
 
   // Adds a switch to the command line containing the field trial state as a
   // string (if not using shared memory to share field trial state), or the
@@ -615,7 +597,7 @@ class BASE_EXPORT FieldTrialList {
   static void CopyFieldTrialStateToFlags(const char* field_trial_handle_switch,
                                          const char* enable_features_switch,
                                          const char* disable_features_switch,
-                                         base::CommandLine* cmd_line);
+                                         CommandLine* cmd_line);
 
   // Create a FieldTrial with the given |name| and using 100% probability for
   // the FieldTrial, force FieldTrial to have the same group string as
@@ -681,8 +663,26 @@ class BASE_EXPORT FieldTrialList {
   GetAllFieldTrialsFromPersistentAllocator(
       PersistentMemoryAllocator const& allocator);
 
-  // Returns true if a global field trial list is set. Only used for testing.
-  static bool IsGlobalSetForTesting();
+  // Returns a pointer to the global instance. This is exposed so that it can
+  // be used in a DCHECK in FeatureList and ScopedFeatureList test-only logic
+  // and is not intended to be used widely beyond those cases.
+  static FieldTrialList* GetInstance();
+
+  // For testing, sets the global instance to null and returns the previous one.
+  static FieldTrialList* BackupInstanceForTesting();
+
+  // For testing, sets the global instance to |instance|.
+  static void RestoreInstanceForTesting(FieldTrialList* instance);
+
+  // Allows nested instances of FieldTrialList without having to use the
+  // backup&restore methods above.
+  // TODO(crbug.com/1018667): Remove after all unit tests have been migrated.
+  static void AllowNestedFieldTrialListForTesting();
+
+  // Exposes the previous instance of FieldTrialNest, where |this| was nested.
+  // Null except in tests that use AllowNestedFieldTrialListForTesting().
+  // TODO(crbug.com/1018667): Remove after all unit tests have been migrated.
+  const FieldTrialList* GetPreviousGlobal() const;
 
  private:
   // Allow tests to access our innards for testing purposes.
@@ -702,13 +702,13 @@ class BASE_EXPORT FieldTrialList {
   // a GUID. Serialization and deserialization doesn't actually transport the
   // underlying OS resource - that must be done by the Process launcher.
   static std::string SerializeSharedMemoryRegionMetadata(
-      const base::ReadOnlySharedMemoryRegion& shm);
+      const ReadOnlySharedMemoryRegion& shm);
 #if defined(OS_WIN) || defined(OS_FUCHSIA) || \
     (defined(OS_MACOSX) && !defined(OS_IOS))
-  static base::ReadOnlySharedMemoryRegion DeserializeSharedMemoryRegionMetadata(
+  static ReadOnlySharedMemoryRegion DeserializeSharedMemoryRegionMetadata(
       const std::string& switch_value);
 #elif defined(OS_POSIX) && !defined(OS_NACL)
-  static base::ReadOnlySharedMemoryRegion DeserializeSharedMemoryRegionMetadata(
+  static ReadOnlySharedMemoryRegion DeserializeSharedMemoryRegionMetadata(
       int fd,
       const std::string& switch_value);
 #endif
@@ -733,7 +733,7 @@ class BASE_EXPORT FieldTrialList {
   // and creates field trials via CreateTrialsFromSharedMemoryMapping(). Returns
   // true if successful and false otherwise.
   static bool CreateTrialsFromSharedMemoryRegion(
-      const base::ReadOnlySharedMemoryRegion& shm_region);
+      const ReadOnlySharedMemoryRegion& shm_region);
 
   // Expects a mapped piece of shared memory |shm_mapping| that was created from
   // the browser process's field_trial_allocator and shared via the command
@@ -741,7 +741,7 @@ class BASE_EXPORT FieldTrialList {
   // trials in it, and creates them via CreateFieldTrial(). Returns true if
   // successful and false otherwise.
   static bool CreateTrialsFromSharedMemoryMapping(
-      base::ReadOnlySharedMemoryMapping shm_mapping);
+      ReadOnlySharedMemoryMapping shm_mapping);
 
   // Instantiate the field trial allocator, add all existing field trials to it,
   // and duplicates its handle to a read-only handle, which gets stored in
@@ -808,10 +808,13 @@ class BASE_EXPORT FieldTrialList {
   // Readonly copy of the region to the allocator. Needs to be a member variable
   // because it's needed from both CopyFieldTrialStateToFlags() and
   // AppendFieldTrialHandleIfNeeded().
-  base::ReadOnlySharedMemoryRegion readonly_allocator_region_;
+  ReadOnlySharedMemoryRegion readonly_allocator_region_;
 
   // Tracks whether CreateTrialsFromCommandLine() has been called.
   bool create_trials_from_command_line_called_ = false;
+
+  // TODO(crbug.com/1018667): Remove after all unit tests have been migrated.
+  FieldTrialList* previous_global_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(FieldTrialList);
 };

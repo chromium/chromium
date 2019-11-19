@@ -1,0 +1,10 @@
+[document web]
+++[list] xml-roles:list
+++++[description term] xml-roles:term
+++++++[static] name='Term1'
+++++[description value] xml-roles:definition
+++++++[static] name='Definition1'
+++++[description term] xml-roles:term
+++++++[static] name='Term2'
+++++[description value] xml-roles:definition
+++++++[static] name='Definition2'

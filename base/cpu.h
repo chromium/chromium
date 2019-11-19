@@ -6,10 +6,24 @@
 #define BASE_CPU_H_
 
 #include <string>
+#include <tuple>
 
 #include "base/base_export.h"
+#include "build/build_config.h"
 
 namespace base {
+
+#if defined(ARCH_CPU_X86_FAMILY)
+namespace internal {
+
+// Compute the CPU family and model based on the vendor and CPUID signature.
+// Returns in order: family, model, extended family, extended model.
+BASE_EXPORT std::tuple<int, int, int, int> ComputeX86FamilyAndModel(
+    const std::string& vendor,
+    int signature);
+
+}  // namespace internal
+#endif  // defined(ARCH_CPU_X86_FAMILY)
 
 // Query information about the processor.
 class BASE_EXPORT CPU final {
@@ -52,6 +66,7 @@ class BASE_EXPORT CPU final {
   bool has_non_stop_time_stamp_counter() const {
     return has_non_stop_time_stamp_counter_;
   }
+  bool is_running_in_vm() const { return is_running_in_vm_; }
 
   IntelMicroArchitecture GetIntelMicroArchitecture() const;
   const std::string& cpu_brand() const { return cpu_brand_; }
@@ -79,6 +94,7 @@ class BASE_EXPORT CPU final {
   bool has_avx2_;
   bool has_aesni_;
   bool has_non_stop_time_stamp_counter_;
+  bool is_running_in_vm_;
   std::string cpu_vendor_;
   std::string cpu_brand_;
 };

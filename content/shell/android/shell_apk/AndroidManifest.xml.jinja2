@@ -7,9 +7,8 @@
  -->
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="org.chromium.content_shell_apk">
+    package="{{ manifest_package }}">
 
-    <uses-sdk android:minSdkVersion="19" android:targetSdkVersion="23" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.CAMERA"/>
@@ -20,10 +19,13 @@
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
-    <application android:name="ContentShellApplication"
+    {% block extra_uses_permissions %}
+    {% endblock %}
+
+    <application android:name="org.chromium.content_shell_apk.ContentShellApplication"
             android:icon="@mipmap/app_icon"
-            android:label="Content Shell">
-        <activity android:name="ContentShellActivity"
+            android:label="{% block application_label %}Content Shell{% endblock %}">
+        <activity android:name="org.chromium.content_shell_apk.ContentShellActivity"
                   android:launchMode="singleTask"
                   android:theme="@android:style/Theme.Holo.Light.NoActionBar"
                   android:configChanges="orientation|keyboardHidden|keyboard|screenSize"
@@ -82,6 +84,10 @@
                  android:isolatedProcess="true"
                  android:exported="false" />
         {% endfor %}
+        {% block extra_application_definitions_for_test %}
+        {% endblock %}
 
     </application>
+    {% block extra_root_definitions %}
+    {% endblock %}
 </manifest>

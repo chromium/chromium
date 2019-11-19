@@ -10,11 +10,11 @@
 #include "base/android/jni_android.h"
 #include "base/bind.h"
 #include "base/time/time.h"
+#include "chrome/android/chrome_jni_headers/FeedSchedulerBridge_jni.h"
 #include "chrome/browser/android/feed/feed_host_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_android.h"
 #include "components/feed/content/feed_host_service.h"
-#include "jni/FeedSchedulerBridge_jni.h"
 
 using base::android::JavaRef;
 using base::android::JavaParamRef;
@@ -36,8 +36,7 @@ static jlong JNI_FeedSchedulerBridge_Init(
 FeedSchedulerBridge::FeedSchedulerBridge(const JavaRef<jobject>& j_this,
                                          FeedSchedulerHost* scheduler_host)
     : j_this_(ScopedJavaGlobalRef<jobject>(j_this)),
-      scheduler_host_(scheduler_host),
-      weak_factory_(this) {
+      scheduler_host_(scheduler_host) {
   DCHECK(scheduler_host_);
   scheduler_host_->Initialize(
       base::BindRepeating(&FeedSchedulerBridge::TriggerRefresh,

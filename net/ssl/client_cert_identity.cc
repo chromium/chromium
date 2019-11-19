@@ -4,6 +4,8 @@
 
 #include "net/ssl/client_cert_identity.h"
 
+#include <utility>
+
 #include "base/bind.h"
 #include "net/cert/x509_util.h"
 #include "net/ssl/ssl_private_key.h"
@@ -14,10 +16,9 @@ namespace {
 
 void IdentityOwningPrivateKeyCallback(
     std::unique_ptr<ClientCertIdentity> identity,
-    const base::Callback<void(scoped_refptr<SSLPrivateKey>)>&
-        private_key_callback,
+    base::OnceCallback<void(scoped_refptr<SSLPrivateKey>)> private_key_callback,
     scoped_refptr<SSLPrivateKey> private_key) {
-  private_key_callback.Run(std::move(private_key));
+  std::move(private_key_callback).Run(std::move(private_key));
 }
 
 }  // namespace
@@ -29,13 +30,13 @@ ClientCertIdentity::~ClientCertIdentity() = default;
 // static
 void ClientCertIdentity::SelfOwningAcquirePrivateKey(
     std::unique_ptr<ClientCertIdentity> self,
-    const base::Callback<void(scoped_refptr<SSLPrivateKey>)>&
+    base::OnceCallback<void(scoped_refptr<SSLPrivateKey>)>
         private_key_callback) {
   ClientCertIdentity* self_ptr = self.get();
   auto wrapped_private_key_callback =
-      base::Bind(&IdentityOwningPrivateKeyCallback, base::Passed(&self),
-                 private_key_callback);
-  self_ptr->AcquirePrivateKey(wrapped_private_key_callback);
+      base::BindOnce(&IdentityOwningPrivateKeyCallback, std::move(self),
+                     std::move(private_key_callback));
+  self_ptr->AcquirePrivateKey(std::move(wrapped_private_key_callback));
 }
 
 void ClientCertIdentity::SetIntermediates(

@@ -21,13 +21,19 @@ import update_histogram_enum
 import update_use_counter_feature_enum
 
 
-USE_COUNTER_CPP_PATH = 'third_party/blink/renderer/core/frame/use_counter.cc'
+USE_COUNTER_MOJOM_PATH = 'third_party/blink/public/mojom/use_counter/'\
+                         'css_property_id.mojom'
 
 
 def EnumToCssProperty(enum_name):
   """Converts a camel cased enum name to the lower case CSS property."""
   # The first group also searches for uppercase letters to account for single
   # uppercase letters, such as in "ZIndex" that need to convert to "z-index".
+
+  # Special case total page measured for backward compat.
+  if enum_name == "TotalPagesMeasured":
+    return "Total Pages Measured"
+
   return re.sub(r'([a-zA-Z])([A-Z])', r'\1-\2', enum_name).lower()
 
 
@@ -36,23 +42,21 @@ def ReadCssProperties(filename):
   with open(path_util.GetInputFile(filename)) as f:
     content = f.readlines()
 
-  # Looking for a pair of lines like "case CSSPropertyGrid:\n return 453;".
-  ENUM_REGEX = re.compile(r"""CSSProperty(.*):  # capture the enum name
-                              \s*return\s*
-                              ([0-9]+)          # capture the id
+  # Looking for a single line like "kFontWeight = 10,"
+  ENUM_REGEX = re.compile(r"""k(\w+)\s*=       # capture the enum name
+                              \s*(\d+),?       # capture the id
                               """, re.VERBOSE)
 
   properties = {}
-  previous_line = ''
   for line in content:
-    enum_match = ENUM_REGEX.search(previous_line + '\n' + line)
+    enum_match = ENUM_REGEX.search(line)
     if enum_match:
       enum_name = enum_match.group(1)
       property_id = int(enum_match.group(2))
+      # Properties with id = 0 are invalid. Skip them.
+      if property_id == 0:
+        continue
       properties[property_id] = EnumToCssProperty(enum_name)
-      previous_line = ''
-    else:
-      previous_line = line
 
   return properties
 
@@ -67,9 +71,9 @@ if __name__ == '__main__':
   options, args = parser.parse_args()
 
   if options.dashboard:
-    enum_dict = ReadCssProperties(USE_COUNTER_CPP_PATH)
+    enum_dict = ReadCssProperties(USE_COUNTER_MOJOM_PATH)
     update_use_counter_feature_enum.PrintEnumForDashboard(enum_dict)
   else:
     update_histogram_enum.UpdateHistogramFromDict(
-        'MappedCSSProperties', ReadCssProperties(USE_COUNTER_CPP_PATH),
-        USE_COUNTER_CPP_PATH, os.path.basename(__file__))
+        'MappedCSSProperties', ReadCssProperties(USE_COUNTER_MOJOM_PATH),
+        USE_COUNTER_MOJOM_PATH, os.path.basename(__file__))

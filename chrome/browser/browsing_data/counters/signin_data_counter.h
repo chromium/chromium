@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_BROWSING_DATA_COUNTERS_SIGNIN_DATA_COUNTER_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "components/browsing_data/core/counters/passwords_counter.h"
@@ -15,12 +16,13 @@ namespace browsing_data {
 
 class SigninDataCounter : public PasswordsCounter {
  public:
-  class SigninDataResult : public SyncResult {
+  class SigninDataResult : public PasswordsResult {
    public:
     SigninDataResult(const SigninDataCounter* source,
                      ResultInt num_passwords,
                      ResultInt num_webauthn_credentials,
-                     bool sync_enabled);
+                     bool sync_enabled,
+                     std::vector<std::string> domain_examples);
     ~SigninDataResult() override;
 
     ResultInt WebAuthnCredentialsValue() const {
@@ -40,7 +42,7 @@ class SigninDataCounter : public PasswordsCounter {
 
  private:
   int CountWebAuthnCredentials();
-  std::unique_ptr<SyncResult> MakeResult() override;
+  std::unique_ptr<PasswordsResult> MakeResult() override;
 
   std::unique_ptr<::device::fido::PlatformCredentialStore> credential_store_;
 };

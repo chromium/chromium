@@ -18,11 +18,10 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/global_request_id.h"
 #include "content/public/common/widget_type.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "ui/gfx/native_widget_types.h"
 
 namespace content {
-
-class ResourceDispatcherHostImpl;
 
 // Instantiated per RenderProcessHost to provide various optimizations on
 // behalf of a RenderWidgetHost.  This class bridges between the IO thread
@@ -34,8 +33,7 @@ class RenderWidgetHelper
  public:
   RenderWidgetHelper();
 
-  void Init(int render_process_id,
-            ResourceDispatcherHostImpl* resource_dispatcher_host);
+  void Init(int render_process_id);
 
   // Gets the next available routing id.  This is thread safe.
   int GetNextRoutingID();
@@ -49,10 +47,10 @@ class RenderWidgetHelper
 
   // IO THREAD ONLY -----------------------------------------------------------
   void CreateNewWidget(int opener_id,
-                       mojom::WidgetPtr,
+                       mojo::PendingRemote<mojom::Widget>,
                        int* route_id);
   void CreateNewFullscreenWidget(int opener_id,
-                                 mojom::WidgetPtr,
+                                 mojo::PendingRemote<mojom::Widget>,
                                  int* route_id);
 
  private:
@@ -65,19 +63,17 @@ class RenderWidgetHelper
   // Called on the UI thread to finish creating a widget.
   void OnCreateWidgetOnUI(int32_t opener_id,
                           int32_t route_id,
-                          mojom::WidgetPtrInfo widget);
+                          mojo::PendingRemote<mojom::Widget> widget);
 
   // Called on the UI thread to create a fullscreen widget.
   void OnCreateFullscreenWidgetOnUI(int32_t opener_id,
                                     int32_t route_id,
-                                    mojom::WidgetPtrInfo widget);
+                                    mojo::PendingRemote<mojom::Widget> widget);
 
   int render_process_id_;
 
   // The next routing id to use.
   base::AtomicSequenceNumber next_routing_id_;
-
-  ResourceDispatcherHostImpl* resource_dispatcher_host_;
 
   DISALLOW_COPY_AND_ASSIGN(RenderWidgetHelper);
 };

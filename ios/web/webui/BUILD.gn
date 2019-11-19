@@ -10,19 +10,17 @@ source_set("webui") {
     "//ios/web:resources",
     "//ios/web:resources_grit",
     "//ios/web/public",
+    "//ios/web/public/js_messaging",
+    "//ios/web/public/webui",
     "//ios/web/web_state:web_state_impl_header",
     "//mojo/public/cpp/system",
-    "//services/service_manager/public/mojom",
+    "//net",
     "//ui/base",
     "//ui/resources",
     "//url",
   ]
 
   sources = [
-    "crw_web_ui_manager.h",
-    "crw_web_ui_manager.mm",
-    "crw_web_ui_page_builder.h",
-    "crw_web_ui_page_builder.mm",
     "crw_web_ui_scheme_handler.h",
     "crw_web_ui_scheme_handler.mm",
     "mojo_facade.h",
@@ -38,12 +36,14 @@ source_set("webui") {
     "url_data_source_ios_impl.h",
     "url_fetcher_block_adapter.h",
     "url_fetcher_block_adapter.mm",
-    "web_ui_ios_controller_factory_registry.cc",
+    "web_ui_ios_controller.cc",
     "web_ui_ios_controller_factory_registry.h",
+    "web_ui_ios_controller_factory_registry.mm",
     "web_ui_ios_data_source_impl.h",
     "web_ui_ios_data_source_impl.mm",
     "web_ui_ios_impl.h",
     "web_ui_ios_impl.mm",
+    "web_ui_ios_message_handler.cc",
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]

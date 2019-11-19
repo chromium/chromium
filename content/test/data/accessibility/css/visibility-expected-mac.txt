@@ -1,0 +1,3 @@
+AXWebArea
+++AXStaticText AXValue='visible link'
+++AXStaticText AXValue='visible link'

@@ -132,7 +132,7 @@ function runTest(t, test) {
         break;
       case 'metadata':
         media.onloadedmetadata = t.step_func(_ => {
-          assert_equals(media.readyState, HTMLMediaElement.HAVE_METADATA);
+          assert_greater_than_equal(media.readyState, HTMLMediaElement.HAVE_METADATA);
           --expectedLoading;
           if (expectedLoading == 0)
             runNextTest();

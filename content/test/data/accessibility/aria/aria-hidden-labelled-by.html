@@ -1,0 +1,23 @@
+<!--
+@UIA-WIN-ALLOW:Label*
+@BLINK-ALLOW:label*
+@WIN-ALLOW:label*
+-->
+<!DOCTYPE html>
+<html>
+<body>
+  <div>
+    <span aria-hidden="true" id="s1" aria-label="span-1"></span>
+      <span aria-label="span-2" id="s2"></span>
+      <span aria-hidden="false" id="s3" aria-label="span-3" aria-labelledby="s4">
+        <span aria-hidden="true" id="s4" aria-label="span-4"></span>
+      </span>
+    </span>
+
+    <span aria-label="span-A" aria-labelledby="s1"></span>
+    <span aria-label="span-B" aria-labelledby="s2"></span>
+    <span aria-label="span-C" aria-labelledby="s3"></span>
+    <span aria-label="span-D" aria-labelledby="s4"></span>
+  </div>
+</body>
+</html>

@@ -1,0 +1,7 @@
+# These files contain values for criticial HTTP headers. Any changes to these
+# values have a high probability of significant breakage and should
+# be discussed with blink-api-owners-discuss@ first or go through the
+# official Blink launch process.
+per-file components_locale_settings_*.xtb=file://third_party/blink/API_OWNERS
+
+# COMPONENT: Internals

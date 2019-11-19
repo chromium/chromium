@@ -30,9 +30,13 @@
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/dip_util.h"
+#include "ui/display/display.h"
 #include "ui/display/manager/display_manager.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/gfx/linux/client_native_pixmap_factory_dmabuf.h"
+
+namespace arc {
 
 namespace {
 // Callback into Android to force screen updates if the queue gets this big.
@@ -42,9 +46,14 @@ constexpr size_t kQueueSizeToDropFrames = 8;
 // Bytes per pixel, Android returns stride in pixel units, Chrome uses it in
 // bytes.
 constexpr size_t kBytesPerPixel = 4;
-}  // namespace
 
-namespace arc {
+scoped_refptr<viz::ContextProvider> GetContextProvider() {
+  return aura::Env::GetInstance()
+      ->context_factory()
+      ->SharedMainThreadContextProvider();
+}
+
+}  // namespace
 
 struct ArcScreenCaptureSession::PendingBuffer {
   PendingBuffer(std::unique_ptr<gfx::GpuMemoryBuffer> gpu_buffer,
@@ -97,8 +106,7 @@ ArcScreenCaptureSession::ArcScreenCaptureSession(
       notifier_(std::move(notifier)),
       size_(size),
       client_native_pixmap_factory_(
-          gfx::CreateClientNativePixmapFactoryDmabuf()),
-      weak_ptr_factory_(this) {}
+          gfx::CreateClientNativePixmapFactoryDmabuf()) {}
 
 mojom::ScreenCaptureSessionPtr ArcScreenCaptureSession::Initialize(
     content::DesktopMediaID desktop_id,
@@ -112,18 +120,16 @@ mojom::ScreenCaptureSessionPtr ArcScreenCaptureSession::Initialize(
     return nullptr;
   }
 
-  ui::Layer* layer = display_root_window_->layer();
-  if (!layer) {
-    LOG(ERROR) << "Unable to find layer for the desktop window";
-    return nullptr;
-  }
-  auto context_provider = display_root_window_->env()
-                              ->context_factory()
-                              ->SharedMainThreadContextProvider();
+  auto context_provider = GetContextProvider();
   gl_helper_ = std::make_unique<viz::GLHelper>(
       context_provider->ContextGL(), context_provider->ContextSupport());
-  gfx::Size desktop_size =
-      ui::ConvertSizeToPixel(layer, layer->bounds().size());
+
+  display::Display display =
+      display::Screen::GetScreen()->GetDisplayNearestWindow(
+          display_root_window_);
+
+  gfx::Size desktop_size = display.GetSizeInPixel();
+
   scaler_ = gl_helper_->CreateScaler(
       viz::GLHelper::ScalerQuality::SCALER_QUALITY_GOOD,
       gfx::Vector2d(desktop_size.width(), desktop_size.height()),
@@ -140,7 +146,7 @@ mojom::ScreenCaptureSessionPtr ArcScreenCaptureSession::Initialize(
     notification_ui_->OnStarted(
         base::BindOnce(&ArcScreenCaptureSession::NotificationStop,
                        weak_ptr_factory_.GetWeakPtr()),
-        base::RepeatingClosure());
+        content::MediaStreamUI::SourceCallback());
   }
 
   ash::Shell::Get()->display_manager()->inc_screen_capture_active_counter();
@@ -182,10 +188,7 @@ void ArcScreenCaptureSession::SetOutputBuffer(
     std::move(callback).Run();
     return;
   }
-  gpu::gles2::GLES2Interface* gl = display_root_window_->env()
-                                       ->context_factory()
-                                       ->SharedMainThreadContextProvider()
-                                       ->ContextGL();
+  gpu::gles2::GLES2Interface* gl = GetContextProvider()->ContextGL();
   if (!gl) {
     LOG(ERROR) << "Unable to get the GL context";
     std::move(callback).Run();
@@ -194,6 +197,8 @@ void ArcScreenCaptureSession::SetOutputBuffer(
 
   gfx::GpuMemoryBufferHandle handle;
   handle.type = gfx::NATIVE_PIXMAP;
+  // Dummy modifier.
+  handle.native_pixmap_handle.modifier = 0;
   base::PlatformFile platform_file;
   MojoResult mojo_result =
       mojo::UnwrapPlatformFile(std::move(graphics_buffer), &platform_file);
@@ -202,13 +207,12 @@ void ArcScreenCaptureSession::SetOutputBuffer(
     std::move(callback).Run();
     return;
   }
-  base::ScopedFD scoped_fd(platform_file);
-  handle.native_pixmap_handle.fds.emplace_back(std::move(scoped_fd));
   handle.native_pixmap_handle.planes.emplace_back(
-      stride * kBytesPerPixel, 0, stride * kBytesPerPixel * size_.height(), 0);
+      stride * kBytesPerPixel, 0, stride * kBytesPerPixel * size_.height(),
+      base::ScopedFD(platform_file));
   std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer =
       gpu::GpuMemoryBufferImplNativePixmap::CreateFromHandle(
-          client_native_pixmap_factory_.get(), handle, size_,
+          client_native_pixmap_factory_.get(), std::move(handle), size_,
           gfx::BufferFormat::RGBX_8888, gfx::BufferUsage::SCANOUT,
           gpu::GpuMemoryBufferImpl::DestructionCallback());
   if (!gpu_memory_buffer) {
@@ -247,35 +251,32 @@ void ArcScreenCaptureSession::SetOutputBuffer(
 }
 
 void ArcScreenCaptureSession::QueryCompleted(
-    std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer,
     GLuint query_id,
-    GLuint texture,
-    GLuint id,
-    SetOutputBufferCallback callback) {
+    std::unique_ptr<PendingBuffer> pending_buffer) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  std::move(callback).Run();
-  gpu::gles2::GLES2Interface* gl = display_root_window_->env()
-                                       ->context_factory()
-                                       ->SharedMainThreadContextProvider()
-                                       ->ContextGL();
+
+  // Notify ARC++ that the buffer is ready.
+  std::move(pending_buffer->callback_).Run();
+
+  gpu::gles2::GLES2Interface* gl = GetContextProvider()->ContextGL();
   if (!gl) {
     LOG(ERROR) << "Unable to get the GL context";
     return;
   }
-  gl->BindTexture(GL_TEXTURE_2D, texture);
-  gl->ReleaseTexImage2DCHROMIUM(GL_TEXTURE_2D, id);
-  gl->DeleteTextures(1, &texture);
-  gl->DestroyImageCHROMIUM(id);
+
+  // Return resources for ARC++ buffer. The GpuMemoryBuffer will go out of
+  // scope and be destroyed too.
+  gl->BindTexture(GL_TEXTURE_2D, pending_buffer->texture_);
+  gl->ReleaseTexImage2DCHROMIUM(GL_TEXTURE_2D, pending_buffer->image_id_);
+  gl->DeleteTextures(1, &pending_buffer->texture_);
+  gl->DestroyImageCHROMIUM(pending_buffer->image_id_);
   gl->DeleteQueriesEXT(1, &query_id);
 }
 
 void ArcScreenCaptureSession::OnDesktopCaptured(
     std::unique_ptr<viz::CopyOutputResult> result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  gpu::gles2::GLES2Interface* gl = display_root_window_->env()
-                                       ->context_factory()
-                                       ->SharedMainThreadContextProvider()
-                                       ->ContextGL();
+  gpu::gles2::GLES2Interface* gl = GetContextProvider()->ContextGL();
   if (!gl) {
     LOG(ERROR) << "Unable to get the GL context";
     return;
@@ -284,9 +285,10 @@ void ArcScreenCaptureSession::OnDesktopCaptured(
     return;
 
   // Get the source texture
-  GLuint src_texture = gl_helper_->ConsumeMailboxToTexture(
-      result->GetTextureResult()->mailbox,
-      result->GetTextureResult()->sync_token);
+  gl->WaitSyncTokenCHROMIUM(
+      result->GetTextureResult()->sync_token.GetConstData());
+  GLuint src_texture = gl->CreateAndConsumeTextureCHROMIUM(
+      result->GetTextureResult()->mailbox.name);
   std::unique_ptr<viz::SingleReleaseCallback> release_callback =
       result->TakeTextureOwnership();
 
@@ -308,10 +310,9 @@ void ArcScreenCaptureSession::OnDesktopCaptured(
 void ArcScreenCaptureSession::CopyDesktopTextureToGpuBuffer(
     std::unique_ptr<DesktopTexture> desktop_texture,
     std::unique_ptr<PendingBuffer> pending_buffer) {
-  gpu::gles2::GLES2Interface* gl = display_root_window_->env()
-                                       ->context_factory()
-                                       ->SharedMainThreadContextProvider()
-                                       ->ContextGL();
+  auto context_provider = GetContextProvider();
+  gpu::gles2::GLES2Interface* gl = context_provider->ContextGL();
+
   if (!gl) {
     LOG(ERROR) << "Unable to get the GL context";
     return;
@@ -323,21 +324,19 @@ void ArcScreenCaptureSession::CopyDesktopTextureToGpuBuffer(
                  gfx::Vector2dF(), pending_buffer->texture_,
                  gfx::Rect(0, 0, size_.width(), size_.height()));
   gl->EndQueryEXT(GL_COMMANDS_COMPLETED_CHROMIUM);
+
+  // Return CopyOutputResult resources after texture copy happens.
   gl->DeleteTextures(1, &desktop_texture->texture_);
   if (desktop_texture->release_callback_) {
-    desktop_texture->release_callback_->Run(gpu::SyncToken(), false);
+    gpu::SyncToken sync_token;
+    gl->GenSyncTokenCHROMIUM(sync_token.GetData());
+    desktop_texture->release_callback_->Run(sync_token, false);
   }
-  display_root_window_->env()
-      ->context_factory()
-      ->SharedMainThreadContextProvider()
-      ->ContextSupport()
-      ->SignalQuery(
-          query_id,
-          base::BindOnce(&ArcScreenCaptureSession::QueryCompleted,
-                         weak_ptr_factory_.GetWeakPtr(),
-                         std::move(pending_buffer->gpu_buffer_), query_id,
-                         pending_buffer->texture_, pending_buffer->image_id_,
-                         std::move(pending_buffer->callback_)));
+
+  context_provider->ContextSupport()->SignalQuery(
+      query_id, base::BindOnce(&ArcScreenCaptureSession::QueryCompleted,
+                               weak_ptr_factory_.GetWeakPtr(), query_id,
+                               std::move(pending_buffer)));
 }
 
 void ArcScreenCaptureSession::OnAnimationStep(base::TimeTicks timestamp) {

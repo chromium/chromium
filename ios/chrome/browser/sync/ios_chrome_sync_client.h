@@ -39,6 +39,8 @@ class IOSChromeSyncClient : public browser_sync::BrowserSyncClient {
   base::FilePath GetLocalSyncBackendFolder() override;
   syncer::ModelTypeStoreService* GetModelTypeStoreService() override;
   syncer::DeviceInfoSyncService* GetDeviceInfoSyncService() override;
+  send_tab_to_self::SendTabToSelfSyncService* GetSendTabToSelfSyncService()
+      override;
   bookmarks::BookmarkModel* GetBookmarkModel() override;
   favicon::FaviconService* GetFaviconService() override;
   history::HistoryService* GetHistoryService() override;
@@ -46,8 +48,8 @@ class IOSChromeSyncClient : public browser_sync::BrowserSyncClient {
   base::Closure GetPasswordStateChangedCallback() override;
   syncer::DataTypeController::TypeVector CreateDataTypeControllers(
       syncer::SyncService* sync_service) override;
-  autofill::PersonalDataManager* GetPersonalDataManager() override;
   invalidation::InvalidationService* GetInvalidationService() override;
+  syncer::TrustedVaultClient* GetTrustedVaultClient() override;
   BookmarkUndoService* GetBookmarkUndoService() override;
   scoped_refptr<syncer::ExtensionsActivity> GetExtensionsActivity() override;
   base::WeakPtr<syncer::SyncableService> GetSyncableServiceForType(
@@ -57,6 +59,7 @@ class IOSChromeSyncClient : public browser_sync::BrowserSyncClient {
   scoped_refptr<syncer::ModelSafeWorker> CreateModelWorkerForGroup(
       syncer::ModelSafeGroup group) override;
   syncer::SyncApiComponentFactory* GetSyncApiComponentFactory() override;
+  syncer::SyncTypePreferenceProvider* GetPreferenceProvider() override;
 
  private:
   ios::ChromeBrowserState* const browser_state_;
@@ -66,6 +69,8 @@ class IOSChromeSyncClient : public browser_sync::BrowserSyncClient {
   // controller creation is moved elsewhere.
   std::unique_ptr<browser_sync::ProfileSyncComponentsFactoryImpl>
       component_factory_;
+
+  std::unique_ptr<syncer::TrustedVaultClient> trusted_vault_client_;
 
   // Members that must be fetched on the UI thread but accessed on their
   // respective backend threads.

@@ -31,8 +31,9 @@
 // https://heycam.github.io/webidl/#es-DOMException
 
 [
-    Constructor(optional DOMString message = "", optional DOMString name = "Error"),
     Exposed=(Window,Worker),
+    Constructor(optional DOMString message = "", optional DOMString name = "Error"),
+    Serializable,
     DoNotCheckConstants
 ] interface DOMException {
 

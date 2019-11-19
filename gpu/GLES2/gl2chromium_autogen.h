@@ -171,9 +171,13 @@
 #define glMultiDrawArraysWEBGL GLES2_GET_FUN(MultiDrawArraysWEBGL)
 #define glMultiDrawArraysInstancedWEBGL \
   GLES2_GET_FUN(MultiDrawArraysInstancedWEBGL)
+#define glMultiDrawArraysInstancedBaseInstanceWEBGL \
+  GLES2_GET_FUN(MultiDrawArraysInstancedBaseInstanceWEBGL)
 #define glMultiDrawElementsWEBGL GLES2_GET_FUN(MultiDrawElementsWEBGL)
 #define glMultiDrawElementsInstancedWEBGL \
   GLES2_GET_FUN(MultiDrawElementsInstancedWEBGL)
+#define glMultiDrawElementsInstancedBaseVertexBaseInstanceWEBGL \
+  GLES2_GET_FUN(MultiDrawElementsInstancedBaseVertexBaseInstanceWEBGL)
 #define glStencilFunc GLES2_GET_FUN(StencilFunc)
 #define glStencilFuncSeparate GLES2_GET_FUN(StencilFuncSeparate)
 #define glStencilMask GLES2_GET_FUN(StencilMask)
@@ -277,6 +281,9 @@
 #define glFramebufferParameteri GLES2_GET_FUN(FramebufferParameteri)
 #define glBindImageTexture GLES2_GET_FUN(BindImageTexture)
 #define glDispatchCompute GLES2_GET_FUN(DispatchCompute)
+#define glDispatchComputeIndirect GLES2_GET_FUN(DispatchComputeIndirect)
+#define glDrawArraysIndirect GLES2_GET_FUN(DrawArraysIndirect)
+#define glDrawElementsIndirect GLES2_GET_FUN(DrawElementsIndirect)
 #define glGetProgramInterfaceiv GLES2_GET_FUN(GetProgramInterfaceiv)
 #define glGetProgramResourceIndex GLES2_GET_FUN(GetProgramResourceIndex)
 #define glGetProgramResourceName GLES2_GET_FUN(GetProgramResourceName)
@@ -315,7 +322,11 @@
 #define glCopyTextureCHROMIUM GLES2_GET_FUN(CopyTextureCHROMIUM)
 #define glCopySubTextureCHROMIUM GLES2_GET_FUN(CopySubTextureCHROMIUM)
 #define glDrawArraysInstancedANGLE GLES2_GET_FUN(DrawArraysInstancedANGLE)
+#define glDrawArraysInstancedBaseInstanceANGLE \
+  GLES2_GET_FUN(DrawArraysInstancedBaseInstanceANGLE)
 #define glDrawElementsInstancedANGLE GLES2_GET_FUN(DrawElementsInstancedANGLE)
+#define glDrawElementsInstancedBaseVertexBaseInstanceANGLE \
+  GLES2_GET_FUN(DrawElementsInstancedBaseVertexBaseInstanceANGLE)
 #define glVertexAttribDivisorANGLE GLES2_GET_FUN(VertexAttribDivisorANGLE)
 #define glProduceTextureDirectCHROMIUM \
   GLES2_GET_FUN(ProduceTextureDirectCHROMIUM)
@@ -330,11 +341,6 @@
 #define glTraceEndCHROMIUM GLES2_GET_FUN(TraceEndCHROMIUM)
 #define glDiscardFramebufferEXT GLES2_GET_FUN(DiscardFramebufferEXT)
 #define glLoseContextCHROMIUM GLES2_GET_FUN(LoseContextCHROMIUM)
-#define glGenSyncTokenCHROMIUM GLES2_GET_FUN(GenSyncTokenCHROMIUM)
-#define glGenUnverifiedSyncTokenCHROMIUM \
-  GLES2_GET_FUN(GenUnverifiedSyncTokenCHROMIUM)
-#define glVerifySyncTokensCHROMIUM GLES2_GET_FUN(VerifySyncTokensCHROMIUM)
-#define glWaitSyncTokenCHROMIUM GLES2_GET_FUN(WaitSyncTokenCHROMIUM)
 #define glUnpremultiplyAndDitherCopyCHROMIUM \
   GLES2_GET_FUN(UnpremultiplyAndDitherCopyCHROMIUM)
 #define glDrawBuffersEXT GLES2_GET_FUN(DrawBuffersEXT)
@@ -384,11 +390,11 @@
   GLES2_GET_FUN(BindFragmentInputLocationCHROMIUM)
 #define glProgramPathFragmentInputGenCHROMIUM \
   GLES2_GET_FUN(ProgramPathFragmentInputGenCHROMIUM)
+#define glContextVisibilityHintCHROMIUM \
+  GLES2_GET_FUN(ContextVisibilityHintCHROMIUM)
 #define glCoverageModulationCHROMIUM GLES2_GET_FUN(CoverageModulationCHROMIUM)
 #define glGetGraphicsResetStatusKHR GLES2_GET_FUN(GetGraphicsResetStatusKHR)
 #define glBlendBarrierKHR GLES2_GET_FUN(BlendBarrierKHR)
-#define glApplyScreenSpaceAntialiasingCHROMIUM \
-  GLES2_GET_FUN(ApplyScreenSpaceAntialiasingCHROMIUM)
 #define glBindFragDataLocationIndexedEXT \
   GLES2_GET_FUN(BindFragDataLocationIndexedEXT)
 #define glBindFragDataLocationEXT GLES2_GET_FUN(BindFragDataLocationEXT)
@@ -418,8 +424,8 @@
 #define glDestroyGpuFenceCHROMIUM GLES2_GET_FUN(DestroyGpuFenceCHROMIUM)
 #define glInvalidateReadbackBufferShadowDataCHROMIUM \
   GLES2_GET_FUN(InvalidateReadbackBufferShadowDataCHROMIUM)
-#define glFramebufferTextureMultiviewLayeredANGLE \
-  GLES2_GET_FUN(FramebufferTextureMultiviewLayeredANGLE)
+#define glFramebufferTextureMultiviewOVR \
+  GLES2_GET_FUN(FramebufferTextureMultiviewOVR)
 #define glMaxShaderCompilerThreadsKHR GLES2_GET_FUN(MaxShaderCompilerThreadsKHR)
 #define glCreateAndTexStorage2DSharedImageCHROMIUM \
   GLES2_GET_FUN(CreateAndTexStorage2DSharedImageCHROMIUM)

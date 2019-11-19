@@ -1,5 +1,0 @@
-Bug 101970: Heap-use-after-free in WebCore::LayoutLayerModelObject::hasSelfPaintingLayer
-Test passes if it does not crash.
-
-  
- 

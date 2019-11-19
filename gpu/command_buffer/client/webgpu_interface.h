@@ -5,16 +5,30 @@
 #ifndef GPU_COMMAND_BUFFER_CLIENT_WEBGPU_INTERFACE_H_
 #define GPU_COMMAND_BUFFER_CLIENT_WEBGPU_INTERFACE_H_
 
-extern "C" typedef struct _ClientBuffer* ClientBuffer;
-extern "C" typedef struct _GLColorSpace* GLColorSpace;
+#include <dawn/dawn_proc_table.h>
+#include <dawn/webgpu.h>
+
+#include "gpu/command_buffer/client/interface_base.h"
+#include "gpu/command_buffer/common/webgpu_cmd_enums.h"
 
 namespace gpu {
 namespace webgpu {
 
-class WebGPUInterface {
+struct ReservedTexture {
+  WGPUTexture texture;
+  uint32_t id;
+  uint32_t generation;
+};
+
+class WebGPUInterface : public InterfaceBase {
  public:
   WebGPUInterface() {}
   virtual ~WebGPUInterface() {}
+
+  virtual const DawnProcTable& GetProcs() const = 0;
+  virtual void FlushCommands() = 0;
+  virtual WGPUDevice GetDefaultDevice() = 0;
+  virtual ReservedTexture ReserveTexture(WGPUDevice device) = 0;
 
 // Include the auto-generated part of this class. We split this because
 // it means we can easily edit the non-auto generated parts right here in

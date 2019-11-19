@@ -60,7 +60,7 @@ class ThumbnailGenerator {
 
   // This is a {@link ThumbnailGenerator} Java object.
   base::android::ScopedJavaGlobalRef<jobject> java_delegate_;
-  base::WeakPtrFactory<ThumbnailGenerator> weak_factory_;
+  base::WeakPtrFactory<ThumbnailGenerator> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ThumbnailGenerator);
 };

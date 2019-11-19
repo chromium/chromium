@@ -4,9 +4,9 @@
 
 #include <iostream>
 
-#include "base/hash.h"
+#include "base/hash/hash.h"
 #include "base/logging.h"
-#include "device/bluetooth/bluetooth_uuid.h"
+#include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 
 int main(int argc, char** argv) {
   if (argc <= 2) {

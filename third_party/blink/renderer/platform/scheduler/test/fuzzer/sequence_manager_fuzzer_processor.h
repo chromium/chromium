@@ -6,11 +6,12 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_TEST_FUZZER_SEQUENCE_MANAGER_FUZZER_PROCESSOR_H_
 
 #include <memory>
-#include <vector>
 
 #include "base/time/time.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/scheduler/test/fuzzer/proto/sequence_manager_test_description.pb.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace base {
 namespace sequence_manager {
@@ -25,6 +26,8 @@ class ThreadPoolManager;
 // by the |thread_pool_manager_| should live for the scope of the main thread
 // entry function i.e RunTest.
 class PLATFORM_EXPORT SequenceManagerFuzzerProcessor {
+  USING_FAST_MALLOC(SequenceManagerFuzzerProcessor);
+
  public:
   // Public interface used to parse the fuzzer's test description and
   // run the relevant APIs.
@@ -80,33 +83,33 @@ class PLATFORM_EXPORT SequenceManagerFuzzerProcessor {
   // ThreadPoolManager::CreateThread is used to construct these threads and
   // given that it can be called from multiple threads, the order of
   // construction isn't deterministic.
-  const std::vector<std::vector<TaskForTest>>& ordered_tasks() const;
+  const Vector<Vector<TaskForTest>>& ordered_tasks() const;
 
   // Returns an ordered list of actions executed on each thread. Note that the
   // ordering of the threads isn't deterministic. For more details, check the
   // comment above on ordered_tasks().
-  const std::vector<std::vector<ActionForTest>>& ordered_actions() const;
+  const Vector<Vector<ActionForTest>>& ordered_actions() const;
 
  private:
   friend class ThreadManager;
 
   // Logs the task defined by the parameters passed to |ordered_tasks| if
   // |log_for_testing_| is enabled.
-  void LogTaskForTesting(std::vector<TaskForTest>* ordered_tasks,
+  void LogTaskForTesting(Vector<TaskForTest>* ordered_tasks,
                          uint64_t task_id,
-                         TimeTicks start_time,
-                         TimeTicks end_time);
+                         base::TimeTicks start_time,
+                         base::TimeTicks end_time);
 
   // Logs the action defined by the parameters passed to |ordered_actions| if
   // |log_for_testing_| is enabled.
-  void LogActionForTesting(std::vector<ActionForTest>* ordered_actions,
+  void LogActionForTesting(Vector<ActionForTest>* ordered_actions,
                            uint64_t action_id,
                            ActionForTest::ActionType type,
-                           TimeTicks start_time);
+                           base::TimeTicks start_time);
 
   const bool log_for_testing_;
 
-  const TimeTicks initial_time_;
+  const base::TimeTicks initial_time_;
 
   const std::unique_ptr<ThreadPoolManager> thread_pool_manager_;
 
@@ -118,12 +121,12 @@ class PLATFORM_EXPORT SequenceManagerFuzzerProcessor {
   // For Testing. Each entry contains the ordered list of tasks for one of the
   // created threads. The first entry is reserved for the main thread (which is
   // always empty since no tasks are executed on the main thread).
-  std::vector<std::vector<TaskForTest>> ordered_tasks_;
+  Vector<Vector<TaskForTest>> ordered_tasks_;
 
   // For Testing. Each entry contains the ordered list of actions for one of the
   // created threads. The first entry is reserved for the main thread (which
   // can only contain ActionType::kCreateThread actions).
-  std::vector<std::vector<ActionForTest>> ordered_actions_;
+  Vector<Vector<ActionForTest>> ordered_actions_;
 };
 
 }  // namespace sequence_manager

@@ -23,6 +23,8 @@ class AppManagementShelfDelegate : public ash::ShelfModelObserver {
   bool IsPinned(const std::string& app_id);
   void SetPinned(const std::string& app_id, apps::mojom::OptionalBool pinned);
 
+  bool IsPolicyPinned(const std::string& app_id) const;
+
  private:
   // ash::ShelfModelObserver:
   void ShelfItemAdded(int index) override;

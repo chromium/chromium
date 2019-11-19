@@ -9,7 +9,7 @@
 
 #include "chromecast/public/bluetooth/bluetooth_types.h"
 #include "device/bluetooth/bluetooth_export.h"
-#include "device/bluetooth/bluetooth_uuid.h"
+#include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 
 // This file contains common utilities for implementing Chromium bluetooth
 // interfaces with the Cast Bluetooth stack.

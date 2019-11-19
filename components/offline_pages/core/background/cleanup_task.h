@@ -59,7 +59,7 @@ class CleanupTask : public Task {
       expired_request_ids_and_reasons_;
 
   // Allows us to pass a weak pointer to callbacks.
-  base::WeakPtrFactory<CleanupTask> weak_ptr_factory_;
+  base::WeakPtrFactory<CleanupTask> weak_ptr_factory_{this};
 };
 
 }  // namespace offline_pages

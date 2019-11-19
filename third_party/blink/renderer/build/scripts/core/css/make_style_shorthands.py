@@ -30,7 +30,7 @@
 from core.css import css_properties
 from collections import defaultdict
 import json5_generator
-from name_utilities import enum_for_css_property
+from name_utilities import enum_key_for_css_property, id_for_css_property
 import template_expander
 
 
@@ -53,10 +53,12 @@ class StylePropertyShorthandWriter(json5_generator.Writer):
 
         self._longhand_dictionary = defaultdict(list)
         for property_ in json5_properties.shorthands:
+            property_['longhand_enum_keys'] = map(
+                enum_key_for_css_property, property_['longhands'])
             property_['longhand_property_ids'] = map(
-                enum_for_css_property, property_['longhands'])
-            for longhand in property_['longhand_property_ids']:
-                self._longhand_dictionary[longhand].append(property_)
+                id_for_css_property, property_['longhands'])
+            for longhand_enum_key in property_['longhand_enum_keys']:
+                self._longhand_dictionary[longhand_enum_key].append(property_)
 
         for longhands in self._longhand_dictionary.values():
             # Sort first by number of longhands in decreasing order, then

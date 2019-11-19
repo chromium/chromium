@@ -14,7 +14,7 @@ import org.chromium.base.Log;
  * on Android.
  */
 public abstract class CastSwitches {
-    private static final String TAG = "cr_CastSwitches";
+    private static final String TAG = "CastSwitches";
 
     // Background color to use when chromium hasn't rendered anything yet. This will often be
     // displayed briefly when loading a Cast app. Format is a #ARGB in hex. (Black: #FF000000,

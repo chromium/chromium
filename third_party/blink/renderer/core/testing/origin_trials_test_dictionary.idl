@@ -4,5 +4,5 @@
 
 dictionary OriginTrialsTestDictionary {
     boolean unconditionalBool = true;
-    [OriginTrialEnabled=OriginTrialsSampleAPI] boolean normalBool = true;
+    [RuntimeEnabled=OriginTrialsSampleAPI] boolean normalBool = true;
 };

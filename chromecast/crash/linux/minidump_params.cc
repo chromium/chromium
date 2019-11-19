@@ -6,8 +6,7 @@
 
 namespace chromecast {
 
-MinidumpParams::MinidumpParams(const std::string& p_process_name,
-                               const uint64_t p_process_uptime,
+MinidumpParams::MinidumpParams(const uint64_t p_process_uptime,
                                const std::string& p_suffix,
                                const std::string& p_previous_app_name,
                                const std::string& p_current_app_name,
@@ -15,19 +14,16 @@ MinidumpParams::MinidumpParams(const std::string& p_process_name,
                                const std::string& p_cast_release_version,
                                const std::string& p_cast_build_number,
                                const std::string& p_reason)
-    : process_name(p_process_name),
-      process_uptime(p_process_uptime),
+    : process_uptime(p_process_uptime),
       suffix(p_suffix),
       previous_app_name(p_previous_app_name),
       current_app_name(p_current_app_name),
       last_app_name(p_last_app_name),
       cast_release_version(p_cast_release_version),
       cast_build_number(p_cast_build_number),
-      reason(p_reason) {
-}
+      reason(p_reason) {}
 
-MinidumpParams::MinidumpParams() : process_uptime(0) {
-}
+MinidumpParams::MinidumpParams() : process_uptime(0) {}
 
 MinidumpParams::MinidumpParams(const MinidumpParams& params) = default;
 

@@ -10,7 +10,7 @@
 #include "ios/chrome/app/startup/ios_chrome_main_delegate.h"
 
 namespace base {
-class Time;
+class TimeTicks;
 }
 
 namespace web {
@@ -31,7 +31,7 @@ class IOSChromeMain {
 
   // Returns the time that main() started.  Used for performance tests.
   // InitStartTime() must has been called before.
-  static const base::Time& StartTime();
+  static const base::TimeTicks& StartTime();
 
  private:
   IOSChromeMainDelegate main_delegate_;

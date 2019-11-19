@@ -70,10 +70,10 @@ void DocumentAnimations::UpdateAnimationTimingIfNeeded(Document& document) {
 void DocumentAnimations::UpdateAnimations(
     Document& document,
     DocumentLifecycle::LifecycleState required_lifecycle_state,
-    const base::Optional<CompositorElementIdSet>& composited_element_ids) {
+    const PaintArtifactCompositor* paint_artifact_compositor) {
   DCHECK(document.Lifecycle().GetState() >= required_lifecycle_state);
 
-  if (document.GetPendingAnimations().Update(composited_element_ids)) {
+  if (document.GetPendingAnimations().Update(paint_artifact_compositor)) {
     DCHECK(document.View());
     document.View()->ScheduleAnimation();
   }

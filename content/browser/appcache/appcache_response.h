@@ -26,7 +26,6 @@ namespace content {
 class AppCacheDiskCache;
 class AppCacheDiskCacheEntry;
 class AppCacheStorage;
-class MockAppCacheStorage;
 
 static const int kUnknownResponseDataSize = -1;
 
@@ -123,6 +122,12 @@ class CONTENT_EXPORT AppCacheResponseIO {
 // operation.  In other words, instances are safe to delete at will.
 class CONTENT_EXPORT AppCacheResponseReader : public AppCacheResponseIO {
  public:
+  // Use AppCacheStorage::CreateResponseReader() instead of calling directly.
+  //
+  // The constructor is exposed for std::make_unique.
+  AppCacheResponseReader(int64_t response_id,
+                         base::WeakPtr<AppCacheDiskCache> disk_cache);
+
   ~AppCacheResponseReader() override;
 
   // Reads http info from storage. Always returns the result of the read
@@ -159,13 +164,6 @@ class CONTENT_EXPORT AppCacheResponseReader : public AppCacheResponseIO {
   void SetReadRange(int offset, int length);
 
  protected:
-  friend class AppCacheStorageImpl;
-  friend class content::MockAppCacheStorage;
-
-  // Use AppCacheStorage::CreateResponse() instead of calling directly.
-  AppCacheResponseReader(int64_t response_id,
-                         base::WeakPtr<AppCacheDiskCache> disk_cache);
-
   void OnIOComplete(int result) override;
   void OnOpenEntryComplete() override;
   base::WeakPtr<AppCacheResponseIO> GetWeakPtr() override;
@@ -178,7 +176,7 @@ class CONTENT_EXPORT AppCacheResponseReader : public AppCacheResponseIO {
   int read_position_;
   int reading_metadata_size_;
 
-  base::WeakPtrFactory<AppCacheResponseReader> weak_factory_;
+  base::WeakPtrFactory<AppCacheResponseReader> weak_factory_{this};
 };
 
 // Writes new response data to storage. If the object is deleted
@@ -187,6 +185,12 @@ class CONTENT_EXPORT AppCacheResponseReader : public AppCacheResponseIO {
 // operation. In other words, instances are safe to delete at will.
 class CONTENT_EXPORT AppCacheResponseWriter : public AppCacheResponseIO {
  public:
+  // Use AppCacheStorage::CreateResponseWriter() instead of calling directly.
+  //
+  // The constructor is exposed for std::make_unique.
+  explicit AppCacheResponseWriter(int64_t response_id,
+                                  base::WeakPtr<AppCacheDiskCache> disk_cache);
+
   ~AppCacheResponseWriter() override;
 
   // Writes the http info to storage. Always returns the result of the write
@@ -219,15 +223,7 @@ class CONTENT_EXPORT AppCacheResponseWriter : public AppCacheResponseIO {
   // Returns the amount written, info and data.
   int64_t amount_written() { return info_size_ + write_position_; }
 
- protected:
-  // Should only be constructed by the storage class and derivatives.
-  AppCacheResponseWriter(int64_t response_id,
-                         base::WeakPtr<AppCacheDiskCache> disk_cache);
-
  private:
-  friend class AppCacheStorageImpl;
-  friend class content::MockAppCacheStorage;
-
   enum CreationPhase {
     NO_ATTEMPT,
     INITIAL_ATTEMPT,
@@ -250,7 +246,7 @@ class CONTENT_EXPORT AppCacheResponseWriter : public AppCacheResponseIO {
   int write_position_;
   int write_amount_;
   CreationPhase creation_phase_;
-  base::WeakPtrFactory<AppCacheResponseWriter> weak_factory_;
+  base::WeakPtrFactory<AppCacheResponseWriter> weak_factory_{this};
 };
 
 // Writes metadata of the existing response to storage. If the object is deleted
@@ -260,6 +256,13 @@ class CONTENT_EXPORT AppCacheResponseWriter : public AppCacheResponseIO {
 class CONTENT_EXPORT AppCacheResponseMetadataWriter
     : public AppCacheResponseIO {
  public:
+  // Use AppCacheStorage::CreateResponseMetadataWriter() instead of calling
+  // directly.
+  //
+  // The constructor is exposed for std::make_unique.
+  AppCacheResponseMetadataWriter(int64_t response_id,
+                                 base::WeakPtr<AppCacheDiskCache> disk_cache);
+
   ~AppCacheResponseMetadataWriter() override;
 
   // Writes metadata to storage. Always returns the result of the write
@@ -278,21 +281,13 @@ class CONTENT_EXPORT AppCacheResponseMetadataWriter
   // Returns true if there is a write pending.
   bool IsWritePending() { return IsIOPending(); }
 
- protected:
-  friend class AppCacheStorageImpl;
-  friend class content::MockAppCacheStorage;
-
-  // Should only be constructed by the storage class and derivatives.
-  AppCacheResponseMetadataWriter(int64_t response_id,
-                                 base::WeakPtr<AppCacheDiskCache> disk_cache);
-
  private:
   void OnIOComplete(int result) override;
   void OnOpenEntryComplete() override;
   base::WeakPtr<AppCacheResponseIO> GetWeakPtr() override;
 
   int write_amount_;
-  base::WeakPtrFactory<AppCacheResponseMetadataWriter> weak_factory_;
+  base::WeakPtrFactory<AppCacheResponseMetadataWriter> weak_factory_{this};
 };
 
 }  // namespace content

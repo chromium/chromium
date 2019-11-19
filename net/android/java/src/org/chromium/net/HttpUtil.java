@@ -5,6 +5,7 @@
 package org.chromium.net;
 
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 
 /**
  * Class to access HttpUtil library from Java.
@@ -20,7 +21,11 @@ public final class HttpUtil {
      * - |headerValue| is validly formed (see HttpUtil::IsValidHeaderValue).
      */
     public static boolean isAllowedHeader(String headerName, String headerValue) {
-        return nativeIsAllowedHeader(headerName, headerValue);
+        return HttpUtilJni.get().isAllowedHeader(headerName, headerValue);
     }
-    private static native boolean nativeIsAllowedHeader(String headerName, String headerValue);
+
+    @NativeMethods
+    interface Natives {
+        boolean isAllowedHeader(String headerName, String headerValue);
+    }
 }

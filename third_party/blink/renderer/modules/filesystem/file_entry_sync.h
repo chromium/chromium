@@ -45,11 +45,6 @@ class FileEntrySync final : public EntrySync {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static FileEntrySync* Create(DOMFileSystemBase* file_system,
-                               const String& full_path) {
-    return MakeGarbageCollected<FileEntrySync>(file_system, full_path);
-  }
-
   FileEntrySync(DOMFileSystemBase*, const String& full_path);
 
   bool isFile() const override { return true; }

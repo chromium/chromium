@@ -19,8 +19,7 @@ PairingHostAuthenticator::PairingHostAuthenticator(
     const std::string& pin)
     : pairing_registry_(pairing_registry),
       create_base_authenticator_callback_(create_base_authenticator_callback),
-      pin_(pin),
-      weak_factory_(this) {}
+      pin_(pin) {}
 
 void PairingHostAuthenticator::Initialize(
     const std::string& client_id,

@@ -144,7 +144,7 @@ class AppInstallEventLogger : public AppInstallEventLogCollector::Delegate,
   std::unique_ptr<AppInstallEventLogCollector> log_collector_;
 
   // Weak factory used to reference |this| from background tasks.
-  base::WeakPtrFactory<AppInstallEventLogger> weak_factory_;
+  base::WeakPtrFactory<AppInstallEventLogger> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AppInstallEventLogger);
 };

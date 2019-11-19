@@ -11,5 +11,7 @@ interface AssociatedInterface {};
 // Analogous to the generic InterfaceProvider interface, but for content
 // AssociatedInterfaces.
 interface AssociatedInterfaceProvider {
-  GetAssociatedInterface(string name, associated AssociatedInterface& request);
+  GetAssociatedInterface(
+      string name,
+      pending_associated_receiver<AssociatedInterface> receiver);
 };

@@ -1,0 +1,135 @@
+<!doctype HTML>
+<html>
+<meta charset="utf8">
+<title>Display Locking: getBoundingClientRect on block layout</title>
+<link rel="author" title="Rakina Zata Amni" href="mailto:rakina@chromium.org">
+<link rel="help" href="https://github.com/WICG/display-locking">
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../resources/utils.js"></script>
+
+<body>
+<style>
+div:not([rendersubtree~="invisible"]) {
+  intrinsic-size: legacy !important;
+}
+</style>
+<script>
+const BODY_WIDTH = document.body.getBoundingClientRect().width;
+const CONTENT_WIDTH = 33;
+const CONTENT_HEIGHT = 44;
+
+async_test(async(t) => {
+  let container = document.createElement("div");
+  let child = document.createElement("div");
+  container.appendChild(child);
+  document.body.appendChild(container);
+  container.style = `intrinsic-size: ${CONTENT_WIDTH}px ${CONTENT_HEIGHT}px;`;
+  await setInvisible(container);
+
+  let rect = container.getBoundingClientRect();
+  // Even though the intrinsic-size is specified, regular block
+  // layout causes the container to be BODY_WIDTH.
+  t.step(() => assert_equals(rect.width, BODY_WIDTH,
+    "Locked element uses BODY_WIDTH for width"));
+  t.step(() => assert_equals(rect.height, CONTENT_HEIGHT,
+    "Locked element uses height from intrinsic-size"));
+
+  rect = child.getBoundingClientRect();
+  t.step(() => assert_equals(rect.width, BODY_WIDTH,
+    "Child of locked element with no content uses container's width (BODY_WIDTH)"));
+  t.step(() => assert_equals(rect.height, 0,
+    "Child of locked element with no content has zero height"));
+
+  child.style = "width: 100px; height: 200px;";
+  rect = container.getBoundingClientRect();
+  t.step(() => assert_equals(rect.width, BODY_WIDTH,
+    "Locked element with sized child uses BODY_WIDTH"));
+  t.step(() => assert_equals(rect.height, CONTENT_HEIGHT,
+    "Locked element with sized child uses height from intrinsic-size"));
+  rect = child.getBoundingClientRect();
+  t.step(() => assert_equals(rect.width, 100,
+    "Child of locked element uses width from style"));
+  t.step(() => assert_equals(rect.height, 200,
+    "Child of locked element uses height from style"));
+
+  t.done();
+}, "getBoundingClientRect");
+
+async_test(async(t) => {
+  let container = document.createElement("div");
+  let child = document.createElement("div");
+  container.appendChild(child);
+  document.body.appendChild(container);
+  container.style = `width: min-content; intrinsic-size: ${CONTENT_WIDTH}px ${CONTENT_HEIGHT}px;`;
+  await setInvisible(container);
+
+  let rect = container.getBoundingClientRect();
+  t.step(() => assert_equals(rect.width, CONTENT_WIDTH,
+    "Locked element with min-content uses width from intrinsic-size"));
+  t.step(() => assert_equals(rect.height, CONTENT_HEIGHT,
+    "Locked element with min-content uses height from intrinsic-size"));
+
+  rect = child.getBoundingClientRect();
+  t.step(() => assert_equals(rect.width, CONTENT_WIDTH,
+    "Child of locked element with min-content & no content uses width from intrinsic-size"));
+  t.step(() => assert_equals(rect.height, 0,
+    "Child of locked element with min-content & no content has zero height"));
+
+  child.style = "width: 100px; height: 200px;";
+  rect = container.getBoundingClientRect();
+  t.step(() => assert_equals(rect.width, CONTENT_WIDTH,
+    "Locked element with min-content and sized child uses width from intrinsic-size"));
+  t.step(() => assert_equals(rect.height, CONTENT_HEIGHT,
+    "Locked element with min-content and sized child uses height from intrinsic-size"));
+  rect = child.getBoundingClientRect();
+  t.step(() => assert_equals(rect.width, 100,
+    "Child of locked element with min-content uses width from style"));
+  t.step(() => assert_equals(rect.height, 200,
+    "Child of locked element with min-content uses height from style"));
+
+  t.done();
+}, "getBoundingClientRect with min-content");
+
+async_test(async(t) => {
+  let container = document.createElement("div");
+  let child = document.createElement("div");
+  container.appendChild(child);
+  document.body.appendChild(container);
+  container.style = `intrinsic-size: ${CONTENT_WIDTH}px ${CONTENT_HEIGHT}px;`;
+  await setInvisible(container);
+  let rect = container.getBoundingClientRect();
+
+  // Even though the intrinsic-size is specified, regular block
+  // layout causes the container to be BODY_WIDTH.
+  t.step(() => assert_equals(rect.width, BODY_WIDTH,
+    "Locked element uses BODY_WIDTH for width"));
+  t.step(() => assert_equals(rect.height, CONTENT_HEIGHT,
+    "Locked element uses height from intrinsic-size"));
+
+  rect = child.getBoundingClientRect();
+  t.step(() => assert_equals(rect.width, BODY_WIDTH,
+    "Child of locked element with no content uses container's width (BODY_WIDTH)"));
+  t.step(() => assert_equals(rect.height, 0,
+    "Child of locked element with no content has zero height"));
+
+  container.style = "intrinsic-size: 55px 66px;";
+  rect = container.getBoundingClientRect();
+  t.step(() => assert_equals(rect.width, BODY_WIDTH,
+    "After intrinsic-size change, locked element width remains BODY_WIDTH"));
+  t.step(() => assert_equals(rect.height, 66,
+    "After intrinsic-size change, locked element uses height from newest intrinsic-size"));
+
+  rect = child.getBoundingClientRect();
+  t.step(() => assert_equals(rect.width, BODY_WIDTH,
+    "Child of locked element with no content width remains BODY_WIDTH"));
+  t.step(() => assert_equals(rect.height, 0,
+    "Child of locked element with no content has zero height"));
+
+
+  t.done();
+}, "getBoundingClientRect with changed intrinsic-size");
+</script>
+</body>
+</html>

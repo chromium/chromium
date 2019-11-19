@@ -133,8 +133,9 @@ void ChromeNetworkingCastPrivateDelegate::VerifyDestination(
     std::unique_ptr<Credentials> credentials,
     const VerifiedCallback& success_callback,
     const FailureCallback& failure_callback) {
-  base::PostTaskWithTraitsAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+  base::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::USER_VISIBLE},
       base::Bind(&RunDecodeAndVerifyCredentials, base::Passed(&credentials)),
       base::Bind(&VerifyDestinationCompleted, success_callback,
                  failure_callback));
@@ -145,8 +146,9 @@ void ChromeNetworkingCastPrivateDelegate::VerifyAndEncryptData(
     std::unique_ptr<Credentials> credentials,
     const DataCallback& success_callback,
     const FailureCallback& failure_callback) {
-  base::PostTaskWithTraitsAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+  base::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::USER_VISIBLE},
       base::Bind(&RunVerifyAndEncryptData, data, base::Passed(&credentials)),
       base::Bind(&VerifyAndEncryptDataCompleted, success_callback,
                  failure_callback));

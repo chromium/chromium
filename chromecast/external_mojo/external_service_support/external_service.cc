@@ -9,18 +9,17 @@
 namespace chromecast {
 namespace external_service_support {
 
-ExternalService::ExternalService() : service_binding_(this) {}
+ExternalService::ExternalService() = default;
 
 ExternalService::~ExternalService() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-external_mojo::mojom::ExternalServicePtr ExternalService::GetBinding() {
+mojo::PendingRemote<external_mojo::mojom::ExternalService>
+ExternalService::GetReceiver() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  service_binding_.Close();
-  external_mojo::mojom::ExternalServicePtr ptr;
-  service_binding_.Bind(mojo::MakeRequest(&ptr));
-  return ptr;
+  service_receiver_.reset();
+  return service_receiver_.BindNewPipeAndPassRemote();
 }
 
 void ExternalService::AddInterface(const std::string& interface_name,

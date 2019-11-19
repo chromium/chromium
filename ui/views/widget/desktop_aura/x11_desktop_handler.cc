@@ -4,12 +4,15 @@
 
 #include "ui/views/widget/desktop_aura/x11_desktop_handler.h"
 
+#include <memory>
+
 #include "base/strings/string_number_conversions.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/base/x/x11_menu_list.h"
-#include "ui/base/x/x11_window_event_manager.h"
+#include "ui/base/x/x11_util.h"
 #include "ui/events/platform/platform_event_source.h"
+#include "ui/events/x/x11_window_event_manager.h"
 #include "ui/gfx/x/x11.h"
 #include "ui/gfx/x/x11_atom_cache.h"
 #include "ui/gfx/x/x11_error_tracker.h"
@@ -18,7 +21,7 @@
 namespace {
 
 // Our global instance. Deleted when our Env() is deleted.
-views::X11DesktopHandler* g_handler = NULL;
+views::X11DesktopHandler* g_handler = nullptr;
 
 }  // namespace
 
@@ -44,9 +47,9 @@ X11DesktopHandler::X11DesktopHandler()
     ui::PlatformEventSource::GetInstance()->AddPlatformEventDispatcher(this);
   aura::Env::GetInstance()->AddObserver(this);
 
-  x_root_window_events_.reset(new ui::XScopedEventSelector(
+  x_root_window_events_ = std::make_unique<ui::XScopedEventSelector>(
       x_root_window_,
-      PropertyChangeMask | StructureNotifyMask | SubstructureNotifyMask));
+      PropertyChangeMask | StructureNotifyMask | SubstructureNotifyMask);
 }
 
 X11DesktopHandler::~X11DesktopHandler() {
@@ -72,7 +75,7 @@ std::string X11DesktopHandler::GetWorkspace() {
 bool X11DesktopHandler::UpdateWorkspace() {
   int desktop;
   if (ui::GetCurrentDesktop(&desktop)) {
-    workspace_ = base::IntToString(desktop);
+    workspace_ = base::NumberToString(desktop);
     return true;
   }
   return false;
@@ -112,7 +115,7 @@ void X11DesktopHandler::OnWindowInitialized(aura::Window* window) {
 }
 
 void X11DesktopHandler::OnWillDestroyEnv() {
-  g_handler = NULL;
+  g_handler = nullptr;
   delete this;
 }
 

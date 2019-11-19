@@ -4,7 +4,7 @@
 
 #include "content/browser/loader/navigation_loader_interceptor.h"
 
-#include "content/common/navigation_subresource_loader_params.h"
+#include "content/browser/navigation_subresource_loader_params.h"
 
 namespace content {
 
@@ -16,10 +16,16 @@ NavigationLoaderInterceptor::MaybeCreateSubresourceLoaderParams() {
 bool NavigationLoaderInterceptor::MaybeCreateLoaderForResponse(
     const network::ResourceRequest& request,
     const network::ResourceResponseHead& response,
+    mojo::ScopedDataPipeConsumerHandle* response_body,
     network::mojom::URLLoaderPtr* loader,
-    network::mojom::URLLoaderClientRequest* client_request,
-    ThrottlingURLLoader* url_loader,
-    bool* skip_other_interceptors) {
+    mojo::PendingReceiver<network::mojom::URLLoaderClient>* client_receiver,
+    blink::ThrottlingURLLoader* url_loader,
+    bool* skip_other_interceptors,
+    bool* will_return_unsafe_redirect) {
+  return false;
+}
+
+bool NavigationLoaderInterceptor::ShouldBypassRedirectChecks() {
   return false;
 }
 

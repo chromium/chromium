@@ -59,8 +59,7 @@ CrashRecoveryManagerImpl::CrashRecoveryManagerImpl(
     HostScanCache* host_scan_cache)
     : network_state_handler_(network_state_handler),
       active_host_(active_host),
-      host_scan_cache_(host_scan_cache),
-      weak_ptr_factory_(this) {}
+      host_scan_cache_(host_scan_cache) {}
 
 CrashRecoveryManagerImpl::~CrashRecoveryManagerImpl() = default;
 

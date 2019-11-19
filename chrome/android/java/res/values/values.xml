@@ -4,12 +4,8 @@
      found in the LICENSE file. -->
 
 <resources
-    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="MissingTranslation">
-
-    <!-- Menu Animation Constants -->
-    <item type="fraction" format="fraction" name="menu_animation_pivot_x">95%</item>
 
     <!-- Full Screen Constants -->
     <!-- These constants were chosen empirically for their visually pleasant behavior.
@@ -48,16 +44,15 @@
     <string name="help_context_bookmarks">mobile_bookmarks</string>
     <string name="help_context_history">mobile_history</string>
     <string name="help_context_privacy">mobile_privacy</string>
-    <string name="help_context_translate">mobile_translate</string>
     <string name="help_context_general">mobile_general</string>
     <string name="help_context_protected_content">protected_content</string>
     <string name="help_context_data_reduction">reduce_data_usage</string>
     <string name="help_context_incognito_learn_more">chrome_incognito</string>
-    <string name="help_context_usage_reports">send_crash_report</string>
     <string name="help_context_sad_tab">mobile_awsnap</string>
     <string name="help_context_clear_browsing_data">clear_browsing_data</string>
     <string name="help_context_change_sync_passphrase">change_sync_passphrase</string>
     <string name="help_context_sync_and_services">syncgoogleservices</string>
+    <string name="help_context_passwords">passwords</string>
     <!-- TODO(peconn): Add help section. -->
     <!-- <string name="help_context_suggestions">mobile_content_suggestions</string> -->
 
@@ -80,4 +75,10 @@
     <integer name="download_infobar_bar_start_offset">800</integer>
     <integer name="download_infobar_bar_fill_in_delay">400</integer>
     <integer name="download_infobar_bar_fill_out_delay">200</integer>
+
+    <!-- Bottom navigation bar styling. -->
+    <bool name="window_light_navigation_bar">true</bool>
+
+    <!-- Status bar icon styling. -->
+    <bool name="window_light_status_bar">true</bool>
 </resources>

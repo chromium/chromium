@@ -34,6 +34,7 @@ Polymer({
     passwordPromptText: {
       type: String,
       notify: true,
+      value: '',
     },
 
     /**
@@ -70,6 +71,12 @@ Polymer({
      * @type {QuickUnlockPrivate}
      */
     quickUnlockPrivate: {type: Object, value: chrome.quickUnlockPrivate},
+
+    /** @private {boolean} */
+    waitingForPasswordCheck_: {
+      type: Boolean,
+      value: false,
+    },
   },
 
   /** @return {!CrInputElement} */
@@ -108,6 +115,7 @@ Polymer({
    * @private
    */
   submitPassword_: function() {
+    this.waitingForPasswordCheck_ = true;
     clearTimeout(this.clearAccountPasswordTimeoutId_);
 
     const password = this.passwordInput.value;
@@ -115,10 +123,12 @@ Polymer({
     // Do not submit/show an error in this case.
     if (!password) {
       this.passwordInvalid_ = false;
+      this.waitingForPasswordCheck_ = false;
       return;
     }
 
     this.quickUnlockPrivate.getAuthToken(password, (tokenInfo) => {
+      this.waitingForPasswordCheck_ = false;
       if (chrome.runtime.lastError) {
         this.passwordInvalid_ = true;
         // Select the whole password if user entered an incorrect password.
@@ -153,7 +163,8 @@ Polymer({
 
   /** @private */
   isConfirmEnabled_: function() {
-    return !this.passwordInvalid_ && this.inputValue_;
+    return !this.waitingForPasswordCheck_ && !this.passwordInvalid_ &&
+        this.inputValue_;
   },
 });
 })();

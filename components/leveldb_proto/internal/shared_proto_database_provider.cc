@@ -12,9 +12,9 @@
 namespace leveldb_proto {
 
 SharedProtoDatabaseProvider::SharedProtoDatabaseProvider(
-    const scoped_refptr<base::SequencedTaskRunner>& task_runner,
+    const scoped_refptr<base::SequencedTaskRunner>& client_task_runner,
     base::WeakPtr<ProtoDatabaseProvider> provider_weak_ptr)
-    : task_runner_(task_runner),
+    : client_task_runner_(client_task_runner),
       provider_weak_ptr_(std::move(provider_weak_ptr)) {}
 
 SharedProtoDatabaseProvider::~SharedProtoDatabaseProvider() = default;
@@ -22,7 +22,7 @@ SharedProtoDatabaseProvider::~SharedProtoDatabaseProvider() = default;
 void SharedProtoDatabaseProvider::GetDBInstance(
     GetSharedDBInstanceCallback callback,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner) {
-  task_runner_->PostTask(
+  client_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&ProtoDatabaseProvider::GetSharedDBInstance,
                                 provider_weak_ptr_, std::move(callback),
                                 std::move(callback_task_runner)));

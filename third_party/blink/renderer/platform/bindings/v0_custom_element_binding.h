@@ -35,7 +35,7 @@
 
 #include "third_party/blink/renderer/platform/bindings/scoped_persistent.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -44,13 +44,10 @@ class PLATFORM_EXPORT V0CustomElementBinding {
   USING_FAST_MALLOC(V0CustomElementBinding);
 
  public:
-  static std::unique_ptr<V0CustomElementBinding> Create(
-      v8::Isolate*,
-      v8::Local<v8::Object> prototype);
+  V0CustomElementBinding(v8::Isolate*, v8::Local<v8::Object> prototype);
   ~V0CustomElementBinding();
 
  private:
-  V0CustomElementBinding(v8::Isolate*, v8::Local<v8::Object> prototype);
   ScopedPersistent<v8::Object> prototype_;
 };
 

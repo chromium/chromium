@@ -7,11 +7,13 @@
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "mojo/core/embedder/embedder.h"
-#include "mojo/public/cpp/bindings/strong_binding_set.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_network_connection_tracker.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -24,11 +26,13 @@ const char kTestGeolocationApiKey[] = "";
 class PublicIpAddressGeolocatorTest : public testing::Test {
  public:
   PublicIpAddressGeolocatorTest()
-      : scoped_task_environment_(
-            base::test::ScopedTaskEnvironment::MainThreadType::IO) {
+      : task_environment_(base::test::TaskEnvironment::MainThreadType::IO),
+        network_connection_tracker_(
+            network::TestNetworkConnectionTracker::CreateInstance()) {
     notifier_.reset(new PublicIpAddressLocationNotifier(
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_),
+        network::TestNetworkConnectionTracker::GetInstance(),
         kTestGeolocationApiKey));
   }
 
@@ -41,12 +45,12 @@ class PublicIpAddressGeolocatorTest : public testing::Test {
         base::Bind(&PublicIpAddressGeolocatorTest::OnMojoBadMessage,
                    base::Unretained(this)));
 
-    binding_set_.AddBinding(
+    receiver_set_.Add(
         std::make_unique<PublicIpAddressGeolocator>(
             PARTIAL_TRAFFIC_ANNOTATION_FOR_TESTS, notifier_.get(),
             base::Bind(&PublicIpAddressGeolocatorTest::OnGeolocatorBadMessage,
                        base::Unretained(this))),
-        mojo::MakeRequest(&public_ip_address_geolocator_));
+        public_ip_address_geolocator_.BindNewPipeAndPassReceiver());
   }
 
   void TearDown() override {
@@ -62,7 +66,7 @@ class PublicIpAddressGeolocatorTest : public testing::Test {
 
   // Deal with PublicIpAddressGeolocator bad message.
   void OnGeolocatorBadMessage(const std::string& message) {
-    binding_set_.ReportBadMessage(message);
+    receiver_set_.ReportBadMessage(message);
   }
 
   // Invokes QueryNextPosition on |public_ip_address_geolocator_|, and runs
@@ -84,20 +88,24 @@ class PublicIpAddressGeolocatorTest : public testing::Test {
   // Result of the latest completed call to QueryNextPosition.
   mojom::GeopositionPtr position_;
 
-  // StrongBindingSet to mojom::Geolocation.
-  mojo::StrongBindingSet<mojom::Geolocation> binding_set_;
+  // UniqueReceiverSet to mojom::Geolocation.
+  mojo::UniqueReceiverSet<mojom::Geolocation> receiver_set_;
 
   // Test task runner.
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
 
   // List of any Mojo bad-message errors raised.
   std::vector<std::string> bad_messages_;
+
+  // Test NetworkConnectionTracker for PublicIpAddressLocationNotifier.
+  std::unique_ptr<network::TestNetworkConnectionTracker>
+      network_connection_tracker_;
 
   // PublicIpAddressGeolocator requires a notifier.
   std::unique_ptr<PublicIpAddressLocationNotifier> notifier_;
 
   // The object under test.
-  mojom::GeolocationPtr public_ip_address_geolocator_;
+  mojo::Remote<mojom::Geolocation> public_ip_address_geolocator_;
 
   // Test URLLoaderFactory for handling requests to the geolocation API.
   network::TestURLLoaderFactory test_url_loader_factory_;
@@ -140,8 +148,7 @@ TEST_F(PublicIpAddressGeolocatorTest, BindAndQuery) {
 // connection error and reports a bad message.
 TEST_F(PublicIpAddressGeolocatorTest, ProhibitedOverlappingCalls) {
   base::RunLoop loop;
-  public_ip_address_geolocator_.set_connection_error_handler(
-      loop.QuitClosure());
+  public_ip_address_geolocator_.set_disconnect_handler(loop.QuitClosure());
 
   // Issue two overlapping calls to QueryNextPosition.
   QueryNextPosition(base::Closure());

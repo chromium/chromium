@@ -4,8 +4,8 @@
 
 #import "ios/web/web_state/ui/crw_web_view_proxy_impl.h"
 
-#import "ios/web/public/web_state/ui/crw_content_view.h"
-#import "ios/web/public/web_state/ui/crw_web_view_scroll_view_proxy.h"
+#import "ios/web/common/crw_content_view.h"
+#import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
 #import "ios/web/web_state/ui/crw_web_controller.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

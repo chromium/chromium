@@ -10,7 +10,6 @@
 
 const float kTableViewNavigationVerticalOffsetForSearchHeader = 6.0f;
 const float kTableViewNavigationAlphaForDisabledSearchBar = 0.5f;
-const float kTableViewNavigationWhiteAlphaForSearchScrim = 0.2f;
 const NSTimeInterval kTableViewNavigationScrimFadeDuration = 0.2;
 
 NSString* const kTableViewNavigationDismissButtonId =

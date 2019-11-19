@@ -12,31 +12,23 @@
 #include "base/memory/ptr_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/font_pref_change_notifier_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_font_webkit_names.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "content/public/browser/notification_source.h"
 
 // Identifies the user data on the profile.
 const char kFontFamilyCacheKey[] = "FontFamilyCacheKey";
 
 FontFamilyCache::FontFamilyCache(Profile* profile)
     : prefs_(profile->GetPrefs()) {
-  notification_registrar_.Add(this,
-                              chrome::NOTIFICATION_PROFILE_DESTROYED,
-                              content::Source<Profile>(profile));
-
-  // Safe to use Unretained here since the registrar is scoped to this class.
   font_change_registrar_.Register(
       FontPrefChangeNotifierFactory::GetForProfile(profile),
       base::Bind(&FontFamilyCache::OnPrefsChanged, base::Unretained(this)));
 }
 
-FontFamilyCache::~FontFamilyCache() {
-}
+FontFamilyCache::~FontFamilyCache() = default;
 
 void FontFamilyCache::FillFontFamilyMap(Profile* profile,
                                         const char* map_name,
@@ -124,11 +116,4 @@ void FontFamilyCache::OnPrefsChanged(const std::string& pref_name) {
       break;
     }
   }
-}
-
-void FontFamilyCache::Observe(int type,
-                              const content::NotificationSource& source,
-                              const content::NotificationDetails& details) {
-  DCHECK_EQ(chrome::NOTIFICATION_PROFILE_DESTROYED, type);
-  font_change_registrar_.Unregister();
 }

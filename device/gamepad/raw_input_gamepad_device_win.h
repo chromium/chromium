@@ -15,15 +15,17 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/weak_ptr.h"
 #include "device/gamepad/abstract_haptic_gamepad.h"
-#include "device/gamepad/dualshock4_controller_win.h"
 #include "device/gamepad/hid_dll_functions_win.h"
-#include "device/gamepad/hid_haptic_gamepad_win.h"
 #include "device/gamepad/public/cpp/gamepad.h"
 
 namespace device {
 
-class RawInputGamepadDeviceWin : public AbstractHapticGamepad {
+class HidHapticGamepad;
+class Dualshock4Controller;
+
+class RawInputGamepadDeviceWin final : public AbstractHapticGamepad {
  public:
   // Relevant usage IDs within the Generic Desktop usage page. RawInput gamepads
   // must have one of these usage IDs.
@@ -57,8 +59,9 @@ class RawInputGamepadDeviceWin : public AbstractHapticGamepad {
   // Read the current gamepad state into |pad|.
   void ReadPadState(Gamepad* pad) const;
 
-  // Set the vibration magnitude for the strong and weak vibration actuators.
+  // AbstractHapticGamepad implementation.
   void SetVibration(double strong_magnitude, double weak_magnitude) override;
+  base::WeakPtr<AbstractHapticGamepad> GetWeakPtr() override;
 
  private:
   // Axis state and capabilities for a single RawInput axis.
@@ -69,8 +72,12 @@ class RawInputGamepadDeviceWin : public AbstractHapticGamepad {
     unsigned long bitmask;
   };
 
-  // Stop vibration and release held resources.
+  // AbstractHapticGamepad implementation.
   void DoShutdown() override;
+
+  // "Returns an open handle for the HID device, or an invalid handle if the
+  // device could not be opened."
+  base::win::ScopedHandle OpenHidHandle();
 
   // Fetch information about this device. Returns true if the device appears to
   // be a valid gamepad.
@@ -83,7 +90,7 @@ class RawInputGamepadDeviceWin : public AbstractHapticGamepad {
   bool QueryDeviceName();
 
   // Fetch the product string. Returns false if none is available.
-  bool QueryProductString();
+  bool QueryProductString(base::win::ScopedHandle& hid_handle);
 
   // These methods fetch information about the capabilities of buttons and axes
   // on the device.
@@ -136,10 +143,12 @@ class RawInputGamepadDeviceWin : public AbstractHapticGamepad {
   PHIDP_PREPARSED_DATA preparsed_data_ = nullptr;
 
   // Dualshock4-specific functionality (e.g., haptics), if available.
-  std::unique_ptr<Dualshock4ControllerWin> dualshock4_;
+  std::unique_ptr<Dualshock4Controller> dualshock4_;
 
   // A controller that uses a HID output report for vibration effects.
-  std::unique_ptr<HidHapticGamepadWin> hid_haptics_;
+  std::unique_ptr<HidHapticGamepad> hid_haptics_;
+
+  base::WeakPtrFactory<RawInputGamepadDeviceWin> weak_factory_{this};
 };
 
 }  // namespace device

@@ -21,8 +21,6 @@
 #include "unpack50.cpp"
 #include "unpack50frag.cpp"
 
-namespace third_party_unrar {
-
 Unpack::Unpack(ComprDataIO *DataIO)
 :Inp(true),VMCodeInp(true)
 {
@@ -372,5 +370,3 @@ void Unpack::MakeDecodeTables(byte *LengthTable,DecodeTable *Dec,uint Size)
     }
   }
 }
-
-}  // namespace third_party_unrar

@@ -46,6 +46,15 @@ std::ostream& operator<<(std::ostream& out, NSMenuItem* item) {
   return out << "NSMenuItem " << base::SysNSStringToUTF8([item keyEquivalent]);
 }
 
+// Returns whether a keyboard layout is one of the "commandless" cyrillic
+// layouts introduced in 10.15: these layouts do not ever fire key equivalents
+// (in any app, not just Chrome) and appear not to be intended for full-time
+// use.
+bool IsCommandlessCyrillicLayout(NSString* layoutId) {
+  return [layoutId isEqualToString:@"com.apple.keylayout.Kyrgyz-Cyrillic"] ||
+         [layoutId isEqualToString:@"com.apple.keylayout.Mongolian-Cyrillic"];
+}
+
 void ExpectKeyFiresItemEq(bool result, NSEvent* key, NSMenuItem* item,
     bool compareCocoa) {
   EXPECT_EQ(result, [item cr_firesForKeyEvent:key]) << key << '\n' << item;
@@ -267,8 +276,8 @@ TEST(NSMenuItemAdditionsTest, TestFiresForKeyEvent) {
   ExpectKeyDoesntFireItem(key, MenuItem(@"z", 0x100000));
   ExpectKeyFiresItem(key, MenuItem(@";", 0x100000));
 
-  // Change to Dvorak-QWERTY
-  SetIsInputSourceDvorakQwertyForTesting(true);
+  // Change to Command-QWERTY
+  SetIsInputSourceCommandQwertyForTesting(true);
 
   // cmd-z on dvorak qwerty layout (so that the key produces ';', but 'z' if
   // cmd is down)
@@ -296,8 +305,8 @@ TEST(NSMenuItemAdditionsTest, TestFiresForKeyEvent) {
                      false);
   ExpectKeyDoesntFireItem(key, MenuItem(@"\x9", NSControlKeyMask), false);
 
-  // Change away from Dvorak-QWERTY
-  SetIsInputSourceDvorakQwertyForTesting(false);
+  // Change away from Command-QWERTY
+  SetIsInputSourceCommandQwertyForTesting(false);
 
   // cmd-shift-z on dvorak layout (so that we get a ':')
   key = KeyEvent(0x12010a, @";", @":", 6);
@@ -417,10 +426,14 @@ TEST(NSMenuItemAdditionsTest, TestMOnDifferentLayouts) {
       // to trigger a keyEquivalent, since then it won't be possible to type
       // "m".
       continue;
+    } else if (IsCommandlessCyrillicLayout(layoutId)) {
+      // Commandless layouts have no way to trigger a menu key equivalent at
+      // all, in any app.
+      continue;
     }
 
-    if ([layoutId isEqualToString:@"com.apple.keylayout.DVORAK-QWERTYCMD"]) {
-      SetIsInputSourceDvorakQwertyForTesting(true);
+    if (IsKeyboardLayoutCommandQwerty(layoutId)) {
+      SetIsInputSourceCommandQwertyForTesting(true);
     }
 
     EventModifiers modifiers = cmdKey >> 8;
@@ -438,8 +451,8 @@ TEST(NSMenuItemAdditionsTest, TestMOnDifferentLayouts) {
       ExpectKeyFiresItem(key, item, false);
     }
 
-    if ([layoutId isEqualToString:@"com.apple.keylayout.DVORAK-QWERTYCMD"]) {
-      SetIsInputSourceDvorakQwertyForTesting(false);
+    if (IsKeyboardLayoutCommandQwerty(layoutId)) {
+      SetIsInputSourceCommandQwertyForTesting(false);
     }
   }
   CFRelease(list);

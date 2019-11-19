@@ -29,7 +29,7 @@ void ExtensionApiUnittest::SetUp() {
 }
 
 std::unique_ptr<base::Value> ExtensionApiUnittest::RunFunctionAndReturnValue(
-    UIThreadExtensionFunction* function,
+    ExtensionFunction* function,
     const std::string& args) {
   function->set_extension(extension());
   return std::unique_ptr<base::Value>(
@@ -38,7 +38,7 @@ std::unique_ptr<base::Value> ExtensionApiUnittest::RunFunctionAndReturnValue(
 
 std::unique_ptr<base::DictionaryValue>
 ExtensionApiUnittest::RunFunctionAndReturnDictionary(
-    UIThreadExtensionFunction* function,
+    ExtensionFunction* function,
     const std::string& args) {
   base::Value* value = RunFunctionAndReturnValue(function, args).release();
   base::DictionaryValue* dict = NULL;
@@ -53,7 +53,7 @@ ExtensionApiUnittest::RunFunctionAndReturnDictionary(
 }
 
 std::unique_ptr<base::ListValue> ExtensionApiUnittest::RunFunctionAndReturnList(
-    UIThreadExtensionFunction* function,
+    ExtensionFunction* function,
     const std::string& args) {
   base::Value* value = RunFunctionAndReturnValue(function, args).release();
   base::ListValue* list = NULL;
@@ -68,13 +68,14 @@ std::unique_ptr<base::ListValue> ExtensionApiUnittest::RunFunctionAndReturnList(
 }
 
 std::string ExtensionApiUnittest::RunFunctionAndReturnError(
-    UIThreadExtensionFunction* function, const std::string& args) {
+    ExtensionFunction* function,
+    const std::string& args) {
   function->set_extension(extension());
   return utils::RunFunctionAndReturnError(function, args, browser());
 }
 
-void ExtensionApiUnittest::RunFunction(
-    UIThreadExtensionFunction* function, const std::string& args) {
+void ExtensionApiUnittest::RunFunction(ExtensionFunction* function,
+                                       const std::string& args) {
   RunFunctionAndReturnValue(function, args);
 }
 

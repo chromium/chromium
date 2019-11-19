@@ -15,29 +15,31 @@ class MockCredentialManager {
   constructor() {
     this.reset();
 
-    this.binding_ = new mojo.Binding(blink.mojom.CredentialManager, this);
     this.interceptor_ = new MojoInterfaceInterceptor(
-        blink.mojom.CredentialManager.name);
+      blink.mojom.CredentialManager.$interfaceName, "context", true);
     this.interceptor_.oninterfacerequest = e => {
-      this.binding_.bind(e.handle);
+      this.bindHandleToReceiver(e.handle);
     };
     this.interceptor_.start();
   }
 
+  bindHandleToReceiver(handle) {
+    this.receiver_ = new blink.mojom.CredentialManagerReceiver(this);
+    this.receiver_.$.bindHandle(handle);
+  }
+
   constructCredentialInfo_(type, id, password, name, icon) {
-  return new blink.mojom.CredentialInfo({
+    return {
       type: type,
       id: stringToMojoString16(id),
       name: stringToMojoString16(name),
-      icon: new url.mojom.Url({url: icon}),
+      icon: {url: icon},
       password: stringToMojoString16(password),
-      federation: new url.mojom.Origin(
-          {scheme: 'https', host: 'foo.com', port: 443})
-    });
+      federation: {scheme: 'https', host: 'foo.com', port: 443}
+    };
   }
 
   // Mock functions:
-
   async get(mediation, includePasswords, federations) {
     if (this.error_ == blink.mojom.CredentialManagerError.SUCCESS) {
       return {error: this.error_, credential: this.credentialInfo_};
@@ -77,29 +79,33 @@ class MockAuthenticator {
   constructor() {
     this.reset();
 
-    this.binding_ = new mojo.Binding(blink.mojom.Authenticator, this);
     this.interceptor_ = new MojoInterfaceInterceptor(
-        blink.mojom.Authenticator.name);
+      blink.mojom.Authenticator.$interfaceName, "context", true);
     this.interceptor_.oninterfacerequest = e => {
-      this.binding_.bind(e.handle);
+      this.bindHandleToReceiver(e.handle);
     };
     this.interceptor_.start();
+  }
+
+  bindHandleToReceiver(handle) {
+    this.receiver_ = new blink.mojom.AuthenticatorReceiver(this);
+    this.receiver_.$.bindHandle(handle);
   }
 
   // Returns a MakeCredentialResponse to the client.
   async makeCredential(options) {
     var response = null;
     if (this.status_ == blink.mojom.AuthenticatorStatus.SUCCESS) {
-      let info = new blink.mojom.CommonCredentialInfo(
-          { id: this.id_,
+      let info = { id: this.id_,
             rawId: this.rawId_,
             clientDataJson: this.clientDataJson_,
-          });
-      response = new blink.mojom.MakeCredentialAuthenticatorResponse(
-          { info: info,
+          };
+      response = { info: info,
             attestationObject: this.attestationObject_,
             transports: [blink.mojom.AuthenticatorTransport.INTERNAL],
-          });
+            echoHmacCreateSecret: false,
+            hmacCreateSecret: false,
+          };
     }
     let status = this.status_;
     this.reset();
@@ -108,18 +114,18 @@ class MockAuthenticator {
 
   async getAssertion(options) {
     var response = null;
-    if (this.status_ == blink.mojom.AuthenticatorStatus.SUCCESS) {
-      let info = new blink.mojom.CommonCredentialInfo(
-          { id: this.id_,
+  if (this.status_ == blink.mojom.AuthenticatorStatus.SUCCESS) {
+      let info = { id: this.id_,
             rawId: this.rawId_,
             clientDataJson: this.clientDataJson_,
-          });
-      response = new blink.mojom.GetAssertionAuthenticatorResponse(
-          { info: info,
+          };
+      response = { info: info,
             authenticatorData: this.authenticatorData_,
             signature: this.signature_,
             userHandle: this.userHandle_,
-          });
+            echoAppidExtension: false,
+            appidExtension: false,
+          };
     }
     let status = this.status_;
     this.reset();
@@ -129,6 +135,8 @@ class MockAuthenticator {
   async isUserVerifyingPlatformAuthenticatorAvailable() {
     return false;
   }
+
+  async cancel() {}
 
   // Resets state of mock Authenticator.
   reset() {

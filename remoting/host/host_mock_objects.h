@@ -27,6 +27,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor_monitor.h"
+#include "ui/events/event.h"
 
 namespace base {
 class TimeDelta;
@@ -68,7 +69,9 @@ class MockClientSessionControl : public ClientSessionControl {
 
   MOCK_CONST_METHOD0(client_jid, const std::string&());
   MOCK_METHOD1(DisconnectSession, void(protocol::ErrorCode error));
-  MOCK_METHOD1(OnLocalMouseMoved, void(const webrtc::DesktopVector&));
+  MOCK_METHOD2(OnLocalPointerMoved,
+               void(const webrtc::DesktopVector&, ui::EventType));
+  MOCK_METHOD1(OnLocalKeyPressed, void(uint32_t));
   MOCK_METHOD1(SetDisableInputs, void(bool));
   MOCK_METHOD0(ResetVideoPipeline, void());
   MOCK_METHOD1(OnDesktopDisplayChanged,

@@ -5,18 +5,4 @@ include_rules = [
   "+ui/events/devices",
   "+ui/events/platform_event.h",
   "+ui/strings",
-  # DeviceDataManager is not created in all environments (such as ash when
-  # running in mus/mash).
-  "-ui/events/devices/device_data_manager.h",
 ]
-
-specific_include_rules = {
-  "default_touch_transform_setter.cc": [
-    # DefaultTouchTransformSetter only runs in environments where
-    # DeviceDataManager exists.
-    "+ui/events/devices/device_data_manager.h",
-  ],
-  "touch_transform_controller_unittest.cc": [
-    "+ui/events/devices/device_data_manager.h",
-  ],
-}

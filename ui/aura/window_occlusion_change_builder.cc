@@ -7,6 +7,7 @@
 #include "base/containers/flat_map.h"
 #include "base/logging.h"
 #include "base/macros.h"
+#include "components/viz/client/frame_eviction_manager.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/aura/window_tracker.h"
 
@@ -18,6 +19,9 @@ class DefaultWindowOcclusionChangeBuilder
  public:
   DefaultWindowOcclusionChangeBuilder() = default;
   ~DefaultWindowOcclusionChangeBuilder() override {
+    // No frame eviction until all occlusion state changes are applied.
+    viz::FrameEvictionManager::ScopedPause scoped_frame_eviction_pause;
+
     while (!windows_.windows().empty()) {
       Window* window = windows_.Pop();
       auto it = changes_.find(window);

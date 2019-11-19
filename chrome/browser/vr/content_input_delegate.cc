@@ -4,7 +4,8 @@
 
 #include "chrome/browser/vr/content_input_delegate.h"
 
-#include "base/callback_helpers.h"
+#include <utility>
+
 #include "base/time/time.h"
 #include "chrome/browser/vr/platform_input_handler.h"
 
@@ -67,7 +68,7 @@ void ContentInputDelegate::OnWebInputIndicesChanged(
     int selection_end,
     int composition_start,
     int composition_end,
-    base::OnceCallback<void(const TextInputInfo&)> callback) {
+    TextInputUpdateCallback callback) {
   // The purpose of this method is to determine if we need to query content for
   // the text surrounding the currently focused web input field.
 
@@ -79,62 +80,45 @@ void ContentInputDelegate::OnWebInputIndicesChanged(
       i.selection_end == selection_end &&
       i.composition_start == composition_start &&
       i.composition_end == composition_end) {
-    base::ResetAndReturn(&callback).Run(i);
+    std::move(callback).Run(i);
     return;
   }
 
-  // If the changed indices are the same as the previous ones, this is probably
-  // called as a side-effect of us requesting the text state below, so it's safe
-  // to ignore this update. If this is not called as a side-effect of us
-  // requesting the text state below, and the indices just happen to match the
-  // previous state, it's still okay to ignore this update. Consider the
-  // following scenario: 1) State after last request for web input state:
-  //     This is a test|
-  // 2) JS on the page changed the web input state to:
-  //     This blah test|
-  // In this case, 2) will trigger this function and we'll ignore it. The next
-  // time user types something, we'll calculate the diff from our stale version
-  // of the web input state, but because we're committing the delta between the
-  // previous and the current keyboard state, the update to content will still
-  // be correct. That is, even if the keyboard works with the incorrect version
-  // of the text state, the end result is still correct from the user's point of
-  // view. This is also how android IME works (it only requests text state when
-  // the indices actually change).
-  i = pending_text_input_info_;
-  if (pending_text_request_state_ != kNoPendingRequest &&
-      i.selection_start == selection_start &&
-      i.selection_end == selection_end &&
-      i.composition_start == composition_start &&
-      i.composition_end == composition_end) {
-    pending_text_request_state_ = kNoPendingRequest;
-    return;
-  }
-
-  // The indices changed and we need to query the update state.
-  pending_text_input_info_.selection_start = selection_start;
-  pending_text_input_info_.selection_end = selection_end;
-  pending_text_input_info_.composition_start = composition_start;
-  pending_text_input_info_.composition_end = composition_end;
+  // Otherwise, queue up the callback
   update_state_callbacks_.emplace(std::move(callback));
-  pending_text_request_state_ = kRequested;
-  input_handler()->RequestWebInputText(base::BindOnce(
-      &ContentInputDelegate::OnWebInputTextChanged, base::Unretained(this)));
+
+  // If there's no current request, create one
+  if (pending_text_request_state_ == kNoPendingRequest) {
+    TextInputInfo pending_text_input_info;
+    pending_text_input_info.selection_start = selection_start;
+    pending_text_input_info.selection_end = selection_end;
+    pending_text_input_info.composition_start = composition_start;
+    pending_text_input_info.composition_end = composition_end;
+    input_handler()->RequestWebInputText(base::BindOnce(
+        &ContentInputDelegate::OnWebInputTextChanged, base::Unretained(this),
+        std::move(pending_text_input_info)));
+    pending_text_request_state_ = kRequested;
+  }
 }
 
 void ContentInputDelegate::ClearTextInputState() {
   pending_text_request_state_ = kNoPendingRequest;
-  pending_text_input_info_ = TextInputInfo();
   last_keyboard_edit_ = EditedText();
 }
 
-void ContentInputDelegate::OnWebInputTextChanged(const base::string16& text) {
-  pending_text_input_info_.text = text;
+void ContentInputDelegate::OnWebInputTextChanged(
+    TextInputInfo pending_input_info,
+    const base::string16& text) {
+  pending_input_info.text = text;
   DCHECK(!update_state_callbacks_.empty());
 
-  pending_text_request_state_ = kResponseReceived;
-  auto update_state_callback = std::move(update_state_callbacks_.front());
-  update_state_callbacks_.pop();
-  base::ResetAndReturn(&update_state_callback).Run(pending_text_input_info_);
+  while (!update_state_callbacks_.empty()) {
+    auto update_state_callback = std::move(update_state_callbacks_.front());
+    update_state_callbacks_.pop();
+    std::move(update_state_callback).Run(pending_input_info);
+  }
+
+  pending_text_request_state_ = kNoPendingRequest;
 }
 
 }  // namespace vr

@@ -9,16 +9,12 @@
 }
 * { zoom: 6318030279180000000; }
 </style>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
 <div id=target></div>
-<p>PASS if no crash.</p>
 <script>
-if (window.testRunner) {
-  testRunner.dumpAsText();
-  testRunner.waitUntilDone();
-}
-target.addEventListener('animationstart', function() {
+var test = async_test("Test if it does not crash when it has zoom");
+target.addEventListener('animationstart', test.step_func_done(() => {
   getComputedStyle(target).left;
-  if (window.testRunner)
-    testRunner.notifyDone();
-});
+}));
 </script>

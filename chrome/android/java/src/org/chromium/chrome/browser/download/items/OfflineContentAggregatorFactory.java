@@ -4,9 +4,11 @@
 
 package org.chromium.chrome.browser.download.items;
 
-import android.support.annotation.Nullable;
-import android.support.annotation.VisibleForTesting;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.annotations.NativeMethods;
+import org.chromium.chrome.browser.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.offline_items_collection.OfflineContentProvider;
 
@@ -17,7 +19,7 @@ import org.chromium.components.offline_items_collection.OfflineContentProvider;
 public class OfflineContentAggregatorFactory {
     // TODO(crbug.com/857543): Remove this after downloads have implemented it.
     // We need only one provider, since OfflineContentAggregator lives in the original profile.
-    private static DownloadBlockedOfflineContentProvider sBlockedProvider;
+    private static OfflineContentProvider sProvider;
 
     private OfflineContentAggregatorFactory() {}
 
@@ -32,26 +34,35 @@ public class OfflineContentAggregatorFactory {
     public static void setOfflineContentProviderForTests(
             @Nullable OfflineContentProvider provider) {
         if (provider == null) {
-            sBlockedProvider = null;
+            sProvider = null;
         } else {
-            sBlockedProvider = new DownloadBlockedOfflineContentProvider(provider);
+            sProvider = getProvider(provider);
         }
     }
 
     /**
-     * Used to get access to the {@link OfflineContentProvider} associated with {@code profile}.
-     * The same {@link OfflineContentProvider} will be returned for the same {@link Profile}.
-     * @param profile The {@link Profile} that owns the {@link OfflineContentProvider}.
-     * @return An {@link OfflineContentProvider} instance.
+     * Used to get access to the offline content aggregator.
+     * @return An {@link OfflineContentProvider} instance representing the offline content
+     *         aggregator.
      */
-    public static OfflineContentProvider forProfile(Profile profile) {
-        if (sBlockedProvider == null) {
-            sBlockedProvider = new DownloadBlockedOfflineContentProvider(
-                    nativeGetOfflineContentAggregatorForProfile(profile));
+    public static OfflineContentProvider get() {
+        if (sProvider == null) {
+            sProvider = getProvider(
+                    OfflineContentAggregatorFactoryJni.get().getOfflineContentAggregator());
         }
-        return sBlockedProvider;
+        return sProvider;
     }
 
-    private static native OfflineContentProvider nativeGetOfflineContentAggregatorForProfile(
-            Profile profile);
+    private static OfflineContentProvider getProvider(OfflineContentProvider provider) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DOWNLOAD_OFFLINE_CONTENT_PROVIDER)) {
+            return provider;
+        } else {
+            return new DownloadBlockedOfflineContentProvider(provider);
+        }
+    }
+
+    @NativeMethods
+    interface Natives {
+        OfflineContentProvider getOfflineContentAggregator();
+    }
 }

@@ -40,13 +40,12 @@
 #include "third_party/blink/renderer/core/dom/static_node_list.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 // Uncomment to run the SelectorQueryTests for stats in a release build.
 // #define RELEASE_QUERY_STATS
 
 namespace blink {
-
-using namespace html_names;
 
 #if DCHECK_IS_ON() || defined(RELEASE_QUERY_STATS)
 static SelectorQuery::QueryStats& CurrentQueryStats() {
@@ -196,10 +195,11 @@ static void CollectElementsByTagName(
 
 inline bool AncestorHasClassName(ContainerNode& root_node,
                                  const AtomicString& class_name) {
-  if (!root_node.IsElementNode())
+  auto* root_node_element = DynamicTo<Element>(root_node);
+  if (!root_node_element)
     return false;
 
-  for (Element* element = &ToElement(root_node); element;
+  for (auto* element = root_node_element; element;
        element = element->parentElement()) {
     if (element->HasClassName(class_name))
       return true;
@@ -344,10 +344,10 @@ void SelectorQuery::ExecuteSlowTraversingShadowTree(
     typename SelectorQueryTrait::OutputType& output) const {
   for (ContainerNode* node = NextTraversingShadowTree(root_node, &root_node);
        node; node = NextTraversingShadowTree(*node, &root_node)) {
-    if (!node->IsElementNode())
+    auto* element = DynamicTo<Element>(node);
+    if (!element)
       continue;
     QUERY_STATS_INCREMENT(slow_traversing_shadow_tree_scan);
-    Element* element = ToElement(node);
     if (!SelectorListMatches(root_node, *element))
       continue;
     SelectorQueryTrait::AppendElement(output, *element);
@@ -503,7 +503,7 @@ SelectorQuery::SelectorQuery(CSSSelectorList selector_list)
       // We only use the fast path when in standards mode where #id selectors
       // are case sensitive, so we need the same behavior for [id=value].
       if (current->Match() == CSSSelector::kAttributeExact &&
-          current->Attribute() == kIdAttr &&
+          current->Attribute() == html_names::kIdAttr &&
           current->AttributeMatch() == CSSSelector::kCaseSensitive) {
         selector_id_ = current->Value();
         break;
@@ -533,7 +533,7 @@ SelectorQuery* SelectorQueryCache::Add(const AtomicString& selectors,
     return it->value.get();
 
   CSSSelectorList selector_list = CSSParser::ParseSelector(
-      CSSParserContext::Create(
+      MakeGarbageCollected<CSSParserContext>(
           document, document.BaseURL(), true /* origin_clean */,
           document.GetReferrerPolicy(), WTF::TextEncoding(),
           CSSParserContext::kSnapshotProfile),

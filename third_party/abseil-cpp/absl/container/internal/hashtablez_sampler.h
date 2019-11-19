@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//      http://www.apache.org/licenses/LICENSE-2.0
+//      https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -12,8 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-// This is a low level library to sample hashtables and collect runtime
-// statistics about them.
+// -----------------------------------------------------------------------------
+// File: hashtablez_sampler.h
+// -----------------------------------------------------------------------------
+//
+// This header file defines the API for a low level library to sample hashtables
+// and collect runtime statistics about them.
 //
 // `HashtablezSampler` controls the lifecycle of `HashtablezInfo` objects which
 // store information about a single sample.
@@ -22,6 +26,15 @@
 // `Sample()` and `Unsample()` make use of a single global sampler with
 // properties controlled by the flags hashtablez_enabled,
 // hashtablez_sample_rate, and hashtablez_max_samples.
+//
+// WARNING
+//
+// Using this sampling API may cause sampled Swiss tables to use the global
+// allocator (operator `new`) in addition to any custom allocator.  If you
+// are using a table in an unusual circumstance where allocation or calling a
+// linux syscall is unacceptable, this could interfere.
+//
+// This utility is internal-only. Use at your own risk.
 
 #ifndef ABSL_CONTAINER_INTERNAL_HASHTABLEZ_SAMPLER_H_
 #define ABSL_CONTAINER_INTERNAL_HASHTABLEZ_SAMPLER_H_
@@ -52,7 +65,7 @@ struct HashtablezInfo {
 
   // Puts the object into a clean state, fills in the logically `const` members,
   // blocking for any readers that are currently sampling the object.
-  void PrepareForSampling() EXCLUSIVE_LOCKS_REQUIRED(init_mu);
+  void PrepareForSampling() ABSL_EXCLUSIVE_LOCKS_REQUIRED(init_mu);
 
   // These fields are mutated by the various Record* APIs and need to be
   // thread-safe.
@@ -70,7 +83,7 @@ struct HashtablezInfo {
   // prevents races with sampling and resurrecting an object.
   absl::Mutex init_mu;
   HashtablezInfo* next;
-  HashtablezInfo* dead GUARDED_BY(init_mu);
+  HashtablezInfo* dead ABSL_GUARDED_BY(init_mu);
 
   // All of the fields below are set by `PrepareForSampling`, they must not be
   // mutated in `Record*` functions.  They are logically `const` in that sense.

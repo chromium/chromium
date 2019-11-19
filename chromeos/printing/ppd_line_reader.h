@@ -23,14 +23,14 @@ class CHROMEOS_EXPORT PpdLineReader {
   // |contents| may or may not be gzip-compressed, and must remain valid and
   // unchanged while the Created PpdReader exists.
   static std::unique_ptr<PpdLineReader> Create(const std::string& contents,
-                                               int max_line_length);
+                                               size_t max_line_length);
 
   // Checks to see whether the file contents in |contents| contains the magic
   // number which is found at the beginning of every PPD file. To verify this,
   // a line reader is created which simply attempts to read the first line and
   // checks whether it contains the magic number.
   static bool ContainsMagicNumber(const std::string& contents,
-                                  int max_line_length);
+                                  size_t max_line_length);
 
   virtual ~PpdLineReader() = default;
 

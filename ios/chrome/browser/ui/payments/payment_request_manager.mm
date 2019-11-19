@@ -21,7 +21,7 @@
 #include "base/strings/utf_string_conversions.h"
 #import "base/values.h"
 #include "components/autofill/core/browser/autofill_manager.h"
-#include "components/autofill/core/browser/credit_card.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/ios/browser/autofill_driver_ios.h"
 #include "components/omnibox/browser/location_bar_model.h"
@@ -29,9 +29,9 @@
 #include "components/payments/core/features.h"
 #include "components/payments/core/journey_logger.h"
 #include "components/payments/core/payment_address.h"
+#include "components/payments/core/payment_app.h"
 #include "components/payments/core/payment_details.h"
 #include "components/payments/core/payment_details_validation.h"
-#include "components/payments/core/payment_instrument.h"
 #include "components/payments/core/payment_prefs.h"
 #include "components/payments/core/payment_request_base_delegate.h"
 #include "components/payments/core/payment_request_data_util.h"
@@ -56,21 +56,20 @@
 #import "ios/chrome/browser/ui/payments/js_payment_request_manager.h"
 #import "ios/chrome/browser/ui/payments/payment_request_coordinator.h"
 #import "ios/chrome/browser/ui/payments/payment_request_error_coordinator.h"
-#include "ios/web/public/favicon_status.h"
-#include "ios/web/public/navigation_item.h"
-#include "ios/web/public/navigation_manager.h"
-#include "ios/web/public/origin_util.h"
-#include "ios/web/public/ssl_status.h"
-#import "ios/web/public/url_scheme_util.h"
-#import "ios/web/public/web_state/js/crw_js_injection_receiver.h"
-#import "ios/web/public/web_state/navigation_context.h"
-#import "ios/web/public/web_state/ui/crw_web_view_proxy.h"
-#include "ios/web/public/web_state/url_verification_constants.h"
-#include "ios/web/public/web_state/web_frame.h"
-#include "ios/web/public/web_state/web_frame_util.h"
-#import "ios/web/public/web_state/web_frames_manager.h"
-#import "ios/web/public/web_state/web_state.h"
-#import "ios/web/public/web_state/web_state_observer_bridge.h"
+#include "ios/web/common/origin_util.h"
+#import "ios/web/common/url_scheme_util.h"
+#import "ios/web/public/deprecated/crw_js_injection_receiver.h"
+#include "ios/web/public/deprecated/url_verification_constants.h"
+#include "ios/web/public/favicon/favicon_status.h"
+#include "ios/web/public/js_messaging/web_frame.h"
+#import "ios/web/public/js_messaging/web_frames_manager.h"
+#import "ios/web/public/navigation/navigation_context.h"
+#include "ios/web/public/navigation/navigation_item.h"
+#include "ios/web/public/navigation/navigation_manager.h"
+#include "ios/web/public/security/ssl_status.h"
+#import "ios/web/public/ui/crw_web_view_proxy.h"
+#import "ios/web/public/web_state.h"
+#import "ios/web/public/web_state_observer_bridge.h"
 #include "third_party/libaddressinput/chromium/chrome_metadata_source.h"
 #include "third_party/libaddressinput/chromium/chrome_storage_impl.h"
 #include "url/gurl.h"
@@ -97,7 +96,7 @@ const NSTimeInterval kNoopInterval = 0.1;
 const NSTimeInterval kTimeoutInterval = 60.0;
 
 // Error messages used in Payment Request API.
-NSString* const kCancelErrorMessage = @"Request cancelled";
+NSString* const kCancelErrorMessage = @"User closed the Payment Request UI.";
 
 struct PendingPaymentResponse {
   std::string methodName;
@@ -136,6 +135,9 @@ struct PendingPaymentResponse {
   // Storage for data to return in the payment response, until we're ready to
   // send an actual PaymentResponse.
   PendingPaymentResponse _pendingPaymentResponse;
+
+  // Subscription for JS message.
+  std::unique_ptr<web::WebState::ScriptCommandSubscription> _subscription;
 }
 
 // YES if Payment Request is enabled on the active web state.
@@ -309,7 +311,6 @@ struct PendingPaymentResponse {
     _paymentRequestJsManager = nil;
 
     _activeWebState->RemoveObserver(_activeWebStateObserver.get());
-    _activeWebState->RemoveScriptCommandCallback(kCommandPrefix);
     _activeWebStateObserver.reset();
     _activeWebState = nullptr;
   }
@@ -320,7 +321,7 @@ struct PendingPaymentResponse {
     _paymentRequestJsManager = nil;
 
     _activeWebState->RemoveObserver(_activeWebStateObserver.get());
-    _activeWebState->RemoveScriptCommandCallback(kCommandPrefix);
+    _subscription.reset();
     _activeWebState = nullptr;
   }
 
@@ -329,17 +330,17 @@ struct PendingPaymentResponse {
   if (_activeWebState) {
     __weak PaymentRequestManager* weakSelf = self;
     auto callback = base::BindRepeating(
-        ^bool(const base::DictionaryValue& JSON, const GURL& originURL,
-              bool interacting, bool isMainFrame, web::WebFrame* senderFrame) {
-          if (!isMainFrame) {
-            // Payment request is only supported on main frame.
-            return false;
+        ^(const base::DictionaryValue& JSON, const GURL& originURL,
+          bool userIsInteracting, web::WebFrame* senderFrame) {
+          // Payment request is only supported on main frame.
+          if (senderFrame->IsMainFrame()) {
+            // |originURL| and |userIsInteracting| aren't used.
+            [weakSelf handleScriptCommand:JSON];
           }
-          // |originURL| and |userIsInteracting| aren't used.
-          return [weakSelf handleScriptCommand:JSON];
         });
     _activeWebState->AddObserver(_activeWebStateObserver.get());
-    _activeWebState->AddScriptCommandCallback(callback, kCommandPrefix);
+    _subscription =
+        _activeWebState->AddScriptCommandCallback(callback, kCommandPrefix);
 
     _paymentRequestJsManager =
         base::mac::ObjCCastStrict<JSPaymentRequestManager>(
@@ -589,47 +590,54 @@ paymentRequestFromMessage:(const base::DictionaryValue&)message
   }
 
   if (![self webStateContentIsSecureHTML]) {
-    paymentRequest->journey_logger().SetNotShown(
-        payments::JourneyLogger::NOT_SHOWN_REASON_OTHER);
-
+    if (paymentRequest->state() != payments::PaymentRequest::State::CLOSED) {
+      paymentRequest->journey_logger().SetNotShown(
+          payments::JourneyLogger::NOT_SHOWN_REASON_OTHER);
+      paymentRequest->set_updating(false);
+      paymentRequest->set_state(payments::PaymentRequest::State::CLOSED);
+    }
     LOG(ERROR) << "Request promise rejected: "
                << base::SysNSStringToUTF16(kNotSupportedError)
                << "Must be in a secure context";
-    [self abortPaymentRequest:paymentRequest
-                       reason:payments::JourneyLogger::ABORT_REASON_OTHER
-                    errorName:kNotSupportedError
-                 errorMessage:@"Must be in a secure context"
-                     callback:nil];
+    [_paymentRequestJsManager
+        rejectRequestPromiseWithErrorName:kNotSupportedError
+                             errorMessage:@"Must be in a secure context"
+                        completionHandler:nil];
     return YES;
   }
 
   if (paymentRequest->state() != payments::PaymentRequest::State::CREATED) {
-    paymentRequest->journey_logger().SetNotShown(
-        payments::JourneyLogger::NOT_SHOWN_REASON_OTHER);
-
+    if (paymentRequest->state() != payments::PaymentRequest::State::CLOSED) {
+      paymentRequest->journey_logger().SetNotShown(
+          payments::JourneyLogger::NOT_SHOWN_REASON_OTHER);
+      paymentRequest->set_updating(false);
+      paymentRequest->set_state(payments::PaymentRequest::State::CLOSED);
+    }
     LOG(ERROR) << "Request promise rejected: "
                << base::SysNSStringToUTF16(kInvalidStateError)
                << "Already called show() once";
-    [self abortPaymentRequest:paymentRequest
-                       reason:payments::JourneyLogger::ABORT_REASON_OTHER
-                    errorName:kInvalidStateError
-                 errorMessage:@"Already called show() once"
-                     callback:nil];
+    [_paymentRequestJsManager
+        rejectRequestPromiseWithErrorName:kInvalidStateError
+                             errorMessage:@"Already called show() once"
+                        completionHandler:nil];
     return YES;
   }
 
   if (_pendingPaymentRequest) {
-    paymentRequest->journey_logger().SetNotShown(
-        payments::JourneyLogger::NOT_SHOWN_REASON_CONCURRENT_REQUESTS);
-
+    if (paymentRequest->state() != payments::PaymentRequest::State::CLOSED) {
+      paymentRequest->journey_logger().SetNotShown(
+          payments::JourneyLogger::NOT_SHOWN_REASON_CONCURRENT_REQUESTS);
+      paymentRequest->set_updating(false);
+      paymentRequest->set_state(payments::PaymentRequest::State::CLOSED);
+    }
     LOG(ERROR) << "Request promise rejected: "
                << base::SysNSStringToUTF16(kAbortError)
                << "Only one PaymentRequest may be shown at a time";
-    [self abortPendingRequestWithReason:payments::JourneyLogger::
-                                            ABORT_REASON_OTHER
-                           errorMessage:
-                               @"Only one PaymentRequest may be shown at a time"
-                               callback:nil];
+    [_paymentRequestJsManager
+        rejectRequestPromiseWithErrorName:kAbortError
+                             errorMessage:@"Only one PaymentRequest may be "
+                                          @"shown at a time"
+                        completionHandler:nil];
     return YES;
   }
 
@@ -637,17 +645,21 @@ paymentRequestFromMessage:(const base::DictionaryValue&)message
       (!base::FeatureList::IsEnabled(
            payments::features::kWebPaymentsNativeApps) ||
        paymentRequest->url_payment_method_identifiers().empty())) {
-    paymentRequest->journey_logger().SetNotShown(
-        payments::JourneyLogger::NOT_SHOWN_REASON_NO_SUPPORTED_PAYMENT_METHOD);
-
+    if (paymentRequest->state() != payments::PaymentRequest::State::CLOSED) {
+      paymentRequest->journey_logger().SetNotShown(
+          payments::JourneyLogger::
+              NOT_SHOWN_REASON_NO_SUPPORTED_PAYMENT_METHOD);
+      paymentRequest->set_updating(false);
+      paymentRequest->set_state(payments::PaymentRequest::State::CLOSED);
+    }
     LOG(ERROR) << "Request promise rejected: "
                << base::SysNSStringToUTF16(kNotSupportedError)
                << "The payment method is not supported";
-    [self abortPaymentRequest:paymentRequest
-                       reason:payments::JourneyLogger::ABORT_REASON_OTHER
-                    errorName:kNotSupportedError
-                 errorMessage:@"The payment method is not supported"
-                     callback:nil];
+    [_paymentRequestJsManager
+        rejectRequestPromiseWithErrorName:kNotSupportedError
+                             errorMessage:@"The payment method is not supported"
+                        completionHandler:nil];
+
     return YES;
   }
 
@@ -669,7 +681,8 @@ paymentRequestFromMessage:(const base::DictionaryValue&)message
   BOOL connectionSecure =
       _activeWebState->GetLastCommittedURL().SchemeIs(url::kHttpsScheme);
   // Payment Request is only enabled in main frame.
-  web::WebFrame* main_frame = web::GetMainWebFrame(_activeWebState);
+  web::WebFrame* main_frame =
+      _activeWebState->GetWebFramesManager()->GetMainWebFrame();
   autofill::AutofillManager* autofillManager =
       autofill::AutofillDriverIOS::FromWebStateAndWebFrame(_activeWebState,
                                                            main_frame)
@@ -693,6 +706,11 @@ paymentRequestFromMessage:(const base::DictionaryValue&)message
 
     [self setUnblockEventQueueTimer];
     [self setUpdateEventTimeoutTimer];
+  } else {
+    paymentRequest->journey_logger().RecordTransactionAmount(
+        paymentRequest->payment_details().total->amount->currency,
+        paymentRequest->payment_details().total->amount->value,
+        false /*completed*/);
   }
 
   return YES;
@@ -851,6 +869,10 @@ paymentRequestFromMessage:(const base::DictionaryValue&)message
     _pendingPaymentRequest->RecordUseStats();
     _pendingPaymentRequest->GetPrefService()->SetBoolean(
         payments::kPaymentsFirstTransactionCompleted, true);
+    _pendingPaymentRequest->journey_logger().RecordTransactionAmount(
+        _pendingPaymentRequest->payment_details().total->amount->currency,
+        _pendingPaymentRequest->payment_details().total->amount->value,
+        true /*completed*/);
     [self dismissPaymentRequestUIWithCallback:callback];
   }
 
@@ -902,6 +924,11 @@ paymentRequestFromMessage:(const base::DictionaryValue&)message
     LOG(ERROR) << errorMessage;
     return NO;
   }
+
+  _pendingPaymentRequest->journey_logger().RecordTransactionAmount(
+      _pendingPaymentRequest->payment_details().total->amount->currency,
+      _pendingPaymentRequest->payment_details().total->amount->value,
+      false /*completed*/);
 
   [_paymentRequestCoordinator updatePaymentDetails:paymentDetails];
 
@@ -983,7 +1010,7 @@ paymentRequestFromMessage:(const base::DictionaryValue&)message
   // If the scheme is cryptographic, the SSL certificate must also be valid.
   return !security_state::IsSchemeCryptographic(lastCommittedURL) ||
          security_state::IsSslCertificateValid(
-             self.locationBarModel->GetSecurityLevel(true));
+             self.locationBarModel->GetSecurityLevel());
 }
 
 #pragma mark - PaymentRequestUIDelegate
@@ -1006,8 +1033,7 @@ requestFullCreditCard:(const autofill::CreditCard&)creditCard
 
 - (void)paymentInstrument:(payments::IOSPaymentInstrument*)paymentInstrument
     launchAppWithUniversalLink:(GURL)universalLink
-            instrumentDelegate:
-                (payments::PaymentInstrument::Delegate*)delegate {
+            instrumentDelegate:(payments::PaymentApp::Delegate*)delegate {
   DCHECK(_pendingPaymentRequest);
   DCHECK(_activeWebState);
 
@@ -1035,7 +1061,7 @@ requestFullCreditCard:(const autofill::CreditCard&)creditCard
       payments::JourneyLogger::EVENT_PAY_CLICKED);
   coordinator.paymentRequest->journey_logger().SetEventOccurred(
       coordinator.paymentRequest->selected_payment_method()->type() ==
-              payments::PaymentInstrument::Type::AUTOFILL
+              payments::PaymentApp::Type::AUTOFILL
           ? payments::JourneyLogger::EVENT_SELECTED_CREDIT_CARD
           : payments::JourneyLogger::EVENT_SELECTED_OTHER);
 

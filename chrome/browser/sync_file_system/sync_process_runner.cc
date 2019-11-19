@@ -69,8 +69,7 @@ SyncProcessRunner::SyncProcessRunner(const std::string& name,
       running_tasks_(0),
       timer_helper_(std::move(timer_helper)),
       service_state_(SYNC_SERVICE_RUNNING),
-      pending_changes_(0),
-      factory_(this) {
+      pending_changes_(0) {
   DCHECK_LE(1u, max_parallel_task_);
   if (!timer_helper_)
     timer_helper_.reset(new BaseTimerHelper);

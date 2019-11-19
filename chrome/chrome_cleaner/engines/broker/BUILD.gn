@@ -1,0 +1,194 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/chrome_cleaner/chrome_cleaner_args.gni")
+
+# Nothing outside //chrome/chrome_cleaner can depend on these targets.
+visibility = [ "//chrome/chrome_cleaner/*" ]
+
+source_set("common") {
+  sources = [
+    "cleaner_engine_requests_impl.h",
+    "cleaner_sandbox_interface.h",
+    "engine_cleanup_results_impl.cc",
+    "engine_cleanup_results_impl.h",
+    "engine_client.cc",
+    "engine_client.h",
+    "engine_file_requests_impl.cc",
+    "engine_file_requests_impl.h",
+    "engine_requests_impl.cc",
+    "engine_requests_impl.h",
+    "engine_scan_results_impl.cc",
+    "engine_scan_results_impl.h",
+    "logging_conversion.cc",
+    "logging_conversion.h",
+    "sandbox_setup.cc",
+    "sandbox_setup.h",
+    "scanner_sandbox_interface.cc",
+    "scanner_sandbox_interface.h",
+  ]
+
+  deps = [
+    ":interface_metadata_observer",
+    "//base",
+    "//chrome/chrome_cleaner:buildflags",
+    "//chrome/chrome_cleaner/constants:common_strings",
+    "//chrome/chrome_cleaner/constants:quarantine_constants",
+    "//chrome/chrome_cleaner/constants:uws_id",
+    "//chrome/chrome_cleaner/engines/common",
+    "//chrome/chrome_cleaner/ipc:mojo_task_runner",
+    "//chrome/chrome_cleaner/ipc:sandbox",
+    "//chrome/chrome_cleaner/logging:common",
+    "//chrome/chrome_cleaner/mojom:engine_sandbox_interface",
+    "//chrome/chrome_cleaner/os:cleaner_os",
+    "//chrome/chrome_cleaner/os:common_os",
+    "//chrome/chrome_cleaner/os:file_remover_api",
+    "//chrome/chrome_cleaner/pup_data:pup_data_base",
+    "//chrome/chrome_cleaner/settings",
+    "//chrome/chrome_cleaner/settings:settings_types",
+    "//chrome/chrome_cleaner/strings",
+    "//chrome/chrome_cleaner/zip_archiver:common",
+    "//components/chrome_cleaner/public/constants:constants",
+    "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/system",
+    "//sandbox/win:sandbox",
+  ]
+
+  if (!is_official_chrome_cleaner_build) {
+    # Unofficial builds allow loading some target-only code in the broker, for
+    # testing.
+    deps += [ "//chrome/chrome_cleaner/engines/target:common" ]
+  }
+}
+
+source_set("disabled_cleaner_sandbox_interface") {
+  sources = [
+    "noop_cleaner_engine_requests_impl.cc",
+  ]
+
+  deps = [
+    ":common",
+    "//base",
+    "//chrome/chrome_cleaner/zip_archiver:common",
+    "//mojo/public/cpp/bindings",
+  ]
+}
+
+source_set("cleaner_sandbox_interface") {
+  sources = [
+    "cleaner_engine_requests_impl.cc",
+    "cleaner_sandbox_interface.cc",
+  ]
+
+  deps = [
+    ":common",
+    "//base",
+    "//chrome/chrome_cleaner/chrome_utils:chrome_util_lib",
+    "//chrome/chrome_cleaner/constants:common_strings",
+    "//chrome/chrome_cleaner/engines/common",
+    "//chrome/chrome_cleaner/engines/common:resources_header",
+    "//chrome/chrome_cleaner/os:cleaner_os",
+    "//chrome/chrome_cleaner/os:common_os",
+    "//chrome/chrome_cleaner/pup_data:pup_data_base",
+    "//sandbox/win:sandbox",
+  ]
+}
+
+source_set("engine_client_mock") {
+  testonly = true
+
+  sources = [
+    "engine_client_mock.cc",
+    "engine_client_mock.h",
+  ]
+
+  deps = [
+    ":common",
+    "//base/test:test_support",
+    "//chrome/chrome_cleaner/ipc:mojo_task_runner",
+    "//testing/gmock",
+  ]
+}
+
+source_set("interface_metadata_observer") {
+  sources = [
+    "interface_metadata_observer.h",
+  ]
+}
+
+source_set("noop_interface_metadata_observer") {
+  sources = [
+    "noop_interface_metadata_observer.cc",
+    "noop_interface_metadata_observer.h",
+  ]
+
+  deps = [
+    ":interface_metadata_observer",
+    "//base",
+  ]
+}
+
+source_set("interface_log_service") {
+  sources = [
+    "interface_log_service.cc",
+    "interface_log_service.h",
+  ]
+
+  deps = [
+    ":interface_metadata_observer",
+    "//base",
+    "//chrome/chrome_cleaner/os:common_os",
+  ]
+
+  public_deps = [
+    "//chrome/chrome_cleaner/logging/proto:interface_logger_proto",
+  ]
+
+  all_dependent_configs = [ "//third_party/protobuf:using_proto" ]
+}
+
+source_set("unittest_sources") {
+  testonly = true
+
+  sources = [
+    "cleaner_sandbox_interface_unittest.cc",
+    "engine_client_unittest.cc",
+    "engine_requests_no_blocking_unittest.cc",
+    "interface_log_service_unittest.cc",
+    "logging_conversion_unittest.cc",
+    "scanner_sandbox_interface_unittest.cc",
+  ]
+
+  deps = [
+    ":cleaner_sandbox_interface",
+    ":common",
+    ":interface_log_service",
+    ":interface_metadata_observer",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/chrome_cleaner/engines/common",
+    "//chrome/chrome_cleaner/engines/target:common",
+    "//chrome/chrome_cleaner/engines/target:test_support",
+    "//chrome/chrome_cleaner/ipc:mojo_task_runner",
+    "//chrome/chrome_cleaner/logging:mock_logging_service",
+    "//chrome/chrome_cleaner/mojom:engine_sandbox_interface",
+    "//chrome/chrome_cleaner/os:cleaner_os",
+    "//chrome/chrome_cleaner/os:common_os",
+    "//chrome/chrome_cleaner/pup_data:pup_data_base",
+    "//chrome/chrome_cleaner/pup_data:test_uws",
+    "//chrome/chrome_cleaner/settings",
+    "//chrome/chrome_cleaner/strings",
+    "//chrome/chrome_cleaner/test:test_executables",
+    "//chrome/chrome_cleaner/test:test_pup_data",
+    "//chrome/chrome_cleaner/test:test_scoped_service_handle",
+    "//chrome/chrome_cleaner/test:test_strings",
+    "//chrome/chrome_cleaner/test:test_util",
+    "//chrome/chrome_cleaner/test:test_uws_catalog",
+    "//components/chrome_cleaner/public/constants",
+    "//components/chrome_cleaner/test:test_name_helper",
+    "//sandbox/win:sandbox",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

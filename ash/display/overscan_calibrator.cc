@@ -19,6 +19,7 @@
 #include "ui/compositor/paint_recorder.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/managed_display_info.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/canvas.h"
 
 namespace ash {
@@ -68,35 +69,64 @@ void DrawTriangle(int x_offset,
   canvas->DrawPath(path, border_flags);
 }
 
+gfx::Insets RotateInsets(display::Display::Rotation rotation,
+                         gfx::Insets&& insets) {
+  switch (rotation) {
+    case display::Display::ROTATE_0:
+      return insets;
+    case display::Display::ROTATE_90:
+      return gfx::Insets(insets.right(), insets.top(), insets.left(),
+                         insets.bottom());
+    case display::Display::ROTATE_180:
+      return gfx::Insets(insets.bottom(), insets.right(), insets.top(),
+                         insets.left());
+    case display::Display::ROTATE_270:
+      return gfx::Insets(insets.left(), insets.bottom(), insets.right(),
+                         insets.top());
+  }
+  NOTREACHED();
+  return std::move(insets);
+}
+
+gfx::Insets ConvertToDisplay(const display::Display& display,
+                             const gfx::Insets& insets) {
+  display::ManagedDisplayInfo info =
+      ash::Shell::Get()->display_manager()->GetDisplayInfo(display.id());
+  return RotateInsets(
+      display.rotation(),
+      insets.Scale(info.device_scale_factor() / display.device_scale_factor()));
+}
+
+gfx::Insets ConvertToHost(const display::Display& display,
+                          const gfx::Insets& insets) {
+  display::ManagedDisplayInfo info =
+      ash::Shell::Get()->display_manager()->GetDisplayInfo(display.id());
+  display::Display::Rotation inverted_rotation =
+      static_cast<display::Display::Rotation>(
+          (4 - static_cast<int>(display.rotation())) % 4);
+  return RotateInsets(
+      inverted_rotation,
+      insets.Scale(display.device_scale_factor() / info.device_scale_factor()));
+}
+
 }  // namespace
 
 OverscanCalibrator::OverscanCalibrator(const display::Display& target_display,
                                        const gfx::Insets& initial_insets)
     : display_(target_display),
-      insets_(initial_insets),
+      insets_(ConvertToDisplay(display_, initial_insets)),
       initial_insets_(initial_insets),
       committed_(false) {
   // Undo the overscan calibration temporarily so that the user can see
   // dark boundary and current overscan region.
   ash::Shell::Get()->window_tree_host_manager()->SetOverscanInsets(
       display_.id(), gfx::Insets());
-
-  display::ManagedDisplayInfo info =
-      ash::Shell::Get()->display_manager()->GetDisplayInfo(display_.id());
-
-  aura::Window* root = ash::Shell::GetRootWindowForDisplayId(display_.id());
-  ui::Layer* parent_layer =
-      ash::Shell::GetContainer(root, ash::kShellWindowId_OverlayContainer)
-          ->layer();
-
-  calibration_layer_.reset(new ui::Layer());
-  calibration_layer_->SetOpacity(0.5f);
-  calibration_layer_->SetBounds(parent_layer->bounds());
-  calibration_layer_->set_delegate(this);
-  parent_layer->Add(calibration_layer_.get());
+  UpdateUILayer();
+  display::Screen::GetScreen()->AddObserver(this);
 }
 
 OverscanCalibrator::~OverscanCalibrator() {
+  display::Screen::GetScreen()->RemoveObserver(this);
   // Overscan calibration has finished without commit, so the display has to
   // be the original offset.
   if (!committed_) {
@@ -107,12 +137,12 @@ OverscanCalibrator::~OverscanCalibrator() {
 
 void OverscanCalibrator::Commit() {
   ash::Shell::Get()->window_tree_host_manager()->SetOverscanInsets(
-      display_.id(), insets_);
+      display_.id(), ConvertToHost(display_, insets_));
   committed_ = true;
 }
 
 void OverscanCalibrator::Reset() {
-  insets_ = initial_insets_;
+  insets_ = ConvertToDisplay(display_, initial_insets_);
   calibration_layer_->SchedulePaint(calibration_layer_->bounds());
 }
 
@@ -124,12 +154,12 @@ void OverscanCalibrator::UpdateInsets(const gfx::Insets& insets) {
 
 void OverscanCalibrator::OnPaintLayer(const ui::PaintContext& context) {
   ui::PaintRecorder recorder(context, calibration_layer_->size());
-  static const SkColor kTransparent = SkColorSetARGB(0, 0, 0, 0);
   gfx::Rect full_bounds = calibration_layer_->bounds();
   gfx::Rect inner_bounds = full_bounds;
   inner_bounds.Inset(insets_);
   recorder.canvas()->FillRect(full_bounds, SK_ColorBLACK);
-  recorder.canvas()->FillRect(inner_bounds, kTransparent, SkBlendMode::kClear);
+  recorder.canvas()->FillRect(inner_bounds, SK_ColorTRANSPARENT,
+                              SkBlendMode::kClear);
 
   gfx::Point center = inner_bounds.CenterPoint();
   int vertical_offset = inner_bounds.height() / 2 - kArrowGapWidth;
@@ -144,9 +174,31 @@ void OverscanCalibrator::OnPaintLayer(const ui::PaintContext& context) {
 
 void OverscanCalibrator::OnDeviceScaleFactorChanged(
     float old_device_scale_factor,
-    float new_device_scale_factor) {
-  // TODO(mukai): Cancel the overscan calibration when the device
-  // configuration has changed.
+    float new_device_scale_factor) {}
+
+void OverscanCalibrator::OnDisplayMetricsChanged(
+    const display::Display& display,
+    uint32_t changed_metrics) {
+  if (display_.id() != display.id() || committed_)
+    return;
+  display_ = display;
+  UpdateUILayer();
+  Reset();
+}
+
+void OverscanCalibrator::UpdateUILayer() {
+  display::ManagedDisplayInfo info =
+      ash::Shell::Get()->display_manager()->GetDisplayInfo(display_.id());
+
+  aura::Window* root = ash::Shell::GetRootWindowForDisplayId(display_.id());
+  ui::Layer* parent_layer =
+      ash::Shell::GetContainer(root, ash::kShellWindowId_OverlayContainer)
+          ->layer();
+  calibration_layer_.reset(new ui::Layer());
+  calibration_layer_->SetOpacity(0.5f);
+  calibration_layer_->SetBounds(parent_layer->bounds());
+  calibration_layer_->set_delegate(this);
+  parent_layer->Add(calibration_layer_.get());
 }
 
 }  // namespace ash

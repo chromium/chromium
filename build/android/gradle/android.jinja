@@ -15,11 +15,11 @@
             ]
 {% endif %}
 {% if variables.java_excludes is defined %}
-            java.filter.exclude(
+            java.filter.exclude([
 {% for path in variables.java_excludes %}
                 "{{ path }}",
 {% endfor %}
-            )
+            ])
 {% endif %}
 {% if variables.jni_libs is defined %}
             jniLibs.srcDirs = [

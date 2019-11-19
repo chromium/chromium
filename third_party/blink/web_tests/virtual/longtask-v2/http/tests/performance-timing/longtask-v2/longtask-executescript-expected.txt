@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-PASS Performance longtask entries with execute-script attribute are observable.
-Harness: the test ran to completion.
-

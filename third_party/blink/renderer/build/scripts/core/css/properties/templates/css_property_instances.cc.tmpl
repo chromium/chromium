@@ -1,0 +1,61 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+{% from 'templates/macros.tmpl' import source_files_for_generated_file %}
+{{source_files_for_generated_file(template_file, input_files)}}
+// clang-format off
+
+#include "third_party/blink/renderer/core/css/properties/css_property_instances.h"
+
+#include "third_party/blink/renderer/core/css/properties/longhands.h"
+#include "third_party/blink/renderer/core/css/properties/longhands/variable.h"
+#include "third_party/blink/renderer/core/css/properties/shorthands.h"
+
+namespace blink {
+namespace {
+
+{% for _, _, property_id, classname, namespace_group, _ in property_classes_by_property_id %}
+static constexpr css_{{namespace_group.lower()}}::{{classname}} property_{{property_id.lower()}};
+{% endfor %}
+{% for _, _, property_id, classname, namespace_group, _ in alias_classes_by_property_id %}
+static constexpr css_{{namespace_group.lower()}}::{{classname}} property_{{property_id.lower()}};
+{% endfor %}
+
+} // namespace
+
+{% for property_class_data in property_classes_by_property_id %}
+const CSSProperty& Get{{property_class_data.property_id}}() {
+  return property_{{property_class_data.property_id.lower()}};
+}
+{% endfor %}
+
+const CSSUnresolvedProperty* GetAliasPropertyInternal(CSSPropertyID id) {
+  DCHECK_GT(id, lastCSSProperty);  // last property id
+  DCHECK_LE(id, lastUnresolvedCSSProperty);  // last unresolved property id
+  switch (id) {
+    {% for property_class_data in alias_classes_by_property_id %}
+    case CSSPropertyID::{{property_class_data.enum_key}}:
+      return &property_{{property_class_data.property_id.lower()}};
+    {% endfor %}
+    default:
+      NOTREACHED();
+      return nullptr;
+  }
+}
+
+const CSSUnresolvedProperty& GetNonAliasPropertyInternal(CSSPropertyID id) {
+  DCHECK_NE(id, CSSPropertyID::kInvalid);
+  DCHECK_NE(id, CSSPropertyID::kVariable);
+  DCHECK_LE(id, lastCSSProperty);  // last property id
+  static constexpr const CSSUnresolvedProperty* const property_classes[] = {
+    {% for property_class_data in property_classes_by_property_id %}
+    &property_{{property_class_data.property_id.lower()}},  // {{property_class_data.property_id}}
+    {% endfor %}
+  };
+  // Subtract 2 because CSSPropertyID::kInvalid and CSSPropertyID::kVariable do not
+  // appear in the array.
+  return *property_classes[static_cast<int>(id) - 2];
+}
+
+}  // namespace blink

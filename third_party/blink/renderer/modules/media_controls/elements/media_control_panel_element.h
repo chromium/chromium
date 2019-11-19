@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIA_CONTROLS_ELEMENTS_MEDIA_CONTROL_PANEL_ELEMENT_H_
 
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_div_element.h"
+#include "third_party/blink/renderer/modules/media_controls/media_controls_shared_helper.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 
 namespace blink {
@@ -40,12 +41,9 @@ class MODULES_EXPORT MediaControlPanelElement final
   bool EventListenerIsAttachedForTest() const;
 
  private:
-  class TransitionEventListener;
-
   void EnsureTransitionEventListener();
   void DetachTransitionEventListener();
 
-  void DefaultEventHandler(Event&) override;
   bool KeepEventInNode(const Event&) const override;
 
   void DidBecomeVisible();
@@ -55,7 +53,7 @@ class MODULES_EXPORT MediaControlPanelElement final
   bool opaque_ = true;
   bool keep_displayed_for_accessibility_ = false;
 
-  Member<TransitionEventListener> event_listener_;
+  Member<MediaControlsSharedHelpers::TransitionEventListener> event_listener_;
 };
 
 }  // namespace blink

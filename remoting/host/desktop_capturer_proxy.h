@@ -71,7 +71,7 @@ class DesktopCapturerProxy : public webrtc::DesktopCapturer {
   // Contains the most recently gathered info about the desktop displays.
   std::unique_ptr<DesktopDisplayInfo> desktop_display_info_;
 
-  base::WeakPtrFactory<DesktopCapturerProxy> weak_factory_;
+  base::WeakPtrFactory<DesktopCapturerProxy> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DesktopCapturerProxy);
 };

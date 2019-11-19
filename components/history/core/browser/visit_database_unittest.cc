@@ -29,10 +29,8 @@ namespace history {
 
 namespace {
 
-bool IsVisitInfoEqual(const VisitRow& a,
-                      const VisitRow& b) {
-  return a.visit_id == b.visit_id &&
-         a.url_id == b.url_id &&
+bool IsVisitInfoEqual(const VisitRow& a, const VisitRow& b) {
+  return a.visit_id == b.visit_id && a.url_id == b.url_id &&
          a.visit_time == b.visit_time &&
          a.referring_visit == b.referring_visit &&
          ui::PageTransitionTypeIncludingQualifiersIs(a.transition,
@@ -45,8 +43,7 @@ class VisitDatabaseTest : public PlatformTest,
                           public URLDatabase,
                           public VisitDatabase {
  public:
-  VisitDatabaseTest() {
-  }
+  VisitDatabaseTest() {}
 
  private:
   // Test setup.
@@ -283,8 +280,7 @@ TEST_F(VisitDatabaseTest, GetAllVisitsInRange) {
   // Query a time range and make sure beginning is inclusive and ending is
   // exclusive.
   GetAllVisitsInRange(test_visit_rows[1].visit_time,
-                      test_visit_rows[3].visit_time, 0,
-                      &results);
+                      test_visit_rows[3].visit_time, 0, &results);
   ASSERT_EQ(static_cast<size_t>(2), results.size());
   EXPECT_TRUE(IsVisitInfoEqual(results[0], test_visit_rows[1]));
   EXPECT_TRUE(IsVisitInfoEqual(results[1], test_visit_rows[2]));
@@ -443,8 +439,7 @@ TEST_F(VisitDatabaseTest, GetHistoryCount) {
   Time now = two_days_ago;
 
   ui::PageTransition standard_transition = ui::PageTransitionFromInt(
-      ui::PAGE_TRANSITION_TYPED |
-      ui::PAGE_TRANSITION_CHAIN_START |
+      ui::PAGE_TRANSITION_TYPED | ui::PAGE_TRANSITION_CHAIN_START |
       ui::PAGE_TRANSITION_CHAIN_END);
 
   // Add 5 visits (3 distinct URLs) for the day before yesterday.
@@ -515,27 +510,25 @@ TEST_F(VisitDatabaseTest, GetHistoryCount) {
 
   // Narrowing the range to exclude |first_day_1| will still return 5,
   // because |first_day_1| is not unique.
-  EXPECT_TRUE(GetHistoryCount(
-      two_days_ago + TimeDelta::FromHours(2), today, &result));
+  EXPECT_TRUE(
+      GetHistoryCount(two_days_ago + TimeDelta::FromHours(2), today, &result));
   EXPECT_EQ(5, result);
 
   // Narrowing the range to exclude |second_day_4| will return 4,
   // because |second_day_4| is unique.
-  EXPECT_TRUE(GetHistoryCount(
-      two_days_ago, yesterday + TimeDelta::FromHours(3), &result));
+  EXPECT_TRUE(GetHistoryCount(two_days_ago, yesterday + TimeDelta::FromHours(3),
+                              &result));
   EXPECT_EQ(4, result);
 
   // Narrowing the range to exclude both |first_day_1| and |second_day_4| will
   // still return 4.
   EXPECT_TRUE(GetHistoryCount(two_days_ago + TimeDelta::FromHours(2),
-                              yesterday + TimeDelta::FromHours(3),
-                              &result));
+                              yesterday + TimeDelta::FromHours(3), &result));
   EXPECT_EQ(4, result);
 
   // A range that contains no visits will return 0.
   EXPECT_TRUE(GetHistoryCount(two_days_ago + TimeDelta::FromMicroseconds(1),
-                              two_days_ago + TimeDelta::FromHours(1),
-                              &result));
+                              two_days_ago + TimeDelta::FromHours(1), &result));
   EXPECT_EQ(0, result);
 
   // If this timezone uses DST, test the behavior on days when the time
@@ -579,9 +572,8 @@ TEST_F(VisitDatabaseTest, GetHistoryCount) {
     backward_2.visit_id = 11;
     AddVisit(&backward_2, SOURCE_BROWSED);
 
-    EXPECT_TRUE(GetHistoryCount(shift_backward,
-                                shift_backward + TimeDelta::FromHours(25),
-                                &result));
+    EXPECT_TRUE(GetHistoryCount(
+        shift_backward, shift_backward + TimeDelta::FromHours(25), &result));
     EXPECT_EQ(1, result);
   }
 
@@ -594,19 +586,146 @@ TEST_F(VisitDatabaseTest, GetHistoryCount) {
     forward_1.visit_id = 12;
     AddVisit(&forward_1, SOURCE_BROWSED);
 
-    Time almost_24_hours_later = shift_forward +
-                                 TimeDelta::FromHours(24) -
+    Time almost_24_hours_later = shift_forward + TimeDelta::FromHours(24) -
                                  TimeDelta::FromMicroseconds(1);
     VisitRow forward_2(1, almost_24_hours_later, 0, standard_transition, 0,
                        true);
     forward_2.visit_id = 13;
     AddVisit(&forward_2, SOURCE_BROWSED);
 
-    EXPECT_TRUE(GetHistoryCount(shift_forward,
-                                shift_forward + TimeDelta::FromHours(24),
-                                &result));
+    EXPECT_TRUE(GetHistoryCount(
+        shift_forward, shift_forward + TimeDelta::FromHours(24), &result));
     EXPECT_EQ(2, result);
   }
+}
+
+TEST_F(VisitDatabaseTest, GetLastVisitToHost_BadURL) {
+  base::Time last_visit;
+  EXPECT_FALSE(GetLastVisitToHost(GURL(), base::Time::Min(), base::Time::Max(),
+                                  &last_visit));
+  EXPECT_EQ(last_visit, base::Time());
+}
+
+TEST_F(VisitDatabaseTest, GetLastVisitToHost_NonHttpURL) {
+  base::Time last_visit;
+  EXPECT_FALSE(GetLastVisitToHost(GURL("ftp://host/"), base::Time::Min(),
+                                  base::Time::Max(), &last_visit));
+  EXPECT_EQ(last_visit, base::Time());
+}
+
+TEST_F(VisitDatabaseTest, GetLastVisitToHost_NoVisits) {
+  base::Time last_visit;
+  EXPECT_TRUE(GetLastVisitToHost(GURL("https://www.chromium.org"),
+                                 base::Time::Min(), base::Time::Max(),
+                                 &last_visit));
+  EXPECT_EQ(last_visit, base::Time());
+}
+
+TEST_F(VisitDatabaseTest, GetLastVisitToHost_VisitsOutsideRange) {
+  base::Time begin_time = base::Time::Now();
+  base::Time end_time = begin_time + base::TimeDelta::FromHours(1);
+
+  VisitRow row1{AddURL(URLRow(GURL("https://www.chromium.org"))),
+                begin_time - base::TimeDelta::FromHours(1),
+                0,
+                ui::PageTransitionFromInt(0),
+                0,
+                false};
+  AddVisit(&row1, SOURCE_BROWSED);
+  VisitRow row2{AddURL(URLRow(GURL("https://www.chromium.org"))),
+                end_time + base::TimeDelta::FromHours(1),
+                0,
+                ui::PageTransitionFromInt(0),
+                0,
+                false};
+  AddVisit(&row2, SOURCE_BROWSED);
+
+  base::Time last_visit;
+  EXPECT_TRUE(GetLastVisitToHost(GURL("https://www.chromium.org"), begin_time,
+                                 end_time, &last_visit));
+  EXPECT_EQ(last_visit, base::Time());
+}
+
+TEST_F(VisitDatabaseTest, GetLastVisitToHost_EndTimeNotIncluded) {
+  base::Time begin_time = base::Time::Now();
+  base::Time end_time = begin_time + base::TimeDelta::FromHours(1);
+
+  VisitRow row1{AddURL(URLRow(GURL("https://www.chromium.org"))),
+                begin_time,
+                0,
+                ui::PageTransitionFromInt(0),
+                0,
+                false};
+  AddVisit(&row1, SOURCE_BROWSED);
+  VisitRow row2{AddURL(URLRow(GURL("https://www.chromium.org"))),
+                end_time,
+                0,
+                ui::PageTransitionFromInt(0),
+                0,
+                false};
+  AddVisit(&row2, SOURCE_BROWSED);
+
+  base::Time last_visit;
+  EXPECT_TRUE(GetLastVisitToHost(GURL("https://www.chromium.org"), begin_time,
+                                 end_time, &last_visit));
+  EXPECT_EQ(last_visit, begin_time);
+}
+
+TEST_F(VisitDatabaseTest, GetLastVisitToHost_SameOriginOnly) {
+  base::Time begin_time = base::Time::Now();
+  base::Time end_time = begin_time + base::TimeDelta::FromHours(1);
+
+  VisitRow row1{AddURL(URLRow(GURL("https://other.origin.chromium.org"))),
+                begin_time,
+                0,
+                ui::PageTransitionFromInt(0),
+                0,
+                false};
+  AddVisit(&row1, SOURCE_BROWSED);
+  VisitRow row2{AddURL(URLRow(GURL("https://www.chromium.org/path?query=foo"))),
+                begin_time + base::TimeDelta::FromMinutes(1),
+                0,
+                ui::PageTransitionFromInt(0),
+                0,
+                false};
+  AddVisit(&row2, SOURCE_BROWSED);
+
+  base::Time last_visit;
+  EXPECT_TRUE(GetLastVisitToHost(GURL("https://www.chromium.org"), begin_time,
+                                 end_time, &last_visit));
+  EXPECT_EQ(last_visit, begin_time + base::TimeDelta::FromMinutes(1));
+}
+
+TEST_F(VisitDatabaseTest, GetLastVisitToHost_MostRecentVisitTime) {
+  base::Time begin_time = base::Time::Now();
+  base::Time end_time = begin_time + base::TimeDelta::FromHours(1);
+
+  VisitRow row1{AddURL(URLRow(GURL("https://chromium.org/"))),
+                begin_time,
+                0,
+                ui::PageTransitionFromInt(0),
+                0,
+                false};
+  AddVisit(&row1, SOURCE_BROWSED);
+  VisitRow row2{AddURL(URLRow(GURL("https://www.chromium.org/"))),
+                begin_time + base::TimeDelta::FromMinutes(1),
+                0,
+                ui::PageTransitionFromInt(0),
+                0,
+                false};
+  AddVisit(&row2, SOURCE_BROWSED);
+  VisitRow row3{AddURL(URLRow(GURL("https://www.chromium.org/"))),
+                begin_time + base::TimeDelta::FromMinutes(2),
+                0,
+                ui::PageTransitionFromInt(0),
+                0,
+                false};
+  AddVisit(&row3, SOURCE_BROWSED);
+
+  base::Time last_visit;
+  EXPECT_TRUE(GetLastVisitToHost(GURL("https://www.chromium.org"), begin_time,
+                                 end_time, &last_visit));
+  EXPECT_EQ(last_visit, begin_time + base::TimeDelta::FromMinutes(2));
 }
 
 TEST_F(VisitDatabaseTest, GetGoogleDomainVisitsFromSearchesInRange_NoVisits) {

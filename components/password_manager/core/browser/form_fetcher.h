@@ -9,6 +9,8 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/observer_list_types.h"
+#include "base/strings/string16.h"
 
 namespace autofill {
 struct PasswordForm;
@@ -32,19 +34,12 @@ class FormFetcher {
   enum class State { WAITING, NOT_WAITING };
 
   // API to be implemented by classes which want the results from FormFetcher.
-  class Consumer {
+  class Consumer : public base::CheckedObserver {
    public:
-    virtual ~Consumer() = default;
-
     // FormFetcher calls this method every time the state changes from WAITING
-    // to UP_TO_DATE. It fills |non_federated| with pointers to non-federated
-    // matches (pointees stay owned by FormFetcher). To access the federated
-    // matches, the consumer can simply call GetFederatedMatches().
-    // |filtered_count| is the number of non-federated forms which were
-    // filtered out by CredentialsFilter and not included in |non_federated|.
-    virtual void ProcessMatches(
-        const std::vector<const autofill::PasswordForm*>& non_federated,
-        size_t filtered_count) = 0;
+    // to NOT_WAITING. It is now safe for consumers to call the accessor
+    // functions for matches.
+    virtual void OnFetchCompleted() = 0;
   };
 
   FormFetcher() = default;
@@ -52,8 +47,8 @@ class FormFetcher {
   virtual ~FormFetcher() = default;
 
   // Adds |consumer|, which must not be null. If the current state is
-  // UP_TO_DATE, calls ProcessMatches on the consumer immediately. Assumes that
-  // |consumer| outlives |this|.
+  // NOT_WAITING, calls OnFetchCompleted on the consumer immediately. Assumes
+  // that |consumer| outlives |this|.
   virtual void AddConsumer(Consumer* consumer) = 0;
 
   // Call this to stop |consumer| from receiving updates from |this|.
@@ -68,49 +63,29 @@ class FormFetcher {
 
   // Non-federated matches obtained from the backend. Valid only if GetState()
   // returns NOT_WAITING.
-  virtual const std::vector<const autofill::PasswordForm*>&
-  GetNonFederatedMatches() const = 0;
+  virtual std::vector<const autofill::PasswordForm*> GetNonFederatedMatches()
+      const = 0;
 
   // Federated matches obtained from the backend. Valid only if GetState()
   // returns NOT_WAITING.
+  virtual std::vector<const autofill::PasswordForm*> GetFederatedMatches()
+      const = 0;
+
+  // Whether there are blacklisted matches in the backend. Valid only if
+  // GetState() returns NOT_WAITING.
+  virtual bool IsBlacklisted() const = 0;
+
+  // Non-federated matches obtained from the backend that have the same scheme
+  // of this form.
   virtual const std::vector<const autofill::PasswordForm*>&
-  GetFederatedMatches() const = 0;
+  GetAllRelevantMatches() const = 0;
 
-  // The following accessors return various kinds of `suppressed` credentials.
-  // These are stored credentials that are not (auto-)filled, because they are
-  // for an origin that is similar to, but not exactly matching the origin that
-  // this FormFetcher was created for. They are used for recording metrics on
-  // how often such -- potentially, but not necessarily related -- credentials
-  // are not offered to the user, unduly increasing log-in friction.
-  //
-  // There are currently three kinds of suppressed credentials:
-  //  1.) HTTPS credentials not filled on the HTTP version of the origin.
-  //  2.) PSL-matches that are not auto-filled (but filled on account select).
-  //  3.) Same-organization name credentials, not filled.
-  //
-  // Results below are queried on a best-effort basis, might be somewhat stale,
-  // and are available shortly after the Consumer::ProcessMatches callback.
+  // Nonblacklisted matches obtained from the backend.
+  virtual const std::vector<const autofill::PasswordForm*>& GetBestMatches()
+      const = 0;
 
-  // When this instance fetches forms for an HTTP origin: Returns saved
-  // credentials, if any, found for the HTTPS version of that origin. Empty
-  // otherwise.
-  virtual const std::vector<const autofill::PasswordForm*>&
-  GetSuppressedHTTPSForms() const = 0;
-
-  // Returns saved credentials, if any, for PSL-matching origins. Autofilling
-  // these is suppressed, however, they *can be* filled on account select.
-  virtual const std::vector<const autofill::PasswordForm*>&
-  GetSuppressedPSLMatchingForms() const = 0;
-
-  // Returns saved credentials, if any, found for HTTP/HTTPS origins with the
-  // same organization name as the origin this FormFetcher was created for.
-  virtual const std::vector<const autofill::PasswordForm*>&
-  GetSuppressedSameOrganizationNameForms() const = 0;
-
-  // Whether querying suppressed forms (of all flavors) was attempted and did
-  // complete at least once during the lifetime of this instance, regardless of
-  // whether there have been any results.
-  virtual bool DidCompleteQueryingSuppressedForms() const = 0;
+  // Pointer to a preferred entry in the vector returned by GetBestMatches().
+  virtual const autofill::PasswordForm* GetPreferredMatch() const = 0;
 
   // Fetches stored matching logins. In addition the statistics is fetched on
   // platforms with the password bubble. This is called automatically during

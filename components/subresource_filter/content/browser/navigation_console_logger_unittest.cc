@@ -50,8 +50,8 @@ TEST_F(NavigationConsoleLoggerTest, NavigationFails_NoLog) {
       GURL("http://example.test/"), main_rfh());
   navigation->Start();
   NavigationConsoleLogger::LogMessageOnCommit(
-      navigation->GetNavigationHandle(), content::CONSOLE_MESSAGE_LEVEL_WARNING,
-      "foo");
+      navigation->GetNavigationHandle(),
+      blink::mojom::ConsoleMessageLevel::kWarning, "foo");
   navigation->Fail(net::ERR_ABORTED);
 
   EXPECT_TRUE(GetConsoleMessages(main_rfh()).empty());
@@ -62,8 +62,8 @@ TEST_F(NavigationConsoleLoggerTest, NavigationCommitsToErrorPage_NoLog) {
       GURL("http://example.test/"), main_rfh());
   navigation->Start();
   NavigationConsoleLogger::LogMessageOnCommit(
-      navigation->GetNavigationHandle(), content::CONSOLE_MESSAGE_LEVEL_WARNING,
-      "foo");
+      navigation->GetNavigationHandle(),
+      blink::mojom::ConsoleMessageLevel::kWarning, "foo");
   navigation->Fail(net::ERR_TIMED_OUT);
 
   EXPECT_TRUE(GetConsoleMessages(main_rfh()).empty());
@@ -74,29 +74,29 @@ TEST_F(NavigationConsoleLoggerTest, NavigationCommitsSuccessfully_Logs) {
       GURL("http://example.test/"), main_rfh());
   navigation->Start();
   NavigationConsoleLogger::LogMessageOnCommit(
-      navigation->GetNavigationHandle(), content::CONSOLE_MESSAGE_LEVEL_WARNING,
-      "foo");
+      navigation->GetNavigationHandle(),
+      blink::mojom::ConsoleMessageLevel::kWarning, "foo");
 
   EXPECT_TRUE(GetConsoleMessages(main_rfh()).empty());
   navigation->Commit();
 
-  EXPECT_TRUE(base::ContainsValue(GetConsoleMessages(main_rfh()), "foo"));
+  EXPECT_TRUE(base::Contains(GetConsoleMessages(main_rfh()), "foo"));
 }
 
 TEST_F(NavigationConsoleLoggerTest, NavigationAlreadyCommit_Logs) {
   auto on_finish = [](content::NavigationHandle* handle) {
     NavigationConsoleLogger::LogMessageOnCommit(
-        handle, content::CONSOLE_MESSAGE_LEVEL_WARNING, "foo");
+        handle, blink::mojom::ConsoleMessageLevel::kWarning, "foo");
   };
   NavigationFinishCaller caller(web_contents(), base::BindRepeating(on_finish));
   NavigateAndCommit(GURL("http://example.test/"));
-  EXPECT_TRUE(base::ContainsValue(GetConsoleMessages(main_rfh()), "foo"));
+  EXPECT_TRUE(base::Contains(GetConsoleMessages(main_rfh()), "foo"));
 }
 
 TEST_F(NavigationConsoleLoggerTest, NavigationAlreadyFailed_NoLog) {
   auto on_finish = [](content::NavigationHandle* handle) {
     NavigationConsoleLogger::LogMessageOnCommit(
-        handle, content::CONSOLE_MESSAGE_LEVEL_WARNING, "foo");
+        handle, blink::mojom::ConsoleMessageLevel::kWarning, "foo");
   };
   NavigationFinishCaller caller(web_contents(), base::BindRepeating(on_finish));
   content::NavigationSimulator::NavigateAndFailFromBrowser(
@@ -111,7 +111,7 @@ TEST_F(NavigationConsoleLoggerTest, MultipleNavigations_OneLog) {
     navigation->Start();
     NavigationConsoleLogger::LogMessageOnCommit(
         navigation->GetNavigationHandle(),
-        content::CONSOLE_MESSAGE_LEVEL_WARNING, "foo");
+        blink::mojom::ConsoleMessageLevel::kWarning, "foo");
     navigation->Commit();
   }
   NavigateAndCommit(GURL("http://example.test/"));
@@ -123,11 +123,11 @@ TEST_F(NavigationConsoleLoggerTest, MultipleMessages) {
       GURL("http://example.test/"), main_rfh());
   navigation->Start();
   NavigationConsoleLogger::LogMessageOnCommit(
-      navigation->GetNavigationHandle(), content::CONSOLE_MESSAGE_LEVEL_WARNING,
-      "foo");
+      navigation->GetNavigationHandle(),
+      blink::mojom::ConsoleMessageLevel::kWarning, "foo");
   NavigationConsoleLogger::LogMessageOnCommit(
-      navigation->GetNavigationHandle(), content::CONSOLE_MESSAGE_LEVEL_WARNING,
-      "bar");
+      navigation->GetNavigationHandle(),
+      blink::mojom::ConsoleMessageLevel::kWarning, "bar");
 
   EXPECT_TRUE(GetConsoleMessages(main_rfh()).empty());
   navigation->Commit();
@@ -142,8 +142,8 @@ TEST_F(NavigationConsoleLoggerTest, SyncNavigationDuringNavigation) {
       GURL("http://example.test/path"), main_rfh());
   navigation->Start();
   NavigationConsoleLogger::LogMessageOnCommit(
-      navigation->GetNavigationHandle(), content::CONSOLE_MESSAGE_LEVEL_WARNING,
-      "foo");
+      navigation->GetNavigationHandle(),
+      blink::mojom::ConsoleMessageLevel::kWarning, "foo");
 
   content::NavigationSimulator::CreateRendererInitiated(
       GURL("http://example.test/#hash"), main_rfh())

@@ -31,6 +31,7 @@
 <translation id="4769065380738716500">Le immagini sono state sostituite dal rispettivo testo alternativo.</translation>
 <translation id="4896660567607030658">Nessun feedback, mostra solo il cursore.</translation>
 <translation id="4937901943818762779">Consenti le immagini animate, ma solo una volta.</translation>
+<translation id="4949131196216960195">Premi il &lt;span class='key'&gt;tasto per la ricerca&lt;/span&gt; + &lt;img src='increase_brightness.png'&gt; (il tasto Aumenta luminosità o F7) per attivare la funzione di navigazione con cursore. Per disattivarla, premi di nuovo la stessa combinazione di tasti.</translation>
 <translation id="4954450790315188152">Quando la funzione di navigazione con cursore è attiva:</translation>
 <translation id="5041932793799765940">Regolazione colore</translation>
 <translation id="5094574508723441140">Contrasto aumentato</translation>
@@ -43,7 +44,7 @@
 <translation id="5631241868147802353">Combinazione di colori predefinita:</translation>
 <translation id="5650358096585648000">Feedback visivo</translation>
 <translation id="5710185147685935461">Cambia o inverti la combinazione di colori per rendere più leggibili le pagine web.</translation>
-<translation id="5939518447894949180">Ripristina</translation>
+<translation id="5939518447894949180">Reimposta</translation>
 <translation id="595639123821853262">Scala di grigi invertita</translation>
 <translation id="6017514345406065928">Verde</translation>
 <translation id="6050189528197190982">Scala di grigi</translation>
@@ -59,7 +60,6 @@
 <translation id="7658239707568436148">Annulla</translation>
 <translation id="786423340267544509">Aggiungi bordo a elementi con attributi aria-describedat o longdesc.</translation>
 <translation id="7942349550061667556">Rosso</translation>
-<translation id="8254860724243898966">Premi &lt;span class='key'&gt;Alt&lt;/span&gt; + &lt;img src='increase_brightness.png'&gt; (il tasto Aumenta luminosità o F7) per attivare la funzione di navigazione con cursore. Premi di nuovo per disattivarla.</translation>
 <translation id="8260673944985561857">Opzioni di navigazione con cursore</translation>
 <translation id="8321034316479930120">Norme relative alle animazioni</translation>
 <translation id="8480209185614411573">Contrasto elevato</translation>

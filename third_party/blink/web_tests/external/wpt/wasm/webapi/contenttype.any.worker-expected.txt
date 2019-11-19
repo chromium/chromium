@@ -14,10 +14,10 @@ FAIL Response with Content-Type "application/wasm;x": instantiateStreaming asser
 FAIL Response with Content-Type "application/wasm;charset=UTF-8": compileStreaming assert_unreached: Should have rejected: undefined Reached unreachable code
 FAIL Response with Content-Type "application/wasm;charset=UTF-8": instantiateStreaming assert_unreached: Should have rejected: undefined Reached unreachable code
 PASS Response with Content-Type "application/wasm": compileStreaming
-PASS Response with Content-Type "application/wasm": instantiateStreaming
+FAIL Response with Content-Type "application/wasm": instantiateStreaming assert_array_equals: matching export keys lengths differ, expected 0 got 1
 PASS Response with Content-Type "APPLICATION/wasm": compileStreaming
-PASS Response with Content-Type "APPLICATION/wasm": instantiateStreaming
+FAIL Response with Content-Type "APPLICATION/wasm": instantiateStreaming assert_array_equals: matching export keys lengths differ, expected 0 got 1
 PASS Response with Content-Type "APPLICATION/WASM": compileStreaming
-PASS Response with Content-Type "APPLICATION/WASM": instantiateStreaming
+FAIL Response with Content-Type "APPLICATION/WASM": instantiateStreaming assert_array_equals: matching export keys lengths differ, expected 0 got 1
 Harness: the test ran to completion.
 

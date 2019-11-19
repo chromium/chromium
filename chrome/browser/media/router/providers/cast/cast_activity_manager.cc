@@ -5,363 +5,34 @@
 #include "chrome/browser/media/router/providers/cast/cast_activity_manager.h"
 
 #include <memory>
+#include <utility>
 #include <vector>
 
 #include "base/bind.h"
-#include "chrome/browser/media/router/data_decoder_util.h"
-#include "chrome/common/media_router/discovery/media_sink_service_base.h"
-#include "chrome/common/media_router/providers/cast/cast_media_source.h"
+#include "base/optional.h"
+#include "chrome/browser/media/router/providers/cast/cast_activity_record.h"
+#include "chrome/browser/media/router/providers/cast/cast_session_client.h"
+#include "chrome/browser/media/router/providers/cast/mirroring_activity_record.h"
+#include "chrome/common/media_router/media_source.h"
+#include "chrome/common/media_router/mojom/media_router.mojom.h"
+#include "url/origin.h"
+
+using blink::mojom::PresentationConnectionCloseReason;
+using blink::mojom::PresentationConnectionState;
 
 namespace media_router {
-
-namespace {
-
-void ReportClientMessageParseError(const MediaRoute::Id& route_id,
-                                   const std::string& error) {
-  // TODO(crbug.com/808720): Record UMA metric for parse result.
-  DVLOG(2) << "Failed to parse Cast client message for " << route_id << ": "
-           << error;
-}
-
-}  // namespace
-
-CastSessionClient::CastSessionClient(const std::string& client_id,
-                                     const url::Origin& origin,
-                                     int tab_id,
-                                     DataDecoder* data_decoder,
-                                     CastActivityRecord* activity)
-    : client_id_(client_id),
-      origin_(origin),
-      tab_id_(tab_id),
-      data_decoder_(data_decoder),
-      activity_(activity),
-      connection_binding_(this),
-      weak_ptr_factory_(this) {}
-
-CastSessionClient::~CastSessionClient() = default;
-
-mojom::RoutePresentationConnectionPtr CastSessionClient::Init() {
-  blink::mojom::PresentationConnectionPtrInfo renderer_connection;
-  connection_binding_.Bind(mojo::MakeRequest(&renderer_connection));
-  auto connection_request = mojo::MakeRequest(&connection_);
-  connection_->DidChangeState(
-      blink::mojom::PresentationConnectionState::CONNECTED);
-  return mojom::RoutePresentationConnection::New(std::move(renderer_connection),
-                                                 std::move(connection_request));
-}
-
-void CastSessionClient::SendMessageToClient(
-    blink::mojom::PresentationConnectionMessagePtr message) {
-  connection_->OnMessage(std::move(message));
-}
-
-void CastSessionClient::SendMediaStatusToClient(
-    const base::Value& media_status,
-    base::Optional<int> request_id) {
-  // Look up if there is a pending request from this client associated with this
-  // message. If so, send the media status message as a response by setting the
-  // sequence number.
-  base::Optional<int> sequence_number;
-  if (request_id) {
-    auto it = pending_media_requests_.find(*request_id);
-    if (it != pending_media_requests_.end()) {
-      DVLOG(2) << "Found matching request id: " << *request_id << " -> "
-               << it->second;
-      sequence_number = it->second;
-      pending_media_requests_.erase(it);
-    }
-  }
-
-  SendMessageToClient(
-      CreateV2Message(client_id_, media_status, sequence_number));
-}
-
-void CastSessionClient::OnMessage(
-    blink::mojom::PresentationConnectionMessagePtr message) {
-  if (!message->is_message())
-    return;
-
-  data_decoder_->ParseJson(
-      message->get_message(),
-      base::BindRepeating(&CastSessionClient::HandleParsedClientMessage,
-                          weak_ptr_factory_.GetWeakPtr()),
-      base::BindRepeating(&ReportClientMessageParseError,
-                          activity_->route().media_route_id()));
-}
-
-void CastSessionClient::DidClose(
-    blink::mojom::PresentationConnectionCloseReason reason) {
-  // TODO(https://crbug.com/809249): Implement close connection with this
-  // method once we make sure Blink calls this on navigation and on
-  // PresentationConnection::close().
-}
-
-void CastSessionClient::HandleParsedClientMessage(
-    std::unique_ptr<base::Value> message) {
-  std::unique_ptr<CastInternalMessage> cast_message =
-      CastInternalMessage::From(std::move(*message));
-  if (!cast_message) {
-    ReportClientMessageParseError(activity_->route().media_route_id(),
-                                  "Not a Cast message");
-    DVLOG(2) << "Received non-Cast message from client";
-    return;
-  }
-
-  if (cast_message->client_id != client_id_) {
-    DVLOG(2) << "Client ID mismatch: expected: " << client_id_
-             << ", got: " << cast_message->client_id;
-    return;
-  }
-
-  if (cast_message->type != CastInternalMessage::Type::kAppMessage &&
-      cast_message->type != CastInternalMessage::Type::kV2Message) {
-    DVLOG(2) << "Unhandled message type: "
-             << static_cast<int>(cast_message->type);
-    return;
-  }
-
-  if (cast_message->session_id() != activity_->session_id()) {
-    DVLOG(2) << "Session ID mismatch: expected: "
-             << activity_->session_id().value_or("<missing>")
-             << ", got: " << cast_message->session_id();
-    return;
-  }
-
-  if (cast_message->type == CastInternalMessage::Type::kAppMessage &&
-      activity_->SendAppMessageToReceiver(*cast_message) ==
-          cast_channel::Result::kOk) {
-    // Send an ACK message back to SDK client to indicate it is handled.
-    DCHECK(cast_message->sequence_number);
-    SendMessageToClient(CreateAppMessageAck(cast_message->client_id,
-                                            *cast_message->sequence_number));
-  } else if (cast_message->type == CastInternalMessage::Type::kV2Message) {
-    HandleV2ProtocolMessage(*cast_message);
-  }
-}
-
-void CastSessionClient::HandleV2ProtocolMessage(
-    const CastInternalMessage& cast_message) {
-  const std::string& type_str = cast_message.v2_message_type();
-  cast_channel::V2MessageType type =
-      cast_channel::V2MessageTypeFromString(type_str);
-  if (cast_channel::IsMediaRequestMessageType(type)) {
-    DVLOG(2) << "Got media command from client: " << type_str;
-    base::Optional<int> request_id =
-        activity_->SendMediaRequestToReceiver(cast_message);
-    if (request_id) {
-      DCHECK(cast_message.sequence_number);
-      if (pending_media_requests_.size() >= kMaxPendingMediaRequests) {
-        // Delete old pending requests.  Request IDs are generated sequentially,
-        // so this should always delete the oldest requests.  Deleting requests
-        // is O(n) in the size of the table, so we delete half the outstanding
-        // requests at once so the amortized deletion cost is O(1).
-        pending_media_requests_.erase(pending_media_requests_.begin(),
-                                      pending_media_requests_.begin() +
-                                          pending_media_requests_.size() / 2);
-      }
-      pending_media_requests_.emplace(*request_id,
-                                      *cast_message.sequence_number);
-    }
-  } else if (type == cast_channel::V2MessageType::kSetVolume) {
-    DVLOG(2) << "Got volume command from client";
-    DCHECK(cast_message.sequence_number);
-    activity_->SendSetVolumeRequestToReceiver(
-        cast_message, base::BindOnce(&CastSessionClient::SendResultResponse,
-                                     weak_ptr_factory_.GetWeakPtr(),
-                                     *cast_message.sequence_number));
-  } else if (type == cast_channel::V2MessageType::kStop) {
-    // TODO(jrw): implement STOP_SESSION.
-    DVLOG(2) << "Ignoring stop-session (" << type_str << ") message";
-  } else {
-    DLOG(FATAL) << "Unknown v2 message type: " << type_str;
-  }
-}
-
-void CastSessionClient::SendResultResponse(int sequence_number,
-                                           cast_channel::Result result) {
-  // TODO(jrw): Send error message on failure.
-  if (result == cast_channel::Result::kOk) {
-    // Send an empty message to let the client know the request succeeded.
-    SendMessageToClient(
-        CreateV2Message(client_id_, base::Value(), sequence_number));
-  }
-}
-
-void CastSessionClient::CloseConnection() {
-  if (connection_)
-    connection_->DidChangeState(
-        blink::mojom::PresentationConnectionState::CLOSED);
-
-  connection_.reset();
-  connection_binding_.Close();
-}
-
-void CastSessionClient::TerminateConnection() {
-  if (connection_)
-    connection_->DidChangeState(
-        blink::mojom::PresentationConnectionState::TERMINATED);
-
-  connection_.reset();
-  connection_binding_.Close();
-}
-
-CastActivityRecord::~CastActivityRecord() {}
-
-mojom::RoutePresentationConnectionPtr CastActivityRecord::AddClient(
-    const std::string& client_id,
-    const url::Origin& origin,
-    int tab_id) {
-  DCHECK(!base::ContainsKey(connected_clients_, client_id));
-  auto client = std::make_unique<CastSessionClient>(client_id, origin, tab_id,
-                                                    data_decoder_, this);
-  auto presentation_connection = client->Init();
-  connected_clients_.emplace(client_id, std::move(client));
-  return presentation_connection;
-}
-
-void CastActivityRecord::SetOrUpdateSession(const CastSession& session,
-                                            const MediaSinkInternal& sink,
-                                            const std::string& hash_token) {
-  DVLOG(2) << "CastActivityRecord::SetOrUpdateSession old session_id = "
-           << session_id_.value_or("<missing>")
-           << ", new session_id = " << session.session_id();
-  if (!session_id_) {
-    session_id_ = session.session_id();
-  } else {
-    DCHECK_EQ(*session_id_, session.session_id());
-    for (auto& client : connected_clients_)
-      client.second->SendMessageToClient(
-          CreateUpdateSessionMessage(session, client.first, sink, hash_token));
-  }
-  route_.set_description(session.GetRouteDescription());
-}
-
-cast_channel::Result CastActivityRecord::SendAppMessageToReceiver(
-    const CastInternalMessage& cast_message) {
-  const CastSession* session = GetSession();
-  if (!session)
-    return cast_channel::Result::kFailed;  // TODO(jrw): Send error code back to
-                                           // SDK client.
-  const std::string& message_namespace = cast_message.app_message_namespace();
-  if (!base::ContainsKey(session->message_namespaces(), message_namespace)) {
-    DVLOG(2) << "Disallowed message namespace: " << message_namespace;
-    // TODO(jrw): Send error code back to SDK client.
-    return cast_channel::Result::kFailed;
-  }
-  return message_handler_->SendAppMessage(
-      GetCastChannelId(),
-      cast_channel::CreateCastMessage(
-          message_namespace, cast_message.app_message_body(),
-          cast_message.client_id, session->transport_id()));
-}
-
-base::Optional<int> CastActivityRecord::SendMediaRequestToReceiver(
-    const CastInternalMessage& cast_message) {
-  CastSession* session = GetSession();
-  if (!session)
-    return base::nullopt;
-  return message_handler_->SendMediaRequest(
-      GetCastChannelId(), cast_message.v2_message_body(),
-      cast_message.client_id, session->transport_id());
-}
-
-void CastActivityRecord::SendSetVolumeRequestToReceiver(
-    const CastInternalMessage& cast_message,
-    cast_channel::ResultCallback callback) {
-  message_handler_->SendSetVolumeRequest(
-      GetCastChannelId(), cast_message.v2_message_body(),
-      cast_message.client_id, std::move(callback));
-}
-
-void CastActivityRecord::SendStopSessionMessageToReceiver(
-    const base::Optional<std::string>& client_id,
-    mojom::MediaRouteProvider::TerminateRouteCallback callback) {
-  const std::string& sink_id = route_.media_sink_id();
-  const MediaSinkInternal* sink = media_sink_service_->GetSinkById(sink_id);
-  DCHECK(sink);
-  DCHECK(session_id_);
-
-  message_handler_->StopSession(
-      sink->cast_data().cast_channel_id, *session_id_, client_id,
-      base::BindOnce(&CastActivityManager::HandleStopSessionResponse,
-                     activity_manager_->GetWeakPtr(), route_.media_route_id(),
-                     std::move(callback)));
-}
-
-void CastActivityRecord::SendMessageToClient(
-    const std::string& client_id,
-    blink::mojom::PresentationConnectionMessagePtr message) {
-  auto it = connected_clients_.find(client_id);
-  if (it == connected_clients_.end()) {
-    DVLOG(2) << "Attempting to send message to nonexistent client: "
-             << client_id;
-    return;
-  }
-  it->second->SendMessageToClient(std::move(message));
-}
-
-void CastActivityRecord::ClosePresentationConnections() {
-  for (auto& client : connected_clients_)
-    client.second->CloseConnection();
-}
-
-void CastActivityRecord::TerminatePresentationConnections() {
-  for (auto& client : connected_clients_)
-    client.second->TerminateConnection();
-}
-
-CastActivityRecord::CastActivityRecord(
-    const MediaRoute& route,
-    const std::string& app_id,
-    MediaSinkServiceBase* media_sink_service,
-    cast_channel::CastMessageHandler* message_handler,
-    CastSessionTracker* session_tracker,
-    DataDecoder* data_decoder,
-    CastActivityManager* owner)
-    : route_(route),
-      app_id_(app_id),
-      media_sink_service_(media_sink_service),
-      message_handler_(message_handler),
-      session_tracker_(session_tracker),
-      data_decoder_(data_decoder),
-      activity_manager_(owner) {}
-
-CastSession* CastActivityRecord::GetSession() {
-  DCHECK(session_id_);
-  CastSession* session = session_tracker_->GetSessionById(*session_id_);
-  if (!session) {
-    // TODO(crbug.com/905002): Add UMA metrics for this and other error
-    // conditions.
-    LOG(ERROR) << "Session not found: " << session_id_.value_or("<missing>");
-  }
-  return session;
-}
-
-int CastActivityRecord::GetCastChannelId() {
-  const MediaSinkInternal* sink = media_sink_service_->GetSinkByRoute(route_);
-  if (!sink) {
-    // TODO(crbug.com/905002): Add UMA metrics for this and other error
-    // conditions.
-    LOG(ERROR) << "Sink not found for route: " << route_;
-    return -1;
-  }
-  return sink->cast_data().cast_channel_id;
-}
 
 CastActivityManager::CastActivityManager(
     MediaSinkServiceBase* media_sink_service,
     CastSessionTracker* session_tracker,
     cast_channel::CastMessageHandler* message_handler,
     mojom::MediaRouter* media_router,
-    std::unique_ptr<DataDecoder> data_decoder,
     const std::string& hash_token)
     : media_sink_service_(media_sink_service),
       session_tracker_(session_tracker),
       message_handler_(message_handler),
       media_router_(media_router),
-      data_decoder_(std::move(data_decoder)),
-      hash_token_(hash_token),
-      weak_ptr_factory_(this) {
+      hash_token_(hash_token) {
   DCHECK(media_sink_service_);
   DCHECK(message_handler_);
   DCHECK(media_router_);
@@ -415,6 +86,9 @@ void CastActivityManager::LaunchSession(
   MediaRoute route(route_id, source, sink_id, /* description */ std::string(),
                    /* is_local */ true, /* for_display */ true);
   route.set_incognito(incognito);
+  route.set_controller_type(RouteControllerType::kGeneric);
+  DVLOG(1) << "LaunchSession: source_id=" << cast_source.source_id()
+           << ", route_id: " << route_id << ", sink_id=" << sink_id;
   DoLaunchSessionParams params(route, cast_source, sink, origin, tab_id,
                                std::move(callback));
   // If there is currently a session on the sink, it must be terminated before
@@ -432,7 +106,8 @@ void CastActivityManager::LaunchSession(
         existing_route_id,
         base::BindOnce(
             &CastActivityManager::LaunchSessionAfterTerminatingExisting,
-            GetWeakPtr(), existing_route_id, std::move(params)));
+            weak_ptr_factory_.GetWeakPtr(), existing_route_id,
+            std::move(params)));
   }
 }
 
@@ -441,6 +116,7 @@ void CastActivityManager::DoLaunchSession(DoLaunchSessionParams params) {
   const CastMediaSource& cast_source = params.cast_source;
   const MediaRoute::Id& route_id = route.media_route_id();
   const MediaSinkInternal& sink = params.sink;
+
   // TODO(crbug.com/904995): In the case of multiple app IDs (e.g. mirroring),
   // we need to choose an appropriate app ID to launch based on capabilities.
   std::string app_id = cast_source.GetAppIds()[0];
@@ -450,27 +126,31 @@ void CastActivityManager::DoLaunchSession(DoLaunchSessionParams params) {
            << ", sink ID = " << sink.sink().id() << ", app ID = " << app_id
            << ", origin = " << params.origin << ", tab ID = " << params.tab_id;
 
-  std::unique_ptr<CastActivityRecord> activity(new CastActivityRecord(
-      route, app_id, media_sink_service_, message_handler_, session_tracker_,
-      data_decoder_.get(), this));
-  auto* activity_ptr = activity.get();
-  activities_.emplace(route_id, std::move(activity));
+  mojom::RoutePresentationConnectionPtr presentation_connection;
+
+  if (cast_source.ContainsApp(kCastStreamingAppId)) {
+    // Lanch a mirroring session.
+    AddMirroringActivityRecord(route, app_id, params.tab_id, sink.cast_data());
+  } else {
+    // Launch a flinging session.
+    auto* activity_ptr = AddCastActivityRecord(route, app_id);
+    const std::string& client_id = cast_source.client_id();
+    if (!client_id.empty()) {
+      presentation_connection =
+          activity_ptr->AddClient(cast_source, params.origin, params.tab_id);
+      activity_ptr->SendMessageToClient(
+          client_id,
+          CreateReceiverActionCastMessage(client_id, sink, hash_token_));
+    }
+  }
+
   NotifyAllOnRoutesUpdated();
   base::TimeDelta launch_timeout = cast_source.launch_timeout();
   message_handler_->LaunchSession(
       sink.cast_data().cast_channel_id, app_id, launch_timeout,
       base::BindOnce(&CastActivityManager::HandleLaunchSessionResponse,
-                     GetWeakPtr(), route_id, sink, cast_source));
-
-  mojom::RoutePresentationConnectionPtr presentation_connection;
-  const std::string& client_id = cast_source.client_id();
-  if (!client_id.empty()) {
-    presentation_connection =
-        activity_ptr->AddClient(client_id, params.origin, params.tab_id);
-    activity_ptr->SendMessageToClient(
-        client_id,
-        CreateReceiverActionCastMessage(client_id, sink, hash_token_));
-  }
+                     weak_ptr_factory_.GetWeakPtr(), route_id, sink,
+                     cast_source));
 
   std::move(params.callback)
       .Run(route, std::move(presentation_connection),
@@ -495,20 +175,179 @@ void CastActivityManager::LaunchSessionAfterTerminatingExisting(
   DoLaunchSession(std::move(params));
 }
 
+bool CastActivityManager::CanJoinSession(const ActivityRecord& activity,
+                                         const CastMediaSource& cast_source,
+                                         bool incognito) const {
+  if (!cast_source.ContainsApp(activity.app_id()))
+    return false;
+
+  if (base::Contains(activity.connected_clients(), cast_source.client_id()))
+    return false;
+
+  if (activity.route().is_incognito() != incognito)
+    return false;
+
+  return true;
+}
+
+ActivityRecord* CastActivityManager::FindActivityForSessionJoin(
+    const CastMediaSource& cast_source,
+    const std::string& presentation_id) {
+  // We only allow joining by session ID. The Cast SDK uses
+  // "cast-session_<Session ID>" as the presentation ID in the reconnect
+  // request.
+  if (!base::StartsWith(presentation_id, kCastPresentationIdPrefix,
+                        base::CompareCase::SENSITIVE)) {
+    // TODO(jrw): Find session by presentation_id.
+    return nullptr;
+  }
+
+  // Find the session ID.
+  std::string session_id{
+      presentation_id.substr(strlen(kCastPresentationIdPrefix))};
+
+  // Find activity by session ID.  Search should fail if the session ID is not
+  // valid.
+  auto it = std::find_if(activities_.begin(), activities_.end(),
+                         [&session_id](const auto& entry) {
+                           return entry.second->session_id() == session_id;
+                         });
+  return it == activities_.end() ? nullptr : it->second.get();
+}
+
+ActivityRecord* CastActivityManager::FindActivityForAutoJoin(
+    const CastMediaSource& cast_source,
+    const url::Origin& origin,
+    int tab_id) {
+  switch (cast_source.auto_join_policy()) {
+    case AutoJoinPolicy::kTabAndOriginScoped:
+    case AutoJoinPolicy::kOriginScoped:
+      break;
+    case AutoJoinPolicy::kPageScoped:
+      return nullptr;
+  }
+
+  auto it = std::find_if(
+      activities_.begin(), activities_.end(),
+      [&cast_source, &origin, tab_id](const auto& activity) {
+        AutoJoinPolicy policy = cast_source.auto_join_policy();
+        const ActivityRecord* record = activity.second.get();
+        if (!record->route().is_local())
+          return false;
+        if (!cast_source.ContainsApp(record->app_id()))
+          return false;
+        const auto& clients = record->connected_clients();
+        return std::any_of(clients.begin(), clients.end(),
+                           [policy, &origin, tab_id](const auto& client) {
+                             return IsAutoJoinAllowed(policy, origin, tab_id,
+                                                      client.second->origin(),
+                                                      client.second->tab_id());
+                           });
+      });
+  return it == activities_.end() ? nullptr : it->second.get();
+}
+
+void CastActivityManager::JoinSession(
+    const CastMediaSource& cast_source,
+    const std::string& presentation_id,
+    const url::Origin& origin,
+    int tab_id,
+    bool incognito,
+    mojom::MediaRouteProvider::JoinRouteCallback callback) {
+  DVLOG(2) << "JoinSession: source / presentation ID: "
+           << cast_source.source_id() << ", " << presentation_id;
+  ActivityRecord* activity = nullptr;
+  if (presentation_id == kAutoJoinPresentationId) {
+    activity = FindActivityForAutoJoin(cast_source, origin, tab_id);
+    if (!activity && cast_source.default_action_policy() !=
+                         DefaultActionPolicy::kCastThisTab) {
+      auto sink = ConvertMirrorToCast(tab_id);
+      if (sink) {
+        LaunchSession(cast_source, *sink, presentation_id, origin, tab_id,
+                      incognito, std::move(callback));
+        return;
+      }
+    }
+  } else {
+    activity = FindActivityForSessionJoin(cast_source, presentation_id);
+  }
+
+  if (!activity || !CanJoinSession(*activity, cast_source, incognito)) {
+    DVLOG(2) << "No joinable activity";
+    std::move(callback).Run(base::nullopt, nullptr,
+                            std::string("No matching route"),
+                            RouteRequestResult::ResultCode::ROUTE_NOT_FOUND);
+    return;
+  }
+  DVLOG(2) << "Found activity to join: " << activity->route().media_route_id();
+
+  // TODO(jrw): Check whether |activity| is from an incognito route, maybe
+  // report INCOGNITO_MISMATCH, or remove INCOGNITO_MISMATCH from
+  // RouteRequestResult::ResultCode.  The check is currently performed inside
+  // CanJoinSession(), and the behavior is consistent with the old
+  // implementation, which never reports an INCOGNITO_MISMATCH error.
+
+  const MediaSinkInternal* sink =
+      media_sink_service_->GetSinkById(activity->route().media_sink_id());
+  if (!sink) {
+    std::move(callback).Run(base::nullopt, nullptr,
+                            std::string("Sink not found"),
+                            RouteRequestResult::ResultCode::SINK_NOT_FOUND);
+    return;
+  }
+
+  mojom::RoutePresentationConnectionPtr presentation_connection =
+      activity->AddClient(cast_source, origin, tab_id);
+
+  DCHECK(activity->session_id());
+  const CastSession* session =
+      session_tracker_->GetSessionById(*activity->session_id());
+  const std::string& client_id = cast_source.client_id();
+  activity->SendMessageToClient(
+      client_id,
+      CreateNewSessionMessage(*session, client_id, *sink, hash_token_));
+  message_handler_->EnsureConnection(sink->cast_data().cast_channel_id,
+                                     client_id, session->transport_id());
+
+  // Route is now local; update route queries.
+  NotifyAllOnRoutesUpdated();
+  std::move(callback).Run(activity->route(), std::move(presentation_connection),
+                          base::nullopt, RouteRequestResult::ResultCode::OK);
+}
+
+// TODO(jrw): Can this be merged with HandleStopSessionResponse?
+void CastActivityManager::RemoveActivityByRouteId(const std::string& route_id) {
+  auto it = activities_.find(route_id);
+  if (it != activities_.end()) {
+    RemoveActivity(it, PresentationConnectionState::TERMINATED,
+                   PresentationConnectionCloseReason::CLOSED);
+  }
+}
+
 void CastActivityManager::RemoveActivity(
     ActivityMap::iterator activity_it,
-    blink::mojom::PresentationConnectionState state,
-    bool notify) {
-  DCHECK(state == blink::mojom::PresentationConnectionState::CLOSED ||
-         state == blink::mojom::PresentationConnectionState::TERMINATED);
-  if (state == blink::mojom::PresentationConnectionState::CLOSED)
-    activity_it->second->ClosePresentationConnections();
-  else
-    activity_it->second->TerminatePresentationConnections();
+    PresentationConnectionState state,
+    PresentationConnectionCloseReason close_reason) {
+  RemoveActivityWithoutNotification(activity_it, state, close_reason);
+  NotifyAllOnRoutesUpdated();
+}
+
+void CastActivityManager::RemoveActivityWithoutNotification(
+    ActivityMap::iterator activity_it,
+    PresentationConnectionState state,
+    PresentationConnectionCloseReason close_reason) {
+  switch (state) {
+    case PresentationConnectionState::CLOSED:
+      activity_it->second->ClosePresentationConnections(close_reason);
+      break;
+    case PresentationConnectionState::TERMINATED:
+      activity_it->second->TerminatePresentationConnections();
+      break;
+    default:
+      DLOG(ERROR) << "Invalid state: " << state;
+  }
 
   activities_.erase(activity_it);
-  if (notify)
-    NotifyAllOnRoutesUpdated();
 }
 
 void CastActivityManager::TerminateSession(
@@ -531,8 +370,9 @@ void CastActivityManager::TerminateSession(
   // There is no session associated with the route, e.g. the launch request is
   // still pending.
   if (!session_id) {
-    DVLOG(2) << "Terminated route has no session ID.";
-    RemoveActivity(activity_it);
+    DLOG(WARNING) << "Terminated route has no session ID.";
+    RemoveActivity(activity_it, PresentationConnectionState::TERMINATED,
+                   PresentationConnectionCloseReason::CLOSED);
     std::move(callback).Run(base::nullopt, RouteRequestResult::OK);
     return;
   }
@@ -540,14 +380,21 @@ void CastActivityManager::TerminateSession(
   const MediaSinkInternal* sink = media_sink_service_->GetSinkByRoute(route);
   CHECK(sink);
 
-  for (auto& client : activity->connected_clients()) {
-    client.second->SendMessageToClient(
-        CreateReceiverActionStopMessage(client.first, *sink, hash_token_));
-  }
-
   activity->SendStopSessionMessageToReceiver(
       base::nullopt,  // TODO(jrw): Get the real client ID.
-      std::move(callback));
+      hash_token_, std::move(callback));
+}
+
+bool CastActivityManager::CreateMediaController(
+    const std::string& route_id,
+    mojo::PendingReceiver<mojom::MediaController> media_controller,
+    mojo::PendingRemote<mojom::MediaStatusObserver> observer) {
+  auto activity_it = activities_.find(route_id);
+  if (activity_it == activities_.end())
+    return false;
+  activity_it->second->CreateMediaController(std::move(media_controller),
+                                             std::move(observer));
+  return true;
 }
 
 CastActivityManager::ActivityMap::iterator
@@ -570,6 +417,40 @@ CastActivityManager::FindActivityBySink(const MediaSinkInternal& sink) {
       });
 }
 
+ActivityRecord* CastActivityManager::AddCastActivityRecord(
+    const MediaRoute& route,
+    const std::string& app_id) {
+  std::unique_ptr<ActivityRecord> activity;
+  if (activity_record_factory_) {
+    activity = activity_record_factory_->MakeCastActivityRecord(route, app_id);
+  } else {
+    activity.reset(new CastActivityRecord(route, app_id, media_sink_service_,
+                                          message_handler_, session_tracker_,
+                                          this));
+  }
+  auto* activity_ptr = activity.get();
+  activities_.emplace(route.media_route_id(), std::move(activity));
+  return activity_ptr;
+}
+
+ActivityRecord* CastActivityManager::AddMirroringActivityRecord(
+    const MediaRoute& route,
+    const std::string& app_id,
+    int tab_id,
+    const CastSinkExtraData& cast_data) {
+  auto activity = std::make_unique<MirroringActivityRecord>(
+      route, app_id, message_handler_, session_tracker_, tab_id, cast_data,
+      media_router_,
+      // We could theoretically use base::Unretained() below instead of
+      // GetWeakPtr(), the that seems like an unnecessary optimization here.
+      // --jrw
+      base::BindOnce(&CastActivityManager::RemoveActivityByRouteId,
+                     weak_ptr_factory_.GetWeakPtr(), route.media_route_id()));
+  auto* activity_ptr = activity.get();
+  activities_.emplace(route.media_route_id(), std::move(activity));
+  return activity_ptr;
+}
+
 void CastActivityManager::OnAppMessage(
     int channel_id,
     const cast_channel::CastMessage& message) {
@@ -580,24 +461,19 @@ void CastActivityManager::OnAppMessage(
     DVLOG(2) << "No activity associated with channel!";
     return;
   }
+  it->second->OnAppMessage(message);
+}
 
-  CastActivityRecord* activity = it->second.get();
-  const auto& session_id = activity->session_id();
-  if (!session_id) {
-    DVLOG(2) << "No session associated with activity!";
+void CastActivityManager::OnInternalMessage(
+    int channel_id,
+    const cast_channel::InternalMessage& message) {
+  DVLOG(2) << "Received internal message on cast channel " << channel_id;
+  auto it = FindActivityByChannelId(channel_id);
+  if (it == activities_.end()) {
+    DVLOG(2) << "No activity associated with channel!";
     return;
   }
-
-  if (message.destination_id() == "*") {
-    for (const auto& client : activity->connected_clients()) {
-      activity->SendMessageToClient(
-          client.first, CreateAppMessage(*session_id, client.first, message));
-    }
-  } else {
-    const std::string& client_id = message.destination_id();
-    activity->SendMessageToClient(
-        client_id, CreateAppMessage(*session_id, client_id, message));
-  }
+  it->second->OnInternalMessage(message);
 }
 
 void CastActivityManager::OnSessionAddedOrUpdated(const MediaSinkInternal& sink,
@@ -606,12 +482,13 @@ void CastActivityManager::OnSessionAddedOrUpdated(const MediaSinkInternal& sink,
 
   // If |activity| is null, we have discovered a non-local activity.
   if (activity_it == activities_.end()) {
+    // TODO(crbug.com/954797): Test this case.
     AddNonLocalActivityRecord(sink, session);
     NotifyAllOnRoutesUpdated();
     return;
   }
 
-  CastActivityRecord* activity = activity_it->second.get();
+  ActivityRecord* activity = activity_it->second.get();
   DCHECK(activity->route().media_sink_id() == sink.sink().id());
 
   DVLOG(2) << "Receiver status: update/replace activity: "
@@ -625,22 +502,26 @@ void CastActivityManager::OnSessionAddedOrUpdated(const MediaSinkInternal& sink,
   DCHECK(existing_session_id);
 
   // If |existing_session_id| is empty, then most likely it's due to a pending
-  // launch. Check the app ID to see if the existing activity should be updated
-  // or replaced.  Otherwise, check the session ID to see if the existing
-  // activity should be updated or replaced.
+  // launch. Check the app ID to see if the existing activity should be
+  // updated or replaced.  Otherwise, check the session ID to see if the
+  // existing activity should be updated or replaced.
   if (existing_session_id ? existing_session_id == session.session_id()
                           : activity->app_id() == session.app_id()) {
     activity->SetOrUpdateSession(session, sink, hash_token_);
   } else {
-    // NOTE(jrw): This happens if a receiver switches to a new session (or app),
-    // causing the activity associated with the old session to be considered
-    // remote.  This scenario is tested in the unit tests, but it's unclear
-    // whether it even happens in practice; I haven't been able to trigger it.
+    // NOTE(jrw): This happens if a receiver switches to a new session (or
+    // app), causing the activity associated with the old session to be
+    // considered remote.  This scenario is tested in the unit tests, but it's
+    // unclear whether it even happens in practice; I haven't been able to
+    // trigger it.
     //
     // TODO(jrw): Try to come up with a test to exercise this code.
-    RemoveActivity(activity_it,
-                   blink::mojom::PresentationConnectionState::TERMINATED,
-                   /* notify */ false);
+    //
+    // TODO(jrw): Figure out why this code was originally written to
+    // explicitly avoid calling NotifyAllOnRoutesUpdated().
+    RemoveActivityWithoutNotification(
+        activity_it, PresentationConnectionState::TERMINATED,
+        PresentationConnectionCloseReason::CLOSED);
     AddNonLocalActivityRecord(sink, session);
   }
   NotifyAllOnRoutesUpdated();
@@ -648,8 +529,10 @@ void CastActivityManager::OnSessionAddedOrUpdated(const MediaSinkInternal& sink,
 
 void CastActivityManager::OnSessionRemoved(const MediaSinkInternal& sink) {
   auto it = FindActivityBySink(sink);
-  if (it != activities_.end())
-    RemoveActivity(it);
+  if (it != activities_.end()) {
+    RemoveActivity(it, PresentationConnectionState::TERMINATED,
+                   PresentationConnectionCloseReason::CLOSED);
+  }
 }
 
 void CastActivityManager::OnMediaStatusUpdated(const MediaSinkInternal& sink,
@@ -657,9 +540,16 @@ void CastActivityManager::OnMediaStatusUpdated(const MediaSinkInternal& sink,
                                                base::Optional<int> request_id) {
   auto it = FindActivityBySink(sink);
   if (it != activities_.end()) {
-    for (auto& client : it->second->connected_clients())
-      client.second->SendMediaStatusToClient(media_status, request_id);
+    it->second->SendMediaStatusToClients(media_status, request_id);
   }
+}
+
+cast_channel::ResultCallback CastActivityManager::MakeResultCallbackForRoute(
+    const std::string& route_id,
+    mojom::MediaRouteProvider::TerminateRouteCallback callback) {
+  return base::BindOnce(&CastActivityManager::HandleStopSessionResponse,
+                        weak_ptr_factory_.GetWeakPtr(), route_id,
+                        std::move(callback));
 }
 
 void CastActivityManager::AddNonLocalActivityRecord(
@@ -685,11 +575,8 @@ void CastActivityManager::AddNonLocalActivityRecord(
   MediaRoute route(route_id, source, sink_id, /* description */ std::string(),
                    /* is_local */ false, /* for_display */ true);
 
-  std::unique_ptr<CastActivityRecord> record(new CastActivityRecord(
-      route, app_id, media_sink_service_, message_handler_, session_tracker_,
-      data_decoder_.get(), this));
-  record->SetOrUpdateSession(session, sink, hash_token_);
-  activities_.emplace(route_id, std::move(record));
+  auto* activity_ptr = AddCastActivityRecord(route, app_id);
+  activity_ptr->SetOrUpdateSession(session, sink, hash_token_);
 }
 
 const MediaRoute* CastActivityManager::GetRoute(
@@ -736,16 +623,18 @@ void CastActivityManager::HandleLaunchSessionResponse(
   }
 
   if (response.result != cast_channel::LaunchSessionResponse::Result::kOk) {
-    DVLOG(2) << "Failed to launch session for " << route_id;
-    RemoveActivity(activity_it);
+    DLOG(ERROR) << "Failed to launch session for " << route_id;
+    RemoveActivity(activity_it, PresentationConnectionState::CLOSED,
+                   PresentationConnectionCloseReason::CONNECTION_ERROR);
     SendFailedToCastIssue(sink.sink().id(), route_id);
     return;
   }
 
   auto session = CastSession::From(sink, *response.receiver_status);
   if (!session) {
-    DVLOG(2) << "Unable to get session from launch response";
-    RemoveActivity(activity_it);
+    DLOG(ERROR) << "Unable to get session from launch response";
+    RemoveActivity(activity_it, PresentationConnectionState::CLOSED,
+                   PresentationConnectionCloseReason::CONNECTION_ERROR);
     SendFailedToCastIssue(sink.sink().id(), route_id);
     return;
   }
@@ -782,7 +671,8 @@ void CastActivityManager::HandleStopSessionResponse(
   }
 
   if (result == cast_channel::Result::kOk) {
-    RemoveActivity(activity_it);
+    RemoveActivity(activity_it, PresentationConnectionState::TERMINATED,
+                   PresentationConnectionCloseReason::CLOSED);
     std::move(callback).Run(base::nullopt, RouteRequestResult::OK);
   } else {
     std::move(callback).Run("Failed to terminate route",
@@ -793,7 +683,7 @@ void CastActivityManager::HandleStopSessionResponse(
 void CastActivityManager::SendFailedToCastIssue(
     const MediaSink::Id& sink_id,
     const MediaRoute::Id& route_id) {
-  // TODO(imcheng): i18n-ize the title string.
+  // TODO(crbug.com/989237): i18n-ize the title string.
   IssueInfo info("Failed to cast. Please try again.",
                  IssueInfo::Action::DISMISS, IssueInfo::Severity::WARNING);
   info.sink_id = sink_id;
@@ -801,8 +691,15 @@ void CastActivityManager::SendFailedToCastIssue(
   media_router_->OnIssue(info);
 }
 
-base::WeakPtr<CastActivityManager> CastActivityManager::GetWeakPtr() {
-  return weak_ptr_factory_.GetWeakPtr();
+base::Optional<MediaSinkInternal> CastActivityManager::ConvertMirrorToCast(
+    int tab_id) {
+  for (const auto& pair : activities_) {
+    if (pair.second->mirroring_tab_id() == tab_id) {
+      return pair.second->sink();
+    }
+  }
+
+  return base::nullopt;
 }
 
 CastActivityManager::DoLaunchSessionParams::DoLaunchSessionParams(
@@ -823,5 +720,8 @@ CastActivityManager::DoLaunchSessionParams::DoLaunchSessionParams(
     DoLaunchSessionParams&& other) = default;
 
 CastActivityManager::DoLaunchSessionParams::~DoLaunchSessionParams() = default;
+
+CastActivityRecordFactoryForTest*
+    CastActivityManager::activity_record_factory_ = nullptr;
 
 }  // namespace media_router

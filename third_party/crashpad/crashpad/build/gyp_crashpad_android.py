@@ -28,82 +28,45 @@ def main(args):
   parser = argparse.ArgumentParser(
       description='Set up an Android cross build',
       epilog='Additional arguments will be passed to gyp_crashpad.py.')
+  parser.add_argument('--arch', required=True, help='Target architecture')
+  parser.add_argument('--api-level', required=True, help='Target API level')
   parser.add_argument('--ndk', required=True, help='Standalone NDK toolchain')
-  parser.add_argument('--compiler',
-                      default='clang',
-                      choices=('clang', 'gcc'),
-                      help='The compiler to use, clang by default')
   (parsed, extra_command_line_args) = parser.parse_known_args(args)
 
-  NDK_ERROR=(
-      'NDK must be a valid standalone NDK toolchain.\n' +
-      'See https://developer.android.com/ndk/guides/standalone_toolchain.html')
-  arch_dirs = glob.glob(os.path.join(parsed.ndk, '*-linux-android*'))
-  if len(arch_dirs) != 1:
-    parser.error(NDK_ERROR)
+  ndk_bin_dir = os.path.join(parsed.ndk,
+                             'toolchains',
+                             'llvm',
+                             'prebuilt',
+                             'linux-x86_64',
+                             'bin')
+  if not os.path.exists(ndk_bin_dir):
+    parser.error("missing toolchain")
 
-  arch_triplet = os.path.basename(arch_dirs[0])
-  ARCH_TRIPLET_TO_ARCH = {
-    'arm-linux-androideabi': 'arm',
-    'aarch64-linux-android': 'arm64',
-    'i686-linux-android': 'ia32',
-    'x86_64-linux-android': 'x64',
-    'mipsel-linux-android': 'mips',
-    'mips64el-linux-android': 'mips64',
+  ARCH_TO_ARCH_TRIPLET = {
+    'arm': 'armv7a-linux-androideabi',
+    'arm64': 'aarch64-linux-android',
+    'ia32': 'i686-linux-android',
+    'x64': 'x86_64-linux-android',
   }
-  if arch_triplet not in ARCH_TRIPLET_TO_ARCH:
-    parser.error(NDK_ERROR)
-  arch = ARCH_TRIPLET_TO_ARCH[arch_triplet]
 
-  ndk_bin_dir = os.path.join(parsed.ndk, 'bin')
+  clang_prefix = ARCH_TO_ARCH_TRIPLET[parsed.arch] + parsed.api_level
+  os.environ['CC_target'] = os.path.join(ndk_bin_dir, clang_prefix + '-clang')
+  os.environ['CXX_target'] = os.path.join(ndk_bin_dir, clang_prefix + '-clang++')
 
-  clang_path = os.path.join(ndk_bin_dir, 'clang')
-  extra_args = []
+  extra_args = ['-D', 'android_api_level=' + parsed.api_level]
 
-  if parsed.compiler == 'clang':
-    os.environ['CC_target'] = clang_path
-    os.environ['CXX_target'] = os.path.join(ndk_bin_dir, 'clang++')
-  elif parsed.compiler == 'gcc':
-    os.environ['CC_target'] = os.path.join(ndk_bin_dir,
-                                           '%s-gcc' % arch_triplet)
-    os.environ['CXX_target'] = os.path.join(ndk_bin_dir,
-                                            '%s-g++' % arch_triplet)
-
-  # Unlike the Clang build, when using GCC with unified headers, __ANDROID_API__
-  # isn’t set automatically and must be pushed in to the build. Fish the correct
-  # value out of the Clang wrapper script. If deprecated headers are in use, the
-  # Clang wrapper won’t mention __ANDROID_API__, but the standalone toolchain’s
-  # <android/api-level.h> will #define it for both Clang and GCC.
-  #
-  # android_api_level is extracted in this manner even when compiling with Clang
-  # so that it’s available for use in GYP conditions that need to test the API
-  # level, but beware that it’ll only be available when unified headers are in
-  # use.
-  #
-  # Unified headers are the way of the future, according to
-  # https://android.googlesource.com/platform/ndk/+/ndk-r14/CHANGELOG.md and
-  # https://android.googlesource.com/platform/ndk/+/master/docs/UnifiedHeaders.md.
-  # Traditional (deprecated) headers have been removed entirely as of NDK r16.
-  # https://android.googlesource.com/platform/ndk/+/ndk-release-r16/CHANGELOG.md.
-  with open(clang_path, 'r') as file:
-    clang_script_contents = file.read()
-  matches = re.finditer(r'\s-D__ANDROID_API__=([\d]+)\s',
-                        clang_script_contents)
-  match = next(matches, None)
-  if match:
-    android_api = int(match.group(1))
-    extra_args.extend(['-D', 'android_api_level=%d' % android_api])
-    if next(matches, None):
-      raise AssertionError('__ANDROID_API__ defined too many times')
+  # ARM only includes 'v7a' in the tool prefix for clang
+  tool_prefix = ('arm-linux-androideabi' if parsed.arch == 'arm'
+                 else ARCH_TO_ARCH_TRIPLET[parsed.arch])
 
   for tool in ('ar', 'nm', 'readelf'):
     os.environ['%s_target' % tool.upper()] = (
-        os.path.join(ndk_bin_dir, '%s-%s' % (arch_triplet, tool)))
+        os.path.join(ndk_bin_dir, '%s-%s' % (tool_prefix, tool)))
 
   return gyp_crashpad.main(
       ['-D', 'OS=android',
-       '-D', 'target_arch=%s' % arch,
-       '-D', 'clang=%d' % (1 if parsed.compiler == 'clang' else 0),
+       '-D', 'target_arch=%s' % parsed.arch,
+       '-D', 'clang=1',
        '-f', 'ninja-android'] +
       extra_args +
       extra_command_line_args)

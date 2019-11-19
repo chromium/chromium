@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/memory/ref_counted.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -20,12 +21,14 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
-#include "device/usb/public/cpp/fake_usb_device_manager.h"
-#include "device/usb/public/mojom/device.mojom.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "services/device/public/cpp/test/fake_usb_device_manager.h"
+#include "services/device/public/mojom/usb_device.mojom.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
 
 namespace blink {
@@ -36,8 +39,8 @@ class WebUsbService;
 
 using content::RenderFrameHost;
 using device::FakeUsbDeviceManager;
-using device::mojom::UsbDeviceManagerPtr;
 using device::mojom::UsbDeviceInfoPtr;
+using device::mojom::UsbDeviceManager;
 
 namespace {
 
@@ -73,7 +76,7 @@ class FakeChooserView : public ChooserController::View {
 class FakeUsbChooser : public WebUsbChooser {
  public:
   explicit FakeUsbChooser(RenderFrameHost* render_frame_host)
-      : WebUsbChooser(render_frame_host), weak_factory_(this) {}
+      : WebUsbChooser(render_frame_host) {}
 
   ~FakeUsbChooser() override {}
 
@@ -92,7 +95,7 @@ class FakeUsbChooser : public WebUsbChooser {
   }
 
  private:
-  base::WeakPtrFactory<FakeUsbChooser> weak_factory_;
+  base::WeakPtrFactory<FakeUsbChooser> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FakeUsbChooser);
 };
@@ -106,15 +109,15 @@ class TestContentBrowserClient : public ChromeContentBrowserClient {
   // ChromeContentBrowserClient:
   void CreateWebUsbService(
       content::RenderFrameHost* render_frame_host,
-      mojo::InterfaceRequest<blink::mojom::WebUsbService> request) override {
+      mojo::PendingReceiver<blink::mojom::WebUsbService> receiver) override {
     if (use_real_chooser_) {
       ChromeContentBrowserClient::CreateWebUsbService(render_frame_host,
-                                                      std::move(request));
+                                                      std::move(receiver));
     } else {
       usb_chooser_.reset(new FakeUsbChooser(render_frame_host));
       web_usb_service_.reset(
           new WebUsbServiceImpl(render_frame_host, usb_chooser_->GetWeakPtr()));
-      web_usb_service_->BindRequest(std::move(request));
+      web_usb_service_->BindReceiver(std::move(receiver));
     }
   }
 
@@ -136,10 +139,11 @@ class WebUsbTest : public InProcessBrowserTest {
     AddFakeDevice("123456");
 
     // Connect with the FakeUsbDeviceManager.
-    UsbDeviceManagerPtr device_manager_ptr;
-    device_manager_.AddBinding(mojo::MakeRequest(&device_manager_ptr));
+    mojo::PendingRemote<UsbDeviceManager> device_manager;
+    device_manager_.AddReceiver(
+        device_manager.InitWithNewPipeAndPassReceiver());
     UsbChooserContextFactory::GetForProfile(browser()->profile())
-        ->SetDeviceManagerForTesting(std::move(device_manager_ptr));
+        ->SetDeviceManagerForTesting(std::move(device_manager));
 
     original_content_browser_client_ =
         content::SetBrowserClientForTesting(&test_content_browser_client_);
@@ -185,34 +189,24 @@ IN_PROC_BROWSER_TEST_F(WebUsbTest, RequestAndGetDevices) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  int int_result;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractInt(
-      web_contents,
-      "navigator.usb.getDevices()"
-      "    .then(devices => {"
-      "        domAutomationController.send(devices.length);"
-      "    });",
-      &int_result));
-  EXPECT_EQ(0, int_result);
+  EXPECT_EQ(content::ListValueOf(), content::EvalJs(web_contents,
+                                                    R"((async () => {
+        let devices = await navigator.usb.getDevices();
+        return devices.map(device => device.serialNumber);
+      })())"));
 
-  std::string result;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      web_contents,
-      "navigator.usb.requestDevice({ filters: [ { vendorId: 0 } ] })"
-      "    .then(device => {"
-      "        domAutomationController.send(device.serialNumber);"
-      "    });",
-      &result));
-  EXPECT_EQ("123456", result);
+  EXPECT_EQ("123456", content::EvalJs(web_contents,
+                                      R"((async () => {
+        let device =
+            await navigator.usb.requestDevice({ filters: [{ vendorId: 0 }] });
+        return device.serialNumber;
+      })())"));
 
-  EXPECT_TRUE(content::ExecuteScriptAndExtractInt(
-      web_contents,
-      "navigator.usb.getDevices()"
-      "    .then(devices => {"
-      "        domAutomationController.send(devices.length);"
-      "    });",
-      &int_result));
-  EXPECT_EQ(1, int_result);
+  EXPECT_EQ(content::ListValueOf("123456"), content::EvalJs(web_contents,
+                                                            R"((async () => {
+        let devices = await navigator.usb.getDevices();
+        return devices.map(device => device.serialNumber);
+      })())"));
 }
 
 IN_PROC_BROWSER_TEST_F(WebUsbTest, RequestDeviceWithGuardBlocked) {
@@ -222,71 +216,55 @@ IN_PROC_BROWSER_TEST_F(WebUsbTest, RequestDeviceWithGuardBlocked) {
   auto* map =
       HostContentSettingsMapFactory::GetForProfile(browser()->profile());
   map->SetContentSettingDefaultScope(origin(), origin(),
-                                     CONTENT_SETTINGS_TYPE_USB_GUARD,
+                                     ContentSettingsType::USB_GUARD,
                                      std::string(), CONTENT_SETTING_BLOCK);
 
-  std::string result;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      web_contents,
-      "navigator.usb.requestDevice({ filters: [ { vendorId: 0 } ] })"
-      "    .then(device => {"
-      "      domAutomationController.send('failed');"
-      "    }, error => {"
-      "      domAutomationController.send(error.name + ': ' + error.message);"
-      "    });",
-      &result));
-  EXPECT_EQ("NotFoundError: No device selected.", result);
+  EXPECT_EQ("NotFoundError: No device selected.",
+            content::EvalJs(web_contents,
+                            R"((async () => {
+            try {
+              await navigator.usb.requestDevice({ filters: [{ vendorId: 0 }] });
+              return "Expected error, got success.";
+            } catch (e) {
+              return `${e.name}: ${e.message}`;
+            }
+          })())"));
 }
 
 IN_PROC_BROWSER_TEST_F(WebUsbTest, AddRemoveDevice) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  std::string result;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      web_contents,
-      "navigator.usb.requestDevice({ filters: [ { vendorId: 0 } ] })"
-      "    .then(device => {"
-      "        domAutomationController.send(device.serialNumber);"
-      "    });"
+  EXPECT_EQ("123456", content::EvalJs(web_contents,
+                                      R"((async () => {
+        let device =
+            await navigator.usb.requestDevice({ filters: [{ vendorId: 0 }] });
+        return device.serialNumber;
+      })())"));
 
-      "var deviceAdded = null;"
-      "navigator.usb.addEventListener('connect', e => {"
-      "    deviceAdded = e.device;"
-      "});"
-
-      "var deviceRemoved = null;"
-      "navigator.usb.addEventListener('disconnect', e => {"
-      "    deviceRemoved = e.device;"
-      "});",
-      &result));
-  EXPECT_EQ("123456", result);
+  EXPECT_TRUE(content::ExecJs(web_contents,
+                              R"(
+        var removedPromise = new Promise(resolve => {
+          navigator.usb.addEventListener('disconnect', e => {
+            resolve(e.device.serialNumber);
+          }, { once: true });
+        });
+      )"));
 
   RemoveFakeDevice();
-  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ("123456", content::EvalJs(web_contents, "removedPromise"));
 
-  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      web_contents,
-      "if (deviceRemoved === null) {"
-      "  domAutomationController.send('null');"
-      "} else {"
-      "  domAutomationController.send(deviceRemoved.serialNumber);"
-      "}",
-      &result));
-  EXPECT_EQ("123456", result);
+  EXPECT_TRUE(content::ExecJs(web_contents,
+                              R"(
+        var addedPromise = new Promise(resolve => {
+          navigator.usb.addEventListener('connect', e => {
+            resolve(e.device.serialNumber);
+          }, { once: true });
+        });
+      )"));
 
   AddFakeDevice("123456");
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      web_contents,
-      "if (deviceAdded === null) {"
-      "  domAutomationController.send('null');"
-      "} else {"
-      "  domAutomationController.send(deviceAdded.serialNumber);"
-      "}",
-      &result));
-  EXPECT_EQ("123456", result);
+  EXPECT_EQ("123456", content::EvalJs(web_contents, "addedPromise"));
 }
 
 IN_PROC_BROWSER_TEST_F(WebUsbTest, AddRemoveDeviceEphemeral) {
@@ -296,35 +274,25 @@ IN_PROC_BROWSER_TEST_F(WebUsbTest, AddRemoveDeviceEphemeral) {
   // Replace the default mock device with one that has no serial number.
   RemoveFakeDevice();
   AddFakeDevice("");
-  base::RunLoop().RunUntilIdle();
 
-  std::string result;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      web_contents,
-      "navigator.usb.requestDevice({ filters: [ { vendorId: 0 } ] })"
-      "    .then(device => {"
-      "        domAutomationController.send(device.serialNumber);"
-      "    });"
+  EXPECT_EQ("", content::EvalJs(web_contents,
+                                R"((async () => {
+        let device =
+            await navigator.usb.requestDevice({ filters: [{ vendorId: 0 }] });
+        return device.serialNumber;
+      })())"));
 
-      "var deviceRemoved = null;"
-      "navigator.usb.addEventListener('disconnect', e => {"
-      "    deviceRemoved = e.device;"
-      "});",
-      &result));
-  EXPECT_EQ("", result);
+  EXPECT_TRUE(content::ExecJs(web_contents,
+                              R"(
+        var removedPromise = new Promise(resolve => {
+          navigator.usb.addEventListener('disconnect', e => {
+            resolve(e.device.serialNumber);
+          }, { once: true });
+        });
+      )"));
 
   RemoveFakeDevice();
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      web_contents,
-      "if (deviceRemoved === null) {"
-      "  domAutomationController.send('null');"
-      "} else {"
-      "  domAutomationController.send(deviceRemoved.serialNumber);"
-      "}",
-      &result));
-  EXPECT_EQ("", result);
+  EXPECT_EQ("", content::EvalJs(web_contents, "removedPromise"));
 }
 
 IN_PROC_BROWSER_TEST_F(WebUsbTest, NavigateWithChooserCrossOrigin) {
@@ -336,10 +304,11 @@ IN_PROC_BROWSER_TEST_F(WebUsbTest, NavigateWithChooserCrossOrigin) {
       web_contents, 1 /* number_of_navigations */,
       content::MessageLoopRunner::QuitMode::DEFERRED);
 
-  EXPECT_TRUE(content::ExecuteScript(
-      web_contents,
-      "navigator.usb.requestDevice({ filters: [] });"
-      "document.location.href = \"https://google.com\";"));
+  EXPECT_TRUE(content::ExecJs(web_contents,
+                              R"(
+        navigator.usb.requestDevice({ filters: [] });
+        document.location.href = "https://google.com";
+      )"));
 
   observer.Wait();
   EXPECT_EQ(0u, browser()->GetBubbleManager()->GetBubbleCountForTesting());

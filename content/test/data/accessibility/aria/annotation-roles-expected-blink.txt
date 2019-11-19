@@ -1,0 +1,6 @@
+rootWebArea
+++genericContainer ignored
+++++comment name='comment'
+++++commentSection name='comment section'
+++++revision name='revision'
+++++suggestion name='suggestion'

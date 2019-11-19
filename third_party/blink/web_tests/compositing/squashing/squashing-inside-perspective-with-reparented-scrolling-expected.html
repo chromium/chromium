@@ -3,6 +3,10 @@
     This test ensures that the offset from renderer is correctly applied
     to reparented overflow controls, even if they are unclipped.
 -->
+<script>
+if (window.internals)
+    internals.useMockOverlayScrollbars();
+</script>
 <style>
 #scroller {
     overflow: scroll;
@@ -30,7 +34,3 @@
     <div id='fixed'></div>
     <div id='scrolled'></div>
 </div>
-<script>
-if (window.internals)
-    internals.runtimeFlags.overlayScrollbarsEnabled = true;
-</script>

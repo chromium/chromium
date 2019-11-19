@@ -1,5 +1,3 @@
-namespace third_party_unrar {
-
 static const uint MaxVolumes=65535;
 
 RecVolumes5::RecVolumes5(bool TestOnly)
@@ -141,12 +139,10 @@ bool RecVolumes5::Restore(RAROptions *Cmd,const wchar *Name,bool Silent)
   wcsncpyz(ArcName,Name,ASIZE(ArcName));
 
   wchar *Num=GetVolNumPart(ArcName);
-  if (Num==ArcName)
-    return false; // Number part is missing in the name.
   while (Num>ArcName && IsDigit(*(Num-1)))
     Num--;
   if (Num==ArcName)
-    return false; // Entire volume name is numeric, not possible for REV file.
+    return false; // Numeric part is missing or entire volume name is numeric, not possible for RAR or REV volume.
   wcsncpyz(Num,L"*.*",ASIZE(ArcName)-(Num-ArcName));
   
   wchar FirstVolName[NM];
@@ -291,8 +287,8 @@ bool RecVolumes5::Restore(RAROptions *Cmd,const wchar *Name,bool Silent)
       Item->f->Close();
 
       wchar NewName[NM];
-      wcscpy(NewName,Item->Name);
-      wcscat(NewName,L".bad");
+      wcsncpyz(NewName,Item->Name,ASIZE(NewName));
+      wcsncatz(NewName,L".bad",ASIZE(NewName));
 
       uiMsg(UIMSG_BADARCHIVE,Item->Name);
       uiMsg(UIMSG_RENAMING,Item->Name,NewName);
@@ -521,5 +517,3 @@ void RecVolumes5::Test(RAROptions *Cmd,const wchar *Name)
     NextVolumeName(VolName,ASIZE(VolName),false);
   }
 }
-
-}  // namespace third_party_unrar

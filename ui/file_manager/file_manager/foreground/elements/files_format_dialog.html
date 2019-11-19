@@ -1,0 +1,81 @@
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+  -- Use of this source code is governed by a BSD-style license that can be
+  -- found in the LICENSE file.
+  -->
+
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_input/cr_input.html">
+<link rel="import" href="chrome://resources/cr_elements/icons.html">
+<link rel="import" href="chrome://resources/cr_elements/md_select_css.html">
+<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
+<link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
+<link rel="import" href="chrome://resources/html/i18n_behavior.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
+
+<dom-module id="files-format-dialog">
+  <template>
+    <style include="cr-shared-style md-select">
+      .md-select {
+        width: 100%;
+      }
+
+      [slot='body'] > div {
+        margin-bottom: var(--cr-form-field-bottom-spacing);
+      }
+
+      #warning-icon {
+        --iron-icon-fill-color: var(--google-red-600);
+      }
+
+      #warning-message {
+        color: var(--google-red-600);
+        display: inline-block;
+        margin-inline-start: 8px;
+      }
+    </style>
+
+    <cr-dialog id="dialog" show-close-button
+        close-text="[[i18n('CLOSE_LABEL')]]" exportparts="dialog">
+      <div slot="title">
+        [[i18n('FORMAT_DIALOG_TITLE', volumeInfo_.label)]]
+      </div>
+      <div slot="body">
+        <div>[[i18n('FORMAT_DIALOG_MESSAGE')]]</div>
+        <div id="warning-container" hidden="[[!space_used_]]" role="alert">
+          <iron-icon id="warning-icon" icon="cr:warning"></iron-icon>
+          <div id="warning-message">
+            [[i18n('FORMAT_DIALOG_DELETE_WARNING', space_used_)]]
+          </div>
+        </div>
+        <cr-input label="[[i18n('FORMAT_DIALOG_DRIVE_NAME_LABEL')]]"
+            id="label" value="{{label_}}" auto-validate="true">
+        </cr-input>
+        <div id="disk-format">
+          <label id="format-type-label" class="cr-form-field-label">
+            [[i18n('FORMAT_DIALOG_FORMAT_LABEL')]]
+          </label>
+          <select class="md-select" aria-labelledby="format-type-label"
+              value="{{formatType_::change}}">
+            <option value="vfat">FAT32</option>
+            <option value="exfat">exFAT</option>
+            <option value="ntfs">NTFS</option>
+          </select>
+        </div>
+      </div>
+      <div slot="button-container">
+        <cr-button class="cancel-button" on-click="cancel_" id="cancel">
+          [[i18n('CANCEL_LABEL')]]
+        </cr-button>
+        <cr-button class="action-button" on-click="format_"
+            id="format-button">
+          [[i18n('FORMAT_DIALOG_CONFIRM_LABEL')]]
+        </cr-button>
+      </div>
+    </cr-dialog>
+  </template>
+
+  <script src="files_format_dialog.js"></script>
+</dom-module>

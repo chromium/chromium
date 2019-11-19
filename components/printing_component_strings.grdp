@@ -7,4 +7,227 @@
       </message>
     </if>
   </if>
+
+  <message name="IDS_PDF_COMPOSITOR_SERVICE_DISPLAY_NAME" desc="The display name (in the system task manager, etc) of the service process used for PDF compositing.">
+    PDF Compositor Service
+  </message>
+
+  <if expr="chromeos">
+    <message name="IDS_PRINT_FINISHINGS_STAPLE" desc="RFC 8011 (5.2.6) finishings: staple">
+      Staple
+    </message>
+    <message name="IDS_PRINT_FINISHINGS_PUNCH" desc="RFC 8011 (5.2.6) finishings: punch">
+      Punch
+    </message>
+    <message name="IDS_PRINT_FINISHINGS_COVER" desc="RFC 8011 (5.2.6) finishings: cover">
+      Cover
+    </message>
+    <message name="IDS_PRINT_FINISHINGS_BIND" desc="RFC 8011 (5.2.6) finishings: bind">
+      Bind
+    </message>
+    <message name="IDS_PRINT_FINISHINGS_SADDLE_STITCH" desc="RFC 8011 (5.2.6) finishings: saddle-stitch">
+      Saddle stitch
+    </message>
+    <message name="IDS_PRINT_FINISHINGS_EDGE_STITCH" desc="RFC 8011 (5.2.6) finishings: edge-stitch">
+      Edge stitch
+    </message>
+    <message name="IDS_PRINT_FINISHINGS_FOLD" desc="PWG 5100.1 (5.1.2) PWG 5100.1-2001 'finishings' Values: fold">
+      Fold
+    </message>
+    <message name="IDS_PRINT_FINISHINGS_TRIM" desc="PWG 5100.1 (5.1.2) PWG 5100.1-2001 'finishings' Values: trim">
+      Trim
+    </message>
+    <message name="IDS_PRINT_FINISHINGS_BALE" desc="PWG 5100.1 (5.1.2) PWG 5100.1-2001 'finishings' Values: bale">
+      Bale
+    </message>
+    <message name="IDS_PRINT_FINISHINGS_BOOKLET_MAKER" desc="PWG 5100.1 (5.1.2) PWG 5100.1-2001 'finishings' Values: booklet-maker">
+      Booklet maker
+    </message>
+    <message name="IDS_PRINT_FINISHINGS_JOG_OFFSET" desc="PWG 5100.1 (5.1.2) PWG 5100.1-2001 'finishings' Values: jog-offset">
+      Jog offset
+    </message>
+    <message name="IDS_PRINT_FINISHINGS_COAT" desc="PWG 5100.1 (5.1.3) PWG 5100.1-2014 'finishings' Values: coat">
+      Coat
+    </message>
+    <message name="IDS_PRINT_FINISHINGS_LAMINATE" desc="PWG 5100.1 (5.1.3) PWG 5100.1-2014 'finishings' Values: laminate">
+      Laminate
+    </message>
+    <message name="IDS_PRINT_FINISHINGS_STAPLE_TOP_LEFT" desc="RFC 8011 (5.2.6) finishings: staple-top-left">
+      Staple top left
+    </message>
+    <message name="IDS_PRINT_FINISHINGS_STAPLE_BOTTOM_LEFT" desc="RFC 8011 (5.2.6) finishings: staple-bottom-left">
+      Staple bottom left
+    </message>
+    <message name="IDS_PRINT_FINISHINGS_STAPLE_TOP_RIGHT" desc="RFC 8011 (5.2.6) finishings: staple-top-right">
+      Staple top right
+    </message>
+    <message name="IDS_PRINT_FINISHINGS_STAPLE_BOTTOM_RIGHT" desc="RFC 8011 (5.2.6) finishings: staple-bottom-right">
+      Staple bottom right
+    </message>
+    <message name="IDS_PRINT_FINISHINGS_EDGE_STITCH_LEFT" desc="RFC 8011 (5.2.6) finishings: edge-stitch-left">
+      Edge stitch left
+    </message>
+    <message name="IDS_PRINT_FINISHINGS_EDGE_STITCH_TOP" desc="RFC 8011 (5.2.6) finishings: edge-stitch-top">
+      Edge stitch top
+    </message>
+    <message name="IDS_PRINT_FINISHINGS_EDGE_STITCH_RIGHT" desc="RFC 8011 (5.2.6) finishings: edge-stitch-right">
+      Edge stitch right
+    </message>
+    <message name="IDS_PRINT_FINISHINGS_EDGE_STITCH_BOTTOM" desc="RFC 8011 (5.2.6) finishings: edge-stitch-bottom">
+      Edge stitch bottom
+    </message>
+    <message name="IDS_PRINT_FINISHINGS_STAPLE_DUAL_LEFT" desc="RFC 8011 (5.2.6) finishings: staple-dual-left">
+      Dual staple left
+    </message>
+    <message name="IDS_PRINT_FINISHINGS_STAPLE_DUAL_TOP" desc="RFC 8011 (5.2.6) finishings: staple-dual-top">
+      Dual staple top
+    </message>
+    <message name="IDS_PRINT_FINISHINGS_STAPLE_DUAL_RIGHT" desc="RFC 8011 (5.2.6) finishings: staple-dual-right">
+      Dual staple right
+    </message>
+    <message name="IDS_PRINT_FINISHINGS_STAPLE_DUAL_BOTTOM" desc="RFC 8011 (5.2.6) finishings: staple-dual-bottom">
+      Dual staple bottom
+    </message>
+    <message name="IDS_PRINT_FINISHINGS_STAPLE_TRIPLE_LEFT" desc="PWG 5100.1 (5.1.3) PWG 5100.1-2014 'finishings' Values: staple-triple-left">
+      Triple staple left
+    </message>
+    <message name="IDS_PRINT_FINISHINGS_STAPLE_TRIPLE_TOP" desc="PWG 5100.1 (5.1.3) PWG 5100.1-2014 'finishings' Values: staple-triple-top">
+      Triple staple top
+    </message>
+    <message name="IDS_PRINT_FINISHINGS_STAPLE_TRIPLE_RIGHT" desc="PWG 5100.1 (5.1.3) PWG 5100.1-2014 'finishings' Values: staple-triple-right">
+      Triple staple right
+    </message>
+    <message name="IDS_PRINT_FINISHINGS_STAPLE_TRIPLE_BOTTOM" desc="PWG 5100.1 (5.1.3) PWG 5100.1-2014 'finishings' Values: staple-triple-bottom">
+      Triple staple bottom
+    </message>
+    <message name="IDS_PRINT_FINISHINGS_BIND_LEFT" desc="PWG 5100.1 (5.1.2) PWG 5100.1-2001 'finishings' Values: bind-left">
+      Bind left
+    </message>
+    <message name="IDS_PRINT_FINISHINGS_BIND_TOP" desc="PWG 5100.1 (5.1.2) PWG 5100.1-2001 'finishings' Values: bind-top">
+      Bind top
+    </message>
+    <message name="IDS_PRINT_FINISHINGS_BIND_RIGHT" desc="PWG 5100.1 (5.1.2) PWG 5100.1-2001 'finishings' Values: bind-right">
+      Bind right
+    </message>
+    <message name="IDS_PRINT_FINISHINGS_BIND_BOTTOM" desc="PWG 5100.1 (5.1.2) PWG 5100.1-2001 'finishings' Values: bind-bottom">
+      Bind bottom
+    </message>
+    <message name="IDS_PRINT_FINISHINGS_TRIM_AFTER_PAGES" desc="PWG 5100.13 (7.2) finishings: trim-after-pages">
+      Trim after each page
+    </message>
+    <message name="IDS_PRINT_FINISHINGS_TRIM_AFTER_DOCUMENTS" desc="PWG 5100.13 (7.2) finishings: trim-after-documents">
+      Trim after each document
+    </message>
+    <message name="IDS_PRINT_FINISHINGS_TRIM_AFTER_COPIES" desc="PWG 5100.13 (7.2) finishings: trim-after-copies">
+      Trim after each copy
+    </message>
+    <message name="IDS_PRINT_FINISHINGS_TRIM_AFTER_JOB" desc="PWG 5100.13 (7.2) finishings: trim-after-job">
+      Trim after job
+    </message>
+    <message name="IDS_PRINT_FINISHINGS_PUNCH_TOP_LEFT" desc="PWG 5100.1 (5.1.3) PWG 5100.1-2014 'finishings' Values: punch-top-left">
+      Punch top left
+    </message>
+    <message name="IDS_PRINT_FINISHINGS_PUNCH_BOTTOM_LEFT" desc="PWG 5100.1 (5.1.3) PWG 5100.1-2014 'finishings' Values: punch-bottom-left">
+      Punch bottom left
+    </message>
+    <message name="IDS_PRINT_FINISHINGS_PUNCH_TOP_RIGHT" desc="PWG 5100.1 (5.1.3) PWG 5100.1-2014 'finishings' Values: punch-top-right">
+      Punch top right
+    </message>
+    <message name="IDS_PRINT_FINISHINGS_PUNCH_BOTTOM_RIGHT" desc="PWG 5100.1 (5.1.3) PWG 5100.1-2014 'finishings' Values: punch-bottom-right">
+      Punch bottom right
+    </message>
+    <message name="IDS_PRINT_FINISHINGS_PUNCH_DUAL_LEFT" desc="PWG 5100.1 (5.1.3) PWG 5100.1-2014 'finishings' Values: punch-dual-left">
+      Dual punch left
+    </message>
+    <message name="IDS_PRINT_FINISHINGS_PUNCH_DUAL_TOP" desc="PWG 5100.1 (5.1.3) PWG 5100.1-2014 'finishings' Values: punch-dual-top">
+      Dual punch top
+    </message>
+    <message name="IDS_PRINT_FINISHINGS_PUNCH_DUAL_RIGHT" desc="PWG 5100.1 (5.1.3) PWG 5100.1-2014 'finishings' Values: punch-dual-right">
+      Dual punch right
+    </message>
+    <message name="IDS_PRINT_FINISHINGS_PUNCH_DUAL_BOTTOM" desc="PWG 5100.1 (5.1.3) PWG 5100.1-2014 'finishings' Values: punch-dual-bottom">
+      Dual punch bottom
+    </message>
+    <message name="IDS_PRINT_FINISHINGS_PUNCH_TRIPLE_LEFT" desc="PWG 5100.1 (5.1.3) PWG 5100.1-2014 'finishings' Values: punch-triple-left">
+      Triple punch left
+    </message>
+    <message name="IDS_PRINT_FINISHINGS_PUNCH_TRIPLE_TOP" desc="PWG 5100.1 (5.1.3) PWG 5100.1-2014 'finishings' Values: punch-triple-top">
+      Triple punch top
+    </message>
+    <message name="IDS_PRINT_FINISHINGS_PUNCH_TRIPLE_RIGHT" desc="PWG 5100.1 (5.1.3) PWG 5100.1-2014 'finishings' Values: punch-triple-right">
+      Triple punch right
+    </message>
+    <message name="IDS_PRINT_FINISHINGS_PUNCH_TRIPLE_BOTTOM" desc="PWG 5100.1 (5.1.3) PWG 5100.1-2014 'finishings' Values: punch-triple-bottom">
+      Triple punch bottom
+    </message>
+    <message name="IDS_PRINT_FINISHINGS_PUNCH_QUAD_LEFT" desc="PWG 5100.1 (5.1.3) PWG 5100.1-2014 'finishings' Values: punch-quad-left">
+      Quad punch left
+    </message>
+    <message name="IDS_PRINT_FINISHINGS_PUNCH_QUAD_TOP" desc="PWG 5100.1 (5.1.3) PWG 5100.1-2014 'finishings' Values: punch-quad-top">
+      Quad punch top
+    </message>
+    <message name="IDS_PRINT_FINISHINGS_PUNCH_QUAD_RIGHT" desc="PWG 5100.1 (5.1.3) PWG 5100.1-2014 'finishings' Values: punch-quad-right">
+      Quad punch right
+    </message>
+    <message name="IDS_PRINT_FINISHINGS_PUNCH_QUAD_BOTTOM" desc="PWG 5100.1 (5.1.3) PWG 5100.1-2014 'finishings' Values: punch-quad-bottom">
+      Quad punch bottom
+    </message>
+    <message name="IDS_PRINT_FINISHINGS_PUNCH_MULTIPLE_LEFT" desc="PWG 5100.1 (5.1.4) PWG 5100.1-2017 'finishings' Values: punch-multiple-left">
+      Multiple punch left
+    </message>
+    <message name="IDS_PRINT_FINISHINGS_PUNCH_MULTIPLE_TOP" desc="PWG 5100.1 (5.1.4) PWG 5100.1-2017 'finishings' Values: punch-multiple-top">
+      Multiple punch top
+    </message>
+    <message name="IDS_PRINT_FINISHINGS_PUNCH_MULTIPLE_RIGHT" desc="PWG 5100.1 (5.1.4) PWG 5100.1-2017 'finishings' Values: punch-multiple-right">
+      Multiple punch right
+    </message>
+    <message name="IDS_PRINT_FINISHINGS_PUNCH_MULTIPLE_BOTTOM" desc="PWG 5100.1 (5.1.4) PWG 5100.1-2017 'finishings' Values: punch-multiple-bottom">
+      Multiple punch bottom
+    </message>
+    <message name="IDS_PRINT_FINISHINGS_FOLD_ACCORDION" desc="PWG 5100.1 (5.1.3) PWG 5100.1-2014 'finishings' Values: fold-accordion">
+      Accordion fold
+    </message>
+    <message name="IDS_PRINT_FINISHINGS_FOLD_DOUBLE_GATE" desc="PWG 5100.1 (5.1.3) PWG 5100.1-2014 'finishings' Values: fold-double-gate">
+      Double-gate fold
+    </message>
+    <message name="IDS_PRINT_FINISHINGS_FOLD_GATE" desc="PWG 5100.1 (5.1.3) PWG 5100.1-2014 'finishings' Values: fold-gate">
+      Gate fold
+    </message>
+    <message name="IDS_PRINT_FINISHINGS_FOLD_HALF" desc="PWG 5100.1 (5.1.3) PWG 5100.1-2014 'finishings' Values: fold-half">
+      Fold half
+    </message>
+    <message name="IDS_PRINT_FINISHINGS_FOLD_HALF_Z" desc="PWG 5100.1 (5.1.3) PWG 5100.1-2014 'finishings' Values: fold-half-z">
+      Z-fold half
+    </message>
+    <message name="IDS_PRINT_FINISHINGS_FOLD_LEFT_GATE" desc="PWG 5100.1 (5.1.3) PWG 5100.1-2014 'finishings' Values: fold-left-gate">
+      Left gate fold
+    </message>
+    <message name="IDS_PRINT_FINISHINGS_FOLD_LETTER" desc="PWG 5100.1 (5.1.3) PWG 5100.1-2014 'finishings' Values: fold-letter">
+      Letter fold
+    </message>
+    <message name="IDS_PRINT_FINISHINGS_FOLD_PARALLEL" desc="PWG 5100.1 (5.1.3) PWG 5100.1-2014 'finishings' Values: fold-parallel">
+      Parallel fold
+    </message>
+    <message name="IDS_PRINT_FINISHINGS_FOLD_POSTER" desc="PWG 5100.1 (5.1.3) PWG 5100.1-2014 'finishings' Values: fold-poster">
+      Poster fold
+    </message>
+    <message name="IDS_PRINT_FINISHINGS_FOLD_RIGHT_GATE" desc="PWG 5100.1 (5.1.3) PWG 5100.1-2014 'finishings' Values: fold-right-gate">
+      Right gate fold
+    </message>
+    <message name="IDS_PRINT_FINISHINGS_FOLD_Z" desc="PWG 5100.1 (5.1.3) PWG 5100.1-2014 'finishings' Values: fold-z">
+      Z-fold
+    </message>
+    <message name="IDS_PRINT_FINISHINGS_FOLD_ENGINEERING_Z" desc="PWG 5100.1 (5.1.4) PWG 5100.1-2017 'finishings' Values: fold-engineering-z">
+      Engineering Z-fold
+    </message>
+    <message name="IDS_PRINT_PRINT_QUALITY_DRAFT" desc="RFC 8011 (5.2.13) print-quality: draft">
+      Draft
+    </message>
+    <message name="IDS_PRINT_PRINT_QUALITY_NORMAL" desc="RFC 8011 (5.2.13) print-quality: normal">
+      Normal
+    </message>
+    <message name="IDS_PRINT_PRINT_QUALITY_HIGH" desc="RFC 8011 (5.2.13) print-quality: high">
+      High
+    </message>
+  </if>
 </grit-part>

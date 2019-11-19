@@ -23,9 +23,13 @@ class BadgedProfilePhoto : public views::View {
     BADGE_TYPE_SYNC_ERROR,
     BADGE_TYPE_SYNC_PAUSED,
     BADGE_TYPE_SYNC_DISABLED,
+    BADGE_TYPE_SYNC_OFF,
   };
 
   static const char kViewClassName[];
+
+  // Width/Height of the profile photo.
+  static constexpr int kImageSize = 40;
 
   // Constructs a View hierarchy with the gfx::ImageSkia corresponding to
   // |badge_type| positioned in the bottom-right corner of |profile_photo|. In

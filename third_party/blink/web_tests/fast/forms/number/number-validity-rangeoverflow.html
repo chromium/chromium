@@ -57,6 +57,8 @@ checkNotOverflow('0.999999999999999999999999999999999999999999', '0.999999999999
 checkOverflow('101', '100');
 checkOverflow('-99', '-100');
 checkOverflow('101', '1E+2');
+input.min = '-2';
+checkOverflow('-.8', '-1');
 input.min = '200';  // value < min && value > max
 checkOverflow('101', '100');
 

@@ -72,9 +72,6 @@ class SignedExchangeBrowserTestHelper {
   static const uint64_t kSignatureHeaderExpires;
 
  private:
-  static void InstallMockInterceptors(const GURL& url,
-                                      const std::string& data_path);
-
   bool OnInterceptCallback(URLLoaderInterceptor::RequestParams* params);
 
   std::unique_ptr<URLLoaderInterceptor> interceptor_;

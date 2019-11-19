@@ -9,9 +9,9 @@
 <dom-module id="settings-radio-group">
   <template>
     <style include="settings-shared"></style>
-    <div>[[label]]</div>
     <cr-radio-group selected="[[selected]]"
-        on-selected-changed="onSelectedChanged_">
+        on-selected-changed="onSelectedChanged_"
+        aria-label$="[[groupAriaLabel]]">
       <slot></slot>
     </cr-radio-group>
   </template>

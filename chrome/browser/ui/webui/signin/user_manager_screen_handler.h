@@ -17,8 +17,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/profiles/profile_statistics.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
+#include "chrome/browser/ui/browser_list_observer.h"
 #include "content/public/browser/web_ui_message_handler.h"
 #include "google_apis/gaia/gaia_oauth_client.h"
 
@@ -43,10 +42,9 @@ enum AuthenticatedLaunchUserEvent {
   EVENT_COUNT,
 };
 
-class UserManagerScreenHandler
-    : public content::WebUIMessageHandler,
-      public gaia::GaiaOAuthClient::Delegate,
-      public content::NotificationObserver {
+class UserManagerScreenHandler : public content::WebUIMessageHandler,
+                                 public BrowserListObserver,
+                                 public gaia::GaiaOAuthClient::Delegate {
  public:
   UserManagerScreenHandler();
   ~UserManagerScreenHandler() override;
@@ -58,13 +56,11 @@ class UserManagerScreenHandler
   // that all the visible user manager screens can be updated.
   class ProfileUpdateObserver;
 
-  // WebUIMessageHandler implementation.
+  // WebUIMessageHandler:
   void RegisterMessages() override;
 
-  // content::NotificationObserver implementation:
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
+  // BrowserListObserver:
+  void OnBrowserAdded(Browser* browser) override;
 
   void HandleInitialize(const base::ListValue* args);
   void HandleAuthenticatedLaunchUser(const base::ListValue* args);
@@ -73,7 +69,6 @@ class UserManagerScreenHandler
   void HandleRemoveUser(const base::ListValue* args);
   void HandleAreAllProfilesLocked(const base::ListValue* args);
   void HandleRemoveUserWarningLoadStats(const base::ListValue* args);
-  void HandleGetRemoveWarningDialogMessage(const base::ListValue* args);
 
   // Function used to gather statistics from a profile.
   void GatherStatistics(base::Time start_time, Profile* profile);
@@ -83,14 +78,11 @@ class UserManagerScreenHandler
                                          base::Time start_time,
                                          profiles::ProfileCategoryStats result);
 
-  // Handle GAIA auth results.
+  // gaia::GaiaOAuthClient::Delegate:
   void OnGetTokenInfoResponse(
       std::unique_ptr<base::DictionaryValue> token_info) override;
   void OnOAuthError() override;
   void OnNetworkError(int response_code) override;
-
-  // Handle when Notified of a NOTIFICATION_BROWSER_OPENED event.
-  void OnBrowserOpened(Browser* browser);
 
   // Sends user list to account chooser.
   void SendUserList();
@@ -119,12 +111,10 @@ class UserManagerScreenHandler
   // URL hash, used to key post-profile actions if present.
   std::string url_hash_;
 
-  content::NotificationRegistrar registrar_;
-
   // The CancelableTaskTracker is currently used by GetProfileStatistics
   base::CancelableTaskTracker tracker_;
 
-  base::WeakPtrFactory<UserManagerScreenHandler> weak_ptr_factory_;
+  base::WeakPtrFactory<UserManagerScreenHandler> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(UserManagerScreenHandler);
 };

@@ -1,0 +1,42 @@
+<style include="cr-hidden-style">
+  :host {
+    align-items: center;
+    background-color: rgba(241, 241, 241, .9);
+    color: var(--cr-secondary-text-color);
+    display: flex;
+    height: 100%;
+    justify-content: center;
+    position: absolute;
+    width: 100%;
+    z-index: 10;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :host {
+      /* TODO(dbeam): share with cr-dialog dialog::backdrop? */
+      background-color: rgba(0, 0, 0, .6);
+    }
+  }
+
+  #container {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+  }
+
+  iron-icon {
+    height: 64px;
+    margin-bottom: 16px;
+    width: 64px;
+  }
+
+  #text {
+    color: #6e6e6e;
+    font-size: 123.1%;
+    font-weight: 500;
+  }
+</style>
+<div id="container">
+  <iron-icon icon="cr:extension"></iron-icon>
+  <div id="text">$i18n{dropToInstall}</div>
+</div>

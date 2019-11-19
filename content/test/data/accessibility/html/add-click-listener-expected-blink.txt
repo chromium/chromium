@@ -2,3 +2,5 @@ rootWebArea name='Done'
 ++genericContainer
 ++++genericContainer
 ++++++button name='This should be accessible'
+++++++++staticText name='This should be accessible'
+++++++++++inlineTextBox name='This should be accessible'

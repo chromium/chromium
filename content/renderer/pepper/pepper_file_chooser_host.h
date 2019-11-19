@@ -63,7 +63,7 @@ class CONTENT_EXPORT PepperFileChooserHost
   ppapi::host::ReplyMessageContext reply_context_;
   CompletionHandler* handler_;
 
-  base::WeakPtrFactory<PepperFileChooserHost> weak_factory_;
+  base::WeakPtrFactory<PepperFileChooserHost> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PepperFileChooserHost);
 };

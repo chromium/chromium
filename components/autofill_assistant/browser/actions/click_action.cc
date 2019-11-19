@@ -9,43 +9,63 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "components/autofill_assistant/browser/actions/action_delegate.h"
+#include "components/autofill_assistant/browser/client_status.h"
+#include "components/autofill_assistant/browser/service.pb.h"
 
 namespace autofill_assistant {
 
-ClickAction::ClickAction(const ActionProto& proto)
-    : Action(proto), weak_ptr_factory_(this) {
+ClickAction::ClickAction(ActionDelegate* delegate, const ActionProto& proto)
+    : Action(delegate, proto) {
   DCHECK(proto_.has_click());
+  switch (proto.click().click_type()) {
+    case ClickProto_ClickType_NOT_SET:  // default: TAP
+    case ClickProto_ClickType_TAP:
+      click_type_ = TAP;
+      break;
+    case ClickProto_ClickType_JAVASCRIPT:
+      click_type_ = JAVASCRIPT;
+      break;
+    case ClickProto_ClickType_CLICK:
+      click_type_ = CLICK;
+      break;
+  }
 }
 
 ClickAction::~ClickAction() {}
 
-void ClickAction::InternalProcessAction(ActionDelegate* delegate,
-                                        ProcessActionCallback callback) {
-  DCHECK_GT(proto_.click().element_to_click().selectors_size(), 0);
-  delegate->ShortWaitForElementExist(
-      Selector(proto_.click().element_to_click()),
-      base::BindOnce(&ClickAction::OnWaitForElement,
-                     weak_ptr_factory_.GetWeakPtr(), base::Unretained(delegate),
-                     std::move(callback)));
+void ClickAction::InternalProcessAction(ProcessActionCallback callback) {
+  Selector selector =
+      Selector(proto_.click().element_to_click()).MustBeVisible();
+  if (selector.empty()) {
+    DVLOG(1) << __func__ << ": empty selector";
+    UpdateProcessedAction(INVALID_SELECTOR);
+    std::move(callback).Run(std::move(processed_action_proto_));
+    return;
+  }
+  delegate_->ShortWaitForElement(selector,
+                                 base::BindOnce(&ClickAction::OnWaitForElement,
+                                                weak_ptr_factory_.GetWeakPtr(),
+                                                std::move(callback), selector));
 }
 
-void ClickAction::OnWaitForElement(ActionDelegate* delegate,
-                                   ProcessActionCallback callback,
-                                   bool element_found) {
-  if (!element_found) {
-    UpdateProcessedAction(ELEMENT_RESOLUTION_FAILED);
+void ClickAction::OnWaitForElement(ProcessActionCallback callback,
+                                   const Selector& selector,
+                                   const ClientStatus& element_status) {
+  if (!element_status.ok()) {
+    UpdateProcessedAction(element_status.proto_status());
     std::move(callback).Run(std::move(processed_action_proto_));
     return;
   }
 
-  delegate->ClickOrTapElement(
-      Selector(proto_.click().element_to_click()),
+  delegate_->ClickOrTapElement(
+      selector, click_type_,
       base::BindOnce(&::autofill_assistant::ClickAction::OnClick,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void ClickAction::OnClick(ProcessActionCallback callback, bool status) {
-  UpdateProcessedAction(status ? ACTION_APPLIED : OTHER_ACTION_STATUS);
+void ClickAction::OnClick(ProcessActionCallback callback,
+                          const ClientStatus& status) {
+  UpdateProcessedAction(status);
   std::move(callback).Run(std::move(processed_action_proto_));
 }
 

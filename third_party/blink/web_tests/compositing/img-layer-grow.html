@@ -2,22 +2,13 @@
 <html>
 <head>
 <script src="../resources/run-after-layout-and-paint.js"></script>
-<script src="resources/mock_scrollbars.js"></script>
 <script type="text/javascript" charset="utf-8">
-
-  if (window.testRunner) {
-    testRunner.waitUntilDone();
-    testRunner.dumpAsTextWithPixelResults(); // This is only useful as a pixel test.
-  }
-
   function doTest()
   {
     div = document.getElementById("div");
     runAfterLayoutAndPaint(function() {
       div.style.height = "1600px";
-      if (window.testRunner)
-        testRunner.notifyDone();
-    });
+    }, true);
   }
 
   window.addEventListener('load', doTest, false);
@@ -26,7 +17,7 @@
 </head>
 <body>
   <div id="div">
-    <img id="image" src="resources/apple.jpg" style="transform: translateZ(0);">
+    <img id="image" src="resources/apple.jpg" style="will-change: transform;">
   </div>
 </body>
 </html>

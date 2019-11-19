@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit latest_public_release="0" current_release="1" output_all_resource_defines="false">
+  <outputs>
+    <output filename="grit/resources.h" type="rc_header">
+      <emit emit_type='prepend'></emit>
+    </output>
+    <output filename="bindings_resources.pak" type="data_package" />
+  </outputs>
+  <translations />
+  <release seq="1">
+    <includes>
+      <include name="IDR_PORT_CONNECTOR_JS" file="resources\named_message_port_connector.js" type="BINDATA" />
+    </includes>
+  </release>
+</grit>

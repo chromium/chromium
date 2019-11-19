@@ -20,12 +20,12 @@ interface PluginHost {
   CouldNotLoadPlugin(mojo_base.mojom.FilePath file_path);
 
   // Notifies when a plugin couldn't be loaded because it's outdated.
-  BlockedOutdatedPlugin(PluginRenderer plugin_renderer,
+  BlockedOutdatedPlugin(pending_remote<PluginRenderer> plugin_renderer,
                         string group_id);
 
   // Notifies when a plugin couldn't be loaded because it requires a
   // component update.
-  BlockedComponentUpdatedPlugin(PluginRenderer plugin_renderer,
+  BlockedComponentUpdatedPlugin(pending_remote<PluginRenderer> plugin_renderer,
                                 string group_id);
 
 };

@@ -49,7 +49,7 @@ suite('Metrics', function() {
 
       /** @override */
       deleteItems: function() {
-        return PolymerTest.flushTasks();
+        return test_util.flushTasks();
       }
     };
   });
@@ -63,7 +63,7 @@ suite('Metrics', function() {
 
     app = replaceApp();
     updateSignInState(false);
-    return PolymerTest.flushTasks();
+    return test_util.flushTasks();
   });
 
   test('History.HistoryPageView', function() {
@@ -75,7 +75,7 @@ suite('Metrics', function() {
     app.selectedPage_ = 'syncedTabs';
     assertEquals(1, histogram[HistoryPageViewHistogram.SIGNIN_PROMO]);
     updateSignInState(true);
-    return PolymerTest.flushTasks().then(() => {
+    return test_util.flushTasks().then(() => {
       assertEquals(1, histogram[HistoryPageViewHistogram.SYNCED_TABS]);
       app.selectedPage_ = 'history';
       assertEquals(2, histogram[HistoryPageViewHistogram.HISTORY]);
@@ -83,14 +83,19 @@ suite('Metrics', function() {
   });
 
   test('history-list', function() {
-    const historyEntry =
-        createHistoryEntry('2015-01-01', 'http://www.google.com');
-    historyEntry.starred = true;
-    app.historyResult(createHistoryInfo(), [
-      createHistoryEntry('2015-01-01', 'http://www.example.com'), historyEntry
-    ]);
+    // Create a history entry that is between 7 and 8 days in the past. For the
+    // purposes of the tested functionality, we consider a day to be a 24 hour
+    // period, with no regard to DST shifts.
+    const weekAgo =
+        new Date(new Date().getTime() - 7 * 24 * 60 * 60 * 1000 - 1);
 
-    return PolymerTest.flushTasks()
+    const historyEntry = createHistoryEntry(weekAgo, 'http://www.google.com');
+    historyEntry.starred = true;
+    app.historyResult(
+        createHistoryInfo(),
+        [createHistoryEntry(weekAgo, 'http://www.example.com'), historyEntry]);
+
+    return test_util.flushTasks()
         .then(() => {
           const items = polymerSelectAll(app.$.history, 'history-item');
           MockInteractions.tap(items[1].$$('#bookmark-star'));
@@ -100,15 +105,25 @@ suite('Metrics', function() {
           assertEquals(1, histogramMap['HistoryPage.ClickPosition'][1]);
           assertEquals(1, histogramMap['HistoryPage.ClickPositionSubset'][1]);
 
+          // TODO(https://crbug.com/1000573): Log the contents of this histogram
+          // for debugging in case the flakiness reoccurs.
+          console.log(Object.keys(histogramMap['HistoryPage.ClickAgeInDays']));
+
+          // The "age in days" histogram should record 8 days, since the history
+          // entry was created between 7 and 8 days ago and we round the
+          // recorded value up.
+          assertEquals(1, histogramMap['HistoryPage.ClickAgeInDays'][8]);
+          assertEquals(1, histogramMap['HistoryPage.ClickAgeInDaysSubset'][8]);
+
           app.fire('change-query', {search: 'goog'});
           assertEquals(1, actionMap['Search']);
           app.set('queryState_.incremental', true);
           app.historyResult(createHistoryInfo('goog'), [
-            createHistoryEntry('2015-01-01', 'http://www.google.com'),
-            createHistoryEntry('2015-01-01', 'http://www.google.com'),
-            createHistoryEntry('2015-01-01', 'http://www.google.com')
+            createHistoryEntry(weekAgo, 'http://www.google.com'),
+            createHistoryEntry(weekAgo, 'http://www.google.com'),
+            createHistoryEntry(weekAgo, 'http://www.google.com')
           ]);
-          return PolymerTest.flushTasks();
+          return test_util.flushTasks();
         })
         .then(() => {
           items = polymerSelectAll(app.$.history, 'history-item');
@@ -118,32 +133,32 @@ suite('Metrics', function() {
           assertEquals(1, histogramMap['HistoryPage.ClickPositionSubset'][0]);
           MockInteractions.tap(items[0].$.checkbox);
           MockInteractions.tap(items[4].$.checkbox);
-          return PolymerTest.flushTasks();
+          return test_util.flushTasks();
         })
         .then(() => {
           app.$.toolbar.deleteSelectedItems();
           assertEquals(1, actionMap['RemoveSelected']);
-          return PolymerTest.flushTasks();
+          return test_util.flushTasks();
         })
         .then(() => {
           MockInteractions.tap(app.$.history.$$('.cancel-button'));
           assertEquals(1, actionMap['CancelRemoveSelected']);
           app.$.toolbar.deleteSelectedItems();
-          return PolymerTest.flushTasks();
+          return test_util.flushTasks();
         })
         .then(() => {
           MockInteractions.tap(app.$.history.$$('.action-button'));
           assertEquals(1, actionMap['ConfirmRemoveSelected']);
-          return PolymerTest.flushTasks();
+          return test_util.flushTasks();
         })
         .then(() => {
           items = polymerSelectAll(app.$.history, 'history-item');
           MockInteractions.tap(items[0].$['menu-button']);
-          return PolymerTest.flushTasks();
+          return test_util.flushTasks();
         })
         .then(() => {
           MockInteractions.tap(app.$.history.$$('#menuRemoveButton'));
-          return PolymerTest.flushTasks();
+          return test_util.flushTasks();
         })
         .then(() => {
           assertEquals(1, histogramMap['HistoryPage.RemoveEntryPosition'][0]);
@@ -156,7 +171,7 @@ suite('Metrics', function() {
     app.selectedPage_ = 'syncedTabs';
     let histogram;
     let menuButton;
-    return PolymerTest.flushTasks()
+    return test_util.flushTasks()
         .then(() => {
           histogram = histogramMap[SYNCED_TABS_HISTOGRAM_NAME];
           assertEquals(1, histogram[SyncedTabsHistogram.INITIALIZED]);
@@ -173,11 +188,11 @@ suite('Metrics', function() {
                 ]),
           ];
           setForeignSessions(sessionList);
-          return PolymerTest.flushTasks();
+          return test_util.flushTasks();
         })
         .then(() => {
           assertEquals(1, histogram[SyncedTabsHistogram.HAS_FOREIGN_DATA]);
-          return PolymerTest.flushTasks();
+          return test_util.flushTasks();
         })
         .then(() => {
           cards = polymerSelectAll(
@@ -191,14 +206,14 @@ suite('Metrics', function() {
 
           menuButton = cards[0].$['menu-button'];
           MockInteractions.tap(menuButton);
-          return PolymerTest.flushTasks();
+          return test_util.flushTasks();
         })
         .then(() => {
           MockInteractions.tap(app.$$('#synced-devices').$$('#menuOpenButton'));
           assertEquals(1, histogram[SyncedTabsHistogram.OPEN_ALL]);
 
           MockInteractions.tap(menuButton);
-          return PolymerTest.flushTasks();
+          return test_util.flushTasks();
         })
         .then(() => {
           MockInteractions.tap(

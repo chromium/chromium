@@ -28,6 +28,7 @@ class StubDecodeCache : public ImageDecodeCache {
   void ClearCache() override {}
   size_t GetMaximumMemoryLimitBytes() const override;
   bool UseCacheForDrawImage(const DrawImage& image) const override;
+  void RecordStats() override {}
 };
 
 }  // namespace cc

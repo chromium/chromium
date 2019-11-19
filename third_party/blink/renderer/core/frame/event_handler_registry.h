@@ -24,7 +24,7 @@ typedef HashCountedSet<UntracedMember<EventTarget>> EventTargetSet;
 // event targets for a frame may only be registered with the
 // EventHandlerRegistry of its corresponding local root.
 class CORE_EXPORT EventHandlerRegistry final
-    : public GarbageCollectedFinalized<EventHandlerRegistry> {
+    : public GarbageCollected<EventHandlerRegistry> {
  public:
   explicit EventHandlerRegistry(LocalFrame&);
   virtual ~EventHandlerRegistry();
@@ -41,8 +41,9 @@ class CORE_EXPORT EventHandlerRegistry final
     kTouchStartOrMoveEventPassive,
     kTouchEndOrCancelEventBlocking,
     kTouchEndOrCancelEventPassive,
-    kPointerEvent,  // This includes all pointerevents excluding pointerrawmove.
-    kPointerRawMoveEvent,
+    kPointerEvent,  // This includes all pointerevents excluding
+                    // pointerrawupdate.
+    kPointerRawUpdateEvent,
 #if DCHECK_IS_ON()
     // Additional event categories for verifying handler tracking logic.
     kEventsForTesting,
@@ -78,7 +79,6 @@ class CORE_EXPORT EventHandlerRegistry final
   void DocumentDetached(Document&);
 
   void Trace(blink::Visitor*);
-  void ClearWeakMembers(Visitor*);
 
  private:
   enum ChangeOperation {
@@ -128,6 +128,8 @@ class CORE_EXPORT EventHandlerRegistry final
   void CheckConsistency(EventHandlerClass) const;
 
   Page* GetPage() const;
+
+  void ProcessCustomWeakness(const WeakCallbackInfo&);
 
   Member<LocalFrame> frame_;
   EventTargetSet targets_[kEventHandlerClassCount];

@@ -4,10 +4,14 @@
 
 #include "components/browsing_data/core/browsing_data_utils.h"
 
+#include <string>
+#include <vector>
+
 #include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/no_destructor.h"
+#include "base/strings/utf_string_conversions.h"
 #include "components/browsing_data/core/counters/autofill_counter.h"
 #include "components/browsing_data/core/counters/history_counter.h"
 #include "components/browsing_data/core/counters/passwords_counter.h"
@@ -114,15 +118,46 @@ base::string16 GetCounterTextFromResult(
     text = l10n_util::GetStringUTF16(IDS_CLEAR_BROWSING_DATA_CALCULATING);
 
   } else if (pref_name == prefs::kDeletePasswords) {
-    const BrowsingDataCounter::SyncResult* password_result =
-        static_cast<const BrowsingDataCounter::SyncResult*>(result);
+    const PasswordsCounter::PasswordsResult* password_result =
+        static_cast<const PasswordsCounter::PasswordsResult*>(result);
 
-    BrowsingDataCounter::ResultInt count = password_result->Value();
+    BrowsingDataCounter::ResultInt password_count = password_result->Value();
+    const std::vector<std::string>& domain_examples =
+        password_result->domain_examples();
 
-    text = l10n_util::GetPluralStringFUTF16(
-        password_result->is_sync_enabled() ? IDS_DEL_PASSWORDS_COUNTER_SYNCED
-                                           : IDS_DEL_PASSWORDS_COUNTER,
-        count);
+    DCHECK_GE(password_count,
+              base::checked_cast<browsing_data::BrowsingDataCounter::ResultInt>(
+                  domain_examples.size()));
+    DCHECK_EQ(domain_examples.empty(), password_count == 0);
+
+    std::vector<base::string16> replacements;
+    if (domain_examples.size()) {
+      replacements.emplace_back(base::UTF8ToUTF16(domain_examples[0]));
+      if (domain_examples.size() > 1) {
+        replacements.emplace_back(base::UTF8ToUTF16(domain_examples[1]));
+      }
+      if (password_count > 2 && domain_examples.size() > 1) {
+        replacements.emplace_back(l10n_util::GetPluralStringFUTF16(
+            IDS_DEL_PASSWORDS_COUNTER_AND_X_MORE, password_count - 2));
+      }
+      const base::string16& domains_list = base::ReplaceStringPlaceholders(
+          l10n_util::GetPluralStringFUTF16(IDS_DEL_PASSWORDS_DOMAINS_DISPLAY,
+                                           (domain_examples.size() > 1)
+                                               ? password_count
+                                               : domain_examples.size()),
+          replacements, nullptr);
+      text = base::ReplaceStringPlaceholders(
+          l10n_util::GetPluralStringFUTF16(
+              password_result->is_sync_enabled()
+                  ? IDS_DEL_PASSWORDS_COUNTER_SYNCED
+                  : IDS_DEL_PASSWORDS_COUNTER,
+              password_count),
+          {domains_list}, nullptr);
+    } else {
+      text = l10n_util::GetStringUTF16(
+          IDS_DEL_PASSWORDS_AND_SIGNIN_DATA_COUNTER_NONE);
+    }
+
   } else if (pref_name == prefs::kDeleteDownloadHistory) {
     BrowsingDataCounter::ResultInt count =
         static_cast<const BrowsingDataCounter::FinishedResult*>(result)
@@ -310,8 +345,7 @@ BrowsingDataType GetDataTypeFromDeletionPreference(
           {prefs::kDeleteSiteSettings, BrowsingDataType::SITE_SETTINGS},
           {prefs::kDeleteDownloadHistory, BrowsingDataType::DOWNLOADS},
           {prefs::kDeleteHostedAppsData, BrowsingDataType::HOSTED_APPS_DATA},
-      },
-      base::KEEP_FIRST_OF_DUPES);
+      });
 
   auto iter = preference_to_datatype->find(pref_name);
   DCHECK(iter != preference_to_datatype->end());

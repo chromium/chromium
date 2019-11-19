@@ -5,9 +5,9 @@
 #ifndef IOS_WEB_SHELL_TEST_APP_WEB_SHELL_TEST_UTIL_H_
 #define IOS_WEB_SHELL_TEST_APP_WEB_SHELL_TEST_UTIL_H_
 
-#import "ios/web/public/web_state/web_state.h"
-
 namespace web {
+class WebState;
+
 namespace shell_test_util {
 
 // Gets the current WebState for the web shell.

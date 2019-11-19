@@ -23,8 +23,6 @@ class SequencedTaskRunner;
 
 namespace net {
 
-class NetLogCaptureMode;
-
 // FileNetLogObserver watches the NetLog event stream and sends all entries to
 // a file.
 //

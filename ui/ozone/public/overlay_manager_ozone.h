@@ -22,11 +22,6 @@ class OverlayManagerOzone {
   // Get the hal struct to check for overlay support.
   virtual std::unique_ptr<OverlayCandidatesOzone> CreateOverlayCandidates(
       gfx::AcceleratedWidget w) = 0;
-
-  // Whether the underlying platform supports deferring compositing of buffers
-  // via overlays. In cases where overlays are not supported the promotion and
-  // validation logics can be skipped client side.
-  virtual bool SupportsOverlays() const = 0;
 };
 
 }  // namespace ui

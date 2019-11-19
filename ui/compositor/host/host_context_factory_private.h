@@ -13,7 +13,10 @@
 #include "base/memory/scoped_refptr.h"
 #include "components/viz/common/display/renderer_settings.h"
 #include "components/viz/common/surfaces/frame_sink_id_allocator.h"
-#include "services/viz/privileged/interfaces/compositing/display_private.mojom.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "services/viz/privileged/mojom/compositing/display_private.mojom.h"
+#include "services/viz/privileged/mojom/compositing/external_begin_frame_controller.mojom.h"
 #include "ui/compositor/compositor.h"
 
 namespace base {
@@ -28,7 +31,7 @@ class RasterContextProvider;
 
 namespace ui {
 
-class ExternalBeginFrameControllerClientImpl;
+struct PendingBeginFrameArgs;
 
 class HostContextFactoryPrivate : public ContextFactoryPrivate {
  public:
@@ -75,15 +78,23 @@ class HostContextFactoryPrivate : public ContextFactoryPrivate {
   void SetDisplayColorMatrix(Compositor* compositor,
                              const SkMatrix44& matrix) override;
   void SetDisplayColorSpace(Compositor* compositor,
-                            const gfx::ColorSpace& blending_color_space,
-                            const gfx::ColorSpace& output_color_space) override;
+                            const gfx::ColorSpace& output_color_space,
+                            float sdr_white_level) override;
   void SetDisplayVSyncParameters(Compositor* compositor,
                                  base::TimeTicks timebase,
                                  base::TimeDelta interval) override;
-  void IssueExternalBeginFrame(Compositor* compositor,
-                               const viz::BeginFrameArgs& args) override;
+  void IssueExternalBeginFrame(
+      Compositor* compositor,
+      const viz::BeginFrameArgs& args,
+      bool force,
+      base::OnceCallback<void(const viz::BeginFrameAck&)> callback) override;
   void SetOutputIsSecure(Compositor* compositor, bool secure) override;
-  viz::FrameSinkManagerImpl* GetFrameSinkManager() override;
+  void AddVSyncParameterObserver(
+      Compositor* compositor,
+      mojo::PendingRemote<viz::mojom::VSyncParameterObserver> observer)
+      override;
+  void SetDisplayTransformHint(Compositor* compositor,
+                               gfx::OverlayTransform transform) override;
 
  private:
   struct CompositorData {
@@ -94,13 +105,12 @@ class HostContextFactoryPrivate : public ContextFactoryPrivate {
 
     // Privileged interface that controls the display for a root
     // CompositorFrameSink.
-    viz::mojom::DisplayPrivateAssociatedPtr display_private;
+    mojo::AssociatedRemote<viz::mojom::DisplayPrivate> display_private;
     std::unique_ptr<viz::HostDisplayClient> display_client;
+    mojo::AssociatedRemote<viz::mojom::ExternalBeginFrameController>
+        external_begin_frame_controller;
 
-    // Controls external BeginFrames for the display. Only set if external
-    // BeginFrames are enabled for the compositor.
-    std::unique_ptr<ExternalBeginFrameControllerClientImpl>
-        external_begin_frame_controller_client;
+    std::unique_ptr<PendingBeginFrameArgs> pending_begin_frame_args;
 
     // SetOutputIsSecure is called before the compositor is ready, so remember
     // the status and apply it during configuration.
@@ -114,7 +124,6 @@ class HostContextFactoryPrivate : public ContextFactoryPrivate {
 
   viz::FrameSinkIdAllocator frame_sink_id_allocator_;
   viz::HostFrameSinkManager* host_frame_sink_manager_;
-  const viz::RendererSettings renderer_settings_;
 
   bool is_gpu_compositing_disabled_ = false;
 

@@ -1,0 +1,18 @@
+document
+++group
+++++img
+++++++description Name='Static fallback'
+++++img
+++++++description Name='<newline>    '
+++++++group Name='Aria hidden paragraph in fallback content'
+++++++++description Name='Line breaking content in a fallback'
+++++++description Name='<newline>    '
+++++++group Name='Visibility hidden paragraph in fallback content'
+++++++++description Name='This is another paragraph in fallback'
+++++++description Name='<newline>    '
+++++++heading Name='Aria hidden paragraph in fallback content'
+++++++description Name='<newline>    '
+++++++heading
+++++++description Name='<newline>    '
+++++++heading
+++++++description Name='<newline>  '

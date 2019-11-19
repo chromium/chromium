@@ -5,6 +5,7 @@
 #include "media/video/h264_level_limits.h"
 
 #include "base/logging.h"
+#include "base/stl_util.h"
 #include "media/video/h264_parser.h"
 
 namespace media {
@@ -139,6 +140,29 @@ bool CheckH264LevelLimits(VideoCodecProfile profile,
   }
 
   return true;
+}
+
+base::Optional<uint8_t> FindValidH264Level(VideoCodecProfile profile,
+                                           uint32_t bitrate,
+                                           uint32_t framerate,
+                                           uint32_t framesize_in_mbs) {
+  constexpr uint8_t kH264Levels[] = {
+      H264SPS::kLevelIDC1p0, H264SPS::kLevelIDC1B,  H264SPS::kLevelIDC1p1,
+      H264SPS::kLevelIDC1p2, H264SPS::kLevelIDC1p3, H264SPS::kLevelIDC2p0,
+      H264SPS::kLevelIDC2p1, H264SPS::kLevelIDC2p2, H264SPS::kLevelIDC3p0,
+      H264SPS::kLevelIDC3p1, H264SPS::kLevelIDC3p2, H264SPS::kLevelIDC4p0,
+      H264SPS::kLevelIDC4p1, H264SPS::kLevelIDC4p2, H264SPS::kLevelIDC5p0,
+      H264SPS::kLevelIDC5p1, H264SPS::kLevelIDC5p2, H264SPS::kLevelIDC6p0,
+      H264SPS::kLevelIDC6p1, H264SPS::kLevelIDC6p2,
+  };
+
+  for (const uint8_t level : kH264Levels) {
+    if (CheckH264LevelLimits(profile, level, bitrate, framerate,
+                             framesize_in_mbs)) {
+      return level;
+    }
+  }
+  return base::nullopt;
 }
 
 }  // namespace media

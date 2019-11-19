@@ -1,4 +1,4 @@
 [document web] tag:#document
 ++[section] tag:body
-++++[text] name='Web Browser'
-++++[text] name=' A computer program with a graphical user interface for displaying HTML files, used to navigate the World Wide Web.'
+++++[static] name='Web Browser'
+++++[static] name=' A computer program with a graphical user interface for displaying HTML files, used to navigate the World Wide Web.'

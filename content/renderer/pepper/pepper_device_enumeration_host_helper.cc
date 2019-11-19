@@ -30,8 +30,8 @@ class PepperDeviceEnumerationHostHelper::ScopedEnumerationRequest
  public:
   // |owner| must outlive this object.
   ScopedEnumerationRequest(PepperDeviceEnumerationHostHelper* owner,
-                           const Delegate::DevicesCallback& callback)
-      : callback_(callback), requested_(false), sync_call_(false) {
+                           Delegate::DevicesOnceCallback callback)
+      : callback_(std::move(callback)), requested_(false), sync_call_(false) {
     if (!owner->delegate_) {
       // If no delegate, return an empty list of devices.
       base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -53,8 +53,8 @@ class PepperDeviceEnumerationHostHelper::ScopedEnumerationRequest
     sync_call_ = true;
     owner->delegate_->EnumerateDevices(
         owner->device_type_,
-        base::Bind(&ScopedEnumerationRequest::EnumerateDevicesCallbackBody,
-                   AsWeakPtr()));
+        base::BindOnce(&ScopedEnumerationRequest::EnumerateDevicesCallbackBody,
+                       AsWeakPtr()));
     sync_call_ = false;
   }
 
@@ -70,12 +70,12 @@ class PepperDeviceEnumerationHostHelper::ScopedEnumerationRequest
               &ScopedEnumerationRequest::EnumerateDevicesCallbackBody,
               AsWeakPtr(), devices));
     } else {
-      callback_.Run(devices);
+      std::move(callback_).Run(devices);
       // This object may have been destroyed at this point.
     }
   }
 
-  PepperDeviceEnumerationHostHelper::Delegate::DevicesCallback callback_;
+  PepperDeviceEnumerationHostHelper::Delegate::DevicesOnceCallback callback_;
   bool requested_;
   bool sync_call_;
 
@@ -89,9 +89,9 @@ class PepperDeviceEnumerationHostHelper::ScopedMonitoringRequest
  public:
   // |owner| must outlive this object.
   ScopedMonitoringRequest(PepperDeviceEnumerationHostHelper* owner,
-                          const Delegate::DevicesCallback& callback)
+                          Delegate::DevicesCallback callback)
       : owner_(owner),
-        callback_(callback),
+        callback_(std::move(callback)),
         requested_(false),
         subscription_id_(0u) {
     DCHECK(owner_);
@@ -104,7 +104,7 @@ class PepperDeviceEnumerationHostHelper::ScopedMonitoringRequest
     // |callback| is never called synchronously by StartMonitoringDevices(),
     // so it is OK to pass it directly, even if |callback| destroys |this|.
     subscription_id_ = owner_->delegate_->StartMonitoringDevices(
-        owner_->device_type_, callback);
+        owner_->device_type_, callback_);
   }
 
   ~ScopedMonitoringRequest() {
@@ -170,10 +170,10 @@ int32_t PepperDeviceEnumerationHostHelper::OnEnumerateDevices(
   if (enumerate_devices_context_.is_valid())
     return PP_ERROR_INPROGRESS;
 
-  enumerate_.reset(new ScopedEnumerationRequest(
-      this,
-      base::Bind(&PepperDeviceEnumerationHostHelper::OnEnumerateDevicesComplete,
-                 base::Unretained(this))));
+  enumerate_ = std::make_unique<ScopedEnumerationRequest>(
+      this, base::BindOnce(
+                &PepperDeviceEnumerationHostHelper::OnEnumerateDevicesComplete,
+                base::Unretained(this)));
   if (!enumerate_->requested())
     return PP_ERROR_FAILED;
 
@@ -184,9 +184,10 @@ int32_t PepperDeviceEnumerationHostHelper::OnEnumerateDevices(
 int32_t PepperDeviceEnumerationHostHelper::OnMonitorDeviceChange(
     HostMessageContext* /* context */,
     uint32_t callback_id) {
-  monitor_.reset(new ScopedMonitoringRequest(
-      this, base::Bind(&PepperDeviceEnumerationHostHelper::OnNotifyDeviceChange,
-                       base::Unretained(this), callback_id)));
+  monitor_ = std::make_unique<ScopedMonitoringRequest>(
+      this, base::BindRepeating(
+                &PepperDeviceEnumerationHostHelper::OnNotifyDeviceChange,
+                base::Unretained(this), callback_id));
 
   return monitor_->requested() ? PP_OK : PP_ERROR_FAILED;
 }

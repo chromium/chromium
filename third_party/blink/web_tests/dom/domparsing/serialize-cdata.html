@@ -1,15 +1,11 @@
-<p>Test for <a href="http://bugs.webkit.org/show_bug.cgi?id=11772">bug 11772</a>:
-XMLSerializer.serializeToString incorrect value for CDATA nodes.</p>
-<p>Should say PASS below.</p>
+<title>Test for "http://bugs.webkit.org/show_bug.cgi?id=11772":
+XMLSerializer.serializeToString incorrect value for CDATA nodes.</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
 <script>
-if (window.testRunner)
-  testRunner.dumpAsText();
-
 var d = window.document.implementation.createDocument("", "", null);
 var n = d.createCDATASection("-- <cdata> --");
 var s = (new XMLSerializer()).serializeToString(n);
-if (s == "<![CDATA[-- <cdata> --]]>")
-  document.write("PASS");
-else
-  document.write("FAIL");
+assert_equals(s, "<![CDATA[-- <cdata> --]]>");
+done();
 </script>

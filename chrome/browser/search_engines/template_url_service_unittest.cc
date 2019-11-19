@@ -19,6 +19,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/cancelable_task_tracker.h"
+#include "base/test/bind_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
 #include "base/threading/thread.h"
@@ -35,7 +36,7 @@
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::ASCIIToUTF16;
@@ -47,26 +48,6 @@ namespace {
 // A prepopulated ID to set for engines we want to show in the default list.
 // This must simply be greater than 0.
 static constexpr int kPrepopulatedId = 999999;
-
-// QueryHistoryCallbackImpl ---------------------------------------------------
-
-struct QueryHistoryCallbackImpl {
-  QueryHistoryCallbackImpl() : success(false) {}
-
-  void Callback(bool success,
-                const history::URLRow& row,
-                const history::VisitVector& visits) {
-    this->success = success;
-    if (success) {
-      this->row = row;
-      this->visits = visits;
-    }
-  }
-
-  bool success;
-  history::URLRow row;
-  history::VisitVector visits;
-};
 
 std::unique_ptr<TemplateURL> CreateKeywordWithDate(
     TemplateURLService* model,
@@ -199,7 +180,8 @@ class TemplateURLServiceTest : public testing::Test {
   }
 
  private:
-  content::TestBrowserThreadBundle thread_bundle_;  // To set up BrowserThreads.
+  content::BrowserTaskEnvironment
+      task_environment_;  // To set up BrowserThreads.
   std::unique_ptr<TemplateURLServiceTestUtil> test_util_;
 
   DISALLOW_COPY_AND_ASSIGN(TemplateURLServiceTest);
@@ -726,8 +708,8 @@ TEST_F(TemplateURLServiceTest, Reset) {
 
   // Make sure the mappings in the model were updated.
   ASSERT_EQ(t_url, model()->GetTemplateURLForKeyword(new_keyword));
-  ASSERT_TRUE(
-      model()->GetTemplateURLForKeyword(ASCIIToUTF16("keyword")) == NULL);
+  ASSERT_EQ(nullptr,
+            model()->GetTemplateURLForKeyword(ASCIIToUTF16("keyword")));
 
   std::unique_ptr<TemplateURL> cloned_url(
       std::make_unique<TemplateURL>(t_url->data()));
@@ -739,6 +721,88 @@ TEST_F(TemplateURLServiceTest, Reset) {
   ASSERT_TRUE(read_url);
   AssertEquals(*cloned_url, *read_url);
   AssertTimesEqual(now, read_url->last_modified());
+}
+
+TEST_F(TemplateURLServiceTest, CreateFromPlayAPI) {
+  test_util()->VerifyLoad();
+  const size_t initial_count = model()->GetTemplateURLs().size();
+
+  const base::string16 short_name = ASCIIToUTF16("google");
+  const base::string16 keyword = ASCIIToUTF16("keyword");
+  const std::string search_url = "http://www.google.com/foo/bar";
+  const std::string suggest_url = "http://www.google.com/suggest";
+  const std::string favicon_url = "http://favicon.url";
+  TemplateURL* t_url = model()->CreateOrUpdateTemplateURLFromPlayAPIData(
+      short_name, keyword, search_url, suggest_url, favicon_url);
+  ASSERT_EQ(short_name, t_url->short_name());
+  ASSERT_EQ(keyword, t_url->keyword());
+  ASSERT_EQ(search_url, t_url->url());
+  ASSERT_EQ(suggest_url, t_url->suggestions_url());
+  ASSERT_EQ(GURL(favicon_url), t_url->favicon_url());
+  ASSERT_TRUE(t_url->created_from_play_api());
+  ASSERT_EQ(t_url, model()->GetTemplateURLForKeyword(keyword));
+
+  auto cloned_url = std::make_unique<TemplateURL>(t_url->data());
+
+  // Reload the model from the database and make sure the change took.
+  test_util()->ResetModel(true);
+  EXPECT_EQ(initial_count + 1, model()->GetTemplateURLs().size());
+  const TemplateURL* read_url = model()->GetTemplateURLForKeyword(keyword);
+  ASSERT_TRUE(read_url);
+  AssertEquals(*cloned_url, *read_url);
+}
+
+TEST_F(TemplateURLServiceTest, UpdateFromPlayAPI) {
+  base::string16 keyword = ASCIIToUTF16("keyword");
+
+  // Add a new TemplateURL.
+  test_util()->VerifyLoad();
+  const size_t initial_count = model()->GetTemplateURLs().size();
+  TemplateURLData data;
+  data.SetShortName(ASCIIToUTF16("google"));
+  data.SetKeyword(keyword);
+  data.SetURL("http://www.google.com/foo/bar");
+  data.favicon_url = GURL("http://favicon.url");
+  data.date_created = Time::FromTimeT(100);
+  data.last_modified = Time::FromTimeT(100);
+  data.last_visited = Time::FromTimeT(100);
+  TemplateURL* t_url = model()->Add(std::make_unique<TemplateURL>(data));
+
+  VerifyObserverCount(1);
+  base::RunLoop().RunUntilIdle();
+
+  Time now = Time::Now();
+  auto clock = std::make_unique<base::SimpleTestClock>();
+  clock->SetNow(now);
+  model()->set_clock(std::move(clock));
+
+  // Reset the short name and url and make sure it takes.
+  const base::string16 new_short_name = ASCIIToUTF16("new_name");
+  const std::string new_search_url = "new_url";
+  const std::string new_suggest_url = "new_suggest_url";
+  const std::string new_favicon_url = "new_favicon_url";
+  TemplateURL* updated_turl = model()->CreateOrUpdateTemplateURLFromPlayAPIData(
+      new_short_name, keyword, new_search_url, new_suggest_url,
+      new_favicon_url);
+  ASSERT_EQ(t_url, updated_turl);
+  ASSERT_EQ(new_short_name, t_url->short_name());
+  ASSERT_EQ(keyword, t_url->keyword());
+  ASSERT_EQ(new_search_url, t_url->url());
+  ASSERT_EQ(new_suggest_url, t_url->suggestions_url());
+  ASSERT_EQ(GURL(new_favicon_url), t_url->favicon_url());
+  ASSERT_TRUE(t_url->created_from_play_api());
+
+  // Make sure the mappings in the model were updated.
+  ASSERT_EQ(t_url, model()->GetTemplateURLForKeyword(keyword));
+
+  auto cloned_url = std::make_unique<TemplateURL>(t_url->data());
+
+  // Reload the model from the database and make sure the change took.
+  test_util()->ResetModel(true);
+  EXPECT_EQ(initial_count + 1, model()->GetTemplateURLs().size());
+  const TemplateURL* read_url = model()->GetTemplateURLForKeyword(keyword);
+  ASSERT_TRUE(read_url);
+  AssertEquals(*cloned_url, *read_url);
 }
 
 TEST_F(TemplateURLServiceTest, DefaultSearchProvider) {
@@ -1126,88 +1190,35 @@ TEST_F(TemplateURLServiceTest, DontUpdateKeywordSearchForNonReplaceable) {
   }
 }
 
-TEST_F(TemplateURLServiceWithoutFallbackTest, ChangeGoogleBaseValue) {
+// Historically, {google:baseURL} keywords would change to different
+// country-specific Google URLs dynamically. That logic was removed, but test
+// that country-specific Google URLs can still be added manually.
+TEST_F(TemplateURLServiceWithoutFallbackTest, ManualCountrySpecificGoogleURL) {
   // NOTE: Do not load the prepopulate data, which also has a {google:baseURL}
   // keyword in it and would confuse this test.
   test_util()->ChangeModelToLoadState();
 
-  test_util()->SetGoogleBaseURL(GURL("http://google.com/"));
   const TemplateURL* t_url = AddKeywordWithDate(
       "name", "google.com", "{google:baseURL}?q={searchTerms}", "http://sugg1",
       std::string(), "http://icon1", false, "UTF-8;UTF-16");
-  ASSERT_EQ(t_url, model()->GetTemplateURLForHost("google.com"));
-  EXPECT_EQ("google.com", t_url->url_ref().GetHost(search_terms_data()));
+  ASSERT_EQ(t_url, model()->GetTemplateURLForHost("www.google.com"));
+  EXPECT_EQ("www.google.com", t_url->url_ref().GetHost(search_terms_data()));
   EXPECT_EQ(ASCIIToUTF16("google.com"), t_url->keyword());
 
-  // Change the Google base url.
-  test_util()->ResetObserverCount();
-  test_util()->SetGoogleBaseURL(GURL("http://google.co.uk/"));
-  VerifyObserverCount(1);
-
-  // Make sure the host->TemplateURL map was updated appropriately.
-  ASSERT_EQ(t_url, model()->GetTemplateURLForHost("google.co.uk"));
-  EXPECT_TRUE(model()->GetTemplateURLForHost("google.com") == NULL);
-  EXPECT_EQ("google.co.uk", t_url->url_ref().GetHost(search_terms_data()));
-  EXPECT_EQ(ASCIIToUTF16("google.co.uk"), t_url->keyword());
-  EXPECT_EQ("http://google.co.uk/?q=x", t_url->url_ref().ReplaceSearchTerms(
-      TemplateURLRef::SearchTermsArgs(ASCIIToUTF16("x")), search_terms_data()));
-
-  // Now add a manual entry and then change the Google base URL such that the
-  // autogenerated Google search keyword would conflict.
+  // Now add a manual entry for a country-specific Google URL.
   TemplateURL* manual = AddKeywordWithDate(
-      "manual", "google.de", "http://google.de/search?q={searchTerms}",
+      "manual", "google.de", "http://www.google.de/search?q={searchTerms}",
       std::string(), std::string(), std::string(), false);
-  test_util()->SetGoogleBaseURL(GURL("http://google.de"));
 
-  // Verify that the manual entry is untouched, and the autogenerated keyword
-  // has not changed.
+  // Verify that the entries do not conflict.
+  ASSERT_EQ(t_url,
+            model()->GetTemplateURLForKeyword(ASCIIToUTF16("google.com")));
+  EXPECT_EQ("www.google.com", t_url->url_ref().GetHost(search_terms_data()));
+  EXPECT_EQ(ASCIIToUTF16("google.com"), t_url->keyword());
   ASSERT_EQ(manual,
             model()->GetTemplateURLForKeyword(ASCIIToUTF16("google.de")));
-  EXPECT_EQ("google.de", manual->url_ref().GetHost(search_terms_data()));
-  ASSERT_EQ(t_url,
-            model()->GetTemplateURLForKeyword(ASCIIToUTF16("google.co.uk")));
-  EXPECT_EQ("google.de", t_url->url_ref().GetHost(search_terms_data()));
-  EXPECT_EQ(ASCIIToUTF16("google.co.uk"), t_url->keyword());
-
-  // Change the base URL again and verify that the autogenerated keyword follows
-  // even though it didn't match the base URL, while the manual entry is still
-  // untouched.
-  test_util()->SetGoogleBaseURL(GURL("http://google.fr/"));
-  ASSERT_EQ(manual, model()->GetTemplateURLForHost("google.de"));
-  EXPECT_EQ("google.de", manual->url_ref().GetHost(search_terms_data()));
+  EXPECT_EQ("www.google.de", manual->url_ref().GetHost(search_terms_data()));
   EXPECT_EQ(ASCIIToUTF16("google.de"), manual->keyword());
-  ASSERT_EQ(t_url, model()->GetTemplateURLForHost("google.fr"));
-  EXPECT_TRUE(model()->GetTemplateURLForHost("google.co.uk") == NULL);
-  EXPECT_EQ("google.fr", t_url->url_ref().GetHost(search_terms_data()));
-  EXPECT_EQ(ASCIIToUTF16("google.fr"), t_url->keyword());
-
-  // Now add an OSDD entry and then change the Google base URL such that the
-  // autogenerated Google search keyword would conflict.
-  TemplateURL* osdd = AddKeywordWithDate(
-      "osdd", "google.it", "http://google.it/search?q={searchTerms}",
-      std::string(), std::string(), std::string(), true);
-  ASSERT_EQ(osdd,
-            model()->GetTemplateURLForKeyword(ASCIIToUTF16("google.it")));
-  EXPECT_EQ(ASCIIToUTF16("google.it"), osdd->keyword());
-  ASSERT_EQ(osdd, model()->GetTemplateURLForHost("google.it"));
-  EXPECT_EQ("google.it", osdd->url_ref().GetHost(search_terms_data()));
-  const std::string osdd_guid = osdd->sync_guid();
-  ASSERT_EQ(osdd, model()->GetTemplateURLForGUID(osdd_guid));
-  test_util()->SetGoogleBaseURL(GURL("http://google.it"));
-
-  // Verify that the osdd entry was removed, and the autogenerated keyword has
-  // changed.
-  EXPECT_FALSE(model()->GetTemplateURLForGUID(osdd_guid));
-  ASSERT_EQ(t_url,
-            model()->GetTemplateURLForKeyword(ASCIIToUTF16("google.it")));
-  EXPECT_EQ(ASCIIToUTF16("google.it"), t_url->keyword());
-  ASSERT_EQ(t_url, model()->GetTemplateURLForHost("google.it"));
-  EXPECT_EQ("google.it", t_url->url_ref().GetHost(search_terms_data()));
-  ASSERT_EQ(manual,
-            model()->GetTemplateURLForKeyword(ASCIIToUTF16("google.de")));
-  EXPECT_EQ(ASCIIToUTF16("google.de"), manual->keyword());
-  ASSERT_EQ(manual, model()->GetTemplateURLForHost("google.de"));
-  EXPECT_EQ("google.de", manual->url_ref().GetHost(search_terms_data()));
 }
 
 // Make sure TemplateURLService generates a KEYWORD_GENERATED visit for
@@ -1237,22 +1248,24 @@ TEST_F(TemplateURLServiceTest, GenerateVisitOnKeyword) {
 
   // Query history for the generated url.
   base::CancelableTaskTracker tracker;
-  QueryHistoryCallbackImpl callback;
-  history->QueryURL(GURL("http://keyword"),
-                    true,
-                    base::Bind(&QueryHistoryCallbackImpl::Callback,
-                               base::Unretained(&callback)),
-                    &tracker);
+  history::QueryURLResult query_url_result;
+  history->QueryURL(
+      GURL("http://keyword"), true,
+      base::BindLambdaForTesting([&](history::QueryURLResult result) {
+        query_url_result = std::move(result);
+      }),
+      &tracker);
 
   // Wait for the request to be processed.
   test_util()->profile()->BlockUntilHistoryProcessesPendingRequests();
 
   // And make sure the url and visit were added.
-  EXPECT_TRUE(callback.success);
-  EXPECT_NE(0, callback.row.id());
-  ASSERT_EQ(1U, callback.visits.size());
-  EXPECT_TRUE(ui::PageTransitionCoreTypeIs(
-      callback.visits[0].transition, ui::PAGE_TRANSITION_KEYWORD_GENERATED));
+  EXPECT_TRUE(query_url_result.success);
+  EXPECT_NE(0, query_url_result.row.id());
+  ASSERT_EQ(1U, query_url_result.visits.size());
+  EXPECT_TRUE(
+      ui::PageTransitionCoreTypeIs(query_url_result.visits[0].transition,
+                                   ui::PAGE_TRANSITION_KEYWORD_GENERATED));
 }
 
 // Make sure that the load routine deletes prepopulated engines that no longer

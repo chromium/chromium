@@ -14,7 +14,8 @@
  *   name: string,
  *   policy: boolean,
  *   webTrustAnchor: boolean,
- *   readonly: boolean,
+ *   canBeDeleted: boolean,
+ *   canBeEdited: boolean,
  *   untrusted: boolean,
  * }}
  * @see chrome/browser/ui/webui/settings/certificates_handler.cc
@@ -93,7 +94,8 @@ cr.define('certificate_manager', function() {
   class CertificatesBrowserProxy {
     /**
      * Triggers 5 events in the following order
-     * 1x 'certificates-model-ready' event.
+     * 1x 'client-import-allowed-changed' event.
+     * 1x 'ca-import-allowed-changed' event.
      * 4x 'certificates-changed' event, one for each certificate category.
      */
     refreshCertificates() {}

@@ -5,9 +5,11 @@
 import("//chrome/process_version_rc_template.gni")
 import("//testing/test.gni")
 
+# This target builds the updater executable, its installer, and unittests.
 group("win") {
   deps = [
     ":updater",
+    "//chrome/updater/win/installer:installer",
   ]
 }
 
@@ -19,12 +21,22 @@ executable("updater") {
 
   configs += [ "//build/config/win:windowed" ]
 
-  libs = [ "winhttp.lib" ]
   deps = [
-    ":code",
+    ":core",
+    ":install_app",
     ":version_resources",
     "//build/win:default_exe_manifest",
     "//chrome/updater:common",
+    "//chrome/updater/win/ui:ui_resources",
+  ]
+}
+
+copy("uninstall.cmd") {
+  sources = [
+    "setup/uninstall.cmd",
+  ]
+  outputs = [
+    "$target_gen_dir/uninstall.cmd",
   ]
 }
 
@@ -35,7 +47,34 @@ process_version_rc_template("version_resources") {
   output = "$target_gen_dir/updater_exe.rc"
 }
 
-source_set("code") {
+source_set("base") {
+  sources = [
+    "constants.cc",
+    "constants.h",
+    "scoped_handle.h",
+    "task_scheduler.cc",
+    "task_scheduler.h",
+    "user_info.cc",
+    "user_info.h",
+    "util.cc",
+    "util.h",
+  ]
+
+  defines = [ "SECURITY_WIN32" ]
+
+  deps = [
+    "//base",
+    "//chrome/updater:common",
+    "//chrome/updater:version_header",
+  ]
+
+  libs = [
+    "secur32.lib",
+    "taskschd.lib",
+  ]
+}
+
+source_set("core") {
   sources = [
     "net/net_util.cc",
     "net/net_util.h",
@@ -45,17 +84,66 @@ source_set("code") {
     "net/network_winhttp.cc",
     "net/network_winhttp.h",
     "net/scoped_hinternet.h",
-    "util.cc",
-    "util.h",
+    "setup/setup.cc",
+    "setup/setup.h",
+    "setup/setup_util.cc",
+    "setup/setup_util.h",
+    "setup/uninstall.cc",
+    "setup/uninstall.h",
+  ]
+
+  libs = [ "winhttp.lib" ]
+
+  deps = [
+    ":base",
+    "//base",
+    "//chrome/installer/util:with_no_strings",
+    "//chrome/updater:common",
+    "//components/update_client",
+    "//url:url",
+  ]
+  allow_circular_includes_from = [ "//chrome/updater:common" ]
+}
+
+source_set("install_progress_observer") {
+  sources = [
+    "install_progress_observer.cc",
+    "install_progress_observer.h",
   ]
 
   deps = [
     "//base",
-    "//components/update_client",
   ]
 }
 
-source_set("unittest") {
+# This build target is defined to minimize the impact of -Wno-missing-braces
+# compiler switch. In the future it might be possible to isolate the
+# dependency of ATL in the UI so ATL headers are not visible in the
+# compilation units outside the UI itself.
+# TODO(sorin): https://crbug.com/1014311
+source_set("install_app") {
+  sources = [
+    "install_app.cc",
+    "install_app.h",
+  ]
+
+  deps = [
+    ":core",
+    ":install_progress_observer",
+    "//base",
+    "//base:i18n",
+    "//chrome/updater:common",
+    "//chrome/updater/win/ui",
+    "//components/prefs",
+    "//components/update_client",
+  ]
+  allow_circular_includes_from = [ "//chrome/updater:common" ]
+
+  cflags_cc = [ "-Wno-missing-braces" ]
+}
+
+# Tests built into Chrome's unit_tests.exe.
+source_set("updater_tests") {
   testonly = true
 
   sources = [
@@ -64,8 +152,37 @@ source_set("unittest") {
   ]
 
   deps = [
-    ":code",
+    ":base",
+    ":core",
+    ":install_app",
     "//base/test:test_support",
+    "//testing/gtest",
+  ]
+
+  data_deps = [
+    ":updater_unittests",
+    "//chrome/updater/win/installer:installer_unittest",
+  ]
+}
+
+# Specific tests which must run in their own process due to COM, security, or
+# test isolation requirements.
+test("updater_unittests") {
+  testonly = true
+
+  sources = [
+    "//chrome/updater/win/test/test_main.cc",
+    "task_scheduler_unittest.cc",
+  ]
+
+  deps = [
+    ":base",
+    ":core",
+    ":install_app",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/updater/win/test:test_executables",
+    "//chrome/updater/win/test:test_strings",
     "//testing/gtest",
   ]
 }

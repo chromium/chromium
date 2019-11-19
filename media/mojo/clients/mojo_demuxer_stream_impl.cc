@@ -19,10 +19,8 @@ namespace media {
 
 MojoDemuxerStreamImpl::MojoDemuxerStreamImpl(
     media::DemuxerStream* stream,
-    mojo::InterfaceRequest<mojom::DemuxerStream> request)
-    : binding_(this, std::move(request)),
-      stream_(stream),
-      weak_factory_(this) {}
+    mojo::PendingReceiver<mojom::DemuxerStream> receiver)
+    : receiver_(this, std::move(receiver)), stream_(stream) {}
 
 MojoDemuxerStreamImpl::~MojoDemuxerStreamImpl() = default;
 
@@ -54,9 +52,9 @@ void MojoDemuxerStreamImpl::Initialize(InitializeCallback callback) {
 }
 
 void MojoDemuxerStreamImpl::Read(ReadCallback callback) {
-  stream_->Read(base::Bind(&MojoDemuxerStreamImpl::OnBufferReady,
-                           weak_factory_.GetWeakPtr(),
-                           base::Passed(&callback)));
+  stream_->Read(base::BindOnce(&MojoDemuxerStreamImpl::OnBufferReady,
+                               weak_factory_.GetWeakPtr(),
+                               base::Passed(&callback)));
 }
 
 void MojoDemuxerStreamImpl::EnableBitstreamConverter() {

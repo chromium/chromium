@@ -1,0 +1,12 @@
+# Changes to IPC messages require a security review to avoid introducing
+# new sandbox escapes.
+per-file *.mojom=set noparent
+per-file *.mojom=file://ipc/SECURITY_OWNERS
+per-file *.typemap=set noparent
+per-file *.typemap=file://ipc/SECURITY_OWNERS
+per-file *_mojom_traits*.*=set noparent
+per-file *_mojom_traits*.*=file://ipc/SECURITY_OWNERS
+per-file *_message*.*=set noparent
+per-file *_message*.*=file://ipc/SECURITY_OWNERS
+per-file *_param_traits*.*=set noparent
+per-file *_param_traits*.*=file://ipc/SECURITY_OWNERS

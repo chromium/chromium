@@ -14,11 +14,10 @@
 #include "base/macros.h"
 
 namespace ui {
-class MenuModel;
 class SimpleMenuModel;
 }  // namespace ui
 
-namespace app_list {
+namespace ash {
 
 namespace test {
 
@@ -30,16 +29,13 @@ class AppListTestModel : public AppListModel {
     AppListTestItem(const std::string& id, AppListTestModel* model);
     ~AppListTestItem() override;
     void Activate(int event_flags);
-    ui::MenuModel* GetContextMenuModel();
+    std::unique_ptr<ui::SimpleMenuModel> CreateContextMenuModel();
     const char* GetItemType() const override;
 
     void SetPosition(const syncer::StringOrdinal& new_position);
 
    private:
-    AppListTestModel* model_;
-
-    // The menu that holds context menu options.
-    std::unique_ptr<ui::SimpleMenuModel> menu_model_;
+    AppListTestModel* const model_;
 
     DISALLOW_COPY_AND_ASSIGN(AppListTestItem);
   };
@@ -96,6 +92,6 @@ class AppListTestModel : public AppListModel {
 };
 
 }  // namespace test
-}  // namespace app_list
+}  // namespace ash
 
 #endif  // ASH_APP_LIST_TEST_APP_LIST_TEST_MODEL_H_

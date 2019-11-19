@@ -45,25 +45,27 @@ NSString* GetErrorPage(const GURL& url,
     NOTREACHED();
   }
 
-  base::DictionaryValue error_strings;
-  error_page::LocalizedError::GetStrings(
-      net_error, error_page::Error::kNetErrorDomain, url, is_post,
-      /*stale_copy_in_cache=*/false,
-      /*can_show_network_diagnostics_dialog=*/false, is_off_the_record,
-      error_page::LocalizedError::OfflineContentOnNetErrorFeatureState::
-          kDisabled,
-      /*auto_fetch_feature_enabled=*/false,
-      GetApplicationContext()->GetApplicationLocale(),
-      /*params=*/nullptr, &error_strings);
+  error_page::LocalizedError::PageState page_state =
+      error_page::LocalizedError::GetPageState(
+          net_error, error_page::Error::kNetErrorDomain, url, is_post,
+          /*stale_copy_in_cache=*/false,
+          /*can_show_network_diagnostics_dialog=*/false, is_off_the_record,
+          /*offline_content_feature_enabled=*/false,
+          /*auto_fetch_feature_enabled=*/false,
+          GetApplicationContext()->GetApplicationLocale(),
+          /*params=*/nullptr);
 
   ui::ScaleFactor scale_factor =
       ui::ResourceBundle::GetSharedInstance().GetMaxScaleFactor();
 
-  const base::StringPiece template_html(
-      ui::ResourceBundle::GetSharedInstance().GetRawDataResourceForScale(
-          IDR_NET_ERROR_HTML, scale_factor));
+  std::string extracted_string =
+      ui::ResourceBundle::GetSharedInstance().LoadDataResourceStringForScale(
+          IDR_NET_ERROR_HTML, scale_factor);
+  base::StringPiece template_html(extracted_string.data(),
+                                  extracted_string.size());
+
   if (template_html.empty())
     NOTREACHED() << "unable to load template. ID: " << IDR_NET_ERROR_HTML;
   return base::SysUTF8ToNSString(webui::GetTemplatesHtml(
-      template_html, &error_strings, /*template_id=*/"t"));
+      template_html, &page_state.strings, /*template_id=*/"t"));
 }

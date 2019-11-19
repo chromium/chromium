@@ -9,6 +9,6 @@ TEST COMPLETE
 
 ============== Back Forward List ==============
 curr->  (file test):fast/history/history-length-append-subframe-with-hash.html#wentBack
-            about:blank (in frame "<!--framePath //<!--frame0-->-->")
+            about:blank/#identifier (in frame "<!--framePath //<!--frame0-->-->")
         (file test):fast/history/resources/back-on-load.html
 ===============================================

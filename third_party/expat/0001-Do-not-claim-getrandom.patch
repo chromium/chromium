@@ -1,0 +1,22 @@
+diff --git a/third_party/expat/include/expat_config/expat_config.h b/third_party/expat/include/expat_config/expat_config.h
+index 278d7a8..c693a14a 100644
+--- a/third_party/expat/include/expat_config/expat_config.h
++++ b/third_party/expat/include/expat_config/expat_config.h
+@@ -23,7 +23,7 @@
+ #define HAVE_GETPAGESIZE 1
+ 
+ /* Define to 1 if you have the `getrandom' function. */
+-#define HAVE_GETRANDOM 1
++/* #define HAVE_GETRANDOM 1 */
+ 
+ /* Define to 1 if you have the <inttypes.h> header file. */
+ #define HAVE_INTTYPES_H 1
+@@ -50,7 +50,7 @@
+ #define HAVE_STRING_H 1
+ 
+ /* Define to 1 if you have `syscall' and `SYS_getrandom'. */
+-#define HAVE_SYSCALL_GETRANDOM 1
++/* #define HAVE_SYSCALL_GETRANDOM 1 */
+ 
+ /* Define to 1 if you have the <sys/param.h> header file. */
+ #define HAVE_SYS_PARAM_H 1

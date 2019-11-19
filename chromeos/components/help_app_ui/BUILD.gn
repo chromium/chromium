@@ -1,0 +1,39 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/test/base/js2gtest.gni")
+
+assert(is_chromeos, "Help App is Chrome OS only")
+
+static_library("help_app_ui") {
+  sources = [
+    "help_app_guest_ui.cc",
+    "help_app_guest_ui.h",
+    "help_app_ui.cc",
+    "help_app_ui.h",
+    "url_constants.cc",
+    "url_constants.h",
+  ]
+
+  deps = [
+    "//chromeos/constants",
+    "//chromeos/resources:help_app_resources",
+    "//content/public/browser",
+    "//ui/webui",
+  ]
+}
+
+js2gtest("browser_tests_js") {
+  test_type = "mojo_lite_webui"
+
+  sources = [
+    "test/help_app_ui_browsertest.js",
+  ]
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  deps = [
+    "//chromeos/constants",
+  ]
+}

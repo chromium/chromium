@@ -18,17 +18,17 @@ MediaRouterInternalsWebUIMessageHandler::
 
 void MediaRouterInternalsWebUIMessageHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
-      "initialized",
+      "getStatus",
       base::BindRepeating(
-          &MediaRouterInternalsWebUIMessageHandler::HandleInitialized,
+          &MediaRouterInternalsWebUIMessageHandler::HandleGetStatus,
           base::Unretained(this)));
 }
 
-void MediaRouterInternalsWebUIMessageHandler::HandleInitialized(
+void MediaRouterInternalsWebUIMessageHandler::HandleGetStatus(
     const base::ListValue* args) {
   AllowJavascript();
-  CallJavascriptFunction("media_router_internals.setStatus",
-                         router_->GetState());
+  const base::Value& callback_id = args->GetList()[0];
+  ResolveJavascriptCallback(callback_id, router_->GetState());
 }
 
 }  // namespace media_router

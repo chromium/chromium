@@ -51,16 +51,9 @@ void ReverbInputBuffer::Write(const float* source_p, size_t number_of_frames) {
 float* ReverbInputBuffer::DirectReadFrom(int* read_index,
                                          size_t number_of_frames) {
   size_t buffer_length = buffer_.size();
-  bool is_pointer_good = read_index && *read_index >= 0 &&
-                         *read_index + number_of_frames <= buffer_length;
-  DCHECK(is_pointer_good);
-  if (!is_pointer_good) {
-    // Should never happen in practice but return pointer to start of buffer
-    // (avoid crash)
-    if (read_index)
-      *read_index = 0;
-    return buffer_.Data();
-  }
+  DCHECK(read_index);
+  DCHECK_GE(*read_index, 0);
+  DCHECK_LE(*read_index + number_of_frames, buffer_length);
 
   float* source_p = buffer_.Data();
   float* p = source_p + *read_index;

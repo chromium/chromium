@@ -1,7 +1,6 @@
 <!DOCTYPE HTML>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 <!-- Will set indeterminate state via JS -->
 <input id="element1" type="checkbox" />
 <script>
@@ -42,130 +41,130 @@
     return accessibilityController.accessibleElementById(id);
   }
 
-  test_after_layout_and_paint(function(t) {
+  test(function(t) {
     var ax = axElementById("element1");
     assert_equals(ax.checked, "mixed");
   }, "A native indeterminate checkbox must have the mixed state");
 
-  test_after_layout_and_paint(function(t) {
+  test(function(t) {
     var ax = axElementById("element2");
     assert_equals(ax.checked, "false");
   }, "A native checkbox that is not indeterminate" +
       " must NOT have the mixed state");
 
-  test_after_layout_and_paint(function(t) {
+  test(function(t) {
     var ax = axElementById("element3");
     assert_equals(ax.checked, "false");
   }, "A native radio that in a group with nothing checked" +
       " must appear unchecked, not mixed");
 
-  test_after_layout_and_paint(function(t) {
+  test(function(t) {
     var ax = axElementById("element4");
     assert_equals(ax.checked, "false");
   }, "A native radio that in a group with something checked" +
       " must NOT have the mixed state");
 
-  test_after_layout_and_paint(function(t) {
+  test(function(t) {
     var ax = axElementById("input-button");
     assert_equals(ax.checked, "");
   }, "<input type=button> does not set checked property");
 
-  test_after_layout_and_paint(function(t) {
+  test(function(t) {
     var ax = axElementById("input-button-false");
     assert_equals(ax.checked, "false");
   }, "<input type=button aria-pressed=false> is not checked");
 
-  test_after_layout_and_paint(function(t) {
+  test(function(t) {
     var ax = axElementById("input-button-false");
     assert_equals(ax.role, "AXRole: AXToggleButton");
   }, "<input type=button aria-pressed=false> is a toggle button");
 
-  test_after_layout_and_paint(function(t) {
+  test(function(t) {
     var ax = axElementById("input-button-mixed");
     assert_equals(ax.checked, "mixed");
   }, "<input type=button aria-pressed=mixed> has checked state of mixed");
 
-  test_after_layout_and_paint(function(t) {
+  test(function(t) {
     var ax = axElementById("input-button-mixed");
     assert_equals(ax.role, "AXRole: AXToggleButton");
   }, "<input type=button aria-pressed=mixed> is a toggle button");
 
-  test_after_layout_and_paint(function(t) {
+  test(function(t) {
     var ax = axElementById("input-button-true");
     assert_equals(ax.checked, "true");
   }, "<input type=button aria-pressed=true> has checked state of true");
 
-  test_after_layout_and_paint(function(t) {
+  test(function(t) {
     var ax = axElementById("input-button-true");
     assert_equals(ax.role, "AXRole: AXToggleButton");
   }, "<input type=button aria-pressed=true> is a toggle button");
 
-  test_after_layout_and_paint(function(t) {
+  test(function(t) {
     var ax = axElementById("aria-button");
     assert_equals(ax.checked, "");
   }, "<div role=button> does not set checked property");
 
-  test_after_layout_and_paint(function(t) {
+  test(function(t) {
     var ax = axElementById("aria-button-false");
     assert_equals(ax.checked, "false");
   }, "<div role=button aria-pressed=false> is not checked");
 
-  test_after_layout_and_paint(function(t) {
+  test(function(t) {
     var ax = axElementById("aria-button-false");
     assert_equals(ax.role, "AXRole: AXToggleButton");
   }, "<div role=button aria-pressed=false> is a toggle button");
 
-  test_after_layout_and_paint(function(t) {
+  test(function(t) {
     var ax = axElementById("aria-button-mixed");
     assert_equals(ax.checked, "mixed");
   }, "<div role=button aria-pressed=mixed> has checked state of mixed");
 
-  test_after_layout_and_paint(function(t) {
+  test(function(t) {
     var ax = axElementById("aria-button-mixed");
     assert_equals(ax.role, "AXRole: AXToggleButton");
   }, "<div role=button aria-pressed=mixed> is a toggle button");
 
-  test_after_layout_and_paint(function(t) {
+  test(function(t) {
     var ax = axElementById("aria-button-true");
     assert_equals(ax.checked, "true");
   }, "<div role=button aria-pressed=true> has checked state of true");
 
-  test_after_layout_and_paint(function(t) {
+  test(function(t) {
     var ax = axElementById("aria-button-true");
     assert_equals(ax.role, "AXRole: AXToggleButton");
   }, "<div role=button aria-pressed=true> is a toggle button");
 
-  test_after_layout_and_paint(function(t) {
+  test(function(t) {
     var ax = axElementById("button");
     assert_equals(ax.checked, "");
   }, "<button> does not set checked property");
 
-  test_after_layout_and_paint(function(t) {
+  test(function(t) {
     var ax = axElementById("button-false");
     assert_equals(ax.checked, "false");
   }, "<button aria-pressed=false> is not checked");
 
-  test_after_layout_and_paint(function(t) {
+  test(function(t) {
     var ax = axElementById("button-false");
     assert_equals(ax.role, "AXRole: AXToggleButton");
   }, "<button aria-pressed=false> is a toggle button");
 
-  test_after_layout_and_paint(function(t) {
+  test(function(t) {
     var ax = axElementById("button-mixed");
     assert_equals(ax.checked, "mixed");
   }, "<button aria-pressed=mixed> has pressed state of checked");
 
-  test_after_layout_and_paint(function(t) {
+  test(function(t) {
     var ax = axElementById("button-mixed");
     assert_equals(ax.role, "AXRole: AXToggleButton");
   }, "<button aria-pressed=mixed> is a toggle button");
 
-  test_after_layout_and_paint(function(t) {
+  test(function(t) {
     var ax = axElementById("button-true");
     assert_equals(ax.checked, "true");
   }, "<button aria-pressed=true> has checked state of true");
 
-  test_after_layout_and_paint(function(t) {
+  test(function(t) {
     var ax = axElementById("button-true");
     assert_equals(ax.role, "AXRole: AXToggleButton");
   }, "<button aria-pressed=true> is a toggle button");

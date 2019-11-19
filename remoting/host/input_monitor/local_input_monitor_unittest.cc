@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "remoting/base/auto_thread_task_runner.h"
@@ -33,12 +33,12 @@ class LocalInputMonitorTest : public testing::Test {
 
   void SetUp() override;
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_ {
+  base::test::TaskEnvironment task_environment_ {
 #if defined(OS_WIN)
-    base::test::ScopedTaskEnvironment::MainThreadType::UI
+    base::test::TaskEnvironment::MainThreadType::UI
 #else   // !defined(OS_WIN)
     // Required to watch a file descriptor from NativeMessageProcessHost.
-    base::test::ScopedTaskEnvironment::MainThreadType::IO
+    base::test::TaskEnvironment::MainThreadType::IO
 #endif  // !defined(OS_WIN)
   };
 
@@ -70,7 +70,8 @@ TEST_F(LocalInputMonitorTest, BasicWithClientSession) {
       .Times(AnyNumber())
       .WillRepeatedly(ReturnRef(client_jid_));
   EXPECT_CALL(client_session_control_, DisconnectSession(_)).Times(AnyNumber());
-  EXPECT_CALL(client_session_control_, OnLocalMouseMoved(_)).Times(AnyNumber());
+  EXPECT_CALL(client_session_control_, OnLocalPointerMoved(_, _))
+      .Times(AnyNumber());
   EXPECT_CALL(client_session_control_, SetDisableInputs(_)).Times(0);
 
   {

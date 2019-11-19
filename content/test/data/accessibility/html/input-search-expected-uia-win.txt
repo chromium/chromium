@@ -1,0 +1,3 @@
+document LocalizedControlType='document'
+++group LocalizedControlType='group'
+++++searchbox LocalizedControlType='search box' Value.Value='Search terms'

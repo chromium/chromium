@@ -6,9 +6,7 @@
 
 namespace heap_profiling {
 
-const char kMemlog[] = "memlog";
-const char kMemlogInProcess[] = "memlog-in-process";
-const char kMemlogKeepSmallAllocations[] = "memlog-keep-small-allocations";
+const char kMemlogMode[] = "memlog";
 const char kMemlogModeAll[] = "all";
 const char kMemlogModeAllRenderers[] = "all-renderers";
 const char kMemlogModeBrowser[] = "browser";
@@ -18,8 +16,15 @@ const char kMemlogModeMinimal[] = "minimal";
 const char kMemlogModeRendererSampling[] = "renderer-sampling";
 const char kMemlogModeUtilityAndBrowser[] = "utility-and-browser";
 const char kMemlogModeUtilitySampling[] = "utility-sampling";
-const char kMemlogSampling[] = "memlog-sampling";
+
 const char kMemlogSamplingRate[] = "memlog-sampling-rate";
+const char kMemlogSamplingRate10KB[] = "10000";
+const char kMemlogSamplingRate50KB[] = "50000";
+const char kMemlogSamplingRate100KB[] = "100000";
+const char kMemlogSamplingRate500KB[] = "500000";
+const char kMemlogSamplingRate1MB[] = "1000000";
+const char kMemlogSamplingRate5MB[] = "5000000";
+
 const char kMemlogStackMode[] = "memlog-stack-mode";
 const char kMemlogStackModeMixed[] = "mixed";
 const char kMemlogStackModeNative[] = "native";

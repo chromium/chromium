@@ -14,12 +14,14 @@
 
 namespace gl {
 
+struct GLVersionInfo;
 struct GLWindowSystemBindingInfo;
 
 GL_EXPORT void InitializeStaticGLBindingsGLX();
 GL_EXPORT void InitializeDebugGLBindingsGLX();
 GL_EXPORT void ClearBindingsGLX();
-GL_EXPORT bool GetGLWindowSystemBindingInfoGLX(GLWindowSystemBindingInfo* info);
+GL_EXPORT bool GetGLWindowSystemBindingInfoGLX(const GLVersionInfo& gl_info,
+                                               GLWindowSystemBindingInfo* info);
 GL_EXPORT void SetDisabledExtensionsGLX(const std::string& disabled_extensions);
 GL_EXPORT bool InitializeExtensionSettingsOneOffGLX();
 

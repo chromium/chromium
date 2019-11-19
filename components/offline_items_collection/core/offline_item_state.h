@@ -20,7 +20,7 @@ enum OfflineItemState {
   FAILED,
   PAUSED,  // TODO(dtrainor): Make sure exposing a PAUSED state does not impact
            // downloads resumption.
-  MAX_DOWNLOAD_STATE,
+  NUM_ENTRIES,
 };
 
 // Implemented for testing only. See test_support/offline_item_test_support.cc.

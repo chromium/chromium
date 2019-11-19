@@ -97,8 +97,8 @@ void IncognitoWindowTracker::ShowPromo() {
   // Owned by its native widget. Will be destroyed when its widget is destroyed.
   incognito_promo_ = FeaturePromoBubbleView::CreateOwned(
       app_menu_button, views::BubbleBorder::TOP_RIGHT,
-      GetPromoStringSpecifier(),
-      FeaturePromoBubbleView::ActivationAction::ACTIVATE);
+      FeaturePromoBubbleView::ActivationAction::ACTIVATE,
+      GetPromoStringSpecifier());
   views::Widget* widget = incognito_promo_->GetWidget();
   incognito_promo_observer_.Add(widget);
   app_menu_button->SetPromoFeature(InProductHelpFeature::kIncognitoWindow);

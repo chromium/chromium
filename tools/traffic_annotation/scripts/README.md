@@ -22,3 +22,10 @@ Provides tools for annotation test scripts.
 # update_annotations_sheet.py
 This script updates the Google sheet that presents all network traffic
 annotations.
+
+# extractor.py
+Scans through a set of specified C++ files to detect existing traffic
+annotations in code. It uses regex expressions on source files.
+
+# extractor_test.py
+Unit tests for extractor.py.

@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "components/download/public/common/download_danger_type.h"
 #include "net/http/http_response_headers.h"
 
 namespace content {
@@ -261,6 +262,16 @@ void FakeDownloadItem::ShowDownloadInShell() {
   NOTREACHED();
 }
 
+void FakeDownloadItem::Rename(const base::FilePath& name,
+                              RenameDownloadCallback callback) {
+  NOTREACHED();
+}
+
+void FakeDownloadItem::OnAsyncScanningCompleted(
+    download::DownloadDangerType danger_type) {
+  NOTREACHED();
+}
+
 bool FakeDownloadItem::IsPaused() const {
   return false;
 }
@@ -308,6 +319,12 @@ const GURL& FakeDownloadItem::GetTabUrl() const {
 const GURL& FakeDownloadItem::GetTabReferrerUrl() const {
   NOTREACHED();
   return dummy_url;
+}
+
+const base::Optional<url::Origin>& FakeDownloadItem::GetRequestInitiator()
+    const {
+  NOTREACHED();
+  return dummy_origin;
 }
 
 std::string FakeDownloadItem::GetSuggestedFilename() const {

@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
-#include "components/data_use_measurement/core/data_use_user_data.h"
 #include "components/safe_browsing/proto/csd.pb.h"
 #include "google_apis/google_api_keys.h"
 #include "net/base/escape.h"
@@ -128,9 +127,6 @@ void IncidentReportUploaderImpl::OnURLLoaderCompleteInternal(
     const std::string& response_body,
     int response_code,
     int net_error) {
-  UMA_HISTOGRAM_TIMES("SBIRS.ReportUploadTime",
-                      base::TimeTicks::Now() - time_begin_);
-
   Result result = UPLOAD_REQUEST_FAILED;
   std::unique_ptr<ClientIncidentResponse> response;
   if (net_error == net::OK && response_code == net::HTTP_OK) {

@@ -46,8 +46,7 @@ const char kDefaultMasterPrefs[] = "master_preferences";
 //      "require_eula": true,
 //      "skip_first_run_ui": true,
 //      "system_level": false,
-//      "verbose_logging": true,
-//      "welcome_page_on_os_upgrade_enabled": false
+//      "verbose_logging": true
 //   },
 //   "browser": {
 //      "show_home_button": true

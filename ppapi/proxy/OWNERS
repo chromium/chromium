@@ -1,5 +1,3 @@
-piman@chromium.org
-
 per-file *_messages*.h=set noparent
 per-file *_messages*.h=file://ipc/SECURITY_OWNERS
 
@@ -8,3 +6,7 @@ per-file *_messages.cc=file://ipc/SECURITY_OWNERS
 
 per-file *_param_traits*.*=set noparent
 per-file *_param_traits*.*=file://ipc/SECURITY_OWNERS
+
+per-file pdf_resource.*=thestig@chromium.org
+per-file pdf_resource_unittest.cc=thestig@chromium.org
+per-file ppp_pdf_proxy.*=thestig@chromium.org

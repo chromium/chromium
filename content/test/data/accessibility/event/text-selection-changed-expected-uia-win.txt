@@ -1,0 +1,5 @@
+Text_TextSelectionChanged on role=document
+=== Start Continuation ===
+Text_TextSelectionChanged on role=textbox, name=input
+=== Start Continuation ===
+Text_TextSelectionChanged on role=textbox, name=textarea

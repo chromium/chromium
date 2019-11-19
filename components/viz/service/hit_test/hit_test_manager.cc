@@ -6,6 +6,7 @@
 
 #include "components/viz/common/hit_test/aggregated_hit_test_region.h"
 #include "components/viz/service/surfaces/latest_local_surface_id_lookup_delegate.h"
+#include "components/viz/service/surfaces/surface.h"
 
 namespace viz {
 
@@ -13,6 +14,16 @@ namespace {
 // TODO(gklassen): Review and select appropriate sizes based on
 // telemetry / UMA.
 constexpr uint32_t kMaxRegionsPerSurface = 1024;
+
+// Whenever a hit test region is marked as kHitTestAsk there must be a reason
+// for async hit test and vice versa.
+bool FlagsAndAsyncReasonsMatch(uint32_t flags,
+                               uint32_t async_hit_test_reasons) {
+  if (flags & kHitTestAsk)
+    return async_hit_test_reasons != kNotAsyncHitTest;
+  return async_hit_test_reasons == kNotAsyncHitTest;
+}
+
 }  // namespace
 
 HitTestManager::HitTestAsyncQueriedDebugRegion::
@@ -39,7 +50,7 @@ bool HitTestManager::OnSurfaceDamaged(const SurfaceId& surface_id,
   return false;
 }
 
-void HitTestManager::OnSurfaceDiscarded(const SurfaceId& surface_id) {
+void HitTestManager::OnSurfaceDestroyed(const SurfaceId& surface_id) {
   hit_test_region_lists_.erase(surface_id);
 }
 
@@ -155,6 +166,11 @@ bool HitTestManager::ValidateHitTestRegionList(
     HitTestRegionList* hit_test_region_list) {
   if (hit_test_region_list->regions.size() > kMaxRegionsPerSurface)
     return false;
+  if (!FlagsAndAsyncReasonsMatch(
+          hit_test_region_list->flags,
+          hit_test_region_list->async_hit_test_reasons)) {
+    return false;
+  }
   for (auto& region : hit_test_region_list->regions) {
     // TODO(gklassen): Ensure that |region->frame_sink_id| is a child of
     // |frame_sink_id|.
@@ -162,6 +178,8 @@ bool HitTestManager::ValidateHitTestRegionList(
       region.frame_sink_id = FrameSinkId(surface_id.frame_sink_id().client_id(),
                                          region.frame_sink_id.sink_id());
     }
+    if (!FlagsAndAsyncReasonsMatch(region.flags, region.async_hit_test_reasons))
+      return false;
   }
   return true;
 }

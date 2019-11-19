@@ -1,0 +1,244 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+// Push message event success/error codes for internal use & reporting in UMA.
+// Enum values can be added, but must never be renumbered or deleted and reused.
+enum PushDeliveryStatus {
+  // The message was successfully delivered.
+  SUCCESS = 0,
+
+  // The message could not be delivered because the app id was unknown.
+  UNKNOWN_APP_ID = 2,
+
+  // The message could not be delivered because origin no longer has permission.
+  PERMISSION_DENIED = 3,
+
+  // The message could not be delivered because no service worker was found.
+  NO_SERVICE_WORKER = 4,
+
+  // The message could not be delivered because of a service worker error.
+  SERVICE_WORKER_ERROR = 5,
+
+  // The message was delivered, but the Service Worker passed a Promise to
+  // event.waitUntil that got rejected.
+  EVENT_WAITUNTIL_REJECTED = 6,
+
+  // The message was delivered, but the Service Worker timed out processing it.
+  TIMEOUT = 7,
+
+  // NOTE: Do not renumber or delete these as that would confuse interpretation
+  // of previously logged data. When making changes, also update the enum list
+  // in tools/metrics/histograms/histograms.xml to keep it in sync.
+};
+
+// Push getregistration success/error codes for internal use & reporting in UMA.
+// Enum values can be added, but must never be renumbered or deleted and reused.
+enum PushGetRegistrationStatus {
+  // Getting the registration was successful.
+  SUCCESS = 0,
+
+  // Getting the registration failed because the push service is not available.
+  SERVICE_NOT_AVAILABLE = 1,
+
+  // Getting the registration failed because we failed to read from storage.
+  STORAGE_ERROR = 2,
+
+  // Getting the registration failed because there is no push registration.
+  REGISTRATION_NOT_FOUND = 3,
+
+  // Getting the registration failed because the push service isn't available in
+  // incognito, but we tell JS registration not found to not reveal incognito.
+  INCOGNITO_REGISTRATION_NOT_FOUND = 4,
+
+  // Getting the registration failed because public key could not be retrieved.
+  // PUBLIC_KEY_UNAVAILABLE = 5,
+
+  // Getting the registration failed because storage was corrupt.
+  STORAGE_CORRUPT = 6,
+
+  // Getting the registration failed because the renderer was shut down.
+  RENDERER_SHUTDOWN = 7,
+
+  // Getting the registration failed because there was no live service worker.
+  NO_LIVE_SERVICE_WORKER = 8,
+
+  // NOTE: Do not renumber or delete these as that would confuse interpretation
+  // of previously logged data. When making changes, also update the enum list
+  // in tools/metrics/histograms/histograms.xml to keep it in sync.
+};
+
+// Push registration success/error codes for internal use & reporting in UMA.
+// Enum values can be added, but must never be renumbered or deleted and reused.
+enum PushRegistrationStatus {
+  // New successful registration (there was not yet a registration cached in
+  // Service Worker storage, so the browser successfully registered with the
+  // push service. This is likely to be a new push registration, though it's
+  // possible that the push service had its own cache (for example if Chrome's
+  // app data was cleared, we might have forgotten about a registration that the
+  // push service still stores).
+  SUCCESS_FROM_PUSH_SERVICE = 0,
+
+  // Registration failed because there is no Service Worker.
+  NO_SERVICE_WORKER = 1,
+
+  // Registration failed because the push service is not available.
+  SERVICE_NOT_AVAILABLE = 2,
+
+  // Registration failed because the maximum number of registratons has been
+  // reached.
+  LIMIT_REACHED = 3,
+
+  // Registration failed because permission was denied.
+  PERMISSION_DENIED = 4,
+
+  // Registration failed in the push service implemented by the embedder.
+  SERVICE_ERROR = 5,
+
+  // Registration failed because no sender id was provided by the page.
+  NO_SENDER_ID = 6,
+
+  // Registration succeeded, but we failed to persist it.
+  STORAGE_ERROR = 7,
+
+  // A successful registration was already cached in Service Worker storage.
+  SUCCESS_FROM_CACHE = 8,
+
+  // Registration failed due to a network error.
+  NETWORK_ERROR = 9,
+
+  // Registration failed because the push service is not available in incognito,
+  // but we tell JS that permission was denied to not reveal incognito.
+  INCOGNITO_PERMISSION_DENIED = 10,
+
+  // Registration failed because the public key could not be retrieved.
+  PUBLIC_KEY_UNAVAILABLE = 11,
+
+  // Registration failed because the manifest could not be retrieved or was
+  // empty.
+  MANIFEST_EMPTY_OR_MISSING = 12,
+
+  // Registration failed because a subscription with a different sender id
+  // already exists.
+  SENDER_ID_MISMATCH = 13,
+
+  // Registration failed because storage was corrupt. It will be retried
+  // automatically after unsubscribing to fix the corruption.
+  STORAGE_CORRUPT = 14,
+
+  // Registration failed because the renderer was shut down.
+  RENDERER_SHUTDOWN = 15,
+
+  // Registration was successful for a subscription that was already known by
+  // the cache, but the push service returned a new subscription. This may
+  // happen when a subscription is invalidated by the push service.
+  SUCCESS_NEW_SUBSCRIPTION_FROM_PUSH_SERVICE = 16,
+
+  // NOTE: Do not renumber or delete these as that would confuse interpretation
+  // of previously logged data. When making changes, also update the enum list
+  // in tools/metrics/histograms/histograms.xml to keep it in sync.
+};
+
+// Push unregistration reason for reporting in UMA. Enum values can be added,
+// but must never be renumbered or deleted and reused.
+enum PushUnregistrationReason {
+  // Should never happen.
+  UNKNOWN = 0,
+
+  // Unregistering because the website called the unsubscribe API.
+  JAVASCRIPT_API = 1,
+
+  // Unregistering because the user manually revoked permission.
+  PERMISSION_REVOKED = 2,
+
+  // Automatic - incoming message's app id was unknown.
+  DELIVERY_UNKNOWN_APP_ID = 3,
+
+  // Automatic - incoming message's origin no longer has permission.
+  DELIVERY_PERMISSION_DENIED = 4,
+
+  // Automatic - incoming message's service worker was not found.
+  DELIVERY_NO_SERVICE_WORKER = 5,
+
+  // Automatic - GCM Store reset due to corruption.
+  GCM_STORE_RESET = 6,
+
+  // Unregistering because the service worker was unregistered.
+  SERVICE_WORKER_UNREGISTERED = 7,
+
+  // Website called subscribe API and the stored subscription was corrupt, so
+  // it is being unsubscribed in order to attempt a clean subscription.
+  SUBSCRIBE_STORAGE_CORRUPT = 8,
+
+  // Website called getSubscription API and the stored subscription was corrupt.
+  GET_SUBSCRIPTION_STORAGE_CORRUPT = 9,
+
+  // The Service Worker database got wiped, most likely due to corruption.
+  SERVICE_WORKER_DATABASE_WIPED = 10,
+
+  // NOTE: Do not renumber or delete these as that would confuse interpretation
+  // of previously logged data. When making changes, also update the enum list
+  // in tools/metrics/histograms/histograms.xml to keep it in sync.
+};
+
+
+// Push unregistration success/error codes for internal use & reporting in UMA.
+// Enum values can be added, but must never be renumbered or deleted and reused.
+enum PushUnregistrationStatus {
+  // The unregistration was successful.
+  SUCCESS_UNREGISTERED = 0,
+
+  // Unregistration was unnecessary, as the registration was not found.
+  SUCCESS_WAS_NOT_REGISTERED = 1,
+
+  // The unregistration did not happen because of a network error, but will be
+  // retried until it succeeds.
+  PENDING_NETWORK_ERROR = 2,
+
+  // Unregistration failed because there is no Service Worker.
+  NO_SERVICE_WORKER = 3,
+
+  // Unregistration failed because the push service is not available.
+  SERVICE_NOT_AVAILABLE = 4,
+
+  // Unregistration failed in the push service implemented by the embedder, but
+  // will be retried until it succeeds.
+  PENDING_SERVICE_ERROR = 5,
+
+  // Unregistration succeeded, but we failed to clear Service Worker storage.
+  STORAGE_ERROR = 6,
+
+  // Unregistration failed due to a network error.
+  NETWORK_ERROR = 7,
+
+  // NOTE: Do not renumber or delete these as that would confuse interpretation
+  // of previously logged data. When making changes, also update the enum list
+  // in tools/metrics/histograms/histograms.xml to keep it in sync.
+};
+
+// Push message user visible tracking for reporting in UMA. Enum values can be
+// added, but must never be renumbered or deleted and reused.
+enum PushUserVisibleStatus {
+  // A notification was required and one (or more) were shown.
+  REQUIRED_AND_SHOWN = 0,
+
+  // A notification was not required, but one (or more) were shown anyway.
+  NOT_REQUIRED_BUT_SHOWN = 1,
+
+  // A notification was not required and none were shown.
+  NOT_REQUIRED_AND_NOT_SHOWN = 2,
+
+  // A notification was required, but none were shown. Fortunately, the site has
+  // been well behaved recently so it was glossed over.
+  REQUIRED_BUT_NOT_SHOWN_USED_GRACE = 3,
+
+  // A notification was required, but none were shown. Unfortunately, the site
+  // has run out of grace, so we had to show the user a generic notification.
+  REQUIRED_BUT_NOT_SHOWN_GRACE_EXCEEDED = 4,
+
+  // NOTE: Do not renumber or delete these as that would confuse interpretation
+  // of previously logged data. When making changes, also update the enum list
+  // in tools/metrics/histograms/histograms.xml to keep it in sync.
+};

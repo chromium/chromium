@@ -109,9 +109,7 @@ const int GeneratePageBundleReconcileTask::kMaxGenerateBundleAttempts = 3;
 GeneratePageBundleReconcileTask::GeneratePageBundleReconcileTask(
     PrefetchStore* prefetch_store,
     PrefetchNetworkRequestFactory* request_factory)
-    : prefetch_store_(prefetch_store),
-      request_factory_(request_factory),
-      weak_factory_(this) {}
+    : prefetch_store_(prefetch_store), request_factory_(request_factory) {}
 
 GeneratePageBundleReconcileTask::~GeneratePageBundleReconcileTask() = default;
 

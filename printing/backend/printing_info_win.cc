@@ -30,15 +30,15 @@ uint8_t* GetPrinterInfo(HANDLE printer, int level) {
   DWORD size = 0;
   ::GetPrinter(printer, level, NULL, 0, &size);
   if (size == 0) {
-    LOG(WARNING) << "Failed to get size of PRINTER_INFO_" << level <<
-                    ", error = " << GetLastError();
+    LOG(WARNING) << "Failed to get size of PRINTER_INFO_" << level
+                 << ", error = " << GetLastError();
     return NULL;
   }
   std::unique_ptr<uint8_t[]> buffer(new uint8_t[size]);
   memset(buffer.get(), 0, size);
   if (!::GetPrinter(printer, level, buffer.get(), size, &size)) {
-    LOG(WARNING) << "Failed to get PRINTER_INFO_" << level <<
-                    ", error = " << GetLastError();
+    LOG(WARNING) << "Failed to get PRINTER_INFO_" << level
+                 << ", error = " << GetLastError();
     return NULL;
   }
   return buffer.release();

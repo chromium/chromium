@@ -148,6 +148,32 @@ public class AutofillUiUtilsTest {
     @Test
     @SmallTest
     @SuppressLint("SetTextI18n")
+    public void testExpirationDateErrorWithMonthBeingEditedAndValidYearReturnsNotEnoughInfo() {
+        mMonthInput.setText("");
+        mMonthInput.requestFocus();
+        mYearInput.setText(String.valueOf(mTwoDigitThisYear + 1));
+
+        int errorType = getExpirationDateErrorForUserEnteredMonthAndYear();
+
+        Assert.assertEquals(ErrorType.NOT_ENOUGH_INFO, errorType);
+    }
+
+    @Test
+    @SmallTest
+    @SuppressLint("SetTextI18n")
+    public void testExpirationDateErrorWithMonthSetToZeroAndValidYearReturnsNotEnoughInfo() {
+        mMonthInput.setText("0");
+        mMonthInput.requestFocus();
+        mYearInput.setText(String.valueOf(mTwoDigitThisYear + 1));
+
+        int errorType = getExpirationDateErrorForUserEnteredMonthAndYear();
+
+        Assert.assertEquals(ErrorType.NOT_ENOUGH_INFO, errorType);
+    }
+
+    @Test
+    @SmallTest
+    @SuppressLint("SetTextI18n")
     public void testGetMonthWithNonNumericInputReturnsNegativeOne() {
         mMonthInput.setText("MM");
 

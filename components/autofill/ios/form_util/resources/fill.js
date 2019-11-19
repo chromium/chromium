@@ -24,7 +24,7 @@ goog.require('__crWeb.form');
  *   option_values: Array<string>
  * }}
  */
-var AutofillFormFieldData;
+let AutofillFormFieldData;
 
 /**
  * @typedef {{
@@ -34,7 +34,7 @@ var AutofillFormFieldData;
  *   fields: Array<AutofillFormFieldData>
  * }}
  */
-var AutofillFormData;
+let AutofillFormData;
 
 /**
  * Namespace for this file. It depends on |__gCrWeb| having already been
@@ -168,27 +168,27 @@ __gCrWeb.fill.autoComplete = function(element) {
  *
  * @param {string} value The value the input element will be set.
  * @param {Element} input The input element of which the value is set.
- **/
+ */
 function setInputElementAngularValue_(value, input) {
   if (!input || !window['angular']) {
     return;
   }
-  var angular_element =
+  const angularElement =
       window['angular'].element && window['angular'].element(input);
-  if (!angular_element) {
+  if (!angularElement) {
     return;
   }
-  angular_element.val(value);
-  var angular_model = angular_element.data && angular_element.data('ngModel');
-  var angular_scope = angular_element.scope();
-  if (!angular_model || !angular_scope) {
+  angularElement.val(value);
+  const angularModel = angularElement.data && angularElement.data('ngModel');
+  const angularScope = angularElement.scope();
+  if (!angularModel || !angularScope) {
     return;
   }
-  angular_element.injector().invoke([
+  angularElement.injector().invoke([
     '$parse',
     function(parse) {
-      var setter = parse(angular_model);
-      setter.assign(angular_scope, value);
+      const setter = parse(angularModel);
+      setter.assign(angularScope, value);
     }
   ]);
 }
@@ -217,7 +217,7 @@ __gCrWeb.fill.setInputElementValue = function(
     value, input, callback = undefined) {
   if (!input) return;
 
-  var activeElement = document.activeElement;
+  const activeElement = document.activeElement;
   if (input != activeElement) {
     __gCrWeb.fill.createAndDispatchHTMLEvent(
         activeElement, value, 'blur', true, false);
@@ -242,7 +242,7 @@ __gCrWeb.fill.setInputElementValue = function(
  * @param {Element} input The input element of which the value is set.
  */
 function setInputElementValue_(value, input) {
-  var propertyName = (input.type === 'checkbox' || input.type === 'radio') ?
+  const propertyName = (input.type === 'checkbox' || input.type === 'radio') ?
       'checked' :
       'value';
   if (input.type !== 'select-one' && input.type !== 'checkbox' &&
@@ -272,14 +272,14 @@ function setInputElementValue_(value, input) {
   // The setter simply forwards the set to the older property descriptor.
   // Once the setter has been called, just forward get and set calls.
 
-  var oldPropertyDescriptor = /** @type {!Object} */ (
+  const oldPropertyDescriptor = /** @type {!Object} */ (
       Object.getOwnPropertyDescriptor(input, propertyName));
-  var overrideProperty =
+  const overrideProperty =
       oldPropertyDescriptor && oldPropertyDescriptor.configurable;
-  var setterCalled = false;
+  let setterCalled = false;
 
   if (overrideProperty) {
-    var newProperty = {
+    const newProperty = {
       get: function() {
         if (setterCalled && oldPropertyDescriptor.get) {
           return oldPropertyDescriptor.get.call(input);
@@ -294,7 +294,7 @@ function setInputElementValue_(value, input) {
       newProperty.set = function(e) {
         setterCalled = true;
         oldPropertyDescriptor.set.call(input, value);
-      }
+      };
     }
     Object.defineProperty(input, propertyName, newProperty);
   } else {
@@ -369,13 +369,13 @@ __gCrWeb.fill.sanitizeValueForInputElement = function(proposedValue, element) {
  */
 __gCrWeb.fill.sanitizeValueForTextFieldInputType = function(
     proposedValue, element) {
-  var textFieldElementType = element.type;
+  const textFieldElementType = element.type;
   if (textFieldElementType === 'email') {
     return __gCrWeb.fill.sanitizeValueForEmailInputType(proposedValue, element);
   } else if (textFieldElementType === 'number') {
     return __gCrWeb.fill.sanitizeValueForNumberInputType(proposedValue);
   }
-  var valueWithLineBreakRemoved = proposedValue.replace(/(\r\n|\n|\r)/gm, '');
+  const valueWithLineBreakRemoved = proposedValue.replace(/(\r\n|\n|\r)/gm, '');
   // TODO(chenyu): Should we also implement numCharactersInGraphemeClusters()
   // in chromium/src/third_party/WebKit/Source/core/platform/text/
   // TextBreakIterator.cpp and call it here when computing newLength?
@@ -383,10 +383,10 @@ __gCrWeb.fill.sanitizeValueForTextFieldInputType = function(
   // on the text length is considered due to
   // https://bugs.webkit.org/show_bug.cgi?id=14536, no such limit is
   // considered here for now.
-  var newLength = valueWithLineBreakRemoved.length;
+  let newLength = valueWithLineBreakRemoved.length;
   // This logic is from method String limitLength() in TextFieldInputType.h
-  for (var i = 0; i < newLength; ++i) {
-    var current = valueWithLineBreakRemoved[i];
+  for (let i = 0; i < newLength; ++i) {
+    const current = valueWithLineBreakRemoved[i];
     if (current < ' ' && current != '\t') {
       newLength = i;
       break;
@@ -411,13 +411,13 @@ __gCrWeb.fill.sanitizeValueForTextFieldInputType = function(
  */
 __gCrWeb.fill.sanitizeValueForEmailInputType = function(
     proposedValue, element) {
-  var valueWithLineBreakRemoved = proposedValue.replace(/(\r\n|\n\r)/gm, '');
+  const valueWithLineBreakRemoved = proposedValue.replace(/(\r\n|\n\r)/gm, '');
 
   if (!element.multiple) {
     return __gCrWeb.common.trim(proposedValue);
   }
-  var addresses = valueWithLineBreakRemoved.split(',');
-  for (var i = 0; i < addresses.length; ++i) {
+  const addresses = valueWithLineBreakRemoved.split(',');
+  for (let i = 0; i < addresses.length; ++i) {
     addresses[i] = __gCrWeb.common.trim(addresses[i]);
   }
   return addresses.join(',');
@@ -440,7 +440,7 @@ __gCrWeb.fill.sanitizeValueForEmailInputType = function(
  * @return {string} The sanitized value.
  */
 __gCrWeb.fill.sanitizeValueForNumberInputType = function(proposedValue) {
-  var sanitizedValue = Number(proposedValue);
+  const sanitizedValue = Number(proposedValue);
   if (isNaN(sanitizedValue)) {
     return '';
   }
@@ -491,7 +491,7 @@ __gCrWeb.fill.notifyElementValueChanged = function(element, value) {
  */
 __gCrWeb.fill.createAndDispatchHTMLEvent = function(
     element, value, type, bubbles, cancelable) {
-  var event =
+  const event =
       new Event(type, {bubbles: bubbles, cancelable: cancelable, data: value});
   if (type == 'input') {
     event.inputType = 'insertText';
@@ -506,8 +506,8 @@ __gCrWeb.fill.createAndDispatchHTMLEvent = function(
  * @return {string} Canonical action.
  */
 __gCrWeb.fill.getCanonicalActionForForm = function(formElement) {
-  var rawAction = formElement.getAttribute('action') || '';
-  var absoluteUrl =
+  const rawAction = formElement.getAttribute('action') || '';
+  const absoluteUrl =
       __gCrWeb.common.absoluteURL(formElement.ownerDocument, rawAction);
   return __gCrWeb.common.removeQueryAndReferenceFromURL(absoluteUrl);
 };
@@ -543,19 +543,19 @@ __gCrWeb.fill.getCanonicalActionForForm = function(formElement) {
  */
 function extractFieldsFromControlElements_(
     controlElements, extractMask, formFields, fieldsExtracted, elementArray) {
-  for (var i = 0; i < controlElements.length; ++i) {
+  for (let i = 0; i < controlElements.length; ++i) {
     fieldsExtracted[i] = false;
     elementArray[i] = null;
 
     /** @type {FormControlElement} */
-    var controlElement = controlElements[i];
+    const controlElement = controlElements[i];
     if (!__gCrWeb.fill.isAutofillableElement(controlElement)) {
       continue;
     }
 
     // Create a new AutofillFormFieldData, fill it out and map it to the
     // field's name.
-    var formField = new __gCrWeb['common'].JSONSafeObject;
+    const formField = new __gCrWeb['common'].JSONSafeObject;
     __gCrWeb.fill.webFormControlElementToFormField(
         controlElement, extractMask, formField);
     formFields.push(formField);
@@ -582,7 +582,7 @@ function isVisibleNode_(node) {
   if (!node) return false;
 
   if (node.nodeType === Node.ELEMENT_NODE) {
-    var style = window.getComputedStyle(/** @type {Element} */ (node));
+    const style = window.getComputedStyle(/** @type {Element} */ (node));
     if (style.visibility == 'hidden' || style.display == 'none') return false;
   }
 
@@ -617,21 +617,21 @@ function isVisibleNode_(node) {
  */
 function matchLabelsAndFields_(
     labels, formElement, controlElements, elementArray) {
-  for (var index = 0; index < labels.length; ++index) {
-    var label = labels[index];
-    var fieldElement = label.control;
-    var fieldData = null;
+  for (let index = 0; index < labels.length; ++index) {
+    const label = labels[index];
+    const fieldElement = label.control;
+    let fieldData = null;
     if (!fieldElement) {
       // Sometimes site authors will incorrectly specify the corresponding
       // field element's name rather than its id, so we compensate here.
-      var elementName = label.htmlFor;
+      const elementName = label.htmlFor;
       if (!elementName) continue;
       // Look through the list for elements with this name. There can actually
       // be more than one. In this case, the label may not be particularly
       // useful, so just discard it.
-      for (var elementIndex = 0; elementIndex < elementArray.length;
+      for (let elementIndex = 0; elementIndex < elementArray.length;
            ++elementIndex) {
-        var currentFieldData = elementArray[elementIndex];
+        const currentFieldData = elementArray[elementIndex];
         if (currentFieldData && currentFieldData['name'] === elementName) {
           if (fieldData !== null) {
             fieldData = null;
@@ -646,7 +646,7 @@ function matchLabelsAndFields_(
       continue;
     } else {
       // Typical case: look up |fieldData| in |elementArray|.
-      for (var elementIndex = 0; elementIndex < elementArray.length;
+      for (let elementIndex = 0; elementIndex < elementArray.length;
            ++elementIndex) {
         if (controlElements[elementIndex] === fieldElement) {
           fieldData = elementArray[elementIndex];
@@ -660,7 +660,7 @@ function matchLabelsAndFields_(
     if (!('label' in fieldData)) {
       fieldData['label'] = '';
     }
-    var labelText = __gCrWeb.fill.findChildText(label);
+    const labelText = __gCrWeb.fill.findChildText(label);
     // Concatenate labels because some sites might have multiple label
     // candidates.
     if (fieldData['label'].length > 0 && labelText.length > 0) {
@@ -709,14 +709,14 @@ __gCrWeb.fill.formOrFieldsetsToFormData = function(
     form, field) {
   // This should be a map from a control element to the AutofillFormFieldData.
   // However, without Map support, it's just an Array of AutofillFormFieldData.
-  var elementArray = [];
+  const elementArray = [];
 
   // The extracted FormFields.
-  var formFields = [];
+  const formFields = [];
 
   // A vector of bools that indicate whether each element in |controlElements|
   // meets the requirements and thus will be in the resulting |form|.
-  var fieldsExtracted = [];
+  const fieldsExtracted = [];
 
   if (!extractFieldsFromControlElements_(
           controlElements, extractMask, formFields, fieldsExtracted,
@@ -730,12 +730,12 @@ __gCrWeb.fill.formOrFieldsetsToFormData = function(
     // element along with |controlElements| and |elementArray| to find the
     // previously created AutofillFormFieldData and set the
     // AutofillFormFieldData's label.
-    var labels = formElement.getElementsByTagName('label');
+    const labels = formElement.getElementsByTagName('label');
     matchLabelsAndFields_(labels, formElement, controlElements, elementArray);
   } else {
     // Same as the if block, but for all the labels in fieldset
-    for (var i = 0; i < fieldsets.length; ++i) {
-      var labels = fieldsets[i].getElementsByTagName('label');
+    for (let i = 0; i < fieldsets.length; ++i) {
+      const labels = fieldsets[i].getElementsByTagName('label');
       matchLabelsAndFields_(labels, formElement, controlElements, elementArray);
     }
   }
@@ -744,14 +744,14 @@ __gCrWeb.fill.formOrFieldsetsToFormData = function(
   // the DOM.  We use the |fieldsExtracted| vector to make sure we assign the
   // extracted label to the correct field, as it's possible |form_fields| will
   // not contain all of the elements in |control_elements|.
-  for (var i = 0, fieldIdx = 0;
+  for (let i = 0, fieldIdx = 0;
        i < controlElements.length && fieldIdx < formFields.length; ++i) {
     // This field didn't meet the requirements, so don't try to find a label
     // for it.
     if (!fieldsExtracted[i]) continue;
 
-    var controlElement = controlElements[i];
-    var currentField = formFields[fieldIdx];
+    const controlElement = controlElements[i];
+    const currentField = formFields[fieldIdx];
     if (!currentField['label']) {
       currentField['label'] =
           __gCrWeb.fill.inferLabelForElement(controlElement);
@@ -825,7 +825,7 @@ __gCrWeb.fill.webFormElementToFormData = function(
   // valid, which is computed by creating a <a> element, and we don't check if
   // the action is valid.
 
-  var controlElements = __gCrWeb.form.getFormControlElements(formElement);
+  const controlElements = __gCrWeb.form.getFormControlElements(formElement);
 
   return __gCrWeb.fill.formOrFieldsetsToFormData(
       formElement, formControlElement, [] /* fieldsets */, controlElements,
@@ -914,10 +914,10 @@ __gCrWeb.fill.trimWhitespaceTrailing = function(input) {
  */
 __gCrWeb.fill.combineAndCollapseWhitespace = function(
     prefix, suffix, forceWhitespace) {
-  var prefixTrimmed = __gCrWeb.fill.trimWhitespaceTrailing(prefix);
-  var prefixTrailingWhitespace = prefixTrimmed != prefix;
-  var suffixTrimmed = __gCrWeb.fill.trimWhitespaceLeading(suffix);
-  var suffixLeadingWhitespace = suffixTrimmed != suffix;
+  const prefixTrimmed = __gCrWeb.fill.trimWhitespaceTrailing(prefix);
+  const prefixTrailingWhitespace = prefixTrimmed != prefix;
+  const suffixTrimmed = __gCrWeb.fill.trimWhitespaceLeading(suffix);
+  const suffixLeadingWhitespace = suffixTrimmed != suffix;
   if (prefixTrailingWhitespace || suffixLeadingWhitespace || forceWhitespace) {
     return prefixTrimmed + ' ' + suffixTrimmed;
   } else {
@@ -958,7 +958,7 @@ __gCrWeb.fill.findChildTextInner = function(node, depth, divsToSkip) {
       return '';
     }
     if (__gCrWeb.form.isFormControlElement(/** @type {Element} */ (node))) {
-      var input = /** @type {FormControlElement} */ (node);
+      const input = /** @type {FormControlElement} */ (node);
       if (__gCrWeb.fill.isAutofillableElement(input)) {
         return '';
       }
@@ -966,7 +966,7 @@ __gCrWeb.fill.findChildTextInner = function(node, depth, divsToSkip) {
   }
 
   if (node.tagName === 'DIV') {
-    for (var i = 0; i < divsToSkip.length; ++i) {
+    for (let i = 0; i < divsToSkip.length; ++i) {
       if (node === divsToSkip[i]) {
         return '';
       }
@@ -974,7 +974,7 @@ __gCrWeb.fill.findChildTextInner = function(node, depth, divsToSkip) {
   }
 
   // Extract the text exactly at this node.
-  var nodeText = __gCrWeb.fill.nodeValue(node);
+  let nodeText = __gCrWeb.fill.nodeValue(node);
   if (node.nodeType === Node.TEXT_NODE && !nodeText) {
     // In the C++ version, this text node would have been stripped completely.
     // Just pass the buck.
@@ -984,9 +984,9 @@ __gCrWeb.fill.findChildTextInner = function(node, depth, divsToSkip) {
 
   // Recursively compute the children's text.
   // Preserve inter-element whitespace separation.
-  var childText =
+  const childText =
       __gCrWeb.fill.findChildTextInner(node.firstChild, depth - 1, divsToSkip);
-  var addSpace = node.nodeType === Node.TEXT_NODE && !nodeText;
+  let addSpace = node.nodeType === Node.TEXT_NODE && !nodeText;
   // Emulate apparently incorrect Chromium behavior tracked in
   // https://crbug.com/239819.
   addSpace = false;
@@ -995,7 +995,7 @@ __gCrWeb.fill.findChildTextInner = function(node, depth, divsToSkip) {
 
   // Recursively compute the siblings' text.
   // Again, preserve inter-element whitespace separation.
-  var siblingText =
+  const siblingText =
       __gCrWeb.fill.findChildTextInner(node.nextSibling, depth - 1, divsToSkip);
   addSpace = node.nodeType === Node.TEXT_NODE && !nodeText;
   // Emulate apparently incorrect Chromium behavior tracked in
@@ -1023,9 +1023,9 @@ __gCrWeb.fill.findChildTextInner = function(node, depth, divsToSkip) {
 __gCrWeb.fill.findChildTextWithIgnoreList = function(node, divsToSkip) {
   if (node.nodeType === Node.TEXT_NODE) return __gCrWeb.fill.nodeValue(node);
 
-  var child = node.firstChild;
-  var kChildSearchDepth = 10;
-  var nodeText =
+  const child = node.firstChild;
+  const kChildSearchDepth = 10;
+  let nodeText =
       __gCrWeb.fill.findChildTextInner(child, kChildSearchDepth, divsToSkip);
   nodeText = nodeText.trim();
   return nodeText;
@@ -1062,8 +1062,8 @@ __gCrWeb.fill.findChildText = function(node) {
  *                  sibling or no label.
  */
 __gCrWeb.fill.inferLabelFromSibling = function(element, forward) {
-  var inferredLabel = '';
-  var sibling = element;
+  let inferredLabel = '';
+  let sibling = element;
   if (!sibling) {
     return '';
   }
@@ -1080,7 +1080,7 @@ __gCrWeb.fill.inferLabelFromSibling = function(element, forward) {
     }
 
     // Skip over comments.
-    var nodeType = sibling.nodeType;
+    const nodeType = sibling.nodeType;
     if (nodeType === Node.COMMENT_NODE) {
       continue;
     }
@@ -1098,9 +1098,9 @@ __gCrWeb.fill.inferLabelFromSibling = function(element, forward) {
         __gCrWeb.fill.hasTagName(sibling, 'strong') ||
         __gCrWeb.fill.hasTagName(sibling, 'span') ||
         __gCrWeb.fill.hasTagName(sibling, 'font')) {
-      var value = __gCrWeb.fill.findChildText(sibling);
+      const value = __gCrWeb.fill.findChildText(sibling);
       // A text node's value will be empty if it is for a line break.
-      var addSpace = nodeType === Node.TEXT_NODE && value.length === 0;
+      const addSpace = nodeType === Node.TEXT_NODE && value.length === 0;
       inferredLabel = __gCrWeb.fill.combineAndCollapseWhitespace(
           value, inferredLabel, addSpace);
       continue;
@@ -1108,7 +1108,7 @@ __gCrWeb.fill.inferLabelFromSibling = function(element, forward) {
 
     // If we have identified a partial label and have reached a non-lightweight
     // element, consider the label to be complete.
-    var trimmedLabel = inferredLabel.trim();
+    const trimmedLabel = inferredLabel.trim();
     if (trimmedLabel.length > 0) {
       break;
     }
@@ -1260,14 +1260,15 @@ __gCrWeb.fill.inferLabelFromListItem = function(element) {
     return '';
   }
 
-  var parentNode = element.parentNode;
+  let parentNode = element.parentNode;
   while (parentNode && parentNode.nodeType === Node.ELEMENT_NODE &&
          !__gCrWeb.fill.hasTagName(parentNode, 'li')) {
     parentNode = parentNode.parentNode;
   }
 
-  if (parentNode && __gCrWeb.fill.hasTagName(parentNode, 'li'))
+  if (parentNode && __gCrWeb.fill.hasTagName(parentNode, 'li')) {
     return __gCrWeb.fill.findChildText(parentNode);
+  }
 
   return '';
 };
@@ -1292,7 +1293,7 @@ __gCrWeb.fill.inferLabelFromTableColumn = function(element) {
     return '';
   }
 
-  var parentNode = element.parentNode;
+  let parentNode = element.parentNode;
   while (parentNode && parentNode.nodeType === Node.ELEMENT_NODE &&
          !__gCrWeb.fill.hasTagName(parentNode, 'td')) {
     parentNode = parentNode.parentNode;
@@ -1304,8 +1305,8 @@ __gCrWeb.fill.inferLabelFromTableColumn = function(element) {
 
   // Check all previous siblings, skipping non-element nodes, until we find a
   // non-empty text block.
-  var inferredLabel = '';
-  var previous = parentNode.previousSibling;
+  let inferredLabel = '';
+  let previous = parentNode.previousSibling;
   while (inferredLabel.length === 0 && previous) {
     if (__gCrWeb.fill.hasTagName(previous, 'td') ||
         __gCrWeb.fill.hasTagName(previous, 'th')) {
@@ -1339,7 +1340,7 @@ __gCrWeb.fill.inferLabelFromTableRow = function(element) {
     return '';
   }
 
-  var cell = element.parentNode;
+  let cell = element.parentNode;
   while (cell) {
     if (cell.nodeType === Node.ELEMENT_NODE &&
         __gCrWeb.fill.hasTagName(cell, 'td')) {
@@ -1354,12 +1355,12 @@ __gCrWeb.fill.inferLabelFromTableRow = function(element) {
   }
 
   // Count the cell holding |element|.
-  var cellCount = cell.colSpan;
-  var cellPosition = 0;
-  var cellPositionEnd = cellCount - 1;
+  let cellCount = cell.colSpan;
+  let cellPosition = 0;
+  let cellPositionEnd = cellCount - 1;
 
   // Count cells to the left to figure out |element|'s cell's position.
-  var cellIterator = cell.previousSibling;
+  let cellIterator = cell.previousSibling;
   while (cellIterator) {
     if (cellIterator.nodeType === Node.ELEMENT_NODE &&
         __gCrWeb.fill.hasTagName(cellIterator, 'td')) {
@@ -1383,7 +1384,7 @@ __gCrWeb.fill.inferLabelFromTableRow = function(element) {
   cellPositionEnd += cellPosition;
 
   // Find the current row.
-  var parentNode = element.parentNode;
+  let parentNode = element.parentNode;
   while (parentNode && parentNode.nodeType === Node.ELEMENT_NODE &&
          !__gCrWeb.fill.hasTagName(parentNode, 'tr')) {
     parentNode = parentNode.parentNode;
@@ -1394,7 +1395,7 @@ __gCrWeb.fill.inferLabelFromTableRow = function(element) {
   }
 
   // Now find the previous row.
-  var rowIt = parentNode.previousSibling;
+  let rowIt = parentNode.previousSibling;
   while (rowIt) {
     if (rowIt.nodeType === Node.ELEMENT_NODE &&
         __gCrWeb.fill.hasTagName(parentNode, 'tr')) {
@@ -1406,15 +1407,15 @@ __gCrWeb.fill.inferLabelFromTableRow = function(element) {
   // If there exists a previous row, check its cells and size. If they align
   // with the current row, infer the label from the cell above.
   if (rowIt) {
-    var matchingCell = null;
-    var prevRowCount = 0;
-    var prevRowIt = rowIt.firstChild;
+    let matchingCell = null;
+    let prevRowCount = 0;
+    let prevRowIt = rowIt.firstChild;
     while (prevRowIt) {
       if (prevRowIt.nodeType === Node.ELEMENT_NODE) {
         if (__gCrWeb.fill.hasTagName(prevRowIt, 'td') ||
             __gCrWeb.fill.hasTagName(prevRowIt, 'th')) {
-          var span = prevRowIt.colSpan;
-          var prevRowCountEnd = prevRowCount + span - 1;
+          const span = prevRowIt.colSpan;
+          const prevRowCountEnd = prevRowCount + span - 1;
           if (prevRowCount === cellPosition &&
               prevRowCountEnd === cellPositionEnd) {
             matchingCell = prevRowIt;
@@ -1425,7 +1426,7 @@ __gCrWeb.fill.inferLabelFromTableRow = function(element) {
       prevRowIt = prevRowIt.nextSibling;
     }
     if (cellCount === prevRowCount && matchingCell) {
-      var inferredLabel = __gCrWeb.fill.findChildText(matchingCell);
+      const inferredLabel = __gCrWeb.fill.findChildText(matchingCell);
       if (inferredLabel.length > 0) {
         return inferredLabel;
       }
@@ -1435,8 +1436,8 @@ __gCrWeb.fill.inferLabelFromTableRow = function(element) {
   // If there is no previous row, or if the previous row and current row do not
   // align, check all previous siblings, skipping non-element nodes, until we
   // find a non-empty text block.
-  var inferredLabel = '';
-  var previous = parentNode.previousSibling;
+  let inferredLabel = '';
+  let previous = parentNode.previousSibling;
   while (inferredLabel.length === 0 && previous) {
     if (__gCrWeb.fill.hasTagName(previous, 'tr')) {
       inferredLabel = __gCrWeb.fill.findChildText(previous);
@@ -1462,7 +1463,7 @@ __gCrWeb.fill.isTraversableContainerElement = function(node) {
     return false;
   }
 
-  var tagName = /** @type {Element} */ (node).tagName;
+  const tagName = /** @type {Element} */ (node).tagName;
   return (
       tagName === 'DD' || tagName === 'DIV' || tagName === 'FIELDSET' ||
       tagName === 'LI' || tagName === 'TD' || tagName === 'TABLE');
@@ -1485,7 +1486,7 @@ __gCrWeb.fill.inferLabelFromEnclosingLabel = function(element) {
   if (!element) {
     return '';
   }
-  var node = element.parentNode;
+  let node = element.parentNode;
   while (node && !__gCrWeb.fill.hasTagName(node, 'label')) {
     node = node.parentNode;
   }
@@ -1516,12 +1517,12 @@ __gCrWeb.fill.inferLabelFromDivTable = function(element) {
     return '';
   }
 
-  var node = element.parentNode;
-  var lookingForParent = true;
-  var divsToSkip = [];
+  let node = element.parentNode;
+  let lookingForParent = true;
+  const divsToSkip = [];
 
   // Search the sibling and parent <div>s until we find a candidate label.
-  var inferredLabel = '';
+  let inferredLabel = '';
   while (inferredLabel.length === 0 && node) {
     if (__gCrWeb.fill.hasTagName(node, 'div')) {
       if (lookingForParent) {
@@ -1532,11 +1533,11 @@ __gCrWeb.fill.inferLabelFromDivTable = function(element) {
       }
       // Avoid sibling DIVs that contain autofillable fields.
       if (!lookingForParent && inferredLabel.length > 0) {
-        var resultElement = node.querySelector('input, select, textarea');
+        const resultElement = node.querySelector('input, select, textarea');
         if (resultElement) {
           inferredLabel = '';
-          var addDiv = true;
-          for (var i = 0; i < divsToSkip.length; ++i) {
+          let addDiv = true;
+          for (let i = 0; i < divsToSkip.length; ++i) {
             if (node === divsToSkip[i]) {
               addDiv = false;
               break;
@@ -1593,7 +1594,7 @@ __gCrWeb.fill.inferLabelFromDefinitionList = function(element) {
     return '';
   }
 
-  var parentNode = element.parentNode;
+  let parentNode = element.parentNode;
   while (parentNode && parentNode.nodeType === Node.ELEMENT_NODE &&
          !__gCrWeb.fill.hasTagName(parentNode, 'dd')) {
     parentNode = parentNode.parentNode;
@@ -1604,7 +1605,7 @@ __gCrWeb.fill.inferLabelFromDefinitionList = function(element) {
   }
 
   // Skip by any intervening text nodes.
-  var previous = parentNode.previousSibling;
+  let previous = parentNode.previousSibling;
   while (previous && previous.nodeType === Node.TEXT_NODE) {
     previous = previous.previousSibling;
   }
@@ -1627,11 +1628,12 @@ __gCrWeb.fill.inferLabelFromDefinitionList = function(element) {
  * @return {Array} The element types for all ancestors.
  */
 __gCrWeb.fill.ancestorTagNames = function(element) {
-  var tagNames = [];
-  var parentNode = element.parentNode;
+  const tagNames = [];
+  let parentNode = element.parentNode;
   while (parentNode) {
-    if (parentNode.nodeType === Node.ELEMENT_NODE)
+    if (parentNode.nodeType === Node.ELEMENT_NODE) {
       tagNames.push(parentNode.tagName);
+    }
     parentNode = parentNode.parentNode;
   }
   return tagNames;
@@ -1649,7 +1651,7 @@ __gCrWeb.fill.ancestorTagNames = function(element) {
  * @return {string} The inferred label of element, or '' if none could be found.
  */
 __gCrWeb.fill.inferLabelForElement = function(element) {
-  var inferredLabel;
+  let inferredLabel;
   if (__gCrWeb.fill.isCheckableElement(element)) {
     inferredLabel = __gCrWeb.fill.inferLabelFromNext(element);
     if (__gCrWeb.fill.IsLabelValid(inferredLabel)) {
@@ -1676,10 +1678,10 @@ __gCrWeb.fill.inferLabelForElement = function(element) {
 
   // For all other searches that involve traversing up the tree, the search
   // order is based on which tag is the closest ancestor to |element|.
-  var tagNames = __gCrWeb.fill.ancestorTagNames(element);
-  var seenTagNames = {};
-  for (var index = 0; index < tagNames.length; ++index) {
-    var tagName = tagNames[index];
+  const tagNames = __gCrWeb.fill.ancestorTagNames(element);
+  const seenTagNames = {};
+  for (let index = 0; index < tagNames.length; ++index) {
+    const tagName = tagNames[index];
     if (tagName in seenTagNames) {
       continue;
     }
@@ -1691,8 +1693,9 @@ __gCrWeb.fill.inferLabelForElement = function(element) {
       inferredLabel = __gCrWeb.fill.inferLabelFromDivTable(element);
     } else if (tagName === 'TD') {
       inferredLabel = __gCrWeb.fill.inferLabelFromTableColumn(element);
-      if (!__gCrWeb.fill.IsLabelValid(inferredLabel))
+      if (!__gCrWeb.fill.IsLabelValid(inferredLabel)) {
         inferredLabel = __gCrWeb.fill.inferLabelFromTableRow(element);
+      }
     } else if (tagName === 'DD') {
       inferredLabel = __gCrWeb.fill.inferLabelFromDefinitionList(element);
     } else if (tagName === 'LI') {
@@ -1735,9 +1738,9 @@ __gCrWeb.fill.getOptionStringsFromElement = function(selectElement, field) {
   field['option_values'].toJSON = null;
   field['option_contents'] = [];
   field['option_contents'].toJSON = null;
-  var options = selectElement.options;
-  for (var i = 0; i < options.length; ++i) {
-    var option = options[i];
+  const options = selectElement.options;
+  for (let i = 0; i < options.length; ++i) {
+    const option = options[i];
     field['option_values'].push(option['value']);
     field['option_contents'].push(option['text']);
   }
@@ -1856,12 +1859,12 @@ __gCrWeb.fill.nodeValue = function(node) {
  * @return {string} The value for |element|.
  */
 __gCrWeb.fill.value = function(element) {
-  var value = element.value;
+  let value = element.value;
   if (__gCrWeb.fill.isSelectElement(element)) {
     if (element.options.length > 0 && element.selectedIndex == 0 &&
         element.options[0].disabled &&
         !element.options[0].hasAttribute('selected')) {
-      for (var i = 0; i < element.options.length; i++) {
+      for (let i = 0; i < element.options.length; i++) {
         if (!element.options[i].disabled ||
             element.options[i].hasAttribute('selected')) {
           value = element.options[i].value;
@@ -1908,9 +1911,9 @@ __gCrWeb.fill.webFormControlElementToFormField = function(
   field['id_attribute'] = element.getAttribute('id') || '';
 
   field['form_control_type'] = element.type;
-  var autocomplete_attribute = element.getAttribute('autocomplete');
-  if (autocomplete_attribute) {
-    field['autocomplete_attribute'] = autocomplete_attribute;
+  const autocompleteAttribute = element.getAttribute('autocomplete');
+  if (autocompleteAttribute) {
+    field['autocomplete_attribute'] = autocompleteAttribute;
   }
   if (field['autocomplete_attribute'] != null &&
       field['autocomplete_attribute'].length > __gCrWeb.fill.MAX_DATA_LENGTH) {
@@ -1920,8 +1923,8 @@ __gCrWeb.fill.webFormControlElementToFormField = function(
     field['autocomplete_attribute'] = 'x-max-data-length-exceeded';
   }
 
-  var role_attribute = element.getAttribute('role');
-  if (role_attribute && role_attribute.toLowerCase() == 'presentation') {
+  const roleAttribute = element.getAttribute('role');
+  if (roleAttribute && roleAttribute.toLowerCase() == 'presentation') {
     field['role'] = __gCrWeb.fill.ROLE_ATTRIBUTE_PRESENTATION;
   }
 
@@ -1960,14 +1963,14 @@ __gCrWeb.fill.webFormControlElementToFormField = function(
     return;
   }
 
-  var value = __gCrWeb.fill.value(element);
+  let value = __gCrWeb.fill.value(element);
 
   if (__gCrWeb.fill.isSelectElement(element) &&
       (extractMask & __gCrWeb.fill.EXTRACT_MASK_OPTION_TEXT)) {
     // Convert the |select_element| value to text if requested.
-    var options = element.options;
-    for (var index = 0; index < options.length; ++index) {
-      var optionElement = options[index];
+    const options = element.options;
+    for (let index = 0; index < options.length; ++index) {
+      const optionElement = options[index];
       if (__gCrWeb.fill.value(optionElement) === value) {
         value = optionElement.text;
         break;
@@ -1997,13 +2000,13 @@ __gCrWeb.fill.webFormControlElementToFormField = function(
  * @return {string} a JSON encoded version of |form|
  */
 __gCrWeb.fill.autofillSubmissionData = function(form) {
-  var formData = new __gCrWeb['common'].JSONSafeObject;
-  var extractMask =
+  const formData = new __gCrWeb['common'].JSONSafeObject;
+  const extractMask =
       __gCrWeb.fill.EXTRACT_MASK_VALUE | __gCrWeb.fill.EXTRACT_MASK_OPTIONS;
   __gCrWeb['fill'].webFormElementToFormData(
       window, form, null, extractMask, formData, null);
   return __gCrWeb.stringify([formData]);
-}
+};
 
 /**
  * Returns the coalesced child text of the elements who's ids are found in
@@ -2030,19 +2033,27 @@ function coalesceTextByIdList(element, attribute) {
     return '';
   }
 
-  var ids = element.getAttribute(attribute);
+  const ids = element.getAttribute(attribute);
   if (!ids) {
     return '';
   }
 
   return ids.trim()
-            .split(/\s+/)
-            .map(function(i) { return document.getElementById(i); })
-            .filter(function(e) { return e !== null; })
-            .map(function (n) { return __gCrWeb.fill.findChildText(n); })
-            .filter(function (s) { return s.length > 0; })
-            .join(' ')
-            .trim();
+      .split(/\s+/)
+      .map(function(i) {
+        return document.getElementById(i);
+      })
+      .filter(function(e) {
+        return e !== null;
+      })
+      .map(function(n) {
+        return __gCrWeb.fill.findChildText(n);
+      })
+      .filter(function(s) {
+        return s.length > 0;
+      })
+      .join(' ')
+      .trim();
 }
 
 /**
@@ -2051,18 +2062,18 @@ function coalesceTextByIdList(element, attribute) {
  * aria-labelledby text.
  */
 __gCrWeb.fill.getAriaLabel = function(element) {
-  var label = coalesceTextByIdList(element, 'aria-labelledby');
+  let label = coalesceTextByIdList(element, 'aria-labelledby');
   if (!label) {
     label = element.getAttribute('aria-label') || '';
   }
   return label.trim();
-}
+};
 
 /**
  * Returns the coalesced text referenced by the aria-describedby attribute.
  */
 __gCrWeb.fill.getAriaDescription = function(element) {
   return coalesceTextByIdList(element, 'aria-describedby');
-}
+};
 
 }());  // End of anonymous object

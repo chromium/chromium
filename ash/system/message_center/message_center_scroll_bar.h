@@ -29,6 +29,7 @@ class MessageCenterScrollBar : public views::OverlayScrollBar {
   // View overrides:
   bool OnKeyPressed(const ui::KeyEvent& event) override;
   bool OnMouseWheel(const ui::MouseWheelEvent& event) override;
+  const char* GetClassName() const override;
 
   // ui::EventHandler overrides:
   void OnGestureEvent(ui::GestureEvent* event) override;

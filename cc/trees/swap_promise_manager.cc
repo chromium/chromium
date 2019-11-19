@@ -50,9 +50,14 @@ SwapPromiseManager::TakeSwapPromises() {
 
 void SwapPromiseManager::BreakSwapPromises(
     SwapPromise::DidNotSwapReason reason) {
-  for (const auto& swap_promise : swap_promise_list_)
-    swap_promise->DidNotSwap(reason);
-  swap_promise_list_.clear();
+  std::vector<std::unique_ptr<SwapPromise>> keep_active_swap_promises;
+  for (auto& swap_promise : swap_promise_list_) {
+    if (swap_promise->DidNotSwap(reason) ==
+        SwapPromise::DidNotSwapAction::KEEP_ACTIVE) {
+      keep_active_swap_promises.push_back(std::move(swap_promise));
+    }
+  }
+  swap_promise_list_.swap(keep_active_swap_promises);
 }
 
 }  // namespace cc

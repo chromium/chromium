@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "build/build_config.h"
 #include "ui/aura/test/aura_test_base.h"
 #include "ui/aura/test/test_cursor_client.h"
 #include "ui/aura/test/test_screen.h"
@@ -33,14 +34,61 @@ TEST_F(WindowTreeHostTest, DPIWindowSize) {
   EXPECT_EQ(gfx::Rect(0, 0, 534, 400), root_window()->bounds());
 
   gfx::Transform transform;
-  transform.Translate(0, 1.1f);
+  transform.Translate(0, -1.1f);
   host()->SetRootTransform(transform);
   EXPECT_EQ(gfx::Rect(0, 1, 534, 401), root_window()->bounds());
 
   EXPECT_EQ(starting_bounds, host()->GetBoundsInPixels());
   EXPECT_EQ(gfx::Rect(0, 1, 534, 401), root_window()->bounds());
-  EXPECT_EQ(gfx::Vector2dF(0, 0),
-            host()->compositor()->root_layer()->subpixel_position_offset());
+}
+
+TEST_F(WindowTreeHostTest,
+       ShouldHaveExactRootWindowBoundsWithDisplayRotation1xScale) {
+  test_screen()->SetDeviceScaleFactor(1.f);
+
+  host()->SetBoundsInPixels(gfx::Rect(0, 0, 400, 300));
+  test_screen()->SetDisplayRotation(display::Display::ROTATE_0);
+  EXPECT_EQ(host()->GetBoundsInPixels(), gfx::Rect(0, 0, 400, 300));
+  EXPECT_EQ(display::Screen::GetScreen()->GetPrimaryDisplay().rotation(),
+            display::Display::ROTATE_0);
+  EXPECT_EQ(display::Screen::GetScreen()->GetPrimaryDisplay().GetSizeInPixel(),
+            gfx::Size(400, 300));
+  EXPECT_EQ(display::Screen::GetScreen()->GetPrimaryDisplay().bounds(),
+            gfx::Rect(0, 0, 400, 300));
+  EXPECT_EQ(gfx::Rect(400, 300), host()->window()->bounds());
+
+  host()->SetBoundsInPixels(gfx::Rect(0, 0, 400, 300));
+  test_screen()->SetDisplayRotation(display::Display::ROTATE_90);
+  EXPECT_EQ(host()->GetBoundsInPixels(), gfx::Rect(0, 0, 400, 300));
+  EXPECT_EQ(display::Screen::GetScreen()->GetPrimaryDisplay().rotation(),
+            display::Display::ROTATE_90);
+  EXPECT_EQ(display::Screen::GetScreen()->GetPrimaryDisplay().GetSizeInPixel(),
+            gfx::Size(300, 400));
+  EXPECT_EQ(display::Screen::GetScreen()->GetPrimaryDisplay().bounds(),
+            gfx::Rect(0, 0, 300, 400));
+  EXPECT_EQ(gfx::Rect(300, 400), host()->window()->bounds());
+
+  host()->SetBoundsInPixels(gfx::Rect(0, 0, 400, 300));
+  test_screen()->SetDisplayRotation(display::Display::ROTATE_180);
+  EXPECT_EQ(host()->GetBoundsInPixels(), gfx::Rect(0, 0, 400, 300));
+  EXPECT_EQ(display::Screen::GetScreen()->GetPrimaryDisplay().rotation(),
+            display::Display::ROTATE_180);
+  EXPECT_EQ(display::Screen::GetScreen()->GetPrimaryDisplay().GetSizeInPixel(),
+            gfx::Size(400, 300));
+  EXPECT_EQ(display::Screen::GetScreen()->GetPrimaryDisplay().bounds(),
+            gfx::Rect(0, 0, 400, 300));
+  EXPECT_EQ(gfx::Rect(400, 300), host()->window()->bounds());
+
+  host()->SetBoundsInPixels(gfx::Rect(0, 0, 400, 300));
+  test_screen()->SetDisplayRotation(display::Display::ROTATE_270);
+  EXPECT_EQ(host()->GetBoundsInPixels(), gfx::Rect(0, 0, 400, 300));
+  EXPECT_EQ(display::Screen::GetScreen()->GetPrimaryDisplay().rotation(),
+            display::Display::ROTATE_270);
+  EXPECT_EQ(display::Screen::GetScreen()->GetPrimaryDisplay().GetSizeInPixel(),
+            gfx::Size(300, 400));
+  EXPECT_EQ(display::Screen::GetScreen()->GetPrimaryDisplay().bounds(),
+            gfx::Rect(0, 0, 300, 400));
+  EXPECT_EQ(gfx::Rect(300, 400), host()->window()->bounds());
 }
 
 #if defined(OS_CHROMEOS)
@@ -83,10 +131,42 @@ TEST_F(WindowTreeHostTest, NoRewritesPostIME) {
 TEST_F(WindowTreeHostTest, ColorSpace) {
   EXPECT_EQ(gfx::ColorSpace::CreateSRGB(),
             host()->compositor()->output_color_space());
-  test_screen()->SetColorSpace(gfx::ColorSpace::CreateSCRGBLinear());
-  EXPECT_EQ(gfx::ColorSpace::CreateSCRGBLinear(),
+
+  test_screen()->SetColorSpace(gfx::ColorSpace::CreateDisplayP3D65());
+  EXPECT_EQ(gfx::ColorSpace::CreateDisplayP3D65(),
             host()->compositor()->output_color_space());
 }
+
+#if defined(OS_WIN)
+TEST_F(WindowTreeHostTest, ColorSpaceHDR) {
+  EXPECT_EQ(gfx::ColorSpace::CreateSRGB(),
+            host()->compositor()->output_color_space());
+
+  // UI compositor overrides HDR color space based on whether alpha blending is
+  // needed or not.
+  test_screen()->SetColorSpace(gfx::ColorSpace::CreateHDR10());
+  host()->compositor()->SetBackgroundColor(SK_ColorBLACK);
+  EXPECT_EQ(gfx::ColorSpace::CreateHDR10(),
+            host()->compositor()->output_color_space());
+
+  test_screen()->SetColorSpace(gfx::ColorSpace::CreateHDR10());
+  host()->compositor()->SetBackgroundColor(SK_ColorTRANSPARENT);
+  EXPECT_EQ(gfx::ColorSpace::CreateSCRGBLinear(),
+            host()->compositor()->output_color_space());
+
+  // UI compositor does not override color space if it's already SCRGB linear.
+  test_screen()->SetColorSpace(gfx::ColorSpace::CreateSCRGBLinear(), 200.f);
+  host()->compositor()->SetBackgroundColor(SK_ColorBLACK);
+  EXPECT_EQ(gfx::ColorSpace::CreateSCRGBLinear(),
+            host()->compositor()->output_color_space());
+
+  // UI compositor does not override SDR color space.
+  test_screen()->SetColorSpace(gfx::ColorSpace::CreateSRGB(), 200.f);
+  host()->compositor()->SetBackgroundColor(SK_ColorTRANSPARENT);
+  EXPECT_EQ(gfx::ColorSpace::CreateSRGB(),
+            host()->compositor()->output_color_space());
+}
+#endif  // OS_WIN
 
 class TestWindow : public ui::StubWindow {
  public:

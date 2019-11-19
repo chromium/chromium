@@ -25,7 +25,8 @@ class MEDIA_EXPORT MultiChannelResampler {
   // to be completely filled with data upon return; zero padded if not enough
   // frames are available to satisfy the request.  |frame_delay| is the number
   // of output frames already processed and can be used to estimate delay.
-  typedef base::Callback<void(int frame_delay, AudioBus* audio_bus)> ReadCB;
+  typedef base::RepeatingCallback<void(int frame_delay, AudioBus* audio_bus)>
+      ReadCB;
 
   // Constructs a MultiChannelResampler with the specified |read_cb|, which is
   // used to acquire audio data for resampling.  |io_sample_rate_ratio| is the
@@ -34,7 +35,7 @@ class MEDIA_EXPORT MultiChannelResampler {
   MultiChannelResampler(int channels,
                         double io_sample_rate_ratio,
                         size_t request_frames,
-                        const ReadCB& read_cb);
+                        const ReadCB read_cb);
   virtual ~MultiChannelResampler();
 
   // Resamples |frames| of data from |read_cb_| into AudioBus.

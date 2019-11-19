@@ -24,8 +24,8 @@
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/ime/dummy_text_input_client.h"
+#include "ui/base/ime/init/input_method_factory.h"
 #include "ui/base/ime/input_method.h"
-#include "ui/base/ime/input_method_factory.h"
 #include "ui/base/ime/input_method_minimal.h"
 #include "ui/display/display.h"
 #include "ui/display/screen_base.h"
@@ -36,7 +36,7 @@
 #include "ui/gfx/geometry/rect.h"
 
 #if defined(OS_CHROMEOS)
-#include "chromeos/dbus/fake_power_manager_client.h"
+#include "chromeos/dbus/power/fake_power_manager_client.h"
 #endif
 
 namespace extensions {
@@ -60,7 +60,7 @@ class ShellDesktopControllerAuraTest : public ShellTestBaseAura {
         display::DisplayList::Type::NOT_PRIMARY);
 
 #if defined(OS_CHROMEOS)
-    chromeos::PowerManagerClient::Initialize();
+    chromeos::PowerManagerClient::InitializeFake();
 #endif
 
     controller_ =

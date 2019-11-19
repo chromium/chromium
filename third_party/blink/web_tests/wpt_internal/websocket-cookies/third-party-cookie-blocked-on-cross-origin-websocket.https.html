@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<meta charset="utf-8"/>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/websockets/cookies/support/websocket-cookies-helper.sub.js"></script>
+
+<iframe id="iframe" src=""></iframe>
+<script>
+if (window.testRunner) {
+  // Block third-party cookies.
+  testRunner.setBlockThirdPartyCookies(true);
+}
+
+async_test(t => {
+  window.addEventListener(
+      'message',
+      t.step_func_done(event => {
+        assert_equals(event.data, 'DONE: (none)');
+      }),
+      false);
+  // The iframe is cross-origin from the websocket and from the main frame.
+  // The main frame is same-origin as the websocket.
+  var url = document.location.href.replace(HTTPS_ORIGIN, HTTPS_CROSS_SITE_ORIGIN)
+                                  .replace('third-party-cookie-blocked-on-cross-origin-websocket.https.html', '') +
+            'resources/set-cookie.https.html';
+  document.getElementById('iframe').setAttribute('src', url);
+}, 'Test that first-party cookies are blocked for WebSockets conforming the ' +
+    'requirements of the SameSite attribute.');
+</script>

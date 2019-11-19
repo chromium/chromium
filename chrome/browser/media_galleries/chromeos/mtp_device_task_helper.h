@@ -17,7 +17,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/media_galleries/fileapi/mtp_device_async_delegate.h"
 #include "services/device/public/mojom/mtp_file_entry.mojom.h"
-#include "storage/browser/fileapi/async_file_util.h"
+#include "storage/browser/file_system/async_file_util.h"
 
 class MTPReadFileWorker;
 struct SnapshotRequestInfo;
@@ -291,7 +291,7 @@ class MTPDeviceTaskHelper {
   std::unique_ptr<MTPReadFileWorker> read_file_worker_;
 
   // For callbacks that may run after destruction.
-  base::WeakPtrFactory<MTPDeviceTaskHelper> weak_ptr_factory_;
+  base::WeakPtrFactory<MTPDeviceTaskHelper> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(MTPDeviceTaskHelper);
 };

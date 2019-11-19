@@ -8,9 +8,11 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "ash/lock_screen_action/lock_screen_action_background_controller.h"
 #include "ash/lock_screen_action/lock_screen_action_background_observer.h"
 #include "ash/lock_screen_action/lock_screen_action_background_state.h"
 #include "ash/public/cpp/shelf_types.h"
+#include "ash/tray_action/tray_action.h"
 #include "ash/tray_action/tray_action_observer.h"
 #include "ash/wm/lock_layout_manager.h"
 #include "base/macros.h"
@@ -18,9 +20,7 @@
 
 namespace ash {
 
-class LockScreenActionBackgroundController;
 class Shelf;
-class TrayAction;
 
 // Window layout manager for windows intended to handle lock tray actions.
 // Since "new note" is currently the only supported action, the layout
@@ -48,7 +48,7 @@ class ASH_EXPORT LockActionHandlerLayoutManager
       LockScreenActionBackgroundController* action_background_controller);
   ~LockActionHandlerLayoutManager() override;
 
-  // WmSnapToPixelLayoutManager:
+  // WmDefaultLayoutManager:
   void OnWindowAddedToLayout(aura::Window* child) override;
   void OnChildWindowVisibilityChanged(aura::Window* child,
                                       bool visibile) override;
@@ -68,10 +68,10 @@ class ASH_EXPORT LockActionHandlerLayoutManager
 
   LockScreenActionBackgroundController* action_background_controller_;
 
-  ScopedObserver<TrayAction, TrayActionObserver> tray_action_observer_;
+  ScopedObserver<TrayAction, TrayActionObserver> tray_action_observer_{this};
   ScopedObserver<LockScreenActionBackgroundController,
                  LockScreenActionBackgroundObserver>
-      action_background_observer_;
+      action_background_observer_{this};
 
   DISALLOW_COPY_AND_ASSIGN(LockActionHandlerLayoutManager);
 };

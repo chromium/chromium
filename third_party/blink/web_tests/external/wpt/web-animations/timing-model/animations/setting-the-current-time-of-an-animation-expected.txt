@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-FAIL Setting the current time of a pending animation to unresolved does not throw a TypeError Failed to set the 'currentTime' property on 'Animation': currentTime may not be changed from resolved to unresolved
-PASS Setting the current time of a playing animation to unresolved throws a TypeError
-PASS Setting the current time of a paused animation to unresolved throws a TypeError
-FAIL Setting the current time of a pausing animation applies a pending playback rate assert_true: expected true got undefined
-Harness: the test ran to completion.
-

@@ -76,7 +76,7 @@
                     style="@style/VerticalDivider"
                     android:visibility="gone" />
 
-                <org.chromium.chrome.browser.omnibox.UrlBar
+                <org.chromium.chrome.browser.omnibox.UrlBarApi26
                     android:id="@+id/url_bar"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -102,7 +102,7 @@
         android:layout_gravity="center_vertical|end"
         android:layout_width="42dp"
         android:paddingEnd="4dp"
-        android:src="@drawable/ic_more_vert_black_24dp"
+        android:src="@drawable/ic_more_vert_24dp"
         android:contentDescription="@string/accessibility_toolbar_btn_menu"
         android:background="@null"
         app:tint="@color/standard_mode_tint" />

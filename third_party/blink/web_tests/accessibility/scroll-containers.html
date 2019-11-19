@@ -1,7 +1,6 @@
 <!DOCTYPE HTML>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 
 <div id="container">
   <div style="border: 1px solid #000; height: 5000px;">5000-pixel box</div>
@@ -18,7 +17,7 @@
 <div id="console"></div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var axWebArea = accessibilityController.rootElement;
     assert_equals(axWebArea.role, "AXRole: AXWebArea");
 

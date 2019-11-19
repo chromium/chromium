@@ -64,7 +64,7 @@ class HighlighterView : public fast_ink::FastInkView {
   std::unique_ptr<base::OneShotTimer> animation_timer_;
   gfx::Rect highlighter_damage_rect_;
   bool pending_update_buffer_ = false;
-  base::WeakPtrFactory<HighlighterView> weak_ptr_factory_;
+  base::WeakPtrFactory<HighlighterView> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(HighlighterView);
 };

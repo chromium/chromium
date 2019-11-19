@@ -25,7 +25,7 @@ class NSSCertDatabaseChromeOSManager : public base::SupportsUserData::Data {
   typedef base::Callback<void(net::NSSCertDatabaseChromeOS*)>
       GetNSSCertDatabaseCallback;
   explicit NSSCertDatabaseChromeOSManager(const std::string& username_hash)
-      : username_hash_(username_hash), weak_ptr_factory_(this) {
+      : username_hash_(username_hash) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
     crypto::ScopedPK11Slot private_slot(crypto::GetPrivateSlotForChromeOSUser(
         username_hash,
@@ -71,7 +71,7 @@ class NSSCertDatabaseChromeOSManager : public base::SupportsUserData::Data {
   std::string username_hash_;
   std::unique_ptr<net::NSSCertDatabaseChromeOS> nss_cert_database_;
   ReadyCallbackList ready_callback_list_;
-  base::WeakPtrFactory<NSSCertDatabaseChromeOSManager> weak_ptr_factory_;
+  base::WeakPtrFactory<NSSCertDatabaseChromeOSManager> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(NSSCertDatabaseChromeOSManager);
 };

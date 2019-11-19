@@ -5,6 +5,7 @@
 #include <string>
 
 #include "base/android/jni_string.h"
+#include "chrome/android/chrome_jni_headers/DomDistillerTabUtils_jni.h"
 #include "chrome/browser/dom_distiller/tab_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -13,7 +14,6 @@
 #include "components/url_formatter/url_formatter.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_constants.h"
-#include "jni/DomDistillerTabUtils_jni.h"
 #include "url/gurl.h"
 
 using base::android::JavaParamRef;

@@ -7,12 +7,17 @@
 
 #include <IOKit/IOKitLib.h>
 
+#include <string>
+
 namespace extensions {
 
-// Determines whether the object from the IO registry is a USB mass storage
-// device.  It does this by reading the ancestors of the object to see if any
-// is of the USB mass-storage class.
-bool IsUsbDevice(io_object_t disk_obj);
+// Determines whether the specified disk is suitable for writing an image onto.
+// If this function returns true, it also returns other info values; pass
+// null if those values are not wanted.
+bool IsSuitableRemovableStorageDevice(io_object_t disk_obj,
+                                      std::string* out_bsd_name,
+                                      uint64_t* out_size_in_bytes,
+                                      bool* out_removable);
 
 }  // namespace extensions
 

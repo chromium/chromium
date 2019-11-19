@@ -6,6 +6,7 @@
 #define CONTENT_PUBLIC_BROWSER_CHILD_PROCESS_SECURITY_POLICY_H_
 
 #include <string>
+#include <vector>
 
 #include "content/common/content_export.h"
 #include "url/gurl.h"
@@ -16,6 +17,8 @@ class FilePath;
 }
 
 namespace content {
+
+class BrowserContext;
 
 // The ChildProcessSecurityPolicy class is used to grant and revoke security
 // capabilities for child processes.  For example, it restricts whether a child
@@ -215,6 +218,115 @@ class ChildProcessSecurityPolicy {
   // url::Origin instead of GURL (so that CanAccessDataForOrigin can verify
   // whether precursor of opaque origins also matches the process lock).
   virtual bool CanAccessDataForOrigin(int child_id, const GURL& url) = 0;
+
+  // Defines available sources of isolated origins.  This should be specified
+  // when adding isolated origins with the AddIsolatedOrigins() call below.
+  enum class IsolatedOriginSource {
+    // Used for origins that are hardcoded into the browser.
+    BUILT_IN,
+    // Used for origins that are specified from the command line, i.e.
+    // --isolate-origins.
+    COMMAND_LINE,
+    // Used for origins that are configured through field trials.
+    FIELD_TRIAL,
+    // Used for origins defined by an administrator (e.g., via enterprise
+    // policy).
+    POLICY,
+    // Used for origins that are isolated based on user-triggered runtime
+    // heuristics.
+    USER_TRIGGERED,
+    // Used for testing purposes.
+    TEST
+  };
+
+  // Add |origins| to the list of origins that require process isolation.  When
+  // making process model decisions for such origins, the scheme+host tuple
+  // rather than scheme and eTLD+1 will be used.  SiteInstances for these
+  // origins will also use the full host of the isolated origin as site URL.
+  //
+  // Subdomains of an isolated origin are considered to be part of that
+  // origin's site.  For example, if https://isolated.foo.com is added as an
+  // isolated origin, then https://bar.isolated.foo.com will be considered part
+  // of the site for https://isolated.foo.com.
+  //
+  // Note that origins from |origins| must not be unique - URLs that render with
+  // unique origins, such as data: URLs, are not supported. Non-standard
+  // schemes are also not supported.  Sandboxed frames (e.g., <iframe sandbox>)
+  // *are* supported, since process placement decisions will be based on the
+  // URLs such frames navigate to, and not the origin of committed documents
+  // (which might be unique).  If an isolated origin opens an about:blank
+  // popup, it will stay in the isolated origin's process. Nested URLs
+  // (filesystem: and blob:) retain process isolation behavior of their inner
+  // origin.
+  //
+  // Note that it is okay if |origins| contains duplicates - the set of origins
+  // will be deduplicated inside the method.
+  //
+  // The new isolated origins will apply only to BrowsingInstances and renderer
+  // processes created *after* this call.  This is necessary to not break
+  // scripting relationships between same-origin iframes in existing
+  // BrowsingInstances.  To do this, this function internally determines a
+  // threshold BrowsingInstance ID that is higher than all existing
+  // BrowsingInstance IDs but lower than future BrowsingInstance IDs, and
+  // associates it with each of the |origins|. If an origin had already been
+  // isolated prior to calling this, it is ignored, and its threshold is not
+  // updated.
+  //
+  // |source| describes the context/reason for adding the new isolated origins;
+  // see comments on IsolatedOriginSource.
+  //
+  // If |browser_context| is non-null, the new isolated origins added via this
+  // function will apply only within that BrowserContext.  If |browser_context|
+  // is null, the new isolated origins will apply globally in *all*
+  // BrowserContexts (but still subject to the BrowsingInstance ID cutoff in
+  // the previous paragraph).
+  //
+  // This function may be called again for the same origin but different
+  // |browser_context|. In that case, the origin will be isolated in all
+  // BrowserContexts for which this function has been called.  However,
+  // attempts to re-add an origin for the same |browser_context| will be
+  // ignored.
+  virtual void AddIsolatedOrigins(
+      const std::vector<url::Origin>& origins,
+      IsolatedOriginSource source,
+      BrowserContext* browser_context = nullptr) = 0;
+
+  // Semantically identical to the above, but accepts a string of comma
+  // separated origins. |origins_to_add| can contain both wildcard and
+  // non-wildcard origins, e.g. "https://[*.]foo.com,https://bar.com".
+  //
+  // Wildcard origins provide a way to treat all subdomains under the specified
+  // host and scheme as distinct isolated origins. For example,
+  // https://[*.]foo.com would isolate https://foo.com, https://bar.foo.com and
+  // https://qux.baz.foo.com all in separate processes. Adding a wildcard origin
+  // implies breaking document.domain for all of its subdomains.
+  //
+  // Note that wildcards can only be added using this version of
+  // AddIsolatedOrigins; they cannot be specified in a url::Origin().
+  virtual void AddIsolatedOrigins(
+      base::StringPiece origins_to_add,
+      IsolatedOriginSource source,
+      BrowserContext* browser_context = nullptr) = 0;
+
+  // Returns true if |origin| is a globally (not per-profile) isolated origin.
+  virtual bool IsGloballyIsolatedOriginForTesting(
+      const url::Origin& origin) = 0;
+
+  // Returns the set of currently active isolated origins, optionally filtered
+  // by the source of how they were added and/or by BrowserContext.
+  //
+  // If |source| is provided, only origins that were added with the same source
+  // will be returned; if |source| is base::nullopt, origins from all sources
+  // will be returned.
+  //
+  // If |browser_context| is null, only globally applicable origins will be
+  // returned.  If |browser_context| is non-null, only origins that apply
+  // within that particular BrowserContext will be returned (note that this
+  // includes both matching per-profile isolated origins as well as globally
+  // applicable origins which apply to |browser_context| by definition).
+  virtual std::vector<url::Origin> GetIsolatedOrigins(
+      base::Optional<IsolatedOriginSource> source = base::nullopt,
+      BrowserContext* browser_context = nullptr) = 0;
 };
 
 }  // namespace content

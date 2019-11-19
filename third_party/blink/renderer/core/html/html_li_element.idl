@@ -18,8 +18,10 @@
  */
 
 // https://html.spec.whatwg.org/C/#the-li-element
-[HTMLConstructor]
-interface HTMLLIElement : HTMLElement {
+[
+    Exposed=Window,
+    HTMLConstructor
+] interface HTMLLIElement : HTMLElement {
     [CEReactions, Reflect] attribute long value;
 
     // obsolete members

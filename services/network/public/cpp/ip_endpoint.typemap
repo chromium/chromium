@@ -8,7 +8,7 @@ traits_headers = [ "//services/network/public/cpp/ip_endpoint_mojom_traits.h" ]
 sources = [
   "//services/network/public/cpp/ip_endpoint_mojom_traits.cc",
 ]
-type_mappings = [ "network.mojom.IPEndPoint=net::IPEndPoint" ]
+type_mappings = [ "network.mojom.IPEndPoint=::net::IPEndPoint" ]
 public_deps = [
   "//net",
 ]

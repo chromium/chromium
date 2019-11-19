@@ -14,22 +14,19 @@ namespace blink {
 namespace scheduler {
 
 NonMainThreadSchedulerImpl::NonMainThreadSchedulerImpl(
-    std::unique_ptr<base::sequence_manager::SequenceManager> manager,
+    base::sequence_manager::SequenceManager* manager,
     TaskType default_task_type)
-    : helper_(std::move(manager), this, default_task_type) {}
+    : helper_(manager, this, default_task_type) {}
 
 NonMainThreadSchedulerImpl::~NonMainThreadSchedulerImpl() = default;
 
 // static
 std::unique_ptr<NonMainThreadSchedulerImpl> NonMainThreadSchedulerImpl::Create(
-    WebThreadType thread_type,
+    ThreadType thread_type,
+    base::sequence_manager::SequenceManager* sequence_manager,
     WorkerSchedulerProxy* proxy) {
-  return std::make_unique<WorkerThreadScheduler>(
-      thread_type,
-      base::sequence_manager::CreateSequenceManagerOnCurrentThread(
-          base::sequence_manager::SequenceManager::Settings{
-              .randomised_sampling_enabled = true}),
-      proxy);
+  return std::make_unique<WorkerThreadScheduler>(thread_type, sequence_manager,
+                                                 proxy);
 }
 
 void NonMainThreadSchedulerImpl::Init() {
@@ -62,6 +59,16 @@ void NonMainThreadSchedulerImpl::PostNonNestableIdleTask(
   IdleTaskRunner()->PostNonNestableIdleTask(
       location, base::BindOnce(&NonMainThreadSchedulerImpl::RunIdleTask,
                                std::move(task)));
+}
+
+void NonMainThreadSchedulerImpl::PostDelayedIdleTask(
+    const base::Location& location,
+    base::TimeDelta delay,
+    Thread::IdleTask task) {
+  IdleTaskRunner()->PostDelayedIdleTask(
+      location, delay,
+      base::BindOnce(&NonMainThreadSchedulerImpl::RunIdleTask,
+                     std::move(task)));
 }
 
 std::unique_ptr<blink::PageScheduler>
@@ -105,8 +112,9 @@ const base::TickClock* NonMainThreadSchedulerImpl::GetTickClock() {
   return helper_.GetClock();
 }
 
-SchedulerHelper* NonMainThreadSchedulerImpl::GetHelper() {
-  return &helper_;
+scoped_refptr<base::SingleThreadTaskRunner>
+NonMainThreadSchedulerImpl::DeprecatedDefaultTaskRunner() {
+  return DefaultTaskRunner();
 }
 
 }  // namespace scheduler

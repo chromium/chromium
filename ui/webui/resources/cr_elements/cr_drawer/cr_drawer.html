@@ -1,5 +1,6 @@
 <link rel="import" href="../../html/polymer.html">
 
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 <link rel="import" href="../../html/assert.html">
 <link rel="import" href="../../html/util.html">
 <link rel="import" href="../shared_vars_css.html">
@@ -23,9 +24,11 @@
         width: var(--drawer-width);
       }
 
-      :host-context([dark]) dialog {
-        background: var(--google-grey-900)
-            linear-gradient(rgba(255, 255, 255, .04), rgba(255, 255, 255, .04));
+      @media (prefers-color-scheme: dark) {
+        :host dialog {
+          background: var(--google-grey-900)
+              linear-gradient(rgba(255, 255, 255, .04), rgba(255, 255, 255, .04));
+        }
       }
 
       :host dialog,
@@ -66,15 +69,29 @@
       .drawer-header {
         align-items: center;
         border-bottom: var(--cr-separator-line);
+        color: var(--cr-drawer-header-color, inherit);
         display: flex;
         font-size: 123.08%;  /* go to 16px from 13px */
+        font-weight: var(--cr-drawer-header-font-weight, inherit);
         min-height: 56px;
-        outline: none;
-        padding-inline-start: 24px;
+        padding-inline-start: var(--cr-drawer-header-padding, 24px);
       }
 
-      :host-context([dark]) .drawer-header {
-        color: var(--cr-primary-text-color);
+      @media (prefers-color-scheme: dark) {
+        .drawer-header {
+          color: var(--cr-primary-text-color);
+        }
+      }
+
+      #heading {
+        outline: none;
+      }
+
+      #iconButton {
+        cursor: pointer;
+        margin-inline-end: 14px;
+        margin-inline-start: 0;
+        outline: none;
       }
 
       :host ::slotted(.drawer-content) {
@@ -82,13 +99,21 @@
         overflow: auto;
       }
     </style>
-    <dialog id="dialog" on-cancel="onDialogCancel_" on-tap="onDialogTap_"
+    <dialog id="dialog" on-cancel="onDialogCancel_" on-click="onDialogTap_"
         on-close="onDialogClose_">
-      <div id="container" on-tap="onContainerTap_">
-        <div class="drawer-header" tabindex="-1">[[heading]]</div>
+      <div id="container" on-click="onContainerTap_">
+        <div class="drawer-header">
+          <!-- Hidden from a11y because this icon is decorative. Clicking closes
+              the dialog, but screen reader users can do this by pressing ESC,
+              so aria-hidden is OK here. -->
+          <iron-icon id="iconButton" icon="[[iconName]]" on-click="onIconTap_"
+              title="[[iconTitle]]" hidden="[[!iconName]]" aria-hidden="true">
+          </iron-icon>
+          <div id="heading" tabindex="-1">[[heading]]</div>
+        </div>
         <slot></slot>
       </div>
     </dialog>
   </template>
+  <script src="cr_drawer.js"></script>
 </dom-module>
-<script src="cr_drawer.js"></script>

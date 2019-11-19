@@ -31,27 +31,8 @@
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
-#include "third_party/skia/include/core/SkRect.h"
-#include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
-
-FloatRect::FloatRect(const IntRect& r)
-    : location_(r.Location()), size_(r.Size()) {}
-
-FloatRect::FloatRect(const LayoutRect& r)
-    : location_(r.Location()), size_(r.Size()) {}
-
-FloatRect::FloatRect(const SkRect& r)
-    : location_(r.fLeft, r.fTop), size_(r.width(), r.height()) {}
-
-void FloatRect::Move(const LayoutSize& delta) {
-  location_.Move(delta.Width().ToFloat(), delta.Height().ToFloat());
-}
-
-void FloatRect::Move(const IntSize& delta) {
-  location_.Move(delta.Width(), delta.Height());
-}
 
 FloatRect FloatRect::NarrowPrecision(double x,
                                      double y,
@@ -250,14 +231,6 @@ float FloatRect::SquaredDistanceTo(const FloatPoint& point) const {
   return (point - closest_point).DiagonalLengthSquared();
 }
 
-FloatRect::operator SkRect() const {
-  return SkRect::MakeXYWH(X(), Y(), Width(), Height());
-}
-
-FloatRect::operator gfx::RectF() const {
-  return gfx::RectF(X(), Y(), Width(), Height());
-}
-
 FloatRect UnionRect(const Vector<FloatRect>& rects) {
   FloatRect result;
 
@@ -270,8 +243,8 @@ FloatRect UnionRect(const Vector<FloatRect>& rects) {
 IntRect EnclosedIntRect(const FloatRect& rect) {
   IntPoint location = CeiledIntPoint(rect.Location());
   IntPoint max_point = FlooredIntPoint(rect.MaxXMaxYCorner());
-  IntSize size(ClampSub(max_point.X(), location.X()),
-               ClampSub(max_point.Y(), location.Y()));
+  IntSize size(base::ClampSub(max_point.X(), location.X()),
+               base::ClampSub(max_point.Y(), location.Y()));
   size.ClampNegativeToZero();
   return IntRect(location, size);
 }
@@ -298,8 +271,8 @@ std::ostream& operator<<(std::ostream& ostream, const FloatRect& rect) {
 }
 
 String FloatRect::ToString() const {
-  return String::Format("%s %s", Location().ToString().Ascii().data(),
-                        Size().ToString().Ascii().data());
+  return String::Format("%s %s", Location().ToString().Ascii().c_str(),
+                        Size().ToString().Ascii().c_str());
 }
 
 WTF::TextStream& operator<<(WTF::TextStream& ts, const FloatRect& r) {

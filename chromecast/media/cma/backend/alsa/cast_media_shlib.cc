@@ -4,16 +4,9 @@
 
 #include <alsa/asoundlib.h>
 
-#include "base/at_exit.h"
 #include "base/command_line.h"
-#include "base/files/scoped_file.h"
 #include "base/logging.h"
-#include "base/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
-#include "chromecast/base/init_command_line_shlib.h"
-#include "chromecast/base/task_runner_impl.h"
 #include "chromecast/media/cma/backend/media_pipeline_backend_for_mixer.h"
-#include "chromecast/media/cma/backend/stream_mixer.h"
 #include "chromecast/public/cast_media_shlib.h"
 #include "chromecast/public/graphics_types.h"
 #include "chromecast/public/video_plane.h"
@@ -81,19 +74,9 @@ void InitializeAlsaControls() {
 
 DefaultVideoPlane* g_video_plane = nullptr;
 
-base::AtExitManager g_at_exit_manager;
-
-std::unique_ptr<base::ThreadTaskRunnerHandle> g_thread_task_runner_handle;
-
 }  // namespace
 
 void CastMediaShlib::Initialize(const std::vector<std::string>& argv) {
-  // Sets logging to display process and thread ID.
-  logging::SetLogItems(true, true, false, false);
-  chromecast::InitCommandLineShlib(argv);
-
-  g_video_plane = new DefaultVideoPlane();
-
   InitializeAlsaControls();
   ::media::InitializeMediaLibrary();
 }
@@ -111,29 +94,17 @@ void CastMediaShlib::Finalize() {
 
   delete g_video_plane;
   g_video_plane = nullptr;
-
-  g_thread_task_runner_handle.reset();
 }
 
 VideoPlane* CastMediaShlib::GetVideoPlane() {
+  if (!g_video_plane) {
+    g_video_plane = new DefaultVideoPlane();
+  }
   return g_video_plane;
 }
 
 MediaPipelineBackend* CastMediaShlib::CreateMediaPipelineBackend(
     const MediaPipelineDeviceParams& params) {
-  // Set up the static reference in base::ThreadTaskRunnerHandle::Get
-  // for the media thread in this shared library.  We can extract the
-  // SingleThreadTaskRunner passed in from cast_shell for this.
-  if (!base::ThreadTaskRunnerHandle::IsSet()) {
-    DCHECK(!g_thread_task_runner_handle);
-    const scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-        static_cast<TaskRunnerImpl*>(params.task_runner)->runner();
-    DCHECK(task_runner->BelongsToCurrentThread());
-    g_thread_task_runner_handle.reset(
-        new base::ThreadTaskRunnerHandle(task_runner));
-  }
-
-  // TODO(cleichner): Implement MediaSyncType in MediaPipelineDeviceAlsa.
   return new MediaPipelineBackendForMixer(params);
 }
 

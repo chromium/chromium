@@ -53,7 +53,7 @@
 
         @font-face {
             font-family: 'test5';
-            src: local('Times'), local('Tinos-Regular'), local('Times New Roman');
+            src: local('Times'), local('Times Roman'), local('Tinos-Regular'), local('Times New Roman');
         }
         @font-face {
             font-family: 'test5';

@@ -49,7 +49,7 @@ class MouseCursorMonitorProxy : public webrtc::MouseCursorMonitor {
   scoped_refptr<base::SingleThreadTaskRunner> capture_task_runner_;
   Callback* callback_ = nullptr;
 
-  base::WeakPtrFactory<MouseCursorMonitorProxy> weak_factory_;
+  base::WeakPtrFactory<MouseCursorMonitorProxy> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(MouseCursorMonitorProxy);
 };

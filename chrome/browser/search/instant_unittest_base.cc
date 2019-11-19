@@ -18,16 +18,12 @@
 #include "chrome/browser/search_engines/ui_thread_search_terms_data.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/search_test_utils.h"
-#include "components/google/core/browser/google_pref_names.h"
-#include "components/google/core/browser/google_url_tracker.h"
+#include "components/image_fetcher/core/mock_image_fetcher.h"
 #include "components/search/search.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
-#include "components/variations/entropy_provider.h"
 
 InstantUnitTestBase::InstantUnitTestBase() {
-  field_trial_list_.reset(new base::FieldTrialList(
-      std::make_unique<variations::SHA1EntropyProvider>("42")));
 }
 
 InstantUnitTestBase::~InstantUnitTestBase() {
@@ -36,16 +32,22 @@ InstantUnitTestBase::~InstantUnitTestBase() {
 void InstantUnitTestBase::SetUp() {
   BrowserWithTestWindowTest::SetUp();
 
+  clock_ = new base::SimpleTestClock();
+
   template_url_service_ = TemplateURLServiceFactory::GetForProfile(profile());
   search_test_utils::WaitForTemplateURLServiceToLoad(template_url_service_);
 
-  UIThreadSearchTermsData::SetGoogleBaseURL("https://www.google.com/");
   SetUserSelectedDefaultSearchProvider("{google:baseURL}");
   instant_service_ = InstantServiceFactory::GetForProfile(profile());
+
+  instant_service_->SetImageFetcherForTesting(
+      new testing::NiceMock<image_fetcher::MockImageFetcher>());
 }
 
 void InstantUnitTestBase::TearDown() {
-  UIThreadSearchTermsData::SetGoogleBaseURL("");
+  delete clock_;
+  clock_ = nullptr;
+
   BrowserWithTestWindowTest::TearDown();
 }
 
@@ -61,17 +63,6 @@ void InstantUnitTestBase::SetUserSelectedDefaultSearchProvider(
   TemplateURL* template_url =
       template_url_service_->Add(std::make_unique<TemplateURL>(data));
   template_url_service_->SetUserSelectedDefaultSearchProvider(template_url);
-}
-
-void InstantUnitTestBase::NotifyGoogleBaseURLUpdate(
-    const std::string& new_google_base_url) {
-  // GoogleURLTracker is not created in tests.
-  // (See GoogleURLTrackerFactory::ServiceIsNULLWhileTesting())
-  // For determining google:baseURL for NTP, the following is used:
-  // UIThreadSearchTermsData::GoogleBaseURLValue()
-  // For simulating test behavior, this is overridden below.
-  UIThreadSearchTermsData::SetGoogleBaseURL(new_google_base_url);
-  TemplateURLServiceFactory::GetForProfile(profile())->GoogleBaseURLChanged();
 }
 
 TestingProfile* InstantUnitTestBase::CreateProfile() {

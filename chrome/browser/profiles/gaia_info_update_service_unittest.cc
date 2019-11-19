@@ -26,8 +26,8 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/prefs/pref_service.h"
-#include "components/signin/core/browser/account_info.h"
-#include "components/signin/core/browser/signin_pref_names.h"
+#include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/gfx/image/image.h"
@@ -100,7 +100,7 @@ class GAIAInfoUpdateServiceTestBase : public ProfileInfoCacheTest {
     return profile_;
   }
 
-  identity::IdentityTestEnvironment* identity_test_env() {
+  signin::IdentityTestEnvironment* identity_test_env() {
     return identity_test_env_adaptor_->identity_test_env();
   }
 
@@ -294,48 +294,6 @@ TEST_F(GAIAInfoUpdateServiceTest, ProfileLockEnabledForWhitelist) {
       GetString(prefs::kGoogleServicesHostedDomain));
 }
 
-// TODO(anthonyvd) : remove or update test once the refactoring of the internals
-// of ProfileInfoCache is complete.
-TEST_F(GAIAInfoUpdateServiceTest, HandlesProfileReordering) {
-  size_t index = GetCache()->GetIndexOfProfileWithPath(profile()->GetPath());
-  GetCache()->SetNameOfProfileAtIndex(index, FullName16("B"));
-  GetCache()->SetProfileIsUsingDefaultNameAtIndex(index, true);
-
-  CreateProfile(FullName("A"));
-  CreateProfile(FullName("C"));
-  CreateProfile(FullName("E"));
-
-  size_t index_before =
-      GetCache()->GetIndexOfProfileWithPath(profile()->GetPath());
-
-  // Rename our profile.
-  RenameProfile(FullName16("D"), GivenName16("D"));
-  // Profiles should have been reordered in the cache.
-  EXPECT_NE(index_before,
-            GetCache()->GetIndexOfProfileWithPath(profile()->GetPath()));
-  // Rename the profile back to the original name, it should go back to its
-  // original position.
-  RenameProfile(FullName16("B"), GivenName16("B"));
-  EXPECT_EQ(index_before,
-            GetCache()->GetIndexOfProfileWithPath(profile()->GetPath()));
-
-  // Rename only the given name of our profile.
-  RenameProfile(FullName16("B"), GivenName16("D"));
-  // Rename the profile back to the original name, it should go back to its
-  // original position.
-  RenameProfile(FullName16("B"), GivenName16("B"));
-  EXPECT_EQ(index_before,
-            GetCache()->GetIndexOfProfileWithPath(profile()->GetPath()));
-
-  // Rename only the full name of our profile.
-  RenameProfile(FullName16("D"), GivenName16("B"));
-  // Rename the profile back to the original name, it should go back to its
-  // original position.
-  RenameProfile(FullName16("B"), GivenName16("B"));
-  EXPECT_EQ(index_before,
-            GetCache()->GetIndexOfProfileWithPath(profile()->GetPath()));
-}
-
 TEST_F(GAIAInfoUpdateServiceTest, ShouldUseGAIAProfileInfo) {
 #if defined(OS_CHROMEOS)
   // This feature should never be enabled on ChromeOS.
@@ -361,7 +319,7 @@ TEST_F(GAIAInfoUpdateServiceTest, LogOut) {
   ProfileAttributesEntry* entry = storage()->GetAllProfilesAttributes().front();
   entry->SetGAIAName(gaia_name);
   gfx::Image gaia_picture = gfx::test::CreateImage(256, 256);
-  entry->SetGAIAPicture(&gaia_picture);
+  entry->SetGAIAPicture(gaia_picture);
 
   // Set a fake picture URL.
   profile()->GetPrefs()->SetString(prefs::kProfileGAIAInfoPictureURL,
@@ -379,7 +337,7 @@ TEST_F(GAIAInfoUpdateServiceTest, LogOut) {
 
 TEST_F(GAIAInfoUpdateServiceTest, LogIn) {
   // Log in.
-  EXPECT_CALL(*service(), Update());
+  EXPECT_CALL(*service(), Update()).Times(testing::AtLeast(1));
   identity_test_env()->SetPrimaryAccount("pat@example.com");
 }
 
@@ -392,7 +350,7 @@ TEST_F(GAIAInfoUpdateServiceMiscTest, ClearGaiaInfoOnStartup) {
   entry->SetGAIAName(base::UTF8ToUTF16("foo"));
   entry->SetGAIAGivenName(base::UTF8ToUTF16("Pat Foo"));
   gfx::Image gaia_picture = gfx::test::CreateImage(256, 256);
-  entry->SetGAIAPicture(&gaia_picture);
+  entry->SetGAIAPicture(gaia_picture);
 
   GetCache()->AddObserver(this);
 

@@ -4,15 +4,14 @@
 
 #include "content/renderer/web_ui_extension_data.h"
 
-#include "content/common/view_messages.h"
-#include "content/public/renderer/render_view.h"
+#include "content/common/frame_messages.h"
+#include "content/public/renderer/render_frame.h"
 
 namespace content {
 
-WebUIExtensionData::WebUIExtensionData(RenderView* render_view)
-    : RenderViewObserver(render_view),
-      RenderViewObserverTracker<WebUIExtensionData>(render_view) {
-}
+WebUIExtensionData::WebUIExtensionData(RenderFrame* render_frame)
+    : RenderFrameObserver(render_frame),
+      RenderFrameObserverTracker<WebUIExtensionData>(render_frame) {}
 
 WebUIExtensionData::~WebUIExtensionData() {
 }
@@ -27,7 +26,7 @@ std::string WebUIExtensionData::GetValue(const std::string& key) const {
 bool WebUIExtensionData::OnMessageReceived(const IPC::Message& message) {
   bool handled = true;
   IPC_BEGIN_MESSAGE_MAP(WebUIExtensionData, message)
-    IPC_MESSAGE_HANDLER(ViewMsg_SetWebUIProperty, OnSetWebUIProperty)
+    IPC_MESSAGE_HANDLER(FrameMsg_SetWebUIProperty, OnSetWebUIProperty)
     IPC_MESSAGE_UNHANDLED(handled = false)
   IPC_END_MESSAGE_MAP()
   return handled;

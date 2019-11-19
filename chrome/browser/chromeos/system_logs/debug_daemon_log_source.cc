@@ -19,7 +19,7 @@
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/common/chrome_switches.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/debug_daemon_client.h"
+#include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_thread.h"
@@ -31,8 +31,6 @@ namespace {
 constexpr char kNotAvailable[] = "<not available>";
 constexpr char kRoutesKeyName[] = "routes";
 constexpr char kNetworkStatusKeyName[] = "network-status";
-constexpr char kModemStatusKeyName[] = "modem-status";
-constexpr char kWiMaxStatusKeyName[] = "wimax-status";
 
 // List of user log files that Chrome reads directly as these logs are generated
 // by Chrome itself.
@@ -44,6 +42,7 @@ constexpr struct UserLogs {
   const char* log_file_relative_path;
 } kUserLogs[] = {
     {"chrome_user_log", "log/chrome"},
+    {"chrome_user_log.PREVIOUS", "log/chrome.PREVIOUS"},
     {"libassistant_user_log", "log/libassistant.log"},
     {"login-times", "login-times"},
     {"logout-times", "logout-times"},
@@ -73,8 +72,7 @@ DebugDaemonLogSource::DebugDaemonLogSource(bool scrub)
     : SystemLogsSource("DebugDemon"),
       response_(new SystemLogsResponse()),
       num_pending_requests_(0),
-      scrub_(scrub),
-      weak_ptr_factory_(this) {}
+      scrub_(scrub) {}
 
 DebugDaemonLogSource::~DebugDaemonLogSource() {}
 
@@ -89,25 +87,21 @@ void DebugDaemonLogSource::Fetch(SysLogsSourceCallback callback) {
 
   client->GetRoutes(true,   // Numeric
                     false,  // No IPv6
-                    base::Bind(&DebugDaemonLogSource::OnGetRoutes,
-                               weak_ptr_factory_.GetWeakPtr()));
+                    base::BindOnce(&DebugDaemonLogSource::OnGetRoutes,
+                                   weak_ptr_factory_.GetWeakPtr()));
   ++num_pending_requests_;
-  client->GetNetworkStatus(base::Bind(&DebugDaemonLogSource::OnGetNetworkStatus,
-                                      weak_ptr_factory_.GetWeakPtr()));
-  ++num_pending_requests_;
-  client->GetModemStatus(base::Bind(&DebugDaemonLogSource::OnGetModemStatus,
-                                    weak_ptr_factory_.GetWeakPtr()));
-  ++num_pending_requests_;
-  client->GetWiMaxStatus(base::Bind(&DebugDaemonLogSource::OnGetWiMaxStatus,
-                                    weak_ptr_factory_.GetWeakPtr()));
+
+  client->GetNetworkStatus(base::BindOnce(&DebugDaemonLogSource::OnGetOneLog,
+                                          weak_ptr_factory_.GetWeakPtr(),
+                                          kNetworkStatusKeyName));
   ++num_pending_requests_;
 
   if (scrub_) {
-    client->GetScrubbedBigLogs(base::Bind(&DebugDaemonLogSource::OnGetLogs,
-                                          weak_ptr_factory_.GetWeakPtr()));
+    client->GetScrubbedBigLogs(base::BindOnce(&DebugDaemonLogSource::OnGetLogs,
+                                              weak_ptr_factory_.GetWeakPtr()));
   } else {
-    client->GetAllLogs(base::Bind(&DebugDaemonLogSource::OnGetLogs,
-                                  weak_ptr_factory_.GetWeakPtr()));
+    client->GetAllLogs(base::BindOnce(&DebugDaemonLogSource::OnGetLogs,
+                                      weak_ptr_factory_.GetWeakPtr()));
   }
   ++num_pending_requests_;
 }
@@ -122,28 +116,11 @@ void DebugDaemonLogSource::OnGetRoutes(
   RequestCompleted();
 }
 
-void DebugDaemonLogSource::OnGetNetworkStatus(
-    base::Optional<std::string> status) {
+void DebugDaemonLogSource::OnGetOneLog(std::string key,
+                                       base::Optional<std::string> status) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  (*response_)[kNetworkStatusKeyName] =
-      std::move(status).value_or(kNotAvailable);
-  RequestCompleted();
-}
-
-void DebugDaemonLogSource::OnGetModemStatus(
-    base::Optional<std::string> status) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  (*response_)[kModemStatusKeyName] = std::move(status).value_or(kNotAvailable);
-  RequestCompleted();
-}
-
-void DebugDaemonLogSource::OnGetWiMaxStatus(
-    base::Optional<std::string> status) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  (*response_)[kWiMaxStatusKeyName] = std::move(status).value_or(kNotAvailable);
+  (*response_)[std::move(key)] = std::move(status).value_or(kNotAvailable);
   RequestCompleted();
 }
 
@@ -176,8 +153,9 @@ void DebugDaemonLogSource::GetLoggedInUsersLogFiles() {
 
   auto response = std::make_unique<SystemLogsResponse>();
   SystemLogsResponse* response_ptr = response.get();
-  base::PostTaskWithTraitsAndReply(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+  base::PostTaskAndReply(
+      FROM_HERE,
+      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&ReadUserLogFiles, profile_dirs, response_ptr),
       base::BindOnce(&DebugDaemonLogSource::MergeUserLogFilesResponse,
                      weak_ptr_factory_.GetWeakPtr(), std::move(response)));

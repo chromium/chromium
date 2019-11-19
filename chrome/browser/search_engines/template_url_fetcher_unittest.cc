@@ -23,8 +23,8 @@
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
-#include "content/public/test/test_browser_thread_bundle.h"
-#include "net/test/embedded_test_server/embedded_test_server.h"
+#include "content/public/test/browser_task_environment.h"
+#include "content/public/test/url_loader_interceptor.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -32,6 +32,17 @@
 namespace {
 
 using base::ASCIIToUTF16;
+
+bool GetTestFilePath(const std::string& file_name, base::FilePath* path) {
+  if (!base::PathService::Get(base::DIR_SOURCE_ROOT, path))
+    return false;
+  *path = path->AppendASCII("components")
+              .AppendASCII("test")
+              .AppendASCII("data")
+              .AppendASCII("search_engines")
+              .AppendASCII(file_name);
+  return true;
+}
 
 class TestTemplateUrlFetcher : public TemplateURLFetcher {
  public:
@@ -64,12 +75,6 @@ class TemplateURLFetcherTest : public testing::Test {
         test_util_.model(),
         base::Bind(&TemplateURLFetcherTest::RequestCompletedCallback,
                    base::Unretained(this))));
-
-    ASSERT_TRUE(test_server_.Start());
-  }
-
-  void TearDown() override {
-    ASSERT_TRUE(test_server_.ShutdownAndWaitUntilComplete());
   }
 
   // Called when a request completes.
@@ -79,6 +84,14 @@ class TemplateURLFetcherTest : public testing::Test {
   void StartDownload(const base::string16& keyword,
                      const std::string& osdd_file_name,
                      bool check_that_file_exists);
+
+  // Handles an incoming request.
+  bool HandleRequest(content::URLLoaderInterceptor::RequestParams* params) {
+    base::FilePath path;
+    CHECK(GetTestFilePath(params->url_request.url.ExtractFileName(), &path));
+    content::URLLoaderInterceptor::WriteResponse(path, params->client.get());
+    return true;
+  }
 
   // Waits for any downloads to finish.
   void WaitForDownloadToFinish();
@@ -90,10 +103,11 @@ class TemplateURLFetcherTest : public testing::Test {
   int requests_completed() const { return requests_completed_; }
 
  private:
-  content::TestBrowserThreadBundle thread_bundle_;  // To set up BrowserThreads.
+  content::BrowserTaskEnvironment
+      task_environment_;  // To set up BrowserThreads.
   TemplateURLServiceTestUtil test_util_;
   std::unique_ptr<TemplateURLFetcher> template_url_fetcher_;
-  net::EmbeddedTestServer test_server_;
+  content::URLLoaderInterceptor url_loader_interceptor_;
 
   // How many TemplateURKFetcher::RequestDelegate requests have completed.
   int requests_completed_;
@@ -106,24 +120,13 @@ class TemplateURLFetcherTest : public testing::Test {
   DISALLOW_COPY_AND_ASSIGN(TemplateURLFetcherTest);
 };
 
-bool GetTestDataDir(base::FilePath* dir) {
-  if (!base::PathService::Get(base::DIR_SOURCE_ROOT, dir))
-    return false;
-  *dir = dir->AppendASCII("components")
-             .AppendASCII("test")
-             .AppendASCII("data")
-             .AppendASCII("search_engines");
-  return true;
-}
-
 TemplateURLFetcherTest::TemplateURLFetcherTest()
-    : thread_bundle_(content::TestBrowserThreadBundle::IO_MAINLOOP),
+    : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP),
+      url_loader_interceptor_(
+          base::BindRepeating(&TemplateURLFetcherTest::HandleRequest,
+                              base::Unretained(this))),
       requests_completed_(0),
-      waiting_for_download_(false) {
-  base::FilePath test_data_dir;
-  CHECK(GetTestDataDir(&test_data_dir));
-  test_server_.ServeFilesFromDirectory(test_data_dir);
-}
+      waiting_for_download_(false) {}
 
 void TemplateURLFetcherTest::RequestCompletedCallback() {
   requests_completed_++;
@@ -137,14 +140,13 @@ void TemplateURLFetcherTest::StartDownload(
     bool check_that_file_exists) {
   if (check_that_file_exists) {
     base::FilePath osdd_full_path;
-    ASSERT_TRUE(GetTestDataDir(&osdd_full_path));
-    osdd_full_path = osdd_full_path.AppendASCII(osdd_file_name);
+    ASSERT_TRUE(GetTestFilePath(osdd_file_name, &osdd_full_path));
     ASSERT_TRUE(base::PathExists(osdd_full_path));
     ASSERT_FALSE(base::DirectoryExists(osdd_full_path));
   }
 
   // Start the fetch.
-  GURL osdd_url = test_server_.GetURL("/" + osdd_file_name);
+  GURL osdd_url("http://some.url/" + osdd_file_name);
   GURL favicon_url;
 
   TestingProfile* profile = test_util_.profile();

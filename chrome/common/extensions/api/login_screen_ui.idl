@@ -1,0 +1,31 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Use the <code>chrome.loginScreenUi</code> API to show and hide custom
+// login UI.
+[platforms=("chromeos"),
+ implemented_in="chrome/browser/chromeos/extensions/login_screen/login_screen_ui/login_screen_ui_api.h"]
+namespace loginScreenUi {
+
+  dictionary ShowOptions {
+    // Relative url of the contents to show.
+    DOMString url;
+
+    // Whether the user can close the window, defaults to false.
+    boolean? userCanClose;
+  };
+
+  // Callback that does not take arguments.
+  callback SimpleCallback = void ();
+
+  interface Functions {
+    // Opens a window, which is visible on top of the login and lock screen.
+    // |options|: Options for the custom login UI window.
+    static void show(ShowOptions options, optional SimpleCallback callback);
+
+    // Closes the login/lock screen UI window previously opened by this
+    // extension.
+    static void close(optional SimpleCallback callback);
+  };
+};

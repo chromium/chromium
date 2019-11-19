@@ -4,6 +4,8 @@
 
 #include "ui/ozone/platform/cast/overlay_manager_cast.h"
 
+#include <memory>
+
 #include "ui/ozone/public/overlay_candidates_ozone.h"
 
 namespace ui {
@@ -27,10 +29,6 @@ OverlayManagerCast::~OverlayManagerCast() {
 std::unique_ptr<OverlayCandidatesOzone>
 OverlayManagerCast::CreateOverlayCandidates(gfx::AcceleratedWidget w) {
   return std::make_unique<OverlayCandidatesCast>();
-}
-
-bool OverlayManagerCast::SupportsOverlays() const {
-  return false;
 }
 
 }  // namespace ui

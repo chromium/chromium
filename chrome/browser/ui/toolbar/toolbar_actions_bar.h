@@ -16,6 +16,7 @@
 #include "base/observer_list.h"
 #include "base/optional.h"
 #include "base/scoped_observer.h"
+#include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_bar_bubble_delegate.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
@@ -45,7 +46,8 @@ class ToolbarActionViewController;
 // app menu. The main bar can have only a single row of icons with flexible
 // width, whereas the overflow bar has multiple rows of icons with a fixed
 // width (the width of the menu).
-class ToolbarActionsBar : public ToolbarActionsModel::Observer,
+class ToolbarActionsBar : public ExtensionsContainer,
+                          public ToolbarActionsModel::Observer,
                           public TabStripModelObserver {
  public:
   using ToolbarActions =
@@ -187,46 +189,9 @@ class ToolbarActionsBar : public ToolbarActionsModel::Observer,
   // Called when the active bubble is closed.
   void OnBubbleClosed();
 
-  // Returns true if the given |action| is visible on the main toolbar.
-  bool IsActionVisibleOnMainBar(const ToolbarActionViewController* action)
-      const;
-
-  // Pops out a given |action|, ensuring it is visible.
-  // |is_sticky| refers to whether or not the action will stay popped out if
-  // the overflow menu is opened.
-  // |closure| will be called once any animation is complete.
-  void PopOutAction(ToolbarActionViewController* action,
-                    bool is_sticky,
-                    const base::Closure& closure);
-
-  // Undoes the current "pop out"; i.e., moves the popped out action back into
-  // overflow.
-  void UndoPopOut();
-
-  // Sets the active popup owner to be |popup_owner|.
-  void SetPopupOwner(ToolbarActionViewController* popup_owner);
-
-  // Hides the actively showing popup, if any.
-  void HideActivePopup();
-
-  // Returns the main (i.e., not overflow) controller for the given action.
-  ToolbarActionViewController* GetMainControllerForAction(
-      ToolbarActionViewController* action);
-
   // Add or remove an observer.
   void AddObserver(ToolbarActionsBarObserver* observer);
   void RemoveObserver(ToolbarActionsBarObserver* observer);
-
-  // Displays the given |bubble| once the toolbar is no longer animating.
-  void ShowToolbarActionBubble(
-      std::unique_ptr<ToolbarActionsBarBubbleDelegate> bubble);
-  // Same as above, but uses PostTask() in all cases.
-  void ShowToolbarActionBubbleAsync(
-      std::unique_ptr<ToolbarActionsBarBubbleDelegate> bubble);
-
-  // Closes the overflow menu, if it was open. Returns whether or not the
-  // overflow menu was closed.
-  bool CloseOverflowMenuIfOpen();
 
   // Returns the underlying toolbar actions, but does not order them. Primarily
   // for use in testing.
@@ -247,9 +212,6 @@ class ToolbarActionsBar : public ToolbarActionsModel::Observer,
     return platform_settings_;
   }
   ToolbarActionViewController* popup_owner() { return popup_owner_; }
-  ToolbarActionViewController* popped_out_action() const {
-    return popped_out_action_;
-  }
   bool in_overflow_mode() const { return main_bar_ != nullptr; }
   bool is_showing_bubble() const { return is_showing_bubble_; }
 
@@ -265,6 +227,24 @@ class ToolbarActionsBar : public ToolbarActionsModel::Observer,
   static bool disable_animations_for_testing_;
   static void set_extension_bubble_appearance_wait_time_for_testing(
       int time_in_seconds);
+
+  // ExtensionsContainer:
+  ToolbarActionViewController* GetActionForId(
+      const std::string& action_id) override;
+  ToolbarActionViewController* GetPoppedOutAction() const override;
+  bool IsActionVisibleOnToolbar(
+      const ToolbarActionViewController* action) const override;
+  void UndoPopOut() override;
+  void SetPopupOwner(ToolbarActionViewController* popup_owner) override;
+  void HideActivePopup() override;
+  bool CloseOverflowMenuIfOpen() override;
+  void PopOutAction(ToolbarActionViewController* action,
+                    bool is_sticky,
+                    const base::Closure& closure) override;
+  void ShowToolbarActionBubble(
+      std::unique_ptr<ToolbarActionsBarBubbleDelegate> bubble) override;
+  void ShowToolbarActionBubbleAsync(
+      std::unique_ptr<ToolbarActionsBarBubbleDelegate> bubble) override;
 
  private:
   // Returns the insets by which the icon area bounds (See GetIconAreaRect())
@@ -287,6 +267,7 @@ class ToolbarActionsBar : public ToolbarActionsModel::Observer,
   void OnToolbarVisibleCountChanged() override;
   void OnToolbarHighlightModeChanged(bool is_highlighting) override;
   void OnToolbarModelInitialized() override;
+  void OnToolbarPinnedActionsChanged() override;
 
   // TabStripModelObserver:
   void OnTabStripModelChanged(
@@ -298,9 +279,6 @@ class ToolbarActionsBar : public ToolbarActionsModel::Observer,
   // |tween_type|.
   void ResizeDelegate(gfx::Tween::Type tween_type);
 
-  // Returns the action for the given |id|, if one exists.
-  ToolbarActionViewController* GetActionForId(const std::string& action_id);
-
   // Returns the current web contents.
   content::WebContents* GetCurrentWebContents();
 
@@ -311,6 +289,10 @@ class ToolbarActionsBar : public ToolbarActionsModel::Observer,
 
   // Shows an extension message bubble, if any should be shown.
   void MaybeShowExtensionBubble();
+
+  // Returns the main bar, which is |main_bar_| if this is in overflow mode, and
+  // |this| otherwise.
+  ToolbarActionsBar* GetMainBar();
 
   // The delegate for this object (in a real build, this is the view).
   ToolbarActionsBarDelegate* delegate_;
@@ -379,11 +361,9 @@ class ToolbarActionsBar : public ToolbarActionsModel::Observer,
   // no drag is in progress.
   base::Optional<size_t> index_of_dragged_item_;
 
-  ScopedObserver<TabStripModel, TabStripModelObserver> tab_strip_observer_;
-
   base::ObserverList<ToolbarActionsBarObserver>::Unchecked observers_;
 
-  base::WeakPtrFactory<ToolbarActionsBar> weak_ptr_factory_;
+  base::WeakPtrFactory<ToolbarActionsBar> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ToolbarActionsBar);
 };

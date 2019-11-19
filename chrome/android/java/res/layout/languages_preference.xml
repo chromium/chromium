@@ -16,7 +16,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="@dimen/pref_languages_padding"
+        android:padding="@dimen/draggable_list_item_padding"
         android:text="@string/languages_list_prefs_description" />
 
     <FrameLayout
@@ -31,7 +31,7 @@
         android:background="?attr/selectableItemBackground"
         android:clickable="true"
         android:gravity="center_vertical"
-        android:padding="@dimen/pref_languages_padding"
+        android:padding="@dimen/draggable_list_item_padding"
         android:paddingStart="@dimen/pref_languages_add_button_padding"
         android:drawablePadding="@dimen/pref_languages_add_button_padding"
         android:text="@string/prefs_add_language"

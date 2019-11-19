@@ -9,7 +9,7 @@
 #include "base/macros.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/web/public/test/fakes/test_web_state.h"
-#include "ios/web/public/test/test_web_thread_bundle.h"
+#include "ios/web/public/test/web_task_environment.h"
 #include "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -28,7 +28,7 @@ class PrerenderServiceTest : public PlatformTest {
   ~PrerenderServiceTest() override = default;
 
  protected:
-  web::TestWebThreadBundle thread_bundle_;
+  web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<PrerenderService> service_;
   web::TestWebState web_state_;

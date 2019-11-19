@@ -77,8 +77,14 @@ class Offliner {
     LOADING_FAILED_HTTP_ERROR = 20,
     // Loading was deferred because the active tab URL matches.
     LOADING_DEFERRED = 21,
+    // The loaded page has a HTTPS certificate error.
+    LOADED_PAGE_HAS_CERTIFICATE_ERROR = 22,
+    // The loaded page is blocked by SafeBrowsing.
+    LOADED_PAGE_IS_BLOCKED = 23,
+    // The loaded page is an interstitial or an error page.
+    LOADED_PAGE_IS_CHROME_INTERNAL = 24,
 
-    kMaxValue = LOADING_DEFERRED,
+    kMaxValue = LOADED_PAGE_IS_CHROME_INTERNAL,
   };
 
   // Reports the load progress of a request.
@@ -120,7 +126,14 @@ class Offliner {
   virtual bool HandleTimeout(int64_t request_id) = 0;
 
   // TODO(dougarnett): add policy support methods.
+
+  static std::string RequestStatusToString(RequestStatus request_status);
 };
+
+// This operator is for testing only, implemented in ./test_util.cc.
+// This is provided here to avoid ODR problems.
+std::ostream& operator<<(std::ostream& out,
+                         const Offliner::RequestStatus& value);
 
 }  // namespace offline_pages
 

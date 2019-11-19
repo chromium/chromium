@@ -17,6 +17,8 @@ source_set("lib") {
       "barcode_detection_impl_mac.mm",
       "barcode_detection_impl_mac_vision.h",
       "barcode_detection_impl_mac_vision.mm",
+      "barcode_detection_impl_mac_vision_api.h",
+      "barcode_detection_impl_mac_vision_api.mm",
       "barcode_detection_provider_mac.h",
       "barcode_detection_provider_mac.mm",
       "detection_utils_mac.h",
@@ -65,7 +67,6 @@ source_set("lib") {
   public_deps = [
     "//base",
     "//media/capture",
-    "//services/service_manager/public/cpp",
     "//services/shape_detection/public/mojom",
   ]
 
@@ -79,7 +80,6 @@ if (is_android) {
     sources = [
       "android/java/src/org/chromium/shape_detection/InterfaceRegistrar.java",
     ]
-    jni_package = "shape_detection"
   }
 
   android_library("shape_detection_java") {
@@ -104,11 +104,9 @@ if (is_android) {
       "//mojo/public/java:bindings_java",
       "//mojo/public/java:system_java",
       "//mojo/public/java/system:system_impl_java",
-      "//services/service_manager/public/java:service_manager_java",
-      "//services/service_manager/public/mojom:mojom_java",
       "//services/shape_detection/public/mojom:mojom_java",
-      "//skia/public/interfaces:interfaces_java",
-      "//ui/gfx/geometry/mojo:mojo_java",
+      "//skia/public/mojom:mojom_java",
+      "//ui/gfx/geometry/mojom:mojom_java",
     ]
   }
 }
@@ -117,6 +115,7 @@ source_set("tests") {
   testonly = true
   sources = [
     "barcode_detection_impl_mac_unittest.mm",
+    "barcode_detection_provider_mac_unittest.mm",
     "face_detection_impl_mac_unittest.mm",
     "face_detection_impl_win_unittest.cc",
     "text_detection_impl_mac_unittest.mm",
@@ -134,6 +133,7 @@ source_set("tests") {
     ":lib",
     "//base",
     "//base/test:test_support",
+    "//mojo/public/cpp/test_support:test_utils",
     "//skia",
     "//testing/gmock",
     "//testing/gtest",

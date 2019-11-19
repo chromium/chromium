@@ -4,23 +4,31 @@
 
 package org.chromium.chrome.browser.customtabs;
 
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Rect;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.customtabs.CustomTabsSessionToken;
 import android.text.TextUtils;
 
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
+import androidx.browser.customtabs.CustomTabsSessionToken;
+
+import org.chromium.base.ContextUtils;
 import org.chromium.base.TraceEvent;
-import org.chromium.base.VisibleForTesting;
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.prerender.ExternalPrerenderHandler;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabBuilder;
 import org.chromium.chrome.browser.tab.TabObserver;
+import org.chromium.chrome.browser.tab_activity_glue.ReparentingTask;
+import org.chromium.chrome.browser.tabmodel.TabLaunchType;
 import org.chromium.chrome.browser.util.UrlUtilities;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.common.Referrer;
 import org.chromium.network.mojom.ReferrerPolicy;
-
+import org.chromium.ui.base.WindowAndroid;
 
 /**
  * Holds a hidden tab which may be used to preload pages before a CustomTabActivity is launched.
@@ -75,7 +83,7 @@ public class HiddenTabHolder {
         // Ensures no Browser.EXTRA_HEADERS were in the Intent.
         if (IntentHandler.getExtraHeadersFromIntent(extrasIntent) != null) return;
 
-        Tab tab = Tab.createDetached(CustomTabDelegateFactory.createDummy());
+        Tab tab = buildDetachedTab();
 
         HiddenTabObserver observer = new HiddenTabObserver();
         tab.addObserver(observer);
@@ -95,6 +103,32 @@ public class HiddenTabHolder {
 
         mSpeculation = new SpeculationParams(session, url, tab, observer, referrer);
         mSpeculation.tab.loadUrl(loadParams);
+    }
+
+    /**
+     * Creates an instance of a {@link Tab} that is fully detached from any activity.
+     * Also performs general tab initialization as well as detached specifics.
+     *
+     * The current application context must allow the creation of a WindowAndroid.
+     *
+     * @return The newly created and initialized tab.
+     */
+    private static Tab buildDetachedTab() {
+        Context context = ContextUtils.getApplicationContext();
+        Tab tab = new TabBuilder()
+                          .setWindow(new WindowAndroid(context))
+                          .setLaunchType(TabLaunchType.FROM_SPECULATIVE_BACKGROUND_CREATION)
+                          .setDelegateFactory(CustomTabDelegateFactory.createDummy())
+                          .setInitiallyHidden(true)
+                          .build();
+
+        // Resize the webContent to avoid expensive post load resize when attaching the tab.
+        Rect bounds = ExternalPrerenderHandler.estimateContentSize(context, false);
+        int width = bounds.right - bounds.left;
+        int height = bounds.bottom - bounds.top;
+        tab.getWebContents().setSize(width, height);
+        ReparentingTask.detach(tab);
+        return tab;
     }
 
     /**

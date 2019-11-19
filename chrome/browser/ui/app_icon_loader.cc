@@ -7,8 +7,10 @@
 AppIconLoader::AppIconLoader() {}
 
 AppIconLoader::AppIconLoader(Profile* profile,
-                             int icon_size,
+                             int icon_size_in_dip,
                              AppIconLoaderDelegate* delegate)
-    : profile_(profile), icon_size_(icon_size), delegate_(delegate) {}
+    : profile_(profile),
+      icon_size_in_dip_(icon_size_in_dip),
+      delegate_(delegate) {}
 
 AppIconLoader::~AppIconLoader() {}

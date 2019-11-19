@@ -22,7 +22,10 @@
 #include "media/base/limits.h"
 #include "media/base/video_util.h"
 #include "media/capture/mojom/video_capture_types.mojom.h"
-#include "services/viz/privileged/interfaces/compositing/frame_sink_video_capture.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "services/viz/privileged/mojom/compositing/frame_sink_video_capture.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -42,6 +45,11 @@ using testing::Return;
 
 namespace viz {
 namespace {
+
+bool AlignsWithI420SubsamplingBoundaries(const gfx::Rect& update_rect) {
+  return (update_rect.x() % 2 == 0) && (update_rect.y() % 2 == 0) &&
+         (update_rect.width() % 2 == 0) && (update_rect.height() % 2 == 0);
+}
 
 // Returns true if |frame|'s device scale factor, page scale factor and root
 // scroll offset are equal to the expected values.
@@ -112,7 +120,7 @@ class MockFrameSinkManager : public FrameSinkVideoCapturerManager {
 
 class MockConsumer : public mojom::FrameSinkVideoConsumer {
  public:
-  MockConsumer() : binding_(this) {}
+  MockConsumer() {}
 
   MOCK_METHOD0(OnFrameCapturedMock, void());
   MOCK_METHOD0(OnStopped, void());
@@ -126,10 +134,8 @@ class MockConsumer : public mojom::FrameSinkVideoConsumer {
     PropagateMojoTasks();
   }
 
-  mojom::FrameSinkVideoConsumerPtr BindVideoConsumer() {
-    mojom::FrameSinkVideoConsumerPtr ptr;
-    binding_.Bind(mojo::MakeRequest(&ptr));
-    return ptr;
+  mojo::PendingRemote<mojom::FrameSinkVideoConsumer> BindVideoConsumer() {
+    return receiver_.BindNewPipeAndPassRemote();
   }
 
  private:
@@ -137,13 +143,17 @@ class MockConsumer : public mojom::FrameSinkVideoConsumer {
       base::ReadOnlySharedMemoryRegion data,
       media::mojom::VideoFrameInfoPtr info,
       const gfx::Rect& expected_content_rect,
-      mojom::FrameSinkVideoConsumerFrameCallbacksPtr callbacks) final {
+      mojo::PendingRemote<mojom::FrameSinkVideoConsumerFrameCallbacks>
+          callbacks) final {
     ASSERT_TRUE(data.IsValid());
     const auto required_bytes_to_hold_planes =
         static_cast<uint32_t>(info->coded_size.GetArea() * 3 / 2);
     ASSERT_LE(required_bytes_to_hold_planes, data.GetSize());
     ASSERT_TRUE(info);
-    ASSERT_TRUE(callbacks.get());
+
+    mojo::Remote<mojom::FrameSinkVideoConsumerFrameCallbacks> callbacks_remote(
+        std::move(callbacks));
+    ASSERT_TRUE(callbacks_remote.get());
 
     // Map the shared memory buffer and re-constitute a VideoFrame instance
     // around it for analysis via TakeFrame().
@@ -170,10 +180,10 @@ class MockConsumer : public mojom::FrameSinkVideoConsumer {
     frames_.push_back(std::move(frame));
     done_callbacks_.push_back(
         base::BindOnce(&mojom::FrameSinkVideoConsumerFrameCallbacks::Done,
-                       std::move(callbacks)));
+                       std::move(callbacks_remote)));
   }
 
-  mojo::Binding<mojom::FrameSinkVideoConsumer> binding_;
+  mojo::Receiver<mojom::FrameSinkVideoConsumer> receiver_{this};
   std::vector<scoped_refptr<VideoFrame>> frames_;
   std::vector<base::OnceClosure> done_callbacks_;
 };
@@ -369,8 +379,7 @@ class FrameSinkVideoCapturerTest : public testing::Test {
         true /* enable_auto_throttling */);
     oracle_ = oracle.get();
     capturer_ = std::make_unique<FrameSinkVideoCapturerImpl>(
-        &frame_sink_manager_, mojom::FrameSinkVideoCapturerRequest(),
-        std::move(oracle));
+        &frame_sink_manager_, mojo::NullReceiver(), std::move(oracle));
   }
 
   void SetUp() override {
@@ -471,6 +480,11 @@ class FrameSinkVideoCapturerTest : public testing::Test {
   void AdvanceClockForRefreshTimer() {
     task_runner_->FastForwardBy(capturer_->GetDelayBeforeNextRefreshAttempt());
     PropagateMojoTasks();
+  }
+
+  gfx::Rect ExpandRectToI420SubsampleBoundaries(const gfx::Rect& rect) {
+    return FrameSinkVideoCapturerImpl::ExpandRectToI420SubsampleBoundaries(
+        rect);
   }
 
  protected:
@@ -1048,6 +1062,10 @@ TEST_F(FrameSinkVideoCapturerTest, DeliversUpdateRectAndCaptureCounter) {
                     size_set().expected_content_rect.height()));
   expected_frame_update_rect.Offset(
       size_set().expected_content_rect.OffsetFromOrigin());
+  EXPECT_FALSE(AlignsWithI420SubsamplingBoundaries(expected_frame_update_rect));
+  expected_frame_update_rect =
+      ExpandRectToI420SubsampleBoundaries(expected_frame_update_rect);
+  EXPECT_TRUE(AlignsWithI420SubsamplingBoundaries(expected_frame_update_rect));
 
   // Notify frame damage with custom damage rect, and expect that the refresh
   // frame is delivered to the consumer with a corresponding |update_rect|.

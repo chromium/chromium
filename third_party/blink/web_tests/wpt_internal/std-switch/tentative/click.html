@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<body>
+<script type="module">
+import 'std:elements/switch';
+
+promise_test(async t => {
+  let switchElement = document.createElement('std-switch');
+  document.body.appendChild(switchElement);
+  assert_false(switchElement.on);
+
+  let inputEventCounter = 0;
+  let changeEventCounter = 0;
+  switchElement.oninput = t.step_func(e => {
+    ++inputEventCounter;
+    assert_true(e.bubbles);
+    assert_false(e.cancelable);
+    assert_false(e.composed);
+    assert_false(e.isTrusted);
+  });
+  switchElement.onchange = t.step_func(e => {
+    ++changeEventCounter;
+    assert_true(e.bubbles);
+    assert_false(e.cancelable);
+    assert_false(e.composed);
+    assert_false(e.isTrusted);
+  });
+
+  await test_driver.click(switchElement);
+  assert_true(switchElement.on);
+  assert_equals(inputEventCounter, 1);
+  assert_equals(changeEventCounter, 1);
+
+  await test_driver.click(switchElement);
+  assert_false(switchElement.on);
+  assert_equals(inputEventCounter, 2);
+  assert_equals(changeEventCounter, 2);
+
+  switchElement.disabled = true;
+  await test_driver.click(switchElement);
+  // No changes
+  assert_false(switchElement.on);
+  assert_equals(inputEventCounter, 2);
+  assert_equals(changeEventCounter, 2);
+}, 'Click should change the status, and dispatch input/change events.');
+
+test(() => {
+  let switchElement = document.createElement('std-switch');
+  let inputEventCounter = 0;
+  let changeEventCounter = 0;
+  switchElement.oninput = e => {
+    ++inputEventCounter;
+  };
+  switchElement.onchange = e => {
+    ++changeEventCounter;
+  };
+  switchElement.click();
+  assert_equals(inputEventCounter, 1);
+  assert_equals(changeEventCounter, 1);
+}, 'input/change events should be synchronous.');
+
+promise_test(async t => {
+  let switchElement = document.createElement('std-switch');
+  document.body.appendChild(switchElement);
+  assert_false(switchElement.on);
+
+  let inputEventCounter = 0;
+  let changeEventCounter = 0;
+  switchElement.oninput = t.step_func(e => {
+    ++inputEventCounter;
+    assert_true(e.bubbles);
+    assert_false(e.cancelable);
+    assert_false(e.composed);
+    assert_false(e.isTrusted);
+  });
+  switchElement.onchange = t.step_func(e => {
+    ++changeEventCounter;
+    assert_true(e.bubbles);
+    assert_false(e.cancelable);
+    assert_false(e.composed);
+    assert_false(e.isTrusted);
+  });
+
+  await test_driver.send_keys(switchElement, ' ');
+  assert_true(switchElement.on, 'on');
+  assert_equals(inputEventCounter, 1);
+  assert_equals(changeEventCounter, 1);
+
+  await test_driver.send_keys(switchElement, ' ');
+  assert_false(switchElement.on, 'off');
+  assert_equals(inputEventCounter, 2);
+  assert_equals(changeEventCounter, 2);
+}, 'Space key is equivalent to click.');
+</script>
+</body>

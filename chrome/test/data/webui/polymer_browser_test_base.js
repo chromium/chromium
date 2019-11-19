@@ -38,16 +38,15 @@ PolymerTest.prototype = {
   runAccessibilityChecks: false,
 
   /**
-   * Files that need not be compiled. Should be overridden to use correct
-   * relative paths with PolymerTest.getLibraries.
+   * Files that need not be compiled.
    * @override
    */
   extraLibraries: [
-    'ui/webui/resources/js/cr.js',
-    'ui/webui/resources/js/promise_resolver.js',
-    'third_party/mocha/mocha.js',
-    'chrome/test/data/webui/mocha_adapter.js',
-    'third_party/polymer/v1_0/components-chromium/iron-test-helpers/' +
+    '//ui/webui/resources/js/cr.js',
+    '//ui/webui/resources/js/promise_resolver.js',
+    '//third_party/mocha/mocha.js',
+    '//chrome/test/data/webui/mocha_adapter.js',
+    '//third_party/polymer/v1_0/components-chromium/iron-test-helpers/' +
         'mock-interactions.js',
   ],
 
@@ -86,52 +85,7 @@ PolymerTest.prototype = {
         throw e;
       }
     };
-
-    // Import Polymer before running tests.
-    suiteSetup(function() {
-      if (!window.Polymer) {
-        return PolymerTest.importHtml('chrome://resources/html/polymer.html');
-      }
-    });
   },
-
-  /** @override */
-  tearDown: function() {
-    // Note: We do this in tearDown() so that we have a chance to stamp all the
-    // dom-if templates, add elements through interaction, etc.
-    PolymerTest.testIronIcons(document.body);
-
-    testing.Test.prototype.tearDown.call(this);
-  }
-};
-
-/**
- * Tests that any iron-icon child of an HTML element has a corresponding
- * non-empty svg element.
- * @param {!HTMLElement} e The element to check the iron icons in.
- */
-PolymerTest.testIronIcons = function(e) {
-  e.querySelectorAll('* /deep/ iron-icon').forEach(function(icon) {
-    // Early return if the src is set instead of the icon, since the tests
-    // below will not work correctly in this case.
-    if (icon.src && !icon.icon) {
-      return;
-    }
-
-    // If the icon isn't set (or is set to ''), then don't test this. Having no
-    // set icon is valid for cases when we don't want to display anything.
-    if (!icon.icon) {
-      var rect = icon.getBoundingClientRect();
-      expectFalse(
-          rect.width * rect.height > 0,
-          'iron-icon with undefined "icon" is visible in the DOM.');
-      return;
-    }
-    var svg = icon.$$('svg');
-    expectTrue(
-        !!svg && svg.innerHTML != '',
-        'icon "' + icon.icon + '" is not present');
-  });
 };
 
 /**
@@ -181,31 +135,4 @@ PolymerTest.clearBody = function() {
   if (vulcanizeDiv) {
     document.body.appendChild(vulcanizeDiv);
   }
-};
-
-/**
- * Helper function to return the list of extra libraries relative to basePath.
- */
-PolymerTest.getLibraries = function(basePath) {
-  // Ensure basePath ends in '/'.
-  if (basePath.length && basePath[basePath.length - 1] != '/') {
-    basePath += '/';
-  }
-
-  return PolymerTest.prototype.extraLibraries.map(function(library) {
-    return basePath + library;
-  });
-};
-
-/*
- * Waits for queued up tasks to finish before proceeding. Inspired by:
- * https://github.com/Polymer/web-component-tester/blob/master/browser/environment/helpers.js#L97
- */
-PolymerTest.flushTasks = function() {
-  Polymer.dom.flush();
-  // Promises have microtask timing, so we use setTimeout to explicity force a
-  // new task.
-  return new Promise(function(resolve, reject) {
-    window.setTimeout(resolve, 0);
-  });
 };

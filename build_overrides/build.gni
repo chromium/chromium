@@ -42,7 +42,7 @@ declare_args() {
   # This does not affect the compiler. When this variable is false, targets will
   # instead use a hermetic install of Xcode. [The hermetic install can be
   # obtained with gclient sync after setting the environment variable
-  # FORCE_MAC_TOOLCHAIN].
+  # FORCE_MAC_TOOLCHAIN for target_os mac only].
   use_system_xcode = ""
 }
 
@@ -51,10 +51,12 @@ if (host_os == "mac" && use_system_xcode == "") {
                         [ target_os ],
                         "value")
 
-  # TODO(https://crbug.com/904400): Re-enable this check once hermetic toolchain
-  # runs on latest macOS release [Mojave].
-  # assert(_result != 2,
-  #        "Do not allow building targets with the default" +
-  #            "hermetic toolchain if the minimum OS version is not met.")
+  assert(_result != 2,
+         "Do not allow building targets with the default" +
+             "hermetic toolchain if the minimum OS version is not met.")
+  assert(_result != 3,
+         "iOS does not support building with a hermetic toolchain. " +
+             "Please install Xcode.")
+
   use_system_xcode = _result != 1
 }

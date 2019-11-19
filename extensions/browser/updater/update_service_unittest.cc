@@ -21,7 +21,7 @@
 #include "components/update_client/crx_update_item.h"
 #include "components/update_client/update_client.h"
 #include "content/public/browser/notification_service.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extensions_test.h"
@@ -497,12 +497,6 @@ TEST_F(UpdateServiceTest, InProgressUpdate_Successful) {
   const auto& request = update_client()->update_request(0);
   EXPECT_THAT(request.extension_ids,
               testing::ElementsAre("A", "B", "C", "D", "E"));
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples("Extensions.ExtensionUpdaterUpdateCalls"),
-      testing::ElementsAre(base::Bucket(5, 1)));
-  EXPECT_THAT(histogram_tester.GetAllSamples(
-                  "Extensions.UnifiedExtensionUpdaterUpdateCalls"),
-              testing::ElementsAre(base::Bucket(5, 1)));
 
   update_client()->RunDelayedUpdate(0);
   EXPECT_TRUE(executed);
@@ -542,12 +536,6 @@ TEST_F(UpdateServiceTest, InProgressUpdate_Duplicate) {
   const auto& request = update_client()->update_request(0);
   EXPECT_THAT(request.extension_ids,
               testing::ElementsAre("A", "B", "C", "D", "E"));
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples("Extensions.ExtensionUpdaterUpdateCalls"),
-      testing::ElementsAre(base::Bucket(5, 1)));
-  EXPECT_THAT(histogram_tester.GetAllSamples(
-                  "Extensions.UnifiedExtensionUpdaterUpdateCalls"),
-              testing::ElementsAre(base::Bucket(5, 1)));
 
   update_client()->RunDelayedUpdate(0);
   EXPECT_TRUE(executed1);
@@ -586,12 +574,6 @@ TEST_F(UpdateServiceTest, InProgressUpdate_NonOverlapped) {
 
   EXPECT_THAT(request1.extension_ids, testing::ElementsAre("A", "B", "C"));
   EXPECT_THAT(request2.extension_ids, testing::ElementsAre("D", "E"));
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples("Extensions.ExtensionUpdaterUpdateCalls"),
-      testing::ElementsAre(base::Bucket(2, 1), base::Bucket(3, 1)));
-  EXPECT_THAT(histogram_tester.GetAllSamples(
-                  "Extensions.UnifiedExtensionUpdaterUpdateCalls"),
-              testing::ElementsAre(base::Bucket(2, 1), base::Bucket(3, 1)));
 
   update_client()->RunDelayedUpdate(0);
   EXPECT_TRUE(executed1);
@@ -632,12 +614,6 @@ TEST_F(UpdateServiceTest, InProgressUpdate_Overlapped) {
 
   EXPECT_THAT(request1.extension_ids, testing::ElementsAre("A", "B", "C"));
   EXPECT_THAT(request2.extension_ids, testing::ElementsAre("D"));
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples("Extensions.ExtensionUpdaterUpdateCalls"),
-      testing::ElementsAre(base::Bucket(1, 1), base::Bucket(3, 1)));
-  EXPECT_THAT(histogram_tester.GetAllSamples(
-                  "Extensions.UnifiedExtensionUpdaterUpdateCalls"),
-              testing::ElementsAre(base::Bucket(1, 1), base::Bucket(3, 1)));
 
   update_client()->RunDelayedUpdate(0);
   ASSERT_TRUE(executed1);
@@ -694,12 +670,6 @@ TEST_F(UpdateServiceTest, InProgressUpdate_3Overlapped) {
 
   EXPECT_THAT(request1.extension_ids, testing::ElementsAre("A", "B", "C"));
   EXPECT_THAT(request2.extension_ids, testing::ElementsAre("D", "E"));
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples("Extensions.ExtensionUpdaterUpdateCalls"),
-      testing::ElementsAre(base::Bucket(2, 1), base::Bucket(3, 1)));
-  EXPECT_THAT(histogram_tester.GetAllSamples(
-                  "Extensions.UnifiedExtensionUpdaterUpdateCalls"),
-              testing::ElementsAre(base::Bucket(2, 1), base::Bucket(3, 1)));
 
   update_client()->RunDelayedUpdate(0);
   ASSERT_TRUE(executed1);
@@ -771,14 +741,6 @@ TEST_F(UpdateServiceTest, InProgressUpdate_4Overlapped) {
   EXPECT_THAT(request1.extension_ids, testing::ElementsAre("A", "B", "C"));
   EXPECT_THAT(request2.extension_ids, testing::ElementsAre("D", "E"));
   EXPECT_THAT(request3.extension_ids, testing::ElementsAre("G", "H", "I", "J"));
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples("Extensions.ExtensionUpdaterUpdateCalls"),
-      testing::ElementsAre(base::Bucket(2, 1), base::Bucket(3, 1),
-                           base::Bucket(4, 1)));
-  EXPECT_THAT(histogram_tester.GetAllSamples(
-                  "Extensions.UnifiedExtensionUpdaterUpdateCalls"),
-              testing::ElementsAre(base::Bucket(2, 1), base::Bucket(3, 1),
-                                   base::Bucket(4, 1)));
 
   update_client()->RunDelayedUpdate(0);
   ASSERT_TRUE(executed1);
@@ -833,13 +795,6 @@ TEST_F(UpdateServiceTest, InProgressUpdate_Batch) {
               testing::ElementsAre("A44", "A45", "A46", "A47", "A48", "A49",
                                    "A50", "A51", "A52", "A53", "A54", "A55",
                                    "A56", "A57", "A58", "A59"));
-
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples("Extensions.ExtensionUpdaterUpdateCalls"),
-      testing::ElementsAre(base::Bucket(16, 1), base::Bucket(22, 2)));
-  EXPECT_THAT(histogram_tester.GetAllSamples(
-                  "Extensions.UnifiedExtensionUpdaterUpdateCalls"),
-              testing::ElementsAre(base::Bucket(16, 1), base::Bucket(22, 2)));
 
   update_client()->RunDelayedUpdate(0);
   EXPECT_FALSE(executed);
@@ -903,15 +858,6 @@ TEST_F(UpdateServiceTest, InProgressUpdate_NoBatchAndBatch) {
               testing::ElementsAre("A44", "A45", "A46", "A47", "A48", "A49",
                                    "A50", "A51", "A52", "A53", "A54"));
 
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples("Extensions.ExtensionUpdaterUpdateCalls"),
-      testing::ElementsAre(base::Bucket(4, 1), base::Bucket(11, 1),
-                           base::Bucket(22, 2)));
-  EXPECT_THAT(histogram_tester.GetAllSamples(
-                  "Extensions.UnifiedExtensionUpdaterUpdateCalls"),
-              testing::ElementsAre(base::Bucket(4, 1), base::Bucket(11, 1),
-                                   base::Bucket(22, 2)));
-
   update_client()->RunDelayedUpdate(0);
   EXPECT_TRUE(executed1);
   EXPECT_FALSE(executed2);
@@ -930,22 +876,13 @@ TEST_F(UpdateServiceTest, InProgressUpdate_NoBatchAndBatch) {
   EXPECT_FALSE(update_service()->IsBusy());
 }
 
-class UpdateServiceCanUpdateTest : public UpdateServiceTest,
-                                   public ::testing::WithParamInterface<bool> {
+class UpdateServiceCanUpdateTest : public UpdateServiceTest {
  public:
   UpdateServiceCanUpdateTest() {}
   ~UpdateServiceCanUpdateTest() override {}
 
   void SetUp() override {
     UpdateServiceTest::SetUp();
-
-    if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          extensions_features::kNewExtensionUpdaterService);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          extensions_features::kNewExtensionUpdaterService);
-    }
 
     store_extension_ =
         ExtensionBuilder("store_extension")
@@ -1010,11 +947,11 @@ class UpdateServiceCanUpdateFeatureEnabledNonDefaultUpdateUrl
   }
 };
 
-TEST_P(UpdateServiceCanUpdateTest, UpdateService_CanUpdate) {
+TEST_F(UpdateServiceCanUpdateTest, UpdateService_CanUpdate) {
   // Update service can only update webstore extensions when enabled.
-  EXPECT_EQ(GetParam(), update_service()->CanUpdate(store_extension_->id()));
+  EXPECT_TRUE(update_service()->CanUpdate(store_extension_->id()));
   // ... and extensions with empty update URL.
-  EXPECT_EQ(GetParam(), update_service()->CanUpdate(emptyurl_extension_->id()));
+  EXPECT_TRUE(update_service()->CanUpdate(emptyurl_extension_->id()));
   // It can't update off-store extrensions.
   EXPECT_FALSE(update_service()->CanUpdate(offstore_extension_->id()));
   // ... or extensions with empty update URL converted from user script.
@@ -1025,7 +962,7 @@ TEST_P(UpdateServiceCanUpdateTest, UpdateService_CanUpdate) {
   EXPECT_FALSE(update_service()->CanUpdate(""));
 }
 
-TEST_P(UpdateServiceCanUpdateFeatureEnabledNonDefaultUpdateUrl,
+TEST_F(UpdateServiceCanUpdateFeatureEnabledNonDefaultUpdateUrl,
        UpdateService_CanUpdate) {
   // Update service cannot update extensions when the default webstore update
   // url is changed.
@@ -1036,15 +973,6 @@ TEST_P(UpdateServiceCanUpdateFeatureEnabledNonDefaultUpdateUrl,
   EXPECT_FALSE(update_service()->CanUpdate(std::string(32, 'a')));
   EXPECT_FALSE(update_service()->CanUpdate(""));
 }
-
-INSTANTIATE_TEST_SUITE_P(CanUpdateTest,
-                         UpdateServiceCanUpdateTest,
-                         ::testing::Bool());
-
-INSTANTIATE_TEST_SUITE_P(
-    CanUpdateTest,
-    UpdateServiceCanUpdateFeatureEnabledNonDefaultUpdateUrl,
-    ::testing::Bool());
 
 }  // namespace
 

@@ -129,9 +129,7 @@ gfx::Image ImageFamily::CreateExact(int width, int height) const {
     // is not racy to |image|. Since this function can run on a different thread
     // than the thread |image| created on, we should not touch the
     // non-thread-safe ref count in gfx::Image here.
-    std::unique_ptr<gfx::ImageSkia> image_skia(
-        new gfx::ImageSkia(*image->ToImageSkia()));
-    return gfx::Image(*image_skia);
+    return gfx::Image(image->AsImageSkia());
   }
 
   SkBitmap bitmap = image->AsBitmap();

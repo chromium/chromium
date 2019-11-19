@@ -6,13 +6,14 @@
 
 #include <string>
 #include <utility>
+
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "content/browser/loader/navigation_loader_interceptor.h"
+#include "content/browser/loader/single_request_url_loader_factory.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
 #include "content/browser/service_worker/fake_embedded_worker_instance_client.h"
 #include "content/browser/service_worker/fake_service_worker.h"
@@ -21,15 +22,15 @@
 #include "content/browser/service_worker/service_worker_test_utils.h"
 #include "content/browser/service_worker/service_worker_version.h"
 #include "content/common/service_worker/service_worker_utils.h"
-#include "content/common/single_request_url_loader_factory.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
-#include "content/public/test/test_browser_thread_bundle.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe_utils.h"
 #include "net/ssl/ssl_info.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
-#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/resource_response.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/test/test_url_loader_client.h"
@@ -102,11 +103,12 @@ class FetchEventServiceWorker : public FakeServiceWorker {
 
   // Tells this worker to respond to fetch events with the specified stream.
   void RespondWithStream(
-      blink::mojom::ServiceWorkerStreamCallbackRequest callback_request,
+      mojo::PendingReceiver<blink::mojom::ServiceWorkerStreamCallback>
+          callback_receiver,
       mojo::ScopedDataPipeConsumerHandle consumer_handle) {
     response_mode_ = ResponseMode::kStream;
     stream_handle_ = blink::mojom::ServiceWorkerStreamHandle::New();
-    stream_handle_->callback_request = std::move(callback_request);
+    stream_handle_->callback_receiver = std::move(callback_receiver);
     stream_handle_->stream = std::move(consumer_handle);
   }
 
@@ -177,11 +179,12 @@ class FetchEventServiceWorker : public FakeServiceWorker {
   }
 
  protected:
-  void DispatchFetchEvent(
+  void DispatchFetchEventForMainResource(
       blink::mojom::DispatchFetchEventParamsPtr params,
-      blink::mojom::ServiceWorkerFetchResponseCallbackPtr response_callback,
-      blink::mojom::ServiceWorker::DispatchFetchEventCallback finish_callback)
-      override {
+      mojo::PendingRemote<blink::mojom::ServiceWorkerFetchResponseCallback>
+          pending_response_callback,
+      blink::mojom::ServiceWorker::DispatchFetchEventForMainResourceCallback
+          finish_callback) override {
     // Basic checks on DispatchFetchEvent parameters.
     EXPECT_TRUE(params->request->is_main_resource_load);
 
@@ -189,11 +192,13 @@ class FetchEventServiceWorker : public FakeServiceWorker {
     if (params->request->body)
       request_body_ = params->request->body;
 
+    mojo::Remote<blink::mojom::ServiceWorkerFetchResponseCallback>
+        response_callback(std::move(pending_response_callback));
     switch (response_mode_) {
       case ResponseMode::kDefault:
-        FakeServiceWorker::DispatchFetchEvent(std::move(params),
-                                              std::move(response_callback),
-                                              std::move(finish_callback));
+        FakeServiceWorker::DispatchFetchEventForMainResource(
+            std::move(params), response_callback.Unbind(),
+            std::move(finish_callback));
         break;
       case ResponseMode::kBlob:
         response_callback->OnResponse(
@@ -231,7 +236,7 @@ class FetchEventServiceWorker : public FakeServiceWorker {
 
         // Finish the event by calling |finish_callback|.
         // This is the Mojo callback for
-        // blink::mojom::ServiceWorker::DispatchFetchEvent().
+        // blink::mojom::ServiceWorker::DispatchFetchEventForMainResource().
         // If this is not called, Mojo will complain. In production code,
         // ServiceWorkerContextClient would call this when it aborts all
         // callbacks after an unexpected stop.
@@ -286,8 +291,10 @@ class FetchEventServiceWorker : public FakeServiceWorker {
   blink::mojom::ServiceWorkerStreamHandlePtr stream_handle_;
 
   // For ResponseMode::kEarlyResponse and kDeferredResponse.
-  blink::mojom::ServiceWorker::DispatchFetchEventCallback finish_callback_;
-  blink::mojom::ServiceWorkerFetchResponseCallbackPtr response_callback_;
+  blink::mojom::ServiceWorker::DispatchFetchEventForMainResourceCallback
+      finish_callback_;
+  mojo::Remote<blink::mojom::ServiceWorkerFetchResponseCallback>
+      response_callback_;
 
   // For ResponseMode::kRedirect.
   GURL redirected_url_;
@@ -324,26 +331,17 @@ const char kHistogramMainResourceFetchEvent[] =
 // Of course, no actual service worker runs in the unit test, it is simulated
 // via EmbeddedWorkerTestHelper receiving IPC messages from the browser and
 // responding as if a service worker is running in the renderer.
-//
-// ServiceWorkerNavigationLoaderTest is also a
-// ServiceWorkerNavigationLoader::Delegate. In production code,
-// ServiceWorkerControlleeRequestHandler is the Delegate. So this class also
-// basically mocks that part of ServiceWorkerControlleeRequestHandler.
-class ServiceWorkerNavigationLoaderTest
-    : public testing::Test,
-      public ServiceWorkerNavigationLoader::Delegate {
+class ServiceWorkerNavigationLoaderTest : public testing::Test {
  public:
   ServiceWorkerNavigationLoaderTest()
-      : thread_bundle_(TestBrowserThreadBundle::IO_MAINLOOP) {}
+      : task_environment_(BrowserTaskEnvironment::IO_MAINLOOP) {}
   ~ServiceWorkerNavigationLoaderTest() override = default;
 
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(network::features::kNetworkService);
     helper_ = std::make_unique<EmbeddedWorkerTestHelper>(base::FilePath());
 
     // Create an active service worker.
-    storage()->LazyInitializeForTest(base::DoNothing());
-    base::RunLoop().RunUntilIdle();
+    storage()->LazyInitializeForTest();
     blink::mojom::ServiceWorkerRegistrationOptions options;
     options.scope = GURL("https://example.com/");
     registration_ =
@@ -366,9 +364,11 @@ class ServiceWorkerNavigationLoaderTest
     // Make the registration findable via storage functions.
     registration_->set_last_update_check(base::Time::Now());
     base::Optional<blink::ServiceWorkerStatusCode> status;
-    storage()->StoreRegistration(registration_.get(), version_.get(),
-                                 CreateReceiverOnCurrentThread(&status));
-    base::RunLoop().RunUntilIdle();
+    base::RunLoop run_loop;
+    storage()->StoreRegistration(
+        registration_.get(), version_.get(),
+        ReceiveServiceWorkerStatus(&status, run_loop.QuitClosure()));
+    run_loop.Run();
     ASSERT_EQ(blink::ServiceWorkerStatusCode::kOk, status.value());
 
     // Set up custom fakes to let tests customize how to respond to fetch
@@ -383,41 +383,34 @@ class ServiceWorkerNavigationLoaderTest
 
   ServiceWorkerStorage* storage() { return helper_->context()->storage(); }
 
-  // Indicates whether ServiceWorkerNavigationLoader decided to handle a
-  // request, i.e., it returned a non-null RequestHandler for the request.
-  enum class LoaderResult {
-    kHandledRequest,
-    kDidNotHandleRequest,
-  };
-
-  // Starts a request. Returns whether ServiceWorkerNavigationLoader handled the
-  // request. If kHandledRequest was returned, the request is ongoing and the
+  // Starts a request. After calling this, the request is ongoing and the
   // caller can use functions like client_.RunUntilComplete() to wait for
   // completion.
-  LoaderResult StartRequest(std::unique_ptr<network::ResourceRequest> request) {
-    provider_host_ = CreateProviderHostForWindow(
-        helper_->mock_render_process_id(), true /* is_parent_frame_secure */,
-        helper_->context()->AsWeakPtr(), &provider_endpoints_);
-    // Start a ServiceWorkerNavigationLoader. It should return a
-    // RequestHandler.
-    SingleRequestURLLoaderFactory::RequestHandler handler;
+  void StartRequest(std::unique_ptr<network::ResourceRequest> request) {
+    // Create a ServiceWorkerProviderHost and simulate what
+    // ServiceWorkerControlleeRequestHandler does to assign it a controller.
+    if (!provider_host_) {
+      provider_host_ = CreateProviderHostForWindow(
+          helper_->mock_render_process_id(), /*is_parent_frame_secure=*/true,
+          helper_->context()->AsWeakPtr(), &provider_endpoints_);
+      provider_host_->UpdateUrls(request->url, request->url,
+                                 url::Origin::Create(request->url));
+      provider_host_->AddMatchingRegistration(registration_.get());
+      provider_host_->SetControllerRegistration(
+          registration_, /*notify_controllerchange=*/false);
+    }
+
+    // Create a ServiceWorkerNavigationLoader.
     loader_ = std::make_unique<ServiceWorkerNavigationLoader>(
-        base::BindOnce(&ReceiveRequestHandler, &handler),
         base::BindOnce(&ServiceWorkerNavigationLoaderTest::Fallback,
                        base::Unretained(this)),
-        this, *request, provider_host_,
+        provider_host_,
         base::WrapRefCounted<URLLoaderFactoryGetter>(
             helper_->context()->loader_factory_getter()));
-    loader_->ForwardToServiceWorker();
-    base::RunLoop().RunUntilIdle();
-    if (!handler)
-      return LoaderResult::kDidNotHandleRequest;
 
-    // Run the handler. It will load |request.url|.
-    std::move(handler).Run(*request, mojo::MakeRequest(&loader_ptr_),
-                           client_.CreateInterfacePtr());
-
-    return LoaderResult::kHandledRequest;
+    // Load |request.url|.
+    loader_->StartRequest(*request, mojo::MakeRequest(&loader_ptr_),
+                          client_.CreateRemote());
   }
 
   // The |fallback_callback| passed to the ServiceWorkerNavigationLoader in
@@ -462,46 +455,26 @@ class ServiceWorkerNavigationLoaderTest
   std::unique_ptr<network::ResourceRequest> CreateRequest() {
     std::unique_ptr<network::ResourceRequest> request =
         std::make_unique<network::ResourceRequest>();
-    request->url = GURL("https://www.example.com/");
+    request->url = GURL("https://example.com/");
     request->method = "GET";
-    request->fetch_request_mode = network::mojom::FetchRequestMode::kNavigate;
-    request->fetch_credentials_mode =
-        network::mojom::FetchCredentialsMode::kInclude;
-    request->fetch_redirect_mode = network::mojom::FetchRedirectMode::kManual;
+    request->mode = network::mojom::RequestMode::kNavigate;
+    request->credentials_mode = network::mojom::CredentialsMode::kInclude;
+    request->redirect_mode = network::mojom::RedirectMode::kManual;
     return request;
-  }
-
- protected:
-  // ServiceWorkerNavigationLoader::Delegate -----------------------------------
-  void OnPrepareToRestart() override {}
-
-  ServiceWorkerVersion* GetServiceWorkerVersion(
-      ServiceWorkerMetrics::URLRequestJobResult* result) override {
-    return version_.get();
-  }
-
-  bool RequestStillValid(
-      ServiceWorkerMetrics::URLRequestJobResult* result) override {
-    return true;
-  }
-
-  void MainResourceLoadFailed() override {
-    was_main_resource_load_failed_called_ = true;
   }
 
   bool HasWorkInBrowser(ServiceWorkerVersion* version) const {
     return version->HasWorkInBrowser();
   }
-  // --------------------------------------------------------------------------
 
-  TestBrowserThreadBundle thread_bundle_;
+ protected:
+  BrowserTaskEnvironment task_environment_;
   std::unique_ptr<EmbeddedWorkerTestHelper> helper_;
   scoped_refptr<ServiceWorkerRegistration> registration_;
   scoped_refptr<ServiceWorkerVersion> version_;
   FetchEventServiceWorker* service_worker_;
   storage::BlobStorageContext blob_context_;
   network::TestURLLoaderClient client_;
-  bool was_main_resource_load_failed_called_ = false;
   std::unique_ptr<ServiceWorkerNavigationLoader> loader_;
   network::mojom::URLLoaderPtr loader_ptr_;
   base::WeakPtr<ServiceWorkerProviderHost> provider_host_;
@@ -510,16 +483,13 @@ class ServiceWorkerNavigationLoaderTest
   bool did_call_fallback_callback_ = false;
   bool reset_subresource_loader_params_ = false;
   base::OnceClosure quit_closure_for_fallback_callback_;
-
-  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(ServiceWorkerNavigationLoaderTest, Basic) {
   base::HistogramTester histogram_tester;
 
-  // Perform the request
-  LoaderResult result = StartRequest(CreateRequest());
-  EXPECT_EQ(LoaderResult::kHandledRequest, result);
+  // Perform the request.
+  StartRequest(CreateRequest());
   client_.RunUntilComplete();
 
   EXPECT_EQ(net::OK, client_.completion_status().error_code);
@@ -542,13 +512,16 @@ TEST_F(ServiceWorkerNavigationLoaderTest, Basic) {
 TEST_F(ServiceWorkerNavigationLoaderTest, NoActiveWorker) {
   base::HistogramTester histogram_tester;
 
-  // Clear |version_| to make GetServiceWorkerVersion() return null.
-  version_ = nullptr;
+  // Make a provider host without a controller.
+  provider_host_ = CreateProviderHostForWindow(
+      helper_->mock_render_process_id(), /*is_parent_frame_secure=*/true,
+      helper_->context()->AsWeakPtr(), &provider_endpoints_);
+  provider_host_->UpdateUrls(GURL("https://example.com/"),
+                             GURL("https://example.com/"),
+                             url::Origin::Create(GURL("https://example.com/")));
 
   // Perform the request.
-  LoaderResult result = StartRequest(CreateRequest());
-  EXPECT_EQ(LoaderResult::kHandledRequest, result);
-
+  StartRequest(CreateRequest());
   client_.RunUntilComplete();
   EXPECT_EQ(net::ERR_FAILED, client_.completion_status().error_code);
 
@@ -595,13 +568,12 @@ TEST_F(ServiceWorkerNavigationLoaderTest, BlobResponse) {
   auto blob = blink::mojom::SerializedBlob::New();
   blob->uuid = blob_handle->uuid();
   blob->size = blob_handle->size();
-  blink::mojom::BlobRequest request = mojo::MakeRequest(&blob->blob);
-  storage::BlobImpl::Create(std::move(blob_handle), std::move(request));
+  storage::BlobImpl::Create(std::move(blob_handle),
+                            blob->blob.InitWithNewPipeAndPassReceiver());
   service_worker_->RespondWithBlob(std::move(blob));
 
   // Perform the request.
-  LoaderResult result = StartRequest(CreateRequest());
-  EXPECT_EQ(LoaderResult::kHandledRequest, result);
+  StartRequest(CreateRequest());
   client_.RunUntilComplete();
 
   const network::ResourceResponseHead& info = client_.response_head();
@@ -636,13 +608,12 @@ TEST_F(ServiceWorkerNavigationLoaderTest, BrokenBlobResponse) {
                                   storage::BlobStatus::ERR_OUT_OF_MEMORY);
   auto blob = blink::mojom::SerializedBlob::New();
   blob->uuid = kBrokenUUID;
-  blink::mojom::BlobRequest request = mojo::MakeRequest(&blob->blob);
-  storage::BlobImpl::Create(std::move(blob_handle), std::move(request));
+  storage::BlobImpl::Create(std::move(blob_handle),
+                            blob->blob.InitWithNewPipeAndPassReceiver());
   service_worker_->RespondWithBlob(std::move(blob));
 
   // Perform the request.
-  LoaderResult result = StartRequest(CreateRequest());
-  EXPECT_EQ(LoaderResult::kHandledRequest, result);
+  StartRequest(CreateRequest());
 
   // We should get a valid response once the headers arrive.
   client_.RunUntilResponseReceived();
@@ -671,14 +642,14 @@ TEST_F(ServiceWorkerNavigationLoaderTest, StreamResponse) {
 
   // Construct the Stream to respond with.
   const char kResponseBody[] = "Here is sample text for the Stream.";
-  blink::mojom::ServiceWorkerStreamCallbackPtr stream_callback;
+  mojo::Remote<blink::mojom::ServiceWorkerStreamCallback> stream_callback;
   mojo::DataPipe data_pipe;
-  service_worker_->RespondWithStream(mojo::MakeRequest(&stream_callback),
-                                     std::move(data_pipe.consumer_handle));
+  service_worker_->RespondWithStream(
+      stream_callback.BindNewPipeAndPassReceiver(),
+      std::move(data_pipe.consumer_handle));
 
   // Perform the request.
-  LoaderResult result = StartRequest(CreateRequest());
-  EXPECT_EQ(LoaderResult::kHandledRequest, result);
+  StartRequest(CreateRequest());
   client_.RunUntilResponseReceived();
 
   const network::ResourceResponseHead& info = client_.response_head();
@@ -719,14 +690,14 @@ TEST_F(ServiceWorkerNavigationLoaderTest, StreamResponse_Abort) {
 
   // Construct the Stream to respond with.
   const char kResponseBody[] = "Here is sample text for the Stream.";
-  blink::mojom::ServiceWorkerStreamCallbackPtr stream_callback;
+  mojo::Remote<blink::mojom::ServiceWorkerStreamCallback> stream_callback;
   mojo::DataPipe data_pipe;
-  service_worker_->RespondWithStream(mojo::MakeRequest(&stream_callback),
-                                     std::move(data_pipe.consumer_handle));
+  service_worker_->RespondWithStream(
+      stream_callback.BindNewPipeAndPassReceiver(),
+      std::move(data_pipe.consumer_handle));
 
   // Perform the request.
-  LoaderResult result = StartRequest(CreateRequest());
-  EXPECT_EQ(LoaderResult::kHandledRequest, result);
+  StartRequest(CreateRequest());
   client_.RunUntilResponseReceived();
 
   const network::ResourceResponseHead& info = client_.response_head();
@@ -769,14 +740,14 @@ TEST_F(ServiceWorkerNavigationLoaderTest, StreamResponseAndCancel) {
 
   // Construct the Stream to respond with.
   const char kResponseBody[] = "Here is sample text for the Stream.";
-  blink::mojom::ServiceWorkerStreamCallbackPtr stream_callback;
+  mojo::Remote<blink::mojom::ServiceWorkerStreamCallback> stream_callback;
   mojo::DataPipe data_pipe;
-  service_worker_->RespondWithStream(mojo::MakeRequest(&stream_callback),
-                                     std::move(data_pipe.consumer_handle));
+  service_worker_->RespondWithStream(
+      stream_callback.BindNewPipeAndPassReceiver(),
+      std::move(data_pipe.consumer_handle));
 
   // Perform the request.
-  LoaderResult result = StartRequest(CreateRequest());
-  EXPECT_EQ(LoaderResult::kHandledRequest, result);
+  StartRequest(CreateRequest());
   client_.RunUntilResponseReceived();
 
   const network::ResourceResponseHead& info = client_.response_head();
@@ -791,10 +762,8 @@ TEST_F(ServiceWorkerNavigationLoaderTest, StreamResponseAndCancel) {
   ASSERT_EQ(MOJO_RESULT_OK, mojo_result);
   EXPECT_EQ(sizeof(kResponseBody) - 1, written_bytes);
   EXPECT_TRUE(data_pipe.producer_handle.is_valid());
-  EXPECT_TRUE(HasWorkInBrowser(version_.get()));
   loader_ptr_.reset();
   base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(HasWorkInBrowser(version_.get()));
 
   // Although ServiceWorkerNavigationLoader resets its URLLoaderClient pointer
   // on connection error, the URLLoaderClient still exists. In this test, it is
@@ -827,17 +796,15 @@ TEST_F(ServiceWorkerNavigationLoaderTest, FallbackResponse) {
   service_worker_->RespondWithFallback();
 
   // Perform the request.
-  LoaderResult result = StartRequest(CreateRequest());
-  EXPECT_EQ(LoaderResult::kHandledRequest, result);
+  StartRequest(CreateRequest());
 
   // The fallback callback should be called.
   RunUntilFallbackCallback();
   EXPECT_FALSE(reset_subresource_loader_params_);
-  EXPECT_FALSE(was_main_resource_load_failed_called_);
 
   // The request should not be handled by the loader, but it shouldn't be a
   // failure.
-  EXPECT_FALSE(was_main_resource_load_failed_called_);
+  EXPECT_TRUE(provider_host_->controller());
   histogram_tester.ExpectUniqueSample(kHistogramMainResourceFetchEvent,
                                       blink::ServiceWorkerStatusCode::kOk, 1);
 
@@ -854,9 +821,7 @@ TEST_F(ServiceWorkerNavigationLoaderTest, ErrorResponse) {
   service_worker_->RespondWithError();
 
   // Perform the request.
-  LoaderResult result = StartRequest(CreateRequest());
-  EXPECT_EQ(LoaderResult::kHandledRequest, result);
-
+  StartRequest(CreateRequest());
   client_.RunUntilComplete();
   EXPECT_EQ(net::ERR_FAILED, client_.completion_status().error_code);
 
@@ -876,13 +841,12 @@ TEST_F(ServiceWorkerNavigationLoaderTest, FailFetchDispatch) {
   service_worker_->FailToDispatchFetchEvent();
 
   // Perform the request.
-  LoaderResult result = StartRequest(CreateRequest());
-  EXPECT_EQ(LoaderResult::kHandledRequest, result);
+  StartRequest(CreateRequest());
 
   // The fallback callback should be called.
   RunUntilFallbackCallback();
   EXPECT_TRUE(reset_subresource_loader_params_);
-  EXPECT_TRUE(was_main_resource_load_failed_called_);
+  EXPECT_FALSE(provider_host_->controller());
 
   histogram_tester.ExpectUniqueSample(
       kHistogramMainResourceFetchEvent,
@@ -900,8 +864,7 @@ TEST_F(ServiceWorkerNavigationLoaderTest, EarlyResponse) {
   service_worker_->RespondEarly();
 
   // Perform the request.
-  LoaderResult result = StartRequest(CreateRequest());
-  EXPECT_EQ(LoaderResult::kHandledRequest, result);
+  StartRequest(CreateRequest());
   client_.RunUntilComplete();
 
   const network::ResourceResponseHead& info = client_.response_head();
@@ -915,42 +878,6 @@ TEST_F(ServiceWorkerNavigationLoaderTest, EarlyResponse) {
   EXPECT_FALSE(HasWorkInBrowser(version_.get()));
 }
 
-// Test asking the loader to fallback to network. In production code, this
-// happens when there is no active service worker for the URL, or it must be
-// skipped, etc.
-TEST_F(ServiceWorkerNavigationLoaderTest, FallbackToNetwork) {
-  base::HistogramTester histogram_tester;
-
-  network::ResourceRequest request;
-  request.url = GURL("https://www.example.com/");
-  request.method = "GET";
-  request.fetch_request_mode = network::mojom::FetchRequestMode::kNavigate;
-  request.fetch_credentials_mode =
-      network::mojom::FetchCredentialsMode::kInclude;
-  request.fetch_redirect_mode = network::mojom::FetchRedirectMode::kManual;
-
-  SingleRequestURLLoaderFactory::RequestHandler handler;
-  auto loader = std::make_unique<ServiceWorkerNavigationLoader>(
-      base::BindOnce(&ReceiveRequestHandler, &handler),
-      base::BindOnce(&ServiceWorkerNavigationLoaderTest::Fallback,
-                     base::Unretained(this)),
-      this, request, nullptr /* provider_host */,
-      base::WrapRefCounted<URLLoaderFactoryGetter>(
-          helper_->context()->loader_factory_getter()));
-  // Ask the loader to fallback to network. In production code,
-  // ServiceWorkerControlleeRequestHandler calls FallbackToNetwork() to do this.
-  loader->FallbackToNetwork();
-  base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(handler);
-
-  // No fetch event was dispatched.
-  histogram_tester.ExpectTotalCount(kHistogramMainResourceFetchEvent, 0);
-  histogram_tester.ExpectTotalCount(
-      "ServiceWorker.LoadTiming.MainFrame.MainResource."
-      "StartToForwardServiceWorker",
-      0);
-}
-
 // Test responding to the fetch event with a redirect response.
 TEST_F(ServiceWorkerNavigationLoaderTest, Redirect) {
   base::HistogramTester histogram_tester;
@@ -958,8 +885,7 @@ TEST_F(ServiceWorkerNavigationLoaderTest, Redirect) {
   service_worker_->RespondWithRedirectResponse(new_url);
 
   // Perform the request.
-  LoaderResult result = StartRequest(CreateRequest());
-  EXPECT_EQ(LoaderResult::kHandledRequest, result);
+  StartRequest(CreateRequest());
   client_.RunUntilRedirectReceived();
 
   const network::ResourceResponseHead& info = client_.response_head();
@@ -975,9 +901,8 @@ TEST_F(ServiceWorkerNavigationLoaderTest, Redirect) {
                                       blink::ServiceWorkerStatusCode::kOk, 1);
 }
 
-TEST_F(ServiceWorkerNavigationLoaderTest, LifetimeAfterForwardToServiceWorker) {
-  LoaderResult result = StartRequest(CreateRequest());
-  EXPECT_EQ(LoaderResult::kHandledRequest, result);
+TEST_F(ServiceWorkerNavigationLoaderTest, Lifetime) {
+  StartRequest(CreateRequest());
   base::WeakPtr<ServiceWorkerNavigationLoader> loader = loader_->AsWeakPtr();
   ASSERT_TRUE(loader);
 
@@ -998,41 +923,9 @@ TEST_F(ServiceWorkerNavigationLoaderTest, LifetimeAfterForwardToServiceWorker) {
   // |loader_| is deleted here. LSan test will alert if it leaks.
 }
 
-TEST_F(ServiceWorkerNavigationLoaderTest, LifetimeAfterFallbackToNetwork) {
-  network::ResourceRequest request;
-  request.url = GURL("https://www.example.com/");
-  request.method = "GET";
-  request.fetch_request_mode = network::mojom::FetchRequestMode::kNavigate;
-  request.fetch_credentials_mode =
-      network::mojom::FetchCredentialsMode::kInclude;
-  request.fetch_redirect_mode = network::mojom::FetchRedirectMode::kManual;
-
-  SingleRequestURLLoaderFactory::RequestHandler handler;
-  auto loader = std::make_unique<ServiceWorkerNavigationLoader>(
-      base::BindOnce(&ReceiveRequestHandler, &handler),
-      base::BindOnce(&ServiceWorkerNavigationLoaderTest::Fallback,
-                     base::Unretained(this)),
-      this, request, nullptr /* provider_host */,
-      base::WrapRefCounted<URLLoaderFactoryGetter>(
-          helper_->context()->loader_factory_getter()));
-  base::WeakPtr<ServiceWorkerNavigationLoader> loader_weakptr =
-      loader->AsWeakPtr();
-  // Ask the loader to fallback to network. In production code,
-  // ServiceWorkerControlleeRequestHandler calls FallbackToNetwork() to do this.
-  loader->FallbackToNetwork();
-  base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(handler);
-  EXPECT_TRUE(loader_weakptr);
-
-  // DetachedFromRequest() deletes |loader_|.
-  loader.release()->DetachedFromRequest();
-  EXPECT_FALSE(loader_weakptr);
-}
-
 TEST_F(ServiceWorkerNavigationLoaderTest, ConnectionErrorDuringFetchEvent) {
   service_worker_->DeferResponse();
-  LoaderResult result = StartRequest(CreateRequest());
-  EXPECT_EQ(LoaderResult::kHandledRequest, result);
+  StartRequest(CreateRequest());
 
   // Wait for the fetch event to be dispatched.
   service_worker_->RunUntilFetchEvent();
@@ -1051,13 +944,15 @@ TEST_F(ServiceWorkerNavigationLoaderTest, ConnectionErrorDuringFetchEvent) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(ServiceWorkerNavigationLoaderTest, DetachedDuringFetchEvent) {
-  LoaderResult result = StartRequest(CreateRequest());
-  EXPECT_EQ(LoaderResult::kHandledRequest, result);
+TEST_F(ServiceWorkerNavigationLoaderTest, CancelNavigationDuringFetchEvent) {
+  StartRequest(CreateRequest());
 
-  // Detach the loader immediately after it started. This results in
-  // DidDispatchFetchEvent() being invoked later with null |delegate_|.
-  loader_.release()->DetachedFromRequest();
+  // Delete the provider host during the request. The load should abort without
+  // crashing.
+  provider_endpoints_.host_remote()->reset();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(provider_host_);
+
   client_.RunUntilComplete();
   EXPECT_EQ(net::ERR_ABORTED, client_.completion_status().error_code);
 }

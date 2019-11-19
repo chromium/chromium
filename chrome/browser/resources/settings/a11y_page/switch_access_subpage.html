@@ -1,0 +1,91 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/html/i18n_behavior.html">
+<link rel="import" href="chrome://resources/cr_elements/md_select_css.html">
+<link rel="import" href="../controls/settings_dropdown_menu.html">
+<link rel="import" href="../controls/settings_slider.html">
+<link rel="import" href="../controls/settings_toggle_button.html">
+<link rel="import" href="../i18n_setup.html">
+<link rel="import" href="../prefs/prefs_behavior.html">
+<link rel="import" href="../settings_shared_css.html">
+
+<dom-module id="settings-switch-access-subpage">
+  <template>
+    <style include="settings-shared md-select">
+      h2 {
+        padding-inline-start: var(--cr-section-padding);
+      }
+    </style>
+    <h2>$i18n{switchAssignmentHeading}</h2>
+    <div class="list-frame">
+      <div class="settings-box continuation list-item">
+        <div class="start sub-item settings-box-text">
+          $i18n{assignSelectSwitchLabel}
+        </div>
+        <settings-dropdown-menu label="$i18n{assignSelectSwitchLabel}"
+            pref="{{prefs.switch_access.select.setting}}"
+            menu-options="[[switchAssignOptions_]]"
+            on-settings-control-change="onSelectAssigned_">
+        </settings-dropdown-menu>
+      </div>
+      <div class="settings-box continuation list-item">
+        <div class="start sub-item settings-box-text">
+          $i18n{assignNextSwitchLabel}
+        </div>
+        <settings-dropdown-menu label="$i18n{assignNextSwitchLabel}"
+            pref="{{prefs.switch_access.next.setting}}"
+            menu-options="[[switchAssignOptions_]]"
+            on-settings-control-change="onNextAssigned_">
+        </settings-dropdown-menu>
+      </div>
+      <div class="settings-box continuation list-item">
+        <div class="start sub-item settings-box-text">
+          $i18n{assignPreviousSwitchLabel}
+        </div>
+        <settings-dropdown-menu label="$i18n{assignPreviousSwitchLabel}"
+            pref="{{prefs.switch_access.previous.setting}}"
+            menu-options="[[switchAssignOptions_]]"
+            on-settings-control-change="onPreviousAssigned_">
+        </settings-dropdown-menu>
+      </div>
+    </div>
+    <h2>$i18n{switchAccessAutoScanHeading}</h2>
+    <div class="list-frame">
+      <settings-toggle-button class="continuation list-item"
+          pref="{{prefs.switch_access.auto_scan.enabled}}"
+          label="$i18n{switchAccessAutoScanLabel}">
+      </settings-toggle-button>
+      <div class="settings-box continuation list-item"
+          hidden$="[[!prefs.switch_access.auto_scan.enabled.value]]">
+        <div class="start sub-item settings-box-text" id="scanSpeed">
+          [[getLabelForSpeedSlider_(prefs.switch_access.auto_scan.speed_ms.*)]]
+        </div>
+        <settings-slider id="scanSpeedSlider" aria-describedby="scanSpeed"
+            pref="{{prefs.switch_access.auto_scan.speed_ms}}"
+            ticks="[[autoScanSpeedRangeMs_]]"
+            min="[[minScanSpeedMs_]]"
+            max="[[maxScanSpeedMs_]]"
+            label-min="[[minScanSpeedLabelSec_]]"
+            label-max="[[maxScanSpeedLabelSec_]]">
+        </settings-dropdown-menu>
+      </div>
+      <div class="settings-box continuation list-item"
+          hidden$="[[!showKeyboardScanSettings_(
+          prefs.switch_access.auto_scan.enabled.value)]]">
+        <div class="start sub-item settings-box-text" id="keyboardScanSpeed">
+          $i18n{switchAccessAutoScanKeyboardSpeedLabel}
+        </div>
+        <settings-slider id="keyboardScanSpeedSlider"
+            aria-describedby="keyboardScanSpeed"
+            pref="{{prefs.switch_access.auto_scan.keyboard.speed_ms}}"
+            ticks="[[autoScanSpeedRangeMs_]]"
+            min="[[minScanSpeedMs_]]"
+            max="[[maxScanSpeedMs_]]"
+            label-min="[[minScanSpeedLabelSec_]]"
+            label-max="[[maxScanSpeedLabelSec_]]">
+        </settings-dropdown-menu>
+      </div>
+    </div>
+  </template>
+  <script src="switch_access_subpage.js"></script>
+</dom-module>

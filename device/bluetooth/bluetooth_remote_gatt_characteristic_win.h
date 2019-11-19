@@ -42,11 +42,11 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattCharacteristicWin
   Properties GetProperties() const override;
   Permissions GetPermissions() const override;
   bool IsNotifying() const override;
-  void ReadRemoteCharacteristic(const ValueCallback& callback,
-                                const ErrorCallback& error_callback) override;
+  void ReadRemoteCharacteristic(ValueCallback callback,
+                                ErrorCallback error_callback) override;
   void WriteRemoteCharacteristic(const std::vector<uint8_t>& value,
-                                 const base::Closure& callback,
-                                 const ErrorCallback& error_callback) override;
+                                 base::OnceClosure callback,
+                                 ErrorCallback error_callback) override;
 
   // Update included descriptors.
   void Update();
@@ -55,12 +55,12 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattCharacteristicWin
 
  protected:
   void SubscribeToNotifications(BluetoothRemoteGattDescriptor* ccc_descriptor,
-                                const base::Closure& callback,
-                                const ErrorCallback& error_callback) override;
+                                base::OnceClosure callback,
+                                ErrorCallback error_callback) override;
   void UnsubscribeFromNotifications(
       BluetoothRemoteGattDescriptor* ccc_descriptor,
-      const base::Closure& callback,
-      const ErrorCallback& error_callback) override;
+      base::OnceClosure callback,
+      ErrorCallback error_callback) override;
 
  private:
   void OnGetIncludedDescriptorsCallback(
@@ -88,8 +88,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattCharacteristicWin
   BluetoothRemoteGattService::GattErrorCode HRESULTToGattErrorCode(HRESULT hr);
   void OnGattCharacteristicValueChanged(
       std::unique_ptr<std::vector<uint8_t>> new_value);
-  void GattEventRegistrationCallback(const base::Closure& callback,
-                                     const ErrorCallback& error_callback,
+  void GattEventRegistrationCallback(base::OnceClosure callback,
+                                     ErrorCallback error_callback,
                                      PVOID event_handle,
                                      HRESULT hr);
   void ClearIncludedDescriptors();
@@ -112,13 +112,10 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattCharacteristicWin
   std::pair<ValueCallback, ErrorCallback> read_characteristic_value_callbacks_;
 
   // WriteRemoteCharacteristic request callbacks.
-  std::pair<base::Closure, ErrorCallback> write_characteristic_value_callbacks_;
+  std::pair<base::OnceClosure, ErrorCallback>
+      write_characteristic_value_callbacks_;
 
   bool characteristic_value_read_or_write_in_progress_;
-
-  // Vector stores StartNotifySession request callbacks.
-  std::vector<std::pair<NotifySessionCallback, ErrorCallback>>
-      start_notify_session_callbacks_;
 
   // GATT event handle returned by GattEventRegistrationCallback.
   PVOID gatt_event_handle_;
@@ -127,7 +124,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattCharacteristicWin
   // descriptors.
   int discovery_pending_count_;
 
-  base::WeakPtrFactory<BluetoothRemoteGattCharacteristicWin> weak_ptr_factory_;
+  base::WeakPtrFactory<BluetoothRemoteGattCharacteristicWin> weak_ptr_factory_{
+      this};
   DISALLOW_COPY_AND_ASSIGN(BluetoothRemoteGattCharacteristicWin);
 };
 

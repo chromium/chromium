@@ -61,7 +61,7 @@ DeprecatedStorageInfo* DOMWindowQuota::webkitStorageInfo(
 
 DeprecatedStorageInfo* DOMWindowQuota::webkitStorageInfo() const {
   if (!storage_info_)
-    storage_info_ = DeprecatedStorageInfo::Create();
+    storage_info_ = MakeGarbageCollected<DeprecatedStorageInfo>();
   return storage_info_.Get();
 }
 

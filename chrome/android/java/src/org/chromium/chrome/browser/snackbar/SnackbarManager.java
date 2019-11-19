@@ -6,15 +6,16 @@ package org.chromium.chrome.browser.snackbar;
 
 import android.app.Activity;
 import android.os.Handler;
-import android.support.annotation.Nullable;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
-import org.chromium.base.VisibleForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.infobar.InfoBar;
 import org.chromium.chrome.browser.infobar.InfoBarContainer;
@@ -94,7 +95,8 @@ public class SnackbarManager implements OnClickListener, InfoBarContainer.InfoBa
         mSnackbarParentView = snackbarParentView;
 
         ApplicationStatus.registerStateListenerForActivity(this, mActivity);
-        if (ApplicationStatus.getStateForActivity(mActivity) == ActivityState.STARTED) {
+        if (ApplicationStatus.getStateForActivity(mActivity) == ActivityState.STARTED
+                || ApplicationStatus.getStateForActivity(mActivity) == ActivityState.RESUMED) {
             onStart();
         }
     }
@@ -256,8 +258,9 @@ public class SnackbarManager implements OnClickListener, InfoBarContainer.InfoBa
 
         if (AccessibilityUtil.isAccessibilityEnabled()) {
             durationMs *= 2;
-            if (durationMs < sAccessibilitySnackbarDurationMs)
+            if (durationMs < sAccessibilitySnackbarDurationMs) {
                 durationMs = sAccessibilitySnackbarDurationMs;
+            }
         }
 
         return durationMs;

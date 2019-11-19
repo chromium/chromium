@@ -113,9 +113,9 @@ PepperPrintSettingsManager::Result ComputeDefaultPrintSettings() {
 
 void PepperPrintSettingsManagerImpl::GetDefaultPrintSettings(
     PepperPrintSettingsManager::Callback callback) {
-  base::PostTaskWithTraitsAndReplyWithResult(
-      FROM_HERE, {BrowserThread::UI}, base::Bind(ComputeDefaultPrintSettings),
-      std::move(callback));
+  base::PostTaskAndReplyWithResult(FROM_HERE, {BrowserThread::UI},
+                                   base::Bind(ComputeDefaultPrintSettings),
+                                   std::move(callback));
 }
 
 }  // namespace content

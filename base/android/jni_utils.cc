@@ -6,7 +6,7 @@
 
 #include "base/android/scoped_java_ref.h"
 
-#include "jni/JNIUtils_jni.h"
+#include "base/base_jni_headers/JNIUtils_jni.h"
 
 namespace base {
 namespace android {

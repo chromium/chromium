@@ -200,10 +200,8 @@ UDPSocketPosix::UDPSocketPosix(DatagramSocket::BindType bind_type,
       write_buf_len_(0),
       net_log_(NetLogWithSource::Make(net_log, NetLogSourceType::UDP_SOCKET)),
       bound_network_(NetworkChangeNotifier::kInvalidNetworkHandle),
-      experimental_recv_optimization_enabled_(false),
-      weak_factory_(this) {
-  net_log_.BeginEvent(NetLogEventType::SOCKET_ALIVE,
-                      source.ToEventParametersCallback());
+      experimental_recv_optimization_enabled_(false) {
+  net_log_.BeginEventReferencingSource(NetLogEventType::SOCKET_ALIVE, source);
 }
 
 UDPSocketPosix::~UDPSocketPosix() {
@@ -297,11 +295,11 @@ void UDPSocketPosix::Close() {
     return;
 
   // Zero out any pending read/write callback state.
-  read_buf_ = NULL;
+  read_buf_.reset();
   read_buf_len_ = 0;
   read_callback_.Reset();
   recv_from_address_ = NULL;
-  write_buf_ = NULL;
+  write_buf_.reset();
   write_buf_len_ = 0;
   write_callback_.Reset();
   send_to_address_.reset();
@@ -364,9 +362,9 @@ int UDPSocketPosix::GetLocalAddress(IPEndPoint* address) const {
     if (!address->FromSockAddr(storage.addr, storage.addr_len))
       return ERR_ADDRESS_INVALID;
     local_address_ = std::move(address);
-    net_log_.AddEvent(
-        NetLogEventType::UDP_LOCAL_ADDRESS,
-        CreateNetLogUDPConnectCallback(local_address_.get(), bound_network_));
+    net_log_.AddEvent(NetLogEventType::UDP_LOCAL_ADDRESS, [&] {
+      return CreateNetLogUDPConnectParams(*local_address_, bound_network_);
+    });
   }
 
   *address = *local_address_;
@@ -460,8 +458,9 @@ int UDPSocketPosix::SendToOrWrite(IOBuffer* buf,
 
 int UDPSocketPosix::Connect(const IPEndPoint& address) {
   DCHECK_NE(socket_, kInvalidSocket);
-  net_log_.BeginEvent(NetLogEventType::UDP_CONNECT,
-                      CreateNetLogUDPConnectCallback(&address, bound_network_));
+  net_log_.BeginEvent(NetLogEventType::UDP_CONNECT, [&] {
+    return CreateNetLogUDPConnectParams(address, bound_network_);
+  });
   int rv = SetMulticastOptions();
   if (rv != OK)
     return rv;
@@ -740,7 +739,7 @@ void UDPSocketPosix::DidCompleteRead() {
   int result =
       InternalRecvFrom(read_buf_.get(), read_buf_len_, recv_from_address_);
   if (result != ERR_IO_PENDING) {
-    read_buf_ = NULL;
+    read_buf_.reset();
     read_buf_len_ = 0;
     recv_from_address_ = NULL;
     bool ok = read_socket_watcher_.StopWatchingFileDescriptor();
@@ -765,9 +764,8 @@ void UDPSocketPosix::LogRead(int result,
 
     IPEndPoint address;
     bool is_address_valid = address.FromSockAddr(addr, addr_len);
-    net_log_.AddEvent(NetLogEventType::UDP_BYTES_RECEIVED,
-                      CreateNetLogUDPDataTranferCallback(
-                          result, bytes, is_address_valid ? &address : NULL));
+    NetLogUDPDataTransfer(net_log_, NetLogEventType::UDP_BYTES_RECEIVED, result,
+                          bytes, is_address_valid ? &address : nullptr);
   }
 
   received_activity_monitor_.Increment(result);
@@ -778,7 +776,7 @@ void UDPSocketPosix::DidCompleteWrite() {
       InternalSendTo(write_buf_.get(), write_buf_len_, send_to_address_.get());
 
   if (result != ERR_IO_PENDING) {
-    write_buf_ = NULL;
+    write_buf_.reset();
     write_buf_len_ = 0;
     send_to_address_.reset();
     write_socket_watcher_.StopWatchingFileDescriptor();
@@ -795,9 +793,8 @@ void UDPSocketPosix::LogWrite(int result,
   }
 
   if (net_log_.IsCapturing()) {
-    net_log_.AddEvent(
-        NetLogEventType::UDP_BYTES_SENT,
-        CreateNetLogUDPDataTranferCallback(result, bytes, address));
+    NetLogUDPDataTransfer(net_log_, NetLogEventType::UDP_BYTES_SENT, result,
+                          bytes, address);
   }
 
   sent_activity_monitor_.Increment(result);
@@ -938,13 +935,6 @@ int UDPSocketPosix::SetMulticastOptions() {
   if (multicast_interface_ != 0) {
     switch (addr_family_) {
       case AF_INET: {
-#if defined(OS_FUCHSIA)
-        // setsockopt(IP_MULTICAST_IF) is broken on Fuchsia.
-        // TODO(https://crbug.com/938101) Remove ifdef once the bug is fixed
-        // upstream.
-        return OK;
-#endif
-
 #if defined(OS_MACOSX)
         ip_mreq mreq = {};
         int error = GetIPv4AddressFromIndex(socket_, multicast_interface_,
@@ -1196,17 +1186,12 @@ SendResult UDPSocketPosixSender::InternalSendmmsgBuffers(
     DatagramBuffers buffers) const {
   base::StackVector<struct iovec, kWriteAsyncMaxBuffersThreshold + 1> msg_iov;
   base::StackVector<struct mmsghdr, kWriteAsyncMaxBuffersThreshold + 1> msgvec;
-  int i = 0;
-  for (auto& buffer : buffers) {
-    msg_iov[i].iov_base = const_cast<char*>(buffer->data());
-    msg_iov[i].iov_len = buffer->length();
-    i++;
-  }
-  for (size_t j = 0; j < buffers.size(); j++) {
-    std::memset(&msgvec[j], 0, sizeof(msgvec[j]));
-    msgvec[j].msg_hdr.msg_iov = &msg_iov[j];
-    msgvec[j].msg_hdr.msg_iovlen = 1;
-  }
+  msg_iov->reserve(buffers.size());
+  for (auto& buffer : buffers)
+    msg_iov->push_back({const_cast<char*>(buffer->data()), buffer->length()});
+  msgvec->reserve(buffers.size());
+  for (size_t j = 0; j < buffers.size(); j++)
+    msgvec->push_back({{nullptr, 0, &msg_iov[j], 1, nullptr, 0, 0}, 0});
   int result = HANDLE_EINTR(Sendmmsg(fd, &msgvec[0], buffers.size(), 0));
   SendResult send_result(0, 0, std::move(buffers));
   if (result < 0) {
@@ -1338,13 +1323,14 @@ void UDPSocketPosix::FlushPending() {
 
 // TODO(ckrasic) Sad face.  Do this lazily because many tests exploded
 // otherwise.  |threading_and_tasks.md| advises to instantiate a
-// |base::test::ScopedTaskEnvironment| in the test, implementing that
+// |base::test::TaskEnvironment| in the test, implementing that
 // for all tests that might exercise QUIC is too daunting.  Also, in
 // some tests it seemed like following the advice just broke in other
 // ways.
 base::SequencedTaskRunner* UDPSocketPosix::GetTaskRunner() {
   if (task_runner_ == nullptr) {
-    task_runner_ = CreateSequencedTaskRunnerWithTraits(base::TaskTraits());
+    task_runner_ =
+        CreateSequencedTaskRunner(base::TaskTraits(base::ThreadPool()));
   }
   return task_runner_.get();
 }

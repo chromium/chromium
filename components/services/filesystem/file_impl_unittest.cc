@@ -8,28 +8,42 @@
 #include <vector>
 
 #include "base/files/file.h"
-#include "components/services/filesystem/files_test_base.h"
-#include "components/services/filesystem/public/interfaces/directory.mojom.h"
-#include "mojo/public/cpp/bindings/interface_request.h"
-#include "mojo/public/cpp/bindings/type_converter.h"
+#include "base/macros.h"
+#include "base/test/task_environment.h"
+#include "components/services/filesystem/directory_test_helper.h"
+#include "components/services/filesystem/public/mojom/directory.mojom.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace filesystem {
 namespace {
 
-using FileImplTest = FilesTestBase;
+class FileImplTest : public testing::Test {
+ public:
+  FileImplTest() = default;
+
+  mojo::Remote<mojom::Directory> CreateTempDir() {
+    return test_helper_.CreateTempDir();
+  }
+
+ private:
+  base::test::TaskEnvironment task_environment_;
+  DirectoryTestHelper test_helper_;
+
+  DISALLOW_COPY_AND_ASSIGN(FileImplTest);
+};
 
 TEST_F(FileImplTest, CreateWriteCloseRenameOpenRead) {
-  mojom::DirectoryPtr directory;
-  GetTemporaryRoot(&directory);
+  mojo::Remote<mojom::Directory> directory = CreateTempDir();
   base::File::Error error;
   bool handled = false;
 
   {
     // Create my_file.
-    mojom::FilePtr file;
+    mojo::Remote<mojom::File> file;
     error = base::File::Error::FILE_ERROR_FAILED;
     handled =
-        directory->OpenFile("my_file", MakeRequest(&file),
+        directory->OpenFile("my_file", file.BindNewPipeAndPassReceiver(),
                             mojom::kFlagWrite | mojom::kFlagCreate, &error);
     ASSERT_TRUE(handled);
     EXPECT_EQ(base::File::Error::FILE_OK, error);
@@ -64,10 +78,10 @@ TEST_F(FileImplTest, CreateWriteCloseRenameOpenRead) {
 
   {
     // Open my_file again.
-    mojom::FilePtr file;
+    mojo::Remote<mojom::File> file;
     error = base::File::Error::FILE_ERROR_FAILED;
     bool handled =
-        directory->OpenFile("your_file", MakeRequest(&file),
+        directory->OpenFile("your_file", file.BindNewPipeAndPassReceiver(),
                             mojom::kFlagRead | mojom::kFlagOpen, &error);
     ASSERT_TRUE(handled);
     EXPECT_EQ(base::File::Error::FILE_OK, error);
@@ -89,8 +103,7 @@ TEST_F(FileImplTest, CreateWriteCloseRenameOpenRead) {
 }
 
 TEST_F(FileImplTest, CantWriteInReadMode) {
-  mojom::DirectoryPtr directory;
-  GetTemporaryRoot(&directory);
+  mojo::Remote<mojom::Directory> directory = CreateTempDir();
   base::File::Error error;
 
   std::vector<uint8_t> bytes_to_write;
@@ -102,10 +115,10 @@ TEST_F(FileImplTest, CantWriteInReadMode) {
 
   {
     // Create my_file.
-    mojom::FilePtr file;
+    mojo::Remote<mojom::File> file;
     error = base::File::Error::FILE_ERROR_FAILED;
     bool handled =
-        directory->OpenFile("my_file", MakeRequest(&file),
+        directory->OpenFile("my_file", file.BindNewPipeAndPassReceiver(),
                             mojom::kFlagWrite | mojom::kFlagCreate, &error);
     ASSERT_TRUE(handled);
     EXPECT_EQ(base::File::Error::FILE_OK, error);
@@ -128,10 +141,10 @@ TEST_F(FileImplTest, CantWriteInReadMode) {
 
   {
     // Open my_file again, this time with read only mode.
-    mojom::FilePtr file;
+    mojo::Remote<mojom::File> file;
     error = base::File::Error::FILE_ERROR_FAILED;
     bool handled =
-        directory->OpenFile("my_file", MakeRequest(&file),
+        directory->OpenFile("my_file", file.BindNewPipeAndPassReceiver(),
                             mojom::kFlagRead | mojom::kFlagOpen, &error);
     ASSERT_TRUE(handled);
     EXPECT_EQ(base::File::Error::FILE_OK, error);
@@ -155,16 +168,15 @@ TEST_F(FileImplTest, CantWriteInReadMode) {
 }
 
 TEST_F(FileImplTest, OpenInAppendMode) {
-  mojom::DirectoryPtr directory;
-  GetTemporaryRoot(&directory);
+  mojo::Remote<mojom::Directory> directory = CreateTempDir();
   base::File::Error error;
 
   {
     // Create my_file.
-    mojom::FilePtr file;
+    mojo::Remote<mojom::File> file;
     error = base::File::Error::FILE_ERROR_FAILED;
     bool handled =
-        directory->OpenFile("my_file", MakeRequest(&file),
+        directory->OpenFile("my_file", file.BindNewPipeAndPassReceiver(),
                             mojom::kFlagWrite | mojom::kFlagCreate, &error);
     ASSERT_TRUE(handled);
     EXPECT_EQ(base::File::Error::FILE_OK, error);
@@ -193,10 +205,10 @@ TEST_F(FileImplTest, OpenInAppendMode) {
 
   {
     // Append to my_file.
-    mojom::FilePtr file;
+    mojo::Remote<mojom::File> file;
     error = base::File::Error::FILE_ERROR_FAILED;
     bool handled =
-        directory->OpenFile("my_file", MakeRequest(&file),
+        directory->OpenFile("my_file", file.BindNewPipeAndPassReceiver(),
                             mojom::kFlagAppend | mojom::kFlagOpen, &error);
     ASSERT_TRUE(handled);
     EXPECT_EQ(base::File::Error::FILE_OK, error);
@@ -227,10 +239,10 @@ TEST_F(FileImplTest, OpenInAppendMode) {
 
   {
     // Open my_file again.
-    mojom::FilePtr file;
+    mojo::Remote<mojom::File> file;
     error = base::File::Error::FILE_ERROR_FAILED;
     bool handled =
-        directory->OpenFile("my_file", MakeRequest(&file),
+        directory->OpenFile("my_file", file.BindNewPipeAndPassReceiver(),
                             mojom::kFlagRead | mojom::kFlagOpen, &error);
     ASSERT_TRUE(handled);
     EXPECT_EQ(base::File::Error::FILE_OK, error);
@@ -251,16 +263,15 @@ TEST_F(FileImplTest, OpenInAppendMode) {
 }
 
 TEST_F(FileImplTest, OpenInTruncateMode) {
-  mojom::DirectoryPtr directory;
-  GetTemporaryRoot(&directory);
+  mojo::Remote<mojom::Directory> directory = CreateTempDir();
   base::File::Error error;
 
   {
     // Create my_file.
-    mojom::FilePtr file;
+    mojo::Remote<mojom::File> file;
     error = base::File::Error::FILE_ERROR_FAILED;
     bool handled =
-        directory->OpenFile("my_file", MakeRequest(&file),
+        directory->OpenFile("my_file", file.BindNewPipeAndPassReceiver(),
                             mojom::kFlagWrite | mojom::kFlagCreate, &error);
     ASSERT_TRUE(handled);
     EXPECT_EQ(base::File::Error::FILE_OK, error);
@@ -289,10 +300,10 @@ TEST_F(FileImplTest, OpenInTruncateMode) {
 
   {
     // Append to my_file.
-    mojom::FilePtr file;
+    mojo::Remote<mojom::File> file;
     error = base::File::Error::FILE_ERROR_FAILED;
     bool handled = directory->OpenFile(
-        "my_file", MakeRequest(&file),
+        "my_file", file.BindNewPipeAndPassReceiver(),
         mojom::kFlagWrite | mojom::kFlagOpenTruncated, &error);
     ASSERT_TRUE(handled);
     EXPECT_EQ(base::File::Error::FILE_OK, error);
@@ -323,10 +334,10 @@ TEST_F(FileImplTest, OpenInTruncateMode) {
 
   {
     // Open my_file again.
-    mojom::FilePtr file;
+    mojo::Remote<mojom::File> file;
     error = base::File::Error::FILE_ERROR_FAILED;
     bool handled =
-        directory->OpenFile("my_file", MakeRequest(&file),
+        directory->OpenFile("my_file", file.BindNewPipeAndPassReceiver(),
                             mojom::kFlagRead | mojom::kFlagOpen, &error);
     ASSERT_TRUE(handled);
     EXPECT_EQ(base::File::Error::FILE_OK, error);
@@ -349,15 +360,14 @@ TEST_F(FileImplTest, OpenInTruncateMode) {
 // Note: Ignore nanoseconds, since it may not always be supported. We expect at
 // least second-resolution support though.
 TEST_F(FileImplTest, StatTouch) {
-  mojom::DirectoryPtr directory;
-  GetTemporaryRoot(&directory);
+  mojo::Remote<mojom::Directory> directory = CreateTempDir();
   base::File::Error error;
 
   // Create my_file.
-  mojom::FilePtr file;
+  mojo::Remote<mojom::File> file;
   error = base::File::Error::FILE_ERROR_FAILED;
   bool handled =
-      directory->OpenFile("my_file", MakeRequest(&file),
+      directory->OpenFile("my_file", file.BindNewPipeAndPassReceiver(),
                           mojom::kFlagWrite | mojom::kFlagCreate, &error);
   ASSERT_TRUE(handled);
   EXPECT_EQ(base::File::Error::FILE_OK, error);
@@ -420,15 +430,14 @@ TEST_F(FileImplTest, StatTouch) {
 }
 
 TEST_F(FileImplTest, TellSeek) {
-  mojom::DirectoryPtr directory;
-  GetTemporaryRoot(&directory);
+  mojo::Remote<mojom::Directory> directory = CreateTempDir();
   base::File::Error error;
 
   // Create my_file.
-  mojom::FilePtr file;
+  mojo::Remote<mojom::File> file;
   error = base::File::Error::FILE_ERROR_FAILED;
   bool handled =
-      directory->OpenFile("my_file", MakeRequest(&file),
+      directory->OpenFile("my_file", file.BindNewPipeAndPassReceiver(),
                           mojom::kFlagWrite | mojom::kFlagCreate, &error);
   ASSERT_TRUE(handled);
   EXPECT_EQ(base::File::Error::FILE_OK, error);
@@ -506,15 +515,14 @@ TEST_F(FileImplTest, TellSeek) {
 }
 
 TEST_F(FileImplTest, Dup) {
-  mojom::DirectoryPtr directory;
-  GetTemporaryRoot(&directory);
+  mojo::Remote<mojom::Directory> directory = CreateTempDir();
   base::File::Error error;
 
   // Create my_file.
-  mojom::FilePtr file1;
+  mojo::Remote<mojom::File> file1;
   error = base::File::Error::FILE_ERROR_FAILED;
   bool handled = directory->OpenFile(
-      "my_file", MakeRequest(&file1),
+      "my_file", file1.BindNewPipeAndPassReceiver(),
       mojom::kFlagRead | mojom::kFlagWrite | mojom::kFlagCreate, &error);
   ASSERT_TRUE(handled);
   EXPECT_EQ(base::File::Error::FILE_OK, error);
@@ -536,9 +544,9 @@ TEST_F(FileImplTest, Dup) {
   const int end_hello_pos = static_cast<int>(num_bytes_written);
 
   // Dup it.
-  mojom::FilePtr file2;
+  mojo::Remote<mojom::File> file2;
   error = base::File::Error::FILE_ERROR_FAILED;
-  handled = file1->Dup(MakeRequest(&file2), &error);
+  handled = file1->Dup(file2.BindNewPipeAndPassReceiver(), &error);
   ASSERT_TRUE(handled);
   EXPECT_EQ(base::File::Error::FILE_OK, error);
 
@@ -600,15 +608,14 @@ TEST_F(FileImplTest, Truncate) {
   const uint32_t kInitialSize = 1000;
   const uint32_t kTruncatedSize = 654;
 
-  mojom::DirectoryPtr directory;
-  GetTemporaryRoot(&directory);
+  mojo::Remote<mojom::Directory> directory = CreateTempDir();
   base::File::Error error;
 
   // Create my_file.
-  mojom::FilePtr file;
+  mojo::Remote<mojom::File> file;
   error = base::File::Error::FILE_ERROR_FAILED;
   bool handled =
-      directory->OpenFile("my_file", MakeRequest(&file),
+      directory->OpenFile("my_file", file.BindNewPipeAndPassReceiver(),
                           mojom::kFlagWrite | mojom::kFlagCreate, &error);
   ASSERT_TRUE(handled);
   EXPECT_EQ(base::File::Error::FILE_OK, error);
@@ -649,16 +656,15 @@ TEST_F(FileImplTest, Truncate) {
 }
 
 TEST_F(FileImplTest, AsHandle) {
-  mojom::DirectoryPtr directory;
-  GetTemporaryRoot(&directory);
+  mojo::Remote<mojom::Directory> directory = CreateTempDir();
   base::File::Error error;
 
   {
     // Create my_file.
-    mojom::FilePtr file1;
+    mojo::Remote<mojom::File> file1;
     error = base::File::Error::FILE_ERROR_FAILED;
     bool handled = directory->OpenFile(
-        "my_file", MakeRequest(&file1),
+        "my_file", file1.BindNewPipeAndPassReceiver(),
         mojom::kFlagRead | mojom::kFlagWrite | mojom::kFlagCreate, &error);
     ASSERT_TRUE(handled);
     EXPECT_EQ(base::File::Error::FILE_OK, error);
@@ -676,10 +682,10 @@ TEST_F(FileImplTest, AsHandle) {
 
   {
     // Reopen my_file.
-    mojom::FilePtr file2;
+    mojo::Remote<mojom::File> file2;
     error = base::File::Error::FILE_ERROR_FAILED;
     bool handled =
-        directory->OpenFile("my_file", MakeRequest(&file2),
+        directory->OpenFile("my_file", file2.BindNewPipeAndPassReceiver(),
                             mojom::kFlagRead | mojom::kFlagOpen, &error);
     ASSERT_TRUE(handled);
     EXPECT_EQ(base::File::Error::FILE_OK, error);
@@ -701,15 +707,14 @@ TEST_F(FileImplTest, AsHandle) {
 }
 
 TEST_F(FileImplTest, SimpleLockUnlock) {
-  mojom::DirectoryPtr directory;
-  GetTemporaryRoot(&directory);
+  mojo::Remote<mojom::Directory> directory = CreateTempDir();
   base::File::Error error;
 
   // Create my_file.
-  mojom::FilePtr file;
+  mojo::Remote<mojom::File> file;
   error = base::File::Error::FILE_ERROR_FAILED;
   bool handled = directory->OpenFile(
-      "my_file", MakeRequest(&file),
+      "my_file", file.BindNewPipeAndPassReceiver(),
       mojom::kFlagRead | mojom::kFlagWrite | mojom::kFlagCreate, &error);
   ASSERT_TRUE(handled);
   EXPECT_EQ(base::File::Error::FILE_OK, error);
@@ -728,15 +733,14 @@ TEST_F(FileImplTest, SimpleLockUnlock) {
 }
 
 TEST_F(FileImplTest, CantDoubleLock) {
-  mojom::DirectoryPtr directory;
-  GetTemporaryRoot(&directory);
+  mojo::Remote<mojom::Directory> directory = CreateTempDir();
   base::File::Error error;
 
   // Create my_file.
-  mojom::FilePtr file;
+  mojo::Remote<mojom::File> file;
   error = base::File::Error::FILE_ERROR_FAILED;
   bool handled = directory->OpenFile(
-      "my_file", MakeRequest(&file),
+      "my_file", file.BindNewPipeAndPassReceiver(),
       mojom::kFlagRead | mojom::kFlagWrite | mojom::kFlagCreate, &error);
   ASSERT_TRUE(handled);
   EXPECT_EQ(base::File::Error::FILE_OK, error);
@@ -755,16 +759,15 @@ TEST_F(FileImplTest, CantDoubleLock) {
 }
 
 TEST_F(FileImplTest, ClosingFileClearsLock) {
-  mojom::DirectoryPtr directory;
-  GetTemporaryRoot(&directory);
+  mojo::Remote<mojom::Directory> directory = CreateTempDir();
   base::File::Error error;
 
   {
     // Create my_file.
-    mojom::FilePtr file;
+    mojo::Remote<mojom::File> file;
     error = base::File::Error::FILE_ERROR_FAILED;
     bool handled = directory->OpenFile(
-        "my_file", MakeRequest(&file),
+        "my_file", file.BindNewPipeAndPassReceiver(),
         mojom::kFlagRead | mojom::kFlagWrite | mojom::kFlagOpenAlways, &error);
     ASSERT_TRUE(handled);
     EXPECT_EQ(base::File::Error::FILE_OK, error);
@@ -778,10 +781,10 @@ TEST_F(FileImplTest, ClosingFileClearsLock) {
 
   {
     // Open the file again.
-    mojom::FilePtr file;
+    mojo::Remote<mojom::File> file;
     error = base::File::Error::FILE_ERROR_FAILED;
     bool handled = directory->OpenFile(
-        "my_file", MakeRequest(&file),
+        "my_file", file.BindNewPipeAndPassReceiver(),
         mojom::kFlagRead | mojom::kFlagWrite | mojom::kFlagOpenAlways, &error);
     ASSERT_TRUE(handled);
     EXPECT_EQ(base::File::Error::FILE_OK, error);

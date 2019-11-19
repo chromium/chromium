@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {DropPosition, IncognitoAvailability} from './constants.js';
+
 /**
  * @fileoverview Closure typedefs for Bookmarks.
  */
@@ -19,12 +21,12 @@
  *   children: (!Array<string>|undefined),
  * }}
  */
-let BookmarkNode;
+export let BookmarkNode;
 
 /**
  * @typedef {!Object<string, BookmarkNode>}
  */
-let NodeMap;
+export let NodeMap;
 
 /**
  * @typedef {{
@@ -34,7 +36,7 @@ let NodeMap;
  *
  * |items| is used as a set and all values in the map are true.
  */
-let SelectionState;
+export let SelectionState;
 
 /**
  * Note:
@@ -53,10 +55,10 @@ let SelectionState;
  *   results: ?Array<string>,
  * }}
  */
-let SearchState;
+export let SearchState;
 
 /** @typedef {!Map<string, boolean>} */
-let FolderOpenState;
+export let FolderOpenState;
 
 /**
  * @typedef {{
@@ -64,7 +66,7 @@ let FolderOpenState;
  *   incognitoAvailability: IncognitoAvailability,
  * }}
  */
-let PreferencesState;
+export let PreferencesState;
 
 /**
  * @typedef {{
@@ -76,27 +78,29 @@ let PreferencesState;
  *   selection: SelectionState,
  * }}
  */
-let BookmarksPageState;
+export let BookmarksPageState;
 
 /** @typedef {{element: BookmarkElement, position: DropPosition}} */
-let DropDestination;
+export let DropDestination;
 
-/**
- * @record
- */
-function BookmarkElement() {}
+export class BookmarkElement extends HTMLElement {
+  constructor() {
+    super();
 
-/** @type {string} */
-BookmarkElement.itemId;
+    /** @type {string} */
+    this.itemId = '';
+  }
 
-/** @return {HTMLElement} */
-BookmarkElement.getDropTarget = function() {};
+  /** @return {HTMLElement} */
+  getDropTarget() {}
+}
 
-/** @constructor */
-function DragData() {
-  /** @type {Array<BookmarkTreeNode>} */
-  this.elements = null;
+export class DragData {
+  constructor() {
+    /** @type {Array<BookmarkTreeNode>} */
+    this.elements = null;
 
-  /** @type {boolean} */
-  this.sameProfile = false;
+    /** @type {boolean} */
+    this.sameProfile = false;
+  }
 }

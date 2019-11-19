@@ -81,7 +81,7 @@ class GPU_GLES2_EXPORT IndexedBufferBindingHost
   bool do_buffer_refcounting_;
 
  private:
-  enum IndexedBufferBindingType {
+  enum class IndexedBufferBindingType {
     kBindBufferBase,
     kBindBufferRange,
     kBindBufferNone

@@ -26,7 +26,9 @@
 #include "media/base/media_log.h"
 #include "media/capture/video/video_capture_device_descriptor.h"
 #include "media/capture/video_capture_types.h"
-#include "media/mojo/interfaces/audio_logging.mojom.h"
+#include "media/mojo/mojom/audio_logging.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace media {
 struct MediaLogEvent;
@@ -97,23 +99,22 @@ class CONTENT_EXPORT MediaInternals : public media::AudioLogFactory,
   std::unique_ptr<media::AudioLog> CreateAudioLog(AudioComponent component,
                                                   int component_id) override;
 
-  // Creates a media::mojom::AudioLogPtr strongly bound to a new
+  // Creates a PendingRemote<media::mojom::AudioLog> strongly bound to a new
   // media::mojom::AudioLog instance. Safe to call from any thread.
-  media::mojom::AudioLogPtr CreateMojoAudioLog(
+  mojo::PendingRemote<media::mojom::AudioLog> CreateMojoAudioLog(
       AudioComponent component,
       int component_id,
       int render_process_id = -1,
       int render_frame_id = MSG_ROUTING_NONE);
 
-  // Strongly bounds |request| to a new media::mojom::AudioLog instance. Safe to
-  // call from any thread.
-  void CreateMojoAudioLog(AudioComponent component,
-                          int component_id,
-                          media::mojom::AudioLogRequest request,
-                          int render_process_id = -1,
-                          int render_frame_id = MSG_ROUTING_NONE);
-
-  void OnProcessTerminatedForTesting(int process_id);
+  // Strongly bounds |receiver| to a new media::mojom::AudioLog instance. Safe
+  // to call from any thread.
+  void CreateMojoAudioLog(
+      AudioComponent component,
+      int component_id,
+      mojo::PendingReceiver<media::mojom::AudioLog> receiver,
+      int render_process_id = -1,
+      int render_frame_id = MSG_ROUTING_NONE);
 
  private:
   // Needs access to SendUpdate.
@@ -169,7 +170,6 @@ class CONTENT_EXPORT MediaInternals : public media::AudioLogFactory,
   bool can_update_;
   base::DictionaryValue audio_streams_cached_data_;
   int owner_ids_[media::AudioLogFactory::AUDIO_COMPONENT_MAX];
-  std::unique_ptr<MediaInternalsUMAHandler> uma_handler_;
 
   DISALLOW_COPY_AND_ASSIGN(MediaInternals);
 };

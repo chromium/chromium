@@ -118,7 +118,8 @@ void FullscreenClient::Paint(const wl_callback_listener& frame_listener) {
 
   wl_surface_set_buffer_scale(surface_.get(), scale_);
   wl_surface_set_buffer_transform(surface_.get(), transform_);
-  wl_surface_damage(surface_.get(), 0, 0, size_.width(), size_.height());
+  wl_surface_damage(surface_.get(), 0, 0, surface_size_.width(),
+                    surface_size_.height());
   wl_surface_attach(surface_.get(), buffer->buffer.get(), 0, 0);
 
   // Set up the frame callback.
@@ -156,6 +157,19 @@ void FullscreenClient::HandleMode(void* data,
     return;
 
   size_.SetSize(width, height);
+  switch (transform_) {
+    case WL_OUTPUT_TRANSFORM_NORMAL:
+    case WL_OUTPUT_TRANSFORM_180:
+      surface_size_.SetSize(width, height);
+      break;
+    case WL_OUTPUT_TRANSFORM_90:
+    case WL_OUTPUT_TRANSFORM_270:
+      surface_size_.SetSize(height, width);
+      break;
+    default:
+      NOTREACHED();
+      break;
+  }
 
   std::unique_ptr<wl_region> opaque_region(static_cast<wl_region*>(
       wl_compositor_create_region(globals_.compositor.get())));
@@ -165,7 +179,8 @@ void FullscreenClient::HandleMode(void* data,
     return;
   }
 
-  wl_region_add(opaque_region.get(), 0, 0, size_.width(), size_.height());
+  wl_region_add(opaque_region.get(), 0, 0, surface_size_.width(),
+                surface_size_.height());
   wl_surface_set_opaque_region(surface_.get(), opaque_region.get());
   wl_surface_set_input_region(surface_.get(), opaque_region.get());
 

@@ -2,22 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import <EarlGrey/EarlGrey.h>
+
 #include <vector>
 
 #include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/browser/autofill_profile.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/credit_card.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/payments/payment_request_cache.h"
 #include "ios/chrome/browser/ui/autofill/card_unmask_prompt_view_bridge.h"
 #import "ios/chrome/browser/ui/payments/payment_request_egtest_base.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
+#import "ios/chrome/test/app/tab_test_util.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/web/public/test/http_server/http_server.h"
-#import "ios/web/public/test/web_view_interaction_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -67,7 +69,7 @@ const char kRequestEmailPage[] =
 
   [ChromeEarlGrey loadURL:web::test::HttpServer::MakeUrl(kNoShippingPage)];
 
-  [ChromeEarlGrey tapWebViewElementWithID:@"buy"];
+  [ChromeEarlGrey tapWebStateElementWithID:@"buy"];
 
   // Tap the buy button.
   [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabelId(
@@ -134,7 +136,7 @@ const char kRequestEmailPage[] =
 
   [ChromeEarlGrey loadURL:web::test::HttpServer::MakeUrl(kFreeShippingPage)];
 
-  [ChromeEarlGrey tapWebViewElementWithID:@"buy"];
+  [ChromeEarlGrey tapWebStateElementWithID:@"buy"];
 
   // Tap the buy button.
   [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabelId(
@@ -181,13 +183,14 @@ const char kRequestEmailPage[] =
   // Create a billing address and a card that uses it.
   autofill::AutofillProfile billingAddress = autofill::test::GetFullProfile();
   [self addAutofillProfile:billingAddress];
+
   autofill::CreditCard card = autofill::test::GetCreditCard();  // visa
   card.set_billing_address_id(billingAddress.guid());
   [self addCreditCard:card];
 
   [ChromeEarlGrey loadURL:web::test::HttpServer::MakeUrl(kContactDetailsPage)];
 
-  [ChromeEarlGrey tapWebViewElementWithID:@"buy"];
+  [ChromeEarlGrey tapWebStateElementWithID:@"buy"];
 
   // Tap the buy button.
   [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabelId(
@@ -216,13 +219,14 @@ const char kRequestEmailPage[] =
   // Create a billing address and a card that uses it.
   autofill::AutofillProfile billingAddress = autofill::test::GetFullProfile();
   [self addAutofillProfile:billingAddress];
+
   autofill::CreditCard card = autofill::test::GetCreditCard();  // visa
   card.set_billing_address_id(billingAddress.guid());
   [self addCreditCard:card];
 
   [ChromeEarlGrey loadURL:web::test::HttpServer::MakeUrl(kRequestEmailPage)];
 
-  [ChromeEarlGrey tapWebViewElementWithID:@"buy"];
+  [ChromeEarlGrey tapWebStateElementWithID:@"buy"];
 
   // Tap the buy button.
   [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabelId(

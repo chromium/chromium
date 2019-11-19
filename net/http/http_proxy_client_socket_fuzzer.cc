@@ -7,15 +7,17 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <fuzzer/FuzzedDataProvider.h>
+
 #include <memory>
 #include <string>
 
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/fuzzed_data_provider.h"
 #include "net/base/address_list.h"
 #include "net/base/auth.h"
 #include "net/base/host_port_pair.h"
+#include "net/base/network_isolation_key.h"
 #include "net/base/test_completion_callback.h"
 #include "net/http/http_auth_cache.h"
 #include "net/http/http_auth_handler_basic.h"
@@ -36,7 +38,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   // Use a test NetLog, to exercise logging code.
   net::TestNetLog test_net_log;
 
-  base::FuzzedDataProvider data_provider(data, size);
+  FuzzedDataProvider data_provider(data, size);
 
   net::TestCompletionCallback callback;
   std::unique_ptr<net::FuzzedSocket> fuzzed_socket(
@@ -45,7 +47,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   // Create auth handler supporting basic and digest schemes.  Other schemes can
   // make system calls, which doesn't seem like a great idea.
-  net::HttpAuthCache auth_cache;
+  net::HttpAuthCache auth_cache(
+      false /* key_server_entries_by_network_isolation_key */);
   net::HttpAuthHandlerRegistryFactory auth_handler_factory;
   auth_handler_factory.RegisterSchemeFactory(
       net::kBasicAuthScheme, new net::HttpAuthHandlerBasic::Factory());
@@ -53,18 +56,18 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
       net::kDigestAuthScheme, new net::HttpAuthHandlerDigest::Factory());
 
   scoped_refptr<net::HttpAuthController> auth_controller(
-      new net::HttpAuthController(net::HttpAuth::AUTH_PROXY,
-                                  GURL("http://proxy:42/"), &auth_cache,
-                                  &auth_handler_factory, nullptr));
+      base::MakeRefCounted<net::HttpAuthController>(
+          net::HttpAuth::AUTH_PROXY, GURL("http://proxy:42/"),
+          net::NetworkIsolationKey(), &auth_cache, &auth_handler_factory,
+          nullptr));
   // Determine if the HttpProxyClientSocket should be told the underlying socket
   // is HTTPS.
-  bool is_https_proxy = data_provider.ConsumeBool();
   net::HttpProxyClientSocket socket(
       std::move(fuzzed_socket), "Bond/007", net::HostPortPair("foo", 80),
       net::ProxyServer(net::ProxyServer::SCHEME_HTTP,
                        net::HostPortPair("proxy", 42)),
       auth_controller.get(), true /* tunnel */, false /* using_spdy */,
-      net::kProtoUnknown, nullptr /* proxy_delegate */, is_https_proxy,
+      net::kProtoUnknown, nullptr /* proxy_delegate */,
       TRAFFIC_ANNOTATION_FOR_TESTS);
   int result = socket.Connect(callback.callback());
   result = callback.GetResult(result);

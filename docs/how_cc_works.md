@@ -2,7 +2,7 @@
 
 [Original google doc](https://docs.google.com/document/d/1yjzOWrPfFGviEd1nru3yzqxSHETC-zsEBSt9C8SvV-Q/edit)
 
-[Chinese translation](https://zhuanlan.zhihu.com/p/54601110)
+[Chinese](https://zhuanlan.zhihu.com/p/54601110) | [Korean](https://github.com/naver/whale-browser-developers/blob/master/translation/chromium/docs/how_cc_works.md)
 
 [TOC]
 

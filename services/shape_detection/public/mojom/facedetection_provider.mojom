@@ -9,5 +9,6 @@ module shape_detection.mojom;
 import "services/shape_detection/public/mojom/facedetection.mojom";
 
 interface FaceDetectionProvider {
-  CreateFaceDetection(FaceDetection& request, FaceDetectorOptions options);
+  CreateFaceDetection(pending_receiver<FaceDetection> receiver,
+                      FaceDetectorOptions options);
 };

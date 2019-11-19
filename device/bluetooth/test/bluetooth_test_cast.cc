@@ -165,7 +165,7 @@ void BluetoothTestCast::UpdateAdapter(
 
   // Update the adapter with the ScanResult.
   le_scan_manager_.observer_->OnNewScanResult(result);
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 }
 
 }  // namespace device

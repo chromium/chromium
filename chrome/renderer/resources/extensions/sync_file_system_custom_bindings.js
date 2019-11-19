@@ -4,17 +4,10 @@
 
 // Custom binding for the syncFileSystem API.
 
-var binding =
-    apiBridge || require('binding').Binding.create('syncFileSystem');
-
-var registerArgumentMassager = bindingUtil ?
-    $Function.bind(bindingUtil.registerEventArgumentMassager, bindingUtil) :
-    require('event_bindings').registerArgumentMassager;
-
 var fileSystemNatives = requireNative('file_system_natives');
 var syncFileSystemNatives = requireNative('sync_file_system');
 
-binding.registerCustomHook(function(bindingsAPI) {
+apiBridge.registerCustomHook(function(bindingsAPI) {
   var apiFunctions = bindingsAPI.apiFunctions;
 
   // Functions which take in an [instanceOf=FileEntry].
@@ -87,8 +80,8 @@ binding.registerCustomHook(function(bindingsAPI) {
   });
 });
 
-registerArgumentMassager('syncFileSystem.onFileStatusChanged',
-                         function(args, dispatch) {
+bindingUtil.registerEventArgumentMassager('syncFileSystem.onFileStatusChanged',
+                                          function(args, dispatch) {
   // Make FileEntry object using all the base string fields.
   var fileEntry = fileSystemNatives.GetFileEntry(
       args[0].fileSystemType,
@@ -107,6 +100,3 @@ registerArgumentMassager('syncFileSystem.onFileStatusChanged',
   }
   dispatch([fileInfo]);
 });
-
-if (!apiBridge)
-  exports.$set('binding', binding.generate());

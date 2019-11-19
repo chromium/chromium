@@ -12,6 +12,7 @@ import android.os.BatteryManager;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 
 /**
  * Integrates native PowerMonitor with the java side.
@@ -63,7 +64,7 @@ public class PowerMonitor  {
         // If we're not plugged, assume we're running on battery power.
         sInstance.mIsBatteryPower = chargePlug != BatteryManager.BATTERY_PLUGGED_USB
                 && chargePlug != BatteryManager.BATTERY_PLUGGED_AC;
-        nativeOnBatteryChargingChanged();
+        PowerMonitorJni.get().onBatteryChargingChanged();
     }
 
     @CalledByNative
@@ -76,5 +77,8 @@ public class PowerMonitor  {
         return sInstance.mIsBatteryPower;
     }
 
-    private static native void nativeOnBatteryChargingChanged();
+    @NativeMethods
+    interface Natives {
+        void onBatteryChargingChanged();
+    }
 }

@@ -28,8 +28,8 @@ enum class ResourceType : uint8_t;
 
 typedef HeapVector<Member<SourceListDirective>> SourceListDirectiveVector;
 
-class CORE_EXPORT CSPDirectiveList
-    : public GarbageCollectedFinalized<CSPDirectiveList> {
+class CORE_EXPORT CSPDirectiveList final
+    : public GarbageCollected<CSPDirectiveList> {
  public:
   static CSPDirectiveList* Create(ContentSecurityPolicy*,
                                   const UChar* begin,
@@ -60,12 +60,10 @@ class CORE_EXPORT CSPDirectiveList
                    const WTF::OrdinalNumber& context_line,
                    SecurityViolationReportingPolicy) const;
 
-  bool AllowEval(ScriptState*,
-                 SecurityViolationReportingPolicy,
+  bool AllowEval(SecurityViolationReportingPolicy,
                  ContentSecurityPolicy::ExceptionStatus,
                  const String& script_content) const;
-  bool AllowWasmEval(ScriptState*,
-                     SecurityViolationReportingPolicy,
+  bool AllowWasmEval(SecurityViolationReportingPolicy,
                      ContentSecurityPolicy::ExceptionStatus,
                      const String& script_content) const;
   bool AllowPluginType(const String& type,
@@ -81,7 +79,8 @@ class CORE_EXPORT CSPDirectiveList
                        const IntegrityMetadataSet& = IntegrityMetadataSet(),
                        ParserDisposition = kParserInserted) const;
 
-  bool AllowTrustedTypePolicy(const String& policy_name) const;
+  bool AllowTrustedTypePolicy(const String& policy_name,
+                              bool is_duplicate) const;
 
   // |allowAncestors| does not need to know whether the resource was a
   // result of a redirect. After a redirect, source paths are usually
@@ -100,7 +99,8 @@ class CORE_EXPORT CSPDirectiveList
                                     ResourceRequest::RedirectStatus,
                                     SecurityViolationReportingPolicy) const;
 
-  bool AllowTrustedTypeAssignmentFailure(const String& message) const;
+  bool AllowTrustedTypeAssignmentFailure(const String& message,
+                                         const String& sample) const;
 
   bool StrictMixedContentChecking() const {
     return strict_mixed_content_checking_enforced_;
@@ -108,6 +108,12 @@ class CORE_EXPORT CSPDirectiveList
   void ReportMixedContent(const KURL& mixed_url,
                           ResourceRequest::RedirectStatus) const;
 
+  bool ShouldDisableEval() const {
+    return ShouldDisableEvalBecauseScriptSrc() ||
+           ShouldDisableEvalBecauseTrustedTypes();
+  }
+  bool ShouldDisableEvalBecauseScriptSrc() const;
+  bool ShouldDisableEvalBecauseTrustedTypes() const;
   const String& EvalDisabledErrorMessage() const {
     return eval_disabled_error_message_;
   }
@@ -176,7 +182,6 @@ class CORE_EXPORT CSPDirectiveList
   void EnforceStrictMixedContentChecking(const String& name,
                                          const String& value);
   void EnableInsecureRequestsUpgrade(const String& name, const String& value);
-  void TreatAsPublicAddress(const String& name, const String& value);
   void RequireTrustedTypes(const String& name, const String& value);
 
   template <class CSPDirectiveType>
@@ -194,7 +199,8 @@ class CORE_EXPORT CSPDirectiveList
                        const KURL& blocked_url,
                        ResourceRequest::RedirectStatus,
                        ContentSecurityPolicy::ViolationType violation_type =
-                           ContentSecurityPolicy::kURLViolation) const;
+                           ContentSecurityPolicy::kURLViolation,
+                       const String& sample = String()) const;
   void ReportViolationWithFrame(const String& directive_text,
                                 const ContentSecurityPolicy::DirectiveType,
                                 const String& console_message,
@@ -212,7 +218,6 @@ class CORE_EXPORT CSPDirectiveList
                            const ContentSecurityPolicy::DirectiveType,
                            const String& message,
                            const KURL& blocked_url,
-                           ScriptState*,
                            const ContentSecurityPolicy::ExceptionStatus,
                            const String& content) const;
 
@@ -239,12 +244,10 @@ class CORE_EXPORT CSPDirectiveList
 
   bool CheckEvalAndReportViolation(SourceListDirective*,
                                    const String& console_message,
-                                   ScriptState*,
                                    ContentSecurityPolicy::ExceptionStatus,
                                    const String& script_content) const;
   bool CheckWasmEvalAndReportViolation(SourceListDirective*,
                                        const String& console_message,
-                                       ScriptState*,
                                        ContentSecurityPolicy::ExceptionStatus,
                                        const String& script_content) const;
   bool CheckInlineAndReportViolation(
@@ -300,7 +303,6 @@ class CORE_EXPORT CSPDirectiveList
   bool strict_mixed_content_checking_enforced_;
 
   bool upgrade_insecure_requests_;
-  bool treat_as_public_address_;
 
   Member<MediaListDirective> plugin_types_;
   Member<SourceListDirective> base_uri_;

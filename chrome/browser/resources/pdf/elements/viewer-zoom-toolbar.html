@@ -1,0 +1,68 @@
+    <style>
+      :host {
+        --button-position-offset: 48px;
+        bottom: 0;
+        padding: 48px 0;
+        position: fixed;
+        right: 0;
+        user-select: none;
+        z-index: 3;
+      }
+
+      :host-context([is-print-preview]) {
+        --button-position-offset: 24px;
+      }
+
+      :host-context([is-print-preview][dir='ltr']),
+      :host-context([dir='rtl']) {
+        left: 0;
+        right: auto;
+      }
+
+      :host-context([is-print-preview][dir='rtl']) {
+        left: auto;
+        right: 0;
+      }
+
+      #zoom-buttons {
+        position: relative;
+        right: var(--button-position-offset);
+      }
+
+      :host-context([is-print-preview][dir='ltr']) #zoom-buttons,
+      :host-context([dir='rtl']) #zoom-buttons {
+        left: var(--button-position-offset);
+        right: auto;
+      }
+
+      :host-context([is-print-preview][dir='rtl']) #zoom-buttons {
+        left: auto;
+        right: var(--button-position-offset);
+      }
+
+      viewer-zoom-button {
+        display: block;
+      }
+
+      /* A small gap between the zoom in/zoom out buttons. */
+      #zoom-out-button {
+        margin-top: 10px;
+      }
+
+      /* A larger gap between the fit button and bottom two buttons. */
+      #zoom-in-button {
+        margin-top: 24px;
+      }
+    </style>
+    <div id="zoom-buttons">
+      <viewer-zoom-button id="fit-button" on-fabclick="fitToggle" delay="100"
+          keyboard-navigation-active="[[keyboardNavigationActive_]]"
+          icons="pdf:fullscreen-exit cr:fullscreen">
+      </viewer-zoom-button>
+      <viewer-zoom-button id="zoom-in-button" icons="pdf:add"
+          keyboard-navigation-active="[[keyboardNavigationActive_]]"
+          on-fabclick="zoomIn" delay="50"></viewer-zoom-button>
+      <viewer-zoom-button id="zoom-out-button" icons="pdf:remove"
+          keyboard-navigation-active="[[keyboardNavigationActive_]]"
+          on-fabclick="zoomOut" delay="0"></viewer-zoom-button>
+    </div>

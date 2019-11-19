@@ -17,7 +17,7 @@ source_set("net_export") {
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/webui",
     "//ios/chrome/common:common",
-    "//ios/web",
-    "//net:net",
+    "//ios/web/public/webui",
+    "//net",
   ]
 }

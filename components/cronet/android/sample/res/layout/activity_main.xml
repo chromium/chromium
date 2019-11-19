@@ -10,12 +10,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true" />
-
-    <TextView
-        android:id="@+id/dataView"
-        android:layout_width="wrap_content"
+    <ScrollView
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="26dp"
-        android:layout_below="@id/resultView" />
-
+        android:layout_below="@id/resultView">
+        <TextView
+            android:id="@+id/dataView"
+            android:clickable="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="26dp"/>
+    </ScrollView>
 </RelativeLayout>

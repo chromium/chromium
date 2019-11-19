@@ -1,6 +1,9 @@
 <!--
 @MAC-ALLOW:AXRole*
 @MAC-ALLOW:AXSubrole*
+@UIA-WIN-ALLOW:ControlType='UIA_GroupControlTypeId'
+@UIA-WIN-ALLOW:LocalizedControlType='section'
+@WIN-ALLOW:localized_extended_role='section'
 @WIN-ALLOW:xml-roles:*
 @AURALINUX-ALLOW:xml-roles:*
 -->
@@ -10,6 +13,10 @@
 
 <section>
   This is a section element.
+</section>
+
+<section aria-label='section'>
+  This is a named section element.
 </section>
 
 </body>

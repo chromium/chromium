@@ -31,5 +31,5 @@ interface DebugRecordingFileProvider {
 // recording can disable it, i.e. closing debug recording message pipe without
 // priorly enabling debug recording will not change debug recording state.
 interface DebugRecording {
-  Enable(DebugRecordingFileProvider file_provider);
+  Enable(pending_remote<DebugRecordingFileProvider> file_provider);
 };

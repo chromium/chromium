@@ -8,7 +8,8 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.RectF;
-import android.support.test.filters.SmallTest;
+
+import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -103,7 +104,7 @@ public class FaceDetectionImplTest {
     @Test
     @SmallTest
     @Feature({"ShapeDetection"})
-    public void testDetectHandlesOddWidthWithAndroidAPI() throws Exception {
+    public void testDetectHandlesOddWidthWithAndroidAPI() {
         // Pad the image so that the width is odd.
         Bitmap paddedBitmap = Bitmap.createBitmap(MONA_LISA_BITMAP.imageInfo.width + 1,
                 MONA_LISA_BITMAP.imageInfo.height, Bitmap.Config.ARGB_8888);

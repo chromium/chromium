@@ -13,6 +13,7 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.UserData;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.blink_public.web.WebInputEventType;
 import org.chromium.content.browser.input.ImeAdapterImpl;
 import org.chromium.content.browser.selection.SelectionPopupControllerImpl;
@@ -78,12 +79,14 @@ public class GestureListenerManagerImpl
         mIterator = mListeners.rewindableIterator();
         mViewDelegate = mWebContents.getViewAndroidDelegate();
         WindowEventObserverManager.from(mWebContents).addObserver(this);
-        mNativeGestureListenerManager = nativeInit(mWebContents);
+        mNativeGestureListenerManager = GestureListenerManagerImplJni.get().init(
+                GestureListenerManagerImpl.this, mWebContents);
     }
 
     private void resetGestureDetection() {
         if (mNativeGestureListenerManager != 0) {
-            nativeResetGestureDetection(mNativeGestureListenerManager);
+            GestureListenerManagerImplJni.get().resetGestureDetection(
+                    mNativeGestureListenerManager, GestureListenerManagerImpl.this);
         }
     }
 
@@ -104,14 +107,16 @@ public class GestureListenerManagerImpl
     @Override
     public void updateMultiTouchZoomSupport(boolean supportsMultiTouchZoom) {
         if (mNativeGestureListenerManager == 0) return;
-        nativeSetMultiTouchZoomSupportEnabled(
-                mNativeGestureListenerManager, supportsMultiTouchZoom);
+        GestureListenerManagerImplJni.get().setMultiTouchZoomSupportEnabled(
+                mNativeGestureListenerManager, GestureListenerManagerImpl.this,
+                supportsMultiTouchZoom);
     }
 
     @Override
     public void updateDoubleTapSupport(boolean supportsDoubleTap) {
         if (mNativeGestureListenerManager == 0) return;
-        nativeSetDoubleTapSupportEnabled(mNativeGestureListenerManager, supportsDoubleTap);
+        GestureListenerManagerImplJni.get().setDoubleTapSupportEnabled(
+                mNativeGestureListenerManager, GestureListenerManagerImpl.this, supportsDoubleTap);
     }
 
     /** Update all the listeners after touch down event occurred. */
@@ -328,9 +333,10 @@ public class GestureListenerManagerImpl
     private void setTouchScrollInProgress(boolean touchScrollInProgress) {
         mIsTouchScrollInProgress = touchScrollInProgress;
 
-        // Use the active touch scroll signal for hiding. The animation movement
-        // by fling will naturally hide the ActionMode by invalidating its content rect.
-        getSelectionPopupController().setScrollInProgress(touchScrollInProgress);
+        // Use the active touch scroll and fling scroll signal for hiding.
+        // The animation movement by fling will naturally hide the ActionMode
+        // by invalidating its content rect.
+        getSelectionPopupController().setScrollInProgress(isScrollInProgress());
     }
 
     /**
@@ -367,10 +373,14 @@ public class GestureListenerManagerImpl
         return mWebContents.getRenderCoordinates().getLastFrameViewportHeightPixInt();
     }
 
-    private native long nativeInit(WebContentsImpl webContents);
-    private native void nativeResetGestureDetection(long nativeGestureListenerManager);
-    private native void nativeSetDoubleTapSupportEnabled(
-            long nativeGestureListenerManager, boolean enabled);
-    private native void nativeSetMultiTouchZoomSupportEnabled(
-            long nativeGestureListenerManager, boolean enabled);
+    @NativeMethods
+    interface Natives {
+        long init(GestureListenerManagerImpl caller, WebContentsImpl webContents);
+        void resetGestureDetection(
+                long nativeGestureListenerManager, GestureListenerManagerImpl caller);
+        void setDoubleTapSupportEnabled(long nativeGestureListenerManager,
+                GestureListenerManagerImpl caller, boolean enabled);
+        void setMultiTouchZoomSupportEnabled(long nativeGestureListenerManager,
+                GestureListenerManagerImpl caller, boolean enabled);
+    }
 }

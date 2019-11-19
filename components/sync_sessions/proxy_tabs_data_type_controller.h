@@ -28,8 +28,8 @@ class ProxyTabsDataTypeController : public syncer::DataTypeController {
   void BeforeLoadModels(syncer::ModelTypeConfigurer* configurer) override;
   void LoadModels(const syncer::ConfigureContext& configure_context,
                   const ModelLoadCallback& model_load_callback) override;
-  void RegisterWithBackend(base::OnceCallback<void(bool)> set_downloaded,
-                           syncer::ModelTypeConfigurer* configurer) override;
+  RegisterWithBackendResult RegisterWithBackend(
+      syncer::ModelTypeConfigurer* configurer) override;
   void StartAssociating(StartCallback start_callback) override;
   void Stop(syncer::ShutdownReason shutdown_reason,
             StopCallback callback) override;

@@ -3,8 +3,10 @@ rmistry@chromium.org
 per-file loading_ct.py=tdresser@chromium.org
 per-file loading_ct.py=maxlg@chromium.org
 per-file loading_ct.py=dproy@chromium.org
-per-file repaint*=wkorman@chromium.org
+per-file generic_trace.py=wangxianzhu@chromium.org
+per-file generic_trace.py=pdr@chromium.org
+per-file repaint*=wangxianzhu@chromium.org
+per-file repaint*=pdr@chromium.org
 per-file leak_detection_ct.py=yuzus@chromium.org
-per-file memory_ct.py=nednguyen@google.com
 per-file memory_ct.py=erikchen@chromium.org
 per-file memory_ct.py=perezju@chromium.org

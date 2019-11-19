@@ -14,6 +14,7 @@ callback DecodeErrorCallback = void (DOMException error);
 callback DecodeSuccessCallback = void (AudioBuffer decodedData);
 
 [
+    Exposed=Window,
     ActiveScriptWrappable
 ] interface BaseAudioContext : EventTarget {
     // All rendered audio ultimately connects to destination, which represents the audio hardware.

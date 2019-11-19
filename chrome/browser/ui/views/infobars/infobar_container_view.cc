@@ -4,11 +4,14 @@
 
 #include "chrome/browser/ui/views/infobars/infobar_container_view.h"
 
+#include <numeric>
+
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_shader.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/infobars/infobar_view.h"
 #include "chrome/grit/generated_resources.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/canvas.h"
@@ -54,7 +57,7 @@ const char InfoBarContainerView::kViewClassName[] = "InfoBarContainerView";
 InfoBarContainerView::InfoBarContainerView(Delegate* delegate)
     : infobars::InfoBarContainer(delegate),
       content_shadow_(new ContentShadow()) {
-  set_id(VIEW_ID_INFO_BAR_CONTAINER);
+  SetID(VIEW_ID_INFO_BAR_CONTAINER);
   AddChildView(content_shadow_);
 }
 
@@ -63,14 +66,14 @@ InfoBarContainerView::~InfoBarContainerView() {
 }
 
 void InfoBarContainerView::Layout() {
-  int top = 0;
-
-  // Iterate over all infobars; the last child is the content shadow.
-  for (int i = 0; i < child_count() - 1; ++i) {
-    InfoBarView* child = static_cast<InfoBarView*>(child_at(i));
-    child->SetBounds(0, top, width(), child->computed_height());
-    top = child->bounds().bottom();
-  }
+  const auto set_bounds = [this](int top, auto* child) {
+    const int height = static_cast<InfoBarView*>(child)->computed_height();
+    child->SetBounds(0, top, width(), height);
+    return top + height;
+  };
+  DCHECK_EQ(content_shadow_, children().back());
+  const int top = std::accumulate(children().begin(),
+                                  std::prev(children().end()), 0, set_bounds);
 
   // The shadow is positioned flush with the bottom infobar, with the separator
   // there drawn by the shadow code (so we don't have to extend our bounds out
@@ -90,15 +93,11 @@ void InfoBarContainerView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 }
 
 gfx::Size InfoBarContainerView::CalculatePreferredSize() const {
-  gfx::Size size;
-
-  // Iterate over all infobars; the last child is the content shadow.
-  for (int i = 0; i < child_count() - 1; ++i) {
-    const gfx::Size child_size = child_at(i)->GetPreferredSize();
-    size.Enlarge(0, child_size.height());
-    size.SetToMax(child_size);  // Only affects our width.
-  }
-
+  const auto enlarge_size = [](const gfx::Size& size, const auto* child) {
+    const gfx::Size child_size = child->GetPreferredSize();
+    return gfx::Size(std::max(size.width(), child_size.width()),
+                     size.height() + child_size.height());
+  };
   // Don't reserve space for the bottom shadow here.  Because the shadow paints
   // to its own layer and this class doesn't, it can paint outside the size
   // computed here.  Not including the shadow bounds means the browser will
@@ -108,7 +107,9 @@ gfx::Size InfoBarContainerView::CalculatePreferredSize() const {
   // desirable.  On the other hand, it also means the browser doesn't know the
   // shadow is there and could lay out something atop it or size the window too
   // small for it; but these are unlikely.
-  return size;
+  DCHECK_EQ(content_shadow_, children().back());
+  return std::accumulate(children().cbegin(), std::prev(children().cend()),
+                         gfx::Size(), enlarge_size);
 }
 
 void InfoBarContainerView::PlatformSpecificAddInfoBar(
@@ -132,9 +133,9 @@ void InfoBarContainerView::PlatformSpecificInfoBarStateChanged(
   // shadow), and the new top infobar is child 1.  The conditional below
   // won't exclude cases where we're adding rather than removing an infobar, but
   // doing unnecessary work on the second infobar in those cases is harmless.
-  if (!is_animating && child_count() > 2) {
+  if (!is_animating && children().size() > 2) {
     // Dropping the separator may change the height.
-    auto* infobar = static_cast<InfoBarView*>(child_at(1));
+    auto* infobar = static_cast<InfoBarView*>(children()[1]);
     infobar->RecalculateHeight();
 
     // We need to force a paint whether or not the height actually changed.

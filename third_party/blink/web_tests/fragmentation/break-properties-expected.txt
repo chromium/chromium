@@ -17,35 +17,35 @@ PASS getComputedStyle(element)['page-break-after'] is "avoid"
 break-after:avoid-column
 PASS getComputedStyle(element)['break-after'] is "avoid-column"
 PASS getComputedStyle(element)['-webkit-column-break-after'] is "avoid"
-PASS getComputedStyle(element)['page-break-after'] is "auto"
+PASS getComputedStyle(element)['page-break-after'] is ""
 break-after:avoid-page
 PASS getComputedStyle(element)['break-after'] is "avoid-page"
-PASS getComputedStyle(element)['-webkit-column-break-after'] is "auto"
-PASS getComputedStyle(element)['page-break-after'] is "avoid"
+PASS getComputedStyle(element)['-webkit-column-break-after'] is ""
+PASS getComputedStyle(element)['page-break-after'] is ""
 break-after:column
 PASS getComputedStyle(element)['break-after'] is "column"
 PASS getComputedStyle(element)['-webkit-column-break-after'] is "always"
-PASS getComputedStyle(element)['page-break-after'] is "auto"
+PASS getComputedStyle(element)['page-break-after'] is ""
 break-after:left
 PASS getComputedStyle(element)['break-after'] is "left"
-PASS getComputedStyle(element)['-webkit-column-break-after'] is "auto"
+PASS getComputedStyle(element)['-webkit-column-break-after'] is ""
 PASS getComputedStyle(element)['page-break-after'] is "left"
 break-after:page
 PASS getComputedStyle(element)['break-after'] is "page"
-PASS getComputedStyle(element)['-webkit-column-break-after'] is "auto"
+PASS getComputedStyle(element)['-webkit-column-break-after'] is ""
 PASS getComputedStyle(element)['page-break-after'] is "always"
 break-after:recto
 PASS getComputedStyle(element)['break-after'] is "recto"
-PASS getComputedStyle(element)['-webkit-column-break-after'] is "auto"
-PASS getComputedStyle(element)['page-break-after'] is "auto"
+PASS getComputedStyle(element)['-webkit-column-break-after'] is ""
+PASS getComputedStyle(element)['page-break-after'] is ""
 break-after:right
 PASS getComputedStyle(element)['break-after'] is "right"
-PASS getComputedStyle(element)['-webkit-column-break-after'] is "auto"
+PASS getComputedStyle(element)['-webkit-column-break-after'] is ""
 PASS getComputedStyle(element)['page-break-after'] is "right"
 break-after:verso
 PASS getComputedStyle(element)['break-after'] is "verso"
-PASS getComputedStyle(element)['-webkit-column-break-after'] is "auto"
-PASS getComputedStyle(element)['page-break-after'] is "auto"
+PASS getComputedStyle(element)['-webkit-column-break-after'] is ""
+PASS getComputedStyle(element)['page-break-after'] is ""
 break-before:always
 PASS getComputedStyle(element)['break-before'] is "auto"
 PASS getComputedStyle(element)['-webkit-column-break-before'] is "auto"
@@ -61,35 +61,35 @@ PASS getComputedStyle(element)['page-break-before'] is "avoid"
 break-before:avoid-column
 PASS getComputedStyle(element)['break-before'] is "avoid-column"
 PASS getComputedStyle(element)['-webkit-column-break-before'] is "avoid"
-PASS getComputedStyle(element)['page-break-before'] is "auto"
+PASS getComputedStyle(element)['page-break-before'] is ""
 break-before:avoid-page
 PASS getComputedStyle(element)['break-before'] is "avoid-page"
-PASS getComputedStyle(element)['-webkit-column-break-before'] is "auto"
-PASS getComputedStyle(element)['page-break-before'] is "avoid"
+PASS getComputedStyle(element)['-webkit-column-break-before'] is ""
+PASS getComputedStyle(element)['page-break-before'] is ""
 break-before:column
 PASS getComputedStyle(element)['break-before'] is "column"
 PASS getComputedStyle(element)['-webkit-column-break-before'] is "always"
-PASS getComputedStyle(element)['page-break-before'] is "auto"
+PASS getComputedStyle(element)['page-break-before'] is ""
 break-before:left
 PASS getComputedStyle(element)['break-before'] is "left"
-PASS getComputedStyle(element)['-webkit-column-break-before'] is "auto"
+PASS getComputedStyle(element)['-webkit-column-break-before'] is ""
 PASS getComputedStyle(element)['page-break-before'] is "left"
 break-before:page
 PASS getComputedStyle(element)['break-before'] is "page"
-PASS getComputedStyle(element)['-webkit-column-break-before'] is "auto"
+PASS getComputedStyle(element)['-webkit-column-break-before'] is ""
 PASS getComputedStyle(element)['page-break-before'] is "always"
 break-before:recto
 PASS getComputedStyle(element)['break-before'] is "recto"
-PASS getComputedStyle(element)['-webkit-column-break-before'] is "auto"
-PASS getComputedStyle(element)['page-break-before'] is "auto"
+PASS getComputedStyle(element)['-webkit-column-break-before'] is ""
+PASS getComputedStyle(element)['page-break-before'] is ""
 break-before:right
 PASS getComputedStyle(element)['break-before'] is "right"
-PASS getComputedStyle(element)['-webkit-column-break-before'] is "auto"
+PASS getComputedStyle(element)['-webkit-column-break-before'] is ""
 PASS getComputedStyle(element)['page-break-before'] is "right"
 break-before:verso
 PASS getComputedStyle(element)['break-before'] is "verso"
-PASS getComputedStyle(element)['-webkit-column-break-before'] is "auto"
-PASS getComputedStyle(element)['page-break-before'] is "auto"
+PASS getComputedStyle(element)['-webkit-column-break-before'] is ""
+PASS getComputedStyle(element)['page-break-before'] is ""
 break-inside:auto
 PASS getComputedStyle(element)['break-inside'] is "auto"
 PASS getComputedStyle(element)['-webkit-column-break-inside'] is "auto"
@@ -101,15 +101,15 @@ PASS getComputedStyle(element)['page-break-inside'] is "avoid"
 break-inside:avoid-column
 PASS getComputedStyle(element)['break-inside'] is "avoid-column"
 PASS getComputedStyle(element)['-webkit-column-break-inside'] is "avoid"
-PASS getComputedStyle(element)['page-break-inside'] is "auto"
+PASS getComputedStyle(element)['page-break-inside'] is ""
 break-inside:avoid-page
 PASS getComputedStyle(element)['break-inside'] is "avoid-page"
-PASS getComputedStyle(element)['-webkit-column-break-inside'] is "auto"
+PASS getComputedStyle(element)['-webkit-column-break-inside'] is ""
 PASS getComputedStyle(element)['page-break-inside'] is "avoid"
 -webkit-column-break-after:always
 PASS getComputedStyle(element)['break-after'] is "column"
 PASS getComputedStyle(element)['-webkit-column-break-after'] is "always"
-PASS getComputedStyle(element)['page-break-after'] is "auto"
+PASS getComputedStyle(element)['page-break-after'] is ""
 -webkit-column-break-after:avoid
 PASS getComputedStyle(element)['break-after'] is "avoid"
 PASS getComputedStyle(element)['-webkit-column-break-after'] is "avoid"
@@ -121,7 +121,7 @@ PASS getComputedStyle(element)['page-break-after'] is "auto"
 -webkit-column-break-before:always
 PASS getComputedStyle(element)['break-before'] is "column"
 PASS getComputedStyle(element)['-webkit-column-break-before'] is "always"
-PASS getComputedStyle(element)['page-break-before'] is "auto"
+PASS getComputedStyle(element)['page-break-before'] is ""
 -webkit-column-break-before:avoid
 PASS getComputedStyle(element)['break-before'] is "avoid"
 PASS getComputedStyle(element)['-webkit-column-break-before'] is "avoid"
@@ -140,7 +140,7 @@ PASS getComputedStyle(element)['-webkit-column-break-before'] is "auto"
 PASS getComputedStyle(element)['page-break-before'] is "auto"
 page-break-after:always
 PASS getComputedStyle(element)['break-after'] is "page"
-PASS getComputedStyle(element)['-webkit-column-break-after'] is "auto"
+PASS getComputedStyle(element)['-webkit-column-break-after'] is ""
 PASS getComputedStyle(element)['page-break-after'] is "always"
 page-break-after:avoid
 PASS getComputedStyle(element)['break-after'] is "avoid"
@@ -148,11 +148,11 @@ PASS getComputedStyle(element)['-webkit-column-break-after'] is "avoid"
 PASS getComputedStyle(element)['page-break-after'] is "avoid"
 page-break-after:left
 PASS getComputedStyle(element)['break-after'] is "left"
-PASS getComputedStyle(element)['-webkit-column-break-after'] is "auto"
+PASS getComputedStyle(element)['-webkit-column-break-after'] is ""
 PASS getComputedStyle(element)['page-break-after'] is "left"
 page-break-after:right
 PASS getComputedStyle(element)['break-after'] is "right"
-PASS getComputedStyle(element)['-webkit-column-break-after'] is "auto"
+PASS getComputedStyle(element)['-webkit-column-break-after'] is ""
 PASS getComputedStyle(element)['page-break-after'] is "right"
 page-break-after:verso
 PASS getComputedStyle(element)['break-after'] is "auto"
@@ -160,7 +160,7 @@ PASS getComputedStyle(element)['-webkit-column-break-after'] is "auto"
 PASS getComputedStyle(element)['page-break-after'] is "auto"
 page-break-before:always
 PASS getComputedStyle(element)['break-before'] is "page"
-PASS getComputedStyle(element)['-webkit-column-break-before'] is "auto"
+PASS getComputedStyle(element)['-webkit-column-break-before'] is ""
 PASS getComputedStyle(element)['page-break-before'] is "always"
 page-break-before:avoid
 PASS getComputedStyle(element)['break-before'] is "avoid"
@@ -168,11 +168,11 @@ PASS getComputedStyle(element)['-webkit-column-break-before'] is "avoid"
 PASS getComputedStyle(element)['page-break-before'] is "avoid"
 page-break-before:left
 PASS getComputedStyle(element)['break-before'] is "left"
-PASS getComputedStyle(element)['-webkit-column-break-before'] is "auto"
+PASS getComputedStyle(element)['-webkit-column-break-before'] is ""
 PASS getComputedStyle(element)['page-break-before'] is "left"
 page-break-before:right
 PASS getComputedStyle(element)['break-before'] is "right"
-PASS getComputedStyle(element)['-webkit-column-break-before'] is "auto"
+PASS getComputedStyle(element)['-webkit-column-break-before'] is ""
 PASS getComputedStyle(element)['page-break-before'] is "right"
 page-break-before:verso
 PASS getComputedStyle(element)['break-before'] is "auto"

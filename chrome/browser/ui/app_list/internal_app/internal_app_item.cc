@@ -6,22 +6,14 @@
 
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "base/metrics/histogram_macros.h"
-#include "chrome/browser/ui/app_list/app_context_menu.h"
+#include "chrome/browser/apps/app_service/app_service_metrics.h"
 #include "chrome/browser/ui/app_list/app_list_model_updater.h"
+#include "chrome/browser/ui/app_list/internal_app/internal_app_context_menu.h"
 #include "chrome/browser/ui/app_list/internal_app/internal_app_metadata.h"
 #include "ui/base/l10n/l10n_util.h"
 
 // static
 const char InternalAppItem::kItemType[] = "InternalAppItem";
-
-// TODO(crbug.com/826982): move UMA_HISTOGRAM_ENUMERATION code to
-// built_in_chromeos_apps.cc when the AppService feature is enabled by default.
-
-// static
-void InternalAppItem::RecordActiveHistogram(const std::string& app_id) {
-  app_list::InternalAppName name = app_list::GetInternalAppNameByAppId(app_id);
-  UMA_HISTOGRAM_ENUMERATION("Apps.AppListInternalApp.Activate", name);
-}
 
 InternalAppItem::InternalAppItem(
     Profile* profile,
@@ -31,7 +23,7 @@ InternalAppItem::InternalAppItem(
     : ChromeAppListItem(profile, internal_app.app_id) {
   SetIcon(app_list::GetIconForResourceId(
       internal_app.icon_resource_id,
-      app_list::AppListConfig::instance().grid_icon_dimension()));
+      ash::AppListConfig::instance().grid_icon_dimension()));
   SetName(l10n_util::GetStringUTF8(internal_app.name_string_resource_id));
   if (sync_item && sync_item->item_ordinal.IsValid())
     UpdateFromSync(sync_item);
@@ -49,14 +41,14 @@ const char* InternalAppItem::GetItemType() const {
 }
 
 void InternalAppItem::Activate(int event_flags) {
-  RecordActiveHistogram(id());
+  apps::RecordAppLaunch(id(), apps::mojom::LaunchSource::kFromAppListGrid);
   app_list::OpenInternalApp(id(), profile(), event_flags);
 }
 
 void InternalAppItem::GetContextMenuModel(GetMenuModelCallback callback) {
   if (!context_menu_) {
-    context_menu_ = std::make_unique<app_list::AppContextMenu>(
-        nullptr, profile(), id(), GetController());
+    context_menu_ = std::make_unique<InternalAppContextMenu>(profile(), id(),
+                                                             GetController());
   }
   context_menu_->GetMenuModel(std::move(callback));
 }

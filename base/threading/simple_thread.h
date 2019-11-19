@@ -81,12 +81,12 @@ class BASE_EXPORT SimpleThread : public PlatformThread::Delegate {
     bool joinable = true;
   };
 
-  // Create a SimpleThread.  |options| should be used to manage any specific
+  // Creates a SimpleThread. |options| should be used to manage any specific
   // configuration involving the thread creation and management.
-  // Every thread has a name, in the form of |name_prefix|/TID, for example
-  // "my_thread/321".  The thread will not be created until Start() is called.
-  explicit SimpleThread(const std::string& name_prefix);
-  SimpleThread(const std::string& name_prefix, const Options& options);
+  // Every thread has a name, which is a display string to identify the thread.
+  // The thread will not be created until Start() is called.
+  explicit SimpleThread(const std::string& name);
+  SimpleThread(const std::string& name, const Options& options);
 
   ~SimpleThread() override;
 
@@ -140,8 +140,7 @@ class BASE_EXPORT SimpleThread : public PlatformThread::Delegate {
   // has been initialized before this is called.
   virtual void BeforeJoin() {}
 
-  const std::string name_prefix_;
-  std::string name_;
+  const std::string name_;
   const Options options_;
   PlatformThreadHandle thread_;  // PlatformThread handle, reset after Join.
   WaitableEvent event_;          // Signaled if Start() was ever called.

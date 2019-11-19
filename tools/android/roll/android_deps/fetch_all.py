@@ -29,6 +29,8 @@ state if you're not satisfied with the results of --update-all. Note that
 this preserves local modifications to your build.gradle file.
 """
 
+from __future__ import print_function
+
 import argparse
 import collections
 import contextlib
@@ -61,9 +63,6 @@ _ANDROID_DEPS_ADDITIONAL_README_PATHS = (
 # Location of the android_deps libs directory from a root checkout.
 _ANDROID_DEPS_LIBS_SUBDIR = _ANDROID_DEPS_SUBDIR + '/libs'
 
-# Location of the build.gradle file used to configure our dependencies.
-_BUILD_GRADLE_PATH = 'tools/android/roll/android_deps/build.gradle'
-
 # Location of the buildSrc directory used implement our gradle task.
 _GRADLE_BUILDSRC_PATH = 'tools/android/roll/android_deps/buildSrc'
 
@@ -72,14 +71,6 @@ _UPDATED_GIT_FILES = [
   'DEPS',
   _ANDROID_DEPS_BUILD_GN,
   _ANDROID_DEPS_ADDITIONAL_README_PATHS,
-]
-
-# The list of files and dirs that are copied to the build directory by this
-# script. Should not include _UPDATED_GIT_FILES.
-_COPIED_PATHS = [
-  _ANDROID_DEPS_LICENSE_SUBDIR,
-  _BUILD_GRADLE_PATH,
-  _GRADLE_BUILDSRC_PATH,
 ]
 
 # If this file exists in an aar file then it is appended to LICENSE
@@ -127,7 +118,7 @@ def RaiseCommandException(args, returncode, output, error):
   raise Exception(message)
 
 
-def RunCommand(args):
+def RunCommand(args, print_stdout=False):
   """Run a new shell command.
 
   This function runs without printing anything.
@@ -139,7 +130,8 @@ def RunCommand(args):
     return status, and standard output + error merged in a single message.
   """
   logging.debug('Run %s', args)
-  p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  stdout = None if print_stdout else subprocess.PIPE
+  p = subprocess.Popen(args, stdout=stdout)
   pout, _ = p.communicate()
   if p.returncode != 0:
     RaiseCommandException(args, p.returncode, None, pout)
@@ -274,7 +266,7 @@ def GetCipdPackageInfo(cipd_yaml_path):
   return (package_name, package_tag)
 
 
-def ParseDeps(root_dir):
+def ParseDeps(root_dir, libs_dir):
   """Parse an android_deps/libs and retrieve package information.
 
   Args:
@@ -286,8 +278,7 @@ def ParseDeps(root_dir):
     and |package_name| and |package_tag| are the extracted from it.
   """
   result = {}
-  libs_dir = os.path.abspath(os.path.join(
-      root_dir, _ANDROID_DEPS_LIBS_SUBDIR))
+  libs_dir = os.path.abspath(os.path.join(root_dir, libs_dir))
   for cipd_file in FindInDirectory(libs_dir, 'cipd.yaml'):
     pkg_name, pkg_tag = GetCipdPackageInfo(cipd_file)
     cipd_path = os.path.dirname(cipd_file)
@@ -304,8 +295,8 @@ def PrintPackageList(packages, list_name):
     packages: list of package names.
     list_name: a simple word describing the package list (e.g. 'new')
   """
-  print '  %d %s packages:' % (len(packages), list_name)
-  print '\n'.join(['    - %s' % p for p in packages])
+  print('  %d %s packages:' % (len(packages), list_name))
+  print('\n'.join(['    - %s' % p for p in packages]))
 
 
 def GenerateCipdUploadCommand(cipd_pkg_info):
@@ -335,6 +326,16 @@ def main():
       help='Path to Chromium source tree (auto-detect by default).')
   parser.add_argument('--gradle-wrapper',
       help='Path to custom gradle wrapper (auto-detect by default).')
+  parser.add_argument(
+      '--build-gradle',
+      help='Path to build.gradle relative to src/.',
+      default='tools/android/roll/android_deps/build.gradle')
+  parser.add_argument(
+      '--git-dir', help='Path to git subdir from chromium-dir.', default='.')
+  parser.add_argument(
+      '--ignore-licenses',
+      help='Ignores licenses for these deps.',
+      action='store_true')
   parser.add_argument('--update-all', action='store_true',
       help='Update current checkout in case of build.gradle changes.'
       'This will also print a list of commands to upload new and updated '
@@ -342,14 +343,9 @@ def main():
   parser.add_argument('--reset-workspace', action='store_true',
       help='Reset your Chromium workspace to its HEAD state, but preserves '
       'build.gradle changes. Use this to undo previous --update-all changes.')
-  parser.add_argument('--log-level', help='Set log level (e.g. \'info\' or '
-                      '\'debug\')')
+  parser.add_argument(
+      '--debug', action='store_true', help='Enable debug logging')
   args = parser.parse_args()
-
-  logging.basicConfig(format='%(message)s')
-  logger = logging.getLogger()
-  if args.log_level:
-    logger.setLevel(args.log_level.upper())
 
   # Determine Chromium source tree.
   chromium_src = args.chromium_dir
@@ -357,34 +353,58 @@ def main():
     # Assume this script is stored under tools/android/roll/android_deps/
     chromium_src = _CHROMIUM_SRC
 
+  chromium_src = os.path.abspath(chromium_src)
+
+  abs_git_dir = os.path.normpath(os.path.join(chromium_src, args.git_dir))
+
   if not os.path.isdir(chromium_src):
     raise Exception('Not a directory: ' + chromium_src)
+  if not os.path.isdir(abs_git_dir):
+    raise Exception('Not a directory: ' + abs_git_dir)
 
-  chromium_src = os.path.abspath(chromium_src)
+  # The list of files and dirs that are copied to the build directory by this
+  # script. Should not include _UPDATED_GIT_FILES.
+  copied_paths = {
+      args.build_gradle:
+          args.build_gradle,
+      _GRADLE_BUILDSRC_PATH:
+          os.path.join(os.path.dirname(args.build_gradle), "buildSrc"),
+  }
+
+  if not args.ignore_licenses:
+    copied_paths[_ANDROID_DEPS_LICENSE_SUBDIR] = _ANDROID_DEPS_LICENSE_SUBDIR
+
+  logging.basicConfig(format='%(message)s')
+  logger = logging.getLogger()
+  if args.debug:
+    logger.setLevel('DEBUG')
 
   # Handle --reset-workspace here.
   if args.reset_workspace:
-    print '# Removing .cipd directory.'
+    print('# Removing .cipd directory.')
     cipd_dir = os.path.join(chromium_src, '..', '.cipd')
     if os.path.isdir(cipd_dir):
       RunCommand(['rm', '-rf', cipd_dir])
 
-    print '# Saving build.gradle content'
-    build_gradle_path = os.path.join(chromium_src, _BUILD_GRADLE_PATH)
+    print('# Saving build.gradle content')
+    build_gradle_path = os.path.join(chromium_src, args.build_gradle)
     build_gradle = ReadFile(build_gradle_path)
 
-    print '# Resetting and re-syncing workspace. (may take a while).'
-    RunCommand(['gclient', 'sync', '--reset', '--nohooks', '-r', 'src@HEAD'])
+    print('# Resetting and re-syncing workspace. (may take a while).')
+    RunCommand(['gclient', 'sync', '--reset', '--nohooks', '-r', 'src@HEAD'],
+               print_stdout=args.debug)
 
-    print '# Restoring build.gradle.'
+    print('# Restoring build.gradle.')
     WriteFile(build_gradle_path, build_gradle)
     return
 
   missing_files = []
-  for src_path in _UPDATED_GIT_FILES + _COPIED_PATHS:
+  for src_path in copied_paths.keys():
     if not os.path.exists(os.path.join(chromium_src, src_path)):
       missing_files.append(src_path)
-
+  for src_path in _UPDATED_GIT_FILES:
+    if not os.path.exists(os.path.join(abs_git_dir, src_path)):
+      missing_files.append(src_path)
   if missing_files:
     raise Exception('Missing files from %s: %s' % (chromium_src, missing_files))
 
@@ -398,35 +418,42 @@ def main():
     raise Exception('Missing required python script: ' + aar_py)
 
   with BuildDir(args.build_dir) as build_dir:
-    print '# Setup build directory.'
+    print('# Setup build directory.')
     logging.debug('Using build directory: ' + build_dir)
     for git_file in _UPDATED_GIT_FILES:
-      git_data = ReadGitHeadFile(chromium_src, git_file)
-      WriteFile(os.path.join(build_dir, git_file), git_data)
+      git_data = ReadGitHeadFile(abs_git_dir, git_file)
+      WriteFile(os.path.join(build_dir, args.git_dir, git_file), git_data)
 
-    for path in _COPIED_PATHS:
-      CopyFileOrDirectory(os.path.join(chromium_src, path),
-                          os.path.join(build_dir, path))
+    for path, dest in copied_paths.iteritems():
+      CopyFileOrDirectory(
+          os.path.join(chromium_src, path), os.path.join(build_dir, dest))
 
-    print '# Use Gradle to download packages and edit/create relevant files.'
+    print('# Use Gradle to download packages and edit/create relevant files.')
     # This gradle command generates the new DEPS and BUILD.gn files, it can also
     # handle special cases. Edit BuildConfigGenerator.groovy#addSpecialTreatment
     # for such cases.
     gradle_cmd = [
         gradle_wrapper_path,
-        '-b', os.path.join(build_dir, _BUILD_GRADLE_PATH),
+        '-b',
+        os.path.join(build_dir, args.build_gradle),
         'setupRepository',
         '--stacktrace',
     ]
-    RunCommand(gradle_cmd)
+    if args.debug:
+      gradle_cmd.append('--debug')
 
-    libs_dir = os.path.join(build_dir, _ANDROID_DEPS_LIBS_SUBDIR)
+    RunCommand(gradle_cmd, print_stdout=args.debug)
 
-    print '# Reformat %s.' % _ANDROID_DEPS_BUILD_GN
-    gn_args = ['gn', 'format', os.path.join(build_dir, _ANDROID_DEPS_BUILD_GN)]
-    RunCommand(gn_args)
+    libs_dir = os.path.join(build_dir, args.git_dir, _ANDROID_DEPS_LIBS_SUBDIR)
 
-    print '# Generate Android .aar info and third-party license files.'
+    print('# Reformat %s.' % _ANDROID_DEPS_BUILD_GN)
+    gn_args = [
+        'gn', 'format',
+        os.path.join(build_dir, args.git_dir, _ANDROID_DEPS_BUILD_GN)
+    ]
+    RunCommand(gn_args, print_stdout=args.debug)
+
+    print('# Generate Android .aar info and third-party license files.')
     aar_files = FindInDirectory(libs_dir, '*.aar')
     for aar_file in aar_files:
       aar_dirname = os.path.dirname(aar_file)
@@ -435,17 +462,19 @@ def main():
       if not os.path.exists(aar_info_path):
         logging.info('- %s' % aar_info_name)
         RunCommand([aar_py, 'list', aar_file, '--output', aar_info_path])
-      with zipfile.ZipFile(aar_file) as z:
-        if _THIRD_PARTY_LICENSE_FILENAME in z.namelist():
-          license_path = os.path.join(aar_dirname, 'LICENSE')
-          # Make sure to append as we don't want to lose the existing license.
-          with open(license_path, 'a') as f:
-            f.write(z.read(_THIRD_PARTY_LICENSE_FILENAME))
+      if not args.ignore_licenses:
+        with zipfile.ZipFile(aar_file) as z:
+          if _THIRD_PARTY_LICENSE_FILENAME in z.namelist():
+            license_path = os.path.join(aar_dirname, 'LICENSE')
+            # Make sure to append as we don't want to lose the existing license.
+            with open(license_path, 'a') as f:
+              f.write(z.read(_THIRD_PARTY_LICENSE_FILENAME))
 
 
-    print '# Compare CIPD packages.'
-    existing_packages = ParseDeps(chromium_src)
-    build_packages = ParseDeps(build_dir)
+    print('# Compare CIPD packages.')
+    existing_packages = ParseDeps(abs_git_dir, _ANDROID_DEPS_LIBS_SUBDIR)
+    build_packages = ParseDeps(
+        build_dir, os.path.join(args.git_dir, _ANDROID_DEPS_LIBS_SUBDIR))
 
     deleted_packages = []
     updated_packages = []
@@ -480,28 +509,29 @@ def main():
 
     if not args.update_all:
       if not (deleted_packages or new_packages or updated_packages):
-        print 'No changes detected. All good.'
+        print('No changes detected. All good.')
       else:
-        print 'Changes detected:'
+        print('Changes detected:')
         if new_packages:
           PrintPackageList(new_packages, 'new')
         if updated_packages:
           PrintPackageList(updated_packages, 'updated')
         if deleted_packages:
           PrintPackageList(deleted_packages, 'deleted')
-        print ''
-        print 'Run with --update-all to update your checkout!'
+        print('')
+        print('Run with --update-all to update your checkout!')
       return
 
     # Copy updated DEPS and BUILD.gn to build directory.
     update_cmds = []
     for updated_file in _UPDATED_GIT_FILES:
-      CopyFileOrDirectory(os.path.join(build_dir, updated_file),
-                          os.path.join(chromium_src, updated_file))
+      CopyFileOrDirectory(
+          os.path.join(build_dir, args.git_dir, updated_file),
+          os.path.join(abs_git_dir, updated_file))
 
     # Delete obsolete or updated package directories.
     for pkg in deleted_packages + updated_packages:
-      pkg_path = os.path.join(chromium_src, existing_packages[pkg].path)
+      pkg_path = os.path.join(abs_git_dir, existing_packages[pkg].path)
       DeleteDirectory(pkg_path)
 
     # Copy new and updated packages from build directory.
@@ -512,11 +542,11 @@ def main():
       CopyFileOrDirectory(src_pkg_path, dst_pkg_path)
 
     if cipd_packages_to_upload:
-      print 'Run the following to upload new and updated CIPD packages:'
-      print 'Note: Duplicate instances with the same tag will break the build.'
-      print '------------------------ cut here -----------------------------'
-      print '\n'.join(cipd_commands)
-      print '------------------------ cut here -----------------------------'
+      print('Run the following to upload new and updated CIPD packages:')
+      print('Note: Duplicate instances with the same tag will break the build.')
+      print('------------------------ cut here -----------------------------')
+      print('\n'.join(cipd_commands))
+      print('------------------------ cut here -----------------------------')
 
 
 if __name__ == "__main__":

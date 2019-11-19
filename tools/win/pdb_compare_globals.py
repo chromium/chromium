@@ -18,6 +18,8 @@ Typical output from ShowGlobals.exe is lines like these:
   1       1824    0       0       LcidToLocaleNameTable   chrome.dll.pdb
 """
 
+from __future__ import print_function
+
 import os
 import subprocess
 import sys
@@ -32,7 +34,7 @@ def LoadSymbols(pdb_name):
   elif extension in ['.txt']:
     lines = open(pdb_name).readlines()
   else:
-    print 'Unrecognized extension in %s' % pdb_name
+    print('Unrecognized extension in %s' % pdb_name)
     return result
   for line in lines:
     parts = line.split('\t')
@@ -45,17 +47,17 @@ def LoadSymbols(pdb_name):
 
 
 def ShowExtras(symbols_A, symbols_B, name_A, name_B):
-  print 'Symbols that are in %s but not in %s' % (name_A, name_B)
+  print('Symbols that are in %s but not in %s' % (name_A, name_B))
   for key in symbols_A:
     if not key in symbols_B:
       # Print all the numerical data, followed by the symbol name, separated by
       # tabs.
-      print '\t'.join(symbols_A[key] + [key])
-  print
+      print('\t'.join(symbols_A[key] + [key]))
+  print()
 
 
 def ShowDifferences(symbols_A, symbols_B, name_A, name_B):
-  print 'Symbols that are changed from %s to %s' % (name_A, name_B)
+  print('Symbols that are changed from %s to %s' % (name_A, name_B))
   for key in symbols_A:
     if key in symbols_B:
       value_a = symbols_A[key]
@@ -63,10 +65,10 @@ def ShowDifferences(symbols_A, symbols_B, name_A, name_B):
       if value_a != value_b:
         # Print the symbol name and then the two versions of the numerical data,
         # indented.
-        print '%s changed from/to:' % key
-        print '\t' + '\t'.join(value_a)
-        print '\t' + '\t'.join(value_b)
-  print
+        print('%s changed from/to:' % key)
+        print('\t' + '\t'.join(value_a))
+        print('\t' + '\t'.join(value_b))
+  print()
 
 
 def main():
@@ -74,14 +76,14 @@ def main():
   symbols_2 = LoadSymbols(sys.argv[2])
 
   if len(symbols_1) == 0:
-    print 'No data found in %s - fastlink?' % sys.argv[1]
+    print('No data found in %s - fastlink?' % sys.argv[1])
     return
   if len(symbols_2) == 0:
-    print 'No data found in %s - fastlink?' % sys.argv[2]
+    print('No data found in %s - fastlink?' % sys.argv[2])
     return
 
-  print ('%d interesting globals in %s, %d interesting globals in %s' %
-         (len(symbols_1), sys.argv[1], len(symbols_2), sys.argv[2]))
+  print('%d interesting globals in %s, %d interesting globals in %s' %
+        (len(symbols_1), sys.argv[1], len(symbols_2), sys.argv[2]))
 
   ShowExtras(symbols_1, symbols_2, sys.argv[1], sys.argv[2])
   ShowExtras(symbols_2, symbols_1, sys.argv[2], sys.argv[1])

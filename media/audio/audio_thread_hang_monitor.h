@@ -10,9 +10,12 @@
 #include <atomic>
 #include <memory>
 
+#include "base/callback_forward.h"
+#include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -48,10 +51,25 @@ class MEDIA_EXPORT AudioThreadHangMonitor final {
     kMaxValue = kRecovered
   };
 
+  enum class HangAction {
+    // Do nothing. (UMA logging is always done.)
+    kDoNothing,
+    // A crash dump will be collected the first time the thread is detected as
+    // hung (note that no actual crashing is involved).
+    kDump,
+    // Terminate the current process with exit code 0.
+    kTerminateCurrentProcess,
+    // Terminate the current process with exit code 1, which yields a crash
+    // dump.
+    kDumpAndTerminateCurrentProcess
+  };
+
   // |monitor_task_runner| may be set explicitly by tests only. Other callers
-  // should use the default.
+  // should use the default. If |hang_deadline| is not provided, or if it's
+  // zero, a default value is used.
   static Ptr Create(
-      bool dump_on_hang,
+      HangAction hang_action,
+      base::Optional<base::TimeDelta> hang_deadline,
       const base::TickClock* clock,
       scoped_refptr<base::SingleThreadTaskRunner> audio_thread_task_runner,
       scoped_refptr<base::SequencedTaskRunner> monitor_task_runner = nullptr);
@@ -62,6 +80,8 @@ class MEDIA_EXPORT AudioThreadHangMonitor final {
   bool IsAudioThreadHung() const;
 
  private:
+  friend class AudioThreadHangMonitorTest;
+
   class SharedAtomicFlag final
       : public base::RefCountedThreadSafe<SharedAtomicFlag> {
    public:
@@ -75,7 +95,8 @@ class MEDIA_EXPORT AudioThreadHangMonitor final {
   };
 
   AudioThreadHangMonitor(
-      bool dump_on_hang,
+      HangAction hang_action,
+      base::Optional<base::TimeDelta> hang_deadline,
       const base::TickClock* clock,
       scoped_refptr<base::SingleThreadTaskRunner> audio_thread_task_runner);
 
@@ -94,6 +115,16 @@ class MEDIA_EXPORT AudioThreadHangMonitor final {
   // LogHistogramThreadStatus logs |thread_status_| to a histogram.
   void LogHistogramThreadStatus();
 
+  // For tests. See below functions.
+  void SetHangActionCallbacksForTesting(
+      base::RepeatingClosure dump_callback,
+      base::RepeatingClosure terminate_process_callback);
+
+  // Thin wrapper functions that either executes the default or runs a callback
+  // set with SetHangActioncallbacksForTesting(), for testing purposes.
+  void DumpWithoutCrashing();
+  void TerminateCurrentProcess();
+
   const base::TickClock* const clock_;
 
   // This flag is set to false on the monitor sequence and then set to true on
@@ -103,9 +134,15 @@ class MEDIA_EXPORT AudioThreadHangMonitor final {
   // |audio_task_runner_| is the task runner of the audio thread.
   const scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner_;
 
-  // If |dump_on_hang_| is set, a crash dump will be collected the first time
-  // the thread is detected as hung (note that no actual crashing is involved).
-  const bool dump_on_hang_;
+  // Which action(s) to take when detected hung thread.
+  const HangAction hang_action_;
+
+  // At which interval to ping and see if the thread is running.
+  const base::TimeDelta ping_interval_;
+
+  // For testing. See DumpWithoutCrashing() and TerminateCurrentProcess().
+  base::RepeatingClosure dump_callback_;
+  base::RepeatingClosure terminate_process_callback_;
 
   std::atomic<ThreadStatus> audio_thread_status_ = {ThreadStatus::kStarted};
 

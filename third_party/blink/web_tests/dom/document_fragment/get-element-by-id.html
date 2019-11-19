@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html>
+<title>Tests that getElementById() API is exposed on DocumentFragment nodes</title>
 <head>
 <link rel="help" href="https://dom.spec.whatwg.org/#interface-nonelementparentnode">
-<script src="../../resources/js-test.js"></script>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
 </head>
 <body>
 <div id="notInFragment"></div>
 <div id="duplicateId1"></div>
 <script>
-description("Tests that getElementById() API is exposed on DocumentFragment nodes.");
-
 var fragment = new DocumentFragment();
 var div = document.createElement("div");
 div.id = "divID";
@@ -27,14 +27,15 @@ var h2 = document.createElement("h2");
 h2.id = "duplicateId2";
 div.appendChild(h2);
 
-shouldBe("fragment.getElementById('divID')", "div");
-shouldBe("fragment.getElementById('aID')", "a");
-shouldBeNull("fragment.getElementById('notInFragment')");
-shouldBeNull("fragment.getElementById('doesNotExist')");
+assert_equals(fragment.getElementById('divID'), div);
+assert_equals(fragment.getElementById('aID'), a);
+assert_equals(fragment.getElementById('notInFragment'), null);
+assert_equals(fragment.getElementById('doesNotExist'), null);
 
 // Duplicate ID cases.
-shouldBe("fragment.getElementById('duplicateId1')", "span"); // Should return the Element *inside* the DocumentFragment.
-shouldBe("fragment.getElementById('duplicateId2')", "h1"); // Should return the first matching Element in case of duplicate.
+assert_equals(fragment.getElementById('duplicateId1'), span); // Should return the Element *inside* the DocumentFragment.
+assert_equals(fragment.getElementById('duplicateId2'), h1); // Should return the first matching Element in case of duplicate.
+done();
 </script>
 </body>
 </html>

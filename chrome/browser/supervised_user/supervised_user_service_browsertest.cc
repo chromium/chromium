@@ -12,45 +12,35 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/supervised_user/logged_in_user_mixin.h"
 #include "chrome/browser/supervised_user/supervised_user_constants.h"
-#include "chrome/browser/supervised_user/supervised_user_service.h"
-#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_settings_service.h"
 #include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/common/chrome_switches.h"
 #include "chrome/common/net/safe_search_util.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/in_process_browser_test.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/test_utils.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 
-#if defined(OS_CHROMEOS)
-#include "chromeos/constants/chromeos_switches.h"
-#endif
-
-namespace {
-
-class SupervisedUserServiceTestSupervised : public InProcessBrowserTest {
- public:
-  // content::BrowserTestBase:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitchASCII(switches::kSupervisedUserId,
-                                    supervised_users::kChildAccountSUID);
-#if defined(OS_CHROMEOS)
-    command_line->AppendSwitchASCII(
-        chromeos::switches::kLoginUser,
-        "supervised_user@locally-managed.localhost");
-    command_line->AppendSwitchASCII(chromeos::switches::kLoginProfile, "hash");
-#endif
+class SupervisedUserServiceTestSupervised
+    : public MixinBasedInProcessBrowserTest {
+ protected:
+  void SetUpOnMainThread() override {
+    MixinBasedInProcessBrowserTest::SetUpOnMainThread();
+    logged_in_user_mixin_.SetUpOnMainThreadHelper(host_resolver(), this);
   }
+
+ private:
+  chromeos::LoggedInUserMixin logged_in_user_mixin_{
+      &mixin_host_, chromeos::LoggedInUserMixin::LogInType::kChild,
+      embedded_test_server()};
 };
 
-}  // namespace
-
-typedef InProcessBrowserTest SupervisedUserServiceTest;
+// unsupervised tests
+using SupervisedUserServiceTest = InProcessBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(SupervisedUserServiceTest, LocalPolicies) {
   Profile* profile = browser()->profile();
@@ -92,7 +82,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserServiceTestSupervised, ProfileName) {
   std::string original_name = prefs->GetString(prefs::kProfileName);
 
   SupervisedUserSettingsService* settings =
-      SupervisedUserSettingsServiceFactory::GetForProfile(profile);
+      SupervisedUserSettingsServiceFactory::GetForKey(profile->GetProfileKey());
 
   // Change the name. Both the profile pref and the entry in
   // ProfileAttributesStorage should be updated.

@@ -6,26 +6,28 @@
 #define CHROMEOS_SERVICES_MULTIDEVICE_SETUP_PRIVILEGED_HOST_DEVICE_SETTER_BASE_H_
 
 #include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
-#include "mojo/public/cpp/bindings/binding_set.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 
 namespace chromeos {
 
 namespace multidevice_setup {
 
-// PrivilegedHostDeviceSetter implementation which accepts requests to bind to
+// PrivilegedHostDeviceSetter implementation which accepts receivers to bind to
 // it.
 class PrivilegedHostDeviceSetterBase
     : public mojom::PrivilegedHostDeviceSetter {
  public:
   ~PrivilegedHostDeviceSetterBase() override;
 
-  void BindRequest(mojom::PrivilegedHostDeviceSetterRequest request);
+  void BindReceiver(
+      mojo::PendingReceiver<mojom::PrivilegedHostDeviceSetter> receiver);
 
  protected:
   PrivilegedHostDeviceSetterBase();
 
  private:
-  mojo::BindingSet<mojom::PrivilegedHostDeviceSetter> bindings_;
+  mojo::ReceiverSet<mojom::PrivilegedHostDeviceSetter> receivers_;
 
   DISALLOW_COPY_AND_ASSIGN(PrivilegedHostDeviceSetterBase);
 };

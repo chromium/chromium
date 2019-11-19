@@ -301,7 +301,7 @@ class PrinterJobHandler : public base::RefCountedThreadSafe<PrinterJobHandler>,
   base::Time job_start_time_;
   base::Time spooling_start_time_;
 
-  base::WeakPtrFactory<PrinterJobHandler> weak_ptr_factory_;
+  base::WeakPtrFactory<PrinterJobHandler> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PrinterJobHandler);
 };

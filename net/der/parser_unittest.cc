@@ -65,6 +65,92 @@ TEST(ParserTest, FailsIfLengthOverlapsAnotherTLV) {
   ASSERT_FALSE(inner_sequence.ReadTagAndValue(&tag, &value));
 }
 
+TEST(ParserTest, ReadOptionalTagPresent) {
+  // DER encoding of 2 top-level TLV values:
+  // INTEGER { 1 }
+  // OCTET_STRING { `02` }
+  const uint8_t der[] = {0x02, 0x01, 0x01, 0x04, 0x01, 0x02};
+  Parser parser((Input(der)));
+
+  Input value;
+  bool present;
+  ASSERT_TRUE(parser.ReadOptionalTag(kInteger, &value, &present));
+  ASSERT_TRUE(present);
+  const uint8_t expected_int_value[] = {0x01};
+  ASSERT_EQ(Input(expected_int_value), value);
+
+  Tag tag;
+  ASSERT_TRUE(parser.ReadTagAndValue(&tag, &value));
+  ASSERT_EQ(kOctetString, tag);
+  const uint8_t expected_octet_string_value[] = {0x02};
+  ASSERT_EQ(Input(expected_octet_string_value), value);
+
+  ASSERT_FALSE(parser.HasMore());
+}
+
+TEST(ParserTest, ReadOptionalTag2Present) {
+  // DER encoding of 2 top-level TLV values:
+  // INTEGER { 1 }
+  // OCTET_STRING { `02` }
+  const uint8_t der[] = {0x02, 0x01, 0x01, 0x04, 0x01, 0x02};
+  Parser parser((Input(der)));
+
+  base::Optional<Input> optional_value;
+  ASSERT_TRUE(parser.ReadOptionalTag(kInteger, &optional_value));
+  ASSERT_TRUE(optional_value.has_value());
+  const uint8_t expected_int_value[] = {0x01};
+  ASSERT_EQ(Input(expected_int_value), *optional_value);
+
+  Tag tag;
+  Input value;
+  ASSERT_TRUE(parser.ReadTagAndValue(&tag, &value));
+  ASSERT_EQ(kOctetString, tag);
+  const uint8_t expected_octet_string_value[] = {0x02};
+  ASSERT_EQ(Input(expected_octet_string_value), value);
+
+  ASSERT_FALSE(parser.HasMore());
+}
+
+TEST(ParserTest, ReadOptionalTagNotPresent) {
+  // DER encoding of 1 top-level TLV value:
+  // OCTET_STRING { `02` }
+  const uint8_t der[] = {0x04, 0x01, 0x02};
+  Parser parser((Input(der)));
+
+  Input value;
+  bool present;
+  ASSERT_TRUE(parser.ReadOptionalTag(kInteger, &value, &present));
+  ASSERT_FALSE(present);
+
+  Tag tag;
+  ASSERT_TRUE(parser.ReadTagAndValue(&tag, &value));
+  ASSERT_EQ(kOctetString, tag);
+  const uint8_t expected_octet_string_value[] = {0x02};
+  ASSERT_EQ(Input(expected_octet_string_value), value);
+
+  ASSERT_FALSE(parser.HasMore());
+}
+
+TEST(ParserTest, ReadOptionalTag2NotPresent) {
+  // DER encoding of 1 top-level TLV value:
+  // OCTET_STRING { `02` }
+  const uint8_t der[] = {0x04, 0x01, 0x02};
+  Parser parser((Input(der)));
+
+  base::Optional<Input> optional_value;
+  ASSERT_TRUE(parser.ReadOptionalTag(kInteger, &optional_value));
+  ASSERT_FALSE(optional_value.has_value());
+
+  Tag tag;
+  Input value;
+  ASSERT_TRUE(parser.ReadTagAndValue(&tag, &value));
+  ASSERT_EQ(kOctetString, tag);
+  const uint8_t expected_octet_string_value[] = {0x02};
+  ASSERT_EQ(Input(expected_octet_string_value), value);
+
+  ASSERT_FALSE(parser.HasMore());
+}
+
 TEST(ParserTest, CanSkipOptionalTagAtEndOfInput) {
   const uint8_t der[] = {0x02 /* INTEGER */, 0x01, 0x01};
   Parser parser((Input(der)));

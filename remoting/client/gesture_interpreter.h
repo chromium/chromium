@@ -119,7 +119,7 @@ class GestureInterpreter {
   FlingAnimation pan_animation_;
   FlingAnimation scroll_animation_;
 
-  base::WeakPtrFactory<GestureInterpreter> weak_factory_;
+  base::WeakPtrFactory<GestureInterpreter> weak_factory_{this};
 
   // GestureInterpreter is neither copyable nor movable.
   DISALLOW_COPY_AND_ASSIGN(GestureInterpreter);

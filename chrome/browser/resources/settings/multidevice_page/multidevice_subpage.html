@@ -1,10 +1,11 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
-<link rel="import" href="chrome://resources/cr_elements/chromeos/network/cr_network_listener_behavior.html">
+<link rel="import" href="chrome://resources/cr_components/chromeos/network/network_listener_behavior.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_link_row/cr_link_row.html">
+<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
 <link rel="import" href="chrome://resources/html/cr.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-button/paper-button.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-icon-button/paper-icon-button-light.html">
 <link rel="import" href="../i18n_setup.html">
 <link rel="import" href="../route.html">
 <link rel="import" href="../settings_shared_css.html">
@@ -28,11 +29,7 @@
       }
 
       #feature-items-container {
-        @apply --settings-list-frame-padding;
-      }
-
-      #forget-device-container {
-        border-top: var(--settings-separator-line);
+        padding-inline-start: var(--cr-section-indent-padding);
       }
     </style>
     <div class="settings-box first">
@@ -43,9 +40,9 @@
       </div>
         <template is="dom-if" if="[[shouldShowVerifyButton_(pageContentData)]]"
             restamp>
-          <paper-button on-click="handleVerifyButtonClick_">
+          <cr-button on-click="handleVerifyButtonClick_">
             $i18n{multideviceVerifyButton}
-          </paper-button>
+          </cr-button>
         </template>
         <template is="dom-if" if="[[shouldShowSuiteToggle_(pageContentData)]]"
             restamp>
@@ -87,32 +84,28 @@
             <template is="dom-if"
                 if="[[doesAndroidMessagesRequireSetUp_(pageContentData)]]"
                 restamp>
-              <paper-button disabled$="[[!isSuiteOn(pageContentData)]]"
+              <cr-button disabled$="[[isAndroidMessagesSetupButtonDisabled_(
+                                       pageContentData)]]"
                 on-click="handleAndroidMessagesButtonClick_"
                   slot="feature-controller">
                 $i18n{multideviceSetupButton}
-              </paper-button>
+              </cr-button>
             </template>
           </settings-multidevice-feature-item>
         </template>
       </div>
     </template>
-    <div id="forget-device-container">
-      <div id="forget-device"
-          class="settings-box two-line first"
-          on-click="handleForgetDeviceClick_"
-          actionable>
-        <div class="start">
-          $i18n{multideviceForgetDevice}
-          <div class="secondary" id="multideviceForgetDeviceSummary">
-            $i18n{multideviceForgetDeviceSummary}
-          </div>
+    <div class="settings-box two-line">
+        <div id="forget-device-label" class="start">
+            $i18n{multideviceForgetDevice}
+            <div class="secondary">
+                $i18n{multideviceForgetDeviceSummary}
+            </div>
         </div>
-        <paper-icon-button-light class="subpage-arrow">
-          <button aria-label="$i18n{multideviceForgetDevice}"
-              aria-describedby="multideviceForgetDeviceSummary"></button>
-        </paper-icon-button-light>
-      </div>
+        <cr-button on-click="handleForgetDeviceClick_"
+          aria-labelledby="forgetDeviceLabel">
+           $i18n{multideviceForgetDeviceDisconnect}
+        </cr-button>
     </div>
     <cr-dialog id="forgetDeviceDialog">
       <div slot="title">$i18n{multideviceForgetDevice}</div>
@@ -122,15 +115,15 @@
         </div>
       </div>
       <div slot="button-container">
-        <paper-button class="cancel-button"
+        <cr-button class="cancel-button"
             on-click="onForgetDeviceDialogCancelClick_">
           $i18n{cancel}
-        </paper-button>
-        <paper-button id="confirmButton"
+        </cr-button>
+        <cr-button id="confirmButton"
             class="action-button"
             on-click="onForgetDeviceDialogConfirmClick_">
-          $i18n{confirm}
-        </paper-button>
+          $i18n{multideviceForgetDeviceDisconnect}
+        </cr-button>
       </div>
     </cr-dialog>
   </template>

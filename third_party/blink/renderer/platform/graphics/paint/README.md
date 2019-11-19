@@ -1,26 +1,27 @@
+<!---
+  The live version of this document can be viewed at:
+  https://chromium.googlesource.com/chromium/src/+/master/third_party/blink/renderer/platform/graphics/paint/README.md
+-->
+
 # Platform paint code
 
 This directory contains the implementation of display lists and display
 list-based painting, except for code which requires knowledge of `core/`
 concepts, such as DOM elements and layout objects.
 
-This code is owned by the [paint team][paint-team-site].
+For information about how the display list and paint property trees are
+generated, see [the core paint README file](../../../core/paint/README.md).
 
-CompositeAfterPaint is currently being implemented. Unlike Slimming Paint v1,
-CompositeAfterPaint represents its paint artifact not as a flat display list,
-but as a list of drawings, and a list of paint chunks, stored together.
+This code is owned by the [rendering team](https://www.chromium.org/teams/rendering).
 
-This document explains the CompositeAfterPaint (CAP) world as it develops, not
-the SPv1 world it replaces.
-
-[paint-team-site]: https://www.chromium.org/teams/paint-team
+[TOC]
 
 ## Paint artifact
 
-The CAP [paint artifact](paint_artifact.h) consists of a list of display items
-in paint order (ideally mostly or all drawings), partitioned into *paint chunks*
-which define certain *paint properties* which affect how the content should be
-drawn or composited.
+The CompositeAfterPaint [paint artifact](paint_artifact.h) consists of a list of
+display items in paint order (ideally mostly or all drawings), partitioned into
+*paint chunks* which define certain *paint properties* which affect how the
+content should be drawn or composited.
 
 ## Paint properties
 
@@ -59,7 +60,7 @@ Each transform node has:
   rendering context ID should sort together
 * other fields, see [the header file](transform_paint_property_node.h)
 
-***promo
+*** note
 The painting system may create transform nodes which don't affect the position
 of points in the xy-plane, but which have an apparent effect only when
 multiplied with other transformation matrices. In particular, a transform node
@@ -222,7 +223,7 @@ previous paint artifact. It's the last step of painting.
 
 It's done in two levels:
 
-* Paint chunk level (`RasterInvalidator`](raster_invalidator.h): matches each
+* Paint chunk level [`RasterInvalidator`](raster_invalidator.h): matches each
   paint chunk in the current paint artifact against the corresponding paint
   chunk in the previous paint artifact, by matching their ids. There are
   following cases:
@@ -252,7 +253,7 @@ It's done in two levels:
 
     * Otherwise, check for changed display items within the paint chunk.
 
-* Display item level (`DisplayItemRasterInvalidator`](display_item_raster_invalidator.h]:
+* Display item level [`DisplayItemRasterInvalidator`](display_item_raster_invalidator.h):
   This is executed when a new chunk matches an old chunk in-order and paint
   properties didn't change. The algorithm checks changed display items within a
   paint chunk.

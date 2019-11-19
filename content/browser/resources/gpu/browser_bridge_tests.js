@@ -1,13 +1,13 @@
 // Copyright (c) 2012 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-var commandLineFlags = [
+const commandLineFlags = [
   '--flag-switches-begin', '--show-composited-layer-borders',
   '--flag-switches-end'
 ];
-var commandLineStr = './out/Debug/chrome ' + commandLineFlags.join(' ');
+const commandLineStr = './out/Debug/chrome ' + commandLineFlags.join(' ');
 
-var glValueArray = [
+const glValueArray = [
   'GL_ARB_compatibility',
   'GL_ARB_copy_buffer',
   'GL_ARB_depth_buffer_float',
@@ -187,7 +187,7 @@ var glValueArray = [
   'GL_SUN_slice_accum'
 ];
 (function() {
-var dataSets = [
+const dataSets = [
   {
     name: 'full_data_linux',
     gpuInfo: {
@@ -268,9 +268,9 @@ var dataSets = [
 
 ];
 
-var selectEl = document.createElement('select');
-for (var i = 0; i < dataSets.length; ++i) {
-  var optionEl = document.createElement('option');
+const selectEl = document.createElement('select');
+for (let i = 0; i < dataSets.length; ++i) {
+  const optionEl = document.createElement('option');
   optionEl.textContent = dataSets[i].name;
   optionEl.dataSet = dataSets[i];
   selectEl.add(optionEl);
@@ -284,8 +284,8 @@ selectEl.addEventListener('keydown', function() {
   }, 0);
 });
 
-var controlEl = document.createElement('div');
-var textEl = document.createElement('span');
+const controlEl = document.createElement('div');
+const textEl = document.createElement('span');
 textEl.textContent = 'GPU Info:';
 controlEl.appendChild(textEl);
 controlEl.appendChild(selectEl);

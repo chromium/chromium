@@ -13,13 +13,14 @@
 #include "base/strings/stringprintf.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/resource_type.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/http/http_util.h"
 #include "net/url_request/redirect_util.h"
 #include "services/network/loader_util.h"
+#include "services/network/public/cpp/content_security_policy.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/resource_request_body.h"
-#include "services/network/public/cpp/resource_response.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
 #include "ui/base/page_transition_types.h"
 
@@ -52,7 +53,7 @@ void ServiceWorkerLoaderHelpers::SaveResponseHeaders(
     const int status_code,
     const std::string& status_text,
     const base::flat_map<std::string, std::string>& headers,
-    network::ResourceResponseHead* out_head) {
+    network::mojom::URLResponseHead* out_head) {
   // Build a string instead of using HttpResponseHeaders::AddHeader on
   // each header, since AddHeader has O(n^2) performance.
   std::string buf(base::StringPrintf("HTTP/1.1 %d %s\r\n", status_code,
@@ -65,8 +66,8 @@ void ServiceWorkerLoaderHelpers::SaveResponseHeaders(
   }
   buf.append("\r\n");
 
-  out_head->headers = new net::HttpResponseHeaders(
-      net::HttpUtil::AssembleRawHeaders(buf.c_str(), buf.size()));
+  out_head->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
+      net::HttpUtil::AssembleRawHeaders(buf));
 
   // Populate |out_head|'s MIME type with the value from the HTTP response
   // headers.
@@ -93,7 +94,7 @@ void ServiceWorkerLoaderHelpers::SaveResponseHeaders(
 // static
 void ServiceWorkerLoaderHelpers::SaveResponseInfo(
     const blink::mojom::FetchAPIResponse& response,
-    network::ResourceResponseHead* out_head) {
+    network::mojom::URLResponseHead* out_head) {
   out_head->was_fetched_via_service_worker = true;
   out_head->was_fallback_required_by_service_worker = false;
   out_head->url_list_via_service_worker = response.url_list;
@@ -108,13 +109,15 @@ void ServiceWorkerLoaderHelpers::SaveResponseInfo(
     out_head->cache_storage_cache_name.clear();
   out_head->cors_exposed_header_names = response.cors_exposed_header_names;
   out_head->did_service_worker_navigation_preload = false;
+  out_head->content_security_policy =
+      network::ContentSecurityPolicy(response.content_security_policy.Clone());
 }
 
 // static
 base::Optional<net::RedirectInfo>
 ServiceWorkerLoaderHelpers::ComputeRedirectInfo(
     const network::ResourceRequest& original_request,
-    const network::ResourceResponseHead& response_head) {
+    const network::mojom::URLResponseHead& response_head) {
   std::string new_location;
   if (!response_head.headers->IsRedirect(&new_location))
     return base::nullopt;
@@ -122,14 +125,15 @@ ServiceWorkerLoaderHelpers::ComputeRedirectInfo(
   // If the request is a MAIN_FRAME request, the first-party URL gets
   // updated on redirects.
   const net::URLRequest::FirstPartyURLPolicy first_party_url_policy =
-      original_request.resource_type == RESOURCE_TYPE_MAIN_FRAME
+      original_request.resource_type ==
+              static_cast<int>(ResourceType::kMainFrame)
           ? net::URLRequest::UPDATE_FIRST_PARTY_URL_ON_REDIRECT
           : net::URLRequest::NEVER_CHANGE_FIRST_PARTY_URL;
   return net::RedirectInfo::ComputeRedirectInfo(
       original_request.method, original_request.url,
-      original_request.site_for_cookies, original_request.top_frame_origin,
+      original_request.request_initiator, original_request.site_for_cookies,
       first_party_url_policy, original_request.referrer_policy,
-      network::ComputeReferrer(original_request.referrer),
+      original_request.referrer.GetAsReferrer().spec(),
       response_head.headers->response_code(),
       original_request.url.Resolve(new_location),
       net::RedirectUtil::GetReferrerPolicyHeader(response_head.headers.get()),
@@ -137,7 +141,7 @@ ServiceWorkerLoaderHelpers::ComputeRedirectInfo(
 }
 
 int ServiceWorkerLoaderHelpers::ReadBlobResponseBody(
-    blink::mojom::BlobPtr* blob,
+    mojo::Remote<blink::mojom::Blob>* blob,
     uint64_t blob_size,
     base::OnceCallback<void(int)> on_blob_read_complete,
     mojo::ScopedDataPipeConsumerHandle* handle_out) {
@@ -152,10 +156,10 @@ int ServiceWorkerLoaderHelpers::ReadBlobResponseBody(
   if (rv != MOJO_RESULT_OK)
     return net::ERR_FAILED;
 
-  blink::mojom::BlobReaderClientPtr blob_reader_client;
-  mojo::MakeStrongBinding(
+  mojo::PendingRemote<blink::mojom::BlobReaderClient> blob_reader_client;
+  mojo::MakeSelfOwnedReceiver(
       std::make_unique<BlobCompleteCaller>(std::move(on_blob_read_complete)),
-      mojo::MakeRequest(&blob_reader_client));
+      blob_reader_client.InitWithNewPipeAndPassReceiver());
 
   (*blob)->ReadAll(std::move(producer_handle), std::move(blob_reader_client));
   return net::OK;

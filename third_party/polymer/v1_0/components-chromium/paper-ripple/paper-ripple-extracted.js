@@ -79,6 +79,22 @@ Polymer({
     this.debounce('show ripple', function() { this.__showRipple(e); }, 1);
   },
 
+  clear: function() {
+    this.__hideRipple();
+    this.holdDown = false;
+  },
+
+  showAndHoldDown: function() {
+    if (this.holdDown) {
+      return;
+    }
+    this.ripples.forEach(ripple => {
+      ripple.remove();
+    });
+    this.ripples = [];
+    this.holdDown = true;
+  },
+
   /**
    * @param {Event=} e
    * @private

@@ -1,0 +1,85 @@
+// Copyright 2016 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module gfx.mojom;
+
+// Mojo equivalent of ui::gfx::ColorSpace. See ui/gfx/color_space.h for
+// additional documentation.
+
+enum ColorSpacePrimaryID {
+  INVALID,
+  BT709,
+  BT470M,
+  BT470BG,
+  SMPTE170M,
+  SMPTE240M,
+  FILM,
+  BT2020,
+  SMPTEST428_1,
+  SMPTEST431_2,
+  SMPTEST432_1,
+  XYZ_D50,
+  ADOBE_RGB,
+  APPLE_GENERIC_RGB,
+  WIDE_GAMUT_COLOR_SPIN,
+  CUSTOM
+};
+
+enum ColorSpaceTransferID {
+  INVALID,
+  BT709,
+  BT709_APPLE,
+  GAMMA18,
+  GAMMA22,
+  GAMMA24,
+  GAMMA28,
+  SMPTE170M,
+  SMPTE240M,
+  LINEAR,
+  LOG,
+  LOG_SQRT,
+  IEC61966_2_4,
+  BT1361_ECG,
+  IEC61966_2_1,
+  BT2020_10,
+  BT2020_12,
+  SMPTEST2084,
+  SMPTEST428_1,
+  ARIB_STD_B67,
+  SMPTEST2084_NON_HDR,
+  IEC61966_2_1_HDR,
+  LINEAR_HDR,
+  CUSTOM
+};
+
+enum ColorSpaceMatrixID {
+  INVALID,
+  RGB,
+  BT709,
+  FCC,
+  BT470BG,
+  SMPTE170M,
+  SMPTE240M,
+  YCOCG,
+  BT2020_NCL,
+  BT2020_CL,
+  YDZDX,
+  GBR
+};
+
+enum ColorSpaceRangeID {
+  INVALID,
+  LIMITED,
+  FULL,
+  DERIVED
+};
+
+struct ColorSpace {
+  ColorSpacePrimaryID primaries;
+  ColorSpaceTransferID transfer;
+  ColorSpaceMatrixID matrix;
+  ColorSpaceRangeID range;
+  array<float, 9> custom_primary_matrix;
+  array<float, 7> custom_transfer_params;
+};

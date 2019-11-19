@@ -52,8 +52,8 @@ class AndroidSmsAppInstallingStatusObserver
   void OnFeatureStatesChange(
       const FeatureStateManager::FeatureStatesMap& feature_states_map) override;
 
-  bool IsPwaNeeded();
-  void InstallPwaIfNeeded();
+  bool DoesFeatureStateAllowInstallation();
+  void UpdatePwaInstallationState();
 
   HostStatusProvider* host_status_provider_;
   FeatureStateManager* feature_state_manager_;

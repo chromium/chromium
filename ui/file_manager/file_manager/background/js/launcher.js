@@ -42,9 +42,7 @@ const FILE_MANAGER_WINDOW_CREATE_OPTIONS = {
     width: Math.min(Math.round(window.screen.availWidth * 0.8), 1000),
     height: Math.min(Math.round(window.screen.availHeight * 0.8), 600)
   },
-  frame: {
-    color: '#254fae'
-  },
+  frame: {color: '#254fae'},
   minWidth: 480,
   minHeight: 300
 };
@@ -94,12 +92,12 @@ launcher.launchFileManager = (opt_appState, opt_id, opt_type, opt_callback) => {
           }
           // Different current directories.
           if (opt_appState.currentDirectoryURL !==
-                  contentWindow.appState.currentDirectoryURL) {
+              contentWindow.appState.currentDirectoryURL) {
             continue;
           }
           // Selection URL specified, and it is different.
           if (opt_appState.selectionURL &&
-                  opt_appState.selectionURL !==
+              opt_appState.selectionURL !==
                   contentWindow.appState.selectionURL) {
             continue;
           }
@@ -173,9 +171,7 @@ launcher.launchFileManager = (opt_appState, opt_id, opt_type, opt_callback) => {
     const appId = FILES_ID_PREFIX + id;
 
     const appWindow = new AppWindowWrapper(
-        'main.html',
-        appId,
-        FILE_MANAGER_WINDOW_CREATE_OPTIONS);
+        'main.html', appId, FILE_MANAGER_WINDOW_CREATE_OPTIONS);
     appWindow.launch(opt_appState || {}, false, () => {
       appWindow.rawAppWindow.focus();
       if (opt_callback) {

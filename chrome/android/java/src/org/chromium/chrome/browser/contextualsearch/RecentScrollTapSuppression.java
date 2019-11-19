@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.contextualsearch;
 
 import org.chromium.base.TimeUtils;
+import org.chromium.chrome.browser.contextualsearch.ContextualSearchFieldTrial.ContextualSearchSetting;
 
 /**
  * Heuristic for Tap suppression after a recent scroll action.
@@ -32,7 +33,8 @@ public class RecentScrollTapSuppression extends ContextualSearchHeuristic {
         } else {
             mDurationSinceRecentScrollMs = 0;
         }
-        int experimentThreshold = ContextualSearchFieldTrial.getRecentScrollDurationMs();
+        int experimentThreshold = ContextualSearchFieldTrial.getValue(
+                ContextualSearchSetting.RECENT_SCROLL_DURATION_MS);
         mRecentScrollDurationThreshold = experimentThreshold > 0
                 ? experimentThreshold
                 : DEFAULT_RECENT_SCROLL_SUPPRESSION_DURATION_MS;

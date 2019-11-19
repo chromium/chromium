@@ -62,6 +62,9 @@ void ExpectBypassLocalhost(
     "127.0.0.1",
     "127.100.0.2",
     "[::1]",
+    "[::0:FFFF:127.0.0.1]",
+    "[::fFfF:127.100.0.0]",
+    "[0::ffff:7f00:1]",
 #if defined(BYPASS_LOOPBACK)
     "loopback",
     "loopback.",
@@ -74,7 +77,8 @@ void ExpectBypassLocalhost(
 // Tests calling |rules.Matches()| for link-local URLs returns |bypasses|.
 void ExpectBypassLinkLocal(const ProxyBypassRules& rules, bool bypasses) {
   const char* kHosts[] = {
-      "169.254.3.2", "169.254.100.1", "[FE80::8]", "[fe91::1]",
+      "169.254.3.2", "169.254.100.1",        "[FE80::8]",
+      "[fe91::1]",   "[::ffff:169.254.3.2]",
   };
 
   ExpectRulesMatch(rules, kHosts, base::size(kHosts), bypasses, {});
@@ -94,6 +98,11 @@ void ExpectBypassMisc(
     "[FD80::1]",
     "foo",
     "www.example3.com",
+    "[::ffff:128.0.0.1]",
+    "[::ffff:126.100.0.0]",
+    "[::ffff::ffff:127.0.0.1]",
+    "[::ffff:0:127.0.0.1]",
+    "[::127.0.0.1]",
 #if !defined(BYPASS_LOOPBACK)
     "loopback",
     "loopback.",
@@ -379,6 +388,7 @@ TEST(ProxyBypassRulesTest, ParseAndMatchCIDR_IPv4) {
   EXPECT_TRUE(rules.Matches(GURL("http://192.168.1.1")));
   EXPECT_TRUE(rules.Matches(GURL("ftp://192.168.4.4")));
   EXPECT_TRUE(rules.Matches(GURL("https://192.168.0.0:81")));
+  // Test that an IPv4 mapped IPv6 literal matches an IPv4 CIDR rule.
   EXPECT_TRUE(rules.Matches(GURL("http://[::ffff:192.168.11.11]")));
 
   EXPECT_FALSE(rules.Matches(GURL("http://foobar.com")));
@@ -396,6 +406,21 @@ TEST(ProxyBypassRulesTest, ParseAndMatchCIDR_IPv6) {
   EXPECT_TRUE(rules.Matches(GURL("http://[A:b:C:9::]")));
   EXPECT_FALSE(rules.Matches(GURL("http://foobar.com")));
   EXPECT_FALSE(rules.Matches(GURL("http://192.169.1.1")));
+
+  // Test that an IPv4 literal matches an IPv4 mapped IPv6 CIDR rule.
+  // This is the IPv4 mapped equivalent to 192.168.1.1/16.
+  rules.ParseFromString("::ffff:192.168.1.1/112");
+  EXPECT_TRUE(rules.Matches(GURL("http://[::ffff:192.168.1.3]")));
+  EXPECT_TRUE(rules.Matches(GURL("http://192.168.11.11")));
+  EXPECT_FALSE(rules.Matches(GURL("http://10.10.1.1")));
+
+  // Test using an IP range that is close to IPv4 mapped, but not
+  // quite. Should not result in matches.
+  rules.ParseFromString("::fffe:192.168.1.1/112");
+  EXPECT_TRUE(rules.Matches(GURL("http://[::fffe:192.168.1.3]")));
+  EXPECT_FALSE(rules.Matches(GURL("http://[::ffff:192.168.1.3]")));
+  EXPECT_FALSE(rules.Matches(GURL("http://192.168.11.11")));
+  EXPECT_FALSE(rules.Matches(GURL("http://10.10.1.1")));
 }
 
 // Test that parsing an IPv6 range given a bracketed literal is not supported.

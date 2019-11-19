@@ -115,7 +115,7 @@ void ChromeTableViewControllerTest::CheckSectionFooterWithId(
   CheckSectionFooter(l10n_util::GetNSString(expected_text_id), section);
 }
 
-// TODO(crbug.com/894791): There are some unittests that are using
+// TODO(crbug.com/894800): There are some unittests that are using
 // CheckTextCellText to check Item with both "text" and "detailText". Change all
 // of them to CheckTextCellTextAndDetailText when the migration is finished.
 void ChromeTableViewControllerTest::CheckTextCellText(NSString* expected_text,

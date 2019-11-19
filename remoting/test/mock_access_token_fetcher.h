@@ -26,11 +26,11 @@ class MockAccessTokenFetcher : public AccessTokenFetcher {
 
   MOCK_METHOD2(GetAccessTokenFromAuthCode,
                void(const std::string& auth_code,
-                    const AccessTokenCallback& callback));
+                    AccessTokenCallback callback));
 
   MOCK_METHOD2(GetAccessTokenFromRefreshToken,
                void(const std::string& refresh_token,
-                    const AccessTokenCallback& callback));
+                    AccessTokenCallback callback));
 
   // Stores an access token fetcher object and wires up the mock methods to call
   // through to the appropriate method on it.  This method is typically used to

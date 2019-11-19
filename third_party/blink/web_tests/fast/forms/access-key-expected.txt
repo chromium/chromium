@@ -17,10 +17,13 @@ If this test passes you should see 1 - 9 and a, b and c clicked or focussed.
 5 input type submit clicked
 6 input type reset focussed
 6 input type reset clicked
+7 link focussed
 7 link clicked
 9 input type associated to label around input focussed
 a input type associated to label closed before input focussed
+b area 1 focussed
 b area 1 clicked
+c area 2 focussed
 c area 2 clicked
 d select focussed
 d select clicked

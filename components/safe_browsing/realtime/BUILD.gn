@@ -1,0 +1,60 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("policy_engine") {
+  sources = [
+    "policy_engine.cc",
+    "policy_engine.h",
+  ]
+
+  deps = [
+    "//base:base",
+    "//components/prefs",
+    "//components/safe_browsing:features",
+    "//components/safe_browsing:realtimeapi_proto",
+    "//components/safe_browsing/common:safe_browsing_prefs",
+    "//components/unified_consent",
+    "//components/user_prefs",
+    "//content/public/browser",
+    "//content/public/common:resource_type_header",
+  ]
+}
+
+static_library("url_lookup_service") {
+  sources = [
+    "url_lookup_service.cc",
+    "url_lookup_service.h",
+  ]
+
+  deps = [
+    ":policy_engine",
+    "//base:base",
+    "//components/safe_browsing:realtimeapi_proto",
+    "//components/safe_browsing/db:v4_protocol_manager_util",
+    "//content/public/browser",
+    "//url:url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "policy_engine_unittest.cc",
+    "url_lookup_service_unittest.cc",
+  ]
+  deps = [
+    ":policy_engine",
+    ":url_lookup_service",
+    "//base/test:test_support",
+    "//components/safe_browsing:features",
+    "//components/safe_browsing/common:safe_browsing_prefs",
+    "//components/sync_preferences:test_support",
+    "//components/unified_consent",
+    "//components/user_prefs",
+    "//content/test:test_support",
+    "//services/network:test_support",
+    "//services/network/public/cpp:cpp",
+    "//testing/gtest",
+  ]
+}

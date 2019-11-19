@@ -1,10 +1,10 @@
 {
   "comments": [
-    "Builder for 32-bit devices.",
+    "Builder for devices.",
     "Build is performed with gn+ninja.",
     "If modified, please change chromium.fyi/ios-device-goma-canary-clobber.json too."
   ],
-  "xcode build version": "10b61",
+  "xcode build version": "11a1027",
   "gn_args": [
     "goma_dir=\"$(goma_dir)\"",
     "ios_enable_code_signing=false",
@@ -19,7 +19,6 @@
     "all"
   ],
   "configuration": "Release",
-  "explain": true,
   "tests": [
   ]
 }

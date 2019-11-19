@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.infobar;
 import android.os.Bundle;
 
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ResourceId;
 import org.chromium.chrome.browser.preferences.PreferencesLauncher;
 import org.chromium.chrome.browser.preferences.datareduction.DataReductionPreferenceFragment;
@@ -24,7 +25,8 @@ public class PreviewsLitePageInfoBar extends ConfirmInfoBar {
     }
 
     private PreviewsLitePageInfoBar(int iconDrawbleId, String message, String linkText) {
-        super(iconDrawbleId, null, message, linkText, null, null);
+        super(iconDrawbleId, R.color.infobar_icon_drawable_color, null, message, linkText, null,
+                null);
     }
 
     @Override

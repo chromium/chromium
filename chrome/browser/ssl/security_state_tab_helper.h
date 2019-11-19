@@ -7,10 +7,11 @@
 
 #include <memory>
 
+#include "base/optional.h"
 #include "components/security_state/core/security_state.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
-#include "third_party/blink/public/platform/web_security_style.h"
+#include "third_party/blink/public/common/security/security_style.h"
 
 namespace content {
 class NavigationHandle;
@@ -25,9 +26,10 @@ class SecurityStateTabHelper
  public:
   ~SecurityStateTabHelper() override;
 
-  // See security_state::GetSecurityInfo.
-  void GetSecurityInfo(
-      security_state::SecurityInfo* result) const;
+  // See security_state::GetSecurityLevel.
+  security_state::SecurityLevel GetSecurityLevel();
+  std::unique_ptr<security_state::VisibleSecurityState>
+  GetVisibleSecurityState();
 
   // content::WebContentsObserver:
   void DidStartNavigation(
@@ -42,9 +44,15 @@ class SecurityStateTabHelper
 
   bool UsedPolicyInstalledCertificate() const;
   security_state::MaliciousContentStatus GetMaliciousContentStatus() const;
-  std::unique_ptr<security_state::VisibleSecurityState>
-  GetVisibleSecurityState() const;
-  std::vector<std::string> GetSecureOriginsAndPatterns() const;
+
+  // Caches the legacy TLS warning suppression status for the duration of a page
+  // load (bound to a specific navigation ID) to ensure that we show consistent
+  // security UI (e.g., security indicator and page info). This is because the
+  // status depends on external state (a component loading from disk), which can
+  // cause inconsistent state across a page load if it isn't cached.
+  base::Optional<std::pair<int /* navigation entry ID */,
+                           bool /* should_suppress_legacy_tls_warning */>>
+      cached_should_suppress_legacy_tls_warning_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 

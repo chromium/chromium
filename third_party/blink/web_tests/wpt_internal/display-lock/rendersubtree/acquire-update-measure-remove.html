@@ -1,0 +1,79 @@
+<!doctype HTML>
+<html class="reftest-wait">
+<meta charset="utf8">
+<title>Display Locking: acquire, update, measure, remove</title>
+<link rel="author" title="Vladimir Levin" href="mailto:vmpstr@chromium.org">
+<link rel="help" href="https://github.com/WICG/display-locking">
+<link rel="match" href="acquire-update-measure-remove-ref.html">
+<script src="/common/reftest-wait.js"></script>
+<script src="resources/utils.js"></script>
+
+<style>
+#container {
+  background: lightgreen;
+}
+#sizer {
+  width: 100px;
+  height: 100px;
+}
+.child {
+  width: 20px;
+  height: 20%;
+  background: cyan;
+}
+#empty {
+  background: red;
+  width: max-style layout;
+}
+#spacer {
+  width: 150px;
+  height: 150px;
+  background: green;
+}
+</style>
+
+<div id="empty"></div>
+<div id="spacer"></div>
+<div id="log"></div>
+
+<script>
+function measureAndRemove() {
+  const log = document.getElementById("log");
+  log.innerHTML += "" + document.getElementById("0").offsetTop;
+  log.innerHTML += " " + document.getElementById("1").offsetTop;
+  log.innerHTML += " " + document.getElementById("2").offsetTop;
+  log.innerHTML += " " + document.getElementById("empty").offsetTop;
+  log.innerHTML += " " + document.getElementById("spacer").offsetTop;
+  document.getElementById("container").remove();
+}
+
+function createChild(id) {
+  const child = document.createElement("div");
+  child.classList = "child";
+  child.id = id;
+  return child;
+}
+
+function construct(container) {
+  const sizer = document.createElement("div");
+  sizer.id = "sizer";
+  container.appendChild(sizer);
+  sizer.appendChild(createChild("0"));
+  sizer.appendChild(createChild("1"));
+  sizer.appendChild(createChild("2"));
+}
+
+function runTest() {
+  const container = document.createElement("div");
+  container.id = "container";
+  setInvisible(container).then(() => {
+    construct(container);
+    document.getElementById("empty").appendChild(container);
+    container.updateRendering().then(measureAndRemove).then(takeScreenshot);
+  });
+}
+
+window.onload = runTest;
+</script>
+
+</html>

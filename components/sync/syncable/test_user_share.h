@@ -15,10 +15,13 @@
 
 namespace syncer {
 
+class DirectoryCryptographer;
+class KeystoreKeysHandler;
 class SyncEncryptionHandler;
 class TestDirectorySetterUpper;
 
 namespace syncable {
+class BaseTransaction;
 class TestTransactionObserver;
 }
 
@@ -64,6 +67,9 @@ class TestUserShare {
   // Save and reload Directory to clear out temporary data in memory.
   bool Reload();
 
+  DirectoryCryptographer* GetCryptographer(
+      const syncable::BaseTransaction* trans);
+
   // Non-null iff called between a call to SetUp() and TearDown().
   UserShare* user_share();
 
@@ -71,14 +77,19 @@ class TestUserShare {
   // methods normally handled via the SyncEngine.
   SyncEncryptionHandler* encryption_handler();
 
+  // KeystoreKeysHandler is required for construction of ModelTypeRegistry in
+  // several unittests. Currently owned by |dir_maker_|.
+  // TODO(crbug.com/922900): the ownership of KeystoreKeysHandler should be
+  // moved outside of TestDirectorySetterUpper, since we need to support USS
+  // implementation of Nigori.
+  KeystoreKeysHandler* keystore_keys_handler();
+
   // Returns the directory's transaction observer.  This transaction observer
   // has methods which can be helpful when writing test assertions.
   syncable::TestTransactionObserver* transaction_observer();
 
   // A helper function to pretend to download this type's root node.
   static bool CreateRoot(ModelType model_type, UserShare* service);
-
-  size_t GetDeleteJournalSize() const;
 
  private:
   std::unique_ptr<TestDirectorySetterUpper> dir_maker_;

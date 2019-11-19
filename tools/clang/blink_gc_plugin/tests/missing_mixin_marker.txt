@@ -10,10 +10,10 @@ missing_mixin_marker.cpp:27:29: warning: [blink-gc] Garbage-collected class 'MyS
 missing_mixin_marker.cpp:20:27: note: [blink-gc] Mixin base class derived here:
 class Supplement : public GarbageCollectedMixin {
                    ~~~~~~~^~~~~~~~~~~~~~~~~~~~~
-missing_mixin_marker.cpp:53:35: warning: [blink-gc] Garbage-collected class 'PureVirtualDerived' derives mixin class 'Mixin'. You must add USING_GARBAGE_COLLECTED_MIXIN(PureVirtualDerived).
+missing_mixin_marker.cpp:54:35: warning: [blink-gc] Garbage-collected class 'PureVirtualDerived' derives mixin class 'Mixin'. You must add USING_GARBAGE_COLLECTED_MIXIN(PureVirtualDerived).
 class PureVirtualDerived : public PureVirtual {
                            ~~~~~~~^~~~~~~~~~~
-missing_mixin_marker.cpp:48:66: note: [blink-gc] Mixin base class derived here:
+missing_mixin_marker.cpp:49:66: note: [blink-gc] Mixin base class derived here:
 class PureVirtual : public GarbageCollected<PureVirtual>, public Mixin {
                                                           ~~~~~~~^~~~~
 missing_mixin_marker.cpp:9:22: note: [blink-gc] Mixin base class derived here:

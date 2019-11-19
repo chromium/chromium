@@ -86,9 +86,18 @@ Polymer({
    */
   onSubmit_: function() {
     assert(!this.$.add.disabled);
+    let primaryPattern = this.site_;
+    let secondaryPattern = settings.SITE_EXCEPTION_WILDCARD;
+
+    if (this.$.thirdParties.checked) {
+      primaryPattern = settings.SITE_EXCEPTION_WILDCARD;
+      secondaryPattern = this.site_;
+    }
+
     this.browserProxy.setCategoryPermissionForPattern(
-        this.site_, this.site_, this.category, this.contentSetting,
+        primaryPattern, secondaryPattern, this.category, this.contentSetting,
         this.$.incognito.checked);
+
     this.$.dialog.close();
   },
 
@@ -103,5 +112,14 @@ Polymer({
     if (!this.hasIncognito) {
       this.$.incognito.checked = false;
     }
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  shouldHideThirdPartyCookieCheckbox_: function() {
+    return this.category !== settings.ContentSettingsTypes.COOKIES ||
+        !loadTimeData.getBoolean('showImprovedCookieControlsForThirdParties');
   },
 });

@@ -9,10 +9,17 @@
 
 #include "ash/app_list/app_list_export.h"
 #include "ash/app_list/views/search_result_base_view.h"
-#include "ash/app_list/views/suggestion_chip_view.h"
 #include "base/macros.h"
 
-namespace app_list {
+namespace views {
+class BoxLayout;
+class ImageView;
+class InkDrop;
+class InkDropRipple;
+class Label;
+}  // namespace views
+
+namespace ash {
 
 class AppListViewDelegate;
 
@@ -23,8 +30,10 @@ class APP_LIST_EXPORT SearchResultSuggestionChipView
   explicit SearchResultSuggestionChipView(AppListViewDelegate* view_delegate);
   ~SearchResultSuggestionChipView() override;
 
+  // Enables background blur for folder icon if |enabled| is true.
+  void SetBackgroundBlurEnabled(bool enabled);
+
   void OnResultChanged() override;
-  void SetIndexInSuggestionChipContainer(size_t index);
 
   // SearchResultObserver:
   void OnMetadataChanged() override;
@@ -33,31 +42,46 @@ class APP_LIST_EXPORT SearchResultSuggestionChipView
   void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
   // views::View:
-  void Layout() override;
   const char* GetClassName() const override;
-  gfx::Size CalculatePreferredSize() const override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+  void ChildVisibilityChanged(views::View* child) override;
+  void OnPaintBackground(gfx::Canvas* canvas) override;
+  void OnFocus() override;
+  void OnBlur() override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
 
-  SuggestionChipView* suggestion_chip_view() { return suggestion_chip_view_; }
+  // views::InkDropHost:
+  std::unique_ptr<views::InkDrop> CreateInkDrop() override;
+  std::unique_ptr<views::InkDropRipple> CreateInkDropRipple() const override;
+
+  // ui::LayerOwner:
+  std::unique_ptr<ui::Layer> RecreateLayer() override;
+
+  void SetIcon(const gfx::ImageSkia& icon);
+
+  void SetText(const base::string16& text);
+  const base::string16& GetText() const;
 
  private:
   // Updates the suggestion chip view's title and icon.
   void UpdateSuggestionChipView();
 
+  void InitLayout();
+
+  // Sets rounded corners for the layer with |corner_radius| to clip the chip.
+  void SetRoundedCornersForLayer(int corner_radius);
+
   AppListViewDelegate* const view_delegate_;  // Owned by AppListView.
 
-  // The view that actually shows the icon and title.
-  SuggestionChipView* suggestion_chip_view_ = nullptr;
+  views::ImageView* icon_view_;  // Owned by view hierarchy.
+  views::Label* text_view_;      // Owned by view hierarchy.
 
-  // The index of this view in the suggestion_chip_container, only used for uma
-  // logging.
-  int index_in_suggestion_chip_container_ = -1;
-  base::WeakPtrFactory<SearchResultSuggestionChipView> weak_ptr_factory_;
+  views::BoxLayout* layout_manager_;  // Owned by view hierarchy.
+
+  base::WeakPtrFactory<SearchResultSuggestionChipView> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SearchResultSuggestionChipView);
 };
 
-}  // namespace app_list
+}  // namespace ash
 
 #endif  // ASH_APP_LIST_VIEWS_SEARCH_RESULT_SUGGESTION_CHIP_VIEW_H_

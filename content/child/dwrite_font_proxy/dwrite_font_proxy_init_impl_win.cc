@@ -6,14 +6,18 @@
 
 #include <dwrite.h>
 
+#include <utility>
+
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/debug/alias.h"
+#include "base/trace_event/trace_event.h"
 #include "base/win/iat_patch_function.h"
 #include "base/win/windows_version.h"
 #include "content/child/dwrite_font_proxy/dwrite_font_proxy_win.h"
 #include "content/child/dwrite_font_proxy/font_fallback_win.h"
 #include "content/child/font_warmup_win.h"
+#include "content/public/child/child_thread.h"
 #include "content/public/common/service_names.mojom.h"
 #include "skia/ext/fontmgr_default.h"
 #include "third_party/blink/public/web/win/web_font_rendering.h"
@@ -30,8 +34,8 @@ namespace {
 DWriteFontCollectionProxy* g_font_collection = nullptr;
 FontFallback* g_font_fallback = nullptr;
 
-base::RepeatingCallback<blink::mojom::DWriteFontProxyPtrInfo(void)>*
-    g_connection_callback_override = nullptr;
+base::RepeatingCallback<mojo::PendingRemote<blink::mojom::DWriteFontProxy>(
+    void)>* g_connection_callback_override = nullptr;
 
 // Windows-only DirectWrite support. These warm up the DirectWrite paths
 // before sandbox lock down to allow Skia access to the Font Manager service.
@@ -47,21 +51,20 @@ void CreateDirectWriteFactory(IDWriteFactory** factory) {
 
 }  // namespace
 
-void InitializeDWriteFontProxy(service_manager::Connector* connector) {
+void InitializeDWriteFontProxy() {
+  TRACE_EVENT0("dwrite,fonts", "InitializeDWriteFontProxy");
   mswr::ComPtr<IDWriteFactory> factory;
 
   CreateDirectWriteFactory(&factory);
 
   if (!g_font_collection) {
-    blink::mojom::DWriteFontProxyPtrInfo dwrite_font_proxy;
+    mojo::PendingRemote<blink::mojom::DWriteFontProxy> dwrite_font_proxy;
     if (g_connection_callback_override) {
       dwrite_font_proxy = g_connection_callback_override->Run();
-    } else if (connector) {
-      connector->BindInterface(mojom::kBrowserServiceName,
-                               mojo::MakeRequest(&dwrite_font_proxy));
+    } else if (auto* thread = ChildThread::Get()) {
+      thread->BindHostReceiver(
+          dwrite_font_proxy.InitWithNewPipeAndPassReceiver());
     }
-    // If |connector| is not provided, the connection to the browser will be
-    // created on demand.
     DWriteFontCollectionProxy::Create(&g_font_collection, factory.Get(),
                                       std::move(dwrite_font_proxy));
   }
@@ -89,7 +92,7 @@ void InitializeDWriteFontProxy(service_manager::Connector* connector) {
   // This flag can be removed when Win8.0 and earlier are no longer supported.
   bool fallback_available = g_font_fallback != nullptr;
   DCHECK_EQ(fallback_available,
-            base::win::GetVersion() > base::win::VERSION_WIN8);
+            base::win::GetVersion() > base::win::Version::WIN8);
   blink::WebFontRendering::SetUseSkiaFontFallback(fallback_available);
 }
 
@@ -99,12 +102,12 @@ void UninitializeDWriteFontProxy() {
 }
 
 void SetDWriteFontProxySenderForTesting(
-    base::RepeatingCallback<blink::mojom::DWriteFontProxyPtrInfo(void)>
-        sender) {
+    base::RepeatingCallback<
+        mojo::PendingRemote<blink::mojom::DWriteFontProxy>(void)> sender) {
   DCHECK(!g_connection_callback_override);
-  g_connection_callback_override =
-      new base::RepeatingCallback<blink::mojom::DWriteFontProxyPtrInfo(void)>(
-          std::move(sender));
+  g_connection_callback_override = new base::RepeatingCallback<
+      mojo::PendingRemote<blink::mojom::DWriteFontProxy>(void)>(
+      std::move(sender));
 }
 
 void ClearDWriteFontProxySenderForTesting() {

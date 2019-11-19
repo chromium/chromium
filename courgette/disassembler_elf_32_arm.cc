@@ -365,12 +365,16 @@ CheckBool DisassemblerElf32ARM::ParseRelocationSection(
   if (abs32_locations_.size() > section_relocs_count)
     match = false;
 
-  if (!abs32_locations_.empty()) {
+  if (match && !abs32_locations_.empty()) {
     std::vector<RVA>::const_iterator reloc_iter = abs32_locations_.begin();
 
-    for (uint32_t i = 0; i < section_relocs_count; ++i) {
-      if (section_relocs_iter->r_offset == *reloc_iter)
+    // Look for the first reloc unit matching |abs32_locations_[0]|.
+    size_t section_relocs_remaining = section_relocs_count;
+    for (; section_relocs_remaining > 0; --section_relocs_remaining) {
+      if (section_relocs_iter->r_info == R_ARM_RELATIVE &&
+          section_relocs_iter->r_offset == *reloc_iter) {
         break;
+      }
 
       if (!ParseSimpleRegion(file_offset, file_offset + sizeof(Elf32_Rel),
                              receptor)) {
@@ -381,6 +385,12 @@ CheckBool DisassemblerElf32ARM::ParseRelocationSection(
       ++section_relocs_iter;
     }
 
+    // If there aren't enough reloc units left then don't bother matching. This
+    // can happen if the reloc units are not sorted.
+    if (abs32_locations_.size() > section_relocs_remaining)
+      match = false;
+
+    // Try to match successive reloc units with (sorted) |abs32_locations_|.
     while (match && (reloc_iter != abs32_locations_.end())) {
       if (section_relocs_iter->r_info != R_ARM_RELATIVE ||
           section_relocs_iter->r_offset != *reloc_iter) {
@@ -393,7 +403,7 @@ CheckBool DisassemblerElf32ARM::ParseRelocationSection(
     }
 
     if (match) {
-      // Skip over relocation tables
+      // Success: Emit relocation table.
       if (!receptor->EmitElfARMRelocation())
         return false;
     }
@@ -514,7 +524,7 @@ CheckBool DisassemblerElf32ARM::ParseRel32RelocsFromSection(
       // 0        | 0          1
       // 0        | 1          0
       // 1        | 1          1
-      on_32bit = (~(on_32bit ^ (op_size == 4))) != 0;
+      on_32bit = (on_32bit == (op_size == 4));
     } else {
       // Move 2 bytes at a time, but track 32-bit boundaries
       p += 2;

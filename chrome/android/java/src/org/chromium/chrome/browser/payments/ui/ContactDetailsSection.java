@@ -5,9 +5,11 @@
 package org.chromium.chrome.browser.payments.ui;
 
 import android.content.Context;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
+import androidx.annotation.Nullable;
+
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.payments.AutofillAddress;
 import org.chromium.chrome.browser.payments.AutofillContact;
@@ -152,6 +154,9 @@ public class ContactDetailsSection extends SectionInformation {
                     firstCompleteContactIndex != SectionInformation.NO_SELECTION);
         }
 
+        // Record all required and missing fields of the most complete suggestion.
+        recordMissingContactFields(uniqueContacts.isEmpty() ? null : uniqueContacts.get(0));
+
         updateItemsWithCollection(firstCompleteContactIndex, uniqueContacts);
     }
 
@@ -177,5 +182,27 @@ public class ContactDetailsSection extends SectionInformation {
                     requestPayerName, requestPayerPhone, requestPayerEmail);
         }
         return null;
+    }
+
+    // Bit field values are identical to ProfileFields from payments_profile_comparator.h
+    private void recordMissingContactFields(AutofillContact contact) {
+        int missingFields = 0;
+        if (mContactEditor.getRequestPayerName()
+                && (contact == null || TextUtils.isEmpty(contact.getPayerName()))) {
+            missingFields |= ContactEditor.INVALID_NAME;
+        }
+        if (mContactEditor.getRequestPayerPhone()
+                && (contact == null || TextUtils.isEmpty(contact.getPayerPhone()))) {
+            missingFields |= ContactEditor.INVALID_PHONE_NUMBER;
+        }
+        if (mContactEditor.getRequestPayerEmail()
+                && (contact == null || TextUtils.isEmpty(contact.getPayerEmail()))) {
+            missingFields |= ContactEditor.INVALID_EMAIL;
+        }
+
+        if (missingFields != 0) {
+            RecordHistogram.recordSparseHistogram(
+                    "PaymentRequest.MissingContactFields", missingFields);
+        }
     }
 }

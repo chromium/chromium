@@ -5,8 +5,11 @@
 '''Handling of the <message> element.
 '''
 
+from __future__ import print_function
+
 import re
-import types
+
+import six
 
 from grit.node import base
 
@@ -56,7 +59,7 @@ class MessageNode(base.ContentNode):
 
   # For splitting a list of things that can be separated by commas or
   # whitespace
-  _SPLIT_RE = lazy_re.compile('\s*,\s*|\s+')
+  _SPLIT_RE = lazy_re.compile(r'\s*,\s*|\s+')
 
   def __init__(self):
     super(MessageNode, self).__init__()
@@ -98,7 +101,7 @@ class MessageNode(base.ContentNode):
     return True
 
   def SetReplaceEllipsis(self, value):
-    '''Sets whether to replace ... with \u2026.
+    r'''Sets whether to replace ... with \u2026.
     '''
     self._replace_ellipsis = value
 
@@ -164,10 +167,10 @@ class MessageNode(base.ContentNode):
     placeholders = []
 
     for item in self.mixed_content:
-      if isinstance(item, types.StringTypes):
+      if isinstance(item, six.string_types):
         # Not a <ph> element: fail if any <ph> formatters are detected.
         if _FORMATTERS.search(item):
-          print _BAD_PLACEHOLDER_MSG % (item, self.source)
+          print(_BAD_PLACEHOLDER_MSG % (item, self.source))
           raise exception.PlaceholderNotInsidePhNode
         text += item
       else:
@@ -198,7 +201,7 @@ class MessageNode(base.ContentNode):
         # Fail if <ph> special chars remain in cdata.
         if re.search(r'[%\$]', cdata):
           message_id = self.attrs['name'] + ' ' + original;
-          print _INVALID_PH_CHAR_MSG % (message_id, self.source)
+          print(_INVALID_PH_CHAR_MSG % (message_id, self.source))
           raise exception.InvalidCharactersInsidePhNode
 
         # Otherwise, accept this <ph> placeholder.
@@ -301,7 +304,7 @@ class MessageNode(base.ContentNode):
 
     items = message.GetContent()
     for ix, item in enumerate(items):
-      if isinstance(item, types.StringTypes):
+      if isinstance(item, six.string_types):
         # Ensure whitespace at front and back of message is correctly handled.
         if ix == 0:
           item = "'''" + item

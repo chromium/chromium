@@ -30,7 +30,9 @@ namespace syncer {
 class SyncCycleSnapshot {
  public:
   SyncCycleSnapshot();
-  SyncCycleSnapshot(const ModelNeutralState& model_neutral_state,
+  SyncCycleSnapshot(const std::string& birthday,
+                    const std::string& bag_of_chips,
+                    const ModelNeutralState& model_neutral_state,
                     const ProgressMarkerMap& download_progress_markers,
                     bool is_silenced,
                     int num_encryption_conflicts,
@@ -43,8 +45,7 @@ class SyncCycleSnapshot {
                     const std::vector<int>& num_entries_by_type,
                     const std::vector<int>& num_to_delete_entries_by_type,
                     sync_pb::SyncEnums::GetUpdatesOrigin get_updates_origin,
-                    base::TimeDelta short_poll_interval,
-                    base::TimeDelta long_poll_interval,
+                    base::TimeDelta poll_interval,
                     bool has_remaining_local_changes);
   SyncCycleSnapshot(const SyncCycleSnapshot& other);
   ~SyncCycleSnapshot();
@@ -53,6 +54,8 @@ class SyncCycleSnapshot {
 
   std::string ToString() const;
 
+  const std::string& birthday() const { return birthday_; }
+  const std::string& bag_of_chips() const { return bag_of_chips_; }
   ModelNeutralState model_neutral_state() const { return model_neutral_state_; }
   const ProgressMarkerMap& download_progress_markers() const;
   bool is_silenced() const;
@@ -66,8 +69,7 @@ class SyncCycleSnapshot {
   const std::vector<int>& num_entries_by_type() const;
   const std::vector<int>& num_to_delete_entries_by_type() const;
   sync_pb::SyncEnums::GetUpdatesOrigin get_updates_origin() const;
-  base::TimeDelta short_poll_interval() const;
-  base::TimeDelta long_poll_interval() const;
+  base::TimeDelta poll_interval() const;
   // Whether usynced items existed at the time the sync cycle completed.
   bool has_remaining_local_changes() const;
 
@@ -75,6 +77,8 @@ class SyncCycleSnapshot {
   bool is_initialized() const;
 
  private:
+  std::string birthday_;
+  std::string bag_of_chips_;
   ModelNeutralState model_neutral_state_;
   ProgressMarkerMap download_progress_markers_;
   bool is_silenced_;
@@ -91,8 +95,7 @@ class SyncCycleSnapshot {
 
   sync_pb::SyncEnums::GetUpdatesOrigin get_updates_origin_;
 
-  base::TimeDelta short_poll_interval_;
-  base::TimeDelta long_poll_interval_;
+  base::TimeDelta poll_interval_;
 
   bool has_remaining_local_changes_;
 

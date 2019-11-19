@@ -81,24 +81,24 @@ void ChromeProxyMainDialog::DisableExtensions(
 
 void ChromeProxyMainDialog::PostPromptResultReceivedTask(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
-    mojom::PromptAcceptance prompt_acceptance) {
+    PromptUserResponse::PromptAcceptance prompt_acceptance) {
   task_runner->PostTask(
       FROM_HERE, base::BindOnce(&ChromeProxyMainDialog::PromptResultReceived,
                                 base::Unretained(this), prompt_acceptance));
 }
 
 void ChromeProxyMainDialog::PromptResultReceived(
-    mojom::PromptAcceptance prompt_acceptance) {
+    PromptUserResponse::PromptAcceptance prompt_acceptance) {
   Settings::GetInstance()->set_logs_allowed_in_cleanup_mode(
-      prompt_acceptance == mojom::PromptAcceptance::ACCEPTED_WITH_LOGS);
+      prompt_acceptance == PromptUserResponse::ACCEPTED_WITH_LOGS);
   delegate()->AcceptedCleanup(
-      prompt_acceptance == mojom::PromptAcceptance::ACCEPTED_WITH_LOGS ||
-      prompt_acceptance == mojom::PromptAcceptance::ACCEPTED_WITHOUT_LOGS);
+      prompt_acceptance == PromptUserResponse::ACCEPTED_WITH_LOGS ||
+      prompt_acceptance == PromptUserResponse::ACCEPTED_WITHOUT_LOGS);
 }
 
 void ChromeProxyMainDialog::PostCloseAfterReceivingResponseTask(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
-    mojom::PromptAcceptance prompt_acceptance) {
+    PromptUserResponse::PromptAcceptance prompt_acceptance) {
   task_runner->PostTask(
       FROM_HERE,
       base::BindOnce(&ChromeProxyMainDialog::CloseAfterReceivingResponse,
@@ -106,7 +106,7 @@ void ChromeProxyMainDialog::PostCloseAfterReceivingResponseTask(
 }
 
 void ChromeProxyMainDialog::CloseAfterReceivingResponse(
-    mojom::PromptAcceptance /*prompt_acceptance*/) {
+    PromptUserResponse::PromptAcceptance /*prompt_acceptance*/) {
   delegate()->OnClose();
 }
 

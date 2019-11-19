@@ -38,7 +38,7 @@ class SelfDeleteFullCardRequester
 
   ActionDelegate::GetFullCardCallback callback_;
 
-  base::WeakPtrFactory<SelfDeleteFullCardRequester> weak_ptr_factory_;
+  base::WeakPtrFactory<SelfDeleteFullCardRequester> weak_ptr_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(SelfDeleteFullCardRequester);
 };
 }  // namespace autofill_assistant

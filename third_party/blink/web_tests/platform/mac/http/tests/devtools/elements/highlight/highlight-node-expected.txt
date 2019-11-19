@@ -1,0 +1,270 @@
+This test verifies the position and size of the highlight rectangles overlaid on an inspected node.
+
+inspectedElement{
+  "paths": [
+    {
+      "path": [
+        "M",
+        30,
+        30,
+        "L",
+        230,
+        30,
+        "L",
+        230,
+        230,
+        "L",
+        30,
+        230,
+        "Z"
+      ],
+      "fillColor": "rgba(255, 0, 0, 0)",
+      "outlineColor": "rgba(128, 0, 0, 0)",
+      "name": "content"
+    },
+    {
+      "path": [
+        "M",
+        15,
+        15,
+        "L",
+        245,
+        15,
+        "L",
+        245,
+        245,
+        "L",
+        15,
+        245,
+        "Z"
+      ],
+      "fillColor": "rgba(0, 255, 0, 0)",
+      "name": "padding"
+    },
+    {
+      "path": [
+        "M",
+        5,
+        5,
+        "L",
+        255,
+        5,
+        "L",
+        255,
+        255,
+        "L",
+        5,
+        255,
+        "Z"
+      ],
+      "fillColor": "rgba(0, 0, 255, 0)",
+      "name": "border"
+    },
+    {
+      "path": [
+        "M",
+        0,
+        0,
+        "L",
+        260,
+        0,
+        "L",
+        260,
+        260,
+        "L",
+        0,
+        260,
+        "Z"
+      ],
+      "fillColor": "rgba(255, 255, 255, 0)",
+      "name": "margin"
+    }
+  ],
+  "showRulers": true,
+  "showExtensionLines": true,
+  "elementInfo": {
+    "tagName": "div",
+    "idValue": "inspectedElement",
+    "nodeWidth": "250",
+    "nodeHeight": "250"
+  }
+}
+
+First text node{
+  "paths": [
+    {
+      "path": [
+        "M",
+        "<number>",
+        "<number>",
+        "L",
+        "<number>",
+        "<number>",
+        "L",
+        "<number>",
+        "<number>",
+        "L",
+        "<number>",
+        "<number>",
+        "Z"
+      ],
+      "fillColor": "rgba(255, 0, 0, 0)",
+      "outlineColor": "rgba(128, 0, 0, 0)",
+      "name": "content"
+    },
+    {
+      "path": [
+        "M",
+        "<number>",
+        "<number>",
+        "L",
+        "<number>",
+        "<number>",
+        "L",
+        "<number>",
+        "<number>",
+        "L",
+        "<number>",
+        "<number>",
+        "Z"
+      ],
+      "fillColor": "rgba(0, 255, 0, 0)",
+      "name": "padding"
+    },
+    {
+      "path": [
+        "M",
+        "<number>",
+        "<number>",
+        "L",
+        "<number>",
+        "<number>",
+        "L",
+        "<number>",
+        "<number>",
+        "L",
+        "<number>",
+        "<number>",
+        "Z"
+      ],
+      "fillColor": "rgba(0, 0, 255, 0)",
+      "name": "border"
+    },
+    {
+      "path": [
+        "M",
+        "<number>",
+        "<number>",
+        "L",
+        "<number>",
+        "<number>",
+        "L",
+        "<number>",
+        "<number>",
+        "L",
+        "<number>",
+        "<number>",
+        "Z"
+      ],
+      "fillColor": "rgba(255, 255, 255, 0)",
+      "name": "margin"
+    }
+  ],
+  "showRulers": true,
+  "showExtensionLines": true,
+  "elementInfo": {
+    "nodeWidth": "Width within 3px from 28? true",
+    "nodeHeight": "Height within 3px from 25? false",
+    "tagName": "#text"
+  }
+}
+
+Second text node{
+  "paths": [
+    {
+      "path": [
+        "M",
+        "<number>",
+        "<number>",
+        "L",
+        "<number>",
+        "<number>",
+        "L",
+        "<number>",
+        "<number>",
+        "L",
+        "<number>",
+        "<number>",
+        "Z"
+      ],
+      "fillColor": "rgba(255, 0, 0, 0)",
+      "outlineColor": "rgba(128, 0, 0, 0)",
+      "name": "content"
+    },
+    {
+      "path": [
+        "M",
+        "<number>",
+        "<number>",
+        "L",
+        "<number>",
+        "<number>",
+        "L",
+        "<number>",
+        "<number>",
+        "L",
+        "<number>",
+        "<number>",
+        "Z"
+      ],
+      "fillColor": "rgba(0, 255, 0, 0)",
+      "name": "padding"
+    },
+    {
+      "path": [
+        "M",
+        "<number>",
+        "<number>",
+        "L",
+        "<number>",
+        "<number>",
+        "L",
+        "<number>",
+        "<number>",
+        "L",
+        "<number>",
+        "<number>",
+        "Z"
+      ],
+      "fillColor": "rgba(0, 0, 255, 0)",
+      "name": "border"
+    },
+    {
+      "path": [
+        "M",
+        "<number>",
+        "<number>",
+        "L",
+        "<number>",
+        "<number>",
+        "L",
+        "<number>",
+        "<number>",
+        "L",
+        "<number>",
+        "<number>",
+        "Z"
+      ],
+      "fillColor": "rgba(255, 255, 255, 0)",
+      "name": "margin"
+    }
+  ],
+  "showRulers": true,
+  "showExtensionLines": true,
+  "elementInfo": {
+    "nodeWidth": "Width within 3px from 30? true",
+    "nodeHeight": "Height within 3px from 24? true",
+    "tagName": "#text"
+  }
+}
+

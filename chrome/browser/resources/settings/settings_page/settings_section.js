@@ -58,5 +58,9 @@ let SettingsSectionElement = Polymer({
    */
   getTitleHiddenStatus_: function() {
     return this.pageTitle ? false : 'true';
+  },
+
+  focus: function() {
+    this.$$('.title').focus();
   }
 });

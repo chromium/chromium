@@ -8,7 +8,7 @@
 #include <memory>
 #include "base/macros.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
@@ -88,7 +88,6 @@ class LayoutAnalyzer {
  private:
   const char* NameForCounter(Counter) const;
 
-  double start_ms_;
   unsigned depth_;
   unsigned counters_[kNumCounters];
   DISALLOW_COPY_AND_ASSIGN(LayoutAnalyzer);

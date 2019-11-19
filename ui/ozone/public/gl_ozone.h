@@ -7,19 +7,21 @@
 
 #include <string>
 
+#include "base/component_export.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gpu_preference.h"
-#include "ui/ozone/ozone_base_export.h"
 
 namespace gl {
 class GLContext;
-struct GLContextAttribs;
 class GLShareGroup;
 class GLSurface;
+
+struct GLContextAttribs;
+struct GLVersionInfo;
 }
 
 namespace ui {
@@ -27,7 +29,7 @@ namespace ui {
 // Interface that has all of the required methods for an Ozone platform to
 // implement a GL implementation. Functions in gl_factory.h and gl_initializer.h
 // will delegate to functions in this interface.
-class OZONE_BASE_EXPORT GLOzone {
+class COMPONENT_EXPORT(OZONE_BASE) GLOzone {
  public:
   virtual ~GLOzone() {}
 
@@ -58,6 +60,7 @@ class OZONE_BASE_EXPORT GLOzone {
   // Returns information about the GL window system binding implementation (eg.
   // EGL, GLX, WGL). Returns true if the information was retrieved successfully.
   virtual bool GetGLWindowSystemBindingInfo(
+      const gl::GLVersionInfo& gl_info,
       gl::GLWindowSystemBindingInfo* info) = 0;
 
   // Creates a GL context that is compatible with the given surface.

@@ -41,16 +41,6 @@ scoped_refptr<Animation> Animation::CreateImplInstance() const {
   return Animation::Create(id());
 }
 
-ElementId Animation::element_id_of_keyframe_effect(
-    KeyframeEffectId keyframe_effect_id) const {
-  DCHECK(GetKeyframeEffectById(keyframe_effect_id));
-  return GetKeyframeEffectById(keyframe_effect_id)->element_id();
-}
-
-bool Animation::IsElementAttached(ElementId id) const {
-  return base::ContainsKey(element_to_keyframe_effect_id_map_, id);
-}
-
 void Animation::SetAnimationHost(AnimationHost* animation_host) {
   animation_host_ = animation_host;
 }
@@ -319,6 +309,13 @@ size_t Animation::TickingKeyframeModelsCount() const {
   for (auto& keyframe_effect : keyframe_effects_)
     count += keyframe_effect->TickingKeyframeModelsCount();
   return count;
+}
+
+bool Animation::AffectsCustomProperty() const {
+  for (const auto& keyframe_effect : keyframe_effects_)
+    if (keyframe_effect->AffectsCustomProperty())
+      return true;
+  return false;
 }
 
 void Animation::SetNeedsCommit() {

@@ -7,14 +7,34 @@
 
 #import <Foundation/Foundation.h>
 
-@protocol MetricsRecorder;
-
 // CommandDispatcher allows coordinators to register as command handlers for
 // specific selectors.  Other objects can call these methods on the dispatcher,
-// which in turn will forward the call to the registered handler. In addition,
-// coordinators can register MetricsRecorders with selectors so that when a
-// a selector is invoked on the dispatcher, the MetricsRecorder is also
-// notified.
+// which in turn will forward the call to the registered handler.
+
+// While CommandDispatcher conforms functionally to any protocols it is
+// dispatching for, the compiler doesn't (and can't) know that. To call
+// dispatched methods on a dispatcher, it's best to use a typecast to an
+// id pointer conforming to the relevant protocols. Such a pointer should also
+// be passed into objects that need to call, but not configure, the dispatcher
+// (anything other than a coordinator). To create such a pointer in a way that
+// both compiles and is checked for correctness at runtime, use the provided
+// function-like macro HandlerForProtocol, defined below. Usage is as follows:
+//
+//   id<SomeProtocol> handler = HandlerForProtocol(dispatcher, SomeProtocol);
+//
+//     |dispatcher| should be a CommandDispatcher object, and SomeProtocol is
+//     the *name* of a protocol (not a string, not a Protocol* pointer, and not
+//     an @protocol() expression to generate one).
+//
+// This will typecast |dispatcher| to an id<SomeProtocol> (for compile-time
+// type checking), and verify that |dispatcher| is currently dispatching
+// for |protocol| (for run-time verification). If |dispatcher| isn't dispatching
+// for |protocol|, HandlerForProtocol() returns nil and DCHECKs.
+//
+#define HandlerForProtocol(Dispatcher, ProtocolName) \
+  static_cast<id<ProtocolName>>(                     \
+      [Dispatcher strictCallableForProtocol:@protocol(ProtocolName)])
+
 @interface CommandDispatcher : NSObject
 
 // Registers the given |target| to receive forwarded messages for the given
@@ -37,14 +57,13 @@
 // Removes all forwarding registrations for the given |target|.
 - (void)stopDispatchingToTarget:(id)target;
 
-// Registers the given |recorder| to be notified when |selector| is invoked
-// on the dispatcher.
-- (void)registerMetricsRecorder:(id<MetricsRecorder>)recorder
-                    forSelector:(SEL)selector;
+// YES if the dispatcher is currently dispatching for |protocol|, including
+// (recursively) any protocols that |protocol| conforms to.
+- (BOOL)dispatchingForProtocol:(Protocol*)protocol;
 
-// Deregisters |selector| from notifying its associated MetricsRecorder when
-// |selector| is invoked on the dispatcher.
-- (void)deregisterMetricsRecordingForSelector:(SEL)selector;
+// Returns the reciever if it is dispatching for |protocol|, and CHECK()s
+// otherwise.
+- (CommandDispatcher*)strictCallableForProtocol:(Protocol*)protocol;
 
 @end
 

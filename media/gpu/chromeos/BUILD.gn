@@ -1,0 +1,141 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//media/gpu/args.gni")
+import("//testing/test.gni")
+
+assert(use_v4l2_codec || use_vaapi)
+
+# This target can depend on targets in //media/gpu/{v4l2,vaapi}.
+source_set("chromeos") {
+  # TODO(crbug.com/1006266): consider using |use_chromeos_video_acceleration|.
+  defines = [ "MEDIA_GPU_IMPLEMENTATION" ]
+  sources = [
+    "chromeos_video_decoder_factory.cc",
+    "chromeos_video_decoder_factory.h",
+    "image_processor_factory.cc",
+  ]
+
+  public_deps = [
+    ":common",
+  ]
+
+  deps = [
+    "//base",
+    "//media",
+    "//media/gpu:buildflags",
+    "//media/gpu:command_buffer_helper",
+    "//media/gpu:common",
+  ]
+
+  if (use_vaapi || use_v4l2_codec) {
+    deps += [ "//media/gpu/linux:common" ]
+  }
+
+  if (use_vaapi) {
+    deps += [ "//media/gpu/vaapi" ]
+  }
+
+  if (use_v4l2_codec) {
+    deps += [ "//media/gpu/v4l2" ]
+  }
+}
+
+# This target can be depended by targets in //media/gpu/{v4l2,vaapi}.
+source_set("common") {
+  defines = [ "MEDIA_GPU_IMPLEMENTATION" ]
+  sources = [
+    "dmabuf_video_frame_pool.cc",
+    "dmabuf_video_frame_pool.h",
+    "gpu_buffer_layout.cc",
+    "gpu_buffer_layout.h",
+    "image_processor.cc",
+    "image_processor.h",
+    "image_processor_factory.h",
+    "image_processor_with_pool.cc",
+    "image_processor_with_pool.h",
+    "libyuv_image_processor.cc",
+    "libyuv_image_processor.h",
+    "mailbox_video_frame_converter.cc",
+    "mailbox_video_frame_converter.h",
+    "platform_video_frame_pool.cc",
+    "platform_video_frame_pool.h",
+    "video_decoder_pipeline.cc",
+    "video_decoder_pipeline.h",
+    "video_frame_converter.cc",
+    "video_frame_converter.h",
+  ]
+
+  # TODO(crbug.com/1012587): Merge :fourcc to :common.
+  public_deps = [
+    ":fourcc",
+  ]
+
+  deps = [
+    ":fourcc",
+    "//base",
+    "//media",
+    "//media/gpu:buildflags",
+    "//media/gpu:command_buffer_helper",
+    "//media/gpu:common",
+    "//media/gpu:video_frame_mapper_common",
+    "//media/gpu/linux:common",
+    "//third_party/libyuv",
+    "//ui/gfx/geometry",
+    "//ui/gl",
+  ]
+}
+
+# Although fourcc is platform-agnostic; however, it is restricted by the above
+# assert(use_v4l2_codec || use_vaapi).
+source_set("fourcc") {
+  defines = [ "MEDIA_GPU_IMPLEMENTATION" ]
+  sources = [
+    "fourcc.cc",
+    "fourcc.h",
+  ]
+
+  deps = [
+    "//base",
+    "//media",
+    "//media/gpu:buildflags",
+    "//media/gpu:common",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  deps = [
+    ":common",
+    "//base",
+    "//base/test:test_support",
+    "//media/gpu:buildflags",
+    "//skia",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+  sources = [
+    "fourcc_unittests.cc",
+    "mailbox_video_frame_converter_unittest.cc",
+    "platform_video_frame_pool_unittest.cc",
+  ]
+}
+
+test("image_processor_test") {
+  sources = [
+    "image_processor_test.cc",
+  ]
+  deps = [
+    ":chromeos",
+    "//base/test:test_support",
+    "//media:test_support",
+    "//media/gpu:buildflags",
+    "//media/gpu/test:frame_file_writer",
+    "//media/gpu/test:frame_validator",
+    "//media/gpu/test:helpers",
+    "//media/gpu/test:image_processor",
+    "//mojo/core/embedder",
+    "//testing/gtest",
+  ]
+}

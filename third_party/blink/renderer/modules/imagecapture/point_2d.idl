@@ -5,6 +5,6 @@
 // https://w3c.github.io/mediacapture-image/#point2d-section
 
 dictionary Point2D {
-  float x = 0.0;
-  float y = 0.0;
+  double x = 0.0;
+  double y = 0.0;
 };

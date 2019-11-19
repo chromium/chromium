@@ -14,26 +14,32 @@ test suites which a given CL affects, and ensures that they all pass.
 
 ## Options
 
-* `COMMIT=false`
+The Chromium CQ supports a variety of options that can change what it checks.
+
+> These options are supported via git footers. They must appear in the last
+> paragraph of your commit message to be used. See `git help footers` or
+> [git_footers.py][1] for more information.
+
+* `Commit: false`
 
   You can mark a CL with this if you are working on experimental code and do not
   want to risk accidentally submitting it via the CQ. The CQ will immediately
   stop processing the change if it contains this option.
 
-* `CQ_INCLUDE_TRYBOTS=<trybots>`
+* `Cq-Include-Trybots: <trybots>`
 
   This flag allows you to specify some additional bots to run for this CL, in
   addition to the default bots. The format for the list of trybots is
   "bucket:trybot1,trybot2;bucket2:trybot3".
 
-* `NOPRESUBMIT=true`
+* `No-Presubmit: true`
 
   If you want to skip the presubmit check, you can add this line, and the commit
   queue won't run the presubmit for your change. This should only be used when
   there's a bug in the PRESUBMIT scripts. Please check that there's a bug filed
   against the bad script, and if there isn't, [file one](https://crbug.com/new).
 
-* `NOTREECHECKS=true`
+* `No-Tree-Checks: true`
 
   Add this line if you want to skip the tree status checks. This means the CQ
   will commit a CL even if the tree is closed. Obviously this is strongly
@@ -41,12 +47,12 @@ test suites which a given CL affects, and ensures that they all pass.
   cases this is acceptable, primarily to fix build breakages (i.e., your CL will
   help in reopening the tree).
 
-* `NOTRY=true`
+* `No-Try: true`
 
   This should only be used for reverts to green the tree, since it skips try
   bots and might therefore break the tree. You shouldn't use this otherwise.
 
-* `TBR=<username>`
+* `Tbr: <username>`
 
   [See policy](https://chromium.googlesource.com/chromium/src/+/master/docs/code_reviews.md#TBR-To-Be-Reviewed)
   of when it's acceptable to use TBR ("To be reviewed"). If a change has a TBR
@@ -54,20 +60,43 @@ test suites which a given CL affects, and ensures that they all pass.
 
 ## FAQ
 
-### What exactly does CQ run?
+### What exactly does the CQ run?
 
-CQ runs the jobs specified in [cq.cfg](../../infra/config/branch/cq.cfg). See
-[`cq_builders.md`](cq_builders.md) for an auto generated file with links to
-information about the builders on the CQ.
+CQ runs the jobs specified in [commit-queue.cfg][2]. See
+[`cq-builders.md`](https://chromium.googlesource.com/chromium/src/+/master/src/infra/config/generated/cq-builders.md)
+for an auto generated file with links to information about the builders on the
+CQ.
 
 Some of these jobs are experimental. This means they are executed on a
 percentage of CQ builds, and the outcome of the build doesn't affect if the CL
 can land or not. See the schema linked at the top of the file for more
 information on what the fields in the config do.
 
+The CQ has the following structure:
+
+* Compile all test suites that might be affected by the CL.
+* Runs all test suites that might be affected by the CL.
+    * Many test suites are divided into shards. Each shard is run as a separate
+      swarming task.
+    * These steps are labeled '(with patch)'
+* Retry each shard that has a test failure. The retry has the exact same
+  configuration as the original run. No recompile is necessary.
+    * If the retry succeeds, then the failure is ignored.
+    * These steps are labeled '(retry shards with patch)'
+    * It's important to retry with the exact same configuration. Attempting to
+      retry the failing test in isolation often produces different behavior.
+* Recompile each failing test suite without the CL. Rerun each failing test
+  suite in isolation.
+    * If the retry fails, then the fail is ignored, as it's assumed that the test
+      is broken/flaky on tip of tree.
+    * These steps are labeled '(without patch)'
+* Fail the build if there are tests which failed in both '(with patch)' and
+  '(retry shards with patch)' but passed in '(without patch)'.
+
 ### Why did my CL fail the CQ?
 
 Please follow these general guidelines:
+
 1. Check to see if your patch caused the build failures, and fix if possible.
 1. If compilation or individual tests are failing on one or more CQ bots and you
    suspect that your CL is not responsible, please contact your friendly
@@ -103,6 +132,20 @@ There are several requirements for a builder to be added to the Commit Queue.
 
 Please email dpranke@chromium.org, who will approve new build configurations.
 
+### How do I ensure a trybot runs on all changes to a specific directory?
+
+Several builders are included in the CQ only for changes that affect specific
+directories. These used to be configured via Cq-Include-Trybots footers
+injected at CL upload time. They are now configured via `location_regexp` fields
+in [commit-queue.cfg][2], e.g.
+
+```
+  builders {
+    name: "chromium/try/my-specific-trybot"
+    location_regexp: ".+/{+]/path/to/my/specific/directory/.+"
+  }
+```
+
 ## Flakiness
 
 The CQ can sometimes be flaky. Flakiness is when a test on the CQ fails, but
@@ -115,22 +158,22 @@ causes of flaky tests on the CQ:
   of tests being run, not mocking out network traffic or other real world
   interactions.
 
-CQ handles flakiness mainly by retrying tests. It retries at a few different
-levels:
+The CQ mitigates flakiness by retrying failed tests. The core tradeoff in retry
+policy is that adding retries increases the probability that a flaky test will
+land on tip of tree sublinearly, but mitigates the impact of the flaky test on
+unrelated CLs exponentially.
 
-1. Per test retries.
-
-   Most test suites have test retries built into them, which
-   retry failed tests a few times.
-1. Per build retries.
-
-   After a test suite fails in a build, the build will retry the test suite
-   again, both without patch, and with the patch applied.
-1. Per CQ run retries.
-
-   If a build fails, CQ will retry the individual trybot which failed.
+For example, imagine a CL that adds a test that fails with 50% probability. Even
+with no retries, the test will land with 50% probability. Subsequently, 50% of
+all unrelated CQ attempts would flakily fail. This effect is cumulative across
+different flaky tests. Since the CQ has roughly ~20,000 unique flaky tests,
+without retries, pretty much no CL would ever pass the CQ.
 
 ## Help!
 
 Have other questions? Run into any issues with the CQ? Email
 infra-dev@chromium.org, or file a [trooper bug](https://g.co/bugatrooper).
+
+
+[1]: https://chromium.googlesource.com/chromium/tools/depot_tools/+/HEAD/git_footers.py
+[2]: ../../infra/config/commit-queue.cfg

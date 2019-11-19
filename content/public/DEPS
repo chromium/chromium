@@ -10,4 +10,5 @@ include_rules = [
   # available to code in content/public.
   "+content/common/content_export.h",
   "+content/public/common",
+  "+content/public/android/content_jni_headers",
 ]

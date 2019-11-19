@@ -4,11 +4,14 @@
 
 #include "chrome/browser/ui/search/new_tab_page_navigation_throttle.h"
 
+#include <utility>
+
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/common/url_constants.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
 #include "net/http/http_status_code.h"
 #include "url/gurl.h"
@@ -60,15 +63,10 @@ NewTabPageNavigationThrottle::WillFailRequest() {
 
 content::NavigationThrottle::ThrottleCheckResult
 NewTabPageNavigationThrottle::OpenLocalNewTabPage() {
-  UMA_HISTOGRAM_ENUMERATION("InstantExtended.CacheableNTPLoad",
-                            search::CACHEABLE_NTP_LOAD_FAILED,
-                            search::CACHEABLE_NTP_LOAD_MAX);
-  navigation_handle()->GetWebContents()->OpenURL(
-      content::OpenURLParams(GURL(chrome::kChromeSearchLocalNtpUrl),
-                             navigation_handle()->GetReferrer(),
-                             navigation_handle()->GetFrameTreeNodeId(),
-                             WindowOpenDisposition::CURRENT_TAB,
-                             navigation_handle()->GetPageTransition(),
-                             false /* is_renderer_initiated */));
+  content::OpenURLParams params =
+      content::OpenURLParams::FromNavigationHandle(navigation_handle());
+  params.url = GURL(chrome::kChromeSearchLocalNtpUrl);
+  params.is_renderer_initiated = false;
+  navigation_handle()->GetWebContents()->OpenURL(std::move(params));
   return content::NavigationThrottle::CANCEL_AND_IGNORE;
 }

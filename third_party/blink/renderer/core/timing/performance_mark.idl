@@ -25,7 +25,10 @@
 
 // https://w3c.github.io/user-timing/#performancemark
 
-[Exposed=(Window,Worker)]
+[Exposed=(Window,Worker),
+ Constructor(DOMString markName, optional PerformanceMarkOptions markOptions),
+ ConstructorCallWith=ScriptState,
+ RaisesException=Constructor]
 interface PerformanceMark : PerformanceEntry {
-    [CallWith=ScriptState, RuntimeEnabled=CustomUserTiming] readonly attribute any detail;
+    [CallWith=ScriptState] readonly attribute any detail;
 };

@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/strings/string16.h"
 #include "chrome/chrome_cleaner/os/scoped_service_handle.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace chrome_cleaner {
 
@@ -19,19 +20,26 @@ namespace chrome_cleaner {
 class TestScopedServiceHandle : public ScopedServiceHandle {
  public:
   ~TestScopedServiceHandle();
-  bool InstallService();
-  bool InstallCustomService(const base::string16& service_name,
-                            const base::FilePath& module_path);
-  bool StartService();
-  bool StopAndDelete();
+
+  ::testing::AssertionResult InstallService();
+  ::testing::AssertionResult StartService();
+  ::testing::AssertionResult StopAndDelete();
   void Close();
+
   const base::char16* service_name() const { return service_name_.c_str(); }
 
  private:
-  static bool StopAndDeleteService(const base::string16& service_name);
-
   base::string16 service_name_;
 };
+
+// Returns a random string that is not an existing service name. This is a
+// best-effort check as a service with that name could be created before the
+// function returns.
+base::string16 RandomUnusedServiceNameForTesting();
+
+// Tries to stop any copies of the test service executable that are running.
+// Returns false if an executable remains running.
+::testing::AssertionResult EnsureNoTestServicesRunning();
 
 }  // namespace chrome_cleaner
 

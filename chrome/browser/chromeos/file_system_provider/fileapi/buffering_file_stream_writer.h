@@ -11,7 +11,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "net/base/completion_once_callback.h"
-#include "storage/browser/fileapi/file_stream_writer.h"
+#include "storage/browser/file_system/file_stream_writer.h"
 
 namespace net {
 class IOBuffer;
@@ -89,7 +89,7 @@ class BufferingFileStreamWriter : public storage::FileStreamWriter {
   scoped_refptr<net::IOBuffer> intermediate_buffer_;
   int buffered_bytes_;
 
-  base::WeakPtrFactory<BufferingFileStreamWriter> weak_ptr_factory_;
+  base::WeakPtrFactory<BufferingFileStreamWriter> weak_ptr_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(BufferingFileStreamWriter);
 };
 

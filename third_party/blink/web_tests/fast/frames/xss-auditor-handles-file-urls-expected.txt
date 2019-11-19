@@ -1,2 +1,0 @@
-CONSOLE ERROR: line 3: The XSS Auditor refused to execute a script in 'html;base64,PHNjcmlwdD5hbGVydCgxKTwvc2NyaXB0Pg==%27%3E' because its source code was found within the request. The auditor was enabled as the server did not send an 'X-XSS-Protection' header.
-

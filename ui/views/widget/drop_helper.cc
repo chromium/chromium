@@ -25,13 +25,9 @@ base::RepeatingClosure* GetDragEnteredCallback() {
 }  // namespace
 
 DropHelper::DropHelper(View* root_view)
-    : root_view_(root_view),
-      target_view_(NULL),
-      deepest_view_(NULL) {
-}
+    : root_view_(root_view), target_view_(nullptr), deepest_view_(nullptr) {}
 
-DropHelper::~DropHelper() {
-}
+DropHelper::~DropHelper() = default;
 
 // static
 void DropHelper::SetDragEnteredCallbackForTesting(
@@ -43,9 +39,9 @@ void DropHelper::SetDragEnteredCallbackForTesting(
 
 void DropHelper::ResetTargetViewIfEquals(View* view) {
   if (target_view_ == view)
-    target_view_ = NULL;
+    target_view_ = nullptr;
   if (deepest_view_ == view)
-    deepest_view_ = NULL;
+    deepest_view_ = nullptr;
 }
 
 int DropHelper::OnDragOver(const OSExchangeData& data,
@@ -76,14 +72,14 @@ int DropHelper::OnDragOver(const OSExchangeData& data,
 
 void DropHelper::OnDragExit() {
   NotifyDragExit();
-  deepest_view_ = target_view_ = NULL;
+  deepest_view_ = target_view_ = nullptr;
 }
 
 int DropHelper::OnDrop(const OSExchangeData& data,
                        const gfx::Point& root_view_location,
                        int drag_operation) {
   View* drop_view = target_view_;
-  deepest_view_ = target_view_ = NULL;
+  deepest_view_ = target_view_ = nullptr;
   if (!drop_view)
     return ui::DragDropTypes::DRAG_NONE;
 
@@ -105,7 +101,7 @@ View* DropHelper::CalculateTargetView(
     const OSExchangeData& data,
     bool check_can_drop) {
   return CalculateTargetViewImpl(root_view_location, data, check_can_drop,
-                                 NULL);
+                                 nullptr);
 }
 
 View* DropHelper::CalculateTargetViewImpl(
@@ -128,15 +124,14 @@ View* DropHelper::CalculateTargetViewImpl(
   // Walk the tree, stopping at target_view_ as we know it'll accept the
   // drop.
   while (view && view != target_view_ &&
-         (!view->enabled() || !view->CanDrop(data))) {
+         (!view->GetEnabled() || !view->CanDrop(data))) {
     view = view->parent();
   }
 #else
   int formats = 0;
   std::set<ui::ClipboardFormatType> format_types;
   while (view && view != target_view_) {
-    if (view->enabled() &&
-        view->GetDropFormats(&formats, &format_types) &&
+    if (view->GetEnabled() && view->GetDropFormats(&formats, &format_types) &&
         data.HasAnyFormat(formats, format_types) &&
         (!check_can_drop || view->CanDrop(data))) {
       // Found the view.

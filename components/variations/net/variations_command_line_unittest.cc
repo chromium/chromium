@@ -21,7 +21,6 @@ TEST(VariationsCommandLineTest, TestGetVariationsCommandLine) {
   std::string enable_feature_list = "feature1<trial1";
   std::string disable_feature_list = "feature2<trial2";
 
-  base::FieldTrialList field_trial_list(nullptr);
   AssociateParamsFromString(param_list);
   base::FieldTrialList::CreateTrialsFromString(trial_list,
                                                std::set<std::string>());

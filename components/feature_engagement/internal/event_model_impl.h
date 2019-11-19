@@ -58,7 +58,7 @@ class EventModelImpl : public EventModel {
   // Whether the model has been fully initialized.
   bool ready_;
 
-  base::WeakPtrFactory<EventModelImpl> weak_factory_;
+  base::WeakPtrFactory<EventModelImpl> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(EventModelImpl);
 };

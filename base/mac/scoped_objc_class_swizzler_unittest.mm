@@ -92,9 +92,7 @@ TEST(ObjCClassSwizzlerTest, SwizzleInstanceMethods) {
     EXPECT_EQ(6, [object_one method]);
     EXPECT_EQ(7, [object_two method]);
 
-    IMP original = swizzler.GetOriginalImplementation();
-    id expected_result = reinterpret_cast<id>(3);
-    EXPECT_EQ(expected_result, original(object_one, @selector(method)));
+    EXPECT_EQ(3, swizzler.InvokeOriginal<int>(object_one, @selector(method)));
   }
 
   EXPECT_EQ(3, [object_one method]);
@@ -113,10 +111,8 @@ TEST(ObjCClassSwizzlerTest, SwizzleClassMethods) {
     EXPECT_EQ(20, [ObjCClassSwizzlerTestOne function]);
     EXPECT_EQ(10, [ObjCClassSwizzlerTestTwo function]);
 
-    IMP original = swizzler.GetOriginalImplementation();
-    id expected_result = reinterpret_cast<id>(10);
-    EXPECT_EQ(expected_result,
-              original([ObjCClassSwizzlerTestOne class], @selector(function)));
+    EXPECT_EQ(10, swizzler.InvokeOriginal<int>([ObjCClassSwizzlerTestOne class],
+                                               @selector(function)));
   }
 
   EXPECT_EQ(10, [ObjCClassSwizzlerTestOne function]);
@@ -135,9 +131,7 @@ TEST(ObjCClassSwizzlerTest, SwizzleViaCategory) {
         @selector(alternate));
     EXPECT_EQ(9, [object_one method]);
 
-    IMP original = swizzler.GetOriginalImplementation();
-    id expected_result = reinterpret_cast<id>(3);
-    EXPECT_EQ(expected_result, original(object_one, @selector(method)));
+    EXPECT_EQ(3, swizzler.InvokeOriginal<int>(object_one, @selector(method)));
   }
 
   EXPECT_EQ(3, [object_one method]);
@@ -155,9 +149,7 @@ TEST(ObjCClassSwizzlerTest, SwizzleViaInheritance) {
         @selector(childAlternate));
     EXPECT_EQ(15, [child method]);
 
-    IMP original = swizzler.GetOriginalImplementation();
-    id expected_result = reinterpret_cast<id>(3);
-    EXPECT_EQ(expected_result, original(child, @selector(method)));
+    EXPECT_EQ(3, swizzler.InvokeOriginal<int>(child, @selector(method)));
   }
 
   EXPECT_EQ(3, [child method]);

@@ -6,10 +6,10 @@
 
 #include "base/bind.h"
 #include "base/files/file_util.h"
+#include "base/hash/sha1.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/sha1.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
@@ -40,11 +40,11 @@ constexpr char kPdfToPwgRasterLongEdgeTestFile[] =
 
 void ResultCallbackImpl(bool* called,
                         base::ReadOnlySharedMemoryRegion* pwg_region_out,
-                        base::Closure quit_closure,
+                        base::OnceClosure quit_closure,
                         base::ReadOnlySharedMemoryRegion pwg_region_in) {
   *called = true;
   *pwg_region_out = std::move(pwg_region_in);
-  quit_closure.Run();
+  std::move(quit_closure).Run();
 }
 
 void GetPdfData(const char* file_name,

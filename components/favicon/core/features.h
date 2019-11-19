@@ -12,6 +12,7 @@ struct Feature;
 namespace favicon {
 
 extern const base::Feature kAllowPropagationOfFaviconCacheHits;
+extern const base::Feature kEnableHistoryFaviconsGoogleServerQuery;
 
 }  // namespace favicon
 

@@ -44,16 +44,23 @@ DirectoryEntrySync::DirectoryEntrySync(DOMFileSystemBase* file_system,
     : EntrySync(file_system, full_path) {}
 
 DirectoryReaderSync* DirectoryEntrySync::createReader() {
-  return DirectoryReaderSync::Create(file_system_, full_path_);
+  return MakeGarbageCollected<DirectoryReaderSync>(file_system_, full_path_);
 }
 
 FileEntrySync* DirectoryEntrySync::getFile(const String& path,
                                            const FileSystemFlags* options,
                                            ExceptionState& exception_state) {
-  EntryCallbacksSyncHelper* sync_helper = EntryCallbacksSyncHelper::Create();
-  file_system_->GetFile(this, path, options, sync_helper->GetSuccessCallback(),
-                        sync_helper->GetErrorCallback(),
-                        DOMFileSystemBase::kSynchronous);
+  auto* sync_helper = MakeGarbageCollected<EntryCallbacksSyncHelper>();
+
+  auto success_callback_wrapper =
+      WTF::Bind(&EntryCallbacksSyncHelper::OnSuccess,
+                WrapPersistentIfNeeded(sync_helper));
+  auto error_callback_wrapper = WTF::Bind(&EntryCallbacksSyncHelper::OnError,
+                                          WrapPersistentIfNeeded(sync_helper));
+
+  file_system_->GetFile(
+      this, path, options, std::move(success_callback_wrapper),
+      std::move(error_callback_wrapper), DOMFileSystemBase::kSynchronous);
   Entry* entry = sync_helper->GetResultOrThrow(exception_state);
   return entry ? ToFileEntrySync(EntrySync::Create(entry)) : nullptr;
 }
@@ -62,18 +69,30 @@ DirectoryEntrySync* DirectoryEntrySync::getDirectory(
     const String& path,
     const FileSystemFlags* options,
     ExceptionState& exception_state) {
-  EntryCallbacksSyncHelper* sync_helper = EntryCallbacksSyncHelper::Create();
+  auto* sync_helper = MakeGarbageCollected<EntryCallbacksSyncHelper>();
+
+  auto success_callback_wrapper =
+      WTF::Bind(&EntryCallbacksSyncHelper::OnSuccess,
+                WrapPersistentIfNeeded(sync_helper));
+  auto error_callback_wrapper = WTF::Bind(&EntryCallbacksSyncHelper::OnError,
+                                          WrapPersistentIfNeeded(sync_helper));
+
   file_system_->GetDirectory(
-      this, path, options, sync_helper->GetSuccessCallback(),
-      sync_helper->GetErrorCallback(), DOMFileSystemBase::kSynchronous);
+      this, path, options, std::move(success_callback_wrapper),
+      std::move(error_callback_wrapper), DOMFileSystemBase::kSynchronous);
+
   Entry* entry = sync_helper->GetResultOrThrow(exception_state);
   return entry ? ToDirectoryEntrySync(EntrySync::Create(entry)) : nullptr;
 }
 
 void DirectoryEntrySync::removeRecursively(ExceptionState& exception_state) {
-  VoidCallbacksSyncHelper* sync_helper = VoidCallbacksSyncHelper::Create();
-  file_system_->RemoveRecursively(this, nullptr,
-                                  sync_helper->GetErrorCallback(),
+  auto* sync_helper = MakeGarbageCollected<VoidCallbacksSyncHelper>();
+
+  auto error_callback_wrapper = WTF::Bind(&VoidCallbacksSyncHelper::OnError,
+                                          WrapPersistentIfNeeded(sync_helper));
+
+  file_system_->RemoveRecursively(this, VoidCallbacks::SuccessCallback(),
+                                  std::move(error_callback_wrapper),
                                   DOMFileSystemBase::kSynchronous);
   sync_helper->GetResultOrThrow(exception_state);
 }

@@ -4,6 +4,7 @@
 
 // IPC messages for EME on android.
 // Multiply-included message file, hence no include guard.
+// no-include-guard-because-multiply-included
 
 #include <vector>
 
@@ -24,6 +25,7 @@ IPC_STRUCT_BEGIN(SupportedKeySystemResponse)
   IPC_STRUCT_MEMBER(media::SupportedCodecs, secure_codecs,
                     media::EME_CODEC_NONE)
   IPC_STRUCT_MEMBER(bool, is_persistent_license_supported)
+  IPC_STRUCT_MEMBER(bool, is_cbcs_encryption_supported)
 IPC_STRUCT_END()
 
 // Messages sent from the renderer to the browser.

@@ -11,6 +11,7 @@
 #include "base/mac/foundation_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller_factory.h"
@@ -26,7 +27,7 @@
 #import "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
-#include "ios/web/public/referrer.h"
+#include "ios/web/public/navigation/referrer.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -34,7 +35,7 @@
 
 @interface PrimaryToolbarCoordinator () <PrimaryToolbarViewControllerDelegate> {
   // Observer that updates |toolbarViewController| for fullscreen events.
-  std::unique_ptr<FullscreenControllerObserver> _fullscreenObserver;
+  std::unique_ptr<FullscreenUIUpdater> _fullscreenUIUpdater;
 }
 
 // Whether the coordinator is started.
@@ -86,11 +87,9 @@
   self.orchestrator.editViewAnimatee =
       [self.locationBarCoordinator editViewAnimatee];
 
-  _fullscreenObserver =
-      std::make_unique<FullscreenUIUpdater>(self.viewController);
-  FullscreenControllerFactory::GetInstance()
-      ->GetForBrowserState(self.browserState)
-      ->AddObserver(_fullscreenObserver.get());
+  _fullscreenUIUpdater = std::make_unique<FullscreenUIUpdater>(
+      FullscreenControllerFactory::GetForBrowserState(self.browserState),
+      self.viewController);
 
   [super start];
   self.started = YES;
@@ -102,10 +101,7 @@
   [super stop];
   [self.commandDispatcher stopDispatchingToTarget:self];
   [self.locationBarCoordinator stop];
-  FullscreenControllerFactory::GetInstance()
-      ->GetForBrowserState(self.browserState)
-      ->RemoveObserver(_fullscreenObserver.get());
-  _fullscreenObserver = nullptr;
+  _fullscreenUIUpdater = nullptr;
   self.started = NO;
 }
 
@@ -170,6 +166,12 @@
   self.enableAnimationsForOmniboxFocus = NO;
   [self fakeboxFocused];
   self.enableAnimationsForOmniboxFocus = YES;
+  // If the pasteboard is containing a URL, the omnibox popup suggestions are
+  // displayed as soon as the omnibox is focused.
+  // If the fake omnibox animation is triggered at the same time, it is possible
+  // to see the NTP going up where the real omnibox should be displayed.
+  if ([self.locationBarCoordinator omniboxPopupHasAutocompleteResults])
+    [self onFakeboxAnimationComplete];
 }
 
 - (void)fakeboxFocused {
@@ -215,12 +217,11 @@
 - (void)setUpLocationBar {
   self.locationBarCoordinator = [[LocationBarCoordinator alloc] init];
 
-  self.locationBarCoordinator.browserState = self.browserState;
+  self.locationBarCoordinator.browser = self.browser;
   self.locationBarCoordinator.dispatcher =
       base::mac::ObjCCastStrict<CommandDispatcher>(self.dispatcher);
   self.locationBarCoordinator.commandDispatcher = self.commandDispatcher;
   self.locationBarCoordinator.delegate = self.delegate;
-  self.locationBarCoordinator.webStateList = self.webStateList;
   self.locationBarCoordinator.popupPresenterDelegate =
       self.popupPresenterDelegate;
   [self.locationBarCoordinator start];

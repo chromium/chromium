@@ -59,8 +59,8 @@ class ExampleBubble : public BubbleDialogDelegateView {
   int GetDialogButtons() const override { return ui::DIALOG_BUTTON_NONE; }
 
   void Init() override {
-    SetLayoutManager(
-        std::make_unique<BoxLayout>(BoxLayout::kVertical, gfx::Insets(50)));
+    SetLayoutManager(std::make_unique<BoxLayout>(
+        BoxLayout::Orientation::kVertical, gfx::Insets(50)));
     AddChildView(new Label(GetArrowName(arrow())));
   }
 
@@ -72,13 +72,11 @@ class ExampleBubble : public BubbleDialogDelegateView {
 
 BubbleExample::BubbleExample() : ExampleBase("Bubble") {}
 
-BubbleExample::~BubbleExample() {}
+BubbleExample::~BubbleExample() = default;
 
 void BubbleExample::CreateExampleView(View* container) {
-  PrintStatus("Click with optional modifiers: [Ctrl] for set_arrow(NONE), "
-     "[Alt] for set_arrow(FLOAT), or [Shift] to reverse the arrow iteration.");
-  container->SetLayoutManager(
-      std::make_unique<BoxLayout>(BoxLayout::kHorizontal, gfx::Insets(), 10));
+  container->SetLayoutManager(std::make_unique<BoxLayout>(
+      BoxLayout::Orientation::kHorizontal, gfx::Insets(), 10));
   no_shadow_ = new LabelButton(this, ASCIIToUTF16("No Shadow"));
   container->AddChildView(no_shadow_);
   no_shadow_opaque_ = new LabelButton(this, ASCIIToUTF16("Opaque Border"));
@@ -123,6 +121,8 @@ void BubbleExample::ButtonPressed(Button* sender, const ui::Event& event) {
   BubbleDialogDelegateView::CreateBubble(bubble);
 
   bubble->GetWidget()->Show();
+  PrintStatus("Click with optional modifiers: [Ctrl] for set_arrow(NONE), "
+     "[Alt] for set_arrow(FLOAT), or [Shift] to reverse the arrow iteration.");
 }
 
 }  // namespace examples

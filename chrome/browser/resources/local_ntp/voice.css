@@ -55,8 +55,12 @@
   background-color: white;
 }
 
-html[darkmode=true] .overlay-dialog::backdrop {
-  background-color: rgb(41, 42, 45);
+@media (prefers-color-scheme: dark) {
+  .overlay-dialog::backdrop {
+    /* Equivalent to --dark-mode-dialog-rgb. CSS variables cannot be used in
+     * pseudo elements. */
+    background-color: rgb(41, 42, 45);
+  }
 }
 
 /* The background element. */
@@ -70,9 +74,11 @@ html[darkmode=true] .overlay-dialog::backdrop {
   z-index: 10000;
 }
 
-html[darkmode=true] .overlay,
-html[darkmode=true] .overlay-hidden {
-  background-color: rgb(41, 42, 45);
+@media (prefers-color-scheme: dark) {
+  .overlay,
+  .overlay-hidden {
+    background-color: rgb(var(--dark-mode-dialog-rgb));
+  }
 }
 
 /* Full Page visible style for the background element. */
@@ -104,8 +110,10 @@ html[dir=rtl] .close-button {
   right: auto;
 }
 
-html[darkmode=true] .close-button {
-  color: rgb(var(--GG200-rgb));
+@media (prefers-color-scheme: dark) {
+  .close-button {
+    color: rgb(var(--GG200-rgb));
+  }
 }
 
 .close-button:hover {
@@ -172,10 +180,13 @@ html[darkmode=true] .close-button {
   transition: background-color 218ms, border 218ms, box-shadow 218ms;
 }
 
-html[darkmode=true] .button {
-  background-color: rgb(var(--GG900-rgb));
-  border-color: rgba(0, 0, 0, 0.1);
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.3), 0 4px 8px 3px rgba(0, 0, 0, 0.15);
+@media (prefers-color-scheme: dark) {
+  .button {
+    background-color: rgb(var(--GG900-rgb));
+    border-color: rgba(0, 0, 0, .1);
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, .3),
+                0 4px 8px 3px rgba(0, 0, 0, .15);
+  }
 }
 
 /* Button state when speech recognition is inactive. */
@@ -201,8 +212,10 @@ html[darkmode=true] .button {
   box-shadow: none;
 }
 
-html[darkmode=true] .voice-rs .button {
-  background-color: rgb(var(--GR300-rgb));
+@media (prefers-color-scheme: dark) {
+  .voice-rs .button {
+    background-color: rgb(var(--GR300-rgb));
+  }
 }
 
 /* Vibrating input volume level. */
@@ -221,8 +234,10 @@ html[darkmode=true] .voice-rs .button {
   width: 301px;
 }
 
-html[darkmode=true] .level {
-  background-color: rgb(var(--GG700-rgb));
+@media (prefers-color-scheme: dark) {
+  .level {
+    background-color: rgb(var(--GG700-rgb));
+  }
 }
 
 /* Container for scaling and positioning of the button. */
@@ -262,8 +277,10 @@ html[dir=rtl] .overlay-hidden .button-container {
   background-color: var(--dark_red);
 }
 
-html[darkmode=true] .voice-rs .button:active {
-  background-color: rgb(223, 128, 119);
+@media (prefers-color-scheme: dark) {
+  .voice-rs .button:active {
+    background-color: rgb(223, 128, 119);
+  }
 }
 
 /* Style applied to the button when clicked. */
@@ -271,8 +288,10 @@ html[darkmode=true] .voice-rs .button:active {
   background-color: var(--light_grey);
 }
 
-html[darkmode=true] .button:active {
-  background-color: rgb(53, 54, 57);
+@media (prefers-color-scheme: dark) {
+  .button:active {
+    background-color: rgb(53, 54, 57);
+  }
 }
 
 /* TEXT */
@@ -284,13 +303,13 @@ html[darkmode=true] .button:active {
  *   - voice-text-5l - 5 line style class */
 
 /* Styles applied to the positioning text-container element. */
-.text-container {
+#text-container {
   pointer-events: none;
 }
 
 /* Full Page UI style for the text-container. */
-.overlay .text-container,
-.overlay-hidden .text-container {
+.overlay #text-container,
+.overlay-hidden #text-container {
   position: absolute;
 }
 
@@ -350,8 +369,10 @@ html[dir=rtl] .overlay .voice-text {
   color: var(--grey);
 }
 
-html[darkmode=true] #voice-text-i {
-  color: rgb(var(--GG500-rgb));
+@media (prefers-color-scheme: dark) {
+  #voice-text-i {
+    color: rgb(var(--GG500-rgb));
+  }
 }
 
 /* Final (high confidence) text. */
@@ -359,8 +380,10 @@ html[darkmode=true] #voice-text-i {
   color: black;
 }
 
-html[darkmode=true] #voice-text-f {
-  color: rgb(var(--GG200-rgb));
+@media (prefers-color-scheme: dark) {
+  #voice-text-f {
+    color: rgb(var(--GG200-rgb));
+  }
 }
 
 /* Text area links. */
@@ -373,8 +396,10 @@ html[darkmode=true] #voice-text-f {
   text-decoration: underline;
 }
 
-html[darkmode=true] .voice-text-link {
-  color: rgb(var(--GB300-rgb));
+@media (prefers-color-scheme: dark) {
+  .voice-text-link {
+    color: rgb(var(--GB300-rgb));
+  }
 }
 
 /* Range of motion for the typing animation. */
@@ -460,8 +485,10 @@ html[darkmode=true] .voice-text-link {
   width: 24px;
 }
 
-html[darkmode=true] .receiver {
-  background-color: rgb(var(--GG500-rgb));
+@media (prefers-color-scheme: dark) {
+  .receiver {
+    background-color: rgb(var(--GG500-rgb));
+  }
 }
 
 /* Part 2 of CSS-only microphone icon: the shell and stem wrapper element.
@@ -489,8 +516,10 @@ html[darkmode=true] .receiver {
   z-index: 1; /* z-index is only used to specify position relative to stem. */
 }
 
-html[darkmode=true] .stem {
-  background-color: rgb(var(--GG500-rgb));
+@media (prefers-color-scheme: dark) {
+  .stem {
+    background-color: rgb(var(--GG500-rgb));
+  }
 }
 
 /* Part 4 of CSS-only microphone icon: shell that holds the receiver.
@@ -506,8 +535,10 @@ html[darkmode=true] .stem {
   z-index: 0; /* z-index is only used to specify position relative to stem. */
 }
 
-html[darkmode=true] .shell {
-  border-color: rgb(var(--GG500-rgb));
+@media (prefers-color-scheme: dark) {
+  .shell {
+    border-color: rgb(var(--GG500-rgb));
+  }
 }
 
 /* The .voice-ml style is applied when the UI is in
@@ -517,17 +548,21 @@ html[darkmode=true] .shell {
   background-color: var(--listening_icon_color);
 }
 
-html[darkmode=true] .voice-ml .receiver,
-html[darkmode=true] .voice-ml .stem {
-  background-color: rgb(var(--GR300-rgb));
+@media (prefers-color-scheme: dark) {
+  .voice-ml .receiver,
+  .voice-ml .stem {
+    background-color: rgb(var(--GR300-rgb));
+  }
 }
 
 .voice-ml .shell {
   border-color: var(--listening_icon_color);
 }
 
-html[darkmode=true] .voice-ml .shell {
-  border-color: rgb(var(--GR300-rgb));
+@media (prefers-color-scheme: dark) {
+  .voice-ml .shell {
+    border-color: rgb(var(--GR300-rgb));
+  }
 }
 
 /* The .voice-rs style is applied when the UI is in
@@ -537,15 +572,19 @@ html[darkmode=true] .voice-ml .shell {
   background-color: var(--active_icon_color);
 }
 
-html[darkmode=true] .voice-rs .receiver,
-html[darkmode=true] .voice-rs .stem {
-  background-color: rgb(var(--GG200-rgb));
+@media (prefers-color-scheme: dark) {
+  .voice-rs .receiver,
+  .voice-rs .stem {
+    background-color: rgb(var(--GG200-rgb));
+  }
 }
 
 .voice-rs .shell {
   border-color: var(--active_icon_color);
 }
 
-html[darkmode=true] .voice-rs .shell {
-  border-color: rgb(var(--GG200-rgb));
+@media (prefers-color-scheme: dark) {
+  .voice-rs .shell {
+    border-color: rgb(var(--GG200-rgb));
+  }
 }

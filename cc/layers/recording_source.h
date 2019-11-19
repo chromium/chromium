@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "cc/base/invalidation_region.h"
 #include "cc/cc_export.h"
@@ -36,7 +35,10 @@ class CC_EXPORT RecordingSource {
   };
 
   RecordingSource();
+  RecordingSource(const RecordingSource&) = delete;
   virtual ~RecordingSource();
+
+  RecordingSource& operator=(const RecordingSource&) = delete;
 
   bool UpdateAndExpandInvalidation(Region* invalidation,
                                    const gfx::Size& layer_size,
@@ -82,8 +84,6 @@ class CC_EXPORT RecordingSource {
   void DetermineIfSolidColor();
 
   InvalidationRegion invalidation_;
-
-  DISALLOW_COPY_AND_ASSIGN(RecordingSource);
 };
 
 }  // namespace cc

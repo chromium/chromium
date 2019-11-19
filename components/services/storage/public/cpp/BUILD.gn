@@ -1,0 +1,21 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+component("cpp") {
+  output_name = "storage_service_public"
+
+  public = [
+    "constants.h",
+  ]
+
+  sources = [
+    "constants.cc",
+  ]
+
+  public_deps = [
+    "//base",
+  ]
+
+  defines = [ "IS_STORAGE_SERVICE_PUBLIC_IMPL" ]
+}

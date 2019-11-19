@@ -71,7 +71,8 @@ ExtensionNavigationUIData::ExtensionNavigationUIData(
                   window_id,
                   // The RenderFrameHost may not have an associated WebContents
                   // in cases such as interstitial pages.
-                  web_contents ? web_contents->GetLastCommittedURL() : GURL()) {
+                  web_contents ? web_contents->GetLastCommittedURL() : GURL(),
+                  base::nullopt /* pending_main_frame_url */) {
   WebViewGuest* web_view = WebViewGuest::FromWebContents(web_contents);
   if (web_view) {
     is_web_view_ = true;

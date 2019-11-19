@@ -23,9 +23,8 @@ class StackSamplingConfiguration {
  public:
   StackSamplingConfiguration();
 
-  // Get the stack sampling params to use for this process.
-  base::StackSamplingProfiler::SamplingParams
-      GetSamplingParamsForCurrentProcess() const;
+  // Get the stack sampling params to use.
+  base::StackSamplingProfiler::SamplingParams GetSamplingParams() const;
 
   // Returns true if the profiler should be started for the current process.
   bool IsProfilerEnabledForCurrentProcess() const;
@@ -51,6 +50,7 @@ class StackSamplingConfiguration {
   enum ProfileConfiguration {
     // Chrome-wide configurations set in the browser process.
     PROFILE_DISABLED,
+    PROFILE_DISABLED_TREND_MICRO,
     PROFILE_CONTROL,
     PROFILE_ENABLED,
 

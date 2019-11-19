@@ -16,7 +16,7 @@
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string16.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "services/device/geolocation/fake_location_provider.h"
@@ -102,8 +102,8 @@ void DummyFunction(const LocationProvider* provider,
 class GeolocationProviderTest : public testing::Test {
  protected:
   GeolocationProviderTest()
-      : scoped_task_environment_(
-            base::test::ScopedTaskEnvironment::MainThreadType::UI),
+      : task_environment_(
+            base::test::SingleThreadTaskEnvironment::MainThreadType::UI),
         arbitrator_(new FakeLocationProvider) {
     provider()->SetArbitratorForTesting(base::WrapUnique(arbitrator_));
   }
@@ -129,7 +129,7 @@ class GeolocationProviderTest : public testing::Test {
   // test completes.
   base::ShadowingAtExitManager at_exit_;
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
 
   base::ThreadChecker thread_checker_;
 

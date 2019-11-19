@@ -125,7 +125,7 @@ class OneTimeMessageHandler {
   // The associated bindings system. Outlives this object.
   NativeExtensionBindingsSystem* const bindings_system_;
 
-  base::WeakPtrFactory<OneTimeMessageHandler> weak_factory_;
+  base::WeakPtrFactory<OneTimeMessageHandler> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(OneTimeMessageHandler);
 };

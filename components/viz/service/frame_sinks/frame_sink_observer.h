@@ -8,6 +8,7 @@
 namespace viz {
 
 class FrameSinkId;
+struct BeginFrameArgs;
 
 class FrameSinkObserver {
  public:
@@ -36,6 +37,14 @@ class FrameSinkObserver {
   virtual void OnUnregisteredFrameSinkHierarchy(
       const FrameSinkId& parent_frame_sink_id,
       const FrameSinkId& child_frame_sink_id) = 0;
+
+  // Called when a sink has started a frame.
+  virtual void OnFrameSinkDidBeginFrame(const FrameSinkId& frame_sink_id,
+                                        const BeginFrameArgs& args) = 0;
+
+  // Called when a sink has finished processing a frame.
+  virtual void OnFrameSinkDidFinishFrame(const FrameSinkId& frame_sink_id,
+                                         const BeginFrameArgs& args) = 0;
 };
 
 }  // namespace viz

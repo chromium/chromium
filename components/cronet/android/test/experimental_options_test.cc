@@ -9,12 +9,15 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/bind.h"
 #include "base/time/time.h"
+#include "components/cronet/android/cronet_tests_jni_headers/ExperimentalOptionsTest_jni.h"
 #include "components/cronet/android/test/cronet_test_util.h"
-#include "jni/ExperimentalOptionsTest_jni.h"
 #include "net/base/address_family.h"
 #include "net/base/net_errors.h"
+#include "net/base/network_isolation_key.h"
 #include "net/dns/host_cache.h"
 #include "net/dns/host_resolver.h"
+#include "net/dns/host_resolver_source.h"
+#include "net/dns/public/dns_query_type.h"
 #include "net/url_request/url_request_context.h"
 
 using base::android::JavaParamRef;
@@ -31,10 +34,13 @@ void WriteToHostCacheOnNetworkThread(jlong jcontext_adapter,
 
   // Create multiple keys to ensure the test works in a variety of network
   // conditions.
-  net::HostCache::Key key1(hostname, net::ADDRESS_FAMILY_UNSPECIFIED, 0);
-  net::HostCache::Key key2(
-      hostname, net::ADDRESS_FAMILY_IPV4,
-      net::HOST_RESOLVER_DEFAULT_FAMILY_SET_DUE_TO_NO_IPV6);
+  net::HostCache::Key key1(hostname, net::DnsQueryType::UNSPECIFIED, 0,
+                           net::HostResolverSource::ANY,
+                           net::NetworkIsolationKey());
+  net::HostCache::Key key2(hostname, net::DnsQueryType::A,
+                           net::HOST_RESOLVER_DEFAULT_FAMILY_SET_DUE_TO_NO_IPV6,
+                           net::HostResolverSource::ANY,
+                           net::NetworkIsolationKey());
 
   net::IPAddress address;
   CHECK(address.AssignFromIPLiteral(address_string));

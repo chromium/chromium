@@ -18,6 +18,7 @@
 #include "extensions/renderer/native_renderer_messaging_service.h"
 #include "extensions/renderer/runtime_hooks_delegate.h"
 #include "extensions/renderer/script_context.h"
+#include "extensions/renderer/script_context_set.h"
 #include "extensions/renderer/send_message_tester.h"
 
 namespace extensions {
@@ -116,7 +117,7 @@ TEST_F(ExtensionHooksDelegateTest, SendRequestDisabled) {
   // extension with an event page).
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("foo")
-          .SetBackgroundPage(ExtensionBuilder::BackgroundPage::EVENT)
+          .SetBackgroundContext(ExtensionBuilder::BackgroundContext::EVENT_PAGE)
           .SetLocation(Manifest::UNPACKED)
           .Build();
   RegisterExtension(extension);
@@ -195,7 +196,7 @@ TEST_F(ExtensionHooksDelegateTest, SendRequestChannelLeftOpenToReplyAsync) {
   // Open a receiver for the message.
   EXPECT_CALL(*ipc_message_sender(),
               SendOpenMessagePort(MSG_ROUTING_NONE, port_id));
-  messaging_service()->DispatchOnConnect(*script_context_set(), port_id,
+  messaging_service()->DispatchOnConnect(script_context_set(), port_id,
                                          kChannel, tab_connection_info,
                                          external_connection_info, nullptr);
   ::testing::Mock::VerifyAndClearExpectations(ipc_message_sender());
@@ -204,11 +205,62 @@ TEST_F(ExtensionHooksDelegateTest, SendRequestChannelLeftOpenToReplyAsync) {
 
   // Post the message to the receiver. Since the receiver doesn't respond, the
   // channel should remain open.
-  messaging_service()->DeliverMessage(*script_context_set(), port_id,
+  messaging_service()->DeliverMessage(script_context_set(), port_id,
                                       Message("\"message\"", false), nullptr);
   ::testing::Mock::VerifyAndClearExpectations(ipc_message_sender());
   EXPECT_TRUE(
       messaging_service()->HasPortForTesting(script_context(), port_id));
+}
+
+// Tests that overriding the runtime equivalents of chrome.extension methods
+// with accessors that throw does not cause a crash on access. Regression test
+// for https://crbug.com/949170.
+TEST_F(ExtensionHooksDelegateTest, RuntimeAliasesCorrupted) {
+  v8::HandleScope handle_scope(isolate());
+  v8::Local<v8::Context> context = MainContext();
+
+  // Set a trap on chrome.runtime.sendMessage.
+  constexpr char kMutateChromeRuntime[] =
+      R"((function() {
+           Object.defineProperty(
+               chrome.runtime, 'sendMessage',
+               { get() { throw new Error('haha'); } });
+         }))";
+  RunFunctionOnGlobal(FunctionFromString(context, kMutateChromeRuntime),
+                      context, 0, nullptr);
+
+  // Touch chrome.extension.sendMessage, which is aliased to the runtime
+  // version. Though an error is thrown, we shouldn't crash.
+  constexpr char kTouchExtensionSendMessage[] =
+      "(function() { chrome.extension.sendMessage; })";
+  RunFunctionOnGlobal(FunctionFromString(context, kTouchExtensionSendMessage),
+                      context, 0, nullptr);
+}
+
+// Ensure that HandleGetURL allows extension URLs and doesn't allow arbitrary
+// non-extension URLs. Very similar to RuntimeHooksDeligateTest that tests a
+// similar function.
+TEST_F(ExtensionHooksDelegateTest, GetURL) {
+  v8::HandleScope handle_scope(isolate());
+  v8::Local<v8::Context> context = MainContext();
+
+  auto get_url = [this, context](const char* args, const GURL& expected_url) {
+    SCOPED_TRACE(base::StringPrintf("Args: `%s`", args));
+    constexpr char kGetUrlTemplate[] =
+        "(function() { return chrome.extension.getURL(%s); })";
+    v8::Local<v8::Function> get_url =
+        FunctionFromString(context, base::StringPrintf(kGetUrlTemplate, args));
+    v8::Local<v8::Value> url = RunFunction(get_url, context, 0, nullptr);
+    ASSERT_FALSE(url.IsEmpty());
+    ASSERT_TRUE(url->IsString());
+    EXPECT_EQ(expected_url.spec(), gin::V8ToString(isolate(), url));
+  };
+
+  get_url("''", extension()->url());
+  get_url("'foo'", extension()->GetResourceURL("foo"));
+  get_url("'/foo'", extension()->GetResourceURL("foo"));
+  get_url("'https://www.google.com'",
+          GURL(extension()->url().spec() + "https://www.google.com"));
 }
 
 }  // namespace extensions

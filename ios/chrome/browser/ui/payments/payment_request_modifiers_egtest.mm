@@ -2,12 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import <EarlGrey/EarlGrey.h>
+
 #include "base/strings/sys_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/payments/core/features.h"
 #import "ios/chrome/browser/ui/payments/payment_request_egtest_base.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
+#import "ios/chrome/test/app/tab_test_util.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/web/public/test/http_server/http_server.h"
@@ -63,8 +66,7 @@ id<GREYMatcher> PaymentMethodCellMatcher(
 
 - (void)setUp {
   [super setUp];
-  if (!base::FeatureList::IsEnabled(
-          payments::features::kWebPaymentsModifiers)) {
+  if (![ChromeEarlGrey isWebPaymentsModifiersEnabled]) {
     // payments::features::kWebPaymentsModifiers feature is not enabled,
     // You have to pass --enable-features=WebPaymentsModifiers command line
     // argument in order to run this test.
@@ -100,7 +102,7 @@ id<GREYMatcher> PaymentMethodCellMatcher(
 - (void)testNoModifierAppliedNoSelectedInstrument {
   [ChromeEarlGrey loadURL:web::test::HttpServer::MakeUrl(kModifiersPage)];
 
-  [ChromeEarlGrey tapWebViewElementWithID:@"buy"];
+  [ChromeEarlGrey tapWebStateElementWithID:@"buy"];
 
   // Verify there's no line item.
   [[EarlGrey selectElementWithMatcher:PriceCellMatcher(@"Total, USD $5.00", NO)]
@@ -114,7 +116,7 @@ id<GREYMatcher> PaymentMethodCellMatcher(
 
   [self addLocalCard];
 
-  [ChromeEarlGrey tapWebViewElementWithID:@"buy"];
+  [ChromeEarlGrey tapWebStateElementWithID:@"buy"];
 
   // Verify there's a selected payment method.
   [[EarlGrey selectElementWithMatcher:PaymentMethodCellMatcher(_localCard)]
@@ -142,7 +144,7 @@ id<GREYMatcher> PaymentMethodCellMatcher(
 
   [self addServerCardWithType:CREDIT];
 
-  [ChromeEarlGrey tapWebViewElementWithID:@"buy"];
+  [ChromeEarlGrey tapWebStateElementWithID:@"buy"];
 
   // Verify there's a selected payment method.
   [[EarlGrey selectElementWithMatcher:PaymentMethodCellMatcher(_serverCard)]
@@ -170,7 +172,7 @@ id<GREYMatcher> PaymentMethodCellMatcher(
 
   [self addServerCardWithType:CREDIT];
 
-  [ChromeEarlGrey tapWebViewElementWithID:@"credit_supported_type"];
+  [ChromeEarlGrey tapWebStateElementWithID:@"credit_supported_type"];
 
   // Verify there's a selected payment method.
   [[EarlGrey selectElementWithMatcher:PaymentMethodCellMatcher(_serverCard)]
@@ -194,7 +196,7 @@ id<GREYMatcher> PaymentMethodCellMatcher(
 
   [self addServerCardWithType:CREDIT];
 
-  [ChromeEarlGrey tapWebViewElementWithID:@"debit_supported_type"];
+  [ChromeEarlGrey tapWebStateElementWithID:@"debit_supported_type"];
 
   // Verify there's no line item.
   [[EarlGrey selectElementWithMatcher:PriceCellMatcher(@"Total, USD $5.00", NO)]
@@ -212,7 +214,7 @@ id<GREYMatcher> PaymentMethodCellMatcher(
 
   [self addServerCardWithType:CREDIT];
 
-  [ChromeEarlGrey tapWebViewElementWithID:@"mastercard_any_supported_type"];
+  [ChromeEarlGrey tapWebStateElementWithID:@"mastercard_any_supported_type"];
 
   // Verify there's a selected payment method.
   [[EarlGrey selectElementWithMatcher:PaymentMethodCellMatcher(_serverCard)]
@@ -236,7 +238,7 @@ id<GREYMatcher> PaymentMethodCellMatcher(
 
   [self addLocalCard];
 
-  [ChromeEarlGrey tapWebViewElementWithID:@"mastercard_any_supported_type"];
+  [ChromeEarlGrey tapWebStateElementWithID:@"mastercard_any_supported_type"];
 
   // Verify there's a selected payment method.
   [[EarlGrey selectElementWithMatcher:PaymentMethodCellMatcher(_localCard)]
@@ -259,7 +261,7 @@ id<GREYMatcher> PaymentMethodCellMatcher(
 
   [self addServerCardWithType:CREDIT];
 
-  [ChromeEarlGrey tapWebViewElementWithID:@"mastercard_supported_network"];
+  [ChromeEarlGrey tapWebStateElementWithID:@"mastercard_supported_network"];
 
   // Verify there's a selected payment method.
   [[EarlGrey selectElementWithMatcher:PaymentMethodCellMatcher(_serverCard)]

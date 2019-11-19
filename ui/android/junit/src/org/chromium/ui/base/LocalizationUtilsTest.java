@@ -24,16 +24,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 public class LocalizationUtilsTest {
     @Test
     @SmallTest
-    public void testGetDefaultCompressedPakLocaleForLanguage() {
-        assertEquals("fr", LocalizationUtils.getDefaultCompressedPakLocaleForLanguage("fr"));
-        assertEquals("es", LocalizationUtils.getDefaultCompressedPakLocaleForLanguage("es"));
-        assertEquals("en-US", LocalizationUtils.getDefaultCompressedPakLocaleForLanguage("en"));
-        assertEquals("pt-PT", LocalizationUtils.getDefaultCompressedPakLocaleForLanguage("pt"));
-        assertEquals("zh-CN", LocalizationUtils.getDefaultCompressedPakLocaleForLanguage("zh"));
-    }
-
-    @Test
-    @SmallTest
     public void testGetSplitLanguageForAndroid() {
         assertEquals("en", LocalizationUtils.getSplitLanguageForAndroid("en"));
         assertEquals("es", LocalizationUtils.getSplitLanguageForAndroid("es"));

@@ -236,24 +236,6 @@ class NaClDescWrapper {
   DISALLOW_COPY_AND_ASSIGN(NaClDescWrapper);
 };
 
-std::unique_ptr<NaClDescWrapper> MakeShmNaClDesc(
-    const base::SharedMemoryHandle& handle,
-    size_t size) {
-#if defined(OS_MACOSX)
-  return std::unique_ptr<NaClDescWrapper>(new NaClDescWrapper(
-      NaClDescImcShmMachMake(handle.GetMemoryObject(), size)));
-#else
-  return std::unique_ptr<NaClDescWrapper>(
-      new NaClDescWrapper(NaClDescImcShmMake(
-#if defined(OS_WIN)
-          handle.GetHandle(),
-#else
-          base::SharedMemory::GetFdFromSharedMemoryHandle(handle),
-#endif
-          size)));
-#endif
-}
-
 std::unique_ptr<NaClDescWrapper> MakeShmRegionNaClDesc(
     base::subtle::PlatformSharedMemoryRegion region) {
   // Writable regions are not supported in NaCl.
@@ -578,11 +560,6 @@ bool NaClIPCAdapter::RewriteMessage(const IPC::Message& msg, uint32_t type) {
     for (ppapi::proxy::SerializedHandle& handle : handles) {
       std::unique_ptr<NaClDescWrapper> nacl_desc;
       switch (handle.type()) {
-        case ppapi::proxy::SerializedHandle::SHARED_MEMORY: {
-          nacl_desc = MakeShmNaClDesc(handle.shmem(),
-                                      static_cast<size_t>(handle.size()));
-          break;
-        }
         case ppapi::proxy::SerializedHandle::SHARED_MEMORY_REGION: {
           nacl_desc = MakeShmRegionNaClDesc(handle.TakeSharedMemoryRegion());
           break;

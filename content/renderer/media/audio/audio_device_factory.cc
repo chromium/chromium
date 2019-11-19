@@ -66,13 +66,13 @@ scoped_refptr<media::AudioOutputDevice> NewOutputDevice(
 
 // This is where we decide which audio will go to mixers and which one to
 // AudioOutputDevice directly.
-bool IsMixable(AudioDeviceFactory::SourceType source_type) {
+bool IsMixable(blink::WebAudioDeviceSourceType source_type) {
   // Media element must ALWAYS go through mixer.
-  return source_type == AudioDeviceFactory::kSourceMediaElement;
+  return source_type == blink::WebAudioDeviceSourceType::kMediaElement;
 }
 
 scoped_refptr<media::SwitchableAudioRendererSink> NewMixableSink(
-    AudioDeviceFactory::SourceType source_type,
+    blink::WebAudioDeviceSourceType source_type,
     int render_frame_id,
     const media::AudioSinkParameters& params) {
   RenderThreadImpl* render_thread = RenderThreadImpl::current();
@@ -87,19 +87,19 @@ scoped_refptr<media::SwitchableAudioRendererSink> NewMixableSink(
 }  // namespace
 
 media::AudioLatency::LatencyType AudioDeviceFactory::GetSourceLatencyType(
-    AudioDeviceFactory::SourceType source) {
+    blink::WebAudioDeviceSourceType source) {
   switch (source) {
-    case AudioDeviceFactory::kSourceWebAudioInteractive:
+    case blink::WebAudioDeviceSourceType::kWebAudioInteractive:
       return media::AudioLatency::LATENCY_INTERACTIVE;
-    case AudioDeviceFactory::kSourceNone:
-    case AudioDeviceFactory::kSourceWebRtc:
-    case AudioDeviceFactory::kSourceNonRtcAudioTrack:
-    case AudioDeviceFactory::kSourceWebAudioBalanced:
+    case blink::WebAudioDeviceSourceType::kNone:
+    case blink::WebAudioDeviceSourceType::kWebRtc:
+    case blink::WebAudioDeviceSourceType::kNonRtcAudioTrack:
+    case blink::WebAudioDeviceSourceType::kWebAudioBalanced:
       return media::AudioLatency::LATENCY_RTC;
-    case AudioDeviceFactory::kSourceMediaElement:
-    case AudioDeviceFactory::kSourceWebAudioPlayback:
+    case blink::WebAudioDeviceSourceType::kMediaElement:
+    case blink::WebAudioDeviceSourceType::kWebAudioPlayback:
       return media::AudioLatency::LATENCY_PLAYBACK;
-    case AudioDeviceFactory::kSourceWebAudioExact:
+    case blink::WebAudioDeviceSourceType::kWebAudioExact:
       return media::AudioLatency::LATENCY_EXACT_MS;
   }
   NOTREACHED();
@@ -118,7 +118,7 @@ AudioDeviceFactory::NewAudioRendererMixerSink(
 // static
 scoped_refptr<media::AudioRendererSink>
 AudioDeviceFactory::NewAudioRendererSink(
-    SourceType source_type,
+    blink::WebAudioDeviceSourceType source_type,
     int render_frame_id,
     const media::AudioSinkParameters& params) {
   if (factory_) {
@@ -144,7 +144,7 @@ AudioDeviceFactory::NewAudioRendererSink(
 // static
 scoped_refptr<media::SwitchableAudioRendererSink>
 AudioDeviceFactory::NewSwitchableAudioRendererSink(
-    SourceType source_type,
+    blink::WebAudioDeviceSourceType source_type,
     int render_frame_id,
     const media::AudioSinkParameters& params) {
   if (factory_) {
@@ -195,11 +195,11 @@ media::OutputDeviceInfo AudioDeviceFactory::GetOutputDeviceInfo(
 
   // There's one process wide instance that lives on the render thread.
   static base::NoDestructor<AudioRendererSinkCacheImpl> cache(
-      base::CreateSequencedTaskRunnerWithTraits(
-          {base::TaskPriority::BEST_EFFORT,
+      base::CreateSequencedTaskRunner(
+          {base::ThreadPool(), base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN}),
       base::BindRepeating(&AudioDeviceFactory::NewAudioRendererSink,
-                          AudioDeviceFactory::kSourceNone),
+                          blink::WebAudioDeviceSourceType::kNone),
       kDeleteTimeout);
   return cache->GetSinkInfo(render_frame_id, params.session_id,
                             params.device_id);

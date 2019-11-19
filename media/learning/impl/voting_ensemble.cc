@@ -12,9 +12,9 @@ VotingEnsemble::VotingEnsemble(std::vector<std::unique_ptr<Model>> models)
 
 VotingEnsemble::~VotingEnsemble() = default;
 
-TargetDistribution VotingEnsemble::PredictDistribution(
+TargetHistogram VotingEnsemble::PredictDistribution(
     const FeatureVector& instance) {
-  TargetDistribution distribution;
+  TargetHistogram distribution;
 
   for (auto iter = models_.begin(); iter != models_.end(); iter++)
     distribution += (*iter)->PredictDistribution(instance);

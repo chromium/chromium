@@ -16,14 +16,14 @@ deps = [
 ]
 
 type_mappings = [
-  "mojo.test.EnumWithTraits=mojo::test::EnumWithTraitsImpl",
-  "mojo.test.StructWithTraits=mojo::test::StructWithTraitsImpl",
-  "mojo.test.StructWithUnreachableTraits=mojo::test::StructWithUnreachableTraitsImpl",
-  "mojo.test.NestedStructWithTraits=mojo::test::NestedStructWithTraitsImpl",
-  "mojo.test.TrivialStructWithTraits=mojo::test::TrivialStructWithTraitsImpl[copyable_pass_by_value]",
-  "mojo.test.MoveOnlyStructWithTraits=mojo::test::MoveOnlyStructWithTraitsImpl[move_only]",
-  "mojo.test.StructWithTraitsForUniquePtr=std::unique_ptr<int>[move_only,nullable_is_same_type]",
-  "mojo.test.UnionWithTraits=std::unique_ptr<mojo::test::UnionWithTraitsBase>[move_only,nullable_is_same_type]",
-  "mojo.test.StructForceSerialize=mojo::test::StructForceSerializeImpl[force_serialize]",
-  "mojo.test.StructNestedForceSerialize=mojo::test::StructNestedForceSerializeImpl",
+  "mojo.test.EnumWithTraits=::mojo::test::EnumWithTraitsImpl",
+  "mojo.test.StructWithTraits=::mojo::test::StructWithTraitsImpl",
+  "mojo.test.StructWithUnreachableTraits=::mojo::test::StructWithUnreachableTraitsImpl",
+  "mojo.test.NestedStructWithTraits=::mojo::test::NestedStructWithTraitsImpl",
+  "mojo.test.TrivialStructWithTraits=::mojo::test::TrivialStructWithTraitsImpl[copyable_pass_by_value]",
+  "mojo.test.MoveOnlyStructWithTraits=::mojo::test::MoveOnlyStructWithTraitsImpl[move_only]",
+  "mojo.test.StructWithTraitsForUniquePtr=::std::unique_ptr<int>[move_only,nullable_is_same_type]",
+  "mojo.test.UnionWithTraits=::std::unique_ptr<::mojo::test::UnionWithTraitsBase>[move_only,nullable_is_same_type]",
+  "mojo.test.StructForceSerialize=::mojo::test::StructForceSerializeImpl[force_serialize]",
+  "mojo.test.StructNestedForceSerialize=::mojo::test::StructNestedForceSerializeImpl",
 ]

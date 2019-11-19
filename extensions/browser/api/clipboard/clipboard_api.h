@@ -37,7 +37,7 @@ class ClipboardAPI : public BrowserContextKeyedAPI,
   content::BrowserContext* const browser_context_;
 };
 
-class ClipboardSetImageDataFunction : public UIThreadExtensionFunction {
+class ClipboardSetImageDataFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("clipboard.setImageData", CLIPBOARD_SETIMAGEDATA)
 

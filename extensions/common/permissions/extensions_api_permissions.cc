@@ -50,8 +50,6 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
     {APIPermission::kDisplaySource, "displaySource"},
     {APIPermission::kDns, "dns"},
     {APIPermission::kDocumentScan, "documentScan"},
-    {APIPermission::kExtensionView, "extensionview",
-     APIPermissionInfo::kFlagCannotBeOptional},
     {APIPermission::kExternallyConnectableAllUrls,
      "externally_connectable.all_urls"},
     {APIPermission::kFeedbackPrivate, "feedbackPrivate",
@@ -78,6 +76,10 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
     {APIPermission::kLockScreen, "lockScreen"},
     {APIPermission::kLockWindowFullscreenPrivate, "lockWindowFullscreenPrivate",
      APIPermissionInfo::kFlagCannotBeOptional},
+    {APIPermission::kLogin, "login"},
+    {APIPermission::kLoginScreenStorage, "loginScreenStorage"},
+    {APIPermission::kLoginScreenUi, "loginScreenUi"},
+    {APIPermission::kLoginState, "loginState"},
     {APIPermission::kMediaPerceptionPrivate, "mediaPerceptionPrivate"},
     {APIPermission::kMetricsPrivate, "metricsPrivate",
      APIPermissionInfo::kFlagCannotBeOptional},
@@ -90,6 +92,8 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
      APIPermissionInfo::kFlagCannotBeOptional},
     {APIPermission::kPower, "power"},
     {APIPermission::kPrinterProvider, "printerProvider"},
+    {APIPermission::kPrinting, "printing"},
+    {APIPermission::kPrintingMetrics, "printingMetrics"},
     {APIPermission::kSerial, "serial"},
     {APIPermission::kSocket, "socket", APIPermissionInfo::kFlagCannotBeOptional,
      &CreateAPIPermission<SocketPermission>},
@@ -126,6 +130,8 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
      APIPermissionInfo::kFlagCannotBeOptional},
     {APIPermission::kWindowShape, "app.window.shape"},
     {APIPermission::kFileSystemRequestDownloads, "fileSystem.requestDownloads"},
+    {APIPermission::kDeclarativeNetRequestFeedback,
+     declarative_net_request::kFeedbackAPIPermission},
 };
 
 }  // namespace

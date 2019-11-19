@@ -9,13 +9,7 @@
 
 @interface ChromeTableViewStyler : NSObject
 
-// The BlurEffect used on the UITableView section headers.
-@property(nonatomic, readwrite, strong)
-    UIBlurEffect* tableViewSectionHeaderBlurEffect;
-
-// The background color for the table view and its cells. If this is set to an
-// opaque color, cells can choose to make themselves opaque and draw their own
-// background as a performance optimization.
+// The background color for the table view.
 @property(nonatomic, readwrite, strong) UIColor* tableViewBackgroundColor;
 // The background color for the cell. It overrides |tableViewBackgroundColor|
 // for the cell background if it is not nil.
@@ -25,8 +19,18 @@
 @property(nonatomic, readwrite, strong) UIColor* headerFooterTitleColor;
 // Cell highlight color.
 @property(nonatomic, readwrite, strong) UIColor* cellHighlightColor;
-// Color of cell separator line. If not set, defaults to 0xC8C7CC.
+// Color of cell separator line. If not set, defaults to the default UIKit
+// color.
 @property(nonatomic, readwrite, strong) UIColor* cellSeparatorColor;
+
+// TODO (crbug.com/981889): Remove with iOS 12.
+// Color overrides. These should not be in general use, but
+// are necessary to provide colors on pre-iOS 13 devices for screens that are
+// always in dark mode. They can be removed then.
+@property(nonatomic, readwrite, strong) UIColor* cellDetailColor;
+@property(nonatomic, readwrite, strong) UIColor* headerFooterDetailColor;
+@property(nonatomic, readwrite, strong) UIColor* tintColor;
+@property(nonatomic, readwrite, strong) UIColor* solidButtonTextColor;
 
 @end
 

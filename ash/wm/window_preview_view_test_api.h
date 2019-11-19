@@ -16,7 +16,6 @@ class Widget;
 }  // namespace views
 
 namespace ash {
-namespace wm {
 
 class WindowPreviewView;
 
@@ -33,7 +32,7 @@ class WindowPreviewViewTestApi {
 
   // Gets the mirror view in |mirror_views_| associated with |widget|. Returns
   // null if |widget|'s window does not exist in |mirror_views_|.
-  wm::WindowMirrorView* GetMirrorViewForWidget(views::Widget* widget);
+  WindowMirrorView* GetMirrorViewForWidget(views::Widget* widget);
 
  private:
   WindowPreviewView* preview_view_;
@@ -41,7 +40,6 @@ class WindowPreviewViewTestApi {
   DISALLOW_COPY_AND_ASSIGN(WindowPreviewViewTestApi);
 };
 
-}  // namespace wm
 }  // namespace ash
 
 #endif  // ASH_WM_WINDOW_PREVIEW_VIEW_TEST_API_H_

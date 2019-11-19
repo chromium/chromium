@@ -38,16 +38,15 @@ namespace courgette {
 
 // FileMapping
 
-FileMapping::FileMapping() : mapping_(NULL), view_(NULL) {
-}
+FileMapping::FileMapping() : mapping_(nullptr), view_(nullptr) {}
 
 FileMapping::~FileMapping() {
   Close();
 }
 
 bool FileMapping::InitializeView(size_t size) {
-  DCHECK(view_ == NULL);
-  DCHECK(mapping_ != NULL);
+  DCHECK(view_ == nullptr);
+  DCHECK(mapping_ != nullptr);
   view_ = ::MapViewOfFile(mapping_, FILE_MAP_WRITE, 0, 0, size);
   if (!view_) {
     Close();
@@ -59,7 +58,7 @@ bool FileMapping::InitializeView(size_t size) {
 bool FileMapping::Create(HANDLE file, size_t size) {
   DCHECK(file != INVALID_HANDLE_VALUE);
   DCHECK(!valid());
-  mapping_ = ::CreateFileMapping(file, NULL, PAGE_READWRITE, 0, 0, NULL);
+  mapping_ = ::CreateFileMapping(file, nullptr, PAGE_READWRITE, 0, 0, nullptr);
   if (!mapping_)
     return false;
 
@@ -71,12 +70,12 @@ void FileMapping::Close() {
     ::UnmapViewOfFile(view_);
   if (mapping_)
     ::CloseHandle(mapping_);
-  mapping_ = NULL;
-  view_ = NULL;
+  mapping_ = nullptr;
+  view_ = nullptr;
 }
 
 bool FileMapping::valid() const {
-  return view_ != NULL;
+  return view_ != nullptr;
 }
 
 void* FileMapping::view() const {
@@ -128,7 +127,7 @@ bool TempMapping::valid() const {
 
 // static
 TempMapping* TempMapping::GetMappingFromPtr(void* mem) {
-  TempMapping* ret = NULL;
+  TempMapping* ret = nullptr;
   if (mem) {
     ret = reinterpret_cast<TempMapping**>(mem)[-1];
   }

@@ -12,6 +12,7 @@ namespace blink {
 using mojom::blink::DevToolsSessionState;
 using mojom::blink::DevToolsSessionStatePtr;
 using std::unique_ptr;
+using testing::ElementsAre;
 using testing::UnorderedElementsAre;
 
 // This session object is normally on the browser side; see
@@ -25,7 +26,7 @@ class FakeDevToolsSession {
     if (!session_state_cookie_)
       session_state_cookie_ = DevToolsSessionState::New();
     for (auto& entry : updates->entries) {
-      if (!entry.value.IsNull())
+      if (entry.value.has_value())
         session_state_cookie_->entries.Set(entry.key, std::move(entry.value));
       else
         session_state_cookie_->entries.erase(entry.key);
@@ -53,7 +54,8 @@ struct AgentWithSimpleFields {
         field1_(&agent_state_, /*default_value=*/0.0),
         multiplier_(&agent_state_, /*default_value=*/1.0),
         counter_(&agent_state_, /*default_value=*/1),
-        message_(&agent_state_, /*default_value=*/WTF::String()) {}
+        message_(&agent_state_, /*default_value=*/WTF::String()),
+        bytes_(&agent_state_, /*default_value=*/{}) {}
 
   InspectorAgentState agent_state_;
   InspectorAgentState::Boolean enabled_;
@@ -61,6 +63,7 @@ struct AgentWithSimpleFields {
   InspectorAgentState::Double multiplier_;
   InspectorAgentState::Integer counter_;
   InspectorAgentState::String message_;
+  InspectorAgentState::Bytes bytes_;
 };
 
 TEST(InspectorSessionStateTest, SimpleFields) {
@@ -77,11 +80,13 @@ TEST(InspectorSessionStateTest, SimpleFields) {
     simple_agent.field1_.Set(11.0);
     simple_agent.multiplier_.Set(42.0);
     simple_agent.counter_.Set(311);
+    simple_agent.bytes_.Set({0xde, 0xad, 0xbe, 0xef});
 
     EXPECT_EQ(true, simple_agent.enabled_.Get());
     EXPECT_EQ(11.0, simple_agent.field1_.Get());
     EXPECT_EQ(42.0, simple_agent.multiplier_.Get());
     EXPECT_EQ(311, simple_agent.counter_.Get());
+    EXPECT_THAT(simple_agent.bytes_.Get(), ElementsAre(0xde, 0xad, 0xbe, 0xef));
 
     // Now send the updates back to the browser session.
     dev_tools_session.ApplyUpdates(session_state.TakeUpdates());
@@ -96,11 +101,13 @@ TEST(InspectorSessionStateTest, SimpleFields) {
     EXPECT_EQ(11.0, simple_agent.field1_.Get());
     EXPECT_EQ(42.0, simple_agent.multiplier_.Get());
     EXPECT_EQ(311, simple_agent.counter_.Get());
+    EXPECT_THAT(simple_agent.bytes_.Get(), ElementsAre(0xde, 0xad, 0xbe, 0xef));
 
     simple_agent.enabled_.Set(false);
     simple_agent.multiplier_.Clear();
     simple_agent.field1_.Set(-1.0);
     simple_agent.counter_.Set(312);
+    simple_agent.bytes_.Set({1, 2, 3});
 
     // Now send the updates back to the browser session.
     dev_tools_session.ApplyUpdates(session_state.TakeUpdates());
@@ -115,11 +122,13 @@ TEST(InspectorSessionStateTest, SimpleFields) {
     EXPECT_EQ(-1.0, simple_agent.field1_.Get());
     EXPECT_EQ(1.0, simple_agent.multiplier_.Get());
     EXPECT_EQ(312, simple_agent.counter_.Get());
+    EXPECT_THAT(simple_agent.bytes_.Get(), ElementsAre(1, 2, 3));
 
     simple_agent.enabled_.Clear();
     simple_agent.multiplier_.Set(1.0);  // default value => clears.
     simple_agent.field1_.Clear();
     simple_agent.counter_.Clear();
+    simple_agent.bytes_.Clear();
   }
 }
 
@@ -221,7 +230,7 @@ TEST(InspectorSessionStateTest, MultipleAgents) {
   // Show that the keys for the field values are prefixed with the domain name
   // passed to AgentState so that the stored values won't collide.
   DevToolsSessionStatePtr cookie = dev_tools_session.CloneCookie();
-  std::vector<WTF::String> keys;
+  Vector<WTF::String> keys;
   for (const WTF::String& k : cookie->entries.Keys())
     keys.push_back(k);
 

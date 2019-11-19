@@ -11,6 +11,7 @@
 
 #include "cc/trees/occlusion.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/rrect_f.h"
 #include "ui/gfx/transform.h"
 
 namespace cc {
@@ -34,15 +35,19 @@ struct CC_EXPORT DrawProperties {
   // DrawProperties::opacity may be different than LayerImpl::opacity,
   // particularly in the case when a RenderSurface re-parents the layer's
   // opacity, or when opacity is compounded by the hierarchy.
-  float opacity;
+  float opacity = 0.f;
 
   // Whether the layer has a potentially animating transform in its chain of
   // transforms to the screen. This is essentially a cache of the transform
   // node's potentially-animated status.
-  bool screen_space_transform_is_animating;
+  bool screen_space_transform_is_animating = false;
 
   // True if the layer needs to be clipped by clip_rect.
-  bool is_clipped;
+  bool is_clipped = false;
+
+  // If set, it makes the layer's rounded corner not trigger a render surface if
+  // possible.
+  bool is_fast_rounded_corner = false;
 
   // This rect is a bounding box around what part of the layer is visible, in
   // the layer's coordinate space.
@@ -55,6 +60,10 @@ struct CC_EXPORT DrawProperties {
   // In target surface space, the original rect that clipped this layer. This
   // value is used to avoid unnecessarily changing GL scissor state.
   gfx::Rect clip_rect;
+
+  // Contains a rounded corner rect to clip this layer when drawing. This rrect
+  // is in the target space of the layer.
+  gfx::RRectF rounded_corner_bounds;
 };
 
 }  // namespace cc

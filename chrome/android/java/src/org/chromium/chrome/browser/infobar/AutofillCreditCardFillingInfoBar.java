@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.infobar;
 import android.graphics.Bitmap;
 
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ResourceId;
 
 import java.util.ArrayList;
@@ -33,8 +34,8 @@ public class AutofillCreditCardFillingInfoBar extends ConfirmInfoBar {
     private AutofillCreditCardFillingInfoBar(long nativeAutofillCreditCardFillingInfoBar,
             int enumeratedIconId, Bitmap iconBitmap, String message, String buttonOk,
             String buttonCancel) {
-        super(ResourceId.mapToDrawableId(enumeratedIconId), iconBitmap, message, null, buttonOk,
-                buttonCancel);
+        super(ResourceId.mapToDrawableId(enumeratedIconId), R.color.infobar_icon_drawable_color,
+                iconBitmap, message, null, buttonOk, buttonCancel);
     }
 
     /**

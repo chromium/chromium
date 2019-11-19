@@ -1,0 +1,220 @@
+\bprovence\s+alpes\s+cote\s+d\s+azur\b	u
+\balpes\s+de\s+haute\s+provence\b	04
+\barnouville\s+les\s+gonesse\b	arnouville
+\bterritoire\s+de\s+belfort\b	90
+\blanguedoc\s+roussillon\b	k
+\bpyrenees\s+atlantiques\b	64
+\bpyrenees\s+orientales\b	66
+\bmeurthe\s+et\s+moselle\b	54
+\bnord\s+pas\s+de\s+calais\b	o
+\bchampagne\s+ardenne\b	g
+\bcharente\s+maritime\b	17
+\bseine\s+saint\s+denis\b	93
+\bbouches\s+du\s+rhone\b	13
+\bloire\s+atlantique\b	44
+\bpays\s+de\s+la\s+loire\b	r
+\bpoitou\s+charentes\b	t
+\balpes\s+maritimes\b	06
+\bbasse\s+normandie\b	p
+\bhaute\s+normandie\b	q
+\bille\s+et\s+vilaine\b	35
+\btarn\s+et\s+garonne\b	82
+\bdepartementale\b	d
+\bhaute\s+pyrenees\b	65
+\bhauts\s+de\s+seine\b	92
+\bindre\s+et\s+loire\b	37
+\blot\s+et\s+garonne\b	47
+\blower\s+normandy\b	p
+\bmaine\s+et\s+loire\b	49
+\bsaone\s+et\s+loire\b	71
+\bseine\s+maritime\b	76
+\bupper\s+normandy\b	q
+\bcotes\s+d\s+armor\b	22
+\bdepartemental\b	d
+\bfranche\s+comte\b	1
+\bhaute\s+garonne\b	31
+\bile\s+de\s+france\b	j
+\bmidi\s+pyrenees\b	n
+\bpas\s+de\s+calais\b	62
+\bseine\s+et\s+mame\b	77
+\bcorse\s+du\s+sud\b	2a
+\bdix\s+huitieme\b	18
+\bdix\s+neuvieme\b	19
+\bdix\s+septieme\b	17
+\beure\s+et\s+loir\b	28
+\bhaute\s+savoie\b	74
+\bhaute\s+vienne\b	87
+\bloir\s+et\s+cher\b	41
+\bval\s+de\s+marne\b	94
+\bcouffouleux\b	coufouleux
+\bdeux\s+sevres\b	79
+\bhaute\s+alpes\b	05
+\bhaute\s+corse\b	2b
+\bhaute\s+loire\b	43
+\bhaute\s+marne\b	52
+\bhaute\s+saone\b	70
+\bpuy\s+de\s+dome\b	63
+\bquatorzieme\b	14
+\brhone\s+alpes\b	5
+\bacquitaine\b	b
+\benclave\s+de\b	
+\bval\s+d\s+oise\b	95
+\baquitaine\b	b
+\bboulevard\b	bd
+\bbourgogne\b	d
+\bcinquieme\b	5
+\bcote\s+d\s+or\b	21
+\bfinistere\b	29
+\bhaut\s+rhin\b	68
+\bmoribihan\b	56
+\bnationale\b	n
+\bquatrieme\b	4
+\bquinzieme\b	15
+\btreizieme\b	13
+\btroisieme\b	3
+\bvingtieme\b	20
+\ballemont\b	allemond
+\bardennes\b	08
+\bauvergne\b	c
+\baveryron\b	12
+\bbas\s+rhin\b	67
+\bbretagne\b	
+\bbrittany\b	
+\bburgundy\b	d
+\bcalvados\b	14
+\bcharente\b	16
+\bdeuxieme\b	2
+\bdordogne\b	24
+\bdouzieme\b	12
+\bhuitieme\b	8
+\bla\s+croix\b	lacroix
+\blimousin\b	l
+\blorraine\b	m
+\bneuvieme\b	9
+\bpicardie\b	s
+\bpremiere\b	1
+\bseizième\b	16
+\bseptieme\b	7
+\bvaucluse\b	84
+\byvelines\b	78
+\bardeche\b	07
+\bcorreze\b	19
+\bcorsica\b	h
+\bdixieme\b	x
+\bessonne\b	91
+\bgironde\b	33
+\bherault\b	34
+\bmayenne\b	53
+\bmoselle\b	57
+\bonzieme\b	11
+\bpicardy\b	s
+\bsixieme\b	6
+\ballier\b	03
+\balsace\b	a
+\bariege\b	09
+\bavenue\b	ave
+\bcantal\b	15
+\bcentre\b	f
+\bcreuse\b	23
+\bfrance\b	fr
+\bgrande\b	gd
+\blandes\b	40
+\bloiret\b	45
+\blozere\b	48
+\bmanche\b	50
+\bnievre\b	58
+\bregion\b	
+\bsainte\b	
+\bsarthe\b	72
+\bsavoie\b	73
+\bvendee\b	85
+\bvienne\b	86
+\bvosges\b	88
+\baisne\b	02
+\bcorse\b	h
+\bde\s+l\'\b	
+\bde\s+la\b	
+\bdoubs\b	25
+\bdrome\b	26
+\bet\s+du\b	
+\bgrand\b	gd
+\bindre\b	36
+\bisere\b	38
+\bloire\b	42
+\bmarne\b	51
+\bmeuse\b	55
+\bmount\b	mt
+\bnorth\b	n
+\bouest\b	o
+\bparis\b	
+\brhone\b	69
+\bsaint\b	
+\bsomme\b	80
+\bsouth\b	s
+\bvilla\b	vil
+\bxviii\b	18
+\byonne\b	89
+\baude\b	11
+\bcher\b	18
+\beure\b	27
+\bgard\b	30
+\bgers\b	32
+\bieme\b	
+\bjura\b	39
+\bnord\b	n
+\boise\b	60
+\borne\b	61
+\btarn\b	81
+\bviii\b	8
+\bwest\b	o
+\bxiii\b	13
+\bxvii\b	17
+\bain\b	01
+\bdes\b	
+\beme\b	
+\bere\b	
+\best\b	
+\bgde\b	gd
+\biii\b	3
+\bles\b	
+\blot\b	46
+\bmte\b	mt
+\bste\b	
+\bsud\b	s
+\bsur\b	
+\bvar\b	83
+\bvii\b	7
+\bxii\b	12
+\bxiv\b	14
+\bxix\b	19
+\bxvi\b	16
+\b10\b	x
+\b59\b	n
+\b75\b	
+\bd\'\b	
+\bde\b	
+\bdu\b	
+\ben\b	
+\ber\b	
+\bgr\b	gd
+\bii\b	2
+\bin\b	
+\biv\b	4
+\bix\b	9
+\bl\'\b	
+\bla\b	
+\ble\b	
+\bnd\b	
+\bof\b	
+\brd\b	
+\bre\b	
+\bst\b	
+\bth\b	
+\bvi\b	6
+\bxi\b	11
+\bxv\b	15
+\bxx\b	20
+\be\b	
+\bi\b	1
+\bv\b	5
+\bw\b	o

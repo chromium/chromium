@@ -15,8 +15,12 @@
 #include "base/macros.h"
 #include "base/sequence_token.h"
 #include "base/single_thread_task_runner.h"
+#include "base/task/post_task.h"
+#include "base/test/bind_test_util.h"
 #include "base/test/gtest_util.h"
+#include "base/test/task_environment.h"
 #include "base/threading/simple_thread.h"
+#include "base/threading/thread_local.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -26,17 +30,17 @@ namespace {
 // Runs a callback on another thread.
 class RunCallbackThread : public SimpleThread {
  public:
-  explicit RunCallbackThread(const Closure& callback)
-      : SimpleThread("RunCallbackThread"), callback_(callback) {
+  explicit RunCallbackThread(OnceClosure callback)
+      : SimpleThread("RunCallbackThread"), callback_(std::move(callback)) {
     Start();
     Join();
   }
 
  private:
   // SimpleThread:
-  void Run() override { callback_.Run(); }
+  void Run() override { std::move(callback_).Run(); }
 
-  const Closure callback_;
+  OnceClosure callback_;
 
   DISALLOW_COPY_AND_ASSIGN(RunCallbackThread);
 };
@@ -83,7 +87,7 @@ TEST(SequenceCheckerTest, CallsAllowedOnSameThreadSameSequenceToken) {
 TEST(SequenceCheckerTest, CallsDisallowedOnDifferentThreadsNoSequenceToken) {
   SequenceCheckerImpl sequence_checker;
   RunCallbackThread thread(
-      Bind(&ExpectNotCalledOnValidSequence, Unretained(&sequence_checker)));
+      BindOnce(&ExpectNotCalledOnValidSequence, Unretained(&sequence_checker)));
 }
 
 TEST(SequenceCheckerTest, CallsAllowedOnDifferentThreadsSameSequenceToken) {
@@ -94,8 +98,9 @@ TEST(SequenceCheckerTest, CallsAllowedOnDifferentThreadsSameSequenceToken) {
   SequenceCheckerImpl sequence_checker;
   EXPECT_TRUE(sequence_checker.CalledOnValidSequence());
 
-  RunCallbackThread thread(Bind(&ExpectCalledOnValidSequenceWithSequenceToken,
-                                Unretained(&sequence_checker), sequence_token));
+  RunCallbackThread thread(
+      BindOnce(&ExpectCalledOnValidSequenceWithSequenceToken,
+               Unretained(&sequence_checker), sequence_token));
 }
 
 TEST(SequenceCheckerTest, CallsDisallowedOnSameThreadDifferentSequenceToken) {
@@ -145,9 +150,79 @@ TEST(SequenceCheckerTest, DetachFromSequenceNoSequenceToken) {
   // Verify that CalledOnValidSequence() returns true when called on a
   // different thread after a call to DetachFromSequence().
   RunCallbackThread thread(
-      Bind(&ExpectCalledOnValidSequence, Unretained(&sequence_checker)));
+      BindOnce(&ExpectCalledOnValidSequence, Unretained(&sequence_checker)));
 
   EXPECT_FALSE(sequence_checker.CalledOnValidSequence());
+}
+
+TEST(SequenceCheckerTest, Move) {
+  SequenceCheckerImpl initial;
+  EXPECT_TRUE(initial.CalledOnValidSequence());
+
+  SequenceCheckerImpl move_constructed(std::move(initial));
+  EXPECT_TRUE(move_constructed.CalledOnValidSequence());
+
+  SequenceCheckerImpl move_assigned;
+  move_assigned = std::move(move_constructed);
+
+  // The two SequenceCheckerImpls moved from should be able to rebind to another
+  // sequence.
+  RunCallbackThread thread1(
+      BindOnce(&ExpectCalledOnValidSequence, Unretained(&initial)));
+  RunCallbackThread thread2(
+      BindOnce(&ExpectCalledOnValidSequence, Unretained(&move_constructed)));
+
+  // But the latest one shouldn't be able to run on another sequence.
+  RunCallbackThread thread(
+      BindOnce(&ExpectNotCalledOnValidSequence, Unretained(&move_assigned)));
+
+  EXPECT_TRUE(move_assigned.CalledOnValidSequence());
+}
+
+TEST(SequenceCheckerTest, MoveAssignIntoDetached) {
+  SequenceCheckerImpl initial;
+
+  SequenceCheckerImpl move_assigned;
+  move_assigned.DetachFromSequence();
+  move_assigned = std::move(initial);
+
+  // |initial| is detached after move.
+  RunCallbackThread thread1(
+      BindOnce(&ExpectCalledOnValidSequence, Unretained(&initial)));
+
+  // |move_assigned| should be associated with the main thread.
+  RunCallbackThread thread2(
+      BindOnce(&ExpectNotCalledOnValidSequence, Unretained(&move_assigned)));
+
+  EXPECT_TRUE(move_assigned.CalledOnValidSequence());
+}
+
+TEST(SequenceCheckerTest, MoveFromDetachedRebinds) {
+  SequenceCheckerImpl initial;
+  initial.DetachFromSequence();
+
+  SequenceCheckerImpl moved_into(std::move(initial));
+
+  // |initial| is still detached after move.
+  RunCallbackThread thread1(
+      BindOnce(&ExpectCalledOnValidSequence, Unretained(&initial)));
+
+  // |moved_into| is bound to the current sequence as part of the move.
+  RunCallbackThread thread2(
+      BindOnce(&ExpectNotCalledOnValidSequence, Unretained(&moved_into)));
+  EXPECT_TRUE(moved_into.CalledOnValidSequence());
+}
+
+TEST(SequenceCheckerTest, MoveOffSequenceBanned) {
+  testing::GTEST_FLAG(death_test_style) = "threadsafe";
+
+  SequenceCheckerImpl other_sequence;
+  other_sequence.DetachFromSequence();
+  RunCallbackThread thread(
+      BindOnce(&ExpectCalledOnValidSequence, Unretained(&other_sequence)));
+
+  EXPECT_DCHECK_DEATH(
+      SequenceCheckerImpl main_sequence(std::move(other_sequence)));
 }
 
 TEST(SequenceCheckerMacroTest, Macros) {
@@ -176,6 +251,35 @@ TEST(SequenceCheckerMacroTest, Macros) {
   // Don't expect a DCHECK death when a SequenceChecker is used for the first
   // time after having been detached.
   DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker) << "Error message.";
+}
+
+// Owns a SequenceCheckerImpl, and asserts that CalledOnValidSequence() is valid
+// in ~SequenceCheckerOwner.
+class SequenceCheckerOwner {
+ public:
+  SequenceCheckerOwner() = default;
+  ~SequenceCheckerOwner() { EXPECT_TRUE(checker_.CalledOnValidSequence()); }
+
+ private:
+  SequenceCheckerImpl checker_;
+
+  DISALLOW_COPY_AND_ASSIGN(SequenceCheckerOwner);
+};
+
+// Verifies SequenceCheckerImpl::CalledOnValidSequence() returns true if called
+// during thread destruction.
+TEST(SequenceCheckerTest, CalledOnValidSequenceFromThreadDestruction) {
+  ThreadLocalOwnedPointer<SequenceCheckerOwner> thread_local_owner;
+  {
+    test::TaskEnvironment task_environment;
+    auto task_runner = CreateSequencedTaskRunner({ThreadPool()});
+    task_runner->PostTask(
+        FROM_HERE, BindLambdaForTesting([&]() {
+          thread_local_owner.Set(std::make_unique<SequenceCheckerOwner>());
+        }));
+    task_runner = nullptr;
+    task_environment.RunUntilIdle();
+  }
 }
 
 }  // namespace base

@@ -58,11 +58,15 @@ public class TextInputState {
     }
 
     public CharSequence getTextAfterSelection(int maxChars) {
+        // Clamp the maxChars to avoid integer overflow or negative value.
+        maxChars = Math.max(0, Math.min(maxChars, mText.length() - mSelection.end()));
         return TextUtils.substring(
                 mText, mSelection.end(), Math.min(mText.length(), mSelection.end() + maxChars));
     }
 
     public CharSequence getTextBeforeSelection(int maxChars) {
+        // Clamp the maxChars to the valid value.
+        maxChars = Math.max(0, Math.min(maxChars, mSelection.start()));
         return TextUtils.substring(
                 mText, Math.max(0, mSelection.start() - maxChars), mSelection.start());
     }

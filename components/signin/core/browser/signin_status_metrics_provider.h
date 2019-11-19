@@ -16,7 +16,7 @@
 #include "build/build_config.h"
 #include "components/signin/core/browser/signin_status_metrics_provider_base.h"
 #include "components/signin/core/browser/signin_status_metrics_provider_delegate.h"
-#include "services/identity/public/cpp/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 
 namespace metrics {
 class ChromeUserMetricsExtension;
@@ -28,7 +28,7 @@ class SigninStatusMetricsProviderDelegate;
 // record the value into a histogram before UMA log is uploaded on platform
 // Windows, Linux, Mac and Android.
 class SigninStatusMetricsProvider : public SigninStatusMetricsProviderBase,
-                                    public identity::IdentityManager::Observer {
+                                    public signin::IdentityManager::Observer {
  public:
   ~SigninStatusMetricsProvider() override;
 
@@ -41,10 +41,10 @@ class SigninStatusMetricsProvider : public SigninStatusMetricsProviderBase,
       std::unique_ptr<SigninStatusMetricsProviderDelegate> delegate);
 
   // Update the sign-in status when a IdentityManager is created.
-  void OnIdentityManagerCreated(identity::IdentityManager* identity_manager);
+  void OnIdentityManagerCreated(signin::IdentityManager* identity_manager);
 
   // Update the sign-in status when a IdentityManager is shut down.
-  void OnIdentityManagerShutdown(identity::IdentityManager* identity_manager);
+  void OnIdentityManagerShutdown(signin::IdentityManager* identity_manager);
 
   // Updates the initial sign-in status. For testing purpose only.
   void UpdateInitialSigninStatusForTesting(size_t total_count,
@@ -90,13 +90,13 @@ class SigninStatusMetricsProvider : public SigninStatusMetricsProviderBase,
 
   // Used to track the IdentityManagers that this instance is observing so that
   // this instance can be removed as an observer on its destruction.
-  ScopedObserver<identity::IdentityManager, identity::IdentityManager::Observer>
+  ScopedObserver<signin::IdentityManager, signin::IdentityManager::Observer>
       scoped_observer_;
 
   // Whether the instance is for testing or not.
   bool is_test_;
 
-  base::WeakPtrFactory<SigninStatusMetricsProvider> weak_ptr_factory_;
+  base::WeakPtrFactory<SigninStatusMetricsProvider> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SigninStatusMetricsProvider);
 };

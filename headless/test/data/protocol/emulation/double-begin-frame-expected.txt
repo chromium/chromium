@@ -1,0 +1,2 @@
+Tests that beginFrame correctly reports an error with another pending frame.
+response: {"code":-32000,"message":"Another frame is pending"}

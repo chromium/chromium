@@ -17,13 +17,16 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/syslog_logging.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/win/registry.h"
+#include "chrome/browser/browser_switcher/browser_switcher_policy_migrator.h"
 #include "chrome/browser/browser_switcher/browser_switcher_prefs.h"
 #include "chrome/browser/browser_switcher/browser_switcher_sitelist.h"
 #include "chrome/browser/browser_switcher/ieem_sitelist_parser.h"
 #include "chrome/browser/profiles/profile.h"
+#include "extensions/browser/extension_registry.h"
 
 namespace browser_switcher {
 
@@ -35,6 +38,7 @@ const wchar_t kIeSiteListValue[] = L"SiteList";
 
 const int kCurrentFileVersion = 1;
 
+// Returns "AppData\Local\Google\BrowserSwitcher".
 base::FilePath GetCacheDir() {
   base::FilePath path;
   if (!base::PathService::Get(base::DIR_LOCAL_APP_DATA, &path))
@@ -44,8 +48,27 @@ base::FilePath GetCacheDir() {
   return path;
 }
 
+// Creates a RuleSet that is the concatenation of all 3 sources.
+RuleSet GetRules(const BrowserSwitcherPrefs& prefs,
+                 const BrowserSwitcherSitelist* sitelist) {
+  const RuleSet* source_rulesets[] = {
+      &prefs.GetRules(),
+      sitelist->GetIeemSitelist(),
+      sitelist->GetExternalSitelist(),
+  };
+  RuleSet rules;
+  for (const RuleSet* source : source_rulesets) {
+    rules.sitelist.insert(rules.sitelist.end(), source->sitelist.begin(),
+                          source->sitelist.end());
+    rules.greylist.insert(rules.greylist.end(), source->greylist.begin(),
+                          source->greylist.end());
+  }
+  return rules;
+}
+
 // Serialize prefs to a string for writing to cache.dat.
-std::string SerializeCacheFile(const BrowserSwitcherPrefs& prefs) {
+std::string SerializeCacheFile(const BrowserSwitcherPrefs& prefs,
+                               const BrowserSwitcherSitelist* sitelist) {
   std::ostringstream buffer;
 
   buffer << kCurrentFileVersion << std::endl;
@@ -57,7 +80,8 @@ std::string SerializeCacheFile(const BrowserSwitcherPrefs& prefs) {
   buffer << prefs.GetChromePath() << std::endl;
   buffer << base::JoinString(prefs.GetChromeParameters(), " ") << std::endl;
 
-  const auto& rules = prefs.GetRules();
+  const RuleSet rules = GetRules(prefs, sitelist);
+
   buffer << rules.sitelist.size() << std::endl;
   if (!rules.sitelist.empty())
     buffer << base::JoinString(rules.sitelist, "\n") << std::endl;
@@ -65,24 +89,6 @@ std::string SerializeCacheFile(const BrowserSwitcherPrefs& prefs) {
   buffer << rules.greylist.size() << std::endl;
   if (!rules.greylist.empty())
     buffer << base::JoinString(rules.greylist, "\n") << std::endl;
-
-  return buffer.str();
-}
-
-std::string SerializeSitelistCacheFile(
-    const BrowserSwitcherSitelist* sitelist) {
-  const auto* ieem = sitelist->GetIeemSitelist();
-  const auto* external = sitelist->GetExternalSitelist();
-
-  std::ostringstream buffer;
-
-  buffer << kCurrentFileVersion << std::endl;
-
-  buffer << (ieem->sitelist.size() + external->sitelist.size()) << std::endl;
-  if (!ieem->sitelist.empty())
-    buffer << base::JoinString(ieem->sitelist, "\n") << std::endl;
-  if (!external->sitelist.empty())
-    buffer << base::JoinString(external->sitelist, "\n") << std::endl;
 
   return buffer.str();
 }
@@ -117,14 +123,15 @@ void SaveDataToFile(const std::string& data, base::StringPiece file_name) {
   UMA_HISTOGRAM_BOOLEAN("BrowserSwitcher.CacheFile.MoveSuccess", success);
 }
 
-void DoRemovePrefsFile() {
+// Delete the file at "AppData\Local\Google\BrowserSwitcher\<file_name>".
+void DoRemoveFileFromCacheDir(std::string file_name) {
   base::FilePath dir = GetCacheDir();
 
   if (dir.empty())
     return;
 
   // Ignore errors while deleting.
-  base::FilePath dest_path = dir.AppendASCII("cache.dat");
+  base::FilePath dest_path = dir.AppendASCII(file_name);
   base::DeleteFile(dest_path, false);
 }
 
@@ -135,29 +142,32 @@ base::Optional<std::string>* IeemSitelistUrlForTesting() {
   return ieem_sitelist_url_for_testing.get();
 }
 
+bool IsLBSExtensionEnabled(Profile* profile) {
+  auto* reg = extensions::ExtensionRegistry::Get(profile);
+  DCHECK(reg);
+  return reg->GetExtensionById(kLBSExtensionId,
+                               extensions::ExtensionRegistry::ENABLED);
+}
+
 }  // namespace
 
 BrowserSwitcherServiceWin::BrowserSwitcherServiceWin(Profile* profile)
-    : BrowserSwitcherService(profile), weak_ptr_factory_(this) {
-  if (prefs().IsEnabled())
-    SavePrefsToFile();
-  else
-    DeletePrefsFile();
-
-  prefs_subscription_ =
-      prefs().RegisterPrefsChangedCallback(base::BindRepeating(
-          &BrowserSwitcherServiceWin::OnBrowserSwitcherPrefsChanged,
-          base::Unretained(this)));
+    : BrowserSwitcherService(profile),
+      sequenced_task_runner_(base::CreateSequencedTaskRunner(
+          {base::ThreadPool(), base::MayBlock(),
+           base::TaskPriority::BEST_EFFORT,
+           base::TaskShutdownBehavior::BLOCK_SHUTDOWN})) {
+  UpdateAllCacheFiles();
 }
 
 BrowserSwitcherServiceWin::~BrowserSwitcherServiceWin() = default;
 
 void BrowserSwitcherServiceWin::OnBrowserSwitcherPrefsChanged(
-    BrowserSwitcherPrefs* prefs) {
-  if (prefs->IsEnabled())
-    SavePrefsToFile();
-  else
-    DeletePrefsFile();
+    BrowserSwitcherPrefs* prefs,
+    const std::vector<std::string>& changed_prefs) {
+  BrowserSwitcherService::OnBrowserSwitcherPrefsChanged(prefs, changed_prefs);
+
+  UpdateAllCacheFiles();
 }
 
 // static
@@ -168,29 +178,37 @@ void BrowserSwitcherServiceWin::SetIeemSitelistUrlForTesting(
 
 std::vector<RulesetSource> BrowserSwitcherServiceWin::GetRulesetSources() {
   auto sources = BrowserSwitcherService::GetRulesetSources();
-  if (!prefs().UseIeSitelist())
-    return sources;
   GURL sitelist_url = GetIeemSitelistUrl();
-  if (!sitelist_url.is_valid())
-    return sources;
   sources.emplace_back(
-      sitelist_url,
+      prefs::kUseIeSitelist, sitelist_url, /* invert_rules */ false,
       base::BindOnce(&BrowserSwitcherServiceWin::OnIeemSitelistParsed,
                      weak_ptr_factory_.GetWeakPtr()));
   return sources;
 }
 
-void BrowserSwitcherServiceWin::OnAllRulesetsParsed() {
-  base::PostTaskWithTraits(
-      FROM_HERE,
-      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-       base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
-      base::BindOnce(&SaveDataToFile, SerializeSitelistCacheFile(sitelist()),
-                     "sitelistcache.dat"));
+void BrowserSwitcherServiceWin::LoadRulesFromPrefs() {
+  BrowserSwitcherService::LoadRulesFromPrefs();
+  if (prefs().UseIeSitelist())
+    sitelist()->SetIeemSitelist(
+        ParsedXml(prefs().GetCachedIeemSitelist(), base::nullopt));
+  if (!prefs().IsEnabled())
+    return;
+  SavePrefsToFile();
 }
 
-// static
+void BrowserSwitcherServiceWin::OnAllRulesetsParsed() {
+  BrowserSwitcherService::OnAllRulesetsParsed();
+
+  if (!prefs().IsEnabled())
+    return;
+
+  SavePrefsToFile();
+}
+
 GURL BrowserSwitcherServiceWin::GetIeemSitelistUrl() {
+  if (!prefs().UseIeSitelist())
+    return GURL();
+
   if (*IeemSitelistUrlForTesting() != base::nullopt)
     return GURL((*IeemSitelistUrlForTesting()).value());
 
@@ -207,29 +225,49 @@ GURL BrowserSwitcherServiceWin::GetIeemSitelistUrl() {
 
 void BrowserSwitcherServiceWin::OnIeemSitelistParsed(ParsedXml xml) {
   if (xml.error) {
-    LOG(ERROR) << "Unable to parse IEEM SiteList: " << *xml.error;
+    SYSLOG(ERROR) << "Unable to parse IEEM SiteList: " << *xml.error;
   } else {
     VLOG(2) << "Done parsing IEEM SiteList. "
             << "Applying rules to future navigations.";
+
+    if (prefs().UseIeSitelist())
+      prefs().SetCachedIeemSitelist(xml.rules);
+
     sitelist()->SetIeemSitelist(std::move(xml));
   }
-  ieem_downloader_.reset();
 }
 
 void BrowserSwitcherServiceWin::SavePrefsToFile() {
-  base::PostTaskWithTraits(
+  DCHECK(prefs().IsEnabled());
+  sequenced_task_runner_->PostTask(
       FROM_HERE,
-      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-       base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
-      base::BindOnce(&SaveDataToFile, SerializeCacheFile(prefs()),
+      base::BindOnce(&SaveDataToFile, SerializeCacheFile(prefs(), sitelist()),
                      "cache.dat"));
 }
 
-void BrowserSwitcherServiceWin::DeletePrefsFile() const {
-  base::PostTaskWithTraits(FROM_HERE,
-                           {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-                            base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
-                           base::BindOnce(&DoRemovePrefsFile));
+void BrowserSwitcherServiceWin::DeletePrefsFile() {
+  sequenced_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&DoRemoveFileFromCacheDir, "cache.dat"));
+}
+
+void BrowserSwitcherServiceWin::DeleteSitelistCacheFile() {
+  sequenced_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&DoRemoveFileFromCacheDir, "sitelistcache.dat"));
+}
+
+void BrowserSwitcherServiceWin::UpdateAllCacheFiles() {
+  const bool has_extension = IsLBSExtensionEnabled(profile());
+
+  if (prefs().IsEnabled())
+    SavePrefsToFile();
+  else if (!has_extension)
+    DeletePrefsFile();
+
+  // Clean up sitelistcache.dat from the extension, or from a previous Chrome
+  // version.
+  if (!has_extension)
+    DeleteSitelistCacheFile();
 }
 
 }  // namespace browser_switcher

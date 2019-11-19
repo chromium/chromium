@@ -6,6 +6,7 @@
 #define DEVICE_FIDO_MOCK_FIDO_DISCOVERY_OBSERVER_H_
 
 #include <string>
+#include <vector>
 
 #include "base/component_export.h"
 #include "base/macros.h"
@@ -21,7 +22,8 @@ class MockFidoDiscoveryObserver : public FidoDiscoveryBase::Observer {
   MockFidoDiscoveryObserver();
   ~MockFidoDiscoveryObserver() override;
 
-  MOCK_METHOD2(DiscoveryStarted, void(FidoDiscoveryBase*, bool));
+  MOCK_METHOD3(DiscoveryStarted,
+               void(FidoDiscoveryBase*, bool, std::vector<FidoAuthenticator*>));
   MOCK_METHOD2(DiscoveryStopped, void(FidoDiscoveryBase*, bool));
   MOCK_METHOD2(AuthenticatorAdded,
                void(FidoDiscoveryBase*, FidoAuthenticator*));

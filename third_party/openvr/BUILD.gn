@@ -71,4 +71,8 @@ component("openvr") {
     "src/src/vrcommon",
     "//third_party/jsoncpp/source/include",
   ]
+
+  if (is_win) {
+    ldflags = [ "/DELAYLOAD:shell32.dll" ]
+  }
 }

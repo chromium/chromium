@@ -42,7 +42,7 @@ class ChromeVisibilityObserver : public BrowserListObserver {
   // example, when user switching between two browser windows.
   base::TimeDelta visibility_gap_timeout_;
 
-  base::WeakPtrFactory<ChromeVisibilityObserver> weak_factory_;
+  base::WeakPtrFactory<ChromeVisibilityObserver> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ChromeVisibilityObserver);
 };

@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/core/svg/svg_length_list.h"
 #include "third_party/blink/renderer/core/svg/svg_number_list.h"
 #include "third_party/blink/renderer/core/svg_names.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
 
@@ -31,23 +32,25 @@ SVGTextPositioningElement::SVGTextPositioningElement(
     const QualifiedName& tag_name,
     Document& document)
     : SVGTextContentElement(tag_name, document),
-      x_(SVGAnimatedLengthList::Create(
+      x_(MakeGarbageCollected<SVGAnimatedLengthList>(
           this,
           svg_names::kXAttr,
-          SVGLengthList::Create(SVGLengthMode::kWidth))),
-      y_(SVGAnimatedLengthList::Create(
+          MakeGarbageCollected<SVGLengthList>(SVGLengthMode::kWidth))),
+      y_(MakeGarbageCollected<SVGAnimatedLengthList>(
           this,
           svg_names::kYAttr,
-          SVGLengthList::Create(SVGLengthMode::kHeight))),
-      dx_(SVGAnimatedLengthList::Create(
+          MakeGarbageCollected<SVGLengthList>(SVGLengthMode::kHeight))),
+      dx_(MakeGarbageCollected<SVGAnimatedLengthList>(
           this,
           svg_names::kDxAttr,
-          SVGLengthList::Create(SVGLengthMode::kWidth))),
-      dy_(SVGAnimatedLengthList::Create(
+          MakeGarbageCollected<SVGLengthList>(SVGLengthMode::kWidth))),
+      dy_(MakeGarbageCollected<SVGAnimatedLengthList>(
           this,
           svg_names::kDyAttr,
-          SVGLengthList::Create(SVGLengthMode::kHeight))),
-      rotate_(SVGAnimatedNumberList::Create(this, svg_names::kRotateAttr)) {
+          MakeGarbageCollected<SVGLengthList>(SVGLengthMode::kHeight))),
+      rotate_(
+          MakeGarbageCollected<SVGAnimatedNumberList>(this,
+                                                      svg_names::kRotateAttr)) {
   AddToPropertyMap(x_);
   AddToPropertyMap(y_);
   AddToPropertyMap(dx_);

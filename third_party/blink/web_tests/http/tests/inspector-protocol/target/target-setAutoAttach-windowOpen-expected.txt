@@ -1,0 +1,8 @@
+Tests that Target.setAutoAttach(windowOpen=true) attaches to window.open targets.
+Opened the window
+Attached to window
+Navigated the window
+Target info changed
+Closed the window
+Detached from window
+

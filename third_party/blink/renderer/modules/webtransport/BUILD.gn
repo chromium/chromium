@@ -1,0 +1,33 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/blink/renderer/modules/modules.gni")
+
+blink_modules_sources("webtransport") {
+  sources = [
+    "quic_transport.cc",
+    "quic_transport.h",
+  ]
+}
+
+jumbo_source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "quic_transport_test.cc",
+  ]
+
+  configs += [
+    "//third_party/blink/renderer:config",
+    "//third_party/blink/renderer:inside_blink",
+    "//third_party/blink/renderer/core:blink_core_pch",
+  ]
+
+  deps = [
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/blink/renderer/modules",
+    "//third_party/blink/renderer/platform",
+    "//third_party/blink/renderer/platform/wtf",
+  ]
+}

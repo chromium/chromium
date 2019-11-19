@@ -106,110 +106,20 @@ static const UChar32 kIsCJKIdeographOrSymbolRanges[] = {
     // Modifiers
     0x1F3FB, 0x1F3FF,
 
+    // Colored circles and squares for use with emoji.
+    0x1F7E0, 0x1F7EB,
+
     0x1F900, 0x1F90F,
     // ZIPPER-MOUTH FACE...SIGN OF THE HORNS
-    0x1F910, 0x1F918, 0x1F919, 0x1F97F, 0x1F980, 0x1F9BF, 0x1F9C0, 0x1F9FF};
-
-// Individual codepoints needed for Unicode vertical text layout according to
-// http://www.unicode.org/reports/tr50/
-// Taken from the corresponding data file:
-// http://www.unicode.org/Public/vertical/revision-16/VerticalOrientation-16.txt
-static const UChar32 kIsUprightInMixedVerticalArray[] = {
-    0x000A7, 0x000A9, 0x000AE, 0x000B1, 0x000D7, 0x000F7};
-
-static const UChar32 kIsUprightInMixedVerticalRanges[] = {
-    0x000BC, 0x000BE,
-    // Spacing Modifier Letters (Part of)
-    0x002EA, 0x002EB,
-    // Hangul Jamo
-    0x01100, 0x011FF,
-    // Unified Canadian Aboriginal Syllabics
-    0x01401, 0x0167F,
-    // Unified Canadian Aboriginal Syllabics Extended
-    0x018B0, 0x018FF,
-    // General Punctuation (Part of)
-    0x02016, 0x02016, 0x02020, 0x02021, 0x02030, 0x02031, 0x0203B, 0x0203C,
-    0x02042, 0x02042, 0x02047, 0x02049, 0x02051, 0x02051, 0x02065, 0x02069,
-    // Combining Diacritical Marks for Symbols (Part of)
-    0x020DD, 0x020E0, 0x020E2, 0x020E4,
-    // Letterlike Symbols (Part of)/Number Forms
-    0x02100, 0x02101, 0x02103, 0x02109, 0x0210F, 0x0210F, 0x02113, 0x02114,
-    0x02116, 0x02117, 0x0211E, 0x02123, 0x02125, 0x02125, 0x02127, 0x02127,
-    0x02129, 0x02129, 0x0212E, 0x0212E, 0x02135, 0x0213F, 0x02145, 0x0214A,
-    0x0214C, 0x0214D, 0x0214F, 0x02189, 0x0218C, 0x0218F,
-    // Mathematical Operators (Part of)
-    0x0221E, 0x0221E, 0x02234, 0x02235,
-    // Miscellaneous Technical (Part of)
-    0x02300, 0x02307, 0x0230C, 0x0231F, 0x02324, 0x0232B, 0x0237D, 0x0239A,
-    0x023BE, 0x023CD, 0x023CF, 0x023CF, 0x023D1, 0x023DB, 0x023E2, 0x02422,
-    // Control Pictures (Part of)/Optical Character Recognition/Enclosed
-    // Alphanumerics
-    0x02424, 0x024FF,
-    // Geometric Shapes/Miscellaneous Symbols (Part of)
-    0x025A0, 0x02619, 0x02620, 0x02767, 0x02776, 0x02793,
-    // Miscellaneous Symbols and Arrows (Part of)
-    0x02B12, 0x02B2F, 0x02B50, 0x02B59, 0x02BB8, 0x02BEB, 0x02BF0, 0x02BFF,
-    // Common CJK
-    0x02E80, 0x0A4CF,
-    // Hangul Jamo Extended-A
-    0x0A960, 0x0A97F,
-    // Hangul Syllables/Hangul Jamo Extended-B
-    0x0AC00, 0x0D7FF,
-    // Private Use Area/CJK Compatibility Ideographs
-    0x0E000, 0x0FAFF,
-    // Vertical Forms
-    0x0FE10, 0x0FE1F,
-    // CJK Compatibility Forms (Part of)
-    0x0FE30, 0x0FE48,
-    // Small Form Variants (Part of)
-    0x0FE50, 0x0FE57, 0x0FE59, 0x0FE62, 0x0FE67, 0x0FE6F,
-    // Halfwidth and Fullwidth Forms
-    0x0FF01, 0x0FF0C, 0x0FF0E, 0x0FF1B, 0x0FF1F, 0x0FF60, 0x0FFE0, 0x0FFE7,
-    // Specials (Part of)
-    0x0FFF0, 0x0FFF8, 0x0FFFC, 0x0FFFD,
-    // Meroitic Hieroglyphs
-    0x10980, 0x1099F,
-    // Siddham
-    0x11580, 0x115FF,
-    // Zanabazar Square
-    0x11A00, 0x11AAF,
-    // Egyptian Hieroglyphs
-    0x13000, 0x1342F,
-    // Anatolian Hieroglyphs
-    0x14400, 0x1467F,
-    // Ideographic Symbols and Punctuation
-    0x16FE0, 0x16FFF,
-    // Tangut
-    0x17000, 0x187FF,
-    // Tangut Components
-    0x18800, 0x18AFF,
-    // Kana Supplement
-    0x1B000, 0x1B0FF,
-    // Kana Extended-A
-    0x1B100, 0x1B12F,
-    // Nushu
-    0x1B170, 0x1B2FF,
-    // Byzantine Musical Symbols/Musical Symbols
-    0x1D000, 0x1D1FF,
-    // Tai Xuan Jing Symbols/Counting Rod Numerals
-    0x1D300, 0x1D37F,
-    // Sutton SignWriting
-    0x1D800, 0x1DAAF,
-    // Mahjong Tiles/Domino Tiles/Playing Cards/Enclosed Alphanumeric Supplement
-    // Enclosed Ideographic Supplement/Enclosed Ideographic Supplement
-    // Emoticons/Ornamental Dingbats/Transport and Map Symbols/Alchemical
-    // Symbols Alchemical Symbols
-    0x1F000, 0x1F7FF,
-    // Supplemental Symbols and Pictographs
-    0x1F900, 0x1F9FF,
-    // CJK Unified Ideographs Extension B/C/D
-    // CJK Compatibility Ideographs Supplement
-    0x20000, 0x2FFFD, 0x30000, 0x3FFFD,
-    // Supplementary Private Use Area-A
-    0xF0000, 0xFFFFD,
-    // Supplementary Private Use Area-B
-    0x100000, 0x10FFFD,
-};
+    0x1F910, 0x1F918, 0x1F919, 0x1F97F, 0x1F980, 0x1F9BF, 0x1F9C0, 0x1F9FF,
+    // Clothing
+    0x1FA70, 0x1FA73,
+    // Medical symbols
+    0x1FA78, 0x1FA7A,
+    // Toys and sport symbols
+    0x1FA80, 0x1FA82,
+    // Miscellaneous objects
+    0x1FA90, 0x1FA95};
 
 // https://html.spec.whatwg.org/C/#prod-potentialcustomelementname
 static const UChar32 kIsPotentialCustomElementNameCharArray[] = {
@@ -249,11 +159,9 @@ static const UChar32 kIsHangulRanges[] = {
 
 static const UChar32 kIsHangulArray[] = {};
 
-#if !defined(USING_SYSTEM_ICU)
 // Freezed trie tree, see character_property_data_generator.cc.
 extern const int32_t kSerializedCharacterDataSize;
 extern const uint8_t kSerializedCharacterData[];
-#endif
 
 }  // namespace blink
 

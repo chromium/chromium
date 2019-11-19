@@ -8,6 +8,7 @@
 #include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/single_thread_task_runner.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "content/child/child_process.h"
 #include "content/utility/utility_thread_impl.h"
@@ -21,14 +22,11 @@ static base::LazyInstance<base::Lock>::DestructorAtExit
 
 InProcessUtilityThread::InProcessUtilityThread(
     const InProcessChildThreadParams& params)
-    : Thread("Chrome_InProcUtilityThread"), params_(params) {
-}
+    : Thread("Chrome_InProcUtilityThread"), params_(params) {}
 
 InProcessUtilityThread::~InProcessUtilityThread() {
-  // Wait till in-process utility thread finishes clean up.
-  bool previous_value = base::ThreadRestrictions::SetIOAllowed(true);
+  base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_thread_join;
   Stop();
-  base::ThreadRestrictions::SetIOAllowed(previous_value);
 }
 
 void InProcessUtilityThread::Init() {

@@ -13,6 +13,7 @@
 #include "gpu/command_buffer/common/context_creation_attribs.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/gpu_gles2_export.h"
+#include "gpu/ipc/common/command_buffer_id.h"
 
 namespace gpu {
 
@@ -21,11 +22,11 @@ namespace gpu {
 class GPU_GLES2_EXPORT GpuCommandBufferMemoryTracker : public MemoryTracker {
  public:
   GpuCommandBufferMemoryTracker(
-      int client_id,
+      CommandBufferId command_buffer_id,
       uint64_t client_tracing_id,
-      uint64_t context_group_tracing_id,
       ContextType context_type,
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+      Observer* observer);
   ~GpuCommandBufferMemoryTracker() override;
 
   // MemoryTracker implementation.
@@ -42,14 +43,15 @@ class GPU_GLES2_EXPORT GpuCommandBufferMemoryTracker : public MemoryTracker {
       base::MemoryPressureListener::MemoryPressureLevel pressure_level);
 
   uint64_t size_ = 0;
-  const int client_id_;
+  const CommandBufferId command_buffer_id_;
   const uint64_t client_tracing_id_;
-  const uint64_t context_group_tracing_id_;
 
   // Variables used in memory stat histogram logging.
   const ContextType context_type_;
   base::RepeatingTimer memory_stats_timer_;
   base::MemoryPressureListener memory_pressure_listener_;
+
+  MemoryTracker::Observer* const observer_;
 
   DISALLOW_COPY_AND_ASSIGN(GpuCommandBufferMemoryTracker);
 };

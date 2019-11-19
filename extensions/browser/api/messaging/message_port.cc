@@ -29,9 +29,11 @@ void MessagePort::DispatchOnConnect(
 
 void MessagePort::DispatchOnDisconnect(const std::string& error_message) {}
 
-void MessagePort::OpenPort(int process_id, int routing_id) {}
+void MessagePort::OpenPort(int process_id, const PortContext& port_context) {}
 
-void MessagePort::ClosePort(int process_id, int routing_id) {}
+void MessagePort::ClosePort(int process_id,
+                            int routing_id,
+                            int worker_thread_id) {}
 
 void MessagePort::IncrementLazyKeepaliveCount() {}
 

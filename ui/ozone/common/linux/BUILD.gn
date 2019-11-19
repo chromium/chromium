@@ -25,6 +25,8 @@ source_set("gbm") {
     "gbm_buffer.h",
     "gbm_device.h",
     "gbm_wrapper.cc",
+    "scoped_gbm_device.cc",
+    "scoped_gbm_device.h",
   ]
 
   deps = [

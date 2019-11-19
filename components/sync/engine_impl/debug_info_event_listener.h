@@ -28,7 +28,7 @@ namespace syncer {
 // In order to track datatype association results, we need at least as many
 // entries as datatypes. Reserve additional space for other kinds of events that
 // are likely to happen during first sync or startup.
-const unsigned int kMaxEntries = MODEL_TYPE_COUNT + 10;
+const unsigned int kMaxEntries = ModelType::NUM_ENTRIES + 10;
 
 // Listens to events and records them in a queue. And passes the events to
 // syncer when requested.
@@ -46,8 +46,7 @@ class DebugInfoEventListener : public SyncManager::Observer,
   void OnInitializationComplete(
       const WeakHandle<JsBackend>& js_backend,
       const WeakHandle<DataTypeDebugInfoListener>& debug_listener,
-      bool success,
-      ModelTypeSet restored_types) override;
+      bool success) override;
   void OnConnectionStatusChange(ConnectionStatus connection_status) override;
   void OnActionableError(const SyncProtocolError& sync_error) override;
   void OnMigrationRequested(ModelTypeSet types) override;
@@ -59,12 +58,15 @@ class DebugInfoEventListener : public SyncManager::Observer,
       const KeyDerivationParams& key_derivation_params,
       const sync_pb::EncryptedData& pending_keys) override;
   void OnPassphraseAccepted() override;
+  void OnTrustedVaultKeyRequired() override;
+  void OnTrustedVaultKeyAccepted() override;
   void OnBootstrapTokenUpdated(const std::string& bootstrap_token,
                                BootstrapTokenType type) override;
   void OnEncryptedTypesChanged(ModelTypeSet encrypted_types,
                                bool encrypt_everything) override;
   void OnEncryptionComplete() override;
-  void OnCryptographerStateChanged(Cryptographer* cryptographer) override;
+  void OnCryptographerStateChanged(Cryptographer* cryptographer,
+                                   bool has_pending_keys) override;
   void OnPassphraseTypeChanged(PassphraseType type,
                                base::Time explicit_passphrase_time) override;
 
@@ -104,12 +106,13 @@ class DebugInfoEventListener : public SyncManager::Observer,
   // Cryptographer has keys that are not yet decrypted.
   bool cryptographer_has_pending_keys_;
 
-  // Cryptographer is initialized and does not have pending keys.
-  bool cryptographer_ready_;
+  // Cryptographer is able to encrypt data, which usually means it's initialized
+  // and does not have pending keys.
+  bool cryptographer_can_encrypt_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::WeakPtrFactory<DebugInfoEventListener> weak_ptr_factory_;
+  base::WeakPtrFactory<DebugInfoEventListener> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DebugInfoEventListener);
 };

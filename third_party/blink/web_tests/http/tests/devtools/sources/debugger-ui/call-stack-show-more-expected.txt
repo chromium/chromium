@@ -1,6 +1,6 @@
 Tests "Show more" button in CallStackSidebarPane.
 Set timer for test function.
-callWithAsyncStacktest.js:19
+(anonymous)test.js:19
 callWithAsyncStacktest.js:12
 call1wrapper.js:1
 Promise.then (async)
@@ -102,7 +102,7 @@ call33VM wrapper.js:1
 
 ---------------
 Clicks show more..
-callWithAsyncStacktest.js:19
+(anonymous)test.js:19
 callWithAsyncStacktest.js:12
 call1wrapper.js:1
 Promise.then (async)

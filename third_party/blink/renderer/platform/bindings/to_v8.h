@@ -126,37 +126,25 @@ inline v8::Local<v8::Value> ToV8UnsignedIntegerInternal<8>(
   return v8::Number::New(isolate, value);
 }
 
-inline v8::Local<v8::Value> ToV8(int value,
+inline v8::Local<v8::Value> ToV8(int32_t value,
                                  v8::Local<v8::Object> creation_context,
                                  v8::Isolate* isolate) {
   return ToV8SignedIntegerInternal<sizeof value>(value, isolate);
 }
 
-inline v8::Local<v8::Value> ToV8(long value,
+inline v8::Local<v8::Value> ToV8(int64_t value,
                                  v8::Local<v8::Object> creation_context,
                                  v8::Isolate* isolate) {
   return ToV8SignedIntegerInternal<sizeof value>(value, isolate);
 }
 
-inline v8::Local<v8::Value> ToV8(long long value,
-                                 v8::Local<v8::Object> creation_context,
-                                 v8::Isolate* isolate) {
-  return ToV8SignedIntegerInternal<sizeof value>(value, isolate);
-}
-
-inline v8::Local<v8::Value> ToV8(unsigned value,
+inline v8::Local<v8::Value> ToV8(uint32_t value,
                                  v8::Local<v8::Object> creation_context,
                                  v8::Isolate* isolate) {
   return ToV8UnsignedIntegerInternal<sizeof value>(value, isolate);
 }
 
-inline v8::Local<v8::Value> ToV8(unsigned long value,
-                                 v8::Local<v8::Object> creation_context,
-                                 v8::Isolate* isolate) {
-  return ToV8UnsignedIntegerInternal<sizeof value>(value, isolate);
-}
-
-inline v8::Local<v8::Value> ToV8(unsigned long long value,
+inline v8::Local<v8::Value> ToV8(uint64_t value,
                                  v8::Local<v8::Object> creation_context,
                                  v8::Isolate* isolate) {
   return ToV8UnsignedIntegerInternal<sizeof value>(value, isolate);

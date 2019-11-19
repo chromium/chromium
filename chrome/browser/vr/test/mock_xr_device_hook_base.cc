@@ -3,9 +3,8 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/vr/test/mock_xr_device_hook_base.h"
-#include "content/public/common/service_manager_connection.h"
+#include "chrome/browser/vr/service/xr_device_service.h"
 #include "device/vr/public/mojom/isolated_xr_service.mojom.h"
-#include "services/service_manager/public/cpp/connector.h"
 
 // TODO(https://crbug.com/891832): Remove these conversion functions as part of
 // the switch to only mojom types.
@@ -18,6 +17,8 @@ device_test::mojom::ControllerRole DeviceToMojoControllerRole(
       return device_test::mojom::ControllerRole::kControllerRoleRight;
     case device::kControllerRoleLeft:
       return device_test::mojom::ControllerRole::kControllerRoleLeft;
+    case device::kControllerRoleVoice:
+      return device_test::mojom::ControllerRole::kControllerRoleVoice;
   }
 }
 
@@ -39,33 +40,26 @@ device_test::mojom::ControllerFrameDataPtr DeviceToMojoControllerFrameData(
   ret->is_valid = data.is_valid;
   ret->pose_data = device_test::mojom::PoseFrameData::New();
   ret->pose_data->device_to_origin = gfx::Transform();
-  for (int row = 0; row < 4; ++row) {
-    for (int col = 0; col < 4; ++col) {
+  for (int col = 0; col < 4; ++col) {
+    for (int row = 0; row < 4; ++row) {
       ret->pose_data->device_to_origin->matrix().set(
-          row, col, data.pose_data.device_to_origin[row * 4 + col]);
+          row, col, data.pose_data.device_to_origin[row + col * 4]);
     }
   }
   return ret;
 }
 
 MockXRDeviceHookBase::MockXRDeviceHookBase()
-    : tracked_classes_{device_test::mojom::TrackedDeviceClass::
-                           kTrackedDeviceInvalid},
-      binding_(this) {
-  content::ServiceManagerConnection* connection =
-      content::ServiceManagerConnection::GetForProcess();
-  connection->GetConnector()->BindInterface(
-      device::mojom::kVrIsolatedServiceName,
-      mojo::MakeRequest(&test_hook_registration_));
-
-  device_test::mojom::XRTestHookPtr client;
-  binding_.Bind(mojo::MakeRequest(&client));
+    : tracked_classes_{
+          device_test::mojom::TrackedDeviceClass::kTrackedDeviceInvalid} {
+  vr::GetXRDeviceService()->BindTestHook(
+      service_test_hook_.BindNewPipeAndPassReceiver());
 
   mojo::ScopedAllowSyncCallForTesting scoped_allow_sync;
   // For now, always have the HMD connected.
   tracked_classes_[0] =
       device_test::mojom::TrackedDeviceClass::kTrackedDeviceHmd;
-  test_hook_registration_->SetTestHook(std::move(client));
+  service_test_hook_->SetTestHook(receiver_.BindNewPipeAndPassRemote());
 }
 
 MockXRDeviceHookBase::~MockXRDeviceHookBase() {
@@ -73,11 +67,11 @@ MockXRDeviceHookBase::~MockXRDeviceHookBase() {
 }
 
 void MockXRDeviceHookBase::StopHooking() {
-  // We don't call test_hook_registration_->SetTestHook(nullptr), since that
-  // will potentially deadlock with reentrant or crossing synchronous mojo
+  // We don't call service_test_hook_->SetTestHook(mojo::NullRemote()), since
+  // that will potentially deadlock with reentrant or crossing synchronous mojo
   // calls.
-  binding_.Close();
-  test_hook_registration_ = nullptr;
+  receiver_.reset();
+  service_test_hook_.reset();
 }
 
 void MockXRDeviceHookBase::OnFrameSubmitted(
@@ -147,6 +141,20 @@ void MockXRDeviceHookBase::WaitGetControllerData(
   std::move(callback).Run(DeviceToMojoControllerFrameData(data));
 }
 
+void MockXRDeviceHookBase::WaitGetEventData(
+    device_test::mojom::XRTestHook::WaitGetEventDataCallback callback) {
+  if (event_data_queue_.empty()) {
+    device_test::mojom::EventDataPtr ret = device_test::mojom::EventData::New();
+    ret->type = device_test::mojom::EventType::kNoEvent;
+    std::move(callback).Run(std::move(ret));
+    return;
+  }
+  device_test::mojom::EventDataPtr ret =
+      device_test::mojom::EventData::New(event_data_queue_.front());
+  std::move(callback).Run(std::move(ret));
+  event_data_queue_.pop();
+}
+
 unsigned int MockXRDeviceHookBase::ConnectController(
     const device::ControllerFrameData& initial_data) {
   // Find the first open tracked device slot and fill that.
@@ -164,6 +172,11 @@ unsigned int MockXRDeviceHookBase::ConnectController(
   // NOTREACHED should make it unnecessary to return here (as it does elsewhere
   // in the code), but compilation fails if this is not present.
   return device::kMaxTrackedDevices;
+}
+
+void MockXRDeviceHookBase::TerminateDeviceServiceProcessForTesting() {
+  mojo::ScopedAllowSyncCallForTesting scoped_allow_sync;
+  service_test_hook_->TerminateDeviceServiceProcessForTesting();
 }
 
 void MockXRDeviceHookBase::UpdateController(
@@ -199,4 +212,8 @@ device::ControllerFrameData MockXRDeviceHookBase::CreateValidController(
   ret.pose_data.device_to_origin[10] = 1;
   ret.pose_data.device_to_origin[15] = 1;
   return ret;
+}
+
+void MockXRDeviceHookBase::PopulateEvent(device_test::mojom::EventData data) {
+  event_data_queue_.push(data);
 }

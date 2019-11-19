@@ -10,17 +10,15 @@
 
 namespace syncer {
 
-// TODO(pvalenzuela): Avoid duplication of this typedef by defining it in a
-// common location. This is duplicated here because its original definition in
-// NetworkTimeTracker cannot be depended on.
-//
 // Callback for updating the network time.
 // Params:
 // const base::Time& network_time - the new network time.
 // const base::TimeDelta& resolution - how precise the reading is.
 // const base::TimeDelta& latency - the http request's latency.
-using NetworkTimeUpdateCallback = base::RepeatingCallback<
-    void(const base::Time&, const base::TimeDelta&, const base::TimeDelta&)>;
+using NetworkTimeUpdateCallback =
+    base::RepeatingCallback<void(const base::Time& network_time,
+                                 const base::TimeDelta& resolution,
+                                 const base::TimeDelta& latency)>;
 
 }  // namespace syncer
 

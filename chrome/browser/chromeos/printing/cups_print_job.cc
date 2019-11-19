@@ -11,14 +11,20 @@ namespace chromeos {
 CupsPrintJob::CupsPrintJob(const Printer& printer,
                            int job_id,
                            const std::string& document_title,
-                           int total_page_number)
+                           int total_page_number,
+                           ::printing::PrintJob::Source source,
+                           const std::string& source_id,
+                           const printing::proto::PrintSettings& settings)
     : printer_(printer),
       job_id_(job_id),
       document_title_(document_title),
       total_page_number_(total_page_number),
-      weak_factory_(this) {}
+      source_(source),
+      source_id_(source_id),
+      settings_(settings),
+      creation_time_(base::Time::Now()) {}
 
-CupsPrintJob::~CupsPrintJob() {}
+CupsPrintJob::~CupsPrintJob() = default;
 
 std::string CupsPrintJob::GetUniqueId() const {
   return CreateUniqueId(printer_.id(), job_id_);
@@ -26,6 +32,10 @@ std::string CupsPrintJob::GetUniqueId() const {
 
 base::WeakPtr<CupsPrintJob> CupsPrintJob::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
+}
+
+bool CupsPrintJob::IsExpired() const {
+  return error_code_ == PrinterErrorCode::PRINTER_UNREACHABLE;
 }
 
 // static
@@ -36,12 +46,12 @@ std::string CupsPrintJob::CreateUniqueId(const std::string& printer_id,
 
 bool CupsPrintJob::IsJobFinished() const {
   return state_ == CupsPrintJob::State::STATE_CANCELLED ||
-         state_ == CupsPrintJob::State::STATE_ERROR ||
+         state_ == CupsPrintJob::State::STATE_FAILED ||
          state_ == CupsPrintJob::State::STATE_DOCUMENT_DONE;
 }
 
 bool CupsPrintJob::PipelineDead() const {
-  return error_code_ == CupsPrintJob::ErrorCode::FILTER_FAILED;
+  return error_code_ == PrinterErrorCode::FILTER_FAILED;
 }
 
 }  // namespace chromeos

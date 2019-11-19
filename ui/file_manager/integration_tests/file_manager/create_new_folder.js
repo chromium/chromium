@@ -172,7 +172,7 @@ testcase.createFolderNestedDownloads = async () => {
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
   await expandRoot(appId, TREEITEM_DOWNLOADS);
   await remoteCall.navigateWithDirectoryTree(
-      appId, RootPath.DOWNLOADS_PATH + '/photos', 'My files/Downloads');
+      appId, '/Downloads/photos', 'My files/Downloads');
   await createNewFolder(appId, [], TREEITEM_DOWNLOADS);
 };
 

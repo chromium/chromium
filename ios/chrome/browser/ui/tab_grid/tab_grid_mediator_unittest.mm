@@ -7,7 +7,6 @@
 #import <Foundation/Foundation.h>
 #include <memory>
 
-#include "base/feature_list.h"
 #include "base/mac/foundation_util.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
@@ -17,13 +16,14 @@
 #import "ios/chrome/browser/ui/tab_grid/grid/grid_commands.h"
 #import "ios/chrome/browser/ui/tab_grid/grid/grid_consumer.h"
 #import "ios/chrome/browser/ui/tab_grid/grid/grid_item.h"
-#include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/web/tab_id_tab_helper.h"
 #include "ios/chrome/browser/web_state_list/fake_web_state_list_delegate.h"
 #include "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
+#include "ios/web/common/features.h"
 #import "ios/web/public/test/fakes/test_web_state.h"
-#include "ios/web/public/test/test_web_thread_bundle.h"
+#include "ios/web/public/test/web_task_environment.h"
+#import "ios/web/public/web_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #include "testing/platform_test.h"
@@ -93,10 +93,8 @@ class TabIdFakeWebStateListDelegate : public FakeWebStateListDelegate {
   void WillAddWebState(web::WebState* web_state) override {
     TabIdTabHelper::CreateForWebState(web_state);
     // Create NTPTabHelper to ensure VisibleURL is set to kChromeUINewTabURL.
-    if (base::FeatureList::IsEnabled(kBrowserContainerContainsNTP)) {
-      id delegate = OCMProtocolMock(@protocol(NewTabPageTabHelperDelegate));
-      NewTabPageTabHelper::CreateForWebState(web_state, delegate);
-    }
+    id delegate = OCMProtocolMock(@protocol(NewTabPageTabHelperDelegate));
+    NewTabPageTabHelper::CreateForWebState(web_state, delegate);
   }
 };
 
@@ -141,7 +139,7 @@ class TabGridMediatorTest : public PlatformTest {
   }
 
  protected:
-  web::TestWebThreadBundle thread_bundle_;
+  web::WebTaskEnvironment task_environment_;
   std::unique_ptr<ios::ChromeBrowserState> browser_state_;
   std::unique_ptr<TabIdFakeWebStateListDelegate> web_state_list_delegate_;
   std::unique_ptr<WebStateList> web_state_list_;
@@ -305,7 +303,15 @@ TEST_F(TabGridMediatorTest, AddNewItemAtEndCommand) {
   ASSERT_TRUE(web_state);
   EXPECT_EQ(web_state->GetBrowserState(), browser_state_.get());
   EXPECT_FALSE(web_state->HasOpener());
-  EXPECT_EQ(kChromeUINewTabURL, web_state->GetVisibleURL().spec());
+  if (web::features::UseWKWebViewLoading()) {
+    // The URL of pending item (i.e. kChromeUINewTabURL) will not be returned
+    // here because WebState doesn't load the URL until it's visible and
+    // NavigationManager::GetVisibleURL requires WebState::IsLoading to be true
+    // to return pending item's URL.
+    EXPECT_EQ("", web_state->GetVisibleURL().spec());
+  } else {
+    EXPECT_EQ(kChromeUINewTabURL, web_state->GetVisibleURL().spec());
+  }
   NSString* identifier = TabIdTabHelper::FromWebState(web_state)->tab_id();
   EXPECT_FALSE([original_identifiers_ containsObject:identifier]);
   // Consumer checks.
@@ -327,7 +333,15 @@ TEST_F(TabGridMediatorTest, InsertNewItemCommand) {
   ASSERT_TRUE(web_state);
   EXPECT_EQ(web_state->GetBrowserState(), browser_state_.get());
   EXPECT_FALSE(web_state->HasOpener());
-  EXPECT_EQ(kChromeUINewTabURL, web_state->GetVisibleURL().spec());
+  if (web::features::UseWKWebViewLoading()) {
+    // The URL of pending item (i.e. kChromeUINewTabURL) will not be returned
+    // here because WebState doesn't load the URL until it's visible and
+    // NavigationManager::GetVisibleURL requires WebState::IsLoading to be true
+    // to return pending item's URL.
+    EXPECT_EQ("", web_state->GetVisibleURL().spec());
+  } else {
+    EXPECT_EQ(kChromeUINewTabURL, web_state->GetVisibleURL().spec());
+  }
   NSString* identifier = TabIdTabHelper::FromWebState(web_state)->tab_id();
   EXPECT_FALSE([original_identifiers_ containsObject:identifier]);
   // Consumer checks.

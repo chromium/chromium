@@ -49,6 +49,8 @@ class RawInputDataFetcher : public GamepadDataFetcher,
       mojom::GamepadHapticsManager::ResetVibrationActuatorCallback,
       scoped_refptr<base::SequencedTaskRunner>) override;
 
+  bool DisconnectUnrecognizedGamepad(int source_id) override;
+
  private:
   void OnAddedToProvider() override;
 

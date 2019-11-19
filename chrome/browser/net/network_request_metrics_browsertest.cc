@@ -84,7 +84,7 @@ class WaitForMainFrameResourceObserver : public content::WebContentsObserver {
       RenderFrameHost* render_frame_host,
       const content::GlobalRequestID& request_id,
       const content::mojom::ResourceLoadInfo& resource_load_info) override {
-    EXPECT_EQ(RESOURCE_TYPE_MAIN_FRAME, resource_load_info.resource_type);
+    EXPECT_EQ(ResourceType::kMainFrame, resource_load_info.resource_type);
     EXPECT_EQ(net::OK, resource_load_info.net_error);
     run_loop_.Quit();
   }
@@ -356,8 +356,8 @@ class NetworkRequestMetricsBrowserTest
 };
 
 // Testing before headers / during body is most interesting in the frame case,
-// as it checks the before and after commit case, which with browser-side
-// navigations / PlzNavigate, follow very different paths.
+// as it checks the before and after commit case, which follow very different
+// paths.
 IN_PROC_BROWSER_TEST_P(NetworkRequestMetricsBrowserTest,
                        NetErrorBeforeHeaders) {
   TestNavigationObserver navigation_observer(active_web_contents(), 1);

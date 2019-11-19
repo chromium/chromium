@@ -23,7 +23,6 @@
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_plugin_container.h"
 #include "third_party/blink/public/web/web_plugin_script_forbidden_scope.h"
-#include "third_party/blink/public/web/web_scoped_user_gesture.h"
 
 using ppapi::V8ObjectVar;
 using ppapi::PpapiGlobals;
@@ -328,9 +327,8 @@ PP_Var CallDeprecated(PP_Var var,
                       PP_Var* argv,
                       PP_Var* exception) {
   ObjectAccessor accessor(var);
-  if (accessor.instance() && accessor.instance()->IsProcessingUserGesture()) {
-    blink::WebScopedUserGesture user_gesture(
-        accessor.instance()->CurrentUserGestureToken());
+  if (accessor.instance() &&
+      accessor.instance()->HasTransientUserActivation()) {
     return CallDeprecatedInternal(var, method_name, argc, argv, exception);
   }
   return CallDeprecatedInternal(var, method_name, argc, argv, exception);

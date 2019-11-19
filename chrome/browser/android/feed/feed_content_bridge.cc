@@ -15,13 +15,13 @@
 #include "base/android/jni_string.h"
 #include "base/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "chrome/android/chrome_jni_headers/FeedContentBridge_jni.h"
 #include "chrome/browser/android/feed/feed_host_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_android.h"
 #include "components/feed/content/feed_host_service.h"
 #include "components/feed/core/feed_content_database.h"
 #include "components/feed/core/feed_content_mutation.h"
-#include "jni/FeedContentBridge_jni.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "ui/gfx/image/image.h"
 
@@ -57,7 +57,7 @@ static jlong JNI_FeedContentBridge_Init(
 }
 
 FeedContentBridge::FeedContentBridge(FeedContentDatabase* feed_content_database)
-    : feed_content_database_(feed_content_database), weak_ptr_factory_(this) {}
+    : feed_content_database_(feed_content_database) {}
 
 FeedContentBridge::~FeedContentBridge() = default;
 

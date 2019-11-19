@@ -8,9 +8,10 @@
 
 #include "base/values.h"
 #import "components/translate/ios/browser/js_translate_manager.h"
+#include "ios/web/public/test/fakes/fake_web_frame.h"
 #include "ios/web/public/test/fakes/test_browser_state.h"
 #import "ios/web/public/test/fakes/test_web_state.h"
-#include "ios/web/public/test/test_web_thread_bundle.h"
+#include "ios/web/public/test/web_task_environment.h"
 #include "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #include "url/gurl.h"
@@ -27,6 +28,8 @@ class TranslateControllerTest : public PlatformTest,
   TranslateControllerTest()
       : test_web_state_(new web::TestWebState),
         test_browser_state_(new web::TestBrowserState),
+        fake_main_frame_(/*frame_id=*/"", /*is_main_frame=*/true, GURL()),
+        fake_iframe_(/*frame_id=*/"", /*is_main_frame=*/false, GURL()),
         error_type_(TranslateErrors::Type::NONE),
         ready_time_(0),
         load_time_(0),
@@ -60,9 +63,11 @@ class TranslateControllerTest : public PlatformTest,
     translation_time_ = translation_time;
   }
 
-  web::TestWebThreadBundle web_thread_bundle_;
+  web::WebTaskEnvironment task_environment_;
   std::unique_ptr<web::TestWebState> test_web_state_;
   std::unique_ptr<web::TestBrowserState> test_browser_state_;
+  web::FakeWebFrame fake_main_frame_;
+  web::FakeWebFrame fake_iframe_;
   id mock_js_translate_manager_;
   std::unique_ptr<TranslateController> translate_controller_;
   TranslateErrors::Type error_type_;
@@ -79,7 +84,7 @@ TEST_F(TranslateControllerTest, OnJavascriptCommandReceived) {
   base::DictionaryValue malformed_command;
   EXPECT_FALSE(translate_controller_->OnJavascriptCommandReceived(
       malformed_command, GURL("http://google.com"), /*interacting*/ false,
-      /*is_main_frame=*/true, /*sender_frame=*/nullptr));
+      &fake_main_frame_));
 }
 
 // Tests that OnJavascriptCommandReceived() returns false to iframe commands.
@@ -91,7 +96,7 @@ TEST_F(TranslateControllerTest, OnIFrameJavascriptCommandReceived) {
   command.SetDouble("readyTime", .0);
   EXPECT_FALSE(translate_controller_->OnJavascriptCommandReceived(
       command, GURL("http://google.com"), /*interacting*/ false,
-      /*is_main_frame=*/false, /*sender_frame=*/nullptr));
+      &fake_iframe_));
 }
 
 // Tests that OnTranslateScriptReady() is called when a timeout message is
@@ -104,7 +109,7 @@ TEST_F(TranslateControllerTest, OnTranslateScriptReadyTimeoutCalled) {
   command.SetDouble("readyTime", .0);
   EXPECT_TRUE(translate_controller_->OnJavascriptCommandReceived(
       command, GURL("http://google.com"), /*interacting*/ false,
-      /*is_main_frame=*/true, /*sender_frame=*/nullptr));
+      &fake_main_frame_));
   EXPECT_TRUE(on_script_ready_called_);
   EXPECT_FALSE(on_translate_complete_called_);
   EXPECT_FALSE(error_type_ == TranslateErrors::NONE);
@@ -124,7 +129,7 @@ TEST_F(TranslateControllerTest, OnTranslateScriptReadyCalled) {
   command.SetDouble("readyTime", some_ready_time);
   EXPECT_TRUE(translate_controller_->OnJavascriptCommandReceived(
       command, GURL("http://google.com"), /*interacting*/ false,
-      /*is_main_frame=*/true, /*sender_frame=*/nullptr));
+      &fake_main_frame_));
   EXPECT_TRUE(on_script_ready_called_);
   EXPECT_FALSE(on_translate_complete_called_);
   EXPECT_TRUE(error_type_ == TranslateErrors::NONE);
@@ -146,7 +151,7 @@ TEST_F(TranslateControllerTest, TranslationSuccess) {
   command.SetDouble("translationTime", some_translation_time);
   EXPECT_TRUE(translate_controller_->OnJavascriptCommandReceived(
       command, GURL("http://google.com"), /*interacting*/ false,
-      /*is_main_frame=*/true, /*sender_frame=*/nullptr));
+      &fake_main_frame_));
   EXPECT_FALSE(on_script_ready_called_);
   EXPECT_TRUE(on_translate_complete_called_);
   EXPECT_TRUE(error_type_ == TranslateErrors::NONE);
@@ -162,7 +167,7 @@ TEST_F(TranslateControllerTest, TranslationFailure) {
   command.SetDouble("errorCode", TranslateErrors::INITIALIZATION_ERROR);
   EXPECT_TRUE(translate_controller_->OnJavascriptCommandReceived(
       command, GURL("http://google.com"), /*interacting*/ false,
-      /*is_main_frame=*/true, /*sender_frame=*/nullptr));
+      &fake_main_frame_));
   EXPECT_FALSE(on_script_ready_called_);
   EXPECT_TRUE(on_translate_complete_called_);
   EXPECT_FALSE(error_type_ == TranslateErrors::NONE);
@@ -176,7 +181,7 @@ TEST_F(TranslateControllerTest, OnTranslateLoadJavascript) {
   command.SetString("url", "https://translate.googleapis.com/javascript.js");
   EXPECT_TRUE(translate_controller_->OnJavascriptCommandReceived(
       command, GURL("http://google.com"), /*interacting=*/false,
-      /*is_main_frame=*/true, /*sender_frame=*/nullptr));
+      &fake_main_frame_));
 }
 
 // Tests that OnTranslateSendRequest() is called with the right paramters
@@ -191,7 +196,7 @@ TEST_F(TranslateControllerTest, OnTranslateSendRequest) {
   command.SetDouble("requestID", 0);
   EXPECT_TRUE(translate_controller_->OnJavascriptCommandReceived(
       command, GURL("http://google.com"), /*interacting=*/false,
-      /*is_main_frame=*/true, /*sender_frame=*/nullptr));
+      &fake_main_frame_));
 }
 
 }  // namespace translate

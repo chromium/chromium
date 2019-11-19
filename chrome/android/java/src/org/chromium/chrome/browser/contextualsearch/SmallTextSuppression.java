@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.contextualsearch;
 
+import org.chromium.chrome.browser.contextualsearch.ContextualSearchFieldTrial.ContextualSearchSwitch;
+
 /**
  * Implements a policy that a Tap on a relatively small font should be ignored.
  */
@@ -22,7 +24,8 @@ class SmallTextSuppression extends ContextualSearchHeuristic {
      * @param fontSizeDips The size of the font from Blink in dips.
      */
     SmallTextSuppression(int fontSizeDips) {
-        mIsSuppressionEnabled = ContextualSearchFieldTrial.isSmallTextSuppressionEnabled();
+        mIsSuppressionEnabled = ContextualSearchFieldTrial.getSwitch(
+                ContextualSearchSwitch.IS_SMALL_TEXT_SUPPRESSION_ENABLED);
         mIsConditionSatisfied = isConditionSatisfied(fontSizeDips);
         mDecilizedFontSize = decilizedFontSize(fontSizeDips);
     }

@@ -103,233 +103,153 @@
 	(global.WebXRPolyfill = factory());
 }(this, (function () { 'use strict';
 
-var _global = typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : typeof window !== 'undefined' ? window : {};
+const _global = typeof global !== 'undefined' ? global :
+                typeof self !== 'undefined' ? self :
+                typeof window !== 'undefined' ? window : {};
 
-var classCallCheck = function (instance, Constructor) {
-  if (!(instance instanceof Constructor)) {
-    throw new TypeError("Cannot call a class as a function");
-  }
-};
-
-var createClass = function () {
-  function defineProperties(target, props) {
-    for (var i = 0; i < props.length; i++) {
-      var descriptor = props[i];
-      descriptor.enumerable = descriptor.enumerable || false;
-      descriptor.configurable = true;
-      if ("value" in descriptor) descriptor.writable = true;
-      Object.defineProperty(target, descriptor.key, descriptor);
-    }
-  }
-
-  return function (Constructor, protoProps, staticProps) {
-    if (protoProps) defineProperties(Constructor.prototype, protoProps);
-    if (staticProps) defineProperties(Constructor, staticProps);
-    return Constructor;
-  };
-}();
-
-
-
-
-
-
-
-
-
-var inherits = function (subClass, superClass) {
-  if (typeof superClass !== "function" && superClass !== null) {
-    throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
-  }
-
-  subClass.prototype = Object.create(superClass && superClass.prototype, {
-    constructor: {
-      value: subClass,
-      enumerable: false,
-      writable: true,
-      configurable: true
-    }
-  });
-  if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
-};
-
-
-
-
-
-
-
-
-
-
-
-var possibleConstructorReturn = function (self, call) {
-  if (!self) {
-    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
-  }
-
-  return call && (typeof call === "object" || typeof call === "function") ? call : self;
-};
-
-var PRIVATE = Symbol('@@webxr-polyfill/EventTarget');
-var EventTarget = function () {
-  function EventTarget() {
-    classCallCheck(this, EventTarget);
+const PRIVATE = Symbol('@@webxr-polyfill/EventTarget');
+class EventTarget {
+  constructor() {
     this[PRIVATE] = {
-      listeners: new Map()
+      listeners: new Map(),
     };
   }
-  createClass(EventTarget, [{
-    key: 'addEventListener',
-    value: function addEventListener(type, listener) {
-      if (typeof type !== 'string') {
-        throw new Error('`type` must be a string');
-      }
-      if (typeof listener !== 'function') {
-        throw new Error('`listener` must be a function');
-      }
-      var typedListeners = this[PRIVATE].listeners.get(type) || [];
-      typedListeners.push(listener);
-      this[PRIVATE].listeners.set(type, typedListeners);
-    }
-  }, {
-    key: 'removeEventListener',
-    value: function removeEventListener(type, listener) {
-      if (typeof type !== 'string') {
-        throw new Error('`type` must be a string');
-      }
-      if (typeof listener !== 'function') {
-        throw new Error('`listener` must be a function');
-      }
-      var typedListeners = this[PRIVATE].listeners.get(type) || [];
-      for (var i = typedListeners.length; i >= 0; i--) {
-        if (typedListeners[i] === listener) {
-          typedListeners.pop();
-        }
-      }
-    }
-  }, {
-    key: 'dispatchEvent',
-    value: function dispatchEvent(type, event) {
-      var typedListeners = this[PRIVATE].listeners.get(type) || [];
-      var queue = [];
-      for (var i = 0; i < typedListeners.length; i++) {
-        queue[i] = typedListeners[i];
-      }
-      var _iteratorNormalCompletion = true;
-      var _didIteratorError = false;
-      var _iteratorError = undefined;
-      try {
-        for (var _iterator = queue[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-          var listener = _step.value;
-          listener(event);
-        }
-      } catch (err) {
-        _didIteratorError = true;
-        _iteratorError = err;
-      } finally {
-        try {
-          if (!_iteratorNormalCompletion && _iterator.return) {
-            _iterator.return();
-          }
-        } finally {
-          if (_didIteratorError) {
-            throw _iteratorError;
-          }
-        }
-      }
-      if (typeof this['on' + type] === 'function') {
-        this['on' + type](event);
-      }
-    }
-  }]);
-  return EventTarget;
-}();
-
-var PRIVATE$1 = Symbol('@@webxr-polyfill/XR');
-var XR = function (_EventTarget) {
-  inherits(XR, _EventTarget);
-  function XR(device) {
-    classCallCheck(this, XR);
-    var _this = possibleConstructorReturn(this, (XR.__proto__ || Object.getPrototypeOf(XR)).call(this));
-    _this[PRIVATE$1] = {
-      device: device
-    };
-    return _this;
+  addEventListener(type, listener) {
+    if (typeof type !== 'string') { throw new Error('`type` must be a string'); }
+    if (typeof listener !== 'function') { throw new Error('`listener` must be a function'); }
+    const typedListeners = this[PRIVATE].listeners.get(type) || [];
+    typedListeners.push(listener);
+    this[PRIVATE].listeners.set(type, typedListeners);
   }
-  createClass(XR, [{
-    key: 'requestDevice',
-    value: function requestDevice() {
-      return new Promise(function ($return, $error) {
-        var device;
-        return Promise.resolve(this[PRIVATE$1].device).then(function ($await_1) {
-          try {
-            device = $await_1;
-            if (device) {
-              return $return(device);
-            }
-            return $error(new Error('NotFoundError'));
-          } catch ($boundEx) {
-            return $error($boundEx);
-          }
-        }.bind(this), $error);
-      }.bind(this));
+  removeEventListener(type, listener) {
+    if (typeof type !== 'string') { throw new Error('`type` must be a string'); }
+    if (typeof listener !== 'function') { throw new Error('`listener` must be a function'); }
+    const typedListeners = this[PRIVATE].listeners.get(type) || [];
+    for (let i = typedListeners.length; i >= 0; i--) {
+      if (typedListeners[i] === listener) {
+        typedListeners.pop();
+      }
     }
-  }]);
-  return XR;
-}(EventTarget);
+  }
+  dispatchEvent(type, event) {
+    const typedListeners = this[PRIVATE].listeners.get(type) || [];
+    const queue = [];
+    for (let i = 0; i < typedListeners.length; i++) {
+      queue[i] = typedListeners[i];
+    }
+    for (let listener of queue) {
+      listener(event);
+    }
+    if (typeof this[`on${type}`] === 'function') {
+      this[`on${type}`](event);
+    }
+  }
+}
 
-var now = void 0;
+const PRIVATE$1 = Symbol('@@webxr-polyfill/XR');
+const XRSessionModes = ['inline', 'immersive-vr', 'immersive-ar'];
+const POLYFILL_REQUEST_SESSION_ERROR =
+`Polyfill Error: Must call navigator.xr.supportsSession() with any XRSessionMode
+or navigator.xr.requestSession('inline') prior to requesting an immersive
+session. This is a limitation specific to the WebXR Polyfill and does not apply
+to native implementations of the API.`;
+class XR$1 extends EventTarget {
+  constructor(devicePromise) {
+    super();
+    this[PRIVATE$1] = {
+      device: null,
+      devicePromise,
+      immersiveSession: null,
+      inlineSessions: new Set(),
+    };
+    devicePromise.then((device) => { this[PRIVATE$1].device = device; });
+  }
+  async supportsSession(mode) {
+    if (!this[PRIVATE$1].device) {
+      await this[PRIVATE$1].devicePromise;
+    }
+    if (mode != 'inline') {
+      if (!this[PRIVATE$1].device.supportsSession(mode)) {
+        return Promise.reject(null);
+      }
+    }
+    return Promise.resolve(null);
+  }
+  async requestSession(mode) {
+    if (!this[PRIVATE$1].device) {
+      if (mode != 'inline') {
+        throw new Error(POLYFILL_REQUEST_SESSION_ERROR);
+      } else {
+        await this[PRIVATE$1].devicePromise;
+      }
+    }
+    const sessionId = await this[PRIVATE$1].device.requestSession(mode);
+    const session = new XRSession(this[PRIVATE$1].device, mode, sessionId);
+    if (mode == 'inline') {
+      this[PRIVATE$1].inlineSessions.add(session);
+    } else {
+      this[PRIVATE$1].immersiveSession = session;
+    }
+    const onSessionEnd = () => {
+      if (mode == 'inline') {
+        this[PRIVATE$1].inlineSessions.delete(session);
+      } else {
+        this[PRIVATE$1].immersiveSession = null;
+      }
+      session.removeEventListener('end', onSessionEnd);
+    };
+    session.addEventListener('end', onSessionEnd);
+    return session;
+  }
+}
+
+let now;
 if ('performance' in _global === false) {
-  var startTime = Date.now();
-  now = function now() {
-    return Date.now() - startTime;
-  };
+  let startTime = Date.now();
+  now = () => Date.now() - startTime;
 } else {
-  now = function now() {
-    return performance.now();
-  };
+  now = () => performance.now();
 }
 var now$1 = now;
 
-var PRIVATE$2 = Symbol('@@webxr-polyfill/XRPresentationContext');
-var XRPresentationContext = function () {
-  function XRPresentationContext(canvas, ctx, glAttribs) {
-    classCallCheck(this, XRPresentationContext);
-    this[PRIVATE$2] = { canvas: canvas, ctx: ctx, glAttribs: glAttribs };
-    Object.assign(this, ctx);
+const PRIVATE$2 = Symbol('@@webxr-polyfill/XRPose');
+class XRPose$1 {
+  constructor(transform, emulatedPosition) {
+    this[PRIVATE$2] = {
+      transform,
+      emulatedPosition,
+    };
   }
-  createClass(XRPresentationContext, [{
-    key: 'canvas',
-    get: function get$$1() {
-      return this[PRIVATE$2].canvas;
-    }
-  }]);
-  return XRPresentationContext;
-}();
+  get transform() { return this[PRIVATE$2].transform; }
+  get emulatedPosition() { return this[PRIVATE$2].emulatedPosition; }
+  _setTransform(transform) { this[PRIVATE$2].transform = transform; }
+}
 
-var ARRAY_TYPE = typeof Float32Array !== 'undefined' ? Float32Array : Array;
+const EPSILON = 0.000001;
+let ARRAY_TYPE = (typeof Float32Array !== 'undefined') ? Float32Array : Array;
 
 
-var degree = Math.PI / 180;
+const degree = Math.PI / 180;
 
 function create() {
-  var out = new ARRAY_TYPE(16);
+  let out = new ARRAY_TYPE(16);
+  if(ARRAY_TYPE != Float32Array) {
+    out[1] = 0;
+    out[2] = 0;
+    out[3] = 0;
+    out[4] = 0;
+    out[6] = 0;
+    out[7] = 0;
+    out[8] = 0;
+    out[9] = 0;
+    out[11] = 0;
+    out[12] = 0;
+    out[13] = 0;
+    out[14] = 0;
+  }
   out[0] = 1;
-  out[1] = 0;
-  out[2] = 0;
-  out[3] = 0;
-  out[4] = 0;
   out[5] = 1;
-  out[6] = 0;
-  out[7] = 0;
-  out[8] = 0;
-  out[9] = 0;
   out[10] = 1;
-  out[11] = 0;
-  out[12] = 0;
-  out[13] = 0;
-  out[14] = 0;
   out[15] = 1;
   return out;
 }
@@ -376,35 +296,23 @@ function identity(out) {
 }
 
 function invert(out, a) {
-  var a00 = a[0],
-      a01 = a[1],
-      a02 = a[2],
-      a03 = a[3];
-  var a10 = a[4],
-      a11 = a[5],
-      a12 = a[6],
-      a13 = a[7];
-  var a20 = a[8],
-      a21 = a[9],
-      a22 = a[10],
-      a23 = a[11];
-  var a30 = a[12],
-      a31 = a[13],
-      a32 = a[14],
-      a33 = a[15];
-  var b00 = a00 * a11 - a01 * a10;
-  var b01 = a00 * a12 - a02 * a10;
-  var b02 = a00 * a13 - a03 * a10;
-  var b03 = a01 * a12 - a02 * a11;
-  var b04 = a01 * a13 - a03 * a11;
-  var b05 = a02 * a13 - a03 * a12;
-  var b06 = a20 * a31 - a21 * a30;
-  var b07 = a20 * a32 - a22 * a30;
-  var b08 = a20 * a33 - a23 * a30;
-  var b09 = a21 * a32 - a22 * a31;
-  var b10 = a21 * a33 - a23 * a31;
-  var b11 = a22 * a33 - a23 * a32;
-  var det = b00 * b11 - b01 * b10 + b02 * b09 + b03 * b08 - b04 * b07 + b05 * b06;
+  let a00 = a[0], a01 = a[1], a02 = a[2], a03 = a[3];
+  let a10 = a[4], a11 = a[5], a12 = a[6], a13 = a[7];
+  let a20 = a[8], a21 = a[9], a22 = a[10], a23 = a[11];
+  let a30 = a[12], a31 = a[13], a32 = a[14], a33 = a[15];
+  let b00 = a00 * a11 - a01 * a10;
+  let b01 = a00 * a12 - a02 * a10;
+  let b02 = a00 * a13 - a03 * a10;
+  let b03 = a01 * a12 - a02 * a11;
+  let b04 = a01 * a13 - a03 * a11;
+  let b05 = a02 * a13 - a03 * a12;
+  let b06 = a20 * a31 - a21 * a30;
+  let b07 = a20 * a32 - a22 * a30;
+  let b08 = a20 * a33 - a23 * a30;
+  let b09 = a21 * a32 - a22 * a31;
+  let b10 = a21 * a33 - a23 * a31;
+  let b11 = a22 * a33 - a23 * a32;
+  let det = b00 * b11 - b01 * b10 + b02 * b09 + b03 * b08 - b04 * b07 + b05 * b06;
   if (!det) {
     return null;
   }
@@ -430,45 +338,30 @@ function invert(out, a) {
 
 
 function multiply(out, a, b) {
-  var a00 = a[0],
-      a01 = a[1],
-      a02 = a[2],
-      a03 = a[3];
-  var a10 = a[4],
-      a11 = a[5],
-      a12 = a[6],
-      a13 = a[7];
-  var a20 = a[8],
-      a21 = a[9],
-      a22 = a[10],
-      a23 = a[11];
-  var a30 = a[12],
-      a31 = a[13],
-      a32 = a[14],
-      a33 = a[15];
-  var b0 = b[0],
-      b1 = b[1],
-      b2 = b[2],
-      b3 = b[3];
-  out[0] = b0 * a00 + b1 * a10 + b2 * a20 + b3 * a30;
-  out[1] = b0 * a01 + b1 * a11 + b2 * a21 + b3 * a31;
-  out[2] = b0 * a02 + b1 * a12 + b2 * a22 + b3 * a32;
-  out[3] = b0 * a03 + b1 * a13 + b2 * a23 + b3 * a33;
-  b0 = b[4];b1 = b[5];b2 = b[6];b3 = b[7];
-  out[4] = b0 * a00 + b1 * a10 + b2 * a20 + b3 * a30;
-  out[5] = b0 * a01 + b1 * a11 + b2 * a21 + b3 * a31;
-  out[6] = b0 * a02 + b1 * a12 + b2 * a22 + b3 * a32;
-  out[7] = b0 * a03 + b1 * a13 + b2 * a23 + b3 * a33;
-  b0 = b[8];b1 = b[9];b2 = b[10];b3 = b[11];
-  out[8] = b0 * a00 + b1 * a10 + b2 * a20 + b3 * a30;
-  out[9] = b0 * a01 + b1 * a11 + b2 * a21 + b3 * a31;
-  out[10] = b0 * a02 + b1 * a12 + b2 * a22 + b3 * a32;
-  out[11] = b0 * a03 + b1 * a13 + b2 * a23 + b3 * a33;
-  b0 = b[12];b1 = b[13];b2 = b[14];b3 = b[15];
-  out[12] = b0 * a00 + b1 * a10 + b2 * a20 + b3 * a30;
-  out[13] = b0 * a01 + b1 * a11 + b2 * a21 + b3 * a31;
-  out[14] = b0 * a02 + b1 * a12 + b2 * a22 + b3 * a32;
-  out[15] = b0 * a03 + b1 * a13 + b2 * a23 + b3 * a33;
+  let a00 = a[0], a01 = a[1], a02 = a[2], a03 = a[3];
+  let a10 = a[4], a11 = a[5], a12 = a[6], a13 = a[7];
+  let a20 = a[8], a21 = a[9], a22 = a[10], a23 = a[11];
+  let a30 = a[12], a31 = a[13], a32 = a[14], a33 = a[15];
+  let b0  = b[0], b1 = b[1], b2 = b[2], b3 = b[3];
+  out[0] = b0*a00 + b1*a10 + b2*a20 + b3*a30;
+  out[1] = b0*a01 + b1*a11 + b2*a21 + b3*a31;
+  out[2] = b0*a02 + b1*a12 + b2*a22 + b3*a32;
+  out[3] = b0*a03 + b1*a13 + b2*a23 + b3*a33;
+  b0 = b[4]; b1 = b[5]; b2 = b[6]; b3 = b[7];
+  out[4] = b0*a00 + b1*a10 + b2*a20 + b3*a30;
+  out[5] = b0*a01 + b1*a11 + b2*a21 + b3*a31;
+  out[6] = b0*a02 + b1*a12 + b2*a22 + b3*a32;
+  out[7] = b0*a03 + b1*a13 + b2*a23 + b3*a33;
+  b0 = b[8]; b1 = b[9]; b2 = b[10]; b3 = b[11];
+  out[8] = b0*a00 + b1*a10 + b2*a20 + b3*a30;
+  out[9] = b0*a01 + b1*a11 + b2*a21 + b3*a31;
+  out[10] = b0*a02 + b1*a12 + b2*a22 + b3*a32;
+  out[11] = b0*a03 + b1*a13 + b2*a23 + b3*a33;
+  b0 = b[12]; b1 = b[13]; b2 = b[14]; b3 = b[15];
+  out[12] = b0*a00 + b1*a10 + b2*a20 + b3*a30;
+  out[13] = b0*a01 + b1*a11 + b2*a21 + b3*a31;
+  out[14] = b0*a02 + b1*a12 + b2*a22 + b3*a32;
+  out[15] = b0*a03 + b1*a13 + b2*a23 + b3*a33;
   return out;
 }
 
@@ -484,22 +377,19 @@ function multiply(out, a, b) {
 
 
 function fromRotationTranslation(out, q, v) {
-  var x = q[0],
-      y = q[1],
-      z = q[2],
-      w = q[3];
-  var x2 = x + x;
-  var y2 = y + y;
-  var z2 = z + z;
-  var xx = x * x2;
-  var xy = x * y2;
-  var xz = x * z2;
-  var yy = y * y2;
-  var yz = y * z2;
-  var zz = z * z2;
-  var wx = w * x2;
-  var wy = w * y2;
-  var wz = w * z2;
+  let x = q[0], y = q[1], z = q[2], w = q[3];
+  let x2 = x + x;
+  let y2 = y + y;
+  let z2 = z + z;
+  let xx = x * x2;
+  let xy = x * y2;
+  let xz = x * z2;
+  let yy = y * y2;
+  let yz = y * z2;
+  let zz = z * z2;
+  let wx = w * x2;
+  let wy = w * y2;
+  let wz = w * z2;
   out[0] = 1 - (yy + zz);
   out[1] = xy + wz;
   out[2] = xz - wy;
@@ -527,15 +417,15 @@ function getTranslation(out, mat) {
 }
 
 function getRotation(out, mat) {
-  var trace = mat[0] + mat[5] + mat[10];
-  var S = 0;
+  let trace = mat[0] + mat[5] + mat[10];
+  let S = 0;
   if (trace > 0) {
     S = Math.sqrt(trace + 1.0) * 2;
     out[3] = 0.25 * S;
     out[0] = (mat[6] - mat[9]) / S;
     out[1] = (mat[8] - mat[2]) / S;
     out[2] = (mat[1] - mat[4]) / S;
-  } else if (mat[0] > mat[5] && mat[0] > mat[10]) {
+  } else if ((mat[0] > mat[5]) && (mat[0] > mat[10])) {
     S = Math.sqrt(1.0 + mat[0] - mat[5] - mat[10]) * 2;
     out[3] = (mat[6] - mat[9]) / S;
     out[0] = 0.25 * S;
@@ -561,8 +451,7 @@ function getRotation(out, mat) {
 
 
 function perspective(out, fovy, aspect, near, far) {
-  var f = 1.0 / Math.tan(fovy / 2);
-  var nf = 1 / (near - far);
+  let f = 1.0 / Math.tan(fovy / 2), nf;
   out[0] = f / aspect;
   out[1] = 0;
   out[2] = 0;
@@ -573,954 +462,28 @@ function perspective(out, fovy, aspect, near, far) {
   out[7] = 0;
   out[8] = 0;
   out[9] = 0;
-  out[10] = (far + near) * nf;
   out[11] = -1;
   out[12] = 0;
   out[13] = 0;
-  out[14] = 2 * far * near * nf;
   out[15] = 0;
+  if (far != null && far !== Infinity) {
+    nf = 1 / (near - far);
+    out[10] = (far + near) * nf;
+    out[14] = (2 * far * near) * nf;
+  } else {
+    out[10] = -1;
+    out[14] = -2 * near;
+  }
   return out;
 }
 
-var PRIVATE$3 = Symbol('@@webxr-polyfill/XRDevicePose');
-var XRDevicePose = function () {
-  function XRDevicePose(polyfill) {
-    classCallCheck(this, XRDevicePose);
-    this[PRIVATE$3] = {
-      polyfill: polyfill,
-      leftViewMatrix: identity(new Float32Array(16)),
-      rightViewMatrix: identity(new Float32Array(16)),
-      poseModelMatrix: identity(new Float32Array(16))
-    };
-  }
-  createClass(XRDevicePose, [{
-    key: 'getViewMatrix',
-    value: function getViewMatrix(view) {
-      switch (view.eye) {
-        case 'left':
-          return this[PRIVATE$3].leftViewMatrix;
-        case 'right':
-          return this[PRIVATE$3].rightViewMatrix;
-      }
-      throw new Error('view is not a valid XREye');
-    }
-  }, {
-    key: 'updateFromFrameOfReference',
-    value: function updateFromFrameOfReference(frameOfRef) {
-      var pose = this[PRIVATE$3].polyfill.getBasePoseMatrix();
-      var leftViewMatrix = this[PRIVATE$3].polyfill.getBaseViewMatrix('left');
-      var rightViewMatrix = this[PRIVATE$3].polyfill.getBaseViewMatrix('right');
-      if (pose) {
-        frameOfRef.transformBasePoseMatrix(this[PRIVATE$3].poseModelMatrix, pose);
-      }
-      if (leftViewMatrix && rightViewMatrix) {
-        frameOfRef.transformBaseViewMatrix(this[PRIVATE$3].leftViewMatrix, leftViewMatrix, this[PRIVATE$3].poseModelMatrix);
-        frameOfRef.transformBaseViewMatrix(this[PRIVATE$3].rightViewMatrix, rightViewMatrix, this[PRIVATE$3].poseModelMatrix);
-      }
-    }
-  }, {
-    key: 'poseModelMatrix',
-    get: function get$$1() {
-      return this[PRIVATE$3].poseModelMatrix;
-    }
-  }]);
-  return XRDevicePose;
-}();
-
-var PRIVATE$4 = Symbol('@@webxr-polyfill/XRViewport');
-var XRViewport = function () {
-  function XRViewport(target) {
-    classCallCheck(this, XRViewport);
-    this[PRIVATE$4] = { target: target };
-  }
-  createClass(XRViewport, [{
-    key: 'x',
-    get: function get$$1() {
-      return this[PRIVATE$4].target.x;
-    }
-  }, {
-    key: 'y',
-    get: function get$$1() {
-      return this[PRIVATE$4].target.y;
-    }
-  }, {
-    key: 'width',
-    get: function get$$1() {
-      return this[PRIVATE$4].target.width;
-    }
-  }, {
-    key: 'height',
-    get: function get$$1() {
-      return this[PRIVATE$4].target.height;
-    }
-  }]);
-  return XRViewport;
-}();
-
-var XREyes = ['left', 'right'];
-var PRIVATE$5 = Symbol('@@webxr-polyfill/XRView');
-var XRView = function () {
-  function XRView(polyfill, eye, sessionId) {
-    classCallCheck(this, XRView);
-    if (!XREyes.includes(eye)) {
-      throw new Error('XREye must be one of: ' + XREyes);
-    }
-    var temp = Object.create(null);
-    var viewport = new XRViewport(temp);
-    this[PRIVATE$5] = {
-      polyfill: polyfill,
-      eye: eye,
-      viewport: viewport,
-      temp: temp,
-      sessionId: sessionId
-    };
-  }
-  createClass(XRView, [{
-    key: '_getViewport',
-    value: function _getViewport(layer) {
-      var viewport = this[PRIVATE$5].viewport;
-      if (this[PRIVATE$5].polyfill.getViewport(this[PRIVATE$5].sessionId, this.eye, layer, this[PRIVATE$5].temp)) {
-        return this[PRIVATE$5].viewport;
-      }
-      return undefined;
-    }
-  }, {
-    key: 'eye',
-    get: function get$$1() {
-      return this[PRIVATE$5].eye;
-    }
-  }, {
-    key: 'projectionMatrix',
-    get: function get$$1() {
-      return this[PRIVATE$5].polyfill.getProjectionMatrix(this.eye);
-    }
-  }]);
-  return XRView;
-}();
-
-var PRIVATE$6 = Symbol('@@webxr-polyfill/XRFrame');
-var XRFrame = function () {
-  function XRFrame(polyfill, session, sessionId) {
-    classCallCheck(this, XRFrame);
-    var devicePose = new XRDevicePose(polyfill);
-    var views = [new XRView(polyfill, 'left', sessionId)];
-    if (session.immersive) {
-      views.push(new XRView(polyfill, 'right', sessionId));
-    }
-    this[PRIVATE$6] = {
-      polyfill: polyfill,
-      devicePose: devicePose,
-      views: views,
-      session: session
-    };
-  }
-  createClass(XRFrame, [{
-    key: 'getDevicePose',
-    value: function getDevicePose(coordinateSystem) {
-      this[PRIVATE$6].devicePose.updateFromFrameOfReference(coordinateSystem);
-      return this[PRIVATE$6].devicePose;
-    }
-  }, {
-    key: 'getInputPose',
-    value: function getInputPose(inputSource, coordinateSystem) {
-      return this[PRIVATE$6].polyfill.getInputPose(inputSource, coordinateSystem);
-    }
-  }, {
-    key: 'session',
-    get: function get$$1() {
-      return this[PRIVATE$6].session;
-    }
-  }, {
-    key: 'views',
-    get: function get$$1() {
-      return this[PRIVATE$6].views;
-    }
-  }]);
-  return XRFrame;
-}();
-
-var PRIVATE$7 = Symbol('@@webxr-polyfill/XRStageBoundsPoint');
-var XRStageBoundsPoint = function () {
-  function XRStageBoundsPoint(x, z) {
-    classCallCheck(this, XRStageBoundsPoint);
-    this[PRIVATE$7] = { x: x, z: z };
-  }
-  createClass(XRStageBoundsPoint, [{
-    key: 'x',
-    get: function get$$1() {
-      return this[PRIVATE$7].x;
-    }
-  }, {
-    key: 'z',
-    get: function get$$1() {
-      return this[PRIVATE$7].z;
-    }
-  }]);
-  return XRStageBoundsPoint;
-}();
-
-var PRIVATE$8 = Symbol('@@webxr-polyfill/XRStageBounds');
-var XRStageBounds = function () {
-  function XRStageBounds(boundsData) {
-    classCallCheck(this, XRStageBounds);
-    var geometry = [];
-    for (var i = 0; i < boundsData.length; i += 2) {
-      geometry.push(new XRStageBoundsPoint(boundsData[i], boundsData[i + 1]));
-    }
-    this[PRIVATE$8] = { geometry: geometry };
-  }
-  createClass(XRStageBounds, [{
-    key: 'geometry',
-    get: function get$$1() {
-      return this[PRIVATE$8].geometry;
-    }
-  }]);
-  return XRStageBounds;
-}();
-
-var XRCoordinateSystem = function () {
-  function XRCoordinateSystem() {
-    classCallCheck(this, XRCoordinateSystem);
-  }
-  createClass(XRCoordinateSystem, [{
-    key: 'getTransformTo',
-    value: function getTransformTo(other) {
-      throw new Error('Not yet supported');
-    }
-  }]);
-  return XRCoordinateSystem;
-}();
-
-var DEFAULT_EMULATION_HEIGHT = 1.6;
-var PRIVATE$9 = Symbol('@@webxr-polyfill/XRFrameOfReference');
-var XRFrameOfReferenceTypes = ['head-model', 'eye-level', 'stage'];
-var XRFrameOfReferenceOptions = Object.freeze({
-  disableStageEmulation: false,
-  stageEmulationHeight: 0
-});
-var XRFrameOfReference = function (_XRCoordinateSystem) {
-  inherits(XRFrameOfReference, _XRCoordinateSystem);
-  function XRFrameOfReference(polyfill, type, options, transform, bounds) {
-    classCallCheck(this, XRFrameOfReference);
-    options = Object.assign({}, XRFrameOfReferenceOptions, options);
-    if (!XRFrameOfReferenceTypes.includes(type)) {
-      throw new Error('XRFrameOfReferenceType must be one of ' + XRFrameOfReferenceTypes);
-    }
-    var _this = possibleConstructorReturn(this, (XRFrameOfReference.__proto__ || Object.getPrototypeOf(XRFrameOfReference)).call(this));
-    if (type === 'stage' && options.disableStageEmulation && !transform) {
-      throw new Error('XRFrameOfReference cannot use \'stage\' type, if disabling emulation and platform does not provide');
-    }
-    var _options = options,
-        disableStageEmulation = _options.disableStageEmulation,
-        stageEmulationHeight = _options.stageEmulationHeight;
-    var emulatedHeight = 0;
-    if (type === 'stage' && !transform) {
-      emulatedHeight = stageEmulationHeight !== 0 ? stageEmulationHeight : DEFAULT_EMULATION_HEIGHT;
-    }
-    if (type === 'stage' && !transform) {
-      transform = identity(new Float32Array(16));
-      transform[13] = emulatedHeight;
-    }
-    _this[PRIVATE$9] = {
-      disableStageEmulation: disableStageEmulation,
-      stageEmulationHeight: stageEmulationHeight,
-      emulatedHeight: emulatedHeight,
-      type: type,
-      transform: transform,
-      polyfill: polyfill,
-      bounds: bounds
-    };
-    _this.onboundschange = undefined;
-    return _this;
-  }
-  createClass(XRFrameOfReference, [{
-    key: 'transformBasePoseMatrix',
-    value: function transformBasePoseMatrix(out, pose) {
-      if (this[PRIVATE$9].transform) {
-        multiply(out, this[PRIVATE$9].transform, pose);
-        return;
-      }
-      switch (this.type) {
-        case 'head-model':
-          if (out !== pose) {
-            copy(out, pose);
-          }
-          out[12] = out[13] = out[14] = 0;
-          return;
-        case 'eye-level':
-          if (out !== pose) {
-            copy(out, pose);
-          }
-          return;
-      }
-    }
-  }, {
-    key: 'transformBaseViewMatrix',
-    value: function transformBaseViewMatrix(out, view) {
-      var frameOfRef = this[PRIVATE$9].transform;
-      if (frameOfRef) {
-        invert(out, frameOfRef);
-        multiply(out, view, out);
-      }
-      else if (this.type === 'head-model') {
-          invert(out, view);
-          out[12] = 0;
-          out[13] = 0;
-          out[14] = 0;
-          invert(out, out);
-          return out;
-        }
-        else {
-            copy(out, view);
-          }
-      return out;
-    }
-  }, {
-    key: 'bounds',
-    get: function get$$1() {
-      return this[PRIVATE$9].bounds;
-    }
-  }, {
-    key: 'emulatedHeight',
-    get: function get$$1() {
-      return this[PRIVATE$9].emulatedHeight;
-    }
-  }, {
-    key: 'type',
-    get: function get$$1() {
-      return this[PRIVATE$9].type;
-    }
-  }]);
-  return XRFrameOfReference;
-}(XRCoordinateSystem);
-
-var PRIVATE$10 = Symbol('@@webxr-polyfill/XRSession');
-var XRSessionCreationOptions = Object.freeze({
-  immersive: false,
-  outputContext: undefined
-});
-var validateSessionOptions = function validateSessionOptions(options) {
-  var immersive = options.immersive,
-      outputContext = options.outputContext;
-  if (!immersive && !outputContext) {
-    return false;
-  }
-  if (outputContext !== undefined && !(outputContext instanceof XRPresentationContext)) {
-    return false;
-  }
-  return true;
-};
-var XRSession = function (_EventTarget) {
-  inherits(XRSession, _EventTarget);
-  function XRSession(polyfill, device, sessionOptions, id) {
-    classCallCheck(this, XRSession);
-    sessionOptions = Object.assign({}, XRSessionCreationOptions, sessionOptions);
-    var _this = possibleConstructorReturn(this, (XRSession.__proto__ || Object.getPrototypeOf(XRSession)).call(this));
-    var _sessionOptions = sessionOptions,
-        immersive = _sessionOptions.immersive,
-        outputContext = _sessionOptions.outputContext;
-    _this[PRIVATE$10] = {
-      polyfill: polyfill,
-      device: device,
-      immersive: immersive,
-      outputContext: outputContext,
-      ended: false,
-      suspended: false,
-      suspendedCallback: null,
-      id: id
-    };
-    var frame = new XRFrame(polyfill, _this, _this[PRIVATE$10].id);
-    _this[PRIVATE$10].frame = frame;
-    _this[PRIVATE$10].onPresentationEnd = function (sessionId) {
-      if (sessionId !== _this[PRIVATE$10].id) {
-        _this[PRIVATE$10].suspended = false;
-        _this.dispatchEvent('focus', { session: _this });
-        var suspendedCallback = _this[PRIVATE$10].suspendedCallback;
-        _this[PRIVATE$10].suspendedCallback = null;
-        if (suspendedCallback) {
-          _this.requestAnimationFrame(suspendedCallback);
-        }
-        return;
-      }
-      _this[PRIVATE$10].ended = true;
-      polyfill.removeEventListener('@webvr-polyfill/vr-present-end', _this[PRIVATE$10].onPresentationEnd);
-      polyfill.removeEventListener('@webvr-polyfill/vr-present-start', _this[PRIVATE$10].onPresentationStart);
-      polyfill.removeEventListener('@@webvr-polyfill/input-select-start', _this[PRIVATE$10].onSelectStart);
-      polyfill.removeEventListener('@@webvr-polyfill/input-select-end', _this[PRIVATE$10].onSelectEnd);
-      _this.dispatchEvent('end', { session: _this });
-    };
-    polyfill.addEventListener('@@webxr-polyfill/vr-present-end', _this[PRIVATE$10].onPresentationEnd);
-    _this[PRIVATE$10].onPresentationStart = function (sessionId) {
-      if (sessionId === _this[PRIVATE$10].id) {
-        return;
-      }
-      _this[PRIVATE$10].suspended = true;
-      _this.dispatchEvent('blur', { session: _this });
-    };
-    polyfill.addEventListener('@@webxr-polyfill/vr-present-start', _this[PRIVATE$10].onPresentationStart);
-    _this[PRIVATE$10].onSelectStart = function (evt) {
-      if (evt.sessionId !== _this[PRIVATE$10].id) {
-        return;
-      }
-      _this.dispatchEvent('selectstart', {
-        frame: _this[PRIVATE$10].frame,
-        inputSource: evt.inputSource
-      });
-    };
-    polyfill.addEventListener('@@webxr-polyfill/input-select-start', _this[PRIVATE$10].onSelectStart);
-    _this[PRIVATE$10].onSelectEnd = function (evt) {
-      if (evt.sessionId !== _this[PRIVATE$10].id) {
-        return;
-      }
-      _this.dispatchEvent('selectend', {
-        frame: _this[PRIVATE$10].frame,
-        inputSource: evt.inputSource
-      });
-      _this.dispatchEvent('select', {
-        frame: _this[PRIVATE$10].frame,
-        inputSource: evt.inputSource
-      });
-    };
-    polyfill.addEventListener('@@webxr-polyfill/input-select-end', _this[PRIVATE$10].onSelectEnd);
-    _this.onblur = undefined;
-    _this.onfocus = undefined;
-    _this.onresetpose = undefined;
-    _this.onend = undefined;
-    _this.onselect = undefined;
-    _this.onselectstart = undefined;
-    _this.onselectend = undefined;
-    return _this;
-  }
-  createClass(XRSession, [{
-    key: 'requestFrameOfReference',
-    value: function requestFrameOfReference(type) {
-      var $args = arguments;return new Promise(function ($return, $error) {
-        var options, transform, bounds;
-        options = $args.length > 1 && $args[1] !== undefined ? $args[1] : {};
-        if (this[PRIVATE$10].ended) {
-          return $return();
-        }
-        options = Object.assign({}, XRFrameOfReferenceOptions, options);
-        if (!XRFrameOfReferenceTypes.includes(type)) {
-          return $error(new TypeError('XRFrameOfReferenceType must be one of ' + XRFrameOfReferenceTypes));
-        }
-        transform = null;
-        bounds = null;
-        var $Try_1_Post = function () {
-          try {
-            if (type === 'stage' && transform) {
-              bounds = this[PRIVATE$10].polyfill.requestStageBounds();
-              if (bounds) {
-                bounds = new XRStageBounds(bounds);
-              }
-            }
-            return $return(new XRFrameOfReference(this[PRIVATE$10].polyfill, type, options, transform, bounds));
-          } catch ($boundEx) {
-            return $error($boundEx);
-          }
-        }.bind(this);var $Try_1_Catch = function (e) {
-          try {
-            if (type !== 'stage' || options.disableStageEmulation) {
-              throw e;
-            }
-            return $Try_1_Post();
-          } catch ($boundEx) {
-            return $error($boundEx);
-          }
-        }.bind(this);
-        try {
-          return Promise.resolve(this[PRIVATE$10].polyfill.requestFrameOfReferenceTransform(type, options)).then(function ($await_2) {
-            try {
-              transform = $await_2;
-              return $Try_1_Post();
-            } catch ($boundEx) {
-              return $Try_1_Catch($boundEx);
-            }
-          }.bind(this), $Try_1_Catch);
-        } catch (e) {
-          $Try_1_Catch(e);
-        }
-      }.bind(this));
-    }
-  }, {
-    key: 'requestAnimationFrame',
-    value: function requestAnimationFrame(callback) {
-      var _this2 = this;
-      if (this[PRIVATE$10].ended) {
-        return;
-      }
-      if (this[PRIVATE$10].suspended && this[PRIVATE$10].suspendedCallback) {
-        return;
-      }
-      if (this[PRIVATE$10].suspended && !this[PRIVATE$10].suspendedCallback) {
-        this[PRIVATE$10].suspendedCallback = callback;
-      }
-      return this[PRIVATE$10].polyfill.requestAnimationFrame(function () {
-        _this2[PRIVATE$10].polyfill.onFrameStart(_this2[PRIVATE$10].id);
-        callback(now$1(), _this2[PRIVATE$10].frame);
-        _this2[PRIVATE$10].polyfill.onFrameEnd(_this2[PRIVATE$10].id);
-      });
-    }
-  }, {
-    key: 'cancelAnimationFrame',
-    value: function cancelAnimationFrame(handle) {
-      if (this[PRIVATE$10].ended) {
-        return;
-      }
-      this[PRIVATE$10].polyfill.cancelAnimationFrame(handle);
-    }
-  }, {
-    key: 'getInputSources',
-    value: function getInputSources() {
-      return this[PRIVATE$10].polyfill.getInputSources();
-    }
-  }, {
-    key: 'end',
-    value: function end() {
-      return new Promise(function ($return, $error) {
-        if (this[PRIVATE$10].ended) {
-          return $return();
-        }
-        if (!this.immersive) {
-          this[PRIVATE$10].ended = true;
-          this[PRIVATE$10].polyfill.removeEventListener('@@webvr-polyfill/vr-present-start', this[PRIVATE$10].onPresentationStart);
-          this[PRIVATE$10].polyfill.removeEventListener('@@webvr-polyfill/vr-present-end', this[PRIVATE$10].onPresentationEnd);
-          this[PRIVATE$10].polyfill.removeEventListener('@@webvr-polyfill/input-select-start', this[PRIVATE$10].onSelectStart);
-          this[PRIVATE$10].polyfill.removeEventListener('@@webvr-polyfill/input-select-end', this[PRIVATE$10].onSelectEnd);
-          this.dispatchEvent('end', { session: this });
-        }
-        return $return(this[PRIVATE$10].polyfill.endSession(this[PRIVATE$10].id));
-      }.bind(this));
-    }
-  }, {
-    key: 'device',
-    get: function get$$1() {
-      return this[PRIVATE$10].device;
-    }
-  }, {
-    key: 'immersive',
-    get: function get$$1() {
-      return this[PRIVATE$10].immersive;
-    }
-  }, {
-    key: 'outputContext',
-    get: function get$$1() {
-      return this[PRIVATE$10].outputContext;
-    }
-  }, {
-    key: 'depthNear',
-    get: function get$$1() {
-      return this[PRIVATE$10].polyfill.depthNear;
-    }
-    ,
-    set: function set$$1(value) {
-      this[PRIVATE$10].polyfill.depthNear = value;
-    }
-  }, {
-    key: 'depthFar',
-    get: function get$$1() {
-      return this[PRIVATE$10].polyfill.depthFar;
-    }
-    ,
-    set: function set$$1(value) {
-      this[PRIVATE$10].polyfill.depthFar = value;
-    }
-  }, {
-    key: 'environmentBlendMode',
-    get: function get$$1() {
-      return this[PRIVATE$10].polyfill.environmentBlendMode || 'opaque';
-    }
-  }, {
-    key: 'baseLayer',
-    get: function get$$1() {
-      return this[PRIVATE$10].baseLayer;
-    }
-    ,
-    set: function set$$1(value) {
-      if (this[PRIVATE$10].ended) {
-        return;
-      }
-      this[PRIVATE$10].baseLayer = value;
-      this[PRIVATE$10].polyfill.onBaseLayerSet(this[PRIVATE$10].id, value);
-    }
-  }]);
-  return XRSession;
-}(EventTarget);
-
-var PRIVATE$11 = Symbol('@@webxr-polyfill/XRDevice');
-var XRDevice = function (_EventTarget) {
-  inherits(XRDevice, _EventTarget);
-  function XRDevice(polyfill) {
-    classCallCheck(this, XRDevice);
-    if (!polyfill) {
-      throw new Error('XRDevice must receive a PolyfilledXRDevice.');
-    }
-    var _this = possibleConstructorReturn(this, (XRDevice.__proto__ || Object.getPrototypeOf(XRDevice)).call(this));
-    _this[PRIVATE$11] = {
-      polyfill: polyfill,
-      immersiveSession: null,
-      nonImmersiveSessions: new Set()
-    };
-    _this.ondeactive = undefined;
-    return _this;
-  }
-  createClass(XRDevice, [{
-    key: 'supportsSession',
-    value: function supportsSession() {
-      var $args = arguments;return new Promise(function ($return, $error) {
-        var sessionOptions = $args.length > 0 && $args[0] !== undefined ? $args[0] : {};
-        sessionOptions = Object.assign({}, XRSessionCreationOptions, sessionOptions);
-        if (!validateSessionOptions(sessionOptions)) {
-          return $return(Promise.reject(null));
-        }
-        if (!this[PRIVATE$11].polyfill.supportsSession(sessionOptions)) {
-          return $return(Promise.reject(null));
-        }
-        return $return(null);
-      }.bind(this));
-    }
-  }, {
-    key: 'requestSession',
-    value: function requestSession(sessionOptions) {
-      return new Promise(function ($return, $error) {
-        var _this2, sessionId, session, onSessionEnd;
-        _this2 = this;
-        sessionOptions = Object.assign({}, XRSessionCreationOptions, sessionOptions);
-        if (!validateSessionOptions(sessionOptions)) {
-          return $error(new Error('NotSupportedError'));
-        }
-        if (this[PRIVATE$11].immersiveSession && sessionOptions.immersive) {
-          return $error(new Error('InvalidStateError'));
-        }
-        return Promise.resolve(this[PRIVATE$11].polyfill.requestSession(sessionOptions)).then(function ($await_1) {
-          try {
-            sessionId = $await_1;
-            session = new XRSession(this[PRIVATE$11].polyfill, this, sessionOptions, sessionId);
-            if (sessionOptions.immersive) {
-              this[PRIVATE$11].immersiveSession = session;
-            } else {
-              this[PRIVATE$11].nonImmersiveSessions.add(session);
-            }
-            onSessionEnd = function onSessionEnd() {
-              if (session.immersive) {
-                _this2[PRIVATE$11].immersiveSession = null;
-              } else {
-                _this2[PRIVATE$11].nonImmersiveSessions.delete(session);
-              }
-              session.removeEventListener('end', onSessionEnd);
-            };
-            session.addEventListener('end', onSessionEnd);
-            return $return(session);
-          } catch ($boundEx) {
-            return $error($boundEx);
-          }
-        }.bind(this), $error);
-      }.bind(this));
-    }
-  }]);
-  return XRDevice;
-}(EventTarget);
-
-var domPointROExport = 'DOMPointReadOnly' in _global ? DOMPointReadOnly : null;
-if (!domPointROExport) {
-  var PRIVATE$12 = Symbol('@@webxr-polyfill/DOMPointReadOnly');
-  domPointROExport = function () {
-    function DOMPointReadOnly(x, y, z, w) {
-      classCallCheck(this, DOMPointReadOnly);
-      if (arguments.length === 1) {
-        this[PRIVATE$12] = {
-          x: x.x,
-          y: x.y,
-          z: x.z,
-          w: x.w
-        };
-      } else if (arguments.length === 4) {
-        this[PRIVATE$12] = {
-          x: x,
-          y: y,
-          z: z,
-          w: w
-        };
-      } else {
-        throw new TypeError('Must supply either 1 or 4 arguments');
-      }
-    }
-    createClass(DOMPointReadOnly, [{
-      key: 'x',
-      get: function get$$1() {
-        return this[PRIVATE$12].x;
-      }
-    }, {
-      key: 'y',
-      get: function get$$1() {
-        return this[PRIVATE$12].y;
-      }
-    }, {
-      key: 'z',
-      get: function get$$1() {
-        return this[PRIVATE$12].z;
-      }
-    }, {
-      key: 'w',
-      get: function get$$1() {
-        return this[PRIVATE$12].w;
-      }
-    }]);
-    return DOMPointReadOnly;
-  }();
-}
-var DOMPointReadOnly$1 = domPointROExport;
-
-var XRRay =
-function XRRay() {
-  var origin = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : new DOMPointReadOnly$1(0, 0, 0, 1);
-  var direction = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : new DOMPointReadOnly$1(0, 0, -1, 0);
-  var matrix = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : new Float32Array(16);
-  classCallCheck(this, XRRay);
-  if (!(origin instanceof DOMPointReadOnly$1)) {
-    throw new Error('origin must be a DOMPointReadOnly');
-  }
-  if (!(direction instanceof DOMPointReadOnly$1)) {
-    throw new Error('direction must be a DOMPointReadOnly');
-  }
-  if (!(matrix instanceof Float32Array)) {
-    throw new Error('matrix must be a Float32Array');
-  }
-  Object.defineProperties(this, {
-    origin: {
-      value: origin,
-      writable: false
-    },
-    direction: {
-      value: direction,
-      writable: false
-    },
-    matrix: {
-      value: matrix,
-      writable: false
-    }
-  });
-};
-
-var PRIVATE$13 = Symbol('@@webxr-polyfill/XRInputPose');
-var XRInputPose = function () {
-  function XRInputPose(inputSourceImpl, hasGripMatrix) {
-    classCallCheck(this, XRInputPose);
-    this[PRIVATE$13] = {
-      inputSourceImpl: inputSourceImpl,
-      targetRay: new XRRay(),
-      gripMatrix: hasGripMatrix ? create() : null
-    };
-  }
-  createClass(XRInputPose, [{
-    key: 'targetRay',
-    get: function get$$1() {
-      return this[PRIVATE$13].targetRay;
-    }
-    ,
-    set: function set$$1(value) {
-      this[PRIVATE$13].targetRay = value;
-    }
-  }, {
-    key: 'emulatedPosition',
-    get: function get$$1() {
-      return this[PRIVATE$13].inputSourceImpl.emulatedPosition;
-    }
-  }, {
-    key: 'gripMatrix',
-    get: function get$$1() {
-      return this[PRIVATE$13].gripMatrix;
-    }
-  }]);
-  return XRInputPose;
-}();
-
-var PRIVATE$14 = Symbol('@@webxr-polyfill/XRInputSource');
-var XRInputSource = function () {
-  function XRInputSource(impl) {
-    classCallCheck(this, XRInputSource);
-    this[PRIVATE$14] = {
-      impl: impl
-    };
-  }
-  createClass(XRInputSource, [{
-    key: 'handedness',
-    get: function get$$1() {
-      return this[PRIVATE$14].impl.handedness;
-    }
-  }, {
-    key: 'targetRayMode',
-    get: function get$$1() {
-      return this[PRIVATE$14].impl.targetRayMode;
-    }
-  }]);
-  return XRInputSource;
-}();
-
-var XRLayer = function () {
-  function XRLayer() {
-    classCallCheck(this, XRLayer);
-  }
-  createClass(XRLayer, [{
-    key: "getViewport",
-    value: function getViewport(view) {
-      return view._getViewport(this);
-    }
-  }]);
-  return XRLayer;
-}();
-
-var POLYFILLED_COMPATIBLE_XR_DEVICE = Symbol('@@webxr-polyfill/polyfilled-compatible-xr-device');
-var COMPATIBLE_XR_DEVICE = Symbol('@@webxr-polyfill/compatible-xr-device');
-
-var PRIVATE$15 = Symbol('@@webxr-polyfill/XRWebGLLayer');
-var XRWebGLLayerInit = Object.freeze({
-  antialias: true,
-  depth: false,
-  stencil: false,
-  alpha: true,
-  multiview: false,
-  framebufferScaleFactor: 0
-});
-var XRWebGLLayer = function (_XRLayer) {
-  inherits(XRWebGLLayer, _XRLayer);
-  function XRWebGLLayer(session, context) {
-    var layerInit = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-    classCallCheck(this, XRWebGLLayer);
-    var config = Object.assign({}, XRWebGLLayerInit, layerInit);
-    if (!(session instanceof XRSession)) {
-      throw new Error('session must be a XRSession');
-    }
-    if (session.ended) {
-      throw new Error('InvalidStateError');
-    }
-    if (context[POLYFILLED_COMPATIBLE_XR_DEVICE]) {
-      if (context[COMPATIBLE_XR_DEVICE] !== session.device) {
-        throw new Error('InvalidStateError');
-      }
-    }
-    var framebuffer = context.getParameter(context.FRAMEBUFFER_BINDING);
-    var _this = possibleConstructorReturn(this, (XRWebGLLayer.__proto__ || Object.getPrototypeOf(XRWebGLLayer)).call(this));
-    _this[PRIVATE$15] = {
-      context: context,
-      config: config,
-      framebuffer: framebuffer
-    };
-    return _this;
-  }
-  createClass(XRWebGLLayer, [{
-    key: 'requestViewportScaling',
-    value: function requestViewportScaling(viewportScaleFactor) {
-      console.warn('requestViewportScaling is not yet implemented');
-    }
-  }, {
-    key: 'context',
-    get: function get$$1() {
-      return this[PRIVATE$15].context;
-    }
-  }, {
-    key: 'antialias',
-    get: function get$$1() {
-      return this[PRIVATE$15].config.antialias;
-    }
-  }, {
-    key: 'depth',
-    get: function get$$1() {
-      return this[PRIVATE$15].config.depth;
-    }
-  }, {
-    key: 'stencil',
-    get: function get$$1() {
-      return this[PRIVATE$15].config.stencil;
-    }
-  }, {
-    key: 'alpha',
-    get: function get$$1() {
-      return this[PRIVATE$15].config.alpha;
-    }
-  }, {
-    key: 'multiview',
-    get: function get$$1() {
-      return false;
-    }
-  }, {
-    key: 'framebuffer',
-    get: function get$$1() {
-      return this[PRIVATE$15].framebuffer;
-    }
-  }, {
-    key: 'framebufferWidth',
-    get: function get$$1() {
-      return this[PRIVATE$15].context.drawingBufferWidth;
-    }
-  }, {
-    key: 'framebufferHeight',
-    get: function get$$1() {
-      return this[PRIVATE$15].context.drawingBufferHeight;
-    }
-  }]);
-  return XRWebGLLayer;
-}(XRLayer);
-
-var API = {
-  XR: XR,
-  XRDevice: XRDevice,
-  XRSession: XRSession,
-  XRFrame: XRFrame,
-  XRView: XRView,
-  XRViewport: XRViewport,
-  XRDevicePose: XRDevicePose,
-  XRLayer: XRLayer,
-  XRWebGLLayer: XRWebGLLayer,
-  XRPresentationContext: XRPresentationContext,
-  XRCoordinateSystem: XRCoordinateSystem,
-  XRFrameOfReference: XRFrameOfReference,
-  XRStageBounds: XRStageBounds,
-  XRStageBoundsPoint: XRStageBoundsPoint,
-  XRInputPose: XRInputPose,
-  XRInputSource: XRInputSource,
-  XRRay: XRRay
-};
-
-var extendContextCompatibleXRDevice = function extendContextCompatibleXRDevice(Context) {
-  if (typeof Context.prototype.setCompatibleXRDevice === 'function') {
-    return false;
-  }
-  Context.prototype.setCompatibleXRDevice = function (xrDevice) {
-    var _this = this;
-    return new Promise(function (resolve, reject) {
-      if (xrDevice && typeof xrDevice.requestSession === 'function') {
-        resolve();
-      } else {
-        reject();
-      }
-    }).then(function () {
-      return _this[COMPATIBLE_XR_DEVICE] = xrDevice;
-    });
-  };
-  return true;
-};
-var extendGetContext = function extendGetContext(Canvas) {
-  var getContext = HTMLCanvasElement.prototype.getContext;
-  HTMLCanvasElement.prototype.getContext = function (contextType, glAttribs) {
-    if (contextType === 'xrpresent') {
-      var _ctx = getContext.call(this, '2d', glAttribs);
-      return new XRPresentationContext(this, _ctx, glAttribs);
-    }
-    var ctx = getContext.call(this, contextType, glAttribs);
-    ctx[POLYFILLED_COMPATIBLE_XR_DEVICE] = true;
-    if (glAttribs && 'compatibleXRDevice' in glAttribs) {
-      ctx[COMPATIBLE_XR_DEVICE] = glAttribs.compatibleXRDevice;
-    }
-    return ctx;
-  };
-};
-
 function create$1() {
-  var out = new ARRAY_TYPE(3);
-  out[0] = 0;
-  out[1] = 0;
-  out[2] = 0;
+  let out = new ARRAY_TYPE(3);
+  if(ARRAY_TYPE != Float32Array) {
+    out[0] = 0;
+    out[1] = 0;
+    out[2] = 0;
+  }
   return out;
 }
 function clone$1(a) {
@@ -1531,13 +494,13 @@ function clone$1(a) {
   return out;
 }
 function length(a) {
-  var x = a[0];
-  var y = a[1];
-  var z = a[2];
-  return Math.sqrt(x * x + y * y + z * z);
+  let x = a[0];
+  let y = a[1];
+  let z = a[2];
+  return Math.sqrt(x*x + y*y + z*z);
 }
 function fromValues$1(x, y, z) {
-  var out = new ARRAY_TYPE(3);
+  let out = new ARRAY_TYPE(3);
   out[0] = x;
   out[1] = y;
   out[2] = z;
@@ -1549,24 +512,14 @@ function copy$1(out, a) {
   out[2] = a[2];
   return out;
 }
-function set$2(out, x, y, z) {
-  out[0] = x;
-  out[1] = y;
-  out[2] = z;
-  return out;
-}
+
 function add$1(out, a, b) {
   out[0] = a[0] + b[0];
   out[1] = a[1] + b[1];
   out[2] = a[2] + b[2];
   return out;
 }
-function subtract$1(out, a, b) {
-  out[0] = a[0] - b[0];
-  out[1] = a[1] - b[1];
-  out[2] = a[2] - b[2];
-  return out;
-}
+
 
 
 
@@ -1587,10 +540,10 @@ function scale$1(out, a, b) {
 
 
 function normalize(out, a) {
-  var x = a[0];
-  var y = a[1];
-  var z = a[2];
-  var len = x * x + y * y + z * z;
+  let x = a[0];
+  let y = a[1];
+  let z = a[2];
+  let len = x*x + y*y + z*z;
   if (len > 0) {
     len = 1 / Math.sqrt(len);
     out[0] = a[0] * len;
@@ -1603,6 +556,663 @@ function dot(a, b) {
   return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
 }
 function cross(out, a, b) {
+  let ax = a[0], ay = a[1], az = a[2];
+  let bx = b[0], by = b[1], bz = b[2];
+  out[0] = ay * bz - az * by;
+  out[1] = az * bx - ax * bz;
+  out[2] = ax * by - ay * bx;
+  return out;
+}
+
+
+
+
+
+
+function transformQuat(out, a, q) {
+    let qx = q[0], qy = q[1], qz = q[2], qw = q[3];
+    let x = a[0], y = a[1], z = a[2];
+    let uvx = qy * z - qz * y,
+        uvy = qz * x - qx * z,
+        uvz = qx * y - qy * x;
+    let uuvx = qy * uvz - qz * uvy,
+        uuvy = qz * uvx - qx * uvz,
+        uuvz = qx * uvy - qy * uvx;
+    let w2 = qw * 2;
+    uvx *= w2;
+    uvy *= w2;
+    uvz *= w2;
+    uuvx *= 2;
+    uuvy *= 2;
+    uuvz *= 2;
+    out[0] = x + uvx + uuvx;
+    out[1] = y + uvy + uuvy;
+    out[2] = z + uvz + uuvz;
+    return out;
+}
+
+
+
+function angle(a, b) {
+  let tempA = fromValues$1(a[0], a[1], a[2]);
+  let tempB = fromValues$1(b[0], b[1], b[2]);
+  normalize(tempA, tempA);
+  normalize(tempB, tempB);
+  let cosine = dot(tempA, tempB);
+  if(cosine > 1.0) {
+    return 0;
+  }
+  else if(cosine < -1.0) {
+    return Math.PI;
+  } else {
+    return Math.acos(cosine);
+  }
+}
+
+
+
+
+
+
+
+
+const len = length;
+
+const forEach = (function() {
+  let vec = create$1();
+  return function(a, stride, offset, count, fn, arg) {
+    let i, l;
+    if(!stride) {
+      stride = 3;
+    }
+    if(!offset) {
+      offset = 0;
+    }
+    if(count) {
+      l = Math.min((count * stride) + offset, a.length);
+    } else {
+      l = a.length;
+    }
+    for(i = offset; i < l; i += stride) {
+      vec[0] = a[i]; vec[1] = a[i+1]; vec[2] = a[i+2];
+      fn(vec, vec, arg);
+      a[i] = vec[0]; a[i+1] = vec[1]; a[i+2] = vec[2];
+    }
+    return a;
+  };
+})();
+
+function create$2() {
+  let out = new ARRAY_TYPE(9);
+  if(ARRAY_TYPE != Float32Array) {
+    out[1] = 0;
+    out[2] = 0;
+    out[3] = 0;
+    out[5] = 0;
+    out[6] = 0;
+    out[7] = 0;
+  }
+  out[0] = 1;
+  out[4] = 1;
+  out[8] = 1;
+  return out;
+}
+
+function create$3() {
+  let out = new ARRAY_TYPE(4);
+  if(ARRAY_TYPE != Float32Array) {
+    out[0] = 0;
+    out[1] = 0;
+    out[2] = 0;
+    out[3] = 0;
+  }
+  return out;
+}
+function clone$3(a) {
+  let out = new ARRAY_TYPE(4);
+  out[0] = a[0];
+  out[1] = a[1];
+  out[2] = a[2];
+  out[3] = a[3];
+  return out;
+}
+function fromValues$3(x, y, z, w) {
+  let out = new ARRAY_TYPE(4);
+  out[0] = x;
+  out[1] = y;
+  out[2] = z;
+  out[3] = w;
+  return out;
+}
+function copy$3(out, a) {
+  out[0] = a[0];
+  out[1] = a[1];
+  out[2] = a[2];
+  out[3] = a[3];
+  return out;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function normalize$1(out, a) {
+  let x = a[0];
+  let y = a[1];
+  let z = a[2];
+  let w = a[3];
+  let len = x*x + y*y + z*z + w*w;
+  if (len > 0) {
+    len = 1 / Math.sqrt(len);
+    out[0] = x * len;
+    out[1] = y * len;
+    out[2] = z * len;
+    out[3] = w * len;
+  }
+  return out;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+const forEach$1 = (function() {
+  let vec = create$3();
+  return function(a, stride, offset, count, fn, arg) {
+    let i, l;
+    if(!stride) {
+      stride = 4;
+    }
+    if(!offset) {
+      offset = 0;
+    }
+    if(count) {
+      l = Math.min((count * stride) + offset, a.length);
+    } else {
+      l = a.length;
+    }
+    for(i = offset; i < l; i += stride) {
+      vec[0] = a[i]; vec[1] = a[i+1]; vec[2] = a[i+2]; vec[3] = a[i+3];
+      fn(vec, vec, arg);
+      a[i] = vec[0]; a[i+1] = vec[1]; a[i+2] = vec[2]; a[i+3] = vec[3];
+    }
+    return a;
+  };
+})();
+
+function create$4() {
+  let out = new ARRAY_TYPE(4);
+  if(ARRAY_TYPE != Float32Array) {
+    out[0] = 0;
+    out[1] = 0;
+    out[2] = 0;
+  }
+  out[3] = 1;
+  return out;
+}
+
+function setAxisAngle(out, axis, rad) {
+  rad = rad * 0.5;
+  let s = Math.sin(rad);
+  out[0] = s * axis[0];
+  out[1] = s * axis[1];
+  out[2] = s * axis[2];
+  out[3] = Math.cos(rad);
+  return out;
+}
+
+function multiply$4(out, a, b) {
+  let ax = a[0], ay = a[1], az = a[2], aw = a[3];
+  let bx = b[0], by = b[1], bz = b[2], bw = b[3];
+  out[0] = ax * bw + aw * bx + ay * bz - az * by;
+  out[1] = ay * bw + aw * by + az * bx - ax * bz;
+  out[2] = az * bw + aw * bz + ax * by - ay * bx;
+  out[3] = aw * bw - ax * bx - ay * by - az * bz;
+  return out;
+}
+
+
+
+
+function slerp(out, a, b, t) {
+  let ax = a[0], ay = a[1], az = a[2], aw = a[3];
+  let bx = b[0], by = b[1], bz = b[2], bw = b[3];
+  let omega, cosom, sinom, scale0, scale1;
+  cosom = ax * bx + ay * by + az * bz + aw * bw;
+  if ( cosom < 0.0 ) {
+    cosom = -cosom;
+    bx = - bx;
+    by = - by;
+    bz = - bz;
+    bw = - bw;
+  }
+  if ( (1.0 - cosom) > EPSILON ) {
+    omega  = Math.acos(cosom);
+    sinom  = Math.sin(omega);
+    scale0 = Math.sin((1.0 - t) * omega) / sinom;
+    scale1 = Math.sin(t * omega) / sinom;
+  } else {
+    scale0 = 1.0 - t;
+    scale1 = t;
+  }
+  out[0] = scale0 * ax + scale1 * bx;
+  out[1] = scale0 * ay + scale1 * by;
+  out[2] = scale0 * az + scale1 * bz;
+  out[3] = scale0 * aw + scale1 * bw;
+  return out;
+}
+
+function invert$2(out, a) {
+  let a0 = a[0], a1 = a[1], a2 = a[2], a3 = a[3];
+  let dot$$1 = a0*a0 + a1*a1 + a2*a2 + a3*a3;
+  let invDot = dot$$1 ? 1.0/dot$$1 : 0;
+  out[0] = -a0*invDot;
+  out[1] = -a1*invDot;
+  out[2] = -a2*invDot;
+  out[3] = a3*invDot;
+  return out;
+}
+
+function fromMat3(out, m) {
+  let fTrace = m[0] + m[4] + m[8];
+  let fRoot;
+  if ( fTrace > 0.0 ) {
+    fRoot = Math.sqrt(fTrace + 1.0);
+    out[3] = 0.5 * fRoot;
+    fRoot = 0.5/fRoot;
+    out[0] = (m[5]-m[7])*fRoot;
+    out[1] = (m[6]-m[2])*fRoot;
+    out[2] = (m[1]-m[3])*fRoot;
+  } else {
+    let i = 0;
+    if ( m[4] > m[0] )
+      i = 1;
+    if ( m[8] > m[i*3+i] )
+      i = 2;
+    let j = (i+1)%3;
+    let k = (i+2)%3;
+    fRoot = Math.sqrt(m[i*3+i]-m[j*3+j]-m[k*3+k] + 1.0);
+    out[i] = 0.5 * fRoot;
+    fRoot = 0.5 / fRoot;
+    out[3] = (m[j*3+k] - m[k*3+j]) * fRoot;
+    out[j] = (m[j*3+i] + m[i*3+j]) * fRoot;
+    out[k] = (m[k*3+i] + m[i*3+k]) * fRoot;
+  }
+  return out;
+}
+function fromEuler(out, x, y, z) {
+    let halfToRad = 0.5 * Math.PI / 180.0;
+    x *= halfToRad;
+    y *= halfToRad;
+    z *= halfToRad;
+    let sx = Math.sin(x);
+    let cx = Math.cos(x);
+    let sy = Math.sin(y);
+    let cy = Math.cos(y);
+    let sz = Math.sin(z);
+    let cz = Math.cos(z);
+    out[0] = sx * cy * cz - cx * sy * sz;
+    out[1] = cx * sy * cz + sx * cy * sz;
+    out[2] = cx * cy * sz - sx * sy * cz;
+    out[3] = cx * cy * cz + sx * sy * sz;
+    return out;
+}
+
+const clone$4 = clone$3;
+const fromValues$4 = fromValues$3;
+const copy$4 = copy$3;
+
+
+
+
+
+
+
+
+
+
+const normalize$2 = normalize$1;
+
+
+const rotationTo = (function() {
+  let tmpvec3 = create$1();
+  let xUnitVec3 = fromValues$1(1,0,0);
+  let yUnitVec3 = fromValues$1(0,1,0);
+  return function(out, a, b) {
+    let dot$$1 = dot(a, b);
+    if (dot$$1 < -0.999999) {
+      cross(tmpvec3, xUnitVec3, a);
+      if (len(tmpvec3) < 0.000001)
+        cross(tmpvec3, yUnitVec3, a);
+      normalize(tmpvec3, tmpvec3);
+      setAxisAngle(out, tmpvec3, Math.PI);
+      return out;
+    } else if (dot$$1 > 0.999999) {
+      out[0] = 0;
+      out[1] = 0;
+      out[2] = 0;
+      out[3] = 1;
+      return out;
+    } else {
+      cross(tmpvec3, a, b);
+      out[0] = tmpvec3[0];
+      out[1] = tmpvec3[1];
+      out[2] = tmpvec3[2];
+      out[3] = 1 + dot$$1;
+      return normalize$2(out, out);
+    }
+  };
+})();
+const sqlerp = (function () {
+  let temp1 = create$4();
+  let temp2 = create$4();
+  return function (out, a, b, c, d, t) {
+    slerp(temp1, a, d, t);
+    slerp(temp2, b, c, t);
+    slerp(out, temp1, temp2, 2 * t * (1 - t));
+    return out;
+  };
+}());
+const setAxes = (function() {
+  let matr = create$2();
+  return function(out, view, right, up) {
+    matr[0] = right[0];
+    matr[3] = right[1];
+    matr[6] = right[2];
+    matr[1] = up[0];
+    matr[4] = up[1];
+    matr[7] = up[2];
+    matr[2] = -view[0];
+    matr[5] = -view[1];
+    matr[8] = -view[2];
+    return normalize$2(out, fromMat3(out, matr));
+  };
+})();
+
+const PRIVATE$3 = Symbol('@@webxr-polyfill/XRRigidTransform');
+class XRRigidTransform$1 {
+  constructor() {
+    this[PRIVATE$3] = {
+      matrix: null,
+      position: null,
+      orientation: null,
+      inverse: null,
+    };
+    if (arguments.length === 0) {
+      this[PRIVATE$3].matrix = identity(new Float32Array(16));
+    } else if (arguments.length === 1) {
+      if (arguments[0] instanceof Float32Array) {
+        this[PRIVATE$3].matrix = arguments[0];
+      } else {
+        this[PRIVATE$3].position = this._getPoint(arguments[0]);
+        this[PRIVATE$3].orientation = DOMPointReadOnly.fromPoint({
+            x: 0, y: 0, z: 0, w: 1
+        });
+      }
+    } else if (arguments.length === 2) {
+      this[PRIVATE$3].position = this._getPoint(arguments[0]);
+      this[PRIVATE$3].orientation = this._getPoint(arguments[1]);
+    } else {
+      throw new Error("Too many arguments!");
+    }
+    if (this[PRIVATE$3].matrix) {
+        let position = create$1();
+        getTranslation(position, this[PRIVATE$3].matrix);
+        this[PRIVATE$3].position = DOMPointReadOnly.fromPoint({
+            x: position[0],
+            y: position[1],
+            z: position[2]
+        });
+        let orientation = create$4();
+        getRotation(orientation, this[PRIVATE$3].matrix);
+        this[PRIVATE$3].orientation = DOMPointReadOnly.fromPoint({
+          x: orientation[0],
+          y: orientation[1],
+          z: orientation[2],
+          w: orientation[3]
+        });
+    } else {
+        this[PRIVATE$3].matrix = identity(new Float32Array(16));
+        fromRotationTranslation(
+          this[PRIVATE$3].matrix,
+          fromValues$4(
+            this[PRIVATE$3].orientation.x,
+            this[PRIVATE$3].orientation.y,
+            this[PRIVATE$3].orientation.z,
+            this[PRIVATE$3].orientation.w),
+          fromValues$1(
+            this[PRIVATE$3].position.x,
+            this[PRIVATE$3].position.y,
+            this[PRIVATE$3].position.z)
+        );
+    }
+  }
+  _getPoint(arg) {
+    if (arg instanceof DOMPointReadOnly) {
+      return arg;
+    }
+    return DOMPointReadOnly.fromPoint(arg);
+  }
+  get matrix() { return this[PRIVATE$3].matrix; }
+  get position() { return this[PRIVATE$3].position; }
+  get orientation() { return this[PRIVATE$3].orientation; }
+  get inverse() {
+    if (this[PRIVATE$3].inverse === null) {
+      let invMatrix = identity(new Float32Array(16));
+      invert(invMatrix, this[PRIVATE$3].matrix);
+      this[PRIVATE$3].inverse = new XRRigidTransform$1(invMatrix);
+      this[PRIVATE$3].inverse[PRIVATE$3].inverse = this;
+    }
+    return this[PRIVATE$3].inverse;
+  }
+}
+
+const PRIVATE$4 = Symbol('@@webxr-polyfill/XRViewerPose');
+class XRViewerPose extends XRPose$1 {
+  constructor(device) {
+    super(new XRRigidTransform$1(), false);
+    this[PRIVATE$4] = {
+      device,
+      leftViewMatrix: identity(new Float32Array(16)),
+      rightViewMatrix: identity(new Float32Array(16)),
+      poseModelMatrix: identity(new Float32Array(16)),
+    };
+  }
+  get poseModelMatrix() { return this[PRIVATE$4].poseModelMatrix; }
+  getViewMatrix(view) {
+    switch (view.eye) {
+      case 'left': return this[PRIVATE$4].leftViewMatrix;
+      case 'right': return this[PRIVATE$4].rightViewMatrix;
+    }
+    throw new Error(`view is not a valid XREye`);
+  }
+  get views() {
+    return this[PRIVATE$4].views;
+  }
+  set views(value) {
+    this[PRIVATE$4].views = value;
+  }
+  updateFromReferenceSpace(refSpace) {
+    const pose = this[PRIVATE$4].device.getBasePoseMatrix();
+    const leftViewMatrix = this[PRIVATE$4].device.getBaseViewMatrix('left');
+    const rightViewMatrix = this[PRIVATE$4].device.getBaseViewMatrix('right');
+    if (pose) {
+      refSpace.transformBasePoseMatrix(this[PRIVATE$4].poseModelMatrix, pose);
+      refSpace._adjustForOriginOffset(this[PRIVATE$4].poseModelMatrix);
+      super._setTransform(new XRRigidTransform$1(this[PRIVATE$4].poseModelMatrix));
+    }
+    if (leftViewMatrix && rightViewMatrix) {
+      refSpace.transformBaseViewMatrix(this[PRIVATE$4].leftViewMatrix,
+                                         leftViewMatrix,
+                                         this[PRIVATE$4].poseModelMatrix);
+      refSpace.transformBaseViewMatrix(this[PRIVATE$4].rightViewMatrix,
+                                         rightViewMatrix,
+                                         this[PRIVATE$4].poseModelMatrix);
+      multiply(this[PRIVATE$4].leftViewMatrix, this[PRIVATE$4].leftViewMatrix, refSpace._originOffsetMatrix());
+      multiply(this[PRIVATE$4].rightViewMatrix, this[PRIVATE$4].rightViewMatrix, refSpace._originOffsetMatrix());
+    }
+    for (let view of this[PRIVATE$4].views) {
+      if (view.eye == "left") {
+        view._updateViewMatrix(this[PRIVATE$4].leftViewMatrix);
+      } else if (view.eye == "right") {
+        view._updateViewMatrix(this[PRIVATE$4].rightViewMatrix);
+      }
+    }
+  }
+}
+
+const PRIVATE$5 = Symbol('@@webxr-polyfill/XRViewport');
+class XRViewport {
+  constructor(target) {
+    this[PRIVATE$5] = { target };
+  }
+  get x() { return this[PRIVATE$5].target.x; }
+  get y() { return this[PRIVATE$5].target.y; }
+  get width() { return this[PRIVATE$5].target.width; }
+  get height() { return this[PRIVATE$5].target.height; }
+}
+
+const XREyes = ['left', 'right'];
+const PRIVATE$6 = Symbol('@@webxr-polyfill/XRView');
+class XRView {
+  constructor(device, eye, sessionId) {
+    if (!XREyes.includes(eye)) {
+      throw new Error(`XREye must be one of: ${XREyes}`);
+    }
+    const temp = Object.create(null);
+    const viewport = new XRViewport(temp);
+    this[PRIVATE$6] = {
+      device,
+      eye,
+      viewport,
+      temp,
+      sessionId,
+      transform: null,
+    };
+  }
+  get eye() { return this[PRIVATE$6].eye; }
+  get projectionMatrix() { return this[PRIVATE$6].device.getProjectionMatrix(this.eye); }
+  get transform() { return this[PRIVATE$6].transform; }
+  _updateViewMatrix(viewMatrix) {
+    let invMatrix = identity(new Float32Array(16));
+    invert(invMatrix, viewMatrix);
+    this[PRIVATE$6].transform = new XRRigidTransform$1(invMatrix);
+  }
+  _getViewport(layer) {
+    const viewport = this[PRIVATE$6].viewport;
+    if (this[PRIVATE$6].device.getViewport(this[PRIVATE$6].sessionId,
+                                           this.eye,
+                                           layer,
+                                           this[PRIVATE$6].temp)) {
+      return this[PRIVATE$6].viewport;
+    }
+    return undefined;
+  }
+}
+
+var EPSILON$1 = 0.000001;
+var ARRAY_TYPE$1 = typeof Float32Array !== 'undefined' ? Float32Array : Array;
+
+
+var degree$1 = Math.PI / 180;
+
+function create$7() {
+  var out = new ARRAY_TYPE$1(9);
+  if (ARRAY_TYPE$1 != Float32Array) {
+    out[1] = 0;
+    out[2] = 0;
+    out[3] = 0;
+    out[5] = 0;
+    out[6] = 0;
+    out[7] = 0;
+  }
+  out[0] = 1;
+  out[4] = 1;
+  out[8] = 1;
+  return out;
+}
+
+function create$9() {
+  var out = new ARRAY_TYPE$1(3);
+  if (ARRAY_TYPE$1 != Float32Array) {
+    out[0] = 0;
+    out[1] = 0;
+    out[2] = 0;
+  }
+  return out;
+}
+
+function length$3(a) {
+  var x = a[0];
+  var y = a[1];
+  var z = a[2];
+  return Math.sqrt(x * x + y * y + z * z);
+}
+function fromValues$9(x, y, z) {
+  var out = new ARRAY_TYPE$1(3);
+  out[0] = x;
+  out[1] = y;
+  out[2] = z;
+  return out;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function normalize$3(out, a) {
+  var x = a[0];
+  var y = a[1];
+  var z = a[2];
+  var len = x * x + y * y + z * z;
+  if (len > 0) {
+    len = 1 / Math.sqrt(len);
+    out[0] = a[0] * len;
+    out[1] = a[1] * len;
+    out[2] = a[2] * len;
+  }
+  return out;
+}
+function dot$3(a, b) {
+  return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+}
+function cross$1(out, a, b) {
   var ax = a[0],
       ay = a[1],
       az = a[2];
@@ -1618,73 +1228,25 @@ function cross(out, a, b) {
 
 
 
-function transformMat4(out, a, m) {
-  var x = a[0],
-      y = a[1],
-      z = a[2];
-  var w = m[3] * x + m[7] * y + m[11] * z + m[15];
-  w = w || 1.0;
-  out[0] = (m[0] * x + m[4] * y + m[8] * z + m[12]) / w;
-  out[1] = (m[1] * x + m[5] * y + m[9] * z + m[13]) / w;
-  out[2] = (m[2] * x + m[6] * y + m[10] * z + m[14]) / w;
-  return out;
-}
-
-function transformQuat(out, a, q) {
-  var qx = q[0],
-      qy = q[1],
-      qz = q[2],
-      qw = q[3];
-  var x = a[0],
-      y = a[1],
-      z = a[2];
-  var uvx = qy * z - qz * y,
-      uvy = qz * x - qx * z,
-      uvz = qx * y - qy * x;
-  var uuvx = qy * uvz - qz * uvy,
-      uuvy = qz * uvx - qx * uvz,
-      uuvz = qx * uvy - qy * uvx;
-  var w2 = qw * 2;
-  uvx *= w2;
-  uvy *= w2;
-  uvz *= w2;
-  uuvx *= 2;
-  uuvy *= 2;
-  uuvz *= 2;
-  out[0] = x + uvx + uuvx;
-  out[1] = y + uvy + uuvy;
-  out[2] = z + uvz + uuvz;
-  return out;
-}
-
-
-
-function angle(a, b) {
-  var tempA = fromValues$1(a[0], a[1], a[2]);
-  var tempB = fromValues$1(b[0], b[1], b[2]);
-  normalize(tempA, tempA);
-  normalize(tempB, tempB);
-  var cosine = dot(tempA, tempB);
-  if (cosine > 1.0) {
-    return 0;
-  } else if (cosine < -1.0) {
-    return Math.PI;
-  } else {
-    return Math.acos(cosine);
-  }
-}
-
-
-
-var sub$1 = subtract$1;
 
 
 
 
-var len = length;
 
-var forEach = function () {
-  var vec = create$1();
+
+
+
+
+
+
+
+
+
+
+var len$3 = length$3;
+
+var forEach$2 = function () {
+  var vec = create$9();
   return function (a, stride, offset, count, fn, arg) {
     var i = void 0,
         l = void 0;
@@ -1708,25 +1270,853 @@ var forEach = function () {
   };
 }();
 
-var poseMatrixToXRRay = function poseMatrixToXRRay(poseMatrix) {
-  var rayOrigin = [];
-  var rayDirection = [];
-  set$2(rayOrigin, 0, 0, 0);
-  transformMat4(rayOrigin, rayOrigin, poseMatrix);
-  set$2(rayDirection, 0, 0, -1);
-  transformMat4(rayDirection, rayDirection, poseMatrix);
-  sub$1(rayDirection, rayDirection, rayOrigin);
-  normalize(rayDirection, rayDirection);
-  return new XRRay(new DOMPointReadOnly$1(rayOrigin[0], rayOrigin[1], rayOrigin[2], 1.0), new DOMPointReadOnly$1(rayDirection[0], rayDirection[1], rayDirection[2], 0.0), poseMatrix);
+function create$10() {
+  var out = new ARRAY_TYPE$1(4);
+  if (ARRAY_TYPE$1 != Float32Array) {
+    out[0] = 0;
+    out[1] = 0;
+    out[2] = 0;
+    out[3] = 0;
+  }
+  return out;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function normalize$4(out, a) {
+  var x = a[0];
+  var y = a[1];
+  var z = a[2];
+  var w = a[3];
+  var len = x * x + y * y + z * z + w * w;
+  if (len > 0) {
+    len = 1 / Math.sqrt(len);
+    out[0] = x * len;
+    out[1] = y * len;
+    out[2] = z * len;
+    out[3] = w * len;
+  }
+  return out;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+var forEach$3 = function () {
+  var vec = create$10();
+  return function (a, stride, offset, count, fn, arg) {
+    var i = void 0,
+        l = void 0;
+    if (!stride) {
+      stride = 4;
+    }
+    if (!offset) {
+      offset = 0;
+    }
+    if (count) {
+      l = Math.min(count * stride + offset, a.length);
+    } else {
+      l = a.length;
+    }
+    for (i = offset; i < l; i += stride) {
+      vec[0] = a[i];vec[1] = a[i + 1];vec[2] = a[i + 2];vec[3] = a[i + 3];
+      fn(vec, vec, arg);
+      a[i] = vec[0];a[i + 1] = vec[1];a[i + 2] = vec[2];a[i + 3] = vec[3];
+    }
+    return a;
+  };
+}();
+
+function create$11() {
+  var out = new ARRAY_TYPE$1(4);
+  if (ARRAY_TYPE$1 != Float32Array) {
+    out[0] = 0;
+    out[1] = 0;
+    out[2] = 0;
+  }
+  out[3] = 1;
+  return out;
+}
+
+function setAxisAngle$1(out, axis, rad) {
+  rad = rad * 0.5;
+  var s = Math.sin(rad);
+  out[0] = s * axis[0];
+  out[1] = s * axis[1];
+  out[2] = s * axis[2];
+  out[3] = Math.cos(rad);
+  return out;
+}
+
+
+
+
+
+
+function slerp$1(out, a, b, t) {
+  var ax = a[0],
+      ay = a[1],
+      az = a[2],
+      aw = a[3];
+  var bx = b[0],
+      by = b[1],
+      bz = b[2],
+      bw = b[3];
+  var omega = void 0,
+      cosom = void 0,
+      sinom = void 0,
+      scale0 = void 0,
+      scale1 = void 0;
+  cosom = ax * bx + ay * by + az * bz + aw * bw;
+  if (cosom < 0.0) {
+    cosom = -cosom;
+    bx = -bx;
+    by = -by;
+    bz = -bz;
+    bw = -bw;
+  }
+  if (1.0 - cosom > EPSILON$1) {
+    omega = Math.acos(cosom);
+    sinom = Math.sin(omega);
+    scale0 = Math.sin((1.0 - t) * omega) / sinom;
+    scale1 = Math.sin(t * omega) / sinom;
+  } else {
+    scale0 = 1.0 - t;
+    scale1 = t;
+  }
+  out[0] = scale0 * ax + scale1 * bx;
+  out[1] = scale0 * ay + scale1 * by;
+  out[2] = scale0 * az + scale1 * bz;
+  out[3] = scale0 * aw + scale1 * bw;
+  return out;
+}
+
+
+
+function fromMat3$1(out, m) {
+  var fTrace = m[0] + m[4] + m[8];
+  var fRoot = void 0;
+  if (fTrace > 0.0) {
+    fRoot = Math.sqrt(fTrace + 1.0);
+    out[3] = 0.5 * fRoot;
+    fRoot = 0.5 / fRoot;
+    out[0] = (m[5] - m[7]) * fRoot;
+    out[1] = (m[6] - m[2]) * fRoot;
+    out[2] = (m[1] - m[3]) * fRoot;
+  } else {
+    var i = 0;
+    if (m[4] > m[0]) i = 1;
+    if (m[8] > m[i * 3 + i]) i = 2;
+    var j = (i + 1) % 3;
+    var k = (i + 2) % 3;
+    fRoot = Math.sqrt(m[i * 3 + i] - m[j * 3 + j] - m[k * 3 + k] + 1.0);
+    out[i] = 0.5 * fRoot;
+    fRoot = 0.5 / fRoot;
+    out[3] = (m[j * 3 + k] - m[k * 3 + j]) * fRoot;
+    out[j] = (m[j * 3 + i] + m[i * 3 + j]) * fRoot;
+    out[k] = (m[k * 3 + i] + m[i * 3 + k]) * fRoot;
+  }
+  return out;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+var normalize$5 = normalize$4;
+
+
+var rotationTo$1 = function () {
+  var tmpvec3 = create$9();
+  var xUnitVec3 = fromValues$9(1, 0, 0);
+  var yUnitVec3 = fromValues$9(0, 1, 0);
+  return function (out, a, b) {
+    var dot = dot$3(a, b);
+    if (dot < -0.999999) {
+      cross$1(tmpvec3, xUnitVec3, a);
+      if (len$3(tmpvec3) < 0.000001) cross$1(tmpvec3, yUnitVec3, a);
+      normalize$3(tmpvec3, tmpvec3);
+      setAxisAngle$1(out, tmpvec3, Math.PI);
+      return out;
+    } else if (dot > 0.999999) {
+      out[0] = 0;
+      out[1] = 0;
+      out[2] = 0;
+      out[3] = 1;
+      return out;
+    } else {
+      cross$1(tmpvec3, a, b);
+      out[0] = tmpvec3[0];
+      out[1] = tmpvec3[1];
+      out[2] = tmpvec3[2];
+      out[3] = 1 + dot;
+      return normalize$5(out, out);
+    }
+  };
+}();
+var sqlerp$1 = function () {
+  var temp1 = create$11();
+  var temp2 = create$11();
+  return function (out, a, b, c, d, t) {
+    slerp$1(temp1, a, d, t);
+    slerp$1(temp2, b, c, t);
+    slerp$1(out, temp1, temp2, 2 * t * (1 - t));
+    return out;
+  };
+}();
+var setAxes$1 = function () {
+  var matr = create$7();
+  return function (out, view, right, up) {
+    matr[0] = right[0];
+    matr[3] = right[1];
+    matr[6] = right[2];
+    matr[1] = up[0];
+    matr[4] = up[1];
+    matr[7] = up[2];
+    matr[2] = -view[0];
+    matr[5] = -view[1];
+    matr[8] = -view[2];
+    return normalize$5(out, fromMat3$1(out, matr));
+  };
+}();
+
+function create$13() {
+  var out = new ARRAY_TYPE$1(2);
+  if (ARRAY_TYPE$1 != Float32Array) {
+    out[0] = 0;
+    out[1] = 0;
+  }
+  return out;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+var forEach$4 = function () {
+  var vec = create$13();
+  return function (a, stride, offset, count, fn, arg) {
+    var i = void 0,
+        l = void 0;
+    if (!stride) {
+      stride = 2;
+    }
+    if (!offset) {
+      offset = 0;
+    }
+    if (count) {
+      l = Math.min(count * stride + offset, a.length);
+    } else {
+      l = a.length;
+    }
+    for (i = offset; i < l; i += stride) {
+      vec[0] = a[i];vec[1] = a[i + 1];
+      fn(vec, vec, arg);
+      a[i] = vec[0];a[i + 1] = vec[1];
+    }
+    return a;
+  };
+}();
+
+const PRIVATE$7 = Symbol('@@webxr-polyfill/XRFrame');
+class XRFrame {
+  constructor(device, session, sessionId) {
+    const viewerPose = new XRViewerPose(device);
+    const views = [
+      new XRView(device, 'left', sessionId),
+    ];
+    if (session.immersive) {
+      views.push(new XRView(device, 'right', sessionId));
+    }
+    viewerPose.views = views;
+    this[PRIVATE$7] = {
+      device,
+      viewerPose,
+      views,
+      session,
+    };
+  }
+  get session() { return this[PRIVATE$7].session; }
+  get views() { return this[PRIVATE$7].views; }
+  getViewerPose(space) {
+    this[PRIVATE$7].viewerPose.updateFromReferenceSpace(space);
+    return this[PRIVATE$7].viewerPose;
+  }
+  getPose(space, baseSpace) {
+    if (space._specialType === "viewer") {
+      let viewerPose = this.getViewerPose(baseSpace);
+      return new XRPose(
+        new XRRigidTransform(viewerPose.poseModelMatrix),
+        viewerPose.emulatedPosition);
+    }
+    if (space._specialType === "target-ray" || space._specialType === "grip") {
+      return this[PRIVATE$7].device.getInputPose(
+        space._inputSource, baseSpace, space._specialType);
+    }
+    return null;
+  }
+}
+
+const PRIVATE$8 = Symbol('@@webxr-polyfill/XRStageBoundsPoint');
+class XRStageBoundsPoint {
+  constructor(x, z) {
+    this[PRIVATE$8] = { x, z };
+  }
+  get x() { return this[PRIVATE$8].x; }
+  get z() { return this[PRIVATE$8].z; }
+}
+
+const PRIVATE$9 = Symbol('@@webxr-polyfill/XRStageBounds');
+class XRStageBounds {
+  constructor(boundsData) {
+    const geometry = [];
+    for (let i = 0; i < boundsData.length; i += 2) {
+      geometry.push(new XRStageBoundsPoint(boundsData[i], boundsData[i + 1]));
+    }
+    this[PRIVATE$9] = { geometry };
+  }
+  get geometry() { return this[PRIVATE$9].geometry; }
+}
+
+const PRIVATE$10 = Symbol('@@webxr-polyfill/XRSpace');
+class XRSpace {
+  constructor(specialType = null, inputSource = null) {
+    this[PRIVATE$10] = {
+      specialType,
+      inputSource,
+    };
+  }
+  get _specialType() {
+    return this[PRIVATE$10].specialType;
+  }
+  get _inputSource() {
+    return this[PRIVATE$10].inputSource;
+  }
+}
+
+const DEFAULT_EMULATION_HEIGHT = 1.6;
+const PRIVATE$11 = Symbol('@@webxr-polyfill/XRReferenceSpace');
+const XRReferenceSpaceTypes = [
+  'viewer',
+  'local',
+  'local-floor',
+  'bounded-floor',
+  'unbounded'
+];
+const XRReferenceSpaceOptions = Object.freeze({
+  disableStageEmulation: false,
+  stageEmulationHeight: 0,
+});
+class XRReferenceSpace extends XRSpace {
+  constructor(device, type, options, transform, bounds) {
+    options = Object.assign({}, XRReferenceSpaceOptions, options);
+    if (!XRReferenceSpaceTypes.includes(type)) {
+      throw new Error(`XRReferenceSpaceType must be one of ${XRReferenceSpaceTypes}`);
+    }
+    super((type === 'viewer') ? 'viewer' : null);
+    if (this._isFloor(type) && options.disableStageEmulation && !transform) {
+      throw new Error(`XRReferenceSpace cannot use 'bounded-floor' type, if disabling emulation and platform does not provide`);
+    }
+    const { disableStageEmulation, stageEmulationHeight } = options;
+    let emulatedHeight = 0;
+    if (this._isFloor(type) && !transform) {
+      emulatedHeight = stageEmulationHeight !== 0 ? stageEmulationHeight : DEFAULT_EMULATION_HEIGHT;
+    }
+    if (this._isFloor(type) && !transform) {
+      transform = identity(new Float32Array(16));
+      transform[13] = emulatedHeight;
+    }
+    if (!transform) {
+      transform = identity(new Float32Array(16));
+    }
+    this[PRIVATE$11] = {
+      disableStageEmulation,
+      stageEmulationHeight,
+      emulatedHeight,
+      type,
+      transform,
+      device,
+      bounds,
+      options,
+      originOffset : identity(new Float32Array(16)),
+    };
+    this.onboundschange = undefined;
+  }
+  _isFloor(type) {
+    return type === 'bounded-floor' || type === 'local-floor';
+  }
+  get bounds() { return this[PRIVATE$11].bounds; }
+  get emulatedHeight() { return this[PRIVATE$11].emulatedHeight; }
+  get type() { return this[PRIVATE$11].type; }
+  transformBasePoseMatrix(out, pose) {
+    if (this[PRIVATE$11].transform) {
+      multiply(out, this[PRIVATE$11].transform, pose);
+      return;
+    }
+    switch (this.type) {
+      case 'local':
+        if (out !== pose) {
+          copy(out, pose);
+        }
+        return;
+    }
+  }
+  transformBaseViewMatrix(out, view) {
+    let frameOfRef = this[PRIVATE$11].transform;
+    if (frameOfRef) {
+      invert(out, frameOfRef);
+      multiply(out, view, out);
+    }
+    else {
+      copy(out, view);
+    }
+    return out;
+  }
+  _inverseOriginOffsetMatrix() {
+    let result = identity(new Float32Array(16));
+    invert(result, this[PRIVATE$11].originOffset);
+    return result;
+  }
+  _originOffsetMatrix() {
+    return this[PRIVATE$11].originOffset;
+  }
+  _adjustForOriginOffset(transformMatrix) {
+    multiply(transformMatrix, this._inverseOriginOffsetMatrix(), transformMatrix);
+  }
+  getOffsetReferenceSpace(additionalOffset) {
+    let newSpace = new XRReferenceSpace(
+      this[PRIVATE$11].device,
+      this[PRIVATE$11].type,
+      this[PRIVATE$11].options,
+      this[PRIVATE$11].transform,
+      this[PRIVATE$11].bounds);
+    multiply(newSpace[PRIVATE$11].originOffset, this[PRIVATE$11].originOffset, additionalOffset.matrix);
+    return newSpace;
+  }
+}
+
+const POLYFILLED_XR_COMPATIBLE = Symbol('@@webxr-polyfill/polyfilled-xr-compatible');
+const XR_COMPATIBLE = Symbol('@@webxr-polyfill/xr-compatible');
+
+const PRIVATE$12 = Symbol('@@webxr-polyfill/XRWebGLLayer');
+const XRWebGLLayerInit = Object.freeze({
+  antialias: true,
+  depth: false,
+  stencil: false,
+  alpha: true,
+  multiview: false,
+  ignoreDepthValues: false,
+  framebufferScaleFactor: 1.0,
+});
+class XRWebGLLayer {
+  constructor(session, context, layerInit={}) {
+    const config = Object.assign({}, XRWebGLLayerInit, layerInit);
+    if (!(session instanceof XRSession$1)) {
+      throw new Error('session must be a XRSession');
+    }
+    if (session.ended) {
+      throw new Error(`InvalidStateError`);
+    }
+    if (context[POLYFILLED_XR_COMPATIBLE]) {
+      if (context[XR_COMPATIBLE] !== true) {
+        throw new Error(`InvalidStateError`);
+      }
+    }
+    const framebuffer = context.getParameter(context.FRAMEBUFFER_BINDING);
+    this[PRIVATE$12] = {
+      context,
+      config,
+      framebuffer,
+      session,
+    };
+  }
+  get context() { return this[PRIVATE$12].context; }
+  get antialias() { return this[PRIVATE$12].config.antialias; }
+  get ignoreDepthValues() { return true; }
+  get framebuffer() { return this[PRIVATE$12].framebuffer; }
+  get framebufferWidth() { return this[PRIVATE$12].context.drawingBufferWidth; }
+  get framebufferHeight() { return this[PRIVATE$12].context.drawingBufferHeight; }
+  get _session() { return this[PRIVATE$12].session; }
+  getViewport(view) {
+    return view._getViewport(this);
+  }
+}
+
+const PRIVATE$13 = Symbol('@@webxr-polyfill/XRSession');
+class XRSession$1 extends EventTarget {
+  constructor(device, mode, id) {
+    super();
+    let immersive = mode != 'inline';
+    let outputContext = null;
+    this[PRIVATE$13] = {
+      device,
+      mode,
+      immersive,
+      outputContext,
+      ended: false,
+      suspended: false,
+      suspendedCallback: null,
+      id,
+      activeRenderState: null,
+      pendingRenderState: null,
+    };
+    const frame = new XRFrame(device, this, this[PRIVATE$13].id);
+    this[PRIVATE$13].frame = frame;
+    this[PRIVATE$13].onPresentationEnd = sessionId => {
+      if (sessionId !== this[PRIVATE$13].id) {
+        this[PRIVATE$13].suspended = false;
+        this.dispatchEvent('focus', { session: this });
+        const suspendedCallback = this[PRIVATE$13].suspendedCallback;
+        this[PRIVATE$13].suspendedCallback = null;
+        if (suspendedCallback) {
+          this.requestAnimationFrame(suspendedCallback);
+        }
+        return;
+      }
+      this[PRIVATE$13].ended = true;
+      device.removeEventListener('@webvr-polyfill/vr-present-end', this[PRIVATE$13].onPresentationEnd);
+      device.removeEventListener('@webvr-polyfill/vr-present-start', this[PRIVATE$13].onPresentationStart);
+      device.removeEventListener('@@webvr-polyfill/input-select-start', this[PRIVATE$13].onSelectStart);
+      device.removeEventListener('@@webvr-polyfill/input-select-end', this[PRIVATE$13].onSelectEnd);
+      this.dispatchEvent('end', { session: this });
+    };
+    device.addEventListener('@@webxr-polyfill/vr-present-end', this[PRIVATE$13].onPresentationEnd);
+    this[PRIVATE$13].onPresentationStart = sessionId => {
+      if (sessionId === this[PRIVATE$13].id) {
+        return;
+      }
+      this[PRIVATE$13].suspended = true;
+      this.dispatchEvent('blur', { session: this });
+    };
+    device.addEventListener('@@webxr-polyfill/vr-present-start', this[PRIVATE$13].onPresentationStart);
+    this[PRIVATE$13].onSelectStart = evt => {
+      if (evt.sessionId !== this[PRIVATE$13].id) {
+        return;
+      }
+      this.dispatchEvent('selectstart', {
+        frame: this[PRIVATE$13].frame,
+        inputSource: evt.inputSource
+      });
+    };
+    device.addEventListener('@@webxr-polyfill/input-select-start', this[PRIVATE$13].onSelectStart);
+    this[PRIVATE$13].onSelectEnd = evt => {
+      if (evt.sessionId !== this[PRIVATE$13].id) {
+        return;
+      }
+      this.dispatchEvent('selectend', {
+        frame: this[PRIVATE$13].frame,
+        inputSource: evt.inputSource
+      });
+      this.dispatchEvent('select',  {
+        frame: this[PRIVATE$13].frame,
+        inputSource: evt.inputSource
+      });
+    };
+    device.addEventListener('@@webxr-polyfill/input-select-end', this[PRIVATE$13].onSelectEnd);
+    this.onblur = undefined;
+    this.onfocus = undefined;
+    this.onresetpose = undefined;
+    this.onend = undefined;
+    this.onselect = undefined;
+    this.onselectstart = undefined;
+    this.onselectend = undefined;
+  }
+  get renderState() { return this[PRIVATE$13].activeRenderState; }
+  get immersive() { return this[PRIVATE$13].immersive; }
+  get outputContext() { return this[PRIVATE$13].outputContext; }
+  get depthNear() { return this[PRIVATE$13].device.depthNear; }
+  set depthNear(value) { this[PRIVATE$13].device.depthNear = value; }
+  get depthFar() { return this[PRIVATE$13].device.depthFar; }
+  set depthFar(value) { this[PRIVATE$13].device.depthFar = value; }
+  get environmentBlendMode() {
+    return this[PRIVATE$13].device.environmentBlendMode || 'opaque';
+  }
+  get baseLayer() { return this[PRIVATE$13].baseLayer; }
+  set baseLayer(value) {
+    if (this[PRIVATE$13].ended) {
+      return;
+    }
+    this[PRIVATE$13].baseLayer = value;
+    this[PRIVATE$13].device.onBaseLayerSet(this[PRIVATE$13].id, value);
+  }
+  async requestReferenceSpace(type, options={}) {
+    if (this[PRIVATE$13].ended) {
+      return;
+    }
+    options = Object.assign({}, XRReferenceSpaceOptions, options);
+    if (!XRReferenceSpaceTypes.includes(type)) {
+      throw new TypeError(`XRReferenceSpaceType must be one of ${XRReferenceSpaceTypes}`);
+    }
+    let transform = null;
+    let bounds = null;
+    try {
+      transform = await this[PRIVATE$13].device.requestFrameOfReferenceTransform(type, options);
+    } catch (e) {
+      if (type !== 'stage' || options.disableStageEmulation) {
+        throw e;
+      }
+    }
+    if (type === 'stage' && transform) {
+      bounds = this[PRIVATE$13].device.requestStageBounds();
+      if (bounds) {
+        bounds = new XRStageBounds(bounds);
+      }
+    }
+    return new XRReferenceSpace(this[PRIVATE$13].device, type, options, transform, bounds);
+  }
+  requestAnimationFrame(callback) {
+    if (this[PRIVATE$13].ended) {
+      return;
+    }
+    if (this[PRIVATE$13].suspended && this[PRIVATE$13].suspendedCallback) {
+      return;
+    }
+    if (this[PRIVATE$13].suspended && !this[PRIVATE$13].suspendedCallback) {
+      this[PRIVATE$13].suspendedCallback = callback;
+    }
+    return this[PRIVATE$13].device.requestAnimationFrame(() => {
+      if (this[PRIVATE$13].pendingRenderState !== null) {
+        this[PRIVATE$13].activeRenderState = this[PRIVATE$13].pendingRenderState;
+        this[PRIVATE$13].pendingRenderState = null;
+        if (this[PRIVATE$13].activeRenderState.baseLayer) {
+          this[PRIVATE$13].device.onBaseLayerSet(
+            this[PRIVATE$13].id,
+            this[PRIVATE$13].activeRenderState.baseLayer);
+        }
+        if (this[PRIVATE$13].activeRenderState.inlineVerticalFieldOfView) {
+          this[PRIVATE$13].device.onInlineVerticalFieldOfViewSet(
+            this[PRIVATE$13].id,
+            this[PRIVATE$13].activeRenderState.inlineVerticalFieldOfView);
+        }
+      }
+      this[PRIVATE$13].device.onFrameStart(this[PRIVATE$13].id);
+      callback(now$1(), this[PRIVATE$13].frame);
+      this[PRIVATE$13].device.onFrameEnd(this[PRIVATE$13].id);
+    });
+  }
+  cancelAnimationFrame(handle) {
+    if (this[PRIVATE$13].ended) {
+      return;
+    }
+    this[PRIVATE$13].device.cancelAnimationFrame(handle);
+  }
+  get inputSources() {
+    return this[PRIVATE$13].device.getInputSources();
+  }
+  async end() {
+    if (this[PRIVATE$13].ended) {
+      return;
+    }
+    if (!this.immersive) {
+      this[PRIVATE$13].ended = true;
+      this[PRIVATE$13].device.removeEventListener('@@webvr-polyfill/vr-present-start',
+                                                 this[PRIVATE$13].onPresentationStart);
+      this[PRIVATE$13].device.removeEventListener('@@webvr-polyfill/vr-present-end',
+                                                 this[PRIVATE$13].onPresentationEnd);
+      this[PRIVATE$13].device.removeEventListener('@@webvr-polyfill/input-select-start',
+                                                 this[PRIVATE$13].onSelectStart);
+      this[PRIVATE$13].device.removeEventListener('@@webvr-polyfill/input-select-end',
+                                                 this[PRIVATE$13].onSelectEnd);
+      this.dispatchEvent('end', { session: this });
+    }
+    return this[PRIVATE$13].device.endSession(this[PRIVATE$13].id);
+  }
+  updateRenderState(newState) {
+    if (this[PRIVATE$13].ended) {
+      const message = "Can't call updateRenderState on an XRSession " +
+                      "that has already ended.";
+      throw new Error(message);
+    }
+    if (newState.baseLayer && (newState.baseLayer._session !== this)) {
+      const message = "Called updateRenderState with a base layer that was " +
+                      "created by a different session.";
+      throw new Error(message);
+    }
+    const fovSet = (newState.inlineVerticalFieldOfView !== null) &&
+                   (newState.inlineVerticalFieldOfView !== undefined);
+    if (fovSet) {
+      if (this[PRIVATE$13].immersive) {
+        const message = "inlineVerticalFieldOfView must not be set for an " +
+                        "XRRenderState passed to updateRenderState for an " +
+                        "immersive session.";
+        throw new Error(message);
+      } else {
+        newState.inlineVerticalFieldOfView = Math.min(
+          3.13, Math.max(0.01, newState.inlineVerticalFieldOfView));
+      }
+    }
+    if (this[PRIVATE$13].pendingRenderState === null) {
+      this[PRIVATE$13].pendingRenderState = Object.assign(
+        {}, this[PRIVATE$13].activeRenderState, newState);
+    }
+  }
+}
+
+const PRIVATE$14 = Symbol('@@webxr-polyfill/XRInputSource');
+class XRInputSource {
+  constructor(impl) {
+    this[PRIVATE$14] = {
+      impl,
+      gripSpace: new XRSpace("grip", this),
+      targetRaySpace: new XRSpace("target-ray", this)
+    };
+  }
+  get handedness() { return this[PRIVATE$14].impl.handedness; }
+  get targetRayMode() { return this[PRIVATE$14].impl.targetRayMode; }
+  get gripSpace() {
+    let mode = this[PRIVATE$14].impl.targetRayMode;
+    if (mode === "gaze" || mode === "screen") {
+      return null;
+    }
+    return this[PRIVATE$14].gripSpace;
+  }
+  get targetRaySpace() { return this[PRIVATE$14].targetRaySpace; }
+  get gamepad() { return this[PRIVATE$14].impl.gamepad; }
+}
+
+const PRIVATE$15 = Symbol('@@webxr-polyfill/XRRenderState');
+const XRRenderStateInit = Object.freeze({
+  depthNear: 0.1,
+  depthFar: 1000.0,
+  inlineVerticalFieldOfView: null,
+  baseLayer: null
+});
+class XRRenderState {
+  constructor(stateInit = {}) {
+    const config = Object.assign({}, XRRenderStateInit, stateInit);
+    this[PRIVATE$15] = { config };
+  }
+  get depthNear() { return this[PRIVATE$15].depthNear; }
+  get depthFar() { return this[PRIVATE$15].depthFar; }
+  get inlineVerticalFieldOfView() { return this[PRIVATE$15].inlineVerticalFieldOfView; }
+  get baseLayer() { return this[PRIVATE$15].baseLayer; }
+}
+
+var API = {
+  XR: XR$1,
+  XRSession: XRSession$1,
+  XRFrame,
+  XRView,
+  XRViewport,
+  XRViewerPose,
+  XRWebGLLayer,
+  XRSpace,
+  XRReferenceSpace,
+  XRStageBounds,
+  XRStageBoundsPoint,
+  XRInputSource,
+  XRRenderState,
+  XRRigidTransform: XRRigidTransform$1,
+  XRPose: XRPose$1,
 };
-var isMobile = function isMobile(global) {
+
+const polyfillMakeXRCompatible = Context => {
+  if (typeof Context.prototype.makeXRCompatible === 'function') {
+    return false;
+  }
+  Context.prototype.makeXRCompatible = function () {
+    this[XR_COMPATIBLE] = true;
+    return Promise.resolve();
+  };
+  return true;
+};
+const polyfillGetContext = (Canvas) => {
+  const getContext = Canvas.prototype.getContext;
+  Canvas.prototype.getContext = function (contextType, glAttribs) {
+    const ctx = getContext.call(this, contextType, glAttribs);
+    ctx[POLYFILLED_XR_COMPATIBLE] = true;
+    if (glAttribs && ('xrCompatible' in glAttribs)) {
+      ctx[XR_COMPATIBLE] = glAttribs.xrCompatible;
+    }
+    return ctx;
+  };
+};
+
+const isImageBitmapSupported = global =>
+  !!(global.ImageBitmapRenderingContext &&
+     global.createImageBitmap);
+const isMobile = global => {
   var check = false;
-  (function (a) {
-    if (/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino/i.test(a) || /1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(a.substr(0, 4))) check = true;
-  })(global.navigator.userAgent || global.navigator.vendor || global.opera);
+  (function(a){if(/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino/i.test(a)||/1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(a.substr(0,4)))check = true;})(global.navigator.userAgent||global.navigator.vendor||global.opera);
   return check;
 };
-var applyCanvasStylesForMinimalRendering = function applyCanvasStylesForMinimalRendering(canvas) {
+const applyCanvasStylesForMinimalRendering = canvas => {
   canvas.style.display = 'block';
   canvas.style.position = 'absolute';
   canvas.style.width = canvas.style.height = '1px';
@@ -1804,8 +2194,8 @@ var slicedToArray = function () {
 }();
 var MIN_TIMESTEP = 0.001;
 var MAX_TIMESTEP = 1;
-var base64 = function base64(mimeType, _base) {
-  return 'data:' + mimeType + ';base64,' + _base;
+var dataUri = function dataUri(mimeType, svg) {
+  return 'data:' + mimeType + ',' + encodeURIComponent(svg);
 };
 var lerp = function lerp(a, b, t) {
   return a + (b - a) * t;
@@ -3408,8 +3798,8 @@ function CardboardViewer(params) {
 }
 DeviceInfo.Viewers = Viewers;
 var format = 1;
-var last_updated = "2018-02-20T22:55:10Z";
-var devices = [{"type":"android","rules":[{"mdmh":"asus/*/Nexus 7/*"},{"ua":"Nexus 7"}],"dpi":[320.8,323],"bw":3,"ac":500},{"type":"android","rules":[{"mdmh":"asus/*/ASUS_Z00AD/*"},{"ua":"ASUS_Z00AD"}],"dpi":[403,404.6],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"Google/*/Pixel XL/*"},{"ua":"Pixel XL"}],"dpi":[537.9,533],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"Google/*/Pixel/*"},{"ua":"Pixel"}],"dpi":[432.6,436.7],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"HTC/*/HTC6435LVW/*"},{"ua":"HTC6435LVW"}],"dpi":[449.7,443.3],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"HTC/*/HTC One XL/*"},{"ua":"HTC One XL"}],"dpi":[315.3,314.6],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"htc/*/Nexus 9/*"},{"ua":"Nexus 9"}],"dpi":289,"bw":3,"ac":500},{"type":"android","rules":[{"mdmh":"HTC/*/HTC One M9/*"},{"ua":"HTC One M9"}],"dpi":[442.5,443.3],"bw":3,"ac":500},{"type":"android","rules":[{"mdmh":"HTC/*/HTC One_M8/*"},{"ua":"HTC One_M8"}],"dpi":[449.7,447.4],"bw":3,"ac":500},{"type":"android","rules":[{"mdmh":"HTC/*/HTC One/*"},{"ua":"HTC One"}],"dpi":472.8,"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"Huawei/*/Nexus 6P/*"},{"ua":"Nexus 6P"}],"dpi":[515.1,518],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"LENOVO/*/Lenovo PB2-690Y/*"},{"ua":"Lenovo PB2-690Y"}],"dpi":[457.2,454.713],"bw":3,"ac":500},{"type":"android","rules":[{"mdmh":"LGE/*/Nexus 5X/*"},{"ua":"Nexus 5X"}],"dpi":[422,419.9],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"LGE/*/LGMS345/*"},{"ua":"LGMS345"}],"dpi":[221.7,219.1],"bw":3,"ac":500},{"type":"android","rules":[{"mdmh":"LGE/*/LG-D800/*"},{"ua":"LG-D800"}],"dpi":[422,424.1],"bw":3,"ac":500},{"type":"android","rules":[{"mdmh":"LGE/*/LG-D850/*"},{"ua":"LG-D850"}],"dpi":[537.9,541.9],"bw":3,"ac":500},{"type":"android","rules":[{"mdmh":"LGE/*/VS985 4G/*"},{"ua":"VS985 4G"}],"dpi":[537.9,535.6],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"LGE/*/Nexus 5/*"},{"ua":"Nexus 5 B"}],"dpi":[442.4,444.8],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"LGE/*/Nexus 4/*"},{"ua":"Nexus 4"}],"dpi":[319.8,318.4],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"LGE/*/LG-P769/*"},{"ua":"LG-P769"}],"dpi":[240.6,247.5],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"LGE/*/LGMS323/*"},{"ua":"LGMS323"}],"dpi":[206.6,204.6],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"LGE/*/LGLS996/*"},{"ua":"LGLS996"}],"dpi":[403.4,401.5],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"Micromax/*/4560MMX/*"},{"ua":"4560MMX"}],"dpi":[240,219.4],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"Micromax/*/A250/*"},{"ua":"Micromax A250"}],"dpi":[480,446.4],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"Micromax/*/Micromax AQ4501/*"},{"ua":"Micromax AQ4501"}],"dpi":240,"bw":3,"ac":500},{"type":"android","rules":[{"mdmh":"motorola/*/G5/*"},{"ua":"Moto G (5) Plus"}],"dpi":[403.4,403],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"motorola/*/DROID RAZR/*"},{"ua":"DROID RAZR"}],"dpi":[368.1,256.7],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"motorola/*/XT830C/*"},{"ua":"XT830C"}],"dpi":[254,255.9],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"motorola/*/XT1021/*"},{"ua":"XT1021"}],"dpi":[254,256.7],"bw":3,"ac":500},{"type":"android","rules":[{"mdmh":"motorola/*/XT1023/*"},{"ua":"XT1023"}],"dpi":[254,256.7],"bw":3,"ac":500},{"type":"android","rules":[{"mdmh":"motorola/*/XT1028/*"},{"ua":"XT1028"}],"dpi":[326.6,327.6],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"motorola/*/XT1034/*"},{"ua":"XT1034"}],"dpi":[326.6,328.4],"bw":3,"ac":500},{"type":"android","rules":[{"mdmh":"motorola/*/XT1053/*"},{"ua":"XT1053"}],"dpi":[315.3,316.1],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"motorola/*/XT1562/*"},{"ua":"XT1562"}],"dpi":[403.4,402.7],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"motorola/*/Nexus 6/*"},{"ua":"Nexus 6 B"}],"dpi":[494.3,489.7],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"motorola/*/XT1063/*"},{"ua":"XT1063"}],"dpi":[295,296.6],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"motorola/*/XT1064/*"},{"ua":"XT1064"}],"dpi":[295,295.6],"bw":3,"ac":500},{"type":"android","rules":[{"mdmh":"motorola/*/XT1092/*"},{"ua":"XT1092"}],"dpi":[422,424.1],"bw":3,"ac":500},{"type":"android","rules":[{"mdmh":"motorola/*/XT1095/*"},{"ua":"XT1095"}],"dpi":[422,423.4],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"motorola/*/G4/*"},{"ua":"Moto G (4)"}],"dpi":401,"bw":4,"ac":1000},{"type":"android","rules":[{"mdmh":"OnePlus/*/A0001/*"},{"ua":"A0001"}],"dpi":[403.4,401],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"OnePlus/*/ONE E1005/*"},{"ua":"ONE E1005"}],"dpi":[442.4,441.4],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"OnePlus/*/ONE A2005/*"},{"ua":"ONE A2005"}],"dpi":[391.9,405.4],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"OnePlus/*/ONEPLUS A5000/*"},{"ua":"ONEPLUS A5000 "}],"dpi":[403.411,399.737],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"OnePlus/*/ONE A5010/*"},{"ua":"ONEPLUS A5010"}],"dpi":[403,400],"bw":2,"ac":1000},{"type":"android","rules":[{"mdmh":"OPPO/*/X909/*"},{"ua":"X909"}],"dpi":[442.4,444.1],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"samsung/*/GT-I9082/*"},{"ua":"GT-I9082"}],"dpi":[184.7,185.4],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"samsung/*/SM-G360P/*"},{"ua":"SM-G360P"}],"dpi":[196.7,205.4],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"samsung/*/Nexus S/*"},{"ua":"Nexus S"}],"dpi":[234.5,229.8],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"samsung/*/GT-I9300/*"},{"ua":"GT-I9300"}],"dpi":[304.8,303.9],"bw":5,"ac":500},{"type":"android","rules":[{"mdmh":"samsung/*/SM-T230NU/*"},{"ua":"SM-T230NU"}],"dpi":216,"bw":3,"ac":500},{"type":"android","rules":[{"mdmh":"samsung/*/SGH-T399/*"},{"ua":"SGH-T399"}],"dpi":[217.7,231.4],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"samsung/*/SGH-M919/*"},{"ua":"SGH-M919"}],"dpi":[440.8,437.7],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"samsung/*/SM-N9005/*"},{"ua":"SM-N9005"}],"dpi":[386.4,387],"bw":3,"ac":500},{"type":"android","rules":[{"mdmh":"samsung/*/SAMSUNG-SM-N900A/*"},{"ua":"SAMSUNG-SM-N900A"}],"dpi":[386.4,387.7],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"samsung/*/GT-I9500/*"},{"ua":"GT-I9500"}],"dpi":[442.5,443.3],"bw":3,"ac":500},{"type":"android","rules":[{"mdmh":"samsung/*/GT-I9505/*"},{"ua":"GT-I9505"}],"dpi":439.4,"bw":4,"ac":1000},{"type":"android","rules":[{"mdmh":"samsung/*/SM-G900F/*"},{"ua":"SM-G900F"}],"dpi":[415.6,431.6],"bw":5,"ac":1000},{"type":"android","rules":[{"mdmh":"samsung/*/SM-G900M/*"},{"ua":"SM-G900M"}],"dpi":[415.6,431.6],"bw":5,"ac":1000},{"type":"android","rules":[{"mdmh":"samsung/*/SM-G800F/*"},{"ua":"SM-G800F"}],"dpi":326.8,"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"samsung/*/SM-G906S/*"},{"ua":"SM-G906S"}],"dpi":[562.7,572.4],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"samsung/*/GT-I9300/*"},{"ua":"GT-I9300"}],"dpi":[306.7,304.8],"bw":5,"ac":1000},{"type":"android","rules":[{"mdmh":"samsung/*/SM-T535/*"},{"ua":"SM-T535"}],"dpi":[142.6,136.4],"bw":3,"ac":500},{"type":"android","rules":[{"mdmh":"samsung/*/SM-N920C/*"},{"ua":"SM-N920C"}],"dpi":[515.1,518.4],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"samsung/*/SM-N920P/*"},{"ua":"SM-N920P"}],"dpi":[386.3655,390.144],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"samsung/*/SM-N920W8/*"},{"ua":"SM-N920W8"}],"dpi":[515.1,518.4],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"samsung/*/GT-I9300I/*"},{"ua":"GT-I9300I"}],"dpi":[304.8,305.8],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"samsung/*/GT-I9195/*"},{"ua":"GT-I9195"}],"dpi":[249.4,256.7],"bw":3,"ac":500},{"type":"android","rules":[{"mdmh":"samsung/*/SPH-L520/*"},{"ua":"SPH-L520"}],"dpi":[249.4,255.9],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"samsung/*/SAMSUNG-SGH-I717/*"},{"ua":"SAMSUNG-SGH-I717"}],"dpi":285.8,"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"samsung/*/SPH-D710/*"},{"ua":"SPH-D710"}],"dpi":[217.7,204.2],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"samsung/*/GT-N7100/*"},{"ua":"GT-N7100"}],"dpi":265.1,"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"samsung/*/SCH-I605/*"},{"ua":"SCH-I605"}],"dpi":265.1,"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"samsung/*/Galaxy Nexus/*"},{"ua":"Galaxy Nexus"}],"dpi":[315.3,314.2],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"samsung/*/SM-N910H/*"},{"ua":"SM-N910H"}],"dpi":[515.1,518],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"samsung/*/SM-N910C/*"},{"ua":"SM-N910C"}],"dpi":[515.2,520.2],"bw":3,"ac":500},{"type":"android","rules":[{"mdmh":"samsung/*/SM-G130M/*"},{"ua":"SM-G130M"}],"dpi":[165.9,164.8],"bw":3,"ac":500},{"type":"android","rules":[{"mdmh":"samsung/*/SM-G928I/*"},{"ua":"SM-G928I"}],"dpi":[515.1,518.4],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"samsung/*/SM-G920F/*"},{"ua":"SM-G920F"}],"dpi":580.6,"bw":3,"ac":500},{"type":"android","rules":[{"mdmh":"samsung/*/SM-G920P/*"},{"ua":"SM-G920P"}],"dpi":[522.5,577],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"samsung/*/SM-G925F/*"},{"ua":"SM-G925F"}],"dpi":580.6,"bw":3,"ac":500},{"type":"android","rules":[{"mdmh":"samsung/*/SM-G925V/*"},{"ua":"SM-G925V"}],"dpi":[522.5,576.6],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"samsung/*/SM-G930F/*"},{"ua":"SM-G930F"}],"dpi":576.6,"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"samsung/*/SM-G935F/*"},{"ua":"SM-G935F"}],"dpi":533,"bw":3,"ac":500},{"type":"android","rules":[{"mdmh":"samsung/*/SM-G950F/*"},{"ua":"SM-G950F"}],"dpi":[562.707,565.293],"bw":3,"ac":500},{"type":"android","rules":[{"mdmh":"samsung/*/SM-G955U/*"},{"ua":"SM-G955U"}],"dpi":[522.514,525.762],"bw":3,"ac":500},{"type":"android","rules":[{"mdmh":"Sony/*/C6903/*"},{"ua":"C6903"}],"dpi":[442.5,443.3],"bw":3,"ac":500},{"type":"android","rules":[{"mdmh":"Sony/*/D6653/*"},{"ua":"D6653"}],"dpi":[428.6,427.6],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"Sony/*/E6653/*"},{"ua":"E6653"}],"dpi":[428.6,425.7],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"Sony/*/E6853/*"},{"ua":"E6853"}],"dpi":[403.4,401.9],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"Sony/*/SGP321/*"},{"ua":"SGP321"}],"dpi":[224.7,224.1],"bw":3,"ac":500},{"type":"android","rules":[{"mdmh":"TCT/*/ALCATEL ONE TOUCH Fierce/*"},{"ua":"ALCATEL ONE TOUCH Fierce"}],"dpi":[240,247.5],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"THL/*/thl 5000/*"},{"ua":"thl 5000"}],"dpi":[480,443.3],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"Fly/*/IQ4412/*"},{"ua":"IQ4412"}],"dpi":307.9,"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"ZTE/*/ZTE Blade L2/*"},{"ua":"ZTE Blade L2"}],"dpi":240,"bw":3,"ac":500},{"type":"android","rules":[{"mdmh":"BENEVE/*/VR518/*"},{"ua":"VR518"}],"dpi":480,"bw":3,"ac":500},{"type":"ios","rules":[{"res":[640,960]}],"dpi":[325.1,328.4],"bw":4,"ac":1000},{"type":"ios","rules":[{"res":[640,1136]}],"dpi":[317.1,320.2],"bw":3,"ac":1000},{"type":"ios","rules":[{"res":[750,1334]}],"dpi":326.4,"bw":4,"ac":1000},{"type":"ios","rules":[{"res":[1242,2208]}],"dpi":[453.6,458.4],"bw":4,"ac":1000},{"type":"ios","rules":[{"res":[1125,2001]}],"dpi":[410.9,415.4],"bw":4,"ac":1000},{"type":"ios","rules":[{"res":[1125,2436]}],"dpi":458,"bw":4,"ac":1000}];
+var last_updated = "2018-12-10T17:01:42Z";
+var devices = [{"type":"android","rules":[{"mdmh":"asus/*/Nexus 7/*"},{"ua":"Nexus 7"}],"dpi":[320.8,323],"bw":3,"ac":500},{"type":"android","rules":[{"mdmh":"asus/*/ASUS_Z00AD/*"},{"ua":"ASUS_Z00AD"}],"dpi":[403,404.6],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"Google/*/Pixel 2 XL/*"},{"ua":"Pixel 2 XL"}],"dpi":537.9,"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"Google/*/Pixel 3 XL/*"},{"ua":"Pixel 3 XL"}],"dpi":[558.5,553.8],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"Google/*/Pixel XL/*"},{"ua":"Pixel XL"}],"dpi":[537.9,533],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"Google/*/Pixel 3/*"},{"ua":"Pixel 3"}],"dpi":442.4,"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"Google/*/Pixel 2/*"},{"ua":"Pixel 2"}],"dpi":441,"bw":3,"ac":500},{"type":"android","rules":[{"mdmh":"Google/*/Pixel/*"},{"ua":"Pixel"}],"dpi":[432.6,436.7],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"HTC/*/HTC6435LVW/*"},{"ua":"HTC6435LVW"}],"dpi":[449.7,443.3],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"HTC/*/HTC One XL/*"},{"ua":"HTC One XL"}],"dpi":[315.3,314.6],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"htc/*/Nexus 9/*"},{"ua":"Nexus 9"}],"dpi":289,"bw":3,"ac":500},{"type":"android","rules":[{"mdmh":"HTC/*/HTC One M9/*"},{"ua":"HTC One M9"}],"dpi":[442.5,443.3],"bw":3,"ac":500},{"type":"android","rules":[{"mdmh":"HTC/*/HTC One_M8/*"},{"ua":"HTC One_M8"}],"dpi":[449.7,447.4],"bw":3,"ac":500},{"type":"android","rules":[{"mdmh":"HTC/*/HTC One/*"},{"ua":"HTC One"}],"dpi":472.8,"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"Huawei/*/Nexus 6P/*"},{"ua":"Nexus 6P"}],"dpi":[515.1,518],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"Huawei/*/BLN-L24/*"},{"ua":"HONORBLN-L24"}],"dpi":480,"bw":4,"ac":500},{"type":"android","rules":[{"mdmh":"Huawei/*/BKL-L09/*"},{"ua":"BKL-L09"}],"dpi":403,"bw":3.47,"ac":500},{"type":"android","rules":[{"mdmh":"LENOVO/*/Lenovo PB2-690Y/*"},{"ua":"Lenovo PB2-690Y"}],"dpi":[457.2,454.713],"bw":3,"ac":500},{"type":"android","rules":[{"mdmh":"LGE/*/Nexus 5X/*"},{"ua":"Nexus 5X"}],"dpi":[422,419.9],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"LGE/*/LGMS345/*"},{"ua":"LGMS345"}],"dpi":[221.7,219.1],"bw":3,"ac":500},{"type":"android","rules":[{"mdmh":"LGE/*/LG-D800/*"},{"ua":"LG-D800"}],"dpi":[422,424.1],"bw":3,"ac":500},{"type":"android","rules":[{"mdmh":"LGE/*/LG-D850/*"},{"ua":"LG-D850"}],"dpi":[537.9,541.9],"bw":3,"ac":500},{"type":"android","rules":[{"mdmh":"LGE/*/VS985 4G/*"},{"ua":"VS985 4G"}],"dpi":[537.9,535.6],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"LGE/*/Nexus 5/*"},{"ua":"Nexus 5 B"}],"dpi":[442.4,444.8],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"LGE/*/Nexus 4/*"},{"ua":"Nexus 4"}],"dpi":[319.8,318.4],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"LGE/*/LG-P769/*"},{"ua":"LG-P769"}],"dpi":[240.6,247.5],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"LGE/*/LGMS323/*"},{"ua":"LGMS323"}],"dpi":[206.6,204.6],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"LGE/*/LGLS996/*"},{"ua":"LGLS996"}],"dpi":[403.4,401.5],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"Micromax/*/4560MMX/*"},{"ua":"4560MMX"}],"dpi":[240,219.4],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"Micromax/*/A250/*"},{"ua":"Micromax A250"}],"dpi":[480,446.4],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"Micromax/*/Micromax AQ4501/*"},{"ua":"Micromax AQ4501"}],"dpi":240,"bw":3,"ac":500},{"type":"android","rules":[{"mdmh":"motorola/*/G5/*"},{"ua":"Moto G (5) Plus"}],"dpi":[403.4,403],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"motorola/*/DROID RAZR/*"},{"ua":"DROID RAZR"}],"dpi":[368.1,256.7],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"motorola/*/XT830C/*"},{"ua":"XT830C"}],"dpi":[254,255.9],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"motorola/*/XT1021/*"},{"ua":"XT1021"}],"dpi":[254,256.7],"bw":3,"ac":500},{"type":"android","rules":[{"mdmh":"motorola/*/XT1023/*"},{"ua":"XT1023"}],"dpi":[254,256.7],"bw":3,"ac":500},{"type":"android","rules":[{"mdmh":"motorola/*/XT1028/*"},{"ua":"XT1028"}],"dpi":[326.6,327.6],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"motorola/*/XT1034/*"},{"ua":"XT1034"}],"dpi":[326.6,328.4],"bw":3,"ac":500},{"type":"android","rules":[{"mdmh":"motorola/*/XT1053/*"},{"ua":"XT1053"}],"dpi":[315.3,316.1],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"motorola/*/XT1562/*"},{"ua":"XT1562"}],"dpi":[403.4,402.7],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"motorola/*/Nexus 6/*"},{"ua":"Nexus 6 B"}],"dpi":[494.3,489.7],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"motorola/*/XT1063/*"},{"ua":"XT1063"}],"dpi":[295,296.6],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"motorola/*/XT1064/*"},{"ua":"XT1064"}],"dpi":[295,295.6],"bw":3,"ac":500},{"type":"android","rules":[{"mdmh":"motorola/*/XT1092/*"},{"ua":"XT1092"}],"dpi":[422,424.1],"bw":3,"ac":500},{"type":"android","rules":[{"mdmh":"motorola/*/XT1095/*"},{"ua":"XT1095"}],"dpi":[422,423.4],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"motorola/*/G4/*"},{"ua":"Moto G (4)"}],"dpi":401,"bw":4,"ac":1000},{"type":"android","rules":[{"mdmh":"OnePlus/*/A0001/*"},{"ua":"A0001"}],"dpi":[403.4,401],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"OnePlus/*/ONE E1005/*"},{"ua":"ONE E1005"}],"dpi":[442.4,441.4],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"OnePlus/*/ONE A2005/*"},{"ua":"ONE A2005"}],"dpi":[391.9,405.4],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"OnePlus/*/ONEPLUS A5000/*"},{"ua":"ONEPLUS A5000 "}],"dpi":[403.411,399.737],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"OnePlus/*/ONE A5010/*"},{"ua":"ONEPLUS A5010"}],"dpi":[403,400],"bw":2,"ac":1000},{"type":"android","rules":[{"mdmh":"OPPO/*/X909/*"},{"ua":"X909"}],"dpi":[442.4,444.1],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"samsung/*/GT-I9082/*"},{"ua":"GT-I9082"}],"dpi":[184.7,185.4],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"samsung/*/SM-G360P/*"},{"ua":"SM-G360P"}],"dpi":[196.7,205.4],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"samsung/*/Nexus S/*"},{"ua":"Nexus S"}],"dpi":[234.5,229.8],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"samsung/*/GT-I9300/*"},{"ua":"GT-I9300"}],"dpi":[304.8,303.9],"bw":5,"ac":500},{"type":"android","rules":[{"mdmh":"samsung/*/SM-T230NU/*"},{"ua":"SM-T230NU"}],"dpi":216,"bw":3,"ac":500},{"type":"android","rules":[{"mdmh":"samsung/*/SGH-T399/*"},{"ua":"SGH-T399"}],"dpi":[217.7,231.4],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"samsung/*/SGH-M919/*"},{"ua":"SGH-M919"}],"dpi":[440.8,437.7],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"samsung/*/SM-N9005/*"},{"ua":"SM-N9005"}],"dpi":[386.4,387],"bw":3,"ac":500},{"type":"android","rules":[{"mdmh":"samsung/*/SAMSUNG-SM-N900A/*"},{"ua":"SAMSUNG-SM-N900A"}],"dpi":[386.4,387.7],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"samsung/*/GT-I9500/*"},{"ua":"GT-I9500"}],"dpi":[442.5,443.3],"bw":3,"ac":500},{"type":"android","rules":[{"mdmh":"samsung/*/GT-I9505/*"},{"ua":"GT-I9505"}],"dpi":439.4,"bw":4,"ac":1000},{"type":"android","rules":[{"mdmh":"samsung/*/SM-G900F/*"},{"ua":"SM-G900F"}],"dpi":[415.6,431.6],"bw":5,"ac":1000},{"type":"android","rules":[{"mdmh":"samsung/*/SM-G900M/*"},{"ua":"SM-G900M"}],"dpi":[415.6,431.6],"bw":5,"ac":1000},{"type":"android","rules":[{"mdmh":"samsung/*/SM-G800F/*"},{"ua":"SM-G800F"}],"dpi":326.8,"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"samsung/*/SM-G906S/*"},{"ua":"SM-G906S"}],"dpi":[562.7,572.4],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"samsung/*/GT-I9300/*"},{"ua":"GT-I9300"}],"dpi":[306.7,304.8],"bw":5,"ac":1000},{"type":"android","rules":[{"mdmh":"samsung/*/SM-T535/*"},{"ua":"SM-T535"}],"dpi":[142.6,136.4],"bw":3,"ac":500},{"type":"android","rules":[{"mdmh":"samsung/*/SM-N920C/*"},{"ua":"SM-N920C"}],"dpi":[515.1,518.4],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"samsung/*/SM-N920P/*"},{"ua":"SM-N920P"}],"dpi":[386.3655,390.144],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"samsung/*/SM-N920W8/*"},{"ua":"SM-N920W8"}],"dpi":[515.1,518.4],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"samsung/*/GT-I9300I/*"},{"ua":"GT-I9300I"}],"dpi":[304.8,305.8],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"samsung/*/GT-I9195/*"},{"ua":"GT-I9195"}],"dpi":[249.4,256.7],"bw":3,"ac":500},{"type":"android","rules":[{"mdmh":"samsung/*/SPH-L520/*"},{"ua":"SPH-L520"}],"dpi":[249.4,255.9],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"samsung/*/SAMSUNG-SGH-I717/*"},{"ua":"SAMSUNG-SGH-I717"}],"dpi":285.8,"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"samsung/*/SPH-D710/*"},{"ua":"SPH-D710"}],"dpi":[217.7,204.2],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"samsung/*/GT-N7100/*"},{"ua":"GT-N7100"}],"dpi":265.1,"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"samsung/*/SCH-I605/*"},{"ua":"SCH-I605"}],"dpi":265.1,"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"samsung/*/Galaxy Nexus/*"},{"ua":"Galaxy Nexus"}],"dpi":[315.3,314.2],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"samsung/*/SM-N910H/*"},{"ua":"SM-N910H"}],"dpi":[515.1,518],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"samsung/*/SM-N910C/*"},{"ua":"SM-N910C"}],"dpi":[515.2,520.2],"bw":3,"ac":500},{"type":"android","rules":[{"mdmh":"samsung/*/SM-G130M/*"},{"ua":"SM-G130M"}],"dpi":[165.9,164.8],"bw":3,"ac":500},{"type":"android","rules":[{"mdmh":"samsung/*/SM-G928I/*"},{"ua":"SM-G928I"}],"dpi":[515.1,518.4],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"samsung/*/SM-G920F/*"},{"ua":"SM-G920F"}],"dpi":580.6,"bw":3,"ac":500},{"type":"android","rules":[{"mdmh":"samsung/*/SM-G920P/*"},{"ua":"SM-G920P"}],"dpi":[522.5,577],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"samsung/*/SM-G925F/*"},{"ua":"SM-G925F"}],"dpi":580.6,"bw":3,"ac":500},{"type":"android","rules":[{"mdmh":"samsung/*/SM-G925V/*"},{"ua":"SM-G925V"}],"dpi":[522.5,576.6],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"samsung/*/SM-G930F/*"},{"ua":"SM-G930F"}],"dpi":576.6,"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"samsung/*/SM-G935F/*"},{"ua":"SM-G935F"}],"dpi":533,"bw":3,"ac":500},{"type":"android","rules":[{"mdmh":"samsung/*/SM-G950F/*"},{"ua":"SM-G950F"}],"dpi":[562.707,565.293],"bw":3,"ac":500},{"type":"android","rules":[{"mdmh":"samsung/*/SM-G955U/*"},{"ua":"SM-G955U"}],"dpi":[522.514,525.762],"bw":3,"ac":500},{"type":"android","rules":[{"mdmh":"samsung/*/SM-G955F/*"},{"ua":"SM-G955F"}],"dpi":[522.514,525.762],"bw":3,"ac":500},{"type":"android","rules":[{"mdmh":"Sony/*/C6903/*"},{"ua":"C6903"}],"dpi":[442.5,443.3],"bw":3,"ac":500},{"type":"android","rules":[{"mdmh":"Sony/*/D6653/*"},{"ua":"D6653"}],"dpi":[428.6,427.6],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"Sony/*/E6653/*"},{"ua":"E6653"}],"dpi":[428.6,425.7],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"Sony/*/E6853/*"},{"ua":"E6853"}],"dpi":[403.4,401.9],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"Sony/*/SGP321/*"},{"ua":"SGP321"}],"dpi":[224.7,224.1],"bw":3,"ac":500},{"type":"android","rules":[{"mdmh":"TCT/*/ALCATEL ONE TOUCH Fierce/*"},{"ua":"ALCATEL ONE TOUCH Fierce"}],"dpi":[240,247.5],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"THL/*/thl 5000/*"},{"ua":"thl 5000"}],"dpi":[480,443.3],"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"Fly/*/IQ4412/*"},{"ua":"IQ4412"}],"dpi":307.9,"bw":3,"ac":1000},{"type":"android","rules":[{"mdmh":"ZTE/*/ZTE Blade L2/*"},{"ua":"ZTE Blade L2"}],"dpi":240,"bw":3,"ac":500},{"type":"android","rules":[{"mdmh":"BENEVE/*/VR518/*"},{"ua":"VR518"}],"dpi":480,"bw":3,"ac":500},{"type":"ios","rules":[{"res":[640,960]}],"dpi":[325.1,328.4],"bw":4,"ac":1000},{"type":"ios","rules":[{"res":[640,1136]}],"dpi":[317.1,320.2],"bw":3,"ac":1000},{"type":"ios","rules":[{"res":[750,1334]}],"dpi":326.4,"bw":4,"ac":1000},{"type":"ios","rules":[{"res":[1242,2208]}],"dpi":[453.6,458.4],"bw":4,"ac":1000},{"type":"ios","rules":[{"res":[1125,2001]}],"dpi":[410.9,415.4],"bw":4,"ac":1000},{"type":"ios","rules":[{"res":[1125,2436]}],"dpi":458,"bw":4,"ac":1000}];
 var DPDB_CACHE = {
 	format: format,
 	last_updated: last_updated,
@@ -3484,7 +3874,7 @@ Dpdb.prototype.calcDeviceParams_ = function () {
     var matched = false;
     for (var j = 0; j < device.rules.length; j++) {
       var rule = device.rules[j];
-      if (this.matchRule_(rule, userAgent, width, height)) {
+      if (this.ruleMatches_(rule, userAgent, width, height)) {
         matched = true;
         break;
       }
@@ -3497,8 +3887,9 @@ Dpdb.prototype.calcDeviceParams_ = function () {
   console.warn('No DPDB device match.');
   return null;
 };
-Dpdb.prototype.matchRule_ = function (rule, ua, screenWidth, screenHeight) {
+Dpdb.prototype.ruleMatches_ = function (rule, ua, screenWidth, screenHeight) {
   if (!rule.ua && !rule.res) return false;
+  if (rule.ua && rule.ua.substring(0, 2) === 'SM') rule.ua = rule.ua.substring(0, 7);
   if (rule.ua && ua.indexOf(rule.ua) < 0) return false;
   if (rule.res) {
     if (!rule.res[0] || !rule.res[1]) return false;
@@ -3834,18 +4225,6 @@ FusionPoseSensor.prototype.stop = function () {
 var SENSOR_FREQUENCY = 60;
 var X_AXIS = new Vector3(1, 0, 0);
 var Z_AXIS = new Vector3(0, 0, 1);
-var orientation = {};
-if (screen.orientation) {
-  orientation = screen.orientation;
-} else if (screen.msOrientation) {
-  orientation = screen.msOrientation;
-} else {
-  Object.defineProperty(orientation, 'angle', {
-    get: function get$$1() {
-      return window.orientation || 0;
-    }
-  });
-}
 var SENSOR_TO_VR = new Quaternion();
 SENSOR_TO_VR.setFromAxisAngle(X_AXIS, -Math.PI / 2);
 SENSOR_TO_VR.multiply(new Quaternion().setFromAxisAngle(Z_AXIS, Math.PI / 2));
@@ -3859,12 +4238,9 @@ var PoseSensor = function () {
     this.api = null;
     this.errors = [];
     this._sensorQ = new Quaternion();
-    this._worldToScreenQ = new Quaternion();
     this._outQ = new Quaternion();
     this._onSensorRead = this._onSensorRead.bind(this);
     this._onSensorError = this._onSensorError.bind(this);
-    this._onOrientationChange = this._onOrientationChange.bind(this);
-    this._onOrientationChange();
     this.init();
   }
   createClass(PoseSensor, [{
@@ -3872,7 +4248,10 @@ var PoseSensor = function () {
     value: function init() {
       var sensor = null;
       try {
-        sensor = new RelativeOrientationSensor({ frequency: SENSOR_FREQUENCY });
+        sensor = new RelativeOrientationSensor({
+          frequency: SENSOR_FREQUENCY,
+          referenceFrame: 'screen'
+        });
         sensor.addEventListener('error', this._onSensorError);
       } catch (error) {
         this.errors.push(error);
@@ -3892,7 +4271,6 @@ var PoseSensor = function () {
         this.sensor.addEventListener('reading', this._onSensorRead);
         this.sensor.start();
       }
-      window.addEventListener('orientationchange', this._onOrientationChange);
     }
   }, {
     key: 'useDeviceMotion',
@@ -3921,7 +4299,6 @@ var PoseSensor = function () {
       var out = this._outQ;
       out.copy(SENSOR_TO_VR);
       out.multiply(this._sensorQ);
-      out.multiply(this._worldToScreenQ);
       if (this.config.YAW_ONLY) {
         out.x = out.z = 0;
         out.normalize();
@@ -3948,16 +4325,10 @@ var PoseSensor = function () {
   }, {
     key: '_onSensorRead',
     value: function _onSensorRead() {}
-  }, {
-    key: '_onOrientationChange',
-    value: function _onOrientationChange() {
-      var angle = -orientation.angle * Math.PI / 180;
-      this._worldToScreenQ.setFromAxisAngle(Z_AXIS, angle);
-    }
   }]);
   return PoseSensor;
 }();
-var rotateInstructionsAsset = 'PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+Cjxzdmcgd2lkdGg9IjE5OHB4IiBoZWlnaHQ9IjI0MHB4IiB2aWV3Qm94PSIwIDAgMTk4IDI0MCIgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4bWxuczpza2V0Y2g9Imh0dHA6Ly93d3cuYm9oZW1pYW5jb2RpbmcuY29tL3NrZXRjaC9ucyI+CiAgICA8IS0tIEdlbmVyYXRvcjogU2tldGNoIDMuMy4zICgxMjA4MSkgLSBodHRwOi8vd3d3LmJvaGVtaWFuY29kaW5nLmNvbS9za2V0Y2ggLS0+CiAgICA8dGl0bGU+dHJhbnNpdGlvbjwvdGl0bGU+CiAgICA8ZGVzYz5DcmVhdGVkIHdpdGggU2tldGNoLjwvZGVzYz4KICAgIDxkZWZzPjwvZGVmcz4KICAgIDxnIGlkPSJQYWdlLTEiIHN0cm9rZT0ibm9uZSIgc3Ryb2tlLXdpZHRoPSIxIiBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIHNrZXRjaDp0eXBlPSJNU1BhZ2UiPgogICAgICAgIDxnIGlkPSJ0cmFuc2l0aW9uIiBza2V0Y2g6dHlwZT0iTVNBcnRib2FyZEdyb3VwIj4KICAgICAgICAgICAgPGcgaWQ9IkltcG9ydGVkLUxheWVycy1Db3B5LTQtKy1JbXBvcnRlZC1MYXllcnMtQ29weS0rLUltcG9ydGVkLUxheWVycy1Db3B5LTItQ29weSIgc2tldGNoOnR5cGU9Ik1TTGF5ZXJHcm91cCI+CiAgICAgICAgICAgICAgICA8ZyBpZD0iSW1wb3J0ZWQtTGF5ZXJzLUNvcHktNCIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMC4wMDAwMDAsIDEwNy4wMDAwMDApIiBza2V0Y2g6dHlwZT0iTVNTaGFwZUdyb3VwIj4KICAgICAgICAgICAgICAgICAgICA8cGF0aCBkPSJNMTQ5LjYyNSwyLjUyNyBDMTQ5LjYyNSwyLjUyNyAxNTUuODA1LDYuMDk2IDE1Ni4zNjIsNi40MTggTDE1Ni4zNjIsNy4zMDQgQzE1Ni4zNjIsNy40ODEgMTU2LjM3NSw3LjY2NCAxNTYuNCw3Ljg1MyBDMTU2LjQxLDcuOTM0IDE1Ni40Miw4LjAxNSAxNTYuNDI3LDguMDk1IEMxNTYuNTY3LDkuNTEgMTU3LjQwMSwxMS4wOTMgMTU4LjUzMiwxMi4wOTQgTDE2NC4yNTIsMTcuMTU2IEwxNjQuMzMzLDE3LjA2NiBDMTY0LjMzMywxNy4wNjYgMTY4LjcxNSwxNC41MzYgMTY5LjU2OCwxNC4wNDIgQzE3MS4wMjUsMTQuODgzIDE5NS41MzgsMjkuMDM1IDE5NS41MzgsMjkuMDM1IEwxOTUuNTM4LDgzLjAzNiBDMTk1LjUzOCw4My44MDcgMTk1LjE1Miw4NC4yNTMgMTk0LjU5LDg0LjI1MyBDMTk0LjM1Nyw4NC4yNTMgMTk0LjA5NSw4NC4xNzcgMTkzLjgxOCw4NC4wMTcgTDE2OS44NTEsNzAuMTc5IEwxNjkuODM3LDcwLjIwMyBMMTQyLjUxNSw4NS45NzggTDE0MS42NjUsODQuNjU1IEMxMzYuOTM0LDgzLjEyNiAxMzEuOTE3LDgxLjkxNSAxMjYuNzE0LDgxLjA0NSBDMTI2LjcwOSw4MS4wNiAxMjYuNzA3LDgxLjA2OSAxMjYuNzA3LDgxLjA2OSBMMTIxLjY0LDk4LjAzIEwxMTMuNzQ5LDEwMi41ODYgTDExMy43MTIsMTAyLjUyMyBMMTEzLjcxMiwxMzAuMTEzIEMxMTMuNzEyLDEzMC44ODUgMTEzLjMyNiwxMzEuMzMgMTEyLjc2NCwxMzEuMzMgQzExMi41MzIsMTMxLjMzIDExMi4yNjksMTMxLjI1NCAxMTEuOTkyLDEzMS4wOTQgTDY5LjUxOSwxMDYuNTcyIEM2OC41NjksMTA2LjAyMyA2Ny43OTksMTA0LjY5NSA2Ny43OTksMTAzLjYwNSBMNjcuNzk5LDEwMi41NyBMNjcuNzc4LDEwMi42MTcgQzY3LjI3LDEwMi4zOTMgNjYuNjQ4LDEwMi4yNDkgNjUuOTYyLDEwMi4yMTggQzY1Ljg3NSwxMDIuMjE0IDY1Ljc4OCwxMDIuMjEyIDY1LjcwMSwxMDIuMjEyIEM2NS42MDYsMTAyLjIxMiA2NS41MTEsMTAyLjIxNSA2NS40MTYsMTAyLjIxOSBDNjUuMTk1LDEwMi4yMjkgNjQuOTc0LDEwMi4yMzUgNjQuNzU0LDEwMi4yMzUgQzY0LjMzMSwxMDIuMjM1IDYzLjkxMSwxMDIuMjE2IDYzLjQ5OCwxMDIuMTc4IEM2MS44NDMsMTAyLjAyNSA2MC4yOTgsMTAxLjU3OCA1OS4wOTQsMTAwLjg4MiBMMTIuNTE4LDczLjk5MiBMMTIuNTIzLDc0LjAwNCBMMi4yNDUsNTUuMjU0IEMxLjI0NCw1My40MjcgMi4wMDQsNTEuMDM4IDMuOTQzLDQ5LjkxOCBMNTkuOTU0LDE3LjU3MyBDNjAuNjI2LDE3LjE4NSA2MS4zNSwxNy4wMDEgNjIuMDUzLDE3LjAwMSBDNjMuMzc5LDE3LjAwMSA2NC42MjUsMTcuNjYgNjUuMjgsMTguODU0IEw2NS4yODUsMTguODUxIEw2NS41MTIsMTkuMjY0IEw2NS41MDYsMTkuMjY4IEM2NS45MDksMjAuMDAzIDY2LjQwNSwyMC42OCA2Ni45ODMsMjEuMjg2IEw2Ny4yNiwyMS41NTYgQzY5LjE3NCwyMy40MDYgNzEuNzI4LDI0LjM1NyA3NC4zNzMsMjQuMzU3IEM3Ni4zMjIsMjQuMzU3IDc4LjMyMSwyMy44NCA4MC4xNDgsMjIuNzg1IEM4MC4xNjEsMjIuNzg1IDg3LjQ2NywxOC41NjYgODcuNDY3LDE4LjU2NiBDODguMTM5LDE4LjE3OCA4OC44NjMsMTcuOTk0IDg5LjU2NiwxNy45OTQgQzkwLjg5MiwxNy45OTQgOTIuMTM4LDE4LjY1MiA5Mi43OTIsMTkuODQ3IEw5Ni4wNDIsMjUuNzc1IEw5Ni4wNjQsMjUuNzU3IEwxMDIuODQ5LDI5LjY3NCBMMTAyLjc0NCwyOS40OTIgTDE0OS42MjUsMi41MjcgTTE0OS42MjUsMC44OTIgQzE0OS4zNDMsMC44OTIgMTQ5LjA2MiwwLjk2NSAxNDguODEsMS4xMSBMMTAyLjY0MSwyNy42NjYgTDk3LjIzMSwyNC41NDIgTDk0LjIyNiwxOS4wNjEgQzkzLjMxMywxNy4zOTQgOTEuNTI3LDE2LjM1OSA4OS41NjYsMTYuMzU4IEM4OC41NTUsMTYuMzU4IDg3LjU0NiwxNi42MzIgODYuNjQ5LDE3LjE1IEM4My44NzgsMTguNzUgNzkuNjg3LDIxLjE2OSA3OS4zNzQsMjEuMzQ1IEM3OS4zNTksMjEuMzUzIDc5LjM0NSwyMS4zNjEgNzkuMzMsMjEuMzY5IEM3Ny43OTgsMjIuMjU0IDc2LjA4NCwyMi43MjIgNzQuMzczLDIyLjcyMiBDNzIuMDgxLDIyLjcyMiA2OS45NTksMjEuODkgNjguMzk3LDIwLjM4IEw2OC4xNDUsMjAuMTM1IEM2Ny43MDYsMTkuNjcyIDY3LjMyMywxOS4xNTYgNjcuMDA2LDE4LjYwMSBDNjYuOTg4LDE4LjU1OSA2Ni45NjgsMTguNTE5IDY2Ljk0NiwxOC40NzkgTDY2LjcxOSwxOC4wNjUgQzY2LjY5LDE4LjAxMiA2Ni42NTgsMTcuOTYgNjYuNjI0LDE3LjkxMSBDNjUuNjg2LDE2LjMzNyA2My45NTEsMTUuMzY2IDYyLjA1MywxNS4zNjYgQzYxLjA0MiwxNS4zNjYgNjAuMDMzLDE1LjY0IDU5LjEzNiwxNi4xNTggTDMuMTI1LDQ4LjUwMiBDMC40MjYsNTAuMDYxIC0wLjYxMyw1My40NDIgMC44MTEsNTYuMDQgTDExLjA4OSw3NC43OSBDMTEuMjY2LDc1LjExMyAxMS41MzcsNzUuMzUzIDExLjg1LDc1LjQ5NCBMNTguMjc2LDEwMi4yOTggQzU5LjY3OSwxMDMuMTA4IDYxLjQzMywxMDMuNjMgNjMuMzQ4LDEwMy44MDYgQzYzLjgxMiwxMDMuODQ4IDY0LjI4NSwxMDMuODcgNjQuNzU0LDEwMy44NyBDNjUsMTAzLjg3IDY1LjI0OSwxMDMuODY0IDY1LjQ5NCwxMDMuODUyIEM2NS41NjMsMTAzLjg0OSA2NS42MzIsMTAzLjg0NyA2NS43MDEsMTAzLjg0NyBDNjUuNzY0LDEwMy44NDcgNjUuODI4LDEwMy44NDkgNjUuODksMTAzLjg1MiBDNjUuOTg2LDEwMy44NTYgNjYuMDgsMTAzLjg2MyA2Ni4xNzMsMTAzLjg3NCBDNjYuMjgyLDEwNS40NjcgNjcuMzMyLDEwNy4xOTcgNjguNzAyLDEwNy45ODggTDExMS4xNzQsMTMyLjUxIEMxMTEuNjk4LDEzMi44MTIgMTEyLjIzMiwxMzIuOTY1IDExMi43NjQsMTMyLjk2NSBDMTE0LjI2MSwxMzIuOTY1IDExNS4zNDcsMTMxLjc2NSAxMTUuMzQ3LDEzMC4xMTMgTDExNS4zNDcsMTAzLjU1MSBMMTIyLjQ1OCw5OS40NDYgQzEyMi44MTksOTkuMjM3IDEyMy4wODcsOTguODk4IDEyMy4yMDcsOTguNDk4IEwxMjcuODY1LDgyLjkwNSBDMTMyLjI3OSw4My43MDIgMTM2LjU1Nyw4NC43NTMgMTQwLjYwNyw4Ni4wMzMgTDE0MS4xNCw4Ni44NjIgQzE0MS40NTEsODcuMzQ2IDE0MS45NzcsODcuNjEzIDE0Mi41MTYsODcuNjEzIEMxNDIuNzk0LDg3LjYxMyAxNDMuMDc2LDg3LjU0MiAxNDMuMzMzLDg3LjM5MyBMMTY5Ljg2NSw3Mi4wNzYgTDE5Myw4NS40MzMgQzE5My41MjMsODUuNzM1IDE5NC4wNTgsODUuODg4IDE5NC41OSw4NS44ODggQzE5Ni4wODcsODUuODg4IDE5Ny4xNzMsODQuNjg5IDE5Ny4xNzMsODMuMDM2IEwxOTcuMTczLDI5LjAzNSBDMTk3LjE3MywyOC40NTEgMTk2Ljg2MSwyNy45MTEgMTk2LjM1NSwyNy42MTkgQzE5Ni4zNTUsMjcuNjE5IDE3MS44NDMsMTMuNDY3IDE3MC4zODUsMTIuNjI2IEMxNzAuMTMyLDEyLjQ4IDE2OS44NSwxMi40MDcgMTY5LjU2OCwxMi40MDcgQzE2OS4yODUsMTIuNDA3IDE2OS4wMDIsMTIuNDgxIDE2OC43NDksMTIuNjI3IEMxNjguMTQzLDEyLjk3OCAxNjUuNzU2LDE0LjM1NyAxNjQuNDI0LDE1LjEyNSBMMTU5LjYxNSwxMC44NyBDMTU4Ljc5NiwxMC4xNDUgMTU4LjE1NCw4LjkzNyAxNTguMDU0LDcuOTM0IEMxNTguMDQ1LDcuODM3IDE1OC4wMzQsNy43MzkgMTU4LjAyMSw3LjY0IEMxNTguMDA1LDcuNTIzIDE1Ny45OTgsNy40MSAxNTcuOTk4LDcuMzA0IEwxNTcuOTk4LDYuNDE4IEMxNTcuOTk4LDUuODM0IDE1Ny42ODYsNS4yOTUgMTU3LjE4MSw1LjAwMiBDMTU2LjYyNCw0LjY4IDE1MC40NDIsMS4xMTEgMTUwLjQ0MiwxLjExMSBDMTUwLjE4OSwwLjk2NSAxNDkuOTA3LDAuODkyIDE0OS42MjUsMC44OTIiIGlkPSJGaWxsLTEiIGZpbGw9IiM0NTVBNjQiPjwvcGF0aD4KICAgICAgICAgICAgICAgICAgICA8cGF0aCBkPSJNOTYuMDI3LDI1LjYzNiBMMTQyLjYwMyw1Mi41MjcgQzE0My44MDcsNTMuMjIyIDE0NC41ODIsNTQuMTE0IDE0NC44NDUsNTUuMDY4IEwxNDQuODM1LDU1LjA3NSBMNjMuNDYxLDEwMi4wNTcgTDYzLjQ2LDEwMi4wNTcgQzYxLjgwNiwxMDEuOTA1IDYwLjI2MSwxMDEuNDU3IDU5LjA1NywxMDAuNzYyIEwxMi40ODEsNzMuODcxIEw5Ni4wMjcsMjUuNjM2IiBpZD0iRmlsbC0yIiBmaWxsPSIjRkFGQUZBIj48L3BhdGg+CiAgICAgICAgICAgICAgICAgICAgPHBhdGggZD0iTTYzLjQ2MSwxMDIuMTc0IEM2My40NTMsMTAyLjE3NCA2My40NDYsMTAyLjE3NCA2My40MzksMTAyLjE3MiBDNjEuNzQ2LDEwMi4wMTYgNjAuMjExLDEwMS41NjMgNTguOTk4LDEwMC44NjMgTDEyLjQyMiw3My45NzMgQzEyLjM4Niw3My45NTIgMTIuMzY0LDczLjkxNCAxMi4zNjQsNzMuODcxIEMxMi4zNjQsNzMuODMgMTIuMzg2LDczLjc5MSAxMi40MjIsNzMuNzcgTDk1Ljk2OCwyNS41MzUgQzk2LjAwNCwyNS41MTQgOTYuMDQ5LDI1LjUxNCA5Ni4wODUsMjUuNTM1IEwxNDIuNjYxLDUyLjQyNiBDMTQzLjg4OCw1My4xMzQgMTQ0LjY4Miw1NC4wMzggMTQ0Ljk1Nyw1NS4wMzcgQzE0NC45Nyw1NS4wODMgMTQ0Ljk1Myw1NS4xMzMgMTQ0LjkxNSw1NS4xNjEgQzE0NC45MTEsNTUuMTY1IDE0NC44OTgsNTUuMTc0IDE0NC44OTQsNTUuMTc3IEw2My41MTksMTAyLjE1OCBDNjMuNTAxLDEwMi4xNjkgNjMuNDgxLDEwMi4xNzQgNjMuNDYxLDEwMi4xNzQgTDYzLjQ2MSwxMDIuMTc0IFogTTEyLjcxNCw3My44NzEgTDU5LjExNSwxMDAuNjYxIEM2MC4yOTMsMTAxLjM0MSA2MS43ODYsMTAxLjc4MiA2My40MzUsMTAxLjkzNyBMMTQ0LjcwNyw1NS4wMTUgQzE0NC40MjgsNTQuMTA4IDE0My42ODIsNTMuMjg1IDE0Mi41NDQsNTIuNjI4IEw5Ni4wMjcsMjUuNzcxIEwxMi43MTQsNzMuODcxIEwxMi43MTQsNzMuODcxIFoiIGlkPSJGaWxsLTMiIGZpbGw9IiM2MDdEOEIiPjwvcGF0aD4KICAgICAgICAgICAgICAgICAgICA8cGF0aCBkPSJNMTQ4LjMyNyw1OC40NzEgQzE0OC4xNDUsNTguNDggMTQ3Ljk2Miw1OC40OCAxNDcuNzgxLDU4LjQ3MiBDMTQ1Ljg4Nyw1OC4zODkgMTQ0LjQ3OSw1Ny40MzQgMTQ0LjYzNiw1Ni4zNCBDMTQ0LjY4OSw1NS45NjcgMTQ0LjY2NCw1NS41OTcgMTQ0LjU2NCw1NS4yMzUgTDYzLjQ2MSwxMDIuMDU3IEM2NC4wODksMTAyLjExNSA2NC43MzMsMTAyLjEzIDY1LjM3OSwxMDIuMDk5IEM2NS41NjEsMTAyLjA5IDY1Ljc0MywxMDIuMDkgNjUuOTI1LDEwMi4wOTggQzY3LjgxOSwxMDIuMTgxIDY5LjIyNywxMDMuMTM2IDY5LjA3LDEwNC4yMyBMMTQ4LjMyNyw1OC40NzEiIGlkPSJGaWxsLTQiIGZpbGw9IiNGRkZGRkYiPjwvcGF0aD4KICAgICAgICAgICAgICAgICAgICA8cGF0aCBkPSJNNjkuMDcsMTA0LjM0NyBDNjkuMDQ4LDEwNC4zNDcgNjkuMDI1LDEwNC4zNCA2OS4wMDUsMTA0LjMyNyBDNjguOTY4LDEwNC4zMDEgNjguOTQ4LDEwNC4yNTcgNjguOTU1LDEwNC4yMTMgQzY5LDEwMy44OTYgNjguODk4LDEwMy41NzYgNjguNjU4LDEwMy4yODggQzY4LjE1MywxMDIuNjc4IDY3LjEwMywxMDIuMjY2IDY1LjkyLDEwMi4yMTQgQzY1Ljc0MiwxMDIuMjA2IDY1LjU2MywxMDIuMjA3IDY1LjM4NSwxMDIuMjE1IEM2NC43NDIsMTAyLjI0NiA2NC4wODcsMTAyLjIzMiA2My40NSwxMDIuMTc0IEM2My4zOTksMTAyLjE2OSA2My4zNTgsMTAyLjEzMiA2My4zNDcsMTAyLjA4MiBDNjMuMzM2LDEwMi4wMzMgNjMuMzU4LDEwMS45ODEgNjMuNDAyLDEwMS45NTYgTDE0NC41MDYsNTUuMTM0IEMxNDQuNTM3LDU1LjExNiAxNDQuNTc1LDU1LjExMyAxNDQuNjA5LDU1LjEyNyBDMTQ0LjY0Miw1NS4xNDEgMTQ0LjY2OCw1NS4xNyAxNDQuNjc3LDU1LjIwNCBDMTQ0Ljc4MSw1NS41ODUgMTQ0LjgwNiw1NS45NzIgMTQ0Ljc1MSw1Ni4zNTcgQzE0NC43MDYsNTYuNjczIDE0NC44MDgsNTYuOTk0IDE0NS4wNDcsNTcuMjgyIEMxNDUuNTUzLDU3Ljg5MiAxNDYuNjAyLDU4LjMwMyAxNDcuNzg2LDU4LjM1NSBDMTQ3Ljk2NCw1OC4zNjMgMTQ4LjE0Myw1OC4zNjMgMTQ4LjMyMSw1OC4zNTQgQzE0OC4zNzcsNTguMzUyIDE0OC40MjQsNTguMzg3IDE0OC40MzksNTguNDM4IEMxNDguNDU0LDU4LjQ5IDE0OC40MzIsNTguNTQ1IDE0OC4zODUsNTguNTcyIEw2OS4xMjksMTA0LjMzMSBDNjkuMTExLDEwNC4zNDIgNjkuMDksMTA0LjM0NyA2OS4wNywxMDQuMzQ3IEw2OS4wNywxMDQuMzQ3IFogTTY1LjY2NSwxMDEuOTc1IEM2NS43NTQsMTAxLjk3NSA2NS44NDIsMTAxLjk3NyA2NS45MywxMDEuOTgxIEM2Ny4xOTYsMTAyLjAzNyA2OC4yODMsMTAyLjQ2OSA2OC44MzgsMTAzLjEzOSBDNjkuMDY1LDEwMy40MTMgNjkuMTg4LDEwMy43MTQgNjkuMTk4LDEwNC4wMjEgTDE0Ny44ODMsNTguNTkyIEMxNDcuODQ3LDU4LjU5MiAxNDcuODExLDU4LjU5MSAxNDcuNzc2LDU4LjU4OSBDMTQ2LjUwOSw1OC41MzMgMTQ1LjQyMiw1OC4xIDE0NC44NjcsNTcuNDMxIEMxNDQuNTg1LDU3LjA5MSAxNDQuNDY1LDU2LjcwNyAxNDQuNTIsNTYuMzI0IEMxNDQuNTYzLDU2LjAyMSAxNDQuNTUyLDU1LjcxNiAxNDQuNDg4LDU1LjQxNCBMNjMuODQ2LDEwMS45NyBDNjQuMzUzLDEwMi4wMDIgNjQuODY3LDEwMi4wMDYgNjUuMzc0LDEwMS45ODIgQzY1LjQ3MSwxMDEuOTc3IDY1LjU2OCwxMDEuOTc1IDY1LjY2NSwxMDEuOTc1IEw2NS42NjUsMTAxLjk3NSBaIiBpZD0iRmlsbC01IiBmaWxsPSIjNjA3RDhCIj48L3BhdGg+CiAgICAgICAgICAgICAgICAgICAgPHBhdGggZD0iTTIuMjA4LDU1LjEzNCBDMS4yMDcsNTMuMzA3IDEuOTY3LDUwLjkxNyAzLjkwNiw0OS43OTcgTDU5LjkxNywxNy40NTMgQzYxLjg1NiwxNi4zMzMgNjQuMjQxLDE2LjkwNyA2NS4yNDMsMTguNzM0IEw2NS40NzUsMTkuMTQ0IEM2NS44NzIsMTkuODgyIDY2LjM2OCwyMC41NiA2Ni45NDUsMjEuMTY1IEw2Ny4yMjMsMjEuNDM1IEM3MC41NDgsMjQuNjQ5IDc1LjgwNiwyNS4xNTEgODAuMTExLDIyLjY2NSBMODcuNDMsMTguNDQ1IEM4OS4zNywxNy4zMjYgOTEuNzU0LDE3Ljg5OSA5Mi43NTUsMTkuNzI3IEw5Ni4wMDUsMjUuNjU1IEwxMi40ODYsNzMuODg0IEwyLjIwOCw1NS4xMzQgWiIgaWQ9IkZpbGwtNiIgZmlsbD0iI0ZBRkFGQSI+PC9wYXRoPgogICAgICAgICAgICAgICAgICAgIDxwYXRoIGQ9Ik0xMi40ODYsNzQuMDAxIEMxMi40NzYsNzQuMDAxIDEyLjQ2NSw3My45OTkgMTIuNDU1LDczLjk5NiBDMTIuNDI0LDczLjk4OCAxMi4zOTksNzMuOTY3IDEyLjM4NCw3My45NCBMMi4xMDYsNTUuMTkgQzEuMDc1LDUzLjMxIDEuODU3LDUwLjg0NSAzLjg0OCw0OS42OTYgTDU5Ljg1OCwxNy4zNTIgQzYwLjUyNSwxNi45NjcgNjEuMjcxLDE2Ljc2NCA2Mi4wMTYsMTYuNzY0IEM2My40MzEsMTYuNzY0IDY0LjY2NiwxNy40NjYgNjUuMzI3LDE4LjY0NiBDNjUuMzM3LDE4LjY1NCA2NS4zNDUsMTguNjYzIDY1LjM1MSwxOC42NzQgTDY1LjU3OCwxOS4wODggQzY1LjU4NCwxOS4xIDY1LjU4OSwxOS4xMTIgNjUuNTkxLDE5LjEyNiBDNjUuOTg1LDE5LjgzOCA2Ni40NjksMjAuNDk3IDY3LjAzLDIxLjA4NSBMNjcuMzA1LDIxLjM1MSBDNjkuMTUxLDIzLjEzNyA3MS42NDksMjQuMTIgNzQuMzM2LDI0LjEyIEM3Ni4zMTMsMjQuMTIgNzguMjksMjMuNTgyIDgwLjA1MywyMi41NjMgQzgwLjA2NCwyMi41NTcgODAuMDc2LDIyLjU1MyA4MC4wODgsMjIuNTUgTDg3LjM3MiwxOC4zNDQgQzg4LjAzOCwxNy45NTkgODguNzg0LDE3Ljc1NiA4OS41MjksMTcuNzU2IEM5MC45NTYsMTcuNzU2IDkyLjIwMSwxOC40NzIgOTIuODU4LDE5LjY3IEw5Ni4xMDcsMjUuNTk5IEM5Ni4xMzgsMjUuNjU0IDk2LjExOCwyNS43MjQgOTYuMDYzLDI1Ljc1NiBMMTIuNTQ1LDczLjk4NSBDMTIuNTI2LDczLjk5NiAxMi41MDYsNzQuMDAxIDEyLjQ4Niw3NC4wMDEgTDEyLjQ4Niw3NC4wMDEgWiBNNjIuMDE2LDE2Ljk5NyBDNjEuMzEyLDE2Ljk5NyA2MC42MDYsMTcuMTkgNTkuOTc1LDE3LjU1NCBMMy45NjUsNDkuODk5IEMyLjA4Myw1MC45ODUgMS4zNDEsNTMuMzA4IDIuMzEsNTUuMDc4IEwxMi41MzEsNzMuNzIzIEw5NS44NDgsMjUuNjExIEw5Mi42NTMsMTkuNzgyIEM5Mi4wMzgsMTguNjYgOTAuODcsMTcuOTkgODkuNTI5LDE3Ljk5IEM4OC44MjUsMTcuOTkgODguMTE5LDE4LjE4MiA4Ny40ODksMTguNTQ3IEw4MC4xNzIsMjIuNzcyIEM4MC4xNjEsMjIuNzc4IDgwLjE0OSwyMi43ODIgODAuMTM3LDIyLjc4NSBDNzguMzQ2LDIzLjgxMSA3Ni4zNDEsMjQuMzU0IDc0LjMzNiwyNC4zNTQgQzcxLjU4OCwyNC4zNTQgNjkuMDMzLDIzLjM0NyA2Ny4xNDIsMjEuNTE5IEw2Ni44NjQsMjEuMjQ5IEM2Ni4yNzcsMjAuNjM0IDY1Ljc3NCwxOS45NDcgNjUuMzY3LDE5LjIwMyBDNjUuMzYsMTkuMTkyIDY1LjM1NiwxOS4xNzkgNjUuMzU0LDE5LjE2NiBMNjUuMTYzLDE4LjgxOSBDNjUuMTU0LDE4LjgxMSA2NS4xNDYsMTguODAxIDY1LjE0LDE4Ljc5IEM2NC41MjUsMTcuNjY3IDYzLjM1NywxNi45OTcgNjIuMDE2LDE2Ljk5NyBMNjIuMDE2LDE2Ljk5NyBaIiBpZD0iRmlsbC03IiBmaWxsPSIjNjA3RDhCIj48L3BhdGg+CiAgICAgICAgICAgICAgICAgICAgPHBhdGggZD0iTTQyLjQzNCw0OC44MDggTDQyLjQzNCw0OC44MDggQzM5LjkyNCw0OC44MDcgMzcuNzM3LDQ3LjU1IDM2LjU4Miw0NS40NDMgQzM0Ljc3MSw0Mi4xMzkgMzYuMTQ0LDM3LjgwOSAzOS42NDEsMzUuNzg5IEw1MS45MzIsMjguNjkxIEM1My4xMDMsMjguMDE1IDU0LjQxMywyNy42NTggNTUuNzIxLDI3LjY1OCBDNTguMjMxLDI3LjY1OCA2MC40MTgsMjguOTE2IDYxLjU3MywzMS4wMjMgQzYzLjM4NCwzNC4zMjcgNjIuMDEyLDM4LjY1NyA1OC41MTQsNDAuNjc3IEw0Ni4yMjMsNDcuNzc1IEM0NS4wNTMsNDguNDUgNDMuNzQyLDQ4LjgwOCA0Mi40MzQsNDguODA4IEw0Mi40MzQsNDguODA4IFogTTU1LjcyMSwyOC4xMjUgQzU0LjQ5NSwyOC4xMjUgNTMuMjY1LDI4LjQ2MSA1Mi4xNjYsMjkuMDk2IEwzOS44NzUsMzYuMTk0IEMzNi41OTYsMzguMDg3IDM1LjMwMiw0Mi4xMzYgMzYuOTkyLDQ1LjIxOCBDMzguMDYzLDQ3LjE3MyA0MC4wOTgsNDguMzQgNDIuNDM0LDQ4LjM0IEM0My42NjEsNDguMzQgNDQuODksNDguMDA1IDQ1Ljk5LDQ3LjM3IEw1OC4yODEsNDAuMjcyIEM2MS41NiwzOC4zNzkgNjIuODUzLDM0LjMzIDYxLjE2NCwzMS4yNDggQzYwLjA5MiwyOS4yOTMgNTguMDU4LDI4LjEyNSA1NS43MjEsMjguMTI1IEw1NS43MjEsMjguMTI1IFoiIGlkPSJGaWxsLTgiIGZpbGw9IiM2MDdEOEIiPjwvcGF0aD4KICAgICAgICAgICAgICAgICAgICA8cGF0aCBkPSJNMTQ5LjU4OCwyLjQwNyBDMTQ5LjU4OCwyLjQwNyAxNTUuNzY4LDUuOTc1IDE1Ni4zMjUsNi4yOTcgTDE1Ni4zMjUsNy4xODQgQzE1Ni4zMjUsNy4zNiAxNTYuMzM4LDcuNTQ0IDE1Ni4zNjIsNy43MzMgQzE1Ni4zNzMsNy44MTQgMTU2LjM4Miw3Ljg5NCAxNTYuMzksNy45NzUgQzE1Ni41Myw5LjM5IDE1Ny4zNjMsMTAuOTczIDE1OC40OTUsMTEuOTc0IEwxNjUuODkxLDE4LjUxOSBDMTY2LjA2OCwxOC42NzUgMTY2LjI0OSwxOC44MTQgMTY2LjQzMiwxOC45MzQgQzE2OC4wMTEsMTkuOTc0IDE2OS4zODIsMTkuNCAxNjkuNDk0LDE3LjY1MiBDMTY5LjU0MywxNi44NjggMTY5LjU1MSwxNi4wNTcgMTY5LjUxNywxNS4yMjMgTDE2OS41MTQsMTUuMDYzIEwxNjkuNTE0LDEzLjkxMiBDMTcwLjc4LDE0LjY0MiAxOTUuNTAxLDI4LjkxNSAxOTUuNTAxLDI4LjkxNSBMMTk1LjUwMSw4Mi45MTUgQzE5NS41MDEsODQuMDA1IDE5NC43MzEsODQuNDQ1IDE5My43ODEsODMuODk3IEwxNTEuMzA4LDU5LjM3NCBDMTUwLjM1OCw1OC44MjYgMTQ5LjU4OCw1Ny40OTcgMTQ5LjU4OCw1Ni40MDggTDE0OS41ODgsMjIuMzc1IiBpZD0iRmlsbC05IiBmaWxsPSIjRkFGQUZBIj48L3BhdGg+CiAgICAgICAgICAgICAgICAgICAgPHBhdGggZD0iTTE5NC41NTMsODQuMjUgQzE5NC4yOTYsODQuMjUgMTk0LjAxMyw4NC4xNjUgMTkzLjcyMiw4My45OTcgTDE1MS4yNSw1OS40NzYgQzE1MC4yNjksNTguOTA5IDE0OS40NzEsNTcuNTMzIDE0OS40NzEsNTYuNDA4IEwxNDkuNDcxLDIyLjM3NSBMMTQ5LjcwNSwyMi4zNzUgTDE0OS43MDUsNTYuNDA4IEMxNDkuNzA1LDU3LjQ1OSAxNTAuNDUsNTguNzQ0IDE1MS4zNjYsNTkuMjc0IEwxOTMuODM5LDgzLjc5NSBDMTk0LjI2Myw4NC4wNCAxOTQuNjU1LDg0LjA4MyAxOTQuOTQyLDgzLjkxNyBDMTk1LjIyNyw4My43NTMgMTk1LjM4NCw4My4zOTcgMTk1LjM4NCw4Mi45MTUgTDE5NS4zODQsMjguOTgyIEMxOTQuMTAyLDI4LjI0MiAxNzIuMTA0LDE1LjU0MiAxNjkuNjMxLDE0LjExNCBMMTY5LjYzNCwxNS4yMiBDMTY5LjY2OCwxNi4wNTIgMTY5LjY2LDE2Ljg3NCAxNjkuNjEsMTcuNjU5IEMxNjkuNTU2LDE4LjUwMyAxNjkuMjE0LDE5LjEyMyAxNjguNjQ3LDE5LjQwNSBDMTY4LjAyOCwxOS43MTQgMTY3LjE5NywxOS41NzggMTY2LjM2NywxOS4wMzIgQzE2Ni4xODEsMTguOTA5IDE2NS45OTUsMTguNzY2IDE2NS44MTQsMTguNjA2IEwxNTguNDE3LDEyLjA2MiBDMTU3LjI1OSwxMS4wMzYgMTU2LjQxOCw5LjQzNyAxNTYuMjc0LDcuOTg2IEMxNTYuMjY2LDcuOTA3IDE1Ni4yNTcsNy44MjcgMTU2LjI0Nyw3Ljc0OCBDMTU2LjIyMSw3LjU1NSAxNTYuMjA5LDcuMzY1IDE1Ni4yMDksNy4xODQgTDE1Ni4yMDksNi4zNjQgQzE1NS4zNzUsNS44ODMgMTQ5LjUyOSwyLjUwOCAxNDkuNTI5LDIuNTA4IEwxNDkuNjQ2LDIuMzA2IEMxNDkuNjQ2LDIuMzA2IDE1NS44MjcsNS44NzQgMTU2LjM4NCw2LjE5NiBMMTU2LjQ0Miw2LjIzIEwxNTYuNDQyLDcuMTg0IEMxNTYuNDQyLDcuMzU1IDE1Ni40NTQsNy41MzUgMTU2LjQ3OCw3LjcxNyBDMTU2LjQ4OSw3LjggMTU2LjQ5OSw3Ljg4MiAxNTYuNTA3LDcuOTYzIEMxNTYuNjQ1LDkuMzU4IDE1Ny40NTUsMTAuODk4IDE1OC41NzIsMTEuODg2IEwxNjUuOTY5LDE4LjQzMSBDMTY2LjE0MiwxOC41ODQgMTY2LjMxOSwxOC43MiAxNjYuNDk2LDE4LjgzNyBDMTY3LjI1NCwxOS4zMzYgMTY4LDE5LjQ2NyAxNjguNTQzLDE5LjE5NiBDMTY5LjAzMywxOC45NTMgMTY5LjMyOSwxOC40MDEgMTY5LjM3NywxNy42NDUgQzE2OS40MjcsMTYuODY3IDE2OS40MzQsMTYuMDU0IDE2OS40MDEsMTUuMjI4IEwxNjkuMzk3LDE1LjA2NSBMMTY5LjM5NywxMy43MSBMMTY5LjU3MiwxMy44MSBDMTcwLjgzOSwxNC41NDEgMTk1LjU1OSwyOC44MTQgMTk1LjU1OSwyOC44MTQgTDE5NS42MTgsMjguODQ3IEwxOTUuNjE4LDgyLjkxNSBDMTk1LjYxOCw4My40ODQgMTk1LjQyLDgzLjkxMSAxOTUuMDU5LDg0LjExOSBDMTk0LjkwOCw4NC4yMDYgMTk0LjczNyw4NC4yNSAxOTQuNTUzLDg0LjI1IiBpZD0iRmlsbC0xMCIgZmlsbD0iIzYwN0Q4QiI+PC9wYXRoPgogICAgICAgICAgICAgICAgICAgIDxwYXRoIGQ9Ik0xNDUuNjg1LDU2LjE2MSBMMTY5LjgsNzAuMDgzIEwxNDMuODIyLDg1LjA4MSBMMTQyLjM2LDg0Ljc3NCBDMTM1LjgyNiw4Mi42MDQgMTI4LjczMiw4MS4wNDYgMTIxLjM0MSw4MC4xNTggQzExNi45NzYsNzkuNjM0IDExMi42NzgsODEuMjU0IDExMS43NDMsODMuNzc4IEMxMTEuNTA2LDg0LjQxNCAxMTEuNTAzLDg1LjA3MSAxMTEuNzMyLDg1LjcwNiBDMTEzLjI3LDg5Ljk3MyAxMTUuOTY4LDk0LjA2OSAxMTkuNzI3LDk3Ljg0MSBMMTIwLjI1OSw5OC42ODYgQzEyMC4yNiw5OC42ODUgOTQuMjgyLDExMy42ODMgOTQuMjgyLDExMy42ODMgTDcwLjE2Nyw5OS43NjEgTDE0NS42ODUsNTYuMTYxIiBpZD0iRmlsbC0xMSIgZmlsbD0iI0ZGRkZGRiI+PC9wYXRoPgogICAgICAgICAgICAgICAgICAgIDxwYXRoIGQ9Ik05NC4yODIsMTEzLjgxOCBMOTQuMjIzLDExMy43ODUgTDY5LjkzMyw5OS43NjEgTDcwLjEwOCw5OS42NiBMMTQ1LjY4NSw1Ni4wMjYgTDE0NS43NDMsNTYuMDU5IEwxNzAuMDMzLDcwLjA4MyBMMTQzLjg0Miw4NS4yMDUgTDE0My43OTcsODUuMTk1IEMxNDMuNzcyLDg1LjE5IDE0Mi4zMzYsODQuODg4IDE0Mi4zMzYsODQuODg4IEMxMzUuNzg3LDgyLjcxNCAxMjguNzIzLDgxLjE2MyAxMjEuMzI3LDgwLjI3NCBDMTIwLjc4OCw4MC4yMDkgMTIwLjIzNiw4MC4xNzcgMTE5LjY4OSw4MC4xNzcgQzExNS45MzEsODAuMTc3IDExMi42MzUsODEuNzA4IDExMS44NTIsODMuODE5IEMxMTEuNjI0LDg0LjQzMiAxMTEuNjIxLDg1LjA1MyAxMTEuODQyLDg1LjY2NyBDMTEzLjM3Nyw4OS45MjUgMTE2LjA1OCw5My45OTMgMTE5LjgxLDk3Ljc1OCBMMTE5LjgyNiw5Ny43NzkgTDEyMC4zNTIsOTguNjE0IEMxMjAuMzU0LDk4LjYxNyAxMjAuMzU2LDk4LjYyIDEyMC4zNTgsOTguNjI0IEwxMjAuNDIyLDk4LjcyNiBMMTIwLjMxNyw5OC43ODcgQzEyMC4yNjQsOTguODE4IDk0LjU5OSwxMTMuNjM1IDk0LjM0LDExMy43ODUgTDk0LjI4MiwxMTMuODE4IEw5NC4yODIsMTEzLjgxOCBaIE03MC40MDEsOTkuNzYxIEw5NC4yODIsMTEzLjU0OSBMMTE5LjA4NCw5OS4yMjkgQzExOS42Myw5OC45MTQgMTE5LjkzLDk4Ljc0IDEyMC4xMDEsOTguNjU0IEwxMTkuNjM1LDk3LjkxNCBDMTE1Ljg2NCw5NC4xMjcgMTEzLjE2OCw5MC4wMzMgMTExLjYyMiw4NS43NDYgQzExMS4zODIsODUuMDc5IDExMS4zODYsODQuNDA0IDExMS42MzMsODMuNzM4IEMxMTIuNDQ4LDgxLjUzOSAxMTUuODM2LDc5Ljk0MyAxMTkuNjg5LDc5Ljk0MyBDMTIwLjI0Niw3OS45NDMgMTIwLjgwNiw3OS45NzYgMTIxLjM1NSw4MC4wNDIgQzEyOC43NjcsODAuOTMzIDEzNS44NDYsODIuNDg3IDE0Mi4zOTYsODQuNjYzIEMxNDMuMjMyLDg0LjgzOCAxNDMuNjExLDg0LjkxNyAxNDMuNzg2LDg0Ljk2NyBMMTY5LjU2Niw3MC4wODMgTDE0NS42ODUsNTYuMjk1IEw3MC40MDEsOTkuNzYxIEw3MC40MDEsOTkuNzYxIFoiIGlkPSJGaWxsLTEyIiBmaWxsPSIjNjA3RDhCIj48L3BhdGg+CiAgICAgICAgICAgICAgICAgICAgPHBhdGggZD0iTTE2Ny4yMywxOC45NzkgTDE2Ny4yMyw2OS44NSBMMTM5LjkwOSw4NS42MjMgTDEzMy40NDgsNzEuNDU2IEMxMzIuNTM4LDY5LjQ2IDEzMC4wMiw2OS43MTggMTI3LjgyNCw3Mi4wMyBDMTI2Ljc2OSw3My4xNCAxMjUuOTMxLDc0LjU4NSAxMjUuNDk0LDc2LjA0OCBMMTE5LjAzNCw5Ny42NzYgTDkxLjcxMiwxMTMuNDUgTDkxLjcxMiw2Mi41NzkgTDE2Ny4yMywxOC45NzkiIGlkPSJGaWxsLTEzIiBmaWxsPSIjRkZGRkZGIj48L3BhdGg+CiAgICAgICAgICAgICAgICAgICAgPHBhdGggZD0iTTkxLjcxMiwxMTMuNTY3IEM5MS42OTIsMTEzLjU2NyA5MS42NzIsMTEzLjU2MSA5MS42NTMsMTEzLjU1MSBDOTEuNjE4LDExMy41MyA5MS41OTUsMTEzLjQ5MiA5MS41OTUsMTEzLjQ1IEw5MS41OTUsNjIuNTc5IEM5MS41OTUsNjIuNTM3IDkxLjYxOCw2Mi40OTkgOTEuNjUzLDYyLjQ3OCBMMTY3LjE3MiwxOC44NzggQzE2Ny4yMDgsMTguODU3IDE2Ny4yNTIsMTguODU3IDE2Ny4yODgsMTguODc4IEMxNjcuMzI0LDE4Ljg5OSAxNjcuMzQ3LDE4LjkzNyAxNjcuMzQ3LDE4Ljk3OSBMMTY3LjM0Nyw2OS44NSBDMTY3LjM0Nyw2OS44OTEgMTY3LjMyNCw2OS45MyAxNjcuMjg4LDY5Ljk1IEwxMzkuOTY3LDg1LjcyNSBDMTM5LjkzOSw4NS43NDEgMTM5LjkwNSw4NS43NDUgMTM5Ljg3Myw4NS43MzUgQzEzOS44NDIsODUuNzI1IDEzOS44MTYsODUuNzAyIDEzOS44MDIsODUuNjcyIEwxMzMuMzQyLDcxLjUwNCBDMTMyLjk2Nyw3MC42ODIgMTMyLjI4LDcwLjIyOSAxMzEuNDA4LDcwLjIyOSBDMTMwLjMxOSw3MC4yMjkgMTI5LjA0NCw3MC45MTUgMTI3LjkwOCw3Mi4xMSBDMTI2Ljg3NCw3My4yIDEyNi4wMzQsNzQuNjQ3IDEyNS42MDYsNzYuMDgyIEwxMTkuMTQ2LDk3LjcwOSBDMTE5LjEzNyw5Ny43MzggMTE5LjExOCw5Ny43NjIgMTE5LjA5Miw5Ny43NzcgTDkxLjc3LDExMy41NTEgQzkxLjc1MiwxMTMuNTYxIDkxLjczMiwxMTMuNTY3IDkxLjcxMiwxMTMuNTY3IEw5MS43MTIsMTEzLjU2NyBaIE05MS44MjksNjIuNjQ3IEw5MS44MjksMTEzLjI0OCBMMTE4LjkzNSw5Ny41OTggTDEyNS4zODIsNzYuMDE1IEMxMjUuODI3LDc0LjUyNSAxMjYuNjY0LDczLjA4MSAxMjcuNzM5LDcxLjk1IEMxMjguOTE5LDcwLjcwOCAxMzAuMjU2LDY5Ljk5NiAxMzEuNDA4LDY5Ljk5NiBDMTMyLjM3Nyw2OS45OTYgMTMzLjEzOSw3MC40OTcgMTMzLjU1NCw3MS40MDcgTDEzOS45NjEsODUuNDU4IEwxNjcuMTEzLDY5Ljc4MiBMMTY3LjExMywxOS4xODEgTDkxLjgyOSw2Mi42NDcgTDkxLjgyOSw2Mi42NDcgWiIgaWQ9IkZpbGwtMTQiIGZpbGw9IiM2MDdEOEIiPjwvcGF0aD4KICAgICAgICAgICAgICAgICAgICA8cGF0aCBkPSJNMTY4LjU0MywxOS4yMTMgTDE2OC41NDMsNzAuMDgzIEwxNDEuMjIxLDg1Ljg1NyBMMTM0Ljc2MSw3MS42ODkgQzEzMy44NTEsNjkuNjk0IDEzMS4zMzMsNjkuOTUxIDEyOS4xMzcsNzIuMjYzIEMxMjguMDgyLDczLjM3NCAxMjcuMjQ0LDc0LjgxOSAxMjYuODA3LDc2LjI4MiBMMTIwLjM0Niw5Ny45MDkgTDkzLjAyNSwxMTMuNjgzIEw5My4wMjUsNjIuODEzIEwxNjguNTQzLDE5LjIxMyIgaWQ9IkZpbGwtMTUiIGZpbGw9IiNGRkZGRkYiPjwvcGF0aD4KICAgICAgICAgICAgICAgICAgICA8cGF0aCBkPSJNOTMuMDI1LDExMy44IEM5My4wMDUsMTEzLjggOTIuOTg0LDExMy43OTUgOTIuOTY2LDExMy43ODUgQzkyLjkzMSwxMTMuNzY0IDkyLjkwOCwxMTMuNzI1IDkyLjkwOCwxMTMuNjg0IEw5Mi45MDgsNjIuODEzIEM5Mi45MDgsNjIuNzcxIDkyLjkzMSw2Mi43MzMgOTIuOTY2LDYyLjcxMiBMMTY4LjQ4NCwxOS4xMTIgQzE2OC41MiwxOS4wOSAxNjguNTY1LDE5LjA5IDE2OC42MDEsMTkuMTEyIEMxNjguNjM3LDE5LjEzMiAxNjguNjYsMTkuMTcxIDE2OC42NiwxOS4yMTIgTDE2OC42Niw3MC4wODMgQzE2OC42Niw3MC4xMjUgMTY4LjYzNyw3MC4xNjQgMTY4LjYwMSw3MC4xODQgTDE0MS4yOCw4NS45NTggQzE0MS4yNTEsODUuOTc1IDE0MS4yMTcsODUuOTc5IDE0MS4xODYsODUuOTY4IEMxNDEuMTU0LDg1Ljk1OCAxNDEuMTI5LDg1LjkzNiAxNDEuMTE1LDg1LjkwNiBMMTM0LjY1NSw3MS43MzggQzEzNC4yOCw3MC45MTUgMTMzLjU5Myw3MC40NjMgMTMyLjcyLDcwLjQ2MyBDMTMxLjYzMiw3MC40NjMgMTMwLjM1Nyw3MS4xNDggMTI5LjIyMSw3Mi4zNDQgQzEyOC4xODYsNzMuNDMzIDEyNy4zNDcsNzQuODgxIDEyNi45MTksNzYuMzE1IEwxMjAuNDU4LDk3Ljk0MyBDMTIwLjQ1LDk3Ljk3MiAxMjAuNDMxLDk3Ljk5NiAxMjAuNDA1LDk4LjAxIEw5My4wODMsMTEzLjc4NSBDOTMuMDY1LDExMy43OTUgOTMuMDQ1LDExMy44IDkzLjAyNSwxMTMuOCBMOTMuMDI1LDExMy44IFogTTkzLjE0Miw2Mi44ODEgTDkzLjE0MiwxMTMuNDgxIEwxMjAuMjQ4LDk3LjgzMiBMMTI2LjY5NSw3Ni4yNDggQzEyNy4xNCw3NC43NTggMTI3Ljk3Nyw3My4zMTUgMTI5LjA1Miw3Mi4xODMgQzEzMC4yMzEsNzAuOTQyIDEzMS41NjgsNzAuMjI5IDEzMi43Miw3MC4yMjkgQzEzMy42ODksNzAuMjI5IDEzNC40NTIsNzAuNzMxIDEzNC44NjcsNzEuNjQxIEwxNDEuMjc0LDg1LjY5MiBMMTY4LjQyNiw3MC4wMTYgTDE2OC40MjYsMTkuNDE1IEw5My4xNDIsNjIuODgxIEw5My4xNDIsNjIuODgxIFoiIGlkPSJGaWxsLTE2IiBmaWxsPSIjNjA3RDhCIj48L3BhdGg+CiAgICAgICAgICAgICAgICAgICAgPHBhdGggZD0iTTE2OS44LDcwLjA4MyBMMTQyLjQ3OCw4NS44NTcgTDEzNi4wMTgsNzEuNjg5IEMxMzUuMTA4LDY5LjY5NCAxMzIuNTksNjkuOTUxIDEzMC4zOTMsNzIuMjYzIEMxMjkuMzM5LDczLjM3NCAxMjguNSw3NC44MTkgMTI4LjA2NCw3Ni4yODIgTDEyMS42MDMsOTcuOTA5IEw5NC4yODIsMTEzLjY4MyBMOTQuMjgyLDYyLjgxMyBMMTY5LjgsMTkuMjEzIEwxNjkuOCw3MC4wODMgWiIgaWQ9IkZpbGwtMTciIGZpbGw9IiNGQUZBRkEiPjwvcGF0aD4KICAgICAgICAgICAgICAgICAgICA8cGF0aCBkPSJNOTQuMjgyLDExMy45MTcgQzk0LjI0MSwxMTMuOTE3IDk0LjIwMSwxMTMuOTA3IDk0LjE2NSwxMTMuODg2IEM5NC4wOTMsMTEzLjg0NSA5NC4wNDgsMTEzLjc2NyA5NC4wNDgsMTEzLjY4NCBMOTQuMDQ4LDYyLjgxMyBDOTQuMDQ4LDYyLjczIDk0LjA5Myw2Mi42NTIgOTQuMTY1LDYyLjYxMSBMMTY5LjY4MywxOS4wMSBDMTY5Ljc1NSwxOC45NjkgMTY5Ljg0NCwxOC45NjkgMTY5LjkxNywxOS4wMSBDMTY5Ljk4OSwxOS4wNTIgMTcwLjAzMywxOS4xMjkgMTcwLjAzMywxOS4yMTIgTDE3MC4wMzMsNzAuMDgzIEMxNzAuMDMzLDcwLjE2NiAxNjkuOTg5LDcwLjI0NCAxNjkuOTE3LDcwLjI4NSBMMTQyLjU5NSw4Ni4wNiBDMTQyLjUzOCw4Ni4wOTIgMTQyLjQ2OSw4Ni4xIDE0Mi40MDcsODYuMDggQzE0Mi4zNDQsODYuMDYgMTQyLjI5Myw4Ni4wMTQgMTQyLjI2Niw4NS45NTQgTDEzNS44MDUsNzEuNzg2IEMxMzUuNDQ1LDcwLjk5NyAxMzQuODEzLDcwLjU4IDEzMy45NzcsNzAuNTggQzEzMi45MjEsNzAuNTggMTMxLjY3Niw3MS4yNTIgMTMwLjU2Miw3Mi40MjQgQzEyOS41NCw3My41MDEgMTI4LjcxMSw3NC45MzEgMTI4LjI4Nyw3Ni4zNDggTDEyMS44MjcsOTcuOTc2IEMxMjEuODEsOTguMDM0IDEyMS43NzEsOTguMDgyIDEyMS43Miw5OC4xMTIgTDk0LjM5OCwxMTMuODg2IEM5NC4zNjIsMTEzLjkwNyA5NC4zMjIsMTEzLjkxNyA5NC4yODIsMTEzLjkxNyBMOTQuMjgyLDExMy45MTcgWiBNOTQuNTE1LDYyLjk0OCBMOTQuNTE1LDExMy4yNzkgTDEyMS40MDYsOTcuNzU0IEwxMjcuODQsNzYuMjE1IEMxMjguMjksNzQuNzA4IDEyOS4xMzcsNzMuMjQ3IDEzMC4yMjQsNzIuMTAzIEMxMzEuNDI1LDcwLjgzOCAxMzIuNzkzLDcwLjExMiAxMzMuOTc3LDcwLjExMiBDMTM0Ljk5NSw3MC4xMTIgMTM1Ljc5NSw3MC42MzggMTM2LjIzLDcxLjU5MiBMMTQyLjU4NCw4NS41MjYgTDE2OS41NjYsNjkuOTQ4IEwxNjkuNTY2LDE5LjYxNyBMOTQuNTE1LDYyLjk0OCBMOTQuNTE1LDYyLjk0OCBaIiBpZD0iRmlsbC0xOCIgZmlsbD0iIzYwN0Q4QiI+PC9wYXRoPgogICAgICAgICAgICAgICAgICAgIDxwYXRoIGQ9Ik0xMDkuODk0LDkyLjk0MyBMMTA5Ljg5NCw5Mi45NDMgQzEwOC4xMiw5Mi45NDMgMTA2LjY1Myw5Mi4yMTggMTA1LjY1LDkwLjgyMyBDMTA1LjU4Myw5MC43MzEgMTA1LjU5Myw5MC42MSAxMDUuNjczLDkwLjUyOSBDMTA1Ljc1Myw5MC40NDggMTA1Ljg4LDkwLjQ0IDEwNS45NzQsOTAuNTA2IEMxMDYuNzU0LDkxLjA1MyAxMDcuNjc5LDkxLjMzMyAxMDguNzI0LDkxLjMzMyBDMTEwLjA0Nyw5MS4zMzMgMTExLjQ3OCw5MC44OTQgMTEyLjk4LDkwLjAyNyBDMTE4LjI5MSw4Ni45NiAxMjIuNjExLDc5LjUwOSAxMjIuNjExLDczLjQxNiBDMTIyLjYxMSw3MS40ODkgMTIyLjE2OSw2OS44NTYgMTIxLjMzMyw2OC42OTIgQzEyMS4yNjYsNjguNiAxMjEuMjc2LDY4LjQ3MyAxMjEuMzU2LDY4LjM5MiBDMTIxLjQzNiw2OC4zMTEgMTIxLjU2Myw2OC4yOTkgMTIxLjY1Niw2OC4zNjUgQzEyMy4zMjcsNjkuNTM3IDEyNC4yNDcsNzEuNzQ2IDEyNC4yNDcsNzQuNTg0IEMxMjQuMjQ3LDgwLjgyNiAxMTkuODIxLDg4LjQ0NyAxMTQuMzgyLDkxLjU4NyBDMTEyLjgwOCw5Mi40OTUgMTExLjI5OCw5Mi45NDMgMTA5Ljg5NCw5Mi45NDMgTDEwOS44OTQsOTIuOTQzIFogTTEwNi45MjUsOTEuNDAxIEMxMDcuNzM4LDkyLjA1MiAxMDguNzQ1LDkyLjI3OCAxMDkuODkzLDkyLjI3OCBMMTA5Ljg5NCw5Mi4yNzggQzExMS4yMTUsOTIuMjc4IDExMi42NDcsOTEuOTUxIDExNC4xNDgsOTEuMDg0IEMxMTkuNDU5LDg4LjAxNyAxMjMuNzgsODAuNjIxIDEyMy43OCw3NC41MjggQzEyMy43OCw3Mi41NDkgMTIzLjMxNyw3MC45MjkgMTIyLjQ1NCw2OS43NjcgQzEyMi44NjUsNzAuODAyIDEyMy4wNzksNzIuMDQyIDEyMy4wNzksNzMuNDAyIEMxMjMuMDc5LDc5LjY0NSAxMTguNjUzLDg3LjI4NSAxMTMuMjE0LDkwLjQyNSBDMTExLjY0LDkxLjMzNCAxMTAuMTMsOTEuNzQyIDEwOC43MjQsOTEuNzQyIEMxMDguMDgzLDkxLjc0MiAxMDcuNDgxLDkxLjU5MyAxMDYuOTI1LDkxLjQwMSBMMTA2LjkyNSw5MS40MDEgWiIgaWQ9IkZpbGwtMTkiIGZpbGw9IiM2MDdEOEIiPjwvcGF0aD4KICAgICAgICAgICAgICAgICAgICA8cGF0aCBkPSJNMTEzLjA5Nyw5MC4yMyBDMTE4LjQ4MSw4Ny4xMjIgMTIyLjg0NSw3OS41OTQgMTIyLjg0NSw3My40MTYgQzEyMi44NDUsNzEuMzY1IDEyMi4zNjIsNjkuNzI0IDEyMS41MjIsNjguNTU2IEMxMTkuNzM4LDY3LjMwNCAxMTcuMTQ4LDY3LjM2MiAxMTQuMjY1LDY5LjAyNiBDMTA4Ljg4MSw3Mi4xMzQgMTA0LjUxNyw3OS42NjIgMTA0LjUxNyw4NS44NCBDMTA0LjUxNyw4Ny44OTEgMTA1LDg5LjUzMiAxMDUuODQsOTAuNyBDMTA3LjYyNCw5MS45NTIgMTEwLjIxNCw5MS44OTQgMTEzLjA5Nyw5MC4yMyIgaWQ9IkZpbGwtMjAiIGZpbGw9IiNGQUZBRkEiPjwvcGF0aD4KICAgICAgICAgICAgICAgICAgICA8cGF0aCBkPSJNMTA4LjcyNCw5MS42MTQgTDEwOC43MjQsOTEuNjE0IEMxMDcuNTgyLDkxLjYxNCAxMDYuNTY2LDkxLjQwMSAxMDUuNzA1LDkwLjc5NyBDMTA1LjY4NCw5MC43ODMgMTA1LjY2NSw5MC44MTEgMTA1LjY1LDkwLjc5IEMxMDQuNzU2LDg5LjU0NiAxMDQuMjgzLDg3Ljg0MiAxMDQuMjgzLDg1LjgxNyBDMTA0LjI4Myw3OS41NzUgMTA4LjcwOSw3MS45NTMgMTE0LjE0OCw2OC44MTIgQzExNS43MjIsNjcuOTA0IDExNy4yMzIsNjcuNDQ5IDExOC42MzgsNjcuNDQ5IEMxMTkuNzgsNjcuNDQ5IDEyMC43OTYsNjcuNzU4IDEyMS42NTYsNjguMzYyIEMxMjEuNjc4LDY4LjM3NyAxMjEuNjk3LDY4LjM5NyAxMjEuNzEyLDY4LjQxOCBDMTIyLjYwNiw2OS42NjIgMTIzLjA3OSw3MS4zOSAxMjMuMDc5LDczLjQxNSBDMTIzLjA3OSw3OS42NTggMTE4LjY1Myw4Ny4xOTggMTEzLjIxNCw5MC4zMzggQzExMS42NCw5MS4yNDcgMTEwLjEzLDkxLjYxNCAxMDguNzI0LDkxLjYxNCBMMTA4LjcyNCw5MS42MTQgWiBNMTA2LjAwNiw5MC41MDUgQzEwNi43OCw5MS4wMzcgMTA3LjY5NCw5MS4yODEgMTA4LjcyNCw5MS4yODEgQzExMC4wNDcsOTEuMjgxIDExMS40NzgsOTAuODY4IDExMi45OCw5MC4wMDEgQzExOC4yOTEsODYuOTM1IDEyMi42MTEsNzkuNDk2IDEyMi42MTEsNzMuNDAzIEMxMjIuNjExLDcxLjQ5NCAxMjIuMTc3LDY5Ljg4IDEyMS4zNTYsNjguNzE4IEMxMjAuNTgyLDY4LjE4NSAxMTkuNjY4LDY3LjkxOSAxMTguNjM4LDY3LjkxOSBDMTE3LjMxNSw2Ny45MTkgMTE1Ljg4Myw2OC4zNiAxMTQuMzgyLDY5LjIyNyBDMTA5LjA3MSw3Mi4yOTMgMTA0Ljc1MSw3OS43MzMgMTA0Ljc1MSw4NS44MjYgQzEwNC43NTEsODcuNzM1IDEwNS4xODUsODkuMzQzIDEwNi4wMDYsOTAuNTA1IEwxMDYuMDA2LDkwLjUwNSBaIiBpZD0iRmlsbC0yMSIgZmlsbD0iIzYwN0Q4QiI+PC9wYXRoPgogICAgICAgICAgICAgICAgICAgIDxwYXRoIGQ9Ik0xNDkuMzE4LDcuMjYyIEwxMzkuMzM0LDE2LjE0IEwxNTUuMjI3LDI3LjE3MSBMMTYwLjgxNiwyMS4wNTkgTDE0OS4zMTgsNy4yNjIiIGlkPSJGaWxsLTIyIiBmaWxsPSIjRkFGQUZBIj48L3BhdGg+CiAgICAgICAgICAgICAgICAgICAgPHBhdGggZD0iTTE2OS42NzYsMTMuODQgTDE1OS45MjgsMTkuNDY3IEMxNTYuMjg2LDIxLjU3IDE1MC40LDIxLjU4IDE0Ni43ODEsMTkuNDkxIEMxNDMuMTYxLDE3LjQwMiAxNDMuMTgsMTQuMDAzIDE0Ni44MjIsMTEuOSBMMTU2LjMxNyw2LjI5MiBMMTQ5LjU4OCwyLjQwNyBMNjcuNzUyLDQ5LjQ3OCBMMTEzLjY3NSw3NS45OTIgTDExNi43NTYsNzQuMjEzIEMxMTcuMzg3LDczLjg0OCAxMTcuNjI1LDczLjMxNSAxMTcuMzc0LDcyLjgyMyBDMTE1LjAxNyw2OC4xOTEgMTE0Ljc4MSw2My4yNzcgMTE2LjY5MSw1OC41NjEgQzEyMi4zMjksNDQuNjQxIDE0MS4yLDMzLjc0NiAxNjUuMzA5LDMwLjQ5MSBDMTczLjQ3OCwyOS4zODggMTgxLjk4OSwyOS41MjQgMTkwLjAxMywzMC44ODUgQzE5MC44NjUsMzEuMDMgMTkxLjc4OSwzMC44OTMgMTkyLjQyLDMwLjUyOCBMMTk1LjUwMSwyOC43NSBMMTY5LjY3NiwxMy44NCIgaWQ9IkZpbGwtMjMiIGZpbGw9IiNGQUZBRkEiPjwvcGF0aD4KICAgICAgICAgICAgICAgICAgICA8cGF0aCBkPSJNMTEzLjY3NSw3Ni40NTkgQzExMy41OTQsNzYuNDU5IDExMy41MTQsNzYuNDM4IDExMy40NDIsNzYuMzk3IEw2Ny41MTgsNDkuODgyIEM2Ny4zNzQsNDkuNzk5IDY3LjI4NCw0OS42NDUgNjcuMjg1LDQ5LjQ3OCBDNjcuMjg1LDQ5LjMxMSA2Ny4zNzQsNDkuMTU3IDY3LjUxOSw0OS4wNzMgTDE0OS4zNTUsMi4wMDIgQzE0OS40OTksMS45MTkgMTQ5LjY3NywxLjkxOSAxNDkuODIxLDIuMDAyIEwxNTYuNTUsNS44ODcgQzE1Ni43NzQsNi4wMTcgMTU2Ljg1LDYuMzAyIDE1Ni43MjIsNi41MjYgQzE1Ni41OTIsNi43NDkgMTU2LjMwNyw2LjgyNiAxNTYuMDgzLDYuNjk2IEwxNDkuNTg3LDIuOTQ2IEw2OC42ODcsNDkuNDc5IEwxMTMuNjc1LDc1LjQ1MiBMMTE2LjUyMyw3My44MDggQzExNi43MTUsNzMuNjk3IDExNy4xNDMsNzMuMzk5IDExNi45NTgsNzMuMDM1IEMxMTQuNTQyLDY4LjI4NyAxMTQuMyw2My4yMjEgMTE2LjI1OCw1OC4zODUgQzExOS4wNjQsNTEuNDU4IDEyNS4xNDMsNDUuMTQzIDEzMy44NCw0MC4xMjIgQzE0Mi40OTcsMzUuMTI0IDE1My4zNTgsMzEuNjMzIDE2NS4yNDcsMzAuMDI4IEMxNzMuNDQ1LDI4LjkyMSAxODIuMDM3LDI5LjA1OCAxOTAuMDkxLDMwLjQyNSBDMTkwLjgzLDMwLjU1IDE5MS42NTIsMzAuNDMyIDE5Mi4xODYsMzAuMTI0IEwxOTQuNTY3LDI4Ljc1IEwxNjkuNDQyLDE0LjI0NCBDMTY5LjIxOSwxNC4xMTUgMTY5LjE0MiwxMy44MjkgMTY5LjI3MSwxMy42MDYgQzE2OS40LDEzLjM4MiAxNjkuNjg1LDEzLjMwNiAxNjkuOTA5LDEzLjQzNSBMMTk1LjczNCwyOC4zNDUgQzE5NS44NzksMjguNDI4IDE5NS45NjgsMjguNTgzIDE5NS45NjgsMjguNzUgQzE5NS45NjgsMjguOTE2IDE5NS44NzksMjkuMDcxIDE5NS43MzQsMjkuMTU0IEwxOTIuNjUzLDMwLjkzMyBDMTkxLjkzMiwzMS4zNSAxOTAuODksMzEuNTA4IDE4OS45MzUsMzEuMzQ2IEMxODEuOTcyLDI5Ljk5NSAxNzMuNDc4LDI5Ljg2IDE2NS4zNzIsMzAuOTU0IEMxNTMuNjAyLDMyLjU0MyAxNDIuODYsMzUuOTkzIDEzNC4zMDcsNDAuOTMxIEMxMjUuNzkzLDQ1Ljg0NyAxMTkuODUxLDUyLjAwNCAxMTcuMTI0LDU4LjczNiBDMTE1LjI3LDYzLjMxNCAxMTUuNTAxLDY4LjExMiAxMTcuNzksNzIuNjExIEMxMTguMTYsNzMuMzM2IDExNy44NDUsNzQuMTI0IDExNi45OSw3NC42MTcgTDExMy45MDksNzYuMzk3IEMxMTMuODM2LDc2LjQzOCAxMTMuNzU2LDc2LjQ1OSAxMTMuNjc1LDc2LjQ1OSIgaWQ9IkZpbGwtMjQiIGZpbGw9IiM0NTVBNjQiPjwvcGF0aD4KICAgICAgICAgICAgICAgICAgICA8cGF0aCBkPSJNMTUzLjMxNiwyMS4yNzkgQzE1MC45MDMsMjEuMjc5IDE0OC40OTUsMjAuNzUxIDE0Ni42NjQsMTkuNjkzIEMxNDQuODQ2LDE4LjY0NCAxNDMuODQ0LDE3LjIzMiAxNDMuODQ0LDE1LjcxOCBDMTQzLjg0NCwxNC4xOTEgMTQ0Ljg2LDEyLjc2MyAxNDYuNzA1LDExLjY5OCBMMTU2LjE5OCw2LjA5MSBDMTU2LjMwOSw2LjAyNSAxNTYuNDUyLDYuMDYyIDE1Ni41MTgsNi4xNzMgQzE1Ni41ODMsNi4yODQgMTU2LjU0Nyw2LjQyNyAxNTYuNDM2LDYuNDkzIEwxNDYuOTQsMTIuMTAyIEMxNDUuMjQ0LDEzLjA4MSAxNDQuMzEyLDE0LjM2NSAxNDQuMzEyLDE1LjcxOCBDMTQ0LjMxMiwxNy4wNTggMTQ1LjIzLDE4LjMyNiAxNDYuODk3LDE5LjI4OSBDMTUwLjQ0NiwyMS4zMzggMTU2LjI0LDIxLjMyNyAxNTkuODExLDE5LjI2NSBMMTY5LjU1OSwxMy42MzcgQzE2OS42NywxMy41NzMgMTY5LjgxMywxMy42MTEgMTY5Ljg3OCwxMy43MjMgQzE2OS45NDMsMTMuODM0IDE2OS45MDQsMTMuOTc3IDE2OS43OTMsMTQuMDQyIEwxNjAuMDQ1LDE5LjY3IEMxNTguMTg3LDIwLjc0MiAxNTUuNzQ5LDIxLjI3OSAxNTMuMzE2LDIxLjI3OSIgaWQ9IkZpbGwtMjUiIGZpbGw9IiM2MDdEOEIiPjwvcGF0aD4KICAgICAgICAgICAgICAgICAgICA8cGF0aCBkPSJNMTEzLjY3NSw3NS45OTIgTDY3Ljc2Miw0OS40ODQiIGlkPSJGaWxsLTI2IiBmaWxsPSIjNDU1QTY0Ij48L3BhdGg+CiAgICAgICAgICAgICAgICAgICAgPHBhdGggZD0iTTExMy42NzUsNzYuMzQyIEMxMTMuNjE1LDc2LjM0MiAxMTMuNTU1LDc2LjMyNyAxMTMuNSw3Ni4yOTUgTDY3LjU4Nyw0OS43ODcgQzY3LjQxOSw0OS42OSA2Ny4zNjIsNDkuNDc2IDY3LjQ1OSw0OS4zMDkgQzY3LjU1Niw0OS4xNDEgNjcuNzcsNDkuMDgzIDY3LjkzNyw0OS4xOCBMMTEzLjg1LDc1LjY4OCBDMTE0LjAxOCw3NS43ODUgMTE0LjA3NSw3NiAxMTMuOTc4LDc2LjE2NyBDMTEzLjkxNCw3Ni4yNzkgMTEzLjc5Niw3Ni4zNDIgMTEzLjY3NSw3Ni4zNDIiIGlkPSJGaWxsLTI3IiBmaWxsPSIjNDU1QTY0Ij48L3BhdGg+CiAgICAgICAgICAgICAgICAgICAgPHBhdGggZD0iTTY3Ljc2Miw0OS40ODQgTDY3Ljc2MiwxMDMuNDg1IEM2Ny43NjIsMTA0LjU3NSA2OC41MzIsMTA1LjkwMyA2OS40ODIsMTA2LjQ1MiBMMTExLjk1NSwxMzAuOTczIEMxMTIuOTA1LDEzMS41MjIgMTEzLjY3NSwxMzEuMDgzIDExMy42NzUsMTI5Ljk5MyBMMTEzLjY3NSw3NS45OTIiIGlkPSJGaWxsLTI4IiBmaWxsPSIjRkFGQUZBIj48L3BhdGg+CiAgICAgICAgICAgICAgICAgICAgPHBhdGggZD0iTTExMi43MjcsMTMxLjU2MSBDMTEyLjQzLDEzMS41NjEgMTEyLjEwNywxMzEuNDY2IDExMS43OCwxMzEuMjc2IEw2OS4zMDcsMTA2Ljc1NSBDNjguMjQ0LDEwNi4xNDIgNjcuNDEyLDEwNC43MDUgNjcuNDEyLDEwMy40ODUgTDY3LjQxMiw0OS40ODQgQzY3LjQxMiw0OS4yOSA2Ny41NjksNDkuMTM0IDY3Ljc2Miw0OS4xMzQgQzY3Ljk1Niw0OS4xMzQgNjguMTEzLDQ5LjI5IDY4LjExMyw0OS40ODQgTDY4LjExMywxMDMuNDg1IEM2OC4xMTMsMTA0LjQ0NSA2OC44MiwxMDUuNjY1IDY5LjY1NywxMDYuMTQ4IEwxMTIuMTMsMTMwLjY3IEMxMTIuNDc0LDEzMC44NjggMTEyLjc5MSwxMzAuOTEzIDExMywxMzAuNzkyIEMxMTMuMjA2LDEzMC42NzMgMTEzLjMyNSwxMzAuMzgxIDExMy4zMjUsMTI5Ljk5MyBMMTEzLjMyNSw3NS45OTIgQzExMy4zMjUsNzUuNzk4IDExMy40ODIsNzUuNjQxIDExMy42NzUsNzUuNjQxIEMxMTMuODY5LDc1LjY0MSAxMTQuMDI1LDc1Ljc5OCAxMTQuMDI1LDc1Ljk5MiBMMTE0LjAyNSwxMjkuOTkzIEMxMTQuMDI1LDEzMC42NDggMTEzLjc4NiwxMzEuMTQ3IDExMy4zNSwxMzEuMzk5IEMxMTMuMTYyLDEzMS41MDcgMTEyLjk1MiwxMzEuNTYxIDExMi43MjcsMTMxLjU2MSIgaWQ9IkZpbGwtMjkiIGZpbGw9IiM0NTVBNjQiPjwvcGF0aD4KICAgICAgICAgICAgICAgICAgICA8cGF0aCBkPSJNMTEyLjg2LDQwLjUxMiBDMTEyLjg2LDQwLjUxMiAxMTIuODYsNDAuNTEyIDExMi44NTksNDAuNTEyIEMxMTAuNTQxLDQwLjUxMiAxMDguMzYsMzkuOTkgMTA2LjcxNywzOS4wNDEgQzEwNS4wMTIsMzguMDU3IDEwNC4wNzQsMzYuNzI2IDEwNC4wNzQsMzUuMjkyIEMxMDQuMDc0LDMzLjg0NyAxMDUuMDI2LDMyLjUwMSAxMDYuNzU0LDMxLjUwNCBMMTE4Ljc5NSwyNC41NTEgQzEyMC40NjMsMjMuNTg5IDEyMi42NjksMjMuMDU4IDEyNS4wMDcsMjMuMDU4IEMxMjcuMzI1LDIzLjA1OCAxMjkuNTA2LDIzLjU4MSAxMzEuMTUsMjQuNTMgQzEzMi44NTQsMjUuNTE0IDEzMy43OTMsMjYuODQ1IDEzMy43OTMsMjguMjc4IEMxMzMuNzkzLDI5LjcyNCAxMzIuODQxLDMxLjA2OSAxMzEuMTEzLDMyLjA2NyBMMTE5LjA3MSwzOS4wMTkgQzExNy40MDMsMzkuOTgyIDExNS4xOTcsNDAuNTEyIDExMi44Niw0MC41MTIgTDExMi44Niw0MC41MTIgWiBNMTI1LjAwNywyMy43NTkgQzEyMi43OSwyMy43NTkgMTIwLjcwOSwyNC4yNTYgMTE5LjE0NiwyNS4xNTggTDEwNy4xMDQsMzIuMTEgQzEwNS42MDIsMzIuOTc4IDEwNC43NzQsMzQuMTA4IDEwNC43NzQsMzUuMjkyIEMxMDQuNzc0LDM2LjQ2NSAxMDUuNTg5LDM3LjU4MSAxMDcuMDY3LDM4LjQzNCBDMTA4LjYwNSwzOS4zMjMgMTEwLjY2MywzOS44MTIgMTEyLjg1OSwzOS44MTIgTDExMi44NiwzOS44MTIgQzExNS4wNzYsMzkuODEyIDExNy4xNTgsMzkuMzE1IDExOC43MjEsMzguNDEzIEwxMzAuNzYyLDMxLjQ2IEMxMzIuMjY0LDMwLjU5MyAxMzMuMDkyLDI5LjQ2MyAxMzMuMDkyLDI4LjI3OCBDMTMzLjA5MiwyNy4xMDYgMTMyLjI3OCwyNS45OSAxMzAuOCwyNS4xMzYgQzEyOS4yNjEsMjQuMjQ4IDEyNy4yMDQsMjMuNzU5IDEyNS4wMDcsMjMuNzU5IEwxMjUuMDA3LDIzLjc1OSBaIiBpZD0iRmlsbC0zMCIgZmlsbD0iIzYwN0Q4QiI+PC9wYXRoPgogICAgICAgICAgICAgICAgICAgIDxwYXRoIGQ9Ik0xNjUuNjMsMTYuMjE5IEwxNTkuODk2LDE5LjUzIEMxNTYuNzI5LDIxLjM1OCAxNTEuNjEsMjEuMzY3IDE0OC40NjMsMTkuNTUgQzE0NS4zMTYsMTcuNzMzIDE0NS4zMzIsMTQuNzc4IDE0OC40OTksMTIuOTQ5IEwxNTQuMjMzLDkuNjM5IEwxNjUuNjMsMTYuMjE5IiBpZD0iRmlsbC0zMSIgZmlsbD0iI0ZBRkFGQSI+PC9wYXRoPgogICAgICAgICAgICAgICAgICAgIDxwYXRoIGQ9Ik0xNTQuMjMzLDEwLjQ0OCBMMTY0LjIyOCwxNi4yMTkgTDE1OS41NDYsMTguOTIzIEMxNTguMTEyLDE5Ljc1IDE1Ni4xOTQsMjAuMjA2IDE1NC4xNDcsMjAuMjA2IEMxNTIuMTE4LDIwLjIwNiAxNTAuMjI0LDE5Ljc1NyAxNDguODE0LDE4Ljk0MyBDMTQ3LjUyNCwxOC4xOTkgMTQ2LjgxNCwxNy4yNDkgMTQ2LjgxNCwxNi4yNjkgQzE0Ni44MTQsMTUuMjc4IDE0Ny41MzcsMTQuMzE0IDE0OC44NSwxMy41NTYgTDE1NC4yMzMsMTAuNDQ4IE0xNTQuMjMzLDkuNjM5IEwxNDguNDk5LDEyLjk0OSBDMTQ1LjMzMiwxNC43NzggMTQ1LjMxNiwxNy43MzMgMTQ4LjQ2MywxOS41NSBDMTUwLjAzMSwyMC40NTUgMTUyLjA4NiwyMC45MDcgMTU0LjE0NywyMC45MDcgQzE1Ni4yMjQsMjAuOTA3IDE1OC4zMDYsMjAuNDQ3IDE1OS44OTYsMTkuNTMgTDE2NS42MywxNi4yMTkgTDE1NC4yMzMsOS42MzkiIGlkPSJGaWxsLTMyIiBmaWxsPSIjNjA3RDhCIj48L3BhdGg+CiAgICAgICAgICAgICAgICAgICAgPHBhdGggZD0iTTE0NS40NDUsNzIuNjY3IEwxNDUuNDQ1LDcyLjY2NyBDMTQzLjY3Miw3Mi42NjcgMTQyLjIwNCw3MS44MTcgMTQxLjIwMiw3MC40MjIgQzE0MS4xMzUsNzAuMzMgMTQxLjE0NSw3MC4xNDcgMTQxLjIyNSw3MC4wNjYgQzE0MS4zMDUsNjkuOTg1IDE0MS40MzIsNjkuOTQ2IDE0MS41MjUsNzAuMDExIEMxNDIuMzA2LDcwLjU1OSAxNDMuMjMxLDcwLjgyMyAxNDQuMjc2LDcwLjgyMiBDMTQ1LjU5OCw3MC44MjIgMTQ3LjAzLDcwLjM3NiAxNDguNTMyLDY5LjUwOSBDMTUzLjg0Miw2Ni40NDMgMTU4LjE2Myw1OC45ODcgMTU4LjE2Myw1Mi44OTQgQzE1OC4xNjMsNTAuOTY3IDE1Ny43MjEsNDkuMzMyIDE1Ni44ODQsNDguMTY4IEMxNTYuODE4LDQ4LjA3NiAxNTYuODI4LDQ3Ljk0OCAxNTYuOTA4LDQ3Ljg2NyBDMTU2Ljk4OCw0Ny43ODYgMTU3LjExNCw0Ny43NzQgMTU3LjIwOCw0Ny44NCBDMTU4Ljg3OCw0OS4wMTIgMTU5Ljc5OCw1MS4yMiAxNTkuNzk4LDU0LjA1OSBDMTU5Ljc5OCw2MC4zMDEgMTU1LjM3Myw2OC4wNDYgMTQ5LjkzMyw3MS4xODYgQzE0OC4zNiw3Mi4wOTQgMTQ2Ljg1LDcyLjY2NyAxNDUuNDQ1LDcyLjY2NyBMMTQ1LjQ0NSw3Mi42NjcgWiBNMTQyLjQ3Niw3MSBDMTQzLjI5LDcxLjY1MSAxNDQuMjk2LDcyLjAwMiAxNDUuNDQ1LDcyLjAwMiBDMTQ2Ljc2Nyw3Mi4wMDIgMTQ4LjE5OCw3MS41NSAxNDkuNyw3MC42ODIgQzE1NS4wMSw2Ny42MTcgMTU5LjMzMSw2MC4xNTkgMTU5LjMzMSw1NC4wNjUgQzE1OS4zMzEsNTIuMDg1IDE1OC44NjgsNTAuNDM1IDE1OC4wMDYsNDkuMjcyIEMxNTguNDE3LDUwLjMwNyAxNTguNjMsNTEuNTMyIDE1OC42Myw1Mi44OTIgQzE1OC42Myw1OS4xMzQgMTU0LjIwNSw2Ni43NjcgMTQ4Ljc2NSw2OS45MDcgQzE0Ny4xOTIsNzAuODE2IDE0NS42ODEsNzEuMjgzIDE0NC4yNzYsNzEuMjgzIEMxNDMuNjM0LDcxLjI4MyAxNDMuMDMzLDcxLjE5MiAxNDIuNDc2LDcxIEwxNDIuNDc2LDcxIFoiIGlkPSJGaWxsLTMzIiBmaWxsPSIjNjA3RDhCIj48L3BhdGg+CiAgICAgICAgICAgICAgICAgICAgPHBhdGggZD0iTTE0OC42NDgsNjkuNzA0IEMxNTQuMDMyLDY2LjU5NiAxNTguMzk2LDU5LjA2OCAxNTguMzk2LDUyLjg5MSBDMTU4LjM5Niw1MC44MzkgMTU3LjkxMyw0OS4xOTggMTU3LjA3NCw0OC4wMyBDMTU1LjI4OSw0Ni43NzggMTUyLjY5OSw0Ni44MzYgMTQ5LjgxNiw0OC41MDEgQzE0NC40MzMsNTEuNjA5IDE0MC4wNjgsNTkuMTM3IDE0MC4wNjgsNjUuMzE0IEMxNDAuMDY4LDY3LjM2NSAxNDAuNTUyLDY5LjAwNiAxNDEuMzkxLDcwLjE3NCBDMTQzLjE3Niw3MS40MjcgMTQ1Ljc2NSw3MS4zNjkgMTQ4LjY0OCw2OS43MDQiIGlkPSJGaWxsLTM0IiBmaWxsPSIjRkFGQUZBIj48L3BhdGg+CiAgICAgICAgICAgICAgICAgICAgPHBhdGggZD0iTTE0NC4yNzYsNzEuMjc2IEwxNDQuMjc2LDcxLjI3NiBDMTQzLjEzMyw3MS4yNzYgMTQyLjExOCw3MC45NjkgMTQxLjI1Nyw3MC4zNjUgQzE0MS4yMzYsNzAuMzUxIDE0MS4yMTcsNzAuMzMyIDE0MS4yMDIsNzAuMzExIEMxNDAuMzA3LDY5LjA2NyAxMzkuODM1LDY3LjMzOSAxMzkuODM1LDY1LjMxNCBDMTM5LjgzNSw1OS4wNzMgMTQ0LjI2LDUxLjQzOSAxNDkuNyw0OC4yOTggQzE1MS4yNzMsNDcuMzkgMTUyLjc4NCw0Ni45MjkgMTU0LjE4OSw0Ni45MjkgQzE1NS4zMzIsNDYuOTI5IDE1Ni4zNDcsNDcuMjM2IDE1Ny4yMDgsNDcuODM5IEMxNTcuMjI5LDQ3Ljg1NCAxNTcuMjQ4LDQ3Ljg3MyAxNTcuMjYzLDQ3Ljg5NCBDMTU4LjE1Nyw0OS4xMzggMTU4LjYzLDUwLjg2NSAxNTguNjMsNTIuODkxIEMxNTguNjMsNTkuMTMyIDE1NC4yMDUsNjYuNzY2IDE0OC43NjUsNjkuOTA3IEMxNDcuMTkyLDcwLjgxNSAxNDUuNjgxLDcxLjI3NiAxNDQuMjc2LDcxLjI3NiBMMTQ0LjI3Niw3MS4yNzYgWiBNMTQxLjU1OCw3MC4xMDQgQzE0Mi4zMzEsNzAuNjM3IDE0My4yNDUsNzEuMDA1IDE0NC4yNzYsNzEuMDA1IEMxNDUuNTk4LDcxLjAwNSAxNDcuMDMsNzAuNDY3IDE0OC41MzIsNjkuNiBDMTUzLjg0Miw2Ni41MzQgMTU4LjE2Myw1OS4wMzMgMTU4LjE2Myw1Mi45MzkgQzE1OC4xNjMsNTEuMDMxIDE1Ny43MjksNDkuMzg1IDE1Ni45MDcsNDguMjIzIEMxNTYuMTMzLDQ3LjY5MSAxNTUuMjE5LDQ3LjQwOSAxNTQuMTg5LDQ3LjQwOSBDMTUyLjg2Nyw0Ny40MDkgMTUxLjQzNSw0Ny44NDIgMTQ5LjkzMyw0OC43MDkgQzE0NC42MjMsNTEuNzc1IDE0MC4zMDIsNTkuMjczIDE0MC4zMDIsNjUuMzY2IEMxNDAuMzAyLDY3LjI3NiAxNDAuNzM2LDY4Ljk0MiAxNDEuNTU4LDcwLjEwNCBMMTQxLjU1OCw3MC4xMDQgWiIgaWQ9IkZpbGwtMzUiIGZpbGw9IiM2MDdEOEIiPjwvcGF0aD4KICAgICAgICAgICAgICAgICAgICA8cGF0aCBkPSJNMTUwLjcyLDY1LjM2MSBMMTUwLjM1Nyw2NS4wNjYgQzE1MS4xNDcsNjQuMDkyIDE1MS44NjksNjMuMDQgMTUyLjUwNSw2MS45MzggQzE1My4zMTMsNjAuNTM5IDE1My45NzgsNTkuMDY3IDE1NC40ODIsNTcuNTYzIEwxNTQuOTI1LDU3LjcxMiBDMTU0LjQxMiw1OS4yNDUgMTUzLjczMyw2MC43NDUgMTUyLjkxLDYyLjE3MiBDMTUyLjI2Miw2My4yOTUgMTUxLjUyNSw2NC4zNjggMTUwLjcyLDY1LjM2MSIgaWQ9IkZpbGwtMzYiIGZpbGw9IiM2MDdEOEIiPjwvcGF0aD4KICAgICAgICAgICAgICAgICAgICA8cGF0aCBkPSJNMTE1LjkxNyw4NC41MTQgTDExNS41NTQsODQuMjIgQzExNi4zNDQsODMuMjQ1IDExNy4wNjYsODIuMTk0IDExNy43MDIsODEuMDkyIEMxMTguNTEsNzkuNjkyIDExOS4xNzUsNzguMjIgMTE5LjY3OCw3Ni43MTcgTDEyMC4xMjEsNzYuODY1IEMxMTkuNjA4LDc4LjM5OCAxMTguOTMsNzkuODk5IDExOC4xMDYsODEuMzI2IEMxMTcuNDU4LDgyLjQ0OCAxMTYuNzIyLDgzLjUyMSAxMTUuOTE3LDg0LjUxNCIgaWQ9IkZpbGwtMzciIGZpbGw9IiM2MDdEOEIiPjwvcGF0aD4KICAgICAgICAgICAgICAgICAgICA8cGF0aCBkPSJNMTE0LDEzMC40NzYgTDExNCwxMzAuMDA4IEwxMTQsNzYuMDUyIEwxMTQsNzUuNTg0IEwxMTQsNzYuMDUyIEwxMTQsMTMwLjAwOCBMMTE0LDEzMC40NzYiIGlkPSJGaWxsLTM4IiBmaWxsPSIjNjA3RDhCIj48L3BhdGg+CiAgICAgICAgICAgICAgICA8L2c+CiAgICAgICAgICAgICAgICA8ZyBpZD0iSW1wb3J0ZWQtTGF5ZXJzLUNvcHkiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDYyLjAwMDAwMCwgMC4wMDAwMDApIiBza2V0Y2g6dHlwZT0iTVNTaGFwZUdyb3VwIj4KICAgICAgICAgICAgICAgICAgICA8cGF0aCBkPSJNMTkuODIyLDM3LjQ3NCBDMTkuODM5LDM3LjMzOSAxOS43NDcsMzcuMTk0IDE5LjU1NSwzNy4wODIgQzE5LjIyOCwzNi44OTQgMTguNzI5LDM2Ljg3MiAxOC40NDYsMzcuMDM3IEwxMi40MzQsNDAuNTA4IEMxMi4zMDMsNDAuNTg0IDEyLjI0LDQwLjY4NiAxMi4yNDMsNDAuNzkzIEMxMi4yNDUsNDAuOTI1IDEyLjI0NSw0MS4yNTQgMTIuMjQ1LDQxLjM3MSBMMTIuMjQ1LDQxLjQxNCBMMTIuMjM4LDQxLjU0MiBDOC4xNDgsNDMuODg3IDUuNjQ3LDQ1LjMyMSA1LjY0Nyw0NS4zMjEgQzUuNjQ2LDQ1LjMyMSAzLjU3LDQ2LjM2NyAyLjg2LDUwLjUxMyBDMi44Niw1MC41MTMgMS45NDgsNTcuNDc0IDEuOTYyLDcwLjI1OCBDMS45NzcsODIuODI4IDIuNTY4LDg3LjMyOCAzLjEyOSw5MS42MDkgQzMuMzQ5LDkzLjI5MyA2LjEzLDkzLjczNCA2LjEzLDkzLjczNCBDNi40NjEsOTMuNzc0IDYuODI4LDkzLjcwNyA3LjIxLDkzLjQ4NiBMODIuNDgzLDQ5LjkzNSBDODQuMjkxLDQ4Ljg2NiA4NS4xNSw0Ni4yMTYgODUuNTM5LDQzLjY1MSBDODYuNzUyLDM1LjY2MSA4Ny4yMTQsMTAuNjczIDg1LjI2NCwzLjc3MyBDODUuMDY4LDMuMDggODQuNzU0LDIuNjkgODQuMzk2LDIuNDkxIEw4Mi4zMSwxLjcwMSBDODEuNTgzLDEuNzI5IDgwLjg5NCwyLjE2OCA4MC43NzYsMi4yMzYgQzgwLjYzNiwyLjMxNyA0MS44MDcsMjQuNTg1IDIwLjAzMiwzNy4wNzIgTDE5LjgyMiwzNy40NzQiIGlkPSJGaWxsLTEiIGZpbGw9IiNGRkZGRkYiPjwvcGF0aD4KICAgICAgICAgICAgICAgICAgICA8cGF0aCBkPSJNODIuMzExLDEuNzAxIEw4NC4zOTYsMi40OTEgQzg0Ljc1NCwyLjY5IDg1LjA2OCwzLjA4IDg1LjI2NCwzLjc3MyBDODcuMjEzLDEwLjY3MyA4Ni43NTEsMzUuNjYgODUuNTM5LDQzLjY1MSBDODUuMTQ5LDQ2LjIxNiA4NC4yOSw0OC44NjYgODIuNDgzLDQ5LjkzNSBMNy4yMSw5My40ODYgQzYuODk3LDkzLjY2NyA2LjU5NSw5My43NDQgNi4zMTQsOTMuNzQ0IEw2LjEzMSw5My43MzMgQzYuMTMxLDkzLjczNCAzLjM0OSw5My4yOTMgMy4xMjgsOTEuNjA5IEMyLjU2OCw4Ny4zMjcgMS45NzcsODIuODI4IDEuOTYzLDcwLjI1OCBDMS45NDgsNTcuNDc0IDIuODYsNTAuNTEzIDIuODYsNTAuNTEzIEMzLjU3LDQ2LjM2NyA1LjY0Nyw0NS4zMjEgNS42NDcsNDUuMzIxIEM1LjY0Nyw0NS4zMjEgOC4xNDgsNDMuODg3IDEyLjIzOCw0MS41NDIgTDEyLjI0NSw0MS40MTQgTDEyLjI0NSw0MS4zNzEgQzEyLjI0NSw0MS4yNTQgMTIuMjQ1LDQwLjkyNSAxMi4yNDMsNDAuNzkzIEMxMi4yNCw0MC42ODYgMTIuMzAyLDQwLjU4MyAxMi40MzQsNDAuNTA4IEwxOC40NDYsMzcuMDM2IEMxOC41NzQsMzYuOTYyIDE4Ljc0NiwzNi45MjYgMTguOTI3LDM2LjkyNiBDMTkuMTQ1LDM2LjkyNiAxOS4zNzYsMzYuOTc5IDE5LjU1NCwzNy4wODIgQzE5Ljc0NywzNy4xOTQgMTkuODM5LDM3LjM0IDE5LjgyMiwzNy40NzQgTDIwLjAzMywzNy4wNzIgQzQxLjgwNiwyNC41ODUgODAuNjM2LDIuMzE4IDgwLjc3NywyLjIzNiBDODAuODk0LDIuMTY4IDgxLjU4MywxLjcyOSA4Mi4zMTEsMS43MDEgTTgyLjMxMSwwLjcwNCBMODIuMjcyLDAuNzA1IEM4MS42NTQsMC43MjggODAuOTg5LDAuOTQ5IDgwLjI5OCwxLjM2MSBMODAuMjc3LDEuMzczIEM4MC4xMjksMS40NTggNTkuNzY4LDEzLjEzNSAxOS43NTgsMzYuMDc5IEMxOS41LDM1Ljk4MSAxOS4yMTQsMzUuOTI5IDE4LjkyNywzNS45MjkgQzE4LjU2MiwzNS45MjkgMTguMjIzLDM2LjAxMyAxNy45NDcsMzYuMTczIEwxMS45MzUsMzkuNjQ0IEMxMS40OTMsMzkuODk5IDExLjIzNiw0MC4zMzQgMTEuMjQ2LDQwLjgxIEwxMS4yNDcsNDAuOTYgTDUuMTY3LDQ0LjQ0NyBDNC43OTQsNDQuNjQ2IDIuNjI1LDQ1Ljk3OCAxLjg3Nyw1MC4zNDUgTDEuODcxLDUwLjM4NCBDMS44NjIsNTAuNDU0IDAuOTUxLDU3LjU1NyAwLjk2NSw3MC4yNTkgQzAuOTc5LDgyLjg3OSAxLjU2OCw4Ny4zNzUgMi4xMzcsOTEuNzI0IEwyLjEzOSw5MS43MzkgQzIuNDQ3LDk0LjA5NCA1LjYxNCw5NC42NjIgNS45NzUsOTQuNzE5IEw2LjAwOSw5NC43MjMgQzYuMTEsOTQuNzM2IDYuMjEzLDk0Ljc0MiA2LjMxNCw5NC43NDIgQzYuNzksOTQuNzQyIDcuMjYsOTQuNjEgNy43MSw5NC4zNSBMODIuOTgzLDUwLjc5OCBDODQuNzk0LDQ5LjcyNyA4NS45ODIsNDcuMzc1IDg2LjUyNSw0My44MDEgQzg3LjcxMSwzNS45ODcgODguMjU5LDEwLjcwNSA4Ni4yMjQsMy41MDIgQzg1Ljk3MSwyLjYwOSA4NS41MiwxLjk3NSA4NC44ODEsMS42MiBMODQuNzQ5LDEuNTU4IEw4Mi42NjQsMC43NjkgQzgyLjU1MSwwLjcyNSA4Mi40MzEsMC43MDQgODIuMzExLDAuNzA0IiBpZD0iRmlsbC0yIiBmaWxsPSIjNDU1QTY0Ij48L3BhdGg+CiAgICAgICAgICAgICAgICAgICAgPHBhdGggZD0iTTY2LjI2NywxMS41NjUgTDY3Ljc2MiwxMS45OTkgTDExLjQyMyw0NC4zMjUiIGlkPSJGaWxsLTMiIGZpbGw9IiNGRkZGRkYiPjwvcGF0aD4KICAgICAgICAgICAgICAgICAgICA8cGF0aCBkPSJNMTIuMjAyLDkwLjU0NSBDMTIuMDI5LDkwLjU0NSAxMS44NjIsOTAuNDU1IDExLjc2OSw5MC4yOTUgQzExLjYzMiw5MC4wNTcgMTEuNzEzLDg5Ljc1MiAxMS45NTIsODkuNjE0IEwzMC4zODksNzguOTY5IEMzMC42MjgsNzguODMxIDMwLjkzMyw3OC45MTMgMzEuMDcxLDc5LjE1MiBDMzEuMjA4LDc5LjM5IDMxLjEyNyw3OS42OTYgMzAuODg4LDc5LjgzMyBMMTIuNDUxLDkwLjQ3OCBMMTIuMjAyLDkwLjU0NSIgaWQ9IkZpbGwtNCIgZmlsbD0iIzYwN0Q4QiI+PC9wYXRoPgogICAgICAgICAgICAgICAgICAgIDxwYXRoIGQ9Ik0xMy43NjQsNDIuNjU0IEwxMy42NTYsNDIuNTkyIEwxMy43MDIsNDIuNDIxIEwxOC44MzcsMzkuNDU3IEwxOS4wMDcsMzkuNTAyIEwxOC45NjIsMzkuNjczIEwxMy44MjcsNDIuNjM3IEwxMy43NjQsNDIuNjU0IiBpZD0iRmlsbC01IiBmaWxsPSIjNjA3RDhCIj48L3BhdGg+CiAgICAgICAgICAgICAgICAgICAgPHBhdGggZD0iTTguNTIsOTAuMzc1IEw4LjUyLDQ2LjQyMSBMOC41ODMsNDYuMzg1IEw3NS44NCw3LjU1NCBMNzUuODQsNTEuNTA4IEw3NS43NzgsNTEuNTQ0IEw4LjUyLDkwLjM3NSBMOC41Miw5MC4zNzUgWiBNOC43Nyw0Ni41NjQgTDguNzcsODkuOTQ0IEw3NS41OTEsNTEuMzY1IEw3NS41OTEsNy45ODUgTDguNzcsNDYuNTY0IEw4Ljc3LDQ2LjU2NCBaIiBpZD0iRmlsbC02IiBmaWxsPSIjNjA3RDhCIj48L3BhdGg+CiAgICAgICAgICAgICAgICAgICAgPHBhdGggZD0iTTI0Ljk4Niw4My4xODIgQzI0Ljc1Niw4My4zMzEgMjQuMzc0LDgzLjU2NiAyNC4xMzcsODMuNzA1IEwxMi42MzIsOTAuNDA2IEMxMi4zOTUsOTAuNTQ1IDEyLjQyNiw5MC42NTggMTIuNyw5MC42NTggTDEzLjI2NSw5MC42NTggQzEzLjU0LDkwLjY1OCAxMy45NTgsOTAuNTQ1IDE0LjE5NSw5MC40MDYgTDI1LjcsODMuNzA1IEMyNS45MzcsODMuNTY2IDI2LjEyOCw4My40NTIgMjYuMTI1LDgzLjQ0OSBDMjYuMTIyLDgzLjQ0NyAyNi4xMTksODMuMjIgMjYuMTE5LDgyLjk0NiBDMjYuMTE5LDgyLjY3MiAyNS45MzEsODIuNTY5IDI1LjcwMSw4Mi43MTkgTDI0Ljk4Niw4My4xODIiIGlkPSJGaWxsLTciIGZpbGw9IiM2MDdEOEIiPjwvcGF0aD4KICAgICAgICAgICAgICAgICAgICA8cGF0aCBkPSJNMTMuMjY2LDkwLjc4MiBMMTIuNyw5MC43ODIgQzEyLjUsOTAuNzgyIDEyLjM4NCw5MC43MjYgMTIuMzU0LDkwLjYxNiBDMTIuMzI0LDkwLjUwNiAxMi4zOTcsOTAuMzk5IDEyLjU2OSw5MC4yOTkgTDI0LjA3NCw4My41OTcgQzI0LjMxLDgzLjQ1OSAyNC42ODksODMuMjI2IDI0LjkxOCw4My4wNzggTDI1LjYzMyw4Mi42MTQgQzI1LjcyMyw4Mi41NTUgMjUuODEzLDgyLjUyNSAyNS44OTksODIuNTI1IEMyNi4wNzEsODIuNTI1IDI2LjI0NCw4Mi42NTUgMjYuMjQ0LDgyLjk0NiBDMjYuMjQ0LDgzLjE2IDI2LjI0NSw4My4zMDkgMjYuMjQ3LDgzLjM4MyBMMjYuMjUzLDgzLjM4NyBMMjYuMjQ5LDgzLjQ1NiBDMjYuMjQ2LDgzLjUzMSAyNi4yNDYsODMuNTMxIDI1Ljc2Myw4My44MTIgTDE0LjI1OCw5MC41MTQgQzE0LDkwLjY2NSAxMy41NjQsOTAuNzgyIDEzLjI2Niw5MC43ODIgTDEzLjI2Niw5MC43ODIgWiBNMTIuNjY2LDkwLjUzMiBMMTIuNyw5MC41MzMgTDEzLjI2Niw5MC41MzMgQzEzLjUxOCw5MC41MzMgMTMuOTE1LDkwLjQyNSAxNC4xMzIsOTAuMjk5IEwyNS42MzcsODMuNTk3IEMyNS44MDUsODMuNDk5IDI1LjkzMSw4My40MjQgMjUuOTk4LDgzLjM4MyBDMjUuOTk0LDgzLjI5OSAyNS45OTQsODMuMTY1IDI1Ljk5NCw4Mi45NDYgTDI1Ljg5OSw4Mi43NzUgTDI1Ljc2OCw4Mi44MjQgTDI1LjA1NCw4My4yODcgQzI0LjgyMiw4My40MzcgMjQuNDM4LDgzLjY3MyAyNC4yLDgzLjgxMiBMMTIuNjk1LDkwLjUxNCBMMTIuNjY2LDkwLjUzMiBMMTIuNjY2LDkwLjUzMiBaIiBpZD0iRmlsbC04IiBmaWxsPSIjNjA3RDhCIj48L3BhdGg+CiAgICAgICAgICAgICAgICAgICAgPHBhdGggZD0iTTEzLjI2Niw4OS44NzEgTDEyLjcsODkuODcxIEMxMi41LDg5Ljg3MSAxMi4zODQsODkuODE1IDEyLjM1NCw4OS43MDUgQzEyLjMyNCw4OS41OTUgMTIuMzk3LDg5LjQ4OCAxMi41NjksODkuMzg4IEwyNC4wNzQsODIuNjg2IEMyNC4zMzIsODIuNTM1IDI0Ljc2OCw4Mi40MTggMjUuMDY3LDgyLjQxOCBMMjUuNjMyLDgyLjQxOCBDMjUuODMyLDgyLjQxOCAyNS45NDgsODIuNDc0IDI1Ljk3OCw4Mi41ODQgQzI2LjAwOCw4Mi42OTQgMjUuOTM1LDgyLjgwMSAyNS43NjMsODIuOTAxIEwxNC4yNTgsODkuNjAzIEMxNCw4OS43NTQgMTMuNTY0LDg5Ljg3MSAxMy4yNjYsODkuODcxIEwxMy4yNjYsODkuODcxIFogTTEyLjY2Niw4OS42MjEgTDEyLjcsODkuNjIyIEwxMy4yNjYsODkuNjIyIEMxMy41MTgsODkuNjIyIDEzLjkxNSw4OS41MTUgMTQuMTMyLDg5LjM4OCBMMjUuNjM3LDgyLjY4NiBMMjUuNjY3LDgyLjY2OCBMMjUuNjMyLDgyLjY2NyBMMjUuMDY3LDgyLjY2NyBDMjQuODE1LDgyLjY2NyAyNC40MTgsODIuNzc1IDI0LjIsODIuOTAxIEwxMi42OTUsODkuNjAzIEwxMi42NjYsODkuNjIxIEwxMi42NjYsODkuNjIxIFoiIGlkPSJGaWxsLTkiIGZpbGw9IiM2MDdEOEIiPjwvcGF0aD4KICAgICAgICAgICAgICAgICAgICA8cGF0aCBkPSJNMTIuMzcsOTAuODAxIEwxMi4zNyw4OS41NTQgTDEyLjM3LDkwLjgwMSIgaWQ9IkZpbGwtMTAiIGZpbGw9IiM2MDdEOEIiPjwvcGF0aD4KICAgICAgICAgICAgICAgICAgICA8cGF0aCBkPSJNNi4xMyw5My45MDEgQzUuMzc5LDkzLjgwOCA0LjgxNiw5My4xNjQgNC42OTEsOTIuNTI1IEMzLjg2LDg4LjI4NyAzLjU0LDgzLjc0MyAzLjUyNiw3MS4xNzMgQzMuNTExLDU4LjM4OSA0LjQyMyw1MS40MjggNC40MjMsNTEuNDI4IEM1LjEzNCw0Ny4yODIgNy4yMSw0Ni4yMzYgNy4yMSw0Ni4yMzYgQzcuMjEsNDYuMjM2IDgxLjY2NywzLjI1IDgyLjA2OSwzLjAxNyBDODIuMjkyLDIuODg4IDg0LjU1NiwxLjQzMyA4NS4yNjQsMy45NCBDODcuMjE0LDEwLjg0IDg2Ljc1MiwzNS44MjcgODUuNTM5LDQzLjgxOCBDODUuMTUsNDYuMzgzIDg0LjI5MSw0OS4wMzMgODIuNDgzLDUwLjEwMSBMNy4yMSw5My42NTMgQzYuODI4LDkzLjg3NCA2LjQ2MSw5My45NDEgNi4xMyw5My45MDEgQzYuMTMsOTMuOTAxIDMuMzQ5LDkzLjQ2IDMuMTI5LDkxLjc3NiBDMi41NjgsODcuNDk1IDEuOTc3LDgyLjk5NSAxLjk2Miw3MC40MjUgQzEuOTQ4LDU3LjY0MSAyLjg2LDUwLjY4IDIuODYsNTAuNjggQzMuNTcsNDYuNTM0IDUuNjQ3LDQ1LjQ4OSA1LjY0Nyw0NS40ODkgQzUuNjQ2LDQ1LjQ4OSA4LjA2NSw0NC4wOTIgMTIuMjQ1LDQxLjY3OSBMMTMuMTE2LDQxLjU2IEwxOS43MTUsMzcuNzMgTDE5Ljc2MSwzNy4yNjkgTDYuMTMsOTMuOTAxIiBpZD0iRmlsbC0xMSIgZmlsbD0iI0ZBRkFGQSI+PC9wYXRoPgogICAgICAgICAgICAgICAgICAgIDxwYXRoIGQ9Ik02LjMxNyw5NC4xNjEgTDYuMTAyLDk0LjE0OCBMNi4xMDEsOTQuMTQ4IEw1Ljg1Nyw5NC4xMDEgQzUuMTM4LDkzLjk0NSAzLjA4NSw5My4zNjUgMi44ODEsOTEuODA5IEMyLjMxMyw4Ny40NjkgMS43MjcsODIuOTk2IDEuNzEzLDcwLjQyNSBDMS42OTksNTcuNzcxIDIuNjA0LDUwLjcxOCAyLjYxMyw1MC42NDggQzMuMzM4LDQ2LjQxNyA1LjQ0NSw0NS4zMSA1LjUzNSw0NS4yNjYgTDEyLjE2Myw0MS40MzkgTDEzLjAzMyw0MS4zMiBMMTkuNDc5LDM3LjU3OCBMMTkuNTEzLDM3LjI0NCBDMTkuNTI2LDM3LjEwNyAxOS42NDcsMzcuMDA4IDE5Ljc4NiwzNy4wMjEgQzE5LjkyMiwzNy4wMzQgMjAuMDIzLDM3LjE1NiAyMC4wMDksMzcuMjkzIEwxOS45NSwzNy44ODIgTDEzLjE5OCw0MS44MDEgTDEyLjMyOCw0MS45MTkgTDUuNzcyLDQ1LjcwNCBDNS43NDEsNDUuNzIgMy43ODIsNDYuNzcyIDMuMTA2LDUwLjcyMiBDMy4wOTksNTAuNzgyIDIuMTk4LDU3LjgwOCAyLjIxMiw3MC40MjQgQzIuMjI2LDgyLjk2MyAyLjgwOSw4Ny40MiAzLjM3Myw5MS43MjkgQzMuNDY0LDkyLjQyIDQuMDYyLDkyLjg4MyA0LjY4Miw5My4xODEgQzQuNTY2LDkyLjk4NCA0LjQ4Niw5Mi43NzYgNC40NDYsOTIuNTcyIEMzLjY2NSw4OC41ODggMy4yOTEsODQuMzcgMy4yNzYsNzEuMTczIEMzLjI2Miw1OC41MiA0LjE2Nyw1MS40NjYgNC4xNzYsNTEuMzk2IEM0LjkwMSw0Ny4xNjUgNy4wMDgsNDYuMDU5IDcuMDk4LDQ2LjAxNCBDNy4wOTQsNDYuMDE1IDgxLjU0MiwzLjAzNCA4MS45NDQsMi44MDIgTDgxLjk3MiwyLjc4NSBDODIuODc2LDIuMjQ3IDgzLjY5MiwyLjA5NyA4NC4zMzIsMi4zNTIgQzg0Ljg4NywyLjU3MyA4NS4yODEsMy4wODUgODUuNTA0LDMuODcyIEM4Ny41MTgsMTEgODYuOTY0LDM2LjA5MSA4NS43ODUsNDMuODU1IEM4NS4yNzgsNDcuMTk2IDg0LjIxLDQ5LjM3IDgyLjYxLDUwLjMxNyBMNy4zMzUsOTMuODY5IEM2Ljk5OSw5NC4wNjMgNi42NTgsOTQuMTYxIDYuMzE3LDk0LjE2MSBMNi4zMTcsOTQuMTYxIFogTTYuMTcsOTMuNjU0IEM2LjQ2Myw5My42OSA2Ljc3NCw5My42MTcgNy4wODUsOTMuNDM3IEw4Mi4zNTgsNDkuODg2IEM4NC4xODEsNDguODA4IDg0Ljk2LDQ1Ljk3MSA4NS4yOTIsNDMuNzggQzg2LjQ2NiwzNi4wNDkgODcuMDIzLDExLjA4NSA4NS4wMjQsNC4wMDggQzg0Ljg0NiwzLjM3NyA4NC41NTEsMi45NzYgODQuMTQ4LDIuODE2IEM4My42NjQsMi42MjMgODIuOTgyLDIuNzY0IDgyLjIyNywzLjIxMyBMODIuMTkzLDMuMjM0IEM4MS43OTEsMy40NjYgNy4zMzUsNDYuNDUyIDcuMzM1LDQ2LjQ1MiBDNy4zMDQsNDYuNDY5IDUuMzQ2LDQ3LjUyMSA0LjY2OSw1MS40NzEgQzQuNjYyLDUxLjUzIDMuNzYxLDU4LjU1NiAzLjc3NSw3MS4xNzMgQzMuNzksODQuMzI4IDQuMTYxLDg4LjUyNCA0LjkzNiw5Mi40NzYgQzUuMDI2LDkyLjkzNyA1LjQxMiw5My40NTkgNS45NzMsOTMuNjE1IEM2LjA4Nyw5My42NCA2LjE1OCw5My42NTIgNi4xNjksOTMuNjU0IEw2LjE3LDkzLjY1NCBMNi4xNyw5My42NTQgWiIgaWQ9IkZpbGwtMTIiIGZpbGw9IiM0NTVBNjQiPjwvcGF0aD4KICAgICAgICAgICAgICAgICAgICA8cGF0aCBkPSJNNy4zMTcsNjguOTgyIEM3LjgwNiw2OC43MDEgOC4yMDIsNjguOTI2IDguMjAyLDY5LjQ4NyBDOC4yMDIsNzAuMDQ3IDcuODA2LDcwLjczIDcuMzE3LDcxLjAxMiBDNi44MjksNzEuMjk0IDYuNDMzLDcxLjA2OSA2LjQzMyw3MC41MDggQzYuNDMzLDY5Ljk0OCA2LjgyOSw2OS4yNjUgNy4zMTcsNjguOTgyIiBpZD0iRmlsbC0xMyIgZmlsbD0iI0ZGRkZGRiI+PC9wYXRoPgogICAgICAgICAgICAgICAgICAgIDxwYXRoIGQ9Ik02LjkyLDcxLjEzMyBDNi42MzEsNzEuMTMzIDYuNDMzLDcwLjkwNSA2LjQzMyw3MC41MDggQzYuNDMzLDY5Ljk0OCA2LjgyOSw2OS4yNjUgNy4zMTcsNjguOTgyIEM3LjQ2LDY4LjkgNy41OTUsNjguODYxIDcuNzE0LDY4Ljg2MSBDOC4wMDMsNjguODYxIDguMjAyLDY5LjA5IDguMjAyLDY5LjQ4NyBDOC4yMDIsNzAuMDQ3IDcuODA2LDcwLjczIDcuMzE3LDcxLjAxMiBDNy4xNzQsNzEuMDk0IDcuMDM5LDcxLjEzMyA2LjkyLDcxLjEzMyBNNy43MTQsNjguNjc0IEM3LjU1Nyw2OC42NzQgNy4zOTIsNjguNzIzIDcuMjI0LDY4LjgyMSBDNi42NzYsNjkuMTM4IDYuMjQ2LDY5Ljg3OSA2LjI0Niw3MC41MDggQzYuMjQ2LDcwLjk5NCA2LjUxNyw3MS4zMiA2LjkyLDcxLjMyIEM3LjA3OCw3MS4zMiA3LjI0Myw3MS4yNzEgNy40MTEsNzEuMTc0IEM3Ljk1OSw3MC44NTcgOC4zODksNzAuMTE3IDguMzg5LDY5LjQ4NyBDOC4zODksNjkuMDAxIDguMTE3LDY4LjY3NCA3LjcxNCw2OC42NzQiIGlkPSJGaWxsLTE0IiBmaWxsPSIjODA5N0EyIj48L3BhdGg+CiAgICAgICAgICAgICAgICAgICAgPHBhdGggZD0iTTYuOTIsNzAuOTQ3IEM2LjY0OSw3MC45NDcgNi42MjEsNzAuNjQgNi42MjEsNzAuNTA4IEM2LjYyMSw3MC4wMTcgNi45ODIsNjkuMzkyIDcuNDExLDY5LjE0NSBDNy41MjEsNjkuMDgyIDcuNjI1LDY5LjA0OSA3LjcxNCw2OS4wNDkgQzcuOTg2LDY5LjA0OSA4LjAxNSw2OS4zNTUgOC4wMTUsNjkuNDg3IEM4LjAxNSw2OS45NzggNy42NTIsNzAuNjAzIDcuMjI0LDcwLjg1MSBDNy4xMTUsNzAuOTE0IDcuMDEsNzAuOTQ3IDYuOTIsNzAuOTQ3IE03LjcxNCw2OC44NjEgQzcuNTk1LDY4Ljg2MSA3LjQ2LDY4LjkgNy4zMTcsNjguOTgyIEM2LjgyOSw2OS4yNjUgNi40MzMsNjkuOTQ4IDYuNDMzLDcwLjUwOCBDNi40MzMsNzAuOTA1IDYuNjMxLDcxLjEzMyA2LjkyLDcxLjEzMyBDNy4wMzksNzEuMTMzIDcuMTc0LDcxLjA5NCA3LjMxNyw3MS4wMTIgQzcuODA2LDcwLjczIDguMjAyLDcwLjA0NyA4LjIwMiw2OS40ODcgQzguMjAyLDY5LjA5IDguMDAzLDY4Ljg2MSA3LjcxNCw2OC44NjEiIGlkPSJGaWxsLTE1IiBmaWxsPSIjODA5N0EyIj48L3BhdGg+CiAgICAgICAgICAgICAgICAgICAgPHBhdGggZD0iTTcuNDQ0LDg1LjM1IEM3LjcwOCw4NS4xOTggNy45MjEsODUuMzE5IDcuOTIxLDg1LjYyMiBDNy45MjEsODUuOTI1IDcuNzA4LDg2LjI5MiA3LjQ0NCw4Ni40NDQgQzcuMTgxLDg2LjU5NyA2Ljk2Nyw4Ni40NzUgNi45NjcsODYuMTczIEM2Ljk2Nyw4NS44NzEgNy4xODEsODUuNTAyIDcuNDQ0LDg1LjM1IiBpZD0iRmlsbC0xNiIgZmlsbD0iI0ZGRkZGRiI+PC9wYXRoPgogICAgICAgICAgICAgICAgICAgIDxwYXRoIGQ9Ik03LjIzLDg2LjUxIEM3LjA3NCw4Ni41MSA2Ljk2Nyw4Ni4zODcgNi45NjcsODYuMTczIEM2Ljk2Nyw4NS44NzEgNy4xODEsODUuNTAyIDcuNDQ0LDg1LjM1IEM3LjUyMSw4NS4zMDUgNy41OTQsODUuMjg0IDcuNjU4LDg1LjI4NCBDNy44MTQsODUuMjg0IDcuOTIxLDg1LjQwOCA3LjkyMSw4NS42MjIgQzcuOTIxLDg1LjkyNSA3LjcwOCw4Ni4yOTIgNy40NDQsODYuNDQ0IEM3LjM2Nyw4Ni40ODkgNy4yOTQsODYuNTEgNy4yMyw4Ni41MSBNNy42NTgsODUuMDk4IEM3LjU1OCw4NS4wOTggNy40NTUsODUuMTI3IDcuMzUxLDg1LjE4OCBDNy4wMzEsODUuMzczIDYuNzgxLDg1LjgwNiA2Ljc4MSw4Ni4xNzMgQzYuNzgxLDg2LjQ4MiA2Ljk2Niw4Ni42OTcgNy4yMyw4Ni42OTcgQzcuMzMsODYuNjk3IDcuNDMzLDg2LjY2NiA3LjUzOCw4Ni42MDcgQzcuODU4LDg2LjQyMiA4LjEwOCw4NS45ODkgOC4xMDgsODUuNjIyIEM4LjEwOCw4NS4zMTMgNy45MjMsODUuMDk4IDcuNjU4LDg1LjA5OCIgaWQ9IkZpbGwtMTciIGZpbGw9IiM4MDk3QTIiPjwvcGF0aD4KICAgICAgICAgICAgICAgICAgICA8cGF0aCBkPSJNNy4yMyw4Ni4zMjIgTDcuMTU0LDg2LjE3MyBDNy4xNTQsODUuOTM4IDcuMzMzLDg1LjYyOSA3LjUzOCw4NS41MTIgTDcuNjU4LDg1LjQ3MSBMNy43MzQsODUuNjIyIEM3LjczNCw4NS44NTYgNy41NTUsODYuMTY0IDcuMzUxLDg2LjI4MiBMNy4yMyw4Ni4zMjIgTTcuNjU4LDg1LjI4NCBDNy41OTQsODUuMjg0IDcuNTIxLDg1LjMwNSA3LjQ0NCw4NS4zNSBDNy4xODEsODUuNTAyIDYuOTY3LDg1Ljg3MSA2Ljk2Nyw4Ni4xNzMgQzYuOTY3LDg2LjM4NyA3LjA3NCw4Ni41MSA3LjIzLDg2LjUxIEM3LjI5NCw4Ni41MSA3LjM2Nyw4Ni40ODkgNy40NDQsODYuNDQ0IEM3LjcwOCw4Ni4yOTIgNy45MjEsODUuOTI1IDcuOTIxLDg1LjYyMiBDNy45MjEsODUuNDA4IDcuODE0LDg1LjI4NCA3LjY1OCw4NS4yODQiIGlkPSJGaWxsLTE4IiBmaWxsPSIjODA5N0EyIj48L3BhdGg+CiAgICAgICAgICAgICAgICAgICAgPHBhdGggZD0iTTc3LjI3OCw3Ljc2OSBMNzcuMjc4LDUxLjQzNiBMMTAuMjA4LDkwLjE2IEwxMC4yMDgsNDYuNDkzIEw3Ny4yNzgsNy43NjkiIGlkPSJGaWxsLTE5IiBmaWxsPSIjNDU1QTY0Ij48L3BhdGg+CiAgICAgICAgICAgICAgICAgICAgPHBhdGggZD0iTTEwLjA4Myw5MC4zNzUgTDEwLjA4Myw0Ni40MjEgTDEwLjE0Niw0Ni4zODUgTDc3LjQwMyw3LjU1NCBMNzcuNDAzLDUxLjUwOCBMNzcuMzQxLDUxLjU0NCBMMTAuMDgzLDkwLjM3NSBMMTAuMDgzLDkwLjM3NSBaIE0xMC4zMzMsNDYuNTY0IEwxMC4zMzMsODkuOTQ0IEw3Ny4xNTQsNTEuMzY1IEw3Ny4xNTQsNy45ODUgTDEwLjMzMyw0Ni41NjQgTDEwLjMzMyw0Ni41NjQgWiIgaWQ9IkZpbGwtMjAiIGZpbGw9IiM2MDdEOEIiPjwvcGF0aD4KICAgICAgICAgICAgICAgIDwvZz4KICAgICAgICAgICAgICAgIDxwYXRoIGQ9Ik0xMjUuNzM3LDg4LjY0NyBMMTE4LjA5OCw5MS45ODEgTDExOC4wOTgsODQgTDEwNi42MzksODguNzEzIEwxMDYuNjM5LDk2Ljk4MiBMOTksMTAwLjMxNSBMMTEyLjM2OSwxMDMuOTYxIEwxMjUuNzM3LDg4LjY0NyIgaWQ9IkltcG9ydGVkLUxheWVycy1Db3B5LTIiIGZpbGw9IiM0NTVBNjQiIHNrZXRjaDp0eXBlPSJNU1NoYXBlR3JvdXAiPjwvcGF0aD4KICAgICAgICAgICAgPC9nPgogICAgICAgIDwvZz4KICAgIDwvZz4KPC9zdmc+';
+var rotateInstructionsAsset = "<svg width='198' height='240' viewBox='0 0 198 240' xmlns='http://www.w3.org/2000/svg'><g fill='none' fill-rule='evenodd'><path d='M149.625 109.527l6.737 3.891v.886c0 .177.013.36.038.549.01.081.02.162.027.242.14 1.415.974 2.998 2.105 3.999l5.72 5.062.081-.09s4.382-2.53 5.235-3.024l25.97 14.993v54.001c0 .771-.386 1.217-.948 1.217-.233 0-.495-.076-.772-.236l-23.967-13.838-.014.024-27.322 15.775-.85-1.323c-4.731-1.529-9.748-2.74-14.951-3.61a.27.27 0 0 0-.007.024l-5.067 16.961-7.891 4.556-.037-.063v27.59c0 .772-.386 1.217-.948 1.217-.232 0-.495-.076-.772-.236l-42.473-24.522c-.95-.549-1.72-1.877-1.72-2.967v-1.035l-.021.047a5.111 5.111 0 0 0-1.816-.399 5.682 5.682 0 0 0-.546.001 13.724 13.724 0 0 1-1.918-.041c-1.655-.153-3.2-.6-4.404-1.296l-46.576-26.89.005.012-10.278-18.75c-1.001-1.827-.241-4.216 1.698-5.336l56.011-32.345a4.194 4.194 0 0 1 2.099-.572c1.326 0 2.572.659 3.227 1.853l.005-.003.227.413-.006.004a9.63 9.63 0 0 0 1.477 2.018l.277.27c1.914 1.85 4.468 2.801 7.113 2.801 1.949 0 3.948-.517 5.775-1.572.013 0 7.319-4.219 7.319-4.219a4.194 4.194 0 0 1 2.099-.572c1.326 0 2.572.658 3.226 1.853l3.25 5.928.022-.018 6.785 3.917-.105-.182 46.881-26.965m0-1.635c-.282 0-.563.073-.815.218l-46.169 26.556-5.41-3.124-3.005-5.481c-.913-1.667-2.699-2.702-4.66-2.703-1.011 0-2.02.274-2.917.792a3825 3825 0 0 1-7.275 4.195l-.044.024a9.937 9.937 0 0 1-4.957 1.353c-2.292 0-4.414-.832-5.976-2.342l-.252-.245a7.992 7.992 0 0 1-1.139-1.534 1.379 1.379 0 0 0-.06-.122l-.227-.414a1.718 1.718 0 0 0-.095-.154c-.938-1.574-2.673-2.545-4.571-2.545-1.011 0-2.02.274-2.917.792L3.125 155.502c-2.699 1.559-3.738 4.94-2.314 7.538l10.278 18.75c.177.323.448.563.761.704l46.426 26.804c1.403.81 3.157 1.332 5.072 1.508a15.661 15.661 0 0 0 2.146.046 4.766 4.766 0 0 1 .396 0c.096.004.19.011.283.022.109 1.593 1.159 3.323 2.529 4.114l42.472 24.522c.524.302 1.058.455 1.59.455 1.497 0 2.583-1.2 2.583-2.852v-26.562l7.111-4.105a1.64 1.64 0 0 0 .749-.948l4.658-15.593c4.414.797 8.692 1.848 12.742 3.128l.533.829a1.634 1.634 0 0 0 2.193.531l26.532-15.317L193 192.433c.523.302 1.058.455 1.59.455 1.497 0 2.583-1.199 2.583-2.852v-54.001c0-.584-.312-1.124-.818-1.416l-25.97-14.993a1.633 1.633 0 0 0-1.636.001c-.606.351-2.993 1.73-4.325 2.498l-4.809-4.255c-.819-.725-1.461-1.933-1.561-2.936a7.776 7.776 0 0 0-.033-.294 2.487 2.487 0 0 1-.023-.336v-.886c0-.584-.312-1.123-.817-1.416l-6.739-3.891a1.633 1.633 0 0 0-.817-.219' fill='#455A64'/><path d='M96.027 132.636l46.576 26.891c1.204.695 1.979 1.587 2.242 2.541l-.01.007-81.374 46.982h-.001c-1.654-.152-3.199-.6-4.403-1.295l-46.576-26.891 83.546-48.235' fill='#FAFAFA'/><path d='M63.461 209.174c-.008 0-.015 0-.022-.002-1.693-.156-3.228-.609-4.441-1.309l-46.576-26.89a.118.118 0 0 1 0-.203l83.546-48.235a.117.117 0 0 1 .117 0l46.576 26.891c1.227.708 2.021 1.612 2.296 2.611a.116.116 0 0 1-.042.124l-.021.016-81.375 46.981a.11.11 0 0 1-.058.016zm-50.747-28.303l46.401 26.79c1.178.68 2.671 1.121 4.32 1.276l81.272-46.922c-.279-.907-1.025-1.73-2.163-2.387l-46.517-26.857-83.313 48.1z' fill='#607D8B'/><path d='M148.327 165.471a5.85 5.85 0 0 1-.546.001c-1.894-.083-3.302-1.038-3.145-2.132a2.693 2.693 0 0 0-.072-1.105l-81.103 46.822c.628.058 1.272.073 1.918.042.182-.009.364-.009.546-.001 1.894.083 3.302 1.038 3.145 2.132l79.257-45.759' fill='#FFF'/><path d='M69.07 211.347a.118.118 0 0 1-.115-.134c.045-.317-.057-.637-.297-.925-.505-.61-1.555-1.022-2.738-1.074a5.966 5.966 0 0 0-.535.001 14.03 14.03 0 0 1-1.935-.041.117.117 0 0 1-.103-.092.116.116 0 0 1 .055-.126l81.104-46.822a.117.117 0 0 1 .171.07c.104.381.129.768.074 1.153-.045.316.057.637.296.925.506.61 1.555 1.021 2.739 1.073.178.008.357.008.535-.001a.117.117 0 0 1 .064.218l-79.256 45.759a.114.114 0 0 1-.059.016zm-3.405-2.372c.089 0 .177.002.265.006 1.266.056 2.353.488 2.908 1.158.227.274.35.575.36.882l78.685-45.429c-.036 0-.072-.001-.107-.003-1.267-.056-2.354-.489-2.909-1.158-.282-.34-.402-.724-.347-1.107a2.604 2.604 0 0 0-.032-.91L63.846 208.97a13.91 13.91 0 0 0 1.528.012c.097-.005.194-.007.291-.007z' fill='#607D8B'/><path d='M2.208 162.134c-1.001-1.827-.241-4.217 1.698-5.337l56.011-32.344c1.939-1.12 4.324-.546 5.326 1.281l.232.41a9.344 9.344 0 0 0 1.47 2.021l.278.27c3.325 3.214 8.583 3.716 12.888 1.23l7.319-4.22c1.94-1.119 4.324-.546 5.325 1.282l3.25 5.928-83.519 48.229-10.278-18.75z' fill='#FAFAFA'/><path d='M12.486 181.001a.112.112 0 0 1-.031-.005.114.114 0 0 1-.071-.056L2.106 162.19c-1.031-1.88-.249-4.345 1.742-5.494l56.01-32.344a4.328 4.328 0 0 1 2.158-.588c1.415 0 2.65.702 3.311 1.882.01.008.018.017.024.028l.227.414a.122.122 0 0 1 .013.038 9.508 9.508 0 0 0 1.439 1.959l.275.266c1.846 1.786 4.344 2.769 7.031 2.769 1.977 0 3.954-.538 5.717-1.557a.148.148 0 0 1 .035-.013l7.284-4.206a4.321 4.321 0 0 1 2.157-.588c1.427 0 2.672.716 3.329 1.914l3.249 5.929a.116.116 0 0 1-.044.157l-83.518 48.229a.116.116 0 0 1-.059.016zm49.53-57.004c-.704 0-1.41.193-2.041.557l-56.01 32.345c-1.882 1.086-2.624 3.409-1.655 5.179l10.221 18.645 83.317-48.112-3.195-5.829c-.615-1.122-1.783-1.792-3.124-1.792a4.08 4.08 0 0 0-2.04.557l-7.317 4.225a.148.148 0 0 1-.035.013 11.7 11.7 0 0 1-5.801 1.569c-2.748 0-5.303-1.007-7.194-2.835l-.278-.27a9.716 9.716 0 0 1-1.497-2.046.096.096 0 0 1-.013-.037l-.191-.347a.11.11 0 0 1-.023-.029c-.615-1.123-1.783-1.793-3.124-1.793z' fill='#607D8B'/><path d='M42.434 155.808c-2.51-.001-4.697-1.258-5.852-3.365-1.811-3.304-.438-7.634 3.059-9.654l12.291-7.098a7.599 7.599 0 0 1 3.789-1.033c2.51 0 4.697 1.258 5.852 3.365 1.811 3.304.439 7.634-3.059 9.654l-12.291 7.098a7.606 7.606 0 0 1-3.789 1.033zm13.287-20.683a7.128 7.128 0 0 0-3.555.971l-12.291 7.098c-3.279 1.893-4.573 5.942-2.883 9.024 1.071 1.955 3.106 3.122 5.442 3.122a7.13 7.13 0 0 0 3.556-.97l12.291-7.098c3.279-1.893 4.572-5.942 2.883-9.024-1.072-1.955-3.106-3.123-5.443-3.123z' fill='#607D8B'/><path d='M149.588 109.407l6.737 3.89v.887c0 .176.013.36.037.549.011.081.02.161.028.242.14 1.415.973 2.998 2.105 3.999l7.396 6.545c.177.156.358.295.541.415 1.579 1.04 2.95.466 3.062-1.282.049-.784.057-1.595.023-2.429l-.003-.16v-1.151l25.987 15.003v54c0 1.09-.77 1.53-1.72.982l-42.473-24.523c-.95-.548-1.72-1.877-1.72-2.966v-34.033' fill='#FAFAFA'/><path d='M194.553 191.25c-.257 0-.54-.085-.831-.253l-42.472-24.521c-.981-.567-1.779-1.943-1.779-3.068v-34.033h.234v34.033c0 1.051.745 2.336 1.661 2.866l42.473 24.521c.424.245.816.288 1.103.122.285-.164.442-.52.442-1.002v-53.933l-25.753-14.868.003 1.106c.034.832.026 1.654-.024 2.439-.054.844-.396 1.464-.963 1.746-.619.309-1.45.173-2.28-.373a5.023 5.023 0 0 1-.553-.426l-7.397-6.544c-1.158-1.026-1.999-2.625-2.143-4.076a9.624 9.624 0 0 0-.027-.238 4.241 4.241 0 0 1-.038-.564v-.82l-6.68-3.856.117-.202 6.738 3.89.058.034v.954c0 .171.012.351.036.533.011.083.021.165.029.246.138 1.395.948 2.935 2.065 3.923l7.397 6.545c.173.153.35.289.527.406.758.499 1.504.63 2.047.359.49-.243.786-.795.834-1.551.05-.778.057-1.591.024-2.417l-.004-.163v-1.355l.175.1 25.987 15.004.059.033v54.068c0 .569-.198.996-.559 1.204a1.002 1.002 0 0 1-.506.131' fill='#607D8B'/><path d='M145.685 163.161l24.115 13.922-25.978 14.998-1.462-.307c-6.534-2.17-13.628-3.728-21.019-4.616-4.365-.524-8.663 1.096-9.598 3.62a2.746 2.746 0 0 0-.011 1.928c1.538 4.267 4.236 8.363 7.995 12.135l.532.845-25.977 14.997-24.115-13.922 75.518-43.6' fill='#FFF'/><path d='M94.282 220.818l-.059-.033-24.29-14.024.175-.101 75.577-43.634.058.033 24.29 14.024-26.191 15.122-.045-.01-1.461-.307c-6.549-2.174-13.613-3.725-21.009-4.614a13.744 13.744 0 0 0-1.638-.097c-3.758 0-7.054 1.531-7.837 3.642a2.62 2.62 0 0 0-.01 1.848c1.535 4.258 4.216 8.326 7.968 12.091l.016.021.526.835.006.01.064.102-.105.061-25.977 14.998-.058.033zm-23.881-14.057l23.881 13.788 24.802-14.32c.546-.315.846-.489 1.017-.575l-.466-.74c-3.771-3.787-6.467-7.881-8.013-12.168a2.851 2.851 0 0 1 .011-2.008c.815-2.199 4.203-3.795 8.056-3.795.557 0 1.117.033 1.666.099 7.412.891 14.491 2.445 21.041 4.621.836.175 1.215.254 1.39.304l25.78-14.884-23.881-13.788-75.284 43.466z' fill='#607D8B'/><path d='M167.23 125.979v50.871l-27.321 15.773-6.461-14.167c-.91-1.996-3.428-1.738-5.624.574a10.238 10.238 0 0 0-2.33 4.018l-6.46 21.628-27.322 15.774v-50.871l75.518-43.6' fill='#FFF'/><path d='M91.712 220.567a.127.127 0 0 1-.059-.016.118.118 0 0 1-.058-.101v-50.871c0-.042.023-.08.058-.101l75.519-43.6a.117.117 0 0 1 .175.101v50.871c0 .041-.023.08-.059.1l-27.321 15.775a.118.118 0 0 1-.094.01.12.12 0 0 1-.071-.063l-6.46-14.168c-.375-.822-1.062-1.275-1.934-1.275-1.089 0-2.364.686-3.5 1.881a10.206 10.206 0 0 0-2.302 3.972l-6.46 21.627a.118.118 0 0 1-.054.068L91.77 220.551a.12.12 0 0 1-.058.016zm.117-50.92v50.601l27.106-15.65 6.447-21.583a10.286 10.286 0 0 1 2.357-4.065c1.18-1.242 2.517-1.954 3.669-1.954.969 0 1.731.501 2.146 1.411l6.407 14.051 27.152-15.676v-50.601l-75.284 43.466z' fill='#607D8B'/><path d='M168.543 126.213v50.87l-27.322 15.774-6.46-14.168c-.91-1.995-3.428-1.738-5.624.574a10.248 10.248 0 0 0-2.33 4.019l-6.461 21.627-27.321 15.774v-50.87l75.518-43.6' fill='#FFF'/><path d='M93.025 220.8a.123.123 0 0 1-.059-.015.12.12 0 0 1-.058-.101v-50.871c0-.042.023-.08.058-.101l75.518-43.6a.112.112 0 0 1 .117 0c.036.02.059.059.059.1v50.871a.116.116 0 0 1-.059.101l-27.321 15.774a.111.111 0 0 1-.094.01.115.115 0 0 1-.071-.062l-6.46-14.168c-.375-.823-1.062-1.275-1.935-1.275-1.088 0-2.363.685-3.499 1.881a10.19 10.19 0 0 0-2.302 3.971l-6.461 21.628a.108.108 0 0 1-.053.067l-27.322 15.775a.12.12 0 0 1-.058.015zm.117-50.919v50.6l27.106-15.649 6.447-21.584a10.293 10.293 0 0 1 2.357-4.065c1.179-1.241 2.516-1.954 3.668-1.954.969 0 1.732.502 2.147 1.412l6.407 14.051 27.152-15.676v-50.601l-75.284 43.466z' fill='#607D8B'/><path d='M169.8 177.083l-27.322 15.774-6.46-14.168c-.91-1.995-3.428-1.738-5.625.574a10.246 10.246 0 0 0-2.329 4.019l-6.461 21.627-27.321 15.774v-50.87l75.518-43.6v50.87z' fill='#FAFAFA'/><path d='M94.282 220.917a.234.234 0 0 1-.234-.233v-50.871c0-.083.045-.161.117-.202l75.518-43.601a.234.234 0 1 1 .35.202v50.871a.233.233 0 0 1-.116.202l-27.322 15.775a.232.232 0 0 1-.329-.106l-6.461-14.168c-.36-.789-.992-1.206-1.828-1.206-1.056 0-2.301.672-3.415 1.844a10.099 10.099 0 0 0-2.275 3.924l-6.46 21.628a.235.235 0 0 1-.107.136l-27.322 15.774a.23.23 0 0 1-.116.031zm.233-50.969v50.331l26.891-15.525 6.434-21.539a10.41 10.41 0 0 1 2.384-4.112c1.201-1.265 2.569-1.991 3.753-1.991 1.018 0 1.818.526 2.253 1.48l6.354 13.934 26.982-15.578v-50.331l-75.051 43.331z' fill='#607D8B'/><path d='M109.894 199.943c-1.774 0-3.241-.725-4.244-2.12a.224.224 0 0 1 .023-.294.233.233 0 0 1 .301-.023c.78.547 1.705.827 2.75.827 1.323 0 2.754-.439 4.256-1.306 5.311-3.067 9.631-10.518 9.631-16.611 0-1.927-.442-3.56-1.278-4.724a.232.232 0 0 1 .323-.327c1.671 1.172 2.591 3.381 2.591 6.219 0 6.242-4.426 13.863-9.865 17.003-1.574.908-3.084 1.356-4.488 1.356zm-2.969-1.542c.813.651 1.82.877 2.968.877h.001c1.321 0 2.753-.327 4.254-1.194 5.311-3.067 9.632-10.463 9.632-16.556 0-1.979-.463-3.599-1.326-4.761.411 1.035.625 2.275.625 3.635 0 6.243-4.426 13.883-9.865 17.023-1.574.909-3.084 1.317-4.49 1.317-.641 0-1.243-.149-1.799-.341z' fill='#607D8B'/><path d='M113.097 197.23c5.384-3.108 9.748-10.636 9.748-16.814 0-2.051-.483-3.692-1.323-4.86-1.784-1.252-4.374-1.194-7.257.47-5.384 3.108-9.748 10.636-9.748 16.814 0 2.051.483 3.692 1.323 4.86 1.784 1.252 4.374 1.194 7.257-.47' fill='#FAFAFA'/><path d='M108.724 198.614c-1.142 0-2.158-.213-3.019-.817-.021-.014-.04.014-.055-.007-.894-1.244-1.367-2.948-1.367-4.973 0-6.242 4.426-13.864 9.865-17.005 1.574-.908 3.084-1.363 4.49-1.363 1.142 0 2.158.309 3.018.913a.23.23 0 0 1 .056.056c.894 1.244 1.367 2.972 1.367 4.997 0 6.243-4.426 13.783-9.865 16.923-1.574.909-3.084 1.276-4.49 1.276zm-2.718-1.109c.774.532 1.688.776 2.718.776 1.323 0 2.754-.413 4.256-1.28 5.311-3.066 9.631-10.505 9.631-16.598 0-1.909-.434-3.523-1.255-4.685-.774-.533-1.688-.799-2.718-.799-1.323 0-2.755.441-4.256 1.308-5.311 3.066-9.631 10.506-9.631 16.599 0 1.909.434 3.517 1.255 4.679z' fill='#607D8B'/><path d='M149.318 114.262l-9.984 8.878 15.893 11.031 5.589-6.112-11.498-13.797' fill='#FAFAFA'/><path d='M169.676 120.84l-9.748 5.627c-3.642 2.103-9.528 2.113-13.147.024-3.62-2.089-3.601-5.488.041-7.591l9.495-5.608-6.729-3.885-81.836 47.071 45.923 26.514 3.081-1.779c.631-.365.869-.898.618-1.39-2.357-4.632-2.593-9.546-.683-14.262 5.638-13.92 24.509-24.815 48.618-28.07 8.169-1.103 16.68-.967 24.704.394.852.145 1.776.008 2.407-.357l3.081-1.778-25.825-14.91' fill='#FAFAFA'/><path d='M113.675 183.459a.47.47 0 0 1-.233-.062l-45.924-26.515a.468.468 0 0 1 .001-.809l81.836-47.071a.467.467 0 0 1 .466 0l6.729 3.885a.467.467 0 0 1-.467.809l-6.496-3.75-80.9 46.533 44.988 25.973 2.848-1.644c.192-.111.62-.409.435-.773-2.416-4.748-2.658-9.814-.7-14.65 2.806-6.927 8.885-13.242 17.582-18.263 8.657-4.998 19.518-8.489 31.407-10.094 8.198-1.107 16.79-.97 24.844.397.739.125 1.561.007 2.095-.301l2.381-1.374-25.125-14.506a.467.467 0 0 1 .467-.809l25.825 14.91a.467.467 0 0 1 0 .809l-3.081 1.779c-.721.417-1.763.575-2.718.413-7.963-1.351-16.457-1.486-24.563-.392-11.77 1.589-22.512 5.039-31.065 9.977-8.514 4.916-14.456 11.073-17.183 17.805-1.854 4.578-1.623 9.376.666 13.875.37.725.055 1.513-.8 2.006l-3.081 1.78a.476.476 0 0 1-.234.062' fill='#455A64'/><path d='M153.316 128.279c-2.413 0-4.821-.528-6.652-1.586-1.818-1.049-2.82-2.461-2.82-3.975 0-1.527 1.016-2.955 2.861-4.02l9.493-5.607a.233.233 0 1 1 .238.402l-9.496 5.609c-1.696.979-2.628 2.263-2.628 3.616 0 1.34.918 2.608 2.585 3.571 3.549 2.049 9.343 2.038 12.914-.024l9.748-5.628a.234.234 0 0 1 .234.405l-9.748 5.628c-1.858 1.072-4.296 1.609-6.729 1.609' fill='#607D8B'/><path d='M113.675 182.992l-45.913-26.508M113.675 183.342a.346.346 0 0 1-.175-.047l-45.913-26.508a.35.35 0 1 1 .35-.607l45.913 26.508a.35.35 0 0 1-.175.654' fill='#455A64'/><path d='M67.762 156.484v54.001c0 1.09.77 2.418 1.72 2.967l42.473 24.521c.95.549 1.72.11 1.72-.98v-54.001' fill='#FAFAFA'/><path d='M112.727 238.561c-.297 0-.62-.095-.947-.285l-42.473-24.521c-1.063-.613-1.895-2.05-1.895-3.27v-54.001a.35.35 0 1 1 .701 0v54.001c0 .96.707 2.18 1.544 2.663l42.473 24.522c.344.198.661.243.87.122.206-.119.325-.411.325-.799v-54.001a.35.35 0 1 1 .7 0v54.001c0 .655-.239 1.154-.675 1.406a1.235 1.235 0 0 1-.623.162' fill='#455A64'/><path d='M112.86 147.512h-.001c-2.318 0-4.499-.522-6.142-1.471-1.705-.984-2.643-2.315-2.643-3.749 0-1.445.952-2.791 2.68-3.788l12.041-6.953c1.668-.962 3.874-1.493 6.212-1.493 2.318 0 4.499.523 6.143 1.472 1.704.984 2.643 2.315 2.643 3.748 0 1.446-.952 2.791-2.68 3.789l-12.042 6.952c-1.668.963-3.874 1.493-6.211 1.493zm12.147-16.753c-2.217 0-4.298.497-5.861 1.399l-12.042 6.952c-1.502.868-2.33 1.998-2.33 3.182 0 1.173.815 2.289 2.293 3.142 1.538.889 3.596 1.378 5.792 1.378h.001c2.216 0 4.298-.497 5.861-1.399l12.041-6.953c1.502-.867 2.33-1.997 2.33-3.182 0-1.172-.814-2.288-2.292-3.142-1.539-.888-3.596-1.377-5.793-1.377z' fill='#607D8B'/><path d='M165.63 123.219l-5.734 3.311c-3.167 1.828-8.286 1.837-11.433.02-3.147-1.817-3.131-4.772.036-6.601l5.734-3.31 11.397 6.58' fill='#FAFAFA'/><path d='M154.233 117.448l9.995 5.771-4.682 2.704c-1.434.827-3.352 1.283-5.399 1.283-2.029 0-3.923-.449-5.333-1.263-1.29-.744-2-1.694-2-2.674 0-.991.723-1.955 2.036-2.713l5.383-3.108m0-.809l-5.734 3.31c-3.167 1.829-3.183 4.784-.036 6.601 1.568.905 3.623 1.357 5.684 1.357 2.077 0 4.159-.46 5.749-1.377l5.734-3.311-11.397-6.58M145.445 179.667c-1.773 0-3.241-.85-4.243-2.245-.067-.092-.057-.275.023-.356.08-.081.207-.12.3-.055.781.548 1.706.812 2.751.811 1.322 0 2.754-.446 4.256-1.313 5.31-3.066 9.631-10.522 9.631-16.615 0-1.927-.442-3.562-1.279-4.726a.235.235 0 0 1 .024-.301.232.232 0 0 1 .3-.027c1.67 1.172 2.59 3.38 2.59 6.219 0 6.242-4.425 13.987-9.865 17.127-1.573.908-3.083 1.481-4.488 1.481zM142.476 178c.814.651 1.82 1.002 2.969 1.002 1.322 0 2.753-.452 4.255-1.32 5.31-3.065 9.631-10.523 9.631-16.617 0-1.98-.463-3.63-1.325-4.793.411 1.035.624 2.26.624 3.62 0 6.242-4.425 13.875-9.865 17.015-1.573.909-3.084 1.376-4.489 1.376a5.49 5.49 0 0 1-1.8-.283z' fill='#607D8B'/><path d='M148.648 176.704c5.384-3.108 9.748-10.636 9.748-16.813 0-2.052-.483-3.693-1.322-4.861-1.785-1.252-4.375-1.194-7.258.471-5.383 3.108-9.748 10.636-9.748 16.813 0 2.051.484 3.692 1.323 4.86 1.785 1.253 4.374 1.195 7.257-.47' fill='#FAFAFA'/><path d='M144.276 178.276c-1.143 0-2.158-.307-3.019-.911a.217.217 0 0 1-.055-.054c-.895-1.244-1.367-2.972-1.367-4.997 0-6.241 4.425-13.875 9.865-17.016 1.573-.908 3.084-1.369 4.489-1.369 1.143 0 2.158.307 3.019.91a.24.24 0 0 1 .055.055c.894 1.244 1.367 2.971 1.367 4.997 0 6.241-4.425 13.875-9.865 17.016-1.573.908-3.084 1.369-4.489 1.369zm-2.718-1.172c.773.533 1.687.901 2.718.901 1.322 0 2.754-.538 4.256-1.405 5.31-3.066 9.631-10.567 9.631-16.661 0-1.908-.434-3.554-1.256-4.716-.774-.532-1.688-.814-2.718-.814-1.322 0-2.754.433-4.256 1.3-5.31 3.066-9.631 10.564-9.631 16.657 0 1.91.434 3.576 1.256 4.738z' fill='#607D8B'/><path d='M150.72 172.361l-.363-.295a24.105 24.105 0 0 0 2.148-3.128 24.05 24.05 0 0 0 1.977-4.375l.443.149a24.54 24.54 0 0 1-2.015 4.46 24.61 24.61 0 0 1-2.19 3.189M115.917 191.514l-.363-.294a24.174 24.174 0 0 0 2.148-3.128 24.038 24.038 0 0 0 1.976-4.375l.443.148a24.48 24.48 0 0 1-2.015 4.461 24.662 24.662 0 0 1-2.189 3.188M114 237.476V182.584 237.476' fill='#607D8B'/><g><path d='M81.822 37.474c.017-.135-.075-.28-.267-.392-.327-.188-.826-.21-1.109-.045l-6.012 3.471c-.131.076-.194.178-.191.285.002.132.002.461.002.578v.043l-.007.128-6.591 3.779c-.001 0-2.077 1.046-2.787 5.192 0 0-.912 6.961-.898 19.745.015 12.57.606 17.07 1.167 21.351.22 1.684 3.001 2.125 3.001 2.125.331.04.698-.027 1.08-.248l75.273-43.551c1.808-1.069 2.667-3.719 3.056-6.284 1.213-7.99 1.675-32.978-.275-39.878-.196-.693-.51-1.083-.868-1.282l-2.086-.79c-.727.028-1.416.467-1.534.535L82.032 37.072l-.21.402' fill='#FFF'/><path d='M144.311 1.701l2.085.79c.358.199.672.589.868 1.282 1.949 6.9 1.487 31.887.275 39.878-.39 2.565-1.249 5.215-3.056 6.284L69.21 93.486a1.78 1.78 0 0 1-.896.258l-.183-.011c0 .001-2.782-.44-3.003-2.124-.56-4.282-1.151-8.781-1.165-21.351-.015-12.784.897-19.745.897-19.745.71-4.146 2.787-5.192 2.787-5.192l6.591-3.779.007-.128v-.043c0-.117 0-.446-.002-.578-.003-.107.059-.21.191-.285l6.012-3.472a.98.98 0 0 1 .481-.11c.218 0 .449.053.627.156.193.112.285.258.268.392l.211-.402 60.744-34.836c.117-.068.806-.507 1.534-.535m0-.997l-.039.001c-.618.023-1.283.244-1.974.656l-.021.012-60.519 34.706a2.358 2.358 0 0 0-.831-.15c-.365 0-.704.084-.98.244l-6.012 3.471c-.442.255-.699.69-.689 1.166l.001.15-6.08 3.487c-.373.199-2.542 1.531-3.29 5.898l-.006.039c-.009.07-.92 7.173-.906 19.875.014 12.62.603 17.116 1.172 21.465l.002.015c.308 2.355 3.475 2.923 3.836 2.98l.034.004c.101.013.204.019.305.019a2.77 2.77 0 0 0 1.396-.392l75.273-43.552c1.811-1.071 2.999-3.423 3.542-6.997 1.186-7.814 1.734-33.096-.301-40.299-.253-.893-.704-1.527-1.343-1.882l-.132-.062-2.085-.789a.973.973 0 0 0-.353-.065' fill='#455A64'/><path d='M128.267 11.565l1.495.434-56.339 32.326' fill='#FFF'/><path d='M74.202 90.545a.5.5 0 0 1-.25-.931l18.437-10.645a.499.499 0 1 1 .499.864L74.451 90.478l-.249.067M75.764 42.654l-.108-.062.046-.171 5.135-2.964.17.045-.045.171-5.135 2.964-.063.017M70.52 90.375V46.421l.063-.036L137.84 7.554v43.954l-.062.036L70.52 90.375zm.25-43.811v43.38l66.821-38.579V7.985L70.77 46.564z' fill='#607D8B'/><path d='M86.986 83.182c-.23.149-.612.384-.849.523l-11.505 6.701c-.237.139-.206.252.068.252h.565c.275 0 .693-.113.93-.252L87.7 83.705c.237-.139.428-.253.425-.256a11.29 11.29 0 0 1-.006-.503c0-.274-.188-.377-.418-.227l-.715.463' fill='#607D8B'/><path d='M75.266 90.782H74.7c-.2 0-.316-.056-.346-.166-.03-.11.043-.217.215-.317l11.505-6.702c.236-.138.615-.371.844-.519l.715-.464a.488.488 0 0 1 .266-.089c.172 0 .345.13.345.421 0 .214.001.363.003.437l.006.004-.004.069c-.003.075-.003.075-.486.356l-11.505 6.702a2.282 2.282 0 0 1-.992.268zm-.6-.25l.034.001h.566c.252 0 .649-.108.866-.234l11.505-6.702c.168-.098.294-.173.361-.214-.004-.084-.004-.218-.004-.437l-.095-.171-.131.049-.714.463c-.232.15-.616.386-.854.525l-11.505 6.702-.029.018z' fill='#607D8B'/><path d='M75.266 89.871H74.7c-.2 0-.316-.056-.346-.166-.03-.11.043-.217.215-.317l11.505-6.702c.258-.151.694-.268.993-.268h.565c.2 0 .316.056.346.166.03.11-.043.217-.215.317l-11.505 6.702a2.282 2.282 0 0 1-.992.268zm-.6-.25l.034.001h.566c.252 0 .649-.107.866-.234l11.505-6.702.03-.018-.035-.001h-.565c-.252 0-.649.108-.867.234l-11.505 6.702-.029.018zM74.37 90.801v-1.247 1.247' fill='#607D8B'/><path d='M68.13 93.901c-.751-.093-1.314-.737-1.439-1.376-.831-4.238-1.151-8.782-1.165-21.352-.015-12.784.897-19.745.897-19.745.711-4.146 2.787-5.192 2.787-5.192l74.859-43.219c.223-.129 2.487-1.584 3.195.923 1.95 6.9 1.488 31.887.275 39.878-.389 2.565-1.248 5.215-3.056 6.283L69.21 93.653c-.382.221-.749.288-1.08.248 0 0-2.781-.441-3.001-2.125-.561-4.281-1.152-8.781-1.167-21.351-.014-12.784.898-19.745.898-19.745.71-4.146 2.787-5.191 2.787-5.191l6.598-3.81.871-.119 6.599-3.83.046-.461L68.13 93.901' fill='#FAFAFA'/><path d='M68.317 94.161l-.215-.013h-.001l-.244-.047c-.719-.156-2.772-.736-2.976-2.292-.568-4.34-1.154-8.813-1.168-21.384-.014-12.654.891-19.707.9-19.777.725-4.231 2.832-5.338 2.922-5.382l6.628-3.827.87-.119 6.446-3.742.034-.334a.248.248 0 0 1 .273-.223.248.248 0 0 1 .223.272l-.059.589-6.752 3.919-.87.118-6.556 3.785c-.031.016-1.99 1.068-2.666 5.018-.007.06-.908 7.086-.894 19.702.014 12.539.597 16.996 1.161 21.305.091.691.689 1.154 1.309 1.452a1.95 1.95 0 0 1-.236-.609c-.781-3.984-1.155-8.202-1.17-21.399-.014-12.653.891-19.707.9-19.777.725-4.231 2.832-5.337 2.922-5.382-.004.001 74.444-42.98 74.846-43.212l.028-.017c.904-.538 1.72-.688 2.36-.433.555.221.949.733 1.172 1.52 2.014 7.128 1.46 32.219.281 39.983-.507 3.341-1.575 5.515-3.175 6.462L69.335 93.869a2.023 2.023 0 0 1-1.018.292zm-.147-.507c.293.036.604-.037.915-.217l75.273-43.551c1.823-1.078 2.602-3.915 2.934-6.106 1.174-7.731 1.731-32.695-.268-39.772-.178-.631-.473-1.032-.876-1.192-.484-.193-1.166-.052-1.921.397l-.034.021-74.858 43.218c-.031.017-1.989 1.069-2.666 5.019-.007.059-.908 7.085-.894 19.702.015 13.155.386 17.351 1.161 21.303.09.461.476.983 1.037 1.139.114.025.185.037.196.039h.001z' fill='#455A64'/><path d='M69.317 68.982c.489-.281.885-.056.885.505 0 .56-.396 1.243-.885 1.525-.488.282-.884.057-.884-.504 0-.56.396-1.243.884-1.526' fill='#FFF'/><path d='M68.92 71.133c-.289 0-.487-.228-.487-.625 0-.56.396-1.243.884-1.526a.812.812 0 0 1 .397-.121c.289 0 .488.229.488.626 0 .56-.396 1.243-.885 1.525a.812.812 0 0 1-.397.121m.794-2.459a.976.976 0 0 0-.49.147c-.548.317-.978 1.058-.978 1.687 0 .486.271.812.674.812a.985.985 0 0 0 .491-.146c.548-.317.978-1.057.978-1.687 0-.486-.272-.813-.675-.813' fill='#8097A2'/><path d='M68.92 70.947c-.271 0-.299-.307-.299-.439 0-.491.361-1.116.79-1.363a.632.632 0 0 1 .303-.096c.272 0 .301.306.301.438 0 .491-.363 1.116-.791 1.364a.629.629 0 0 1-.304.096m.794-2.086a.812.812 0 0 0-.397.121c-.488.283-.884.966-.884 1.526 0 .397.198.625.487.625a.812.812 0 0 0 .397-.121c.489-.282.885-.965.885-1.525 0-.397-.199-.626-.488-.626' fill='#8097A2'/><path d='M69.444 85.35c.264-.152.477-.031.477.272 0 .303-.213.67-.477.822-.263.153-.477.031-.477-.271 0-.302.214-.671.477-.823' fill='#FFF'/><path d='M69.23 86.51c-.156 0-.263-.123-.263-.337 0-.302.214-.671.477-.823a.431.431 0 0 1 .214-.066c.156 0 .263.124.263.338 0 .303-.213.67-.477.822a.431.431 0 0 1-.214.066m.428-1.412c-.1 0-.203.029-.307.09-.32.185-.57.618-.57.985 0 .309.185.524.449.524a.63.63 0 0 0 .308-.09c.32-.185.57-.618.57-.985 0-.309-.185-.524-.45-.524' fill='#8097A2'/><path d='M69.23 86.322l-.076-.149c0-.235.179-.544.384-.661l.12-.041.076.151c0 .234-.179.542-.383.66l-.121.04m.428-1.038a.431.431 0 0 0-.214.066c-.263.152-.477.521-.477.823 0 .214.107.337.263.337a.431.431 0 0 0 .214-.066c.264-.152.477-.519.477-.822 0-.214-.107-.338-.263-.338' fill='#8097A2'/><path d='M139.278 7.769v43.667L72.208 90.16V46.493l67.07-38.724' fill='#455A64'/><path d='M72.083 90.375V46.421l.063-.036 67.257-38.831v43.954l-.062.036-67.258 38.831zm.25-43.811v43.38l66.821-38.579V7.985L72.333 46.564z' fill='#607D8B'/></g><path d='M125.737 88.647l-7.639 3.334V84l-11.459 4.713v8.269L99 100.315l13.369 3.646 13.368-15.314' fill='#455A64'/></g></svg>";
 function RotateInstructions() {
   this.loadIcon_();
   var overlay = document.createElement('div');
@@ -4057,7 +4428,7 @@ RotateInstructions.prototype.update = function () {
   }
 };
 RotateInstructions.prototype.loadIcon_ = function () {
-  this.icon = base64('image/svg+xml', rotateInstructionsAsset);
+  this.icon = dataUri('image/svg+xml', rotateInstructionsAsset);
 };
 var DEFAULT_VIEWER = 'CardboardV1';
 var VIEWER_KEY = 'WEBVR_CARDBOARD_VIEWER';
@@ -4202,7 +4573,7 @@ ViewerSelector.prototype.createButton_ = function (label, onclick) {
 };
 var commonjsGlobal$$1 = typeof window !== 'undefined' ? window : typeof commonjsGlobal !== 'undefined' ? commonjsGlobal : typeof self !== 'undefined' ? self : {};
 function unwrapExports$$1 (x) {
-	return x && x.__esModule ? x['default'] : x;
+	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
 }
 function createCommonjsModule$$1(fn, module) {
 	return module = { exports: {} }, fn(module, module.exports), module.exports;
@@ -4905,493 +5276,143 @@ return CardboardVRDisplay;
 });
 var CardboardVRDisplay = unwrapExports(cardboardVrDisplay);
 
-var PolyfilledXRDevice = function (_EventTarget) {
-  inherits(PolyfilledXRDevice, _EventTarget);
-  function PolyfilledXRDevice(global) {
-    classCallCheck(this, PolyfilledXRDevice);
-    var _this = possibleConstructorReturn(this, (PolyfilledXRDevice.__proto__ || Object.getPrototypeOf(PolyfilledXRDevice)).call(this));
-    _this.global = global;
-    _this.onWindowResize = _this.onWindowResize.bind(_this);
-    _this.global.window.addEventListener('resize', _this.onWindowResize);
-    _this.environmentBlendMode = 'opaque';
-    return _this;
+class XRDevice extends EventTarget {
+  constructor(global) {
+    super();
+    this.global = global;
+    this.onWindowResize = this.onWindowResize.bind(this);
+    this.global.window.addEventListener('resize', this.onWindowResize);
+    this.environmentBlendMode = 'opaque';
   }
-  createClass(PolyfilledXRDevice, [{
-    key: 'onBaseLayerSet',
-    value: function onBaseLayerSet(sessionId, layer) {
-      throw new Error('Not implemented');
-    }
-  }, {
-    key: 'supportsSession',
-    value: function supportsSession() {
-      throw new Error('Not implemented');
-    }
-  }, {
-    key: 'requestSession',
-    value: function requestSession() {
-      return new Promise(function ($return, $error) {
-        return $error(new Error('Not implemented'));
-      }.bind(this));
-    }
-  }, {
-    key: 'requestAnimationFrame',
-    value: function requestAnimationFrame(callback) {
-      throw new Error('Not implemented');
-    }
-  }, {
-    key: 'onFrameStart',
-    value: function onFrameStart(sessionId) {
-      throw new Error('Not implemented');
-    }
-  }, {
-    key: 'onFrameEnd',
-    value: function onFrameEnd(sessionId) {
-      throw new Error('Not implemented');
-    }
-  }, {
-    key: 'requestStageBounds',
-    value: function requestStageBounds() {
-      throw new Error('Not implemented');
-    }
-  }, {
-    key: 'requestFrameOfReferenceTransform',
-    value: function requestFrameOfReferenceTransform(type, options) {
-      return new Promise(function ($return, $error) {
-        return $return(undefined);
-      }.bind(this));
-    }
-  }, {
-    key: 'cancelAnimationFrame',
-    value: function cancelAnimationFrame(handle) {
-      throw new Error('Not implemented');
-    }
-  }, {
-    key: 'endSession',
-    value: function endSession(sessionId) {
-      throw new Error('Not implemented');
-    }
-  }, {
-    key: 'getViewport',
-    value: function getViewport(sessionId, eye, layer, target) {
-      throw new Error('Not implemented');
-    }
-  }, {
-    key: 'getProjectionMatrix',
-    value: function getProjectionMatrix(eye) {
-      throw new Error('Not implemented');
-    }
-  }, {
-    key: 'getBasePoseMatrix',
-    value: function getBasePoseMatrix() {
-      throw new Error('Not implemented');
-    }
-  }, {
-    key: 'getBaseViewMatrix',
-    value: function getBaseViewMatrix(eye) {
-      throw new Error('Not implemented');
-    }
-  }, {
-    key: 'getInputSources',
-    value: function getInputSources() {
-      throw new Error('Not implemented');
-    }
-  }, {
-    key: 'getInputPose',
-    value: function getInputPose(inputSource, coordinateSystem) {
-      throw new Error('Not implemented');
-    }
-  }, {
-    key: 'onWindowResize',
-    value: function onWindowResize() {
-      this.onWindowResize();
-    }
-  }, {
-    key: 'depthNear',
-    get: function get$$1() {
-      throw new Error('Not implemented');
-    }
-    ,
-    set: function set$$1(val) {
-      throw new Error('Not implemented');
-    }
-  }, {
-    key: 'depthFar',
-    get: function get$$1() {
-      throw new Error('Not implemented');
-    }
-    ,
-    set: function set$$1(val) {
-      throw new Error('Not implemented');
-    }
-  }]);
-  return PolyfilledXRDevice;
-}(EventTarget);
-
-function create$2() {
-  var out = new ARRAY_TYPE(9);
-  out[0] = 1;
-  out[1] = 0;
-  out[2] = 0;
-  out[3] = 0;
-  out[4] = 1;
-  out[5] = 0;
-  out[6] = 0;
-  out[7] = 0;
-  out[8] = 1;
-  return out;
-}
-
-function create$3() {
-  var out = new ARRAY_TYPE(4);
-  out[0] = 0;
-  out[1] = 0;
-  out[2] = 0;
-  out[3] = 0;
-  return out;
-}
-function clone$3(a) {
-  var out = new ARRAY_TYPE(4);
-  out[0] = a[0];
-  out[1] = a[1];
-  out[2] = a[2];
-  out[3] = a[3];
-  return out;
-}
-
-function copy$3(out, a) {
-  out[0] = a[0];
-  out[1] = a[1];
-  out[2] = a[2];
-  out[3] = a[3];
-  return out;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-function normalize$1(out, a) {
-  var x = a[0];
-  var y = a[1];
-  var z = a[2];
-  var w = a[3];
-  var len = x * x + y * y + z * z + w * w;
-  if (len > 0) {
-    len = 1 / Math.sqrt(len);
-    out[0] = x * len;
-    out[1] = y * len;
-    out[2] = z * len;
-    out[3] = w * len;
+  get depthNear() { throw new Error('Not implemented'); }
+  set depthNear(val) { throw new Error('Not implemented'); }
+  get depthFar() { throw new Error('Not implemented'); }
+  set depthFar(val) { throw new Error('Not implemented'); }
+  onBaseLayerSet(sessionId, layer) { throw new Error('Not implemented'); }
+  onInlineVerticalFieldOfViewSet(sessionId, value) { throw new Error('Not implemented'); }
+  supportsSession(mode) { throw new Error('Not implemented'); }
+  async requestSession(mode) { throw new Error('Not implemented'); }
+  requestAnimationFrame(callback) { throw new Error('Not implemented'); }
+  onFrameStart(sessionId) { throw new Error('Not implemented'); }
+  onFrameEnd(sessionId) { throw new Error('Not implemented'); }
+  requestStageBounds() { throw new Error('Not implemented'); }
+  async requestFrameOfReferenceTransform(type, options) {
+    return undefined;
   }
-  return out;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-var forEach$1 = function () {
-  var vec = create$3();
-  return function (a, stride, offset, count, fn, arg) {
-    var i = void 0,
-        l = void 0;
-    if (!stride) {
-      stride = 4;
-    }
-    if (!offset) {
-      offset = 0;
-    }
-    if (count) {
-      l = Math.min(count * stride + offset, a.length);
-    } else {
-      l = a.length;
-    }
-    for (i = offset; i < l; i += stride) {
-      vec[0] = a[i];vec[1] = a[i + 1];vec[2] = a[i + 2];vec[3] = a[i + 3];
-      fn(vec, vec, arg);
-      a[i] = vec[0];a[i + 1] = vec[1];a[i + 2] = vec[2];a[i + 3] = vec[3];
-    }
-    return a;
-  };
-}();
-
-function create$4() {
-  var out = new ARRAY_TYPE(4);
-  out[0] = 0;
-  out[1] = 0;
-  out[2] = 0;
-  out[3] = 1;
-  return out;
-}
-
-function setAxisAngle(out, axis, rad) {
-  rad = rad * 0.5;
-  var s = Math.sin(rad);
-  out[0] = s * axis[0];
-  out[1] = s * axis[1];
-  out[2] = s * axis[2];
-  out[3] = Math.cos(rad);
-  return out;
-}
-
-function multiply$4(out, a, b) {
-  var ax = a[0],
-      ay = a[1],
-      az = a[2],
-      aw = a[3];
-  var bx = b[0],
-      by = b[1],
-      bz = b[2],
-      bw = b[3];
-  out[0] = ax * bw + aw * bx + ay * bz - az * by;
-  out[1] = ay * bw + aw * by + az * bx - ax * bz;
-  out[2] = az * bw + aw * bz + ax * by - ay * bx;
-  out[3] = aw * bw - ax * bx - ay * by - az * bz;
-  return out;
-}
-
-
-
-
-function slerp(out, a, b, t) {
-  var ax = a[0],
-      ay = a[1],
-      az = a[2],
-      aw = a[3];
-  var bx = b[0],
-      by = b[1],
-      bz = b[2],
-      bw = b[3];
-  var omega = void 0,
-      cosom = void 0,
-      sinom = void 0,
-      scale0 = void 0,
-      scale1 = void 0;
-  cosom = ax * bx + ay * by + az * bz + aw * bw;
-  if (cosom < 0.0) {
-    cosom = -cosom;
-    bx = -bx;
-    by = -by;
-    bz = -bz;
-    bw = -bw;
+  cancelAnimationFrame(handle) { throw new Error('Not implemented'); }
+  endSession(sessionId) { throw new Error('Not implemented'); }
+  getViewport(sessionId, eye, layer, target) { throw new Error('Not implemented'); }
+  getProjectionMatrix(eye) { throw new Error('Not implemented'); }
+  getBasePoseMatrix() { throw new Error('Not implemented'); }
+  getBaseViewMatrix(eye) { throw new Error('Not implemented'); }
+  getInputSources() { throw new Error('Not implemented'); }
+  getInputPose(inputSource, coordinateSystem, poseType) { throw new Error('Not implemented'); }
+  onWindowResize() {
+    this.onWindowResize();
   }
-  if (1.0 - cosom > 0.000001) {
-    omega = Math.acos(cosom);
-    sinom = Math.sin(omega);
-    scale0 = Math.sin((1.0 - t) * omega) / sinom;
-    scale1 = Math.sin(t * omega) / sinom;
-  } else {
-    scale0 = 1.0 - t;
-    scale1 = t;
+}
+
+let oculusTouch = {
+  mapping: 'xr-standard',
+  id: 'oculus-touch',
+  buttons: {
+    length: 6,
+    0: 1,
+    1: 0,
+    2: 2,
+    3: null,
+    4: 3,
+    5: 4
+  },
+  gripTransform: {
+    position: [0, -0.02, 0.04, 1],
+    orientation: [Math.PI * 0.11, 0, 0, 1]
   }
-  out[0] = scale0 * ax + scale1 * bx;
-  out[1] = scale0 * ay + scale1 * by;
-  out[2] = scale0 * az + scale1 * bz;
-  out[3] = scale0 * aw + scale1 * bw;
-  return out;
-}
-function invert$2(out, a) {
-  var a0 = a[0],
-      a1 = a[1],
-      a2 = a[2],
-      a3 = a[3];
-  var dot$$1 = a0 * a0 + a1 * a1 + a2 * a2 + a3 * a3;
-  var invDot = dot$$1 ? 1.0 / dot$$1 : 0;
-  out[0] = -a0 * invDot;
-  out[1] = -a1 * invDot;
-  out[2] = -a2 * invDot;
-  out[3] = a3 * invDot;
-  return out;
-}
-
-function fromMat3(out, m) {
-  var fTrace = m[0] + m[4] + m[8];
-  var fRoot = void 0;
-  if (fTrace > 0.0) {
-    fRoot = Math.sqrt(fTrace + 1.0);
-    out[3] = 0.5 * fRoot;
-    fRoot = 0.5 / fRoot;
-    out[0] = (m[5] - m[7]) * fRoot;
-    out[1] = (m[6] - m[2]) * fRoot;
-    out[2] = (m[1] - m[3]) * fRoot;
-  } else {
-    var i = 0;
-    if (m[4] > m[0]) i = 1;
-    if (m[8] > m[i * 3 + i]) i = 2;
-    var j = (i + 1) % 3;
-    var k = (i + 2) % 3;
-    fRoot = Math.sqrt(m[i * 3 + i] - m[j * 3 + j] - m[k * 3 + k] + 1.0);
-    out[i] = 0.5 * fRoot;
-    fRoot = 0.5 / fRoot;
-    out[3] = (m[j * 3 + k] - m[k * 3 + j]) * fRoot;
-    out[j] = (m[j * 3 + i] + m[i * 3 + j]) * fRoot;
-    out[k] = (m[k * 3 + i] + m[i * 3 + k]) * fRoot;
+};
+let windowsMixedReality = {
+  mapping: 'xr-standard',
+  id: 'windows-mixed-reality',
+  buttons: {
+    length: 4,
+    0: 1,
+    1: 0,
+    2: 2,
+    3: 4,
+  },
+  gripTransform: {
+    position: [0, -0.02, 0.04, 1],
+    orientation: [Math.PI * 0.11, 0, 0, 1]
   }
-  return out;
-}
-function fromEuler(out, x, y, z) {
-  var halfToRad = 0.5 * Math.PI / 180.0;
-  x *= halfToRad;
-  y *= halfToRad;
-  z *= halfToRad;
-  var sx = Math.sin(x);
-  var cx = Math.cos(x);
-  var sy = Math.sin(y);
-  var cy = Math.cos(y);
-  var sz = Math.sin(z);
-  var cz = Math.cos(z);
-  out[0] = sx * cy * cz - cx * sy * sz;
-  out[1] = cx * sy * cz + sx * cy * sz;
-  out[2] = cx * cy * sz - sx * sy * cz;
-  out[3] = cx * cy * cz + sx * sy * sz;
-  return out;
-}
-
-var clone$4 = clone$3;
-
-var copy$4 = copy$3;
-
-
-
-
-
-
-
-
-
-
-var normalize$2 = normalize$1;
-
-
-var rotationTo = function () {
-  var tmpvec3 = create$1();
-  var xUnitVec3 = fromValues$1(1, 0, 0);
-  var yUnitVec3 = fromValues$1(0, 1, 0);
-  return function (out, a, b) {
-    var dot$$1 = dot(a, b);
-    if (dot$$1 < -0.999999) {
-      cross(tmpvec3, xUnitVec3, a);
-      if (len(tmpvec3) < 0.000001) cross(tmpvec3, yUnitVec3, a);
-      normalize(tmpvec3, tmpvec3);
-      setAxisAngle(out, tmpvec3, Math.PI);
-      return out;
-    } else if (dot$$1 > 0.999999) {
-      out[0] = 0;
-      out[1] = 0;
-      out[2] = 0;
-      out[3] = 1;
-      return out;
-    } else {
-      cross(tmpvec3, a, b);
-      out[0] = tmpvec3[0];
-      out[1] = tmpvec3[1];
-      out[2] = tmpvec3[2];
-      out[3] = 1 + dot$$1;
-      return normalize$2(out, out);
+};
+let GamepadMappings = {
+  "Oculus Touch (Right)": oculusTouch,
+  "Oculus Touch (Left)": oculusTouch,
+  "Oculus Go Controller": {
+    mapping: 'xr-standard',
+    id: 'oculus-go',
+    buttons: {
+      0: 1,
+      1: 0,
+    },
+    gripTransform: {
+      orientation: [Math.PI * 0.11, 0, 0, 1]
     }
-  };
-}();
-var sqlerp = function () {
-  var temp1 = create$4();
-  var temp2 = create$4();
-  return function (out, a, b, c, d, t) {
-    slerp(temp1, a, d, t);
-    slerp(temp2, b, c, t);
-    slerp(out, temp1, temp2, 2 * t * (1 - t));
-    return out;
-  };
-}();
-var setAxes = function () {
-  var matr = create$2();
-  return function (out, view, right, up) {
-    matr[0] = right[0];
-    matr[3] = right[1];
-    matr[6] = right[2];
-    matr[1] = up[0];
-    matr[4] = up[1];
-    matr[7] = up[2];
-    matr[2] = -view[0];
-    matr[5] = -view[1];
-    matr[8] = -view[2];
-    return normalize$2(out, fromMat3(out, matr));
-  };
-}();
+  },
+  "Windows Mixed Reality (Right)": windowsMixedReality,
+  "Windows Mixed Reality (Left)": windowsMixedReality,
+};
 
-var HEAD_ELBOW_OFFSET_RIGHTHANDED = fromValues$1(0.155, -0.465, -0.15);
-var HEAD_ELBOW_OFFSET_LEFTHANDED = fromValues$1(-0.155, -0.465, -0.15);
-var ELBOW_WRIST_OFFSET = fromValues$1(0, 0, -0.25);
-var WRIST_CONTROLLER_OFFSET = fromValues$1(0, 0, 0.05);
-var ARM_EXTENSION_OFFSET = fromValues$1(-0.08, 0.14, 0.08);
-var ELBOW_BEND_RATIO = 0.4;
-var EXTENSION_RATIO_WEIGHT = 0.4;
-var MIN_ANGULAR_SPEED = 0.61;
-var MIN_ANGLE_DELTA = 0.175;
-var MIN_EXTENSION_COS = 0.12;
-var MAX_EXTENSION_COS = 0.87;
-var RAD_TO_DEG = 180 / Math.PI;
+const HEAD_ELBOW_OFFSET_RIGHTHANDED = fromValues$1(0.155, -0.465, -0.15);
+const HEAD_ELBOW_OFFSET_LEFTHANDED = fromValues$1(-0.155, -0.465, -0.15);
+const ELBOW_WRIST_OFFSET = fromValues$1(0, 0, -0.25);
+const WRIST_CONTROLLER_OFFSET = fromValues$1(0, 0, 0.05);
+const ARM_EXTENSION_OFFSET = fromValues$1(-0.08, 0.14, 0.08);
+const ELBOW_BEND_RATIO = 0.4;
+const EXTENSION_RATIO_WEIGHT = 0.4;
+const MIN_ANGULAR_SPEED = 0.61;
+const MIN_ANGLE_DELTA = 0.175;
+const MIN_EXTENSION_COS = 0.12;
+const MAX_EXTENSION_COS = 0.87;
+const RAD_TO_DEG = 180 / Math.PI;
 function eulerFromQuaternion(out, q, order) {
   function clamp(value, min$$1, max$$1) {
-    return value < min$$1 ? min$$1 : value > max$$1 ? max$$1 : value;
+    return (value < min$$1 ? min$$1 : (value > max$$1 ? max$$1 : value));
   }
   var sqx = q[0] * q[0];
   var sqy = q[1] * q[1];
   var sqz = q[2] * q[2];
   var sqw = q[3] * q[3];
-  if (order === 'XYZ') {
-    out[0] = Math.atan2(2 * (q[0] * q[3] - q[1] * q[2]), sqw - sqx - sqy + sqz);
-    out[1] = Math.asin(clamp(2 * (q[0] * q[2] + q[1] * q[3]), -1, 1));
-    out[2] = Math.atan2(2 * (q[2] * q[3] - q[0] * q[1]), sqw + sqx - sqy - sqz);
-  } else if (order === 'YXZ') {
-    out[0] = Math.asin(clamp(2 * (q[0] * q[3] - q[1] * q[2]), -1, 1));
-    out[1] = Math.atan2(2 * (q[0] * q[2] + q[1] * q[3]), sqw - sqx - sqy + sqz);
-    out[2] = Math.atan2(2 * (q[0] * q[1] + q[2] * q[3]), sqw - sqx + sqy - sqz);
-  } else if (order === 'ZXY') {
-    out[0] = Math.asin(clamp(2 * (q[0] * q[3] + q[1] * q[2]), -1, 1));
-    out[1] = Math.atan2(2 * (q[1] * q[3] - q[2] * q[0]), sqw - sqx - sqy + sqz);
-    out[2] = Math.atan2(2 * (q[2] * q[3] - q[0] * q[1]), sqw - sqx + sqy - sqz);
-  } else if (order === 'ZYX') {
-    out[0] = Math.atan2(2 * (q[0] * q[3] + q[2] * q[1]), sqw - sqx - sqy + sqz);
-    out[1] = Math.asin(clamp(2 * (q[1] * q[3] - q[0] * q[2]), -1, 1));
-    out[2] = Math.atan2(2 * (q[0] * q[1] + q[2] * q[3]), sqw + sqx - sqy - sqz);
-  } else if (order === 'YZX') {
-    out[0] = Math.atan2(2 * (q[0] * q[3] - q[2] * q[1]), sqw - sqx + sqy - sqz);
-    out[1] = Math.atan2(2 * (q[1] * q[3] - q[0] * q[2]), sqw + sqx - sqy - sqz);
-    out[2] = Math.asin(clamp(2 * (q[0] * q[1] + q[2] * q[3]), -1, 1));
-  } else if (order === 'XZY') {
-    out[0] = Math.atan2(2 * (q[0] * q[3] + q[1] * q[2]), sqw - sqx + sqy - sqz);
-    out[1] = Math.atan2(2 * (q[0] * q[2] + q[1] * q[3]), sqw + sqx - sqy - sqz);
-    out[2] = Math.asin(clamp(2 * (q[2] * q[3] - q[0] * q[1]), -1, 1));
+  if ( order === 'XYZ' ) {
+    out[0] = Math.atan2( 2 * ( q[0] * q[3] - q[1] * q[2] ), ( sqw - sqx - sqy + sqz ) );
+    out[1] = Math.asin(  clamp( 2 * ( q[0] * q[2] + q[1] * q[3] ), -1, 1 ) );
+    out[2] = Math.atan2( 2 * ( q[2] * q[3] - q[0] * q[1] ), ( sqw + sqx - sqy - sqz ) );
+  } else if ( order ===  'YXZ' ) {
+    out[0] = Math.asin(  clamp( 2 * ( q[0] * q[3] - q[1] * q[2] ), -1, 1 ) );
+    out[1] = Math.atan2( 2 * ( q[0] * q[2] + q[1] * q[3] ), ( sqw - sqx - sqy + sqz ) );
+    out[2] = Math.atan2( 2 * ( q[0] * q[1] + q[2] * q[3] ), ( sqw - sqx + sqy - sqz ) );
+  } else if ( order === 'ZXY' ) {
+    out[0] = Math.asin(  clamp( 2 * ( q[0] * q[3] + q[1] * q[2] ), -1, 1 ) );
+    out[1] = Math.atan2( 2 * ( q[1] * q[3] - q[2] * q[0] ), ( sqw - sqx - sqy + sqz ) );
+    out[2] = Math.atan2( 2 * ( q[2] * q[3] - q[0] * q[1] ), ( sqw - sqx + sqy - sqz ) );
+  } else if ( order === 'ZYX' ) {
+    out[0] = Math.atan2( 2 * ( q[0] * q[3] + q[2] * q[1] ), ( sqw - sqx - sqy + sqz ) );
+    out[1] = Math.asin(  clamp( 2 * ( q[1] * q[3] - q[0] * q[2] ), -1, 1 ) );
+    out[2] = Math.atan2( 2 * ( q[0] * q[1] + q[2] * q[3] ), ( sqw + sqx - sqy - sqz ) );
+  } else if ( order === 'YZX' ) {
+    out[0] = Math.atan2( 2 * ( q[0] * q[3] - q[2] * q[1] ), ( sqw - sqx + sqy - sqz ) );
+    out[1] = Math.atan2( 2 * ( q[1] * q[3] - q[0] * q[2] ), ( sqw + sqx - sqy - sqz ) );
+    out[2] = Math.asin(  clamp( 2 * ( q[0] * q[1] + q[2] * q[3] ), -1, 1 ) );
+  } else if ( order === 'XZY' ) {
+    out[0] = Math.atan2( 2 * ( q[0] * q[3] + q[1] * q[2] ), ( sqw - sqx + sqy - sqz ) );
+    out[1] = Math.atan2( 2 * ( q[0] * q[2] + q[1] * q[3] ), ( sqw + sqx - sqy - sqz ) );
+    out[2] = Math.asin(  clamp( 2 * ( q[2] * q[3] - q[0] * q[1] ), -1, 1 ) );
   } else {
     console.log('No order given for quaternion to euler conversion.');
     return;
   }
 }
-var OrientationArmModel = function () {
-  function OrientationArmModel() {
-    classCallCheck(this, OrientationArmModel);
+class OrientationArmModel {
+  constructor() {
     this.hand = 'right';
     this.headElbowOffset = HEAD_ELBOW_OFFSET_RIGHTHANDED;
     this.controllerQ = create$4();
@@ -5405,115 +5426,196 @@ var OrientationArmModel = function () {
     this.rootQ = create$4();
     this.position = create$1();
   }
-  createClass(OrientationArmModel, [{
-    key: 'setHandedness',
-    value: function setHandedness(hand) {
-      if (this.hand != hand) {
-        this.hand = hand;
-        if (this.hand == 'left') {
-          this.headElbowOffset = HEAD_ELBOW_OFFSET_LEFTHANDED;
-        } else {
-          this.headElbowOffset = HEAD_ELBOW_OFFSET_RIGHTHANDED;
-        }
-      }
-    }
-  }, {
-    key: 'update',
-    value: function update(controllerOrientation, headPoseMatrix) {
-      this.time = now$1();
-      if (controllerOrientation) {
-        copy$4(this.lastControllerQ, this.controllerQ);
-        copy$4(this.controllerQ, controllerOrientation);
-      }
-      if (headPoseMatrix) {
-        getTranslation(this.headPos, headPoseMatrix);
-        getRotation(this.headQ, headPoseMatrix);
-      }
-      var headYawQ = this.getHeadYawOrientation_();
-      var angleDelta = this.quatAngle_(this.lastControllerQ, this.controllerQ);
-      var timeDelta = (this.time - this.lastTime) / 1000;
-      var controllerAngularSpeed = angleDelta / timeDelta;
-      if (controllerAngularSpeed > MIN_ANGULAR_SPEED) {
-        slerp(this.rootQ, this.rootQ, headYawQ, Math.min(angleDelta / MIN_ANGLE_DELTA, 1.0));
+  setHandedness(hand) {
+    if (this.hand != hand) {
+      this.hand = hand;
+      if (this.hand == 'left') {
+        this.headElbowOffset = HEAD_ELBOW_OFFSET_LEFTHANDED;
       } else {
-        copy$4(this.rootQ, headYawQ);
+        this.headElbowOffset = HEAD_ELBOW_OFFSET_RIGHTHANDED;
       }
-      var controllerForward = fromValues$1(0, 0, -1.0);
-      transformQuat(controllerForward, controllerForward, this.controllerQ);
-      var controllerDotY = dot(controllerForward, [0, 1, 0]);
-      var extensionRatio = this.clamp_((controllerDotY - MIN_EXTENSION_COS) / MAX_EXTENSION_COS, 0.0, 1.0);
-      var controllerCameraQ = clone$4(this.rootQ);
-      invert$2(controllerCameraQ, controllerCameraQ);
-      multiply$4(controllerCameraQ, controllerCameraQ, this.controllerQ);
-      var elbowPos = this.elbowPos;
-      copy$1(elbowPos, this.headPos);
-      add$1(elbowPos, elbowPos, this.headElbowOffset);
-      var elbowOffset = clone$1(ARM_EXTENSION_OFFSET);
-      scale$1(elbowOffset, elbowOffset, extensionRatio);
-      add$1(elbowPos, elbowPos, elbowOffset);
-      var totalAngle = this.quatAngle_(controllerCameraQ, create$4());
-      var totalAngleDeg = totalAngle * RAD_TO_DEG;
-      var lerpSuppression = 1 - Math.pow(totalAngleDeg / 180, 4);var elbowRatio = ELBOW_BEND_RATIO;
-      var wristRatio = 1 - ELBOW_BEND_RATIO;
-      var lerpValue = lerpSuppression * (elbowRatio + wristRatio * extensionRatio * EXTENSION_RATIO_WEIGHT);
-      var wristQ = create$4();
-      slerp(wristQ, wristQ, controllerCameraQ, lerpValue);
-      var invWristQ = invert$2(create$4(), wristQ);
-      var elbowQ = clone$4(controllerCameraQ);
-      multiply$4(elbowQ, elbowQ, invWristQ);
-      var wristPos = this.wristPos;
-      copy$1(wristPos, WRIST_CONTROLLER_OFFSET);
-      transformQuat(wristPos, wristPos, wristQ);
-      add$1(wristPos, wristPos, ELBOW_WRIST_OFFSET);
-      transformQuat(wristPos, wristPos, elbowQ);
-      add$1(wristPos, wristPos, elbowPos);
-      var offset = clone$1(ARM_EXTENSION_OFFSET);
-      scale$1(offset, offset, extensionRatio);
-      add$1(this.position, this.wristPos, offset);
-      transformQuat(this.position, this.position, this.rootQ);
-      this.lastTime = this.time;
     }
-  }, {
-    key: 'getPosition',
-    value: function getPosition() {
-      return this.position;
+  }
+  update(controllerOrientation, headPoseMatrix) {
+    this.time = now$1();
+    if (controllerOrientation) {
+      copy$4(this.lastControllerQ, this.controllerQ);
+      copy$4(this.controllerQ, controllerOrientation);
     }
-  }, {
-    key: 'getHeadYawOrientation_',
-    value: function getHeadYawOrientation_() {
-      var headEuler = create$1();
-      eulerFromQuaternion(headEuler, this.headQ, 'YXZ');
-      var destinationQ = fromEuler(create$4(), 0, headEuler[1] * RAD_TO_DEG, 0);
-      return destinationQ;
+    if (headPoseMatrix) {
+      getTranslation(this.headPos, headPoseMatrix);
+      getRotation(this.headQ, headPoseMatrix);
     }
-  }, {
-    key: 'clamp_',
-    value: function clamp_(value, min$$1, max$$1) {
-      return Math.min(Math.max(value, min$$1), max$$1);
+    let headYawQ = this.getHeadYawOrientation_();
+    let angleDelta = this.quatAngle_(this.lastControllerQ, this.controllerQ);
+    let timeDelta = (this.time - this.lastTime) / 1000;
+    let controllerAngularSpeed = angleDelta / timeDelta;
+    if (controllerAngularSpeed > MIN_ANGULAR_SPEED) {
+      slerp(this.rootQ, this.rootQ, headYawQ,
+                 Math.min(angleDelta / MIN_ANGLE_DELTA, 1.0));
+    } else {
+      copy$4(this.rootQ, headYawQ);
     }
-  }, {
-    key: 'quatAngle_',
-    value: function quatAngle_(q1, q2) {
-      var vec1 = [0, 0, -1];
-      var vec2 = [0, 0, -1];
-      transformQuat(vec1, vec1, q1);
-      transformQuat(vec2, vec2, q2);
-      return angle(vec1, vec2);
-    }
-  }]);
-  return OrientationArmModel;
-}();
+    let controllerForward = fromValues$1(0, 0, -1.0);
+    transformQuat(controllerForward, controllerForward, this.controllerQ);
+    let controllerDotY = dot(controllerForward, [0, 1, 0]);
+    let extensionRatio = this.clamp_(
+        (controllerDotY - MIN_EXTENSION_COS) / MAX_EXTENSION_COS, 0.0, 1.0);
+    let controllerCameraQ = clone$4(this.rootQ);
+    invert$2(controllerCameraQ, controllerCameraQ);
+    multiply$4(controllerCameraQ, controllerCameraQ, this.controllerQ);
+    let elbowPos = this.elbowPos;
+    copy$1(elbowPos, this.headPos);
+    add$1(elbowPos, elbowPos, this.headElbowOffset);
+    let elbowOffset = clone$1(ARM_EXTENSION_OFFSET);
+    scale$1(elbowOffset, elbowOffset, extensionRatio);
+    add$1(elbowPos, elbowPos, elbowOffset);
+    let totalAngle = this.quatAngle_(controllerCameraQ, create$4());
+    let totalAngleDeg = totalAngle * RAD_TO_DEG;
+    let lerpSuppression = 1 - Math.pow(totalAngleDeg / 180, 4);let elbowRatio = ELBOW_BEND_RATIO;
+    let wristRatio = 1 - ELBOW_BEND_RATIO;
+    let lerpValue = lerpSuppression *
+        (elbowRatio + wristRatio * extensionRatio * EXTENSION_RATIO_WEIGHT);
+    let wristQ = create$4();
+    slerp(wristQ, wristQ, controllerCameraQ, lerpValue);
+    let invWristQ = invert$2(create$4(), wristQ);
+    let elbowQ = clone$4(controllerCameraQ);
+    multiply$4(elbowQ, elbowQ, invWristQ);
+    let wristPos = this.wristPos;
+    copy$1(wristPos, WRIST_CONTROLLER_OFFSET);
+    transformQuat(wristPos, wristPos, wristQ);
+    add$1(wristPos, wristPos, ELBOW_WRIST_OFFSET);
+    transformQuat(wristPos, wristPos, elbowQ);
+    add$1(wristPos, wristPos, elbowPos);
+    let offset = clone$1(ARM_EXTENSION_OFFSET);
+    scale$1(offset, offset, extensionRatio);
+    add$1(this.position, this.wristPos, offset);
+    transformQuat(this.position, this.position, this.rootQ);
+    this.lastTime = this.time;
+  }
+  getPosition() {
+    return this.position;
+  }
+  getHeadYawOrientation_() {
+    let headEuler = create$1();
+    eulerFromQuaternion(headEuler, this.headQ, 'YXZ');
+    let destinationQ = fromEuler(create$4(), 0, headEuler[1] * RAD_TO_DEG, 0);
+    return destinationQ;
+  }
+  clamp_(value, min$$1, max$$1) {
+    return Math.min(Math.max(value, min$$1), max$$1);
+  }
+  quatAngle_(q1, q2) {
+    let vec1 = [0, 0, -1];
+    let vec2 = [0, 0, -1];
+    transformQuat(vec1, vec1, q1);
+    transformQuat(vec2, vec2, q2);
+    return angle(vec1, vec2);
+  }
+}
 
-var GamepadXRInputSource = function () {
-  function GamepadXRInputSource(polyfill) {
-    var primaryButtonIndex = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
-    classCallCheck(this, GamepadXRInputSource);
+const PRIVATE$16 = Symbol('@@webxr-polyfill/XRRemappedGamepad');
+const PLACEHOLDER_BUTTON = { pressed: false, touched: false, value: 0.0 };
+Object.freeze(PLACEHOLDER_BUTTON);
+class XRRemappedGamepad {
+  constructor(gamepad, map) {
+    if (!map) {
+      map = {};
+    }
+    let axes = new Array(map.axes ? map.axes.length : gamepad.axes.length);
+    let buttons = new Array(map.buttons ? map.buttons.length : gamepad.buttons.length);
+    let gripTransform = null;
+    if (map.gripTransform) {
+      let orientation = map.gripTransform.orientation || [0, 0, 0, 1];
+      gripTransform = create();
+      fromRotationTranslation(
+        gripTransform,
+        normalize$2(orientation, orientation),
+        map.gripTransform.position || [0, 0, 0]
+      );
+    }
+    let targetRayTransform = null;
+    if (map.targetRayTransform) {
+      let orientation =  map.targetRayTransform.orientation || [0, 0, 0, 1];
+      targetRayTransform = create();
+      fromRotationTranslation(
+        targetRayTransform,
+        normalize$2(orientation, orientation),
+        map.targetRayTransform.position || [0, 0, 0]
+      );
+    }
+    this[PRIVATE$16] = {
+      gamepad,
+      map,
+      id: map.id || gamepad.id,
+      mapping: map.mapping || gamepad.mapping,
+      axes,
+      buttons,
+      gripTransform,
+      targetRayTransform,
+    };
+    this._update();
+  }
+  _update() {
+    let gamepad = this[PRIVATE$16].gamepad;
+    let map = this[PRIVATE$16].map;
+    let axes = this[PRIVATE$16].axes;
+    for (let i = 0; i < axes.length; ++i) {
+      if (map.axes && i in map.axes) {
+        if (map.axes[i] === null) {
+          axes[i] = 0;
+        } else {
+          axes[i] = gamepad.axes[map.axes[i]];
+        }
+      } else {
+        axes[i] = gamepad.axes[i];
+      }
+    }
+    let buttons = this[PRIVATE$16].buttons;
+    for (let i = 0; i < buttons.length; ++i) {
+      if (map.buttons && i in map.buttons) {
+        if (map.buttons[i] === null) {
+          buttons[i] = PLACEHOLDER_BUTTON;
+        } else {
+          buttons[i] = gamepad.buttons[map.buttons[i]];
+        }
+      } else {
+        buttons[i] = gamepad.buttons[i];
+      }
+    }
+  }
+  get id() {
+    return this[PRIVATE$16].id;
+  }
+  get index() {
+    return 0;
+  }
+  get connected() {
+    return this[PRIVATE$16].gamepad.connected;
+  }
+  get timestamp() {
+    return this[PRIVATE$16].gamepad.timestamp;
+  }
+  get mapping() {
+    return this[PRIVATE$16].mapping;
+  }
+  get axes() {
+    return this[PRIVATE$16].axes;
+  }
+  get buttons() {
+    return this[PRIVATE$16].buttons;
+  }
+}
+class GamepadXRInputSource {
+  constructor(polyfill, primaryButtonIndex = 0) {
     this.polyfill = polyfill;
+    this.nativeGamepad = null;
     this.gamepad = null;
     this.inputSource = new XRInputSource(this);
     this.lastPosition = create$1();
     this.emulatedPosition = false;
     this.basePoseMatrix = create();
+    this.outputMatrix = create();
     this.inputPoses = new WeakMap();
     this.primaryButtonIndex = primaryButtonIndex;
     this.primaryActionPressed = false;
@@ -5521,675 +5623,514 @@ var GamepadXRInputSource = function () {
     this.targetRayMode = 'gaze';
     this.armModel = null;
   }
-  createClass(GamepadXRInputSource, [{
-    key: 'updateFromGamepad',
-    value: function updateFromGamepad(gamepad) {
-      this.gamepad = gamepad;
-      this.handedness = gamepad.hand;
-      if (gamepad.pose) {
-        this.targetRayMode = 'tracked-pointer';
-        this.emulatedPosition = !gamepad.pose.hasPosition;
-      } else if (gamepad.hand === '') {
-        this.targetRayMode = 'gaze';
-        this.emulatedPosition = false;
-      }
-    }
-  }, {
-    key: 'updateBasePoseMatrix',
-    value: function updateBasePoseMatrix() {
-      if (this.gamepad && this.gamepad.pose) {
-        var pose = this.gamepad.pose;
-        var position = pose.position;
-        var orientation = pose.orientation;
-        if (!position && !orientation) {
-          return;
-        }
-        if (!position) {
-          if (!pose.hasPosition) {
-            if (!this.armModel) {
-              this.armModel = new OrientationArmModel();
-            }
-            this.armModel.setHandedness(this.gamepad.hand);
-            this.armModel.update(orientation, this.polyfill.getBasePoseMatrix());
-            position = this.armModel.getPosition();
-          } else {
-            position = this.lastPosition;
-          }
-        } else {
-          this.lastPosition[0] = position[0];
-          this.lastPosition[1] = position[1];
-          this.lastPosition[2] = position[2];
-        }
-        fromRotationTranslation(this.basePoseMatrix, orientation, position);
+  updateFromGamepad(gamepad) {
+    if (this.nativeGamepad !== gamepad) {
+      this.nativeGamepad = gamepad;
+      if (gamepad) {
+        this.gamepad = new XRRemappedGamepad(gamepad, GamepadMappings[gamepad.id]);
       } else {
-        copy(this.basePoseMatrix, this.polyfill.getBasePoseMatrix());
+        this.gamepad = null;
       }
-      return this.basePoseMatrix;
     }
-  }, {
-    key: 'getXRInputPose',
-    value: function getXRInputPose(coordinateSystem) {
-      this.updateBasePoseMatrix();
-      var inputPose = this.inputPoses.get(coordinateSystem);
-      if (!inputPose) {
-        inputPose = new XRInputPose(this, this.gamepad && this.gamepad.pose);
-        this.inputPoses.set(coordinateSystem, inputPose);
-      }
-      var rayTransformMatrix = new Float32Array(16);
-      coordinateSystem.transformBasePoseMatrix(rayTransformMatrix, this.basePoseMatrix);
-      inputPose.targetRay = poseMatrixToXRRay(rayTransformMatrix);
-      if (inputPose.gripMatrix) {
-        coordinateSystem.transformBasePoseMatrix(inputPose.gripMatrix, this.basePoseMatrix);
-      }
-      return inputPose;
+    this.handedness = gamepad.hand;
+    if (this.gamepad) {
+      this.gamepad._update();
     }
-  }]);
-  return GamepadXRInputSource;
-}();
-
-var EXTRA_PRESENTATION_ATTRIBUTES = {
-  highRefreshRate: true
-};
-var PRIMARY_BUTTON_MAP = {
-  oculus: 1,
-  openvr: 1
-};
-var CAN_USE_GAMEPAD = _global.navigator && 'getGamepads' in _global.navigator;
-var SESSION_ID = 0;
-var Session = function Session(sessionOptions) {
-  classCallCheck(this, Session);
-  this.outputContext = sessionOptions.outputContext;
-  this.immersive = sessionOptions.immersive;
-  this.ended = null;
-  this.baseLayer = null;
-  this.id = ++SESSION_ID;
-  this.modifiedCanvasLayer = false;
-};
-
-var WebVRDevice = function (_PolyfilledXRDevice) {
-  inherits(WebVRDevice, _PolyfilledXRDevice);
-  function WebVRDevice(global, display) {
-    classCallCheck(this, WebVRDevice);
-    var canPresent = display.capabilities.canPresent;
-    var _this = possibleConstructorReturn(this, (WebVRDevice.__proto__ || Object.getPrototypeOf(WebVRDevice)).call(this, global));
-    _this.display = display;
-    _this.frame = new global.VRFrameData();
-    _this.sessions = new Map();
-    _this.immersiveSession = null;
-    _this.canPresent = canPresent;
-    _this.baseModelMatrix = create();
-    _this.gamepadInputSources = {};
-    _this.tempVec3 = new Float32Array(3);
-    _this.onVRDisplayPresentChange = _this.onVRDisplayPresentChange.bind(_this);
-    global.window.addEventListener('vrdisplaypresentchange', _this.onVRDisplayPresentChange);
-    return _this;
+    if (gamepad.pose) {
+      this.targetRayMode = 'tracked-pointer';
+      this.emulatedPosition = !gamepad.pose.hasPosition;
+    } else if (gamepad.hand === '') {
+      this.targetRayMode = 'gaze';
+      this.emulatedPosition = false;
+    }
   }
-  createClass(WebVRDevice, [{
-    key: 'onBaseLayerSet',
-    value: function onBaseLayerSet(sessionId, layer) {
-      var _this2 = this;
-      var session = this.sessions.get(sessionId);
-      var canvas = layer.context.canvas;
-      if (session.immersive) {
-        var left = this.display.getEyeParameters('left');
-        var right = this.display.getEyeParameters('right');
-        canvas.width = Math.max(left.renderWidth, right.renderWidth) * 2;
-        canvas.height = Math.max(left.renderHeight, right.renderHeight);
-        this.display.requestPresent([{
-          source: canvas, attributes: EXTRA_PRESENTATION_ATTRIBUTES
-        }]).then(function () {
-          if ("production" !== 'test' && !_this2.global.document.body.contains(canvas)) {
-            session.modifiedCanvasLayer = true;
-            _this2.global.document.body.appendChild(canvas);
-            applyCanvasStylesForMinimalRendering(canvas);
-          }
-          session.baseLayer = layer;
-        });
-      }
-      else if (session.outputContext) {
-          session.baseLayer = layer;
-        }
-    }
-  }, {
-    key: 'supportsSession',
-    value: function supportsSession() {
-      var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-      if (options.immersive === true && this.canPresent === false) {
-        return false;
-      }
-      return true;
-    }
-  }, {
-    key: 'requestSession',
-    value: function requestSession() {
-      var $args = arguments;return new Promise(function ($return, $error) {
-        var options, canvas, ctx, session;
-        options = $args.length > 0 && $args[0] !== undefined ? $args[0] : {};
-        if (!this.supportsSession(options)) {
-          return $return(Promise.reject());
-        }
-        if (options.immersive) {
-          canvas = this.global.document.createElement('canvas');
-          {
-            ctx = canvas.getContext('webgl');
-          }
-          return Promise.resolve(this.display.requestPresent([{
-            source: canvas, attributes: EXTRA_PRESENTATION_ATTRIBUTES }])).then(function ($await_2) {
-            try {
-              return $If_1.call(this);
-            } catch ($boundEx) {
-              return $error($boundEx);
-            }
-          }.bind(this), $error);
-        }
-        function $If_1() {
-          session = new Session(options);
-          this.sessions.set(session.id, session);
-          if (options.immersive) {
-            this.immersiveSession = session;
-            this.dispatchEvent('@@webxr-polyfill/vr-present-start', session.id);
-          }
-          return $return(Promise.resolve(session.id));
-        }
-        return $If_1.call(this);
-      }.bind(this));
-    }
-  }, {
-    key: 'requestAnimationFrame',
-    value: function requestAnimationFrame(callback) {
-      return this.display.requestAnimationFrame(callback);
-    }
-  }, {
-    key: 'getPrimaryButtonIndex',
-    value: function getPrimaryButtonIndex(gamepad) {
-      var primaryButton = 0;
-      var name = gamepad.id.toLowerCase();
-      for (var key in PRIMARY_BUTTON_MAP) {
-        if (name.includes(key)) {
-          primaryButton = PRIMARY_BUTTON_MAP[key];
-          break;
-        }
-      }
-      return Math.min(primaryButton, gamepad.buttons.length - 1);
-    }
-  }, {
-    key: 'onFrameStart',
-    value: function onFrameStart(sessionId) {
-      this.display.getFrameData(this.frame);
-      var session = this.sessions.get(sessionId);
-      if (session.immersive && CAN_USE_GAMEPAD) {
-        var prevInputSources = this.gamepadInputSources;
-        this.gamepadInputSources = {};
-        var gamepads = _global.navigator.getGamepads();
-        for (var i = 0; i < gamepads.length; ++i) {
-          var gamepad = gamepads[i];
-          if (gamepad && gamepad.displayId === this.display.displayId) {
-            var inputSourceImpl = prevInputSources[i];
-            if (!inputSourceImpl) {
-              inputSourceImpl = new GamepadXRInputSource(this, this.getPrimaryButtonIndex(gamepad));
-            }
-            inputSourceImpl.updateFromGamepad(gamepad);
-            this.gamepadInputSources[i] = inputSourceImpl;
-            if (inputSourceImpl.primaryButtonIndex != -1) {
-              var primaryActionPressed = gamepad.buttons[inputSourceImpl.primaryButtonIndex].pressed;
-              if (primaryActionPressed && !inputSourceImpl.primaryActionPressed) {
-                this.dispatchEvent('@@webxr-polyfill/input-select-start', { sessionId: session.id, inputSource: inputSourceImpl.inputSource });
-              } else if (!primaryActionPressed && inputSourceImpl.primaryActionPressed) {
-                this.dispatchEvent('@@webxr-polyfill/input-select-end', { sessionId: session.id, inputSource: inputSourceImpl.inputSource });
-              }
-              inputSourceImpl.primaryActionPressed = primaryActionPressed;
-            }
-          }
-        }
-      }
-      if (session.outputContext && !session.immersive) {
-        var outputCanvas = session.outputContext.canvas;
-        var oWidth = outputCanvas.offsetWidth;
-        var oHeight = outputCanvas.offsetHeight;
-        if (outputCanvas.width != oWidth) {
-          outputCanvas.width = oWidth;
-        }
-        if (outputCanvas.height != oHeight) {
-          outputCanvas.height = oHeight;
-        }
-        var canvas = session.baseLayer.context.canvas;
-        if (!this.immersiveSession || canvas !== this.immersiveSession.baseLayer.context.canvas) {
-          if (canvas.width != oWidth) {
-            canvas.width = oWidth;
-          }
-          if (canvas.height != oHeight) {
-            canvas.height = oHeight;
-          }
-          perspective(this.frame.leftProjectionMatrix, Math.PI * 0.4, oWidth / oHeight, this.depthNear, this.depthFar);
-        }
-      }
-    }
-  }, {
-    key: 'onFrameEnd',
-    value: function onFrameEnd(sessionId) {
-      var session = this.sessions.get(sessionId);
-      if (session.ended || !session.baseLayer) {
+  updateBasePoseMatrix() {
+    if (this.nativeGamepad && this.nativeGamepad.pose) {
+      let pose = this.nativeGamepad.pose;
+      let position = pose.position;
+      let orientation = pose.orientation;
+      if (!position && !orientation) {
         return;
       }
-      if (session.outputContext && !(session.immersive && !this.display.capabilities.hasExternalDisplay)) {
-        var mirroring = session.immersive && this.display.capabilities.hasExternalDisplay;
-        var canvas = session.baseLayer.context.canvas;
-        var iWidth = mirroring ? canvas.width / 2 : canvas.width;
-        var iHeight = canvas.height;
-        {
-          var outputCanvas = session.outputContext.canvas;
-          var outputContext = outputCanvas.getContext('2d');
-          var oWidth = outputCanvas.width;
-          var oHeight = outputCanvas.height;
-          outputContext.drawImage(canvas, 0, 0, iWidth, iHeight, 0, 0, oWidth, oHeight);
-        }
-      }
-      if (session.immersive && session.baseLayer) {
-        this.display.submitFrame();
-      }
-    }
-  }, {
-    key: 'cancelAnimationFrame',
-    value: function cancelAnimationFrame(handle) {
-      this.display.cancelAnimationFrame(handle);
-    }
-  }, {
-    key: 'endSession',
-    value: function endSession(sessionId) {
-      return new Promise(function ($return, $error) {
-        var session = this.sessions.get(sessionId);
-        if (session.ended) {
-          return $return();
-        }
-        if (session.immersive) {
-          return $return(this.display.exitPresent());
+      if (!position) {
+        if (!pose.hasPosition) {
+          if (!this.armModel) {
+            this.armModel = new OrientationArmModel();
+          }
+          this.armModel.setHandedness(this.nativeGamepad.hand);
+          this.armModel.update(orientation, this.polyfill.getBasePoseMatrix());
+          position = this.armModel.getPosition();
         } else {
-          session.ended = true;
+          position = this.lastPosition;
         }
-        return $return();
-      }.bind(this));
-    }
-  }, {
-    key: 'requestStageBounds',
-    value: function requestStageBounds() {
-      if (this.display.stageParameters) {
-        var width = this.display.stageParameters.sizeX;
-        var depth = this.display.stageParameters.sizeZ;
-        var data = [];
-        data.push(-width / 2);
-        data.push(-depth / 2);
-        data.push(width / 2);
-        data.push(-depth / 2);
-        data.push(width / 2);
-        data.push(depth / 2);
-        data.push(-width / 2);
-        data.push(depth / 2);
-        return data;
+      } else {
+        this.lastPosition[0] = position[0];
+        this.lastPosition[1] = position[1];
+        this.lastPosition[2] = position[2];
       }
-      return null;
+      fromRotationTranslation(this.basePoseMatrix, orientation, position);
+    } else {
+      copy(this.basePoseMatrix, this.polyfill.getBasePoseMatrix());
     }
-  }, {
-    key: 'requestFrameOfReferenceTransform',
-    value: function requestFrameOfReferenceTransform(type, options) {
-      return new Promise(function ($return, $error) {
-        if (type === 'stage' && this.display.stageParameters && this.display.stageParameters.sittingToStandingTransform) {
-          return $return(this.display.stageParameters.sittingToStandingTransform);
+    return this.basePoseMatrix;
+  }
+  getXRPose(coordinateSystem, poseType) {
+    this.updateBasePoseMatrix();
+    switch(poseType) {
+      case "target-ray":
+        coordinateSystem.transformBasePoseMatrix(this.outputMatrix, this.basePoseMatrix);
+        if (this.gamepad && this.gamepad[PRIVATE$16].targetRayTransform) {
+          multiply(this.outputMatrix, this.outputMatrix, this.gamepad[PRIVATE$16].targetRayTransform);
         }
-        return $return();
-      }.bind(this));
+        break;
+      case "grip":
+        if (!this.nativeGamepad || !this.nativeGamepad.pose) {
+          return null;
+        }
+        coordinateSystem.transformBasePoseMatrix(this.outputMatrix, this.basePoseMatrix);
+        if (this.gamepad && this.gamepad[PRIVATE$16].gripTransform) {
+          multiply(this.outputMatrix, this.outputMatrix, this.gamepad[PRIVATE$16].gripTransform);
+        }
+        break;
+      default:
+        return null;
     }
-  }, {
-    key: 'getProjectionMatrix',
-    value: function getProjectionMatrix(eye) {
-      if (eye === 'left') {
-        return this.frame.leftProjectionMatrix;
-      } else if (eye === 'right') {
-        return this.frame.rightProjectionMatrix;
-      } else {
-        throw new Error('eye must be of type \'left\' or \'right\'');
+    coordinateSystem._adjustForOriginOffset(this.outputMatrix);
+    return new XRPose(new XRRigidTransform(this.outputMatrix), this.emulatedPosition);
+  }
+}
+
+const TEST_ENV = "production" === 'test';
+const EXTRA_PRESENTATION_ATTRIBUTES = {
+  highRefreshRate: true,
+};
+const PRIMARY_BUTTON_MAP = {
+  oculus: 1,
+  openvr: 1,
+  'spatial controller (spatial interaction source)': 1
+};
+let SESSION_ID = 0;
+class Session {
+  constructor(mode, polyfillOptions={}) {
+    this.mode = mode;
+    this.outputContext = null;
+    this.immersive = mode == 'immersive-vr' || mode == 'immersive-ar';
+    this.ended = null;
+    this.baseLayer = null;
+    this.inlineVerticalFieldOfView = Math.PI * 0.5;
+    this.id = ++SESSION_ID;
+    this.modifiedCanvasLayer = false;
+    if (this.outputContext && !TEST_ENV) {
+      const renderContextType = polyfillOptions.renderContextType || '2d';
+      this.renderContext = this.outputContext.canvas.getContext(renderContextType);
+    }
+  }
+}
+class WebVRDevice extends XRDevice {
+  constructor(global, display) {
+    const { canPresent } = display.capabilities;
+    super(global);
+    this.display = display;
+    this.frame = new global.VRFrameData();
+    this.sessions = new Map();
+    this.immersiveSession = null;
+    this.canPresent = canPresent;
+    this.baseModelMatrix = create();
+    this.gamepadInputSources = {};
+    this.tempVec3 = new Float32Array(3);
+    this.onVRDisplayPresentChange = this.onVRDisplayPresentChange.bind(this);
+    global.window.addEventListener('vrdisplaypresentchange', this.onVRDisplayPresentChange);
+    this.CAN_USE_GAMEPAD = global.navigator && ('getGamepads' in global.navigator);
+    this.HAS_BITMAP_SUPPORT = isImageBitmapSupported(global);
+  }
+  get depthNear() { return this.display.depthNear; }
+  set depthNear(val) { this.display.depthNear = val; }
+  get depthFar() { return this.display.depthFar; }
+  set depthFar(val) { this.display.depthFar = val; }
+  onBaseLayerSet(sessionId, layer) {
+    const session = this.sessions.get(sessionId);
+    const canvas = layer.context.canvas;
+    if (session.immersive) {
+      const left = this.display.getEyeParameters('left');
+      const right = this.display.getEyeParameters('right');
+      canvas.width = Math.max(left.renderWidth, right.renderWidth) * 2;
+      canvas.height = Math.max(left.renderHeight, right.renderHeight);
+      this.display.requestPresent([{
+          source: canvas, attributes: EXTRA_PRESENTATION_ATTRIBUTES
+        }]).then(() => {
+        if (!TEST_ENV && !this.global.document.body.contains(canvas)) {
+          session.modifiedCanvasLayer = true;
+          this.global.document.body.appendChild(canvas);
+          applyCanvasStylesForMinimalRendering(canvas);
+        }
+        session.baseLayer = layer;
+      });
+    }
+    else {
+      session.baseLayer = layer;
+    }
+  }
+  onInlineVerticalFieldOfViewSet(sessionId, value) {
+    const session = this.sessions.get(sessionId);
+    session.inlineVerticalFieldOfView = value;
+  }
+  supportsSession(mode) {
+    if (XRSessionModes.indexOf(mode) == -1) {
+      throw new TypeError(
+          `The provided value '${mode}' is not a valid enum value of type XRSessionMode`);
+    }
+    if (mode == 'immersive-ar') {
+      return false;
+    }
+    if (mode == 'immersive-vr' && this.canPresent === false) {
+      return false;
+    }
+    return true;
+  }
+  async requestSession(mode) {
+    if (!this.supportsSession(mode)) {
+      return Promise.reject();
+    }
+    let immersive = mode == 'immersive-vr';
+    if (immersive) {
+      const canvas = this.global.document.createElement('canvas');
+      if (!TEST_ENV) {
+        const ctx = canvas.getContext('webgl');
+      }
+      await this.display.requestPresent([{
+          source: canvas, attributes: EXTRA_PRESENTATION_ATTRIBUTES }]);
+    }
+    const session = new Session(mode, {
+      renderContextType: this.HAS_BITMAP_SUPPORT ? 'bitmaprenderer' : '2d'
+    });
+    this.sessions.set(session.id, session);
+    if (immersive) {
+      this.immersiveSession = session;
+      this.dispatchEvent('@@webxr-polyfill/vr-present-start', session.id);
+    }
+    return Promise.resolve(session.id);
+  }
+  requestAnimationFrame(callback) {
+    return this.display.requestAnimationFrame(callback);
+  }
+  getPrimaryButtonIndex(gamepad) {
+    let primaryButton = 0;
+    let name = gamepad.id.toLowerCase();
+    for (let key in PRIMARY_BUTTON_MAP) {
+      if (name.includes(key)) {
+        primaryButton = PRIMARY_BUTTON_MAP[key];
+        break;
       }
     }
-  }, {
-    key: 'getViewport',
-    value: function getViewport(sessionId, eye, layer, target) {
-      var session = this.sessions.get(sessionId);
-      var _layer$context$canvas = layer.context.canvas,
-          width = _layer$context$canvas.width,
-          height = _layer$context$canvas.height;
-      if (!session.immersive) {
-        target.x = target.y = 0;
-        target.width = width;
-        target.height = height;
-        return true;
+    return Math.min(primaryButton, gamepad.buttons.length - 1);
+  }
+  onFrameStart(sessionId) {
+    this.display.getFrameData(this.frame);
+    const session = this.sessions.get(sessionId);
+    if (session.immersive && this.CAN_USE_GAMEPAD) {
+      let prevInputSources = this.gamepadInputSources;
+      this.gamepadInputSources = {};
+      let gamepads = this.global.navigator.getGamepads();
+      for (let i = 0; i < gamepads.length; ++i) {
+        let gamepad = gamepads[i];
+        if (gamepad && gamepad.displayId > 0) {
+          let inputSourceImpl = prevInputSources[i];
+          if (!inputSourceImpl) {
+            inputSourceImpl = new GamepadXRInputSource(this, this.getPrimaryButtonIndex(gamepad));
+          }
+          inputSourceImpl.updateFromGamepad(gamepad);
+          this.gamepadInputSources[i] = inputSourceImpl;
+          if (inputSourceImpl.primaryButtonIndex != -1) {
+            let primaryActionPressed = gamepad.buttons[inputSourceImpl.primaryButtonIndex].pressed;
+            if (primaryActionPressed && !inputSourceImpl.primaryActionPressed) {
+              this.dispatchEvent('@@webxr-polyfill/input-select-start', { sessionId: session.id, inputSource: inputSourceImpl.inputSource });
+            } else if (!primaryActionPressed && inputSourceImpl.primaryActionPressed) {
+              this.dispatchEvent('@@webxr-polyfill/input-select-end', { sessionId: session.id, inputSource: inputSourceImpl.inputSource });
+            }
+            inputSourceImpl.primaryActionPressed = primaryActionPressed;
+          }
+        }
       }
-      if (eye === 'left') {
-        target.x = 0;
-      } else if (eye === 'right') {
-        target.x = width / 2;
-      } else {
-        return false;
+    }
+    if (TEST_ENV) {
+      return;
+    }
+    if (!session.immersive && session.baseLayer) {
+      const canvas = session.baseLayer.context.canvas;
+      perspective(this.frame.leftProjectionMatrix, session.inlineVerticalFieldOfView,
+          canvas.width/canvas.height, this.depthNear, this.depthFar);
+    }
+  }
+  onFrameEnd(sessionId) {
+    const session = this.sessions.get(sessionId);
+    if (session.ended || !session.baseLayer) {
+      return;
+    }
+    if (session.outputContext &&
+        !(session.immersive && !this.display.capabilities.hasExternalDisplay)) {
+      const mirroring =
+        session.immersive && this.display.capabilities.hasExternalDisplay;
+      const iCanvas = session.baseLayer.context.canvas;
+      const iWidth = mirroring ? iCanvas.width / 2 : iCanvas.width;
+      const iHeight = iCanvas.height;
+      if (!TEST_ENV) {
+        const oCanvas = session.outputContext.canvas;
+        const oWidth = oCanvas.width;
+        const oHeight = oCanvas.height;
+        const renderContext = session.renderContext;
+        if (this.HAS_BITMAP_SUPPORT) {
+          if (iCanvas.transferToImageBitmap) {
+            renderContext.transferFromImageBitmap(iCanvas.transferToImageBitmap());
+          }
+          else {
+            this.global.createImageBitmap(iCanvas, 0, 0, iWidth, iHeight, {
+              resizeWidth: oWidth,
+              resizeHeight: oHeight,
+            }).then(bitmap => renderContext.transferFromImageBitmap(bitmap));
+          }
+        } else {
+          renderContext.drawImage(iCanvas, 0, 0, iWidth, iHeight,
+                                           0, 0, oWidth, oHeight);
+        }
       }
-      target.y = 0;
-      target.width = width / 2;
+    }
+    if (session.immersive && session.baseLayer) {
+      this.display.submitFrame();
+    }
+  }
+  cancelAnimationFrame(handle) {
+    this.display.cancelAnimationFrame(handle);
+  }
+  async endSession(sessionId) {
+    const session = this.sessions.get(sessionId);
+    if (session.ended) {
+      return;
+    }
+    if (session.immersive) {
+      return this.display.exitPresent();
+    } else {
+      session.ended = true;
+    }
+  }
+  requestStageBounds() {
+    if (this.display.stageParameters) {
+      const width = this.display.stageParameters.sizeX;
+      const depth = this.display.stageParameters.sizeZ;
+      const data = [];
+      data.push(-width / 2);
+      data.push(-depth / 2);
+      data.push(width / 2);
+      data.push(-depth / 2);
+      data.push(width / 2);
+      data.push(depth / 2);
+      data.push(-width / 2);
+      data.push(depth / 2);
+      return data;
+    }
+    return null;
+  }
+  async requestFrameOfReferenceTransform(type, options) {
+    if (type === 'stage' && this.display.stageParameters &&
+                            this.display.stageParameters.sittingToStandingTransform) {
+      return this.display.stageParameters.sittingToStandingTransform;
+    }
+  }
+  getProjectionMatrix(eye) {
+    if (eye === 'left') {
+      return this.frame.leftProjectionMatrix;
+    } else if (eye === 'right') {
+      return this.frame.rightProjectionMatrix;
+    } else if (eye === 'none') {
+      return this.frame.leftProjectionMatrix;
+    } else {
+      throw new Error(`eye must be of type 'left' or 'right'`);
+    }
+  }
+  getViewport(sessionId, eye, layer, target) {
+    const session = this.sessions.get(sessionId);
+    const { width, height } = layer.context.canvas;
+    if (!session.immersive) {
+      target.x = target.y = 0;
+      target.width = width;
       target.height = height;
       return true;
     }
-  }, {
-    key: 'getBasePoseMatrix',
-    value: function getBasePoseMatrix() {
-      var _frame$pose = this.frame.pose,
-          position = _frame$pose.position,
-          orientation = _frame$pose.orientation;
-      if (!position && !orientation) {
-        return this.baseModelMatrix;
-      }
-      if (!position) {
-        position = this.tempVec3;
-        position[0] = position[1] = position[2] = 0;
-      }
-      fromRotationTranslation(this.baseModelMatrix, orientation, position);
+    if (eye === 'left') {
+      target.x = 0;
+    } else if (eye === 'right') {
+      target.x = width / 2;
+    } else {
+      return false;
+    }
+    target.y = 0;
+    target.width = width / 2;
+    target.height = height;
+    return true;
+  }
+  getBasePoseMatrix() {
+    let { position, orientation } = this.frame.pose;
+    if (!position && !orientation) {
       return this.baseModelMatrix;
     }
-  }, {
-    key: 'getBaseViewMatrix',
-    value: function getBaseViewMatrix(eye) {
-      if (eye === 'left') {
-        return this.frame.leftViewMatrix;
-      } else if (eye === 'right') {
-        return this.frame.rightViewMatrix;
-      } else {
-        throw new Error('eye must be of type \'left\' or \'right\'');
-      }
+    if (!position) {
+      position = this.tempVec3;
+      position[0] = position[1] = position[2] = 0;
     }
-  }, {
-    key: 'getInputSources',
-    value: function getInputSources() {
-      var inputSources = [];
-      for (var i in this.gamepadInputSources) {
-        inputSources.push(this.gamepadInputSources[i].inputSource);
-      }
-      return inputSources;
+    fromRotationTranslation(this.baseModelMatrix, orientation, position);
+    return this.baseModelMatrix;
+  }
+  getBaseViewMatrix(eye) {
+    if (eye === 'left') {
+      return this.frame.leftViewMatrix;
+    } else if (eye === 'right') {
+      return this.frame.rightViewMatrix;
+    } else {
+      throw new Error(`eye must be of type 'left' or 'right'`);
     }
-  }, {
-    key: 'getInputPose',
-    value: function getInputPose(inputSource, coordinateSystem) {
-      if (!coordinateSystem) {
-        return null;
-      }
-      for (var i in this.gamepadInputSources) {
-        var inputSourceImpl = this.gamepadInputSources[i];
-        if (inputSourceImpl.inputSource === inputSource) {
-          return inputSourceImpl.getXRInputPose(coordinateSystem);
-        }
-      }
+  }
+  getInputSources() {
+    let inputSources = [];
+    for (let i in this.gamepadInputSources) {
+      inputSources.push(this.gamepadInputSources[i].inputSource);
+    }
+    return inputSources;
+  }
+  getInputPose(inputSource, coordinateSystem, poseType) {
+    if (!coordinateSystem) {
       return null;
     }
-  }, {
-    key: 'onWindowResize',
-    value: function onWindowResize() {}
-  }, {
-    key: 'onVRDisplayPresentChange',
-    value: function onVRDisplayPresentChange(e) {
-      var _this3 = this;
-      if (!this.display.isPresenting) {
-        this.sessions.forEach(function (session) {
-          if (session.immersive && !session.ended) {
-            if (session.modifiedCanvasLayer) {
-              var canvas = session.baseLayer.context.canvas;
-              document.body.removeChild(canvas);
-              canvas.setAttribute('style', '');
-            }
-            if (_this3.immersiveSession === session) {
-              _this3.immersiveSession = null;
-            }
-            _this3.dispatchEvent('@@webxr-polyfill/vr-present-end', session.id);
-          }
-        });
+    for (let i in this.gamepadInputSources) {
+      let inputSourceImpl = this.gamepadInputSources[i];
+      if (inputSourceImpl.inputSource === inputSource) {
+        return inputSourceImpl.getXRPose(coordinateSystem, poseType);
       }
     }
-  }, {
-    key: 'depthNear',
-    get: function get$$1() {
-      return this.display.depthNear;
+    return null;
+  }
+  onWindowResize() {
+  }
+  onVRDisplayPresentChange(e) {
+    if (!this.display.isPresenting) {
+      this.sessions.forEach(session => {
+        if (session.immersive && !session.ended) {
+          if (session.modifiedCanvasLayer) {
+            const canvas = session.baseLayer.context.canvas;
+            document.body.removeChild(canvas);
+            canvas.setAttribute('style', '');
+          }
+          if (this.immersiveSession === session) {
+            this.immersiveSession = null;
+          }
+          this.dispatchEvent('@@webxr-polyfill/vr-present-end', session.id);
+        }
+      });
     }
-    ,
-    set: function set$$1(val) {
-      this.display.depthNear = val;
-    }
-  }, {
-    key: 'depthFar',
-    get: function get$$1() {
-      return this.display.depthFar;
-    }
-    ,
-    set: function set$$1(val) {
-      this.display.depthFar = val;
-    }
-  }]);
-  return WebVRDevice;
-}(PolyfilledXRDevice);
+  }
+}
 
-var CardboardXRDevice = function (_WebVRDevice) {
-  inherits(CardboardXRDevice, _WebVRDevice);
-  function CardboardXRDevice(global) {
-    classCallCheck(this, CardboardXRDevice);
-    var display = new CardboardVRDisplay();
-    var _this = possibleConstructorReturn(this, (CardboardXRDevice.__proto__ || Object.getPrototypeOf(CardboardXRDevice)).call(this, global, display));
-    _this.display = display;
-    _this.frame = {
+class CardboardXRDevice extends WebVRDevice {
+  constructor(global, cardboardConfig) {
+    const display = new CardboardVRDisplay(cardboardConfig || {});
+    super(global, display);
+    this.display = display;
+    this.frame = {
       rightViewMatrix: new Float32Array(16),
       leftViewMatrix: new Float32Array(16),
       rightProjectionMatrix: new Float32Array(16),
       leftProjectionMatrix: new Float32Array(16),
       pose: null,
-      timestamp: null
+      timestamp: null,
     };
-    return _this;
   }
-  return CardboardXRDevice;
-}(WebVRDevice);
+}
 
-var getXRDevice = function getXRDevice(global) {
-  return new Promise(function ($return, $error) {
-    var device;
-    device = null;
-    if ('xr' in global.navigator) {
-      var $Try_1_Post = function () {
-        try {
-          return $If_3.call(this);
-        } catch ($boundEx) {
-          return $error($boundEx);
-        }
-      }.bind(this);var $Try_1_Catch = function (e) {
-        try {
-          return $Try_1_Post();
-        } catch ($boundEx) {
-          return $error($boundEx);
-        }
-      }.bind(this);
-      try {
-        return Promise.resolve(global.navigator.xr.requestDevice()).then(function ($await_6) {
-          try {
-            device = $await_6;
-            return $Try_1_Post();
-          } catch ($boundEx) {
-            return $Try_1_Catch($boundEx);
-          }
-        }.bind(this), $Try_1_Catch);
-      } catch (e) {
-        $Try_1_Catch(e);
+const getWebVRDevice = async function (global) {
+  let device = null;
+  if ('getVRDisplays' in global.navigator) {
+    try {
+      const displays = await global.navigator.getVRDisplays();
+      if (displays && displays.length) {
+        device = new WebVRDevice(global, displays[0]);
       }
-    }
-    function $If_3() {
-      return $return(device);
-    }
-    return $If_3.call(this);
-  }.bind(this));
+    } catch (e) {}
+  }
+  return device;
 };
-var getVRDisplay = function getVRDisplay(global) {
-  return new Promise(function ($return, $error) {
-    var device, displays;
-    device = null;
-    if ('getVRDisplays' in global.navigator) {
-      var $Try_2_Post = function () {
-        try {
-          return $If_4.call(this);
-        } catch ($boundEx) {
-          return $error($boundEx);
-        }
-      }.bind(this);var $Try_2_Catch = function (e) {
-        try {
-          return $Try_2_Post();
-        } catch ($boundEx) {
-          return $error($boundEx);
-        }
-      }.bind(this);
-      try {
-        return Promise.resolve(global.navigator.getVRDisplays()).then(function ($await_7) {
-          try {
-            displays = $await_7;
-            if (displays && displays.length) {
-              device = new WebVRDevice(global, displays[0]);
-            }
-            return $Try_2_Post();
-          } catch ($boundEx) {
-            return $Try_2_Catch($boundEx);
-          }
-        }.bind(this), $Try_2_Catch);
-      } catch (e) {
-        $Try_2_Catch(e);
-      }
+const requestXRDevice = async function (global, config) {
+  if (config.webvr) {
+    let xr = await getWebVRDevice(global);
+    if (xr) {
+      return xr;
     }
-    function $If_4() {
-      return $return(device);
-    }
-    return $If_4.call(this);
-  }.bind(this));
-};
-var requestDevice = function requestDevice(global, config) {
-  return new Promise(function ($return, $error) {
-    var device;
-    return Promise.resolve(getXRDevice(global)).then(function ($await_8) {
-      try {
-        device = $await_8;
-        if (device) {
-          return $return(device);
-        }
-        if (config.webvr) {
-          return Promise.resolve(getVRDisplay(global)).then(function ($await_9) {
-            try {
-              device = $await_9;
-              if (device) {
-                return $return(new XRDevice(device));
-              }
-              return $If_5.call(this);
-            } catch ($boundEx) {
-              return $error($boundEx);
-            }
-          }.bind(this), $error);
-        }
-        function $If_5() {
-          if (config.cardboard && isMobile(global)) {
-            if (!global.VRFrameData) {
-              global.VRFrameData = function () {
-                this.rightViewMatrix = new Float32Array(16);
-                this.leftViewMatrix = new Float32Array(16);
-                this.rightProjectionMatrix = new Float32Array(16);
-                this.leftProjectionMatrix = new Float32Array(16);
-                this.pose = null;
-              };
-            }
-            return $return(new XRDevice(new CardboardXRDevice(global)));
-          }
-          return $return(null);
-        }
-        return $If_5.call(this);
-      } catch ($boundEx) {
-        return $error($boundEx);
-      }
-    }.bind(this), $error);
-  }.bind(this));
+  }
+  if (!global.VRFrameData) {
+    global.VRFrameData = function () {
+      this.rightViewMatrix = new Float32Array(16);
+      this.leftViewMatrix = new Float32Array(16);
+      this.rightProjectionMatrix = new Float32Array(16);
+      this.leftProjectionMatrix = new Float32Array(16);
+      this.pose = null;
+    };
+  }
+  return new CardboardXRDevice(global, config.cardboardConfig);
 };
 
-var CONFIG_DEFAULTS = {
+const CONFIG_DEFAULTS = {
+  global: _global,
   webvr: true,
-  cardboard: true
+  cardboard: true,
+  cardboardConfig: null,
+  allowCardboardOnDesktop: false,
 };
-var partials = ['navigator', 'HTMLCanvasElement', 'WebGLRenderingContext'];
-var WebXRPolyfill = function () {
-  function WebXRPolyfill(global) {
-    var config = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-    classCallCheck(this, WebXRPolyfill);
-    this.global = global || _global;
+const partials = ['navigator', 'HTMLCanvasElement', 'WebGLRenderingContext'];
+class WebXRPolyfill {
+  constructor(config={}) {
     this.config = Object.freeze(Object.assign({}, CONFIG_DEFAULTS, config));
+    this.global = this.config.global;
     this.nativeWebXR = 'xr' in this.global.navigator;
     this.injected = false;
     if (!this.nativeWebXR) {
       this._injectPolyfill(this.global);
     }
     else if (this.config.cardboard && isMobile(this.global)) {
-        this._patchRequestDevice();
-      }
+      this._patchNavigatorXR();
+    }
   }
-  createClass(WebXRPolyfill, [{
-    key: '_injectPolyfill',
-    value: function _injectPolyfill(global) {
-      if (!partials.every(function (iface) {
-        return !!global[iface];
-      })) {
-        throw new Error('Global must have the following attributes : ' + partials);
-      }
-      var _iteratorNormalCompletion = true;
-      var _didIteratorError = false;
-      var _iteratorError = undefined;
-      try {
-        for (var _iterator = Object.keys(API)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-          var className = _step.value;
-          if (global[className] !== undefined) {
-            console.warn(className + ' already defined on global.');
-          } else {
-            global[className] = API[className];
-          }
-        }
-      } catch (err) {
-        _didIteratorError = true;
-        _iteratorError = err;
-      } finally {
-        try {
-          if (!_iteratorNormalCompletion && _iterator.return) {
-            _iterator.return();
-          }
-        } finally {
-          if (_didIteratorError) {
-            throw _iteratorError;
-          }
-        }
-      }
-      {
-        var polyfilledCtx = extendContextCompatibleXRDevice(global.WebGLRenderingContext);
-        if (polyfilledCtx) {
-          extendGetContext(global.HTMLCanvasElement);
-          if (global.WebGL2RenderingContext) {
-            extendContextCompatibleXRDevice(global.WebGL2RenderingContext);
-          }
-        }
-      }
-      this.injected = true;
-      this._patchRequestDevice();
+  _injectPolyfill(global) {
+    if (!partials.every(iface => !!global[iface])) {
+      throw new Error(`Global must have the following attributes : ${partials}`);
     }
-  }, {
-    key: '_patchRequestDevice',
-    value: function _patchRequestDevice() {
-      var device = requestDevice(this.global, this.config);
-      this.xr = new XR(device);
-      Object.defineProperty(this.global.navigator, 'xr', {
-        value: this.xr,
-        configurable: true
-      });
+    for (const className of Object.keys(API)) {
+      if (global[className] !== undefined) {
+        console.warn(`${className} already defined on global.`);
+      } else {
+        global[className] = API[className];
+      }
     }
-  }]);
-  return WebXRPolyfill;
-}();
+    {
+      const polyfilledCtx = polyfillMakeXRCompatible(global.WebGLRenderingContext);
+      if (polyfilledCtx) {
+        polyfillGetContext(global.HTMLCanvasElement);
+        if (global.OffscreenCanvas) {
+          polyfillGetContext(global.OffscreenCanvas);
+        }
+        if (global.WebGL2RenderingContext){
+          polyfillMakeXRCompatible(global.WebGL2RenderingContext);
+        }
+      }
+    }
+    this.injected = true;
+    this._patchNavigatorXR();
+  }
+  _patchNavigatorXR() {
+    let devicePromise = requestXRDevice(this.global, this.config);
+    this.xr = new XR(devicePromise);
+    Object.defineProperty(this.global.navigator, 'xr', {
+      value: this.xr,
+      configurable: true,
+    });
+  }
+}
 
 return WebXRPolyfill;
 

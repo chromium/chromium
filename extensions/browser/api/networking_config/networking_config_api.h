@@ -11,8 +11,7 @@
 
 namespace extensions {
 
-class NetworkingConfigSetNetworkFilterFunction
-    : public UIThreadExtensionFunction {
+class NetworkingConfigSetNetworkFilterFunction : public ExtensionFunction {
  public:
   NetworkingConfigSetNetworkFilterFunction();
 
@@ -30,8 +29,7 @@ class NetworkingConfigSetNetworkFilterFunction
   DISALLOW_COPY_AND_ASSIGN(NetworkingConfigSetNetworkFilterFunction);
 };
 
-class NetworkingConfigFinishAuthenticationFunction
-    : public UIThreadExtensionFunction {
+class NetworkingConfigFinishAuthenticationFunction : public ExtensionFunction {
  public:
   NetworkingConfigFinishAuthenticationFunction();
 

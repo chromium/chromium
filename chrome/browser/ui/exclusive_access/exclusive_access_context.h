@@ -26,7 +26,7 @@ class ExclusiveAccessContext {
     STATE_EXIT_TAB_FULLSCREEN,
   };
 
-  virtual ~ExclusiveAccessContext() {}
+  virtual ~ExclusiveAccessContext() = default;
 
   // Returns the current profile associated with the window.
   virtual Profile* GetProfile() = 0;
@@ -38,11 +38,11 @@ class ExclusiveAccessContext {
   // Called when we transition between tab and browser fullscreen. This method
   // updates the UI by showing/hiding the tab strip, toolbar and bookmark bar
   // in the browser fullscreen. Currently only supported on Mac.
-  virtual void UpdateUIForTabFullscreen(TabFullscreenState state);
+  virtual void UpdateUIForTabFullscreen(TabFullscreenState state) {}
 
   // Updates the toolbar state to be hidden or shown in fullscreen according to
   // the preference's state. Only supported on Mac.
-  virtual void UpdateFullscreenToolbar();
+  virtual void UpdateFullscreenToolbar() {}
 
   // Enters fullscreen and update exit bubble.
   virtual void EnterFullscreen(const GURL& url,

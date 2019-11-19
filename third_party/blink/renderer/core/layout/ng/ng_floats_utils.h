@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef NGFloatsUtils_h
-#define NGFloatsUtils_h
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_FLOATS_UTILS_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_FLOATS_UTILS_H_
 
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -17,19 +17,11 @@ class ComputedStyle;
 class NGConstraintSpace;
 class NGExclusionSpace;
 struct NGBfcOffset;
-struct NGLogicalSize;
+struct LogicalSize;
 struct NGPositionedFloat;
 struct NGUnpositionedFloat;
 
 typedef Vector<NGPositionedFloat, 8> NGPositionedFloatVector;
-
-enum NGFloatTypeValue {
-  kFloatTypeNone = 0b00,
-  kFloatTypeLeft = 0b01,
-  kFloatTypeRight = 0b10,
-  kFloatTypeBoth = 0b11
-};
-typedef int NGFloatTypes;
 
 // Returns the inline size (relative to {@code parent_space}) of the
 // unpositioned float.
@@ -41,17 +33,15 @@ LayoutUnit ComputeMarginBoxInlineSizeForUnpositionedFloat(
 // Positions {@code unpositioned_float} into {@code new_parent_space}.
 // @returns A positioned float.
 CORE_EXPORT NGPositionedFloat
-PositionFloat(const NGLogicalSize& float_available_size,
-              const NGLogicalSize& float_percentage_size,
-              const NGLogicalSize& float_replaced_percentage_size,
+PositionFloat(const LogicalSize& float_available_size,
+              const LogicalSize& float_percentage_size,
+              const LogicalSize& float_replaced_percentage_size,
               const NGBfcOffset& origin_bfc_offset,
               NGUnpositionedFloat*,
               const NGConstraintSpace& parent_space,
               const ComputedStyle& parent_style,
               NGExclusionSpace* exclusion_space);
 
-NGFloatTypes ToFloatTypes(EClear clear);
-
 }  // namespace blink
 
-#endif  // NGFloatsUtils_h
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_FLOATS_UTILS_H_

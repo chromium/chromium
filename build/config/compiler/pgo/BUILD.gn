@@ -17,22 +17,10 @@ config("pgo_instrumentation_flags") {
   if (chrome_pgo_phase == 1) {
     if (is_clang) {
       cflags = [ "-fprofile-instr-generate" ]
-      if (is_win) {
-        # Normally, we pass -fprofile-instr-generate to the compiler and it
-        # automatically passes the right flags to the linker.
-        # However, on Windows, we call the linker directly, without going
-        # through the compiler driver. This means we need to pass the right
-        # flags ourselves.
-        _clang_rt_base_path =
-            "$clang_base_path/lib/clang/$clang_version/lib/windows"
-        if (target_cpu == "x86") {
-          _clang_rt_suffix = "-i386.lib"
-        } else if (target_cpu == "x64") {
-          _clang_rt_suffix = "-x86_64.lib"
-        }
-        assert(_clang_rt_suffix != "", "target CPU $target_cpu not supported")
-        ldflags += [ "$_clang_rt_base_path/clang_rt.profile$_clang_rt_suffix" ]
-      } else {
+      if (!is_win) {
+        # Windows directly calls link.exe instead of the compiler driver when
+        # linking, and embeds the path to the profile runtime library as
+        # dependent library into each object file.
         ldflags += [ "-fprofile-instr-generate" ]
       }
     } else if (is_win) {

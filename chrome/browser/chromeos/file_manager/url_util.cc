@@ -20,7 +20,6 @@ namespace util {
 namespace {
 
 const char kAllowedPaths[] = "allowedPaths";
-const char kNativePath[] = "nativePath";
 const char kNativeOrDrivePath[] = "nativeOrDrivePath";
 const char kAnyPath[] = "anyPath";
 const char kAnyPathOrUrl[] = "anyPathOrUrl";
@@ -78,7 +77,8 @@ GURL GetFileManagerMainPageUrlWithParams(
     const std::string& target_name,
     const ui::SelectFileDialog::FileTypeInfo* file_types,
     int file_type_index,
-    const base::FilePath::StringType& default_extension) {
+    const base::FilePath::StringType& default_extension,
+    bool show_android_picker_apps) {
   base::DictionaryValue arg_value;
   arg_value.SetString("type", GetDialogTypeAsString(type));
   arg_value.SetString("title", title);
@@ -86,6 +86,7 @@ GURL GetFileManagerMainPageUrlWithParams(
   arg_value.SetString("selectionURL", selection_url.spec());
   arg_value.SetString("targetName", target_name);
   arg_value.SetString("defaultExtension", default_extension);
+  arg_value.SetBoolean("showAndroidPickerApps", show_android_picker_apps);
 
   if (file_types) {
     auto types_list = std::make_unique<base::ListValue>();
@@ -119,11 +120,6 @@ GURL GetFileManagerMainPageUrlWithParams(
   if (file_types) {
     switch (file_types->allowed_paths) {
       case ui::SelectFileDialog::FileTypeInfo::NATIVE_PATH:
-        if (base::FeatureList::IsEnabled(chromeos::features::kDriveFs))
-          arg_value.SetString(kAllowedPaths, kNativeOrDrivePath);
-        else
-          arg_value.SetString(kAllowedPaths, kNativePath);
-        break;
       case ui::SelectFileDialog::FileTypeInfo::NATIVE_OR_DRIVE_PATH:
         arg_value.SetString(kAllowedPaths, kNativeOrDrivePath);
         break;
@@ -134,10 +130,8 @@ GURL GetFileManagerMainPageUrlWithParams(
         arg_value.SetString(kAllowedPaths, kAnyPathOrUrl);
         break;
     }
-  } else if (base::FeatureList::IsEnabled(chromeos::features::kDriveFs)) {
-    arg_value.SetString(kAllowedPaths, kNativeOrDrivePath);
   } else {
-    arg_value.SetString(kAllowedPaths, kNativePath);
+    arg_value.SetString(kAllowedPaths, kNativeOrDrivePath);
   }
 
   std::string json_args;

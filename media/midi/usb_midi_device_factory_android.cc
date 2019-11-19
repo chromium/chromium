@@ -9,7 +9,7 @@
 
 #include "base/bind.h"
 #include "base/synchronization/lock.h"
-#include "jni/UsbMidiDeviceFactoryAndroid_jni.h"
+#include "media/midi/midi_jni_headers/UsbMidiDeviceFactoryAndroid_jni.h"
 #include "media/midi/usb_midi_device_android.h"
 
 using base::android::JavaParamRef;
@@ -53,13 +53,9 @@ void UsbMidiDeviceFactoryAndroid::EnumerateDevices(
 // Called from the Java world.
 void UsbMidiDeviceFactoryAndroid::OnUsbMidiDeviceRequestDone(
     JNIEnv* env,
-    const JavaParamRef<jobject>& caller,
     const JavaParamRef<jobjectArray>& devices) {
-  size_t size = env->GetArrayLength(devices);
   UsbMidiDevice::Devices devices_to_pass;
-  for (size_t i = 0; i < size; ++i) {
-    base::android::ScopedJavaLocalRef<jobject> raw_device(
-        env, env->GetObjectArrayElement(devices, i));
+  for (auto raw_device : devices.ReadElements<jobject>()) {
     devices_to_pass.push_back(
         std::make_unique<UsbMidiDeviceAndroid>(raw_device, delegate_));
   }
@@ -70,7 +66,6 @@ void UsbMidiDeviceFactoryAndroid::OnUsbMidiDeviceRequestDone(
 // Called from the Java world.
 void UsbMidiDeviceFactoryAndroid::OnUsbMidiDeviceAttached(
     JNIEnv* env,
-    const JavaParamRef<jobject>& caller,
     const JavaParamRef<jobject>& device) {
   delegate_->OnDeviceAttached(
       std::make_unique<UsbMidiDeviceAndroid>(device, delegate_));
@@ -79,7 +74,6 @@ void UsbMidiDeviceFactoryAndroid::OnUsbMidiDeviceAttached(
 // Called from the Java world.
 void UsbMidiDeviceFactoryAndroid::OnUsbMidiDeviceDetached(
     JNIEnv* env,
-    const JavaParamRef<jobject>& caller,
     jint index) {
   delegate_->OnDeviceDetached(index);
 }

@@ -214,7 +214,7 @@ std::string DhcpPacFileAdapterFetcher::GetPacURLFromDhcp(
   std::wstring adapter_name_wide = base::SysMultiByteToWide(adapter_name,
                                                             CP_ACP);
 
-  DHCPCAPI_PARAMS_ARRAY send_params = { 0, NULL };
+  DHCPCAPI_PARAMS_ARRAY send_params = {0, nullptr};
 
   DHCPCAPI_PARAMS wpad_params = { 0 };
   wpad_params.OptionId = 252;
@@ -246,13 +246,10 @@ std::string DhcpPacFileAdapterFetcher::GetPacURLFromDhcp(
     // chances on non-standard, poorly documented usage.
     base::ScopedBlockingCall scoped_blocking_call(
         FROM_HERE, base::BlockingType::MAY_BLOCK);
-    res = ::DhcpRequestParams(DHCPCAPI_REQUEST_SYNCHRONOUS,
-                              NULL,
-                              const_cast<LPWSTR>(adapter_name_wide.c_str()),
-                              NULL,
-                              send_params, request_params,
-                              result_buffer.get(), &result_buffer_size,
-                              NULL);
+    res = ::DhcpRequestParams(
+        DHCPCAPI_REQUEST_SYNCHRONOUS, nullptr,
+        const_cast<LPWSTR>(adapter_name_wide.c_str()), nullptr, send_params,
+        request_params, result_buffer.get(), &result_buffer_size, nullptr);
     ++retry_count;
   } while (res == ERROR_MORE_DATA && retry_count <= 3);
 

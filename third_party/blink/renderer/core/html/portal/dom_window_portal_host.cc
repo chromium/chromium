@@ -13,12 +13,17 @@ namespace blink {
 
 // static
 PortalHost* DOMWindowPortalHost::portalHost(LocalDOMWindow& window) {
+  if (ShouldExposePortalHost(window))
+    return &PortalHost::From(window);
+  return nullptr;
+}
+
+// static
+bool DOMWindowPortalHost::ShouldExposePortalHost(const LocalDOMWindow& window) {
   // The portal host is only exposed in the main frame of a page
   // embedded in a portal.
-  if (!window.GetFrame() || !window.GetFrame()->IsMainFrame() ||
-      !window.GetFrame()->GetPage()->InsidePortal())
-    return nullptr;
-  return &PortalHost::From(window);
+  return window.GetFrame() && window.GetFrame()->IsMainFrame() &&
+         window.GetFrame()->GetPage()->InsidePortal();
 }
 
 }  // namespace blink

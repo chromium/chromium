@@ -4,21 +4,19 @@
 
 #include "third_party/blink/renderer/core/html/html_picture_element.h"
 
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
-#include "third_party/blink/renderer/core/frame/use_counter.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/html/html_source_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/loader/image_loader.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
 
-using namespace html_names;
-
-inline HTMLPictureElement::HTMLPictureElement(Document& document)
-    : HTMLElement(kPictureTag, document) {}
-
-DEFINE_NODE_FACTORY(HTMLPictureElement)
+HTMLPictureElement::HTMLPictureElement(Document& document)
+    : HTMLElement(html_names::kPictureTag, document) {}
 
 void HTMLPictureElement::SourceOrMediaChanged() {
   for (HTMLImageElement* image_element =

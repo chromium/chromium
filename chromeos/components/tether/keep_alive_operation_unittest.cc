@@ -43,7 +43,7 @@ class MockOperationObserver : public KeepAliveOperation::Observer {
 
   void OnOperationFinished(multidevice::RemoteDeviceRef remote_device,
                            std::unique_ptr<DeviceStatus> device_status) {
-    OnOperationFinishedRaw(remote_device, device_status.release());
+    OnOperationFinishedRaw(remote_device, device_status.get());
   }
 
  private:

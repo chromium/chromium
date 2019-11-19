@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_APP_LIST_INTERNAL_APP_INTERNAL_APP_ICON_LOADER_H_
 
 #include <map>
-#include <memory>
 #include <string>
 
 #include "base/macros.h"
@@ -30,10 +29,7 @@ class InternalAppIconLoader : public AppIconLoader {
   void UpdateImage(const std::string& app_id) override;
 
  private:
-  using AppIDToIconMap = std::map<std::string, std::unique_ptr<gfx::ImageSkia>>;
-
-  // The preferred icon size.
-  int resource_size_in_dip_;
+  using AppIDToIconMap = std::map<std::string, gfx::ImageSkia>;
 
   // Maps from internal app id to icon.
   AppIDToIconMap icon_map_;

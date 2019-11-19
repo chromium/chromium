@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//   http://www.apache.org/licenses/LICENSE-2.0
+//   https://www.apache.org/licenses/LICENSE-2.0
 //
 //   Unless required by applicable law or agreed to in writing, software
 //   distributed under the License is distributed on an "AS IS" BASIS,
@@ -46,7 +46,13 @@ std::unique_ptr<absl::time_internal::cctz::ZoneInfoSource> DefaultFactory(
 // A "weak" definition for cctz_extension::zone_info_source_factory.
 // The user may override this with their own "strong" definition (see
 // zone_info_source.h).
-#if defined(_MSC_VER)
+#if !defined(__has_attribute)
+#define __has_attribute(x) 0
+#endif
+#if __has_attribute(weak) || defined(__GNUC__)
+ZoneInfoSourceFactory zone_info_source_factory
+    __attribute__((weak)) = DefaultFactory;
+#elif defined(_MSC_VER) && !defined(_LIBCPP_VERSION)
 extern ZoneInfoSourceFactory zone_info_source_factory;
 extern ZoneInfoSourceFactory default_factory;
 ZoneInfoSourceFactory default_factory = DefaultFactory;
@@ -60,19 +66,11 @@ ZoneInfoSourceFactory default_factory = DefaultFactory;
     "/alternatename:?zone_info_source_factory@cctz_extension@time_internal@absl@@3P6A?AV?$unique_ptr@VZoneInfoSource@cctz@time_internal@absl@@U?$default_delete@VZoneInfoSource@cctz@time_internal@absl@@@std@@@std@@AEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@5@AEBV?$function@$$A6A?AV?$unique_ptr@VZoneInfoSource@cctz@time_internal@absl@@U?$default_delete@VZoneInfoSource@cctz@time_internal@absl@@@std@@@std@@AEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@2@@Z@5@@ZEA=?default_factory@cctz_extension@time_internal@absl@@3P6A?AV?$unique_ptr@VZoneInfoSource@cctz@time_internal@absl@@U?$default_delete@VZoneInfoSource@cctz@time_internal@absl@@@std@@@std@@AEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@5@AEBV?$function@$$A6A?AV?$unique_ptr@VZoneInfoSource@cctz@time_internal@absl@@U?$default_delete@VZoneInfoSource@cctz@time_internal@absl@@@std@@@std@@AEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@2@@Z@5@@ZEA")
 #else
 #error Unsupported MSVC platform
-#endif
-#else  // _MSC_VER
-#if !defined(__has_attribute)
-#define __has_attribute(x) 0
-#endif
-#if __has_attribute(weak) || defined(__GNUC__)
-ZoneInfoSourceFactory zone_info_source_factory
-    __attribute__((weak)) = DefaultFactory;
+#endif  // _M_<PLATFORM>
 #else
 // Make it a "strong" definition if we have no other choice.
 ZoneInfoSourceFactory zone_info_source_factory = DefaultFactory;
 #endif
-#endif  // _MSC_VER
 
 }  // namespace cctz_extension
 }  // namespace time_internal

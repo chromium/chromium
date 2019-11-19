@@ -1,0 +1,66 @@
+<!DOCTYPE HTML>
+
+<!-- READ BEFORE UPDATING:
+If this test is updated make sure to increment the "revision" value of the
+associated test in content/test/gpu/page_sets/pixel_tests.py. This will ensure
+that the baseline images are regenerated on the next run.
+-->
+
+<html>
+<head>
+<meta name="viewport" content="initial-scale=1">
+<title>Tab Switch Canvas 2D Test: Diagonally opposite green and blue box, over red box</title>
+<style type="text/css">
+.nomargin {
+  margin: 0px auto;
+}
+</style>
+<script>
+let g_swapsBeforeAck = 15;
+let g_canvas;
+let g_c2d;
+
+function waitForFinish()
+{
+  if (g_swapsBeforeAck == 0) {
+    sendResult("SUCCESS");
+  } else {
+    g_swapsBeforeAck--;
+    window.requestAnimationFrame(waitForFinish);
+  }
+}
+
+function handleVisibilityChange() {
+  if (document.visibilityState == "visible")
+    waitForFinish();
+}
+
+function sendResult(status) {
+  if (domAutomationController) {
+    domAutomationController.send(status);
+  } else {
+    console.log(status);
+  }
+}
+
+function main()
+{
+  document.addEventListener("visibilitychange", handleVisibilityChange, false);
+  g_canvas = document.getElementById("c");
+  g_c2d = g_canvas.getContext("2d");
+  g_c2d.clearRect(0, 0, g_canvas.width, g_canvas.height);
+  g_c2d.fillStyle = "red";
+  g_c2d.fillRect(0, 0, 100, 100);
+  // Verify that output doesn't get flipped vertically.
+  g_c2d.fillStyle = "green";
+  g_c2d.fillRect(0, 0, 50, 50);
+  g_c2d.fillStyle = "blue";
+  g_c2d.fillRect(50, 50, 50, 50);
+  sendResult("READY");
+}
+</script>
+</head>
+<body onload="main()" class="nomargin">
+<canvas id="c" width="100" height="100" class="nomargin" style="background-color:black"></canvas>
+</body>
+</html>

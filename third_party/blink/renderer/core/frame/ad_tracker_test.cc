@@ -6,12 +6,16 @@
 
 #include <memory>
 
+#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/probe/async_task_id.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
 namespace blink {
@@ -87,6 +91,13 @@ class AdTrackerTest : public testing::Test {
     return page_holder_->GetDocument().GetFrame();
   }
 
+  void CreateAdTracker() {
+    if (ad_tracker_)
+      ad_tracker_->Shutdown();
+    ad_tracker_ = MakeGarbageCollected<TestAdTracker>(GetFrame());
+    ad_tracker_->SetExecutionContext(&page_holder_->GetDocument());
+  }
+
   void WillExecuteScript(const String& script_url) {
     ad_tracker_->WillExecuteScript(&page_holder_->GetDocument(),
                                    String(script_url));
@@ -107,10 +118,9 @@ class AdTrackerTest : public testing::Test {
 };
 
 void AdTrackerTest::SetUp() {
-  page_holder_ = DummyPageHolder::Create(IntSize(800, 600));
+  page_holder_ = std::make_unique<DummyPageHolder>(IntSize(800, 600));
   page_holder_->GetDocument().SetURL(KURL("https://example.com/foo"));
-  ad_tracker_ = MakeGarbageCollected<TestAdTracker>(GetFrame());
-  ad_tracker_->SetExecutionContext(&page_holder_->GetDocument());
+  CreateAdTracker();
 }
 
 void AdTrackerTest::TearDown() {
@@ -123,6 +133,36 @@ TEST_F(AdTrackerTest, AnyExecutingScriptsTaggedAsAdResource) {
 
   WillExecuteScript("https://example.com/foo.js");
   WillExecuteScript("https://example.com/bar.js");
+  EXPECT_TRUE(AnyExecutingScriptsTaggedAsAdResource());
+}
+
+TEST_F(AdTrackerTest, TopOfStackOnly_NoAdsOnTop) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kTopOfStackAdTagging);
+  CreateAdTracker();
+
+  String ad_script_url("https://example.com/bar.js");
+  AppendToKnownAdScripts(ad_script_url);
+
+  WillExecuteScript(ad_script_url);
+  WillExecuteScript("https://example.com/foo.js");
+  ad_tracker_->SetScriptAtTopOfStack("https://www.example.com/baz.js");
+
+  EXPECT_FALSE(AnyExecutingScriptsTaggedAsAdResource());
+}
+
+TEST_F(AdTrackerTest, TopOfStackOnly_AdsOnTop) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kTopOfStackAdTagging);
+  CreateAdTracker();
+
+  String ad_script_url("https://example.com/bar.js");
+  AppendToKnownAdScripts(ad_script_url);
+
+  WillExecuteScript(ad_script_url);
+  WillExecuteScript("https://example.com/foo.js");
+  ad_tracker_->SetScriptAtTopOfStack(ad_script_url);
+
   EXPECT_TRUE(AnyExecutingScriptsTaggedAsAdResource());
 }
 
@@ -194,6 +234,49 @@ TEST_F(AdTrackerTest, AdStackFrameCounting) {
   EXPECT_TRUE(AnyExecutingScriptsTaggedAsAdResource());
 }
 
+TEST_F(AdTrackerTest, AsyncTagging) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kAsyncStackAdTagging);
+  CreateAdTracker();
+
+  // Put an ad script on the stack.
+  AppendToKnownAdScripts("https://example.com/ad.js");
+  WillExecuteScript("https://example.com/ad.js");
+  EXPECT_TRUE(AnyExecutingScriptsTaggedAsAdResource());
+
+  // Create a fake task void*.
+  probe::AsyncTaskId async_task;
+
+  // Create an async task while ad script is running.
+  ad_tracker_->DidCreateAsyncTask(&async_task);
+
+  // Finish executing the ad script.
+  DidExecuteScript();
+  EXPECT_FALSE(AnyExecutingScriptsTaggedAsAdResource());
+
+  // Start and stop the async task created by the ad script.
+  ad_tracker_->DidStartAsyncTask(&async_task);
+  EXPECT_TRUE(AnyExecutingScriptsTaggedAsAdResource());
+  ad_tracker_->DidFinishAsyncTask(&async_task);
+  EXPECT_FALSE(AnyExecutingScriptsTaggedAsAdResource());
+
+  // Do it again.
+  ad_tracker_->DidStartAsyncTask(&async_task);
+  EXPECT_TRUE(AnyExecutingScriptsTaggedAsAdResource());
+  ad_tracker_->DidFinishAsyncTask(&async_task);
+  EXPECT_FALSE(AnyExecutingScriptsTaggedAsAdResource());
+
+  // Call the task recursively.
+  ad_tracker_->DidStartAsyncTask(&async_task);
+  EXPECT_TRUE(AnyExecutingScriptsTaggedAsAdResource());
+  ad_tracker_->DidStartAsyncTask(&async_task);
+  EXPECT_TRUE(AnyExecutingScriptsTaggedAsAdResource());
+  ad_tracker_->DidFinishAsyncTask(&async_task);
+  EXPECT_TRUE(AnyExecutingScriptsTaggedAsAdResource());
+  ad_tracker_->DidFinishAsyncTask(&async_task);
+  EXPECT_FALSE(AnyExecutingScriptsTaggedAsAdResource());
+}
+
 class AdTrackerSimTest : public SimTest {
  protected:
   void SetUp() override {
@@ -235,6 +318,10 @@ TEST_F(AdTrackerSimTest, ScriptLoadedWhileExecutingAdScript) {
     script.src = "vanilla_script.js";
     document.body.appendChild(script);
     )SCRIPT");
+
+  // Wait for script to run.
+  base::RunLoop().RunUntilIdle();
+
   vanilla_script.Complete("");
 
   EXPECT_TRUE(IsKnownAdScript(&GetDocument(), kAdUrl));
@@ -257,6 +344,9 @@ TEST_F(AdTrackerSimTest, ScriptDetectedByContext) {
     document.body.appendChild(frame);
     )SCRIPT");
 
+  // Wait for script to run.
+  base::RunLoop().RunUntilIdle();
+
   // The child frame should be an ad subframe.
   auto* child_frame =
       To<LocalFrame>(GetDocument().GetFrame()->Tree().FirstChild());
@@ -270,9 +360,10 @@ TEST_F(AdTrackerSimTest, ScriptDetectedByContext) {
 }
 
 TEST_F(AdTrackerSimTest, RedirectToAdUrl) {
+  SimRequest::Params params;
+  params.redirect_url = "https://example.com/ad_script.js";
   SimSubresourceRequest redirect_script(
-      "https://example.com/redirect_script.js",
-      "https://example.com/ad_script.js", "text/javascript");
+      "https://example.com/redirect_script.js", "text/javascript", params);
   SimSubresourceRequest ad_script("https://example.com/ad_script.js",
                                   "text/javascript");
 
@@ -303,6 +394,9 @@ TEST_F(AdTrackerSimTest, AdResourceDetectedByContext) {
     frame.src="ad_frame.html";
     document.body.appendChild(frame);
     )SCRIPT");
+
+  // Wait for script to run.
+  base::RunLoop().RunUntilIdle();
 
   // The child frame should be an ad subframe.
   auto* child_frame =
@@ -336,6 +430,9 @@ TEST_F(AdTrackerSimTest, InlineAdScriptRunningInNonAdContext) {
     document.body.appendChild(frame);
     )SCRIPT");
 
+  // Wait for script to run.
+  base::RunLoop().RunUntilIdle();
+
   // Verify that the new frame is an ad frame.
   EXPECT_TRUE(To<LocalFrame>(GetDocument().GetFrame()->Tree().FirstChild())
                   ->IsAdSubframe());
@@ -352,12 +449,20 @@ TEST_F(AdTrackerSimTest, InlineAdScriptRunningInNonAdContext) {
 
   // The new sibling frame should also be identified as an ad.
   EXPECT_TRUE(
-      To<LocalFrame>(GetDocument().GetFrame()->Tree().Find("ad_sibling"))
+      To<LocalFrame>(GetDocument().GetFrame()->Tree().ScopedChild("ad_sibling"))
           ->IsAdSubframe());
 }
 
 // Image loaded by ad script is tagged as ad.
-TEST_F(AdTrackerSimTest, ImageLoadedWhileExecutingAdScript) {
+TEST_F(AdTrackerSimTest, ImageLoadedWhileExecutingAdScriptAsyncEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kAsyncStackAdTagging);
+
+  // Reset the AdTracker so that it gets the latest base::Feature value on
+  // construction.
+  ad_tracker_ = MakeGarbageCollected<TestAdTracker>(GetDocument().GetFrame());
+  GetDocument().GetFrame()->SetAdTrackerForTesting(ad_tracker_);
+
   const char kAdUrl[] = "https://example.com/ad_script.js";
   const char kVanillaUrl[] = "https://example.com/vanilla_image.jpg";
   SimSubresourceRequest ad_resource(kAdUrl, "text/javascript");
@@ -372,11 +477,55 @@ TEST_F(AdTrackerSimTest, ImageLoadedWhileExecutingAdScript) {
     image.src = "vanilla_image.jpg";
     document.body.appendChild(image);
     )SCRIPT");
+
+  // Wait for script to run.
+  base::RunLoop().RunUntilIdle();
+
   vanilla_image.Complete("");
 
   EXPECT_TRUE(IsKnownAdScript(&GetDocument(), kAdUrl));
   EXPECT_TRUE(ad_tracker_->RequestWithUrlTaggedAsAd(kAdUrl));
-  // TODO(crbug.com/848916): Should be true.
+
+  // Image loading is async, so we should catch this when async stacks are
+  // monitored.
+  EXPECT_TRUE(ad_tracker_->RequestWithUrlTaggedAsAd(kVanillaUrl));
+}
+
+// Image loaded by ad script is tagged as ad.
+TEST_F(AdTrackerSimTest, ImageLoadedWhileExecutingAdScriptAsyncDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kAsyncStackAdTagging);
+
+  // Reset the AdTracker so that it gets the latest base::Feature value on
+  // construction.
+  ad_tracker_ = MakeGarbageCollected<TestAdTracker>(GetDocument().GetFrame());
+  GetDocument().GetFrame()->SetAdTrackerForTesting(ad_tracker_);
+
+  const char kAdUrl[] = "https://example.com/ad_script.js";
+  const char kVanillaUrl[] = "https://example.com/vanilla_image.jpg";
+  SimSubresourceRequest ad_resource(kAdUrl, "text/javascript");
+  SimSubresourceRequest vanilla_image(kVanillaUrl, "image/jpeg");
+
+  ad_tracker_->SetAdSuffix("ad_script.js");
+
+  main_resource_->Complete("<body></body><script src=ad_script.js></script>");
+
+  ad_resource.Complete(R"SCRIPT(
+    image = document.createElement("img");
+    image.src = "vanilla_image.jpg";
+    document.body.appendChild(image);
+    )SCRIPT");
+
+  // Wait for script to run.
+  base::RunLoop().RunUntilIdle();
+
+  vanilla_image.Complete("");
+
+  EXPECT_TRUE(IsKnownAdScript(&GetDocument(), kAdUrl));
+  EXPECT_TRUE(ad_tracker_->RequestWithUrlTaggedAsAd(kAdUrl));
+
+  // Image loading is async, so we won't catch this when async stacks aren't
+  // monitored.
   EXPECT_FALSE(ad_tracker_->RequestWithUrlTaggedAsAd(kVanillaUrl));
 }
 
@@ -398,6 +547,10 @@ TEST_F(AdTrackerSimTest, FrameLoadedWhileExecutingAdScript) {
     iframe.src = "vanilla_page.html";
     document.body.appendChild(iframe);
     )SCRIPT");
+
+  // Wait for script to run.
+  base::RunLoop().RunUntilIdle();
+
   vanilla_page.Complete("<img src=vanilla_img.jpg></img>");
   vanilla_image.Complete("");
 
@@ -464,6 +617,9 @@ TEST_F(AdTrackerSimTest, SameOriginSubframeFromAdScript) {
     document.body.appendChild(iframe);
     )SCRIPT");
 
+  // Wait for script to run.
+  base::RunLoop().RunUntilIdle();
+
   iframe_resource.Complete("iframe data");
 
   Frame* subframe = GetDocument().GetFrame()->Tree().FirstChild();
@@ -488,16 +644,19 @@ TEST_F(AdTrackerSimTest, SameOriginDocWrittenSubframeFromAdScript) {
     iframeDocument.close();
     )SCRIPT");
 
+  // Wait for script to run.
+  base::RunLoop().RunUntilIdle();
+
   Frame* subframe = GetDocument().GetFrame()->Tree().FirstChild();
   auto* local_subframe = To<LocalFrame>(subframe);
   EXPECT_TRUE(local_subframe->IsAdSubframe());
 }
 
-class AdTrackerDisabledSimTest : public SimTest {
+class AdTrackerDisabledSimTest : public SimTest,
+                                 private ScopedAdTaggingForTest {
  protected:
+  AdTrackerDisabledSimTest() : ScopedAdTaggingForTest(false) {}
   void SetUp() override {
-    RuntimeEnabledFeatures::SetAdTaggingEnabled(false);
-
     SimTest::SetUp();
     main_resource_ = std::make_unique<SimRequest>(
         "https://example.com/test.html", "text/html");

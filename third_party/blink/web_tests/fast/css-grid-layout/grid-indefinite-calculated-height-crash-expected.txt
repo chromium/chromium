@@ -1,2 +1,1 @@
-CONSOLE WARNING: Percentages row tracks and gutters for indefinite height grid containers will be resolved against the intrinsic height instead of being treated as auto and zero respectively. This change will happen in M70, around October 2018. See https://www.chromestatus.com/feature/6708326821789696 for more details.
 This test has PASSED if it didn't CRASH on Debug builds.

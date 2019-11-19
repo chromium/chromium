@@ -19,13 +19,10 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chrome_service.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/constants.mojom.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/safe_browsing/client_model.pb.h"
-#include "components/data_use_measurement/core/data_use_user_data.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/common/safe_browsing.mojom.h"
 #include "components/safe_browsing/common/safe_browsing_prefs.h"
@@ -37,6 +34,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "crypto/sha2.h"
 #include "google_apis/google_api_keys.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/escape.h"
 #include "net/base/ip_address.h"
 #include "net/base/load_flags.h"
@@ -45,7 +43,6 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
-#include "services/service_manager/public/cpp/connector.h"
 #include "url/gurl.h"
 
 using content::BrowserThread;
@@ -101,9 +98,7 @@ ClientSideDetectionService::CacheState::CacheState(bool phish, base::Time time)
 
 ClientSideDetectionService::ClientSideDetectionService(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : enabled_(false),
-      url_loader_factory_(url_loader_factory),
-      weak_factory_(this) {
+    : enabled_(false), url_loader_factory_(url_loader_factory) {
   base::Closure update_renderers =
       base::Bind(&ClientSideDetectionService::SendModelToRenderers,
                  base::Unretained(this));
@@ -209,10 +204,10 @@ void ClientSideDetectionService::OnURLLoaderComplete(
   if (url_loader->ResponseInfo() && url_loader->ResponseInfo()->headers)
     response_code = url_loader->ResponseInfo()->headers->response_code();
 
-  if (base::ContainsKey(client_phishing_reports_, url_loader)) {
+  if (base::Contains(client_phishing_reports_, url_loader)) {
     HandlePhishingVerdict(url_loader, url_loader->GetFinalURL(),
                           url_loader->NetError(), response_code, data);
-  } else if (base::ContainsKey(client_malware_reports_, url_loader)) {
+  } else if (base::Contains(client_malware_reports_, url_loader)) {
     HandleMalwareVerdict(url_loader, url_loader->GetFinalURL(),
                          url_loader->NetError(), response_code, data);
   } else {
@@ -253,17 +248,9 @@ void ClientSideDetectionService::SendModelToProcess(
     DVLOG(2) << "Disabling client-side phishing detection for "
              << "RenderProcessHost @" << process;
   }
-  safe_browsing::mojom::PhishingModelSetterPtr phishing;
-  // Null in unit tests.
-  if (!ChromeService::GetInstance()->connector()) {
-    return;
-  }
-  ChromeService::GetInstance()->connector()->BindInterface(
-      service_manager::ServiceFilter::ByNameWithIdInGroup(
-          chrome::mojom::kRendererServiceName,
-          process->GetChildIdentity().instance_id(),
-          process->GetChildIdentity().instance_group()),
-      &phishing);
+
+  mojo::Remote<safe_browsing::mojom::PhishingModelSetter> phishing;
+  process->BindReceiver(phishing.BindNewPipeAndPassReceiver());
   phishing->SetPhishingModel(model);
 }
 

@@ -71,11 +71,18 @@ function setupEvents() {
   var lookalike = interstitialType == 'LOOKALIKE';
   var billing = interstitialType == 'SAFEBROWSING' &&
                     loadTimeData.getBoolean('billing');
+  var originPolicy = interstitialType == "ORIGIN_POLICY";
+  var blockedInterception = interstitialType == "BLOCKED_INTERCEPTION";
   var hidePrimaryButton = loadTimeData.getBoolean('hide_primary_button');
   var showRecurrentErrorParagraph = loadTimeData.getBoolean(
     'show_recurrent_error_paragraph');
 
-  if (ssl) {
+  if (loadTimeData.valueExists('darkModeAvailable') &&
+      loadTimeData.getBoolean('darkModeAvailable')) {
+    $('body').classList.add('dark-mode-available');
+  }
+
+  if (ssl || originPolicy || blockedInterception) {
     $('body').classList.add(badClock ? 'bad-clock' : 'ssl');
     $('error-code').textContent = loadTimeData.getString('errorCode');
     $('error-code').classList.remove(HIDDEN_CLASS);
@@ -104,12 +111,13 @@ function setupEvents() {
           break;
 
         case 'SSL':
-          if (badClock)
+          if (badClock) {
             sendCommand(SecurityInterstitialCommandId.CMD_OPEN_DATE_SETTINGS);
-          else if (overridable)
+          } else if (overridable) {
             sendCommand(SecurityInterstitialCommandId.CMD_DONT_PROCEED);
-          else
+          } else {
             sendCommand(SecurityInterstitialCommandId.CMD_RELOAD);
+          }
           break;
 
         case 'SAFEBROWSING':
@@ -118,7 +126,7 @@ function setupEvents() {
           break;
 
         case 'LOOKALIKE':
-          // Primary button is hidden for lookalike URL interstitial.
+          sendCommand(SecurityInterstitialCommandId.CMD_DONT_PROCEED);
           break;
 
         default:
@@ -128,19 +136,17 @@ function setupEvents() {
   }
 
   if (lookalike) {
-    var proceed_button = 'proceed-button';
-    var dont_proceed_link = 'dont-proceed-link';
-    $('primary-button').classList.add(HIDDEN_CLASS);
-    $(proceed_button).classList.remove(HIDDEN_CLASS);
+    var proceedButton = 'proceed-button';
+    var dontProceedLink = 'dont-proceed-link';
+    $(proceedButton).classList.remove(HIDDEN_CLASS);
 
-    $(proceed_button).textContent =
-        loadTimeData.getString('proceedButtonText');
+    $(proceedButton).textContent = loadTimeData.getString('proceedButtonText');
 
-    $(proceed_button).addEventListener('click', function(event) {
+    $(proceedButton).addEventListener('click', function(event) {
       sendCommand(SecurityInterstitialCommandId.CMD_PROCEED);
     });
 
-    $(dont_proceed_link).addEventListener('click', function(event) {
+    $(dontProceedLink).addEventListener('click', function(event) {
       sendCommand(SecurityInterstitialCommandId.CMD_DONT_PROCEED);
     });
   }
@@ -183,7 +189,7 @@ function setupEvents() {
   }
 
   if (captivePortal || billing || lookalike) {
-    // Captive portal, billing and lookalike pages don't have details button.
+    // Captive portal, billing and lookalike pages don't have details buttons.
     $('details-button').classList.add('hidden');
   } else {
     $('details-button').addEventListener('click', function(event) {

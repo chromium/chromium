@@ -12,16 +12,14 @@ FakeInputServiceLinux::~FakeInputServiceLinux() {}
 
 // mojom::InputDeviceManager implementation:
 void FakeInputServiceLinux::GetDevicesAndSetClient(
-    mojom::InputDeviceManagerClientAssociatedPtrInfo client,
+    mojo::PendingAssociatedRemote<mojom::InputDeviceManagerClient> client,
     GetDevicesCallback callback) {
   GetDevices(std::move(callback));
 
   if (!client.is_valid())
     return;
 
-  mojom::InputDeviceManagerClientAssociatedPtr client_ptr;
-  client_ptr.Bind(std::move(client));
-  clients_.AddPtr(std::move(client_ptr));
+  clients_.Add(std::move(client));
 }
 
 void FakeInputServiceLinux::GetDevices(GetDevicesCallback callback) {
@@ -32,15 +30,15 @@ void FakeInputServiceLinux::GetDevices(GetDevicesCallback callback) {
   std::move(callback).Run(std::move(devices));
 }
 
-void FakeInputServiceLinux::Bind(mojom::InputDeviceManagerRequest request) {
-  bindings_.AddBinding(this, std::move(request));
+void FakeInputServiceLinux::Bind(
+    mojo::PendingReceiver<mojom::InputDeviceManager> receiver) {
+  receivers_.Add(this, std::move(receiver));
 }
 
 void FakeInputServiceLinux::AddDevice(mojom::InputDeviceInfoPtr info) {
   auto* device_info = info.get();
-  clients_.ForAllPtrs([device_info](mojom::InputDeviceManagerClient* client) {
+  for (auto& client : clients_)
     client->InputDeviceAdded(device_info->Clone());
-  });
 
   devices_[info->id] = std::move(info);
 }
@@ -48,9 +46,8 @@ void FakeInputServiceLinux::AddDevice(mojom::InputDeviceInfoPtr info) {
 void FakeInputServiceLinux::RemoveDevice(const std::string& id) {
   devices_.erase(id);
 
-  clients_.ForAllPtrs([id](mojom::InputDeviceManagerClient* client) {
+  for (auto& client : clients_)
     client->InputDeviceRemoved(id);
-  });
 }
 
 }  // namespace device

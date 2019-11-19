@@ -171,13 +171,14 @@ namespace cmd {
 //
 // NOTE: THE ORDER OF THESE MUST NOT CHANGE (their id is derived by order)
 #define COMMON_COMMAND_BUFFER_CMDS(OP) \
-  OP(Noop)                          /*  0 */ \
-  OP(SetToken)                      /*  1 */ \
-  OP(SetBucketSize)                 /*  2 */ \
-  OP(SetBucketData)                 /*  3 */ \
-  OP(SetBucketDataImmediate)        /*  4 */ \
-  OP(GetBucketStart)                /*  5 */ \
-  OP(GetBucketData)                 /*  6 */ \
+  OP(Noop)                   /*  0 */  \
+  OP(SetToken)               /*  1 */  \
+  OP(SetBucketSize)          /*  2 */  \
+  OP(SetBucketData)          /*  3 */  \
+  OP(SetBucketDataImmediate) /*  4 */  \
+  OP(GetBucketStart)         /*  5 */  \
+  OP(GetBucketData)          /*  6 */  \
+  OP(InsertFenceSync)        /*  7 */
 
 // Common commands.
 enum CommandId {
@@ -551,6 +552,45 @@ static_assert(offsetof(GetBucketData, shared_memory_id) == 16,
               "offset of GetBucketData.shared_memory_id should be 16");
 static_assert(offsetof(GetBucketData, shared_memory_offset) == 20,
               "offset of GetBucketData.shared_memory_offset should be 20");
+
+struct InsertFenceSync {
+  typedef InsertFenceSync ValueType;
+  static const CommandId kCmdId = kInsertFenceSync;
+  static const cmd::ArgFlags kArgFlags = cmd::kFixed;
+  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(1);
+
+  void SetHeader() { header.SetCmd<ValueType>(); }
+
+  void Init(uint64_t _release_count) {
+    SetHeader();
+    release_count_0 = static_cast<uint32_t>(_release_count & 0xFFFFFFFF);
+    release_count_1 =
+        static_cast<uint32_t>((_release_count >> 32) & 0xFFFFFFFF);
+  }
+
+  void* Set(void* cmd, uint64_t _release_count) {
+    static_cast<ValueType*>(cmd)->Init(_release_count);
+    return NextCmdAddress<ValueType>(cmd);
+  }
+
+  uint64_t release_count() const volatile {
+    return (static_cast<uint64_t>(release_count_1) << 32) +
+           static_cast<uint64_t>(release_count_0);
+  }
+
+  gpu::CommandHeader header;
+  uint32_t release_count_0;
+  uint32_t release_count_1;
+};
+
+static_assert(sizeof(InsertFenceSync) == 12,
+              "size of InsertFenceSync should be 12");
+static_assert(offsetof(InsertFenceSync, header) == 0,
+              "offset of InsertFenceSync header should be 0");
+static_assert(offsetof(InsertFenceSync, release_count_0) == 4,
+              "offset of InsertFenceSync release_count_0 should be 4");
+static_assert(offsetof(InsertFenceSync, release_count_1) == 8,
+              "offset of InsertFenceSync release_count_1 should be 8");
 
 }  // namespace cmd
 

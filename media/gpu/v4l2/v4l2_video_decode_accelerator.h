@@ -28,8 +28,8 @@
 #include "base/trace_event/memory_dump_provider.h"
 #include "media/base/limits.h"
 #include "media/base/video_decoder_config.h"
+#include "media/gpu/chromeos/image_processor.h"
 #include "media/gpu/gpu_video_decode_accelerator_helpers.h"
-#include "media/gpu/image_processor.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/gpu/v4l2/v4l2_device.h"
 #include "media/video/picture.h"
@@ -47,6 +47,7 @@ class GLFenceEGL;
 namespace media {
 
 class H264Parser;
+class V4L2StatefulWorkaround;
 
 // This class handles video accelerators directly through a V4L2 device exported
 // by the hardware blocks.
@@ -109,14 +110,14 @@ class MEDIA_GPU_EXPORT V4L2VideoDecodeAccelerator
   // VideoDecodeAccelerator implementation.
   // Note: Initialize() and Destroy() are synchronous.
   bool Initialize(const Config& config, Client* client) override;
-  void Decode(const BitstreamBuffer& bitstream_buffer) override;
+  void Decode(BitstreamBuffer bitstream_buffer) override;
   void Decode(scoped_refptr<DecoderBuffer> buffer,
               int32_t bitstream_id) override;
   void AssignPictureBuffers(const std::vector<PictureBuffer>& buffers) override;
   void ImportBufferForPicture(
       int32_t picture_buffer_id,
       VideoPixelFormat pixel_format,
-      const gfx::GpuMemoryBufferHandle& gpu_memory_buffer_handles) override;
+      gfx::GpuMemoryBufferHandle gpu_memory_buffer_handles) override;
   void ReusePictureBuffer(int32_t picture_buffer_id) override;
   void Flush() override;
   void Reset() override;
@@ -193,10 +194,8 @@ class MEDIA_GPU_EXPORT V4L2VideoDecodeAccelerator
     GLuint texture_id;
     bool cleared;           // Whether the texture is cleared and safe to render
                             // from. See TextureManager for details.
-    // Input fds of the processor. Exported from the decoder.
-    std::vector<base::ScopedFD> processor_input_fds;
-    // Output fds. Used only when OutputMode is IMPORT.
-    std::vector<base::ScopedFD> output_fds;
+    // Output frame. Used only when OutputMode is IMPORT.
+    scoped_refptr<VideoFrame> output_frame;
   };
 
   //
@@ -207,6 +206,7 @@ class MEDIA_GPU_EXPORT V4L2VideoDecodeAccelerator
   void InitializeTask(const Config& config,
                       bool* result,
                       base::WaitableEvent* done);
+  bool CheckConfig(const Config& config);
 
   // Enqueue a buffer to decode.  This will enqueue a buffer to the
   // decoder_input_queue_, then queue a DecodeBufferTask() to actually decode
@@ -247,11 +247,9 @@ class MEDIA_GPU_EXPORT V4L2VideoDecodeAccelerator
 
   // Check |planes| and |dmabuf_fds| are valid in import mode, besides
   // ImportBufferForPicture.
-  void ImportBufferForPictureForImportTask(
-      int32_t picture_buffer_id,
-      VideoPixelFormat pixel_format,
-      std::vector<base::ScopedFD> dmabuf_fds,
-      std::vector<gfx::NativePixmapPlane> planes);
+  void ImportBufferForPictureForImportTask(int32_t picture_buffer_id,
+                                           VideoPixelFormat pixel_format,
+                                           gfx::NativePixmapHandle handle);
 
   // Create an EGLImage for the buffer associated with V4L2 |buffer_index| and
   // for |picture_buffer_id|, backed by dmabuf file descriptors in
@@ -393,10 +391,6 @@ class MEDIA_GPU_EXPORT V4L2VideoDecodeAccelerator
 
   // Set input and output formats before starting decode.
   bool SetupFormats();
-  // Return a usable input format of image processor. Return 0 if not found.
-  uint32_t FindImageProcessorInputFormat();
-  // Return a usable output format of image processor. Return 0 if not found.
-  uint32_t FindImageProcessorOutputFormat();
   // Reset image processor and drop all processing frames.
   bool ResetImageProcessor();
 
@@ -510,6 +504,11 @@ class MEDIA_GPU_EXPORT V4L2VideoDecodeAccelerator
   // For H264 decode, hardware requires that we send it frame-sized chunks.
   // We'll need to parse the stream.
   std::unique_ptr<H264Parser> decoder_h264_parser_;
+
+  // Workaround for V4L2VideoDecodeAccelerator. This is created only if some
+  // workaround is necessary for the V4L2VideoDecodeAccelerator.
+  std::vector<std::unique_ptr<V4L2StatefulWorkaround>> workarounds_;
+
   // Set if the decoder has a pending incomplete frame in an input buffer.
   bool decoder_partial_frame_pending_;
 

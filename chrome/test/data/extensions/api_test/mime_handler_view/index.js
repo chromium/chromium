@@ -98,15 +98,11 @@ var tests = [
     Promise.all([printMessageArrived, contentRead]).then(chrome.test.succeed);
   },
 
-  function testAbort() {
-    checkStreamDetails('testAbort.csv', false);
-    chrome.mimeHandlerPrivate.abortStream(function() {
-      fetchUrl(streamDetails.streamUrl).then(function(response) {
-        chrome.test.assertEq(0, response.status);
-        chrome.test.assertEq('error', response.data);
-        chrome.test.succeed();
-      });
-    });
+  function testIframeBasic() {
+    checkStreamDetails('testIframeBasic.csv', true);
+    fetchUrl(streamDetails.streamUrl)
+        .then(expectSuccessfulRead)
+        .then(chrome.test.succeed);
   },
 
   function testNonAsciiHeaders() {
@@ -138,6 +134,14 @@ var tests = [
     while (queuedMessages.length) {
       handleMessage(queuedMessages.shift());
     }
+  },
+
+  function testPostMessageUMA() {
+    // The actual testing is done on the browser side. Pass so long as the
+    // resource is properly fetched.
+    fetchUrl(streamDetails.streamUrl)
+        .then(expectSuccessfulRead)
+        .then(chrome.test.succeed);
   },
 
   function testDataUrl() {
@@ -222,6 +226,28 @@ var tests = [
             chrome.test.assertEq('normal', currentWindow.state);
             chrome.test.succeed();
           });
+          break;
+      }
+      calls++;
+    });
+    chrome.test.runWithUserGesture(
+        () => document.body.webkitRequestFullscreen());
+  },
+
+  function testFullscreenEscape() {
+    checkStreamDetails('testFullscreenEscape.csv', false);
+    var calls = 0;
+    var windowId;
+    window.addEventListener('webkitfullscreenchange', async e => {
+      switch(calls) {
+        case 0: // On fullscreen entered.
+          chrome.test.assertTrue(document.webkitIsFullScreen);
+          chrome.test.assertEq(document.body, document.webkitFullscreenElement);
+          break;
+        case 1: // On fullscreen exited.
+          chrome.test.assertFalse(document.webkitIsFullScreen);
+          chrome.test.assertEq(null, document.webkitFullscreenElement);
+          chrome.test.succeed();
           break;
       }
       calls++;

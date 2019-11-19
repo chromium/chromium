@@ -16,6 +16,7 @@
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/api/power.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/wake_lock.mojom.h"
 
 namespace content {
@@ -25,7 +26,7 @@ class BrowserContext;
 namespace extensions {
 
 // Implementation of the chrome.power.requestKeepAwake API.
-class PowerRequestKeepAwakeFunction : public UIThreadExtensionFunction {
+class PowerRequestKeepAwakeFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("power.requestKeepAwake", POWER_REQUESTKEEPAWAKE)
 
@@ -37,7 +38,7 @@ class PowerRequestKeepAwakeFunction : public UIThreadExtensionFunction {
 };
 
 // Implementation of the chrome.power.releaseKeepAwake API.
-class PowerReleaseKeepAwakeFunction : public UIThreadExtensionFunction {
+class PowerReleaseKeepAwakeFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("power.releaseKeepAwake", POWER_RELEASEKEEPAWAKE)
 
@@ -126,7 +127,7 @@ class PowerAPI : public BrowserContextKeyedAPI,
   ActivateWakeLockFunction activate_wake_lock_function_;
   CancelWakeLockFunction cancel_wake_lock_function_;
 
-  device::mojom::WakeLockPtr wake_lock_;
+  mojo::Remote<device::mojom::WakeLock> wake_lock_;
   bool is_wake_lock_active_;
 
   // Current level used by wake lock.

@@ -8,6 +8,7 @@
 #include <set>
 
 #include "base/scoped_observer.h"
+#include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
 
 namespace ukm {
@@ -34,7 +35,7 @@ class HistoryDeleteObserver : public history::HistoryServiceObserver {
  private:
   // Tracks observed history services, for cleanup.
   ScopedObserver<history::HistoryService, history::HistoryServiceObserver>
-      history_observer_;
+      history_observer_{this};
 
   DISALLOW_COPY_AND_ASSIGN(HistoryDeleteObserver);
 };

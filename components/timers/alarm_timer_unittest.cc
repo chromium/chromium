@@ -12,7 +12,7 @@
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -97,8 +97,8 @@ class SelfDeletingAlarmTimerTester {
 // that timers work properly in all configurations.
 
 TEST(AlarmTimerTest, SimpleAlarmTimer) {
-  base::test::ScopedTaskEnvironment task_environment(
-      base::test::ScopedTaskEnvironment::MainThreadType::IO);
+  base::test::TaskEnvironment task_environment(
+      base::test::TaskEnvironment::MainThreadType::IO);
 
   base::RunLoop run_loop;
   bool did_run = false;
@@ -112,8 +112,8 @@ TEST(AlarmTimerTest, SimpleAlarmTimer) {
 }
 
 TEST(AlarmTimerTest, SimpleAlarmTimer_Cancel) {
-  base::test::ScopedTaskEnvironment task_environment(
-      base::test::ScopedTaskEnvironment::MainThreadType::IO);
+  base::test::TaskEnvironment task_environment(
+      base::test::TaskEnvironment::MainThreadType::IO);
 
   bool did_run_a = false;
   AlarmTimerTester* a =
@@ -140,8 +140,8 @@ TEST(AlarmTimerTest, SimpleAlarmTimer_Cancel) {
 // If underlying timer does not handle this properly, we will crash or fail
 // in full page heap environment.
 TEST(AlarmTimerTest, SelfDeletingAlarmTimer) {
-  base::test::ScopedTaskEnvironment task_environment(
-      base::test::ScopedTaskEnvironment::MainThreadType::IO);
+  base::test::TaskEnvironment task_environment(
+      base::test::TaskEnvironment::MainThreadType::IO);
 
   base::RunLoop run_loop;
   bool did_run = false;
@@ -155,8 +155,8 @@ TEST(AlarmTimerTest, SelfDeletingAlarmTimer) {
 }
 
 TEST(AlarmTimerTest, AlarmTimerZeroDelay) {
-  base::test::ScopedTaskEnvironment task_environment(
-      base::test::ScopedTaskEnvironment::MainThreadType::IO);
+  base::test::TaskEnvironment task_environment(
+      base::test::TaskEnvironment::MainThreadType::IO);
 
   base::RunLoop run_loop;
   bool did_run = false;
@@ -170,8 +170,8 @@ TEST(AlarmTimerTest, AlarmTimerZeroDelay) {
 }
 
 TEST(AlarmTimerTest, AlarmTimerZeroDelay_Cancel) {
-  base::test::ScopedTaskEnvironment task_environment(
-      base::test::ScopedTaskEnvironment::MainThreadType::IO);
+  base::test::TaskEnvironment task_environment(
+      base::test::TaskEnvironment::MainThreadType::IO);
 
   bool did_run_a = false;
   AlarmTimerTester* a =
@@ -202,8 +202,8 @@ TEST(AlarmTimerTest, MessageLoopShutdown) {
   // if debug heap checking is enabled.
   bool did_run = false;
   {
-    base::test::ScopedTaskEnvironment task_environment(
-        base::test::ScopedTaskEnvironment::MainThreadType::IO);
+    base::test::TaskEnvironment task_environment(
+        base::test::TaskEnvironment::MainThreadType::IO);
 
     AlarmTimerTester a(&did_run, kTenMilliseconds, base::OnceClosure());
     AlarmTimerTester b(&did_run, kTenMilliseconds, base::OnceClosure());
@@ -223,8 +223,8 @@ TEST(AlarmTimerTest, MessageLoopShutdown) {
 }
 
 TEST(AlarmTimerTest, NonRepeatIsRunning) {
-  base::test::ScopedTaskEnvironment task_environment(
-      base::test::ScopedTaskEnvironment::MainThreadType::IO);
+  base::test::TaskEnvironment task_environment(
+      base::test::TaskEnvironment::MainThreadType::IO);
 
   auto timer = SimpleAlarmTimer::CreateForTesting();
   EXPECT_FALSE(timer->IsRunning());
@@ -244,8 +244,8 @@ TEST(AlarmTimerTest, NonRepeatIsRunning) {
 }
 
 TEST(AlarmTimerTest, RetainNonRepeatIsRunning) {
-  base::test::ScopedTaskEnvironment task_environment(
-      base::test::ScopedTaskEnvironment::MainThreadType::IO);
+  base::test::TaskEnvironment task_environment(
+      base::test::TaskEnvironment::MainThreadType::IO);
 
   auto timer = SimpleAlarmTimer::CreateForTesting();
   EXPECT_FALSE(timer->IsRunning());
@@ -290,8 +290,8 @@ void SetCallbackHappened2(base::OnceClosure quit_closure) {
 
 TEST(AlarmTimerTest, ContinuationStopStart) {
   ClearAllCallbackHappened();
-  base::test::ScopedTaskEnvironment task_environment(
-      base::test::ScopedTaskEnvironment::MainThreadType::IO);
+  base::test::TaskEnvironment task_environment(
+      base::test::TaskEnvironment::MainThreadType::IO);
 
   auto timer = SimpleAlarmTimer::CreateForTesting();
   timer->Start(FROM_HERE, base::TimeDelta::FromMilliseconds(10),
@@ -311,8 +311,8 @@ TEST(AlarmTimerTest, ContinuationStopStart) {
 
 TEST(AlarmTimerTest, ContinuationReset) {
   ClearAllCallbackHappened();
-  base::test::ScopedTaskEnvironment task_environment(
-      base::test::ScopedTaskEnvironment::MainThreadType::IO);
+  base::test::TaskEnvironment task_environment(
+      base::test::TaskEnvironment::MainThreadType::IO);
 
   base::RunLoop run_loop;
   auto timer = SimpleAlarmTimer::CreateForTesting();
@@ -328,8 +328,8 @@ TEST(AlarmTimerTest, ContinuationReset) {
 // Verify that no crash occurs if a timer is deleted while its callback is
 // running.
 TEST(AlarmTimerTest, DeleteTimerWhileCallbackIsRunning) {
-  base::test::ScopedTaskEnvironment task_environment(
-      base::test::ScopedTaskEnvironment::MainThreadType::IO);
+  base::test::TaskEnvironment task_environment(
+      base::test::TaskEnvironment::MainThreadType::IO);
 
   base::RunLoop run_loop;
 
@@ -347,8 +347,8 @@ TEST(AlarmTimerTest, DeleteTimerWhileCallbackIsRunning) {
 // Verify that no crash occurs if a zero-delay timer is deleted while its
 // callback is running.
 TEST(AlarmTimerTest, DeleteTimerWhileCallbackIsRunningZeroDelay) {
-  base::test::ScopedTaskEnvironment task_environment(
-      base::test::ScopedTaskEnvironment::MainThreadType::IO);
+  base::test::TaskEnvironment task_environment(
+      base::test::TaskEnvironment::MainThreadType::IO);
   base::RunLoop run_loop;
 
   // Will be deleted by the callback.

@@ -1,0 +1,30 @@
+This is a testharness.js-based test.
+FAIL MediaRecorder sets no default MIMEType in the constructor for audio assert_equals: MediaRecorder has no default MIMEtype expected "" but got "audio/webm;codecs=opus"
+FAIL MediaRecorder sets no default MIMEType in the constructor for video assert_equals: MediaRecorder has no default MIMEtype expected "" but got "video/webm;codecs=vp8"
+FAIL MediaRecorder sets no default MIMEType in the constructor for audio/video assert_equals: MediaRecorder has no default MIMEtype expected "" but got "video/webm;codecs=vp8,opus"
+PASS MediaRecorder invalid audio MIMEType throws
+PASS MediaRecorder invalid audio MIMEType is unsupported
+PASS MediaRecorder invalid video MIMEType throws
+PASS MediaRecorder invalid video MIMEType is unsupported
+PASS Unsupported MIMEType audio/mp4 throws
+PASS Unsupported MIMEType video/mp4 throws
+PASS Unsupported MIMEType audio/ogg throws
+PASS Unsupported MIMEType audio/ogg; codecs="vorbis" throws
+PASS Unsupported MIMEType audio/ogg; codecs="opus" throws
+PASS Supported MIMEType audio/webm is set immediately after constructing
+PASS Unsupported MIMEType audio/webm; codecs="vorbis" throws
+PASS Supported MIMEType audio/webm; codecs="opus" is set immediately after constructing
+PASS Supported MIMEType video/webm is set immediately after constructing
+PASS Supported MIMEType video/webm; codecs="vp8" is set immediately after constructing
+PASS Unsupported MIMEType video/webm; codecs="vp8, vorbis" throws
+PASS Supported MIMEType video/webm; codecs="vp8, opus" is set immediately after constructing
+PASS Supported MIMEType video/webm; codecs="vp9" is set immediately after constructing
+PASS Unsupported MIMEType video/webm; codecs="vp9, vorbis" throws
+PASS Supported MIMEType video/webm; codecs="vp9, opus" is set immediately after constructing
+PASS Unsupported MIMEType video/webm; codecs="av1" throws
+PASS Unsupported MIMEType video/webm; codecs="av1, opus" throws
+FAIL MediaRecorder sets a MIMEType after 'start' for audio assert_equals: MediaRecorder has no MIMEtype after start() for audio expected "" but got "audio/webm;codecs=opus"
+FAIL MediaRecorder sets a MIMEType after 'start' for video assert_equals: MediaRecorder has no MIMEtype after start() for video expected "" but got "video/webm;codecs=vp8"
+FAIL MediaRecorder sets a MIMEType after 'start' for audio/video assert_equals: MediaRecorder has no MIMEtype after start() for audio/video expected "" but got "video/webm;codecs=vp8,opus"
+Harness: the test ran to completion.
+

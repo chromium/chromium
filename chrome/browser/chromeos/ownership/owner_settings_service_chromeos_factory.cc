@@ -37,11 +37,10 @@ DeviceSettingsService* GetDeviceSettingsService() {
 OwnerSettingsServiceChromeOSFactory::OwnerSettingsServiceChromeOSFactory()
     : BrowserContextKeyedServiceFactory(
           "OwnerSettingsService",
-          BrowserContextDependencyManager::GetInstance()) {
-}
+          BrowserContextDependencyManager::GetInstance()) {}
 
-OwnerSettingsServiceChromeOSFactory::~OwnerSettingsServiceChromeOSFactory() {
-}
+OwnerSettingsServiceChromeOSFactory::~OwnerSettingsServiceChromeOSFactory() =
+    default;
 
 // static
 OwnerSettingsServiceChromeOS*
@@ -87,18 +86,29 @@ void OwnerSettingsServiceChromeOSFactory::SetOwnerKeyUtilForTesting(
   owner_key_util_ = owner_key_util;
 }
 
-// static
-KeyedService* OwnerSettingsServiceChromeOSFactory::BuildInstanceFor(
-    content::BrowserContext* browser_context) {
-  Profile* profile = static_cast<Profile*>(browser_context);
-  if (profile->IsGuestSession() || ProfileHelper::IsSigninProfile(profile) ||
+content::BrowserContext*
+OwnerSettingsServiceChromeOSFactory::GetBrowserContextToUse(
+    content::BrowserContext* context) const {
+  Profile* profile = Profile::FromBrowserContext(context);
+  if (profile->IsOffTheRecord() || ProfileHelper::IsSigninProfile(profile) ||
       ProfileHelper::IsLockScreenAppProfile(profile)) {
     return nullptr;
   }
 
+  return context;
+}
+
+bool OwnerSettingsServiceChromeOSFactory::ServiceIsCreatedWithBrowserContext()
+    const {
+  return true;
+}
+
+KeyedService* OwnerSettingsServiceChromeOSFactory::BuildServiceInstanceFor(
+    content::BrowserContext* context) const {
   // If g_stub_cros_settings_provider_for_testing_ is set, we treat the current
   // user as the owner, and write settings directly to the stubbed provider.
   // This is done using the FakeOwnerSettingsService.
+  Profile* profile = Profile::FromBrowserContext(context);
   if (g_stub_cros_settings_provider_for_testing_ != nullptr) {
     return new FakeOwnerSettingsService(
         g_stub_cros_settings_provider_for_testing_, profile,
@@ -109,16 +119,6 @@ KeyedService* OwnerSettingsServiceChromeOSFactory::BuildInstanceFor(
       GetDeviceSettingsService(),
       profile,
       GetInstance()->GetOwnerKeyUtil());
-}
-
-bool OwnerSettingsServiceChromeOSFactory::ServiceIsCreatedWithBrowserContext()
-    const {
-  return true;
-}
-
-KeyedService* OwnerSettingsServiceChromeOSFactory::BuildServiceInstanceFor(
-    content::BrowserContext* context) const {
-  return BuildInstanceFor(context);
 }
 
 }  // namespace chromeos

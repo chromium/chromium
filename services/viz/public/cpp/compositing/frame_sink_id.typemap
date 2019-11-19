@@ -2,11 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-mojom = "//services/viz/public/interfaces/compositing/frame_sink_id.mojom"
+mojom = "//services/viz/public/mojom/compositing/frame_sink_id.mojom"
 public_headers = [ "//components/viz/common/surfaces/frame_sink_id.h" ]
 deps = [
   "//components/viz/common",
 ]
 traits_headers =
-    [ "//services/viz/public/cpp/compositing/frame_sink_id_struct_traits.h" ]
-type_mappings = [ "viz.mojom.FrameSinkId=viz::FrameSinkId" ]
+    [ "//services/viz/public/cpp/compositing/frame_sink_id_mojom_traits.h" ]
+type_mappings = [ "viz.mojom.FrameSinkId=::viz::FrameSinkId" ]

@@ -276,7 +276,7 @@ class NetworkPortalDetectorImpl : public NetworkPortalDetector,
   // Contents of a last log message about completed detection attempt.
   DetectionAttemptCompletedReport attempt_completed_report_;
 
-  base::WeakPtrFactory<NetworkPortalDetectorImpl> weak_factory_;
+  base::WeakPtrFactory<NetworkPortalDetectorImpl> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(NetworkPortalDetectorImpl);
 };

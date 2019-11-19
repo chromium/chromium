@@ -1,37 +1,90 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STREAMS_TRANSFORM_STREAM_DEFAULT_CONTROLLER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STREAMS_TRANSFORM_STREAM_DEFAULT_CONTROLLER_H_
 
-#include "base/macros.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/bindings/script_state.h"
-#include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "v8/include/v8.h"
 
 namespace blink {
 
-// Thin wrapper for the JavaScript TransformStreamDefaultController object. The
-// API mimics the JavaScript API
-// https://streams.spec.whatwg.org/#ts-default-controller-class but unneeded
-// parts have not been implemented.
-class CORE_EXPORT TransformStreamDefaultController final {
-  STACK_ALLOCATED();
+class ExceptionState;
+class ScriptState;
+class StreamAlgorithm;
+class TransformStreamNative;
+class Visitor;
+
+class CORE_EXPORT TransformStreamDefaultController : public ScriptWrappable {
+  DEFINE_WRAPPERTYPEINFO();
 
  public:
-  TransformStreamDefaultController(ScriptState*,
-                                   v8::Local<v8::Value> controller);
+  TransformStreamDefaultController();
+  ~TransformStreamDefaultController() override;
 
-  void Enqueue(v8::Local<v8::Value> chunk, ExceptionState&);
+  // https://streams.spec.whatwg.org/#ts-default-controller-desired-size
+  double desiredSize(bool& is_null) const;
+
+  // https://streams.spec.whatwg.org/#ts-default-controller-enqueue
+  void enqueue(ScriptState*, ExceptionState&);
+  void enqueue(ScriptState*, ScriptValue chunk, ExceptionState&);
+
+  // https://streams.spec.whatwg.org/#ts-default-controller-error
+  void error(ScriptState*);
+  void error(ScriptState*, ScriptValue reason);
+
+  // https://streams.spec.whatwg.org/#ts-default-controller-terminate
+  void terminate(ScriptState*);
+
+  void Trace(Visitor*) override;
 
  private:
-  Member<ScriptState> script_state_;
-  v8::Local<v8::Value> controller_;
+  friend class TransformStreamNative;
 
-  DISALLOW_COPY_AND_ASSIGN(TransformStreamDefaultController);
+  class DefaultTransformAlgorithm;
+
+  // https://streams.spec.whatwg.org/#set-up-transform-stream-default-controller
+  static void SetUp(TransformStreamNative*,
+                    TransformStreamDefaultController*,
+                    StreamAlgorithm* transform_algorithm,
+                    StreamAlgorithm* flush_algorithm);
+
+  // https://streams.spec.whatwg.org/#set-up-transform-stream-default-controller-from-transformer
+  static v8::Local<v8::Value> SetUpFromTransformer(
+      ScriptState*,
+      TransformStreamNative*,
+      v8::Local<v8::Object> transformer,
+      ExceptionState&);
+
+  // https://streams.spec.whatwg.org/#transform-stream-default-controller-clear-algorithms
+  static void ClearAlgorithms(TransformStreamDefaultController*);
+
+  // https://streams.spec.whatwg.org/#transform-stream-default-controller-enqueue
+  static void Enqueue(ScriptState*,
+                      TransformStreamDefaultController*,
+                      v8::Local<v8::Value> chunk,
+                      ExceptionState&);
+
+  // https://streams.spec.whatwg.org/#transform-stream-default-controller-error
+  static void Error(ScriptState*,
+                    TransformStreamDefaultController*,
+                    v8::Local<v8::Value> e);
+
+  // https://streams.spec.whatwg.org/#transform-stream-default-controller-perform-transform
+  static v8::Local<v8::Promise> PerformTransform(
+      ScriptState*,
+      TransformStreamDefaultController*,
+      v8::Local<v8::Value> chunk);
+
+  // https://streams.spec.whatwg.org/#transform-stream-default-controller-terminate
+  static void Terminate(ScriptState*, TransformStreamDefaultController*);
+
+  Member<TransformStreamNative> controlled_transform_stream_;
+  Member<StreamAlgorithm> flush_algorithm_;
+  Member<StreamAlgorithm> transform_algorithm_;
 };
 
 }  // namespace blink

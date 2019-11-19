@@ -71,9 +71,10 @@ class CONTENT_EXPORT FrameSwapMessageQueue
   // |messages| depending on |reason| it may make sense to deliver certain
   //            messages asynchronously. This vector will contain those
   //            messages.
-  void DidNotSwap(int source_frame_number,
-                  cc::SwapPromise::DidNotSwapReason reason,
-                  std::vector<std::unique_ptr<IPC::Message>>* messages);
+  cc::SwapPromise::DidNotSwapAction DidNotSwap(
+      int source_frame_number,
+      cc::SwapPromise::DidNotSwapReason reason,
+      std::vector<std::unique_ptr<IPC::Message>>* messages);
 
   // A SendMessageScope object must be held by the caller when this method is
   // called.

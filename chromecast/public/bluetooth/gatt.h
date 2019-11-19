@@ -212,22 +212,14 @@ class CHROMECAST_EXPORT Gatt {
                                    const Characteristic& characteristic,
                                    AuthReq auth_req);
 
-    // Write |characteristic| on remote device |addr|. If |auth_req| is
-    // AUTH_REQ_INVALID, this function will automatically retry stronger
-    // authentications on failure.
+    // Write |characteristic| on remote device |addr| with |write_type|. If
+    // |auth_req| is AUTH_REQ_INVALID, this function will automatically retry
+    // stronger authentications on failure.
     static bool WriteCharacteristic(const Addr& addr,
                                     const Characteristic& characteristic,
                                     AuthReq auth_req,
+                                    WriteType write_type,
                                     const std::vector<uint8_t>& value);
-
-    // New version of above method where |write_type| can be specified.
-    // TODO(bcf): Replace old version in next API update.
-    static bool WriteCharacteristic2(const Addr& addr,
-                                     const Characteristic& characteristic,
-                                     AuthReq auth_req,
-                                     WriteType write_type,
-                                     const std::vector<uint8_t>& value)
-        __attribute__((__weak__));
 
     // Read |descriptor| from remote device |addr|. If |auth_req| is
     // AUTH_REQ_INVALID, this function will automatically retry stronger
@@ -267,6 +259,14 @@ class CHROMECAST_EXPORT Gatt {
     // Retrieve the list of services on device |addr|. They will be returned in
     // the callback |OnGetServices|.
     static bool GetServices(const Addr& addr);
+
+    // Clear pending connect request of remote device with |addr|.
+    static bool ClearPendingConnect(const Addr& addr)
+        __attribute__((__weak__));
+
+    // Clear pending disconnect request of remote device with |addr|.
+    static bool ClearPendingDisconnect(const Addr& addr)
+        __attribute__((__weak__));
   };
 
   // GATT Server role. Devices must implement the GATT server role in order to

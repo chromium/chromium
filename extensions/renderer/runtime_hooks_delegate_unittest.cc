@@ -168,6 +168,8 @@ TEST_F(RuntimeHooksDelegateTest, GetURL) {
   get_url("''", extension()->url());
   get_url("'foo'", extension()->GetResourceURL("foo"));
   get_url("'/foo'", extension()->GetResourceURL("foo"));
+  get_url("'https://www.google.com'",
+          GURL(extension()->url().spec() + "https://www.google.com"));
 }
 
 TEST_F(RuntimeHooksDelegateTest, Connect) {
@@ -253,15 +255,12 @@ TEST_F(RuntimeHooksDelegateTest, SendMessage) {
   tester.TestSendMessage("null, {data: 'hello'}, function() {}",
                          kStandardMessage, self_target, false,
                          SendMessageTester::OPEN);
-  tester.TestSendMessage("null, 'test', function() {}",
-                         R"("test")", self_target, false,
-                         SendMessageTester::OPEN);
-  tester.TestSendMessage("null, 'test'",
-                         R"("test")", self_target, false,
+  tester.TestSendMessage("null, 'test', function() {}", R"("test")",
+                         self_target, false, SendMessageTester::OPEN);
+  tester.TestSendMessage("null, 'test'", R"("test")", self_target, false,
                          SendMessageTester::CLOSED);
-  tester.TestSendMessage("undefined, 'test', function() {}",
-                         R"("test")", self_target, false,
-                         SendMessageTester::OPEN);
+  tester.TestSendMessage("undefined, 'test', function() {}", R"("test")",
+                         self_target, false, SendMessageTester::OPEN);
 
   // Funny case. The only required argument is `message`, which can be any type.
   // This means that if an extension provides a <string, object> pair for the

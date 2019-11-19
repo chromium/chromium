@@ -8,27 +8,26 @@ static_library("pdf_compositor") {
   sources = [
     "pdf_compositor_impl.cc",
     "pdf_compositor_impl.h",
-    "pdf_compositor_service.cc",
-    "pdf_compositor_service.h",
   ]
 
   deps = [
     "//base",
     "//components/crash/core/common:crash_key",
     "//components/discardable_memory/client",
-    "//components/discardable_memory/public/interfaces",
-    "//content/public/child",
-    "//content/public/common:service_names",
+    "//components/discardable_memory/public/mojom",
+    "//components/services/pdf_compositor/public/cpp",
     "//content/public/utility",
     "//printing/common",
-    "//services/ws/public/mojom",
     "//skia",
     "//third_party/blink/public:blink_headers",
   ]
 
+  if (is_win) {
+    deps += [ "//content/public/child" ]
+  }
+
   public_deps = [
-    "//components/services/pdf_compositor/public/interfaces",
-    "//services/service_manager/public/cpp",
+    "//components/services/pdf_compositor/public/mojom",
   ]
 }
 
@@ -37,7 +36,6 @@ if (enable_basic_printing) {
     testonly = true
     sources = [
       "pdf_compositor_impl_unittest.cc",
-      "pdf_compositor_service_unittest.cc",
     ]
 
     include_dirs = [
@@ -52,8 +50,8 @@ if (enable_basic_printing) {
       "//base/test:test_support",
       "//cc/paint:paint",
       "//components/crash/core/common:crash_key",
-      "//components/services/pdf_compositor/public/interfaces",
-      "//services/service_manager/public/cpp/test:test_support",
+      "//components/services/pdf_compositor/public/cpp",
+      "//components/services/pdf_compositor/public/mojom",
       "//skia",
       "//testing/gmock",
       "//testing/gtest",

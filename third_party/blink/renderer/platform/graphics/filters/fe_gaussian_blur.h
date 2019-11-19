@@ -29,8 +29,6 @@ namespace blink {
 
 class PLATFORM_EXPORT FEGaussianBlur final : public FilterEffect {
  public:
-  static FEGaussianBlur* Create(Filter*, float, float);
-
   FEGaussianBlur(Filter*, float, float);
 
   // Compute which destination area will be affected when applying a gaussian

@@ -13,7 +13,7 @@
 #include "chrome/browser/local_discovery/service_discovery_client.h"
 #include "chrome/browser/local_discovery/service_discovery_client_mac.h"
 #import "chrome/browser/ui/cocoa/test/cocoa_test_helper.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/sockaddr_storage.h"
 #include "testing/gtest_mac.h"
@@ -30,7 +30,7 @@
 @implementation TestNSNetService
 
 - (id)initWithData:(NSData*)data {
-  if ((self = [super init])) {
+  if ((self = [super initWithDomain:@"" type:@"_tcp." name:@"Test.123"])) {
     data_.reset([data retain]);
   }
   return self;
@@ -79,7 +79,7 @@ class ServiceDiscoveryClientMacTest : public CocoaTest {
   ServiceDiscoveryClient* client() { return client_.get(); }
 
  protected:
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
 
   scoped_refptr<ServiceDiscoveryClientMac> client_;
 
@@ -97,8 +97,8 @@ TEST_F(ServiceDiscoveryClientMacTest, ServiceWatcher) {
 
   std::unique_ptr<ServiceWatcher> watcher = client()->CreateServiceWatcher(
       test_service_type,
-      base::Bind(&ServiceDiscoveryClientMacTest::OnServiceUpdated,
-                 base::Unretained(this)));
+      base::BindRepeating(&ServiceDiscoveryClientMacTest::OnServiceUpdated,
+                          base::Unretained(this)));
   watcher->Start();
 
   // Weak pointer to implementation class.
@@ -119,8 +119,8 @@ TEST_F(ServiceDiscoveryClientMacTest, ServiceResolver) {
   const std::string test_service_name = "Test.123._testing._tcp.local";
   std::unique_ptr<ServiceResolver> resolver = client()->CreateServiceResolver(
       test_service_name,
-      base::Bind(&ServiceDiscoveryClientMacTest::OnResolveComplete,
-                 base::Unretained(this)));
+      base::BindOnce(&ServiceDiscoveryClientMacTest::OnResolveComplete,
+                     base::Unretained(this)));
 
   const uint8_t record_bytes[] = {2, 'a', 'b', 3, 'd', '=', 'e'};
   base::scoped_nsobject<TestNSNetService> test_service([[TestNSNetService alloc]
@@ -155,8 +155,8 @@ TEST_F(ServiceDiscoveryClientMacTest, ServiceResolver) {
   const std::vector<std::string>& metadata =
       last_service_description_.metadata;
   EXPECT_EQ(2u, metadata.size());
-  EXPECT_TRUE(base::ContainsValue(metadata, "ab"));
-  EXPECT_TRUE(base::ContainsValue(metadata, "d=e"));
+  EXPECT_TRUE(base::Contains(metadata, "ab"));
+  EXPECT_TRUE(base::Contains(metadata, "d=e"));
 
   EXPECT_EQ(ip_address, last_service_description_.ip_address);
   EXPECT_EQ(kPort, last_service_description_.address.port());
@@ -168,8 +168,8 @@ TEST_F(ServiceDiscoveryClientMacTest, ResolveInvalidUnicodeRecord) {
   const std::string test_service_name = "Test.123._testing._tcp.local";
   std::unique_ptr<ServiceResolver> resolver = client()->CreateServiceResolver(
       test_service_name,
-      base::Bind(&ServiceDiscoveryClientMacTest::OnResolveComplete,
-                 base::Unretained(this)));
+      base::BindOnce(&ServiceDiscoveryClientMacTest::OnResolveComplete,
+                     base::Unretained(this)));
 
   const uint8_t record_bytes[] = {
     3, 'a', '=', 'b',
@@ -210,8 +210,8 @@ TEST_F(ServiceDiscoveryClientMacTest, ResolveInvalidUnicodeRecord) {
   const std::vector<std::string>& metadata =
       last_service_description_.metadata;
   EXPECT_EQ(2u, metadata.size());
-  EXPECT_TRUE(base::ContainsValue(metadata, "a=b"));
-  EXPECT_TRUE(base::ContainsValue(metadata, "cd=e9"));
+  EXPECT_TRUE(base::Contains(metadata, "a=b"));
+  EXPECT_TRUE(base::Contains(metadata, "cd=e9"));
 
   EXPECT_EQ(ip_address, last_service_description_.ip_address);
   EXPECT_EQ(kPort, last_service_description_.address.port());
@@ -226,16 +226,16 @@ TEST_F(ServiceDiscoveryClientMacTest, ResolveInvalidServiceName) {
   const std::string test_service_name =
       "Test\x9F\xF0\x92\xA9.123._testing._tcp.local";
   std::unique_ptr<ServiceResolver> resolver = client()->CreateServiceResolver(
-      test_service_name,
-      base::Bind(
-          [](ServiceDiscoveryClientMacTest* test,
-             base::Closure quit_closure,
-             ServiceResolver::RequestStatus status,
-             const ServiceDescription& service_description) {
-            test->OnResolveComplete(status, service_description);
-            quit_closure.Run();
-          },
-          base::Unretained(this), run_loop.QuitClosure()));
+      test_service_name, base::BindOnce(
+                             [](ServiceDiscoveryClientMacTest* test,
+                                base::OnceClosure quit_closure,
+                                ServiceResolver::RequestStatus status,
+                                const ServiceDescription& service_description) {
+                               test->OnResolveComplete(status,
+                                                       service_description);
+                               std::move(quit_closure).Run();
+                             },
+                             base::Unretained(this), run_loop.QuitClosure()));
   resolver->StartResolving();
 
   run_loop.Run();

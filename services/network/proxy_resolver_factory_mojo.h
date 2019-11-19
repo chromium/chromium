@@ -11,7 +11,6 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "mojo/public/cpp/bindings/binding.h"
 #include "net/base/completion_once_callback.h"
 #include "net/proxy_resolution/proxy_resolver_factory.h"
 #include "services/proxy_resolver/public/mojom/proxy_resolver.mojom.h"
@@ -53,7 +52,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ProxyResolverFactoryMojo
       error_observer_factory_;
   net::NetLog* const net_log_;
 
-  base::WeakPtrFactory<ProxyResolverFactoryMojo> weak_ptr_factory_;
+  base::WeakPtrFactory<ProxyResolverFactoryMojo> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ProxyResolverFactoryMojo);
 };

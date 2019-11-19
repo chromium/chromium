@@ -23,7 +23,7 @@
 #include "chrome/browser/chromeos/file_system_provider/notification_manager_interface.h"
 #include "chrome/browser/chromeos/file_system_provider/request_value.h"
 #include "chrome/test/base/testing_profile.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
@@ -127,7 +127,7 @@ class EventLogger {
     base::File::Error error_;
   };
 
-  EventLogger() : weak_ptr_factory_(this) {}
+  EventLogger() {}
   virtual ~EventLogger() {}
 
   void OnExecute(int request_id) {
@@ -166,7 +166,7 @@ class EventLogger {
   std::vector<std::unique_ptr<ExecuteEvent>> execute_events_;
   std::vector<std::unique_ptr<SuccessEvent>> success_events_;
   std::vector<std::unique_ptr<ErrorEvent>> error_events_;
-  base::WeakPtrFactory<EventLogger> weak_ptr_factory_;
+  base::WeakPtrFactory<EventLogger> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(EventLogger);
 };
@@ -331,7 +331,7 @@ class FileSystemProviderRequestManagerTest : public testing::Test {
                                               notification_manager_.get()));
   }
 
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<FakeNotificationManager> notification_manager_;
   std::unique_ptr<RequestManager> request_manager_;

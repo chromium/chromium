@@ -8,7 +8,7 @@
 
 #include "base/macros.h"
 #include "base/test/bind_test_util.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "device/fido/fido_discovery_factory.h"
@@ -29,13 +29,14 @@ class FakeFidoDiscoveryTest : public ::testing::Test {
   ~FakeFidoDiscoveryTest() override = default;
 
  protected:
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  FakeFidoDiscoveryFactory fake_fido_discovery_factory_;
+  base::test::TaskEnvironment task_environment_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(FakeFidoDiscoveryTest);
 };
 
-using ScopedFakeFidoDiscoveryFactoryTest = FakeFidoDiscoveryTest;
+using FakeFidoDiscoveryFactoryTest = FakeFidoDiscoveryTest;
 
 TEST_F(FakeFidoDiscoveryTest, Transport) {
   FakeFidoDiscovery discovery_ble(FidoTransportProtocol::kBluetoothLowEnergy);
@@ -66,7 +67,8 @@ TEST_F(FakeFidoDiscoveryTest, StartDiscovery) {
   ASSERT_TRUE(discovery.is_start_requested());
   ASSERT_FALSE(discovery.is_running());
 
-  EXPECT_CALL(observer, DiscoveryStarted(&discovery, true));
+  EXPECT_CALL(observer, DiscoveryStarted(&discovery, true,
+                                         std::vector<FidoAuthenticator*>()));
   discovery.WaitForCallToStartAndSimulateSuccess();
   ASSERT_TRUE(discovery.is_running());
   ASSERT_TRUE(discovery.is_start_requested());
@@ -86,7 +88,8 @@ TEST_F(FakeFidoDiscoveryTest, WaitThenStartStopDiscovery) {
   ASSERT_FALSE(discovery.is_running());
   ASSERT_TRUE(discovery.is_start_requested());
 
-  EXPECT_CALL(observer, DiscoveryStarted(&discovery, true));
+  EXPECT_CALL(observer, DiscoveryStarted(&discovery, true,
+                                         std::vector<FidoAuthenticator*>()));
   discovery.SimulateStarted(true);
   ASSERT_TRUE(discovery.is_running());
   ASSERT_TRUE(discovery.is_start_requested());
@@ -104,7 +107,8 @@ TEST_F(FakeFidoDiscoveryTest, StartFail) {
   ASSERT_FALSE(discovery.is_running());
   ASSERT_TRUE(discovery.is_start_requested());
 
-  EXPECT_CALL(observer, DiscoveryStarted(&discovery, false));
+  EXPECT_CALL(observer, DiscoveryStarted(&discovery, false,
+                                         std::vector<FidoAuthenticator*>()));
   discovery.SimulateStarted(false);
   ASSERT_FALSE(discovery.is_running());
   ASSERT_TRUE(discovery.is_start_requested());
@@ -118,19 +122,16 @@ TEST_F(FakeFidoDiscoveryTest, AddDevice) {
   discovery.set_observer(&observer);
 
   discovery.Start();
-
   auto device0 = std::make_unique<MockFidoDevice>();
   EXPECT_CALL(*device0, GetId()).WillOnce(::testing::Return("device0"));
   base::RunLoop device0_done;
-  EXPECT_CALL(observer, AuthenticatorAdded(&discovery, _))
+  discovery.AddDevice(std::move(device0));
+
+  EXPECT_CALL(observer, DiscoveryStarted(&discovery, true, testing::SizeIs(1)))
       .WillOnce(testing::InvokeWithoutArgs(
           [&device0_done]() { device0_done.Quit(); }));
-  discovery.AddDevice(std::move(device0));
-  device0_done.Run();
-  ::testing::Mock::VerifyAndClearExpectations(&observer);
-
-  EXPECT_CALL(observer, DiscoveryStarted(&discovery, true));
   discovery.SimulateStarted(true);
+  device0_done.Run();
   ::testing::Mock::VerifyAndClearExpectations(&observer);
 
   auto device1 = std::make_unique<MockFidoDevice>();
@@ -145,34 +146,32 @@ TEST_F(FakeFidoDiscoveryTest, AddDevice) {
 }
 
 #if !defined(OS_ANDROID)
-TEST_F(ScopedFakeFidoDiscoveryFactoryTest,
-       OverridesUsbFactoryFunctionWhileInScope) {
-  ScopedFakeFidoDiscoveryFactory factory;
-  auto* injected_fake_discovery = factory.ForgeNextHidDiscovery();
+TEST_F(FakeFidoDiscoveryFactoryTest, ForgesUsbFactoryFunction) {
+  auto* injected_fake_discovery =
+      fake_fido_discovery_factory_.ForgeNextHidDiscovery();
   ASSERT_EQ(FidoTransportProtocol::kUsbHumanInterfaceDevice,
             injected_fake_discovery->transport());
-  auto produced_discovery = FidoDiscoveryFactory::Create(
+  auto produced_discovery = fake_fido_discovery_factory_.Create(
       FidoTransportProtocol::kUsbHumanInterfaceDevice, nullptr);
   EXPECT_TRUE(produced_discovery);
   EXPECT_EQ(injected_fake_discovery, produced_discovery.get());
 }
 #endif
 
-TEST_F(ScopedFakeFidoDiscoveryFactoryTest,
-       OverridesBleFactoryFunctionWhileInScope) {
-  ScopedFakeFidoDiscoveryFactory factory;
-
-  auto* injected_fake_discovery_1 = factory.ForgeNextBleDiscovery();
+TEST_F(FakeFidoDiscoveryFactoryTest, ForgesBleFactoryFunction) {
+  auto* injected_fake_discovery_1 =
+      fake_fido_discovery_factory_.ForgeNextBleDiscovery();
   ASSERT_EQ(FidoTransportProtocol::kBluetoothLowEnergy,
             injected_fake_discovery_1->transport());
-  auto produced_discovery_1 = FidoDiscoveryFactory::Create(
+  auto produced_discovery_1 = fake_fido_discovery_factory_.Create(
       FidoTransportProtocol::kBluetoothLowEnergy, nullptr);
   EXPECT_EQ(injected_fake_discovery_1, produced_discovery_1.get());
 
-  auto* injected_fake_discovery_2 = factory.ForgeNextBleDiscovery();
+  auto* injected_fake_discovery_2 =
+      fake_fido_discovery_factory_.ForgeNextBleDiscovery();
   ASSERT_EQ(FidoTransportProtocol::kBluetoothLowEnergy,
             injected_fake_discovery_2->transport());
-  auto produced_discovery_2 = FidoDiscoveryFactory::Create(
+  auto produced_discovery_2 = fake_fido_discovery_factory_.Create(
       FidoTransportProtocol::kBluetoothLowEnergy, nullptr);
   EXPECT_EQ(injected_fake_discovery_2, produced_discovery_2.get());
 }

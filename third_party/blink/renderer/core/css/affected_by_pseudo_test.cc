@@ -16,8 +16,6 @@
 
 namespace blink {
 
-using namespace html_names;
-
 class AffectedByPseudoTest : public PageTestBase {
  protected:
   struct ElementResult {
@@ -57,11 +55,11 @@ void AffectedByPseudoTest::CheckElementsForFocus(
 // ":focus div" will mark ascendants of all divs with
 // childrenOrSiblingsAffectedByFocus.
 TEST_F(AffectedByPseudoTest, FocusedAscendant) {
-  ElementResult expected[] = {{kBodyTag, true},
-                              {kDivTag, true},
-                              {kDivTag, false},
-                              {kDivTag, false},
-                              {kSpanTag, false}};
+  ElementResult expected[] = {{html_names::kBodyTag, true},
+                              {html_names::kDivTag, true},
+                              {html_names::kDivTag, false},
+                              {html_names::kDivTag, false},
+                              {html_names::kSpanTag, false}};
 
   SetHtmlInnerHTML(R"HTML(
     <head>
@@ -79,11 +77,11 @@ TEST_F(AffectedByPseudoTest, FocusedAscendant) {
 // "body:focus div" will mark the body element with
 // childrenOrSiblingsAffectedByFocus.
 TEST_F(AffectedByPseudoTest, FocusedAscendantWithType) {
-  ElementResult expected[] = {{kBodyTag, true},
-                              {kDivTag, false},
-                              {kDivTag, false},
-                              {kDivTag, false},
-                              {kSpanTag, false}};
+  ElementResult expected[] = {{html_names::kBodyTag, true},
+                              {html_names::kDivTag, false},
+                              {html_names::kDivTag, false},
+                              {html_names::kDivTag, false},
+                              {html_names::kSpanTag, false}};
 
   SetHtmlInnerHTML(R"HTML(
     <head>
@@ -104,11 +102,11 @@ TEST_F(AffectedByPseudoTest, FocusedAscendantWithType) {
 // is checked and the childrenOrSiblingsAffectedByFocus flag set before the
 // negated type selector is found.
 TEST_F(AffectedByPseudoTest, FocusedAscendantWithNegatedType) {
-  ElementResult expected[] = {{kBodyTag, false},
-                              {kDivTag, true},
-                              {kDivTag, false},
-                              {kDivTag, false},
-                              {kSpanTag, false}};
+  ElementResult expected[] = {{html_names::kBodyTag, false},
+                              {html_names::kDivTag, true},
+                              {html_names::kDivTag, false},
+                              {html_names::kDivTag, false},
+                              {html_names::kSpanTag, false}};
 
   SetHtmlInnerHTML(R"HTML(
     <head>
@@ -130,8 +128,10 @@ TEST_F(AffectedByPseudoTest, FocusedAscendantWithNegatedType) {
 // though none of the children are affected. There are other mechanisms that
 // makes sure the sibling also gets its styles recalculated.
 TEST_F(AffectedByPseudoTest, FocusedSibling) {
-  ElementResult expected[] = {
-      {kBodyTag, false}, {kDivTag, true}, {kSpanTag, false}, {kDivTag, false}};
+  ElementResult expected[] = {{html_names::kBodyTag, false},
+                              {html_names::kDivTag, true},
+                              {html_names::kSpanTag, false},
+                              {html_names::kDivTag, false}};
 
   SetHtmlInnerHTML(R"HTML(
     <head>

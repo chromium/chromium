@@ -1,58 +1,53 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hi">
-<translation id="1326317727527857210">अपने अन्य डिवाइस से अपने टैब पाने के लिए, Chrome में साइन इन करें.</translation>
+<translation id="1282031177488366470">Chrome की सुविधाओं और प्रदर्शन को बेहतर बनाने में मदद करें</translation>
+<translation id="1682483655351012182">अपना Chrome डेटा सिंक करें</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1816764564654397850">Google Chrome निजता सूचना</translation>
 <translation id="1863312987075920112">इस ऐप्‍लिकेशन का इस्तेमाल करके, आप Chrome की <ph name="BEGIN_LINK_TOS" />सेवा की शर्तों<ph name="END_LINK_TOS" /> और <ph name="BEGIN_LINK_PRIVACY" />निजता सूचना<ph name="END_LINK_PRIVACY" /> से सहमत होते हैं.</translation>
-<translation id="1984705450038014246">अपना Chrome डेटा सिंक करें</translation>
 <translation id="2147651015520127414">Chrome ने सत्‍यापित किया है कि वेबसाइट का यह प्रमाणपत्र <ph name="ISSUER" /> ने जारी किया है.</translation>
 <translation id="2199719347983604670">Chrome सिंक का डेटा</translation>
-<translation id="2334084861041072223">कॉपीराइट <ph name="YEAR" /> Google Inc. सर्वाधिकार सुरक्षित.</translation>
-<translation id="2342981853652716282">अपने सभी डिवाइस पर अपने बुकमार्क, पासवर्ड आदि पाने के लिए Chrome में प्रवेश करें.</translation>
 <translation id="2347208864470321755">जब यह सुविधा चालू होती है, तो Chrome अन्य भाषा में लिखे पृष्ठों को Google अनुवाद का उपयोग करके अनुवाद करने के लिए ऑफ़र करेगा. <ph name="BEGIN_LINK" />और जानें<ph name="END_LINK" /></translation>
-<translation id="2441696206556358796">चित्रों को सहेजने के लिए, Chrome को अपने फ़ोटो का उपयोग करने देने के लिए सेटिंग पर टैप करें</translation>
+<translation id="2441696206556358796">इमेज को सेव करने के लिए, Chrome को अपने फ़ोटो का इस्तेमाल करने देने के लिए सेटिंग पर टैप करें</translation>
 <translation id="2576431527583832481">Chrome अब बेहतर हो गया है! एक नया वर्शन उपलब्ध है.</translation>
-<translation id="257708665678654955">क्या आप चाहते हैं कि Google Chrome अगली बार इस साइट के <ph name="LANGUAGE_NAME" /> पृष्ठों का अनुवाद करने का ऑफ़र दे?</translation>
+<translation id="257708665678654955">क्या आप चाहते हैं कि Google Chrome अगली बार इस साइट के <ph name="LANGUAGE_NAME" /> पेजों का अनुवाद करने का ऑफ़र दे?</translation>
 <translation id="3030414234702425231">क्‍योंकि आप <ph name="SIGNOUT_MANAGED_DOMAIN" /> की ओर से प्रबंधित खाते से साइन आउट कर रहे हैं, इसलिए आपका Chrome डेटा इस डिवाइस से मिट जाएगा. आपका डेटा आपके Google खाते में बना रहेगा.</translation>
-<translation id="3148434565183091099">अपने सभी डिवाइस पर अपने बुकमार्क प्राप्‍त करने के लिए, Chrome में प्रवेश करें.</translation>
-<translation id="3148688391461398285">अपने स्थान के आधार पर Chrome में बेहतर अनुभव प्राप्त करें.</translation>
-<translation id="3167189358072330585">आपका खाता Google Chrome पर काम नहीं करता. कृपया साइन इन करने के लिए अपने डोमेन व्यवस्थापक से संपर्क करें या नियमित Google खाते का उपयोग करें.</translation>
+<translation id="3148688391461398285">अपने स्थान के आधार पर Chrome में बेहतर अनुभव पाएं.</translation>
+<translation id="3167189358072330585">आपका खाता Google Chrome पर काम नहीं करता. कृपया साइन इन करने के लिए अपने डोमेन एडमिन से संपर्क करें या नियमित Google खाते का इस्तेमाल करें.</translation>
 <translation id="3196546062792660320">Chrome आपके खातों को वेब पर लाकर आपका समय बचाता है. आप सेटिंग में खाते जोड़ सकते हैं या उन्हें निकाल सकते हैं.</translation>
-<translation id="3282568296779691940">Chrome में प्रवेश करें</translation>
+<translation id="3282568296779691940">Chrome में साइन इन करें</translation>
 <translation id="3345341804167540816">Chrome का सभी जगह उपयोग करना</translation>
 <translation id="384394811301901750">Google Chrome इस समय आपके कैमरे का उपयोग नहीं कर सकता</translation>
-<translation id="3870154837782082782">Google Inc.</translation>
-<translation id="3980220367029651214">आप समन्वयित खातों को <ph name="USER_EMAIL1" /> से <ph name="USER_EMAIL2" /> में बदल रहे हैं. आपका मौजूदा Chrome डेटा <ph name="DOMAIN" /> द्वारा प्रबंधित किया जाता है. इससे आपका डेटा इस सेवा से हट जाएगा, लेकिन आपका डेटा <ph name="USER_EMAIL1" /> में बना रहेगा.</translation>
-<translation id="3988789688219830639">Google Chrome के पास आपकी फ़ोटो या वीडियो का एक्सेस नहीं है. iOS सेटिंग &gt; निजता &gt; फ़ोटो में एक्सेस सक्षम करें.</translation>
-<translation id="4099578267706723511">'इस्तेमाल के आंकड़े' और 'खराबी रिपोर्ट' Google को भेजकर Chrome को बेहतर बनाने में सहायता करें.</translation>
-<translation id="415767770115540173">अपने स्थान के आधार पर Chrome में एक बेहतर Google अनुभव प्राप्त करें.</translation>
-<translation id="424864128008805179">Chrome से प्रस्थान करें?</translation>
-<translation id="447252321002412580">Chrome के फ़ीचर और परफ़ॉर्मेंस को बेहतर बनाने में सहायता करें</translation>
-<translation id="4523886039239821078">कुछ ऐड-ऑन के कारण Chrome क्रैश हो जाता है. कृपया उन्हें अनइंस्टॉल करें:</translation>
-<translation id="4615174829807303908">आप <ph name="SIGNOUT_MANAGED_DOMAIN" /> द्वारा प्रबंधित खाते से प्रस्थान कर रहे हैं. इससे आपका Chrome डेटा इस डिवाइस से हट जाएगा, लेकिन आपका डेटा आपके Google खाते में बना रहेगा.</translation>
+<translation id="3980220367029651214">आप सिंक खातों को <ph name="USER_EMAIL1" /> से <ph name="USER_EMAIL2" /> में बदल रहे हैं. आपका मौजूदा Chrome डेटा <ph name="DOMAIN" /> से प्रबंधित किया जाता है. इससे आपका डेटा इस सेवा से मिट जाएगा, लेकिन आपका डेटा <ph name="USER_EMAIL1" /> में बना रहेगा.</translation>
+<translation id="3988789688219830639">Google Chrome के पास आपकी फ़ोटो या वीडियो का एक्सेस नहीं है. iOS सेटिंग &gt; निजता &gt; फ़ोटो में जाकर एक्सेस चालू करें.</translation>
+<translation id="4099578267706723511">Google को इस्तेमाल के आंकड़े और खराबी रिपोर्ट भेजकर Chrome को बेहतर बनाने में मदद करें.</translation>
+<translation id="415767770115540173">अपने स्थान के आधार पर Chrome में एक बेहतर Google अनुभव पाएं.</translation>
+<translation id="424864128008805179">Chrome से साइन आउट करें?</translation>
+<translation id="4249068189593983585">Chrome इस्तेमाल करने के लिए सलाह. ज़्यादा टैब विकल्पों के लिए, टूलबार में 'टैब दिखाएं' बटन को दबाकर रखें. यह बटन आपकी स्क्रीन के सबसे नीचे या सबसे ऊपर मिलेगा.</translation>
+<translation id="4523886039239821078">कुछ ऐड-ऑन के कारण Chrome बंद हो जा रहा है. कृपया उन्हें अनइंस्टॉल करें:</translation>
 <translation id="5389212809648216794">Google Chrome आपके कैमरे का उपयोग नहीं कर सकता क्योंकि दूसरा ऐप्लिकेशन उसका उपयोग कर रहा है</translation>
+<translation id="5621912349729388018"><ph name="BEGIN_LINK" />Chrome की अपडेट की गई सेवा की शर्तें देखें.<ph name="END_LINK" /></translation>
 <translation id="5639704535586432836">सेटिंग &gt; निजता &gt; कैमरा &gt; Google Chrome खोलें और कैमरा चालू करें.</translation>
-<translation id="5642200033778930880">Google Chrome विभाजित दृश्य मोड में आपके कैमरे का उपयोग नहीं कर सकता</translation>
+<translation id="5642200033778930880">Google Chrome स्प्लिट व्यू मोड में आपके कैमरे का इस्तेमाल नहीं कर सकता</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5854621639439811139">Chrome के लिए सलाह. 'वापस जाएं', 'आगे जाएं' और 'खोजें' जैसे कुछ बटन अब आपकी स्क्रीन के सबसे नीचे मिलेंगे.</translation>
 <translation id="6036420186814142909">Google Chrome में ऐसी सुविधाएं हैं जो आपको अपने इंटरनेट डेटा को प्रबंधित करने और वेबपृष्ठों को तेज़ी से लोड करने में आपकी सहायता करती हैं. <ph name="BEGIN_LINK" />और जानें<ph name="END_LINK" /></translation>
-<translation id="6573431926118603307">आपके द्वारा अपने अन्य डिवाइस पर खोले गए टैब यहां दिखाई देंगे.</translation>
+<translation id="6573431926118603307">  अपने अन्य डिवाइस पर खोले गए टैब यहां दिखाई देंगे.</translation>
 <translation id="6600954340915313787">Chrome पर कॉपी किया गया</translation>
-<translation id="6648150602980899529">आप <ph name="DOMAIN" /> द्वारा प्रबंधित खाते में प्रवेश कर रहे हैं और उसके व्यवस्थापक को अपने Chrome डेटा पर नियंत्रण प्रदान कर रहे हैं. आपका डेटा इस खाते से स्थायी रूप से संबद्ध हो जाएगा. Chrome से प्रस्थान करने से आपका डेटा इस डिवाइस से हट जाएगा, लेकिन वह आपके Google खाते में संग्रहित रहेगा.</translation>
+<translation id="6648150602980899529">आप <ph name="DOMAIN" /> से प्रबंधित खाते में साइन इन कर रहे हैं और उसके एडमिन को अपने Chrome डेटा पर नियंत्रण दे रहे हैं. आपका डेटा इस खाते से स्थायी रूप से जुड़ जाएगा. Chrome से साइन आउट करने से आपका डेटा इस डिवाइस से मिट जाएगा, लेकिन वह आपके Google खाते में बना रहेगा.</translation>
 <translation id="6676840375528380067">इस डिवाइस से अपना Chrome डेटा हटाएं?</translation>
 <translation id="690638524486313356">Google Chrome सेवा की शर्तें</translation>
 <translation id="7165736900384873061">Google Chrome QR स्कैनर उपयोग शुरू करें</translation>
-<translation id="7172660552945675509">टिप्स: <ph name="BEGIN_LINK" />Chrome को अपने डॉक में ले जाएं<ph name="END_LINK" /></translation>
-<translation id="7173660919484573146">आपके पासवर्ड का अधिकृत एक्सेस पक्का करने के लिए, Chrome 'फ़ेस आईडी' यानी चेहरा पहचान का इस्तेमाल करता है.</translation>
-<translation id="7265369419224458312">अपने कंप्यूटर पर आपके खोले हुए टैब सीधे यहां से एेक्सेस करें. बस अपने कंप्यूटर पर Chrome खोलें, मेनू पर जाएं और "Chrome में साइन इन करें…" चुनें</translation>
-<translation id="728488472449859922">Google Chrome QR स्कैनर चालू करें</translation>
+<translation id="7172660552945675509">सलाह: <ph name="BEGIN_LINK" />Chrome को अपने डॉक में ले जाएं<ph name="END_LINK" /></translation>
+<translation id="7173660919484573146">आपके पासवर्ड का अधिकृत ऐक्सेस पक्का करने के लिए, Chrome 'फ़ेस आईडी' यानी चेहरा पहचान का इस्तेमाल करता है.</translation>
+<translation id="7265369419224458312">अपने कंप्यूटर पर खोले गए टैब सीधे यहां से एक्सेस करें. बस अपने कंप्यूटर पर Chrome खोलें, मेन्यू पर जाएं और “Chrome में साइन इन करें…” चुनें</translation>
 <translation id="7400722733683201933">Google Chrome के बारे में</translation>
-<translation id="7437998757836447326">Chrome से प्रस्थान करें</translation>
 <translation id="756809126120519699">साफ़ किया गया Chrome डेटा</translation>
 <translation id="7626032353295482388">Chrome में आपका स्वागत है</translation>
+<translation id="7698568245838009292">Chrome आपका कैमरा ऐक्सेस करना चाहता है</translation>
+<translation id="8370517070665726704">कॉपीराइट <ph name="YEAR" /> Google LLC. सर्वाधिकार सुरक्षित.</translation>
 <translation id="840168496893712993">कुछ ऐड-ऑन के कारण Chrome क्रैश हो जाता है. कृपया उन्हें अनइंस्टॉल करके देखें.</translation>
 <translation id="8459495907675268833">चयनित डेटा Chrome और समन्वयित डिवाइस से निकाल दिया गया है. हो सकता है कि आपके Google खाते में अन्य प्रकार के ब्राउज़िंग इतिहास जैसे खोज और history.google.com पर अन्य Google सेवाओं की गतिविधि हो.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
-<translation id="8606668294522778825">आपके ब्राउज़िंग अनुभव को बेहतर बनाने के लिए Google Chrome, वेब सेवाओं का उपयोग कर सकता है. आप इन सेवाओं को वैकल्‍पिक रूप से बंद कर सकते हैं. <ph name="BEGIN_LINK" />और जानें<ph name="END_LINK" /></translation>
-<translation id="96145293669295453">Chrome के लिए सलाह. ज़्यादा टैब विकल्पों के लिए, टूलबार में 'टेब दिखाएं' बटन को दबाकर रखें, जो आपकी स्क्रीन के सबसे नीचे या सबसे ऊपर मिलेगा.</translation>
 </translationbundle>

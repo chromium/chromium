@@ -15,7 +15,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/chromeos/arc/input_method_manager/arc_input_method_manager_bridge.h"
 #include "chrome/browser/chromeos/input_method/input_method_engine.h"
-#include "components/arc/common/input_method_manager.mojom.h"
+#include "components/arc/mojom/input_method_manager.mojom.h"
 #include "mojo/public/cpp/bindings/binding.h"
 
 namespace arc {
@@ -48,6 +48,8 @@ class InputConnectionImpl : public mojom::InputConnection {
   void RequestTextInputState(
       mojom::InputConnection::RequestTextInputStateCallback callback) override;
   void SetSelection(const gfx::Range& new_selection_range) override;
+  void SendKeyEvent(mojom::KeyEventDataPtr data_ptr) override;
+  void SetCompositionRange(const gfx::Range& new_composition_range) override;
 
  private:
   // Starts the timer to send new TextInputState.
@@ -63,8 +65,6 @@ class InputConnectionImpl : public mojom::InputConnection {
   const int input_context_id_;
 
   mojo::Binding<mojom::InputConnection> binding_;
-
-  base::string16 composing_text_;
 
   base::OneShotTimer state_update_timer_;
 

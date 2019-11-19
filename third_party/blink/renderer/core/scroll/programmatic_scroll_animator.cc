@@ -19,12 +19,17 @@ ProgrammaticScrollAnimator::ProgrammaticScrollAnimator(
     ScrollableArea* scrollable_area)
     : scrollable_area_(scrollable_area), start_time_(0.0) {}
 
-ProgrammaticScrollAnimator::~ProgrammaticScrollAnimator() = default;
+ProgrammaticScrollAnimator::~ProgrammaticScrollAnimator() {
+  if (on_finish_)
+    std::move(on_finish_).Run();
+}
 
 void ProgrammaticScrollAnimator::ResetAnimationState() {
   ScrollAnimatorCompositorCoordinator::ResetAnimationState();
   animation_curve_.reset();
   start_time_ = 0.0;
+  if (on_finish_)
+    std::move(on_finish_).Run();
 }
 
 void ProgrammaticScrollAnimator::NotifyOffsetChanged(
@@ -46,15 +51,20 @@ void ProgrammaticScrollAnimator::ScrollToOffsetWithoutAnimation(
     sequencer->RunQueuedAnimations();
 }
 
-void ProgrammaticScrollAnimator::AnimateToOffset(const ScrollOffset& offset,
-                                                 bool is_sequenced_scroll) {
+void ProgrammaticScrollAnimator::AnimateToOffset(
+    const ScrollOffset& offset,
+    bool is_sequenced_scroll,
+    ScrollableArea::ScrollCallback on_finish) {
   if (run_state_ == RunState::kPostAnimationCleanup)
     ResetAnimationState();
 
   start_time_ = 0.0;
   target_offset_ = offset;
   is_sequenced_scroll_ = is_sequenced_scroll;
-  animation_curve_ = CompositorScrollOffsetAnimationCurve::Create(
+  if (on_finish_)
+    std::move(on_finish_).Run();
+  on_finish_ = std::move(on_finish);
+  animation_curve_ = std::make_unique<CompositorScrollOffsetAnimationCurve>(
       CompositorOffsetFromBlinkOffset(target_offset_),
       CompositorScrollOffsetAnimationCurve::kScrollDurationDeltaBased);
 
@@ -69,6 +79,8 @@ void ProgrammaticScrollAnimator::AnimateToOffset(const ScrollOffset& offset,
 void ProgrammaticScrollAnimator::CancelAnimation() {
   DCHECK_NE(run_state_, RunState::kRunningOnCompositorButNeedsUpdate);
   ScrollAnimatorCompositorCoordinator::CancelAnimation();
+  if (on_finish_)
+    std::move(on_finish_).Run();
 }
 
 void ProgrammaticScrollAnimator::TickAnimation(double monotonic_time) {
@@ -100,7 +112,7 @@ void ProgrammaticScrollAnimator::UpdateCompositorAnimations() {
     return ResetAnimationState();
   }
 
-  if (compositor_animation_id_ &&
+  if (compositor_animation_id() &&
       run_state_ != RunState::kRunningOnCompositor) {
     // If the current run state is WaitingToSendToCompositor but we have a
     // non-zero compositor animation id, there's a currently running
@@ -111,8 +123,6 @@ void ProgrammaticScrollAnimator::UpdateCompositorAnimations() {
 
     RemoveAnimation();
 
-    compositor_animation_id_ = 0;
-    compositor_animation_group_id_ = 0;
     if (run_state_ == RunState::kWaitingToCancelOnCompositor) {
       ResetAnimationState();
       return;
@@ -132,19 +142,12 @@ void ProgrammaticScrollAnimator::UpdateCompositorAnimations() {
     // crbug.com/730705
     if (!scrollable_area_->ShouldScrollOnMainThread() &&
         !is_sequenced_scroll_) {
-      std::unique_ptr<CompositorKeyframeModel> animation =
-          CompositorKeyframeModel::Create(
-              *animation_curve_, compositor_target_property::SCROLL_OFFSET, 0,
-              0);
-
-      int animation_id = animation->Id();
-      int animation_group_id = animation->Group();
+      auto animation = std::make_unique<CompositorKeyframeModel>(
+          *animation_curve_, compositor_target_property::SCROLL_OFFSET, 0, 0);
 
       if (AddAnimation(std::move(animation))) {
         sent_to_compositor = true;
         run_state_ = RunState::kRunningOnCompositor;
-        compositor_animation_id_ = animation_id;
-        compositor_animation_group_id_ = animation_group_id;
       }
     }
 
@@ -168,9 +171,8 @@ void ProgrammaticScrollAnimator::LayerForCompositedScrollingDidChange(
   // continue the animation on the main thread.
   if (run_state_ == RunState::kRunningOnCompositor &&
       !scrollable_area_->LayerForScrolling()) {
+    RemoveAnimation();
     run_state_ = RunState::kRunningOnMainThread;
-    compositor_animation_id_ = 0;
-    compositor_animation_group_id_ = 0;
     animation_curve_->SetInitialValue(
         CompositorOffsetFromBlinkOffset(scrollable_area_->GetScrollOffset()));
     scrollable_area_->RegisterForAnimation();
@@ -189,6 +191,8 @@ void ProgrammaticScrollAnimator::NotifyCompositorAnimationFinished(
 }
 
 void ProgrammaticScrollAnimator::AnimationFinished() {
+  if (on_finish_)
+    std::move(on_finish_).Run();
   if (is_sequenced_scroll_) {
     is_sequenced_scroll_ = false;
     if (SmoothScrollSequencer* sequencer =

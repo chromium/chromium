@@ -41,14 +41,6 @@ class SVGPointListTearOff final
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static SVGPointListTearOff* Create(
-      SVGPointList* target,
-      SVGAnimatedPropertyBase* binding,
-      PropertyIsAnimValType property_is_anim_val) {
-    return MakeGarbageCollected<SVGPointListTearOff>(target, binding,
-                                                     property_is_anim_val);
-  }
-
   SVGPointListTearOff(SVGPointList* target,
                       SVGAnimatedPropertyBase* binding,
                       PropertyIsAnimValType property_is_anim_val)

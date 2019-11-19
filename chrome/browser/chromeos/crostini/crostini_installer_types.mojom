@@ -1,0 +1,32 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module crostini.mojom;
+
+enum InstallerState {
+  kStart,               // Just started installation
+  kInstallImageLoader,  // Loading the Termina VM component.
+  kStartConcierge,      // Starting the Concierge D-Bus client.
+  kCreateDiskImage,     // Creating the image for the Termina VM.
+  kStartTerminaVm,      // Starting the Termina VM.
+  kCreateContainer,     // Creating the container inside the Termina VM.
+  kSetupContainer,      // Setting up the container inside the Termina VM.
+  kStartContainer,      // Starting the container inside the Termina VM.
+  kFetchSshKeys,        // Fetch ssh keys from concierge.
+  kMountContainer,      // Do sshfs mount of container.
+};
+
+enum InstallerError {
+  kNone,
+  kErrorLoadingTermina,
+  kErrorStartingConcierge,
+  kErrorCreatingDiskImage,
+  kErrorStartingTermina,
+  kErrorStartingContainer,
+  kErrorOffline,
+  kErrorFetchingSshKeys,
+  kErrorMountingContainer,
+  kErrorSettingUpContainer,
+  kErrorInsufficientDiskSpace,
+};

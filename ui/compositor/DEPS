@@ -4,7 +4,8 @@ include_rules = [
   "+components/viz/host",
   "+components/viz/service",
   "+gpu/command_buffer/client/gles2_interface.h",
-  "+services/ws/public/cpp",
+  "+mojo/public/cpp/bindings/pending_remote.h",
+  "+services/viz/privileged/mojom/compositing",
   "+skia/ext/refptr.h",
   "+third_party/khronos/GLES2/gl2.h",
   "+third_party/skia",
@@ -19,7 +20,11 @@ specific_include_rules = {
   "run_all_unittests\.cc": [
     "+mojo/core/embedder",
   ],
+  "test.*_x11\.cc": [
+    "+ui/events/x",
+  ],
   ".*_(unit|pixel|perf)test.*\.cc": [
     "+components/viz/test",
   ],
 }
+

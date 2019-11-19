@@ -12,7 +12,7 @@
 namespace mojo {
 
 template <>
-struct COMPONENT_EXPORT(MOJO_BASE_MOJOM)
+struct COMPONENT_EXPORT(MOJO_BASE_SHARED_TRAITS)
     StructTraits<mojo_base::mojom::FileDataView, base::File> {
   static bool IsNull(const base::File& file) { return !file.IsValid(); }
 

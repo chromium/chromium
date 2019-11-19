@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 
 #include "base/android/jni_android.h"
+#include "chrome/android/chrome_jni_headers/WebContentsFactory_jni.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "content/public/browser/web_contents.h"
-#include "jni/WebContentsFactory_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;

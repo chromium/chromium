@@ -38,7 +38,11 @@ DecodedDrawImage::DecodedDrawImage()
                        kNone_SkFilterQuality,
                        true) {}
 
-DecodedDrawImage::DecodedDrawImage(const DecodedDrawImage& other) = default;
+DecodedDrawImage::DecodedDrawImage(const DecodedDrawImage&) = default;
+DecodedDrawImage::DecodedDrawImage(DecodedDrawImage&&) = default;
+DecodedDrawImage& DecodedDrawImage::operator=(const DecodedDrawImage&) =
+    default;
+DecodedDrawImage& DecodedDrawImage::operator=(DecodedDrawImage&&) = default;
 
 DecodedDrawImage::~DecodedDrawImage() = default;
 

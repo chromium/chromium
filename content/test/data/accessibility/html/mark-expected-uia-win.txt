@@ -1,0 +1,6 @@
+document
+++group
+++++description Name='This test is to check '
+++++description LocalizedControlType='highlight'
+++++++description Name='mark tag'
+++++description Name='.'

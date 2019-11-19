@@ -1,0 +1,28 @@
+<!doctype html>
+<!--
+Test page for verifying that video controls look and function as expected in
+the VR browser.
+-->
+<html>
+  <head>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <link rel="stylesheet" type="text/css" href="../resources/webxr_e2e.css">
+  </head>
+  <body>
+    <script src="../../../../../../third_party/blink/web_tests/resources/testharness.js"></script>
+    <script src="../resources/webxr_e2e.js"></script>
+    <video id="video_element" controls loop>
+      <source src="../resources/media/red_rectangle.webm" type="video/webm">
+    </video>
+    <script>
+      function fullscreenVideo() {
+        document.getElementById('video_element').requestFullscreen();
+      }
+
+      function isVideoFullscreen() {
+        return document.getElementById('video_element').fullscreenElement;
+      }
+    </script>
+    <button type="button" id="fullscreen_button" onclick="fullscreenVideo()">Fullscreen</button>
+  </body>
+</html>

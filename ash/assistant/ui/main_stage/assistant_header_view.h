@@ -11,6 +11,7 @@
 #include "ash/assistant/model/assistant_ui_model_observer.h"
 #include "base/component_export.h"
 #include "base/macros.h"
+#include "base/memory/scoped_refptr.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -20,7 +21,7 @@ class BoxLayout;
 namespace ash {
 
 class AssistantViewDelegate;
-class BaseLogoView;
+class LogoView;
 
 // AssistantHeaderView is the child of UiElementContainerView which provides
 // the Assistant icon.
@@ -38,7 +39,7 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantHeaderView
 
   // AssistantInteractionModelObserver:
   void OnResponseChanged(
-      const std::shared_ptr<AssistantResponse>& response) override;
+      const scoped_refptr<AssistantResponse>& response) override;
 
   // AssistantUiModelObserver:
   void OnUiVisibilityChanged(
@@ -53,7 +54,7 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantHeaderView
   AssistantViewDelegate* const delegate_;  // Owned by Shell.
 
   views::BoxLayout* layout_manager_;  // Owned by view hierarchy.
-  BaseLogoView* molecule_icon_;       // Owned by view hierarchy.
+  LogoView* molecule_icon_;           // Owned by view hierarchy.
 
   // True if this is the first query response received for the current Assistant
   // UI session, false otherwise.

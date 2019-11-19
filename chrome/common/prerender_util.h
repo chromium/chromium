@@ -13,8 +13,6 @@ class GURL;
 
 namespace prerender {
 extern const char kFollowOnlyWhenPrerenderShown[];
-extern const char kPurposeHeaderName[];
-extern const char kPurposeHeaderValue[];
 
 // Returns true iff the scheme of the URL given is valid for prerendering.
 bool DoesURLHaveValidScheme(const GURL& url);

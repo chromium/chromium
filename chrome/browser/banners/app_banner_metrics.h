@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_BANNERS_APP_BANNER_METRICS_H_
 
 #include "chrome/browser/installable/installable_logging.h"
-#include "third_party/blink/public/common/manifest/web_display_mode.h"
+#include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 
 namespace banners {
 
@@ -32,8 +32,8 @@ enum DisplayEvent {
 enum InstallEvent {
   INSTALL_EVENT_MIN = 20,
   INSTALL_EVENT_NATIVE_APP_INSTALL_TRIGGERED = 21,
-  INSTALL_EVENT_NATIVE_APP_INSTALL_STARTED = 22,
-  INSTALL_EVENT_NATIVE_APP_INSTALL_COMPLETED = 23,
+  // Deprecated: INSTALL_EVENT_NATIVE_APP_INSTALL_STARTED = 22,
+  // Deprecated: INSTALL_EVENT_NATIVE_APP_INSTALL_COMPLETED = 23,
   INSTALL_EVENT_WEB_APP_INSTALLED = 24,
   INSTALL_EVENT_MAX = 25,
 };
@@ -46,7 +46,7 @@ enum DismissEvent {
   DISMISS_EVENT_BANNER_CLICK = 43,
   DISMISS_EVENT_BANNER_SWIPE = 44,
   DISMISS_EVENT_CLOSE_BUTTON = 45,
-  DISMISS_EVENT_INSTALL_TIMEOUT = 46,
+  // Deprecated: DISMISS_EVENT_INSTALL_TIMEOUT = 46,
   DISMISS_EVENT_DISMISSED = 47,
   DISMISS_EVENT_AMBIENT_INFOBAR_DISMISSED = 48,
   DISMISS_EVENT_MAX = 49,
@@ -59,8 +59,8 @@ enum UserResponse {
   USER_RESPONSE_WEB_APP_ACCEPTED = 2,
   USER_RESPONSE_NATIVE_APP_DISMISSED = 3,
   USER_RESPONSE_WEB_APP_DISMISSED = 4,
-  USER_RESPONSE_NATIVE_APP_IGNORED = 5,
-  USER_RESPONSE_WEB_APP_IGNORED = 6,
+  // Deprecated: USER_RESPONSE_NATIVE_APP_IGNORED = 5,
+  // Deprecated: USER_RESPONSE_WEB_APP_IGNORED = 6,
   USER_RESPONSE_MAX = 7,
 };
 
@@ -92,7 +92,7 @@ void TrackMinutesFromFirstVisitToBannerShown(int minutes);
 void TrackUserResponse(int event);
 void TrackBeforeInstallEvent(int event);
 void TrackInstallableStatusCode(InstallableStatusCode code);
-void TrackInstallDisplayMode(blink::WebDisplayMode display);
+void TrackInstallDisplayMode(blink::mojom::DisplayMode display);
 
 }  // namespace banners
 

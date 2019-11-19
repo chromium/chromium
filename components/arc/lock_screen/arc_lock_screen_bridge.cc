@@ -8,9 +8,9 @@
 #include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "components/arc/arc_bridge_service.h"
 #include "components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "components/arc/arc_service_manager.h"
+#include "components/arc/session/arc_bridge_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 

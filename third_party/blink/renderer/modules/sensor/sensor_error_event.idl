@@ -6,7 +6,6 @@
 // https://w3c.github.io/sensors/#sensorerrorevent
 
 [
-    RuntimeEnabled=Sensor,
     SecureContext,
     Constructor(DOMString type, SensorErrorEventInit eventInitDict),
     Exposed=Window

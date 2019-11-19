@@ -1,0 +1,29 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="ms">
+<translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> daripada tab anda sudah lama tidak digunakan. Tutup tab?</translation>
+<translation id="1181037720776840403">Alih keluar</translation>
+<translation id="125153950246128346">Ketik untuk melihat tab lain</translation>
+<translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tab}other{<ph name="TABS_COUNT_MANY" /> tab}}</translation>
+<translation id="257674075312929031">Kumpulan</translation>
+<translation id="2613747923081026172">Buat kumpulan</translation>
+<translation id="2671423594960767771">Kongsi kumpulan</translation>
+<translation id="2977480621796371840">Alih keluar daripada kumpulan</translation>
+<translation id="4212246570487010370">Teruskan penyemakan imbas</translation>
+<translation id="4648718555153979859">Tab anda dikumpulkan bersama di sini</translation>
+<translation id="5007392906805964215">Semak</translation>
+<translation id="5073204694187207510">Sembunyikan grid skrin penuh</translation>
+<translation id="5082793167783849073">Bandingkan halaman dengan pantas dengan membuat kumpulan. Untuk bermula, sentuh &amp; tahan pautan.</translation>
+<translation id="5580090775658607195"><ph name="TAB_COUNT" /> tab dihimpunkan</translation>
+<translation id="5792534911093536736">Lagi tab</translation>
+<translation id="58326064309361797">Seret tab untuk menghimpunkannya</translation>
+<translation id="6040143037577758943">Tutup</translation>
+<translation id="6193448654517602979">Pilih tab</translation>
+<translation id="6615455863669487791">Tunjukkan kepada saya</translation>
+<translation id="6840760312327750441">Untuk menghimpunkan tab, sentuh &amp; tahan tab. Kemudian, seret tab itu ke tab lain.</translation>
+<translation id="7151209024774799310">Alih keluar tab daripada kumpulan</translation>
+<translation id="7559245342362162951">Tunjukkan tab kumpulan dalam grid skrin penuh</translation>
+<translation id="9150694013019234766">Beralih antara tab dalam kumpulan tab anda berhampiran bahagian bawah skrin</translation>
+<translation id="9169594135889675189">Tambahkan tab baharu pada kumpulan</translation>
+<translation id="959682366969460160">Jadi teratur</translation>
+</translationbundle>

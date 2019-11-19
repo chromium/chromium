@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 
 <table role="grid" aria-activedescendant="focused-cell" tabindex="-1" id="container-with-active-descendant">
   <tr role="row">
@@ -14,7 +13,7 @@
 <button id="focusable-element">Button</button>
 
 <script>
-test_after_layout_and_paint(() => {
+test(() => {
   if (document.activeElement)
     document.activeElement.blur();
 
@@ -33,7 +32,7 @@ test_after_layout_and_paint(() => {
   accessibilityFocusable.display = 'none';
 }, 'A click event should be dispatched if a non-focusable element can take accessibility focus via aria-activedescendant.');
 
-test_after_layout_and_paint(() => {
+test(() => {
   if (document.activeElement)
     document.activeElement.blur();
 
@@ -51,7 +50,7 @@ test_after_layout_and_paint(() => {
   accessibilityFocusable.display = 'none';
 }, 'A click event should not be dispatched if a click handler is attached directly to an element that can take accessibility focus via aria-activedescendant.');
 
-test_after_layout_and_paint(() => {
+test(() => {
   if (document.activeElement)
     document.activeElement.blur();
 
@@ -69,7 +68,7 @@ test_after_layout_and_paint(() => {
   nonFocusable.display = 'none';
 }, 'A click event should not be dispatched if an element cannot take accessibility focus.');
 
-test_after_layout_and_paint(() => {
+test(() => {
   if (document.activeElement)
     document.activeElement.blur();
 

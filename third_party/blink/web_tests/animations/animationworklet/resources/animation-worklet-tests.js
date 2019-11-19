@@ -33,6 +33,12 @@ async function waitForDocumentTimelineAdvance() {
   } while (timeAtStart === document.timeline.currentTime)
 }
 
+async function waitForAnimationFrameWithCondition(condition) {
+  do {
+    await new Promise(window.requestAnimationFrame);
+  } while (!condition())
+}
+
 // Load test cases in worklet context in sequence and wait until they are resolved.
 function runTests(testcases) {
   if (window.testRunner) {

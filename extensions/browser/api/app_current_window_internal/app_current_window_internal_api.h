@@ -11,8 +11,7 @@ namespace extensions {
 
 class AppWindow;
 
-class AppCurrentWindowInternalExtensionFunction
-    : public UIThreadExtensionFunction {
+class AppCurrentWindowInternalExtensionFunction : public ExtensionFunction {
  protected:
   ~AppCurrentWindowInternalExtensionFunction() override {}
 

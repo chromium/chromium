@@ -62,11 +62,11 @@ class ProximityAuthProfilePrefManager
   int64_t GetLastPromotionCheckTimestampMs() const override;
   void SetPromotionShownCount(int count) override;
   int GetPromotionShownCount() const override;
-  void SetProximityThreshold(ProximityThreshold value) override;
-  ProximityThreshold GetProximityThreshold() const override;
   bool IsChromeOSLoginAllowed() const override;
   void SetIsChromeOSLoginEnabled(bool is_enabled) override;
   bool IsChromeOSLoginEnabled() const override;
+  void SetHasShownLoginDisabledMessage(bool has_shown) override;
+  bool HasShownLoginDisabledMessage() const override;
 
   // chromeos::multidevice_setup::MultiDeviceSetupClient::Observer:
   void OnFeatureStatesChanged(
@@ -91,16 +91,11 @@ class ProximityAuthProfilePrefManager
   // The account id of the current profile.
   AccountId account_id_;
 
-  // Used to determine the FeatureState of Smart Lock. See |feature_state_|.
+  // Used to determine the FeatureState of Smart Lock.
   chromeos::multidevice_setup::MultiDeviceSetupClient*
       multidevice_setup_client_ = nullptr;
 
-  // Caches feature state of Smart Lock. Populated by using
-  // |multidevice_setup_client_|.
-  chromeos::multidevice_setup::mojom::FeatureState feature_state_ = chromeos::
-      multidevice_setup::mojom::FeatureState::kUnavailableNoVerifiedHost;
-
-  base::WeakPtrFactory<ProximityAuthProfilePrefManager> weak_ptr_factory_;
+  base::WeakPtrFactory<ProximityAuthProfilePrefManager> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ProximityAuthProfilePrefManager);
 };

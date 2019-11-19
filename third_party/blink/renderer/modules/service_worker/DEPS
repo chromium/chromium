@@ -12,18 +12,24 @@ include_rules = [
 ]
 
 specific_include_rules = {
-    "service_worker_global_scope_proxy\.cc": [
+    "service_worker_global_scope\.cc": [
         "+third_party/blink/renderer/modules/background_fetch",
         "+third_party/blink/renderer/modules/background_sync",
+        "+third_party/blink/renderer/modules/content_index",
         "+third_party/blink/renderer/modules/cookie_store",
-        "+third_party/blink/renderer/modules/exported",
         "+third_party/blink/renderer/modules/notifications",
         "+third_party/blink/renderer/modules/payments",
         "+third_party/blink/renderer/modules/push_messaging",
     ],
+    "service_worker_global_scope_proxy\.cc": [
+        "+third_party/blink/renderer/modules/exported",
+    ],
     "service_worker_installed_scripts_manager_test\.cc": [
         "+base/run_loop.h",
         "+mojo/public/cpp/bindings/binding.h",
+    ],
+    "service_worker_timeout_timer_test\.cc": [
+        "+base/test/test_mock_time_task_runner.h",
     ],
     "web_embedded_worker_impl_test\.cc": [
         "+third_party/blink/renderer/modules/exported",

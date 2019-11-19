@@ -36,8 +36,7 @@ class JsSyncManagerObserver : public SyncManager::Observer {
   void OnInitializationComplete(
       const WeakHandle<JsBackend>& js_backend,
       const WeakHandle<DataTypeDebugInfoListener>& debug_info_listener,
-      bool success,
-      ModelTypeSet restored_types) override;
+      bool success) override;
   void OnActionableError(const SyncProtocolError& sync_protocol_error) override;
   void OnProtocolEvent(const ProtocolEvent& event) override;
   void OnMigrationRequested(ModelTypeSet types) override;

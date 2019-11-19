@@ -31,7 +31,7 @@ class BluetoothGattDescriptorBlueZ
  private:
   // Called by dbus:: on unsuccessful completion of a request to read or write
   // the descriptor value.
-  void OnError(const ErrorCallback& error_callback,
+  void OnError(ErrorCallback error_callback,
                const std::string& error_name,
                const std::string& error_message);
 

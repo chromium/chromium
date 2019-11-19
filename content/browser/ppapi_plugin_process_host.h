@@ -112,7 +112,7 @@ class PpapiPluginProcessHost : public BrowserChildProcessHostDelegate,
   void OpenChannelToPlugin(Client* client);
 
   BrowserPpapiHostImpl* host_impl() { return host_impl_.get(); }
-  const BrowserChildProcessHostImpl* process() { return process_.get(); }
+  BrowserChildProcessHostImpl* process() { return process_.get(); }
   const base::Optional<url::Origin>& origin_lock() const {
     return origin_lock_;
   }
@@ -141,6 +141,7 @@ class PpapiPluginProcessHost : public BrowserChildProcessHostDelegate,
 
   void OnProcessLaunched() override;
   void OnProcessCrashed(int exit_code) override;
+  void BindHostReceiver(mojo::GenericPendingReceiver receiver) override;
   bool OnMessageReceived(const IPC::Message& msg) override;
   void OnChannelConnected(int32_t peer_pid) override;
   void OnChannelError() override;

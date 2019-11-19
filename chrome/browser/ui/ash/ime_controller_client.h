@@ -5,10 +5,12 @@
 #ifndef CHROME_BROWSER_UI_ASH_IME_CONTROLLER_CLIENT_H_
 #define CHROME_BROWSER_UI_ASH_IME_CONTROLLER_CLIENT_H_
 
-#include "ash/public/interfaces/ime_controller.mojom.h"
-#include "ash/public/interfaces/ime_info.mojom.h"
+#include "ash/public/mojom/ime_controller.mojom.h"
+#include "ash/public/mojom/ime_info.mojom-forward.h"
 #include "base/macros.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "ui/base/ime/chromeos/ime_keyboard.h"
 #include "ui/base/ime/chromeos/input_method_manager.h"
 #include "ui/chromeos/ime/input_method_menu_manager.h"
@@ -29,7 +31,8 @@ class ImeControllerClient
   void Init();
 
   // Tests can shim in a mock mojo interface for the ash controller.
-  void InitForTesting(ash::mojom::ImeControllerPtr controller);
+  void InitForTesting(
+      mojo::PendingRemote<ash::mojom::ImeController> controller);
 
   static ImeControllerClient* Get();
 
@@ -46,6 +49,7 @@ class ImeControllerClient
   void UpdateCastingState(bool casting_enabled) override;
   void OverrideKeyboardKeyset(chromeos::input_method::mojom::ImeKeyset keyset,
                               OverrideKeyboardKeysetCallback callback) override;
+  void ShowModeIndicator() override;
 
   // chromeos::input_method::InputMethodManager::Observer:
   void InputMethodChanged(chromeos::input_method::InputMethodManager* manager,
@@ -87,15 +91,13 @@ class ImeControllerClient
   // Sends information about current and available IMEs to ash.
   void RefreshIme();
 
-  void ShowModeIndicator();
-
   chromeos::input_method::InputMethodManager* const input_method_manager_;
 
   // Binds this object to the mojo interface.
-  mojo::Binding<ash::mojom::ImeControllerClient> binding_;
+  mojo::Receiver<ash::mojom::ImeControllerClient> receiver_{this};
 
-  // ImeController interface in ash.
-  ash::mojom::ImeControllerPtr ime_controller_ptr_;
+  // ImeController remote in ash.
+  mojo::Remote<ash::mojom::ImeController> ime_controller_;
 
   DISALLOW_COPY_AND_ASSIGN(ImeControllerClient);
 };

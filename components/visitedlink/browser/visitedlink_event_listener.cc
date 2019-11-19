@@ -11,7 +11,7 @@
 #include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_widget_host.h"
-#include "services/service_manager/public/cpp/interface_provider.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 using base::Time;
 using base::TimeDelta;
@@ -44,8 +44,8 @@ class VisitedLinkUpdater {
       : reset_needed_(false),
         invalidate_hashes_(false),
         render_process_id_(render_process_id) {
-    BindInterface(content::RenderProcessHost::FromID(render_process_id),
-                  &sink_);
+    content::RenderProcessHost::FromID(render_process_id)
+        ->BindReceiver(sink_.BindNewPipeAndPassReceiver());
   }
 
   // Informs the renderer about a new visited link table.
@@ -112,7 +112,7 @@ class VisitedLinkUpdater {
   bool reset_needed_;
   bool invalidate_hashes_;
   int render_process_id_;
-  mojom::VisitedLinkNotificationSinkPtr sink_;
+  mojo::Remote<mojom::VisitedLinkNotificationSink> sink_;
   VisitedLinkCommon::Fingerprints pending_;
 };
 

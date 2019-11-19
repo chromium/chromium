@@ -78,26 +78,10 @@ ChromeVoxE2ETest.prototype = {
     var url = TestUtils.createUrlForDoc(doc);
     var createParams = {active: true, url: url};
     chrome.tabs.create(createParams, function(tab) {
-      if (opt_callback)
+      if (opt_callback) {
         opt_callback(tab.url);
+      }
     });
-  },
-
-  /**
-   * Increment the selected index of a select control.
-   * @param {number} tabId Of the page.
-   * @param {string} elementQueryString
-   */
-  incrementSelectedIndex: function(tabId, elementQueryString) {
-    var code = TestUtils.extractHtmlFromCommentEncodedString(
-        function() { /*!
-      var target = document.body.querySelector('$0');
-      target.focus();
-      target.selectedIndex++;
-    */ },
-        [elementQueryString]);
-
-    chrome.tabs.executeScript(tabId, {code: code});
   },
 
   /**

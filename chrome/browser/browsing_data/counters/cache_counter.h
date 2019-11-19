@@ -45,7 +45,7 @@ class CacheCounter : public browsing_data::BrowsingDataCounter {
   bool is_upper_limit_;
   int pending_sources_;
 
-  base::WeakPtrFactory<CacheCounter> weak_ptr_factory_;
+  base::WeakPtrFactory<CacheCounter> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_BROWSING_DATA_COUNTERS_CACHE_COUNTER_H_

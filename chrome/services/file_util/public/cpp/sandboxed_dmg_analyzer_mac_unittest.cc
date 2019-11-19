@@ -18,10 +18,9 @@
 #include "chrome/common/safe_browsing/archive_analyzer_results.h"
 #include "chrome/common/safe_browsing/file_type_policies.h"
 #include "chrome/services/file_util/file_util_service.h"
-#include "chrome/services/file_util/public/mojom/constants.mojom.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
-#include "services/service_manager/public/cpp/test/test_connector_factory.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -29,20 +28,19 @@ namespace {
 class SandboxedDMGAnalyzerTest : public testing::Test {
  public:
   SandboxedDMGAnalyzerTest()
-      : browser_thread_bundle_(content::TestBrowserThreadBundle::IO_MAINLOOP),
-        file_util_service_(test_connector_factory_.RegisterInstance(
-            chrome::mojom::kFileUtilServiceName)) {}
+      : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP) {}
 
   void AnalyzeFile(const base::FilePath& path,
                    safe_browsing::ArchiveAnalyzerResults* results) {
+    mojo::PendingRemote<chrome::mojom::FileUtilService> remote;
+    FileUtilService service(remote.InitWithNewPipeAndPassReceiver());
     base::RunLoop run_loop;
     ResultsGetter results_getter(run_loop.QuitClosure(), results);
     scoped_refptr<SandboxedDMGAnalyzer> analyzer(new SandboxedDMGAnalyzer(
         path,
         safe_browsing::FileTypePolicies::GetInstance()->GetMaxFileSizeToAnalyze(
             "dmg"),
-        results_getter.GetCallback(),
-        test_connector_factory_.GetDefaultConnector()));
+        results_getter.GetCallback(), std::move(remote)));
     analyzer->Start();
     run_loop.Run();
   }
@@ -82,10 +80,7 @@ class SandboxedDMGAnalyzerTest : public testing::Test {
     DISALLOW_COPY_AND_ASSIGN(ResultsGetter);
   };
 
-  content::TestBrowserThreadBundle browser_thread_bundle_;
-  content::InProcessUtilityThreadHelper utility_thread_helper_;
-  service_manager::TestConnectorFactory test_connector_factory_;
-  FileUtilService file_util_service_;
+  content::BrowserTaskEnvironment task_environment_;
 };
 
 TEST_F(SandboxedDMGAnalyzerTest, AnalyzeDMG) {

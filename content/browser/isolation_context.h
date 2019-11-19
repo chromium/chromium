@@ -6,13 +6,14 @@
 #define CONTENT_BROWSER_ISOLATION_CONTEXT_H_
 
 #include "base/optional.h"
+#include "base/util/type_safety/id_type.h"
 #include "content/common/content_export.h"
-#include "gpu/command_buffer/common/id_type.h"
+#include "content/public/browser/browser_or_resource_context.h"
 
 namespace content {
 
 class BrowsingInstance;
-using BrowsingInstanceId = gpu::IdType32<BrowsingInstance>;
+using BrowsingInstanceId = util::IdType32<BrowsingInstance>;
 
 // This class is used to specify the context in which process model decisions
 // need to be made.  For example, dynamically added isolated origins only take
@@ -22,17 +23,26 @@ using BrowsingInstanceId = gpu::IdType32<BrowsingInstance>;
 // BrowsingInstance are used. This object may be used on UI or IO threads.
 class CONTENT_EXPORT IsolationContext {
  public:
-  // A default-constructed IsolationContext is not associated with a specific
-  // BrowsingInstance.  Callers can use this when they don't know the current
-  // BrowsingInstance, or aren't associated with one.
+  // Normal use cases should create an IsolationContext associated with both a
+  // BrowsingInstance and a BrowserContext (profile).  The constructor that
+  // takes in a BrowserContext* may only be used on the UI thread; when
+  // creating this object on the IO thread, the BrowserOrResourceContext
+  // version should be used instead.
+  IsolationContext(BrowsingInstanceId browsing_instance_id,
+                   BrowserContext* browser_context);
+  IsolationContext(BrowsingInstanceId browsing_instance_id,
+                   BrowserOrResourceContext browser_or_resource_context);
+
+  // Also temporarily allow constructing an IsolationContext not associated
+  // with a specific BrowsingInstance.  Callers can use this when they don't
+  // know the current BrowsingInstance, or aren't associated with one.
   //
   // TODO(alexmos):  This is primarily used in tests, as well as in call sites
   // which do not yet plumb proper BrowsingInstance information.  Once the
   // remaining non-test call sites are removed or updated, this should become a
   // test-only API.
-  IsolationContext();
+  explicit IsolationContext(BrowserContext* browser_context);
 
-  explicit IsolationContext(BrowsingInstanceId browsing_instance_id);
   ~IsolationContext() = default;
 
   // Returns the BrowsingInstance ID associated with this isolation context.
@@ -48,13 +58,18 @@ class CONTENT_EXPORT IsolationContext {
     return browsing_instance_id_;
   }
 
+  // Return the BrowserOrResourceContext associated with this IsolationContext.
+  // This represents the profile associated with this IsolationContext, and can
+  // be used on both UI and IO threads.
+  const BrowserOrResourceContext& browser_or_resource_context() const {
+    return browser_or_resource_context_;
+  }
+
  private:
   // When non-null, associates this context with a particular BrowsingInstance.
   BrowsingInstanceId browsing_instance_id_;
 
-  // TODO(alexmos): Include BrowserContext information here as well.  Replace
-  // process model APIs that pass in both BrowserContext and IsolationContext
-  // to only pass in IsolationContext.
+  BrowserOrResourceContext browser_or_resource_context_;
 };
 
 }  // namespace content

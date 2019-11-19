@@ -26,6 +26,10 @@
 
 #include "third_party/blink/renderer/platform/graphics/image.h"
 
+#include <math.h>
+
+#include <tuple>
+
 #include "base/numerics/checked_math.h"
 #include "build/build_config.h"
 #include "cc/tiles/software_image_decode_cache.h"
@@ -42,59 +46,23 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_shader.h"
 #include "third_party/blink/renderer/platform/graphics/scoped_interpolation_quality.h"
-#include "third_party/blink/renderer/platform/histogram.h"
+#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
-#include "third_party/blink/renderer/platform/shared_buffer.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkSurface.h"
 
-#include <math.h>
-#include <tuple>
-
 namespace blink {
-
-class CombinedImageDecodeCache {
-  USING_FAST_MALLOC(CombinedImageDecodeCache);
-
- public:
-  CombinedImageDecodeCache(size_t locked_memory_limit_bytes)
-      : locked_memory_limit_bytes_(locked_memory_limit_bytes) {
-    constexpr int kMaxIndex =
-        (kMaxCanvasPixelFormat + 1) * (kMaxCanvasColorSpace + 1);
-    decode_caches_.resize(kMaxIndex);
-  }
-
-  cc::ImageDecodeCache* GetCache(CanvasColorSpace color_space,
-                                 CanvasPixelFormat pixel_format) {
-    base::AutoLock lock(lock_);
-    int index = (kMaxCanvasColorSpace + 1) * pixel_format + color_space;
-    if (!decode_caches_[index]) {
-      decode_caches_[index] = std::make_unique<cc::SoftwareImageDecodeCache>(
-          CanvasColorParams::PixelFormatToSkColorType(pixel_format),
-          locked_memory_limit_bytes_, PaintImage::kDefaultGeneratorClientId,
-          blink::CanvasColorParams::CanvasColorSpaceToSkColorSpace(
-              color_space));
-    }
-    return decode_caches_[index].get();
-  }
-
- private:
-  std::vector<std::unique_ptr<cc::SoftwareImageDecodeCache>> decode_caches_;
-  const size_t locked_memory_limit_bytes_;
-  base::Lock lock_;
-};
 
 Image::Image(ImageObserver* observer, bool is_multipart)
     : image_observer_disabled_(false),
       image_observer_(observer),
       stable_image_id_(PaintImage::GetNextId()),
-      is_multipart_(is_multipart),
-      high_contrast_classification_(
-          HighContrastClassification::kNotClassified) {}
+      is_multipart_(is_multipart) {}
 
 Image::~Image() = default;
 
@@ -105,20 +73,30 @@ Image* Image::NullImage() {
 }
 
 // static
-cc::ImageDecodeCache* Image::SharedCCDecodeCache(
-    CanvasColorSpace color_space,
-    CanvasPixelFormat pixel_format) {
+cc::ImageDecodeCache& Image::SharedCCDecodeCache(SkColorType color_type) {
   // This denotes the allocated locked memory budget for the cache used for
   // book-keeping. The cache indicates when the total memory locked exceeds this
   // budget in cc::DecodedDrawImage.
+  DCHECK(color_type == kN32_SkColorType || color_type == kRGBA_F16_SkColorType);
   static const size_t kLockedMemoryLimitBytes = 64 * 1024 * 1024;
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(CombinedImageDecodeCache, combined_cache,
-                                  (kLockedMemoryLimitBytes));
-  return combined_cache.GetCache(color_space, pixel_format);
+  if (color_type == kRGBA_F16_SkColorType) {
+    DEFINE_THREAD_SAFE_STATIC_LOCAL(
+        cc::SoftwareImageDecodeCache, image_decode_cache,
+        (kRGBA_F16_SkColorType, kLockedMemoryLimitBytes,
+         PaintImage::kDefaultGeneratorClientId));
+    return image_decode_cache;
+  }
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(cc::SoftwareImageDecodeCache,
+                                  image_decode_cache,
+                                  (kN32_SkColorType, kLockedMemoryLimitBytes,
+                                   PaintImage::kDefaultGeneratorClientId));
+  return image_decode_cache;
 }
 
-scoped_refptr<Image> Image::LoadPlatformResource(const char* name) {
-  const WebData& resource = Platform::Current()->GetDataResource(name);
+scoped_refptr<Image> Image::LoadPlatformResource(int resource_id,
+                                                 ui::ScaleFactor scale_factor) {
+  const WebData& resource =
+      Platform::Current()->GetDataResource(resource_id, scale_factor);
   if (resource.IsEmpty())
     return Image::NullImage();
 
@@ -202,8 +180,8 @@ sk_sp<PaintShader> CreatePatternShader(const PaintImage& image,
                                        SkFilterQuality quality_to_use,
                                        bool should_antialias,
                                        const FloatSize& spacing,
-                                       SkShader::TileMode tmx,
-                                       SkShader::TileMode tmy) {
+                                       SkTileMode tmx,
+                                       SkTileMode tmy) {
   if (spacing.IsZero()) {
     return PaintShader::MakeImage(image, tmx, tmy, &shader_matrix);
   }
@@ -224,13 +202,9 @@ sk_sp<PaintShader> CreatePatternShader(const PaintImage& image,
                                       tile_rect, tmx, tmy, &shader_matrix);
 }
 
-SkShader::TileMode ComputeTileMode(float left,
-                                   float right,
-                                   float min,
-                                   float max) {
+SkTileMode ComputeTileMode(float left, float right, float min, float max) {
   DCHECK(left < right);
-  return left >= min && right <= max ? SkShader::kClamp_TileMode
-                                     : SkShader::kRepeat_TileMode;
+  return left >= min && right <= max ? SkTileMode::kClamp : SkTileMode::kRepeat;
 }
 
 }  // anonymous namespace
@@ -339,9 +313,8 @@ bool Image::ApplyShader(PaintFlags& flags, const SkMatrix& local_matrix) {
   if (!image)
     return false;
 
-  flags.setShader(PaintShader::MakeImage(image, SkShader::kRepeat_TileMode,
-                                         SkShader::kRepeat_TileMode,
-                                         &local_matrix));
+  flags.setShader(PaintShader::MakeImage(image, SkTileMode::kRepeat,
+                                         SkTileMode::kRepeat, &local_matrix));
   if (!flags.HasShader())
     return false;
 
@@ -374,6 +347,52 @@ SkBitmap Image::AsSkBitmapForCurrentFrame(
   SkBitmap bitmap;
   sk_image->asLegacyBitmap(&bitmap);
   return bitmap;
+}
+
+bool Image::GetBitmap(const FloatRect& src_rect, SkBitmap* bitmap) {
+  if (!src_rect.Width() || !src_rect.Height())
+    return false;
+
+  SkScalar sx = SkFloatToScalar(src_rect.X());
+  SkScalar sy = SkFloatToScalar(src_rect.Y());
+  SkScalar sw = SkFloatToScalar(src_rect.Width());
+  SkScalar sh = SkFloatToScalar(src_rect.Height());
+  SkRect src = {sx, sy, sx + sw, sy + sh};
+  SkRect dest = {0, 0, sw, sh};
+
+  if (!bitmap || !bitmap->tryAllocPixels(SkImageInfo::MakeN32(
+                     static_cast<int>(src_rect.Width()),
+                     static_cast<int>(src_rect.Height()), kPremul_SkAlphaType)))
+    return false;
+
+  SkCanvas canvas(*bitmap);
+  canvas.clear(SK_ColorTRANSPARENT);
+  canvas.drawImageRect(PaintImageForCurrentFrame().GetSkImage(), src, dest,
+                       nullptr);
+  return true;
+}
+
+DarkModeClassification Image::GetDarkModeClassification(
+    const FloatRect& src_rect) {
+  // Assuming that multiple uses of the same sprite region all have the same
+  // size, only the top left corner coordinates of the src_rect are used to
+  // generate the key for caching and retrieving the classification.
+  ClassificationKey key(src_rect.X(), src_rect.Y());
+  auto result = dark_mode_classifications_.find(key);
+  if (result == dark_mode_classifications_.end())
+    return DarkModeClassification::kNotClassified;
+
+  return result->value;
+}
+
+void Image::AddDarkModeClassification(
+    const FloatRect& src_rect,
+    DarkModeClassification dark_mode_classification) {
+  // Add the classification in the map only if the image is not classified yet.
+  DCHECK(GetDarkModeClassification(src_rect) ==
+         DarkModeClassification::kNotClassified);
+  ClassificationKey key(src_rect.X(), src_rect.Y());
+  dark_mode_classifications_.insert(key, dark_mode_classification);
 }
 
 }  // namespace blink

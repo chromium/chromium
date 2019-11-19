@@ -8,14 +8,12 @@
 #import <Foundation/Foundation.h>
 #import <WebKit/WebKit.h>
 
-#import "ios/web/public/block_types.h"
-
 namespace web {
 class BrowserState;
+class WebState;
 }  // namespace web
 
 @protocol CRWContextMenuDelegate;
-@protocol CRWJSInjectionEvaluator;
 
 // A controller that will recognise context menu gesture on |webView|. This
 // controller will rely on a long press gesture recognizer and JavaScript to
@@ -26,20 +24,21 @@ class BrowserState;
 // Installs the |CRWContextMenuController| on |webView|.
 // - |webView| cannot be nil. |webView| is not retained and caller is
 //   responsible for keeping it alive.
-// - |injectionEvaluator| can proxy all javascript calls to |webView| to
-//   sanitize the eveluated strings. If |injectionEvaluator| is nil, JavaScript
-//   is directly executed on |webView|.
 // - This class relies on the pre-injection of base.js in webView.
 // - This class will perform gesture recognition and JavaScript on every touch
 //   event on |webView| and can have performance impact.
-// TODO(crbug.com/228179): This class only triggers context menu on mainFrame.
 - (instancetype)initWithWebView:(WKWebView*)webView
                    browserState:(web::BrowserState*)browserState
-             injectionEvaluator:(id<CRWJSInjectionEvaluator>)injectionEvaluator
                        delegate:(id<CRWContextMenuDelegate>)delegate
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
+
+// WebState associated with this controller.
+// When the |webState| is set, the WKWebView default context menu gesture
+// recognizer is overridden after each navigation. If it is never set, the
+// default gesture recognizer is only overridden in this object -init method.
+@property(nonatomic, assign) web::WebState* webState;
 
 // By default, this controller "hooks" long touches to suppress the system
 // default behavior (which shows the system context menu) and show its own

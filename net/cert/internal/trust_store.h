@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/memory/ref_counted.h"
+#include "base/supports_user_data.h"
 #include "net/base/net_export.h"
 #include "net/cert/internal/cert_issuer_source.h"
 #include "net/cert/internal/parsed_certificate.h"
@@ -15,7 +16,7 @@
 namespace net {
 
 enum class CertificateTrustType {
-  // This certificate is explicitly blacklisted (distrusted).
+  // This certificate is explicitly blocked (distrusted).
   DISTRUSTED,
 
   // The trustedness of this certificate is unknown (inherits trust from
@@ -58,10 +59,18 @@ class NET_EXPORT TrustStore : public CertIssuerSource {
 
   // Writes the trustedness of |cert| into |*trust|. Both |cert| and |trust|
   // must be non-null.
+  //
+  // Optionally, if |debug_data| is non-null, debug information may be added
+  // (any added Data must implement the Clone method.) The same |debug_data|
+  // object may be passed to multiple GetTrust calls for a single verification,
+  // so implementations should check whether they already added data with a
+  // certain key and update it instead of overwriting it.
   virtual void GetTrust(const scoped_refptr<ParsedCertificate>& cert,
-                        CertificateTrust* trust) const = 0;
+                        CertificateTrust* trust,
+                        base::SupportsUserData* debug_data) const = 0;
 
   // Disable async issuers for TrustStore, as it isn't needed.
+  // TODO(mattm): Pass debug_data here too.
   void AsyncGetIssuersOf(const ParsedCertificate* cert,
                          std::unique_ptr<Request>* out_req) final;
 

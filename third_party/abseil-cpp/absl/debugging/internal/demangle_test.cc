@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//      http://www.apache.org/licenses/LICENSE-2.0
+//      https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -81,8 +81,9 @@ TEST(Demangle, Clones) {
 // Tests that verify that Demangle footprint is within some limit.
 // They are not to be run under sanitizers as the sanitizers increase
 // stack consumption by about 4x.
-#if defined(ABSL_INTERNAL_HAVE_DEBUGGING_STACK_CONSUMPTION) && \
-    !ADDRESS_SANITIZER && !MEMORY_SANITIZER && !THREAD_SANITIZER
+#if defined(ABSL_INTERNAL_HAVE_DEBUGGING_STACK_CONSUMPTION) &&   \
+    !defined(ADDRESS_SANITIZER) && !defined(MEMORY_SANITIZER) && \
+    !defined(THREAD_SANITIZER)
 
 static const char *g_mangled;
 static char g_demangle_buffer[4096];
@@ -176,6 +177,7 @@ static void TestOnInput(const char* input) {
 TEST(DemangleRegression, NegativeLength) {
   TestOnInput("_ZZn4");
 }
+
 TEST(DemangleRegression, DeeplyNestedArrayType) {
   const int depth = 100000;
   std::string data = "_ZStI";

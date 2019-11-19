@@ -4,6 +4,7 @@
 
 #include "chrome/browser/devtools/protocol/page_handler.h"
 
+#include "chrome/browser/installable/installable_manager.h"
 #include "chrome/browser/subresource_filter/chrome_subresource_filter_client.h"
 
 PageHandler::PageHandler(content::WebContents* web_contents,
@@ -46,4 +47,27 @@ protocol::Response PageHandler::SetAdBlockingEnabled(bool enabled) {
     return protocol::Response::Error("Page domain is disabled.");
   ToggleAdBlocking(enabled);
   return protocol::Response::OK();
+}
+
+void PageHandler::GetInstallabilityErrors(
+    std::unique_ptr<GetInstallabilityErrorsCallback> callback) {
+  auto errors = std::make_unique<protocol::Array<std::string>>();
+  InstallableManager* manager =
+      web_contents() ? InstallableManager::FromWebContents(web_contents())
+                     : nullptr;
+  if (!manager) {
+    callback->sendFailure(
+        protocol::Response::Error("Unable to fetch errors for target"));
+    return;
+  }
+  manager->GetAllErrors(base::BindOnce(&PageHandler::GotInstallabilityErrors,
+                                       std::move(callback)));
+}
+
+// static
+void PageHandler::GotInstallabilityErrors(
+    std::unique_ptr<GetInstallabilityErrorsCallback> callback,
+    std::vector<std::string> errors) {
+  callback->sendSuccess(
+      std::make_unique<protocol::Array<std::string>>(std::move(errors)));
 }

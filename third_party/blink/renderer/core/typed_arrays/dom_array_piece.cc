@@ -13,12 +13,11 @@ DOMArrayPiece::DOMArrayPiece(
     InitWithUnionOption option) {
   if (array_buffer_or_view.IsArrayBuffer()) {
     DOMArrayBuffer* array_buffer = array_buffer_or_view.GetAsArrayBuffer();
-    InitWithData(array_buffer->Data(), array_buffer->ByteLength());
+    InitWithArrayBuffer(array_buffer->Buffer());
   } else if (array_buffer_or_view.IsArrayBufferView()) {
     DOMArrayBufferView* array_buffer_view =
         array_buffer_or_view.GetAsArrayBufferView().View();
-    InitWithData(array_buffer_view->BaseAddress(),
-                 array_buffer_view->byteLength());
+    InitWithArrayBufferView(array_buffer_view->View());
   } else if (array_buffer_or_view.IsNull() &&
              option == kAllowNullPointToNullWithZeroSize) {
     InitWithData(nullptr, 0);

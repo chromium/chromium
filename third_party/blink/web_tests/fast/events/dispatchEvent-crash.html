@@ -4,7 +4,8 @@
         testRunner.dumpAsText();
 
     // FIXME: this should also test WorkerContext and MessagePort.
-    var eventTargets = [new XMLHttpRequest, (new XMLHttpRequest).upload, window.applicationCache, new Worker("about:blank"), document.body];
+    var workerScriptBlob = new Blob([], {type: 'application/javascript'});
+    var eventTargets = [new XMLHttpRequest, (new XMLHttpRequest).upload, window.applicationCache, new Worker(URL.createObjectURL(workerScriptBlob)), document.body];
 
     for (var i = 0; i < eventTargets.length; ++i) {
         eventTarget = eventTargets[i];

@@ -1,6 +1,15 @@
-benwells@chromium.org
-finnur@chromium.org
-rdevlin.cronin@chromium.org
+file://chrome/browser/ui/extensions/OWNERS
+
+# Copied from the above include because they aren't automatically copied:
+per-file bookmark_app_*=alancutter@chromium.org
+per-file bookmark_app_*=mgiuca@chromium.org
+per-file bookmark_app_*=ortuno@chromium.org
+per-file hosted_app_*=alancutter@chromium.org
+per-file hosted_app_*=mgiuca@chromium.org
+per-file hosted_app_*=ortuno@chromium.org
+per-file pwa_*=alancutter@chromium.org
+per-file pwa_*=mgiuca@chromium.org
+per-file pwa_*=ortuno@chromium.org
 
 # TEAM: extensions-dev@chromium.org
 # COMPONENT: Platform>Extensions

@@ -1,0 +1,13 @@
+{
+  "name": "SW based extension: Messaging_WorkerToTab test",
+  "version": "0.1",
+  "manifest_version": 2,
+  "description": "chrome.tabs.sendMessage from extension SW.",
+  "permissions": ["tabs"],
+  "content_scripts": [{
+    "matches": ["*://127.0.0.1:*/*"],
+    "run_at": "document_start",
+    "js": ["content_script.js"]
+  }],
+  "background": {"service_worker": "service_worker_background.js"}
+}

@@ -23,9 +23,8 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/account_id/account_id.h"
-#include "components/signin/core/browser/account_consistency_method.h"
 #include "components/sync_preferences/pref_service_syncable.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -78,14 +77,14 @@ class ProfileListDesktopTest : public testing::Test {
   void AddOmittedProfile(const std::string& name) {
     ProfileAttributesStorage* storage = manager()->profile_attributes_storage();
     storage->AddProfile(manager()->profiles_dir().AppendASCII(name),
-                        ASCIIToUTF16(name), std::string(), base::string16(), 0,
-                        "TEST_ID", EmptyAccountId());
+                        ASCIIToUTF16(name), std::string(), base::string16(),
+                        false, 0, "TEST_ID", EmptyAccountId());
   }
 
   int change_count() const { return mock_observer_->change_count(); }
 
  private:
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager manager_;
   std::unique_ptr<MockObserver> mock_observer_;
   std::unique_ptr<AvatarMenu> avatar_menu_;
@@ -218,7 +217,7 @@ TEST_F(ProfileListDesktopTest, ModifyingNameResortsCorrectly) {
   ProfileAttributesEntry* entry;
   ASSERT_TRUE(manager()->profile_attributes_storage()->
                   GetProfileAttributesWithPath(profile1->GetPath(), &entry));
-  entry->SetName(ASCIIToUTF16(newname1));
+  entry->SetLocalProfileName(ASCIIToUTF16(newname1));
   EXPECT_EQ(1, change_count());
 
   // Now the first menu item should be named "beta", and the second be "gamma".

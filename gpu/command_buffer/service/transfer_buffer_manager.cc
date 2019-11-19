@@ -20,8 +20,6 @@
 #include "gpu/command_buffer/common/cmd_buffer_common.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 
-using ::base::SharedMemory;
-
 namespace gpu {
 
 TransferBufferManager::TransferBufferManager(MemoryTracker* memory_tracker)

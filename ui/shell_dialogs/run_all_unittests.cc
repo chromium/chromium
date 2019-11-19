@@ -8,13 +8,12 @@
 #include "base/test/launcher/unit_test_launcher.h"
 #include "base/test/test_suite.h"
 #include "build/build_config.h"
+#include "mojo/core/embedder/embedder.h"
 #include "ui/base/material_design/material_design_controller.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_paths.h"
 
 #if defined(OS_MACOSX)
-#include "base/files/file_path.h"
-#include "base/mac/bundle_locations.h"
 #include "base/test/mock_chrome_application_mac.h"
 #endif
 
@@ -41,13 +40,6 @@ void ShellDialogsTestSuite::Initialize() {
 
 #if defined(OS_MACOSX)
   mock_cr_app::RegisterMockCrApp();
-
-  // Set up framework bundle so that tests on Mac can access nib files.
-  base::FilePath path;
-  base::PathService::Get(base::DIR_EXE, &path);
-  path = path.Append(
-      FILE_PATH_LITERAL("shell_dialogs_unittests_bundle.framework"));
-  base::mac::SetOverrideFrameworkBundlePath(path);
 #endif
 
   // Setup resource bundle.
@@ -62,9 +54,6 @@ void ShellDialogsTestSuite::Initialize() {
 void ShellDialogsTestSuite::Shutdown() {
   ui::ResourceBundle::CleanupSharedInstance();
 
-#if defined(OS_MACOSX)
-  base::mac::SetOverrideFrameworkBundle(NULL);
-#endif
   base::TestSuite::Shutdown();
 }
 
@@ -72,6 +61,8 @@ void ShellDialogsTestSuite::Shutdown() {
 
 int main(int argc, char** argv) {
   ShellDialogsTestSuite test_suite(argc, argv);
+
+  mojo::core::Init();
 
   return base::LaunchUnitTests(argc, argv,
                                base::BindOnce(&ShellDialogsTestSuite::Run,

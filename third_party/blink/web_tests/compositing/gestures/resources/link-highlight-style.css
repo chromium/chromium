@@ -41,5 +41,6 @@ a, a:active, a:visited {
 }
 
 .composited {
+  will-change: transform;
   transform: translateZ(0);
 }

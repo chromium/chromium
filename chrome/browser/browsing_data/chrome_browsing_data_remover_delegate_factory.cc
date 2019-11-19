@@ -5,6 +5,8 @@
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate_factory.h"
 
 #include "base/memory/singleton.h"
+#include "build/build_config.h"
+#include "chrome/browser/android/feed/feed_host_service_factory.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -22,10 +24,6 @@
 #include "content/public/browser/browser_context.h"
 #include "extensions/buildflags/buildflags.h"
 
-#if defined(OS_ANDROID)
-#include "chrome/browser/offline_pages/offline_page_model_factory.h"
-#endif
-
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/activity_log/activity_log.h"
 #include "extensions/browser/extension_prefs_factory.h"
@@ -34,6 +32,11 @@
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
 #include "chrome/browser/sessions/session_service_factory.h"
 #endif
+
+#if defined(OS_ANDROID)
+#include "components/feed/buildflags.h"
+#include "components/feed/feed_feature_list.h"
+#endif  // defined(OS_ANDROID)
 
 // static
 ChromeBrowsingDataRemoverDelegateFactory*
@@ -55,6 +58,13 @@ ChromeBrowsingDataRemoverDelegateFactory::
           BrowserContextDependencyManager::GetInstance()) {
   DependsOn(autofill::PersonalDataManagerFactory::GetInstance());
   DependsOn(DataReductionProxyChromeSettingsFactory::GetInstance());
+#if defined(OS_ANDROID)
+#if BUILDFLAG(ENABLE_FEED_IN_CHROME)
+  if (base::FeatureList::IsEnabled(feed::kInterestFeedContentSuggestions)) {
+    DependsOn(feed::FeedHostServiceFactory::GetInstance());
+  }
+#endif  // BUILDFLAG(ENABLE_FEED_IN_CHROME)
+#endif  // defined(OS_ANDROID)
   DependsOn(HistoryServiceFactory::GetInstance());
   DependsOn(HostContentSettingsMapFactory::GetInstance());
   DependsOn(PasswordStoreFactory::GetInstance());
@@ -64,14 +74,13 @@ ChromeBrowsingDataRemoverDelegateFactory::
   DependsOn(WebDataServiceFactory::GetInstance());
   DependsOn(WebHistoryServiceFactory::GetInstance());
 
-#if defined(OS_ANDROID)
-  DependsOn(offline_pages::OfflinePageModelFactory::GetInstance());
-#endif
-
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   DependsOn(extensions::ActivityLog::GetFactoryInstance());
   DependsOn(extensions::ExtensionPrefsFactory::GetInstance());
 #endif
+
+  // In Android, depends on offline_pages::OfflinePageModelFactory in
+  // SimpleDependencyManager.
 
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
   DependsOn(SessionServiceFactory::GetInstance());

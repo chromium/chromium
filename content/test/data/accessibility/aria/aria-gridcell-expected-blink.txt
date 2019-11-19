@@ -1,16 +1,17 @@
 rootWebArea
-++grid multiselectable
-++++row selected=false
-++++++columnHeader name='Browser' selected=false
-++++++++staticText name='Browser'
-++++++++++inlineTextBox name='Browser'
-++++++columnHeader name='Rendering Engine' selected=false
-++++++++staticText name='Rendering Engine'
-++++++++++inlineTextBox name='Rendering Engine'
-++++row selected=false
-++++++cell name='Chrome' selected=false
-++++++++staticText name='Chrome'
-++++++++++inlineTextBox name='Chrome'
-++++++cell name='Blink' selected=false
-++++++++staticText name='Blink'
-++++++++++inlineTextBox name='Blink'
+++genericContainer ignored
+++++grid multiselectable
+++++++row selected=false
+++++++++columnHeader name='Browser' selected=false
+++++++++++staticText name='Browser'
+++++++++++++inlineTextBox name='Browser'
+++++++++columnHeader name='Rendering Engine' selected=false
+++++++++++staticText name='Rendering Engine'
+++++++++++++inlineTextBox name='Rendering Engine'
+++++++row selected=false
+++++++++cell name='Chrome' selected=false
+++++++++++staticText name='Chrome'
+++++++++++++inlineTextBox name='Chrome'
+++++++++cell name='Blink' selected=false
+++++++++++staticText name='Blink'
+++++++++++++inlineTextBox name='Blink'

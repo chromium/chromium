@@ -6,6 +6,7 @@
 #define UI_OZONE_PLATFORM_DRM_GPU_HARDWARE_DISPLAY_PLANE_MANAGER_LEGACY_H_
 
 #include <stdint.h>
+#include <memory>
 
 #include "base/macros.h"
 #include "ui/ozone/platform/drm/gpu/hardware_display_plane_manager.h"

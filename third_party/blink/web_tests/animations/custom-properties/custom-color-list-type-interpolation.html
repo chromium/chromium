@@ -66,10 +66,6 @@ assertInterpolation({
   {at: 1.5, is: 'rgb(0, 0, 192) rgb(0, 0, 255)'}
 ]);
 
-// Composition and neutralKeyframe tests assume that composite:add means
-// component-wise addition, which may or may not be the behavior we want.
-// https://github.com/w3c/css-houdini-drafts/issues/799
-
 assertInterpolation({
   property: '--color-list',
   from: neutralKeyframe,

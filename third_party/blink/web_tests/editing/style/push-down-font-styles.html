@@ -35,15 +35,15 @@ testStyleWithoutCSS('fontsize', 5, '^abc| xyz', '<font size="5">^abc|</font> xyz
        'font-size-3 first word');
 testStyleWithoutCSS('fontsize', 3,
     '<font size="7">^abc| <div>xyz</div></font>',
-    '^abc| <div style="font-size: -webkit-xxx-large;">xyz</div>',
+    '^abc| <div style="font-size: xxx-large;">xyz</div>',
     'font-size-4 first word');
 testStyleWithoutCSS('fontsize', 3,
        '<font size="7"><div>^abc|</div><div>xyz</div></font>',
-       '<div style>^abc|</div><div style="font-size: -webkit-xxx-large;">xyz</div>',
+       '<div style>^abc|</div><div style="font-size: xxx-large;">xyz</div>',
        'font-size-5 first word');
 testStyleWithoutCSS('fontsize', 3,
        '<font size="7"><div>abc</div>^xyz|</font>',
-       '<div style="font-size: -webkit-xxx-large;">abc</div>^xyz|',
+       '<div style="font-size: xxx-large;">abc</div>^xyz|',
        'font-size-6 second word');
 testStyleWithoutCSS('fontsize', 7,
        '^<font size="7"><div>abc</div>xyz</font>|',
@@ -81,7 +81,7 @@ testStyleWithCSS('fontsize', 7,
     '1 font-size-with-css all');
 testStyleWithCSS('fontsize', 7,
       '^<font size="3"><div>abc</div>xyz</font>|',
-      '<div style><span style="font-size: -webkit-xxx-large;">^abc</span></div><span style="font-size: -webkit-xxx-large;">xyz|</span>',
+      '<div style><span style="font-size: xxx-large;">^abc</span></div><span style="font-size: xxx-large;">xyz|</span>',
       '2 font-size-with-css all');
 testStyleWithCSS('fontsize', 6,
        '^<font size="7"><div>abc</div>xyz</font>|',

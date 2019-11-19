@@ -13,11 +13,9 @@ namespace sync_bookmarks {
 
 BookmarkSyncService::BookmarkSyncService(
     BookmarkUndoService* bookmark_undo_service) {
-  if (base::FeatureList::IsEnabled(switches::kSyncUSSBookmarks)) {
     bookmark_model_type_processor_ =
         std::make_unique<sync_bookmarks::BookmarkModelTypeProcessor>(
             bookmark_undo_service);
-  }
 }
 
 BookmarkSyncService::~BookmarkSyncService() {}

@@ -4,22 +4,22 @@
 
 #include "ui/aura/test/aura_test_context_factory.h"
 
+#include "cc/test/test_layer_tree_frame_sink.h"
 #include "components/viz/test/fake_output_surface.h"
 #include "components/viz/test/fake_skia_output_surface.h"
 #include "components/viz/test/test_context_provider.h"
-#include "components/viz/test/test_layer_tree_frame_sink.h"
 
 namespace aura {
 namespace test {
 namespace {
 
-class FrameSinkClient : public viz::TestLayerTreeFrameSinkClient {
+class FrameSinkClient : public cc::TestLayerTreeFrameSinkClient {
  public:
   explicit FrameSinkClient(
       scoped_refptr<viz::ContextProvider> display_context_provider)
       : display_context_provider_(std::move(display_context_provider)) {}
 
-  // viz::TestLayerTreeFrameSinkClient:
+  // cc::TestLayerTreeFrameSinkClient:
   std::unique_ptr<viz::SkiaOutputSurface> CreateDisplaySkiaOutputSurface()
       override {
     return viz::FakeSkiaOutputSurface::Create3d();
@@ -60,7 +60,7 @@ void AuraTestContextFactory::CreateLayerTreeFrameSink(
   constexpr bool synchronous_composite = false;
   constexpr bool disable_display_vsync = false;
   const double refresh_rate = 200.0;
-  auto frame_sink = std::make_unique<viz::TestLayerTreeFrameSink>(
+  auto frame_sink = std::make_unique<cc::TestLayerTreeFrameSink>(
       context_provider, viz::TestContextProvider::CreateWorker(),
       GetGpuMemoryBufferManager(), renderer_settings(),
       base::ThreadTaskRunnerHandle::Get().get(), synchronous_composite,

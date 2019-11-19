@@ -93,7 +93,7 @@ typedef HistogramBase::Count Count;
 typedef HistogramBase::Sample Sample;
 
 // static
-const uint32_t Histogram::kBucketCount_MAX = 10002u;
+const uint32_t Histogram::kBucketCount_MAX = 1002u;
 
 class Histogram::Factory {
  public:
@@ -263,6 +263,8 @@ HistogramBase* Histogram::FactoryTimeGet(const std::string& name,
                                          TimeDelta maximum,
                                          uint32_t bucket_count,
                                          int32_t flags) {
+  DCHECK_LT(minimum.InMilliseconds(), std::numeric_limits<Sample>::max());
+  DCHECK_LT(maximum.InMilliseconds(), std::numeric_limits<Sample>::max());
   return FactoryGet(name, static_cast<Sample>(minimum.InMilliseconds()),
                     static_cast<Sample>(maximum.InMilliseconds()), bucket_count,
                     flags);
@@ -273,6 +275,8 @@ HistogramBase* Histogram::FactoryMicrosecondsTimeGet(const std::string& name,
                                                      TimeDelta maximum,
                                                      uint32_t bucket_count,
                                                      int32_t flags) {
+  DCHECK_LT(minimum.InMicroseconds(), std::numeric_limits<Sample>::max());
+  DCHECK_LT(maximum.InMicroseconds(), std::numeric_limits<Sample>::max());
   return FactoryGet(name, static_cast<Sample>(minimum.InMicroseconds()),
                     static_cast<Sample>(maximum.InMicroseconds()), bucket_count,
                     flags);
@@ -441,13 +445,7 @@ bool Histogram::InspectConstructionArguments(StringPiece name,
     DVLOG(1) << "Histogram: " << name << " has bad maximum: " << *maximum;
     *maximum = kSampleType_MAX - 1;
   }
-  if (*bucket_count >= kBucketCount_MAX) {
-    check_okay = false;
-    DVLOG(1) << "Histogram: " << name << " has bad bucket_count: "
-             << *bucket_count;
-    *bucket_count = kBucketCount_MAX - 1;
-  }
-  if (*bucket_count > 1002) {
+  if (*bucket_count > kBucketCount_MAX) {
     UmaHistogramSparse("Histogram.TooManyBuckets.1000",
                        static_cast<Sample>(HashMetricName(name)));
 
@@ -456,16 +454,12 @@ bool Histogram::InspectConstructionArguments(StringPiece name,
     // them here.
     // Blink.UseCounter legitimately has more than 1000 entries in its enum.
     // Arc.OOMKills: https://crbug.com/916757
-    // Autofill.FieldPredictionQuality.ByFieldType: https://crbug.com/916752
-    // Bluetooth.MacOS.Errors: https://crbug.com/916754
-    // BlinkGC.CommittedSize: https://crbug.com/916761
-    // PartitionAlloc.CommittedSize: https://crbug.com/916761
     if (!name.starts_with("Blink.UseCounter") &&
-        !name.starts_with("Arc.OOMKills.") &&
-        !name.starts_with("Autofill.FieldPredictionQuality.ByFieldType.") &&
-        !name.starts_with("Bluetooth.MacOS.Errors.") &&
-        name != "BlinkGC.CommittedSize" &&
-        name != "PartitionAlloc.CommittedSize") {
+        !name.starts_with("Arc.OOMKills.")) {
+      DVLOG(1) << "Histogram: " << name
+               << " has bad bucket_count: " << *bucket_count << " (limit "
+               << kBucketCount_MAX << ")";
+
       // Assume it's a mistake and limit to 100 buckets, plus under and over.
       // If the DCHECK doesn't alert the user then hopefully the small number
       // will be obvious on the dashboard. If not, then it probably wasn't
@@ -810,9 +804,9 @@ void Histogram::WriteAsciiBucketContext(const int64_t past,
 
 void Histogram::GetParameters(DictionaryValue* params) const {
   params->SetString("type", HistogramTypeToString(GetHistogramType()));
-  params->SetInteger("min", declared_min());
-  params->SetInteger("max", declared_max());
-  params->SetInteger("bucket_count", static_cast<int>(bucket_count()));
+  params->SetIntKey("min", declared_min());
+  params->SetIntKey("max", declared_max());
+  params->SetIntKey("bucket_count", static_cast<int>(bucket_count()));
 }
 
 void Histogram::GetCountAndBucketData(Count* count,
@@ -826,10 +820,10 @@ void Histogram::GetCountAndBucketData(Count* count,
     Sample count_at_index = snapshot->GetCountAtIndex(i);
     if (count_at_index > 0) {
       std::unique_ptr<DictionaryValue> bucket_value(new DictionaryValue());
-      bucket_value->SetInteger("low", ranges(i));
+      bucket_value->SetIntKey("low", ranges(i));
       if (i != bucket_count() - 1)
-        bucket_value->SetInteger("high", ranges(i + 1));
-      bucket_value->SetInteger("count", count_at_index);
+        bucket_value->SetIntKey("high", ranges(i + 1));
+      bucket_value->SetIntKey("count", count_at_index);
       buckets->Set(index, std::move(bucket_value));
       ++index;
     }
@@ -906,6 +900,8 @@ HistogramBase* LinearHistogram::FactoryTimeGet(const std::string& name,
                                                TimeDelta maximum,
                                                uint32_t bucket_count,
                                                int32_t flags) {
+  DCHECK_LT(minimum.InMilliseconds(), std::numeric_limits<Sample>::max());
+  DCHECK_LT(maximum.InMilliseconds(), std::numeric_limits<Sample>::max());
   return FactoryGet(name, static_cast<Sample>(minimum.InMilliseconds()),
                     static_cast<Sample>(maximum.InMilliseconds()), bucket_count,
                     flags);

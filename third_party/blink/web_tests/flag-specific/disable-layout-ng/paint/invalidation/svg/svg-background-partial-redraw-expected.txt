@@ -1,0 +1,18 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "LayoutBlockFlow (positioned) DIV id='revealer'",
+          "rect": [9, 153, 200, 100],
+          "reason": "disappeared"
+        }
+      ]
+    }
+  ]
+}
+

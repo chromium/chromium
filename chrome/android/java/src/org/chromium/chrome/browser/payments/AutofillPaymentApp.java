@@ -5,8 +5,9 @@
 package org.chromium.chrome.browser.payments;
 
 import android.os.Handler;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
+
+import androidx.annotation.Nullable;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeFeatureList;
@@ -14,6 +15,7 @@ import org.chromium.chrome.browser.autofill.CardType;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
+import org.chromium.components.payments.MethodStrings;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.payments.mojom.PaymentDetailsModifier;
 import org.chromium.payments.mojom.PaymentMethodData;
@@ -43,8 +45,8 @@ public class AutofillPaymentApp implements PaymentApp {
     }
 
     @Override
-    public void getInstruments(Map<String, PaymentMethodData> methodDataMap, String unusedOrigin,
-            String unusedIFRameOrigin, byte[][] unusedCertificateChain,
+    public void getInstruments(String unusedId, Map<String, PaymentMethodData> methodDataMap,
+            String unusedOrigin, String unusedIFRameOrigin, byte[][] unusedCertificateChain,
             Map<String, PaymentDetailsModifier> unusedModifiers,
             final InstrumentsCallback callback) {
         new Handler().post(
@@ -63,11 +65,11 @@ public class AutofillPaymentApp implements PaymentApp {
                            ChromeFeatureList.WEB_PAYMENTS_RETURN_GOOGLE_PAY_IN_BASIC_CARD));
         List<PaymentInstrument> instruments = new ArrayList<>(cards.size());
 
-        if (methodDataMap.containsKey(BasicCardUtils.BASIC_CARD_METHOD_NAME)) {
+        if (methodDataMap.containsKey(MethodStrings.BASIC_CARD)) {
             mBasicCardSupportedNetworks = BasicCardUtils.convertBasicCardToNetworks(
-                    methodDataMap.get(BasicCardUtils.BASIC_CARD_METHOD_NAME));
+                    methodDataMap.get(MethodStrings.BASIC_CARD));
             mBasicCardTypes = BasicCardUtils.convertBasicCardToTypes(
-                    methodDataMap.get(BasicCardUtils.BASIC_CARD_METHOD_NAME));
+                    methodDataMap.get(MethodStrings.BASIC_CARD));
         } else {
             mBasicCardTypes = new HashSet<>(BasicCardUtils.getCardTypes().values());
             mBasicCardTypes.add(CardType.UNKNOWN);
@@ -109,7 +111,7 @@ public class AutofillPaymentApp implements PaymentApp {
         String methodName = null;
         if (mBasicCardSupportedNetworks != null
                 && mBasicCardSupportedNetworks.contains(card.getBasicCardIssuerNetwork())) {
-            methodName = BasicCardUtils.BASIC_CARD_METHOD_NAME;
+            methodName = MethodStrings.BASIC_CARD;
         } else if (mSupportedMethods.contains(card.getBasicCardIssuerNetwork())) {
             methodName = card.getBasicCardIssuerNetwork();
         }
@@ -134,7 +136,7 @@ public class AutofillPaymentApp implements PaymentApp {
     @Override
     public Set<String> getAppMethodNames() {
         Set<String> methods = new HashSet<>(BasicCardUtils.getNetworks().values());
-        methods.add(BasicCardUtils.BASIC_CARD_METHOD_NAME);
+        methods.add(MethodStrings.BASIC_CARD);
         return methods;
     }
 
@@ -147,7 +149,7 @@ public class AutofillPaymentApp implements PaymentApp {
     public static boolean merchantSupportsAutofillPaymentInstruments(
             Map<String, PaymentMethodData> methodDataMap) {
         assert methodDataMap != null;
-        PaymentMethodData basicCardData = methodDataMap.get(BasicCardUtils.BASIC_CARD_METHOD_NAME);
+        PaymentMethodData basicCardData = methodDataMap.get(MethodStrings.BASIC_CARD);
         if (basicCardData != null) {
             Set<String> basicCardNetworks =
                     BasicCardUtils.convertBasicCardToNetworks(basicCardData);

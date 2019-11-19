@@ -26,12 +26,18 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_PERFORMANCE_MARK_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_PERFORMANCE_MARK_H_
 
+#include "third_party/blink/public/mojom/timing/performance_mark_or_measure.mojom-blink-forward.h"
+#include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/core/timing/performance_entry.h"
-#include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
+#include "third_party/blink/renderer/platform/heap/heap_allocator.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
+
+class ExceptionState;
+class PerformanceMarkOptions;
 
 class CORE_EXPORT PerformanceMark final : public PerformanceEntry {
   DEFINE_WRAPPERTYPEINFO();
@@ -40,28 +46,37 @@ class CORE_EXPORT PerformanceMark final : public PerformanceEntry {
   static PerformanceMark* Create(ScriptState* script_state,
                                  const AtomicString& name,
                                  double start_time,
-                                 const ScriptValue& detail) {
-    return MakeGarbageCollected<PerformanceMark>(script_state, name, start_time,
-                                                 detail);
-  }
+                                 const ScriptValue& detail,
+                                 ExceptionState& exception_state);
 
-  PerformanceMark(ScriptState*,
-                  const AtomicString& name,
+  // This method is required by the constructor defined in performance_mark.idl.
+  static PerformanceMark* Create(ScriptState*,
+                                 const AtomicString& mark_name,
+                                 PerformanceMarkOptions*,
+                                 ExceptionState&);
+
+  PerformanceMark(const AtomicString& name,
                   double start_time,
-                  const ScriptValue& detail);
+                  scoped_refptr<SerializedScriptValue>,
+                  ExceptionState& exception_state);
 
   AtomicString entryType() const override;
   PerformanceEntryType EntryTypeEnum() const override;
+  mojom::blink::PerformanceMarkOrMeasurePtr ToMojoPerformanceMarkOrMeasure()
+      override;
 
-  ScriptValue detail(ScriptState*) const;
+  ScriptValue detail(ScriptState*);
 
   void Trace(blink::Visitor*) override;
 
  private:
   ~PerformanceMark() override = default;
 
-  scoped_refptr<DOMWrapperWorld> world_;
-  TraceWrapperV8Reference<v8::Value> detail_;
+  scoped_refptr<SerializedScriptValue> serialized_detail_;
+  // In order to prevent cross-world reference leak, we create a copy of the
+  // detail for each world.
+  HeapHashMap<WeakMember<ScriptState>, TraceWrapperV8Reference<v8::Value>>
+      deserialized_detail_map_;
 };
 
 }  // namespace blink

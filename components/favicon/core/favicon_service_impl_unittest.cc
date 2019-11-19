@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "base/files/scoped_temp_dir.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "components/favicon/core/favicon_client.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/test/history_service_test_util.h"
@@ -17,7 +17,7 @@ namespace favicon {
 namespace {
 
 TEST(FaviconServiceImplTest, ShouldCacheUnableToDownloadFavicons) {
-  base::test::ScopedTaskEnvironment task_environment;
+  base::test::SingleThreadTaskEnvironment task_environment;
   base::ScopedTempDir history_dir;
   CHECK(history_dir.CreateUniqueTempDir());
   std::unique_ptr<history::HistoryService> history_service =

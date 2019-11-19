@@ -36,7 +36,6 @@ from blinkpy.common.host import Host
 from blinkpy.common.system.log_utils import configure_logging
 from blinkpy.web_tests.models import test_expectations
 from blinkpy.web_tests.port.factory import platform_options
-from blinkpy.w3c.wpt_manifest import WPTManifest
 
 _log = logging.getLogger(__name__)
 
@@ -84,22 +83,52 @@ def check_virtual_test_suites(host, options):
     fs = host.filesystem
     web_tests_dir = port.web_tests_dir()
     virtual_suites = port.virtual_test_suites()
+    virtual_suites.sort(key=lambda s: s.full_prefix)
 
     failures = []
     for suite in virtual_suites:
+        suite_comps = suite.full_prefix.split(port.TEST_PATH_SEPARATOR)
+        prefix = suite_comps[1]
+        normalized_bases = [port.normalize_test_name(b) for b in suite.bases]
+        normalized_bases.sort();
+        for i in range(1, len(normalized_bases)):
+            for j in range(0, i):
+                if normalized_bases[i].startswith(normalized_bases[j]):
+                    failure = 'Base "{}" starts with "{}" in the same virtual suite "{}", so is redundant.'.format(
+                        normalized_bases[i], normalized_bases[j], prefix)
+                    _log.error(failure)
+                    failures.append(failure)
+
         # A virtual test suite needs either
         # - a top-level README.md (e.g. virtual/foo/README.md)
-        # - a README.txt for each covered dir/file (e.g.
+        # - a README.txt for each covered directory (e.g.
         #   virtual/foo/http/tests/README.txt, virtual/foo/fast/README.txt, ...)
-        comps = [web_tests_dir] + suite.name.split('/') + ['README.txt']
-        path_to_readme_txt = fs.join(*comps)
-        comps = [web_tests_dir] + suite.name.split('/')[:2] + ['README.md']
+        comps = [web_tests_dir] + suite_comps + ['README.md']
         path_to_readme_md = fs.join(*comps)
-        if not fs.exists(path_to_readme_txt) and not fs.exists(path_to_readme_md):
-            failure = '{} and {} are both missing (each virtual suite must have one).'.format(
-                path_to_readme_txt, path_to_readme_md)
-            _log.error(failure)
-            failures.append(failure)
+        for base in suite.bases:
+            if not base:
+                failure = 'Base value in virtual suite "{}" should not be an empty string'.format(prefix)
+                _log.error(failure)
+                failures.append(failure)
+                continue
+            base_comps = base.split(port.TEST_PATH_SEPARATOR)
+            absolute_base = port.abspath_for_test(base)
+            if fs.isfile(absolute_base):
+                del base_comps[-1]
+            elif not fs.isdir(absolute_base):
+                failure = 'Base "{}" in virtual suite "{}" must refer to a real file or directory'.format(
+                    base, prefix)
+                _log.error(failure)
+                failures.append(failure)
+                continue
+            comps = [web_tests_dir] + suite_comps + base_comps + ['README.txt']
+            path_to_readme_txt = fs.join(*comps)
+            if not fs.exists(path_to_readme_md) and not fs.exists(path_to_readme_txt):
+                failure = '"{}" and "{}" are both missing (each virtual suite must have one).'.format(
+                    path_to_readme_txt, path_to_readme_md)
+                _log.error(failure)
+                failures.append(failure)
+
     if failures:
         _log.error('')
     return failures
@@ -178,10 +207,6 @@ def main(argv, stderr, host=None):
         configure_logging(logging_level=logging.INFO, stream=stderr, include_time=False)
 
     try:
-        # Need to generate MANIFEST.json since some expectations correspond to WPT
-        # tests that aren't files and only exist in the manifest.
-        _log.debug('Generating MANIFEST.json for web-platform-tests ...')
-        WPTManifest.ensure_manifest(host)
         exit_status = run_checks(host, options)
     except KeyboardInterrupt:
         exit_status = exit_codes.INTERRUPTED_EXIT_STATUS

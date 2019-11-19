@@ -136,7 +136,7 @@ class PepperMediaStreamAudioTrackHost : public PepperMediaStreamTrackHostBase {
     // Pending |Configure()| reply context.
     ppapi::host::ReplyMessageContext pending_configure_reply_;
 
-    base::WeakPtrFactory<AudioSink> weak_factory_;
+    base::WeakPtrFactory<AudioSink> weak_factory_{this};
 
     DISALLOW_COPY_AND_ASSIGN(AudioSink);
   };

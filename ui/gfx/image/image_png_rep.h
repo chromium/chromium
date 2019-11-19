@@ -28,7 +28,7 @@ struct GFX_EXPORT ImagePNGRep {
   gfx::Size Size() const;
 
   scoped_refptr<base::RefCountedMemory> raw_data;
-  float scale;
+  float scale = 1.0f;
 };
 
 }  // namespace gfx

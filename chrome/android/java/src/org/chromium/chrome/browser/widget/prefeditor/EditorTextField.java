@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.widget.prefeditor;
 
 import android.content.Context;
-import android.support.annotation.Nullable;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.content.res.AppCompatResources;
 import android.text.Editable;
@@ -25,17 +24,19 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView.OnEditorActionListener;
 
-import org.chromium.base.VisibleForTesting;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.widget.CompatibilityTextInputLayout;
-import org.chromium.chrome.browser.widget.TintedDrawable;
+import org.chromium.chrome.browser.ui.widget.TintedDrawable;
+import org.chromium.chrome.browser.widget.ChromeTextInputLayout;
 
 /** Handles validation and display of one field from the {@link EditorFieldModel}. */
 @VisibleForTesting
 public class EditorTextField extends FrameLayout implements EditorFieldView, View.OnClickListener {
     private EditorFieldModel mEditorFieldModel;
     private OnEditorActionListener mEditorActionListener;
-    private CompatibilityTextInputLayout mInputLayout;
+    private ChromeTextInputLayout mInputLayout;
     private AutoCompleteTextView mInput;
     private View mIconsLayer;
     private ImageView mActionIcon;
@@ -55,7 +56,7 @@ public class EditorTextField extends FrameLayout implements EditorFieldView, Vie
         mObserverForTest = observer;
 
         LayoutInflater.from(context).inflate(R.layout.payments_request_editor_textview, this, true);
-        mInputLayout = (CompatibilityTextInputLayout) findViewById(R.id.text_input_layout);
+        mInputLayout = (ChromeTextInputLayout) findViewById(R.id.text_input_layout);
 
         // Build up the label.  Required fields are indicated by appending a '*'.
         CharSequence label = fieldModel.getLabel();
@@ -107,15 +108,12 @@ public class EditorTextField extends FrameLayout implements EditorFieldView, Vie
         }
 
         // Validate the field when the user de-focuses it.
-        mInput.setOnFocusChangeListener(new OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus) {
-                    mHasFocusedAtLeastOnce = true;
-                } else if (mHasFocusedAtLeastOnce) {
-                    // Show no errors until the user has already tried to edit the field once.
-                    updateDisplayedError(!mEditorFieldModel.isValid());
-                }
+        mInputLayout.addEditTextOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                mHasFocusedAtLeastOnce = true;
+            } else if (mHasFocusedAtLeastOnce) {
+                // Show no errors until the user has already tried to edit the field once.
+                updateDisplayedError(!mEditorFieldModel.isValid());
             }
         });
 
@@ -124,7 +122,6 @@ public class EditorTextField extends FrameLayout implements EditorFieldView, Vie
             @Override
             public void afterTextChanged(Editable s) {
                 fieldModel.setValue(s.toString());
-                fieldModel.setCustomErrorMessage(null);
                 updateDisplayedError(false);
                 updateFieldValueIcon(false);
                 if (mObserverForTest != null) {
@@ -143,7 +140,11 @@ public class EditorTextField extends FrameLayout implements EditorFieldView, Vie
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (mInput.hasFocus()) {
+                    fieldModel.setCustomErrorMessage(null);
+                }
+            }
         });
 
         // Display any autofill suggestions.

@@ -4,8 +4,9 @@
 
 package org.chromium.components.offline_items_collection;
 
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
+
+import androidx.annotation.Nullable;
 
 /**
  * Legacy helper information meant to help with the migration process to OfflineItems.
@@ -14,6 +15,7 @@ public class LegacyHelpers {
     // These are legacy namespaces for the purpose of ID generation that will only affect the UI.
     public static final String LEGACY_OFFLINE_PAGE_NAMESPACE = "LEGACY_OFFLINE_PAGE";
     public static final String LEGACY_DOWNLOAD_NAMESPACE = "LEGACY_DOWNLOAD";
+    public static final String LEGACY_ANDROID_DOWNLOAD_NAMESPACE = "LEGACY_ANDROID_DOWNLOAD";
     private static final String LEGACY_DOWNLOAD_NAMESPACE_PREFIX = "LEGACY_DOWNLOAD";
 
     /**
@@ -51,6 +53,16 @@ public class LegacyHelpers {
      */
     public static boolean isLegacyOfflinePage(@Nullable ContentId id) {
         return id != null && TextUtils.equals(LEGACY_OFFLINE_PAGE_NAMESPACE, id.namespace);
+    }
+
+    /**
+     * Helper to determine if a {@link ContentId} corresponds to a download through android download
+     * manager.
+     * @param id The {@link ContentId} to inspect.
+     * @return   Whether or not {@code id} was built for a android DownloadManager download.
+     */
+    public static boolean isLegacyAndroidDownload(@Nullable ContentId id) {
+        return id != null && TextUtils.equals(LEGACY_ANDROID_DOWNLOAD_NAMESPACE, id.namespace);
     }
 
     private LegacyHelpers() {}

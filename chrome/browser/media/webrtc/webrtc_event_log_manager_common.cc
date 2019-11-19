@@ -10,6 +10,7 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -43,22 +44,44 @@ static_assert(kInvalidWebRtcEventLogWebAppId < kMinWebRtcEventLogWebAppId ||
 const char kRemoteBoundWebRtcEventLogFileNamePrefix[] = "webrtc_event_log";
 
 // Important! These values may be relied on by web-apps. Do not change.
+const char kStartRemoteLoggingFailureAlreadyLogging[] = "Already logging.";
+const char kStartRemoteLoggingFailureDeadRenderProcessHost[] =
+    "RPH already dead.";
 const char kStartRemoteLoggingFailureFeatureDisabled[] = "Feature disabled.";
-const char kStartRemoteLoggingFailureUnlimitedSizeDisallowed[] =
-    "Unlimited size disallowed.";
-const char kStartRemoteLoggingFailureMaxSizeTooSmall[] = "Max size too small.";
+const char kStartRemoteLoggingFailureFileCreationError[] =
+    "Could not create file.";
+const char kStartRemoteLoggingFailureFilePathUsedHistory[] =
+    "Used history file path.";
+const char kStartRemoteLoggingFailureFilePathUsedLog[] = "Used log file path.";
+const char kStartRemoteLoggingFailureIllegalWebAppId[] = "Illegal web-app ID.";
+const char kStartRemoteLoggingFailureLoggingDisabledBrowserContext[] =
+    "Disabled for browser context.";
 const char kStartRemoteLoggingFailureMaxSizeTooLarge[] =
     "Excessively large max log size.";
+const char kStartRemoteLoggingFailureMaxSizeTooSmall[] = "Max size too small.";
+const char kStartRemoteLoggingFailureNoAdditionalActiveLogsAllowed[] =
+    "No additional active logs allowed.";
 const char kStartRemoteLoggingFailureOutputPeriodMsTooLarge[] =
     "Excessively large output period (ms).";
-const char kStartRemoteLoggingFailureIllegalWebAppId[] = "Illegal web-app ID.";
 const char kStartRemoteLoggingFailureUnknownOrInactivePeerConnection[] =
     "Unknown or inactive peer connection.";
-const char kStartRemoteLoggingFailureAlreadyLogging[] = "Already logging.";
-const char kStartRemoteLoggingFailureGeneric[] = "Unspecified error.";
+const char kStartRemoteLoggingFailureUnlimitedSizeDisallowed[] =
+    "Unlimited size disallowed.";
 
 const BrowserContextId kNullBrowserContextId =
     reinterpret_cast<BrowserContextId>(nullptr);
+
+void UmaRecordWebRtcEventLoggingApi(WebRtcEventLoggingApiUma result) {
+  base::UmaHistogramEnumeration("WebRtcEventLogging.Api", result);
+}
+
+void UmaRecordWebRtcEventLoggingUpload(WebRtcEventLoggingUploadUma result) {
+  base::UmaHistogramEnumeration("WebRtcEventLogging.Upload", result);
+}
+
+void UmaRecordWebRtcEventLoggingNetErrorType(int net_error) {
+  base::UmaHistogramSparse("WebRtcEventLogging.NetError", net_error);
+}
 
 namespace {
 

@@ -1,0 +1,259 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+option optimize_for = LITE_RUNTIME;
+
+package optimization_guide.proto;
+
+import "common_types.proto";
+
+// A generic handle for any type of model.
+message Model {
+  reserved 3, 4;
+
+  oneof model {
+    DecisionTree decision_tree = 1;
+    Ensemble ensemble = 2;
+  }
+  // The tag number is high to allow models to be added and an uncommon number
+  // in case the proto this is generated from adds a similar functionality.
+  optional DoubleValue threshold = 123;
+}
+
+// An ensemble prediction model consisting of an ordered sequence of models.
+// This message can be used to express bagged or boosted models.
+message Ensemble {
+  reserved 2, 3, 4;
+
+  message Member { optional Model submodel = 1; }
+  // The tag number is set by the proto this is generated from and cannot be
+  // changed.
+  repeated Member members = 100;
+}
+
+// A decision tree model with its weight for use if included in an ensemble.
+message DecisionTree {
+  reserved 2;
+
+  repeated TreeNode nodes = 1;
+  optional float weight = 3;
+}
+
+// A node of a decision tree that is a binary deicison or a leaf.
+message TreeNode {
+  reserved 6, 7;
+
+  // Following fields are provided for convenience and better readability.
+  // Filling them in is not required.
+  optional Int32Value node_id = 1;
+  optional Int32Value depth = 2;
+  optional Int32Value subtree_size = 3;
+
+  oneof node_type {
+    BinaryNode binary_node = 4;
+    Leaf leaf = 5;
+  }
+}
+
+// A tree node that contains an inequality test that during evaluation
+// determines whether to continue the left or right child.
+message BinaryNode {
+  reserved 3, 5;
+
+  optional Int32Value left_child_id = 1;
+  optional Int32Value right_child_id = 2;
+  enum Direction {
+    LEFT = 0;
+    RIGHT = 1;
+  }
+  // When a datapoint satisfies the test, it should be propagated to the left
+  // child.
+  optional InequalityTest inequality_left_child_test = 4;
+}
+
+// Vector of values for use within Models.
+message Vector {
+  repeated Value value = 1;
+}
+
+// A leaf node of a decision tree.
+message Leaf {
+  reserved 2, 3;
+
+  optional Vector vector = 1;
+}
+
+// The ID for the features used during evaluation of a Model.
+message FeatureId {
+  reserved 2;
+
+  optional StringValue id = 1;
+}
+
+// The set of inequality operations supported by binary nodes for
+// decision tree models.
+message InequalityTest {
+  reserved 4;
+
+  // When the feature is missing, the test's outcome is undefined.
+  optional FeatureId feature_id = 1;
+  enum Type {
+    LESS_OR_EQUAL = 0;
+    LESS_THAN = 1;
+    GREATER_OR_EQUAL = 2;
+    GREATER_THAN = 3;
+  };
+  optional Type type = 2;
+  optional Value threshold = 3;
+}
+
+// Represents a single value of any type, e.g. 5 or "abc".
+message Value {
+  reserved 5;
+
+  oneof value {
+    float float_value = 1;
+    double double_value = 2;
+    int32 int32_value = 3;
+    int64 int64_value = 4;
+  }
+}
+
+// Wrapper message for `int32`.
+//
+// The JSON representation for `Int32Value` is JSON number.
+message Int32Value {
+  // The int32 value.
+  optional int32 value = 1;
+}
+
+// Wrapper message for `string`.
+//
+// The JSON representation for `StringValue` is JSON string.
+message StringValue {
+  // The string value.
+  optional string value = 1;
+}
+
+// Wrapper message for `double`.
+//
+// The JSON representation for `DoubleValue` is JSON number.
+message DoubleValue {
+  // The double value.
+  optional double value = 1;
+}
+
+// Requests prediction models to be used for a set of optimization targets.
+message GetModelsRequest {
+  // Information about the requested models.
+  repeated ModelInfo requested_models = 1;
+  // The set of hosts to get additional metadata for, if applicable.
+  repeated string hosts = 2;
+  // Context in which this request is made.
+  //
+  // If the context matches one that requires more urgency (i.e.
+  // CONTEXT_PAGE_NAVIGATION), then no model updates will be returned for the
+  // requested models.
+  optional RequestContext request_context = 3;
+}
+
+// Response to the GetModels request.
+message GetModelsResponse {
+  // The models to be used during prediction for the requested optimization
+  // targets.
+  repeated PredictionModel models = 1;
+  // A set of model features and their values for the hosts contained in the
+  // request to be expected to be consulted with during prediction.
+  //
+  // It is not guaranteed that this set will contain an entry for every
+  // requested host.
+  repeated HostModelFeatures host_model_features = 2;
+}
+
+// Holds the prediction model for a particular optimization target.
+message PredictionModel {
+  // Information about the model.
+  optional ModelInfo model_info = 1;
+  // The model to evaluate for the attached model information.
+  //
+  // This will only be set if the model that the client claims it has is stale.
+  // It is also guaranteed that the value populated as part of this field is one
+  // that the client claims to support based on the request's client model
+  // capabilities.
+  optional Model model = 2;
+}
+
+//  Metadata for a prediction model for a specific optimization target.
+message ModelInfo {
+  // The optimization target for which the model predicts.
+  optional OptimizationTarget optimization_target = 1;
+  // The version of the model, which is specific to the optimization target.
+  optional int64 version = 2;
+  // The set of model features that are supported by the model.
+  //
+  // If in the request, this represents the set of features that the client
+  // understands how to evaluate. If in the response, this represents the set
+  // of features referenced by the model.
+  repeated ClientModelFeature supported_model_features = 3;
+  // The set of model types the requesting client can use to make predictions.
+  repeated ModelType supported_model_types = 4;
+}
+
+// The scenarios for which the optimization guide has models for.
+enum OptimizationTarget {
+  OPTIMIZATION_TARGET_UNKNOWN = 0;
+  // Should only be applied when the page load is predicted to be painful.
+  OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD = 1;
+}
+
+// The features that only the client can compute during prediction and also
+// knows how to evaluate.
+enum ClientModelFeature {
+  CLIENT_MODEL_FEATURE_UNKNOWN = 0;
+  // The effective connection type for the page load.
+  CLIENT_MODEL_FEATURE_EFFECTIVE_CONNECTION_TYPE = 1;
+  // How the current page load transitioned from the previous one.
+  CLIENT_MODEL_FEATURE_PAGE_TRANSITION = 2;
+  // The site engagement score of the main frame host for the page load.
+  CLIENT_MODEL_FEATURE_SITE_ENGAGEMENT_SCORE = 3;
+  // Whether the origin for the page load matches the origin of the previous
+  // page load.
+  CLIENT_MODEL_FEATURE_SAME_ORIGIN_NAVIGATION = 4;
+  // The mean of the duration from navigation to first contentful paint for the
+  // session.
+  CLIENT_MODEL_FEATURE_FIRST_CONTENTFUL_PAINT_SESSION_MEAN = 5;
+  // The standard deviation of the duration from navigation to first
+  // contentful paint for the session.
+  CLIENT_MODEL_FEATURE_FIRST_CONTENTFUL_PAINT_SESSION_STANDARD_DEVIATION = 6;
+  // The duration from navigation to first contentful paint for the previous
+  // page load, if applicable.
+  CLIENT_MODEL_FEATURE_FIRST_CONTENTFUL_PAINT_PREVIOUS_PAGE_LOAD = 7;
+}
+
+// The types of models that can be evaluated.
+enum ModelType {
+  MODEL_TYPE_UNKNOWN = 0;
+  // A decision tree.
+  MODEL_TYPE_DECISION_TREE = 1;
+}
+
+// A set of model features and the host that it applies to.
+message HostModelFeatures {
+  // The host that the features should be applied for.
+  optional string host = 1;
+  // The set of features and their values that apply to the host.
+  repeated ModelFeature model_features = 2;
+}
+
+// Information about a feature that is potentially referenced in a model.
+message ModelFeature {
+  // The name of the feature to match if encountered in a model.
+  optional string feature_name = 1;
+  // The value of the feature to be used during prediction.
+  oneof feature_value {
+    double double_value = 2;
+    int64 int64_value = 3;
+  }
+}

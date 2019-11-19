@@ -1,7 +1,7 @@
 # Network Traffic Annotation Auditor
 This binary runs the clang tool for extraction of Network Traffic Annotations
 from chromium source code, collects and summarizes its outputs, and performs
-tests and maintanance.
+tests and maintenance.
 Please see `docs/network_traffic_annotations.md` for an introduction to network
 traffic annotations.
 
@@ -33,11 +33,13 @@ separated, specifying the safe lists based on
 Use * as wildcard for zero or more characters when specifying file paths.
 
 Here are the exception types:
-* `all`: Files and paths in this category are excempted from all tests.
+* `all`: Files and paths in this category are exempted from all tests.
 * `missing`: Files and paths in this category can use the
   MISSING_TRAFFIC_ANNOTATION tag.
+* `mutable_tag`: Files and paths in this category can use the
+  CreateMutableNetworkTrafficAnnotationTag() function.
 * `direct_assignment`: The functions in this category can assign a value
   directly to a MutableNetworkTrafficAnnotationTag. This is controlled to
-  avoid assigning arbitrary values to mutable annotations. The format of the
-  entries should be `full_function_name@file_path`. For example:
-  `download::ProtoConversions::EntryFromProto@components/download/internal/background_service/proto_conversions.cc`
+  avoid assigning arbitrary values to mutable annotations.
+* `test_annotation`: Files and paths in this category can use the
+  TRAFFIC_ANNOTATION_FOR_TESTS tag.

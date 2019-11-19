@@ -11,6 +11,7 @@
 #include "extensions/shell/browser/api/feedback_private/shell_feedback_private_delegate.h"
 #include "extensions/shell/browser/delegates/shell_kiosk_delegate.h"
 #include "extensions/shell/browser/shell_app_view_guest_delegate.h"
+#include "extensions/shell/browser/shell_display_info_provider.h"
 #include "extensions/shell/browser/shell_extension_web_contents_observer.h"
 #include "extensions/shell/browser/shell_virtual_keyboard_delegate.h"
 #include "extensions/shell/browser/shell_web_view_guest_delegate.h"
@@ -44,6 +45,11 @@ std::unique_ptr<VirtualKeyboardDelegate>
 ShellExtensionsAPIClient::CreateVirtualKeyboardDelegate(
     content::BrowserContext* browser_context) const {
   return std::make_unique<ShellVirtualKeyboardDelegate>();
+}
+
+std::unique_ptr<DisplayInfoProvider>
+ShellExtensionsAPIClient::CreateDisplayInfoProvider() const {
+  return std::make_unique<ShellDisplayInfoProvider>();
 }
 
 #if defined(OS_LINUX) && !defined(OS_CHROMEOS)

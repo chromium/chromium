@@ -40,7 +40,8 @@ def main(argv):
 
   compdb_text = json.dumps(
       compile_db.ProcessCompileDatabaseIfNeeded(
-          compile_db.GenerateWithNinja(args.p, args.targets)))
+          compile_db.GenerateWithNinja(args.p, args.targets)),
+      indent=2)
   if args.o is None:
     print(compdb_text)
   else:

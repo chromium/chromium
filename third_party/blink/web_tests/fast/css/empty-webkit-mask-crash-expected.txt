@@ -1,2 +1,0 @@
-https://bugs.webkit.org/show_bug.cgi?id=50151 : Crash in LayoutBox::paintMaskImages due to a mask without an associated image
-The test passes if it does not CRASH (normally the output is a white page)

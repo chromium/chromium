@@ -65,7 +65,7 @@ def secure_context_if(code, secure_context_test):
     return generate_indented_conditional(code, secure_context_test)
 
 
-# [OriginTrialEnabled]
+# [RuntimeEnabled]
 def origin_trial_enabled_if(code, origin_trial_feature_name, execution_context=None):
     if not origin_trial_feature_name:
         return code

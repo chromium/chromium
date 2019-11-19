@@ -46,16 +46,14 @@ struct CookieStoreCommand {
 
   // Constructor for LOAD and LOAD_COOKIES_FOR_KEY calls.  |key| should be empty
   // for LOAD_COOKIES_FOR_KEY.
-  CookieStoreCommand(Type type,
-                     const CookieMonster::PersistentCookieStore::LoadedCallback&
-                         loaded_callback,
-                     const std::string& key);
+  CookieStoreCommand(
+      Type type,
+      CookieMonster::PersistentCookieStore::LoadedCallback loaded_callback,
+      const std::string& key);
 
   // Constructor for ADD, UPDATE_ACCESS_TIME, and REMOVE calls.
   CookieStoreCommand(Type type, const CanonicalCookie& cookie);
-
-  CookieStoreCommand(const CookieStoreCommand& other);
-
+  CookieStoreCommand(CookieStoreCommand&& other);
   ~CookieStoreCommand();
 
   Type type;
@@ -89,12 +87,17 @@ class MockPersistentCookieStore : public CookieMonster::PersistentCookieStore {
                           std::vector<std::unique_ptr<CanonicalCookie>> result);
 
   const CommandList& commands() const { return commands_; }
+  CommandList TakeCommands() { return std::move(commands_); }
+  CookieMonster::PersistentCookieStore::LoadedCallback TakeCallbackAt(
+      size_t i) {
+    return std::move(commands_[i].loaded_callback);
+  }
 
-  void Load(const LoadedCallback& loaded_callback,
+  void Load(LoadedCallback loaded_callback,
             const NetLogWithSource& net_log) override;
 
   void LoadCookiesForKey(const std::string& key,
-                         const LoadedCallback& loaded_callback) override;
+                         LoadedCallback loaded_callback) override;
 
   void AddCookie(const CanonicalCookie& cookie) override;
 
@@ -104,7 +107,7 @@ class MockPersistentCookieStore : public CookieMonster::PersistentCookieStore {
 
   void SetForceKeepSessionState() override;
 
-  void SetBeforeFlushCallback(base::RepeatingClosure callback) override;
+  void SetBeforeCommitCallback(base::RepeatingClosure callback) override;
 
   void Flush(base::OnceClosure callback) override;
 
@@ -145,11 +148,11 @@ class MockSimplePersistentCookieStore
  public:
   MockSimplePersistentCookieStore();
 
-  void Load(const LoadedCallback& loaded_callback,
+  void Load(LoadedCallback loaded_callback,
             const NetLogWithSource& net_log) override;
 
   void LoadCookiesForKey(const std::string& key,
-                         const LoadedCallback& loaded_callback) override;
+                         LoadedCallback loaded_callback) override;
 
   void AddCookie(const CanonicalCookie& cookie) override;
 
@@ -159,7 +162,7 @@ class MockSimplePersistentCookieStore
 
   void SetForceKeepSessionState() override;
 
-  void SetBeforeFlushCallback(base::RepeatingClosure callback) override;
+  void SetBeforeCommitCallback(base::RepeatingClosure callback) override;
 
   void Flush(base::OnceClosure callback) override;
 

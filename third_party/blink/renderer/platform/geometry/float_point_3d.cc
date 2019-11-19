@@ -56,10 +56,6 @@ float FloatPoint3D::AngleBetween(const FloatPoint3D& y) const {
   return 0;
 }
 
-FloatPoint3D::operator gfx::Point3F() const {
-  return gfx::Point3F(x_, y_, z_);
-}
-
 std::ostream& operator<<(std::ostream& ostream, const FloatPoint3D& point) {
   return ostream << point.ToString();
 }

@@ -21,7 +21,7 @@ base::string16 MacAddressAsString16(const uint8_t mac_as_int[6]) {
       mac_as_int[3], mac_as_int[4], mac_as_int[5]));
 }
 
-WifiDataProviderCommon::WifiDataProviderCommon() : weak_factory_(this) {}
+WifiDataProviderCommon::WifiDataProviderCommon() {}
 
 WifiDataProviderCommon::~WifiDataProviderCommon() = default;
 

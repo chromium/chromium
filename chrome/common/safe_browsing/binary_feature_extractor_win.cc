@@ -12,6 +12,7 @@
 
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/threading/scoped_thread_priority.h"
 #include "chrome/common/safe_browsing/pe_image_reader_win.h"
 #include "components/safe_browsing/proto/csd.pb.h"
 
@@ -42,6 +43,10 @@ bool OnCertificateEntry(uint16_t revision,
 void BinaryFeatureExtractor::CheckSignature(
     const base::FilePath& file_path,
     ClientDownloadRequest_SignatureInfo* signature_info) {
+  // Mitigate the issues caused by loading DLLs on a background thread
+  // (http://crbug/973868).
+  base::ScopedThreadMayLoadLibraryOnBackgroundThread priority_boost(FROM_HERE);
+
   DVLOG(2) << "Checking signature for " << file_path.value();
 
   WINTRUST_FILE_INFO file_info = {0};

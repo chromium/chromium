@@ -1,11 +1,26 @@
 rootWebArea
-++button name='Button1'
-++toggleButton name='Button2' checkedState=true
-++toggleButton name='Button3' checkedState=false
-++popUpButton name='Button4' haspopup=menu
-++button name='Button5'
-++button name='Complex button '
-++++staticText name='Complex button '
-++++++inlineTextBox name='Complex button '
-++++textField
-++++++genericContainer
+++genericContainer ignored
+++++button name='Button1'
+++++++staticText name='Button1'
+++++++++inlineTextBox name='Button1'
+++++toggleButton name='Button2' checkedState=true
+++++toggleButton name='Button3' checkedState=false
+++++popUpButton name='Button4' haspopup=menu
+++++button name='Button5'
+++++++staticText name='Button5'
+++++++++inlineTextBox name='Button5'
+++++button name='Complex button '
+++++++staticText name='Complex button '
+++++++++inlineTextBox name='Complex button '
+++++++textField
+++++++++genericContainer
+++++toggleButton name='Complex toggle button ' checkedState=true
+++++++staticText name='Complex toggle button '
+++++++++inlineTextBox name='Complex toggle button '
+++++++textField
+++++++++genericContainer
+++++popUpButton name='Complex pop up button ' haspopup=menu
+++++++staticText name='Complex pop up button '
+++++++++inlineTextBox name='Complex pop up button '
+++++++textField
+++++++++genericContainer

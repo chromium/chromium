@@ -11,8 +11,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-CWV_EXPORT
 // Represents a profile for autofilling address forms.
+CWV_EXPORT
 @interface CWVAutofillProfile : NSObject
 
 // The full name. e.g. "Homer Simpson".

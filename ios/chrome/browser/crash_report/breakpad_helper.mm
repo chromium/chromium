@@ -15,6 +15,7 @@
 #include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/post_task.h"
@@ -45,15 +46,18 @@ NSString* const kCrashedInBackground = @"crashed_in_background";
 NSString* const kFreeDiskInKB = @"free_disk_in_kb";
 NSString* const kFreeMemoryInKB = @"free_memory_in_kb";
 NSString* const kMemoryWarningInProgress = @"memory_warning_in_progress";
+NSString* const kHangReport = @"hang-report";
 NSString* const kMemoryWarningCount = @"memory_warning_count";
 NSString* const kUptimeAtRestoreInMs = @"uptime_at_restore_in_ms";
 NSString* const kUploadedInRecoveryMode = @"uploaded_in_recovery_mode";
+NSString* const kGridToVisibleTabAnimation = @"grid_to_visible_tab_animation";
 
 // Multiple state information are combined into one CrachReportMultiParameter
 // to save limited and finite number of ReportParameters.
 // These are the values grouped in the user_application_state parameter.
 NSString* const kOrientationState = @"orient";
 NSString* const kHorizontalSizeClass = @"sizeclass";
+NSString* const kUserInterfaceStyle = @"user_interface_style";
 NSString* const kSignedIn = @"signIn";
 NSString* const kIsShowingPDF = @"pdf";
 NSString* const kVideoPlaying = @"avplay";
@@ -112,12 +116,9 @@ bool FatalMessageHandler(int severity,
   return false;
 }
 
-// Caches the uploading flag in NSUserDefaults, so that we can access the value
-// in safe mode.
-void CacheUploadingEnabled(bool uploading_enabled) {
-  NSUserDefaults* user_defaults = [NSUserDefaults standardUserDefaults];
-  [user_defaults setBool:uploading_enabled ? YES : NO
-                  forKey:kCrashReportsUploadingEnabledKey];
+// Called after Breakpad finishes uploading each report.
+void UploadResultHandler(NSString* report_id, NSError* error) {
+  base::UmaHistogramSparse("CrashReport.BreakpadIOSUploadOutcome", error.code);
 }
 
 }  // namespace
@@ -155,16 +156,28 @@ void SetEnabled(bool enabled) {
     [[BreakpadController sharedInstance] start:NO];
   } else {
     [[BreakpadController sharedInstance] stop];
-    CacheUploadingEnabled(false);
   }
 }
 
 void SetBreakpadUploadingEnabled(bool enabled) {
-  CacheUploadingEnabled(g_crash_reporter_enabled && enabled);
-
   if (!g_crash_reporter_enabled)
     return;
+  if (enabled) {
+    static dispatch_once_t once_token;
+    dispatch_once(&once_token, ^{
+      [[BreakpadController sharedInstance]
+          setUploadCallback:UploadResultHandler];
+    });
+  }
   [[BreakpadController sharedInstance] setUploadingEnabled:enabled];
+}
+
+// Caches the uploading flag in NSUserDefaults, so that we can access the value
+// in safe mode.
+void SetUserEnabledUploading(bool uploading_enabled) {
+  [[NSUserDefaults standardUserDefaults]
+      setBool:uploading_enabled ? YES : NO
+       forKey:kCrashReportsUploadingEnabledKey];
 }
 
 void SetUploadingEnabled(bool enabled) {
@@ -185,8 +198,7 @@ void SetUploadingEnabled(bool enabled) {
   }
 }
 
-bool IsUploadingEnabled() {
-  // Return the value cached by CacheUploadingEnabled().
+bool UserEnabledUploading() {
   return [[NSUserDefaults standardUserDefaults]
       boolForKey:kCrashReportsUploadingEnabledKey];
 }
@@ -194,8 +206,9 @@ bool IsUploadingEnabled() {
 void CleanupCrashReports() {
   base::FilePath crash_directory;
   base::PathService::Get(ios::DIR_CRASH_DUMPS, &crash_directory);
-  base::PostTaskWithTraits(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+  base::PostTask(
+      FROM_HERE,
+      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&DeleteAllReportsInDirectory, crash_directory));
 }
 
@@ -266,6 +279,13 @@ void SetMemoryWarningInProgress(bool value) {
     RemoveReportParameter(kMemoryWarningInProgress);
 }
 
+void SetHangReport(bool value) {
+  if (value)
+    AddReportParameter(kHangReport, @"yes", true);
+  else
+    RemoveReportParameter(kHangReport);
+}
+
 void SetCurrentFreeMemoryInKB(int value) {
   AddReportParameter(kFreeMemoryInKB, [NSString stringWithFormat:@"%d", value],
                      true);
@@ -300,6 +320,12 @@ void SetCurrentHorizontalSizeClass(int horizontalSizeClass) {
       withValue:horizontalSizeClass];
 }
 
+void SetCurrentUserInterfaceStyle(int userInterfaceStyle) {
+  [[CrashReportUserApplicationState sharedInstance]
+       setValue:kUserInterfaceStyle
+      withValue:userInterfaceStyle];
+}
+
 void SetCurrentlySignedIn(bool signedIn) {
   if (signedIn) {
     [[CrashReportUserApplicationState sharedInstance] setValue:kSignedIn
@@ -328,6 +354,22 @@ void SetDestroyingAndRebuildingIncognitoBrowserState(bool in_progress) {
     [[CrashReportUserApplicationState sharedInstance]
         removeValue:kDestroyingAndRebuildingIncognitoBrowserState];
   }
+}
+
+void SetGridToVisibleTabAnimation(NSString* to_view_controller,
+                                  NSString* presenting_view_controller,
+                                  NSString* presented_view_controller,
+                                  NSString* parent_view_controller) {
+  NSString* formatted_value =
+      [NSString stringWithFormat:
+                    @"{toVC:%@, presentingVC:%@, presentedVC:%@, parentVC:%@}",
+                    to_view_controller, presenting_view_controller,
+                    presented_view_controller, parent_view_controller];
+  AddReportParameter(kGridToVisibleTabAnimation, formatted_value, true);
+}
+
+void RemoveGridToVisibleTabAnimation() {
+  RemoveReportParameter(kGridToVisibleTabAnimation);
 }
 
 void MediaStreamPlaybackDidStart() {

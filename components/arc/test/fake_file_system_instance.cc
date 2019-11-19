@@ -7,6 +7,8 @@
 #include <string.h>
 #include <unistd.h>
 
+#include <limits>
+#include <sstream>
 #include <utility>
 
 #include "base/bind.h"
@@ -25,30 +27,6 @@ namespace arc {
 
 namespace {
 
-base::ScopedFD CreateRegularFileDescriptor(const std::string& content,
-                                           const base::FilePath& temp_dir) {
-  base::FilePath path;
-  bool create_success = base::CreateTemporaryFileInDir(temp_dir, &path);
-  DCHECK(create_success);
-  int written_size = base::WriteFile(path, content.data(), content.size());
-  DCHECK_EQ(static_cast<int>(content.size()), written_size);
-  base::File file(path, base::File::FLAG_OPEN | base::File::FLAG_READ);
-  DCHECK(file.IsValid());
-  return base::ScopedFD(file.TakePlatformFile());
-}
-
-base::ScopedFD CreateStreamFileDescriptor(const std::string& content) {
-  int fds[2];
-  int ret = pipe(fds);
-  DCHECK_EQ(0, ret);
-  base::ScopedFD fd_read(fds[0]);
-  base::ScopedFD fd_write(fds[1]);
-  bool write_success =
-      base::WriteFileDescriptor(fd_write.get(), content.data(), content.size());
-  DCHECK(write_success);
-  return fd_read;
-}
-
 mojom::DocumentPtr MakeDocument(const FakeFileSystemInstance::Document& doc) {
   mojom::DocumentPtr document = mojom::Document::New();
   document->document_id = doc.document_id;
@@ -56,6 +34,9 @@ mojom::DocumentPtr MakeDocument(const FakeFileSystemInstance::Document& doc) {
   document->mime_type = doc.mime_type;
   document->size = doc.size;
   document->last_modified = doc.last_modified;
+  document->supports_delete = doc.supports_delete;
+  document->supports_rename = doc.supports_rename;
+  document->dir_supports_create = doc.dir_supports_create;
   return document;
 }
 
@@ -67,6 +48,17 @@ mojom::RootPtr MakeRoot(const FakeFileSystemInstance::Root& in_root) {
   root->title = in_root.title;
   return root;
 }
+
+// Generates unique document ID on each calls.
+std::string GenerateDocumentId() {
+  static int count = 0;
+  std::ostringstream ss;
+  ss << "doc_" << count++;
+  return ss.str();
+}
+
+// Maximum size in bytes to read FD from PIPE.
+constexpr size_t kMaxBytesToReadFromPipe = 8 * 1024;  // 8KB;
 
 }  // namespace
 
@@ -88,13 +80,38 @@ FakeFileSystemInstance::Document::Document(
     const std::string& mime_type,
     int64_t size,
     uint64_t last_modified)
+    : Document(authority,
+               document_id,
+               parent_document_id,
+               display_name,
+               mime_type,
+               size,
+               last_modified,
+               true,
+               true,
+               true) {}
+
+FakeFileSystemInstance::Document::Document(
+    const std::string& authority,
+    const std::string& document_id,
+    const std::string& parent_document_id,
+    const std::string& display_name,
+    const std::string& mime_type,
+    int64_t size,
+    uint64_t last_modified,
+    bool supports_delete,
+    bool supports_rename,
+    bool dir_supports_create)
     : authority(authority),
       document_id(document_id),
       parent_document_id(parent_document_id),
       display_name(display_name),
       mime_type(mime_type),
       size(size),
-      last_modified(last_modified) {}
+      last_modified(last_modified),
+      supports_delete(supports_delete),
+      supports_rename(supports_rename),
+      dir_supports_create(dir_supports_create) {}
 
 FakeFileSystemInstance::Document::Document(const Document& that) = default;
 
@@ -174,6 +191,79 @@ void FakeFileSystemInstance::TriggerWatchers(
   }
 }
 
+bool FakeFileSystemInstance::DocumentExists(const std::string& authority,
+                                            const std::string& document_id) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DocumentKey key(authority, document_id);
+  return documents_.find(key) != documents_.end();
+}
+
+bool FakeFileSystemInstance::DocumentExists(const std::string& authority,
+                                            const std::string& root_document_id,
+                                            const base::FilePath& path) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  std::vector<std::string> path_components;
+  path.GetComponents(&path_components);
+  std::string document_id =
+      FindChildDocumentId(authority, root_document_id, path_components);
+  return DocumentExists(authority, document_id);
+}
+
+FakeFileSystemInstance::Document FakeFileSystemInstance::GetDocument(
+    const std::string& authority,
+    const std::string& document_id) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DocumentKey key(authority, document_id);
+  auto iter = documents_.find(key);
+  DCHECK(iter != documents_.end());
+  return iter->second;
+}
+
+FakeFileSystemInstance::Document FakeFileSystemInstance::GetDocument(
+    const std::string& authority,
+    const std::string& root_document_id,
+    const base::FilePath& path) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  std::vector<std::string> path_components;
+  path.GetComponents(&path_components);
+  std::string document_id =
+      FindChildDocumentId(authority, root_document_id, path_components);
+  return GetDocument(authority, document_id);
+}
+
+std::string FakeFileSystemInstance::GetFileContent(const std::string& url) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  return GetFileContent(url, std::numeric_limits<size_t>::max());
+}
+
+std::string FakeFileSystemInstance::GetFileContent(const std::string& url,
+                                                   size_t bytes) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  auto regular_file_paths_it = regular_file_paths_.find(url);
+  if (regular_file_paths_it != regular_file_paths_.end()) {
+    base::FilePath path = regular_file_paths_it->second;
+    std::string content;
+    if (base::ReadFileToStringWithMaxSize(path, &content, bytes))
+      return content;
+  } else {
+    auto pipe_read_ends_it = pipe_read_ends_.find(url);
+    if (pipe_read_ends_it != pipe_read_ends_.end()) {
+      if (bytes > kMaxBytesToReadFromPipe) {
+        LOG(ERROR) << "Trying to read too many bytes from pipe. " << url;
+        return std::string();
+      }
+      std::string result;
+      result.resize(bytes);
+      bool success =
+          base::ReadFromFD(pipe_read_ends_it->second.get(), &result[0], bytes);
+      DCHECK(success);
+      return result;
+    }
+  }
+  LOG(ERROR) << "A file to read content not found. " << url;
+  return std::string();
+}
+
 void FakeFileSystemInstance::AddWatcher(const std::string& authority,
                                         const std::string& document_id,
                                         AddWatcherCallback callback) {
@@ -232,8 +322,32 @@ void FakeFileSystemInstance::OpenFileToRead(const std::string& url,
   const File& file = iter->second;
   base::ScopedFD fd =
       file.seekable == File::Seekable::YES
-          ? CreateRegularFileDescriptor(file.content, temp_dir_.GetPath())
-          : CreateStreamFileDescriptor(file.content);
+          ? CreateRegularFileDescriptor(file, base::File::Flags::FLAG_OPEN |
+                                                  base::File::Flags::FLAG_READ)
+          : CreateStreamFileDescriptorToRead(file.content);
+  mojo::ScopedHandle wrapped_handle =
+      mojo::WrapPlatformHandle(mojo::PlatformHandle(std::move(fd)));
+  DCHECK(wrapped_handle.is_valid());
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), std::move(wrapped_handle)));
+}
+
+void FakeFileSystemInstance::OpenFileToWrite(const std::string& url,
+                                             OpenFileToWriteCallback callback) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  auto iter = files_.find(url);
+  if (iter == files_.end()) {
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), mojo::ScopedHandle()));
+    return;
+  }
+  const File& file = iter->second;
+  base::ScopedFD fd =
+      file.seekable == File::Seekable::YES
+          ? CreateRegularFileDescriptor(file, base::File::Flags::FLAG_OPEN |
+                                                  base::File::Flags::FLAG_WRITE)
+          : CreateStreamFileDescriptorToWrite(file.url);
   mojo::ScopedHandle wrapped_handle =
       mojo::WrapPlatformHandle(mojo::PlatformHandle(std::move(fd)));
   DCHECK(wrapped_handle.is_valid());
@@ -310,6 +424,109 @@ void FakeFileSystemInstance::GetRoots(GetRootsCallback callback) {
                                 base::make_optional(std::move(roots))));
 }
 
+void FakeFileSystemInstance::DeleteDocument(const std::string& authority,
+                                            const std::string& document_id,
+                                            DeleteDocumentCallback callback) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DocumentKey key(authority, document_id);
+  auto iter = documents_.find(key);
+  if (iter == documents_.end() || iter->second.supports_delete == false) {
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), false));
+    return;
+  }
+  documents_.erase(iter);
+  size_t erased = child_documents_.erase(key);
+  DCHECK_NE(0u, erased);
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), true));
+}
+
+void FakeFileSystemInstance::RenameDocument(const std::string& authority,
+                                            const std::string& document_id,
+                                            const std::string& display_name,
+                                            RenameDocumentCallback callback) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DocumentKey key(authority, document_id);
+  auto iter = documents_.find(key);
+  if (iter == documents_.end() || iter->second.supports_rename == false) {
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), mojom::DocumentPtr()));
+    return;
+  }
+  iter->second.display_name = display_name;
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), MakeDocument(iter->second)));
+}
+
+void FakeFileSystemInstance::CreateDocument(
+    const std::string& authority,
+    const std::string& parent_document_id,
+    const std::string& mime_type,
+    const std::string& display_name,
+    CreateDocumentCallback callback) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DocumentKey parent_key(authority, parent_document_id);
+  auto iter = documents_.find(parent_key);
+  DCHECK(iter != documents_.end());
+  if (iter->second.dir_supports_create == false) {
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), mojom::DocumentPtr()));
+    return;
+  }
+  std::string document_id = GenerateDocumentId();
+  Document document(authority, document_id, parent_document_id, display_name,
+                    mime_type, 0, 0);
+  AddDocument(document);
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), MakeDocument(document)));
+}
+
+void FakeFileSystemInstance::CopyDocument(
+    const std::string& authority,
+    const std::string& source_document_id,
+    const std::string& target_parent_document_id,
+    CopyDocumentCallback callback) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DocumentKey source_key(authority, source_document_id);
+  auto iter = documents_.find(source_key);
+  DCHECK(iter != documents_.end());
+  Document target_document(iter->second);
+  target_document.document_id = target_document.display_name;
+  target_document.parent_document_id = target_parent_document_id;
+  AddDocument(target_document);
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), MakeDocument(target_document)));
+}
+
+void FakeFileSystemInstance::MoveDocument(
+    const std::string& authority,
+    const std::string& source_document_id,
+    const std::string& source_parent_document_id,
+    const std::string& target_parent_document_id,
+    MoveDocumentCallback callback) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DocumentKey source_key(authority, source_document_id);
+  DocumentKey source_parent_key(authority, source_parent_document_id);
+  DocumentKey target_parent_key(authority, target_parent_document_id);
+  for (auto iter = child_documents_[source_parent_key].begin();
+       iter != child_documents_[source_parent_key].end(); iter++) {
+    if (*iter == source_key) {
+      child_documents_[source_parent_key].erase(iter);
+      break;
+    }
+  }
+  child_documents_[target_parent_key].push_back(source_key);
+  auto iter = documents_.find(source_key);
+  DCHECK(iter != documents_.end());
+  iter->second.parent_document_id = target_parent_document_id;
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), MakeDocument(iter->second)));
+}
+
 void FakeFileSystemInstance::InitDeprecated(mojom::FileSystemHostPtr host) {
   Init(std::move(host), base::DoNothing());
 }
@@ -348,6 +565,76 @@ void FakeFileSystemInstance::OpenUrlsWithPermission(
     mojom::OpenUrlsRequestPtr request,
     OpenUrlsWithPermissionCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  handled_url_requests_.emplace_back(std::move(request));
+}
+
+std::string FakeFileSystemInstance::FindChildDocumentId(
+    const std::string& authority,
+    const std::string& parent_document_id,
+    const std::vector<std::string>& components) {
+  if (components.empty())
+    return parent_document_id;
+
+  auto children_iter =
+      child_documents_.find(DocumentKey(authority, parent_document_id));
+  if (children_iter == child_documents_.end())
+    return std::string();
+
+  for (DocumentKey key : children_iter->second) {
+    auto iter = documents_.find(key);
+    if (iter == documents_.end())
+      continue;
+
+    if (iter->second.display_name == components[0]) {
+      std::vector<std::string> next_components(components.begin() + 1,
+                                               components.end());
+      return FindChildDocumentId(authority, iter->second.document_id,
+                                 next_components);
+    }
+  }
+  return std::string();
+}
+
+base::ScopedFD FakeFileSystemInstance::CreateRegularFileDescriptor(
+    const File& file,
+    uint32_t flags) {
+  if (regular_file_paths_.find(file.url) == regular_file_paths_.end()) {
+    base::FilePath path;
+    bool create_success =
+        base::CreateTemporaryFileInDir(temp_dir_.GetPath(), &path);
+    DCHECK(create_success);
+    int written_size =
+        base::WriteFile(path, file.content.data(), file.content.size());
+    DCHECK_EQ(static_cast<int>(file.content.size()), written_size);
+    regular_file_paths_[file.url] = path;
+  }
+  base::File regular_file(regular_file_paths_[file.url], flags);
+  DCHECK(regular_file.IsValid());
+  return base::ScopedFD(regular_file.TakePlatformFile());
+}
+
+base::ScopedFD FakeFileSystemInstance::CreateStreamFileDescriptorToRead(
+    const std::string& content) {
+  int fds[2];
+  int ret = pipe(fds);
+  DCHECK_EQ(0, ret);
+  base::ScopedFD fd_read(fds[0]);
+  base::ScopedFD fd_write(fds[1]);
+  bool write_success =
+      base::WriteFileDescriptor(fd_write.get(), content.data(), content.size());
+  DCHECK(write_success);
+  return fd_read;
+}
+
+base::ScopedFD FakeFileSystemInstance::CreateStreamFileDescriptorToWrite(
+    const std::string& url) {
+  int fds[2];
+  int ret = pipe(fds);
+  DCHECK_EQ(0, ret);
+  base::ScopedFD fd_read(fds[0]);
+  base::ScopedFD fd_write(fds[1]);
+  pipe_read_ends_.emplace(url, std::move(fd_read));
+  return fd_write;
 }
 
 }  // namespace arc

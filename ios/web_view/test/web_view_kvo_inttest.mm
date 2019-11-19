@@ -7,6 +7,7 @@
 
 #include "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
+#include "components/url_formatter/elide_url.h"
 #import "ios/web_view/test/observer.h"
 #import "ios/web_view/test/web_view_inttest_base.h"
 #import "ios/web_view/test/web_view_test_util.h"
@@ -166,23 +167,35 @@ TEST_F(WebViewKvoTest, URLs) {
   Observer* visible_url_observer = [[Observer alloc] init];
   [visible_url_observer setObservedObject:web_view_ keyPath:@"visibleURL"];
 
+  Observer* visible_location_string_observer = [[Observer alloc] init];
+  [visible_location_string_observer setObservedObject:web_view_
+                                              keyPath:@"visibleLocationString"];
+
   GURL page_2 = GetUrlForPageWithTitleAndBody("Page 2", "Body 2");
   NSURL* page_2_url = net::NSURLWithGURL(page_2);
+  NSString* page_2_location_string = base::SysUTF16ToNSString(
+      url_formatter::FormatUrlForSecurityDisplay(page_2));
 
   std::string page_1_html = base::StringPrintf(
       "<a id='link_1' href='%s'>Link 1</a>", page_2.spec().c_str());
-  NSURL* page_1_url =
-      net::NSURLWithGURL(GetUrlForPageWithTitleAndBody("Page 1", page_1_html));
+  GURL page_1 = GetUrlForPageWithTitleAndBody("Page 1", page_1_html);
+  NSURL* page_1_url = net::NSURLWithGURL(page_1);
+  NSString* page_1_location_string = base::SysUTF16ToNSString(
+      url_formatter::FormatUrlForSecurityDisplay(page_1));
 
   [web_view_ loadRequest:[NSURLRequest requestWithURL:page_1_url]];
 
   // |visibleURL| will update immediately
   EXPECT_NSEQ(page_1_url, visible_url_observer.lastValue);
+  EXPECT_NSEQ(page_1_location_string,
+              visible_location_string_observer.lastValue);
 
   ASSERT_TRUE(
       test::WaitForWebViewContainingTextOrTimeout(web_view_, @"Link 1"));
   EXPECT_NSEQ(page_1_url, last_committed_url_observer.lastValue);
   EXPECT_NSEQ(page_1_url, visible_url_observer.lastValue);
+  EXPECT_NSEQ(page_1_location_string,
+              visible_location_string_observer.lastValue);
 
   // Navigate to page 2.
   EXPECT_TRUE(test::TapWebViewElementWithId(web_view_, @"link_1"));
@@ -190,6 +203,8 @@ TEST_F(WebViewKvoTest, URLs) {
       test::WaitForWebViewContainingTextOrTimeout(web_view_, @"Body 2"));
   EXPECT_NSEQ(page_2_url, last_committed_url_observer.lastValue);
   EXPECT_NSEQ(page_2_url, visible_url_observer.lastValue);
+  EXPECT_NSEQ(page_2_location_string,
+              visible_location_string_observer.lastValue);
 
   // Navigate back to page 1.
   [web_view_ goBack];
@@ -197,6 +212,8 @@ TEST_F(WebViewKvoTest, URLs) {
       test::WaitForWebViewContainingTextOrTimeout(web_view_, @"Link 1"));
   EXPECT_NSEQ(page_1_url, last_committed_url_observer.lastValue);
   EXPECT_NSEQ(page_1_url, visible_url_observer.lastValue);
+  EXPECT_NSEQ(page_1_location_string,
+              visible_location_string_observer.lastValue);
 }
 
 }  // namespace ios_web_view

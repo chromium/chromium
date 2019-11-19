@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_CHILD_NODE_H_
 
 #include "third_party/blink/renderer/core/dom/node.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
@@ -15,19 +15,19 @@ class ChildNode {
 
  public:
   static void before(Node& node,
-                     const HeapVector<NodeOrString>& nodes,
+                     const HeapVector<NodeOrStringOrTrustedScript>& nodes,
                      ExceptionState& exception_state) {
     return node.Before(nodes, exception_state);
   }
 
   static void after(Node& node,
-                    const HeapVector<NodeOrString>& nodes,
+                    const HeapVector<NodeOrStringOrTrustedScript>& nodes,
                     ExceptionState& exception_state) {
     return node.After(nodes, exception_state);
   }
 
   static void replaceWith(Node& node,
-                          const HeapVector<NodeOrString>& nodes,
+                          const HeapVector<NodeOrStringOrTrustedScript>& nodes,
                           ExceptionState& exception_state) {
     return node.ReplaceWith(nodes, exception_state);
   }

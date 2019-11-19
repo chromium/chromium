@@ -5,8 +5,6 @@
 import("//third_party/blink/renderer/core/core.gni")
 
 blink_core_sources("script") {
-  split_count = 5
-
   sources = [
     "classic_pending_script.cc",
     "classic_pending_script.h",
@@ -26,6 +24,8 @@ blink_core_sources("script") {
     "ignore_destructive_write_count_incrementer.h",
     "import_map.cc",
     "import_map.h",
+    "js_module_script.cc",
+    "js_module_script.h",
     "layered_api.cc",
     "layered_api.h",
     "layered_api_module.h",
@@ -39,10 +39,15 @@ blink_core_sources("script") {
     "module_map.h",
     "module_pending_script.cc",
     "module_pending_script.h",
+    "module_record_resolver.h",
+    "module_record_resolver_impl.cc",
+    "module_record_resolver_impl.h",
     "module_script.cc",
     "module_script.h",
     "parsed_specifier.cc",
     "parsed_specifier.h",
+    "pending_import_map.cc",
+    "pending_import_map.h",
     "pending_script.cc",
     "pending_script.h",
     "script.h",
@@ -50,12 +55,11 @@ blink_core_sources("script") {
     "script_element_base.h",
     "script_loader.cc",
     "script_loader.h",
-    "script_module_resolver.h",
-    "script_module_resolver_impl.cc",
-    "script_module_resolver_impl.h",
     "script_runner.cc",
     "script_runner.h",
     "script_scheduling_type.h",
+    "value_wrapper_synthetic_module_script.cc",
+    "value_wrapper_synthetic_module_script.h",
     "worker_modulator_impl.cc",
     "worker_modulator_impl.h",
     "worklet_modulator_impl.cc",
@@ -70,4 +74,25 @@ blink_core_sources("script") {
   ]
 
   jumbo_excluded_sources = [ "modulator.cc" ]  # https://crbug.com/716395
+}
+
+copy("layered_apis_elements_virtual_scroller_js") {
+  testonly = true
+
+  sources = [
+    "resources/layered_api/elements/virtual-scroller/find-element.mjs",
+    "resources/layered_api/elements/virtual-scroller/sets.mjs",
+    "resources/layered_api/elements/virtual-scroller/visibility-manager.mjs",
+  ]
+
+  outputs = [
+    "{{source_gen_dir}}/{{source_file_part}}",
+  ]
+}
+
+group("js_files_for_web_tests") {
+  testonly = true
+  data_deps = [
+    ":layered_apis_elements_virtual_scroller_js",
+  ]
 }

@@ -80,17 +80,20 @@ body > main {
   background-color: rgb(250, 250, 250);
 }
 
-.messages.row .value,
+.warnings.row .value,
+.errors.row .value,
 .value.row .value {
   flex-grow: 1;
   max-height: 200px;
   overflow: auto;
+  overflow-wrap: break-word;
   text-overflow: unset;
-  white-space: pre;
+  white-space: pre-wrap;
 }
 
-<if expr="not android">
-.messages.row .name,
+<if expr="not is_android">
+.errors.row .name,
+.warnings.row .name,
 .conflict.row .name,
 .value.row .name {
   text-align: end;
@@ -122,11 +125,11 @@ div.status-entry:last-child {
 }
 
 body > header {
+  align-items: center;
   padding: 12px;
 }
 
-body > header,
-.reload-show-unset-section {
+.header-row {
   align-items: center;
   display: flex;
   height: 56px;
@@ -179,7 +182,7 @@ a {
   display: none;
 }
 
-<if expr="android">
+<if expr="is_android">
 body > main {
   padding: 0;
 }

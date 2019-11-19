@@ -22,7 +22,7 @@ class ExtendedAuthenticator;
 namespace extensions {
 
 class QuickUnlockPrivateGetAuthTokenFunction
-    : public UIThreadExtensionFunction,
+    : public ExtensionFunction,
       public chromeos::AuthStatusConsumer {
  public:
   using AuthenticatorAllocator =
@@ -67,7 +67,7 @@ class QuickUnlockPrivateGetAuthTokenFunction
 };
 
 class QuickUnlockPrivateSetLockScreenEnabledFunction
-    : public UIThreadExtensionFunction {
+    : public ExtensionFunction {
  public:
   QuickUnlockPrivateSetLockScreenEnabledFunction();
   DECLARE_EXTENSION_FUNCTION("quickUnlockPrivate.setLockScreenEnabled",
@@ -85,8 +85,7 @@ class QuickUnlockPrivateSetLockScreenEnabledFunction
   DISALLOW_COPY_AND_ASSIGN(QuickUnlockPrivateSetLockScreenEnabledFunction);
 };
 
-class QuickUnlockPrivateGetAvailableModesFunction
-    : public UIThreadExtensionFunction {
+class QuickUnlockPrivateGetAvailableModesFunction : public ExtensionFunction {
  public:
   QuickUnlockPrivateGetAvailableModesFunction();
   DECLARE_EXTENSION_FUNCTION("quickUnlockPrivate.getAvailableModes",
@@ -104,8 +103,7 @@ class QuickUnlockPrivateGetAvailableModesFunction
   DISALLOW_COPY_AND_ASSIGN(QuickUnlockPrivateGetAvailableModesFunction);
 };
 
-class QuickUnlockPrivateGetActiveModesFunction
-    : public UIThreadExtensionFunction {
+class QuickUnlockPrivateGetActiveModesFunction : public ExtensionFunction {
  public:
   QuickUnlockPrivateGetActiveModesFunction();
   DECLARE_EXTENSION_FUNCTION("quickUnlockPrivate.getActiveModes",
@@ -126,8 +124,7 @@ class QuickUnlockPrivateGetActiveModesFunction
   DISALLOW_COPY_AND_ASSIGN(QuickUnlockPrivateGetActiveModesFunction);
 };
 
-class QuickUnlockPrivateCheckCredentialFunction
-    : public UIThreadExtensionFunction {
+class QuickUnlockPrivateCheckCredentialFunction : public ExtensionFunction {
  public:
   QuickUnlockPrivateCheckCredentialFunction();
   DECLARE_EXTENSION_FUNCTION("quickUnlockPrivate.checkCredential",
@@ -144,7 +141,7 @@ class QuickUnlockPrivateCheckCredentialFunction
 };
 
 class QuickUnlockPrivateGetCredentialRequirementsFunction
-    : public UIThreadExtensionFunction {
+    : public ExtensionFunction {
  public:
   QuickUnlockPrivateGetCredentialRequirementsFunction();
   DECLARE_EXTENSION_FUNCTION("quickUnlockPrivate.getCredentialRequirements",
@@ -160,7 +157,7 @@ class QuickUnlockPrivateGetCredentialRequirementsFunction
   DISALLOW_COPY_AND_ASSIGN(QuickUnlockPrivateGetCredentialRequirementsFunction);
 };
 
-class QuickUnlockPrivateSetModesFunction : public UIThreadExtensionFunction {
+class QuickUnlockPrivateSetModesFunction : public ExtensionFunction {
  public:
   using QuickUnlockMode =
       extensions::api::quick_unlock_private::QuickUnlockMode;

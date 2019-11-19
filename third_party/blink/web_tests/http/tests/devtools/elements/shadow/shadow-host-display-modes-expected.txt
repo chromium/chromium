@@ -13,7 +13,7 @@ Tests that distributed nodes and their updates are correctly shown in different 
         - <div class="oldestShadowMain">
             - <content select=".distributeMeToOldest">
                   <div id="fallbackOldest"></div>
-                  ↪ <div>
+                  ↪ <div> reveal
               </content>
           </div>
       <div class="distributeMeToYoungest original">\n        youngest distributed text\n    </div>
@@ -27,8 +27,8 @@ Tests that distributed nodes and their updates are correctly shown in different 
         - <div class="oldestShadowMain">
             - <content select=".distributeMeToOldest">
                   <div id="fallbackOldest"></div>
-                  ↪ <div>
-                  ↪ <div>
+                  ↪ <div> reveal
+                  ↪ <div> reveal
               </content>
           </div>
       <div class="distributeMeToYoungest original">\n        youngest distributed text\n    </div>
@@ -43,9 +43,9 @@ Tests that distributed nodes and their updates are correctly shown in different 
         - <div class="oldestShadowMain">
             - <content select=".distributeMeToOldest">
                   <div id="fallbackOldest"></div>
-                  ↪ <div>
-                  ↪ <div>
-                  ↪ <div>
+                  ↪ <div> reveal
+                  ↪ <div> reveal
+                  ↪ <div> reveal
               </content>
           </div>
       <div class="distributeMeToYoungest original">\n        youngest distributed text\n    </div>

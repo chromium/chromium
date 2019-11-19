@@ -9,9 +9,8 @@
 #import "ios/chrome/browser/ui/collection_view/cells/MDCCollectionViewCell+Chrome.h"
 #include "ios/chrome/browser/ui/collection_view/cells/collection_view_cell_constants.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/colors/UIColor+cr_semantic_colors.h"
 #import "ios/chrome/common/ui_util/constraints_ui_util.h"
-#import "ios/third_party/material_components_ios/src/components/Palettes/src/MaterialPalettes.h"
-#import "ios/third_party/material_components_ios/src/components/Typography/src/MaterialTypography.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -102,15 +101,15 @@ const CGFloat kMinDetailTextWidthRatio = 0.25f;
     _textLabel = [[UILabel alloc] init];
     _textLabel.translatesAutoresizingMaskIntoConstraints = NO;
     _textLabel.font = [UIFont systemFontOfSize:kUIKitMainFontSize];
-    _textLabel.textColor = UIColorFromRGB(kUIKitMainTextColor);
-    _textLabel.backgroundColor = [UIColor clearColor];
+    _textLabel.textColor = UIColor.cr_labelColor;
+    _textLabel.backgroundColor = UIColor.clearColor;
     [contentView addSubview:_textLabel];
 
     _detailTextLabel = [[UILabel alloc] init];
     _detailTextLabel.translatesAutoresizingMaskIntoConstraints = NO;
     _detailTextLabel.font = [UIFont systemFontOfSize:kUIKitDetailFontSize];
-    _detailTextLabel.textColor = UIColorFromRGB(kUIKitDetailTextColor);
-    _detailTextLabel.backgroundColor = [UIColor clearColor];
+    _detailTextLabel.textColor = UIColor.cr_secondaryLabelColor;
+    _detailTextLabel.backgroundColor = UIColor.clearColor;
     [contentView addSubview:_detailTextLabel];
 
     // Set up the width constraints. They are activated here and updated in

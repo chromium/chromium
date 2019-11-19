@@ -1,9 +1,0 @@
-Testing transitionDuration: PASS
-Testing transitionProperty: PASS
-Testing transitionDelay: PASS
-Testing transitionTimingFunction: PASS
-Testing animationName: PASS
-Testing animationDuration: PASS
-Testing animationDelay: PASS
-Testing animationFillMode: PASS
-

@@ -62,7 +62,7 @@ class AXTreeSourceAuraTest : public ChromeViewsTestBase {
     widget_ = new Widget();
     Widget::InitParams init_params(Widget::InitParams::TYPE_WINDOW_FRAMELESS);
     init_params.context = GetContext();
-    widget_->Init(init_params);
+    widget_->Init(std::move(init_params));
 
     content_ = new View();
     widget_->SetContentsView(content_);
@@ -83,8 +83,9 @@ class AXTreeSourceAuraTest : public ChromeViewsTestBase {
   Widget* widget_;
   View* content_;
   Textfield* textfield_;
+  AXAuraObjCache cache_;
   // A simulated desktop root with no delegate.
-  AXRootObjWrapper root_wrapper_{nullptr};
+  AXRootObjWrapper root_wrapper_{nullptr, &cache_};
 
  private:
   DISALLOW_COPY_AND_ASSIGN(AXTreeSourceAuraTest);
@@ -94,23 +95,22 @@ TEST_F(AXTreeSourceAuraTest, Accessors) {
   // Focus the textfield so the cursor does not disappear.
   textfield_->RequestFocus();
 
-  AXTreeSourceViews ax_tree(&root_wrapper_, ui::AXTreeID::CreateNewAXTreeID());
+  AXTreeSourceViews ax_tree(&root_wrapper_, ui::AXTreeID::CreateNewAXTreeID(),
+                            &cache_);
   ASSERT_TRUE(ax_tree.GetRoot());
 
   // ID's should be > 0.
   ASSERT_GE(ax_tree.GetRoot()->GetUniqueId(), 1);
 
   // Grab the content view directly from cache to avoid walking down the tree.
-  AXAuraObjWrapper* content =
-      AXAuraObjCache::GetInstance()->GetOrCreate(content_);
+  AXAuraObjWrapper* content = cache_.GetOrCreate(content_);
   std::vector<AXAuraObjWrapper*> content_children;
   ax_tree.GetChildren(content, &content_children);
   ASSERT_EQ(1U, content_children.size());
 
   // Walk down to the text field and assert it is what we expect.
   AXAuraObjWrapper* textfield = content_children[0];
-  AXAuraObjWrapper* cached_textfield =
-      AXAuraObjCache::GetInstance()->GetOrCreate(textfield_);
+  AXAuraObjWrapper* cached_textfield = cache_.GetOrCreate(textfield_);
   ASSERT_EQ(cached_textfield, textfield);
   std::vector<AXAuraObjWrapper*> textfield_children;
   ax_tree.GetChildren(textfield, &textfield_children);
@@ -131,11 +131,11 @@ TEST_F(AXTreeSourceAuraTest, Accessors) {
 }
 
 TEST_F(AXTreeSourceAuraTest, DoDefault) {
-  AXTreeSourceViews ax_tree(&root_wrapper_, ui::AXTreeID::CreateNewAXTreeID());
+  AXTreeSourceViews ax_tree(&root_wrapper_, ui::AXTreeID::CreateNewAXTreeID(),
+                            &cache_);
 
   // Grab a wrapper to |DoDefault| (click).
-  AXAuraObjWrapper* textfield_wrapper =
-      AXAuraObjCache::GetInstance()->GetOrCreate(textfield_);
+  AXAuraObjWrapper* textfield_wrapper = cache_.GetOrCreate(textfield_);
 
   // Click and verify focus.
   ASSERT_FALSE(textfield_->HasFocus());
@@ -147,11 +147,11 @@ TEST_F(AXTreeSourceAuraTest, DoDefault) {
 }
 
 TEST_F(AXTreeSourceAuraTest, Focus) {
-  AXTreeSourceViews ax_tree(&root_wrapper_, ui::AXTreeID::CreateNewAXTreeID());
+  AXTreeSourceViews ax_tree(&root_wrapper_, ui::AXTreeID::CreateNewAXTreeID(),
+                            &cache_);
 
   // Grab a wrapper to focus.
-  AXAuraObjWrapper* textfield_wrapper =
-      AXAuraObjCache::GetInstance()->GetOrCreate(textfield_);
+  AXAuraObjWrapper* textfield_wrapper = cache_.GetOrCreate(textfield_);
 
   // Focus and verify.
   ASSERT_FALSE(textfield_->HasFocus());
@@ -163,7 +163,8 @@ TEST_F(AXTreeSourceAuraTest, Focus) {
 }
 
 TEST_F(AXTreeSourceAuraTest, Serialize) {
-  AXTreeSourceViews ax_tree(&root_wrapper_, ui::AXTreeID::CreateNewAXTreeID());
+  AXTreeSourceViews ax_tree(&root_wrapper_, ui::AXTreeID::CreateNewAXTreeID(),
+                            &cache_);
   AuraAXTreeSerializer ax_serializer(&ax_tree);
   ui::AXTreeUpdate out_update;
 
@@ -179,8 +180,7 @@ TEST_F(AXTreeSourceAuraTest, Serialize) {
 
   // Grab the textfield since serialization only walks up the tree (not down
   // from root).
-  AXAuraObjWrapper* textfield_wrapper =
-      AXAuraObjCache::GetInstance()->GetOrCreate(textfield_);
+  AXAuraObjWrapper* textfield_wrapper = cache_.GetOrCreate(textfield_);
 
   // Now, re-serialize.
   ui::AXTreeUpdate out_update2;
@@ -189,7 +189,7 @@ TEST_F(AXTreeSourceAuraTest, Serialize) {
   size_t node_count = out_update2.nodes.size();
 
   // We should have far more updates this time around.
-  ASSERT_GE(node_count, 8U);
+  EXPECT_GE(node_count, 7U);
 
   int text_field_update_index = -1;
   for (size_t i = 0; i < node_count; ++i) {
@@ -203,10 +203,10 @@ TEST_F(AXTreeSourceAuraTest, Serialize) {
 }
 
 TEST_F(AXTreeSourceAuraTest, SerializeWindowSetsClipsChildren) {
-  AXTreeSourceViews ax_tree(&root_wrapper_, ui::AXTreeID::CreateNewAXTreeID());
+  AXTreeSourceViews ax_tree(&root_wrapper_, ui::AXTreeID::CreateNewAXTreeID(),
+                            &cache_);
   AuraAXTreeSerializer ax_serializer(&ax_tree);
-  AXAuraObjWrapper* widget_wrapper =
-      AXAuraObjCache::GetInstance()->GetOrCreate(widget_);
+  AXAuraObjWrapper* widget_wrapper = cache_.GetOrCreate(widget_);
   ui::AXNodeData node_data;
   ax_tree.SerializeNode(widget_wrapper, &node_data);
   EXPECT_EQ(ax::mojom::Role::kWindow, node_data.role);

@@ -1,6 +1,0 @@
-specific_include_rules = {
-  "automation_apitest\.cc": [
-    "+ash/accelerators/accelerator_controller.h",
-    "+ash/shell.h",
-  ]
-}

@@ -76,7 +76,7 @@ bool HasExpiredOrIncompleteResult(
   for (float favicon_scale : favicon_scales) {
     int edge_size_in_pixel = std::ceil(desired_size_in_dip * favicon_scale);
     gfx::Size value(edge_size_in_pixel, edge_size_in_pixel);
-    if (!base::ContainsValue(favicon_sizes, value))
+    if (!base::Contains(favicon_sizes, value))
       return true;
   }
   return false;
@@ -226,8 +226,9 @@ void FaviconHandler::FetchFavicon(const GURL& page_url, bool is_same_document) {
   // we get <link rel="icon"> candidates (FaviconHandler::OnUpdateCandidates()).
   service_->GetFaviconForPageURL(
       last_page_url_, icon_types_, preferred_icon_size(),
-      base::Bind(&FaviconHandler::OnFaviconDataForInitialURLFromFaviconService,
-                 base::Unretained(this)),
+      base::BindOnce(
+          &FaviconHandler::OnFaviconDataForInitialURLFromFaviconService,
+          base::Unretained(this)),
       &cancelable_task_tracker_for_page_url_);
 }
 
@@ -360,8 +361,9 @@ void FaviconHandler::OnUpdateCandidates(
   // mappings only if the manifest URL is cached.
   GetFaviconAndUpdateMappingsUnlessIncognito(
       /*icon_url=*/manifest_url_, favicon_base::IconType::kWebManifestIcon,
-      base::Bind(&FaviconHandler::OnFaviconDataForManifestFromFaviconService,
-                 base::Unretained(this)));
+      base::BindOnce(
+          &FaviconHandler::OnFaviconDataForManifestFromFaviconService,
+          base::Unretained(this)));
 }
 
 void FaviconHandler::OnFaviconDataForManifestFromFaviconService(
@@ -621,19 +623,20 @@ void FaviconHandler::DownloadCurrentCandidateOrAskFaviconService() {
   } else {
     GetFaviconAndUpdateMappingsUnlessIncognito(
         icon_url, icon_type,
-        base::Bind(&FaviconHandler::OnFaviconData, base::Unretained(this)));
+        base::BindOnce(&FaviconHandler::OnFaviconData, base::Unretained(this)));
   }
 }
 
 void FaviconHandler::GetFaviconAndUpdateMappingsUnlessIncognito(
     const GURL& icon_url,
     favicon_base::IconType icon_type,
-    const favicon_base::FaviconResultsCallback& callback) {
+    favicon_base::FaviconResultsCallback callback) {
   // We don't know the favicon, but we may have previously downloaded the
   // favicon for another page that shares the same favicon. Ask for the
   // favicon given the favicon URL.
   if (delegate_->IsOffTheRecord()) {
-    service_->GetFavicon(icon_url, icon_type, preferred_icon_size(), callback,
+    service_->GetFavicon(icon_url, icon_type, preferred_icon_size(),
+                         std::move(callback),
                          &cancelable_task_tracker_for_candidates_);
   } else {
     // Ask the history service for the icon. This does two things:
@@ -642,8 +645,8 @@ void FaviconHandler::GetFaviconAndUpdateMappingsUnlessIncognito(
     //    include the mapping between the page url and the favicon url.
     // This is asynchronous. The history service will call back when done.
     service_->UpdateFaviconMappingsAndFetch(
-        page_urls_, icon_url, icon_type, preferred_icon_size(), callback,
-        &cancelable_task_tracker_for_candidates_);
+        page_urls_, icon_url, icon_type, preferred_icon_size(),
+        std::move(callback), &cancelable_task_tracker_for_candidates_);
   }
 }
 

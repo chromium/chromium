@@ -9,8 +9,8 @@
     android:layout_height="wrap_content"
     android:minHeight="@dimen/snippets_article_header_height"
     android:orientation="horizontal"
-    android:paddingStart="@dimen/snippets_padding"
-    android:paddingEnd="@dimen/snippets_padding"
+    android:paddingStart="@dimen/card_padding"
+    android:paddingEnd="@dimen/card_padding"
     android:gravity="center_vertical">
 
     <TextView

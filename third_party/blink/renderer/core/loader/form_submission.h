@@ -32,23 +32,22 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_FORM_SUBMISSION_H_
 
 #include "base/macros.h"
-#include "third_party/blink/public/web/web_triggering_event_info.h"
+#include "third_party/blink/public/common/navigation/triggering_event_info.h"
 #include "third_party/blink/renderer/core/loader/frame_load_request.h"
 #include "third_party/blink/renderer/core/loader/navigation_policy.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/referrer.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
-class Document;
 class EncodedFormData;
 class Event;
 class HTMLFormControlElement;
 class HTMLFormElement;
 
-class FormSubmission : public GarbageCollectedFinalized<FormSubmission> {
+class FormSubmission final : public GarbageCollected<FormSubmission> {
  public:
   enum SubmitMethod { kGetMethod, kPostMethod, kDialogMethod };
 
@@ -112,17 +111,14 @@ class FormSubmission : public GarbageCollectedFinalized<FormSubmission> {
 
   void Trace(blink::Visitor*);
 
-  FrameLoadRequest CreateFrameLoadRequest(Document* origin_document);
+  void Navigate();
 
   KURL RequestURL() const;
 
   SubmitMethod Method() const { return method_; }
   const KURL& Action() const { return action_; }
-  const AtomicString& Target() const { return target_; }
-  void ClearTarget() { target_ = g_null_atom; }
   HTMLFormElement* Form() const { return form_.Get(); }
   EncodedFormData* Data() const { return form_data_.get(); }
-  NavigationPolicy GetNavigationPolicy() const { return navigation_policy_; }
 
   const String& Result() const { return result_; }
 
@@ -136,7 +132,7 @@ class FormSubmission : public GarbageCollectedFinalized<FormSubmission> {
   scoped_refptr<EncodedFormData> form_data_;
   String boundary_;
   NavigationPolicy navigation_policy_;
-  WebTriggeringEventInfo triggering_event_info_;
+  TriggeringEventInfo triggering_event_info_;
   String result_;
 };
 

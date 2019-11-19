@@ -172,7 +172,7 @@ class V4GetHashProtocolManager {
   // synchronously. |list_client_states| is needed for reporting the current
   // state of the lists on the client; it does not affect the response from the
   // server.
-  virtual void GetFullHashes(const FullHashToStoreAndHashPrefixesMap&
+  virtual void GetFullHashes(const FullHashToStoreAndHashPrefixesMap
                                  full_hash_to_matching_hash_prefixes,
                              const std::vector<std::string>& list_client_states,
                              FullHashCallback callback);

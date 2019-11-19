@@ -9,11 +9,13 @@
 
 #include "base/macros.h"
 #include "build/build_config.h"
-#include "media/mojo/interfaces/interface_factory.mojom.h"
-#include "media/mojo/interfaces/media_service.mojom.h"
-#include "media/mojo/services/deferred_destroy_strong_binding_set.h"
+#include "media/mojo/mojom/interface_factory.mojom.h"
+#include "media/mojo/mojom/media_service.mojom.h"
 #include "media/mojo/services/media_mojo_export.h"
 #include "mojo/public/cpp/bindings/binding_set.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
 #include "services/service_manager/public/cpp/service.h"
 #include "services/service_manager/public/cpp/service_binding.h"
@@ -42,8 +44,9 @@ class MEDIA_MOJO_EXPORT MediaService : public service_manager::Service,
   void Create(mojom::MediaServiceRequest request);
 
   void CreateInterfaceFactory(
-      mojom::InterfaceFactoryRequest request,
-      service_manager::mojom::InterfaceProviderPtr host_interfaces) final;
+      mojo::PendingReceiver<mojom::InterfaceFactory> receiver,
+      mojo::PendingRemote<service_manager::mojom::InterfaceProvider>
+          host_interfaces) final;
 
   service_manager::ServiceBinding service_binding_;
   service_manager::ServiceKeepalive keepalive_;
@@ -56,8 +59,7 @@ class MEDIA_MOJO_EXPORT MediaService : public service_manager::Service,
   // |mojo_media_client_| must be destructed before |ref_factory_|.
   std::unique_ptr<MojoMediaClient> mojo_media_client_;
 
-  DeferredDestroyStrongBindingSet<mojom::InterfaceFactory>
-      interface_factory_bindings_;
+  mojo::UniqueReceiverSet<mojom::InterfaceFactory> interface_factory_receivers_;
 
   service_manager::BinderRegistry registry_;
   mojo::BindingSet<mojom::MediaService> bindings_;

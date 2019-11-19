@@ -5,10 +5,11 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <fuzzer/FuzzedDataProvider.h>
+
 #include <list>
 #include <vector>
 
-#include "base/test/fuzzed_data_provider.h"
 #include "net/third_party/quiche/src/http2/hpack/decoder/hpack_decoder.h"
 
 // Entry point for LibFuzzer.
@@ -17,7 +18,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   if (size < 4)
     return 0;
 
-  base::FuzzedDataProvider fuzzed_data_provider(data, size);
+  FuzzedDataProvider fuzzed_data_provider(data, size);
   size_t max_string_size =
       fuzzed_data_provider.ConsumeIntegralInRange<size_t>(1, 10 * size);
   http2::HpackDecoder decoder(http2::HpackDecoderNoOpListener::NoOpListener(),

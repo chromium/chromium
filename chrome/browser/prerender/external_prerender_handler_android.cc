@@ -8,6 +8,7 @@
 #include "base/android/jni_string.h"
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/android/chrome_jni_headers/ExternalPrerenderHandler_jni.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/prerender/prerender_handle.h"
 #include "chrome/browser/prerender/prerender_manager.h"
@@ -15,7 +16,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_android.h"
 #include "content/public/browser/web_contents.h"
-#include "jni/ExternalPrerenderHandler_jni.h"
 
 using base::android::ConvertJavaStringToUTF16;
 using base::android::JavaParamRef;
@@ -53,7 +53,6 @@ bool JNI_ExternalPrerenderHandler_CheckAndConvertParams(
 base::android::ScopedJavaLocalRef<jobject>
 ExternalPrerenderHandlerAndroid::AddPrerender(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     const JavaParamRef<jobject>& jprofile,
     const JavaParamRef<jobject>& jweb_contents,
     const JavaParamRef<jstring>& jurl,
@@ -108,9 +107,7 @@ ExternalPrerenderHandlerAndroid::AddPrerender(
   }
 }
 
-void ExternalPrerenderHandlerAndroid::CancelCurrentPrerender(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& object) {
+void ExternalPrerenderHandlerAndroid::CancelCurrentPrerender(JNIEnv* env) {
   if (!prerender_handle_)
     return;
 

@@ -7,7 +7,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #import "base/test/ios/wait_util.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "testing/platform_test.h"
 
@@ -22,7 +22,7 @@ using DownloadDirectoryTest = PlatformTest;
 
 // Tests that DeleteDownloadsDirectory() actually deletes the directory.
 TEST_F(DownloadDirectoryTest, Deletion) {
-  base::test::ScopedTaskEnvironment envoronment;
+  base::test::TaskEnvironment envoronment;
 
   // Create a new file in downloads directory.
   base::FilePath dir;

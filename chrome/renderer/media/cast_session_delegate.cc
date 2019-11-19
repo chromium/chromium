@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/single_thread_task_runner.h"
@@ -39,8 +38,7 @@ static base::LazyInstance<CastThreads>::DestructorAtExit g_cast_threads =
     LAZY_INSTANCE_INITIALIZER;
 
 CastSessionDelegateBase::CastSessionDelegateBase()
-    : io_task_runner_(content::RenderThread::Get()->GetIOTaskRunner()),
-      weak_factory_(this) {
+    : io_task_runner_(content::RenderThread::Get()->GetIOTaskRunner()) {
   DCHECK(io_task_runner_.get());
 #if defined(OS_WIN)
   // Note that this also increases the accuracy of PostDelayTask,
@@ -105,8 +103,7 @@ void CastSessionDelegateBase::StatusNotificationCB(
   }
 }
 
-CastSessionDelegate::CastSessionDelegate()
-    : weak_factory_(this) {
+CastSessionDelegate::CastSessionDelegate() {
   DCHECK(io_task_runner_.get());
 }
 
@@ -300,13 +297,13 @@ void CastSessionDelegate::OnOperationalStatusChange(
       // successfully re-initialized.
       if (is_for_audio) {
         if (!audio_frame_input_available_callback_.is_null()) {
-          base::ResetAndReturn(&audio_frame_input_available_callback_).Run(
-              cast_sender_->audio_frame_input());
+          std::move(audio_frame_input_available_callback_)
+              .Run(cast_sender_->audio_frame_input());
         }
       } else {
         if (!video_frame_input_available_callback_.is_null()) {
-          base::ResetAndReturn(&video_frame_input_available_callback_).Run(
-              cast_sender_->video_frame_input());
+          std::move(video_frame_input_available_callback_)
+              .Run(cast_sender_->video_frame_input());
         }
       }
       break;

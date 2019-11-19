@@ -1,4 +1,4 @@
 [document web]
 ++[landmark] xml-roles:navigation
 ++++[link] name='Don't click on me'
-++++++[text] name='Don't click on me'
+++++++[static] name='Don't click on me'

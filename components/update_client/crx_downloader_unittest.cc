@@ -14,7 +14,7 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/bind_test_util.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "components/update_client/net/network_chromium.h"
@@ -34,7 +34,7 @@ namespace {
 const char kTestFileName[] = "jebgalgnebhfojomionfpkfelancnnkf.crx";
 
 const char hash_jebg[] =
-    "6fc4b93fd11134de1300c2c0bb88c12b644a4ec0fd7c9b12cb7cc067667bde87";
+    "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498";
 
 base::FilePath MakeTestFilePath(const char* file) {
   base::FilePath path;
@@ -91,7 +91,7 @@ class CrxDownloaderTest : public testing::Test {
   static const int kExpectedContext = 0xaabb;
 
  private:
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   scoped_refptr<network::SharedURLLoaderFactory>
       test_shared_url_loader_factory_;
   base::OnceClosure quit_closure_;
@@ -109,8 +109,7 @@ CrxDownloaderTest::CrxDownloaderTest()
       crx_context_(0),
       num_download_complete_calls_(0),
       num_progress_calls_(0),
-      scoped_task_environment_(
-          base::test::ScopedTaskEnvironment::MainThreadType::IO),
+      task_environment_(base::test::TaskEnvironment::MainThreadType::IO),
       test_shared_url_loader_factory_(
           base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
               &test_url_loader_factory_)) {}
@@ -159,17 +158,17 @@ void CrxDownloaderTest::AddResponse(const GURL& url,
   if (net_error == net::OK) {
     std::string data;
     EXPECT_TRUE(base::ReadFileToString(file_path, &data));
-    network::ResourceResponseHead head;
-    head.content_length = data.size();
+    auto head = network::mojom::URLResponseHead::New();
+    head->content_length = data.size();
     network::URLLoaderCompletionStatus status(net_error);
     status.decoded_body_length = data.size();
-    test_url_loader_factory_.AddResponse(url, head, data, status);
+    test_url_loader_factory_.AddResponse(url, std::move(head), data, status);
     return;
   }
 
   EXPECT_NE(net_error, net::OK);
   test_url_loader_factory_.AddResponse(
-      url, network::ResourceResponseHead(), std::string(),
+      url, network::mojom::URLResponseHead::New(), std::string(),
       network::URLLoaderCompletionStatus(net_error));
 }
 
@@ -186,7 +185,7 @@ void CrxDownloaderTest::RunThreads() {
 }
 
 void CrxDownloaderTest::RunThreadsUntilIdle() {
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
   base::RunLoop().RunUntilIdle();
 }
 
@@ -342,8 +341,8 @@ TEST_F(CrxDownloaderTest, TwoUrls_FirstInvalid) {
   EXPECT_EQ(-1, download_metrics[0].total_bytes);
   EXPECT_EQ(expected_crx_url, download_metrics[1].url);
   EXPECT_EQ(0, download_metrics[1].error);
-  EXPECT_EQ(1843, download_metrics[1].downloaded_bytes);
-  EXPECT_EQ(1843, download_metrics[1].total_bytes);
+  EXPECT_EQ(1015, download_metrics[1].downloaded_bytes);
+  EXPECT_EQ(1015, download_metrics[1].total_bytes);
 }
 
 // Tests that the download succeeds if the first url is correct and the

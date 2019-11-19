@@ -29,13 +29,11 @@ class SVGFEMergeElement final : public SVGFilterPrimitiveStandardAttributes {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  DECLARE_NODE_FACTORY(SVGFEMergeElement);
-
   explicit SVGFEMergeElement(Document&);
 
  private:
   FilterEffect* Build(SVGFilterBuilder*, Filter*) override;
-  bool TaintsOrigin(bool inputs_taint_origin) const override;
+  bool TaintsOrigin() const override { return false; }
 };
 
 }  // namespace blink

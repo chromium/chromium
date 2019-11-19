@@ -14,6 +14,9 @@ import gpu_project_config
 path_util.SetupTelemetryPaths()
 
 from telemetry.testing import browser_test_runner
+from telemetry.testing import serially_executed_browser_test_case
+from py_utils import discover
+
 
 def PostprocessJSON(file_name, run_test_args):
   # The file is not necessarily written depending on the arguments - only
@@ -42,6 +45,17 @@ def FailIfScreenLockedOnMac():
   if current_session.get('CGSSessionScreenIsLocked'):
     raise RuntimeError('Mac lockscreen detected, aborting.')
 
+def FindTestCase(test_name):
+  for start_dir in gpu_project_config.CONFIG.start_dirs:
+    modules_to_classes = discover.DiscoverClasses(
+        start_dir,
+        gpu_project_config.CONFIG.top_level_dir,
+        base_class=serially_executed_browser_test_case.
+        SeriallyExecutedBrowserTestCase)
+    for cl in modules_to_classes.values():
+      if cl.Name() == test_name:
+          return cl
+
 def main():
   FailIfScreenLockedOnMac()
   rest_args = sys.argv[1:]
@@ -53,6 +67,27 @@ def main():
     action='store_true',
     help=('Write the test script arguments to the results file.'))
   option, rest_args_filtered = parser.parse_known_args(rest_args)
+
+  parser.add_argument(
+      'test', nargs='*', type=str, help=argparse.SUPPRESS)
+  option, _ = parser.parse_known_args(rest_args_filtered)
+
+  if option.test:
+    test_class = FindTestCase(option.test[0])
+  else:
+    test_class = None
+
+  if test_class:
+    rest_args_filtered.extend(
+        ['--test-name-prefix=%s.%s.' %
+         (test_class.__module__, test_class.__name__)])
+
+  if not any(arg.startswith('--retry-limit') for arg in rest_args_filtered):
+    if '--retry-only-retry-on-failure-tests' not in rest_args_filtered:
+      rest_args_filtered.append('--retry-only-retry-on-failure-tests')
+    rest_args_filtered.append('--retry-limit=2')
+  rest_args_filtered.extend([
+      '--repository-absolute-path', path_util.GetChromiumSrcDir()])
 
   retval = browser_test_runner.Run(
       gpu_project_config.CONFIG, rest_args_filtered)

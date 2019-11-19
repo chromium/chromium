@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
+#include "ios/chrome/browser/crash_report/breakpad_helper.h"
 #include "ios/chrome/browser/crash_report/crash_report_flags.h"
 #import "third_party/breakpad/breakpad/src/client/ios/Breakpad.h"
 #import "third_party/breakpad/breakpad/src/client/ios/BreakpadController.h"
@@ -179,6 +180,7 @@ void LogRecoveryTime(base::TimeDelta time) {
           if (!breakpadRef) {
             return;
           }
+          breakpad_helper::SetHangReport(true);
           NSDictionary* breakpadReportInfo =
               BreakpadGenerateReport(breakpadRef, nil);
           if (!breakpadReportInfo) {

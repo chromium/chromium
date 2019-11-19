@@ -1,6 +1,6 @@
 include_rules = [
-  "-checkdeps/testdata/disallowed",
-  "+checkdeps/testdata/allowed",
+  "-buildtools/checkdeps/testdata/disallowed",
+  "+buildtools/checkdeps/testdata/allowed",
   "-third_party/explicitly_disallowed",
 ]
 skip_child_includes = [

@@ -1,4 +1,4 @@
-csharp@chromium.org
-robertshield@chromium.org
+# Inherit owners from the parent directory, but use a different component.
 
+# TEAM: security-dev@chromium.org
 # COMPONENT: UI>Browser>Preferences>Protector

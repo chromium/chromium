@@ -39,7 +39,7 @@ makeSimpleXHR @ VM:9
 requestHelper @ console-xhr-logging.js:14
 (anonymous) @ VM:1
 
-Message count: 3
+Message count: 4
 console-xhr-logging.js:13 sending a GET request to http://localhost:8000/devtools/resources/cors-disabled/xhr-exists.html
 VM:37 Access to XMLHttpRequest at 'http://localhost:8000/devtools/resources/cors-disabled/xhr-exists.html' from origin 'http://127.0.0.1:8000' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
 makeXHR @ VM:37
@@ -47,7 +47,13 @@ makeSimpleXHRWithPayload @ VM:13
 makeSimpleXHR @ VM:9
 requestHelper @ console-xhr-logging.js:14
 (anonymous) @ VM:1
-VM:37 XHR finished loading: GET "http://localhost:8000/devtools/resources/cors-disabled/xhr-exists.html".
+VM:37 GET http://localhost:8000/devtools/resources/cors-disabled/xhr-exists.html net::ERR_FAILED
+makeXHR @ VM:37
+makeSimpleXHRWithPayload @ VM:13
+makeSimpleXHR @ VM:9
+requestHelper @ console-xhr-logging.js:14
+(anonymous) @ VM:1
+VM:37 XHR failed loading: GET "http://localhost:8000/devtools/resources/cors-disabled/xhr-exists.html".
 makeXHR @ VM:37
 makeSimpleXHRWithPayload @ VM:13
 makeSimpleXHR @ VM:9
@@ -69,9 +75,15 @@ requestHelper @ console-xhr-logging.js:14
 Message count: 1
 console-xhr-logging.js:13 sending a POST request to resources/post-target.cgi
 
-Message count: 2
+Message count: 3
 console-xhr-logging.js:13 sending a GET request to http://localhost:8000/devtools/resources/cors-disabled/xhr-exists.html
 VM:37 Access to XMLHttpRequest at 'http://localhost:8000/devtools/resources/cors-disabled/xhr-exists.html' from origin 'http://127.0.0.1:8000' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
+makeXHR @ VM:37
+makeSimpleXHRWithPayload @ VM:13
+makeSimpleXHR @ VM:9
+requestHelper @ console-xhr-logging.js:14
+(anonymous) @ VM:1
+VM:37 GET http://localhost:8000/devtools/resources/cors-disabled/xhr-exists.html net::ERR_FAILED
 makeXHR @ VM:37
 makeSimpleXHRWithPayload @ VM:13
 makeSimpleXHR @ VM:9

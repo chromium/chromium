@@ -23,6 +23,10 @@ namespace policy {
 class ExternalDataManager;
 class PolicyMap;
 
+// A pattern for validating hostnames. Used for the validation of
+// DeviceLoginScreenDomainAutoComplete policy.
+extern const char hostNameRegex[];
+
 // Decodes a JSON string to a base::Value and validates it against the schema
 // defined in policy_templates.json for the policy named |policy_name|. Unknown
 // properties are dropped. Returns nullptr if the input cannot be parsed as

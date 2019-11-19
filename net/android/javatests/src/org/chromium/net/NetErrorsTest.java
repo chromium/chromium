@@ -26,12 +26,11 @@ public class NetErrorsTest {
     /**
      * Test whether we can include NetError.java and call to static integers defined in the file.
      *
-     * @throws Exception
      */
     @Test
     @SmallTest
     @Feature({"Android-AppBase"})
-    public void testExampleErrorDefined() throws Exception {
+    public void testExampleErrorDefined() {
         Assert.assertEquals(IO_PENDING_ERROR, NetError.ERR_IO_PENDING);
         Assert.assertEquals(FAILED_ERROR, NetError.ERR_FAILED);
     }

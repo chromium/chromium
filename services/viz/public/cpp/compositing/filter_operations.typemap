@@ -2,15 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-mojom = "//services/viz/public/interfaces/compositing/filter_operations.mojom"
+mojom = "//services/viz/public/mojom/compositing/filter_operations.mojom"
 deps = [
   "//cc/paint",
 ]
 public_headers = [ "//cc/paint/filter_operations.h" ]
-traits_headers = [
-  "//services/viz/public/cpp/compositing/filter_operations_struct_traits.h",
-]
+traits_headers =
+    [ "//services/viz/public/cpp/compositing/filter_operations_mojom_traits.h" ]
 sources = [
-  "//services/viz/public/cpp/compositing/filter_operations_struct_traits.cc",
+  "//services/viz/public/cpp/compositing/filter_operations_mojom_traits.cc",
 ]
-type_mappings = [ "viz.mojom.FilterOperations=cc::FilterOperations" ]
+type_mappings = [ "viz.mojom.FilterOperations=::cc::FilterOperations" ]

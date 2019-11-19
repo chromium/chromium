@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+PASS Property hyphens value 'none' computes to 'none'
+PASS Property hyphens value 'manual' computes to 'manual'
+FAIL Property hyphens value 'auto' computes to 'auto' assert_true: 'auto' is a supported value for hyphens. expected true got false
+Harness: the test ran to completion.
+

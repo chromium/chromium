@@ -29,7 +29,7 @@ inline bool Is{{tag.interface}}(const {{namespace}}Element* element) {
   return element && Is{{tag.interface}}(*element);
 }
 inline bool Is{{tag.interface}}(const Node& node) {
-  return node.Is{{namespace}}Element() && Is{{tag.interface}}(To{{namespace}}Element(node));
+  return node.Is{{namespace}}Element() && Is{{tag.interface}}(To<{{namespace}}Element>(node));
 }
 inline bool Is{{tag.interface}}(const Node* node) {
   return node && Is{{tag.interface}}(*node);
@@ -48,10 +48,24 @@ inline bool IsElementOfType<const {{tag.interface}}>(const {{namespace}}Element&
 // reinterpret_cast in the casting functions above. reinterpret_cast would be
 // unsafe due to multiple inheritence.
 
+// TODO(abhijeet@igalia.com): Remove below type casting macros.
 {% for tag in tags|sort if not tag.multipleTagNames and not tag.noTypeHelpers %}
-#define To{{tag.interface}}(x) blink::ToElement<blink::{{tag.interface}}>(x)
-#define To{{tag.interface}}OrNull(x) blink::ToElementOrNull<blink::{{tag.interface}}>(x)
-#define To{{tag.interface}}OrDie(x) blink::ToElementOrDie<blink::{{tag.interface}}>(x)
+template <>
+struct DowncastTraits<{{tag.interface}}> {
+  static bool AllowFrom(const Element& element) {
+    {% if tag.runtimeEnabled %}
+    if (!RuntimeEnabledFeatures::{{tag.runtimeEnabled}}Enabled())
+      return false;
+    {% endif %}
+    return element.HasTagName({{cpp_namespace}}::{{tag|symbol}}Tag);
+  }
+  static bool AllowFrom(const Node& node) {
+    return node.Is{{namespace}}Element() && IsA<{{tag.interface}}>(To<{{namespace}}Element>(node));
+  }
+};
+#define To{{tag.interface}}(x) blink::To<blink::{{tag.interface}}>(x)
+#define To{{tag.interface}}OrNull(x) blink::DynamicTo<blink::{{tag.interface}}>(x)
+
 {% endfor %}
 
 {% if namespace == "HTML" %}

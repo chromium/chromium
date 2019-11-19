@@ -7,7 +7,8 @@
 namespace net {
 namespace test {
 
-MockQuicData::MockQuicData() : sequence_number_(0) {}
+MockQuicData::MockQuicData(quic::ParsedQuicVersion version)
+    : sequence_number_(0), printer_(version) {}
 
 MockQuicData::~MockQuicData() {}
 
@@ -36,6 +37,13 @@ void MockQuicData::AddWrite(IoMode mode, int rv) {
   writes_.push_back(MockWrite(mode, rv, sequence_number_++));
 }
 
+void MockQuicData::AddWrite(IoMode mode,
+                            int rv,
+                            std::unique_ptr<quic::QuicEncryptedPacket> packet) {
+  writes_.push_back(MockWrite(mode, rv, sequence_number_++));
+  packets_.push_back(std::move(packet));
+}
+
 void MockQuicData::AddSocketDataToFactory(MockClientSocketFactory* factory) {
   factory->AddSocketDataProvider(InitializeAndGetSequencedSocketData());
 }
@@ -54,6 +62,7 @@ void MockQuicData::Resume() {
 
 SequencedSocketData* MockQuicData::InitializeAndGetSequencedSocketData() {
   socket_data_.reset(new SequencedSocketData(reads_, writes_));
+  socket_data_->set_printer(&printer_);
   if (connect_ != nullptr)
     socket_data_->set_connect_data(*connect_);
 

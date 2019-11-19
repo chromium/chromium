@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include <cassert>
+#include <cstdint>
 #include <cstring>
 #include <sstream>
 #include <string>
@@ -17,12 +18,17 @@
 #include "base/base_export.h"
 #include "base/callback_forward.h"
 #include "base/compiler_specific.h"
-#include "base/debug/debugger.h"
+#include "base/immediate_crash.h"
+#include "base/logging_buildflags.h"
 #include "base/macros.h"
 #include "base/scoped_clear_last_error.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/template_util.h"
 #include "build/build_config.h"
+
+#if defined(OS_CHROMEOS)
+#include <cstdio>
+#endif
 
 //
 // Optional message capabilities
@@ -167,22 +173,30 @@ typedef base::char16 PathChar;
 typedef char PathChar;
 #endif
 
-// Where to record logging output? A flat file and/or system debug log
-// via OutputDebugString.
-enum LoggingDestination {
+// A bitmask of potential logging destinations.
+using LoggingDestination = uint32_t;
+// Specifies where logs will be written. Multiple destinations can be specified
+// with bitwise OR.
+// Unless destination is LOG_NONE, all logs with severity ERROR and above will
+// be written to stderr in addition to the specified destination.
+enum : uint32_t {
   LOG_NONE                = 0,
   LOG_TO_FILE             = 1 << 0,
   LOG_TO_SYSTEM_DEBUG_LOG = 1 << 1,
+  LOG_TO_STDERR           = 1 << 2,
 
-  LOG_TO_ALL = LOG_TO_FILE | LOG_TO_SYSTEM_DEBUG_LOG,
+  LOG_TO_ALL = LOG_TO_FILE | LOG_TO_SYSTEM_DEBUG_LOG | LOG_TO_STDERR,
 
-  // On Windows, use a file next to the exe; on POSIX platforms, where
-  // it may not even be possible to locate the executable on disk, use
-  // stderr.
-#if defined(OS_WIN)
-  LOG_DEFAULT = LOG_TO_FILE,
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+// On Windows, use a file next to the exe.
+// On POSIX platforms, where it may not even be possible to locate the
+// executable on disk, use stderr.
+// On Fuchsia, use the Fuchsia logging service.
+#if defined(OS_FUCHSIA) || defined(OS_NACL)
   LOG_DEFAULT = LOG_TO_SYSTEM_DEBUG_LOG,
+#elif defined(OS_WIN)
+  LOG_DEFAULT = LOG_TO_FILE,
+#elif defined(OS_POSIX)
+  LOG_DEFAULT = LOG_TO_SYSTEM_DEBUG_LOG | LOG_TO_STDERR,
 #endif
 };
 
@@ -200,21 +214,22 @@ enum LogLockingState { LOCK_LOG_FILE, DONT_LOCK_LOG_FILE };
 enum OldFileDeletionState { DELETE_OLD_LOG_FILE, APPEND_TO_OLD_LOG_FILE };
 
 struct BASE_EXPORT LoggingSettings {
-  // The defaults values are:
-  //
-  //  logging_dest: LOG_DEFAULT
-  //  log_file:     NULL
-  //  lock_log:     LOCK_LOG_FILE
-  //  delete_old:   APPEND_TO_OLD_LOG_FILE
-  LoggingSettings();
+  // Equivalent to logging destination enum, but allows for multiple
+  // destinations.
+  uint32_t logging_dest = LOG_DEFAULT;
 
-  LoggingDestination logging_dest;
-
-  // The three settings below have an effect only when LOG_TO_FILE is
+  // The four settings below have an effect only when LOG_TO_FILE is
   // set in |logging_dest|.
-  const PathChar* log_file;
-  LogLockingState lock_log;
-  OldFileDeletionState delete_old;
+  const PathChar* log_file_path = nullptr;
+  LogLockingState lock_log = LOCK_LOG_FILE;
+  OldFileDeletionState delete_old = APPEND_TO_OLD_LOG_FILE;
+#if defined(OS_CHROMEOS)
+  // Contains an optional file that logs should be written to. If present,
+  // |log_file_path| will be ignored, and the logging system will take ownership
+  // of the FILE. If there's an error writing to this file, no fallback paths
+  // will be opened.
+  FILE* log_file = nullptr;
+#endif
 };
 
 // Define different names for the BaseInitLoggingImpl() function depending on
@@ -300,10 +315,10 @@ BASE_EXPORT void SetShowErrorDialogs(bool enable_dialogs);
 // however clients can use this function to override with their own handling
 // (e.g. a silent one for Unit Tests)
 using LogAssertHandlerFunction =
-    base::Callback<void(const char* file,
-                        int line,
-                        const base::StringPiece message,
-                        const base::StringPiece stack_trace)>;
+    base::RepeatingCallback<void(const char* file,
+                                 int line,
+                                 const base::StringPiece message,
+                                 const base::StringPiece stack_trace)>;
 
 class BASE_EXPORT ScopedLogAssertHandler {
  public:
@@ -515,119 +530,15 @@ BASE_EXPORT extern std::ostream* g_swallow_stream;
 class CheckOpResult {
  public:
   // |message| must be non-null if and only if the check failed.
-  CheckOpResult(std::string* message) : message_(message) {}
+  constexpr CheckOpResult(std::string* message) : message_(message) {}
   // Returns true if the check succeeded.
-  operator bool() const { return !message_; }
+  constexpr operator bool() const { return !message_; }
   // Returns the message.
   std::string* message() { return message_; }
 
  private:
   std::string* message_;
 };
-
-// Crashes in the fastest possible way with no attempt at logging.
-// There are different constraints to satisfy here, see http://crbug.com/664209
-// for more context:
-// - The trap instructions, and hence the PC value at crash time, have to be
-//   distinct and not get folded into the same opcode by the compiler.
-//   On Linux/Android this is tricky because GCC still folds identical
-//   asm volatile blocks. The workaround is generating distinct opcodes for
-//   each CHECK using the __COUNTER__ macro.
-// - The debug info for the trap instruction has to be attributed to the source
-//   line that has the CHECK(), to make crash reports actionable. This rules
-//   out the ability of using a inline function, at least as long as clang
-//   doesn't support attribute(artificial).
-// - Failed CHECKs should produce a signal that is distinguishable from an
-//   invalid memory access, to improve the actionability of crash reports.
-// - The compiler should treat the CHECK as no-return instructions, so that the
-//   trap code can be efficiently packed in the prologue of the function and
-//   doesn't interfere with the main execution flow.
-// - When debugging, developers shouldn't be able to accidentally step over a
-//   CHECK. This is achieved by putting opcodes that will cause a non
-//   continuable exception after the actual trap instruction.
-// - Don't cause too much binary bloat.
-#if defined(COMPILER_GCC)
-
-#if defined(ARCH_CPU_X86_FAMILY) && !defined(OS_NACL)
-// int 3 will generate a SIGTRAP.
-#define TRAP_SEQUENCE() \
-  asm volatile(         \
-      "int3; ud2; push %0;" ::"i"(static_cast<unsigned char>(__COUNTER__)))
-
-#elif defined(ARCH_CPU_ARMEL) && !defined(OS_NACL)
-// bkpt will generate a SIGBUS when running on armv7 and a SIGTRAP when running
-// as a 32 bit userspace app on arm64. There doesn't seem to be any way to
-// cause a SIGTRAP from userspace without using a syscall (which would be a
-// problem for sandboxing).
-#define TRAP_SEQUENCE() \
-  asm volatile("bkpt #0; udf %0;" ::"i"(__COUNTER__ % 256))
-
-#elif defined(ARCH_CPU_ARM64) && !defined(OS_NACL)
-// This will always generate a SIGTRAP on arm64.
-#define TRAP_SEQUENCE() \
-  asm volatile("brk #0; hlt %0;" ::"i"(__COUNTER__ % 65536))
-
-#else
-// Crash report accuracy will not be guaranteed on other architectures, but at
-// least this will crash as expected.
-#define TRAP_SEQUENCE() __builtin_trap()
-#endif  // ARCH_CPU_*
-
-#elif defined(COMPILER_MSVC)
-
-// Clang is cleverer about coalescing int3s, so we need to add a unique-ish
-// instruction following the __debugbreak() to have it emit distinct locations
-// for CHECKs rather than collapsing them all together. It would be nice to use
-// a short intrinsic to do this (and perhaps have only one implementation for
-// both clang and MSVC), however clang-cl currently does not support intrinsics.
-// On the flip side, MSVC x64 doesn't support inline asm. So, we have to have
-// two implementations. Normally clang-cl's version will be 5 bytes (1 for
-// `int3`, 2 for `ud2`, 2 for `push byte imm`, however, TODO(scottmg):
-// https://crbug.com/694670 clang-cl doesn't currently support %'ing
-// __COUNTER__, so eventually it will emit the dword form of push.
-// TODO(scottmg): Reinvestigate a short sequence that will work on both
-// compilers once clang supports more intrinsics. See https://crbug.com/693713.
-#if !defined(__clang__)
-#define TRAP_SEQUENCE() __debugbreak()
-#elif defined(ARCH_CPU_ARM64)
-#define TRAP_SEQUENCE() \
-  __asm volatile("brk #0\n hlt %0\n" ::"i"(__COUNTER__ % 65536));
-#else
-#define TRAP_SEQUENCE() ({ {__asm int 3 __asm ud2 __asm push __COUNTER__}; })
-#endif  // __clang__
-
-#else
-#error Port
-#endif  // COMPILER_GCC
-
-// CHECK() and the trap sequence can be invoked from a constexpr function.
-// This could make compilation fail on GCC, as it forbids directly using inline
-// asm inside a constexpr function. However, it allows calling a lambda
-// expression including the same asm.
-// The side effect is that the top of the stacktrace will not point to the
-// calling function, but to this anonymous lambda. This is still useful as the
-// full name of the lambda will typically include the name of the function that
-// calls CHECK() and the debugger will still break at the right line of code.
-#if !defined(COMPILER_GCC)
-#define WRAPPED_TRAP_SEQUENCE() TRAP_SEQUENCE()
-#else
-#define WRAPPED_TRAP_SEQUENCE() \
-  do {                          \
-    [] { TRAP_SEQUENCE(); }();  \
-  } while (false)
-#endif
-
-#if defined(__clang__) || defined(COMPILER_GCC)
-#define IMMEDIATE_CRASH()    \
-  ({                         \
-    WRAPPED_TRAP_SEQUENCE(); \
-    __builtin_unreachable(); \
-  })
-#else
-// This is supporting non-chromium user of logging.h to build with MSVC, like
-// pdfium. On MSVC there is no __builtin_unreachable().
-#define IMMEDIATE_CRASH() WRAPPED_TRAP_SEQUENCE()
-#endif
 
 // CHECK dies with a fatal error if condition is not true.  It is *not*
 // controlled by NDEBUG, so the check will be executed regardless of
@@ -659,26 +570,6 @@ class CheckOpResult {
 
 #else  // !(OFFICIAL_BUILD && NDEBUG)
 
-#if defined(_PREFAST_) && defined(OS_WIN)
-// Use __analysis_assume to tell the VC++ static analysis engine that
-// assert conditions are true, to suppress warnings.  The LAZY_STREAM
-// parameter doesn't reference 'condition' in /analyze builds because
-// this evaluation confuses /analyze. The !! before condition is because
-// __analysis_assume gets confused on some conditions:
-// http://randomascii.wordpress.com/2011/09/13/analyze-for-visual-studio-the-ugly-part-5/
-
-#define CHECK(condition)                    \
-  __analysis_assume(!!(condition)),         \
-      LAZY_STREAM(LOG_STREAM(FATAL), false) \
-          << "Check failed: " #condition ". "
-
-#define PCHECK(condition)                    \
-  __analysis_assume(!!(condition)),          \
-      LAZY_STREAM(PLOG_STREAM(FATAL), false) \
-          << "Check failed: " #condition ". "
-
-#else  // _PREFAST_
-
 // Do as much work as possible out of line to reduce inline code size.
 #define CHECK(condition)                                                      \
   LAZY_STREAM(::logging::LogMessage(__FILE__, __LINE__, #condition).stream(), \
@@ -687,8 +578,6 @@ class CheckOpResult {
 #define PCHECK(condition)                                           \
   LAZY_STREAM(PLOG_STREAM(FATAL), !ANALYZER_ASSUME_TRUE(condition)) \
       << "Check failed: " #condition ". "
-
-#endif  // _PREFAST_
 
 // Helper macro for binary operators.
 // Don't use this macro directly in your code, use CHECK_EQ et al below.
@@ -716,6 +605,16 @@ inline typename std::enable_if<
     void>::type
 MakeCheckOpValueString(std::ostream* os, const T& v) {
   (*os) << v;
+}
+
+// Overload for types that no operator<< but do have .ToString() defined.
+template <typename T>
+inline typename std::enable_if<
+    !base::internal::SupportsOstreamOperator<const T&>::value &&
+        base::internal::SupportsToString<const T&>::value,
+    void>::type
+MakeCheckOpValueString(std::ostream* os, const T& v) {
+  (*os) << v.ToString();
 }
 
 // Provide an overload for functions and function pointers. Function pointers
@@ -786,20 +685,21 @@ std::string* MakeCheckOpString<std::string, std::string>(
 // The checked condition is wrapped with ANALYZER_ASSUME_TRUE, which under
 // static analysis builds, blocks analysis of the current path if the
 // condition is false.
-#define DEFINE_CHECK_OP_IMPL(name, op)                                       \
-  template <class t1, class t2>                                              \
-  inline std::string* Check##name##Impl(const t1& v1, const t2& v2,          \
-                                        const char* names) {                 \
-    if (ANALYZER_ASSUME_TRUE(v1 op v2))                                      \
-      return NULL;                                                           \
-    else                                                                     \
-      return ::logging::MakeCheckOpString(v1, v2, names);                    \
-  }                                                                          \
-  inline std::string* Check##name##Impl(int v1, int v2, const char* names) { \
-    if (ANALYZER_ASSUME_TRUE(v1 op v2))                                      \
-      return NULL;                                                           \
-    else                                                                     \
-      return ::logging::MakeCheckOpString(v1, v2, names);                    \
+#define DEFINE_CHECK_OP_IMPL(name, op)                                 \
+  template <class t1, class t2>                                        \
+  constexpr std::string* Check##name##Impl(const t1& v1, const t2& v2, \
+                                           const char* names) {        \
+    if (ANALYZER_ASSUME_TRUE(v1 op v2))                                \
+      return nullptr;                                                  \
+    else                                                               \
+      return ::logging::MakeCheckOpString(v1, v2, names);              \
+  }                                                                    \
+  constexpr std::string* Check##name##Impl(int v1, int v2,             \
+                                           const char* names) {        \
+    if (ANALYZER_ASSUME_TRUE(v1 op v2))                                \
+      return nullptr;                                                  \
+    else                                                               \
+      return ::logging::MakeCheckOpString(v1, v2, names);              \
   }
 DEFINE_CHECK_OP_IMPL(EQ, ==)
 DEFINE_CHECK_OP_IMPL(NE, !=)
@@ -885,21 +785,6 @@ const LogSeverity LOG_DCHECK = LOG_FATAL;
 // DCHECK_IS_ON() is true. When DCHECK_IS_ON() is false, the macros use
 // EAT_STREAM_PARAMETERS to avoid expressions that would create temporaries.
 
-#if defined(_PREFAST_) && defined(OS_WIN)
-// See comments on the previous use of __analysis_assume.
-
-#define DCHECK(condition)                    \
-  __analysis_assume(!!(condition)),          \
-      LAZY_STREAM(LOG_STREAM(DCHECK), false) \
-          << "Check failed: " #condition ". "
-
-#define DPCHECK(condition)                    \
-  __analysis_assume(!!(condition)),           \
-      LAZY_STREAM(PLOG_STREAM(DCHECK), false) \
-          << "Check failed: " #condition ". "
-
-#else  // !(defined(_PREFAST_) && defined(OS_WIN))
-
 #if DCHECK_IS_ON()
 
 #define DCHECK(condition)                                           \
@@ -915,8 +800,6 @@ const LogSeverity LOG_DCHECK = LOG_FATAL;
 #define DPCHECK(condition) EAT_STREAM_PARAMETERS << !(condition)
 
 #endif  // DCHECK_IS_ON()
-
-#endif  // defined(_PREFAST_) && defined(OS_WIN)
 
 // Helper macro for binary operators.
 // Don't use this macro directly in your code, use DCHECK_EQ et al below.
@@ -982,7 +865,7 @@ const LogSeverity LOG_DCHECK = LOG_FATAL;
 #define DCHECK_GE(val1, val2) DCHECK_OP(GE, >=, val1, val2)
 #define DCHECK_GT(val1, val2) DCHECK_OP(GT, > , val1, val2)
 
-#if !DCHECK_IS_ON() && defined(OS_CHROMEOS)
+#if BUILDFLAG(ENABLE_LOG_ERROR_NOT_REACHED)
 // Implement logging of NOTREACHED() as a dedicated function to get function
 // call overhead down to a minimum.
 void LogErrorNotReached(const char* file, int line);
@@ -1038,6 +921,7 @@ class BASE_EXPORT LogMessage {
   // The file and line information passed in to the constructor.
   const char* file_;
   const int line_;
+  const char* file_basename_;
 
   // This is useful since the LogMessage class uses a lot of Win32 calls
   // that will lose the value of GLE and the code that called the log function
@@ -1117,6 +1001,14 @@ class BASE_EXPORT ErrnoLogMessage {
 //       after this call.
 BASE_EXPORT void CloseLogFile();
 
+#if defined(OS_CHROMEOS)
+// Returns a new file handle that will write to the same destination as the
+// currently open log file. Returns nullptr if logging to a file is disabled,
+// or if opening the file failed. This is intended to be used to initialize
+// logging in child processes that are unable to open files.
+BASE_EXPORT FILE* DuplicateLogFILE();
+#endif
+
 // Async signal safe logging mechanism.
 BASE_EXPORT void RawLog(int level, const char* message);
 
@@ -1173,18 +1065,13 @@ inline std::ostream& operator<<(std::ostream& out, const std::wstring& wstr) {
 #define NOTIMPLEMENTED_MSG "NOT IMPLEMENTED"
 #endif
 
-#if defined(OS_ANDROID) && defined(OFFICIAL_BUILD)
-#define NOTIMPLEMENTED() EAT_STREAM_PARAMETERS
-#define NOTIMPLEMENTED_LOG_ONCE() EAT_STREAM_PARAMETERS
-#else
-#define NOTIMPLEMENTED() LOG(ERROR) << NOTIMPLEMENTED_MSG
-#define NOTIMPLEMENTED_LOG_ONCE()                      \
-  do {                                                 \
-    static bool logged_once = false;                   \
-    LOG_IF(ERROR, !logged_once) << NOTIMPLEMENTED_MSG; \
-    logged_once = true;                                \
-  } while (0);                                         \
+#define NOTIMPLEMENTED() DLOG(ERROR) << NOTIMPLEMENTED_MSG
+#define NOTIMPLEMENTED_LOG_ONCE()                       \
+  do {                                                  \
+    static bool logged_once = false;                    \
+    DLOG_IF(ERROR, !logged_once) << NOTIMPLEMENTED_MSG; \
+    logged_once = true;                                 \
+  } while (0);                                          \
   EAT_STREAM_PARAMETERS
-#endif
 
 #endif  // BASE_LOGGING_H_

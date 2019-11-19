@@ -47,6 +47,15 @@ constexpr char kLearnMoreUrl[] =
 // Tag value used to uniquely identify the "learn more" (?) button.
 constexpr int kLearnMoreButton = 100;
 
+std::unique_ptr<views::View> CreateExtraView(views::ButtonListener* listener) {
+  auto learn_more = views::CreateVectorImageButton(listener);
+  views::SetImageFromVectorIcon(learn_more.get(),
+                                vector_icons::kHelpOutlineIcon);
+  learn_more->SetTooltipText(l10n_util::GetStringUTF16(IDS_LEARN_MORE));
+  learn_more->set_tag(kLearnMoreButton);
+  return learn_more;
+}
+
 class InvertBubbleView : public views::BubbleDialogDelegateView,
                          public views::LinkListener,
                          public views::ButtonListener {
@@ -56,9 +65,6 @@ class InvertBubbleView : public views::BubbleDialogDelegateView,
 
  private:
   // Overridden from views::BubbleDialogDelegateView:
-  views::View* CreateExtraView() override;
-  int GetDialogButtons() const override;
-  base::string16 GetDialogButtonLabel(ui::DialogButton button) const override;
   void Init() override;
 
   // Overridden from views::WidgetDelegate:
@@ -86,6 +92,10 @@ InvertBubbleView::InvertBubbleView(Browser* browser, views::View* anchor_view)
       browser_(browser),
       high_contrast_(nullptr),
       dark_theme_(nullptr) {
+  DialogDelegate::set_buttons(ui::DIALOG_BUTTON_OK);
+  DialogDelegate::set_button_label(ui::DIALOG_BUTTON_OK,
+                                   l10n_util::GetStringUTF16(IDS_DONE));
+  DialogDelegate::SetExtraView(::CreateExtraView(this));
   set_margins(gfx::Insets());
   chrome::RecordDialogCreation(chrome::DialogIdentifier::INVERT);
 }
@@ -93,50 +103,31 @@ InvertBubbleView::InvertBubbleView(Browser* browser, views::View* anchor_view)
 InvertBubbleView::~InvertBubbleView() {
 }
 
-views::View* InvertBubbleView::CreateExtraView() {
-  views::ImageButton* learn_more = views::CreateVectorImageButton(this);
-  views::SetImageFromVectorIcon(learn_more, vector_icons::kHelpOutlineIcon);
-  learn_more->SetTooltipText(l10n_util::GetStringUTF16(IDS_LEARN_MORE));
-  learn_more->set_tag(kLearnMoreButton);
-  return learn_more;
-}
-
-int InvertBubbleView::GetDialogButtons() const {
-  return ui::DIALOG_BUTTON_OK;
-}
-
-base::string16 InvertBubbleView::GetDialogButtonLabel(
-    ui::DialogButton button) const {
-  DCHECK_EQ(button, ui::DialogButton::DIALOG_BUTTON_OK);
-  return l10n_util::GetStringUTF16(IDS_DONE);
-}
-
 void InvertBubbleView::Init() {
   const ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
   SetBorder(views::CreateEmptyBorder(
       provider->GetInsetsMetric(views::INSETS_DIALOG)));
 
-  views::Label* header =
-      new views::Label(l10n_util::GetStringUTF16(IDS_HIGH_CONTRAST_HEADER),
-                       CONTEXT_BODY_TEXT_LARGE);
+  auto high_contrast = std::make_unique<views::Link>(
+      l10n_util::GetStringUTF16(IDS_HIGH_CONTRAST_EXT),
+      CONTEXT_BODY_TEXT_LARGE);
+  high_contrast->set_listener(this);
 
-  high_contrast_ =
-      new views::Link(l10n_util::GetStringUTF16(IDS_HIGH_CONTRAST_EXT),
-                      CONTEXT_BODY_TEXT_LARGE);
-  high_contrast_->set_listener(this);
+  auto dark_theme = std::make_unique<views::Link>(
+      l10n_util::GetStringUTF16(IDS_DARK_THEME), CONTEXT_BODY_TEXT_LARGE);
+  dark_theme->set_listener(this);
 
-  dark_theme_ = new views::Link(l10n_util::GetStringUTF16(IDS_DARK_THEME),
-                                CONTEXT_BODY_TEXT_LARGE);
-  dark_theme_->set_listener(this);
-
-  views::BoxLayout* layout = SetLayoutManager(
-      std::make_unique<views::BoxLayout>(views::BoxLayout::kVertical));
+  views::BoxLayout* layout =
+      SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kVertical));
   layout->set_cross_axis_alignment(
-      views::BoxLayout::CROSS_AXIS_ALIGNMENT_START);
+      views::BoxLayout::CrossAxisAlignment::kStart);
 
-  AddChildView(header);
-  AddChildView(high_contrast_);
-  AddChildView(dark_theme_);
+  AddChildView(std::make_unique<views::Label>(
+      l10n_util::GetStringUTF16(IDS_HIGH_CONTRAST_HEADER),
+      CONTEXT_BODY_TEXT_LARGE));
+  high_contrast_ = AddChildView(std::move(high_contrast));
+  dark_theme_ = AddChildView(std::move(dark_theme));
 
   // Switching to high-contrast mode has a nasty habit of causing Chrome
   // top-level windows to lose focus, so closing the bubble on deactivate

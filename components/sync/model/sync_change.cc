@@ -6,6 +6,8 @@
 
 #include <ostream>
 
+#include "components/sync/protocol/sync.pb.h"
+
 namespace syncer {
 
 SyncChange::SyncChange() : change_type_(ACTION_INVALID) {}
@@ -28,10 +30,10 @@ bool SyncChange::IsValid() const {
     return IsRealDataType(sync_data_.GetDataType());
 
   // Local changes must always have a tag and specify a valid datatype.
-  if (SyncDataLocal(sync_data_).GetTag().empty() ||
-      !IsRealDataType(sync_data_.GetDataType())) {
+  if (SyncDataLocal(sync_data_).GetTag().empty())
     return false;
-  }
+  if (!IsRealDataType(sync_data_.GetDataType()))
+    return false;
 
   // Adds and updates must have a non-unique-title.
   if (change_type_ == ACTION_ADD || change_type_ == ACTION_UPDATE)

@@ -15,33 +15,12 @@ namespace base {
 
 // Win32UnwindFunctions -------------------------------------------------------
 
-const HMODULE ModuleHandleTraits::kNonNullModuleForTesting =
-    reinterpret_cast<HMODULE>(static_cast<uintptr_t>(-1));
-
-// static
-bool ModuleHandleTraits::CloseHandle(HMODULE handle) {
-  if (handle == kNonNullModuleForTesting)
-    return true;
-
-  return ::FreeLibrary(handle) != 0;
-}
-
-// static
-bool ModuleHandleTraits::IsHandleValid(HMODULE handle) {
-  return handle != nullptr;
-}
-
-// static
-HMODULE ModuleHandleTraits::NullHandle() {
-  return nullptr;
-}
-
 namespace {
 
 // Implements the UnwindFunctions interface for the corresponding Win32
 // functions.
 class Win32UnwindFunctions : public Win32StackFrameUnwinder::UnwindFunctions {
-public:
+ public:
   Win32UnwindFunctions();
   ~Win32UnwindFunctions() override;
 
@@ -53,10 +32,7 @@ public:
                      PRUNTIME_FUNCTION runtime_function,
                      CONTEXT* context) override;
 
-  ScopedModuleHandle GetModuleForProgramCounter(
-      DWORD64 program_counter) override;
-
-private:
+ private:
   DISALLOW_COPY_AND_ASSIGN(Win32UnwindFunctions);
 };
 
@@ -79,7 +55,7 @@ void Win32UnwindFunctions::VirtualUnwind(DWORD64 image_base,
                                          PRUNTIME_FUNCTION runtime_function,
                                          CONTEXT* context) {
 #ifdef _WIN64
-  void* handler_data;
+  void* handler_data = nullptr;
   ULONG64 establisher_frame;
   KNONVOLATILE_CONTEXT_POINTERS nvcontext = {};
   ::RtlVirtualUnwind(UNW_FLAG_NHANDLER, image_base, program_counter,
@@ -90,102 +66,71 @@ void Win32UnwindFunctions::VirtualUnwind(DWORD64 image_base,
 #endif
 }
 
-ScopedModuleHandle Win32UnwindFunctions::GetModuleForProgramCounter(
-    DWORD64 program_counter) {
-  HMODULE module_handle = nullptr;
-  // GetModuleHandleEx() increments the module reference count, which is then
-  // managed and ultimately decremented by ScopedModuleHandle.
-  if (!::GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS,
-                           reinterpret_cast<LPCTSTR>(program_counter),
-                           &module_handle)) {
-    const DWORD error = ::GetLastError();
-    DCHECK_EQ(ERROR_MOD_NOT_FOUND, static_cast<int>(error));
-  }
-  return ScopedModuleHandle(module_handle);
-}
-
 }  // namespace
 
 // Win32StackFrameUnwinder ----------------------------------------------------
 
-Win32StackFrameUnwinder::UnwindFunctions::~UnwindFunctions() {}
-Win32StackFrameUnwinder::UnwindFunctions::UnwindFunctions() {}
+Win32StackFrameUnwinder::UnwindFunctions::~UnwindFunctions() = default;
+Win32StackFrameUnwinder::UnwindFunctions::UnwindFunctions() = default;
 
 Win32StackFrameUnwinder::Win32StackFrameUnwinder()
     : Win32StackFrameUnwinder(std::make_unique<Win32UnwindFunctions>()) {}
 
 Win32StackFrameUnwinder::~Win32StackFrameUnwinder() {}
 
-bool Win32StackFrameUnwinder::TryUnwind(CONTEXT* context,
-                                        ScopedModuleHandle* module) {
+bool Win32StackFrameUnwinder::TryUnwind(
+    bool at_top_frame,
+    CONTEXT* context,
+    // The module parameter, while not directly used, is still passed because it
+    // represents an implicit dependency for this function. Having the Module
+    // ensures that we have incremented the HMODULE reference count, which is
+    // critical to ensuring that the module is not unloaded during the
+    // unwinding. Otherwise the module could be unloaded between the
+    // LookupFunctionEntry and VirtualUnwind calls, resulting in crashes
+    // accessing unwind information from the unloaded module.
+    const ModuleCache::Module* module) {
 #ifdef _WIN64
-  // TODO(wittman): update base::ModuleCache to return a ScopedModuleHandle and
-  // use it for this module lookup.
-  ScopedModuleHandle frame_module =
-      unwind_functions_->GetModuleForProgramCounter(ContextPC(context));
-  if (!frame_module.IsValid()) {
-    // There's no loaded module containing the instruction pointer. This can be
-    // due to executing code that is not in a module. In particular,
-    // runtime-generated code associated with third-party injected DLLs
-    // typically is not in a module. It can also be due to the the module having
-    // been unloaded since we recorded the stack.  In the latter case the
-    // function unwind information was part of the unloaded module, so it's not
-    // possible to unwind further.
-    //
-    // If a module was found, it's still theoretically possible for the detected
-    // module module to be different than the one that was loaded when the stack
-    // was copied (i.e. if the module was unloaded and a different module loaded
-    // in overlapping memory). This likely would cause a crash, but has not been
-    // observed in practice.
-    return false;
-  }
-
+  // Ensure we found a valid module for the program counter.
+  DCHECK(module);
   ULONG64 image_base;
   // Try to look up unwind metadata for the current function.
   PRUNTIME_FUNCTION runtime_function =
       unwind_functions_->LookupFunctionEntry(ContextPC(context), &image_base);
+  DCHECK_EQ(module->GetBaseAddress(), image_base);
 
   if (runtime_function) {
     unwind_functions_->VirtualUnwind(image_base, ContextPC(context),
                                      runtime_function, context);
-    at_top_frame_ = false;
-  } else {
-    if (at_top_frame_) {
-      at_top_frame_ = false;
+    return true;
+  }
 
-      // This is a leaf function (i.e. a function that neither calls a function,
-      // nor allocates any stack space itself).
+  if (at_top_frame) {
+    // This is a leaf function (i.e. a function that neither calls a function,
+    // nor allocates any stack space itself).
 #if defined(ARCH_CPU_X86_64)
-      // For X64, return address is at RSP.
-      context->Rip = *reinterpret_cast<DWORD64*>(context->Rsp);
-      context->Rsp += 8;
+    // For X64, return address is at RSP.
+    context->Rip = *reinterpret_cast<DWORD64*>(context->Rsp);
+    context->Rsp += 8;
 #elif defined(ARCH_CPU_ARM64)
-      // For leaf function on Windows ARM64, return address is at LR(X30).
-      // Add CONTEXT_UNWOUND_TO_CALL flag to avoid unwind ambiguity for tailcall
-      // on ARM64, because padding after tailcall is not guaranteed.
-      context->Pc = context->Lr;
-      context->ContextFlags |= CONTEXT_UNWOUND_TO_CALL;
+    // For leaf function on Windows ARM64, return address is at LR(X30).  Add
+    // CONTEXT_UNWOUND_TO_CALL flag to avoid unwind ambiguity for tailcall on
+    // ARM64, because padding after tailcall is not guaranteed.
+    context->Pc = context->Lr;
+    context->ContextFlags |= CONTEXT_UNWOUND_TO_CALL;
 #else
 #error Unsupported Windows 64-bit Arch
 #endif
-    } else {
-      // In theory we shouldn't get here, as it means we've encountered a
-      // function without unwind information below the top of the stack, which
-      // is forbidden by the Microsoft x64 calling convention.
-      //
-      // The one known case in Chrome code that executes this path occurs
-      // because of BoringSSL unwind information inconsistent with the actual
-      // function code. See https://crbug.com/542919.
-      //
-      // Note that dodgy third-party generated code that otherwise would enter
-      // this path should be caught by the module check above, since the code
-      // typically is located outside of a module.
-      return false;
-    }
+    return true;
   }
 
-  module->Set(frame_module.Take());
-  return true;
+  // In theory we shouldn't get here, as it means we've encountered a function
+  // without unwind information below the top of the stack, which is forbidden
+  // by the Microsoft x64 calling convention.
+  //
+  // The one known case in Chrome code that executes this path occurs because
+  // of BoringSSL unwind information inconsistent with the actual function
+  // code. See https://crbug.com/542919.
+  return false;
 #else
   NOTREACHED();
   return false;
@@ -194,6 +139,6 @@ bool Win32StackFrameUnwinder::TryUnwind(CONTEXT* context,
 
 Win32StackFrameUnwinder::Win32StackFrameUnwinder(
     std::unique_ptr<UnwindFunctions> unwind_functions)
-    : at_top_frame_(true), unwind_functions_(std::move(unwind_functions)) {}
+    : unwind_functions_(std::move(unwind_functions)) {}
 
 }  // namespace base

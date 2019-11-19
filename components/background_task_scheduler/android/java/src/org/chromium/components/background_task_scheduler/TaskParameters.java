@@ -6,7 +6,8 @@ package org.chromium.components.background_task_scheduler;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
+
+import androidx.annotation.NonNull;
 
 /**
  * TaskParameters are passed to {@link BackgroundTask}s whenever they are invoked. It contains the

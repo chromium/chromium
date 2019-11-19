@@ -1,0 +1,3 @@
+[document web]
+++[landmark] xml-roles:contentinfo
+++++[static] name='This is ARIA role contentinfo.'

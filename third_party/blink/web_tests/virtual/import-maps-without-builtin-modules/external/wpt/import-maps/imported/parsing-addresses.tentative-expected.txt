@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+PASS Relative URL-like addresses / should accept strings prefixed with ./, ../, or /
+FAIL Relative URL-like addresses / should not accept strings prefixed with ./, ../, or / for data: base URLs test helper does not support data: base URLs
+PASS Relative URL-like addresses / should accept the literal strings ./, ../, or / with no suffix
+FAIL Relative URL-like addresses / should ignore percent-encoded variants of ./, ../, or / assert_equals: expected "{\"imports\":{},\"scopes\":{}}" but got "{\"imports\":{\"dotDotSlash1\":[],\"dotDotSlash2\":[],\"dotDotSlash3\":[],\"dotSlash1\":[],\"dotSlash2\":[],\"dotSlash3\":[],\"slash2\":[]},\"scopes\":{}}"
+PASS Absolute URL addresses / should only accept absolute URL addresses with fetch schemes
+FAIL Absolute URL addresses / should parse absolute URLs, ignoring unparseable ones assert_equals: expected "{\"imports\":{\"invalidButParseable1\":\"https://example.org/\",\"invalidButParseable2\":\"https://example.com///\",\"noPercentDecoding\":\"https://example.com/%41\",\"percentDecoding\":\"https://example.com/\",\"prettyNormal\":\"https://example.net/\"},\"scopes\":{}}" but got "{\"imports\":{\"invalidButParseable1\":\"https://example.org/\",\"invalidButParseable2\":\"https://example.com///\",\"noPercentDecoding\":\"https://example.com/A\",\"percentDecoding\":\"https://example.com/\",\"prettyNormal\":\"https://example.net/\",\"unparseable1\":\"https://ex%20ample.org/\",\"unparseable2\":[],\"unparseable3\":[]},\"scopes\":{}}"
+FAIL Failing addresses: mismatched trailing slashes / should warn for the simple case assert_equals: expected "{\"imports\":{},\"scopes\":{}}" but got "{\"imports\":{\"trailer/\":[]},\"scopes\":{}}"
+FAIL Other invalid addresses / should ignore unprefixed strings that are not absolute URLs assert_equals: expected "{\"imports\":{},\"scopes\":{}}" but got "{\"imports\":{\"foo\":[]},\"scopes\":{}}"
+Harness: the test ran to completion.
+

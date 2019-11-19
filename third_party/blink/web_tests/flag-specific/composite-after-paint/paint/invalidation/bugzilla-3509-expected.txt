@@ -1,0 +1,23 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "NGPhysicalBoxFragment LayoutNGBlockFlow DIV id='im'",
+          "rect": [61, 131, 50, 100],
+          "reason": "incremental"
+        },
+        {
+          "object": "NGPhysicalTextFragment '\u00A0'",
+          "rect": [11, 131, 4, 19],
+          "reason": "geometry"
+        }
+      ]
+    }
+  ]
+}
+

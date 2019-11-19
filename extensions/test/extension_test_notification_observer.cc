@@ -11,9 +11,7 @@
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/test_utils.h"
-#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/notification_types.h"
-#include "extensions/browser/process_manager.h"
 #include "extensions/common/extension.h"
 
 namespace extensions {
@@ -35,9 +33,9 @@ const Extension* GetNonTerminatedExtensions(const std::string& id,
 ////////////////////////////////////////////////////////////////////////////////
 // ExtensionTestNotificationObserver::NotificationSet
 
-ExtensionTestNotificationObserver::NotificationSet::NotificationSet()
-    : process_manager_observer_(this) {}
-ExtensionTestNotificationObserver::NotificationSet::~NotificationSet() {}
+ExtensionTestNotificationObserver::NotificationSet::NotificationSet() = default;
+ExtensionTestNotificationObserver::NotificationSet::~NotificationSet() =
+    default;
 
 void ExtensionTestNotificationObserver::NotificationSet::Add(
     int type,
@@ -75,8 +73,7 @@ ExtensionTestNotificationObserver::ExtensionTestNotificationObserver(
     : context_(context),
       extension_installs_observed_(0),
       extension_load_errors_observed_(0),
-      crx_installers_done_observed_(0),
-      registry_observer_(this) {
+      crx_installers_done_observed_(0) {
   if (context_)
     registry_observer_.Add(ExtensionRegistry::Get(context_));
 }

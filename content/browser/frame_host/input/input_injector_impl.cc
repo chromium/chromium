@@ -10,7 +10,9 @@
 #include "base/bind.h"
 #include "content/browser/renderer_host/input/synthetic_gesture.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
+#include "content/common/input/input_injector.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 namespace content {
 
@@ -29,10 +31,11 @@ InputInjectorImpl::InputInjectorImpl(
 
 InputInjectorImpl::~InputInjectorImpl() {}
 
-void InputInjectorImpl::Create(base::WeakPtr<RenderFrameHostImpl> frame_host,
-                               mojom::InputInjectorRequest request) {
-  mojo::MakeStrongBinding(std::make_unique<InputInjectorImpl>(frame_host),
-                          std::move(request));
+void InputInjectorImpl::Create(
+    base::WeakPtr<RenderFrameHostImpl> frame_host,
+    mojo::PendingReceiver<mojom::InputInjector> receiver) {
+  mojo::MakeSelfOwnedReceiver(std::make_unique<InputInjectorImpl>(frame_host),
+                              std::move(receiver));
 }
 
 void InputInjectorImpl::QueueSyntheticSmoothDrag(

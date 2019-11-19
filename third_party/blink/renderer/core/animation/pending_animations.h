@@ -43,6 +43,8 @@
 
 namespace blink {
 
+class PaintArtifactCompositor;
+
 // Handles starting animations when they could potentially require
 // interaction with the compositor. This can include both main-thread
 // and compositor thread animations. For example, when the Document
@@ -57,7 +59,7 @@ namespace blink {
 // with compositor animations when both classes of CSS Animations are triggered
 // by the same recalc.
 class CORE_EXPORT PendingAnimations final
-    : public GarbageCollectedFinalized<PendingAnimations> {
+    : public GarbageCollected<PendingAnimations> {
  public:
   explicit PendingAnimations(Document& document)
       : timer_(document.GetTaskRunner(TaskType::kInternalDefault),
@@ -86,7 +88,7 @@ class CORE_EXPORT PendingAnimations final
   //
   // Returns whether we are waiting for an animation to start and should service
   // again on the next frame.
-  bool Update(const base::Optional<CompositorElementIdSet>&,
+  bool Update(const PaintArtifactCompositor* paint_artifact_compositor,
               bool start_on_compositor = true);
   void NotifyCompositorAnimationStarted(double monotonic_animation_start_time,
                                         int compositor_group = 0);
@@ -94,9 +96,7 @@ class CORE_EXPORT PendingAnimations final
   void Trace(blink::Visitor*);
 
  private:
-  void TimerFired(TimerBase*) {
-    Update(base::Optional<CompositorElementIdSet>(), false);
-  }
+  void TimerFired(TimerBase*) { Update(nullptr, false); }
   int NextCompositorGroup();
 
   HeapVector<Member<Animation>> pending_;

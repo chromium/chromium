@@ -14,10 +14,11 @@ import org.chromium.base.annotations.CalledByNative;
  */
 public class BookmarkId {
     public static final int INVALID_FOLDER_ID = -2;
-    public static final int ROOT_FOLDER_ID = -1;
+    public static final int INVALID_ID = -1;
 
     private static final String LOG_TAG = "BookmarkId";
     private static final char TYPE_PARTNER = 'p';
+    private static final int ROOT_FOLDER_ID = -1;
 
     private final long mId;
     private final int mType;

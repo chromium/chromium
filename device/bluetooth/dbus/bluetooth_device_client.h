@@ -31,18 +31,20 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceClient : public BluezDBusClient {
 
   // This callback invoked for a successful GetConnInfo API call with the
   // RSSI, TX power, and maximum TX power of the current connection.
-  using ConnInfoCallback = base::Callback<
+  using ConnInfoCallback = base::OnceCallback<
       void(int16_t rssi, int16_t transmit_power, int16_t max_transmit_power)>;
 
   // This callback invoked for a successful GetServiceRecords API call with the
   // currently discovered service records.
-  using ServiceRecordsCallback = base::Callback<void(const ServiceRecordList&)>;
+  using ServiceRecordsCallback =
+      base::OnceCallback<void(const ServiceRecordList&)>;
 
   // The ErrorCallback is used by device methods to indicate failure.
   // It receives two arguments: the name of the error in |error_name| and
   // an optional message in |error_message|.
-  using ErrorCallback = base::Callback<void(const std::string& error_name,
-                                            const std::string& error_message)>;
+  using ErrorCallback =
+      base::OnceCallback<void(const std::string& error_name,
+                              const std::string& error_message)>;
 
   // Structure of properties associated with bluetooth devices.
   struct Properties : public dbus::PropertySet {
@@ -187,73 +189,73 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceClient : public BluezDBusClient {
   // may be used to connect additional profiles for an already connected device,
   // and succeeds if at least one profile is connected.
   virtual void Connect(const dbus::ObjectPath& object_path,
-                       const base::Closure& callback,
-                       const ErrorCallback& error_callback) = 0;
+                       base::OnceClosure callback,
+                       ErrorCallback error_callback) = 0;
 
   // Disconnects the device with object path |object_path|, terminating
   // the low-level ACL connection and any profiles using it.
   virtual void Disconnect(const dbus::ObjectPath& object_path,
-                          const base::Closure& callback,
-                          const ErrorCallback& error_callback) = 0;
+                          base::OnceClosure callback,
+                          ErrorCallback error_callback) = 0;
 
   // Connects to the profile |uuid| on the device with object path
   // |object_path|, provided that the profile has been registered with a
   // handler on the local device.
   virtual void ConnectProfile(const dbus::ObjectPath& object_path,
                               const std::string& uuid,
-                              const base::Closure& callback,
-                              const ErrorCallback& error_callback) = 0;
+                              base::OnceClosure callback,
+                              ErrorCallback error_callback) = 0;
 
   // Disconnects from the profile |uuid| on the device with object path
   // |object_path|.
   virtual void DisconnectProfile(const dbus::ObjectPath& object_path,
                                  const std::string& uuid,
-                                 const base::Closure& callback,
-                                 const ErrorCallback& error_callback) = 0;
+                                 base::OnceClosure callback,
+                                 ErrorCallback error_callback) = 0;
 
   // Initiates pairing with the device with object path |object_path| and
   // retrieves all SDP records or GATT primary services. An agent must be
   // registered to handle the pairing request.
   virtual void Pair(const dbus::ObjectPath& object_path,
-                    const base::Closure& callback,
-                    const ErrorCallback& error_callback) = 0;
+                    base::OnceClosure callback,
+                    ErrorCallback error_callback) = 0;
 
   // Cancels an in-progress pairing with the device with object path
   // |object_path| initiated by Pair().
   virtual void CancelPairing(const dbus::ObjectPath& object_path,
-                             const base::Closure& callback,
-                             const ErrorCallback& error_callback) = 0;
+                             base::OnceClosure callback,
+                             ErrorCallback error_callback) = 0;
 
   // Returns the RSSI, TX power, and maximum TX power of a connection to the
   // device with object path |object_path|. If the device is not connected, then
   // an error will be returned.
   virtual void GetConnInfo(const dbus::ObjectPath& object_path,
-                           const ConnInfoCallback& callback,
-                           const ErrorCallback& error_callback) = 0;
+                           ConnInfoCallback callback,
+                           ErrorCallback error_callback) = 0;
 
   // Sets the connection parameters (e.g. connection interval) for the device.
   virtual void SetLEConnectionParameters(
       const dbus::ObjectPath& object_path,
       const ConnectionParameters& conn_params,
-      const base::Closure& callback,
-      const ErrorCallback& error_callback) = 0;
+      base::OnceClosure callback,
+      ErrorCallback error_callback) = 0;
 
   // Returns the currently discovered service records for the device with
   // object path |object_path|. If the device is not connected, then an error
   // will be returned.
   virtual void GetServiceRecords(const dbus::ObjectPath& object_path,
-                                 const ServiceRecordsCallback& callback,
-                                 const ErrorCallback& error_callback) = 0;
+                                 ServiceRecordsCallback callback,
+                                 ErrorCallback error_callback) = 0;
 
   // Executes all the privous prepare writes in a reliable write session.
   virtual void ExecuteWrite(const dbus::ObjectPath& object_path,
-                            const base::Closure& callback,
-                            const ErrorCallback& error_callback) = 0;
+                            base::OnceClosure callback,
+                            ErrorCallback error_callback) = 0;
 
   // Aborts all the privous prepare writes in a reliable write session.
   virtual void AbortWrite(const dbus::ObjectPath& object_path,
-                          const base::Closure& callback,
-                          const ErrorCallback& error_callback) = 0;
+                          base::OnceClosure callback,
+                          ErrorCallback error_callback) = 0;
 
   // Creates the instance.
   static BluetoothDeviceClient* Create();

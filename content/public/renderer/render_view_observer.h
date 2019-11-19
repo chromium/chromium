@@ -8,15 +8,12 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "content/common/content_export.h"
+#include "content/public/common/page_visibility_state.h"
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_sender.h"
 
-class GURL;
-
 namespace blink {
-class WebGestureEvent;
 class WebLocalFrame;
-struct WebURLError;
 }
 
 namespace content {
@@ -35,21 +32,13 @@ class CONTENT_EXPORT RenderViewObserver : public IPC::Listener,
   virtual void OnDestruct() = 0;
 
   // These match the WebKit API notifications
-  virtual void DidFailProvisionalLoad(blink::WebLocalFrame* frame,
-                                      const blink::WebURLError& error) {}
-  virtual void DidCommitProvisionalLoad(blink::WebLocalFrame* frame,
-                                        bool is_new_navigation) {}
   virtual void DidClearWindowObject(blink::WebLocalFrame* frame) {}
   virtual void DidCommitCompositorFrame() {}
   virtual void DidUpdateMainFrameLayout() {}
 
-  // These match the RenderView methods.
-  virtual void DidHandleGestureEvent(const blink::WebGestureEvent& event) {}
-
-  // These match incoming IPCs.
-  virtual void Navigate(const GURL& url) {}
-
   virtual void OnZoomLevelChanged() {}
+
+  virtual void OnPageVisibilityChanged(PageVisibilityState visibility_state) {}
 
   // IPC::Listener implementation.
   bool OnMessageReceived(const IPC::Message& message) override;

@@ -97,7 +97,7 @@ class WebContentsEntry : public content::WebContentsObserver {
   // States whether we did record a main frame for this entry.
   SiteInstance* main_frame_site_instance_;
 
-  base::WeakPtrFactory<WebContentsEntry> weak_factory_;
+  base::WeakPtrFactory<WebContentsEntry> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(WebContentsEntry);
 };
@@ -108,8 +108,7 @@ WebContentsEntry::WebContentsEntry(content::WebContents* web_contents,
                                    WebContentsTaskProvider* provider)
     : WebContentsObserver(web_contents),
       provider_(provider),
-      main_frame_site_instance_(nullptr),
-      weak_factory_(this) {}
+      main_frame_site_instance_(nullptr) {}
 
 WebContentsEntry::~WebContentsEntry() {
   ClearAllTasks(false);

@@ -8,7 +8,10 @@ import android.content.res.Configuration;
 import android.view.Gravity;
 import android.view.WindowManager;
 
+import androidx.annotation.NonNull;
+
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
 import org.chromium.chrome.browser.payments.ServiceWorkerPaymentAppBridge;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.WebContents;
@@ -21,33 +24,39 @@ import org.chromium.ui.display.DisplayUtil;
 public class PaymentHandlerActivity extends CustomTabActivity {
     private static final double BOTTOM_SHEET_HEIGHT_RATIO = 0.7;
     private boolean mHaveNotifiedServiceWorker;
-    private boolean mTabObserverAdded;
+    private WebContents mWebContents;
 
     @Override
-    public void preInflationStartup() {
-        super.preInflationStartup();
+    public void performPreInflationStartup() {
+        super.performPreInflationStartup();
         updateHeight();
-        getComponent().resolveTabController().addObserver(this::addTabObserverIfTabReady);
-        addTabObserverIfTabReady();
+        addObserverForPaymentsWhenTabReady();
     }
 
-    private void addTabObserverIfTabReady() {
-        if (mTabObserverAdded) return;
-        Tab tab = getComponent().resolveTabController().getTab();
+    private void addObserverForPaymentsWhenTabReady() {
+        CustomTabActivityTabProvider tabProvider = getComponent().resolveTabProvider();
+        Tab tab = tabProvider.getTab();
         if (tab != null) {
             ServiceWorkerPaymentAppBridge.addTabObserverForPaymentRequestTab(tab);
-            mTabObserverAdded = true;
+            mWebContents = tab.getWebContents();
+        } else {
+            tabProvider.addObserver(new CustomTabActivityTabProvider.Observer() {
+                @Override
+                public void onInitialTabCreated(@NonNull Tab tab, int mode) {
+                    tabProvider.removeObserver(this);
+                    ServiceWorkerPaymentAppBridge.addTabObserverForPaymentRequestTab(tab);
+                    mWebContents = tab.getWebContents();
+                }
+            });
         }
     }
 
     @Override
     protected void handleFinishAndClose() {
         // Notify the window is closing so as to abort invoking payment app early.
-        Tab tab = getActivityTab();
-        WebContents webContents = tab == null ? null : tab.getWebContents();
-        if (!mHaveNotifiedServiceWorker && webContents != null) {
+        if (!mHaveNotifiedServiceWorker && mWebContents != null) {
             mHaveNotifiedServiceWorker = true;
-            ServiceWorkerPaymentAppBridge.onClosingPaymentAppWindow(webContents);
+            ServiceWorkerPaymentAppBridge.onClosingPaymentAppWindow(mWebContents);
         }
 
         super.handleFinishAndClose();

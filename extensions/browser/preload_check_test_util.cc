@@ -57,7 +57,7 @@ void PreloadCheckRunner::OnCheckComplete(const PreloadCheck::Errors& errors) {
 
 // PreloadCheckStub:
 PreloadCheckStub::PreloadCheckStub(const Errors& errors)
-    : PreloadCheck(nullptr), errors_(errors), weak_ptr_factory_(this) {}
+    : PreloadCheck(nullptr), errors_(errors) {}
 
 PreloadCheckStub::~PreloadCheckStub() {}
 

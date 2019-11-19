@@ -5,14 +5,14 @@
 #ifndef COMPONENTS_EXO_WM_HELPER_H_
 #define COMPONENTS_EXO_WM_HELPER_H_
 
+#include <memory>
 #include <vector>
 
 #include "base/macros.h"
 #include "base/observer_list.h"
+#include "base/time/time.h"
 #include "ui/aura/client/drag_drop_delegate.h"
-#include "ui/aura/env.h"
 #include "ui/base/cursor/cursor.h"
-#include "ui/compositor/compositor_vsync_manager.h"
 
 namespace aura {
 class Window;
@@ -29,6 +29,7 @@ class ActivationChangeObserver;
 
 namespace display {
 class ManagedDisplayInfo;
+class ManagedDisplayMode;
 }
 
 namespace ui {
@@ -41,6 +42,7 @@ class ActivationChangeObserver;
 }
 
 namespace exo {
+class VSyncTimingManager;
 
 // Helper interface for accessing WindowManager related features.
 class WMHelper : public aura::client::DragDropDelegate {
@@ -87,8 +89,6 @@ class WMHelper : public aura::client::DragDropDelegate {
   static WMHelper* GetInstance();
   static bool HasInstance();
 
-  virtual aura::Env* env() = 0;
-
   virtual void AddActivationObserver(
       wm::ActivationChangeObserver* observer) = 0;
   virtual void RemoveActivationObserver(
@@ -102,15 +102,15 @@ class WMHelper : public aura::client::DragDropDelegate {
   virtual void RemoveDragDropObserver(DragDropObserver* observer) = 0;
   virtual void SetDragDropDelegate(aura::Window*) = 0;
   virtual void ResetDragDropDelegate(aura::Window*) = 0;
-  virtual void AddVSyncObserver(
-      ui::CompositorVSyncManager::Observer* observer) = 0;
-  virtual void RemoveVSyncObserver(
-      ui::CompositorVSyncManager::Observer* observer) = 0;
+  virtual VSyncTimingManager& GetVSyncTimingManager() = 0;
 
   virtual const display::ManagedDisplayInfo& GetDisplayInfo(
       int64_t display_id) const = 0;
   virtual const std::vector<uint8_t>& GetDisplayIdentificationData(
       int64_t display_id) const = 0;
+  virtual bool GetActiveModeForDisplayId(
+      int64_t display_id,
+      display::ManagedDisplayMode* mode) const = 0;
 
   virtual aura::Window* GetPrimaryDisplayContainer(int container_id) = 0;
   virtual aura::Window* GetActiveWindow() const = 0;
@@ -122,8 +122,10 @@ class WMHelper : public aura::client::DragDropDelegate {
   virtual void RemovePreTargetHandler(ui::EventHandler* handler) = 0;
   virtual void AddPostTargetHandler(ui::EventHandler* handler) = 0;
   virtual void RemovePostTargetHandler(ui::EventHandler* handler) = 0;
-  virtual bool IsTabletModeWindowManagerEnabled() const = 0;
+  virtual bool InTabletMode() const = 0;
   virtual double GetDefaultDeviceScaleFactor() const = 0;
+  virtual void SetImeBlocked(aura::Window* window, bool ime_blocked) = 0;
+  virtual bool IsImeBlocked(aura::Window* window) const = 0;
 
   virtual LifetimeManager* GetLifetimeManager() = 0;
   virtual aura::client::CaptureClient* GetCaptureClient() = 0;
@@ -132,7 +134,8 @@ class WMHelper : public aura::client::DragDropDelegate {
   void OnDragEntered(const ui::DropTargetEvent& event) override = 0;
   int OnDragUpdated(const ui::DropTargetEvent& event) override = 0;
   void OnDragExited() override = 0;
-  int OnPerformDrop(const ui::DropTargetEvent& event) override = 0;
+  int OnPerformDrop(const ui::DropTargetEvent& event,
+                    std::unique_ptr<ui::OSExchangeData> data) override = 0;
 
  protected:
   DISALLOW_COPY_AND_ASSIGN(WMHelper);

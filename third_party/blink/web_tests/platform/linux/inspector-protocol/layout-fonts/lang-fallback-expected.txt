@@ -1,0 +1,249 @@
+تح
+#ar:
+"DejaVu Sans" : 2
+
+ՀՁ
+#hy-am:
+"DejaVu Sans" : 2
+
+সম
+#bn:
+"Mukti Narrow" : 2
+
+⡰⡱
+#en-us-brai:
+"DejaVu Sans" : 2
+
+ᨀᨁ
+#bug:
+"DejaVu Sans" : 2
+
+ᐐᐑ
+#cans:
+"DejaVu Sans" : 2
+
+𐊠𐊡
+#xcr:
+"DejaVu Sans" : 2
+
+ᎡᎢ
+#chr:
+"DejaVu Sans" : 2
+
+ⲁⲂ
+#copt:
+"DejaVu Sans" : 2
+
+𒀀𒀌
+#akk:
+"DejaVu Sans" : 2
+
+𐠀𐠁
+#ecy:
+"DejaVu Sans" : 2
+
+АБВ
+#ru:
+"Tinos" : 3
+
+𐐀𐐁
+#en:
+"DejaVu Sans" : 2
+
+अआ
+#hi:
+"Lohit Devanagari" : 2
+
+ሁሂ
+#am:
+"DejaVu Sans" : 2
+
+ႠႡ
+#ka:
+"DejaVu Sans" : 2
+
+ΑΒ
+#el:
+"Tinos" : 2
+
+ਡਢ
+#pa:
+"Lohit Gurmukhi" : 2
+
+我
+#zh-CN:
+"Noto Sans CJK JP Regular" : 1
+
+我
+#zh-HK:
+"Noto Sans CJK JP Regular" : 1
+
+我
+#zh-Hans:
+"Noto Sans CJK JP Regular" : 1
+
+我
+#zh-Hant:
+"Noto Sans CJK JP Regular" : 1
+
+我
+#ja:
+"Noto Sans CJK JP Regular" : 1
+
+ᄀᄁ
+#ko:
+"Noto Sans CJK JP Regular" : 2
+
+בג
+#he:
+"Tinos" : 2
+
+កខ
+#km:
+"Noto Sans Khmer" : 2
+
+𐡁𐡂
+#arc:
+"DejaVu Sans" : 2
+
+𐭡𐭢
+#pal:
+"DejaVu Sans" : 2
+
+𐭁𐭂
+#xpr:
+"DejaVu Sans" : 2
+
+ꦑꦒ
+#jv:
+"DejaVu Sans" : 2
+
+ಡಢ
+#kn:
+"DejaVu Sans" : 2
+
+𐨐𐨑
+#sa:
+"DejaVu Sans" : 2
+
+໐໑
+#lo:
+"DejaVu Sans" : 2
+
+ꓐꓑ
+#lis:
+"DejaVu Sans" : 2
+
+𐊁𐊂
+#xlc:
+"DejaVu Sans" : 2
+
+𐤡𐤢
+#xld:
+"DejaVu Sans" : 2
+
+ഡഢ
+#ml:
+"DejaVu Sans" : 2
+
+𐦡𐦢
+#script_meroitic:
+"DejaVu Sans" : 2
+
+ကခ
+#my:
+"DejaVu Sans" : 2
+
+ᦁᦂ
+#script_new_tai_lue:
+"DejaVu Sans" : 2
+
+߁߂
+#nko:
+"DejaVu Sans" : 2
+
+ᚁ
+#script_ogham:
+"DejaVu Sans" : 2
+
+᱑᱒
+#script_ol_chiki:
+"DejaVu Sans" : 2
+
+𐌁𐌂
+#script_old_italic:
+"DejaVu Sans" : 2
+
+𐎡𐎢
+#peo:
+"DejaVu Sans" : 2
+
+𐩡𐩢
+#script_old_south_arabian:
+"DejaVu Sans" : 2
+
+ଡଢ
+#or:
+"DejaVu Sans" : 2
+
+ꡁꡂ
+#script_phags_pa:
+"DejaVu Sans" : 2
+
+ᚠᚡ
+#script_runic:
+"DejaVu Sans" : 2
+
+𐑑𐑒
+#script_shavian:
+"DejaVu Sans" : 2
+
+එඒ
+#si:
+"DejaVu Sans" : 2
+
+𑃑𑃒
+#script_sora_sompeng:
+"DejaVu Sans" : 2
+
+ܑܒ
+#syr:
+"DejaVu Sans" : 2
+
+ᥑᥒ
+#script_tai_le:
+"DejaVu Sans" : 2
+
+றல
+#ta:
+"Lohit Tamil" : 2
+
+డఢ
+#te:
+"DejaVu Sans" : 2
+
+ށނ
+#script_thaana:
+"DejaVu Sans" : 2
+
+กข
+#th:
+"Garuda" : 2
+
+༁༂
+#bo:
+"DejaVu Sans" : 2
+
+ⴱⴲ
+#script_tifinagh:
+"DejaVu Sans" : 2
+
+ꔁꔂ
+#vai:
+"DejaVu Sans" : 2
+
+ꀀꀁ
+#yi:
+"DejaVu Sans" : 2
+
+

@@ -26,11 +26,13 @@
 #include "third_party/blink/renderer/modules/webaudio/audio_param.h"
 
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/modules/webaudio/audio_graph_tracer.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node_output.h"
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
+#include "third_party/blink/renderer/platform/audio/vector_math.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/histogram.h"
+#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
 namespace blink {
@@ -92,7 +94,7 @@ String AudioParamHandler::GetParamName() const {
     case kParamTypeBiquadFilterQ:
       return "BiquadFilter.Q";
     case kParamTypeBiquadFilterGain:
-      return "BiquadFilter.Gain";
+      return "BiquadFilter.gain";
     case kParamTypeBiquadFilterDetune:
       return "BiquadFilter.detune";
     case kParamTypeDelayDelayTime:
@@ -159,8 +161,9 @@ float AudioParamHandler::Value() {
   float v = IntrinsicValue();
   if (GetDeferredTaskHandler().IsAudioThread()) {
     bool has_value;
-    float timeline_value = timeline_.ValueForContextTime(
-        DestinationHandler(), v, has_value, MinValue(), MaxValue());
+    float timeline_value;
+    std::tie(has_value, timeline_value) = timeline_.ValueForContextTime(
+        DestinationHandler(), v, MinValue(), MaxValue());
 
     if (has_value)
       v = timeline_value;
@@ -187,9 +190,9 @@ bool AudioParamHandler::Smooth() {
   // If values have been explicitly scheduled on the timeline, then use the
   // exact value.  Smoothing effectively is performed by the timeline.
   bool use_timeline_value = false;
-  float value =
-      timeline_.ValueForContextTime(DestinationHandler(), IntrinsicValue(),
-                                    use_timeline_value, MinValue(), MaxValue());
+  float value;
+  std::tie(use_timeline_value, value) = timeline_.ValueForContextTime(
+      DestinationHandler(), IntrinsicValue(), MinValue(), MaxValue());
 
   float smoothed_value = timeline_.SmoothedValue();
   if (smoothed_value == value) {
@@ -225,11 +228,9 @@ float AudioParamHandler::FinalValue() {
 void AudioParamHandler::CalculateSampleAccurateValues(
     float* values,
     unsigned number_of_values) {
-  bool is_safe =
-      GetDeferredTaskHandler().IsAudioThread() && values && number_of_values;
-  DCHECK(is_safe);
-  if (!is_safe)
-    return;
+  DCHECK(GetDeferredTaskHandler().IsAudioThread());
+  DCHECK(values);
+  DCHECK_GT(number_of_values, 0u);
 
   CalculateFinalValues(values, number_of_values, IsAudioRate());
 }
@@ -237,11 +238,9 @@ void AudioParamHandler::CalculateSampleAccurateValues(
 void AudioParamHandler::CalculateFinalValues(float* values,
                                              unsigned number_of_values,
                                              bool sample_accurate) {
-  bool is_good =
-      GetDeferredTaskHandler().IsAudioThread() && values && number_of_values;
-  DCHECK(is_good);
-  if (!is_good)
-    return;
+  DCHECK(GetDeferredTaskHandler().IsAudioThread());
+  DCHECK(values);
+  DCHECK_GT(number_of_values, 0u);
 
   // The calculated result will be the "intrinsic" value summed with all
   // audio-rate connections.
@@ -253,8 +252,9 @@ void AudioParamHandler::CalculateFinalValues(float* values,
     // Calculate control-rate (k-rate) intrinsic value.
     bool has_value;
     float value = IntrinsicValue();
-    float timeline_value = timeline_.ValueForContextTime(
-        DestinationHandler(), value, has_value, MinValue(), MaxValue());
+    float timeline_value;
+    std::tie(has_value, timeline_value) = timeline_.ValueForContextTime(
+        DestinationHandler(), value, MinValue(), MaxValue());
 
     if (has_value)
       value = timeline_value;
@@ -284,6 +284,13 @@ void AudioParamHandler::CalculateFinalValues(float* values,
       // Sum, with unity-gain.
       summing_bus_->SumFrom(*connection_bus);
     }
+
+    // Clamp the values now to the nominal range
+    float min_value = MinValue();
+    float max_value = MaxValue();
+
+    vector_math::Vclip(values, 1, &min_value, &max_value, values, 1,
+                       number_of_values);
   }
 }
 
@@ -303,24 +310,18 @@ void AudioParamHandler::CalculateTimelineValues(float* values,
       sample_rate, sample_rate, MinValue(), MaxValue()));
 }
 
-int AudioParamHandler::ComputeQHistogramValue(float new_value) const {
-  // For the Q value, assume a useful range is [0, 25] and that 0.25 dB
-  // resolution is good enough.  Then, we can map the floating point Q value (in
-  // dB) to an integer just by multipling by 4 and rounding.
-  new_value = clampTo(new_value, 0.0, 25.0);
-  return static_cast<int>(4 * new_value + 0.5);
-}
-
 // ----------------------------------------------------------------
 
 AudioParam::AudioParam(BaseAudioContext& context,
-                       AudioParamType param_type,
+                       const String& parent_uuid,
+                       AudioParamHandler::AudioParamType param_type,
                        double default_value,
                        AudioParamHandler::AutomationRate rate,
                        AudioParamHandler::AutomationRateMode rate_mode,
                        float min_value,
                        float max_value)
-    : handler_(AudioParamHandler::Create(context,
+    : InspectorHelperMixin(context.GraphTracer(), parent_uuid),
+      handler_(AudioParamHandler::Create(context,
                                          param_type,
                                          default_value,
                                          rate,
@@ -331,17 +332,8 @@ AudioParam::AudioParam(BaseAudioContext& context,
       deferred_task_handler_(&context.GetDeferredTaskHandler()) {}
 
 AudioParam* AudioParam::Create(BaseAudioContext& context,
-                               AudioParamType param_type,
-                               double default_value) {
-  return MakeGarbageCollected<AudioParam>(
-      context, param_type, default_value,
-      AudioParamHandler::AutomationRate::kAudio,
-      AudioParamHandler::AutomationRateMode::kVariable,
-      -std::numeric_limits<float>::max(), std::numeric_limits<float>::max());
-}
-
-AudioParam* AudioParam::Create(BaseAudioContext& context,
-                               AudioParamType param_type,
+                               const String& parent_uuid,
+                               AudioParamHandler::AudioParamType param_type,
                                double default_value,
                                AudioParamHandler::AutomationRate rate,
                                AudioParamHandler::AutomationRateMode rate_mode,
@@ -349,9 +341,9 @@ AudioParam* AudioParam::Create(BaseAudioContext& context,
                                float max_value) {
   DCHECK_LE(min_value, max_value);
 
-  return MakeGarbageCollected<AudioParam>(context, param_type, default_value,
-                                          rate, rate_mode, min_value,
-                                          max_value);
+  return MakeGarbageCollected<AudioParam>(context, parent_uuid, param_type,
+                                          default_value, rate, rate_mode,
+                                          min_value, max_value);
 }
 
 AudioParam::~AudioParam() {
@@ -365,6 +357,7 @@ AudioParam::~AudioParam() {
 
 void AudioParam::Trace(blink::Visitor* visitor) {
   visitor->Trace(context_);
+  InspectorHelperMixin::Trace(visitor);
   ScriptWrappable::Trace(visitor);
 }
 
@@ -375,7 +368,8 @@ float AudioParam::value() const {
 void AudioParam::WarnIfOutsideRange(const String& param_method, float value) {
   if (value < minValue() || value > maxValue()) {
     Context()->GetExecutionContext()->AddConsoleMessage(ConsoleMessage::Create(
-        kJSMessageSource, mojom::ConsoleMessageLevel::kWarning,
+        mojom::ConsoleMessageSource::kJavaScript,
+        mojom::ConsoleMessageLevel::kWarning,
         Handler().GetParamName() + "." + param_method + " " +
             String::Number(value) + " outside nominal range [" +
             String::Number(minValue()) + ", " + String::Number(maxValue()) +
@@ -411,7 +405,7 @@ float AudioParam::maxValue() const {
   return Handler().MaxValue();
 }
 
-void AudioParam::SetParamType(AudioParamType param_type) {
+void AudioParam::SetParamType(AudioParamHandler::AudioParamType param_type) {
   Handler().SetParamType(param_type);
 }
 

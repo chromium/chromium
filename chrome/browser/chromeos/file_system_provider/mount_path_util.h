@@ -9,7 +9,7 @@
 
 #include "base/files/file_path.h"
 #include "base/macros.h"
-#include "storage/browser/fileapi/file_system_url.h"
+#include "storage/browser/file_system/file_system_url.h"
 
 class Profile;
 

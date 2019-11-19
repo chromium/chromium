@@ -1,0 +1,43 @@
+Tests that the panel shows the correct text for non-cryptographic secure origins
+
+Panel on origin view:
+<DIV class=widget vbox security-origin-view slot=insertion-point-main >
+    <STYLE >
+    </STYLE>
+    <STYLE >
+    </STYLE>
+    <DIV class=title-section >
+        <DIV class=title-section-header role=heading aria-level=1 >
+Origin
+        </DIV>
+        <DIV class=origin-display >
+            <SPAN class=security-property security-property-secure >
+            </SPAN>
+            <SPAN >
+                <SPAN class=url-scheme-secure >
+chrome-test
+                </SPAN>
+                <SPAN class=url-scheme-separator >
+://
+                </SPAN>
+                <SPAN >
+test
+                </SPAN>
+            </SPAN>
+        </DIV>
+        <DIV class=view-network-button >
+            <SPAN class=devtools-link origin-button role=link >
+View requests in Network Panel
+            </SPAN>
+        </DIV>
+    </DIV>
+    <DIV class=origin-view-section >
+        <DIV class=origin-view-section-title role=heading aria-level=2 >
+Secure
+        </DIV>
+        <DIV >
+This origin is a non-HTTPS secure origin.
+        </DIV>
+    </DIV>
+</DIV>
+

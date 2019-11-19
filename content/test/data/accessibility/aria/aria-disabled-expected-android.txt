@@ -1,13 +1,13 @@
 android.webkit.WebView focusable focused scrollable
 ++android.view.View
 ++++android.widget.EditText clickable editable_text focusable input_type=1
-++++android.widget.EditText disabled editable_text focusable input_type=1
+++++android.widget.EditText clickable disabled editable_text focusable input_type=1
 ++++android.widget.EditText clickable editable_text focusable input_type=1
 ++android.view.View disabled
-++++android.widget.EditText disabled editable_text focusable input_type=1
-++++android.widget.EditText disabled editable_text focusable input_type=1
+++++android.widget.EditText clickable disabled editable_text focusable input_type=1
+++++android.widget.EditText clickable disabled editable_text focusable input_type=1
 ++++android.widget.EditText clickable editable_text focusable input_type=1
 ++android.view.View
 ++++android.widget.EditText clickable editable_text focusable input_type=1
-++++android.widget.EditText disabled editable_text focusable input_type=1
+++++android.widget.EditText clickable disabled editable_text focusable input_type=1
 ++++android.widget.EditText clickable editable_text focusable input_type=1

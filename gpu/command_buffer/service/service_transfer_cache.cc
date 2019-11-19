@@ -16,6 +16,7 @@
 #include "cc/paint/image_transfer_cache_entry.h"
 #include "gpu/command_buffer/service/service_discardable_manager.h"
 #include "third_party/skia/include/core/SkImage.h"
+#include "third_party/skia/include/core/SkYUVAIndex.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "ui/gl/trace_util.h"
 
@@ -26,6 +27,9 @@ namespace {
 // unbounded handle growth with tiny entries.
 static size_t kMaxCacheEntries = 2000;
 
+// Alias the image entry to its skia counterpart, taking ownership of the
+// memory and preventing double counting.
+//
 // TODO(ericrk): Move this into ServiceImageTransferCacheEntry - here for now
 // due to ui/gl dependency.
 void DumpMemoryForImageTransferCacheEntry(
@@ -33,14 +37,12 @@ void DumpMemoryForImageTransferCacheEntry(
     const std::string& dump_name,
     const cc::ServiceImageTransferCacheEntry* entry) {
   using base::trace_event::MemoryAllocatorDump;
+  DCHECK(entry->image());
 
   MemoryAllocatorDump* dump = pmd->CreateAllocatorDump(dump_name);
   dump->AddScalar(MemoryAllocatorDump::kNameSize,
                   MemoryAllocatorDump::kUnitsBytes, entry->CachedSize());
 
-  // Alias the image entry to its skia counterpart, taking ownership of the
-  // memory and preventing double counting.
-  DCHECK(entry->image());
   GrBackendTexture image_backend_texture =
       entry->image()->getBackendTexture(false /* flushPendingGrContextIO */);
   GrGLTextureInfo info;
@@ -51,6 +53,57 @@ void DumpMemoryForImageTransferCacheEntry(
     // (importance 2), attributing memory here.
     const int kImportance = 3;
     pmd->AddOwnershipEdge(dump->guid(), guid, kImportance);
+  }
+}
+
+// Alias each texture of the YUV image entry to its Skia texture counterpart,
+// taking ownership of the memory and preventing double counting.
+//
+// Because hardware-decoded images do not have knowledge of the individual plane
+// sizes, we allow |plane_sizes| to be empty and report the aggregate size for
+// plane_0 and give plane_1 and plane_2 size 0.
+//
+// TODO(ericrk): Move this into ServiceImageTransferCacheEntry - here for now
+// due to ui/gl dependency.
+void DumpMemoryForYUVImageTransferCacheEntry(
+    base::trace_event::ProcessMemoryDump* pmd,
+    const std::string& dump_base_name,
+    const cc::ServiceImageTransferCacheEntry* entry) {
+  using base::trace_event::MemoryAllocatorDump;
+  DCHECK(entry->image());
+  DCHECK(entry->is_yuv());
+
+  std::vector<size_t> plane_sizes = entry->GetPlaneCachedSizes();
+  for (size_t i = 0u; i < entry->num_planes(); ++i) {
+    MemoryAllocatorDump* dump = pmd->CreateAllocatorDump(
+        dump_base_name +
+        base::StringPrintf("/plane_%0u", base::checked_cast<uint32_t>(i)));
+    if (plane_sizes.empty()) {
+      // Hardware-decoded image case.
+      dump->AddScalar(MemoryAllocatorDump::kNameSize,
+                      MemoryAllocatorDump::kUnitsBytes,
+                      (i == SkYUVAIndex::kY_Index) ? entry->CachedSize() : 0u);
+    } else {
+      DCHECK_EQ(plane_sizes.size(), entry->num_planes());
+      dump->AddScalar(MemoryAllocatorDump::kNameSize,
+                      MemoryAllocatorDump::kUnitsBytes, plane_sizes.at(i));
+    }
+
+    // If entry->image() is backed by multiple textures,
+    // getBackendTexture() would end up flattening them to RGB, which is
+    // undesirable.
+    GrBackendTexture image_backend_texture =
+        entry->GetPlaneImage(i)->getBackendTexture(
+            false /* flushPendingGrContextIO */);
+    GrGLTextureInfo info;
+    if (image_backend_texture.getGLTextureInfo(&info)) {
+      auto guid = gl::GetGLTextureRasterGUIDForTracing(info.fID);
+      pmd->CreateSharedGlobalAllocatorDump(guid);
+      // Importance of 3 gives this dump priority over the dump made by Skia
+      // (importance 2), attributing memory here.
+      const int kImportance = 3;
+      pmd->AddOwnershipEdge(dump->guid(), guid, kImportance);
+    }
   }
 }
 
@@ -78,7 +131,7 @@ ServiceTransferCache::ServiceTransferCache()
   // Don't register a dump provider in these cases.
   if (base::ThreadTaskRunnerHandle::IsSet()) {
     base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
-        this, "cc::GpuImageDecodeCache", base::ThreadTaskRunnerHandle::Get());
+        this, "gpu::ServiceTransferCache", base::ThreadTaskRunnerHandle::Get());
   }
 }
 
@@ -104,6 +157,10 @@ bool ServiceTransferCache::CreateLockedEntry(const EntryKey& key,
     return false;
 
   total_size_ += entry->CachedSize();
+  if (key.entry_type == cc::TransferCacheEntryType::kImage) {
+    total_image_count_++;
+    total_image_size_ += entry->CachedSize();
+  }
   entries_.Put(key, CacheEntryInternal(handle, std::move(entry)));
   EnforceLimits();
   return true;
@@ -119,6 +176,10 @@ void ServiceTransferCache::CreateLocalEntry(
   DeleteEntry(key);
 
   total_size_ += entry->CachedSize();
+  if (key.entry_type == cc::TransferCacheEntryType::kImage) {
+    total_image_count_++;
+    total_image_size_ += entry->CachedSize();
+  }
 
   entries_.Put(key, CacheEntryInternal(base::nullopt, std::move(entry)));
   EnforceLimits();
@@ -142,6 +203,10 @@ Iterator ServiceTransferCache::ForceDeleteEntry(Iterator it) {
 
   DCHECK_GE(total_size_, it->second.entry->CachedSize());
   total_size_ -= it->second.entry->CachedSize();
+  if (it->first.entry_type == cc::TransferCacheEntryType::kImage) {
+    total_image_count_--;
+    total_image_size_ -= it->second.entry->CachedSize();
+  }
   return entries_.Erase(it);
 }
 
@@ -174,6 +239,10 @@ void ServiceTransferCache::EnforceLimits() {
     }
 
     total_size_ -= it->second.entry->CachedSize();
+    if (it->first.entry_type == cc::TransferCacheEntryType::kImage) {
+      total_image_count_--;
+      total_image_size_ -= it->second.entry->CachedSize();
+    }
     it = entries_.Erase(it);
   }
 }
@@ -207,32 +276,35 @@ void ServiceTransferCache::DeleteAllEntriesForDecoder(int decoder_id) {
   }
 }
 
-bool ServiceTransferCache::CreateLockedImageEntry(
+bool ServiceTransferCache::CreateLockedHardwareDecodedImageEntry(
     int decoder_id,
     uint32_t entry_id,
     ServiceDiscardableHandle handle,
     GrContext* context,
-    base::span<const uint8_t> decoded_image,
-    size_t row_bytes,
-    const SkImageInfo& image_info,
-    bool needs_mips,
-    sk_sp<SkColorSpace> target_color_space) {
+    std::vector<sk_sp<SkImage>> plane_images,
+    cc::YUVDecodeFormat plane_images_format,
+    SkYUVColorSpace yuv_color_space,
+    size_t buffer_byte_size,
+    bool needs_mips) {
   EntryKey key(decoder_id, cc::TransferCacheEntryType::kImage, entry_id);
   auto found = entries_.Peek(key);
   if (found != entries_.end())
     return false;
 
-  // Create the service-side image transfer cache entry. Note that this involves
-  // uploading the image if it fits in GPU memory.
+  // Create the service-side image transfer cache entry.
   auto entry = std::make_unique<cc::ServiceImageTransferCacheEntry>();
-  if (!entry->BuildFromDecodedData(context, decoded_image, row_bytes,
-                                   image_info, needs_mips,
-                                   target_color_space)) {
+  if (!entry->BuildFromHardwareDecodedImage(
+          context, std::move(plane_images), plane_images_format,
+          yuv_color_space, buffer_byte_size, needs_mips)) {
     return false;
   }
 
   // Insert it in the transfer cache.
   total_size_ += entry->CachedSize();
+  if (key.entry_type == cc::TransferCacheEntryType::kImage) {
+    total_image_count_++;
+    total_image_size_ += entry->CachedSize();
+  }
   entries_.Put(key, CacheEntryInternal(handle, std::move(entry)));
   EnforceLimits();
   return true;
@@ -250,7 +322,16 @@ bool ServiceTransferCache::OnMemoryDump(
                            reinterpret_cast<uintptr_t>(this));
     MemoryAllocatorDump* dump = pmd->CreateAllocatorDump(dump_name);
     dump->AddScalar(MemoryAllocatorDump::kNameSize,
-                    MemoryAllocatorDump::kUnitsBytes, total_size_);
+                    MemoryAllocatorDump::kUnitsBytes, total_image_size_);
+
+    if (total_image_count_ > 0) {
+      MemoryAllocatorDump* dump_avg_size =
+          pmd->CreateAllocatorDump(dump_name + "/avg_image_size");
+      const size_t avg_image_size =
+          total_image_size_ / (total_image_count_ * 1.0);
+      dump_avg_size->AddScalar("average_size", MemoryAllocatorDump::kUnitsBytes,
+                               avg_image_size);
+    }
 
     // Early out, no need for more detail in a BACKGROUND dump.
     return true;
@@ -267,11 +348,16 @@ bool ServiceTransferCache::OnMemoryDump(
     }
 
     if (image_entry && image_entry->fits_on_gpu()) {
-      std::string dump_name = base::StringPrintf(
+      std::string dump_base_name = base::StringPrintf(
           "gpu/transfer_cache/cache_0x%" PRIXPTR "/gpu/entry_0x%" PRIXPTR,
           reinterpret_cast<uintptr_t>(this),
           reinterpret_cast<uintptr_t>(entry));
-      DumpMemoryForImageTransferCacheEntry(pmd, dump_name, image_entry);
+      if (image_entry->is_yuv()) {
+        DumpMemoryForYUVImageTransferCacheEntry(pmd, dump_base_name,
+                                                image_entry);
+      } else {
+        DumpMemoryForImageTransferCacheEntry(pmd, dump_base_name, image_entry);
+      }
     } else {
       std::string dump_name = base::StringPrintf(
           "gpu/transfer_cache/cache_0x%" PRIXPTR "/cpu/entry_0x%" PRIXPTR,

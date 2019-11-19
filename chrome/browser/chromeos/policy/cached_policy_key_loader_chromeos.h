@@ -95,7 +95,7 @@ class CachedPolicyKeyLoaderChromeOS {
   SEQUENCE_CHECKER(sequence_checker_);
 
   // Must be the last memeber.
-  base::WeakPtrFactory<CachedPolicyKeyLoaderChromeOS> weak_factory_;
+  base::WeakPtrFactory<CachedPolicyKeyLoaderChromeOS> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(CachedPolicyKeyLoaderChromeOS);
 };

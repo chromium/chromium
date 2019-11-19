@@ -82,9 +82,9 @@ void LoadApp(content::BrowserContext* context,
   app_state->app_launch_ordinal = app_sorting->GetAppLaunchOrdinal(id);
   app_state->page_ordinal = app_sorting->GetPageOrdinal(id);
   app_state->launch_type = extensions::GetLaunchTypePrefValue(prefs, id);
-  extensions::ExtensionService* service =
-      extensions::ExtensionSystem::Get(context)->extension_service();
-  const extensions::Extension* extension = service->GetInstalledExtension(id);
+  extensions::ExtensionRegistry* registry =
+      extensions::ExtensionRegistry::Get(context);
+  const extensions::Extension* extension = registry->GetInstalledExtension(id);
   // GetInstalledExtension(id) returns null if |id| is for a pending extension.
   // In case of running tests against real backend servers, pending apps won't
   // be installed.

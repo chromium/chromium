@@ -15,17 +15,15 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
+#include "base/task/task_traits.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/common/chrome_switches.h"
-#include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "chrome/common/url_constants.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
-#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/storage_partition.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
@@ -33,55 +31,12 @@
 #include "extensions/common/manifest_handlers/app_isolation_info.h"
 #include "extensions/common/manifest_handlers/content_capabilities_handler.h"
 #include "extensions/common/permissions/permissions_data.h"
-#include "storage/browser/quota/quota_manager.h"
-#include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 #include "url/origin.h"
 
 using content::BrowserThread;
 using extensions::APIPermission;
 using extensions::Extension;
 using storage::SpecialStoragePolicy;
-
-namespace {
-
-void ReportQuotaUsage(blink::mojom::QuotaStatusCode code,
-                      int64_t usage,
-                      int64_t quota) {
-  if (code == blink::mojom::QuotaStatusCode::kOk) {
-    // We're interested in the amount of space hosted apps are using. Record it
-    // when the extension is granted the unlimited storage permission (once per
-    // extension load, so on average once per run).
-    UMA_HISTOGRAM_MEMORY_KB("Extensions.HostedAppUnlimitedStorageUsage", usage);
-  }
-}
-
-// Log the usage for a hosted app with unlimited storage.
-void LogHostedAppUnlimitedStorageUsage(
-    scoped_refptr<const Extension> extension,
-    content::BrowserContext* browser_context) {
-  GURL launch_url =
-      extensions::AppLaunchInfo::GetLaunchWebURL(extension.get()).GetOrigin();
-  content::StoragePartition* partition =
-      browser_context ?  // |browser_context| can be NULL in unittests.
-      content::BrowserContext::GetStoragePartitionForSite(browser_context,
-                                                          launch_url) :
-      NULL;
-  if (partition) {
-    // We only have to query for kStorageTypePersistent data usage, because apps
-    // cannot ask for any more temporary storage, according to
-    // https://developers.google.com/chrome/whitepapers/storage.
-    BrowserThread::PostAfterStartupTask(
-        FROM_HERE,
-        base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::IO}),
-        base::BindOnce(&storage::QuotaManager::GetUsageAndQuotaForWebApps,
-                       partition->GetQuotaManager(),
-                       url::Origin::Create(launch_url),
-                       blink::mojom::StorageType::kPersistent,
-                       base::Bind(&ReportQuotaUsage)));
-  }
-}
-
-}  // namespace
 
 ExtensionSpecialStoragePolicy::ExtensionSpecialStoragePolicy(
     content_settings::CookieSettings* cookie_settings)
@@ -169,8 +124,7 @@ ExtensionSpecialStoragePolicy::ExtensionsProtectingOrigin(
 }
 
 void ExtensionSpecialStoragePolicy::GrantRightsForExtension(
-    const extensions::Extension* extension,
-    content::BrowserContext* browser_context) {
+    const extensions::Extension* extension) {
   base::AutoLock locker(lock_);
   DCHECK(extension);
 
@@ -194,8 +148,6 @@ void ExtensionSpecialStoragePolicy::GrantRightsForExtension(
     if (extension->permissions_data()->HasAPIPermission(
             APIPermission::kUnlimitedStorage) &&
         unlimited_extensions_.Add(extension)) {
-      if (extension->is_hosted_app())
-        LogHostedAppUnlimitedStorageUsage(extension, browser_context);
       change_flags |= SpecialStoragePolicy::STORAGE_UNLIMITED;
     }
 
@@ -271,10 +223,9 @@ void ExtensionSpecialStoragePolicy::NotifyGranted(
     const GURL& origin,
     int change_flags) {
   if (!BrowserThread::CurrentlyOn(BrowserThread::IO)) {
-    base::PostTaskWithTraits(
-        FROM_HERE, {BrowserThread::IO},
-        base::BindOnce(&ExtensionSpecialStoragePolicy::NotifyGranted, this,
-                       origin, change_flags));
+    base::PostTask(FROM_HERE, {BrowserThread::IO},
+                   base::BindOnce(&ExtensionSpecialStoragePolicy::NotifyGranted,
+                                  this, origin, change_flags));
     return;
   }
   SpecialStoragePolicy::NotifyGranted(origin, change_flags);
@@ -284,10 +235,9 @@ void ExtensionSpecialStoragePolicy::NotifyRevoked(
     const GURL& origin,
     int change_flags) {
   if (!BrowserThread::CurrentlyOn(BrowserThread::IO)) {
-    base::PostTaskWithTraits(
-        FROM_HERE, {BrowserThread::IO},
-        base::BindOnce(&ExtensionSpecialStoragePolicy::NotifyRevoked, this,
-                       origin, change_flags));
+    base::PostTask(FROM_HERE, {BrowserThread::IO},
+                   base::BindOnce(&ExtensionSpecialStoragePolicy::NotifyRevoked,
+                                  this, origin, change_flags));
     return;
   }
   SpecialStoragePolicy::NotifyRevoked(origin, change_flags);
@@ -295,7 +245,7 @@ void ExtensionSpecialStoragePolicy::NotifyRevoked(
 
 void ExtensionSpecialStoragePolicy::NotifyCleared() {
   if (!BrowserThread::CurrentlyOn(BrowserThread::IO)) {
-    base::PostTaskWithTraits(
+    base::PostTask(
         FROM_HERE, {BrowserThread::IO},
         base::BindOnce(&ExtensionSpecialStoragePolicy::NotifyCleared, this));
     return;

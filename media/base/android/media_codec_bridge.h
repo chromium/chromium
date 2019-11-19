@@ -14,13 +14,15 @@
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
+#include "base/optional.h"
 #include "base/time/time.h"
+#include "media/base/encryption_pattern.h"
+#include "media/base/encryption_scheme.h"
 #include "media/base/media_export.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace media {
 
-class EncryptionScheme;
 struct SubsampleEntry;
 
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.media
@@ -92,7 +94,8 @@ class MEDIA_EXPORT MediaCodecBridge {
       const std::string& key_id,
       const std::string& iv,
       const std::vector<SubsampleEntry>& subsamples,
-      const EncryptionScheme& encryption_scheme,
+      EncryptionScheme encryption_scheme,
+      base::Optional<EncryptionPattern> encryption_pattern,
       base::TimeDelta presentation_time) = 0;
 
   // Submits an empty buffer with the END_OF_STREAM flag set.
@@ -155,6 +158,9 @@ class MEDIA_EXPORT MediaCodecBridge {
   virtual void OnBuffersAvailable(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj) = 0;
+
+  // Returns the CodecType this codec was created with.
+  virtual CodecType GetCodecType() const = 0;
 
   DISALLOW_COPY_AND_ASSIGN(MediaCodecBridge);
 };

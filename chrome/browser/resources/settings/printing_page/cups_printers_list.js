@@ -46,8 +46,7 @@ Polymer({
     this.activePrinter = e.model.item;
     const menu =
         /** @type {!CrActionMenuElement} */ (this.$$('cr-action-menu'));
-    menu.showAt(/** @type {!Element} */ (
-        Polymer.dom(/** @type {!Event} */ (e)).localTarget));
+    menu.showAt(/** @type {!Element} */ (/** @type {!Event} */ (e).target));
   },
 
   /**
@@ -93,5 +92,15 @@ Polymer({
       return printer.printerName.toLowerCase().includes(
           searchTerm.toLowerCase());
     };
+  },
+
+  /**
+   * @param {!CupsPrinterInfo} first
+   * @param {!CupsPrinterInfo} second
+   * @return {number} The result of the comparison.
+   * @private
+   */
+  sort_: function(first, second) {
+    return settings.printing.alphabeticalSort(first, second);
   },
 });

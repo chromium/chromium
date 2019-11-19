@@ -6,6 +6,7 @@
 #define REMOTING_HOST_CLIENT_SESSION_CONTROL_H_
 
 #include "remoting/protocol/errors.h"
+#include "ui/events/event.h"
 
 namespace webrtc {
 class DesktopVector;
@@ -31,8 +32,12 @@ class ClientSessionControl {
   // scheduler components.
   virtual void DisconnectSession(protocol::ErrorCode error) = 0;
 
-  // Called when local mouse movement is detected.
-  virtual void OnLocalMouseMoved(const webrtc::DesktopVector& position) = 0;
+  // Called when local mouse or touch movement is detected.
+  virtual void OnLocalPointerMoved(const webrtc::DesktopVector& position,
+                                   ui::EventType type) = 0;
+
+  // Called when a local key press or release is detected.
+  virtual void OnLocalKeyPressed(uint32_t usb_keycode) = 0;
 
   // Disables or enables the remote input in the client session.
   virtual void SetDisableInputs(bool disable_inputs) = 0;

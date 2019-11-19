@@ -7,12 +7,16 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_state.h"
+#include "ash/wm/wm_event.h"
+#include "chromeos/constants/chromeos_switches.h"
+#include "ui/aura/test/test_windows.h"
 #include "ui/aura/window.h"
 #include "ui/display/screen.h"
+#include "ui/events/base_event_utils.h"
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
-namespace wm {
+namespace window_util {
 
 namespace {
 
@@ -21,6 +25,29 @@ std::string GetAdjustedBounds(const gfx::Rect& visible,
   AdjustBoundsToEnsureMinimumWindowVisibility(visible, &to_be_adjusted);
   return to_be_adjusted.ToString();
 }
+
+class FakeWindowState : public WindowState::State {
+ public:
+  explicit FakeWindowState() = default;
+  ~FakeWindowState() override = default;
+
+  // WindowState::State overrides:
+  void OnWMEvent(WindowState* window_state, const WMEvent* event) override {
+    if (event->type() == WM_EVENT_MINIMIZE)
+      was_visible_on_minimize_ = window_state->window()->IsVisible();
+  }
+  WindowStateType GetType() const override { return WindowStateType::kNormal; }
+  void AttachState(WindowState* window_state,
+                   WindowState::State* previous_state) override {}
+  void DetachState(WindowState* window_state) override {}
+
+  bool was_visible_on_minimize() { return was_visible_on_minimize_; }
+
+ private:
+  bool was_visible_on_minimize_ = true;
+
+  DISALLOW_COPY_AND_ASSIGN(FakeWindowState);
+};
 
 }  // namespace
 
@@ -31,18 +58,28 @@ TEST_F(WindowUtilTest, CenterWindow) {
   std::unique_ptr<aura::Window> window(
       CreateTestWindowInShellWithBounds(gfx::Rect(12, 20, 100, 100)));
 
-  WindowState* window_state = GetWindowState(window.get());
+  WindowState* window_state = WindowState::Get(window.get());
   EXPECT_FALSE(window_state->bounds_changed_by_user());
 
   CenterWindow(window.get());
   // Centring window is considered as a user's action.
   EXPECT_TRUE(window_state->bounds_changed_by_user());
-  EXPECT_EQ("200,122 100x100", window->bounds().ToString());
-  EXPECT_EQ("200,122 100x100", window->GetBoundsInScreen().ToString());
+  if (chromeos::switches::ShouldShowShelfHotseat()) {
+    EXPECT_EQ("200,126 100x100", window->bounds().ToString());
+    EXPECT_EQ("200,126 100x100", window->GetBoundsInScreen().ToString());
+  } else {
+    EXPECT_EQ("200,122 100x100", window->bounds().ToString());
+    EXPECT_EQ("200,122 100x100", window->GetBoundsInScreen().ToString());
+  }
   window->SetBoundsInScreen(gfx::Rect(600, 0, 100, 100), GetSecondaryDisplay());
   CenterWindow(window.get());
-  EXPECT_EQ("250,122 100x100", window->bounds().ToString());
-  EXPECT_EQ("750,122 100x100", window->GetBoundsInScreen().ToString());
+  if (chromeos::switches::ShouldShowShelfHotseat()) {
+    EXPECT_EQ("250,126 100x100", window->bounds().ToString());
+    EXPECT_EQ("750,126 100x100", window->GetBoundsInScreen().ToString());
+  } else {
+    EXPECT_EQ("250,122 100x100", window->bounds().ToString());
+    EXPECT_EQ("750,122 100x100", window->GetBoundsInScreen().ToString());
+  }
 }
 
 TEST_F(WindowUtilTest, AdjustBoundsToEnsureMinimumVisibility) {
@@ -162,8 +199,8 @@ TEST_F(WindowUtilTest, RemoveTransientDescendants) {
   window_list.push_back(descendant2.get());
   RemoveTransientDescendants(&window_list);
   ASSERT_EQ(2u, window_list.size());
-  ASSERT_TRUE(base::ContainsValue(window_list, window1.get()));
-  ASSERT_TRUE(base::ContainsValue(window_list, window2.get()));
+  ASSERT_TRUE(base::Contains(window_list, window1.get()));
+  ASSERT_TRUE(base::Contains(window_list, window2.get()));
 
   // Create a window which has a transient parent that is not in |window_list|.
   // Test that the window is not removed when calling
@@ -176,5 +213,50 @@ TEST_F(WindowUtilTest, RemoveTransientDescendants) {
   EXPECT_EQ(3u, window_list.size());
 }
 
-}  // namespace wm
+TEST_F(WindowUtilTest,
+       HideAndMaybeMinimizeWithoutAnimationMinimizesArcWindowsBeforeHiding) {
+  auto window = CreateTestWindow();
+  auto* state = new FakeWindowState();
+  WindowState::Get(window.get())
+      ->SetStateObject(std::unique_ptr<WindowState::State>(state));
+
+  std::vector<aura::Window*> windows = {window.get()};
+  HideAndMaybeMinimizeWithoutAnimation(windows, /*minimize=*/true);
+
+  EXPECT_FALSE(window->IsVisible());
+  EXPECT_TRUE(state->was_visible_on_minimize());
+}
+
+TEST_F(WindowUtilTest, InteriorTargeter) {
+  auto window = CreateTestWindow();
+  window->SetBounds(gfx::Rect(0, 0, 100, 100));
+
+  WindowState::Get(window.get())->Maximize();
+  InstallResizeHandleWindowTargeterForWindow(window.get());
+
+  auto* child = aura::test::CreateTestWindowWithDelegateAndType(
+      aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate(),
+      aura::client::WINDOW_TYPE_UNKNOWN, 1, gfx::Rect(window->bounds().size()),
+      window.get(),
+      /*show_on_creation=*/true);
+
+  ui::EventTarget* root_target = window->GetRootWindow();
+  auto* targeter = root_target->GetEventTargeter();
+  {
+    ui::MouseEvent mouse(ui::ET_MOUSE_MOVED, gfx::Point(0, 0), gfx::Point(0, 0),
+                         ui::EventTimeForNow(), ui::EF_NONE, ui::EF_NONE);
+    EXPECT_EQ(child, targeter->FindTargetForEvent(root_target, &mouse));
+  }
+
+  // InteriorEventTargeter is now active and should pass an event at the edge to
+  // its parent.
+  WindowState::Get(window.get())->Restore();
+  {
+    ui::MouseEvent mouse(ui::ET_MOUSE_MOVED, gfx::Point(0, 0), gfx::Point(0, 0),
+                         ui::EventTimeForNow(), ui::EF_NONE, ui::EF_NONE);
+    EXPECT_EQ(window.get(), targeter->FindTargetForEvent(root_target, &mouse));
+  }
+}
+
+}  // namespace window_util
 }  // namespace ash

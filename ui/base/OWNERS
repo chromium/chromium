@@ -1,4 +1,7 @@
-per-file template_expressions*=dschuyler@chromium.org
+per-file template_expressions*=dbeam@chromium.org
+per-file template_expressions*=dpapad@chromium.org
+per-file template_expressions*=michaelpg@chromium.org
+per-file template_expressions*=rbpotter@chromium.org
 
 # If you're doing structural changes get a review from one of the ui/OWNERS.
 per-file BUILD.gn=*

@@ -37,8 +37,7 @@
 
 namespace blink {
 
-class CORE_EXPORT ShadowRootV0 final
-    : public GarbageCollectedFinalized<ShadowRootV0> {
+class CORE_EXPORT ShadowRootV0 final : public GarbageCollected<ShadowRootV0> {
  public:
   using NodeToDestinationInsertionPoints =
       HeapHashMap<Member<const Node>, Member<DestinationInsertionPoints>>;
@@ -89,7 +88,7 @@ class CORE_EXPORT ShadowRootV0 final
  private:
   ShadowRoot& GetShadowRoot() const { return *shadow_root_; }
 
-  TraceWrapperMember<ShadowRoot> shadow_root_;
+  Member<ShadowRoot> shadow_root_;
   unsigned descendant_shadow_element_count_ = 0;
   unsigned descendant_content_element_count_ = 0;
   HeapVector<Member<V0InsertionPoint>> descendant_insertion_points_;
@@ -104,9 +103,9 @@ class CORE_EXPORT ShadowRootV0 final
 
 inline void ShadowRootV0::DidAddInsertionPoint(V0InsertionPoint* point) {
   DCHECK(point);
-  if (IsHTMLShadowElement(*point))
+  if (IsA<HTMLShadowElement>(*point))
     ++descendant_shadow_element_count_;
-  else if (IsHTMLContentElement(*point))
+  else if (IsA<HTMLContentElement>(*point))
     ++descendant_content_element_count_;
   else
     NOTREACHED();
@@ -115,10 +114,10 @@ inline void ShadowRootV0::DidAddInsertionPoint(V0InsertionPoint* point) {
 
 inline void ShadowRootV0::DidRemoveInsertionPoint(V0InsertionPoint* point) {
   DCHECK(point);
-  if (IsHTMLShadowElement(*point)) {
+  if (IsA<HTMLShadowElement>(*point)) {
     DCHECK_GT(descendant_shadow_element_count_, 0u);
     --descendant_shadow_element_count_;
-  } else if (IsHTMLContentElement(*point)) {
+  } else if (IsA<HTMLContentElement>(*point)) {
     DCHECK_GT(descendant_content_element_count_, 0u);
     --descendant_content_element_count_;
   } else {

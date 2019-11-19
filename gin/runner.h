@@ -53,7 +53,7 @@ class GIN_EXPORT Runner {
  private:
   friend class Scope;
 
-  base::WeakPtrFactory<Runner> weak_factory_;
+  base::WeakPtrFactory<Runner> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(Runner);
 };

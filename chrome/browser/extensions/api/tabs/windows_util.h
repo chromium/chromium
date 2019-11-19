@@ -9,7 +9,7 @@
 
 #include "chrome/browser/extensions/window_controller_list.h"
 
-class UIThreadExtensionFunction;
+class ExtensionFunction;
 
 namespace extensions {
 class WindowController;
@@ -19,7 +19,7 @@ namespace windows_util {
 
 // Populates |browser| for given |window_id|. If the window is not found,
 // returns false and sets |error|.
-bool GetBrowserFromWindowID(UIThreadExtensionFunction* function,
+bool GetBrowserFromWindowID(ExtensionFunction* function,
                             int window_id,
                             extensions::WindowController::TypeFilter filter,
                             Browser** browser,
@@ -31,7 +31,7 @@ bool GetBrowserFromWindowID(UIThreadExtensionFunction* function,
 // kind of window (including app and devtools), otherwise it will
 // return true only for normal browser windows as well as windows
 // created by the extension.
-bool CanOperateOnWindow(const UIThreadExtensionFunction* function,
+bool CanOperateOnWindow(const ExtensionFunction* function,
                         const extensions::WindowController* controller,
                         extensions::WindowController::TypeFilter filter);
 

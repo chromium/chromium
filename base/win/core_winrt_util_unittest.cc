@@ -13,14 +13,14 @@ namespace base {
 namespace win {
 
 TEST(CoreWinrtUtilTest, PreloadFunctions) {
-  if (GetVersion() < VERSION_WIN8)
+  if (GetVersion() < Version::WIN8)
     EXPECT_FALSE(ResolveCoreWinRTDelayload());
   else
     EXPECT_TRUE(ResolveCoreWinRTDelayload());
 }
 
 TEST(CoreWinrtUtilTest, RoInitializeAndUninitialize) {
-  if (GetVersion() < VERSION_WIN8)
+  if (GetVersion() < Version::WIN8)
     return;
 
   ASSERT_TRUE(ResolveCoreWinRTDelayload());

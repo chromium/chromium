@@ -10,7 +10,7 @@
 #include "content/public/browser/tts_controller_delegate.h"
 #include "content/public/browser/tts_platform.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/platform/web_speech_synthesis_constants.h"
+#include "third_party/blink/public/mojom/speech/speech_synthesis.mojom.h"
 
 namespace content {
 
@@ -22,12 +22,13 @@ class MockTtsPlatformImpl : public TtsPlatform {
   MockTtsPlatformImpl() {}
   virtual ~MockTtsPlatformImpl() {}
   bool PlatformImplAvailable() override { return true; }
-  bool Speak(int utterance_id,
+  void Speak(int utterance_id,
              const std::string& utterance,
              const std::string& lang,
              const VoiceData& voice,
-             const UtteranceContinuousParameters& params) override {
-    return true;
+             const UtteranceContinuousParameters& params,
+             base::OnceCallback<void(bool)> on_speak_finished) override {
+    std::move(on_speak_finished).Run(true);
   }
   bool IsSpeaking() override { return false; }
   bool StopSpeaking() override { return true; }
@@ -37,7 +38,7 @@ class MockTtsPlatformImpl : public TtsPlatform {
   bool LoadBuiltInTtsEngine(BrowserContext* browser_context) override {
     return false;
   }
-  void WillSpeakUtteranceWithVoice(const TtsUtterance* utterance,
+  void WillSpeakUtteranceWithVoice(TtsUtterance* utterance,
                                    const VoiceData& voice_data) override {}
   void SetError(const std::string& error) override {}
   std::string GetError() override { return std::string(); }
@@ -49,7 +50,7 @@ class MockTtsControllerDelegate : public TtsControllerDelegate {
   MockTtsControllerDelegate() {}
   ~MockTtsControllerDelegate() override {}
 
-  int GetMatchingVoice(const content::TtsUtterance* utterance,
+  int GetMatchingVoice(content::TtsUtterance* utterance,
                        std::vector<content::VoiceData>& voices) override {
     // Below 0 implies a "native" voice.
     return -1;
@@ -82,15 +83,15 @@ TEST_F(TtsControllerTest, TestTtsControllerShutdown) {
 
   controller->SetTtsPlatform(&platform_impl);
 
-  TtsUtterance* utterance1 = TtsUtterance::Create(nullptr);
+  std::unique_ptr<TtsUtterance> utterance1 = TtsUtterance::Create(nullptr);
   utterance1->SetCanEnqueue(true);
   utterance1->SetSrcId(1);
-  controller->SpeakOrEnqueue(utterance1);
+  controller->SpeakOrEnqueue(std::move(utterance1));
 
-  TtsUtterance* utterance2 = TtsUtterance::Create(nullptr);
+  std::unique_ptr<TtsUtterance> utterance2 = TtsUtterance::Create(nullptr);
   utterance2->SetCanEnqueue(true);
   utterance2->SetSrcId(2);
-  controller->SpeakOrEnqueue(utterance2);
+  controller->SpeakOrEnqueue(std::move(utterance2));
 
   // Make sure that deleting the controller when there are pending
   // utterances doesn't cause a crash.
@@ -106,22 +107,22 @@ TEST_F(TtsControllerTest, TestTtsControllerUtteranceDefaults) {
       std::make_unique<TtsControllerForTesting>();
 
   std::unique_ptr<TtsUtterance> utterance1 =
-      base::WrapUnique(content::TtsUtterance::Create(nullptr));
+      content::TtsUtterance::Create(nullptr);
   // Initialized to default (unset constant) values.
-  EXPECT_EQ(blink::kWebSpeechSynthesisDoublePrefNotSet,
+  EXPECT_EQ(blink::mojom::kSpeechSynthesisDoublePrefNotSet,
             utterance1->GetContinuousParameters().rate);
-  EXPECT_EQ(blink::kWebSpeechSynthesisDoublePrefNotSet,
+  EXPECT_EQ(blink::mojom::kSpeechSynthesisDoublePrefNotSet,
             utterance1->GetContinuousParameters().pitch);
-  EXPECT_EQ(blink::kWebSpeechSynthesisDoublePrefNotSet,
+  EXPECT_EQ(blink::mojom::kSpeechSynthesisDoublePrefNotSet,
             utterance1->GetContinuousParameters().volume);
 
   controller->UpdateUtteranceDefaults(utterance1.get());
   // Updated to global defaults.
-  EXPECT_EQ(blink::kWebSpeechSynthesisDefaultTextToSpeechRate,
+  EXPECT_EQ(blink::mojom::kSpeechSynthesisDefaultRate,
             utterance1->GetContinuousParameters().rate);
-  EXPECT_EQ(blink::kWebSpeechSynthesisDefaultTextToSpeechPitch,
+  EXPECT_EQ(blink::mojom::kSpeechSynthesisDefaultPitch,
             utterance1->GetContinuousParameters().pitch);
-  EXPECT_EQ(blink::kWebSpeechSynthesisDefaultTextToSpeechVolume,
+  EXPECT_EQ(blink::mojom::kSpeechSynthesisDefaultVolume,
             utterance1->GetContinuousParameters().volume);
 }
 #endif  // !defined(OS_CHROMEOS)

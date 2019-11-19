@@ -11,6 +11,10 @@
 
     <include layout="@layout/location_status" />
 
+    <!--
+      Padding for this view is adjusted in LocationBarPhone when the search engine logo is active.
+      This is to prevent the url clipping described in crbug.com/1012436.
+    -->
     <include
         android:layout_width="match_parent"
         android:layout_height="match_parent"

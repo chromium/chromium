@@ -159,18 +159,15 @@ Then to run for example the headless platform:
 ### Linux Desktop - ([waterfall](https://build.chromium.org/p/chromium.fyi/builders/Ozone%20Linux/))
 
 **Warning: Experimental support for Linux Desktop is available since m57 and still under
-  development. Most of the work is done in the upstream, but some patches continue to
-  be landed to the [ozone-wayland-dev](https://github.com/Igalia/chromium/tree/ozone-wayland-dev) branch.**
+  development. The work is purely done in the upstream, but you can still find some Ozone/X11
+  patches in the the old [ozone-wayland-dev](https://github.com/Igalia/chromium/tree/ozone-wayland-dev) branch.**
 
 To build `chrome`, do this from the `src` directory:
 
 ``` shell
-gn args out/OzoneLinuxDesktop --args="use_ozone=true use_XXX_minigbm=true"
+gn args out/OzoneLinuxDesktop --args="use_ozone=true use_system_minigbm=true use_system_libdrm=true"
 ninja -C out/OzoneLinuxDesktop chrome
 ```
-
-You have to choose, which driver for minigbm to use from the
-[third\_party/minigbm/BUILD.gn](https://cs.chromium.org/chromium/src/third_party/minigbm/BUILD.gn?l=16).
 
 Then to run for example the X11 platform:
 
@@ -181,7 +178,7 @@ Then to run for example the X11 platform:
 Or run for example the Wayland platform:
 
 ``` shell
-./out/OzoneLinuxDesktop/chrome --ozone-platform=Wayland
+./out/OzoneLinuxDesktop/chrome --ozone-platform=wayland
 ```
 
 ### GN Configuration notes
@@ -264,11 +261,11 @@ with us on freenode.net, `#ozone-wayland` channel or on `ozone-dev`.
 
 Below are some quick build & run instructions. It is assumed that you are
 launching `chrome` from a Wayland environment such as `weston`. Execute the
-following commands (check above the comment regarding usage of minigbm, which
-is required by Ozone/Wayland by design):
+following commands (make sure a system version of gbm and drm is used, which are
+required by Ozone/Wayland by design, when running on Linux platforms.):
 
 ``` shell
-gn args out/OzoneWayland --args="use_ozone=true use_intel_minigbm=true"
+gn args out/OzoneWayland --args="use_ozone=true use_system_minigbm=true use_system_libdrm=true"
 ninja -C out/OzoneWayland chrome
 ./out/OzoneWayland/chrome --ozone-platform=wayland
 ```

@@ -78,7 +78,7 @@ class ConflictResolver : public SyncTask {
 
   SyncEngineContext* sync_context_;  // Not owned.
 
-  base::WeakPtrFactory<ConflictResolver> weak_ptr_factory_;
+  base::WeakPtrFactory<ConflictResolver> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ConflictResolver);
 };

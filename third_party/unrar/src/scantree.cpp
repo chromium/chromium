@@ -1,7 +1,5 @@
 #include "rar.hpp"
 
-namespace third_party_unrar {
-
 ScanTree::ScanTree(StringList *FileMasks,RECURSE_MODE Recurse,bool GetLinks,SCAN_DIRS GetDirs)
 {
   ScanTree::FileMasks=FileMasks;
@@ -144,7 +142,12 @@ bool ScanTree::GetFilteredMask()
   bool WildcardFound=false;
   uint FolderWildcardCount=0;
   uint SlashPos=0;
-  for (int I=0;CurMask[I]!=0;I++)
+  uint StartPos=0;
+#ifdef _WIN_ALL // Not treat the special NTFS \\?\d: path prefix as a wildcard.
+  if (CurMask[0]=='\\' && CurMask[1]=='\\' && CurMask[2]=='?' && CurMask[3]=='\\')
+    StartPos=4;
+#endif
+  for (uint I=StartPos;CurMask[I]!=0;I++)
   {
     if (CurMask[I]=='?' || CurMask[I]=='*')
       WildcardFound=true;
@@ -173,7 +176,7 @@ bool ScanTree::GetFilteredMask()
 
   wchar Filter[NM];
   // Convert path\dir*\ to *\dir filter to search for 'dir' in all 'path' subfolders.
-  wcscpy(Filter,L"*");
+  wcsncpyz(Filter,L"*",ASIZE(Filter));
   AddEndSlash(Filter,ASIZE(Filter));
   // SlashPos might point or not point to path separator for masks like 'dir*', '\dir*' or 'd:dir*'
   wchar *WildName=IsPathDiv(CurMask[SlashPos]) || IsDriveDiv(CurMask[SlashPos]) ? CurMask+SlashPos+1 : CurMask+SlashPos;
@@ -220,7 +223,7 @@ bool ScanTree::GetNextMask()
   wchar *Name=PointToName(CurMask);
   if (*Name==0)
     wcsncatz(CurMask,MASKALL,ASIZE(CurMask));
-  if (Name[0]=='.' && (Name[1]==0 || (Name[1]=='.' && Name[2]==0)))
+  if (Name[0]=='.' && (Name[1]==0 || Name[1]=='.' && Name[2]==0))
   {
     AddEndSlash(CurMask,ASIZE(CurMask));
     wcsncatz(CurMask,MASKALL,ASIZE(CurMask));
@@ -259,9 +262,9 @@ SCAN_CODE ScanTree::FindProc(FindData *FD)
     // at top level in recursion mode. We always comrpess the entire directory
     // if folder wildcard is specified.
     bool SearchAll=!IsDir && (Depth>0 || Recurse==RECURSE_ALWAYS ||
-                   (FolderWildcards && Recurse!=RECURSE_DISABLE) || 
-                   (Wildcards && Recurse==RECURSE_WILDCARDS) || 
-                   (ScanEntireDisk && Recurse!=RECURSE_DISABLE));
+                   FolderWildcards && Recurse!=RECURSE_DISABLE || 
+                   Wildcards && Recurse==RECURSE_WILDCARDS || 
+                   ScanEntireDisk && Recurse!=RECURSE_DISABLE);
     if (Depth==0)
       SearchAllInRoot=SearchAll;
     if (SearchAll || Wildcards)
@@ -362,7 +365,7 @@ SCAN_CODE ScanTree::FindProc(FindData *FD)
         wcsncpyz(CurMask,Mask+1,ASIZE(CurMask));
       else
       {
-        *(PrevSlash+1)=0;
+        *PrevSlash=0;
         wcsncatz(CurMask,Mask,ASIZE(CurMask));
       }
     }
@@ -489,5 +492,3 @@ void ScanTree::ScanError(bool &Error)
     ErrHandler.SysErrMsg();
   }
 }
-
-}  // namespace third_party_unrar

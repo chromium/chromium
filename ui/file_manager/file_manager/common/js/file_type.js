@@ -397,6 +397,13 @@ FileType.types = [
         'application/vnd\\.(ms-excel|' +
             'openxmlformats-officedocument\\.spreadsheetml\\.sheet)',
         'i')
+  },
+  {
+    type: 'archive',
+    icon: 'tini',
+    name: 'TINI_FILE_TYPE',
+    subtype: 'TGZ',
+    pattern: /\.tini$/i,
   }
 ];
 
@@ -470,8 +477,10 @@ FileType.getTypeForName = name => {
 
   // subtype is the extension excluding the first dot.
   return {
-    name: 'GENERIC_FILE_TYPE', type: 'UNKNOWN',
-    subtype: extension.substr(1).toUpperCase(), icon: ''
+    name: 'GENERIC_FILE_TYPE',
+    type: 'UNKNOWN',
+    subtype: extension.substr(1).toUpperCase(),
+    icon: ''
   };
 };
 
@@ -485,6 +494,17 @@ FileType.getTypeForName = name => {
  */
 FileType.getType = (entry, opt_mimeType) => {
   if (entry.isDirectory) {
+    // For removable partitions, use the file system type.
+    if (/** @type {VolumeEntry}*/ (entry).volumeInfo &&
+        /** @type {VolumeEntry}*/ (entry).volumeInfo.diskFileSystemType) {
+      return {
+        name: '',
+        type: 'partition',
+        subtype:
+            /** @type {VolumeEntry}*/ (entry).volumeInfo.diskFileSystemType,
+        icon: '',
+      };
+    }
     return FileType.DIRECTORY;
   }
 
@@ -511,8 +531,10 @@ FileType.getType = (entry, opt_mimeType) => {
 
   // subtype is the extension excluding the first dot.
   return {
-    name: 'GENERIC_FILE_TYPE', type: 'UNKNOWN',
-    subtype: extension.substr(1).toUpperCase(), icon: ''
+    name: 'GENERIC_FILE_TYPE',
+    type: 'UNKNOWN',
+    subtype: extension.substr(1).toUpperCase(),
+    icon: ''
   };
 };
 
@@ -616,6 +638,7 @@ FileType.getIconOverrides = (entry, opt_rootType) => {
   const overrides = {
     [VolumeManagerCommon.RootType.DOWNLOADS]: {
       '/Downloads': VolumeManagerCommon.VolumeType.DOWNLOADS,
+      '/PvmDefault': 'plugin_vm',
     },
   };
   const root = overrides[opt_rootType];

@@ -81,6 +81,7 @@ source_set("courgette_common") {
   ]
   deps = [
     "//base",
+    "//third_party/lzma_sdk",
   ]
 }
 

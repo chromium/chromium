@@ -33,6 +33,7 @@ class MEDIA_EXPORT AlsaWrapper {
   virtual int PcmDrain(snd_pcm_t* handle);
   virtual int PcmDrop(snd_pcm_t* handle);
   virtual int PcmDelay(snd_pcm_t* handle, snd_pcm_sframes_t* delay);
+  virtual int PcmResume(snd_pcm_t* handle);
   virtual snd_pcm_sframes_t PcmWritei(snd_pcm_t* handle,
                                       const void* buffer,
                                       snd_pcm_uframes_t size);
@@ -48,6 +49,7 @@ class MEDIA_EXPORT AlsaWrapper {
                            snd_pcm_uframes_t* period_size);
   virtual int PcmHwParamsMalloc(snd_pcm_hw_params_t** hw_params);
   virtual int PcmHwParamsAny(snd_pcm_t* handle, snd_pcm_hw_params_t* hw_params);
+  virtual int PcmHwParamsCanResume(snd_pcm_hw_params_t* hw_params);
   virtual int PcmHwParamsSetRateResample(snd_pcm_t* handle,
                                          snd_pcm_hw_params_t* hw_params,
                                          unsigned int value);

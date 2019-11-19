@@ -7,7 +7,7 @@
 #include <memory>
 #include <set>
 
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "components/flags_ui/pref_service_flags_storage.h"
 #include "components/prefs/in_memory_pref_store.h"
 #include "components/prefs/pref_registry_simple.h"

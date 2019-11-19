@@ -35,43 +35,13 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 
 namespace blink {
-namespace {
-
-v8::Local<v8::Value> ToWorldSafeValue(ScriptState* target_script_state,
-                                      v8::Local<v8::Value> value) {
-  if (value.IsEmpty() || !value->IsObject())
-    return value;
-
-  v8::Local<v8::Context> creation_context =
-      value.As<v8::Object>()->CreationContext();
-  v8::Isolate* isolate = target_script_state->GetIsolate();
-  if (&ScriptState::From(creation_context)->World() ==
-      &target_script_state->World()) {
-    return value;
-  }
-
-  v8::Context::Scope target_context_scope(target_script_state->GetContext());
-  scoped_refptr<SerializedScriptValue> serialized =
-      SerializedScriptValue::SerializeAndSwallowExceptions(isolate, value);
-  return serialized->Deserialize(isolate);
-}
-
-}  // namespace
 
 v8::Local<v8::Value> ScriptValue::V8Value() const {
   if (IsEmpty())
     return v8::Local<v8::Value>();
 
   DCHECK(GetIsolate()->InContext());
-
-  // This is a check to validate that you don't return a ScriptValue to a world
-  // different from the world that created the ScriptValue.
-  // Probably this could be:
-  //   if (&script_state_->world() == &DOMWrapperWorld::current(isolate()))
-  //       return v8::Local<v8::Value>();
-  // instead of triggering CHECK.
-  CHECK_EQ(&script_state_->World(), &DOMWrapperWorld::Current(GetIsolate()));
-  return value_->NewLocal(GetIsolate());
+  return value_->Get(ScriptState::From(isolate_->GetCurrentContext()));
 }
 
 v8::Local<v8::Value> ScriptValue::V8ValueFor(
@@ -79,15 +49,13 @@ v8::Local<v8::Value> ScriptValue::V8ValueFor(
   if (IsEmpty())
     return v8::Local<v8::Value>();
 
-  return ToWorldSafeValue(target_script_state,
-                          value_->NewLocal(target_script_state->GetIsolate()));
+  return value_->GetAcrossWorld(target_script_state);
 }
 
 bool ScriptValue::ToString(String& result) const {
   if (IsEmpty())
     return false;
 
-  ScriptState::Scope scope(script_state_);
   v8::Local<v8::Value> string = V8Value();
   if (string.IsEmpty() || !string->IsString())
     return false;
@@ -95,8 +63,8 @@ bool ScriptValue::ToString(String& result) const {
   return true;
 }
 
-ScriptValue ScriptValue::CreateNull(ScriptState* script_state) {
-  return ScriptValue(script_state, v8::Null(script_state->GetIsolate()));
+ScriptValue ScriptValue::CreateNull(v8::Isolate* isolate) {
+  return ScriptValue(isolate, v8::Null(isolate));
 }
 
 }  // namespace blink

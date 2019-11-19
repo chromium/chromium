@@ -1,4 +1,5 @@
 include_rules = [
+  "+components/services/heap_profiling/public/cpp",
   "+components/version_info",
   "+content/public/common",
   "+extensions/common",
@@ -6,6 +7,10 @@ include_rules = [
   "+extensions/shell/common/api",
   "+extensions/shell/grit",
   "+mojo/public/cpp/bindings",
+  "+net/http",
+  "+services/network/public/cpp",
+  "+services/service_manager/public/cpp",
+  "+third_party/blink/public/common/loader/url_loader_throttle.h",
   "+ui/accessibility",
   "+ui/base",
   "+ui/gfx",

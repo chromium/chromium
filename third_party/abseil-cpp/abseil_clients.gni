@@ -1,0 +1,30 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Usage of Abseil in Chromium is guarded by an explicit opt-in list, before
+# adding projects to this list please reach out to cxx@chromium.org and CC:
+# - https://cs.chromium.org/chromium/src/third_party/abseil-cpp/OWNERS
+#
+# More information can be found at:
+# https://docs.google.com/document/d/1DgS1-A3rzboTLjpf4m1sqkJgWjnY_Ru2dokk1X1vBDU
+declare_args() {
+  # Additional targets that can depend on absl.
+  # ** DISCLAIMER **
+  #
+  # Using "additional_absl_clients" is highly discouraged because it will break
+  # the component build since Abseil doesn't have export annotations and WebRTC
+  # is already depending on it. Any CL that use "additional_absl_clients" will
+  # have a really high probability of being reverted.
+  additional_absl_clients = []
+}
+assert(!is_component_build || additional_absl_clients == [])
+
+_chromium_absl_clients = [
+  "//libassistant/*",
+  "//third_party/webrtc/*",
+  "//third_party/abseil-cpp/*",
+  "//third_party/googletest:gtest",
+]
+
+absl_visibility = _chromium_absl_clients + additional_absl_clients

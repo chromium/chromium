@@ -12,8 +12,6 @@ onload = function() {
     if (window.testRunner)
         testRunner.dumpAsText();
     var iframeDocument = iframe.contentDocument;
-    // Need to use link elements in this test to create placeholder styles so
-    // we'll go into the Force case inside updateLayoutIgnorePendingStylesheets.
     var link = document.createElement("link");
     link.href = "doesnotexist.css";
     link.rel = "stylesheet";

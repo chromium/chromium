@@ -44,13 +44,6 @@ class CanvasPattern final : public ScriptWrappable {
   static Pattern::RepeatMode ParseRepetitionType(const String&,
                                                  ExceptionState&);
 
-  static CanvasPattern* Create(scoped_refptr<Image> image,
-                               Pattern::RepeatMode repeat,
-                               bool origin_clean) {
-    return MakeGarbageCollected<CanvasPattern>(std::move(image), repeat,
-                                               origin_clean);
-  }
-
   CanvasPattern(scoped_refptr<Image>, Pattern::RepeatMode, bool origin_clean);
 
   Pattern* GetPattern() const { return pattern_.get(); }

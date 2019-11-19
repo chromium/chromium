@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<title>Test Picture-in-Picture service error</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/testdriver.js"></script>
+<script src="../../resources/testdriver-vendor.js"></script>
+<script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
+<script src="file:///gen/third_party/blink/public/mojom/picture_in_picture/picture_in_picture.mojom.js"></script>
+<script src="../../external/wpt/picture-in-picture/resources/picture-in-picture-helpers.js"></script>
+<body></body>
+<script>
+class PictureInPictureServiceMock {
+  constructor() {
+    this.bindingSet_ = new mojo.BindingSet(
+        blink.mojom.PictureInPictureService);
+
+    this.interceptor_ =
+        new MojoInterfaceInterceptor(blink.mojom.PictureInPictureService.name, "context", true);
+    this.interceptor_.oninterfacerequest =
+        e => this.bindingSet_.addBinding(this, e.handle);
+    this.interceptor_.start();
+  }
+
+  async startSession(playerId, surfaceId, naturalSize, showPlayPauseButton,
+        observer, callback) {
+    return { session: null, size: new gfx.mojom.Size() };
+  }
+};
+
+promise_test(async t => {
+  new PictureInPictureServiceMock();
+
+  const video = await loadVideo(document, '../content/test.ogv');
+  return promise_rejects(t, 'NotSupportedError',
+    requestPictureInPictureWithTrustedClick(video));
+});
+</script>

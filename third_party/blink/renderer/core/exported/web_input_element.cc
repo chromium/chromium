@@ -61,6 +61,10 @@ bool WebInputElement::IsPasswordField() const {
   return ConstUnwrap<HTMLInputElement>()->type() == input_type_names::kPassword;
 }
 
+void WebInputElement::SetHasBeenPasswordField() {
+  Unwrap<HTMLInputElement>()->SetHasBeenPasswordField();
+}
+
 bool WebInputElement::IsPasswordFieldForAutofill() const {
   if (ConstUnwrap<HTMLInputElement>()->IsTextField() &&
       ConstUnwrap<HTMLInputElement>()->HasBeenPasswordField()) {

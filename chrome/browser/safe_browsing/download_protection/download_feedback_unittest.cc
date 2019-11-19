@@ -18,7 +18,7 @@
 #include "components/safe_browsing/proto/csd.pb.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/test/test_shared_url_loader_factory.h"
@@ -97,10 +97,11 @@ std::unique_ptr<TwoPhaseUploader> FakeUploaderFactory::CreateTwoPhaseUploader(
 class DownloadFeedbackTest : public testing::Test {
  public:
   DownloadFeedbackTest()
-      : file_task_runner_(base::CreateSequencedTaskRunnerWithTraits(
-            {base::MayBlock(), base::TaskPriority::BEST_EFFORT})),
-        io_task_runner_(base::CreateSingleThreadTaskRunnerWithTraits(
-            {content::BrowserThread::IO})),
+      : file_task_runner_(base::CreateSequencedTaskRunner(
+            {base::ThreadPool(), base::MayBlock(),
+             base::TaskPriority::BEST_EFFORT})),
+        io_task_runner_(
+            base::CreateSingleThreadTaskRunner({content::BrowserThread::IO})),
         feedback_finish_called_(false) {
     EXPECT_NE(io_task_runner_, file_task_runner_);
     shared_url_loader_factory_ =
@@ -132,7 +133,7 @@ class DownloadFeedbackTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
   base::FilePath upload_file_path_;
   std::string upload_file_data_;
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   scoped_refptr<base::SequencedTaskRunner> file_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
   FakeUploaderFactory two_phase_uploader_factory_;

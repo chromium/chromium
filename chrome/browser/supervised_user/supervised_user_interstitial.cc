@@ -7,11 +7,12 @@
 #include <stddef.h>
 
 #include "base/bind.h"
+#include "base/bind_helpers.h"
+#include "base/callback.h"
+#include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/scoped_observer.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/values.h"
@@ -19,9 +20,9 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/supervised_user/supervised_user_navigation_observer.h"
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/infobars/core/infobar.h"
@@ -29,20 +30,13 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/interstitial_page.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/navigation_entry.h"
-#include "content/public/browser/reload_type.h"
-#include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
-#include "content/public/browser/web_ui.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
-#include "ui/base/webui/jstemplate_builder.h"
-#include "ui/base/webui/web_ui_util.h"
 
 #if defined(OS_ANDROID)
 #include "chrome/browser/supervised_user/child_accounts/child_account_feedback_reporter_android.h"
@@ -59,6 +53,15 @@ namespace {
 
 // For use in histograms.
 enum Commands { PREVIEW, BACK, NTP, ACCESS_REQUEST, HISTOGRAM_BOUNDING_VALUE };
+
+// For use in histograms.The enum values should remain synchronized with the
+// enum ManagedUserURLRequestPermissionSource in
+// tools/metrics/histograms/enums.xml.
+enum class RequestPermissionSource {
+  MAIN_FRAME = 0,
+  SUB_FRAME,
+  HISTOGRAM_BOUNDING_VALUE
+};
 
 class TabCloser : public content::WebContentsUserData<TabCloser> {
  public:
@@ -79,11 +82,10 @@ class TabCloser : public content::WebContentsUserData<TabCloser> {
  private:
   friend class content::WebContentsUserData<TabCloser>;
 
-  explicit TabCloser(WebContents* web_contents)
-      : web_contents_(web_contents), weak_ptr_factory_(this) {
-    base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
-                             base::BindOnce(&TabCloser::CloseTabImpl,
-                                            weak_ptr_factory_.GetWeakPtr()));
+  explicit TabCloser(WebContents* web_contents) : web_contents_(web_contents) {
+    base::PostTask(FROM_HERE, {BrowserThread::UI},
+                   base::BindOnce(&TabCloser::CloseTabImpl,
+                                  weak_ptr_factory_.GetWeakPtr()));
   }
 
   void CloseTabImpl() {
@@ -104,7 +106,7 @@ class TabCloser : public content::WebContentsUserData<TabCloser> {
   }
 
   WebContents* web_contents_;
-  base::WeakPtrFactory<TabCloser> weak_ptr_factory_;
+  base::WeakPtrFactory<TabCloser> weak_ptr_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 
@@ -113,81 +115,17 @@ class TabCloser : public content::WebContentsUserData<TabCloser> {
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(TabCloser)
 
-}  // namespace
-
-const content::InterstitialPageDelegate::TypeID
-    SupervisedUserInterstitial::kTypeForTesting =
-        &SupervisedUserInterstitial::kTypeForTesting;
-
-// TODO(carlosil): Remove Show function and the rest of non-committed
-// interstitials code once committed interstitials are the only code path.
-// static
-void SupervisedUserInterstitial::Show(
-    WebContents* web_contents,
-    const GURL& url,
-    supervised_user_error_page::FilteringBehaviorReason reason,
-    bool initial_page_load,
-    const base::Callback<void(bool)>& callback) {
-  DCHECK(!base::FeatureList::IsEnabled(
-      features::kSupervisedUserCommittedInterstitials));
-  // |interstitial_page_| is responsible for deleting the interstitial.
-  SupervisedUserInterstitial* interstitial = new SupervisedUserInterstitial(
-      web_contents, url, reason, initial_page_load, callback);
-
-  interstitial->Init();
-}
-
-// static
-std::unique_ptr<SupervisedUserInterstitial> SupervisedUserInterstitial::Create(
-    WebContents* web_contents,
-    const GURL& url,
-    supervised_user_error_page::FilteringBehaviorReason reason,
-    bool initial_page_load,
-    const base::Callback<void(bool)>& callback) {
-  DCHECK(base::FeatureList::IsEnabled(
-      features::kSupervisedUserCommittedInterstitials));
-  std::unique_ptr<SupervisedUserInterstitial> interstitial(
-      new SupervisedUserInterstitial(web_contents, url, reason,
-                                     initial_page_load, callback));
-
-  // Caller is responsible for deleting the interstitial.
-  interstitial->Init();
-
-  return interstitial;
-}
-
-SupervisedUserInterstitial::SupervisedUserInterstitial(
-    WebContents* web_contents,
-    const GURL& url,
-    supervised_user_error_page::FilteringBehaviorReason reason,
-    bool initial_page_load,
-    const base::Callback<void(bool)>& callback)
-    : web_contents_(web_contents),
-      profile_(Profile::FromBrowserContext(web_contents->GetBrowserContext())),
-      interstitial_page_(NULL),
-      url_(url),
-      reason_(reason),
-      initial_page_load_(initial_page_load),
-      proceeded_(false),
-      callback_(callback),
-      scoped_observer_(this),
-      weak_ptr_factory_(this) {}
-
-SupervisedUserInterstitial::~SupervisedUserInterstitial() {}
-
-void SupervisedUserInterstitial::Init() {
-  DCHECK(!ShouldProceed());
-
-  InfoBarService* service = InfoBarService::FromWebContents(web_contents_);
+// Removes all the infobars which are attached to |web_contents| and for
+// which ShouldExpire() returns true.
+void CleanUpInfoBar(content::WebContents* web_contents) {
+  InfoBarService* service = InfoBarService::FromWebContents(web_contents);
   if (service) {
-    // Remove all the infobars which are attached to |web_contents_| and for
-    // which ShouldExpire() returns true.
     content::LoadCommittedDetails details;
     // |details.is_same_document| is default false, and |details.is_main_frame|
     // is default true. This results in is_navigation_to_different_page()
     // returning true.
     DCHECK(details.is_navigation_to_different_page());
-    content::NavigationController& controller = web_contents_->GetController();
+    content::NavigationController& controller = web_contents->GetController();
     details.entry = controller.GetVisibleEntry();
     if (controller.GetLastCommittedEntry()) {
       details.previous_entry_index = controller.GetLastCommittedEntryIndex();
@@ -202,20 +140,42 @@ void SupervisedUserInterstitial::Init() {
         service->RemoveInfoBar(infobar);
     }
   }
-
-  SupervisedUserService* supervised_user_service =
-      SupervisedUserServiceFactory::GetForProfile(profile_);
-  scoped_observer_.Add(supervised_user_service);
-
-  if (!base::FeatureList::IsEnabled(
-          features::kSupervisedUserCommittedInterstitials)) {
-    // If committed interstitials are enabled we do not create an
-    // interstitial_page
-    interstitial_page_ = content::InterstitialPage::Create(
-        web_contents_, initial_page_load_, url_, this);
-    interstitial_page_->Show();
-  }
 }
+
+}  // namespace
+
+// static
+std::unique_ptr<SupervisedUserInterstitial> SupervisedUserInterstitial::Create(
+    WebContents* web_contents,
+    const GURL& url,
+    supervised_user_error_page::FilteringBehaviorReason reason,
+    int frame_id,
+    int64_t interstitial_navigation_id) {
+  std::unique_ptr<SupervisedUserInterstitial> interstitial =
+      base::WrapUnique(new SupervisedUserInterstitial(
+          web_contents, url, reason, frame_id, interstitial_navigation_id));
+
+  if (web_contents->GetMainFrame()->GetFrameTreeNodeId() == frame_id)
+    CleanUpInfoBar(web_contents);
+
+  // Caller is responsible for deleting the interstitial.
+  return interstitial;
+}
+
+SupervisedUserInterstitial::SupervisedUserInterstitial(
+    WebContents* web_contents,
+    const GURL& url,
+    supervised_user_error_page::FilteringBehaviorReason reason,
+    int frame_id,
+    int64_t interstitial_navigation_id)
+    : web_contents_(web_contents),
+      profile_(Profile::FromBrowserContext(web_contents->GetBrowserContext())),
+      url_(url),
+      reason_(reason),
+      frame_id_(frame_id),
+      interstitial_navigation_id_(interstitial_navigation_id) {}
+
+SupervisedUserInterstitial::~SupervisedUserInterstitial() {}
 
 // static
 std::string SupervisedUserInterstitial::GetHTMLContents(
@@ -249,151 +209,69 @@ std::string SupervisedUserInterstitial::GetHTMLContents(
       g_browser_process->GetApplicationLocale());
 }
 
-std::string SupervisedUserInterstitial::GetHTMLContents() {
-  return GetHTMLContents(profile_, reason_);
-}
+void SupervisedUserInterstitial::GoBack() {
+  // GoBack only for main frame.
+  DCHECK_EQ(web_contents()->GetMainFrame()->GetFrameTreeNodeId(), frame_id());
 
-void SupervisedUserInterstitial::CommandReceived(const std::string& command) {
-  if (command == "\"back\"") {
-    UMA_HISTOGRAM_ENUMERATION("ManagedMode.BlockingInterstitialCommand",
-                              BACK,
-                              HISTOGRAM_BOUNDING_VALUE);
-    if (base::FeatureList::IsEnabled(
-            features::kSupervisedUserCommittedInterstitials)) {
-      DontProceedInternal();
-    } else {
-      interstitial_page_->DontProceed();
-    }
-    return;
-  }
-
-  if (command == "\"request\"") {
-    UMA_HISTOGRAM_ENUMERATION("ManagedMode.BlockingInterstitialCommand",
-                              ACCESS_REQUEST,
-                              HISTOGRAM_BOUNDING_VALUE);
-
-    SupervisedUserService* supervised_user_service =
-        SupervisedUserServiceFactory::GetForProfile(profile_);
-    supervised_user_service->AddURLAccessRequest(
-        url_, base::Bind(&SupervisedUserInterstitial::OnAccessRequestAdded,
-                         weak_ptr_factory_.GetWeakPtr()));
-    return;
-  }
-
-  SupervisedUserService* supervised_user_service =
-      SupervisedUserServiceFactory::GetForProfile(profile_);
-  base::string16 second_custodian =
-      base::UTF8ToUTF16(supervised_user_service->GetSecondCustodianName());
-
-  if (command == "\"feedback\"") {
-    bool is_child_account = profile_->IsChild();
-    base::string16 reason =
-        l10n_util::GetStringUTF16(supervised_user_error_page::GetBlockMessageID(
-            reason_, is_child_account, second_custodian.empty()));
-    std::string message = l10n_util::GetStringFUTF8(
-        IDS_BLOCK_INTERSTITIAL_DEFAULT_FEEDBACK_TEXT, reason);
-#if defined(OS_ANDROID)
-    DCHECK(is_child_account);
-    ReportChildAccountFeedback(web_contents_, message, url_);
-#else
-    chrome::ShowFeedbackPage(chrome::FindBrowserWithWebContents(web_contents_),
-                             chrome::kFeedbackSourceSupervisedUserInterstitial,
-                             message,
-                             std::string() /* description_placeholder_text */,
-                             std::string() /* category_tag */,
-                             std::string() /* extra_diagnostics */);
-#endif
-    return;
-  }
-
-  NOTREACHED();
+  UMA_HISTOGRAM_ENUMERATION("ManagedMode.BlockingInterstitialCommand", BACK,
+                            HISTOGRAM_BOUNDING_VALUE);
+  AttemptMoveAwayFromCurrentFrameURL();
+  OnInterstitialDone();
 }
 
 void SupervisedUserInterstitial::RequestPermission(
     base::OnceCallback<void(bool)> RequestCallback) {
   UMA_HISTOGRAM_ENUMERATION("ManagedMode.BlockingInterstitialCommand",
                             ACCESS_REQUEST, HISTOGRAM_BOUNDING_VALUE);
+
+  RequestPermissionSource source;
+  if (web_contents()->GetMainFrame()->GetFrameTreeNodeId() == frame_id())
+    source = RequestPermissionSource::MAIN_FRAME;
+  else
+    source = RequestPermissionSource::SUB_FRAME;
+
+  UMA_HISTOGRAM_ENUMERATION("ManagedUsers.RequestPermissionSource", source,
+                            RequestPermissionSource::HISTOGRAM_BOUNDING_VALUE);
+
   SupervisedUserService* supervised_user_service =
       SupervisedUserServiceFactory::GetForProfile(profile_);
   supervised_user_service->AddURLAccessRequest(url_,
                                                std::move(RequestCallback));
 }
 
-void SupervisedUserInterstitial::OnProceed() {
-  ProceedInternal();
-}
+void SupervisedUserInterstitial::ShowFeedback() {
+  // TODO(yilkal): Remove checking IsChild since legacy supervised users are
+  // deprecated.
+  bool is_child_account = profile_->IsChild();
 
-void SupervisedUserInterstitial::OnDontProceed() {
-  DontProceedInternal();
-}
-
-content::InterstitialPageDelegate::TypeID
-SupervisedUserInterstitial::GetTypeForTesting() const {
-  return SupervisedUserInterstitial::kTypeForTesting;
-}
-
-void SupervisedUserInterstitial::OnURLFilterChanged() {
-  if (ShouldProceed()) {
-    if (base::FeatureList::IsEnabled(
-            features::kSupervisedUserCommittedInterstitials)) {
-      ProceedInternal();
-    } else {
-      // Interstitial page deletes the interstitial when proceeding but not
-      // synchronously, so a check is required to avoid calling proceed twice.
-      if (!proceeded_)
-        interstitial_page_->Proceed();
-      proceeded_ = true;
-    }
-  }
-}
-
-void SupervisedUserInterstitial::OnAccessRequestAdded(bool success) {
-  DCHECK(!base::FeatureList::IsEnabled(
-      features::kSupervisedUserCommittedInterstitials));
-  VLOG(1) << "Sent access request for " << url_.spec()
-          << (success ? " successfully" : " unsuccessfully");
-  std::string jsFunc =
-      base::StringPrintf("setRequestStatus(%s);", success ? "true" : "false");
-  if (interstitial_page_->GetMainFrame()) {
-    interstitial_page_->GetMainFrame()->ExecuteJavaScript(
-        base::ASCIIToUTF16(jsFunc));
-  }
-}
-
-bool SupervisedUserInterstitial::ShouldProceed() {
   SupervisedUserService* supervised_user_service =
       SupervisedUserServiceFactory::GetForProfile(profile_);
-  const SupervisedUserURLFilter* url_filter =
-      supervised_user_service->GetURLFilter();
-  SupervisedUserURLFilter::FilteringBehavior behavior;
-  if (url_filter->HasAsyncURLChecker()) {
-    if (!url_filter->GetManualFilteringBehaviorForURL(url_, &behavior))
-      return false;
-  } else {
-    behavior = url_filter->GetFilteringBehaviorForURL(url_);
-  }
-  return behavior != SupervisedUserURLFilter::BLOCK;
+  std::string second_custodian =
+      supervised_user_service->GetSecondCustodianName();
+
+  base::string16 reason =
+      l10n_util::GetStringUTF16(supervised_user_error_page::GetBlockMessageID(
+          reason_, is_child_account, second_custodian.empty()));
+  std::string message = l10n_util::GetStringFUTF8(
+      IDS_BLOCK_INTERSTITIAL_DEFAULT_FEEDBACK_TEXT, reason);
+#if defined(OS_ANDROID)
+  DCHECK(is_child_account);
+  ReportChildAccountFeedback(web_contents_, message, url_);
+#else
+  chrome::ShowFeedbackPage(
+      chrome::FindBrowserWithWebContents(web_contents_),
+      chrome::kFeedbackSourceSupervisedUserInterstitial, message,
+      std::string() /* description_placeholder_text */,
+      std::string() /* category_tag */, std::string() /* extra_diagnostics */);
+#endif
+  return;
 }
 
-void SupervisedUserInterstitial::MoveAwayFromCurrentPage() {
+void SupervisedUserInterstitial::AttemptMoveAwayFromCurrentFrameURL() {
   // No need to do anything if the WebContents is in the process of being
   // destroyed anyway.
   if (web_contents_->IsBeingDestroyed())
     return;
-
-  // If the interstitial was shown during a page load and there is no history
-  // entry to go back to, attempt to close the tab.
-  // This check is skipped when committed interstitials are on, because all
-  // interstitials are treated as initial page loads in this case, the case
-  // where there is nothing to go back to will be handled by the default case at
-  // the end.
-  if (!base::FeatureList::IsEnabled(
-          features::kSupervisedUserCommittedInterstitials) &&
-      initial_page_load_) {
-    if (web_contents_->GetController().IsInitialBlankNavigation())
-      TabCloser::MaybeClose(web_contents_);
-    return;
-  }
 
   // If the interstitial was shown over an existing page, navigate back from
   // that page. If that is not possible, attempt to close the entire tab.
@@ -405,27 +283,12 @@ void SupervisedUserInterstitial::MoveAwayFromCurrentPage() {
   TabCloser::MaybeClose(web_contents_);
 }
 
-void SupervisedUserInterstitial::DispatchContinueRequest(
-    bool continue_request) {
-  callback_.Run(continue_request);
+void SupervisedUserInterstitial::OnInterstitialDone() {
+  auto* navigation_observer =
+      SupervisedUserNavigationObserver::FromWebContents(web_contents_);
 
   // After this, the WebContents may be destroyed. Make sure we don't try to use
   // it again.
   web_contents_ = nullptr;
-}
-
-void SupervisedUserInterstitial::ProceedInternal() {
-  if (base::FeatureList::IsEnabled(
-          features::kSupervisedUserCommittedInterstitials) &&
-      web_contents_) {
-    // In the committed interstitials case, there will be nothing to resume, so
-    // refresh instead.
-    web_contents_->GetController().Reload(content::ReloadType::NORMAL, true);
-  }
-  DispatchContinueRequest(true);
-}
-
-void SupervisedUserInterstitial::DontProceedInternal() {
-  MoveAwayFromCurrentPage();
-  DispatchContinueRequest(false);
+  navigation_observer->OnInterstitialDone(frame_id_);
 }

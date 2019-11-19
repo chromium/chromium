@@ -20,13 +20,13 @@ namespace content {
 
 using std::make_pair;
 
-MockStorageClient::MockStorageClient(
-    QuotaManagerProxy* quota_manager_proxy,
-    const MockOriginData* mock_data, QuotaClient::ID id, size_t mock_data_size)
+MockStorageClient::MockStorageClient(QuotaManagerProxy* quota_manager_proxy,
+                                     const MockOriginData* mock_data,
+                                     QuotaClient::ID id,
+                                     size_t mock_data_size)
     : quota_manager_proxy_(quota_manager_proxy),
       id_(id),
-      mock_time_counter_(0),
-      weak_factory_(this) {
+      mock_time_counter_(0) {
   Populate(mock_data, mock_data_size);
 }
 

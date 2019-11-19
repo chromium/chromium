@@ -1,10 +1,17 @@
+# If you're adding a new feature or modifying non-trivial amount of code
+# in Network Service, please consider sharing the design idea/doc with
+# network-service-dev@chromium.org beforehand.
+
 cduvall@chromium.org
 ericorth@chromium.org
+falken@chromium.org
 jam@chromium.org
 kinuko@chromium.org
 mmenke@chromium.org
 morlovich@chromium.org
 reillyg@chromium.org
+rmcelrath@chromium.org
+toyoshim@chromium.org
 tsepez@chromium.org
 yhirano@chromium.org
 
@@ -15,6 +22,9 @@ per-file cross_origin_read_blocking*=creis@chromium.org
 per-file cross_origin_read_blocking*=lukasza@chromium.org
 per-file cross_origin_resource_policy*=creis@chromium.org
 per-file cross_origin_resource_policy*=lukasza@chromium.org
+per-file sec_header_helpers*=creis@chromium.org
+per-file sec_header_helpers*=lukasza@chromium.org
+per-file sec_header_helpers*=mkwst@chromium.org
 
 per-file expect_ct_reporter*=estark@chromium.org
 
@@ -27,4 +37,13 @@ per-file *_type_converter*.*=file://ipc/SECURITY_OWNERS
 per-file network_sandbox_hook_linux.*.cc=file://sandbox/OWNERS
 per-file network_sandbox_win.*=file://sandbox/win/OWNERS
 
-per-file resource_scheduler*=tbansal@chromium.org
+per-file network_quality*=file://net/nqe/OWNERS
+
+per-file BUILD.gn=file://net/nqe/OWNERS
+per-file BUILD.gn=file://services/network/resource_scheduler/OWNERS
+
+# Content Security Policy
+per-file content_security_policy*=lfg@chromium.org
+per-file content_security_policy*=nasko@chromium.org
+
+# COMPONENT: Internals>Services>Network

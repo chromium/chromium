@@ -7,7 +7,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #import "ios/chrome/browser/download/download_manager_tab_helper_delegate.h"
-#import "ios/chrome/browser/ui/network_activity_indicator_manager.h"
+#import "ios/chrome/browser/network_activity/network_activity_indicator_manager.h"
 #import "ios/web/public/download/download_task.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

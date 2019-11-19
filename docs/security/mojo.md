@@ -164,9 +164,10 @@ callee to trust the caller.
 
 ### Do not send unnecessary or privilege-presuming data
 
-> Note: there is currently work in progress to associate origins with the
-> `InterfaceProvider`s for frames and workers: <https://crbug.com/734210> and
-> <https://crbug.com/775792/>.
+> Each `InterfaceProvider` for frames and workers is strongly associated with an
+> origin. Where possible, prefer to use this associated origin rather than
+> sending it over IPC. (See <https://crbug.com/734210> and
+> <https://crbug.com/775792/>).
 
 For example, the browser process must not (fully) trust the renderer's claims
 about origins. The browser process should already know what origin the renderer
@@ -498,7 +499,7 @@ if (!CheckMul(request->elements(), request->element_size())
          .AssignIfValid(&alloc_size)) {
   // Safe: avoids allocating with a bogus size that overflowed to a smaller than
   // expected value.
-  mojo::ReportBadMessge("Invalid allocation size");
+  mojo::ReportBadMessage("Invalid allocation size");
 }
 
 Element* array = CreateArray(alloc_size);
@@ -689,9 +690,9 @@ IDLDictionary* FromMojo(const mojom::blink::DictionaryPtr& in) {
 
 ### Use the proper abstractions
 
-`mojo::BindingSet` implies multiple clients may connect. If this actually isn't
+`mojo::ReceiverSet` implies multiple clients may connect. If this actually isn't
 the case, please do not use it. For example, if an interface can be rebound,
-then use the singular `mojo::Binding` and simply `Close()` the existing binding
+then use the singular `mojo::Receiver` and simply `reset()` the existing receiver
 before reusing it.
 
 

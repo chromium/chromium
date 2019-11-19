@@ -108,9 +108,11 @@ var prompt_test_cases = [
     }
 ];
 
-function verify_prompt_resolve(e, t) {
-    callWithKeyDown(() => e.prompt().then(
-        function() { }, t.unreached_func("prompt() promise should resolve.")));
+function verify_prompt_resolve(e, t, test_case) {
+    callWithKeyDown(() => e.prompt().then(t.step_func(function(result) {
+        assert_equals(result.platform, test_case.platform, 'Resolved platform');
+        assert_equals(result.outcome, test_case.outcome, 'Outcome');
+    }), t.unreached_func("prompt() promise should resolve.")));
 }
 
 function verify_prompt_reject(e, t) {
@@ -170,7 +172,7 @@ function prompt_test(index) {
                     assert_false(event == null, "event is null outside handler");
 
                     // Test that firing prompt() outside of the handler resolves or rejects correctly.
-                    verify_prompt_resolve(event, t);
+                    verify_prompt_resolve(event, t, test_case);
                     // Check userChoice and call the next test.
                     verify_userChoice(event, t, test_case, index);
                 }, 0);
@@ -181,7 +183,7 @@ function prompt_test(index) {
             verify_prompt_reject(e, t);
 
             // Call prompt() to restart the pipeline.
-            verify_prompt_resolve(e, t);
+            verify_prompt_resolve(e, t, test_case);
 
             // prompt() has been fired, so check the userChoice promise and call the next test.
             verify_userChoice(e, t, test_case, index);

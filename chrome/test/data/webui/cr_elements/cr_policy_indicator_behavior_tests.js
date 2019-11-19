@@ -35,6 +35,28 @@ suite('CrPolicyIndicatorBehavior', function() {
             indicator.indicatorType, indicator.indicatorSourceName));
   });
 
+  test('parent-controlled indicator', function() {
+    indicator.indicatorType = CrPolicyIndicatorType.PARENT;
+
+    assertTrue(indicator.indicatorVisible);
+    assertEquals('cr20:kite', indicator.indicatorIcon);
+    assertEquals(
+        'parent',
+        indicator.getIndicatorTooltip(
+            indicator.indicatorType, indicator.indicatorSourceName));
+  });
+
+  test('child-restriction indicator', function() {
+    indicator.indicatorType = CrPolicyIndicatorType.CHILD_RESTRICTION;
+
+    assertTrue(indicator.indicatorVisible);
+    assertEquals('cr20:kite', indicator.indicatorIcon);
+    assertEquals(
+        'Restricted for child',
+        indicator.getIndicatorTooltip(
+            indicator.indicatorType, indicator.indicatorSourceName));
+  });
+
   test('recommended indicator', function() {
     indicator.indicatorType = CrPolicyIndicatorType.RECOMMENDED;
 

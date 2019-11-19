@@ -30,12 +30,16 @@
 
 #include "third_party/blink/public/platform/web_http_body.h"
 
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "services/network/public/mojom/data_pipe_getter.mojom-blink.h"
+#include "third_party/blink/public/mojom/blob/blob.mojom-blink.h"
+#include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "third_party/blink/renderer/platform/file_metadata.h"
 #include "third_party/blink/renderer/platform/network/encoded_form_data.h"
 #include "third_party/blink/renderer/platform/network/form_data_encoder.h"
-#include "third_party/blink/renderer/platform/shared_buffer.h"
+#include "third_party/blink/renderer/platform/network/wrapped_data_pipe_getter.h"
+#include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 
 namespace blink {
 
@@ -89,18 +93,17 @@ bool WebHTTPBody::ElementAt(size_t index, Element& result) const {
       result.blob_length = std::numeric_limits<uint64_t>::max();
       if (element.optional_blob_data_handle_) {
         result.optional_blob_handle =
-            element.optional_blob_data_handle_->CloneBlobPtr()
-                .PassInterface()
-                .PassHandle();
+            element.optional_blob_data_handle_->CloneBlobRemote().PassPipe();
         result.blob_length = element.optional_blob_data_handle_->size();
       }
       break;
     case FormDataElement::kDataPipe:
       result.type = Element::kTypeDataPipe;
-      network::mojom::blink::DataPipeGetterPtr data_pipe_getter;
-      (*element.data_pipe_getter_->GetPtr())
-          ->Clone(mojo::MakeRequest(&data_pipe_getter));
-      result.data_pipe_getter = data_pipe_getter.PassInterface().PassHandle();
+      mojo::PendingRemote<network::mojom::blink::DataPipeGetter>
+          data_pipe_getter;
+      element.data_pipe_getter_->GetDataPipeGetter()->Clone(
+          data_pipe_getter.InitWithNewPipeAndPassReceiver());
+      result.data_pipe_getter = data_pipe_getter.PassPipe();
       break;
   }
 
@@ -124,8 +127,8 @@ void WebHTTPBody::AppendFile(const WebString& file_path) {
 }
 
 void WebHTTPBody::AppendFileRange(const WebString& file_path,
-                                  long long file_start,
-                                  long long file_length,
+                                  int64_t file_start,
+                                  int64_t file_length,
                                   double modification_time) {
   EnsureMutable();
   private_->AppendFileRange(file_path, file_start, file_length,
@@ -141,32 +144,32 @@ void WebHTTPBody::AppendBlob(const WebString& uuid,
                              uint64_t length,
                              mojo::ScopedMessagePipeHandle blob_handle) {
   EnsureMutable();
-  mojom::blink::BlobPtrInfo blob_ptr_info(std::move(blob_handle),
-                                          mojom::blink::Blob::Version_);
+  mojo::PendingRemote<mojom::blink::Blob> blob_remote(
+      std::move(blob_handle), mojom::blink::Blob::Version_);
   private_->AppendBlob(
       uuid, BlobDataHandle::Create(uuid, "" /* type is not necessary */, length,
-                                   std::move(blob_ptr_info)));
+                                   std::move(blob_remote)));
 }
 
 void WebHTTPBody::AppendDataPipe(mojo::ScopedMessagePipeHandle message_pipe) {
   EnsureMutable();
 
-  // Convert the raw message pipe to network::mojom::blink::DataPipeGetter.
-  network::mojom::blink::DataPipeGetterPtr data_pipe_getter;
-  data_pipe_getter.Bind(network::mojom::blink::DataPipeGetterPtrInfo(
-      std::move(message_pipe), 0u));
+  // Convert the raw message pipe to
+  // mojo::Remote<network::mojom::blink::DataPipeGetter>.
+  mojo::PendingRemote<network::mojom::blink::DataPipeGetter> data_pipe_getter(
+      std::move(message_pipe), 0u);
 
   auto wrapped =
       base::MakeRefCounted<WrappedDataPipeGetter>(std::move(data_pipe_getter));
   private_->AppendDataPipe(std::move(wrapped));
 }
 
-long long WebHTTPBody::Identifier() const {
+int64_t WebHTTPBody::Identifier() const {
   DCHECK(!IsNull());
   return private_->Identifier();
 }
 
-void WebHTTPBody::SetIdentifier(long long identifier) {
+void WebHTTPBody::SetIdentifier(int64_t identifier) {
   EnsureMutable();
   return private_->SetIdentifier(identifier);
 }

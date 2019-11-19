@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_ITERABLE_H_
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_ITERABLE_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_for_each_iterator_callback.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_iterator_result_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_script_runner.h"
 #include "third_party/blink/renderer/core/dom/iterator.h"
@@ -48,52 +49,47 @@ class Iterable {
 
   void forEachForBinding(ScriptState* script_state,
                          const ScriptValue& this_value,
-                         const ScriptValue& callback,
+                         V8ForEachIteratorCallback* callback,
                          const ScriptValue& this_arg,
                          ExceptionState& exception_state) {
     IterationSource* source =
         this->StartIteration(script_state, exception_state);
 
-    v8::Isolate* isolate = script_state->GetIsolate();
-    v8::TryCatch try_catch(isolate);
+    v8::TryCatch try_catch(script_state->GetIsolate());
 
-    v8::Local<v8::Object> creation_context(
-        this_value.V8Value().As<v8::Object>());
-    v8::Local<v8::Function> v8_callback(callback.V8Value().As<v8::Function>());
-    v8::Local<v8::Value> v8_this_arg(this_arg.V8Value());
-    v8::Local<v8::Value> args[3];
-
-    args[2] = this_value.V8Value();
+    v8::Local<v8::Value> v8_callback_this_value = this_arg.V8Value();
+    v8::Local<v8::Value> v8_value;
+    v8::Local<v8::Value> v8_key;
 
     while (true) {
       KeyType key;
       ValueType value;
 
       if (!source->Next(script_state, key, value, exception_state))
-        return;
+        break;
 
       DCHECK(!exception_state.HadException());
 
-      args[0] = ToV8(value, creation_context, isolate);
-      args[1] = ToV8(key, creation_context, isolate);
-      if (args[0].IsEmpty() || args[1].IsEmpty()) {
-        if (try_catch.HasCaught())
-          exception_state.RethrowV8Exception(try_catch.Exception());
+      v8_value = ToV8(value, script_state);
+      v8_key = ToV8(key, script_state);
+      if (try_catch.HasCaught()) {
+        exception_state.RethrowV8Exception(try_catch.Exception());
         return;
       }
 
-      v8::Local<v8::Value> result;
-      if (!V8ScriptRunner::CallFunction(v8_callback,
-                                        ExecutionContext::From(script_state),
-                                        v8_this_arg, 3, args, isolate)
-               .ToLocal(&result)) {
+      if (callback
+              ->Invoke(v8_callback_this_value,
+                       ScriptValue(script_state->GetIsolate(), v8_value),
+                       ScriptValue(script_state->GetIsolate(), v8_key),
+                       this_value)
+              .IsNothing()) {
         exception_state.RethrowV8Exception(try_catch.Exception());
         return;
       }
     }
   }
 
-  class IterationSource : public GarbageCollectedFinalized<IterationSource> {
+  class IterationSource : public GarbageCollected<IterationSource> {
    public:
     virtual ~IterationSource() = default;
 
@@ -125,18 +121,18 @@ class Iterable {
   };
   struct EntrySelector {
     STATIC_ONLY(EntrySelector);
-    static Vector<ScriptValue, 2> Select(ScriptState* script_state,
-                                         const KeyType& key,
-                                         const ValueType& value) {
+    static HeapVector<ScriptValue, 2> Select(ScriptState* script_state,
+                                             const KeyType& key,
+                                             const ValueType& value) {
       v8::Local<v8::Object> creation_context =
           script_state->GetContext()->Global();
       v8::Isolate* isolate = script_state->GetIsolate();
 
-      Vector<ScriptValue, 2> entry;
+      HeapVector<ScriptValue, 2> entry;
       entry.push_back(
-          ScriptValue(script_state, ToV8(key, creation_context, isolate)));
+          ScriptValue(isolate, ToV8(key, creation_context, isolate)));
       entry.push_back(
-          ScriptValue(script_state, ToV8(value, creation_context, isolate)));
+          ScriptValue(isolate, ToV8(value, creation_context, isolate)));
       return entry;
     }
   };

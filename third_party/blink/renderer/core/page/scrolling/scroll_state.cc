@@ -71,9 +71,8 @@ void ScrollState::consumeDelta(double x,
 }
 
 void ScrollState::distributeToScrollChainDescendant() {
-  if (!scroll_chain_.empty()) {
-    DOMNodeId descendant_id = scroll_chain_.front();
-    scroll_chain_.pop_front();
+  if (!scroll_chain_.IsEmpty()) {
+    DOMNodeId descendant_id = scroll_chain_.TakeFirst();
     NodeForId(descendant_id)->CallDistributeScroll(*this);
   }
 }

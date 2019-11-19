@@ -5,6 +5,8 @@
 #include "chrome/browser/extensions/api/enterprise_reporting_private/enterprise_reporting_private_api.h"
 
 #include <memory>
+#include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/json/json_writer.h"
@@ -61,10 +63,12 @@ EnterpriseReportingPrivateUploadChromeDesktopReportFunction::
 
   cloud_policy_client_ = std::make_unique<policy::CloudPolicyClient>(
       std::string() /* machine_id */, std::string() /* machine_model */,
-      std::string() /* brand_code */, device_management_service,
+      std::string() /* brand_code */, std::string() /* ethernet_mac_address */,
+      std::string() /* dock_mac_address */,
+      std::string() /* manufacture_date */, device_management_service,
       std::move(url_loader_factory), nullptr,
       policy::CloudPolicyClient::DeviceDMTokenCallback());
-  dm_token_ = policy::BrowserDMTokenStorage::Get()->RetrieveDMToken();
+  dm_token_ = policy::BrowserDMTokenStorage::Get()->RetrieveBrowserDMToken();
   client_id_ = policy::BrowserDMTokenStorage::Get()->RetrieveClientId();
 }
 
@@ -83,7 +87,7 @@ ExtensionFunction::ResponseAction
 EnterpriseReportingPrivateUploadChromeDesktopReportFunction::Run() {
   VLOG(1) << "Uploading enterprise report";
 
-  if (dm_token_.empty() || client_id_.empty()) {
+  if (!dm_token_.is_valid() || client_id_.empty()) {
     LogReportError("Device is not enrolled.");
     return RespondNow(Error(enterprise_reporting::kDeviceNotEnrolled));
   }
@@ -102,7 +106,7 @@ EnterpriseReportingPrivateUploadChromeDesktopReportFunction::Run() {
   }
 
   if (!cloud_policy_client_->is_registered())
-    cloud_policy_client_->SetupRegistration(dm_token_, client_id_,
+    cloud_policy_client_->SetupRegistration(dm_token_.value(), client_id_,
                                             std::vector<std::string>());
 
   cloud_policy_client_->UploadChromeDesktopReport(
@@ -121,7 +125,7 @@ void EnterpriseReportingPrivateUploadChromeDesktopReportFunction::
 }
 
 void EnterpriseReportingPrivateUploadChromeDesktopReportFunction::
-    SetRegistrationInfoForTesting(const std::string& dm_token,
+    SetRegistrationInfoForTesting(const policy::DMToken& dm_token,
                                   const std::string& client_id) {
   dm_token_ = dm_token;
   client_id_ = client_id;

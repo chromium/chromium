@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/containers/flat_set.h"
 #include "base/optional.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/public/cpp/cors/cors_error_status.h"
@@ -55,8 +56,16 @@ base::Optional<CorsErrorStatus> CheckAccess(
     const int response_status_code,
     const base::Optional<std::string>& allow_origin_header,
     const base::Optional<std::string>& allow_credentials_header,
-    mojom::FetchCredentialsMode credentials_mode,
+    mojom::CredentialsMode credentials_mode,
     const url::Origin& origin);
+
+// Returns true if |request_mode| is not kNavigate nor kNoCors, and the
+// origin of |request_url| is not a data URL, and |request_initiator| is not
+// same as the origin of |request_url|,
+COMPONENT_EXPORT(NETWORK_CPP)
+bool ShouldCheckCors(const GURL& request_url,
+                     const base::Optional<url::Origin>& request_initiator,
+                     mojom::RequestMode request_mode);
 
 // Performs a CORS access check on the CORS-preflight response parameters.
 // According to the note at https://fetch.spec.whatwg.org/#cors-preflight-fetch
@@ -68,7 +77,7 @@ base::Optional<CorsErrorStatus> CheckPreflightAccess(
     const int response_status_code,
     const base::Optional<std::string>& allow_origin_header,
     const base::Optional<std::string>& allow_credentials_header,
-    mojom::FetchCredentialsMode actual_credentials_mode,
+    mojom::CredentialsMode actual_credentials_mode,
     const url::Origin& origin);
 
 // Given a redirected-to URL, checks if the location is allowed
@@ -78,7 +87,7 @@ base::Optional<CorsErrorStatus> CheckPreflightAccess(
 COMPONENT_EXPORT(NETWORK_CPP)
 base::Optional<CorsErrorStatus> CheckRedirectLocation(
     const GURL& url,
-    mojom::FetchRequestMode request_mode,
+    mojom::RequestMode request_mode,
     const base::Optional<url::Origin>& origin,
     bool cors_flag,
     bool tainted);
@@ -97,7 +106,7 @@ base::Optional<CorsErrorStatus> CheckExternalPreflight(
     const base::Optional<std::string>& allow_external);
 
 COMPONENT_EXPORT(NETWORK_CPP)
-bool IsCorsEnabledRequestMode(mojom::FetchRequestMode mode);
+bool IsCorsEnabledRequestMode(mojom::RequestMode mode);
 
 // Checks safelisted request parameters.
 COMPONENT_EXPORT(NETWORK_CPP)
@@ -105,7 +114,10 @@ bool IsCorsSafelistedMethod(const std::string& method);
 COMPONENT_EXPORT(NETWORK_CPP)
 bool IsCorsSafelistedContentType(const std::string& name);
 COMPONENT_EXPORT(NETWORK_CPP)
-bool IsCorsSafelistedHeader(const std::string& name, const std::string& value);
+bool IsCorsSafelistedHeader(
+    const std::string& name,
+    const std::string& value,
+    const base::flat_set<std::string>& extra_safelisted_header_names = {});
 COMPONENT_EXPORT(NETWORK_CPP)
 bool IsNoCorsSafelistedHeaderName(const std::string& name);
 COMPONENT_EXPORT(NETWORK_CPP)
@@ -132,17 +144,14 @@ std::vector<std::string> CorsUnsafeRequestHeaderNames(
 COMPONENT_EXPORT(NETWORK_CPP)
 std::vector<std::string> CorsUnsafeNotForbiddenRequestHeaderNames(
     const net::HttpRequestHeaders::HeaderVector& headers,
-    bool is_revalidating);
+    bool is_revalidating,
+    const base::flat_set<std::string>& extra_safelisted_header_names = {});
 
 // Checks forbidden method in the fetch spec.
 // See https://fetch.spec.whatwg.org/#forbidden-method.
 // TODO(toyoshim): Move Blink FetchUtils::IsForbiddenMethod to cors:: and use
 // this implementation internally.
 COMPONENT_EXPORT(NETWORK_CPP) bool IsForbiddenMethod(const std::string& name);
-
-// Checks forbidden header in the fetch spec.
-// See https://fetch.spec.whatwg.org/#forbidden-header-name.
-COMPONENT_EXPORT(NETWORK_CPP) bool IsForbiddenHeader(const std::string& name);
 
 // https://fetch.spec.whatwg.org/#ok-status aka a successful 2xx status code,
 // https://tools.ietf.org/html/rfc7231#section-6.3 . We opt to use the Fetch
@@ -162,7 +171,7 @@ bool IsCorsCrossOriginResponseType(mojom::FetchResponseType type);
 // Returns true if the credentials flag should be set for the given arguments
 // as in https://fetch.spec.whatwg.org/#http-network-or-cache-fetch.
 COMPONENT_EXPORT(NETWORK_CPP)
-bool CalculateCredentialsFlag(mojom::FetchCredentialsMode credentials_mode,
+bool CalculateCredentialsFlag(mojom::CredentialsMode credentials_mode,
                               mojom::FetchResponseType response_tainting);
 
 }  // namespace cors

@@ -57,8 +57,7 @@ extensions::ExtensionResource GetExtensionIconResource(
 class BlankImageSource : public gfx::CanvasImageSource {
  public:
   explicit BlankImageSource(const gfx::Size& size_in_dip)
-      : CanvasImageSource(size_in_dip, /*is_opaque =*/ false) {
-  }
+      : CanvasImageSource(size_in_dip) {}
   ~BlankImageSource() override {}
 
  private:
@@ -132,12 +131,12 @@ IconImage::IconImage(content::BrowserContext* context,
       icon_set_(icon_set),
       resource_size_in_dip_(resource_size_in_dip),
       keep_original_size_(keep_original_size),
+      did_complete_initial_load_(false),
       source_(NULL),
       default_icon_(gfx::ImageSkiaOperations::CreateResizedImage(
           default_icon,
           skia::ImageOperations::RESIZE_BEST,
-          gfx::Size(resource_size_in_dip, resource_size_in_dip))),
-      weak_ptr_factory_(this) {
+          gfx::Size(resource_size_in_dip, resource_size_in_dip))) {
   if (observer)
     AddObserver(observer);
   gfx::Size resource_size(resource_size_in_dip, resource_size_in_dip);
@@ -239,6 +238,7 @@ void IconImage::OnImageLoaded(float scale, const gfx::Image& image_in) {
 
 void IconImage::OnImageRepLoaded(const gfx::ImageSkiaRep& rep) {
   DCHECK(!rep.is_null());
+  did_complete_initial_load_ = true;
 
   image_skia_.RemoveRepresentation(rep.scale());
   image_skia_.AddRepresentation(rep);

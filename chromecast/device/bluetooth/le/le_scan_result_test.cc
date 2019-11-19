@@ -121,7 +121,7 @@ TEST(LeScanResultTest, AllUuids) {
   ASSERT_EQ(6ul, all_uuids->size());
 
   auto exists = [&all_uuids](const bluetooth_v2_shlib::Uuid& uuid) {
-    return base::ContainsValue(*all_uuids, uuid);
+    return base::Contains(*all_uuids, uuid);
   };
 
   EXPECT_TRUE(exists(util::UuidFromInt16(kIncompleteUuid16)));

@@ -14,10 +14,14 @@
 namespace media {
 
 VirtualAudioOutputStream::VirtualAudioOutputStream(
-    const AudioParameters& params, VirtualAudioInputStream* target,
-    const AfterCloseCallback& after_close_cb)
-    : params_(params), target_input_stream_(target),
-      after_close_cb_(after_close_cb), callback_(NULL), volume_(1.0f) {
+    const AudioParameters& params,
+    VirtualAudioInputStream* target,
+    AfterCloseCallback after_close_cb)
+    : params_(params),
+      target_input_stream_(target),
+      after_close_cb_(std::move(after_close_cb)),
+      callback_(nullptr),
+      volume_(1.0f) {
   DCHECK(params_.IsValid());
   DCHECK(target);
 
@@ -59,11 +63,13 @@ void VirtualAudioOutputStream::Close() {
   // here.  The callback is moved to a stack-local first since |this| could be
   // destroyed during Run().
   if (after_close_cb_) {
-    const AfterCloseCallback cb = after_close_cb_;
-    after_close_cb_.Reset();
-    cb.Run(this);
+    std::move(after_close_cb_).Run(this);
   }
 }
+
+// There is nothing to flush since |this| is removed from the
+// |target_input_stream_|.
+void VirtualAudioOutputStream::Flush() {}
 
 void VirtualAudioOutputStream::SetVolume(double volume) {
   DCHECK(thread_checker_.CalledOnValidThread());

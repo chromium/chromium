@@ -9,15 +9,8 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/network_time/network_time_tracker.h"
-
-namespace base {
-namespace test {
-class ScopedFeatureList;
-}  // namespace test
-
-class FieldTrialList;
-}  // namespace base
 
 namespace net {
 namespace test_server {
@@ -62,8 +55,7 @@ class FieldTrialTest {
       NetworkTimeTracker::FetchBehavior fetch_behavior);
 
  private:
-  std::unique_ptr<base::FieldTrialList> field_trial_list_;
-  std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 
   DISALLOW_COPY_AND_ASSIGN(FieldTrialTest);
 };

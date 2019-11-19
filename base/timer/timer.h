@@ -7,7 +7,7 @@
 // delay expires.
 // RepeatingTimer on the other hand calls you back periodically with the
 // prescribed time interval.
-// RetainingOneShotTimer doesn't repeat the task itself like OneShotTimer, but
+// RetainingOneShotTimer doesn't repeat the task itself like RepeatingTimer, but
 // retains the given task after the time out. You can restart it with Reset
 // again without giving new task to Start.
 //
@@ -49,7 +49,7 @@
 // By default, the scheduled tasks will be run on the same sequence that the
 // Timer was *started on*. To mock time in unit tests, some old tests used
 // SetTaskRunner() to schedule the delay on a test-controlled TaskRunner. The
-// modern and preferred approach to mock time is to use ScopedTaskEnvironment's
+// modern and preferred approach to mock time is to use TaskEnvironment's
 // MOCK_TIME mode.
 
 #ifndef BASE_TIMER_TIMER_H_
@@ -114,13 +114,10 @@ class BASE_EXPORT TimerBase {
   // this Timer is running. This method can only be called while this Timer
   // isn't running. This is an alternative (old) approach to mock time in tests.
   // The modern and preferred approach is to use
-  // ScopedTaskEnvironment::MainThreadType::MOCK_TIME
-  // (ScopedTaskEnvironment::NowSource::MAIN_THREAD_MOCK_TIME may also be useful
-  // if the Timer is ever restarted). To avoid racy usage of Timer,
+  // TaskEnvironment::TimeSource::MOCK_TIME. To avoid racy usage of Timer,
   // |task_runner| must run tasks on the same sequence which this Timer is bound
-  // to (started from).
-  // TODO(gab): Migrate all callers to
-  // ScopedTaskEnvironment::MainThreadType::MOCK_TIME.
+  // to (started from). TODO(gab): Migrate all callers to
+  // TaskEnvironment::TimeSource::MOCK_TIME.
   virtual void SetTaskRunner(scoped_refptr<SequencedTaskRunner> task_runner);
 
   // Call this method to stop and cancel the timer.  It is a no-op if the timer

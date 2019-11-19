@@ -121,7 +121,7 @@ void TimeDomain::SetNextWakeUpForQueue(
   }
 }
 
-void TimeDomain::WakeUpReadyDelayedQueues(LazyNow* lazy_now) {
+void TimeDomain::MoveReadyDelayedTasksToWorkQueues(LazyNow* lazy_now) {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
   // Wake up any queues with pending delayed work.  Note std::multimap stores
   // the elements sorted by key, so the begin() iterator points to the earliest
@@ -129,7 +129,7 @@ void TimeDomain::WakeUpReadyDelayedQueues(LazyNow* lazy_now) {
   while (!delayed_wake_up_queue_.empty() &&
          delayed_wake_up_queue_.Min().wake_up.time <= lazy_now->Now()) {
     internal::TaskQueueImpl* queue = delayed_wake_up_queue_.Min().queue;
-    queue->WakeUpForDelayedWork(lazy_now);
+    queue->MoveReadyDelayedTasksToWorkQueue(lazy_now);
   }
 }
 

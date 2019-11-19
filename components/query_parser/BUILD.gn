@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//testing/libfuzzer/fuzzer_test.gni")
+
 source_set("query_parser") {
   sources = [
     "query_parser.cc",
@@ -27,5 +29,16 @@ source_set("unit_tests") {
     ":query_parser",
     "//base",
     "//testing/gtest",
+  ]
+}
+
+fuzzer_test("query_parser_fuzzer") {
+  sources = [
+    "query_parser_fuzzer.cc",
+  ]
+  deps = [
+    ":query_parser",
+    "//base:base",
+    "//base:i18n",
   ]
 }

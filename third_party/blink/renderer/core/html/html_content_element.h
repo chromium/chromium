@@ -42,8 +42,6 @@ class CORE_EXPORT HTMLContentElement final : public V0InsertionPoint {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  DECLARE_NODE_FACTORY(HTMLContentElement);
-
   HTMLContentElement(Document&);
   ~HTMLContentElement() override;
 
@@ -90,9 +88,10 @@ inline bool HTMLContentElement::CanSelectNode(
     return true;
   if (!IsSelectValid())
     return false;
-  if (!siblings[nth]->IsElementNode())
+  auto* element = DynamicTo<Element>(siblings[nth].Get());
+  if (!element)
     return false;
-  return MatchSelector(*ToElement(siblings[nth]));
+  return MatchSelector(*element);
 }
 
 }  // namespace blink

@@ -4,8 +4,15 @@
 
 module content.mojom;
 
-// The default service name the browser identifies as when connecting to
-// the Service Manager.
+// The name of the global singleton service hosted within the Content browser
+// process. This service is generally granted unfettered access to arbitrary
+// capabilities. Its global instance can be used to access other services by
+// using the |ServiceManagerConnection::GetForProcess()| API.
+const string kSystemServiceName = "content_system";
+
+// The name for service instances spawned per BrowserContext in a unique
+// instance group, to isolate incoming interface requests from renderers spawned
+// for that BrowserContext.
 const string kBrowserServiceName = "content_browser";
 
 // The default service name used to identify the gpu process when connecting it
@@ -27,6 +34,3 @@ const string kRendererServiceName = "content_renderer";
 // The default service name used to identify utility processes when connecting
 // them to the Service Manager.
 const string kUtilityServiceName = "content_utility";
-
-// The name for the network service running in the utility process.
-const string kNetworkServiceName = "network";

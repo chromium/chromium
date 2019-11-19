@@ -26,9 +26,6 @@ const int ExclusiveAccessBubble::kIdleTimeMs = 2300;
 const int ExclusiveAccessBubble::kSnoozeNotificationsTimeMs = 900000;  // 15m.
 const int ExclusiveAccessBubble::kPositionCheckHz = 10;
 const int ExclusiveAccessBubble::kSlideInRegionHeightPx = 4;
-const int ExclusiveAccessBubble::kSlideInDurationMs = 350;
-const int ExclusiveAccessBubble::kSlideOutDurationMs = 700;
-const int ExclusiveAccessBubble::kQuickSlideOutDurationMs = 150;
 const int ExclusiveAccessBubble::kPopupTopPx = 45;
 const int ExclusiveAccessBubble::kSimplifiedPopupTopPx = 45;
 

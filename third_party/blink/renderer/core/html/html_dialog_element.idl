@@ -24,8 +24,10 @@
  */
 
 // https://html.spec.whatwg.org/C/#the-dialog-element
-[HTMLConstructor]
-interface HTMLDialogElement : HTMLElement {
+[
+    Exposed=Window,
+    HTMLConstructor
+] interface HTMLDialogElement : HTMLElement {
     [CEReactions, Reflect] attribute boolean open;
     attribute DOMString returnValue;
     [CEReactions] void show();

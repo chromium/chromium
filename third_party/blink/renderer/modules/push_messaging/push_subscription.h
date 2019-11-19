@@ -8,6 +8,7 @@
 #include <memory>
 #include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
+#include "third_party/blink/public/mojom/push_messaging/push_messaging.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/dom/dom_time_stamp.h"
@@ -16,27 +17,29 @@
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
 class PushSubscriptionOptions;
 class ServiceWorkerRegistration;
-class ScriptPromiseResolver;
 class ScriptState;
-struct WebPushSubscription;
 
 class MODULES_EXPORT PushSubscription final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static PushSubscription* Take(
-      ScriptPromiseResolver* resolver,
-      std::unique_ptr<WebPushSubscription> push_subscription,
+  static PushSubscription* Create(
+      mojom::blink::PushSubscriptionPtr subscription,
       ServiceWorkerRegistration* service_worker_registration);
-  static void Dispose(WebPushSubscription* subscription_raw);
 
-  PushSubscription(const WebPushSubscription& subscription,
+  PushSubscription(const KURL& endpoint,
+                   bool user_visible_only,
+                   const WTF::Vector<uint8_t>& application_server_key,
+                   const WTF::Vector<unsigned char>& p256dh,
+                   const WTF::Vector<unsigned char>& auth,
                    ServiceWorkerRegistration* service_worker_registration);
+
   ~PushSubscription() override;
 
   KURL endpoint() const { return endpoint_; }

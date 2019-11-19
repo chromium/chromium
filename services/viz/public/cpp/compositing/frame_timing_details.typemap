@@ -1,0 +1,13 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+mojom = "//services/viz/public/mojom/compositing/frame_timing_details.mojom"
+public_headers = [ "//components/viz/common/frame_timing_details.h" ]
+deps = [
+  "//components/viz/common",
+]
+traits_headers = [
+  "//services/viz/public/cpp/compositing/frame_timing_details_mojom_traits.h",
+]
+type_mappings = [ "viz.mojom.FrameTimingDetails=::viz::FrameTimingDetails" ]

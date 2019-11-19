@@ -10,7 +10,7 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "chrome/chrome_cleaner/http/mock_http_agent_factory.h"
 #include "chrome/chrome_cleaner/logging/test_utils.h"
@@ -60,8 +60,7 @@ class SafeBrowsingReporterTest : public testing::Test {
 
  protected:
   SafeBrowsingReporterTest()
-      : scoped_task_environment_(
-            base::test::ScopedTaskEnvironment::MainThreadType::UI) {}
+      : task_environment_(base::test::TaskEnvironment::MainThreadType::UI) {}
 
   // Uploads a report and waits for OnReportUploadResult to be called.
   void DoUploadReport(const std::string& serialized_report) {
@@ -74,7 +73,7 @@ class SafeBrowsingReporterTest : public testing::Test {
   }
 
   // Needed for the current task runner to be available.
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
 
   // |result_| and |response_string_| are set in |OnReportUploadResult| and used
   // to confirm that the upload succeeded or failed appropriately.

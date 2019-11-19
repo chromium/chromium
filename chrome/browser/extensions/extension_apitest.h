@@ -61,6 +61,15 @@ class ExtensionApiTest : public ExtensionBrowserTest {
     // Load the extension using //extensions/test/data/ as the root path instead
     // of loading from //chrome/test/data/extensions/api_test/.
     kFlagUseRootExtensionsDir = 1 << 7,
+
+    // Pass the FOR_LOGIN_SCREEN flag when loading the extension. This flag is
+    // usually provided for force-installed extension on the login screen. This
+    // also sets the location to EXTERNAL_POLICY.
+    kFlagLoadForLoginScreen = 1 << 8,
+
+    // Load the event page extension as a Service Worker based background
+    // extension.
+    kFlagRunAsServiceWorkerBasedExtension = 1 << 9,
   };
 
   ExtensionApiTest();
@@ -152,9 +161,8 @@ class ExtensionApiTest : public ExtensionBrowserTest {
 
   // Similar to RunPlatformAppTest, except sets an additional string argument
   // |customArg| to the test config object.
-  bool RunPlatformAppTestWithArg(
-      const std::string& extension_name, const char* custom_arg);
-
+  bool RunPlatformAppTestWithArg(const std::string& extension_name,
+                                 const char* custom_arg);
 
   // Similar to RunPlatformAppTest, with custom |flags| (as defined in the Flags
   // enum). The kFlagLaunchPlatformApp flag is automatically added.

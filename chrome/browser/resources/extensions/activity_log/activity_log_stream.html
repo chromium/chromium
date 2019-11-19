@@ -1,0 +1,78 @@
+<style include="shared-style">
+  :host {
+    --activity-log-call-and-time-width: 575px;
+    --activity-type-width: 85px;
+    --activity-time-width: 100px;
+
+    display: flex;
+    flex-direction: column;
+  }
+
+  cr-search-field {
+    align-self: center;
+    margin-inline-end: auto;
+  }
+
+  .activity-table-headings {
+    width: var(--activity-log-call-and-time-width);
+  }
+
+  #activity-type {
+    flex: 0 var(--activity-type-width);
+  }
+
+  #activity-key {
+    flex: 1;
+    margin-inline-start: 10px;
+  }
+
+  #activity-time {
+    flex: 0 var(--activity-time-width);
+    text-align: end;
+  }
+
+  iron-list {
+    flex: 1;
+  }
+</style>
+<div class="activity-subpage-header">
+  <cr-search-field label="$i18n{activityLogSearchLabel}"
+    on-search-changed="onSearchChanged_">
+  </cr-search-field >
+  <cr-button id="toggle-stream-button" on-click="onToggleButtonClick_">
+    <span hidden$="[[isStreamOn_]]">
+      $i18n{startActivityStream}
+    </span>
+    <span hidden$="[[!isStreamOn_]]">
+      $i18n{stopActivityStream}
+    </span>
+  </cr-button>
+  <cr-button class="clear-activities-button" on-click="clearStream">
+    $i18n{clearActivities}
+  </cr-button>
+</div>
+<div id="empty-stream-message" class="activity-message"
+    hidden$="[[!isStreamEmpty_(activityStream_.length)]]">
+  <span id="stream-stopped-message" hidden$="[[isStreamOn_]]">
+    $i18n{emptyStreamStopped}
+  </span>
+  <span id="stream-started-message" hidden$="[[!isStreamOn_]]">
+    $i18n{emptyStreamStarted}
+  </span>
+</div>
+<div id="empty-search-message" class="activity-message"
+    hidden$="[[!shouldShowEmptySearchMessage_(
+        activityStream_.length, filteredActivityStream_.length)]]">
+  $i18n{noSearchResults}
+</div>
+<div class="activity-table-headings"
+    hidden$="[[isFilteredStreamEmpty_(filteredActivityStream_.length)]]">
+  <span id="activity-type">$i18n{activityLogTypeColumn}</span>
+  <span id="activity-key">$i18n{activityLogNameColumn}</span>
+  <span id="activity-time">$i18n{activityLogTimeColumn}</span>
+</div>
+<iron-list items="[[filteredActivityStream_]]">
+  <template>
+    <activity-log-stream-item data="[[item]]"></activity-log-stream-item>
+  </template>
+</iron-list>

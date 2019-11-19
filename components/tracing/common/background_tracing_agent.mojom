@@ -1,0 +1,39 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module tracing.mojom;
+
+// This interface is used to receive callbacks from BackgroundTracingAgent.
+interface BackgroundTracingAgentClient {
+  OnInitialized();
+  OnTriggerBackgroundTrace(string histogram_name);
+  OnAbortBackgroundTrace();
+};
+
+// This interface is used to allow clients (the browser process) to monitor for
+// specific metrics being hit and control when to start/stop tracing in
+// response. How metrics are communicated b/w processes is not covered here.
+interface BackgroundTracingAgent {
+  // Call this method to begin reporting metrics corresponding to the named
+  // histogram. Lower and upper bound values constrain what data is reported.
+  // This results in OnTriggerBackgroundTrace callbacks (multiple if |repeat|
+  // is set to true). If a histogram event does not match and |repeat| is
+  // false, then OnAbortBackgroundTrace is called.
+  SetUMACallback(string histogram_name,
+                 int32 histogram_lower_value,
+                 int32 histogram_upper_value,
+                 bool repeat);
+
+  // Call this method to stop reporting metrics corresponding to the named
+  // histogram.
+  ClearUMACallback(string histogram_name);
+};
+
+// This interface is used to construct a BackgroundTracingAgent.
+interface BackgroundTracingAgentProvider {
+  // Results in an OnInitialized callback to |client|.
+  Create(uint64 tracing_process_id,
+         pending_remote<BackgroundTracingAgentClient> client,
+         pending_receiver<BackgroundTracingAgent> agent);
+};

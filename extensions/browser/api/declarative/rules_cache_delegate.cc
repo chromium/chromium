@@ -45,8 +45,7 @@ RulesCacheDelegate::RulesCacheDelegate(Type type, bool log_storage_init_delay)
     : type_(type),
       browser_context_(nullptr),
       log_storage_init_delay_(log_storage_init_delay),
-      notified_registry_(false),
-      weak_ptr_factory_(this) {}
+      notified_registry_(false) {}
 
 RulesCacheDelegate::~RulesCacheDelegate() {}
 
@@ -89,14 +88,14 @@ void RulesCacheDelegate::Init(RulesRegistry* registry) {
       store->RegisterKey(storage_key_);
 
     system.ready().Post(
-        FROM_HERE, base::BindRepeating(
-                       &RulesCacheDelegate::ReadRulesForInstalledExtensions,
+        FROM_HERE,
+        base::BindOnce(&RulesCacheDelegate::ReadRulesForInstalledExtensions,
                        weak_ptr_factory_.GetWeakPtr()));
   }
 
   system.ready().Post(FROM_HERE,
-                      base::BindRepeating(&RulesCacheDelegate::CheckIfReady,
-                                          weak_ptr_factory_.GetWeakPtr()));
+                      base::BindOnce(&RulesCacheDelegate::CheckIfReady,
+                                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void RulesCacheDelegate::UpdateRules(const std::string& extension_id,
@@ -144,7 +143,7 @@ void RulesCacheDelegate::CheckIfReady() {
   if (notified_registry_ || !waiting_for_extensions_.empty())
     return;
 
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {rules_registry_thread_},
       base::BindOnce(&RulesRegistry::MarkReady, registry_, storage_init_time_));
   notified_registry_ = true;
@@ -188,9 +187,10 @@ void RulesCacheDelegate::ReadFromStorage(const std::string& extension_id) {
     storage_init_time_ = base::Time::Now();
 
   if (!GetDeclarativeRulesStored(extension_id)) {
-    ExtensionSystem::Get(browser_context_)->ready().Post(
-        FROM_HERE, base::Bind(&RulesCacheDelegate::CheckIfReady,
-                              weak_ptr_factory_.GetWeakPtr()));
+    ExtensionSystem::Get(browser_context_)
+        ->ready()
+        .Post(FROM_HERE, base::BindOnce(&RulesCacheDelegate::CheckIfReady,
+                                        weak_ptr_factory_.GetWeakPtr()));
     return;
   }
 
@@ -211,17 +211,17 @@ void RulesCacheDelegate::ReadFromStorageCallback(
     std::unique_ptr<base::Value> value) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK_EQ(Type::kPersistent, type_);
-  base::PostTaskWithTraits(
-      FROM_HERE, {rules_registry_thread_},
-      base::BindOnce(&RulesRegistry::DeserializeAndAddRules, registry_,
-                     extension_id, std::move(value)));
+  base::PostTask(FROM_HERE, {rules_registry_thread_},
+                 base::BindOnce(&RulesRegistry::DeserializeAndAddRules,
+                                registry_, extension_id, std::move(value)));
 
   waiting_for_extensions_.erase(extension_id);
 
   if (waiting_for_extensions_.empty())
-    ExtensionSystem::Get(browser_context_)->ready().Post(
-        FROM_HERE, base::Bind(&RulesCacheDelegate::CheckIfReady,
-                              weak_ptr_factory_.GetWeakPtr()));
+    ExtensionSystem::Get(browser_context_)
+        ->ready()
+        .Post(FROM_HERE, base::BindOnce(&RulesCacheDelegate::CheckIfReady,
+                                        weak_ptr_factory_.GetWeakPtr()));
 }
 
 bool RulesCacheDelegate::GetDeclarativeRulesStored(

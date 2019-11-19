@@ -1,0 +1,15 @@
+SVG 1.1 dynamic animation tests
+This is some text.
+
+test to determine whether auto-rotate animateMotion path animations pre-muliply or post-multiply animation transform matrix
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+FAIL rootSVGElement.getBBox().x should be close to 115. Was 116.01841735839844.
+FAIL rootSVGElement.getBBox().y should be close to -154. Was -162.9019012451172.
+PASS rootSVGElement.getBBox().x is 367
+PASS rootSVGElement.getBBox().y is 550
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

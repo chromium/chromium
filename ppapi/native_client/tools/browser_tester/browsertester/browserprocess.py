@@ -3,6 +3,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import print_function
+
 import os
 import signal
 import subprocess
@@ -12,7 +14,7 @@ class BrowserProcessBase(object):
 
   def __init__(self, handle):
     self.handle = handle
-    print 'PID', self.handle.pid
+    print('PID', self.handle.pid)
 
   def GetReturnCode(self):
     return self.handle.returncode
@@ -36,7 +38,7 @@ class BrowserProcessBase(object):
 
   def Kill(self):
     if self.IsRunning():
-      print 'KILLING the browser'
+      print('KILLING the browser')
       try:
         self.kill()
         # If it doesn't die, we hang.  Oh well.
@@ -76,7 +78,7 @@ def RunCommandWithSubprocess(cmd, env=None):
 def RunCommandInProcessGroup(cmd, env=None):
   def SetPGrp():
     os.setpgrp()
-    print 'I\'M THE SESSION LEADER!'
+    print('I\'M THE SESSION LEADER!')
+
   handle = subprocess.Popen(cmd, env=env, preexec_fn=SetPGrp)
   return BrowserProcessPosix(handle)
-

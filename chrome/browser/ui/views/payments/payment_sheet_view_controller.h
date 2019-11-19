@@ -39,7 +39,7 @@ class PaymentSheetViewController : public PaymentRequestSheetController,
   void OnSpecUpdated() override;
 
   // PaymentRequestState::Observer:
-  void OnGetAllPaymentInstrumentsFinished() override {}
+  void OnGetAllPaymentAppsFinished() override {}
   void OnSelectedInformationChanged() override;
 
  private:

@@ -7,7 +7,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
-#include "jni/JniOAuthTokenGetter_jni.h"
+#include "remoting/android/jni_headers/JniOAuthTokenGetter_jni.h"
 
 using base::android::ConvertJavaStringToUTF8;
 using base::android::JavaParamRef;
@@ -46,7 +46,7 @@ static void JNI_JniOAuthTokenGetter_ResolveOAuthTokenCallback(
   delete callback;
 }
 
-JniOAuthTokenGetter::JniOAuthTokenGetter() : weak_factory_(this) {
+JniOAuthTokenGetter::JniOAuthTokenGetter() {
   DETACH_FROM_THREAD(thread_checker_);
   weak_ptr_ = weak_factory_.GetWeakPtr();
 }

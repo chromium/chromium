@@ -21,6 +21,7 @@ class UserCommandArcJob : public RemoteCommandJob {
 
   // RemoteCommandJob:
   enterprise_management::RemoteCommand_Type GetType() const override;
+  base::TimeDelta GetCommandTimeout() const override;
 
  protected:
   // RemoteCommandJob:

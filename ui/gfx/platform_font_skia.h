@@ -25,6 +25,11 @@ class GFX_EXPORT PlatformFontSkia : public PlatformFont {
   PlatformFontSkia();
   PlatformFontSkia(const std::string& font_name, int font_size_pixels);
 
+  // Wraps the provided SkTypeface without triggering a font rematch.
+  PlatformFontSkia(sk_sp<SkTypeface> typeface,
+                   int font_size_pixels,
+                   const base::Optional<FontRenderParams>& params);
+
   // Initials the default PlatformFont. Returns true if this is successful, or
   // false if fonts resources are not available. If this returns false, the
   // calling service should shut down.
@@ -53,11 +58,10 @@ class GFX_EXPORT PlatformFontSkia : public PlatformFont {
   int GetExpectedTextWidth(int length) override;
   int GetStyle() const override;
   const std::string& GetFontName() const override;
-  std::string GetActualFontNameForTesting() const override;
+  std::string GetActualFontName() const override;
   int GetFontSize() const override;
   const FontRenderParams& GetFontRenderParams() override;
-
-  sk_sp<SkTypeface> typeface() const { return typeface_; }
+  sk_sp<SkTypeface> GetNativeSkTypefaceIfAvailable() const override;
 
  private:
   // Create a new instance of this object with the specified properties. Called

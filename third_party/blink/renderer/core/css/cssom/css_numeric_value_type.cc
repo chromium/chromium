@@ -86,12 +86,14 @@ AtomicString CSSNumericValueType::BaseTypeToString(BaseType base_type) {
 }
 
 CSSNumericValueType::CSSNumericValueType(CSSPrimitiveValue::UnitType unit) {
+  exponents_.Fill(0, kNumBaseTypes);
   if (unit != CSSPrimitiveValue::UnitType::kNumber)
     SetExponent(UnitTypeToBaseType(unit), 1);
 }
 
 CSSNumericValueType::CSSNumericValueType(int exponent,
                                          CSSPrimitiveValue::UnitType unit) {
+  exponents_.Fill(0, kNumBaseTypes);
   if (unit != CSSPrimitiveValue::UnitType::kNumber)
     SetExponent(UnitTypeToBaseType(unit), exponent);
 }

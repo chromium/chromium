@@ -50,7 +50,7 @@ input[type="month" i],
 input[type="time" i],
 input[type="week" i] {
     align-items: center;
-    -webkit-appearance: menulist;
+    -webkit-appearance: menulist; /* AutoAppearanceFor() should match to this. */
     background-color: ButtonFace;
     border: 1px solid #a9a9a9;
     display: -webkit-inline-flex;

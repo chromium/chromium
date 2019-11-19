@@ -384,7 +384,7 @@ if (is_mac) {
       "breakpad/src/client/mac/handler/dynamic_images.cc",
       "breakpad/src/client/mac/handler/minidump_generator.cc",
       "breakpad/src/client/minidump_file_writer.cc",
-      "breakpad/src/common/convert_UTF.c",
+      "breakpad/src/common/convert_UTF.cc",
       "breakpad/src/common/mac/MachIPC.mm",
       "breakpad/src/common/mac/arch_utilities.cc",
       "breakpad/src/common/mac/bootstrap_compat.cc",
@@ -598,7 +598,7 @@ if (is_linux || is_android) {
       "breakpad/src/client/minidump_file_writer-inl.h",
       "breakpad/src/client/minidump_file_writer.cc",
       "breakpad/src/client/minidump_file_writer.h",
-      "breakpad/src/common/convert_UTF.c",
+      "breakpad/src/common/convert_UTF.cc",
       "breakpad/src/common/convert_UTF.h",
       "breakpad/src/common/linux/elf_core_dump.cc",
       "breakpad/src/common/linux/elf_core_dump.h",
@@ -719,6 +719,7 @@ if (is_linux || is_android) {
 
     data_deps = [
       ":linux_dumper_unittest_helper",
+      "//testing/buildbot/filters:breakpad_unittests_filters",
     ]
 
     include_dirs = [
@@ -821,9 +822,7 @@ if (is_linux || is_android) {
 
 if (is_win) {
   if (current_toolchain == host_toolchain) {
-    executable("dump_syms") {
-      # TODO(scottmg) using this with VS2015 may break the crash server.
-      # https://crbug.com/696671
+    static_library("common_windows") {
       include_dirs = [
         "$visual_studio_path/DIA SDK/include",
         "breakpad/src",
@@ -834,13 +833,56 @@ if (is_win) {
         "breakpad/src/common/windows/dia_util.h",
         "breakpad/src/common/windows/guid_string.cc",
         "breakpad/src/common/windows/guid_string.h",
+        "breakpad/src/common/windows/http_upload.cc",
+        "breakpad/src/common/windows/http_upload.h",
+        "breakpad/src/common/windows/module_info.h",
         "breakpad/src/common/windows/omap.cc",
         "breakpad/src/common/windows/omap.h",
+        "breakpad/src/common/windows/omap_internal.h",
         "breakpad/src/common/windows/pdb_source_line_writer.cc",
         "breakpad/src/common/windows/pdb_source_line_writer.h",
+        "breakpad/src/common/windows/pe_source_line_writer.cc",
+        "breakpad/src/common/windows/pe_source_line_writer.h",
+        "breakpad/src/common/windows/pe_util.cc",
+        "breakpad/src/common/windows/pe_util.h",
         "breakpad/src/common/windows/string_utils-inl.h",
         "breakpad/src/common/windows/string_utils.cc",
+        "breakpad/src/common/windows/symbol_collector_client.cc",
+        "breakpad/src/common/windows/symbol_collector_client.h",
+      ]
+    }
+
+    static_library("ms_symbol_server_converter") {
+      include_dirs = [
+        "$visual_studio_path/DIA SDK/include",
+        "breakpad/src",
+      ]
+
+      sources = [
+        "breakpad/src/tools/windows/converter/ms_symbol_server_converter.cc",
+      ]
+
+      deps = [
+        "//third_party/breakpad:common_windows",
+      ]
+
+      libs = [ "Pathcch.lib" ]
+    }
+
+    executable("dump_syms") {
+      # TODO(scottmg) using this with VS2015 may break the crash server.
+      # https://crbug.com/696671
+      include_dirs = [
+        "$visual_studio_path/DIA SDK/include",
+        "breakpad/src",
+      ]
+
+      sources = [
         "breakpad/src/tools/windows/dump_syms/dump_syms.cc",
+      ]
+
+      deps = [
+        "//third_party/breakpad:common_windows",
       ]
 
       lib_dirs = []
@@ -854,6 +896,88 @@ if (is_win) {
         "diaguids.lib",
         "imagehlp.lib",
       ]
+
+      if (is_clang) {
+        # clang complains about microsoft-specific goto extensions. Instead of
+        # rewriting decade-old, goto-ridden code, disable the warning.
+        cflags = [ "-Wno-microsoft-goto" ]
+      }
+    }
+
+    executable("symupload") {
+      include_dirs = [
+        "$visual_studio_path/DIA SDK/include",
+        "breakpad/src",
+      ]
+
+      sources = [
+        "breakpad/src/tools/windows/symupload/symupload.cc",
+      ]
+
+      deps = [
+        "//third_party/breakpad:common_windows",
+      ]
+
+      ldflags = [ "/LARGEADDRESSAWARE" ]
+
+      lib_dirs = []
+      if (current_cpu == "x64") {
+        lib_dirs += [ "$visual_studio_path/DIA SDK/lib/amd64" ]
+      } else {
+        lib_dirs += [ "$visual_studio_path/DIA SDK/lib" ]
+      }
+
+      libs = [
+        "diaguids.lib",
+        "imagehlp.lib",
+      ]
+
+      if (is_clang) {
+        # clang complains about microsoft-specific goto extensions. Instead of
+        # rewriting decade-old, goto-ridden code, disable the warning.
+        cflags = [ "-Wno-microsoft-goto" ]
+      }
+    }
+
+    executable("google_converter") {
+      include_dirs = [
+        "$visual_studio_path/DIA SDK/include",
+        "breakpad/src",
+      ]
+
+      sources = [
+        "breakpad/src/tools/windows/converter_exe/converter.cc",
+        "breakpad/src/tools/windows/converter_exe/escaping.cc",
+        "breakpad/src/tools/windows/converter_exe/escaping.h",
+        "breakpad/src/tools/windows/converter_exe/http_download.cc",
+        "breakpad/src/tools/windows/converter_exe/tokenizer.cc",
+        "breakpad/src/tools/windows/converter_exe/winhttp_client.cc",
+        "breakpad/src/tools/windows/converter_exe/wininet_client.cc",
+      ]
+
+      deps = [
+        "//third_party/breakpad:common_windows",
+        "//third_party/breakpad:ms_symbol_server_converter",
+      ]
+
+      ldflags = [
+        "/DELAYLOAD:dbghelp.dll",
+        "/DELAYLOAD:dwmapi.dll",
+        "/DELAYLOAD:uxtheme.dll",
+      ]
+
+      lib_dirs = []
+      if (current_cpu == "x64") {
+        lib_dirs += [ "$visual_studio_path/DIA SDK/lib/amd64" ]
+      } else {
+        lib_dirs += [ "$visual_studio_path/DIA SDK/lib" ]
+      }
+
+      libs = [
+        "diaguids.lib",
+        "imagehlp.lib",
+      ]
+
       if (is_clang) {
         # clang complains about microsoft-specific goto extensions. Instead of
         # rewriting decade-old, goto-ridden code, disable the warning.
@@ -893,7 +1017,7 @@ if (is_ios) {
       "breakpad/src/client/minidump_file_writer-inl.h",
       "breakpad/src/client/minidump_file_writer.cc",
       "breakpad/src/client/minidump_file_writer.h",
-      "breakpad/src/common/convert_UTF.c",
+      "breakpad/src/common/convert_UTF.cc",
       "breakpad/src/common/convert_UTF.h",
       "breakpad/src/common/long_string_dictionary.cc",
       "breakpad/src/common/mac/HTTPMultipartUpload.m",
@@ -921,10 +1045,6 @@ if (is_ios) {
       "breakpad/src",
       "breakpad/src/client/mac/Framework",
       "breakpad/src/common/mac",
-    ]
-
-    deps = [
-      "//third_party/google_toolbox_for_mac",
     ]
 
     public_configs = [ ":client_config" ]

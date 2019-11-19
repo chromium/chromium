@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_STATUS_AREA_WIDGET_DELEGATE_H_
 
 #include "ash/ash_export.h"
+#include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "base/macros.h"
 #include "ui/gfx/image/image_skia.h"
@@ -18,7 +19,8 @@ class Shelf;
 
 // The View for the status area widget.
 class ASH_EXPORT StatusAreaWidgetDelegate : public views::AccessiblePaneView,
-                                            public views::WidgetDelegate {
+                                            public views::WidgetDelegate,
+                                            public ShelfConfig::Observer {
  public:
   explicit StatusAreaWidgetDelegate(Shelf* shelf);
   ~StatusAreaWidgetDelegate() override;
@@ -38,6 +40,7 @@ class ASH_EXPORT StatusAreaWidgetDelegate : public views::AccessiblePaneView,
   View* GetDefaultFocusableChild() override;
 
   // Overridden from views::View:
+  const char* GetClassName() const override;
   views::Widget* GetWidget() override;
   const views::Widget* GetWidget() const override;
 
@@ -47,6 +50,9 @@ class ASH_EXPORT StatusAreaWidgetDelegate : public views::AccessiblePaneView,
   // views::WidgetDelegate overrides:
   bool CanActivate() const override;
   void DeleteDelegate() override;
+
+  // Overridden from ShelfConfig::Observer:
+  void OnShelfConfigUpdated() override;
 
   void set_default_last_focusable_child(bool default_last_focusable_child) {
     default_last_focusable_child_ = default_last_focusable_child;

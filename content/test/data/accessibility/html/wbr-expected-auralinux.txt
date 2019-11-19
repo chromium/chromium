@@ -1,5 +1,5 @@
 [document web]
 ++[section]
-++++[text] name='Supercali'
-++++[text] name='fragilistic'
-++++[text] name='expialidocious'
+++++[static] name='Supercali'
+++++[static] name='fragilistic'
+++++[static] name='expialidocious'

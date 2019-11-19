@@ -6,11 +6,14 @@ import("//ios/build/config.gni")
 
 source_set("download") {
   deps = [
+    ":download_cookies",
     "//base",
+    "//ios/net",
+    "//ios/web/common",
     "//ios/web/net/cookies",
     "//ios/web/public",
     "//ios/web/public/download",
-    "//ios/web/web_state:error_translation_util",
+    "//ios/web/web_view:util",
     "//ui/base",
   ]
 
@@ -26,10 +29,29 @@ source_set("download") {
   configs += [ "//build/config/compiler:enable_arc" ]
 }
 
+source_set("download_cookies") {
+  visibility = [ ":*" ]
+
+  deps = [
+    "//ios/net",
+    "//net",
+  ]
+
+  sources = [
+    "download_session_cookie_storage.h",
+    "download_session_cookie_storage.mm",
+  ]
+
+  libs = [ "Foundation.framework" ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
 source_set("download_unittests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   deps = [
+    ":download_cookies",
     "//base",
     "//base/test:test_support",
     "//ios/testing:ocmock_support",
@@ -46,6 +68,7 @@ source_set("download_unittests") {
 
   sources = [
     "download_controller_impl_unittest.mm",
+    "download_session_cookie_storage_unittest.mm",
     "download_task_impl_unittest.mm",
   ]
 }

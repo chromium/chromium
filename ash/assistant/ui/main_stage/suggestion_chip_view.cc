@@ -10,6 +10,7 @@
 
 #include "ash/assistant/ui/assistant_ui_constants.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
@@ -65,7 +66,7 @@ void SuggestionChipView::ChildVisibilityChanged(views::View* child) {
   // When icon visibility is modified we need to update layout padding.
   if (child == icon_view_) {
     const int padding_left_dip =
-        icon_view_->visible() ? kIconMarginDip : kChipPaddingDip;
+        icon_view_->GetVisible() ? kIconMarginDip : kChipPaddingDip;
     layout_manager_->set_inside_border_insets(
         gfx::Insets(0, padding_left_dip, 0, kChipPaddingDip));
   }
@@ -81,11 +82,11 @@ void SuggestionChipView::InitLayout(const Params& params) {
       gfx::Insets(0, padding_left_dip, 0, kChipPaddingDip), kIconMarginDip));
 
   layout_manager_->set_cross_axis_alignment(
-      views::BoxLayout::CrossAxisAlignment::CROSS_AXIS_ALIGNMENT_CENTER);
+      views::BoxLayout::CrossAxisAlignment::kCenter);
 
   // Icon.
   const int icon_size =
-      app_list::AppListConfig::instance().suggestion_chip_icon_dimension();
+      AppListConfig::instance().suggestion_chip_icon_dimension();
   icon_view_->SetImageSize(gfx::Size(icon_size, icon_size));
   icon_view_->SetPreferredSize(gfx::Size(icon_size, icon_size));
 
@@ -156,7 +157,7 @@ void SuggestionChipView::SetText(const base::string16& text) {
 }
 
 const base::string16& SuggestionChipView::GetText() const {
-  return text_view_->text();
+  return text_view_->GetText();
 }
 
 }  // namespace ash

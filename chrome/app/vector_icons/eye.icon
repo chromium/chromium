@@ -1,0 +1,32 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+CANVAS_DIMENSIONS, 16,
+MOVE_TO, 8, 5.67f,
+CUBIC_TO, 7.47f, 5.67f, 6.96f, 5.88f, 6.59f, 6.25f,
+CUBIC_TO, 6.21f, 6.63f, 6, 7.14f, 6, 7.67f,
+CUBIC_TO, 6, 8.2f, 6.21f, 8.71f, 6.59f, 9.08f,
+CUBIC_TO, 6.96f, 9.46f, 7.47f, 9.67f, 8, 9.67f,
+CUBIC_TO, 8.53f, 9.67f, 9.04f, 9.46f, 9.41f, 9.08f,
+CUBIC_TO, 9.79f, 8.71f, 10, 8.2f, 10, 7.67f,
+CUBIC_TO, 10, 7.14f, 9.79f, 6.63f, 9.41f, 6.25f,
+CUBIC_TO, 9.04f, 5.88f, 8.53f, 5.67f, 8, 5.67f,
+CLOSE,
+MOVE_TO, 8, 11,
+CUBIC_TO, 7.12f, 11, 6.27f, 10.65f, 5.64f, 10.02f,
+CUBIC_TO, 5.02f, 9.4f, 4.67f, 8.55f, 4.67f, 7.67f,
+CUBIC_TO, 4.67f, 6.78f, 5.02f, 5.93f, 5.64f, 5.31f,
+CUBIC_TO, 6.27f, 4.68f, 7.12f, 4.33f, 8, 4.33f,
+CUBIC_TO, 8.88f, 4.33f, 9.73f, 4.68f, 10.36f, 5.31f,
+CUBIC_TO, 10.98f, 5.93f, 11.33f, 6.78f, 11.33f, 7.67f,
+CUBIC_TO, 11.33f, 8.55f, 10.98f, 9.4f, 10.36f, 10.02f,
+CUBIC_TO, 9.73f, 10.65f, 8.88f, 11, 8, 11,
+V_LINE_TO, 11,
+CLOSE,
+MOVE_TO, 8, 2.67f,
+CUBIC_TO, 4.67f, 2.67f, 1.82f, 4.74f, 0.67f, 7.67f,
+CUBIC_TO, 1.82f, 10.59f, 4.67f, 12.67f, 8, 12.67f,
+CUBIC_TO, 11.33f, 12.67f, 14.18f, 10.59f, 15.33f, 7.67f,
+CUBIC_TO, 14.18f, 4.74f, 11.33f, 2.67f, 8, 2.67f,
+CLOSE

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<div style="position:absolute; height: 200px; width: 200px; transform: translateZ(0); background: lightgray"></div>
+<div style="position:absolute; height: 200px; width: 200px; will-change: transform; background: lightgray"></div>
 <div style="position:absolute; height: 200px; width: 200px; top: 50px; left: 50px; background:lightblue"></div>
 <div id="target" style="position:absolute; height: 200px; width: 200px; top: 50px; left: 50px; background:lightblue"></div>
 <script src="../resources/text-based-repaint.js"></script>
@@ -8,7 +8,7 @@
 // location of the squashed layer.
 function repaintTest() {
     var target = document.getElementById("target");
-    target.style.transform = 'translateZ(0)';
+    target.style.willChange = 'transform';
 };
 runRepaintAndPixelTest();
 </script>

@@ -1,0 +1,17 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module chromecast.shell.mojom;
+
+// Interface associated with RenderFrames for managing on-load JavaScript
+// injection tasks per frame. Does not enforce script injection policies,
+// which must be implemented at a higher level.
+interface OnLoadScriptInjector {
+  // Add an on-load JavaScript injection task. The script will be
+  // executed before any other script (e.g. <script> tag) runs.
+  AddOnLoadScript(string script);
+
+  // Clear all registered on-load JavaScript injection tasks.
+  ClearOnLoadScripts();
+};

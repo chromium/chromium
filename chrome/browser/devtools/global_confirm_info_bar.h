@@ -62,7 +62,7 @@ class GlobalConfirmInfoBar : public TabStripModelObserver,
   // down.
   bool is_closing_;
 
-  base::WeakPtrFactory<GlobalConfirmInfoBar> weak_factory_;
+  base::WeakPtrFactory<GlobalConfirmInfoBar> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(GlobalConfirmInfoBar);
 };

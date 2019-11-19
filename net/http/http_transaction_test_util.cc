@@ -20,6 +20,7 @@
 #include "net/base/load_flags.h"
 #include "net/base/load_timing_info.h"
 #include "net/base/net_errors.h"
+#include "net/base/network_isolation_key.h"
 #include "net/cert/x509_certificate.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/http/http_cache.h"
@@ -174,6 +175,12 @@ MockHttpRequest::MockHttpRequest(const MockTransaction& t) {
   method = t.method;
   extra_headers.AddHeadersFromString(t.request_headers);
   load_flags = t.load_flags;
+  url::Origin origin = url::Origin::Create(url);
+  network_isolation_key = NetworkIsolationKey(origin, origin);
+}
+
+std::string MockHttpRequest::CacheKey() {
+  return HttpCache::GenerateCacheKeyForTest(this);
 }
 
 //-----------------------------------------------------------------------------
@@ -195,9 +202,11 @@ TestTransactionConsumer::~TestTransactionConsumer() = default;
 void TestTransactionConsumer::Start(const HttpRequestInfo* request,
                                     const NetLogWithSource& net_log) {
   state_ = STARTING;
-  int result = trans_->Start(
-      request, base::Bind(&TestTransactionConsumer::OnIOComplete,
-                          base::Unretained(this)), net_log);
+  int result =
+      trans_->Start(request,
+                    base::BindOnce(&TestTransactionConsumer::OnIOComplete,
+                                   base::Unretained(this)),
+                    net_log);
   if (result != ERR_IO_PENDING)
     DidStart(result);
 }
@@ -229,10 +238,10 @@ void TestTransactionConsumer::DidFinish(int result) {
 void TestTransactionConsumer::Read() {
   state_ = READING;
   read_buf_ = base::MakeRefCounted<IOBuffer>(1024);
-  int result = trans_->Read(read_buf_.get(),
-                            1024,
-                            base::Bind(&TestTransactionConsumer::OnIOComplete,
-                                       base::Unretained(this)));
+  int result =
+      trans_->Read(read_buf_.get(), 1024,
+                   base::BindOnce(&TestTransactionConsumer::OnIOComplete,
+                                  base::Unretained(this)));
   if (result != ERR_IO_PENDING)
     DidRead(result);
 }
@@ -263,8 +272,7 @@ MockNetworkTransaction::MockNetworkTransaction(RequestPriority priority,
       sent_bytes_(0),
       socket_log_id_(NetLogSource::kInvalidId),
       done_reading_called_(false),
-      reading_(false),
-      weak_factory_(this) {}
+      reading_(false) {}
 
 MockNetworkTransaction::~MockNetworkTransaction() {
   // Use request_ as in ~HttpNetworkTransaction to make sure its valid and not
@@ -367,11 +375,6 @@ int MockNetworkTransaction::Read(net::IOBuffer* buf,
 void MockNetworkTransaction::StopCaching() {
   if (transaction_factory_.get())
     transaction_factory_->TransactionStopCaching();
-}
-
-bool MockNetworkTransaction::GetFullRequestHeaders(
-    HttpRequestHeaders* headers) const {
-  return false;
 }
 
 int64_t MockNetworkTransaction::GetTotalReceivedBytes() const {
@@ -502,6 +505,11 @@ int MockNetworkTransaction::StartInternal(const HttpRequestInfo* request,
   if (request_->load_flags & LOAD_PREFETCH)
     response_.unused_since_prefetch = true;
 
+  if (request_->load_flags & LOAD_RESTRICTED_PREFETCH) {
+    DCHECK(response_.unused_since_prefetch);
+    response_.restricted_prefetch = true;
+  }
+
   // Pause and resume.
   if (!before_network_start_callback_.is_null()) {
     bool defer = false;
@@ -587,11 +595,11 @@ int MockNetworkLayer::CreateTransaction(
 }
 
 HttpCache* MockNetworkLayer::GetCache() {
-  return NULL;
+  return nullptr;
 }
 
 HttpNetworkSession* MockNetworkLayer::GetSession() {
-  return NULL;
+  return nullptr;
 }
 
 void MockNetworkLayer::SetClock(base::Clock* clock) {
@@ -611,10 +619,9 @@ base::Time MockNetworkLayer::Now() {
 int ReadTransaction(HttpTransaction* trans, std::string* result) {
   int rv;
 
-  TestCompletionCallback callback;
-
   std::string content;
   do {
+    TestCompletionCallback callback;
     scoped_refptr<IOBuffer> buf = base::MakeRefCounted<IOBuffer>(256);
     rv = trans->Read(buf.get(), 256, callback.callback());
     if (rv == ERR_IO_PENDING) {

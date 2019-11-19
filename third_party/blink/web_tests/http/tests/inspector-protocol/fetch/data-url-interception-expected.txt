@@ -1,0 +1,4 @@
+Tests that data: URLs are not intercepted.
+document.body: hello
+Response after Fetch.fulfillRequest: subresource content
+

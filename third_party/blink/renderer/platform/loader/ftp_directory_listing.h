@@ -8,11 +8,11 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
 
 class KURL;
-class SharedBuffer;
 
 // Translates |input|, an FTP LISTING result, to an HTML and returns it. When
 // an error happens that is written in the result HTML.

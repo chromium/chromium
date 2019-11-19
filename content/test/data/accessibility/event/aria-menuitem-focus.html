@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<body>
+<div id="menubar" role="menubar" tabindex="0" aria-activedescendant="file">
+  <span id="file" role="menuitem" aria-expanded="false">File</span>
+  <span id="edit" role="menuitem" aria-expanded="false">Edit</span>
+</div>
+<script>
+  var menubar = document.getElementById('menubar');
+  menubar.focus();
+  function go() {
+    menubar.setAttribute('aria-activedescendant', 'edit');
+  }
+</script>
+</body>
+</html>

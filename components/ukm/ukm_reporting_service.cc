@@ -13,7 +13,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "components/metrics/metrics_service_client.h"
 #include "components/prefs/pref_registry_simple.h"
-#include "components/ukm/persisted_logs_metrics_impl.h"
+#include "components/ukm/unsent_log_store_metrics_impl.h"
 #include "components/ukm/ukm_pref_names.h"
 #include "components/ukm/ukm_service.h"
 
@@ -24,15 +24,15 @@ namespace {
 // The UKM server's URL.
 constexpr char kMimeType[] = "application/vnd.chrome.ukm";
 
-// The number of UKM logs that will be stored in PersistedLogs before logs
+// The number of UKM logs that will be stored in UnsentLogStore before logs
 // start being dropped.
-constexpr int kMinPersistedLogs = 8;
+constexpr int kMinUnsentLogCount = 8;
 
-// The number of bytes UKM logs that will be stored in PersistedLogs before
+// The number of bytes UKM logs that will be stored in UnsentLogStore before
 // logs start being dropped.
 // This ensures that a reasonable amount of history will be stored even if there
 // is a long series of very small logs.
-constexpr int kMinPersistedBytes = 300000;
+constexpr int kMinUnsentLogBytes = 300000;
 
 // If an upload fails, and the transmission was over this byte count, then we
 // will discard the log, and not try to retransmit it.  We also don't persist
@@ -53,7 +53,7 @@ GURL GetServerUrl() {
 
 // static
 void UkmReportingService::RegisterPrefs(PrefRegistrySimple* registry) {
-  registry->RegisterListPref(prefs::kUkmPersistedLogs);
+  registry->RegisterListPref(prefs::kUkmUnsentLogStore);
   // Base class already registered by MetricsReportingService::RegisterPrefs
   // ReportingService::RegisterPrefs(registry);
 }
@@ -61,18 +61,18 @@ void UkmReportingService::RegisterPrefs(PrefRegistrySimple* registry) {
 UkmReportingService::UkmReportingService(metrics::MetricsServiceClient* client,
                                          PrefService* local_state)
     : ReportingService(client, local_state, kMaxLogRetransmitSize),
-      persisted_logs_(std::make_unique<ukm::PersistedLogsMetricsImpl>(),
+      unsent_log_store_(std::make_unique<ukm::UnsentLogStoreMetricsImpl>(),
                       local_state,
-                      prefs::kUkmPersistedLogs,
-                      kMinPersistedLogs,
-                      kMinPersistedBytes,
+                      prefs::kUkmUnsentLogStore,
+                      kMinUnsentLogCount,
+                      kMinUnsentLogBytes,
                       kMaxLogRetransmitSize,
                       client->GetUploadSigningKey()) {}
 
 UkmReportingService::~UkmReportingService() {}
 
 metrics::LogStore* UkmReportingService::log_store() {
-  return &persisted_logs_;
+  return &unsent_log_store_;
 }
 
 GURL UkmReportingService::GetUploadUrl() const {
@@ -111,4 +111,4 @@ void UkmReportingService::LogSuccess(size_t log_size) {
 
 void UkmReportingService::LogLargeRejection(size_t log_size) {}
 
-}  // namespace metrics
+}  // namespace ukm

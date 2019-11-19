@@ -13,8 +13,7 @@
   <release seq="1">
     <includes>
       <include name="IDR_PRINT_PREVIEW_VULCANIZED_HTML" file="${root_gen_dir}\chrome\browser\resources\print_preview\vulcanized.html" use_base_dir="false" preprocess="true" compress="gzip" type="BINDATA" />
-      <include name="IDR_PRINT_PREVIEW_VULCANIZED_P2_HTML" file="${root_gen_dir}\chrome\browser\resources\print_preview\vulcanized.p2.html" use_base_dir="false" preprocess="true" compress="gzip" type="BINDATA" />
-      <include name="IDR_PRINT_PREVIEW_CRISPER_JS" file="${root_gen_dir}\chrome\browser\resources\print_preview\crisper.js" use_base_dir="false" preprocess="true" compress="gzip" type="BINDATA" />
+      <include name="IDR_PRINT_PREVIEW_PRINT_PREVIEW_ROLLUP_JS" file="${root_gen_dir}\chrome\browser\resources\print_preview\print_preview.js" use_base_dir="false" preprocess="true" compress="gzip" type="BINDATA" />
     </includes>
   </release>
 </grit>

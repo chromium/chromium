@@ -28,7 +28,7 @@ class MEDIA_EXPORT WebMInfoParser : public WebMParserClient {
   // Returns the number of bytes parsed on success.
   int Parse(const uint8_t* buf, int size);
 
-  int64_t timecode_scale() const { return timecode_scale_; }
+  int64_t timecode_scale_ns() const { return timecode_scale_ns_; }
   double duration() const { return duration_; }
   base::Time date_utc() const { return date_utc_; }
 
@@ -41,7 +41,7 @@ class MEDIA_EXPORT WebMInfoParser : public WebMParserClient {
   bool OnBinary(int id, const uint8_t* data, int size) override;
   bool OnString(int id, const std::string& str) override;
 
-  int64_t timecode_scale_;
+  int64_t timecode_scale_ns_;
   double duration_;
   base::Time date_utc_;
 

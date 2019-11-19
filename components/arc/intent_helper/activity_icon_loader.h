@@ -15,7 +15,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
-#include "components/arc/common/intent_helper.mojom.h"
+#include "components/arc/mojom/intent_helper.mojom.h"
 #include "ui/base/layout.h"
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
@@ -112,7 +112,7 @@ class ActivityIconLoader {
   THREAD_CHECKER(thread_checker_);
 
   // This must come last to make sure weak pointers are invalidated first.
-  base::WeakPtrFactory<ActivityIconLoader> weak_ptr_factory_;
+  base::WeakPtrFactory<ActivityIconLoader> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ActivityIconLoader);
 };

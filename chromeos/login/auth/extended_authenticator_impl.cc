@@ -14,9 +14,9 @@
 #include "chromeos/cryptohome/cryptohome_util.h"
 #include "chromeos/cryptohome/homedir_methods.h"
 #include "chromeos/cryptohome/system_salt_getter.h"
-#include "chromeos/dbus/cryptohome_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/dbus/cryptohome/cryptohome_client.h"
 #include "chromeos/login/auth/auth_status_consumer.h"
+#include "chromeos/login/auth/cryptohome_parameter_utils.h"
 #include "chromeos/login/auth/key.h"
 #include "chromeos/login/auth/login_event_recorder.h"
 #include "chromeos/login/auth/user_context.h"
@@ -173,7 +173,7 @@ void ExtendedAuthenticatorImpl::DoAuthenticateToMount(
     const UserContext& user_context) {
   RecordStartMarker("MountEx");
   const Key* const key = user_context.GetKey();
-  DBusThreadManager::Get()->GetCryptohomeClient()->MountEx(
+  CryptohomeClient::Get()->MountEx(
       cryptohome::CreateAccountIdentifierFromAccountId(
           user_context.GetAccountId()),
       cryptohome::CreateAuthorizationRequest(key->GetLabel(), key->GetSecret()),
@@ -186,10 +186,11 @@ void ExtendedAuthenticatorImpl::DoAuthenticateToCheck(
     const base::Closure& success_callback,
     const UserContext& user_context) {
   RecordStartMarker("CheckKeyEx");
-  const Key* const key = user_context.GetKey();
   cryptohome::HomedirMethods::GetInstance()->CheckKeyEx(
       cryptohome::Identification(user_context.GetAccountId()),
-      cryptohome::CreateAuthorizationRequest(key->GetLabel(), key->GetSecret()),
+      cryptohome::CreateAuthorizationRequestFromKeyDef(
+          cryptohome_parameter_utils::CreateAuthorizationKeyDefFromUserContext(
+              user_context)),
       cryptohome::CheckKeyRequest(),
       base::Bind(&ExtendedAuthenticatorImpl::OnOperationComplete, this,
                  "CheckKeyEx", user_context, success_callback));

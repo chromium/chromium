@@ -165,19 +165,22 @@ TEST(PlatformFontMacTest, FontWeightAPIConsistency) {
 
   // Each typeface maps weight notches differently, and the weight is actually a
   // floating point value that may not map directly to a gfx::Font::Weight. For
-  // example San Francisco on macOS 10.12 goes up from 0 in the sequence:
-  // [0.23, 0.23, 0.3, 0.4, 0.56, 0.62, 0.62, ...] and has no "thin" weights.
-  // But also iterating over weights does weird stuff sometimes - occasionally
-  // the font goes italic, but going up another step goes back to non-italic,
-  // at a heavier weight.
+  // example San Francisco on macOS 10.12 goes up from 0 in the sequence: [0.23,
+  // 0.23, 0.3, 0.4, 0.56, 0.62, 0.62, ...] and has no "thin" weights. But also
+  // iterating over weights does weird stuff sometimes - before macOS 10.15,
+  // occasionally the font goes italic, but going up another step goes back to
+  // non-italic, at a heavier weight.
 
   // NSCTFontUIUsageAttribute = CTFontMediumUsage.
   ns_font = [manager convertWeight:up ofFont:ns_font];         // 0.23.
   EXPECT_EQ(Font::Weight::MEDIUM, Font(ns_font).GetWeight());  // Row 6.
 
-  // Goes italic: NSCTFontUIUsageAttribute = CTFontMediumItalicUsage.
-  ns_font = [manager convertWeight:up ofFont:ns_font];         // 0.23.
-  EXPECT_EQ(Font::Weight::MEDIUM, Font(ns_font).GetWeight());  // Row 7.
+  // 10.15 fixed the bug where the step up from medium created a medium italic.
+  if (base::mac::IsAtMostOS10_14()) {
+    // Goes italic: NSCTFontUIUsageAttribute = CTFontMediumItalicUsage.
+    ns_font = [manager convertWeight:up ofFont:ns_font];         // 0.23.
+    EXPECT_EQ(Font::Weight::MEDIUM, Font(ns_font).GetWeight());  // Row 7.
+  }
 
   // NSCTFontUIUsageAttribute = CTFontDemiUsage.
   ns_font = [manager convertWeight:up ofFont:ns_font];  // 0.3.

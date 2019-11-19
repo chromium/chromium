@@ -2,7 +2,6 @@
 <html>
   <script src="../resources/testharness.js"></script>
   <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 
   <body id="body" role="main">
     <p id="paragraph">Some text.
@@ -17,7 +16,7 @@
       window.axSpan = accessibilityController.accessibleElementById('span');
     });
 
-    async_test_after_layout_and_paint((t) => {
+    async_test((t) => {
       assert_equals(window.axBody.language, 'AXLanguage: en-US',
           'The browser language has not been changed yet.');
 

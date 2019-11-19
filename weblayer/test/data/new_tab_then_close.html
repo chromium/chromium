@@ -1,0 +1,19 @@
+<html>
+  <body>
+    <p>some content</p>
+  </body>
+  <script>
+    var openedWindow = null;
+    function openNewWindowOrClose() {
+      if (openedWindow == null) {
+        openedWindow = window.open('about:blank', '');
+      } else {
+        openedWindow.close();
+        openedWindow = null;
+      }
+    }
+
+    document.addEventListener('touchend',
+                              function(e) { openNewWindowOrClose(); }, false);
+  </script>
+</html>

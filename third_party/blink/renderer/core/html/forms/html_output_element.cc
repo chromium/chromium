@@ -35,17 +35,14 @@
 
 namespace blink {
 
-inline HTMLOutputElement::HTMLOutputElement(Document& document)
+HTMLOutputElement::HTMLOutputElement(Document& document)
     : HTMLFormControlElement(html_names::kOutputTag, document),
       is_default_value_mode_(true),
       default_value_(""),
-      tokens_(DOMTokenList::Create(*this, html_names::kForAttr)) {}
+      tokens_(MakeGarbageCollected<DOMTokenList>(*this, html_names::kForAttr)) {
+}
 
 HTMLOutputElement::~HTMLOutputElement() = default;
-
-HTMLOutputElement* HTMLOutputElement::Create(Document& document) {
-  return MakeGarbageCollected<HTMLOutputElement>(document);
-}
 
 const AtomicString& HTMLOutputElement::FormControlType() const {
   DEFINE_STATIC_LOCAL(const AtomicString, output, ("output"));
@@ -117,10 +114,6 @@ void HTMLOutputElement::setDefaultValue(const String& value) {
   // when the element's value mode flag to "default".
   if (is_default_value_mode_)
     setTextContent(value);
-}
-
-int HTMLOutputElement::tabIndex() const {
-  return HTMLElement::tabIndex();
 }
 
 void HTMLOutputElement::Trace(Visitor* visitor) {

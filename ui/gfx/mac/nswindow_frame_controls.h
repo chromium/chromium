@@ -17,16 +17,6 @@ class Size;
 GFX_EXPORT void SetNSWindowCanFullscreen(NSWindow* window,
                                          bool allow_fullscreen);
 
-// Returns whether the window is always-on-top.
-GFX_EXPORT bool IsNSWindowAlwaysOnTop(NSWindow* window);
-
-// Sets whether the window is always-on-top. This also sets
-// NSWindowCollectionBehaviorManaged because by default always-on-top windows
-// are NSWindowCollectionBehaviorTransient which means they will not appear in
-// Expose and cannot be moved between workspaces.
-GFX_EXPORT void SetNSWindowAlwaysOnTop(NSWindow* window,
-                                       bool always_on_top);
-
 // Sets whether the window appears on all workspaces.
 GFX_EXPORT void SetNSWindowVisibleOnAllWorkspaces(NSWindow* window,
                                                   bool always_visible);

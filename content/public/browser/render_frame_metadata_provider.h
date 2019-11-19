@@ -48,11 +48,7 @@ class CONTENT_EXPORT RenderFrameMetadataProvider {
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
 
-  // Notifies the renderer to begin sending a notification on all frame
-  // submissions.
-  virtual void ReportAllFrameSubmissionsForTesting(bool enabled) = 0;
-
-  virtual const cc::RenderFrameMetadata& LastRenderFrameMetadata() const = 0;
+  virtual const cc::RenderFrameMetadata& LastRenderFrameMetadata() = 0;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(RenderFrameMetadataProvider);

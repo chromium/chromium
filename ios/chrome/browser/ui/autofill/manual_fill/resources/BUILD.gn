@@ -22,13 +22,6 @@ imageset("mf_arrow_up") {
   ]
 }
 
-imageset("mf_gradient") {
-  sources = [
-    "mf_gradient.imageset/Contents.json",
-    "mf_gradient.imageset/mf_gradient.png",
-  ]
-}
-
 imageset("mf_keyboard") {
   sources = [
     "mf_keyboard.imageset/Contents.json",

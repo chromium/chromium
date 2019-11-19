@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.locale;
+import org.chromium.base.annotations.NativeMethods;
 
 /**
  * A loader class for changes of template url in a given special locale. This is a JNI bridge and
@@ -20,7 +21,7 @@ public class LocaleTemplateUrlLoader {
     public LocaleTemplateUrlLoader(String localeId) {
         assert localeId.length() == 2;
         mLocaleId = localeId;
-        mNativeLocaleTemplateUrlLoader = nativeInit(localeId);
+        mNativeLocaleTemplateUrlLoader = LocaleTemplateUrlLoaderJni.get().init(localeId);
     }
 
     /**
@@ -28,7 +29,7 @@ public class LocaleTemplateUrlLoader {
      */
     public void destroy() {
         assert mNativeLocaleTemplateUrlLoader != 0;
-        nativeDestroy(mNativeLocaleTemplateUrlLoader);
+        LocaleTemplateUrlLoaderJni.get().destroy(mNativeLocaleTemplateUrlLoader);
         mNativeLocaleTemplateUrlLoader = 0;
     }
 
@@ -41,7 +42,8 @@ public class LocaleTemplateUrlLoader {
         assert mNativeLocaleTemplateUrlLoader != 0;
         // If the locale is the same as the one set at install time, there is no need to load the
         // search engines, as they are already cached in the template url service.
-        mAddedToService = nativeLoadTemplateUrls(mNativeLocaleTemplateUrlLoader);
+        mAddedToService =
+                LocaleTemplateUrlLoaderJni.get().loadTemplateUrls(mNativeLocaleTemplateUrlLoader);
         return mAddedToService;
     }
 
@@ -51,7 +53,9 @@ public class LocaleTemplateUrlLoader {
      */
     public void removeTemplateUrls() {
         assert mNativeLocaleTemplateUrlLoader != 0;
-        if (mAddedToService) nativeRemoveTemplateUrls(mNativeLocaleTemplateUrlLoader);
+        if (mAddedToService) {
+            LocaleTemplateUrlLoaderJni.get().removeTemplateUrls(mNativeLocaleTemplateUrlLoader);
+        }
     }
 
     /**
@@ -59,7 +63,8 @@ public class LocaleTemplateUrlLoader {
      */
     public void overrideDefaultSearchProvider() {
         assert mNativeLocaleTemplateUrlLoader != 0;
-        nativeOverrideDefaultSearchProvider(mNativeLocaleTemplateUrlLoader);
+        LocaleTemplateUrlLoaderJni.get().overrideDefaultSearchProvider(
+                mNativeLocaleTemplateUrlLoader);
     }
 
     /**
@@ -67,14 +72,16 @@ public class LocaleTemplateUrlLoader {
      */
     public void setGoogleAsDefaultSearch() {
         assert mNativeLocaleTemplateUrlLoader != 0;
-        nativeSetGoogleAsDefaultSearch(mNativeLocaleTemplateUrlLoader);
+        LocaleTemplateUrlLoaderJni.get().setGoogleAsDefaultSearch(mNativeLocaleTemplateUrlLoader);
     }
 
-    private static native long nativeInit(String localeId);
-    private static native void nativeDestroy(long nativeLocaleTemplateUrlLoader);
-    private static native boolean nativeLoadTemplateUrls(long nativeLocaleTemplateUrlLoader);
-    private static native void nativeRemoveTemplateUrls(long nativeLocaleTemplateUrlLoader);
-    private static native void nativeOverrideDefaultSearchProvider(
-            long nativeLocaleTemplateUrlLoader);
-    private static native void nativeSetGoogleAsDefaultSearch(long nativeLocaleTemplateUrlLoader);
+    @NativeMethods
+    interface Natives {
+        long init(String localeId);
+        void destroy(long nativeLocaleTemplateUrlLoader);
+        boolean loadTemplateUrls(long nativeLocaleTemplateUrlLoader);
+        void removeTemplateUrls(long nativeLocaleTemplateUrlLoader);
+        void overrideDefaultSearchProvider(long nativeLocaleTemplateUrlLoader);
+        void setGoogleAsDefaultSearch(long nativeLocaleTemplateUrlLoader);
+    }
 }

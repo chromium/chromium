@@ -288,7 +288,7 @@ TEST_F('SelectToSpeakKeystrokeSelectionTest', 'TextFieldFullySelected',
       'range.setEnd(body, 2);';
   this.runWithLoadedTree(this.generateHtmlWithSelection(selectionCode,
       '<p>paragraph</p>' +
-      '<input type="text" value="text field"></input>'), function() {
+      '<input type="text" value="text field">'), function() {
         this.triggerReadSelectedText();
         assertTrue(this.mockTts.currentlySpeaking());
         assertEquals(this.mockTts.pendingUtterances().length, 2);
@@ -395,7 +395,7 @@ TEST_F('SelectToSpeakKeystrokeSelectionTest', 'HandlesTextWithBrComplex',
   });
 });
 
-TEST_F('SelectToSpeakKeystrokeSelectionTest', 'HandlesTextWithBrAfterText',
+TEST_F('SelectToSpeakKeystrokeSelectionTest', 'HandlesTextWithBrAfterText1',
     function() {
   // A bug was that if the selection was on the rootWebArea, paragraphs were
   // not counted correctly. The more divs and paragraphs before the selection,
@@ -412,6 +412,30 @@ TEST_F('SelectToSpeakKeystrokeSelectionTest', 'HandlesTextWithBrAfterText',
         assertEquals(this.mockTts.pendingUtterances().length, 1);
         this.assertEqualsCollapseWhitespace(
             this.mockTts.pendingUtterances()[0], 'Some text');
+  });
+});
+
+TEST_F('SelectToSpeakKeystrokeSelectionTest', 'HandlesTextWithBrAfterText2',
+    function() {
+  // A bug was that if the selection was on the rootWebArea, paragraphs were
+  // not counted correctly. The more divs and paragraphs before the selection,
+  // the further off it got.
+  let selectionCode =
+      'let p = document.getElementsByTagName("p")[0];' +
+      'let body = document.getElementsByTagName("body")[0];' +
+      'range.setStart(p, 1);' +
+      'range.setEnd(body, 3);';
+  this.runWithLoadedTree(this.generateHtmlWithSelection(selectionCode,
+      '<p>Unread</p><p>Some text</p><br/>Unread'), function() {
+        this.triggerReadSelectedText();
+        assertTrue(this.mockTts.currentlySpeaking());
+        assertTrue(this.mockTts.pendingUtterances().length > 0);
+        this.assertEqualsCollapseWhitespace(
+            this.mockTts.pendingUtterances()[0], 'Some text');
+        if (this.mockTts.pendingUtterances().length > 1) {
+          this.assertEqualsCollapseWhitespace(
+              this.mockTts.pendingUtterances()[1], '');
+        }
   });
 });
 
@@ -448,6 +472,8 @@ TEST_F('SelectToSpeakKeystrokeSelectionTest', 'textFieldWithComboBoxSimple',
             this.mockTts.pendingUtterances()[0], 'one');
   });
 });
+// TODO(katie): It doesn't seem possible to programatically specify a range that
+// selects only part of the text in a combo box.
 
 TEST_F('SelectToSpeakKeystrokeSelectionTest',
     'contentEditableInternallySelected', function() {

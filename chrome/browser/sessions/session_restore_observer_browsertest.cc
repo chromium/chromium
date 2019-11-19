@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/sessions/session_restore_observer.h"
-
 #include <memory>
 #include <unordered_map>
 
@@ -15,10 +13,13 @@
 #include "chrome/browser/resource_coordinator/tab_load_tracker_test_support.h"
 #include "chrome/browser/resource_coordinator/tab_manager.h"
 #include "chrome/browser/sessions/session_restore.h"
+#include "chrome/browser/sessions/session_restore_observer.h"
+#include "chrome/browser/sessions/session_restore_test_helper.h"
 #include "chrome/browser/sessions/session_service_factory.h"
 #include "chrome/browser/sessions/session_service_test_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -127,8 +128,8 @@ class SessionRestoreObserverTest : public InProcessBrowserTest {
 
     // Create a new window, which should trigger session restore.
     chrome::NewEmptyWindow(profile);
-    ui_test_utils::BrowserAddedObserver window_observer;
-    return window_observer.WaitForSingleNewBrowser();
+    SessionRestoreTestHelper().Wait();
+    return BrowserList::GetInstance()->GetLastActive();
   }
 
   void WaitForTabsToLoad(Browser* browser) {

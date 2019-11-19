@@ -4,11 +4,17 @@
 
 mojom = "//gpu/ipc/common/gpu_preferences.mojom"
 public_headers = [ "//gpu/config/gpu_preferences.h" ]
-traits_headers = [ "//gpu/ipc/common/gpu_preferences_struct_traits.h" ]
+traits_headers = [ "//gpu/ipc/common/gpu_preferences_mojom_traits.h" ]
 public_deps = [
   "//media:media_buildflags",
 ]
-type_mappings = [
-  "gpu.mojom.GpuPreferences=gpu::GpuPreferences",
-  "gpu.mojom.VpxDecodeVendors=gpu::GpuPreferences::VpxDecodeVendors",
+deps = [
+  # We depend on gpu_preferences but since it also depends on its own
+  # mojo bindings, that is handled with an |allowed_circular_includes|
+  # in //gpu/config:gpu_preferences.
+  # "//gpu/config:gpu_preferences",
 ]
+sources = [
+  "//gpu/ipc/common/gpu_preferences_mojom_traits.h",
+]
+type_mappings = [ "gpu.mojom.GpuPreferences=::gpu::GpuPreferences" ]

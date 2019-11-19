@@ -155,7 +155,7 @@ class DevToolsFileHelper {
   std::unique_ptr<DevToolsFileWatcher, DevToolsFileWatcher::Deleter>
       file_watcher_;
   scoped_refptr<base::SequencedTaskRunner> file_task_runner_;
-  base::WeakPtrFactory<DevToolsFileHelper> weak_factory_;
+  base::WeakPtrFactory<DevToolsFileHelper> weak_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(DevToolsFileHelper);
 };
 

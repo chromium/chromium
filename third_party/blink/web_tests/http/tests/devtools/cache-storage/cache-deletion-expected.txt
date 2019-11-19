@@ -9,11 +9,13 @@ Dumping CacheStorage tree:
         (cache empty)
 Dumping CacheStorage tree:
     cache: testCache1 - http://127.0.0.1:8000
-        /1, default, text/plain, 0
-        /2, default, text/plain, 0
+        0, /1, default, text/plain, 0
+        1, /2, default, text/plain, 0
+        totalCount: 2
     cache: testCache2 - http://127.0.0.1:8000
-        /1, default, text/plain, 0
-        /2, default, text/plain, 0
+        0, /1, default, text/plain, 0
+        1, /2, default, text/plain, 0
+        totalCount: 2
 Deleting CacheStorage cache testCache2
 Dumping CacheStorage tree:
     (empty)

@@ -5,15 +5,15 @@
 #include "chrome/browser/media/router/providers/cast/cast_app_discovery_service.h"
 
 #include "base/bind.h"
-#include "base/test/scoped_task_environment.h"
 #include "base/test/simple_test_tick_clock.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "chrome/browser/media/router/test/test_helper.h"
 #include "chrome/common/media_router/discovery/media_sink_service_base.h"
 #include "chrome/common/media_router/providers/cast/cast_media_source.h"
 #include "chrome/common/media_router/test/test_helper.h"
 #include "components/cast_channel/cast_test_util.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -70,7 +70,7 @@ class CastAppDiscoveryServiceTest : public testing::Test {
   }
 
  protected:
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
   base::SimpleTestTickClock clock_;
   testing::NiceMock<cast_channel::MockCastSocketService> socket_service_;

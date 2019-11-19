@@ -9,12 +9,13 @@
 
 #include <memory>
 
+#include "base/macros.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/prefs/pref_service.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/payments/test_payment_request.h"
 #import "ios/web/public/test/fakes/test_web_state.h"
-#include "ios/web/public/test/test_web_thread_bundle.h"
+#include "ios/web/public/test/web_task_environment.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -25,12 +26,6 @@ class AutofillProfile;
 class CreditCard;
 }  // namespace autofill
 
-namespace identity {
-class IdentityTestEnvironment;
-}  // namespace identity
-
-class IdentityTestEnvironmentChromeBrowserStateAdaptor;
-
 // Base class for various payment request related unit tests. This purposely
 // does not inherit from PlatformTest (testing::Test) so that it can be used
 // by ViewController unit tests.
@@ -39,7 +34,7 @@ class PaymentRequestUnitTestBase {
   PaymentRequestUnitTestBase();
   ~PaymentRequestUnitTestBase();
 
-  void DoSetUp();
+  void DoSetUp(TestChromeBrowserState::TestingFactories factories = {});
   void DoTearDown();
 
   // Should be called after data is added to the database via AddAutofillProfile
@@ -48,8 +43,6 @@ class PaymentRequestUnitTestBase {
 
   void AddAutofillProfile(const autofill::AutofillProfile& profile);
   void AddCreditCard(const autofill::CreditCard& card);
-
-  identity::IdentityTestEnvironment* identity_test_env();
 
   payments::TestPaymentRequest* payment_request() {
     return payment_request_.get();
@@ -70,14 +63,14 @@ class PaymentRequestUnitTestBase {
   }
 
  private:
-  web::TestWebThreadBundle web_thread_bundle_;
+  web::WebTaskEnvironment task_environment_;
   web::TestWebState web_state_;
   std::unique_ptr<PrefService> pref_service_;
   autofill::TestPersonalDataManager personal_data_manager_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   std::unique_ptr<payments::TestPaymentRequest> payment_request_;
-  std::unique_ptr<IdentityTestEnvironmentChromeBrowserStateAdaptor>
-      identity_test_env_adaptor_;
+
+  DISALLOW_COPY_AND_ASSIGN(PaymentRequestUnitTestBase);
 };
 
 #endif  // IOS_CHROME_BROWSER_PAYMENTS_PAYMENT_REQUEST_UNITTEST_BASE_H_

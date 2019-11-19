@@ -20,7 +20,7 @@
  */
 function FactoryRegistry(
     appIdCheckerFactory, approvedOrigins, countdownFactory, originChecker,
-    requestHelper, sysTimer, textFetcher) {
+    sysTimer) {
   /** @private {!AppIdCheckerFactory} */
   this.appIdCheckerFactory_ = appIdCheckerFactory;
   /** @private {!ApprovedOrigins} */
@@ -29,12 +29,8 @@ function FactoryRegistry(
   this.countdownFactory_ = countdownFactory;
   /** @private {!OriginChecker} */
   this.originChecker_ = originChecker;
-  /** @private {!RequestHelper} */
-  this.requestHelper_ = requestHelper;
   /** @private {!SystemTimer} */
   this.sysTimer_ = sysTimer;
-  /** @private {!TextFetcher} */
-  this.textFetcher_ = textFetcher;
 }
 
 /** @return {!AppIdCheckerFactory} An appId checker factory. */
@@ -57,17 +53,7 @@ FactoryRegistry.prototype.getOriginChecker = function() {
   return this.originChecker_;
 };
 
-/** @return {!RequestHelper} A request helper. */
-FactoryRegistry.prototype.getRequestHelper = function() {
-  return this.requestHelper_;
-};
-
 /** @return {!SystemTimer} A system timer implementation. */
 FactoryRegistry.prototype.getSystemTimer = function() {
   return this.sysTimer_;
-};
-
-/** @return {!TextFetcher} A text fetcher. */
-FactoryRegistry.prototype.getTextFetcher = function() {
-  return this.textFetcher_;
 };

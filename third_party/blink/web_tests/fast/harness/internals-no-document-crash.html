@@ -6,7 +6,7 @@
         testRunner.dumpAsText();
     if (window.internals) {
         try {
-            internals.updateLayoutIgnorePendingStylesheetsAndRunPostLayoutTasks(document.querySelector('iframe'));
+            internals.updateLayoutAndRunPostLayoutTasks(document.querySelector('iframe'));
         } catch (e) {}
     }
 </script>

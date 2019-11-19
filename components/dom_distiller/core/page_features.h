@@ -38,15 +38,14 @@ std::vector<double> CalculateDerivedFeatures(bool isOGArticle,
 std::vector<double> CalculateDerivedFeaturesFromJSON(
     const base::Value* stringified_json);
 
-std::vector<double> CalculateDerivedFeatures(
-    bool openGraph,
-    const GURL& url,
-    unsigned elementCount,
-    unsigned anchorCount,
-    unsigned formCount,
-    double mozScore,
-    double mozScoreAllSqrt,
-    double mozScoreAllLinear);
+std::vector<double> CalculateDerivedFeatures(bool openGraph,
+                                             const GURL& url,
+                                             unsigned elementCount,
+                                             unsigned anchorCount,
+                                             unsigned formCount,
+                                             double mozScore,
+                                             double mozScoreAllSqrt,
+                                             double mozScoreAllLinear);
 
 }  // namespace dom_distiller
 

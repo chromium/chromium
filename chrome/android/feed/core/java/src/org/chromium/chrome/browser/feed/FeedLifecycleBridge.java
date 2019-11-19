@@ -4,9 +4,11 @@
 
 package org.chromium.chrome.browser.feed;
 
-import org.chromium.base.VisibleForTesting;
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.profiles.Profile;
 
 /**
@@ -23,7 +25,7 @@ public class FeedLifecycleBridge {
      * @param profile Profile of the user whose lifecycle events we care about.
      */
     public FeedLifecycleBridge(Profile profile) {
-        mNativeBridge = nativeInit(profile);
+        mNativeBridge = FeedLifecycleBridgeJni.get().init(FeedLifecycleBridge.this, profile);
     }
 
     /*
@@ -31,7 +33,7 @@ public class FeedLifecycleBridge {
      */
     public void destroy() {
         assert mNativeBridge != 0;
-        nativeDestroy(mNativeBridge);
+        FeedLifecycleBridgeJni.get().destroy(mNativeBridge, FeedLifecycleBridge.this);
         mNativeBridge = 0;
     }
 
@@ -53,6 +55,9 @@ public class FeedLifecycleBridge {
         }
     }
 
-    private native long nativeInit(Profile profile);
-    private native void nativeDestroy(long nativeFeedLifecycleBridge);
+    @NativeMethods
+    interface Natives {
+        long init(FeedLifecycleBridge caller, Profile profile);
+        void destroy(long nativeFeedLifecycleBridge, FeedLifecycleBridge caller);
+    }
 }

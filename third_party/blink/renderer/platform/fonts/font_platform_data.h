@@ -38,10 +38,9 @@
 #include "third_party/blink/renderer/platform/fonts/font_orientation.h"
 #include "third_party/blink/renderer/platform/fonts/small_caps_iterator.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/hash_table_deleted_value_type.h"
-#include "third_party/blink/renderer/platform/wtf/text/cstring.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_impl.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/skia/include/core/SkFont.h"
@@ -49,19 +48,7 @@
 #include "third_party/skia/include/core/SkTypeface.h"
 
 #if defined(OS_MACOSX)
-OBJC_CLASS NSFont;
-
-typedef struct CGFont* CGFontRef;
 typedef const struct __CTFont* CTFontRef;
-
-#include <objc/objc-auto.h>
-
-inline CTFontRef toCTFontRef(NSFont* nsFont) {
-  return reinterpret_cast<CTFontRef>(nsFont);
-}
-inline NSFont* toNSFont(CTFontRef ctFontRef) {
-  return const_cast<NSFont*>(reinterpret_cast<const NSFont*>(ctFontRef));
-}
 #endif  // defined(OS_MACOSX)
 
 class SkFont;
@@ -72,7 +59,6 @@ namespace blink {
 
 class Font;
 class HarfBuzzFace;
-class FontVariationSettings;
 
 class PLATFORM_EXPORT FontPlatformData {
   USING_FAST_MALLOC(FontPlatformData);
@@ -91,16 +77,8 @@ class PLATFORM_EXPORT FontPlatformData {
                    bool synthetic_italic,
                    FontOrientation = FontOrientation::kHorizontal);
   FontPlatformData(const FontPlatformData& src, float text_size);
-#if defined(OS_MACOSX)
-  FontPlatformData(NSFont*,
-                   float size,
-                   bool synthetic_bold,
-                   bool synthetic_italic,
-                   FontOrientation,
-                   FontVariationSettings*);
-#endif
   FontPlatformData(const sk_sp<SkTypeface>,
-                   const CString& name,
+                   const std::string& name,
                    float text_size,
                    bool synthetic_bold,
                    bool synthetic_italic,
@@ -108,12 +86,11 @@ class PLATFORM_EXPORT FontPlatformData {
   ~FontPlatformData();
 
 #if defined(OS_MACOSX)
-  // These methods return a nullptr for FreeType backed SkTypefaces, compare
-  // FontCustomPlatformData, which are used for variable fonts on Mac OS <
-  // 10.12. They should not return nullptr otherwise. So they allow
-  // distinguishing which backend the SkTypeface is using.
+  // Returns nullptr for FreeType backed SkTypefaces, compare
+  // FontCustomPlatformData, which are used for variable fonts on Mac OS
+  // <10.12. It should not return nullptr otherwise. So it allows distinguishing
+  // which backend the SkTypeface is using.
   CTFontRef CtFont() const;
-  CGFontRef CgFont() const;
 #endif
 
   String FontFamilyName() const;
@@ -161,14 +138,13 @@ class PLATFORM_EXPORT FontPlatformData {
   enum Flags {
     kAntiAlias = 1 << 0,
     kSubpixelsAntiAlias = 1 << 1,
-    kSubpixelMetrics = 1 << 2,
   };
   int FontFlags() const { return font_flags_; }
 #endif
 
  private:
 #if !defined(OS_WIN) && !defined(OS_MACOSX)
-  WebFontRenderStyle QuerySystemRenderStyle(const CString& family,
+  WebFontRenderStyle QuerySystemRenderStyle(const std::string& family,
                                             float text_size,
                                             SkFontStyle);
 #endif
@@ -179,8 +155,8 @@ class PLATFORM_EXPORT FontPlatformData {
 #endif
 
   sk_sp<SkTypeface> typeface_;
-#if !defined(OS_WIN)
-  CString family_;
+#if !defined(OS_WIN) && !defined(OS_MACOSX)
+  std::string family_;
 #endif
 
  public:

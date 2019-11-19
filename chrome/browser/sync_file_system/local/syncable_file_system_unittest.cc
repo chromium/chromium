@@ -12,14 +12,14 @@
 #include "chrome/browser/sync_file_system/local/local_file_sync_context.h"
 #include "chrome/browser/sync_file_system/local/sync_file_system_backend.h"
 #include "chrome/browser/sync_file_system/syncable_file_system_util.h"
-#include "content/public/test/test_browser_thread_bundle.h"
-#include "storage/browser/fileapi/file_system_context.h"
-#include "storage/browser/fileapi/file_system_operation_context.h"
-#include "storage/browser/fileapi/isolated_context.h"
+#include "content/public/test/browser_task_environment.h"
+#include "storage/browser/file_system/file_system_context.h"
+#include "storage/browser/file_system/file_system_operation_context.h"
+#include "storage/browser/file_system/isolated_context.h"
 #include "storage/browser/quota/quota_manager.h"
 #include "storage/browser/test/async_file_test_helper.h"
 #include "storage/browser/test/sandbox_file_system_test_helper.h"
-#include "storage/common/fileapi/file_system_types.h"
+#include "storage/common/file_system/file_system_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/leveldatabase/leveldb_chrome.h"
 
@@ -39,8 +39,7 @@ class SyncableFileSystemTest : public testing::Test {
         file_system_(GURL("http://example.com/"),
                      in_memory_env_.get(),
                      base::ThreadTaskRunnerHandle::Get().get(),
-                     base::ThreadTaskRunnerHandle::Get().get()),
-        weak_factory_(this) {}
+                     base::ThreadTaskRunnerHandle::Get().get()) {}
 
   void SetUp() override {
     ASSERT_TRUE(data_dir_.CreateUniqueTempDir());
@@ -98,14 +97,14 @@ class SyncableFileSystemTest : public testing::Test {
   }
 
   base::ScopedTempDir data_dir_;
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<leveldb::Env> in_memory_env_;
   CannedSyncableFileSystem file_system_;
 
  private:
   scoped_refptr<LocalFileSyncContext> sync_context_;
 
-  base::WeakPtrFactory<SyncableFileSystemTest> weak_factory_;
+  base::WeakPtrFactory<SyncableFileSystemTest> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SyncableFileSystemTest);
 };
@@ -198,9 +197,9 @@ TEST_F(SyncableFileSystemTest, ChangeTrackerSimple) {
   file_system_.GetChangedURLsInTracker(&urls);
 
   EXPECT_EQ(3U, urls.size());
-  EXPECT_TRUE(base::ContainsKey(urls, URL(kPath0)));
-  EXPECT_TRUE(base::ContainsKey(urls, URL(kPath1)));
-  EXPECT_TRUE(base::ContainsKey(urls, URL(kPath2)));
+  EXPECT_TRUE(base::Contains(urls, URL(kPath0)));
+  EXPECT_TRUE(base::Contains(urls, URL(kPath1)));
+  EXPECT_TRUE(base::Contains(urls, URL(kPath2)));
 
   VerifyAndClearChange(URL(kPath0),
                        FileChange(FileChange::FILE_CHANGE_ADD_OR_UPDATE,
@@ -232,9 +231,9 @@ TEST_F(SyncableFileSystemTest, ChangeTrackerSimple) {
 
   // kPath0 and its all chidren (kPath1 and kPath2) must have been deleted.
   EXPECT_EQ(3U, urls.size());
-  EXPECT_TRUE(base::ContainsKey(urls, URL(kPath0)));
-  EXPECT_TRUE(base::ContainsKey(urls, URL(kPath1)));
-  EXPECT_TRUE(base::ContainsKey(urls, URL(kPath2)));
+  EXPECT_TRUE(base::Contains(urls, URL(kPath0)));
+  EXPECT_TRUE(base::Contains(urls, URL(kPath1)));
+  EXPECT_TRUE(base::Contains(urls, URL(kPath2)));
 
   VerifyAndClearChange(URL(kPath0),
                        FileChange(FileChange::FILE_CHANGE_DELETE,

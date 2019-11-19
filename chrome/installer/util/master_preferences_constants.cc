@@ -12,8 +12,6 @@ namespace master_preferences {
       "import_bookmarks_from_file";
   const char kDistroSuppressDefaultBrowserPromptPref[] =
       "suppress_default_browser_prompt_for_version";
-  const char kDistroWelcomePageOnOSUpgradeEnabled[] =
-      "welcome_page_on_os_upgrade_enabled";
   const char kDoNotCreateAnyShortcuts[] = "do_not_create_any_shortcuts";
   const char kDoNotCreateDesktopShortcut[] = "do_not_create_desktop_shortcut";
   const char kDoNotCreateQuickLaunchShortcut[] =
@@ -25,8 +23,6 @@ namespace master_preferences {
   const char kLogFile[] = "log_file";
   const char kMakeChromeDefault[] = "make_chrome_default";
   const char kMakeChromeDefaultForUser[] = "make_chrome_default_for_user";
-  const char kSuppressFirstRunDefaultBrowserPrompt[] =
-      "suppress_first_run_default_browser_prompt";
   const char kMsi[] = "msi";
   const char kMsiProductId[] = "msi_product_id";
   const char kRequireEula[] = "require_eula";

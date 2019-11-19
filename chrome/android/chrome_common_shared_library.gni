@@ -6,26 +6,29 @@ import("//base/android/linker/config.gni")
 import("//build/config/android/config.gni")
 import("//build/config/android/linker_version_script.gni")
 import("//build/config/compiler/compiler.gni")
+import("//build/partitioned_shared_library.gni")
+import("//chrome/android/modules/buildflags.gni")
 import("//device/vr/buildflags/buildflags.gni")
 
-# These variables control whether app bundles use the same native libraries as
-# the APK, or bundle-specific versions. The bundle-specific versions may
-# diverge when code is moved from the base library into dynamic feature
-# modules. The variables can be removed when the bundle-specific lib
-# configuration has stabilized.
-bundle_library_suffix = "_base"
-bundle_pak_asset_type = "bundle"
+# TODO(cjgrant): Remove these variables once downstream stops using them.
+bundle_library_suffix = ""
+apk_pak_asset_type = "_apk"
 
 # This template contains all common configuration for native shared libraries,
 # including libchrome, monochrome, standalone webview (also called monochrome),
 # and libchromefortest (used by chrome_public_test_apk).
 #
 # Variables:
-#    export_symbol_whitelist: Optional. If set, a pre-determined list of additional
-#      methods are exposed by the resulting library.
 #    is_monochrome: Optional. If set, the library is for use in monochrome.
 #    is_webview: If true, the library is for webview, and browser-specific
 #      config is skipped.
+#    module_descs: Optional. Descriptors of feature modules for which library
+#      targets should be auto-generated. The targets are called
+#      "${target_name}_<module name>" and can be depended on like shared_library
+#      targets. If enabled, the library targets create partitions containing the
+#      module's native code. Otherwise, they simply depend on the module's
+#      native_deps. See //chrome/android/modules/chrome_feature_modules.gni for
+#      the descriptor format.
 template("chrome_common_shared_library") {
   _is_monochrome = defined(invoker.is_monochrome) && invoker.is_monochrome
   _is_webview = defined(invoker.is_webview) && invoker.is_webview
@@ -34,24 +37,43 @@ template("chrome_common_shared_library") {
   _linker_script = "$target_gen_dir/${target_name}_linker_script.txt"
   _linker_script_target = "${target_name}_linker_script"
 
+  # Create a partitioned libraries if the build config supports it, and the
+  # invoker has supplied module descriptors.
+  _generate_partitions = defined(invoker.module_descs) && use_native_partitions
+  _module_descs = []
+  if (defined(invoker.module_descs)) {
+    _module_descs = invoker.module_descs
+  }
+
   # Create a custom linker script based on JNI and feature module requirements.
   generate_linker_version_script(_linker_script_target) {
     linker_script = _linker_script
     export_java_symbols = _export_java_symbols
-    if (defined(invoker.export_symbol_whitelist)) {
-      export_symbol_whitelist_file =
-          "//chrome/android/feature_module_exports.lst"
+    export_feature_registrations = true
+    if (_generate_partitions) {
+      export_symbol_whitelist_files = []
+      foreach(_module_desc, invoker.module_descs) {
+        if (defined(_module_desc.native_entrypoints)) {
+          export_symbol_whitelist_files += [ _module_desc.native_entrypoints ]
+        }
+      }
     }
   }
 
-  shared_library(target_name) {
-    forward_variables_from(invoker, "*", [ "export_symbol_whitelist" ])
+  if (_generate_partitions) {
+    _target_type = "partitioned_shared_library"
+  } else {
+    _target_type = "shared_library"
+  }
+
+  target(_target_type, target_name) {
+    forward_variables_from(invoker, "*")
+
     if (!_is_webview) {
       deps += [ "//chrome:chrome_android_core" ]
     }
 
-    public_configs = extra_chrome_shared_library_configs
-    deps += extra_chrome_shared_library_deps
+    configs += [ "//build/config/compiler:chrome_orderfile_config" ]
 
     # Use a dynamically-generated linker script.
     configs -= [ "//build/config/android:hide_all_but_jni_onload" ]
@@ -65,17 +87,27 @@ template("chrome_common_shared_library") {
     ldflags += [ "-Wl,--version-script=" +
                  rebase_path(_linker_script, root_build_dir) ]
 
-    # Handle VR JNI regisration and dependencies.
+    # Handle VR JNI registration and dependencies.
     if (!_is_webview && enable_vr) {
       if (_export_java_symbols) {
-        # NOTE: While this is file is named *_monochrome.cc, it just contains
-        # an empty vr::RegisterJni() function that returns true.
+        # NOTE: While this file is named *_monochrome.cc, it just contains an
+        # empty vr::RegisterJni() function that returns true.
         sources += [ "../browser/android/vr/register_jni_monochrome.cc" ]
       } else {
         sources += [ "../browser/android/vr/register_jni.cc" ]
         deps += [
           "//chrome/browser/android/vr:jni_registration($default_toolchain)",
         ]
+      }
+    }
+
+    if (_generate_partitions) {
+      partitions = []
+      foreach(_module_desc, _module_descs) {
+        if (defined(_module_desc.native_deps)) {
+          partitions += [ _module_desc.name ]
+          deps += _module_desc.native_deps
+        }
       }
     }
 
@@ -99,6 +131,19 @@ template("chrome_common_shared_library") {
     # See crbug.com/705088.
     if (target_cpu == "arm" && is_asan) {
       ldflags += [ "-Wl,--long-plt" ]
+    }
+  }
+
+  if (!_generate_partitions) {
+    # Make helper targets so that we always have module native targets no matter
+    # whether partitions are enabled.
+    foreach(_module_desc, _module_descs) {
+      if (defined(_module_desc.native_deps)) {
+        group("${target_name}_${_module_desc.name}") {
+          forward_variables_from(invoker, [ "testonly" ])
+          deps = _module_desc.native_deps
+        }
+      }
     }
   }
 }

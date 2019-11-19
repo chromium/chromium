@@ -12,14 +12,15 @@
 #include "ash/assistant/assistant_ui_controller.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
-#include "ash/public/interfaces/voice_interaction_controller.mojom.h"
+#include "ash/public/mojom/assistant_controller.mojom.h"
 #include "ash/shell.h"
-#include "ash/voice_interaction/voice_interaction_controller.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "base/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/stl_util.h"
 #include "base/task/post_task.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/gfx/codec/jpeg_codec.h"
@@ -53,11 +54,38 @@ void EncodeScreenshotAndRunCallback(
     mojom::AssistantScreenContextController::RequestScreenshotCallback callback,
     std::unique_ptr<ui::LayerTreeOwner> layer_owner,
     gfx::Image image) {
-  base::PostTaskWithTraitsAndReplyWithResult(
+  base::PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::TaskTraits{base::MayBlock(), base::TaskPriority::USER_BLOCKING},
+      base::TaskTraits{base::ThreadPool(), base::MayBlock(),
+                       base::TaskPriority::USER_BLOCKING},
       base::BindOnce(&DownsampleAndEncodeImage, std::move(image)),
       std::move(callback));
+}
+
+void MirrorChildren(ui::Layer* to_mirror,
+                    ui::Layer* mirror,
+                    const ::wm::MapLayerFunc& map_func) {
+  for (auto* child : to_mirror->children()) {
+    ui::LayerOwner* owner = child->owner();
+    ui::Layer* child_mirror = owner ? map_func.Run(owner).release() : nullptr;
+    if (child_mirror) {
+      mirror->Add(child_mirror);
+      MirrorChildren(child, child_mirror, map_func);
+    }
+  }
+}
+
+std::unique_ptr<ui::LayerTreeOwner> MirrorLayersWithClosure(
+    ui::LayerOwner* root,
+    const ::wm::MapLayerFunc& map_func) {
+  DCHECK(root->OwnsLayer());
+  auto layer = map_func.Run(root);
+  if (!layer)
+    return nullptr;
+
+  auto mirror = std::make_unique<ui::LayerTreeOwner>(std::move(layer));
+  MirrorChildren(root->layer(), mirror->root(), map_func);
+  return mirror;
 }
 
 std::unique_ptr<ui::LayerTreeOwner> CreateLayerForAssistantSnapshot(
@@ -84,20 +112,24 @@ std::unique_ptr<ui::LayerTreeOwner> CreateLayerForAssistantSnapshot(
 
   aura::Window* app_list_container =
       ash::Shell::GetContainer(root_window, kShellWindowId_AppListContainer);
+  aura::Window* app_list_tablet_mode_container =
+      ash::Shell::GetContainer(root_window, kShellWindowId_HomeScreenContainer);
 
-  // Ignore app list to prevent interfering with app list animations.
+  // Prevent app list from being snapshot on top of other contents.
   if (app_list_container)
     excluded_layers.insert(app_list_container->layer());
+  if (app_list_tablet_mode_container)
+    excluded_layers.insert(app_list_tablet_mode_container->layer());
 
   MruWindowTracker::WindowList windows =
-      Shell::Get()->mru_window_tracker()->BuildMruWindowList();
+      Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
 
   for (aura::Window* window : windows) {
     if (window->GetProperty(kBlockedForAssistantSnapshotKey))
       blocked_layers.insert(window->layer());
   }
 
-  return ::wm::RecreateLayersWithClosure(
+  return MirrorLayersWithClosure(
       root_window,
       base::BindRepeating(
           [](LayerSet blocked_layers, LayerSet excluded_layers,
@@ -105,10 +137,10 @@ std::unique_ptr<ui::LayerTreeOwner> CreateLayerForAssistantSnapshot(
             // Parent layer is excluded meaning that it's pointless to clone
             // current child and all its descendants. This reduces the number
             // of layers to create.
-            if (base::ContainsKey(blocked_layers, owner->layer()->parent()))
+            if (base::Contains(blocked_layers, owner->layer()->parent()))
               return nullptr;
 
-            if (base::ContainsKey(blocked_layers, owner->layer())) {
+            if (base::Contains(blocked_layers, owner->layer())) {
               // Blocked layers are replaced with solid black layers so that
               // they won't be included in the screenshot but still preserve
               // the window stacking.
@@ -122,7 +154,7 @@ std::unique_ptr<ui::LayerTreeOwner> CreateLayerForAssistantSnapshot(
             if (excluded_layers.count(owner->layer()))
               return nullptr;
 
-            return owner->RecreateLayer();
+            return owner->layer()->Mirror();
           },
           std::move(blocked_layers), std::move(excluded_layers)));
 }
@@ -131,9 +163,7 @@ std::unique_ptr<ui::LayerTreeOwner> CreateLayerForAssistantSnapshot(
 
 AssistantScreenContextController::AssistantScreenContextController(
     AssistantController* assistant_controller)
-    : assistant_controller_(assistant_controller),
-      binding_(this),
-      screen_context_request_factory_(this) {
+    : assistant_controller_(assistant_controller) {
   assistant_controller_->AddObserver(this);
 }
 
@@ -141,9 +171,9 @@ AssistantScreenContextController::~AssistantScreenContextController() {
   assistant_controller_->RemoveObserver(this);
 }
 
-void AssistantScreenContextController::BindRequest(
-    mojom::AssistantScreenContextControllerRequest request) {
-  binding_.Bind(std::move(request));
+void AssistantScreenContextController::BindReceiver(
+    mojo::PendingReceiver<mojom::AssistantScreenContextController> receiver) {
+  receiver_.Bind(std::move(receiver));
 }
 
 void AssistantScreenContextController::SetAssistant(

@@ -1,0 +1,11 @@
+<!doctype html>
+<iframe id="sandbox1" src="testEmbedded.csv"
+        sandbox="allow-scripts allow-same-origin"></iframe>
+<iframe id="sandbox2" src="test_embedded.html"
+        sandbox="allow-scripts allow-same-origin"></iframe>
+<iframe id="notsandboxed" src="testEmbedded.csv"></iframe>
+<script>
+  function remove_frame(id) {
+    document.getElementById(id).outerHTML = "";
+  }
+</script>

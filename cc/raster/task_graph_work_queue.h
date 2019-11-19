@@ -35,18 +35,17 @@ class CC_EXPORT TaskGraphWorkQueue {
                     TaskNamespace* task_namespace,
                     uint16_t category,
                     uint16_t priority);
+    PrioritizedTask(const PrioritizedTask&) = delete;
     PrioritizedTask(PrioritizedTask&& other);
     ~PrioritizedTask();
 
+    PrioritizedTask& operator=(const PrioritizedTask&) = delete;
     PrioritizedTask& operator=(PrioritizedTask&& other) = default;
 
     scoped_refptr<Task> task;
     TaskNamespace* task_namespace;
     uint16_t category;
     uint16_t priority;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(PrioritizedTask);
   };
 
   using CategorizedTask = std::pair<uint16_t, scoped_refptr<Task>>;
@@ -56,8 +55,12 @@ class CC_EXPORT TaskGraphWorkQueue {
     typedef std::vector<TaskNamespace*> Vector;
 
     TaskNamespace();
+    TaskNamespace(const TaskNamespace&) = delete;
     TaskNamespace(TaskNamespace&& other);
     ~TaskNamespace();
+
+    TaskNamespace& operator=(const TaskNamespace&) = delete;
+    TaskNamespace& operator=(TaskNamespace&&) = default;
 
     // Current task graph.
     TaskGraph graph;
@@ -71,13 +74,13 @@ class CC_EXPORT TaskGraphWorkQueue {
 
     // This set contains all currently running tasks.
     std::vector<CategorizedTask> running_tasks;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(TaskNamespace);
   };
 
   TaskGraphWorkQueue();
+  TaskGraphWorkQueue(const TaskGraphWorkQueue&) = delete;
   virtual ~TaskGraphWorkQueue();
+
+  TaskGraphWorkQueue& operator=(const TaskGraphWorkQueue&) = delete;
 
   // Generates a NamespaceToken which is guaranteed to be unique within this
   // TaskGraphWorkQueue.
@@ -192,8 +195,6 @@ class CC_EXPORT TaskGraphWorkQueue {
 
   // Provides a unique id to each NamespaceToken.
   int next_namespace_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(TaskGraphWorkQueue);
 };
 
 }  // namespace cc

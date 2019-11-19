@@ -115,11 +115,14 @@ class It2MeNativeMessagingHost : public It2MeHost::Observer,
   std::unique_ptr<SignalStrategy> CreateDelegatedSignalStrategy(
       const base::DictionaryValue* message);
 
-  // Creates an XMPP signal strategy from the values stored in |message| along
+  // Creates a FtlSignalStrategy from the values stored in |message| along
   // with |user_name|.  Returns nullptr on failure.
-  std::unique_ptr<SignalStrategy> CreateXmppSignalStrategy(
+  std::unique_ptr<SignalStrategy> CreateFtlSignalStrategy(
       const std::string& user_name,
-      const base::DictionaryValue* message);
+      const std::string& access_token);
+
+  // Extracts OAuth access token from the message passed from the client.
+  std::string ExtractAccessToken(const base::DictionaryValue* message);
 
   // Used to determine whether to create and pass messages to an elevated host.
   bool needs_elevation_ = false;
@@ -166,7 +169,7 @@ class It2MeNativeMessagingHost : public It2MeHost::Observer,
   base::Closure policy_error_closure_for_testing_;
 
   base::WeakPtr<It2MeNativeMessagingHost> weak_ptr_;
-  base::WeakPtrFactory<It2MeNativeMessagingHost> weak_factory_;
+  base::WeakPtrFactory<It2MeNativeMessagingHost> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(It2MeNativeMessagingHost);
 };

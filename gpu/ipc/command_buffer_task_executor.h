@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/ref_counted.h"
 #include "gpu/command_buffer/common/activity_flags.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/command_buffer/service/framebuffer_completeness_cache.h"
@@ -19,6 +18,7 @@
 #include "gpu/command_buffer/service/sequence_id.h"
 #include "gpu/command_buffer/service/service_discardable_manager.h"
 #include "gpu/command_buffer/service/shader_translator_cache.h"
+#include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image_manager.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_preferences.h"
@@ -32,6 +32,7 @@ class GLShareGroup;
 namespace gpu {
 class MailboxManager;
 class SyncPointManager;
+class SingleTaskSequence;
 
 namespace gles2 {
 class Outputter;
@@ -40,42 +41,19 @@ class ProgramCache;
 
 // Provides accessors for GPU service objects and the serializer interface to
 // the GPU thread used by InProcessCommandBuffer.
-class GL_IN_PROCESS_CONTEXT_EXPORT CommandBufferTaskExecutor
-    : public base::RefCountedThreadSafe<CommandBufferTaskExecutor> {
+class GL_IN_PROCESS_CONTEXT_EXPORT CommandBufferTaskExecutor {
  public:
-  // Represents a single task execution sequence. Tasks posted to a sequence are
-  // run in order. Tasks across sequences should be synchronized using sync
-  // tokens. Destroying the sequence will drop tasks which haven't been executed
-  // yet.
-  class GL_IN_PROCESS_CONTEXT_EXPORT Sequence {
-   public:
-    virtual ~Sequence() {}
-
-    // Returns identifier used for identifying sync tokens with this sequence,
-    // and for scheduling.
-    virtual SequenceId GetSequenceId() = 0;
-
-    // Returns true if sequence should yield while running its current task.
-    virtual bool ShouldYield() = 0;
-
-    // Schedule a task with provided sync token dependencies. The dependencies
-    // are hints for sync token waits within the task, and can be ignored by the
-    // implementation.
-    virtual void ScheduleTask(base::OnceClosure task,
-                              std::vector<SyncToken> sync_token_fences) = 0;
-
-    // Continue running the current task after yielding execution.
-    virtual void ContinueTask(base::OnceClosure task) = 0;
-  };
-
-  CommandBufferTaskExecutor(const GpuPreferences& gpu_preferences,
-                            const GpuFeatureInfo& gpu_feature_info,
-                            SyncPointManager* sync_point_manager,
-                            MailboxManager* mailbox_manager,
-                            scoped_refptr<gl::GLShareGroup> share_group,
-                            gl::GLSurfaceFormat share_group_surface_format,
-                            SharedImageManager* shared_image_manager,
-                            gles2::ProgramCache* program_cache);
+  CommandBufferTaskExecutor(
+      const GpuPreferences& gpu_preferences,
+      const GpuFeatureInfo& gpu_feature_info,
+      SyncPointManager* sync_point_manager,
+      MailboxManager* mailbox_manager,
+      scoped_refptr<gl::GLShareGroup> share_group,
+      gl::GLSurfaceFormat share_group_surface_format,
+      SharedImageManager* shared_image_manager,
+      gles2::ProgramCache* program_cache,
+      scoped_refptr<SharedContextState> shared_context_state);
+  virtual ~CommandBufferTaskExecutor();
 
   // Always use virtualized GL contexts if this returns true.
   virtual bool ForceVirtualizedGLContexts() const = 0;
@@ -91,7 +69,10 @@ class GL_IN_PROCESS_CONTEXT_EXPORT CommandBufferTaskExecutor
 
   // Returns a new task execution sequence. Sequences should not outlive the
   // task executor.
-  virtual std::unique_ptr<Sequence> CreateSequence() = 0;
+  virtual std::unique_ptr<SingleTaskSequence> CreateSequence() = 0;
+
+  // Called if InProcessCommandBuffer is not passed a client TaskRunner.
+  virtual void PostNonNestableToClient(base::OnceClosure callback) = 0;
 
   const GpuPreferences& gpu_preferences() const { return gpu_preferences_; }
   const GpuFeatureInfo& gpu_feature_info() const { return gpu_feature_info_; }
@@ -117,15 +98,14 @@ class GL_IN_PROCESS_CONTEXT_EXPORT CommandBufferTaskExecutor
   }
   SharedImageManager* shared_image_manager() { return shared_image_manager_; }
 
+  scoped_refptr<SharedContextState> shared_context_state() {
+    return shared_context_state_;
+  }
+
   // These methods construct accessed fields if not already initialized.
   scoped_refptr<gl::GLShareGroup> share_group();
   gles2::Outputter* outputter();
   gles2::ProgramCache* program_cache();
-
- protected:
-  friend class base::RefCountedThreadSafe<CommandBufferTaskExecutor>;
-
-  virtual ~CommandBufferTaskExecutor();
 
  private:
   const GpuPreferences gpu_preferences_;
@@ -143,6 +123,7 @@ class GL_IN_PROCESS_CONTEXT_EXPORT CommandBufferTaskExecutor
   gles2::ShaderTranslatorCache shader_translator_cache_;
   gles2::FramebufferCompletenessCache framebuffer_completeness_cache_;
   SharedImageManager* shared_image_manager_;
+  const scoped_refptr<SharedContextState> shared_context_state_;
 
   // No-op default initialization is used in in-process mode.
   GpuProcessActivityFlags activity_flags_;

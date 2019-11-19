@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <memory>
 #include <string>
 
 #include "base/macros.h"
@@ -60,11 +61,10 @@ class SESSIONS_EXPORT SessionCommand {
   // count is not equal to the size of data this command contains.
   bool GetPayload(void* dest, size_t count) const;
 
-  // Returns the contents as a pickle. It is up to the caller to delete the
-  // returned Pickle. The returned Pickle references the underlying data of
-  // this SessionCommand. If you need it to outlive the command, copy the
-  // pickle.
-  base::Pickle* PayloadAsPickle() const;
+  // Returns the contents as a pickle. The returned Pickle references the
+  // underlying data of this SessionCommand. If you need it to outlive the
+  // command, copy the pickle.
+  std::unique_ptr<base::Pickle> PayloadAsPickle() const;
 
  private:
   const id_type id_;

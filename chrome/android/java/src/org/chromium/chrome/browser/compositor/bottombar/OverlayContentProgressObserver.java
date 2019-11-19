@@ -16,9 +16,9 @@ public class OverlayContentProgressObserver {
 
     /**
      * Called when progress has updated.
-     * @param progress The current progress.
+     * @param progress The current progress in the range [0,1].
      */
-    public void onProgressBarUpdated(int progress) {}
+    public void onProgressBarUpdated(float progress) {}
 
     /**
      * Called when the progress bar has finished.

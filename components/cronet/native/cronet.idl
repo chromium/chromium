@@ -109,8 +109,8 @@ struct Error {
 
     /**
      * Error code indicating an error related to the <a href="https://www.chromium.org/quic">
-     * QUIC</a> protocol. When {@link #getErrorCode} returns this code, this exception can be cast
-     * to {@link QuicException} for more information.
+     * QUIC</a> protocol. When {@link #error_code} is this code, see
+     * {@link quic_detailed_error_code} for more information.
      */
     ERROR_QUIC_PROTOCOL_FAILED = 10,
 
@@ -153,7 +153,7 @@ struct Error {
 
   /**
    * Contains detailed <a href="https://www.chromium.org/quic">QUIC</a> error code from
-   * <a href=https://cs.chromium.org/chromium/src/net/quic/quic_protocol.h?type=cs&q=%22enum+QuicErrorCode+%7B%22+file:src/net/quic/quic_protocol.h>
+   * <a href="https://cs.chromium.org/search/?q=symbol:%5CbQuicErrorCode%5Cb">
    * QuicErrorCode</a> when the |error_code| code is |ERROR_QUIC_PROTOCOL_FAILED|.
    */
   int32 quic_detailed_error_code = 0;
@@ -317,6 +317,10 @@ enum RESULT {
    * Params is required
    */
   NULL_POINTER_PARAMS = -311,
+  /**
+   * Executor for RequestFinishedInfoListener is required
+   */
+  NULL_POINTER_REQUEST_FINISHED_INFO_LISTENER_EXECUTOR = -312,
 };
 
 /**
@@ -360,7 +364,7 @@ interface Engine {
 
   /**
    * Shuts down the Engine if there are no active requests,
-   * otherwise throws an exception.
+   * otherwise returns a failure RESULT.
    *
    * Cannot be called on network thread - the thread Cronet calls into
    * Executor on (which is different from the thread the Executor invokes
@@ -384,19 +388,39 @@ interface Engine {
   GetDefaultUserAgent() => (string default_user_agent);
 
   /**
-   * Registers a listener that gets called after the end of each request after
-   * OnSucceeded(), OnFailed(), or OnCanceled() is called with the {@code
-   * RequestFinishedInfo}.
+   * Registers a listener that gets called at the end of each request.
    *
-   * The listener is called on {@code executor} -- the same executor may be
-   * used with several listeners.
+   * The listener is called on {@code executor}.
    *
-   * Ownership **not** taken for {@code listener} or {@code executor} -- these
-   * may be safely destroyed after a call to RemoveRequestFinishedListener(),
-   * or if the engine has shutdown.
+   * The listener is called before {@link UrlRequestCallback.OnCanceled()},
+   * {@link UrlRequestCallback.OnFailed()} or {@link
+   * UrlRequestCallback.OnSucceeded()} is called -- note that if {@code
+   * executor} runs the listener asyncronously, the actual call to the listener
+   * may happen after a {@code UrlRequestCallback} method is called.
+   *
+   * Listeners are only guaranteed to be called for requests that are started
+   * after the listener is added.
+   *
+   * Ownership is **not** taken for {@code listener} or {@code executor}.
+   *
+   * Assuming the listener won't run again (there are no pending requests with
+   * the listener attached, either via {@code Engine} or {@code UrlRequest}),
+   * the app may destroy it once its {@code OnRequestFinished()} has started,
+   * even inside that method.
+   *
+   * Similarly, the app may destroy {@code executor} in or after {@code
+   * OnRequestFinished()}.
+   *
+   * It's also OK to destroy {@code executor} in or after one of {@link
+   * UrlRequestCallback.OnCanceled()}, {@link UrlRequestCallback.OnFailed()} or
+   * {@link UrlRequestCallback.OnSucceeded()}.
+   *
+   * Of course, both of these are only true if {@code listener} won't run again
+   * and {@code executor} isn't being used for anything else that might start
+   * running in the future.
    *
    * @param listener the listener for finished requests.
-   * @param executor the executor upon which to run the listener.
+   * @param executor the executor upon which to run {@code listener}.
    */
   AddRequestFinishedListener(RequestFinishedInfoListener listener,
                              Executor executor);
@@ -859,8 +883,12 @@ interface UrlRequestCallback {
    * Invoked when request is completed successfully. Once invoked, no other
    * UrlRequestCallback methods will be invoked.
    *
+   * Implementations of {@link #OnSucceeded} are allowed to call {@code
+   * Cronet_UrlRequest_Destroy(request)}, but note that destroying {@code
+   * request} destroys {@code info}.
+   *
    * @param request Request that succeeded.
-   * @param info Response information.
+   * @param info Response information. NOTE: this is owned by {@code request}.
    */
   OnSucceeded(UrlRequest request, UrlResponseInfo info);
 
@@ -869,10 +897,15 @@ interface UrlRequestCallback {
    * Once invoked, no other UrlRequestCallback methods will be invoked.
    * |error| provides information about the failure.
    *
+   * Implementations of {@link #OnFailed} are allowed to call {@code
+   * Cronet_UrlRequest_Destroy(request)}, but note that destroying {@code
+   * request} destroys {@code info} and {@code error}.
+   *
    * @param request Request that failed.
    * @param info Response information. May be null if no response was
-   *         received.
-   * @param error information about error.
+   *         received. NOTE: this is owned by {@code request}.
+   * @param error information about error. NOTE: this is owned by {@code
+   *         request}.
    */
   OnFailed(UrlRequest request, UrlResponseInfo info, Error error);
 
@@ -880,9 +913,13 @@ interface UrlRequestCallback {
    * Invoked if request was canceled via UrlRequest.cancel(). Once
    * invoked, no other UrlRequestCallback methods will be invoked.
    *
+   * Implementations of {@link #OnCanceled} are allowed to call {@code
+   * Cronet_UrlRequest_Destroy(request)}, but note that destroying {@code
+   * request} destroys {@code info}.
+   *
    * @param request Request that was canceled.
    * @param info Response information. May be null if no response was
-   *         received.
+   *         received. NOTE: this is owned by {@code request}.
    */
   OnCanceled(UrlRequest request, UrlResponseInfo info);
 };
@@ -960,9 +997,7 @@ interface UploadDataProvider {
    * UploadDataSink.onRewindError() on failure. Neither read nor rewind
    * will be called until one of those methods or the other is called.
    * Even if the associated UrlRequest is canceled, one or the other
-   * must still be called before resources can be safely freed. Throwing an
-   * exception will also result in resources being freed and the request being
-   * errored out.
+   * must still be called before resources can be safely freed.
    *
    * If rewinding is not supported, this should call
    * UploadDataSink.onRewindError(). Note that rewinding is required to
@@ -991,7 +1026,7 @@ interface UrlRequest {
    * Initialized UrlRequest to |url| with |params|. All methods of |callback| for
    * request will be invoked on |executor|. The |executor| must not run tasks on
    * the thread calling Executor.execute() to prevent blocking networking
-   * operations and causing exceptions during shutdown.
+   * operations and causing failure RESULTs during shutdown.
    *
    * @param engine Engine to process the request.
    * @param url URL for the request.
@@ -1138,7 +1173,7 @@ struct UrlRequestParams {
 
   /**
    * Marks that the executors this request will use to notify callbacks (for
-   * UploadDataProvider andUrlRequestCallback) is intentionally performing
+   * UploadDataProvider and UrlRequestCallback) is intentionally performing
    * inline execution without switching to another thread.
    *
    * <p><b>Warning:</b> This option makes it easy to accidentally block the network thread.
@@ -1154,21 +1189,43 @@ struct UrlRequestParams {
   array<handle> annotations;
 
   /**
-   * A listener that gets invoked after {@link
-   * UrlRequestCallback.OnCanceled()}, {@link UrlRequestCallback.OnFailed()} or
-   * {@link UrlRequestCallback.OnSucceeded()} return.
+   * A listener that gets invoked at the end of each request.
    *
    * The listener is invoked with the request finished info on {@code
    * request_finished_executor}, which must be set.
    *
-   * Ownership **not** taken for {@code request_finished_listener} or {@code
-   * request_finished_executor} -- these may be safely destroyed after a call
-   * to RemoveRequestFinishedListener(), or if the engine has shutdown.
+   * The listener is called before {@link UrlRequestCallback.OnCanceled()},
+   * {@link UrlRequestCallback.OnFailed()} or {@link
+   * UrlRequestCallback.OnSucceeded()} is called -- note that if {@code
+   * request_finished_executor} runs the listener asyncronously, the actual
+   * call to the listener may happen after a {@code UrlRequestCallback} method
+   * is called.
+
+   * Ownership is **not** taken.
+   *
+   * Assuming the listener won't run again (there are no pending requests with
+   * the listener attached, either via {@code Engine} or {@code UrlRequest}),
+   * the app may destroy it once its {@code OnRequestFinished()} has started,
+   * even inside that method.
    */
   RequestFinishedInfoListener? request_finished_listener;
 
   /**
    * The Executor used to run the {@code request_finished_listener}.
+   *
+   * Ownership is **not** taken.
+   *
+   * Similar to {@code request_finished_listener}, the app may destroy {@code
+   * request_finished_executor} in or after {@code OnRequestFinished()}.
+   *
+   * It's also OK to destroy {@code request_finished_executor} in or after one
+   * of {@link UrlRequestCallback.OnCanceled()}, {@link
+   * UrlRequestCallback.OnFailed()} or {@link
+   * UrlRequestCallback.OnSucceeded()}.
+   *
+   * Of course, both of these are only true if {@code
+   * request_finished_executor} isn't being used for anything else that might
+   * start running in the future.
    */
   Executor? request_finished_executor;
 };
@@ -1280,14 +1337,20 @@ struct Metrics {
 
   /**
    * Time when sending HTTP request headers started.
+   *
+   * Will equal null if the request failed or was canceled before sending
+   * started.
    */
-  DateTime sending_start;
+  DateTime? sending_start;
 
   /**
    * Time when sending HTTP request body finished. (Sending request body
    * happens after sending request headers.)
+   *
+   * Will equal null if the request failed or was canceled before sending
+   * ended.
    */
-  DateTime sending_end;
+  DateTime? sending_end;
 
   /**
    * Time when first byte of HTTP/2 server push was received.  Will equal
@@ -1303,8 +1366,11 @@ struct Metrics {
 
   /**
    * Time when the end of the response headers was received.
+   *
+   * Will equal null if the request failed or was canceled before the response
+   * started.
    */
-  DateTime response_start;
+  DateTime? response_start;
 
   /**
    * Time when the request finished.
@@ -1372,17 +1438,6 @@ struct RequestFinishedInfo {
    * Returns the reason why the request finished.
    */
   FINISHED_REASON finished_reason = SUCCEEDED;
-
-  /**
-   * {@link UrlResponseInfo} for the request, if its response had started.
-   */
-  UrlResponseInfo? response_info;
-
-  /**
-   * If the request failed, will be equal to the same {@link Error} provided to
-   * {@link UrlRequestCallback.OnFailed}.
-   */
-  Error? error;
 };
 
 /**
@@ -1391,12 +1446,39 @@ struct RequestFinishedInfo {
 [Abstract]
 interface RequestFinishedInfoListener {
   /**
-   * Invoked with request info after OnSucceeded(), OnFailed() or OnCanceled()
-   * in UrlRequestCallback. Will be called in a task submitted to the Executor
-   * passed with this RequestFinishedInfoListener.
+   * Will be called in a task submitted to the {@code Executor} passed with
+   * this {@code RequestFinishedInfoListener}.
+   *
+   * The listener is called before {@link UrlRequestCallback.OnCanceled()},
+   * {@link UrlRequestCallback.OnFailed()} or {@link
+   * UrlRequestCallback.OnSucceeded()} is called -- note that if the executor
+   * runs the listener asyncronously, the actual call to the listener may
+   * happen after a {@code UrlRequestCallback} method is called.
    *
    * @param request_info {@link RequestFinishedInfo} for finished request.
-   * **Not** owned -- this will be destroyed after the call.
+   *     Ownership is *not* transferred by this call, do not destroy
+   *     {@code request_info}.
+   *
+   *     {@code request_info} will be valid as long as the {@code UrlRequest}
+   *     that created it hasn't been destroyed -- **additionally**, it will
+   *     also always be valid for the duration of {@code OnRequestFinished()},
+   *     even if the {@code UrlRequest} has been destroyed.
+   *
+   *     This is accomplished by ownership being shared between the {@code
+   *     UrlRequest} and the code that calls this listener.
+   *
+   * @param response_info A pointer to the same UrlResponseInfo passed to
+   *     {@link UrlRequestCallback.OnCanceled()}, {@link
+   *     UrlRequestCallback.OnFailed()} or {@link
+   *     UrlRequestCallback.OnSucceeded()}. The lifetime and ownership of
+   *     {@code response_info} works the same as for {@code request_info}.
+   *
+   * @param error A pointer to the same Error passed to
+   *     {@code UrlRequestCallback.OnFailed()}, or null if there was no error.
+   *     The lifetime and ownership of {@code error} works the same as for
+   *     {@code request_info}.
    */
-  OnRequestFinished(RequestFinishedInfo request_info);
+  OnRequestFinished(RequestFinishedInfo request_info,
+                    UrlResponseInfo response_info,
+                    Error error);
 };

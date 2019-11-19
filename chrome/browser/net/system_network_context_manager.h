@@ -15,6 +15,8 @@
 #include "chrome/browser/net/proxy_config_monitor.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_member.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/host_resolver.mojom-forward.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom-forward.h"
@@ -63,37 +65,18 @@ class SystemNetworkContextManager {
   // instance already exists, this will cause a DCHECK failure.
   static SystemNetworkContextManager* CreateInstance(PrefService* pref_service);
 
-  // Gets the global SystemNetworkContextManager instance.
+  // Checks if the global SystemNetworkContextManager has been created.
+  static bool HasInstance();
+
+  // Gets the global SystemNetworkContextManager instance. If it has not been
+  // created yet, NetworkService is called, which will cause the
+  // SystemNetworkContextManager to be created.
   static SystemNetworkContextManager* GetInstance();
 
   // Destroys the global SystemNetworkContextManager instance.
   static void DeleteInstance();
 
   static void RegisterPrefs(PrefRegistrySimple* registry);
-
-  // Initializes |network_context_params| as needed to set up a system
-  // NetworkContext. If the network service is disabled,
-  // |network_context_request| will be for the NetworkContext used by the
-  // SystemNetworkContextManager. Otherwise, this method can still be used to
-  // help set up the IOThread's in-process URLRequestContext.
-  //
-  // Must be called before the system NetworkContext is first used.
-  //
-  // |stub_resolver_enabled|, |dns_over_https_servers|,
-  // |http_auth_static_params|, |http_auth_dynamic_params|, and
-  // |is_quic_allowed| are used to pass initial NetworkService state to the
-  // caller, so the NetworkService can be configured appropriately. Using
-  // NetworkService's Mojo interface to set those options would lead to races
-  // with other UI->IO thread network-related tasks, since Mojo doesn't preserve
-  // execution order relative to PostTasks.
-  void SetUp(network::mojom::NetworkContextRequest* network_context_request,
-             network::mojom::NetworkContextParamsPtr* network_context_params,
-             bool* stub_resolver_enabled,
-             base::Optional<std::vector<network::mojom::DnsOverHttpsServerPtr>>*
-                 dns_over_https_servers,
-             network::mojom::HttpAuthStaticParamsPtr* http_auth_static_params,
-             network::mojom::HttpAuthDynamicParamsPtr* http_auth_dynamic_params,
-             bool* is_quic_allowed);
 
   // Returns the System NetworkContext. May only be called after SetUp(). Does
   // any initialization of the NetworkService that may be needed when first
@@ -118,11 +101,12 @@ class SystemNetworkContextManager {
   // NetworkService, and for those using the network service (if enabled).
   void DisableQuic();
 
-  // Returns an SSLConfigClientRequest that can be passed as a
+  // Returns an mojo::PendingReceiver<SSLConfigClient> that can be passed as a
   // NetorkContextParam.
-  network::mojom::SSLConfigClientRequest GetSSLConfigClientRequest();
+  mojo::PendingReceiver<network::mojom::SSLConfigClient>
+  GetSSLConfigClientReceiver();
 
-  // Populates |initial_ssl_config| and |ssl_config_client_request| members of
+  // Populates |initial_ssl_config| and |ssl_config_client_receiver| members of
   // |network_context_params|. As long as the SystemNetworkContextManager
   // exists, any NetworkContext created with the params will continue to get
   // SSL configuration updates.
@@ -149,7 +133,8 @@ class SystemNetworkContextManager {
 
   // Returns configuration that would be sent to the stub DNS resolver.
   static void GetStubResolverConfigForTesting(
-      bool* stub_resolver_enabled,
+      bool* insecure_stub_resolver_enabled,
+      net::DnsConfig::SecureDnsMode* secure_dns_mode,
       base::Optional<std::vector<network::mojom::DnsOverHttpsServerPtr>>*
           dns_over_https_servers);
 
@@ -157,6 +142,12 @@ class SystemNetworkContextManager {
   GetHttpAuthStaticParamsForTesting();
   static network::mojom::HttpAuthDynamicParamsPtr
   GetHttpAuthDynamicParamsForTesting();
+
+  // Enables Certificate Transparency and enforcing the Chrome Certificate
+  // Transparency Policy. For test use only. Use base::nullopt_t to reset to
+  // the default state.
+  static void SetEnableCertificateTransparencyForTesting(
+      base::Optional<bool> enabled);
 
  private:
   class URLLoaderFactoryForSystem;
@@ -181,18 +172,13 @@ class SystemNetworkContextManager {
   ProxyConfigMonitor proxy_config_monitor_;
 
   // NetworkContext using the network service, if the network service is
-  // enabled. nullptr, otherwise.
-  network::mojom::NetworkContextPtr network_service_network_context_;
-
-  // This is a NetworkContext that wraps the IOThread's SystemURLRequestContext.
-  // Always initialized in SetUp, but it's only returned by Context() when the
-  // network service is disabled.
-  network::mojom::NetworkContextPtr io_thread_network_context_;
+  // enabled. mojo::NullRemote(), otherwise.
+  mojo::Remote<network::mojom::NetworkContext> network_service_network_context_;
 
   // URLLoaderFactory backed by the NetworkContext returned by GetContext(), so
   // consumers don't all need to create their own factory.
   scoped_refptr<URLLoaderFactoryForSystem> shared_url_loader_factory_;
-  network::mojom::URLLoaderFactoryPtr url_loader_factory_;
+  mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory_;
 
   bool is_quic_allowed_ = true;
 

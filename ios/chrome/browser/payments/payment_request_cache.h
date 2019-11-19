@@ -12,7 +12,10 @@
 #include "base/macros.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "ios/chrome/browser/payments/payment_request.h"
-#import "ios/web/public/web_state/web_state.h"
+
+namespace web {
+class WebState;
+}
 
 namespace payments {
 

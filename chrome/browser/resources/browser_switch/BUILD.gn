@@ -1,0 +1,35 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/polymer.gni")
+
+js_type_check("closure_compile") {
+  is_polymer3 = true
+  deps = [
+    ":app",
+    ":browser_switch_proxy",
+    "internals:browser_switch_internals",
+  ]
+}
+
+js_library("app") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/js:load_time_data.m",
+  ]
+}
+
+js_library("browser_switch_proxy") {
+  deps = [
+    "//ui/webui/resources/js:cr.m",
+  ]
+}
+
+polymer_modulizer("app") {
+  js_file = "app.js"
+  html_file = "app.html"
+  html_type = "v3-ready"
+}

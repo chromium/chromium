@@ -36,7 +36,6 @@ class TestBrowserContext : public BrowserContext {
   void SetSpecialStoragePolicy(storage::SpecialStoragePolicy* policy);
   void SetPermissionControllerDelegate(
       std::unique_ptr<PermissionControllerDelegate> delegate);
-  net::URLRequestContextGetter* GetRequestContext();
 
   // Allow clients to make this an incognito context.
   void set_is_off_the_record(bool is_off_the_record) {
@@ -44,41 +43,28 @@ class TestBrowserContext : public BrowserContext {
   }
 
   // BrowserContext implementation.
-  base::FilePath GetPath() const override;
+  base::FilePath GetPath() override;
 #if !defined(OS_ANDROID)
   std::unique_ptr<ZoomLevelDelegate> CreateZoomLevelDelegate(
       const base::FilePath& partition_path) override;
 #endif  // !defined(OS_ANDROID)
-  bool IsOffTheRecord() const override;
+  bool IsOffTheRecord() override;
   DownloadManagerDelegate* GetDownloadManagerDelegate() override;
   ResourceContext* GetResourceContext() override;
   BrowserPluginGuestManager* GetGuestManager() override;
   storage::SpecialStoragePolicy* GetSpecialStoragePolicy() override;
   PushMessagingService* GetPushMessagingService() override;
+  StorageNotificationService* GetStorageNotificationService() override;
   SSLHostStateDelegate* GetSSLHostStateDelegate() override;
   PermissionControllerDelegate* GetPermissionControllerDelegate() override;
   ClientHintsControllerDelegate* GetClientHintsControllerDelegate() override;
   BackgroundFetchDelegate* GetBackgroundFetchDelegate() override;
   BackgroundSyncController* GetBackgroundSyncController() override;
   BrowsingDataRemoverDelegate* GetBrowsingDataRemoverDelegate() override;
-  net::URLRequestContextGetter* CreateRequestContext(
-      ProtocolHandlerMap* protocol_handlers,
-      URLRequestInterceptorScopedVector request_interceptors) override;
-  net::URLRequestContextGetter* CreateRequestContextForStoragePartition(
-      const base::FilePath& partition_path,
-      bool in_memory,
-      ProtocolHandlerMap* protocol_handlers,
-      URLRequestInterceptorScopedVector request_interceptors)  override;
-  net::URLRequestContextGetter* CreateMediaRequestContext() override;
-  net::URLRequestContextGetter* CreateMediaRequestContextForStoragePartition(
-      const base::FilePath& partition_path,
-      bool in_memory) override;
 
  private:
   // Hold a reference here because BrowserContext owns lifetime.
-  URLRequestInterceptorScopedVector request_interceptors_;
   base::ScopedTempDir browser_context_dir_;
-  scoped_refptr<net::URLRequestContextGetter> request_context_;
   std::unique_ptr<MockResourceContext> resource_context_;
   scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy_;
   std::unique_ptr<MockSSLHostStateDelegate> ssl_host_state_delegate_;

@@ -9,8 +9,6 @@
 
 #include "ash/public/cpp/shelf_item_delegate.h"
 #include "base/macros.h"
-#include "base/scoped_observer.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 
 namespace ash {
@@ -47,9 +45,9 @@ class BrowserShortcutLauncherItemController : public ash::ShelfItemDelegate,
                     int64_t display_id,
                     ash::ShelfLaunchSource source,
                     ItemSelectedCallback callback) override;
-  ash::MenuItemList GetAppMenuItems(int event_flags) override;
+  AppMenuItems GetAppMenuItems(int event_flags) override;
   void GetContextMenu(int64_t display_id,
-                      GetMenuModelCallback callback) override;
+                      GetContextMenuCallback callback) override;
   void ExecuteCommand(bool from_context_menu,
                       int64_t command_id,
                       int32_t event_flags,
@@ -68,11 +66,8 @@ class BrowserShortcutLauncherItemController : public ash::ShelfItemDelegate,
 
   ash::ShelfModel* shelf_model_;
 
-  // The cached list of open browser windows shown in an application menu.
-  BrowserList::BrowserVector browser_menu_items_;
-
-  // Observer for browser windows adding and closing events.
-  ScopedObserver<BrowserList, BrowserListObserver> browser_list_observer_;
+  // The cached browser windows and tab indices shown in an application menu.
+  std::vector<std::pair<Browser*, size_t>> app_menu_items_;
 
   std::unique_ptr<LauncherContextMenu> context_menu_;
 

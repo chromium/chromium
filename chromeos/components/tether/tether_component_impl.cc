@@ -172,8 +172,7 @@ TetherComponentImpl::TetherComponentImpl(
       crash_recovery_manager_(CrashRecoveryManagerImpl::Factory::NewInstance(
           network_state_handler,
           synchronous_shutdown_object_container_->active_host(),
-          synchronous_shutdown_object_container_->host_scan_cache())),
-      weak_ptr_factory_(this) {
+          synchronous_shutdown_object_container_->host_scan_cache())) {
   crash_recovery_manager_->RestorePreCrashStateIfNecessary(
       base::Bind(&TetherComponentImpl::OnPreCrashStateRestored,
                  weak_ptr_factory_.GetWeakPtr()));

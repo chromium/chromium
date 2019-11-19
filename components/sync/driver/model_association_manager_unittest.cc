@@ -8,7 +8,7 @@
 
 #include "base/callback.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "components/sync/driver/configure_context.h"
 #include "components/sync/driver/fake_data_type_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -54,8 +54,8 @@ class SyncModelAssociationManagerTest : public testing::Test {
   SyncModelAssociationManagerTest() {}
 
  protected:
-  base::test::ScopedTaskEnvironment task_environment_{
-      base::test::ScopedTaskEnvironment::MainThreadType::UI};
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::SingleThreadTaskEnvironment::MainThreadType::UI};
   MockModelAssociationManagerDelegate delegate_;
   DataTypeController::TypeMap controllers_;
 };
@@ -733,7 +733,7 @@ TEST_F(SyncModelAssociationManagerTest,
   ModelTypeSet desired_types = preferred_types;
 
   ConfigureContext configure_context;
-  configure_context.storage_option = STORAGE_ON_DISK;
+  configure_context.sync_mode = SyncMode::kFull;
 
   EXPECT_CALL(delegate_, OnSingleDataTypeWillStart(BOOKMARKS));
   EXPECT_CALL(delegate_, OnSingleDataTypeWillStart(APPS));
@@ -757,7 +757,7 @@ TEST_F(SyncModelAssociationManagerTest,
   testing::Mock::VerifyAndClearExpectations(&delegate_);
 
   // Switch to in-memory storage.
-  configure_context.storage_option = STORAGE_IN_MEMORY;
+  configure_context.sync_mode = SyncMode::kTransportOnly;
   desired_types.Remove(APPS);
   preferred_types.Remove(APPS);
 
@@ -786,7 +786,7 @@ TEST_F(SyncModelAssociationManagerTest,
 }
 
 TEST_F(SyncModelAssociationManagerTest,
-       SwitchFromInMemoryToOnDiskRestartsTypes) {
+       SwitchFromTransportOnlyToFullSyncRestartsTypes) {
   // Associate model with two data types.
   controllers_[BOOKMARKS] = std::make_unique<FakeDataTypeController>(BOOKMARKS);
   controllers_[APPS] = std::make_unique<FakeDataTypeController>(APPS);
@@ -795,7 +795,7 @@ TEST_F(SyncModelAssociationManagerTest,
   ModelTypeSet desired_types = preferred_types;
 
   ConfigureContext configure_context;
-  configure_context.storage_option = STORAGE_IN_MEMORY;
+  configure_context.sync_mode = SyncMode::kTransportOnly;
 
   EXPECT_CALL(delegate_, OnSingleDataTypeWillStart(BOOKMARKS));
   EXPECT_CALL(delegate_, OnSingleDataTypeWillStart(APPS));
@@ -818,8 +818,8 @@ TEST_F(SyncModelAssociationManagerTest,
             DataTypeController::RUNNING);
   testing::Mock::VerifyAndClearExpectations(&delegate_);
 
-  // Switch to on-disk storage.
-  configure_context.storage_option = STORAGE_ON_DISK;
+  // Switch to full-sync mode.
+  configure_context.sync_mode = SyncMode::kFull;
   desired_types.Remove(APPS);
   preferred_types.Remove(APPS);
 

@@ -7,20 +7,11 @@
   await TestRunner.loadModule('security_test_runner');
   await TestRunner.showPanel('security');
 
-  /** @type {!Protocol.Security.InsecureContentStatus} */
-  var insecureContentStatus = {
-    ranMixedContent: false,
-    displayedMixedContent: false,
-    ranContentWithCertErrors: false,
-    displayedContentWithCertErrors: false,
-    ranInsecureContentStyle: Protocol.Security.SecurityState.Insecure,
-    displayedInsecureContentStyle: Protocol.Security.SecurityState.Neutral
-  };
   TestRunner.mainTarget.model(Security.SecurityModel)
       .dispatchEventToListeners(
           Security.SecurityModel.Events.SecurityStateChanged,
           new Security.PageSecurityState(
-              Protocol.Security.SecurityState.Secure, true, [], insecureContentStatus, 'Test: Summary Override Text'));
+              Protocol.Security.SecurityState.Secure, [], 'Test: Summary Override Text'));
 
   TestRunner.dumpDeepInnerHTML(
       Security.SecurityPanel._instance()._mainView.contentElement.getElementsByClassName('security-summary-text')[0]);

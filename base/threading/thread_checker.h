@@ -38,7 +38,7 @@
 //       // It's sometimes useful to detach on construction for objects that are
 //       // constructed in one place and forever after used from another
 //       // thread.
-//       DETACH_FROM_THREAD(my_thread_checker_);
+//       DETACH_FROM_THREAD(thread_checker_);
 //     }
 //
 //     ~MyClass() {
@@ -48,16 +48,16 @@
 //       // knows usage on the associated thread is done. If you're not
 //       // detaching in the constructor, you probably want to explicitly check
 //       // in the destructor.
-//       DCHECK_CALLED_ON_VALID_THREAD(my_thread_checker_);
+//       DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 //     }
 //
 //     void MyMethod() {
-//       DCHECK_CALLED_ON_VALID_THREAD(my_thread_checker_);
+//       DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 //       ... (do stuff) ...
 //     }
 //
 //    private:
-//     THREAD_CHECKER(my_thread_checker_);
+//     THREAD_CHECKER(thread_checker_);
 //   }
 
 #if DCHECK_IS_ON()
@@ -65,7 +65,7 @@
 #define DCHECK_CALLED_ON_VALID_THREAD(name) DCHECK((name).CalledOnValidThread())
 #define DETACH_FROM_THREAD(name) (name).DetachFromThread()
 #else  // DCHECK_IS_ON()
-#define THREAD_CHECKER(name)
+#define THREAD_CHECKER(name) static_assert(true, "")
 #define DCHECK_CALLED_ON_VALID_THREAD(name) EAT_STREAM_PARAMETERS
 #define DETACH_FROM_THREAD(name)
 #endif  // DCHECK_IS_ON()
@@ -79,6 +79,12 @@ namespace base {
 class ThreadCheckerDoNothing {
  public:
   ThreadCheckerDoNothing() = default;
+
+  // Moving between matching threads is allowed to help classes with
+  // ThreadCheckers that want a default move-construct/assign.
+  ThreadCheckerDoNothing(ThreadCheckerDoNothing&& other) = default;
+  ThreadCheckerDoNothing& operator=(ThreadCheckerDoNothing&& other) = default;
+
   bool CalledOnValidThread() const WARN_UNUSED_RESULT { return true; }
   void DetachFromThread() {}
 
@@ -89,7 +95,7 @@ class ThreadCheckerDoNothing {
 // Note that ThreadCheckerImpl::CalledOnValidThread() returns false when called
 // from tasks posted to SingleThreadTaskRunners bound to different sequences,
 // even if the tasks happen to run on the same thread (e.g. two independent
-// SingleThreadTaskRunners on the TaskScheduler that happen to share a thread).
+// SingleThreadTaskRunners on the ThreadPool that happen to share a thread).
 #if DCHECK_IS_ON()
 class ThreadChecker : public ThreadCheckerImpl {
 };

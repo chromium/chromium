@@ -22,24 +22,21 @@
 
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
-#include "third_party/blink/renderer/core/frame/use_counter.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/html_style_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
-
-StyleSheetList* StyleSheetList::Create() {
-  return MakeGarbageCollected<StyleSheetList>();
-}
 
 StyleSheetList::StyleSheetList(TreeScope* tree_scope)
     : tree_scope_(tree_scope) {
   CHECK(tree_scope);
 }
 
-inline const HeapVector<TraceWrapperMember<StyleSheet>>&
-StyleSheetList::StyleSheets() const {
+inline const HeapVector<Member<StyleSheet>>& StyleSheetList::StyleSheets()
+    const {
   return GetDocument()->GetStyleEngine().StyleSheetsForStyleSheetList(
       *tree_scope_);
 }
@@ -55,7 +52,7 @@ StyleSheet* StyleSheetList::item(unsigned index) {
     return index < style_sheet_vector_.size() ? style_sheet_vector_[index].Get()
                                               : nullptr;
   }
-  const HeapVector<TraceWrapperMember<StyleSheet>>& sheets = StyleSheets();
+  const HeapVector<Member<StyleSheet>>& sheets = StyleSheets();
   return index < sheets.size() ? sheets[index].Get() : nullptr;
 }
 
@@ -70,7 +67,7 @@ HTMLStyleElement* StyleSheetList::GetNamedItem(const AtomicString& name) const {
   // practice anyway ;)
   // FIXME: We should figure out if we should change this or fix the spec.
   Element* element = tree_scope_->getElementById(name);
-  return IsHTMLStyleElement(element) ? ToHTMLStyleElement(element) : nullptr;
+  return DynamicTo<HTMLStyleElement>(element);
 }
 
 CSSStyleSheet* StyleSheetList::AnonymousNamedGetter(const AtomicString& name) {

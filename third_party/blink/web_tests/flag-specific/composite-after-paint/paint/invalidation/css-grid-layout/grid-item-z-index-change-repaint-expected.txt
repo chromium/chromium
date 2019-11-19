@@ -1,0 +1,28 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "LayoutNGBlockFlow DIV id='item2' class='sizedToGridArea green'",
+          "rect": [8, 236, 200, 100],
+          "reason": "disappeared"
+        },
+        {
+          "object": "LayoutNGBlockFlow DIV id='item2' class='sizedToGridArea green'",
+          "rect": [8, 236, 200, 100],
+          "reason": "chunk appeared"
+        },
+        {
+          "object": "LayoutNGBlockFlow DIV id='item1' class='sizedToGridArea green negativeZIndex'",
+          "rect": [8, 126, 200, 100],
+          "reason": "chunk reordered"
+        }
+      ]
+    }
+  ]
+}
+

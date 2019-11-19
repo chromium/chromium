@@ -41,9 +41,9 @@ class VideoEncoderShim : public media::VideoEncodeAccelerator {
       override;
   bool Initialize(const media::VideoEncodeAccelerator::Config& config,
                   media::VideoEncodeAccelerator::Client* client) override;
-  void Encode(const scoped_refptr<media::VideoFrame>& frame,
+  void Encode(scoped_refptr<media::VideoFrame> frame,
               bool force_keyframe) override;
-  void UseOutputBitstreamBuffer(const media::BitstreamBuffer& buffer) override;
+  void UseOutputBitstreamBuffer(media::BitstreamBuffer buffer) override;
   void RequestEncodingParametersChange(uint32_t bitrate,
                                        uint32_t framerate) override;
   void Destroy() override;
@@ -67,7 +67,7 @@ class VideoEncoderShim : public media::VideoEncodeAccelerator {
   // Task doing the encoding.
   scoped_refptr<base::SingleThreadTaskRunner> media_task_runner_;
 
-  base::WeakPtrFactory<VideoEncoderShim> weak_ptr_factory_;
+  base::WeakPtrFactory<VideoEncoderShim> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(VideoEncoderShim);
 };

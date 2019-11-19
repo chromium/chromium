@@ -6,7 +6,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
-#include "jni/DumpstateWriter_jni.h"
+#include "chromecast/base/jni_headers/DumpstateWriter_jni.h"
 
 namespace chromecast {
 

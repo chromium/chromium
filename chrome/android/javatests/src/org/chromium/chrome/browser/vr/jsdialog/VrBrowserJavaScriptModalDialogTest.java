@@ -33,7 +33,6 @@ import org.chromium.chrome.test.util.RenderTestRule;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 
 import java.io.IOException;
-import java.util.concurrent.ExecutionException;
 
 /**
  * Test JavaScript modal dialogs in VR.
@@ -53,7 +52,7 @@ public class VrBrowserJavaScriptModalDialogTest {
     private VrBrowserTestFramework mVrBrowserTestFramework;
 
     @Before
-    public void setUp() throws InterruptedException {
+    public void setUp() {
         mActivity = mActivityTestRule.getActivity();
         mVrBrowserTestFramework = new VrBrowserTestFramework(mActivityTestRule);
         mVrBrowserTestFramework.loadUrlAndAwaitInitialization(
@@ -72,8 +71,7 @@ public class VrBrowserJavaScriptModalDialogTest {
     @Test
     @MediumTest
     @Feature({"Browser", "RenderTest"})
-    public void testAlertModalDialog()
-            throws InterruptedException, ExecutionException, IOException {
+    public void testAlertModalDialog() throws InterruptedException, IOException {
         NativeUiUtils.performActionAndWaitForUiQuiescence(() -> {
             NativeUiUtils.performActionAndWaitForVisibilityStatus(
                     UserFriendlyElementName.BROWSING_DIALOG, true /* visible */, () -> {
@@ -94,8 +92,7 @@ public class VrBrowserJavaScriptModalDialogTest {
     @Test
     @MediumTest
     @Feature({"Browser", "RenderTest"})
-    public void testConfirmModalDialog()
-            throws InterruptedException, ExecutionException, IOException {
+    public void testConfirmModalDialog() throws InterruptedException, IOException {
         NativeUiUtils.performActionAndWaitForUiQuiescence(() -> {
             NativeUiUtils.performActionAndWaitForVisibilityStatus(
                     UserFriendlyElementName.BROWSING_DIALOG, true /* visible */, () -> {
@@ -123,8 +120,7 @@ public class VrBrowserJavaScriptModalDialogTest {
     @Test
     @MediumTest
     @Feature({"Browser", "RenderTest"})
-    public void testPromptModalDialog()
-            throws InterruptedException, ExecutionException, IOException {
+    public void testPromptModalDialog() throws InterruptedException, IOException {
         String expectedString = "Hopefully not";
         NativeUiUtils.performActionAndWaitForUiQuiescence(() -> {
             NativeUiUtils.performActionAndWaitForVisibilityStatus(

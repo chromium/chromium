@@ -11,7 +11,7 @@
 
 #include "base/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "components/services/filesystem/public/interfaces/types.mojom.h"
+#include "components/services/filesystem/public/mojom/types.mojom.h"
 #include "net/base/io_buffer.h"
 
 namespace chromeos {
@@ -24,6 +24,13 @@ const char kFakeFileText[] =
 const size_t kFakeFileSize = sizeof(kFakeFileText) - 1u;
 const char kFakeFileModificationTime[] = "Fri Apr 25 01:47:53 UTC 2014";
 const char kFakeFileMimeType[] = "text/plain";
+
+constexpr base::FilePath::CharType kBadFakeEntryPath1[] =
+    FILE_PATH_LITERAL("/bad1");
+constexpr char kBadFakeEntryName1[] = "/bad1";
+constexpr base::FilePath::CharType kBadFakeEntryPath2[] =
+    FILE_PATH_LITERAL("/bad2");
+constexpr char kBadFakeEntryName2[] = "bad2";
 
 }  // namespace
 
@@ -42,9 +49,7 @@ FakeEntry::~FakeEntry() {
 
 FakeProvidedFileSystem::FakeProvidedFileSystem(
     const ProvidedFileSystemInfo& file_system_info)
-    : file_system_info_(file_system_info),
-      last_file_handle_(0),
-      weak_ptr_factory_(this) {
+    : file_system_info_(file_system_info), last_file_handle_(0) {
   AddEntry(base::FilePath(FILE_PATH_LITERAL("/")), true, "", 0, base::Time(),
            "", "");
 
@@ -52,6 +57,13 @@ FakeProvidedFileSystem::FakeProvidedFileSystem(
   DCHECK(base::Time::FromString(kFakeFileModificationTime, &modification_time));
   AddEntry(base::FilePath(kFakeFilePath), false, kFakeFileName, kFakeFileSize,
            modification_time, kFakeFileMimeType, kFakeFileText);
+
+  // Add a set of bad entries, in the root directory, which should be filtered
+  // out.
+  AddEntry(base::FilePath(kBadFakeEntryPath1), false, kBadFakeEntryName1,
+           kFakeFileSize, modification_time, kFakeFileMimeType, kFakeFileText);
+  AddEntry(base::FilePath(kBadFakeEntryPath2), false, kBadFakeEntryName2,
+           kFakeFileSize, modification_time, kFakeFileMimeType, kFakeFileText);
 }
 
 FakeProvidedFileSystem::~FakeProvidedFileSystem() {}
@@ -158,11 +170,13 @@ AbortCallback FakeProvidedFileSystem::ReadDirectory(
     const base::FilePath file_path = it->first;
     if (file_path == directory_path || directory_path.IsParent(file_path)) {
       const EntryMetadata* const metadata = it->second->metadata.get();
-      entry_list.emplace_back(
-          base::FilePath(*metadata->name),
-          *metadata->is_directory
-              ? filesystem::mojom::FsFileType::DIRECTORY
-              : filesystem::mojom::FsFileType::REGULAR_FILE);
+      filesystem::mojom::FsFileType entry_type =
+          *metadata->is_directory ? filesystem::mojom::FsFileType::DIRECTORY
+                                  : filesystem::mojom::FsFileType::REGULAR_FILE;
+      if (*metadata->name == kBadFakeEntryName2) {
+        entry_type = static_cast<filesystem::mojom::FsFileType>(7);
+      }
+      entry_list.emplace_back(base::FilePath(*metadata->name), entry_type);
     }
   }
 

@@ -10,6 +10,8 @@ In essense it runs a subset of BinScope tests ensuring that binaries have
 /NXCOMPAT, /DYNAMICBASE and /SAFESEH.
 """
 
+from __future__ import print_function
+
 import json
 import os
 import optparse
@@ -60,18 +62,18 @@ def main(options, args):
     # Check for /DYNAMICBASE.
     if pe.OPTIONAL_HEADER.DllCharacteristics & DYNAMICBASE_FLAG:
       if options.verbose:
-        print "Checking %s for /DYNAMICBASE... PASS" % path
+        print("Checking %s for /DYNAMICBASE... PASS" % path)
     else:
       success = False
-      print "Checking %s for /DYNAMICBASE... FAIL" % path
+      print("Checking %s for /DYNAMICBASE... FAIL" % path)
 
     # Check for /NXCOMPAT.
     if pe.OPTIONAL_HEADER.DllCharacteristics & NXCOMPAT_FLAG:
       if options.verbose:
-        print "Checking %s for /NXCOMPAT... PASS" % path
+        print("Checking %s for /NXCOMPAT... PASS" % path)
     else:
       success = False
-      print "Checking %s for /NXCOMPAT... FAIL" % path
+      print("Checking %s for /NXCOMPAT... FAIL" % path)
 
     # Check for /SAFESEH. Binaries should meet one of the following
     # criteria:
@@ -87,10 +89,10 @@ def main(options, args):
          pe.DIRECTORY_ENTRY_LOAD_CONFIG.struct.SEHandlerTable != 0) or
         pe.FILE_HEADER.Machine == MACHINE_TYPE_AMD64):
       if options.verbose:
-        print "Checking %s for /SAFESEH... PASS" % path
+        print("Checking %s for /SAFESEH... PASS" % path)
     else:
       success = False
-      print "Checking %s for /SAFESEH... FAIL" % path
+      print("Checking %s for /SAFESEH... FAIL" % path)
 
     # ASLR is weakened on Windows 64-bit when the ImageBase is below 4GB
     # (because the loader will never be rebase the image above 4GB).
@@ -109,7 +111,7 @@ def main(options, args):
     else:
       failures.append(path)
 
-  print "Result: %d files found, %d files passed" % (pe_total, pe_passed)
+  print("Result: %d files found, %d files passed" % (pe_total, pe_passed))
 
   if options.json:
     with open(options.json, 'w') as f:

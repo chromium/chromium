@@ -5,7 +5,7 @@
 #include "ash/system/unified/ime_mode_view.h"
 
 #include "ash/ime/ime_controller.h"
-#include "ash/session/session_controller.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/model/system_tray_model.h"
@@ -61,6 +61,10 @@ void ImeModeView::OnSessionStateChanged(session_manager::SessionState state) {
   Update();
 }
 
+const char* ImeModeView::GetClassName() const {
+  return "ImeModeView";
+}
+
 void ImeModeView::Update() {
   // Hide the IME mode icon when the locale is shown, because showing locale and
   // IME together is confusing.
@@ -74,9 +78,7 @@ void ImeModeView::Update() {
 
   // Do not show IME mode icon in tablet mode as it's less useful and screen
   // space is limited.
-  if (Shell::Get()
-          ->tablet_mode_controller()
-          ->IsTabletModeWindowManagerEnabled()) {
+  if (Shell::Get()->tablet_mode_controller()->InTabletMode()) {
     SetVisible(false);
     return;
   }
@@ -95,6 +97,7 @@ void ImeModeView::Update() {
                                  ime_controller->current_ime().name);
   label()->SetTooltipText(description);
   label()->SetCustomAccessibleName(description);
+  label()->SetElideBehavior(gfx::NO_ELIDE);
 
   Layout();
 }

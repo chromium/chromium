@@ -4,8 +4,11 @@
 #include "components/viz/common/skia_helper.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/base/math_util.h"
+#include "third_party/skia/include/effects/SkColorFilterImageFilter.h"
+#include "third_party/skia/include/effects/SkColorMatrix.h"
 #include "third_party/skia/include/effects/SkOverdrawColorFilter.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
+#include "third_party/skia/include/gpu/GrContext.h"
 #include "ui/gfx/skia_util.h"
 
 namespace viz {
@@ -63,6 +66,13 @@ sk_sp<SkColorFilter> SkiaHelper::MakeOverdrawColorFilter() {
       0x00000000, 0x00000000, 0x2fff0000, 0x2f00ff00, 0x3f0000ff, 0x7f0000ff,
   };
   return SkOverdrawColorFilter::Make(colors);
+}
+
+sk_sp<SkImageFilter> SkiaHelper::BuildOpacityFilter(float opacity) {
+  SkColorMatrix matrix;
+  matrix.setScale(1.f, 1.f, 1.f, opacity);
+  return SkColorFilterImageFilter::Make(SkColorFilters::Matrix(matrix),
+                                        nullptr);
 }
 
 }  // namespace viz

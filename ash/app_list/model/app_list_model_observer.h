@@ -10,7 +10,7 @@
 #include "ash/app_list/model/app_list_model.h"
 #include "ash/app_list/model/app_list_model_export.h"
 
-namespace app_list {
+namespace ash {
 
 class AppListItem;
 
@@ -42,6 +42,6 @@ class APP_LIST_MODEL_EXPORT AppListModelObserver {
   virtual ~AppListModelObserver() {}
 };
 
-}  // namespace app_list
+}  // namespace ash
 
 #endif  // ASH_APP_LIST_MODEL_APP_LIST_MODEL_OBSERVER_H_

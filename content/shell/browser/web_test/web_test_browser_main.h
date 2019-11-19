@@ -5,15 +5,10 @@
 #ifndef CONTENT_SHELL_BROWSER_WEB_TEST_WEB_TEST_BROWSER_MAIN_H_
 #define CONTENT_SHELL_BROWSER_WEB_TEST_WEB_TEST_BROWSER_MAIN_H_
 
-#include <memory>
-
 namespace content {
-class BrowserMainRunner;
 struct MainFunctionParams;
 }  // namespace content
 
-int WebTestBrowserMain(
-    const content::MainFunctionParams& parameters,
-    const std::unique_ptr<content::BrowserMainRunner>& main_runner);
+void WebTestBrowserMain(const content::MainFunctionParams& parameters);
 
 #endif  // CONTENT_SHELL_BROWSER_WEB_TEST_WEB_TEST_BROWSER_MAIN_H_

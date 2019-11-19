@@ -51,12 +51,12 @@ TEST_F(MouseCursorEventFilterTest, WarpMouse) {
   // Touch the right edge of the primary root window. Pointer should warp.
   EXPECT_TRUE(TestIfMouseWarpsAt(gfx::Point(499, 11)));
   EXPECT_EQ("501,11",  // by 2px.
-            Shell::Get()->aura_env()->last_mouse_location().ToString());
+            aura::Env::GetInstance()->last_mouse_location().ToString());
 
   // Touch the left edge of the secondary root window. Pointer should warp.
   EXPECT_TRUE(TestIfMouseWarpsAt(gfx::Point(500, 11)));
   EXPECT_EQ("498,11",  // by 2px.
-            Shell::Get()->aura_env()->last_mouse_location().ToString());
+            aura::Env::GetInstance()->last_mouse_location().ToString());
 
   // Touch the left edge of the primary root window.
   EXPECT_FALSE(TestIfMouseWarpsAt(gfx::Point(0, 11)));
@@ -87,13 +87,13 @@ TEST_F(MouseCursorEventFilterTest, WarpMouseDifferentSizeDisplays) {
   // because 1px left of (0, 500) is outside the primary root window.
   EXPECT_FALSE(TestIfMouseWarpsAt(gfx::Point(501, 500)));
   EXPECT_EQ("501,500",
-            Shell::Get()->aura_env()->last_mouse_location().ToString());
+            aura::Env::GetInstance()->last_mouse_location().ToString());
 
   // Touch the left edge of the secondary root window. Pointer should warp
   // because 1px left of (0, 480) is inside the primary root window.
   EXPECT_TRUE(TestIfMouseWarpsAt(gfx::Point(500, 480)));
   EXPECT_EQ("498,480",  // by 2px.
-            Shell::Get()->aura_env()->last_mouse_location().ToString());
+            aura::Env::GetInstance()->last_mouse_location().ToString());
 }
 
 // Verifies if the mouse pointer correctly moves between displays with
@@ -108,18 +108,18 @@ TEST_F(MouseCursorEventFilterTest, WarpMouseDifferentScaleDisplaysInNative) {
                                                   .placement_list[0]
                                                   .position);
 
-  Shell::Get()->aura_env()->SetLastMouseLocation(gfx::Point(900, 123));
+  aura::Env::GetInstance()->SetLastMouseLocation(gfx::Point(900, 123));
 
   EXPECT_TRUE(TestIfMouseWarpsAt(gfx::Point(499, 123)));
   EXPECT_EQ("500,123",
-            Shell::Get()->aura_env()->last_mouse_location().ToString());
+            aura::Env::GetInstance()->last_mouse_location().ToString());
   // Touch the edge of 2nd display again and make sure it warps to
   // 1st dislay.
   EXPECT_TRUE(TestIfMouseWarpsAt(gfx::Point(500, 123)));
   // TODO(oshima): Due to a bug in EventGenerator, the screen coordinates
   // is shrunk by dsf once. Fix this.
   EXPECT_EQ("498,61",
-            Shell::Get()->aura_env()->last_mouse_location().ToString());
+            aura::Env::GetInstance()->last_mouse_location().ToString());
 }
 
 // Verifies if MouseCursorEventFilter::set_mouse_warp_enabled() works as
@@ -130,12 +130,12 @@ TEST_F(MouseCursorEventFilterTest, SetMouseWarpModeFlag) {
   event_filter()->set_mouse_warp_enabled(false);
   EXPECT_FALSE(TestIfMouseWarpsAt(gfx::Point(499, 11)));
   EXPECT_EQ("499,11",
-            Shell::Get()->aura_env()->last_mouse_location().ToString());
+            aura::Env::GetInstance()->last_mouse_location().ToString());
 
   event_filter()->set_mouse_warp_enabled(true);
   EXPECT_TRUE(TestIfMouseWarpsAt(gfx::Point(499, 11)));
   EXPECT_EQ("501,11",
-            Shell::Get()->aura_env()->last_mouse_location().ToString());
+            aura::Env::GetInstance()->last_mouse_location().ToString());
 }
 
 // Verifies cursor's device scale factor is updated when a cursor has moved

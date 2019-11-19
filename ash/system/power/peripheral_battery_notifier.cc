@@ -6,24 +6,23 @@
 
 #include <vector>
 
+#include "ash/power/hid_battery_util.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/bind.h"
+#include "base/logging.h"
 #include "base/macros.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
-#include "base/strings/string_split.h"
-#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
+#include "base/time/default_tick_clock.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/bluetooth_device.h"
-#include "third_party/re2/src/re2/re2.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
-#include "ui/events/devices/input_device_manager.h"
+#include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/touchscreen_device.h"
 #include "ui/gfx/image/image.h"
 #include "ui/message_center/message_center.h"
@@ -35,7 +34,7 @@ namespace {
 
 // When a peripheral device's battery level is <= kLowBatteryLevel, consider
 // it to be in low battery condition.
-const int kLowBatteryLevel = 15;
+const uint8_t kLowBatteryLevel = 15;
 
 // Don't show 2 low battery notification within |kNotificationInterval|.
 constexpr base::TimeDelta kNotificationInterval =
@@ -48,67 +47,15 @@ const char kNotifierStylusBattery[] = "ash.stylus-battery";
 const char kNotificationOriginUrl[] = "chrome://peripheral-battery";
 const char kNotifierNonStylusBattery[] = "power.peripheral-battery";
 
-// HID device's battery sysfs entry path looks like
-// /sys/class/power_supply/hid-{AA:BB:CC:DD:EE:FF|AAAA:BBBB:CCCC.DDDD}-battery.
-// Here the bluetooth address is showed in reverse order and its true
-// address "FF:EE:DD:CC:BB:AA".
-const char kHIDBatteryPathPrefix[] = "/sys/class/power_supply/hid-";
-const char kHIDBatteryPathSuffix[] = "-battery";
-
-// Regex to check for valid bluetooth addresses.
-constexpr char kBluetoothAddressRegex[] =
-    "^([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2})$";
-
-// Checks whether the device at |path| is a HID battery. Returns false if |path|
-// is lacking the HID battery prefix or suffix, or if it contains them but has
-// nothing in between.
-bool IsHIDBattery(const std::string& path) {
-  if (!base::StartsWith(path, kHIDBatteryPathPrefix,
-                        base::CompareCase::INSENSITIVE_ASCII) ||
-      !base::EndsWith(path, kHIDBatteryPathSuffix,
-                      base::CompareCase::INSENSITIVE_ASCII)) {
-    return false;
-  }
-
-  return static_cast<int>(path.size()) -
-             static_cast<int>(strlen(kHIDBatteryPathPrefix) +
-                              strlen(kHIDBatteryPathSuffix)) >
-         0;
-}
-
-// Extract the identifier in |path| found between the path prefix and suffix.
-std::string ExtractIdentifier(const std::string& path) {
-  int header_size = strlen(kHIDBatteryPathPrefix);
-  int end_size = strlen(kHIDBatteryPathSuffix);
-  int key_len = path.size() - header_size - end_size;
-  if (key_len <= 0)
-    return std::string();
-
-  return path.substr(header_size, key_len);
-}
-
-// Extracts a Bluetooth address (e.g. "AA:BB:CC:DD:EE:FF") from |path|, a sysfs
-// device path like "/sys/class/power-supply/hid-AA:BB:CC:DD:EE:FF-battery".
-// The address supplied in |path| is reversed, so this method will reverse the
-// extracted address. Returns an empty string if |path| does not contain a
-// Bluetooth address.
-std::string ExtractBluetoothAddressFromPath(const std::string& path) {
-  std::string identifier = ExtractIdentifier(path);
-  if (!RE2::FullMatch(identifier, kBluetoothAddressRegex))
-    return std::string();
-
-  std::string reverse_address = base::ToLowerASCII(identifier);
-  std::vector<base::StringPiece> result = base::SplitStringPiece(
-      reverse_address, ":", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-  std::reverse(result.begin(), result.end());
-  return base::JoinString(result, ":");
-}
+// Prefix added to the address of a Bluetooth device to generate an unique ID
+// when posting a notification to the Message Center.
+const char kBluetoothDeviceIdPrefix[] = "battery_notification_bluetooth-";
 
 // Checks if the device is an external stylus.
 bool IsStylusDevice(const std::string& path, const std::string& model_name) {
-  std::string identifier = ExtractIdentifier(path);
+  std::string identifier = ExtractHIDBatteryIdentifier(path);
   for (const ui::TouchscreenDevice& device :
-       ui::InputDeviceManager::GetInstance()->GetTouchscreenDevices()) {
+       ui::DeviceDataManager::GetInstance()->GetTouchscreenDevices()) {
     if (device.has_stylus &&
         (device.name == model_name ||
          device.name.find(model_name) != std::string::npos) &&
@@ -131,13 +78,13 @@ struct NotificationParams {
   const gfx::VectorIcon* icon;
 };
 
-NotificationParams GetNonStylusNotificationParams(const std::string& address,
-                                                  const std::string& name,
-                                                  int battery_level,
+NotificationParams GetNonStylusNotificationParams(const std::string& map_key,
+                                                  const base::string16& name,
+                                                  uint8_t battery_level,
                                                   bool is_bluetooth) {
   return NotificationParams{
-      address,
-      base::ASCIIToUTF16(name),
+      map_key,
+      name,
       l10n_util::GetStringFUTF16Int(
           IDS_ASH_LOW_PERIPHERAL_BATTERY_NOTIFICATION_TEXT, battery_level),
       kNotifierNonStylusBattery,
@@ -156,13 +103,56 @@ NotificationParams GetStylusNotificationParams() {
       &kNotificationStylusBatteryWarningIcon};
 }
 
+std::string GetMapKeyForBluetoothAddress(const std::string& bluetooth_address) {
+  return kBluetoothDeviceIdPrefix + base::ToLowerASCII(bluetooth_address);
+}
+
+// Returns the corresponding map key for a HID device.
+std::string GetBatteryMapKey(const std::string& path) {
+  // Check if the HID path corresponds to a Bluetooth device.
+  const std::string bluetooth_address =
+      ExtractBluetoothAddressFromHIDBatteryPath(path);
+  return bluetooth_address.empty()
+             ? path
+             : GetMapKeyForBluetoothAddress(bluetooth_address);
+}
+
+std::string GetBatteryMapKey(device::BluetoothDevice* device) {
+  return GetMapKeyForBluetoothAddress(device->GetAddress());
+}
+
 }  // namespace
 
 const char PeripheralBatteryNotifier::kStylusNotificationId[] =
     "stylus-battery";
 
+PeripheralBatteryNotifier::BatteryInfo::BatteryInfo() = default;
+
+PeripheralBatteryNotifier::BatteryInfo::BatteryInfo(
+    const base::string16& name,
+    base::Optional<uint8_t> level,
+    base::TimeTicks last_notification_timestamp,
+    bool is_stylus,
+    const std::string& bluetooth_address)
+    : name(name),
+      level(level),
+      last_notification_timestamp(last_notification_timestamp),
+      is_stylus(is_stylus),
+      bluetooth_address(bluetooth_address) {}
+
+PeripheralBatteryNotifier::BatteryInfo::~BatteryInfo() = default;
+
+PeripheralBatteryNotifier::BatteryInfo::BatteryInfo(const BatteryInfo& info) {
+  name = info.name;
+  level = info.level;
+  last_notification_timestamp = info.last_notification_timestamp;
+  is_stylus = info.is_stylus;
+  bluetooth_address = info.bluetooth_address;
+}
+
 PeripheralBatteryNotifier::PeripheralBatteryNotifier()
-    : weakptr_factory_(
+    : clock_(base::DefaultTickClock::GetInstance()),
+      weakptr_factory_(
           new base::WeakPtrFactory<PeripheralBatteryNotifier>(this)) {
   chromeos::PowerManagerClient::Get()->AddObserver(this);
   device::BluetoothAdapterFactory::GetAdapter(
@@ -195,44 +185,38 @@ void PeripheralBatteryNotifier::PeripheralBatteryStatusReceived(
 
   // If unknown battery level received, cancel any existing notification.
   if (level == -1) {
-    CancelNotification(path);
+    CancelNotification(GetBatteryMapKey(path));
     return;
   }
 
-  // Post the notification in 2 cases:
-  // 1. It's the first time the battery level is received, and it is below
-  //    kLowBatteryLevel.
-  // 2. The battery level is in record and it drops below kLowBatteryLevel.
-  if (batteries_.find(path) == batteries_.end()) {
-    BatteryInfo battery{name, level, base::TimeTicks(),
-                        IsStylusDevice(path, name),
-                        ExtractBluetoothAddressFromPath(path)};
-    if (level <= kLowBatteryLevel) {
-      if (PostNotification(path, battery)) {
-        battery.last_notification_timestamp = testing_clock_
-                                                  ? testing_clock_->NowTicks()
-                                                  : base::TimeTicks::Now();
-      }
-    }
-    batteries_[path] = battery;
-  } else {
-    BatteryInfo* battery = &batteries_[path];
-    battery->name = name;
-    int old_level = battery->level;
-    battery->level = level;
-    if (old_level > kLowBatteryLevel && level <= kLowBatteryLevel) {
-      if (PostNotification(path, *battery)) {
-        battery->last_notification_timestamp = testing_clock_
-                                                   ? testing_clock_->NowTicks()
-                                                   : base::TimeTicks::Now();
-      }
-    }
-  }
+  BatteryInfo battery{base::ASCIIToUTF16(name), level, base::TimeTicks(),
+                      IsStylusDevice(path, name),
+                      ExtractBluetoothAddressFromHIDBatteryPath(path)};
+  UpdateBattery(GetBatteryMapKey(path), battery);
 }
 
-void PeripheralBatteryNotifier::DeviceChanged(device::BluetoothAdapter* adapter,
-                                              device::BluetoothDevice* device) {
-  if (!device->IsPaired())
+void PeripheralBatteryNotifier::DeviceBatteryChanged(
+    device::BluetoothAdapter* adapter,
+    device::BluetoothDevice* device,
+    base::Optional<uint8_t> new_battery_percentage) {
+  if (!new_battery_percentage) {
+    CancelNotification(kBluetoothDeviceIdPrefix +
+                       base::ToLowerASCII(device->GetAddress()));
+    return;
+  }
+
+  DCHECK_LE(new_battery_percentage.value(), 100);
+  BatteryInfo battery{device->GetNameForDisplay(),
+                      new_battery_percentage.value(), base::TimeTicks(),
+                      false /* is_stylus */, device->GetAddress()};
+  UpdateBattery(GetBatteryMapKey(device), battery);
+}
+
+void PeripheralBatteryNotifier::DeviceConnectedStateChanged(
+    device::BluetoothAdapter* adapter,
+    device::BluetoothDevice* device,
+    bool is_now_connected) {
+  if (!is_now_connected)
     RemoveBluetoothBattery(device->GetAddress());
 }
 
@@ -251,33 +235,72 @@ void PeripheralBatteryNotifier::InitializeOnBluetoothReady(
 void PeripheralBatteryNotifier::RemoveBluetoothBattery(
     const std::string& bluetooth_address) {
   std::string address_lowercase = base::ToLowerASCII(bluetooth_address);
-  for (auto it = batteries_.begin(); it != batteries_.end(); ++it) {
-    if (it->second.bluetooth_address == address_lowercase) {
-      CancelNotification(it->first);
-      batteries_.erase(it);
-      return;
-    }
+  auto it = batteries_.find(kBluetoothDeviceIdPrefix + address_lowercase);
+  if (it != batteries_.end()) {
+    CancelNotification(it->first);
+    batteries_.erase(it);
   }
 }
 
-bool PeripheralBatteryNotifier::PostNotification(const std::string& path,
+void PeripheralBatteryNotifier::UpdateBattery(const std::string& map_key,
+                                              const BatteryInfo& battery_info) {
+  bool was_old_battery_level_low = false;
+  auto it = batteries_.find(map_key);
+
+  if (it == batteries_.end()) {
+    batteries_[map_key] = battery_info;
+  } else {
+    BatteryInfo& existing_battery_info = it->second;
+    base::Optional<uint8_t> old_level = existing_battery_info.level;
+    was_old_battery_level_low = old_level && *old_level < kLowBatteryLevel;
+    existing_battery_info.name = battery_info.name;
+    existing_battery_info.level = battery_info.level;
+  }
+
+  const BatteryInfo& info = batteries_[map_key];
+  if (!info.level || *info.level > kLowBatteryLevel) {
+    CancelNotification(map_key);
+    return;
+  }
+
+  // If low battery was on record, check if there is a notification, otherwise
+  // the user dismissed it and we shouldn't create another one.
+  if (was_old_battery_level_low)
+    UpdateBatteryNotificationIfVisible(map_key, info);
+  else
+    ShowNotification(map_key, info);
+}
+
+void PeripheralBatteryNotifier::UpdateBatteryNotificationIfVisible(
+    const std::string& map_key,
+    const BatteryInfo& battery) {
+  message_center::Notification* notification =
+      message_center::MessageCenter::Get()->FindVisibleNotificationById(
+          map_key);
+  if (notification)
+    ShowOrUpdateNotification(map_key, battery);
+}
+
+void PeripheralBatteryNotifier::ShowNotification(const std::string& map_key,
                                                  const BatteryInfo& battery) {
-  // Only post notification if kNotificationInterval seconds have passed since
-  // last notification showed, avoiding the case where the battery level
-  // oscillates around the threshold level.
-  base::TimeTicks now =
-      testing_clock_ ? testing_clock_->NowTicks() : base::TimeTicks::Now();
-  if (now - battery.last_notification_timestamp < kNotificationInterval)
-    return false;
+  base::TimeTicks now = clock_->NowTicks();
+  if (now - battery.last_notification_timestamp >= kNotificationInterval) {
+    ShowOrUpdateNotification(map_key, battery);
+    batteries_[map_key].last_notification_timestamp = clock_->NowTicks();
+  }
+}
 
+void PeripheralBatteryNotifier::ShowOrUpdateNotification(
+    const std::string& map_key,
+    const BatteryInfo& battery) {
   // Stylus battery notifications differ slightly.
-  NotificationParams params =
-      battery.is_stylus
-          ? GetStylusNotificationParams()
-          : GetNonStylusNotificationParams(path, battery.name, battery.level,
-                                           !battery.bluetooth_address.empty());
+  NotificationParams params = battery.is_stylus
+                                  ? GetStylusNotificationParams()
+                                  : GetNonStylusNotificationParams(
+                                        map_key, battery.name, *battery.level,
+                                        !battery.bluetooth_address.empty());
 
-  auto notification = ash::CreateSystemNotification(
+  auto notification = CreateSystemNotification(
       message_center::NOTIFICATION_TYPE_SIMPLE, params.id, params.title,
       params.message, base::string16(), params.url,
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
@@ -288,16 +311,19 @@ bool PeripheralBatteryNotifier::PostNotification(const std::string& path,
 
   message_center::MessageCenter::Get()->AddNotification(
       std::move(notification));
-  return true;
 }
 
-void PeripheralBatteryNotifier::CancelNotification(const std::string& path) {
-  const auto it = batteries_.find(path);
+void PeripheralBatteryNotifier::CancelNotification(const std::string& map_key) {
+  const auto it = batteries_.find(map_key);
   if (it != batteries_.end()) {
-    std::string notification_id =
-        it->second.is_stylus ? kStylusNotificationId : path;
+    std::string notification_map_key =
+        it->second.is_stylus ? kStylusNotificationId : map_key;
     message_center::MessageCenter::Get()->RemoveNotification(
-        notification_id, false /* by_user */);
+        notification_map_key, false /* by_user */);
+
+    // Resetting this value allows a new low battery level to post a
+    // notification if the old one was also under the threshold.
+    it->second.level.reset();
   }
 }
 

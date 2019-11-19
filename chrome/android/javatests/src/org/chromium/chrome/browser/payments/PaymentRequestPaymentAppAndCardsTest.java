@@ -12,6 +12,7 @@ import static org.chromium.chrome.browser.payments.PaymentRequestTestRule.NO_INS
 import android.support.test.filters.MediumTest;
 
 import org.junit.Assert;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,9 +27,9 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.MainActivityStartCallback;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ui.DisableAnimationsTestRule;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -37,13 +38,16 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class PaymentRequestPaymentAppAndCardsTest implements MainActivityStartCallback {
+    // Disable animations to reduce flakiness.
+    @ClassRule
+    public static DisableAnimationsTestRule sNoAnimationsRule = new DisableAnimationsTestRule();
+
     @Rule
     public PaymentRequestTestRule mPaymentRequestTestRule =
             new PaymentRequestTestRule("payment_request_bobpay_and_cards_test.html", this);
 
     @Override
-    public void onMainActivityStarted() throws InterruptedException, ExecutionException,
-            TimeoutException {
+    public void onMainActivityStarted() throws TimeoutException {
         AutofillTestHelper helper = new AutofillTestHelper();
         String billingAddressId = helper.setProfile(new AutofillProfile("", "https://example.com",
                 true, "Jon Doe", "Google", "340 Main St", "CA", "Los Angeles", "", "90291", "",
@@ -65,8 +69,7 @@ public class PaymentRequestPaymentAppAndCardsTest implements MainActivityStartCa
     @Test
     @MediumTest
     @Feature({"Payments"})
-    public void testNoInstrumentsInFastBobPay()
-            throws InterruptedException, ExecutionException, TimeoutException {
+    public void testNoInstrumentsInFastBobPay() throws TimeoutException {
         runTest(NO_INSTRUMENTS, IMMEDIATE_RESPONSE);
     }
 
@@ -77,8 +80,7 @@ public class PaymentRequestPaymentAppAndCardsTest implements MainActivityStartCa
     @Test
     @MediumTest
     @Feature({"Payments"})
-    public void testNoInstrumentsInSlowBobPay()
-            throws InterruptedException, ExecutionException, TimeoutException {
+    public void testNoInstrumentsInSlowBobPay() throws TimeoutException {
         runTest(NO_INSTRUMENTS, DELAYED_RESPONSE);
     }
 
@@ -89,8 +91,7 @@ public class PaymentRequestPaymentAppAndCardsTest implements MainActivityStartCa
     @Test
     @MediumTest
     @Feature({"Payments"})
-    public void testHaveInstrumentsInFastBobPay()
-            throws InterruptedException, ExecutionException, TimeoutException {
+    public void testHaveInstrumentsInFastBobPay() throws TimeoutException {
         runTest(HAVE_INSTRUMENTS, IMMEDIATE_RESPONSE);
     }
 
@@ -101,8 +102,7 @@ public class PaymentRequestPaymentAppAndCardsTest implements MainActivityStartCa
     @Test
     @MediumTest
     @Feature({"Payments"})
-    public void testHaveInstrumentsInSlowBobPay()
-            throws InterruptedException, ExecutionException, TimeoutException {
+    public void testHaveInstrumentsInSlowBobPay() throws TimeoutException {
         runTest(HAVE_INSTRUMENTS, DELAYED_RESPONSE);
     }
 
@@ -111,7 +111,7 @@ public class PaymentRequestPaymentAppAndCardsTest implements MainActivityStartCa
     @MediumTest
     @Feature({"Payments"})
     public void testEditPaymentMethodAndCancelEditorShouldKeepCardSelected()
-            throws InterruptedException, ExecutionException, TimeoutException {
+            throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());
         mPaymentRequestTestRule.clickInPaymentMethodAndWait(
                 R.id.payments_section, mPaymentRequestTestRule.getReadyForInput());
@@ -132,7 +132,7 @@ public class PaymentRequestPaymentAppAndCardsTest implements MainActivityStartCa
     @MediumTest
     @Feature({"Payments"})
     public void testAddPaymentMethodAndCancelEditorShouldKeepExistingCardSelected()
-            throws InterruptedException, ExecutionException, TimeoutException {
+            throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());
         mPaymentRequestTestRule.clickInPaymentMethodAndWait(
                 R.id.payments_section, mPaymentRequestTestRule.getReadyForInput());
@@ -148,8 +148,7 @@ public class PaymentRequestPaymentAppAndCardsTest implements MainActivityStartCa
         mPaymentRequestTestRule.expectPaymentMethodRowIsSelected(0);
     }
 
-    private void runTest(int instrumentPresence, int responseSpeed) throws InterruptedException,
-            ExecutionException, TimeoutException  {
+    private void runTest(int instrumentPresence, int responseSpeed) throws TimeoutException {
         mPaymentRequestTestRule.installPaymentApp(instrumentPresence, responseSpeed);
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());
         mPaymentRequestTestRule.clickInPaymentMethodAndWait(

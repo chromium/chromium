@@ -251,12 +251,7 @@ class ResetStatusValidator {
 };
 ResetStatusValidator reset_status;
 
-class SamplerParameterValidator {
- public:
-  bool IsValid(const GLenum value) const;
-};
-SamplerParameterValidator sampler_parameter;
-
+ValueValidator<GLenum> sampler_parameter;
 ValueValidator<GLenum> shader_binary_format;
 ValueValidator<GLenum> shader_parameter;
 class ShaderPrecisionValidator {

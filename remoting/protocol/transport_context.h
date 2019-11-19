@@ -23,8 +23,6 @@ class NetworkManager;
 
 namespace remoting {
 
-class OAuthTokenGetter;
-class SignalStrategy;
 class UrlRequestFactory;
 
 namespace protocol {
@@ -37,8 +35,8 @@ class IceConfigRequest;
 // TURN configuration.
 class TransportContext : public base::RefCountedThreadSafe<TransportContext> {
  public:
+  // TODO(yuweih): See if we still need this enum.
   enum RelayMode {
-    GTURN,
     TURN,
 
     LAST_RELAYMODE = TURN
@@ -50,24 +48,13 @@ class TransportContext : public base::RefCountedThreadSafe<TransportContext> {
 
   static scoped_refptr<TransportContext> ForTests(TransportRole role);
 
-  TransportContext(SignalStrategy* signal_strategy,
-                   std::unique_ptr<PortAllocatorFactory> port_allocator_factory,
+  TransportContext(std::unique_ptr<PortAllocatorFactory> port_allocator_factory,
                    std::unique_ptr<UrlRequestFactory> url_request_factory,
                    const NetworkSettings& network_settings,
                    TransportRole role);
 
   void set_turn_ice_config(const IceConfig& ice_config) {
     ice_config_[TURN] = ice_config;
-  }
-
-  // Sets URL to fetch ICE config. If |oauth_token_getter| is not nullptr then
-  // it's used to get OAuth token for the ICE config request, otherwise the
-  // request is not authenticated.
-  void set_ice_config_url(const std::string& ice_config_url,
-                          OAuthTokenGetter* oauth_token_getter) {
-    DCHECK(!ice_config_url.empty());
-    ice_config_url_ = ice_config_url;
-    oauth_token_getter_ = oauth_token_getter;
   }
 
   // Sets relay mode for all future calls of GetIceConfig(). Doesn't affect
@@ -83,7 +70,7 @@ class TransportContext : public base::RefCountedThreadSafe<TransportContext> {
     network_manager_ = network_manager;
   }
 
-  // Prepares fresh JingleInfo. It may be called while connection is being
+  // Prepares fresh ICE configs. It may be called while connection is being
   // negotiated to minimize the chance that the following GetIceConfig() will
   // be blocking.
   void Prepare();
@@ -102,8 +89,7 @@ class TransportContext : public base::RefCountedThreadSafe<TransportContext> {
   rtc::NetworkManager* network_manager() const { return network_manager_; }
 
   // Returns the suggested bandwidth cap for TURN relay connections, or 0 if
-  // no rate-limit is set in the IceConfig. Currently this is not used for
-  // legacy GTURN connections.
+  // no rate-limit is set in the IceConfig.
   int GetTurnMaxRateKbps() const;
 
  private:
@@ -114,16 +100,12 @@ class TransportContext : public base::RefCountedThreadSafe<TransportContext> {
   void EnsureFreshIceConfig();
   void OnIceConfig(RelayMode relay_mode, const IceConfig& ice_config);
 
-  SignalStrategy* signal_strategy_;
   std::unique_ptr<PortAllocatorFactory> port_allocator_factory_;
   std::unique_ptr<UrlRequestFactory> url_request_factory_;
   NetworkSettings network_settings_;
   TransportRole role_;
 
-  std::string ice_config_url_;
-  OAuthTokenGetter* oauth_token_getter_ = nullptr;
-
-  RelayMode relay_mode_ = RelayMode::GTURN;
+  RelayMode relay_mode_ = RelayMode::TURN;
 
   rtc::NetworkManager* network_manager_ = nullptr;
 

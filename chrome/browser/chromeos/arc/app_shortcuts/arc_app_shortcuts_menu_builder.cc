@@ -11,10 +11,26 @@
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/chromeos/arc/app_shortcuts/arc_app_shortcuts_request.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/app_list/app_list_client_impl.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
+#include "chrome/browser/ui/app_list/search/search_controller.h"
+#include "chrome/browser/ui/app_list/search/search_result_ranker/app_launch_data.h"
+#include "chrome/browser/ui/app_list/search/search_result_ranker/ranking_item_util.h"
 #include "ui/base/models/simple_menu_model.h"
 
 namespace arc {
+
+namespace {
+
+// Convert an app_id and a shortcut_id, eg. manifest_new_note_shortcut, into a
+// full URL for an Arc app shortcut, of the form:
+// appshortcutsearch://[app_id]/[shortcut_id].
+std::string ConstructArcAppShortcutUrl(const std::string& app_id,
+                                       const std::string& shortcut_id) {
+  return "appshortcutsearch://" + app_id + "/" + shortcut_id;
+}
+
+}  // namespace
 
 ArcAppShortcutsMenuBuilder::ArcAppShortcutsMenuBuilder(
     Profile* profile,
@@ -54,6 +70,17 @@ void ArcAppShortcutsMenuBuilder::ExecuteCommand(int command_id) {
   LaunchAppShortcutItem(profile_, app_id_,
                         app_shortcut_items_->at(index).shortcut_id,
                         display_id_);
+
+  // Send a training signal to the search controller.
+  AppListClientImpl* app_list_client_impl = AppListClientImpl::GetInstance();
+  if (!app_list_client_impl)
+    return;
+  app_list::AppLaunchData app_launch_data;
+  app_launch_data.id = ConstructArcAppShortcutUrl(
+      app_id_, app_shortcut_items_->at(index).shortcut_id),
+  app_launch_data.ranking_item_type =
+      app_list::RankingItemType::kArcAppShortcut;
+  app_list_client_impl->search_controller()->Train(std::move(app_launch_data));
 }
 
 void ArcAppShortcutsMenuBuilder::OnGetAppShortcutItems(

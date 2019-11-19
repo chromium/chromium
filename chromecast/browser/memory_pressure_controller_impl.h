@@ -8,8 +8,9 @@
 #include "base/macros.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "chromecast/common/mojom/memory_pressure.mojom.h"
-#include "mojo/public/cpp/bindings/binding_set.h"
-#include "mojo/public/cpp/bindings/interface_ptr_set.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 
 namespace chromecast {
 
@@ -18,17 +19,19 @@ class MemoryPressureControllerImpl : public mojom::MemoryPressureController {
   MemoryPressureControllerImpl();
   ~MemoryPressureControllerImpl() override;
 
-  void AddBinding(mojom::MemoryPressureControllerRequest request);
+  void AddReceiver(
+      mojo::PendingReceiver<mojom::MemoryPressureController> receiver);
 
  private:
   // chromecast::mojom::MemoryPressure implementation.
-  void AddObserver(mojom::MemoryPressureObserverPtr observer) override;
+  void AddObserver(
+      mojo::PendingRemote<mojom::MemoryPressureObserver> observer) override;
 
   void OnMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel level);
 
-  mojo::InterfacePtrSet<mojom::MemoryPressureObserver> observers_;
-  mojo::BindingSet<mojom::MemoryPressureController> bindings_;
+  mojo::RemoteSet<mojom::MemoryPressureObserver> observers_;
+  mojo::ReceiverSet<mojom::MemoryPressureController> receivers_;
 
   std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
 

@@ -86,7 +86,7 @@ void SetLocalizedStrings(Profile* profile,
 content::WebUIDataSource* CreateDataSource(Profile* profile) {
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(chrome::kChromeUIFirstRunHost);
-  source->SetJsonPath("strings.js");
+  source->UseStringsJs();
   source->SetDefaultResource(IDR_FIRST_RUN_HTML);
   source->AddResourcePath(kFirstRunJSPath, IDR_FIRST_RUN_JS);
   base::DictionaryValue localized_strings;

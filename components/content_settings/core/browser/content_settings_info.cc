@@ -34,7 +34,7 @@ ContentSetting ContentSettingsInfo::GetInitialDefaultSetting() const {
 }
 
 bool ContentSettingsInfo::IsSettingValid(ContentSetting setting) const {
-  return base::ContainsKey(valid_settings_, setting);
+  return base::Contains(valid_settings_, setting);
 }
 
 // TODO(raymes): Find a better way to deal with the special-casing in
@@ -43,20 +43,20 @@ bool ContentSettingsInfo::IsDefaultSettingValid(ContentSetting setting) const {
   ContentSettingsType type = website_settings_info_->type();
 #if defined(OS_CHROMEOS)
   // Don't support ALLOW for protected media default setting until migration.
-  if (type == CONTENT_SETTINGS_TYPE_PROTECTED_MEDIA_IDENTIFIER &&
+  if (type == ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER &&
       setting == CONTENT_SETTING_ALLOW) {
     return false;
   }
 #endif
 
   // Don't support ALLOW for the default media settings.
-  if ((type == CONTENT_SETTINGS_TYPE_MEDIASTREAM_CAMERA ||
-       type == CONTENT_SETTINGS_TYPE_MEDIASTREAM_MIC) &&
+  if ((type == ContentSettingsType::MEDIASTREAM_CAMERA ||
+       type == ContentSettingsType::MEDIASTREAM_MIC) &&
       setting == CONTENT_SETTING_ALLOW) {
     return false;
   }
 
-  return base::ContainsKey(valid_settings_, setting);
+  return base::Contains(valid_settings_, setting);
 }
 
 }  // namespace content_settings

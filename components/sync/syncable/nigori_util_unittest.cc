@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/sync/base/cryptographer.h"
+#include "components/sync/syncable/nigori_util.h"
+#include "components/sync/nigori/cryptographer.h"
 #include "components/sync/protocol/bookmark_specifics.pb.h"
 #include "components/sync/protocol/sync.pb.h"
-#include "components/sync/syncable/nigori_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace syncer {

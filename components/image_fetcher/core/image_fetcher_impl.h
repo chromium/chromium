@@ -79,6 +79,11 @@ class ImageFetcherImpl : public ImageFetcher {
                       const RequestMetadata& metadata,
                       const gfx::Image& image);
 
+  // Used to run |image_data_callback| only if |this| is still valid.
+  void RunImageDataCallback(ImageDataFetcherCallback image_data_callback,
+                            std::string image_data,
+                            RequestMetadata request_metadata);
+
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   std::unique_ptr<ImageDecoder> image_decoder_;
@@ -88,6 +93,8 @@ class ImageFetcherImpl : public ImageFetcher {
   // Map from each image URL to the request information (associated website
   // url, fetcher, pending callbacks).
   ImageRequestMap pending_net_requests_;
+
+  base::WeakPtrFactory<ImageFetcherImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ImageFetcherImpl);
 };

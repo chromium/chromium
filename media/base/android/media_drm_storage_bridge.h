@@ -89,7 +89,7 @@ class MediaDrmStorageBridge {
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
-  base::WeakPtrFactory<MediaDrmStorageBridge> weak_factory_;
+  base::WeakPtrFactory<MediaDrmStorageBridge> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(MediaDrmStorageBridge);
 };

@@ -5,7 +5,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/test/fuzzed_data_provider.h"
+#include <fuzzer/FuzzedDataProvider.h>
+
 #include "leveldb/db.h"
 #include "leveldb/env.h"
 #include "third_party/leveldatabase/src/helpers/memenv/memenv.h"
@@ -30,7 +31,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     return 0;
 
   Env* mem_env = NewMemEnv(Env::Default());
-  base::FuzzedDataProvider data_provider(data, size);
+  FuzzedDataProvider data_provider(data, size);
 
   Options open_opts;
   open_opts.create_if_missing = true;

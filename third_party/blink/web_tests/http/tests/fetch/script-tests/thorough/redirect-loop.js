@@ -30,7 +30,7 @@ var TEST_TARGETS = [
   // Redirect loop: same origin -> other origin
   [REDIRECT_LOOP_URL + encodeURIComponent(OTHER_BASE_URL + '&ACAOrigin=*') +
    '&Count=20&mode=cors&credentials=same-origin&method=GET',
-   [fetchResolved, noContentLength, noServerHeader, hasBody, typeCors,
+   [fetchResolved, hasContentLength, noServerHeader, hasBody, typeCors,
     responseRedirected,
     checkURLList.bind(
         self,
@@ -47,7 +47,7 @@ var TEST_TARGETS = [
   // Redirect loop: other origin -> same origin
   [OTHER_REDIRECT_LOOP_URL + encodeURIComponent(BASE_URL + 'ACAOrigin=*') +
    '&Count=20&mode=cors&credentials=same-origin&method=GET&ACAOrigin=*',
-   [fetchResolved, noContentLength, noServerHeader, hasBody, typeCors,
+   [fetchResolved, hasContentLength, noServerHeader, hasBody, typeCors,
     responseRedirected,
     checkURLList.bind(
         self,
@@ -66,7 +66,7 @@ var TEST_TARGETS = [
   [OTHER_REDIRECT_LOOP_URL +
    encodeURIComponent(OTHER_BASE_URL + 'ACAOrigin=*') +
    '&Count=20&mode=cors&credentials=same-origin&method=GET&ACAOrigin=*',
-   [fetchResolved, noContentLength, noServerHeader, hasBody, typeCors,
+   [fetchResolved, hasContentLength, noServerHeader, hasBody, typeCors,
     responseRedirected,
     checkURLList.bind(
         self,

@@ -25,15 +25,17 @@ namespace update_client {
 
 class NetworkFetcher {
  public:
+  // If the request does not have an X-Retry-After header, implementations
+  // should pass -1 for |xheader_retry_after_sec|.
   using PostRequestCompleteCallback =
       base::OnceCallback<void(std::unique_ptr<std::string> response_body,
                               int net_error,
                               const std::string& header_etag,
                               int64_t xheader_retry_after_sec)>;
-  using DownloadToFileCompleteCallback = base::OnceCallback<
-      void(base::FilePath path, int net_error, int64_t content_size)>;
-  using ResponseStartedCallback = base::OnceCallback<
-      void(const GURL& final_url, int response_code, int64_t content_length)>;
+  using DownloadToFileCompleteCallback =
+      base::OnceCallback<void(int net_error, int64_t content_size)>;
+  using ResponseStartedCallback =
+      base::OnceCallback<void(int response_code, int64_t content_length)>;
   using ProgressCallback = base::RepeatingCallback<void(int64_t current)>;
 
   // The ETag header carries the ECSDA signature of the POST response, if

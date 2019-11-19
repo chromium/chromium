@@ -9,9 +9,8 @@
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/fake_permission_broker_client.h"
+#include "base/test/task_environment.h"
+#include "chromeos/dbus/permission_broker/fake_permission_broker_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -28,21 +27,16 @@ void CopyFirewallHole(base::RunLoop* run_loop,
 class FirewallHoleTest : public testing::Test {
  public:
   FirewallHoleTest()
-      : scoped_task_environment_(
-            base::test::ScopedTaskEnvironment::MainThreadType::UI) {}
+      : task_environment_(
+            base::test::SingleThreadTaskEnvironment::MainThreadType::UI) {}
   ~FirewallHoleTest() override = default;
 
-  void SetUp() override { DBusThreadManager::Initialize(); }
+  void SetUp() override { PermissionBrokerClient::InitializeFake(); }
 
-  void TearDown() override { DBusThreadManager::Shutdown(); }
-
-  FakePermissionBrokerClient* permission_broker_client() {
-    return static_cast<FakePermissionBrokerClient*>(
-        DBusThreadManager::Get()->GetPermissionBrokerClient());
-  }
+  void TearDown() override { PermissionBrokerClient::Shutdown(); }
 
  private:
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
 TEST_F(FirewallHoleTest, GrantTcpPortAccess) {
@@ -52,13 +46,13 @@ TEST_F(FirewallHoleTest, GrantTcpPortAccess) {
                      base::Bind(&CopyFirewallHole, &run_loop, &hole));
   run_loop.Run();
   EXPECT_TRUE(hole.get());
-  EXPECT_TRUE(permission_broker_client()->HasTcpHole(1234, "foo0"));
+  EXPECT_TRUE(FakePermissionBrokerClient::Get()->HasTcpHole(1234, "foo0"));
   hole.reset();
-  EXPECT_FALSE(permission_broker_client()->HasTcpHole(1234, "foo0"));
+  EXPECT_FALSE(FakePermissionBrokerClient::Get()->HasTcpHole(1234, "foo0"));
 }
 
 TEST_F(FirewallHoleTest, DenyTcpPortAccess) {
-  permission_broker_client()->AddTcpDenyRule(1234, "foo0");
+  FakePermissionBrokerClient::Get()->AddTcpDenyRule(1234, "foo0");
 
   base::RunLoop run_loop;
   std::unique_ptr<FirewallHole> hole;
@@ -75,13 +69,13 @@ TEST_F(FirewallHoleTest, GrantUdpPortAccess) {
                      base::Bind(&CopyFirewallHole, &run_loop, &hole));
   run_loop.Run();
   EXPECT_TRUE(hole.get());
-  EXPECT_TRUE(permission_broker_client()->HasUdpHole(1234, "foo0"));
+  EXPECT_TRUE(FakePermissionBrokerClient::Get()->HasUdpHole(1234, "foo0"));
   hole.reset();
-  EXPECT_FALSE(permission_broker_client()->HasUdpHole(1234, "foo0"));
+  EXPECT_FALSE(FakePermissionBrokerClient::Get()->HasUdpHole(1234, "foo0"));
 }
 
 TEST_F(FirewallHoleTest, DenyUdpPortAccess) {
-  permission_broker_client()->AddUdpDenyRule(1234, "foo0");
+  FakePermissionBrokerClient::Get()->AddUdpDenyRule(1234, "foo0");
 
   base::RunLoop run_loop;
   std::unique_ptr<FirewallHole> hole;

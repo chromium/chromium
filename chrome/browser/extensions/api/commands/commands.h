@@ -7,7 +7,7 @@
 
 #include "extensions/browser/extension_function.h"
 
-class GetAllCommandsFunction : public UIThreadExtensionFunction {
+class GetAllCommandsFunction : public ExtensionFunction {
   ~GetAllCommandsFunction() override {}
   ResponseAction Run() override;
   DECLARE_EXTENSION_FUNCTION("commands.getAll", COMMANDS_GETALL)

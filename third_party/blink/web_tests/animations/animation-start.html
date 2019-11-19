@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<head>
+  <title>Test for animationstart event during initial rendering</title>
+  <style>
+    .target {
+      height: 100px;
+      width: 100px;
+      animation-duration: 40ms;
+    }
+    #translate {
+      background-color: blue;
+      animation-name: move1;
+    }
+    @keyframes move1 {
+        from { transform: translateX(100px); }
+        to   { transform: translateX(200px); }
+    }
+    #left {
+      position: relative;
+      background-color: red;
+      animation-name: move2;
+    }
+    @keyframes move2 {
+        from { left: 100px; }
+        to   { left: 200px; }
+    }
+  </style>
+  <script src="resources/animation-test-helpers.js" type="text/javascript"></script>
+  <script type="text/javascript">
+    if (window.testRunner) {
+      testRunner.dumpAsText();
+      testRunner.waitUntilDone();
+    }
+
+    function log(message) {
+      var div = document.createElement('div');
+      div.textContent = message;
+      document.body.appendChild(div);
+    }
+
+    var startCount = 0;
+    var start = function(evt) {
+      log('animationstart received for ' + evt.target.id);
+      if (++startCount == 2 && window.testRunner)
+        testRunner.notifyDone();
+    }
+    document.addEventListener('animationstart', start, false);
+  </script>
+</head>
+<body>
+<p>
+  This tests the order and firing of animationstart events for
+  animations which started as soon as the document loads.
+</p>
+<!--
+  Test both composited and non-composited animations as they have different
+  start behavior but should both generate animationstart events.
+-->
+<div class="target" id="translate">transform</div>
+<div class="target" id="left">left</div>
+</body>
+</html>

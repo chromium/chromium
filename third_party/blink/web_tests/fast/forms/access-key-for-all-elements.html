@@ -2,6 +2,24 @@
 <body>
 <script src="../../resources/testharness.js"></script>
 <script src="../../resources/testharnessreport.js"></script>
+
+<fieldset id='declared-focusable-elements'>
+  <!--  begin setup for <rp> element -->
+    <rp style="display: block">(</rp>
+  <!--  end of setup for <rp> element -->
+
+  <!--  begin setup for <area> element -->
+    <img usemap="#testMap">
+    <map name="testMap">
+      <area>test</area>
+    </map>
+  <!-- end of setup for <area> element -->
+
+  <!--  begin setup for <audio> element -->
+    <audio controls>
+  <!-- end of setup for <audio> element -->
+<fieldset>
+
 <script>
 const modifiers = /\bMac OS X\b/.test(navigator.userAgent) ? ["ctrlKey", "altKey"] : ["altKey"];
 
@@ -9,43 +27,53 @@ function pressKey(key) {
   eventSender.keyDown(key, modifiers);
 }
 
-const tagNames = [
+const focusableTagNames = [
   "a", "abbr", "acronym", "address", "area", "article", "aside", "audio",
-  "b", "base", "basefont", "bdo", "bgsound", "big", "blockquote", "body", "br",
-  "canvas", "caption", "center", "cite", "code", "col", "colgroup", "datalist",
+  "b", "base", "basefont", "bdo", "bgsound", "big", "blockquote", "br",
+  "canvas", "caption", "center", "cite", "code", "col", "colgroup",
   "dd", "del", "details", "dfn", "dir", "div", "dl", "dt",
-  "em", "embed", "fieldset", "figcaption", "figure", "font", "footer", "form",
+  "em", "fieldset", "figcaption", "figure", "font", "footer", "form",
   "frame", "frameset",
-  "h1", "h2", "h3", "h4", "h5", "h6", "head", "header", "hgroup","hr","html",
-  "i", "iframe", "img", "ins", "kbd", "label", "layer", "li", "link", "listing",
-  "main", "map", "mark", "marquee", "menu", "meta", "meter",
-  "nav", "nobr", "noembed", "noframes", "nolayer", "noscript",
-  "object", "ol", "output", "p", "param", "plaintext", "pre", "progress", "q",
-  "rp", "rt", "ruby", "s", "samp", "script", "section", "small", "source",
-  "span", "strike", "strong", "style", "sub", "summary", "sup",
-  "table", "tbody", "td", "tfoot", "th", "thead", "title", "tr", "track", "tt",
+  "h1", "h2", "h3", "h4", "h5", "h6", "header", "hgroup","hr","html",
+  "i", "iframe", "img", "ins", "kbd", "label", "layer", "li", "listing",
+  "main", "map", "mark", "marquee", "menu", "meter",
+  "nav", "nobr", "nolayer", "object",
+  "ol", "output", "p", "plaintext", "pre", "progress", "q",
+  "rp", "rt", "ruby", "s", "samp", "section", "small", "source",
+  "span", "strike", "strong", "sub", "summary", "sup",
+  "table", "tbody", "td", "tfoot", "th", "thead", "tr", "track", "tt",
   "u", "ul", "var", "video", "wbr", "xmp"];
 
-tagNames.forEach((name) => {
+const nonFocusableTagNames = ["embed", "head", "link", "meta", "noembed", "noscript", "param", "script", "style", "title"];
+
+function testPressAccessKeyOnElement(element) {
+  var clicked = false;
+  element.onclick = () => { clicked = true; }
+  var focused = false;
+  element.onfocus = () => { focused = true; }
+
+  pressKey(element.accessKey);
+  const isFocusable = focusableTagNames.includes(element.tagName.toLowerCase());
+  assert_true(clicked, `Pressing access key on a ${!isFocusable ? "non-" : ""}focusable element should ${!isFocusable ? "not" : ""} trigger click handler.`);
+  assert_equals(focused, isFocusable, `Pressing access key on a ${!isFocusable ? "non-" : ""}focusable element should ${!isFocusable ? "not" : ""} focus on the element.`);
+}
+
+focusableTagNames.concat(nonFocusableTagNames).forEach((name) => {
   test(() => {
-    var testElement = document.createElement(name);
-    document.body.appendChild(testElement);
-    var clicked = false;
-    testElement.onclick = () => { clicked = true; }
-    var focused = false;
-    testElement.onfocus = () => { focused = true; }
-
-    assert_not_equals(testElement.accessKey, undefined);
-
-    testElement.accessKey = "k";
-    assert_equals(testElement.accessKey, "k");
-
-    pressKey(testElement.accessKey);
-    assert_true(clicked, "Pressing access key should trigger click handler.");
-    assert_false(focused, "Pressing access key should not focus on the element.");
-
-    document.body.removeChild(testElement);
+    const declaredElementsContainer = document.getElementById('declared-focusable-elements');
+    let element = declaredElementsContainer.getElementsByTagName(name)[0];
+    if (!element) {
+      element = document.createElement(name);
+      document.body.appendChild(element);
+    }
+    element.tabIndex = 0;
+    assert_not_equals(element.accessKey, undefined);
+    element.accessKey = "k";
+    assert_equals(element.accessKey, "k");
+    testPressAccessKeyOnElement(element);
+    element.remove();
   }, "Check for " + name + " tag");
 });
 </script>
 </body>
+</html>

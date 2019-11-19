@@ -26,7 +26,7 @@ class WebUsbChooserDesktop : public WebUsbChooser {
  private:
   BubbleReference bubble_;
 
-  base::WeakPtrFactory<WebUsbChooserDesktop> weak_factory_;
+  base::WeakPtrFactory<WebUsbChooserDesktop> weak_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(WebUsbChooserDesktop);
 };
 

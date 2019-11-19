@@ -41,8 +41,8 @@ class InstantController::TabObserver : public content::WebContentsObserver {
 
 InstantController::InstantController(Profile* profile,
                                      TabStripModel* tab_strip_model)
-    : profile_(profile), tab_strip_observer_(this) {
-  tab_strip_observer_.Add(tab_strip_model);
+    : profile_(profile) {
+  tab_strip_model->AddObserver(this);
 }
 
 InstantController::~InstantController() = default;
@@ -83,7 +83,7 @@ void InstantController::UpdateInfoForInstantTab() {
   InstantService* instant_service =
       InstantServiceFactory::GetForProfile(profile_);
   if (instant_service) {
-    instant_service->UpdateThemeInfo();
-    instant_service->UpdateMostVisitedItemsInfo();
+    instant_service->UpdateNtpTheme();
+    instant_service->UpdateMostVisitedInfo();
   }
 }

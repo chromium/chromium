@@ -1,0 +1,102 @@
+/* Copyright (c) 2012 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* This file holds CSS that should be shared, in theory, by all user-visible
+ * chrome:// pages. This contrasts chrome_shared.css, which it is meant to
+ * replace, but has CSS specific to options and options-like pages. */
+
+/* Prevent CSS from overriding the hidden property. */
+[hidden] {
+  display: none !important;
+}
+
+html.loading * {
+  -webkit-transition-delay: 0ms !important;
+  -webkit-transition-duration: 0ms !important;
+}
+
+body {
+  cursor: default;
+  margin: 0;
+}
+
+p {
+  line-height: 1.8em;
+}
+
+h1,
+h2,
+h3 {
+  -user-select: none;
+  font-weight: normal;
+  /* Makes the vertical size of the text the same for all fonts. */
+  line-height: 1;
+}
+
+h1 {
+  font-size: 1.5em;
+}
+
+h2 {
+  font-size: 1.3em;
+  margin-bottom: 0.4em;
+}
+
+h3 {
+  color: black;
+  font-size: 1.2em;
+  margin-bottom: 0.5em;
+}
+
+a {
+  color: rgb(17, 85, 204);
+  text-decoration: underline;
+}
+
+a:active {
+  color: rgb(5, 37, 119);
+}
+
+/* Elements that need to be LTR even in an RTL context, but should align
+ * right. (Namely, URLs, search engine names, etc.)
+ */
+html[dir='rtl'] .weakrtl {
+  direction: ltr;
+  text-align: right;
+}
+
+/* Input fields in search engine table need to be weak-rtl. Since those input
+ * fields are generated for all cr.ListItem elements (and we only want weakrtl
+ * on some), the class needs to be on the enclosing div.
+ */
+html[dir='rtl'] div.weakrtl input {
+  direction: ltr;
+  text-align: right;
+}
+
+html[dir='rtl'] .favicon-cell.weakrtl {
+  -webkit-padding-end: 22px;
+  -webkit-padding-start: 0;
+}
+
+/* weakrtl for selection drop downs needs to account for the fact that
+ * Webkit does not honor the text-align attribute for the select element.
+ * (See Webkit bug #40216)
+ */
+html[dir='rtl'] select.weakrtl {
+  direction: rtl;
+}
+
+html[dir='rtl'] select.weakrtl option {
+  direction: ltr;
+}
+
+/* WebKit does not honor alignment for text specified via placeholder attribute.
+ * This CSS is a workaround. Please remove once WebKit bug is fixed.
+ * https://bugs.webkit.org/show_bug.cgi?id=63367
+ */
+html[dir='rtl'] input.weakrtl::-webkit-input-placeholder,
+html[dir='rtl'] .weakrtl input::-webkit-input-placeholder {
+  direction: rtl;
+}

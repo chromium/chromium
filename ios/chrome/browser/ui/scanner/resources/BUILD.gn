@@ -1,0 +1,23 @@
+# Copyright 2017 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ios/asset_catalog.gni")
+
+imageset("scanner_torch_off") {
+  sources = [
+    "scanner_torch_off.imageset/Contents.json",
+    "scanner_torch_off.imageset/torch_off.png",
+    "scanner_torch_off.imageset/torch_off@2x.png",
+    "scanner_torch_off.imageset/torch_off@3x.png",
+  ]
+}
+
+imageset("scanner_torch_on") {
+  sources = [
+    "scanner_torch_on.imageset/Contents.json",
+    "scanner_torch_on.imageset/torch_on.png",
+    "scanner_torch_on.imageset/torch_on@2x.png",
+    "scanner_torch_on.imageset/torch_on@3x.png",
+  ]
+}

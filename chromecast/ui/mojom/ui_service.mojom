@@ -1,0 +1,29 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module chromecast.mojom;
+
+enum ZOrder {
+  // Base layer for web-based system UI, or for regular apps on Chromecast.
+  APP = -1,
+  // If the main system UI is web-based, then apps running in this layer won't
+  // be managed by the system web UI.
+  UNMANAGED_APP = 0,
+  // Diagnostic overlay for debugging.
+  DEBUG_OVERLAY = 1,
+  // Overlay apps with transparent backgrounds.
+  INFO_OVERLAY = 2,
+  // Unused.
+  SOFT_KEYBOARD = 3,
+  // Volume bar overlay.
+  VOLUME = 4,
+  // Touch-based media controls.
+  MEDIA_INFO = 5,
+  // Touch-based settings UI.
+  SETTINGS = 6,
+  // Boot animation.
+  BOOT_ANIMATION_OVERLAY = 7,
+  // Rounded corners for select devices.
+  CORNERS_OVERLAY = 8,
+};

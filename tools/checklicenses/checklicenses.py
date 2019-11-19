@@ -5,6 +5,7 @@
 
 """Makes sure that all files contain proper licensing information."""
 
+from __future__ import print_function
 
 import json
 import optparse
@@ -15,7 +16,7 @@ import sys
 
 
 def PrintUsage():
-  print """Usage: python checklicenses.py [--root <root>] [tocheck]
+  print("""Usage: python checklicenses.py [--root <root>] [tocheck]
   --root   Specifies the repository root. This defaults to "../.." relative
            to the script file. This will be correct given the normal location
            of the script in "<root>/tools/checklicenses".
@@ -28,7 +29,7 @@ def PrintUsage():
 
 Examples:
   python checklicenses.py
-  python checklicenses.py --root ~/chromium/src third_party"""
+  python checklicenses.py --root ~/chromium/src third_party""")
 
 
 WHITELISTED_LICENSES = [
@@ -456,9 +457,6 @@ PATH_SPECIFIC_WHITELISTED_LICENSES = {
     'third_party/openh264/src': [
         'UNKNOWN',
     ],
-    'third_party/openmax_dl/dl' : [
-        'Khronos Group',
-    ],
     'third_party/boringssl': [
         # There are some files in BoringSSL which came from OpenSSL and have no
         # license in them. We don't wish to add the license header ourselves
@@ -671,9 +669,9 @@ def check_licenses(options, args):
     PrintUsage()
     return 1
 
-  print "Using base directory:", options.base_directory
-  print "Checking:", start_dir
-  print
+  print("Using base directory:", options.base_directory)
+  print("Checking:", start_dir)
+  print()
 
   licensecheck_path = os.path.abspath(os.path.join(options.base_directory,
                                                    'third_party',
@@ -687,14 +685,14 @@ def check_licenses(options, args):
                                   stderr=subprocess.PIPE)
   stdout, stderr = licensecheck.communicate()
   if options.verbose:
-    print '----------- licensecheck stdout -----------'
-    print stdout
-    print '--------- end licensecheck stdout ---------'
+    print('----------- licensecheck stdout -----------')
+    print(stdout)
+    print('--------- end licensecheck stdout ---------')
   if licensecheck.returncode != 0 or stderr:
-    print '----------- licensecheck stderr -----------'
-    print stderr
-    print '--------- end licensecheck stderr ---------'
-    print "\nFAILED\n"
+    print('----------- licensecheck stderr -----------')
+    print(stderr)
+    print('--------- end licensecheck stderr ---------')
+    print("\nFAILED\n")
     return 1
 
   used_suppressions = set()
@@ -735,15 +733,15 @@ def check_licenses(options, args):
 
   if errors:
     for error in errors:
-      print "'%s' has non-whitelisted license '%s'" % (
-          error['filename'], error['license'])
-    print "\nFAILED\n"
-    print "Please read",
-    print "http://www.chromium.org/developers/adding-3rd-party-libraries"
-    print "for more info how to handle the failure."
-    print
-    print "Please respect OWNERS of checklicenses.py. Changes violating"
-    print "this requirement may be reverted."
+      print("'%s' has non-whitelisted license '%s'" % (error['filename'],
+                                                       error['license']))
+    print("\nFAILED\n")
+    print("Please read", end=' ')
+    print("http://www.chromium.org/developers/adding-3rd-party-libraries")
+    print("for more info how to handle the failure.")
+    print()
+    print("Please respect OWNERS of checklicenses.py. Changes violating")
+    print("this requirement may be reverted.")
 
     # Do not print unused suppressions so that above message is clearly
     # visible and gets proper attention. Too much unrelated output
@@ -751,15 +749,15 @@ def check_licenses(options, args):
 
     return 1
 
-  print "\nSUCCESS\n"
+  print("\nSUCCESS\n")
 
   if not len(args):
     unused_suppressions = set(
         PATH_SPECIFIC_WHITELISTED_LICENSES.iterkeys()).difference(
             used_suppressions)
     if unused_suppressions:
-      print "\nNOTE: unused suppressions detected:\n"
-      print '\n'.join(unused_suppressions)
+      print("\nNOTE: unused suppressions detected:\n")
+      print('\n'.join(unused_suppressions))
 
   return 0
 

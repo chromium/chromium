@@ -128,9 +128,6 @@
       </message>
       <message name="IDS_AW_WEBPAGE_TEMPORARILY_DOWN_SUGGESTIONS" desc="Suggestions provided to the user when it is not possible to contact the server"><ph name="MARKUP_1">&lt;strong&gt;<ex>_</ex></ph>Suggestions:<ph name="MARKUP_2">&lt;/strong&gt;&lt;ul&gt;&lt;li&gt;<ex>_</ex></ph>Make sure you have a data connection<ph name="MARKUP_3">&lt;/li&gt;&lt;li&gt;<ex>_</ex></ph>Reload this webpage later<ph name="MARKUP_4">&lt;/li&gt;&lt;li&gt;<ex>_</ex></ph>Check the address you entered<ph name="MARKUP_5">&lt;/li&gt;&lt;/ul&gt;<ex>_</ex></ph>
       </message>
-      <message name="IDS_AW_WEBPAGE_PARENTAL_PERMISSION_NEEDED" desc="Message informing a child user that they need to ask their parents for permission to access the page">
-        Oops! You need to ask your parent if it's OK to visit <ph name="PAGE">&lt;strong&gt;$1&lt;/strong&gt;<ex>page.html</ex></ph>.
-      </message>
     </messages>
   </release>
 </grit>

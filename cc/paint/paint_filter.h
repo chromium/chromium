@@ -72,7 +72,10 @@ class CC_PAINT_EXPORT PaintFilter : public SkRefCnt {
   using MapDirection = SkImageFilter::MapDirection;
   using CropRect = SkImageFilter::CropRect;
 
+  PaintFilter(const PaintFilter&) = delete;
   ~PaintFilter() override;
+
+  PaintFilter& operator=(const PaintFilter&) = delete;
 
   static std::string TypeToString(Type type);
 
@@ -156,8 +159,6 @@ class CC_PAINT_EXPORT PaintFilter : public SkRefCnt {
   const bool has_discardable_images_;
 
   ImageAnalysisState image_analysis_state_ = ImageAnalysisState::kNoAnalysis;
-
-  DISALLOW_COPY_AND_ASSIGN(PaintFilter);
 };
 
 class CC_PAINT_EXPORT ColorFilterPaintFilter final : public PaintFilter {

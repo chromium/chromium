@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/buildflag_header.gni")
 import("//build/config/jumbo.gni")
 import("//build/config/ui.gni")
 import("//gpu/vulkan/features.gni")
@@ -20,11 +21,6 @@ ozone_platform_deps = ozone_external_platform_deps
 
 # Extra dependencies to pull into ozone_unittests for built platforms.
 ozone_platform_test_deps = ozone_external_platform_test_deps
-
-if (ozone_platform_magma) {
-  ozone_platforms += [ "magma" ]
-  ozone_platform_deps += [ "platform/magma" ]
-}
 
 if (ozone_platform_windows) {
   ozone_platforms += [ "windows" ]
@@ -70,7 +66,6 @@ constructor_list_cc_file = "$target_gen_dir/constructor_list.cc"
 
 jumbo_component("ozone_base") {
   sources = [
-    "ozone_base_export.h",
     "public/cursor_factory_ozone.cc",
     "public/cursor_factory_ozone.h",
     "public/gl_ozone.h",
@@ -94,17 +89,20 @@ jumbo_component("ozone_base") {
     "public/platform_window_surface.h",
     "public/surface_factory_ozone.cc",
     "public/surface_factory_ozone.h",
+    "public/surface_ozone_canvas.cc",
     "public/surface_ozone_canvas.h",
     "public/swap_completion_callback.h",
+    "public/system_input_injector.h",
   ]
 
-  defines = [ "OZONE_BASE_IMPLEMENTATION" ]
+  defines = [ "IS_OZONE_BASE_IMPL" ]
 
   public_deps = [
     "//base",
     "//gpu/vulkan:buildflags",
     "//ipc",
     "//skia",
+    "//ui/base/clipboard:clipboard_types",
     "//ui/display",
     "//ui/display/types",
     "//ui/display/util",
@@ -117,6 +115,7 @@ jumbo_component("ozone_base") {
     "//ui/gfx/ipc/geometry",
     "//ui/gfx/ipc/skia",
     "//ui/gl",
+    "//ui/ozone/public/mojom:gesture_properties_service",
   ]
 
   if (enable_vulkan) {
@@ -129,8 +128,9 @@ jumbo_component("ozone_base") {
     "//ui/base",
     "//ui/events/ozone/*",
     "//ui/ozone/common/*",
-    "//ui/ozone/public/interfaces",
+    "//ui/ozone/public/mojom",
     "//ui/ozone/platform/*",
+    "//ui/base/ime/chromeos/*",
   ]
 
   # Out of tree platforms can depend on this.
@@ -141,7 +141,6 @@ source_set("platform") {
   sources = [
     "common/stub_client_native_pixmap_factory.cc",
     "common/stub_client_native_pixmap_factory.h",
-    "ozone_export.h",
     "platform_constructor_list.h",
     "platform_object.h",
     "platform_object_internal.h",
@@ -161,7 +160,7 @@ source_set("platform") {
     "public/ozone_platform.h",
   ]
 
-  defines = [ "OZONE_IMPLEMENTATION" ]
+  defines = [ "IS_OZONE_IMPL" ]
 
   public_deps = [
     ":ozone_base",
@@ -198,8 +197,9 @@ jumbo_component("ozone") {
   visibility = []
   visibility = [ "*" ]
   public_deps = [
+    ":buildflags",
     ":platform",
-    "//ui/ozone/public/interfaces",
+    "//ui/ozone/public/mojom",
   ]
 }
 
@@ -220,7 +220,7 @@ jumbo_source_set("test_support_internal") {
     "//testing/gtest",
     "//ui/gfx:test_support",
     "//ui/gfx/geometry",
-    "//ui/ozone/public/interfaces:struct_trait_unit_test",
+    "//ui/ozone/public/mojom:mojom_trait_unit_test",
     "//ui/platform_window:platform_window",
   ]
 
@@ -292,6 +292,10 @@ test("ozone_unittests") {
   # Platform tests link ozone statically. Make sure we're not getting a
   # 2nd copy of any code via the component.
   assert_no_deps = [ "//ui/ozone" ]
+
+  data_deps = [
+    "//testing/buildbot/filters:ozone_unittests_filters",
+  ]
 }
 
 # X11 backend has its own test suite only built when we are using the x11
@@ -308,4 +312,9 @@ if (ozone_platform_x11) {
     # 2nd copy of any code via the component.
     assert_no_deps = [ "//ui/ozone" ]
   }
+}
+
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+  flags = [ "OZONE_PLATFORM_X11=$ozone_platform_x11" ]
 }

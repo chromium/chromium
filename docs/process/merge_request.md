@@ -86,6 +86,10 @@ fix is low complexity.
 Security bugs should be consulted with [chrome-security@](chrome-security@google.com)
 to determine criticality.
 
+If it is unclear whether the severity of the issue meets the bar for merging
+consult with the [TPM](https://chromiumdash.appspot.com/schedule) and your
+manager.
+
 This table below provides key dates and phases as an example, for M61 release.
 
 Key Event  | Date

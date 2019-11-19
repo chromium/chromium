@@ -13,7 +13,7 @@ namespace extensions {
 
 // AsyncApiFunction provides convenient thread management for APIs that need to
 // do essentially all their work on a thread other than the UI thread.
-class AsyncApiFunction : public UIThreadExtensionFunction {
+class AsyncApiFunction : public ExtensionFunction {
  protected:
   AsyncApiFunction();
   ~AsyncApiFunction() override;
@@ -36,7 +36,7 @@ class AsyncApiFunction : public UIThreadExtensionFunction {
   // Respond. Guaranteed to happen on UI thread.
   virtual bool Respond() = 0;
 
-  // UIThreadExtensionFunction:
+  // ExtensionFunction:
   ResponseAction Run() final;
 
  protected:

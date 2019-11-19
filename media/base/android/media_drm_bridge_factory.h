@@ -72,7 +72,7 @@ class MEDIA_EXPORT MediaDrmBridgeFactory : public CdmFactory {
   std::unique_ptr<MediaDrmStorageBridge> storage_;
   scoped_refptr<MediaDrmBridge> media_drm_bridge_;
 
-  base::WeakPtrFactory<MediaDrmBridgeFactory> weak_factory_;
+  base::WeakPtrFactory<MediaDrmBridgeFactory> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(MediaDrmBridgeFactory);
 };

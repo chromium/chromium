@@ -61,6 +61,7 @@ checkUnderflow('-101', '-100');
 checkUnderflow('99', '1E+2');
 input.max = '100';  // value < min && value > max
 checkUnderflow('101', '200');
+checkUnderflow('-.8', '1');
 
 // Disabled
 checkNotUnderflow('99', '1E+2', true);

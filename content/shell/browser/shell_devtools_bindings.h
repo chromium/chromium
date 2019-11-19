@@ -45,8 +45,12 @@ class ShellDevToolsBindings : public WebContentsObserver,
                         WebContents* inspected_contents,
                         ShellDevToolsDelegate* delegate);
 
+  static std::vector<ShellDevToolsBindings*> GetInstancesForWebContents(
+      WebContents* web_contents);
+
   void InspectElementAt(int x, int y);
   virtual void Attach();
+  void UpdateInspectedWebContents(WebContents* new_contents);
 
   void CallClientFunction(const std::string& function_name,
                           const base::Value* arg1,
@@ -69,6 +73,7 @@ class ShellDevToolsBindings : public WebContentsObserver,
   void WebContentsDestroyed() override;
 
   void SendMessageAck(int request_id, const base::Value* arg1);
+  void AttachInternal();
 
   WebContents* inspected_contents_;
   ShellDevToolsDelegate* delegate_;
@@ -87,7 +92,7 @@ class ShellDevToolsBindings : public WebContentsObserver,
 
   using ExtensionsAPIs = std::map<std::string, std::string>;
   ExtensionsAPIs extensions_api_;
-  base::WeakPtrFactory<ShellDevToolsBindings> weak_factory_;
+  base::WeakPtrFactory<ShellDevToolsBindings> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ShellDevToolsBindings);
 };

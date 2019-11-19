@@ -1,0 +1,7 @@
+[document web]
+++[section]
+++++[combo box] supports-autocompletion selectable-text autocomplete:inline haspopup:listbox
+++++[combo box] supports-autocompletion selectable-text autocomplete:list haspopup:listbox
+++++[combo box] supports-autocompletion selectable-text autocomplete:both haspopup:listbox
+++++[combo box] selectable-text haspopup:listbox
+++++[entry] supports-autocompletion selectable-text autocomplete:inline

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel=stylesheet href="dummy.css?style">
+<link rel=preload as=style href="dummy.css?preload">
+<script>
+window.addEventListener("load", () => {
+  const entries = performance.getEntriesByType("resource");
+  let result = "FAIL";
+  if ((entries.length == 2) &&
+    entries[0].name.includes("preload") &&
+    entries[1].name.includes("style")) {
+    result = "PASS";
+  }
+  window.top.postMessage(result, "*");
+});
+</script>
+<link rel=stylesheet href="dummy.css?preload">

@@ -13,8 +13,6 @@
 #include "base/rand_util.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
-#include "content/renderer/media/stream/media_stream_video_source.h"
-#include "content/renderer/media/stream/media_stream_video_track.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/video_util.h"
 #include "ppapi/c/pp_errors.h"
@@ -24,6 +22,8 @@
 #include "ppapi/host/host_message_context.h"
 #include "ppapi/proxy/ppapi_messages.h"
 #include "ppapi/shared_impl/media_stream_buffer.h"
+#include "third_party/blink/public/web/modules/mediastream/media_stream_video_source.h"
+#include "third_party/blink/public/web/modules/mediastream/media_stream_video_track.h"
 #include "third_party/libyuv/include/libyuv.h"
 
 using media::VideoFrame;
@@ -92,33 +92,31 @@ PP_VideoFrame_Format GetTargetFormat(PP_VideoFrame_Format source,
   return plugin != PP_VIDEOFRAME_FORMAT_UNKNOWN ? plugin : source;
 }
 
-void ConvertFromMediaVideoFrame(const scoped_refptr<media::VideoFrame>& src,
+void ConvertFromMediaVideoFrame(const media::VideoFrame& src,
                                 PP_VideoFrame_Format dst_format,
                                 const gfx::Size& dst_size,
                                 uint8_t* dst) {
-  CHECK(src->format() == media::PIXEL_FORMAT_YV12 ||
-        src->format() == media::PIXEL_FORMAT_I420);
+  CHECK(src.format() == media::PIXEL_FORMAT_YV12 ||
+        src.format() == media::PIXEL_FORMAT_I420);
   if (dst_format == PP_VIDEOFRAME_FORMAT_BGRA) {
-    if (src->visible_rect().size() == dst_size) {
-      libyuv::I420ToARGB(src->visible_data(VideoFrame::kYPlane),
-                         src->stride(VideoFrame::kYPlane),
-                         src->visible_data(VideoFrame::kUPlane),
-                         src->stride(VideoFrame::kUPlane),
-                         src->visible_data(VideoFrame::kVPlane),
-                         src->stride(VideoFrame::kVPlane),
-                         dst,
-                         dst_size.width() * 4,
-                         dst_size.width(),
+    if (src.visible_rect().size() == dst_size) {
+      libyuv::I420ToARGB(src.visible_data(VideoFrame::kYPlane),
+                         src.stride(VideoFrame::kYPlane),
+                         src.visible_data(VideoFrame::kUPlane),
+                         src.stride(VideoFrame::kUPlane),
+                         src.visible_data(VideoFrame::kVPlane),
+                         src.stride(VideoFrame::kVPlane), dst,
+                         dst_size.width() * 4, dst_size.width(),
                          dst_size.height());
     } else {
       libyuv::YUVToARGBScaleClip(
-          src->visible_data(VideoFrame::kYPlane),
-          src->stride(VideoFrame::kYPlane),
-          src->visible_data(VideoFrame::kUPlane),
-          src->stride(VideoFrame::kUPlane),
-          src->visible_data(VideoFrame::kVPlane),
-          src->stride(VideoFrame::kVPlane), libyuv::FOURCC_YV12,
-          src->visible_rect().width(), src->visible_rect().height(), dst,
+          src.visible_data(VideoFrame::kYPlane),
+          src.stride(VideoFrame::kYPlane),
+          src.visible_data(VideoFrame::kUPlane),
+          src.stride(VideoFrame::kUPlane),
+          src.visible_data(VideoFrame::kVPlane),
+          src.stride(VideoFrame::kVPlane), libyuv::FOURCC_YV12,
+          src.visible_rect().width(), src.visible_rect().height(), dst,
           dst_size.width() * 4, libyuv::FOURCC_ARGB, dst_size.width(),
           dst_size.height(), 0, 0, dst_size.width(), dst_size.height(),
           kFilterMode);
@@ -134,39 +132,24 @@ void ConvertFromMediaVideoFrame(const scoped_refptr<media::VideoFrame>& src,
     const int plane_order = (dst_format == PP_VIDEOFRAME_FORMAT_YV12) ? 0 : 1;
     int dst_width = dst_size.width();
     int dst_height = dst_size.height();
-    libyuv::ScalePlane(src->visible_data(kPlanesOrder[plane_order][0]),
-                       src->stride(kPlanesOrder[plane_order][0]),
-                       src->visible_rect().width(),
-                       src->visible_rect().height(),
-                       dst,
-                       dst_width,
-                       dst_width,
-                       dst_height,
-                       kFilterMode);
+    libyuv::ScalePlane(src.visible_data(kPlanesOrder[plane_order][0]),
+                       src.stride(kPlanesOrder[plane_order][0]),
+                       src.visible_rect().width(), src.visible_rect().height(),
+                       dst, dst_width, dst_width, dst_height, kFilterMode);
     dst += dst_width * dst_height;
-    const int src_halfwidth = (src->visible_rect().width() + 1) >> 1;
-    const int src_halfheight = (src->visible_rect().height() + 1) >> 1;
+    const int src_halfwidth = (src.visible_rect().width() + 1) >> 1;
+    const int src_halfheight = (src.visible_rect().height() + 1) >> 1;
     const int dst_halfwidth = (dst_width + 1) >> 1;
     const int dst_halfheight = (dst_height + 1) >> 1;
-    libyuv::ScalePlane(src->visible_data(kPlanesOrder[plane_order][1]),
-                       src->stride(kPlanesOrder[plane_order][1]),
-                       src_halfwidth,
-                       src_halfheight,
-                       dst,
-                       dst_halfwidth,
-                       dst_halfwidth,
-                       dst_halfheight,
-                       kFilterMode);
+    libyuv::ScalePlane(src.visible_data(kPlanesOrder[plane_order][1]),
+                       src.stride(kPlanesOrder[plane_order][1]), src_halfwidth,
+                       src_halfheight, dst, dst_halfwidth, dst_halfwidth,
+                       dst_halfheight, kFilterMode);
     dst += dst_halfwidth * dst_halfheight;
-    libyuv::ScalePlane(src->visible_data(kPlanesOrder[plane_order][2]),
-                       src->stride(kPlanesOrder[plane_order][2]),
-                       src_halfwidth,
-                       src_halfheight,
-                       dst,
-                       dst_halfwidth,
-                       dst_halfwidth,
-                       dst_halfheight,
-                       kFilterMode);
+    libyuv::ScalePlane(src.visible_data(kPlanesOrder[plane_order][2]),
+                       src.stride(kPlanesOrder[plane_order][2]), src_halfwidth,
+                       src_halfheight, dst, dst_halfwidth, dst_halfwidth,
+                       dst_halfheight, kFilterMode);
   } else {
     NOTREACHED();
   }
@@ -177,20 +160,20 @@ void ConvertFromMediaVideoFrame(const scoped_refptr<media::VideoFrame>& src,
 namespace content {
 
 // Internal class used for delivering video frames on the IO-thread to
-// the MediaStreamVideoSource implementation.
+// the blink::MediaStreamVideoSource implementation.
 class PepperMediaStreamVideoTrackHost::FrameDeliverer
     : public base::RefCountedThreadSafe<FrameDeliverer> {
  public:
   FrameDeliverer(scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
                  const blink::VideoCaptureDeliverFrameCB& new_frame_callback);
 
-  void DeliverVideoFrame(const scoped_refptr<media::VideoFrame>& frame);
+  void DeliverVideoFrame(scoped_refptr<media::VideoFrame> frame);
 
  private:
   friend class base::RefCountedThreadSafe<FrameDeliverer>;
   virtual ~FrameDeliverer();
 
-  void DeliverFrameOnIO(const scoped_refptr<media::VideoFrame>& frame);
+  void DeliverFrameOnIO(scoped_refptr<media::VideoFrame> frame);
 
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
   blink::VideoCaptureDeliverFrameCB new_frame_callback_;
@@ -208,18 +191,18 @@ PepperMediaStreamVideoTrackHost::FrameDeliverer::~FrameDeliverer() {
 }
 
 void PepperMediaStreamVideoTrackHost::FrameDeliverer::DeliverVideoFrame(
-    const scoped_refptr<media::VideoFrame>& frame) {
+    scoped_refptr<media::VideoFrame> frame) {
   io_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&FrameDeliverer::DeliverFrameOnIO, this, frame));
+      FROM_HERE, base::BindOnce(&FrameDeliverer::DeliverFrameOnIO, this,
+                                std::move(frame)));
 }
 
 void PepperMediaStreamVideoTrackHost::FrameDeliverer::DeliverFrameOnIO(
-     const scoped_refptr<media::VideoFrame>& frame) {
+    scoped_refptr<media::VideoFrame> frame) {
   DCHECK(io_task_runner_->BelongsToCurrentThread());
   // The time when this frame is generated is unknown so give a null value to
   // |estimated_capture_time|.
-  new_frame_callback_.Run(frame, base::TimeTicks());
+  new_frame_callback_.Run(std::move(frame), base::TimeTicks());
 }
 
 PepperMediaStreamVideoTrackHost::PepperMediaStreamVideoTrackHost(
@@ -233,8 +216,7 @@ PepperMediaStreamVideoTrackHost::PepperMediaStreamVideoTrackHost(
       source_frame_format_(PP_VIDEOFRAME_FORMAT_UNKNOWN),
       plugin_frame_format_(PP_VIDEOFRAME_FORMAT_UNKNOWN),
       frame_data_size_(0),
-      type_(kRead),
-      weak_factory_(this) {
+      type_(kRead) {
   DCHECK(!track_.IsNull());
 }
 
@@ -247,8 +229,7 @@ PepperMediaStreamVideoTrackHost::PepperMediaStreamVideoTrackHost(
       source_frame_format_(PP_VIDEOFRAME_FORMAT_UNKNOWN),
       plugin_frame_format_(PP_VIDEOFRAME_FORMAT_UNKNOWN),
       frame_data_size_(0),
-      type_(kWrite),
-      weak_factory_(this) {
+      type_(kWrite) {
   InitBlinkTrack();
   DCHECK(!track_.IsNull());
 }
@@ -303,7 +284,7 @@ void PepperMediaStreamVideoTrackHost::InitBuffers() {
 }
 
 void PepperMediaStreamVideoTrackHost::OnClose() {
-  MediaStreamVideoSink::DisconnectFromTrack();
+  blink::MediaStreamVideoSink::DisconnectFromTrack();
   weak_factory_.InvalidateWeakPtrs();
 }
 
@@ -364,14 +345,14 @@ int32_t PepperMediaStreamVideoTrackHost::SendFrameToTrack(int32_t index) {
 }
 
 void PepperMediaStreamVideoTrackHost::OnVideoFrame(
-    const scoped_refptr<VideoFrame>& video_frame,
+    scoped_refptr<VideoFrame> video_frame,
     base::TimeTicks estimated_capture_time) {
-  DCHECK(video_frame.get());
+  DCHECK(video_frame);
   // TODO(penghuang): Check |frame->end_of_stream()| and close the track.
   scoped_refptr<media::VideoFrame> frame = video_frame;
   // Drop alpha channel since we do not support it yet.
   if (frame->format() == media::PIXEL_FORMAT_I420A)
-    frame = media::WrapAsI420VideoFrame(video_frame);
+    frame = media::WrapAsI420VideoFrame(std::move(video_frame));
   PP_VideoFrame_Format ppformat = ToPpapiFormat(frame->format());
   if (ppformat == PP_VIDEOFRAME_FORMAT_UNKNOWN)
     return;
@@ -403,13 +384,13 @@ void PepperMediaStreamVideoTrackHost::OnVideoFrame(
   buffer->size.width = size.width();
   buffer->size.height = size.height();
   buffer->data_size = frame_data_size_;
-  ConvertFromMediaVideoFrame(frame, ppformat, size, buffer->data);
+  ConvertFromMediaVideoFrame(*frame, ppformat, size, buffer->data);
 
   SendEnqueueBufferMessageToPlugin(index);
 }
 
 class PepperMediaStreamVideoTrackHost::VideoSource final
-    : public MediaStreamVideoSource {
+    : public blink::MediaStreamVideoSource {
  public:
   explicit VideoSource(base::WeakPtr<PepperMediaStreamVideoTrackHost> host)
       : host_(std::move(host)) {}
@@ -446,12 +427,13 @@ class PepperMediaStreamVideoTrackHost::VideoSource final
 };
 
 void PepperMediaStreamVideoTrackHost::DidConnectPendingHostToResource() {
-  if (!MediaStreamVideoSink::connected_track().IsNull())
+  if (!blink::MediaStreamVideoSink::connected_track().IsNull())
     return;
-  MediaStreamVideoSink::ConnectToTrack(
-      track_, media::BindToCurrentLoop(
-                  base::Bind(&PepperMediaStreamVideoTrackHost::OnVideoFrame,
-                             weak_factory_.GetWeakPtr())),
+  blink::MediaStreamVideoSink::ConnectToTrack(
+      track_,
+      media::BindToCurrentLoop(
+          base::BindRepeating(&PepperMediaStreamVideoTrackHost::OnVideoFrame,
+                              weak_factory_.GetWeakPtr())),
       false);
 }
 
@@ -514,16 +496,16 @@ void PepperMediaStreamVideoTrackHost::InitBlinkTrack() {
                            blink::WebMediaStreamSource::kTypeVideo,
                            blink::WebString::FromASCII(kPepperVideoSourceName),
                            false /* remote */);
-  MediaStreamVideoSource* const source =
+  blink::MediaStreamVideoSource* const source =
       new VideoSource(weak_factory_.GetWeakPtr());
   webkit_source.SetPlatformSource(
       base::WrapUnique(source));  // Takes ownership of |source|.
 
   const bool enabled = true;
-  track_ = MediaStreamVideoTrack::CreateVideoTrack(
+  track_ = blink::MediaStreamVideoTrack::CreateVideoTrack(
       source,
-      base::Bind(&PepperMediaStreamVideoTrackHost::OnTrackStarted,
-                 base::Unretained(this)),
+      base::BindRepeating(&PepperMediaStreamVideoTrackHost::OnTrackStarted,
+                          base::Unretained(this)),
       enabled);
   // Note: The call to CreateVideoTrack() returned a track that holds a
   // ref-counted reference to |webkit_source| (and, implicitly, |source|).
@@ -531,7 +513,7 @@ void PepperMediaStreamVideoTrackHost::InitBlinkTrack() {
 
 void PepperMediaStreamVideoTrackHost::OnTrackStarted(
     blink::WebPlatformMediaStreamSource* source,
-    blink::MediaStreamRequestResult result,
+    blink::mojom::MediaStreamRequestResult result,
     const blink::WebString& result_name) {
   DVLOG(3) << "OnTrackStarted result: " << result;
 }

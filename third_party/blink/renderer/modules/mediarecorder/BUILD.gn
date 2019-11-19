@@ -2,13 +2,52 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/buildflag_header.gni")
 import("//third_party/blink/renderer/modules/modules.gni")
+import("//third_party/webrtc/webrtc.gni")
+
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+  flags = [ "RTC_USE_H264=$rtc_use_h264" ]
+}
 
 blink_modules_sources("mediarecorder") {
   sources = [
+    "audio_track_encoder.cc",
+    "audio_track_encoder.h",
+    "audio_track_opus_encoder.cc",
+    "audio_track_opus_encoder.h",
+    "audio_track_pcm_encoder.cc",
+    "audio_track_pcm_encoder.h",
+    "audio_track_recorder.cc",
+    "audio_track_recorder.h",
     "blob_event.cc",
     "blob_event.h",
     "media_recorder.cc",
     "media_recorder.h",
+    "media_recorder_handler.cc",
+    "media_recorder_handler.h",
+    "vea_encoder.cc",
+    "vea_encoder.h",
+    "video_track_recorder.cc",
+    "video_track_recorder.h",
+    "vpx_encoder.cc",
+    "vpx_encoder.h",
   ]
+
+  deps = [
+    ":buildflags",
+    "//third_party/libvpx",
+    "//third_party/libyuv",
+    "//third_party/opus",
+  ]
+
+  if (rtc_use_h264) {
+    sources += [
+      "h264_encoder.cc",
+      "h264_encoder.h",
+    ]
+
+    deps += [ "//third_party/openh264:encoder" ]
+  }
 }

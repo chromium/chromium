@@ -1,0 +1,16 @@
+{
+  metadata: {
+    namespace: "MathML",
+    namespaceURI: "http://www.w3.org/1998/Math/MathML",
+    attrsNullNamespace: true,
+    export: "CORE_EXPORT",
+  },
+
+  data: [
+    "definitionURL",
+    "encoding",
+    "mathbackground",
+    "mathcolor",
+    "mathsize",
+  ],
+}

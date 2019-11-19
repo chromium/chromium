@@ -1,0 +1,9 @@
+<!DOCTYPE html>
+<script>
+testRunner.waitUntilDone();
+</script>
+<script src="../../../../fast/forms/resources/picker-common.js"></script>
+<input type=month id=month value="2018-08">
+<script>
+openPicker(document.getElementById('month'), () => testRunner.notifyDone());
+</script>

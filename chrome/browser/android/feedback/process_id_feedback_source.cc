@@ -5,8 +5,8 @@
 #include "chrome/browser/android/feedback/process_id_feedback_source.h"
 
 #include "base/task/post_task.h"
+#include "chrome/android/chrome_jni_headers/ProcessIdFeedbackSource_jni.h"
 #include "content/public/browser/browser_task_traits.h"
-#include "jni/ProcessIdFeedbackSource_jni.h"
 
 #include "base/android/jni_array.h"
 #include "base/bind.h"
@@ -54,7 +54,7 @@ void ProcessIdFeedbackSource::PrepareProcessIds() {
     process_ids_[content::PROCESS_TYPE_RENDERER].push_back(
         host->GetProcess().Pid());
   }
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&ProcessIdFeedbackSource::PrepareProcessIdsOnIOThread,
                      this));
@@ -67,7 +67,7 @@ void ProcessIdFeedbackSource::PrepareProcessIdsOnIOThread() {
     process_ids_[iter.GetData().process_type].push_back(
         iter.GetData().GetProcess().Handle());
 
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&ProcessIdFeedbackSource::PrepareCompleted, this));
 }

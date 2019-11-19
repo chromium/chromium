@@ -2,34 +2,84 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/shell_test_api.h"
+#include "ash/public/cpp/test/shell_test_api.h"
 
+#include <memory>
 #include <utility>
 
 #include "ash/accelerators/accelerator_commands.h"
+#include "ash/accelerometer/accelerometer_reader.h"
+#include "ash/app_list/app_list_controller_impl.h"
+#include "ash/app_list/views/app_list_view.h"
+#include "ash/keyboard/keyboard_controller_impl.h"
+#include "ash/public/cpp/autotest_private_api_utils.h"
+#include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/system/power/backlights_forced_off_setter.h"
 #include "ash/system/power/power_button_controller.h"
+#include "ash/wm/overview/overview_animation_state_waiter.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
-#include "ash/ws/window_service_owner.h"
+#include "ash/wm/workspace_controller.h"
+#include "base/run_loop.h"
 #include "components/prefs/testing_pref_service.h"
 #include "mojo/public/cpp/bindings/strong_binding.h"
-#include "services/ws/window_service.h"
-#include "services/ws/window_tree.h"
+#include "ui/aura/window_tree_host.h"
+#include "ui/compositor/compositor.h"
+#include "ui/compositor/compositor_observer.h"
+#include "ui/events/devices/device_data_manager_test_api.h"
 #include "ui/events/gesture_detection/gesture_configuration.h"
 
 namespace ash {
+namespace {
 
-ShellTestApi::ShellTestApi() : ShellTestApi(Shell::Get()) {}
+// Wait for a WindowTreeHost to no longer be holding pointer events.
+class PointerMoveLoopWaiter : public ui::CompositorObserver {
+ public:
+  explicit PointerMoveLoopWaiter(aura::WindowTreeHost* window_tree_host)
+      : window_tree_host_(window_tree_host) {
+    window_tree_host_->compositor()->AddObserver(this);
+  }
 
-ShellTestApi::ShellTestApi(Shell* shell) : shell_(shell) {}
+  ~PointerMoveLoopWaiter() override {
+    window_tree_host_->compositor()->RemoveObserver(this);
+  }
+
+  void Wait() {
+    // Use a while loop as it's possible for releasing the lock to trigger
+    // processing events, which again grabs the lock.
+    while (window_tree_host_->holding_pointer_moves()) {
+      run_loop_ = std::make_unique<base::RunLoop>(
+          base::RunLoop::Type::kNestableTasksAllowed);
+      run_loop_->Run();
+      run_loop_.reset();
+    }
+  }
+
+  // ui::CompositorObserver:
+  void OnCompositingEnded(ui::Compositor* compositor) override {
+    if (run_loop_)
+      run_loop_->Quit();
+  }
+
+ private:
+  aura::WindowTreeHost* window_tree_host_;
+  std::unique_ptr<base::RunLoop> run_loop_;
+
+  DISALLOW_COPY_AND_ASSIGN(PointerMoveLoopWaiter);
+};
+
+}  // namespace
+
+ShellTestApi::ShellTestApi() : shell_(Shell::Get()) {}
+ShellTestApi::~ShellTestApi() = default;
 
 // static
-void ShellTestApi::BindRequest(mojom::ShellTestApiRequest request) {
-  mojo::MakeStrongBinding(std::make_unique<ShellTestApi>(), std::move(request));
+void ShellTestApi::SetTabletControllerUseScreenshotForTest(
+    bool use_screenshot) {
+  TabletModeController::SetUseScreenshotForTest(use_screenshot);
 }
 
 MessageCenterController* ShellTestApi::message_center_controller() {
@@ -41,7 +91,8 @@ SystemGestureEventFilter* ShellTestApi::system_gesture_event_filter() {
 }
 
 WorkspaceController* ShellTestApi::workspace_controller() {
-  return shell_->GetPrimaryRootWindowController()->workspace_controller();
+  // TODO(afakhry): Split this into two, one for root, and one for context.
+  return GetActiveWorkspaceController(shell_->GetPrimaryRootWindow());
 }
 
 ScreenPositionController* ShellTestApi::screen_position_controller() {
@@ -60,11 +111,6 @@ PowerPrefs* ShellTestApi::power_prefs() {
   return shell_->power_prefs_.get();
 }
 
-void ShellTestApi::OnLocalStatePrefServiceInitialized(
-    std::unique_ptr<PrefService> pref_service) {
-  shell_->OnLocalStatePrefServiceInitialized(std::move(pref_service));
-}
-
 void ShellTestApi::ResetPowerButtonControllerForTest() {
   shell_->backlights_forced_off_setter_->ResetForTest();
   shell_->power_button_controller_ = std::make_unique<PowerButtonController>(
@@ -75,66 +121,101 @@ void ShellTestApi::SimulateModalWindowOpenForTest(bool modal_window_open) {
   shell_->simulate_modal_window_open_for_test_ = modal_window_open;
 }
 
-void ShellTestApi::IsSystemModalWindowOpen(IsSystemModalWindowOpenCallback cb) {
-  std::move(cb).Run(Shell::IsSystemModalWindowOpen());
+bool ShellTestApi::IsSystemModalWindowOpen() {
+  return Shell::IsSystemModalWindowOpen();
 }
 
-void ShellTestApi::EnableTabletModeWindowManager(bool enable) {
-  shell_->tablet_mode_controller()->EnableTabletModeWindowManager(enable);
+void ShellTestApi::SetTabletModeEnabledForTest(bool enable,
+                                               bool wait_for_completion) {
+  // Detach mouse devices, so we can enter tablet mode.
+  // Calling RunUntilIdle() here is necessary before setting the mouse devices
+  // to prevent the callback from evdev thread from overwriting whatever we set
+  // here below. See `InputDeviceFactoryEvdevProxy::OnStartupScanComplete()`.
+  base::RunLoop().RunUntilIdle();
+  ui::DeviceDataManagerTestApi().SetMouseDevices({});
+
+  TabletMode::Waiter waiter(enable);
+  shell_->tablet_mode_controller()->SetEnabledForTest(enable);
+  waiter.Wait();
 }
 
-void ShellTestApi::EnableVirtualKeyboard(EnableVirtualKeyboardCallback cb) {
-  shell_->EnableKeyboard();
-  std::move(cb).Run();
+void ShellTestApi::EnableVirtualKeyboard() {
+  shell_->keyboard_controller()->SetEnableFlag(
+      keyboard::KeyboardEnableFlag::kCommandLineEnabled);
 }
 
-void ShellTestApi::SnapWindowInSplitView(const std::string& client_name,
-                                         ws::Id window_id,
-                                         bool left,
-                                         SnapWindowInSplitViewCallback cb) {
-  auto* window_service = shell_->window_service_owner()->window_service();
-  aura::Window* window = nullptr;
-  for (ws::WindowTree* window_tree : window_service->window_trees()) {
-    if (client_name == window_tree->client_name()) {
-      window = window_tree->GetWindowByTransportId(window_id);
-      break;
-    }
-  }
-  DCHECK(window);
-  shell_->split_view_controller()->SnapWindow(
-      window,
-      left ? ash::SplitViewController::LEFT : ash::SplitViewController::RIGHT);
-  shell_->split_view_controller()->FlushForTesting();
-  std::move(cb).Run();
-}
-
-void ShellTestApi::ToggleFullscreen(ToggleFullscreenCallback cb) {
+void ShellTestApi::ToggleFullscreen() {
   ash::accelerators::ToggleFullscreen();
-  std::move(cb).Run();
 }
 
-void ShellTestApi::ToggleOverviewMode(ToggleOverviewModeCallback cb) {
-  shell_->overview_controller()->ToggleOverview();
-  std::move(cb).Run();
+bool ShellTestApi::IsOverviewSelecting() {
+  return shell_->overview_controller()->InOverviewSession();
 }
 
 void ShellTestApi::AddRemoveDisplay() {
   shell_->display_manager()->AddRemoveDisplay();
 }
 
-void ShellTestApi::SetMinFlingVelocity(float velocity) {
-  ui::GestureConfiguration::GetInstance()->set_min_fling_velocity(velocity);
+void ShellTestApi::WaitForNoPointerHoldLock() {
+  aura::WindowTreeHost* primary_host =
+      Shell::GetPrimaryRootWindowController()->GetHost();
+  if (primary_host->holding_pointer_moves())
+    PointerMoveLoopWaiter(primary_host).Wait();
 }
 
-void ShellTestApi::GetChildWindowCountInContainer(
-    int container_id,
-    GetChildWindowCountInContainerCallback cb) {
-  auto* container =
-      ash::Shell::GetPrimaryRootWindow()->GetChildById(container_id);
-  // Return an negative count to indicate that the container is invalid.
-  if (!container)
-    std::move(cb).Run(-1);
-  std::move(cb).Run(container->children().size());
+void ShellTestApi::WaitForNextFrame(base::OnceClosure closure) {
+  Shell::GetPrimaryRootWindowController()
+      ->GetHost()
+      ->compositor()
+      ->RequestPresentationTimeForNextFrame(base::BindOnce(
+          [](base::OnceClosure closure,
+             const gfx::PresentationFeedback& feedback) {
+            std::move(closure).Run();
+          },
+          std::move(closure)));
+}
+
+void ShellTestApi::WaitForOverviewAnimationState(OverviewAnimationState state) {
+  auto* overview_controller = shell_->overview_controller();
+  if (state == OverviewAnimationState::kEnterAnimationComplete &&
+      overview_controller->InOverviewSession() &&
+      !overview_controller->IsInStartAnimation()) {
+    // If there is no animation applied, call the callback immediately.
+    return;
+  }
+  if (state == OverviewAnimationState::kExitAnimationComplete &&
+      !overview_controller->InOverviewSession() &&
+      !overview_controller->IsCompletingShutdownAnimations()) {
+    // If there is no animation applied, call the callback immediately.
+    return;
+  }
+  base::RunLoop run_loop;
+  new OverviewAnimationStateWaiter(
+      state, base::Bind([](base::RunLoop* run_loop,
+                           bool finished) { run_loop->QuitWhenIdle(); },
+                        base::Unretained(&run_loop)));
+  run_loop.Run();
+}
+
+void ShellTestApi::WaitForLauncherAnimationState(
+    ash::AppListViewState target_state) {
+  base::RunLoop run_loop;
+  WaitForLauncherState(target_state, run_loop.QuitWhenIdleClosure());
+  run_loop.Run();
+}
+
+PaginationModel* ShellTestApi::GetAppListPaginationModel() {
+  AppListView* view =
+      Shell::Get()->app_list_controller()->presenter()->GetView();
+  if (!view)
+    return nullptr;
+  return view->GetAppsPaginationModel();
+}
+
+std::vector<aura::Window*> ShellTestApi::GetItemWindowListInOverviewGrids() {
+  return ash::Shell::Get()
+      ->overview_controller()
+      ->GetItemWindowListInOverviewGridsForTest();
 }
 
 }  // namespace ash

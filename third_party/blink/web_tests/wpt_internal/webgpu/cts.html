@@ -1,0 +1,250 @@
+<!--
+    This file is a modified copy of the cts.html from external/wpt/webgpu/.
+
+    It functions identically, except it has a custom variant list which breaks
+    down the test cases further so that test suppressions can be specific to
+    individual tests or test cases.
+-->
+
+<!doctype html>
+<title>WebGPU CTS</title>
+<meta charset=utf-8>
+<link rel=help href='https://gpuweb.github.io/gpuweb/'>
+
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<style>
+#results {
+    font-family: monospace;
+    width: 100%;
+    height: 15em;
+}
+
+/* Test Name column */
+#results > tbody > tr > td:nth-child(2) {
+    word-break: break-word;
+}
+
+/* Message column */
+#results > tbody > tr > td:nth-child(3) {
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+</style>
+
+<textarea id=results></textarea>
+<script type=module src=/webgpu/runtime/wpt.js></script>
+
+<meta name=variant content='?worker=0&q=cts:buffers/create_mapped:'>
+<meta name=variant content='?worker=0&q=cts:buffers/map:'>
+<meta name=variant content='?worker=0&q=cts:buffers/map_detach:'>
+<meta name=variant content='?worker=0&q=cts:buffers/map_oom:mapWriteAsync='>
+<meta name=variant content='?worker=0&q=cts:buffers/map_oom:mapReadAsync='>
+<meta name=variant content='?worker=0&q=cts:buffers/map_oom:createBufferMapped~'>
+<meta name=variant content='?worker=0&q=cts:buffers/map_oom:createBufferAsync~'>
+<meta name=variant content='?worker=0&q=cts:canvas/context_creation:'>
+<meta name=variant content='?worker=0&q=cts:command_buffer/basic:'>
+<meta name=variant content='?worker=0&q=cts:command_buffer/compute/basic:'>
+<meta name=variant content='?worker=0&q=cts:command_buffer/copies:'>
+<meta name=variant content='?worker=0&q=cts:command_buffer/render/basic:'>
+<meta name=variant content='?worker=0&q=cts:command_buffer/render/rendering:'>
+<meta name=variant content='?worker=0&q=cts:command_buffer/render/storeop:storeOp_controls_whether_1x1_drawn_quad_is_stored={"storeOp":"store"}'>
+<meta name=variant content='?worker=0&q=cts:command_buffer/render/storeop:storeOp_controls_whether_1x1_drawn_quad_is_stored={"storeOp":"clear"}'>
+<meta name=variant content='?worker=0&q=cts:examples:'>
+<meta name=variant content='?worker=0&q=cts:fences:'>
+<meta name=variant content='?worker=0&q=cts:validation/createBindGroup:binding_count_mismatch~'>
+<meta name=variant content='?worker=0&q=cts:validation/createBindGroup:binding_must_be_present_in_layout~'>
+<meta name=variant content='?worker=0&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"uniform-buffer","resourceType":"error"}'>
+<meta name=variant content='?worker=0&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"uniform-buffer","resourceType":"uniform-buffer"}'>
+<meta name=variant content='?worker=0&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"uniform-buffer","resourceType":"storage-buffer"}'>
+<meta name=variant content='?worker=0&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"uniform-buffer","resourceType":"sampler"}'>
+<meta name=variant content='?worker=0&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"uniform-buffer","resourceType":"sampled-texture"}'>
+<meta name=variant content='?worker=0&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"uniform-buffer","resourceType":"storage-texture"}'>
+<meta name=variant content='?worker=0&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"storage-buffer","resourceType":"error"}'>
+<meta name=variant content='?worker=0&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"storage-buffer","resourceType":"uniform-buffer"}'>
+<meta name=variant content='?worker=0&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"storage-buffer","resourceType":"storage-buffer"}'>
+<meta name=variant content='?worker=0&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"storage-buffer","resourceType":"sampler"}'>
+<meta name=variant content='?worker=0&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"storage-buffer","resourceType":"sampled-texture"}'>
+<meta name=variant content='?worker=0&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"storage-buffer","resourceType":"storage-texture"}'>
+<meta name=variant content='?worker=0&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"readonly-storage-buffer","resourceType":"error"}'>
+<meta name=variant content='?worker=0&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"readonly-storage-buffer","resourceType":"uniform-buffer"}'>
+<meta name=variant content='?worker=0&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"readonly-storage-buffer","resourceType":"storage-buffer"}'>
+<meta name=variant content='?worker=0&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"readonly-storage-buffer","resourceType":"sampler"}'>
+<meta name=variant content='?worker=0&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"readonly-storage-buffer","resourceType":"sampled-texture"}'>
+<meta name=variant content='?worker=0&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"readonly-storage-buffer","resourceType":"storage-texture"}'>
+<meta name=variant content='?worker=0&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"sampler","resourceType":"error"}'>
+<meta name=variant content='?worker=0&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"sampler","resourceType":"uniform-buffer"}'>
+<meta name=variant content='?worker=0&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"sampler","resourceType":"storage-buffer"}'>
+<meta name=variant content='?worker=0&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"sampler","resourceType":"sampler"}'>
+<meta name=variant content='?worker=0&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"sampler","resourceType":"sampled-texture"}'>
+<meta name=variant content='?worker=0&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"sampler","resourceType":"storage-texture"}'>
+<meta name=variant content='?worker=0&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"sampled-texture","resourceType":"error"}'>
+<meta name=variant content='?worker=0&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"sampled-texture","resourceType":"uniform-buffer"}'>
+<meta name=variant content='?worker=0&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"sampled-texture","resourceType":"storage-buffer"}'>
+<meta name=variant content='?worker=0&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"sampled-texture","resourceType":"sampler"}'>
+<meta name=variant content='?worker=0&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"sampled-texture","resourceType":"sampled-texture"}'>
+<meta name=variant content='?worker=0&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"sampled-texture","resourceType":"storage-texture"}'>
+<meta name=variant content='?worker=0&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"storage-texture","resourceType":"error"}'>
+<meta name=variant content='?worker=0&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"storage-texture","resourceType":"uniform-buffer"}'>
+<meta name=variant content='?worker=0&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"storage-texture","resourceType":"storage-buffer"}'>
+<meta name=variant content='?worker=0&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"storage-texture","resourceType":"sampler"}'>
+<meta name=variant content='?worker=0&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"storage-texture","resourceType":"sampled-texture"}'>
+<meta name=variant content='?worker=0&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"storage-texture","resourceType":"storage-texture"}'>
+<meta name=variant content='?worker=0&q=cts:validation/createBindGroup:texture_binding_must_have_correct_usage={"type":"sampled-texture"}'>
+<meta name=variant content='?worker=0&q=cts:validation/createBindGroup:texture_binding_must_have_correct_usage={"type":"storage-texture"}'>
+<meta name=variant content='?worker=0&q=cts:validation/createBindGroup:texture_must_have_correct_component_type~'>
+<meta name=variant content='?worker=0&q=cts:validation/createBindGroup:texture_must_have_correct_dimension~'>
+<meta name=variant content='?worker=0&q=cts:validation/createBindGroup:buffer_offset_and_size_for_bind_groups_match~'>
+<meta name=variant content='?worker=0&q=cts:validation/createBindGroupLayout:some_binding_index_was_specified_more_than_once~'>
+<meta name=variant content='?worker=0&q=cts:validation/createBindGroupLayout:negative_binding_index~'>
+<meta name=variant content='?worker=0&q=cts:validation/createBindGroupLayout:Visibility_of_bindings_can_be_0~'>
+<meta name=variant content='?worker=0&q=cts:validation/createBindGroupLayout:number_of_dynamic_buffers_exceeds_the_maximum_value~'>
+<meta name=variant content='?worker=0&q=cts:validation/createBindGroupLayout:dynamic_set_to_true_is_allowed_only_for_buffers={"type":"uniform-buffer"}'>
+<meta name=variant content='?worker=0&q=cts:validation/createBindGroupLayout:dynamic_set_to_true_is_allowed_only_for_buffers={"type":"storage-buffer"}'>
+<meta name=variant content='?worker=0&q=cts:validation/createBindGroupLayout:dynamic_set_to_true_is_allowed_only_for_buffers={"type":"readonly-storage-buffer"}'>
+<meta name=variant content='?worker=0&q=cts:validation/createBindGroupLayout:dynamic_set_to_true_is_allowed_only_for_buffers={"type":"sampler"}'>
+<meta name=variant content='?worker=0&q=cts:validation/createBindGroupLayout:dynamic_set_to_true_is_allowed_only_for_buffers={"type":"sampled-texture"}'>
+<meta name=variant content='?worker=0&q=cts:validation/createBindGroupLayout:dynamic_set_to_true_is_allowed_only_for_buffers={"type":"storage-texture"}'>
+<meta name=variant content='?worker=0&q=cts:validation/createPipelineLayout:'>
+<meta name=variant content='?worker=0&q=cts:validation/createRenderPipeline:'>
+<meta name=variant content='?worker=0&q=cts:validation/createTexture:validation_of_sampleCount={"sampleCount":0}'>
+<meta name=variant content='?worker=0&q=cts:validation/createTexture:validation_of_sampleCount={"sampleCount":1}'>
+<meta name=variant content='?worker=0&q=cts:validation/createTexture:validation_of_sampleCount={"sampleCount":2}'>
+<meta name=variant content='?worker=0&q=cts:validation/createTexture:validation_of_sampleCount={"sampleCount":3}'>
+<meta name=variant content='?worker=0&q=cts:validation/createTexture:validation_of_sampleCount={"sampleCount":4}'>
+<meta name=variant content='?worker=0&q=cts:validation/createTexture:validation_of_sampleCount={"sampleCount":8}'>
+<meta name=variant content='?worker=0&q=cts:validation/createTexture:validation_of_sampleCount={"sampleCount":16}'>
+<meta name=variant content='?worker=0&q=cts:validation/createTexture:validation_of_sampleCount={"sampleCount":4,"mipLevelCount":2}'>
+<meta name=variant content='?worker=0&q=cts:validation/createTexture:validation_of_sampleCount={"sampleCount":4,"arrayLayerCount":2}'>
+<meta name=variant content='?worker=0&q=cts:validation/createTexture:validation_of_mipLevelCount~'>
+<meta name=variant content='?worker=0&q=cts:validation/createTexture:it_is_valid_to_destroy_a_texture~'>
+<meta name=variant content='?worker=0&q=cts:validation/createTexture:it_is_valid_to_destroy_a_destroyed_texture~'>
+<meta name=variant content='?worker=0&q=cts:validation/createTexture:it_is_invalid_to_submit_a_destroyed_texture_before_and_after_encode~'>
+<meta name=variant content='?worker=0&q=cts:validation/createTexture:it_is_invalid_to_have_an_output_attachment_texture_with_non_renderable_format~'>
+<meta name=variant content='?worker=0&q=cts:validation/createView:creating_texture_view_on_a_2D_non_array_texture~'>
+<meta name=variant content='?worker=0&q=cts:validation/createView:creating_texture_view_on_a_2D_array_texture~'>
+<meta name=variant content='?worker=0&q=cts:validation/createView:Using_defaults_validates_the_same_as_setting_values_for_more_than_1_array_layer~'>
+<meta name=variant content='?worker=0&q=cts:validation/createView:Using_defaults_validates_the_same_as_setting_values_for_only_1_array_layer~'>
+<meta name=variant content='?worker=0&q=cts:validation/createView:creating_cube_map_texture_view~'>
+<meta name=variant content='?worker=0&q=cts:validation/createView:creating_cube_map_texture_view_with_a_non_square_texture~'>
+<meta name=variant content='?worker=0&q=cts:validation/createView:test_the_format_compatibility_rules_when_creating_a_texture_view~'>
+<meta name=variant content='?worker=0&q=cts:validation/createView:it_is_invalid_to_use_a_texture_view_created_from_a_destroyed_texture='>
+<meta name=variant content='?worker=0&q=cts:validation/error_scope:'>
+<meta name=variant content='?worker=0&q=cts:validation/fences:'>
+<meta name=variant content='?worker=0&q=cts:validation/queue_submit:'>
+<meta name=variant content='?worker=0&q=cts:validation/render_pass:'>
+<meta name=variant content='?worker=0&q=cts:validation/render_pass_descriptor:'>
+<meta name=variant content='?worker=0&q=cts:validation/setBindGroup:'>
+<meta name=variant content='?worker=0&q=cts:validation/setBlendColor:'>
+<meta name=variant content='?worker=0&q=cts:validation/setScissorRect:'>
+<meta name=variant content='?worker=0&q=cts:validation/setStencilReference:'>
+<meta name=variant content='?worker=0&q=cts:validation/setVertexBuffer:'>
+<meta name=variant content='?worker=0&q=cts:validation/setViewport:'>
+<meta name=variant content='?worker=0&q=cts:validation/vertex_state:'>
+
+<meta name=variant content='?worker=1&q=cts:buffers/create_mapped:'>
+<meta name=variant content='?worker=1&q=cts:buffers/map:'>
+<meta name=variant content='?worker=1&q=cts:buffers/map_detach:'>
+<meta name=variant content='?worker=1&q=cts:buffers/map_oom:mapWriteAsync='>
+<meta name=variant content='?worker=1&q=cts:buffers/map_oom:mapReadAsync='>
+<meta name=variant content='?worker=1&q=cts:buffers/map_oom:createBufferMapped~'>
+<meta name=variant content='?worker=1&q=cts:buffers/map_oom:createBufferAsync~'>
+<meta name=variant content='?worker=1&q=cts:canvas/context_creation:'>
+<meta name=variant content='?worker=1&q=cts:command_buffer/basic:'>
+<meta name=variant content='?worker=1&q=cts:command_buffer/compute/basic:'>
+<meta name=variant content='?worker=1&q=cts:command_buffer/copies:'>
+<meta name=variant content='?worker=1&q=cts:command_buffer/render/basic:'>
+<meta name=variant content='?worker=1&q=cts:command_buffer/render/rendering:'>
+<meta name=variant content='?worker=1&q=cts:command_buffer/render/storeop:storeOp_controls_whether_1x1_drawn_quad_is_stored={"storeOp":"store"}'>
+<meta name=variant content='?worker=1&q=cts:command_buffer/render/storeop:storeOp_controls_whether_1x1_drawn_quad_is_stored={"storeOp":"clear"}'>
+<meta name=variant content='?worker=1&q=cts:examples:'>
+<meta name=variant content='?worker=1&q=cts:fences:'>
+<meta name=variant content='?worker=1&q=cts:validation/createBindGroup:binding_count_mismatch~'>
+<meta name=variant content='?worker=1&q=cts:validation/createBindGroup:binding_must_be_present_in_layout~'>
+<meta name=variant content='?worker=1&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"uniform-buffer","resourceType":"error"}'>
+<meta name=variant content='?worker=1&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"uniform-buffer","resourceType":"uniform-buffer"}'>
+<meta name=variant content='?worker=1&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"uniform-buffer","resourceType":"storage-buffer"}'>
+<meta name=variant content='?worker=1&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"uniform-buffer","resourceType":"sampler"}'>
+<meta name=variant content='?worker=1&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"uniform-buffer","resourceType":"sampled-texture"}'>
+<meta name=variant content='?worker=1&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"uniform-buffer","resourceType":"storage-texture"}'>
+<meta name=variant content='?worker=1&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"storage-buffer","resourceType":"error"}'>
+<meta name=variant content='?worker=1&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"storage-buffer","resourceType":"uniform-buffer"}'>
+<meta name=variant content='?worker=1&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"storage-buffer","resourceType":"storage-buffer"}'>
+<meta name=variant content='?worker=1&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"storage-buffer","resourceType":"sampler"}'>
+<meta name=variant content='?worker=1&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"storage-buffer","resourceType":"sampled-texture"}'>
+<meta name=variant content='?worker=1&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"storage-buffer","resourceType":"storage-texture"}'>
+<meta name=variant content='?worker=1&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"readonly-storage-buffer","resourceType":"error"}'>
+<meta name=variant content='?worker=1&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"readonly-storage-buffer","resourceType":"uniform-buffer"}'>
+<meta name=variant content='?worker=1&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"readonly-storage-buffer","resourceType":"storage-buffer"}'>
+<meta name=variant content='?worker=1&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"readonly-storage-buffer","resourceType":"sampler"}'>
+<meta name=variant content='?worker=1&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"readonly-storage-buffer","resourceType":"sampled-texture"}'>
+<meta name=variant content='?worker=1&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"readonly-storage-buffer","resourceType":"storage-texture"}'>
+<meta name=variant content='?worker=1&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"sampler","resourceType":"error"}'>
+<meta name=variant content='?worker=1&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"sampler","resourceType":"uniform-buffer"}'>
+<meta name=variant content='?worker=1&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"sampler","resourceType":"storage-buffer"}'>
+<meta name=variant content='?worker=1&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"sampler","resourceType":"sampler"}'>
+<meta name=variant content='?worker=1&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"sampler","resourceType":"sampled-texture"}'>
+<meta name=variant content='?worker=1&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"sampler","resourceType":"storage-texture"}'>
+<meta name=variant content='?worker=1&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"sampled-texture","resourceType":"error"}'>
+<meta name=variant content='?worker=1&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"sampled-texture","resourceType":"uniform-buffer"}'>
+<meta name=variant content='?worker=1&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"sampled-texture","resourceType":"storage-buffer"}'>
+<meta name=variant content='?worker=1&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"sampled-texture","resourceType":"sampler"}'>
+<meta name=variant content='?worker=1&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"sampled-texture","resourceType":"sampled-texture"}'>
+<meta name=variant content='?worker=1&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"sampled-texture","resourceType":"storage-texture"}'>
+<meta name=variant content='?worker=1&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"storage-texture","resourceType":"error"}'>
+<meta name=variant content='?worker=1&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"storage-texture","resourceType":"uniform-buffer"}'>
+<meta name=variant content='?worker=1&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"storage-texture","resourceType":"storage-buffer"}'>
+<meta name=variant content='?worker=1&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"storage-texture","resourceType":"sampler"}'>
+<meta name=variant content='?worker=1&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"storage-texture","resourceType":"sampled-texture"}'>
+<meta name=variant content='?worker=1&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"storage-texture","resourceType":"storage-texture"}'>
+<meta name=variant content='?worker=1&q=cts:validation/createBindGroup:texture_binding_must_have_correct_usage={"type":"sampled-texture"}'>
+<meta name=variant content='?worker=1&q=cts:validation/createBindGroup:texture_binding_must_have_correct_usage={"type":"storage-texture"}'>
+<meta name=variant content='?worker=1&q=cts:validation/createBindGroup:texture_must_have_correct_component_type~'>
+<meta name=variant content='?worker=1&q=cts:validation/createBindGroup:texture_must_have_correct_dimension~'>
+<meta name=variant content='?worker=1&q=cts:validation/createBindGroup:buffer_offset_and_size_for_bind_groups_match~'>
+<meta name=variant content='?worker=1&q=cts:validation/createBindGroupLayout:some_binding_index_was_specified_more_than_once~'>
+<meta name=variant content='?worker=1&q=cts:validation/createBindGroupLayout:negative_binding_index~'>
+<meta name=variant content='?worker=1&q=cts:validation/createBindGroupLayout:Visibility_of_bindings_can_be_0~'>
+<meta name=variant content='?worker=1&q=cts:validation/createBindGroupLayout:number_of_dynamic_buffers_exceeds_the_maximum_value~'>
+<meta name=variant content='?worker=1&q=cts:validation/createBindGroupLayout:dynamic_set_to_true_is_allowed_only_for_buffers={"type":"uniform-buffer"}'>
+<meta name=variant content='?worker=1&q=cts:validation/createBindGroupLayout:dynamic_set_to_true_is_allowed_only_for_buffers={"type":"storage-buffer"}'>
+<meta name=variant content='?worker=1&q=cts:validation/createBindGroupLayout:dynamic_set_to_true_is_allowed_only_for_buffers={"type":"readonly-storage-buffer"}'>
+<meta name=variant content='?worker=1&q=cts:validation/createBindGroupLayout:dynamic_set_to_true_is_allowed_only_for_buffers={"type":"sampler"}'>
+<meta name=variant content='?worker=1&q=cts:validation/createBindGroupLayout:dynamic_set_to_true_is_allowed_only_for_buffers={"type":"sampled-texture"}'>
+<meta name=variant content='?worker=1&q=cts:validation/createBindGroupLayout:dynamic_set_to_true_is_allowed_only_for_buffers={"type":"storage-texture"}'>
+<meta name=variant content='?worker=1&q=cts:validation/createPipelineLayout:'>
+<meta name=variant content='?worker=1&q=cts:validation/createRenderPipeline:'>
+<meta name=variant content='?worker=1&q=cts:validation/createTexture:validation_of_sampleCount={"sampleCount":0}'>
+<meta name=variant content='?worker=1&q=cts:validation/createTexture:validation_of_sampleCount={"sampleCount":1}'>
+<meta name=variant content='?worker=1&q=cts:validation/createTexture:validation_of_sampleCount={"sampleCount":2}'>
+<meta name=variant content='?worker=1&q=cts:validation/createTexture:validation_of_sampleCount={"sampleCount":3}'>
+<meta name=variant content='?worker=1&q=cts:validation/createTexture:validation_of_sampleCount={"sampleCount":4}'>
+<meta name=variant content='?worker=1&q=cts:validation/createTexture:validation_of_sampleCount={"sampleCount":8}'>
+<meta name=variant content='?worker=1&q=cts:validation/createTexture:validation_of_sampleCount={"sampleCount":16}'>
+<meta name=variant content='?worker=1&q=cts:validation/createTexture:validation_of_sampleCount={"sampleCount":4,"mipLevelCount":2}'>
+<meta name=variant content='?worker=1&q=cts:validation/createTexture:validation_of_sampleCount={"sampleCount":4,"arrayLayerCount":2}'>
+<meta name=variant content='?worker=1&q=cts:validation/createTexture:validation_of_mipLevelCount~'>
+<meta name=variant content='?worker=1&q=cts:validation/createTexture:it_is_valid_to_destroy_a_texture~'>
+<meta name=variant content='?worker=1&q=cts:validation/createTexture:it_is_valid_to_destroy_a_destroyed_texture~'>
+<meta name=variant content='?worker=1&q=cts:validation/createTexture:it_is_invalid_to_submit_a_destroyed_texture_before_and_after_encode~'>
+<meta name=variant content='?worker=1&q=cts:validation/createTexture:it_is_invalid_to_have_an_output_attachment_texture_with_non_renderable_format~'>
+<meta name=variant content='?worker=1&q=cts:validation/createView:creating_texture_view_on_a_2D_non_array_texture~'>
+<meta name=variant content='?worker=1&q=cts:validation/createView:creating_texture_view_on_a_2D_array_texture~'>
+<meta name=variant content='?worker=1&q=cts:validation/createView:Using_defaults_validates_the_same_as_setting_values_for_more_than_1_array_layer~'>
+<meta name=variant content='?worker=1&q=cts:validation/createView:Using_defaults_validates_the_same_as_setting_values_for_only_1_array_layer~'>
+<meta name=variant content='?worker=1&q=cts:validation/createView:creating_cube_map_texture_view~'>
+<meta name=variant content='?worker=1&q=cts:validation/createView:creating_cube_map_texture_view_with_a_non_square_texture~'>
+<meta name=variant content='?worker=1&q=cts:validation/createView:test_the_format_compatibility_rules_when_creating_a_texture_view~'>
+<meta name=variant content='?worker=1&q=cts:validation/createView:it_is_invalid_to_use_a_texture_view_created_from_a_destroyed_texture='>
+<meta name=variant content='?worker=1&q=cts:validation/error_scope:'>
+<meta name=variant content='?worker=1&q=cts:validation/fences:'>
+<meta name=variant content='?worker=1&q=cts:validation/queue_submit:'>
+<meta name=variant content='?worker=1&q=cts:validation/render_pass:'>
+<meta name=variant content='?worker=1&q=cts:validation/render_pass_descriptor:'>
+<meta name=variant content='?worker=1&q=cts:validation/setBindGroup:'>
+<meta name=variant content='?worker=1&q=cts:validation/setBlendColor:'>
+<meta name=variant content='?worker=1&q=cts:validation/setScissorRect:'>
+<meta name=variant content='?worker=1&q=cts:validation/setStencilReference:'>
+<meta name=variant content='?worker=1&q=cts:validation/setVertexBuffer:'>
+<meta name=variant content='?worker=1&q=cts:validation/setViewport:'>
+<meta name=variant content='?worker=1&q=cts:validation/vertex_state:'>

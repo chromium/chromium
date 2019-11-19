@@ -15,9 +15,7 @@
 namespace blink {
 
 MediaStreamAudioTrack::MediaStreamAudioTrack(bool is_local_track)
-    : blink::WebPlatformMediaStreamTrack(is_local_track),
-      is_enabled_(1),
-      weak_factory_(this) {
+    : WebPlatformMediaStreamTrack(is_local_track), is_enabled_(1) {
   DVLOG(1) << "MediaStreamAudioTrack@" << this << "::MediaStreamAudioTrack("
            << (is_local_track ? "local" : "remote") << " track)";
 }
@@ -30,9 +28,9 @@ MediaStreamAudioTrack::~MediaStreamAudioTrack() {
 
 // static
 MediaStreamAudioTrack* MediaStreamAudioTrack::From(
-    const blink::WebMediaStreamTrack& track) {
+    const WebMediaStreamTrack& track) {
   if (track.IsNull() ||
-      track.Source().GetType() != blink::WebMediaStreamSource::kTypeAudio) {
+      track.Source().GetType() != WebMediaStreamSource::kTypeAudio) {
     return nullptr;
   }
   return static_cast<MediaStreamAudioTrack*>(track.GetPlatformTrack());
@@ -47,7 +45,7 @@ void MediaStreamAudioTrack::AddSink(WebMediaStreamAudioSink* sink) {
   // If the track has already stopped, just notify the sink of this fact without
   // adding it.
   if (stop_callback_.is_null()) {
-    sink->OnReadyStateChanged(blink::WebMediaStreamSource::kReadyStateEnded);
+    sink->OnReadyStateChanged(WebMediaStreamSource::kReadyStateEnded);
     return;
   }
 
@@ -83,7 +81,7 @@ void MediaStreamAudioTrack::SetEnabled(bool enabled) {
 }
 
 void MediaStreamAudioTrack::SetContentHint(
-    blink::WebMediaStreamTrack::ContentHintType content_hint) {
+    WebMediaStreamTrack::ContentHintType content_hint) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   std::vector<WebMediaStreamAudioSink*> sinks_to_notify;
@@ -96,12 +94,12 @@ void* MediaStreamAudioTrack::GetClassIdentifier() const {
   return nullptr;
 }
 
-void MediaStreamAudioTrack::Start(const base::Closure& stop_callback) {
+void MediaStreamAudioTrack::Start(base::OnceClosure stop_callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!stop_callback.is_null());
   DCHECK(stop_callback_.is_null());
   DVLOG(1) << "Starting MediaStreamAudioTrack@" << this << '.';
-  stop_callback_ = stop_callback;
+  stop_callback_ = std::move(stop_callback);
 }
 
 void MediaStreamAudioTrack::StopAndNotify(base::OnceClosure callback) {
@@ -115,7 +113,7 @@ void MediaStreamAudioTrack::StopAndNotify(base::OnceClosure callback) {
   deliverer_.GetConsumerList(&sinks_to_end);
   for (WebMediaStreamAudioSink* sink : sinks_to_end) {
     deliverer_.RemoveConsumer(sink);
-    sink->OnReadyStateChanged(blink::WebMediaStreamSource::kReadyStateEnded);
+    sink->OnReadyStateChanged(WebMediaStreamSource::kReadyStateEnded);
   }
 
   if (callback)

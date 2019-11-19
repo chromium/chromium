@@ -18,8 +18,7 @@
 // user to pick the transport protocol over which they wish to use their
 // security key.
 class AuthenticatorTransportSelectorSheetView
-    : public AuthenticatorRequestSheetView,
-      public TransportHoverListModel::Delegate {
+    : public AuthenticatorRequestSheetView {
  public:
   explicit AuthenticatorTransportSelectorSheetView(
       std::unique_ptr<AuthenticatorTransportSelectorSheetModel> model);
@@ -33,9 +32,6 @@ class AuthenticatorTransportSelectorSheetView
 
   // AuthenticatorRequestSheetView:
   std::unique_ptr<views::View> BuildStepSpecificContent() override;
-
-  // TransportHoverListModel::Delegate:
-  void OnItemSelected(AuthenticatorTransport transport) override;
 
   DISALLOW_COPY_AND_ASSIGN(AuthenticatorTransportSelectorSheetView);
 };

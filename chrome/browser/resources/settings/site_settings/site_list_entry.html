@@ -1,10 +1,10 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
+<link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
 <link rel="import" href="chrome://resources/cr_elements/icons.html">
 <link rel="import" href="chrome://resources/cr_elements/policy/cr_policy_pref_indicator.html">
 <link rel="import" href="chrome://resources/html/cr/ui/focus_row_behavior.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-icon-button/paper-icon-button-light.html">
 <link rel="import" href="../i18n_setup.html">
 <link rel="import" href="../icons.html">
 <link rel="import" href="../route.html">
@@ -26,10 +26,8 @@
       }
 
       /* Tooltip is hidden since site-list will display a common tooltip. */
-      cr-policy-pref-indicator {
-        --cr-tooltip: {
-          display: none;
-        };
+      cr-policy-pref-indicator::part(tooltip) {
+        display: none;
       }
     </style>
     <div class="list-item" focus-row-container>
@@ -38,19 +36,19 @@
         <site-favicon url="[[model.origin]]"></site-favicon>
         <div class="middle no-min-width">
           <div class="text-elide">
-            <span class="url-directionality">[[model.displayName]]</span>
+            <span class="url-directionality">[[computeDisplayName_(model)]]
+            </span>
           </div>
 
           <!-- This div must not contain extra whitespace. -->
           <div class="secondary text-elide"
-              id="siteDescription">[[siteDescription_]]</div>
+              id="siteDescription">[[computeSiteDescription_(model)]]</div>
         </div>
         <template is="dom-if" if="[[allowNavigateToSiteDetail_]]">
-          <paper-icon-button-light class="subpage-arrow">
-            <button aria-label$="[[model.displayName]]"
-                aria-describedby="siteDescription" focus-row-control
-                focus-type="site-details"></button>
-          </paper-icon-button-light>
+          <cr-icon-button class="subpage-arrow"
+              aria-label$="[[computeDisplayName_(model)]]"
+              aria-describedby="siteDescription" focus-row-control
+              focus-type="site-details"></cr-icon-button>
           <div class="separator"></div>
         </template>
       </div>
@@ -60,20 +58,15 @@
             on-focus="onShowTooltip_" focus-row-control focus-type="policy">
         </cr-policy-pref-indicator>
       </template>
-      <paper-icon-button-light id="resetSiteContainer"
-          class="icon-delete-gray"
-          hidden="[[shouldHideResetButton_(model, readOnlyList)]]">
-        <button id="resetSite" on-click="onResetButtonTap_"
-            aria-label="$i18n{siteSettingsActionReset}" focus-row-control
-            focus-type="reset"></button>
-      </paper-icon-button-light>
-      <paper-icon-button-light id="actionMenuButtonContainer"
-          class="icon-more-vert"
-          hidden="[[shouldHideActionMenu_(model, readOnlyList)]]">
-        <button id="actionMenuButton" on-click="onShowActionMenuTap_"
-            title="$i18n{moreActions}" focus-row-control focus-type="menu">
-        </button>
-      </paper-icon-button-light>
+      <cr-icon-button id="resetSite" class="icon-delete-gray"
+          hidden="[[shouldHideResetButton_(model, readOnlyList)]]"
+          on-click="onResetButtonTap_"
+          aria-label="$i18n{siteSettingsActionReset}" focus-row-control
+          focus-type="reset"></cr-icon-button>
+      <cr-icon-button id="actionMenuButton" class="icon-more-vert"
+          hidden="[[shouldHideActionMenu_(model, readOnlyList)]]"
+          on-click="onShowActionMenuTap_" title="$i18n{moreActions}"
+          focus-row-control focus-type="menu"></cr-icon-button>
     </div>
   </template>
   <script src="site_list_entry.js"></script>

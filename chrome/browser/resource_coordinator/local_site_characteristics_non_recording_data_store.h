@@ -37,17 +37,16 @@ class LocalSiteCharacteristicsNonRecordingDataStore
       const url::Origin& origin) override;
   std::unique_ptr<SiteCharacteristicsDataWriter> GetWriterForOrigin(
       const url::Origin& origin,
-      TabVisibility tab_visibility) override;
+      performance_manager::TabVisibility tab_visibility) override;
   bool IsRecordingForTesting() override;
 
   // LocalSiteCharacteristicsDataStoreInspector:
   const char* GetDataStoreName() override;
   std::vector<url::Origin> GetAllInMemoryOrigins() override;
   void GetDatabaseSize(DatabaseSizeCallback on_have_data) override;
-  bool GetDataForOrigin(
-      const url::Origin& origin,
-      bool* is_dirty,
-      std::unique_ptr<SiteCharacteristicsProto>* data) override;
+  bool GetDataForOrigin(const url::Origin& origin,
+                        bool* is_dirty,
+                        std::unique_ptr<SiteDataProto>* data) override;
   SiteCharacteristicsDataStore* GetDataStore() override;
 
  private:

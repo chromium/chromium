@@ -21,11 +21,12 @@
 // https://html.spec.whatwg.org/C/#the-form-element
 
 [
+    Exposed=Window,
     HTMLConstructor,
     OverrideBuiltins
 ] interface HTMLFormElement : HTMLElement {
     [CEReactions, Reflect=accept_charset] attribute DOMString acceptCharset;
-    [CEReactions, URL, RaisesException=Setter] attribute URLString action;
+    [CEReactions, URL] attribute USVString action;
     [CEReactions, Reflect, ReflectOnly=("on","off"), ReflectMissing="on", ReflectInvalid="on"] attribute DOMString autocomplete;
     [CEReactions, CustomElementCallbacks] attribute DOMString enctype;
     [CEReactions, CustomElementCallbacks] attribute DOMString encoding;
@@ -41,6 +42,7 @@
     [NotEnumerable] getter (RadioNodeList or Element) (DOMString name);
 
     [ImplementedAs=submitFromJavaScript] void submit();
+    [RaisesException] void requestSubmit(optional HTMLElement submitter);
     [CEReactions, CustomElementCallbacks] void reset();
     boolean checkValidity();
     boolean reportValidity();

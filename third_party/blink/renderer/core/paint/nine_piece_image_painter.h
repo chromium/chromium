@@ -13,9 +13,9 @@ class ComputedStyle;
 class GraphicsContext;
 class ImageResourceObserver;
 class Node;
-class LayoutRect;
 class NinePieceImage;
 class Document;
+struct PhysicalRect;
 
 class NinePieceImagePainter {
   STACK_ALLOCATED();
@@ -25,7 +25,7 @@ class NinePieceImagePainter {
                     const ImageResourceObserver&,
                     const Document&,
                     Node*,
-                    const LayoutRect&,
+                    const PhysicalRect&,
                     const ComputedStyle&,
                     const NinePieceImage&,
                     bool include_logical_left_edge = true,

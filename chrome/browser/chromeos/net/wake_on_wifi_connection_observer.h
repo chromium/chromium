@@ -9,7 +9,6 @@
 #include "base/macros.h"
 #include "chrome/browser/chromeos/net/wake_on_wifi_manager.h"
 #include "components/gcm_driver/gcm_connection_observer.h"
-#include "content/public/browser/notification_observer.h"
 #include "net/base/ip_endpoint.h"
 
 class Profile;
@@ -23,6 +22,10 @@ class NetworkDeviceHandler;
 // associated with a profile.
 class WakeOnWifiConnectionObserver : public gcm::GCMConnectionObserver {
  public:
+  WakeOnWifiConnectionObserver(Profile* profile,
+                               bool wifi_properties_received,
+                               WakeOnWifiManager::WakeOnWifiFeature feature,
+                               NetworkDeviceHandler* network_device_handler);
   ~WakeOnWifiConnectionObserver() override;
 
   // Handles the case when the wifi properties have been received along with
@@ -45,12 +48,6 @@ class WakeOnWifiConnectionObserver : public gcm::GCMConnectionObserver {
                            TestWakeOnWifiPacketRemove);
   FRIEND_TEST_ALL_PREFIXES(WakeOnWifiObserverTest, TestWakeOnWifiNoneAdd);
   FRIEND_TEST_ALL_PREFIXES(WakeOnWifiObserverTest, TestWakeOnWifiNoneRemove);
-  friend class WakeOnWifiManager;
-
-  WakeOnWifiConnectionObserver(Profile* profile,
-                               bool wifi_properties_received,
-                               WakeOnWifiManager::WakeOnWifiFeature feature,
-                               NetworkDeviceHandler* network_device_handler);
 
   void AddWakeOnPacketConnection();
   void RemoveWakeOnPacketConnection();

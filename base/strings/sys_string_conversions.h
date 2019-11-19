@@ -61,12 +61,12 @@ BASE_EXPORT std::string SysWideToMultiByte(const std::wstring& wide,
 
 // Creates a string, and returns it with a refcount of 1. You are responsible
 // for releasing it. Returns NULL on failure.
-BASE_EXPORT CFStringRef SysUTF8ToCFStringRef(const std::string& utf8);
-BASE_EXPORT CFStringRef SysUTF16ToCFStringRef(const string16& utf16);
+BASE_EXPORT CFStringRef SysUTF8ToCFStringRef(StringPiece utf8);
+BASE_EXPORT CFStringRef SysUTF16ToCFStringRef(StringPiece16 utf16);
 
 // Same, but returns an autoreleased NSString.
-BASE_EXPORT NSString* SysUTF8ToNSString(const std::string& utf8);
-BASE_EXPORT NSString* SysUTF16ToNSString(const string16& utf16);
+BASE_EXPORT NSString* SysUTF8ToNSString(StringPiece utf8);
+BASE_EXPORT NSString* SysUTF16ToNSString(StringPiece16 utf16);
 
 // Converts a CFStringRef to an STL string. Returns an empty string on failure.
 BASE_EXPORT std::string SysCFStringRefToUTF8(CFStringRef ref);

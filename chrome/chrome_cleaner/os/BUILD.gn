@@ -2,6 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+# Nothing outside //chrome/chrome_cleaner can depend on these targets.
+visibility = [ "//chrome/chrome_cleaner/*" ]
+
 source_set("common_os") {
   sources = [
     "digest_verifier.cc",
@@ -53,7 +56,8 @@ source_set("common_os") {
   ]
 
   deps = [
-    "//base:base",
+    "//base",
+    "//chrome/chrome_cleaner:buildflags",
     "//chrome/chrome_cleaner/constants:common_strings",
     "//chrome/chrome_cleaner/constants:version_header",
     "//chrome/chrome_cleaner/proto:file_digest_proto",
@@ -62,7 +66,7 @@ source_set("common_os") {
 
     # For file_path_sanitization
     "//chrome/chrome_cleaner/proto:shared_pup_enums_proto",
-    "//crypto:crypto",
+    "//crypto",
   ]
 
   libs = [
@@ -101,12 +105,13 @@ source_set("cleaner_os") {
 
   deps = [
     ":common_os",
-    "//base:base",
+    ":file_remover_api",
+    "//base",
     "//chrome/chrome_cleaner/constants:common_strings",
     "//chrome/chrome_cleaner/constants:quarantine_constants",
     "//chrome/chrome_cleaner/constants:version_header",
-    "//chrome/chrome_cleaner/interfaces:zip_archiver_interface",
     "//chrome/chrome_cleaner/logging/proto:removal_status_proto",
+    "//chrome/chrome_cleaner/mojom:zip_archiver_interface",
     "//chrome/chrome_cleaner/proto:shared_pup_enums_proto",
     "//chrome/chrome_cleaner/zip_archiver:common",
     "//components/chrome_cleaner/public/constants:constants",
@@ -114,7 +119,6 @@ source_set("cleaner_os") {
   ]
 
   public_deps = [
-    ":file_remover_api",
     "//chrome/chrome_cleaner/logging/proto:removal_status_proto",
   ]
 }
@@ -138,7 +142,6 @@ source_set("unittest_sources") {
     "resource_util_unittest.cc",
     "shutdown_watchdog_unittest.cc",
     "system_util_cleaner_unittest.cc",
-    "system_util_unittest.cc",
     "task_scheduler_unittest.cc",
     "whitelisted_directory_unittest.cc",
   ]
@@ -147,7 +150,7 @@ source_set("unittest_sources") {
     ":cleaner_os",
     ":common_os",
     ":file_remover_api",
-    "//base:base",
+    "//base",
     "//base/test:test_config",
     "//base/test:test_support",
     "//chrome/chrome_cleaner/constants:common_strings",

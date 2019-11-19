@@ -12,7 +12,7 @@ struct wl_client;
 namespace exo {
 namespace wayland {
 
-constexpr uint32_t kWlOutputVersion = 2;
+constexpr uint32_t kWlOutputVersion = 3;
 
 void bind_output(wl_client* client, void* data, uint32_t version, uint32_t id);
 

@@ -1,0 +1,29 @@
+<style include="cr-hidden-style">
+  #viewManager {
+    display: flex;
+    font-size: 100%;
+    margin: 0;
+    min-height: 100vh;
+  }
+
+  #viewManager :-webkit-any(nux-google-apps, nux-ntp-background,
+      nux-set-as-default) {
+    /* Override cr-view-manager's default styling for view. */
+    bottom: initial;
+    left: initial;
+    margin: auto;
+    position: unset;
+    right: initial;
+    top: initial;
+  }
+
+  cr-toast {
+    min-width: initial;
+  }
+</style>
+<cr-view-manager id="viewManager" hidden="[[!modulesInitialized_]]">
+  <landing-view id="step-landing" slot="view" class="active"></landing-view>
+</cr-view-manager>
+<cr-toast duration="3000">
+  <div>$i18n{defaultBrowserChanged}</div>
+</cr-toast>

@@ -66,8 +66,8 @@ class ExtensionInstallPrompt {
     REPAIR_PROMPT = 9,
     DELEGATED_PERMISSIONS_PROMPT = 10,
     // DELEGATED_BUNDLE_PERMISSIONS_PROMPT_DEPRECATED = 11,
-    NUM_PROMPT_TYPES = 12,
-    WEBSTORE_WIDGET_PROMPT = 13,
+    WEBSTORE_WIDGET_PROMPT = 12,
+    NUM_PROMPT_TYPES = 13,
   };
 
   // The last prompt type to display; only used for testing.
@@ -326,6 +326,10 @@ class ExtensionInstallPrompt {
   // Shows the actual UI (the icon should already be loaded).
   void ShowConfirmation();
 
+  // If auto confirm is enabled then posts a task to proceed with or cancel the
+  // install and returns true. Otherwise returns false.
+  bool AutoConfirmPromptIfEnabled();
+
   Profile* profile_;
 
   base::ThreadChecker ui_thread_checker_;
@@ -358,7 +362,7 @@ class ExtensionInstallPrompt {
   // Whether or not the |show_dialog_callback_| was called.
   bool did_call_show_dialog_;
 
-  base::WeakPtrFactory<ExtensionInstallPrompt> weak_factory_;
+  base::WeakPtrFactory<ExtensionInstallPrompt> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ExtensionInstallPrompt);
 };

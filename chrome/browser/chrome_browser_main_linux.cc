@@ -4,8 +4,6 @@
 
 #include "chrome/browser/chrome_browser_main_linux.h"
 
-#include <fontconfig/fontconfig.h>
-
 #include <memory>
 #include <string>
 #include <utility>
@@ -18,6 +16,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/grit/chromium_strings.h"
 #include "components/crash/content/app/breakpad_linux.h"
+#include "components/crash/content/app/crashpad.h"
 #include "components/metrics/metrics_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
@@ -37,20 +36,10 @@
 
 ChromeBrowserMainPartsLinux::ChromeBrowserMainPartsLinux(
     const content::MainFunctionParams& parameters,
-    ChromeFeatureListCreator* chrome_feature_list_creator)
-    : ChromeBrowserMainPartsPosix(parameters,
-                                  chrome_feature_list_creator) {}
+    StartupData* startup_data)
+    : ChromeBrowserMainPartsPosix(parameters, startup_data) {}
 
 ChromeBrowserMainPartsLinux::~ChromeBrowserMainPartsLinux() {
-}
-
-void ChromeBrowserMainPartsLinux::ToolkitInitialized() {
-  // Explicitly initialize Fontconfig early on to prevent races later due to
-  // implicit initialization in response to threads' first calls to Fontconfig:
-  // http://crbug.com/404311
-  FcInit();
-
-  ChromeBrowserMainPartsPosix::ToolkitInitialized();
 }
 
 void ChromeBrowserMainPartsLinux::PreProfileInit() {
@@ -58,8 +47,9 @@ void ChromeBrowserMainPartsLinux::PreProfileInit() {
   // Needs to be called after we have chrome::DIR_USER_DATA and
   // g_browser_process.  This happens in PreCreateThreads.
   // base::GetLinuxDistro() will initialize its value if needed.
-  base::PostTaskWithTraits(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+  base::PostTask(
+      FROM_HERE,
+      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(base::IgnoreResult(&base::GetLinuxDistro)));
 #endif
 
@@ -76,8 +66,8 @@ void ChromeBrowserMainPartsLinux::PreProfileInit() {
   // Forward the product name
   config->product_name = l10n_util::GetStringUTF8(IDS_PRODUCT_NAME);
   // OSCrypt may target keyring, which requires calls from the main thread.
-  config->main_thread_runner = base::CreateSingleThreadTaskRunnerWithTraits(
-      {content::BrowserThread::UI});
+  config->main_thread_runner =
+      base::CreateSingleThreadTaskRunner({content::BrowserThread::UI});
   // OSCrypt can be disabled in a special settings file.
   config->should_use_preference =
       parsed_command_line().HasSwitch(switches::kEnableEncryptionSelection);
@@ -91,14 +81,15 @@ void ChromeBrowserMainPartsLinux::PreProfileInit() {
 void ChromeBrowserMainPartsLinux::PostProfileInit() {
   ChromeBrowserMainPartsPosix::PostProfileInit();
 
-  g_browser_process->metrics_service()->RecordBreakpadRegistration(
-      breakpad::IsCrashReporterEnabled());
+  bool enabled = (crash_reporter::IsCrashpadEnabled() &&
+                  crash_reporter::GetUploadsEnabled()) ||
+                 breakpad::IsCrashReporterEnabled();
+  g_browser_process->metrics_service()->RecordBreakpadRegistration(enabled);
 }
 
 void ChromeBrowserMainPartsLinux::PostMainMessageLoopStart() {
 #if !defined(OS_CHROMEOS)
-  bluez::BluezDBusThreadManager::Initialize();
-  bluez::BluezDBusManager::Initialize();
+  bluez::BluezDBusManager::Initialize(nullptr /* system_bus */);
 #endif
 
   ChromeBrowserMainPartsPosix::PostMainMessageLoopStart();

@@ -4,6 +4,9 @@
 
 import("//build/config/android/rules.gni")
 import("//build/config/c++/c++.gni")
+import("//device/vr/buildflags/buildflags.gni")
+
+assert(enable_vr)
 
 android_aar_prebuilt("controller_test_api_java") {
   testonly = true
@@ -25,69 +28,6 @@ android_aar_prebuilt("gvr_common_java") {
     "proguard-gvr-chromium.txt",
   ]
   ignore_native_libraries = true
-
-  jar_included_patterns = [
-    # The following list contains all the java classes in com.google.vr. that we
-    # use. Gvr allows loading GvrLayout and GvrUiLayout from VrCore. So a lot of
-    # classes are not needed.
-    "*google/common/logging/nano/Vr\$VREvent.class",
-    "*google/common/logging/nano/Vr\$VREvent\$SdkConfigurationParams*",
-    "*google/vr/cardboard/AndroidNCompat*.class",
-    "*google/vr/cardboard/ConfigUtils.class",
-    "*google/vr/cardboard/ContentProviderVrParamsProvider.class",
-    "*google/vr/cardboard/ContextUtils.class",
-    "*google/vr/cardboard/DisplaySynchronizer.class",
-    "*google/vr/cardboard/DisplayUtils.class",
-    "*google/vr/cardboard/FrameMonitor.class",
-    "*google/vr/cardboard/IsEmulator.class",
-    "*google/vr/cardboard/PackageUtils.class",
-    "*google/vr/cardboard/StoragePermissionUtils.class",
-    "*google/vr/cardboard/UiUtils.class",
-    "*google/vr/cardboard/VrContextWrapper.class",
-    "*google/vr/cardboard/VrCoreLibraryLoader.class",
-    "*google/vr/cardboard/VrParamsProvider.class",
-    "*google/vr/cardboard/VrParamsProviderFactory.class",
-    "*google/vr/cardboard/VrParamsProviderFactory\$ContentProviderClientHandle.class",
-    "*google/vr/cardboard/VrSettingsProviderContract.class",
-    "*google/vr/internal/controller/ControllerServiceBridge.class",
-    "*google/vr/internal/controller/ControllerServiceBridge\$*",
-    "*google/vr/internal/controller/NativeCallbacks.class",
-    "*google/vr/ndk/base/AndroidCompat.class",
-    "*google/vr/ndk/base/BuildConstants.class",
-    "*google/vr/ndk/base/DaydreamApi*.class",
-    "*google/vr/ndk/base/DaydreamUtils.class",
-    "*google/vr/ndk/base/DefaultNativeLibraryLoader.class",
-    "*google/vr/ndk/base/GvrApi.class",
-    "*google/vr/ndk/base/GvrLayout.class",
-    "*google/vr/ndk/base/GvrLayoutFactory.class",
-    "*google/vr/ndk/base/GvrUiLayout.class",
-    "*google/vr/ndk/base/SdkConfigurationReader.class",
-    "*google/vr/ndk/base/TraceCompat.class",
-    "*google/vr/ndk/base/Version.class",
-    "*google/vr/sdk/common/deps/a.class",
-    "*google/vr/sdk/common/deps/b.class",
-    "*google/vr/sdk/common/deps/c.class",
-    "*google/vr/sdk/proto/nano/CardboardDevice.class",
-    "*google/vr/sdk/proto/nano/CardboardDevice\$*",
-    "*google/vr/sdk/proto/nano/Display.class",
-    "*google/vr/sdk/proto/nano/Display\$*",
-    "*google/vr/sdk/proto/nano/Preferences.class",
-    "*google/vr/sdk/proto/nano/Preferences\$*",
-    "*google/vr/sdk/proto/nano/SdkConfiguration.class",
-    "*google/vr/sdk/proto/nano/SdkConfiguration\$*",
-    "*google/vr/vrcore/base/api/ParcelableProto.class",
-    "*google/vr/vrcore/base/api/VrCoreConstants.class",
-    "*google/vr/vrcore/base/api/VrCoreNotAvailableException.class",
-    "*google/vr/vrcore/base/api/VrCoreUtils.class",
-    "*google/vr/vrcore/base/api/VrCoreUtils\$*",
-    "*google/vr/vrcore/common/api/IDaydream*",
-    "*google/vr/vrcore/common/api/ITransition*",
-    "*google/vr/vrcore/common/api/IVrCore*",
-    "*google/vr/vrcore/controller/api/IController*",
-    "*google/vr/vrcore/controller/api/Controller*",
-    "*google/vr/vrcore/library/api/*",
-  ]
-
   deps = [
     "//third_party/android_protobuf:protobuf_nano_javalib",
   ]

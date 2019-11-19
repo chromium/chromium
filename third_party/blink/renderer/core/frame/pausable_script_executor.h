@@ -22,19 +22,13 @@ class ScriptState;
 class WebScriptExecutionCallback;
 
 class CORE_EXPORT PausableScriptExecutor final
-    : public GarbageCollectedFinalized<PausableScriptExecutor>,
+    : public GarbageCollected<PausableScriptExecutor>,
       public ContextLifecycleObserver {
   USING_GARBAGE_COLLECTED_MIXIN(PausableScriptExecutor);
 
  public:
   enum BlockingOption { kNonBlocking, kOnloadBlocking };
 
-  static PausableScriptExecutor* Create(
-      LocalFrame*,
-      scoped_refptr<DOMWrapperWorld>,
-      const HeapVector<ScriptSourceCode>& sources,
-      bool user_gesture,
-      WebScriptExecutionCallback*);
   static void CreateAndRun(LocalFrame*,
                            v8::Isolate*,
                            v8::Local<v8::Context>,
@@ -44,7 +38,7 @@ class CORE_EXPORT PausableScriptExecutor final
                            v8::Local<v8::Value> argv[],
                            WebScriptExecutionCallback*);
 
-  class Executor : public GarbageCollectedFinalized<Executor> {
+  class Executor : public GarbageCollected<Executor> {
    public:
     virtual ~Executor() = default;
 
@@ -53,6 +47,11 @@ class CORE_EXPORT PausableScriptExecutor final
     virtual void Trace(blink::Visitor* visitor) {}
   };
 
+  PausableScriptExecutor(LocalFrame*,
+                         scoped_refptr<DOMWrapperWorld>,
+                         const HeapVector<ScriptSourceCode>&,
+                         bool,
+                         WebScriptExecutionCallback*);
   PausableScriptExecutor(LocalFrame*,
                          ScriptState*,
                          WebScriptExecutionCallback*,

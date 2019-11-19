@@ -380,7 +380,7 @@ TEST(ParseCapabilities, LoggingPrefsOk) {
   base::DictionaryValue logging_prefs;
   logging_prefs.SetString("Network", "INFO");
   base::DictionaryValue caps;
-  caps.SetKey("loggingPrefs", std::move(logging_prefs));
+  caps.SetKey("goog:loggingPrefs", std::move(logging_prefs));
   Status status = capabilities.Parse(caps);
   ASSERT_TRUE(status.IsOk());
   ASSERT_EQ(1u, capabilities.logging_prefs.size());
@@ -390,7 +390,7 @@ TEST(ParseCapabilities, LoggingPrefsOk) {
 TEST(ParseCapabilities, LoggingPrefsNotDict) {
   Capabilities capabilities;
   base::DictionaryValue caps;
-  caps.SetString("loggingPrefs", "INFO");
+  caps.SetString("goog:loggingPrefs", "INFO");
   Status status = capabilities.Parse(caps);
   ASSERT_FALSE(status.IsOk());
 }
@@ -401,7 +401,7 @@ TEST(ParseCapabilities, PerfLoggingPrefsInspectorDomainStatus) {
   base::DictionaryValue logging_prefs;
   logging_prefs.SetString(WebDriverLog::kPerformanceType, "INFO");
   base::DictionaryValue desired_caps;
-  desired_caps.SetKey("loggingPrefs", std::move(logging_prefs));
+  desired_caps.SetKey("goog:loggingPrefs", std::move(logging_prefs));
   ASSERT_EQ(PerfLoggingPrefs::InspectorDomainStatus::kDefaultEnabled,
             capabilities.perf_logging_prefs.network);
   ASSERT_EQ(PerfLoggingPrefs::InspectorDomainStatus::kDefaultEnabled,
@@ -425,7 +425,7 @@ TEST(ParseCapabilities, PerfLoggingPrefsTracing) {
   base::DictionaryValue logging_prefs;
   logging_prefs.SetString(WebDriverLog::kPerformanceType, "INFO");
   base::DictionaryValue desired_caps;
-  desired_caps.SetKey("loggingPrefs", std::move(logging_prefs));
+  desired_caps.SetKey("goog:loggingPrefs", std::move(logging_prefs));
   ASSERT_EQ("", capabilities.perf_logging_prefs.trace_categories);
   base::DictionaryValue perf_logging_prefs;
   perf_logging_prefs.SetString("traceCategories", "benchmark,blink.console");
@@ -446,7 +446,7 @@ TEST(ParseCapabilities, PerfLoggingPrefsInvalidInterval) {
   base::DictionaryValue logging_prefs;
   logging_prefs.SetString(WebDriverLog::kPerformanceType, "INFO");
   base::DictionaryValue desired_caps;
-  desired_caps.SetKey("loggingPrefs", std::move(logging_prefs));
+  desired_caps.SetKey("goog:loggingPrefs", std::move(logging_prefs));
   base::DictionaryValue perf_logging_prefs;
   // A bufferUsageReportingInterval interval <= 0 will cause DevTools errors.
   perf_logging_prefs.SetInteger("bufferUsageReportingInterval", 0);
@@ -462,7 +462,7 @@ TEST(ParseCapabilities, PerfLoggingPrefsNotDict) {
   base::DictionaryValue logging_prefs;
   logging_prefs.SetString(WebDriverLog::kPerformanceType, "INFO");
   base::DictionaryValue desired_caps;
-  desired_caps.SetKey("loggingPrefs", std::move(logging_prefs));
+  desired_caps.SetKey("goog:loggingPrefs", std::move(logging_prefs));
   desired_caps.SetString("goog:chromeOptions.perfLoggingPrefs",
                          "traceCategories");
   Status status = capabilities.Parse(desired_caps);
@@ -487,7 +487,7 @@ TEST(ParseCapabilities, PerfLoggingPrefsPerfLogOff) {
   // Disable performance log by setting logging level to OFF.
   logging_prefs.SetString(WebDriverLog::kPerformanceType, "OFF");
   base::DictionaryValue desired_caps;
-  desired_caps.SetKey("loggingPrefs", std::move(logging_prefs));
+  desired_caps.SetKey("goog:loggingPrefs", std::move(logging_prefs));
   base::DictionaryValue perf_logging_prefs;
   perf_logging_prefs.SetBoolean("enableNetwork", true);
   desired_caps.SetPath({"goog:chromeOptions", "perfLoggingPrefs"},
@@ -509,8 +509,8 @@ TEST(ParseCapabilities, ExcludeSwitches) {
   ASSERT_TRUE(status.IsOk());
   ASSERT_EQ(2u, capabilities.exclude_switches.size());
   const std::set<std::string>& switches = capabilities.exclude_switches;
-  ASSERT_TRUE(base::ContainsKey(switches, "switch1"));
-  ASSERT_TRUE(base::ContainsKey(switches, "switch2"));
+  ASSERT_TRUE(base::Contains(switches, "switch1"));
+  ASSERT_TRUE(base::Contains(switches, "switch2"));
 }
 
 TEST(ParseCapabilities, UseRemoteBrowser) {

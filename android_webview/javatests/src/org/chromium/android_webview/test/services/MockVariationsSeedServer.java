@@ -8,7 +8,7 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.os.ParcelFileDescriptor;
 
-import org.chromium.android_webview.services.IVariationsSeedServer;
+import org.chromium.android_webview.common.services.IVariationsSeedServer;
 import org.chromium.android_webview.services.VariationsSeedServer;
 import org.chromium.base.test.util.CallbackHelper;
 

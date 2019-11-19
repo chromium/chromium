@@ -7,6 +7,8 @@ import("//third_party/protobuf/proto_library.gni")
 
 jumbo_static_library("browser") {
   sources = [
+    "autofill_log_router_factory.cc",
+    "autofill_log_router_factory.h",
     "content_autofill_driver.cc",
     "content_autofill_driver.h",
     "content_autofill_driver_factory.cc",
@@ -19,9 +21,10 @@ jumbo_static_library("browser") {
 
   public_deps = [
     ":risk_proto",
-    "//components/autofill/content/common:mojo_interfaces",
+    "//components/autofill/content/common/mojom",
     "//components/autofill/core/browser",
     "//components/autofill/core/common",
+    "//components/keyed_service/content",
     "//skia",
   ]
   deps = [
@@ -49,6 +52,10 @@ jumbo_static_library("browser") {
     "//ui/gfx/geometry",
     "//url",
   ]
+
+  if (!is_android) {
+    deps += [ "//components/autofill/content/browser/webauthn" ]
+  }
 }
 
 proto_library("risk_proto") {
@@ -61,6 +68,7 @@ proto_library("risk_proto") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "autofill_internals_log_router_unittest.cc",
     "content_autofill_driver_unittest.cc",
     "key_press_handler_manager_unittest.cc",
   ]
@@ -68,7 +76,7 @@ source_set("unit_tests") {
   deps = [
     ":browser",
     "//base",
-    "//components/autofill/content/common:mojo_interfaces",
+    "//components/autofill/content/common/mojom",
     "//components/autofill/core/browser",
     "//components/autofill/core/browser:test_support",
     "//components/autofill/core/common",

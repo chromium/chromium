@@ -7,6 +7,7 @@
 
 #include "base/macros.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "ui/base/ime/init/input_method_factory.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/base/ime/mock_input_method.h"
 #include "ui/base/ime/text_input_client.h"
@@ -22,14 +23,14 @@ namespace chromeos {
 // The base class of text input testing.
 class TextInputTestBase : public InProcessBrowserTest {
  public:
-  TextInputTestBase() {}
-  ~TextInputTestBase() override {}
-
-  void SetUpInProcessBrowserTestFixture() override;
+  TextInputTestBase();
+  ~TextInputTestBase() override;
 
   ui::InputMethod* GetInputMethod() const;
 
  private:
+  ui::ScopedTestInputMethodFactory scoped_test_input_method_factory_;
+
   DISALLOW_COPY_AND_ASSIGN(TextInputTestBase);
 };
 

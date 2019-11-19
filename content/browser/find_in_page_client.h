@@ -5,7 +5,7 @@
 #ifndef CONTENT_BROWSER_FIND_IN_PAGE_CLIENT_H_
 #define CONTENT_BROWSER_FIND_IN_PAGE_CLIENT_H_
 
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/mojom/frame/find_in_page.mojom.h"
 
 namespace content {
@@ -43,7 +43,7 @@ class FindInPageClient final : public blink::mojom::FindInPageClient {
                         blink::mojom::FindMatchUpdateType update_type);
   RenderFrameHostImpl* const frame_;
   FindRequestManager* const find_request_manager_;
-  mojo::Binding<blink::mojom::FindInPageClient> binding_;
+  mojo::Receiver<blink::mojom::FindInPageClient> receiver_{this};
   int number_of_matches_ = 0;
 
   DISALLOW_COPY_AND_ASSIGN(FindInPageClient);

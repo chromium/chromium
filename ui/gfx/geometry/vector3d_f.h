@@ -87,6 +87,10 @@ inline bool operator==(const Vector3dF& lhs, const Vector3dF& rhs) {
   return lhs.x() == rhs.x() && lhs.y() == rhs.y() && lhs.z() == rhs.z();
 }
 
+inline bool operator!=(const Vector3dF& lhs, const Vector3dF& rhs) {
+  return !(lhs == rhs);
+}
+
 inline Vector3dF operator-(const Vector3dF& v) {
   return Vector3dF(-v.x(), -v.y(), -v.z());
 }

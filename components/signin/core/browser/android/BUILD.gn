@@ -6,11 +6,12 @@ import("//build/config/android/rules.gni")
 
 generate_jni("jni_headers") {
   sources = [
+    "java/src/org/chromium/components/signin/AccountManagerFacade.java",
     "java/src/org/chromium/components/signin/AccountTrackerService.java",
     "java/src/org/chromium/components/signin/ChildAccountInfoFetcher.java",
+    "java/src/org/chromium/components/signin/ConsistencyCookieManager.java",
     "java/src/org/chromium/components/signin/OAuth2TokenService.java",
   ]
-  jni_package = "components/signin"
 }
 
 android_library("java") {
@@ -19,8 +20,11 @@ android_library("java") {
     "$google_play_services_package:google_play_services_base_java",
     "$google_play_services_package:google_play_services_basement_java",
     "//base:base_java",
+    "//base:jni_java",
     "//net/android:net_java",
-    "//third_party/android_deps:android_support_annotations_java",
+    "//third_party/android_deps:android_support_v4_java",
+    "//third_party/android_deps:androidx_annotation_annotation_java",
+    "//ui/android:ui_java",
   ]
 
   java_files = [
@@ -35,19 +39,26 @@ android_library("java") {
     "java/src/org/chromium/components/signin/ChildAccountInfoFetcher.java",
     "java/src/org/chromium/components/signin/ChildAccountStatus.java",
     "java/src/org/chromium/components/signin/ChromeSigninController.java",
+    "java/src/org/chromium/components/signin/ConsistencyCookieManager.java",
     "java/src/org/chromium/components/signin/GmsAvailabilityException.java",
     "java/src/org/chromium/components/signin/GmsJustUpdatedException.java",
     "java/src/org/chromium/components/signin/util/PatternMatcher.java",
+    "java/src/org/chromium/components/signin/MutableObservableValue.java",
     "java/src/org/chromium/components/signin/OAuth2TokenService.java",
+    "java/src/org/chromium/components/signin/ObservableValue.java",
     "java/src/org/chromium/components/signin/ProfileDataSource.java",
+    "java/src/org/chromium/components/signin/SigninActivityMonitor.java",
     "java/src/org/chromium/components/signin/SystemAccountManagerDelegate.java",
   ]
+
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 
 junit_binary("components_signin_junit_tests") {
   java_files = [
     "junit/src/org/chromium/components/signin/test/AccountManagerFacadeRobolectricTest.java",
     "junit/src/org/chromium/components/signin/test/PatternMatcherTest.java",
+    "junit/src/org/chromium/components/signin/test/ObservableValueTest.java",
   ]
   deps = [
     ":java",
@@ -55,7 +66,7 @@ junit_binary("components_signin_junit_tests") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
-    "//third_party/android_deps:android_support_annotations_java",
+    "//third_party/android_deps:androidx_annotation_annotation_java",
     "//third_party/junit",
   ]
 }
@@ -67,7 +78,7 @@ android_library("signin_javatests") {
     ":signin_java_test_support",
     "//base:base_java",
     "//base:base_java_test_support",
-    "//third_party/android_deps:android_support_annotations_java",
+    "//third_party/android_deps:androidx_annotation_annotation_java",
     "//third_party/android_support_test_runner:rules_java",
     "//third_party/android_support_test_runner:runner_java",
     "//third_party/jsr-305:jsr_305_javalib",
@@ -83,13 +94,14 @@ android_library("signin_java_test_support") {
     ":java",
     "//base:base_java",
     "//base:base_java_test_support",
-    "//third_party/android_deps:android_support_annotations_java",
+    "//third_party/android_deps:androidx_annotation_annotation_java",
     "//third_party/jsr-305:jsr_305_javalib",
     "//third_party/junit",
   ]
 
   java_files = [
     "javatests/src/org/chromium/components/signin/test/util/AccountHolder.java",
+    "javatests/src/org/chromium/components/signin/test/util/AccountManagerTestRule.java",
     "javatests/src/org/chromium/components/signin/test/util/FakeAccountManagerDelegate.java",
     "javatests/src/org/chromium/components/signin/test/util/FakeProfileDataSource.java",
   ]

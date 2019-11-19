@@ -18,13 +18,19 @@
 namespace content {
 
 class CookieStoreManager;
+class RenderFrameHost;
 class ServiceWorkerContextWrapper;
+struct ServiceWorkerVersionInfo;
 
 // UI thread handle to a CookieStoreManager.
 //
 // This class is RefCountedDeleteOnSequence because it has members that must be
-// accessed on the IO thread, and therefore must be destroyed on the IO thread.
-// Conceptually, CookieStoreContext instances are owned by StoragePartitionImpl.
+// accessed on the service worker core thread, and therefore must be destroyed
+// on the service worker core thread. Conceptually, CookieStoreContext instances
+// are owned by StoragePartitionImpl.
+//
+// TODO(crbug.com/824858): This can probably be single-threaded after the
+// service worker core thread moves to the UI thread.
 class CONTENT_EXPORT CookieStoreContext
     : public base::RefCountedDeleteOnSequence<CookieStoreContext> {
  public:
@@ -60,27 +66,46 @@ class CONTENT_EXPORT CookieStoreContext
   void ListenToCookieChanges(::network::mojom::NetworkContext* network_context,
                              base::OnceCallback<void(bool)> success_callback);
 
-  // Routes a mojo request to the CookieStoreManager on the IO thread.
-  void CreateService(blink::mojom::CookieStoreRequest request,
-                     const url::Origin& origin);
+  // Routes a mojo receiver to the CookieStoreManager.
+  //
+  // Production code should use the CreateServiceFor*() helpers below.
+  void CreateServiceForTesting(
+      const url::Origin& origin,
+      mojo::PendingReceiver<blink::mojom::CookieStore> receiver);
+
+  // Routes a mojo receiver from a Frame to the CookieStoreManager.
+  //
+  // Must be called on the UI thread.
+  static void CreateServiceForFrame(
+      RenderFrameHost* render_frame_host,
+      mojo::PendingReceiver<blink::mojom::CookieStore> receiver);
+
+  // Routes a mojo receiver from a Service Worker to the CookieStoreManager.
+  //
+  // Must be called on the UI thread.
+  static void CreateServiceForWorker(
+      const ServiceWorkerVersionInfo& info,
+      mojo::PendingReceiver<blink::mojom::CookieStore> receiver);
 
  private:
   friend class base::RefCountedDeleteOnSequence<CookieStoreContext>;
   friend class base::DeleteHelper<CookieStoreContext>;
   ~CookieStoreContext();
 
-  void InitializeOnIOThread(
+  void InitializeOnCoreThread(
       scoped_refptr<ServiceWorkerContextWrapper> service_worker_context,
       base::OnceCallback<void(bool)> success_callback);
 
-  void ListenToCookieChangesOnIOThread(
-      ::network::mojom::CookieManagerPtrInfo cookie_manager_ptr_info,
+  void ListenToCookieChangesOnCoreThread(
+      mojo::PendingRemote<::network::mojom::CookieManager>
+          cookie_manager_remote,
       base::OnceCallback<void(bool)> success_callback);
 
-  void CreateServiceOnIOThread(blink::mojom::CookieStoreRequest request,
-                               const url::Origin& origin);
+  void CreateServiceOnCoreThread(
+      const url::Origin& origin,
+      mojo::PendingReceiver<blink::mojom::CookieStore> receiver);
 
-  // Only accessed on the IO thread.
+  // Only accessed on the service worker core thread.
   std::unique_ptr<CookieStoreManager> cookie_store_manager_;
 
 #if DCHECK_IS_ON()

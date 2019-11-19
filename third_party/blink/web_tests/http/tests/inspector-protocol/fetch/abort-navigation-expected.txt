@@ -1,0 +1,5 @@
+Tests that aborted navigation request does not result in navigation.
+Request to http://www.example.com/, type: Document
+Error text from Page.navigate: net::ERR_ABORTED
+current location: http://127.0.0.1:8000/inspector-protocol/resources/test-page.html
+

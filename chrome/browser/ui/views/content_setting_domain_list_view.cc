@@ -14,8 +14,8 @@
 ContentSettingDomainListView::ContentSettingDomainListView(
     const base::string16& title,
     const std::set<std::string>& domains) {
-  SetLayoutManager(
-      std::make_unique<views::BoxLayout>(views::BoxLayout::kVertical));
+  SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical));
 
   auto title_label = std::make_unique<views::Label>(title);
   title_label->SetMultiLine(true);

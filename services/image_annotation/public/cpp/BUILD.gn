@@ -10,23 +10,10 @@ source_set("cpp") {
 
   public_deps = [
     "//base",
+    "//services/image_annotation:lib",
     "//services/image_annotation/public/mojom",
     "//skia",
     "//ui/gfx/codec",
-  ]
-}
-
-source_set("manifest") {
-  sources = [
-    "manifest.cc",
-    "manifest.h",
-  ]
-
-  public_deps = [
-    "//base",
-    "//services/data_decoder/public/mojom:constants",
-    "//services/image_annotation/public/mojom",
-    "//services/service_manager/public/cpp",
   ]
 }
 
@@ -41,6 +28,7 @@ source_set("tests") {
     ":cpp",
     "//base",
     "//base/test:test_support",
+    "//services/image_annotation:lib",
     "//testing/gmock",
     "//testing/gtest",
     "//ui/gfx/codec",

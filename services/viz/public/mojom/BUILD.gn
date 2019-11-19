@@ -1,0 +1,57 @@
+# Copyright 2017 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom("mojom") {
+  generate_java = true
+  sources = [
+    "compositing/begin_frame_args.mojom",
+    "compositing/compositing_mode_watcher.mojom",
+    "compositing/compositor_frame.mojom",
+    "compositing/compositor_frame_metadata.mojom",
+    "compositing/compositor_frame_sink.mojom",
+    "compositing/copy_output_request.mojom",
+    "compositing/copy_output_result.mojom",
+    "compositing/filter_operation.mojom",
+    "compositing/filter_operations.mojom",
+    "compositing/frame_deadline.mojom",
+    "compositing/frame_sink_id.mojom",
+    "compositing/frame_timing_details.mojom",
+    "compositing/local_surface_id.mojom",
+    "compositing/local_surface_id_allocation.mojom",
+    "compositing/paint_filter.mojom",
+    "compositing/quads.mojom",
+    "compositing/render_pass.mojom",
+    "compositing/resource_settings.mojom",
+    "compositing/returned_resource.mojom",
+    "compositing/selection.mojom",
+    "compositing/shared_quad_state.mojom",
+    "compositing/surface_id.mojom",
+    "compositing/surface_info.mojom",
+    "compositing/surface_range.mojom",
+    "compositing/texture_releaser.mojom",
+    "compositing/transferable_resource.mojom",
+    "compositing/vertical_scroll_direction.mojom",
+    "compositing/video_detector_observer.mojom",
+    "gpu.mojom",
+    "hit_test/aggregated_hit_test_region.mojom",
+    "hit_test/hit_test_region_list.mojom",
+    "hit_test/input_target_client.mojom",
+  ]
+
+  public_deps = [
+    "//gpu/ipc/common:interfaces",
+    "//media/mojo/mojom",
+    "//mojo/public/mojom/base",
+    "//skia/public/mojom",
+    "//ui/gfx/geometry/mojom",
+    "//ui/gfx/mojom",
+    "//ui/latency/mojom",
+  ]
+
+  if (is_chromeos) {
+    public_deps += [ "//components/chromeos_camera/common" ]
+  }
+}

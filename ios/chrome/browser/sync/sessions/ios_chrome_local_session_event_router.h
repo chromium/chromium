@@ -16,7 +16,7 @@
 #include "components/sync_sessions/local_session_event_router.h"
 #import "ios/chrome/browser/tabs/tab_model_list_observer.h"
 #include "ios/chrome/browser/web_state_list/web_state_list_observer.h"
-#include "ios/web/public/web_state/web_state_observer.h"
+#include "ios/web/public/web_state_observer.h"
 
 class GURL;
 

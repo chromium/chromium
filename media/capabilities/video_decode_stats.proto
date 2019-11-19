@@ -26,4 +26,16 @@ message DecodeStatsProto {
   // where a few bad outlier playbacks permanently define a machines
   // capabilities.
   optional double last_write_date = 7;
+
+  // Required (for those in the "unweighted" experiment). An unweighted average
+  // of dropped frames percentage from the last |num_unweighted_playbacks|.
+  optional double unweighted_average_frames_dropped = 8 [default = 0];
+
+  // Required (for those in the "unweighted" experiment). An unweighted average
+  // of efficient frames percentage from the last |num_unweighted_playbacks|.
+  optional double unweighted_average_frames_efficient = 9 [default = 0];
+
+  // Required (for those in the "unweighted" experiment). Count of playbacks
+  // contributing to |unweighted_average_frames_*| fields.
+  optional uint64 num_unweighted_playbacks = 10 [default = 0];
 }

@@ -5,7 +5,7 @@
 module content.mojom;
 
 import "content/common/render_frame_metadata.mojom";
-import "services/viz/public/interfaces/compositing/compositor_frame_sink.mojom";
+import "services/viz/public/mojom/compositing/compositor_frame_sink.mojom";
 
 // This interface provides CompositorFrameSink and a
 // RenderFrameMetadataObserverClient for the renderer. While also
@@ -14,12 +14,15 @@ import "services/viz/public/interfaces/compositing/compositor_frame_sink.mojom";
 interface FrameSinkProvider {
   CreateForWidget(
       int32 widget_id,
-      viz.mojom.CompositorFrameSink& compositor_frame_sink_request,
-      viz.mojom.CompositorFrameSinkClient compositor_frame_sink_client);
+      pending_receiver<viz.mojom.CompositorFrameSink>
+          compositor_frame_sink_receiver,
+      pending_remote<viz.mojom.CompositorFrameSinkClient>
+          compositor_frame_sink_client);
 
    RegisterRenderFrameMetadataObserver(
       int32  widget_id,
-      RenderFrameMetadataObserverClient&
-        render_frame_metadata_observer_client_request,
-      RenderFrameMetadataObserver render_frame_metadata_observer);
+      pending_receiver<RenderFrameMetadataObserverClient>
+        render_frame_metadata_observer_client_receiver,
+      pending_remote<RenderFrameMetadataObserver>
+        render_frame_metadata_observer);
 };

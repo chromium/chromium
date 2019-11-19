@@ -9,3 +9,8 @@
 
 ; mach IPC
 (allow mach-lookup (global-name "com.apple.windowserver.active"))
+
+; This is available in 10.15+, and rolled out as a Finch experiment.
+(if (param-true? filter-syscalls)
+  (when (defined? 'syscall-unix)
+    (deny syscall-unix (with send-signal SIGSYS))))

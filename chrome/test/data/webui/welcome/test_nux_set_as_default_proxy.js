@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/** @implements {nux.NuxSetAsDefaultProxy} */
-class TestNuxSetAsDefaultProxy extends TestBrowserProxy {
+import {TestBrowserProxy} from '../test_browser_proxy.m.js';
+
+/** @implements {NuxSetAsDefaultProxy} */
+export class TestNuxSetAsDefaultProxy extends TestBrowserProxy {
   constructor() {
     super([
       'requestDefaultBrowserState',
@@ -21,9 +23,8 @@ class TestNuxSetAsDefaultProxy extends TestBrowserProxy {
 
   /** @override */
   requestDefaultBrowserState() {
-    cr.webUIListenerCallback(
-        'browser-default-state-changed', this.defaultStatus_);
     this.methodCalled('requestDefaultBrowserState');
+    return Promise.resolve(this.defaultStatus_);
   }
 
   /** @override */
@@ -31,7 +32,7 @@ class TestNuxSetAsDefaultProxy extends TestBrowserProxy {
     this.methodCalled('setAsDefault');
   }
 
-  /** @param {!nux.DefaultBrowserInfo} status */
+  /** @param {!DefaultBrowserInfo} status */
   setDefaultStatus(status) {
     this.defaultStatus_ = status;
   }

@@ -17,6 +17,10 @@ source_set("flatbuffers") {
     "src/include/flatbuffers/stl_emulation.h",
   ]
 
+  if (is_win) {
+    data_deps = [ "//build/win:runtime_libs" ]
+  }
+
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
 

@@ -4,8 +4,11 @@
 
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_physical_line_box_fragment.h"
 
+#include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_break_token.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_fragment_traversal.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_line_box_fragment_builder.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_relative_utils.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 
@@ -14,7 +17,6 @@ namespace blink {
 namespace {
 
 struct SameSizeAsNGPhysicalLineBoxFragment : NGPhysicalContainerFragment {
-  void* pointer;
   NGLineHeightMetrics metrics;
 };
 
@@ -33,7 +35,7 @@ NGPhysicalLineBoxFragment::Create(NGLineBoxFragmentBuilder* builder) {
   // we pass the buffer as a constructor argument.
   void* data = ::WTF::Partitions::FastMalloc(
       sizeof(NGPhysicalLineBoxFragment) +
-          builder->children_.size() * sizeof(NGLinkStorage),
+          builder->children_.size() * sizeof(NGLink),
       ::WTF::GetStringWithTypeName<NGPhysicalLineBoxFragment>());
   new (data) NGPhysicalLineBoxFragment(builder);
   return base::AdoptRef(static_cast<NGPhysicalLineBoxFragment*>(data));
@@ -47,8 +49,13 @@ NGPhysicalLineBoxFragment::NGPhysicalLineBoxFragment(
                                   kFragmentLineBox,
                                   builder->line_box_type_),
       metrics_(builder->metrics_) {
-  style_ = std::move(builder->style_);
+  // A line box must have a metrics unless it's an empty line box.
+  DCHECK(!metrics_.IsEmpty() || IsEmptyLineBox());
   base_direction_ = static_cast<unsigned>(builder->base_direction_);
+  has_hanging_ = builder->hang_inline_size_ != 0;
+  has_propagated_descendants_ = has_floating_descendants_for_paint_ ||
+                                HasOutOfFlowPositionedDescendants() ||
+                                builder->unpositioned_list_marker_;
 }
 
 NGLineHeightMetrics NGPhysicalLineBoxFragment::BaselineMetrics(
@@ -59,86 +66,60 @@ NGLineHeightMetrics NGPhysicalLineBoxFragment::BaselineMetrics(
   return metrics_;
 }
 
-NGPhysicalOffsetRect NGPhysicalLineBoxFragment::InkOverflow() const {
-  return ContentsInkOverflow();
-}
-
-NGPhysicalOffsetRect NGPhysicalLineBoxFragment::ContentsInkOverflow() const {
-  // Cannot be cached, because children might change their self-painting flag.
-  NGPhysicalOffsetRect overflow({}, Size());
-  for (const auto& child : Children()) {
-    child->PropagateContentsInkOverflow(&overflow, child.Offset());
-  }
-  return overflow;
-}
-
-NGPhysicalOffsetRect NGPhysicalLineBoxFragment::ScrollableOverflow(
+PhysicalRect NGPhysicalLineBoxFragment::ScrollableOverflow(
     const LayoutObject* container,
     const ComputedStyle* container_style,
-    NGPhysicalSize container_physical_size) const {
+    PhysicalSize container_physical_size) const {
   WritingMode container_writing_mode = container_style->GetWritingMode();
   TextDirection container_direction = container_style->Direction();
-  NGPhysicalOffsetRect overflow({}, Size());
+  PhysicalRect overflow;
   for (const auto& child : Children()) {
-    NGPhysicalOffsetRect child_scroll_overflow =
+    PhysicalRect child_scroll_overflow =
         child->ScrollableOverflowForPropagation(container);
     child_scroll_overflow.offset += child.Offset();
-    // If child has the same style as parent, parent will compute relative
-    // offset.
-    if (&child->Style() != container_style) {
+
+    // Chop the hanging part from scrollable overflow. Children overflow in
+    // inline direction should hang, which should not cause scroll.
+    // TODO(kojii): Should move to text fragment to make this more accurate.
+    if (UNLIKELY(has_hanging_ && !child->IsFloatingOrOutOfFlowPositioned())) {
+      if (IsHorizontalWritingMode(container_writing_mode)) {
+        if (child_scroll_overflow.offset.left < 0)
+          child_scroll_overflow.offset.left = LayoutUnit();
+        if (child_scroll_overflow.Right() > Size().width)
+          child_scroll_overflow.ShiftRightEdgeTo(Size().width);
+      } else {
+        if (child_scroll_overflow.offset.top < 0)
+          child_scroll_overflow.offset.top = LayoutUnit();
+        if (child_scroll_overflow.Bottom() > Size().height)
+          child_scroll_overflow.ShiftBottomEdgeTo(Size().height);
+      }
+    }
+
+    // For implementation reasons, text nodes inherit computed style from their
+    // container, including everything, also non-inherited properties. So, if
+    // the container has a relative offset, this will be falsely reflected on
+    // text children. We need to guard against this.
+    if (!child->IsText()) {
       child_scroll_overflow.offset +=
           ComputeRelativeOffset(child->Style(), container_writing_mode,
                                 container_direction, container_physical_size);
     }
     overflow.Unite(child_scroll_overflow);
   }
+
+  // Make sure we include the inline-size of the line-box in the overflow.
+  PhysicalRect rect;
+  if (IsHorizontalWritingMode(container_writing_mode))
+    rect.size.width = Size().width;
+  else
+    rect.size.height = Size().height;
+  overflow.UniteEvenIfEmpty(rect);
+
   return overflow;
 }
 
-const NGPhysicalFragment* NGPhysicalLineBoxFragment::FirstLogicalLeaf() const {
-  if (Children().IsEmpty())
-    return nullptr;
-  // TODO(xiaochengh): This isn't correct for mixed Bidi. Fix it. Besides, we
-  // should compute and store it during layout.
-  const TextDirection direction = Style().Direction();
-  const NGPhysicalFragment* runner = this;
-  while (runner->IsContainer() && !runner->IsBlockFormattingContextRoot()) {
-    const NGPhysicalContainerFragment* runner_as_container =
-        ToNGPhysicalContainerFragment(runner);
-    if (runner_as_container->Children().IsEmpty())
-      break;
-    runner = direction == TextDirection::kLtr
-                 ? runner_as_container->Children().front().get()
-                 : runner_as_container->Children().back().get();
-  }
-  DCHECK_NE(runner, this);
-  return runner;
-}
-
-const NGPhysicalFragment* NGPhysicalLineBoxFragment::LastLogicalLeaf() const {
-  if (Children().IsEmpty())
-    return nullptr;
-  // TODO(xiaochengh): This isn't correct for mixed Bidi. Fix it. Besides, we
-  // should compute and store it during layout.
-  const TextDirection direction = Style().Direction();
-  const NGPhysicalFragment* runner = this;
-  while (runner->IsContainer() && !runner->IsBlockFormattingContextRoot()) {
-    const NGPhysicalContainerFragment* runner_as_container =
-        ToNGPhysicalContainerFragment(runner);
-    if (runner_as_container->Children().IsEmpty())
-      break;
-    runner = direction == TextDirection::kLtr
-                 ? runner_as_container->Children().back().get()
-                 : runner_as_container->Children().front().get();
-  }
-  DCHECK_NE(runner, this);
-  return runner;
-}
-
 bool NGPhysicalLineBoxFragment::HasSoftWrapToNextLine() const {
-  DCHECK(BreakToken());
-  DCHECK(BreakToken()->IsInlineType());
-  const NGInlineBreakToken& break_token = ToNGInlineBreakToken(*BreakToken());
+  const auto& break_token = To<NGInlineBreakToken>(*BreakToken());
   return !break_token.IsFinished() && !break_token.IsForcedBreak();
 }
 

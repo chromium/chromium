@@ -1,0 +1,73 @@
+<title>Web Locks</title>
+<script>
+    var unblock = {};
+    var blocked = {};
+
+    var next_request_id = 1;
+
+    function AcquireLock(lock_name) {
+      blocked[lock_name] = new Promise(r => { unblock[lock_name] = r; });
+      navigator.locks.request(lock_name, {}, async lock => {
+          await blocked[lock_name];
+      });
+    }
+
+    function StealLock(lock_name) {
+      blocked[lock_name] = new Promise(r => { unblock[lock_name] = r; });
+      navigator.locks.request(lock_name, {steal: true}, async lock => {
+        await blocked[lock_name];
+      });
+    }
+
+    function ReleaseLock(lock_name) {
+      unblock[lock_name]();
+    }
+
+    function AcquireReleaseLockFromDedicatedWorker() {
+      return new Promise(resolve => {
+        const worker = new Worker('dedicated_worker.js');
+        let data = {op: 'acquire_lock', rqid: next_request_id++};
+        worker.postMessage(data);
+        const listener = event => {
+          if (event.data.rqid !== data.rqid)
+            return;
+          worker.onmessage = undefined;
+          resolve(event.data);
+        };
+        worker.onmessage = listener;
+      });
+    }
+
+    function AcquireReleaseLockFromSharedWorker() {
+      return new Promise(resolve => {
+        const worker = new SharedWorker('shared_worker.js');
+        let data = {op: 'acquire_lock', rqid: next_request_id++};
+        worker.port.postMessage(data);
+        const listener = event => {
+          if (event.data.rqid !== data.rqid)
+            return;
+          worker.port.onmessage = undefined;
+          resolve(event.data);
+        };
+        worker.port.onmessage = listener;
+      });
+    }
+
+    function AcquireReleaseLockFromServiceWorker() {
+      return new Promise(async resolve => {
+        await navigator.serviceWorker.register('service_worker.js');
+        registration = await navigator.serviceWorker.ready;
+
+        var message_channel = new MessageChannel();
+        message_channel.port1.onmessage = event => {
+          if (event.data.rqid !== data.rqid)
+            return;
+          message_channel.port1.onmessage = undefined;
+          resolve(event.data);
+        }
+        let data = {op: 'acquire_lock', rqid: next_request_id++};
+       registration.active.postMessage(
+            data, [message_channel.port2]);
+      });
+    }
+</script>

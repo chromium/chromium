@@ -36,8 +36,8 @@ DialAppInfoResult::DialAppInfoResult(DialAppInfoResult&& other) = default;
 
 DialAppInfoResult::~DialAppInfoResult() = default;
 
-DialAppDiscoveryService::DialAppDiscoveryService(DataDecoder* data_decoder)
-    : parser_(std::make_unique<SafeDialAppInfoParser>(data_decoder)) {}
+DialAppDiscoveryService::DialAppDiscoveryService()
+    : parser_(std::make_unique<SafeDialAppInfoParser>()) {}
 
 DialAppDiscoveryService::~DialAppDiscoveryService() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -85,8 +85,7 @@ DialAppDiscoveryService::PendingRequest::PendingRequest(
               &DialAppDiscoveryService::PendingRequest::OnDialAppInfoFetchError,
               base::Unretained(this))),
       app_info_cb_(std::move(app_info_cb)),
-      service_(service),
-      weak_ptr_factory_(this) {}
+      service_(service) {}
 
 DialAppDiscoveryService::PendingRequest::~PendingRequest() {
   DCHECK(app_info_cb_.is_null());

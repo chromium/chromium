@@ -35,7 +35,7 @@ public class NotificationPlatformBridgeUnitTest {
      */
     @Test
     @Feature({"Browser", "Notifications"})
-    public void testGetOriginFromNotificationTag() throws Exception {
+    public void testGetOriginFromNotificationTag() {
         // The common case.
         assertEquals("https://example.com",
                 NotificationPlatformBridge.getOriginFromNotificationTag(
@@ -64,7 +64,7 @@ public class NotificationPlatformBridgeUnitTest {
      */
     @Test
     @Feature({"Browser", "Notifications"})
-    public void testGetOriginFromChannelId() throws Exception {
+    public void testGetOriginFromChannelId() {
         // Returns the expected origin for a channel id associated with a particular origin.
         assertEquals("https://example.com",
                 NotificationPlatformBridge.getOriginFromChannelId(
@@ -85,7 +85,7 @@ public class NotificationPlatformBridgeUnitTest {
      */
     @Test
     @Feature({"Browser", "Notifications"})
-    public void testMakeDefaults() throws Exception {
+    public void testMakeDefaults() {
         // 0 should be returned if pattern length is 0, silent is true, and vibration is enabled.
         assertEquals(0, NotificationPlatformBridge.makeDefaults(0, true, true));
 
@@ -111,7 +111,7 @@ public class NotificationPlatformBridgeUnitTest {
      */
     @Test
     @Feature({"Browser", "Notifications"})
-    public void testMakeVibrationPattern() throws Exception {
+    public void testMakeVibrationPattern() {
         assertTrue(Arrays.equals(new long[] {0, 100, 200, 300},
                 NotificationPlatformBridge.makeVibrationPattern(new int[] {100, 200, 300})));
     }

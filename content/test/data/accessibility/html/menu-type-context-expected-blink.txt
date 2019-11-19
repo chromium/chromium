@@ -1,6 +1,9 @@
 rootWebArea
-++paragraph
-++++staticText name='Right-click inside this box to see the context menu!'
-++++++inlineTextBox name='Right-click inside this box to see the context menu!'
-++genericContainer
-++genericContainer
+++genericContainer ignored
+++++genericContainer ignored
+++++++paragraph
+++++++++staticText name='Right-click inside this box to see the context menu!'
+++++++++++inlineTextBox name='Right-click inside this box to see the context menu!'
+++++++genericContainer ignored
+++++++++genericContainer
+++++++++genericContainer

@@ -39,12 +39,12 @@ ItemActionStatus AddOfflinePageSync(const OfflinePageItem& item,
                                     sql::Database* db) {
   static const char kSql[] =
       "INSERT OR IGNORE INTO offlinepages_v1"
-      " (offline_id, online_url, client_namespace, client_id, file_path,"
-      " file_size, creation_time, last_access_time, access_count,"
-      " title, original_url, request_origin, system_download_id,"
-      " file_missing_time, upgrade_attempt, digest)"
+      " (offline_id,online_url,client_namespace,client_id,file_path,file_size,"
+      "creation_time,last_access_time,access_count,title,original_url,"
+      "request_origin,system_download_id,file_missing_time,digest,"
+      "snippet,attribution)"
       " VALUES "
-      " (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+      "(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
   sql::Statement statement(db->GetCachedStatement(SQL_FROM_HERE, kSql));
   statement.BindInt64(0, item.offline_id);
@@ -57,12 +57,13 @@ ItemActionStatus AddOfflinePageSync(const OfflinePageItem& item,
   statement.BindInt64(7, store_utils::ToDatabaseTime(item.last_access_time));
   statement.BindInt(8, item.access_count);
   statement.BindString16(9, item.title);
-  statement.BindString(10, item.original_url.spec());
+  statement.BindString(10, item.original_url_if_different.spec());
   statement.BindString(11, item.request_origin);
   statement.BindInt64(12, item.system_download_id);
   statement.BindInt64(13, store_utils::ToDatabaseTime(item.file_missing_time));
-  statement.BindInt(14, item.upgrade_attempt);
-  statement.BindString(15, item.digest);
+  statement.BindString(14, item.digest);
+  statement.BindString(15, item.snippet);
+  statement.BindString(16, item.attribution);
 
   if (!statement.Run())
     return ItemActionStatus::STORE_ERROR;
@@ -78,8 +79,7 @@ AddPageTask::AddPageTask(OfflinePageMetadataStore* store,
                          AddPageTaskCallback callback)
     : store_(store),
       offline_page_(offline_page),
-      callback_(std::move(callback)),
-      weak_ptr_factory_(this) {
+      callback_(std::move(callback)) {
   DCHECK(!callback_.is_null());
 }
 

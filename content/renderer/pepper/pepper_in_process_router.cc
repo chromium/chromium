@@ -23,7 +23,7 @@ namespace content {
 
 class PepperInProcessRouter::Channel : public IPC::Sender {
  public:
-  Channel(const base::Callback<bool(IPC::Message*)>& callback)
+  Channel(const base::RepeatingCallback<bool(IPC::Message*)>& callback)
       : callback_(callback) {}
 
   ~Channel() override {}
@@ -31,20 +31,17 @@ class PepperInProcessRouter::Channel : public IPC::Sender {
   bool Send(IPC::Message* message) override { return callback_.Run(message); }
 
  private:
-  base::Callback<bool(IPC::Message*)> callback_;
+  base::RepeatingCallback<bool(IPC::Message*)> callback_;
 };
 
 PepperInProcessRouter::PepperInProcessRouter(RendererPpapiHostImpl* host_impl)
-    : host_impl_(host_impl),
-      pending_message_id_(0),
-      reply_result_(false),
-      weak_factory_(this) {
-  browser_channel_.reset(new Channel(base::Bind(
+    : host_impl_(host_impl), pending_message_id_(0), reply_result_(false) {
+  browser_channel_.reset(new Channel(base::BindRepeating(
       &PepperInProcessRouter::SendToBrowser, base::Unretained(this))));
-  host_to_plugin_router_.reset(new Channel(base::Bind(
+  host_to_plugin_router_.reset(new Channel(base::BindRepeating(
       &PepperInProcessRouter::SendToPlugin, base::Unretained(this))));
-  plugin_to_host_router_.reset(new Channel(
-      base::Bind(&PepperInProcessRouter::SendToHost, base::Unretained(this))));
+  plugin_to_host_router_.reset(new Channel(base::BindRepeating(
+      &PepperInProcessRouter::SendToHost, base::Unretained(this))));
 }
 
 PepperInProcessRouter::~PepperInProcessRouter() {}

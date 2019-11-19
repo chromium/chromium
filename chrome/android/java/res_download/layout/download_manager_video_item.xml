@@ -29,8 +29,16 @@
         app:layout_gravity="center"
         app:cornerRadiusTopStart="@dimen/download_manager_thumbnail_corner_radius"
         app:cornerRadiusTopEnd="@dimen/download_manager_thumbnail_corner_radius"
-        app:roundedfillColor="@color/modern_grey_300"
-        style="@style/AsyncImageView"/>
+        app:roundedfillColor="@color/modern_grey_300"/>
+
+    <org.chromium.ui.widget.ChromeImageButton
+        android:id="@+id/action_button"
+        app:layout_column="0"
+        app:layout_row="0"
+        app:layout_gravity="center"
+        android:elevation="2dp"
+        android:clickable="false"
+        style="@style/LargeMediaPlayButton"/>
 
    <org.chromium.chrome.browser.download.home.view.SelectionView
        android:id="@+id/selection"

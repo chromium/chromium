@@ -25,29 +25,29 @@
  *
  */
 
-// https://html.spec.whatwg.org/C/#the-messageevent-interfaces
+// https://html.spec.whatwg.org/C/#the-messageevent-interface
 
 [
     Constructor(DOMString type, optional MessageEventInit eventInitDict),
     Exposed=(Window,Worker,AudioWorklet),
     RaisesException=Constructor
 ] interface MessageEvent : Event {
-    [Custom=Getter] readonly attribute any data;
+    [CachedAttribute=IsDataDirty, CallWith=ScriptState] readonly attribute any data;
     readonly attribute DOMString origin;
     readonly attribute DOMString lastEventId;
-    // TODO(bashi): |source| should be (WindowProxy or MessagePort)?
+    // TODO(bashi): |source| should be of type MessageEventSource.
     readonly attribute EventTarget? source;
     [CachedAttribute=isPortsDirty] readonly attribute FrozenArray<MessagePort> ports;
     [RuntimeEnabled=UserActivationAPI] readonly attribute UserActivation? userActivation;
 
-    // TODO(foolip): none of the arguments should have [DefaultValue=Undefined] (they
-    // have other default values in the spec) and |sourceArg|'s type is wrong.
-    [Custom, MeasureAs=InitMessageEvent] void initMessageEvent(DOMString typeArg,
-                                   [DefaultValue=Undefined] optional boolean canBubbleArg,
-                                   [DefaultValue=Undefined] optional boolean cancelableArg,
-                                   [DefaultValue=Undefined] optional any dataArg,
-                                   [DefaultValue=Undefined] optional DOMString originArg,
-                                   [DefaultValue=Undefined] optional DOMString lastEventIdArg,
-                                   [DefaultValue=Undefined] optional EventTarget sourceArg,
-                                   [DefaultValue=Undefined] optional sequence<MessagePort> portsArg);
+    // TODO(foolip): |source| should be of type MessageEventSource.
+    [MeasureAs=InitMessageEvent] void initMessageEvent(
+        DOMString type,
+        optional boolean bubbles = false,
+        optional boolean cancelable = false,
+        optional any data = null,
+        optional USVString origin = "",
+        optional DOMString lastEventId = "",
+        optional EventTarget? source = null,
+        optional sequence<MessagePort> ports = []);
 };

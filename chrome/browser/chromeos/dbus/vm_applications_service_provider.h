@@ -44,7 +44,7 @@ class VmApplicationsServiceProvider
   void UpdateMimeTypes(dbus::MethodCall* method_call,
                        dbus::ExportedObject::ResponseSender response_sender);
 
-  base::WeakPtrFactory<VmApplicationsServiceProvider> weak_ptr_factory_;
+  base::WeakPtrFactory<VmApplicationsServiceProvider> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(VmApplicationsServiceProvider);
 };

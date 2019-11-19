@@ -22,6 +22,7 @@ Local Modifications:
    imported.
  - The contents of the google directory are original Chromium-specific
    additions.
+ - Added chromeconf.h
  - Plus the changes in 'patches' folder.
  - Code in contrib/ other than contrib/minizip was added to match zlib's
    contributor layout.

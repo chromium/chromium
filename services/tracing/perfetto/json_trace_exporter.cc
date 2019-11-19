@@ -11,7 +11,7 @@
 #include "base/json/json_writer.h"
 #include "base/json/string_escape.h"
 #include "base/trace_event/trace_event.h"
-#include "third_party/perfetto/include/perfetto/tracing/core/trace_packet.h"
+#include "third_party/perfetto/include/perfetto/ext/tracing/core/trace_packet.h"
 #include "third_party/perfetto/protos/perfetto/trace/chrome/chrome_trace_event.pbzero.h"
 #include "third_party/perfetto/protos/perfetto/trace/chrome/chrome_trace_packet.pb.h"
 
@@ -19,23 +19,195 @@ namespace tracing {
 
 namespace {
 
+using TraceEvent = ::base::trace_event::TraceEvent;
+
 constexpr size_t kTraceEventBufferSizeInBytes = 100 * 1024;
 
+const char kStrippedArgument[] = "__stripped__";
+
+template <typename Nested>
+void AppendProtoArrayAsJSON(std::string* out, const Nested& array);
+
+template <typename Nested>
+void AppendProtoDictAsJSON(std::string* out, const Nested& dict);
+
+template <typename Nested>
+void AppendProtoValueAsJSON(std::string* out, const Nested& value) {
+  base::trace_event::TraceEvent::TraceValue json_value;
+  if (value.has_int_value()) {
+    json_value.as_int = value.int_value();
+    TraceEvent::AppendValueAsJSON(TRACE_VALUE_TYPE_INT, json_value, out);
+  } else if (value.has_double_value()) {
+    json_value.as_double = value.double_value();
+    TraceEvent::AppendValueAsJSON(TRACE_VALUE_TYPE_DOUBLE, json_value, out);
+  } else if (value.has_bool_value()) {
+    json_value.as_bool = value.bool_value();
+    TraceEvent::AppendValueAsJSON(TRACE_VALUE_TYPE_BOOL, json_value, out);
+  } else if (value.has_string_value()) {
+    json_value.as_string = value.string_value().c_str();
+    TraceEvent::AppendValueAsJSON(TRACE_VALUE_TYPE_STRING, json_value, out);
+  } else if (value.has_nested_type()) {
+    if (value.nested_type() == Nested::ARRAY) {
+      AppendProtoArrayAsJSON(out, value);
+      return;
+    } else if (value.nested_type() == Nested::DICT) {
+      AppendProtoDictAsJSON(out, value);
+    } else {
+      NOTREACHED();
+    }
+  } else {
+    NOTREACHED();
+  }
+}
+
+template <typename Nested>
+void AppendProtoArrayAsJSON(std::string* out, const Nested& array) {
+  out->append("[");
+
+  bool is_first_entry = true;
+  for (auto& value : array.array_values()) {
+    if (!is_first_entry) {
+      out->append(",");
+    } else {
+      is_first_entry = false;
+    }
+
+    AppendProtoValueAsJSON(out, value);
+  }
+
+  out->append("]");
+}
+
+template <typename Nested>
+void AppendProtoDictAsJSON(std::string* out, const Nested& dict) {
+  out->append("{");
+
+  DCHECK_EQ(dict.dict_keys_size(), dict.dict_values_size());
+  for (int i = 0; i < dict.dict_keys_size(); ++i) {
+    if (i != 0) {
+      out->append(",");
+    }
+
+    base::EscapeJSONString(dict.dict_keys(i), true, out);
+    out->append(":");
+
+    AppendProtoValueAsJSON(out, dict.dict_values(i));
+  }
+
+  out->append("}");
+}
+
+template <typename Value, typename Nested>
+void OutputJSONFromArgumentValue(const Value& arg,
+                                 const base::Optional<Nested>& nested,
+                                 const base::Optional<std::string>& json_value,
+                                 std::string* out) {
+  TraceEvent::TraceValue value;
+  if (arg.has_bool_value()) {
+    value.as_bool = arg.bool_value();
+    TraceEvent::AppendValueAsJSON(TRACE_VALUE_TYPE_BOOL, value, out);
+    return;
+  }
+
+  if (arg.has_uint_value()) {
+    value.as_uint = arg.uint_value();
+    TraceEvent::AppendValueAsJSON(TRACE_VALUE_TYPE_UINT, value, out);
+    return;
+  }
+
+  if (arg.has_int_value()) {
+    value.as_int = arg.int_value();
+    TraceEvent::AppendValueAsJSON(TRACE_VALUE_TYPE_INT, value, out);
+    return;
+  }
+
+  if (arg.has_double_value()) {
+    value.as_double = arg.double_value();
+    TraceEvent::AppendValueAsJSON(TRACE_VALUE_TYPE_DOUBLE, value, out);
+    return;
+  }
+
+  if (arg.has_pointer_value()) {
+    value.as_pointer = reinterpret_cast<void*>(arg.pointer_value());
+    TraceEvent::AppendValueAsJSON(TRACE_VALUE_TYPE_POINTER, value, out);
+    return;
+  }
+
+  if (arg.has_string_value()) {
+    std::string str = arg.string_value();
+    value.as_string = &str[0];
+    TraceEvent::AppendValueAsJSON(TRACE_VALUE_TYPE_STRING, value, out);
+    return;
+  }
+
+  if (json_value) {
+    *out += *json_value;
+    return;
+  }
+
+  if (nested) {
+    AppendProtoDictAsJSON(out, nested.value());
+    return;
+  }
+
+  NOTREACHED();
+}
 }  // namespace
+
+void OutputJSONFromArgumentProto(
+    const perfetto::protos::ChromeTraceEvent::Arg& arg,
+    std::string* out) {
+  base::Optional<perfetto::protos::ChromeTracedValue> traced_value;
+  if (arg.has_traced_value()) {
+    traced_value = arg.traced_value();
+  }
+  base::Optional<std::string> json_value;
+  if (arg.has_json_value()) {
+    json_value = arg.json_value();
+  }
+  OutputJSONFromArgumentValue<perfetto::protos::ChromeTraceEvent::Arg,
+                              perfetto::protos::ChromeTracedValue>(
+      arg, traced_value, json_value, out);
+}
+
+void OutputJSONFromArgumentProto(const perfetto::protos::DebugAnnotation& arg,
+                                 std::string* out) {
+  base::Optional<perfetto::protos::DebugAnnotation::NestedValue> nested_value;
+  if (arg.has_nested_value()) {
+    nested_value = arg.nested_value();
+  }
+  base::Optional<std::string> json_value;
+  if (arg.has_legacy_json_value()) {
+    json_value = arg.legacy_json_value();
+  }
+  OutputJSONFromArgumentValue<perfetto::protos::DebugAnnotation,
+                              perfetto::protos::DebugAnnotation::NestedValue>(
+      arg, nested_value, json_value, out);
+}
 
 JSONTraceExporter::JSONTraceExporter(
     ArgumentFilterPredicate argument_filter_predicate,
+    MetadataFilterPredicate metadata_filter_predicate,
     OnTraceEventJSONCallback callback)
     : out_(callback),
       metadata_(std::make_unique<base::DictionaryValue>()),
-      argument_filter_predicate_(std::move(argument_filter_predicate)) {}
+      argument_filter_predicate_(std::move(argument_filter_predicate)),
+      metadata_filter_predicate_(std::move(metadata_filter_predicate)) {}
 
 JSONTraceExporter::~JSONTraceExporter() = default;
 
 void JSONTraceExporter::OnTraceData(std::vector<perfetto::TracePacket> packets,
                                     bool has_more) {
   DCHECK(!packets.empty() || !has_more);
+  // Since we write each string before checking the limit, we'll
+  // always go slightly over and hence we reserve some extra space
+  // to avoid most reallocs. We do this in the callback to prevent this from
+  // being included in the memory dumps from tracing.
+  const size_t kReserveCapacity = kTraceEventBufferSizeInBytes * 5 / 4;
+  out_.reserve(kReserveCapacity);
 
+  // TODO(eseckler): |label_filter_| seems broken for anything but
+  // "traceEvents" (e.g. "systemTraceEvents" will output invalid JSON).
   if (label_filter_.empty() && !has_output_json_preamble_) {
     out_ += "{\"traceEvents\":[";
     has_output_json_preamble_ = true;
@@ -44,10 +216,13 @@ void JSONTraceExporter::OnTraceData(std::vector<perfetto::TracePacket> packets,
   // Delegate to the subclasses to parse the packets. It will create
   // ScopedJSONTraceEventAppenders to write the contained events along with
   // other trace fields.
-  ProcessPackets(packets);
+  ProcessPackets(packets, has_more);
 
   if (!has_more) {
     if (label_filter_.empty()) {
+      if (!legacy_json_trace_events_.empty()) {
+        *AddJSONTraceEvent() += legacy_json_trace_events_;
+      }
       // We are done adding events so now we close the traceEvents array and
       // append the rest of the fields. The rest of the fields aren't very large
       // so we don't need to check if we need to run the callback.
@@ -55,19 +230,12 @@ void JSONTraceExporter::OnTraceData(std::vector<perfetto::TracePacket> packets,
     }
 
     if ((label_filter_.empty() || label_filter_ == "systemTraceEvents") &&
-        (!legacy_system_ftrace_output_.empty() ||
-         !legacy_system_trace_events_.empty())) {
-      DCHECK(legacy_system_ftrace_output_.empty() ||
-             legacy_system_trace_events_.empty());
+        !legacy_system_ftrace_output_.empty()) {
       out_ += ",\"systemTraceEvents\":";
-      if (!legacy_system_ftrace_output_.empty()) {
-        std::string escaped;
-        base::EscapeJSONString(legacy_system_ftrace_output_,
-                               true /* put_in_quotes */, &escaped);
-        out_ += escaped;
-      } else {
-        out_ += legacy_system_trace_events_ + "}";
-      }
+      std::string escaped;
+      base::EscapeJSONString(legacy_system_ftrace_output_,
+                             true /* put_in_quotes */, &escaped);
+      out_ += escaped;
     }
 
     if (label_filter_.empty()) {
@@ -77,10 +245,10 @@ void JSONTraceExporter::OnTraceData(std::vector<perfetto::TracePacket> packets,
         base::JSONWriter::Write(*metadata_, &json_value);
         out_ += json_value;
       }
-    }
 
-    // Finish the json object we started in the preamble.
-    out_ += "}";
+      // Finish the json object we started in the preamble.
+      out_ += "}";
+    }
   }
 
   // Send any remaining data. There is no harm issuing the callback with an
@@ -98,19 +266,13 @@ void JSONTraceExporter::AddChromeLegacyJSONTrace(
   DCHECK(!json_trace.data().empty());
   switch (json_trace.type()) {
     case perfetto::protos::ChromeLegacyJsonTrace::USER_TRACE:
-      *AddJSONTraceEvent() += json_trace.data();
-      return;
-    case perfetto::protos::ChromeLegacyJsonTrace::SYSTEM_TRACE:
       if (!ShouldOutputTraceEvents()) {
         return;
       }
-      if (legacy_system_trace_events_.empty()) {
-        legacy_system_trace_events_ = "{";
-      } else {
-        legacy_system_trace_events_ += ",";
-      }
-      legacy_system_trace_events_ += json_trace.data();
+      legacy_json_trace_events_ += json_trace.data();
       return;
+    // SYSTEM_TRACE is not supported anymore.
+    case perfetto::protos::ChromeLegacyJsonTrace::SYSTEM_TRACE:
     default:
       NOTREACHED();
   }
@@ -123,6 +285,12 @@ void JSONTraceExporter::AddLegacyFtrace(
 
 void JSONTraceExporter::AddChromeMetadata(
     const perfetto::protos::ChromeMetadata& metadata) {
+  if (!metadata_filter_predicate_.is_null() &&
+      !metadata_filter_predicate_.Run(metadata.name())) {
+    metadata_->SetString(metadata.name(), kStrippedArgument);
+    return;
+  }
+
   if (metadata.has_string_value()) {
     metadata_->SetString(metadata.name(), metadata.string_value());
   } else if (metadata.has_int_value()) {
@@ -140,6 +308,12 @@ void JSONTraceExporter::AddChromeMetadata(
 
 void JSONTraceExporter::SetTraceStatsMetadata(
     const perfetto::protos::TraceStats& trace_stats) {
+  if (!metadata_filter_predicate_.is_null() &&
+      !metadata_filter_predicate_.Run("perfetto_trace_stats")) {
+    metadata_->SetString("perfetto_trace_stats", kStrippedArgument);
+    return;
+  }
+
   auto dict = std::make_unique<base::DictionaryValue>();
   dict->SetInteger("producers_connected", trace_stats.producers_connected());
   dict->SetInteger("producers_seen", trace_stats.producers_seen());
@@ -177,10 +351,23 @@ void JSONTraceExporter::SetTraceStatsMetadata(
                          buf_stats.readaheads_succeeded());
     buf_dict->SetInteger("readaheads_failed", buf_stats.readaheads_failed());
     buf_dict->SetInteger("abi_violations", buf_stats.abi_violations());
-    buf_list->GetList().push_back(std::move(buf_value));
+    buf_dict->SetInteger("trace_writer_packet_loss",
+                         buf_stats.trace_writer_packet_loss());
+    buf_list->Append(std::move(buf_value));
   }
   dict->SetList("buffer_stats", std::move(buf_list));
   metadata_->SetDictionary("perfetto_trace_stats", std::move(dict));
+}
+
+void JSONTraceExporter::AddMetadata(const std::string& entry_name,
+                                    std::unique_ptr<base::Value> value) {
+  if (!metadata_filter_predicate_.is_null() &&
+      !metadata_filter_predicate_.Run(entry_name)) {
+    metadata_->SetString(entry_name, kStrippedArgument);
+    return;
+  }
+
+  metadata_->Set(entry_name, std::move(value));
 }
 
 JSONTraceExporter::ScopedJSONTraceEventAppender
@@ -211,11 +398,6 @@ JSONTraceExporter::StringBuffer* JSONTraceExporter::AddJSONTraceEvent() {
 JSONTraceExporter::StringBuffer::StringBuffer(
     JSONTraceExporter::OnTraceEventJSONCallback callback)
     : callback_(std::move(callback)) {
-  // Since we write each string before checking the limit, we'll
-  // always go slightly over and hence we reserve some extra space
-  // to avoid most reallocs.
-  const size_t kReserveCapacity = kTraceEventBufferSizeInBytes * 5 / 4;
-  out_.reserve(kReserveCapacity);
 }
 
 JSONTraceExporter::StringBuffer::~StringBuffer() {}
@@ -249,6 +431,10 @@ const std::string& JSONTraceExporter::StringBuffer::out() {
   return out_;
 }
 
+void JSONTraceExporter::StringBuffer::reserve(size_t size) {
+  out_.reserve(size);
+}
+
 void JSONTraceExporter::StringBuffer::EscapeJSONAndAppend(
     const std::string& unescaped) {
   MaybeRunCallback();
@@ -257,10 +443,11 @@ void JSONTraceExporter::StringBuffer::EscapeJSONAndAppend(
 
 void JSONTraceExporter::StringBuffer::Flush(base::DictionaryValue* metadata,
                                             bool has_more) {
-  callback_.Run(out_, metadata, has_more);
+  callback_.Run(&out_, metadata, has_more);
   if (has_more) {
     // We clear |out_| because we've processed all the current data in |out_|
-    // and we don't want any data to be repeated. We have to protect this by
+    // and we don't want any data to be repeated. The callback should have moved
+    // all the contents, but clear it to be safe. We have to protect this by
     // checking |has_more| because the callback could have deleted |this| in
     // which cause |out_| is a destroyed as well.
     out_.clear();
@@ -333,7 +520,7 @@ bool JSONTraceExporter::ArgumentBuilder::SkipBecauseStripped(
     return true;
   }
   if (ArgumentNameIsStripped(name)) {
-    AddArg()->AppendF("\"%s\":\"__stripped__\"", name.c_str());
+    AddArg()->AppendF("\"%s\":\"%s\"", name.c_str(), kStrippedArgument);
     return true;
   }
   return false;
@@ -364,6 +551,9 @@ JSONTraceExporter::ScopedJSONTraceEventAppender::ScopedJSONTraceEventAppender(
     JSONTraceExporter::ScopedJSONTraceEventAppender&& move) {
   out_ = move.out_;
   phase_ = move.phase_;
+  added_args_ = move.added_args_;
+  event_name_ = std::move(move.event_name_);
+  category_group_name_ = std::move(move.category_group_name_);
   argument_filter_predicate_ = std::move(move.argument_filter_predicate_);
   // We null out the string so that the destructor knows not to append the
   // closing brace for the json.
@@ -395,6 +585,16 @@ void JSONTraceExporter::ScopedJSONTraceEventAppender::AddThreadDuration(
 void JSONTraceExporter::ScopedJSONTraceEventAppender::AddThreadTimestamp(
     int64_t thread_timestamp) {
   out_->AppendF(",\"tts\":%" PRId64, thread_timestamp);
+}
+
+void JSONTraceExporter::ScopedJSONTraceEventAppender::AddThreadInstructionCount(
+    int64_t thread_instruction_count) {
+  out_->AppendF(",\"ticount\":%" PRId64, thread_instruction_count);
+}
+
+void JSONTraceExporter::ScopedJSONTraceEventAppender::AddThreadInstructionDelta(
+    int64_t thread_instruction_delta) {
+  out_->AppendF(",\"tidelta\":%" PRId64, thread_instruction_delta);
 }
 
 void JSONTraceExporter::ScopedJSONTraceEventAppender::AddBindId(

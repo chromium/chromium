@@ -39,14 +39,14 @@ class UI_BASE_EXPORT TreeModelObserver {
   // Notification that nodes were added to the specified parent.
   virtual void TreeNodesAdded(TreeModel* model,
                               TreeModelNode* parent,
-                              int start,
-                              int count) = 0;
+                              size_t start,
+                              size_t count) = 0;
 
   // Notification that nodes were removed from the specified parent.
   virtual void TreeNodesRemoved(TreeModel* model,
                                 TreeModelNode* parent,
-                                int start,
-                                int count) = 0;
+                                size_t start,
+                                size_t count) = 0;
 
   // Notification that the contents of a node has changed.
   virtual void TreeNodeChanged(TreeModel* model, TreeModelNode* node) = 0;
@@ -63,21 +63,20 @@ class UI_BASE_EXPORT TreeModelObserver {
 // hierarchy and observer notification. See tree_node_model.h.
 class UI_BASE_EXPORT TreeModel {
  public:
+  using Nodes = std::vector<TreeModelNode*>;
+
   // Returns the root of the tree. This may or may not be shown in the tree,
   // see SetRootShown for details.
   virtual TreeModelNode* GetRoot() = 0;
 
-  // Returns the number of children in |parent|.
-  virtual int GetChildCount(TreeModelNode* parent) = 0;
-
-  // Returns the child node of |parent| at |index|.
-  virtual TreeModelNode* GetChild(TreeModelNode* parent, int index) = 0;
+  // Returns the children of |parent|.
+  virtual Nodes GetChildren(const TreeModelNode* parent) const = 0;
 
   // Returns the index of |child| in |parent|.
-  virtual int GetIndexOf(TreeModelNode* parent, TreeModelNode* child) = 0;
+  virtual int GetIndexOf(TreeModelNode* parent, TreeModelNode* child) const = 0;
 
   // Returns the parent of |node|, or NULL if |node| is the root.
-  virtual TreeModelNode* GetParent(TreeModelNode* node) = 0;
+  virtual TreeModelNode* GetParent(TreeModelNode* node) const = 0;
 
   // Adds an observer of the model.
   virtual void AddObserver(TreeModelObserver* observer) = 0;

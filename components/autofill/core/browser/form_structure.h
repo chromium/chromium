@@ -11,6 +11,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/gtest_prod_util.h"
@@ -24,8 +25,8 @@
 #include "components/autofill/core/browser/form_types.h"
 #include "components/autofill/core/browser/proto/api_v1.pb.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/autofill/core/common/password_form.h"
-#include "components/autofill/core/common/submission_source.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -37,11 +38,12 @@ class TimeTicks;
 
 namespace autofill {
 
+class LogBuffer;
+class LogManager;
+
 // Password attributes (whether a password has special symbols, numeric, etc.)
 enum class PasswordAttribute {
   kHasLowercaseLetter,
-  kHasUppercaseLetter,
-  kHasNumeric,
   kHasSpecialSymbol,
   kPasswordAttributesCount
 };
@@ -60,7 +62,7 @@ class FormStructure {
 
   // Runs several heuristics against the form fields to determine their possible
   // types.
-  void DetermineHeuristicTypes();
+  void DetermineHeuristicTypes(LogManager* log_manager = nullptr);
 
   // Encodes the proto |upload| request from this FormStructure.
   // In some cases, a |login_form_signature| is included as part of the upload.
@@ -107,6 +109,13 @@ class FormStructure {
   // Returns whether sending autofill field metadata to the server is enabled.
   static bool IsAutofillFieldMetadataEnabled();
 
+  // Creates FormStructure that has bare minimum information for uploading
+  // votes, namely form and field signatures. Warning: do not use for Autofill
+  // code, since it is likely missing some fields.
+  static std::unique_ptr<FormStructure> CreateForPasswordManagerUpload(
+      FormSignature form_signature,
+      const std::vector<FieldSignature>& field_signatures);
+
   // Return the form signature as string.
   std::string FormSignatureAsStr() const;
 
@@ -126,7 +135,7 @@ class FormStructure {
   void UpdateAutofillCount();
 
   // Returns true if this form matches the structural requirements for Autofill.
-  bool ShouldBeParsed() const;
+  bool ShouldBeParsed(LogManager* log_manager = nullptr) const;
 
   // Returns true if heuristic autofill type detection should be attempted for
   // this form.
@@ -147,7 +156,7 @@ class FormStructure {
 
   // Sets the field types to be those set for |cached_form|.
   void RetrieveFromCache(const FormStructure& cached_form,
-                         const bool apply_is_autofilled,
+                         const bool should_keep_cached_value,
                          const bool only_server_and_autofill_state);
 
   // Logs quality metrics for |this|, which should be a user-submitted form.
@@ -194,10 +203,6 @@ class FormStructure {
   // All returned values are standardized to upper case.
   std::set<base::string16> PossibleValues(ServerFieldType type);
 
-  // Gets the form's current value for |type|. For example, it may return
-  // the contents of a text input or the currently selected <option>.
-  base::string16 GetUniqueValue(HtmlFieldType type) const;
-
   // Rationalize phone number fields in a given section, that is only fill
   // the fields that are considered composing a first complete phone number.
   void RationalizePhoneNumbersInSection(std::string section);
@@ -237,17 +242,13 @@ class FormStructure {
     return has_author_specified_types_;
   }
 
-  bool has_author_specified_sections() const {
-    return has_author_specified_sections_;
-  }
-
   bool has_author_specified_upi_vpa_hint() const {
     return has_author_specified_upi_vpa_hint_;
   }
 
   bool has_password_field() const { return has_password_field_; }
 
-  void set_submission_event(SubmissionIndicatorEvent submission_event) {
+  void set_submission_event(mojom::SubmissionIndicatorEvent submission_event) {
     submission_event_ = submission_event;
   }
 
@@ -270,6 +271,10 @@ class FormStructure {
   // Returns the possible form types.
   std::set<FormType> GetFormTypes() const;
 
+  // Returns a collection of ServerFieldTypes corresponding to this
+  // FormStructure's fields.
+  std::vector<ServerFieldType> GetServerFieldTypes() const;
+
   bool passwords_were_revealed() const { return passwords_were_revealed_; }
   void set_passwords_were_revealed(bool passwords_were_revealed) {
     passwords_were_revealed_ = passwords_were_revealed;
@@ -279,12 +284,11 @@ class FormStructure {
       const std::pair<PasswordAttribute, bool>& vote) {
     password_attributes_vote_ = vote;
   }
-#if defined(UNIT_TEST)
+
   base::Optional<std::pair<PasswordAttribute, bool>>
-  get_password_attributes_vote_for_testing() const {
+  get_password_attributes_vote() const {
     return password_attributes_vote_;
   }
-#endif
 
   void set_password_length_vote(const size_t noisified_password_length) {
     DCHECK(password_attributes_vote_.has_value())
@@ -292,24 +296,40 @@ class FormStructure {
            "|password_attributes_vote_| has no value.";
     password_length_vote_ = noisified_password_length;
   }
-#if defined(UNIT_TEST)
-  size_t get_password_length_vote_for_testing() const {
+
+  size_t get_password_length_vote() const {
     DCHECK(password_attributes_vote_.has_value())
         << "|password_length_vote_| doesn't make sense if "
            "|password_attributes_vote_| has no value.";
     return password_length_vote_;
   }
 
-  SubmissionIndicatorEvent get_submission_event_for_testing() const {
+#if defined(UNIT_TEST)
+  mojom::SubmissionIndicatorEvent get_submission_event_for_testing() const {
     return submission_event_;
   }
 #endif
 
-  SubmissionSource submission_source() const { return submission_source_; }
-  void set_submission_source(SubmissionSource submission_source) {
-    submission_source_ = submission_source;
+  void set_password_symbol_vote(int noisified_symbol) {
+    DCHECK(password_attributes_vote_.has_value())
+        << "password_symbol_vote_| doesn't make sense if "
+           "|password_attributes_vote_| has no value.";
+    password_symbol_vote_ = noisified_symbol;
   }
 
+  int get_password_symbol_vote() const {
+    DCHECK(password_attributes_vote_.has_value())
+        << "|password_symbol_vote_| doesn't make sense if "
+           "|password_attributes_vote_| has no value";
+    return password_symbol_vote_;
+  }
+
+  mojom::SubmissionSource submission_source() const {
+    return submission_source_;
+  }
+  void set_submission_source(mojom::SubmissionSource submission_source) {
+    submission_source_ = submission_source;
+  }
   bool operator==(const FormData& form) const;
   bool operator!=(const FormData& form) const;
 
@@ -330,6 +350,16 @@ class FormStructure {
   void set_page_language(std::string language) {
     page_language_ = std::move(language);
   }
+
+  bool value_from_dynamic_change_form() const {
+    return value_from_dynamic_change_form_;
+  }
+
+  void set_value_from_dynamic_change_form(bool v) {
+    value_from_dynamic_change_form_ = v;
+  }
+
+  uint32_t unique_renderer_id() const { return unique_renderer_id_; }
 
  private:
   friend class AutofillMergeTest;
@@ -385,6 +415,9 @@ class FormStructure {
     size_t current_section_ptr = 0;
   };
 
+  FormStructure(FormSignature form_signature,
+                const std::vector<FieldSignature>& field_signatures);
+
   // A function to fine tune the credit cards related predictions. For example:
   // lone credit card fields in an otherwise non-credit-card related form is
   // unlikely to be correct, the function will override that prediction.
@@ -426,17 +459,21 @@ class FormStructure {
   // Two or three fields predicted as the whole address should be address lines
   // 1, 2 and 3 instead.
   void RationalizeAddressLineFields(
-      SectionedFieldsIndexes& sections_of_address_indexes,
+      SectionedFieldsIndexes* sections_of_address_indexes,
       AutofillMetrics::FormInteractionsUkmLogger*);
 
   // Rationalize state and country interdependently.
   void RationalizeAddressStateCountry(
-      SectionedFieldsIndexes& sections_of_state_indexes,
-      SectionedFieldsIndexes& sections_of_country_indexes,
+      SectionedFieldsIndexes* sections_of_state_indexes,
+      SectionedFieldsIndexes* sections_of_country_indexes,
       AutofillMetrics::FormInteractionsUkmLogger*);
 
   // Tunes the fields with identical predictions.
   void RationalizeRepeatedFields(AutofillMetrics::FormInteractionsUkmLogger*);
+
+  // Filters out fields that don't meet the relationship ruleset for their type
+  // defined in |type_relationships_rules_|.
+  void RationalizeTypeRelationships();
 
   // A helper function to review the predictions and do appropriate adjustments
   // when it considers necessary.
@@ -493,7 +530,8 @@ class FormStructure {
 
   // The type of the event that was taken as an indication that the form has
   // been successfully submitted.
-  SubmissionIndicatorEvent submission_event_;
+  mojom::SubmissionIndicatorEvent submission_event_ =
+      mojom::SubmissionIndicatorEvent::NONE;
 
   // The source URL.
   GURL source_url_;
@@ -505,50 +543,50 @@ class FormStructure {
   url::Origin main_frame_origin_;
 
   // The number of fields able to be auto-filled.
-  size_t autofill_count_;
+  size_t autofill_count_ = 0;
 
   // A vector of all the input fields in the form.
   std::vector<std::unique_ptr<AutofillField>> fields_;
 
   // The number of fields that are part of the form signature and that are
   // included in queries to the Autofill server.
-  size_t active_field_count_;
+  size_t active_field_count_ = 0;
 
   // Whether the server expects us to always upload, never upload, or default
   // to the stored upload rates.
-  UploadRequired upload_required_;
+  UploadRequired upload_required_ = USE_UPLOAD_RATES;
 
   // Whether the form includes any field types explicitly specified by the site
   // author, via the |autocompletetype| attribute.
-  bool has_author_specified_types_;
+  bool has_author_specified_types_ = false;
 
   // Whether the form includes any sections explicitly specified by the site
   // author, via the autocomplete attribute.
-  bool has_author_specified_sections_;
+  bool has_author_specified_sections_ = false;
 
   // Whether the form includes a field that explicitly sets it autocomplete
   // type to "upi-vpa".
-  bool has_author_specified_upi_vpa_hint_;
+  bool has_author_specified_upi_vpa_hint_ = false;
 
   // Whether the form was parsed for autocomplete attribute, thus assigning
   // the real values of |has_author_specified_types_| and
   // |has_author_specified_sections_|.
-  bool was_parsed_for_autocomplete_attributes_;
+  bool was_parsed_for_autocomplete_attributes_ = false;
 
   // True if the form contains at least one password field.
-  bool has_password_field_;
+  bool has_password_field_ = false;
 
   // True if the form is a <form>.
-  bool is_form_tag_;
+  bool is_form_tag_ = true;
 
   // True if the form is made of unowned fields (i.e., not within a <form> tag)
   // in what appears to be a checkout flow. This attribute is only calculated
   // and used if features::kAutofillRestrictUnownedFieldsToFormlessCheckout is
   // enabled, to prevent heuristics from running on formless non-checkout.
-  bool is_formless_checkout_;
+  bool is_formless_checkout_ = false;
 
   // True if all form fields are password fields.
-  bool all_fields_are_passwords_;
+  bool all_fields_are_passwords_ = false;
 
   // The unique signature for this form, composed of the target url domain,
   // the form name, and the form field names in a 64-bit hash.
@@ -562,11 +600,17 @@ class FormStructure {
 
   // True iff the form is a password form and the user has seen the password
   // value before accepting the prompt to save. Used for crowdsourcing.
-  bool passwords_were_revealed_;
+  bool passwords_were_revealed_ = false;
 
   // The vote about password attributes (e.g. whether the password has a numeric
   // character).
   base::Optional<std::pair<PasswordAttribute, bool>> password_attributes_vote_;
+
+  // If |password_attribute_vote_| contains (kHasSpecialSymbol, true), this
+  // field contains nosified information about a special symbol in a
+  // user-created password stored as ASCII code. The default value of 0
+  // indicates that no symbol was set.
+  int password_symbol_vote_ = 0;
 
   // Noisified password length for crowdsourcing. If |password_attributes_vote_|
   // has no value, |password_length_vote_| should be ignored.
@@ -575,9 +619,9 @@ class FormStructure {
   // Used to record whether developer has used autocomplete markup or
   // UPI-VPA hints, This is a bitmask of DeveloperEngagementMetric and set in
   // DetermineHeuristicTypes().
-  int developer_engagement_metrics_;
+  int developer_engagement_metrics_ = 0;
 
-  SubmissionSource submission_source_ = SubmissionSource::NONE;
+  mojom::SubmissionSource submission_source_ = mojom::SubmissionSource::NONE;
 
   // The randomized encoder to use to encode form metadata during upload.
   // If this is nullptr, no randomized metadata will be sent.
@@ -587,9 +631,14 @@ class FormStructure {
   // form/field metadata.
   bool is_rich_query_enabled_ = false;
 
+  bool value_from_dynamic_change_form_ = false;
+
+  uint32_t unique_renderer_id_;
+
   DISALLOW_COPY_AND_ASSIGN(FormStructure);
 };
 
+LogBuffer& operator<<(LogBuffer& buffer, const FormStructure& form);
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_STRUCTURE_H_

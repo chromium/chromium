@@ -34,7 +34,7 @@
 #include "chrome/browser/sync_file_system/syncable_file_system_util.h"
 #include "components/drive/drive_api_util.h"
 #include "google_apis/drive/drive_api_parser.h"
-#include "storage/common/fileapi/file_system_util.h"
+#include "storage/common/file_system/file_system_util.h"
 #include "third_party/leveldatabase/env_chromium.h"
 #include "third_party/leveldatabase/leveldb_chrome.h"
 #include "third_party/leveldatabase/src/include/leveldb/db.h"
@@ -1293,16 +1293,13 @@ SyncStatusCode MetadataDatabase::SweepDirtyTrackers(
   return WriteToDatabase();
 }
 
-MetadataDatabase::MetadataDatabase(
-    const base::FilePath& database_path,
-    bool enable_on_disk_index,
-    leveldb::Env* env_override)
+MetadataDatabase::MetadataDatabase(const base::FilePath& database_path,
+                                   bool enable_on_disk_index,
+                                   leveldb::Env* env_override)
     : database_path_(database_path),
       env_override_(env_override),
       enable_on_disk_index_(enable_on_disk_index),
-      largest_known_change_id_(0),
-      weak_ptr_factory_(this) {
-}
+      largest_known_change_id_(0) {}
 
 SyncStatusCode MetadataDatabase::Initialize() {
   SyncStatusCode status = SYNC_STATUS_UNKNOWN;
@@ -1424,7 +1421,7 @@ void MetadataDatabase::MaybeAddTrackersForNewFile(
       if (!parent_tracker.active())
         continue;
 
-      if (base::ContainsKey(parents_to_exclude, parent_tracker.tracker_id()))
+      if (base::Contains(parents_to_exclude, parent_tracker.tracker_id()))
         continue;
 
       CreateTrackerForParentAndFileMetadata(

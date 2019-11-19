@@ -1,0 +1,76 @@
+
+First dump layer tree:
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    }
+  ]
+}
+
+Second dump layer tree:
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutNGBlockFlow (relative positioned) DIV id='child' class='child'",
+      "bounds": [250, 100],
+      "contentsOpaque": true,
+      "backgroundColor": "#008000",
+      "transform": 3
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [8, 8, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "parent": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [121, 41, 0, 1]
+      ]
+    },
+    {
+      "id": 3,
+      "parent": 2,
+      "transform": [
+        [0.707106781186548, 0, -0.707106781186548, 0.00117851130197758],
+        [0, 1, 0, 0],
+        [0.707106781186548, 0, 0.707106781186548, -0.00117851130197758],
+        [-50, 10, 100, 0.833333333333333]
+      ],
+      "origin": [125, 50]
+    }
+  ]
+}
+
+Third dump layer tree:
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    }
+  ]
+}
+

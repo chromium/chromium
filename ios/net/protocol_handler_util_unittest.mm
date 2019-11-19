@@ -8,15 +8,14 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/test/task_environment.h"
 #include "net/base/elements_upload_data_stream.h"
 #import "net/base/mac/url_conversions.h"
 #include "net/base/upload_bytes_element_reader.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
-#include "net/url_request/data_protocol_handler.h"
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_job.h"
 #include "net/url_request/url_request_job_factory.h"
@@ -44,8 +43,6 @@ namespace net {
 namespace {
 
 const char* kTextHtml = "text/html";
-const char* kTextPlain = "text/plain";
-const char* kAscii = "US-ASCII";
 
 class HeadersURLRequestJob : public URLRequestJob {
  public:
@@ -116,60 +113,19 @@ class ProtocolHandlerUtilTest : public PlatformTest,
     // Ownership of the protocol handlers is transferred to the factory.
     job_factory_.SetProtocolHandler("http",
                                     base::WrapUnique(new NetProtocolHandler));
-    job_factory_.SetProtocolHandler("data",
-                                    base::WrapUnique(new DataProtocolHandler));
     request_context_->set_job_factory(&job_factory_);
-  }
-
-  NSURLResponse* BuildDataURLResponse(const std::string& mime_type,
-                                      const std::string& encoding,
-                                      const std::string& content) {
-    // Build an URL in the form "data:<mime_type>;charset=<encoding>,<content>"
-    // The ';' is removed if mime_type or charset is empty.
-    std::string url_string = std::string("data:") + mime_type;
-    if (!encoding.empty())
-      url_string += ";charset=" + encoding;
-    url_string += ",";
-    GURL url(url_string);
-
-    std::unique_ptr<URLRequest> request(
-        request_context_->CreateRequest(url, DEFAULT_PRIORITY, this));
-    request->Start();
-    base::RunLoop loop;
-    loop.RunUntilIdle();
-    return GetNSURLResponseForRequest(request.get());
-  }
-
-  void CheckDataResponse(NSURLResponse* response,
-                         const std::string& mime_type,
-                         const std::string& encoding) {
-    EXPECT_NSEQ(base::SysUTF8ToNSString(mime_type), [response MIMEType]);
-    EXPECT_NSEQ(base::SysUTF8ToNSString(encoding), [response textEncodingName]);
-    // The response class must be NSURLResponse (and not NSHTTPURLResponse) when
-    // the scheme is "data".
-    EXPECT_TRUE([response isMemberOfClass:[NSURLResponse class]]);
   }
 
   void OnResponseStarted(URLRequest* request, int net_error) override {}
   void OnReadCompleted(URLRequest* request, int bytes_read) override {}
 
  protected:
-  base::MessageLoop loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   URLRequestJobFactoryImpl job_factory_;
   std::unique_ptr<URLRequestContext> request_context_;
 };
 
 }  // namespace
-
-TEST_F(ProtocolHandlerUtilTest, GetResponseDataSchemeTest) {
-  NSURLResponse* response;
-  // MIME type and charset are correctly carried over.
-  response = BuildDataURLResponse("?mime=type'", "$(charset-*", "content");
-  CheckDataResponse(response, "?mime=type'", "$(charset-*");
-  // Missing values are treated as default values.
-  response = BuildDataURLResponse("", "", "content");
-  CheckDataResponse(response, kTextPlain, kAscii);
-}
 
 TEST_F(ProtocolHandlerUtilTest, GetResponseHttpTest) {
   // Create a request.

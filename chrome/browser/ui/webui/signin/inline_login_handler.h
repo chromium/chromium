@@ -5,16 +5,16 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SIGNIN_INLINE_LOGIN_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_SIGNIN_INLINE_LOGIN_HANDLER_H_
 
+#include <string>
+#include <vector>
+
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/web_ui_message_handler.h"
+#include "net/cookies/canonical_cookie.h"
 
 namespace base {
 class DictionaryValue;
-}
-
-namespace net {
-class CanonicalCookie;
 }
 
 namespace signin_metrics {
@@ -54,6 +54,9 @@ class InlineLoginHandler : public content::WebUIMessageHandler {
   // |SetExtraInitParams| to set extra init params.
   void ContinueHandleInitializeMessage();
 
+  // JS callback to handle tasks after auth extension loads.
+  virtual void HandleAuthExtensionReadyMessage(const base::ListValue* args) {}
+
   // JS callback to complete login. It calls |CompleteLogin| to do the real
   // work.
   void HandleCompleteLoginMessage(const base::ListValue* args);
@@ -62,7 +65,8 @@ class InlineLoginHandler : public content::WebUIMessageHandler {
   // from the CookieManager.
   void HandleCompleteLoginMessageWithCookies(
       const base::ListValue& args,
-      const std::vector<net::CanonicalCookie>& cookies);
+      const net::CookieStatusList& cookies,
+      const net::CookieStatusList& excluded_cookies);
 
   // JS callback to switch the UI from a constrainted dialog to a full tab.
   void HandleSwitchToFullTabMessage(const base::ListValue* args);
@@ -72,7 +76,7 @@ class InlineLoginHandler : public content::WebUIMessageHandler {
   void HandleNavigationButtonClicked(const base::ListValue* args);
 
   // Handles the web ui message sent when the window is closed from javascript.
-  void HandleDialogClose(const base::ListValue* args);
+  virtual void HandleDialogClose(const base::ListValue* args);
 
   virtual void SetExtraInitParams(base::DictionaryValue& params) {}
   virtual void CompleteLogin(const std::string& email,
@@ -84,7 +88,7 @@ class InlineLoginHandler : public content::WebUIMessageHandler {
                              bool trusted_found,
                              bool choose_what_to_sync) = 0;
 
-  base::WeakPtrFactory<InlineLoginHandler> weak_ptr_factory_;
+  base::WeakPtrFactory<InlineLoginHandler> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(InlineLoginHandler);
 };

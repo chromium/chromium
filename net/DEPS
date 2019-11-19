@@ -1,14 +1,12 @@
 include_rules = [
   "+crypto",
-  "+gin",
-  "+jni",
   "+mojo/public",
+  "+net/net_jni_headers",
   "+third_party/apple_apsl",
   "+third_party/boringssl/src/include",
   "+third_party/nss",
   "+third_party/protobuf/src/google/protobuf",
   "+third_party/zlib",
-  "+v8",
 
   # Most of net should not depend on icu, and brotli to keep size down when
   # built as a library.
@@ -69,9 +67,9 @@ specific_include_rules = {
     "+base/i18n",
   ],
 
-  # Needed for fuzz targets written using libprotobuf-mutator library.
+  # Dependencies specific for fuzz targets and other fuzzing-related code.
   ".*fuzz.*": [
-    "+third_party/libprotobuf-mutator",
+    "+third_party/libprotobuf-mutator",  # This is needed for LPM-based fuzzers.
   ]
 }
 

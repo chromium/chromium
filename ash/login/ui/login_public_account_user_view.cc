@@ -59,32 +59,33 @@ LoginPublicAccountUserView::Callbacks::Callbacks(const Callbacks& other) =
 LoginPublicAccountUserView::Callbacks::~Callbacks() = default;
 
 LoginPublicAccountUserView::LoginPublicAccountUserView(
-    const mojom::LoginUserInfoPtr& user,
+    const LoginUserInfo& user,
     const Callbacks& callbacks)
     : NonAccessibleView(kLoginPublicAccountUserViewClassName),
       on_tap_(callbacks.on_tap),
       on_public_account_tap_(callbacks.on_public_account_tapped) {
-  DCHECK_EQ(user->basic_user_info->type,
-            user_manager::USER_TYPE_PUBLIC_ACCOUNT);
+  DCHECK_EQ(user.basic_user_info.type, user_manager::USER_TYPE_PUBLIC_ACCOUNT);
   DCHECK(callbacks.on_tap);
   DCHECK(callbacks.on_public_account_tapped);
 
-  user_view_ = new LoginUserView(
+  auto user_view = std::make_unique<LoginUserView>(
       LoginDisplayStyle::kLarge, false /*show_dropdown*/, true /*show_domain*/,
       base::BindRepeating(&LoginPublicAccountUserView::OnUserViewTap,
                           base::Unretained(this)),
       base::RepeatingClosure(), base::RepeatingClosure());
-  arrow_button_ = new ArrowButtonView(this, kArrowButtonSizeDp);
-  arrow_button_->SetBackgroundColor(kArrowButtonBackground);
-  arrow_button_->SetFocusPainter(nullptr);
+  auto arrow_button =
+      std::make_unique<ArrowButtonView>(this, kArrowButtonSizeDp);
+  arrow_button->SetBackgroundColor(kArrowButtonBackground);
+  arrow_button->SetFocusPainter(nullptr);
 
   SetPaintToLayer(ui::LayerType::LAYER_NOT_DRAWN);
 
   // build layout for public account.
-  SetLayoutManager(
-      std::make_unique<views::BoxLayout>(views::BoxLayout::kVertical));
-  views::View* wrapped_user_view =
-      login_views_utils::WrapViewForPreferredSize(user_view_);
+  SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical));
+  user_view_ = user_view.get();
+  auto wrapped_user_view =
+      login_views_utils::WrapViewForPreferredSize(std::move(user_view));
 
   auto add_padding = [&](int amount) {
     auto* padding = new NonAccessibleView();
@@ -93,9 +94,9 @@ LoginPublicAccountUserView::LoginPublicAccountUserView(
   };
 
   add_padding(kDistanceFromTopOfBigUserViewToUserIconDp);
-  AddChildView(wrapped_user_view);
+  AddChildView(std::move(wrapped_user_view));
   add_padding(kDistanceFromUserViewToArrowButton);
-  AddChildView(arrow_button_);
+  arrow_button_ = AddChildView(std::move(arrow_button));
   add_padding(kDistanceFromArrowButtonToBigUserViewBottom);
 
   // Update authentication UI.
@@ -127,13 +128,11 @@ void LoginPublicAccountUserView::SetAuthEnabled(bool enabled, bool animate) {
   PreferredSizeChanged();
 }
 
-void LoginPublicAccountUserView::UpdateForUser(
-    const mojom::LoginUserInfoPtr& user) {
+void LoginPublicAccountUserView::UpdateForUser(const LoginUserInfo& user) {
   user_view_->UpdateForUser(user, true /*animate*/);
 }
 
-const mojom::LoginUserInfoPtr& LoginPublicAccountUserView::current_user()
-    const {
+const LoginUserInfo& LoginPublicAccountUserView::current_user() const {
   return user_view_->current_user();
 }
 

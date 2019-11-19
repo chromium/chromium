@@ -6,6 +6,7 @@ import("//build/buildflag_header.gni")
 import("//build/config/jumbo.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//services/network/public/cpp/features.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
 
 buildflag_header("buildflags") {
   header = "network_service_buildflags.h"
@@ -16,6 +17,9 @@ jumbo_component("cpp") {
   output_name = "network_cpp"
 
   sources = [
+    "constants.h",
+    "content_security_policy.cc",
+    "content_security_policy.h",
     "cors/cors.cc",
     "cors/cors.h",
     "cors/origin_access_entry.cc",
@@ -28,8 +32,16 @@ jumbo_component("cpp") {
     "cors/preflight_result.h",
     "cross_thread_shared_url_loader_factory_info.cc",
     "cross_thread_shared_url_loader_factory_info.h",
+    "data_pipe_to_source_stream.cc",
+    "data_pipe_to_source_stream.h",
     "features.cc",
     "features.h",
+    "header_util.cc",
+    "header_util.h",
+    "is_potentially_trustworthy.cc",
+    "is_potentially_trustworthy.h",
+    "load_info_util.cc",
+    "load_info_util.h",
     "net_adapters.cc",
     "net_adapters.h",
     "network_connection_tracker.cc",
@@ -38,13 +50,21 @@ jumbo_component("cpp") {
     "network_quality_tracker.h",
     "network_switches.cc",
     "network_switches.h",
+    "request_mode.cc",
+    "request_mode.h",
     "resolve_host_client_base.cc",
     "resolve_host_client_base.h",
+    "resource_response.cc",
+    "resource_response.h",
+    "resource_response_info.cc",
+    "resource_response_info.h",
     "shared_url_loader_factory.cc",
     "shared_url_loader_factory.h",
     "simple_url_loader.cc",
     "simple_url_loader.h",
     "simple_url_loader_stream_consumer.h",
+    "source_stream_to_data_pipe.cc",
+    "source_stream_to_data_pipe.h",
     "weak_wrapper_shared_url_loader_factory.cc",
     "weak_wrapper_shared_url_loader_factory.h",
     "wrapper_shared_url_loader_factory.cc",
@@ -74,6 +94,7 @@ jumbo_component("cpp") {
     ":cpp_base",
     "//net",
     "//services/network/public/mojom",
+    "//url",
     "//url/ipc:url_ipc",
   ]
 
@@ -97,8 +118,6 @@ jumbo_component("cpp_base") {
   sources = [
     "cors/cors_error_status.cc",
     "cors/cors_error_status.h",
-    "cors/preflight_timing_info.cc",
-    "cors/preflight_timing_info.h",
     "data_element.cc",
     "data_element.h",
     "http_raw_request_response_info.cc",
@@ -111,6 +130,10 @@ jumbo_component("cpp_base") {
     "net_ipc_param_traits.h",
     "network_ipc_param_traits.cc",
     "network_ipc_param_traits.h",
+    "network_isolation_key_mojom_traits.cc",
+    "network_isolation_key_mojom_traits.h",
+    "origin_policy.cc",
+    "origin_policy.h",
     "p2p_param_traits.cc",
     "p2p_param_traits.h",
     "p2p_socket_type.h",
@@ -122,10 +145,6 @@ jumbo_component("cpp_base") {
     "resource_request.h",
     "resource_request_body.cc",
     "resource_request_body.h",
-    "resource_response.cc",
-    "resource_response.h",
-    "resource_response_info.cc",
-    "resource_response_info.h",
     "url_loader_completion_status.cc",
     "url_loader_completion_status.h",
     "url_request_mojom_traits.cc",
@@ -146,7 +165,6 @@ jumbo_component("cpp_base") {
   public_deps = [
     "//services/network/public/mojom:data_pipe_interfaces",
     "//services/network/public/mojom:mutable_network_traffic_annotation_interface",
-    "//third_party/webrtc/rtc_base",
     "//url/ipc:url_ipc",
     "//url/mojom:url_mojom_gurl",
     "//url/mojom:url_mojom_origin",
@@ -157,8 +175,7 @@ jumbo_component("cpp_base") {
     "//mojo/public/mojom/base",
     "//net",
     "//services/network/public/mojom:mojom_shared",
-    "//third_party/webrtc_overrides",
-    "//third_party/webrtc_overrides:init_webrtc",
+    "//third_party/webrtc_overrides:webrtc_component",
   ]
   defines = [ "IS_NETWORK_CPP_BASE_IMPL" ]
 }
@@ -176,28 +193,32 @@ source_set("tests") {
   testonly = true
 
   sources = [
+    "content_security_policy_unittest.cc",
+    "cookie_manager_mojom_traits_unittest.cc",
     "cors/cors_unittest.cc",
     "cors/origin_access_entry_unittest.cc",
     "cors/origin_access_list_unittest.cc",
     "cors/preflight_cache_unittest.cc",
     "cors/preflight_result_unittest.cc",
     "cross_thread_shared_url_loader_factory_info_unittest.cc",
+    "data_pipe_to_source_stream_unittest.cc",
+    "default_credentials_mojom_traits_unittest.cc",
     "digitally_signed_mojom_traits_unittest.cc",
+    "header_util_unittest.cc",
     "host_resolver_mojom_traits_unittest.cc",
     "ip_address_mojom_traits_unittest.cc",
+    "is_potentially_trustworthy_unittest.cc",
     "mutable_network_traffic_annotation_tag_mojom_traits_unittest.cc",
     "mutable_partial_network_traffic_annotation_tag_mojom_traits_unittest.cc",
     "network_connection_tracker_unittest.cc",
+    "network_isolation_key_mojom_traits_unittest.cc",
     "network_mojom_traits_unittest.cc",
     "network_quality_tracker_unittest.cc",
     "proxy_config_mojom_traits_unittest.cc",
     "simple_url_loader_unittest.cc",
+    "source_stream_to_data_pipe_unittest.cc",
     "url_request_mojom_traits_unittest.cc",
   ]
-
-  if (is_ct_supported) {
-    sources += [ "signed_tree_head_mojom_traits_unittest.cc" ]
-  }
 
   if (!is_ios) {
     sources += [ "server/http_server_unittest.cc" ]
@@ -221,15 +242,11 @@ source_set("tests") {
   ]
 }
 
-source_set("manifest") {
+fuzzer_test("cors_fuzzer") {
   sources = [
-    "manifest.cc",
-    "manifest.h",
+    "cors/cors_fuzzer.cc",
   ]
-
   deps = [
-    "//base",
-    "//services/network/public/mojom",
-    "//services/service_manager/public/cpp",
+    ":cpp",
   ]
 }

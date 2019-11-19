@@ -38,12 +38,6 @@ class TreeWalker final : public ScriptWrappable, public NodeIteratorBase {
   USING_GARBAGE_COLLECTED_MIXIN(TreeWalker);
 
  public:
-  static TreeWalker* Create(Node* root_node,
-                            unsigned what_to_show,
-                            V8NodeFilter* filter) {
-    return MakeGarbageCollected<TreeWalker>(root_node, what_to_show, filter);
-  }
-
   TreeWalker(Node*, unsigned what_to_show, V8NodeFilter*);
 
   Node* currentNode() const { return current_.Get(); }

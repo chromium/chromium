@@ -8,20 +8,21 @@
 #include <string>
 #include <vector>
 
-#include "third_party/cros_system_api/dbus/service_constants.h"
 #include "ui/display/manager/display_manager_export.h"
 #include "ui/display/types/display_constants.h"
+
+#if defined(OS_CHROMEOS)
+#include "third_party/cros_system_api/dbus/service_constants.h"
+#endif  // defined(OS_CHROMEOS)
 
 namespace display {
 
 class DisplaySnapshot;
 class ManagedDisplayMode;
 
+#if defined(OS_CHROMEOS)
 // Returns a string describing |state|.
 std::string DisplayPowerStateToString(chromeos::DisplayPowerState state);
-
-// Returns a string describing |state|.
-std::string MultipleDisplayStateToString(MultipleDisplayState state);
 
 // Returns the number of displays in |displays| that should be turned on, per
 // |state|.  If |display_power| is non-NULL, it is updated to contain the
@@ -31,10 +32,15 @@ GetDisplayPower(const std::vector<DisplaySnapshot*>& displays,
                 chromeos::DisplayPowerState state,
                 std::vector<bool>* display_power);
 
-// Returns whether the DisplayConnectionType |type| is a physically connected
-// display. Currently only DISPLAY_CONNECTION_TYPE_NETWORK return false.
-// All other types return true.
-bool IsPhysicalDisplayType(DisplayConnectionType type);
+#endif  // defined(OS_CHROMEOS)
+
+// Returns a string describing |state|.
+std::string MultipleDisplayStateToString(MultipleDisplayState state);
+
+// Sets bits in |protection_mask| for each ContentProtectionMethod supported by
+// the display |type|. Returns false for unknown display types.
+bool GetContentProtectionMethods(DisplayConnectionType type,
+                                 uint32_t* protection_mask);
 
 // Returns a list of display zooms supported by the given |mode|.
 std::vector<float> DISPLAY_MANAGER_EXPORT

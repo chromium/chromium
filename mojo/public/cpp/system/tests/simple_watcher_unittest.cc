@@ -9,8 +9,8 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "mojo/public/c/system/types.h"
 #include "mojo/public/cpp/system/data_pipe.h"
@@ -27,7 +27,7 @@ void RunResultHandler(Handler f, MojoResult result) {
 
 template <typename Handler>
 SimpleWatcher::ReadyCallback OnReady(Handler f) {
-  return base::Bind(&RunResultHandler<Handler>, f);
+  return base::BindRepeating(&RunResultHandler<Handler>, f);
 }
 
 SimpleWatcher::ReadyCallback NotReached() {
@@ -40,7 +40,7 @@ class SimpleWatcherTest : public testing::Test {
   ~SimpleWatcherTest() override {}
 
  private:
-  base::MessageLoop message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
 
   DISALLOW_COPY_AND_ASSIGN(SimpleWatcherTest);
 };
@@ -229,7 +229,7 @@ TEST_F(SimpleWatcherTest, UnarmedCancel) {
   base::RunLoop loop;
   EXPECT_EQ(MOJO_RESULT_OK,
             b_watcher.Watch(b.get(), MOJO_HANDLE_SIGNAL_READABLE,
-                            base::Bind(
+                            base::BindRepeating(
                                 [](base::RunLoop* loop, MojoResult result) {
                                   EXPECT_EQ(result, MOJO_RESULT_CANCELLED);
                                   loop->Quit();
@@ -253,7 +253,7 @@ TEST_F(SimpleWatcherTest, ManualArming) {
   base::RunLoop loop;
   EXPECT_EQ(MOJO_RESULT_OK,
             b_watcher.Watch(b.get(), MOJO_HANDLE_SIGNAL_READABLE,
-                            base::Bind(
+                            base::BindRepeating(
                                 [](base::RunLoop* loop, MojoResult result) {
                                   EXPECT_EQ(result, MOJO_RESULT_OK);
                                   loop->Quit();
@@ -276,7 +276,7 @@ TEST_F(SimpleWatcherTest, ManualArmOrNotifyWhileSignaled) {
   EXPECT_EQ(MOJO_RESULT_OK,
             b_watcher1.Watch(
                 b.get(), MOJO_HANDLE_SIGNAL_READABLE,
-                base::Bind(
+                base::BindRepeating(
                     [](base::RunLoop* loop, bool* notified, MojoResult result) {
                       EXPECT_EQ(result, MOJO_RESULT_OK);
                       *notified = true;
@@ -290,7 +290,7 @@ TEST_F(SimpleWatcherTest, ManualArmOrNotifyWhileSignaled) {
   EXPECT_EQ(MOJO_RESULT_OK,
             b_watcher2.Watch(
                 b.get(), MOJO_HANDLE_SIGNAL_READABLE,
-                base::Bind(
+                base::BindRepeating(
                     [](base::RunLoop* loop, bool* notified, MojoResult result) {
                       EXPECT_EQ(result, MOJO_RESULT_OK);
                       *notified = true;

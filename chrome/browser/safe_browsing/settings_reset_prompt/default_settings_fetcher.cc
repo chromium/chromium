@@ -11,6 +11,7 @@
 #include "base/bind_helpers.h"
 #include "base/logging.h"
 #include "base/task/post_task.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/google/google_brand.h"
 #include "chrome/browser/net/system_network_context_manager.h"
@@ -25,9 +26,9 @@ namespace safe_browsing {
 
 namespace {
 
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 constexpr char kOmahaUrl[] = "https://tools.google.com/service/update2";
-#endif  // defined(GOOGLE_CHROME_BUILD)
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 }  // namespace
 
@@ -61,7 +62,7 @@ DefaultSettingsFetcher::~DefaultSettingsFetcher() {}
 void DefaultSettingsFetcher::Start() {
   DCHECK(!config_fetcher_);
 
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   std::string brandcode;
   if (google_brand::GetBrand(&brandcode) && !brandcode.empty()) {
     config_fetcher_.reset(new BrandcodeConfigFetcher(
@@ -72,7 +73,7 @@ void DefaultSettingsFetcher::Start() {
         GURL(kOmahaUrl), brandcode));
     return;
   }
-#endif  // defined(GOOGLE_CHROME_BUILD)
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
   // For non Google Chrome builds and cases with an empty |brandcode|, we create
   // a default-constructed |BrandcodedDefaultSettings| object and post the
@@ -93,7 +94,7 @@ void DefaultSettingsFetcher::PostCallbackAndDeleteSelf(
   if (!default_settings)
     default_settings.reset(new BrandcodedDefaultSettings());
 
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {content::BrowserThread::UI},
       base::BindOnce(std::move(callback_), std::move(default_settings)));
   delete this;

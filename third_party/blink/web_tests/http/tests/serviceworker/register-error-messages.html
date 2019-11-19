@@ -26,22 +26,14 @@ function assert_register_fails(script, scope, message) {
 promise_test(function(t) {
     var script = 'resources/registration-worker.js';
     var scope = 'resources';
-    var message = 'Failed to register a ServiceWorker: The path of the ' +
-        'provided scope (\'/serviceworker/resources\') is not under the max ' +
-        'scope allowed (\'/serviceworker/resources/\'). Adjust the scope, ' +
-        'move the Service Worker script, or use the Service-Worker-Allowed ' +
-        'HTTP header to allow the scope.';
+    var message = 'Failed to register a ServiceWorker for scope (\'http://127.0.0.1:8000/serviceworker/resources\') with script (\'http://127.0.0.1:8000/serviceworker/resources/registration-worker.js\'): The path of the provided scope (\'/serviceworker/resources\') is not under the max scope allowed (\'/serviceworker/resources/\'). Adjust the scope, move the Service Worker script, or use the Service-Worker-Allowed HTTP header to allow the scope.';
     return assert_register_fails(script, scope, message);
   }, 'Registering same scope as the script directory without the last slash');
 
 promise_test(function(t) {
     var script = 'resources/registration-worker.js';
     var scope = 'different-directory/';
-    var message = 'Failed to register a ServiceWorker: The path of the ' +
-        'provided scope (\'/serviceworker/different-directory/\') is not ' +
-        'under the max scope allowed (\'/serviceworker/resources/\'). ' +
-        'Adjust the scope, move the Service Worker script, or use the ' +
-        'Service-Worker-Allowed HTTP header to allow the scope.';
+    var message = 'Failed to register a ServiceWorker for scope (\'http://127.0.0.1:8000/serviceworker/different-directory/\') with script (\'http://127.0.0.1:8000/serviceworker/resources/registration-worker.js\'): The path of the provided scope (\'/serviceworker/different-directory/\') is not under the max scope allowed (\'/serviceworker/resources/\'). Adjust the scope, move the Service Worker script, or use the Service-Worker-Allowed HTTP header to allow the scope.';
     return assert_register_fails(script, scope, message);
   }, 'Registration scope outside the script directory');
 
@@ -66,32 +58,28 @@ promise_test(function(t) {
 promise_test(function(t) {
     var script = 'resources/no-such-worker.js';
     var scope = 'resources/scope/no-such-worker';
-    var message = 'Failed to register a ServiceWorker: A bad HTTP response ' +
-      'code (404) was received when fetching the script.';
+    var message = 'Failed to register a ServiceWorker for scope (\'http://127.0.0.1:8000/serviceworker/resources/scope/no-such-worker\') with script (\'http://127.0.0.1:8000/serviceworker/resources/no-such-worker.js\'): A bad HTTP response code (404) was received when fetching the script.';
     return assert_register_fails(script, scope, message);
   }, 'Registering non-existent script');
 
 promise_test(function(t) {
     var script = 'resources/invalid-chunked-encoding.php';
     var scope = 'resources/scope/invalid-chunked-encoding/';
-    var message = 'Failed to register a ServiceWorker: An unknown error ' +
-        'occurred when fetching the script.';
+    var message = 'Failed to register a ServiceWorker for scope (\'http://127.0.0.1:8000/serviceworker/resources/scope/invalid-chunked-encoding/\') with script (\'http://127.0.0.1:8000/serviceworker/resources/invalid-chunked-encoding.php\'): An unknown error occurred when fetching the script.';
     return assert_register_fails(script, scope, message);
   }, 'Registering invalid chunked encoding script');
 
 promise_test(function(t) {
     var script = 'resources/mime-type-worker.php';
     var scope = 'resources/scope/no-mime-type-worker/';
-    var message = 'Failed to register a ServiceWorker: The script does not ' +
-        'have a MIME type.';
+    var message = 'Failed to register a ServiceWorker for scope (\'http://127.0.0.1:8000/serviceworker/resources/scope/no-mime-type-worker/\') with script (\'http://127.0.0.1:8000/serviceworker/resources/mime-type-worker.php\'): The script does not have a MIME type.';
     return assert_register_fails(script, scope, message);
   }, 'Registering script with no MIME type');
 
 promise_test(function(t) {
     var script = 'resources/mime-type-worker.php?mime=text/plain';
     var scope = 'resources/scope/bad-mime-type-worker/';
-    var message = 'Failed to register a ServiceWorker: The script has an ' +
-        'unsupported MIME type (\'text/plain\').';
+    var message = 'Failed to register a ServiceWorker for scope (\'http://127.0.0.1:8000/serviceworker/resources/scope/bad-mime-type-worker/\') with script (\'http://127.0.0.1:8000/serviceworker/resources/mime-type-worker.php?mime=text/plain\'): The script has an unsupported MIME type (\'text/plain\').';
     return assert_register_fails(script, scope, message);
   }, 'Registering script with bad MIME type');
 
@@ -99,48 +87,42 @@ promise_test(function(t) {
     var script = 'resources/redirect.php?Redirect=' +
                   encodeURIComponent('..//resources/registration-worker.js');
     var scope = 'resources/scope/redirect/';
-    var message = 'Failed to register a ServiceWorker: The script resource ' +
-        'is behind a redirect, which is disallowed.';
+    var message = 'Failed to register a ServiceWorker for scope (\'http://127.0.0.1:8000/serviceworker/resources/scope/redirect/\') with script (\'http://127.0.0.1:8000/serviceworker/resources/redirect.php?Redirect=..%2F%2Fresources%2Fregistration-worker.js\'): The script resource is behind a redirect, which is disallowed.';
     return assert_register_fails(script, scope, message);
   }, 'Registering redirected script');
 
 promise_test(function(t) {
     var script = 'resources/malformed-worker.php?parse-error';
     var scope = 'resources/scope/parse-error';
-    var message = 'Failed to register a ServiceWorker: ServiceWorker script ' +
-        'evaluation failed';
+    var message = 'Failed to register a ServiceWorker for scope (\'http://127.0.0.1:8000/serviceworker/resources/scope/parse-error\') with script (\'http://127.0.0.1:8000/serviceworker/resources/malformed-worker.php?parse-error\'): ServiceWorker script evaluation failed';
     return assert_register_fails(script, scope, message);
   }, 'Registering script including parse error');
 
 promise_test(function(t) {
     var script = 'resources/malformed-worker.php?undefined-error';
     var scope = 'resources/scope/undefined-error';
-    var message = 'Failed to register a ServiceWorker: ServiceWorker script ' +
-        'evaluation failed';
+    var message = 'Failed to register a ServiceWorker for scope (\'http://127.0.0.1:8000/serviceworker/resources/scope/undefined-error\') with script (\'http://127.0.0.1:8000/serviceworker/resources/malformed-worker.php?undefined-error\'): ServiceWorker script evaluation failed';
     return assert_register_fails(script, scope, message);
   }, 'Registering script including undefined error');
 
 promise_test(function(t) {
     var script = 'resources/malformed-worker.php?uncaught-exception';
     var scope = 'resources/scope/uncaught-exception';
-    var message = 'Failed to register a ServiceWorker: ServiceWorker script ' +
-        'evaluation failed';
+    var message = 'Failed to register a ServiceWorker for scope (\'http://127.0.0.1:8000/serviceworker/resources/scope/uncaught-exception\') with script (\'http://127.0.0.1:8000/serviceworker/resources/malformed-worker.php?uncaught-exception\'): ServiceWorker script evaluation failed';
     return assert_register_fails(script, scope, message);
   }, 'Registering script including uncaught exception');
 
 promise_test(function(t) {
     var script = 'resources/malformed-worker.php?import-malformed-script';
     var scope = 'resources/scope/import-malformed-script';
-    var message = 'Failed to register a ServiceWorker: ServiceWorker script ' +
-        'evaluation failed';
+    var message = 'Failed to register a ServiceWorker for scope (\'http://127.0.0.1:8000/serviceworker/resources/scope/import-malformed-script\') with script (\'http://127.0.0.1:8000/serviceworker/resources/malformed-worker.php?import-malformed-script\'): ServiceWorker script evaluation failed';
     return assert_register_fails(script, scope, message);
   }, 'Registering script importing malformed script');
 
 promise_test(function(t) {
     var script = 'resources/malformed-worker.php?import-no-such-script';
     var scope = 'resources/scope/import-no-such-script';
-    var message = 'Failed to register a ServiceWorker: ServiceWorker script ' +
-        'evaluation failed';
+    var message = 'Failed to register a ServiceWorker for scope (\'http://127.0.0.1:8000/serviceworker/resources/scope/import-no-such-script\') with script (\'http://127.0.0.1:8000/serviceworker/resources/malformed-worker.php?import-no-such-script\'): ServiceWorker script evaluation failed';
     return assert_register_fails(script, scope, message);
   }, 'Registering script importing non-existent script');
 

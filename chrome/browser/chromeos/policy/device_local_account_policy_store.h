@@ -14,7 +14,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/chromeos/settings/device_settings_service.h"
-#include "chromeos/dbus/session_manager_client.h"
+#include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_validator.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_store_base.h"
 
@@ -101,7 +101,7 @@ class DeviceLocalAccountPolicyStore : public UserCloudPolicyStoreBase {
 
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
 
-  base::WeakPtrFactory<DeviceLocalAccountPolicyStore> weak_factory_;
+  base::WeakPtrFactory<DeviceLocalAccountPolicyStore> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DeviceLocalAccountPolicyStore);
 };

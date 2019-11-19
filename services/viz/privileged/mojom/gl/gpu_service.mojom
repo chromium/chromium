@@ -1,0 +1,148 @@
+// Copyright 2016 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module viz.mojom;
+
+[EnableIf=is_chromeos]
+import "components/arc/mojom/protected_buffer_manager.mojom";
+[EnableIf=is_chromeos]
+import "components/arc/mojom/video_decode_accelerator.mojom";
+[EnableIf=is_chromeos]
+import "components/arc/mojom/video_encode_accelerator.mojom";
+[EnableIf=is_chromeos]
+import "components/arc/mojom/video_protected_buffer_allocator.mojom";
+[EnableIf=is_chromeos]
+import "components/chromeos_camera/common/mjpeg_decode_accelerator.mojom";
+[EnableIf=is_chromeos]
+import "components/chromeos_camera/common/jpeg_encode_accelerator.mojom";
+import "gpu/ipc/common/dx_diag_node.mojom";
+import "gpu/ipc/common/gpu_info.mojom";
+import "gpu/ipc/common/memory_stats.mojom";
+import "gpu/ipc/common/surface_handle.mojom";
+import "gpu/ipc/common/sync_token.mojom";
+import "media/mojo/mojom/video_encode_accelerator.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+import "ui/gfx/mojom/buffer_types.mojom";
+import "ui/gl/mojom/gpu_preference.mojom";
+
+interface GpuService {
+  // Tells the GPU service to create a new channel for communication with a
+  // client. The GPU service responds with an IPC handle.
+  EstablishGpuChannel(int32 client_id,
+                      uint64 client_tracing_id,
+                      bool is_gpu_host,
+                      bool cache_shaders_on_disk)
+      => (handle<message_pipe>? channel_handle);
+
+  // Tells the GPU process to close the channel identified by |client_id|.
+  // If no channel can be identified, do nothing.
+  CloseChannel(int32 client_id);
+
+  // Create a new ARC VideoDecodeAccelerator and binds it to |vda|.
+  [EnableIf=is_chromeos]
+  CreateArcVideoDecodeAccelerator(
+      pending_receiver<arc.mojom.VideoDecodeAccelerator> vda);
+
+  // Create a new ARC VideoEncodeAccelerator and binds it to |vea|.
+  [EnableIf=is_chromeos]
+  CreateArcVideoEncodeAccelerator(
+      pending_receiver<arc.mojom.VideoEncodeAccelerator> vea);
+
+  // Create a new ARC VideoProtectedBufferAllocator and binds it to |pba|.
+  [EnableIf=is_chromeos]
+  CreateArcVideoProtectedBufferAllocator(
+      pending_receiver<arc.mojom.VideoProtectedBufferAllocator> pba);
+
+  // Create a new ARC ProtectedBufferManager and binds it to |pbm|.
+  [EnableIf=is_chromeos]
+  CreateArcProtectedBufferManager(
+      pending_receiver<arc.mojom.ProtectedBufferManager> pbm);
+
+  // Creates a new MjpegDecodeAccelerator and binds it to |jda|.
+  [EnableIf=is_chromeos]
+  CreateJpegDecodeAccelerator(
+      pending_receiver<chromeos_camera.mojom.MjpegDecodeAccelerator> jda);
+
+  // Creates a new JpegEncodeAccelerator and binds it to |jea|.
+  [EnableIf=is_chromeos]
+  CreateJpegEncodeAccelerator(
+      pending_receiver<chromeos_camera.mojom.JpegEncodeAccelerator> jea);
+
+  // Creates a VideoEncodeAcceleratorProvider and binds it to |vea_provider|.
+  CreateVideoEncodeAcceleratorProvider(
+      pending_receiver<media.mojom.VideoEncodeAcceleratorProvider>
+          vea_provider);
+
+  CreateGpuMemoryBuffer(gfx.mojom.GpuMemoryBufferId id,
+                        gfx.mojom.Size size,
+                        gfx.mojom.BufferFormat format,
+                        gfx.mojom.BufferUsage usage,
+                        int32 client_id,
+                        gpu.mojom.SurfaceHandle surface_handle)
+      => (gfx.mojom.GpuMemoryBufferHandle buffer_handle);
+
+  DestroyGpuMemoryBuffer(gfx.mojom.GpuMemoryBufferId id,
+                         int32 client_id,
+                         gpu.mojom.SyncToken sync_token);
+
+  GetVideoMemoryUsageStats() => (gpu.mojom.VideoMemoryUsageStats stats);
+
+  // Starts tracking the peak GPU memory until GetPeakMemoryUsage is called.
+  // To be associated with |sequence_num|, repeated calls with the same value
+  // are ignored.
+  StartPeakMemoryMonitor(uint32 sequence_num);
+
+  // Ends tracking the peak GPU memory for the associated |sequence_num|.
+  // Returning the value of the peak seen since StartPeakMemoryMonitorProcess.
+  GetPeakMemoryUsage(uint32 sequence_num) => (uint64 memory_usage);
+
+  [EnableIf=is_win]
+  RequestCompleteGpuInfo() => (gpu.mojom.DxDiagNode dx_diagnostics);
+  [EnableIf=is_win]
+  GetGpuSupportedRuntimeVersion()
+      => (gpu.mojom.Dx12VulkanVersionInfo dx12_vulkan_version_info);
+
+  // Requests that the GPU process query system availability of HDR output and
+  // return it.
+  RequestHDRStatus() => (bool hdr_enabled);
+
+  // Notify GPU that a shader program was loaded from disk. Key is an
+  // SHA-1 hash, and data a binary blob with serialized program info.
+  // Note that this method is used only from a trusted process.
+  LoadedShader(int32 client_id, string key, string data);
+
+  // Tells GPU to wake up the GPU because we're about to draw.
+  WakeUpGpu();
+
+  // Tells GPU that host has seen a GPU switch. This can happen when the display
+  // is reconfigured, for example.
+  GpuSwitched(gl.mojom.GpuPreference active_gpu_heuristic);
+
+  DestroyAllChannels();
+
+  // Called by the browser shortly after the application is backgrounded. The
+  // GPU can use this message to perform appropriate cleanup. Sent with a
+  // slight delay to prevent thrashing if the app is rapidly backgrounded
+  // foregrounded.
+  OnBackgroundCleanup();
+
+  // Called by the browser immediately after the application is backgrounded.
+  OnBackgrounded();
+  // Called by the browser immediately after the application is foregrounded.
+  OnForegrounded();
+
+  // Begin a batch of layer tree changes.
+  [EnableIf=is_mac]
+  BeginCATransaction();
+
+  // Commit a batch of layer tree changes atomically. Returns after the commit
+  // completes.
+  [EnableIf=is_mac]
+  CommitCATransaction() => ();
+
+  Crash();
+  Hang();
+  ThrowJavaException();
+  Stop() => ();
+};

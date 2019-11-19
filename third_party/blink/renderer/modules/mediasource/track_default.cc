@@ -29,7 +29,7 @@ const AtomicString& TrackDefault::TextKeyword() {
 }
 
 ScriptValue TrackDefault::kinds(ScriptState* script_state) const {
-  return ScriptValue(script_state, ToV8(kinds_, script_state));
+  return ScriptValue(script_state->GetIsolate(), ToV8(kinds_, script_state));
 }
 
 TrackDefault* TrackDefault::Create(const AtomicString& type,

@@ -4,13 +4,14 @@
 
 #include "chrome/browser/media/cdm_storage_id_key.h"
 
+#include "build/branding_buildflags.h"
 #include "media/media_buildflags.h"
 
 #if !BUILDFLAG(ENABLE_CDM_STORAGE_ID)
 #error This should only be compiled if "enable_cdm_storage_id" specified.
 #endif
 
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "chrome/browser/internal/google_chrome_cdm_storage_id_key.h"
 #endif
 

@@ -13,8 +13,7 @@ FakeClientConnectionParameters::FakeClientConnectionParameters(
     const std::string& feature,
     base::OnceCallback<void(const base::UnguessableToken&)> destructor_callback)
     : ClientConnectionParameters(feature),
-      destructor_callback_(std::move(destructor_callback)),
-      weak_ptr_factory_(this) {}
+      destructor_callback_(std::move(destructor_callback)) {}
 
 FakeClientConnectionParameters::~FakeClientConnectionParameters() {
   if (destructor_callback_)
@@ -37,19 +36,19 @@ void FakeClientConnectionParameters::PerformSetConnectionAttemptFailed(
 }
 
 void FakeClientConnectionParameters::PerformSetConnectionSucceeded(
-    mojom::ChannelPtr channel,
-    mojom::MessageReceiverRequest message_receiver_request) {
+    mojo::PendingRemote<mojom::Channel> channel,
+    mojo::PendingReceiver<mojom::MessageReceiver> message_receiver_receiver) {
   DCHECK(message_receiver_);
-  DCHECK(!message_receiver_binding_);
+  DCHECK(!message_receiver_receiver_);
 
-  channel_ = std::move(channel);
-  channel_->set_connection_error_with_reason_handler(
+  channel_.Bind(std::move(channel));
+  channel_.set_disconnect_with_reason_handler(
       base::BindOnce(&FakeClientConnectionParameters::OnChannelDisconnected,
                      weak_ptr_factory_.GetWeakPtr()));
 
-  message_receiver_binding_ =
-      std::make_unique<mojo::Binding<mojom::MessageReceiver>>(
-          message_receiver_.get(), std::move(message_receiver_request));
+  message_receiver_receiver_ =
+      std::make_unique<mojo::Receiver<mojom::MessageReceiver>>(
+          message_receiver_.get(), std::move(message_receiver_receiver));
 }
 
 void FakeClientConnectionParameters::OnChannelDisconnected(

@@ -24,11 +24,7 @@ const int kBufferSize = 1024*1024;  // 1MB to minimize transaction costs.
 }  // namespace
 
 ReadaheadFileStreamReader::ReadaheadFileStreamReader(FileStreamReader* source)
-    : source_(source),
-      source_error_(0),
-      source_has_pending_read_(false),
-      weak_factory_(this) {
-}
+    : source_(source), source_error_(0), source_has_pending_read_(false) {}
 
 ReadaheadFileStreamReader::~ReadaheadFileStreamReader() {}
 
@@ -141,7 +137,7 @@ void ReadaheadFileStreamReader::OnFinishReadFromSource(net::IOBuffer* buf,
     // Free the pending callback before running it, as the callback often
     // dispatches another read.
     scoped_refptr<net::DrainableIOBuffer> sink = pending_sink_buffer_;
-    pending_sink_buffer_ = NULL;
+    pending_sink_buffer_.reset();
     std::move(pending_read_callback_)
         .Run(FinishReadFromCacheOrStoredError(sink.get()));
   }

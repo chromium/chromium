@@ -37,7 +37,8 @@ public class TabModelSelectorTabModelObserver extends EmptyTabModelObserver {
             mSelectorObserver = new EmptyTabModelSelectorObserver() {
                 @Override
                 public void onNewTabCreated(Tab tab) {
-                    assert false : "onChange should have happened and unregistered this listener.";
+                    throw new IllegalStateException(
+                            "onChange should have happened and unregistered this listener.");
                 }
 
                 @Override

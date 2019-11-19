@@ -21,29 +21,26 @@
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/suggestions/proto/suggestions.pb.h"
 #include "components/suggestions/suggestions_service.h"
+#include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_service_observer.h"
 #include "components/sync/driver/sync_service_utils.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/backoff_entry.h"
 #include "net/url_request/url_fetcher_delegate.h"
-#include "services/identity/public/cpp/access_token_info.h"
 #include "url/gurl.h"
 
-namespace identity {
+namespace signin {
 class IdentityManager;
 class PrimaryAccountAccessTokenFetcher;
-}  // namespace identity
+}  // namespace signin
 
 namespace network {
 class SharedURLLoaderFactory;
 class SimpleURLLoader;
 }  // namespace network
-
-namespace syncer {
-class SyncService;
-}  // namespace syncer
 
 namespace user_prefs {
 class PrefRegistrySyncable;
@@ -59,7 +56,7 @@ class SuggestionsServiceImpl : public SuggestionsService,
                                public syncer::SyncServiceObserver {
  public:
   SuggestionsServiceImpl(
-      identity::IdentityManager* identity_manager,
+      signin::IdentityManager* identity_manager,
       syncer::SyncService* sync_service,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::unique_ptr<SuggestionsStore> suggestions_store,
@@ -140,7 +137,7 @@ class SuggestionsServiceImpl : public SuggestionsService,
   // Called when an access token request completes (successfully or not).
   void AccessTokenAvailable(const GURL& url,
                             GoogleServiceAuthError error,
-                            identity::AccessTokenInfo access_token_info);
+                            signin::AccessTokenInfo access_token_info);
 
   // Issues a network request for suggestions (fetch, blacklist, or clear
   // blacklist, depending on |url|).
@@ -174,11 +171,11 @@ class SuggestionsServiceImpl : public SuggestionsService,
 
   base::ThreadChecker thread_checker_;
 
-  identity::IdentityManager* identity_manager_;
+  signin::IdentityManager* identity_manager_;
 
   syncer::SyncService* sync_service_;
   ScopedObserver<syncer::SyncService, syncer::SyncServiceObserver>
-      sync_service_observer_;
+      sync_service_observer_{this};
 
   // The state of history sync, i.e. are we uploading history data to Google?
   syncer::UploadState history_sync_state_;
@@ -200,7 +197,7 @@ class SuggestionsServiceImpl : public SuggestionsService,
 
   // Helper for fetching OAuth2 access tokens. This is non-null iff an access
   // token request is currently in progress.
-  std::unique_ptr<identity::PrimaryAccountAccessTokenFetcher> token_fetcher_;
+  std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher> token_fetcher_;
 
   // Contains the current suggestions fetch request. Will only have a value
   // while a request is pending, and will be reset by |OnURLFetchComplete| or
@@ -214,7 +211,7 @@ class SuggestionsServiceImpl : public SuggestionsService,
   ResponseCallbackList callback_list_;
 
   // For callbacks may be run after destruction.
-  base::WeakPtrFactory<SuggestionsServiceImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<SuggestionsServiceImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SuggestionsServiceImpl);
 };

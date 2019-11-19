@@ -3,7 +3,6 @@
 <head>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 </head>
 <body>
 
@@ -20,7 +19,7 @@
 <div id="div7" tabindex="0">Initial text before list<ul><li>List item</li></ul></div>
 
 <script>
-test_after_layout_and_paint((t) => {
+test((t) => {
     var link = document.getElementById('link');
     link.focus();
     assert_equals(document.activeElement == link, true);

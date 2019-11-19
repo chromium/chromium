@@ -114,21 +114,21 @@ bool UnpackAPIPermissions(const std::vector<std::string>& permissions_input,
   // Validate and partition the parsed APIs.
   for (const auto* api_permission : apis) {
     if (required_permissions.apis().count(api_permission->id())) {
-      result->required_apis.insert(api_permission->id());
+      result->required_apis.insert(api_permission->Clone());
       continue;
     }
 
     if (!optional_permissions.apis().count(api_permission->id())) {
-      result->unlisted_apis.insert(api_permission->id());
+      result->unlisted_apis.insert(api_permission->Clone());
       continue;
     }
 
     if (!api_permission->info()->supports_optional()) {
-      result->unsupported_optional_apis.insert(api_permission->id());
+      result->unsupported_optional_apis.insert(api_permission->Clone());
       continue;
     }
 
-    result->optional_apis.insert(api_permission->id());
+    result->optional_apis.insert(api_permission->Clone());
   }
 
   return true;

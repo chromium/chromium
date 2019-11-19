@@ -27,6 +27,7 @@
 // https://svgwg.org/svg2-draft/types.html#InterfaceSVGLengthList
 
 [
+    Exposed=Window,
     ImplementedAs=SVGLengthListTearOff
 ] interface SVGLengthList {
     readonly attribute unsigned long length;

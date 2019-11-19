@@ -38,10 +38,12 @@ class GFX_EXPORT X11AtomCache {
   ~X11AtomCache();
 
   // Returns the pre-interned Atom without having to go to the x server.
+  // On failure, x11::None is returned.
   XAtom GetAtom(const char*) const;
 
   XDisplay* xdisplay_;
 
+  // Using std::map, as it is possible for thousands of atoms to be registered.
   mutable std::map<std::string, XAtom> cached_atoms_;
 
   DISALLOW_COPY_AND_ASSIGN(X11AtomCache);

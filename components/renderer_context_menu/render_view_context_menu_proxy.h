@@ -15,6 +15,8 @@ class WebContents;
 
 namespace gfx {
 class Image;
+class ImageSkia;
+struct VectorIcon;
 }
 
 namespace ui {
@@ -80,6 +82,12 @@ class RenderViewContextMenuProxy {
  public:
   // Add a menu item to a context menu.
   virtual void AddMenuItem(int command_id, const base::string16& title) = 0;
+  virtual void AddMenuItemWithIcon(int command_id,
+                                   const base::string16& title,
+                                   const gfx::ImageSkia& image) = 0;
+  virtual void AddMenuItemWithIcon(int command_id,
+                                   const base::string16& title,
+                                   const gfx::VectorIcon& image) = 0;
   virtual void AddCheckItem(int command_id, const base::string16& title) = 0;
   virtual void AddSeparator() = 0;
 
@@ -87,6 +95,14 @@ class RenderViewContextMenuProxy {
   virtual void AddSubMenu(int command_id,
                           const base::string16& label,
                           ui::MenuModel* model) = 0;
+  virtual void AddSubMenuWithStringIdAndIcon(int command_id,
+                                             int message_id,
+                                             ui::MenuModel* model,
+                                             const gfx::ImageSkia& image) = 0;
+  virtual void AddSubMenuWithStringIdAndIcon(int command_id,
+                                             int message_id,
+                                             ui::MenuModel* model,
+                                             const gfx::VectorIcon& image) = 0;
 
   // Update the status and text of the specified context-menu item.
   virtual void UpdateMenuItem(int command_id,

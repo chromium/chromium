@@ -21,7 +21,7 @@ namespace views {
 // EventObservers cannot modify events nor alter dispatch.
 class VIEWS_EXPORT EventMonitor {
  public:
-  virtual ~EventMonitor() {}
+  virtual ~EventMonitor() = default;
 
   // Create an instance for monitoring application events. This includes all
   // events on ChromeOS, but only events targeting Chrome on desktop platforms.

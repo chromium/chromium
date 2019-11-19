@@ -5,8 +5,7 @@
 #ifndef CHROME_BROWSER_UI_BLOCKED_CONTENT_POPUP_BLOCKER_H_
 #define CHROME_BROWSER_UI_BLOCKED_CONTENT_POPUP_BLOCKER_H_
 
-#include "base/optional.h"
-#include "third_party/blink/public/web/window_features.mojom.h"
+#include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
@@ -37,13 +36,13 @@ bool ConsiderForPopupBlocking(WindowOpenDisposition disposition);
 // |blocked_popups_| container.
 //
 // |opener_url| is an optional parameter used to compute how the popup
-// permission will behave. If it is not set the current committed URL will be
+// permission will behave. If it is nullptr, the current committed URL will be
 // used instead.
 //
 // If this function returns true, then the contents of |params| is moved to
 // |blocked_popups_|.
 bool MaybeBlockPopup(content::WebContents* web_contents,
-                     const base::Optional<GURL>& opener_url,
+                     const GURL* opener_url,
                      NavigateParams* params,
                      const content::OpenURLParams* open_url_params,
                      const blink::mojom::WindowFeatures& window_features);

@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//base/android/jni_generator/config.gni")
 import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
 import("//third_party/icu/config.gni")
@@ -9,9 +10,10 @@ import("//tools/v8_context_snapshot/v8_context_snapshot.gni")
 
 content_shell_manifest =
     "$target_gen_dir/content_shell_manifest/AndroidManifest.xml"
+content_shell_test_manifest =
+    "$target_gen_dir/content_shell_test_manifest/AndroidManifest.xml"
 
 generate_jni("content_shell_jni_headers") {
-  jni_package = "content/shell"
   sources = [
     "java/src/org/chromium/content_shell/Shell.java",
     "java/src/org/chromium/content_shell/ShellManager.java",
@@ -71,6 +73,7 @@ android_library("content_shell_java") {
     ":content_shell_java_resources",
     ":content_shell_manifest",
     "//base:base_java",
+    "//base:jni_java",
     "//components/download/internal/common:internal_java",
     "//components/embedder_support/android:content_view_java",
     "//components/embedder_support/android:view_java",
@@ -89,12 +92,22 @@ android_library("content_shell_java") {
   ]
 
   android_manifest_for_lint = content_shell_manifest
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 
 jinja_template("content_shell_manifest") {
   testonly = true
   input = "shell_apk/AndroidManifest.xml.jinja2"
   output = content_shell_manifest
+  variables = [ "manifest_package=org.chromium.content_shell_apk" ]
+}
+
+jinja_template("content_shell_test_manifest") {
+  testonly = true
+  input = "javatests/AndroidManifest.xml"
+  includes = [ "shell_apk/AndroidManifest.xml.jinja2" ]
+  output = content_shell_test_manifest
+  variables = [ "manifest_package=org.chromium.content_shell_apk.tests" ]
 }
 
 android_resources("content_shell_apk_resources") {
@@ -103,8 +116,7 @@ android_resources("content_shell_apk_resources") {
   deps = [
     ":content_shell_java_resources",
   ]
-  android_manifest = content_shell_manifest
-  android_manifest_dep = ":content_shell_manifest"
+  custom_package = "org.chromium.content_shell_apk"
 }
 
 android_library("content_shell_apk_java") {
@@ -124,8 +136,6 @@ android_library("content_shell_apk_java") {
     "//third_party/jsr-305:jsr_305_javalib",
     "//ui/android:ui_java",
   ]
-
-  android_manifest_for_lint = content_shell_manifest
 
   java_files = [
     "shell_apk/src/org/chromium/content_shell_apk/ChildProcessLauncherTestHelperService.java",
@@ -162,31 +172,62 @@ android_assets("content_shell_assets") {
   }
 }
 
-android_apk("content_shell_apk") {
-  testonly = true
-  enable_multidex = true
-  deps = [
-    ":content_shell_apk_java",
-    ":content_shell_assets",
-    ":content_shell_java",
-    "//base:base_java",
-    "//base:base_java_test_support",
-    "//components/crash/android:java",
-    "//content/public/android:content_java",
-    "//content/public/test/android:web_test_java_support",
-    "//media/capture/video/android:capture_java",
-    "//net/android:net_java",
-    "//services/shape_detection:shape_detection_java",
-    "//third_party/crashpad/crashpad/handler:crashpad_handler_named_as_so",
-    "//third_party/mesa_headers",
-    "//ui/android:ui_java",
-  ]
+template("content_shell_apk_tmpl") {
+  _target_type = invoker.target_type
+  target(_target_type, target_name) {
+    forward_variables_from(invoker, "*")
+    testonly = true
+    if (!defined(deps)) {
+      deps = []
+    }
+    deps += [
+      ":content_shell_apk_java",
+      ":content_shell_assets",
+      ":content_shell_java",
+      "//base:base_java",
+      "//base:base_java_test_support",
+      "//components/crash/android:java",
+      "//components/crash/content/app:chrome_crashpad_handler_named_as_so",
+      "//content/public/android:content_java",
+      "//content/public/test/android:android_test_message_pump_support_java",
+      "//media/capture/video/android:capture_java",
+      "//net/android:net_java",
+      "//services/shape_detection:shape_detection_java",
+      "//third_party/mesa_headers",
+      "//ui/android:ui_java",
+    ]
+    loadable_modules = [ "$root_out_dir/libchrome_crashpad_handler.so" ]
+  }
+}
+
+content_shell_apk_tmpl("content_shell_apk") {
+  target_type = "android_apk"
   apk_name = "ContentShell"
   android_manifest = content_shell_manifest
   android_manifest_dep = ":content_shell_manifest"
   shared_libraries = [ ":libcontent_shell_content_view" ]
-  loadable_modules = [ "$root_out_dir/libcrashpad_handler.so" ]
   command_line_flags_file = "content-shell-command-line"
+}
+
+content_shell_apk_tmpl("content_shell_test_apk") {
+  target_type = "instrumentation_test_apk"
+  apk_name = "ContentShellTest"
+  android_manifest = content_shell_test_manifest
+  android_manifest_dep = ":content_shell_test_manifest"
+  shared_libraries = [ ":libcontent_native_test" ]
+  deps = [
+    "//base:base_java_test_support",
+    "//base:base_javatests",
+    "//content/public/android:content_javatests",
+    "//net/android:net_javatests",
+    "//third_party/android_support_test_runner:runner_java",
+  ]
+  data_deps = [
+    "//testing/buildbot/filters:content_shell_test_apk_filters",
+  ]
+  if (enable_chrome_android_internal) {
+    data_deps += [ "//clank/build/bot/filters:content_shell_test_apk_filters" ]
+  }
 }
 
 android_library("content_shell_test_java") {
@@ -211,20 +252,6 @@ android_library("content_shell_test_java") {
     "javatests/src/org/chromium/content_shell_apk/ContentShellActivityTestRule.java",
     "javatests/src/org/chromium/content_shell_apk/ContentShellUrlTest.java",
   ]
-}
-
-instrumentation_test_apk("content_shell_test_apk") {
-  deps = [
-    "//base:base_java_test_support",
-    "//base:base_javatests",
-    "//content/public/android:content_javatests",
-    "//net/android:net_javatests",
-    "//third_party/android_support_test_runner:runner_java",
-  ]
-  apk_under_test = ":content_shell_apk"
-  apk_name = "ContentShellTest"
-  shared_libraries = [ ":libcontent_native_test" ]
-  android_manifest = "javatests/AndroidManifest.xml"
 }
 
 if (current_cpu != "x64") {
@@ -252,27 +279,29 @@ if (current_cpu != "x64") {
 
   android_apk(_linker_test_apk_target_name) {
     testonly = true
-    enable_multidex = true
     deps = [
       ":content_shell_assets",
       ":content_shell_java",
       ":linker_resources",
       "//base:base_java",
+      "//base:jni_java",
       "//content/public/android:content_java",
       "//ui/android:ui_java",
     ]
     android_manifest = chromium_linker_test_manifest
     android_manifest_dep = ":chromium_linker_test_manifest"
     apk_name = "ChromiumLinkerTest"
+    shared_libraries = [ ":linker_test" ]
+    use_chromium_linker = true
+    enable_chromium_linker_tests = true
+    jni_registration_header = _linker_test_jni_registration_header
     java_files = [
       "linker_test_apk/src/org/chromium/chromium_linker_test_apk/ChromiumLinkerTestActivity.java",
       "linker_test_apk/src/org/chromium/chromium_linker_test_apk/ChromiumLinkerTestApplication.java",
       "linker_test_apk/src/org/chromium/chromium_linker_test_apk/LinkerTests.java",
     ]
-    shared_libraries = [ ":linker_test" ]
-    use_chromium_linker = true
-    enable_chromium_linker_tests = true
-    jni_registration_header = _linker_test_jni_registration_header
+    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+    processor_args_javac = [ skip_gen_jni_arg ]
   }
 
   test_runner_script(_linker_test_apk_test_runner_target_name) {
@@ -321,7 +350,6 @@ if (current_cpu != "x64") {
 
   generate_jni("linker_test_jni_headers") {
     testonly = true
-    jni_package = "content/shell"
     sources = [
       "linker_test_apk/src/org/chromium/chromium_linker_test_apk/LinkerTests.java",
     ]
@@ -335,6 +363,7 @@ android_library("content_shell_browsertests_java") {
     "//base:base_java",
     "//content/public/android:content_java",
     "//testing/android/native_test:native_test_java",
+    "//third_party/android_deps:com_android_support_support_compat_java",
     "//ui/android:ui_java",
   ]
   java_files = [ "browsertests/src/org/chromium/content_shell/browsertests/ContentShellBrowserTestActivity.java" ]

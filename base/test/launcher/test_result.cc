@@ -27,6 +27,8 @@ bool TestResultPart::TypeFromString(const std::string& str, Type* type) {
     *type = kNonFatalFailure;
   else if (str == "fatal_failure")
     *type = kFatalFailure;
+  else if (str == "skip")
+    *type = kSkip;
   else
     return false;
   return true;
@@ -40,6 +42,8 @@ std::string TestResultPart::TypeAsString() const {
       return "failure";
     case kFatalFailure:
       return "fatal_failure";
+    case kSkip:
+      return "skip";
     default:
       NOTREACHED();
   }

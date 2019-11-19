@@ -28,8 +28,7 @@ RemoteDeviceLifeCycleImpl::RemoteDeviceLifeCycleImpl(
     : remote_device_(remote_device),
       local_device_(local_device),
       secure_channel_client_(secure_channel_client),
-      state_(RemoteDeviceLifeCycle::State::STOPPED),
-      weak_ptr_factory_(this) {}
+      state_(RemoteDeviceLifeCycle::State::STOPPED) {}
 
 RemoteDeviceLifeCycleImpl::~RemoteDeviceLifeCycleImpl() {}
 
@@ -111,6 +110,9 @@ void RemoteDeviceLifeCycleImpl::OnConnectionAttemptFailure(
                     << " stopped because Bluetooth is not available.";
     TransitionToState(RemoteDeviceLifeCycle::State::STOPPED);
   } else {
+    // TODO(crbug.com/991644): Improve the name AUTHENTICATION_FAILED (it can
+    // encompass errors other than authentication failures) and create a metric
+    // with buckets corresponding to the ConnectionAttemptFailureReason.
     PA_LOG(ERROR) << "Failed to authenticate with remote device: "
                   << remote_device_.GetTruncatedDeviceIdForLogs()
                   << ", for reason: " << reason << ". Giving up.";
@@ -135,7 +137,10 @@ void RemoteDeviceLifeCycleImpl::OnConnection(
 
 void RemoteDeviceLifeCycleImpl::OnDisconnected() {
   DCHECK(state_ == RemoteDeviceLifeCycle::State::SECURE_CHANNEL_ESTABLISHED);
+
+  messenger_->RemoveObserver(this);
   messenger_.reset();
+
   FindConnection();
 }
 

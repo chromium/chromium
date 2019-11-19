@@ -10,7 +10,7 @@
 
 namespace extensions {
 
-class IdentityGetProfileUserInfoFunction : public UIThreadExtensionFunction {
+class IdentityGetProfileUserInfoFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("identity.getProfileUserInfo",
                              IDENTITY_GETPROFILEUSERINFO)
@@ -20,7 +20,7 @@ class IdentityGetProfileUserInfoFunction : public UIThreadExtensionFunction {
  private:
   ~IdentityGetProfileUserInfoFunction() override;
 
-  // UIThreadExtensionFunction implementation.
+  // ExtensionFunction implementation.
   ExtensionFunction::ResponseAction Run() override;
 };
 

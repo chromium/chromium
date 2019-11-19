@@ -1,0 +1,69 @@
+This is a testharness.js-based test.
+Found 65 tests; 59 PASS, 6 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS Same-origin script with correct sha256 hash.
+PASS Same-origin script with correct sha384 hash.
+PASS Same-origin script with correct sha512 hash.
+PASS Same-origin script with empty integrity.
+PASS Same-origin script with incorrect hash.
+PASS Same-origin script with multiple sha256 hashes, including correct.
+PASS Same-origin script with multiple sha256 hashes, including unknown algorithm.
+PASS Same-origin script with sha256 mismatch, sha512 match
+PASS Same-origin script with sha256 match, sha512 mismatch
+PASS <crossorigin='anonymous'> script with correct hash, ACAO: *
+PASS <crossorigin='anonymous'> script with incorrect hash, ACAO: *
+PASS <crossorigin='use-credentials'> script with correct hash, CORS-eligible
+PASS <crossorigin='use-credentials'> script with incorrect hash CORS-eligible
+PASS <crossorigin='anonymous'> script with CORS-ineligible resource
+PASS Cross-origin script, not CORS request, with correct hash
+PASS Cross-origin script, not CORS request, with hash mismatch
+PASS Cross-origin script, empty integrity
+PASS Same-origin script with correct hash, options.
+PASS Same-origin script with unknown algorithm only.
+PASS Same-origin script with matching digest re-uses preload with matching digest.
+PASS Same-origin script with non-matching digest does not re-use preload with matching digest.
+PASS Same-origin script with matching digest does not re-use preload with non-matching digest.
+PASS Same-origin script with non-matching digest does not re-use preload with non-matching digest.
+PASS Same-origin style with correct sha256 hash.
+PASS Same-origin style with correct sha384 hash.
+PASS Same-origin style with correct sha512 hash.
+PASS Same-origin style with empty integrity.
+PASS Same-origin style with incorrect hash.
+PASS Same-origin style with multiple sha256 hashes, including correct.
+PASS Same-origin style with multiple sha256 hashes, including unknown algorithm.
+PASS Same-origin style with sha256 mismatch, sha512 match
+PASS Same-origin style with sha256 match, sha512 mismatch
+PASS <crossorigin='anonymous'> style with correct hash, ACAO: *
+PASS <crossorigin='anonymous'> style with incorrect hash, ACAO: *
+PASS <crossorigin='use-credentials'> style with correct hash, CORS-eligible
+PASS <crossorigin='use-credentials'> style with incorrect hash CORS-eligible
+PASS <crossorigin='anonymous'> style with CORS-ineligible resource
+PASS Cross-origin style, not CORS request, with correct hash
+PASS Cross-origin style, not CORS request, with hash mismatch
+PASS Cross-origin style, empty integrity
+PASS Same-origin style with correct hash, options.
+PASS Same-origin style with unknown algorithm only.
+PASS Same-origin style with matching digest re-uses preload with matching digest.
+PASS Same-origin style with non-matching digest does not re-use preload with matching digest.
+PASS Same-origin style with matching digest does not re-use preload with non-matching digest.
+PASS Same-origin style with non-matching digest does not re-use preload with non-matching digest.
+PASS Same-origin image with correct sha256 hash.
+PASS Same-origin image with correct sha384 hash.
+PASS Same-origin image with correct sha512 hash.
+PASS Same-origin image with empty integrity.
+FAIL Same-origin image with incorrect hash. assert_unreached: Invalid preload load succeeded. Reached unreachable code
+PASS Same-origin image with multiple sha256 hashes, including correct.
+PASS Same-origin image with multiple sha256 hashes, including unknown algorithm.
+PASS Same-origin image with sha256 mismatch, sha512 match
+FAIL Same-origin image with sha256 match, sha512 mismatch assert_unreached: Invalid preload load succeeded. Reached unreachable code
+PASS <crossorigin='anonymous'> image with correct hash, ACAO: *
+FAIL <crossorigin='anonymous'> image with incorrect hash, ACAO: * assert_unreached: Invalid preload load succeeded. Reached unreachable code
+PASS <crossorigin='use-credentials'> image with correct hash, CORS-eligible
+FAIL <crossorigin='use-credentials'> image with incorrect hash CORS-eligible assert_unreached: Invalid preload load succeeded. Reached unreachable code
+PASS <crossorigin='anonymous'> image with CORS-ineligible resource
+FAIL Cross-origin image, not CORS request, with correct hash assert_unreached: Invalid preload load succeeded. Reached unreachable code
+FAIL Cross-origin image, not CORS request, with hash mismatch assert_unreached: Invalid preload load succeeded. Reached unreachable code
+PASS Cross-origin image, empty integrity
+PASS Same-origin image with correct hash, options.
+PASS Same-origin image with unknown algorithm only.
+Harness: the test ran to completion.
+

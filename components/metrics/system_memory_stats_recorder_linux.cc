@@ -54,18 +54,6 @@ void RecordMemoryStats(RecordMemoryStatsType type) {
       (memory.active_file + memory.inactive_file + memory.free) / 1024;
 
   switch (type) {
-    case RECORD_MEMORY_STATS_TAB_DISCARDED: {
-#if defined(OS_CHROMEOS)
-      UMA_HISTOGRAM_MEGABYTES_LINEAR("Tabs.Discard.MemGraphicsMB",
-                                     mem_graphics_gem_mb);
-      UMA_HISTOGRAM_MEGABYTES_LINEAR("Tabs.Discard.MemShmemMB", mem_shmem_mb);
-#endif
-      UMA_HISTOGRAM_ALLOCATED_MEGABYTES("Tabs.Discard.MemAllocatedMB",
-                                        mem_allocated_mb);
-      UMA_HISTOGRAM_LARGE_MEMORY_MB("Tabs.Discard.MemAvailableMB",
-                                    mem_available_mb);
-      break;
-    }
     case RECORD_MEMORY_STATS_CONTENTS_OOM_KILLED: {
 #if defined(OS_CHROMEOS)
       UMA_HISTOGRAM_MEGABYTES_LINEAR("Memory.OOMKill.Contents.MemGraphicsMB",

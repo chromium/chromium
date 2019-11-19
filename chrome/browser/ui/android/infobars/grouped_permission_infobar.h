@@ -5,15 +5,12 @@
 #ifndef CHROME_BROWSER_UI_ANDROID_INFOBARS_GROUPED_PERMISSION_INFOBAR_H_
 #define CHROME_BROWSER_UI_ANDROID_INFOBARS_GROUPED_PERMISSION_INFOBAR_H_
 
-#include <jni.h>
-
-#include "base/android/scoped_java_ref.h"
 #include "chrome/browser/ui/android/infobars/confirm_infobar.h"
 
 class GroupedPermissionInfoBarDelegate;
 
-// TODO(timloh): This is incorrectly named as we've removed grouped permissions,
-// rename it to PermissionInfoBar once crbug.com/606138 is done.
+// TODO(andypaicu): rename this to PermissionInfoBar, grouped permissions are
+// not a thing anymore.
 class GroupedPermissionInfoBar : public ConfirmInfoBar {
  public:
   explicit GroupedPermissionInfoBar(

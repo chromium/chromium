@@ -10,7 +10,7 @@
 #include "base/macros.h"
 #include "ui/compositor/test/fake_context_factory.h"
 
-namespace viz {
+namespace cc {
 class TestLayerTreeFrameSinkClient;
 }
 
@@ -27,7 +27,7 @@ class AuraTestContextFactory : public ui::FakeContextFactory {
       base::WeakPtr<ui::Compositor> compositor) override;
 
  private:
-  std::set<std::unique_ptr<viz::TestLayerTreeFrameSinkClient>>
+  std::set<std::unique_ptr<cc::TestLayerTreeFrameSinkClient>>
       frame_sink_clients_;
 
   DISALLOW_COPY_AND_ASSIGN(AuraTestContextFactory);

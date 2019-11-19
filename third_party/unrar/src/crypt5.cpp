@@ -1,5 +1,3 @@
-namespace third_party_unrar {
-
 static void hmac_sha256(const byte *Key,size_t KeyLength,const byte *Data,
                         size_t DataLength,byte *ResDigest,
                         sha256_context *ICtxOpt,bool *SetIOpt,
@@ -233,6 +231,3 @@ void TestPBKDF2() // Test PBKDF2 HMAC-SHA256
   mprintf(L"\nPBKDF2 test3: %s", memcmp(Key,Res3,32)==0 ? L"OK":L"Failed");
 }
 #endif
-
-}  // namespace third_party_unrar
-

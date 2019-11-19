@@ -19,7 +19,8 @@
 
   const profile = message.result.profile;
   const foundTheSample = profile.samples.some(sample =>
-    sample.size >= 500 * 200 && sample.stack.some(frame => frame.includes('HTMLCanvasElement')));
+    sample.size >= 500 * 200 && sample.stack.some(frame =>
+      frame.includes('HTMLCanvasElement') || frame.includes('CanvasRenderingContext')));
   testRunner.log('Found sample: ' + foundTheSample);
   if (!foundTheSample)
     testRunner.log(profile);

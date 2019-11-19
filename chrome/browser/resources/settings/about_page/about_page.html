@@ -11,23 +11,21 @@
 <link rel="import" href="../settings_page/settings_section.html">
 <link rel="import" href="../settings_page_css.html">
 <link rel="import" href="../settings_shared_css.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_link_row/cr_link_row.html">
 <link rel="import" href="chrome://resources/cr_elements/icons.html">
 <link rel="import" href="chrome://resources/html/assert.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
 <link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-button/paper-button.html">
 
 <if expr="chromeos">
 <link rel="import" href="detailed_build_info.html">
 <link rel="import" href="update_warning_dialog.html">
+<link rel="import" href="../chromeos/os_icons.html">
 <link rel="import" href="../settings_page/settings_subpage.html">
 <link rel="import" href="../reset_page/powerwash_dialog.html">
-</if>
-
-<if expr="_google_chrome and is_macosx">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-icon-button/paper-icon-button-light.html">
 </if>
 
 <dom-module id="settings-about-page">
@@ -57,9 +55,10 @@
         margin-inline-end: var(--about-page-image-space);
       }
 
-      iron-icon {
+      .icon-container {
         margin-inline-end: var(--about-page-image-space);
         min-width: 32px;  /* The width of the product-logo img. */
+        text-align: center;
       }
 
       iron-icon[icon='settings:check-circle'] {
@@ -74,7 +73,7 @@
         overflow-x: auto;
       }
 
-      paper-button {
+      cr-button {
         white-space: nowrap;
       }
 
@@ -92,11 +91,12 @@
       <settings-animated-pages id="pages" section="about"
           focus-config="[[focusConfig_]]">
         <div route-path="default">
-          <div class="settings-box two-line">
+          <div class="settings-box two-line first">
             <img id="product-logo" on-click="onProductLogoTap_"
                 srcset="chrome://theme/current-channel-logo@1x 1x,
                         chrome://theme/current-channel-logo@2x 2x"
-                alt="$i18n{aboutProductLogoAlt}">
+                alt="$i18n{aboutProductLogoAlt}"
+                role="presentation">
             <h1 class="product-title">$i18n{aboutProductTitle}</h1>
           </div>
           <div class="settings-box two-line">
@@ -105,19 +105,25 @@
               src URL -->
             <!-- Set the icon from the iconset (when it's obsolete/EOL and
               when update is done) or set the src (when it's updating). -->
-            <iron-icon
-                hidden="[[!shouldShowIcons_(showUpdateStatus_)]]"
 <if expr="not chromeos">
-                icon$="[[getUpdateStatusIcon_(
-                    obsoleteSystemInfo_, currentUpdateStatusEvent_)]]"
-                src="[[getThrobberSrcIfUpdating_(obsoleteSystemInfo_, currentUpdateStatusEvent_)]]">
+            <div class="icon-container"
+                hidden="[[!shouldShowIcons_(showUpdateStatus_)]]">
+              <iron-icon
+                  icon$="[[getUpdateStatusIcon_(
+                      obsoleteSystemInfo_, currentUpdateStatusEvent_)]]"
+                  src="[[getThrobberSrcIfUpdating_(obsoleteSystemInfo_, currentUpdateStatusEvent_)]]">
 </if>
 <if expr="chromeos">
-                icon$="[[getUpdateStatusIcon_(
-                    hasEndOfLife_, currentUpdateStatusEvent_)]]"
-                src="[[getThrobberSrcIfUpdating_(hasEndOfLife_, currentUpdateStatusEvent_)]]">
+            <div class="icon-container"
+                hidden="[[!shouldShowIcons_(showUpdateStatus_,
+                    showOsSettings_)]]">
+              <iron-icon
+                  icon$="[[getUpdateStatusIcon_(
+                      hasEndOfLife_, currentUpdateStatusEvent_)]]"
+                  src="[[getThrobberSrcIfUpdating_(hasEndOfLife_, currentUpdateStatusEvent_)]]">
 </if>
-            </iron-icon>
+              </iron-icon>
+            </div>
             <div class="start padded">
               <div id="updateStatusMessage" hidden="[[!showUpdateStatus_]]">
                 <div
@@ -146,53 +152,54 @@
               </span>
 </if>
 <if expr="chromeos">
-             <div id="endOfLifeMessageContainer" hidden="[[!hasEndOfLife_]]">
-               $i18n{endOfLifeMessage}
-               <a href="$i18n{endOfLifeLearnMoreURL}" target="_blank">
-                 $i18n{learnMore}
-               </a>
-             </div>
+              <div id="endOfLifeMessageContainer" hidden="[[!hasEndOfLife_]]">
+                $i18n{endOfLifeMessage}
+                <a href="$i18n{endOfLifeLearnMoreURL}" target="_blank">
+                  $i18n{learnMore}
+                </a>
+              </div>
 </if>
               <div class="secondary">$i18n{aboutBrowserVersion}</div>
+<if expr="chromeos">
+              <div class="secondary"
+                  inner-h-t-m-l="[[getUpdateOsSettingsLink_()]]">
+              </div>
+</if>
             </div>
             <div class="separator" hidden="[[!showButtonContainer_]]"></div>
             <span id="buttonContainer" hidden="[[!showButtonContainer_]]">
-              <paper-button id="relaunch" class="secondary-button"
-                  hidden="[[!showRelaunch_]]" on-click="onRelaunchTap_">
+              <cr-button id="relaunch" hidden="[[!showRelaunch_]]"
+                  on-click="onRelaunchTap_">
                 $i18n{aboutRelaunch}
-              </paper-button>
+              </cr-button>
 <if expr="chromeos">
-              <paper-button id="relaunchAndPowerwash" class="secondary-button"
+              <cr-button id="relaunchAndPowerwash"
                   hidden="[[!showRelaunchAndPowerwash_]]"
                   on-click="onRelaunchAndPowerwashTap_">
                 $i18n{aboutRelaunchAndPowerwash}
-              </paper-button>
-              <paper-button id="checkForUpdates" class="secondary-button"
-                  hidden="[[!showCheckUpdates_]]"
+              </cr-button>
+              <cr-button id="checkForUpdates" hidden="[[!showCheckUpdates_]]"
                   on-click="onCheckUpdatesTap_">
                 $i18n{aboutCheckForUpdates}
-              </paper-button>
+              </cr-button>
 </if>
             </span>
           </div>
 <if expr="chromeos">
-          <div id="aboutTPMFirmwareUpdate" class="settings-box two-line"
+          <cr-link-row
+              id="aboutTPMFirmwareUpdate"
+              class="hr"
               hidden$="[[!showTPMFirmwareUpdateLineItem_]]"
-              on-click="onTPMFirmwareUpdateTap_" actionable>
-            <div class="start">
-              <div>$i18n{aboutTPMFirmwareUpdateTitle}</div>
-              <div class="secondary">
-                $i18n{aboutTPMFirmwareUpdateDescription}
-                <a href="$i18n{aboutTPMFirmwareUpdateLearnMoreURL}"
-                    target="_blank" on-click="onLearnMoreTap_">
-                  $i18n{learnMore}
-                </a>
-              </div>
+              label="$i18n{aboutTPMFirmwareUpdateTitle}"
+              on-click="onTPMFirmwareUpdateTap_">
+            <div slot="sub-label">
+              $i18n{aboutTPMFirmwareUpdateDescription}
+              <a href="$i18n{aboutTPMFirmwareUpdateLearnMoreURL}"
+                  target="_blank" on-click="onLearnMoreTap_">
+                $i18n{learnMore}
+              </a>
             </div>
-            <paper-icon-button-light class="subpage-arrow">
-              <button aria-labelledby="aboutTPMFirmwareUpdate"></button>
-            </paper-icon-button-light>
-          </div>
+          </cr-link-row>
 </if>
 <if expr="_google_chrome and is_macosx">
           <template is="dom-if" if="[[!promoteUpdaterStatus_.hidden]]">
@@ -208,26 +215,45 @@
                   $i18n{learnMore}
                 </a>
               </div>
-              <paper-icon-button-light class="subpage-arrow"
-                  hidden="[[!promoteUpdaterStatus_.actionable]]">
-                <button disabled="[[promoteUpdaterStatus_.disabled]]"
-                    aria-label$="[[promoteUpdaterStatus_.text]]">
-                </button>
-              </paper-icon-button-light>
+              <cr-icon-button class="subpage-arrow"
+                  hidden$="[[!promoteUpdaterStatus_.actionable]]"
+                  disabled="[[promoteUpdaterStatus_.disabled]]"
+                  aria-label$="[[promoteUpdaterStatus_.text]]"></cr-icon-button>
             </div>
+          </template>
+</if>
+<if expr="chromeos">
+          <template is="dom-if" if="[[hasReleaseNotes_]]">
+            <cr-link-row class="hr" id="releaseNotesOnline"
+                hidden="[[!hasInternetConnection_]]"
+                on-click="onReleaseNotesTap_"
+                label="$i18n{aboutShowReleaseNotes}" external></cr-link-row>
+            <cr-link-row class="hr" id="releaseNotesOffline"
+                hidden="[[hasInternetConnection_]]"
+                on-click="onReleaseNotesTap_"
+                label="$i18n{aboutShowReleaseNotes}"
+                title="$i18n{aboutReleaseNotesOffline}" external></cr-link-row>
           </template>
 </if>
           <cr-link-row class="hr" id="help" on-click="onHelpTap_"
               label="$i18n{aboutGetHelpUsingChrome}" external></cr-link-row>
 <if expr="_google_chrome">
           <cr-link-row class="hr" id="reportIssue" on-click="onReportIssueTap_"
-              label="$i18n{aboutReportAnIssue}"></cr-link-row>
+              hidden="[[!prefs.feedback_allowed.value]]"
+              label="$i18n{aboutReportAnIssue}" external></cr-link-row>
 </if>
 <if expr="chromeos">
           <cr-link-row class="hr" id="detailed-build-info-trigger"
               on-click="onDetailedBuildInfoTap_"
-              label="$i18n{aboutDetailedBuildInfo}"></cr-link-row>
+              label="$i18n{aboutDetailedBuildInfo}"
+              role-description="$i18n{subpageArrowRoleDescription}"
+              hidden$="[[!showOsSettings_]]">
+          </cr-link-row>
 </if>
+          <cr-link-row class="hr" on-click="onManagementPageTap_"
+              start-icon="cr:domain" label="$i18n{managementPage}"
+              role-description="$i18n{subpageArrowRoleDescription}"
+              hidden$="[[!isManaged_]]"></cr-link-row>
         </div>
 <if expr="chromeos">
         <template is="dom-if" route-path="/help/details">
@@ -240,7 +266,7 @@
     </settings-section>
 
     <settings-section>
-      <div class="settings-box padded block">
+      <div class="settings-box padded block first">
         <div class="info-section">
           <div class="secondary">$i18n{aboutProductTitle}</div>
           <div class="secondary">$i18n{aboutProductCopyright}</div>
@@ -249,10 +275,9 @@
         <div class="info-section">
           <div class="secondary">$i18nRaw{aboutProductLicense}</div>
 <if expr="chromeos">
-          <div class="secondary"
+          <div id="crostiniLicense" class="secondary"
               inner-h-t-m-l="[[getAboutProductOsLicense_(
-                  showCrostiniLicense_)]]">
-          </div>
+                  showCrostiniLicense_)]]" hidden$="[[!showOsSettings_]]"></div>
 </if>
         </div>
 <if expr="_google_chrome">
@@ -261,7 +286,8 @@
       </div>
 <if expr="chromeos">
       <div class="settings-box padded block" id="regulatoryInfo"
-          hidden$="[[!shouldShowRegulatoryOrSafetyInfo_(regulatoryInfo_)]]">
+          hidden$="[[!shouldShowRegulatoryOrSafetyInfo_(regulatoryInfo_,
+              showOsSettings_)]]">
 <if expr="_google_chrome">
         <div class="secondary" hidden$="[[!shouldShowSafetyInfo_()]]">
           <a target="_blank" href="$i18n{aboutProductSafetyURL}">
@@ -270,8 +296,7 @@
         </div>
 </if>
         <img src="[[regulatoryInfo_.url]]" alt="[[regulatoryInfo_.text]]"
-            hidden$="[[!shouldShowRegulatoryInfo_(regulatoryInfo_)]]"
-            role="presentation">
+            hidden$="[[!shouldShowRegulatoryInfo_(regulatoryInfo_)]]">
       </div>
 </if>
     </settings-section>

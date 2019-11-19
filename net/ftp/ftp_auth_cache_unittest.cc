@@ -38,7 +38,7 @@ TEST(FtpAuthCacheTest, LookupAddRemove) {
   GURL origin2("ftp://foo2");
 
   // Lookup non-existent entry.
-  EXPECT_TRUE(cache.Lookup(origin1) == NULL);
+  EXPECT_TRUE(cache.Lookup(origin1) == nullptr);
 
   // Add entry for origin1.
   cache.Add(origin1, AuthCredentials(kUsername1, kPassword1));
@@ -69,11 +69,11 @@ TEST(FtpAuthCacheTest, LookupAddRemove) {
 
   // Remove entry of origin1.
   cache.Remove(origin1, AuthCredentials(kUsername3, kPassword3));
-  EXPECT_TRUE(cache.Lookup(origin1) == NULL);
+  EXPECT_TRUE(cache.Lookup(origin1) == nullptr);
 
   // Remove non-existent entry.
   cache.Remove(origin1, AuthCredentials(kUsername3, kPassword3));
-  EXPECT_TRUE(cache.Lookup(origin1) == NULL);
+  EXPECT_TRUE(cache.Lookup(origin1) == nullptr);
 }
 
 // Check that if the origin differs only by port number, it is considered
@@ -116,7 +116,7 @@ TEST(FtpAuthCacheTest, NormalizedKey) {
 
   // Remove
   cache.Remove(GURL("ftp://HOsT"), AuthCredentials(kOthername, kOtherword));
-  EXPECT_TRUE(cache.Lookup(GURL("ftp://host")) == NULL);
+  EXPECT_TRUE(cache.Lookup(GURL("ftp://host")) == nullptr);
 }
 
 TEST(FtpAuthCacheTest, OnlyRemoveMatching) {
@@ -131,7 +131,7 @@ TEST(FtpAuthCacheTest, OnlyRemoveMatching) {
 
   // Auth data matches, should remove.
   cache.Remove(GURL("ftp://host"), AuthCredentials(kUsername, kPassword));
-  EXPECT_TRUE(cache.Lookup(GURL("ftp://host")) == NULL);
+  EXPECT_TRUE(cache.Lookup(GURL("ftp://host")) == nullptr);
 }
 
 TEST(FtpAuthCacheTest, EvictOldEntries) {
@@ -149,7 +149,7 @@ TEST(FtpAuthCacheTest, EvictOldEntries) {
 
   // Adding one entry should cause eviction of the first entry.
   cache.Add(GURL("ftp://last_host"), AuthCredentials(kUsername, kPassword));
-  EXPECT_TRUE(cache.Lookup(GURL("ftp://host0")) == NULL);
+  EXPECT_TRUE(cache.Lookup(GURL("ftp://host0")) == nullptr);
 
   // Remaining entries should not get evicted.
   for (size_t i = 1; i < FtpAuthCache::kMaxEntries; i++) {

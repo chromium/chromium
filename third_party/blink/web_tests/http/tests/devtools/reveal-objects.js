@@ -11,8 +11,12 @@
   await TestRunner.showPanel('resources');
   await TestRunner.showPanel('network');
   await TestRunner.loadHTML(`
-      <div id="div">
+      <div id="targetnode">
       </div>
+      <span id="toremove"></span>
+      <span id="containertoremove">
+        <span id="child"></span>
+      </span>
     `);
   await TestRunner.evaluateInPagePromise(`
       function loadResource(url)
@@ -24,14 +28,17 @@
   `);
   await TestRunner.addScriptTag('resources/bar.js');
 
-  var node;
+  var divNode;
+  var spanNode;
+  var childNode;
+  var container;
   var resource;
   var uiLocation;
   var requestWithResource;
   var requestWithoutResource;
 
   TestRunner.runTestSuite([
-    function init(next) {
+    async function init(next) {
       installHooks();
 
       TestRunner.resourceTreeModel.forAllResources(function(r) {
@@ -42,14 +49,14 @@
       });
       uiLocation = Workspace.workspace.uiSourceCodeForURL(resource.url).uiLocation(2, 1);
 
-      ElementsTestRunner.nodeWithId('div', nodeCallback);
+      divNode = await ElementsTestRunner.nodeWithIdPromise('targetnode');
+      spanNode = await ElementsTestRunner.nodeWithIdPromise('toremove');
+      childNode = await ElementsTestRunner.nodeWithIdPromise('child');
+      container = await ElementsTestRunner.nodeWithIdPromise('containertoremove');
 
-      function nodeCallback(foundNode) {
-        node = foundNode;
-        NetworkTestRunner.recordNetwork();
-        var url = TestRunner.url('bar.js');
-        TestRunner.evaluateInPage(`loadResource('${url}')`, firstXhrCallback);
-      }
+      NetworkTestRunner.recordNetwork();
+      var url = TestRunner.url('bar.js');
+      TestRunner.evaluateInPage(`loadResource('${url}')`, firstXhrCallback);
 
       function firstXhrCallback() {
         requestWithResource = SDK.networkLog.requestForURL(resource.url);
@@ -69,7 +76,29 @@
     },
 
     function revealNode(next) {
-      Common.Revealer.reveal(node).then(next);
+      Common.Revealer.reveal(divNode).then(next);
+    },
+
+    function revealRemovedNode(next) {
+      spanNode.removeNode(function() {
+        Common.Revealer.reveal(spanNode).then(() => {
+          TestRunner.addResult('Removed node revealed');
+        }, () => {
+          TestRunner.addResult('Removed node not revealed');
+        }).finally(next);
+      });
+    },
+
+    function revealNodeWithRemovedParent(next) {
+      // Note: we remove the container, and then check that the child also can
+      // not be revealed since it is also detached.
+      container.parentNode.removeNode(function() {
+        Common.Revealer.reveal(childNode).then(() => {
+          TestRunner.addResult('Node with removed parent revealed');
+        }, () => {
+          TestRunner.addResult('Node with removed parent not revealed');
+        }).finally(next);
+      });
     },
 
     function revealUILocation(next) {

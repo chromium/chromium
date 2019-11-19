@@ -143,10 +143,7 @@ void WaveShaperDSPKernel::ProcessCurve(const float* source,
 void WaveShaperDSPKernel::ProcessCurve2x(const float* source,
                                          float* destination,
                                          uint32_t frames_to_process) {
-  bool is_safe = frames_to_process == audio_utilities::kRenderQuantumFrames;
-  DCHECK(is_safe);
-  if (!is_safe)
-    return;
+  DCHECK_EQ(frames_to_process, audio_utilities::kRenderQuantumFrames);
 
   float* temp_p = temp_buffer_->Data();
 
@@ -161,10 +158,7 @@ void WaveShaperDSPKernel::ProcessCurve2x(const float* source,
 void WaveShaperDSPKernel::ProcessCurve4x(const float* source,
                                          float* destination,
                                          uint32_t frames_to_process) {
-  bool is_safe = frames_to_process == audio_utilities::kRenderQuantumFrames;
-  DCHECK(is_safe);
-  if (!is_safe)
-    return;
+  DCHECK_EQ(frames_to_process, audio_utilities::kRenderQuantumFrames);
 
   float* temp_p = temp_buffer_->Data();
   float* temp_p2 = temp_buffer2_->Data();

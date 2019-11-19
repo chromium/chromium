@@ -11,13 +11,13 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/memory/ptr_util.h"
+#include "chrome/android/chrome_jni_headers/NearOomInfoBar_jni.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/ui/interventions/intervention_delegate.h"
 #include "chrome/browser/ui/interventions/intervention_infobar_delegate.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "content/public/browser/web_contents.h"
-#include "jni/NearOomInfoBar_jni.h"
 
 NearOomInfoBar::NearOomInfoBar(InterventionDelegate* delegate)
     : InfoBarAndroid(std::make_unique<InterventionInfoBarDelegate>(

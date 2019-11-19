@@ -4,6 +4,10 @@
 
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 
+std::string AutocompleteProviderClient::ProfileUserName() const {
+  return "";
+}
+
 bool AutocompleteProviderClient::IsBrowserUpdateAvailable() const {
   return false;
 }

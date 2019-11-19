@@ -28,7 +28,7 @@ tryPostMessage('["a", "a", "b", {a:"b", b:"a"}]');
 tryPostMessage('[1,2,3]');
 tryPostMessage('[,,1]');
 tryPostMessage('(function(){})', true, null, DOMException.DATA_CLONE_ERR);
-tryPostMessage('var x = 0; try { eval("badref"); } catch(e) { x = e; } x', true, null, DOMException.DATA_CLONE_ERR);
+tryPostMessage('var x = 0; try { eval("badref"); } catch(e) { x = e; } x');
 var arrayBuffer = new ArrayBuffer(1);
 tryPostMessage('"data"', false, null, 0, [arrayBuffer]);
 tryPostMessage('arrayBuffer', true, null, DOMException.DATA_CLONE_ERR);

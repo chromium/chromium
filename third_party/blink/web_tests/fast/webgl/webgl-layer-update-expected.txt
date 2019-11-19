@@ -1,3 +1,0 @@
-This test is only useful as a pixel test. You should see red canvas of size 100x100.
-
-

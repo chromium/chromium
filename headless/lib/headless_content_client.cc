@@ -13,24 +13,24 @@ HeadlessContentClient::HeadlessContentClient() = default;
 
 HeadlessContentClient::~HeadlessContentClient() = default;
 
-base::string16 HeadlessContentClient::GetLocalizedString(int message_id) const {
+base::string16 HeadlessContentClient::GetLocalizedString(int message_id) {
   return l10n_util::GetStringUTF16(message_id);
 }
 
 base::StringPiece HeadlessContentClient::GetDataResource(
     int resource_id,
-    ui::ScaleFactor scale_factor) const {
+    ui::ScaleFactor scale_factor) {
   return ui::ResourceBundle::GetSharedInstance().GetRawDataResourceForScale(
       resource_id, scale_factor);
 }
 
 base::RefCountedMemory* HeadlessContentClient::GetDataResourceBytes(
-    int resource_id) const {
+    int resource_id) {
   return ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytes(
       resource_id);
 }
 
-gfx::Image& HeadlessContentClient::GetNativeImageNamed(int resource_id) const {
+gfx::Image& HeadlessContentClient::GetNativeImageNamed(int resource_id) {
   return ui::ResourceBundle::GetSharedInstance().GetNativeImageNamed(
       resource_id);
 }

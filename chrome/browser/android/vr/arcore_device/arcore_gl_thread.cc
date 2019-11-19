@@ -5,7 +5,6 @@
 #include "chrome/browser/android/vr/arcore_device/arcore_gl_thread.h"
 
 #include <utility>
-#include "base/message_loop/message_loop.h"
 #include "base/version.h"
 #include "chrome/browser/android/vr/arcore_device/ar_image_transport.h"
 #include "chrome/browser/android/vr/arcore_device/arcore_gl.h"
@@ -32,9 +31,8 @@ ArCoreGl* ArCoreGlThread::GetArCoreGl() {
 void ArCoreGlThread::Init() {
   DCHECK(!arcore_gl_);
 
-  arcore_gl_ = std::make_unique<ArCoreGl>(ar_image_transport_factory_->Create(
-      base::ResetAndReturn(&mailbox_bridge_)));
-
+  arcore_gl_ = std::make_unique<ArCoreGl>(
+      ar_image_transport_factory_->Create(std::move(mailbox_bridge_)));
   std::move(initialized_callback_).Run();
 }
 

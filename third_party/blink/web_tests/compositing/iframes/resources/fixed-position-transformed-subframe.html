@@ -29,26 +29,12 @@
         -webkit-perspective: 1px;
     }
   </style>
-  <script src="../../../resources/run-after-layout-and-paint.js"></script>
   <script>
-    if (window.testRunner) {
-      testRunner.dumpAsTextWithPixelResults();
-    }
-
     function doTest()
     {
-      if (window.testRunner)
-        testRunner.waitUntilDone();
-
       // Any scroll should keep the fixed-position element where it is.
       // If it stutters or disappears incorrectly, then the red background will be revealed.
       window.scrollTo(0, 150);
- 
-      if (window.testRunner) {
-        runAfterLayoutAndPaint(function() {
-          testRunner.notifyDone();
-        });
-      }
     }
 
     window.addEventListener('load', doTest, false);

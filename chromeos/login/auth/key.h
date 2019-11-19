@@ -13,6 +13,8 @@ namespace chromeos {
 
 // Key for user authentication. The class supports hashing of plain text
 // passwords to generate keys as well as the use of pre-hashed keys.
+//
+// TODO(crbug.com/826417): Consider making this class movable.
 class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) Key {
  public:
   enum KeyType {

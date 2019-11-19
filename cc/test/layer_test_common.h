@@ -5,18 +5,7 @@
 #ifndef CC_TEST_LAYER_TEST_COMMON_H_
 #define CC_TEST_LAYER_TEST_COMMON_H_
 
-#include <stddef.h>
-
-#include <memory>
-#include <utility>
-
-#include "cc/animation/animation_timeline.h"
-#include "cc/test/fake_layer_tree_host.h"
-#include "cc/test/fake_layer_tree_host_client.h"
-#include "cc/test/test_task_graph_runner.h"
-#include "cc/trees/effect_node.h"
-#include "cc/trees/layer_tree_host_impl.h"
-#include "components/viz/common/quads/render_pass.h"
+#include "cc/layers/layer_collections.h"
 
 #define EXPECT_SET_NEEDS_COMMIT(expect, code_to_test)                 \
   do {                                                                \
@@ -32,197 +21,50 @@
     Mock::VerifyAndClearExpectations(layer_tree_host_.get());               \
   } while (false)
 
-namespace gfx { class Rect; }
+namespace gfx {
+class Rect;
+}
 
 namespace viz {
 class QuadList;
 }
 
 namespace cc {
-class LayerImpl;
-class LayerTreeFrameSink;
-class RenderSurfaceImpl;
 
-// Returns the RenderSurfaceImpl into which the given layer draws.
-RenderSurfaceImpl* GetRenderSurface(LayerImpl* layer_impl);
+class LayerTreeHost;
+class LayerTreeImpl;
 
-class LayerTestCommon {
- public:
-  static const char* quad_string;
+// In tests that build layer tree and property trees directly at impl-side,
+// before calling LayerTreeImpl::UpdateDrawProperties() or any function calling
+// it, we should call this function to make the layer tree and property trees
+// ready for draw property update.
+void PrepareForUpdateDrawProperties(LayerTreeImpl*);
 
-  static void VerifyQuadsExactlyCoverRect(const viz::QuadList& quads,
-                                          const gfx::Rect& rect);
+// Calls LayerTreeImpl::UpdateDrawProperties() after calling the above function.
+// If |output_update_layer_list| is not null, it accepts layers output from
+// draw_property_utils::FindLayersThatNeedUpdates().
+void UpdateDrawProperties(LayerTreeImpl*,
+                          LayerImplList* output_update_layer_list = nullptr);
 
-  static void VerifyQuadsAreOccluded(const viz::QuadList& quads,
-                                     const gfx::Rect& occluded,
-                                     size_t* partially_occluded_count);
+// Main-thread counterpart of the above function. If |output_update_layer_list|
+// is not null, it accepts layers output from
+// draw_property_utils::FindLayersThatNeedUpdates().
+void UpdateDrawProperties(LayerTreeHost*,
+                          LayerList* output_update_layer_list = nullptr);
 
-  static void SetupBrowserControlsAndScrollLayerWithVirtualViewport(
-      LayerTreeHostImpl* host_impl,
-      LayerTreeImpl* tree_impl,
-      float top_controls_height,
-      const gfx::Size& inner_viewport_size,
-      const gfx::Size& outer_viewport_size,
-      const gfx::Size& scroll_layer_size);
+// Set device scale factor and update device viewport rect to be the root layer
+// size scaled by the device scale factor.
+void SetDeviceScaleAndUpdateViewportRect(LayerTreeImpl*,
+                                         float device_scale_factor);
+void SetDeviceScaleAndUpdateViewportRect(LayerTreeHost*,
+                                         float device_scale_factor);
 
-  class LayerImplTest {
-   public:
-    LayerImplTest();
-    explicit LayerImplTest(
-        std::unique_ptr<LayerTreeFrameSink> layer_tree_frame_sink);
-    explicit LayerImplTest(const LayerTreeSettings& settings);
-    LayerImplTest(const LayerTreeSettings& settings,
-                  std::unique_ptr<LayerTreeFrameSink> layer_tree_frame_sink);
-    ~LayerImplTest();
+void VerifyQuadsExactlyCoverRect(const viz::QuadList& quads,
+                                 const gfx::Rect& rect);
 
-    template <typename T>
-    T* AddChildToRoot() {
-      std::unique_ptr<T> layer =
-          T::Create(host_->host_impl()->active_tree(), layer_impl_id_++);
-      T* ptr = layer.get();
-      root_layer_for_testing()->test_properties()->AddChild(std::move(layer));
-      return ptr;
-    }
-
-    template <typename T>
-    T* AddChild(LayerImpl* parent) {
-      std::unique_ptr<T> layer =
-          T::Create(host_->host_impl()->active_tree(), layer_impl_id_++);
-      T* ptr = layer.get();
-      parent->test_properties()->AddChild(std::move(layer));
-      return ptr;
-    }
-
-    template <typename T>
-    T* AddMaskLayer(LayerImpl* origin) {
-      std::unique_ptr<T> layer =
-          T::Create(host_->host_impl()->active_tree(), layer_impl_id_++);
-      T* ptr = layer.get();
-      origin->test_properties()->SetMaskLayer(std::move(layer));
-      return ptr;
-    }
-
-    template <typename T, typename A>
-    T* AddChildToRoot(const A& a) {
-      std::unique_ptr<T> layer =
-          T::Create(host_->host_impl()->active_tree(), layer_impl_id_++, a);
-      T* ptr = layer.get();
-      root_layer_for_testing()->test_properties()->AddChild(std::move(layer));
-      return ptr;
-    }
-
-    template <typename T, typename A, typename B>
-    T* AddChildToRoot(const A& a, const B& b) {
-      std::unique_ptr<T> layer =
-          T::Create(host_->host_impl()->active_tree(), layer_impl_id_++, a, b);
-      T* ptr = layer.get();
-      root_layer_for_testing()->test_properties()->AddChild(std::move(layer));
-      return ptr;
-    }
-
-    template <typename T, typename A, typename B, typename C>
-    T* AddChildToRoot(const A& a, const B& b, const C& c) {
-      std::unique_ptr<T> layer = T::Create(host_->host_impl()->active_tree(),
-                                           layer_impl_id_++, a, b, c);
-      T* ptr = layer.get();
-      root_layer_for_testing()->test_properties()->AddChild(std::move(layer));
-      return ptr;
-    }
-
-    template <typename T, typename A, typename B, typename C, typename D>
-    T* AddChildToRoot(const A& a, const B& b, const C& c, const D& d) {
-      std::unique_ptr<T> layer = T::Create(host_->host_impl()->active_tree(),
-                                           layer_impl_id_++, a, b, c, d);
-      T* ptr = layer.get();
-      root_layer_for_testing()->test_properties()->AddChild(std::move(layer));
-      return ptr;
-    }
-
-    template <typename T,
-              typename A,
-              typename B,
-              typename C,
-              typename D,
-              typename E>
-    T* AddChildToRoot(const A& a,
-                      const B& b,
-                      const C& c,
-                      const D& d,
-                      const E& e) {
-      std::unique_ptr<T> layer = T::Create(host_->host_impl()->active_tree(),
-                                           layer_impl_id_++, a, b, c, d, e);
-      T* ptr = layer.get();
-      root_layer_for_testing()->test_properties()->AddChild(std::move(layer));
-      return ptr;
-    }
-
-    template <typename T,
-              typename A,
-              typename B,
-              typename C,
-              typename D,
-              typename E>
-    T* AddChild(LayerImpl* parent,
-                const A& a,
-                const B& b,
-                const C& c,
-                const D& d,
-                const E& e) {
-      std::unique_ptr<T> layer = T::Create(host_->host_impl()->active_tree(),
-                                           layer_impl_id_++, a, b, c, d, e);
-      T* ptr = layer.get();
-      parent->test_properties()->AddChild(std::move(layer));
-      return ptr;
-    }
-
-    void CalcDrawProps(const gfx::Size& viewport_size);
-    void AppendQuadsWithOcclusion(LayerImpl* layer_impl,
-                                  const gfx::Rect& occluded);
-    void AppendQuadsForPassWithOcclusion(LayerImpl* layer_impl,
-                                         viz::RenderPass* given_render_pass,
-                                         const gfx::Rect& occluded);
-    void AppendSurfaceQuadsWithOcclusion(RenderSurfaceImpl* surface_impl,
-                                         const gfx::Rect& occluded);
-
-    void RequestCopyOfOutput();
-
-    LayerTreeFrameSink* layer_tree_frame_sink() const {
-      return host_->host_impl()->layer_tree_frame_sink();
-    }
-    viz::ClientResourceProvider* resource_provider() const {
-      return host_->host_impl()->resource_provider();
-    }
-    LayerImpl* root_layer_for_testing() const {
-      return host_impl()->active_tree()->root_layer_for_testing();
-    }
-    FakeLayerTreeHost* host() { return host_.get(); }
-    FakeLayerTreeHostImpl* host_impl() const { return host_->host_impl(); }
-    TaskRunnerProvider* task_runner_provider() const {
-      return host_->host_impl()->task_runner_provider();
-    }
-    const viz::QuadList& quad_list() const { return render_pass_->quad_list; }
-    scoped_refptr<AnimationTimeline> timeline() { return timeline_; }
-    scoped_refptr<AnimationTimeline> timeline_impl() { return timeline_impl_; }
-
-    void BuildPropertyTreesForTesting() {
-      host_impl()->active_tree()->BuildPropertyTreesForTesting();
-    }
-    void SetElementIdsForTesting() {
-      host_impl()->active_tree()->SetElementIdsForTesting();
-    }
-
-   private:
-    FakeLayerTreeHostClient client_;
-    TestTaskGraphRunner task_graph_runner_;
-    std::unique_ptr<LayerTreeFrameSink> layer_tree_frame_sink_;
-    std::unique_ptr<AnimationHost> animation_host_;
-    std::unique_ptr<FakeLayerTreeHost> host_;
-    std::unique_ptr<viz::RenderPass> render_pass_;
-    scoped_refptr<AnimationTimeline> timeline_;
-    scoped_refptr<AnimationTimeline> timeline_impl_;
-    int layer_impl_id_;
-  };
-};
+void VerifyQuadsAreOccluded(const viz::QuadList& quads,
+                            const gfx::Rect& occluded,
+                            size_t* partially_occluded_count);
 
 }  // namespace cc
 

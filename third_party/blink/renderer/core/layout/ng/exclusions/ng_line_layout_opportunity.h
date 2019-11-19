@@ -7,7 +7,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
@@ -59,6 +59,13 @@ struct CORE_EXPORT NGLineLayoutOpportunity {
   LayoutUnit AvailableFloatInlineSize() const {
     DCHECK_GE(float_line_right_offset, float_line_left_offset);
     return float_line_right_offset - float_line_left_offset;
+  }
+
+  bool IsEqualToAvailableFloatInlineSize(LayoutUnit inline_size) const {
+    DCHECK_GE(float_line_right_offset, float_line_left_offset);
+    // Compare |line_right| isntead of |inline_size| to avoid returning |false|
+    // when |line_left + inline_size| exceeds |LayoutUnit::Max| and clamped.
+    return float_line_left_offset + inline_size == float_line_right_offset;
   }
 };
 

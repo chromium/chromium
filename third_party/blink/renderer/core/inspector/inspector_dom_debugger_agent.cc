@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/core/inspector/resolve_node.h"
 #include "third_party/blink/renderer/core/inspector/v8_inspector_string.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace {
 
@@ -224,7 +225,7 @@ Response InspectorDOMDebuggerAgent::disable() {
 
 void InspectorDOMDebuggerAgent::Restore() {
   if (enabled_.Get())
-    instrumenting_agents_->addInspectorDOMDebuggerAgent(this);
+    instrumenting_agents_->AddInspectorDOMDebuggerAgent(this);
 }
 
 Response InspectorDOMDebuggerAgent::setEventListenerBreakpoint(
@@ -422,9 +423,8 @@ InspectorDOMDebuggerAgent::BuildObjectsForEventListeners(
     const V8EventListenerInfoList& event_information,
     v8::Local<v8::Context> context,
     const v8_inspector::StringView& object_group_id) {
-  std::unique_ptr<protocol::Array<protocol::DOMDebugger::EventListener>>
-      listeners_array =
-          protocol::Array<protocol::DOMDebugger::EventListener>::create();
+  auto listeners_array =
+      std::make_unique<protocol::Array<protocol::DOMDebugger::EventListener>>();
   // Make sure listeners with |use_capture| true come first because they have
   // precedence.
   for (const auto& info : event_information) {
@@ -433,7 +433,7 @@ InspectorDOMDebuggerAgent::BuildObjectsForEventListeners(
     std::unique_ptr<protocol::DOMDebugger::EventListener> listener_object =
         BuildObjectForEventListener(context, info, object_group_id);
     if (listener_object)
-      listeners_array->addItem(std::move(listener_object));
+      listeners_array->emplace_back(std::move(listener_object));
   }
   for (const auto& info : event_information) {
     if (info.use_capture)
@@ -441,7 +441,7 @@ InspectorDOMDebuggerAgent::BuildObjectsForEventListeners(
     std::unique_ptr<protocol::DOMDebugger::EventListener> listener_object =
         BuildObjectForEventListener(context, info, object_group_id);
     if (listener_object)
-      listeners_array->addItem(std::move(listener_object));
+      listeners_array->emplace_back(std::move(listener_object));
   }
   return listeners_array;
 }
@@ -756,9 +756,9 @@ void InspectorDOMDebuggerAgent::DidRemoveBreakpoint() {
 void InspectorDOMDebuggerAgent::SetEnabled(bool enabled) {
   enabled_.Set(enabled);
   if (enabled)
-    instrumenting_agents_->addInspectorDOMDebuggerAgent(this);
+    instrumenting_agents_->AddInspectorDOMDebuggerAgent(this);
   else
-    instrumenting_agents_->removeInspectorDOMDebuggerAgent(this);
+    instrumenting_agents_->RemoveInspectorDOMDebuggerAgent(this);
 }
 
 void InspectorDOMDebuggerAgent::DidCommitLoadForLocalFrame(LocalFrame*) {

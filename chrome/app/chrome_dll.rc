@@ -1,7 +1,9 @@
 // Microsoft Visual C++ generated resource script.
 //
+#include "build/branding_buildflags.h"
 #include "chrome_dll_resource.h"
 #include "chrome_command_ids.h"
+#include "printing/buildflags/buildflags.h"
 
 #define APSTUDIO_READONLY_SYMBOLS
 /////////////////////////////////////////////////////////////////////////////
@@ -35,14 +37,11 @@ IDR_MAINFRAME ACCELERATORS
 BEGIN
     VK_BACK,        IDC_BACK,                   VIRTKEY
     VK_LEFT,        IDC_BACK,                   VIRTKEY, ALT
-// This really should be using the buildflag but the resource compiler fails on
-// macro functions longer than 31 chars which this command produces. The BUILD
-// sets this regular define for this target only for this line to consume.
-#ifdef ENABLE_PRINTING_FOR_RC  // #if BUILDFLAG(ENABLE_PRINTING)
+#if BUILDFLAG(ENABLE_PRINTING)
     "P",            IDC_BASIC_PRINT,            VIRTKEY, CONTROL, SHIFT
 #endif  // ENABLE_PRINTING_FOR_RC
     "D",            IDC_BOOKMARK_ALL_TABS,      VIRTKEY, CONTROL, SHIFT
-    "D",            IDC_BOOKMARK_PAGE,          VIRTKEY, CONTROL
+    "D",            IDC_BOOKMARK_THIS_TAB,      VIRTKEY, CONTROL
     VK_DELETE,      IDC_CLEAR_BROWSING_DATA,    VIRTKEY, CONTROL, SHIFT
     "W",            IDC_CLOSE_TAB,              VIRTKEY, CONTROL
     VK_F4,          IDC_CLOSE_TAB,              VIRTKEY, CONTROL
@@ -116,7 +115,7 @@ BEGIN
     "O",            IDC_SHOW_BOOKMARK_MANAGER,  VIRTKEY, CONTROL, SHIFT
     "J",            IDC_SHOW_DOWNLOADS,         VIRTKEY, CONTROL
     "H",            IDC_SHOW_HISTORY,           VIRTKEY, CONTROL
-    VK_ESCAPE,      IDC_STOP,                   VIRTKEY
+    VK_ESCAPE,      IDC_CLOSE_FIND_OR_STOP,     VIRTKEY
     VK_ESCAPE,      IDC_TASK_MANAGER,           VIRTKEY, SHIFT
     "U",            IDC_VIEW_SOURCE,            VIRTKEY, CONTROL
     VK_OEM_MINUS,   IDC_ZOOM_MINUS,             VIRTKEY, CONTROL
@@ -164,7 +163,7 @@ END
 // the icon from the current module). We can perhaps work around this in the
 // future to get the icon from the .exe, which would save a copy.
 
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 IDR_MAINFRAME       ICON                        "theme\google_chrome\win\chrome.ico"
 IDR_SXS             ICON                        "theme\google_chrome\win\chrome_sxs.ico"
 IDR_X004_DEV        ICON                        "theme\google_chrome\win\chrome_dev.ico"

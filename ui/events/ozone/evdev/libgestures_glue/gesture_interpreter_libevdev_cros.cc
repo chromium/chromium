@@ -254,6 +254,13 @@ void GestureInterpreterLibevdevCros::OnGestureReady(const Gesture* gesture) {
     case kGestureTypeSwipeLift:
       OnGestureSwipeLift(gesture, &gesture->details.swipe_lift);
       break;
+    case kGestureTypeFourFingerSwipe:
+      OnGestureFourFingerSwipe(gesture, &gesture->details.four_finger_swipe);
+      break;
+    case kGestureTypeFourFingerSwipeLift:
+      OnGestureFourFingerSwipeLift(gesture,
+                                   &gesture->details.four_finger_swipe_lift);
+      break;
     case kGestureTypePinch:
       OnGesturePinch(gesture, &gesture->details.pinch);
       break;
@@ -386,6 +393,40 @@ void GestureInterpreterLibevdevCros::OnGestureSwipeLift(
       id_, ET_SCROLL_FLING_START, cursor_->GetLocation(),
       gfx::Vector2dF() /* delta */, gfx::Vector2dF() /* ordinal_delta */,
       kGestureScrollFingerCount, StimeToTimeTicks(gesture->end_time)));
+}
+
+void GestureInterpreterLibevdevCros::OnGestureFourFingerSwipe(
+    const Gesture* gesture,
+    const GestureFourFingerSwipe* swipe) {
+  DVLOG(3) << base::StringPrintf("Gesture Four Finger Swipe: (%f, %f) [%f, %f]",
+                                 swipe->dx, swipe->dy, swipe->ordinal_dx,
+                                 swipe->ordinal_dy);
+
+  if (!cursor_)
+    return;  // No cursor!
+
+  dispatcher_->DispatchScrollEvent(ScrollEventParams(
+      id_, ET_SCROLL, cursor_->GetLocation(),
+      gfx::Vector2dF(swipe->dx, swipe->dy),
+      gfx::Vector2dF(swipe->ordinal_dx, swipe->ordinal_dy),
+      /*finger_count=*/4, StimeToTimeTicks(gesture->end_time)));
+}
+
+void GestureInterpreterLibevdevCros::OnGestureFourFingerSwipeLift(
+    const Gesture* gesture,
+    const GestureFourFingerSwipeLift* swipe) {
+  DVLOG(3) << base::StringPrintf("Gesture Four Finger Swipe Lift");
+
+  if (!cursor_)
+    return;  // No cursor!
+
+  // Turn a swipe lift into a fling start.
+  // TODO(spang): Figure out why and put it in this comment.
+
+  dispatcher_->DispatchScrollEvent(ScrollEventParams(
+      id_, ET_SCROLL_FLING_START, cursor_->GetLocation(),
+      /*delta=*/gfx::Vector2dF(), /*ordinal_delta=*/gfx::Vector2dF(),
+      /*finger_count=*/4, StimeToTimeTicks(gesture->end_time)));
 }
 
 void GestureInterpreterLibevdevCros::OnGesturePinch(const Gesture* gesture,

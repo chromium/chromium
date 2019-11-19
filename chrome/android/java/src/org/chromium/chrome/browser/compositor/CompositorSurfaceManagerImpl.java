@@ -13,6 +13,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import org.chromium.base.Log;
+
 /**
  * Manage multiple SurfaceViews for the compositor, so that transitions between
  * surfaces with and without an alpha channel can be visually smooth.
@@ -55,7 +57,15 @@ class CompositorSurfaceManagerImpl implements SurfaceHolder.Callback2, Composito
 
         public SurfaceState(Context context, int format, SurfaceHolder.Callback2 callback) {
             surfaceView = new SurfaceView(context);
-            surfaceView.setZOrderMediaOverlay(true);
+
+            // Media overlays require a translucent surface for the compositor which should be
+            // placed above them, so we mark it setZOrderMediaOverlay. But its not not needed for
+            // the opaque one. In fact setting this for the opaque one causes glitches when
+            // transitioning to the opaque SurfaceView. This is because if the opaque SurfaceView is
+            // stacked on top of the translucent one, the framework doesn't draw any content
+            // underneath it and shows its background instead when it has no content during the
+            // transition.
+            if (format == PixelFormat.TRANSLUCENT) surfaceView.setZOrderMediaOverlay(true);
             surfaceView.setVisibility(View.INVISIBLE);
             surfaceHolder().setFormat(format);
             surfaceHolder().addCallback(callback);
@@ -81,6 +91,7 @@ class CompositorSurfaceManagerImpl implements SurfaceHolder.Callback2, Composito
         }
 
         public void detachFromParent() {
+            Log.e(TAG, "SurfaceState : detach from parent : " + format);
             final ViewGroup parent = mParent;
             // Since removeView can call surfaceDestroyed before returning, be sure that isAttached
             // will return false.
@@ -92,6 +103,8 @@ class CompositorSurfaceManagerImpl implements SurfaceHolder.Callback2, Composito
             return mParent != null;
         }
     }
+
+    private static final String TAG = "CompositorSurfaceMgr";
 
     // SurfaceView with a translucent PixelFormat.
     private final SurfaceState mTranslucent;
@@ -137,6 +150,7 @@ class CompositorSurfaceManagerImpl implements SurfaceHolder.Callback2, Composito
 
     @Override
     public void requestSurface(int format) {
+        Log.e(TAG, "Transitioning to surface with format : " + format);
         mRequestedByClient = (format == PixelFormat.TRANSLUCENT) ? mTranslucent : mOpaque;
 
         // If destruction is pending, then we must wait for it to complete.  When we're notified
@@ -258,6 +272,7 @@ class CompositorSurfaceManagerImpl implements SurfaceHolder.Callback2, Composito
         // Note that |createPending| might not be set, if Android destroyed and recreated this
         // surface on its own.
 
+        Log.e(TAG, "surfaceCreated format : " + state.format);
         if (state != mRequestedByClient) {
             // Surface is created, but it's not the one that's been requested most recently.  Just
             // destroy it again.
@@ -294,6 +309,7 @@ class CompositorSurfaceManagerImpl implements SurfaceHolder.Callback2, Composito
         // and we can clear |destroyPending|.  Otherwise, Android has destroyed this surface while
         // our destroy was posted, and might even return it before it runs.  When the post runs, it
         // can sort that out based on whether the surface is valid or not.
+        Log.e(TAG, "surfaceDestroyed format : " + state.format);
         if (!state.destroyPending) {
             state.createPending = true;
         } else if (!state.isAttached()) {
@@ -312,6 +328,9 @@ class CompositorSurfaceManagerImpl implements SurfaceHolder.Callback2, Composito
             // re-signal the client about construction.
             return;
         }
+
+        // Make sure the client has no remaining references to the destroyed surface.
+        mClient.unownedSurfaceDestroyed();
 
         // The client doesn't own this surface, but might want it.
         // If the client has requested this surface, then start construction on it.  The client will

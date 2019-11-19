@@ -1,0 +1,16 @@
+mojom = "//chrome/services/cups_proxy/public/mojom/proxy.mojom"
+
+public_headers = [ "//chrome/services/ipp_parser/public/cpp/ipp_converter.h" ]
+
+traits_headers =
+    [ "//chrome/services/cups_proxy/public/mojom/proxy_mojom_traits.h" ]
+
+sources = [
+  "//chrome/services/cups_proxy/public/mojom/proxy_mojom_traits.cc",
+]
+
+public_deps = [
+  "//printing",
+]
+
+type_mappings = [ "cups_proxy.mojom.HttpHeader=ipp_converter::HttpHeader" ]

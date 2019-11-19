@@ -43,7 +43,7 @@ class ContentDecryptionModuleResultPromise
   void CompleteWithKeyStatus(
       WebEncryptedMediaKeyInformation::KeyStatus) override;
   void CompleteWithError(WebContentDecryptionModuleException,
-                         unsigned long system_code,
+                         uint32_t system_code,
                          const WebString&) override;
 
   // It is only valid to call this before completion.

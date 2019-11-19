@@ -24,7 +24,7 @@ class BackgroundSyncControllerFactory
   BackgroundSyncControllerFactory();
   ~BackgroundSyncControllerFactory() override;
 
-  // BrowserContextKeyedBaseFactory methods:
+  // BrowserContextKeyedServiceFactory methods:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(

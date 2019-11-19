@@ -41,10 +41,7 @@ config("runtime_library") {
       defines += [ "CR_SYSROOT_HASH=$sysroot_hash" ]
     }
     asmflags += sysroot_flags
-
-    link_sysroot_flags =
-        [ "--sysroot=" + rebase_path(link_sysroot, root_build_dir) ]
-    ldflags += link_sysroot_flags
+    ldflags += sysroot_flags
 
     # When use_custom_libcxx=true, some -isystem flags get passed to
     # cflags_cc to set up libc++ include paths.  We want to make sure
@@ -64,7 +61,7 @@ config("runtime_library") {
                            [
                              rebase_path("//build/linux/sysroot_ld_path.sh",
                                          root_build_dir),
-                             rebase_path(link_sysroot),
+                             rebase_path(sysroot),
                            ],
                            "list lines")
     foreach(ld_path, ld_paths) {

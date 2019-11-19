@@ -9,9 +9,10 @@ interface AssistantAudioDecoderFactory {
   // Creates an AssistantAudioDecoder to decode audio stream data from
   // |data_source|.
   // |client|'s methods will be called when certain events happen.
-  CreateAssistantAudioDecoder(AssistantAudioDecoder& audio_decoder,
-                              AssistantAudioDecoderClient client,
-                              AssistantMediaDataSource data_source);
+  CreateAssistantAudioDecoder(
+      pending_receiver<AssistantAudioDecoder> audio_decoder,
+      pending_remote<AssistantAudioDecoderClient> client,
+      pending_remote<AssistantMediaDataSource> data_source);
 };
 
 // Interface to communicate with assistant audio decoder service.

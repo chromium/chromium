@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_OFFLINE_PAGES_CORE_PREFETCH_STUB_PREFETCH_SERVICE_H_
 #define COMPONENTS_OFFLINE_PAGES_CORE_PREFETCH_STUB_PREFETCH_SERVICE_H_
 
+#include <string>
+
 #include "components/offline_pages/core/prefetch/prefetch_service.h"
 
 namespace offline_pages {
@@ -18,6 +20,8 @@ class StubPrefetchService : public PrefetchService {
       SuggestionsProvider* suggestions_provider) override;
   void NewSuggestionsAvailable() override;
   void RemoveSuggestion(GURL url) override;
+  std::string GetCachedGCMToken() const override;
+  void ForceRefreshSuggestions() override;
   PrefetchGCMHandler* GetPrefetchGCMHandler() override;
   OfflineEventLogger* GetLogger() override;
   OfflineMetricsCollector* GetOfflineMetricsCollector() override;
@@ -29,7 +33,8 @@ class StubPrefetchService : public PrefetchService {
   PrefetchBackgroundTaskHandler* GetPrefetchBackgroundTaskHandler() override;
   ThumbnailFetcher* GetThumbnailFetcher() override;
   OfflinePageModel* GetOfflinePageModel() override;
-  image_fetcher::ImageFetcher* GetThumbnailImageFetcher() override;
+  image_fetcher::ImageFetcher* GetImageFetcher() override;
+  void SetEnabledByServer(PrefService* pref_service, bool enabled) override;
 
   SuggestedArticlesObserver* GetSuggestedArticlesObserverForTesting() override;
 };

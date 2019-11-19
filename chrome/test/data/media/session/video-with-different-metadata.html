@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Test page showing a video with media session actions and metadata</title>
+</head>
+<body>
+  <video id="video" controls loop>
+    <source src="../bigbuck.webm">
+  </video>
+<script>
+const video = document.getElementById('video');
+
+// Called by the browser test to start playback. Note that the browser test
+// needs to explicitly disable user gesture requirements for autoplay for this
+// function to work.
+function play() {
+  video.play().then(_ => {
+    setupMetadata();
+    setupActionHandlers();
+  });
+}
+
+function setupMetadata() {
+  // Use different metadata than the other test file.
+  navigator.mediaSession.metadata = new MediaMetadata({
+    title: "Different Title",
+    artist: "Another Artist"
+  });
+}
+
+function setupActionHandlers() {
+  // Add empty action handlers to tell the browser we want to show all the
+  // possible action buttons.
+  function doNothing() {}
+
+  navigator.mediaSession.setActionHandler('previoustrack', doNothing);
+  navigator.mediaSession.setActionHandler('nexttrack', doNothing);
+  navigator.mediaSession.setActionHandler('seekbackward', doNothing);
+  navigator.mediaSession.setActionHandler('seekforward', doNothing);
+  navigator.mediaSession.setActionHandler('play', _ => { video.play(); });
+  navigator.mediaSession.setActionHandler('pause', _ => { video.pause(); });
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<title>Test that when a video has multiple text tracks with the same label we show a kind indicator.</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../media-controls.js"></script>
+<video controls width=500 preload=none src="../content/60_sec_video.webm">
+  <track id="captions" kind="captions" label="English">
+  <track id="subtitles" kind="subtitles" label="English">
+  <track id="unique" kind="captions" label="French">
+</video>
+<script>
+async_test(t => {
+  const video = document.querySelector('video');
+  enableTestMode(video);
+
+  video.addEventListener('loadedmetadata', t.step_func(() => {
+    clickCaptionButton(video, t.step_func_done(() => {
+      const captions = textTrackListItemAtIndex(video, 0);
+      const captionsIndicator = textTrackListItemInnerKindIndicator(captions);
+      assert_not_equals(null, captionsIndicator, 'captions should have an indicator');
+      assert_equals('-internal-media-controls-text-track-list-kind-captions',
+                    internals.shadowPseudoId(captionsIndicator),
+                    'the captions indicator should be the right type');
+      assert_not_equals(getComputedStyle(captionsIndicator)['background-image'], 'none',
+                    'the captions indicator should have a background image')
+
+      const subtitles = textTrackListItemAtIndex(video, 1);
+      const subtitlesIndicator = textTrackListItemInnerKindIndicator(subtitles);
+      assert_not_equals(null, subtitlesIndicator, 'subtitles should have an indicator');
+      assert_equals('-internal-media-controls-text-track-list-kind-subtitles',
+                    internals.shadowPseudoId(subtitlesIndicator),
+                    'the subtitles indicator should be the right type');
+      assert_not_equals(getComputedStyle(subtitlesIndicator)['background-image'], 'none',
+                    'the subtitles indicator should have a background image')
+
+      const unique = textTrackListItemAtIndex(video, 2);
+      const uniqueIndicator = textTrackListItemInnerKindIndicator(unique);
+      assert_equals(null, uniqueIndicator, 'unique should not have an indicator');
+    }));
+  }), { once: true });
+
+  video.load();
+});
+</script>
+</html>

@@ -9,12 +9,13 @@
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
+#include "content/browser/service_worker/service_worker_context_core.h"
 
 namespace content {
 
 FakeEmbeddedWorkerInstanceClient::FakeEmbeddedWorkerInstanceClient(
     EmbeddedWorkerTestHelper* helper)
-    : helper_(helper), binding_(this), weak_factory_(this) {}
+    : helper_(helper) {}
 
 FakeEmbeddedWorkerInstanceClient::~FakeEmbeddedWorkerInstanceClient() = default;
 
@@ -24,9 +25,10 @@ FakeEmbeddedWorkerInstanceClient::GetWeakPtr() {
 }
 
 void FakeEmbeddedWorkerInstanceClient::Bind(
-    blink::mojom::EmbeddedWorkerInstanceClientRequest request) {
-  binding_.Bind(std::move(request));
-  binding_.set_connection_error_handler(
+    mojo::PendingReceiver<blink::mojom::EmbeddedWorkerInstanceClient>
+        receiver) {
+  receiver_.Bind(std::move(receiver));
+  receiver_.set_disconnect_handler(
       base::BindOnce(&FakeEmbeddedWorkerInstanceClient::OnConnectionError,
                      base::Unretained(this)));
 
@@ -35,7 +37,7 @@ void FakeEmbeddedWorkerInstanceClient::Bind(
 }
 
 void FakeEmbeddedWorkerInstanceClient::RunUntilBound() {
-  if (binding_)
+  if (receiver_.is_bound())
     return;
   base::RunLoop loop;
   quit_closure_for_bind_ = loop.QuitClosure();
@@ -43,7 +45,7 @@ void FakeEmbeddedWorkerInstanceClient::RunUntilBound() {
 }
 
 void FakeEmbeddedWorkerInstanceClient::Disconnect() {
-  binding_.Close();
+  receiver_.reset();
   OnConnectionError();
 }
 
@@ -52,10 +54,22 @@ void FakeEmbeddedWorkerInstanceClient::StartWorker(
   host_.Bind(std::move(params->instance_host));
   start_params_ = std::move(params);
 
-  helper_->OnServiceWorkerRequest(
-      std::move(start_params_->service_worker_request));
+  helper_->OnServiceWorkerReceiver(
+      std::move(start_params_->service_worker_receiver));
 
-  host_->OnReadyForInspection();
+  // Create message pipes. We may need to keep |devtools_agent_receiver| and
+  // |devtools_agent_host_remote| if we want not to invoke
+  // connection error handlers.
+
+  mojo::PendingRemote<blink::mojom::DevToolsAgent> devtools_agent_remote;
+  mojo::PendingReceiver<blink::mojom::DevToolsAgent> devtools_agent_receiver =
+      devtools_agent_remote.InitWithNewPipeAndPassReceiver();
+
+  mojo::Remote<blink::mojom::DevToolsAgentHost> devtools_agent_host_remote;
+  host_->OnReadyForInspection(
+      std::move(devtools_agent_remote),
+      devtools_agent_host_remote.BindNewPipeAndPassReceiver());
+
   if (start_params_->is_installed) {
     EvaluateScript();
     return;
@@ -66,9 +80,18 @@ void FakeEmbeddedWorkerInstanceClient::StartWorker(
   // storage. We do that manually here.
   //
   // TODO(falken): For new workers, this should use
-  // |script_loader_factory_ptr_info| from |start_params_->provider_info|
+  // |script_loader_factory_remote| from |start_params_->provider_info|
   // to request the script and the browser process should be able to mock it.
   // For installed workers, the map should already be populated.
+  ServiceWorkerVersion* version = helper_->context()->GetLiveVersion(
+      start_params_->service_worker_version_id);
+  if (version && version->status() == ServiceWorkerVersion::REDUNDANT) {
+    // This can happen if ForceDelete() was called on the registration. Early
+    // return because otherwise PopulateScriptCacheMap will DCHECK. If we mocked
+    // things as per the TODO, the script load would fail and we don't need to
+    // special case this.
+    return;
+  }
   helper_->PopulateScriptCacheMap(
       start_params_->service_worker_version_id,
       base::BindOnce(

@@ -1,0 +1,35 @@
+<html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<body>
+<p>This tests that an input field does not change its size when a value is previewed.</p>
+
+<div><input id="emptyInput" style="font: 12px Arial"></div>
+<div><input id="previewInput" style="font: 12px Arial"></div>
+
+<div><textarea id="emptyTextArea" style="font: 12px Arial"></textarea></div>
+<div><textarea id="previewTextArea" style="font: 12px Arial"></textarea></div>
+<script>
+test(() => {
+    var empty = document.getElementById('emptyInput');
+    var preview = document.getElementById('previewInput');
+
+    internals.setSuggestedValue(preview, 'Foooooooooooooooooooooooooooooooooooo');
+
+    assert_equals(empty.offsetWidth, preview.offsetWidth, 'Elements should have same width');
+    assert_equals(empty.offsetHeight, preview.offsetHeight, 'Elements should have same height');
+}, 'Testing that an <input> field does not change its size when a value is previewed.');
+
+test(() => {
+    var empty = document.getElementById('emptyTextArea');
+    var preview = document.getElementById('previewTextArea');
+
+    internals.setSuggestedValue(preview, 'Foooooooooooooooooooooooooooooooooooo');
+
+    assert_equals(empty.offsetWidth, preview.offsetWidth, 'Elements should have same width');
+    assert_equals(empty.offsetHeight, preview.offsetHeight, 'Elements should have same height');
+}, 'Testing that an <textarea> field does not change its size when a value is previewed.');
+
+</script>
+</body>
+</html>

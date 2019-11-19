@@ -43,6 +43,8 @@ class CaptivePortalDetectorTestBase {
 
   CaptivePortalDetector* detector() { return detector_; }
 
+  const GURL& get_probe_url() { return detector_->probe_url_; }
+
  protected:
   CaptivePortalDetector* detector_;
   network::TestURLLoaderFactory test_loader_factory_;

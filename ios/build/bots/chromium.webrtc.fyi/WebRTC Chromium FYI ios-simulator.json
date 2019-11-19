@@ -1,8 +1,8 @@
 {
   "comments": [
-    "Runs tests on @3x, @2x, 64-bit phone, tablet, iOS 11."
+    "Runs tests on @3x, @2x, 64-bit phone, tablet, iOS 12."
   ],
-  "xcode build version": "10b61",
+  "xcode build version": "11a1027",
   "gn_args": [
     "goma_dir=\"$(goma_dir)\"",
     "ios_enable_code_signing=false",
@@ -22,23 +22,23 @@
     {
       "include": "webrtc_tests.json",
       "device type": "iPhone 6s Plus",
-      "os": "11.4",
-      "host os": "Mac-10.13.6",
-      "pool": "Chrome"
+      "os": "12.2",
+      "host os": "Mac-10.14.6",
+      "pool": "chromium.tests"
     },
     {
       "include": "webrtc_tests.json",
       "device type": "iPhone 6s",
-      "os": "11.4",
-      "host os": "Mac-10.13.6",
-      "pool": "Chrome"
+      "os": "12.2",
+      "host os": "Mac-10.14.6",
+      "pool": "chromium.tests"
     },
     {
       "include": "webrtc_tests.json",
       "device type": "iPad Air 2",
-      "os": "11.4",
-      "host os": "Mac-10.13.6",
-      "pool": "Chrome"
+      "os": "12.2",
+      "host os": "Mac-10.14.6",
+      "pool": "chromium.tests"
     }
   ]
 }

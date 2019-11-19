@@ -47,6 +47,50 @@ class ExtensionPrefsObserver {
   // https://chromium-review.googlesource.com/c/chromium/src/+/1196107/3/chrome/browser/extensions/runtime_permissions_observer.h#26.
   virtual void OnExtensionRuntimePermissionsChanged(
       const std::string& extension_id) {}
+
+  // Called when an extension's last-launch-time has changed.
+  virtual void OnExtensionLastLaunchTimeChanged(
+      const std::string& extension_id,
+      const base::Time& last_launch_time) {}
+
+  // Called when the ExtensionPrefs object (the thing that this observer
+  // observes) will be destroyed. In response, the observer, |this|, should
+  // call "prefs->RemoveObserver(this)", whether directly or indirectly (e.g.
+  // via ScopedObserver::Remove).
+  virtual void OnExtensionPrefsWillBeDestroyed(ExtensionPrefs* prefs) {}
+};
+
+// An ExtensionPrefsObserver that's part of the GetEarlyExtensionPrefsObservers
+// mechanism, where the ExtensionPrefsObserver needs to connect to an
+// ExtensionPrefs, but the ExtensionPrefs doesn't exist yet. This
+// OnExtensionPrefsAvailable method lets the connection happen during or
+// shortly after the ExtensionPrefs constructor.
+class EarlyExtensionPrefsObserver {
+ public:
+  // Called when "prefs->AddObserver(observer)" should be called, during or
+  // shortly after |prefs|' constructor. OnExtensionPrefsAvailable
+  // implementations should make that AddObserver call, but are also
+  // responsible for making the matching RemoveObserver call at an appropriate
+  // time, no later than during the observer's destructor. Otherwise, the
+  // observee (the |prefs| object) will follow a dangling pointer whenever the
+  // next event occurs.
+  //
+  // Making that RemoveObserver call at the right time has to be the
+  // responsibility of the observer, not the observee, since the observee does
+  // not know when the observer is destroyed or is otherwise no longer
+  // interested in events.
+  //
+  // Given that the observer is responsible for calling RemoveObserver, it is
+  // cleaner for the observer, not the observee, to also be responsible for
+  // calling AddObserver.
+  //
+  // The recommended technique for ensuring matching AddObserver and
+  // RemoveObserver calls is to used a ScopedObserver.
+  //
+  // Unlike other ExtensionPrefsObserver methods, this method does not have an
+  // "const std::string& extension_id" argument. It is not about any one
+  // particular extension, it is about the extension preferences as a whole.
+  virtual void OnExtensionPrefsAvailable(ExtensionPrefs* prefs) = 0;
 };
 
 }  // namespace extensions

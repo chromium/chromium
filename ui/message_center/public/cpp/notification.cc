@@ -7,7 +7,6 @@
 #include <map>
 #include <memory>
 
-#include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -23,9 +22,6 @@ namespace {
 
 unsigned g_next_serial_number = 0;
 
-base::LazyInstance<std::map<std::string, const gfx::VectorIcon&>>::Leaky
-    g_vector_icon_registry = LAZY_INSTANCE_INITIALIZER;
-
 const gfx::ImageSkia CreateSolidColorImage(int width,
                                            int height,
                                            SkColor color) {
@@ -35,12 +31,10 @@ const gfx::ImageSkia CreateSolidColorImage(int width,
   return gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
 }
 
-gfx::Image DeepCopyImage(const gfx::Image& image) {
-  if (image.IsEmpty())
-    return gfx::Image();
-  std::unique_ptr<gfx::ImageSkia> image_skia(
-      new gfx::ImageSkia(*image.ToImageSkia()));
-  return gfx::Image(*image_skia);
+// Returns an image created on the current thread that shares the same
+// underlying ImageSkia data as the original image.
+gfx::Image DuplicateImage(const gfx::Image& image) {
+  return image.IsEmpty() ? gfx::Image() : gfx::Image(image.AsImageSkia());
 }
 
 }  // namespace
@@ -61,8 +55,6 @@ RichNotificationData::RichNotificationData(const RichNotificationData& other) =
     default;
 
 RichNotificationData::~RichNotificationData() = default;
-
-Notification::Notification() : serial_number_(g_next_serial_number++) {}
 
 Notification::Notification(NotificationType type,
                            const std::string& id,
@@ -86,6 +78,12 @@ Notification::Notification(NotificationType type,
       serial_number_(g_next_serial_number++),
       delegate_(std::move(delegate)) {}
 
+Notification::Notification(scoped_refptr<NotificationDelegate> delegate,
+                           const Notification& other)
+    : Notification(other) {
+  delegate_ = delegate;
+}
+
 Notification::Notification(const std::string& id, const Notification& other)
     : Notification(other) {
   id_ = id;
@@ -105,16 +103,16 @@ std::unique_ptr<Notification> Notification::DeepCopy(
     bool include_icon_images) {
   std::unique_ptr<Notification> notification_copy =
       std::make_unique<Notification>(notification);
-  notification_copy->set_icon(DeepCopyImage(notification_copy->icon()));
+  notification_copy->set_icon(DuplicateImage(notification_copy->icon()));
   notification_copy->set_image(include_body_image
-                                   ? DeepCopyImage(notification_copy->image())
+                                   ? DuplicateImage(notification_copy->image())
                                    : gfx::Image());
   notification_copy->set_small_image(
       include_small_image ? notification_copy->small_image() : gfx::Image());
   for (size_t i = 0; i < notification_copy->buttons().size(); i++) {
     notification_copy->SetButtonIcon(
         i, include_icon_images
-               ? DeepCopyImage(notification_copy->buttons()[i].icon)
+               ? DuplicateImage(notification_copy->buttons()[i].icon)
                : gfx::Image());
   }
   return notification_copy;
@@ -154,21 +152,6 @@ gfx::Image Notification::GenerateMaskedSmallIcon(int dip_size,
       masked, skia::ImageOperations::ResizeMethod::RESIZE_BEST,
       gfx::Size(dip_size, dip_size));
   return gfx::Image(resized);
-}
-
-// static
-void RegisterVectorIcons(
-    const std::vector<const gfx::VectorIcon*>& vector_icons) {
-  for (const gfx::VectorIcon* icon : vector_icons) {
-    g_vector_icon_registry.Get().insert(
-        std::pair<std::string, const gfx::VectorIcon&>(icon->name, *icon));
-  }
-}
-
-// static
-const gfx::VectorIcon* GetRegisteredVectorIcon(const std::string& id) {
-  auto iter = g_vector_icon_registry.Get().find(id);
-  return iter != g_vector_icon_registry.Get().end() ? &iter->second : nullptr;
 }
 
 }  // namespace message_center

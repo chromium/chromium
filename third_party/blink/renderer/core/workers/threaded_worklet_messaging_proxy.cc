@@ -19,13 +19,13 @@
 #include "third_party/blink/renderer/core/workers/global_scope_creation_params.h"
 #include "third_party/blink/renderer/core/workers/threaded_worklet_object_proxy.h"
 #include "third_party/blink/renderer/core/workers/worker_clients.h"
-#include "third_party/blink/renderer/core/workers/worker_content_settings_client.h"
 #include "third_party/blink/renderer/core/workers/worklet_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worklet_module_responses_map.h"
 #include "third_party/blink/renderer/core/workers/worklet_pending_tasks.h"
-#include "third_party/blink/renderer/platform/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object_snapshot.h"
+#include "third_party/blink/renderer/platform/loader/fetch/worker_resource_timing_notifier.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 namespace blink {
 
@@ -54,10 +54,6 @@ void ThreadedWorkletMessagingProxy::Initialize(
   ContentSecurityPolicy* csp = document->GetContentSecurityPolicy();
   DCHECK(csp);
 
-  ProvideContentSettingsClientToWorker(
-      worker_clients,
-      document->GetFrame()->Client()->CreateWorkerContentSettingsClient());
-
   auto global_scope_creation_params =
       std::make_unique<GlobalScopeCreationParams>(
           document->Url(), mojom::ScriptType::kModule,
@@ -66,14 +62,16 @@ void ThreadedWorkletMessagingProxy::Initialize(
           document->GetFrame()->Client()->CreateWorkerFetchContext(),
           csp->Headers(), document->GetReferrerPolicy(),
           document->GetSecurityOrigin(), document->IsSecureContext(),
-          document->GetHttpsState(), worker_clients, document->AddressSpace(),
+          document->GetHttpsState(), worker_clients,
+          document->GetFrame()->Client()->CreateWorkerContentSettingsClient(),
+          document->AddressSpace(),
           OriginTrialContext::GetTokens(document).get(),
           base::UnguessableToken::Create(),
           std::make_unique<WorkerSettings>(document->GetSettings()),
           kV8CacheOptionsDefault, module_responses_map,
           service_manager::mojom::blink::InterfaceProviderPtrInfo(),
-          BeginFrameProviderParams(), nullptr /* parent_feature_policy */,
-          document->GetAgentClusterID());
+          mojo::NullRemote(), BeginFrameProviderParams(),
+          nullptr /* parent_feature_policy */, document->GetAgentClusterID());
 
   // Worklets share the pre-initialized backing thread so that we don't have to
   // specify the backing thread startup data.
@@ -87,20 +85,22 @@ void ThreadedWorkletMessagingProxy::Trace(blink::Visitor* visitor) {
 
 void ThreadedWorkletMessagingProxy::FetchAndInvokeScript(
     const KURL& module_url_record,
-    network::mojom::FetchCredentialsMode credentials_mode,
+    network::mojom::CredentialsMode credentials_mode,
     const FetchClientSettingsObjectSnapshot& outside_settings_object,
+    WorkerResourceTimingNotifier& outside_resource_timing_notifier,
     scoped_refptr<base::SingleThreadTaskRunner> outside_settings_task_runner,
     WorkletPendingTasks* pending_tasks) {
   DCHECK(IsMainThread());
   PostCrossThreadTask(
       *GetWorkerThread()->GetTaskRunner(TaskType::kInternalLoading), FROM_HERE,
-      CrossThreadBind(&ThreadedWorkletObjectProxy::FetchAndInvokeScript,
-                      CrossThreadUnretained(worklet_object_proxy_.get()),
-                      module_url_record, credentials_mode,
-                      WTF::Passed(outside_settings_object.CopyData()),
-                      std::move(outside_settings_task_runner),
-                      WrapCrossThreadPersistent(pending_tasks),
-                      CrossThreadUnretained(GetWorkerThread())));
+      CrossThreadBindOnce(
+          &ThreadedWorkletObjectProxy::FetchAndInvokeScript,
+          CrossThreadUnretained(worklet_object_proxy_.get()), module_url_record,
+          credentials_mode, WTF::Passed(outside_settings_object.CopyData()),
+          WrapCrossThreadPersistent(&outside_resource_timing_notifier),
+          std::move(outside_settings_task_runner),
+          WrapCrossThreadPersistent(pending_tasks),
+          CrossThreadUnretained(GetWorkerThread())));
 }
 
 void ThreadedWorkletMessagingProxy::WorkletObjectDestroyed() {

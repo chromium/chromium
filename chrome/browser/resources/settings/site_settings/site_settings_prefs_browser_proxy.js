@@ -14,8 +14,16 @@
  * @enum {string}
  */
 const ContentSettingProvider = {
+  POLICY: 'policy',
+  SUPERVISED_USER: 'supervised_user',
   EXTENSION: 'extension',
+  INSTALLED_WEBAPP_PROVIDER: 'installed_webapp_provider',
+  NOTIFICATION_ANDROID: 'notification_android',
+  EPHEMERAL: 'ephemeral',
   PREFERENCE: 'preference',
+  DEFAULT: 'default',
+  TESTS: 'tests',
+  TESTS_OTHER: 'tests_other'
 };
 
 /**
@@ -33,7 +41,8 @@ let IsValid;
  *            engagement: number,
  *            usage: number,
               numCookies: number,
-              hasPermissionSettings: boolean}}
+              hasPermissionSettings: boolean,
+              isInstalled: boolean}}
  */
 let OriginInfo;
 
@@ -44,7 +53,8 @@ let OriginInfo;
  * "example.com".
  * @typedef {{etldPlus1: string,
  *            numCookies: number,
- *            origins: Array<OriginInfo>}}
+ *            origins: Array<OriginInfo>,
+ *            hasInstalledPWA: boolean}}
  */
 let SiteGroup;
 
@@ -426,12 +436,9 @@ cr.define('settings', function() {
     /** @override */
     setCategoryPermissionForPattern(
         primaryPattern, secondaryPattern, contentType, value, incognito) {
-      // TODO(dschuyler): It may be incorrect for JS to send the embeddingOrigin
-      // pattern. Look into removing this parameter from site_settings_handler.
-      // Ignoring the |secondaryPattern| and using '' instead is a quick-fix.
       chrome.send(
           'setCategoryPermissionForPattern',
-          [primaryPattern, '', contentType, value, incognito]);
+          [primaryPattern, secondaryPattern, contentType, value, incognito]);
     }
 
     /** @override */

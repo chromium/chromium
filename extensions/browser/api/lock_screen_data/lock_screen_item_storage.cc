@@ -22,7 +22,6 @@
 #include "extensions/browser/api/storage/backend_task_runner.h"
 #include "extensions/browser/api/storage/local_value_store_cache.h"
 #include "extensions/browser/event_router.h"
-#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/value_store/value_store.h"
 #include "extensions/browser/value_store/value_store_factory_impl.h"
@@ -141,9 +140,7 @@ LockScreenItemStorage::LockScreenItemStorage(
       crypto_key_(crypto_key),
       local_state_(local_state),
       tick_clock_(base::DefaultTickClock::GetInstance()),
-      extension_registry_observer_(this),
-      value_store_cache_(CreateValueStoreCache(storage_root.Append(user_id_))),
-      weak_ptr_factory_(this) {
+      value_store_cache_(CreateValueStoreCache(storage_root.Append(user_id_))) {
   CHECK(!user_id_.empty());
   extension_registry_observer_.Add(ExtensionRegistry::Get(context));
   task_runner_ = GetBackendTaskRunner();

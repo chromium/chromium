@@ -1,0 +1,14 @@
+{
+   "manifest_version": 2,
+   "name": "minimal",
+   "theme": {
+      "colors": {
+         "ntp_background": [150, 150, 100]
+      },
+      "properties": {
+         "ntp_logo_alternate": 0
+      }
+
+   },
+   "version": "2.0"
+}

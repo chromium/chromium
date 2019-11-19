@@ -1,0 +1,19 @@
+<html>
+<link rel="stylesheet" href="used.css" />
+<link rel="stylesheet" href="not-initially-used.css" />
+<link rel="stylesheet" href="unused.css" />
+<link rel="stylesheet" href="empty.css" />
+<script>
+  function appendStylesheet() {
+    document.body.innerAdjecentHTML('afterend', '<link rel="stylesheet" href="lazily-loaded.css" />');
+  }
+  function appendElement() {
+    const e = document.createElement('h2');
+    e.innerText = 'This is a test';
+    document.body.append(e);
+  }
+</script>
+<body>
+  <h1>Hello World</h1>
+</body>
+</html>

@@ -16,6 +16,7 @@
 
 class WebUIBrowserTest;
 class MojoWebUIBrowserTest;
+class CertificateHandlerTest;
 
 namespace base {
 class ListValue;
@@ -141,6 +142,7 @@ class CONTENT_EXPORT WebUIMessageHandler {
   friend class WebUIImpl;
   friend class ::WebUIBrowserTest;
   friend class ::MojoWebUIBrowserTest;
+  friend class ::CertificateHandlerTest;
 
   // TODO(dbeam): disallow JavaScript when a renderer process crashes.
   // http://crbug.com/610450

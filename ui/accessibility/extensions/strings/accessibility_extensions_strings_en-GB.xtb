@@ -31,6 +31,7 @@
 <translation id="4769065380738716500">Images have been replaced by their alt text.</translation>
 <translation id="4896660567607030658">No feedback, just show the cursor.</translation>
 <translation id="4937901943818762779">Allow animated images, but only once.</translation>
+<translation id="4949131196216960195">Press &lt;span class='key'&gt;Search&lt;/span&gt; + &lt;img src='increase_brightness.png'&gt; (the Increase Brightness key or F7) to turn on Caret Browsing. Press it again to turn it off.</translation>
 <translation id="4954450790315188152">When Caret Browsing is enabled:</translation>
 <translation id="5041932793799765940">Colour adjustment</translation>
 <translation id="5094574508723441140">Increased Contrast</translation>
@@ -60,7 +61,6 @@
 <translation id="7658239707568436148">Cancel</translation>
 <translation id="786423340267544509">Add border to elements with aria-describedat or longdesc attributes.</translation>
 <translation id="7942349550061667556">Red</translation>
-<translation id="8254860724243898966">Press &lt;span class='key'&gt;Alt&lt;/span&gt; + &lt;img src='increase_brightness.png'&gt; (the Increase Brightness key, or F7) to turn on Caret Browsing. Press it again to turn it off.</translation>
 <translation id="8260673944985561857">Caret Browsing Options</translation>
 <translation id="8321034316479930120">Animation Policy</translation>
 <translation id="8480209185614411573">High Contrast</translation>

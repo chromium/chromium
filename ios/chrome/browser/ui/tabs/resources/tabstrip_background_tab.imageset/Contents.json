@@ -6,11 +6,17 @@
             "filename": "tabstrip_background_tab@2x~ipad.png"
         },
         {
-            "idiom": "ipad",
-            "scale": "1x",
-            "filename": "tabstrip_background_tab~ipad.png"
-        }
-    ],
+          "idiom" : "universal",
+          "filename" : "tabstrip_background_tab_dark@2x~ipad.png",
+          "appearances" : [
+            {
+              "appearance" : "luminosity",
+              "value" : "dark"
+          }
+      ],
+          "scale" : "2x"
+      }
+  ],
     "info": {
         "version": 1,
         "author": "xcode"

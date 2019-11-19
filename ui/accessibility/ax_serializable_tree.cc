@@ -36,12 +36,16 @@ class AX_EXPORT AXTreeSourceAdapter
 
   void GetChildren(const AXNode* node,
                    std::vector<const AXNode*>* out_children) const override {
-    for (int i = 0; i < node->child_count(); ++i)
-      out_children->push_back(node->ChildAtIndex(i));
+    *out_children = std::vector<const AXNode*>(node->children().cbegin(),
+                                               node->children().cend());
   }
 
   AXNode* GetParent(const AXNode* node) const override {
     return node->parent();
+  }
+
+  bool IsIgnored(const AXNode* node) const override {
+    return node->IsIgnored();
   }
 
   bool IsValid(const AXNode* node) const override { return node != nullptr; }

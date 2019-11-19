@@ -6,7 +6,7 @@ element.style { ()
     color: red;
 
 [expanded] 
-#inspected { (<style>…</style>)
+#inspected { (<style>)
 /-- overloaded --/     color: green;
 
 [expanded] 
@@ -24,7 +24,7 @@ element.style { ()
     color: red;
 
 [expanded] 
-hr, #inspected { (<style>…</style>)
+hr, #inspected { (<style>)
 /-- overloaded --/     color: green;
 
 [expanded] 
@@ -42,7 +42,7 @@ element.style { ()
     color: red;
 
 [expanded] [no-affect] 
-#inspectedChanged { (<style>…</style>)
+#inspectedChanged { (<style>)
     color: green;
 
 [expanded] 

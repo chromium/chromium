@@ -456,3 +456,88 @@ template("cast_test_group_list") {
     }
   }
 }
+
+# This template creates a tar.gz file with test dependencies.
+#
+# Parameters
+#   output (required)
+#       The absolute path to the tar.gz file to be created.
+#
+#   deps_list_path (required)
+#       Absolute path to runtime dependencies file. This has to point to the
+#       same file runtime_deps_path of cast_test_group_list is pointing to.
+#
+#   exclude_deps (optional)
+#       gn list of paths to filter out from the dependencies list.
+#       This is used to remove folders with huge files that are not needed.
+#
+#   additional_deps (optional)
+#       gn list of paths to be added to the list of dependencies
+#       before creating the tar.gz file.
+#
+# This template has to be used in combination with cast_test_group_list
+# that generates the runtime dependencies file.
+#
+# Example usage:
+#
+# cast_test_group_list("chromecast_test_lists") {
+#  build_list_path = "$root_out_dir/tests/build_test_list.txt"
+#  runtime_deps_path = "$root_out_dir/tests/runtime_deps.json"
+#  run_list_path = "$root_out_dir/tests/run_test_list.txt"
+#  test_groups = [ ":chromecast_test_group" ]
+# }
+#
+# cast_test_deps_archive("chromecast_test_deps_archive") {
+#  output = "$root_out_dir/test_deps.tar.gz"
+#  deps_list_path = "$root_out_dir/tests/runtime_deps.json"
+#  exclude_deps = [
+#    "exe.unstripped",
+#    "lib.unstripped"
+#  ]
+#  additional_deps = [
+#    "tests",
+#  ]
+#  deps = [
+#    ":chromecast_test_lists"
+#  ]
+# }
+#
+template("cast_test_deps_archive") {
+  assert(defined(invoker.output), "$target_name needs 'output'")
+  assert(defined(invoker.deps_list_path),
+         "$target_name needs 'deps_list_path'")
+
+  deps = invoker.deps
+
+  action(target_name) {
+    testonly = true
+
+    script = "//chromecast/tools/build/package_test_deps.py"
+    outputs = [
+      invoker.output
+    ]
+
+    # Generate a comma separated list of filters.
+    _exclude_deps = ""
+    foreach(_exclude_dep, invoker.exclude_deps) {
+      _exclude_deps += "," + _exclude_dep
+    }
+
+    # Generate a comma separated list of includes.
+    _additional_deps = ""
+    foreach(_additional_dep, invoker.additional_deps) {
+      _additional_deps += "," + _additional_dep
+    }
+
+    args = [
+      "--output",
+      rebase_path(invoker.output, root_build_dir),
+      "--deps_list_path",
+      rebase_path(invoker.deps_list_path, root_build_dir),
+      "--exclude_deps",
+      _exclude_deps,
+      "--additional_deps",
+      _additional_deps,
+    ]
+  }
+}

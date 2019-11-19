@@ -66,7 +66,7 @@ class MockDecodeCache : public StubDecodeCache {
 
 TEST(PlaybackImageProviderTest, SkipsAllImages) {
   MockDecodeCache cache;
-  PlaybackImageProvider provider(&cache, base::nullopt);
+  PlaybackImageProvider provider(&cache, gfx::ColorSpace(), base::nullopt);
 
   SkIRect rect = SkIRect::MakeWH(10, 10);
   SkMatrix matrix = SkMatrix::I();
@@ -93,7 +93,8 @@ TEST(PlaybackImageProviderTest, SkipsSomeImages) {
   settings.emplace();
   settings->images_to_skip = {skip_image.stable_id()};
 
-  PlaybackImageProvider provider(&cache, std::move(settings));
+  PlaybackImageProvider provider(&cache, gfx::ColorSpace(),
+                                 std::move(settings));
 
   SkIRect rect = SkIRect::MakeWH(10, 10);
   SkMatrix matrix = SkMatrix::I();
@@ -107,7 +108,8 @@ TEST(PlaybackImageProviderTest, RefAndUnrefDecode) {
 
   base::Optional<PlaybackImageProvider::Settings> settings;
   settings.emplace();
-  PlaybackImageProvider provider(&cache, std::move(settings));
+  PlaybackImageProvider provider(&cache, gfx::ColorSpace(),
+                                 std::move(settings));
 
   {
     SkRect rect = SkRect::MakeWH(10, 10);
@@ -135,7 +137,8 @@ TEST(PlaybackImageProviderTest, SwapsGivenFrames) {
   settings.emplace();
   settings->image_to_current_frame_index = image_to_frame;
 
-  PlaybackImageProvider provider(&cache, std::move(settings));
+  PlaybackImageProvider provider(&cache, gfx::ColorSpace(),
+                                 std::move(settings));
 
   SkIRect rect = SkIRect::MakeWH(10, 10);
   SkMatrix matrix = SkMatrix::I();
@@ -151,7 +154,8 @@ TEST(PlaybackImageProviderTest, BitmapImages) {
 
   base::Optional<PlaybackImageProvider::Settings> settings;
   settings.emplace();
-  PlaybackImageProvider provider(&cache, std::move(settings));
+  PlaybackImageProvider provider(&cache, gfx::ColorSpace(),
+                                 std::move(settings));
 
   {
     SkIRect rect = SkIRect::MakeWH(10, 10);
@@ -172,7 +176,8 @@ TEST(PlaybackImageProviderTest, IgnoresImagesNotSupportedByCache) {
   cache.set_use_cache_for_draw_image(false);
   base::Optional<PlaybackImageProvider::Settings> settings;
   settings.emplace();
-  PlaybackImageProvider provider(&cache, std::move(settings));
+  PlaybackImageProvider provider(&cache, gfx::ColorSpace(),
+                                 std::move(settings));
   {
     SkIRect rect = SkIRect::MakeWH(10, 10);
     SkMatrix matrix = SkMatrix::I();

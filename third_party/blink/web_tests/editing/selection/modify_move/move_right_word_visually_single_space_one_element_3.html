@@ -1,0 +1,128 @@
+<!doctype html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../assert_selection.js"></script>
+<script>
+if (window.internals)
+  internals.settings.setEditingBehavior('win');
+
+selection_test(
+  '<div contenteditable dir="ltr">|ששש נננ בבב גגג קקק</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="ltr">\u05E9\u05E9\u05E9 |\u05E0\u05E0\u05E0 \u05D1\u05D1\u05D1 \u05D2\u05D2\u05D2 \u05E7\u05E7\u05E7</div>',
+  '3-0 right word');
+
+selection_test(
+  '<div contenteditable dir="ltr">ש|שש נננ בבב גגג קקק</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="ltr">\u05E9\u05E9\u05E9 |\u05E0\u05E0\u05E0 \u05D1\u05D1\u05D1 \u05D2\u05D2\u05D2 \u05E7\u05E7\u05E7</div>',
+  '3-1 right word');
+
+selection_test(
+  '<div contenteditable dir="ltr">שש|ש נננ בבב גגג קקק</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="ltr">\u05E9\u05E9\u05E9 |\u05E0\u05E0\u05E0 \u05D1\u05D1\u05D1 \u05D2\u05D2\u05D2 \u05E7\u05E7\u05E7</div>',
+  '3-2 right word');
+
+selection_test(
+  '<div contenteditable dir="ltr">ששש| נננ בבב גגג קקק</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="ltr">\u05E9\u05E9\u05E9 \u05E0\u05E0\u05E0 |\u05D1\u05D1\u05D1 \u05D2\u05D2\u05D2 \u05E7\u05E7\u05E7</div>',
+  '3-3 right word');
+
+selection_test(
+  '<div contenteditable dir="ltr">ששש |נננ בבב גגג קקק</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="ltr">\u05E9\u05E9\u05E9 \u05E0\u05E0\u05E0 |\u05D1\u05D1\u05D1 \u05D2\u05D2\u05D2 \u05E7\u05E7\u05E7</div>',
+  '3-4 right word');
+
+selection_test(
+  '<div contenteditable dir="ltr">ששש נ|ננ בבב גגג קקק</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="ltr">\u05E9\u05E9\u05E9 \u05E0\u05E0\u05E0 |\u05D1\u05D1\u05D1 \u05D2\u05D2\u05D2 \u05E7\u05E7\u05E7</div>',
+  '3-5 right word');
+
+selection_test(
+  '<div contenteditable dir="ltr">ששש ננ|נ בבב גגג קקק</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="ltr">\u05E9\u05E9\u05E9 \u05E0\u05E0\u05E0 |\u05D1\u05D1\u05D1 \u05D2\u05D2\u05D2 \u05E7\u05E7\u05E7</div>',
+  '3-6 right word');
+
+selection_test(
+  '<div contenteditable dir="ltr">ששש נננ| בבב גגג קקק</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="ltr">\u05E9\u05E9\u05E9 \u05E0\u05E0\u05E0 \u05D1\u05D1\u05D1 |\u05D2\u05D2\u05D2 \u05E7\u05E7\u05E7</div>',
+  '3-7 right word');
+
+selection_test(
+  '<div contenteditable dir="ltr">ששש נננ |בבב גגג קקק</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="ltr">\u05E9\u05E9\u05E9 \u05E0\u05E0\u05E0 \u05D1\u05D1\u05D1 |\u05D2\u05D2\u05D2 \u05E7\u05E7\u05E7</div>',
+  '3-8 right word');
+
+selection_test(
+  '<div contenteditable dir="ltr">ששש נננ ב|בב גגג קקק</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="ltr">\u05E9\u05E9\u05E9 \u05E0\u05E0\u05E0 \u05D1\u05D1\u05D1 |\u05D2\u05D2\u05D2 \u05E7\u05E7\u05E7</div>',
+  '3-9 right word');
+
+selection_test(
+  '<div contenteditable dir="ltr">ששש נננ בב|ב גגג קקק</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="ltr">\u05E9\u05E9\u05E9 \u05E0\u05E0\u05E0 \u05D1\u05D1\u05D1 |\u05D2\u05D2\u05D2 \u05E7\u05E7\u05E7</div>',
+  '3-10 right word');
+
+selection_test(
+  '<div contenteditable dir="ltr">ששש נננ בבב| גגג קקק</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="ltr">\u05E9\u05E9\u05E9 \u05E0\u05E0\u05E0 \u05D1\u05D1\u05D1 \u05D2\u05D2\u05D2 |\u05E7\u05E7\u05E7</div>',
+  '3-11 right word');
+
+selection_test(
+  '<div contenteditable dir="ltr">ששש נננ בבב |גגג קקק</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="ltr">\u05E9\u05E9\u05E9 \u05E0\u05E0\u05E0 \u05D1\u05D1\u05D1 \u05D2\u05D2\u05D2 |\u05E7\u05E7\u05E7</div>',
+  '3-12 right word');
+
+selection_test(
+  '<div contenteditable dir="ltr">ששש נננ בבב ג|גג קקק</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="ltr">\u05E9\u05E9\u05E9 \u05E0\u05E0\u05E0 \u05D1\u05D1\u05D1 \u05D2\u05D2\u05D2 |\u05E7\u05E7\u05E7</div>',
+  '3-13 right word');
+
+selection_test(
+  '<div contenteditable dir="ltr">ששש נננ בבב גג|ג קקק</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="ltr">\u05E9\u05E9\u05E9 \u05E0\u05E0\u05E0 \u05D1\u05D1\u05D1 \u05D2\u05D2\u05D2 |\u05E7\u05E7\u05E7</div>',
+  '3-14 right word');
+
+selection_test(
+  '<div contenteditable dir="ltr">ששש נננ בבב גגג| קקק</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="ltr">\u05E9\u05E9\u05E9 \u05E0\u05E0\u05E0 \u05D1\u05D1\u05D1 \u05D2\u05D2\u05D2 \u05E7\u05E7\u05E7|</div>',
+  '3-15 right word');
+
+selection_test(
+  '<div contenteditable dir="ltr">ששש נננ בבב גגג |קקק</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="ltr">\u05E9\u05E9\u05E9 \u05E0\u05E0\u05E0 \u05D1\u05D1\u05D1 \u05D2\u05D2\u05D2 \u05E7\u05E7\u05E7|</div>',
+  '3-16 right word');
+
+selection_test(
+  '<div contenteditable dir="ltr">ששש נננ בבב גגג ק|קק</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="ltr">\u05E9\u05E9\u05E9 \u05E0\u05E0\u05E0 \u05D1\u05D1\u05D1 \u05D2\u05D2\u05D2 \u05E7\u05E7\u05E7|</div>',
+  '3-17 right word');
+
+selection_test(
+  '<div contenteditable dir="ltr">ששש נננ בבב גגג קק|ק</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="ltr">\u05E9\u05E9\u05E9 \u05E0\u05E0\u05E0 \u05D1\u05D1\u05D1 \u05D2\u05D2\u05D2 \u05E7\u05E7\u05E7|</div>',
+  '3-18 right word');
+
+selection_test(
+  '<div contenteditable dir="ltr">ששש נננ בבב גגג קקק|</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="ltr">ששש נננ בבב גגג קקק|</div>',
+  '3-19 right word');
+</script>

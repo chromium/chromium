@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/ash/multi_user/multi_user_context_menu.h"
 
+#include "ash/public/cpp/multi_user_window_manager.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/macros.h"
@@ -12,8 +13,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
-#include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_client.h"
-#include "chrome/browser/ui/ash/session_controller_client.h"
+#include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
+#include "chrome/browser/ui/ash/session_controller_client_impl.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -63,8 +64,8 @@ void OnAcceptTeleportWarning(const AccountId& account_id,
   PrefService* pref = ProfileManager::GetActiveUserProfile()->GetPrefs();
   pref->SetBoolean(prefs::kMultiProfileWarningShowDismissed, no_show_again);
 
-  MultiUserWindowManagerClient::GetInstance()->ShowWindowForUser(window_,
-                                                                 account_id);
+  MultiUserWindowManagerHelper::GetWindowManager()->ShowWindowForUser(
+      window_, account_id);
 }
 
 }  // namespace
@@ -77,9 +78,8 @@ std::unique_ptr<ui::MenuModel> CreateMultiUserContextMenu(
 
   if (logged_in_users.size() > 1u) {
     // If this window is not owned, we don't show the menu addition.
-    MultiUserWindowManagerClient* client =
-        MultiUserWindowManagerClient::GetInstance();
-    const AccountId& account_id = client->GetWindowOwner(window);
+    auto* window_manager = MultiUserWindowManagerHelper::GetWindowManager();
+    const AccountId& account_id = window_manager->GetWindowOwner(window);
     if (!account_id.is_valid() || !window)
       return model;
     auto* menu = new MultiUserContextMenuChromeos(window);
@@ -127,7 +127,7 @@ void ExecuteVisitDesktopCommand(int command_id, aura::Window* window) {
         }
       }
 
-      SessionControllerClient::Get()->ShowTeleportWarningDialog(
+      SessionControllerClientImpl::Get()->ShowTeleportWarningDialog(
           std::move(on_accept));
       return;
     }

@@ -5,6 +5,20 @@
 import("//build/config/features.gni")
 import("//testing/test.gni")
 
+source_set("webrtc_glue") {
+  sources = [
+    "glue/thread_wrapper.cc",
+    "glue/thread_wrapper.h",
+    "glue/utils.cc",
+    "glue/utils.h",
+  ]
+  deps = [
+    "//base",
+    "//net",
+    "//third_party/webrtc_overrides:webrtc_component",
+  ]
+}
+
 static_library("jingle_glue") {
   sources = [
     "glue/network_service_async_socket.cc",
@@ -13,24 +27,15 @@ static_library("jingle_glue") {
     "glue/network_service_config.h",
     "glue/task_pump.cc",
     "glue/task_pump.h",
-    "glue/thread_wrapper.cc",
-    "glue/thread_wrapper.h",
-    "glue/utils.cc",
-    "glue/utils.h",
   ]
   public_deps = [
     "//services/network/public/mojom",
-    "//third_party/webrtc_overrides",
   ]
   deps = [
-    ":jingle_fake_socket",
     "//base",
-    "//base/third_party/dynamic_annotations",
     "//net",
     "//third_party/libjingle_xmpp:rtc_task_runner",
   ]
-
-  configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
 
   if (is_nacl) {
     sources -= [
@@ -43,7 +48,7 @@ static_library("jingle_glue") {
 
 # These files are separated into their own target to avoid a circular dependency
 # since services/network depends on this.
-static_library("jingle_fake_socket") {
+source_set("fake_ssl_socket") {
   sources = [
     "glue/fake_ssl_client_socket.cc",
     "glue/fake_ssl_client_socket.h",
@@ -109,7 +114,7 @@ static_library("notifier") {
 
   public_deps = [
     "//third_party/libjingle_xmpp",
-    "//third_party/webrtc_overrides",
+    "//third_party/webrtc_overrides:webrtc_component",
   ]
   deps = [
     ":jingle_glue",
@@ -189,15 +194,12 @@ test("jingle_unittests") {
 
   configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
 
-  public_deps = [
-    "//third_party/libjingle_xmpp",
-    "//third_party/webrtc_overrides",
-    "//third_party/webrtc_overrides:init_webrtc",
-  ]
   deps = [
+    ":fake_ssl_socket",
     ":jingle_glue",
     ":notifier",
     ":notifier_test_util",
+    ":webrtc_glue",
     "//base",
     "//base/test:test_support",
     "//mojo/core/embedder",
@@ -210,5 +212,6 @@ test("jingle_unittests") {
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/libjingle_xmpp:rtc_task_runner",
+    "//third_party/webrtc_overrides:webrtc_component",
   ]
 }

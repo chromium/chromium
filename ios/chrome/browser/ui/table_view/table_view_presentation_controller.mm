@@ -195,6 +195,11 @@ const CGFloat kTableViewMaxWidth = 414.0;
   self.dimmingShield.frame = self.containerView.bounds;
   self.shadowContainer.frame = [self frameOfPresentedViewInContainerView];
 
+  // The TableView will be presented modally, make sure the container A11y is
+  // marked as so in order to prevent voice over focusing the presenter VC
+  // instead of the presented VC (TableView).
+  self.containerView.accessibilityViewIsModal = YES;
+
   // Force the presented VC's view to fill the tableViewContainer.  Otherwise
   // there are cases (switching size classes while another VC is presented over
   // the tableView) where autoresizing does not properly size the presented VC's

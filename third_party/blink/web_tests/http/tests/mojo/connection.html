@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
+<script src="/gen/mojo/public/interfaces/bindings/tests/sample_interfaces.mojom.js"></script>
+<script src="/gen/mojo/public/interfaces/bindings/tests/sample_service.mojom.js"></script>
+<script>
+'use strict';
+
+promise_test(async () => {
+  function ServiceImpl() {
+  }
+
+  ServiceImpl.prototype.frobinate = function(foo, baz, port) {
+    assert_equals(foo.name, "Example name");
+    assert_equals(baz, sample.Service.BazOptions.REGULAR);
+    assert_true(port.ptr.isBound());
+    port.ptr.reset();
+
+    return Promise.resolve({result: 42});
+  };
+
+  var service = new sample.ServicePtr();
+  var serviceBinding = new mojo.Binding(
+      sample.Service, new ServiceImpl(), mojo.makeRequest(service));
+  var sourcePipe = Mojo.createMessagePipe();
+  var port = new sample.PortPtr();
+  var portRequest = mojo.makeRequest(port);
+
+  var foo = new sample.Foo();
+  foo.bar = new sample.Bar();
+  foo.name = "Example name";
+  foo.source = sourcePipe.handle0;
+
+  assert_equals((await service.frobinate(
+      foo, sample.Service.BazOptions.REGULAR, port)).result, 42);
+
+  service.ptr.reset();
+  serviceBinding.close();
+
+  // sourcePipe.handle1 hasn't been closed yet.
+  sourcePipe.handle1.close();
+
+  // portRequest.handle hasn't been closed yet.
+  portRequest.handle.close();
+}, 'client server');
+
+promise_test(async () => {
+  var service = new sample.ServicePtr();
+  // Discard the interface request.
+  var interfaceRequest = mojo.makeRequest(service);
+  interfaceRequest.close();
+
+  try {
+    await service.frobinate(null, sample.Service.BazOptions.REGULAR, null);
+    assert_unreached();
+  } catch (e) {
+    assert_not_equals(e, null);
+  }
+}, 'write to closed pipe');
+
+promise_test(async () => {
+  function ProviderImpl() {
+  }
+
+  ProviderImpl.prototype.echoString = function(a) {
+    return Promise.resolve({a: a});
+  };
+
+  ProviderImpl.prototype.echoStrings = function(a, b) {
+    return Promise.resolve({a: a, b: b});
+  };
+
+  var provider = new sample.ProviderPtr();
+  var providerBinding = new mojo.Binding(
+      sample.Provider, new ProviderImpl(), mojo.makeRequest(provider));
+  assert_equals((await provider.echoString("hello")).a, "hello");
+  var response = await provider.echoStrings("hello", "world");
+  assert_equals(response.a, "hello");
+  assert_equals(response.b, "world");
+}, 'request response');
+
+</script>

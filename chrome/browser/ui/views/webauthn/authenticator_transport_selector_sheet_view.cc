@@ -19,10 +19,5 @@ std::unique_ptr<views::View>
 AuthenticatorTransportSelectorSheetView::BuildStepSpecificContent() {
   return std::make_unique<HoverListView>(
       std::make_unique<TransportHoverListModel>(
-          model()->dialog_model()->available_transports(), this));
-}
-
-void AuthenticatorTransportSelectorSheetView::OnItemSelected(
-    AuthenticatorTransport transport) {
-  model()->OnTransportSelected(transport);
+          model()->dialog_model()->available_transports(), model()));
 }

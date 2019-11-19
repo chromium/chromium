@@ -102,6 +102,11 @@ class NET_EXPORT_PRIVATE WebSocketDeflateStream : public WebSocketStream {
   // User callback saved for asynchronous reads.
   CompletionOnceCallback read_callback_;
 
+  // References of Deflater outputs kept until next WriteFrames().
+  std::vector<scoped_refptr<IOBufferWithSize>> deflater_outputs_;
+  // References of Inflater outputs kept until next ReadFrames().
+  std::vector<scoped_refptr<IOBufferWithSize>> inflater_outputs_;
+
   DISALLOW_COPY_AND_ASSIGN(WebSocketDeflateStream);
 };
 

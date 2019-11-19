@@ -321,32 +321,32 @@ bool ProgramInfoManager::Program::GetUniformsiv(
             uniform_infos_[indices[ii]].name.length() + 1);
       }
       return true;
+  }
+  if (num_uniforms != uniforms_es3_.size()) {
+    return false;
+  }
+  switch (pname) {
     case GL_UNIFORM_BLOCK_INDEX:
-      DCHECK_EQ(num_uniforms, uniforms_es3_.size());
       for (GLsizei ii = 0; ii < count; ++ii) {
         params[ii] = uniforms_es3_[indices[ii]].block_index;
       }
       return true;
     case GL_UNIFORM_OFFSET:
-      DCHECK_EQ(num_uniforms, uniforms_es3_.size());
       for (GLsizei ii = 0; ii < count; ++ii) {
         params[ii] = uniforms_es3_[indices[ii]].offset;
       }
       return true;
     case GL_UNIFORM_ARRAY_STRIDE:
-      DCHECK_EQ(num_uniforms, uniforms_es3_.size());
       for (GLsizei ii = 0; ii < count; ++ii) {
         params[ii] = uniforms_es3_[indices[ii]].array_stride;
       }
       return true;
     case GL_UNIFORM_MATRIX_STRIDE:
-      DCHECK_EQ(num_uniforms, uniforms_es3_.size());
       for (GLsizei ii = 0; ii < count; ++ii) {
         params[ii] = uniforms_es3_[indices[ii]].matrix_stride;
       }
       return true;
     case GL_UNIFORM_IS_ROW_MAJOR:
-      DCHECK_EQ(num_uniforms, uniforms_es3_.size());
       for (GLsizei ii = 0; ii < count; ++ii) {
         params[ii] = uniforms_es3_[indices[ii]].is_row_major;
       }

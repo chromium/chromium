@@ -11,7 +11,6 @@
 #include "base/run_loop.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/search/search.h"
@@ -25,6 +24,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/child_process_launcher_utils.h"
 #include "content/public/browser/notification_service.h"
+#include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
@@ -34,6 +34,8 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/no_renderer_crashes_assertion.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "media/base/media_switches.h"
 #include "net/base/filename_util.h"
@@ -178,10 +180,9 @@ class ChromeRenderProcessHostTest : public extensions::ExtensionBrowserTest {
     // Create a new normal tab with a data URL. It should be in its own process.
     GURL page1("data:text/html,hello world1");
 
-    ui_test_utils::WindowedTabAddedNotificationObserver observer1(
-        content::NotificationService::AllSources());
+    ui_test_utils::TabAddedWaiter add_tab1(browser());
     ::ShowSingletonTab(browser(), page1);
-    observer1.Wait();
+    add_tab1.Wait();
 
     tab_count++;
     host_count++;
@@ -196,10 +197,9 @@ class ChromeRenderProcessHostTest : public extensions::ExtensionBrowserTest {
     // own process, but without Site Isolation, it can share the previous
     // process.
     GURL page2("data:text/html,hello world2");
-    ui_test_utils::WindowedTabAddedNotificationObserver observer2(
-        content::NotificationService::AllSources());
+    ui_test_utils::TabAddedWaiter add_tab2(browser());
     ::ShowSingletonTab(browser(), page2);
-    observer2.Wait();
+    add_tab2.Wait();
     tab_count++;
     if (content::AreAllSitesIsolatedForTesting())
       host_count++;
@@ -218,10 +218,9 @@ class ChromeRenderProcessHostTest : public extensions::ExtensionBrowserTest {
     // 43448 where extension and WebUI tabs could get combined into normal
     // renderers.
     GURL history(chrome::kChromeUIHistoryURL);
-    ui_test_utils::WindowedTabAddedNotificationObserver observer3(
-        content::NotificationService::AllSources());
+    ui_test_utils::TabAddedWaiter add_tab3(browser());
     ::ShowSingletonTab(browser(), history);
-    observer3.Wait();
+    add_tab3.Wait();
     tab_count++;
     host_count++;
     EXPECT_EQ(tab_count, browser()->tab_strip_model()->count());
@@ -232,11 +231,10 @@ class ChromeRenderProcessHostTest : public extensions::ExtensionBrowserTest {
 
     // Create an extension tab.  It should be in its own process.
     GURL extension_url("chrome-extension://" + extension->id());
-    ui_test_utils::WindowedTabAddedNotificationObserver observer4(
-        content::NotificationService::AllSources());
+    ui_test_utils::TabAddedWaiter add_tab4(browser());
     ::ShowSingletonTab(browser(), extension_url);
 
-    observer4.Wait();
+    add_tab4.Wait();
     tab_count++;
     host_count++;
     EXPECT_EQ(tab_count, browser()->tab_strip_model()->count());
@@ -298,10 +296,9 @@ IN_PROC_BROWSER_TEST_F(ChromeRenderProcessHostTest, ProcessPerTab) {
 
   // Create a new normal tab with a data URL.  It should be in its own process.
   GURL page1("data:text/html,hello world1");
-  ui_test_utils::WindowedTabAddedNotificationObserver observer1(
-      content::NotificationService::AllSources());
+  ui_test_utils::TabAddedWaiter add_tab1(browser());
   ::ShowSingletonTab(browser(), page1);
-  observer1.Wait();
+  add_tab1.Wait();
   tab_count++;
   host_count++;
   EXPECT_EQ(tab_count, browser()->tab_strip_model()->count());
@@ -310,10 +307,9 @@ IN_PROC_BROWSER_TEST_F(ChromeRenderProcessHostTest, ProcessPerTab) {
   // Create another data URL tab.  With Site Isolation, this will require its
   // own process, but without Site Isolation, it can share the previous process.
   GURL page2("data:text/html,hello world2");
-  ui_test_utils::WindowedTabAddedNotificationObserver observer2(
-      content::NotificationService::AllSources());
+  ui_test_utils::TabAddedWaiter add_tab2(browser());
   ::ShowSingletonTab(browser(), page2);
-  observer2.Wait();
+  add_tab2.Wait();
   tab_count++;
   if (content::AreAllSitesIsolatedForTesting())
     host_count++;
@@ -495,10 +491,9 @@ IN_PROC_BROWSER_TEST_F(ChromeRenderProcessHostTest,
   int host_count = 1;
 
   GURL page1("data:text/html,hello world1");
-  ui_test_utils::WindowedTabAddedNotificationObserver observer1(
-      content::NotificationService::AllSources());
+  ui_test_utils::TabAddedWaiter add_tab(browser());
   ::ShowSingletonTab(browser(), page1);
-  observer1.Wait();
+  add_tab.Wait();
   tab_count++;
   host_count++;
   EXPECT_EQ(tab_count, browser()->tab_strip_model()->count());
@@ -536,10 +531,9 @@ IN_PROC_BROWSER_TEST_F(ChromeRenderProcessHostTest,
   int host_count = 1;
 
   GURL page1("data:text/html,hello world1");
-  ui_test_utils::WindowedTabAddedNotificationObserver observer1(
-      content::NotificationService::AllSources());
+  ui_test_utils::TabAddedWaiter add_tab1(browser());
   ::ShowSingletonTab(browser(), page1);
-  observer1.Wait();
+  add_tab1.Wait();
   tab_count++;
   host_count++;
   EXPECT_EQ(tab_count, browser()->tab_strip_model()->count());
@@ -574,13 +568,10 @@ IN_PROC_BROWSER_TEST_F(ChromeRenderProcessHostTest,
 class WindowDestroyer : public content::WebContentsObserver {
  public:
   WindowDestroyer(content::WebContents* web_contents, TabStripModel* model)
-      : content::WebContentsObserver(web_contents),
-        tab_strip_model_(model),
-        browser_closed_observer_(chrome::NOTIFICATION_BROWSER_CLOSED,
-                                 content::NotificationService::AllSources()) {}
+      : content::WebContentsObserver(web_contents), tab_strip_model_(model) {}
 
   // Wait for the browser window to be destroyed.
-  void Wait() { browser_closed_observer_.Wait(); }
+  void Wait() { ui_test_utils::WaitForBrowserToClose(); }
 
   void RenderProcessGone(base::TerminationStatus status) override {
     tab_strip_model_->CloseAllTabs();
@@ -588,7 +579,6 @@ class WindowDestroyer : public content::WebContentsObserver {
 
  private:
   TabStripModel* tab_strip_model_;
-  content::WindowedNotificationObserver browser_closed_observer_;
 
   DISALLOW_COPY_AND_ASSIGN(WindowDestroyer);
 };
@@ -608,14 +598,18 @@ IN_PROC_BROWSER_TEST_F(ChromeRenderProcessHostTest,
   GURL url(chrome::kChromeUIOmniboxURL);
 
   ui_test_utils::NavigateToURL(browser(), url);
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url, WindowOpenDisposition::NEW_BACKGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_NAVIGATION);
+  WebContents* wc1 = browser()->tab_strip_model()->GetWebContentsAt(0);
+
+  content::WebContentsAddedObserver wc2_observer;
+  content::ExecuteScriptAsync(
+      wc1, content::JsReplace("window.open($1, '_blank')", url));
+  WebContents* wc2 = wc2_observer.GetWebContents();
+  content::TestNavigationObserver nav_observer(wc2, 1);
+  nav_observer.Wait();
 
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
-
-  WebContents* wc1 = browser()->tab_strip_model()->GetWebContentsAt(0);
-  WebContents* wc2 = browser()->tab_strip_model()->GetWebContentsAt(1);
+  EXPECT_EQ(wc1->GetMainFrame()->GetLastCommittedURL(),
+            wc2->GetMainFrame()->GetLastCommittedURL());
   EXPECT_EQ(wc1->GetMainFrame()->GetProcess(),
             wc2->GetMainFrame()->GetProcess());
 
@@ -625,6 +619,7 @@ IN_PROC_BROWSER_TEST_F(ChromeRenderProcessHostTest,
   // Kill the renderer process, simulating a crash. This should the ProcessDied
   // method to be called. Alternatively, RenderProcessHost::OnChannelError can
   // be called to directly force a call to ProcessDied.
+  content::ScopedAllowRendererCrashes allow_renderer_crashes(wc1);
   wc1->GetMainFrame()->GetProcess()->Shutdown(-1);
 
   destroyer.Wait();

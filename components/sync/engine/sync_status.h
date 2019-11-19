@@ -66,14 +66,9 @@ struct SyncStatus {
   int num_local_overwrites_total;
   int num_server_overwrites_total;
 
-  // Nudge counts for each possible source
-  int nudge_source_notification;
-  int nudge_source_local;
-  int nudge_source_local_refresh;
-
   // Encryption related.
   ModelTypeSet encrypted_types;
-  bool cryptographer_ready;
+  bool cryptographer_can_encrypt;
   bool crypto_has_pending_keys;
   bool has_keystore_key;
   base::Time keystore_migration_time;

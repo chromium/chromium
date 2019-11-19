@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+testRunner.waitUntilDone();
+</script>
+<script src='../../../fast/forms/resources/picker-common.js'></script>
+</head>
+<body>
+<input type='color' id='color' value='#EA5FB0'>
+
+<p id='description' style='opacity: 0'></p>
+<div id='console' style='opacity: 0'></div>
+
+<script>
+openPicker(document.getElementById('color'), openPickerSuccessfulCallback, () => testRunner.notifyDone());
+
+function openPickerSuccessfulCallback() {
+  popupWindow.focus();
+  const popupDocument = popupWindow.document;
+  const formatToggler = popupDocument.querySelector('format-toggler');
+  formatToggler.click();
+  const hValueContainer = popupDocument.getElementById('hValueContainer');
+  const hValueContainerRect = hValueContainer.getBoundingClientRect();
+  eventSender.mouseMoveTo(hValueContainerRect.right - 1, hValueContainerRect.top);
+  eventSender.mouseDown();
+  eventSender.mouseUp();
+  eventSender.keyDown('Backspace');
+  eventSender.keyDown('Backspace');
+  eventSender.keyDown('Backspace');
+  eventSender.keyDown('2');
+  eventSender.keyDown('7');
+  eventSender.keyDown('6');
+  testRunner.notifyDone();
+}
+</script>
+</body>
+</html>

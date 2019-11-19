@@ -11,6 +11,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -82,21 +83,22 @@ TEST_F(EmfPrintingTest, Enumerate) {
   if (IsTestCaseDisabled())
     return;
 
-  PrintSettings settings;
+  auto settings = std::make_unique<PrintSettings>();
 
   // My test case is a HP Color LaserJet 4550 PCL.
-  settings.set_device_name(L"UnitTest Printer");
+  settings->set_device_name(L"UnitTest Printer");
 
   // Initialize it.
   PrintingContextWin context(this);
-  EXPECT_EQ(PrintingContext::OK, context.InitWithSettingsForTest(settings));
+  EXPECT_EQ(PrintingContext::OK,
+            context.InitWithSettingsForTest(std::move(settings)));
 
   base::FilePath emf_file;
   EXPECT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &emf_file));
   emf_file = emf_file.Append(FILE_PATH_LITERAL("printing"))
-                     .Append(FILE_PATH_LITERAL("test"))
-                     .Append(FILE_PATH_LITERAL("data"))
-                     .Append(FILE_PATH_LITERAL("test4.emf"));
+                 .Append(FILE_PATH_LITERAL("test"))
+                 .Append(FILE_PATH_LITERAL("data"))
+                 .Append(FILE_PATH_LITERAL("test4.emf"));
 
   // Load any EMF with an image.
   std::string emf_data;
@@ -116,15 +118,14 @@ TEST_F(EmfPrintingTest, Enumerate) {
   RECT page_bounds = emf.GetPageBounds(1).ToRECT();
   Emf::Enumerator emf_enum(emf, context.context(), &page_bounds);
   for (Emf::Enumerator::const_iterator itr = emf_enum.begin();
-       itr != emf_enum.end();
-       ++itr) {
+       itr != emf_enum.end(); ++itr) {
     // To help debugging.
     ptrdiff_t index = itr - emf_enum.begin();
     // If you get this assert, you need to lookup iType in wingdi.h. It starts
     // with EMR_HEADER.
     EMR_HEADER;
-    EXPECT_TRUE(itr->SafePlayback(&emf_enum.context_)) <<
-        " index: " << index << " type: " << itr->record()->iType;
+    EXPECT_TRUE(itr->SafePlayback(&emf_enum.context_))
+        << " index: " << index << " type: " << itr->record()->iType;
   }
   context.PageDone();
   context.DocumentDone();

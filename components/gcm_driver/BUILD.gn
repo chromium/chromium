@@ -40,6 +40,10 @@ static_library("gcm_driver") {
     "registration_info.h",
     "system_encryptor.cc",
     "system_encryptor.h",
+    "web_push_common.cc",
+    "web_push_common.h",
+    "web_push_sender.cc",
+    "web_push_sender.h",
   ]
 
   public_deps = [
@@ -54,17 +58,16 @@ static_library("gcm_driver") {
     ":gcm_buildflags",
     "//base:i18n",
     "//components/crx_file",
-    "//components/data_use_measurement/core",
     "//components/keyed_service/core",
     "//components/os_crypt",
     "//components/pref_registry",
     "//components/prefs",
+    "//components/signin/public/identity_manager",
     "//components/sync",
     "//components/version_info",
     "//google_apis",
     "//google_apis/gcm",
     "//net",
-    "//services/identity/public/cpp",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
     "//url:url",
@@ -195,6 +198,15 @@ source_set("unit_tests") {
     "//third_party/protobuf:protobuf_lite",
   ]
 
+  if (!is_ios) {
+    sources += [ "web_push_sender_unittest.cc" ]
+
+    deps += [
+      "//content/test:test_support",
+      "//third_party/re2",
+    ]
+  }
+
   if (!use_gcm_from_platform) {
     sources += [
       "account_tracker_unittest.cc",
@@ -203,11 +215,10 @@ source_set("unit_tests") {
       "gcm_channel_status_request_unittest.cc",
       "gcm_client_impl_unittest.cc",
       "gcm_driver_desktop_unittest.cc",
+      "gcm_driver_unittest.cc",
       "gcm_stats_recorder_impl_unittest.cc",
     ]
+
+    deps += [ "//components/signin/public/identity_manager:test_support" ]
   }
-  deps += [
-    "//services/identity/public/cpp",
-    "//services/identity/public/cpp:test_support",
-  ]
 }

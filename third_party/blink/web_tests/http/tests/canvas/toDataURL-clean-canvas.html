@@ -1,0 +1,39 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <script src="../../../resources/testharness.js"></script>
+  <script src="../../../resources/testharnessreport.js"></script>
+</head>
+<body>
+  <script>
+    async_test((t) => {
+      var img = new Image();
+      img.src = "resources/abe.png";
+
+      img.onload = function() {
+        var canvas2d = document.createElement("canvas");
+        canvas2d.width = img.width;
+        canvas2d.height = img.height;
+        var context2d = canvas2d.getContext("2d");
+        context2d.drawImage(img, 0, 0);
+        var data2d = canvas2d.toDataURL();
+        assert_greater_than(data2d.length, 0, "toDataURL should work for local images");
+
+        createImageBitmap(img, 0, 0, img.width, img.height).then(function(bitmap) {
+          var canvasBitmap = document.createElement("canvas");
+          canvasBitmap.width = img.width;
+          canvasBitmap.height = img.height;
+          var contextBitmap = canvasBitmap.getContext("bitmaprenderer");
+          contextBitmap.transferFromImageBitmap(bitmap);
+          var dataBitmap = canvasBitmap.toDataURL();
+
+          assert_equals(data2d, dataBitmap);
+          assert_greater_than(dataBitmap.length, 0, "toDataURL should work for local images");
+
+          t.done();
+        });
+      };
+    });
+  </script>
+</body>
+</html>

@@ -37,7 +37,7 @@ namespace blink {
 TypeAhead::TypeAhead(TypeAheadDataSource* data_source)
     : data_source_(data_source), repeating_char_(0) {}
 
-constexpr TimeDelta kTypeAheadTimeout = TimeDelta::FromSecondsD(1);
+constexpr base::TimeDelta kTypeAheadTimeout = base::TimeDelta::FromSecondsD(1);
 
 static String StripLeadingWhiteSpace(const String& string) {
   unsigned length = string.length();
@@ -123,7 +123,7 @@ int TypeAhead::HandleEvent(const KeyboardEvent& event,
 bool TypeAhead::HasActiveSession(const KeyboardEvent& event) {
   if (!last_type_time_)
     return false;
-  TimeDelta delta = event.PlatformTimeStamp() - *last_type_time_;
+  base::TimeDelta delta = event.PlatformTimeStamp() - *last_type_time_;
   return delta <= kTypeAheadTimeout;
 }
 

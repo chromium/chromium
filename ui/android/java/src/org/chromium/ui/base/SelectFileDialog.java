@@ -19,19 +19,20 @@ import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.webkit.MimeTypeMap;
 
-import org.chromium.base.ApiCompatibilityUtils;
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.ContentUriUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.PathUtils;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.VisibleForTesting;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
-import org.chromium.ui.ContactsPickerListener;
 import org.chromium.ui.PhotoPickerListener;
 import org.chromium.ui.R;
 import org.chromium.ui.UiUtils;
@@ -48,8 +49,7 @@ import java.util.concurrent.TimeUnit;
  * a set of accepted file types. The path of the selected file is passed to the native dialog.
  */
 @JNINamespace("ui")
-public class SelectFileDialog
-        implements WindowAndroid.IntentCallback, ContactsPickerListener, PhotoPickerListener {
+public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPickerListener {
     private static final String TAG = "SelectFileDialog";
     private static final String IMAGE_TYPE = "image/";
     private static final String VIDEO_TYPE = "video/";
@@ -157,14 +157,10 @@ public class SelectFileDialog
                         new Intent(MediaStore.Audio.Media.RECORD_SOUND_ACTION));
 
         List<String> missingPermissions = new ArrayList<>();
-        if (shouldUseContactsPicker()) {
-            if (!window.hasPermission(Manifest.permission.READ_CONTACTS)) {
-                missingPermissions.add(Manifest.permission.READ_CONTACTS);
-            }
-        } else if (shouldUsePhotoPicker()) {
-            if (!window.hasPermission(Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                missingPermissions.add(Manifest.permission.READ_EXTERNAL_STORAGE);
-            }
+        String storagePermission = Manifest.permission.READ_EXTERNAL_STORAGE;
+        boolean shouldUsePhotoPicker = shouldUsePhotoPicker();
+        if (shouldUsePhotoPicker) {
+            if (!window.hasPermission(storagePermission)) missingPermissions.add(storagePermission);
         } else {
             if (((mSupportsImageCapture && shouldShowImageTypes())
                         || (mSupportsVideoCapture && shouldShowVideoTypes()))
@@ -184,9 +180,31 @@ public class SelectFileDialog
                     missingPermissions.toArray(new String[missingPermissions.size()]);
             window.requestPermissions(requestPermissions, (permissions, grantResults) -> {
                 for (int i = 0; i < grantResults.length; i++) {
-                    if (grantResults[i] == PackageManager.PERMISSION_DENIED && mCapture) {
-                        onFileNotSelected();
-                        return;
+                    if (grantResults[i] == PackageManager.PERMISSION_DENIED) {
+                        if (mCapture) {
+                            onFileNotSelected();
+                            return;
+                        }
+
+                        // TODO(finnur): Remove once we figure out the cause of crbug.com/950024.
+                        if (shouldUsePhotoPicker) {
+                            if (permissions.length != requestPermissions.length) {
+                                throw new RuntimeException(
+                                        String.format("Permissions arrays misaligned: %d != %d",
+                                                permissions.length, requestPermissions.length));
+                            }
+
+                            if (!permissions[i].equals(requestPermissions[i])) {
+                                throw new RuntimeException(
+                                        String.format("Permissions arrays don't match: %s != %s",
+                                                permissions[i], requestPermissions[i]));
+                            }
+                        }
+
+                        if (shouldUsePhotoPicker && permissions[i].equals(storagePermission)) {
+                            onFileNotSelected();
+                            return;
+                        }
                     }
                 }
                 launchSelectFileIntent();
@@ -244,16 +262,8 @@ public class SelectFileDialog
 
         Activity activity = mWindowAndroid.getActivity().get();
 
-        // Use the new contacts picker, if available.
-        // TODO(finnur): Remove this code path (for opening the Contacts Picker dialog).
-        if (shouldUseContactsPicker()
-                && UiUtils.showContactsPicker(
-                        activity, this, mAllowMultiple, true, true, true, "")) {
-            return;
-        }
-
         // Use the new photo picker, if available.
-        List<String> imageMimeTypes = convertToImageMimeTypes(mFileTypes);
+        List<String> imageMimeTypes = convertToSupportedPhotoPickerTypes(mFileTypes);
         if (shouldUsePhotoPicker()
                 && UiUtils.showPhotoPicker(activity, this, mAllowMultiple, imageMimeTypes)) {
             return;
@@ -315,39 +325,28 @@ public class SelectFileDialog
      *   4.) There is a valid Android Activity associated with the file request.
      */
     private boolean shouldUsePhotoPicker() {
-        List<String> imageMimeTypes = convertToImageMimeTypes(mFileTypes);
-        return !captureImage() && imageMimeTypes != null && UiUtils.shouldShowPhotoPicker()
+        List<String> mediaMimeTypes = convertToSupportedPhotoPickerTypes(mFileTypes);
+        return !captureImage() && mediaMimeTypes != null && UiUtils.shouldShowPhotoPicker()
                 && mWindowAndroid.getActivity().get() != null;
     }
 
     /**
-     * Determines whether the contacts picker should be used for this select file request.  To be
-     * applicable for the contacts picker, the following must be true:
-     *   1.) Only text/json+contacts must be specicied as an accepted type.
-     *   2.) The contacts picker is supported by the embedder (i.e. Chrome).
-     *   3.) There is a valid Android Activity associated with the file request.
-     */
-    private boolean shouldUseContactsPicker() {
-        if (mFileTypes.size() != 1) return false;
-        if (!mFileTypes.get(0).equals("text/json+contacts")) return false;
-        return UiUtils.shouldShowContactsPicker() && mWindowAndroid.getActivity().get() != null;
-    }
-
-    /**
-     * Converts a list of extensions and Mime types to a list of de-duped Mime types containing
-     * image types only. If the input list contains a non-image type, then null is returned.
+     * Converts a list of extensions and Mime types to a list of de-duped Mime types supported by
+     * the photo picker only. If the input list contains a unsupported type, then null is returned.
      * @param fileTypes the list of filetypes (extensions and Mime types) to convert.
-     * @return A de-duped list of Image Mime types only, or null if one or more non-image types were
-     *         given as input.
+     * @return A de-duped list of supported types only, or null if one or more unsupported types
+     *         were given as input.
      */
     @VisibleForTesting
-    public static List<String> convertToImageMimeTypes(List<String> fileTypes) {
+    public static List<String> convertToSupportedPhotoPickerTypes(List<String> fileTypes) {
         if (fileTypes.size() == 0) return null;
         List<String> mimeTypes = new ArrayList<>();
         for (String type : fileTypes) {
             String mimeType = ensureMimeType(type);
             if (!mimeType.startsWith("image/")) {
-                return null;
+                if (!UiUtils.photoPickerSupportsVideo() || !mimeType.startsWith("video/")) {
+                    return null;
+                }
             }
             if (!mimeTypes.contains(mimeType)) mimeTypes.add(mimeType);
         }
@@ -377,7 +376,7 @@ public class SelectFileDialog
     }
 
     @Override
-    public void onPhotoPickerUserAction(@PhotoPickerAction int action, String[] photos) {
+    public void onPhotoPickerUserAction(@PhotoPickerAction int action, Uri[] photos) {
         switch (action) {
             case PhotoPickerAction.CANCEL:
                 onFileNotSelected();
@@ -389,21 +388,9 @@ public class SelectFileDialog
                     return;
                 }
 
-                if (photos.length == 1) {
-                    GetDisplayNameTask task =
-                            new GetDisplayNameTask(ContextUtils.getApplicationContext(), false,
-                                    new Uri[] {Uri.parse(photos[0])});
-                    task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                    return;
-                } else {
-                    Uri[] filePathArray = new Uri[photos.length];
-                    for (int i = 0; i < photos.length; ++i) {
-                        filePathArray[i] = Uri.parse(photos[i]);
-                    }
-                    GetDisplayNameTask task = new GetDisplayNameTask(
-                            ContextUtils.getApplicationContext(), true, filePathArray);
-                    task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                }
+                GetDisplayNameTask task = new GetDisplayNameTask(
+                        ContextUtils.getApplicationContext(), photos.length > 1, photos);
+                task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                 break;
 
             case PhotoPickerAction.LAUNCH_GALLERY:
@@ -434,24 +421,6 @@ public class SelectFileDialog
         }
     }
 
-    @Override
-    public void onContactsPickerUserAction(
-            @ContactsPickerAction int action, String contactsJson, List<Contact> contacts) {
-        switch (action) {
-            case ContactsPickerAction.CANCEL:
-                onFileNotSelected();
-                break;
-
-            case ContactsPickerAction.CONTACTS_SELECTED:
-                nativeOnContactsSelected(mNativeSelectFileDialog, contactsJson);
-                break;
-
-            case ContactsPickerAction.SELECT_ALL:
-            case ContactsPickerAction.UNDO_SELECT_ALL:
-                break;
-        }
-    }
-
     private class GetCameraIntentTask extends AsyncTask<Uri> {
         private Boolean mDirectToCamera;
         private WindowAndroid mWindow;
@@ -468,8 +437,7 @@ public class SelectFileDialog
         public Uri doInBackground() {
             try {
                 Context context = ContextUtils.getApplicationContext();
-                return ApiCompatibilityUtils.getUriForImageCaptureFile(
-                        getFileForImageCapture(context));
+                return ContentUriUtils.getContentUriFromFile(getFileForImageCapture(context));
             } catch (IOException e) {
                 Log.e(TAG, "Cannot retrieve content uri from file", e);
                 return null;
@@ -579,8 +547,13 @@ public class SelectFileDialog
         }
 
         if (ContentResolver.SCHEME_FILE.equals(results.getData().getScheme())) {
-            onFileSelected(mNativeSelectFileDialog, results.getData().getSchemeSpecificPart(), "");
-            return;
+            String filePath = results.getData().getPath();
+            // Don't allow files under private data dir to be uploaded.
+            if (!TextUtils.isEmpty(filePath)
+                    && !filePath.startsWith(PathUtils.getDataDirectory())) {
+                onFileSelected(mNativeSelectFileDialog, filePath, "");
+                return;
+            }
         }
 
         if (ContentResolver.SCHEME_CONTENT.equals(results.getScheme())) {
@@ -787,24 +760,27 @@ public class SelectFileDialog
     }
 
     private boolean eligibleForPhotoPicker() {
-        return convertToImageMimeTypes(mFileTypes) != null;
+        return convertToSupportedPhotoPickerTypes(mFileTypes) != null;
     }
 
     private void onFileSelected(
             long nativeSelectFileDialogImpl, String filePath, String displayName) {
         if (eligibleForPhotoPicker()) recordImageCountHistogram(1);
-        nativeOnFileSelected(nativeSelectFileDialogImpl, filePath, displayName);
+        SelectFileDialogJni.get().onFileSelected(
+                nativeSelectFileDialogImpl, SelectFileDialog.this, filePath, displayName);
     }
 
     private void onMultipleFilesSelected(
             long nativeSelectFileDialogImpl, String[] filePathArray, String[] displayNameArray) {
         if (eligibleForPhotoPicker()) recordImageCountHistogram(filePathArray.length);
-        nativeOnMultipleFilesSelected(nativeSelectFileDialogImpl, filePathArray, displayNameArray);
+        SelectFileDialogJni.get().onMultipleFilesSelected(
+                nativeSelectFileDialogImpl, SelectFileDialog.this, filePathArray, displayNameArray);
     }
 
     private void onFileNotSelected(long nativeSelectFileDialogImpl) {
         if (eligibleForPhotoPicker()) recordImageCountHistogram(0);
-        nativeOnFileNotSelected(nativeSelectFileDialogImpl);
+        SelectFileDialogJni.get().onFileNotSelected(
+                nativeSelectFileDialogImpl, SelectFileDialog.this);
     }
 
     private void recordImageCountHistogram(int count) {
@@ -817,10 +793,14 @@ public class SelectFileDialog
         return new SelectFileDialog(nativeSelectFileDialog);
     }
 
-    private native void nativeOnFileSelected(long nativeSelectFileDialogImpl,
-            String filePath, String displayName);
-    private native void nativeOnMultipleFilesSelected(long nativeSelectFileDialogImpl,
-            String[] filePathArray, String[] displayNameArray);
-    private native void nativeOnFileNotSelected(long nativeSelectFileDialogImpl);
-    private native void nativeOnContactsSelected(long nativeSelectFileDialogImpl, String contacts);
+    @NativeMethods
+    interface Natives {
+        void onFileSelected(long nativeSelectFileDialogImpl, SelectFileDialog caller,
+                String filePath, String displayName);
+        void onMultipleFilesSelected(long nativeSelectFileDialogImpl, SelectFileDialog caller,
+                String[] filePathArray, String[] displayNameArray);
+        void onFileNotSelected(long nativeSelectFileDialogImpl, SelectFileDialog caller);
+        void onContactsSelected(
+                long nativeSelectFileDialogImpl, SelectFileDialog caller, String contacts);
+    }
 }

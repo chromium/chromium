@@ -8,16 +8,16 @@ layer at (0,0) size 800x600
       LayoutBlockFlow {P} at (0,0) size 784x60
         LayoutText {#text} at (0,0) size 241x19
           text run at (0,0) width 241: "There was a workaround added to fix "
-        LayoutInline {A} at (0,0) size 149x19 [color=#0000EE]
+        LayoutInline {A} at (241,0) size 149x19 [color=#0000EE]
           LayoutText {#text} at (241,0) size 149x19
             text run at (241,0) width 149: "rdar://problem/4033202"
         LayoutText {#text} at (390,0) size 297x19
           text run at (390,0) width 8: ". "
           text run at (398,0) width 289: "A bug to remove the workaround was filed as"
-        LayoutInline {A} at (0,0) size 149x19 [color=#0000EE]
+        LayoutInline {A} at (0,20) size 149x19 [color=#0000EE]
           LayoutText {#text} at (0,20) size 149x19
             text run at (0,20) width 149: "rdar://problem/4040763"
-        LayoutText {#text} at (149,20) size 760x39
+        LayoutText {#text} at (0,20) size 760x39
           text run at (149,20) width 8: ". "
           text run at (157,20) width 603: "The underlying problem with VisiblePositions was fixed, and so I removed the workaround and"
           text run at (0,40) width 136: "added this layout test."
@@ -25,7 +25,7 @@ layer at (0,0) size 800x600
         LayoutBlockFlow {P} at (1,1) size 782x20
           LayoutText {#text} at (0,0) size 12x19
             text run at (0,0) width 12: "hi"
-          LayoutInline {SPAN} at (0,0) size 0x19
+          LayoutInline {SPAN} at (12,0) size 0x19
         LayoutBlockFlow (anonymous) at (1,21) size 782x40
           LayoutBR {BR} at (0,0) size 0x19
           LayoutText {#text} at (0,20) size 21x19

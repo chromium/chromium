@@ -8,6 +8,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -122,4 +123,21 @@ int GetIndexOfExistingTab(Browser* browser, const NavigateParams& params) {
   }
 
   return -1;
+}
+
+std::pair<Browser*, int> GetIndexAndBrowserOfExistingTab(
+    Profile* profile,
+    const NavigateParams& params) {
+  for (auto browser_it = BrowserList::GetInstance()->begin_last_active();
+       browser_it != BrowserList::GetInstance()->end_last_active();
+       ++browser_it) {
+    Browser* browser = *browser_it;
+    // When tab switching, only look at same profile and anonymity level.
+    if (browser->profile()->IsSameProfileAndType(profile)) {
+      int index = GetIndexOfExistingTab(browser, params);
+      if (index >= 0)
+        return {browser, index};
+    }
+  }
+  return {nullptr, -1};
 }

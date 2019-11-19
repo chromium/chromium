@@ -11,14 +11,16 @@
 
 namespace blink {
 
+class HTMLElement;
 class HTMLVideoElement;
+class PictureInPictureOptions;
 class ScriptPromiseResolver;
 
 // PictureInPictureController allows to know if Picture-in-Picture is allowed
 // for a video element in Blink outside of modules/ module. It
 // is an interface that the module will implement and add a provider for.
 class CORE_EXPORT PictureInPictureController
-    : public GarbageCollectedFinalized<PictureInPictureController>,
+    : public GarbageCollected<PictureInPictureController>,
       public Supplement<Document> {
   USING_GARBAGE_COLLECTED_MIXIN(PictureInPictureController);
 
@@ -45,19 +47,22 @@ class CORE_EXPORT PictureInPictureController
     kDisabledBySystem,
     kDisabledByFeaturePolicy,
     kDisabledByAttribute,
+    kInvalidWidthOrHeightOption,
   };
 
-  // Enter Picture-in-Picture for a video element and resolve promise if any.
-  virtual void EnterPictureInPicture(HTMLVideoElement*,
+  // Enter Picture-in-Picture for an element with options if any and resolve
+  // promise if any.
+  virtual void EnterPictureInPicture(HTMLElement*,
+                                     PictureInPictureOptions*,
                                      ScriptPromiseResolver*) = 0;
 
   // Exit Picture-in-Picture for a video element and resolve promise if any.
   virtual void ExitPictureInPicture(HTMLVideoElement*,
                                     ScriptPromiseResolver*) = 0;
 
-  // Returns whether a given video element in a document associated with the
+  // Returns whether a given element in a document associated with the
   // controller is allowed to request Picture-in-Picture.
-  virtual Status IsElementAllowed(const HTMLVideoElement&) const = 0;
+  virtual Status IsElementAllowed(const HTMLElement&) const = 0;
 
   // Should be called when an element has exited Picture-in-Picture.
   virtual void OnExitedPictureInPicture(ScriptPromiseResolver*) = 0;

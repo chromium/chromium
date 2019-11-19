@@ -38,7 +38,7 @@ URLRequestThrottlerManager::~URLRequestThrottlerManager() {
   // entries, detach the entries' back-pointer to the manager.
   auto i = url_entries_.begin();
   while (i != url_entries_.end()) {
-    if (i->second.get() != NULL) {
+    if (i->second.get() != nullptr) {
       i->second->DetachManager();
     }
     ++i;
@@ -66,11 +66,11 @@ scoped_refptr<URLRequestThrottlerEntryInterface>
   // aggressively (i.e. this resets the error count when the entry's URL
   // hasn't been requested in long enough).
   if (entry.get() && entry->IsEntryOutdated()) {
-    entry = NULL;
+    entry = nullptr;
   }
 
   // Create the entry if needed.
-  if (entry.get() == NULL) {
+  if (entry.get() == nullptr) {
     entry = new URLRequestThrottlerEntry(this, url_id);
 
     // We only disable back-off throttling on an entry that we have
@@ -78,10 +78,9 @@ scoped_refptr<URLRequestThrottlerEntryInterface>
     // the entry for localhost URLs.
     if (IsLocalhost(url)) {
       if (!logged_for_localhost_disabled_ && IsLocalhost(url)) {
-        std::string host = url.host();
         logged_for_localhost_disabled_ = true;
-        net_log_.AddEvent(NetLogEventType::THROTTLING_DISABLED_FOR_HOST,
-                          NetLog::StringCallback("host", &host));
+        net_log_.AddEventWithStringParams(
+            NetLogEventType::THROTTLING_DISABLED_FOR_HOST, "host", url.host());
       }
 
       // TODO(joi): Once sliding window is separate from back-off throttling,

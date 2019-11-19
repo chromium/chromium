@@ -8,10 +8,12 @@
 #include <list>
 #include <memory>
 
+#include "base/bind.h"
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 
 // OVERVIEW:
 //
@@ -74,36 +76,31 @@ class CallbackListBase {
  public:
   class Subscription {
    public:
-    Subscription(CallbackListBase<CallbackType>* list,
-                 typename std::list<CallbackType>::iterator iter)
-        : list_(list),
-          iter_(iter) {
-    }
+    explicit Subscription(base::OnceClosure subscription_destroyed)
+        : subscription_destroyed_(std::move(subscription_destroyed)) {}
 
-    ~Subscription() {
-      if (list_->active_iterator_count_) {
-        iter_->Reset();
-      } else {
-        list_->callbacks_.erase(iter_);
-        if (!list_->removal_callback_.is_null())
-          list_->removal_callback_.Run();
-      }
-    }
+    ~Subscription() { std::move(subscription_destroyed_).Run(); }
+
+    // Returns true if the CallbackList associated with this subscription has
+    // been deleted, which means that the associated callback will no longer be
+    // invoked.
+    bool IsCancelled() const { return subscription_destroyed_.IsCancelled(); }
 
    private:
-    CallbackListBase<CallbackType>* list_;
-    typename std::list<CallbackType>::iterator iter_;
+    base::OnceClosure subscription_destroyed_;
 
     DISALLOW_COPY_AND_ASSIGN(Subscription);
   };
 
   // Add a callback to the list. The callback will remain registered until the
-  // returned Subscription is destroyed, which must occur before the
-  // CallbackList is destroyed.
+  // returned Subscription is destroyed. When the CallbackList is destroyed, any
+  // outstanding subscriptions are safely invalidated.
   std::unique_ptr<Subscription> Add(const CallbackType& cb) WARN_UNUSED_RESULT {
     DCHECK(!cb.is_null());
     return std::make_unique<Subscription>(
-        this, callbacks_.insert(callbacks_.end(), cb));
+        base::BindOnce(&CallbackListBase::OnSubscriptionDestroyed,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       callbacks_.insert(callbacks_.end(), cb)));
   }
 
   // Sets a callback which will be run when a subscription list is changed.
@@ -114,7 +111,7 @@ class CallbackListBase {
   // Returns true if there are no subscriptions. This is only valid to call when
   // not looping through the list.
   bool empty() {
-    DCHECK_EQ(0, active_iterator_count_);
+    DCHECK_EQ(0u, active_iterator_count_);
     return callbacks_.empty();
   }
 
@@ -157,12 +154,9 @@ class CallbackListBase {
     typename std::list<CallbackType>::iterator list_iter_;
   };
 
-  CallbackListBase() : active_iterator_count_(0) {}
+  CallbackListBase() = default;
 
-  ~CallbackListBase() {
-    DCHECK_EQ(0, active_iterator_count_);
-    DCHECK_EQ(0U, callbacks_.size());
-  }
+  ~CallbackListBase() { DCHECK_EQ(0u, active_iterator_count_); }
 
   // Returns an instance of a CallbackListBase::Iterator which can be used
   // to run callbacks.
@@ -189,9 +183,22 @@ class CallbackListBase {
   }
 
  private:
+  void OnSubscriptionDestroyed(
+      const typename std::list<CallbackType>::iterator& iter) {
+    if (active_iterator_count_) {
+      iter->Reset();
+    } else {
+      callbacks_.erase(iter);
+      if (removal_callback_)
+        removal_callback_.Run();
+    }
+    // Note that |removal_callback_| may destroy |this|.
+  }
+
   std::list<CallbackType> callbacks_;
-  int active_iterator_count_;
+  size_t active_iterator_count_ = 0;
   RepeatingClosure removal_callback_;
+  WeakPtrFactory<CallbackListBase> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(CallbackListBase);
 };

@@ -5,22 +5,24 @@
 #include "chrome/browser/chromeos/policy/remote_commands/crd_host_delegate.h"
 
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/task/post_task.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/app_mode/arc/arc_kiosk_app_manager.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_app_manager.h"
+#include "chrome/browser/chromeos/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/settings/device_oauth2_token_service.h"
 #include "chrome/browser/chromeos/settings/device_oauth2_token_service_factory.h"
+#include "chrome/common/chrome_features.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 #include "extensions/browser/api/messaging/native_message_host.h"
 #include "google_apis/gaia/gaia_constants.h"
-#include "google_apis/gaia/oauth2_token_service.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_request_headers.h"
 #include "remoting/host/it2me/it2me_native_messaging_host_chromeos.h"
@@ -46,6 +48,7 @@ constexpr char kCRDResponseHello[] = "helloResponse";
 constexpr char kCRDResponseConnect[] = "connectResponse";
 constexpr char kCRDStateChanged[] = "hostStateChanged";
 constexpr char kCRDResponseDisconnect[] = "disconnectResponse";
+constexpr char kCRDResponseError[] = "error";
 
 // Connect message parameters:
 constexpr char kCRDConnectUserName[] = "userName";
@@ -53,8 +56,8 @@ constexpr char kCRDConnectAuth[] = "authServiceWithToken";
 constexpr char kCRDConnectXMPPServer[] = "xmppServerAddress";
 constexpr char kCRDConnectXMPPTLS[] = "xmppServerUseTls";
 constexpr char kCRDConnectDirectoryBot[] = "directoryBotJid";
-constexpr char kCRDConnectICEConfig[] = "iceConfig";
 constexpr char kCRDConnectNoDialogs[] = "noDialogs";
+constexpr char kCRDTerminateUponInput[] = "terminateUponInput";
 
 // Connect message parameter values:
 constexpr char kCRDConnectXMPPServerValue[] = "talk.google.com:443";
@@ -84,6 +87,10 @@ constexpr char kCloudDevicesOAuth2Scope[] =
     "https://www.googleapis.com/auth/clouddevices";
 constexpr char kChromotingOAuth2Scope[] =
     "https://www.googleapis.com/auth/chromoting";
+constexpr char kChromotingRemoteSupportOAuth2Scope[] =
+    "https://www.googleapis.com/auth/chromoting.remote.support";
+constexpr char kTachyonOAuth2Scope[] =
+    "https://www.googleapis.com/auth/tachyon";
 
 net::NetworkTrafficAnnotationTag CreateIceConfigRequestAnnotation() {
   return net::DefineNetworkTrafficAnnotation("CRD_ice_config_request", R"(
@@ -128,7 +135,7 @@ net::NetworkTrafficAnnotationTag CreateIceConfigRequestAnnotation() {
 }  // namespace
 
 CRDHostDelegate::CRDHostDelegate()
-    : OAuth2TokenService::Consumer("crd_host_delegate"), weak_factory_(this) {}
+    : OAuth2AccessTokenManager::Consumer("crd_host_delegate") {}
 
 CRDHostDelegate::~CRDHostDelegate() {
 }
@@ -151,8 +158,7 @@ bool CRDHostDelegate::AreServicesReady() const {
 
 bool CRDHostDelegate::IsRunningKiosk() const {
   auto* user_manager = user_manager::UserManager::Get();
-  if (!user_manager->IsLoggedInAsKioskApp() &&
-      !user_manager->IsLoggedInAsArcKioskApp()) {
+  if (!user_manager->IsLoggedInAsAnyKioskApp()) {
     return false;
   }
   if (!GetKioskProfile())
@@ -165,10 +171,15 @@ bool CRDHostDelegate::IsRunningKiosk() const {
     chromeos::KioskAppManager::App app;
     CHECK(manager->GetApp(manager->GetAutoLaunchApp(), &app));
     return app.was_auto_launched_with_zero_delay;
-  } else {  // ARC Kiosk
+  } else if (user_manager->IsLoggedInAsArcKioskApp()) {
     return chromeos::ArcKioskAppManager::Get()
         ->current_app_was_auto_launched_with_zero_delay();
+  } else if (user_manager->IsLoggedInAsWebKioskApp()) {
+    return chromeos::WebKioskAppManager::Get()
+        ->current_app_was_auto_launched_with_zero_delay();
   }
+  NOTREACHED();
+  return false;
 }
 
 base::TimeDelta CRDHostDelegate::GetIdlenessPeriod() const {
@@ -184,21 +195,29 @@ void CRDHostDelegate::FetchOAuthToken(
   chromeos::DeviceOAuth2TokenService* oauth_service =
       chromeos::DeviceOAuth2TokenServiceFactory::Get();
 
-  OAuth2TokenService::ScopeSet scopes;
+  OAuth2AccessTokenManager::ScopeSet scopes;
   scopes.insert(GaiaConstants::kGoogleUserInfoEmail);
-  scopes.insert(GaiaConstants::kGoogleTalkOAuth2Scope);
   scopes.insert(kCloudDevicesOAuth2Scope);
+
+  if (base::FeatureList::IsEnabled(
+          features::kUseFtlSignalingForCrdHostDelegate)) {
+    scopes.insert(kChromotingRemoteSupportOAuth2Scope);
+    scopes.insert(kTachyonOAuth2Scope);
+  }
+
+  // TODO(joedow): Remove these scopes once we migrate to FTL signaling.
+  scopes.insert(GaiaConstants::kGoogleTalkOAuth2Scope);
   scopes.insert(kChromotingOAuth2Scope);
 
   oauth_success_callback_ = std::move(success_callback);
   error_callback_ = std::move(error_callback);
 
-  oauth_request_ = oauth_service->StartRequest(
+  oauth_request_ = oauth_service->StartAccessTokenRequest(
       oauth_service->GetRobotAccountId(), scopes, this);
 }
 
 void CRDHostDelegate::OnGetTokenSuccess(
-    const OAuth2TokenService::Request* request,
+    const OAuth2AccessTokenManager::Request* request,
     const OAuth2AccessTokenConsumer::TokenResponse& token_response) {
   oauth_request_.reset();
   error_callback_.Reset();
@@ -206,7 +225,7 @@ void CRDHostDelegate::OnGetTokenSuccess(
 }
 
 void CRDHostDelegate::OnGetTokenFailure(
-    const OAuth2TokenService::Request* request,
+    const OAuth2AccessTokenManager::Request* request,
     const GoogleServiceAuthError& error) {
   oauth_request_.reset();
   oauth_success_callback_.Reset();
@@ -227,8 +246,7 @@ void CRDHostDelegate::FetchICEConfig(
 
   auto ice_request = std::make_unique<network::ResourceRequest>();
   ice_request->url = GURL(kICEConfigURL);
-  ice_request->load_flags =
-      net::LOAD_DO_NOT_SEND_COOKIES | net::LOAD_DO_NOT_SAVE_COOKIES;
+  ice_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
 
   ice_request->headers.SetHeader(net::HttpRequestHeaders::kAuthorization,
                                  "Bearer " + oauth_token);
@@ -274,7 +292,8 @@ void CRDHostDelegate::OnICEConfigurationLoaded(
 
 void CRDHostDelegate::StartCRDHostAndGetCode(
     const std::string& oauth_token,
-    base::Value ice_config,
+    base::Value unused_ice_config,
+    bool terminate_upon_input,
     DeviceCommandStartCRDSessionJob::AccessCodeCallback success_callback,
     DeviceCommandStartCRDSessionJob::ErrorCallback error_callback) {
   DCHECK(!host_);
@@ -293,8 +312,9 @@ void CRDHostDelegate::StartCRDHostAndGetCode(
   connect_params.SetKey(kCRDConnectXMPPTLS, base::Value(true));
   connect_params.SetKey(kCRDConnectDirectoryBot,
                         base::Value(kCRDConnectDirectoryBotValue));
-  connect_params.SetKey(kCRDConnectICEConfig, std::move(ice_config));
   connect_params.SetKey(kCRDConnectNoDialogs, base::Value(true));
+  connect_params.SetKey(kCRDTerminateUponInput,
+                        base::Value(terminate_upon_input));
   connect_params_ = std::move(connect_params);
 
   remote_connected_ = false;
@@ -305,11 +325,8 @@ void CRDHostDelegate::StartCRDHostAndGetCode(
 
   // TODO(antrim): set up watchdog timer (reasonable cutoff).
   host_ = remoting::CreateIt2MeNativeMessagingHostForChromeOS(
-      g_browser_process->system_request_context(),
-      base::CreateSingleThreadTaskRunnerWithTraits(
-          {content::BrowserThread::IO}),
-      base::CreateSingleThreadTaskRunnerWithTraits(
-          {content::BrowserThread::UI}),
+      base::CreateSingleThreadTaskRunner({content::BrowserThread::IO}),
+      base::CreateSingleThreadTaskRunner({content::BrowserThread::UI}),
       g_browser_process->policy_service());
   host_->Start(this);
 
@@ -342,7 +359,7 @@ void CRDHostDelegate::PostMessageFromNativeHost(const std::string& message) {
   } else if (type == kCRDResponseDisconnect) {
     OnDisconnectResponse();
     return;
-  } else if (type == kCRDStateChanged) {
+  } else if (type == kCRDStateChanged || type == kCRDResponseError) {
     // Handle CRD host state changes
     auto* state_value =
         message_value->FindKeyOfType(kCRDStateKey, base::Value::Type::STRING);
@@ -368,7 +385,7 @@ void CRDHostDelegate::PostMessageFromNativeHost(const std::string& message) {
     }
     return;
   }
-  LOG(WARNING) << "Unknown message type :" << type;
+  LOG(WARNING) << "Unknown message type: " << type;
 }
 
 void CRDHostDelegate::OnHelloResponse() {

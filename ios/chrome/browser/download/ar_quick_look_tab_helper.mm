@@ -35,7 +35,8 @@ namespace {
 // Returns a suffix for Download.IOSDownloadARModelState histogram for the
 // |download_task|.
 std::string GetMimeTypeSuffix(web::DownloadTask* download_task) {
-  DCHECK(IsUsdzFileFormat(download_task->GetOriginalMimeType()));
+  DCHECK(IsUsdzFileFormat(download_task->GetOriginalMimeType(),
+                          download_task->GetSuggestedFilename()));
   return kUsdzMimeTypeHistogramSuffix;
 }
 
@@ -50,7 +51,8 @@ IOSDownloadARModelState GetHistogramEnum(web::DownloadTask* download_task) {
     return IOSDownloadARModelState::kStarted;
   }
   DCHECK(download_task->IsDone());
-  if (!IsUsdzFileFormat(download_task->GetMimeType())) {
+  if (!IsUsdzFileFormat(download_task->GetMimeType(),
+                        download_task->GetSuggestedFilename())) {
     return IOSDownloadARModelState::kWrongMimeTypeFailure;
   }
   if (download_task->GetHttpCode() == 401 ||
@@ -108,8 +110,9 @@ void ARQuickLookTabHelper::Download(
   // Take ownership of |download_task| and start the download.
   download_task_ = std::move(download_task);
   download_task_->AddObserver(this);
-  base::PostTaskWithTraitsAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+  base::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::USER_VISIBLE},
       base::BindOnce(&base::CreateDirectory, download_dir),
       base::BindOnce(&ARQuickLookTabHelper::DownloadWithDestinationDir,
                      AsWeakPtr(), download_dir, download_task_.get()));
@@ -120,7 +123,8 @@ void ARQuickLookTabHelper::DidFinishDownload() {
   // Inform the delegate only if the download has been successful.
   if (download_task_->GetHttpCode() == 401 ||
       download_task_->GetHttpCode() == 403 || download_task_->GetErrorCode() ||
-      !IsUsdzFileFormat(download_task_->GetMimeType())) {
+      !IsUsdzFileFormat(download_task_->GetMimeType(),
+                        download_task_->GetSuggestedFilename())) {
     return;
   }
 
@@ -151,8 +155,8 @@ void ARQuickLookTabHelper::DownloadWithDestinationDir(
     return;
   }
 
-  auto task_runner = base::CreateSequencedTaskRunnerWithTraits(
-      {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
+  auto task_runner = base::CreateSequencedTaskRunner(
+      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::USER_VISIBLE});
   base::string16 file_name = download_task_->GetSuggestedFilename();
   base::FilePath path = destination_dir.Append(base::UTF16ToUTF8(file_name));
   auto writer = std::make_unique<net::URLFetcherFileWriter>(task_runner, path);

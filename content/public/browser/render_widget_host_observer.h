@@ -5,6 +5,7 @@
 #ifndef CONTENT_PUBLIC_BROWSER_RENDER_WIDGET_HOST_OBSERVER_H_
 #define CONTENT_PUBLIC_BROWSER_RENDER_WIDGET_HOST_OBSERVER_H_
 
+#include "base/observer_list_types.h"
 #include "content/common/content_export.h"
 
 namespace content {
@@ -13,7 +14,7 @@ class RenderWidgetHost;
 
 // An observer API implemented by classes which are interested
 // in RenderWidgetHost events.
-class CONTENT_EXPORT RenderWidgetHostObserver {
+class CONTENT_EXPORT RenderWidgetHostObserver : public base::CheckedObserver {
  public:
   // This method is invoked when the visibility of the RenderWidgetHost changes.
   virtual void RenderWidgetHostVisibilityChanged(RenderWidgetHost* widget_host,
@@ -25,7 +26,7 @@ class CONTENT_EXPORT RenderWidgetHostObserver {
   virtual void RenderWidgetHostDestroyed(RenderWidgetHost* widget_host) {}
 
  protected:
-  virtual ~RenderWidgetHostObserver() {}
+  ~RenderWidgetHostObserver() override = default;
 };
 
 }  // namespace content

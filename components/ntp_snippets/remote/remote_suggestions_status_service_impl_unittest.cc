@@ -14,7 +14,6 @@
 #include "components/ntp_snippets/remote/test_utils.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
-#include "components/variations/variations_params_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -60,7 +59,6 @@ class RemoteSuggestionsStatusServiceImplTest : public ::testing::Test {
 
   RemoteSuggestionsStatus last_status_;
   test::RemoteSuggestionsTestUtils utils_;
-  variations::testing::VariationParamsManager params_manager_;
 };
 
 TEST_F(RemoteSuggestionsStatusServiceImplTest, NoSigninNeeded) {

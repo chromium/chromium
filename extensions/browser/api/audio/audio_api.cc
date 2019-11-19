@@ -47,7 +47,8 @@ bool CanUseDeprecatedAudioApi(const Extension* extension) {
       .is_available();
 }
 
-bool CanReceiveDeprecatedAudioEvent(content::BrowserContext* context,
+bool CanReceiveDeprecatedAudioEvent(content::BrowserContext* browser_context,
+                                    Feature::Context target_context,
                                     const Extension* extension,
                                     Event* event,
                                     const base::DictionaryValue* filter) {

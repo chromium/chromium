@@ -6,7 +6,7 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/sessions/session_service.h"
 #include "chrome/browser/sessions/session_tab_helper.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -23,19 +23,19 @@
 #include "chrome/common/url_constants.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/sessions/core/session_types.h"
-#include "components/signin/core/browser/account_info.h"
+#include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/base/time.h"
 #include "components/sync/protocol/proto_value_conversions.h"
+#include "components/sync/protocol/session_specifics.pb.h"
 #include "components/sync/test/fake_server/sessions_hierarchy.h"
 #include "components/sync_sessions/session_store.h"
 #include "components/sync_sessions/session_sync_service.h"
 #include "components/sync_sessions/session_sync_test_helper.h"
 #include "components/sync_sessions/synced_session_tracker.h"
 #include "google_apis/gaia/gaia_auth_util.h"
-#include "services/identity/public/cpp/identity_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/mojo/window_open_disposition.mojom.h"
 
 namespace {
 
@@ -91,22 +91,59 @@ class IsHistoryURLSyncedChecker : public SingleClientStatusChangeChecker {
  public:
   IsHistoryURLSyncedChecker(const std::string& url,
                             fake_server::FakeServer* fake_server,
-                            browser_sync::ProfileSyncService* service)
+                            syncer::ProfileSyncService* service)
       : SingleClientStatusChangeChecker(service),
         url_(url),
         fake_server_(fake_server) {}
 
   // StatusChangeChecker implementation.
-  bool IsExitConditionSatisfied() override {
+  bool IsExitConditionSatisfied(std::ostream* os) override {
+    *os << "Waiting for URLs to be commited to the server";
     return fake_server_->GetCommittedHistoryURLs().count(url_) != 0;
-  }
-
-  std::string GetDebugMessage() const override {
-    return "Waiting for URLs to be commited to the server";
   }
 
  private:
   const std::string url_;
+  fake_server::FakeServer* fake_server_;
+};
+
+class IsIconURLSyncedChecker : public SingleClientStatusChangeChecker {
+ public:
+  IsIconURLSyncedChecker(const std::string& page_url,
+                         const std::string& icon_url,
+                         fake_server::FakeServer* fake_server,
+                         syncer::ProfileSyncService* service)
+      : SingleClientStatusChangeChecker(service),
+        page_url_(page_url),
+        icon_url_(icon_url),
+        fake_server_(fake_server) {}
+
+  // StatusChangeChecker implementation.
+  bool IsExitConditionSatisfied(std::ostream* os) override {
+    *os << "Waiting for URLs to be commited to the server";
+    std::vector<sync_pb::SyncEntity> sessions =
+        fake_server_->GetSyncEntitiesByModelType(syncer::SESSIONS);
+    for (const auto& entity : sessions) {
+      const sync_pb::SessionSpecifics& session_specifics =
+          entity.specifics().session();
+      if (!session_specifics.has_tab()) {
+        continue;
+      }
+      for (int i = 0; i < session_specifics.tab().navigation_size(); i++) {
+        const sync_pb::TabNavigation& nav =
+            session_specifics.tab().navigation(i);
+        if (nav.has_virtual_url() && nav.has_favicon_url() &&
+            nav.virtual_url() == page_url_ && nav.favicon_url() == icon_url_) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+ private:
+  const std::string page_url_;
+  const std::string icon_url_;
   fake_server::FakeServer* fake_server_;
 };
 
@@ -149,7 +186,7 @@ class SingleClientSessionsSyncTest : public SyncTest {
   // Simulates receiving list of accounts in the cookie jar from ListAccounts
   // endpoint. Adds |account_ids| into signed in accounts, notifies
   // ProfileSyncService and waits for change to propagate to sync engine.
-  void UpdateCookieJarAccountsAndWait(std::vector<std::string> account_ids,
+  void UpdateCookieJarAccountsAndWait(std::vector<CoreAccountId> account_ids,
                                       bool expected_cookie_jar_mismatch) {
     std::vector<gaia::ListedAccount> accounts;
     for (const auto& account_id : account_ids) {
@@ -178,7 +215,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest,
       SessionSyncServiceFactory::GetForProfile(GetProfile(0));
 
   EXPECT_NE(nullptr, service->GetOpenTabsUIDelegate());
-  ASSERT_TRUE(GetClient(0)->DisableSyncForDatatype(syncer::PROXY_TABS));
+  ASSERT_TRUE(
+      GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kTabs));
   EXPECT_EQ(nullptr, service->GetOpenTabsUIDelegate());
 }
 
@@ -269,7 +307,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest,
   // If the user disables history sync on settings, but still enables tab sync,
   // then sessions should be synced but the server should be able to tell the
   // difference based on active datatypes.
-  ASSERT_TRUE(GetClient(0)->DisableSyncForDatatype(syncer::TYPED_URLS));
+  ASSERT_TRUE(
+      GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kHistory));
   ASSERT_TRUE(CheckInitialState(0));
 
   ASSERT_TRUE(OpenTab(0, GURL(kURL1)));
@@ -647,33 +686,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, TabMovedToOtherWindow) {
       {{base_url.spec()}, {new_window_url.spec(), moved_tab_url.spec()}}));
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, SourceTabIDSet) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
-  ASSERT_TRUE(CheckInitialState(0));
-
-  GURL base_url = GURL(kURL1);
-  ASSERT_TRUE(OpenTab(0, base_url));
-
-  WaitForURLOnServer(base_url);
-
-  GURL new_tab_url = GURL(kURL2);
-  ASSERT_TRUE(OpenTabFromSourceIndex(
-      0, 0, new_tab_url, WindowOpenDisposition::NEW_FOREGROUND_TAB));
-  WaitForHierarchyOnServer(
-      SessionsHierarchy({{base_url.spec(), new_tab_url.spec()}}));
-
-  content::WebContents* original_tab_contents =
-      GetBrowser(0)->tab_strip_model()->GetWebContentsAt(0);
-  content::WebContents* new_tab_contents =
-      GetBrowser(0)->tab_strip_model()->GetWebContentsAt(1);
-
-  SessionID source_tab_id = SessionTabHelper::IdForTab(original_tab_contents);
-  sync_sessions::SyncSessionsRouterTabHelper* new_tab_helper =
-      sync_sessions::SyncSessionsRouterTabHelper::FromWebContents(
-          new_tab_contents);
-  EXPECT_EQ(new_tab_helper->source_tab_id(), source_tab_id);
-}
-
 IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, CookieJarMismatch) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
@@ -709,7 +721,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, CookieJarMismatch) {
   // Avoid interferences from actual IdentityManager trying to fetch gaia
   // account information, which would exercise
   // ProfileSyncService::OnAccountsInCookieUpdated().
-  identity::CancelAllOngoingGaiaCookieOperations(
+  signin::CancelAllOngoingGaiaCookieOperations(
       IdentityManagerFactory::GetForProfile(GetProfile(0)));
 
   // Trigger a cookie jar change (user signing in to content area).
@@ -744,6 +756,27 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, CookieJarMismatch) {
                          /*sample=*/true, /*expected_inclusive_lower_bound=*/1);
     histogram_tester.ExpectTotalCount("Sync.CookieJarEmptyOnMismatch", 0);
   }
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest,
+                       ShouldNotifyLoadedIconUrl) {
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(CheckInitialState(0));
+
+  // Url with endoded 1 pixel icon.
+  std::string icon_url =
+      "data:image/png;base64,"
+      "R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
+  std::string page_url =
+      "data:text/html,<html><title>TestWithFavicon</title><link rel=icon "
+      "href=" +
+      icon_url + " /></html>";
+
+  ASSERT_TRUE(OpenTab(0, GURL(page_url)));
+
+  IsIconURLSyncedChecker checker(page_url, icon_url, GetFakeServer(),
+                                 GetSyncService(0));
+  EXPECT_TRUE(checker.Wait());
 }
 
 }  // namespace

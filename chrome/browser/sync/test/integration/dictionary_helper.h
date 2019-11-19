@@ -56,8 +56,7 @@ class DictionaryMatchChecker : public MultiClientStatusChangeChecker {
   DictionaryMatchChecker();
 
   // StatusChangeChecker implementation.
-  bool IsExitConditionSatisfied() override;
-  std::string GetDebugMessage() const override;
+  bool IsExitConditionSatisfied(std::ostream* os) override;
 };
 
 // Checker to block until the number of dictionary entries to equal to an
@@ -67,8 +66,7 @@ class NumDictionaryEntriesChecker : public SingleClientStatusChangeChecker {
   NumDictionaryEntriesChecker(int index, size_t num_words);
 
   // StatusChangeChecker implementation.
-  bool IsExitConditionSatisfied() override;
-  std::string GetDebugMessage() const override;
+  bool IsExitConditionSatisfied(std::ostream* os) override;
 
  private:
   int index_;

@@ -382,11 +382,11 @@ static inline String ExpandedNameLocalPart(Node* node) {
   // But note that Blink does not support namespace nodes.
   switch (node->getNodeType()) {
     case Node::kElementNode:
-      return ToElement(node)->localName();
+      return To<Element>(node)->localName();
     case Node::kAttributeNode:
-      return ToAttr(node)->localName();
+      return To<Attr>(node)->localName();
     case Node::kProcessingInstructionNode:
-      return ToProcessingInstruction(node)->target();
+      return To<ProcessingInstruction>(node)->target();
     default:
       return String();
   }
@@ -395,9 +395,9 @@ static inline String ExpandedNameLocalPart(Node* node) {
 static inline String ExpandedNamespaceURI(Node* node) {
   switch (node->getNodeType()) {
     case Node::kElementNode:
-      return ToElement(node)->namespaceURI();
+      return To<Element>(node)->namespaceURI();
     case Node::kAttributeNode:
-      return ToAttr(node)->namespaceURI();
+      return To<Attr>(node)->namespaceURI();
     default:
       return String();
   }
@@ -408,10 +408,10 @@ static inline String ExpandedName(Node* node) {
 
   switch (node->getNodeType()) {
     case Node::kElementNode:
-      prefix = ToElement(node)->prefix();
+      prefix = To<Element>(node)->prefix();
       break;
     case Node::kAttributeNode:
-      prefix = ToAttr(node)->prefix();
+      prefix = To<Attr>(node)->prefix();
       break;
     default:
       break;
@@ -629,10 +629,9 @@ Value FunLang::Evaluate(EvaluationContext& context) const {
   const Attribute* language_attribute = nullptr;
   Node* node = context.node.Get();
   while (node) {
-    if (node->IsElementNode()) {
-      Element* element = ToElement(node);
+    if (auto* element = DynamicTo<Element>(node))
       language_attribute = element->Attributes().Find(xml_names::kLangAttr);
-    }
+
     if (language_attribute)
       break;
     node = node->parentNode();

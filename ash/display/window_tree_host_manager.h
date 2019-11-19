@@ -23,6 +23,7 @@
 #include "ui/base/ime/input_method.h"
 #include "ui/base/ime/input_method_delegate.h"
 #include "ui/display/display_observer.h"
+#include "ui/display/manager/content_protection_manager.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/gfx/geometry/point.h"
 
@@ -47,6 +48,7 @@ class RootWindowController;
 class ASH_EXPORT WindowTreeHostManager
     : public display::DisplayObserver,
       public aura::WindowTreeHostObserver,
+      public display::ContentProtectionManager::Observer,
       public display::DisplayManager::Delegate,
       public ui::internal::InputMethodDelegate {
  public:
@@ -69,25 +71,6 @@ class ASH_EXPORT WindowTreeHostManager
 
     // Invoked in WindowTreeHostManager::Shutdown().
     virtual void OnWindowTreeHostManagerShutdown() {}
-
-    // Invoked when an existing AshWindowTreeHost is reused for a new display.
-    // This happens when all displays are removed, and then a new display is
-    // added.
-    virtual void OnWindowTreeHostReusedForDisplay(
-        AshWindowTreeHost* window_tree_host,
-        const display::Display& display) {}
-
-    // Called when the primary display is changed to an existing display. This
-    // results in swapping the display ids the two WindowTreeHosts are
-    // associated with. At the time this is called the ids have already been
-    // swapped.
-    // When there is more than one display and the primary display is removed
-    // internally the WindowTreeHosts for the two displays are swapped and then
-    // the WindowTreeHosts for the non-primary that was swapped with is deleted.
-    // This function is also called in this case as well (after the swap, before
-    // the deletion).
-    virtual void OnWindowTreeHostsSwappedDisplays(AshWindowTreeHost* host1,
-                                                  AshWindowTreeHost* host2) {}
   };
 
   WindowTreeHostManager();
@@ -164,6 +147,9 @@ class ASH_EXPORT WindowTreeHostManager
   // aura::WindowTreeHostObserver overrides:
   void OnHostResized(aura::WindowTreeHost* host) override;
 
+  // display::ContentProtectionManager::Observer overrides:
+  void OnDisplaySecurityChanged(int64_t display_id, bool secure) override;
+
   // display::DisplayManager::Delegate overrides:
   void CreateOrUpdateMirroringDisplay(
       const display::DisplayInfoList& info_list) override;
@@ -174,8 +160,7 @@ class ASH_EXPORT WindowTreeHostManager
 
   // ui::internal::InputMethodDelegate overrides:
   ui::EventDispatchDetails DispatchKeyEventPostIME(
-      ui::KeyEvent* event,
-      DispatchKeyEventPostIMECallback callback) override;
+      ui::KeyEvent* event) override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(WindowTreeHostManagerTest, BoundsUpdated);
@@ -220,7 +205,7 @@ class ASH_EXPORT WindowTreeHostManager
   // should be moved after a display configuration change.
   int64_t cursor_display_id_for_restore_;
 
-  base::WeakPtrFactory<WindowTreeHostManager> weak_ptr_factory_;
+  base::WeakPtrFactory<WindowTreeHostManager> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(WindowTreeHostManager);
 };

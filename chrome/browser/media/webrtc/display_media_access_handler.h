@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_MEDIA_WEBRTC_DISPLAY_MEDIA_ACCESS_HANDLER_H_
 
 #include <memory>
+#include <string>
 
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
@@ -35,12 +36,12 @@ class DisplayMediaAccessHandler : public CaptureAccessHandlerBase,
 
   // MediaAccessHandler implementation.
   bool SupportsStreamType(content::WebContents* web_contents,
-                          const blink::MediaStreamType stream_type,
+                          const blink::mojom::MediaStreamType stream_type,
                           const extensions::Extension* extension) override;
   bool CheckMediaAccessPermission(
       content::RenderFrameHost* render_frame_host,
       const GURL& security_origin,
-      blink::MediaStreamType type,
+      blink::mojom::MediaStreamType type,
       const extensions::Extension* extension) override;
   void HandleRequest(content::WebContents* web_contents,
                      const content::MediaStreamRequest& request,
@@ -49,7 +50,7 @@ class DisplayMediaAccessHandler : public CaptureAccessHandlerBase,
   void UpdateMediaRequestState(int render_process_id,
                                int render_frame_id,
                                int page_request_id,
-                               blink::MediaStreamType stream_type,
+                               blink::mojom::MediaStreamType stream_type,
                                content::MediaRequestState state) override;
 
  private:

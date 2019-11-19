@@ -11,7 +11,7 @@
 #include <string>
 #include <tuple>
 
-#include "base/hash.h"
+#include "base/hash/hash.h"
 #include "base/strings/string_piece.h"
 #include "components/viz/common/viz_common_export.h"
 

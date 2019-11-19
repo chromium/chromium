@@ -13,12 +13,15 @@ public interface OverscrollRefreshHandler {
     /**
      * Signals the start of an overscrolling pull.
      * @param type Type of the overscroll action.
+     * @param startX X position of touch event at the beginning of overscroll.
+     * @param startY Y position of touch event at the beginning of overscroll.
      * @param navigateForward {@code true} for forward navigation, {@code false} for back.
      *        Used only for {@link OverscrollAction.HISTORY_NAVIGATION}.
      * @return Whether the handler will consume the overscroll sequence.
      */
     @CalledByNative
-    public boolean start(@OverscrollAction int type, boolean navigateForward);
+    public boolean start(
+            @OverscrollAction int type, float startX, float startY, boolean navigateForward);
 
     /**
      * Signals a pull update.

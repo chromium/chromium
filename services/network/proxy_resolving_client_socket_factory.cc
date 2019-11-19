@@ -29,11 +29,6 @@ ProxyResolvingClientSocketFactory::ProxyResolvingClientSocketFactory(
   session_context.cert_transparency_verifier =
       request_context->cert_transparency_verifier();
   session_context.ct_policy_enforcer = request_context->ct_policy_enforcer();
-  // TODO(rkn): This is NULL because ChannelIDService is not thread safe.
-  // TODO(mmenke):  The above comment makes no sense, as not a single one of
-  // these classes is thread safe. Figure out if the comment's wrong, or if this
-  // entire class is badly broken.
-  session_context.channel_id_service = NULL;
   session_context.proxy_resolution_service =
       request_context->proxy_resolution_service();
   session_context.proxy_delegate = request_context->proxy_delegate();
@@ -42,6 +37,7 @@ ProxyResolvingClientSocketFactory::ProxyResolvingClientSocketFactory(
       request_context->http_auth_handler_factory();
   session_context.http_server_properties =
       request_context->http_server_properties();
+  session_context.quic_context = request_context->quic_context();
   session_context.net_log = request_context->net_log();
 
   const net::HttpNetworkSession::Params* reference_params =
@@ -60,15 +56,19 @@ ProxyResolvingClientSocketFactory::ProxyResolvingClientSocketFactory(
     session_params.enable_http2 = reference_params->enable_http2;
     session_params.enable_http2_alternative_service =
         reference_params->enable_http2_alternative_service;
-    // Note that ProxyResolvingClientSocket uses either
-    // net::InitSocketHandleForTlsConnect() or
-    // net::InitSocketHandleForRawConnect() to establish connections through
-    // socket pools. QUIC's connection establishment is in another path, so
-    // enabling QUIC won't do anything here.
+    // Note that ProxyResolvingClientSocket does not use QUIC, so enabling QUIC
+    // won't do anything here.
   }
 
+  // TODO(mmenke): Is a new HttpNetworkSession still needed?
+  // ProxyResolvingClientSocket doesn't use socket pools, just the
+  // SpdySessionPool, so it may be sufficient to create a new SpdySessionPool,
+  // just use CommonConnectJobParams that reference it, but otherwise uses
+  // |request_context|'s NetworkSession's objects.
   network_session_ = std::make_unique<net::HttpNetworkSession>(session_params,
                                                                session_context);
+  common_connect_job_params_ = std::make_unique<net::CommonConnectJobParams>(
+      network_session_->CreateCommonConnectJobParams());
 }
 
 ProxyResolvingClientSocketFactory::~ProxyResolvingClientSocketFactory() {}
@@ -81,18 +81,22 @@ ProxyResolvingClientSocketFactory::CreateSocket(
   // might have since entered proxy credentials. Clear the http auth of
   // |network_session_| and copy over the data from |request_context|'s auth
   // cache.
+  //
+  // TODO(davidben): This does not share the SSLClientContext, so proxy client
+  // certificate credentials do not work. However, client certificates for both
+  // proxy and origin are handled at the socket layer, so doing so would pick up
+  // both sets. Depending on how these sockets are used, this may not be what we
+  // want. Toggling privacy mode (i.e. CORS uncredentialed mode) on the
+  // ConnectJob should give proxy auth without origin auth, but only after
+  // https://crbug.com/775438 is fixed.
   network_session_->http_auth_cache()->ClearAllEntries();
   net::HttpAuthCache* other_auth_cache =
       request_context_->http_transaction_factory()
           ->GetSession()
           ->http_auth_cache();
-  network_session_->http_auth_cache()->UpdateAllFrom(*other_auth_cache);
-  net::SSLConfig ssl_config;
-  // Unconditionally get the |ssl_config| regardless of |use_tls|, because
-  // SSLConfig is used for the proxy even !|use_tls|.
-  request_context_->ssl_config_service()->GetSSLConfig(&ssl_config);
-  return std::make_unique<ProxyResolvingClientSocket>(network_session_.get(),
-                                                      ssl_config, url, use_tls);
+  network_session_->http_auth_cache()->CopyProxyEntriesFrom(*other_auth_cache);
+  return std::make_unique<ProxyResolvingClientSocket>(
+      network_session_.get(), common_connect_job_params_.get(), url, use_tls);
 }
 
 }  // namespace network

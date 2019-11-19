@@ -15,7 +15,6 @@ namespace test_runner {
 struct TEST_RUNNER_EXPORT TestPreferences {
   int default_font_size;
   int minimum_font_size;
-  bool xss_auditor_enabled;
   bool allow_file_access_from_file_urls;
   bool allow_running_of_insecure_content;
   blink::WebString default_text_encoding_name;

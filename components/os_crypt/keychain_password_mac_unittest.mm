@@ -12,7 +12,7 @@
 #include "components/os_crypt/encryption_key_creation_util_ios.h"
 #else
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/os_crypt/encryption_key_creation_util_mac.h"
 #include "components/os_crypt/os_crypt_pref_names_mac.h"
@@ -94,7 +94,7 @@ class KeychainPasswordTest : public testing::Test {
 
 #if !defined(OS_IOS)
   // Waits until all tasks in the task runner's queue are finished.
-  void RunUntilIdle() { scoped_task_environment_.RunUntilIdle(); }
+  void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
@@ -107,7 +107,7 @@ class KeychainPasswordTest : public testing::Test {
  private:
 #if !defined(OS_IOS)
   base::HistogramTester histogram_tester_;
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
 #endif
 
   DISALLOW_COPY_AND_ASSIGN(KeychainPasswordTest);

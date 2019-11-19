@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/page_info/page_info.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/safe_browsing/buildflags.h"
 #include "ui/gfx/native_widget_types.h"
 
 #if !defined(OS_ANDROID)
@@ -37,17 +38,22 @@ class X509Certificate;
 // etc.).
 class PageInfoUI {
  public:
-  // The Page Info UI contains several tabs. Each tab is associated with
-  // a unique tab id. The enum |TabId| contains all the ids for the tabs.
-  enum TabId {
-    TAB_ID_PERMISSIONS = 0,
-    TAB_ID_CONNECTION,
-    NUM_TAB_IDS,
-  };
-
   enum class SecuritySummaryColor {
     RED,
     GREEN,
+  };
+
+  enum class SecurityDescriptionType {
+    // The UI describes whether the connection is secure, e.g. secure
+    // HTTPS, non-secure HTTP.
+    CONNECTION,
+    // The UI describes e.g. an internal (chrome://) page or extension page.
+    INTERNAL,
+    // The UI describes a Safe Browsing warning, e.g. site deceptive or contains
+    // malware.
+    SAFE_BROWSING,
+    // The UI shows a Safety Tip.
+    SAFETY_TIP,
   };
 
   struct SecurityDescription {
@@ -59,6 +65,9 @@ class PageInfoUI {
     // A short paragraph with more details about the state, and how
     // the user should treat it.
     base::string16 details;
+    // The category of the security description, used to determine which help
+    // center article to link to.
+    SecurityDescriptionType type;
   };
 
   // |CookieInfo| contains information about the cookies from a specific source.
@@ -117,9 +126,18 @@ class PageInfoUI {
     std::string site_identity;
     // Status of the site's identity.
     PageInfo::SiteIdentityStatus identity_status;
+    // Site's Safe Browsing status.
+    PageInfo::SafeBrowsingStatus safe_browsing_status;
+    // Site's safety tip info. Only set if the feature is enabled to show the
+    // Safety Tip UI.
+    security_state::SafetyTipInfo safety_tip_info;
+
+#if defined(OS_ANDROID)
     // Textual description of the site's identity status that is displayed to
     // the user.
-    std::string identity_status_description;
+    std::string identity_status_description_android;
+#endif
+
     // The server certificate if a secure connection.
     scoped_refptr<net::X509Certificate> certificate;
     // Status of the site's connection.
@@ -186,7 +204,7 @@ class PageInfoUI {
 
   // Returns the connection icon ID for the given connection |status|.
   static int GetConnectionIconID(PageInfo::SiteConnectionStatus status);
-#else
+#else  // !defined(OS_ANDROID)
   // Returns icons for the given PermissionInfo |info|. If |info|'s current
   // setting is CONTENT_SETTING_DEFAULT, it will return the icon for |info|'s
   // default setting.
@@ -215,6 +233,9 @@ class PageInfoUI {
   // Return true if the given ContentSettingsType is in PageInfoUI.
   static bool ContentSettingsTypeInPageInfo(ContentSettingsType type);
 
+  static std::unique_ptr<SecurityDescription>
+  CreateSafetyTipSecurityDescription(const security_state::SafetyTipInfo& info);
+
   // Sets cookie information.
   virtual void SetCookieInfo(const CookieInfoList& cookie_info_list) = 0;
 
@@ -229,14 +250,13 @@ class PageInfoUI {
   virtual void SetPageFeatureInfo(const PageFeatureInfo& page_feature_info) = 0;
 
   // Helper to get security description info to display to the user.
-  std::unique_ptr<PageInfoUI::SecurityDescription> GetSecurityDescription(
+  std::unique_ptr<SecurityDescription> GetSecurityDescription(
       const IdentityInfo& identity_info) const;
 
-#if defined(SAFE_BROWSING_DB_LOCAL)
+#if BUILDFLAG(FULL_SAFE_BROWSING)
   // Creates security description for password reuse case.
-  virtual std::unique_ptr<PageInfoUI::SecurityDescription>
-  CreateSecurityDescriptionForPasswordReuse(
-      bool is_enterprise_password) const = 0;
+  virtual std::unique_ptr<SecurityDescription>
+  CreateSecurityDescriptionForPasswordReuse() const = 0;
 #endif
 };
 

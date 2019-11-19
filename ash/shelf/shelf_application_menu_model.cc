@@ -4,52 +4,34 @@
 
 #include "ash/shelf/shelf_application_menu_model.h"
 
-#include <stddef.h>
-
+#include <algorithm>
 #include <limits>
-#include <utility>
 
+#include "ash/app_list/app_list_controller_impl.h"
 #include "ash/public/cpp/shelf_item_delegate.h"
+#include "ash/shell.h"
 #include "base/metrics/histogram_macros.h"
 #include "ui/display/types/display_constants.h"
-#include "ui/gfx/image/image.h"
-
-namespace {
-
-const int kInvalidCommandId = std::numeric_limits<int>::max();
-
-}  // namespace
 
 namespace ash {
 
 ShelfApplicationMenuModel::ShelfApplicationMenuModel(
     const base::string16& title,
-    std::vector<mojom::MenuItemPtr> items,
+    Items items,
     ShelfItemDelegate* delegate)
-    : ui::SimpleMenuModel(this), items_(std::move(items)), delegate_(delegate) {
-  AddItem(kInvalidCommandId, title);
-
-  for (size_t i = 0; i < items_.size(); i++) {
-    mojom::MenuItem* item = items_[i].get();
-    AddItem(i, item->label);
-    if (!item->image.isNull())
-      SetIcon(GetIndexOfCommandId(i), gfx::Image(item->image));
-  }
-
-  // SimpleMenuModel does not allow two consecutive spacing separator items.
-  // This only occurs in tests; users should not see menus with no |items_|.
-  if (!items_.empty())
-    AddSeparator(ui::SPACING_SEPARATOR);
+    : ui::SimpleMenuModel(this), delegate_(delegate) {
+  AddTitle(title);
+  for (size_t i = 0; i < items.size(); i++)
+    AddItemWithIcon(i, items[i].first, items[i].second);
+  AddSeparator(ui::SPACING_SEPARATOR);
+  DCHECK_EQ(GetItemCount(), int{items.size() + 2}) << "Update metrics |- 2|";
 }
 
 ShelfApplicationMenuModel::~ShelfApplicationMenuModel() = default;
 
-bool ShelfApplicationMenuModel::IsCommandIdChecked(int command_id) const {
-  return false;
-}
-
 bool ShelfApplicationMenuModel::IsCommandIdEnabled(int command_id) const {
-  return command_id >= 0 && static_cast<size_t>(command_id) < items_.size();
+  // This enables items added in the constructor, but not the title.
+  return command_id >= 0 && command_id < GetItemCount();
 }
 
 void ShelfApplicationMenuModel::ExecuteCommand(int command_id,
@@ -57,11 +39,18 @@ void ShelfApplicationMenuModel::ExecuteCommand(int command_id,
   DCHECK(IsCommandIdEnabled(command_id));
   // Have the delegate execute its own custom command id for the given item.
   if (delegate_) {
+    // Record app launch when selecting window to open from disambiguation
+    // menu.
+    Shell::Get()->app_list_controller()->RecordShelfAppLaunched(
+        base::nullopt /* recorded_app_list_view_state */,
+        base::nullopt /* recorded_home_launcher_shown */);
+
     // The display hosting the menu is irrelevant, windows activate in-place.
-    delegate_->ExecuteCommand(false, items_[command_id]->command_id,
+    delegate_->ExecuteCommand(false /*from_context_menu*/, command_id,
                               event_flags, display::kInvalidDisplayId);
   }
-  RecordMenuItemSelectedMetrics(command_id, items_.size());
+  // Subtract two to avoid counting the title and separator.
+  RecordMenuItemSelectedMetrics(command_id, std::max(GetItemCount() - 2, 0));
 }
 
 void ShelfApplicationMenuModel::RecordMenuItemSelectedMetrics(

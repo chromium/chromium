@@ -58,7 +58,7 @@ class TEST_RUNNER_EXPORT TextInputController {
 
   WebViewTestProxy* web_view_test_proxy_;
 
-  base::WeakPtrFactory<TextInputController> weak_factory_;
+  base::WeakPtrFactory<TextInputController> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(TextInputController);
 };

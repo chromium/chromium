@@ -23,7 +23,7 @@ namespace base {
 class SingleThreadTaskRunner;
 }
 
-namespace ws {
+namespace viz {
 class ContextProviderCommandBuffer;
 }
 
@@ -42,7 +42,7 @@ class VideoDecoderShim : public media::VideoDecodeAccelerator {
 
   // media::VideoDecodeAccelerator implementation.
   bool Initialize(const Config& config, Client* client) override;
-  void Decode(const media::BitstreamBuffer& bitstream_buffer) override;
+  void Decode(media::BitstreamBuffer bitstream_buffer) override;
   void AssignPictureBuffers(
       const std::vector<media::PictureBuffer>& buffers) override;
   void ReusePictureBuffer(int32_t picture_buffer_id) override;
@@ -80,7 +80,7 @@ class VideoDecoderShim : public media::VideoDecodeAccelerator {
 
   PepperVideoDecoderHost* host_;
   scoped_refptr<base::SingleThreadTaskRunner> media_task_runner_;
-  scoped_refptr<ws::ContextProviderCommandBuffer> context_provider_;
+  scoped_refptr<viz::ContextProviderCommandBuffer> context_provider_;
 
   // The current decoded frame size.
   gfx::Size texture_size_;
@@ -108,7 +108,7 @@ class VideoDecoderShim : public media::VideoDecodeAccelerator {
 
   std::unique_ptr<YUVConverter> yuv_converter_;
 
-  base::WeakPtrFactory<VideoDecoderShim> weak_ptr_factory_;
+  base::WeakPtrFactory<VideoDecoderShim> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(VideoDecoderShim);
 };

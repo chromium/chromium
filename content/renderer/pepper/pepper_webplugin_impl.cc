@@ -23,7 +23,7 @@
 #include "content/renderer/renderer_blink_platform_impl.h"
 #include "ppapi/shared_impl/ppapi_globals.h"
 #include "ppapi/shared_impl/var_tracker.h"
-#include "services/service_manager/public/cpp/connector.h"
+#include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_coalesced_input_event.h"
 #include "third_party/blink/public/platform/web_point.h"
@@ -321,8 +321,8 @@ bool PepperWebPluginImpl::ExecuteEditCommand(const blink::WebString& name,
       return false;
 
     if (!clipboard_) {
-      blink::Platform::Current()->GetConnector()->BindInterface(
-          blink::Platform::Current()->GetBrowserServiceName(), &clipboard_);
+      blink::Platform::Current()->GetBrowserInterfaceBroker()->GetInterface(
+          clipboard_.BindNewPipeAndPassReceiver());
     }
     base::string16 markup;
     base::string16 text;
@@ -330,9 +330,9 @@ bool PepperWebPluginImpl::ExecuteEditCommand(const blink::WebString& name,
       markup = instance_->GetSelectedText(true);
       text = instance_->GetSelectedText(false);
     }
-    clipboard_->WriteHtml(ui::CLIPBOARD_TYPE_COPY_PASTE, markup, GURL());
-    clipboard_->WriteText(ui::CLIPBOARD_TYPE_COPY_PASTE, text);
-    clipboard_->CommitWrite(ui::CLIPBOARD_TYPE_COPY_PASTE);
+    clipboard_->WriteHtml(markup, GURL());
+    clipboard_->WriteText(text);
+    clipboard_->CommitWrite();
 
     instance_->ReplaceSelection("");
     return true;
@@ -347,11 +347,11 @@ bool PepperWebPluginImpl::ExecuteEditCommand(const blink::WebString& name,
       return false;
 
     if (!clipboard_) {
-      blink::Platform::Current()->GetConnector()->BindInterface(
-          blink::Platform::Current()->GetBrowserServiceName(), &clipboard_);
+      blink::Platform::Current()->GetBrowserInterfaceBroker()->GetInterface(
+          clipboard_.BindNewPipeAndPassReceiver());
     }
     base::string16 text;
-    clipboard_->ReadText(ui::CLIPBOARD_TYPE_COPY_PASTE, &text);
+    clipboard_->ReadText(ui::ClipboardBuffer::kCopyPaste, &text);
 
     instance_->ReplaceSelection(base::UTF16ToUTF8(text));
     return true;
@@ -453,6 +453,14 @@ bool PepperWebPluginImpl::GetPrintPresetOptionsFromDocument(
   if (!instance_)
     return false;
   return instance_->GetPrintPresetOptionsFromDocument(preset_options);
+}
+
+bool PepperWebPluginImpl::IsPdfPlugin() {
+  // Re-entrancy may cause JS to try to execute script on the plugin before it
+  // is fully initialized. See: crbug.com/715747.
+  if (!instance_)
+    return false;
+  return instance_->IsPdfPlugin();
 }
 
 bool PepperWebPluginImpl::CanRotateView() {

@@ -36,17 +36,16 @@ class WidgetElement : public views::WidgetRemovalsObserver,
   void OnWidgetDestroyed(views::Widget* widget) override;
 
   // UIElement:
-  std::vector<std::pair<std::string, std::string>> GetCustomProperties()
-      const override;
   void GetBounds(gfx::Rect* bounds) const override;
   void SetBounds(const gfx::Rect& bounds) override;
   void GetVisible(bool* visible) const override;
   void SetVisible(bool visible) override;
-  std::unique_ptr<protocol::Array<std::string>> GetAttributes() const override;
+  std::vector<std::string> GetAttributes() const override;
   std::pair<gfx::NativeWindow, gfx::Rect> GetNodeWindowAndScreenBounds()
       const override;
 
   static views::Widget* From(const UIElement* element);
+  void InitSources() override;
 
  private:
   views::Widget* widget_;

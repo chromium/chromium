@@ -35,8 +35,8 @@ class FreezerCgroupProcessManager::FileWorker {
  public:
   // Called on UI thread.
   explicit FileWorker(scoped_refptr<base::SequencedTaskRunner> file_thread)
-      : ui_thread_(base::CreateSingleThreadTaskRunnerWithTraits(
-            {content::BrowserThread::UI})),
+      : ui_thread_(
+            base::CreateSingleThreadTaskRunner({content::BrowserThread::UI})),
         file_thread_(file_thread),
         enabled_(false),
         froze_successfully_(false) {
@@ -157,8 +157,9 @@ class FreezerCgroupProcessManager::FileWorker {
 };
 
 FreezerCgroupProcessManager::FreezerCgroupProcessManager()
-    : file_thread_(base::CreateSequencedTaskRunnerWithTraits(
-          {base::TaskPriority::BEST_EFFORT, base::MayBlock()})),
+    : file_thread_(base::CreateSequencedTaskRunner(
+          {base::ThreadPool(), base::TaskPriority::BEST_EFFORT,
+           base::MayBlock()})),
       file_worker_(new FileWorker(file_thread_)) {
   file_thread_->PostTask(
       FROM_HERE,

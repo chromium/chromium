@@ -45,12 +45,12 @@ class OmniboxTextView : public views::View {
   // Returns the render text, or an empty string if there is none.
   const base::string16& text() const;
 
-  // Sets the render text with default rendering for the given |text|. The
+  // Sets the render text with default rendering for the given |new_text|. The
   // |classifications| are used to style the text. An ImageLine incorporates
   // both the text and the styling.
   // |deemphasize| specifies whether to use a slightly smaller font than normal.
-  void SetText(const base::string16& text, bool deemphasize = false);
-  void SetText(const base::string16& text,
+  void SetText(const base::string16& new_text, bool deemphasize = false);
+  void SetText(const base::string16& new_text,
                const ACMatchClassifications& classifications,
                bool deemphasize = false);
   void SetText(const SuggestionAnswer::ImageLine& line,
@@ -78,22 +78,22 @@ class OmniboxTextView : public views::View {
   void AppendText(const SuggestionAnswer::TextField& field,
                   const base::string16& prefix);
 
-  // Updates the cached maximum line height.
-  void UpdateLineHeight();
+  // Updates the cached maximum line height and recomputes the preferred size.
+  void OnStyleChanged();
 
   // To get color values.
   OmniboxResultView* result_view_;
 
   // Font settings for this view.
-  int font_height_;
+  int font_height_ = 0;
 
   // Whether to apply deemphasized font instead of primary omnibox font.
   // TODO(orinj): Use a more general ChromeTextContext for flexibility, or
   // otherwise clean up & unify the different ways of selecting fonts & styles.
-  bool use_deemphasized_font_;
+  bool use_deemphasized_font_ = false;
 
   // Whether to wrap lines if the width is too narrow for the whole string.
-  bool wrap_text_lines_;
+  bool wrap_text_lines_ = false;
 
   // The primary data for this class.
   std::unique_ptr<gfx::RenderText> render_text_;

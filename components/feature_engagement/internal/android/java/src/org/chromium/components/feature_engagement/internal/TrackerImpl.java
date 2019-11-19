@@ -4,15 +4,17 @@
 
 package org.chromium.components.feature_engagement.internal;
 
-import android.support.annotation.CheckResult;
-import android.support.annotation.Nullable;
+import androidx.annotation.CheckResult;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
+import org.chromium.base.CommandLine;
 import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JCaller;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.feature_engagement.TriggerState;
+import org.chromium.ui.UiSwitches;
 
 /**
  * Java side of the JNI bridge between TrackerImpl in Java
@@ -24,7 +26,7 @@ public class TrackerImpl implements Tracker {
      * A JNI-wrapper for the native DisplayLockHandle.
      * The C++ counterpart is DisplayLockHandleAndroid.
      */
-    private static class DisplayLockHandleAndroid implements DisplayLockHandle {
+    static class DisplayLockHandleAndroid implements DisplayLockHandle {
         @CalledByNative("DisplayLockHandleAndroid")
         private static DisplayLockHandleAndroid create(long nativePtr) {
             return new DisplayLockHandleAndroid(nativePtr);
@@ -44,13 +46,10 @@ public class TrackerImpl implements Tracker {
         @Override
         public void release() {
             assert mNativePtr != 0;
-            nativeRelease(this, mNativePtr);
+            TrackerImplJni.get().release(mNativePtr);
             assert mNativePtr == 0;
         }
     }
-
-    private static native void nativeRelease(
-            @JCaller DisplayLockHandleAndroid caller, long nativeDisplayLockHandleAndroid);
 
     /**
      * The pointer to the feature_engagement::TrackerImplAndroid JNI bridge.
@@ -69,32 +68,37 @@ public class TrackerImpl implements Tracker {
     @Override
     public void notifyEvent(String event) {
         assert mNativePtr != 0;
-        nativeNotifyEvent(mNativePtr, event);
+        TrackerImplJni.get().notifyEvent(mNativePtr, TrackerImpl.this, event);
     }
 
     @Override
     public boolean shouldTriggerHelpUI(String feature) {
+        // Disable all IPH if the UI is in screenshot mode. For context, see crbug.com/964012.
+        if (CommandLine.getInstance().hasSwitch(UiSwitches.ENABLE_SCREENSHOT_UI_MODE)) {
+            return false;
+        }
+
         assert mNativePtr != 0;
-        return nativeShouldTriggerHelpUI(mNativePtr, feature);
+        return TrackerImplJni.get().shouldTriggerHelpUI(mNativePtr, TrackerImpl.this, feature);
     }
 
     @Override
     public boolean wouldTriggerHelpUI(String feature) {
         assert mNativePtr != 0;
-        return nativeWouldTriggerHelpUI(mNativePtr, feature);
+        return TrackerImplJni.get().wouldTriggerHelpUI(mNativePtr, TrackerImpl.this, feature);
     }
 
     @Override
     @TriggerState
     public int getTriggerState(String feature) {
         assert mNativePtr != 0;
-        return nativeGetTriggerState(mNativePtr, feature);
+        return TrackerImplJni.get().getTriggerState(mNativePtr, TrackerImpl.this, feature);
     }
 
     @Override
     public void dismissed(String feature) {
         assert mNativePtr != 0;
-        nativeDismissed(mNativePtr, feature);
+        TrackerImplJni.get().dismissed(mNativePtr, TrackerImpl.this, feature);
     }
 
     @Override
@@ -102,19 +106,19 @@ public class TrackerImpl implements Tracker {
     @Nullable
     public DisplayLockHandle acquireDisplayLock() {
         assert mNativePtr != 0;
-        return nativeAcquireDisplayLock(mNativePtr);
+        return TrackerImplJni.get().acquireDisplayLock(mNativePtr, TrackerImpl.this);
     }
 
     @Override
     public boolean isInitialized() {
         assert mNativePtr != 0;
-        return nativeIsInitialized(mNativePtr);
+        return TrackerImplJni.get().isInitialized(mNativePtr, TrackerImpl.this);
     }
 
     @Override
     public void addOnInitializedCallback(Callback<Boolean> callback) {
         assert mNativePtr != 0;
-        nativeAddOnInitializedCallback(mNativePtr, callback);
+        TrackerImplJni.get().addOnInitializedCallback(mNativePtr, TrackerImpl.this, callback);
     }
 
     @CalledByNative
@@ -128,14 +132,20 @@ public class TrackerImpl implements Tracker {
         return mNativePtr;
     }
 
-    private native void nativeNotifyEvent(long nativeTrackerImplAndroid, String event);
-    private native boolean nativeShouldTriggerHelpUI(long nativeTrackerImplAndroid, String feature);
-    private native boolean nativeWouldTriggerHelpUI(long nativeTrackerImplAndroid, String feature);
-    @TriggerState
-    private native int nativeGetTriggerState(long nativeTrackerImplAndroid, String feature);
-    private native void nativeDismissed(long nativeTrackerImplAndroid, String feature);
-    private native DisplayLockHandleAndroid nativeAcquireDisplayLock(long nativeTrackerImplAndroid);
-    private native boolean nativeIsInitialized(long nativeTrackerImplAndroid);
-    private native void nativeAddOnInitializedCallback(
-            long nativeTrackerImplAndroid, Callback<Boolean> callback);
+    @NativeMethods
+    interface Natives {
+        void notifyEvent(long nativeTrackerImplAndroid, TrackerImpl caller, String event);
+        boolean shouldTriggerHelpUI(
+                long nativeTrackerImplAndroid, TrackerImpl caller, String feature);
+        boolean wouldTriggerHelpUI(
+                long nativeTrackerImplAndroid, TrackerImpl caller, String feature);
+        int getTriggerState(long nativeTrackerImplAndroid, TrackerImpl caller, String feature);
+        void dismissed(long nativeTrackerImplAndroid, TrackerImpl caller, String feature);
+        DisplayLockHandleAndroid acquireDisplayLock(
+                long nativeTrackerImplAndroid, TrackerImpl caller);
+        boolean isInitialized(long nativeTrackerImplAndroid, TrackerImpl caller);
+        void addOnInitializedCallback(
+                long nativeTrackerImplAndroid, TrackerImpl caller, Callback<Boolean> callback);
+        void release(long nativeDisplayLockHandleAndroid);
+    }
 }

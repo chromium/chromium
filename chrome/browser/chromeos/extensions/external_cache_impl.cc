@@ -24,7 +24,6 @@
 #include "content/public/browser/notification_details.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_source.h"
-#include "content/public/common/service_manager_connection.h"
 #include "extensions/browser/notification_types.h"
 #include "extensions/browser/updater/extension_downloader.h"
 #include "extensions/common/extension.h"
@@ -78,8 +77,7 @@ ExternalCacheImpl::ExternalCacheImpl(
       delegate_(delegate),
       always_check_updates_(always_check_updates),
       wait_for_cache_initialization_(wait_for_cache_initialization),
-      cached_extensions_(new base::DictionaryValue()),
-      weak_ptr_factory_(this) {
+      cached_extensions_(new base::DictionaryValue()) {
   notification_registrar_.Add(
       this, extensions::NOTIFICATION_EXTENSION_INSTALL_ERROR,
       content::NotificationService::AllBrowserContextsAndSources());
@@ -200,7 +198,7 @@ void ExternalCacheImpl::OnExtensionDownloadFailed(
     extensions::ExtensionDownloaderDelegate::Error error,
     const extensions::ExtensionDownloaderDelegate::PingResult& ping_result,
     const std::set<int>& request_ids) {
-  if (error == NO_UPDATE_AVAILABLE) {
+  if (error == Error::NO_UPDATE_AVAILABLE) {
     if (!cached_extensions_->HasKey(id)) {
       LOG(ERROR) << "ExternalCacheImpl extension " << id
                  << " not found on update server";
@@ -211,7 +209,7 @@ void ExternalCacheImpl::OnExtensionDownloadFailed(
     }
   } else {
     LOG(ERROR) << "ExternalCacheImpl failed to download extension " << id
-               << ", error " << error;
+               << ", error " << static_cast<int>(error);
     delegate_->OnExtensionDownloadFailed(id);
   }
 }
@@ -251,12 +249,6 @@ bool ExternalCacheImpl::GetExtensionExistingVersion(const std::string& id,
   return false;
 }
 
-service_manager::Connector* ExternalCacheImpl::GetConnector() {
-  if (use_null_connector_)
-    return nullptr;
-  return content::ServiceManagerConnection::GetForProcess()->GetConnector();
-}
-
 void ExternalCacheImpl::UpdateExtensionLoader() {
   VLOG(1) << "Notify ExternalCacheImpl delegate about cache update";
   if (delegate_)
@@ -270,8 +262,7 @@ void ExternalCacheImpl::CheckCache() {
   // If url_loader_factory_ is missing we can't download anything.
   if (url_loader_factory_) {
     downloader_ = ChromeExtensionDownloaderFactory::CreateForURLLoaderFactory(
-        url_loader_factory_, this, GetConnector(),
-        extensions::GetExternalVerifierFormat());
+        url_loader_factory_, this, extensions::GetExternalVerifierFormat());
   }
 
   cached_extensions_->Clear();
@@ -282,21 +273,25 @@ void ExternalCacheImpl::CheckCache() {
       continue;
     }
 
+    base::FilePath file_path;
+    std::string version;
+    std::string hash;
+    bool is_cached =
+        local_cache_.GetExtension(entry.first, hash, &file_path, &version);
+    if (!is_cached)
+      version = "0.0.0.0";
     if (downloader_) {
       GURL update_url =
           GetExtensionUpdateUrl(entry.second, always_check_updates_);
 
       if (update_url.is_valid()) {
-        downloader_->AddPendingExtension(
+        downloader_->AddPendingExtensionWithVersion(
             entry.first, update_url, extensions::Manifest::EXTERNAL_POLICY,
-            false, 0, extensions::ManifestFetchData::FetchPriority::BACKGROUND);
+            false, 0, extensions::ManifestFetchData::FetchPriority::BACKGROUND,
+            base::Version(version));
       }
     }
-
-    base::FilePath file_path;
-    std::string version;
-    std::string hash;
-    if (local_cache_.GetExtension(entry.first, hash, &file_path, &version)) {
+    if (is_cached) {
       cached_extensions_->SetKey(
           entry.first,
           GetExtensionValueToCache(entry.second, file_path.value(), version));

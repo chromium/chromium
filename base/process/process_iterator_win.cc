@@ -36,7 +36,7 @@ void ProcessIterator::InitProcessEntry(ProcessEntry* entry) {
 
 bool NamedProcessIterator::IncludeEntry() {
   // Case insensitive.
-  return _wcsicmp(as_wcstr(executable_name_), entry().exe_file()) == 0 &&
+  return !_wcsicmp(as_wcstr(executable_name_), as_wcstr(entry().exe_file())) &&
          ProcessIterator::IncludeEntry();
 }
 

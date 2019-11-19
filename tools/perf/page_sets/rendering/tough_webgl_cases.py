@@ -38,13 +38,14 @@ class ToughWebglPage(rendering_story.RenderingStory):
 
   def RunPageInteractions(self, action_runner):
     with action_runner.CreateInteraction('WebGLAnimation'):
-      action_runner.Wait(5)
+      action_runner.Wait(10)
 
 
 class NvidiaVertexBufferObjectPage(ToughWebglPage):
   BASE_NAME = 'nvidia_vertex_buffer_object'
   # pylint: disable=line-too-long
   URL = 'http://www.khronos.org/registry/webgl/sdk/demos/google/nvidia-vertex-buffer-object/index.html'
+  TAGS = ToughWebglPage.TAGS + [story_tags.REPRESENTATIVE_WIN_DESKTOP]
 
 
 class SansAngelesPage(ToughWebglPage):
@@ -57,19 +58,18 @@ class ParticlesPage(ToughWebglPage):
   BASE_NAME = 'particles'
   # pylint: disable=line-too-long
   URL = 'http://www.khronos.org/registry/webgl/sdk/demos/google/particles/index.html'
-  TAGS = ToughWebglPage.TAGS + [story_tags.REPRESENTATIVE_WIN_DESKTOP]
 
 
 class EarthPage(ToughWebglPage):
   BASE_NAME = 'earth'
   URL = 'http://www.khronos.org/registry/webgl/sdk/demos/webkit/Earth.html'
-  TAGS = ToughWebglPage.TAGS + [story_tags.REPRESENTATIVE_MAC_DESKTOP]
 
 
 class ManyPlanetsDeepPage(ToughWebglPage):
   BASE_NAME = 'many_planets_deep'
   # pylint: disable=line-too-long
   URL = 'http://www.khronos.org/registry/webgl/sdk/demos/webkit/ManyPlanetsDeep.html'
+  TAGS = ToughWebglPage.TAGS + [story_tags.REPRESENTATIVE_WIN_DESKTOP]
 
 
 class AquariumPage(ToughWebglPage):
@@ -81,6 +81,7 @@ class AquariumPage(ToughWebglPage):
 class Aquarium20KFishPage(ToughWebglPage):
   BASE_NAME = 'aquarium_20k'
   URL = 'http://webglsamples.org/aquarium/aquarium.html?numFish=20000'
+  TAGS = ToughWebglPage.TAGS + [story_tags.REPRESENTATIVE_WIN_DESKTOP]
 
 
 class BlobPage(ToughWebglPage):
@@ -107,6 +108,10 @@ class AnimometerWebGLAttribArraysPage(ToughWebglPage):
   BASE_NAME = 'animometer_webgl_attrib_arrays'
   # pylint: disable=line-too-long
   URL = 'http://kenrussell.github.io/webgl-animometer/Animometer/tests/3d/webgl.html?use_attributes=1'
+  TAGS = ToughWebglPage.TAGS + [
+    story_tags.REPRESENTATIVE_MOBILE,
+    story_tags.REPRESENTATIVE_MAC_DESKTOP
+  ]
 
 class CameraToWebGLPage(ToughWebglPage):
   TAGS = ToughWebglPage.TAGS + [story_tags.USE_FAKE_CAMERA_DEVICE]

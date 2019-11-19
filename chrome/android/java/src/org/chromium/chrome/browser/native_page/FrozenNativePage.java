@@ -71,6 +71,11 @@ public class FrozenNativePage implements NativePage {
     }
 
     @Override
+    public boolean isFrozen() {
+        return true;
+    }
+
+    @Override
     public void destroy() {
     }
 }

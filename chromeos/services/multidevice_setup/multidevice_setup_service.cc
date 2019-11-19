@@ -59,19 +59,19 @@ MultiDeviceSetupService::MultiDeviceSetupService(
 
 MultiDeviceSetupService::~MultiDeviceSetupService() {
   // Subclasses may hold onto message response callbacks. It's important that
-  // all bindings are closed by the time those callbacks are destroyed, or they
+  // all receivers are closed by the time those callbacks are destroyed, or they
   // will DCHECK.
   if (multidevice_setup_)
-    multidevice_setup_->CloseAllBindings();
+    multidevice_setup_->CloseAllReceivers();
 }
 
 void MultiDeviceSetupService::OnStart() {
   PA_LOG(VERBOSE) << "MultiDeviceSetupService::OnStart()";
   registry_.AddInterface(
-      base::BindRepeating(&MultiDeviceSetupBase::BindRequest,
+      base::BindRepeating(&MultiDeviceSetupBase::BindReceiver,
                           base::Unretained(multidevice_setup_.get())));
   registry_.AddInterface(base::BindRepeating(
-      &PrivilegedHostDeviceSetterBase::BindRequest,
+      &PrivilegedHostDeviceSetterBase::BindReceiver,
       base::Unretained(privileged_host_device_setter_.get())));
 }
 

@@ -28,13 +28,6 @@ class CONTENT_EXPORT InputDispositionHandler {
   virtual void OnGestureEventAck(const GestureEventWithLatencyInfo& event,
                                  InputEventAckSource ack_source,
                                  InputEventAckState ack_result) = 0;
-
-  enum UnexpectedEventAckType {
-    UNEXPECTED_ACK,
-    UNEXPECTED_EVENT_TYPE,
-    BAD_ACK_MESSAGE
-  };
-  virtual void OnUnexpectedEventAck(UnexpectedEventAckType type) = 0;
 };
 
 }  // namespace content

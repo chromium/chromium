@@ -6,7 +6,6 @@ package org.chromium.chrome.test.crash;
 
 import android.support.test.filters.SmallTest;
 
-import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,47 +32,31 @@ public class IntentionalCrashTest {
     @SmallTest
     @Test
     public void testRendererCrash() {
-        try {
-            mActivityTestRule.startMainActivityFromLauncher();
-            mActivityTestRule.loadUrl("chrome://crash");
-        } catch (InterruptedException e) {
-            Assert.fail(e.toString());
-        }
+        mActivityTestRule.startMainActivityFromLauncher();
+        mActivityTestRule.loadUrl("chrome://crash");
     }
 
     @DisabledTest
     @SmallTest
     @Test
     public void testBrowserCrash() {
-        try {
-            mActivityTestRule.startMainActivityFromLauncher();
-            mActivityTestRule.loadUrl("chrome://inducebrowsercrashforrealz");
-        } catch (InterruptedException e) {
-            Assert.fail(e.toString());
-        }
+        mActivityTestRule.startMainActivityFromLauncher();
+        mActivityTestRule.loadUrl("chrome://inducebrowsercrashforrealz");
     }
 
     @DisabledTest
     @SmallTest
     @Test
     public void testJavaCrash() {
-        try {
-            mActivityTestRule.startMainActivityFromLauncher();
-            mActivityTestRule.loadUrl("chrome://java-crash/");
-        } catch (InterruptedException e) {
-            Assert.fail(e.toString());
-        }
+        mActivityTestRule.startMainActivityFromLauncher();
+        mActivityTestRule.loadUrl("chrome://java-crash/");
     }
 
     @DisabledTest
     @SmallTest
     @Test
     public void testGpuCrash() {
-        try {
-            mActivityTestRule.startMainActivityFromLauncher();
-            mActivityTestRule.loadUrl("chrome://gpucrash");
-        } catch (InterruptedException e) {
-            Assert.fail(e.toString());
-        }
+        mActivityTestRule.startMainActivityFromLauncher();
+        mActivityTestRule.loadUrl("chrome://gpucrash");
     }
 }

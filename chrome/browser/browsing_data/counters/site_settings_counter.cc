@@ -81,10 +81,10 @@ void SiteSettingsCounter::Count() {
   }
 
   ContentSettingsForOneType content_settings_list_for_usb_chooser;
-  map_->GetSettingsForOneType(CONTENT_SETTINGS_TYPE_USB_CHOOSER_DATA,
+  map_->GetSettingsForOneType(ContentSettingsType::USB_CHOOSER_DATA,
                               content_settings::ResourceIdentifier(),
                               &content_settings_list_for_usb_chooser);
-  iterate_content_settings_list(CONTENT_SETTINGS_TYPE_USB_CHOOSER_DATA,
+  iterate_content_settings_list(ContentSettingsType::USB_CHOOSER_DATA,
                                 content_settings_list_for_usb_chooser);
 
 #if !defined(OS_ANDROID)

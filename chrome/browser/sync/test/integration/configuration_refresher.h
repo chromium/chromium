@@ -7,6 +7,7 @@
 
 #include "base/macros.h"
 #include "base/scoped_observer.h"
+#include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_service_observer.h"
 
 // Triggers a GetUpdates via refresh for any observed SyncService after a
@@ -27,7 +28,8 @@ class ConfigurationRefresher : public syncer::SyncServiceObserver {
   // syncer::SyncServiceObserver implementation.
   void OnSyncConfigurationCompleted(syncer::SyncService* sync_service) override;
 
-  ScopedObserver<syncer::SyncService, ConfigurationRefresher> scoped_observer_;
+  ScopedObserver<syncer::SyncService, syncer::SyncServiceObserver>
+      scoped_observer_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ConfigurationRefresher);
 };

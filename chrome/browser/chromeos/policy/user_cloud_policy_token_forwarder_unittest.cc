@@ -32,16 +32,16 @@
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_service.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_type.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/backoff_entry.h"
-#include "services/identity/public/cpp/identity_manager.h"
-#include "services/identity/public/cpp/identity_test_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -115,6 +115,8 @@ class UserCloudPolicyTokenForwarderTest : public testing::Test {
 
   void TearDown() override {
     user_policy_manager_->core()->Disconnect();
+    // Must be torn down before |profile_manager_|.
+    user_policy_manager_.reset();
     chromeos::DBusThreadManager::Shutdown();
   }
 
@@ -194,7 +196,7 @@ class UserCloudPolicyTokenForwarderTest : public testing::Test {
   // OnCloudPolicyServiceInitializationCompleted().
   void SimulateCloudPolicyServiceInitialized() { store_->NotifyStoreLoaded(); }
 
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
 
   base::HistogramTester histogram_tester_;
 

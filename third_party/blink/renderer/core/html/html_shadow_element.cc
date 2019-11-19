@@ -32,20 +32,19 @@
 
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
-#include "third_party/blink/renderer/core/frame/use_counter.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
 
 class Document;
 
-inline HTMLShadowElement::HTMLShadowElement(Document& document)
+HTMLShadowElement::HTMLShadowElement(Document& document)
     : V0InsertionPoint(html_names::kShadowTag, document) {
   UseCounter::Count(document, WebFeature::kHTMLShadowElement);
 }
-
-DEFINE_NODE_FACTORY(HTMLShadowElement)
 
 HTMLShadowElement::~HTMLShadowElement() = default;
 

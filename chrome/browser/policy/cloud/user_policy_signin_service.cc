@@ -14,11 +14,11 @@
 #include "chrome/browser/policy/cloud/user_policy_signin_service_internal.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/signin/account_id_from_account_info.h"
 #include "chrome/browser/signin/signin_util.h"
-#include "components/account_id/account_id.h"
 #include "components/policy/core/common/cloud/cloud_policy_client_registration_helper.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
-#include "components/signin/core/browser/account_info.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "content/public/browser/notification_details.h"
 #include "content/public/browser/notification_source.h"
 #include "content/public/browser/storage_partition.h"
@@ -35,7 +35,7 @@ UserPolicySigninService::UserPolicySigninService(
     PrefService* local_state,
     DeviceManagementService* device_management_service,
     UserCloudPolicyManager* policy_manager,
-    identity::IdentityManager* identity_manager,
+    signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> system_url_loader_factory)
     : UserPolicySigninServiceBase(profile,
                                   local_state,
@@ -62,39 +62,9 @@ void UserPolicySigninService::PrepareForUserCloudPolicyManagerShutdown() {
   UserPolicySigninServiceBase::PrepareForUserCloudPolicyManagerShutdown();
 }
 
-void UserPolicySigninService::RegisterForPolicyWithLoginToken(
-    const std::string& username,
-    const std::string& oauth2_refresh_token,
-    const PolicyRegistrationCallback& callback) {
-  DCHECK(!oauth2_refresh_token.empty());
-
-  // Create a new CloudPolicyClient for fetching the DMToken.
-  std::unique_ptr<CloudPolicyClient> policy_client =
-      CreateClientForRegistrationOnly(username);
-  if (!policy_client) {
-    callback.Run(std::string(), std::string());
-    return;
-  }
-
-  // Fire off the registration process. Callback keeps the CloudPolicyClient
-  // alive for the length of the registration process. Use the system
-  // request context because the user is not signed in to this profile yet
-  // (we are just doing a test registration to see if policy is supported for
-  // this user).
-  registration_helper_ = std::make_unique<CloudPolicyClientRegistrationHelper>(
-      policy_client.get(),
-      enterprise_management::DeviceRegisterRequest::BROWSER);
-  registration_helper_->StartRegistrationWithLoginToken(
-      oauth2_refresh_token,
-      base::Bind(&UserPolicySigninService::CallPolicyRegistrationCallback,
-                 base::Unretained(this),
-                 base::Passed(&policy_client),
-                 callback));
-}
-
 void UserPolicySigninService::RegisterForPolicyWithAccountId(
     const std::string& username,
-    const std::string& account_id,
+    const CoreAccountId& account_id,
     const PolicyRegistrationCallback& callback) {
   DCHECK(!account_id.empty());
 

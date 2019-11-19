@@ -6,13 +6,12 @@ package org.chromium.chrome.browser.metrics;
 
 import android.os.SystemClock;
 
-import org.chromium.base.library_loader.LibraryProcessType;
+import org.chromium.base.ObservableSupplier;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.chrome.browser.ChromeActivity;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.browser.util.UrlUtilities;
-import org.chromium.content_public.browser.BrowserStartupController;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 
@@ -22,7 +21,6 @@ import org.chromium.content_public.browser.WebContents;
  */
 public class ActivityTabStartupMetricsTracker {
     private final long mActivityStartTimeMs;
-    private final ChromeActivity mActivity;
 
     // Event duration recorded from the |mActivityStartTimeMs|.
     private long mFirstCommitTimeMs;
@@ -31,29 +29,16 @@ public class ActivityTabStartupMetricsTracker {
     private PageLoadMetrics.Observer mPageLoadMetricsObserver;
     private boolean mShouldTrackStartupMetrics;
 
-    public ActivityTabStartupMetricsTracker(ChromeActivity activity) {
+    public ActivityTabStartupMetricsTracker(
+            ObservableSupplier<TabModelSelector> tabModelSelectorSupplier) {
         mActivityStartTimeMs = SystemClock.uptimeMillis();
-        mActivity = activity;
-        BrowserStartupController.get(LibraryProcessType.PROCESS_BROWSER)
-                .addStartupCompletedObserver(new BrowserStartupController.StartupCallback() {
-                    @Override
-                    public void onSuccess() {
-                        // The activity's TabModelSelector may not have been initialized yet
-                        // causing a crash. See https://crbug.com/847580
-                        if (!mActivity.areTabModelsInitialized()) return;
-                        registerObservers();
-                    }
-
-                    @Override
-                    public void onFailure() {}
-                });
+        tabModelSelectorSupplier.addObserver((selector) -> registerObservers(selector));
     }
 
-    private void registerObservers() {
+    private void registerObservers(TabModelSelector tabModelSelector) {
         if (!mShouldTrackStartupMetrics) return;
         mTabModelSelectorTabObserver =
-                new TabModelSelectorTabObserver(mActivity.getTabModelSelector()) {
-
+                new TabModelSelectorTabObserver(tabModelSelector) {
                     private boolean mIsFirstPageLoadStart = true;
 
                     @Override
@@ -78,13 +63,14 @@ public class ActivityTabStartupMetricsTracker {
                     }
                 };
         mPageLoadMetricsObserver = new PageLoadMetrics.Observer() {
-            private final static long NO_NAVIGATION_ID = -1;
+            private static final long NO_NAVIGATION_ID = -1;
 
             private long mNavigationId = NO_NAVIGATION_ID;
             private boolean mShouldRecordHistograms;
 
             @Override
-            public void onNewNavigation(WebContents webContents, long navigationId) {
+            public void onNewNavigation(WebContents webContents, long navigationId,
+                    boolean isFirstNavigationInWebContents) {
                 if (mNavigationId != NO_NAVIGATION_ID) return;
 
                 mNavigationId = navigationId;

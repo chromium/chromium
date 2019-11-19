@@ -1,0 +1,33 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "NGPhysicalTextFragment 'This span should disappear. '",
+          "rect": [112, 193, 178, 19],
+          "reason": "disappeared"
+        },
+        {
+          "object": "LayoutNGBlockFlow DIV",
+          "rect": [290, 108, 100, 100],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutNGBlockFlow DIV",
+          "rect": [112, 108, 100, 100],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment ' '",
+          "rect": [108, 193, 4, 19],
+          "reason": "geometry"
+        }
+      ]
+    }
+  ]
+}
+

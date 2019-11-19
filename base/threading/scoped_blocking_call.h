@@ -109,7 +109,7 @@ class BASE_EXPORT UncheckedScopedBlockingCall {
 //      FROM_HERE, BlockingType::WILL_BLOCK);
 //  waitable_event.Wait();  // Wait() instantiates its own ScopedBlockingCall.
 //
-// When a ScopedBlockingCall is instantiated from a TaskScheduler parallel or
+// When a ScopedBlockingCall is instantiated from a ThreadPool parallel or
 // sequenced task, the thread pool size is incremented to compensate for the
 // blocked thread (more or less aggressively depending on BlockingType).
 class BASE_EXPORT ScopedBlockingCall
@@ -160,10 +160,10 @@ class BASE_EXPORT BlockingObserver {
 BASE_EXPORT void SetBlockingObserverForCurrentThread(
     BlockingObserver* blocking_observer);
 
-BASE_EXPORT void ClearBlockingObserverForTesting();
+BASE_EXPORT void ClearBlockingObserverForCurrentThread();
 
 // Unregisters the |blocking_observer| on the current thread within its scope.
-// Used in TaskScheduler tests to prevent calls to //base sync primitives from
+// Used in ThreadPool tests to prevent calls to //base sync primitives from
 // affecting the thread pool capacity.
 class BASE_EXPORT ScopedClearBlockingObserverForTesting {
  public:

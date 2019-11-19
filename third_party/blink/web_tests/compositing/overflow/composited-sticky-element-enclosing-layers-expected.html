@@ -4,6 +4,11 @@ onload = function() {
 }
 </script>
 <style>
+.composited {
+  /* Triggers promotion without creating stacking context. */
+  backface-visibility: hidden;
+}
+
 #scroller {
   overflow: scroll;
   height: 200px;
@@ -22,7 +27,7 @@ onload = function() {
   background: green;
 }
 </style>
-<div id="scroller">
+<div id="scroller" class="composited">
   <div class="container">
     <div class="relative"></div>
   </div>

@@ -36,7 +36,7 @@ class GetRequestsTask : public Task {
   // Callback used to return the read results.
   RequestQueueStore::GetRequestsCallback callback_;
 
-  base::WeakPtrFactory<GetRequestsTask> weak_ptr_factory_;
+  base::WeakPtrFactory<GetRequestsTask> weak_ptr_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(GetRequestsTask);
 };
 

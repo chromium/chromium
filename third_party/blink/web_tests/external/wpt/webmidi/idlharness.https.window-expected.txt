@@ -1,7 +1,17 @@
 This is a testharness.js-based test.
-Found 83 tests; 71 PASS, 12 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 93 tests; 81 PASS, 12 FAIL, 0 TIMEOUT, 0 NOTRUN.
 FAIL idl_test setup promise_test: Unhandled rejection with value: object "SecurityError: An attempt was made to break through the security policy of the user agent."
+PASS idl_test validation
 PASS Partial interface Navigator: original interface defined
+PASS Partial interface Navigator: member names are unique
+PASS Partial interface mixin NavigatorID: member names are unique
+PASS Navigator includes NavigatorID: member names are unique
+PASS Navigator includes NavigatorLanguage: member names are unique
+PASS Navigator includes NavigatorOnLine: member names are unique
+PASS Navigator includes NavigatorContentUtils: member names are unique
+PASS Navigator includes NavigatorCookies: member names are unique
+PASS Navigator includes NavigatorPlugins: member names are unique
+PASS Navigator includes NavigatorConcurrentHardware: member names are unique
 PASS MIDIInputMap interface: existence and properties of interface object
 PASS MIDIInputMap interface object length
 PASS MIDIInputMap interface object name

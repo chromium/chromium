@@ -8,7 +8,6 @@
 #include "chrome/browser/extensions/api/input_ime/input_ime_api_nonchromeos.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/common/chrome_switches.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "extensions/test/extension_test_message_listener.h"
@@ -25,11 +24,6 @@ class InputImeApiTest : public ExtensionApiTest {
   InputImeApiTest() {}
 
  protected:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    ExtensionApiTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitch(switches::kEnableInputImeAPI);
-  }
-
   // Sets the private flag of |track_key_events_for_testing_| in InputMethod.
   void SetTrackKeyEvents(ui::InputMethod* input_method, bool track) {
     input_method->track_key_events_for_testing_ = track;
@@ -114,7 +108,13 @@ IN_PROC_BROWSER_TEST_F(InputImeApiTest, DISABLED_BasicApiTest) {
   input_method->DetachTextInputClient(client2.get());
 }
 
-IN_PROC_BROWSER_TEST_F(InputImeApiTest, SendKeyEventsOnNormalPage) {
+// TODO(crbug.com/1004628) Flakes on Windows and Linux
+#if defined(OS_WIN) || defined(OS_LINUX)
+#define MAYBE_SendKeyEventsOnNormalPage DISABLED_SendKeyEventsOnNormalPage
+#else
+#define MAYBE_SendKeyEventsOnNormalPage SendKeyEventsOnNormalPage
+#endif
+IN_PROC_BROWSER_TEST_F(InputImeApiTest, MAYBE_SendKeyEventsOnNormalPage) {
   // Navigates to special page that sendKeyEvents API has limition with.
   ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUINewTabURL));
   // Manipulates the focused text input client because the follow cursor

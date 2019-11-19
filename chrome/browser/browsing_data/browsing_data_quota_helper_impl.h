@@ -72,7 +72,7 @@ class BrowsingDataQuotaHelperImpl : public BrowsingDataQuotaHelper {
 
   scoped_refptr<storage::QuotaManager> quota_manager_;
 
-  base::WeakPtrFactory<BrowsingDataQuotaHelperImpl> weak_factory_;
+  base::WeakPtrFactory<BrowsingDataQuotaHelperImpl> weak_factory_{this};
 
   friend class BrowsingDataQuotaHelper;
   friend class BrowsingDataQuotaHelperTest;

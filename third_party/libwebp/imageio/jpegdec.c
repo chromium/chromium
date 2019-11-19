@@ -206,6 +206,7 @@ struct my_error_mgr {
 
 static void my_error_exit(j_common_ptr dinfo) {
   struct my_error_mgr* myerr = (struct my_error_mgr*)dinfo->err;
+  fprintf(stderr, "libjpeg error: ");
   dinfo->err->output_message(dinfo);
   longjmp(myerr->setjmp_buffer, 1);
 }

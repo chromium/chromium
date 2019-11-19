@@ -9,12 +9,29 @@
 
 import argparse
 import json
+import os
 import sys
 import subprocess
 import time
 
-
 import common
+
+
+def _PathExists(path):
+  return path is not None and os.path.exists(path)
+
+
+def _ForwardOptionalArgs(args):
+  forwardable_args = []
+  if _PathExists(args.monochrome_pathmap):
+    forwardable_args += ['--monochrome-pathmap', args.monochrome_pathmap]
+  if _PathExists(args.chrome_pathmap):
+    forwardable_args += ['--chrome-pathmap', args.chrome_pathmap]
+  if _PathExists(args.system_webview_pathmap):
+    forwardable_args += [
+        '--system-webview-pathmap', args.system_webview_pathmap
+    ]
+  return forwardable_args
 
 
 def main():
@@ -30,14 +47,27 @@ def main():
   # Ignored, but required to satisfy the isolated_script interface.
   # We aren't a perf test, so don't have any perf output.
   parser.add_argument('--isolated-script-test-perf-output')
+
+  # We must intercept the pathmap args since they are always passed by the
+  # trybots but the files in question may not actually exist (path shortening
+  # may not be enabled for all apks). Check if the files exist and forward the
+  # arg iff they are.
+  parser.add_argument(
+      '--monochrome-pathmap', help='The monochrome APK resources pathmap path.')
+  parser.add_argument(
+      '--chrome-pathmap', help='The chrome APK resources pathmap path.')
+  parser.add_argument(
+      '--system-webview-pathmap',
+      help='The system webview APK resources pathmap path.')
+
   args, extra = parser.parse_known_args(sys.argv[1:])
 
   if args.isolated_script_test_filter and (
       'monochrome_apk_checker' not in args.isolated_script_test_filter):
-      parser.error('isolated-script-test-filter has invalid test: %s' % (
-          args.isolated_script_test_filter))
+    parser.error('isolated-script-test-filter has invalid test: %s' %
+                 (args.isolated_script_test_filter))
 
-  cmd = [args.script] + extra
+  cmd = [args.script] + extra + _ForwardOptionalArgs(args)
 
   start_time = time.time()
   ret = subprocess.call(cmd)

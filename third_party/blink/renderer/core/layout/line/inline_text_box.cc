@@ -430,23 +430,22 @@ bool InlineTextBox::IsLineBreak() const {
 }
 
 bool InlineTextBox::NodeAtPoint(HitTestResult& result,
-                                const HitTestLocation& location_in_container,
-                                const LayoutPoint& accumulated_offset,
+                                const HitTestLocation& hit_test_location,
+                                const PhysicalOffset& accumulated_offset,
                                 LayoutUnit /* lineTop */,
                                 LayoutUnit /*lineBottom*/) {
   if (IsLineBreak() || truncation_ == kCFullTruncation)
     return false;
 
-  LayoutPoint box_origin = PhysicalLocation();
-  box_origin.MoveBy(accumulated_offset);
-  LayoutRect rect(box_origin, Size());
+  PhysicalOffset box_origin = PhysicalLocation();
+  box_origin += accumulated_offset;
+  PhysicalRect rect(box_origin, Size());
   if (VisibleToHitTestRequest(result.GetHitTestRequest()) &&
-      location_in_container.Intersects(rect)) {
+      hit_test_location.Intersects(rect)) {
     GetLineLayoutItem().UpdateHitTestResult(
-        result, FlipForWritingMode(location_in_container.Point() -
-                                   ToLayoutSize(accumulated_offset)));
+        result, hit_test_location.Point() - accumulated_offset);
     if (result.AddNodeToListBasedTestResult(GetLineLayoutItem().GetNode(),
-                                            location_in_container,
+                                            hit_test_location,
                                             rect) == kStopHitTesting)
       return true;
   }
@@ -511,28 +510,22 @@ void InlineTextBox::PaintDocumentMarker(GraphicsContext& pt,
                                                   font, grammar);
 }
 
-void InlineTextBox::PaintTextMatchMarkerForeground(
-    const PaintInfo& paint_info,
-    const LayoutPoint& box_origin,
-    const TextMatchMarker& marker,
-    const ComputedStyle& style,
-    const Font& font) const {
-  InlineTextBoxPainter(*this).PaintTextMatchMarkerForeground(
-      paint_info, box_origin, marker, style, font);
-  if (GetLineLayoutItem().ContainsOnlyWhitespaceOrNbsp() !=
-      OnlyWhitespaceOrNbsp::kYes) {
-    paint_info.context.GetPaintController().SetTextPainted();
-  }
+void InlineTextBox::PaintTextMarkerForeground(const PaintInfo& paint_info,
+                                              const LayoutPoint& box_origin,
+                                              const TextMarkerBase& marker,
+                                              const ComputedStyle& style,
+                                              const Font& font) const {
+  InlineTextBoxPainter(*this).PaintTextMarkerForeground(paint_info, box_origin,
+                                                        marker, style, font);
 }
 
-void InlineTextBox::PaintTextMatchMarkerBackground(
-    const PaintInfo& paint_info,
-    const LayoutPoint& box_origin,
-    const TextMatchMarker& marker,
-    const ComputedStyle& style,
-    const Font& font) const {
-  InlineTextBoxPainter(*this).PaintTextMatchMarkerBackground(
-      paint_info, box_origin, marker, style, font);
+void InlineTextBox::PaintTextMarkerBackground(const PaintInfo& paint_info,
+                                              const LayoutPoint& box_origin,
+                                              const TextMarkerBase& marker,
+                                              const ComputedStyle& style,
+                                              const Font& font) const {
+  InlineTextBoxPainter(*this).PaintTextMarkerBackground(paint_info, box_origin,
+                                                        marker, style, font);
 }
 
 int InlineTextBox::CaretMinOffset() const {
@@ -699,23 +692,23 @@ String InlineTextBox::GetText() const {
   return GetLineLayoutItem().GetText().Substring(Start(), Len());
 }
 
-#ifndef NDEBUG
+#if DCHECK_IS_ON()
 
 void InlineTextBox::DumpBox(StringBuilder& string_inlinetextbox) const {
   String value = GetText();
   value.Replace('\\', "\\\\");
   value.Replace('\n', "\\n");
-  string_inlinetextbox.Append(String::Format("%s %p", BoxName(), this));
+  string_inlinetextbox.AppendFormat("%s %p", BoxName(), this);
   while (string_inlinetextbox.length() < kShowTreeCharacterOffset)
-    string_inlinetextbox.Append(" ");
+    string_inlinetextbox.Append(' ');
   const LineLayoutText obj = GetLineLayoutItem();
-  string_inlinetextbox.Append(
-      String::Format("\t%s %p", obj.GetName(), obj.DebugPointer()));
+  string_inlinetextbox.AppendFormat("\t%s %p", obj.GetName(),
+                                    obj.DebugPointer());
   const int kLayoutObjectCharacterOffset = 75;
   while (string_inlinetextbox.length() < kLayoutObjectCharacterOffset)
-    string_inlinetextbox.Append(" ");
-  string_inlinetextbox.Append(String::Format(
-      "(%d,%d) \"%s\"", Start(), Start() + Len(), value.Utf8().data()));
+    string_inlinetextbox.Append(' ');
+  string_inlinetextbox.AppendFormat("(%d,%d) \"%s\"", Start(), Start() + Len(),
+                                    value.Utf8().c_str());
 }
 
 #endif

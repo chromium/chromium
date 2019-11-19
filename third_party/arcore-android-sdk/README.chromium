@@ -24,6 +24,8 @@ The LICENSE file is taken from
  * https://github.com/google-ar/arcore-unity-sdk/blob/master/LICENSE
 
 Changes:
+2019-07-22 - Upgrade test-apks/arcore_current.apk to v1.10.
+2019-04-02 - Upgrade test-apks/arcore_current.apk to v1.8.
 2018-12-11 - Upgrade ARCore to v1.5. Remove checked in .so files - we now
              extract them from ARCore's .aar file at build time.
 2018-12-11 - Upgrade test-apks/arcore_current.apk to v1.6.

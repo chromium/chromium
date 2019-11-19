@@ -11,6 +11,7 @@
 #include <xmmintrin.h>
 #endif
 
+#include "base/numerics/ranges.h"
 #include "base/trace_event/traced_value.h"
 #include "base/values.h"
 #include "ui/gfx/geometry/angle_conversions.h"
@@ -161,8 +162,7 @@ static inline bool IsNearlyTheSame(float f, float g) {
   // for the base of the scale too.
   static const float epsilon_scale = 0.00001f;
   return std::abs(f - g) <
-         epsilon_scale *
-             std::max(std::max(std::abs(f), std::abs(g)), epsilon_scale);
+         epsilon_scale * std::max({std::abs(f), std::abs(g), epsilon_scale});
 }
 
 static inline bool IsNearlyTheSame(const gfx::PointF& lhs,
@@ -613,7 +613,7 @@ float MathUtil::SmallestAngleBetweenVectors(const gfx::Vector2dF& v1,
                                             const gfx::Vector2dF& v2) {
   double dot_product = gfx::DotProduct(v1, v2) / v1.Length() / v2.Length();
   // Clamp to compensate for rounding errors.
-  dot_product = std::max(-1.0, std::min(1.0, dot_product));
+  dot_product = base::ClampToRange(dot_product, -1.0, 1.0);
   return static_cast<float>(gfx::RadToDeg(std::acos(dot_product)));
 }
 

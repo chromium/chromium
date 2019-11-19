@@ -41,7 +41,7 @@ class FacetManager {
   // same name. See documentation in affiliation_service.h for details:
   void GetAffiliationsAndBranding(
       StrategyOnCacheMiss cache_miss_strategy,
-      const AffiliationService::ResultCallback& callback,
+      AffiliationService::ResultCallback callback,
       const scoped_refptr<base::TaskRunner>& callback_task_runner);
   void Prefetch(const base::Time& keep_fresh_until);
   void CancelPrefetch(const base::Time& keep_fresh_until);
@@ -100,11 +100,11 @@ class FacetManager {
   base::Time GetNextRequiredFetchTimeDueToPrefetch() const;
 
   // Posts the callback of the request described by |request_info| with success.
-  static void ServeRequestWithSuccess(const RequestInfo& request_info,
+  static void ServeRequestWithSuccess(RequestInfo request_info,
                                       const AffiliatedFacets& affiliation);
 
   // Posts the callback of the request described by |request_info| with failure.
-  static void ServeRequestWithFailure(const RequestInfo& request_info);
+  static void ServeRequestWithFailure(RequestInfo request_info);
 
   FacetURI facet_uri_;
   FacetManagerHost* backend_;

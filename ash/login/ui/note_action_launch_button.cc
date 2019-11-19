@@ -6,9 +6,9 @@
 
 #include <memory>
 
-#include "ash/public/interfaces/tray_action.mojom.h"
+#include "ash/public/cpp/shelf_config.h"
+#include "ash/public/mojom/tray_action.mojom.h"
 #include "ash/resources/vector_icons/vector_icons.h"
-#include "ash/shelf/shelf_constants.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/i18n/rtl.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -187,9 +187,9 @@ class NoteActionLaunchButton::ActionButton : public views::ImageButton,
         event_targeter_delegate_(kLargeBubbleRadiusDp, kSmallBubbleRadiusDp) {
     SetAccessibleName(
         l10n_util::GetStringUTF16(IDS_ASH_STYLUS_TOOLS_CREATE_NOTE_ACTION));
-    SetImage(
-        views::Button::STATE_NORMAL,
-        CreateVectorIcon(kTrayActionNewLockScreenNoteIcon, kShelfIconColor));
+    SetImage(views::Button::STATE_NORMAL,
+             CreateVectorIcon(kTrayActionNewLockScreenNoteIcon,
+                              ShelfConfig::Get()->shelf_icon_color()));
     SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
     SetFocusPainter(nullptr);
     EnableCanvasFlippingForRTLUI(true);

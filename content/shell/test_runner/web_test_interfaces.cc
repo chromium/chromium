@@ -47,10 +47,6 @@ WebTestRunner* WebTestInterfaces::TestRunner() {
   return interfaces_->GetTestRunner();
 }
 
-blink::WebThemeEngine* WebTestInterfaces::ThemeEngine() {
-  return interfaces_->GetThemeEngine();
-}
-
 TestInterfaces* WebTestInterfaces::GetTestInterfaces() {
   return interfaces_.get();
 }

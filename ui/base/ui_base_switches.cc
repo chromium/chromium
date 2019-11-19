@@ -41,6 +41,11 @@ const char kDisableTouchAdjustment[] = "disable-touch-adjustment";
 // Disables touch event based drag and drop.
 const char kDisableTouchDragDrop[] = "disable-touch-drag-drop";
 
+// Disable re-use of non-exact resources to fulfill ResourcePool requests.
+// Intended only for use in layout or pixel tests to reduce noise.
+const char kDisallowNonExactResourceReuse[] =
+    "disallow-non-exact-resource-reuse";
+
 // Enables touch event based drag and drop.
 const char kEnableTouchDragDrop[] = "enable-touch-drag-drop";
 
@@ -59,24 +64,9 @@ const char kForceHighContrast[] = "force-high-contrast";
 // language[-country] where language is the 2 letter code from ISO-639.
 const char kLang[] = "lang";
 
-// Defines the speed of Material Design visual feedback animations.
-const char kMaterialDesignInkDropAnimationSpeed[] =
-    "material-design-ink-drop-animation-speed";
-
-// Defines that Material Design visual feedback animations should be fast.
-const char kMaterialDesignInkDropAnimationSpeedFast[] = "fast";
-
-// Defines that Material Design visual feedback animations should be slow.
-const char kMaterialDesignInkDropAnimationSpeedSlow[] = "slow";
-
-// Controls touch-optimized UI layout for top chrome.
-const char kTopChromeTouchUi[] = "top-chrome-touch-ui";
-const char kTopChromeTouchUiAuto[] = "auto";
-const char kTopChromeTouchUiDisabled[] = "disabled";
-const char kTopChromeTouchUiEnabled[] = "enabled";
-
-// Disable partial swap which is needed for some OpenGL drivers / emulators.
-const char kUIDisablePartialSwap[] = "ui-disable-partial-swap";
+// Transform localized strings to be longer, with beginning and end markers to
+// make truncation visually apparent.
+const char kMangleLocalizedStrings[] = "mangle-localized-strings";
 
 // Visualize overdraw by color-coding elements based on if they have other
 // elements drawn underneath. This is good for showing where the UI might be
@@ -90,15 +80,6 @@ const char kUIDisablePartialSwap[] = "ui-disable-partial-swap";
 // Red: Overdrawn four or more times.
 const char kShowOverdrawFeedback[] = "show-overdraw-feedback";
 
-// Disable re-use of non-exact resources to fulfill ResourcePool requests.
-// Intended only for use in layout or pixel tests to reduce noise.
-const char kDisallowNonExactResourceReuse[] =
-    "disallow-non-exact-resource-reuse";
-
-// Transform localized strings to be longer, with beginning and end markers to
-// make truncation visually apparent.
-const char kMangleLocalizedStrings[] = "mangle-localized-strings";
-
 // Re-draw everything multiple times to simulate a much slower machine.
 // Give a slow down factor to cause renderer to take that many times longer to
 // complete, such as --slow-down-compositing-scale-factor=2.
@@ -107,5 +88,17 @@ const char kSlowDownCompositingScaleFactor[] =
 
 // Tint GL-composited color.
 const char kTintGlCompositedContent[] = "tint-gl-composited-content";
+
+// Controls touch-optimized UI layout for top chrome.
+const char kTopChromeTouchUi[] = "top-chrome-touch-ui";
+const char kTopChromeTouchUiAuto[] = "auto";
+const char kTopChromeTouchUiDisabled[] = "disabled";
+const char kTopChromeTouchUiEnabled[] = "enabled";
+
+// Disable partial swap which is needed for some OpenGL drivers / emulators.
+const char kUIDisablePartialSwap[] = "ui-disable-partial-swap";
+
+// Enables the ozone x11 clipboard for linux-chromeos.
+const char kUseSystemClipboard[] = "use-system-clipboard";
 
 }  // namespace switches

@@ -9,7 +9,7 @@
 
 #include "base/macros.h"
 #include "media/base/media_log.h"
-#include "media/mojo/interfaces/media_log.mojom.h"
+#include "media/mojo/mojom/media_log.mojom.h"
 
 namespace media {
 

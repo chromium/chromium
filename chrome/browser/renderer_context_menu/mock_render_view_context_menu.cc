@@ -13,6 +13,8 @@
 #include "content/public/browser/browser_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/color_palette.h"
+#include "ui/gfx/paint_vector_icon.h"
 
 MockRenderViewContextMenu::MockMenuItem::MockMenuItem()
     : command_id(0), enabled(false), checked(false), hidden(true) {}
@@ -58,6 +60,28 @@ void MockRenderViewContextMenu::AddMenuItem(int command_id,
   items_.push_back(item);
 }
 
+void MockRenderViewContextMenu::AddMenuItemWithIcon(
+    int command_id,
+    const base::string16& title,
+    const gfx::ImageSkia& image) {
+  MockMenuItem item;
+  item.command_id = command_id;
+  item.enabled = observer_->IsCommandIdEnabled(command_id);
+  item.checked = false;
+  item.hidden = false;
+  item.title = title;
+  item.icon = gfx::Image(image);
+  items_.push_back(item);
+}
+
+void MockRenderViewContextMenu::AddMenuItemWithIcon(
+    int command_id,
+    const base::string16& title,
+    const gfx::VectorIcon& icon) {
+  AddMenuItemWithIcon(command_id, title,
+                      gfx::CreateVectorIcon(icon, gfx::kPlaceholderColor));
+}
+
 void MockRenderViewContextMenu::AddCheckItem(int command_id,
                                              const base::string16& title) {
   MockMenuItem item;
@@ -89,6 +113,37 @@ void MockRenderViewContextMenu::AddSubMenu(int command_id,
   item.title = label;
   items_.push_back(item);
 
+  AppendSubMenuItems(model);
+}
+
+void MockRenderViewContextMenu::AddSubMenuWithStringIdAndIcon(
+    int command_id,
+    int message_id,
+    ui::MenuModel* model,
+    const gfx::ImageSkia& image) {
+  MockMenuItem item;
+  item.command_id = command_id;
+  item.enabled = observer_->IsCommandIdEnabled(command_id);
+  item.checked = observer_->IsCommandIdChecked(command_id);
+  item.hidden = false;
+  item.title = l10n_util::GetStringUTF16(message_id);
+  item.icon = gfx::Image(image);
+  items_.push_back(item);
+
+  AppendSubMenuItems(model);
+}
+
+void MockRenderViewContextMenu::AddSubMenuWithStringIdAndIcon(
+    int command_id,
+    int message_id,
+    ui::MenuModel* model,
+    const gfx::VectorIcon& icon) {
+  AddSubMenuWithStringIdAndIcon(
+      command_id, message_id, model,
+      gfx::CreateVectorIcon(icon, gfx::kPlaceholderColor));
+}
+
+void MockRenderViewContextMenu::AppendSubMenuItems(ui::MenuModel* model) {
   // Add items in the submenu |model| to |items_| so that the items can be
   // updated later via the RenderViewContextMenuProxy interface.
   // NOTE: this is a hack for the mock class. Ideally, RVCMProxy should neither
@@ -102,7 +157,7 @@ void MockRenderViewContextMenu::AddSubMenu(int command_id,
     sub_item.enabled = model->IsEnabledAt(i);
     sub_item.checked = model->IsItemCheckedAt(i);
     sub_item.hidden = false;
-    sub_item.title = model->GetSublabelAt(i);
+    sub_item.title = model->GetLabelAt(i);
     items_.push_back(sub_item);
   }
 }
@@ -179,7 +234,7 @@ content::BrowserContext* MockRenderViewContextMenu::GetBrowserContext() const {
 }
 
 content::WebContents* MockRenderViewContextMenu::GetWebContents() const {
-  return nullptr;
+  return web_contents_;
 }
 
 void MockRenderViewContextMenu::SetObserver(

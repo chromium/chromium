@@ -5,8 +5,7 @@
 #ifndef ASH_ASSISTANT_UI_MAIN_STAGE_ASSISTANT_OPT_IN_VIEW_H_
 #define ASH_ASSISTANT_UI_MAIN_STAGE_ASSISTANT_OPT_IN_VIEW_H_
 
-#include "ash/public/cpp/assistant/default_voice_interaction_observer.h"
-#include "ash/public/interfaces/voice_interaction_controller.mojom.h"
+#include "ash/public/cpp/assistant/assistant_state.h"
 #include "base/component_export.h"
 #include "base/macros.h"
 #include "ui/views/controls/button/button.h"
@@ -24,7 +23,7 @@ class AssistantViewDelegate;
 class COMPONENT_EXPORT(ASSISTANT_UI) AssistantOptInView
     : public views::View,
       public views::ButtonListener,
-      public DefaultVoiceInteractionObserver {
+      public AssistantStateObserver {
  public:
   explicit AssistantOptInView(AssistantViewDelegate* delegate_);
   ~AssistantOptInView() override;
@@ -37,13 +36,12 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantOptInView
   // views::ButtonListener:
   void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
-  // DefaultVoiceInteractionObserver:
-  void OnVoiceInteractionConsentStatusUpdated(
-      mojom::ConsentStatus consent_status) override;
+  // AssistantStateObserver:
+  void OnAssistantConsentStatusChanged(int consent_status) override;
 
  private:
   void InitLayout();
-  void UpdateLabel(mojom::ConsentStatus consent_status);
+  void UpdateLabel(int consent_status);
 
   views::StyledLabel* label_;  // Owned by view hierarchy.
 

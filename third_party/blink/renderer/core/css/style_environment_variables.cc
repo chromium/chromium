@@ -110,7 +110,7 @@ void StyleEnvironmentVariables::SetVariable(const AtomicString& name,
               CSSVariableData::CreateResolved(
                   tokens, backing_strings, false /* is_animation_tainted */,
                   false /* has_font_units */, false /* has_root_font_units*/,
-                  true /* absolutized */));
+                  true /* absolutized */, g_null_atom, WTF::TextEncoding()));
 }
 
 void StyleEnvironmentVariables::SetVariable(const UADefinedVariable name,

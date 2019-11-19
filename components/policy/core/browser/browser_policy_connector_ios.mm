@@ -29,7 +29,7 @@ class DeviceManagementServiceConfiguration
 
   ~DeviceManagementServiceConfiguration() override {}
 
-  std::string GetServerUrl() override {
+  std::string GetDMServerUrl() override {
     return BrowserPolicyConnector::GetDeviceManagementUrl();
   }
 
@@ -51,6 +51,10 @@ class DeviceManagementServiceConfiguration
                                     os_bugfix_version);
     return base::StringPrintf(
         "%s|%s|%s", os_name.c_str(), os_hardware.c_str(), os_version.c_str());
+  }
+
+  std::string GetReportingServerUrl() override {
+    return BrowserPolicyConnector::GetRealtimeReportingUrl();
   }
 
  private:

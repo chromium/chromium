@@ -11,11 +11,11 @@
 #include "base/android/jni_string.h"
 #include "base/bind.h"
 #include "base/strings/stringprintf.h"
+#include "chrome/android/chrome_jni_headers/RlzPingHandler_jni.h"
 #include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
-#include "jni/RlzPingHandler_jni.h"
 #include "net/base/load_flags.h"
 #include "net/base/url_util.h"
 #include "net/http/http_response_headers.h"
@@ -115,7 +115,7 @@ void RlzPingHandler::Ping(
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = request_url;
   resource_request->load_flags = net::LOAD_DISABLE_CACHE;
-  resource_request->allow_credentials = false;
+  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
 
   simple_url_loader_ = network::SimpleURLLoader::Create(
       std::move(resource_request), traffic_annotation);

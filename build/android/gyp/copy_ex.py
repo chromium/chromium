@@ -6,6 +6,8 @@
 
 """Copies files to a directory."""
 
+from __future__ import print_function
+
 import filecmp
 import itertools
 import optparse
@@ -53,8 +55,8 @@ def DoCopy(options, deps):
 
   for f in files:
     if os.path.isdir(f) and not options.clear:
-      print ('To avoid stale files you must use --clear when copying '
-             'directories')
+      print('To avoid stale files you must use --clear when copying '
+            'directories')
       sys.exit(-1)
     CopyFile(f, options.dest, deps)
 
@@ -74,7 +76,7 @@ def DoRenaming(options, deps):
 
   for src, dest in itertools.izip(src_files, dest_files):
     if os.path.isdir(src):
-      print ('renaming diretory is not supported.')
+      print('renaming diretory is not supported.')
       sys.exit(-1)
     else:
       CopyFile(src, os.path.join(options.dest, dest), deps)

@@ -26,14 +26,14 @@ TEST(RegexSetMatcherTest, MatchRegexes) {
   std::set<StringPattern::ID> result1;
   matcher.Match("http://abracadabra.com", &result1);
   EXPECT_EQ(2U, result1.size());
-  EXPECT_TRUE(base::ContainsKey(result1, 42));
-  EXPECT_TRUE(base::ContainsKey(result1, 239));
+  EXPECT_TRUE(base::Contains(result1, 42));
+  EXPECT_TRUE(base::Contains(result1, 239));
 
   std::set<StringPattern::ID> result2;
   matcher.Match("https://abfffffffffffffffffffffffffffffff.fi/cf", &result2);
   EXPECT_EQ(2U, result2.size());
-  EXPECT_TRUE(base::ContainsKey(result2, 17));
-  EXPECT_TRUE(base::ContainsKey(result2, 42));
+  EXPECT_TRUE(base::Contains(result2, 17));
+  EXPECT_TRUE(base::Contains(result2, 42));
 
   std::set<StringPattern::ID> result3;
   matcher.Match("http://nothing.com/", &result3);
@@ -56,7 +56,7 @@ TEST(RegexSetMatcherTest, CaseSensitivity) {
   std::set<StringPattern::ID> result2;
   matcher.Match("http://aaa.net/quaaACK", &result2);
   EXPECT_EQ(1U, result2.size());
-  EXPECT_TRUE(base::ContainsKey(result2, 57));
+  EXPECT_TRUE(base::Contains(result2, 57));
 }
 
 }  // namespace url_matcher

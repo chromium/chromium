@@ -1,0 +1,19 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "mojo/public/mojom/base/file.mojom";
+
+// Interface used to start / stop writing out an AEC dump from a child process.
+interface AecDumpAgent {
+  Start(mojo_base.mojom.File file);
+  Stop();
+};
+
+// Interface used to register child processes that can generate AEC dump files.
+interface AecDumpManager {
+  // Register the provided |agent| until disconnected.
+  Add(pending_remote<AecDumpAgent> agent);
+};

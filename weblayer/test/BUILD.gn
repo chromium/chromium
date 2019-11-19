@@ -1,0 +1,143 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+import("//build/config/ui.gni")
+import("//testing/test.gni")
+import("//tools/grit/grit_rule.gni")
+import("//tools/v8_context_snapshot/v8_context_snapshot.gni")
+import("//weblayer/variables.gni")
+
+if (is_android) {
+  import("//build/config/android/rules.gni")
+
+  weblayer_browsertests_manifest =
+      "${target_gen_dir}/weblayer_browsertests_manifest/AndroidManifest.xml"
+
+  jinja_template("weblayer_browsertests_manifest") {
+    testonly = true
+    input = "//weblayer/shell/android/browsertests_apk/AndroidManifest.xml"
+    output = weblayer_browsertests_manifest
+  }
+
+  android_library("weblayer_browsertests_java") {
+    testonly = true
+    java_files = [
+      "../shell/android/browsertests_apk/src/org/chromium/weblayer_browsertests_apk/WebLayerBrowserTestsActivity.java",
+      "../shell/android/browsertests_apk/src/org/chromium/weblayer_browsertests_apk/WebLayerBrowserTestsApplication.java",
+    ]
+    deps = [
+      ":weblayer_browsertests_manifest",
+      "//base:base_java",
+      "//base:base_java_test_support",
+      "//content/public/android:content_java",
+      "//content/public/test/android:content_java_test_support",
+      "//testing/android/native_test:native_test_java",
+      "//third_party/android_deps:android_support_v4_java",
+      "//third_party/android_deps:com_android_support_support_compat_java",
+      "//ui/android:ui_java",
+      "//weblayer/public/java",
+    ]
+
+    android_manifest_for_lint = weblayer_browsertests_manifest
+  }
+
+  android_assets("weblayer_test_assets") {
+    testonly = true
+    disable_compression = true
+    deps = [
+      "//third_party/icu:icu_assets",
+    ]
+    if (use_v8_context_snapshot) {
+      deps += [ "//tools/v8_context_snapshot:v8_context_snapshot_assets" ]
+    } else {
+      deps += [ "//v8:v8_external_startup_data_assets" ]
+    }
+  }
+}
+
+test("weblayer_browsertests") {
+  data = [
+    "$root_out_dir/weblayer_shell.pak",
+    "data/",
+    "//net/tools/testserver/",
+    "//third_party/pywebsocket/src/mod_pywebsocket/",
+    "//third_party/tlslite/",
+  ]
+
+  data_deps = [
+    "//third_party/mesa_headers",
+    "//weblayer/shell:pak",
+  ]
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  deps = [
+    "//base",
+    "//base",
+    "//base/test:test_support",
+    "//components/security_interstitials/content:security_interstitial_page",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//net:test_support",
+    "//testing/gtest",
+    "//ui/base",
+    "//weblayer/shell:weblayer_shell_lib",
+  ]
+
+  sources = [
+    "../browser/errorpage_browsertest.cc",
+    "../browser/navigation_browsertest.cc",
+    "../browser/ssl_browsertest.cc",
+    "../browser/webui/webui_browsertest.cc",
+    "browsertests_main.cc",
+    "interstitial_utils.cc",
+    "interstitial_utils.h",
+    "load_completion_observer.cc",
+    "load_completion_observer.h",
+    "test_launcher_delegate_impl.cc",
+    "test_launcher_delegate_impl.h",
+    "test_navigation_observer.cc",
+    "test_navigation_observer.h",
+    "weblayer_browser_test.cc",
+    "weblayer_browser_test.h",
+    "weblayer_browser_test_test.cc",
+    "weblayer_browser_test_utils.cc",
+    "weblayer_browser_test_utils.h",
+  ]
+
+  if (is_android) {
+    sources += [
+      "../shell/android/browsertests_apk/weblayer_browser_tests_jni_onload.cc",
+    ]
+    deps += [
+      ":weblayer_browsertests_java",
+      ":weblayer_test_assets",
+      "//android_webview:generate_aw_strings_grit",
+      "//android_webview:locale_pak_assets",
+      "//android_webview:pak_file_assets",
+      "//content/public/test/android:android_test_message_pump_support_java",
+      "//content/test:android_test_message_pump_support",
+      "//content/test:android_test_message_pump_support",
+      "//services/tracing:test_utils",
+      "//testing/android/native_test:native_test_support",
+      "//ui/android:android",
+      "//ui/touch_selection:touch_selection",
+      "//weblayer:locale_pak_assets",
+
+      # Needed for WebLayerImpl.
+      "//weblayer/browser/java",
+
+      # default upstream safebrowsing related classes
+      "//weblayer/browser/java:gms_bridge_upstream_impl_java",
+    ]
+
+    android_manifest =
+        "${target_gen_dir}/weblayer_browsertests_manifest/AndroidManifest.xml"
+    android_manifest_dep = ":weblayer_browsertests_manifest"
+    use_default_launcher = false
+    shared_resources = true
+    product_config_java_packages = [ weblayer_product_config_java_package ]
+  }
+}

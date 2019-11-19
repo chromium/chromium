@@ -12,12 +12,7 @@ js_type_check("closure_compile") {
 
 js_library("reset_password") {
   deps = [
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:util",
-  ]
-  extra_deps = [ "//chrome/browser/ui/webui/reset_password:mojo_bindings_js" ]
-  externs_list = [
-    "$root_gen_dir/chrome/browser/ui/webui/reset_password/reset_password.mojom.externs.js",
-    "$externs_path/mojo.js",
+    "//chrome/browser/ui/webui/reset_password:mojo_bindings_js_library_for_compile",
+    "//ui/webui/resources/js:util.m",
   ]
 }

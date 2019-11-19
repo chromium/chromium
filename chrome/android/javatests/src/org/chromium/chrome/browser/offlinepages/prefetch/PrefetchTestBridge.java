@@ -21,9 +21,15 @@ public class PrefetchTestBridge {
     public static void insertIntoCachedImageFetcher(String url, byte[] imageData) {
         nativeInsertIntoCachedImageFetcher(url, imageData);
     }
+    public static void addCandidatePrefetchURL(String url, String title, String thumbnailUrl,
+            String faviconUrl, String snippet, String attribution) {
+        nativeAddCandidatePrefetchURL(url, title, thumbnailUrl, faviconUrl, snippet, attribution);
+    }
 
     static native void nativeEnableLimitlessPrefetching(boolean enabled);
     static native boolean nativeIsLimitlessPrefetchingEnabled();
     static native void nativeSkipNTPSuggestionsAPIKeyCheck();
     static native void nativeInsertIntoCachedImageFetcher(String url, byte[] imageData);
+    static native void nativeAddCandidatePrefetchURL(String url, String title, String thumbnailUrl,
+            String faviconUrl, String snippet, String attribution);
 }

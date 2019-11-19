@@ -6,9 +6,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:drawableStart="@drawable/add_circle_blue"
     android:drawablePadding="16dp"
     android:gravity="center_vertical"
     android:padding="8dp"
     android:text="@string/signin_add_account"
-    android:textAppearance="@style/TextAppearance.BlackBodyDefault"/>
+    android:textAppearance="@style/TextAppearance.BlackBodyDefault" />

@@ -40,7 +40,7 @@ class PrefetchImporterImpl : public PrefetchImporter {
   OfflinePageModel* offline_page_model_;
   scoped_refptr<base::TaskRunner> background_task_runner_;
   std::set<int64_t> outstanding_import_offline_ids_;
-  base::WeakPtrFactory<PrefetchImporterImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<PrefetchImporterImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PrefetchImporterImpl);
 };

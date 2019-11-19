@@ -4,13 +4,20 @@
 
 #include "chrome/browser/chromeos/arc/policy/arc_policy_util.h"
 
+#include <memory>
+
 #include "base/command_line.h"
 #include "base/json/json_reader.h"
 #include "base/values.h"
+#include "chrome/browser/chromeos/policy/configuration_policy_handler_chromeos.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
-#include "chrome/browser/policy/profile_policy_connector_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/constants/chromeos_switches.h"
+#include "components/arc/arc_prefs.h"
+#include "components/policy/core/common/policy_map.h"
+#include "components/policy/policy_constants.h"
+#include "components/policy/proto/cloud_policy.pb.h"
+#include "components/prefs/pref_value_map.h"
 
 namespace arc {
 namespace policy_util {
@@ -27,7 +34,7 @@ constexpr char kInstallTypeForceInstalled[] = "FORCE_INSTALLED";
 }  // namespace
 
 bool IsAccountManaged(const Profile* profile) {
-  return policy::ProfilePolicyConnectorFactory::IsProfileManaged(profile);
+  return profile->GetProfilePolicyConnector()->IsManaged();
 }
 
 bool IsArcDisabledForEnterprise() {
@@ -35,13 +42,31 @@ bool IsArcDisabledForEnterprise() {
       chromeos::switches::kEnterpriseDisableArc);
 }
 
-EcryptfsMigrationAction GetDefaultEcryptfsMigrationActionForManagedUser(
-    bool active_directory_user) {
-  // Active directory users are assumed to be enterprise users, so mimic the
-  // server-side default logic for enterprise users, letting them choose if
-  // they want to migrate by default.
-  return active_directory_user ? EcryptfsMigrationAction::kAskUser
-                               : EcryptfsMigrationAction::kDisallowMigration;
+base::Optional<EcryptfsMigrationAction> DecodeMigrationActionFromPolicy(
+    const enterprise_management::CloudPolicySettings& policy) {
+  if (!policy.has_ecryptfsmigrationstrategy())
+    return base::nullopt;
+  const enterprise_management::IntegerPolicyProto& policy_proto =
+      policy.ecryptfsmigrationstrategy();
+  if (!policy_proto.has_value())
+    return base::nullopt;
+
+  // Use |policy::EcryptfsMigrationStrategyPolicyHandler| to translate from
+  // policy to enum, as some obsolete policy settings need to be aliased to
+  // other enum values.
+  policy::PolicyMap policy_map;
+  policy_map.Set(
+      policy::key::kEcryptfsMigrationStrategy, policy::POLICY_LEVEL_MANDATORY,
+      policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
+      std::make_unique<base::Value>(static_cast<int>(policy_proto.value())),
+      nullptr);
+  PrefValueMap prefs;
+  policy::EcryptfsMigrationStrategyPolicyHandler handler;
+  handler.ApplyPolicySettings(policy_map, &prefs);
+  int strategy = 0;
+  if (!prefs.GetInteger(arc::prefs::kEcryptfsMigrationStrategy, &strategy))
+    return base::nullopt;
+  return static_cast<EcryptfsMigrationAction>(strategy);
 }
 
 std::set<std::string> GetRequestedPackagesFromArcPolicy(

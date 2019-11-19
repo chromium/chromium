@@ -1,0 +1,27 @@
+<!doctype html>
+<title>Scheduling API: Task.result Accessed After Task Runs</title>
+<link rel="author" title="Scott Haseley" href="mailto:shaseley@chromium.org">
+<link rel="help" href="https://github.com/WICG/main-thread-scheduling">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<script>
+'use strict';
+
+async_test(t => {
+  (function() {
+    let task = scheduler.postTask(t.step_func(() => {
+      // This task will run after |task| finishes.
+      scheduler.postTask(t.step_func(() => {
+        assert_equals(task.status,  'completed');
+        task.result.then(t.step_func_done((res) => {
+          assert_equals(res, 1234);
+        }));
+      }));
+      return 1234;
+    }));
+  })();
+
+}, 'Test task.result is resolved properly when accessed after the task runs');
+
+</script>

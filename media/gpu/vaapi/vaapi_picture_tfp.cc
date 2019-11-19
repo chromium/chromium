@@ -97,7 +97,7 @@ bool VaapiTFPPicture::Allocate(gfx::BufferFormat format) {
 
 bool VaapiTFPPicture::ImportGpuMemoryBufferHandle(
     gfx::BufferFormat format,
-    const gfx::GpuMemoryBufferHandle& gpu_memory_buffer_handle) {
+    gfx::GpuMemoryBufferHandle gpu_memory_buffer_handle) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   NOTIMPLEMENTED() << "GpuMemoryBufferHandle import not implemented";
   return false;

@@ -17,8 +17,14 @@ import org.chromium.content_public.browser.WebContents;
  */
 public class PageLoadMetrics {
     public static final String FIRST_CONTENTFUL_PAINT = "firstContentfulPaint";
+    public static final String LARGEST_CONTENTFUL_PAINT = "largestContentfulPaint";
+    public static final String LARGEST_CONTENTFUL_PAINT_SIZE = "largestContentfulPaintSize";
     public static final String NAVIGATION_START = "navigationStart";
     public static final String LOAD_EVENT_START = "loadEventStart";
+    public static final String FIRST_INPUT_DELAY = "firstInputDelay";
+    public static final String LAYOUT_SHIFT_SCORE = "layoutShiftScore";
+    public static final String LAYOUT_SHIFT_SCORE_BEFORE_INPUT_OR_SCROLL =
+            "layoutShiftScoreBeforeInputOrScroll";
     public static final String DOMAIN_LOOKUP_START = "domainLookupStart";
     public static final String DOMAIN_LOOKUP_END = "domainLookupEnd";
     public static final String CONNECT_START = "connectStart";
@@ -38,8 +44,10 @@ public class PageLoadMetrics {
          *
          * @param webContents the WebContents this metrics is related to.
          * @param navigationId the unique id of a navigation this metrics is related to.
+         * @param isFirstNavigationInWebContents whether this is the first nav in the WebContents.
          */
-        default void onNewNavigation(WebContents webContents, long navigationId) {}
+        default void onNewNavigation(WebContents webContents, long navigationId,
+                boolean isFirstNavigationInWebContents) {}
 
         /**
          * Called when Network Quality Estimate is available, once per page load, when the
@@ -71,6 +79,19 @@ public class PageLoadMetrics {
                 long navigationStartTick, long firstContentfulPaintMs) {}
 
         /**
+         * Called when the largest contentful paint page load metric is available.
+         *
+         * @param webContents the WebContents this metrics is related to.
+         * @param navigationId the unique id of a navigation this metrics is related to.
+         * @param navigationStartTick Absolute navigation start time, as TimeTicks.
+         * @param largestContentfulPaintMs Time to largest contentful paint from navigation start.
+         * @param largestContentfulPaintSize Size of largest contentful paint, in CSS pixels.
+         */
+        default void onLargestContentfulPaint(WebContents webContents, long navigationId,
+                long navigationStartTick, long largestContentfulPaintMs,
+                long largestContentfulPaintSize) {}
+
+        /**
          * Called when the first meaningful paint page load metric is available. See
          * FirstMeaningfulPaintDetector.cpp
          *
@@ -81,6 +102,16 @@ public class PageLoadMetrics {
          */
         default void onFirstMeaningfulPaint(WebContents webContents, long navigationId,
                 long navigationStartTick, long firstMeaningfulPaintMs) {}
+
+        /**
+         * Called when the first input delay page load metric is available.
+         *
+         * @param webContents the WebContents this metrics is related to.
+         * @param navigationId the unique id of a navigation this metrics is related to.
+         * @param firstInputDelayMs First input delay.
+         */
+        default void onFirstInputDelay(
+                WebContents webContents, long navigationId, long firstInputDelayMs) {}
 
         /**
          * Called when the load event start metric is available.
@@ -105,6 +136,19 @@ public class PageLoadMetrics {
         default void onLoadedMainResource(WebContents webContents, long navigationId,
                 long dnsStartMs, long dnsEndMs, long connectStartMs, long connectEndMs,
                 long requestStartMs, long sendStartMs, long sendEndMs) {}
+
+        /**
+         * Called when the layout shift score is available.
+         *
+         * @param webContents the WebContents this metrics is related to.
+         * @param navigationId the unique id of a navigation this metrics is related to.
+         * @param layoutShiftScoreBeforeInputOrScroll the cumulative layout shift score, before user
+         *         input or scroll.
+         * @param layoutShiftScoreOverall the cumulative layout shift score over the lifetime of the
+         *         web page.
+         */
+        default void onLayoutShiftScore(WebContents webContents, long navigationId,
+                float layoutShiftScoreBeforeInputOrScroll, float layoutShiftScoreOverall) {}
     }
 
     private static ObserverList<Observer> sObservers;
@@ -124,11 +168,12 @@ public class PageLoadMetrics {
     }
 
     @CalledByNative
-    static void onNewNavigation(WebContents webContents, long navigationId) {
+    static void onNewNavigation(
+            WebContents webContents, long navigationId, boolean isFirstNavigationInWebContents) {
         ThreadUtils.assertOnUiThread();
         if (sObservers == null) return;
         for (Observer observer : sObservers) {
-            observer.onNewNavigation(webContents, navigationId);
+            observer.onNewNavigation(webContents, navigationId, isFirstNavigationInWebContents);
         }
     }
 
@@ -155,6 +200,18 @@ public class PageLoadMetrics {
     }
 
     @CalledByNative
+    static void onLargestContentfulPaint(WebContents webContents, long navigationId,
+            long navigationStartTick, long largestContentfulPaintMs,
+            long largestContentfulPaintSize) {
+        ThreadUtils.assertOnUiThread();
+        if (sObservers == null) return;
+        for (Observer observer : sObservers) {
+            observer.onLargestContentfulPaint(webContents, navigationId, navigationStartTick,
+                    largestContentfulPaintMs, largestContentfulPaintSize);
+        }
+    }
+
+    @CalledByNative
     static void onFirstMeaningfulPaint(WebContents webContents, long navigationId,
             long navigationStartTick, long firstMeaningfulPaintMs) {
         ThreadUtils.assertOnUiThread();
@@ -162,6 +219,16 @@ public class PageLoadMetrics {
         for (Observer observer : sObservers) {
             observer.onFirstMeaningfulPaint(
                     webContents, navigationId, navigationStartTick, firstMeaningfulPaintMs);
+        }
+    }
+
+    @CalledByNative
+    static void onFirstInputDelay(
+            WebContents webContents, long navigationId, long firstInputDelayMs) {
+        ThreadUtils.assertOnUiThread();
+        if (sObservers == null) return;
+        for (Observer observer : sObservers) {
+            observer.onFirstInputDelay(webContents, navigationId, firstInputDelayMs);
         }
     }
 
@@ -185,6 +252,17 @@ public class PageLoadMetrics {
         for (Observer observer : sObservers) {
             observer.onLoadedMainResource(webContents, navigationId, dnsStartMs, dnsEndMs,
                     connectStartMs, connectEndMs, requestStartMs, sendStartMs, sendEndMs);
+        }
+    }
+
+    @CalledByNative
+    static void onLayoutShiftScore(WebContents webContents, long navigationId,
+            float layoutShiftScoreBeforeInputOrScroll, float layoutShiftScoreOverall) {
+        ThreadUtils.assertOnUiThread();
+        if (sObservers == null) return;
+        for (Observer observer : sObservers) {
+            observer.onLayoutShiftScore(webContents, navigationId,
+                    layoutShiftScoreBeforeInputOrScroll, layoutShiftScoreOverall);
         }
     }
 

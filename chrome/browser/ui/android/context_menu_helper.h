@@ -15,6 +15,7 @@
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "content/public/common/context_menu_params.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 
 namespace content {
 struct ContextMenuParams;
@@ -26,7 +27,8 @@ class ContextMenuHelper
     : public content::WebContentsUserData<ContextMenuHelper> {
  protected:
   using ImageRetrieveCallback = base::Callback<void(
-      chrome::mojom::ChromeRenderFrameAssociatedPtr chrome_render_frame_ptr,
+      mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame>
+          chrome_render_frame_ptr,
       const base::android::JavaRef<jobject>& jcallback,
       const std::vector<uint8_t>& thumbnail_data,
       const gfx::Size& max_dimen_px)>;

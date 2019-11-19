@@ -152,6 +152,27 @@ aomenc bear-320x180-10bit.y4m --lag-in-frames=0 --target-bitrate=50 \
   -o bear-av1-320x180-10bit.webm
 ```
 
+#### bear-av1-opus.mp4
+Created by combining bear-av1.mp4 and bear-opus.mp4.
+```
+ffmpeg -i bear-av1.mp4 -i bear-opus.mp4 -c copy -strict -2 \
+  -movflags frag_keyframe+empty_moov+default_base_moof \
+  bear-av1-opus.mp4
+```
+**Note**: "-strict -2" was required because the current ffmpeg version
+has support for OPUS in MP4 as experimental.
+
+#### av1-svc-L2T2.ivf
+AV1 data that has spatial and temporal layers.
+This is the same as av1-1-b8-22-svc-L2T2.ivf in
+[libaom test vectors]:https://aomedia.googlesource.com/aom/+/master/test/test_vectors.cc
+
+#### av1-show_existing_frame.ivf
+AV1 data that contains frames with `show_existing_frame=1`.
+This is the same as 00000592.ivf in
+https://people.xiph.org/~tterribe/av1/samples-all/
+
+
 ### Alpha Channel
 
 #### bear-vp8a.webm
@@ -233,9 +254,13 @@ a rotation of 180 degrees in mp4 meta data.
 Actual video frames are the same as four-colors.mp4, except it specifies
 a rotation of 270 degrees in mp4 meta data.
 
-#### four-colors-vp9.web
+#### four-colors-vp9.webm
 A 960x540 vp9 video with 4 color blocks (Y,R,G,B) in every frame. This is
 converted from four-colors.mp4 by ffmpeg.
+
+#### four-colors-vp9-i420a.webm
+A 960x540 yuva420p vp9 video with 4 color blocks (Y,R,G,B) in every frame. This
+is converted from four-colors.mp4 by adding an opacity of 0.5 using ffmpeg.
 
 #### bear-320x180-hi10p.mp4
 #### bear-320x240-vp9_profile2.webm
@@ -446,6 +471,20 @@ packager in=bear-flac.mp4,stream=audio,output=bear-flac-cenc.mp4
          --pssh 000000327073736800000000EDEF8BA979D64ACEA3C827DCD51D21ED000000121210303132333435363738393031323334350000003470737368010000001077EFECC0B24D02ACE33C1E52E2FB4B000000013031323334353637383930313233343500000000
 ```
 
+#### bear-opus-cenc.mp4
+Encrypted version of bear-opus.mp4, encrypted by [Shaka Packager] v2.3.0 using
+key ID [1] and key [2].
+
+```
+packager in=bear-opus.mp4,stream=audio,output=bear-opus-cenc.mp4
+         --enable_raw_key_encryption
+         --protection_scheme cenc
+         --clear_lead 0
+         --segment_duration 0.5
+         --keys label=:key_id=30313233343536373839303132333435:key=ebdd62f16814d27b68ef122afce4ae3c
+         --pssh 000000327073736800000000EDEF8BA979D64ACEA3C827DCD51D21ED000000121210303132333435363738393031323334350000003470737368010000001077EFECC0B24D02ACE33C1E52E2FB4B000000013031323334353637383930313233343500000000
+```
+
 #### bear-a_enc-a.webm
 bear-320x240-audio-only.webm encrypted using key ID [1] and key [2].
 
@@ -570,20 +609,6 @@ ffmpeg -i third_party/WebKit/LayoutTests/media/content/test-25fps.mp4 \
       -vcodec copy -vbsf h264_mp4toannexb -an test-25fps.h264
 ```
 
-#### test-25fps.h264.md5
-MD5s of RGB thumbnail rendered version of test-25fps.h264 decoded with Intel
-VAAPI and V4L2VDA on various platforms.
-Written out by video_decode_accelerator_unittest.
-These differ between implementations because color space-converted frames are
-not specified to the last bit and GLES shader/texture filtering
-precision varies.
-
-#### test-25fps.h264.frames.md5:
-MD5s of frame which is decoded with Intel VAAPI and V4L2 decoders and is
-converted to I420 pixel format. Written out by
-video_decode_accelerator_unittest when input file is test-25fps.h264.
-This value must be identical on all platforms.
-
 #### test-25fps.h264.json:
 JSON file that contains all metadata related to test-25fps.h264, used by the
 video_decode_accelerator_tests. This includes the video codec, resolution and
@@ -596,16 +621,6 @@ mkvextract v5.0.1
 ffmpeg -i test-25fps.h264 -vcodec libvpx -an test-25fps.webm && \
     mkvextract tracks test-25fps.webm 1:test-25fps.vp8 && rm test-25fps.webm
 ```
-
-#### test-25fps.vp8.md5
-MD5 of RGB thumbnail rendered version of test-25fps.vp8. Written out by
-video_decode_accelerator_unittest.
-
-#### test-25fps.vp8.frames.md5:
-MD5s of frame which is decoded with Intel VAAPI and V4L2 decoders and is
-converted to I420 pixel format. Written out by
-video_decode_accelerator_unittest when input file is test-25fps.vp8.
-This value must be identical on all platforms.
 
 #### test-25fps.vp8.json:
 JSON file that contains all metadata related to test-25fps.vp8, used by the
@@ -625,16 +640,6 @@ vpxenc test-25fps_i420.yuv -o test-25fps.vp9 --codec=vp9 -w 320 -h 240 --ivf \
     --maxsection-pct=2000 --undershoot-pct=100
 ```
 
-#### test-25fps.vp9.md5
-MD5 of RGB thumbnail rendered version of test-25fps.vp9. Written out by
-video_decode_accelerator_unittest.
-
-#### test-25fps.vp9.frames.md5:
-MD5s of frame which is decoded with Intel VAAPI and V4L2 decoders and is
-converted to I420 pixel format. Written out by
-video_decode_accelerator_unittest when input file is test-25fps.vp9.
-This value must be identical on all platforms.
-
 #### test-25fps.vp9.json:
 JSON file that contains all metadata related to test-25fps.vp9, used by the
 video_decode_accelerator_tests. This includes the video codec, resolution and
@@ -644,16 +649,6 @@ md5 checksums of individual video frames when converted to the I420 format.
 Similar to test-25fps.vp9, substituting the option `--profile=0` with
 `--profile=2 --bit-depth=10` to vpxenc. (Note that vpxenc must have been
 configured with the option --enable-vp9-highbitdepth).
-
-#### test-25fps.vp9_2.md5
-MD5 of RGB thumbnail rendered version of test-25fps.vp9_2. Written out by
-video_decode_accelerator_unittest.
-
-#### test-25fps.vp9_2.frames.md5:
-MD5s of frame which is decoded with Intel VAAPI and V4L2 decoders and is
-converted to I420 pixel format. Written out by
-video_decode_accelerator_unittest when input file is test-25fps.vp9_2.
-This value must be identical on all platforms.
 
 #### test-25fps.vp9_2.json:
 JSON file that contains all metadata related to test-25fps.vp9_2, used by the
@@ -671,10 +666,6 @@ ffmpeg -i vp90_2_17_show_existing_frame.vp9 -vcodec copy -an -f ivf \
     vp90_2_17_show_existing_frame.vp9.ivf
 ```
 
-#### vp90_2_10_show_existing_frame2.vp9.ivf.md5
-MD5 of RGB thumbnail rendered version of vp90_2_10_show_existing_frame2.vp9.ivf.
-Written out by video_decode_accelerator_unittest.
-
 
 ### bear
 
@@ -685,14 +676,6 @@ bear.mp4 (https://chromiumcodereview.appspot.com/10805089):
 ffmpeg -i bear.mp4 -vcodec copy -vbsf h264_mp4toannexb -an bear.h264
 ```
 
-#### bear.h264.md5
-MD5s of RGB thumbnail rendered version of bear.h264 decoded with Intel
-VAAPI on Ivy Bridge and Sandy Bridge and V4L2VDA on Exynos.
-Written out by video_decode_accelerator_unittest.
-These differ between implementations because color space-converted frames are
-not specified to the last bit and GLES shader/texture filtering
-precision varies.
-
 ### npot-video
 
 #### npot-video.h264
@@ -702,14 +685,6 @@ npot-video.mp4 (https://codereview.chromium.org/8342021):
 ffmpeg -i npot-video.mp4 -vcodec copy -vbsf h264_mp4toannexb -an npot-video.h264
 ```
 
-#### npot-video.h264.md5
-MD5s of RGB thumbnail rendered version of npot-video.h264 decoded with Intel
-VAAPI on Ivy Bridge and Sandy Bridge and V4L2VDA on Exynos.
-Written out by video_decode_accelerator_unittest.
-These differ between implementations because color space-converted frames are
-not specified to the last bit and GLES shader/texture filtering
-precision varies.
-
 ### red-green
 
 #### red-green.h264
@@ -718,14 +693,6 @@ red-green.mp4 (https://codereview.chromium.org/8342021):
 ```
 ffmpeg -i red-green.mp4 -vcodec copy -vbsf h264_mp4toannexb -an red-green.h264
 ```
-
-#### red-green.h264.md5
-MD5s of RGB thumbnail rendered version of red-green.h264 decoded with Intel
-VAAPI on Ivy Bridge and Sandy Bridge and V4L2VDA on Exynos.
-Written out by video_decode_accelerator_unittest.
-These differ between implementations because color space-converted frames are
-not specified to the last bit and GLES shader/texture filtering
-precision varies.
 
 ## Misc Test Files
 
@@ -750,26 +717,16 @@ The frame sizes change between 1080p and 720p every 24 frames.
 
 ### VEA test files:
 
-#### bear_128x96_40frames.yuv
-First 40 raw i420 frames of bear-1280x720.mp4 scaled down to 128x96 for
-video_encode_accelerator_unittest. This is the size that could be encoded
-with the lowest H264 level 1.0 in 30 fps.
-
-#### bear_320x192_40frames.yuv
+#### bear_320x192_40frames.yuv.webm
 First 40 raw i420 frames of bear-1280x720.mp4 scaled down to 320x192 for
-video_encode_accelerator_unittest.
+video_encode_accelerator_unittest. Encoded with vp9 lossless:
+`ffmpeg -pix_fmt yuv420p -s:v 320x192 -r 30 -i bear_320x192_40frames.yuv -lossless 1 bear_320x192_40frames.yuv.webm`
 
-#### bear_320x192_40frames.nv12.yuv
-First 40 raw nv12 frames of bear-1280x720.mp4 scaled down to 320x192 for
-video_encode_accelerator_unittest.
+#### bear_640x384_40frames.yuv.webm
+First 40 raw i420 frames of bear-1280x720.mp4 scaled down to 340x384 for
+video_encode_accelerator_unittest. Encoded with vp9 lossless:
+`ffmpeg -pix_fmt yuv420p -s:v 640x384 -r 30 -i bear_640x384_40frames.yuv -lossless 1 bear_640x384_40frames.yuv.webm`
 
-#### bear_320x192_40frames.nv21.yuv
-First 40 raw nv21 frames of bear-1280x720.mp4 scaled down to 320x192 for
-video_encode_accelerator_unittest.
-
-#### bear_320x192_40frames.yv12.yuv
-First 40 raw yv12 frames of bear-1280x720.mp4 scaled down to 320x192 for
-video_encode_accelerator_unittest.
 
 ### ImageProcessor Test Files
 
@@ -785,8 +742,34 @@ First frame of bear\_320x192\_40frames.nv12.yuv for image\_processor_test.
 #### bear\_320x192.nv12.yuv.json
 Metadata describing bear\_320x192.nv12.yuv.
 
-#### bear\_320x192.yv21.yuv
-First frame of bear\_320x192\_40frames.yv21.yuv for image\_processor_test.
+#### bear\_320x192.yv12.yuv
+First frame of bear\_320x192\_40frames.yv12.yuv for image\_processor_test.
+
+#### bear\_320x192.rgba
+RAW RGBA format data. This data is created from bear\_320x192.i420.yuv by the
+following command. Alpha channel is always 0xFF because of that.
+`ffmpeg -s 320x192 -pix_fmt yuv420p -i bear_320x192.i420.yuv -vcodec rawvideo -f image2 -pix_fmt rgba bear_320x192.rgba`
+
+#### bear\_320x192.bgra
+RAW BGRA format data. This data is created from bear\_320x192.i420.yuv by the
+following command. Alpha channel is always 0xFF because of that.
+`ffmpeg -s 320x192 -pix_fmt yuv420p -i bear_320x192.i420.yuv -vcodec rawvideo -f image2 -pix_fmt rgba bear_320x192.bgra`
+
+
+#### puppets-1280x720.nv12.yuv
+RAW NV12 format data. The width and height are 1280 and 720, respectively.
+This data is created from peach\_pi-1280x720.jpg by the following command.
+`ffmpeg -i peach_pi-1280x720.jpg -s 1280x720 -pix_fmt nv12 puppets-1280x720.nv12.yuv`
+
+#### puppets-640x360.nv12.yuv
+RAW NV12 format data. The width and height are 640 and 360, respectively.
+This data is created from puppets-1280x720.nv12.yuv by the following command.
+`ffmpeg -s:v 1280x720 -pix_fmt nv12 -i puppets-1280x720.nv12.yuv -vf scale=640x360 -c:v rawvideo -pix_fmt nv12 puppets-640x360.nv12.yuv`
+
+#### puppets-320x180.nv12.yuv
+RAW NV12 format data. The width and height are 320 and 180, respectively.
+This data is created from puppets-1280x720.nv12.yuv by the following command.
+`ffmpeg -s:v 1280x720 -pix_fmt nv12 -i puppets-1280x720.nv12.yuv -vf scale=320x180 -c:v rawvideo -pix_fmt nv12 puppets-320x180.nv12.yuv`
 
 ###  VP9 parser test files:
 
@@ -817,22 +800,104 @@ ffmpeg -i green.webm -i a300hz.webm -map 0 -map 1 green-a300hz.webm
 ffmpeg -i red.webm -i a500hz.webm -map 0 -map 1 red-a500hz.webm
 ```
 
+### WebP Test Files
+
+#### BlackAndWhite_criss-cross_pattern_2015x2015.webp
+A lossy WebP encoded image of 2015x2015. Created by gildekel@ using Gimp.
+
+#### bouncy_ball.webp
+An animated (extended) WebP encoded image of 450x450. Created by gildekel@
+using Gimp.
+
+#### red_green_gradient_lossy.webp
+A lossy WebP encoded image of 3000x3000. Created by gildekel@ using Gimp.
+
+#### RGB_noise_2015x2015.webp
+A lossy WebP encoded image of 2015x2015 that contains RGB noise. Created by
+gildekel@ using Gimp.
+
+#### RGB_noise_large_pixels_115x115.webp
+A lossy WebP encoded image of 115x115 that contains large pixels RGB noise.
+Created by gildekel@ using Gimp.
+
+#### RGB_noise_large_pixels_2015x2015.webp
+A lossy WebP encoded image of 2015x2015 that contains large pixels RGB noise.
+Created by gildekel@ using Gimp.
+
+#### RGB_noise_large_pixels_4000x4000.webp
+A lossy WebP encoded image of 4000x4000 that contains large pixels RGB noise.
+Created by gildekel@ using Gimp.
+
+#### solid_green_2015x2015.webp
+A lossy WebP encoded image of 2015x2015 of solid bright green. Created by
+gildekel@ using Gimp.
+
+#### yellow_pink_gradient_lossless.webp
+A lossless WebP encoded image of 3000x3000. Created by gildekel@ using Gimp.
+
 ### JPEG Test Files
 
 #### pixel-1280x720.jpg
-Single MJEPG encoded frame of 1280x720, captured on Chromebook Pixel. This image
+Single MJPEG encoded frame of 1280x720, captured on Chromebook Pixel. This image
 does not have Huffman table.
+
+#### pixel-1280x720-trailing-zeros.jpg
+A version of pixel-1280x720.jpg with five trailing zero bytes after the EOI
+marker. The command used to generated it was:
+```
+echo -e "`xxd -g1 -p -c1 pixel-1280x720.jpg`" "\n00\n00\n00\n00\n00" | xxd -r -g1 -p -c1 > pixel-1280x720-trailing-zeros.jpg
+```
 
 #### pixel-1280x720-grayscale.jpg
 A version of pixel-1280x720.jpg converted to grayscale using:
 ```
 jpegtran -grayscale pixel-1280x720.jpg > pixel-1280x720-grayscale.jpg
 ```
+Then, using a hex editor, the Huffman table sections were removed from the
+resulting file.
+
 #### pixel-1280x720-yuv420.jpg
 A version of pixel-1280x720.jpg converted to 4:2:0 subsampling using:
 ```
-convert pixel-1280x720.jpg -sampling-factor 4:2:0 pixel-1280x720-yuv420.jpg
+convert pixel-1280x720.jpg -sampling-factor 4:2:0 -define jpeg:optimize-coding=false pixel-1280x720-yuv420.jpg
 ```
+Then, using a hex editor, the Huffman table sections were removed from the
+resulting file.
+
+#### pixel-40x23-yuv420.jpg
+A version of pixel-1280x720-yuv420.jpg resized to 40x23 (so that the height is
+odd) using:
+```
+convert pixel-1280x720-yuv420.jpg -resize 40x23\! -define jpeg:optimize-coding=false pixel-40x23-yuv420.jpg
+```
+Then, using a hex editor, the Huffman table sections were removed from the
+resulting file.
+
+#### pixel-41x22-yuv420.jpg
+A version of pixel-1280x720-yuv420.jpg resized to 41x22 (so that the width is
+odd) using:
+```
+convert pixel-1280x720-yuv420.jpg -resize 41x22\! -define jpeg:optimize-coding=false pixel-41x22-yuv420.jpg
+```
+Then, using a hex editor, the Huffman table sections were removed from the
+resulting file.
+
+#### pixel-41x23-yuv420.jpg
+A version of pixel-1280x720-yuv420.jpg resized to 41x23 (so that both dimensions
+are odd) using:
+```
+convert pixel-1280x720-yuv420.jpg -resize 41x23\! -define jpeg:optimize-coding=false pixel-41x23-yuv420.jpg
+```
+Then, using a hex editor, the Huffman table sections were removed from the
+resulting file.
+
+#### pixel-1280x720-yuv444.jpg
+A version of pixel-1280x720.jpg converted to 4:4:4 subsampling using:
+```
+convert pixel-1280x720.jpg -sampling-factor 4:4:4 -define jpeg:optimize-coding=false pixel-1280x720-yuv444.jpg
+```
+Then, using a hex editor, the Huffman table sections were removed from the
+resulting file.
 
 #### peach_pi-1280x720.jpg
 Single MJPEG encoded frame of 1280x720, captured on Samsung Chromebook 2(13").
@@ -894,6 +959,25 @@ HEVC video stream in fragmented MP4 container, generated with
 ```
 ffmpeg -i bear-320x240.webm -c:v libx265 -an -movflags faststart+frag_keyframe bear-320x240-v_frag-hevc.mp4
 ```
+
+#### bear-320x240-v-2frames_frag-hevc.mp4
+HEVC video stream in fragmented MP4 container, including the first 2 frames, generated with
+```
+ffmpeg -i bear-320x240.webm -c:v libx265 -an -movflags frag_keyframe+empty_moov+default_base_moof \
+    -vframes 2  bear-320x240-v-2frames_frag-hevc.mp4
+```
+
+#### bear-320x240-v-2frames-keyframe-is-non-sync-sample_frag-hevc.mp4
+This is bear-320x240-v-2frames_frag-hevc.mp4, with manually updated
+trun.first_sample_flags: s/0x02000000/0x01010000 (first frame is
+non-sync-sample, depends on another frame, mismatches compressed h265 first
+frame's keyframe-ness).
+
+#### bear-320x240-v-2frames-nonkeyframe-is-sync-sample_frag-hevc.mp4
+This is bear-320x240-v-2frames_frag-hevc.mp4, with manually updated
+tfhd.default_sample_flags: s/0x01010000/0x02000000 (second frame is sync-sample,
+doesn't depend on other frames, mismatches compressed h265 second frame's
+nonkeyframe-ness).
 
 ### Multi-track MP4 file
 

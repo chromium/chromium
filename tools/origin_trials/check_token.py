@@ -12,6 +12,9 @@ usage: check_token.py [-h] [--use-chrome-key |
 
 Run "check_token.py -h" for more help on usage.
 """
+
+from __future__ import print_function
+
 import argparse
 import base64
 from datetime import datetime
@@ -104,8 +107,8 @@ def main():
     try:
       key_file = open(os.path.expanduser(private_key_file), mode="rb")
     except IOError as exc:
-      print "Unable to open key file: %s" % private_key_file
-      print "(%s)" % exc
+      print("Unable to open key file: %s" % private_key_file)
+      print("(%s)" % exc)
       sys.exit(1)
 
     private_key = key_file.read(64)
@@ -115,7 +118,7 @@ def main():
     # half.
     if (len(private_key) < 64 or
       ed25519.publickey(private_key[:32]) != private_key[32:]):
-      print "Unable to use the specified private key file."
+      print("Unable to use the specified private key file.")
       sys.exit(1)
 
     public_key = private_key[32:]
@@ -123,13 +126,13 @@ def main():
   try:
     token_contents = base64.b64decode(args.token)
   except TypeError as exc:
-    print "Error decoding the token (%s)" % exc
+    print("Error decoding the token (%s)" % exc)
     sys.exit(1)
 
 
   # Only version 2 currently supported.
   if (len(token_contents) < (VERSION_OFFSET + VERSION_SIZE)):
-    print "Token is malformed - too short."
+    print("Token is malformed - too short.")
     sys.exit(1)
 
   version = token_contents[VERSION_OFFSET:(VERSION_OFFSET + VERSION_SIZE)]
@@ -139,15 +142,15 @@ def main():
     for x in version:
       version_number <<= 8
       version_number += ord(x)
-    print "Token has wrong version: %d" % version_number
+    print("Token has wrong version: %d" % version_number)
     sys.exit(1)
 
   # Token must be large enough to contain a version, signature, and payload
   # length.
   minimum_token_length = PAYLOAD_LENGTH_OFFSET + PAYLOAD_LENGTH_SIZE
   if (len(token_contents) < minimum_token_length):
-    print "Token is malformed - too short: %d bytes, minimum is %d" % \
-      (len(token_contents), minimum_token_length)
+    print("Token is malformed - too short: %d bytes, minimum is %d" % \
+      (len(token_contents), minimum_token_length))
     sys.exit(1)
 
   # Extract the length of the signed data (Big-endian).
@@ -158,8 +161,8 @@ def main():
   # Validate that the stated length matches the actual payload length.
   actual_payload_length = len(token_contents) - PAYLOAD_OFFSET
   if (payload_length != actual_payload_length):
-    print "Token is %d bytes, expected %d" % (actual_payload_length,
-                                              payload_length)
+    print("Token is %d bytes, expected %d" % (actual_payload_length,
+                                              payload_length))
     sys.exit(1)
 
   # Extract the version-specific contents of the token.
@@ -173,30 +176,30 @@ def main():
   try:
     ed25519.checkvalid(signature, signed_data, public_key)
   except Exception as exc:
-    print "Signature invalid (%s)" % exc
+    print("Signature invalid (%s)" % exc)
     sys.exit(1)
 
   try:
     payload = token_contents[PAYLOAD_OFFSET:].decode('utf-8')
   except UnicodeError as exc:
-    print "Unable to decode token contents (%s)" % exc
+    print("Unable to decode token contents (%s)" % exc)
     sys.exit(1)
 
   try:
     token_data = json.loads(payload)
   except Exception as exc:
-    print "Unable to parse payload (%s)" % exc
-    print "Payload: %s" % payload
+    print("Unable to parse payload (%s)" % exc)
+    print("Payload: %s" % payload)
     sys.exit(1)
 
-  print
-  print "Token data: %s" % token_data
-  print
+  print()
+  print("Token data: %s" % token_data)
+  print()
 
   # Extract the required fields
   for field in ["origin", "feature", "expiry"]:
-    if not token_data.has_key(field):
-      print "Token is missing required field: %s" % field
+    if field not in token_data:
+      print("Token is missing required field: %s" % field)
       sys.exit(1)
 
   origin = token_data["origin"]
@@ -207,14 +210,14 @@ def main():
   is_subdomain = token_data.get("isSubdomain")
 
   # Output the token details
-  print "Token details:"
-  print " Origin: %s" % origin
-  print " Is Subdomain: %s" % is_subdomain
-  print " Feature: %s" % trial_name
-  print " Expiry: %d (%s UTC)" % (expiry, datetime.utcfromtimestamp(expiry))
-  print " Signature: %s" % ", ".join('0x%02x' % ord(x) for x in signature)
-  print " Signature (Base64): %s" % base64.b64encode(signature)
-  print
+  print("Token details:")
+  print(" Origin: %s" % origin)
+  print(" Is Subdomain: %s" % is_subdomain)
+  print(" Feature: %s" % trial_name)
+  print(" Expiry: %d (%s UTC)" % (expiry, datetime.utcfromtimestamp(expiry)))
+  print(" Signature: %s" % ", ".join('0x%02x' % ord(x) for x in signature))
+  print(" Signature (Base64): %s" % base64.b64encode(signature))
+  print()
 
 if __name__ == "__main__":
   main()

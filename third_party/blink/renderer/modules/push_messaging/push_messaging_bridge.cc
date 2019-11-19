@@ -4,12 +4,11 @@
 
 #include "third_party/blink/renderer/modules/push_messaging/push_messaging_bridge.h"
 
-#include "third_party/blink/public/platform/modules/push_messaging/web_push_error.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/modules/permissions/permission_utils.h"
-#include "third_party/blink/renderer/modules/push_messaging/push_error.h"
 #include "third_party/blink/renderer/modules/push_messaging/push_subscription_options_init.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
@@ -18,20 +17,6 @@ namespace {
 // Error message to explain that the userVisibleOnly flag must be set.
 const char kUserVisibleOnlyRequired[] =
     "Push subscriptions that don't enable userVisibleOnly are not supported.";
-
-String PermissionStatusToString(mojom::blink::PermissionStatus status) {
-  switch (status) {
-    case mojom::blink::PermissionStatus::GRANTED:
-      return "granted";
-    case mojom::blink::PermissionStatus::DENIED:
-      return "denied";
-    case mojom::blink::PermissionStatus::ASK:
-      return "prompt";
-  }
-
-  NOTREACHED();
-  return "denied";
-}
 
 }  // namespace
 
@@ -67,11 +52,11 @@ ScriptPromise PushMessagingBridge::GetPermissionState(
     const PushSubscriptionOptionsInit* options) {
   ExecutionContext* context = ExecutionContext::From(script_state);
   if (!permission_service_) {
-    ConnectToPermissionService(context,
-                               mojo::MakeRequest(&permission_service_));
+    ConnectToPermissionService(
+        context, permission_service_.BindNewPipeAndPassReceiver());
   }
 
-  ScriptPromiseResolver* resolver = ScriptPromiseResolver::Create(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
   // The `userVisibleOnly` flag on |options| must be set, as it's intended to be
@@ -80,8 +65,8 @@ ScriptPromise PushMessagingBridge::GetPermissionState(
   //
   // TODO(peter): Would it be better to resolve DENIED rather than rejecting?
   if (!options->hasUserVisibleOnly() || !options->userVisibleOnly()) {
-    resolver->Reject(DOMException::Create(DOMExceptionCode::kNotSupportedError,
-                                          kUserVisibleOnlyRequired));
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kNotSupportedError, kUserVisibleOnlyRequired));
     return promise;
   }
 

@@ -65,7 +65,7 @@ SignedCertificateTimestamp::CreateFromPickle(base::PickleIterator* iter) {
         iter->ReadString(&sct->signature.signature_data) &&
         iter->ReadInt(&origin) &&
         iter->ReadString(&sct->log_description))) {
-    return NULL;
+    return nullptr;
   }
   // Now set the rest of the member variables:
   sct->version = static_cast<Version>(version);

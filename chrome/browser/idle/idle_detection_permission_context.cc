@@ -12,7 +12,7 @@
 
 IdleDetectionPermissionContext::IdleDetectionPermissionContext(Profile* profile)
     : PermissionContextBase(profile,
-                            CONTENT_SETTINGS_TYPE_IDLE_DETECTION,
+                            ContentSettingsType::IDLE_DETECTION,
                             blink::mojom::FeaturePolicyFeature::kNotFound) {}
 
 IdleDetectionPermissionContext::~IdleDetectionPermissionContext() = default;
@@ -28,9 +28,9 @@ void IdleDetectionPermissionContext::UpdateTabContext(
     return;
 
   if (allowed)
-    content_settings->OnContentAllowed(CONTENT_SETTINGS_TYPE_IDLE_DETECTION);
+    content_settings->OnContentAllowed(ContentSettingsType::IDLE_DETECTION);
   else
-    content_settings->OnContentBlocked(CONTENT_SETTINGS_TYPE_IDLE_DETECTION);
+    content_settings->OnContentBlocked(ContentSettingsType::IDLE_DETECTION);
 }
 
 ContentSetting IdleDetectionPermissionContext::GetPermissionStatusInternal(

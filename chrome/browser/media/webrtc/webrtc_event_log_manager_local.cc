@@ -184,16 +184,9 @@ void WebRtcLocalEventLogManager::StartLogFile(const PeerConnectionKey& key) {
 
   // In the unlikely case that this filename is already taken, find a unique
   // number to append to the filename, if possible.
-  int unique_number =
-      base::GetUniquePathNumber(file_path, base::FilePath::StringType());
-  if (unique_number < 0) {
+  file_path = base::GetUniquePath(file_path);
+  if (file_path.empty()) {
     return;  // No available file path was found.
-  } else if (unique_number != 0) {
-    // The filename is taken, but a unique number was found.
-    // TODO(crbug.com/785333): Fix the way the unique number is used.
-    file_path = file_path.InsertBeforeExtension(
-        FILE_PATH_LITERAL(" (") + NumberToStringType(unique_number) +
-        FILE_PATH_LITERAL(")"));
   }
 
   auto log_file =

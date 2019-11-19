@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_remaining_time_display_element.h"
 
+#include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/blink/renderer/modules/media_controls/media_controls_impl.h"
 
 namespace {
@@ -18,9 +19,8 @@ namespace blink {
 
 MediaControlRemainingTimeDisplayElement::
     MediaControlRemainingTimeDisplayElement(MediaControlsImpl& media_controls)
-    : MediaControlTimeDisplayElement(
-          media_controls,
-          WebLocalizedString::kAXMediaTimeRemainingDisplay) {
+    : MediaControlTimeDisplayElement(media_controls,
+                                     IDS_AX_MEDIA_TIME_REMAINING_DISPLAY) {
   SetShadowPseudoId(
       AtomicString("-webkit-media-controls-time-remaining-display"));
 }

@@ -4,6 +4,8 @@
 
 #include "ash/wm/window_animations.h"
 
+#include "ash/public/cpp/keyboard/keyboard_switches.h"
+#include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_animation_types.h"
 #include "ash/shell.h"
@@ -20,7 +22,6 @@
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
-#include "ui/keyboard/public/keyboard_switches.h"
 
 using aura::Window;
 using ui::Layer;
@@ -79,16 +80,16 @@ TEST_F(WindowAnimationsTest, HideShowBrightnessGrayscaleAnimation) {
   EXPECT_TRUE(window->layer()->visible());
 
   // Hiding.
-  ::wm::SetWindowVisibilityAnimationType(
-      window.get(), wm::WINDOW_VISIBILITY_ANIMATION_TYPE_BRIGHTNESS_GRAYSCALE);
+  wm::SetWindowVisibilityAnimationType(
+      window.get(), WINDOW_VISIBILITY_ANIMATION_TYPE_BRIGHTNESS_GRAYSCALE);
   AnimateOnChildWindowVisibilityChanged(window.get(), false);
   EXPECT_EQ(0.0f, window->layer()->GetTargetOpacity());
   EXPECT_FALSE(window->layer()->GetTargetVisibility());
   EXPECT_FALSE(window->layer()->visible());
 
   // Showing.
-  ::wm::SetWindowVisibilityAnimationType(
-      window.get(), wm::WINDOW_VISIBILITY_ANIMATION_TYPE_BRIGHTNESS_GRAYSCALE);
+  wm::SetWindowVisibilityAnimationType(
+      window.get(), WINDOW_VISIBILITY_ANIMATION_TYPE_BRIGHTNESS_GRAYSCALE);
   AnimateOnChildWindowVisibilityChanged(window.get(), true);
   EXPECT_EQ(0.0f, window->layer()->GetTargetBrightness());
   EXPECT_EQ(0.0f, window->layer()->GetTargetGrayscale());
@@ -114,8 +115,6 @@ TEST_F(WindowAnimationsTest, LayerTargetVisibility) {
   EXPECT_TRUE(window->layer()->GetTargetVisibility());
 }
 
-namespace wm {
-
 TEST_F(WindowAnimationsTest, CrossFadeToBounds) {
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
@@ -128,7 +127,7 @@ TEST_F(WindowAnimationsTest, CrossFadeToBounds) {
   EXPECT_EQ(1.0f, old_layer->GetTargetOpacity());
 
   // Cross fade to a larger size, as in a maximize animation.
-  GetWindowState(window.get())
+  WindowState::Get(window.get())
       ->SetBoundsDirectCrossFade(gfx::Rect(0, 0, 640, 480));
   // Window's layer has been replaced.
   EXPECT_NE(old_layer, window->layer());
@@ -151,7 +150,7 @@ TEST_F(WindowAnimationsTest, CrossFadeToBounds) {
 
   // Cross fade to a smaller size, as in a restore animation.
   old_layer = window->layer();
-  GetWindowState(window.get())
+  WindowState::Get(window.get())
       ->SetBoundsDirectCrossFade(gfx::Rect(5, 10, 320, 240));
   // Again, window layer has been replaced.
   EXPECT_NE(old_layer, window->layer());
@@ -191,7 +190,7 @@ TEST_F(WindowAnimationsTest, CrossFadeToBoundsFromTransform) {
   EXPECT_EQ(1.0f, old_layer->GetTargetOpacity());
 
   // Cross fade to a larger size, as in a maximize animation.
-  GetWindowState(window.get())
+  WindowState::Get(window.get())
       ->SetBoundsDirectCrossFade(gfx::Rect(0, 0, 640, 480));
   // Window's layer has not been replaced.
   EXPECT_EQ(old_layer, window->layer());
@@ -201,8 +200,6 @@ TEST_F(WindowAnimationsTest, CrossFadeToBoundsFromTransform) {
   // Window still has its old transform before crossfading animation.
   EXPECT_EQ(half_size, old_layer->transform());
 }
-
-}  // namespace wm
 
 TEST_F(WindowAnimationsTest, LockAnimationDuration) {
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
@@ -222,7 +219,7 @@ TEST_F(WindowAnimationsTest, LockAnimationDuration) {
       ui::ScopedLayerAnimationSettings settings2(layer->GetAnimator());
       // Duration is not locked so it gets overridden.
       settings2.SetTransitionDuration(base::TimeDelta::FromMilliseconds(50));
-      wm::GetWindowState(window.get())->Minimize();
+      WindowState::Get(window.get())->Minimize();
       EXPECT_TRUE(layer->GetAnimator()->is_animating());
       // Expect duration from the inner scope
       EXPECT_EQ(50,
@@ -244,7 +241,7 @@ TEST_F(WindowAnimationsTest, LockAnimationDuration) {
       ui::ScopedLayerAnimationSettings settings2(layer->GetAnimator());
       // Transition duration setting is ignored.
       settings2.SetTransitionDuration(base::TimeDelta::FromMilliseconds(50));
-      wm::GetWindowState(window.get())->Minimize();
+      WindowState::Get(window.get())->Minimize();
       EXPECT_TRUE(layer->GetAnimator()->is_animating());
       // Expect duration from the outer scope
       EXPECT_EQ(1000,
@@ -259,7 +256,7 @@ TEST_F(WindowAnimationsTest, LockAnimationDuration) {
     layer = window->layer();
     // Query default duration.
     MinimizeAnimationObserver observer(layer->GetAnimator());
-    wm::GetWindowState(window.get())->Minimize();
+    WindowState::Get(window.get())->Minimize();
     EXPECT_TRUE(layer->GetAnimator()->is_animating());
     base::TimeDelta default_duration(observer.duration());
     window->Show();
@@ -270,7 +267,7 @@ TEST_F(WindowAnimationsTest, LockAnimationDuration) {
     settings.LockTransitionDuration();
     // Setting transition duration is ignored since duration is locked
     settings.SetTransitionDuration(base::TimeDelta::FromMilliseconds(1000));
-    wm::GetWindowState(window.get())->Minimize();
+    WindowState::Get(window.get())->Minimize();
     EXPECT_TRUE(layer->GetAnimator()->is_animating());
     // Expect default duration (200ms for stock ash minimizing animation).
     EXPECT_EQ(default_duration.InMilliseconds(),
@@ -292,7 +289,7 @@ TEST_F(WindowAnimationsTest, SlideOutAnimation) {
   EXPECT_TRUE(window->layer()->visible());
 
   ::wm::SetWindowVisibilityAnimationType(
-      window.get(), wm::WINDOW_VISIBILITY_ANIMATION_TYPE_FADE_IN_SLIDE_OUT);
+      window.get(), WINDOW_VISIBILITY_ANIMATION_TYPE_FADE_IN_SLIDE_OUT);
   AnimateOnChildWindowVisibilityChanged(window.get(), false);
 
   EXPECT_EQ(0.0f, window->layer()->GetTargetOpacity());
@@ -312,7 +309,7 @@ TEST_F(WindowAnimationsTest, FadeInAnimation) {
   EXPECT_FALSE(window->layer()->visible());
 
   ::wm::SetWindowVisibilityAnimationType(
-      window.get(), wm::WINDOW_VISIBILITY_ANIMATION_TYPE_FADE_IN_SLIDE_OUT);
+      window.get(), WINDOW_VISIBILITY_ANIMATION_TYPE_FADE_IN_SLIDE_OUT);
   AnimateOnChildWindowVisibilityChanged(window.get(), true);
 
   EXPECT_EQ(1.0f, window->layer()->GetTargetOpacity());
@@ -328,32 +325,70 @@ TEST_F(WindowAnimationsTest, SlideOutAnimationPlaysTwiceForPipWindow) {
   std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithId(0));
   window->SetBounds(gfx::Rect(8, 8, 100, 100));
 
-  wm::WindowState* window_state = wm::GetWindowState(window.get());
-  const wm::WMEvent enter_pip(wm::WM_EVENT_PIP);
+  WindowState* window_state = WindowState::Get(window.get());
+  const WMEvent enter_pip(WM_EVENT_PIP);
   window_state->OnWMEvent(&enter_pip);
   EXPECT_TRUE(window_state->IsPip());
 
   window->Show();
   EXPECT_TRUE(window->layer()->visible());
-  EXPECT_EQ("8,8 100x100", window->layer()->GetTargetBounds().ToString());
+  EXPECT_EQ(gfx::Rect(8, 8, 100, 100), window->layer()->GetTargetBounds());
 
   window->Hide();
   EXPECT_EQ(0.0f, window->layer()->GetTargetOpacity());
   EXPECT_FALSE(window->layer()->GetTargetVisibility());
   EXPECT_FALSE(window->layer()->visible());
-  EXPECT_EQ("-142,8 100x100", window->layer()->GetTargetBounds().ToString());
+  EXPECT_EQ(gfx::Rect(-142, 8, 100, 100), window->layer()->GetTargetBounds());
 
   // Reset the position and try again.
   window->Show();
   window->SetBounds(gfx::Rect(8, 8, 100, 100));
   EXPECT_TRUE(window->layer()->visible());
-  EXPECT_EQ("8,8 100x100", window->layer()->GetTargetBounds().ToString());
+  EXPECT_EQ(gfx::Rect(8, 8, 100, 100), window->layer()->GetTargetBounds());
 
   window->Hide();
   EXPECT_EQ(0.0f, window->layer()->GetTargetOpacity());
   EXPECT_FALSE(window->layer()->GetTargetVisibility());
   EXPECT_FALSE(window->layer()->visible());
-  EXPECT_EQ("-142,8 100x100", window->layer()->GetTargetBounds().ToString());
+  EXPECT_EQ(gfx::Rect(-142, 8, 100, 100), window->layer()->GetTargetBounds());
+}
+
+TEST_F(WindowAnimationsTest, ResetAnimationAfterDismissingArcPip) {
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+
+  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithId(0));
+  window->SetBounds(gfx::Rect(8, 8, 100, 100));
+
+  WindowState* window_state = WindowState::Get(window.get());
+  const WMEvent enter_pip(WM_EVENT_PIP);
+  window_state->OnWMEvent(&enter_pip);
+  EXPECT_TRUE(window_state->IsPip());
+
+  window->Show();
+  EXPECT_TRUE(window->layer()->visible());
+  EXPECT_EQ(gfx::Rect(8, 8, 100, 100), window->layer()->GetTargetBounds());
+
+  // Ensure the window is slided out.
+  WindowState::Get(window.get())->Minimize();
+  EXPECT_EQ(0.0f, window->layer()->GetTargetOpacity());
+  EXPECT_FALSE(window->layer()->GetTargetVisibility());
+  EXPECT_FALSE(window->layer()->visible());
+  EXPECT_EQ(gfx::Rect(-142, 8, 100, 100), window->layer()->GetTargetBounds());
+
+  WindowState::Get(window.get())->Maximize();
+  EXPECT_EQ(1.0f, window->layer()->GetTargetOpacity());
+  EXPECT_TRUE(window->layer()->visible());
+  EXPECT_EQ(gfx::Rect(0, 0, 800, 600 - ShelfConfig::Get()->shelf_size()),
+            window->layer()->GetTargetBounds());
+
+  // Ensure the window is not slided out.
+  window->Hide();
+  EXPECT_EQ(0.0f, window->layer()->GetTargetOpacity());
+  EXPECT_FALSE(window->layer()->GetTargetVisibility());
+  EXPECT_FALSE(window->layer()->visible());
+  EXPECT_EQ(gfx::Rect(0, 0, 800, 600 - ShelfConfig::Get()->shelf_size()),
+            window->layer()->GetTargetBounds());
 }
 
 }  // namespace ash

@@ -50,13 +50,13 @@ class ApplicationStatusListener;
 namespace disk_cache {
 class Backend;
 class Entry;
+class EntryResult;
 }  // namespace disk_cache
 
 namespace net {
 
 class HttpNetworkSession;
 class HttpResponseInfo;
-class IOBuffer;
 class NetLog;
 struct HttpRequestInfo;
 
@@ -203,17 +203,6 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
                                 HttpResponseInfo* response_info,
                                 bool* response_truncated);
 
-  // Writes |buf_len| bytes of metadata stored in |buf| to the cache entry
-  // referenced by |url|, as long as the entry's |expected_response_time| has
-  // not changed. This method returns without blocking, and the operation will
-  // be performed asynchronously without any completion notification.
-  // Takes ownership of |buf|.
-  virtual void WriteMetadata(const GURL& url,
-                             RequestPriority priority,
-                             base::Time expected_response_time,
-                             IOBuffer* buf,
-                             int buf_len);
-
   // Get/Set the cache's mode.
   void set_mode(Mode value) { mode_ = value; }
   Mode mode() { return mode_; }
@@ -231,11 +220,10 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
   void CloseIdleConnections();
 
   // Called whenever an external cache in the system reuses the resource
-  // referred to by |url| and |http_method|, inside a page with a top-level
-  // URL at |top_frame_origin|.
+  // referred to by |url| and |http_method| and |network_isolation_key|.
   void OnExternalCacheHit(const GURL& url,
                           const std::string& http_method,
-                          base::Optional<url::Origin> top_frame_origin);
+                          const NetworkIsolationKey& network_isolation_key);
 
   // Causes all transactions created after this point to simulate lock timeout
   // and effectively bypass the cache lock whenever there is lock contention.
@@ -275,6 +263,13 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
   void DumpMemoryStats(base::trace_event::ProcessMemoryDump* pmd,
                        const std::string& parent_absolute_name) const;
 
+  // Get the URL from the entry's cache key. If double-keying is not enabled,
+  // this will be the key itself.
+  static std::string GetResourceURLFromHttpCacheKey(const std::string& key);
+
+  // Function to generate cache key for testing.
+  static std::string GenerateCacheKeyForTest(const HttpRequestInfo* request);
+
  private:
   // Types --------------------------------------------------------------------
 
@@ -291,13 +286,17 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
   enum {
     kResponseInfoIndex = 0,
     kResponseContentIndex,
+    // Only currently used in DoTruncateCachedMetadata().
+    // TODO(mmenke): Remove this in and DoTruncateCachedMetadata() in M79, after
+    // most metadata entries in the cache have been removed. Without
+    // DoTruncateCachedMetadata(), the metadata will be removed when a cache
+    // entry is destroyed, but some conditionalized updates will keep it around.
     kMetadataIndex,
 
     // Must remain at the end of the enum.
     kNumCacheEntryDataIndices
   };
 
-  class MetadataWriter;
   class QuicServerInfoFactoryAdaptor;
   class Transaction;
   class WorkItem;
@@ -312,6 +311,11 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
   // To help with testing.
   friend class MockHttpCache;
   friend class HttpCacheIOCallbackTest;
+
+  FRIEND_TEST_ALL_PREFIXES(HttpCacheTest, SplitCacheWithFrameOrigin);
+  FRIEND_TEST_ALL_PREFIXES(HttpCacheTest, NonSplitCache);
+  FRIEND_TEST_ALL_PREFIXES(HttpCacheTest, SplitCache);
+  FRIEND_TEST_ALL_PREFIXES(HttpCacheTest, SplitCacheWithRegistrableDomain);
 
   using TransactionList = std::list<Transaction*>;
   using TransactionSet = std::unordered_set<Transaction*>;
@@ -340,7 +344,7 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
   // (once the data is written to the cache by writers)
 
   struct NET_EXPORT_PRIVATE ActiveEntry {
-    explicit ActiveEntry(disk_cache::Entry* entry);
+    ActiveEntry(disk_cache::Entry* entry, bool opened_in);
     ~ActiveEntry();
     size_t EstimateMemoryUsage() const;
 
@@ -354,6 +358,11 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
     bool TransactionInReaders(Transaction* transaction) const;
 
     disk_cache::Entry* disk_entry = nullptr;
+
+    // Indicates if the disk_entry was opened or not (i.e.: created).
+    // It is set to true when a transaction is added to an entry so that other,
+    // queued, transactions do not mistake it for a newly created entry.
+    bool opened = false;
 
     // Transactions waiting to be added to entry.
     TransactionList add_to_entry_queue;
@@ -409,7 +418,7 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
   int GetBackendForTransaction(Transaction* transaction);
 
   // Generates the cache key for this request.
-  std::string GenerateCacheKey(const HttpRequestInfo*);
+  static std::string GenerateCacheKey(const HttpRequestInfo*);
 
   // Dooms the entry selected by |key|, if it is currently in the list of active
   // entries.
@@ -427,10 +436,10 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
   // currently in use.
   int AsyncDoomEntry(const std::string& key, Transaction* transaction);
 
-  // Dooms the entry associated with a GET for a given |url|, loaded from
-  // a page with top-level frame at |top_frame_origin|.
+  // Dooms the entry associated with a GET for a given url and network
+  // isolation key.
   void DoomMainEntryForUrl(const GURL& url,
-                           base::Optional<url::Origin> top_frame_origin);
+                           const NetworkIsolationKey& isolation_key);
 
   // Closes a previously doomed entry.
   void FinalizeDoomedEntry(ActiveEntry* entry);
@@ -440,7 +449,7 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
 
   // Creates a new ActiveEntry and starts tracking it. |disk_entry| is the disk
   // cache entry.
-  ActiveEntry* ActivateEntry(disk_cache::Entry* disk_entry);
+  ActiveEntry* ActivateEntry(disk_cache::Entry* disk_entry, bool opened);
 
   // Deletes an ActiveEntry.
   void DeactivateEntry(ActiveEntry* entry);
@@ -615,8 +624,19 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
                                   PendingOp* pending_op,
                                   int result);
 
+  // Variant for Open/Create method family, which has a different signature.
+  static void OnPendingCreationOpComplete(const base::WeakPtr<HttpCache>& cache,
+                                          PendingOp* pending_op,
+                                          disk_cache::EntryResult result);
+
   // Processes the backend creation notification.
   void OnBackendCreated(int result, PendingOp* pending_op);
+
+  // Constants ----------------------------------------------------------------
+
+  // Used when generating and accessing keys if cache is split.
+  static const char kDoubleKeyPrefix[];
+  static const char kDoubleKeySeparator[];
 
   // Variables ----------------------------------------------------------------
 
@@ -651,7 +671,7 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
 
   THREAD_CHECKER(thread_checker_);
 
-  base::WeakPtrFactory<HttpCache> weak_factory_;
+  base::WeakPtrFactory<HttpCache> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(HttpCache);
 };

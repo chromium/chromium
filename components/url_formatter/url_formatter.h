@@ -25,6 +25,7 @@
 #include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_offset_string_conversions.h"
+#include "components/url_formatter/spoof_checks/idn_spoof_checker.h"
 #include "net/base/escape.h"
 
 class GURL;
@@ -53,11 +54,11 @@ struct IDNConversionResult {
   // The top domain that the hostname of the input is visually similar to. Is
   // empty if the input didn't match any top domain.
   // E.g. IDNToUnicodeWithDetails("googlé.com") will fill |result| with
-  // "xn--googl-fsa.com" and |matching_top_domain| with "google.com".
-  std::string matching_top_domain;
+  // "xn--googl-fsa.com" and |matching_top_domain.domain| with "google.com".
+  TopDomainEntry matching_top_domain;
 };
 
-// Nothing is ommitted.
+// Nothing is omitted.
 extern const FormatUrlType kFormatUrlOmitNothing;
 
 // If set, any username and password are removed.
@@ -87,7 +88,7 @@ extern const FormatUrlType kFormatUrlOmitFileScheme;
 // If the scheme is 'mailto:', it's removed. Not in kFormatUrlOmitDefaults.
 extern const FormatUrlType kFormatUrlOmitMailToScheme;
 
-// Convenience for omitting all unecessary types. Does not include HTTPS scheme
+// Convenience for omitting all unnecessary types. Does not include HTTPS scheme
 // removal, or experimental flags.
 extern const FormatUrlType kFormatUrlOmitDefaults;
 
@@ -174,8 +175,11 @@ void AppendFormattedHost(const GURL& url, base::string16* output);
 // function does NOT accept UTF-8!
 base::string16 IDNToUnicode(base::StringPiece host);
 
-// Same as IDNToUnicode, but returns more details.
-IDNConversionResult IDNToUnicodeWithDetails(base::StringPiece host);
+// Same as IDNToUnicode, but disables spoof checks and returns more details.
+// In particular, it doesn't fall back to punycode if |host| fails spoof checks
+// in IDN spoof checker or is a lookalike of a top domain.
+// DO NOT use this for displaying URLs.
+IDNConversionResult UnsafeIDNToUnicodeWithDetails(base::StringPiece host);
 
 // If |text| starts with "www." it is removed, otherwise |text| is returned
 // unmodified.
@@ -189,7 +193,7 @@ Skeletons GetSkeletons(const base::string16& host);
 
 // Returns a domain from the top 10K list matching the given skeleton. Used for
 // spoof checking.
-std::string LookupSkeletonInTopDomains(const std::string& skeleton);
+TopDomainEntry LookupSkeletonInTopDomains(const std::string& skeleton);
 
 }  // namespace url_formatter
 

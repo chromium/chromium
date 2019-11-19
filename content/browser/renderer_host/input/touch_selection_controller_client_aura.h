@@ -125,7 +125,7 @@ class CONTENT_EXPORT TouchSelectionControllerClientAura
   gfx::SelectionBound manager_selection_start_;
   gfx::SelectionBound manager_selection_end_;
 
-  base::ObserverList<TouchSelectionControllerClientManager::Observer>::Unchecked
+  base::ObserverList<TouchSelectionControllerClientManager::Observer>
       observers_;
 
   base::RetainingOneShotTimer quick_menu_timer_;

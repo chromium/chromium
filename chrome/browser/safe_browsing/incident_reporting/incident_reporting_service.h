@@ -18,6 +18,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "chrome/browser/safe_browsing/incident_reporting/delayed_analysis_callback.h"
@@ -25,8 +26,6 @@
 #include "chrome/browser/safe_browsing/incident_reporting/download_metadata_manager.h"
 #include "chrome/browser/safe_browsing/incident_reporting/incident_report_uploader.h"
 #include "chrome/browser/safe_browsing/incident_reporting/last_download_finder.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 
 class Profile;
 
@@ -36,8 +35,6 @@ class TaskRunner;
 
 namespace content {
 class DownloadManager;
-class NotificationDetails;
-class NotificationSource;
 }
 
 namespace network {
@@ -77,7 +74,7 @@ class SafeBrowsingService;
 // the initial incident. Finally, already-reported incidents are pruned and any
 // remaining are uploaded in an incident report.
 // Lives on the UI thread.
-class IncidentReportingService : public content::NotificationObserver {
+class IncidentReportingService : public ProfileManagerObserver {
  public:
   explicit IncidentReportingService(SafeBrowsingService* safe_browsing_service);
 
@@ -107,6 +104,9 @@ class IncidentReportingService : public content::NotificationObserver {
   // storage.
   void AddDownloadManager(content::DownloadManager* download_manager);
 
+  // ProfileManagerObserver:
+  void OnProfileAdded(Profile* profile) override;
+
  protected:
   // A pointer to a function that populates a protobuf with environment data.
   typedef void (*CollectEnvironmentDataFn)(
@@ -131,14 +131,6 @@ class IncidentReportingService : public content::NotificationObserver {
   virtual void DoExtensionCollection(
       ClientIncidentReport_ExtensionData* extension_data);
 
-  // Handles the addition of a new profile to the ProfileManager. Creates a new
-  // context for |profile| if one does not exist, drops any received incidents
-  // for the profile if the profile is not participating in safe browsing
-  // extended reporting, and initiates a new search for the most recent download
-  // if a report is being assembled and the most recent has not been found.
-  // Overridden by unit tests to inject incidents prior to creation.
-  virtual void OnProfileAdded(Profile* profile);
-
   // Initiates a search for the most recent binary download. Overriden by unit
   // tests to provide a fake finder.
   virtual std::unique_ptr<LastDownloadFinder> CreateDownloadFinder(
@@ -162,10 +154,6 @@ class IncidentReportingService : public content::NotificationObserver {
 
   // Returns the context for |profile|, or NULL if it is unknown.
   ProfileContext* GetProfileContext(Profile* profile);
-
-  // Handles the destruction of a profile. Incidents reported for the profile
-  // but not yet uploaded are dropped.
-  void OnProfileDestroyed(Profile* profile);
 
   // Returns an initialized profile for which incident reporting is enabled.
   Profile* FindEligibleProfile() const;
@@ -264,11 +252,6 @@ class IncidentReportingService : public content::NotificationObserver {
   void OnClientDownloadRequest(download::DownloadItem* download,
                                const ClientDownloadRequest* request);
 
-  // content::NotificationObserver methods.
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
-
   // Accessor for an URLLoaderFactory with which reports will be sent.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
@@ -283,20 +266,17 @@ class IncidentReportingService : public content::NotificationObserver {
   // collection task at shutdown if it has not yet started.
   scoped_refptr<base::TaskRunner> environment_collection_task_runner_;
 
-  // Registrar for observing profile lifecycle notifications.
-  content::NotificationRegistrar notification_registrar_;
-
   // A subscription for ClientDownloadRequests, used to persist them for later
   // use.
   ClientDownloadRequestSubscription client_download_request_subscription_;
 
   // True when the asynchronous environment collection task has been fired off
   // but has not yet completed.
-  bool environment_collection_pending_;
+  bool environment_collection_pending_ = false;
 
   // True when an incident has been received and the service is waiting for the
   // collation_timer_ to fire.
-  bool collation_timeout_pending_;
+  bool collation_timeout_pending_ = false;
 
   // A timer upon the firing of which the service will report received
   // incidents.
@@ -337,12 +317,13 @@ class IncidentReportingService : public content::NotificationObserver {
   std::unique_ptr<LastDownloadFinder> last_download_finder_;
 
   // A factory for handing out weak pointers for IncidentReceiver objects.
-  base::WeakPtrFactory<IncidentReportingService> receiver_weak_ptr_factory_;
+  base::WeakPtrFactory<IncidentReportingService> receiver_weak_ptr_factory_{
+      this};
 
   // A factory for handing out weak pointers for internal asynchronous tasks
   // that are posted during normal processing (e.g., environment collection,
   // and report uploads).
-  base::WeakPtrFactory<IncidentReportingService> weak_ptr_factory_;
+  base::WeakPtrFactory<IncidentReportingService> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(IncidentReportingService);
 };

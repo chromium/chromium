@@ -18,7 +18,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 @Config(manifest = Config.NONE)
 public class UrlUtilitiesUnitTest {
     @Test
-    public void testIsHttpOrHttps() throws InterruptedException {
+    public void testIsHttpOrHttps() {
         Assert.assertTrue(
                 UrlUtilities.isHttpOrHttps("https://user:pass@awesome.com:9000/bad-scheme/#fake"));
         Assert.assertTrue(UrlUtilities.isHttpOrHttps("http://awesome.example.com/"));
@@ -116,7 +116,7 @@ public class UrlUtilitiesUnitTest {
     }
 
     @Test
-    public void testStripPath() throws InterruptedException {
+    public void testStripPath() {
         Assert.assertEquals("https://example.com:9000",
                 UrlUtilities.stripPath("https://user:pass@example.com:9000/path/#extra"));
         Assert.assertEquals("http://awesome.example.com",

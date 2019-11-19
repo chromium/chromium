@@ -11,11 +11,12 @@
 #include "ash/accessibility/touch_accessibility_enabler.h"
 #include "ash/accessibility/touch_exploration_controller.h"
 #include "ash/ash_export.h"
+#include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
 #include "ash/shell_observer.h"
 #include "base/macros.h"
 #include "base/scoped_observer.h"
+#include "ui/aura/window_observer.h"
 #include "ui/display/display_observer.h"
-#include "ui/keyboard/keyboard_controller_observer.h"
 #include "ui/wm/public/activation_change_observer.h"
 
 namespace chromeos {
@@ -39,7 +40,7 @@ class ASH_EXPORT TouchExplorationManager
       public TouchAccessibilityEnablerDelegate,
       public display::DisplayObserver,
       public ::wm::ActivationChangeObserver,
-      public keyboard::KeyboardControllerObserver,
+      public KeyboardControllerObserver,
       public ShellObserver {
  public:
   explicit TouchExplorationManager(
@@ -48,6 +49,7 @@ class ASH_EXPORT TouchExplorationManager
 
   // AccessibilityObserver overrides:
   void OnAccessibilityStatusChanged() override;
+  void OnAccessibilityControllerShutdown() override;
 
   // aura::WindowObserver overrides:
   void OnWindowPropertyChanged(aura::Window* window,
@@ -85,7 +87,7 @@ class ASH_EXPORT TouchExplorationManager
   void SetTouchAccessibilityAnchorPoint(const gfx::Point& anchor_point);
 
  private:
-  // keyboard::KeyboardControllerObserver overrides:
+  // KeyboardControllerObserver overrides:
   void OnKeyboardVisibleBoundsChanged(const gfx::Rect& new_bounds) override;
   void OnKeyboardEnabledChanged(bool is_enabled) override;
 

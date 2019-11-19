@@ -6,10 +6,10 @@ package org.chromium.chrome.browser.vr.util;
 
 import org.junit.Assert;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.vr.TestVrShellDelegate;
 import org.chromium.chrome.browser.vr.VrCoreInfo;
 import org.chromium.chrome.browser.vr.mock.MockVrCoreVersionChecker;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -28,7 +28,7 @@ public class VrShellDelegateUtils {
     public static TestVrShellDelegate getDelegateInstance() {
         final AtomicReference<TestVrShellDelegate> delegate =
                 new AtomicReference<TestVrShellDelegate>();
-        ThreadUtils.runOnUiThreadBlocking(
+        TestThreadUtils.runOnUiThreadBlocking(
                 () -> { delegate.set(TestVrShellDelegate.getInstance()); });
         return delegate.get();
     }
@@ -45,7 +45,7 @@ public class VrShellDelegateUtils {
     public static MockVrCoreVersionChecker setVrCoreCompatibility(int compatibility) {
         final MockVrCoreVersionChecker mockChecker = new MockVrCoreVersionChecker();
         mockChecker.setMockReturnValue(new VrCoreInfo(null, compatibility));
-        ThreadUtils.runOnUiThreadBlocking(() -> {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
             VrShellDelegateUtils.getDelegateInstance().overrideVrCoreVersionCheckerForTesting(
                     mockChecker);
         });

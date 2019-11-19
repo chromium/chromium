@@ -37,22 +37,37 @@ ShouldUpdateDownloadDBResult ShouldUpdateDownloadDB(
     previous_info = previous->download_info->in_progress_info;
   base::FilePath previous_path =
       previous_info ? previous_info->current_path : base::FilePath();
+  bool previous_paused = previous_info ? previous_info->paused : false;
 
   base::Optional<InProgressInfo> current_info;
   if (current.download_info)
     current_info = current.download_info->in_progress_info;
 
-  base::FilePath current_path =
-      current_info ? current_info->current_path : base::FilePath();
+  base::FilePath current_path;
+  bool paused = false;
+  GURL url;
+  DownloadItem::DownloadState state = DownloadItem::DownloadState::IN_PROGRESS;
+  DownloadInterruptReason interrupt_reason = DOWNLOAD_INTERRUPT_REASON_NONE;
+  if (current_info) {
+    base::FilePath current_path = current_info->current_path;
+    paused = current_info->paused;
+    if (!current_info->url_chain.empty())
+      url = current_info->url_chain.back();
+    state = current_info->state;
+    interrupt_reason = current_info->interrupt_reason;
+  }
 
   // When download path is determined, Chrome should commit the history
   // immediately. Otherwise the file will be left permanently on the external
   // storage if Chrome crashes right away.
-  if (current_path != previous_path)
+  if (current_path != previous_path || paused != previous_paused)
     return ShouldUpdateDownloadDBResult::UPDATE_IMMEDIATELY;
 
   if (previous.value() == current)
     return ShouldUpdateDownloadDBResult::NO_UPDATE;
+
+  if (IsDownloadDone(url, state, interrupt_reason))
+    return ShouldUpdateDownloadDBResult::UPDATE_IMMEDIATELY;
 
   return ShouldUpdateDownloadDBResult::UPDATE;
 }
@@ -70,6 +85,9 @@ void CleanUpInProgressEntry(DownloadDBEntry* entry) {
     in_progress_info->state = DownloadItem::DownloadState::INTERRUPTED;
     in_progress_info->interrupt_reason =
         download::DOWNLOAD_INTERRUPT_REASON_CRASH;
+    // We should not trust the hash value for crashed in-progress download, as
+    // hash is not calculated for when download is in progress.
+    in_progress_info->hash = std::string();
   }
 }
 
@@ -92,9 +110,7 @@ bool IsInProgressEntry(base::Optional<DownloadDBEntry> entry) {
 }  // namespace
 
 DownloadDBCache::DownloadDBCache(std::unique_ptr<DownloadDB> download_db)
-    : initialized_(false),
-      download_db_(std::move(download_db)),
-      weak_factory_(this) {
+    : initialized_(false), download_db_(std::move(download_db)) {
   DCHECK(download_db_);
 }
 
@@ -167,18 +183,6 @@ void DownloadDBCache::UpdateDownloadDB() {
 }
 
 void DownloadDBCache::OnDownloadUpdated(DownloadItem* download) {
-  // TODO(crbug.com/778425): Properly handle fail/resume/retry for downloads
-  // that are in the INTERRUPTED state for a long time.
-  if (!base::FeatureList::IsEnabled(features::kDownloadDBForNewDownloads)) {
-    // If history service is still managing in-progress download, we can safely
-    // remove a download from the in-progress DB whenever it is in the terminal
-    // state. Otherwise, we need to propagate the completed download to
-    // history service before we can remove it.
-    if (download->IsDone()) {
-      OnDownloadRemoved(download);
-      return;
-    }
-  }
   DownloadDBEntry entry = CreateDownloadDBEntryFromItem(
       *(static_cast<DownloadItemImpl*>(download)));
   AddOrReplaceEntry(entry);

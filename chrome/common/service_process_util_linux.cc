@@ -13,6 +13,7 @@
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/threading/platform_thread.h"
+#include "build/branding_buildflags.h"
 #include "chrome/common/auto_start_linux.h"
 #include "chrome/common/multi_process_lock.h"
 #include "chrome/common/service_process_util_posix.h"
@@ -26,9 +27,9 @@ MultiProcessLock* TakeServiceInitializingLock(bool waiting) {
 }
 
 std::string GetBaseDesktopName() {
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return "google-chrome-service.desktop";
-#else  // CHROMIUM_BUILD
+#else  // BUILDFLAG(CHROMIUM_BRANDING)
   return "chromium-service.desktop";
 #endif
 }
@@ -70,9 +71,9 @@ bool ServiceProcessState::TakeSingletonLock() {
 
 bool ServiceProcessState::AddToAutoRun() {
   DCHECK(autorun_command_line_.get());
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   std::string app_name = "Google Chrome Service";
-#else  // CHROMIUM_BUILD
+#else  // BUILDFLAG(CHROMIUM_BRANDING)
   std::string app_name = "Chromium Service";
 #endif
   return AutoStart::AddApplication(

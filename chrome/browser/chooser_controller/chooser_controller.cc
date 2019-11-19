@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -80,6 +81,18 @@ bool ChooserController::ShouldShowReScanButton() const {
 }
 
 bool ChooserController::AllowMultipleSelection() const {
+  return false;
+}
+
+base::string16 ChooserController::GetCancelButtonLabel() const {
+  return l10n_util::GetStringUTF16(IDS_DEVICE_CHOOSER_CANCEL_BUTTON_TEXT);
+}
+
+bool ChooserController::BothButtonsAlwaysEnabled() const {
+  return false;
+}
+
+bool ChooserController::TableViewAlwaysDisabled() const {
   return false;
 }
 

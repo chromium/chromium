@@ -6,10 +6,18 @@
 '''Bootstrapping for GRIT.
 '''
 
+from __future__ import print_function
+
+import os
 import sys
 
 import grit.grit_runner
 
+sys.path.append(os.path.abspath(
+    os.path.join(os.path.dirname(__file__), '..', 'diagnosis')))
+import crbug_1001171
+
 
 if __name__ == '__main__':
-  sys.exit(grit.grit_runner.Main(sys.argv[1:]))
+  with crbug_1001171.DumpStateOnLookupError():
+    sys.exit(grit.grit_runner.Main(sys.argv[1:]))

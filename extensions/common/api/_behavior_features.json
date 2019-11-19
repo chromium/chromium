@@ -8,18 +8,6 @@
 // well as feature.h, simple_feature.h, and feature_provider.h.
 
 {
-  "whitelisted_for_incognito": {
-    "channel": "stable",
-    "extension_types": "all",
-    // This is "external_component" for legacy reasons; it should be
-    // unnecessary given there's a whitelist.
-    "location": "external_component",
-    "whitelist": [
-      "D5736E4B5CF695CB93A2FB57E4FDC6E5AFAB6FE2",  // http://crbug.com/312900
-      "D57DE394F36DC1C3220E7604C575D29C51A6C495",  // http://crbug.com/319444
-      "3F65507A3B39259B38C8173C6FFA3D12DF64CCE9"   // http://crbug.com/371562
-    ]
-  },
   "do_not_sync": {
     "channel": "stable",
     "component_extensions_auto_granted": false,
@@ -87,6 +75,22 @@
       "CBCC42ABED43A4B58FE3810E62AFFA010EB0349F",  // PDF Viewer
       "2FCBCE08B34CCA1728A85F1EFBD9A34DD2558B2E",  // ChromeVox
       "7910EAFDAF64B947E1CB31B333A9BD14CA556B6C"   // Feedback extension
+    ]
+  }, {
+    // Extensions that are force-installed on the login screen through policy
+    // will receive type "login_screen_extension" and have limited API
+    // capabilities. Nonetheless, we only allow specifically whitelisted
+    // extensions here.
+    "channel": "stable",
+    "component_extensions_auto_granted": false,
+    "extension_types": ["login_screen_extension"],
+    "location": "policy",
+    "platforms": ["chromeos"],
+    "whitelist": [
+      "FA84F98B32AFC3013F5711F8711F8F38DB210AB7", // Sign-in Screen Test Extension
+      "7FE4A999359A456C4B0FB7B7AD85CEA29CA50519", // Login screen APIs test extension
+      "E219EE36A3B40612FD2A8CD6937B03EF0C97D3FE", // Imprivata (login screen)
+      "4DBFC1C52D6660DD90791976DF7FEF7B3D360509"  // Imprivata (login screen) DEV
     ]
   }],
   "allow_deprecated_audio_api": {

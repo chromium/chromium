@@ -4,6 +4,8 @@
 
 #include "components/viz/test/fake_skia_output_surface.h"
 
+#include <utility>
+
 #include "base/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
@@ -11,18 +13,26 @@
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/service/display/output_surface_client.h"
 #include "components/viz/service/display/output_surface_frame.h"
-#include "components/viz/service/display/resource_metadata.h"
+#include "components/viz/service/display/texture_deleter.h"
+#include "gpu/GLES2/gl2extchromium.h"
+#include "gpu/command_buffer/common/mailbox_holder.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "third_party/khronos/GLES2/gl2ext.h"
 #include "third_party/skia/include/core/SkPixelRef.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/gl/GrGLTypes.h"
+#include "ui/gfx/swap_result.h"
 #include "ui/gl/gl_utils.h"
 
 namespace viz {
 
 FakeSkiaOutputSurface::FakeSkiaOutputSurface(
     scoped_refptr<ContextProvider> context_provider)
-    : context_provider_(std::move(context_provider)), weak_ptr_factory_(this) {}
+    : SkiaOutputSurface(SkiaOutputSurface::Type::kOpenGL),
+      context_provider_(std::move(context_provider)) {
+  texture_deleter_ =
+      std::make_unique<TextureDeleter>(base::ThreadTaskRunnerHandle::Get());
+}
 
 FakeSkiaOutputSurface::~FakeSkiaOutputSurface() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -74,15 +84,15 @@ void FakeSkiaOutputSurface::SwapBuffers(OutputSurfaceFrame frame) {
   NOTIMPLEMENTED();
 }
 
+void FakeSkiaOutputSurface::ScheduleOutputSurfaceAsOverlay(
+    OverlayProcessor::OutputSurfaceOverlayPlane output_surface_plane) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  NOTIMPLEMENTED();
+}
+
 uint32_t FakeSkiaOutputSurface::GetFramebufferCopyTextureFormat() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return GL_RGB;
-}
-
-OverlayCandidateValidator* FakeSkiaOutputSurface::GetOverlayCandidateValidator()
-    const {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  return nullptr;
 }
 
 bool FakeSkiaOutputSurface::IsDisplayedAsOverlayPlane() const {
@@ -118,6 +128,15 @@ void FakeSkiaOutputSurface::SetNeedsSwapSizeNotifications(
   NOTIMPLEMENTED();
 }
 
+void FakeSkiaOutputSurface::SetUpdateVSyncParametersCallback(
+    UpdateVSyncParametersCallback callback) {
+  NOTIMPLEMENTED();
+}
+
+gfx::OverlayTransform FakeSkiaOutputSurface::GetDisplayTransform() {
+  return gfx::OVERLAY_TRANSFORM_NONE;
+}
+
 SkCanvas* FakeSkiaOutputSurface::BeginPaintCurrentFrame() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   auto& sk_surface = sk_surfaces_[0];
@@ -126,47 +145,56 @@ SkCanvas* FakeSkiaOutputSurface::BeginPaintCurrentFrame() {
   return sk_surface->getCanvas();
 }
 
-sk_sp<SkImage> FakeSkiaOutputSurface::MakePromiseSkImage(
-    ResourceMetadata metadata) {
+void FakeSkiaOutputSurface::MakePromiseSkImage(ImageContext* image_context) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   GrBackendTexture backend_texture;
-  if (!GetGrBackendTexture(metadata, &backend_texture)) {
+  if (!GetGrBackendTexture(*image_context, &backend_texture)) {
     DLOG(ERROR) << "Failed to GetGrBackendTexture from mailbox.";
-    return nullptr;
+    return;
   }
 
   auto sk_color_type = ResourceFormatToClosestSkColorType(
-      true /* gpu_compositing */, metadata.resource_format);
-  return SkImage::MakeFromTexture(
-      gr_context(), backend_texture, kTopLeft_GrSurfaceOrigin, sk_color_type,
-      metadata.alpha_type, metadata.color_space.ToSkColorSpace());
+      true /* gpu_compositing */, image_context->resource_format());
+  image_context->SetImage(
+      SkImage::MakeFromTexture(gr_context(), backend_texture,
+                               kTopLeft_GrSurfaceOrigin, sk_color_type,
+                               image_context->alpha_type(),
+                               image_context->color_space()),
+      backend_texture.getBackendFormat());
 }
 
 sk_sp<SkImage> FakeSkiaOutputSurface::MakePromiseSkImageFromYUV(
-    std::vector<ResourceMetadata> metadatas,
+    const std::vector<ImageContext*>& contexts,
     SkYUVColorSpace yuv_color_space,
+    sk_sp<SkColorSpace> dst_color_space,
     bool has_alpha) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   NOTIMPLEMENTED();
   return nullptr;
 }
 
-gpu::SyncToken FakeSkiaOutputSurface::ReleasePromiseSkImages(
-    std::vector<sk_sp<SkImage>> images) {
-  gpu::SyncToken sync_token;
-  if (images.empty())
-    return sync_token;
-  images.clear();
-  context_provider()->ContextGL()->GenSyncTokenCHROMIUM(sync_token.GetData());
-  return sync_token;
+void FakeSkiaOutputSurface::ReleaseImageContexts(
+    std::vector<std::unique_ptr<ImageContext>> image_contexts) {}
+
+std::unique_ptr<ExternalUseClient::ImageContext>
+FakeSkiaOutputSurface::CreateImageContext(
+    const gpu::MailboxHolder& holder,
+    const gfx::Size& size,
+    ResourceFormat format,
+    const base::Optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
+    sk_sp<SkColorSpace> color_space) {
+  return std::make_unique<ExternalUseClient::ImageContext>(
+      holder, size, format, ycbcr_info, std::move(color_space));
 }
 
-void FakeSkiaOutputSurface::SkiaSwapBuffers(OutputSurfaceFrame frame) {
+gpu::SyncToken FakeSkiaOutputSurface::SkiaSwapBuffers(OutputSurfaceFrame frame,
+                                                      bool wants_sync_token) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(&FakeSkiaOutputSurface::SwapBuffersAck,
                                 weak_ptr_factory_.GetWeakPtr()));
+  return gpu::SyncToken();
 }
 
 SkCanvas* FakeSkiaOutputSurface::BeginPaintRenderPass(
@@ -192,10 +220,14 @@ SkCanvas* FakeSkiaOutputSurface::BeginPaintRenderPass(
   return sk_surface->getCanvas();
 }
 
-gpu::SyncToken FakeSkiaOutputSurface::SubmitPaint() {
+gpu::SyncToken FakeSkiaOutputSurface::SubmitPaint(
+    base::OnceClosure on_finished) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   sk_surfaces_[current_render_pass_id_]->flush();
   current_render_pass_id_ = 0;
+
+  if (on_finished)
+    std::move(on_finished).Run();
 
   gpu::SyncToken sync_token;
   context_provider()->ContextGL()->GenSyncTokenCHROMIUM(sync_token.GetData());
@@ -236,7 +268,8 @@ void FakeSkiaOutputSurface::CopyOutput(
 
   DCHECK(sk_surfaces_.find(id) != sk_surfaces_.end());
   auto* surface = sk_surfaces_[id].get();
-  if (request->result_format() != CopyOutputResult::Format::RGBA_BITMAP ||
+  if ((request->result_format() != CopyOutputResult::Format::RGBA_BITMAP &&
+       request->result_format() != CopyOutputResult::Format::RGBA_TEXTURE) ||
       request->is_scaled() ||
       geometry.result_bounds != geometry.result_selection) {
     // TODO(crbug.com/644851): Complete the implementation for all request
@@ -244,6 +277,29 @@ void FakeSkiaOutputSurface::CopyOutput(
     NOTIMPLEMENTED();
     return;
   }
+
+  if (request->result_format() == CopyOutputResult::Format::RGBA_TEXTURE) {
+    // TODO(sgilhuly): This implementation is incomplete and doesn't copy
+    // anything into the mailbox, but currently the only tests that use this
+    // don't actually check the returned texture data.
+    auto* sii = context_provider_->SharedImageInterface();
+    gpu::Mailbox mailbox = sii->CreateSharedImage(
+        ResourceFormat::RGBA_8888, geometry.result_selection.size(),
+        color_space, gpu::SHARED_IMAGE_USAGE_GLES2);
+
+    auto* gl = context_provider_->ContextGL();
+    gpu::SyncToken sync_token;
+    gl->GenSyncTokenCHROMIUM(sync_token.GetData());
+
+    auto release_callback =
+        texture_deleter_->GetReleaseCallback(context_provider_, mailbox);
+
+    request->SendResult(std::make_unique<CopyOutputTextureResult>(
+        geometry.result_bounds, mailbox, sync_token, color_space,
+        std::move(release_callback)));
+    return;
+  }
+
   auto copy_image = surface->makeImageSnapshot()->makeSubset(
       RectToSkIRect(geometry.sampling_bounds));
   // Send copy request by copying into a bitmap.
@@ -271,28 +327,56 @@ void FakeSkiaOutputSurface::RemoveContextLostObserver(
   NOTIMPLEMENTED();
 }
 
+void FakeSkiaOutputSurface::SetOutOfOrderCallbacks(
+    bool out_of_order_callbacks) {
+  TestContextSupport* support =
+      static_cast<TestContextSupport*>(context_provider()->ContextSupport());
+  support->set_out_of_order_callbacks(out_of_order_callbacks);
+}
+
 bool FakeSkiaOutputSurface::GetGrBackendTexture(
-    const ResourceMetadata& metadata,
+    const ImageContext& image_context,
     GrBackendTexture* backend_texture) {
-  DCHECK(!metadata.mailbox_holder.mailbox.IsZero());
+  DCHECK(!image_context.mailbox_holder().mailbox.IsZero());
 
   auto* gl = context_provider()->ContextGL();
-  gl->WaitSyncTokenCHROMIUM(metadata.mailbox_holder.sync_token.GetConstData());
-  auto texture_id =
-      gl->CreateAndConsumeTextureCHROMIUM(metadata.mailbox_holder.mailbox.name);
-  auto gl_format = TextureStorageFormat(metadata.resource_format);
-  GrGLTextureInfo gl_texture_info = {metadata.mailbox_holder.texture_target,
-                                     texture_id, gl_format};
-  *backend_texture =
-      GrBackendTexture(metadata.size.width(), metadata.size.height(),
-                       GrMipMapped::kNo, gl_texture_info);
+  gl->WaitSyncTokenCHROMIUM(
+      image_context.mailbox_holder().sync_token.GetConstData());
+  auto texture_id = gl->CreateAndConsumeTextureCHROMIUM(
+      image_context.mailbox_holder().mailbox.name);
+  auto gl_format = TextureStorageFormat(image_context.resource_format());
+  GrGLTextureInfo gl_texture_info = {
+      image_context.mailbox_holder().texture_target, texture_id, gl_format};
+  *backend_texture = GrBackendTexture(image_context.size().width(),
+                                      image_context.size().height(),
+                                      GrMipMapped::kNo, gl_texture_info);
   return true;
 }
 
 void FakeSkiaOutputSurface::SwapBuffersAck() {
-  client_->DidReceiveSwapBuffersAck();
-  client_->DidReceivePresentationFeedback(
-      {base::TimeTicks::Now(), base::TimeDelta(), 0});
+  base::TimeTicks now = base::TimeTicks::Now();
+  client_->DidReceiveSwapBuffersAck({now, now});
+  client_->DidReceivePresentationFeedback({now, base::TimeDelta(), 0});
+}
+
+void FakeSkiaOutputSurface::ScheduleGpuTaskForTesting(
+    base::OnceClosure callback,
+    std::vector<gpu::SyncToken> sync_tokens) {
+  NOTIMPLEMENTED();
+}
+
+void FakeSkiaOutputSurface::SendOverlayPromotionNotification(
+    std::vector<gpu::SyncToken> sync_tokens,
+    base::flat_set<gpu::Mailbox> promotion_denied,
+    base::flat_map<gpu::Mailbox, gfx::Rect> possible_promotions) {
+  NOTIMPLEMENTED();
+}
+
+void FakeSkiaOutputSurface::RenderToOverlay(
+    gpu::SyncToken sync_token,
+    gpu::Mailbox overlay_candidate_mailbox,
+    const gfx::Rect& bounds) {
+  NOTIMPLEMENTED();
 }
 
 }  // namespace viz

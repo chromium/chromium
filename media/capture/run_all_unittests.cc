@@ -5,7 +5,7 @@
 #include <stdio.h>
 
 #include "base/bind.h"
-#include "base/message_loop/message_loop.h"
+#include "base/message_loop/message_pump_type.h"
 #include "base/test/launcher/unit_test_launcher.h"
 #include "base/test/test_suite.h"
 #include "base/threading/thread.h"
@@ -22,7 +22,7 @@ class MojoEnabledTestEnvironment final : public testing::Environment {
   void SetUp() final {
     mojo::core::Init();
     mojo_ipc_thread_.StartWithOptions(
-        base::Thread::Options(base::MessageLoop::TYPE_IO, 0));
+        base::Thread::Options(base::MessagePumpType::IO, 0));
     mojo_ipc_support_.reset(new mojo::core::ScopedIPCSupport(
         mojo_ipc_thread_.task_runner(),
         mojo::core::ScopedIPCSupport::ShutdownPolicy::FAST));

@@ -103,7 +103,7 @@ class CronetUploadDataStream : public net::UploadDataStream {
   Delegate* const delegate_;
 
   // Vends pointers on the network thread, though created on a client thread.
-  base::WeakPtrFactory<CronetUploadDataStream> weak_factory_;
+  base::WeakPtrFactory<CronetUploadDataStream> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(CronetUploadDataStream);
 };

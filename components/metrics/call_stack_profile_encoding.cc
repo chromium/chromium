@@ -41,6 +41,8 @@ Thread ToExecutionContextThread(CallStackProfileParams::Thread thread) {
       return IO_THREAD;
     case CallStackProfileParams::COMPOSITOR_THREAD:
       return COMPOSITOR_THREAD;
+    case CallStackProfileParams::SERVICE_WORKER_THREAD:
+      return SERVICE_WORKER_THREAD;
   }
   NOTREACHED();
   return UNKNOWN_THREAD;

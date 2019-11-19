@@ -151,7 +151,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothTaskManagerWin
       ReadGattCharacteristicValueCallback;
   typedef base::Callback<void(std::unique_ptr<std::vector<uint8_t>>)>
       GattCharacteristicValueChangedCallback;
-  typedef base::Callback<void(PVOID, HRESULT)> GattEventRegistrationCallback;
+  using GattEventRegistrationCallback =
+      base::OnceCallback<void(PVOID, HRESULT)>;
 
   // Get all included characteristics of a given service. The service is
   // uniquely identified by its |uuid| and |attribute_handle| with service
@@ -196,7 +197,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothTaskManagerWin
       const base::FilePath& service_path,
       const PBTH_LE_GATT_CHARACTERISTIC characteristic,
       const PBTH_LE_GATT_DESCRIPTOR ccc_descriptor,
-      const GattEventRegistrationCallback& callback,
+      GattEventRegistrationCallback callback,
       const GattCharacteristicValueChangedCallback& registered_callback);
 
   // Post a task to unregister from value change notifications. |event_handle|
@@ -323,7 +324,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothTaskManagerWin
       base::FilePath service_path,
       BTH_LE_GATT_CHARACTERISTIC characteristic,
       BTH_LE_GATT_DESCRIPTOR ccc_descriptor,
-      const GattEventRegistrationCallback& callback,
+      GattEventRegistrationCallback callback,
       const GattCharacteristicValueChangedCallback& registered_callback);
   void UnregisterGattCharacteristicValueChangedEvent(PVOID event_handle);
 

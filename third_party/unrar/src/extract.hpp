@@ -1,8 +1,6 @@
 #ifndef _RAR_EXTRACT_
 #define _RAR_EXTRACT_
 
-namespace third_party_unrar {
-
 enum EXTRACT_ARC_CODE {EXTRACT_ARC_NEXT,EXTRACT_ARC_REPEAT};
 
 class CmdExtract
@@ -59,8 +57,10 @@ class CmdExtract
     void ExtractArchiveInit(Archive &Arc);
     bool ExtractCurrentFile(Archive &Arc,size_t HeaderSize,bool &Repeat);
     static void UnstoreFile(ComprDataIO &DataIO,int64 DestUnpSize);
-};
 
-}  // namespace third_party_unrar
+#if defined(CHROMIUM_UNRAR)
+    int64 GetCurrentFileSize() { return DataIO.CurUnpWrite; }
+#endif
+};
 
 #endif

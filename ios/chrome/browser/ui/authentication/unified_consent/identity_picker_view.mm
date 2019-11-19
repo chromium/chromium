@@ -7,16 +7,15 @@
 #include "base/logging.h"
 #import "ios/chrome/browser/ui/authentication/authentication_constants.h"
 #import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_view.h"
+#import "ios/chrome/browser/ui/authentication/unified_consent/unified_consent_constants.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/colors/UIColor+cr_semantic_colors.h"
 #import "ios/chrome/common/ui_util/constraints_ui_util.h"
 #import "ios/third_party/material_components_ios/src/components/Ink/src/MaterialInk.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-NSString* const kIdentityPickerViewIdentifier =
-    @"kIdentityPickerViewIdentifier";
 
 namespace {
 
@@ -25,8 +24,6 @@ const CGFloat kIdentityPickerViewRadius = 8.;
 const CGFloat kArrowDownSize = 24.;
 // Distances/margins.
 const CGFloat kArrowDownMargin = 12.;
-// Colors
-const int kHeaderBackgroundColor = 0xf1f3f4;
 
 }  // namespace
 
@@ -51,7 +48,7 @@ const int kHeaderBackgroundColor = 0xf1f3f4;
   if (self) {
     self.accessibilityIdentifier = kIdentityPickerViewIdentifier;
     self.layer.cornerRadius = kIdentityPickerViewRadius;
-    self.backgroundColor = UIColorFromRGB(kHeaderBackgroundColor);
+    self.backgroundColor = UIColor.cr_secondarySystemBackgroundColor;
     // Adding view elements inside.
     // Ink view.
     _inkView = [[MDCInkView alloc] initWithFrame:CGRectZero];
@@ -64,7 +61,9 @@ const int kHeaderBackgroundColor = 0xf1f3f4;
     _arrowDownImageView = [[UIImageView alloc] initWithFrame:CGRectZero];
     _arrowDownImageView.translatesAutoresizingMaskIntoConstraints = NO;
     _arrowDownImageView.image =
-        [UIImage imageNamed:@"identity_picker_view_arrow_down"];
+        [[UIImage imageNamed:@"identity_picker_view_arrow_down"]
+            imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    _arrowDownImageView.tintColor = UIColor.cr_labelColor;
     [self addSubview:_arrowDownImageView];
 
     // Main view with avatar, name and email.

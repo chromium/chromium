@@ -4,11 +4,13 @@
 
 #include "chrome/browser/extensions/extension_sync_service.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/auto_reset.h"
+#include "base/bind_helpers.h"
+#include "base/one_shot_event.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/extensions/bookmark_app_helper.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_sync_data.h"
 #include "chrome/browser/extensions/extension_sync_service_factory.h"
@@ -16,6 +18,8 @@
 #include "chrome/browser/extensions/launch_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/glue/sync_start_util.h"
+#include "chrome/browser/web_applications/components/install_manager.h"
+#include "chrome/browser/web_applications/components/web_app_provider_base.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/extensions/sync_helper.h"
@@ -23,8 +27,6 @@
 #include "components/sync/model/sync_change.h"
 #include "components/sync/model/sync_error_factory.h"
 #include "extensions/browser/app_sorting.h"
-#include "extensions/browser/extension_prefs.h"
-#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/uninstall_reason.h"
@@ -57,8 +59,8 @@ bool IsCorrectSyncType(const Extension& extension, syncer::ModelType type) {
 }
 
 // Predicate for PendingExtensionManager.
-// TODO(treib,devlin): The !is_theme check shouldn't be necessary anymore after
-// all the bad data from crbug.com/558299 has been cleaned up, after M52 or so.
+// TODO(crbug.com/862665): The !is_theme check should be unnecessary after all
+// the bad data from crbug.com/558299 has been cleaned up.
 bool ShouldAllowInstall(const Extension* extension) {
   return !extension->is_theme() &&
          extensions::sync_helper::IsSyncable(extension);
@@ -104,8 +106,6 @@ struct ExtensionSyncService::PendingUpdate {
 
 ExtensionSyncService::ExtensionSyncService(Profile* profile)
     : profile_(profile),
-      registry_observer_(this),
-      prefs_observer_(this),
       ignore_updates_(false),
       flare_(sync_start_util::GetFlareForSyncableService(profile->GetPath())) {
   registry_observer_.Add(ExtensionRegistry::Get(profile_));
@@ -149,6 +149,11 @@ bool ExtensionSyncService::HasPendingReenable(
   const PendingUpdate& pending = it->second;
   return pending.version == version &&
          pending.grant_permissions_and_reenable;
+}
+
+void ExtensionSyncService::WaitUntilReadyToSync(base::OnceClosure done) {
+  // Wait for the extension system to be ready.
+  ExtensionSystem::Get(profile_)->ready().Post(FROM_HERE, std::move(done));
 }
 
 syncer::SyncMergeResult ExtensionSyncService::MergeDataAndStartSyncing(
@@ -250,21 +255,17 @@ ExtensionSyncData ExtensionSyncService::CreateSyncData(
   bool incognito_enabled = extensions::util::IsIncognitoEnabled(id, profile_);
   bool remote_install = extension_prefs->HasDisableReason(
       id, extensions::disable_reason::DISABLE_REMOTE_INSTALL);
-  bool installed_by_custodian =
-      extensions::util::WasInstalledByCustodian(id, profile_);
   AppSorting* app_sorting = ExtensionSystem::Get(profile_)->app_sorting();
 
   ExtensionSyncData result =
       extension.is_app()
           ? ExtensionSyncData(
                 extension, enabled, disable_reasons, incognito_enabled,
-                remote_install, installed_by_custodian,
-                app_sorting->GetAppLaunchOrdinal(id),
+                remote_install, app_sorting->GetAppLaunchOrdinal(id),
                 app_sorting->GetPageOrdinal(id),
                 extensions::GetLaunchTypePrefValue(extension_prefs, id))
           : ExtensionSyncData(extension, enabled, disable_reasons,
-                              incognito_enabled, remote_install,
-                              installed_by_custodian);
+                              incognito_enabled, remote_install);
 
   // If there's a pending update, send the new version to sync instead of the
   // installed one.
@@ -300,11 +301,6 @@ void ExtensionSyncService::ApplySyncData(
   // Ignore any pref change notifications etc. while we're applying incoming
   // sync data, so that we don't end up notifying ourselves.
   base::AutoReset<bool> ignore_updates(&ignore_updates_, true);
-
-  // Note: this may cause an existing version of the extension to be reloaded.
-  extensions::util::SetWasInstalledByCustodian(
-      extension_sync_data.id(), profile_,
-      extension_sync_data.installed_by_custodian());
 
   syncer::ModelType type = extension_sync_data.is_app() ? syncer::APPS
                                                         : syncer::EXTENSIONS;
@@ -375,7 +371,7 @@ void ExtensionSyncService::ApplySyncData(
   // not-yet-approved remote installs. It's redundant now that disable reasons
   // are synced (DISABLE_REMOTE_INSTALL should be among them already), but some
   // old sync data may still be around, and it doesn't hurt to add the reason.
-  // TODO(treib,devlin): Deprecate and eventually remove |remote_install|?
+  // TODO(crbug.com/587804): Deprecate and eventually remove |remote_install|.
   if (extension_sync_data.remote_install())
     disable_reasons |= extensions::disable_reason::DISABLE_REMOTE_INSTALL;
 
@@ -430,14 +426,6 @@ void ExtensionSyncService::ApplySyncData(
         extension_service()->EnableExtension(id);
       else if (extension_sync_data.supports_disable_reasons())
         reenable_after_update = true;
-
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-      if (!has_all_permissions && (state == INSTALLED_NEWER) &&
-          extensions::util::IsExtensionSupervised(extension, profile_)) {
-        SupervisedUserServiceFactory::GetForProfile(profile_)
-            ->AddExtensionUpdateRequest(id, extension->version());
-      }
-#endif
     } else {
       // The extension is not installed yet. Set it to enabled; we'll check for
       // permission increase (more accurately, for a version change) when it's
@@ -524,44 +512,34 @@ void ExtensionSyncService::ApplyBookmarkAppSyncData(
     return;
   }
 
-  const Extension* extension =
-      extension_service()->GetInstalledExtension(extension_sync_data.id());
-
-  // Return if there are no bookmark app details that need updating.
-  if (extension &&
-      extension->non_localized_name() == extension_sync_data.name() &&
-      extension->description() ==
-          extension_sync_data.bookmark_app_description()) {
-    return;
-  }
-
-  WebApplicationInfo web_app_info;
-  web_app_info.app_url = bookmark_app_url;
-  web_app_info.title = base::UTF8ToUTF16(extension_sync_data.name());
-  web_app_info.description =
+  auto web_app_info = std::make_unique<WebApplicationInfo>();
+  web_app_info->app_url = bookmark_app_url;
+  web_app_info->title = base::UTF8ToUTF16(extension_sync_data.name());
+  web_app_info->description =
       base::UTF8ToUTF16(extension_sync_data.bookmark_app_description());
-  web_app_info.scope = GURL(extension_sync_data.bookmark_app_scope());
-  web_app_info.theme_color = extension_sync_data.bookmark_app_theme_color();
+  web_app_info->scope = GURL(extension_sync_data.bookmark_app_scope());
+  web_app_info->theme_color = extension_sync_data.bookmark_app_theme_color();
+  web_app_info->open_as_window =
+      extension_sync_data.launch_type() == extensions::LAUNCH_TYPE_WINDOW;
+
   if (!extension_sync_data.bookmark_app_icon_color().empty()) {
     extensions::image_util::ParseHexColorString(
         extension_sync_data.bookmark_app_icon_color(),
-        &web_app_info.generated_icon_color);
+        &web_app_info->generated_icon_color);
   }
   for (const auto& icon : extension_sync_data.linked_icons()) {
-    WebApplicationInfo::IconInfo icon_info;
+    WebApplicationIconInfo icon_info;
     icon_info.url = icon.url;
     icon_info.width = icon.size;
     icon_info.height = icon.size;
-    web_app_info.icons.push_back(icon_info);
+    web_app_info->icons.push_back(icon_info);
   }
 
-#if defined(OS_CHROMEOS)
-  bool is_locally_installed = true;
-#else
-  bool is_locally_installed = extension != nullptr;
-#endif
-  CreateOrUpdateBookmarkApp(extension_service(), &web_app_info,
-                            is_locally_installed);
+  auto* provider = web_app::WebAppProviderBase::GetProviderBase(profile_);
+  DCHECK(provider);
+
+  provider->install_manager().InstallWebAppFromSync(
+      extension_sync_data.id(), std::move(web_app_info), base::DoNothing());
 }
 
 void ExtensionSyncService::SetSyncStartFlareForTesting(
@@ -672,8 +650,8 @@ std::vector<ExtensionSyncData> ExtensionSyncService::GetLocalSyncDataList(
   // Collect the local state.
   ExtensionRegistry* registry = ExtensionRegistry::Get(profile_);
   std::vector<ExtensionSyncData> data;
-  // TODO(treib, kalman): Should we be including blacklisted/blocked extensions
-  // here? I.e. just calling registry->GeneratedInstalledExtensionsSet()?
+  // Note: Maybe we should include blacklisted/blocked extensions here, i.e.
+  // just call registry->GeneratedInstalledExtensionsSet().
   // It would be more consistent, but the danger is that the black/blocklist
   // hasn't been updated on all clients by the time sync has kicked in -
   // so it's safest not to. Take care to add any other extension lists here

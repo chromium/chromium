@@ -11,6 +11,7 @@
 #include "third_party/skia/include/core/SkColorFilter.h"
 #include "third_party/skia/include/core/SkMath.h"
 #include "third_party/skia/include/effects/SkAlphaThresholdFilter.h"
+#include "third_party/skia/include/effects/SkArithmeticImageFilter.h"
 #include "third_party/skia/include/effects/SkColorFilterImageFilter.h"
 #include "third_party/skia/include/effects/SkComposeImageFilter.h"
 #include "third_party/skia/include/effects/SkImageSource.h"
@@ -980,7 +981,7 @@ PaintFlagsPaintFilter::PaintFlagsPaintFilter(PaintFlags flags,
     : PaintFilter(kType, crop_rect, flags.HasDiscardableImages()),
       flags_(std::move(flags)) {
   if (image_provider) {
-    raster_flags_.emplace(&flags_, image_provider, SkMatrix::I(), 255u);
+    raster_flags_.emplace(&flags_, image_provider, SkMatrix::I(), 0, 255u);
   }
   cached_sk_filter_ = SkPaintImageFilter::Make(
       raster_flags_ ? raster_flags_->flags()->ToSkPaint() : flags_.ToSkPaint(),

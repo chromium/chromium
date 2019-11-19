@@ -41,12 +41,6 @@ enum PaymentErrorReason {
 enum CanMakePaymentQueryResult {
   CAN_MAKE_PAYMENT,
   CANNOT_MAKE_PAYMENT,
-  QUERY_QUOTA_EXCEEDED,
-
-  // Used only on localhost and file:// schemes to warn web developer that the
-  // query quota has been exceeded, but Chrome is returning an answer anyway.
-  WARNING_CAN_MAKE_PAYMENT,
-  WARNING_CANNOT_MAKE_PAYMENT,
 };
 
 enum HasEnrolledInstrumentQueryResult {
@@ -60,12 +54,15 @@ enum HasEnrolledInstrumentQueryResult {
   WARNING_HAS_NO_ENROLLED_INSTRUMENT,
 };
 
+// Implemented in the renderer process. Sandboxed. Deals with untrusted data.
+//   components/payments/content/payment_request.h
 interface PaymentRequestClient {
+  OnPaymentMethodChange(string method_name, string stringified_details);
   OnShippingAddressChange(PaymentAddress address);
   OnShippingOptionChange(string shipping_option_id);
   OnPayerDetailChange(PayerDetail detail);
   OnPaymentResponse(PaymentResponse response);
-  OnError(PaymentErrorReason error);
+  OnError(PaymentErrorReason error, string error_message);
   OnComplete();
   OnAbort(bool aborted_successfully);
   OnCanMakePayment(CanMakePaymentQueryResult result);
@@ -91,24 +88,6 @@ enum AndroidPayEnvironment {
   TEST
 };
 
-enum AndroidPayCardNetwork {
-  AMEX,
-  DISCOVER,
-  MASTERCARD,
-  VISA
-};
-
-enum AndroidPayTokenization {
-  UNSPECIFIED,
-  GATEWAY_TOKEN,
-  NETWORK_TOKEN
-};
-
-struct AndroidPayTokenizationParameter {
-  string? key;
-  string? value;
-};
-
 enum BasicCardNetwork {
   AMEX,
   DINERS,
@@ -126,6 +105,27 @@ enum BasicCardType {
   PREPAID
 };
 
+struct GooglePaymentMethodData {
+  // A JSON string built by the renderer from the same merchant-provided
+  // JavaScript object used to build |stringified_data| in the containing
+  // PaymentMethodData. The renderer interprets the JavaScript object as a GPay
+  // API object and sets additional parameters to request contact and shipping
+  // information from the GPay payment app. The renderer uses
+  // blink::JSONObject::toJSONString() to generate this string from the modified
+  // JavaScript object. The browser does not parse the string and passes it
+  // as-is directly to the GPay payment app.
+  string stringified_data;
+  // Each of the following flags is true if the corresponding piece of data was
+  // not requested in |stringified_data| in the containing PaymentMethodDatabut
+  // is now set in |stringified_data| above. The Android browser process uses
+  // these flags to redact the response from the native GPay SDK before
+  // returning it to the renderer.
+  bool phone_requested;
+  bool name_requested;
+  bool email_requested;
+  bool shipping_requested;
+};
+
 struct PaymentMethodData {
   string supported_method;
 
@@ -139,15 +139,16 @@ struct PaymentMethodData {
   // {"gateway": "stripe"}
   string stringified_data;
 
+  // Data specific to the skip-to-GPay experimental flow. This field is only set
+  // if |supported_method| is Google Pay and if the current request is eligible
+  // for the skip-to-GPay experimental flow.
+  [EnableIf=is_android]
+  GooglePaymentMethodData? gpay_bridge_data;
+
   // Android Pay specific method data is parsed in the renderer.
   // https://developers.google.com/web/fundamentals/getting-started/primers/payment-request/android-pay
   // TODO(rouslan): Stop parsing Android Pay data. http://crbug.com/620173
   AndroidPayEnvironment environment;
-  string? merchant_name;
-  string? merchant_id;
-  array<AndroidPayCardNetwork> allowed_card_networks;
-  AndroidPayTokenization tokenization_type;
-  array<AndroidPayTokenizationParameter> parameters;
   // Value of 0 means the merchant did not specify or it was an invalid value.
   int32 min_google_play_services_version;
   // Value of 0 means the merchant did not specify or it was an invalid value.
@@ -166,10 +167,14 @@ struct PaymentDetailsModifier {
 
 struct PaymentDetails {
   PaymentItem? total;
-  array<PaymentItem> display_items;
-  // Shipping options can be null if updateWith() is called w/o shippingOptions
+
+  // If any of these lists is null, then PaymentRequest.UpdateWith() ignores
+  // them. If any of these lists are empty, then PaymentRequest.UpdateWith()
+  // clears the corresponding lists in the browser.
+  array<PaymentItem>? display_items;
   array<PaymentShippingOption>? shipping_options;
-  array<PaymentDetailsModifier> modifiers;
+  array<PaymentDetailsModifier>? modifiers;
+
   string error = "";
   AddressErrors? shipping_address_errors;
   // Identifier identifying the payment request, to be exposed
@@ -177,6 +182,8 @@ struct PaymentDetails {
   // by PaymentDetailsUpdate (next to PaymentDetailsInit) but
   // PaymentDetailsUpdate has no id.
   string? id;
+
+  string? stringified_payment_method_errors;
 };
 
 enum PaymentShippingType {
@@ -199,16 +206,26 @@ enum PaymentComplete {
   UNKNOWN
 };
 
+
+// Implemented in the browser process. Not sandboxed. Deals with trusted data.
+// Android implementation:
+//   chrome/android/java/src/org/chromium/chrome/browser/payments/PaymentRequestImpl.java
+// Desktop (Windows, ChromeOS, Linux, MacOS) implementation:
+//   components/payments/content/payment_request.h
 interface PaymentRequest {
   // Instantiates the renderer-browser connection with the information from the
   // JavaScript constructor of PaymentRequest.
-  Init(PaymentRequestClient client,
+  // |google_pay_bridge_eligible| is true when the renderer process deems the
+  // current request eligible for the skip-to-GPay experimental flow. It is
+  // ultimately up to the browser process to determine whether to trigger it.
+  Init(pending_remote<PaymentRequestClient> client,
        array<PaymentMethodData> method_data,
        PaymentDetails details,
-       PaymentOptions options);
+       PaymentOptions options,
+       [EnableIf=is_android] bool google_pay_bridge_eligible);
 
   // Shows the user interface with the payment details.
-  Show(bool is_user_gesture);
+  Show(bool is_user_gesture, bool wait_for_updated_details);
 
   // Updates the payment details in response to new shipping address or shipping
   // option.
@@ -234,9 +251,8 @@ interface PaymentRequest {
   // Queries whether support for the merchant-specified payment method is
   // available, either because the user has a registered payment handler for
   // that method, or because the browser can do just-in-time registration for a
-  // suitable payment handler. If |legacy_mode| is true, provide the legacy
-  // behavior, which also checks that the user has an enrolled instrument.
-  CanMakePayment(bool legacy_mode);
+  // suitable payment handler.
+  CanMakePayment();
 
   // Queries whether support for the merchant-specified payment method is
   // available and the user has an enrolled instrument for that payment method

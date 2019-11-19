@@ -4,9 +4,9 @@ Chrome, and especially Chrome OS, has apps, e.g. chat apps and camera apps.
 
 There are a number (lets call it `M`) of different places or app Consumers,
 usually UI (user interfaces) related, where users interact with their installed
-apps: e.g. launcher, search bar, shelf, New Tab Page, the `chrome://apps` page,
-permissions or settings pages, picking and running default handlers for URLs,
-MIME types or intents, etc.
+apps: e.g. launcher, search bar, shelf, New Tab Page, the App Management
+settings page, permissions or settings pages, picking and running default
+handlers for URLs, MIME types or intents, etc.
 
 There is also a different number (`N`) of app platforms or app Providers:
 built-in apps, extension-backed apps, PWAs (progressive web apps), ARC++
@@ -29,18 +29,18 @@ The App Service can be decomposed into a number of aspects. In all cases, it
 provides to Consumers a uniform API over the various Provider implementations,
 for these aspects:
 
-- App Registry: list the installed apps.
-- App Icon Factory: load an app's icon, at various resolutions.
-- App Runner: launch apps and track app instances.
-- App Installer: install, uninstall and update apps.
-- App Coordinator: keep system-wide settings, e.g. default handlers.
+  - App Registry: list the installed apps.
+  - App Icon Factory: load an app's icon, at various resolutions.
+  - App Runner: launch apps and track app instances.
+  - App Installer: install, uninstall and update apps.
+  - App Coordinator: keep system-wide settings, e.g. default handlers.
 
 Some things are still the responsbility of individual Consumers or Providers.
 For example, the order in which the apps' icons are presented in the launcher
 is a launcher-specific detail, not a system-wide detail, and is managed by the
-launcher, not the App Service. Similarly, Android-specific VM configuration is
-Android-specific, not generalizable system-wide, and is managed by the Android
-provider (ARC++).
+launcher, not the App Service. Similarly, Android-specific VM (Virtual Machine)
+configuration is Android-specific, not generalizable system-wide, and is
+managed by the Android provider (ARC++).
 
 
 ## Profiles
@@ -256,26 +256,23 @@ Icon data (even compressed as a PNG) is bulky, relative to the rest of the
 especially as the desired icon resolutions (e.g. 64dip or 256dip) aren't known
 up-front. Instead of sending an icon at all possible resolutions, the
 `Publisher` sends an `IconKey`: enough information to load the icon at given
-resoultions. The `IconKey` is an `AppType app_type` plus additional data
-(`uint64 u_key` and `string s_key`) whose semantics depend on the `app_type`.
+resolutions.
 
-For example, some icons are statically built into the Chrome or Chrome OS
-binary, as PNG-formatted resources, and can be loaded (synchronously, without
-sandboxing). They can be loaded from a `u_key` resource ID. Some icons are
-dynamically (and asynchronously) loaded from the extension database on disk.
-They can be loaded from the `s_key` app ID, with the `u_key` serving as a
-(monotonically increasing) epoch number so that an icon update results in a
-different `u_key` and hence a different `IconKey`.
+An `IconKey` augments the `AppType app_type` and `string app_id`. For example,
+some icons are statically built into the Chrome or Chrome OS binary, as
+PNG-formatted resources, and can be loaded (synchronously, without sandboxing).
+They can be loaded from the `IconKey.resource_id`. Other icons are dynamically
+(and asynchronously) loaded from the extension database on disk. The base icon
+can be loaded just from the `app_id` alone.
 
-Consumers (via the `AppServiceProxy`) can always ask the `AppService` to load
-an icon. As an optimization, if the `AppServiceProxy` knows how to load an icon
-for a given `IconKey`, it can skip the Mojo round trip and bulk data IPC and
-load it directly instead. For example, it may know how to load icons from a
-statically built resource ID.
+In either case, the `IconKey.icon_effects` bitmask holds whether to apply
+further image processing effects such as desaturation to gray.
 
     interface AppService {
       // App Icon Factory methods.
       LoadIcon(
+          AppType app_type,
+          string app_id,
           IconKey icon_key,
           IconCompression icon_compression,
           int32 size_hint_in_dip,
@@ -287,6 +284,7 @@ statically built resource ID.
     interface Publisher {
       // App Icon Factory methods.
       LoadIcon(
+          string app_id,
           IconKey icon_key,
           IconCompression icon_compression,
           int32 size_hint_in_dip,
@@ -296,10 +294,28 @@ statically built resource ID.
     };
 
     struct IconKey {
-      AppType app_type;
-      // The semantics of u_key and s_key depend on the app_type.
-      uint64 u_key;
-      string s_key;
+      // A monotonically increasing number so that, after an icon update, a new
+      // IconKey, one that is different in terms of field-by-field equality, can be
+      // broadcast by a Publisher.
+      //
+      // The exact value of the number isn't important, only that newer IconKey's
+      // (those that were created more recently) have a larger timeline than older
+      // IconKey's.
+      //
+      // This is, in some sense, *a* version number, but the field is not called
+      // "version", to avoid any possible confusion that it encodes *the* app's
+      // version number, e.g. the "2.3.5" in "FooBar version 2.3.5 is installed".
+      //
+      // For example, if an app is disabled for some reason (so that its icon is
+      // grayed out), this would result in a different timeline even though the
+      // app's version is unchanged.
+      uint64 timeline;
+      // If non-zero, the compressed icon is compiled into the Chromium binary
+      // as a statically available, int-keyed resource.
+      int32 resource_id;
+      // A bitmask of icon post-processing effects, such as desaturation to
+      // gray and rounding the corners.
+      uint32 icon_effects;
     };
 
     enum IconCompression {
@@ -315,8 +331,52 @@ statically built resource ID.
       bool is_placeholder_icon;
     };
 
-TBD: post-processing effects like rounded corners, badges or grayed out (for
-disabled apps) icons.
+
+## Icon Changes
+
+Apps can change their icons, e.g. after a new version is installed. From the
+App Service's point of view, an icon change is like any other change: Providers
+broadcast an `App` value representing what's changed (icon or otherwise) about
+an app, the Proxy's `AppRegistryCache` enriches this `App` struct to be an
+`AppUpdate`, and `AppRegistryCache` observers can, if that `AppUpdate` shows
+that the icon has changed, issue a new `LoadIcon` Mojo call. A new Mojo call is
+necessary, because a Mojo callback is a `base::OnceCallback`, so the same
+callback can't be used for both the old and the new icon.
+
+
+## Caching and Other Optimizations
+
+Grouping the `IconKey` with the other `LoadIcon` arguments, the combination
+identifies a static (unchanging, but possibly obsolete) image: if a new version
+of an app results in a new icon, or if a change in app state results in a
+grayed out icon, this is represented by a different, larger `IconKey.timeline`.
+As a consequence, the combined `LoadIcon` arguments can be used to key a cache
+or map of `IconValue`s, or to recognize and coalesce multiple concurrent
+requests to the same combination.
+
+Such optimizations can be implemented as a series of "wrapper" classes (as in
+the classic "decorator" or "wrapper" design pattern) that all implement the
+same C++ interface (an `IconLoader` interface). They add their specific feature
+(e.g. caching) by wrapping another `IconLoader`, doing feature-specific work on
+every call or reply before sending the call forward or the reply backward.
+
+There may be multiple caches, as there may be multiple cache eviction policies
+(also known as garbage collection policies), spanning the trade-off from
+favoring minimizing memory use to favoring maximizing cache hit rates. The
+Proxy may have a single cache, with a relatively aggressive eviction policy,
+which applies to all of its Consumer clients. A Consumer might have an
+additional Consumer-specific cache, with a more relaxed eviction policy, if it
+has additional Consumer-specific UI signals to guide when icon-loading requests
+and cache hits are more or less likely.
+
+Note that cache values (the `IconValue` Mojo struct) are, primarily, a
+gfx.mojom.ImageSkia, which are cheap to share. Copying an ImageSkia value does
+not duplicate any underlying pixel buffers.
+
+As a separate optimization, if the `AppServiceProxy` knows how to load an icon
+for a given `IconKey`, it can skip the Mojo round trip and bulk data IPC and
+load it directly instead. For example, it may know how to load icons from a
+statically built resource ID.
 
 
 ## Placeholder Icons
@@ -345,9 +405,42 @@ notified of when real icons are ready will require some mechanism other than a
 placeholder. That field should only be true if the corresponding `LoadIcon`
 call had `allow_placeholder_icon` true. When the `LoadIcon` caller receives a
 placeholder icon, it is up to the caller to issue a new `LoadIcon` call, this
-time with `allow_placeholder_icon` false. A new Mojo call is necessary, because
-a Mojo callback is a `base::OnceCallback`, so the same callback can't be used
-for both the placeholder and the real icon.
+time with `allow_placeholder_icon` false. As before, a new Mojo call is
+necessary, because a Mojo callback is a `base::OnceCallback`, so the same
+callback can't be used for both the placeholder and the real icon.
+
+
+## Provider-Specific Subtleties
+
+Some concerns (like caching and coalescing multiple in-flight calls with the
+same `IconKey`) are not specific to any particular Providers like ARC++ or
+Crostini, and can be solved by the Proxy.
+
+Other concerns are Provider-specific, and are generally solved in Provider
+implementations, albeit often with non-Provider-specific support (such as for
+placeholder icons, discussed above). Such concerns include:
+
+  - Multiple icon sources: some icons for built-in VM-based apps (e.g. ARC++ or
+    Crostini) should be served from a compiled-into-the-browser resource
+    instead of from the VM.
+  - Pending LoadIcon calls: some `LoadIcon` calls might need to wait on
+    bringing up a VM.
+  - Potential on-disk corruption: for whatever reason, an on-disk file that's
+    meant to hold a cached icon may be missing or invalid. In that case, the
+    Provider should still provide a (placeholder) icon, and trigger
+    Provider-specific clean-up and re-load of the real app icon.
+
+All of these concerns listed should be straightforward to handle, and don't
+invalidate the overall App Service `Publisher.LoadIcon` Mojo design, including
+its non-Provider-specific caching and other optimization layers.
+
+There are also yet another category of concerns that are Provider-specific, but
+also outside the purview of the App Service. For example, the file system
+layout of ARC++'s on-disk icon cache is, from the App Service's point of view,
+considered a private ARC++ implementation detail. As long as ARC++'s API
+remains the same, and if ARC++ can notify the App Service if the App Service
+needs to reload any or all icons, then any change in ARC++'s file system layout
+isn't a direct concern to the App Service.
 
 
 # App Runner
@@ -405,4 +498,4 @@ TBD: details.
 
 ---
 
-Updated on 2019-03-02.
+Updated on 2019-03-20.

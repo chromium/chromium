@@ -32,7 +32,7 @@
 #include "third_party/blink/renderer/core/style/nine_piece_image.h"
 #include "third_party/blink/renderer/platform/geometry/length_size.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
@@ -47,9 +47,7 @@ class CachedUAStyle {
   friend class ComputedStyle;
 
  public:
-  static std::unique_ptr<CachedUAStyle> Create(const ComputedStyle* style) {
-    return base::WrapUnique(new CachedUAStyle(style));
-  }
+  explicit CachedUAStyle(const ComputedStyle*);
 
   bool BorderColorEquals(const ComputedStyle& other) const;
   bool BorderWidthEquals(const ComputedStyle& other) const;
@@ -81,7 +79,6 @@ class CachedUAStyle {
   StyleColor background_color;
 
  private:
-  explicit CachedUAStyle(const ComputedStyle*);
   DISALLOW_COPY_AND_ASSIGN(CachedUAStyle);
 };
 

@@ -6,16 +6,19 @@
 
 #include <utility>
 
+#include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
-#include "jni/CrashReportMimeWriter_jni.h"
+#include "components/minidump_uploader/minidump_uploader_jni_headers/CrashReportMimeWriter_jni.h"
 #include "third_party/crashpad/crashpad/handler/minidump_to_upload_parameters.h"
+#include "third_party/crashpad/crashpad/snapshot/exception_snapshot.h"
 #include "third_party/crashpad/crashpad/snapshot/minidump/process_snapshot_minidump.h"
 #include "third_party/crashpad/crashpad/util/file/file_writer.h"
 #include "third_party/crashpad/crashpad/util/net/http_body.h"
 #include "third_party/crashpad/crashpad/util/net/http_multipart_builder.h"
+#include "third_party/crashpad/crashpad/util/posix/signals.h"
 
 namespace minidump_uploader {
 
@@ -29,35 +32,16 @@ enum class ProcessedMinidumpCounts {
   kBrowser = 1,
   kRenderer = 2,
   kGpu = 3,
-  kMaxValue = kGpu
+  kUtility = 4,
+  kMaxValue = kUtility
 };
 #endif  // OS_ANDROID
 
-bool MimeifyReportAndWriteToDirectory(
+bool MimeifyReportWithKeyValuePairs(
     const crashpad::CrashReportDatabase::UploadReport& report,
-    const base::FilePath& dest_dir) {
-  crashpad::HTTPMultipartBuilder builder;
-  pid_t pid;
-  if (!MimeifyReport(report, &builder, &pid)) {
-    return false;
-  }
-
-  crashpad::FileWriter writer;
-  if (!writer.Open(dest_dir.Append(base::StringPrintf(
-                       "%s.dmp%d", report.uuid.ToString().c_str(), pid)),
-                   crashpad::FileWriteMode::kCreateOrFail,
-                   crashpad::FilePermissions::kOwnerOnly)) {
-    return false;
-  }
-
-  return WriteBodyToFile(builder.GetBodyStream().get(), &writer);
-}
-
-}  // namespace
-
-bool MimeifyReport(const crashpad::CrashReportDatabase::UploadReport& report,
-                   crashpad::HTTPMultipartBuilder* http_multipart_builder,
-                   pid_t* pid) {
+    crashpad::HTTPMultipartBuilder* http_multipart_builder,
+    std::vector<std::string>* crashes_key_value_arr,
+    pid_t* pid) {
   crashpad::FileReader* reader = report.Reader();
   crashpad::FileOffset start_offset = reader->SeekGet();
   if (start_offset < 0) {
@@ -88,23 +72,46 @@ bool MimeifyReport(const crashpad::CrashReportDatabase::UploadReport& report,
                    << kv.second;
     } else {
       http_multipart_builder->SetFormData(kv.first, kv.second);
+      if (crashes_key_value_arr) {
+        crashes_key_value_arr->push_back(kv.first);
+        crashes_key_value_arr->push_back(kv.second);
+      }
 #if defined(OS_ANDROID)
       if (kv.first == kPtypeKey) {
-        ProcessedMinidumpCounts count_type;
-        if (kv.second == "browser") {
-          count_type = ProcessedMinidumpCounts::kBrowser;
-        } else if (kv.second == "renderer") {
-          count_type = ProcessedMinidumpCounts::kRenderer;
-        } else if (kv.second == "gpu-process") {
-          count_type = ProcessedMinidumpCounts::kGpu;
-        } else {
-          count_type = ProcessedMinidumpCounts::kOther;
+        const crashpad::ExceptionSnapshot* exception =
+            minidump_process_snapshot.Exception();
+        if (exception != nullptr) {
+          const uint32_t signo = exception->Exception();
+          ProcessedMinidumpCounts count_type;
+          if (kv.second == "browser") {
+            count_type = ProcessedMinidumpCounts::kBrowser;
+          } else if (kv.second == "renderer") {
+            count_type = ProcessedMinidumpCounts::kRenderer;
+          } else if (kv.second == "gpu-process") {
+            count_type = ProcessedMinidumpCounts::kGpu;
+          } else if (kv.second == "utility") {
+            count_type = ProcessedMinidumpCounts::kUtility;
+          } else {
+            count_type = ProcessedMinidumpCounts::kOther;
+          }
+          if (signo !=
+              static_cast<uint32_t>(crashpad::Signals::kSimulatedSigno)) {
+            UMA_HISTOGRAM_ENUMERATION(
+                "Stability.Android.ProcessedRealMinidumps", count_type);
+          } else {
+            UMA_HISTOGRAM_ENUMERATION(
+                "Stability.Android.ProcessedSimulatedMinidumps", count_type);
+          }
         }
-        UMA_HISTOGRAM_ENUMERATION("Stability.Android.ProcessedMinidumps",
-                                  count_type);
+        // TODO(wnwen): Add histogram for number of null exceptions.
       }
 #endif  // OS_ANDROID
     }
+  }
+
+  if (crashes_key_value_arr) {
+    crashes_key_value_arr->push_back(kMinidumpKey);
+    crashes_key_value_arr->push_back(report.uuid.ToString().c_str());
   }
 
   http_multipart_builder->SetFileAttachment(kMinidumpKey,
@@ -113,6 +120,37 @@ bool MimeifyReport(const crashpad::CrashReportDatabase::UploadReport& report,
 
   *pid = minidump_process_snapshot.ProcessID();
   return true;
+}
+
+bool MimeifyReportAndWriteToDirectory(
+    const crashpad::CrashReportDatabase::UploadReport& report,
+    const base::FilePath& dest_dir,
+    std::vector<std::string>* crashes_key_value_arr) {
+  crashpad::HTTPMultipartBuilder builder;
+  pid_t pid;
+  if (!MimeifyReportWithKeyValuePairs(report, &builder, crashes_key_value_arr,
+                                      &pid)) {
+    return false;
+  }
+
+  crashpad::FileWriter writer;
+  if (!writer.Open(dest_dir.Append(base::StringPrintf(
+                       "%s.dmp%d", report.uuid.ToString().c_str(), pid)),
+                   crashpad::FileWriteMode::kCreateOrFail,
+                   crashpad::FilePermissions::kOwnerOnly)) {
+    return false;
+  }
+
+  return WriteBodyToFile(builder.GetBodyStream().get(), &writer);
+}
+
+}  // namespace
+
+bool MimeifyReport(const crashpad::CrashReportDatabase::UploadReport& report,
+                   crashpad::HTTPMultipartBuilder* http_multipart_builder,
+                   pid_t* pid) {
+  return MimeifyReportWithKeyValuePairs(report, http_multipart_builder, nullptr,
+                                        pid);
 }
 
 bool WriteBodyToFile(crashpad::HTTPBodyStream* body,
@@ -126,7 +164,8 @@ bool WriteBodyToFile(crashpad::HTTPBodyStream* body,
 }
 
 void RewriteMinidumpsAsMIMEs(const base::FilePath& src_dir,
-                             const base::FilePath& dest_dir) {
+                             const base::FilePath& dest_dir,
+                             std::vector<std::string>* crashes_key_value_arr) {
   std::unique_ptr<crashpad::CrashReportDatabase> db =
       crashpad::CrashReportDatabase::InitializeWithoutCreating(src_dir);
   if (!db) {
@@ -150,7 +189,8 @@ void RewriteMinidumpsAsMIMEs(const base::FilePath& src_dir,
         continue;
 
       case crashpad::CrashReportDatabase::kNoError:
-        if (MimeifyReportAndWriteToDirectory(*upload_report.get(), dest_dir)) {
+        if (MimeifyReportAndWriteToDirectory(*upload_report.get(), dest_dir,
+                                             crashes_key_value_arr)) {
           db->RecordUploadComplete(std::move(upload_report), std::string());
         } else {
           crashpad::Metrics::CrashUploadSkipped(
@@ -183,7 +223,24 @@ static void JNI_CrashReportMimeWriter_RewriteMinidumpsAsMIMEs(
   base::android::ConvertJavaStringToUTF8(env, j_src_dir, &src_dir);
   base::android::ConvertJavaStringToUTF8(env, j_dest_dir, &dest_dir);
 
-  RewriteMinidumpsAsMIMEs(base::FilePath(src_dir), base::FilePath(dest_dir));
+  RewriteMinidumpsAsMIMEs(base::FilePath(src_dir), base::FilePath(dest_dir),
+                          nullptr);
+}
+
+static base::android::ScopedJavaLocalRef<jobjectArray>
+JNI_CrashReportMimeWriter_RewriteMinidumpsAsMIMEsAndGetCrashKeys(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jstring>& j_src_dir,
+    const base::android::JavaParamRef<jstring>& j_dest_dir) {
+  std::string src_dir, dest_dir;
+  base::android::ConvertJavaStringToUTF8(env, j_src_dir, &src_dir);
+  base::android::ConvertJavaStringToUTF8(env, j_dest_dir, &dest_dir);
+
+  std::vector<std::string> key_value_arr;
+  RewriteMinidumpsAsMIMEs(base::FilePath(src_dir), base::FilePath(dest_dir),
+                          &key_value_arr);
+
+  return base::android::ToJavaArrayOfStrings(env, key_value_arr);
 }
 
 }  // namespace minidump_uploader

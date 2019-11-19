@@ -17,17 +17,20 @@
 #include "base/strings/stringprintf.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
-#include "build/build_config.h"
 #include "crypto/sha2.h"
+#include "net/base/features.h"
 #include "net/base/net_errors.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/url_util.h"
 #include "net/cert/asn1_util.h"
+#include "net/cert/cert_net_fetcher.h"
 #include "net/cert/cert_status_flags.h"
 #include "net/cert/cert_verifier.h"
 #include "net/cert/cert_verify_result.h"
 #include "net/cert/crl_set.h"
 #include "net/cert/internal/ocsp.h"
+#include "net/cert/internal/parse_certificate.h"
+#include "net/cert/internal/revocation_checker.h"
 #include "net/cert/internal/signature_algorithm.h"
 #include "net/cert/known_roots.h"
 #include "net/cert/ocsp_revocation_status.h"
@@ -35,7 +38,14 @@
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
 #include "net/der/encode_values.h"
+#include "net/net_buildflags.h"
+#include "third_party/boringssl/src/include/openssl/pool.h"
 #include "url/url_canon.h"
+
+#if defined(OS_FUCHSIA) || defined(USE_NSS_CERTS) || \
+    (defined(OS_MACOSX) && !defined(OS_IOS))
+#include "net/cert/cert_verify_proc_builtin.h"
+#endif
 
 #if defined(USE_NSS_CERTS)
 #include "net/cert/cert_verify_proc_nss.h"
@@ -48,10 +58,6 @@
 #elif defined(OS_WIN)
 #include "base/win/windows_version.h"
 #include "net/cert/cert_verify_proc_win.h"
-#elif defined(OS_FUCHSIA)
-#include "net/cert/cert_verify_proc_builtin.h"
-#else
-#error Implement certificate verification.
 #endif
 
 namespace net {
@@ -100,7 +106,7 @@ void RecordPublicKeyHistogram(const char* chain_position,
                          CertTypeToString(cert_type));
   // Do not use UMA_HISTOGRAM_... macros here, as it caches the Histogram
   // instance and thus only works if |histogram_name| is constant.
-  base::HistogramBase* counter = NULL;
+  base::HistogramBase* counter = nullptr;
 
   // Histogram buckets are contingent upon the underlying algorithm being used.
   if (cert_type == X509Certificate::kPublicKeyTypeECDH ||
@@ -240,7 +246,7 @@ void BestEffortCheckOCSP(const std::string& raw_response,
 
   verify_result->revocation_status =
       CheckOCSP(raw_response, cert_der, issuer_der, base::Time::Now(),
-                kMaxOCSPLeafUpdateAge, &verify_result->response_status);
+                kMaxRevocationLeafUpdateAge, &verify_result->response_status);
 }
 
 // Records histograms indicating whether the certificate |cert|, which
@@ -310,7 +316,7 @@ bool AreSHA1IntermediatesAllowed() {
   // TODO(rsleevi): Remove this once https://crbug.com/588789 is resolved
   // for Windows 7/2008 users.
   // Note: This must be kept in sync with cert_verify_proc_unittest.cc
-  return base::win::GetVersion() < base::win::VERSION_WIN8;
+  return base::win::GetVersion() < base::win::Version::WIN8;
 #else
   return false;
 #endif
@@ -447,24 +453,36 @@ WARN_UNUSED_RESULT bool InspectSignatureAlgorithmsInChain(
 
 }  // namespace
 
+#if !defined(OS_FUCHSIA)
 // static
-scoped_refptr<CertVerifyProc> CertVerifyProc::CreateDefault() {
+scoped_refptr<CertVerifyProc> CertVerifyProc::CreateSystemVerifyProc(
+    scoped_refptr<CertNetFetcher> cert_net_fetcher) {
 #if defined(USE_NSS_CERTS)
   return new CertVerifyProcNSS();
 #elif defined(OS_ANDROID)
-  return new CertVerifyProcAndroid();
+  return new CertVerifyProcAndroid(std::move(cert_net_fetcher));
 #elif defined(OS_IOS)
   return new CertVerifyProcIOS();
 #elif defined(OS_MACOSX)
   return new CertVerifyProcMac();
 #elif defined(OS_WIN)
   return new CertVerifyProcWin();
-#elif defined(OS_FUCHSIA)
-  return CreateCertVerifyProcBuiltin();
 #else
 #error Unsupported platform
 #endif
 }
+#endif
+
+#if defined(OS_FUCHSIA) || defined(USE_NSS_CERTS) || \
+    (defined(OS_MACOSX) && !defined(OS_IOS))
+// static
+scoped_refptr<CertVerifyProc> CertVerifyProc::CreateBuiltinVerifyProc(
+    scoped_refptr<CertNetFetcher> cert_net_fetcher) {
+  return CreateCertVerifyProcBuiltin(
+      std::move(cert_net_fetcher),
+      SystemTrustStoreProvider::CreateDefaultForSSL());
+}
+#endif
 
 CertVerifyProc::CertVerifyProc() {}
 
@@ -473,6 +491,7 @@ CertVerifyProc::~CertVerifyProc() = default;
 int CertVerifyProc::Verify(X509Certificate* cert,
                            const std::string& hostname,
                            const std::string& ocsp_response,
+                           const std::string& sct_list,
                            int flags,
                            CRLSet* crl_set,
                            const CertificateList& additional_trust_anchors,
@@ -489,14 +508,9 @@ int CertVerifyProc::Verify(X509Certificate* cert,
   verify_result->Reset();
   verify_result->verified_cert = cert;
 
-  if (IsBlacklisted(cert)) {
-    verify_result->cert_status |= CERT_STATUS_REVOKED;
-    return ERR_CERT_REVOKED;
-  }
-
   DCHECK(crl_set);
-  int rv = VerifyInternal(cert, hostname, ocsp_response, flags, crl_set,
-                          additional_trust_anchors, verify_result);
+  int rv = VerifyInternal(cert, hostname, ocsp_response, sct_list, flags,
+                          crl_set, additional_trust_anchors, verify_result);
 
   // Check for mismatched signature algorithms and unknown signature algorithms
   // in the chain. Also fills in the has_* booleans for the digest algorithms
@@ -511,9 +525,13 @@ int CertVerifyProc::Verify(X509Certificate* cert,
     rv = MapCertStatusToNetError(verify_result->cert_status);
   }
 
-  BestEffortCheckOCSP(ocsp_response, *verify_result->verified_cert,
-                      &verify_result->ocsp_result);
-
+  if (verify_result->ocsp_result.response_status ==
+      OCSPVerifyResult::NOT_CHECKED) {
+    // If VerifyInternal did not record the result of checking stapled OCSP,
+    // do it now.
+    BestEffortCheckOCSP(ocsp_response, *verify_result->verified_cert,
+                        &verify_result->ocsp_result);
+  }
   std::vector<std::string> dns_names, ip_addrs;
   cert->GetSubjectAltName(&dns_names, &ip_addrs);
   if (HasNameConstraintsViolation(verify_result->public_key_hashes,
@@ -613,25 +631,69 @@ int CertVerifyProc::Verify(X509Certificate* cert,
 }
 
 // static
-bool CertVerifyProc::IsBlacklisted(X509Certificate* cert) {
-  // CloudFlare revoked all certificates issued prior to April 2nd, 2014. Thus
-  // all certificates where the CN ends with ".cloudflare.com" with a prior
-  // issuance date are rejected.
-  //
-  // The old certs had a lifetime of five years, so this can be removed April
-  // 2nd, 2019.
-  const base::StringPiece cn(cert->subject().common_name);
-  static constexpr base::StringPiece kCloudflareCNSuffix(".cloudflare.com");
-  // April 2nd, 2014 UTC, expressed as seconds since the Unix Epoch.
-  static constexpr base::TimeDelta kCloudflareEpoch =
-      base::TimeDelta::FromSeconds(1396396800);
+void CertVerifyProc::LogNameNormalizationResult(
+    const std::string& histogram_suffix,
+    NameNormalizationResult result) {
+  base::UmaHistogramEnumeration(
+      std::string("Net.CertVerifier.NameNormalizationPrivateRoots") +
+          histogram_suffix,
+      result);
+}
 
-  if (cn.ends_with(kCloudflareCNSuffix) &&
-      cert->valid_start() < (base::Time::UnixEpoch() + kCloudflareEpoch)) {
-    return true;
+// static
+void CertVerifyProc::LogNameNormalizationMetrics(
+    const std::string& histogram_suffix,
+    X509Certificate* verified_cert,
+    bool is_issued_by_known_root) {
+  if (is_issued_by_known_root)
+    return;
+
+  if (verified_cert->intermediate_buffers().empty()) {
+    LogNameNormalizationResult(histogram_suffix,
+                               NameNormalizationResult::kChainLengthOne);
+    return;
   }
 
-  return false;
+  std::vector<CRYPTO_BUFFER*> der_certs;
+  der_certs.push_back(verified_cert->cert_buffer());
+  for (const auto& buf : verified_cert->intermediate_buffers())
+    der_certs.push_back(buf.get());
+
+  ParseCertificateOptions options;
+  options.allow_invalid_serial_numbers = true;
+
+  std::vector<der::Input> subjects;
+  std::vector<der::Input> issuers;
+
+  for (auto* buf : der_certs) {
+    der::Input tbs_certificate_tlv;
+    der::Input signature_algorithm_tlv;
+    der::BitString signature_value;
+    ParsedTbsCertificate tbs;
+    if (!ParseCertificate(
+            der::Input(CRYPTO_BUFFER_data(buf), CRYPTO_BUFFER_len(buf)),
+            &tbs_certificate_tlv, &signature_algorithm_tlv, &signature_value,
+            nullptr /* errors*/) ||
+        !ParseTbsCertificate(tbs_certificate_tlv, options, &tbs,
+                             nullptr /*errors*/)) {
+      LogNameNormalizationResult(histogram_suffix,
+                                 NameNormalizationResult::kError);
+      return;
+    }
+    subjects.push_back(tbs.subject_tlv);
+    issuers.push_back(tbs.issuer_tlv);
+  }
+
+  for (size_t i = 0; i < subjects.size() - 1; ++i) {
+    if (issuers[i] != subjects[i + 1]) {
+      LogNameNormalizationResult(histogram_suffix,
+                                 NameNormalizationResult::kNormalized);
+      return;
+    }
+  }
+
+  LogNameNormalizationResult(histogram_suffix,
+                             NameNormalizationResult::kByteEqual);
 }
 
 // CheckNameConstraints verifies that every name in |dns_names| is in one of
@@ -715,7 +777,7 @@ bool CertVerifyProc::HasNameConstraintsViolation(
       // C=FR, ST=France, L=Paris, O=PM/SGDN, OU=DCSSI,
       // CN=IGC/A/emailAddress=igca@sgdn.pm.gouv.fr
       //
-      // net/data/ssl/blacklist/b9bea7860a962ea3611dab97ab6da3e21c1068b97d55575ed0e11279c11c8932.pem
+      // net/data/ssl/blocklist/b9bea7860a962ea3611dab97ab6da3e21c1068b97d55575ed0e11279c11c8932.pem
       {
           {{0x86, 0xc1, 0x3a, 0x34, 0x08, 0xdd, 0x1a, 0xa7, 0x7e, 0xe8, 0xb6,
             0x94, 0x7c, 0x03, 0x95, 0x87, 0x72, 0xf5, 0x31, 0x24, 0x8c, 0x16,
@@ -725,7 +787,7 @@ bool CertVerifyProc::HasNameConstraintsViolation(
       // C=IN, O=India PKI, CN=CCA India 2007
       // Expires: July 4th 2015.
       //
-      // net/data/ssl/blacklist/f375e2f77a108bacc4234894a9af308edeca1acd8fbde0e7aaa9634e9daf7e1c.pem
+      // net/data/ssl/blocklist/f375e2f77a108bacc4234894a9af308edeca1acd8fbde0e7aaa9634e9daf7e1c.pem
       {
           {{0x7e, 0x6a, 0xcd, 0x85, 0x3c, 0xac, 0xc6, 0x93, 0x2e, 0x9b, 0x51,
             0x9f, 0xda, 0xd1, 0xbe, 0xb5, 0x15, 0xed, 0x2a, 0x2d, 0x00, 0x25,
@@ -735,7 +797,7 @@ bool CertVerifyProc::HasNameConstraintsViolation(
       // C=IN, O=India PKI, CN=CCA India 2011
       // Expires: March 11 2016.
       //
-      // net/data/ssl/blacklist/2d66a702ae81ba03af8cff55ab318afa919039d9f31b4d64388680f81311b65a.pem
+      // net/data/ssl/blocklist/2d66a702ae81ba03af8cff55ab318afa919039d9f31b4d64388680f81311b65a.pem
       {
           {{0x42, 0xa7, 0x09, 0x84, 0xff, 0xd3, 0x99, 0xc4, 0xea, 0xf0, 0xe7,
             0x02, 0xa4, 0x4b, 0xef, 0x2a, 0xd8, 0xa7, 0x9b, 0x8b, 0xf4, 0x64,
@@ -745,7 +807,7 @@ bool CertVerifyProc::HasNameConstraintsViolation(
       // C=IN, O=India PKI, CN=CCA India 2014
       // Expires: March 5 2024.
       //
-      // net/data/ssl/blacklist/60109bc6c38328598a112c7a25e38b0f23e5a7511cb815fb64e0c4ff05db7df7.pem
+      // net/data/ssl/blocklist/60109bc6c38328598a112c7a25e38b0f23e5a7511cb815fb64e0c4ff05db7df7.pem
       {
           {{0x9c, 0xf4, 0x70, 0x4f, 0x3e, 0xe5, 0xa5, 0x98, 0x94, 0xb1, 0x6b,
             0xf0, 0x0c, 0xfe, 0x73, 0xd5, 0x88, 0xda, 0xe2, 0x69, 0xf5, 0x1d,

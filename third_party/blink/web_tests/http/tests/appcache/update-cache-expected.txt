@@ -1,4 +1,6 @@
+CONSOLE WARNING: Application Cache API manifest selection is deprecated and will be removed in M82, around April 2020. See https://www.chromestatus.com/features/6192449487634432 for more details.
 CONSOLE WARNING: line 20: Synchronous XMLHttpRequest on the main thread is deprecated because of its detrimental effects to the end user's experience. For more help, check https://xhr.spec.whatwg.org/.
+CONSOLE WARNING: Application Cache API use is deprecated and will be removed in M82, around April 2020. See https://www.chromestatus.com/features/6192449487634432 for more details.
 Test a simple offline application self-update process. Should print a series of messages followed with DONE:
 
 Updating cache group...

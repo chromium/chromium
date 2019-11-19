@@ -32,53 +32,47 @@ class VectorIconGallery : public View,
                           public TextfieldController,
                           public ButtonListener {
  public:
-  VectorIconGallery()
-      : image_view_(new ImageView()),
-        image_view_container_(new views::View()),
-        size_input_(new Textfield()),
-        color_input_(new Textfield()),
-        file_chooser_(new Textfield()),
-        file_go_button_(
-            MdTextButton::Create(this, base::ASCIIToUTF16("Render"))),
-        // 36dp is one of the natural sizes for MD icons, and corresponds
-        // roughly to a 32dp usable area.
-        size_(36),
-        color_(SK_ColorRED) {
-    AddChildView(size_input_);
-    AddChildView(color_input_);
+  VectorIconGallery() {
+    size_input_ = AddChildView(std::make_unique<Textfield>());
+    color_input_ = AddChildView(std::make_unique<Textfield>());
 
-    image_view_container_->AddChildView(image_view_);
-    auto image_layout = std::make_unique<BoxLayout>(BoxLayout::kHorizontal);
+    auto image_view_container = std::make_unique<views::View>();
+    image_view_ =
+        image_view_container->AddChildView(std::make_unique<ImageView>());
+    auto image_layout =
+        std::make_unique<BoxLayout>(BoxLayout::Orientation::kHorizontal);
     image_layout->set_cross_axis_alignment(
-        BoxLayout::CROSS_AXIS_ALIGNMENT_CENTER);
+        BoxLayout::CrossAxisAlignment::kCenter);
     image_layout->set_main_axis_alignment(
-        BoxLayout::MAIN_AXIS_ALIGNMENT_CENTER);
-    image_view_container_->SetLayoutManager(std::move(image_layout));
+        BoxLayout::MainAxisAlignment::kCenter);
+    image_view_container->SetLayoutManager(std::move(image_layout));
     image_view_->SetBorder(CreateSolidSidedBorder(1, 1, 1, 1, SK_ColorBLACK));
-    AddChildView(image_view_container_);
+    image_view_container_ = AddChildView(std::move(image_view_container));
 
-    BoxLayout* box = SetLayoutManager(
-        std::make_unique<BoxLayout>(BoxLayout::kVertical, gfx::Insets(10), 10));
+    BoxLayout* box = SetLayoutManager(std::make_unique<BoxLayout>(
+        BoxLayout::Orientation::kVertical, gfx::Insets(10), 10));
     box->SetFlexForView(image_view_container_, 1);
 
-    file_chooser_->set_placeholder_text(
+    auto file_chooser = std::make_unique<Textfield>();
+    file_chooser->SetPlaceholderText(
         base::ASCIIToUTF16("Enter a file to read"));
-    View* file_container = new View();
+    auto file_container = std::make_unique<View>();
     BoxLayout* file_box =
         file_container->SetLayoutManager(std::make_unique<BoxLayout>(
-            BoxLayout::kHorizontal, gfx::Insets(10), 10));
-    file_container->AddChildView(file_chooser_);
-    file_container->AddChildView(file_go_button_);
+            BoxLayout::Orientation::kHorizontal, gfx::Insets(10), 10));
+    file_chooser_ = file_container->AddChildView(std::move(file_chooser));
+    file_go_button_ = file_container->AddChildView(
+        MdTextButton::Create(this, base::ASCIIToUTF16("Render")));
     file_box->SetFlexForView(file_chooser_, 1);
-    AddChildView(file_container);
+    AddChildView(std::move(file_container));
 
-    size_input_->set_placeholder_text(base::ASCIIToUTF16("Size in dip"));
+    size_input_->SetPlaceholderText(base::ASCIIToUTF16("Size in dip"));
     size_input_->set_controller(this);
-    color_input_->set_placeholder_text(base::ASCIIToUTF16("Color (AARRGGBB)"));
+    color_input_->SetPlaceholderText(base::ASCIIToUTF16("Color (AARRGGBB)"));
     color_input_->set_controller(this);
   }
 
-  ~VectorIconGallery() override {}
+  ~VectorIconGallery() override = default;
 
   // TextfieldController implementation.
   void ContentsChanged(Textfield* sender,
@@ -108,9 +102,9 @@ class VectorIconGallery : public View,
     DCHECK_EQ(file_go_button_, sender);
     base::ScopedAllowBlockingForTesting allow_blocking;
 #if defined(OS_POSIX)
-    base::FilePath path(base::UTF16ToUTF8(file_chooser_->text()));
+    base::FilePath path(base::UTF16ToUTF8(file_chooser_->GetText()));
 #elif defined(OS_WIN)
-    base::FilePath path(file_chooser_->text());
+    base::FilePath path(file_chooser_->GetText());
 #endif
     base::ReadFileToString(path, &contents_);
     // Skip over comments.
@@ -128,8 +122,13 @@ class VectorIconGallery : public View,
       image_view_->SetImage(
           gfx::CreateVectorIconFromSource(contents_, size_, color_));
     }
-    Layout();
+    InvalidateLayout();
   }
+
+  // 36dp is one of the natural sizes for MD icons, and corresponds roughly to a
+  // 32dp usable area.
+  int size_ = 36;
+  SkColor color_ = SK_ColorRED;
 
   ImageView* image_view_;
   View* image_view_container_;
@@ -139,9 +138,6 @@ class VectorIconGallery : public View,
   Button* file_go_button_;
   std::string contents_;
 
-  int size_;
-  SkColor color_;
-
   DISALLOW_COPY_AND_ASSIGN(VectorIconGallery);
 };
 
@@ -149,7 +145,7 @@ class VectorIconGallery : public View,
 
 VectorExample::VectorExample() : ExampleBase("Vector Icon") {}
 
-VectorExample::~VectorExample() {}
+VectorExample::~VectorExample() = default;
 
 void VectorExample::CreateExampleView(View* container) {
   container->SetLayoutManager(std::make_unique<FillLayout>());

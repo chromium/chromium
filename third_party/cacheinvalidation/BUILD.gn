@@ -134,14 +134,15 @@ if (is_android) {
 
   android_library("cacheinvalidation_javalib") {
     chromium_code = false
-    emma_never_instrument = true
+    jacoco_never_instrument = true
     deps = [
       ":cacheinvalidation_proto_java",
       "$google_play_services_package:google_play_services_gcm_java",
       "$google_play_services_package:google_play_services_iid_java",
       "$google_play_services_package:google_play_services_tasks_java",
+      "//base:base_java",
       "//third_party/android_protobuf:protobuf_nano_javalib",
-      "//third_party/android_tools:android_gcm_java",
+      "//third_party/android_sdk:android_gcm_java",
     ]
 
     java_files = [

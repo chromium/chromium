@@ -6,14 +6,40 @@
 
 #include "base/logging.h"
 #include "chrome/browser/invalidation/deprecated_profile_invalidation_provider_factory.h"
+#include "chrome/browser/invalidation/profile_invalidation_provider_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/profile_sync_service_factory.h"
-#include "components/browser_sync/browser_sync_switches.h"
+#include "chrome/common/chrome_features.h"
 #include "components/drive/drive_notification_manager.h"
 #include "components/invalidation/impl/profile_invalidation_provider.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/sync/driver/sync_driver_switches.h"
 
 namespace drive {
+namespace {
+
+constexpr char kDriveFcmSenderId[] = "947318989803";
+
+invalidation::InvalidationService* GetInvalidationService(Profile* profile) {
+  if (base::FeatureList::IsEnabled(features::kDriveFcmInvalidations)) {
+    if (!invalidation::ProfileInvalidationProviderFactory::GetForProfile(
+            profile)) {
+      return nullptr;
+    }
+    return invalidation::ProfileInvalidationProviderFactory::GetForProfile(
+               profile)
+        ->GetInvalidationServiceForCustomSender(kDriveFcmSenderId);
+  }
+  if (!invalidation::DeprecatedProfileInvalidationProviderFactory::
+          GetForProfile(profile)) {
+    return nullptr;
+  }
+  return invalidation::DeprecatedProfileInvalidationProviderFactory::
+      GetForProfile(profile)
+          ->GetInvalidationService();
+}
+
+}  // namespace
 
 // static
 DriveNotificationManager*
@@ -29,8 +55,7 @@ DriveNotificationManagerFactory::GetForBrowserContext(
     content::BrowserContext* context) {
   if (!switches::IsSyncAllowedByFlag())
     return NULL;
-  if (!invalidation::DeprecatedProfileInvalidationProviderFactory::
-          GetForProfile(Profile::FromBrowserContext(context))) {
+  if (!GetInvalidationService(Profile::FromBrowserContext(context))) {
     // Do not create a DriveNotificationManager for |context|s that do not
     // support invalidation.
     return NULL;
@@ -53,19 +78,16 @@ DriveNotificationManagerFactory::DriveNotificationManagerFactory()
   DependsOn(ProfileSyncServiceFactory::GetInstance());
   DependsOn(invalidation::DeprecatedProfileInvalidationProviderFactory::
                 GetInstance());
+  DependsOn(invalidation::ProfileInvalidationProviderFactory::GetInstance());
 }
 
 DriveNotificationManagerFactory::~DriveNotificationManagerFactory() {}
 
 KeyedService* DriveNotificationManagerFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  invalidation::ProfileInvalidationProvider* invalidation_provider =
-      invalidation::DeprecatedProfileInvalidationProviderFactory::GetForProfile(
-          Profile::FromBrowserContext(context));
-  DCHECK(invalidation_provider);
-  DCHECK(invalidation_provider->GetInvalidationService());
   return new DriveNotificationManager(
-      invalidation_provider->GetInvalidationService());
+      GetInvalidationService(Profile::FromBrowserContext(context)),
+      base::FeatureList::IsEnabled(features::kDriveFcmInvalidations));
 }
 
 }  // namespace drive

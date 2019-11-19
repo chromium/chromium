@@ -58,7 +58,6 @@ void ProtobufToSyncDataEqual(const sync_pb::EntitySpecifics& entity) {
   EXPECT_EQ(input.enabled(), output.enabled());
   EXPECT_EQ(input.incognito_enabled(), output.incognito_enabled());
   EXPECT_EQ(input.remote_install(), output.remote_install());
-  EXPECT_EQ(input.installed_by_custodian(), output.installed_by_custodian());
 }
 
 // Serializes an ExtensionSyncData into a protobuf structure and back again, and
@@ -74,7 +73,6 @@ void SyncDataToProtobufEqual(const ExtensionSyncData& input) {
   EXPECT_EQ(input.enabled(), output->enabled());
   EXPECT_EQ(input.incognito_enabled(), output->incognito_enabled());
   EXPECT_EQ(input.remote_install(), output->remote_install());
-  EXPECT_EQ(input.installed_by_custodian(), output->installed_by_custodian());
   EXPECT_EQ(input.version(), output->version());
   EXPECT_EQ(input.update_url(), output->update_url());
   EXPECT_EQ(input.name(), output->name());
@@ -95,7 +93,6 @@ TEST_F(ExtensionSyncDataTest, ExtensionSyncDataForExtension) {
   extension_specifics->set_enabled(false);
   extension_specifics->set_incognito_enabled(true);
   extension_specifics->set_remote_install(false);
-  extension_specifics->set_installed_by_custodian(false);
   extension_specifics->set_version(kVersion);
   extension_specifics->set_name(kName);
 
@@ -143,7 +140,6 @@ class AppSyncDataTest : public testing::Test {
     extension_specifics->set_disable_reasons(kValidDisableReasons);
     extension_specifics->set_incognito_enabled(true);
     extension_specifics->set_remote_install(false);
-    extension_specifics->set_installed_by_custodian(false);
     extension_specifics->set_name(kName);
   }
 };

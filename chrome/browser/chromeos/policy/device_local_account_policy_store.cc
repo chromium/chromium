@@ -31,11 +31,11 @@ DeviceLocalAccountPolicyStore::DeviceLocalAccountPolicyStore(
     chromeos::DeviceSettingsService* device_settings_service,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner)
     : UserCloudPolicyStoreBase(background_task_runner,
-                               PolicyScope::POLICY_SCOPE_USER),
+                               PolicyScope::POLICY_SCOPE_USER,
+                               PolicySource::POLICY_SOURCE_CLOUD),
       account_id_(account_id),
       session_manager_client_(session_manager_client),
-      device_settings_service_(device_settings_service),
-      weak_factory_(this) {}
+      device_settings_service_(device_settings_service) {}
 
 DeviceLocalAccountPolicyStore::~DeviceLocalAccountPolicyStore() {}
 
@@ -200,6 +200,9 @@ void DeviceLocalAccountPolicyStore::Validate(
   scoped_refptr<ownership::PublicKey> key =
       device_settings_service_->GetPublicKey();
   if (!key.get() || !key->is_loaded() || !device_policy_data) {
+    LOG(ERROR) << "Failed policy validation, key: " << (key.get() != nullptr)
+               << ", is_loaded: " << (key.get() ? key->is_loaded() : false)
+               << ", device_policy_data: " << (device_policy_data != nullptr);
     status_ = CloudPolicyStore::STATUS_BAD_STATE;
     NotifyStoreLoaded();
     return;
@@ -207,7 +210,7 @@ void DeviceLocalAccountPolicyStore::Validate(
 
   auto validator = std::make_unique<UserCloudPolicyValidator>(
       std::move(policy_response), background_task_runner());
-  validator->ValidateUsername(account_id_, false);
+  validator->ValidateUsername(account_id_);
   validator->ValidatePolicyType(dm_protocol::kChromePublicAccountPolicyType);
   // The timestamp is verified when storing a new policy downloaded from the
   // server but not when loading a cached policy from disk.

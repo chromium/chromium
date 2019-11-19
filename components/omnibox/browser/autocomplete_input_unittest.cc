@@ -24,7 +24,7 @@ TEST(AutocompleteInputTest, InputType) {
     const base::string16 input;
     const metrics::OmniboxInputType type;
   } input_cases[] = {
-    {base::string16(), metrics::OmniboxInputType::INVALID},
+    {base::string16(), metrics::OmniboxInputType::EMPTY},
     {ASCIIToUTF16("?"), metrics::OmniboxInputType::QUERY},
     {ASCIIToUTF16("?foo"), metrics::OmniboxInputType::QUERY},
     {ASCIIToUTF16("?foo bar"), metrics::OmniboxInputType::QUERY},
@@ -109,8 +109,19 @@ TEST(AutocompleteInputTest, InputType) {
     // { ASCIIToUTF16("mailto:abuse@foo.com"), metrics::OmniboxInputType::URL },
     {ASCIIToUTF16("view-source:http://www.foo.com/"),
      metrics::OmniboxInputType::URL},
+    {ASCIIToUTF16("javascript"), metrics::OmniboxInputType::UNKNOWN},
     {ASCIIToUTF16("javascript:alert(\"Hi there\");"),
      metrics::OmniboxInputType::URL},
+    {ASCIIToUTF16("javascript:alert%28\"Hi there\"%29;"),
+     metrics::OmniboxInputType::URL},
+    {ASCIIToUTF16("javascript:foo"), metrics::OmniboxInputType::UNKNOWN},
+    {ASCIIToUTF16("javascript:foo;"), metrics::OmniboxInputType::URL},
+    {ASCIIToUTF16("javascript:\"foo\""), metrics::OmniboxInputType::URL},
+    {ASCIIToUTF16("javascript:"), metrics::OmniboxInputType::UNKNOWN},
+    {ASCIIToUTF16("javascript:the cromulent parts"),
+     metrics::OmniboxInputType::UNKNOWN},
+    {ASCIIToUTF16("javascript:foo.getter"), metrics::OmniboxInputType::URL},
+    {ASCIIToUTF16("JavaScript:Tutorials"), metrics::OmniboxInputType::UNKNOWN},
 #if defined(OS_WIN)
     {ASCIIToUTF16("C:\\Program Files"), metrics::OmniboxInputType::URL},
     {ASCIIToUTF16("\\\\Server\\Folder\\File"), metrics::OmniboxInputType::URL},
@@ -168,6 +179,7 @@ TEST(AutocompleteInputTest, InputType) {
     {ASCIIToUTF16("filesystem:"), metrics::OmniboxInputType::QUERY},
     {ASCIIToUTF16("chrome-search://"), metrics::OmniboxInputType::QUERY},
     {ASCIIToUTF16("chrome-devtools:"), metrics::OmniboxInputType::QUERY},
+    {ASCIIToUTF16("devtools:"), metrics::OmniboxInputType::QUERY},
     {ASCIIToUTF16("about://f;"), metrics::OmniboxInputType::QUERY},
     {ASCIIToUTF16("://w"), metrics::OmniboxInputType::UNKNOWN},
     {ASCIIToUTF16(":w"), metrics::OmniboxInputType::UNKNOWN},
@@ -273,28 +285,35 @@ TEST(AutocompleteInputTest, ParseForEmphasizeComponent) {
     const Component scheme;
     const Component host;
   } input_cases[] = {
-    { base::string16(), kInvalidComponent, kInvalidComponent },
-    { ASCIIToUTF16("?"), kInvalidComponent, kInvalidComponent },
-    { ASCIIToUTF16("?http://foo.com/bar"), kInvalidComponent,
-        kInvalidComponent },
-    { ASCIIToUTF16("foo/bar baz"), kInvalidComponent, Component(0, 3) },
-    { ASCIIToUTF16("http://foo/bar baz"), Component(0, 4), Component(7, 3) },
-    { ASCIIToUTF16("link:foo.com"), Component(0, 4), kInvalidComponent },
-    { ASCIIToUTF16("www.foo.com:81"), kInvalidComponent, Component(0, 11) },
-    { base::WideToUTF16(L"\u6d4b\u8bd5"), kInvalidComponent, Component(0, 2) },
-    { ASCIIToUTF16("view-source:http://www.foo.com/"), Component(12, 4),
-        Component(19, 11) },
-    { ASCIIToUTF16("view-source:https://example.com/"),
-      Component(12, 5), Component(20, 11) },
-    { ASCIIToUTF16("view-source:www.foo.com"), kInvalidComponent,
-        Component(12, 11) },
-    { ASCIIToUTF16("view-source:"), Component(0, 11), kInvalidComponent },
-    { ASCIIToUTF16("view-source:garbage"), kInvalidComponent,
-        Component(12, 7) },
-    { ASCIIToUTF16("view-source:http://http://foo"), Component(12, 4),
-        Component(19, 4) },
-    { ASCIIToUTF16("view-source:view-source:http://example.com/"),
-        Component(12, 11), kInvalidComponent }
+      {base::string16(), kInvalidComponent, kInvalidComponent},
+      {ASCIIToUTF16("?"), kInvalidComponent, kInvalidComponent},
+      {ASCIIToUTF16("?http://foo.com/bar"), kInvalidComponent,
+       kInvalidComponent},
+      {ASCIIToUTF16("foo/bar baz"), kInvalidComponent, Component(0, 3)},
+      {ASCIIToUTF16("http://foo/bar baz"), Component(0, 4), Component(7, 3)},
+      {ASCIIToUTF16("link:foo.com"), Component(0, 4), kInvalidComponent},
+      {ASCIIToUTF16("www.foo.com:81"), kInvalidComponent, Component(0, 11)},
+      {base::WideToUTF16(L"\u6d4b\u8bd5"), kInvalidComponent, Component(0, 2)},
+      {ASCIIToUTF16("view-source:http://www.foo.com/"), Component(12, 4),
+       Component(19, 11)},
+      {ASCIIToUTF16("view-source:https://example.com/"), Component(12, 5),
+       Component(20, 11)},
+      {ASCIIToUTF16("view-source:www.foo.com"), kInvalidComponent,
+       Component(12, 11)},
+      {ASCIIToUTF16("view-source:"), Component(0, 11), kInvalidComponent},
+      {ASCIIToUTF16("view-source:garbage"), kInvalidComponent,
+       Component(12, 7)},
+      {ASCIIToUTF16("view-source:http://http://foo"), Component(12, 4),
+       Component(19, 4)},
+      {ASCIIToUTF16("view-source:view-source:http://example.com/"),
+       Component(12, 11), kInvalidComponent},
+      {ASCIIToUTF16("blob:http://www.foo.com/"), Component(5, 4),
+       Component(12, 11)},
+      {ASCIIToUTF16("blob:https://example.com/"), Component(5, 5),
+       Component(13, 11)},
+      {ASCIIToUTF16("blob:www.foo.com"), kInvalidComponent, Component(5, 11)},
+      {ASCIIToUTF16("blob:"), Component(0, 4), kInvalidComponent},
+      {ASCIIToUTF16("blob:garbage"), kInvalidComponent, Component(5, 7)},
   };
 
   for (size_t i = 0; i < base::size(input_cases); ++i) {
@@ -348,5 +367,26 @@ TEST(AutocompleteInputTest, InputTypeWithCursorPosition) {
     EXPECT_EQ(input_cases[i].normalized_input, input.text());
     EXPECT_EQ(input_cases[i].normalized_cursor_position,
               input.cursor_position());
+  }
+}
+
+TEST(AutocompleteInputTest, InputParsedToFallback) {
+  struct test_data {
+    const base::string16 input;
+    const std::string parsed_input;
+  } input_cases[] = {
+      {ASCIIToUTF16("devtools://bundled/devtools/inspector.html"),
+       std::string("devtools://bundled/devtools/inspector.html")},
+      {ASCIIToUTF16("chrome-devtools://bundled/devtools/inspector.html"),
+       std::string("devtools://bundled/devtools/inspector.html")},
+  };
+
+  for (size_t i = 0; i < base::size(input_cases); ++i) {
+    SCOPED_TRACE(input_cases[i].input);
+    AutocompleteInput input(input_cases[i].input,
+                            metrics::OmniboxEventProto::OTHER,
+                            TestSchemeClassifier());
+    input.set_prevent_inline_autocomplete(true);
+    EXPECT_EQ(input_cases[i].parsed_input, input.canonicalized_url().spec());
   }
 }

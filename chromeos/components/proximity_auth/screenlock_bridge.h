@@ -13,7 +13,7 @@
 #include "base/observer_list.h"
 #include "base/strings/string16.h"
 #include "base/values.h"
-#include "chromeos/components/proximity_auth/public/interfaces/auth_type.mojom.h"
+#include "chromeos/components/proximity_auth/public/mojom/auth_type.mojom.h"
 #include "components/account_id/account_id.h"
 
 namespace proximity_auth {
@@ -178,7 +178,7 @@ class ScreenlockBridge {
   ScreenlockBridge();
   ~ScreenlockBridge();
 
-  LockHandler* lock_handler_;  // Not owned
+  LockHandler* lock_handler_ = nullptr;  // Not owned
 
   // The last focused user's id.
   AccountId focused_account_id_;

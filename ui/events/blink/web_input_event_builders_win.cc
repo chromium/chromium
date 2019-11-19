@@ -230,11 +230,11 @@ WebMouseWheelEvent WebMouseWheelEventBuilder::Build(
         break;
       case SB_PAGEUP:
         wheel_delta = 1;
-        result.scroll_by_page = true;
+        result.delta_units = ui::input_types::ScrollGranularity::kScrollByPage;
         break;
       case SB_PAGEDOWN:
         wheel_delta = -1;
-        result.scroll_by_page = true;
+        result.delta_units = ui::input_types::ScrollGranularity::kScrollByPage;
         break;
       default:  // We don't supoprt SB_THUMBPOSITION or SB_THUMBTRACK here.
         wheel_delta = 0;
@@ -304,9 +304,12 @@ WebMouseWheelEvent WebMouseWheelEventBuilder::Build(
   } else {
     unsigned long scroll_lines = kDefaultScrollLinesPerWheelDelta;
     SystemParametersInfo(SPI_GETWHEELSCROLLLINES, 0, &scroll_lines, 0);
-    if (scroll_lines == WHEEL_PAGESCROLL)
-      result.scroll_by_page = true;
-    if (!result.scroll_by_page) {
+    if (scroll_lines == WHEEL_PAGESCROLL) {
+      result.delta_units = ui::input_types::ScrollGranularity::kScrollByPage;
+    }
+
+    if (result.delta_units !=
+        ui::input_types::ScrollGranularity::kScrollByPage) {
       scroll_delta *=
           static_cast<float>(scroll_lines) * kScrollbarPixelsPerLine;
     }

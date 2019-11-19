@@ -17,11 +17,14 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
-#include "components/arc/common/policy.mojom.h"
-#include "components/arc/connection_observer.h"
+#include "components/arc/mojom/policy.mojom.h"
+#include "components/arc/session/connection_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/policy_service.h"
+#include "services/data_decoder/public/cpp/data_decoder.h"
+
+class BrowserContextKeyedServiceFactory;
 
 namespace base {
 class Value;
@@ -80,6 +83,18 @@ class ArcPolicyBridge : public KeyedService,
                                   const std::string& package_name,
                                   mojom::InstallErrorReason reason) {}
 
+    // Called when CloudDPC scheduled direct install with Play Store for
+    // a set of packages.
+    virtual void OnReportDirectInstall(
+        base::Time time,
+        const std::set<std::string>& package_names) {}
+
+    // Called when in CloudDPC the main loop of retries to install apps failed
+    // to install some apps.
+    virtual void OnReportForceInstallMainLoopFailed(
+        base::Time time,
+        const std::set<std::string>& package_names) {}
+
    protected:
     Observer() = default;
     virtual ~Observer() = default;
@@ -94,6 +109,9 @@ class ArcPolicyBridge : public KeyedService,
 
   static ArcPolicyBridge* GetForBrowserContextForTesting(
       content::BrowserContext* context);
+
+  // Return the factory instance for this class.
+  static BrowserContextKeyedServiceFactory* GetFactory();
 
   base::WeakPtr<ArcPolicyBridge> GetWeakPtr();
 
@@ -128,6 +146,12 @@ class ArcPolicyBridge : public KeyedService,
   void ReportCloudDpsFailed(base::Time time,
                             const std::string& package_name,
                             mojom::InstallErrorReason reason) override;
+  void ReportDirectInstall(
+      base::Time time,
+      const std::vector<std::string>& package_names) override;
+  void ReportForceInstallMainLoopFailed(
+      base::Time time,
+      const std::vector<std::string>& package_names) override;
 
   // PolicyService::Observer overrides.
   void OnPolicyUpdated(const policy::PolicyNamespace& ns,
@@ -145,9 +169,9 @@ class ArcPolicyBridge : public KeyedService,
   std::string GetCurrentJSONPolicies() const;
 
   // Called when the compliance report from ARC is parsed.
-  void OnReportComplianceParseSuccess(
+  void OnReportComplianceParse(
       base::OnceCallback<void(const std::string&)> callback,
-      std::unique_ptr<base::Value> parsed_json);
+      data_decoder::DataDecoder::ValueOrError result);
 
   void UpdateComplianceReportMetrics(const base::DictionaryValue* report);
 
@@ -155,6 +179,7 @@ class ArcPolicyBridge : public KeyedService,
   ArcBridgeService* const arc_bridge_service_;  // Owned by ArcServiceManager.
 
   policy::PolicyService* policy_service_ = nullptr;
+
   bool is_managed_ = false;
 
   // HACK(b/73762796): A GUID that is regenerated whenever |this| is created,
@@ -171,7 +196,7 @@ class ArcPolicyBridge : public KeyedService,
   std::string update_notification_policies_hash_;
   // The time of the policy update notification sent when the policy with hash
   // equal to |update_notification_policy_hash_| was active.
-  base::Time update_notification_time_;
+  base::TimeTicks update_notification_time_;
   // Whether the UMA metric for the successfully obtained compliance report
   // since the most recent policy update notificaton was already reported.
   bool compliance_since_update_timing_reported_ = false;
@@ -182,7 +207,7 @@ class ArcPolicyBridge : public KeyedService,
   base::OnceClosure on_arc_instance_ready_callback_;
 
   // Must be the last member.
-  base::WeakPtrFactory<ArcPolicyBridge> weak_ptr_factory_;
+  base::WeakPtrFactory<ArcPolicyBridge> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ArcPolicyBridge);
 };

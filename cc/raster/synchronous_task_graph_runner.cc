@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/threading/simple_thread.h"
-#include "base/threading/thread_restrictions.h"
 #include "base/trace_event/trace_event.h"
 
 namespace cc {

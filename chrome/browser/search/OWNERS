@@ -1,3 +1,6 @@
 file://components/search/OWNERS
 
 per-file *source*=fserb@chromium.org
+
+# COMPONENT: UI>Browser>NewTabPage
+# TEAM: ntp-dev@chromium.org

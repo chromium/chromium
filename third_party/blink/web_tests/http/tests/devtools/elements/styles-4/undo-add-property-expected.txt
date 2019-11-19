@@ -6,7 +6,7 @@ Tests that adding a property is undone properly.
 element.style { ()
 
 [expanded] 
-.container { (<style>…</style>)
+.container { (<style>)
     font-weight: bold;
 
 [expanded] 
@@ -23,7 +23,7 @@ html { (user agent stylesheet)
 element.style { ()
 
 [expanded] 
-.container { (<style>…</style>)
+.container { (<style>)
     font-weight: bold;
     margin-left: 2px;
 
@@ -41,7 +41,7 @@ html { (user agent stylesheet)
 element.style { ()
 
 [expanded] 
-.container { (<style>…</style>)
+.container { (<style>)
     font-weight: bold;
 
 [expanded] 
@@ -58,7 +58,7 @@ html { (user agent stylesheet)
 element.style { ()
 
 [expanded] 
-.container { (<style>…</style>)
+.container { (<style>)
     font-weight: bold;
     margin-left: 2px;
 
@@ -77,7 +77,7 @@ html { (user agent stylesheet)
 element.style { ()
 
 [expanded] 
-.container { (<style>…</style>)
+.container { (<style>)
     font-weight: bold;
     margin-left: 2px;
 
@@ -95,7 +95,7 @@ html { (user agent stylesheet)
 element.style { ()
 
 [expanded] 
-.container { (<style>…</style>)
+.container { (<style>)
     margin-top: 0px;
     font-weight: bold;
     margin-left: 2px;
@@ -114,7 +114,7 @@ html { (user agent stylesheet)
 element.style { ()
 
 [expanded] 
-.container { (<style>…</style>)
+.container { (<style>)
     font-weight: bold;
     margin-left: 2px;
 
@@ -132,7 +132,7 @@ html { (user agent stylesheet)
 element.style { ()
 
 [expanded] 
-.container { (<style>…</style>)
+.container { (<style>)
     margin-top: 0px;
     font-weight: bold;
     margin-left: 2px;
@@ -152,7 +152,7 @@ html { (user agent stylesheet)
 element.style { ()
 
 [expanded] 
-.container { (<style>…</style>)
+.container { (<style>)
     margin-top: 0px;
     font-weight: bold;
     margin-left: 2px;
@@ -171,7 +171,7 @@ html { (user agent stylesheet)
 element.style { ()
 
 [expanded] 
-.container { (<style>…</style>)
+.container { (<style>)
     margin-top: 0px;
     margin-right: 1px;
     font-weight: bold;
@@ -191,7 +191,7 @@ html { (user agent stylesheet)
 element.style { ()
 
 [expanded] 
-.container { (<style>…</style>)
+.container { (<style>)
     margin-top: 0px;
     font-weight: bold;
     margin-left: 2px;
@@ -210,7 +210,7 @@ html { (user agent stylesheet)
 element.style { ()
 
 [expanded] 
-.container { (<style>…</style>)
+.container { (<style>)
     margin-top: 0px;
     margin-right: 1px;
     font-weight: bold;

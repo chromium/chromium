@@ -12,7 +12,6 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/upgrade_detector/upgrade_observer.h"
 #include "components/prefs/pref_change_registrar.h"
-#include "ui/gfx/image/image.h"
 
 class PrefRegistrySimple;
 class UpgradeObserver;
@@ -97,11 +96,6 @@ class UpgradeDetector {
   bool is_rollback() const { return is_rollback_; }
 #endif  // defined(OS_CHROMEOS)
 
-  // Retrieves the right icon based on the degree of severity (each
-  // UpgradeNotificationAnnoyanceLevel has an an accompanying icon) to display
-  // within the app menu.
-  gfx::Image GetIcon();
-
   UpgradeNotificationAnnoyanceLevel upgrade_notification_stage() const {
     return upgrade_notification_stage_;
   }
@@ -147,6 +141,7 @@ class UpgradeDetector {
   // RelaunchNotificationPeriod policy setting, or a zero delta if unset or out
   // of range.
   static base::TimeDelta GetRelaunchNotificationPeriod();
+  static bool IsRelaunchNotificationPolicyEnabled();
 
   const base::Clock* clock() { return clock_; }
 

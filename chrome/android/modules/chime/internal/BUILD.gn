@@ -1,0 +1,17 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+# Upstream chime DFM implementation which does nothing, the actual
+# implementation lives in downstream repo.
+android_library("java") {
+  java_files =
+      [ "java/src/org/chromium/chrome/modules/chime/ChimeModuleEntryImpl.java" ]
+
+  deps = [
+    "//base:base_java",
+    "//chrome/android/modules/chime/public:java",
+  ]
+}

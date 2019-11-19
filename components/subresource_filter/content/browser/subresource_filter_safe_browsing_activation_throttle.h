@@ -28,12 +28,15 @@ namespace subresource_filter {
 
 class SubresourceFilterClient;
 
-enum class ActivationPosition {
+// Enum representing a position in the redirect chain. These values are
+// persisted to logs. Entries should not be renumbered and numeric values should
+// never be reused.
+enum class RedirectPosition {
   kOnly = 0,
   kFirst = 1,
   kMiddle = 2,
   kLast = 3,
-  kMaxValue = kLast,
+  kMaxValue = kLast
 };
 
 // Navigation throttle responsible for activating subresource filtering on page
@@ -102,7 +105,6 @@ class SubresourceFilterSafeBrowsingActivationThrottle
       ActivationList matched_list) const;
 
   std::vector<SubresourceFilterSafeBrowsingClient::CheckResult> check_results_;
-  std::vector<base::TimeTicks> check_start_times_;
 
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
 

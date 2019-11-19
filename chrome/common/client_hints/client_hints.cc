@@ -35,6 +35,11 @@ void GetAllowedClientHintsFromSource(
     DCHECK(rule.setting_value.is_dict());
     const base::Value* expiration_time =
         rule.setting_value.FindKey("expiration_time");
+
+    // |expiration_time| may be null in rare cases. See
+    // https://bugs.chromium.org/p/chromium/issues/detail?id=942398.
+    if (expiration_time == nullptr)
+      continue;
     DCHECK(expiration_time->is_double());
 
     if (base::Time::Now().ToDoubleT() > expiration_time->GetDouble()) {
@@ -43,13 +48,16 @@ void GetAllowedClientHintsFromSource(
     }
 
     const base::Value* list_value = rule.setting_value.FindKey("client_hints");
+    if (list_value == nullptr)
+      continue;
     DCHECK(list_value->is_list());
-    const base::Value::ListStorage& client_hints_list = list_value->GetList();
+    base::span<const base::Value> client_hints_list = list_value->GetList();
     for (const auto& client_hint : client_hints_list) {
       DCHECK(client_hint.is_int());
-      client_hints->SetIsEnabled(
-          static_cast<blink::mojom::WebClientHintsType>(client_hint.GetInt()),
-          true);
+      blink::mojom::WebClientHintsType client_hint_mojo =
+          static_cast<blink::mojom::WebClientHintsType>(client_hint.GetInt());
+      if (blink::mojom::IsKnownEnumValue(client_hint_mojo))
+        client_hints->SetIsEnabled(client_hint_mojo, true);
     }
     // Match found for |url| and client hints have been set.
     return;

@@ -5,20 +5,18 @@
 #include "components/signin/core/browser/account_investigator.h"
 
 #include <map>
-#include <string>
-#include <vector>
 
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_task_environment.h"
-#include "base/timer/timer.h"
+#include "base/test/task_environment.h"
 #include "components/prefs/pref_registry_simple.h"
-#include "components/signin/core/browser/signin_metrics.h"
-#include "components/signin/core/browser/signin_pref_names.h"
+#include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/google_service_auth_error.h"
-#include "services/identity/public/cpp/identity_test_environment.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -39,7 +37,7 @@ class AccountInvestigatorTest : public testing::Test {
 
   ~AccountInvestigatorTest() override { investigator_.Shutdown(); }
 
-  identity::IdentityTestEnvironment* identity_test_env() {
+  signin::IdentityTestEnvironment* identity_test_env() {
     return &identity_test_env_;
   }
   PrefService* pref_service() { return &prefs_; }
@@ -135,10 +133,10 @@ class AccountInvestigatorTest : public testing::Test {
 
  private:
   // Timer needs a message loop.
-  base::test::ScopedTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   sync_preferences::TestingPrefServiceSyncable prefs_;
   network::TestURLLoaderFactory test_url_loader_factory_;
-  identity::IdentityTestEnvironment identity_test_env_;
+  signin::IdentityTestEnvironment identity_test_env_;
   AccountInvestigator investigator_;
   std::map<ReportingType, std::string> suffix_ = {
       {ReportingType::PERIODIC, "_Periodic"},
@@ -147,9 +145,9 @@ class AccountInvestigatorTest : public testing::Test {
 
 namespace {
 
-ListedAccount Account(const std::string& id) {
+ListedAccount Account(const CoreAccountId& account_id) {
   ListedAccount account;
-  account.id = id;
+  account.id = account_id;
   return account;
 }
 
@@ -164,13 +162,13 @@ AccountInfo ToAccountInfo(ListedAccount account) {
 // NOTE: IdentityTestEnvironment uses a prefix for generating gaia IDs:
 // "gaia_id_for_". For this reason, the tests prefix expected account IDs
 // used so that there is a match.
-const std::string kGaiaId1 = identity::GetTestGaiaIdForEmail("1@mail.com");
-const std::string kGaiaId2 = identity::GetTestGaiaIdForEmail("2@mail.com");
-const std::string kGaiaId3 = identity::GetTestGaiaIdForEmail("3@mail.com");
+const std::string kGaiaId1 = signin::GetTestGaiaIdForEmail("1@mail.com");
+const std::string kGaiaId2 = signin::GetTestGaiaIdForEmail("2@mail.com");
+const std::string kGaiaId3 = signin::GetTestGaiaIdForEmail("3@mail.com");
 
-const ListedAccount one(Account(kGaiaId1));
-const ListedAccount two(Account(kGaiaId2));
-const ListedAccount three(Account(kGaiaId3));
+const ListedAccount one(Account(CoreAccountId(kGaiaId1)));
+const ListedAccount two(Account(CoreAccountId(kGaiaId2)));
+const ListedAccount three(Account(CoreAccountId(kGaiaId3)));
 
 const std::vector<ListedAccount> no_accounts{};
 const std::vector<ListedAccount> just_one{one};
@@ -263,7 +261,7 @@ TEST_F(AccountInvestigatorTest, SharedCookieJarReportWithAccount) {
 
 TEST_F(AccountInvestigatorTest, OnGaiaAccountsInCookieUpdatedError) {
   const HistogramTester histogram_tester;
-  identity::AccountsInCookieJarInfo accounts_in_cookie_jar_info = {
+  signin::AccountsInCookieJarInfo accounts_in_cookie_jar_info = {
       /*accounts_are_fresh=*/true, just_one, no_accounts};
   GoogleServiceAuthError error(GoogleServiceAuthError::SERVICE_UNAVAILABLE);
   investigator()->OnAccountsInCookieUpdated(accounts_in_cookie_jar_info, error);
@@ -273,7 +271,7 @@ TEST_F(AccountInvestigatorTest, OnGaiaAccountsInCookieUpdatedError) {
 
 TEST_F(AccountInvestigatorTest, OnGaiaAccountsInCookieUpdatedOnChange) {
   const HistogramTester histogram_tester;
-  identity::AccountsInCookieJarInfo accounts_in_cookie_jar_info = {
+  signin::AccountsInCookieJarInfo accounts_in_cookie_jar_info = {
       /*accounts_are_fresh=*/true, just_one, no_accounts};
   investigator()->OnAccountsInCookieUpdated(
       accounts_in_cookie_jar_info, GoogleServiceAuthError::AuthErrorNone());
@@ -284,14 +282,14 @@ TEST_F(AccountInvestigatorTest, OnGaiaAccountsInCookieUpdatedOnChange) {
 TEST_F(AccountInvestigatorTest, OnGaiaAccountsInCookieUpdatedSigninOnly) {
   // Initial update to simulate the update on first-time-run.
   investigator()->OnAccountsInCookieUpdated(
-      identity::AccountsInCookieJarInfo(),
+      signin::AccountsInCookieJarInfo(),
       GoogleServiceAuthError::AuthErrorNone());
 
   const HistogramTester histogram_tester;
   identity_test_env()->SetPrimaryAccount("1@mail.com");
   pref_service()->SetString(prefs::kGaiaCookieHash,
                             Hash(just_one, no_accounts));
-  identity::AccountsInCookieJarInfo accounts_in_cookie_jar_info = {
+  signin::AccountsInCookieJarInfo accounts_in_cookie_jar_info = {
       /*accounts_are_fresh=*/true, just_one, no_accounts};
   investigator()->OnAccountsInCookieUpdated(
       accounts_in_cookie_jar_info, GoogleServiceAuthError::AuthErrorNone());
@@ -305,7 +303,7 @@ TEST_F(AccountInvestigatorTest,
        OnGaiaAccountsInCookieUpdatedSigninSignOutOfContent) {
   const HistogramTester histogram_tester;
   identity_test_env()->SetPrimaryAccount("1@mail.com");
-  identity::AccountsInCookieJarInfo accounts_in_cookie_jar_info = {
+  signin::AccountsInCookieJarInfo accounts_in_cookie_jar_info = {
       /*accounts_are_fresh=*/true, just_one, no_accounts};
   investigator()->OnAccountsInCookieUpdated(
       accounts_in_cookie_jar_info, GoogleServiceAuthError::AuthErrorNone());
@@ -355,7 +353,7 @@ TEST_F(AccountInvestigatorTest, TryPeriodicReportStale) {
 
   std::string email("f@bar.com");
   identity_test_env()->SetCookieAccounts(
-      {{email, identity::GetTestGaiaIdForEmail(email)}});
+      {{email, signin::GetTestGaiaIdForEmail(email)}});
 
   EXPECT_FALSE(*periodic_pending());
   ExpectSharedReportHistograms(ReportingType::PERIODIC, histogram_tester,

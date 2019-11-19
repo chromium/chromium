@@ -5,15 +5,13 @@
 package org.chromium.chrome.browser.omnibox;
 
 import android.net.Uri;
-import android.os.Build;
-import android.support.annotation.Nullable;
-import android.text.Spannable;
-import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextUtils;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.base.CollectionUtil;
-import org.chromium.chrome.browser.UrlConstants;
+import org.chromium.chrome.browser.util.UrlConstants;
 import org.chromium.content_public.common.ContentUrlConstants;
 
 import java.util.HashSet;
@@ -26,8 +24,9 @@ public class UrlBarData {
      * The URL schemes that should be displayed complete with path.
      */
     public static final HashSet<String> UNSUPPORTED_SCHEMES_TO_SPLIT =
-            CollectionUtil.newHashSet(UrlConstants.FILE_SCHEME, UrlConstants.JAVASCRIPT_SCHEME,
-                    UrlConstants.DATA_SCHEME, UrlConstants.CONTENT_SCHEME);
+            CollectionUtil.newHashSet(ContentUrlConstants.ABOUT_SCHEME, UrlConstants.DATA_SCHEME,
+                    UrlConstants.FILE_SCHEME, UrlConstants.FTP_SCHEME, UrlConstants.INLINE_SCHEME,
+                    UrlConstants.JAVASCRIPT_SCHEME, UrlConstants.CHROME_SCHEME);
     /**
      * URI schemes that ContentView can handle.
      *
@@ -62,21 +61,6 @@ public class UrlBarData {
 
     public static UrlBarData forUrlAndText(
             String url, CharSequence displayText, @Nullable String editingText) {
-        // Because Android versions 4.2 and before lack proper RTL support,
-        // force the formatted URL to render as LTR using an LRM character.
-        // See: https://www.ietf.org/rfc/rfc3987.txt and https://crbug.com/709417
-        if (displayText.length() > 0 && Build.VERSION.SDK_INT <= Build.VERSION_CODES.JELLY_BEAN_MR1
-                && displayText.charAt(0) != LRM) {
-            if (displayText instanceof String) {
-                displayText = LRM + (String) displayText;
-            } else if (displayText instanceof Spannable) {
-                displayText =
-                        new SpannableStringBuilder(displayText).insert(0, Character.toString(LRM));
-            } else {
-                assert false : "Unsupported CharSequence type for display text";
-            }
-        }
-
         int pathSearchOffset = 0;
         String displayTextStr = displayText.toString();
         String scheme = Uri.parse(displayTextStr).getScheme();

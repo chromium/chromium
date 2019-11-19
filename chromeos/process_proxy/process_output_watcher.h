@@ -70,7 +70,7 @@ class CHROMEOS_EXPORT ProcessOutputWatcher {
   // Callback that will be invoked when some output is detected.
   ProcessOutputCallback on_read_callback_;
 
-  base::WeakPtrFactory<ProcessOutputWatcher> weak_factory_;
+  base::WeakPtrFactory<ProcessOutputWatcher> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ProcessOutputWatcher);
 };

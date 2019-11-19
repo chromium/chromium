@@ -4,6 +4,8 @@
 
 #include "printing/printing_context.h"
 
+#include <utility>
+
 #include "base/logging.h"
 #include "printing/page_setup.h"
 #include "printing/page_size_margins.h"
@@ -18,7 +20,8 @@ const float kCloudPrintMarginInch = 0.25;
 }
 
 PrintingContext::PrintingContext(Delegate* delegate)
-    : delegate_(delegate),
+    : settings_(std::make_unique<PrintSettings>()),
+      delegate_(delegate),
       in_print_job_(false),
       abort_printing_(false) {
   DCHECK(delegate_);
@@ -28,23 +31,34 @@ PrintingContext::~PrintingContext() = default;
 
 void PrintingContext::set_margin_type(MarginType type) {
   DCHECK(type != CUSTOM_MARGINS);
-  settings_.set_margin_type(type);
+  settings_->set_margin_type(type);
 }
 
 void PrintingContext::set_is_modifiable(bool is_modifiable) {
-  settings_.set_is_modifiable(is_modifiable);
+  settings_->set_is_modifiable(is_modifiable);
 #if defined(OS_WIN)
-  settings_.set_print_text_with_gdi(is_modifiable);
+  settings_->set_print_text_with_gdi(is_modifiable);
 #endif
+}
+
+const PrintSettings& PrintingContext::settings() const {
+  DCHECK(!in_print_job_);
+  return *settings_;
 }
 
 void PrintingContext::ResetSettings() {
   ReleaseContext();
 
-  settings_.Clear();
+  settings_->Clear();
 
   in_print_job_ = false;
   abort_printing_ = false;
+}
+
+std::unique_ptr<PrintSettings> PrintingContext::TakeAndResetSettings() {
+  std::unique_ptr<PrintSettings> result = std::move(settings_);
+  settings_ = std::make_unique<PrintSettings>();
+  return result;
 }
 
 PrintingContext::Result PrintingContext::OnError() {
@@ -55,25 +69,22 @@ PrintingContext::Result PrintingContext::OnError() {
 
 PrintingContext::Result PrintingContext::UsePdfSettings() {
   base::Value pdf_settings(base::Value::Type::DICTIONARY);
-  pdf_settings.SetKey(kSettingHeaderFooterEnabled, base::Value(false));
-  pdf_settings.SetKey(kSettingShouldPrintBackgrounds, base::Value(false));
-  pdf_settings.SetKey(kSettingShouldPrintSelectionOnly, base::Value(false));
-  pdf_settings.SetKey(kSettingMarginsType, base::Value(printing::NO_MARGINS));
-  pdf_settings.SetKey(kSettingCollate, base::Value(true));
-  pdf_settings.SetKey(kSettingCopies, base::Value(1));
-  pdf_settings.SetKey(kSettingColor, base::Value(printing::COLOR));
-  pdf_settings.SetKey(kSettingDpiHorizontal, base::Value(kPointsPerInch));
-  pdf_settings.SetKey(kSettingDpiVertical, base::Value(kPointsPerInch));
-  pdf_settings.SetKey(kSettingDuplexMode, base::Value(printing::SIMPLEX));
-  pdf_settings.SetKey(kSettingLandscape, base::Value(false));
-  pdf_settings.SetKey(kSettingDeviceName, base::Value(""));
-  pdf_settings.SetKey(kSettingPrintToPDF, base::Value(true));
-  pdf_settings.SetKey(kSettingCloudPrintDialog, base::Value(false));
-  pdf_settings.SetKey(kSettingPrintWithPrivet, base::Value(false));
-  pdf_settings.SetKey(kSettingPrintWithExtension, base::Value(false));
-  pdf_settings.SetKey(kSettingScaleFactor, base::Value(100));
-  pdf_settings.SetKey(kSettingRasterizePdf, base::Value(false));
-  pdf_settings.SetKey(kSettingPagesPerSheet, base::Value(1));
+  pdf_settings.SetBoolKey(kSettingHeaderFooterEnabled, false);
+  pdf_settings.SetBoolKey(kSettingShouldPrintBackgrounds, false);
+  pdf_settings.SetBoolKey(kSettingShouldPrintSelectionOnly, false);
+  pdf_settings.SetIntKey(kSettingMarginsType, printing::NO_MARGINS);
+  pdf_settings.SetBoolKey(kSettingCollate, true);
+  pdf_settings.SetIntKey(kSettingCopies, 1);
+  pdf_settings.SetIntKey(kSettingColor, printing::COLOR);
+  pdf_settings.SetIntKey(kSettingDpiHorizontal, kPointsPerInch);
+  pdf_settings.SetIntKey(kSettingDpiVertical, kPointsPerInch);
+  pdf_settings.SetIntKey(kSettingDuplexMode, printing::SIMPLEX);
+  pdf_settings.SetBoolKey(kSettingLandscape, false);
+  pdf_settings.SetStringKey(kSettingDeviceName, "");
+  pdf_settings.SetIntKey(kSettingPrinterType, kPdfPrinter);
+  pdf_settings.SetIntKey(kSettingScaleFactor, 100);
+  pdf_settings.SetBoolKey(kSettingRasterizePdf, false);
+  pdf_settings.SetIntKey(kSettingPagesPerSheet, 1);
   return UpdatePrintSettings(std::move(pdf_settings));
 }
 
@@ -81,56 +92,40 @@ PrintingContext::Result PrintingContext::UpdatePrintSettings(
     base::Value job_settings) {
   ResetSettings();
 
-  if (!PrintSettingsFromJobSettings(job_settings, &settings_)) {
+  if (!PrintSettingsFromJobSettings(job_settings, settings_.get())) {
     NOTREACHED();
     return OnError();
   }
 
-  base::Optional<bool> print_to_pdf_opt =
-      job_settings.FindBoolKey(kSettingPrintToPDF);
-  base::Optional<bool> is_cloud_dialog_opt =
-      job_settings.FindBoolKey(kSettingCloudPrintDialog);
-  base::Optional<bool> print_with_privet_opt =
-      job_settings.FindBoolKey(kSettingPrintWithPrivet);
-  base::Optional<bool> print_with_extension_opt =
-      job_settings.FindBoolKey(kSettingPrintWithExtension);
-
-  if (!print_to_pdf_opt || !is_cloud_dialog_opt || !print_with_privet_opt ||
-      !print_with_extension_opt) {
-    NOTREACHED();
-    return OnError();
-  }
-
-  bool print_to_pdf = print_to_pdf_opt.value();
-  bool is_cloud_dialog = is_cloud_dialog_opt.value();
-  bool print_with_privet = print_with_privet_opt.value();
-  bool print_with_extension = print_with_extension_opt.value();
-
-  bool print_to_cloud = job_settings.FindKey(kSettingCloudPrintId) != nullptr;
+  PrinterType printer_type = static_cast<PrinterType>(
+      job_settings.FindIntKey(kSettingPrinterType).value());
+  bool print_with_privet = printer_type == kPrivetPrinter;
+  bool print_to_cloud = !!job_settings.FindKey(kSettingCloudPrintId);
   bool open_in_external_preview =
-      job_settings.FindKey(kSettingOpenPDFInPreview) != nullptr;
+      !!job_settings.FindKey(kSettingOpenPDFInPreview);
 
   if (!open_in_external_preview &&
-      (print_to_pdf || print_to_cloud || is_cloud_dialog || print_with_privet ||
-       print_with_extension)) {
-    settings_.set_dpi(kDefaultPdfDpi);
+      (print_to_cloud || print_with_privet || printer_type == kPdfPrinter ||
+       printer_type == kCloudPrinter || printer_type == kExtensionPrinter)) {
+    settings_->set_dpi(kDefaultPdfDpi);
     gfx::Size paper_size(GetPdfPaperSizeDeviceUnits());
-    if (!settings_.requested_media().size_microns.IsEmpty()) {
+    if (!settings_->requested_media().size_microns.IsEmpty()) {
       float device_microns_per_device_unit =
           static_cast<float>(kMicronsPerInch) /
-          settings_.device_units_per_inch();
-      paper_size = gfx::Size(settings_.requested_media().size_microns.width() /
-                                 device_microns_per_device_unit,
-                             settings_.requested_media().size_microns.height() /
-                                 device_microns_per_device_unit);
+          settings_->device_units_per_inch();
+      paper_size =
+          gfx::Size(settings_->requested_media().size_microns.width() /
+                        device_microns_per_device_unit,
+                    settings_->requested_media().size_microns.height() /
+                        device_microns_per_device_unit);
     }
     gfx::Rect paper_rect(0, 0, paper_size.width(), paper_size.height());
     if (print_to_cloud || print_with_privet) {
       paper_rect.Inset(
-          kCloudPrintMarginInch * settings_.device_units_per_inch(),
-          kCloudPrintMarginInch * settings_.device_units_per_inch());
+          kCloudPrintMarginInch * settings_->device_units_per_inch(),
+          kCloudPrintMarginInch * settings_->device_units_per_inch());
     }
-    settings_.SetPrinterPrintableArea(paper_size, paper_rect, true);
+    settings_->SetPrinterPrintableArea(paper_size, paper_rect, true);
     return OK;
   }
 
@@ -144,7 +139,7 @@ PrintingContext::Result PrintingContext::UpdatePrintSettings(
 PrintingContext::Result PrintingContext::UpdatePrintSettingsFromPOD(
     std::unique_ptr<PrintSettings> job_settings) {
   ResetSettings();
-  settings_ = *job_settings;
+  settings_ = std::move(job_settings);
 
   return UpdatePrinterSettings(false /* external_preview */,
                                false /* show_system_dialog */,

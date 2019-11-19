@@ -12,6 +12,7 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -255,18 +256,15 @@ void UpdateOverridesLists(Profile* profile,
 
 // Run favicon callback with image result. If no favicon was available then
 // |image| will be empty.
-void RunFaviconCallbackAsync(
-    const favicon_base::FaviconResultsCallback& callback,
-    const gfx::Image& image) {
-  std::vector<favicon_base::FaviconRawBitmapResult>* favicon_bitmap_results =
-      new std::vector<favicon_base::FaviconRawBitmapResult>();
+void RunFaviconCallbackAsync(favicon_base::FaviconResultsCallback callback,
+                             const gfx::Image& image) {
+  std::vector<favicon_base::FaviconRawBitmapResult> favicon_bitmap_results;
 
   const std::vector<gfx::ImageSkiaRep>& image_reps =
       image.AsImageSkia().image_reps();
   for (size_t i = 0; i < image_reps.size(); ++i) {
     const gfx::ImageSkiaRep& image_rep = image_reps[i];
-    scoped_refptr<base::RefCountedBytes> bitmap_data(
-        new base::RefCountedBytes());
+    auto bitmap_data = base::MakeRefCounted<base::RefCountedBytes>();
     if (gfx::PNGCodec::EncodeBGRASkBitmap(image_rep.GetBitmap(), false,
                                           &bitmap_data->data())) {
       favicon_base::FaviconRawBitmapResult bitmap_result;
@@ -276,7 +274,7 @@ void RunFaviconCallbackAsync(
       // Leave |bitmap_result|'s icon URL as the default of GURL().
       bitmap_result.icon_type = favicon_base::IconType::kFavicon;
 
-      favicon_bitmap_results->push_back(bitmap_result);
+      favicon_bitmap_results.push_back(bitmap_result);
     } else {
       NOTREACHED() << "Could not encode extension favicon";
     }
@@ -284,8 +282,7 @@ void RunFaviconCallbackAsync(
 
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
-      base::BindOnce(&favicon::FaviconService::FaviconResultsCallbackRunner,
-                     callback, base::Owned(favicon_bitmap_results)));
+      base::BindOnce(std::move(callback), std::move(favicon_bitmap_results)));
 }
 
 bool ValidateOverrideURL(const base::Value* override_url_value,
@@ -518,11 +515,11 @@ void ExtensionWebUI::UnregisterChromeURLOverrides(
 void ExtensionWebUI::GetFaviconForURL(
     Profile* profile,
     const GURL& page_url,
-    const favicon_base::FaviconResultsCallback& callback) {
+    favicon_base::FaviconResultsCallback callback) {
   const Extension* extension = extensions::ExtensionRegistry::Get(
       profile)->enabled_extensions().GetByID(page_url.host());
   if (!extension) {
-    RunFaviconCallbackAsync(callback, gfx::Image());
+    RunFaviconCallbackAsync(std::move(callback), gfx::Image());
     return;
   }
 
@@ -562,12 +559,12 @@ void ExtensionWebUI::GetFaviconForURL(
       placeholder_skia.GetRepresentation(
           ui::GetScaleForScaleFactor(scale_factor));
     }
-    RunFaviconCallbackAsync(callback, gfx::Image(placeholder_skia));
+    RunFaviconCallbackAsync(std::move(callback), gfx::Image(placeholder_skia));
   } else {
     // LoadImagesAsync actually can run callback synchronously. We want to force
     // async.
     extensions::ImageLoader::Get(profile)->LoadImagesAsync(
         extension, info_list,
-        base::BindOnce(&RunFaviconCallbackAsync, callback));
+        base::BindOnce(&RunFaviconCallbackAsync, std::move(callback)));
   }
 }

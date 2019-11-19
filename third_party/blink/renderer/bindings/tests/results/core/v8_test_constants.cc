@@ -10,18 +10,21 @@
 // clang-format off
 #include "third_party/blink/renderer/bindings/tests/results/core/v8_test_constants.h"
 
+#include <algorithm>
+
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_configuration.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/deprecation.h"
-#include "third_party/blink/renderer/core/frame/use_counter.h"
-#include "third_party/blink/renderer/core/origin_trials/origin_trials.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_object_constructor.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_context_data.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/scheduler/public/cooperative_scheduling_manager.h"
 #include "third_party/blink/renderer/platform/wtf/get_ptr.h"
 
 namespace blink {
@@ -174,7 +177,7 @@ void V8TestConstants::InstallRuntimeEnabledFeaturesOnTemplate(
   ALLOW_UNUSED_LOCAL(prototype_template);
 
   // Register IDL constants, attributes and operations.
-  if (RuntimeEnabledFeatures::FeatureName1Enabled()) {
+  if (RuntimeEnabledFeatures::RuntimeFeature1Enabled()) {
     static constexpr V8DOMConfiguration::ConstantConfiguration kConfigurations[] = {
         {"FEATURE1_ENABLED_CONST1", V8DOMConfiguration::kConstantTypeShort, static_cast<int>(1)},
         {"FEATURE1_ENABLED_CONST2", V8DOMConfiguration::kConstantTypeShort, static_cast<int>(2)},
@@ -183,7 +186,7 @@ void V8TestConstants::InstallRuntimeEnabledFeaturesOnTemplate(
         isolate, interface_template, prototype_template,
         kConfigurations, base::size(kConfigurations));
   }
-  if (RuntimeEnabledFeatures::FeatureName2Enabled()) {
+  if (RuntimeEnabledFeatures::RuntimeFeature2Enabled()) {
     static constexpr V8DOMConfiguration::ConstantConfiguration kConfigurations[] = {
         {"FEATURE2_ENABLED_CONST1", V8DOMConfiguration::kConstantTypeShort, static_cast<int>(3)},
         {"FEATURE2_ENABLED_CONST2", V8DOMConfiguration::kConstantTypeShort, static_cast<int>(4)},

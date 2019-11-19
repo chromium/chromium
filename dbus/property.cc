@@ -42,8 +42,7 @@ PropertySet::PropertySet(
     const PropertyChangedCallback& property_changed_callback)
     : object_proxy_(object_proxy),
       interface_(interface),
-      property_changed_callback_(property_changed_callback),
-      weak_ptr_factory_(this) {}
+      property_changed_callback_(property_changed_callback) {}
 
 PropertySet::~PropertySet() = default;
 
@@ -105,12 +104,9 @@ void PropertySet::Get(PropertyBase* property, GetCallback callback) {
   writer.AppendString(property->name());
 
   DCHECK(object_proxy_);
-  object_proxy_->CallMethod(&method_call,
-                            ObjectProxy::TIMEOUT_USE_DEFAULT,
-                            base::Bind(&PropertySet::OnGet,
-                                       GetWeakPtr(),
-                                       property,
-                                       callback));
+  object_proxy_->CallMethod(&method_call, ObjectProxy::TIMEOUT_USE_DEFAULT,
+                            base::BindOnce(&PropertySet::OnGet, GetWeakPtr(),
+                                           property, std::move(callback)));
 }
 
 void PropertySet::OnGet(PropertyBase* property, GetCallback callback,
@@ -132,7 +128,7 @@ void PropertySet::OnGet(PropertyBase* property, GetCallback callback,
   }
 
   if (!callback.is_null())
-    callback.Run(response);
+    std::move(callback).Run(response);
 }
 
 bool PropertySet::GetAndBlock(PropertyBase* property) {
@@ -196,12 +192,9 @@ void PropertySet::Set(PropertyBase* property, SetCallback callback) {
   property->AppendSetValueToWriter(&writer);
 
   DCHECK(object_proxy_);
-  object_proxy_->CallMethod(&method_call,
-                            ObjectProxy::TIMEOUT_USE_DEFAULT,
-                            base::Bind(&PropertySet::OnSet,
-                                       GetWeakPtr(),
-                                       property,
-                                       callback));
+  object_proxy_->CallMethod(&method_call, ObjectProxy::TIMEOUT_USE_DEFAULT,
+                            base::BindOnce(&PropertySet::OnSet, GetWeakPtr(),
+                                           property, std::move(callback)));
 }
 
 bool PropertySet::SetAndBlock(PropertyBase* property) {
@@ -224,7 +217,7 @@ void PropertySet::OnSet(PropertyBase* property,
                         Response* response) {
   LOG_IF(WARNING, !response) << property->name() << ": Set: failed.";
   if (!callback.is_null())
-    callback.Run(response);
+    std::move(callback).Run(response);
 }
 
 bool PropertySet::UpdatePropertiesFromReader(MessageReader* reader) {

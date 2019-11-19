@@ -28,6 +28,7 @@
 
 #include <algorithm>
 #include "base/optional.h"
+#include "base/strings/string_util.h"
 #include "third_party/blink/renderer/platform/wtf/dtoa.h"
 #include "third_party/blink/renderer/platform/wtf/text/integer_to_string_conversion.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -113,6 +114,10 @@ void StringBuilder::ClearBuffer() {
   else
     buffer16_.~Buffer16();
   has_buffer_ = false;
+}
+
+void StringBuilder::Ensure16Bit() {
+  EnsureBuffer16(0);
 }
 
 void StringBuilder::Clear() {
@@ -228,39 +233,39 @@ void StringBuilder::Append(const LChar* characters, unsigned length) {
   length_ += length;
 }
 
-template <typename IntegerType>
-static void AppendIntegerInternal(StringBuilder& builder, IntegerType input) {
-  IntegerToStringConverter<IntegerType> converter(input);
-  builder.Append(converter.Characters8(), converter.length());
+void StringBuilder::AppendNumber(bool number) {
+  AppendNumber(static_cast<uint8_t>(number));
 }
 
-void StringBuilder::AppendNumber(int number) {
-  AppendIntegerInternal(*this, number);
-}
-
-void StringBuilder::AppendNumber(unsigned number) {
-  AppendIntegerInternal(*this, number);
-}
-
-void StringBuilder::AppendNumber(long number) {
-  AppendIntegerInternal(*this, number);
-}
-
-void StringBuilder::AppendNumber(unsigned long number) {
-  AppendIntegerInternal(*this, number);
-}
-
-void StringBuilder::AppendNumber(long long number) {
-  AppendIntegerInternal(*this, number);
-}
-
-void StringBuilder::AppendNumber(unsigned long long number) {
-  AppendIntegerInternal(*this, number);
+void StringBuilder::AppendNumber(float number) {
+  AppendNumber(static_cast<double>(number));
 }
 
 void StringBuilder::AppendNumber(double number, unsigned precision) {
   NumberToStringBuffer buffer;
   Append(NumberToFixedPrecisionString(number, precision, buffer));
+}
+
+void StringBuilder::AppendFormat(const char* format, ...) {
+  va_list args;
+
+  static constexpr unsigned kDefaultSize = 256;
+  Vector<char, kDefaultSize> buffer(kDefaultSize);
+
+  va_start(args, format);
+  int length = base::vsnprintf(buffer.data(), kDefaultSize, format, args);
+  va_end(args);
+  DCHECK_GE(length, 0);
+
+  if (length >= static_cast<int>(kDefaultSize)) {
+    buffer.Grow(length + 1);
+    va_start(args, format);
+    length = base::vsnprintf(buffer.data(), buffer.size(), format, args);
+    va_end(args);
+  }
+
+  DCHECK_LT(static_cast<wtf_size_t>(length), buffer.size());
+  Append(reinterpret_cast<const LChar*>(buffer.data()), length);
 }
 
 void StringBuilder::erase(unsigned index) {

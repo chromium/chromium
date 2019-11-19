@@ -17,8 +17,8 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/site_instance.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
-#include "extensions/browser/info_map.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
@@ -109,47 +109,49 @@ bool ShellNaClBrowserDelegate::URLMatchesDebugPatterns(
 // person before you modify it.
 // TODO(jamescook): Refactor this code into the extensions module so it can
 // be shared with Chrome's NaClBrowserDelegateImpl. http://crbug.com/403017
-bool ShellNaClBrowserDelegate::MapUrlToLocalFilePath(
-    const GURL& file_url,
-    bool use_blocking_api,
-    const base::FilePath& profile_directory,
-    base::FilePath* file_path) {
-  ExtensionSystem* extension_system = ExtensionSystem::Get(browser_context_);
-  DCHECK(extension_system);
+NaClBrowserDelegate::MapUrlToLocalFilePathCallback
+ShellNaClBrowserDelegate::GetMapUrlToLocalFilePathCallback(
+    const base::FilePath& profile_directory) {
+  auto extensions = std::make_unique<ExtensionSet>();
+  extensions->InsertAll(
+      ExtensionRegistry::Get(browser_context_)->enabled_extensions());
+  return base::BindRepeating(
+      [](const ExtensionSet* extensions, const GURL& file_url,
+         bool use_blocking_api, base::FilePath* file_path) {
+        // Check that the URL is recognized by the extension system.
+        const Extension* extension =
+            extensions->GetExtensionOrAppByURL(file_url);
+        if (!extension)
+          return false;
 
-  // Check that the URL is recognized by the extension system.
-  const Extension* extension =
-      extension_system->info_map()->extensions().GetExtensionOrAppByURL(
-          file_url);
-  if (!extension)
-    return false;
+        // This is a short-cut which avoids calling a blocking file operation
+        // (GetFilePath()), so that this can be called on the IO thread. It only
+        // handles a subset of the urls.
+        if (!use_blocking_api) {
+          if (file_url.SchemeIs(kExtensionScheme)) {
+            std::string path = file_url.path();
+            base::TrimString(path, "/", &path);  // Remove first slash
+            *file_path = extension->path().AppendASCII(path);
+            return true;
+          }
+          return false;
+        }
 
-  // This is a short-cut which avoids calling a blocking file operation
-  // (GetFilePath()), so that this can be called on the IO thread. It only
-  // handles a subset of the urls.
-  if (!use_blocking_api) {
-    if (file_url.SchemeIs(kExtensionScheme)) {
-      std::string path = file_url.path();
-      base::TrimString(path, "/", &path);  // Remove first slash
-      *file_path = extension->path().AppendASCII(path);
-      return true;
-    }
-    return false;
-  }
+        // Check that the URL references a resource in the extension.
+        // NOTE: app_shell does not support shared modules.
+        ExtensionResource resource = extension->GetResource(file_url.path());
+        if (resource.empty())
+          return false;
 
-  // Check that the URL references a resource in the extension.
-  // NOTE: app_shell does not support shared modules.
-  ExtensionResource resource = extension->GetResource(file_url.path());
-  if (resource.empty())
-    return false;
+        // GetFilePath is a blocking function call.
+        const base::FilePath resource_file_path = resource.GetFilePath();
+        if (resource_file_path.empty())
+          return false;
 
-  // GetFilePath is a blocking function call.
-  const base::FilePath resource_file_path = resource.GetFilePath();
-  if (resource_file_path.empty())
-    return false;
-
-  *file_path = resource_file_path;
-  return true;
+        *file_path = resource_file_path;
+        return true;
+      },
+      base::Owned(std::move(extensions)));
 }
 
 bool ShellNaClBrowserDelegate::IsNonSfiModeAllowed(

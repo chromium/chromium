@@ -32,6 +32,7 @@ class AudioFocusDelegateAndroid : public AudioFocusDelegate {
   void AbandonAudioFocus() override;
   base::Optional<media_session::mojom::AudioFocusType> GetCurrentFocusType()
       const override;
+  const base::UnguessableToken& request_id() const override;
 
   // Called when the Android system requests the MediaSession to be suspended.
   // Called by Java through JNI.
@@ -62,7 +63,6 @@ class AudioFocusDelegateAndroid : public AudioFocusDelegate {
   // Weak pointer because |this| is owned by |media_session_|.
   MediaSessionImpl* media_session_;
   base::android::ScopedJavaGlobalRef<jobject> j_media_session_delegate_;
-
   DISALLOW_COPY_AND_ASSIGN(AudioFocusDelegateAndroid);
 };
 

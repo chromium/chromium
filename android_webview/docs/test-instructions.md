@@ -5,7 +5,7 @@
 ## Android Instructions
 
 Please follow the instructions at
-[android_test_instructions.md](/docs/android_test_instructions.md).
+[android_test_instructions.md](/docs/testing/android_test_instructions.md).
 This guide is an extension with WebView-specific content.
 
 *** note
@@ -33,6 +33,26 @@ $ out/Default/bin/run_webview_instrumentation_test_apk -f AwContentsTest#*Succes
 *** aside
 You can optionally use `ClassName.methodName` instead of `ClassName#methodName`;
 the chromium test runner understands either syntax.
+***
+
+### Java unittests
+
+These tests live under `//android_webview/junit/` and use Robolectric.
+
+```sh
+# Build
+$ autoninja -C out/Default android_webview_junit_tests
+
+# Run tests (any of these commands):
+$ out/Default/bin/run_android_webview_junit_tests # All tests
+$ out/Default/bin/run_android_webview_junit_tests -f *FindAddressTest#* # Same glob patterns work here
+```
+
+*** note
+For junit tests, filter (`-f`) arguments require fully qualified class names
+(e.g. `org.chromium.android_webview.robolectric.FindAddressTest`), but replacing
+the package name with a glob wildcard (`*`), as in the example above, will work
+if the class name is unique.
 ***
 
 ### Native unittests
@@ -88,7 +108,7 @@ $ out/Default/bin/run_webview_instrumentation_test_apk \ # Any test runner
 ```sh
 $ out/Default/bin/run_webview_instrumentation_test_apk \ # Any test runner
     # Desired Features; see commandline-flags.md for more information
-    --enable-features="NetworkService,NetworkServiceInProcess" \
+    --enable-features="MyFeature,MyOtherFeature" \
     -f=AwContentsTest#testClearCacheInQuickSuccession
 ```
 
@@ -123,6 +143,9 @@ $ android_webview/tools/run_cts.py \
     --verbose \ # Optional
     -f=android.webkit.cts.WebViewTest#* # Supports similar test filters
 ```
+
+To disable failing CTS tests, please see the cts_config
+[README](../tools/cts_config/README.md) file.
 
 If you'd like to edit these tests, see internal documentation at
 http://go/clank-webview for working with Android checkouts.

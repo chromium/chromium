@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import print_function
+
 import copy
 
 import json_parse
@@ -58,4 +60,3 @@ def CachedLoad(filename):
   # Return a copy of the object so that any changes a caller makes won't affect
   # the next caller.
   return copy.deepcopy(_cache[filename])
-

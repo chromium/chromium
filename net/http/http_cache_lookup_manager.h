@@ -57,7 +57,7 @@ class NET_EXPORT_PRIVATE HttpCacheLookupManager : public ServerPushDelegate {
   // HttpCache must outlive the HttpCacheLookupManager.
   HttpCache* http_cache_;
   std::map<GURL, std::unique_ptr<LookupTransaction>> lookup_transactions_;
-  base::WeakPtrFactory<HttpCacheLookupManager> weak_factory_;
+  base::WeakPtrFactory<HttpCacheLookupManager> weak_factory_{this};
 };
 
 }  // namespace net

@@ -35,6 +35,7 @@ class CORE_EXPORT Transferables final {
 
  public:
   Transferables() = default;
+  ~Transferables();
 
   ArrayBufferArray array_buffers;
   ImageBitmapArray image_bitmaps;

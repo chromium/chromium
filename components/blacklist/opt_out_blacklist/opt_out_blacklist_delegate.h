@@ -23,15 +23,14 @@ class OptOutBlacklistDelegate {
   // Notifies |this| that |host| has been blacklisted at |time|. This method is
   // guaranteed to be called when a previously whitelisted host is now
   // blacklisted.
-  virtual void OnNewBlacklistedHost(const std::string& host,
-                                    base::Time time) = 0;
+  virtual void OnNewBlacklistedHost(const std::string& host, base::Time time) {}
 
   // Notifies |this| that the user blacklisted has changed, and it is
   // guaranteed to be called when the user blacklisted status is changed.
-  virtual void OnUserBlacklistedStatusChange(bool blacklisted) = 0;
+  virtual void OnUserBlacklistedStatusChange(bool blacklisted) {}
 
   // Notifies |this| that the blacklist is cleared at |time|.
-  virtual void OnBlacklistCleared(base::Time time) = 0;
+  virtual void OnBlacklistCleared(base::Time time) {}
 };
 
 }  // namespace blacklist

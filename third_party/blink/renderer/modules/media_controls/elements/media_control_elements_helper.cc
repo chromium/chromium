@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_div_element.h"
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_input_element.h"
 #include "third_party/blink/renderer/modules/media_controls/media_controls_impl.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
 
@@ -58,16 +59,6 @@ bool MediaControlElementsHelper::IsUserInteractionEventForSlider(
 }
 
 // static
-MediaControlElementType MediaControlElementsHelper::GetMediaControlElementType(
-    const Node* node) {
-  SECURITY_DCHECK(node->IsMediaControlElement());
-  const HTMLElement* element = ToHTMLElement(node);
-  if (IsHTMLInputElement(*element))
-    return static_cast<const MediaControlInputElement*>(element)->DisplayType();
-  return static_cast<const MediaControlDivElement*>(element)->DisplayType();
-}
-
-// static
 const HTMLMediaElement* MediaControlElementsHelper::ToParentMediaElement(
     const Node* node) {
   if (!node)
@@ -84,7 +75,7 @@ const HTMLMediaElement* MediaControlElementsHelper::ToParentMediaElement(
 HTMLDivElement* MediaControlElementsHelper::CreateDiv(const AtomicString& id,
                                                       ContainerNode* parent) {
   DCHECK(parent);
-  HTMLDivElement* element = HTMLDivElement::Create(parent->GetDocument());
+  auto* element = MakeGarbageCollected<HTMLDivElement>(parent->GetDocument());
   element->SetShadowPseudoId(id);
   parent->ParserAppendChild(element);
   return element;
@@ -114,7 +105,7 @@ HTMLDivElement* MediaControlElementsHelper::CreateDivWithId(
     const AtomicString& id,
     ContainerNode* parent) {
   DCHECK(parent);
-  HTMLDivElement* element = HTMLDivElement::Create(parent->GetDocument());
+  auto* element = MakeGarbageCollected<HTMLDivElement>(parent->GetDocument());
   element->setAttribute("id", id);
   parent->ParserAppendChild(element);
   return element;

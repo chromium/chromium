@@ -45,8 +45,8 @@ class FullscreenHandler {
 
   void SetFullscreenImpl(bool fullscreen);
 
-  HWND hwnd_;
-  bool fullscreen_;
+  HWND hwnd_ = nullptr;
+  bool fullscreen_ = false;
 
   // Saved window information from before entering fullscreen mode.
   // TODO(beng): move to private once GetRestoredBounds() moves onto Widget.

@@ -5,6 +5,8 @@
 #include "ui/ozone/platform/drm/gpu/mock_drm_device.h"
 
 #include <xf86drm.h>
+#include <memory>
+#include <utility>
 
 #include "base/logging.h"
 #include "base/stl_util.h"
@@ -91,7 +93,7 @@ MockDrmDevice::MockDrmDevice(std::unique_ptr<GbmDevice> gbm_device)
       page_flip_expectation_(true),
       create_dumb_buffer_expectation_(true),
       current_framebuffer_(0) {
-  plane_manager_.reset(new HardwareDisplayPlaneManagerLegacy(this));
+  plane_manager_ = std::make_unique<HardwareDisplayPlaneManagerLegacy>(this);
 }
 
 // static
@@ -140,9 +142,9 @@ bool MockDrmDevice::InitializeStateWithResult(
   plane_properties_ = plane_properties;
   property_names_ = property_names;
   if (use_atomic) {
-    plane_manager_.reset(new HardwareDisplayPlaneManagerAtomic(this));
+    plane_manager_ = std::make_unique<HardwareDisplayPlaneManagerAtomic>(this);
   } else {
-    plane_manager_.reset(new HardwareDisplayPlaneManagerLegacy(this));
+    plane_manager_ = std::make_unique<HardwareDisplayPlaneManagerLegacy>(this);
   }
 
   return plane_manager_->Initialize();
@@ -215,7 +217,11 @@ bool MockDrmDevice::DisableCrtc(uint32_t crtc_id) {
 }
 
 ScopedDrmConnectorPtr MockDrmDevice::GetConnector(uint32_t connector_id) {
-  return ScopedDrmConnectorPtr(DrmAllocator<drmModeConnector>());
+  ScopedDrmConnectorPtr connector =
+      ScopedDrmConnectorPtr(DrmAllocator<drmModeConnector>());
+  connector->connector_id = connector_id;
+  connector->connector_type = connector_type_;
+  return connector;
 }
 
 bool MockDrmDevice::AddFramebuffer2(uint32_t width,
@@ -491,8 +497,8 @@ bool MockDrmDevice::ValidatePropertyValue(uint32_t id, uint64_t value) {
 
   std::vector<std::string> blob_properties = {"CTM", "DEGAMMA_LUT", "GAMMA_LUT",
                                               "PLANE_CTM"};
-  if (base::ContainsValue(blob_properties, it->second))
-    return base::ContainsKey(allocated_property_blobs_, value);
+  if (base::Contains(blob_properties, it->second))
+    return base::Contains(allocated_property_blobs_, value);
 
   return true;
 }

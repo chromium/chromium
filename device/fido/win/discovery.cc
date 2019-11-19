@@ -5,17 +5,18 @@
 #include "device/fido/win/discovery.h"
 
 #include "base/bind.h"
+#include "base/logging.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "device/fido/win/webauthn_api.h"
 
 namespace device {
 
 WinWebAuthnApiAuthenticatorDiscovery::WinWebAuthnApiAuthenticatorDiscovery(
-    WinWebAuthnApi* const win_webauthn_api,
-    HWND parent_window)
+    HWND parent_window,
+    WinWebAuthnApi* api)
     : FidoDiscoveryBase(FidoTransportProtocol::kUsbHumanInterfaceDevice),
-      win_webauthn_api_(win_webauthn_api),
       parent_window_(parent_window),
-      weak_factory_(this) {}
+      api_(api) {}
 
 WinWebAuthnApiAuthenticatorDiscovery::~WinWebAuthnApiAuthenticatorDiscovery() =
     default;
@@ -25,13 +26,6 @@ void WinWebAuthnApiAuthenticatorDiscovery::Start() {
   if (!observer()) {
     return;
   }
-
-  if (!win_webauthn_api_->IsAvailable()) {
-    observer()->DiscoveryStarted(this, false /* discovery failed */);
-    return;
-  }
-
-  observer()->DiscoveryStarted(this, true /* success */);
 
   // Start() is currently invoked synchronously in the
   // FidoRequestHandler ctor. Invoke AddAuthenticator() asynchronously
@@ -44,9 +38,13 @@ void WinWebAuthnApiAuthenticatorDiscovery::Start() {
 }
 
 void WinWebAuthnApiAuthenticatorDiscovery::AddAuthenticator() {
-  authenticator_ = std::make_unique<WinWebAuthnApiAuthenticator>(
-      WinWebAuthnApi::GetDefault(), parent_window_);
-  observer()->AuthenticatorAdded(this, authenticator_.get());
+  if (!api_->IsAvailable()) {
+    observer()->DiscoveryStarted(this, /*success=*/false);
+    return;
+  }
+  authenticator_ =
+      std::make_unique<WinWebAuthnApiAuthenticator>(parent_window_, api_);
+  observer()->DiscoveryStarted(this, /*success=*/true, {authenticator_.get()});
 }
 
 }  // namespace device

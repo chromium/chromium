@@ -10,6 +10,7 @@
 #include "base/memory/ptr_util.h"
 #include "third_party/blink/renderer/platform/heap/blink_gc.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 
@@ -18,9 +19,6 @@
 
 // Compaction-specific debug switches:
 
-// Set to 0 to prevent compaction GCs, disabling the heap compaction feature.
-#define ENABLE_HEAP_COMPACTION 1
-
 // Emit debug info during compaction.
 #define DEBUG_HEAP_COMPACTION 0
 
@@ -28,17 +26,7 @@
 // 0 - disabled, 1 - minimal, 2 - verbose.
 #define DEBUG_HEAP_FREELIST 0
 
-// Log the amount of time spent compacting.
-#define DEBUG_LOG_HEAP_COMPACTION_RUNNING_TIME 0
-
-// Compact during all idle + precise GCs; for debugging.
-#define STRESS_TEST_HEAP_COMPACTION 0
-
 namespace blink {
-
-namespace incremental_marking_test {
-class IncrementalMarkingTestDriver;
-}
 
 class NormalPageArena;
 class BasePage;
@@ -46,30 +34,24 @@ class ThreadState;
 class ThreadHeap;
 
 class PLATFORM_EXPORT HeapCompact final {
-  friend class incremental_marking_test::IncrementalMarkingTestDriver;
-
  public:
-  static std::unique_ptr<HeapCompact> Create(ThreadHeap* heap) {
-    return base::WrapUnique(new HeapCompact(heap));
+  // Returns |true| if the ongoing GC may compact the given arena/sub-heap.
+  static bool IsCompactableArena(int arena_index) {
+    return arena_index >= BlinkGC::kVectorArenaIndex &&
+           arena_index <= BlinkGC::kHashTableArenaIndex;
   }
 
+  explicit HeapCompact(ThreadHeap*);
   ~HeapCompact();
 
-  // Remove slot from traced_slots_ when a registered slot is destructed by
-  // mutator
-  void RemoveSlot(MovableReference* slot);
-
-  // Determine if a GC for the given type and reason should also perform
-  // additional heap compaction.
-  //
-  bool ShouldCompact(ThreadHeap*,
-                     BlinkGC::StackState,
+  // Returns true if compaction can and should be used for the provided
+  // parameters.
+  bool ShouldCompact(BlinkGC::StackState,
                      BlinkGC::MarkingType,
                      BlinkGC::GCReason);
 
   // Compaction should be performed as part of the ongoing GC, initialize
-  // the heap compaction pass. Returns the appropriate visitor type to
-  // use when running the marking phase.
+  // the heap compaction pass.
   void Initialize(ThreadState*);
 
   // Returns true if the ongoing GC will perform compaction.
@@ -81,31 +63,20 @@ class PLATFORM_EXPORT HeapCompact final {
     return do_compact_ && (compactable_arenas_ & (0x1u << arena_index));
   }
 
-  // Returns |true| if the ongoing GC may compact the given arena/sub-heap.
-  static bool IsCompactableArena(int arena_index) {
-    return arena_index >= BlinkGC::kVector1ArenaIndex &&
-           arena_index <= BlinkGC::kHashTableArenaIndex;
-  }
+  // See |Heap::ShouldRegisterMovingAddress()| documentation.
+  bool ShouldRegisterMovingAddress(Address address);
 
-  // See |Heap::registerMovingObjectReference()| documentation.
-  void RegisterMovingObjectReference(MovableReference* slot);
+  // Slots that are not contained within live objects are filtered. This can
+  // happen when the write barrier for in-payload objects triggers but the outer
+  // backing store does not survive the marking phase because all its referents
+  // die before being reached by the marker.
+  void FilterNonLiveSlots();
 
-  // See |Heap::registerMovingObjectCallback()| documentation.
-  void RegisterMovingObjectCallback(MovableReference*,
-                                    MovingObjectCallback,
-                                    void* callback_data);
+  // Finishes compaction and clears internal state.
+  void Finish();
 
-  // Thread signalling that a compaction pass is starting or has
-  // completed.
-  //
-  // A thread participating in a heap GC will wait on the completion
-  // of compaction across all threads. No thread can be allowed to
-  // potentially access another thread's heap arenas while they're
-  // still being compacted.
-  void StartThreadCompaction();
-  void FinishThreadCompaction();
-
-  void CancelCompaction();
+  // Cancels compaction after slots may have been recorded already.
+  void Cancel();
 
   // Perform any relocation post-processing after having completed compacting
   // the given arena. The number of pages that were freed together with the
@@ -123,30 +94,28 @@ class PLATFORM_EXPORT HeapCompact final {
   // (Called by the sweep compaction pass.)
   void Relocate(Address from, Address to);
 
-  // For unit testing only: arrange for a compaction GC to be triggered
-  // next time a non-conservative GC is run. Sets the compact-next flag
-  // to the new value, returning old.
-  static bool ScheduleCompactionGCForTesting(bool);
+  // Updates the callbacks collection of MovableObjectFixups in preparation
+  // for compaction.
+  void UpdateBackingStoreCallbacks();
 
-  // Test-only: verify that one or more of the vector arenas are
-  // in the process of being compacted.
-  bool IsCompactingVectorArenas() {
-    for (int i = BlinkGC::kVector1ArenaIndex; i <= BlinkGC::kVector4ArenaIndex;
-         ++i) {
-      if (IsCompactingArena(i))
-        return true;
-    }
-    return false;
+  // Enables compaction for the next garbage collection if technically possible.
+  void EnableCompactionForNextGCForTesting() { force_for_next_gc_ = true; }
+
+  // Returns true if one or more vector arenas are being compacted.
+  bool IsCompactingVectorArenasForTesting() const {
+    return IsCompactingArena(BlinkGC::kVectorArenaIndex);
   }
 
-  size_t last_fixup_count_for_testing() {
+  size_t LastFixupCountForTesting() const {
     return last_fixup_count_for_testing_;
   }
 
  private:
   class MovableObjectFixups;
 
-  explicit HeapCompact(ThreadHeap*);
+  // Freelist size threshold that must be exceeded before compaction
+  // should be considered.
+  static const size_t kFreeListSizeThreshold = 512 * 1024;
 
   // Sample the amount of fragmentation and heap memory currently residing
   // on the freelists of the arenas we're able to compact. The computed
@@ -154,41 +123,25 @@ class PLATFORM_EXPORT HeapCompact final {
   // is on order (shouldCompact().)
   void UpdateHeapResidency();
 
-  // Parameters controlling when compaction should be done:
-
-  // Number of GCs that must have passed since last compaction GC.
-  static const int kGCCountSinceLastCompactionThreshold = 10;
-
-  // Freelist size threshold that must be exceeded before compaction
-  // should be considered.
-  static const size_t kFreeListSizeThreshold = 512 * 1024;
-
-  ThreadHeap* const heap_;
-
   MovableObjectFixups& Fixups();
 
+  ThreadHeap* const heap_;
   std::unique_ptr<MovableObjectFixups> fixups_;
 
   // Set to |true| when a compacting sweep will go ahead.
-  bool do_compact_;
-  size_t gc_count_since_last_compaction_;
+  bool do_compact_ = false;
+  size_t gc_count_since_last_compaction_ = 0;
 
   // Last reported freelist size, across all compactable arenas.
-  size_t free_list_size_;
+  size_t free_list_size_ = 0;
 
-  // If compacting, i'th heap arena will be compacted
-  // if corresponding bit is set. Indexes are in
-  // the range of BlinkGC::ArenaIndices.
-  unsigned compactable_arenas_;
+  // If compacting, i'th heap arena will be compacted if corresponding bit is
+  // set. Indexes are in the range of BlinkGC::ArenaIndices.
+  unsigned compactable_arenas_ = 0u;
 
-  // The set is to remember slots that traced during
-  // marking phases. The mapping between the slots and the backing stores are
-  // created at the atomic pause phase.
-  HashSet<MovableReference*> traced_slots_;
+  size_t last_fixup_count_for_testing_ = 0;
 
-  size_t last_fixup_count_for_testing_;
-
-  static bool force_compaction_gc_;
+  bool force_for_next_gc_ = false;
 };
 
 }  // namespace blink

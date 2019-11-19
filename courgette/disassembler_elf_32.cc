@@ -101,28 +101,36 @@ bool DisassemblerElf32::ParseHeader() {
 
   header_ = reinterpret_cast<const Elf32_Ehdr*>(start());
 
-  // Have magic for ELF header?
-  if (header_->e_ident[0] != 0x7f ||
-      header_->e_ident[1] != 'E' ||
-      header_->e_ident[2] != 'L' ||
-      header_->e_ident[3] != 'F')
-    return Bad("No Magic Number");
+  // Perform DisassemblerElf32::QuickDetect() checks (with error messages).
 
-  if (header_->e_type != ET_EXEC &&
-      header_->e_type != ET_DYN)
+  // Have magic for ELF header?
+  if (header_->e_ident[EI_MAG0] != 0x7F || header_->e_ident[EI_MAG1] != 'E' ||
+      header_->e_ident[EI_MAG2] != 'L' || header_->e_ident[EI_MAG3] != 'F') {
+    return Bad("No Magic Number");
+  }
+
+  if (header_->e_ident[EI_CLASS] != ELFCLASS32 ||
+      header_->e_ident[EI_DATA] != ELFDATA2LSB ||
+      header_->e_machine != ElfEM()) {
+    return Bad("Not a supported architecture");
+  }
+
+  if (header_->e_type != ET_EXEC && header_->e_type != ET_DYN)
     return Bad("Not an executable file or shared library");
 
-  if (header_->e_machine != ElfEM())
-    return Bad("Not a supported architecture");
-
-  if (header_->e_version != 1)
+  if (header_->e_version != 1 || header_->e_ident[EI_VERSION] != 1)
     return Bad("Unknown file version");
 
   if (header_->e_shentsize != sizeof(Elf32_Shdr))
     return Bad("Unexpected section header size");
 
-  if (!IsArrayInBounds(header_->e_shoff, header_->e_shnum, sizeof(Elf32_Shdr)))
+  // Perform more complex checks, while extracting data.
+
+  if (header_->e_shoff < sizeof(Elf32_Ehdr) ||
+      !IsArrayInBounds(header_->e_shoff, header_->e_shnum,
+                       sizeof(Elf32_Shdr))) {
     return Bad("Out of bounds section header table");
+  }
 
   // Extract |section_header_table_|, ordered by section id.
   const Elf32_Shdr* section_header_table_raw =
@@ -131,34 +139,41 @@ bool DisassemblerElf32::ParseHeader() {
   section_header_table_size_ = header_->e_shnum;
   section_header_table_.assign(section_header_table_raw,
       section_header_table_raw + section_header_table_size_);
-
-  // TODO(huangs): Validate offsets of all section headers.
-
+  if (!CheckSectionRanges())
+    return Bad("Out of bound section");
   section_header_file_offset_order_ =
       GetSectionHeaderFileOffsetOrder(section_header_table_);
-
-  if (!IsArrayInBounds(header_->e_phoff, header_->e_phnum, sizeof(Elf32_Phdr)))
+  if (header_->e_phoff < sizeof(Elf32_Ehdr) ||
+      !IsArrayInBounds(header_->e_phoff, header_->e_phnum,
+                       sizeof(Elf32_Phdr))) {
     return Bad("Out of bounds program header table");
+  }
 
+  // Extract |program_header_table_|.
+  program_header_table_size_ = header_->e_phnum;
   program_header_table_ = reinterpret_cast<const Elf32_Phdr*>(
       FileOffsetToPointer(header_->e_phoff));
-  program_header_table_size_ = header_->e_phnum;
+  if (!CheckProgramSegmentRanges())
+    return Bad("Out of bound segment");
 
+  // Extract |default_string_section_|.
   Elf32_Half string_section_id = header_->e_shstrndx;
+  if (string_section_id == SHN_UNDEF)
+    return Bad("Missing string section");
   if (string_section_id >= header_->e_shnum)
     return Bad("Out of bounds string section index");
-
+  if (SectionHeader(string_section_id)->sh_type != SHT_STRTAB)
+    return Bad("Invalid string section");
+  default_string_section_size_ = SectionHeader(string_section_id)->sh_size;
   default_string_section_ =
       reinterpret_cast<const char*>(SectionBody(string_section_id));
-  default_string_section_size_ = SectionHeader(string_section_id)->sh_size;
   // String section may be empty. If nonempty, then last byte must be null.
   if (default_string_section_size_ > 0) {
     if (default_string_section_[default_string_section_size_ - 1] != '\0')
       return Bad("String section does not terminate");
   }
 
-  if (!UpdateLength())
-    return Bad("Out of bounds section or segment");
+  UpdateLength();
 
   return Good();
 }
@@ -195,15 +210,17 @@ bool DisassemblerElf32::QuickDetect(const uint8_t* start,
   const Elf32_Ehdr* header = reinterpret_cast<const Elf32_Ehdr*>(start);
 
   // Have magic for ELF header?
-  if (header->e_ident[0] != 0x7f || header->e_ident[1] != 'E' ||
-      header->e_ident[2] != 'L' || header->e_ident[3] != 'F')
+  if (header->e_ident[EI_MAG0] != 0x7F || header->e_ident[EI_MAG1] != 'E' ||
+      header->e_ident[EI_MAG2] != 'L' || header->e_ident[EI_MAG3] != 'F') {
     return false;
-
+  }
+  if (header->e_ident[EI_CLASS] != ELFCLASS32 ||
+      header->e_ident[EI_DATA] != ELFDATA2LSB || header->e_machine != elf_em) {
+    return false;
+  }
   if (header->e_type != ET_EXEC && header->e_type != ET_DYN)
     return false;
-  if (header->e_machine != elf_em)
-    return false;
-  if (header->e_version != 1)
+  if (header->e_version != 1 || header->e_ident[EI_VERSION] != 1)
     return false;
   if (header->e_shentsize != sizeof(Elf32_Shdr))
     return false;
@@ -211,32 +228,47 @@ bool DisassemblerElf32::QuickDetect(const uint8_t* start,
   return true;
 }
 
-bool DisassemblerElf32::UpdateLength() {
-  Elf32_Off result = 0;
-
-  // Find the end of the last section
+bool DisassemblerElf32::CheckSectionRanges() {
   for (Elf32_Half section_id = 0; section_id < SectionHeaderCount();
        ++section_id) {
     const Elf32_Shdr* section_header = SectionHeader(section_id);
+    if (section_header->sh_type == SHT_NOBITS)  // E.g., .bss.
+      continue;
+    if (!IsRangeInBounds(section_header->sh_offset, section_header->sh_size))
+      return false;
+  }
+  return true;
+}
 
+bool DisassemblerElf32::CheckProgramSegmentRanges() {
+  for (Elf32_Half segment_id = 0; segment_id < ProgramSegmentHeaderCount();
+       ++segment_id) {
+    const Elf32_Phdr* segment_header = ProgramSegmentHeader(segment_id);
+    if (!IsRangeInBounds(segment_header->p_offset, segment_header->p_filesz))
+      return false;
+  }
+  return true;
+}
+
+void DisassemblerElf32::UpdateLength() {
+  Elf32_Off result = 0;
+
+  // Find the end of the last section.
+  for (Elf32_Half section_id = 0; section_id < SectionHeaderCount();
+       ++section_id) {
+    const Elf32_Shdr* section_header = SectionHeader(section_id);
     if (section_header->sh_type == SHT_NOBITS)
       continue;
-
-    if (!IsArrayInBounds(section_header->sh_offset, section_header->sh_size, 1))
-      return false;
-
+    DCHECK(IsRangeInBounds(section_header->sh_offset, section_header->sh_size));
     Elf32_Off section_end = section_header->sh_offset + section_header->sh_size;
     result = std::max(result, section_end);
   }
 
-  // Find the end of the last segment
+  // Find the end of the last segment.
   for (Elf32_Half segment_id = 0; segment_id < ProgramSegmentHeaderCount();
        ++segment_id) {
     const Elf32_Phdr* segment_header = ProgramSegmentHeader(segment_id);
-
-    if (!IsArrayInBounds(segment_header->p_offset, segment_header->p_filesz, 1))
-      return false;
-
+    DCHECK(IsRangeInBounds(segment_header->p_offset, segment_header->p_filesz));
     Elf32_Off segment_end = segment_header->p_offset + segment_header->p_filesz;
     result = std::max(result, segment_end);
   }
@@ -250,7 +282,6 @@ bool DisassemblerElf32::UpdateLength() {
   result = std::max(result, segment_table_end);
 
   ReduceLength(result);
-  return true;
 }
 
 CheckBool DisassemblerElf32::SectionName(const Elf32_Shdr& shdr,
@@ -305,6 +336,11 @@ bool DisassemblerElf32::ExtractAbs32Locations() {
     if (section_header->sh_type == SHT_REL) {
       const Elf32_Rel* relocs_table =
           reinterpret_cast<const Elf32_Rel*>(SectionBody(section_id));
+      // Reject if malformed.
+      if (section_header->sh_entsize != sizeof(Elf32_Rel))
+        return false;
+      if (section_header->sh_size % section_header->sh_entsize != 0)
+        return false;
 
       int relocs_table_count =
           section_header->sh_size / section_header->sh_entsize;

@@ -16,10 +16,12 @@ using completion_block_util::AlertCallback;
 using completion_block_util::ConfirmCallback;
 using completion_block_util::PromptCallback;
 using completion_block_util::HTTPAuthCallack;
+using completion_block_util::DecidePolicyCallback;
 using completion_block_util::GetSafeJavaScriptAlertCompletion;
 using completion_block_util::GetSafeJavaScriptConfirmationCompletion;
 using completion_block_util::GetSafeJavaScriptPromptCompletion;
 using completion_block_util::GetSafeHTTPAuthCompletion;
+using completion_block_util::GetSafeDecidePolicyCompletion;
 
 // Tests that a safe JavaScript alert completion block executes the original
 // callback if deallocated.
@@ -81,6 +83,23 @@ TEST_F(SafeWebCompletionTest, HTTPAuth) {
         GetSafeHTTPAuthCompletion(^(NSString* user, NSString* password) {
           EXPECT_FALSE(user);
           EXPECT_FALSE(password);
+          callback_executed = YES;
+        });
+#pragma clang diagnostic pop
+  }
+  EXPECT_TRUE(callback_executed);
+}
+
+// Tests that a safe decide policy completion block executes the original
+// callback if deallocated.
+TEST_F(SafeWebCompletionTest, DecidePolicy) {
+  __block BOOL callback_executed = NO;
+  @autoreleasepool {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-variable"
+    DecidePolicyCallback callback =
+        GetSafeDecidePolicyCompletion(^(bool shouldContinue) {
+          EXPECT_FALSE(shouldContinue);
           callback_executed = YES;
         });
 #pragma clang diagnostic pop

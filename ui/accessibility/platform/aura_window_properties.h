@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_export.h"
 #include "ui/aura/window.h"
 

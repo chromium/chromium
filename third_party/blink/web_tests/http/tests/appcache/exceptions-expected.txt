@@ -1,3 +1,4 @@
+CONSOLE WARNING: Application Cache API use is deprecated and will be removed in M82, around April 2020. See https://www.chromestatus.com/features/6192449487634432 for more details.
 This tests that 'ApplicationCache' methods throw exceptions with reasonable messages.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".

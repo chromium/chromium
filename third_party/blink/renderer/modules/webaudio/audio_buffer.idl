@@ -28,6 +28,7 @@
 
 // See https://webaudio.github.io/web-audio-api/#AudioBuffer
 [
+    Exposed=Window,
     Constructor(AudioBufferOptions options),
     RaisesException=Constructor,
     Measure
@@ -39,6 +40,6 @@
     // Channel access
     readonly attribute unsigned long numberOfChannels;
     [HighEntropy, Measure, RaisesException] Float32Array getChannelData(unsigned long channelIndex);
-    [HighEntropy, Measure, RaisesException] void copyFromChannel(Float32Array destination, long channelNumber, optional unsigned long startInChannel = 0);
-    [RaisesException] void copyToChannel(Float32Array source, long channelNumber, optional unsigned long startInChannel = 0);
+    [HighEntropy, Measure, RaisesException] void copyFromChannel(Float32Array destination, long channelNumber, optional unsigned long bufferOffset = 0);
+    [RaisesException] void copyToChannel(Float32Array source, long channelNumber, optional unsigned long bufferOffset = 0);
 };

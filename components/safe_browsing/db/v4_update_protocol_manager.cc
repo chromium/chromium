@@ -12,7 +12,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
 #include "base/timer/timer.h"
-#include "components/data_use_measurement/core/data_use_user_data.h"
+#include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/db/safebrowsing.pb.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_response_headers.h"
@@ -59,10 +59,6 @@ void RecordUpdateResult(safe_browsing::V4OperationResult result) {
   UMA_HISTOGRAM_ENUMERATION(
       "SafeBrowsing.V4Update.Result", result,
       safe_browsing::V4OperationResult::OPERATION_RESULT_MAX);
-}
-
-void RecordTimedOut(bool timed_out) {
-  UMA_HISTOGRAM_BOOLEAN("SafeBrowsing.V4Update.TimedOut", timed_out);
 }
 
 }  // namespace
@@ -362,7 +358,6 @@ void V4UpdateProtocolManager::IssueUpdateRequest() {
 }
 
 void V4UpdateProtocolManager::HandleTimeout() {
-  RecordTimedOut(true);
   request_.reset();
   ScheduleNextUpdateWithBackoff(true);
 }
@@ -391,7 +386,6 @@ void V4UpdateProtocolManager::OnURLLoaderCompleteInternal(
   last_response_code_ = response_code;
   V4ProtocolManagerUtil::RecordHttpResponseOrErrorCode(
       "SafeBrowsing.V4Update.Network.Result", net_error, last_response_code_);
-  RecordTimedOut(false);
 
   last_response_time_ = Time::Now();
 

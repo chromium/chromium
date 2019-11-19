@@ -1,5 +1,5 @@
-<html>
-<head>
+<!doctype html>
+<html lang="en">
 <title>Inspectable pages</title>
 <meta name="referrer" content="no-referrer">
 <style>
@@ -102,6 +102,19 @@ function onReady() {
   }
 }
 
+function onBlur(event) {
+  const selection = window.getSelection();
+  selection.removeAllRanges();
+  event.stopPropagation();
+  event.preventDefault();
+}
+
+function onFocus(selectElement, event) {
+  selectNodeText(selectElement, event);
+  event.stopPropagation();
+  event.preventDefault();
+}
+
 function customFrontendURL(url) {
   if (!url || !window.location.hash)
     return null;
@@ -117,7 +130,7 @@ function customFrontendURL(url) {
   if (hashParams.get("experiments"))
     originalParams += "&experiments=true";
 
-  return "chrome-devtools://devtools/custom/inspector.html?" + originalParams;
+  return "devtools://devtools/custom/inspector.html?" + originalParams;
 }
 
 function appendItem(item_object) {
@@ -164,6 +177,9 @@ function appendItem(item_object) {
     var urlValue = document.createElement('div');
     urlValue.classList.add("custom-url-value");
     urlValue.textContent = customURL;
+    urlValue.tabIndex = 0;
+    urlValue.addEventListener('blur', onBlur);
+    urlValue.addEventListener('focus', event => onFocus(urlValue, event));
     urlContainer.appendChild(urlValue);
     description.appendChild(urlContainer);
     item_element.addEventListener('click', selectNodeText.bind(null, urlValue));
@@ -189,9 +205,11 @@ function selectNodeText(selectElement, event)
 </script>
 </head>
 <body onload='onLoad()'>
-  <div id='caption'>Inspectable pages</div>
-  <hr>
-  <div id='items'>
+  <div role='main'>
+    <div id='caption' role='heading' aria-level='1'>Inspectable pages</div>
+    <hr>
+    <div id='items'>
+    </div>
   </div>
 </body>
 </html>

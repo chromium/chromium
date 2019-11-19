@@ -138,7 +138,7 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibiltyIdentifier =
   [_menuButton setImage:[UIImage imageNamed:@"ic_menu"]
                forState:UIControlStateNormal];
   [_menuButton addTarget:self
-                  action:@selector(showMenu)
+                  action:@selector(showMainMenu)
         forControlEvents:UIControlEventTouchUpInside];
 
   _field.placeholder = @"Search or type URL";
@@ -246,12 +246,13 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibiltyIdentifier =
 
   [CWVWebView setUserAgentProduct:@"Dummy/1.0"];
 
+  _authService = [[ShellAuthService alloc] init];
+  CWVSyncController.dataSource = _authService;
+
   CWVWebViewConfiguration* configuration =
       [CWVWebViewConfiguration defaultConfiguration];
   configuration.syncController.delegate = self;
   [self createWebViewWithConfiguration:configuration];
-
-  _authService = [[ShellAuthService alloc] init];
 }
 
 - (UIStatusBarStyle)preferredStatusBarStyle {
@@ -293,9 +294,247 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibiltyIdentifier =
   }
 }
 
-- (void)showMenu {
+- (void)showAddressData {
+  CWVAutofillDataManager* dataManager =
+      _webView.configuration.autofillDataManager;
+  [dataManager fetchProfilesWithCompletionHandler:^(
+                   NSArray<CWVAutofillProfile*>* _Nonnull profiles) {
+    NSMutableArray<NSString*>* descriptions = [profiles
+        valueForKey:NSStringFromSelector(@selector(debugDescription))];
+    NSString* message = [descriptions componentsJoinedByString:@"\n\n"];
+    UIAlertController* alertController = [UIAlertController
+        alertControllerWithTitle:@"Addresses"
+                         message:message
+                  preferredStyle:UIAlertControllerStyleActionSheet];
+    for (CWVAutofillProfile* profile in profiles) {
+      NSString* title = [NSString
+          stringWithFormat:@"Delete %@", @([profiles indexOfObject:profile])];
+      UIAlertAction* action =
+          [UIAlertAction actionWithTitle:title
+                                   style:UIAlertActionStyleDefault
+                                 handler:^(UIAlertAction* action) {
+                                   [dataManager deleteProfile:profile];
+                                 }];
+      [alertController addAction:action];
+    }
+    [alertController
+        addAction:[UIAlertAction actionWithTitle:@"Done"
+                                           style:UIAlertActionStyleCancel
+                                         handler:nil]];
+
+    [self presentViewController:alertController animated:YES completion:nil];
+  }];
+}
+
+- (void)showCreditCardData {
+  CWVAutofillDataManager* dataManager =
+      _webView.configuration.autofillDataManager;
+  [dataManager fetchCreditCardsWithCompletionHandler:^(
+                   NSArray<CWVCreditCard*>* _Nonnull creditCards) {
+    NSMutableArray<NSString*>* descriptions = [creditCards
+        valueForKey:NSStringFromSelector(@selector(debugDescription))];
+    NSString* message = [descriptions componentsJoinedByString:@"\n\n"];
+    UIAlertController* alertController = [UIAlertController
+        alertControllerWithTitle:@"Credit cards"
+                         message:message
+                  preferredStyle:UIAlertControllerStyleActionSheet];
+    for (CWVCreditCard* creditCard in creditCards) {
+      // Cards from Google Play can only be deleted on the Google Pay website.
+      if (creditCard.fromGooglePay) {
+        continue;
+      }
+      NSString* title =
+          [NSString stringWithFormat:@"Delete %@",
+                                     @([creditCards indexOfObject:creditCard])];
+      UIAlertAction* action =
+          [UIAlertAction actionWithTitle:title
+                                   style:UIAlertActionStyleDefault
+                                 handler:^(UIAlertAction* action) {
+                                   [dataManager deleteCreditCard:creditCard];
+                                 }];
+      [alertController addAction:action];
+    }
+    __weak ShellViewController* weakSelf = self;
+    [alertController
+        addAction:[UIAlertAction
+                      actionWithTitle:@"Manage Google pay cards"
+                                style:UIAlertActionStyleDefault
+                              handler:^(UIAlertAction* action) {
+                                __weak ShellViewController* strongSelf =
+                                    weakSelf;
+                                NSString* URL;
+                                if ([CWVFlags sharedInstance]
+                                        .usesSyncAndWalletSandbox) {
+                                  URL = @"https://pay.sandbox.google.com/"
+                                        @"payments/home#paymentMethods";
+                                } else {
+                                  URL = @"https://pay.google.com/payments/"
+                                        @"home#paymentMethods";
+                                }
+                                NSURLRequest* request = [NSURLRequest
+                                    requestWithURL:[NSURL URLWithString:URL]];
+                                [strongSelf.webView loadRequest:request];
+                              }]];
+    [alertController
+        addAction:[UIAlertAction actionWithTitle:@"Done"
+                                           style:UIAlertActionStyleCancel
+                                         handler:nil]];
+    [self presentViewController:alertController animated:YES completion:nil];
+  }];
+}
+
+- (void)showPasswordData {
+  CWVAutofillDataManager* dataManager =
+      _webView.configuration.autofillDataManager;
+  [dataManager fetchPasswordsWithCompletionHandler:^(
+                   NSArray<CWVPassword*>* _Nonnull passwords) {
+    NSMutableArray<NSString*>* descriptions = [passwords
+        valueForKey:NSStringFromSelector(@selector(debugDescription))];
+    NSString* message = [descriptions componentsJoinedByString:@"\n\n"];
+    UIAlertController* alertController = [UIAlertController
+        alertControllerWithTitle:@"Passwords"
+                         message:message
+                  preferredStyle:UIAlertControllerStyleActionSheet];
+    for (CWVPassword* password in passwords) {
+      NSString* title = [NSString
+          stringWithFormat:@"Delete %@", @([passwords indexOfObject:password])];
+      UIAlertAction* action =
+          [UIAlertAction actionWithTitle:title
+                                   style:UIAlertActionStyleDefault
+                                 handler:^(UIAlertAction* action) {
+                                   [dataManager deletePassword:password];
+                                 }];
+      [alertController addAction:action];
+    }
+    [alertController
+        addAction:[UIAlertAction actionWithTitle:@"Done"
+                                           style:UIAlertActionStyleCancel
+                                         handler:nil]];
+    [self presentViewController:alertController animated:YES completion:nil];
+  }];
+}
+
+- (void)showSyncMenu {
   UIAlertController* alertController = [UIAlertController
-      alertControllerWithTitle:nil
+      alertControllerWithTitle:@"Sync menu"
+                       message:nil
+                preferredStyle:UIAlertControllerStyleActionSheet];
+
+  CWVSyncController* syncController = _webView.configuration.syncController;
+  CWVIdentity* currentIdentity = syncController.currentIdentity;
+  if (currentIdentity) {
+    NSString* title = [NSString
+        stringWithFormat:@"Stop syncing for %@", currentIdentity.email];
+    [alertController
+        addAction:[UIAlertAction
+                      actionWithTitle:title
+                                style:UIAlertActionStyleDefault
+                              handler:^(UIAlertAction* action) {
+                                [syncController stopSyncAndClearIdentity];
+                              }]];
+
+    __weak ShellViewController* weakSelf = self;
+    if (syncController.passphraseNeeded) {
+      [alertController
+          addAction:[UIAlertAction
+                        actionWithTitle:@"Unlock using passphrase"
+                                  style:UIAlertActionStyleDefault
+                                handler:^(UIAlertAction* action) {
+                                  [weakSelf showPassphraseUnlockAlert];
+                                }]];
+    } else {
+      [alertController
+          addAction:[UIAlertAction actionWithTitle:@"Show autofill data"
+                                             style:UIAlertActionStyleDefault
+                                           handler:^(UIAlertAction* action) {
+                                             [weakSelf showAddressData];
+                                           }]];
+      [alertController
+          addAction:[UIAlertAction actionWithTitle:@"Show credit card data"
+                                             style:UIAlertActionStyleDefault
+                                           handler:^(UIAlertAction* action) {
+                                             [weakSelf showCreditCardData];
+                                           }]];
+      [alertController
+          addAction:[UIAlertAction actionWithTitle:@"Show password data"
+                                             style:UIAlertActionStyleDefault
+                                           handler:^(UIAlertAction* action) {
+                                             [weakSelf showPasswordData];
+                                           }]];
+    }
+  } else {
+    for (CWVIdentity* identity in [_authService identities]) {
+      NSString* title =
+          [NSString stringWithFormat:@"Start sync with %@", identity.email];
+      [alertController
+          addAction:[UIAlertAction
+                        actionWithTitle:title
+                                  style:UIAlertActionStyleDefault
+                                handler:^(UIAlertAction* action) {
+                                  [syncController
+                                      startSyncWithIdentity:identity];
+                                }]];
+    }
+
+    NSString* sandboxTitle = [CWVFlags sharedInstance].usesSyncAndWalletSandbox
+                                 ? @"Use production sync/wallet"
+                                 : @"Use sandbox sync/wallet";
+    [alertController
+        addAction:[UIAlertAction actionWithTitle:sandboxTitle
+                                           style:UIAlertActionStyleDefault
+                                         handler:^(UIAlertAction* action) {
+                                           [CWVFlags sharedInstance]
+                                               .usesSyncAndWalletSandbox ^= YES;
+                                         }]];
+  }
+
+  [alertController
+      addAction:[UIAlertAction actionWithTitle:@"Cancel"
+                                         style:UIAlertActionStyleCancel
+                                       handler:nil]];
+
+  [self presentViewController:alertController animated:YES completion:nil];
+}
+
+- (void)showPassphraseUnlockAlert {
+  UIAlertController* alertController =
+      [UIAlertController alertControllerWithTitle:@"Unlock sync"
+                                          message:@"Enter passphrase"
+                                   preferredStyle:UIAlertControllerStyleAlert];
+
+  __weak UIAlertController* weakAlertController = alertController;
+  CWVSyncController* syncController = _webView.configuration.syncController;
+  UIAlertAction* submit = [UIAlertAction
+      actionWithTitle:@"Unlock"
+                style:UIAlertActionStyleDefault
+              handler:^(UIAlertAction* action) {
+                UITextField* textField =
+                    weakAlertController.textFields.firstObject;
+                NSString* passphrase = textField.text;
+                BOOL result = [syncController unlockWithPassphrase:passphrase];
+                NSLog(@"Sync passphrase unlock result: %d", result);
+              }];
+
+  [alertController addAction:submit];
+
+  UIAlertAction* cancel =
+      [UIAlertAction actionWithTitle:@"Cancel"
+                               style:UIAlertActionStyleCancel
+                             handler:nil];
+  [alertController addAction:cancel];
+
+  [alertController
+      addTextFieldWithConfigurationHandler:^(UITextField* textField) {
+        textField.placeholder = @"passphrase";
+        textField.keyboardType = UIKeyboardTypeDefault;
+      }];
+
+  [self presentViewController:alertController animated:YES completion:nil];
+}
+
+- (void)showMainMenu {
+  UIAlertController* alertController = [UIAlertController
+      alertControllerWithTitle:@"Main menu"
                        message:nil
                 preferredStyle:UIAlertControllerStyleActionSheet];
   [alertController
@@ -339,42 +578,22 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibiltyIdentifier =
                                          [weakSelf resetTranslateSettings];
                                        }]];
 
-  for (CWVIdentity* identity in [_authService identities]) {
-    NSString* title =
-        [NSString stringWithFormat:@"Start sync with %@", identity.email];
-    [alertController
-        addAction:[UIAlertAction
-                      actionWithTitle:title
-                                style:UIAlertActionStyleDefault
-                              handler:^(UIAlertAction* action) {
-                                CWVSyncController* syncController =
-                                    weakSelf.webView.configuration
-                                        .syncController;
-                                [syncController
-                                    startSyncWithIdentity:identity
-                                               dataSource:_authService];
-                              }]];
-  }
-
+  // Shows sync menu.
   [alertController
-      addAction:[UIAlertAction
-                    actionWithTitle:@"Stop sync"
-                              style:UIAlertActionStyleDefault
-                            handler:^(UIAlertAction* action) {
-                              [weakSelf.webView.configuration
-                                      .syncController stopSyncAndClearIdentity];
-                            }]];
-
-  NSString* sandboxTitle = [CWVFlags sharedInstance].usesSyncAndWalletSandbox
-                               ? @"Use production sync/wallet"
-                               : @"Use sandbox sync/wallet";
-  [alertController
-      addAction:[UIAlertAction actionWithTitle:sandboxTitle
+      addAction:[UIAlertAction actionWithTitle:@"Sync menu"
                                          style:UIAlertActionStyleDefault
                                        handler:^(UIAlertAction* action) {
-                                         [CWVFlags sharedInstance]
-                                             .usesSyncAndWalletSandbox ^= YES;
+                                         [weakSelf showSyncMenu];
                                        }]];
+
+  if (self.downloadTask) {
+    [alertController
+        addAction:[UIAlertAction actionWithTitle:@"Cancel download"
+                                           style:UIAlertActionStyleDefault
+                                         handler:^(UIAlertAction* action) {
+                                           [weakSelf.downloadTask cancel];
+                                         }]];
+  }
 
   [self presentViewController:alertController animated:YES completion:nil];
 }
@@ -738,9 +957,8 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibiltyIdentifier =
   NSLog(@"%@:%@", NSStringFromSelector(_cmd), error);
 }
 
-- (void)syncController:(CWVSyncController*)syncController
-    didStopSyncWithReason:(CWVStopSyncReason)reason {
-  NSLog(@"%@:%ld", NSStringFromSelector(_cmd), (long)reason);
+- (void)syncControllerDidStopSync:(CWVSyncController*)syncController {
+  NSLog(@"%@", NSStringFromSelector(_cmd));
 }
 
 @end

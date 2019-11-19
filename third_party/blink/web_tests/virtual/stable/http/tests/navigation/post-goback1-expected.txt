@@ -12,6 +12,8 @@ HTTP_CONNECTION = keep-alive
 HTTP_HOST = 127.0.0.1:8000
 HTTP_ORIGIN = http://127.0.0.1:8000
 HTTP_REFERER = http://127.0.0.1:8000/navigation/resources/page-that-posts.html
+HTTP_SEC_FETCH_MODE = navigate
+HTTP_SEC_FETCH_SITE = same-origin
 HTTP_UPGRADE_INSECURE_REQUESTS = 1
 
 ============== Back Forward List ==============

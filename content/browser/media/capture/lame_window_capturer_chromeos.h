@@ -17,7 +17,10 @@
 #include "base/unguessable_token.h"
 #include "content/browser/media/capture/lame_capture_overlay_chromeos.h"
 #include "media/base/video_frame.h"
-#include "services/viz/privileged/interfaces/compositing/frame_sink_video_capture.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "services/viz/privileged/mojom/compositing/frame_sink_video_capture.mojom.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/gfx/geometry/size.h"
@@ -65,12 +68,14 @@ class LameWindowCapturerChromeOS : public viz::mojom::FrameSinkVideoCapturer,
   void SetAutoThrottlingEnabled(bool enabled) final;
   void ChangeTarget(
       const base::Optional<viz::FrameSinkId>& frame_sink_id) final;
-  void Start(viz::mojom::FrameSinkVideoConsumerPtr consumer) final;
+  void Start(
+      mojo::PendingRemote<viz::mojom::FrameSinkVideoConsumer> consumer) final;
   void Stop() final;
   void RequestRefreshFrame() final;
   void CreateOverlay(
       int32_t stacking_index,
-      viz::mojom::FrameSinkVideoCaptureOverlayRequest request) final;
+      mojo::PendingReceiver<viz::mojom::FrameSinkVideoCaptureOverlay> receiver)
+      final;
 
  private:
   // Represents an in-flight frame, being populated by this capturer and then
@@ -106,7 +111,7 @@ class LameWindowCapturerChromeOS : public viz::mojom::FrameSinkVideoCapturer,
   gfx::Size capture_size_ = gfx::Size(640, 360);
 
   // The current consumer. This is set by Start() and cleared by Stop().
-  viz::mojom::FrameSinkVideoConsumerPtr consumer_;
+  mojo::Remote<viz::mojom::FrameSinkVideoConsumer> consumer_;
 
   // A timer that calls CaptureNextFrame() periodically, according to the
   // currently-set |capture_period_|. This timer is only running while a
@@ -133,7 +138,7 @@ class LameWindowCapturerChromeOS : public viz::mojom::FrameSinkVideoCapturer,
 
   // Used for cancelling any outstanding activities' results, once Stop() is
   // called and there is no longer a consumer to receive another frame.
-  base::WeakPtrFactory<LameWindowCapturerChromeOS> weak_factory_;
+  base::WeakPtrFactory<LameWindowCapturerChromeOS> weak_factory_{this};
 
   // Enforce a very low maximum frame rate (5 FPS), due to the lack of
   // design optimizations. See top-level class comments.

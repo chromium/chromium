@@ -8,4 +8,8 @@ mojom("mojom") {
   sources = [
     "connector.mojom",
   ]
+
+  public_deps = [
+    "//mojo/public/mojom/base",
+  ]
 }

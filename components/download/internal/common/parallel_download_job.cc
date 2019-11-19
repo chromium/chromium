@@ -12,9 +12,7 @@
 #include "components/download/internal/common/parallel_download_utils.h"
 #include "components/download/public/common/download_create_info.h"
 #include "components/download/public/common/download_stats.h"
-#include "components/download/public/common/download_url_loader_factory_getter.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "net/url_request/url_request_context_getter.h"
 
 namespace download {
 namespace {
@@ -23,19 +21,20 @@ const int kDownloadJobVerboseLevel = 1;
 
 ParallelDownloadJob::ParallelDownloadJob(
     DownloadItem* download_item,
-    std::unique_ptr<DownloadRequestHandleInterface> request_handle,
+    CancelRequestCallback cancel_request_callback,
     const DownloadCreateInfo& create_info,
-    scoped_refptr<download::DownloadURLLoaderFactoryGetter>
-        url_loader_factory_getter,
-    net::URLRequestContextGetter* url_request_context_getter)
-    : DownloadJobImpl(download_item, std::move(request_handle), true),
+    URLLoaderFactoryProvider::URLLoaderFactoryProviderPtr
+        url_loader_factory_provider,
+    service_manager::Connector* connector)
+    : DownloadJobImpl(download_item, std::move(cancel_request_callback), true),
       initial_request_offset_(create_info.offset),
       initial_received_slices_(download_item->GetReceivedSlices()),
       content_length_(create_info.total_bytes),
       requests_sent_(false),
       is_canceled_(false),
-      url_loader_factory_getter_(std::move(url_loader_factory_getter)),
-      url_request_context_getter_(url_request_context_getter) {}
+      range_support_(create_info.accept_range),
+      url_loader_factory_provider_(std::move(url_loader_factory_provider)),
+      connector_(connector) {}
 
 ParallelDownloadJob::~ParallelDownloadJob() = default;
 
@@ -126,13 +125,11 @@ void ParallelDownloadJob::OnInputStreamReady(
     DownloadWorker* worker,
     std::unique_ptr<InputStream> input_stream,
     std::unique_ptr<DownloadCreateInfo> download_create_info) {
-  // If server returns a wrong range, abort the parallel request.
-  bool success = download_create_info->offset == worker->offset();
-  if (success) {
-    success = DownloadJob::AddInputStream(std::move(input_stream),
-                                          worker->offset(), worker->length());
-  }
-  RecordParallelDownloadAddStreamSuccess(success);
+  bool success =
+      DownloadJob::AddInputStream(std::move(input_stream), worker->offset());
+
+  RecordParallelDownloadAddStreamSuccess(
+      success, range_support_ == RangeRequestSupportType::kSupport);
 
   // Destroy the request if the sink is gone.
   if (!success) {
@@ -182,10 +179,6 @@ void ParallelDownloadJob::BuildParallelRequests() {
     int64_t remaining_bytes =
         download_item_->GetTotalBytes() - download_item_->GetReceivedBytes();
 
-    int64_t remaining_time = remaining_bytes / current_bytes_per_second;
-    UMA_HISTOGRAM_CUSTOM_COUNTS(
-        "Download.ParallelDownload.RemainingTimeWhenBuildingRequests",
-        remaining_time, 0, base::TimeDelta::FromDays(1).InSeconds(), 50);
     if (remaining_bytes / current_bytes_per_second >
         GetMinRemainingTimeInSeconds()) {
       // Fork more requests to accelerate, only if one slice is left to download
@@ -239,15 +232,14 @@ void ParallelDownloadJob::ForkSubRequests(
     // All parallel requests are half open, which sends request headers like
     // "Range:50-".
     // If server rejects a certain request, others should take over.
-    CreateRequest(it->offset, DownloadSaveInfo::kLengthFullContent);
+    CreateRequest(it->offset);
   }
 }
 
-void ParallelDownloadJob::CreateRequest(int64_t offset, int64_t length) {
+void ParallelDownloadJob::CreateRequest(int64_t offset) {
   DCHECK(download_item_);
-  DCHECK_EQ(DownloadSaveInfo::kLengthFullContent, length);
 
-  auto worker = std::make_unique<DownloadWorker>(this, offset, length);
+  auto worker = std::make_unique<DownloadWorker>(this, offset);
 
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("parallel_download_job", R"(
@@ -280,10 +272,6 @@ void ParallelDownloadJob::CreateRequest(int64_t offset, int64_t length) {
   download_params->set_etag(download_item_->GetETag());
   download_params->set_offset(offset);
 
-  // Setting the length will result in range request to fetch a slice of the
-  // file.
-  download_params->set_length(length);
-
   // Subsequent range requests don't need the "If-Range" header.
   download_params->set_use_if_range(false);
 
@@ -293,12 +281,14 @@ void ParallelDownloadJob::CreateRequest(int64_t offset, int64_t length) {
   download_params->set_referrer_policy(net::URLRequest::NEVER_CLEAR_REFERRER);
 
   // TODO(xingliu): We should not support redirect at all for parallel requests.
-  // Currently the network service code path still can redirect.
-  download_params->set_follow_cross_origin_redirects(false);
+  // Currently the network service code path still can redirect as long as it's
+  // the same origin.
+  download_params->set_cross_origin_redirects(
+      network::mojom::RedirectMode::kError);
 
   // Send the request.
-  worker->SendRequest(std::move(download_params), url_loader_factory_getter_,
-                      url_request_context_getter_);
+  worker->SendRequest(std::move(download_params),
+                      url_loader_factory_provider_.get(), connector_);
   DCHECK(workers_.find(offset) == workers_.end());
   workers_[offset] = std::move(worker);
 }

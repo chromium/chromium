@@ -17,7 +17,7 @@
 #include "media/mojo/common/media_type_converters.h"
 #include "media/mojo/common/mojo_decoder_buffer_converter.h"
 #include "media/mojo/common/mojo_shared_buffer_video_frame.h"
-#include "media/mojo/interfaces/decryptor.mojom.h"
+#include "media/mojo/mojom/decryptor.mojom.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "services/service_manager/public/cpp/connect.h"
 
@@ -42,9 +42,10 @@ base::OnceCallback<T> ToOnceCallback(const base::RepeatingCallback<T>& cb) {
 
 // TODO(xhwang): Consider adding an Initialize() to reduce the amount of work
 // done in the constructor.
-MojoDecryptor::MojoDecryptor(mojom::DecryptorPtr remote_decryptor,
-                             uint32_t writer_capacity)
-    : remote_decryptor_(std::move(remote_decryptor)), weak_factory_(this) {
+MojoDecryptor::MojoDecryptor(
+    mojo::PendingRemote<mojom::Decryptor> remote_decryptor,
+    uint32_t writer_capacity)
+    : remote_decryptor_(std::move(remote_decryptor)) {
   DVLOG(1) << __func__;
 
   uint32_t audio_writer_capacity =
@@ -75,7 +76,7 @@ MojoDecryptor::MojoDecryptor(mojom::DecryptorPtr remote_decryptor,
       GetDefaultDecoderBufferConverterCapacity(DemuxerStream::VIDEO),
       &decrypted_producer_handle);
 
-  remote_decryptor_.set_connection_error_with_reason_handler(
+  remote_decryptor_.set_disconnect_with_reason_handler(
       base::Bind(&MojoDecryptor::OnConnectionError, base::Unretained(this)));
 
   // Pass the other end of each pipe to |remote_decryptor_|.
@@ -287,7 +288,7 @@ void MojoDecryptor::OnConnectionError(uint32_t custom_reason,
   DCHECK(thread_checker_.CalledOnValidThread());
 
   // All pending callbacks will be fired automatically because they are wrapped
-  // in ScopedCallbackRunner.
+  // in WrapCallbackWithDefaultInvokeIfNotRun.
 }
 
 }  // namespace media

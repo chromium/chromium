@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-PASS InstalledApp related properties is not on interfaces before adding trial token via script.
-PASS InstalledApp related properties is on interfaces after adding trial token via script.
-Harness: the test ran to completion.
-

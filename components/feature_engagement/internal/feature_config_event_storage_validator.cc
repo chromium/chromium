@@ -8,7 +8,7 @@
 #include <unordered_set>
 
 #include "base/feature_list.h"
-#include "components/feature_engagement/internal/configuration.h"
+#include "components/feature_engagement/public/configuration.h"
 #include "components/feature_engagement/public/feature_list.h"
 
 namespace feature_engagement {

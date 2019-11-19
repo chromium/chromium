@@ -34,7 +34,7 @@
 
     </LinearLayout>
 
-    <org.chromium.chrome.browser.appmenu.AppMenuItemIcon
+    <org.chromium.ui.widget.ChromeImageView
         android:id="@+id/menu_item_icon"
         android:layout_weight="0"
         android:layout_width="wrap_content"

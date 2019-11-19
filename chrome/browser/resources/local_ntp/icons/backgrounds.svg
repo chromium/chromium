@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 54.1 (76490) - https://sketchapp.com -->
+    <title>ic-ntp-background</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <path d="M4,4 L11,4 L11,2 L4,2 C2.9,2 2,2.9 2,4 L2,11 L4,11 L4,4 Z M10,13 L6,18 L18,18 L15,14 L12.97,16.71 L10,13 Z M17,8.5 C17,7.67 16.33,7 15.5,7 C14.67,7 14,7.67 14,8.5 C14,9.33 14.67,10 15.5,10 C16.33,10 17,9.33 17,8.5 Z M20,2 L13,2 L13,4 L20,4 L20,11 L22,11 L22,4 C22,2.9 21.1,2 20,2 Z M20,20 L13,20 L13,22 L20,22 C21.1,22 22,21.1 22,20 L22,13 L20,13 L20,20 Z M4,13 L2,13 L2,20 C2,21.1 2.9,22 4,22 L11,22 L11,20 L4,20 L4,13 Z" id="path-1"></path>
+    </defs>
+    <g id="ic-ntp-background" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <mask id="mask-2" fill="white">
+            <use xlink:href="#path-1"></use>
+        </mask>
+        <use id="Shape" fill="#000000" fill-rule="nonzero" xlink:href="#path-1"></use>
+    </g>
+</svg>

@@ -16,6 +16,7 @@
 #include "base/bind.h"
 #include "base/sequenced_task_runner.h"
 #include "base/task/post_task.h"
+#include "chrome/android/chrome_jni_headers/OfflinePageEvaluationBridge_jni.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/offline_pages/android/background_scheduler_bridge.h"
 #include "chrome/browser/offline_pages/android/evaluation/evaluation_test_scheduler.h"
@@ -35,9 +36,7 @@
 #include "components/offline_pages/core/downloads/download_notifying_observer.h"
 #include "components/offline_pages/core/offline_page_item.h"
 #include "components/offline_pages/core/offline_page_model.h"
-#include "components/offline_pages/core/offline_pages_ukm_reporter.h"
 #include "content/public/browser/browser_context.h"
-#include "jni/OfflinePageEvaluationBridge_jni.h"
 
 using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF16ToJavaString;
@@ -141,7 +140,7 @@ std::unique_ptr<KeyedService> GetTestingRequestCoordinator(
     std::unique_ptr<OfflinerPolicy> policy,
     std::unique_ptr<Offliner> offliner) {
   scoped_refptr<base::SequencedTaskRunner> background_task_runner =
-      base::CreateSequencedTaskRunnerWithTraits({base::MayBlock()});
+      base::CreateSequencedTaskRunner({base::MayBlock()});
   Profile* profile = Profile::FromBrowserContext(context);
   base::FilePath queue_store_path =
       profile->GetPath().Append(kTestRequestQueueDirname);
@@ -153,13 +152,10 @@ std::unique_ptr<KeyedService> GetTestingRequestCoordinator(
       new android::EvaluationTestScheduler());
   network::NetworkQualityTracker* network_quality_tracker =
       g_browser_process->network_quality_tracker();
-  std::unique_ptr<OfflinePagesUkmReporter> ukm_reporter(
-      new OfflinePagesUkmReporter());
   std::unique_ptr<RequestCoordinator> request_coordinator =
       std::make_unique<RequestCoordinator>(
           std::move(policy), std::move(offliner), std::move(queue),
-          std::move(scheduler), network_quality_tracker,
-          std::move(ukm_reporter));
+          std::move(scheduler), network_quality_tracker);
   request_coordinator->SetInternalStartProcessingCallbackForTest(
       base::Bind(&android::EvaluationTestScheduler::ImmediateScheduleCallback,
                  base::Unretained(scheduler.get())));
@@ -253,7 +249,7 @@ void OfflinePageEvaluationBridge::OfflinePageAdded(
     const OfflinePageItem& added_page) {}
 
 void OfflinePageEvaluationBridge::OfflinePageDeleted(
-    const OfflinePageModel::DeletedPageInfo& page_info) {}
+    const OfflinePageItem& item) {}
 
 // Implement RequestCoordinator::Observer
 void OfflinePageEvaluationBridge::OnAdded(const SavePageRequest& request) {

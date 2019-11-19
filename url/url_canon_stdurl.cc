@@ -128,10 +128,6 @@ int DefaultPortForScheme(const char* scheme, int scheme_len) {
       else if (!strncmp(scheme, kWssScheme, scheme_len))
         default_port = 443;
       break;
-    case 6:
-      if (!strncmp(scheme, kGopherScheme, scheme_len))
-        default_port = 70;
-      break;
     case 2:
       if (!strncmp(scheme, kWsScheme, scheme_len))
         default_port = 80;

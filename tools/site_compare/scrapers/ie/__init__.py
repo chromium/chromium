@@ -5,6 +5,8 @@
 
 """Selects the appropriate scraper for Internet Explorer."""
 
+from __future__ import print_function
+
 
 def GetScraper(version):
   """Returns the scraper module for the given version.
@@ -25,4 +27,4 @@ def GetScraper(version):
 
 # if invoked rather than imported, test
 if __name__ == "__main__":
-  print GetScraper("7.0.5370.1").version
+  print(GetScraper("7.0.5370.1").version)

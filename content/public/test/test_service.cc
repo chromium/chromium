@@ -31,9 +31,9 @@ void TestService::OnBindInterface(
   registry_.BindInterface(interface_name, std::move(interface_pipe));
 }
 
-void TestService::Create(mojom::TestServiceRequest request) {
-  DCHECK(!binding_.is_bound());
-  binding_.Bind(std::move(request));
+void TestService::Create(mojo::PendingReceiver<mojom::TestService> receiver) {
+  DCHECK(!receiver_.is_bound());
+  receiver_.Bind(std::move(receiver));
 }
 
 void TestService::DoSomething(DoSomethingCallback callback) {

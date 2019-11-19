@@ -133,7 +133,8 @@ chrome.test.runTests([
         try {
           chrome.tabs.query({url: 'http://www.chromium.org/'}, function(tabs) {
             chrome.test.assertEq(1, tabs.length);
-            chrome.test.assertEq('http://www.chromium.org/', tabs[0].url);
+            chrome.test.assertEq('http://www.chromium.org/',
+                                 tabs[0].url || tabs[0].pendingUrl);
             done();
           });
         } finally {

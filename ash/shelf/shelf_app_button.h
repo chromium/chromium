@@ -45,11 +45,9 @@ class ASH_EXPORT ShelfAppButton : public ShelfButton {
     STATE_ACTIVE = 1 << 6,
   };
 
-  ShelfAppButton(ShelfView* shelf_view, const base::string16& title);
+  ShelfAppButton(ShelfView* shelf_view,
+                 ShelfButtonDelegate* shelf_button_delegate);
   ~ShelfAppButton() override;
-
-  // Sets the textual title for this entry, to be shown in a tooltip.
-  void SetTitle(const base::string16 title);
 
   // Sets the image to display for this entry.
   void SetImage(const gfx::ImageSkia& image);
@@ -73,24 +71,30 @@ class ASH_EXPORT ShelfAppButton : public ShelfButton {
   // Callback used when a menu for this ShelfAppButton is closed.
   void OnMenuClosed();
 
-  // Overrides to views::Button:
+  // views::Button overrides:
   void ShowContextMenu(const gfx::Point& p,
                        ui::MenuSourceType source_type) override;
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+  bool ShouldEnterPushedState(const ui::Event& event) override;
 
-  // View override - needed by unit test.
+  // views::View overrides:
+  const char* GetClassName() const override;
+  bool OnMousePressed(const ui::MouseEvent& event) override;
+  void OnMouseReleased(const ui::MouseEvent& event) override;
   void OnMouseCaptureLost() override;
+  bool OnMouseDragged(const ui::MouseEvent& event) override;
+  void Layout() override;
+  void ChildPreferredSizeChanged(views::View* child) override;
 
   // Update button state from ShelfItem.
   void ReflectItemStatus(const ShelfItem& item);
 
- protected:
-  // View overrides:
-  const char* GetClassName() const override;
-  bool OnMousePressed(const ui::MouseEvent& event) override;
-  void OnMouseReleased(const ui::MouseEvent& event) override;
-  void Layout() override;
-  void ChildPreferredSizeChanged(views::View* child) override;
+  // Returns whether the icon size is up to date.
+  bool IsIconSizeCurrent();
 
+  void FireRippleActivationTimerForTest();
+
+ protected:
   // ui::EventHandler overrides:
   void OnGestureEvent(ui::GestureEvent* event) override;
 
@@ -104,6 +108,9 @@ class ASH_EXPORT ShelfAppButton : public ShelfButton {
  private:
   class AppNotificationIndicatorView;
   class AppStatusIndicatorView;
+
+  // views::View:
+  bool HandleAccessibleAction(const ui::AXActionData& action_data) override;
 
   // Updates the parts of the button to reflect the current |state_| and
   // alignment. This may add or remove views, layout and paint.
@@ -121,6 +128,9 @@ class ASH_EXPORT ShelfAppButton : public ShelfButton {
 
   // The icon part of a button can be animated independently of the rest.
   views::ImageView* icon_view_;
+
+  // The ShelfView showing this ShelfAppButton. Owned by RootWindowController.
+  ShelfView* shelf_view_;
 
   // Draws an indicator underneath the image to represent the state of the
   // application.

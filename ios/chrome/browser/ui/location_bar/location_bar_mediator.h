@@ -10,6 +10,7 @@
 @protocol LocationBarConsumer;
 class TemplateURLService;
 class WebStateList;
+class OverlayPresenter;
 class LocationBarModel;
 
 // A mediator object that updates the mediator when the web state changes.
@@ -22,6 +23,11 @@ class LocationBarModel;
 // The WebStateList that this mediator listens for any changes on the active web
 // state.
 @property(nonatomic, assign) WebStateList* webStateList;
+
+// The overlay presenter for OverlayModality::kWebContentArea.  This mediator
+// listens for overlay presentation events to determine whether the share button
+// should be enabled.
+@property(nonatomic, assign) OverlayPresenter* webContentAreaOverlayPresenter;
 
 // The location bar model used by this mediator to extract the current URL and
 // the security state.

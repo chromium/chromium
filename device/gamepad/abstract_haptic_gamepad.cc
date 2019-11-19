@@ -12,8 +12,7 @@ namespace {
 constexpr double kMaxDurationMillis = 5000.0;  // 5 seconds
 }  // namespace
 
-AbstractHapticGamepad::AbstractHapticGamepad()
-    : is_shut_down_(false), sequence_id_(0), weak_factory_(this) {}
+AbstractHapticGamepad::AbstractHapticGamepad() = default;
 
 AbstractHapticGamepad::~AbstractHapticGamepad() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -24,6 +23,11 @@ AbstractHapticGamepad::~AbstractHapticGamepad() {
 
 void AbstractHapticGamepad::Shutdown() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(!is_shutting_down_);
+  is_shutting_down_ = true;
+
+  // If an effect is still playing, try to stop vibration. This may fail if the
+  // gamepad is already disconnected.
   if (playing_effect_callback_) {
     sequence_id_++;
     SetZeroVibration();
@@ -32,6 +36,8 @@ void AbstractHapticGamepad::Shutdown() {
         mojom::GamepadHapticsResult::GamepadHapticsResultPreempted);
   }
   DoShutdown();
+
+  // No vibration effects may be played once shutdown is complete.
   is_shut_down_ = true;
 }
 
@@ -114,9 +120,8 @@ void AbstractHapticGamepad::PlayDualRumbleEffect(int sequence_id,
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
-      base::BindOnce(&AbstractHapticGamepad::StartVibration,
-                     weak_factory_.GetWeakPtr(), sequence_id, duration,
-                     strong_magnitude, weak_magnitude),
+      base::BindOnce(&AbstractHapticGamepad::StartVibration, GetWeakPtr(),
+                     sequence_id, duration, strong_magnitude, weak_magnitude),
       base::TimeDelta::FromMillisecondsD(start_delay));
 }
 
@@ -136,15 +141,15 @@ void AbstractHapticGamepad::StartVibration(int sequence_id,
     double remaining_duration = duration - max_duration;
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE,
-        base::BindOnce(&AbstractHapticGamepad::StartVibration,
-                       weak_factory_.GetWeakPtr(), sequence_id,
-                       remaining_duration, strong_magnitude, weak_magnitude),
+        base::BindOnce(&AbstractHapticGamepad::StartVibration, GetWeakPtr(),
+                       sequence_id, remaining_duration, strong_magnitude,
+                       weak_magnitude),
         base::TimeDelta::FromMillisecondsD(max_duration));
   } else {
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE,
-        base::BindOnce(&AbstractHapticGamepad::FinishEffect,
-                       weak_factory_.GetWeakPtr(), sequence_id),
+        base::BindOnce(&AbstractHapticGamepad::FinishEffect, GetWeakPtr(),
+                       sequence_id),
         base::TimeDelta::FromMillisecondsD(duration));
   }
 }

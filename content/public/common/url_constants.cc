@@ -9,7 +9,7 @@ namespace content {
 
 // Before adding new chrome schemes please check with security@chromium.org.
 // There are security implications associated with introducing new schemes.
-const char kChromeDevToolsScheme[] = "chrome-devtools";
+const char kChromeDevToolsScheme[] = "devtools";
 const char kChromeErrorScheme[] = "chrome-error";
 const char kChromeUIScheme[] = "chrome";
 const char kGuestScheme[] = "chrome-guest";
@@ -17,8 +17,7 @@ const char kViewSourceScheme[] = "view-source";
 #if defined(OS_CHROMEOS)
 const char kExternalFileScheme[] = "externalfile";
 #endif
-
-const char kAboutSrcDocURL[] = "about:srcdoc";
+const char kGoogleChromeScheme[] = "googlechrome";
 
 const char kChromeUIAppCacheInternalsHost[] = "appcache-internals";
 const char kChromeUIIndexedDBInternalsHost[] = "indexeddb-internals";

@@ -45,15 +45,14 @@ void GetClientCertTypeAndDescriptor(onc::ONCSource onc_source,
   if (identity)
     cert_config->policy_identity = *identity;
 
-  using namespace ::onc::client_cert;
   const std::string* client_cert_type =
-      dict_with_client_cert.FindStringKey(kClientCertType);
+      dict_with_client_cert.FindStringKey(::onc::client_cert::kClientCertType);
   if (client_cert_type)
     cert_config->client_cert_type = *client_cert_type;
 
-  if (cert_config->client_cert_type == kPattern) {
+  if (cert_config->client_cert_type == ::onc::client_cert::kPattern) {
     const base::Value* pattern_value = dict_with_client_cert.FindKeyOfType(
-        kClientCertPattern, base::Value::Type::DICTIONARY);
+        ::onc::client_cert::kClientCertPattern, base::Value::Type::DICTIONARY);
     if (pattern_value) {
       base::Optional<OncCertificatePattern> pattern =
           OncCertificatePattern::ReadFromONCDictionary(*pattern_value);
@@ -63,9 +62,9 @@ void GetClientCertTypeAndDescriptor(onc::ONCSource onc_source,
       }
       cert_config->pattern = pattern.value();
     }
-  } else if (cert_config->client_cert_type == kRef) {
+  } else if (cert_config->client_cert_type == ::onc::client_cert::kRef) {
     const base::Value* client_cert_ref_key =
-        dict_with_client_cert.FindKeyOfType(kClientCertRef,
+        dict_with_client_cert.FindKeyOfType(::onc::client_cert::kClientCertRef,
                                             base::Value::Type::STRING);
     if (client_cert_ref_key)
       cert_config->guid = client_cert_ref_key->GetString();
@@ -242,18 +241,16 @@ ClientCertConfig::~ClientCertConfig() = default;
 void OncToClientCertConfig(::onc::ONCSource onc_source,
                            const base::DictionaryValue& network_config,
                            ClientCertConfig* cert_config) {
-  using namespace ::onc;
-
   *cert_config = ClientCertConfig();
 
   const base::DictionaryValue* dict_with_client_cert = NULL;
 
   const base::DictionaryValue* wifi = NULL;
-  network_config.GetDictionaryWithoutPathExpansion(network_config::kWiFi,
+  network_config.GetDictionaryWithoutPathExpansion(::onc::network_config::kWiFi,
                                                    &wifi);
   if (wifi) {
     const base::DictionaryValue* eap = NULL;
-    wifi->GetDictionaryWithoutPathExpansion(wifi::kEAP, &eap);
+    wifi->GetDictionaryWithoutPathExpansion(::onc::wifi::kEAP, &eap);
     if (!eap)
       return;
 
@@ -262,12 +259,13 @@ void OncToClientCertConfig(::onc::ONCSource onc_source,
   }
 
   const base::DictionaryValue* vpn = NULL;
-  network_config.GetDictionaryWithoutPathExpansion(network_config::kVPN, &vpn);
+  network_config.GetDictionaryWithoutPathExpansion(::onc::network_config::kVPN,
+                                                   &vpn);
   if (vpn) {
     const base::DictionaryValue* openvpn = NULL;
-    vpn->GetDictionaryWithoutPathExpansion(vpn::kOpenVPN, &openvpn);
+    vpn->GetDictionaryWithoutPathExpansion(::onc::vpn::kOpenVPN, &openvpn);
     const base::DictionaryValue* ipsec = NULL;
-    vpn->GetDictionaryWithoutPathExpansion(vpn::kIPsec, &ipsec);
+    vpn->GetDictionaryWithoutPathExpansion(::onc::vpn::kIPsec, &ipsec);
     if (openvpn) {
       dict_with_client_cert = openvpn;
       cert_config->location = CONFIG_TYPE_OPENVPN;
@@ -280,11 +278,11 @@ void OncToClientCertConfig(::onc::ONCSource onc_source,
   }
 
   const base::DictionaryValue* ethernet = NULL;
-  network_config.GetDictionaryWithoutPathExpansion(network_config::kEthernet,
-                                                   &ethernet);
+  network_config.GetDictionaryWithoutPathExpansion(
+      ::onc::network_config::kEthernet, &ethernet);
   if (ethernet) {
     const base::DictionaryValue* eap = NULL;
-    ethernet->GetDictionaryWithoutPathExpansion(wifi::kEAP, &eap);
+    ethernet->GetDictionaryWithoutPathExpansion(::onc::wifi::kEAP, &eap);
     if (!eap)
       return;
     dict_with_client_cert = eap;

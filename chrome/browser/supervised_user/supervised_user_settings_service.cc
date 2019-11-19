@@ -57,12 +57,10 @@ bool SettingShouldApplyToPrefs(const std::string& name) {
 
 }  // namespace
 
-SupervisedUserSettingsService::SupervisedUserSettingsService(Profile* profile)
-    : profile_(profile),
-      active_(false),
+SupervisedUserSettingsService::SupervisedUserSettingsService()
+    : active_(false),
       initialization_failed_(false),
-      local_settings_(new base::DictionaryValue) {
-}
+      local_settings_(new base::DictionaryValue) {}
 
 SupervisedUserSettingsService::~SupervisedUserSettingsService() {}
 
@@ -92,17 +90,21 @@ void SupervisedUserSettingsService::Init(
 
 std::unique_ptr<
     SupervisedUserSettingsService::SettingsCallbackList::Subscription>
-SupervisedUserSettingsService::Subscribe(const SettingsCallback& callback) {
+SupervisedUserSettingsService::SubscribeForSettingsChange(
+    const SettingsCallback& callback) {
   if (IsReady()) {
     std::unique_ptr<base::DictionaryValue> settings = GetSettings();
     callback.Run(settings.get());
   }
 
-  return callback_list_.Add(callback);
+  return settings_callback_list_.Add(callback);
 }
 
-Profile* SupervisedUserSettingsService::GetProfile() {
-  return profile_;
+std::unique_ptr<
+    SupervisedUserSettingsService::ShutdownCallbackList::Subscription>
+SupervisedUserSettingsService::SubscribeForShutdown(
+    const ShutdownCallback& callback) {
+  return shutdown_callback_list_.Add(callback);
 }
 
 void SupervisedUserSettingsService::SetActive(bool active) {
@@ -135,13 +137,6 @@ void SupervisedUserSettingsService::UploadItem(
     std::unique_ptr<base::Value> value) {
   DCHECK(!SettingShouldApplyToPrefs(key));
   PushItemToSync(key, std::move(value));
-}
-
-void SupervisedUserSettingsService::UpdateSetting(
-    const std::string& key,
-    std::unique_ptr<base::Value> value) {
-  PushItemToSync(key, std::move(value));
-  InformSubscribers();
 }
 
 void SupervisedUserSettingsService::PushItemToSync(
@@ -196,6 +191,18 @@ SyncData SupervisedUserSettingsService::CreateSyncDataForSetting(
 
 void SupervisedUserSettingsService::Shutdown() {
   store_->RemoveObserver(this);
+  shutdown_callback_list_.Notify();
+}
+
+void SupervisedUserSettingsService::WaitUntilReadyToSync(
+    base::OnceClosure done) {
+  DCHECK(!wait_until_ready_to_sync_cb_);
+  if (IsReady()) {
+    std::move(done).Run();
+  } else {
+    // Wait until OnInitializationCompleted().
+    wait_until_ready_to_sync_cb_ = std::move(done);
+  }
 }
 
 SyncMergeResult SupervisedUserSettingsService::MergeDataAndStartSyncing(
@@ -412,7 +419,34 @@ void SupervisedUserSettingsService::OnInitializationCompleted(bool success) {
   }
 
   DCHECK(IsReady());
+
+  if (wait_until_ready_to_sync_cb_)
+    std::move(wait_until_ready_to_sync_cb_).Run();
+
   InformSubscribers();
+}
+
+const base::DictionaryValue*
+SupervisedUserSettingsService::LocalSettingsForTest() const {
+  return local_settings_.get();
+}
+
+base::DictionaryValue* SupervisedUserSettingsService::GetDictionaryAndSplitKey(
+    std::string* key) const {
+  size_t pos = key->find_first_of(kSplitSettingKeySeparator);
+  if (pos == std::string::npos)
+    return GetAtomicSettings();
+
+  base::DictionaryValue* split_settings = GetSplitSettings();
+  std::string prefix = key->substr(0, pos);
+  base::DictionaryValue* dict = nullptr;
+  if (!split_settings->GetDictionary(prefix, &dict)) {
+    DCHECK(!split_settings->HasKey(prefix));
+    dict = split_settings->SetDictionary(
+        prefix, std::make_unique<base::DictionaryValue>());
+  }
+  key->erase(0, pos + 1);
+  return dict;
 }
 
 base::DictionaryValue* SupervisedUserSettingsService::GetOrCreateDictionary(
@@ -441,24 +475,6 @@ base::DictionaryValue* SupervisedUserSettingsService::GetSplitSettings() const {
 
 base::DictionaryValue* SupervisedUserSettingsService::GetQueuedItems() const {
   return GetOrCreateDictionary(kQueuedItems);
-}
-
-base::DictionaryValue* SupervisedUserSettingsService::GetDictionaryAndSplitKey(
-    std::string* key) const {
-  size_t pos = key->find_first_of(kSplitSettingKeySeparator);
-  if (pos == std::string::npos)
-    return GetAtomicSettings();
-
-  base::DictionaryValue* split_settings = GetSplitSettings();
-  std::string prefix = key->substr(0, pos);
-  base::DictionaryValue* dict = nullptr;
-  if (!split_settings->GetDictionary(prefix, &dict)) {
-    DCHECK(!split_settings->HasKey(prefix));
-    dict = split_settings->SetDictionary(
-        prefix, std::make_unique<base::DictionaryValue>());
-  }
-  key->erase(0, pos + 1);
-  return dict;
 }
 
 std::unique_ptr<base::DictionaryValue>
@@ -495,5 +511,5 @@ void SupervisedUserSettingsService::InformSubscribers() {
     return;
 
   std::unique_ptr<base::DictionaryValue> settings = GetSettings();
-  callback_list_.Notify(settings.get());
+  settings_callback_list_.Notify(settings.get());
 }

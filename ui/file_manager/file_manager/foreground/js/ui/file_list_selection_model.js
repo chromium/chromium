@@ -29,6 +29,17 @@ class FileListSelectionModel extends cr.ui.ListSelectionModel {
     this.isCheckSelectMode_ = enabled;
   }
 
+  selectAll() {
+    super.selectAll();
+    // Force change event when selecting all but with only 1 item, to update the
+    // UI with select mode.
+    if (this.isCheckSelectMode_ && this.selectedIndexes.length == 1) {
+      const e = new Event('change');
+      e.changes = [];
+      this.dispatchEvent(e);
+    }
+  }
+
   /**
    * Gets the check-select mode.
    * @return {boolean} True if check-select mode is enabled.
@@ -50,8 +61,7 @@ class FileListSelectionModel extends cr.ui.ListSelectionModel {
     // Call the superclass function.
     super.adjustToReordering(permutation);
     // Leave check-select mode if all items have been deleted.
-    if (oldSelectedItemsCount && !newSelectedItemsCount && this.length_ &&
-        oldLeadIndex != -1) {
+    if (oldSelectedItemsCount && !newSelectedItemsCount && this.length_) {
       this.isCheckSelectMode_ = false;
     }
   }
@@ -63,7 +73,7 @@ class FileListSelectionModel extends cr.ui.ListSelectionModel {
    * @private
    */
   onChangeEvent_(event) {
-    // When the number of selected item is not one, update che check-select
+    // When the number of selected item is not one, update the check-select
     // mode. When the number of selected item is one, the mode depends on the
     // last keyboard/mouse operation. In this case, the mode is controlled from
     // outside. See filelist.handlePointerDownUp and filelist.handleKeyDown.

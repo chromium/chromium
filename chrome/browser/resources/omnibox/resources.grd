@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grit latest_public_release="0"
+      current_release="1"
+      output_all_resource_defines="false">
+  <outputs>
+    <output filename="grit/omnibox_resources.h" type="rc_header">
+      <emit emit_type='prepend'></emit>
+    </output>
+    <output filename="omnibox_resources.pak" type="data_package" />
+  </outputs>
+  <release seq="1">
+    <includes>
+      <include name="IDR_OMNIBOX_HTML"
+               file="omnibox.html"
+               flattenhtml="true"
+               allowexternalscript="true"
+               type="BINDATA"
+               compress="gzip" />
+      <include name="IDR_OMNIBOX_CSS"
+               file="omnibox.css"
+               type="BINDATA"
+               compress="gzip" />
+      <include name="IDR_OMNIBOX_INPUT_CSS"
+               file="omnibox_input.css"
+               type="BINDATA"
+               compress="gzip" />
+      <include name="IDR_OUTPUT_RESULTS_GROUP_CSS"
+               file="output_results_group.css"
+               type="BINDATA"
+               compress="gzip" />
+      <include name="IDR_OMNIBOX_OUTPUT_COLUMN_WIDTHS_CSS"
+               file="omnibox_output_column_widths.css"
+               type="BINDATA"
+               compress="gzip" />
+      <include name="IDR_OMNIBOX_ELEMENT_JS"
+               file="omnibox_element.js"
+               type="BINDATA"
+               compress="gzip" />
+      <include name="IDR_OMNIBOX_INPUT_JS"
+               file="omnibox_input.js"
+               type="BINDATA"
+               compress="gzip" />
+      <include name="IDR_OMNIBOX_OUTPUT_JS"
+               file="omnibox_output.js"
+               type="BINDATA"
+               compress="gzip" />
+      <include name="IDR_OMNIBOX_JS"
+               file="omnibox.js"
+               type="BINDATA"
+               compress="gzip" />
+      <include name="IDR_OMNIBOX_MOJO_JS"
+               file="${root_gen_dir}\chrome\browser\ui\webui\omnibox\omnibox.mojom-lite.js"
+               use_base_dir="false"
+               type="BINDATA"
+               compress="gzip" />
+    </includes>
+  </release>
+</grit>

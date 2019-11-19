@@ -11,74 +11,28 @@
 #include "base/bind.h"
 #include "base/guid.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_api_unittest.h"
 #include "chrome/browser/extensions/test_extension_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
-#include "components/sync/device_info/device_info.h"
-#include "components/sync/device_info/device_info_sync_service.h"
-#include "components/sync/device_info/device_info_tracker.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "components/sync_device_info/device_info.h"
+#include "components/sync_device_info/fake_device_info_sync_service.h"
+#include "content/public/test/browser_task_environment.h"
 #include "extensions/common/extension.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using syncer::DeviceInfo;
-using syncer::DeviceInfoTracker;
-using testing::Return;
+using syncer::FakeDeviceInfoSyncService;
+using syncer::FakeDeviceInfoTracker;
 
 namespace extensions {
 
-class MockDeviceInfoTracker : public DeviceInfoTracker {
- public:
-  ~MockDeviceInfoTracker() override {}
-
-  bool IsSyncing() const override { return !devices_.empty(); }
-
-  std::unique_ptr<DeviceInfo> GetDeviceInfo(
-      const std::string& client_id) const override {
-    NOTREACHED();
-    return std::unique_ptr<DeviceInfo>();
-  }
-
-  static std::unique_ptr<DeviceInfo> CloneDeviceInfo(
-      const DeviceInfo& device_info) {
-    return std::make_unique<DeviceInfo>(
-        device_info.guid(), device_info.client_name(),
-        device_info.chrome_version(), device_info.sync_user_agent(),
-        device_info.device_type(), device_info.signin_scoped_device_id());
-  }
-
-  std::vector<std::unique_ptr<DeviceInfo>> GetAllDeviceInfo() const override {
-    std::vector<std::unique_ptr<DeviceInfo>> list;
-
-    for (const DeviceInfo* device : devices_)
-      list.push_back(CloneDeviceInfo(*device));
-
-    return list;
-  }
-
-  void AddObserver(Observer* observer) override { NOTREACHED(); }
-
-  void RemoveObserver(Observer* observer) override { NOTREACHED(); }
-
-  int CountActiveDevices() const override {
-    NOTREACHED();
-    return 0;
-  }
-
-  void Add(const DeviceInfo* device) { devices_.push_back(device); }
-
- private:
-  // DeviceInfo stored here are not owned.
-  std::vector<const DeviceInfo*> devices_;
-};
-
 TEST(SignedInDevicesAPITest, GetSignedInDevices) {
-  content::TestBrowserThreadBundle thread_bundle;
+  content::BrowserTaskEnvironment task_environment;
   TestingProfile profile;
-  MockDeviceInfoTracker device_tracker;
+  FakeDeviceInfoTracker device_tracker;
   TestExtensionPrefs extension_prefs(base::ThreadTaskRunnerHandle::Get().get());
 
   // Add a couple of devices and make sure we get back public ids for them.
@@ -86,19 +40,19 @@ TEST(SignedInDevicesAPITest, GetSignedInDevices) {
   scoped_refptr<Extension> extension_test =
       extension_prefs.AddExtension(extension_name);
 
-  DeviceInfo device_info1(base::GenerateGUID(),
-                          "abc Device",
-                          "XYZ v1",
+  DeviceInfo device_info1(base::GenerateGUID(), "abc Device", "XYZ v1",
                           "XYZ SyncAgent v1",
-                          sync_pb::SyncEnums_DeviceType_TYPE_LINUX,
-                          "device_id");
+                          sync_pb::SyncEnums_DeviceType_TYPE_LINUX, "device_id",
+                          base::SysInfo::HardwareInfo(), base::Time(),
+                          /*send_tab_to_self_receiving_enabled=*/true,
+                          /*sharing_info=*/base::nullopt);
 
-  DeviceInfo device_info2(base::GenerateGUID(),
-                          "def Device",
-                          "XYZ v2",
+  DeviceInfo device_info2(base::GenerateGUID(), "def Device", "XYZ v2",
                           "XYZ SyncAgent v2",
-                          sync_pb::SyncEnums_DeviceType_TYPE_LINUX,
-                          "device_id");
+                          sync_pb::SyncEnums_DeviceType_TYPE_LINUX, "device_id",
+                          base::SysInfo::HardwareInfo(), base::Time(),
+                          /*send_tab_to_self_receiving_enabled=*/true,
+                          /*sharing_info=*/base::nullopt);
 
   device_tracker.Add(&device_info1);
   device_tracker.Add(&device_info2);
@@ -115,12 +69,12 @@ TEST(SignedInDevicesAPITest, GetSignedInDevices) {
 
   // Add a third device and make sure the first 2 ids are retained and a new
   // id is generated for the third device.
-  DeviceInfo device_info3(base::GenerateGUID(),
-                          "def Device",
-                          "jkl v2",
+  DeviceInfo device_info3(base::GenerateGUID(), "def Device", "jkl v2",
                           "XYZ SyncAgent v2",
-                          sync_pb::SyncEnums_DeviceType_TYPE_LINUX,
-                          "device_id");
+                          sync_pb::SyncEnums_DeviceType_TYPE_LINUX, "device_id",
+                          base::SysInfo::HardwareInfo(), base::Time(),
+                          /*send_tab_to_self_receiving_enabled=*/true,
+                          /*sharing_info=*/base::nullopt);
 
   device_tracker.Add(&device_info3);
 
@@ -136,42 +90,16 @@ TEST(SignedInDevicesAPITest, GetSignedInDevices) {
   EXPECT_NE(public_id3, public_id2);
 }
 
-class MockDeviceInfoSyncService : public syncer::DeviceInfoSyncService {
- public:
-  MockDeviceInfoSyncService() = default;
-  ~MockDeviceInfoSyncService() override = default;
-
-  MockDeviceInfoTracker* mock_tracker() { return &tracker_; }
-
-  // DeviceInfoSyncService implementation.
-  syncer::LocalDeviceInfoProvider* GetLocalDeviceInfoProvider() override {
-    return nullptr;
-  }
-  syncer::DeviceInfoTracker* GetDeviceInfoTracker() override {
-    return &tracker_;
-  }
-  base::WeakPtr<syncer::ModelTypeControllerDelegate> GetControllerDelegate()
-      override {
-    return nullptr;
-  }
-  void InitLocalCacheGuid(const std::string& cache_guid,
-                          const std::string& session_name) override {}
-  void ClearLocalCacheGuid() override {}
-
- private:
-  MockDeviceInfoTracker tracker_;
-};
-
-std::unique_ptr<KeyedService> CreateMockDeviceInfoSyncService(
+std::unique_ptr<KeyedService> CreateFakeDeviceInfoSyncService(
     content::BrowserContext* context) {
-  return std::make_unique<MockDeviceInfoSyncService>();
+  return std::make_unique<FakeDeviceInfoSyncService>();
 }
 
 class ExtensionSignedInDevicesTest : public ExtensionApiUnittest {
  private:
   TestingProfile::TestingFactories GetTestingFactories() override {
     return {{DeviceInfoSyncServiceFactory::GetInstance(),
-             base::BindRepeating(&CreateMockDeviceInfoSyncService)}};
+             base::BindRepeating(&CreateFakeDeviceInfoSyncService)}};
   }
 };
 
@@ -204,24 +132,23 @@ base::DictionaryValue* GetDictionaryFromList(int index,
 }
 
 TEST_F(ExtensionSignedInDevicesTest, GetAll) {
-  MockDeviceInfoTracker* device_tracker =
-      static_cast<MockDeviceInfoSyncService*>(
-          DeviceInfoSyncServiceFactory::GetForProfile(profile()))
-          ->mock_tracker();
+  FakeDeviceInfoTracker* device_tracker = static_cast<FakeDeviceInfoTracker*>(
+      DeviceInfoSyncServiceFactory::GetForProfile(profile())
+          ->GetDeviceInfoTracker());
 
-  DeviceInfo device_info1(base::GenerateGUID(),
-                          "abc Device",
-                          "XYZ v1",
+  DeviceInfo device_info1(base::GenerateGUID(), "abc Device", "XYZ v1",
                           "XYZ SyncAgent v1",
-                          sync_pb::SyncEnums_DeviceType_TYPE_LINUX,
-                          "device_id");
+                          sync_pb::SyncEnums_DeviceType_TYPE_LINUX, "device_id",
+                          base::SysInfo::HardwareInfo(), base::Time(),
+                          /*send_tab_to_self_receiving_enabled=*/true,
+                          /*sharing_info=*/base::nullopt);
 
-  DeviceInfo device_info2(base::GenerateGUID(),
-                          "def Device",
-                          "XYZ v2",
+  DeviceInfo device_info2(base::GenerateGUID(), "def Device", "XYZ v2",
                           "XYZ SyncAgent v2",
-                          sync_pb::SyncEnums_DeviceType_TYPE_LINUX,
-                          "device_id");
+                          sync_pb::SyncEnums_DeviceType_TYPE_LINUX, "device_id",
+                          base::SysInfo::HardwareInfo(), base::Time(),
+                          /*send_tab_to_self_receiving_enabled=*/true,
+                          /*sharing_info=*/base::nullopt);
 
   device_tracker->Add(&device_info1);
   device_tracker->Add(&device_info2);

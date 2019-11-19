@@ -67,7 +67,7 @@ class INVALIDATION_EXPORT GCMNetworkChannel
       invalidation::MessageCallback* incoming_receiver) override;
 
   // SyncNetworkChannel implementation.
-  void UpdateCredentials(const std::string& email,
+  void UpdateCredentials(const CoreAccountId& account_id,
                          const std::string& token) override;
   int GetInvalidationClientType() override;
   void RequestDetailedStatus(
@@ -133,7 +133,7 @@ class INVALIDATION_EXPORT GCMNetworkChannel
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::WeakPtrFactory<GCMNetworkChannel> weak_factory_;
+  base::WeakPtrFactory<GCMNetworkChannel> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(GCMNetworkChannel);
 };

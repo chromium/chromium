@@ -43,7 +43,7 @@ TEST(MediaConditionParserTest, Basic) {
         MediaQueryParser::ParseMediaCondition(CSSParserTokenRange(tokens));
     ASSERT_EQ(media_condition_query_set->QueryVector().size(), (unsigned)1);
     String query_text = media_condition_query_set->QueryVector()[0]->CssText();
-    ASSERT_STREQ(test_cases[i].output, query_text.Ascii().data());
+    ASSERT_EQ(test_cases[i].output, query_text);
   }
 }
 

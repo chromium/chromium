@@ -111,12 +111,17 @@ bool PathProviderMac(int key, base::FilePath* result) {
       return base::mac::GetUserDirectory(NSDesktopDirectory, result);
 #endif
     case base::DIR_ASSETS:
+#if defined(OS_IOS)
+      // TODO(https://crbug.com/957792): Assets live alongside the executable.
+      return PathService::Get(base::DIR_MODULE, result);
+#else
       if (!base::mac::AmIBundled()) {
         return PathService::Get(base::DIR_MODULE, result);
       }
       *result = base::mac::FrameworkBundlePath().Append(
           FILE_PATH_LITERAL("Resources"));
       return true;
+#endif  // !defined(OS_IOS)
     case base::DIR_CACHE:
       return base::mac::GetUserDirectory(NSCachesDirectory, result);
     default:

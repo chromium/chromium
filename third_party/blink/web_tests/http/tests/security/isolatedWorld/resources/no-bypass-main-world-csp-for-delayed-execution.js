@@ -25,7 +25,7 @@ function test(message) {
         window.postMessage("done", "*");
     }
 
-    var permissiveCSP = "script-src: * 'unsafe-eval' 'unsafe-inline'";
+    var permissiveCSP = "script-src * 'unsafe-eval' 'unsafe-inline'";
     var securityOrigin = "chrome-extension://123";
 
     switch (tests) {

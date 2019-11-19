@@ -25,45 +25,18 @@ FakePictureLayer::~FakePictureLayer() = default;
 
 std::unique_ptr<LayerImpl> FakePictureLayer::CreateLayerImpl(
     LayerTreeImpl* tree_impl) {
-  std::unique_ptr<FakePictureLayerImpl> layer_impl;
-  switch (mask_type()) {
-    case Layer::LayerMaskType::NOT_MASK:
-      layer_impl = FakePictureLayerImpl::Create(tree_impl, id());
-      break;
-    case Layer::LayerMaskType::MULTI_TEXTURE_MASK:
-      layer_impl = FakePictureLayerImpl::CreateMask(tree_impl, id());
-      break;
-    case Layer::LayerMaskType::SINGLE_TEXTURE_MASK:
-      layer_impl =
-          FakePictureLayerImpl::CreateSingleTextureMask(tree_impl, id());
-      break;
-    default:
-      NOTREACHED();
-      break;
-  }
+  auto layer_impl = FakePictureLayerImpl::Create(tree_impl, id());
 
   if (!fixed_tile_size_.IsEmpty())
     layer_impl->set_fixed_tile_size(fixed_tile_size_);
 
-  return std::move(layer_impl);
+  return layer_impl;
 }
 
 bool FakePictureLayer::Update() {
   bool updated = PictureLayer::Update();
   update_count_++;
   return updated || always_update_resources_;
-}
-
-bool FakePictureLayer::HasSlowPaths() const {
-  if (force_content_has_slow_paths_)
-    return true;
-  return PictureLayer::HasSlowPaths();
-}
-
-bool FakePictureLayer::HasNonAAPaint() const {
-  if (force_content_has_non_aa_paint_)
-    return true;
-  return PictureLayer::HasNonAAPaint();
 }
 
 }  // namespace cc

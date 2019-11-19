@@ -41,8 +41,12 @@ void WorldSafeV8ReferenceInternal::MaybeCheckCreationContextWorld(
   if (!value->IsObject())
     return;
 
-  ScriptState* script_state =
-      ScriptState::From(value.As<v8::Object>()->CreationContext());
+  v8::Local<v8::Context> context = value.As<v8::Object>()->CreationContext();
+  // Creation context is null if the value is a remote object.
+  if (context.IsEmpty())
+    return;
+
+  ScriptState* script_state = ScriptState::From(context);
   CHECK_EQ(&world, &script_state->World());
 }
 

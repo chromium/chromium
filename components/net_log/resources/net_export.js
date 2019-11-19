@@ -34,10 +34,10 @@ var NetExportView = (function() {
   var kIdFilePathStoppedLogging = 'file-path-stopped';
   var kIdStartOverButton = 'startover';
   var kIdPrivacyReadMoreLink = 'privacy-read-more-link';
-  var kIdPrivacyReadMoreDiv = 'privacy-read-more'
+  var kIdPrivacyReadMoreDiv = 'privacy-read-more';
   var kIdTooBigReadMoreLink = 'toobig-read-more-link';
-  var kIdTooBigReadMoreDiv = 'toobig-read-more'
-  var kIdLogMaxFileSizeInput = 'log-max-filesize'
+  var kIdTooBigReadMoreDiv = 'toobig-read-more';
+  var kIdLogMaxFileSizeInput = 'log-max-filesize';
 
   /**
    * @constructor
@@ -223,11 +223,13 @@ var NetExportView = (function() {
       this.showStateDiv_(kIdStateDivStopped);
 
       // The email button is only available in the mobile UI.
-      if ($(kIdEmailLogButton))
+      if ($(kIdEmailLogButton)) {
         $(kIdEmailLogButton).onclick = this.onSendEmail_.bind(this);
+      }
       // The show file button is only available in the desktop UI.
-      if ($(kIdShowFileButton))
+      if ($(kIdShowFileButton)) {
         $(kIdShowFileButton).onclick = this.onShowFile_.bind(this);
+      }
       $(kIdStartOverButton).onclick = this.onStartOver_.bind(this);
 
       $(kIdFilePathStoppedLogging).textContent = info.file;
@@ -251,13 +253,15 @@ var NetExportView = (function() {
     getCaptureModeText_: function(info) {
       // TODO(eroman): Should not hardcode "Unknown" (will not work properly if
       //               the HTML is internationalized).
-      if (!info.logCaptureModeKnown)
-        return "Unknown";
+      if (!info.logCaptureModeKnown) {
+        return 'Unknown';
+      }
 
       var radioButton = document.querySelector(
           'input[name="log-mode"][value="' + info.captureMode + '"]');
-      if (!radioButton)
+      if (!radioButton) {
         return 'Unknown';
+      }
       return radioButton.parentElement.textContent;
     },
 

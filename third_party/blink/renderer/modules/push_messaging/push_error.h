@@ -5,10 +5,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PUSH_MESSAGING_PUSH_ERROR_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PUSH_MESSAGING_PUSH_ERROR_H_
 
-#include "third_party/blink/public/platform/modules/push_messaging/web_push_error.h"
+#include "third_party/blink/public/mojom/push_messaging/push_messaging.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
@@ -19,9 +20,14 @@ class PushError {
 
  public:
   // For CallbackPromiseAdapter.
-  using WebType = const WebPushError&;
+  using WebType = const mojom::PushErrorType;
   static DOMException* Take(ScriptPromiseResolver* resolver,
-                            const WebPushError& web_error);
+                            mojom::PushErrorType error) {
+    return CreateException(error);
+  }
+
+  static DOMException* CreateException(mojom::PushErrorType error,
+                                       const String& message = String());
 };
 
 }  // namespace blink

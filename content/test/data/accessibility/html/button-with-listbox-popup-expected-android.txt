@@ -1,0 +1,8 @@
+android.webkit.WebView focusable focused scrollable
+++android.view.View
+++++android.view.View name='Choose one:'
+++++android.widget.Spinner role_description='pop up button' clickable focusable name='Choose one: Foo'
+++++android.widget.ListView role_description='list box' clickable collection focusable name='Choose one:' item_count=3 row_count=3
+++++++android.view.View clickable collection_item focusable name='Baz'
+++++++android.view.View clickable collection_item focusable name='Bar' item_index=1 row_index=1
+++++++android.view.View clickable collection_item focusable name='Foo' item_index=2 row_index=2

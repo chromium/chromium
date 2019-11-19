@@ -15,6 +15,7 @@ namespace {
 
 using MountFailure = DriveFsSession::MountObserver::MountFailure;
 constexpr char kDataDirOption[] = "datadir=";
+constexpr char kMyFilesOption[] = "myfiles=";
 constexpr char kMountScheme[] = "drivefs://";
 constexpr base::TimeDelta kMountTimeout = base::TimeDelta::FromSeconds(20);
 
@@ -34,6 +35,7 @@ class DiskMounterImpl : public DiskMounter,
 
   void Mount(const base::UnguessableToken& token,
              const base::FilePath& data_path,
+             const base::FilePath& my_files_path,
              const std::string& desired_mount_dir_name,
              base::OnceCallback<void(base::FilePath)> callback) override {
     DCHECK(mount_path_.empty());
@@ -44,18 +46,18 @@ class DiskMounterImpl : public DiskMounter,
     source_path_ = base::StrCat({kMountScheme, token.ToString()});
     std::string datadir_option =
         base::StrCat({kDataDirOption, data_path.value()});
-    disk_mount_manager_->MountPath(source_path_, "", desired_mount_dir_name,
-                                   {datadir_option},
-                                   chromeos::MOUNT_TYPE_NETWORK_STORAGE,
-                                   chromeos::MOUNT_ACCESS_MODE_READ_WRITE);
+    disk_mount_manager_->MountPath(
+        source_path_, "", desired_mount_dir_name,
+        {datadir_option, base::StrCat({kMyFilesOption, my_files_path.value()})},
+        chromeos::MOUNT_TYPE_NETWORK_STORAGE,
+        chromeos::MOUNT_ACCESS_MODE_READ_WRITE);
   }
 
  private:
   void Unmount() {
     disk_mount_manager_->RemoveObserver(this);
     if (!mount_path_.empty()) {
-      disk_mount_manager_->UnmountPath(mount_path_.value(),
-                                       chromeos::UNMOUNT_OPTIONS_NONE, {});
+      disk_mount_manager_->UnmountPath(mount_path_.value(), {});
       mount_path_.clear();
     }
   }
@@ -100,6 +102,7 @@ DriveFsSession::DriveFsSession(base::OneShotTimer* timer,
                                std::unique_ptr<DiskMounter> disk_mounter,
                                std::unique_ptr<DriveFsConnection> connection,
                                const base::FilePath& data_path,
+                               const base::FilePath& my_files_path,
                                const std::string& desired_mount_dir_name,
                                MountObserver* observer)
     : timer_(timer),
@@ -111,7 +114,7 @@ DriveFsSession::DriveFsSession(base::OneShotTimer* timer,
                            base::Unretained(this)));
   CHECK(token);
   drivefs_ = &connection_->GetDriveFs();
-  disk_mounter_->Mount(token, data_path, desired_mount_dir_name,
+  disk_mounter_->Mount(token, data_path, my_files_path, desired_mount_dir_name,
                        base::BindOnce(&DriveFsSession::OnDiskMountCompleted,
                                       base::Unretained(this)));
   timer_->Start(

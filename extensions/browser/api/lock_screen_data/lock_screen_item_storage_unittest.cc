@@ -704,7 +704,7 @@ class LockScreenItemStorageTest : public ExtensionsTest {
       allowed_paths.push_back(
           test_dir_.GetPath().AppendASCII("deprecated_value_store"));
     }
-    EXPECT_TRUE(base::ContainsValue(allowed_paths, root))
+    EXPECT_TRUE(base::Contains(allowed_paths, root))
         << "Unexpected value store path " << root.value();
 
     return std::make_unique<LocalValueStoreCache>(
@@ -1328,13 +1328,13 @@ TEST_F(LockScreenItemStorageTest, OperationsBlockedOnMigration) {
   EXPECT_TRUE(new_item);
 
   EXPECT_EQ(2u, items.size());
-  EXPECT_TRUE(base::ContainsValue(items, migrated_item_id));
-  EXPECT_TRUE(base::ContainsValue(items, initial_item_id));
+  EXPECT_TRUE(base::Contains(items, migrated_item_id));
+  EXPECT_TRUE(base::Contains(items, initial_item_id));
 
   GetAllItems(&items);
   ASSERT_EQ(2u, items.size());
-  EXPECT_TRUE(base::ContainsValue(items, migrated_item_id));
-  EXPECT_TRUE(base::ContainsValue(items, new_item->id()));
+  EXPECT_TRUE(base::Contains(items, migrated_item_id));
+  EXPECT_TRUE(base::Contains(items, new_item->id()));
 }
 
 TEST_F(LockScreenItemStorageTest,

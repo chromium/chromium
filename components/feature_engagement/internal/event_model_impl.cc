@@ -26,8 +26,7 @@ EventModelImpl::EventModelImpl(
     std::unique_ptr<EventStorageValidator> storage_validator)
     : store_(std::move(store)),
       storage_validator_(std::move(storage_validator)),
-      ready_(false),
-      weak_factory_(this) {}
+      ready_(false) {}
 
 EventModelImpl::~EventModelImpl() = default;
 

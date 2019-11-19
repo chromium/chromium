@@ -72,4 +72,8 @@ void AshWindowTreeHostMirroringUnified::PrepareForShutdown() {
   AshWindowTreeHostPlatform::PrepareForShutdown();
 }
 
+void AshWindowTreeHostMirroringUnified::OnMouseEnter() {
+  // No logical display change in unified desktop mode,so do nothing.
+}
+
 }  // namespace ash

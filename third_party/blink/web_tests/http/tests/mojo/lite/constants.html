@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/gen/layout_test_data/mojo/public/js/mojo_bindings_lite.js"></script>
+<script src="/gen/mojo/public/js/ts/bindings/tests/constants.test-mojom-lite.js"></script>
+<script>
+'use strict';
+
+[{
+  constant: mojo.tstest.BOOL_VALUE,
+  expectedValue: true,
+  type: 'boolean'
+}, {
+  constant: mojo.tstest.INT8_VALUE,
+  expectedValue: -2,
+  type: 'int8'
+}, {
+  constant: mojo.tstest.UINT8_VALUE,
+  expectedValue: 128,
+  type: 'uint8'
+}, {
+  constant: mojo.tstest.INT16_VALUE,
+  expectedValue: -233,
+  type: 'int16'
+}, {
+  constant: mojo.tstest.UINT16_VALUE,
+  expectedValue: 44204,
+  type: 'uint16'
+}, {
+  constant: mojo.tstest.INT32_VALUE,
+  expectedValue: -44204,
+  type: 'int32'
+}, {
+  constant: mojo.tstest.UINT32_VALUE,
+  expectedValue: 4294967295,
+  type: 'uint32'
+}, {
+  // TODO(crbug.com/1009262): Re-enable once we generate the right value for
+  // 64-bit constants.
+  //
+  //  constant: mojo.tstest.kInt64Value,
+  //  expectedValue: -9223372036854775807n,
+  //  type: 'int64'
+  //}, {
+  //  constant: mojo.tstest.kUint64Value,
+  //  expectedValue: 9999999999999999999n,
+  //  type: 'uint64'
+  //}, {
+  constant: mojo.tstest.DOUBLE_VALUE,
+  expectedValue: 3.14159,
+  type: 'double'
+}, {
+  constant: mojo.tstest.DOUBLE_INFINITY,
+  expectedValue: Infinity,
+  type: 'double infinity'
+}, {
+  constant: mojo.tstest.DOUBLE_NEGATIVE_INFINITY,
+  expectedValue: -Infinity,
+  type: 'double negative infinity'
+}, {
+  constant: mojo.tstest.DOUBLE_NA_N,
+  expectedValue: NaN,
+  type: 'double NaN'
+}, {
+  constant: mojo.tstest.FLOAT_VALUE,
+  expectedValue: 2.71828,
+  type: 'float'
+}, {
+  constant: mojo.tstest.FLOAT_INFINITY,
+  expectedValue: Infinity,
+  type: 'float infinity'
+}, {
+  constant: mojo.tstest.FLOAT_NEGATIVE_INFINITY,
+  expectedValue: -Infinity,
+  type: 'float negative infinity'
+}, {
+  constant: mojo.tstest.FLOAT_NA_N,
+  expectedValue: NaN,
+  type: 'NaN'
+}, {
+  constant: mojo.tstest.STRING_VALUE,
+  expectedValue: "test string contents",
+  type: 'string'
+}].forEach(testCase => {
+  test(
+    () => assert_equals(testCase.constant, testCase.expectedValue),
+    `Checks that the value of generated ${testCase.type} constants is correct`);
+});
+</script>

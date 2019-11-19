@@ -5,8 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_ADAPTERS_P2P_QUIC_CRYPTO_CONFIG_FACTORY_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_ADAPTERS_P2P_QUIC_CRYPTO_CONFIG_FACTORY_H_
 
-#include "net/third_party/quic/core/crypto/quic_crypto_client_config.h"
-#include "net/third_party/quic/core/crypto/quic_crypto_server_config.h"
+#include "net/third_party/quiche/src/quic/core/crypto/quic_crypto_client_config.h"
+#include "net/third_party/quiche/src/quic/core/crypto/quic_crypto_server_config.h"
 
 namespace blink {
 

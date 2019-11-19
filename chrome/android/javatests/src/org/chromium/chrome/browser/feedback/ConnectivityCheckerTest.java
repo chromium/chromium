@@ -13,10 +13,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
@@ -150,16 +150,12 @@ public class ConnectivityCheckerTest {
             final boolean useSystemStack) throws Exception {
         Semaphore semaphore = new Semaphore(0);
         final Callback callback = new Callback(semaphore);
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                if (useSystemStack) {
-                    ConnectivityChecker.checkConnectivitySystemNetworkStack(
-                            url, timeoutMs, callback);
-                } else {
-                    ConnectivityChecker.checkConnectivityChromeNetworkStack(
-                            Profile.getLastUsedProfile(), url, timeoutMs, callback);
-                }
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            if (useSystemStack) {
+                ConnectivityChecker.checkConnectivitySystemNetworkStack(url, timeoutMs, callback);
+            } else {
+                ConnectivityChecker.checkConnectivityChromeNetworkStack(
+                        Profile.getLastUsedProfile(), url, timeoutMs, callback);
             }
         });
 

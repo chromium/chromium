@@ -12,7 +12,6 @@
 <translation id="2159915644201199628">Hindi ma-decode ang larawan: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">Ginamit ang localization , subalit hindi natukoy ang default_locale sa manipesto.</translation>
 <translation id="2576842806987913196">Mayroon nang isang CRX file na may ganitong pangalan.</translation>
-<translation id="2753617847762399167">Ilegal na daanan (ganap o may kaugnayan sa '..'): '<ph name="IMAGE_PATH" />'</translation>
 <translation id="2785530881066938471">Hindi ma-load ang file na '<ph name="RELATIVE_PATH" />' para sa script ng nilalaman. Hindi ito naka-encode bilang UTF-8.</translation>
 <translation id="2903070246402204397">Na-block ng administrator ang <ph name="EXTENSION_NAME" /> (extension ID "<ph name="EXTENSION_ID" />"). <ph name="ADMIN_INFO" /></translation>
 <translation id="2988488679308982380">Hindi ma-install ang package: '<ph name="ERROR_CODE" />'</translation>
@@ -38,8 +37,6 @@
 <translation id="5436430103864390185">Hindi sinusuportahan ang mga may hugis na window.</translation>
 <translation id="5456409301717116725">Kasama sa extension na ito ang key file na '<ph name="KEY_PATH" />'. Malamang na hindi mo iyon gustong gawin.</translation>
 <translation id="5486326529110362464">Dapat na umiiral ang halaga ng input para sa pribadong key.</translation>
-<translation id="5627523580512561598">extension na <ph name="EXTENSION_NAME" /></translation>
-<translation id="5960890139610307736">ExtensionView: <ph name="EXTENSIONVIEW_TAG_NAME" /></translation>
 <translation id="5972529113578162692">Kinakailangan ng administrator ng machine na ito na naka-install ang <ph name="EXTENSION_NAME" />. Hindi ito maaaring i-uninstall.</translation>
 <translation id="6027032947578871493">Hindi kilalang produkto na <ph name="PRODUCT_ID" /> mula sa <ph name="VENDOR_NAME" /> (serial number na <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> mula sa vendor na <ph name="VENDOR_ID" /></translation>
@@ -51,7 +48,6 @@
 <translation id="6542618148162044354">Humihiling ang "<ph name="APP_NAME" />" ng access sa isa o higit pa sa iyong mga device:</translation>
 <translation id="657064425229075395">Hindi ma-load ang script ng background na '<ph name="BACKGROUND_SCRIPT" />'.</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" /> mula sa <ph name="VENDOR_NAME" /> (serial number <ph name="SERIAL_NUMBER" />)</translation>
-<translation id="6731255991101203740">Hindi malikha ang direktoryo para sa pag-unzip: '<ph name="DIRECTORY_PATH" />'</translation>
 <translation id="677806580227005219">Mimehandler: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
 <translation id="6840444547062817500">Masyadong madalas nag-reload ang extension na ito.</translation>
 <translation id="7003844668372540529">Hindi kilalang produkto na <ph name="PRODUCT_ID" /> mula sa <ph name="VENDOR_NAME" /></translation>

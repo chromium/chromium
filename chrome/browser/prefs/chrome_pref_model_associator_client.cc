@@ -52,5 +52,6 @@ ChromePrefModelAssociatorClient::MaybeMergePreferenceValues(
     return std::make_unique<base::Value>(
         static_cast<int>(std::max(local_high_score, server_high_score)));
   }
+
   return nullptr;
 }

@@ -1,0 +1,122 @@
+// Copyright 2013 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Include test fixture.
+GEN_INCLUDE(['//ui/accessibility/extensions/chromevoxclassic/testing/chromevox_unittest_base.js']);
+
+/**
+ * Test fixture.
+ * @constructor
+ * @extends {ChromeVoxUnitTestBase}
+ */
+function ChromeVoxUserCommandsUnitTest() {
+  ChromeVoxUnitTestBase.call(this);
+}
+
+ChromeVoxUserCommandsUnitTest.prototype = {
+  __proto__: ChromeVoxUnitTestBase.prototype,
+
+  /** @override */
+  isAsync: true,
+
+  /** @override */
+  closureModuleDeps: [
+    'cvox.ChromeVoxTester',
+  ],
+
+  /** @override */
+  setUp: function() {
+    cvox.ChromeVoxTester.setUp(document);
+  },
+
+  /** @override */
+  tearDown: function() {
+    cvox.ChromeVoxTester.tearDown(document);
+  }
+};
+
+TEST_F('ChromeVoxUserCommandsUnitTest', 'TabHandling', function() {
+  this.loadDoc(function() {/*!
+    <div>
+      <p id="before">Before</p>
+      <a href="http://google.com" id="linka">Here is a link</a>
+      <input type="text"></input>
+      <h1 id="foo">FirstHeading</h1>
+      <a href="http://google.com" id="linkb">Here is another link</a>
+      <h2>SecondHeading</h2>
+    </div>
+  */});
+
+  this.waitForCalm(cvox.ChromeVoxTester.syncToFirstNode);
+  this.waitForCalm(this.userCommand, 'forward');
+  this.waitForCalm(this.userCommand, 'forward');
+  this.waitForCalm(this.userCommand, 'forward');
+  this.waitForCalm(this.userCommand, 'handleTab');
+  this.waitForCalm(function() {
+    // handleTab should place focus on a dummy node immediately in front of
+    // current position so that tab will jump reasonably.
+    var id = document.activeElement.nextSibling.id;
+    assertEquals('foo', id);
+  });
+});
+
+/**
+ * Tests everything in the find next map to make sure there are no
+ * typos and everything is valid.
+ */
+SYNC_TEST_F('ChromeVoxUserCommandsUnitTest', 'FindNextMap', function() {
+  var findMap = cvox.ChromeVoxUserCommands.FIND_NEXT_MAP_;
+  for (var find in findMap) {
+    assertTrue(
+        'no predicate ' + findMap[find].predicate + ' in ' + find,
+        cvox.DomPredicates.hasOwnProperty(findMap[find].predicate));
+    // Probably a typo if it's not one of these types.
+    for (var j in findMap[find]) {
+      assertTrue(
+          'typo in ' + find,
+          j == 'predicate' ||
+          j == 'forwardError' ||
+          j == 'backwardError');
+    }
+  }
+});
+
+/**
+ * Tests the command maps to make sure there are no typos and everything
+ * is valid.
+ * @export
+ */
+SYNC_TEST_F('ChromeVoxUserCommandsUnitTest', 'CommandsMap', function() {
+  var cmdMap = cvox.ChromeVoxUserCommands.CMD_WHITELIST_;
+  var findMap = cvox.ChromeVoxUserCommands.FIND_NEXT_MAP_;
+  for (var cmd in cmdMap) {
+    assertTrue(
+        'cant have both forward and backward in ' + cmd,
+        !cmdMap[cmd].forward || !cmdMap[cmd].backward);
+    for (var j in cmdMap[cmd]) {
+      // Probably a typo if it's not one of these types.
+      assertTrue(
+          'typo in ' + cmd,
+          j == 'forward' ||
+          j == 'backward' ||
+          j == 'announce' ||
+          j == 'findNext' ||
+          j == 'doDefault' ||
+          j == 'nodeList' ||
+          j == 'platformFilter' ||
+          j == 'skipInput' ||
+          j == 'disallowOOBE' ||
+          j == 'allowEvents' ||
+          j == 'disallowContinuation');
+    }
+    if (cmd.findNext) {
+      assertTrue(
+          'typo in ' + cmd + ' for findNext id',
+          findMap.hasOwnProperty(cmdMap[cmd].findNext));
+      assertTrue(
+          'must supply direction for findNext in ' + cmd,
+          cmdMap[cmd].forward || cmdMap[cmd].backward);
+    }
+  }
+});

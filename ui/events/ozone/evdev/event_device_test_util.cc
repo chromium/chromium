@@ -211,6 +211,45 @@ const DeviceCapabilities kEveTouchScreen = {
     base::size(kEveTouchScreenAbsAxes),
 };
 
+// Captured from Pixel Slate.
+const DeviceAbsoluteAxis kNocturneTouchScreenAbsAxes[] = {
+    {ABS_X, {0, 0, 10404, 0, 0, 40}},
+    {ABS_Y, {0, 0, 6936, 0, 0, 40}},
+    {ABS_PRESSURE, {0, 0, 255, 0, 0, 0}},
+    {ABS_MT_SLOT, {0, 0, 9, 0, 0, 0}},
+    {ABS_MT_TOUCH_MAJOR, {0, 0, 255, 0, 0, 1}},
+    {ABS_MT_TOUCH_MINOR, {0, 0, 255, 0, 0, 1}},
+    {ABS_MT_ORIENTATION, {0, 0, 1, 0, 0, 0}},
+    {ABS_MT_POSITION_X, {0, 0, 10404, 0, 0, 40}},
+    {ABS_MT_POSITION_Y, {0, 0, 6936, 0, 0, 40}},
+    {ABS_MT_TOOL_TYPE, {0, 0, 2, 0, 0, 0}},
+    {ABS_MT_TRACKING_ID, {0, 0, 65535, 0, 0, 0}},
+    {ABS_MT_PRESSURE, {0, 0, 255, 0, 0, 0}},
+};
+const DeviceCapabilities kNocturneTouchScreen = {
+    /* path */
+    "/sys/devices/pci0000:00/0000:00:15.0/i2c_designware.0/i2c-6/"
+    "i2c-WCOM50C1:00/0018:2D1F:486C.0001/input/input2/event2",
+    /* name */ "WCOM50C1:00 2D1F:486C",
+    /* phys */ "i2c-WCOM50C1:00",
+    /* uniq */ "",
+    /* bustype */ "0018",
+    /* vendor */ "2d1f",
+    /* product */ "486c",
+    /* version */ "0100",
+    /* prop */ "2",
+    /* ev */ "1b",
+    /* key */ "400 0 0 0 0 0",
+    /* rel */ "0",
+    /* abs */ "6f3800001000003",
+    /* msc */ "20",
+    /* sw */ "0",
+    /* led */ "0",
+    /* ff */ "0",
+    kNocturneTouchScreenAbsAxes,
+    base::size(kNocturneTouchScreenAbsAxes),
+};
+
 // Captured from Chromebook Pixel.
 const DeviceCapabilities kLinkKeyboard = {
     /* path */ "/sys/devices/platform/i8042/serio0/input/input6/event6",
@@ -613,18 +652,18 @@ const DeviceCapabilities kWilsonBeachActiveStylus = {
 const DeviceAbsoluteAxis kEveStylusAbsAxes[] = {
     {ABS_X, {0, 0, 25920, 0, 0, 100}},     {ABS_Y, {0, 0, 17280, 0, 0, 100}},
     {ABS_PRESSURE, {0, 0, 2047, 0, 0, 0}}, {ABS_TILT_X, {0, -90, 90, 0, 0, 57}},
-    {ABS_TILT_Y, {0, -90, 90, 0, 0, 57}},  {ABS_MISC, {0, 0, 255, 0, 0, 0}},
+    {ABS_TILT_Y, {0, -90, 90, 0, 0, 57}},  {ABS_MISC, {0, 0, 65535, 0, 0, 0}},
 };
 const DeviceCapabilities kEveStylus = {
     /* path */
     "/sys/devices/pci0000:00/0000:00:15.0/i2c_designware.0/i2c-6/"
-    "i2c-WCOM50C1:00/0018:2D1F:5134.0001/input/input7/event7",
-    /* name */ "WCOM50C1:00 2D1F:5134 Pen",
-    /* phys */ "",
+    "i2c-WCOM50C1:00/0018:2D1F:5143.0001/input/input5/event5",
+    /* name */ "WCOM50C1:00 2D1F:5143 Pen",
+    /* phys */ "i2c-WCOM50C1:00",
     /* uniq */ "",
     /* bustype */ "0018",
     /* vendor */ "2d1f",
-    /* product */ "5134",
+    /* product */ "5143",
     /* version */ "0100",
     /* prop */ "0",
     /* ev */ "1b",
@@ -637,6 +676,36 @@ const DeviceCapabilities kEveStylus = {
     /* ff */ "0",
     kEveStylusAbsAxes,
     base::size(kEveStylusAbsAxes),
+};
+
+// Captured from Pixel Slate
+const DeviceAbsoluteAxis kNocturneStylusAbsAxes[] = {
+    {ABS_X, {0, 0, 26010, 0, 0, 100}},     {ABS_Y, {0, 0, 17340, 0, 0, 100}},
+    {ABS_PRESSURE, {0, 0, 2047, 0, 0, 0}}, {ABS_TILT_X, {0, -90, 90, 0, 0, 57}},
+    {ABS_TILT_Y, {0, -90, 90, 0, 0, 57}},  {ABS_MISC, {0, 0, 65535, 0, 0, 0}},
+};
+const DeviceCapabilities kNocturneStylus = {
+    /* path */
+    "/sys/devices/pci0000:00/0000:00:15.0/i2c_designware.0/i2c-6/"
+    "i2c-WCOM50C1:00/0018:2D1F:486C.0001/input/input3/event3",
+    /* name */ "WCOM50C1:00 2D1F:486C Pen",
+    /* phys */ "",
+    /* uniq */ "",
+    /* bustype */ "0018",
+    /* vendor */ "2d1f",
+    /* product */ "486c",
+    /* version */ "0100",
+    /* prop */ "0",
+    /* ev */ "1b",
+    /* key */ "1c03 1 0 0 0 0",
+    /* rel */ "0",
+    /* abs */ "1000d000003",
+    /* msc */ "11",
+    /* sw */ "0",
+    /* led */ "0",
+    /* ff */ "0",
+    kNocturneStylusAbsAxes,
+    base::size(kNocturneStylusAbsAxes),
 };
 
 const DeviceCapabilities kHammerKeyboard = {
@@ -760,6 +829,99 @@ const DeviceCapabilities kIlitekTP = {
     base::size(kIlitekTPAbsAxes),
 };
 
+const DeviceCapabilities kSideVolumeButton = {
+    /* path */
+    "/sys/devices/pci0000:00/0000:00:1f.0/PNP0C09:00/GOOG0004:00/GOOG0007:00/"
+    "input/input5/event4",
+    /* name */ "cros_ec_buttons",
+    /* phys */ "GOOG0004:00/input1",
+    /* uniq */ "",
+    /* bustype */ "0006",
+    /* vendor */ "0000",
+    /* product */ "0000",
+    /* version */ "0001",
+    /* prop */ "0",
+    /* ev */ "100023",
+    /* key */ "1c000000000000 0",
+    /* rel */ "0",
+    /* abs */ "0",
+    /* msc */ "0",
+    /* sw */ "1",
+    /* led */ "0",
+    /* ff */ "0",
+};
+
+const DeviceAbsoluteAxis kKohakuTouchscreenAxes[] = {
+    {ABS_X, {0, 0, 1079, 0, 0, 0}},
+    {ABS_Y, {0, 0, 1919, 0, 0, 0}},
+    {ABS_PRESSURE, {0, 0, 255, 0, 0, 0}},
+    {ABS_MT_SLOT, {0, 0, 15, 0, 0, 0}},
+    {ABS_MT_TOUCH_MAJOR, {0, 0, 255, 0, 0, 0}},
+    {ABS_MT_POSITION_X, {0, 0, 1079, 0, 0, 0}},
+    {ABS_MT_POSITION_Y, {0, 0, 1919, 0, 0, 0}},
+    {ABS_MT_TOOL_TYPE, {0, 0, 15, 0, 0, 0}},
+    {ABS_MT_TRACKING_ID, {0, 0, 65535, 0, 0, 0}},
+    {ABS_MT_PRESSURE, {0, 0, 255, 0, 0, 0}},
+    {ABS_MT_DISTANCE, {0, 0, 1, 0, 0, 0}},
+};
+// Captured from Kohaku EVT
+const DeviceCapabilities kKohakuTouchscreen = {
+    /* path */
+    "/sys/devices/pci0000:00/0000:00:15.1/i2c_designware.1/i2c-8/"
+    "i2c-PRP0001:00/input/input3/event3",
+    /* name */ "Atmel maXTouch Touchscreen",
+    /* phys */ "i2c-8-004b/input0",
+    /* uniq */ "",
+    /* bustype */ "0018",
+    /* vendor */ "0000",
+    /* product */ "0000",
+    /* version */ "0000",
+    /* prop */ "2",
+    /* ev */ "b",
+    /* key */ "400 0 0 0 0 0",
+    /* rel */ "0",
+    /* abs */ "ee1800001000003",
+    /* msc */ "0",
+    /* sw */ "0",
+    /* led */ "0",
+    /* ff */ "0",
+    kKohakuTouchscreenAxes,
+    base::size(kKohakuTouchscreenAxes),
+};
+
+const DeviceAbsoluteAxis kKohakuStylusAxes[] = {
+    {ABS_X, {0, 0, 29376, 0, 0, 100}},
+    {ABS_Y, {0, 0, 16524, 0, 0, 100}},
+    {ABS_PRESSURE, {0, 0, 4095, 0, 0, 0}},
+    {ABS_TILT_X, {0, -9000, 9000, 0, 0, 5730}},
+    {ABS_TILT_Y, {0, -9000, 9000, 0, 0, 5730}},
+};
+
+// Captured from Kohaku EVT
+const DeviceCapabilities kKohakuStylus = {
+    /* path */
+    "/sys/devices/pci0000:00/0000:00:15.2/i2c_designware.2/i2c-9/"
+    "i2c-WCOM50C1:00/0018:2D1F:009D.0002/input/input6/event5",
+    /* name */ "WCOM50C1:00 2D1F:009D",
+    /* phys */ "i2c-WCOM50C1:00",
+    /* uniq */ "",
+    /* bustype */ "0018",
+    /* vendor */ "2d1f",
+    /* product */ "009d",
+    /* version */ "0100",
+    /* prop */ "0",
+    /* ev */ "1b",
+    /* key */ "1c03 0 0 0 0 0",
+    /* rel */ "0",
+    /* abs */ "d000003",
+    /* msc */ "10",
+    /* sw */ "0",
+    /* led */ "0",
+    /* ff */ "0",
+    kKohakuStylusAxes,
+    base::size(kKohakuStylusAxes),
+};
+
 // NB: Please use the capture_device_capabilities.py script to add more
 // test data here. This will help ensure the data matches what the kernel
 // reports for a real device and is entered correctly.
@@ -831,7 +993,7 @@ bool CapabilitiesToDeviceInfo(const DeviceCapabilities& capabilities,
   sscanf(capabilities.version, "%" SCNx16, &id.version);
   devinfo->SetId(id);
   devinfo->SetDeviceType(EventDeviceInfo::GetInputDeviceTypeFromId(id));
-
+  devinfo->SetName(capabilities.name);
   return true;
 }
 

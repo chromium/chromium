@@ -21,9 +21,7 @@ namespace vr {
 
 class VR_UI_EXPORT UrlText : public Text {
  public:
-  UrlText(float font_height_dmm,
-          const base::RepeatingCallback<void()>& unhandled_codepoint_callback);
-
+  explicit UrlText(float font_height_dmm);
   ~UrlText() override;
 
   void SetUrl(const GURL& url);

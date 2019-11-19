@@ -24,7 +24,7 @@ cr.define('cr.ui', function() {
    * @extends {cr.ui.ListItem}
    */
   function GridItem(dataItem) {
-    const el = cr.doc.createElement('li');
+    const el = document.createElement('li');
     el.dataItem = dataItem;
     el.__proto__ = GridItem.prototype;
     return el;

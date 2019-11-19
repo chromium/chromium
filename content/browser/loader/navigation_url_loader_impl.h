@@ -14,6 +14,8 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/ssl_status.h"
 #include "content/public/common/previews_state.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 
@@ -23,9 +25,9 @@ struct RedirectInfo;
 
 namespace content {
 
-class NavigationData;
+class BrowserContext;
 class NavigationLoaderInterceptor;
-class ResourceContext;
+class PrefetchedSignedExchangeCache;
 class StoragePartition;
 class StoragePartitionImpl;
 struct GlobalRequestID;
@@ -35,12 +37,14 @@ class CONTENT_EXPORT NavigationURLLoaderImpl : public NavigationURLLoader {
   // The caller is responsible for ensuring that |delegate| outlives the loader.
   // Note |initial_interceptors| is there for test purposes only.
   NavigationURLLoaderImpl(
-      ResourceContext* resource_context,
+      BrowserContext* browser_context,
       StoragePartition* storage_partition,
       std::unique_ptr<NavigationRequestInfo> request_info,
       std::unique_ptr<NavigationUIData> navigation_ui_data,
       ServiceWorkerNavigationHandle* service_worker_handle,
       AppCacheNavigationHandle* appcache_handle,
+      scoped_refptr<PrefetchedSignedExchangeCache>
+          prefetched_signed_exchange_cache,
       NavigationURLLoaderDelegate* delegate,
       std::vector<std::unique_ptr<NavigationLoaderInterceptor>>
           initial_interceptors);
@@ -50,15 +54,13 @@ class CONTENT_EXPORT NavigationURLLoaderImpl : public NavigationURLLoader {
   void FollowRedirect(const std::vector<std::string>& removed_headers,
                       const net::HttpRequestHeaders& modified_headers,
                       PreviewsState new_previews_state) override;
-  void ProceedWithResponse() override;
 
   void OnReceiveResponse(
-      scoped_refptr<network::ResourceResponse> response,
+      scoped_refptr<network::ResourceResponse> response_head,
       network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
-      std::unique_ptr<NavigationData> navigation_data,
+      mojo::ScopedDataPipeConsumerHandle response_body,
       const GlobalRequestID& global_request_id,
       bool is_download,
-      bool is_stream,
       base::TimeDelta total_ui_to_io_time,
       base::Time io_post_time);
   void OnReceiveRedirect(const net::RedirectInfo& redirect_info,
@@ -66,28 +68,12 @@ class CONTENT_EXPORT NavigationURLLoaderImpl : public NavigationURLLoader {
                          base::Time io_post_time);
   void OnComplete(const network::URLLoaderCompletionStatus& status);
 
-  // Overrides loading of frame requests when the network service is disabled.
-  // If the callback returns true, the frame request was intercepted. Otherwise
-  // it should be loaded normally through ResourceDispatcherHost. Passing an
-  // empty callback will restore the default behavior.
-  // This method must be called either on the IO thread or before threads start.
-  // This callback is run on the IO thread.
-  using BeginNavigationInterceptor = base::RepeatingCallback<bool(
-      network::mojom::URLLoaderRequest* request,
-      int32_t routing_id,
-      int32_t request_id,
-      uint32_t options,
-      const network::ResourceRequest& url_request,
-      network::mojom::URLLoaderClientPtr* client,
-      const net::MutableNetworkTrafficAnnotationTag& traffic_annotation)>;
-  static void SetBeginNavigationInterceptorForTesting(
-      const BeginNavigationInterceptor& interceptor);
-
-  // Intercepts loading of frame requests when network service is enabled and a
-  // network::mojom::TrustedURLLoaderHeaderClient is being used. This must be
-  // called on the UI thread or before threads start.
+  // Intercepts loading of frame requests when network service is enabled and
+  // either a network::mojom::TrustedURLLoaderHeaderClient is being used or for
+  // schemes not handled by network service (e.g. files). This must be called on
+  // the UI thread or before threads start.
   using URLLoaderFactoryInterceptor = base::RepeatingCallback<void(
-      network::mojom::URLLoaderFactoryRequest* request)>;
+      mojo::PendingReceiver<network::mojom::URLLoaderFactory>* receiver)>;
   static void SetURLLoaderFactoryInterceptorForTesting(
       const URLLoaderFactoryInterceptor& interceptor);
 
@@ -95,8 +81,9 @@ class CONTENT_EXPORT NavigationURLLoaderImpl : public NavigationURLLoader {
   // |header_client|. This should have the same settings as the factory from the
   // URLLoaderFactoryGetter. Called on the UI thread.
   static void CreateURLLoaderFactoryWithHeaderClient(
-      network::mojom::TrustedURLLoaderHeaderClientPtrInfo header_client,
-      network::mojom::URLLoaderFactoryRequest factory_request,
+      mojo::PendingRemote<network::mojom::TrustedURLLoaderHeaderClient>
+          header_client,
+      mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver,
       StoragePartitionImpl* partition);
 
   // Returns a Request ID for browser-initiated navigation requests. Called on
@@ -107,10 +94,10 @@ class CONTENT_EXPORT NavigationURLLoaderImpl : public NavigationURLLoader {
   class URLLoaderRequestController;
   void OnRequestStarted(base::TimeTicks timestamp);
 
-  void BindNonNetworkURLLoaderFactoryRequest(
+  void BindNonNetworkURLLoaderFactoryReceiver(
       int frame_tree_node_id,
       const GURL& url,
-      network::mojom::URLLoaderFactoryRequest factory);
+      mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver);
 
   NavigationURLLoaderDelegate* delegate_;
 
@@ -126,7 +113,7 @@ class CONTENT_EXPORT NavigationURLLoaderImpl : public NavigationURLLoader {
   // Counts the time overhead of all the hops from the IO to the UI threads.
   base::TimeDelta io_to_ui_time_;
 
-  base::WeakPtrFactory<NavigationURLLoaderImpl> weak_factory_;
+  base::WeakPtrFactory<NavigationURLLoaderImpl> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(NavigationURLLoaderImpl);
 };

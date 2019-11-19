@@ -161,6 +161,24 @@ class SESSIONS_EXPORT SerializedNavigationEntry {
     return extended_info_map_;
   }
 
+  int64_t task_id() const { return task_id_; }
+  void set_task_id(int64_t task_id) { task_id_ = task_id; }
+
+  int64_t parent_task_id() const { return parent_task_id_; }
+  void set_parent_task_id(int64_t parent_task_id) {
+    parent_task_id_ = parent_task_id;
+  }
+
+  int64_t root_task_id() const { return root_task_id_; }
+  void set_root_task_id(int64_t root_task_id) { root_task_id_ = root_task_id; }
+
+  const std::vector<int64_t>& children_task_ids() const {
+    return children_task_ids_;
+  }
+  void set_children_task_ids(std::vector<int64_t> children_task_ids) {
+    children_task_ids_ = children_task_ids;
+  }
+
   size_t EstimateMemoryUsage() const;
 
  private:
@@ -202,6 +220,13 @@ class SESSIONS_EXPORT SerializedNavigationEntry {
   // Provides storage for arbitrary key/value pairs used by features. This
   // data is not synced.
   std::map<std::string, std::string> extended_info_map_;
+
+  // These fields are stored in the 'SupportsUserData' fields of a
+  // NavigationEntry (see SetUserData() and GetUserData() in navigation_entry.h
+  int64_t task_id_ = -1;
+  int64_t parent_task_id_ = -1;
+  int64_t root_task_id_ = -1;
+  std::vector<int64_t> children_task_ids_;
 };
 
 }  // namespace sessions

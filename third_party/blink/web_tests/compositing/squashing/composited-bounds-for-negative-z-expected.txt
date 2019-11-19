@@ -1,81 +1,35 @@
 {
   "layers": [
     {
-      "name": "LayoutView #document",
-      "bounds": [800, 600],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [800, 600],
-      "drawsContent": false
-    },
-    {
-      "name": "Scrolling Contents Layer",
-      "bounds": [800, 600],
-      "contentsOpaque": true,
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "LayoutBlockFlow HTML",
+      "name": "LayoutNGBlockFlow HTML",
       "bounds": [800, 408]
     },
     {
-      "name": "LayoutBlockFlow (positioned) DIV",
+      "name": "LayoutNGBlockFlow (positioned) DIV",
       "bounds": [10, 10],
       "contentsOpaque": true,
       "backgroundColor": "#FF0000",
       "transform": 1
     },
     {
-      "name": "LayoutBlockFlow HTML (foreground) Layer",
+      "name": "LayoutNGBlockFlow HTML (foreground) Layer",
       "bounds": [800, 408]
     },
     {
-      "name": "LayoutBlockFlow DIV",
-      "position": [108, 100],
-      "bounds": [300, 300]
-    },
-    {
-      "name": "Scrolling Layer",
-      "position": [108, 100],
-      "bounds": [285, 300],
-      "drawsContent": false
-    },
-    {
-      "name": "Scrolling Contents Layer",
-      "position": [108, 100],
-      "bounds": [285, 1000],
-      "drawsContent": false
-    },
-    {
-      "name": "Overflow Controls Host Layer",
-      "position": [108, 100],
+      "name": "LayoutNGBlockFlow DIV",
       "bounds": [300, 300],
-      "drawsContent": false
+      "transform": 2
     },
     {
-      "name": "Vertical Scrollbar Layer",
-      "position": [393, 100],
+      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "position": [285, 0],
       "bounds": [15, 300],
-      "drawsContent": false
+      "transform": 2
     },
     {
-      "name": "Squashing Containment Layer",
-      "drawsContent": false
-    },
-    {
-      "name": "LayoutBlockFlow (relative positioned) DIV",
-      "position": [108, 100],
+      "name": "Squashing Layer (first squashed layer: LayoutNGBlockFlow (relative positioned) DIV)",
       "bounds": [285, 1000],
-      "drawsContent": false
-    },
-    {
-      "name": "Squashing Layer (first squashed layer: LayoutBlockFlow (relative positioned) DIV)",
-      "position": [108, 100],
-      "bounds": [285, 1000]
+      "transform": 2
     }
   ],
   "transforms": [
@@ -86,6 +40,15 @@
         [0, 1, 0, 0],
         [0, 0, 1, 0],
         [8, 100, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [108, 100, 0, 1]
       ]
     }
   ]

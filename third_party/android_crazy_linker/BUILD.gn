@@ -9,6 +9,9 @@ import("//testing/test.gni")
 # NOTE: This file is included in Linux builds to build the
 # crazy_linker_zip_fuzzer target (see below). However, the rest of the
 # crazy linker doesn't build or work on Linux yet.
+#
+# NOTE: Instructions for testing the crazy linker are in
+# android_linker_testing.md.
 
 config("crazy_config") {
   include_dirs = [ "src/include" ]
@@ -29,12 +32,15 @@ if (is_android) {
       ":crazy_linker_test_dl_wrappers",
       ":crazy_linker_test_dl_wrappers_recursive",
       ":crazy_linker_test_dl_wrappers_valid_handles",
+      ":crazy_linker_test_dl_wrappers_with_android_dlopen_ext",
       ":crazy_linker_test_dl_wrappers_with_system_handle",
       ":crazy_linker_test_jni_hooks",
       ":crazy_linker_test_load_library",
       ":crazy_linker_test_load_library_depends",
+      ":crazy_linker_test_load_library_with_fd",
       ":crazy_linker_test_load_library_with_gnu_hash_table",
       ":crazy_linker_test_load_library_with_relr_relocations",
+      ":crazy_linker_test_load_library_with_reserved_map",
       ":crazy_linker_test_relocated_shared_relro",
       ":crazy_linker_test_search_path_list",
       ":crazy_linker_test_shared_relro",
@@ -74,6 +80,7 @@ if (is_android) {
         "src/src/crazy_linker_elf_view.h",
         "src/src/crazy_linker_error.cpp",
         "src/src/crazy_linker_error.h",
+        "src/src/crazy_linker_expected.h",
         "src/src/crazy_linker_globals.cpp",
         "src/src/crazy_linker_globals.h",
         "src/src/crazy_linker_gnu_hash_table.cpp",
@@ -84,6 +91,7 @@ if (is_android) {
         "src/src/crazy_linker_library_view.h",
         "src/src/crazy_linker_line_reader.cpp",
         "src/src/crazy_linker_line_reader.h",
+        "src/src/crazy_linker_load_params.h",
         "src/src/crazy_linker_memory_mapping.cpp",
         "src/src/crazy_linker_memory_mapping.h",
         "src/src/crazy_linker_pointer_set.cpp",
@@ -100,6 +108,8 @@ if (is_android) {
         "src/src/crazy_linker_shared_library.h",
         "src/src/crazy_linker_system.cpp",
         "src/src/crazy_linker_system.h",
+        "src/src/crazy_linker_system_android.cpp",
+        "src/src/crazy_linker_system_android.h",
         "src/src/crazy_linker_system_linker.cpp",
         "src/src/crazy_linker_system_linker.h",
         "src/src/crazy_linker_thread_data.cpp",
@@ -141,6 +151,12 @@ if (is_android) {
       public_configs = [ ":crazy_config" ]
       configs -= [ "//build/config/compiler:chromium_code" ]
       configs += [ "//build/config/compiler:no_chromium_code" ]
+
+      # This is used to allow shared memory regions to work on Android Q+
+      # See http://crbug.com/949804
+      deps = [
+        "//third_party/ashmem",
+      ]
     }
   }
 
@@ -157,11 +173,13 @@ if (is_android) {
       "src/src/crazy_linker_elf_hash_table_unittest.cpp",
       "src/src/crazy_linker_elf_symbols_unittest.cpp",
       "src/src/crazy_linker_error_unittest.cpp",
+      "src/src/crazy_linker_expected_unittest.cpp",
       "src/src/crazy_linker_globals_unittest.cpp",
       "src/src/crazy_linker_gnu_hash_table_unittest.cpp",
       "src/src/crazy_linker_line_reader_unittest.cpp",
       "src/src/crazy_linker_pointer_set_unittest.cpp",
       "src/src/crazy_linker_proc_maps_unittest.cpp",
+      "src/src/crazy_linker_rdebug_unittest.cpp",
       "src/src/crazy_linker_relr_relocations_unittest.cpp",
       "src/src/crazy_linker_search_path_list_unittest.cpp",
       "src/src/crazy_linker_system_unittest.cpp",
@@ -174,6 +192,9 @@ if (is_android) {
     ]
 
     include_dirs = [ "src/src" ]
+
+    # Required by crazy_linker_expected_unittest.cpp
+    defines = [ "CRAZY_DEBUG=1" ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
     configs += [ "//build/config/compiler:no_chromium_code" ]
@@ -295,6 +316,14 @@ if (is_android) {
     ]
   }
 
+  crazy_linker_test_library(
+      "crazy_linker_tests_libzoo_with_android_dlopen_ext") {
+    sources = [
+      "src/tests/zoo_with_android_dlopen_ext.cpp",
+    ]
+    libs = [ "dl" ]
+  }
+
   crazy_linker_test_library("crazy_linker_tests_libzoo_with_dlopen_handle") {
     sources = [
       "src/tests/zoo_with_dlopen_handle.cpp",
@@ -366,6 +395,30 @@ if (is_android) {
   executable("crazy_linker_test_load_library") {
     sources = [
       "src/tests/test_load_library.cpp",
+    ]
+    data_deps = [
+      ":crazy_linker_tests_libfoo",
+    ]
+    deps = [
+      ":android_crazy_linker",
+    ]
+  }
+
+  executable("crazy_linker_test_load_library_with_fd") {
+    sources = [
+      "src/tests/test_load_library_with_fd.cpp",
+    ]
+    data_deps = [
+      ":crazy_linker_tests_libfoo",
+    ]
+    deps = [
+      ":android_crazy_linker",
+    ]
+  }
+
+  executable("crazy_linker_test_load_library_with_reserved_map") {
+    sources = [
+      "src/tests/test_load_library_with_reserved_map.cpp",
     ]
     data_deps = [
       ":crazy_linker_tests_libfoo",
@@ -463,6 +516,18 @@ if (is_android) {
     ]
   }
 
+  executable("crazy_linker_test_dl_wrappers_with_android_dlopen_ext") {
+    sources = [
+      "src/tests/test_dl_wrappers_with_android_dlopen_ext.cpp",
+    ]
+    data_deps = [
+      ":crazy_linker_tests_libzoo_with_android_dlopen_ext",
+    ]
+    deps = [
+      ":android_crazy_linker",
+    ]
+  }
+
   executable("crazy_linker_test_dl_wrappers_valid_handles") {
     sources = [
       "src/tests/test_dl_wrappers_valid_handles.cpp",
@@ -542,7 +607,7 @@ if (is_android) {
 # cd $CHROMIUM_SRC_DIR
 # mkdir out/Fuzz
 # gn gen out/Fuzz '--args=use_libfuzzer=true is_asan=true is_debug=false'
-# gn out/Fuzz android_crazy_linker_zip_fuzzer
+# ninja -C out/Fuzz android_crazy_linker_zip_fuzzer
 # out/Fuzz/android_crazy_linker_zip_fuzzer out/Release/apks
 #
 fuzzer_test("android_crazy_linker_zip_fuzzer") {

@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.example">
-  <!-- This AndroidManifest file only exists to verify boundary interfaces
-       compile and lint correctly against API 14 (the minSdkVersion of the
-       support library code). As the minSdkVersion of the support library
-       increases, so should this value. See http://crbug.com/828184 for more
-       details. -->
-  <uses-sdk android:minSdkVersion="14" />
-</manifest>

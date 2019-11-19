@@ -10,7 +10,7 @@ const $fidl_kInitialBufferSize = 1024;
 
 const $fidl_kMessageHeaderSize = 16;
 const $fidl_kMessageTxidOffset = 0;
-const $fidl_kMessageOrdinalOffset = 12;
+const $fidl_kMessageOrdinalOffset = 8;
 
 const $fidl__kAlignment = 8;
 const $fidl__kAlignmentMask = 0x7;
@@ -27,26 +27,35 @@ function $fidl__align(size) {
                  $fidl__kAlignmentMask);
 }
 
+function $fidl__setUint64LE(dataView, offset, value) {
+  var high_bits = Number(BigInt.asUintN(32, value >> 32n))
+  var low_bits = Number(BigInt.asUintN(32, value))
+  dataView.setUint32(offset+4, high_bits, $fidl__kLE);
+  dataView.setUint32(offset+0, low_bits, $fidl__kLE);
+}
+
+
 /**
  * @constructor
  * @param {number} ordinal
  */
-function $fidl_Encoder(ordinal) {
+function $fidl_Encoder(ordinal, has_response) {
   var buf = new ArrayBuffer($fidl_kInitialBufferSize);
   this.data = new DataView(buf);
   this.extent = 0;
   this.handles = [];
-  this._encodeMessageHeader(ordinal);
+  this._encodeMessageHeader(ordinal, has_response);
 }
 
 /**
  * @param {number} ordinal
  */
-$fidl_Encoder.prototype._encodeMessageHeader = function(ordinal) {
+$fidl_Encoder.prototype._encodeMessageHeader = function(ordinal, has_response) {
   this.alloc($fidl_kMessageHeaderSize);
-  var txid = $fidl__nextTxid++ & $fidl__kUserspaceTxidMask;
+  var txid = has_response ? ($fidl__nextTxid++ & $fidl__kUserspaceTxidMask) : 0;
   this.data.setUint32($fidl_kMessageTxidOffset, txid, $fidl__kLE);
-  this.data.setUint32($fidl_kMessageOrdinalOffset, ordinal, $fidl__kLE);
+  $fidl__setUint64LE(
+      this.data, $fidl_kMessageOrdinalOffset, ordinal, $fidl__kLE);
 };
 
 /**

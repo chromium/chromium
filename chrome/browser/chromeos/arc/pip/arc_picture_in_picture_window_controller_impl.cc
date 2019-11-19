@@ -14,17 +14,14 @@ ArcPictureInPictureWindowControllerImpl::
 
 ArcPictureInPictureWindowControllerImpl::
     ~ArcPictureInPictureWindowControllerImpl() {
-  Close(false, false);
+  Close(false);
 }
 
-gfx::Size ArcPictureInPictureWindowControllerImpl::Show() {
+void ArcPictureInPictureWindowControllerImpl::Show() {
   // Should be a no-op on ARC. This is managed on the Android side.
-  return gfx::Size();
 }
 
-void ArcPictureInPictureWindowControllerImpl::Close(
-    bool should_pause_video,
-    bool should_reset_pip_player) {
+void ArcPictureInPictureWindowControllerImpl::Close(bool should_pause_video) {
   // TODO(edcourtney): Currently, |should_pause_video| will always be false
   // here, but if that changes, we should pause the video on the Android side.
   arc_pip_bridge_->ClosePip();
@@ -35,12 +32,6 @@ void ArcPictureInPictureWindowControllerImpl::CloseAndFocusInitiator() {
 }
 
 void ArcPictureInPictureWindowControllerImpl::OnWindowDestroyed() {
-  // Should be a no-op on ARC. This is managed on the Android side.
-}
-
-void ArcPictureInPictureWindowControllerImpl::EmbedSurface(
-    const viz::SurfaceId& surface_id,
-    const gfx::Size& natural_size) {
   // Should be a no-op on ARC. This is managed on the Android side.
 }
 
@@ -59,11 +50,6 @@ bool ArcPictureInPictureWindowControllerImpl::IsPlayerActive() {
   return false;
 }
 
-bool ArcPictureInPictureWindowControllerImpl::IsPlayerMuted() {
-  // Should be a no-op on ARC. This is managed on the Android side.
-  return false;
-}
-
 content::WebContents*
 ArcPictureInPictureWindowControllerImpl::GetInitiatorWebContents() {
   // Should be a no-op on ARC. This is managed on the Android side.
@@ -76,26 +62,12 @@ void ArcPictureInPictureWindowControllerImpl::UpdatePlaybackState(
   // Should be a no-op on ARC. This is managed on the Android side.
 }
 
-void ArcPictureInPictureWindowControllerImpl::UpdateMutedState() {
-  // Should be a no-op on ARC. This is managed on the Android side.
-}
-
 bool ArcPictureInPictureWindowControllerImpl::TogglePlayPause() {
   // Should be a no-op on ARC. This is managed on the Android side.
   return false;
 }
 
-bool ArcPictureInPictureWindowControllerImpl::ToggleMute() {
-  // Should be a no-op on ARC. This is managed on the Android side.
-  return false;
-}
-
 void ArcPictureInPictureWindowControllerImpl::SetAlwaysHidePlayPauseButton(
-    bool is_visible) {
-  // Should be a no-op on ARC. This is managed on the Android side.
-}
-
-void ArcPictureInPictureWindowControllerImpl::SetAlwaysHideMuteButton(
     bool is_visible) {
   // Should be a no-op on ARC. This is managed on the Android side.
 }

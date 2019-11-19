@@ -10,17 +10,19 @@ import shutil
 import sys
 import tempfile
 
-REPOSITORY_ROOT = os.path.abspath(os.path.join(
-    os.path.dirname(__file__), '..', '..', '..'))
+REPOSITORY_ROOT = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, os.pardir))
 DOCLAVA_DIR = os.path.join(REPOSITORY_ROOT, 'buildtools', 'android', 'doclava')
-SDK_DIR = os.path.join(REPOSITORY_ROOT, 'third_party', 'android_tools', 'sdk')
+SDK_DIR = os.path.join(REPOSITORY_ROOT, 'third_party', 'android_sdk', 'public')
 
-sys.path.append(os.path.join(REPOSITORY_ROOT, 'build/android/gyp/util'))
-sys.path.append(os.path.join(REPOSITORY_ROOT, 'net/tools/net_docs'))
-import build_utils
+sys.path.insert(0, os.path.join(REPOSITORY_ROOT, 'build/android/gyp'))
+sys.path.insert(0, os.path.join(REPOSITORY_ROOT, 'net/tools/net_docs'))
+# pylint: disable=wrong-import-position
+from util import build_utils
 import net_docs
 from markdown.postprocessors import Postprocessor
 from markdown.extensions import Extension
+# pylint: enable=wrong-import-position
 
 
 class CronetPostprocessor(Postprocessor):
@@ -38,7 +40,7 @@ def GenerateJavadoc(options, src_dir, output_dir):
   working_dir = os.path.join(options.input_dir, 'android', 'api')
   overview_file = os.path.abspath(options.overview_file)
 
-  android_sdk_jar = os.path.abspath(options.android_sdk_jar)
+  android_sdk_jar = options.android_sdk_jar
   if not android_sdk_jar:
     android_sdk_jar = os.path.join(
         SDK_DIR, 'platforms', 'android-27', 'android.jar')
@@ -57,9 +59,8 @@ def GenerateJavadoc(options, src_dir, output_dir):
     '-federate', 'Android', 'https://developer.android.com/',
     '-federationapi', 'Android', os.path.join(DOCLAVA_DIR, 'current.txt'),
     '-bootclasspath',
-    '%s:%s' % (android_sdk_jar,
-               os.path.join(SDK_DIR, 'extras', 'android', 'support',
-                            'annotations', 'android-support-annotations.jar')),
+    '%s:%s' % (os.path.abspath(android_sdk_jar),
+               os.path.abspath(options.support_annotations_jar)),
   ]
   for subdir, _, files in os.walk(src_dir):
     for filename in files:
@@ -91,6 +92,8 @@ def main():
   parser.add_option('--readme-file', help='Path of the README.md')
   parser.add_option('--zip-file', help='Path to ZIP archive of javadocs.')
   parser.add_option('--android-sdk-jar', help='Path to android.jar')
+  parser.add_option('--support-annotations-jar',
+                    help='Path to support-annotations-$VERSION.jar')
 
   options, _ = parser.parse_args()
   # A temporary directory to put the output of cronet api source jar files.

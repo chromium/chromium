@@ -38,6 +38,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/resource_context.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_client.h"
 #include "content/public/common/content_constants.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/process_type.h"
@@ -114,8 +115,8 @@ PluginServiceImpl::~PluginServiceImpl() {
 }
 
 void PluginServiceImpl::Init() {
-  plugin_list_task_runner_ = base::CreateSequencedTaskRunnerWithTraits(
-      {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+  plugin_list_task_runner_ = base::CreateSequencedTaskRunner(
+      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::USER_VISIBLE,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
 
   // Setup the sequence checker right after setting up the task runner.
@@ -274,9 +275,9 @@ void PluginServiceImpl::OpenChannelToPpapiBroker(
     int render_frame_id,
     const base::FilePath& path,
     PpapiPluginProcessHost::BrokerClient* client) {
-  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
-                           base::BindOnce(&PluginServiceImpl::RecordBrokerUsage,
-                                          render_process_id, render_frame_id));
+  base::PostTask(FROM_HERE, {BrowserThread::UI},
+                 base::BindOnce(&PluginServiceImpl::RecordBrokerUsage,
+                                render_process_id, render_frame_id));
 
   PpapiPluginProcessHost* plugin_host = FindOrStartPpapiBrokerProcess(
       render_process_id, path);
@@ -300,7 +301,6 @@ bool PluginServiceImpl::GetPluginInfoArray(
 
 bool PluginServiceImpl::GetPluginInfo(int render_process_id,
                                       int render_frame_id,
-                                      ResourceContext* context,
                                       const GURL& url,
                                       const url::Origin& main_frame_origin,
                                       const std::string& mime_type,
@@ -308,6 +308,7 @@ bool PluginServiceImpl::GetPluginInfo(int render_process_id,
                                       bool* is_stale,
                                       WebPluginInfo* info,
                                       std::string* actual_mime_type) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   std::vector<WebPluginInfo> plugins;
   std::vector<std::string> mime_types;
   bool stale = GetPluginInfoArray(
@@ -317,8 +318,8 @@ bool PluginServiceImpl::GetPluginInfo(int render_process_id,
 
   for (size_t i = 0; i < plugins.size(); ++i) {
     if (!filter_ ||
-        filter_->IsPluginAvailable(render_process_id, render_frame_id, context,
-                                   url, main_frame_origin, &plugins[i])) {
+        filter_->IsPluginAvailable(render_process_id, render_frame_id, url,
+                                   main_frame_origin, &plugins[i])) {
       *info = plugins[i];
       if (actual_mime_type)
         *actual_mime_type = mime_types[i];
@@ -413,7 +414,7 @@ static const unsigned int kMaxCrashesPerInterval = 3;
 static const unsigned int kCrashesInterval = 120;
 
 void PluginServiceImpl::RegisterPluginCrash(const base::FilePath& path) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto i = crash_times_.find(path);
   if (i == crash_times_.end()) {
     crash_times_[path] = std::vector<base::Time>();
@@ -427,7 +428,7 @@ void PluginServiceImpl::RegisterPluginCrash(const base::FilePath& path) {
 }
 
 bool PluginServiceImpl::IsPluginUnstable(const base::FilePath& path) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   std::map<base::FilePath, std::vector<base::Time> >::const_iterator i =
       crash_times_.find(path);
   if (i == crash_times_.end()) {

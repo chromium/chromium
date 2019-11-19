@@ -12,10 +12,10 @@
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "google_apis/gcm/engine/connection_handler_impl.h"
 #include "google_apis/gcm/monitoring/gcm_stats_recorder.h"
 #include "google_apis/gcm/protocol/mcs.pb.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/proxy_fallback.h"
@@ -54,6 +54,7 @@ ConnectionFactoryImpl::ConnectionFactoryImpl(
     const std::vector<GURL>& mcs_endpoints,
     const net::BackoffEntry::Policy& backoff_policy,
     GetProxyResolvingFactoryCallback get_socket_factory_callback,
+    scoped_refptr<base::SequencedTaskRunner> io_task_runner,
     GCMStatsRecorder* recorder,
     network::NetworkConnectionTracker* network_connection_tracker)
     : mcs_endpoints_(mcs_endpoints),
@@ -65,11 +66,12 @@ ConnectionFactoryImpl::ConnectionFactoryImpl(
       waiting_for_backoff_(false),
       waiting_for_network_online_(false),
       handshake_in_progress_(false),
+      io_task_runner_(std::move(io_task_runner)),
       recorder_(recorder),
       network_connection_tracker_(network_connection_tracker),
-      listener_(NULL),
-      weak_ptr_factory_(this) {
+      listener_(nullptr) {
   DCHECK_GE(mcs_endpoints_.size(), 1U);
+  DCHECK(io_task_runner_);
 }
 
 ConnectionFactoryImpl::~ConnectionFactoryImpl() {
@@ -128,6 +130,8 @@ ConnectionEventTracker* ConnectionFactoryImpl::GetEventTrackerForTesting() {
 }
 
 void ConnectionFactoryImpl::ConnectWithBackoff() {
+  DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
+
   // If a canary managed to connect while a backoff expiration was pending,
   // just cleanup the internal state.
   if (connecting_ || handshake_in_progress_ || IsEndpointReachable()) {
@@ -142,7 +146,7 @@ void ConnectionFactoryImpl::ConnectWithBackoff() {
     waiting_for_backoff_ = true;
     recorder_->RecordConnectionDelayedDueToBackoff(
         backoff_entry_->GetTimeUntilRelease().InMilliseconds());
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    io_task_runner_->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&ConnectionFactoryImpl::ConnectWithBackoff,
                        weak_ptr_factory_.GetWeakPtr()),
@@ -312,7 +316,9 @@ void ConnectionFactoryImpl::StartConnection() {
   GURL current_endpoint = GetCurrentEndpoint();
   recorder_->RecordConnectionInitiated(current_endpoint.host());
 
-  get_socket_factory_callback_.Run(mojo::MakeRequest(&socket_factory_));
+  socket_factory_.reset();
+  get_socket_factory_callback_.Run(
+      socket_factory_.BindNewPipeAndPassReceiver());
 
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("gcm_connection_factory", R"(
@@ -356,7 +362,7 @@ void ConnectionFactoryImpl::StartConnection() {
   socket_factory_->CreateProxyResolvingSocket(
       current_endpoint, std::move(options),
       net::MutableNetworkTrafficAnnotationTag(traffic_annotation),
-      mojo::MakeRequest(&socket_), nullptr /* observer */,
+      socket_.BindNewPipeAndPassReceiver(), mojo::NullRemote() /* observer */,
       base::BindOnce(&ConnectionFactoryImpl::OnConnectDone,
                      base::Unretained(this)));
 }
@@ -387,8 +393,9 @@ ConnectionFactoryImpl::CreateConnectionHandler(
     const ConnectionHandler::ProtoReceivedCallback& read_callback,
     const ConnectionHandler::ProtoSentCallback& write_callback,
     const ConnectionHandler::ConnectionChangedCallback& connection_callback) {
-  return base::WrapUnique<ConnectionHandler>(new ConnectionHandlerImpl(
-      read_timeout, read_callback, write_callback, connection_callback));
+  return base::WrapUnique<ConnectionHandler>(
+      new ConnectionHandlerImpl(io_task_runner_, read_timeout, read_callback,
+                                write_callback, connection_callback));
 }
 
 base::TimeTicks ConnectionFactoryImpl::NowTicks() {

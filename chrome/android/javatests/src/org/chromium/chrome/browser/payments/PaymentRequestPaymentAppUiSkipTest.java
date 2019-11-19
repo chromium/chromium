@@ -13,6 +13,7 @@ import static org.chromium.chrome.browser.payments.PaymentRequestTestRule.IMMEDI
 import android.support.test.filters.MediumTest;
 
 import org.junit.Assert;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,8 +25,8 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeFeatureList;
 import org.chromium.chrome.browser.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ui.DisableAnimationsTestRule;
 
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -38,9 +39,31 @@ import java.util.concurrent.TimeoutException;
         "disable-features=" + ChromeFeatureList.ANDROID_PAYMENT_APPS,
         "disable-features=" + ChromeFeatureList.SERVICE_WORKER_PAYMENT_APPS})
 public class PaymentRequestPaymentAppUiSkipTest {
+    // Disable animations to reduce flakiness.
+    @ClassRule
+    public static DisableAnimationsTestRule sNoAnimationsRule = new DisableAnimationsTestRule();
+
     @Rule
     public PaymentRequestTestRule mPaymentRequestTestRule =
             new PaymentRequestTestRule("payment_request_bobpay_ui_skip_test.html");
+
+    /** If the transaction fails, the browser shows an error message. */
+    @Test
+    @MediumTest
+    @Feature({"Payments"})
+    public void testFail() throws TimeoutException {
+        mPaymentRequestTestRule.installPaymentApp(HAVE_INSTRUMENTS, IMMEDIATE_RESPONSE);
+
+        // Wait for the error message overlay.
+        mPaymentRequestTestRule.triggerUIAndWait(
+                "buyFail", mPaymentRequestTestRule.getResultReady());
+
+        // Dismiss the error message overlay.
+        mPaymentRequestTestRule.clickErrorOverlayAndWait(
+                R.id.ok_button, mPaymentRequestTestRule.getCompleteReplied());
+
+        mPaymentRequestTestRule.expectResultContains(new String[] {"Transaction failed"});
+    }
 
     /**
      * If Bob Pay is supported and installed, user should be able to pay with it. Here Bob Pay
@@ -49,8 +72,7 @@ public class PaymentRequestPaymentAppUiSkipTest {
     @Test
     @MediumTest
     @Feature({"Payments"})
-    public void testPayViaFastBobPay()
-            throws InterruptedException, ExecutionException, TimeoutException {
+    public void testPayViaFastBobPay() throws TimeoutException {
         mPaymentRequestTestRule.installPaymentApp(HAVE_INSTRUMENTS, IMMEDIATE_RESPONSE);
         mPaymentRequestTestRule.openPageAndClickBuyAndWait(mPaymentRequestTestRule.getDismissed());
         mPaymentRequestTestRule.expectResultContains(
@@ -64,8 +86,7 @@ public class PaymentRequestPaymentAppUiSkipTest {
     @Test
     @MediumTest
     @Feature({"Payments"})
-    public void testPayViaSlowBobPay()
-            throws InterruptedException, ExecutionException, TimeoutException {
+    public void testPayViaSlowBobPay() throws TimeoutException {
         mPaymentRequestTestRule.installPaymentApp(HAVE_INSTRUMENTS, DELAYED_RESPONSE);
         mPaymentRequestTestRule.openPageAndClickBuyAndWait(mPaymentRequestTestRule.getDismissed());
         mPaymentRequestTestRule.expectResultContains(
@@ -79,8 +100,7 @@ public class PaymentRequestPaymentAppUiSkipTest {
     @Test
     @MediumTest
     @Feature({"Payments"})
-    public void testPayViaDelayedFastBobPay()
-            throws InterruptedException, ExecutionException, TimeoutException {
+    public void testPayViaDelayedFastBobPay() throws TimeoutException {
         mPaymentRequestTestRule.installPaymentApp(
                 "https://bobpay.com", HAVE_INSTRUMENTS, IMMEDIATE_RESPONSE, DELAYED_CREATION);
         mPaymentRequestTestRule.openPageAndClickBuyAndWait(mPaymentRequestTestRule.getDismissed());
@@ -95,8 +115,7 @@ public class PaymentRequestPaymentAppUiSkipTest {
     @Test
     @MediumTest
     @Feature({"Payments"})
-    public void testPayViaDelayedSlowBobPay()
-            throws InterruptedException, ExecutionException, TimeoutException {
+    public void testPayViaDelayedSlowBobPay() throws TimeoutException {
         mPaymentRequestTestRule.installPaymentApp(
                 "https://bobpay.com", HAVE_INSTRUMENTS, DELAYED_RESPONSE, DELAYED_CREATION);
         mPaymentRequestTestRule.openPageAndClickBuyAndWait(mPaymentRequestTestRule.getDismissed());
@@ -106,16 +125,16 @@ public class PaymentRequestPaymentAppUiSkipTest {
                 RecordHistogram.getHistogramValueCountForTesting("PaymentRequest.Events",
                         Event.REQUEST_METHOD_OTHER | Event.HAD_INITIAL_FORM_OF_PAYMENT
                                 | Event.HAD_NECESSARY_COMPLETE_SUGGESTIONS | Event.SKIPPED_SHOW
-                                | Event.SELECTED_OTHER | Event.PAY_CLICKED
-                                | Event.RECEIVED_INSTRUMENT_DETAILS | Event.COMPLETED));
+                                | Event.AVAILABLE_METHOD_OTHER | Event.SELECTED_OTHER
+                                | Event.PAY_CLICKED | Event.RECEIVED_INSTRUMENT_DETAILS
+                                | Event.COMPLETED));
     }
 
     /** Two payments apps with the same payment method name should not skip payments UI. */
     @Test
     @MediumTest
     @Feature({"Payments"})
-    public void testTwoPaymentsAppsWithTheSamePaymentMethodName()
-            throws InterruptedException, ExecutionException, TimeoutException {
+    public void testTwoPaymentsAppsWithTheSamePaymentMethodName() throws TimeoutException {
         mPaymentRequestTestRule.installPaymentApp(
                 "https://bobpay.com", HAVE_INSTRUMENTS, IMMEDIATE_RESPONSE, IMMEDIATE_CREATION);
         mPaymentRequestTestRule.installPaymentApp(
@@ -129,7 +148,8 @@ public class PaymentRequestPaymentAppUiSkipTest {
                 RecordHistogram.getHistogramValueCountForTesting("PaymentRequest.Events",
                         Event.REQUEST_METHOD_OTHER | Event.HAD_INITIAL_FORM_OF_PAYMENT
                                 | Event.HAD_NECESSARY_COMPLETE_SUGGESTIONS | Event.SHOWN
-                                | Event.SELECTED_OTHER | Event.PAY_CLICKED
-                                | Event.RECEIVED_INSTRUMENT_DETAILS | Event.COMPLETED));
+                                | Event.AVAILABLE_METHOD_OTHER | Event.SELECTED_OTHER
+                                | Event.PAY_CLICKED | Event.RECEIVED_INSTRUMENT_DETAILS
+                                | Event.COMPLETED));
     }
 }

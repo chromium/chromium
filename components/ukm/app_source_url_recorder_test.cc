@@ -5,7 +5,7 @@
 #include "components/ukm/app_source_url_recorder.h"
 
 #include "base/test/scoped_feature_list.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -29,7 +29,7 @@ class AppSourceUrlRecorderTest : public testing::Test {
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   TestAutoSetUkmRecorder test_ukm_recorder_;
 };
 

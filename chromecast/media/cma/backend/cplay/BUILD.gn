@@ -10,9 +10,9 @@ executable("cplay") {
   deps = [
     "//base",
     "//chromecast/media/cma/backend:cast_audio_json",
-    "//chromecast/media/cma/backend:mixer_pipeline",
     "//chromecast/media/cma/backend:public",
     "//chromecast/media/cma/backend:volume_map",
+    "//chromecast/media/cma/backend/mixer",
     "//chromecast/public",
     "//chromecast/public/media",
     "//media",

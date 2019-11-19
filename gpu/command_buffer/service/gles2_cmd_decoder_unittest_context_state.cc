@@ -64,8 +64,6 @@ void SetupUpdateES3UnpackParametersExpectations(::gl::MockGLInterface* gl,
 
 }  // namespace anonymous
 
-using namespace cmds;
-
 class GLES2DecoderRestoreStateTest : public GLES2DecoderManualInitTest {
  public:
   GLES2DecoderRestoreStateTest() = default;
@@ -243,7 +241,7 @@ TEST_P(GLES2DecoderRestoreStateTest, ActiveUnit1) {
 
   // Bind a non-default texture to GL_TEXTURE1 unit.
   EXPECT_CALL(*gl_, ActiveTexture(GL_TEXTURE1));
-  ActiveTexture cmd;
+  cmds::ActiveTexture cmd;
   cmd.Init(GL_TEXTURE1);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
@@ -274,8 +272,8 @@ TEST_P(GLES2DecoderRestoreStateTest, NonDefaultUnit0BGR) {
 
   // Bind a non-default texture to GL_TEXTURE1 unit.
   EXPECT_CALL(*gl_, ActiveTexture(GL_TEXTURE1));
-  SpecializedSetup<ActiveTexture, 0>(true);
-  ActiveTexture cmd;
+  SpecializedSetup<cmds::ActiveTexture, 0>(true);
+  cmds::ActiveTexture cmd;
   cmd.Init(GL_TEXTURE1);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
@@ -343,8 +341,8 @@ TEST_P(GLES2DecoderRestoreStateTest, DefaultUnit0) {
 
   // Bind a non-default texture to GL_TEXTURE1 unit.
   EXPECT_CALL(*gl_, ActiveTexture(GL_TEXTURE1));
-  SpecializedSetup<ActiveTexture, 0>(true);
-  ActiveTexture cmd;
+  SpecializedSetup<cmds::ActiveTexture, 0>(true);
+  cmds::ActiveTexture cmd;
   cmd.Init(GL_TEXTURE1);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
@@ -529,7 +527,7 @@ TEST_P(GLES3DecoderTest, ES3PixelStoreiWithPixelUnpackBuffer) {
   // Without PIXEL_UNPACK_BUFFER bound, PixelStorei with unpack parameters
   // is cached and not passed down to GL.
   EXPECT_CALL(*gl_, PixelStorei(_, _)).Times(0);
-  PixelStorei cmd;
+  cmds::PixelStorei cmd;
   cmd.Init(GL_UNPACK_ROW_LENGTH, 8);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
 
@@ -567,7 +565,7 @@ TEST_P(GLES2DecoderManualInitTest, MipmapHintOnCoreProfile) {
   init.gl_version = "3.2";
   InitDecoder(init);
 
-  Hint cmd;
+  cmds::Hint cmd;
   cmd.Init(GL_GENERATE_MIPMAP_HINT, GL_NICEST);
 
   EXPECT_CALL(*gl_, Hint(GL_GENERATE_MIPMAP_HINT, GL_NICEST)).Times(0);
@@ -583,7 +581,7 @@ TEST_P(GLES2DecoderManualInitTest, MipmapHintOnCompatibilityProfile) {
   init.extensions += " GL_ARB_compatibility";
   InitDecoder(init);
 
-  Hint cmd;
+  cmds::Hint cmd;
   cmd.Init(GL_GENERATE_MIPMAP_HINT, GL_NICEST);
 
   EXPECT_CALL(*gl_, Hint(GL_GENERATE_MIPMAP_HINT, GL_NICEST))

@@ -12,6 +12,7 @@
 #include "chromecast/common/mojom/media_caps.mojom.h"
 #include "chromecast/common/mojom/media_playback_options.mojom.h"
 #include "chromecast/common/mojom/memory_pressure.mojom.h"
+#include "chromecast/common/mojom/queryable_data_store.mojom.h"
 #include "media/mojo/services/media_manifest.h"
 #include "services/service_manager/public/cpp/manifest_builder.h"
 
@@ -53,7 +54,8 @@ const service_manager::Manifest& GetCastContentRendererOverlayManifest() {
         .ExposeInterfaceFilterCapability_Deprecated(
             "navigation:frame", "browser",
             service_manager::Manifest::InterfaceList<
-                mojom::FeatureManager, mojom::MediaPlaybackOptions>())
+                mojom::FeatureManager, mojom::MediaPlaybackOptions,
+                mojom::QueryableDataStore>())
         .Build()
 #if defined(USE_INTERNAL_OVERLAY_MANIFESTS)
         .Amend(cast_content_renderer_internal_manifest_overlay::GetManifest())

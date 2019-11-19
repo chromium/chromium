@@ -34,10 +34,8 @@ class TestWebContentsDelegate : public content::WebContentsDelegate {};
 class PrintPreviewDialogDestroyedObserver : public WebContentsObserver {
  public:
   explicit PrintPreviewDialogDestroyedObserver(WebContents* dialog)
-      : WebContentsObserver(dialog),
-        dialog_destroyed_(false) {
-  }
-  ~PrintPreviewDialogDestroyedObserver() override {}
+      : WebContentsObserver(dialog) {}
+  ~PrintPreviewDialogDestroyedObserver() override = default;
 
   bool dialog_destroyed() const { return dialog_destroyed_; }
 
@@ -45,7 +43,7 @@ class PrintPreviewDialogDestroyedObserver : public WebContentsObserver {
   // content::WebContentsObserver implementation.
   void WebContentsDestroyed() override { dialog_destroyed_ = true; }
 
-  bool dialog_destroyed_;
+  bool dialog_destroyed_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(PrintPreviewDialogDestroyedObserver);
 };
@@ -371,4 +369,5 @@ TEST_F(PrintPreviewDialogControllerUnitTest, MultiplePreviewDialogsClose) {
           web_contents_2->GetMainFrame()->GetProcess());
   rph->SimulateCrash();
 }
+
 }  // namespace printing

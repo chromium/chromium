@@ -18,6 +18,8 @@
 #include "third_party/blink/renderer/core/html/html_unknown_element.h"
 #include "third_party/blink/renderer/core/html_element_factory.h"
 #include "third_party/blink/renderer/core/html_element_type_helpers.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
 
 namespace blink {
@@ -137,7 +139,7 @@ HTMLElement* CustomElement::CreateCustomElement(Document& document,
     return definition->CreateElement(document, tag_name, flags);
   }
   // 7. Otherwise:
-  return ToHTMLElement(
+  return To<HTMLElement>(
       CreateUncustomizedOrUndefinedElementTemplate<kQNameIsValid>(
           document, tag_name, flags, g_null_atom));
 }
@@ -156,19 +158,27 @@ Element* CustomElement::CreateUncustomizedOrUndefinedElementTemplate(
   }
 
   Element* element;
-  if (V0CustomElement::IsValidName(tag_name.LocalName()) &&
-      document.RegistrationContext()) {
-    element = document.RegistrationContext()->CreateCustomTagElement(document,
-                                                                     tag_name);
+  if (RuntimeEnabledFeatures::CustomElementsV0Enabled(&document)) {
+    if (V0CustomElement::IsValidName(tag_name.LocalName()) &&
+        document.RegistrationContext()) {
+      element = document.RegistrationContext()->CreateCustomTagElement(
+          document, tag_name);
+    } else {
+      element = document.CreateRawElement(tag_name, flags);
+      if (level == kCheckAll && !is_value.IsNull()) {
+        element->SetIsValue(is_value);
+        if (flags.IsCustomElementsV0()) {
+          V0CustomElementRegistrationContext::SetTypeExtension(element,
+                                                               is_value);
+        }
+      }
+    }
   } else {
     // 7.1. Let interface be the element interface for localName and namespace.
     // 7.2. Set result to a new element that implements interface, with ...
     element = document.CreateRawElement(tag_name, flags);
-    if (level == kCheckAll && !is_value.IsNull()) {
+    if (level == kCheckAll && !is_value.IsNull())
       element->SetIsValue(is_value);
-      if (flags.IsCustomElementsV0())
-        V0CustomElementRegistrationContext::SetTypeExtension(element, is_value);
-    }
   }
 
   // 7.3. If namespace is the HTML namespace, and either localName is a
@@ -205,7 +215,7 @@ HTMLElement* CustomElement::CreateFailedElement(Document& document,
   // given namespace, namespace prefix set to null, custom element state set
   // to "failed", and node document set to document.
 
-  HTMLElement* element = HTMLUnknownElement::Create(tag_name, document);
+  auto* element = MakeGarbageCollected<HTMLUnknownElement>(tag_name, document);
   element->SetCustomElementState(CustomElementState::kFailed);
   return element;
 }
@@ -274,21 +284,22 @@ void CustomElement::EnqueueFormResetCallback(Element& element) {
   }
 }
 
-void CustomElement::EnqueueDisabledStateChangedCallback(Element& element,
-                                                        bool is_disabled) {
+void CustomElement::EnqueueFormDisabledCallback(Element& element,
+                                                bool is_disabled) {
   auto& definition = *DefinitionForElementWithoutCheck(element);
-  if (definition.HasDisabledStateChangedCallback()) {
-    Enqueue(element, CustomElementReactionFactory::CreateDisabledStateChanged(
+  if (definition.HasFormDisabledCallback()) {
+    Enqueue(element, CustomElementReactionFactory::CreateFormDisabled(
                          definition, is_disabled));
   }
 }
 
-void CustomElement::EnqueueRestoreValueCallback(Element& element,
-                                                const FileOrUSVString& value,
-                                                const String& mode) {
+void CustomElement::EnqueueFormStateRestoreCallback(
+    Element& element,
+    const FileOrUSVStringOrFormData& value,
+    const String& mode) {
   auto& definition = *DefinitionForElementWithoutCheck(element);
-  if (definition.HasRestoreValueCallback()) {
-    Enqueue(element, CustomElementReactionFactory::CreateRestoreValue(
+  if (definition.HasFormStateRestoreCallback()) {
+    Enqueue(element, CustomElementReactionFactory::CreateFormStateRestore(
                          definition, value, mode));
   }
 }

@@ -52,7 +52,7 @@ void GetNSSCertDatabaseForProfile(
     const base::Callback<void(net::NSSCertDatabase*)>& callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&GetCertDBOnIOThread, profile->GetResourceContext(),
                      base::ThreadTaskRunnerHandle::Get(), callback));

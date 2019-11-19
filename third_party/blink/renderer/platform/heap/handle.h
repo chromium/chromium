@@ -37,47 +37,9 @@
 #include "third_party/blink/renderer/platform/heap/heap_traits.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
+#include "third_party/blink/renderer/platform/heap/thread_state_scopes.h"
 #include "third_party/blink/renderer/platform/heap/trace_traits.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
-#if defined(LEAK_SANITIZER)
-#include "third_party/blink/renderer/platform/wtf/leak_annotations.h"
-#endif
-
-namespace blink {
-
-// LEAK_SANITIZER_DISABLED_SCOPE: all allocations made in the current scope
-// will be exempted from LSan consideration.
-//
-// TODO(sof): move this to wtf/LeakAnnotations.h (LeakSanitizer.h?) once
-// wtf/ can freely call upon Oilpan functionality.
-#if defined(LEAK_SANITIZER)
-class LeakSanitizerDisableScope {
-  STACK_ALLOCATED();
-
- public:
-  LeakSanitizerDisableScope() {
-    __lsan_disable();
-    if (ThreadState::Current())
-      ThreadState::Current()->enterStaticReferenceRegistrationDisabledScope();
-  }
-
-  ~LeakSanitizerDisableScope() {
-    __lsan_enable();
-    if (ThreadState::Current())
-      ThreadState::Current()->leaveStaticReferenceRegistrationDisabledScope();
-  }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LeakSanitizerDisableScope);
-};
-#define LEAK_SANITIZER_DISABLED_SCOPE \
-  LeakSanitizerDisableScope lsanDisabledScope
-#else
-#define LEAK_SANITIZER_DISABLED_SCOPE
-#endif
-
-}  // namespace blink
-
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_HANDLE_H_

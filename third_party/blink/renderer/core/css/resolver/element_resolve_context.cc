@@ -30,32 +30,23 @@
 
 namespace blink {
 
-ElementResolveContext::ElementResolveContext(const Document& document)
-    : element_(nullptr),
-      parent_node_(nullptr),
-      layout_parent_(nullptr),
-      root_element_style_(document.documentElement()
-                              ? document.documentElement()->GetComputedStyle()
-                              : document.GetComputedStyle()),
-      element_link_state_(EInsideLink::kNotInsideLink),
-      distributed_to_insertion_point_(false) {}
-
 ElementResolveContext::ElementResolveContext(Element& element)
     : element_(&element),
       element_link_state_(
           element.GetDocument().GetVisitedLinkState().DetermineLinkState(
               element)),
       distributed_to_insertion_point_(false) {
-  LayoutTreeBuilderTraversal::ParentDetails parent_details;
-  if (element.CanParticipateInFlatTree()) {
+  if (!element.NeedsDistributionRecalc() &&
+      element.CanParticipateInFlatTree()) {
+    LayoutTreeBuilderTraversal::ParentDetails parent_details;
     parent_node_ = LayoutTreeBuilderTraversal::Parent(element);
     layout_parent_ =
         LayoutTreeBuilderTraversal::LayoutParent(element, &parent_details);
+    distributed_to_insertion_point_ = parent_details.GetInsertionPoint();
   } else {
     parent_node_ = nullptr;
     layout_parent_ = nullptr;
   }
-  distributed_to_insertion_point_ = parent_details.GetInsertionPoint();
 
   const Document& document = element.GetDocument();
   Node* document_element = document.documentElement();

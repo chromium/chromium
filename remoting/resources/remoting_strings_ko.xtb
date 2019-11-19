@@ -6,16 +6,9 @@
 <translation id="1050693411695664090">나쁨</translation>
 <translation id="1152528166145813711">선택…</translation>
 <translation id="1199593201721843963">원격 연결 사용중지</translation>
+<translation id="1201402288615127009">다음</translation>
 <translation id="1291443878853470558">Chromoting을 사용하여 컴퓨터에 액세스하려면 원격 연결을 사용하도록 설정해야 합니다.</translation>
 <translation id="1297009705180977556"><ph name="HOSTNAME" /> 연결 중 오류가 발생했습니다</translation>
-<translation id="1300633907480909701">Android 기기에서 컴퓨터에 안전하게 액세스하세요.
-
-• Chrome 웹 스토어의 Chrome 원격 데스크톱 앱(https://chrome.google.com/remotedesktop)을 사용하여 각 컴퓨터에서 원격 액세스를 설정합니다.
-• Android 기기에서 앱을 열고 연결할 온라인 컴퓨터를 탭합니다.
-
-원격 컴퓨터에서 미국식 영어 키보드를 사용하지 않는 경우 잘못된 텍스트가 입력될 수 있습니다. 미국식 영어 이외의 키보드 레이아웃은 곧 지원될 예정입니다.
-
-개인정보 보호에 대한 자세한 내용은 Google 개인정보처리방침(http://goo.gl/SyrVzj)과 Chrome 개인정보처리방침(http://goo.gl/0uXE5d)을 참조하세요.</translation>
 <translation id="1324095856329524885">(이 컴퓨터에서 사용할 수 없는 기능입니다.)</translation>
 <translation id="1342297293546459414">공유한 컴퓨터를 보고 제어합니다.</translation>
 <translation id="1389790901665088353">Chrome 원격 데스크톱 호스트 설치 프로그램 다운로드</translation>
@@ -27,8 +20,8 @@
 <translation id="1624185583382384493">이제 웹에서 Chrome 원격 데스크톱을 사용할 수 있습니다. 빠른 속도를 자랑하는 무료 <ph name="LINK_BEGIN" />웹 앱<ph name="LINK_END" />을 사용해 보세요. 여러 대의 모니터를 지원하는 기능이 개선되었으며 그밖에도 더 많은 기능을 제공합니다.</translation>
 <translation id="1643640058022401035">이 페이지를 닫으면 Chromoting 세션이 종료됩니다.</translation>
 <translation id="1654128982815600832">컴퓨터의 원격 연결을 사용하도록 설정 중...</translation>
+<translation id="1697532407822776718">설정 완료</translation>
 <translation id="170207782578677537">컴퓨터를 등록하는 데 실패했습니다.</translation>
-<translation id="1727412735341161734">Chrome 원격 데스크톱</translation>
 <translation id="174018511426417793">등록된 컴퓨터가 없습니다. 컴퓨터에 원격 연결을 사용하려면 Chrome 원격 데스크톱을 설치하고 '<ph name="BUTTON_NAME" />' 버튼을 클릭하세요.</translation>
 <translation id="1742469581923031760">연결 중...</translation>
 <translation id="1770394049404108959">애플리케이션이 열리지 않음</translation>
@@ -46,13 +39,11 @@
 <translation id="2078880767960296260">호스트 프로세스</translation>
 <translation id="20876857123010370">트랙패드 모드</translation>
 <translation id="2089514346391228378">컴퓨터의 원격 연결을 사용하도록 설정했습니다.</translation>
-<translation id="2118549242412205620">Android 기기에서 컴퓨터에 안전하게 액세스하세요.
+<translation id="2198363917176605566"><ph name="PRODUCT_NAME" />을(를) 사용하려면 이 Mac의 화면 내용이 원격 기기에 전송될 수 있도록 '화면 녹화' 권한을 부여해야 합니다.
 
-• Chrome 웹 스토어의 Chrome 원격 데스크톱 앱(https://chrome.google.com/remotedesktop)을 사용하여 각 컴퓨터에서 원격 액세스를 설정할 수 있습니다.
-• Android 기기에서 앱을 열고 연결할 온라인 컴퓨터를 탭합니다.
+권한을 부여하려면 아래의 ‘<ph name="BUTTON_NAME" />’ 버튼을 클릭하여 ‘화면 녹화’ 환경설정 창을 연 다음 ‘<ph name="SERVICE_SCRIPT_NAME" />’ 옆의 체크박스를 선택하세요.
 
-개인정보 보호에 대한 자세한 내용은 Google 개인정보처리방침(http://goo.gl/SyrVzj)과 Chrome 개인정보처리방침(http://goo.gl/0uXE5d)을 참조하세요.</translation>
-<translation id="2124408767156847088">Android 기기에서 컴퓨터에 안전하게 액세스하세요.</translation>
+‘<ph name="SERVICE_SCRIPT_NAME" />’이(가) 이미 선택되어 있다면 선택 해제한 다음 다시 선택합니다.</translation>
 <translation id="2208514473086078157">정책 설정에서 이 컴퓨터를 Chrome 원격 데스크톱 호스트로 공유하는 것을 허용하지 않습니다. 도움이 필요하면 시스템 관리자에게 문의하세요.</translation>
 <translation id="2220529011494928058">문제 신고</translation>
 <translation id="2221097377466213233">오른쪽 Ctrl를 Win 키로 사용(Mac의 경우 ⌘)</translation>
@@ -64,13 +55,13 @@
 <translation id="2314101195544969792"><ph name="APPLICATION_NAME" /> 세션이 일정 시간 비활성화 상태였으므로 곧 연결 해제됩니다.</translation>
 <translation id="2317666076142640974">새로운 <ph name="LINK_BEGIN" />Chrome 원격 데스크톱 웹 앱<ph name="LINK_END" />을 미리 체험해 보시고 의견을 들려주세요.</translation>
 <translation id="2320166752086256636">키보드 숨기기</translation>
-<translation id="2332192922827071008">환경설정 열기</translation>
 <translation id="2353140552984634198">Chromoting을 사용하여 컴퓨터에 안전하게 액세스할 수 있습니다.</translation>
 <translation id="2359808026110333948">계속</translation>
 <translation id="2366718077645204424">호스트에 연결할 수 없습니다. 사용 중인 네트워크의 구성 때문일 수 있습니다.</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />  <ph name="RELATIVE_TIMESTAMP" /> 온라인에 마지막으로 연결했습니다.</translation>
 <translation id="2405928220797050937">이 앱은 더 이상 지원되지 않습니다. 최신 기능과 보안 업데이트를 받으려면 <ph name="LINK_BEGIN" />Chrome 원격 데스크톱 웹 앱<ph name="LINK_END" />을 사용하시기 바랍니다.</translation>
 <translation id="2499160551253595098">사용 통계 및 비정상 종료 보고서 수집을 허용하여 Chrome 원격 데스크톱 개선에 참여하겠습니다.</translation>
+<translation id="2504109125669302160"><ph name="PRODUCT_NAME" />에 '접근성' 권한 부여</translation>
 <translation id="2509394361235492552"><ph name="HOSTNAME" />에 연결되었습니다</translation>
 <translation id="2512228156274966424">참고: 모든 단축키를 사용하려면 Chrome 원격 데스크톱을 '창으로 열기'로 설정합니다.</translation>
 <translation id="2540992418118313681">이 컴퓨터를 다른 사용자가 보고 제어하도록 공유하시겠습니까?</translation>
@@ -86,11 +77,6 @@
 <translation id="2851754573186462851">Chromium 앱 스트리밍</translation>
 <translation id="2888969873284818612">네트워크 오류가 발생했습니다. 기기가 다시 온라인 상태가 되면 앱을 다시 시작하겠습니다.</translation>
 <translation id="2891243864890517178">Mac용(OS X Yosemite 10.10 이상)</translation>
-<translation id="289405675947420287">iOS 기기에서 컴퓨터에 안전하게 액세스하세요. 빠르고 간편하게 무료로 이용할 수 있습니다.
-
-• Chrome 웹 스토어에서 원격으로 액세스하려는 컴퓨터에 Chrome 원격 데스크톱 앱을 다운로드합니다.
-• Chrome 원격 데스크톱 소프트웨어를 설치하고 안내에 따라 설정을 완료합니다.
-• iOS 기기에서 앱을 열고 연결할 온라인 컴퓨터를 탭합니다.</translation>
 <translation id="2894654864775534701">이 컴퓨터는 현재 다른 계정으로 공유되어 있습니다.</translation>
 <translation id="2919669478609886916">현재 이 컴퓨터를 다른 사용자와 공유하고 있습니다. 계속 공유하시겠습니까?</translation>
 <translation id="2921543551052660690">이전에 <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)(으)로 로그인한 적이 있습니다. 이 계정으로 컴퓨터에 액세스하려면 이 계정을 사용해 <ph name="LINK_BEGIN" />Chromium에 로그인<ph name="LINK_END" />하고 Chromoting을 다시 설치하세요.</translation>
@@ -104,7 +90,6 @@
 <translation id="310979712355504754">모두 삭제</translation>
 <translation id="3150823315463303127">호스트에서 정책을 확인하지 못했습니다.</translation>
 <translation id="3171922709365450819">이 클라이언트에서는 타사 승인이 필요하기 때문에 이 기기를 지원하지 않습니다.</translation>
-<translation id="3194245623920924351">Chrome 원격 데스크톱</translation>
 <translation id="3197730452537982411">원격 데스크톱</translation>
 <translation id="324272851072175193">이 도움말을 이메일로 보내기</translation>
 <translation id="3258789396564295715">Chrome 원격 데스크톱을 사용하여 컴퓨터에 안전하게 액세스할 수 있습니다.</translation>
@@ -126,8 +111,6 @@
 <translation id="3695446226812920698">자세히 알아보기</translation>
 <translation id="3718805989288361841">Chrome 원격 데스크톱 관련 정책 설정에 오류가 있습니다. 시스템 관리자에게 도움을 요청하세요.</translation>
 <translation id="3776024066357219166">Chrome 원격 데스크톱 세션이 종료되었습니다.</translation>
-<translation id="3846148461359626420">• iPhone X 화면 이동 및 확대/축소 개선
-• 안정성 개선 및 버그 수정</translation>
 <translation id="3870154837782082782">Google Inc.</translation>
 <translation id="3884839335308961732">Chrome 원격 데스크톱스으로 액세스할 수 있도록 아래 계정 및 PIN을 확인하세요.</translation>
 <translation id="3897092660631435901">메뉴</translation>
@@ -153,11 +136,14 @@
 <translation id="4240294130679914010">Chromoting 호스트 제거 프로그램</translation>
 <translation id="4277463233460010382">이 컴퓨터는 한 개 이상의 클라이언트가 PIN을 입력하지 않고도 연결할 수 있도록 구성되었습니다.</translation>
 <translation id="4277736576214464567">액세스 코드가 잘못되었습니다. 다시 시도해 주세요.</translation>
+<translation id="4281844954008187215">서비스 약관</translation>
 <translation id="4361728918881830843">다른 컴퓨터에 원격 연결을 사용하려면 Chrome 원격 데스크톱을 설치하고 '<ph name="BUTTON_NAME" />' 버튼을 클릭하세요.</translation>
 <translation id="4394049700291259645">사용 중지</translation>
 <translation id="4405930547258349619">핵심 라이브러리</translation>
 <translation id="4430435636878359009">컴퓨터에 원격 연결 사용중지</translation>
 <translation id="4430915108080446161">액세스 코드 생성 중...</translation>
+<translation id="443560535555262820">접근성 환경설정 열기</translation>
+<translation id="4450893287417543264">다시 표시하지 않음</translation>
 <translation id="4472575034687746823">시작하기</translation>
 <translation id="4481276415609939789">등록된 컴퓨터가 없습니다. 컴퓨터에 원격 연결을 사용하려면 Chromoting을 설치하고 '<ph name="BUTTON_NAME" />' 버튼을 클릭하세요.</translation>
 <translation id="4513946894732546136">문제 신고</translation>
@@ -170,13 +156,6 @@
 <translation id="4660011489602794167">키보드 표시</translation>
 <translation id="4703302905453407178">필수 구성 요소가 작동이 중지되었습니다. 개발자에게 문제를 신고해 주세요.</translation>
 <translation id="4703799847237267011">Chromoting 세션이 종료되었습니다.</translation>
-<translation id="4706355010316049867">Chrome
-원격
-데스크톱
-액세스
-지원
-컴퓨터
-PC</translation>
 <translation id="4736223761657662401">연결 기록</translation>
 <translation id="4741792197137897469">인증에 실패했습니다. Chrome에 다시 로그인하세요.</translation>
 <translation id="477305884757156764">애플리케이션이 너무 느림</translation>
@@ -193,9 +172,6 @@ PC</translation>
 <translation id="4973800994433240357">Chromoting 호스트 설치 프로그램을 다운로드하면 Google <ph name="LINK_BEGIN" />서비스 약관<ph name="LINK_END" />에 동의하게 됩니다.</translation>
 <translation id="4974476491460646149"><ph name="HOSTNAME" /> 연결이 종료되었습니다</translation>
 <translation id="4985296110227979402">먼저 컴퓨터를 원격으로 액세스할 수 있도록 설정해야 합니다.</translation>
-<translation id="5059773780693835145"><ph name="PRODUCT_NAME" />을(를) 사용하여 이 기기를 원격으로 제어하려면 먼저 추가 구성 단계를 완료해야 합니다.
-
-이 기능을 사용하려면 '<ph name="BUTTON_NAME" />' 버튼을 선택하여 보안 및 개인정보 보호 환경설정 창을 표시한 후 '<ph name="SERVICE_SCRIPT_NAME" />' 옆의 체크박스를 선택하세요.</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" />(오프라인)</translation>
 <translation id="5070121137485264635">원격 호스트는 타사 웹사이트에 대한 인증이 필요합니다. 계속하려면 이 주소에 액세스할 수 있도록 Chrome 원격 데스크톱에 추가 권한을 허용해야 합니다.</translation>
 <translation id="507204348399810022"><ph name="HOSTNAME" /> 원격 연결을 사용 중지하시겠습니까?</translation>
@@ -205,8 +181,10 @@ PC</translation>
 <translation id="518094545883702183">이 정보는 보고된 문제를 진단하는 데만 사용되고 보고서 조사 담당자만 볼 수 있으며, 30일 이내에 폐기됩니다.</translation>
 <translation id="5204575267916639804">FAQ</translation>
 <translation id="5222676887888702881">로그아웃</translation>
+<translation id="5234764350956374838">숨기기</translation>
 <translation id="5254120496627797685">이 페이지를 닫으면 Chrome 원격 데스크톱 세션이 종료됩니다.</translation>
 <translation id="5308380583665731573">연결</translation>
+<translation id="5327248766486351172">이름</translation>
 <translation id="533625276787323658">연결 대상이 없습니다.</translation>
 <translation id="5363265567587775042">액세스하려는 컴퓨터의 사용자에게 '<ph name="SHARE" />'를 클릭하여 액세스 코드를 달라고 요청하세요.</translation>
 <translation id="5379087427956679853">Chrome 원격 데스크톱을 사용하면 웹에서 내 컴퓨터를 안전하게 공유할 수 있습니다. 양쪽 사용자 모두 <ph name="URL" /> 페이지에 있는 Chrome 원격 데스크톱 앱을 실행해야 합니다.</translation>
@@ -244,14 +222,19 @@ PC</translation>
 <translation id="6198252989419008588">PIN 변경</translation>
 <translation id="6204583485351780592"><ph name="HOSTNAME" />(이전 버전)</translation>
 <translation id="6221358653751391898">Chrome에 로그인하지 않았습니다. 로그인 후 다시 시도하세요.</translation>
+<translation id="6223301979382383752">화면 녹화 환경설정 열기</translation>
 <translation id="6227369581881558336">이제 웹에서 Chrome 원격 데스크톱을 사용할 수 있습니다. 파일 전송 등 새로운 기능도 사용해 보세요. <ph name="LINK_BEGIN" />웹 앱<ph name="LINK_END" />을 확인하세요.</translation>
 <translation id="6284412385303060032">콘솔 로직 화면에서 실행 중인 호스트가 사용자별 세션에서 실행 중인 호스트로 전환하여 커튼 모드를 지원하기 위해 종료되었습니다.</translation>
 <translation id="629730747756840877">계정</translation>
 <translation id="6304318647555713317">클라이언트</translation>
 <translation id="6381670701864002291">기타 문제</translation>
 <translation id="6398765197997659313">전체화면 닫기</translation>
+<translation id="6411861157501911556"><ph name="PRODUCT_NAME" />을(를) 사용하려면 원격 기기에서 입력한 내용이 이 Mac에 삽입될 수 있도록 ‘접근성’ 권한을 부여해야 합니다.
+
+권한을 부여하려면 아래의 ‘<ph name="BUTTON_NAME" />’ 버튼을 클릭하여 ‘접근성’ 환경설정 창을 연 다음 ‘<ph name="SERVICE_SCRIPT_NAME" />’ 옆의 체크박스를 선택하세요.
+
+‘<ph name="SERVICE_SCRIPT_NAME" />’이(가) 이미 선택되어 있다면 선택 해제한 다음 다시 선택합니다.</translation>
 <translation id="6441316101718669559">데스크톱 통합이 이 플랫폼에서 지원되지 않습니다. 애플리케이션을 사용할 수는 있지만, 사용자 환경이 저하될 수 있습니다.</translation>
-<translation id="6502629188777329097">컴퓨터에 안전하게 액세스하기</translation>
 <translation id="652218476070540101">컴퓨터의 PIN을 업데이트 중…</translation>
 <translation id="6527303717912515753">공유</translation>
 <translation id="6541219117979389420">애플리케이션 로그는 사용자의 ID(이메일 주소)와 Google 드라이브에 있는 파일 및 폴더의 이름과 속성 등의 비공개 정보를 포함할 수 있습니다.</translation>
@@ -311,6 +294,7 @@ PC</translation>
 <translation id="7948001860594368197">화면 옵션</translation>
 <translation id="7970576581263377361">인증에 실패했습니다. Chromium에 다시 로그인하세요.</translation>
 <translation id="7981525049612125370">원격 세션이 만료되었습니다.</translation>
+<translation id="8038111231936746805">(기본값)</translation>
 <translation id="8041089156583427627">의견 보내기</translation>
 <translation id="8041721485428375115">Chrome 원격 데스크톱 호스트 설치 프로그램을 다운로드하면 Google <ph name="LINK_BEGIN" />서비스 약관<ph name="LINK_END" />에 동의하게 됩니다.</translation>
 <translation id="8060029310790625334">고객센터</translation>
@@ -320,7 +304,6 @@ PC</translation>
 <translation id="809687642899217504">내 컴퓨터</translation>
 <translation id="811307782653349804">어디서든 내 컴퓨터에 액세스할 수 있습니다.</translation>
 <translation id="8116630183974937060">네트워크 오류가 발생했습니다. 기기가 온라인 상태인지 확인하고 다시 시도하세요.</translation>
-<translation id="8123581458650016326">원격 사용자가 이 기기를 제어하도록 허용</translation>
 <translation id="8178433417677596899">사용자 간 화면 공유가 가능하며 원격 기술 지원에 적합합니다.</translation>
 <translation id="8187079423890319756">Copyright 2013 The Chromium Authors. All rights reserved.</translation>
 <translation id="8196755618196986400">Google이 더 자세한 내용을 확인하기 위해 연락할 수 있도록, 제출한 의견에 사용자의 이메일 주소를 포함해주시기 바랍니다.</translation>
@@ -331,20 +314,22 @@ PC</translation>
 <translation id="837021510621780684">이 컴퓨터에서 시작한 연결</translation>
 <translation id="8383794970363966105">Chromoting을 사용하려면 기기에 Google 계정을 추가해야 합니다.</translation>
 <translation id="8386846956409881180">호스트가 잘못된 OAuth 사용자 인증 정보로 구성되었습니다.</translation>
+<translation id="8397385476380433240"><ph name="PRODUCT_NAME" />에 권한 부여</translation>
+<translation id="8406498562923498210">Chrome 원격 데스크톱 환경에서 실행할 세션을 선택하세요. 일부 세션 유형은 Chrome 원격 데스크톱 및 로컬 콘솔에서의 동시 실행을 지원하지 않을 수 있습니다.</translation>
 <translation id="8428213095426709021">설정</translation>
 <translation id="8445362773033888690">Google Play 스토어에서 보기</translation>
 <translation id="8509907436388546015">데스크톱 통합 프로세스</translation>
 <translation id="8513093439376855948">원격 호스트 관리를 위한 기본 메시징 호스트</translation>
 <translation id="8525306231823319788">전체화면</translation>
 <translation id="8548209692293300397">이전에 <ph name="USER_NAME" />(<ph name="USER_EMAIL" />)(으)로 로그인한 적이 있습니다. 이 계정으로 컴퓨터에 액세스하려면 이 계정을 사용해 <ph name="LINK_BEGIN" />Chrome에 로그인<ph name="LINK_END" />하고 Chrome 원격 데스크톱을 다시 설치하세요.</translation>
+<translation id="858006550102277544">설명</translation>
 <translation id="8642984861538780905">보통</translation>
-<translation id="8705151241155781642">• Android 9.0 Pie 지원 추가
-• Android 기기 화면에 맞게 원격 데스크톱 해상도 크기 조정 지원</translation>
 <translation id="8712909229180978490">Google 드라이브에 저장된 파일을 온라인으로 볼 수 없음</translation>
 <translation id="8743328882720071828"><ph name="CLIENT_USERNAME" />이(가) 컴퓨터를 확인하고 제어할 수 있게 하시겠습니까?</translation>
 <translation id="8747048596626351634">세션이 다운되었거나 시작되지 못했습니다. 원격 컴퓨터에 ~/.chrome-remote-desktop-session이 있는 경우, 세션에서 데스크톱 환경이나 창 관리자와 같이 오랫동안 실행되는 포그라운드 프로세스가 시작되어야 합니다.</translation>
 <translation id="8759753423332885148">자세히 알아보기</translation>
 <translation id="8791202241915690908">Chromoting 호스트 설치 프로그램 다운로드</translation>
+<translation id="8804164990146287819">개인정보처리방침</translation>
 <translation id="894763922177556086">좋음</translation>
 <translation id="895780780740011433">Windows 7 이상용</translation>
 <translation id="897805526397249209">다른 컴퓨터에 원격 연결을 사용하려면 그 컴퓨터에 Chromoting을 설치하고 '<ph name="BUTTON_NAME" />' 버튼을 클릭하세요.</translation>
@@ -355,6 +340,8 @@ PC</translation>
 <translation id="9126115402994542723">이 기기에서 이 호스트로 연결할 때 PIN을 다시 요청하지 않습니다.</translation>
 <translation id="9149580767411232853">원격 데스크톱 전체가 보이도록 표시</translation>
 <translation id="9149992051684092333">데스크톱 공유를 시작하려면 내 데스크톱에 액세스하려는 사용자에게 아래 액세스 코드를 알려주세요.</translation>
+<translation id="916856682307586697">기본 XSession 실행</translation>
+<translation id="9187628920394877737"><ph name="PRODUCT_NAME" />에 '화면 녹화' 권한 부여</translation>
 <translation id="9188433529406846933">승인</translation>
 <translation id="9213184081240281106">호스트 구성이 잘못되었습니다.</translation>
 <translation id="951991426597076286">거부</translation>

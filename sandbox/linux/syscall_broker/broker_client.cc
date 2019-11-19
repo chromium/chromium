@@ -9,6 +9,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <sys/socket.h>
+#include <sys/stat.h>
 
 #include <utility>
 

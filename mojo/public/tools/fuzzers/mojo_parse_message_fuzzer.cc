@@ -3,17 +3,18 @@
 // found in the LICENSE file.
 
 #include "base/bind.h"
-#include "base/message_loop/message_loop.h"
+#include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
-#include "base/task/task_scheduler/task_scheduler.h"
+#include "base/task/single_thread_task_executor.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "mojo/core/embedder/embedder.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/tools/fuzzers/fuzz_impl.h"
 
 void FuzzMessage(const uint8_t* data, size_t size, base::RunLoop* run) {
-  fuzz::mojom::FuzzInterfacePtr fuzz;
-  auto impl = std::make_unique<FuzzImpl>(MakeRequest(&fuzz));
-  auto router = impl->binding_.RouterForTesting();
+  mojo::PendingRemote<fuzz::mojom::FuzzInterface> fuzz;
+  auto impl = std::make_unique<FuzzImpl>(fuzz.InitWithNewPipeAndPassReceiver());
+  auto router = impl->receiver_.internal_state()->RouterForTesting();
 
   /* Create a mojo message with the appropriate payload size. */
   mojo::Message message(0, 0, size, 0, nullptr);
@@ -33,17 +34,17 @@ void FuzzMessage(const uint8_t* data, size_t size, base::RunLoop* run) {
 }
 
 /* Environment for the fuzzer. Initializes the mojo EDK and sets up a
- * TaskScheduler, because Mojo messages must be sent and processed from
+ * ThreadPool, because Mojo messages must be sent and processed from
  * TaskRunners. */
 struct Environment {
-  Environment() : message_loop(base::MessageLoop::TYPE_UI) {
-    base::TaskScheduler::CreateAndStartWithDefaultParams(
+  Environment() : main_thread_task_executor(base::MessagePumpType::UI) {
+    base::ThreadPoolInstance::CreateAndStartWithDefaultParams(
         "MojoParseMessageFuzzerProcess");
     mojo::core::Init();
   }
 
-  /* Message loop to send and handle messages on. */
-  base::MessageLoop message_loop;
+  /* TaskExecutor loop to send and handle messages on. */
+  base::SingleThreadTaskExecutor main_thread_task_executor;
 
   /* Suppress mojo validation failure logs. */
   mojo::internal::ScopedSuppressValidationErrorLoggingForTests log_suppression;
@@ -52,9 +53,9 @@ struct Environment {
 // Entry point for LibFuzzer.
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   static Environment* env = new Environment();
-  /* Pass the data along to run on a MessageLoop, and wait for it to finish. */
+  /* Pass the data along to run on a TaskExecutor, and wait for it to finish. */
   base::RunLoop run;
-  env->message_loop.task_runner()->PostTask(
+  env->main_thread_task_executor.task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&FuzzMessage, data, size, &run));
   run.Run();
 

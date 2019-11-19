@@ -12,10 +12,13 @@
 #include "base/strings/string16.h"
 #include "components/download/public/common/download_item.h"
 #include "components/offline_items_collection/core/offline_item.h"
+#include "components/offline_items_collection/core/rename_result.h"
 
 // Contains various utility methods for conversions between DownloadItem and
 // OfflineItem.
 class OfflineItemUtils {
+  using DownloadRenameResult = download::DownloadItem::DownloadRenameResult;
+
  public:
   static offline_items_collection::OfflineItem CreateOfflineItem(
       const std::string& name_space,
@@ -38,6 +41,11 @@ class OfflineItemUtils {
   // Gets the short text to display for a offline_items_collection::FailState.
   static base::string16 GetFailStateMessage(
       offline_items_collection::FailState fail_state);
+
+  // Converts download::DownloadItem::DownloadRenameResult to
+  // offline_items_collection::RenameResult.
+  static RenameResult ConvertDownloadRenameResultToRenameResult(
+      DownloadRenameResult download_rename_result);
 
  private:
   DISALLOW_COPY_AND_ASSIGN(OfflineItemUtils);

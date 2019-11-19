@@ -31,7 +31,6 @@ Rendering metrics are [written in Javascript](https://cs.chromium.org/chromium/s
 
 -   [cpu\_utilization.html](https://cs.chromium.org/chromium/src/third_party/catapult/tracing/tracing/metrics/rendering/cpu_utilization.html): `cpu_time_per_frame` and `tasks_per_frame`
 -   [frame\_time.html](https://cs.chromium.org/chromium/src/third_party/catapult/tracing/tracing/metrics/rendering/frame_time.html): `frame_times`, `percentage_smooth`, `frame_lengths`, `avg_surface_fps`, `jank_count`, and `ui_frame_times`
--   [latency.html](https://cs.chromium.org/chromium/src/third_party/catapult/tracing/tracing/metrics/rendering/latency.html): `input_event_latency`, `main_thread_scroll_latency`, and `first_gesture_scroll_update_latency`
 -   [pixels.html](https://cs.chromium.org/chromium/src/third_party/catapult/tracing/tracing/metrics/rendering/pixels.html): `mean_pixels_approximated` and `mean_pixels_checkerboarded`
 -   [queueing\_duration.html](https://cs.chromium.org/chromium/src/third_party/catapult/tracing/tracing/metrics/rendering/queueing_duration.html): `queueing_durations`
 

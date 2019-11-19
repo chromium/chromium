@@ -25,19 +25,20 @@
 #include "third_party/blink/renderer/core/svg/graphics/filters/svg_filter_builder.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/platform/graphics/filters/fe_drop_shadow.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
 
-inline SVGFEDropShadowElement::SVGFEDropShadowElement(Document& document)
+SVGFEDropShadowElement::SVGFEDropShadowElement(Document& document)
     : SVGFilterPrimitiveStandardAttributes(svg_names::kFEDropShadowTag,
                                            document),
-      dx_(SVGAnimatedNumber::Create(this, svg_names::kDxAttr, 2)),
-      dy_(SVGAnimatedNumber::Create(this, svg_names::kDyAttr, 2)),
-      std_deviation_(
-          SVGAnimatedNumberOptionalNumber::Create(this,
-                                                  svg_names::kStdDeviationAttr,
-                                                  2)),
-      in1_(SVGAnimatedString::Create(this, svg_names::kInAttr)) {
+      dx_(MakeGarbageCollected<SVGAnimatedNumber>(this, svg_names::kDxAttr, 2)),
+      dy_(MakeGarbageCollected<SVGAnimatedNumber>(this, svg_names::kDyAttr, 2)),
+      std_deviation_(MakeGarbageCollected<SVGAnimatedNumberOptionalNumber>(
+          this,
+          svg_names::kStdDeviationAttr,
+          2)),
+      in1_(MakeGarbageCollected<SVGAnimatedString>(this, svg_names::kInAttr)) {
   AddToPropertyMap(dx_);
   AddToPropertyMap(dy_);
   AddToPropertyMap(std_deviation_);
@@ -51,8 +52,6 @@ void SVGFEDropShadowElement::Trace(blink::Visitor* visitor) {
   visitor->Trace(in1_);
   SVGFilterPrimitiveStandardAttributes::Trace(visitor);
 }
-
-DEFINE_NODE_FACTORY(SVGFEDropShadowElement)
 
 void SVGFEDropShadowElement::setStdDeviation(float x, float y) {
   stdDeviationX()->BaseValue()->SetValue(x);
@@ -108,11 +107,19 @@ FilterEffect* SVGFEDropShadowElement::Build(SVGFilterBuilder* filter_builder,
   // Clamp std.dev. to non-negative. (See SVGFEGaussianBlurElement::build)
   float std_dev_x = std::max(0.0f, stdDeviationX()->CurrentValue()->Value());
   float std_dev_y = std::max(0.0f, stdDeviationY()->CurrentValue()->Value());
-  FilterEffect* effect = FEDropShadow::Create(
+  auto* effect = MakeGarbageCollected<FEDropShadow>(
       filter, std_dev_x, std_dev_y, dx_->CurrentValue()->Value(),
       dy_->CurrentValue()->Value(), color, opacity);
   effect->InputEffects().push_back(input1);
   return effect;
+}
+
+bool SVGFEDropShadowElement::TaintsOrigin() const {
+  const ComputedStyle* style = GetComputedStyle();
+  // TaintsOrigin() is only called after a successful call to Build()
+  // (see above), so we should have a ComputedStyle here.
+  DCHECK(style);
+  return style->SvgStyle().FloodColor().IsCurrentColor();
 }
 
 }  // namespace blink

@@ -32,7 +32,7 @@ TEST_F(FeedContentMutationTest, AppendDeleteOperation) {
   mutation.AppendDeleteOperation(kContentkey);
   EXPECT_FALSE(mutation.Empty());
 
-  ContentOperation operation = mutation.TakeFristOperation();
+  ContentOperation operation = mutation.TakeFirstOperation();
   EXPECT_TRUE(mutation.Empty());
   EXPECT_EQ(operation.type(), ContentOperation::CONTENT_DELETE);
   EXPECT_EQ(operation.key(), kContentkey);
@@ -45,7 +45,7 @@ TEST_F(FeedContentMutationTest, AppendDeleteAllOperation) {
   mutation.AppendDeleteAllOperation();
   EXPECT_FALSE(mutation.Empty());
 
-  ContentOperation operation = mutation.TakeFristOperation();
+  ContentOperation operation = mutation.TakeFirstOperation();
   EXPECT_TRUE(mutation.Empty());
   EXPECT_EQ(operation.type(), ContentOperation::CONTENT_DELETE_ALL);
 }
@@ -57,7 +57,7 @@ TEST_F(FeedContentMutationTest, AppendDeleteByPrefixOperation) {
   mutation.AppendDeleteByPrefixOperation(kContentPrefix);
   EXPECT_FALSE(mutation.Empty());
 
-  ContentOperation operation = mutation.TakeFristOperation();
+  ContentOperation operation = mutation.TakeFirstOperation();
   EXPECT_TRUE(mutation.Empty());
   EXPECT_EQ(operation.type(), ContentOperation::CONTENT_DELETE_BY_PREFIX);
   EXPECT_EQ(operation.prefix(), kContentPrefix);
@@ -70,7 +70,7 @@ TEST_F(FeedContentMutationTest, AppendUpsertOperation) {
   mutation.AppendUpsertOperation(kContentkey, kContentValue);
   EXPECT_FALSE(mutation.Empty());
 
-  ContentOperation operation = mutation.TakeFristOperation();
+  ContentOperation operation = mutation.TakeFirstOperation();
   EXPECT_TRUE(mutation.Empty());
   EXPECT_EQ(operation.type(), ContentOperation::CONTENT_UPSERT);
   EXPECT_EQ(operation.key(), kContentkey);

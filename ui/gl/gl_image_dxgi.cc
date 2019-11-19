@@ -203,6 +203,10 @@ unsigned GLImageDXGI::GetInternalFormat() {
     return HasAlpha(buffer_format_) ? GL_RGBA : GL_RGB;
 }
 
+unsigned GLImageDXGI::GetDataType() {
+  return GL_UNSIGNED_BYTE;
+}
+
 gfx::Size GLImageDXGI::GetSize() {
   return size_;
 }
@@ -221,11 +225,6 @@ void GLImageDXGI::ReleaseTexImage(unsigned target) {
 
   DCHECK(texture_);
   DCHECK(keyed_mutex_);
-
-  Microsoft::WRL::ComPtr<ID3D11Device> device =
-      QueryD3D11DeviceObjectFromANGLE();
-  Microsoft::WRL::ComPtr<ID3D11Device1> device1;
-  device.CopyTo(device1.GetAddressOf());
 
   keyed_mutex_->ReleaseSync(KEY_RELEASE);
 

@@ -24,3 +24,4 @@ generated with the following commands:
 - zip zipfile_no_binaries.zip simple_exe.cc
 - zip zipfile_one_unsigned_binary.zip unsigned.exe
 - zip zipfile_two_binaries_one_signed.zip unsigned.exe signed.exe
+- zip -e encrypted.zip signed.exe

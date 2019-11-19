@@ -9,7 +9,6 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.graphics.Region;
-import android.support.annotation.IntDef;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.View;
@@ -17,6 +16,8 @@ import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.widget.FrameLayout;
+
+import androidx.annotation.IntDef;
 
 import org.chromium.chrome.browser.util.MathUtils;
 import org.chromium.content_public.browser.GestureListenerManager;
@@ -117,7 +118,7 @@ public abstract class SwipableOverlayView extends FrameLayout {
         }
     }
 
-    protected WebContents getWebContents() {
+    public WebContents getWebContents() {
         return mWebContents;
     }
 

@@ -1,0 +1,4 @@
+AriaProperties changed on role=listitem, name=Apple
+AriaProperties changed on role=listitem, name=Orange
+SelectionItem_ElementSelected on role=listitem, name=Orange
+ValueValue changed on role=combobox

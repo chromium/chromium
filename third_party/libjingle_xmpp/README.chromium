@@ -21,8 +21,4 @@ Nothing but Chromium uses this copy. If code in this directory is found to be
 unused in Chromium, it's OK to delete it.
 
 Local Modifications:
-* Include paths in third_party/libjingle_xmpp/xmllite,
-  third_party/libjingle_xmpp/xmpp, and third_party/libjingle_xmpp/task_runner
-  are updated to reflect the new absolute paths to their own and webrtc's
-  headers.
-* disabled unstarted_task_test.DoNotDeleteTask2 under ASan
+This code does not exist in an upstream repo anymore.

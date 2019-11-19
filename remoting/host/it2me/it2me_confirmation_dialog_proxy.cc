@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/macros.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -78,8 +77,7 @@ void It2MeConfirmationDialogProxy::Core::ReportResult(
 
 It2MeConfirmationDialogProxy::It2MeConfirmationDialogProxy(
     scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
-    std::unique_ptr<It2MeConfirmationDialog> dialog)
-    : weak_factory_(this) {
+    std::unique_ptr<It2MeConfirmationDialog> dialog) {
   core_.reset(new Core(ui_task_runner, base::ThreadTaskRunnerHandle::Get(),
                        weak_factory_.GetWeakPtr(), std::move(dialog)));
 }
@@ -105,7 +103,7 @@ void It2MeConfirmationDialogProxy::Show(
 void It2MeConfirmationDialogProxy::ReportResult(
     It2MeConfirmationDialog::Result result) {
   DCHECK(core_->caller_task_runner()->BelongsToCurrentThread());
-  base::ResetAndReturn(&callback_).Run(result);
+  std::move(callback_).Run(result);
 }
 
 }  // namespace remoting

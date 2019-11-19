@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+FAIL application/json+protobuf assert_unreached: Should not load Reached unreachable code
+FAIL application/json+blah assert_unreached: Should not load Reached unreachable code
+PASS text/x-json
+PASS text/json+blah
+PASS application/blahjson
+PASS image/json
+Harness: the test ran to completion.
+

@@ -26,6 +26,10 @@ class MediaKeySystemAccess final : public ScriptWrappable {
   MediaKeySystemConfiguration* getConfiguration() const;
   ScriptPromise createMediaKeys(ScriptState*);
 
+  bool UseHardwareSecureCodecs() const {
+    return access_->UseHardwareSecureCodecs();
+  }
+
  private:
   std::unique_ptr<WebContentDecryptionModuleAccess> access_;
 };

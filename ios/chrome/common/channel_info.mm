@@ -9,6 +9,7 @@
 
 #import "base/mac/bundle_locations.h"
 #import "base/strings/sys_string_conversions.h"
+#include "build/branding_buildflags.h"
 #include "components/version_info/version_info.h"
 #include "components/version_info/version_string.h"
 
@@ -18,7 +19,7 @@
 
 namespace {
 
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 // Channel of the running application, initialized by the first call to
 // GetChannel() and cached for the whole application lifetime.
 version_info::Channel g_channel = version_info::Channel::UNKNOWN;
@@ -31,7 +32,7 @@ std::string GetVersionString() {
 }
 
 std::string GetChannelString() {
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // Only ever return one of "" (for STABLE channel), "unknown", "beta", "dev"
   // or "canary" in branded build.
   switch (GetChannel()) {
@@ -57,7 +58,7 @@ std::string GetChannelString() {
 }
 
 version_info::Channel GetChannel() {
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   static dispatch_once_t channel_dispatch_token;
   dispatch_once(&channel_dispatch_token, ^{
     NSBundle* bundle = base::mac::OuterBundle();

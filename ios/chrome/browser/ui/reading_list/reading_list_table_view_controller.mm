@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/list_model/list_item+Controller.h"
 #import "ios/chrome/browser/ui/reading_list/empty_reading_list_message_util.h"
+#import "ios/chrome/browser/ui/reading_list/reading_list_constants.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_data_sink.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_data_source.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_list_item_updater.h"
@@ -187,7 +188,7 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
 }
 
 + (NSString*)accessibilityIdentifier {
-  return @"ReadingListTableView";
+  return kReadingListViewID;
 }
 
 #pragma mark - UIViewController
@@ -290,6 +291,15 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
   return [self.tableViewModel itemAtIndexPath:indexPath].type == ItemTypeItem;
 }
 
+#pragma mark - UIAdaptivePresentationControllerDelegate
+
+- (void)presentationControllerDidDismiss:
+    (UIPresentationController*)presentationController {
+  // Call the delegate dismissReadingListListViewController to clean up state
+  // and stop the Coordinator.
+  [self.delegate dismissReadingListListViewController:self];
+}
+
 #pragma mark - ChromeTableViewController
 
 - (void)loadModel {
@@ -357,13 +367,6 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
 
 - (BOOL)isItemRead:(id<ReadingListListItem>)item {
   return [self.dataSource isItemRead:item];
-}
-
-- (void)deleteItem:(id<ReadingListListItem>)item {
-  TableViewModel* model = self.tableViewModel;
-  TableViewItem* tableViewItem = base::mac::ObjCCastStrict<TableViewItem>(item);
-  if ([model hasItem:tableViewItem])
-    [self deleteItemsAtIndexPaths:@[ [model indexPathForItem:tableViewItem] ]];
 }
 
 - (void)openItemInNewTab:(id<ReadingListListItem>)item {
@@ -591,6 +594,7 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
       self.selectedUnreadItemCount, self.selectedReadItemCount);
   if (self.toolbarManager.buttonItemsUpdated)
     [self setToolbarItems:[self.toolbarManager buttonItems] animated:YES];
+  [self.toolbarManager updateMarkButtonTitle];
 }
 
 #pragma mark - Item Editing Helpers
@@ -655,6 +659,9 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
                     toSection:(SectionIdentifier)toSection {
   // Reconfigure cells, allowing the custom actions to be updated.
   for (NSIndexPath* indexPath in sortedIndexPaths) {
+    if (![self.tableView cellForRowAtIndexPath:indexPath])
+      continue;
+
     [[self.tableViewModel itemAtIndexPath:indexPath]
         configureCell:[self.tableView cellForRowAtIndexPath:indexPath]
            withStyler:self.styler];
@@ -904,10 +911,10 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
 
 // Called when the table is empty.
 - (void)tableIsEmpty {
-  [self
-      addEmptyTableViewWithAttributedMessage:GetReadingListEmptyMessage()
-                                       image:[UIImage
-                                                 imageNamed:kEmptyStateImage]];
+  UIImage* emptyImage = [[UIImage imageNamed:kEmptyStateImage]
+      imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+  [self addEmptyTableViewWithAttributedMessage:GetReadingListEmptyMessage()
+                                         image:emptyImage];
   [self updateEmptyTableViewMessageAccessibilityLabel:
             GetReadingListEmptyMessageA11yLabel()];
   self.tableView.alwaysBounceVertical = NO;

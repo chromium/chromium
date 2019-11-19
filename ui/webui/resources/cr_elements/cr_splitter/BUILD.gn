@@ -1,0 +1,38 @@
+# Copyright 2018 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/polymer.gni")
+
+js_type_check("closure_compile") {
+  deps = [
+    ":cr_splitter",
+  ]
+}
+
+js_library("cr_splitter") {
+}
+
+polymer_modulizer("cr_splitter") {
+  js_file = "cr_splitter.js"
+  html_file = "cr_splitter.html"
+  html_type = "dom-module"
+}
+
+js_type_check("closure_compile_module") {
+  is_polymer3 = true
+  deps = [
+    ":cr_splitter.m",
+  ]
+}
+
+js_library("cr_splitter.m") {
+  sources = [
+    "$root_gen_dir/ui/webui/resources/cr_elements/cr_splitter/cr_splitter.m.js",
+  ]
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  extra_deps = [ ":cr_splitter_module" ]
+}

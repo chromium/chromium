@@ -404,6 +404,19 @@ function textTrackListItemInnerCheckbox(trackListItem) {
   return null;
 }
 
+function textTrackListItemInnerKindIndicator(trackListItem) {
+  const children = trackListItem.children;
+  for (var i = 0; i < children.length; i++) {
+    const child = children[i];
+    const pseudoId = internals.shadowPseudoId(child);
+    if (pseudoId == "-internal-media-controls-text-track-list-kind-captions" ||
+        pseudoId == "-internal-media-controls-text-track-list-kind-subtitles") {
+      return child;
+    }
+  }
+  return null;
+}
+
 function clickCaptionButton(video, callback) {
   openOverflowAndClickButton(video, captionsOverflowItem(video), callback);
 }
@@ -453,6 +466,17 @@ function runAfterDoubleTapTimerFired(func) {
   // 300ms timer plus 500ms slack.
   const doubleTapTimeoutMs = 300 + 500;
   setTimeout(func, doubleTapTimeoutMs);
+}
+
+// Requests an animation frame.
+function waitForHoverEffectUpdate(func) {
+  // The hover effect is updated at the next animation frame after the layout
+  // changes.
+  return new Promise((resolve) => {
+    requestAnimationFrame(() => {
+      resolve();
+    });
+  });
 }
 
 function hoverMuteButton(video, func) {

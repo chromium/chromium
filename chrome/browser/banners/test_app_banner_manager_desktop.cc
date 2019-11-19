@@ -30,17 +30,19 @@ TestAppBannerManagerDesktop* TestAppBannerManagerDesktop::CreateForWebContents(
   return result;
 }
 
-bool TestAppBannerManagerDesktop::WaitForInstallableCheck() {
-  DCHECK(IsExperimentalAppBannersEnabled());
+void TestAppBannerManagerDesktop::WaitForInstallableCheckTearDown() {
+  base::RunLoop run_loop;
+  tear_down_quit_closure_ = run_loop.QuitClosure();
+  run_loop.Run();
+}
 
+bool TestAppBannerManagerDesktop::WaitForInstallableCheck() {
   if (!installable_.has_value()) {
     base::RunLoop run_loop;
-    quit_closure_ = run_loop.QuitClosure();
+    installable_quit_closure_ = run_loop.QuitClosure();
     run_loop.Run();
   }
-  bool installable = *installable_;
-  installable_.reset();
-  return installable;
+  return *installable_;
 }
 
 void TestAppBannerManagerDesktop::OnDidGetManifest(
@@ -50,20 +52,27 @@ void TestAppBannerManagerDesktop::OnDidGetManifest(
   // AppBannerManagerDesktop does not call |OnDidPerformInstallableCheck| to
   // complete the installability check in this case, instead it early exits
   // with failure.
-  if (result.error_code != NO_ERROR_DETECTED)
+  if (!result.errors.empty())
     SetInstallable(false);
 }
-void TestAppBannerManagerDesktop::OnDidPerformInstallableCheck(
+void TestAppBannerManagerDesktop::OnDidPerformInstallableWebAppCheck(
     const InstallableData& result) {
-  AppBannerManagerDesktop::OnDidPerformInstallableCheck(result);
-  SetInstallable(result.error_code == NO_ERROR_DETECTED);
+  AppBannerManagerDesktop::OnDidPerformInstallableWebAppCheck(result);
+  SetInstallable(result.errors.empty());
+}
+
+void TestAppBannerManagerDesktop::ResetCurrentPageData() {
+  AppBannerManagerDesktop::ResetCurrentPageData();
+  installable_.reset();
+  if (tear_down_quit_closure_)
+    std::move(tear_down_quit_closure_).Run();
 }
 
 void TestAppBannerManagerDesktop::SetInstallable(bool installable) {
   DCHECK(!installable_.has_value());
   installable_ = installable;
-  if (quit_closure_)
-    std::move(quit_closure_).Run();
+  if (installable_quit_closure_)
+    std::move(installable_quit_closure_).Run();
 }
 
 }  // namespace banners

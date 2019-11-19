@@ -8,6 +8,8 @@
 
 #import "base/ios/block_types.h"
 #import "base/mac/foundation_util.h"
+#include "base/strings/sys_string_conversions.h"
+#import "ios/chrome/common/app_group/app_group_command.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/share_extension/share_extension_view.h"
 #import "ios/chrome/share_extension/ui_util.h"
@@ -86,7 +88,12 @@ const CGFloat kMediumAlpha = 0.5;
 
   // This view shadows the screen under the share extension.
   UIView* maskView = [[UIView alloc] initWithFrame:CGRectZero];
-  [self setMaskView:maskView];
+  self.maskView = maskView;
+  // On iOS 13, the default share extension presentation style already has a
+  // mask behind the view.
+  if (@available(iOS 13, *)) {
+    self.maskView.hidden = YES;
+  }
   [self.maskView
       setBackgroundColor:[UIColor colorWithWhite:0 alpha:kMediumAlpha]];
   [self.view addSubview:self.maskView];
@@ -307,7 +314,18 @@ const CGFloat kMediumAlpha = 0.5;
 
   [dict setValue:[NSNumber numberWithBool:cancel]
           forKey:app_group::kShareItemCancel];
-  NSData* data = [NSKeyedArchiver archivedDataWithRootObject:dict];
+  NSError* error = nil;
+  NSData* data = [NSKeyedArchiver archivedDataWithRootObject:dict
+                                       requiringSecureCoding:NO
+                                                       error:&error];
+
+  if (!data || error) {
+    DLOG(WARNING) << "Error serializing data for title: "
+                  << base::SysNSStringToUTF8(title)
+                  << base::SysNSStringToUTF8([error description]);
+    return;
+  }
+
   [[NSFileManager defaultManager] createFileAtPath:[fileURL path]
                                           contents:data
                                         attributes:nil];
@@ -342,6 +360,30 @@ const CGFloat kMediumAlpha = 0.5;
   [self queueActionItemURL:_shareURL
                      title:_shareTitle
                     action:app_group::BOOKMARK_ITEM
+                    cancel:NO
+                completion:^{
+                  [self dismissAndReturnItem:_shareItem];
+                }];
+}
+
+- (void)shareExtensionViewDidSelectOpenInChrome:(id)sender {
+  UIResponder* responder = self;
+  while ((responder = responder.nextResponder)) {
+    if ([responder respondsToSelector:@selector(openURL:)]) {
+      AppGroupCommand* command = [[AppGroupCommand alloc]
+          initWithSourceApp:app_group::kOpenCommandSourceShareExtension
+             URLOpenerBlock:^(NSURL* openURL) {
+               [responder performSelector:@selector(openURL:)
+                               withObject:openURL];
+             }];
+      [command prepareToOpenURL:_shareURL];
+      [command executeInApp];
+      break;
+    }
+  }
+  [self queueActionItemURL:_shareURL
+                     title:_shareTitle
+                    action:app_group::OPEN_IN_CHROME_ITEM
                     cancel:NO
                 completion:^{
                   [self dismissAndReturnItem:_shareItem];

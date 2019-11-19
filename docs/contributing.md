@@ -12,7 +12,9 @@ subrepository, has its own [development workflow][cros-dev-guide].
 
 - [Life of a Chromium Developer][life-of-a-chromium-developer], which is mostly
   up-to-date.
-- [Tutorial][noms-tutorial] by committer emeritus noms@chromium.org
+- [Tutorial][noms-tutorial] by committer emeritus noms@chromium.org.
+- [Commit Checklist][commit-checklist], a useful checklist to go through before
+  submitting each CL on Gerrit.
 
 ## Communicate
 
@@ -107,6 +109,9 @@ git][github-tutorial] is useful for the basics. However, keep in mind that the
 Chromium workflow is not the same as the GitHub pull request workflow.
 
 ## Uploading a change for review
+
+Note: go through the [commit checklist][commit-checklist] for Chromium before
+uploading a change for review.
 
 Chromium uses a Gerrit instance hosted at
 <https://chromium-review.googlesource.com> for code reviews. In order to upload
@@ -277,7 +282,44 @@ Alternatively, a developer with commit access can [directly
 commit][direct-commit] a change, bypassing the commit queue. This should only
 be used in emergencies because it will bypass all the safety nets.
 
+## Code guidelines
+
+In addition to the adhering to the [styleguide][cr-styleguide], the following
+general rules of thumb can be helpful in navigating how to structure changes:
+
+- **Code in the Chromium project should be in service of other code in the
+  Chromium project.** This is important so developers can understand the
+  constraints informing a design decision. Those constraints should be apparent
+  from the scope of code within the boundary of the project and its various
+  repositories. In other words, for each line of code, you should be able to
+  find a product in the Chromium repositories that depends on that line of code
+  or else the line of code should be removed.
+
+- **Code should only be moved to a central location (e.g., //base) when
+  multiple consumers would benefit.** We should resist the temptation to
+  build overly generic common libraries as that can lead to code bloat and
+  unnecessary complexity in common code.
+
+- **The code likely wasn't designed for everything we are trying to do with it
+  now.** Take time to refactor existing code to make sure the new feature or
+  subcomponent you are developing fits properly within the system. Technical
+  debt is easy to accumulate and is everyone's responsibility to avoid.
+
+- **Common code is everyone's responsibility.** Large files that are at the
+  cross-roads of many subsystems, where integration happens, can be some of the
+  most fragile in the system. As a companion to the previous point, be
+  cognizant of how you may be adding more complexity to the commons as you
+  venture to complete your task.
+
+- **Changes should include corresponding tests.** Automated testing is at the
+  heart of how we move forward as a project. All changes should include
+  corresponding tests so we can ensure that there is good coverage for code and
+  that future changes will be less likely to regress functionality. Protect
+  your code with tests!
+
 ## Tips
+
+### Review etiquette
 
 During the lifetime of a review, you may want to rebase your change onto a newer
 source revision to minimize merge conflicts. The reviewer-friendly way to do
@@ -292,11 +334,19 @@ project: contributors and reviewers are often in time zones far apart. Please
 read these guidelines on [minimizing review lag][review-lag] and take them in
 consideration both when writing reviews and responding to review feedback.
 
+### Watchlists
+
+If you would like to be notified about changes to a set of files covering a
+topic or an area of Chromium, you may use the [watchlists][watchlist-doc]
+feature in order to receive email notifications.
+
+
 [//]: # (the reference link section should be alphabetically sorted)
 [checkout-and-build]: https://chromium.googlesource.com/chromium/src/+/master/docs/#checking-out-and-building
 [cl-footer-syntax]: https://dev.chromium.org/developers/contributing-code/-bug-syntax
 [code-reviews-owners]: code_reviews.md#OWNERS-files
 [code-reviews]: code_reviews.md
+[commit-checklist]: commit_checklist.md
 [commit-queue]: infra/cq.md
 [core-principles]: https://www.chromium.org/developers/core-principles
 [corporate-cla]: https://cla.developers.google.com/about/google-corporate?csw=1
@@ -320,3 +370,4 @@ consideration both when writing reviews and responding to review feedback.
 [skia-dev-guide]: https://skia.org/dev/contrib
 [try-job-access]: https://www.chromium.org/getting-involved/become-a-committer#TOC-Try-job-access
 [v8-dev-guide]: https://v8.dev/docs
+[watchlist-doc]: infra/watchlists.md

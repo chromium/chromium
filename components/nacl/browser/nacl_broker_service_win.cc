@@ -34,7 +34,7 @@ bool NaClBrokerService::StartBroker() {
 
 bool NaClBrokerService::LaunchLoader(
     base::WeakPtr<nacl::NaClProcessHost> nacl_process_host,
-    service_manager::mojom::ServiceRequest service_request) {
+    mojo::ScopedMessagePipeHandle ipc_channel_handle) {
   // Add task to the list
   int launch_id = ++next_launch_id_;
   pending_launches_[launch_id] = nacl_process_host;
@@ -45,7 +45,7 @@ bool NaClBrokerService::LaunchLoader(
       return false;
     broker_host = GetBrokerHost();
   }
-  broker_host->LaunchLoader(launch_id, std::move(service_request));
+  broker_host->LaunchLoader(launch_id, std::move(ipc_channel_handle));
 
   return true;
 }

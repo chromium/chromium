@@ -26,13 +26,14 @@
 #include "base/task_runner_util.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/timer/elapsed_timer.h"
+#include "chrome/android/chrome_jni_headers/WebApkInstaller_jni.h"
 #include "chrome/browser/android/color_helpers.h"
 #include "chrome/browser/android/shortcut_helper.h"
-#include "chrome/browser/android/webapk/chrome_webapk_host.h"
 #include "chrome/browser/android/webapk/webapk.pb.h"
 #include "chrome/browser/android/webapk/webapk_icon_hasher.h"
 #include "chrome/browser/android/webapk/webapk_install_service.h"
 #include "chrome/browser/android/webapk/webapk_metrics.h"
+#include "chrome/browser/android/webapk/webapk_ukm_recorder.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_switches.h"
@@ -41,17 +42,18 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/browsing_data_remover.h"
 #include "content/public/browser/storage_partition.h"
-#include "content/public/common/manifest_util.h"
-#include "jni/WebApkInstaller_jni.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/resource_response_info.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
+#include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace {
 
@@ -109,13 +111,6 @@ GURL GetServerUrl() {
                                      : GURL(kDefaultServerUrl);
 }
 
-// Returns the scope from |info| if it is specified. Otherwise, returns the
-// default scope.
-GURL GetScope(const ShortcutInfo& info) {
-  return (info.scope.is_valid()) ? info.scope
-                                 : ShortcutHelper::GetScopeFromURL(info.url);
-}
-
 webapk::WebApk_UpdateReason ConvertUpdateReasonToProtoEnum(
     WebApkUpdateReason update_reason) {
   switch (update_reason) {
@@ -125,6 +120,8 @@ webapk::WebApk_UpdateReason ConvertUpdateReasonToProtoEnum(
       return webapk::WebApk::OLD_SHELL_APK;
     case WebApkUpdateReason::PRIMARY_ICON_HASH_DIFFERS:
       return webapk::WebApk::PRIMARY_ICON_HASH_DIFFERS;
+    case WebApkUpdateReason::PRIMARY_ICON_MASKABLE_DIFFERS:
+      return webapk::WebApk::PRIMARY_ICON_MASKABLE_DIFFERS;
     case WebApkUpdateReason::BADGE_ICON_HASH_DIFFERS:
       return webapk::WebApk::BADGE_ICON_HASH_DIFFERS;
     case WebApkUpdateReason::SCOPE_DIFFERS:
@@ -145,6 +142,8 @@ webapk::WebApk_UpdateReason ConvertUpdateReasonToProtoEnum(
       return webapk::WebApk::DISPLAY_MODE_DIFFERS;
     case WebApkUpdateReason::WEB_SHARE_TARGET_DIFFERS:
       return webapk::WebApk::WEB_SHARE_TARGET_DIFFERS;
+    case WebApkUpdateReason::MANUALLY_TRIGGERED:
+      return webapk::WebApk::MANUALLY_TRIGGERED;
   }
 }
 
@@ -173,7 +172,7 @@ std::string getCurrentAbi() {
 void SetImageData(webapk::Image* image, const SkBitmap& icon) {
   std::vector<unsigned char> png_bytes;
   gfx::PNGCodec::EncodeBGRASkBitmap(icon, false, &png_bytes);
-  image->set_image_data(&png_bytes.front(), png_bytes.size());
+  image->set_image_data(png_bytes.data(), png_bytes.size());
 }
 
 // Populates webapk::WebApk and returns it.
@@ -181,6 +180,7 @@ void SetImageData(webapk::Image* image, const SkBitmap& icon) {
 std::unique_ptr<std::string> BuildProtoInBackground(
     const ShortcutInfo& shortcut_info,
     const SkBitmap& primary_icon,
+    bool is_primary_icon_maskable,
     const SkBitmap& badge_icon,
     const std::string& package_name,
     const std::string& version,
@@ -203,27 +203,28 @@ std::unique_ptr<std::string> BuildProtoInBackground(
   web_app_manifest->set_short_name(base::UTF16ToUTF8(shortcut_info.short_name));
   web_app_manifest->set_start_url(shortcut_info.url.spec());
   web_app_manifest->set_orientation(
-      content::WebScreenOrientationLockTypeToString(shortcut_info.orientation));
+      blink::WebScreenOrientationLockTypeToString(shortcut_info.orientation));
   web_app_manifest->set_display_mode(
-      content::WebDisplayModeToString(shortcut_info.display));
+      blink::DisplayModeToString(shortcut_info.display));
   web_app_manifest->set_background_color(
       OptionalSkColorToString(shortcut_info.background_color));
   web_app_manifest->set_theme_color(
       OptionalSkColorToString(shortcut_info.theme_color));
 
   std::string* scope = web_app_manifest->add_scopes();
-  scope->assign(GetScope(shortcut_info).spec());
+  scope->assign(shortcut_info.scope.spec());
 
   if (shortcut_info.share_target) {
     webapk::ShareTarget* share_target = web_app_manifest->add_share_targets();
     share_target->set_action(shortcut_info.share_target->action.spec());
-    if (shortcut_info.share_target->method == ShareTarget::Method::kPost) {
+    if (shortcut_info.share_target->method ==
+        blink::Manifest::ShareTarget::Method::kPost) {
       share_target->set_method("POST");
     } else {
       share_target->set_method("GET");
     }
     if (shortcut_info.share_target->enctype ==
-        ShareTarget::Enctype::kMultipart) {
+        blink::Manifest::ShareTarget::Enctype::kMultipartFormData) {
       share_target->set_enctype("multipart/form-data");
     } else {
       share_target->set_enctype("application/x-www-form-urlencoded");
@@ -234,8 +235,6 @@ std::unique_ptr<std::string> BuildProtoInBackground(
         base::UTF16ToUTF8(shortcut_info.share_target->params.title));
     share_target_params->set_text(
         base::UTF16ToUTF8(shortcut_info.share_target->params.text));
-    share_target_params->set_url(
-        base::UTF16ToUTF8(shortcut_info.share_target->params.url));
 
     for (const ShareTargetParamsFile& share_target_params_file :
          shortcut_info.share_target->params.files) {
@@ -253,6 +252,11 @@ std::unique_ptr<std::string> BuildProtoInBackground(
     webapk::Image* best_primary_icon_image = web_app_manifest->add_icons();
     SetImageData(best_primary_icon_image, primary_icon);
     best_primary_icon_image->add_usages(webapk::Image::PRIMARY_ICON);
+    if (is_primary_icon_maskable) {
+      best_primary_icon_image->add_purposes(webapk::Image::MASKABLE);
+    } else {
+      best_primary_icon_image->add_purposes(webapk::Image::ANY);
+    }
 
     if (!badge_icon.drawsNothing()) {
       webapk::Image* best_badge_icon_image = web_app_manifest->add_icons();
@@ -266,6 +270,11 @@ std::unique_ptr<std::string> BuildProtoInBackground(
     if (entry.first == shortcut_info.best_primary_icon_url.spec()) {
       SetImageData(image, primary_icon);
       image->add_usages(webapk::Image::PRIMARY_ICON);
+      if (is_primary_icon_maskable) {
+        image->add_purposes(webapk::Image::MASKABLE);
+      } else {
+        image->add_purposes(webapk::Image::ANY);
+      }
     }
     if (entry.first == shortcut_info.best_badge_icon_url.spec()) {
       if (shortcut_info.best_badge_icon_url !=
@@ -291,6 +300,7 @@ bool StoreUpdateRequestToFileInBackground(
     const base::FilePath& update_request_path,
     const ShortcutInfo& shortcut_info,
     const SkBitmap& primary_icon,
+    bool is_primary_icon_maskable,
     const SkBitmap& badge_icon,
     const std::string& package_name,
     const std::string& version,
@@ -301,8 +311,9 @@ bool StoreUpdateRequestToFileInBackground(
                                                 base::BlockingType::MAY_BLOCK);
 
   std::unique_ptr<std::string> proto = BuildProtoInBackground(
-      shortcut_info, primary_icon, badge_icon, package_name, version,
-      icon_url_to_murmur2_hash, is_manifest_stale, update_reason);
+      shortcut_info, primary_icon, is_primary_icon_maskable, badge_icon,
+      package_name, version, icon_url_to_murmur2_hash, is_manifest_stale,
+      update_reason);
 
   // Create directory if it does not exist.
   base::CreateDirectory(update_request_path.DirName());
@@ -324,9 +335,9 @@ std::unique_ptr<std::string> ReadFileInBackground(const base::FilePath& file) {
 
 // Returns task runner for running background tasks.
 scoped_refptr<base::TaskRunner> GetBackgroundTaskRunner() {
-  return base::CreateTaskRunnerWithTraits(
-      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
+  return base::CreateTaskRunner({base::ThreadPool(), base::MayBlock(),
+                                 base::TaskPriority::BEST_EFFORT,
+                                 base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
 }
 
 }  // anonymous namespace
@@ -341,12 +352,13 @@ WebApkInstaller::~WebApkInstaller() {
 void WebApkInstaller::InstallAsync(content::BrowserContext* context,
                                    const ShortcutInfo& shortcut_info,
                                    const SkBitmap& primary_icon,
+                                   bool is_primary_icon_maskable,
                                    const SkBitmap& badge_icon,
                                    FinishCallback finish_callback) {
   // The installer will delete itself when it is done.
   WebApkInstaller* installer = new WebApkInstaller(context);
-  installer->InstallAsync(shortcut_info, primary_icon, badge_icon,
-                          std::move(finish_callback));
+  installer->InstallAsync(shortcut_info, primary_icon, is_primary_icon_maskable,
+                          badge_icon, std::move(finish_callback));
 }
 
 // static
@@ -362,10 +374,11 @@ void WebApkInstaller::UpdateAsync(content::BrowserContext* context,
 void WebApkInstaller::InstallAsyncForTesting(WebApkInstaller* installer,
                                              const ShortcutInfo& shortcut_info,
                                              const SkBitmap& primary_icon,
+                                             bool is_primary_icon_maskable,
                                              const SkBitmap& badge_icon,
                                              FinishCallback callback) {
-  installer->InstallAsync(shortcut_info, primary_icon, badge_icon,
-                          std::move(callback));
+  installer->InstallAsync(shortcut_info, primary_icon, is_primary_icon_maskable,
+                          badge_icon, std::move(callback));
 }
 
 // static
@@ -391,6 +404,7 @@ void WebApkInstaller::OnInstallFinished(
 void WebApkInstaller::BuildProto(
     const ShortcutInfo& shortcut_info,
     const SkBitmap& primary_icon,
+    bool is_primary_icon_maskable,
     const SkBitmap& badge_icon,
     const std::string& package_name,
     const std::string& version,
@@ -400,8 +414,8 @@ void WebApkInstaller::BuildProto(
   base::PostTaskAndReplyWithResult(
       GetBackgroundTaskRunner().get(), FROM_HERE,
       base::BindOnce(&BuildProtoInBackground, shortcut_info, primary_icon,
-                     badge_icon, package_name, version,
-                     icon_url_to_murmur2_hash, is_manifest_stale,
+                     is_primary_icon_maskable, badge_icon, package_name,
+                     version, icon_url_to_murmur2_hash, is_manifest_stale,
                      WebApkUpdateReason::NONE),
       std::move(callback));
 }
@@ -411,6 +425,7 @@ void WebApkInstaller::StoreUpdateRequestToFile(
     const base::FilePath& update_request_path,
     const ShortcutInfo& shortcut_info,
     const SkBitmap& primary_icon,
+    bool is_primary_icon_maskable,
     const SkBitmap& badge_icon,
     const std::string& package_name,
     const std::string& version,
@@ -421,14 +436,14 @@ void WebApkInstaller::StoreUpdateRequestToFile(
   base::PostTaskAndReplyWithResult(
       GetBackgroundTaskRunner().get(), FROM_HERE,
       base::BindOnce(&StoreUpdateRequestToFileInBackground, update_request_path,
-                     shortcut_info, primary_icon, badge_icon, package_name,
-                     version, icon_url_to_murmur2_hash, is_manifest_stale,
+                     shortcut_info, primary_icon, is_primary_icon_maskable,
+                     badge_icon, package_name, version,
+                     icon_url_to_murmur2_hash, is_manifest_stale,
                      update_reason),
       std::move(callback));
 }
 
 void WebApkInstaller::InstallOrUpdateWebApk(const std::string& package_name,
-                                            int version,
                                             const std::string& token) {
   webapk_package_ = package_name;
 
@@ -445,11 +460,11 @@ void WebApkInstaller::InstallOrUpdateWebApk(const std::string& package_name,
     base::android::ScopedJavaLocalRef<jobject> java_primary_icon =
         gfx::ConvertToJavaBitmap(&install_primary_icon_);
     Java_WebApkInstaller_installWebApkAsync(
-        env, java_ref_, java_webapk_package, version, java_title, java_token,
-        install_shortcut_info_->source, java_primary_icon);
+        env, java_ref_, java_webapk_package, webapk_version_, java_title,
+        java_token, install_shortcut_info_->source, java_primary_icon);
   } else {
     Java_WebApkInstaller_updateAsync(env, java_ref_, java_webapk_package,
-                                     version, java_title, java_token);
+                                     webapk_version_, java_title, java_token);
   }
 }
 
@@ -461,6 +476,8 @@ void WebApkInstaller::OnResult(WebApkInstallResult result) {
     if (result == WebApkInstallResult::SUCCESS) {
       webapk::TrackInstallDuration(install_duration_timer_->Elapsed());
       webapk::TrackInstallEvent(webapk::INSTALL_COMPLETED);
+      WebApkUkmRecorder::RecordInstall(install_shortcut_info_->manifest_url,
+                                       webapk_version_);
     } else {
       DVLOG(1) << "The WebAPK installation failed.";
       webapk::TrackInstallEvent(webapk::INSTALL_FAILED);
@@ -474,9 +491,9 @@ WebApkInstaller::WebApkInstaller(content::BrowserContext* browser_context)
     : browser_context_(browser_context),
       server_url_(GetServerUrl()),
       webapk_server_timeout_ms_(kWebApkDownloadUrlTimeoutMs),
+      webapk_version_(0),
       relax_updates_(false),
-      task_type_(UNDEFINED),
-      weak_ptr_factory_(this) {
+      task_type_(UNDEFINED) {
   CreateJavaRef();
 }
 
@@ -488,6 +505,7 @@ void WebApkInstaller::CreateJavaRef() {
 
 void WebApkInstaller::InstallAsync(const ShortcutInfo& shortcut_info,
                                    const SkBitmap& primary_icon,
+                                   bool is_primary_icon_maskable,
                                    const SkBitmap& badge_icon,
                                    FinishCallback finish_callback) {
   install_duration_timer_.reset(new base::ElapsedTimer());
@@ -495,6 +513,7 @@ void WebApkInstaller::InstallAsync(const ShortcutInfo& shortcut_info,
   install_shortcut_info_.reset(new ShortcutInfo(shortcut_info));
   install_primary_icon_ = primary_icon;
   install_badge_icon_ = badge_icon;
+  is_primary_icon_maskable_ = is_primary_icon_maskable;
   short_name_ = shortcut_info.short_name;
   finish_callback_ = std::move(finish_callback);
   task_type_ = INSTALL;
@@ -578,6 +597,7 @@ void WebApkInstaller::OnURLLoaderComplete(
     return;
   }
 
+  base::StringToInt(response->version(), &webapk_version_);
   const std::string& token = response->token();
   if (task_type_ == UPDATE && token.empty()) {
     // https://crbug.com/680131. The server sends an empty URL if the server
@@ -593,9 +613,7 @@ void WebApkInstaller::OnURLLoaderComplete(
     return;
   }
 
-  int version = 1;
-  base::StringToInt(response->version(), &version);
-  InstallOrUpdateWebApk(response->package_name(), version, token);
+  InstallOrUpdateWebApk(response->package_name(), token);
 }
 
 network::SharedURLLoaderFactory* GetURLLoaderFactory(
@@ -616,6 +634,7 @@ void WebApkInstaller::OnHaveSufficientSpaceForInstall() {
   // should be fast because the icon should be in the HTTP cache.
   WebApkIconHasher::DownloadAndComputeMurmur2Hash(
       GetURLLoaderFactory(browser_context_),
+      url::Origin::Create(install_shortcut_info_->url),
       install_shortcut_info_->best_primary_icon_url,
       base::Bind(&WebApkInstaller::OnGotPrimaryIconMurmur2Hash,
                  weak_ptr_factory_.GetWeakPtr()));
@@ -634,6 +653,7 @@ void WebApkInstaller::OnGotPrimaryIconMurmur2Hash(
           install_shortcut_info_->best_primary_icon_url) {
     WebApkIconHasher::DownloadAndComputeMurmur2Hash(
         GetURLLoaderFactory(browser_context_),
+        url::Origin::Create(install_shortcut_info_->url),
         install_shortcut_info_->best_badge_icon_url,
         base::Bind(&WebApkInstaller::OnGotBadgeIconMurmur2Hash,
                    weak_ptr_factory_.GetWeakPtr(), true, primary_icon_hash));
@@ -664,8 +684,9 @@ void WebApkInstaller::OnGotBadgeIconMurmur2Hash(
   }
 
   BuildProto(*install_shortcut_info_, install_primary_icon_,
-             install_badge_icon_, "" /* package_name */, "" /* version */,
-             icon_url_to_murmur2_hash, false /* is_manifest_stale */,
+             is_primary_icon_maskable_, install_badge_icon_,
+             "" /* package_name */, "" /* version */, icon_url_to_murmur2_hash,
+             false /* is_manifest_stale */,
              base::BindOnce(&WebApkInstaller::SendRequest,
                             weak_ptr_factory_.GetWeakPtr()));
 }
@@ -681,7 +702,7 @@ void WebApkInstaller::SendRequest(
   request->url = server_url_;
   request->method = "POST";
   request->load_flags = net::LOAD_DISABLE_CACHE;
-  request->allow_credentials = false;
+  request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   loader_ = network::SimpleURLLoader::Create(std::move(request),
                                              NO_TRAFFIC_ANNOTATION_YET);
   loader_->AttachStringForUpload(*serialized_proto, kProtoMimeType);

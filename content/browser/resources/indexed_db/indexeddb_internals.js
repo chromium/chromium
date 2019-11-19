@@ -14,7 +14,7 @@ cr.define('indexeddb', function() {
   }
 
   function downloadOriginData(event) {
-    var link = event.target;
+    const link = event.target;
     progressNodeFor(link).style.display = 'inline';
     chrome.send(
         'downloadOriginData', [link.idb_partition_path, link.idb_origin_url]);
@@ -22,14 +22,14 @@ cr.define('indexeddb', function() {
   }
 
   function forceClose(event) {
-    var link = event.target;
+    const link = event.target;
     progressNodeFor(link).style.display = 'inline';
     chrome.send('forceClose', [link.idb_partition_path, link.idb_origin_url]);
     return false;
   }
 
   function forceSchemaDowngrade(event) {
-    var link = event.target;
+    const link = event.target;
     progressNodeFor(link).style.display = 'inline';
     chrome.send(
         'forceSchemaDowngrade', [link.idb_partition_path, link.idb_origin_url]);
@@ -37,9 +37,9 @@ cr.define('indexeddb', function() {
   }
 
   function withNode(selector, partition_path, origin_url, callback) {
-    var links = document.querySelectorAll(selector);
-    for (var i = 0; i < links.length; ++i) {
-      var link = links[i];
+    const links = document.querySelectorAll(selector);
+    for (let i = 0; i < links.length; ++i) {
+      const link = links[i];
       if (partition_path == link.idb_partition_path &&
           origin_url == link.idb_origin_url) {
         callback(link);
@@ -80,24 +80,24 @@ cr.define('indexeddb', function() {
   // Fired from the backend with a single partition's worth of
   // IndexedDB metadata.
   function onOriginsReady(origins, partition_path) {
-    var template = jstGetTemplate('indexeddb-list-template');
-    var container = $('indexeddb-list');
+    const template = jstGetTemplate('indexeddb-list-template');
+    const container = $('indexeddb-list');
     container.appendChild(template);
     jstProcess(
         new JsEvalContext({idbs: origins, partition_path: partition_path}),
         template);
 
-    var downloadLinks = container.querySelectorAll('a.download');
-    for (var i = 0; i < downloadLinks.length; ++i) {
+    const downloadLinks = container.querySelectorAll('a.download');
+    for (let i = 0; i < downloadLinks.length; ++i) {
       downloadLinks[i].addEventListener('click', downloadOriginData, false);
     }
-    var forceCloseLinks = container.querySelectorAll('a.force-close');
-    for (i = 0; i < forceCloseLinks.length; ++i) {
+    const forceCloseLinks = container.querySelectorAll('a.force-close');
+    for (let i = 0; i < forceCloseLinks.length; ++i) {
       forceCloseLinks[i].addEventListener('click', forceClose, false);
     }
-    var forceSchemaDowngradeLinks =
+    const forceSchemaDowngradeLinks =
         container.querySelectorAll('a.force-schema-downgrade');
-    for (i = 0; i < forceSchemaDowngradeLinks.length; ++i) {
+    for (let i = 0; i < forceSchemaDowngradeLinks.length; ++i) {
       forceSchemaDowngradeLinks[i].addEventListener(
           'click', forceSchemaDowngrade, false);
     }

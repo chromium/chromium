@@ -73,7 +73,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoBleDiscovery
   // Maps Bluetooth FIDO authenticators that are known to be in pairing mode.
   std::map<std::string, std::unique_ptr<base::OneShotTimer>>
       pairing_mode_device_tracker_;
-  base::WeakPtrFactory<FidoBleDiscovery> weak_factory_;
+  base::WeakPtrFactory<FidoBleDiscovery> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FidoBleDiscovery);
 };

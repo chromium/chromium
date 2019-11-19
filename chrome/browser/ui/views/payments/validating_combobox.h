@@ -14,8 +14,7 @@
 
 namespace payments {
 
-class ValidatingCombobox : public views::Combobox,
-                           public ui::ComboboxModelObserver {
+class ValidatingCombobox : public views::Combobox {
  public:
   ValidatingCombobox(std::unique_ptr<ui::ComboboxModel> model,
                      std::unique_ptr<ValidationDelegate> delegate);
@@ -26,12 +25,12 @@ class ValidatingCombobox : public views::Combobox,
   void OnBlur() override;
   // Used to keep track of our own destruction.
   void ViewHierarchyChanged(
-      const ViewHierarchyChangedDetails& details) override;
+      const views::ViewHierarchyChangedDetails& details) override;
 
   // Called when the combobox contents is changed. May do validation.
   void OnContentsChanged();
 
-  // ui::ComboboxModelObserver:
+  // views::Combobox:
   void OnComboboxModelChanged(ui::ComboboxModel* model) override;
 
   // Identifies whether the current content if valid or not.

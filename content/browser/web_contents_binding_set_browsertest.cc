@@ -14,6 +14,8 @@
 #include "content/public/test/web_contents_binding_set_test_binder.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/test_browser_associated_interfaces.mojom.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "net/dns/mock_host_resolver.h"
 
 namespace content {
@@ -38,9 +40,10 @@ class TestInterfaceBinder : public WebContentsBindingSetTestBinder<
       : bind_callback_(bind_callback) {}
   ~TestInterfaceBinder() override {}
 
-  void BindRequest(RenderFrameHost* frame_host,
-                   mojom::BrowserAssociatedInterfaceTestDriverAssociatedRequest
-                       request) override {
+  void BindReceiver(
+      RenderFrameHost* frame_host,
+      mojo::PendingAssociatedReceiver<
+          mojom::BrowserAssociatedInterfaceTestDriver> receiver) override {
     bind_callback_.Run();
   }
 
@@ -66,7 +69,7 @@ class TestFrameInterfaceBinder : public mojom::WebContentsFrameBindingSetTest {
 }  // namespace
 
 IN_PROC_BROWSER_TEST_F(WebContentsBindingSetBrowserTest, OverrideForTesting) {
-  NavigateToURL(shell(), GURL("data:text/html,ho hum"));
+  EXPECT_TRUE(NavigateToURL(shell(), GURL("data:text/html,ho hum")));
 
   // Ensure that we can add a WebContentsFrameBindingSet and then override its
   // request handler.
@@ -77,21 +80,25 @@ IN_PROC_BROWSER_TEST_F(WebContentsBindingSetBrowserTest, OverrideForTesting) {
   // Now override the binder for this interface. It quits |run_loop| whenever
   // an incoming interface request is received.
   base::RunLoop run_loop;
-  WebContentsBindingSet::GetForWebContents<
-      mojom::BrowserAssociatedInterfaceTestDriver>(web_contents)
-      ->SetBinderForTesting(
-          std::make_unique<TestInterfaceBinder>(run_loop.QuitClosure()));
+  auto* binding_set = WebContentsBindingSet::GetForWebContents<
+      mojom::BrowserAssociatedInterfaceTestDriver>(web_contents);
 
-  // Simulate an inbound request for the test interface. This should get routed
+  TestInterfaceBinder test_binder(run_loop.QuitClosure());
+  binding_set->SetBinder(&test_binder);
+
+  // Simulate an inbound receiver for the test interface. This should get routed
   // to the overriding binder and allow the test to complete.
-  mojom::BrowserAssociatedInterfaceTestDriverAssociatedPtr override_client;
+  mojo::AssociatedRemote<mojom::BrowserAssociatedInterfaceTestDriver>
+      override_client;
   static_cast<WebContentsImpl*>(web_contents)
       ->OnAssociatedInterfaceRequest(
           web_contents->GetMainFrame(),
           mojom::BrowserAssociatedInterfaceTestDriver::Name_,
-          mojo::MakeRequestAssociatedWithDedicatedPipe(&override_client)
+          override_client.BindNewEndpointAndPassDedicatedReceiverForTesting()
               .PassHandle());
   run_loop.Run();
+
+  binding_set->SetBinder(nullptr);
 }
 
 IN_PROC_BROWSER_TEST_F(WebContentsBindingSetBrowserTest, CloseOnFrameDeletion) {
@@ -99,19 +106,19 @@ IN_PROC_BROWSER_TEST_F(WebContentsBindingSetBrowserTest, CloseOnFrameDeletion) {
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL(kTestHost1, "/hello.html")));
 
-  // Simulate an inbound request on the navigated main frame.
+  // Simulate an inbound receiver on the navigated main frame.
   auto* web_contents = shell()->web_contents();
   TestFrameInterfaceBinder binder(web_contents);
-  mojom::WebContentsFrameBindingSetTestAssociatedPtr override_client;
+  mojo::AssociatedRemote<mojom::WebContentsFrameBindingSetTest> override_client;
   static_cast<WebContentsImpl*>(web_contents)
       ->OnAssociatedInterfaceRequest(
           web_contents->GetMainFrame(),
           mojom::WebContentsFrameBindingSetTest::Name_,
-          mojo::MakeRequestAssociatedWithDedicatedPipe(&override_client)
+          override_client.BindNewEndpointAndPassDedicatedReceiverForTesting()
               .PassHandle());
 
   base::RunLoop run_loop;
-  override_client.set_connection_error_handler(run_loop.QuitClosure());
+  override_client.set_disconnect_handler(run_loop.QuitClosure());
 
   // Now navigate the WebContents elsewhere, eventually tearing down the old
   // main frame.

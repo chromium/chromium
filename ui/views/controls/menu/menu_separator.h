@@ -15,6 +15,8 @@ namespace views {
 
 class VIEWS_EXPORT MenuSeparator : public View {
  public:
+  METADATA_HEADER(MenuSeparator);
+
   explicit MenuSeparator(ui::MenuSeparatorType type) : type_(type) {}
 
   // View overrides.

@@ -2,7 +2,6 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
-
 /**
  * Enum for ids.
  * @enum {string}
@@ -23,7 +22,6 @@ const IDS = {
   URL_FIELD_NAME: 'url-field-name',      // URL input field name.
 };
 
-
 /**
  * Enum for key codes.
  * @enum {number}
@@ -36,7 +34,6 @@ const KEYCODES = {
   TAB: 9,
 };
 
-
 /**
  * The origin of this request, i.e. 'https://www.google.TLD' for the remote NTP,
  * or 'chrome-search://local-ntp' for the local NTP.
@@ -44,24 +41,21 @@ const KEYCODES = {
  */
 const DOMAIN_ORIGIN = '{{ORIGIN}}';
 
-
 /**
  * List of parameters passed by query args.
  * @type {Object}
  */
 let queryArgs = {};
 
-
 /**
  * The prepopulated data for the form. Includes title, url, and rid.
  * @type {Object}
  */
-let prepopulatedLink = {
+const prepopulatedLink = {
   rid: -1,
   title: '',
   url: '',
 };
-
 
 /**
  * The title of the dialog when adding a link.
@@ -69,20 +63,17 @@ let prepopulatedLink = {
  */
 let addLinkTitle = '';
 
-
 /**
  * The title of the dialog when editing a link.
  * @type {string}
  */
 let editLinkTitle = '';
 
-
 /**
  * The accessibility title of remove link button.
  * @type {string}
  */
 let deleteLinkTitle = '';
-
 
 /**
  * Handler for the 'linkData' message from the host page. Pre-populates the url
@@ -96,7 +87,7 @@ function prepopulateFields(rid) {
   }
 
   // Grab the link data from the embeddedSearch API.
-  let data = chrome.embeddedSearch.newTabPage.getMostVisitedItemData(rid);
+  const data = chrome.embeddedSearch.newTabPage.getMostVisitedItemData(rid);
   if (!data) {
     return;
   }
@@ -111,19 +102,17 @@ function prepopulateFields(rid) {
   $(IDS.DONE).title = editLinkTitle;
 }
 
-
 /**
  * Shows the invalid URL error message until the URL field is modified.
  */
 function showInvalidUrlUntilTextInput() {
   $(IDS.URL_FIELD_CONTAINER).classList.add('invalid');
-  let reenable = (event) => {
+  const reenable = (event) => {
     $(IDS.URL_FIELD_CONTAINER).classList.remove('invalid');
     $(IDS.URL_FIELD).removeEventListener('input', reenable);
   };
   $(IDS.URL_FIELD).addEventListener('input', reenable);
 }
-
 
 /**
  * Send a message to close the edit dialog. Called when the edit flow has been
@@ -159,7 +148,6 @@ function finishEditLink() {
   closeDialog();
 }
 
-
 /**
  * Call the EmbeddedSearchAPI to delete the link. Closes the dialog.
  * @param {!Event} event The click event.
@@ -168,7 +156,6 @@ function deleteLink(event) {
   chrome.embeddedSearch.newTabPage.deleteMostVisitedItem(prepopulatedLink.rid);
   closeDialog();
 }
-
 
 /**
  * Send a message to close the edit dialog, clears the url and title fields, and
@@ -179,7 +166,7 @@ function closeDialog() {
   // Small delay to allow the dialog to close before cleaning up.
   window.setTimeout(() => {
     $(IDS.FORM).reset();
-    $(IDS.TITLE_FIELD).dir = null;
+    $(IDS.TITLE_FIELD).dir = '';
     $(IDS.URL_FIELD_CONTAINER).classList.remove('invalid');
     $(IDS.DELETE).disabled = false;
     $(IDS.DONE).disabled = false;
@@ -189,7 +176,6 @@ function closeDialog() {
   }, 10);
 }
 
-
 /**
  * Send a message to refocus the edited tile's three dot menu or the add
  * shortcut tile after the cancel button is clicked.
@@ -197,38 +183,25 @@ function closeDialog() {
  */
 function focusBackOnCancel(event) {
   if (event.keyCode === KEYCODES.ENTER || event.keyCode === KEYCODES.SPACE) {
-    let message = {
-      cmd: 'focusMenu',
-      tid: prepopulatedLink.rid
-    };
+    const message = {cmd: 'focusMenu', rid: prepopulatedLink.rid};
     window.parent.postMessage(message, DOMAIN_ORIGIN);
     event.preventDefault();
     closeDialog();
   }
 }
 
-
-/**
- * Handler for the 'updateTheme' message from the host page.
- * @param {object} info Data received in the message.
- */
-function updateTheme(info) {
-  document.documentElement.setAttribute('darkmode', info.isDarkMode);
-}
-
-
 /**
  * Event handler for messages from the host page.
  * @param {Event} event Event received.
  */
 function handlePostMessage(event) {
-  let cmd = event.data.cmd;
-  let args = event.data;
+  const cmd = event.data.cmd;
+  const args = event.data;
   if (cmd === 'linkData') {
-    if (args.tid) {  // We are editing a link, prepopulate the link data.
+    if (args.rid) {  // We are editing a link, prepopulate the link data.
       document.title = editLinkTitle;
       $(IDS.DIALOG_TITLE).textContent = editLinkTitle;
-      prepopulateFields(args.tid);
+      prepopulateFields(args.rid);
     } else {  // We are adding a link, disable the delete button.
       document.title = addLinkTitle;
       $(IDS.DIALOG_TITLE).textContent = addLinkTitle;
@@ -243,21 +216,18 @@ function handlePostMessage(event) {
     window.setTimeout(() => {
       $(IDS.TITLE_FIELD).select();
     }, 10);
-  } else if (cmd === 'updateTheme') {
-    updateTheme(args);
   }
 }
-
 
 /**
  * Does some initialization and shows the dialog window.
  */
 function init() {
   // Parse query arguments.
-  let query = window.location.search.substring(1).split('&');
+  const query = window.location.search.substring(1).split('&');
   queryArgs = {};
   for (let i = 0; i < query.length; ++i) {
-    let val = query[i].split('=');
+    const val = query[i].split('=');
     if (val[0] == '') {
       continue;
     }
@@ -302,7 +272,7 @@ function init() {
     event.preventDefault();
     finishEditLink();
   });
-  let finishEditOrClose = (event) => {
+  const finishEditOrClose = (event) => {
     if (event.keyCode === KEYCODES.ENTER) {
       event.preventDefault();
       if (!$(IDS.DONE).disabled) {
@@ -319,7 +289,7 @@ function init() {
   animations.addRippleAnimations();
 
   // Change input field name to blue on input field focus.
-  let changeColor = (fieldTitle) => {
+  const changeColor = (fieldTitle) => {
     $(fieldTitle).classList.toggle('focused');
   };
   $(IDS.TITLE_FIELD)
@@ -331,8 +301,10 @@ function init() {
   $(IDS.URL_FIELD)
       .addEventListener('blur', () => changeColor(IDS.URL_FIELD_NAME));
   // Disables the "Done" button when the URL field is empty.
-  $(IDS.URL_FIELD).addEventListener('input',
-      () => $(IDS.DONE).disabled = ($(IDS.URL_FIELD).value.trim() === ''));
+  $(IDS.URL_FIELD)
+      .addEventListener(
+          'input',
+          () => $(IDS.DONE).disabled = ($(IDS.URL_FIELD).value.trim() === ''));
 
   utils.setPlatformClass(document.body);
 
@@ -340,6 +312,5 @@ function init() {
 
   window.addEventListener('message', handlePostMessage);
 }
-
 
 window.addEventListener('DOMContentLoaded', init);

@@ -5,17 +5,21 @@
 #include "chrome/browser/ui/views/frame/global_menu_bar_registrar_x11.h"
 
 #include "base/bind.h"
-#include "base/debug/leak_annotations.h"
+#include "base/bind_helpers.h"
 #include "base/logging.h"
+#include "base/stl_util.h"
 #include "chrome/browser/ui/views/frame/global_menu_bar_x11.h"
-#include "content/public/browser/browser_thread.h"
-
-using content::BrowserThread;
+#include "components/dbus/thread_linux/dbus_thread_linux.h"
+#include "dbus/bus.h"
+#include "dbus/message.h"
+#include "dbus/object_path.h"
+#include "dbus/object_proxy.h"
 
 namespace {
 
 const char kAppMenuRegistrarName[] = "com.canonical.AppMenu.Registrar";
 const char kAppMenuRegistrarPath[] = "/com/canonical/AppMenu/Registrar";
+const char kAppMenuRegistrarInterface[] = "com.canonical.AppMenu.Registrar";
 
 }  // namespace
 
@@ -24,118 +28,111 @@ GlobalMenuBarRegistrarX11* GlobalMenuBarRegistrarX11::GetInstance() {
   return base::Singleton<GlobalMenuBarRegistrarX11>::get();
 }
 
-void GlobalMenuBarRegistrarX11::OnWindowMapped(unsigned long xid) {
-  live_xids_.insert(xid);
-
-  if (registrar_proxy_)
-    RegisterXID(xid);
+void GlobalMenuBarRegistrarX11::OnMenuBarCreated(GlobalMenuBarX11* menu) {
+  if (base::Contains(menus_, menu)) {
+    NOTREACHED();
+    return;
+  }
+  menus_[menu] = kUninitialized;
+  if (service_has_owner_)
+    InitializeMenu(menu);
 }
 
-void GlobalMenuBarRegistrarX11::OnWindowUnmapped(unsigned long xid) {
-  if (registrar_proxy_)
-    UnregisterXID(xid);
-
-  live_xids_.erase(xid);
+void GlobalMenuBarRegistrarX11::OnMenuBarDestroyed(GlobalMenuBarX11* menu) {
+  DCHECK(base::Contains(menus_, menu));
+  if (menus_[menu] == kRegistered) {
+    dbus::MethodCall method_call(kAppMenuRegistrarInterface,
+                                 "UnregisterWindow");
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendUint32(menu->xid());
+    registrar_proxy_->CallMethod(&method_call,
+                                 dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+                                 base::DoNothing());
+  }
+  menus_.erase(menu);
 }
 
-GlobalMenuBarRegistrarX11::GlobalMenuBarRegistrarX11()
-    : registrar_proxy_(nullptr) {
-  // libdbusmenu uses the gio version of dbus; I tried using the code in dbus/,
-  // but it looks like that's isn't sharing the bus name with the gio version,
-  // even when |connection_type| is set to SHARED.
-  g_dbus_proxy_new_for_bus(
-      G_BUS_TYPE_SESSION,
-      static_cast<GDBusProxyFlags>(
-          G_DBUS_PROXY_FLAGS_DO_NOT_LOAD_PROPERTIES |
-          G_DBUS_PROXY_FLAGS_DO_NOT_CONNECT_SIGNALS |
-          G_DBUS_PROXY_FLAGS_DO_NOT_AUTO_START),
-      nullptr,
-      kAppMenuRegistrarName,
-      kAppMenuRegistrarPath,
-      kAppMenuRegistrarName,
-      nullptr,  // TODO: Probalby want a real cancelable.
-      static_cast<GAsyncReadyCallback>(OnProxyCreatedThunk),
-      this);
+GlobalMenuBarRegistrarX11::GlobalMenuBarRegistrarX11() {
+  dbus::Bus::Options bus_options;
+  bus_options.bus_type = dbus::Bus::SESSION;
+  bus_options.connection_type = dbus::Bus::PRIVATE;
+  bus_options.dbus_task_runner = dbus_thread_linux::GetTaskRunner();
+  bus_ = base::MakeRefCounted<dbus::Bus>(bus_options);
+
+  registrar_proxy_ = bus_->GetObjectProxy(
+      kAppMenuRegistrarName, dbus::ObjectPath(kAppMenuRegistrarPath));
+
+  dbus::Bus::GetServiceOwnerCallback callback =
+      base::BindRepeating(&GlobalMenuBarRegistrarX11::OnNameOwnerChanged,
+                          weak_ptr_factory_.GetWeakPtr());
+  bus_->ListenForServiceOwnerChange(kAppMenuRegistrarName, callback);
+  bus_->GetServiceOwner(kAppMenuRegistrarName, callback);
 }
 
 GlobalMenuBarRegistrarX11::~GlobalMenuBarRegistrarX11() {
-  if (registrar_proxy_) {
-    g_signal_handlers_disconnect_by_func(
-        registrar_proxy_,
-        reinterpret_cast<void*>(OnNameOwnerChangedThunk),
-        this);
-    g_object_unref(registrar_proxy_);
-  }
+  DCHECK(menus_.empty());
+  bus_->GetDBusTaskRunner()->PostTask(
+      FROM_HERE, base::BindOnce(&dbus::Bus::ShutdownAndBlock, bus_));
 }
 
-void GlobalMenuBarRegistrarX11::RegisterXID(unsigned long xid) {
-  DCHECK(registrar_proxy_);
-  std::string path = GlobalMenuBarX11::GetPathForWindow(xid);
-
-  ANNOTATE_SCOPED_MEMORY_LEAK; // http://crbug.com/314087
-  // TODO(erg): The mozilla implementation goes to a lot of callback trouble
-  // just to make sure that they react to make sure there's some sort of
-  // cancelable object; including making a whole callback just to handle the
-  // cancelable.
-  //
-  // I don't see any reason why we should care if "RegisterWindow" completes or
-  // not.
-  g_dbus_proxy_call(registrar_proxy_,
-                    "RegisterWindow",
-                    g_variant_new("(uo)", xid, path.c_str()),
-                    G_DBUS_CALL_FLAGS_NONE, -1,
-                    nullptr,
-                    nullptr,
-                    nullptr);
+void GlobalMenuBarRegistrarX11::InitializeMenu(GlobalMenuBarX11* menu) {
+  DCHECK(base::Contains(menus_, menu));
+  DCHECK_EQ(menus_[menu], kUninitialized);
+  menus_[menu] = kInitializing;
+  menu->Initialize(base::BindOnce(&GlobalMenuBarRegistrarX11::OnMenuInitialized,
+                                  weak_ptr_factory_.GetWeakPtr(), menu));
 }
 
-void GlobalMenuBarRegistrarX11::UnregisterXID(unsigned long xid) {
-  DCHECK(registrar_proxy_);
-  std::string path = GlobalMenuBarX11::GetPathForWindow(xid);
-
-  ANNOTATE_SCOPED_MEMORY_LEAK; // http://crbug.com/314087
-  // TODO(erg): The mozilla implementation goes to a lot of callback trouble
-  // just to make sure that they react to make sure there's some sort of
-  // cancelable object; including making a whole callback just to handle the
-  // cancelable.
-  //
-  // I don't see any reason why we should care if "UnregisterWindow" completes
-  // or not.
-  g_dbus_proxy_call(registrar_proxy_,
-                    "UnregisterWindow",
-                    g_variant_new("(u)", xid),
-                    G_DBUS_CALL_FLAGS_NONE, -1,
-                    nullptr,
-                    nullptr,
-                    nullptr);
+void GlobalMenuBarRegistrarX11::RegisterMenu(GlobalMenuBarX11* menu) {
+  DCHECK(base::Contains(menus_, menu));
+  DCHECK(menus_[menu] == kInitializeSucceeded || menus_[menu] == kRegistered);
+  menus_[menu] = kRegistered;
+  dbus::MethodCall method_call(kAppMenuRegistrarInterface, "RegisterWindow");
+  dbus::MessageWriter writer(&method_call);
+  writer.AppendUint32(menu->xid());
+  writer.AppendObjectPath(dbus::ObjectPath(menu->GetPath()));
+  registrar_proxy_->CallMethod(
+      &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, base::DoNothing());
 }
 
-void GlobalMenuBarRegistrarX11::OnProxyCreated(GObject* source,
-                                               GAsyncResult* result) {
-  GError* error = nullptr;
-  GDBusProxy* proxy = g_dbus_proxy_new_for_bus_finish(result, &error);
-  if (error) {
-    g_error_free(error);
-    return;
-  }
-
-  // TODO(erg): Mozilla's implementation has a workaround for GDBus
-  // cancellation here. However, it's marked as fixed. If there's weird
-  // problems with cancelation, look at how they fixed their issues.
-
-  registrar_proxy_ = proxy;
-
-  g_signal_connect(registrar_proxy_, "notify::g-name-owner",
-                   G_CALLBACK(OnNameOwnerChangedThunk), this);
-
-  OnNameOwnerChanged(nullptr, nullptr);
+void GlobalMenuBarRegistrarX11::OnMenuInitialized(GlobalMenuBarX11* menu,
+                                                  bool success) {
+  DCHECK(base::Contains(menus_, menu));
+  DCHECK(menus_[menu] == kInitializing);
+  menus_[menu] = success ? kInitializeSucceeded : kInitializeFailed;
+  if (success && service_has_owner_)
+    RegisterMenu(menu);
 }
 
-void GlobalMenuBarRegistrarX11::OnNameOwnerChanged(GObject* /* ignored */,
-                                                   GParamSpec* /* ignored */) {
-  // If the name owner changed, we need to reregister all the live xids with
+void GlobalMenuBarRegistrarX11::OnNameOwnerChanged(
+    const std::string& service_owner) {
+  service_has_owner_ = !service_owner.empty();
+
+  // If the name owner changed, we need to reregister all the live menus with
   // the system.
-  for (auto it = live_xids_.begin(); it != live_xids_.end(); ++it) {
-    RegisterXID(*it);
+  for (const auto& pair : menus_) {
+    GlobalMenuBarX11* menu = pair.first;
+    switch (pair.second) {
+      case kUninitialized:
+        if (service_has_owner_)
+          InitializeMenu(menu);
+        break;
+      case kInitializing:
+        // Wait for Initialize() to finish.
+        break;
+      case kInitializeFailed:
+        // Don't try to recover.
+        break;
+      case kInitializeSucceeded:
+        if (service_has_owner_)
+          RegisterMenu(menu);
+        break;
+      case kRegistered:
+        if (service_has_owner_)
+          RegisterMenu(menu);
+        else
+          menus_[menu] = kInitializeSucceeded;
+        break;
+    }
   }
 }

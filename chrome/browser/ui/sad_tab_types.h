@@ -8,12 +8,12 @@
 #include "build/build_config.h"
 
 enum SadTabKind {
-  SAD_TAB_KIND_CRASHED,        // Tab crashed.
+  SAD_TAB_KIND_CRASHED,  // Tab crashed.
 #if defined(OS_CHROMEOS)
   SAD_TAB_KIND_KILLED_BY_OOM,  // Tab killed by oom killer.
 #endif
-  SAD_TAB_KIND_OOM,            // Tab ran out of memory.
-  SAD_TAB_KIND_KILLED          // Tab killed.
+  SAD_TAB_KIND_OOM,    // Tab ran out of memory.
+  SAD_TAB_KIND_KILLED  // Tab killed.
 };
 
 #endif  // CHROME_BROWSER_UI_SAD_TAB_TYPES_H_

@@ -6,12 +6,15 @@
 
 #include "base/feature_list.h"
 #include "base/logging.h"
-#include "components/omnibox/browser/omnibox_field_trial.h"
-#import "ios/chrome/browser/ui/omnibox/truncating_attributed_label.h"
+#include "components/omnibox/common/omnibox_features.h"
+#import "ios/chrome/browser/ui/elements/fade_truncating_label.h"
+#import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_accessibility_identifier_constants.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
 #include "ios/chrome/browser/ui/util/rtl_geometry.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/colors/dynamic_color_util.h"
+#import "ios/chrome/common/colors/semantic_color_names.h"
 #include "ios/chrome/grit/ios_theme_resources.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -28,9 +31,6 @@ const CGFloat kLeadingPaddingIpad = 183;
 const CGFloat kLeadingPaddingIpadCompact = 71;
 }
 
-NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
-    @"OmniboxPopupRowSwitchTabAccessibilityIdentifier";
-
 @interface OmniboxPopupRow () {
   BOOL _incognito;
 }
@@ -42,13 +42,7 @@ NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
 
 @implementation OmniboxPopupRow
 
-@synthesize textTruncatingLabel = _textTruncatingLabel;
-@synthesize detailTruncatingLabel = _detailTruncatingLabel;
-@synthesize detailAnswerLabel = _detailAnswerLabel;
-@synthesize trailingButton = _trailingButton;
-@synthesize answerImageView = _answerImageView;
 @synthesize imageView = _imageView;
-@synthesize rowHeight = _rowHeight;
 
 - (instancetype)initWithStyle:(UITableViewCellStyle)style
               reuseIdentifier:(NSString*)reuseIdentifier {
@@ -59,17 +53,22 @@ NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
   self = [super initWithStyle:UITableViewCellStyleDefault
               reuseIdentifier:@"OmniboxPopupRow"];
   if (self) {
-    self.isAccessibilityElement = YES;
-    self.backgroundColor = [UIColor clearColor];
     _incognito = incognito;
 
+    self.isAccessibilityElement = YES;
+    self.backgroundColor = UIColor.clearColor;
+    self.selectedBackgroundView = [[UIView alloc] initWithFrame:CGRectZero];
+    self.selectedBackgroundView.backgroundColor = color::DarkModeDynamicColor(
+        [UIColor colorNamed:kTableViewRowHighlightColor], _incognito,
+        [UIColor colorNamed:kTableViewRowHighlightDarkColor]);
+
     _textTruncatingLabel =
-        [[OmniboxPopupTruncatingLabel alloc] initWithFrame:CGRectZero];
+        [[FadeTruncatingLabel alloc] initWithFrame:CGRectZero];
     _textTruncatingLabel.userInteractionEnabled = NO;
     [self.contentView addSubview:_textTruncatingLabel];
 
     _detailTruncatingLabel =
-        [[OmniboxPopupTruncatingLabel alloc] initWithFrame:CGRectZero];
+        [[FadeTruncatingLabel alloc] initWithFrame:CGRectZero];
     _detailTruncatingLabel.userInteractionEnabled = NO;
     [self.contentView addSubview:_detailTruncatingLabel];
 
@@ -80,11 +79,7 @@ NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
     _detailAnswerLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     [self.contentView addSubview:_detailAnswerLabel];
 
-    if (base::FeatureList::IsEnabled(omnibox::kOmniboxTabSwitchSuggestions)) {
-      _trailingButton = [UIButton buttonWithType:UIButtonTypeSystem];
-    } else {
-      _trailingButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    }
+    _trailingButton = [UIButton buttonWithType:UIButtonTypeSystem];
     [_trailingButton setContentMode:UIViewContentModeRight];
     [self updateTrailingButtonImages];
     // TODO(justincohen): Consider using the UITableViewCell's accessory view.
@@ -99,12 +94,11 @@ NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
     _imageView.userInteractionEnabled = NO;
     _imageView.contentMode = UIViewContentModeCenter;
 
-      _imageView.layer.cornerRadius = kImageViewCornerRadiusUIRefresh;
-      _imageView.backgroundColor = incognito
-                                       ? [UIColor colorWithWhite:1 alpha:0.05]
-                                       : [UIColor colorWithWhite:0 alpha:0.03];
-      _imageView.tintColor = incognito ? [UIColor colorWithWhite:1 alpha:0.4]
-                                       : [UIColor colorWithWhite:0 alpha:0.33];
+    _imageView.layer.cornerRadius = kImageViewCornerRadiusUIRefresh;
+    _imageView.backgroundColor = UIColor.clearColor;
+    _imageView.tintColor = color::DarkModeDynamicColor(
+        [UIColor colorNamed:@"omnibox_suggestion_icon_color"], _incognito,
+        [UIColor colorNamed:@"omnibox_suggestion_icon_dark_color"]);
 
     _answerImageView = [[UIImageView alloc] initWithFrame:CGRectZero];
     _answerImageView.userInteractionEnabled = NO;
@@ -153,27 +147,6 @@ NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
   _imageView.frame = frame;
 }
 
-- (void)updateHighlightBackground:(BOOL)highlighted {
-  // Set the background color to match the color of selected table view cells
-  // when their selection style is UITableViewCellSelectionStyleGray.
-  if (highlighted) {
-    self.backgroundColor = _incognito ? [UIColor colorWithWhite:1 alpha:0.1]
-                                      : [UIColor colorWithWhite:0 alpha:0.05];
-  } else {
-    self.backgroundColor = [UIColor clearColor];
-  }
-}
-
-- (void)setHighlighted:(BOOL)highlighted animated:(BOOL)animated {
-  [super setHighlighted:highlighted animated:animated];
-  [self updateHighlightBackground:highlighted];
-}
-
-- (void)setHighlighted:(BOOL)highlighted {
-  [super setHighlighted:highlighted];
-  [self updateHighlightBackground:highlighted];
-}
-
 - (void)setTabMatch:(BOOL)tabMatch {
   _tabMatch = tabMatch;
   [self updateTrailingButtonImages];
@@ -189,26 +162,14 @@ NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
         kOmniboxPopupRowSwitchTabAccessibilityIdentifier;
   } else {
     int appendResourceID = 0;
-    if (base::FeatureList::IsEnabled(omnibox::kOmniboxTabSwitchSuggestions)) {
-      appendResourceID = IDR_IOS_OMNIBOX_KEYBOARD_VIEW_APPEND;
-    } else {
-      appendResourceID = _incognito
-                             ? IDR_IOS_OMNIBOX_KEYBOARD_VIEW_APPEND_INCOGNITO
-                             : IDR_IOS_OMNIBOX_KEYBOARD_VIEW_APPEND;
-    }
+    appendResourceID = IDR_IOS_OMNIBOX_KEYBOARD_VIEW_APPEND;
     appendImage = NativeReversableImage(appendResourceID, YES);
   }
   appendImage =
       [appendImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-  if (base::FeatureList::IsEnabled(omnibox::kOmniboxTabSwitchSuggestions)) {
-    _trailingButton.tintColor = _incognito
-                                    ? [UIColor whiteColor]
-                                    : UIColorFromRGB(kLocationBarTintBlue);
-  } else {
-    _trailingButton.tintColor = _incognito
-                                    ? [UIColor colorWithWhite:1 alpha:0.5]
-                                    : [UIColor colorWithWhite:0 alpha:0.3];
-  }
+  _trailingButton.tintColor =
+      color::DarkModeDynamicColor([UIColor colorNamed:kBlueColor], _incognito,
+                                  [UIColor colorNamed:kBlueDarkColor]);
 
   [_trailingButton setImage:appendImage forState:UIControlStateNormal];
 }

@@ -14,7 +14,6 @@
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_process_host.h"
-#include "services/service_manager/public/cpp/identity.h"
 #include "ui/base/l10n/l10n_util.h"
 
 // static
@@ -22,17 +21,6 @@ SpellcheckService* SpellcheckServiceFactory::GetForContext(
     content::BrowserContext* context) {
   return static_cast<SpellcheckService*>(
       GetInstance()->GetServiceForBrowserContext(context, true));
-}
-
-// static
-SpellcheckService* SpellcheckServiceFactory::GetForRenderer(
-    const service_manager::Identity& renderer_identity) {
-  content::BrowserContext* context =
-      content::BrowserContext::GetBrowserContextForServiceInstanceGroup(
-          renderer_identity.instance_group());
-  if (!context)
-    return nullptr;
-  return GetForContext(context);
 }
 
 // static
@@ -70,6 +58,8 @@ void SpellcheckServiceFactory::RegisterProfilePrefs(
   user_prefs->RegisterListPref(spellcheck::prefs::kSpellCheckDictionaries);
   user_prefs->RegisterListPref(
       spellcheck::prefs::kSpellCheckForcedDictionaries);
+  user_prefs->RegisterListPref(
+      spellcheck::prefs::kSpellCheckBlacklistedDictionaries);
   // Continue registering kSpellCheckDictionary for preference migration.
   // TODO(estade): remove: crbug.com/751275
   user_prefs->RegisterStringPref(

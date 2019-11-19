@@ -8,8 +8,8 @@
 
 #if defined(OS_WIN)
 #include <windows.h>
-#include <objidl.h>
 #include <mlang.h>
+#include <objidl.h>
 #endif
 
 #include <stddef.h>
@@ -25,10 +25,12 @@
 #include "base/debug/stack_trace.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
+#include "base/strings/string_split.h"
 #include "base/system/sys_info.h"
-#include "base/task/task_scheduler/initialization_util.h"
+#include "base/task/thread_pool/initialization_util.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/time/time.h"
-#include "content/common/task_scheduler.h"
+#include "content/common/thread_pool_util.h"
 #include "content/public/common/bindings_policy.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
@@ -41,7 +43,9 @@
 #if defined(OS_WIN)
 #include "base/win/win_util.h"
 #endif
-
+#if defined(OS_LINUX) && defined(ARCH_CPU_X86_64)
+#include "v8/include/v8-wasm-trap-handler-posix.h"
+#endif
 namespace {
 
 void SetV8FlagIfFeature(const base::Feature& feature, const char* v8_flag) {
@@ -62,20 +66,12 @@ void SetV8FlagIfHasSwitch(const char* switch_name, const char* v8_flag) {
   }
 }
 
-std::unique_ptr<base::TaskScheduler::InitParams>
-GetDefaultTaskSchedulerInitParams() {
-  constexpr int kMaxNumThreadsInBackgroundPool = 2;
+std::unique_ptr<base::ThreadPoolInstance::InitParams>
+GetThreadPoolInitParams() {
   constexpr int kMaxNumThreadsInForegroundPoolLowerBound = 3;
-  constexpr auto kSuggestedReclaimTime = base::TimeDelta::FromSeconds(30);
-
-  return std::make_unique<base::TaskScheduler::InitParams>(
-      base::SchedulerWorkerPoolParams(kMaxNumThreadsInBackgroundPool,
-                                      kSuggestedReclaimTime),
-      base::SchedulerWorkerPoolParams(
-          std::max(
-              kMaxNumThreadsInForegroundPoolLowerBound,
-              content::GetMinThreadsInRendererTaskSchedulerForegroundPool()),
-          kSuggestedReclaimTime));
+  return std::make_unique<base::ThreadPoolInstance::InitParams>(
+      std::max(kMaxNumThreadsInForegroundPoolLowerBound,
+               content::GetMinForegroundThreadsInRendererThreadPool()));
 }
 
 #if defined(DCHECK_IS_CONFIGURABLE)
@@ -90,9 +86,8 @@ void V8DcheckCallbackHandler(const char* file, int line, const char* message) {
 
 namespace content {
 
-RenderProcessImpl::RenderProcessImpl(
-    std::unique_ptr<base::TaskScheduler::InitParams> task_scheduler_init_params)
-    : RenderProcess("Renderer", std::move(task_scheduler_init_params)),
+RenderProcessImpl::RenderProcessImpl()
+    : RenderProcess("Renderer", GetThreadPoolInitParams()),
       enabled_bindings_(0) {
 #if defined(DCHECK_IS_CONFIGURABLE)
   // Some official builds ship with DCHECKs compiled in. Failing DCHECKs then
@@ -117,20 +112,18 @@ RenderProcessImpl::RenderProcessImpl(
 
   if (base::SysInfo::IsLowEndDevice()) {
     std::string optimize_flag("--optimize-for-size");
-    v8::V8::SetFlagsFromString(optimize_flag.c_str(),
-                               static_cast<int>(optimize_flag.size()));
+    v8::V8::SetFlagsFromString(optimize_flag.c_str(), optimize_flag.size());
   }
 
   SetV8FlagIfHasSwitch(switches::kDisableJavaScriptHarmonyShipping,
                        "--noharmony-shipping");
   SetV8FlagIfHasSwitch(switches::kJavaScriptHarmony, "--harmony");
+  SetV8FlagIfHasSwitch(switches::kEnableExperimentalWebAssemblyFeatures,
+                       "--wasm-staging");
 
   constexpr char kModuleFlags[] =
       "--harmony-dynamic-import --harmony-import-meta";
   v8::V8::SetFlagsFromString(kModuleFlags, sizeof(kModuleFlags));
-
-  SetV8FlagIfFeature(features::kV8Orinoco, "--no-single-threaded-gc");
-  SetV8FlagIfNotFeature(features::kV8Orinoco, "--single-threaded-gc");
 
   SetV8FlagIfFeature(features::kV8VmFuture, "--future");
   SetV8FlagIfNotFeature(features::kV8VmFuture, "--no-future");
@@ -139,6 +132,13 @@ RenderProcessImpl::RenderProcessImpl(
                      "--liftoff --wasm-tier-up");
   SetV8FlagIfNotFeature(features::kWebAssemblyBaseline,
                         "--no-liftoff --no-wasm-tier-up");
+
+  SetV8FlagIfFeature(features::kWebAssemblyCodeGC, "--wasm-code-gc");
+  SetV8FlagIfNotFeature(features::kWebAssemblyCodeGC, "--no-wasm-code-gc");
+
+  SetV8FlagIfFeature(features::kWebAssemblySimd, "--experimental-wasm-simd");
+  SetV8FlagIfNotFeature(features::kWebAssemblySimd,
+                        "--no-experimental-wasm-simd");
 
   if (base::FeatureList::IsEnabled(features::kWebAssemblyThreads)) {
     constexpr char kFlags[] =
@@ -156,20 +156,21 @@ RenderProcessImpl::RenderProcessImpl(
                           "--no-harmony-sharedarraybuffer");
   }
 
-  SetV8FlagIfFeature(features::kAwaitOptimization,
-                     "--harmony-await-optimization");
-  SetV8FlagIfNotFeature(features::kAwaitOptimization,
-                        "--no-harmony-await-optimization");
-
   SetV8FlagIfNotFeature(features::kWebAssemblyTrapHandler,
                         "--no-wasm-trap-handler");
 #if defined(OS_LINUX) && defined(ARCH_CPU_X86_64)
   if (base::FeatureList::IsEnabled(features::kWebAssemblyTrapHandler)) {
-    bool use_v8_signal_handler = false;
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
     if (!command_line->HasSwitch(
             service_manager::switches::kDisableInProcessStackTraces)) {
-      base::debug::SetStackDumpFirstChanceCallback(v8::V8::TryHandleSignal);
+      // Only enable WebAssembly trap handler if we can set the callback.
+      if (base::debug::SetStackDumpFirstChanceCallback(
+              v8::TryHandleWebAssemblyTrapPosix)) {
+        // We registered the WebAssembly trap handler callback with the stack
+        // dump signal handler successfully. We can tell V8 that it can enable
+        // WebAssembly trap handler without using the V8 signal handler.
+        v8::V8::EnableWebAssemblyTrapHandler(/*use_v8_signal_handler=*/false);
+      }
     } else if (!command_line->HasSwitch(switches::kEnableCrashReporter) &&
                !command_line->HasSwitch(
                    switches::kEnableCrashReporterForTesting)) {
@@ -177,10 +178,8 @@ RenderProcessImpl::RenderProcessImpl(
       // in-process stack traces are disabled then there will be no signal
       // handler. In this case, we fall back on V8's default handler
       // (https://crbug.com/798150).
-      use_v8_signal_handler = true;
+      v8::V8::EnableWebAssemblyTrapHandler(/*use_v8_signal_handler=*/true);
     }
-    // TODO(eholk): report UMA stat for how often this succeeds
-    v8::V8::EnableWebAssemblyTrapHandler(use_v8_signal_handler);
   }
 #endif
 #if defined(OS_WIN) && defined(ARCH_CPU_X86_64)
@@ -210,9 +209,13 @@ RenderProcessImpl::RenderProcessImpl(
   }
 
   if (command_line.HasSwitch(switches::kJavaScriptFlags)) {
-    std::string flags(
-        command_line.GetSwitchValueASCII(switches::kJavaScriptFlags));
-    v8::V8::SetFlagsFromString(flags.c_str(), static_cast<int>(flags.size()));
+    std::string js_flags =
+        command_line.GetSwitchValueASCII(switches::kJavaScriptFlags);
+    std::vector<base::StringPiece> flag_list = base::SplitStringPiece(
+        js_flags, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+    for (const auto& flag : flag_list) {
+      v8::V8::SetFlagsFromString(flag.as_string().c_str(), flag.size());
+    }
   }
 
   if (command_line.HasSwitch(switches::kDomAutomationController))
@@ -232,13 +235,7 @@ RenderProcessImpl::~RenderProcessImpl() {
 }
 
 std::unique_ptr<RenderProcess> RenderProcessImpl::Create() {
-  auto task_scheduler_init_params =
-      content::GetContentClient()->renderer()->GetTaskSchedulerInitParams();
-  if (!task_scheduler_init_params)
-    task_scheduler_init_params = GetDefaultTaskSchedulerInitParams();
-
-  return base::WrapUnique(
-      new RenderProcessImpl(std::move(task_scheduler_init_params)));
+  return base::WrapUnique(new RenderProcessImpl());
 }
 
 void RenderProcessImpl::AddBindings(int bindings) {

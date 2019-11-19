@@ -1,6 +1,15 @@
 include_rules = [
   "-chrome/browser/ui/views",
+  "+components/page_load_metrics/browser",
   "+mash/public/mojom",
   "+services/content/public",
   "+services/device/public/mojom",
 ]
+
+specific_include_rules = {
+  "browser_finder_chromeos_browsertest\.cc": [
+    "+ash/wm/desks/desk.h",
+    "+ash/wm/desks/desks_controller.h",
+    "+ash/wm/desks/desks_test_util.h",
+  ],
+}

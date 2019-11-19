@@ -12,18 +12,12 @@
 #include "base/lazy_instance.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/error_console/error_console_factory.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "components/crx_file/id_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/version_info/version_info.h"
-#include "content/public/browser/notification_details.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_source.h"
 #include "extensions/browser/extension_prefs.h"
-#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
@@ -62,8 +56,7 @@ ErrorConsole::ErrorConsole(Profile* profile)
     : enabled_(false),
       default_mask_(kDefaultMask),
       profile_(profile),
-      prefs_(nullptr),
-      registry_observer_(this) {
+      prefs_(nullptr) {
   pref_registrar_.Init(profile_->GetPrefs());
   pref_registrar_.Add(prefs::kExtensionsUIDeveloperMode,
                       base::Bind(&ErrorConsole::OnPrefChanged,
@@ -200,10 +193,9 @@ void ErrorConsole::Enable() {
   // also create an ExtensionPrefs object.
   prefs_ = ExtensionPrefs::Get(profile_);
 
-  notification_registrar_.Add(
-      this,
-      chrome::NOTIFICATION_PROFILE_DESTROYED,
-      content::NotificationService::AllBrowserContextsAndSources());
+  profile_observer_.Add(profile_);
+  if (profile_->HasOffTheRecordProfile())
+    profile_observer_.Add(profile_->GetOffTheRecordProfile());
 
   const ExtensionSet& extensions =
       ExtensionRegistry::Get(profile_)->enabled_extensions();
@@ -215,7 +207,7 @@ void ErrorConsole::Enable() {
 }
 
 void ErrorConsole::Disable() {
-  notification_registrar_.RemoveAll();
+  profile_observer_.RemoveAll();
   errors_.RemoveAllErrors();
   enabled_ = false;
 }
@@ -266,11 +258,12 @@ void ErrorConsole::AddManifestErrorsForExtension(const Extension* extension) {
   }
 }
 
-void ErrorConsole::Observe(int type,
-                           const content::NotificationSource& source,
-                           const content::NotificationDetails& details) {
-  DCHECK_EQ(chrome::NOTIFICATION_PROFILE_DESTROYED, type);
-  Profile* profile = content::Source<Profile>(source).ptr();
+void ErrorConsole::OnOffTheRecordProfileCreated(Profile* off_the_record) {
+  profile_observer_.Add(off_the_record);
+}
+
+void ErrorConsole::OnProfileWillBeDestroyed(Profile* profile) {
+  profile_observer_.Remove(profile);
   // If incognito profile which we are associated with is destroyed, also
   // destroy all incognito errors.
   if (profile->IsOffTheRecord() && profile_->IsSameProfile(profile))

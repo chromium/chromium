@@ -22,9 +22,7 @@
 #include "chrome/services/media_gallery_util/public/cpp/safe_audio_video_checker.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/common/service_manager_connection.h"
 #include "net/base/mime_util.h"
-#include "services/service_manager/public/cpp/connector.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
 
 namespace {
@@ -46,7 +44,7 @@ class SupportedAudioVideoExtensions {
   }
 
   bool HasSupportedAudioVideoExtension(const base::FilePath& file) {
-    return base::ContainsKey(audio_video_extensions_, file.Extension());
+    return base::Contains(audio_video_extensions_, file.Extension());
   }
 
  private:
@@ -79,60 +77,26 @@ void SupportedAudioVideoChecker::StartPreWriteValidation(
   DCHECK(callback_.is_null());
   callback_ = result_callback;
 
-  base::PostTaskWithTraits(
-      FROM_HERE, {content::BrowserThread::UI},
-      base::BindOnce(&SupportedAudioVideoChecker::RetrieveConnectorOnUIThread,
+  base::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+      base::BindOnce(&OpenBlocking, path_),
+      base::BindOnce(&SupportedAudioVideoChecker::OnFileOpen,
                      weak_factory_.GetWeakPtr()));
 }
 
 SupportedAudioVideoChecker::SupportedAudioVideoChecker(
     const base::FilePath& path)
-    : path_(path),
-      weak_factory_(this) {
-}
+    : path_(path) {}
 
-// static
-void SupportedAudioVideoChecker::RetrieveConnectorOnUIThread(
-    base::WeakPtr<SupportedAudioVideoChecker> this_ptr) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  std::unique_ptr<service_manager::Connector> connector =
-      content::ServiceManagerConnection::GetForProcess()
-          ->GetConnector()
-          ->Clone();
-  // We need a fresh connector so that we can use it on the IO thread. It has
-  // to be retrieved from the UI thread. We must use static method and pass a
-  // WeakPtr around as WeakPtrs are not thread-safe.
-  base::PostTaskWithTraits(
-      FROM_HERE, {content::BrowserThread::IO},
-      base::BindOnce(&SupportedAudioVideoChecker::OnConnectorRetrieved,
-                     this_ptr, std::move(connector)));
-}
-
-// static
-void SupportedAudioVideoChecker::OnConnectorRetrieved(
-    base::WeakPtr<SupportedAudioVideoChecker> this_ptr,
-    std::unique_ptr<service_manager::Connector> connector) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  if (!this_ptr)
-    return;
-
-  base::PostTaskWithTraitsAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-      base::BindOnce(&OpenBlocking, this_ptr->path_),
-      base::BindOnce(&SupportedAudioVideoChecker::OnFileOpen, this_ptr,
-                     std::move(connector)));
-}
-
-void SupportedAudioVideoChecker::OnFileOpen(
-    std::unique_ptr<service_manager::Connector> connector,
-    base::File file) {
+void SupportedAudioVideoChecker::OnFileOpen(base::File file) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   if (!file.IsValid()) {
     callback_.Run(base::File::FILE_ERROR_SECURITY);
     return;
   }
 
-  safe_checker_ = std::make_unique<SafeAudioVideoChecker>(
-      std::move(file), callback_, std::move(connector));
+  safe_checker_ =
+      std::make_unique<SafeAudioVideoChecker>(std::move(file), callback_);
   safe_checker_->Start();
 }

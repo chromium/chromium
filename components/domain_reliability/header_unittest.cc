@@ -4,7 +4,10 @@
 
 #include "components/domain_reliability/header.h"
 
+#include <algorithm>
+
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "components/domain_reliability/config.h"
@@ -18,8 +21,13 @@ class DomainReliabilityHeaderTest : public testing::Test {
   DomainReliabilityHeaderTest() {}
   ~DomainReliabilityHeaderTest() override {}
 
-  void Parse(std::string value) {
-    parsed_ = DomainReliabilityHeader::Parse(value);
+  void Parse(base::StringPiece value) {
+    // Run the parser over a non-NUL-terminated buffer, so ASan will catch
+    // StringPiece misuses.
+    std::unique_ptr<char[]> copy(new char[value.size()]);
+    std::copy(value.begin(), value.end(), copy.get());
+    parsed_ = DomainReliabilityHeader::Parse(
+        base::StringPiece(copy.get(), value.size()));
   }
 
   const DomainReliabilityHeader* parsed() const { return parsed_.get(); }

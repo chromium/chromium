@@ -22,7 +22,8 @@ int FuzzTokenizer(const uint8_t* data, size_t size) {
   HTMLParserOptions options;
   options.script_enabled = fuzzed_data_provider.ConsumeBool();
 
-  std::unique_ptr<HTMLTokenizer> tokenizer = HTMLTokenizer::Create(options);
+  std::unique_ptr<HTMLTokenizer> tokenizer =
+      std::make_unique<HTMLTokenizer>(options);
   SegmentedString input;
   HTMLToken token;
   while (fuzzed_data_provider.RemainingBytes() > 0) {

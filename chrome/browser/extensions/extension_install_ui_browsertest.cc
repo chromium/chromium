@@ -149,14 +149,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallUIBrowserTest,
   ASSERT_FALSE(GetTheme());
 }
 
-// Flaky on Mac (http://crbug.com/851252).
-#if defined(OS_MACOSX)
-#define MAYBE_TestInstallThemeInFullScreen DISABLED_TestInstallThemeInFullScreen
-#else
-#define MAYBE_TestInstallThemeInFullScreen TestInstallThemeInFullScreen
-#endif
+// Flaky (http://crbug.com/851252).
 IN_PROC_BROWSER_TEST_F(ExtensionInstallUIBrowserTest,
-                       MAYBE_TestInstallThemeInFullScreen) {
+                       DISABLED_TestInstallThemeInFullScreen) {
   EXPECT_TRUE(chrome::ExecuteCommand(browser(), IDC_FULLSCREEN));
   InstallThemeAndVerify("theme", "camo theme");
 }

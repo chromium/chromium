@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <fuzzer/FuzzedDataProvider.h>
+
 #include "base/macros.h"
 #include "base/pickle.h"
-#include "base/test/fuzzed_data_provider.h"
 
 namespace {
 constexpr int kIterations = 16;
@@ -20,7 +21,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   }
   // Use the first kReadControlBytes bytes of the fuzzer input to control how
   // the pickled data is read.
-  base::FuzzedDataProvider data_provider(data, kReadControlBytes);
+  FuzzedDataProvider data_provider(data, kReadControlBytes);
   data += kReadControlBytes;
   size -= kReadControlBytes;
 

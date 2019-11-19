@@ -5,9 +5,10 @@
 """Handling of the <include> element.
 """
 
+from __future__ import print_function
+
 import os
 
-from grit import exception
 from grit import util
 import grit.format.html_inline
 import grit.format.rc
@@ -73,10 +74,14 @@ class IncludeNode(base.Node):
     if os.path.isabs(os.path.expandvars(self.attrs['file'])):
       return self.attrs['file']
 
-    # We have no control over code that calles ToRealPath later, so convert
+    # We have no control over code that calls ToRealPath later, so convert
     # the path to be relative against our basedir.
     if self.attrs.get('use_base_dir', 'true') != 'true':
-      return os.path.relpath(self.attrs['file'], self.GetRoot().GetBaseDir())
+      # Normalize the directory path to use the appropriate OS separator.
+      # GetBaseDir() may return paths\like\this or paths/like/this, since it is
+      # read from the base_dir attribute in the grd file.
+      norm_base_dir = util.normpath(self.GetRoot().GetBaseDir())
+      return os.path.relpath(self.attrs['file'], norm_base_dir)
 
     return self.attrs['file']
 

@@ -1,0 +1,43 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package content.proto.internal;
+
+// Serializable version of blink::mojom::FetchAPIRequest.
+//
+// Next Tag: 17
+message FetchAPIRequest {
+  // Serializable version of the Referrer struct defined in
+  // https://cs.chromium.org/chromium/src/content/public/common/referrer.h
+  //
+  // Next Tag: 3
+  message Referrer {
+    optional string url = 1;
+    optional int32 policy = 2;  // blink::WebReferrerPolicy.
+  }
+
+  // Constructor params.
+  optional string url = 1;
+  optional string method = 2;
+  map<string, string> headers = 3;
+  optional Referrer referrer = 4;
+  optional bool is_reload = 5;
+
+  // Other params.
+  optional int32 mode = 6;  // network::mojom::FetchRequestMode.
+  optional bool is_main_resource_load = 7;
+  optional int32 request_context_type = 8;  // content::RequestContextType.
+  optional int32 credentials_mode = 9;  // network::mojom::FetchCredentialsMode.
+  optional int32 cache_mode = 10;       // blink::mojom::FetchCacheMode.
+  optional int32 redirect_mode = 11;    // network::mojom::FetchRedirectMode.
+  optional string integrity = 12;
+  optional bool keepalive = 13;
+  reserved 14;  // Obsolete: this used to be client_id. It was removed.
+  reserved 15;  // for is_reload_navigation
+  optional bool is_history_navigation = 16;
+}

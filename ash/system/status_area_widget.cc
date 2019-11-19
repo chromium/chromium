@@ -4,24 +4,26 @@
 
 #include "ash/system/status_area_widget.h"
 
-#include "ash/session/session_controller.h"
+#include "ash/keyboard/ui/keyboard_ui_controller.h"
+#include "ash/public/cpp/ash_switches.h"
+#include "ash/public/cpp/shelf_config.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
-#include "ash/system/accessibility/autoclick_tray.h"
 #include "ash/system/accessibility/dictation_button_tray.h"
 #include "ash/system/accessibility/select_to_speak_tray.h"
-#include "ash/system/flag_warning/flag_warning_tray.h"
 #include "ash/system/ime_menu/ime_menu_tray.h"
 #include "ash/system/overview/overview_button_tray.h"
 #include "ash/system/palette/palette_tray.h"
 #include "ash/system/session/logout_button_tray.h"
 #include "ash/system/status_area_widget_delegate.h"
+#include "ash/system/tray/status_area_overflow_button_tray.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/virtual_keyboard/virtual_keyboard_tray.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/command_line.h"
 #include "base/i18n/time_formatting.h"
-#include "ui/accessibility/accessibility_switches.h"
-#include "ui/base/ui_base_features.h"
+#include "chromeos/constants/chromeos_switches.h"
 #include "ui/display/display.h"
 #include "ui/native_theme/native_theme_dark_aura.h"
 
@@ -39,7 +41,7 @@ StatusAreaWidget::StatusAreaWidget(aura::Window* status_container, Shelf* shelf)
   params.opacity = views::Widget::InitParams::TRANSLUCENT_WINDOW;
   params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.parent = status_container;
-  Init(params);
+  Init(std::move(params));
   set_focus_on_creation(false);
   SetContentsView(status_area_widget_delegate_);
 }
@@ -47,22 +49,15 @@ StatusAreaWidget::StatusAreaWidget(aura::Window* status_container, Shelf* shelf)
 void StatusAreaWidget::Initialize() {
   // Create the child views, left to right.
 
-  if (::features::IsMultiProcessMash()) {
-    flag_warning_tray_ = std::make_unique<FlagWarningTray>(shelf_);
-    status_area_widget_delegate_->AddChildView(flag_warning_tray_.get());
-  }
+  overflow_button_tray_ =
+      std::make_unique<StatusAreaOverflowButtonTray>(shelf_);
+  status_area_widget_delegate_->AddChildView(overflow_button_tray_.get());
 
   logout_button_tray_ = std::make_unique<LogoutButtonTray>(shelf_);
   status_area_widget_delegate_->AddChildView(logout_button_tray_.get());
 
   dictation_button_tray_ = std::make_unique<DictationButtonTray>(shelf_);
   status_area_widget_delegate_->AddChildView(dictation_button_tray_.get());
-
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kEnableExperimentalAccessibilityAutoclick)) {
-    autoclick_tray_ = std::make_unique<AutoclickTray>(shelf_);
-    status_area_widget_delegate_->AddChildView(autoclick_tray_.get());
-  }
 
   select_to_speak_tray_ = std::make_unique<SelectToSpeakTray>(shelf_);
   status_area_widget_delegate_->AddChildView(select_to_speak_tray_.get());
@@ -87,15 +82,13 @@ void StatusAreaWidget::Initialize() {
   status_area_widget_delegate_->UpdateLayout();
 
   // Initialize after all trays have been created.
+  overflow_button_tray_->Initialize();
   unified_system_tray_->Initialize();
   palette_tray_->Initialize();
   virtual_keyboard_tray_->Initialize();
   ime_menu_tray_->Initialize();
   select_to_speak_tray_->Initialize();
-  if (autoclick_tray_)
-    autoclick_tray_->Initialize();
-  if (dictation_button_tray_)
-    dictation_button_tray_->Initialize();
+  dictation_button_tray_->Initialize();
   overview_button_tray_->Initialize();
   UpdateAfterShelfAlignmentChange();
   UpdateAfterLoginStatusChange(
@@ -106,33 +99,30 @@ void StatusAreaWidget::Initialize() {
 }
 
 StatusAreaWidget::~StatusAreaWidget() {
+  overflow_button_tray_.reset();
   unified_system_tray_.reset();
   ime_menu_tray_.reset();
   select_to_speak_tray_.reset();
-  autoclick_tray_.reset();
   dictation_button_tray_.reset();
   virtual_keyboard_tray_.reset();
   palette_tray_.reset();
   logout_button_tray_.reset();
   overview_button_tray_.reset();
-  flag_warning_tray_.reset();
 
   // All child tray views have been removed.
-  DCHECK_EQ(0, GetContentsView()->child_count());
+  DCHECK(GetContentsView()->children().empty());
 }
 
 void StatusAreaWidget::UpdateAfterShelfAlignmentChange() {
+  overflow_button_tray_->UpdateAfterShelfAlignmentChange();
   unified_system_tray_->UpdateAfterShelfAlignmentChange();
   logout_button_tray_->UpdateAfterShelfAlignmentChange();
   virtual_keyboard_tray_->UpdateAfterShelfAlignmentChange();
   ime_menu_tray_->UpdateAfterShelfAlignmentChange();
   select_to_speak_tray_->UpdateAfterShelfAlignmentChange();
-  if (dictation_button_tray_)
-    dictation_button_tray_->UpdateAfterShelfAlignmentChange();
+  dictation_button_tray_->UpdateAfterShelfAlignmentChange();
   palette_tray_->UpdateAfterShelfAlignmentChange();
   overview_button_tray_->UpdateAfterShelfAlignmentChange();
-  if (flag_warning_tray_)
-    flag_warning_tray_->UpdateAfterShelfAlignmentChange();
   status_area_widget_delegate_->UpdateLayout();
 }
 
@@ -148,7 +138,7 @@ void StatusAreaWidget::UpdateAfterLoginStatusChange(LoginStatus login_status) {
 
 void StatusAreaWidget::SetSystemTrayVisibility(bool visible) {
   TrayBackgroundView* tray = unified_system_tray_.get();
-  tray->SetVisible(visible);
+  tray->SetVisiblePreferred(visible);
   // Opacity is set to prevent flakiness in kiosk browser tests. See
   // https://crbug.com/624584.
   SetOpacity(visible ? 1.f : 0.f);
@@ -158,6 +148,36 @@ void StatusAreaWidget::SetSystemTrayVisibility(bool visible) {
     tray->CloseBubble();
     Hide();
   }
+}
+
+void StatusAreaWidget::UpdateCollapseState() {
+  // The status area is only collapsible in tablet mode. Otherwise, we just show
+  // all trays.
+  if (!Shell::Get()->tablet_mode_controller())
+    return;
+
+  bool is_collapsible =
+      chromeos::switches::ShouldShowShelfHotseat() &&
+      Shell::Get()->tablet_mode_controller()->InTabletMode() &&
+      ShelfConfig::Get()->is_in_app();
+
+  bool force_collapsible = base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kAshForceStatusAreaCollapsible);
+
+  is_collapsible |= force_collapsible;
+
+  // If the status area is already collapsed/expanded, we should not update the
+  // state again.
+  if (is_collapsible && collapse_state_ == CollapseState::NOT_COLLAPSIBLE)
+    collapse_state_ = CollapseState::COLLAPSED;
+  else if (!is_collapsible)
+    collapse_state_ = CollapseState::NOT_COLLAPSIBLE;
+
+  // TODO(tengs): Right now we simply show the overflow button in the collpase
+  // state. The full calculation of which trays overflow will be done in a
+  // future CL.
+  overflow_button_tray_->SetVisiblePreferred(
+      force_collapsible && collapse_state_ != CollapseState::NOT_COLLAPSIBLE);
 }
 
 TrayBackgroundView* StatusAreaWidget::GetSystemTrayAnchor() const {
@@ -188,18 +208,16 @@ bool StatusAreaWidget::IsMessageBubbleShown() const {
 }
 
 void StatusAreaWidget::SchedulePaint() {
+  overview_button_tray_->SchedulePaint();
   status_area_widget_delegate_->SchedulePaint();
   unified_system_tray_->SchedulePaint();
   virtual_keyboard_tray_->SchedulePaint();
   logout_button_tray_->SchedulePaint();
   ime_menu_tray_->SchedulePaint();
   select_to_speak_tray_->SchedulePaint();
-  if (dictation_button_tray_)
-    dictation_button_tray_->SchedulePaint();
+  dictation_button_tray_->SchedulePaint();
   palette_tray_->SchedulePaint();
   overview_button_tray_->SchedulePaint();
-  if (flag_warning_tray_)
-    flag_warning_tray_->SchedulePaint();
 }
 
 const ui::NativeTheme* StatusAreaWidget::GetNativeTheme() const {
@@ -215,13 +233,19 @@ bool StatusAreaWidget::OnNativeWidgetActivationChanged(bool active) {
 }
 
 void StatusAreaWidget::OnMouseEvent(ui::MouseEvent* event) {
+  if (event->IsMouseWheelEvent()) {
+    ui::MouseWheelEvent* mouse_wheel_event = event->AsMouseWheelEvent();
+    shelf_->ProcessMouseWheelEvent(mouse_wheel_event);
+    return;
+  }
+
   // Clicking anywhere except the virtual keyboard tray icon should hide the
   // virtual keyboard.
   gfx::Point location = event->location();
   views::View::ConvertPointFromWidget(virtual_keyboard_tray_.get(), &location);
   if (event->type() == ui::ET_MOUSE_PRESSED &&
       !virtual_keyboard_tray_->HitTestPoint(location)) {
-    keyboard::KeyboardController::Get()->HideKeyboardImplicitlyByUser();
+    keyboard::KeyboardUIController::Get()->HideKeyboardImplicitlyByUser();
   }
   views::Widget::OnMouseEvent(event);
 }
@@ -233,7 +257,7 @@ void StatusAreaWidget::OnGestureEvent(ui::GestureEvent* event) {
   views::View::ConvertPointFromWidget(virtual_keyboard_tray_.get(), &location);
   if (event->type() == ui::ET_GESTURE_TAP_DOWN &&
       !virtual_keyboard_tray_->HitTestPoint(location)) {
-    keyboard::KeyboardController::Get()->HideKeyboardImplicitlyByUser();
+    keyboard::KeyboardUIController::Get()->HideKeyboardImplicitlyByUser();
   }
   views::Widget::OnGestureEvent(event);
 }

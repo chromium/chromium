@@ -14,6 +14,22 @@ GLES2TraceImplementation::GLES2TraceImplementation(GLES2Interface* gl)
 
 GLES2TraceImplementation::~GLES2TraceImplementation() = default;
 
+// InterfaceBase implementation.
+void GLES2TraceImplementation::GenSyncTokenCHROMIUM(GLbyte* sync_token) {
+  gl_->GenSyncTokenCHROMIUM(sync_token);
+}
+void GLES2TraceImplementation::GenUnverifiedSyncTokenCHROMIUM(
+    GLbyte* sync_token) {
+  gl_->GenUnverifiedSyncTokenCHROMIUM(sync_token);
+}
+void GLES2TraceImplementation::VerifySyncTokensCHROMIUM(GLbyte** sync_tokens,
+                                                        GLsizei count) {
+  gl_->VerifySyncTokensCHROMIUM(sync_tokens, count);
+}
+void GLES2TraceImplementation::WaitSyncTokenCHROMIUM(const GLbyte* sync_token) {
+  gl_->WaitSyncTokenCHROMIUM(sync_token);
+}
+
 // Include the auto-generated part of this file. We split this because it means
 // we can easily edit the non-auto generated parts right here in this file
 // instead of having to edit some template or the code generator.

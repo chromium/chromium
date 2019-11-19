@@ -5,11 +5,11 @@
 #include "cc/animation/animation_host.h"
 
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/timer/lap_timer.h"
 #include "cc/animation/animation_id_provider.h"
 #include "cc/animation/animation_timeline.h"
 #include "cc/animation/keyframe_effect.h"
 #include "cc/animation/single_keyframe_effect_animation.h"
-#include "cc/base/lap_timer.h"
 #include "cc/test/fake_impl_task_runner_provider.h"
 #include "cc/test/fake_layer_tree_host.h"
 #include "cc/test/fake_layer_tree_host_client.h"
@@ -17,7 +17,7 @@
 #include "cc/test/stub_layer_tree_host_single_thread_client.h"
 #include "cc/test/test_task_graph_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "testing/perf/perf_test.h"
+#include "testing/perf/perf_result_reporter.h"
 
 namespace cc {
 
@@ -120,7 +120,7 @@ class AnimationHostPerfTest : public testing::Test {
       all_animations_timeline_->GetAnimationById(i)->SetNeedsPushProperties();
   }
 
-  void DoTest() {
+  void DoTest(const std::string& test_name) {
     timer_.Reset();
     do {
       // Invalidate dirty flags.
@@ -130,8 +130,9 @@ class AnimationHostPerfTest : public testing::Test {
       timer_.NextLap();
     } while (!timer_.HasTimeLimitExpired());
 
-    perf_test::PrintResult("push_properties_to", "", "", timer_.LapsPerSecond(),
-                           "runs/s", true);
+    perf_test::PerfResultReporter reporter("push_properties_to", test_name);
+    reporter.RegisterImportantMetric("", "runs/s");
+    reporter.AddResult("", timer_.LapsPerSecond());
   }
 
  private:
@@ -149,23 +150,23 @@ class AnimationHostPerfTest : public testing::Test {
   int first_animation_id_;
   int last_animation_id_;
 
-  LapTimer timer_;
+  base::LapTimer timer_;
   TestTaskGraphRunner task_graph_runner_;
 };
 
 TEST_F(AnimationHostPerfTest, Push1000AnimationsPropertiesTo) {
   CreateAnimations(1000);
-  DoTest();
+  DoTest("Push1000AnimationsPropertiesTo");
 }
 
 TEST_F(AnimationHostPerfTest, Push10TimelinesPropertiesTo) {
   CreateTimelines(10);
-  DoTest();
+  DoTest("Push10TimelinesPropertiesTo");
 }
 
 TEST_F(AnimationHostPerfTest, Push1000TimelinesPropertiesTo) {
   CreateTimelines(1000);
-  DoTest();
+  DoTest("Push1000TimelinesPropertiesTo");
 }
 
 }  // namespace cc

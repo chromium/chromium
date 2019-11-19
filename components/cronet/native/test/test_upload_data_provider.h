@@ -37,6 +37,10 @@ class TestUploadDataProvider {
   // invoke callback asynchronously.
   enum FailMode { NONE, CALLBACK_SYNC, CALLBACK_ASYNC };
 
+  // Indicates whether request should be canceled synchronously before
+  // the callback or asynchronously after.
+  enum CancelMode { CANCEL_NONE, CANCEL_SYNC, CANCEL_ASYNC };
+
   TestUploadDataProvider(SuccessCallbackMode success_callback_mode,
                          Cronet_ExecutorPtr executor);
 
@@ -53,9 +57,17 @@ class TestUploadDataProvider {
 
   void SetRewindFailure(FailMode rewind_fail_mode);
 
+  void SetReadCancel(int read_cancel_index, CancelMode read_cancel_mode);
+
+  void SetRewindCancel(CancelMode rewind_cancel_mode);
+
   void set_bad_length(int64_t bad_length) { bad_length_ = bad_length; }
 
   void set_chunked(bool chunked) { chunked_ = chunked; }
+
+  void set_url_request(Cronet_UrlRequestPtr request) { url_request_ = request; }
+
+  Cronet_ExecutorPtr executor() const { return executor_; }
 
   int num_read_calls() const { return num_read_calls_; }
 
@@ -84,6 +96,8 @@ class TestUploadDataProvider {
 
   bool MaybeFailRewind(Cronet_UploadDataSinkPtr upload_data_sink);
 
+  void MaybeCancelRequest(CancelMode cancel_mode);
+
   void Close();
 
   // Implementation of Cronet_UploadDataProvider methods.
@@ -101,6 +115,8 @@ class TestUploadDataProvider {
   const SuccessCallbackMode success_callback_mode_ = SYNC;
   const Cronet_ExecutorPtr executor_;
 
+  Cronet_UrlRequestPtr url_request_;
+
   bool chunked_ = false;
 
   // Index of read to fail on.
@@ -108,6 +124,13 @@ class TestUploadDataProvider {
   // Indicates how to fail on a read.
   FailMode read_fail_mode_ = NONE;
   FailMode rewind_fail_mode_ = NONE;
+
+  // Index of read to cancel on.
+  int read_cancel_index_ = -1;
+  // Indicates how to cancel on a read.
+  CancelMode read_cancel_mode_ = CANCEL_NONE;
+  CancelMode rewind_cancel_mode_ = CANCEL_NONE;
+
   // Report bad length if not set to -1.
   int64_t bad_length_ = -1;
 

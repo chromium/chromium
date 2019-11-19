@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "cc/cc_export.h"
 #include "cc/layers/layer.h"
 #include "cc/layers/ui_resource_layer.h"
@@ -19,6 +18,9 @@ namespace cc {
 class CC_EXPORT NinePatchLayer : public UIResourceLayer {
  public:
   static scoped_refptr<NinePatchLayer> Create();
+
+  NinePatchLayer(const NinePatchLayer&) = delete;
+  NinePatchLayer& operator=(const NinePatchLayer&) = delete;
 
   void PushPropertiesTo(LayerImpl* layer) override;
 
@@ -60,8 +62,6 @@ class CC_EXPORT NinePatchLayer : public UIResourceLayer {
   // The occluded region in layer space set by SetLayerOcclusion. It is
   // usually larger than |image_aperture_|.
   gfx::Rect layer_occlusion_;
-
-  DISALLOW_COPY_AND_ASSIGN(NinePatchLayer);
 };
 
 }  // namespace cc

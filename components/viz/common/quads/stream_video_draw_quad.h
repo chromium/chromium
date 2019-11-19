@@ -11,6 +11,7 @@
 
 #include "components/viz/common/quads/draw_quad.h"
 #include "components/viz/common/viz_common_export.h"
+#include "gpu/ipc/common/vulkan_ycbcr_info.h"
 #include "ui/gfx/geometry/point_f.h"
 
 namespace viz {
@@ -20,6 +21,8 @@ class VIZ_COMMON_EXPORT StreamVideoDrawQuad : public DrawQuad {
   static const size_t kResourceIdIndex = 0;
 
   StreamVideoDrawQuad();
+  ~StreamVideoDrawQuad() override;
+  StreamVideoDrawQuad(const StreamVideoDrawQuad& quad);
 
   void SetNew(const SharedQuadState* shared_quad_state,
               const gfx::Rect& rect,

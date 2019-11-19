@@ -72,6 +72,8 @@ TEST_F(InitValueManifestTest, InitFromValueInvalid) {
       Testcase("init_invalid_files_css_item_invalid.json", errors::kInvalidCss),
       Testcase("init_invalid_permissions_invalid.json",
                errors::kInvalidPermissions),
+      Testcase("init_invalid_host_permissions_invalid.json",
+               errors::kInvalidHostPermissions),
       Testcase("init_invalid_permissions_item_invalid.json",
                errors::kInvalidPermission),
       Testcase("init_invalid_options_url_invalid.json",

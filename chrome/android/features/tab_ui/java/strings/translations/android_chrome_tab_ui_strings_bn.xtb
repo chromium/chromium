@@ -1,0 +1,29 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="bn">
+<translation id="1075622780330595106">সব ট্যাবের মধ্যে থেকে <ph name="NUMBER_OF_TABS" />টি ট্যাব সম্প্রতি ব্যবহার করা হয়নি। সেগুলি বন্ধ করে দিতে চান?</translation>
+<translation id="1181037720776840403">সরান</translation>
+<translation id="125153950246128346">অন্য ট্যাব দেখতে ট্যাপ করুন</translation>
+<translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" />টি ট্যাব}one{<ph name="TABS_COUNT_MANY" />টি ট্যাব}other{<ph name="TABS_COUNT_MANY" />টি ট্যাব}}</translation>
+<translation id="257674075312929031">গ্রুপ</translation>
+<translation id="2613747923081026172">গ্রুপ তৈরি করুন</translation>
+<translation id="2671423594960767771">গ্রুপ শেয়ার করুন</translation>
+<translation id="2977480621796371840">গ্রুপ থেকে সরান</translation>
+<translation id="4212246570487010370">ব্রাউজ করা চালিয়ে যান</translation>
+<translation id="4648718555153979859">আপনার ট্যাবগুলিকে এখানে একসাথে গ্রুপ করা আছে</translation>
+<translation id="5007392906805964215">পর্যালোচনা করুন</translation>
+<translation id="5073204694187207510">ফুলস্ক্রিন গ্রিড লুকান</translation>
+<translation id="5082793167783849073">একটি গ্রুপ তৈরি করে দ্রুত পৃষ্ঠাগুলির তুলনা করুন। শুরু করতে, কোনও একটি লিঙ্ক স্পর্শ করে ধরে থাকুন।</translation>
+<translation id="5580090775658607195"><ph name="TAB_COUNT" />টি ট্যাব গ্রুপ করা হয়েছে</translation>
+<translation id="5792534911093536736">আরও ট্যাব</translation>
+<translation id="58326064309361797">ট্যাবগুলি গ্রুপ করতে ড্র্যাগ করুন</translation>
+<translation id="6040143037577758943">বন্ধ</translation>
+<translation id="6193448654517602979">ট্যাব বেছে নিন</translation>
+<translation id="6615455863669487791">আমাকে দেখান</translation>
+<translation id="6840760312327750441">ট্যাব গ্রুপ করতে সেটি টাচ করে ধরে থাকুন। তারপর, সেটি টেনে অন্য ট্যাবে নিয়ে আসুন।</translation>
+<translation id="7151209024774799310">গ্রুপ থেকে ট্যাব সরান</translation>
+<translation id="7559245342362162951">ফুলস্ক্রিন গ্রিডে গ্রুপের ট্যাব দেখুন</translation>
+<translation id="9150694013019234766">স্ক্রিনের নিচে থাকা ট্যাব গ্রুপের মধ্যে একটি ট্যাব থেকে অন্য ট্যাবে যান</translation>
+<translation id="9169594135889675189">গ্রুপে নতুন ট্যাব যোগ করুন</translation>
+<translation id="959682366969460160">সবকিছু গুছিয়ে রাখুন</translation>
+</translationbundle>

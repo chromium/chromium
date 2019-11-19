@@ -20,10 +20,11 @@
  */
 
 // https://html.spec.whatwg.org/C/#the-select-element
-[HTMLConstructor]
-interface HTMLSelectElement : HTMLElement {
+[
+    Exposed=Window,
+    HTMLConstructor
+] interface HTMLSelectElement : HTMLElement {
     [CEReactions, ImplementedAs=IDLExposedAutofillValue] attribute DOMString autocomplete;
-    [CEReactions, Reflect] attribute boolean autofocus;
     [CEReactions, Reflect] attribute boolean disabled;
     [ImplementedAs=formOwner] readonly attribute HTMLFormElement? form;
     [CEReactions, Reflect] attribute boolean multiple;

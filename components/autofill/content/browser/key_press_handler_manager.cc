@@ -17,7 +17,7 @@ void KeyPressHandlerManager::RegisterKeyPressHandler(
   // same function with the same bound arguments. That's not what Equals() does
   // (they have to have the same BindState), but it's the closest approximation
   // available.
-  if (handler.is_null() || handler.Equals(handler_))
+  if (handler.is_null() || (handler == handler_))
     return;
 
   if (!handler_.is_null())

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.omnibox;
+import org.chromium.base.annotations.NativeMethods;
 
 /**
  * Utilities for the Omnibox view component.
@@ -16,8 +17,11 @@ public class OmniboxViewUtil {
      * @return The sanitized version of the string.
      */
     public static String sanitizeTextForPaste(String clipboardString) {
-        return nativeSanitizeTextForPaste(clipboardString);
+        return OmniboxViewUtilJni.get().sanitizeTextForPaste(clipboardString);
     }
 
-    private static native String nativeSanitizeTextForPaste(String clipboardString);
+    @NativeMethods
+    interface Natives {
+        String sanitizeTextForPaste(String clipboardString);
+    }
 }

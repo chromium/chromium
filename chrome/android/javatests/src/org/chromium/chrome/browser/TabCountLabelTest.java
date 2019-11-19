@@ -57,7 +57,7 @@ public class TabCountLabelTest {
     @Feature({"Browser", "Main"})
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     @RetryOnFailure
-    public void testTabCountLabel() throws InterruptedException {
+    public void testTabCountLabel() {
         final int tabCount = mActivityTestRule.getActivity().getCurrentTabModel().getCount();
         tabCountLabelCheck("Initial state", tabCount);
         ChromeTabUtils.newTabFromMenu(

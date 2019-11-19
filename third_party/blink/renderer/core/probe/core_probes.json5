@@ -4,6 +4,7 @@
     export_symbol: "CORE_EXPORT",
     include_path: "third_party/blink/renderer/core/inspector",
     includes: [
+      "third_party/blink/renderer/bindings/core/v8/script_source_code.h",
       "third_party/blink/renderer/core/animation/animation.h",
       "third_party/blink/renderer/core/core_probe_sink.h",
       "third_party/blink/renderer/core/dom/character_data.h",
@@ -12,6 +13,7 @@
       "third_party/blink/renderer/core/loader/frame_loader_types.h",
       "third_party/blink/renderer/core/page/chrome_client.h",
       "third_party/blink/renderer/core/probe/core_probes.h",
+      "third_party/blink/public/web/web_media_inspector.h",
     ],
   },
   observers: {
@@ -59,11 +61,13 @@
         "DomContentLoadedEventFired",
         "FrameDocumentUpdated",
         "FrameOwnerContentUpdated",
+        "NodeCreated",
         "PseudoElementCreated",
         "PseudoElementDestroyed",
         "WillModifyDOMAttr",
         "WillPopShadowRoot",
         "WillRemoveDOMNode",
+        "PortalRemoteFrameCreated"
       ]
     },
     InspectorDOMDebuggerAgent: {
@@ -104,7 +108,6 @@
     },
     InspectorLayerTreeAgent: {
       probes: [
-        "DidPaint",
         "LayerTreeDidChange",
         "LayerTreePainted",
       ]
@@ -112,6 +115,13 @@
     InspectorLogAgent: {
       probes: [
         "ConsoleMessageAdded",
+      ]
+    },
+    InspectorMediaAgent: {
+      probes: [
+        "PlayerEventsAdded",
+        "PlayerPropertiesChanged",
+        "PlayersCreated"
       ]
     },
     InspectorNetworkAgent: {
@@ -163,6 +173,7 @@
         "FrameAttachedToParent",
         "FrameClearedScheduledNavigation",
         "FrameDetachedFromParent",
+        "FrameRequestedNavigation",
         "FrameScheduledNavigation",
         "FrameStartedLoading",
         "FrameStoppedLoading",
@@ -207,6 +218,7 @@
         "DidReceiveData",
         "DidReceiveResourceResponse",
         "FrameStartedLoading",
+        "MarkResourceAsCached",
         "PaintTiming",
         "WillSendRequest",
         "WillSendNavigationRequest",

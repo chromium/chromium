@@ -5,6 +5,7 @@
 #include "chrome/renderer/supervised_user/supervised_user_error_page_controller.h"
 
 #include "base/bind.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/renderer/supervised_user/supervised_user_error_page_controller_delegate.h"
 #include "content/public/renderer/render_frame.h"
@@ -34,14 +35,17 @@ void SupervisedUserErrorPageController::Install(
     return;
 
   v8::Local<v8::Object> global = context->Global();
-  global->Set(gin::StringToV8(isolate, "supervisedUserErrorPageController"),
-              controller.ToV8());
+  global
+      ->Set(context,
+            gin::StringToV8(isolate, "supervisedUserErrorPageController"),
+            controller.ToV8())
+      .Check();
 }
 
 SupervisedUserErrorPageController::SupervisedUserErrorPageController(
     base::WeakPtr<SupervisedUserErrorPageControllerDelegate> delegate,
     content::RenderFrame* render_frame)
-    : delegate_(delegate), render_frame_(render_frame), weak_factory_(this) {}
+    : delegate_(delegate), render_frame_(render_frame) {}
 
 SupervisedUserErrorPageController::~SupervisedUserErrorPageController() {}
 
@@ -66,7 +70,9 @@ void SupervisedUserErrorPageController::Feedback() {
 void SupervisedUserErrorPageController::RequestPermissionCallback(
     bool success) {
   std::string result = success ? "true" : "false";
-  std::string js = "setRequestStatus(" + result + ");";
+  std::string in_main_frame = render_frame_->IsMainFrame() ? "true" : "false";
+  std::string js = base::StringPrintf("setRequestStatus(%s, %s)",
+                                      result.c_str(), in_main_frame.c_str());
   render_frame_->ExecuteJavaScript(base::ASCIIToUTF16(js));
 }
 

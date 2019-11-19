@@ -1,0 +1,12 @@
+CONSOLE MESSAGE: line 38: Testing main world. Eval should be blocked by main world CSP.
+CONSOLE MESSAGE: line 7: EvalError: Refused to evaluate a string as JavaScript because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive: "script-src 'self'".
+
+CONSOLE MESSAGE: line 13: PASS: eval blocked as expected.
+CONSOLE MESSAGE: line 44: Testing isolated world with no csp. Eval should be allowed.
+CONSOLE MESSAGE: PASS: eval allowed as expected.
+CONSOLE MESSAGE: line 55: Testing isolated world with strict csp.
+CONSOLE MESSAGE: line 58: internals.runtimeFlags.isolatedWorldCSPEnabled is false
+CONSOLE MESSAGE: PASS: eval allowed as expected.
+CONSOLE MESSAGE: line 68: Testing isolated world with permissive csp.
+CONSOLE MESSAGE: PASS: eval allowed as expected.
+This tests the handling of unsafe-eval CSP checks and its interaction with the isolated world CSP.

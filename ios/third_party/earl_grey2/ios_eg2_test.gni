@@ -31,11 +31,14 @@ template("ios_eg2_test_app_host") {
       deps += [ "//ios/third_party/firebase" ]
     }
 
-    # Xcode needs those two framework installed in the application (and signed)
-    # for the XCTest to run, so install them using extra_system_frameworks.
+    # Xcode needs the following frameworks installed in the application (and
+    # signed) for the XCTest to run, so install them using
+    # extra_system_frameworks.
     _ios_platform_library = "$ios_sdk_platform_path/Developer/Library"
-    extra_system_frameworks =
-        [ "$_ios_platform_library/Frameworks/XCTest.framework" ]
+    extra_system_frameworks = [
+      "$_ios_platform_library/Frameworks/XCTest.framework",
+      "$ios_sdk_platform_path/Developer/Library/PrivateFrameworks/XCTAutomationSupport.framework",
+    ]
 
     if (!defined(ldflags)) {
       ldflags = []
@@ -69,6 +72,7 @@ template("ios_eg2_test") {
     forward_variables_from(invoker,
                            [
                              "xcode_test_application_name",
+                             "xctest_bundle_principal_class",
                              "bundle_deps",
                              "deps",
                            ])

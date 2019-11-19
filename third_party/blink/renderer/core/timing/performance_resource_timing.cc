@@ -31,11 +31,16 @@
 
 #include "third_party/blink/renderer/core/timing/performance_resource_timing.h"
 
+#include "third_party/blink/public/mojom/timing/performance_mark_or_measure.mojom-blink.h"
 #include "third_party/blink/public/platform/web_resource_timing_info.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
 #include "third_party/blink/renderer/core/performance_entry_names.h"
 #include "third_party/blink/renderer/core/timing/performance.h"
+#include "third_party/blink/renderer/core/timing/performance_mark.h"
+#include "third_party/blink/renderer/core/timing/performance_measure.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_load_timing.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_timing_info.h"
@@ -44,8 +49,10 @@ namespace blink {
 
 PerformanceResourceTiming::PerformanceResourceTiming(
     const WebResourceTimingInfo& info,
-    TimeTicks time_origin,
-    const AtomicString& initiator_type)
+    base::TimeTicks time_origin,
+    const AtomicString& initiator_type,
+    mojo::PendingReceiver<mojom::blink::WorkerTimingContainer>
+        worker_timing_receiver)
     : PerformanceEntry(info.name,
                        Performance::MonotonicTimeToDOMHighResTimeStamp(
                            time_origin,
@@ -80,10 +87,12 @@ PerformanceResourceTiming::PerformanceResourceTiming(
 // This constructor is for PerformanceNavigationTiming.
 PerformanceResourceTiming::PerformanceResourceTiming(
     const AtomicString& name,
-    TimeTicks time_origin,
+    base::TimeTicks time_origin,
+    bool is_secure_context,
     const WebVector<WebServerTimingInfo>& server_timing)
     : PerformanceEntry(name, 0.0, 0.0),
       time_origin_(time_origin),
+      is_secure_context_(is_secure_context),
       server_timing_(
           PerformanceServerTiming::FromParsedServerTiming(server_timing)) {}
 
@@ -109,15 +118,15 @@ bool PerformanceResourceTiming::DidReuseConnection() const {
   return did_reuse_connection_;
 }
 
-unsigned long long PerformanceResourceTiming::GetTransferSize() const {
+uint64_t PerformanceResourceTiming::GetTransferSize() const {
   return transfer_size_;
 }
 
-unsigned long long PerformanceResourceTiming::GetEncodedBodySize() const {
+uint64_t PerformanceResourceTiming::GetEncodedBodySize() const {
   return encoded_body_size_;
 }
 
-unsigned long long PerformanceResourceTiming::GetDecodedBodySize() const {
+uint64_t PerformanceResourceTiming::GetDecodedBodySize() const {
   return decoded_body_size_;
 }
 
@@ -235,7 +244,7 @@ DOMHighResTimeStamp PerformanceResourceTiming::connectStart() const {
     return domainLookupEnd();
 
   // connectStart includes any DNS time, so we may need to trim that off.
-  TimeTicks connect_start = timing->ConnectStart();
+  base::TimeTicks connect_start = timing->ConnectStart();
   if (!timing->DnsEnd().is_null())
     connect_start = timing->DnsEnd();
 
@@ -292,7 +301,7 @@ DOMHighResTimeStamp PerformanceResourceTiming::responseStart() const {
   if (!timing)
     return requestStart();
 
-  TimeTicks response_start = timing->ReceiveHeadersStart();
+  base::TimeTicks response_start = timing->ReceiveHeadersStart();
   if (response_start.is_null())
     response_start = timing->ReceiveHeadersEnd();
   if (response_start.is_null())
@@ -310,21 +319,21 @@ DOMHighResTimeStamp PerformanceResourceTiming::responseEnd() const {
       time_origin_, response_end_, allow_negative_value_);
 }
 
-unsigned long long PerformanceResourceTiming::transferSize() const {
+uint64_t PerformanceResourceTiming::transferSize() const {
   if (!AllowTimingDetails())
     return 0;
 
   return GetTransferSize();
 }
 
-unsigned long long PerformanceResourceTiming::encodedBodySize() const {
+uint64_t PerformanceResourceTiming::encodedBodySize() const {
   if (!AllowTimingDetails())
     return 0;
 
   return GetEncodedBodySize();
 }
 
-unsigned long long PerformanceResourceTiming::decodedBodySize() const {
+uint64_t PerformanceResourceTiming::decodedBodySize() const {
   if (!AllowTimingDetails())
     return 0;
 
@@ -334,6 +343,11 @@ unsigned long long PerformanceResourceTiming::decodedBodySize() const {
 const HeapVector<Member<PerformanceServerTiming>>&
 PerformanceResourceTiming::serverTiming() const {
   return server_timing_;
+}
+
+const HeapVector<Member<PerformanceEntry>>&
+PerformanceResourceTiming::workerTiming() const {
+  return worker_timing_;
 }
 
 void PerformanceResourceTiming::BuildJSONValue(V8ObjectBuilder& builder) const {
@@ -356,17 +370,62 @@ void PerformanceResourceTiming::BuildJSONValue(V8ObjectBuilder& builder) const {
   builder.AddNumber("encodedBodySize", encodedBodySize());
   builder.AddNumber("decodedBodySize", decodedBodySize());
 
-  Vector<ScriptValue> server_timing;
+  HeapVector<ScriptValue> server_timing;
   server_timing.ReserveCapacity(server_timing_.size());
-  for (unsigned i = 0; i < server_timing_.size(); i++) {
-    server_timing.push_back(
-        server_timing_[i]->toJSONForBinding(builder.GetScriptState()));
+  for (const auto& timing : server_timing_) {
+    server_timing.push_back(timing->toJSONForBinding(builder.GetScriptState()));
   }
   builder.Add("serverTiming", server_timing);
+
+  HeapVector<ScriptValue> worker_timing;
+  worker_timing.ReserveCapacity(worker_timing_.size());
+  for (const auto& timing : worker_timing_) {
+    worker_timing.push_back(timing->toJSONForBinding(builder.GetScriptState()));
+  }
+  builder.Add("workerTiming", worker_timing);
+}
+
+void PerformanceResourceTiming::AddPerformanceEntry(
+    mojom::blink::PerformanceMarkOrMeasurePtr
+        mojo_performance_mark_or_measure) {
+  // TODO(https://crbug.com/900700): Wait until the end of fetch event to stop
+  // appearing incomplete PerformanceResourceTiming. Incomplete |workerTiming|
+  // will be exposed in the case that FetchEvent#addPerformanceEntry is called
+  // after PerformanceResourceTiming is constructed. This may cause different
+  // results of |workerTiming| in accessing it at the different time.
+
+  NonThrowableExceptionState exception_state;
+  WTF::AtomicString name(mojo_performance_mark_or_measure->name);
+
+  scoped_refptr<SerializedScriptValue> serialized_detail =
+      SerializedScriptValue::NullValue();
+  if (mojo_performance_mark_or_measure->detail) {
+    serialized_detail = SerializedScriptValue::Create(
+        reinterpret_cast<const char*>(
+            mojo_performance_mark_or_measure->detail->data()),
+        mojo_performance_mark_or_measure->detail->size());
+  }
+
+  switch (mojo_performance_mark_or_measure->entry_type) {
+    case mojom::blink::PerformanceMarkOrMeasure::EntryType::kMark:
+      worker_timing_.emplace_back(MakeGarbageCollected<PerformanceMark>(
+          name, mojo_performance_mark_or_measure->start_time, serialized_detail,
+          exception_state));
+      break;
+    case mojom::blink::PerformanceMarkOrMeasure::EntryType::kMeasure:
+      ScriptState* script_state;
+      worker_timing_.emplace_back(MakeGarbageCollected<PerformanceMeasure>(
+          script_state, name, mojo_performance_mark_or_measure->start_time,
+          mojo_performance_mark_or_measure->start_time +
+              mojo_performance_mark_or_measure->duration,
+          serialized_detail, exception_state));
+      break;
+  }
 }
 
 void PerformanceResourceTiming::Trace(blink::Visitor* visitor) {
   visitor->Trace(server_timing_);
+  visitor->Trace(worker_timing_);
   PerformanceEntry::Trace(visitor);
 }
 

@@ -4,6 +4,7 @@
 
 #include "ash/system/tray/tray_utils.h"
 
+#include "ash/style/ash_color_provider.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ui/gfx/font_list.h"
 #include "ui/views/controls/label.h"
@@ -19,9 +20,11 @@ void SetupLabelForTray(views::Label* label) {
 }
 
 SkColor TrayIconColor(session_manager::SessionState session_state) {
-  if (session_state == session_manager::SessionState::OOBE)
-    return kOobeTrayIconColor;
-  return kTrayIconColor;
+  const bool light_icon = session_state == session_manager::SessionState::OOBE;
+  return AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kIconPrimary,
+      light_icon ? AshColorProvider::AshColorMode::kLight
+                 : AshColorProvider::AshColorMode::kDark);
 }
 
 }  // namespace ash

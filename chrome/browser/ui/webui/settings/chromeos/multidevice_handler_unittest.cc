@@ -124,7 +124,7 @@ class MultideviceHandlerTest : public testing::Test {
     fake_android_sms_app_manager_ =
         std::make_unique<android_sms::FakeAndroidSmsAppManager>();
 
-    prefs_.reset(new TestingPrefServiceSimple());
+    prefs_ = std::make_unique<TestingPrefServiceSimple>();
 
     handler_ = std::make_unique<TestMultideviceHandler>(
         prefs_.get(), fake_multidevice_setup_client_.get(),

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SPELLCHECKER_SPELL_CHECK_PANEL_HOST_IMPL_H_
 #define CHROME_BROWSER_SPELLCHECKER_SPELL_CHECK_PANEL_HOST_IMPL_H_
 
+#include "base/callback.h"
 #include "base/macros.h"
 #include "components/spellcheck/common/spellcheck_panel.mojom.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
@@ -18,7 +19,16 @@ class SpellCheckPanelHostImpl : public spellcheck::mojom::SpellCheckPanelHost {
   SpellCheckPanelHostImpl();
   ~SpellCheckPanelHostImpl() override;
 
-  static void Create(spellcheck::mojom::SpellCheckPanelHostRequest request);
+  static void Create(
+      int render_process_id,
+      mojo::PendingReceiver<spellcheck::mojom::SpellCheckPanelHost> receiver);
+
+  // Allows tests to override how |Create()| is implemented to bind a process
+  // hosts's SpellCheckPanelHost receiver.
+  using Binder = base::RepeatingCallback<void(
+      int /* render_process_id */,
+      mojo::PendingReceiver<spellcheck::mojom::SpellCheckPanelHost>)>;
+  static void OverrideBinderForTesting(Binder binder);
 
  private:
   // spellcheck::mojom::SpellCheckPanelHost:

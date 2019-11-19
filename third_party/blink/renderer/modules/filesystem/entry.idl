@@ -52,11 +52,4 @@
     // TODO(crbug.com/841185): |successCallback| and |errorCallback| are not
     // nullable in the spec.
     [CallWith=ScriptState] void getParent(optional EntryCallback? successCallback, optional ErrorCallback? errorCallback);
-
-    // Primarily exposed for testing, to give script some way of getting new
-    // style handles.
-    // TODO(mek): Remove this method once API to get new-style file handles
-    // directly has been implemented.
-    [RuntimeEnabled=WritableFiles]
-    FileSystemBaseHandle asFileSystemHandle();
 };

@@ -36,7 +36,8 @@ void GrTextureMailboxReleaseProc(void* data) {
 
 namespace blink {
 
-void GraphicsContext3DUtils::GetMailboxForSkImage(gpu::Mailbox& out_mailbox,
+bool GraphicsContext3DUtils::GetMailboxForSkImage(gpu::Mailbox& out_mailbox,
+                                                  GLenum& out_texture_target,
                                                   const sk_sp<SkImage>& image,
                                                   GLenum filter) {
   // This object is owned by context_provider_wrapper_, so that weak ref
@@ -50,6 +51,9 @@ void GraphicsContext3DUtils::GetMailboxForSkImage(gpu::Mailbox& out_mailbox,
   DCHECK(gr);
   DCHECK(gl);
   GrTexture* gr_texture = image->getTexture();
+  if (!gr_texture)
+    return false;
+
   DCHECK(gr == gr_texture->getContext());
 
   GrBackendTexture backend_texture = image->getBackendTexture(true);
@@ -60,6 +64,8 @@ void GraphicsContext3DUtils::GetMailboxForSkImage(gpu::Mailbox& out_mailbox,
   DCHECK(result);
 
   GLuint texture_id = info.fID;
+  GLenum texture_target = info.fTarget;
+  out_texture_target = texture_target;
 
   auto it = cached_mailboxes_.find(gr_texture);
   if (it != cached_mailboxes_.end()) {
@@ -74,13 +80,20 @@ void GraphicsContext3DUtils::GetMailboxForSkImage(gpu::Mailbox& out_mailbox,
     gr_texture->setRelease(GrTextureMailboxReleaseProc, release_proc_data);
     cached_mailboxes_.insert(gr_texture, out_mailbox);
   }
-  gl->BindTexture(GL_TEXTURE_2D, texture_id);
-  gl->TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
-  gl->TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
-  gl->TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-  gl->TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-  gl->BindTexture(GL_TEXTURE_2D, 0);
+  gl->BindTexture(texture_target, texture_id);
+  gl->TexParameteri(texture_target, GL_TEXTURE_MIN_FILTER, filter);
+  gl->TexParameteri(texture_target, GL_TEXTURE_MAG_FILTER, filter);
+  gl->TexParameteri(texture_target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  gl->TexParameteri(texture_target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  gl->BindTexture(texture_target, 0);
   gr_texture->textureParamsModified();
+  return true;
+}
+
+void GraphicsContext3DUtils::RegisterMailbox(GrTexture* gr_texture,
+                                             const gpu::Mailbox& mailbox) {
+  DCHECK(cached_mailboxes_.find(gr_texture) == cached_mailboxes_.end());
+  cached_mailboxes_.insert(gr_texture, mailbox);
 }
 
 void GraphicsContext3DUtils::RemoveCachedMailbox(GrTexture* gr_texture) {

@@ -9,11 +9,11 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_util.h"
+#include "base/message_loop/message_pump_type.h"
 #include "base/strings/string_split.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "media/base/video_decoder_config.h"
 #include "media/gpu/macros.h"
-#include "media/gpu/test/rendering_helper.h"
 #include "media/video/h264_parser.h"
 
 #if defined(OS_CHROMEOS)
@@ -23,63 +23,11 @@
 namespace media {
 namespace test {
 
-namespace {
-const size_t kMD5StringLength = 32;
-}  // namespace
-
-VideoDecodeAcceleratorTestEnvironment::VideoDecodeAcceleratorTestEnvironment(
-    bool use_gl_renderer)
-    : use_gl_renderer_(use_gl_renderer),
-      rendering_thread_("GLRenderingVDAClientThread") {}
-
-VideoDecodeAcceleratorTestEnvironment::
-    ~VideoDecodeAcceleratorTestEnvironment() {}
-
-void VideoDecodeAcceleratorTestEnvironment::SetUp() {
-  base::Thread::Options options;
-  options.message_loop_type = base::MessageLoop::TYPE_UI;
-  rendering_thread_.StartWithOptions(options);
-
-  base::WaitableEvent done(base::WaitableEvent::ResetPolicy::AUTOMATIC,
-                           base::WaitableEvent::InitialState::NOT_SIGNALED);
-  rendering_thread_.task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&RenderingHelper::InitializeOneOff,
-                                use_gl_renderer_, &done));
-  done.Wait();
-
-#if defined(OS_CHROMEOS)
-  gpu_helper_.reset(new ui::OzoneGpuTestHelper());
-  // Need to initialize after the rendering side since the rendering side
-  // initializes the "GPU" parts of Ozone.
-  //
-  // This also needs to be done in the test environment since this shouldn't
-  // be initialized multiple times for the same Ozone platform.
-  gpu_helper_->Initialize(base::ThreadTaskRunnerHandle::Get());
-#endif
-}
-
-void VideoDecodeAcceleratorTestEnvironment::TearDown() {
-#if defined(OS_CHROMEOS)
-  gpu_helper_.reset();
-#endif
-  rendering_thread_.Stop();
-}
-
-scoped_refptr<base::SingleThreadTaskRunner>
-VideoDecodeAcceleratorTestEnvironment::GetRenderingTaskRunner() const {
-  return rendering_thread_.task_runner();
-}
-
-EncodedDataHelper::EncodedDataHelper(const std::string& data,
-                                     VideoCodecProfile profile)
-    : data_(data), profile_(profile) {}
-
 EncodedDataHelper::EncodedDataHelper(const std::vector<uint8_t>& stream,
                                      VideoCodecProfile profile)
-    : EncodedDataHelper(
-          std::string(reinterpret_cast<const char*>(stream.data()),
-                      stream.size()),
-          profile) {}
+    : data_(std::string(reinterpret_cast<const char*>(stream.data()),
+                        stream.size())),
+      profile_(profile) {}
 
 EncodedDataHelper::~EncodedDataHelper() {
   base::STLClearObject(&data_);
@@ -125,7 +73,10 @@ size_t EncodedDataHelper::GetBytesForNextNALU(size_t start_pos) {
   size_t pos = start_pos;
   if (pos + 4 > data_.size())
     return pos;
-  LOG_ASSERT(IsNALHeader(data_, pos));
+  if (!IsNALHeader(data_, pos)) {
+    ADD_FAILURE();
+    return std::numeric_limits<std::size_t>::max();
+  }
   pos += 4;
   while (pos + 4 <= data_.size() && !IsNALHeader(data_, pos)) {
     ++pos;
@@ -149,13 +100,36 @@ bool EncodedDataHelper::LookForSPS(size_t* skipped_fragments_count) {
 
 std::string EncodedDataHelper::GetBytesForNextFrame() {
   // Helpful description: http://wiki.multimedia.cx/index.php?title=IVF
+  constexpr size_t kIVFHeaderSize = 32;
+  constexpr size_t kIVFFrameHeaderSize = 12;
+
   size_t pos = next_pos_to_decode_;
   std::string bytes;
-  if (pos == 0)
-    pos = 32;  // Skip IVF header.
 
+  // Only IVF video files are supported. The first 4bytes of an IVF video file's
+  // header should be "DKIF".
+  if (pos == 0) {
+    if ((data_.size() < kIVFHeaderSize) || strncmp(&data_[0], "DKIF", 4) != 0) {
+      LOG(ERROR) << "Unexpected data encountered while parsing IVF header";
+      return bytes;
+    }
+    pos = kIVFHeaderSize;  // Skip IVF header.
+  }
+
+  // Read VP8/9 frame size from IVF header.
+  if (pos + kIVFFrameHeaderSize > data_.size()) {
+    LOG(ERROR) << "Unexpected data encountered while parsing IVF frame header";
+    return bytes;
+  }
   uint32_t frame_size = *reinterpret_cast<uint32_t*>(&data_[pos]);
-  pos += 12;  // Skip frame header.
+  pos += kIVFFrameHeaderSize;  // Skip IVF frame header.
+
+  // Make sure we are not reading out of bounds.
+  if (pos + frame_size > data_.size()) {
+    LOG(ERROR) << "Unexpected data encountered while parsing IVF frame header";
+    next_pos_to_decode_ = data_.size();
+    return bytes;
+  }
   bytes.append(data_.substr(pos, frame_size));
 
   // Update next_pos_to_decode_.
@@ -186,51 +160,5 @@ bool EncodedDataHelper::HasConfigInfo(const uint8_t* data,
   return false;
 }
 
-// Read in golden MD5s for the thumbnailed rendering of this video
-std::vector<std::string> ReadGoldenThumbnailMD5s(
-    const base::FilePath& md5_file_path) {
-  std::vector<std::string> golden_md5s;
-  std::vector<std::string> md5_strings;
-  std::string all_md5s;
-  base::ReadFileToString(md5_file_path, &all_md5s);
-  md5_strings = base::SplitString(all_md5s, "\n", base::TRIM_WHITESPACE,
-                                  base::SPLIT_WANT_ALL);
-  // Check these are legitimate MD5s.
-  for (const std::string& md5_string : md5_strings) {
-    // Ignore the empty string added by SplitString
-    if (!md5_string.length())
-      continue;
-    // Ignore comments
-    if (md5_string.at(0) == '#')
-      continue;
-
-    bool valid_length = md5_string.length() == kMD5StringLength;
-    LOG_IF(ERROR, !valid_length) << "MD5 length error: " << md5_string;
-    bool hex_only = std::count_if(md5_string.begin(), md5_string.end(),
-                                  isxdigit) == kMD5StringLength;
-    LOG_IF(ERROR, !hex_only) << "MD5 includes non-hex char: " << md5_string;
-    if (valid_length && hex_only)
-      golden_md5s.push_back(md5_string);
-  }
-  LOG_IF(ERROR, md5_strings.empty())
-      << "  MD5 checksum file (" << md5_file_path.MaybeAsASCII()
-      << ") missing or empty.";
-  return golden_md5s;
-}
-
-bool ConvertRGBAToRGB(const std::vector<unsigned char>& rgba,
-                      std::vector<unsigned char>* rgb) {
-  size_t num_pixels = rgba.size() / 4;
-  rgb->resize(num_pixels * 3);
-  // Drop the alpha channel, but check as we go that it is all 0xff.
-  bool solid = true;
-  for (size_t i = 0; i < num_pixels; i++) {
-    (*rgb)[3 * i] = rgba[4 * i];
-    (*rgb)[3 * i + 1] = rgba[4 * i + 1];
-    (*rgb)[3 * i + 2] = rgba[4 * i + 2];
-    solid = solid && (rgba[4 * i + 3] == 0xff);
-  }
-  return solid;
-}
 }  // namespace test
 }  // namespace media

@@ -1,46 +1,44 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
 
-<link rel="import" href="chrome://resources/cr_elements/icons.html">
-<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-icon-button/paper-icon-button-light.html">
-<link rel="import" href="actions.html">
-<link rel="import" href="command_manager.html">
-<link rel="import" href="shared_style.html">
-<link rel="import" href="store_client.html">
-<link rel="import" href="strings.html">
-
-<dom-module id="bookmarks-folder-node">
-  <template>
     <style include="shared-style">
       :host {
-        --padding-start-per-depth: 36px;
         display: block;
       }
 
-      .v-centered {
+      #container {
         align-items: center;
-        display: flex;
-        flex-direction: row;
+        cursor: pointer;
+        display: grid;
+        grid-template-areas: 'arrow folder label';
+        grid-template-columns: 24px 24px auto;
+        height: 40px;
+        min-width: fit-content;
+        overflow: hidden;
+        padding-inline-start: calc(var(--node-depth, 0) * 15px);
+      }
+
+      #arrow {
+        grid-area: arrow;
+        justify-self: center;
+        margin: 0;
+        --cr-icon-button-size: 40px;
+      }
+
+      #arrow:not([is-open]) {
+        transform: rotate(-90deg);
+        transition: transform 150ms;
+      }
+
+      .folder-icon {
+        grid-area: folder;
+        justify-self: center;
       }
 
       .menu-label {
         color: var(--folder-inactive-color);
         font-weight: 500;
-        margin-inline-start: 16px;
-      }
-
-      #container {
-        cursor: pointer;
-        height: 40px;
-        padding-inline-start:
-            calc(var(--node-depth, 0) * var(--padding-start-per-depth));
-        position: relative;
-      }
-
-      #folder-label {
-        flex-grow: 1;
-        padding-inline-end: 8px;
+        grid-area: label;
+        padding: 0 6px;
+        white-space: nowrap;
       }
 
       :host([is-selected-folder_]) .menu-label,
@@ -48,41 +46,24 @@
         color: var(--interactive-color);
       }
 
-      :host-context([dark]) .drag-on .menu-label,
-      :host-context([dark]) .drag-on .folder-icon,
-      :host-context([dark]) .drag-on #arrow {
-        color: var(--google-grey-refresh-700);
+      @media (prefers-color-scheme: dark) {
+        .drag-on .menu-label,
+        .drag-on .folder-icon,
+        .drag-on #arrow {
+          color: var(--google-grey-refresh-700);
+        }
       }
 
-      iron-icon {
-        flex-shrink: 0;
-      }
-
-      #arrow {
-        color: var(--cr-secondary-text-color);
-        margin: 0 8px;
-      }
-
-      #arrow iron-icon {
-        transform: rotate(-90deg);
-        transition: transform 150ms;
-      }
-
-      :host-context([dir='rtl']) #arrow iron-icon {
+      :host-context([dir='rtl']) #arrow:not([is-open]) {
         transform: rotate(90deg);
       }
 
-      #arrow iron-icon[is-open] {
+      #arrow[is-open] {
         transform: initial;
-      }
-
-      [no-children] {
-        margin-inline-start: 52px; /* The width of the arrow and its margin */
       }
     </style>
 
     <div id="container"
-        class="v-centered"
         on-click="selectFolder_"
         on-dblclick="toggleFolder_"
         on-contextmenu="onContextMenu_"
@@ -91,24 +72,17 @@
         role="treeitem"
         aria-owns="descendants">
       <template is="dom-if" if="[[hasChildFolder_]]">
-        <paper-icon-button-light id="arrow">
-          <button on-click="toggleFolder_"
-              on-mousedown="preventDefault_"
-              tabindex="-1"
-              aria-label$="[[getButtonAriaLabel_(isOpen, item_)]]">
-            <iron-icon icon="cr:arrow-drop-down" is-open$="[[isOpen]]">
-            </iron-icon>
-          </button>
-        </paper-icon-button-light>
+        <cr-icon-button id="arrow" iron-icon="cr:arrow-drop-down"
+            on-click="toggleFolder_" on-mousedown="preventDefault_"
+            tabindex="-1" is-open$="[[isOpen]]" noink aria-hidden="true">
+        </cr-icon-button>
       </template>
-      <div id="folder-label" class="v-centered">
-        <div class="folder-icon"
-            open$="[[isSelectedFolder_]]"
-            no-children$="[[!hasChildFolder_]]">
-        </div>
-        <div class="menu-label elided-text" title="[[item_.title]]">
-          [[item_.title]]
-        </div>
+      <div class="folder-icon"
+          open$="[[isSelectedFolder_]]"
+          no-children$="[[!hasChildFolder_]]">
+      </div>
+      <div class="menu-label" title="[[item_.title]]">
+        [[item_.title]]
       </div>
     </div>
     <div id="descendants" role="group">
@@ -124,6 +98,3 @@
         </template>
       </template>
     </div>
-  </template>
-  <script src="folder_node.js"></script>
-</dom-module>

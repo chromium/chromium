@@ -1,0 +1,5 @@
+This component will be used by surfaces in Chrome that want to expose Web games.
+Surfaces need to take a dependency on this component and use APIs offered by
+the GamesService.
+
+- core/: shared code that will run on the browser process.

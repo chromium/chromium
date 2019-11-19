@@ -24,7 +24,7 @@
 
             // Overriden using window.location.replace = "new replace"
             shouldBeTrue("canGet('targetWindow.location.replace')");
-            shouldBe("toString('targetWindow.location.replace')", "toString('window.location.replace')");
+            shouldBe("targetWindow.location.replace.name", "''");
 
             if (window.testRunner)
                 testRunner.notifyDone();

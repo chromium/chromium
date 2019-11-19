@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+PASS Registering within Service-Worker-Allowed path
+PASS Registering within Service-Worker-Allowed path (absolute URL)
+PASS Registering within Service-Worker-Allowed path with parent reference
+PASS Registering outside Service-Worker-Allowed path
+PASS Registering outside Service-Worker-Allowed path with parent reference
+FAIL Service-Worker-Allowed is cross-origin to script, registering on a normally allowed scope assert_unreached: Should have rejected: undefined Reached unreachable code
+FAIL Service-Worker-Allowed is cross-origin to script, registering on a normally disallowed scope assert_unreached: Should have rejected: undefined Reached unreachable code
+PASS Service-Worker-Allowed is cross-origin to page, same-origin to script
+Harness: the test ran to completion.
+

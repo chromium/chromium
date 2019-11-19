@@ -7,31 +7,35 @@
 
 #include <string>
 
+#include "base/callback.h"
 #include "base/macros.h"
 #include "chrome/browser/chromeos/login/screens/base_screen.h"
-#include "chrome/browser/chromeos/login/screens/enable_debugging_screen_view.h"
+#include "chrome/browser/ui/webui/chromeos/login/enable_debugging_screen_handler.h"
 
 namespace chromeos {
 
 // Representation independent class that controls screen showing enable
 // debugging screen to users.
-class EnableDebuggingScreen : public BaseScreen,
-                              public EnableDebuggingScreenView::Delegate {
+class EnableDebuggingScreen : public BaseScreen {
  public:
-  EnableDebuggingScreen(BaseScreenDelegate* delegate,
-                        EnableDebuggingScreenView* view);
+  EnableDebuggingScreen(EnableDebuggingScreenView* view,
+                        const base::RepeatingClosure& exit_callback);
   ~EnableDebuggingScreen() override;
+
+  // Called by EnableDebuggingScreenHandler.
+  void OnExit(bool success);
+  void OnViewDestroyed(EnableDebuggingScreenView* view);
 
   // BaseScreen implementation:
   void Show() override;
   void Hide() override;
 
-  // EnableDebuggingScreenActor::Delegate implementation:
-  void OnExit(bool success) override;
-  void OnViewDestroyed(EnableDebuggingScreenView* view) override;
+ protected:
+  base::RepeatingClosure* exit_callback() { return &exit_callback_; }
 
  private:
   EnableDebuggingScreenView* view_;
+  base::RepeatingClosure exit_callback_;
 
   DISALLOW_COPY_AND_ASSIGN(EnableDebuggingScreen);
 };

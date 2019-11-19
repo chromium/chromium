@@ -45,7 +45,7 @@ class CORE_EXPORT LayoutListBox final : public LayoutBlockFlow {
   unsigned size() const;
 
   // Unlike scrollRectToVisible this will not scroll parent boxes.
-  void ScrollToRect(const LayoutRect&);
+  void ScrollToRect(const PhysicalRect&);
 
   const char* GetName() const override { return "LayoutListBox"; }
 

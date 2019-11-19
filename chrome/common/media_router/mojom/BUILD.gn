@@ -1,0 +1,54 @@
+# Copyright 2017 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom("media_controller") {
+  sources = [
+    "media_controller.mojom",
+    "media_status.mojom",
+  ]
+
+  public_deps = [
+    "//mojo/public/mojom/base",
+    "//ui/gfx/geometry/mojom",
+    "//url/mojom:url_mojom_gurl",
+  ]
+}
+
+mojom("media_router") {
+  sources = [
+    "media_router.mojom",
+  ]
+
+  public_deps = [
+    ":media_controller",
+    "//components/mirroring/mojom:host",
+    "//media/mojo/mojom:mirror_service_remoting",
+    "//mojo/public/mojom/base",
+    "//services/network/public/mojom:mojom_ip_address",
+    "//third_party/blink/public/mojom:mojom_platform",
+    "//url/mojom:url_mojom_gurl",
+    "//url/mojom:url_mojom_origin",
+  ]
+
+  if (is_component_build) {
+    overridden_deps = [ "//third_party/blink/public/mojom:mojom_platform" ]
+    component_deps = [ "//third_party/blink/public/common" ]
+  }
+
+  disable_variants = true
+}
+
+mojom("media_router_test_interfaces") {
+  sources = [
+    "media_router_traits_test_service.mojom",
+  ]
+
+  public_deps = [
+    ":media_router",
+  ]
+
+  disable_variants = true
+}

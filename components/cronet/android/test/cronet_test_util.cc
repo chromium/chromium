@@ -7,23 +7,27 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/bind.h"
-#include "base/message_loop/message_loop.h"
+#include "base/message_loop/message_pump.h"
+#include "base/message_loop/message_pump_type.h"
+#include "base/task/sequence_manager/sequence_manager.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "components/cronet/android/cronet_tests_jni_headers/CronetTestUtil_jni.h"
 #include "components/cronet/android/cronet_url_request_adapter.h"
 #include "components/cronet/android/cronet_url_request_context_adapter.h"
 #include "components/cronet/cronet_url_request.h"
 #include "components/cronet/cronet_url_request_context.h"
-#include "jni/CronetTestUtil_jni.h"
 #include "net/socket/socket_test_util.h"
 #include "net/url_request/url_request.h"
 
-using base::android::JavaParamRef;
-
 namespace cronet {
-
 namespace {
 
-base::MessageLoop* g_message_loop = nullptr;
+using ::base::MessagePump;
+using ::base::MessagePumpType;
+using ::base::android::JavaParamRef;
+using ::base::sequence_manager::SequenceManager;
+
+SequenceManager* g_sequence_manager = nullptr;
 
 }  // namespace
 
@@ -77,8 +81,15 @@ net::URLRequest* TestUtil::GetURLRequest(jlong jrequest_adapter) {
 }
 
 static void PrepareNetworkThreadOnNetworkThread(jlong jcontext_adapter) {
-  g_message_loop = new base::MessageLoopForIO();
-  g_message_loop->SetTaskRunner(TestUtil::GetTaskRunner(jcontext_adapter));
+  g_sequence_manager =
+      base::sequence_manager::CreateSequenceManagerOnCurrentThreadWithPump(
+          MessagePump::Create(MessagePumpType::IO),
+          SequenceManager::Settings::Builder()
+              .SetMessagePumpType(MessagePumpType::IO)
+              .Build())
+          .release();
+  g_sequence_manager->SetDefaultTaskRunner(
+      TestUtil::GetTaskRunner(jcontext_adapter));
 }
 
 // Tests need to call into libcronet.so code on libcronet.so threads.
@@ -97,10 +108,9 @@ void JNI_CronetTestUtil_PrepareNetworkThread(
 }
 
 static void CleanupNetworkThreadOnNetworkThread() {
-  DCHECK(g_message_loop);
-  DCHECK(g_message_loop->IsBoundToCurrentThread());
-  delete g_message_loop;
-  g_message_loop = nullptr;
+  DCHECK(g_sequence_manager);
+  delete g_sequence_manager;
+  g_sequence_manager = nullptr;
 }
 
 // Called from Java CronetTestUtil class.

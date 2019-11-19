@@ -33,6 +33,7 @@
 #include "media/base/video_color_space.h"
 #include "media/gpu/gpu_video_decode_accelerator_helpers.h"
 #include "media/gpu/media_gpu_export.h"
+#include "media/gpu/windows/d3d11_com_defs.h"
 #include "media/video/video_decode_accelerator.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect.h"
@@ -103,7 +104,7 @@ class MEDIA_GPU_EXPORT DXVAVideoDecodeAccelerator
 
   // VideoDecodeAccelerator implementation.
   bool Initialize(const Config& config, Client* client) override;
-  void Decode(const BitstreamBuffer& bitstream) override;
+  void Decode(BitstreamBuffer bitstream) override;
   void Decode(scoped_refptr<DecoderBuffer> buffer,
               int32_t bitstream_id) override;
   void AssignPictureBuffers(const std::vector<PictureBuffer>& buffers) override;
@@ -156,6 +157,20 @@ class MEDIA_GPU_EXPORT DXVAVideoDecodeAccelerator
     // update this to be the last one.
     kMaxValue = BIND
   };
+
+  enum class DXVALifetimeProgression {
+    kInitializeStarted = 0,
+    kInitializeSucceeded = 1,
+    kPlaybackSucceeded = 2,
+
+    // For UMA. Must be the last entry. It should be initialized to the
+    // numerically largest value above; if you add more entries, then please
+    // update this to the last one.
+    kMaxValue = kPlaybackSucceeded
+  };
+
+  // Log UMA progression state.
+  void AddLifetimeProgressionStage(DXVALifetimeProgression stage);
 
   // Creates and initializes an instance of the D3D device and the
   // corresponding device manager. The device manager instance is eventually
@@ -300,8 +315,8 @@ class MEDIA_GPU_EXPORT DXVAVideoDecodeAccelerator
                                  int input_buffer_id);
 
   // Copies the source texture |src_texture| to the destination |dest_texture|.
-  // The copying is done on the decoder thread.
-  void CopyTexture(ID3D11Texture2D* src_texture,
+  // The copying is done on the decoder thread.  Returns true on success.
+  bool CopyTexture(ID3D11Texture2D* src_texture,
                    ID3D11Texture2D* dest_texture,
                    Microsoft::WRL::ComPtr<IDXGIKeyedMutex> dest_keyed_mutex,
                    uint64_t keyed_mutex_value,
@@ -387,20 +402,21 @@ class MEDIA_GPU_EXPORT DXVAVideoDecodeAccelerator
   Microsoft::WRL::ComPtr<IDirect3DDeviceManager9> device_manager_;
   Microsoft::WRL::ComPtr<IDirect3DQuery9> query_;
 
-  Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device_;
-  Microsoft::WRL::ComPtr<ID3D11Device> angle_device_;
+  ComD3D11Device d3d11_device_;
+  ComD3D11Device angle_device_;
   Microsoft::WRL::ComPtr<IMFDXGIDeviceManager> d3d11_device_manager_;
   Microsoft::WRL::ComPtr<ID3D10Multithread> multi_threaded_;
-  Microsoft::WRL::ComPtr<ID3D11DeviceContext> d3d11_device_context_;
-  Microsoft::WRL::ComPtr<ID3D11Query> d3d11_query_;
+  ComD3D11DeviceContext d3d11_device_context_;
+  ComD3D11Query d3d11_query_;
 
-  Microsoft::WRL::ComPtr<ID3D11VideoDevice> video_device_;
-  Microsoft::WRL::ComPtr<ID3D11VideoContext> video_context_;
-  Microsoft::WRL::ComPtr<ID3D11VideoProcessorEnumerator> enumerator_;
-  Microsoft::WRL::ComPtr<ID3D11VideoProcessor> d3d11_processor_;
+  ComD3D11VideoDevice video_device_;
+  ComD3D11VideoContext video_context_;
+  ComD3D11VideoProcessorEnumerator enumerator_;
+  ComD3D11VideoProcessor d3d11_processor_;
 
   int processor_width_ = 0;
   int processor_height_ = 0;
+  bool already_initialized_ = false;
 
   Microsoft::WRL::ComPtr<IDirectXVideoProcessorService>
       video_processor_service_;
@@ -558,9 +574,10 @@ class MEDIA_GPU_EXPORT DXVAVideoDecodeAccelerator
 
   // Set to true if we are sharing ANGLE's device.
   bool using_angle_device_;
+  bool using_debug_device_;
 
-  // Enables experimental hardware acceleration for VP8/VP9 video decoding.
-  const gpu::GpuPreferences::VpxDecodeVendors enable_accelerated_vpx_decode_;
+  // Enables hardware acceleration for VP9 video decoding.
+  const bool enable_accelerated_vpx_decode_;
 
   // The media foundation H.264 decoder has problems handling changes like
   // resolution change, bitrate change etc. If we reinitialize the decoder
@@ -581,7 +598,7 @@ class MEDIA_GPU_EXPORT DXVAVideoDecodeAccelerator
   VideoColorSpace current_color_space_;
 
   // WeakPtrFactory for posting tasks back to |this|.
-  base::WeakPtrFactory<DXVAVideoDecodeAccelerator> weak_this_factory_;
+  base::WeakPtrFactory<DXVAVideoDecodeAccelerator> weak_this_factory_{this};
 
   // Function pointer for the MFCreateDXGIDeviceManager API.
   static CreateDXGIDeviceManager create_dxgi_device_manager_;

@@ -190,6 +190,7 @@ public class NetworkChangeNotifierTest {
         private int mNetworkType;
         private int mNetworkSubtype;
         private boolean mIsPrivateDnsActive;
+        private String mPrivateDnsServerName;
         private NetworkCallback mLastRegisteredNetworkCallback;
         private NetworkCallback mLastRegisteredDefaultNetworkCallback;
 
@@ -199,7 +200,7 @@ public class NetworkChangeNotifierTest {
                     mNetworkType == ConnectivityManager.TYPE_WIFI
                             ? wifiManagerDelegate.getWifiSsid()
                             : null,
-                    mIsPrivateDnsActive);
+                    mIsPrivateDnsActive, mPrivateDnsServerName);
         }
 
         @Override
@@ -276,6 +277,10 @@ public class NetworkChangeNotifierTest {
 
         public void setIsPrivateDnsActive(boolean isPrivateDnsActive) {
             mIsPrivateDnsActive = isPrivateDnsActive;
+        }
+
+        public void setPrivateDnsServerName(String privateDnsServerName) {
+            mPrivateDnsServerName = privateDnsServerName;
         }
 
         public NetworkCallback getLastRegisteredNetworkCallback() {
@@ -656,15 +661,20 @@ public class NetworkChangeNotifierTest {
 
         // We should be notified if use of DNS-over-TLS changes.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            // Verify notification for enabling.
+            // Verify notification for enabling private DNS.
             mConnectivityDelegate.setIsPrivateDnsActive(true);
+            mConnectivityDelegate.getDefaultNetworkCallback().onLinkPropertiesChanged(null, null);
+            Assert.assertTrue(observer.hasReceivedNotification());
+            observer.resetHasReceivedNotification();
+            // Verify notification for specifying private DNS server.
+            mConnectivityDelegate.setPrivateDnsServerName("dotserver.com");
             mConnectivityDelegate.getDefaultNetworkCallback().onLinkPropertiesChanged(null, null);
             Assert.assertTrue(observer.hasReceivedNotification());
             observer.resetHasReceivedNotification();
             // Verify no notification for no change.
             mConnectivityDelegate.getDefaultNetworkCallback().onLinkPropertiesChanged(null, null);
             Assert.assertFalse(observer.hasReceivedNotification());
-            // Verify notification for disbling.
+            // Verify notification for disabling.
             mConnectivityDelegate.setIsPrivateDnsActive(false);
             mConnectivityDelegate.getDefaultNetworkCallback().onLinkPropertiesChanged(null, null);
             Assert.assertTrue(observer.hasReceivedNotification());
@@ -817,7 +827,7 @@ public class NetworkChangeNotifierTest {
     @UiThreadTest
     @MediumTest
     @Feature({"Android-AppBase"})
-    public void testQueryableAPIsReturnExpectedValuesFromMockDelegate() throws Exception {
+    public void testQueryableAPIsReturnExpectedValuesFromMockDelegate() {
         NetworkChangeNotifierAutoDetect.Observer observer =
                 new TestNetworkChangeNotifierAutoDetectObserver();
 
@@ -1021,7 +1031,7 @@ public class NetworkChangeNotifierTest {
     @MediumTest
     @Feature({"Android-AppBase"})
     @MinAndroidSdkLevel(Build.VERSION_CODES.M)
-    public void testIsProcessBoundToNetwork() throws Exception {
+    public void testIsProcessBoundToNetwork() {
         ConnectivityManager connectivityManager =
                 (ConnectivityManager) InstrumentationRegistry.getTargetContext().getSystemService(
                         Context.CONNECTIVITY_SERVICE);
@@ -1041,7 +1051,7 @@ public class NetworkChangeNotifierTest {
      */
     @Test
     @MediumTest
-    @MinAndroidSdkLevel(Build.VERSION_CODES.LOLLIPOP)
+    @MinAndroidSdkLevel(Build.VERSION_CODES.LOLLIPOP) // android.net.Network available in L+.
     public void testVpnAccessibleDoesNotLeak() {
         ConnectivityManagerDelegate connectivityManagerDelegate = new ConnectivityManagerDelegate(
                 InstrumentationRegistry.getInstrumentation().getTargetContext());
@@ -1066,6 +1076,34 @@ public class NetworkChangeNotifierTest {
             }
             System.gc();
             System.runFinalization();
+        } finally {
+            StrictMode.setVmPolicy(oldPolicy);
+        }
+    }
+
+    /**
+     * Regression test for crbug.com/946531 where ConnectivityManagerDelegate.vpnAccessible()
+     * triggered StrictMode's untagged socket prohibition.
+     */
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.O) // detectUntaggedSockets added in Oreo.
+    public void testVpnAccessibleDoesNotCreateUntaggedSockets() {
+        ConnectivityManagerDelegate connectivityManagerDelegate = new ConnectivityManagerDelegate(
+                InstrumentationRegistry.getInstrumentation().getTargetContext());
+        StrictMode.VmPolicy oldPolicy = StrictMode.getVmPolicy();
+        StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
+                                       .detectUntaggedSockets()
+                                       .penaltyDeath()
+                                       .penaltyLog()
+                                       .build());
+        try {
+            // Test non-existent Network (NetIds only go to 65535).
+            connectivityManagerDelegate.vpnAccessible(Helper.netIdToNetwork(65537));
+            // Test existing Networks.
+            for (Network network : connectivityManagerDelegate.getAllNetworksUnfiltered()) {
+                connectivityManagerDelegate.vpnAccessible(network);
+            }
         } finally {
             StrictMode.setVmPolicy(oldPolicy);
         }

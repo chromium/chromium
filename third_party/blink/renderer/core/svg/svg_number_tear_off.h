@@ -40,12 +40,6 @@ class SVGNumberTearOff : public SVGPropertyTearOff<SVGNumber> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static SVGNumberTearOff* Create(SVGNumber* target,
-                                  SVGAnimatedPropertyBase* binding,
-                                  PropertyIsAnimValType property_is_anim_val) {
-    return MakeGarbageCollected<SVGNumberTearOff>(target, binding,
-                                                  property_is_anim_val);
-  }
   static SVGNumberTearOff* CreateDetached();
 
   SVGNumberTearOff(SVGNumber*,

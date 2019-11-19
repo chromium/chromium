@@ -15,7 +15,6 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.feedback.ConnectivityTask.FeedbackData;
@@ -23,6 +22,7 @@ import org.chromium.chrome.browser.feedback.ConnectivityTask.Type;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.ConnectionType;
 
 import java.util.HashMap;
@@ -49,8 +49,8 @@ public class ConnectivityTaskTest {
     @MediumTest
     @Feature({"Feedback"})
     public void testNormalCaseShouldWork() {
-        final ConnectivityTask task = ThreadUtils.runOnUiThreadBlockingNoException(
-                new Callable<ConnectivityTask>() {
+        final ConnectivityTask task =
+                TestThreadUtils.runOnUiThreadBlockingNoException(new Callable<ConnectivityTask>() {
                     @Override
                     public ConnectivityTask call() {
                         // Intentionally make HTTPS-connection fail which should result in
@@ -115,15 +115,12 @@ public class ConnectivityTaskTest {
                 semaphore.release();
             }
         };
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                // Intentionally make HTTPS-connection fail which should result in NOT_CONNECTED.
-                ConnectivityChecker.overrideUrlsForTest(
-                        mConnectivityCheckerTestRule.getGenerated204Url(),
-                        mConnectivityCheckerTestRule.getGenerated404Url());
-                ConnectivityTask.create(Profile.getLastUsedProfile(), TIMEOUT_MS, callback);
-            }
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            // Intentionally make HTTPS-connection fail which should result in NOT_CONNECTED.
+            ConnectivityChecker.overrideUrlsForTest(
+                    mConnectivityCheckerTestRule.getGenerated204Url(),
+                    mConnectivityCheckerTestRule.getGenerated404Url());
+            ConnectivityTask.create(Profile.getLastUsedProfile(), TIMEOUT_MS, callback);
         });
         if (!semaphore.tryAcquire(TIMEOUT_MS, TimeUnit.MILLISECONDS)) {
             Assert.fail("Failed to acquire semaphore.");
@@ -148,15 +145,12 @@ public class ConnectivityTaskTest {
                 semaphore.release();
             }
         };
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                // Intentionally make HTTPS connections slow which should result in TIMEOUT.
-                ConnectivityChecker.overrideUrlsForTest(
-                        mConnectivityCheckerTestRule.getGenerated204Url(),
-                        mConnectivityCheckerTestRule.getGeneratedSlowUrl());
-                ConnectivityTask.create(Profile.getLastUsedProfile(), checkTimeoutMs, callback);
-            }
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            // Intentionally make HTTPS connections slow which should result in TIMEOUT.
+            ConnectivityChecker.overrideUrlsForTest(
+                    mConnectivityCheckerTestRule.getGenerated204Url(),
+                    mConnectivityCheckerTestRule.getGeneratedSlowUrl());
+            ConnectivityTask.create(Profile.getLastUsedProfile(), checkTimeoutMs, callback);
         });
         if (!semaphore.tryAcquire(TIMEOUT_MS, TimeUnit.MILLISECONDS)) {
             Assert.fail("Failed to acquire semaphore.");
@@ -173,8 +167,8 @@ public class ConnectivityTaskTest {
     @Feature({"Feedback"})
     @SuppressWarnings("TryFailThrowable") // TODO(tedchoc): Remove after fixing timeout.
     public void testTwoTimeoutsShouldFillInTheRest() {
-        final ConnectivityTask task = ThreadUtils.runOnUiThreadBlockingNoException(
-                new Callable<ConnectivityTask>() {
+        final ConnectivityTask task =
+                TestThreadUtils.runOnUiThreadBlockingNoException(new Callable<ConnectivityTask>() {
                     @Override
                     public ConnectivityTask call() {
                         // Intentionally make HTTPS connections slow which should result in
@@ -228,8 +222,8 @@ public class ConnectivityTaskTest {
     }
 
     private static FeedbackData getResult(final ConnectivityTask task) {
-        final FeedbackData result = ThreadUtils.runOnUiThreadBlockingNoException(
-                new Callable<FeedbackData>() {
+        final FeedbackData result =
+                TestThreadUtils.runOnUiThreadBlockingNoException(new Callable<FeedbackData>() {
                     @Override
                     public FeedbackData call() {
                         return task.get();

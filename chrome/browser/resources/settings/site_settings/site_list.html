@@ -3,6 +3,7 @@
 <link rel="import" href="chrome://resources/html/assert.html">
 <link rel="import" href="chrome://resources/html/cr/ui/focus_without_ink.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_action_menu/cr_action_menu.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
 <link rel="import" href="chrome://resources/cr_elements/policy/cr_policy_pref_indicator.html">
 <link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
 <link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
@@ -31,14 +32,13 @@
     <div id="category">
       <div class="settings-box first">
         <h2 class="start">[[categoryHeader]]</h2>
-        <paper-button id="addSite"
-            class="secondary-button header-aligned-button"
-            hidden="[[readOnlyList]]" on-click="onAddSiteTap_">
+        <cr-button id="addSite" class="header-aligned-button"
+            hidden$="[[!showAddSiteButton_]]" on-click="onAddSiteTap_">
           $i18n{add}
-        </paper-button>
+        </cr-button>
       </div>
 
-      <cr-action-menu>
+      <cr-action-menu role-description="$i18n{menu}">
         <button class="dropdown-item" id="allow"
             on-click="onAllowTap_" hidden$="[[!showAllowAction_]]">
           $i18n{siteSettingsActionAllow}
@@ -77,7 +77,7 @@
                 on-show-action-menu="onShowActionMenu_" tabindex$="[[tabIndex]]"
                 first$="[[!index]]" iron-list-tab-index="[[tabIndex]]"
                 last-focused="{{lastFocused_}}" list-blurred="{{listBlurred_}}"
-                on-show-tooltip="onShowTooltip_">
+                on-show-tooltip="onShowTooltip_" focus-row-index="[[index]]">
             </site-list-entry>
           </template>
         </iron-list>

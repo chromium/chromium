@@ -12,10 +12,9 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
-#include "components/services/unzip/public/interfaces/constants.mojom.h"
-#include "components/services/unzip/unzip_service.h"
-#include "services/service_manager/public/cpp/test/test_connector_factory.h"
+#include "base/test/task_environment.h"
+#include "components/services/unzip/unzipper_impl.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace unzip {
@@ -60,9 +59,7 @@ void CountFiles(const base::FilePath& dir,
 
 class UnzipTest : public testing::Test {
  public:
-  UnzipTest()
-      : unzip_service_(
-            connector_factory_.RegisterInstance(unzip::mojom::kServiceName)) {}
+  UnzipTest() = default;
   ~UnzipTest() override = default;
 
   // Unzips |zip_file| into |output_dir| and returns true if the unzip was
@@ -77,8 +74,8 @@ class UnzipTest : public testing::Test {
   bool DoUnzipWithFilter(const base::FilePath& zip_file,
                          const base::FilePath& output_dir,
                          UnzipFilterCallback filter_callback) {
-    std::unique_ptr<service_manager::Connector> connector =
-        connector_factory_.CreateConnector()->Clone();
+    mojo::PendingRemote<mojom::Unzipper> unzipper;
+    receivers_.Add(&unzipper_, unzipper.InitWithNewPipeAndPassReceiver());
 
     base::RunLoop run_loop;
     bool result = false;
@@ -91,10 +88,10 @@ class UnzipTest : public testing::Test {
         run_loop.QuitClosure(), &result);
 
     if (filter_callback) {
-      UnzipWithFilter(std::move(connector), zip_file, output_dir,
+      UnzipWithFilter(std::move(unzipper), zip_file, output_dir,
                       std::move(filter_callback), std::move(result_callback));
     } else {
-      Unzip(std::move(connector), zip_file, output_dir,
+      Unzip(std::move(unzipper), zip_file, output_dir,
             std::move(result_callback));
     }
     run_loop.Run();
@@ -107,13 +104,13 @@ class UnzipTest : public testing::Test {
     unzip_dir_ = temp_dir_.GetPath();
   }
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
 
   base::ScopedTempDir temp_dir_;
   base::FilePath unzip_dir_;
 
-  service_manager::TestConnectorFactory connector_factory_;
-  unzip::UnzipService unzip_service_;
+  unzip::UnzipperImpl unzipper_;
+  mojo::ReceiverSet<mojom::Unzipper> receivers_;
 };
 
 TEST_F(UnzipTest, UnzipBadArchive) {

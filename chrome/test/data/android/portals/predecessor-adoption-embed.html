@@ -1,0 +1,53 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Test Portal Adoption Content</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type="text/css">
+      portal {
+        border: solid;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Test Portal Adoption Content</h1>
+    <script>
+      var predecessorText = document.createElement('p');
+      predecessorText.textContent = 'Predecessor:';
+
+      var predecessor = null;
+      var pingReplyFromPredecessor = null;
+      window.addEventListener('portalactivate', (e) => {
+        document.body.appendChild(predecessorText);
+
+        predecessor = e.adoptPredecessor();
+        document.body.appendChild(predecessor);
+
+        pingReplyFromPredecessor = new Promise((resolve) => {
+          predecessor.addEventListener('message', (e) => {
+            if (e.data == 'ping reply')
+              resolve();
+          });
+        });
+      });
+
+      async function pingPredecessor() {
+        predecessor.postMessage('ping', '*');
+        await pingReplyFromPredecessor;
+      }
+
+      async function reactivatePredecessor() {
+        await predecessor.activate();
+        document.body.removeChild(predecessor);
+        predecessor = null;
+        document.body.removeChild(predecessorText);
+      }
+
+      function removePredecessor() {
+        document.body.removeChild(predecessor);
+        predecessor = null;
+        document.body.removeChild(predecessorText);
+      }
+    </script>
+  </body>
+</html>

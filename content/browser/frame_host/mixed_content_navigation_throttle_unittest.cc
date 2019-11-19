@@ -55,4 +55,4 @@ TEST(MixedContentNavigationThrottleTest, IsMixedContent) {
   }
 }
 
-}  // content
+}  // namespace content

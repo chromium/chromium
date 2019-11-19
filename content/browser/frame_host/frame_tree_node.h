@@ -62,7 +62,7 @@ class CONTENT_EXPORT FrameTreeNode {
     virtual ~Observer() {}
   };
 
-  static const int kFrameTreeNodeInvalidId = -1;
+  static const int kFrameTreeNodeInvalidId;
 
   // Returns the FrameTreeNode with the given global |frame_tree_node_id|,
   // regardless of which FrameTree it is in.
@@ -95,25 +95,11 @@ class CONTENT_EXPORT FrameTreeNode {
   // Feature-Policy HTTP headers).
   void ResetForNavigation();
 
-  FrameTree* frame_tree() const {
-    return frame_tree_;
-  }
-
-  Navigator* navigator() {
-    return navigator_.get();
-  }
-
-  RenderFrameHostManager* render_manager() {
-    return &render_manager_;
-  }
-
-  int frame_tree_node_id() const {
-    return frame_tree_node_id_;
-  }
-
-  const std::string& frame_name() const {
-    return replication_state_.name;
-  }
+  FrameTree* frame_tree() const { return frame_tree_; }
+  Navigator* navigator() { return navigator_.get(); }
+  RenderFrameHostManager* render_manager() { return &render_manager_; }
+  int frame_tree_node_id() const { return frame_tree_node_id_; }
+  const std::string& frame_name() const { return replication_state_.name; }
 
   const std::string& unique_name() const {
     return replication_state_.unique_name;
@@ -133,6 +119,10 @@ class CONTENT_EXPORT FrameTreeNode {
   FrameTreeNode* opener() const { return opener_; }
 
   FrameTreeNode* original_opener() const { return original_opener_; }
+
+  // Gets the total number of descendants to this FrameTreeNode in addition to
+  // this node.
+  size_t GetFrameTreeSize() const;
 
   // Assigns a new opener for this node and, if |opener| is non-null, registers
   // an observer that will clear this node's opener if |opener| is ever
@@ -160,9 +150,7 @@ class CONTENT_EXPORT FrameTreeNode {
   void SetCurrentURL(const GURL& url);
 
   // Returns true iff SetCurrentURL has been called with a non-blank URL.
-  bool has_committed_real_load() const {
-    return has_committed_real_load_;
-  }
+  bool has_committed_real_load() const { return has_committed_real_load_; }
 
   // Returns whether the frame's owner element in the parent document is
   // collapsed, that is, removed from the layout as if it did not exist, as per
@@ -286,7 +274,6 @@ class CONTENT_EXPORT FrameTreeNode {
   void TransferNavigationRequestOwnership(
       RenderFrameHostImpl* render_frame_host);
 
-  // PlzNavigate
   // Takes ownership of |navigation_request| and makes it the current
   // NavigationRequest of this frame. This corresponds to the start of a new
   // navigation. If there was an ongoing navigation request before calling this
@@ -294,14 +281,10 @@ class CONTENT_EXPORT FrameTreeNode {
   void CreatedNavigationRequest(
       std::unique_ptr<NavigationRequest> navigation_request);
 
-  // PlzNavigate
   // Resets the current navigation request. If |keep_state| is true, any state
   // created by the NavigationRequest (e.g. speculative RenderFrameHost,
   // loading state) will not be reset by the function.
-  // If |keep_state| is false and the request is renderer-initiated and
-  // |inform_renderer| is true, an IPC will be sent to the renderer process to
-  // inform it that the navigation it requested was cancelled.
-  void ResetNavigationRequest(bool keep_state, bool inform_renderer);
+  void ResetNavigationRequest(bool keep_state);
 
   // A RenderFrameHost in this node started loading.
   // |to_different_document| will be true unless the load is a fragment
@@ -403,6 +386,11 @@ class CONTENT_EXPORT FrameTreeNode {
     return user_activation_state_.IsActive();
   }
 
+  // Transfers user activation state from |source| frame to |this| and notifies
+  // proxies in non-source and non-target renderer processes to transfer the
+  // activation state from the source proxy to the target.
+  void TransferUserActivationFrom(RenderFrameHostImpl* source_rfh);
+
   // Remove history entries for all frames created by script in this frame's
   // subtree. If a frame created by a script is removed, then its history entry
   // will never be reused - this saves memory.
@@ -432,6 +420,13 @@ class CONTENT_EXPORT FrameTreeNode {
   bool ConsumeTransientUserActivation();
 
   bool ClearUserActivation();
+
+  // Verify that the renderer process is allowed to set user activation on this
+  // frame by checking whether this frame's RenderWidgetHost had previously seen
+  // an input event that might lead to user activation. If user activation
+  // should be allowed, this returns true and also clears corresponding pending
+  // user activation state in the widget. Otherwise, this returns false.
+  bool VerifyUserActivation();
 
   // The next available browser-global FrameTreeNode ID.
   static int next_frame_tree_node_id_;
@@ -520,7 +515,6 @@ class CONTENT_EXPORT FrameTreeNode {
   // Note that dynamic updates only take effect on the next frame navigation.
   FrameOwnerProperties frame_owner_properties_;
 
-  // PlzNavigate
   // Owns an ongoing NavigationRequest until it is ready to commit. It will then
   // be reset and a RenderFrameHost will be responsible for the navigation.
   std::unique_ptr<NavigationRequest> navigation_request_;
@@ -532,32 +526,8 @@ class CONTENT_EXPORT FrameTreeNode {
 
   bool was_discarded_;
 
-  // The user activation state of the current frame.
-  //
-  // Changes to this state update other FrameTreeNodes as follows: for
-  // notification updates (on user inputs) all ancestor nodes are updated; for
-  // activation consumption calls, the whole frame tree is updated (w/o such
-  // exhaustive consumption, a rouge iframe can cause multiple consumptions per
-  // user activation).
-  //
-  // The user activation state is replicated in the browser process (in
-  // FrameTreeNode) and in the renderer processes (in LocalFrame and
-  // RemoteFrames).  The replicated states across the browser and renderer
-  // processes are kept in sync as follows:
-  //
-  // [A] Consumption of activation state for popups starts in the frame tree of
-  // the browser process and propagate to the renderer trees through direct IPCs
-  // (one IPC sent to each renderer).
-  //
-  // [B] Consumption calls from JS/blink side (e.g. video picture-in-picture)
-  // update the originating renderer's local frame tree and send an IPC to the
-  // browser; the browser updates its frame tree and sends IPCs to all other
-  // renderers each of which then updates its local frame tree.
-  //
-  // [B'] Notification updates on user inputs still follow [B] but they should
-  // really follow [A].  TODO(mustaq): fix through https://crbug.com/848778.
-  //
-  // [C] Expiration of an active state is tracked independently in each process.
+  // The user activation state of the current frame.  See |UserActivationState|
+  // for details on how this state is maintained.
   blink::UserActivationState user_activation_state_;
 
   // A helper for tracing the snapshots of this FrameTreeNode and attributing

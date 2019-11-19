@@ -17,7 +17,7 @@
 #include "media/mojo/common/media_type_converters.h"
 #include "media/mojo/common/mojo_decoder_buffer_converter.h"
 #include "media/mojo/common/mojo_shared_buffer_video_frame.h"
-#include "media/mojo/interfaces/demuxer_stream.mojom.h"
+#include "media/mojo/mojom/demuxer_stream.mojom.h"
 #include "media/mojo/services/mojo_cdm_service_context.h"
 #include "mojo/public/cpp/bindings/strong_binding.h"
 
@@ -73,9 +73,7 @@ std::unique_ptr<MojoDecryptorService> MojoDecryptorService::Create(
 MojoDecryptorService::MojoDecryptorService(
     media::Decryptor* decryptor,
     std::unique_ptr<CdmContextRef> cdm_context_ref)
-    : decryptor_(decryptor),
-      cdm_context_ref_(std::move(cdm_context_ref)),
-      weak_factory_(this) {
+    : decryptor_(decryptor), cdm_context_ref_(std::move(cdm_context_ref)) {
   DVLOG(1) << __func__;
   DCHECK(decryptor_);
   // |cdm_context_ref_| could be null, in which case the owner of |this| will
@@ -265,7 +263,7 @@ void MojoDecryptorService::OnAudioDecoded(
   // improved to use shared memory (http://crbug.com/593896).
   std::vector<mojom::AudioBufferPtr> audio_buffers;
   for (const auto& frame : frames)
-    audio_buffers.push_back(mojom::AudioBuffer::From(frame));
+    audio_buffers.push_back(mojom::AudioBuffer::From(*frame));
 
   std::move(callback).Run(status, std::move(audio_buffers));
 }
@@ -273,7 +271,7 @@ void MojoDecryptorService::OnAudioDecoded(
 void MojoDecryptorService::OnVideoDecoded(
     DecryptAndDecodeVideoCallback callback,
     Status status,
-    const scoped_refptr<VideoFrame>& frame) {
+    scoped_refptr<VideoFrame> frame) {
   DVLOG_IF(1, status != Status::kSuccess)
       << __func__ << ": status = " << status;
   DVLOG_IF(3, status == Status::kSuccess) << __func__;

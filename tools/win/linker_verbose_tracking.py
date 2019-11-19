@@ -66,6 +66,8 @@ common.lib(content_message_generator.obj).obj pulled in for symbol ...
         Command-line obj file: url_loader.mojom.obj
 """
 
+from __future__ import print_function
+
 import io
 import pdb
 import re
@@ -165,9 +167,9 @@ def TrackObj(cross_refs, cross_refed_symbols, obj_name):
     targets.append(obj_name)
   # Print what we are searching for.
   if len(targets) == 1:
-    print 'Searching for %s' % targets[0]
+    print('Searching for %s' % targets[0])
   else:
-    print 'Searching for %s' % targets
+    print('Searching for %s' % targets)
   printed = False
   # Follow the chain of references up to an arbitrary maximum level, which has
   # so far never been approached.
@@ -179,28 +181,28 @@ def TrackObj(cross_refs, cross_refed_symbols, obj_name):
         if target in cross_refs.keys():
           symbol = cross_refed_symbols[target]
           printed = True
-          print '%s.obj pulled in for symbol "%s" by' % (target, symbol)
+          print('%s.obj pulled in for symbol "%s" by' % (target, symbol))
           for ref in cross_refs[target]:
-            print '\t%s' % ref
+            print('\t%s' % ref)
             new_targets[ref] = True
     if len(new_targets) == 0:
       break
-    print
+    print()
     targets = new_targets.keys()
   if not printed:
-    print ('No references to %s found. Directly specified in sources or a '
+    print('No references to %s found. Directly specified in sources or a '
           'source_set?' % obj_name)
 
 
 def main():
   if len(sys.argv) < 3:
-    print r'Usage: %s <verbose_output_file> <objfile>' % sys.argv[0]
-    print r'Sample: %s chrome_dll_verbose.txt SkTLS' % sys.argv[0]
+    print(r'Usage: %s <verbose_output_file> <objfile>' % sys.argv[0])
+    print(r'Sample: %s chrome_dll_verbose.txt SkTLS' % sys.argv[0])
     return 0
   cross_refs, cross_refed_symbols = ParseVerbose(sys.argv[1])
-  print 'Database loaded - %d xrefs found' % len(cross_refs)
+  print('Database loaded - %d xrefs found' % len(cross_refs))
   if not len(cross_refs):
-    print 'No data found to analyze. Exiting'
+    print('No data found to analyze. Exiting')
     return 0
   TrackObj(cross_refs, cross_refed_symbols, sys.argv[2])
 

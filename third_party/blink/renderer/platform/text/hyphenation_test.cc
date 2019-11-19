@@ -41,8 +41,7 @@ class HyphenationTest : public testing::Test {
     // Because the mojo service to open hyphenation dictionaries is not
     // accessible from the unit test, open the dictionary file directly for
     // testing.
-    std::string filename =
-        std::string("hyph-") + locale.Ascii().data() + ".hyb";
+    std::string filename = "hyph-" + locale.Ascii() + ".hyb";
 #if defined(OS_ANDROID)
     base::FilePath path("/system/usr/hyphen-data");
 #else

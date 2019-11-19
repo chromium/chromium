@@ -4,10 +4,9 @@
 
 #import "ios/chrome/browser/ui/collection_view/cells/collection_view_switch_item.h"
 
-#import "ios/chrome/browser/ui/colors/MDCPalette+CrAdditions.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/colors/semantic_color_names.h"
 #include "ios/chrome/grit/ios_strings.h"
-#import "ios/third_party/material_components_ios/src/components/Palettes/src/MaterialPalettes.h"
 #import "ios/third_party/material_components_ios/src/components/Typography/src/MaterialTypography.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 
@@ -74,12 +73,11 @@ const CGFloat kVerticalPadding = 16;
     _textLabel.translatesAutoresizingMaskIntoConstraints = NO;
     [self.contentView addSubview:_textLabel];
 
-    _textLabel.textColor = [[MDCPalette greyPalette] tint900];
+    _textLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
     _textLabel.numberOfLines = 0;
 
     _switchView = [[UISwitch alloc] initWithFrame:CGRectZero];
     _switchView.translatesAutoresizingMaskIntoConstraints = NO;
-    _switchView.onTintColor = [[MDCPalette cr_bluePalette] tint500];
     _switchView.accessibilityHint = l10n_util::GetNSString(
         IDS_IOS_TOGGLE_SETTING_SWITCH_ACCESSIBILITY_HINT);
     [self.contentView addSubview:_switchView];
@@ -115,8 +113,9 @@ const CGFloat kVerticalPadding = 16;
 }
 
 + (UIColor*)defaultTextColorForState:(UIControlState)state {
-  MDCPalette* grey = [MDCPalette greyPalette];
-  return (state & UIControlStateDisabled) ? grey.tint500 : grey.tint900;
+  return (state & UIControlStateDisabled)
+             ? [UIColor colorNamed:kDisabledTintColor]
+             : [UIColor colorNamed:kTextPrimaryColor];
 }
 
 // Implement -layoutSubviews as per instructions in documentation for

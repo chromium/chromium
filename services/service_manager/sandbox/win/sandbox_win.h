@@ -9,6 +9,8 @@
 
 #include <string>
 
+#include "base/bind.h"
+#include "base/callback_forward.h"
 #include "base/process/launch.h"
 #include "base/process/process_handle.h"
 #include "sandbox/win/src/sandbox_types.h"
@@ -19,6 +21,7 @@
 
 namespace base {
 class CommandLine;
+class Value;
 }  // namespace base
 
 namespace sandbox {
@@ -76,6 +79,14 @@ class SERVICE_MANAGER_SANDBOX_EXPORT SandboxWin {
 
   static bool InitBrokerServices(sandbox::BrokerServices* broker_services);
   static bool InitTargetServices(sandbox::TargetServices* target_services);
+
+  // Report diagnostic information about policies applied to sandboxed
+  // processes. This is a snapshot and may describe processes which
+  // have subsequently finished. This can be invoked on any sequence and posts
+  // to |response| to the origin sequence on completion. |response|
+  // will be an empty value if an error is encountered.
+  static sandbox::ResultCode GetPolicyDiagnostics(
+      base::OnceCallback<void(base::Value)> response);
 };
 
 }  // namespace service_manager

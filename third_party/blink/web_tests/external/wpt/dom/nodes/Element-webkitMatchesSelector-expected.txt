@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 661 tests; 659 PASS, 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 669 tests; 667 PASS, 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Selectors-API Level 2 Test Suite: HTML with Selectors Level 3
 PASS Document should not support webkitMatchesSelector
 PASS Detached Element supports webkitMatchesSelector
@@ -172,7 +172,9 @@ PASS In-document Element.webkitMatchesSelector: :lang pseudo-class selector, mat
 PASS In-document Element.webkitMatchesSelector: :lang pseudo-class selector, matching specified language with exact value (with no refNodes): #pseudo-lang-div2:lang(fr)
 PASS In-document Element.webkitMatchesSelector: :lang pseudo-class selector, matching specified language with partial value (with no refNodes): #pseudo-lang-div3:lang(en)
 PASS In-document Element.webkitMatchesSelector: :enabled pseudo-class selector, matching all enabled form controls (with no refNodes): #pseudo-ui :enabled
-PASS In-document Element.webkitMatchesSelector: :enabled pseudo-class selector, matching all disabled form controls (with no refNodes): #pseudo-ui :disabled
+PASS In-document Element.webkitMatchesSelector: :enabled pseudo-class selector, not matching link elements (with no refNodes): #pseudo-link :enabled
+PASS In-document Element.webkitMatchesSelector: :disabled pseudo-class selector, matching all disabled form controls (with no refNodes): #pseudo-ui :disabled
+PASS In-document Element.webkitMatchesSelector: :disabled pseudo-class selector, not matching link elements (with no refNodes): #pseudo-link :disabled
 PASS In-document Element.webkitMatchesSelector: :checked pseudo-class selector, matching checked radio buttons and checkboxes (with no refNodes): #pseudo-ui :checked
 PASS In-document Element.webkitMatchesSelector: :not pseudo-class selector, matching  (with no refNodes): #not>:not(div)
 PASS In-document Element.webkitMatchesSelector: :not pseudo-class selector, matching  (with no refNodes): #not * :not(:first-child)
@@ -333,7 +335,9 @@ PASS Detached Element.webkitMatchesSelector: :link and :visited pseudo-class sel
 PASS Detached Element.webkitMatchesSelector: :lang pseudo-class selector, matching specified language with exact value (with no refNodes): #pseudo-lang-div2:lang(fr)
 PASS Detached Element.webkitMatchesSelector: :lang pseudo-class selector, matching specified language with partial value (with no refNodes): #pseudo-lang-div3:lang(en)
 PASS Detached Element.webkitMatchesSelector: :enabled pseudo-class selector, matching all enabled form controls (with no refNodes): #pseudo-ui :enabled
-PASS Detached Element.webkitMatchesSelector: :enabled pseudo-class selector, matching all disabled form controls (with no refNodes): #pseudo-ui :disabled
+PASS Detached Element.webkitMatchesSelector: :enabled pseudo-class selector, not matching link elements (with no refNodes): #pseudo-link :enabled
+PASS Detached Element.webkitMatchesSelector: :disabled pseudo-class selector, matching all disabled form controls (with no refNodes): #pseudo-ui :disabled
+PASS Detached Element.webkitMatchesSelector: :disabled pseudo-class selector, not matching link elements (with no refNodes): #pseudo-link :disabled
 PASS Detached Element.webkitMatchesSelector: :checked pseudo-class selector, matching checked radio buttons and checkboxes (with no refNodes): #pseudo-ui :checked
 PASS Detached Element.webkitMatchesSelector: :not pseudo-class selector, matching  (with no refNodes): #not>:not(div)
 PASS Detached Element.webkitMatchesSelector: :not pseudo-class selector, matching  (with no refNodes): #not * :not(:first-child)
@@ -493,7 +497,9 @@ PASS Fragment Element.webkitMatchesSelector: :link and :visited pseudo-class sel
 PASS Fragment Element.webkitMatchesSelector: :lang pseudo-class selector, matching specified language with exact value (with no refNodes): #pseudo-lang-div2:lang(fr)
 PASS Fragment Element.webkitMatchesSelector: :lang pseudo-class selector, matching specified language with partial value (with no refNodes): #pseudo-lang-div3:lang(en)
 PASS Fragment Element.webkitMatchesSelector: :enabled pseudo-class selector, matching all enabled form controls (with no refNodes): #pseudo-ui :enabled
-PASS Fragment Element.webkitMatchesSelector: :enabled pseudo-class selector, matching all disabled form controls (with no refNodes): #pseudo-ui :disabled
+PASS Fragment Element.webkitMatchesSelector: :enabled pseudo-class selector, not matching link elements (with no refNodes): #pseudo-link :enabled
+PASS Fragment Element.webkitMatchesSelector: :disabled pseudo-class selector, matching all disabled form controls (with no refNodes): #pseudo-ui :disabled
+PASS Fragment Element.webkitMatchesSelector: :disabled pseudo-class selector, not matching link elements (with no refNodes): #pseudo-link :disabled
 PASS Fragment Element.webkitMatchesSelector: :checked pseudo-class selector, matching checked radio buttons and checkboxes (with no refNodes): #pseudo-ui :checked
 PASS Fragment Element.webkitMatchesSelector: :not pseudo-class selector, matching  (with no refNodes): #not>:not(div)
 PASS Fragment Element.webkitMatchesSelector: :not pseudo-class selector, matching  (with no refNodes): #not * :not(:first-child)
@@ -657,7 +663,9 @@ PASS In-document Element.webkitMatchesSelector: :lang pseudo-class selector, mat
 PASS In-document Element.webkitMatchesSelector: :lang pseudo-class selector, matching specified language with exact value (1) (with no refNodes): #pseudo-lang-div2:lang(fr)
 PASS In-document Element.webkitMatchesSelector: :lang pseudo-class selector, matching specified language with partial value (1) (with no refNodes): #pseudo-lang-div3:lang(en)
 PASS In-document Element.webkitMatchesSelector: :enabled pseudo-class selector, matching all enabled form controls (1) (with no refNodes): #pseudo-ui :enabled
-PASS In-document Element.webkitMatchesSelector: :enabled pseudo-class selector, matching all disabled form controls (1) (with no refNodes): #pseudo-ui :disabled
+PASS In-document Element.webkitMatchesSelector: :enabled pseudo-class selector, not matching link elements (1) (with no refNodes): #pseudo-link :enabled
+PASS In-document Element.webkitMatchesSelector: :disabled pseudo-class selector, matching all disabled form controls (1) (with no refNodes): #pseudo-ui :disabled
+PASS In-document Element.webkitMatchesSelector: :disabled pseudo-class selector, not matching link elements (1) (with no refNodes): #pseudo-link :disabled
 PASS In-document Element.webkitMatchesSelector: :checked pseudo-class selector, matching checked radio buttons and checkboxes (1) (with no refNodes): #pseudo-ui :checked
 PASS In-document Element.webkitMatchesSelector: :not pseudo-class selector, matching (1) (with no refNodes): #not>:not(div)
 PASS In-document Element.webkitMatchesSelector: :not pseudo-class selector, matching (1) (with no refNodes): #not * :not(:first-child)

@@ -1,0 +1,18 @@
+<body></body>
+<script>
+// |kThirdPartySharedWorker| from web_feature.mojom.
+const kFeature = 3032;
+
+async function verifyUseCounter() {
+  await window.internals.observeUseCounter(document, kFeature);
+}
+
+window.onload = function() {
+  var myWorker = new SharedWorker('worker.js');
+  verifyUseCounter();
+  if (window.internals.isUseCounted(document, kFeature)) {
+    window.parent.postMessage('verified_has_use_counter', '*');
+  }
+};
+
+</script>

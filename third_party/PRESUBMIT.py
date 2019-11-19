@@ -5,10 +5,11 @@
 ANDROID_WHITELISTED_LICENSES = [
   'A(pple )?PSL 2(\.0)?',
   'Android Software Development Kit License',
-  'Apache( Version)? 2(\.0)?',
+  'Apache( License)?,?( Version)? 2(\.0)?',
   '(New )?([23]-Clause )?BSD( [23]-Clause)?( with advertising clause)?',
+  'GNU Lesser Public License',
   'L?GPL ?v?2(\.[01])?( or later)?( with the classpath exception)?',
-  'MIT(/X11)?(-like)?',
+  '(The )?MIT(/X11)?(-like)?( License)?',
   'MPL 1\.1 ?/ ?GPL 2(\.0)? ?/ ?LGPL 2\.1',
   'MPL 2(\.0)?',
   'Microsoft Limited Public License',
@@ -58,7 +59,9 @@ def _CheckThirdPartyReadmesUpdated(input_api, output_api):
                                   'externs' + input_api.os_path.sep) and
         not local_path.startswith('third_party' + input_api.os_path.sep +
                                   'closure_compiler' + input_api.os_path.sep +
-                                  'interfaces' + input_api.os_path.sep)):
+                                  'interfaces' + input_api.os_path.sep) and
+        not local_path.startswith('third_party' + input_api.os_path.sep +
+                                  'webxr_test_pages' + input_api.os_path.sep)):
       files.append(f)
       if local_path.endswith("README.chromium"):
         readmes.append(f)
@@ -77,13 +80,16 @@ def _CheckThirdPartyReadmesUpdated(input_api, output_api):
     r'^Short Name: [a-zA-Z0-9_\-\.]+\r?$',
     input_api.re.IGNORECASE | input_api.re.MULTILINE)
   version_pattern = input_api.re.compile(
-    r'^Version: [a-zA-Z0-9_\-\.:]+\r?$',
+    r'^Version: [a-zA-Z0-9_\-\+\.:]+\r?$',
     input_api.re.IGNORECASE | input_api.re.MULTILINE)
   release_pattern = input_api.re.compile(
     r'^Security Critical: (yes|no)\r?$',
     input_api.re.IGNORECASE | input_api.re.MULTILINE)
   license_pattern = input_api.re.compile(
     r'^License: (.+)\r?$',
+    input_api.re.IGNORECASE | input_api.re.MULTILINE)
+  not_shipped_pattern = input_api.re.compile(
+    r'^License File: NOT_SHIPPED\r?$',
     input_api.re.IGNORECASE | input_api.re.MULTILINE)
   license_android_compatible_pattern = input_api.re.compile(
     r'^License Android Compatible: (yes|no)\r?$',
@@ -122,8 +128,11 @@ def _CheckThirdPartyReadmesUpdated(input_api, output_api):
         'This field specifies the license used by the package. Check\n'
         'README.chromium.template for details.',
         [f]))
-    elif not LicenseIsCompatibleWithAndroid(input_api, license_match.group(1)) \
-         and not license_android_compatible_pattern.search(contents):
+    not_shipped_match = not_shipped_pattern.search(contents)
+    android_compatible_match = (
+        license_android_compatible_pattern.search(contents))
+    if (not not_shipped_pattern and not android_compatible_match and
+        not LicenseIsCompatibleWithAndroid(input_api, license_match.group(1))):
       errors.append(output_api.PresubmitPromptWarning(
         'Cannot determine whether specified license is compatible with\n' +
         'the Android licensing requirements. Please check that the license\n' +

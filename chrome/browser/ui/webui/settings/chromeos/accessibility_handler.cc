@@ -35,10 +35,6 @@ void AccessibilityHandler::RegisterMessages() {
           &AccessibilityHandler::HandleShowSelectToSpeakSettings,
           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
-      "showSwitchAccessSettings",
-      base::BindRepeating(&AccessibilityHandler::HandleShowSwitchAccessSettings,
-                          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
       "getStartupSoundEnabled",
       base::BindRepeating(&AccessibilityHandler::HandleGetStartupSoundEnabled,
                           base::Unretained(this)));
@@ -56,11 +52,6 @@ void AccessibilityHandler::HandleShowChromeVoxSettings(
 void AccessibilityHandler::HandleShowSelectToSpeakSettings(
     const base::ListValue* args) {
   OpenExtensionOptionsPage(extension_misc::kSelectToSpeakExtensionId);
-}
-
-void AccessibilityHandler::HandleShowSwitchAccessSettings(
-    const base::ListValue* args) {
-  OpenExtensionOptionsPage(extension_misc::kSwitchAccessExtensionId);
 }
 
 void AccessibilityHandler::HandleGetStartupSoundEnabled(

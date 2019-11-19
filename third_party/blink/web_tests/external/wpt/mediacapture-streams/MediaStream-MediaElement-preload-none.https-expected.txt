@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-FAIL Test that preload 'none' is ignored for MediaStream object URL used as src assert_unreached: 'error' should not be fired, code=4 Reached unreachable code
-PASS Test that preload 'none' is ignored for MediaStream used as srcObject
-Harness: the test ran to completion.
-

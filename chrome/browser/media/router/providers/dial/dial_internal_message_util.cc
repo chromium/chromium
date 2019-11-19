@@ -7,9 +7,9 @@
 #include <array>
 
 #include "base/base64url.h"
+#include "base/hash/sha1.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
-#include "base/sha1.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/media/router/providers/dial/dial_activity_manager.h"
 #include "chrome/browser/media/router/route_message_util.h"
@@ -92,6 +92,11 @@ std::unique_ptr<DialInternalMessage> DialInternalMessage::From(
     base::Value message,
     std::string* error) {
   DCHECK(error);
+  if (!message.is_dict()) {
+    *error = "Input message was not a dictionary";
+    return nullptr;
+  }
+
   base::Value* type_value =
       message.FindKeyOfType("type", base::Value::Type::STRING);
   if (!type_value) {
@@ -177,8 +182,9 @@ DialInternalMessageUtil::DialInternalMessageUtil(const std::string& hash_token)
     : hash_token_(hash_token) {}
 DialInternalMessageUtil::~DialInternalMessageUtil() = default;
 
+// static
 bool DialInternalMessageUtil::IsStopSessionMessage(
-    const DialInternalMessage& message) const {
+    const DialInternalMessage& message) {
   if (message.type != DialInternalMessageType::kV2Message)
     return false;
 

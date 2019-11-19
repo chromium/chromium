@@ -58,8 +58,6 @@ blink_core_sources("events") {
     "pointer_event_factory.h",
     "pop_state_event.cc",
     "pop_state_event.h",
-    "portal_activate_event.cc",
-    "portal_activate_event.h",
     "progress_event.cc",
     "progress_event.h",
     "promise_rejection_event.cc",

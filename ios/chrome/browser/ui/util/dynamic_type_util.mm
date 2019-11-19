@@ -57,3 +57,17 @@ float SystemSuggestedFontSizeMultiplier(UIContentSizeCategory category,
       max_multiplier,
       std::max(min_multiplier, SystemSuggestedFontSizeMultiplier(category)));
 }
+
+UIFont* PreferredFontForTextStyleWithMaxCategory(
+    UIFontTextStyle style,
+    UIContentSizeCategory currentCategory,
+    UIContentSizeCategory maxCategory) {
+  NSComparisonResult result =
+      UIContentSizeCategoryCompareToCategory(currentCategory, maxCategory);
+  UIContentSizeCategory category =
+      result == NSOrderedDescending ? maxCategory : currentCategory;
+  return [UIFont preferredFontForTextStyle:style
+             compatibleWithTraitCollection:
+                 [UITraitCollection
+                     traitCollectionWithPreferredContentSizeCategory:category]];
+}

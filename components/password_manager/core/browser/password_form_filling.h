@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_FORM_FILLING_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_FORM_FILLING_H_
 
-#include <map>
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
@@ -40,11 +39,10 @@ enum class LikelyFormFilling {
 };
 
 LikelyFormFilling SendFillInformationToRenderer(
-    const PasswordManagerClient& client,
+    PasswordManagerClient* client,
     PasswordManagerDriver* driver,
-    bool is_blacklisted,
     const autofill::PasswordForm& observed_form,
-    const std::map<base::string16, const autofill::PasswordForm*>& best_matches,
+    const std::vector<const autofill::PasswordForm*>& best_matches,
     const std::vector<const autofill::PasswordForm*>& federated_matches,
     const autofill::PasswordForm* preferred_match,
     PasswordFormMetricsRecorder* metrics_recorder);

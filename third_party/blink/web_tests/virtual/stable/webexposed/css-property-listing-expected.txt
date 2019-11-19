@@ -75,6 +75,7 @@ All changes to this list should go through Blink's feature review process: http:
     animation-name
     animation-play-state
     animation-timing-function
+    backdrop-filter
     backface-visibility
     background-attachment
     background-blend-mode
@@ -175,6 +176,7 @@ All changes to this list should go through Blink's feature review process: http:
     font-family
     font-feature-settings
     font-kerning
+    font-optical-sizing
     font-size
     font-stretch
     font-style
@@ -248,6 +250,8 @@ All changes to this list should go through Blink's feature review process: http:
     overflow-wrap
     overflow-x
     overflow-y
+    overscroll-behavior-block
+    overscroll-behavior-inline
     overscroll-behavior-x
     overscroll-behavior-y
     padding-block-end

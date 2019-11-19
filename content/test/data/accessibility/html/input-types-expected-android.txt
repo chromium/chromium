@@ -34,7 +34,7 @@ android.webkit.WebView focusable focused scrollable
 ++++++android.widget.Button role_description='button' clickable focusable name='Reset:'
 ++++android.view.View
 ++++++android.view.View name='Search: '
-++++++android.widget.EditText clickable editable_text focusable hint='Search:' input_type=1
+++++++android.widget.EditText role_description='search text field' clickable editable_text focusable hint='Search:' input_type=1
 ++++android.view.View
 ++++++android.view.View name='Submit: '
 ++++++android.widget.Button role_description='button' clickable focusable name='Submit:'

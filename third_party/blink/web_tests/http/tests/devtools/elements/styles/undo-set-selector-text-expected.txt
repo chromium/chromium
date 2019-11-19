@@ -5,7 +5,7 @@ Tests that setting selector text can be undone.
 element.style { ()
 
 [expanded] 
-#inspected { (<style>…</style>)
+#inspected { (<style>)
     color: green;
 
 [expanded] 
@@ -22,7 +22,7 @@ html { (user agent stylesheet)
 element.style { ()
 
 [expanded] 
-#inspected, #other { (<style>…</style>)
+#inspected, #other { (<style>)
     color: green;
 
 [expanded] 
@@ -39,7 +39,7 @@ html { (user agent stylesheet)
 element.style { ()
 
 [expanded] 
-#inspected { (<style>…</style>)
+#inspected { (<style>)
     color: green;
 
 [expanded] 
@@ -56,7 +56,7 @@ html { (user agent stylesheet)
 element.style { ()
 
 [expanded] 
-#inspected, #other { (<style>…</style>)
+#inspected, #other { (<style>)
     color: green;
 
 [expanded] 

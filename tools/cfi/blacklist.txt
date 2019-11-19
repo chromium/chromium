@@ -29,6 +29,12 @@ fun:*internal_default_instance*
 # CAtlArray<T> casts to uninitialized T*.
 src:*atlcoll.h
 
+# https://github.com/grpc/grpc/issues/19375
+src:*third_party/grpc/src/src/core/lib/gprpp/inlined_vector.h
+
+# https://crbug.com/994752
+src:*third_party/spirv-cross/spirv-cross/spirv_cross_containers.hpp
+
 #############################################################################
 # Base class's constructor accesses a derived class.
 
@@ -49,7 +55,7 @@ fun:*ThreadSafeRefCountedGarbageCollected*makeKeepAlive*
 fun:*DatabaseContext*contextDestroyed*
 
 # FIXME: Cannot handle template function LifecycleObserver<>::setContext,
-# so exclude source file for now. 
+# so exclude source file for now.
 src:*lifecycle_observer.h*
 
 #############################################################################
@@ -122,6 +128,7 @@ type:sandbox::TargetServices
 
 # ANGLE
 src:*third_party/angle/src/libANGLE/*
+src:*third_party/angle/src/libEGL/*
 src:*third_party/angle/src/third_party/libXNVCtrl/NVCtrl.c
 # third_party/angle/src/gpu_info_util/SystemInfo_libpci.cpp
 fun:*GetPCIDevicesWithLibPCI*
@@ -155,12 +162,11 @@ src:*device/udev_linux/udev1_loader.cc
 src:*ui/gl/gl_bindings_autogen_*
 
 src:*components/os_crypt/*
-src:*chrome/browser/password_manager/native_backend_gnome_x.cc
-src:*chrome/browser/password_manager/native_backend_libsecret*
 
 src:*content/browser/accessibility/browser_accessibility_auralinux.cc
 src:*ui/accessibility/platform/ax_platform_node_auralinux.cc
 src:*ui/accessibility/platform/ax_platform_atk_hyperlink.cc
+src:*ui/accessibility/platform/ax_platform_node_auralinux_unittest.cc
 
 src:*chrome/browser/ui/zoom/chrome_zoom_level_prefs.cc
 src:*third_party/webrtc/modules/desktop_capture/linux/x_server_pixel_buffer.cc
@@ -180,6 +186,11 @@ fun:*GrGLFunction*
 
 # Call to libcurl.so from the symupload utility
 src:*third_party/breakpad/breakpad/src/common/linux/http_upload.cc
+
+# Indirect call to Xlib.
+fun:*XImageDeleter*
+
+src:*mojo/public/c/system/thunks.cc
 
 # The follow entries are speculatively disabled. They're included in the
 # chromium build and include calls to dynamically resolved symbols; however,
@@ -203,6 +214,7 @@ fun:*LocaleConvertCase*
 
 # PropertyCallbackArguments::Call methods cast function pointers
 src:*v8/src/api-arguments-inl.h
+src:*v8/src/api/api-arguments-inl.h
 
 # v8 callback that casts argument template parameters
 fun:*PendingPhantomCallback*Invoke*

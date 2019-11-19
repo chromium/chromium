@@ -1042,7 +1042,7 @@ diff --git a/src/hunspell/hunspell.hxx b/src/hunspell/hunspell.hxx
 index 43af66b..a35df83 100644
 --- a/src/hunspell/hunspell.hxx
 +++ b/src/hunspell/hunspell.hxx
-@@ -79,6 +79,10 @@
+@@ -79,9 +79,13 @@
  #include <string>
  #include <vector>
  
@@ -1052,7 +1052,12 @@ index 43af66b..a35df83 100644
 +
  #define SPELL_XML "<?xml?>"
  
- #define MAXSUGGESTION 15
+-#define MAXSUGGESTION 15
++#define MAXSUGGESTION 5
+ #define MAXSHARPS 5
+ 
+ #ifndef MAXWORDLEN
+
 @@ -115,11 +119,17 @@ class LIBHUNSPELL_DLL_EXPORTED Hunspell {
     * long path names (without the long path prefix Hunspell will use fopen()
     * with system-dependent character encoding instead of _wfopen()).

@@ -45,10 +45,6 @@ class HitTestLayerRectList final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static HitTestLayerRectList* Create() {
-    return MakeGarbageCollected<HitTestLayerRectList>();
-  }
-
   HitTestLayerRectList();
 
   unsigned length() const;

@@ -3,7 +3,6 @@
 <script src="../../../resources/testharnessreport.js"></script>
 <script src="../../assert_selection.js"></script>
 <script>
-const usesBidiAffinity = window.internals && internals.runtimeFlags.bidiCaretAffinityEnabled;
 
 selection_test(
   '<div contenteditable dir="rtl">|\u05D0\u05D1\u05D2abcdef</div>',
@@ -26,48 +25,42 @@ selection_test(
 selection_test(
   '<div contenteditable dir="rtl">\u05D0\u05D1\u05D2|abcdef</div>',
   selection => selection.modify('move', 'right', 'character'),
-  usesBidiAffinity
-      ? '<div contenteditable dir="rtl">\u05d0\u05d1\u05d2a|bcdef</div>'
-      : '<div contenteditable dir="rtl">\u05D0\u05D1|\u05D2abcdef</div>',
+  '<div contenteditable dir="rtl">\u05D0\u05D1|\u05D2abcdef</div>',
   '8-3 rtl right character');
 
 selection_test(
   '<div contenteditable dir="rtl">\u05D0\u05D1\u05D2a|bcdef</div>',
   selection => selection.modify('move', 'right', 'character'),
-  '<div contenteditable dir="rtl">\u05D0\u05D1\u05D2ab|cdef</div>',
+  '<div contenteditable dir="rtl">\u05D0\u05D1\u05D2|abcdef</div>',
   '8-4 rtl right character');
 
 selection_test(
   '<div contenteditable dir="rtl">\u05D0\u05D1\u05D2ab|cdef</div>',
   selection => selection.modify('move', 'right', 'character'),
-  '<div contenteditable dir="rtl">\u05D0\u05D1\u05D2abc|def</div>',
+  '<div contenteditable dir="rtl">\u05D0\u05D1\u05D2a|bcdef</div>',
   '8-5 rtl right character');
 
 selection_test(
   '<div contenteditable dir="rtl">\u05D0\u05D1\u05D2abc|def</div>',
   selection => selection.modify('move', 'right', 'character'),
-  '<div contenteditable dir="rtl">\u05D0\u05D1\u05D2abcd|ef</div>',
+  '<div contenteditable dir="rtl">\u05D0\u05D1\u05D2ab|cdef</div>',
   '8-6 rtl right character');
 
 selection_test(
   '<div contenteditable dir="rtl">\u05D0\u05D1\u05D2abcd|ef</div>',
   selection => selection.modify('move', 'right', 'character'),
-  '<div contenteditable dir="rtl">\u05D0\u05D1\u05D2abcde|f</div>',
+  '<div contenteditable dir="rtl">\u05D0\u05D1\u05D2abc|def</div>',
   '8-7 rtl right character');
 
 selection_test(
   '<div contenteditable dir="rtl">\u05D0\u05D1\u05D2abcde|f</div>',
   selection => selection.modify('move', 'right', 'character'),
-  usesBidiAffinity
-      ? '<div contenteditable dir="rtl">\u05d0\u05d1\u05d2abcdef|</div>'
-      : '<div contenteditable dir="rtl">\u05D0\u05D1\u05D2|abcdef</div>',
+  '<div contenteditable dir="rtl">\u05D0\u05D1\u05D2abcd|ef</div>',
   '8-8 rtl right character');
 
 selection_test(
   '<div contenteditable dir="rtl">\u05D0\u05D1\u05D2abcdef|</div>',
   selection => selection.modify('move', 'right', 'character'),
-  usesBidiAffinity
-      ? '<div contenteditable dir="rtl">\u05d0\u05d1|\u05d2abcdef</div>'
-      : '<div contenteditable dir="rtl">\u05D0\u05D1\u05D2a|bcdef</div>',
+  '<div contenteditable dir="rtl">\u05D0\u05D1\u05D2abcde|f</div>',
   '8-9 rtl right character');
 </script>

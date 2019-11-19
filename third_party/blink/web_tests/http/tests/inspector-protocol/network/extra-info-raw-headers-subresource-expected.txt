@@ -1,0 +1,6 @@
+Verifies that cross origin requests have their raw headers shown in Network.*ExtraInfo events by checking cookie headers.
+
+Response set-cookie header: name=value; Secure; SameSite=None; HttpOnly
+
+Request cookie header: name=value
+

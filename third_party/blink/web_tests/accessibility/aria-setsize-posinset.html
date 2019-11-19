@@ -3,7 +3,6 @@
 <head>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 </head>
 <body>
 
@@ -13,7 +12,7 @@
 </div>
 
 <script>
-  test_after_layout_and_paint(function(t) {
+  test(function(t) {
     var list = accessibilityController.accessibleElementById("list");
     assert_equals(list.childAtIndex(0).posInSet,3);
     assert_equals(list.childAtIndex(1).posInSet,5);
@@ -30,7 +29,7 @@
 </form>
 
 <script>
-  test_after_layout_and_paint(function(t){
+  test(function(t){
     var form = accessibilityController.accessibleElementById("form");
     // aria-posinset and aria-setSize can be implicitly caluclated for input type of radio.
     assert_equals(form.childAtIndex(0).posInSet,1);
@@ -48,7 +47,7 @@
 </div>
 
 <script>
-  test_after_layout_and_paint(function(t){
+  test(function(t){
     var radio1 = accessibilityController.accessibleElementById("radio1");
     assert_equals(radio1.posInSet,2);
     assert_equals(radio1.setSize,3);

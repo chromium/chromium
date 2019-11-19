@@ -66,7 +66,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) HttpCacheDataRemover {
 
   std::unique_ptr<ConditionalCacheDeletionHelper> deletion_helper_;
 
-  base::WeakPtrFactory<HttpCacheDataRemover> weak_factory_;
+  base::WeakPtrFactory<HttpCacheDataRemover> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(HttpCacheDataRemover);
 };

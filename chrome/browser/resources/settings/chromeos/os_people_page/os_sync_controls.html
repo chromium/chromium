@@ -1,0 +1,82 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/html/assert.html">
+<link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_toggle/cr_toggle.html">
+<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
+<link rel="import" href="../../route.html">
+<link rel="import" href="../../settings_shared_css.html">
+<link rel="import" href="os_sync_browser_proxy.html">
+
+<dom-module id="os-sync-controls">
+  <template>
+    <style include="settings-shared">
+      #sync-data-types .list-item:not([hidden]) ~ .list-item:not([hidden]) {
+        border-top: var(--cr-separator-line);
+      }
+
+      .list-item {
+        display: flex;
+      }
+
+      .list-item > div {
+        flex: 1;
+      }
+    </style>
+    <div class="settings-box first">
+      <div id="featureEnabledLabel" class="start">
+        PLACEHOLDER Enable OS sync
+      </div>
+      <cr-toggle checked="{{osSyncPrefs.featureEnabled}}"
+                 on-change="onFeatureEnabledChanged_"
+                 aria-labelledby="featureEnabledLabel">
+      </cr-toggle>
+    </div>
+    <!-- TODO(jamescook): Hide or disable everything when feature is off. -->
+    <div class="settings-box">
+      <div id="syncEverythingCheckboxLabel" class="start">
+        $i18n{syncEverythingCheckboxLabel}
+      </div>
+      <cr-toggle id="syncAllOsTypesControl"
+          checked="{{osSyncPrefs.syncAllOsTypes}}"
+          on-change="onSyncAllOsTypesChanged_"
+          aria-labelledby="syncEverythingCheckboxLabel">
+      </cr-toggle>
+    </div>
+
+    <div class="list-frame" id="sync-data-types">
+      <div class="list-item" hidden="[[!osSyncPrefs.osPreferencesRegistered]]">
+        <div id="osSettingsCheckboxLabel">
+          $i18n{syncOsSettingsCheckboxLabel}
+        </div>
+        <cr-toggle id="osPreferencesControl"
+            checked="{{osSyncPrefs.osPreferencesSynced}}"
+            on-change="onSingleSyncDataTypeChanged_"
+            disabled="[[shouldSyncCheckboxBeDisabled_(
+                osSyncPrefs.syncAllOsTypes,
+                osSyncPrefs.osPreferencesEnforced)]]"
+            aria-labelledby="osSettingsCheckboxLabel">
+        </cr-toggle>
+      </div>
+
+      <div class="list-item" hidden="[[!osSyncPrefs.printersRegistered]]">
+        <div id="printersCheckboxLabel">
+          $i18n{syncPrintersCheckboxLabel}
+        </div>
+        <cr-toggle checked="{{osSyncPrefs.printersSynced}}"
+            on-change="onSingleSyncDataTypeChanged_"
+            disabled="[[shouldSyncCheckboxBeDisabled_(
+                osSyncPrefs.syncAllOsTypes,
+                osSyncPrefs.printersEnforced)]]"
+            aria-labelledby="printersCheckboxLabel">
+        </cr-toggle>
+      </div>
+
+      <!-- TODO(jamescook): Apps, Wallpaper, Wi-Fi configs. Apps may require
+           support for "forced" types, see SyncUserSettingsImpl and
+           SupervisedUserService::GetForcedTypes(). -->
+
+    </div>
+  </template>
+  <script src="os_sync_controls.js"></script>
+</dom-module>

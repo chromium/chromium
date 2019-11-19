@@ -6,10 +6,10 @@
 
 #include <utility>
 
+#include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/shelf/shelf.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ui/gfx/geometry/insets.h"
-#include "ui/keyboard/keyboard_controller.h"
 #include "ui/views/border.h"
 #include "ui/views/layout/box_layout.h"
 
@@ -18,10 +18,20 @@ namespace ash {
 TrayContainer::TrayContainer(Shelf* shelf) : shelf_(shelf) {
   DCHECK(shelf_);
 
+  ShelfConfig::Get()->AddObserver(this);
+
+  SetPaintToLayer();
+  layer()->SetFillsBoundsOpaquely(false);
   UpdateLayout();
 }
 
-TrayContainer::~TrayContainer() = default;
+TrayContainer::~TrayContainer() {
+  ShelfConfig::Get()->RemoveObserver(this);
+}
+
+void TrayContainer::OnShelfConfigUpdated() {
+  UpdateLayout();
+}
 
 void TrayContainer::UpdateAfterShelfAlignmentChange() {
   UpdateLayout();
@@ -42,7 +52,7 @@ void TrayContainer::ChildVisibilityChanged(View* child) {
 }
 
 void TrayContainer::ViewHierarchyChanged(
-    const ViewHierarchyChangedDetails& details) {
+    const views::ViewHierarchyChangedDetails& details) {
   if (details.parent == this)
     PreferredSizeChanged();
 }
@@ -52,11 +62,16 @@ gfx::Rect TrayContainer::GetAnchorBoundsInScreen() const {
     // When the virtual keyboard is up, any anchored widgets should anchor to
     // the virtual keyboard instead because it will cover the shelf.
     const gfx::Rect occluded_bounds =
-        keyboard::KeyboardController::Get()->GetWorkspaceOccludedBounds();
+        keyboard::KeyboardUIController::Get()
+            ->GetWorkspaceOccludedBoundsInScreen();
     if (!occluded_bounds.IsEmpty())
       return occluded_bounds;
   }
   return GetBoundsInScreen();
+}
+
+const char* TrayContainer::GetClassName() const {
+  return "TrayContainer";
 }
 
 void TrayContainer::UpdateLayout() {
@@ -65,11 +80,14 @@ void TrayContainer::UpdateLayout() {
   // Adjust the size of status tray dark background by adding additional
   // empty border.
   views::BoxLayout::Orientation orientation =
-      is_horizontal ? views::BoxLayout::kHorizontal
-                    : views::BoxLayout::kVertical;
+      is_horizontal ? views::BoxLayout::Orientation::kHorizontal
+                    : views::BoxLayout::Orientation::kVertical;
 
-  gfx::Insets insets(is_horizontal ? gfx::Insets(0, kHitRegionPadding)
-                                   : gfx::Insets(kHitRegionPadding, 0));
+  gfx::Insets insets(
+      is_horizontal
+          ? gfx::Insets(0, ShelfConfig::Get()->status_area_hit_region_padding())
+          : gfx::Insets(ShelfConfig::Get()->status_area_hit_region_padding(),
+                        0));
   SetBorder(views::CreateEmptyBorder(insets));
 
   int horizontal_margin = main_axis_margin_;

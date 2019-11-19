@@ -27,8 +27,16 @@ void WriteMetricsForReportingToPrefsIfEnabled(
     const component_updater::ComponentUpdateService* update_service,
     const base::Clock* clock);
 
-// Return the current time with a three-day granularity.
-base::Time GetThreeDayWindowStart(const base::Clock* clock);
+// Cache the Termina VM kernel in profile prefs from where they
+// are copied to the device status proto during status collection
+// in case advanced Crostini reporting is enabled.
+void WriteTerminaVmKernelVersionToPrefsForReporting(
+    PrefService* profile_prefs,
+    const std::string& kernel_version);
+
+// "Coarsens" the given time to the start of a three-day time window.
+// Used for privacy reasons.
+base::Time GetThreeDayWindowStart(const base::Time& actual_time);
 
 // Retrieve the cros-termina version from the browser's component list.
 std::string GetTerminaVersion(

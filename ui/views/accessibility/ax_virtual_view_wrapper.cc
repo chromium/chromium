@@ -4,14 +4,16 @@
 
 #include "ui/views/accessibility/ax_virtual_view_wrapper.h"
 
-#include "ui/views/accessibility/ax_aura_obj_cache.h"
 #include "ui/views/accessibility/ax_view_obj_wrapper.h"
 #include "ui/views/accessibility/ax_virtual_view.h"
+#include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/view.h"
 
 namespace views {
 
-AXVirtualViewWrapper::AXVirtualViewWrapper(AXVirtualView* virtual_view)
-    : virtual_view_(virtual_view) {}
+AXVirtualViewWrapper::AXVirtualViewWrapper(AXVirtualView* virtual_view,
+                                           AXAuraObjCache* cache)
+    : AXAuraObjWrapper(cache), virtual_view_(virtual_view) {}
 
 AXVirtualViewWrapper::~AXVirtualViewWrapper() = default;
 
@@ -20,19 +22,20 @@ bool AXVirtualViewWrapper::IsIgnored() {
 }
 
 AXAuraObjWrapper* AXVirtualViewWrapper::GetParent() {
-  if (virtual_view_->virtual_parent_view())
-    return virtual_view_->virtual_parent_view()->GetWrapper();
+  if (virtual_view_->virtual_parent_view()) {
+    return const_cast<AXVirtualView*>(virtual_view_->virtual_parent_view())
+        ->GetOrCreateWrapper(aura_obj_cache_);
+  }
   if (virtual_view_->GetOwnerView())
-    return AXAuraObjCache::GetInstance()->GetOrCreate(
-        virtual_view_->GetOwnerView());
+    return aura_obj_cache_->GetOrCreate(virtual_view_->GetOwnerView());
 
   return nullptr;
 }
 
 void AXVirtualViewWrapper::GetChildren(
     std::vector<AXAuraObjWrapper*>* out_children) {
-  for (int i = 0; i < virtual_view_->GetChildCount(); ++i)
-    out_children->push_back(virtual_view_->child_at(i)->GetWrapper());
+  for (const auto& child : virtual_view_->children())
+    out_children->push_back(child->GetOrCreateWrapper(aura_obj_cache_));
 }
 
 void AXVirtualViewWrapper::Serialize(ui::AXNodeData* out_node_data) {

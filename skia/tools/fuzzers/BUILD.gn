@@ -48,9 +48,9 @@ if (is_win && use_libfuzzer) {
 
   static_library("skia_test_fonts") {
     sources = [
-      "//third_party/skia/tools/fonts/SkTestFontMgr.cpp",
-      "//third_party/skia/tools/fonts/SkTestSVGTypeface.cpp",
-      "//third_party/skia/tools/fonts/SkTestTypeface.cpp",
+      "//third_party/skia/tools/fonts/TestFontMgr.cpp",
+      "//third_party/skia/tools/fonts/TestSVGTypeface.cpp",
+      "//third_party/skia/tools/fonts/TestTypeface.cpp",
     ]
     configs += [ "//skia:skia_library_config" ]
 

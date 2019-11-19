@@ -1,0 +1,20 @@
+<!--
+@WIN-DENY:EVENT_OBJECT_FOCUS*
+@UIA-WIN-DENY:AutomationFocusChanged*
+-->
+<!DOCTYPE html>
+<input id="max" type="range" min="0" max="10" value="5">
+<script>
+  var go_passes = [
+    () => document.querySelector('#max').setAttribute('max', 20),
+    () => document.querySelector('#max').removeAttribute('max'),
+    () => document.querySelector('#max').setAttribute('aria-valuemax', 10),
+    () => document.querySelector('#max').removeAttribute('aria-valuemax'),
+  ];
+
+  var current_pass = 0;
+  function go() {
+    go_passes[current_pass++].call();
+    return current_pass < go_passes.length;
+  }
+</script>

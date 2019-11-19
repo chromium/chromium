@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/grit/generated_resources.h"
 #include "extensions/browser/app_window/app_window.h"
+#include "extensions/browser/app_window/native_app_window.h"
 #include "extensions/common/extension.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/l10n_util_mac.h"
@@ -115,22 +116,34 @@ void SetItemWithTagVisible(NSMenuItem* top_level_item,
   [menu_item setHidden:!visible];
 }
 
-const Extension* GetExtensionForNSWindow(NSWindow* window) {
-  const Extension* extension = nullptr;
-  Browser* browser = nullptr;
-
-  extensions::AppWindow* app_window =
-      AppWindowRegistryUtil::GetAppWindowForNativeWindowAnyProfile(window);
-  if (app_window) {
-    extension = app_window->GetExtension();
-  } else {
-    // If there is no corresponding AppWindow, this could be a hosted app, so
-    // check for a browser.
-    browser = chrome::FindBrowserWithWindow(window);
-    extension = apps::ExtensionAppShimHandler::MaybeGetAppForBrowser(browser);
+// Retrieve the Extension and (optionally) Profile for an NSWindow.
+const Extension* GetExtensionForNSWindow(NSWindow* window,
+                                         Profile** profile = nullptr) {
+  if (extensions::AppWindow* app_window =
+          AppWindowRegistryUtil::GetAppWindowForNativeWindowAnyProfile(
+              window)) {
+    if (profile)
+      *profile = Profile::FromBrowserContext(app_window->browser_context());
+    return app_window->GetExtension();
   }
+  // If there is no corresponding AppWindow, this could be a hosted app, so
+  // check for a browser.
+  if (Browser* browser = chrome::FindBrowserWithWindow(window)) {
+    if (profile)
+      *profile = browser->profile();
+    return apps::ExtensionAppShimHandler::MaybeGetAppForBrowser(browser);
+  }
+  return nullptr;
+}
 
-  return extension;
+extensions::AppWindowRegistry::AppWindowList GetAppWindowsForNSWindow(
+    NSWindow* window) {
+  Profile* profile = nullptr;
+  if (const Extension* extension = GetExtensionForNSWindow(window, &profile)) {
+    return extensions::AppWindowRegistry::Get(profile)->GetAppWindowsForApp(
+        extension->id());
+  }
+  return extensions::AppWindowRegistry::AppWindowList();
 }
 
 }  // namespace
@@ -400,10 +413,11 @@ const Extension* GetExtensionForNSWindow(NSWindow* window) {
   NSString* name = [notification name];
   if ([name isEqualToString:NSWindowDidBecomeMainNotification]) {
     id window = [notification object];
-    const Extension* extension = GetExtensionForNSWindow(window);
     // Ignore is_browser: if a window becomes main that does not belong to an
     // extension or browser, treat it the same as switching to a browser.
-    if (extension)
+    const Extension* extension = GetExtensionForNSWindow(window);
+    // Do not install the App menu for bookmark apps (which includes PWAs).
+    if (extension && !extension->from_bookmark())
       [self appBecameMain:extension];
     else
       [self chromeBecameMain];
@@ -509,45 +523,21 @@ const Extension* GetExtensionForNSWindow(NSWindow* window) {
 }
 
 - (void)quitCurrentPlatformApp {
-  extensions::AppWindow* appWindow =
-      AppWindowRegistryUtil::GetAppWindowForNativeWindowAnyProfile(
-          [NSApp keyWindow]);
-  if (appWindow) {
-    apps::ExtensionAppShimHandler::Get()->QuitAppForWindow(appWindow);
-  } else {
-    Browser* browser = chrome::FindBrowserWithWindow([NSApp keyWindow]);
-    const Extension* extension =
-        apps::ExtensionAppShimHandler::MaybeGetAppForBrowser(browser);
-    if (extension) {
-      apps::ExtensionAppShimHandler::Get()->QuitHostedAppForWindow(
-          browser->profile(), extension->id());
-    }
-  }
+  auto windows = GetAppWindowsForNSWindow([NSApp keyWindow]);
+  for (auto it = windows.rbegin(); it != windows.rend(); ++it)
+    (*it)->GetBaseWindow()->Close();
 }
 
 - (void)hideCurrentPlatformApp {
-  extensions::AppWindow* appWindow =
-      AppWindowRegistryUtil::GetAppWindowForNativeWindowAnyProfile(
-          [NSApp keyWindow]);
-  if (appWindow) {
-    apps::ExtensionAppShimHandler::Get()->HideAppForWindow(appWindow);
-  } else {
-    Browser* browser = chrome::FindBrowserWithWindow([NSApp keyWindow]);
-    const Extension* extension =
-        apps::ExtensionAppShimHandler::MaybeGetAppForBrowser(browser);
-    if (extension) {
-      apps::ExtensionAppShimHandler::Get()->HideHostedApp(browser->profile(),
-                                                          extension->id());
-    }
-  }
+  auto windows = GetAppWindowsForNSWindow([NSApp keyWindow]);
+  for (auto it = windows.rbegin(); it != windows.rend(); ++it)
+    (*it)->GetBaseWindow()->Hide();
 }
 
 - (void)focusCurrentPlatformApp {
-  extensions::AppWindow* appWindow =
-      AppWindowRegistryUtil::GetAppWindowForNativeWindowAnyProfile(
-          [NSApp keyWindow]);
-  if (appWindow)
-    apps::ExtensionAppShimHandler::Get()->FocusAppForWindow(appWindow);
+  auto windows = GetAppWindowsForNSWindow([NSApp keyWindow]);
+  for (auto it = windows.rbegin(); it != windows.rend(); ++it)
+    (*it)->GetBaseWindow()->Show();
 }
 
 @end

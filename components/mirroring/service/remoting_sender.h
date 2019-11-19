@@ -14,7 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "media/cast/sender/frame_sender.h"
-#include "media/mojo/interfaces/remoting.mojom.h"
+#include "media/mojo/mojom/remoting.mojom.h"
 #include "mojo/public/cpp/bindings/binding.h"
 
 namespace base {
@@ -112,7 +112,7 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) RemotingSender final
   bool flow_restart_pending_;
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
-  base::WeakPtrFactory<RemotingSender> weak_factory_;
+  base::WeakPtrFactory<RemotingSender> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(RemotingSender);
 };

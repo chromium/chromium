@@ -4,6 +4,7 @@
 
 #include "ash/wm/overview/cleanup_animation_observer.h"
 
+#include <utility>
 #include <vector>
 
 #include "ash/test/ash_test_base.h"
@@ -32,22 +33,18 @@ class TestOverviewDelegate : public OverviewDelegate {
   }
 
   // OverviewDelegate:
-  void OnSelectionEnded() override {}
-
-  void AddDelayedAnimationObserver(
+  void AddExitAnimationObserver(
       std::unique_ptr<DelayedAnimationObserver> animation_observer) override {
     animation_observer->SetOwner(this);
     observers_.push_back(std::move(animation_observer));
   }
-
-  void RemoveAndDestroyAnimationObserver(
+  void RemoveAndDestroyExitAnimationObserver(
       DelayedAnimationObserver* animation_observer) override {
     base::EraseIf(observers_, base::MatchesUniquePtr(animation_observer));
   }
-
-  void AddStartAnimationObserver(
+  void AddEnterAnimationObserver(
       std::unique_ptr<DelayedAnimationObserver> animation_observer) override {}
-  void RemoveAndDestroyStartAnimationObserver(
+  void RemoveAndDestroyEnterAnimationObserver(
       DelayedAnimationObserver* animation_observer) override {}
 
  private:
@@ -77,7 +74,7 @@ class CleanupAnimationObserverTest : public AshTestBase,
     params.type = views::Widget::InitParams::TYPE_WINDOW;
     params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
     params.context = CurrentContext();
-    widget->Init(params);
+    widget->Init(std::move(params));
     widget->Show();
     widget->AddObserver(this);
     widget_ = widget.get();
@@ -105,7 +102,7 @@ TEST_F(CleanupAnimationObserverTest, CreateDestroy) {
   TestOverviewDelegate delegate;
   std::unique_ptr<views::Widget> widget = CreateWindowWidget(gfx::Rect(40, 40));
   auto observer = std::make_unique<CleanupAnimationObserver>(std::move(widget));
-  delegate.AddDelayedAnimationObserver(std::move(observer));
+  delegate.AddExitAnimationObserver(std::move(observer));
 }
 
 // Tests that completing animation deletes the animation observer and the
@@ -126,7 +123,7 @@ TEST_F(CleanupAnimationObserverTest, CreateAnimateComplete) {
     auto observer =
         std::make_unique<CleanupAnimationObserver>(std::move(widget));
     animation_settings.AddObserver(observer.get());
-    delegate.AddDelayedAnimationObserver(std::move(observer));
+    delegate.AddExitAnimationObserver(std::move(observer));
 
     widget_window->SetBounds(gfx::Rect(50, 50, 60, 60));
   }
@@ -160,7 +157,7 @@ TEST_F(CleanupAnimationObserverTest, CreateAnimateShutdown) {
     auto observer =
         std::make_unique<CleanupAnimationObserver>(std::move(widget));
     animation_settings.AddObserver(observer.get());
-    delegate.AddDelayedAnimationObserver(std::move(observer));
+    delegate.AddExitAnimationObserver(std::move(observer));
 
     widget_window->SetBounds(gfx::Rect(50, 50, 60, 60));
   }

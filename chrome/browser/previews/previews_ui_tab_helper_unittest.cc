@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
@@ -16,16 +17,17 @@
 #include "build/build_config.h"
 #include "chrome/browser/data_reduction_proxy/data_reduction_proxy_chrome_settings.h"
 #include "chrome/browser/data_reduction_proxy/data_reduction_proxy_chrome_settings_factory.h"
-#include "chrome/browser/infobars/mock_infobar_service.h"
-#include "chrome/browser/loader/chrome_navigation_data.h"
-#include "chrome/browser/previews/previews_lite_page_navigation_throttle.h"
-#include "chrome/browser/previews/previews_ui_tab_helper.h"
+#include "chrome/browser/previews/previews_https_notification_infobar_decider.h"
+#include "chrome/browser/previews/previews_lite_page_redirect_url_loader_interceptor.h"
+#include "chrome/browser/previews/previews_service.h"
+#include "chrome/browser/previews/previews_service_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_compression_stats.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_service.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_settings.h"
-#include "components/data_reduction_proxy/core/browser/data_reduction_proxy_test_utils.h"
+#include "components/data_reduction_proxy/core/browser/data_store.h"
+#include "components/data_reduction_proxy/core/browser/data_store_impl.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_headers.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_pref_names.h"
 #include "components/data_reduction_proxy/proto/data_store.pb.h"
@@ -36,6 +38,7 @@
 #include "components/previews/content/previews_user_data.h"
 #include "components/previews/core/previews_features.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/common/previews_state.h"
@@ -60,7 +63,6 @@ class PreviewsUITabHelperUnitTest : public ChromeRenderViewHostTestHarness {
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
     offline_pages::OfflinePageTabHelper::CreateForWebContents(web_contents());
 #endif  // BUILDFLAG(ENABLE_OFFLINE_PAGES)
-    MockInfoBarService::CreateForWebContents(web_contents());
     PreviewsUITabHelper::CreateForWebContents(web_contents());
     test_handle_ = std::make_unique<content::MockNavigationHandle>(
         GURL(kTestUrl), main_rfh());
@@ -70,34 +72,12 @@ class PreviewsUITabHelperUnitTest : public ChromeRenderViewHostTestHarness {
     content::RenderFrameHostTester::For(main_rfh())
         ->InitializeRenderFrameIfNeeded();
 
-    drp_test_context_ =
-        data_reduction_proxy::DataReductionProxyTestContext::Builder()
-            .WithMockConfig()
-            .SkipSettingsInitialization()
-            .Build();
-
-    auto* data_reduction_proxy_settings =
-        DataReductionProxyChromeSettingsFactory::GetForBrowserContext(
-            web_contents()->GetBrowserContext());
-
-    PrefRegistrySimple* registry =
-        drp_test_context_->pref_service()->registry();
-    registry->RegisterDictionaryPref(proxy_config::prefs::kProxy);
-    data_reduction_proxy_settings
-        ->set_data_reduction_proxy_enabled_pref_name_for_test(
-            drp_test_context_->GetDataReductionProxyEnabledPrefName());
-    data_reduction_proxy_settings->InitDataReductionProxySettings(
-        drp_test_context_->io_data(), drp_test_context_->pref_service(),
-        drp_test_context_->request_context_getter(), profile(),
-        base::MakeRefCounted<network::TestSharedURLLoaderFactory>(),
-        base::WrapUnique(new data_reduction_proxy::DataStore()),
-        base::ThreadTaskRunnerHandle::Get(),
-        base::ThreadTaskRunnerHandle::Get());
-  }
-
-  void TearDown() override {
-    drp_test_context_->DestroySettings();
-    ChromeRenderViewHostTestHarness::TearDown();
+    DataReductionProxyChromeSettingsFactory::GetForBrowserContext(profile())
+        ->InitDataReductionProxySettings(
+            profile(),
+            std::make_unique<data_reduction_proxy::DataStoreImpl>(
+                profile()->GetPath()),
+            task_environment()->GetMainThreadTaskRunner());
   }
 
   void SetCommittedPreviewsType(previews::PreviewsType previews_type) {
@@ -109,9 +89,7 @@ class PreviewsUITabHelperUnitTest : public ChromeRenderViewHostTestHarness {
     previews_user_data->SetCommittedPreviewsType(previews_type);
   }
 
-  void SimulateWillProcessResponse() {
-    SimulateCommit();
-  }
+  void SimulateWillProcessResponse() { SimulateCommit(); }
 
   void SimulateCommit() {
     test_handle_->set_has_committed(true);
@@ -131,19 +109,11 @@ class PreviewsUITabHelperUnitTest : public ChromeRenderViewHostTestHarness {
         test_handle_.get(), page_id);
   }
 
-  InfoBarService* infobar_service() {
-    return InfoBarService::FromWebContents(web_contents());
-  }
-
- protected:
-  std::unique_ptr<data_reduction_proxy::DataReductionProxyTestContext>
-      drp_test_context_;
-
  private:
   std::unique_ptr<content::MockNavigationHandle> test_handle_;
 };
 
-TEST_F(PreviewsUITabHelperUnitTest, DidFinishNavigationCreatesLitePageInfoBar) {
+TEST_F(PreviewsUITabHelperUnitTest, DidFinishNavigationDisplaysUI) {
   PreviewsUITabHelper* ui_tab_helper =
       PreviewsUITabHelper::FromWebContents(web_contents());
   EXPECT_FALSE(ui_tab_helper->displayed_preview_ui());
@@ -153,7 +123,6 @@ TEST_F(PreviewsUITabHelperUnitTest, DidFinishNavigationCreatesLitePageInfoBar) {
   CallDidFinishNavigation();
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(1U, infobar_service()->infobar_count());
   EXPECT_TRUE(ui_tab_helper->displayed_preview_ui());
 
   // Navigate to reset the displayed state.
@@ -165,15 +134,10 @@ TEST_F(PreviewsUITabHelperUnitTest, DidFinishNavigationCreatesLitePageInfoBar) {
 
 #if defined(OS_ANDROID)
 TEST_F(PreviewsUITabHelperUnitTest, DidFinishNavigationDisplaysOmniboxBadge) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      previews::features::kAndroidOmniboxPreviewsBadge);
-
   PreviewsUITabHelper* ui_tab_helper =
       PreviewsUITabHelper::FromWebContents(web_contents());
   EXPECT_FALSE(ui_tab_helper->displayed_preview_ui());
   EXPECT_FALSE(ui_tab_helper->should_display_android_omnibox_badge());
-  EXPECT_EQ(0U, infobar_service()->infobar_count());
 
   SetCommittedPreviewsType(previews::PreviewsType::LITE_PAGE);
   SimulateWillProcessResponse();
@@ -182,12 +146,11 @@ TEST_F(PreviewsUITabHelperUnitTest, DidFinishNavigationDisplaysOmniboxBadge) {
 
   EXPECT_TRUE(ui_tab_helper->should_display_android_omnibox_badge());
   EXPECT_TRUE(ui_tab_helper->displayed_preview_ui());
-  EXPECT_EQ(0U, infobar_service()->infobar_count());
 }
 #endif
 
 TEST_F(PreviewsUITabHelperUnitTest,
-       DidFinishNavigationCreatesNoScriptPreviewsInfoBar) {
+       DidFinishNavigationCreatesNoScriptPreviewsUI) {
   PreviewsUITabHelper* ui_tab_helper =
       PreviewsUITabHelper::FromWebContents(web_contents());
   EXPECT_FALSE(ui_tab_helper->displayed_preview_ui());
@@ -197,7 +160,6 @@ TEST_F(PreviewsUITabHelperUnitTest,
   CallDidFinishNavigation();
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(1U, infobar_service()->infobar_count());
   EXPECT_TRUE(ui_tab_helper->displayed_preview_ui());
 
   // Navigate to reset the displayed state.
@@ -205,62 +167,6 @@ TEST_F(PreviewsUITabHelperUnitTest,
       ->NavigateAndCommit(GURL(kTestUrl));
 
   EXPECT_FALSE(ui_tab_helper->displayed_preview_ui());
-}
-
-TEST_F(PreviewsUITabHelperUnitTest,
-       DidFinishNavigationDoesCreateLoFiPreviewsInfoBar) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      previews::features::kAndroidOmniboxPreviewsBadge);
-
-  PreviewsUITabHelper* ui_tab_helper =
-      PreviewsUITabHelper::FromWebContents(web_contents());
-  EXPECT_FALSE(ui_tab_helper->displayed_preview_ui());
-
-  SetCommittedPreviewsType(previews::PreviewsType::LOFI);
-  SimulateWillProcessResponse();
-  CallDidFinishNavigation();
-  base::RunLoop().RunUntilIdle();
-
-#if defined(OS_ANDROID)
-  EXPECT_TRUE(ui_tab_helper->should_display_android_omnibox_badge());
-#else
-  EXPECT_EQ(1U, infobar_service()->infobar_count());
-  EXPECT_TRUE(ui_tab_helper->displayed_preview_ui());
-#endif
-
-  // Navigate to reset the displayed state.
-  content::WebContentsTester::For(web_contents())
-      ->NavigateAndCommit(GURL(kTestUrl));
-
-#if defined(OS_ANDROID)
-  EXPECT_FALSE(ui_tab_helper->should_display_android_omnibox_badge());
-#else
-  EXPECT_FALSE(ui_tab_helper->displayed_preview_ui());
-#endif
-}
-
-TEST_F(PreviewsUITabHelperUnitTest,
-       DidFinishNavigationDoesNotCreateLoFiPreviewsInfoBar) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      previews::features::kAndroidOmniboxPreviewsBadge);
-
-  PreviewsUITabHelper* ui_tab_helper =
-      PreviewsUITabHelper::FromWebContents(web_contents());
-  EXPECT_FALSE(ui_tab_helper->displayed_preview_ui());
-
-  SetCommittedPreviewsType(previews::PreviewsType::LOFI);
-  SimulateWillProcessResponse();
-  CallDidFinishNavigation();
-  base::RunLoop().RunUntilIdle();
-
-#if defined(OS_ANDROID)
-  EXPECT_FALSE(ui_tab_helper->should_display_android_omnibox_badge());
-#else
-  EXPECT_EQ(0U, infobar_service()->infobar_count());
-  EXPECT_FALSE(ui_tab_helper->displayed_preview_ui());
-#endif
 }
 
 TEST_F(PreviewsUITabHelperUnitTest, TestPreviewsIDSet) {
@@ -285,7 +191,7 @@ TEST_F(PreviewsUITabHelperUnitTest, TestPreviewsIDSet) {
 }
 
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
-TEST_F(PreviewsUITabHelperUnitTest, CreateOfflineInfoBar) {
+TEST_F(PreviewsUITabHelperUnitTest, CreateOfflineUI) {
   PreviewsUITabHelper* ui_tab_helper =
       PreviewsUITabHelper::FromWebContents(web_contents());
   EXPECT_FALSE(ui_tab_helper->displayed_preview_ui());
@@ -314,8 +220,7 @@ TEST_F(PreviewsUITabHelperUnitTest, CreateOfflineInfoBar) {
                   ->DataUsageMapForTesting()
                   .empty());
 
-  drp_test_context_->pref_service()->SetBoolean("data_usage_reporting.enabled",
-                                                true);
+  profile()->GetPrefs()->SetBoolean("data_usage_reporting.enabled", true);
   base::RunLoop().RunUntilIdle();
 
   SetCommittedPreviewsType(previews::PreviewsType::OFFLINE);
@@ -323,7 +228,6 @@ TEST_F(PreviewsUITabHelperUnitTest, CreateOfflineInfoBar) {
   CallDidFinishNavigation();
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(1U, infobar_service()->infobar_count());
   EXPECT_TRUE(ui_tab_helper->displayed_preview_ui());
 
   // Navigate to reset the displayed state.
@@ -381,7 +285,7 @@ TEST_F(PreviewsUITabHelperUnitTest, TestPreviewsCallbackCalledOptOut) {
 
   base::Optional<bool> on_dismiss_value;
 
-  ui_tab_helper->ShowUIElement(previews::PreviewsType::OFFLINE, true,
+  ui_tab_helper->ShowUIElement(previews::PreviewsType::OFFLINE,
                                base::BindOnce(&OnDismiss, &on_dismiss_value));
 
   EXPECT_FALSE(on_dismiss_value);
@@ -402,7 +306,7 @@ TEST_F(PreviewsUITabHelperUnitTest, TestPreviewsCallbackCalledNonOptOut) {
 
   base::Optional<bool> on_dismiss_value;
 
-  ui_tab_helper->ShowUIElement(previews::PreviewsType::OFFLINE, true,
+  ui_tab_helper->ShowUIElement(previews::PreviewsType::OFFLINE,
                                base::BindOnce(&OnDismiss, &on_dismiss_value));
 
   EXPECT_FALSE(on_dismiss_value);
@@ -414,14 +318,14 @@ TEST_F(PreviewsUITabHelperUnitTest, TestPreviewsCallbackCalledNonOptOut) {
   EXPECT_FALSE(on_dismiss_value.value());
 }
 
-TEST_F(PreviewsUITabHelperUnitTest, TestReloadWithoutPreviewsLitePageRedirect) {
+TEST_F(PreviewsUITabHelperUnitTest,
+       TestReloadWithoutPreviewsLitePageRedirectRedirect) {
   SimulateWillProcessResponse();
   CallDidFinishNavigation();
   base::RunLoop().RunUntilIdle();
 
   GURL original_url("https://porgs.com");
-  GURL previews_url =
-      PreviewsLitePageNavigationThrottle::GetPreviewsURLForURL(original_url);
+  GURL previews_url = previews::GetLitePageRedirectURLForURL(original_url);
   content::WebContentsTester::For(web_contents())
       ->NavigateAndCommit(previews_url);
 
@@ -431,4 +335,36 @@ TEST_F(PreviewsUITabHelperUnitTest, TestReloadWithoutPreviewsLitePageRedirect) {
 
   EXPECT_EQ(previews_url,
             web_contents()->GetController().GetLastCommittedEntry()->GetURL());
+}
+
+TEST_F(PreviewsUITabHelperUnitTest, TestReloadWithoutPreviewsDeferAllScript) {
+  GURL test_url("https://tribbles.com");
+  content::WebContentsTester::For(web_contents())->NavigateAndCommit(test_url);
+
+  PreviewsUITabHelper::FromWebContents(web_contents())
+      ->ReloadWithoutPreviews(previews::PreviewsType::DEFER_ALL_SCRIPT);
+  base::RunLoop().RunUntilIdle();
+
+  ui::PageTransition transition_type = web_contents()
+                                           ->GetController()
+                                           .GetLastCommittedEntry()
+                                           ->GetTransitionType();
+  EXPECT_TRUE(transition_type & ui::PAGE_TRANSITION_RELOAD);
+}
+
+TEST_F(PreviewsUITabHelperUnitTest, TestInfoBarShownOnlyWhenNotSeen) {
+  data_reduction_proxy::DataReductionProxySettings::
+      SetDataSaverEnabledForTesting(profile()->GetPrefs(), true);
+
+  PreviewsService* previews_service = PreviewsServiceFactory::GetForProfile(
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
+
+  PreviewsHTTPSNotificationInfoBarDecider* decider =
+      previews_service->previews_https_notification_infobar_decider();
+
+  EXPECT_TRUE(decider->NeedsToNotifyUser());
+
+  GURL test_url("https://tribbles.com");
+  content::WebContentsTester::For(web_contents())->NavigateAndCommit(test_url);
+  EXPECT_FALSE(decider->NeedsToNotifyUser());
 }

@@ -6,6 +6,7 @@
 
 #include "base/strings/sys_string_conversions.h"
 #include "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/ui/commands/snackbar_commands.h"
 #import "ios/chrome/browser/ui/translate/translate_notification_delegate.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/third_party/material_components_ios/src/components/Snackbar/src/MaterialSnackbar.h"
@@ -25,7 +26,22 @@ NSString* const kTranslateNotificationSnackbarCategory =
 
 }  // namespace
 
+@interface TranslateNotificationPresenter ()
+
+// The dispatcher used by this Object.
+@property(nonatomic, weak) id<SnackbarCommands> dispatcher;
+
+@end
+
 @implementation TranslateNotificationPresenter
+
+- (instancetype)initWithDispatcher:(id<SnackbarCommands>)dispatcher {
+  self = [super init];
+  if (self) {
+    _dispatcher = dispatcher;
+  }
+  return self;
+}
 
 #pragma mark - TranslateNotificationHandler
 
@@ -108,7 +124,7 @@ NSString* const kTranslateNotificationSnackbarCategory =
   message.completionHandler = completionHandler;
   message.category = kTranslateNotificationSnackbarCategory;
   TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
-  [MDCSnackbarManager showMessage:message];
+  [self.dispatcher showSnackbarMessage:message];
 }
 
 @end

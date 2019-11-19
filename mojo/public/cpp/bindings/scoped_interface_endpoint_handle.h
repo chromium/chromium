@@ -109,8 +109,8 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) ScopedInterfaceEndpointHandle {
   //     asssociation, the return value of the getter will initially be null,
   //     change to non-null when the handle is associated, and remain unchanged
   //     ever since.
-  base::Callback<AssociatedGroupController*()> CreateGroupControllerGetter()
-      const;
+  base::RepeatingCallback<AssociatedGroupController*()>
+  CreateGroupControllerGetter() const;
 
   scoped_refptr<State> state_;
 

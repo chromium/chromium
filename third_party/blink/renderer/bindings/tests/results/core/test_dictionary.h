@@ -30,7 +30,6 @@
 #include "third_party/blink/renderer/core/testing/internal_dictionary.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
-#include "third_party/blink/renderer/platform/bindings/trace_wrapper_member.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -50,11 +49,11 @@ class CORE_EXPORT TestDictionary : public IDLDictionaryBase {
   virtual ~TestDictionary();
 
   bool hasAnyInRecordMember() const { return has_any_in_record_member_; }
-  const Vector<std::pair<String, ScriptValue>>& anyInRecordMember() const {
+  const HeapVector<std::pair<String, ScriptValue>>& anyInRecordMember() const {
     DCHECK(has_any_in_record_member_);
     return any_in_record_member_;
   }
-  void setAnyInRecordMember(const Vector<std::pair<String, ScriptValue>>&);
+  void setAnyInRecordMember(const HeapVector<std::pair<String, ScriptValue>>&);
 
   bool hasAnyMember() const { return !(any_member_.IsEmpty() || any_member_.IsUndefined()); }
   ScriptValue anyMember() const {
@@ -493,12 +492,12 @@ class CORE_EXPORT TestDictionary : public IDLDictionaryBase {
   bool has_union_or_null_sequence_member_ = false;
   bool has_unrestricted_double_member_ = false;
 
-  Vector<std::pair<String, ScriptValue>> any_in_record_member_;
+  HeapVector<std::pair<String, ScriptValue>> any_in_record_member_;
   ScriptValue any_member_;
   int32_t applicable_to_type_long_member_;
   String applicable_to_type_string_member_;
   bool boolean_member_;
-  TraceWrapperMember<V8VoidCallbackFunction> callback_function_member_;
+  Member<V8VoidCallbackFunction> callback_function_member_;
   bool create_member_;
   Dictionary dictionary_member_;
   String dom_string_treat_null_as_empty_string_member_;
@@ -526,7 +525,7 @@ class CORE_EXPORT TestDictionary : public IDLDictionaryBase {
   bool origin_trial_second_member_;
   DoubleOrString other_double_or_string_member_;
   Vector<std::pair<String, int8_t>> record_member_;
-  TraceWrapperMember<V8VoidCallbackFunction> required_callback_function_member_;
+  Member<V8VoidCallbackFunction> required_callback_function_member_;
   double restricted_double_member_;
   bool runtime_member_;
   bool runtime_second_member_;
@@ -543,7 +542,7 @@ class CORE_EXPORT TestDictionary : public IDLDictionaryBase {
   Member<TestInterfaceImplementation> test_interface_or_null_member_;
   HeapVector<Member<TestInterfaceImplementation>> test_interface_sequence_member_;
   HeapVector<Member<TestObject>> test_object_sequence_member_;
-  TraceWrapperMember<V8TreatNonObjectAsNullVoidFunction> treat_non_null_obj_member_;
+  Member<V8TreatNonObjectAsNullVoidFunction> treat_non_null_obj_member_;
   Vector<String> treat_null_as_string_sequence_member_;
   Member<DOMUint8Array> uint8_array_member_;
   HeapVector<std::pair<String, LongOrBoolean>> union_in_record_member_;

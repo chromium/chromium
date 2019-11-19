@@ -111,7 +111,7 @@ class MockInputApi(object):
     return found_in_white_list
 
   def LocalPaths(self):
-    return self.files
+    return [file.LocalPath() for file in self.files]
 
   def PresubmitLocalPath(self):
     return self.presubmit_local_path
@@ -219,6 +219,10 @@ class MockFile(object):
   def __len__(self):
     """os.path.basename is called on MockFile so we need a len method."""
     return len(self._local_path)
+
+  def replace(self, altsep, sep):
+    """os.path.basename is called on MockFile so we need a replace method."""
+    return self._local_path.replace(altsep, sep)
 
 
 class MockAffectedFile(MockFile):

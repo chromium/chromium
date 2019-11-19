@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -15,7 +16,7 @@ void InstallOriginTrialFeaturesDefault(
     v8::Local<v8::Object> prototype_object,
     v8::Local<v8::Function> interface_object) {}
 
-void InstallPendingOriginTrialFeatureDefault(const String& feature,
+void InstallPendingOriginTrialFeatureDefault(OriginTrialFeature feature,
                                              const ScriptState* script_state) {}
 
 namespace {
@@ -56,7 +57,7 @@ void InstallOriginTrialFeatures(const WrapperTypeInfo* type,
       type, script_state, prototype_object, interface_object);
 }
 
-void InstallPendingOriginTrialFeature(const String& feature,
+void InstallPendingOriginTrialFeature(OriginTrialFeature feature,
                                       const ScriptState* script_state) {
   DCHECK(script_state);
   DCHECK(script_state->GetContext() ==

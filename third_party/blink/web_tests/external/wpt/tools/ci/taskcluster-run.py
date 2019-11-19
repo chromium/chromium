@@ -19,6 +19,12 @@ def find_wptreport(args):
     return parser.parse_known_args(args)[0].log_wptreport
 
 
+def find_wptscreenshot(args):
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--log-wptscreenshot', action='store')
+    return parser.parse_known_args(args)[0].log_wptscreenshot
+
+
 def gzip_file(filename, delete_original=True):
     with open(filename, 'rb') as f_in:
         with gzip.open('%s.gz' % filename, 'wb') as f_out:
@@ -28,7 +34,7 @@ def gzip_file(filename, delete_original=True):
 
 
 def main(product, commit_range, wpt_args):
-    """Invoke the `wpt run` command according to the needs of the TaskCluster
+    """Invoke the `wpt run` command according to the needs of the Taskcluster
     continuous integration service."""
 
     logger = logging.getLogger("tc-run")
@@ -50,8 +56,8 @@ def main(product, commit_range, wpt_args):
         logger.info("Running all tests")
 
     wpt_args += [
-        "--log-tbpl-level=info",
-        "--log-tbpl=-",
+        "--log-mach-level=info",
+        "--log-mach=-",
         "-y",
         "--no-pause",
         "--no-restart-on-unexpected",
@@ -64,14 +70,16 @@ def main(product, commit_range, wpt_args):
     command = ["python", "./wpt", "run"] + wpt_args + [product]
 
     logger.info("Executing command: %s" % " ".join(command))
-
-    retcode = subprocess.call(command)
+    retcode = subprocess.call(command, env=dict(os.environ, TERM="dumb"))
     if retcode != 0:
         sys.exit(retcode)
 
     wptreport = find_wptreport(wpt_args)
     if wptreport:
         gzip_file(wptreport)
+    wptscreenshot = find_wptscreenshot(wpt_args)
+    if wptscreenshot:
+        gzip_file(wptscreenshot)
 
 
 if __name__ == "__main__":

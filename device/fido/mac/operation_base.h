@@ -45,7 +45,7 @@ class API_AVAILABLE(macosx(10.12.2)) OperationBase : public Operation {
   // Subclasses must call Init() at the beginning of Run().
   bool Init() {
     base::Optional<std::string> encoded_rp_id =
-        CredentialMetadata::EncodeRpId(metadata_secret(), RpId());
+        EncodeRpId(metadata_secret(), RpId());
     if (!encoded_rp_id)
       return false;
 

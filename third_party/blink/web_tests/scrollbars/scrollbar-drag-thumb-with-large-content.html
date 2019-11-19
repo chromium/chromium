@@ -46,8 +46,13 @@
                 eventSender.mouseMoveTo(0, 145);
                 eventSender.mouseUp();
             }
-            if (window.testRunner)
-                document.getElementById("result").innerText = container.scrollLeft == 0 ? "PASS" : "FAIL";
+            requestAnimationFrame(function() {
+              if (window.testRunner) {
+                  document.getElementById("result").innerText = container.scrollLeft == 0 ? "PASS" : "FAIL";
+                  testRunner.notifyDone();
+              }
+            });
+            testRunner.waitUntilDone();
         </script>
     </body>
 </html>

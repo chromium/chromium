@@ -3,7 +3,9 @@
 # found in the LICENSE file.
 """Common code generator for command buffers."""
 
+import errno
 import itertools
+import os
 import os.path
 import re
 import platform
@@ -574,25 +576,23 @@ _STATE_INFO = {
         'name': 'scissor_x',
         'type': 'GLint',
         'default': '0',
-        'expected': 'kViewportX',
       },
       {
         'name': 'scissor_y',
         'type': 'GLint',
         'default': '0',
-        'expected': 'kViewportY',
       },
       {
         'name': 'scissor_width',
         'type': 'GLsizei',
         'default': '1',
-        'expected': 'kViewportWidth',
+        'expected': 'initial_size.width()',
       },
       {
         'name': 'scissor_height',
         'type': 'GLsizei',
         'default': '1',
-        'expected': 'kViewportHeight',
+        'expected': 'initial_size.height()',
       },
     ],
   },
@@ -606,25 +606,23 @@ _STATE_INFO = {
         'name': 'viewport_x',
         'type': 'GLint',
         'default': '0',
-        'expected': 'kViewportX',
       },
       {
         'name': 'viewport_y',
         'type': 'GLint',
         'default': '0',
-        'expected': 'kViewportY',
       },
       {
         'name': 'viewport_width',
         'type': 'GLsizei',
         'default': '1',
-        'expected': 'kViewportWidth',
+        'expected': 'initial_size.width()',
       },
       {
         'name': 'viewport_height',
         'type': 'GLsizei',
         'default': '1',
-        'expected': 'kViewportHeight',
+        'expected': 'initial_size.height()',
       },
     ],
   },
@@ -778,7 +776,7 @@ def CachedStateName(item):
     return 'cached_' + item['name']
   return item['name']
 
-def GuardState(state, operation):
+def GuardState(state, operation, feature_info):
   if 'manual' in state:
     assert state['manual']
     return ""
@@ -787,11 +785,11 @@ def GuardState(state, operation):
   result_end = []
   if 'es3' in state:
     assert state['es3']
-    result.append("  if (feature_info_->IsES3Capable()) {\n");
+    result.append("  if (%s->IsES3Capable()) {\n" % feature_info);
     result_end.append("  }\n")
   if 'extension_flag' in state:
-    result.append("  if (feature_info_->feature_flags().%s) {\n  " %
-                     (state['extension_flag']))
+    result.append("  if (%s->feature_flags().%s) {\n  " %
+                     (feature_info, state['extension_flag']))
     result_end.append("  }\n")
   if 'gl_version_flag' in state:
     name = state['gl_version_flag']
@@ -799,8 +797,8 @@ def GuardState(state, operation):
     if name[0] == '!':
       inverted = '!'
       name = name[1:]
-    result.append("  if (%sfeature_info_->gl_version_info().%s) {\n" %
-                      (inverted, name))
+    result.append("  if (%s%s->gl_version_info().%s) {\n" %
+                      (inverted, feature_info, name))
     result_end.append("  }\n")
 
   result.append(operation)
@@ -881,9 +879,14 @@ class CWriter(object):
   """
   def __init__(self, filename, year):
     self.filename = filename
-    self._file = open(filename, 'wb')
     self._ENTER_MSG = _LICENSE % year + _DO_NOT_EDIT_WARNING % _lower_prefix
     self._EXIT_MSG = ""
+    try:
+      os.makedirs(os.path.dirname(filename))
+    except OSError as e:
+      if e.errno == errno.EEXIST:
+        pass
+    self._file = open(filename, 'wb')
 
   def __enter__(self):
     self._file.write(self._ENTER_MSG)
@@ -912,13 +915,8 @@ class CHeaderWriter(CWriter):
 
   def _get_guard(self):
     non_alnum_re = re.compile(r'[^a-zA-Z0-9]')
-    base = os.path.abspath(self.filename)
-    while os.path.basename(base) != 'src':
-      new_base = os.path.dirname(base)
-      assert new_base != base  # Prevent infinite loop.
-      base = new_base
-    hpath = os.path.relpath(self.filename, base)
-    return non_alnum_re.sub('_', hpath).upper() + '_'
+    assert self.filename.startswith("gpu/")
+    return non_alnum_re.sub('_', self.filename).upper() + '_'
 
 
 class TypeHandler(object):
@@ -1483,8 +1481,8 @@ TEST_P(%(test_name)s, %(name)sInvalidArgs%(arg_index)d_%(value_index)d) {
     args = func.GetOriginalArgs()
     arg_string = ", ".join(
         ["%s /* %s */" % (arg.type, arg.name) for arg in args])
-    f.write("%s GLES2InterfaceStub::%s(%s) {\n" %
-               (func.return_type, func.original_name, arg_string))
+    f.write("%s %sInterfaceStub::%s(%s) {\n" %
+               (func.return_type, _prefix, func.original_name, arg_string))
     if func.return_type != "void":
       f.write("  return 0;\n")
     f.write("}\n")
@@ -1866,7 +1864,7 @@ class StateSetNamedParameter(TypeHandler):
       if not func.GetInfo("no_gl"):
         operation = "        %s(%s);\n" % \
                     (func.GetGLFunctionName(), func.MakeOriginalArgString(""))
-        f.write(GuardState(state, operation))
+        f.write(GuardState(state, operation, "feature_info_"))
       f.write("      }\n")
       f.write("      break;\n")
     f.write("    default:\n")
@@ -1896,15 +1894,18 @@ class CustomHandler(TypeHandler):
 
   def WriteServiceImplementation(self, func, f):
     """Overrriden from TypeHandler."""
-    pass
+    if func.IsES31():
+      TypeHandler.WriteServiceImplementation(self, func, f)
 
   def WriteImmediateServiceImplementation(self, func, f):
     """Overrriden from TypeHandler."""
-    pass
+    if func.IsES31():
+      TypeHandler.WriteImmediateServiceImplementation(self, func, f)
 
   def WriteBucketServiceImplementation(self, func, f):
     """Overrriden from TypeHandler."""
-    pass
+    if func.IsES31():
+      TypeHandler.WriteBucketServiceImplementation(self, func, f)
 
   def WritePassthroughServiceImplementation(self, func, f):
     """Overrriden from TypeHandler."""
@@ -2618,7 +2619,7 @@ class DeleteHandler(TypeHandler):
 
   def WriteServiceImplementation(self, func, f):
     """Overrriden from TypeHandler."""
-    if func.IsES3():
+    if func.IsES3() or func.IsES31():
       TypeHandler.WriteServiceImplementation(self, func, f)
     # HandleDeleteShader and HandleDeleteProgram are manually written.
 
@@ -4737,7 +4738,8 @@ TEST_P(%(test_name)s, %(name)sInvalidArgs) {
 
   def WriteServiceImplementation(self, func, f):
     """Overrriden from TypeHandler."""
-    pass
+    if func.IsES31():
+      TypeHandler.WriteServiceImplementation(self, func, f)
 
   def WritePassthroughServiceImplementation(self, func, f):
     """Overrriden from TypeHandler."""
@@ -6339,9 +6341,11 @@ class GLGenerator(object):
   _comment_re = re.compile(r'^//.*$')
   _function_re = re.compile(r'^GL_APICALL(.*?)GL_APIENTRY (.*?) \((.*?)\);$')
 
-  def __init__(self, verbose, year, function_info, named_type_info):
+  def __init__(self, verbose, year, function_info, named_type_info,
+               chromium_root_dir):
     self.original_functions = []
     self.functions = []
+    self.chromium_root_dir = chromium_root_dir
     self.verbose = verbose
     self.year = year
     self.errors = 0
@@ -6411,6 +6415,7 @@ class GLGenerator(object):
 
   def ParseGLH(self, filename):
     """Parses the cmd_buffer_functions.txt file and extracts the functions"""
+    filename = os.path.join(self.chromium_root_dir, filename)
     with open(filename, "r") as f:
       functions = f.read()
     for line in functions.splitlines():
@@ -6795,7 +6800,8 @@ void ContextState::InitState(const ContextState *prev_state) const {
               if test_prev:
                 operation.append("  }")
 
-              guarded_operation = GuardState(item, ''.join(operation))
+              guarded_operation = GuardState(item, ''.join(operation),
+                                             "feature_info_")
               f.write(guarded_operation)
           else:
             if 'extension_flag' in state:
@@ -6993,14 +6999,16 @@ namespace gles2 {
             })
       self.generated_cpp_filenames.append(filename)
 
-    comment = ("// It is included by %s_cmd_decoder_unittest_base.cc\n"
-               % _lower_prefix)
-    filename = filename_pattern % 0
+
+  def WriteServiceContextStateTestHelpers(self, filename):
+    comment = "// It is included by context_state_test_helpers.cc\n"
     with CHeaderWriter(filename, self.year, comment) as f:
       if self.capability_flags:
         f.write(
-"""void %sDecoderTestBase::SetupInitCapabilitiesExpectations(
-      bool es3_capable) {""" % _prefix)
+            """void ContextStateTestHelpers::SetupInitCapabilitiesExpectations(
+    MockGL* gl,
+    gles2::FeatureInfo* feature_info) {
+""")
         for capability in self.capability_flags:
           capability_no_init = 'no_init' in capability and \
               capability['no_init'] == True
@@ -7010,28 +7018,30 @@ namespace gles2 {
           if capability_es3:
             continue
           if 'extension_flag' in capability:
-            f.write("  if (feature_info()->feature_flags().%s) {\n" %
+            f.write("  if (feature_info->feature_flags().%s) {\n" %
                      capability['extension_flag'])
             f.write("  ")
-          f.write("  ExpectEnableDisable(GL_%s, %s);\n" %
+          f.write("  ExpectEnableDisable(gl, GL_%s, %s);\n" %
                   (capability['name'].upper(),
                    ('false', 'true')['default' in capability]))
           if 'extension_flag' in capability:
             f.write("  }")
-        f.write("  if (es3_capable) {")
+        f.write("  if (feature_info->IsES3Capable()) {")
         for capability in self.capability_flags:
           capability_es3 = 'es3' in capability and capability['es3'] == True
           if capability_es3:
-            f.write("    ExpectEnableDisable(GL_%s, %s);\n" %
+            f.write("    ExpectEnableDisable(gl, GL_%s, %s);\n" %
                        (capability['name'].upper(),
                         ('false', 'true')['default' in capability]))
         f.write("""  }
 }
 """)
       f.write("""
-void %sDecoderTestBase::SetupInitStateExpectations(bool es3_capable) {
-  auto* feature_info_ = feature_info();
-""" % _prefix)
+void ContextStateTestHelpers::SetupInitStateExpectations(
+    MockGL* gl,
+    gles2::FeatureInfo* feature_info,
+    const gfx::Size& initial_size) {
+""")
       # We need to sort the keys so the expectations match
       for state_name in sorted(_STATE_INFO.keys()):
         state = _STATE_INFO[state_name]
@@ -7046,7 +7056,7 @@ void %sDecoderTestBase::SetupInitStateExpectations(bool es3_capable) {
               else:
                 args.append(item['default'])
             f.write(
-                "  EXPECT_CALL(*gl_, %s(%s, %s))\n" %
+                "  EXPECT_CALL(*gl, %s(%s, %s))\n" %
                 (state['func'], ('GL_FRONT', 'GL_BACK')[ndx],
                  ", ".join(args)))
             f.write("      .Times(1)\n")
@@ -7060,7 +7070,7 @@ void %sDecoderTestBase::SetupInitStateExpectations(bool es3_capable) {
 
             operation = []
             operation.append(
-                             "  EXPECT_CALL(*gl_, %s(%s, %s))\n" %
+                             "  EXPECT_CALL(*gl, %s(%s, %s))\n" %
                              (state['func'],
                               (item['enum_set']
                                   if 'enum_set' in item else item['enum']),
@@ -7068,11 +7078,12 @@ void %sDecoderTestBase::SetupInitStateExpectations(bool es3_capable) {
             operation.append("      .Times(1)\n")
             operation.append("      .RetiresOnSaturation();\n")
 
-            guarded_operation = GuardState(item, ''.join(operation))
+            guarded_operation = GuardState(item, ''.join(operation),
+                                           "feature_info")
             f.write(guarded_operation)
         elif 'no_init' not in state:
           if 'extension_flag' in state:
-            f.write("  if (feature_info()->feature_flags().%s) {\n" %
+            f.write("  if (feature_info->feature_flags().%s) {\n" %
                        state['extension_flag'])
             f.write("  ")
           args = []
@@ -7084,16 +7095,16 @@ void %sDecoderTestBase::SetupInitStateExpectations(bool es3_capable) {
           # TODO: Currently we do not check array values.
           args = ["_" if isinstance(arg, list) else arg for arg in args]
           if 'custom_function' in state:
-            f.write("  SetupInitStateManualExpectationsFor%s(%s);\n" %
+            f.write("  SetupInitStateManualExpectationsFor%s(gl, %s);\n" %
                        (state['func'], ", ".join(args)))
           else:
-            f.write("  EXPECT_CALL(*gl_, %s(%s))\n" %
+            f.write("  EXPECT_CALL(*gl, %s(%s))\n" %
                        (state['func'], ", ".join(args)))
             f.write("      .Times(1)\n")
             f.write("      .RetiresOnSaturation();\n")
           if 'extension_flag' in state:
             f.write("  }\n")
-      f.write("  SetupInitStateManualExpectations(es3_capable);\n")
+      f.write("  SetupInitStateManualExpectations(gl, feature_info);\n")
       f.write("}\n")
     self.generated_cpp_filenames.append(filename)
 
@@ -7384,6 +7395,7 @@ extern const NameToFunc g_gles2_function_table[] = {
                   'third_party/khronos/GLES3/gl31.h',
                   'gpu/GLES2/gl2chromium.h',
                   'gpu/GLES2/gl2extchromium.h']:
+      fname = os.path.join(self.chromium_root_dir, fname)
       lines = open(fname).readlines()
       for line in lines:
         m = enum_re.match(line)
@@ -7615,9 +7627,13 @@ const size_t %(p)sUtil::enum_to_string_table_len_ =
     self.generated_cpp_filenames.append(filename)
 
 
-def Format(generated_files):
+def Format(generated_files, output_dir, chromium_root_dir):
+  """Format generated_files relative to output_dir using clang-format."""
   formatter = "third_party/depot_tools/clang-format"
   if platform.system() == "Windows":
     formatter = "third_party\\depot_tools\\clang-format.bat"
+  formatter = os.path.join(chromium_root_dir, formatter)
+  generated_files = map(lambda filename: os.path.join(output_dir, filename),
+                        generated_files)
   for filename in generated_files:
-    call([formatter, "-i", "-style=chromium", filename])
+    call([formatter, "-i", "-style=chromium", filename], cwd=chromium_root_dir)

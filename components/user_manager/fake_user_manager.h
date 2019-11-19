@@ -6,6 +6,7 @@
 #define COMPONENTS_USER_MANAGER_FAKE_USER_MANAGER_H_
 
 #include <map>
+#include <set>
 #include <string>
 
 #include "base/macros.h"
@@ -24,17 +25,27 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerBase {
 
   // Create and add a new user. Created user is not affiliated with the domain,
   // that owns the device.
-  virtual const user_manager::User* AddUser(const AccountId& account_id);
+  const User* AddUser(const AccountId& account_id);
+  const User* AddChildUser(const AccountId& account_id);
+  const User* AddGuestUser(const AccountId& account_id);
 
   // The same as AddUser() but allows to specify user affiliation with the
   // domain, that owns the device.
-  virtual const user_manager::User* AddUserWithAffiliation(
-      const AccountId& account_id,
-      bool is_affiliated);
+  const User* AddUserWithAffiliation(const AccountId& account_id,
+                                     bool is_affiliated);
+
+  // Create and add a new public account. Created user is not affiliated with
+  // the domain, that owns the device.
+  virtual const user_manager::User* AddPublicAccountUser(
+      const AccountId& account_id);
+
+  void set_local_state(PrefService* local_state) { local_state_ = local_state; }
 
   // UserManager overrides.
-  const user_manager::UserList& GetUsers() const override;
-  user_manager::UserList GetUsersAllowedForMultiProfile() const override;
+  const UserList& GetUsers() const override;
+  UserList GetUsersAllowedForMultiProfile() const override;
+  void UpdateUserAccountData(const AccountId& account_id,
+                             const UserAccountData& account_data) override;
 
   // Set the user as logged in.
   void UserLoggedIn(const AccountId& account_id,
@@ -42,8 +53,8 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerBase {
                     bool browser_restart,
                     bool is_child) override;
 
-  const user_manager::User* GetActiveUser() const override;
-  user_manager::User* GetActiveUser() override;
+  const User* GetActiveUser() const override;
+  User* GetActiveUser() override;
   void SwitchActiveUser(const AccountId& account_id) override;
   void SaveUserDisplayName(const AccountId& account_id,
                            const base::string16& display_name) override;
@@ -54,30 +65,26 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerBase {
   bool HasBrowserRestarted() const override;
 
   // Not implemented.
-  void UpdateUserAccountData(const AccountId& account_id,
-                             const UserAccountData& account_data) override {}
   void Shutdown() override {}
-  const user_manager::UserList& GetLRULoggedInUsers() const override;
-  user_manager::UserList GetUnlockUsers() const override;
+  const UserList& GetLRULoggedInUsers() const override;
+  UserList GetUnlockUsers() const override;
   const AccountId& GetOwnerAccountId() const override;
   void OnSessionStarted() override {}
   void RemoveUser(const AccountId& account_id,
-                  user_manager::RemoveUserDelegate* delegate) override {}
+                  RemoveUserDelegate* delegate) override {}
   void RemoveUserFromList(const AccountId& account_id) override;
   bool IsKnownUser(const AccountId& account_id) const override;
-  const user_manager::User* FindUser(
-      const AccountId& account_id) const override;
-  user_manager::User* FindUserAndModify(const AccountId& account_id) override;
-  const user_manager::User* GetPrimaryUser() const override;
-  void SaveUserOAuthStatus(
-      const AccountId& account_id,
-      user_manager::User::OAuthTokenStatus oauth_token_status) override {}
+  const User* FindUser(const AccountId& account_id) const override;
+  User* FindUserAndModify(const AccountId& account_id) override;
+  const User* GetPrimaryUser() const override;
+  void SaveUserOAuthStatus(const AccountId& account_id,
+                           User::OAuthTokenStatus oauth_token_status) override {
+  }
   void SaveForceOnlineSignin(const AccountId& account_id,
                              bool force_online_signin) override {}
   base::string16 GetUserDisplayName(const AccountId& account_id) const override;
   void SaveUserDisplayEmail(const AccountId& account_id,
                             const std::string& display_email) override {}
-  std::string GetUserDisplayEmail(const AccountId& account_id) const override;
   bool IsCurrentUserOwner() const override;
   bool IsCurrentUserNew() const override;
   bool IsCurrentUserNonCryptohomeDataEphemeral() const override;
@@ -89,6 +96,8 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerBase {
   bool IsLoggedInAsSupervisedUser() const override;
   bool IsLoggedInAsKioskApp() const override;
   bool IsLoggedInAsArcKioskApp() const override;
+  bool IsLoggedInAsWebKioskApp() const override;
+  bool IsLoggedInAsAnyKioskApp() const override;
   bool IsLoggedInAsStub() const override;
   bool IsUserNonCryptohomeDataEphemeral(
       const AccountId& account_id) const override;
@@ -99,10 +108,10 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerBase {
   void NotifyLocalStateChanged() override {}
   bool AreSupervisedUsersAllowed() const override;
   bool IsGuestSessionAllowed() const override;
-  bool IsGaiaUserAllowed(const user_manager::User& user) const override;
-  bool IsUserAllowed(const user_manager::User& user) const override;
-  void UpdateLoginState(const user_manager::User* active_user,
-                        const user_manager::User* primary_user,
+  bool IsGaiaUserAllowed(const User& user) const override;
+  bool IsUserAllowed(const User& user) const override;
+  void UpdateLoginState(const User* active_user,
+                        const User* primary_user,
                         bool is_current_user_owner) const override;
   bool GetPlatformKnownUserId(const std::string& user_email,
                               const std::string& gaia_id,
@@ -123,7 +132,7 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerBase {
   PrefService* GetLocalState() const override;
   void HandleUserOAuthTokenStatusChange(
       const AccountId& account_id,
-      user_manager::User::OAuthTokenStatus status) const override {}
+      User::OAuthTokenStatus status) const override {}
   bool IsEnterpriseManaged() const override;
   void LoadDeviceLocalAccounts(
       std::set<AccountId>* device_local_accounts_set) override {}
@@ -134,14 +143,18 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerBase {
   bool IsDeviceLocalAccountMarkedForRemoval(
       const AccountId& account_id) const override;
   void DemoAccountLoggedIn() override {}
-  void KioskAppLoggedIn(user_manager::User* user) override {}
-  void ArcKioskAppLoggedIn(user_manager::User* user) override {}
-  void PublicAccountUserLoggedIn(user_manager::User* user) override {}
+  void KioskAppLoggedIn(User* user) override {}
+  void ArcKioskAppLoggedIn(User* user) override {}
+  void WebKioskAppLoggedIn(User* user) override {}
+  void PublicAccountUserLoggedIn(User* user) override {}
   void SupervisedUserLoggedIn(const AccountId& account_id) override {}
   void OnUserRemoved(const AccountId& account_id) override {}
 
  protected:
-  user_manager::User* primary_user_;
+  User* primary_user_;
+
+  // Can be set by set_local_state().
+  PrefService* local_state_ = nullptr;
 
   // If set this is the active user. If empty, the first created user is the
   // active user.
@@ -149,7 +162,7 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerBase {
 
  private:
   // We use this internal function for const-correctness.
-  user_manager::User* GetActiveUserInternal() const;
+  User* GetActiveUserInternal() const;
 
   // stub, always empty.
   AccountId owner_account_id_ = EmptyAccountId();

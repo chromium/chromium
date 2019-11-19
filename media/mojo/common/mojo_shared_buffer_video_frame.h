@@ -48,7 +48,7 @@ class MojoSharedBufferVideoFrame : public VideoFrame {
   // Creates a MojoSharedBufferVideoFrame that uses the memory in |handle|.
   // This will take ownership of |handle|, so the caller can no longer use it.
   // |mojo_shared_buffer_done_cb|, if not null, is called on destruction,
-  // and is passed ownership of |handle|.
+  // and is passed ownership of |handle|. |handle| must be writable.
   static scoped_refptr<MojoSharedBufferVideoFrame> Create(
       VideoPixelFormat format,
       const gfx::Size& coded_size,

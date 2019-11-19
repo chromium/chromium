@@ -1,0 +1,11 @@
+document
+++group
+++++menuitemradio SelectionItem.IsSelected=true
+++++description Name='Radio0 '
+++++menuitemradio SelectionItem.IsSelected=false
+++++description Name='Radio1 '
+++++radio Name='Radio2' SelectionItem.IsSelected=false
+++menu Selection.CanSelectMultiple=false Selection.IsSelectionRequired=false
+++++radio Name='Radio3' SelectionItem.IsSelected=false
+++++menuitemradio SelectionItem.IsSelected=false
+++++menuitemradio SelectionItem.IsSelected=true

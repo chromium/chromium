@@ -13,7 +13,7 @@
 #import "ios/chrome/browser/download/google_drive_app_util.h"
 #import "ios/chrome/test/fakes/fake_download_manager_consumer.h"
 #import "ios/web/public/test/fakes/fake_download_task.h"
-#include "ios/web/public/test/test_web_thread_bundle.h"
+#include "ios/web/public/test/web_task_environment.h"
 #include "net/base/net_errors.h"
 #include "net/url_request/url_fetcher_response_writer.h"
 #include "testing/gtest_mac.h"
@@ -55,7 +55,7 @@ class DownloadManagerMediatorTest : public PlatformTest {
   id application_;
 
  private:
-  web::TestWebThreadBundle thread_bundle_;
+  web::WebTaskEnvironment task_environment_;
   web::FakeDownloadTask task_;
 };
 

@@ -1,0 +1,34 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Next MinVersion: 1
+
+module arc.mojom;
+
+// These permissions map to ones listed at
+// https://developer.android.com/reference/android/Manifest.permission
+[Extensible]
+enum AppPermission {
+  CAMERA          = 0, // android.manifest.CAMERA
+  LOCATION        = 1, // android.manifest.ACCESS_FINE_LOCATION or android.manifest.ACCESS_COARSE_LOCATION
+  MICROPHONE      = 2, // android.manifest.RECORD_AUDIO
+  NOTIFICATIONS   = 3, // Not a manifest permission
+  CONTACTS        = 4, // android.manifest.READ_CONTACTS and android.manifest.WRITE_CONTACTS
+  STORAGE         = 5, // android.manifest.WRITE_EXTERNAL_STORAGE and android.manifest.READ_EXTERNAL_STORAGE
+};
+
+struct PermissionState {
+  bool granted;          // If the permission has been granted
+  bool managed;          // If the permission is managed by an enterprise policy
+};
+
+// An interface for Chrome to manipulate app permissions in ARC.
+// Next method ID: 2
+interface AppPermissionsInstance {
+  // Grants |permission| for |package_name|.
+  GrantPermission@0(string package_name, AppPermission permission);
+
+  // Revokes |permission| for |package_name|.
+  RevokePermission@1(string package_name, AppPermission permission);
+};

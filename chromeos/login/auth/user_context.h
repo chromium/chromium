@@ -11,6 +11,7 @@
 #include "base/optional.h"
 #include "chromeos/login/auth/challenge_response_key.h"
 #include "chromeos/login/auth/key.h"
+#include "chromeos/login/auth/saml_password_attributes.h"
 #include "components/account_id/account_id.h"
 #include "components/password_manager/core/browser/password_hash_data.h"
 #include "components/user_manager/user_type.h"
@@ -59,8 +60,7 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) UserContext {
   // its hashed/transformed representation.
   const Key* GetKey() const;
   Key* GetKey();
-  // The plain-text user password. Initialized only on enterprise enrolled
-  // devices. See https://crbug.com/386606.
+  // The plain-text user password. See https://crbug.com/386606.
   const Key* GetPasswordKey() const;
   Key* GetMutablePasswordKey();
   // The challenge-response keys for user authentication. Currently, such keys
@@ -78,6 +78,7 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) UserContext {
   bool IsUsingPin() const;
   bool IsForcingDircrypto() const;
   AuthFlow GetAuthFlow() const;
+  bool IsUsingSamlPrincipalsApi() const;
   user_manager::UserType GetUserType() const;
   const std::string& GetPublicSessionLocale() const;
   const std::string& GetPublicSessionInputMethod() const;
@@ -85,6 +86,8 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) UserContext {
   const std::string& GetGAPSCookie() const;
   const base::Optional<password_manager::PasswordHashData>&
   GetSyncPasswordData() const;
+  const base::Optional<SamlPasswordAttributes>& GetSamlPasswordAttributes()
+      const;
 
   bool HasCredentials() const;
 
@@ -93,6 +96,20 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) UserContext {
 
   void SetAccountId(const AccountId& account_id);
   void SetKey(const Key& key);
+  // Saves the user's plaintext password for possible authentication by system
+  // services:
+  // - To networks. If the user's OpenNetworkConfiguration policy contains a
+  //   ${PASSWORD} variable, then the user's password will be used to
+  //   authenticate to the specified network.
+  // - To Kerberos. If the user's KerberosAccounts policy contains a ${PASSWORD}
+  //   variable, then the user's password will be used to authenticate to the
+  //   specified Kerberos account.
+  // The user's password needs to be saved in memory until the policies can be
+  // examined. When policies come in and none of them contain the ${PASSWORD}
+  // variable, the user's password will be discarded. If at least one contains
+  // the password, it will be sent to the session manager, which will then save
+  // it in a keyring so it can be retrieved by the corresponding services.
+  // More details can be found in https://crbug.com/386606.
   void SetPasswordKey(const Key& key);
   void SetAuthCode(const std::string& auth_code);
   void SetRefreshToken(const std::string& refresh_token);
@@ -102,12 +119,15 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) UserContext {
   void SetIsUsingPin(bool is_using_pin);
   void SetIsForcingDircrypto(bool is_forcing_dircrypto);
   void SetAuthFlow(AuthFlow auth_flow);
+  void SetIsUsingSamlPrincipalsApi(bool is_using_saml_principals_api);
   void SetPublicSessionLocale(const std::string& locale);
   void SetPublicSessionInputMethod(const std::string& input_method);
   void SetDeviceId(const std::string& device_id);
   void SetGAPSCookie(const std::string& gaps_cookie);
   void SetSyncPasswordData(
       const password_manager::PasswordHashData& sync_password_data);
+  void SetSamlPasswordAttributes(
+      const SamlPasswordAttributes& saml_password_attributes);
   void SetIsUnderAdvancedProtection(bool is_under_advanced_protection);
 
   void ClearSecrets();
@@ -125,6 +145,7 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) UserContext {
   bool is_using_pin_ = false;
   bool is_forcing_dircrypto_ = false;
   AuthFlow auth_flow_ = AUTH_FLOW_OFFLINE;
+  bool is_using_saml_principals_api_ = false;
   user_manager::UserType user_type_ = user_manager::USER_TYPE_REGULAR;
   std::string public_session_locale_;
   std::string public_session_input_method_;
@@ -134,6 +155,9 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) UserContext {
 
   // For password reuse detection use.
   base::Optional<password_manager::PasswordHashData> sync_password_data_;
+
+  // Info about the user's SAML password, such as when it will expire.
+  base::Optional<SamlPasswordAttributes> saml_password_attributes_;
 };
 
 }  // namespace chromeos

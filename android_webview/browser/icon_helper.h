@@ -67,7 +67,7 @@ class IconHelper : public content::WebContentsObserver {
 
   Listener* listener_;
 
-  typedef uint32_t MissingFaviconURLHash;
+  using MissingFaviconURLHash = size_t;
   std::unordered_set<MissingFaviconURLHash> missing_favicon_urls_;
 
   DISALLOW_COPY_AND_ASSIGN(IconHelper);

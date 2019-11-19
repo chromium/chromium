@@ -4,6 +4,8 @@
 
 package org.chromium.base;
 
+import androidx.annotation.VisibleForTesting;
+
 /**
  * NonThreadSafe is a helper class used to help verify that methods of a
  * class are called from the same thread.

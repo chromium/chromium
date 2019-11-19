@@ -9,6 +9,7 @@ import android.content.Context;
 
 import com.google.ar.core.ArCoreApk;
 
+import org.chromium.base.StrictModeContext;
 import org.chromium.base.annotations.UsedByReflection;
 import org.chromium.chrome.browser.vr.ArCoreShim.Availability;
 import org.chromium.chrome.browser.vr.ArCoreShim.InstallStatus;
@@ -35,9 +36,13 @@ class ArCoreShimImpl implements ArCoreShim {
 
     @Override
     public @Availability int checkAvailability(Context applicationContext) {
-        ArCoreApk.Availability availability =
-                ArCoreApk.getInstance().checkAvailability(applicationContext);
-        return mapArCoreApkAvailability(availability);
+        // ARCore's checkAvailability reads shared preferences via ArCoreContentProvider, need to
+        // turn off strict mode to allow that.
+        try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
+            ArCoreApk.Availability availability =
+                    ArCoreApk.getInstance().checkAvailability(applicationContext);
+            return mapArCoreApkAvailability(availability);
+        }
     }
 
     private @InstallStatus int mapArCoreApkInstallStatus(ArCoreApk.InstallStatus installStatus) {

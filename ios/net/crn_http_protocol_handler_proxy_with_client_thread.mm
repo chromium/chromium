@@ -194,7 +194,7 @@
   // no-op.
 }
 
-- (void)didRecieveAuthChallenge:(net::AuthChallengeInfo*)authInfo
+- (void)didRecieveAuthChallenge:(const net::AuthChallengeInfo&)authInfo
                   nativeRequest:(const net::URLRequest&)nativeRequest
                        callback:(const network_client::AuthCallback&)callback {
   // If we get this far, authentication has failed.

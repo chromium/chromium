@@ -84,20 +84,13 @@ template("lipo_binary") {
       deps += [ "$_arch_binary_target($_toolchain)" ]
     }
 
-    args = []
-    if (!use_system_xcode) {
-      args += [
-        "--developer_dir",
-        hermetic_xcode_path,
-      ]
-    }
-    args += [
-              "xcrun",
-              "lipo",
-              "-create",
-              "-output",
-              rebase_path("$target_out_dir/$_output_name", root_build_dir),
-            ] + rebase_path(inputs, root_build_dir)
+    args = [
+             "xcrun",
+             "lipo",
+             "-create",
+             "-output",
+             rebase_path("$target_out_dir/$_output_name", root_build_dir),
+           ] + rebase_path(inputs, root_build_dir)
 
     if (enable_dsyms) {
       _dsyms_output_dir = "$root_out_dir/$_output_name.dSYM"
@@ -297,7 +290,6 @@ template("create_signed_bundle") {
     bundle_contents_dir = bundle_root_dir
     bundle_resources_dir = bundle_contents_dir
     bundle_executable_dir = bundle_contents_dir
-    bundle_plugins_dir = "$bundle_contents_dir/PlugIns"
 
     if (!defined(public_deps)) {
       public_deps = []
@@ -352,14 +344,7 @@ template("create_signed_bundle") {
       }
     }
 
-    code_signing_args = []
-    if (!use_system_xcode) {
-      code_signing_args += [
-        "--developer_dir",
-        hermetic_xcode_path,
-      ]
-    }
-    code_signing_args += [
+    code_signing_args = [
       "code-sign-bundle",
       "-t=" + ios_sdk_name,
       "-i=" + ios_code_signing_identity,
@@ -769,18 +754,11 @@ template("ios_app_bundle") {
           _generate_entitlements_output,
         ]
 
-        args = []
-        if (!use_system_xcode) {
-          args += [
-            "--developer_dir",
-            hermetic_xcode_path,
-          ]
-        }
-        args += [
-                  "generate-entitlements",
-                  "-e=" + rebase_path(_entitlements_path, root_build_dir),
-                  "-p=" + rebase_path(_info_plist_path, root_build_dir),
-                ] + rebase_path(outputs, root_build_dir)
+        args = [
+                 "generate-entitlements",
+                 "-e=" + rebase_path(_entitlements_path, root_build_dir),
+                 "-p=" + rebase_path(_info_plist_path, root_build_dir),
+               ] + rebase_path(outputs, root_build_dir)
       }
     }
 
@@ -969,6 +947,51 @@ template("ios_appex_bundle") {
 
 set_defaults("ios_appex_bundle") {
   configs = default_executable_configs
+}
+
+# Template to compile .xib and .storyboard files.
+#
+# Arguments
+#
+#     sources:
+#         list of string, sources to compile
+#
+#     ibtool_flags:
+#         (optional) list of string, additional flags to pass to the ibtool
+template("compile_ib_files") {
+  action_foreach(target_name) {
+    forward_variables_from(invoker,
+                           [
+                             "testonly",
+                             "visibility",
+                           ])
+    assert(defined(invoker.sources),
+           "sources must be specified for $target_name")
+    assert(defined(invoker.output_extension),
+           "output_extension must be specified for $target_name")
+
+    ibtool_flags = []
+    if (defined(invoker.ibtool_flags)) {
+      ibtool_flags = invoker.ibtool_flags
+    }
+
+    _output_extension = invoker.output_extension
+
+    script = "//build/config/ios/compile_ib_files.py"
+    sources = invoker.sources
+    outputs = [
+      "$target_gen_dir/$target_name/{{source_name_part}}.$_output_extension",
+    ]
+    args = [
+      "--input",
+      "{{source}}",
+      "--output",
+      rebase_path(
+          "$target_gen_dir/$target_name/{{source_name_part}}.$_output_extension",
+          root_build_dir),
+    ]
+    args += ibtool_flags
+  }
 }
 
 # Compile a xib or storyboard file and add it to a bundle_data so that it is
@@ -1375,15 +1398,12 @@ template("ios_framework_bundle") {
         # sources, so filter any non-header source files from "sources". It is
         # less error prone that having the developer duplicate the list of all
         # headers in addition to "sources".
-        set_sources_assignment_filter([
-                                        "*.c",
-                                        "*.cc",
-                                        "*.cpp",
-                                        "*.m",
-                                        "*.mm",
-                                      ])
-        sources = invoker.sources
-        set_sources_assignment_filter([])
+        sources = []
+        foreach(_source, invoker.sources) {
+          if (get_path_info(_source, "extension") == "h") {
+            sources += [ _source ]
+          }
+        }
 
         args = [
                  rebase_path(_header_map_filename),
@@ -1661,15 +1681,16 @@ template("ios_xctest_bundle") {
       info_plist = "//build/config/ios/Module-Info.plist"
       executable_name = _output_name
 
-      if (ios_automatically_manage_certs) {
-        # Use a fixed bundle identifier for EarlGrey tests when using Xcode to
-        # manage the certificates as the number of free certs is limited.
-        extra_substitutions = [
-          "MODULE_BUNDLE_ID=gtest.${ios_generic_test_bundle_id_suffix}-module",
-        ]
+      if (defined(invoker.xctest_bundle_principal_class)) {
+        _principal_class = invoker.xctest_bundle_principal_class
       } else {
-        extra_substitutions = [ "MODULE_BUNDLE_ID=gtest.$_output_name" ]
+        # Fall back to a reasonable default value.
+        _principal_class = "NSObject"
       }
+      extra_substitutions = [
+        "XCTEST_BUNDLE_PRINCIPAL_CLASS=${_principal_class}",
+        "MODULE_BUNDLE_ID=gtest.$_output_name",
+      ]
     }
 
     bundle_data(_info_plist_bundle) {
@@ -1757,7 +1778,7 @@ template("ios_xctest_bundle") {
         "$root_out_dir/$_output_name.xctest",
       ]
       outputs = [
-        "{{bundle_plugins_dir}}/$_output_name.xctest",
+        "{{bundle_contents_dir}}/PlugIns/$_output_name.xctest",
       ]
     }
   }
@@ -1784,13 +1805,20 @@ template("ios_xctest_test") {
   _host_target = _target_name
   _host_output = _output_name
 
-  _xctest_shell_source_target = _xctest_target + "shell_source"
-  source_set(_xctest_shell_source_target) {
-    sources = [
-      "//build/config/ios/xctest_shell.mm",
-    ]
+  # Allow invokers to specify their own target for the xctest module, but
+  # fall back to a default (empty) module otherwise.
+  if (defined(invoker.xctest_module_target)) {
+    _xctest_module_target = invoker.xctest_module_target
+  } else {
+    _xctest_module_target_name = _xctest_target + "shell_source"
+    _xctest_module_target = ":$_xctest_module_target_name"
+    source_set(_xctest_module_target_name) {
+      sources = [
+        "//build/config/ios/xctest_shell.mm",
+      ]
 
-    configs += [ "//build/config/ios:xctest_config" ]
+      configs += [ "//build/config/ios:xctest_config" ]
+    }
   }
 
   ios_xctest_bundle(_xctest_target) {
@@ -1800,7 +1828,7 @@ template("ios_xctest_test") {
     xcode_test_application_name = _host_output
 
     deps = [
-      ":$_xctest_shell_source_target",
+      _xctest_module_target,
     ]
   }
 
@@ -1813,22 +1841,15 @@ template("ios_xctest_test") {
 
     if (!defined(invoker.info_plist) && !defined(invoker.info_plist_target)) {
       info_plist = "//build/config/ios/Host-Info.plist"
-      if (ios_automatically_manage_certs) {
-        # Use the same bundle identifier for EarlGrey tests as for unit tests
-        # when managing certificates as the number of free certs is limited.
-        if (!defined(extra_substitutions)) {
-          extra_substitutions = []
-        }
-        extra_substitutions +=
-            [ "EXECUTABLE_NAME=gtest.${ios_generic_test_bundle_id_suffix}" ]
-      }
     }
 
-    # Xcode needs those two framework installed in the application (and signed)
-    # for the XCTest to run, so install them using extra_system_frameworks.
+    # Xcode needs the following frameworks installed in the application (and
+    # signed) for the XCTest to run, so install them using
+    # extra_system_frameworks.
     _ios_platform_library = "$ios_sdk_platform_path/Developer/Library"
     extra_system_frameworks = [
       "$_ios_platform_library/Frameworks/XCTest.framework",
+      "$ios_sdk_platform_path/Developer/Library/PrivateFrameworks/XCTAutomationSupport.framework",
       "$ios_sdk_platform_path/Developer/usr/lib/libXCTestBundleInject.dylib",
     ]
 
@@ -1924,13 +1945,6 @@ template("ios_xcuitest_test_runner_bundle") {
 
     executable_name = _output_name
     info_plist_target = ":$_info_plist_merge_plist"
-
-    if (ios_automatically_manage_certs) {
-      # Use the same bundle identifier for XCUITest tests as for unit tests
-      # when managing certificates as the number of free certs is limited.
-      extra_substitutions =
-          [ "EXECUTABLE_NAME=gtest.${ios_generic_test_bundle_id_suffix}" ]
-    }
   }
 
   bundle_data(_info_plist_bundle) {
@@ -2026,7 +2040,11 @@ template("ios_xcuitest_test") {
 
   _xcuitest_module_output = _xcuitest_target
   ios_xctest_bundle(_xcuitest_module_target) {
-    forward_variables_from(invoker, [ "xcode_test_application_name" ])
+    forward_variables_from(invoker,
+                           [
+                             "xcode_test_application_name",
+                             "xctest_bundle_principal_class",
+                           ])
 
     product_type = _ios_xcode_xcuitest_bundle_id
     host_target = _xcuitest_runner_target

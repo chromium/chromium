@@ -104,13 +104,13 @@ TEST_F(BookmarkIOSUtilsUnitTest, DeleteNodes) {
 
   bookmark_utils_ios::DeleteBookmarks(toDelete, _bookmarkModel);
 
-  EXPECT_EQ(mobileNode->child_count(), 2);
-  const BookmarkNode* child0 = mobileNode->GetChild(0);
+  EXPECT_EQ(2u, mobileNode->children().size());
+  const BookmarkNode* child0 = mobileNode->children()[0].get();
   EXPECT_EQ(child0, f1);
-  EXPECT_EQ(child0->child_count(), 3);
-  const BookmarkNode* child1 = mobileNode->GetChild(1);
+  EXPECT_EQ(3u, child0->children().size());
+  const BookmarkNode* child1 = mobileNode->children()[1].get();
   EXPECT_EQ(child1, b);
-  EXPECT_EQ(child1->child_count(), 0);
+  EXPECT_EQ(0u, child1->children().size());
 }
 
 TEST_F(BookmarkIOSUtilsUnitTest, MoveNodes) {
@@ -133,13 +133,13 @@ TEST_F(BookmarkIOSUtilsUnitTest, MoveNodes) {
 
   bookmark_utils_ios::MoveBookmarks(toMove, _bookmarkModel, f1);
 
-  EXPECT_EQ(mobileNode->child_count(), 2);
-  const BookmarkNode* child0 = mobileNode->GetChild(0);
+  EXPECT_EQ(2u, mobileNode->children().size());
+  const BookmarkNode* child0 = mobileNode->children()[0].get();
   EXPECT_EQ(child0, f1);
-  EXPECT_EQ(child0->child_count(), 6);
-  const BookmarkNode* child1 = mobileNode->GetChild(1);
+  EXPECT_EQ(6u, child0->children().size());
+  const BookmarkNode* child1 = mobileNode->children()[1].get();
   EXPECT_EQ(child1, b);
-  EXPECT_EQ(child1->child_count(), 0);
+  EXPECT_EQ(0u, child1->children().size());
 }
 
 TEST_F(BookmarkIOSUtilsUnitTest, TestDefaultMoveFolder) {

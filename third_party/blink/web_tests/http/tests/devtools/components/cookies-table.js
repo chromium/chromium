@@ -145,7 +145,7 @@
       {name: 'cookieC', value: 'foo', path: '/', domain: 'abc.example.com', expires: 1545057090000},
       {name: 'cookieD', value: '{other}', path: '/aa', domain: '.other.com', expires: 19941213},
       {name: 'cookieE', value: 'zz', path: '/gg', domain: 'z.example.com', expires: 6121598},
-      {name: 'cookieF', value: 'null', path: '/', domain: 'example.com', expires: -1000},
+      {name: 'cookieF', value: 'null', path: '/', domain: 'example.com', expires: -1},
     ];
     TestRunner.addResult('\n-------- RebuildTable --------\n');
     testRebuildTable(cookieData);

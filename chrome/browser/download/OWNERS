@@ -1,5 +1,4 @@
-dtrainor@chromium.org
-qinmin@chromium.org
+file://components/download/OWNERS
 
 per-file download_dir_policy_handler*=atwilson@chromium.org
 per-file download_request_limiter*=dominickn@chromium.org

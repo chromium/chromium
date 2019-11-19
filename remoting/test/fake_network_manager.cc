@@ -15,8 +15,7 @@
 namespace remoting {
 
 FakeNetworkManager::FakeNetworkManager(const rtc::IPAddress& address)
-    : started_(false),
-      weak_factory_(this) {
+    : started_(false) {
   network_.reset(new rtc::Network("fake", "Fake Network", address, 32));
   network_->AddIP(address);
 }

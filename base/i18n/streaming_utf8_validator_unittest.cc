@@ -33,7 +33,7 @@
 #include "base/strings/utf_string_conversion_utils.h"
 #include "base/synchronization/lock.h"
 #include "base/task/post_task.h"
-#include "base/task/task_scheduler/task_scheduler.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "third_party/icu/source/common/unicode/utf8.h"
 
 #endif  // BASE_I18N_UTF8_VALIDATOR_THOROUGH_TEST
@@ -110,13 +110,13 @@ class StreamingUtf8ValidatorThoroughTest : public ::testing::Test {
 };
 
 TEST_F(StreamingUtf8ValidatorThoroughTest, TestEverything) {
-  base::TaskScheduler::CreateAndStartWithDefaultParams(
+  base::ThreadPoolInstance::CreateAndStartWithDefaultParams(
       "StreamingUtf8ValidatorThoroughTest");
   {
     base::AutoLock al(lock_);
     uint32_t begin = 0;
     do {
-      base::PostTaskWithTraits(
+      base::PostTask(
           FROM_HERE, {base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
           base::BindOnce(&StreamingUtf8ValidatorThoroughTest::TestRange,
                          base::Unretained(this), begin,
@@ -125,9 +125,9 @@ TEST_F(StreamingUtf8ValidatorThoroughTest, TestEverything) {
       begin += kThoroughTestChunkSize;
     } while (begin != 0);
   }
-  base::TaskScheduler::GetInstance()->Shutdown();
-  base::TaskScheduler::GetInstance()->JoinForTesting();
-  base::TaskScheduler::SetInstance(nullptr);
+  base::ThreadPoolInstance::Get()->Shutdown();
+  base::ThreadPoolInstance::Get()->JoinForTesting();
+  base::ThreadPoolInstance::Set(nullptr);
 }
 
 #endif  // BASE_I18N_UTF8_VALIDATOR_THOROUGH_TEST

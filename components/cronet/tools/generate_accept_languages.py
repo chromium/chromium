@@ -13,7 +13,9 @@
 #   * assumes that there is only one relevant element with the
 #     IDS_ACCEPT_LANGUAGES attribute
 
-import os, re, sys
+import os
+import re
+import sys
 from xml.etree import ElementTree
 
 STRINGS_DIR = sys.argv[2] + 'components/strings/'

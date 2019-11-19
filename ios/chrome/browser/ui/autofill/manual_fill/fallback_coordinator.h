@@ -33,8 +33,7 @@
 
 // The object in charge of interacting with the web view. Used to fill the data
 // in the forms.
-@property(nonatomic, strong)
-    ManualFillInjectionHandler* manualFillInjectionHandler;
+@property(nonatomic, strong) ManualFillInjectionHandler* injectionHandler;
 
 // Creates a coordinator that uses a |viewController|, |browserState| and an
 // |injectionHandler|.

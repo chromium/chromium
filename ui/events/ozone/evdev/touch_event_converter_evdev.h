@@ -5,13 +5,13 @@
 #ifndef UI_EVENTS_OZONE_EVDEV_TOUCH_EVENT_CONVERTER_EVDEV_H_
 #define UI_EVENTS_OZONE_EVDEV_TOUCH_EVENT_CONVERTER_EVDEV_H_
 
+#include <linux/input.h>
 #include <stddef.h>
 #include <stdint.h>
 
 #include <bitset>
 #include <memory>
-
-#include <linux/input.h>
+#include <queue>
 // See if we compile against new enough headers and add missing definition
 // if the headers are too old.
 #ifndef MT_TOOL_PALM
@@ -23,17 +23,21 @@
 #include "base/files/scoped_file.h"
 #include "base/macros.h"
 #include "base/message_loop/message_pump_libevent.h"
+#include "base/metrics/field_trial_params.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/ozone/evdev/event_converter_evdev.h"
 #include "ui/events/ozone/evdev/event_device_info.h"
 #include "ui/events/ozone/evdev/events_ozone_evdev_export.h"
 #include "ui/events/ozone/evdev/touch_evdev_debug_buffer.h"
+#include "ui/events/ozone/evdev/touch_filter/palm_detection_filter.h"
 
 namespace ui {
 
 class DeviceEventDispatcherEvdev;
 class FalseTouchFinder;
 struct InProgressTouchEvdev;
+
+EVENTS_OZONE_EVDEV_EXPORT extern const base::Feature kEnableSingleCancelTouch;
 
 class EVENTS_OZONE_EVDEV_EXPORT TouchEventConverterEvdev
     : public EventConverterEvdev {
@@ -42,6 +46,7 @@ class EVENTS_OZONE_EVDEV_EXPORT TouchEventConverterEvdev
                            base::FilePath path,
                            int id,
                            const EventDeviceInfo& devinfo,
+                           SharedPalmDetectionFilterState* shared_palm_state,
                            DeviceEventDispatcherEvdev* dispatcher);
   ~TouchEventConverterEvdev() override;
 
@@ -64,6 +69,10 @@ class EVENTS_OZONE_EVDEV_EXPORT TouchEventConverterEvdev
 
   // Unsafe part of initialization.
   virtual void Initialize(const EventDeviceInfo& info);
+
+  static const char kHoldCountAtReleaseEventName[];
+  static const char kHoldCountAtCancelEventName[];
+  static const char kPalmFilterTimerEventName[];
 
  private:
   friend class MockTouchEventConverterEvdev;
@@ -88,20 +97,26 @@ class EVENTS_OZONE_EVDEV_EXPORT TouchEventConverterEvdev
                         base::TimeTicks timestamp);
   void ReportEvents(base::TimeTicks timestamp);
 
+  void ProcessTouchEvent(InProgressTouchEvdev* event,
+                         base::TimeTicks timestamp);
+
   void UpdateTrackingId(int slot, int tracking_id);
   void ReleaseTouches();
-  void CancelAllTouches();
+
+  // Returns true if all touches were marked cancelled. Otherwise false.
+  bool MaybeCancelAllTouches();
   bool IsPalm(const InProgressTouchEvdev& touch);
+
   // Normalize pressure value to [0, 1].
-  float ScalePressure(int32_t value);
+  float ScalePressure(int32_t value) const;
 
   int NextTrackingId();
 
   // Input device file descriptor.
-  base::ScopedFD input_device_fd_;
+  const base::ScopedFD input_device_fd_;
 
   // Dispatcher for events.
-  DeviceEventDispatcherEvdev* dispatcher_;
+  DeviceEventDispatcherEvdev* const dispatcher_;
 
   // Set if we drop events in kernel (SYN_DROPPED) or in process.
   bool dropped_events_ = false;
@@ -157,8 +172,16 @@ class EVENTS_OZONE_EVDEV_EXPORT TouchEventConverterEvdev
   // In-progress touch points.
   std::vector<InProgressTouchEvdev> events_;
 
+  // In progress touch points, from being held, along with the timestamp they
+  // were held at.
+  std::vector<std::queue<std::pair<InProgressTouchEvdev, base::TimeTicks>>>
+      held_events_;
+
   // Finds touches that need to be filtered.
   std::unique_ptr<FalseTouchFinder> false_touch_finder_;
+
+  // Finds touches that are palms with user software not just firmware.
+  const std::unique_ptr<PalmDetectionFilter> palm_detection_filter_;
 
   // Records the recent touch events. It is used to fill the feedback reports
   TouchEventLogEvdev touch_evdev_debug_buffer_;

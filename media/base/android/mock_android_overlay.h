@@ -63,7 +63,7 @@ class MockAndroidOverlay : public testing::NiceMock<AndroidOverlay>,
   // Initial configuration, mostly for callbacks.
   std::unique_ptr<AndroidOverlayConfig> config_;
 
-  base::WeakPtrFactory<MockAndroidOverlay> weak_factory_;
+  base::WeakPtrFactory<MockAndroidOverlay> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(MockAndroidOverlay);
 };

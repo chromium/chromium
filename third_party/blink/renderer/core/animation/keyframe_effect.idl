@@ -28,19 +28,19 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// https://drafts.csswg.org/web-animations/#the-keyframeeffect-interfaces
+// https://drafts.csswg.org/web-animations/#the-keyframeeffect-interface
 
 enum CompositeOperation { "replace", "add", "accumulate" };
 
 [
+    Exposed=Window,
     Constructor(Element? target, object? keyframes, optional (unrestricted double or KeyframeEffectOptions) options),
     Constructor(KeyframeEffect source),
     ConstructorCallWith=ScriptState,
-    RaisesException=Constructor,
-    RuntimeEnabled=WebAnimationsAPI
+    RaisesException=Constructor
 ] interface KeyframeEffect : AnimationEffect {
   attribute Element? target;
-  attribute CompositeOperation composite;
-  [CallWith=ScriptState] sequence<object> getKeyframes();
-  [CallWith=ScriptState, RaisesException] void setKeyframes(object? keyframes);
+  [RuntimeEnabled=WebAnimationsAPI] attribute CompositeOperation composite;
+  [CallWith=ScriptState, RuntimeEnabled=WebAnimationsAPI] sequence<object> getKeyframes();
+  [CallWith=ScriptState, RaisesException, RuntimeEnabled=WebAnimationsAPI] void setKeyframes(object? keyframes);
 };

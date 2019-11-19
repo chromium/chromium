@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "device/usb/public/mojom/device_enumeration_options.mojom.h"
 #include "extensions/common/api/printer_provider/usb_printer_manifest_data.h"
 #include "extensions/common/manifest_test.h"
 #include "extensions/common/value_builder.h"
+#include "services/device/public/mojom/usb_enumeration_options.mojom.h"
 
 namespace extensions {
 

@@ -22,6 +22,10 @@ std::string GenerateApplicationNameFromURL(const GURL& url);
 // Compute a deterministic name based on an apps's id.
 std::string GenerateApplicationNameFromAppId(const AppId& app_id);
 
+// Compute a name for Focus Mode, using counter;
+// TODO(crbug.com/943194): Move this method to Focus Mode specific file.
+std::string GenerateApplicationNameForFocusMode();
+
 // Extracts the application id from the app name.
 AppId GetAppIdFromApplicationName(const std::string& app_name);
 
@@ -42,8 +46,11 @@ AppId GetAppIdFromApplicationName(const std::string& app_name);
 AppId GenerateAppIdFromURL(const GURL& url);
 std::string GenerateAppKeyFromURL(const GURL& url);
 
-// Returns whether the given |app_url| is a valid bookmark app url.
+// Returns whether the given |app_url| is a valid web app url.
 bool IsValidWebAppUrl(const GURL& app_url);
+
+// Returns whether the given |app_url| is a valid extension url.
+bool IsValidExtensionUrl(const GURL& app_url);
 
 }  // namespace web_app
 

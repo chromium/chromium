@@ -27,7 +27,7 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid : public BrowserAccessibility {
   void OnLocationChanged() override;
   base::string16 GetValue() const override;
 
-  bool PlatformIsLeaf() const override;
+  bool PlatformIsLeafIncludingIgnored() const override;
   // Android needs events even on objects that are trimmed away.
   bool CanFireEvents() const override;
 
@@ -60,6 +60,9 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid : public BrowserAccessibility {
   // focusable or clickable aren't interesting.
   bool IsInterestingOnAndroid() const;
 
+  // Is a heading whose only child is a link.
+  bool IsHeadingLink() const;
+
   // If this node is interesting (IsInterestingOnAndroid() returns true),
   // returns |this|. If not, it recursively checks all of the
   // platform children of this node, and if just a single one is
@@ -80,7 +83,7 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid : public BrowserAccessibility {
   bool HasImage() const;
 
   const char* GetClassName() const;
-  base::string16 GetText() const override;
+  base::string16 GetInnerText() const override;
   base::string16 GetHint() const;
 
   std::string GetRoleString() const;
@@ -139,17 +142,26 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid : public BrowserAccessibility {
                                 int offset);
 
   // Append line start and end indices for the text of this node
-  // (as returned by GetText()), adding |offset| to each one.
+  // (as returned by GetInnerText()), adding |offset| to each one.
   void GetLineBoundaries(std::vector<int32_t>* line_starts,
                          std::vector<int32_t>* line_ends,
                          int offset);
 
   // Append word start and end indices for the text of this node
-  // (as returned by GetText()) to |word_starts| and |word_ends|,
+  // (as returned by GetInnerText()) to |word_starts| and |word_ends|,
   // adding |offset| to each one.
   void GetWordBoundaries(std::vector<int32_t>* word_starts,
                          std::vector<int32_t>* word_ends,
                          int offset);
+
+  // Return the target of a link or the source of an image.
+  base::string16 GetTargetUrl() const;
+
+  // On Android, spelling errors are returned as "suggestions". Retreive
+  // all of the suggestions for a given text field as vectors of start
+  // and end offsets.
+  void GetSuggestions(std::vector<int>* suggestion_starts,
+                      std::vector<int>* suggestion_ends) const;
 
   // Used to keep track of when to stop reporting content_invalid.
   // Timer only applies if node has focus.

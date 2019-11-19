@@ -20,7 +20,7 @@ layer at (0,0) size 800x600
                   text run at (2,2) width 31: "Cell "
                 LayoutBR {BR} at (32,16) size 1x0
                 LayoutBR {BR} at (2,20) size 0x18
-              LayoutTableCell {TD} at (39,11) size 37x22 [border: (1px inset #808080)] [r=0 c=1 rs=1 cs=1]
-                LayoutText {#text} at (2,2) size 33x18
+              LayoutTableCell {TD} at (39,2) size 37x40 [border: (1px inset #808080)] [r=0 c=1 rs=1 cs=1]
+                LayoutText {#text} at (2,11) size 33x18
                   text run at (2,2) width 33: " Two"
 caret: position 0 of child 2 {BR} of child 0 {TD} of child 0 {TR} of child 0 {TBODY} of child 0 {TABLE} of child 2 {DIV} of body

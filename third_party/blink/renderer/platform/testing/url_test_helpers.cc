@@ -50,8 +50,7 @@ WebURL RegisterMockedURLLoadFromBase(const WebString& base_url,
                                      const WebString& file_name,
                                      const WebString& mime_type) {
   // fullURL = baseURL + fileName.
-  std::string full_url = std::string(base_url.Utf8().data()) +
-                         std::string(file_name.Utf8().data());
+  std::string full_url = base_url.Utf8() + file_name.Utf8();
 
   // filePath = basePath + ("/" +) fileName.
   base::FilePath file_path =
@@ -69,8 +68,8 @@ void RegisterMockedURLLoad(const WebURL& full_url,
   timing.Initialize();
 
   WebURLResponse response(full_url);
-  response.SetMIMEType(mime_type);
-  response.SetHTTPHeaderField(http_names::kContentType, mime_type);
+  response.SetMimeType(mime_type);
+  response.SetHttpHeaderField(http_names::kContentType, mime_type);
   response.SetHttpStatusCode(200);
   response.SetLoadTiming(timing);
 
@@ -82,8 +81,8 @@ void RegisterMockedErrorURLLoad(const WebURL& full_url) {
   timing.Initialize();
 
   WebURLResponse response;
-  response.SetMIMEType("image/png");
-  response.SetHTTPHeaderField(http_names::kContentType, "image/png");
+  response.SetMimeType("image/png");
+  response.SetHttpHeaderField(http_names::kContentType, "image/png");
   response.SetHttpStatusCode(404);
   response.SetLoadTiming(timing);
 
@@ -101,6 +100,20 @@ void RegisterMockedURLLoadWithCustomResponse(const WebURL& full_url,
 
 void RegisterMockedURLUnregister(const WebURL& url) {
   Platform::Current()->GetURLLoaderMockFactory()->UnregisterURL(url);
+}
+
+void UnregisterAllURLsAndClearMemoryCache() {
+  Platform::Current()
+      ->GetURLLoaderMockFactory()
+      ->UnregisterAllURLsAndClearMemoryCache();
+}
+
+void SetLoaderDelegate(WebURLLoaderTestDelegate* delegate) {
+  Platform::Current()->GetURLLoaderMockFactory()->SetLoaderDelegate(delegate);
+}
+
+void ServeAsynchronousRequests() {
+  Platform::Current()->GetURLLoaderMockFactory()->ServeAsynchronousRequests();
 }
 
 }  // namespace url_test_helpers

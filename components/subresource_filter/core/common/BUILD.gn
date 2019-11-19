@@ -19,6 +19,7 @@ static_library("common") {
     "first_party_origin.h",
     "indexed_ruleset.cc",
     "indexed_ruleset.h",
+    "load_policy.cc",
     "load_policy.h",
     "memory_mapped_ruleset.cc",
     "memory_mapped_ruleset.h",
@@ -66,6 +67,7 @@ source_set("unit_tests") {
     "document_subresource_filter_unittest.cc",
     "first_party_origin_unittest.cc",
     "indexed_ruleset_unittest.cc",
+    "load_policy_unittest.cc",
     "scoped_timers_unittest.cc",
     "unindexed_ruleset_unittest.cc",
   ]

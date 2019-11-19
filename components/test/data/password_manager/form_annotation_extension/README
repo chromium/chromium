@@ -15,7 +15,7 @@ logs only clicks, but not mouse movement.
 current site and will get the next site.
 6. Repeat steps 4-5 till all sites have been visited.
 7. You can output the tests for all sites you visited, if you print the value
-of the variable "all_tests" in background page's console.
+of the variable "allTests" in background page's console.
 8. Copy the generated code into the source code of the form classifier tests
 (components/test/data/password_manager/form_classification_tests).
 

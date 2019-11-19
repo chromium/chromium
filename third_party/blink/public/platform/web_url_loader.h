@@ -37,6 +37,10 @@
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 
+namespace base {
+class SingleThreadTaskRunner;
+}
+
 namespace blink {
 
 class WebData;
@@ -71,10 +75,6 @@ class WebURLLoader {
   virtual void LoadAsynchronously(const WebURLRequest&,
                                   WebURLLoaderClient*) = 0;
 
-  // Cancels an asynchronous load.  This will appear as a load error to
-  // the client.
-  virtual void Cancel() = 0;
-
   // Suspends/resumes an asynchronous load.
   virtual void SetDefersLoading(bool) = 0;
 
@@ -83,6 +83,9 @@ class WebURLLoader {
   // priority, but may increase when the resource is needed for rendering.
   virtual void DidChangePriority(WebURLRequest::Priority new_priority,
                                  int intra_priority_value) = 0;
+
+  // Returns the task runner for this request.
+  virtual scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner() = 0;
 };
 
 }  // namespace blink

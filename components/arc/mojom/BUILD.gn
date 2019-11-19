@@ -1,0 +1,145 @@
+# Copyright 2017 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+# This needs to be conditionally-compiled since the typemaps are
+# unconditionally-included from //mojo/public/tools/bindings/mojom.gni. The
+# inclusion is done through read_file(), which does not respect the global
+# defines for GN, so it itself cannot use the "is_chromeos" variable.
+if (is_chromeos) {
+  mojom("mojom") {
+    sources = [
+      "accessibility_helper.mojom",
+      "app.mojom",
+      "app_permissions.mojom",
+      "appfuse.mojom",
+      "arc_bridge.mojom",
+      "audio.mojom",
+      "auth.mojom",
+      "backup_settings.mojom",
+      "bluetooth.mojom",
+      "boot_phase_monitor.mojom",
+      "camera.mojom",
+      "cast_receiver.mojom",
+      "cert_store.mojom",
+      "clipboard.mojom",
+      "crash_collector.mojom",
+      "disk_quota.mojom",
+      "enterprise_reporting.mojom",
+      "file_system.mojom",
+      "ime.mojom",
+      "input_method_manager.mojom",
+      "intent_common.mojom",
+      "intent_helper.mojom",
+      "keymaster.mojom",
+      "kiosk.mojom",
+      "lock_screen.mojom",
+      "media_session.mojom",
+      "metrics.mojom",
+      "midis.mojom",
+      "net.mojom",
+      "obb_mounter.mojom",
+      "oemcrypto.mojom",
+      "oemcrypto_daemon.mojom",
+      "pip.mojom",
+      "policy.mojom",
+      "power.mojom",
+      "print.mojom",
+      "print_common.mojom",
+      "print_spooler.mojom",
+      "process.mojom",
+      "property.mojom",
+      "rotation_lock.mojom",
+      "scale_factor.mojom",
+      "screen_capture.mojom",
+      "storage_manager.mojom",
+      "timer.mojom",
+      "tracing.mojom",
+      "tts.mojom",
+      "usb_host.mojom",
+      "voice_interaction_arc_home.mojom",
+      "voice_interaction_framework.mojom",
+      "volume_mounter.mojom",
+      "wake_lock.mojom",
+      "wallpaper.mojom",
+    ]
+
+    public_deps = [
+      ":camera_intent",
+      ":media",
+      ":notifications",
+      "//components/chromeos_camera/common:camera_app_helper",
+      "//media/capture/video/chromeos/mojom:cros_camera",
+      "//mojo/public/mojom/base",
+      "//services/device/public/mojom:usb",
+      "//services/media_session/public/mojom",
+      "//services/resource_coordinator/public/mojom",
+      "//ui/accessibility/mojom",
+      "//ui/gfx/geometry/mojom",
+      "//url/mojom:url_mojom_gurl",
+    ]
+  }
+
+  mojom("camera_intent") {
+    sources = [
+      "camera_intent.mojom",
+    ]
+  }
+
+  mojom("notifications") {
+    sources = [
+      "bitmap.mojom",
+      "notifications.mojom",
+    ]
+
+    deps = [
+      ":media",  # for gfx.mojom
+    ]
+  }
+
+  # Media related mojo interfaces. These are used by
+  # //services/viz/public/mojom. We have this separate mojom target to
+  # avoid pulling in unnecessary interfaces.
+  mojom("media") {
+    sources = [
+      "gfx.mojom",
+      "protected_buffer_manager.mojom",
+      "video.mojom",
+      "video_common.mojom",
+      "video_decode_accelerator.mojom",
+      "video_encode_accelerator.mojom",
+      "video_protected_buffer_allocator.mojom",
+    ]
+
+    public_deps = [
+      "//ui/gfx/geometry/mojom",
+    ]
+  }
+
+  source_set("mojom_traits") {
+    sources = [
+      "ime_mojom_traits.h",
+    ]
+
+    deps = [
+      ":mojom",
+      "//ui/base/ime:text_input_types",
+    ]
+  }
+
+  source_set("unit_tests") {
+    testonly = true
+    sources = [
+      "video_accelerator_mojom_traits_unittest.cc",
+    ]
+
+    deps = [
+      ":mojom",
+      "//media",
+      "//mojo/public/cpp/test_support:test_utils",
+      "//testing/gtest",
+    ]
+  }
+}

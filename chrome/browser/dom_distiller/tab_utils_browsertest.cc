@@ -31,43 +31,65 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace dom_distiller {
-
 namespace {
-const char* kSimpleArticlePath = "/dom_distiller/simple_article.html";
-}  // namespace
 
-class DomDistillerTabUtilsBrowserTest : public InProcessBrowserTest {
+const char* kSimpleArticlePath = "/dom_distiller/simple_article.html";
+const char* kOriginalArticleTitle = "Test Page Title";
+
+std::unique_ptr<content::WebContents> NewContentsWithSameParamsAs(
+    content::WebContents* source_web_contents) {
+  content::WebContents::CreateParams create_params(
+      source_web_contents->GetBrowserContext());
+  auto new_web_contents = content::WebContents::Create(create_params);
+  DCHECK(new_web_contents);
+  return new_web_contents;
+}
+
+// Helper class that blocks test execution until |observed_contents| enters a
+// certain state. Subclasses specify the precise state by calling
+// |new_url_loaded_runner_|.QuitClosure().Run() when |observed_contents| is
+// ready.
+class NavigationObserver : public content::WebContentsObserver {
  public:
-  void SetUpOnMainThread() override {
-    if (!DistillerJavaScriptWorldIdIsSet()) {
-      SetDistillerJavaScriptWorldId(content::ISOLATED_WORLD_ID_CONTENT_END);
-    }
+  explicit NavigationObserver(content::WebContents* observed_contents) {
+    content::WebContentsObserver::Observe(observed_contents);
   }
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(switches::kEnableDomDistiller);
+  void WaitUntilFinishedLoading() { new_url_loaded_runner_.Run(); }
+
+ protected:
+  base::RunLoop new_url_loaded_runner_;
+};
+
+class OriginalPageNavigationObserver : public NavigationObserver {
+ public:
+  using NavigationObserver::NavigationObserver;
+
+  void DidFinishLoad(content::RenderFrameHost* render_frame_host,
+                     const GURL& validated_url) override {
+    if (!render_frame_host->GetParent())
+      new_url_loaded_runner_.QuitClosure().Run();
   }
 };
 
-// WebContentsMainFrameHelper is used to detect if a distilled page has
+// DistilledPageObserver is used to detect if a distilled page has
 // finished loading. This is done by checking how many times the title has
 // been set rather than using "DidFinishLoad" directly due to the content
 // being set by JavaScript.
-class WebContentsMainFrameHelper : public content::WebContentsObserver {
+class DistilledPageObserver : public NavigationObserver {
  public:
-  WebContentsMainFrameHelper(content::WebContents* web_contents,
-                             const base::Closure& callback)
-      : callback_(callback),
+  explicit DistilledPageObserver(content::WebContents* observed_contents)
+      : NavigationObserver(observed_contents),
         title_set_count_(0),
-        loaded_distiller_page_(false) {
-    content::WebContentsObserver::Observe(web_contents);
-  }
+        loaded_distiller_page_(false) {}
 
   void DidFinishLoad(content::RenderFrameHost* render_frame_host,
                      const GURL& validated_url) override {
     if (!render_frame_host->GetParent() &&
-        validated_url.scheme() == kDomDistillerScheme)
+        validated_url.scheme() == kDomDistillerScheme) {
       loaded_distiller_page_ = true;
+      MaybeNotifyLoaded();
+    }
   }
 
   void TitleWasSet(content::NavigationEntry* entry) override {
@@ -75,110 +97,130 @@ class WebContentsMainFrameHelper : public content::WebContentsObserver {
     // and once when the distillation has finished. Watch for the second time
     // as a signal that the JavaScript that sets the content has run.
     title_set_count_++;
-    if (title_set_count_ >= 2 && loaded_distiller_page_) {
-      callback_.Run();
-    }
+    MaybeNotifyLoaded();
   }
 
  private:
-  base::Closure callback_;
   int title_set_count_;
   bool loaded_distiller_page_;
+
+  // DidFinishLoad() can come after the two title settings.
+  void MaybeNotifyLoaded() {
+    if (title_set_count_ >= 2 && loaded_distiller_page_) {
+      new_url_loaded_runner_.QuitClosure().Run();
+    }
+  }
 };
 
-// https://crbug.com/751730.
-#if defined(OS_CHROMEOS) || defined(OS_LINUX)
-#define MAYBE_TestSwapWebContents DISABLED_TestSwapWebContents
-#else
-#define MAYBE_TestSwapWebContents TestSwapWebContents
-#endif
-IN_PROC_BROWSER_TEST_F(DomDistillerTabUtilsBrowserTest,
-                       MAYBE_TestSwapWebContents) {
-  ASSERT_TRUE(embedded_test_server()->Start());
+class DomDistillerTabUtilsBrowserTest : public InProcessBrowserTest {
+ public:
+  void SetUpOnMainThread() override {
+    if (!DistillerJavaScriptWorldIdIsSet()) {
+      SetDistillerJavaScriptWorldId(content::ISOLATED_WORLD_ID_CONTENT_END);
+    }
+    ASSERT_TRUE(embedded_test_server()->Start());
+    article_url_ = embedded_test_server()->GetURL(kSimpleArticlePath);
+  }
 
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(switches::kEnableDomDistiller);
+  }
+
+ protected:
+  const GURL& article_url() const { return article_url_; }
+
+  std::string GetPageTitle(content::WebContents* web_contents) const {
+    return content::ExecuteScriptAndGetValue(web_contents->GetMainFrame(),
+                                             "document.title")
+        .GetString();
+  }
+
+ private:
+  GURL article_url_;
+};
+
+IN_PROC_BROWSER_TEST_F(DomDistillerTabUtilsBrowserTest,
+                       DistillCurrentPageSwapsWebContents) {
   content::WebContents* initial_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  const GURL& article_url = embedded_test_server()->GetURL(kSimpleArticlePath);
 
   // This blocks until the navigation has completely finished.
-  ui_test_utils::NavigateToURL(browser(), article_url);
+  ui_test_utils::NavigateToURL(browser(), article_url());
 
   DistillCurrentPageAndView(initial_web_contents);
 
-  // Wait until the new WebContents has fully navigated.
+  // Retrieve new web contents and wait for it to finish loading.
   content::WebContents* after_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(after_web_contents != NULL);
-  base::RunLoop new_url_loaded_runner;
-  std::unique_ptr<WebContentsMainFrameHelper> distilled_page_loaded(
-      new WebContentsMainFrameHelper(after_web_contents,
-                                     new_url_loaded_runner.QuitClosure()));
-  new_url_loaded_runner.Run();
-
-  std::string page_title;
-  content::ExecuteScriptAndGetValue(after_web_contents->GetMainFrame(),
-                                    "document.title")->GetAsString(&page_title);
+  ASSERT_NE(after_web_contents, nullptr);
+  DistilledPageObserver(after_web_contents).WaitUntilFinishedLoading();
 
   // Verify the new URL is showing distilled content in a new WebContents.
   EXPECT_NE(initial_web_contents, after_web_contents);
   EXPECT_TRUE(
       after_web_contents->GetLastCommittedURL().SchemeIs(kDomDistillerScheme));
-  EXPECT_EQ("Test Page Title", page_title);
+  EXPECT_EQ(kOriginalArticleTitle, GetPageTitle(after_web_contents));
 }
 
 IN_PROC_BROWSER_TEST_F(DomDistillerTabUtilsBrowserTest,
-                       TestDistillIntoWebContents) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-
+                       DistillAndViewCreatesNewWebContentsAndPreservesOld) {
   content::WebContents* source_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  const GURL& article_url = embedded_test_server()->GetURL(kSimpleArticlePath);
 
   // This blocks until the navigation has completely finished.
-  ui_test_utils::NavigateToURL(browser(), article_url);
+  ui_test_utils::NavigateToURL(browser(), article_url());
 
-  // Create destination WebContents.
-  content::WebContents::CreateParams create_params(
-      source_web_contents->GetBrowserContext());
-  std::unique_ptr<content::WebContents> destination_web_contents =
-      content::WebContents::Create(create_params);
-  content::WebContents* raw_destination_web_contents =
-      destination_web_contents.get();
-  DCHECK(raw_destination_web_contents);
-
+  // Create destination WebContents and add it to the tab strip.
   browser()->tab_strip_model()->AppendWebContents(
-      std::move(destination_web_contents), true);
-  ASSERT_EQ(raw_destination_web_contents,
-            browser()->tab_strip_model()->GetWebContentsAt(1));
+      NewContentsWithSameParamsAs(source_web_contents),
+      /* foreground = */ true);
+  content::WebContents* destination_web_contents =
+      browser()->tab_strip_model()->GetWebContentsAt(1);
 
-  DistillAndView(source_web_contents, raw_destination_web_contents);
-
-  // Wait until the destination WebContents has fully navigated.
-  base::RunLoop new_url_loaded_runner;
-  std::unique_ptr<WebContentsMainFrameHelper> distilled_page_loaded(
-      new WebContentsMainFrameHelper(raw_destination_web_contents,
-                                     new_url_loaded_runner.QuitClosure()));
-  new_url_loaded_runner.Run();
+  DistillAndView(source_web_contents, destination_web_contents);
+  DistilledPageObserver(destination_web_contents).WaitUntilFinishedLoading();
 
   // Verify that the source WebContents is showing the original article.
-  EXPECT_EQ(article_url, source_web_contents->GetLastCommittedURL());
-  std::string page_title;
-  content::ExecuteScriptAndGetValue(source_web_contents->GetMainFrame(),
-                                    "document.title")->GetAsString(&page_title);
-  EXPECT_EQ("Test Page Title", page_title);
+  EXPECT_EQ(article_url(), source_web_contents->GetLastCommittedURL());
+  EXPECT_EQ(kOriginalArticleTitle, GetPageTitle(source_web_contents));
 
   // Verify the destination WebContents is showing distilled content.
-  EXPECT_TRUE(raw_destination_web_contents->GetLastCommittedURL().SchemeIs(
+  EXPECT_TRUE(destination_web_contents->GetLastCommittedURL().SchemeIs(
       kDomDistillerScheme));
-  content::ExecuteScriptAndGetValue(
-      raw_destination_web_contents->GetMainFrame(), "document.title")
-      ->GetAsString(&page_title);
-  EXPECT_EQ("Test Page Title", page_title);
+  EXPECT_EQ(kOriginalArticleTitle, GetPageTitle(destination_web_contents));
 
   content::WebContentsDestroyedWatcher destroyed_watcher(
-      raw_destination_web_contents);
+      destination_web_contents);
   browser()->tab_strip_model()->CloseWebContentsAt(1, 0);
   destroyed_watcher.Wait();
 }
 
+IN_PROC_BROWSER_TEST_F(DomDistillerTabUtilsBrowserTest, ToggleOriginalPage) {
+  content::WebContents* source_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // This blocks until the navigation has completely finished.
+  ui_test_utils::NavigateToURL(browser(), article_url());
+
+  // Create and navigate to the distilled page.
+  browser()->tab_strip_model()->AppendWebContents(
+      NewContentsWithSameParamsAs(source_web_contents),
+      /* foreground = */ true);
+  content::WebContents* destination_web_contents =
+      browser()->tab_strip_model()->GetWebContentsAt(1);
+
+  DistillAndView(source_web_contents, destination_web_contents);
+  DistilledPageObserver(destination_web_contents).WaitUntilFinishedLoading();
+  ASSERT_TRUE(url_utils::IsDistilledPage(
+      destination_web_contents->GetLastCommittedURL()));
+
+  // Now return to the original page.
+  ReturnToOriginalPage(destination_web_contents);
+  OriginalPageNavigationObserver(destination_web_contents)
+      .WaitUntilFinishedLoading();
+  EXPECT_EQ(source_web_contents->GetLastCommittedURL(),
+            destination_web_contents->GetLastCommittedURL());
+}
+
+}  // namespace
 }  // namespace dom_distiller

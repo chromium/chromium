@@ -1,0 +1,17 @@
+[embedded component]
+++[document frame]
+++++[landmark] name='Page 1'
+++++++[paragraph]
+++++++++[static] name='Hello, '
+++++++++[link] name='http://yahoo.com'
+++++++++++[static] name='http://yahoo.com'
+++++++++[static] name='! nice meeting you<newline>'
+++++++[paragraph]
+++++++++[static] name='Goodbye, '
+++++++++[link] name='http://bing.com'
+++++++++++[static] name='http://bing.com'
+++++++++[static] name='! nice meeting you<newline>'
+++++++[paragraph]
+++++++++[static] name='Bye, '
+++++++++[link] name='http://google.com'
+++++++++++[static] name='http://google.com'

@@ -211,7 +211,7 @@ bool DOMMatrixReadOnly::is2D() const {
 }
 
 bool DOMMatrixReadOnly::isIdentity() const {
-  return matrix_->IsIdentity();
+  return matrix_.IsIdentity();
 }
 
 DOMMatrix* DOMMatrixReadOnly::multiply(DOMMatrixInit* other,
@@ -319,39 +319,36 @@ DOMPoint* DOMMatrixReadOnly::transformPoint(const DOMPointInit* point) {
 }
 
 DOMMatrixReadOnly::DOMMatrixReadOnly(const TransformationMatrix& matrix,
-                                     bool is2d) {
-  matrix_ = TransformationMatrix::Create(matrix);
-  is2d_ = is2d;
-}
+                                     bool is2d)
+    : matrix_(matrix), is2d_(is2d) {}
 
 NotShared<DOMFloat32Array> DOMMatrixReadOnly::toFloat32Array() const {
   float array[] = {
-      static_cast<float>(matrix_->M11()), static_cast<float>(matrix_->M12()),
-      static_cast<float>(matrix_->M13()), static_cast<float>(matrix_->M14()),
-      static_cast<float>(matrix_->M21()), static_cast<float>(matrix_->M22()),
-      static_cast<float>(matrix_->M23()), static_cast<float>(matrix_->M24()),
-      static_cast<float>(matrix_->M31()), static_cast<float>(matrix_->M32()),
-      static_cast<float>(matrix_->M33()), static_cast<float>(matrix_->M34()),
-      static_cast<float>(matrix_->M41()), static_cast<float>(matrix_->M42()),
-      static_cast<float>(matrix_->M43()), static_cast<float>(matrix_->M44())};
+      static_cast<float>(matrix_.M11()), static_cast<float>(matrix_.M12()),
+      static_cast<float>(matrix_.M13()), static_cast<float>(matrix_.M14()),
+      static_cast<float>(matrix_.M21()), static_cast<float>(matrix_.M22()),
+      static_cast<float>(matrix_.M23()), static_cast<float>(matrix_.M24()),
+      static_cast<float>(matrix_.M31()), static_cast<float>(matrix_.M32()),
+      static_cast<float>(matrix_.M33()), static_cast<float>(matrix_.M34()),
+      static_cast<float>(matrix_.M41()), static_cast<float>(matrix_.M42()),
+      static_cast<float>(matrix_.M43()), static_cast<float>(matrix_.M44())};
 
   return NotShared<DOMFloat32Array>(DOMFloat32Array::Create(array, 16));
 }
 
 NotShared<DOMFloat64Array> DOMMatrixReadOnly::toFloat64Array() const {
-  double array[] = {
-      matrix_->M11(), matrix_->M12(), matrix_->M13(), matrix_->M14(),
-      matrix_->M21(), matrix_->M22(), matrix_->M23(), matrix_->M24(),
-      matrix_->M31(), matrix_->M32(), matrix_->M33(), matrix_->M34(),
-      matrix_->M41(), matrix_->M42(), matrix_->M43(), matrix_->M44()};
+  double array[] = {matrix_.M11(), matrix_.M12(), matrix_.M13(), matrix_.M14(),
+                    matrix_.M21(), matrix_.M22(), matrix_.M23(), matrix_.M24(),
+                    matrix_.M31(), matrix_.M32(), matrix_.M33(), matrix_.M34(),
+                    matrix_.M41(), matrix_.M42(), matrix_.M43(), matrix_.M44()};
 
   return NotShared<DOMFloat64Array>(DOMFloat64Array::Create(array, 16));
 }
 
 const String DOMMatrixReadOnly::toString(
     ExceptionState& exception_state) const {
-  const char* kComma = ", ";
-  String result;
+  constexpr const char* kComma = ", ";
+  StringBuilder result;
 
   if (is2D()) {
     if (!std::isfinite(a()) || !std::isfinite(b()) || !std::isfinite(c()) ||
@@ -362,20 +359,20 @@ const String DOMMatrixReadOnly::toString(
       return String();
     }
 
-    result.append("matrix(");
-    result.append(String::NumberToStringECMAScript(a()));
-    result.append(kComma);
-    result.append(String::NumberToStringECMAScript(b()));
-    result.append(kComma);
-    result.append(String::NumberToStringECMAScript(c()));
-    result.append(kComma);
-    result.append(String::NumberToStringECMAScript(d()));
-    result.append(kComma);
-    result.append(String::NumberToStringECMAScript(e()));
-    result.append(kComma);
-    result.append(String::NumberToStringECMAScript(f()));
-    result.append(")");
-    return result;
+    result.Append("matrix(");
+    result.Append(String::NumberToStringECMAScript(a()));
+    result.Append(kComma);
+    result.Append(String::NumberToStringECMAScript(b()));
+    result.Append(kComma);
+    result.Append(String::NumberToStringECMAScript(c()));
+    result.Append(kComma);
+    result.Append(String::NumberToStringECMAScript(d()));
+    result.Append(kComma);
+    result.Append(String::NumberToStringECMAScript(e()));
+    result.Append(kComma);
+    result.Append(String::NumberToStringECMAScript(f()));
+    result.Append(")");
+    return result.ToString();
   }
 
   if (!std::isfinite(m11()) || !std::isfinite(m12()) || !std::isfinite(m13()) ||
@@ -390,41 +387,41 @@ const String DOMMatrixReadOnly::toString(
     return String();
   }
 
-  result.append("matrix3d(");
-  result.append(String::NumberToStringECMAScript(m11()));
-  result.append(kComma);
-  result.append(String::NumberToStringECMAScript(m12()));
-  result.append(kComma);
-  result.append(String::NumberToStringECMAScript(m13()));
-  result.append(kComma);
-  result.append(String::NumberToStringECMAScript(m14()));
-  result.append(kComma);
-  result.append(String::NumberToStringECMAScript(m21()));
-  result.append(kComma);
-  result.append(String::NumberToStringECMAScript(m22()));
-  result.append(kComma);
-  result.append(String::NumberToStringECMAScript(m23()));
-  result.append(kComma);
-  result.append(String::NumberToStringECMAScript(m24()));
-  result.append(kComma);
-  result.append(String::NumberToStringECMAScript(m31()));
-  result.append(kComma);
-  result.append(String::NumberToStringECMAScript(m32()));
-  result.append(kComma);
-  result.append(String::NumberToStringECMAScript(m33()));
-  result.append(kComma);
-  result.append(String::NumberToStringECMAScript(m34()));
-  result.append(kComma);
-  result.append(String::NumberToStringECMAScript(m41()));
-  result.append(kComma);
-  result.append(String::NumberToStringECMAScript(m42()));
-  result.append(kComma);
-  result.append(String::NumberToStringECMAScript(m43()));
-  result.append(kComma);
-  result.append(String::NumberToStringECMAScript(m44()));
-  result.append(")");
+  result.Append("matrix3d(");
+  result.Append(String::NumberToStringECMAScript(m11()));
+  result.Append(kComma);
+  result.Append(String::NumberToStringECMAScript(m12()));
+  result.Append(kComma);
+  result.Append(String::NumberToStringECMAScript(m13()));
+  result.Append(kComma);
+  result.Append(String::NumberToStringECMAScript(m14()));
+  result.Append(kComma);
+  result.Append(String::NumberToStringECMAScript(m21()));
+  result.Append(kComma);
+  result.Append(String::NumberToStringECMAScript(m22()));
+  result.Append(kComma);
+  result.Append(String::NumberToStringECMAScript(m23()));
+  result.Append(kComma);
+  result.Append(String::NumberToStringECMAScript(m24()));
+  result.Append(kComma);
+  result.Append(String::NumberToStringECMAScript(m31()));
+  result.Append(kComma);
+  result.Append(String::NumberToStringECMAScript(m32()));
+  result.Append(kComma);
+  result.Append(String::NumberToStringECMAScript(m33()));
+  result.Append(kComma);
+  result.Append(String::NumberToStringECMAScript(m34()));
+  result.Append(kComma);
+  result.Append(String::NumberToStringECMAScript(m41()));
+  result.Append(kComma);
+  result.Append(String::NumberToStringECMAScript(m42()));
+  result.Append(kComma);
+  result.Append(String::NumberToStringECMAScript(m43()));
+  result.Append(kComma);
+  result.Append(String::NumberToStringECMAScript(m44()));
+  result.Append(")");
 
-  return result;
+  return result.ToString();
 }
 
 ScriptValue DOMMatrixReadOnly::toJSONForBinding(
@@ -471,7 +468,7 @@ void DOMMatrixReadOnly::SetMatrixValueFromString(
     string = identity_matrix2d;
 
   const CSSValue* value = CSSParser::ParseSingleValue(
-      CSSPropertyTransform, string,
+      CSSPropertyID::kTransform, string,
       StrictCSSParserContext(execution_context->GetSecureContextMode()));
 
   if (!value || value->IsCSSWideKeyword()) {
@@ -481,14 +478,14 @@ void DOMMatrixReadOnly::SetMatrixValueFromString(
     return;
   }
 
-  if (value->IsIdentifierValue()) {
-    DCHECK(ToCSSIdentifierValue(value)->GetValueID() == CSSValueNone);
-    matrix_->MakeIdentity();
+  if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
+    DCHECK(identifier_value->GetValueID() == CSSValueID::kNone);
+    matrix_.MakeIdentity();
     is2d_ = true;
     return;
   }
 
-  if (TransformBuilder::HasRelativeLengths(ToCSSValueList(*value))) {
+  if (TransformBuilder::HasRelativeLengths(To<CSSValueList>(*value))) {
     exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
                                       "Lengths must be absolute, not relative");
     return;
@@ -506,8 +503,8 @@ void DOMMatrixReadOnly::SetMatrixValueFromString(
     return;
   }
 
-  matrix_->MakeIdentity();
-  operations.Apply(FloatSize(0, 0), *matrix_);
+  matrix_.MakeIdentity();
+  operations.Apply(FloatSize(0, 0), matrix_);
 
   is2d_ = !operations.Has3DOperation();
 

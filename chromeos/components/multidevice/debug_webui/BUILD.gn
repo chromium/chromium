@@ -32,6 +32,7 @@ static_library("debug_webui") {
     "//components/resources",
     "//content/public/browser",
     "//device/bluetooth",
+    "//device/bluetooth/public/cpp",
     "//ui/resources",
     "//ui/webui",
   ]

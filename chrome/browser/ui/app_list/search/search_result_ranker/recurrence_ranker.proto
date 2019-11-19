@@ -4,6 +4,7 @@
 
 syntax = "proto2";
 
+import "frecency_store.proto";
 import "recurrence_predictor.proto";
 
 option optimize_for = LITE_RUNTIME;
@@ -17,4 +18,8 @@ message RecurrenceRankerProto {
   optional uint32 config_hash = 1;
   // Serialisation of the predictor used by the ranker.
   optional RecurrencePredictorProto predictor = 2;
+  // Serialisation of stored targets.
+  optional FrecencyStoreProto targets = 3;
+  // Serialisation of stored conditions.
+  optional FrecencyStoreProto conditions = 4;
 }

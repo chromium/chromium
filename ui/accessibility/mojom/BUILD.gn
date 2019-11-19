@@ -9,7 +9,6 @@ mojom("mojom") {
     "ax_action_data.mojom",
     "ax_assistant_structure.mojom",
     "ax_event.mojom",
-    "ax_host.mojom",
     "ax_node_data.mojom",
     "ax_relative_bounds.mojom",
     "ax_tree_data.mojom",
@@ -21,9 +20,9 @@ mojom("mojom") {
     "//mojo/public/mojom/base",
     "//ui/accessibility:ax_constants_mojo",
     "//ui/accessibility:ax_enums_mojo",
-    "//ui/gfx/geometry/mojo",
-    "//ui/gfx/mojo",
-    "//ui/gfx/range/mojo",
+    "//ui/gfx/geometry/mojom",
+    "//ui/gfx/mojom",
+    "//ui/gfx/range/mojom",
     "//url/mojom:url_mojom_gurl",
   ]
 }

@@ -37,11 +37,14 @@
 
 #include "third_party/blink/renderer/platform/image-decoders/jpeg/jpeg_image_decoder.h"
 
+#include <limits>
 #include <memory>
 
+#include "base/numerics/checked_math.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image_metrics.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 extern "C" {
 #include <stdio.h>  // jpeglib.h needs stdio FILE.
@@ -81,6 +84,39 @@ const int exifMarker = JPEG_APP0 + 1;
 // JPEG only supports a denominator of 8.
 const unsigned g_scale_denominator = 8;
 
+// Extracts the YUV subsampling format of an image given |info| which is assumed
+// to have gone through a jpeg_read_header() call.
+cc::YUVSubsampling YuvSubsampling(const jpeg_decompress_struct& info) {
+  if (info.jpeg_color_space == JCS_YCbCr && info.num_components == 3 &&
+      info.comp_info && info.comp_info[1].h_samp_factor == 1 &&
+      info.comp_info[1].v_samp_factor == 1 &&
+      info.comp_info[2].h_samp_factor == 1 &&
+      info.comp_info[2].v_samp_factor == 1) {
+    const int h = info.comp_info[0].h_samp_factor;
+    const int v = info.comp_info[0].v_samp_factor;
+    if (v == 1) {
+      switch (h) {
+        case 1:
+          return cc::YUVSubsampling::k444;
+        case 2:
+          return cc::YUVSubsampling::k422;
+        case 4:
+          return cc::YUVSubsampling::k411;
+      }
+    } else if (v == 2) {
+      switch (h) {
+        case 1:
+          return cc::YUVSubsampling::k440;
+        case 2:
+          return cc::YUVSubsampling::k420;
+        case 4:
+          return cc::YUVSubsampling::k410;
+      }
+    }
+  }
+  return cc::YUVSubsampling::kUnknown;
+}
+
 // Extracts the JPEG color space of an image for UMA purposes given |info| which
 // is assumed to have gone through a jpeg_read_header(). When the color space is
 // YCbCr, we also extract the chroma subsampling. The caveat is that the
@@ -101,42 +137,44 @@ blink::BitmapImageMetrics::JpegColorSpace ExtractUMAJpegColorSpace(
     case JCS_YCCK:
       return blink::BitmapImageMetrics::JpegColorSpace::kYCCK;
     case JCS_YCbCr:
-      // The following logic is mostly reused from YuvSubsampling(). However,
-      // here we use |info.comp_info| instead of |info.cur_comp_info| to read
-      // the components from the SOF instead of the first scan. We also don't
-      // care about |info.scale_denom|.
-      // TODO: can we use this same logic in YuvSubsampling()?
-      if (info.num_components == 3 && info.comp_info &&
-          info.comp_info[1].h_samp_factor == 1 &&
-          info.comp_info[1].v_samp_factor == 1 &&
-          info.comp_info[2].h_samp_factor == 1 &&
-          info.comp_info[2].v_samp_factor == 1) {
-        const int h = info.comp_info[0].h_samp_factor;
-        const int v = info.comp_info[0].v_samp_factor;
-        if (v == 1) {
-          switch (h) {
-            case 1:
-              return blink::BitmapImageMetrics::JpegColorSpace::kYCbCr444;
-            case 2:
-              return blink::BitmapImageMetrics::JpegColorSpace::kYCbCr422;
-            case 4:
-              return blink::BitmapImageMetrics::JpegColorSpace::kYCbCr411;
-          }
-        } else if (v == 2) {
-          switch (h) {
-            case 1:
-              return blink::BitmapImageMetrics::JpegColorSpace::kYCbCr440;
-            case 2:
-              return blink::BitmapImageMetrics::JpegColorSpace::kYCbCr420;
-            case 4:
-              return blink::BitmapImageMetrics::JpegColorSpace::kYCbCr410;
-          }
-        }
+      switch (YuvSubsampling(info)) {
+        case cc::YUVSubsampling::k444:
+          return blink::BitmapImageMetrics::JpegColorSpace::kYCbCr444;
+        case cc::YUVSubsampling::k422:
+          return blink::BitmapImageMetrics::JpegColorSpace::kYCbCr422;
+        case cc::YUVSubsampling::k411:
+          return blink::BitmapImageMetrics::JpegColorSpace::kYCbCr411;
+        case cc::YUVSubsampling::k440:
+          return blink::BitmapImageMetrics::JpegColorSpace::kYCbCr440;
+        case cc::YUVSubsampling::k420:
+          return blink::BitmapImageMetrics::JpegColorSpace::kYCbCr420;
+        case cc::YUVSubsampling::k410:
+          return blink::BitmapImageMetrics::JpegColorSpace::kYCbCr410;
+        case cc::YUVSubsampling::kUnknown:
+          return blink::BitmapImageMetrics::JpegColorSpace::kYCbCrOther;
       }
-      return blink::BitmapImageMetrics::JpegColorSpace::kYCbCrOther;
+      NOTREACHED();
     default:
       return blink::BitmapImageMetrics::JpegColorSpace::kUnknown;
   }
+}
+
+// Rounds |size| to the smallest multiple of |alignment| that is greater than or
+// equal to |size|.
+// Note that base::bits::Align is not used here because the alignment is not
+// guaranteed to be a power of two.
+int Align(int size, int alignment) {
+  // Width and height are 16 bits for a JPEG (i.e. < 65536) and the maximum
+  // size of a JPEG MCU in either dimension is 8 * 4 == 32.
+  DCHECK_GE(size, 0);
+  DCHECK_LT(size, 1 << 16);
+  DCHECK_GT(alignment, 0);
+  DCHECK_LE(alignment, 32);
+
+  if (size % alignment == 0)
+    return size;
+
+  return ((size + alignment) / alignment) * alignment;
 }
 
 }  // namespace
@@ -162,16 +200,6 @@ enum jstate {
   JPEG_DECOMPRESS_PROGRESSIVE,  // Output progressive pixels
   JPEG_DECOMPRESS_SEQUENTIAL,   // Output sequential pixels
   JPEG_DONE
-};
-
-enum yuv_subsampling {
-  YUV_UNKNOWN,
-  YUV_410,
-  YUV_411,
-  YUV_420,
-  YUV_422,
-  YUV_440,
-  YUV_444
 };
 
 void init_source(j_decompress_ptr jd);
@@ -273,56 +301,13 @@ static ImageOrientation ReadImageOrientation(jpeg_decompress_struct* info) {
 
 static IntSize ComputeYUVSize(const jpeg_decompress_struct* info,
                               int component) {
-  return IntSize(info->cur_comp_info[component]->downsampled_width,
-                 info->cur_comp_info[component]->downsampled_height);
+  return IntSize(info->comp_info[component].downsampled_width,
+                 info->comp_info[component].downsampled_height);
 }
 
 static size_t ComputeYUVWidthBytes(const jpeg_decompress_struct* info,
                                    int component) {
-  return info->cur_comp_info[component]->width_in_blocks * DCTSIZE;
-}
-
-static yuv_subsampling YuvSubsampling(const jpeg_decompress_struct& info) {
-  if ((DCTSIZE == 8) && (info.num_components == 3) && (info.scale_denom <= 8) &&
-      (info.cur_comp_info[0]) && (info.cur_comp_info[1]) &&
-      (info.cur_comp_info[2]) && (info.cur_comp_info[1]->h_samp_factor == 1) &&
-      (info.cur_comp_info[1]->v_samp_factor == 1) &&
-      (info.cur_comp_info[2]->h_samp_factor == 1) &&
-      (info.cur_comp_info[2]->v_samp_factor == 1)) {
-    int h = info.cur_comp_info[0]->h_samp_factor;
-    int v = info.cur_comp_info[0]->v_samp_factor;
-    // 4:4:4 : (h == 1) && (v == 1)
-    // 4:4:0 : (h == 1) && (v == 2)
-    // 4:2:2 : (h == 2) && (v == 1)
-    // 4:2:0 : (h == 2) && (v == 2)
-    // 4:1:1 : (h == 4) && (v == 1)
-    // 4:1:0 : (h == 4) && (v == 2)
-    if (v == 1) {
-      switch (h) {
-        case 1:
-          return YUV_444;
-        case 2:
-          return YUV_422;
-        case 4:
-          return YUV_411;
-        default:
-          break;
-      }
-    } else if (v == 2) {
-      switch (h) {
-        case 1:
-          return YUV_440;
-        case 2:
-          return YUV_420;
-        case 4:
-          return YUV_410;
-        default:
-          break;
-      }
-    }
-  }
-
-  return YUV_UNKNOWN;
+  return info->comp_info[component].width_in_blocks * DCTSIZE;
 }
 
 static void ProgressMonitor(j_common_ptr info) {
@@ -340,11 +325,11 @@ class JPEGImageReader final {
   USING_FAST_MALLOC(JPEGImageReader);
 
  public:
-  JPEGImageReader(JPEGImageDecoder* decoder)
+  JPEGImageReader(JPEGImageDecoder* decoder, size_t initial_offset)
       : decoder_(decoder),
         needs_restart_(false),
-        restart_position_(0),
-        next_read_position_(0),
+        restart_position_(initial_offset),
+        next_read_position_(initial_offset),
         last_set_byte_(nullptr),
         state_(JPEG_HEADER),
         samples_(nullptr) {
@@ -466,6 +451,31 @@ class JPEGImageReader final {
            info_.image_height % mcu_height != 0;
   }
 
+  // Whether or not the horizontal and vertical sample factors of all components
+  // hold valid values (i.e. 1, 2, 3, or 4). It also returns the maximal
+  // horizontal and vertical sample factors via |max_h| and |max_v|.
+  bool AreValidSampleFactorsAvailable(int* max_h, int* max_v) const {
+    if (!info_.num_components)
+      return false;
+
+    const jpeg_component_info* comp_info = info_.comp_info;
+    if (!comp_info)
+      return false;
+
+    *max_h = 0;
+    *max_v = 0;
+    for (int i = 0; i < info_.num_components; ++i) {
+      if (comp_info[i].h_samp_factor < 1 || comp_info[i].h_samp_factor > 4 ||
+          comp_info[i].v_samp_factor < 1 || comp_info[i].v_samp_factor > 4) {
+        return false;
+      }
+
+      *max_h = std::max(*max_h, comp_info[i].h_samp_factor);
+      *max_v = std::max(*max_v, comp_info[i].v_samp_factor);
+    }
+    return true;
+  }
+
   // Decode the JPEG data. If |only_size| is specified, then only the size
   // information will be decoded.
   bool Decode(bool only_size) {
@@ -482,15 +492,13 @@ class JPEGImageReader final {
 
         switch (info_.jpeg_color_space) {
           case JCS_YCbCr:
-            // libjpeg can convert YCbCr image pixels to RGB.
-            info_.out_color_space = rgbOutputColorSpace();
-            if (decoder_->HasImagePlanes() &&
-                (YuvSubsampling(info_) != YUV_UNKNOWN))
+            if (decoder_->CanDecodeToYUV() &&
+                YuvSubsampling(info_) == cc::YUVSubsampling::k420)
               override_color_space = JCS_YCbCr;
-            break;
+            FALLTHROUGH;  // libjpeg can convert YCbCr image pixels to RGB.
           case JCS_GRAYSCALE:
+            FALLTHROUGH;  // libjpeg can convert GRAYSCALE image pixels to RGB.
           case JCS_RGB:
-            // libjpeg can convert GRAYSCALE image pixels to RGB.
             info_.out_color_space = rgbOutputColorSpace();
             break;
           case JCS_CMYK:
@@ -529,13 +537,13 @@ class JPEGImageReader final {
           // the original size won't exceed the memory limit (see
           // |max_decoded_bytes_| in ImageDecoder) or something less than
           // |g_scale_denominator| otherwise to ensure the image is downscaled.
-          std::vector<SkISize> sizes;
+          Vector<SkISize> sizes;
           if (max_numerator == g_scale_denominator &&
               ShouldDecodeToOriginalSize()) {
             sizes.push_back(
                 SkISize::Make(info_.image_width, info_.image_height));
           } else {
-            sizes.reserve(max_numerator);
+            sizes.ReserveCapacity(max_numerator);
             for (int numerator = 1; numerator <= max_numerator; ++numerator) {
               info_.scale_num = numerator;
               jpeg_calc_output_dimensions(&info_);
@@ -628,6 +636,9 @@ class JPEGImageReader final {
       }
       FALLTHROUGH;
       case JPEG_START_DECOMPRESS:
+        if (info_.out_color_space == JCS_YCbCr)
+          DCHECK(decoder_->HasImagePlanes());
+
         // Set parameters for decompression.
         // FIXME -- Should reset dct_method and dither mode for final pass
         // of progressive JPEG.
@@ -852,13 +863,20 @@ void term_source(j_decompress_ptr jd) {
       ->Complete();
 }
 
-JPEGImageDecoder::JPEGImageDecoder(AlphaOption alpha_option,
-                                   const ColorBehavior& color_behavior,
-                                   size_t max_decoded_bytes)
-    : ImageDecoder(alpha_option,
-                   ImageDecoder::kDefaultBitDepth,
-                   color_behavior,
-                   max_decoded_bytes) {}
+JPEGImageDecoder::JPEGImageDecoder(
+    AlphaOption alpha_option,
+    const ColorBehavior& color_behavior,
+    size_t max_decoded_bytes,
+    const OverrideAllowDecodeToYuv allow_decode_to_yuv,
+    size_t offset)
+    : ImageDecoder(
+          alpha_option,
+          ImageDecoder::kDefaultBitDepth,
+          color_behavior,
+          max_decoded_bytes,
+          allow_decode_to_yuv == OverrideAllowDecodeToYuv::kDefault &&
+              RuntimeEnabledFeatures::DecodeJpeg420ImagesToYUVEnabled()),
+      offset_(offset) {}
 
 JPEGImageDecoder::~JPEGImageDecoder() = default;
 
@@ -874,6 +892,17 @@ bool JPEGImageDecoder::SetSize(unsigned width, unsigned height) {
 }
 
 void JPEGImageDecoder::OnSetData(SegmentReader* data) {
+  // TODO(crbug.com/943519): Incremental YUV decoding is not currently
+  // supported.
+  if (IsAllDataReceived()) {
+    // TODO(crbug.com/919627): Right now |allow_decode_to_yuv_| is false by
+    // default and is set by the blink feature DecodeJpeg420ImagesToYUV.
+    //
+    // Calling IsSizeAvailable() ensures the reader is created and the output
+    // color space is set.
+    allow_decode_to_yuv_ &=
+        IsSizeAvailable() && reader_->Info()->out_color_space == JCS_YCbCr;
+  }
   if (reader_)
     reader_->SetData(data);
 }
@@ -918,24 +947,7 @@ unsigned JPEGImageDecoder::DesiredScaleNumerator() const {
 }
 
 bool JPEGImageDecoder::ShouldGenerateAllSizes() const {
-  return supported_decode_sizes_.empty();
-}
-
-bool JPEGImageDecoder::CanDecodeToYUV() {
-  // TODO(crbug.com/919627): Right now |decode_to_yuv_for_testing_| is false by
-  // default and is only set true for unit tests. Remove it once
-  // JPEG YUV decoding is finished and YUV decoding doesn't need to be disabled
-  // outside of tests.
-  //
-  // Returning false here is a bit deceptive because the JPEG decoder does
-  // support YUV. But the rest of the infrastructure at levels above the decoder
-  // is not quite there yet to handle the resulting JPEG YUV data,
-  // so for now we disable that path.
-  //
-  // Calling IsSizeAvailable() ensures the reader is created and the output
-  // color space is set.
-  return decode_to_yuv_for_testing_ && IsSizeAvailable() &&
-         reader_->Info()->out_color_space == JCS_YCbCr;
+  return supported_decode_sizes_.IsEmpty();
 }
 
 void JPEGImageDecoder::DecodeToYUV() {
@@ -949,20 +961,47 @@ void JPEGImageDecoder::DecodeToYUV() {
   }
 }
 
-void JPEGImageDecoder::SetImagePlanes(
-    std::unique_ptr<ImagePlanes> image_planes) {
-  image_planes_ = std::move(image_planes);
+// TODO(crbug.com/919627): Confirm that this is correct for all cases.
+SkYUVColorSpace JPEGImageDecoder::GetYUVColorSpace() const {
+  return SkYUVColorSpace::kJPEG_SkYUVColorSpace;
 }
 
-void JPEGImageDecoder::SetSupportedDecodeSizes(std::vector<SkISize> sizes) {
+void JPEGImageDecoder::SetSupportedDecodeSizes(Vector<SkISize> sizes) {
   supported_decode_sizes_ = std::move(sizes);
 }
 
-std::vector<SkISize> JPEGImageDecoder::GetSupportedDecodeSizes() const {
+Vector<SkISize> JPEGImageDecoder::GetSupportedDecodeSizes() const {
   // DCHECK IsDecodedSizeAvailable instead of IsSizeAvailable, since the latter
   // has side effects of actually doing the decode.
   DCHECK(IsDecodedSizeAvailable());
   return supported_decode_sizes_;
+}
+
+gfx::Size JPEGImageDecoder::GetImageCodedSize() const {
+  // We use the |max_{h,v}_samp_factor|s returned by
+  // AreValidSampleFactorsAvailable() since the ones available via
+  // Info()->max_{h,v}_samp_factor are not updated until the image is actually
+  // being decoded.
+  int max_h_samp_factor;
+  int max_v_samp_factor;
+  if (!reader_->AreValidSampleFactorsAvailable(&max_h_samp_factor,
+                                               &max_v_samp_factor)) {
+    return gfx::Size();
+  }
+
+  const int coded_width = Align(Size().Width(), max_h_samp_factor * 8);
+  const int coded_height = Align(Size().Height(), max_v_samp_factor * 8);
+
+  return gfx::Size(coded_width, coded_height);
+}
+
+cc::ImageHeaderMetadata JPEGImageDecoder::MakeMetadataForDecodeAcceleration()
+    const {
+  cc::ImageHeaderMetadata image_metadata =
+      ImageDecoder::MakeMetadataForDecodeAcceleration();
+  image_metadata.jpeg_is_progressive = reader_->Info()->buffered_image;
+  image_metadata.coded_size = GetImageCodedSize();
+  return image_metadata;
 }
 
 // At the moment we support only JCS_RGB and JCS_CMYK values of the
@@ -1039,6 +1078,8 @@ bool OutputRows(JPEGImageReader* reader, ImageFrame& buffer) {
 static bool OutputRawData(JPEGImageReader* reader, ImagePlanes* image_planes) {
   JSAMPARRAY samples = reader->Samples();
   jpeg_decompress_struct* info = reader->Info();
+
+  DCHECK_EQ(info->out_color_space, JCS_YCbCr);
 
   JSAMPARRAY bufferraw[3];
   JSAMPROW bufferraw2[32];
@@ -1174,12 +1215,19 @@ inline bool IsComplete(const JPEGImageDecoder* decoder, bool only_size) {
   return decoder->FrameIsDecodedAtIndex(0);
 }
 
+cc::YUVSubsampling JPEGImageDecoder::GetYUVSubsampling() const {
+  DCHECK(reader_->Info());
+  // reader_->Info() should have gone through a jpeg_read_header() call.
+  DCHECK(IsDecodedSizeAvailable());
+  return YuvSubsampling(*reader_->Info());
+}
+
 void JPEGImageDecoder::Decode(bool only_size) {
   if (Failed())
     return;
 
   if (!reader_) {
-    reader_ = std::make_unique<JPEGImageReader>(this);
+    reader_ = std::make_unique<JPEGImageReader>(this, offset_);
     reader_->SetData(data_.get());
   }
 

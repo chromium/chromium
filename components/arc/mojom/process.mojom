@@ -1,0 +1,153 @@
+// Copyright 2015 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+//
+// Next MinVersion: 9
+
+module arc.mojom;
+
+import "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom";
+
+// Describes the current process state, as defined by AOSP in
+// android.app.ActivityManager.
+[Extensible]
+enum ProcessState {
+  // Not a real process state.
+  UNKNOWN = -1,
+
+  // Process is a persistent system process.
+  PERSISTENT = 0,
+
+  // Process is a persistent system process and is doing UI.
+  PERSISTENT_UI = 1,
+
+  // Process is hosting the current top activities.  Note that this covers
+  // all activities that are visible to the user.
+  TOP = 2,
+
+  // Process is hosting a foreground service.
+  FOREGROUND_SERVICE = 3,
+
+  // Process is hosting a foreground service due to a system binding.
+  BOUND_FOREGROUND_SERVICE = 4,
+
+  // Process is important to the user, and something they are aware of.
+  IMPORTANT_FOREGROUND = 5,
+
+  // Process is important to the user, but not something they are aware of.
+  IMPORTANT_BACKGROUND = 6,
+
+  // Process is in the background transient so we will try to keep running.
+  TRANSIENT_BACKGROUND = 7,
+
+  // Process is in the background running a backup/restore operation.
+  BACKUP = 8,
+
+  // Process is in the background running a service.  Unlike oom_adj, this level
+  // is used for both the normal running in background state and the executing
+  // operations state.
+  SERVICE = 9,
+
+  // Process is in the background running a receiver. Note that from the
+  // perspective of oom_adj, receivers run at a higher foreground level, but
+  // for our prioritization here that is not necessary and putting them below
+  // services means many fewer changes in some process states as they receive
+  // broadcasts.
+  RECEIVER = 10,
+
+  // Same as PROCESS_STATE_TOP but while device is sleeping.
+  TOP_SLEEPING = 11,
+
+  // Process is in the background, but it can't restore its state so we want
+  // to try to avoid killing it.
+  HEAVY_WEIGHT = 12,
+
+  // Process is in the background but hosts the home activity.
+  HOME = 13,
+
+  // Process is in the background but hosts the last shown activity.
+  LAST_ACTIVITY = 14,
+
+  // Process is being cached for later use and contains activities.
+  CACHED_ACTIVITY = 15,
+
+  // Process is being cached for later use and is a client of another cached
+  // process that contains activities.
+  CACHED_ACTIVITY_CLIENT = 16,
+
+  // Process is being cached for later use and has an activity that corresponds
+  // to an existing recent task.
+  CACHED_RECENT = 17,
+
+  // Process is being cached for later use and is empty.
+  CACHED_EMPTY = 18,
+
+  // Process does not exist.
+  NONEXISTENT = 19,
+};
+
+// Describes a running ARC process.
+// This struct is a subset of android.app.ActivityManager.RunningAppProcessInfo.
+struct RunningAppProcessInfo {
+  // Name of the process.
+  string process_name;
+
+  // PID (within ARC's PID namespace) of the process.
+  uint32 pid;
+
+  // Current process state.
+  ProcessState process_state;
+
+  // Package names running in the process.
+  array<string>? packages;
+
+  // Whether this app is focused in ARC multi-window environment.
+  bool is_focused;
+
+  // Last time the process was active. Milliseconds since boot.
+  // The clock is monotonic (comes from Android System.uptimeMillis()).
+  int64 last_activity_time;
+};
+
+// Describes the memory usage of an ARC process.
+struct ArcMemoryDump {
+  // PID (within ARC's PID namespace) of the process.
+  uint32 pid;
+
+  // Resident Set Size (RSS) in kilobytes
+  uint32 resident_set_kb = 0;
+
+  // Private footprint (RSS + swap usage) in kilobytes
+  uint32 private_footprint_kb = 0;
+};
+
+// Next Method ID: 10
+interface ProcessInstance {
+  // Requests ARC instance to kill a process.
+  [MinVersion=1]
+  KillProcess@1(uint32 pid, string reason);
+
+  [MinVersion=6]
+  RequestProcessList@5() => (array<RunningAppProcessInfo> processes);
+
+  // Requests memory usage dumps for all ARC application processes.
+  [MinVersion=7]
+  RequestApplicationProcessMemoryInfoDeprecated@6()
+    => (memory_instrumentation.mojom.GlobalMemoryDump dump);
+
+  // Requests memory usage dumps for all ARC system processes.
+  [MinVersion=7]
+  RequestSystemProcessMemoryInfoDeprecated@7(array<uint32> nspids)
+    => (memory_instrumentation.mojom.GlobalMemoryDump dump);
+
+  // Requests memory usage dumps for all ARC application processes.
+  [MinVersion=8]
+  RequestApplicationProcessMemoryInfo@8()
+    => (array<ArcMemoryDump> process_dumps);
+
+  // Requests memory usage dumps for all ARC system processes.
+  [MinVersion=8]
+  RequestSystemProcessMemoryInfo@9(array<uint32> nspids)
+    => (array<ArcMemoryDump> process_dumps);
+
+};

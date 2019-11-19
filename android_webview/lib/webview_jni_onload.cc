@@ -9,7 +9,6 @@
 #include "components/version_info/version_info_values.h"
 #include "content/public/app/content_jni_onload.h"
 #include "content/public/app/content_main.h"
-#include "url/url_util.h"
 
 namespace android_webview {
 
@@ -19,11 +18,6 @@ bool OnJNIOnLoadInit() {
 
   base::android::SetVersionNumber(PRODUCT_VERSION);
   content::SetContentMainDelegate(new android_webview::AwMainDelegate());
-
-  // Initialize url lib here while we are still single-threaded, in case we use
-  // CookieManager before initializing Chromium (which would normally have done
-  // this). It's safe to call this multiple times.
-  url::Initialize();
   return true;
 }
 

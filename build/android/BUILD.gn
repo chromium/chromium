@@ -5,6 +5,7 @@
 import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
 import("//build/config/python.gni")
+import("//build_overrides/build.gni")
 
 if (enable_java_templates) {
   sun_tools_jar_path = "$root_gen_dir/sun_tools_jar/tools.jar"
@@ -40,36 +41,44 @@ if (enable_java_templates) {
 
   # Write to a file some GN vars that are useful to scripts that use the output
   # directory. Format is chosen as easliy importable by both python and bash.
-  CR = "$0x0A"
-  _data = ""
-  _data += "android_sdk_build_tools=" +
-           rebase_path(android_sdk_build_tools, root_build_dir) + CR
-  _data += "android_sdk_build_tools_version=$android_sdk_build_tools_version$CR"
-  _data +=
-      "android_sdk_tools_version_suffix=$android_sdk_tools_version_suffix$CR"
-  _data +=
-      "android_sdk_root=" + rebase_path(android_sdk_root, root_build_dir) + CR
-  _data += "android_sdk_version=$android_sdk_version$CR"
-  _data +=
-      "android_ndk_root=" + rebase_path(android_ndk_root, root_build_dir) + CR
-  _data += "android_tool_prefix=" +
-           rebase_path(android_tool_prefix, root_build_dir) + CR
+  _lines = [
+    "android_sdk_build_tools=" +
+        rebase_path(android_sdk_build_tools, root_build_dir),
+    "android_sdk_build_tools_version=$android_sdk_build_tools_version",
+    "android_sdk_tools_version_suffix=$android_sdk_tools_version_suffix",
+    "android_sdk_root=" + rebase_path(android_sdk_root, root_build_dir),
+    "android_sdk_version=$android_sdk_version",
+    "android_ndk_root=" + rebase_path(android_ndk_root, root_build_dir),
+    "android_tool_prefix=" + rebase_path(android_tool_prefix, root_build_dir),
+    "android_configuration_failure_dir=" +
+        rebase_path(android_configuration_failure_dir, root_build_dir),
+  ]
   if (defined(android_secondary_abi_cpu)) {
     _secondary_label_info =
         get_label_info(":foo($android_secondary_abi_toolchain)", "root_out_dir")
-    _data += "android_secondary_abi_toolchain=" +
-             rebase_path(_secondary_label_info, root_build_dir) + CR
+    _lines += [ "android_secondary_abi_toolchain=" +
+                rebase_path(_secondary_label_info, root_build_dir) ]
   }
   if (defined(build_apk_secondary_abi)) {
-    _data += "build_apk_secondary_abi=$build_apk_secondary_abi" + CR
+    _lines += [ "build_apk_secondary_abi=$build_apk_secondary_abi" ]
   }
-  write_file(android_build_vars, _data)
+  write_file(android_build_vars, _lines)
+}
+
+python_library("devil_chromium_py") {
+  pydeps_file = "devil_chromium.pydeps"
+  data = [
+    "devil_chromium.py",
+    "devil_chromium.json",
+    "//third_party/catapult/third_party/gsutil/",
+    "//third_party/catapult/devil/devil/devil_dependencies.json",
+  ]
 }
 
 python_library("test_runner_py") {
+  testonly = true
   pydeps_file = "test_runner.pydeps"
   data = [
-    "devil_chromium.json",
     "pylib/gtest/filter/",
     "pylib/instrumentation/render_test.html.jinja",
     "test_wrapper/logdog_wrapper.py",
@@ -78,9 +87,21 @@ python_library("test_runner_py") {
     "${android_sdk_build_tools}/lib64/libc++.so",
     "${android_sdk_build_tools}/split-select",
     "${android_sdk_root}/platform-tools/adb",
-    "//third_party/catapult/third_party/gsutil/",
-    "//third_party/catapult/devil/devil/devil_dependencies.json",
   ]
+  data_deps = [
+    ":devil_chromium_py",
+  ]
+  if (build_with_chromium) {
+    data += [
+      "//third_party/android_build_tools/bundletool/bundletool-all-0.10.3.jar",
+      "//tools/android/avd/proto/",
+    ]
+    data_deps +=
+        [ "//third_party/android_platform/development/scripts:stack_py" ]
+    if (is_asan) {
+      data_deps += [ "//tools/android/asan/third_party:asan_device_setup" ]
+    }
+  }
 
   # Proguard is needed only when using apks (rather than native executables).
   if (enable_java_templates) {
@@ -96,24 +117,19 @@ python_library("logdog_wrapper_py") {
 
 python_library("resource_sizes_py") {
   pydeps_file = "resource_sizes.pydeps"
+  data_deps = [
+    ":devil_chromium_py",
+    "//third_party/catapult/tracing:convert_chart_json",
+  ]
+  data = [
+    android_build_vars,
+    android_readelf,
+  ]
 }
 
-# Create wrapper scripts in out/bin that takes care of setting the
-# --output-directory.
-_scripts_to_wrap = [
-  "asan_symbolize.py",
-  "tombstones.py",
-]
-
-_wrapper_targets = []
-foreach(script, _scripts_to_wrap) {
-  _target_name = get_path_info(script, "name") + "_wrapper"
-  _wrapper_targets += [ ":$_target_name" ]
-  wrapper_script(_target_name) {
-    target = script
-  }
-}
-
-group("wrapper_scripts") {
-  deps = _wrapper_targets
+python_library("bundle_wrapper_script_py") {
+  pydeps_file = "gyp/create_bundle_wrapper_script.pydeps"
+  data = [
+    "//third_party/android_build_tools/bundletool/bundletool-all-0.10.3.jar",
+  ]
 }

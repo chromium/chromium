@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="40px" height="40px" viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 53.2 (72643) - https://sketchapp.com -->
+    <title>mode_portrait_1x</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <path d="M31.6666667,5 L8.33333333,5 C6.5,5 5,6.5 5,8.33333333 L5,31.6666667 C5,33.5 6.5,35 8.33333333,35 L31.6666667,35 C33.5,35 35,33.5 35,31.6666667 L35,8.33333333 C35,6.5 33.5,5 31.6666667,5 Z M32,32 L8,32 L8,8 L32,8 L32,32 Z" id="path-1"></path>
+    </defs>
+    <g id="mode_portrait_1x" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="ic_portrait_black_24dp">
+            <polygon id="Path" points="0 0 40 0 40 40 0 40"></polygon>
+            <path d="M20,20.086667 C22.0666667,20.086667 23.75,18.4033337 23.75,16.336667 C23.75,14.2700003 22.0666667,12.586667 20,12.586667 C17.9333333,12.586667 16.25,14.2700003 16.25,16.336667 C16.25,18.4033337 17.9333333,20.086667 20,20.086667 Z M27.5,26.753333 C27.5,24.253333 22.5,23.003333 20,23.003333 C17.5,23.003333 12.5,24.253333 12.5,26.753333 L12.5,28.003333 L27.5,28.003333 L27.5,26.753333 Z" id="Shape" fill="#FFFFFF" fill-rule="nonzero"></path>
+        </g>
+        <mask id="mask-2" fill="white">
+            <use xlink:href="#path-1"></use>
+        </mask>
+        <use id="Shape" fill="#FFFFFF" fill-rule="nonzero" xlink:href="#path-1"></use>
+    </g>
+</svg>

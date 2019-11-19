@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
+<script src="file:///gen/mojo/public/mojom/base/unguessable_token.mojom.js"></script>
+<script src="file:///gen/third_party/blink/public/mojom/serial/serial.mojom.js"></script>
+<script src="resources/serial-test-utils.js"></script>
+<script>
+
+serial_test(async (t, fake) => {
+  const { port, fakePort } = await getFakeSerialPort(fake);
+
+  await promise_rejects(t, 'InvalidStateError', port.close());
+}, 'A SerialPort cannot be closed if it was never opened.');
+
+serial_test(async (t, fake) => {
+  const { port, fakePort } = await getFakeSerialPort(fake);
+
+  await port.open({ baudrate: 9600 });
+  await port.close();
+  await promise_rejects(t, 'InvalidStateError', port.close());
+}, 'A SerialPort cannot be closed if it is already closed.');
+
+serial_test(async (t, fake) => {
+  const { port, fakePort } = await getFakeSerialPort(fake);
+
+  await port.open({ baudrate: 9600 });
+  const closePromise = port.close();
+  await promise_rejects(t, 'InvalidStateError', port.close());
+  await closePromise;
+}, 'A SerialPort cannot be closed if it is being closed.');
+
+</script>

@@ -7,7 +7,7 @@
 #include <stdint.h>
 #include <utility>
 
-#include "mojo/public/cpp/bindings/strong_binding.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 namespace device {
 
@@ -35,9 +35,10 @@ class VibrationManagerEmptyImpl : public mojom::VibrationManager {
 }  // namespace
 
 // static
-void VibrationManagerImpl::Create(mojom::VibrationManagerRequest request) {
-  mojo::MakeStrongBinding(std::make_unique<VibrationManagerEmptyImpl>(),
-                          std::move(request));
+void VibrationManagerImpl::Create(
+    mojo::PendingReceiver<mojom::VibrationManager> receiver) {
+  mojo::MakeSelfOwnedReceiver(std::make_unique<VibrationManagerEmptyImpl>(),
+                              std::move(receiver));
 }
 
 }  // namespace device

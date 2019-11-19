@@ -1,4 +1,0 @@
-
-This tests that a frame can set its src to "about:blank" while running inside a <script> without an assertion failing.
-
-SUCCESS - Didn't crash!

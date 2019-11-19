@@ -168,30 +168,10 @@ Polymer({
   },
 
   /**
-   * @param {!CrPicture.ImageElement} image
-   */
-  setSelectedImage_(image) {
-    this.fallbackImage_ = image;
-    // If the user is currently taking a photo, do not change the focus.
-    if (!this.selectedItem ||
-        this.selectedItem.dataset.type != CrPicture.SelectionTypes.CAMERA) {
-      this.$.selector.select(this.$.selector.indexOf(image));
-      this.selectedItem = image;
-    }
-  },
-
-  /** @private */
-  onDefaultImagesChanged_: function() {
-    if (this.selectedImageUrl_) {
-      this.setSelectedImageUrl(this.selectedImageUrl_);
-    }
-  },
-
-  /**
    * Handler for when accessibility-specific keys are pressed.
    * @param {!CustomEvent<!{key: string, keyboardEvent: Object}>} e
    */
-  onKeysPressed_: function(e) {
+  onKeysPressed: function(e) {
     if (!this.selectedItem) {
       return;
     }
@@ -221,6 +201,26 @@ Polymer({
     }
     this.selectImage_(this.selectedItem, activate);
     e.detail.keyboardEvent.preventDefault();
+  },
+
+  /**
+   * @param {!CrPicture.ImageElement} image
+   */
+  setSelectedImage_(image) {
+    this.fallbackImage_ = image;
+    // If the user is currently taking a photo, do not change the focus.
+    if (!this.selectedItem ||
+        this.selectedItem.dataset.type != CrPicture.SelectionTypes.CAMERA) {
+      this.$.selector.select(this.$.selector.indexOf(image));
+      this.selectedItem = image;
+    }
+  },
+
+  /** @private */
+  onDefaultImagesChanged_: function() {
+    if (this.selectedImageUrl_) {
+      this.setSelectedImageUrl(this.selectedImageUrl_);
+    }
   },
 
   /**

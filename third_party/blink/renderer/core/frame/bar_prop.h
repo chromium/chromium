@@ -51,10 +51,6 @@ class BarProp final : public ScriptWrappable, public DOMWindowClient {
     kToolbar
   };
 
-  static BarProp* Create(LocalFrame* frame, Type type) {
-    return MakeGarbageCollected<BarProp>(frame, type);
-  }
-
   BarProp(LocalFrame*, Type);
 
   bool visible() const;

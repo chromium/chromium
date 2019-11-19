@@ -21,7 +21,7 @@ TEST_F(ScrollbarThemeOverlayTest, PaintInvalidation) {
   NiceMock<MockScrollableArea>* mock_scrollable_area =
       MakeGarbageCollected<NiceMock<MockScrollableArea>>(
           ScrollOffset(100, 100));
-  ScrollbarThemeOverlay theme(14, 0, ScrollbarThemeOverlay::kAllowHitTest);
+  ScrollbarThemeOverlay theme(14, 0);
 
   Scrollbar* vertical_scrollbar = Scrollbar::CreateForTesting(
       mock_scrollable_area, kVerticalScrollbar, kRegularScrollbar, &theme);
@@ -93,7 +93,7 @@ TEST_F(ScrollbarThemeOverlayTest, PaintInvalidation) {
   mock_scrollable_area->ClearNeedsPaintInvalidationForScrollControls();
 
   // Pressing down should also cause an invalidation.
-  vertical_scrollbar->SetPressedPart(kThumbPart);
+  vertical_scrollbar->SetPressedPart(kThumbPart, WebInputEvent::kMouseDown);
   EXPECT_TRUE(vertical_scrollbar->ThumbNeedsRepaint());
   EXPECT_TRUE(mock_scrollable_area->VerticalScrollbarNeedsPaintInvalidation());
 
@@ -101,7 +101,7 @@ TEST_F(ScrollbarThemeOverlayTest, PaintInvalidation) {
   mock_scrollable_area->ClearNeedsPaintInvalidationForScrollControls();
 
   // Release should cause invalidation.
-  vertical_scrollbar->SetPressedPart(kNoPart);
+  vertical_scrollbar->SetPressedPart(kNoPart, WebInputEvent::kMouseDown);
   EXPECT_TRUE(vertical_scrollbar->ThumbNeedsRepaint());
   EXPECT_TRUE(mock_scrollable_area->VerticalScrollbarNeedsPaintInvalidation());
 
@@ -136,7 +136,7 @@ TEST_F(ScrollbarThemeOverlayTest, PaintInvalidation) {
   EXPECT_TRUE(vertical_scrollbar->ThumbNeedsRepaint());
   EXPECT_TRUE(mock_scrollable_area->VerticalScrollbarNeedsPaintInvalidation());
 
-  ThreadState::Current()->CollectAllGarbage();
+  ThreadState::Current()->CollectAllGarbageForTesting();
 }
 
 }  // namespace blink

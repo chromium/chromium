@@ -38,7 +38,7 @@ class BackgroundSyncNetworkObserverAndroid
                        content::BrowserThread::DeleteOnUIThread> {
    public:
     static scoped_refptr<BackgroundSyncNetworkObserverAndroid::Observer> Create(
-        base::Callback<void(network::mojom::ConnectionType)> callback);
+        base::RepeatingCallback<void(network::mojom::ConnectionType)> callback);
 
     // Called from BackgroundSyncNetworkObserver.java over JNI whenever the
     // connection type changes. This updates the current connection type seen by
@@ -54,13 +54,14 @@ class BackgroundSyncNetworkObserverAndroid
     friend class base::DeleteHelper<
         BackgroundSyncNetworkObserverAndroid::Observer>;
 
-    Observer(base::Callback<void(network::mojom::ConnectionType)> callback);
+    explicit Observer(
+        base::RepeatingCallback<void(network::mojom::ConnectionType)> callback);
     void Init();
     ~Observer();
 
     // This callback is to be run on the IO thread whenever the connection type
     // changes.
-    base::Callback<void(network::mojom::ConnectionType)> callback_;
+    base::RepeatingCallback<void(network::mojom::ConnectionType)> callback_;
     base::android::ScopedJavaGlobalRef<jobject> j_observer_;
 
     DISALLOW_COPY_AND_ASSIGN(Observer);
@@ -73,7 +74,8 @@ class BackgroundSyncNetworkObserverAndroid
   // Accessed on UI Thread
   scoped_refptr<Observer> observer_;
 
-  base::WeakPtrFactory<BackgroundSyncNetworkObserverAndroid> weak_ptr_factory_;
+  base::WeakPtrFactory<BackgroundSyncNetworkObserverAndroid> weak_ptr_factory_{
+      this};
 };
 
 }  // namespace content

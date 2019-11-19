@@ -54,7 +54,7 @@ class MDnsHostLocator : public HostLocator {
   SEQUENCE_CHECKER(sequence_checker_);
 
   // Must be last member.
-  base::WeakPtrFactory<MDnsHostLocator> weak_factory_;
+  base::WeakPtrFactory<MDnsHostLocator> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(MDnsHostLocator);
 };

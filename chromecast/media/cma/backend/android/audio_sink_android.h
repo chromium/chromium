@@ -122,6 +122,7 @@ class ManagedAudioSink {
   // the manager. If a valid instance existed on entry it is removed from the
   // manager and deleted before creating the new one.
   void Reset(Delegate* delegate,
+             int num_channels,
              int samples_per_second,
              bool primary,
              const std::string& device_id,

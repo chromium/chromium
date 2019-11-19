@@ -32,8 +32,12 @@
 
 #include "third_party/blink/renderer/platform/graphics/filters/filter_effect.h"
 #include "third_party/blink/renderer/platform/graphics/filters/source_graphic.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
+
+Filter::Filter(float scale)
+    : Filter(FloatRect(), FloatRect(), scale, kUserSpace) {}
 
 Filter::Filter(const FloatRect& reference_box,
                const FloatRect& filter_region,
@@ -43,20 +47,7 @@ Filter::Filter(const FloatRect& reference_box,
       filter_region_(filter_region),
       scale_(scale),
       unit_scaling_(unit_scaling),
-      source_graphic_(SourceGraphic::Create(this)) {}
-
-Filter* Filter::Create(const FloatRect& reference_box,
-                       const FloatRect& filter_region,
-                       float scale,
-                       UnitScaling unit_scaling) {
-  return MakeGarbageCollected<Filter>(reference_box, filter_region, scale,
-                                      unit_scaling);
-}
-
-Filter* Filter::Create(float scale) {
-  return MakeGarbageCollected<Filter>(FloatRect(), FloatRect(), scale,
-                                      kUserSpace);
-}
+      source_graphic_(MakeGarbageCollected<SourceGraphic>(this)) {}
 
 void Filter::Trace(blink::Visitor* visitor) {
   visitor->Trace(source_graphic_);

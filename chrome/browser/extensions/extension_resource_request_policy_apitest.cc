@@ -9,22 +9,72 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/service_worker_context.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/service_worker_test_helpers.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/blink/public/common/notifications/platform_notification_data.h"
 #include "url/gurl.h"
 
-class ExtensionResourceRequestPolicyTest : public extensions::ExtensionApiTest {
+namespace extensions {
+
+class ExtensionResourceRequestPolicyTest : public ExtensionApiTest {
  protected:
   void SetUpOnMainThread() override {
-    extensions::ExtensionApiTest::SetUpOnMainThread();
+    ExtensionApiTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+  void OpenUrlInSubFrameAndVerifyNavigationBlocked(
+      const GURL& target_url,
+      const std::string& target_frame_name,
+      const GURL& expected_navigation_url) {
+    GURL main_url = embedded_test_server()->GetURL(
+        "/frame_tree/page_with_two_frames_remote_and_local.html");
+    ui_test_utils::NavigateToURL(browser(), main_url);
+
+    // Navigate |target_frame_name| to |target_url|.
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    content::TestNavigationObserver nav_observer(web_contents, 1);
+    ASSERT_TRUE(content::ExecJs(
+        web_contents, content::JsReplace("window.open($1, $2)", target_url,
+                                         target_frame_name)));
+    nav_observer.Wait();
+
+    // Verify that the navigation has failed.
+    //
+    // It is important that the failure mode below is the same in _all_ of the
+    // tests like (to prevent fingerprinting):
+    // - WebNavigationToNonWebAccessibleResource...
+    // - WebNavigationToNonExistentResource
+    // - WebNavigationToNonExistentExtension
+    // - ...
+    EXPECT_FALSE(nav_observer.last_navigation_succeeded());
+    EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT, nav_observer.last_net_error_code());
+    EXPECT_EQ(expected_navigation_url, nav_observer.last_navigation_url());
+  }
+
+  void OpenUrlInLocalFrameAndVerifyNavigationBlocked(const GURL& target_url) {
+    // Tentatively check that the renderer-side validation took place.  Without
+    // renderer-side navigation we would still expect browser-side validation to
+    // result in ERR_BLOCKED_BY_CLIENT (with a different final URL though) -
+    // this is why the test assertion below is secondary / not that important.
+    GURL url_blocked_by_renderer("chrome-extension://invalid/");
+
+    OpenUrlInSubFrameAndVerifyNavigationBlocked(target_url, "local-frame",
+                                                url_blocked_by_renderer);
   }
 };
 
@@ -213,10 +263,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionResourceRequestPolicyTest,
 IN_PROC_BROWSER_TEST_F(ExtensionResourceRequestPolicyTest,
                        LinkToWebAccessibleResources) {
   std::string result;
-  const extensions::Extension* extension = LoadExtension(
+  const Extension* extension = LoadExtension(
       test_data_dir_.AppendASCII("extension_resource_request_policy")
           .AppendASCII("web_accessible"));
   ASSERT_TRUE(extension);
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::NavigationController& controller = web_contents->GetController();
 
   GURL accessible_linked_resource(embedded_test_server()->GetURL(
       "/extensions/api_test/extension_resource_request_policy/"
@@ -224,10 +277,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionResourceRequestPolicyTest,
   ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(
       browser(), accessible_linked_resource, 1);
   ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      browser()->tab_strip_model()->GetActiveWebContents(),
-      "window.domAutomationController.send(document.URL)",
+      web_contents, "window.domAutomationController.send(document.URL)",
       &result));
-  EXPECT_NE("about:blank", result);
+  EXPECT_EQ(content::PAGE_TYPE_NORMAL,
+            controller.GetLastCommittedEntry()->GetPageType());
+  GURL accessible_url = extension->GetResourceURL("/test.png");
+  EXPECT_EQ(accessible_url, result);
+  EXPECT_EQ(accessible_url,
+            web_contents->GetMainFrame()->GetLastCommittedURL());
 
   GURL nonaccessible_linked_resource(embedded_test_server()->GetURL(
       "/extensions/api_test/extension_resource_request_policy/"
@@ -235,15 +292,16 @@ IN_PROC_BROWSER_TEST_F(ExtensionResourceRequestPolicyTest,
   ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(
       browser(), nonaccessible_linked_resource, 1);
   ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      browser()->tab_strip_model()->GetActiveWebContents(),
-      "window.domAutomationController.send(document.URL)",
+      web_contents, "window.domAutomationController.send(document.URL)",
       &result));
-  EXPECT_EQ("about:blank", result);
-
+  EXPECT_EQ(content::PAGE_TYPE_ERROR,
+            controller.GetLastCommittedEntry()->GetPageType());
+  EXPECT_EQ("chrome-error://chromewebdata/", result);
+  GURL invalid_url("chrome-extension://invalid/");
+  EXPECT_EQ(invalid_url, web_contents->GetMainFrame()->GetLastCommittedURL());
 
   // Redirects can sometimes occur before the load event, so use a
   // UrlLoadObserver instead of blocking waiting for two load events.
-  GURL accessible_url = extension->GetResourceURL("/test.png");
   ui_test_utils::UrlLoadObserver accessible_observer(
       accessible_url, content::NotificationService::AllSources());
   GURL accessible_client_redirect_resource(embedded_test_server()->GetURL(
@@ -251,23 +309,21 @@ IN_PROC_BROWSER_TEST_F(ExtensionResourceRequestPolicyTest,
       "web_accessible/accessible_redirect_resource.html"));
   ui_test_utils::NavigateToURL(browser(), accessible_client_redirect_resource);
   accessible_observer.Wait();
-  EXPECT_EQ(accessible_url, browser()
-                                ->tab_strip_model()
-                                ->GetActiveWebContents()
-                                ->GetLastCommittedURL());
+  EXPECT_EQ(content::PAGE_TYPE_NORMAL,
+            controller.GetLastCommittedEntry()->GetPageType());
+  EXPECT_EQ(accessible_url, web_contents->GetLastCommittedURL());
 
   ui_test_utils::UrlLoadObserver nonaccessible_observer(
-      GURL("about:blank"), content::NotificationService::AllSources());
+      invalid_url, content::NotificationService::AllSources());
   GURL nonaccessible_client_redirect_resource(embedded_test_server()->GetURL(
       "/extensions/api_test/extension_resource_request_policy/"
       "web_accessible/nonaccessible_redirect_resource.html"));
   ui_test_utils::NavigateToURL(browser(),
                                nonaccessible_client_redirect_resource);
   nonaccessible_observer.Wait();
-  EXPECT_EQ(GURL("about:blank"), browser()
-                                     ->tab_strip_model()
-                                     ->GetActiveWebContents()
-                                     ->GetLastCommittedURL());
+  EXPECT_EQ(content::PAGE_TYPE_ERROR,
+            controller.GetLastCommittedEntry()->GetPageType());
+  EXPECT_EQ(invalid_url, web_contents->GetLastCommittedURL());
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionResourceRequestPolicyTest,
@@ -338,12 +394,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionResourceRequestPolicyTest,
       browser()->tab_strip_model()->GetActiveWebContents();
 
   // Any valid extension that happens to have a web accessible resource.
-  const extensions::Extension* patsy = LoadExtension(
+  const Extension* patsy = LoadExtension(
       test_data_dir_.AppendASCII("extension_resource_request_policy")
           .AppendASCII("some_accessible"));
 
   // An extension with a non-webaccessible resource.
-  const extensions::Extension* target = LoadExtension(
+  const Extension* target = LoadExtension(
       test_data_dir_.AppendASCII("extension_resource_request_policy")
           .AppendASCII("inaccessible"));
 
@@ -369,3 +425,226 @@ IN_PROC_BROWSER_TEST_F(ExtensionResourceRequestPolicyTest,
                 ->GetLastCommittedOrigin()
                 .GetURL());
 }
+
+IN_PROC_BROWSER_TEST_F(ExtensionResourceRequestPolicyTest,
+                       WebNavigationToNonWebAccessibleResource_LocalSubframe) {
+  const Extension* extension = LoadExtension(
+      test_data_dir_.AppendASCII("extension_resource_request_policy")
+          .AppendASCII("inaccessible"));
+  ASSERT_TRUE(extension);
+  const GURL non_web_accessible_url =
+      extension->GetResourceURL("inaccessible-iframe-contents.html");
+
+  OpenUrlInLocalFrameAndVerifyNavigationBlocked(non_web_accessible_url);
+}
+
+// This test tries to ensure that there is no difference between
+// 1) navigating to a non-web-accessible-resource of an existing extension
+//    (tested by WebNavigationToNonWebAccessibleResource_... tests)
+// and
+// 2a) navigating to a non-existent resource of an existing extension
+//     (the WebNavigationToNonExistentResource test here)
+// and
+// 2b) navigating to a resource of a non-existent extension
+//     (the WebNavigationToNonExistentExtension test below)
+//
+// The lack of differences is important to prevent web pages from fingerprinting
+// (by making it difficult for web pages to detect which extensions are
+// present).
+IN_PROC_BROWSER_TEST_F(ExtensionResourceRequestPolicyTest,
+                       WebNavigationToNonExistentResource) {
+  const Extension* extension = LoadExtension(
+      test_data_dir_.AppendASCII("extension_resource_request_policy")
+          .AppendASCII("inaccessible"));
+  ASSERT_TRUE(extension);
+  const GURL non_existent_resource_url =
+      extension->GetResourceURL("no-such-extension-resource.html");
+
+  OpenUrlInLocalFrameAndVerifyNavigationBlocked(non_existent_resource_url);
+}
+
+// This test tries to ensure that there is no difference between
+// 1) navigating to a non-web-accessible-resource of an existing extension
+//    (tested by WebNavigationToNonWebAccessibleResource_... tests)
+// and
+// 2a) navigating to a non-existent resource of an existing extension
+//     (the WebNavigationToNonExistentResource test above)
+// and
+// 2b) navigating to a resource of a non-existent extension
+//     (the WebNavigationToNonExistentExtension test here)
+//
+// The lack of differences is important to prevent web pages from fingerprinting
+// (by making it difficult for web pages to detect which extensions are
+// present).
+IN_PROC_BROWSER_TEST_F(ExtensionResourceRequestPolicyTest,
+                       WebNavigationToNonExistentExtension) {
+  const GURL non_existent_extension_url(
+      "chrome-extension://aaaaabbbbbcccccdddddeeeeefffffgg/blah.png");
+
+  OpenUrlInLocalFrameAndVerifyNavigationBlocked(non_existent_extension_url);
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionResourceRequestPolicyTest,
+                       WebNavigationToNonWebAccessibleResource_RemoteSubframe) {
+  const Extension* extension = LoadExtension(
+      test_data_dir_.AppendASCII("extension_resource_request_policy")
+          .AppendASCII("inaccessible"));
+  ASSERT_TRUE(extension);
+  const GURL non_web_accessible_url =
+      extension->GetResourceURL("inaccessible-iframe-contents.html");
+
+  OpenUrlInSubFrameAndVerifyNavigationBlocked(
+      non_web_accessible_url, "remote-frame", non_web_accessible_url);
+}
+
+// This is a regression test for https://crbug.com/442579.
+IN_PROC_BROWSER_TEST_F(
+    ExtensionResourceRequestPolicyTest,
+    WebNavigationToNonWebAccessibleResource_FormTargetingNewWindow) {
+  const Extension* extension = LoadExtension(
+      test_data_dir_.AppendASCII("extension_resource_request_policy")
+          .AppendASCII("inaccessible"));
+  ASSERT_TRUE(extension);
+  const GURL non_web_accessible_url =
+      extension->GetResourceURL("inaccessible-iframe-contents.html");
+
+  GURL main_url = embedded_test_server()->GetURL("/title1.html");
+  ui_test_utils::NavigateToURL(browser(), main_url);
+
+  // Inject and submit a form that will navigate a new window to a
+  // non-web-accessible-resource.  This replicates the repro steps
+  // from https://crbug.com/442579 (although a simpler repro might
+  // exist - window.open(non-war-url, '_blank')).
+  content::WebContentsAddedObserver new_window_observer;
+  content::WebContents* old_window =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  const char* kScriptTemplate = R"(
+      var f = document.createElement('form');
+      f.target = "extWindow";
+      f.action = $1;
+      f.method = "post";
+      document.body.appendChild(f);
+      f.submit();
+  )";
+  ASSERT_TRUE(content::ExecJs(
+      old_window, content::JsReplace(kScriptTemplate, non_web_accessible_url)));
+  content::WebContents* new_window = new_window_observer.GetWebContents();
+  content::TestNavigationObserver nav_observer(new_window, 1);
+  nav_observer.Wait();
+
+  // Verify that the navigation has failed.
+  //
+  // It is important that the failure mode below is the same in _all_ of the
+  // tests like (to prevent fingerprinting):
+  // - WebNavigationToNonWebAccessibleResource...
+  // - WebNavigationToNonExistentResource
+  // - WebNavigationToNonExistentExtension
+  EXPECT_FALSE(nav_observer.last_navigation_succeeded());
+  EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT, nav_observer.last_net_error_code());
+}
+
+// Tests that a service worker for a web origin can't use client.navigate() to
+// navigate to a non-web accessible resource of a Chrome extension.
+IN_PROC_BROWSER_TEST_F(
+    ExtensionResourceRequestPolicyTest,
+    WebNavigationToNonWebAccessibleResource_ViaServiceWorkerNavigate) {
+  const Extension* extension = LoadExtension(
+      test_data_dir_.AppendASCII("extension_resource_request_policy")
+          .AppendASCII("inaccessible"));
+  ASSERT_TRUE(extension);
+  const GURL non_web_accessible_url =
+      extension->GetResourceURL("inaccessible-iframe-contents.html");
+
+  // Load a page that registers a service worker.
+  GURL web_page_url = embedded_test_server()->GetURL(
+      "/service_worker/create_service_worker.html");
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ui_test_utils::NavigateToURL(browser(), web_page_url);
+  EXPECT_EQ("DONE", EvalJs(web_contents, "register('client_api_worker.js');"));
+
+  // Load the page again so we are controlled.
+  ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL(
+                     "/service_worker/create_service_worker.html"));
+  EXPECT_EQ(true, content::EvalJs(web_contents,
+                                  "!!navigator.serviceWorker.controller"));
+
+  // Have the service worker call client.navigate() on the page.
+  content::TestNavigationObserver nav_observer(web_contents, 1);
+  const char kNavigateScriptTemplate[] = R"(
+    (async () => {
+      const registration = await navigator.serviceWorker.ready;
+      registration.active.postMessage({command: 'navigate', url: $1});
+      return true;
+    })();
+  )";
+  EXPECT_EQ(true, content::EvalJs(web_contents,
+                                  content::JsReplace(kNavigateScriptTemplate,
+                                                     non_web_accessible_url)));
+
+  // Verify that the navigation was blocked.
+  nav_observer.Wait();
+  EXPECT_FALSE(nav_observer.last_navigation_succeeded());
+  EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT, nav_observer.last_net_error_code());
+  EXPECT_EQ(non_web_accessible_url, nav_observer.last_navigation_url());
+  ASSERT_TRUE(nav_observer.last_initiator_origin().has_value());
+  EXPECT_EQ(url::Origin::Create(web_page_url),
+            nav_observer.last_initiator_origin().value());
+}
+
+// Tests that a service worker for a web origin can't use the openWindow API to
+// navigate to a non-web accessible resource of a Chrome extension.
+IN_PROC_BROWSER_TEST_F(
+    ExtensionResourceRequestPolicyTest,
+    WebNavigationToNonWebAccessibleResource_ViaServiceWorkerOpenWindow) {
+  const Extension* extension = LoadExtension(
+      test_data_dir_.AppendASCII("extension_resource_request_policy")
+          .AppendASCII("inaccessible"));
+  ASSERT_TRUE(extension);
+  const GURL non_web_accessible_url =
+      extension->GetResourceURL("inaccessible-iframe-contents.html");
+
+  // Load a page that registers a service worker.
+  GURL web_page_url = embedded_test_server()->GetURL(
+      "/service_worker/create_service_worker.html");
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ui_test_utils::NavigateToURL(browser(), web_page_url);
+  EXPECT_EQ("DONE",
+            content::EvalJs(web_contents, "register('client_api_worker.js');"));
+
+  // Simulate clicking a notification - this will prompt the test service worker
+  // to call clients.openWindow(non_web_accessible_url).
+  content::WebContents* new_window = nullptr;
+  {
+    GURL target_url = non_web_accessible_url;
+    blink::PlatformNotificationData notification_data;
+    notification_data.body = base::UTF8ToUTF16(target_url.spec());
+
+    GURL scope_url = embedded_test_server()->GetURL("/service_worker/");
+    content::StoragePartition* storage_partition =
+        content::BrowserContext::GetDefaultStoragePartition(
+            browser()->profile());
+    content::ServiceWorkerContext* context =
+        storage_partition->GetServiceWorkerContext();
+
+    content::WebContentsAddedObserver new_window_observer;
+    content::DispatchServiceWorkerNotificationClick(context, scope_url,
+                                                    notification_data);
+    new_window = new_window_observer.GetWebContents();
+  }
+
+  // Verify that the navigation in the new window will be blocked - we are
+  // disallowing navigations to non-web-accessible-resources.
+  content::TestNavigationObserver nav_observer(new_window, 1);
+  nav_observer.Wait();
+  EXPECT_FALSE(nav_observer.last_navigation_succeeded());
+  EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT, nav_observer.last_net_error_code());
+  EXPECT_EQ(non_web_accessible_url, nav_observer.last_navigation_url());
+  ASSERT_TRUE(nav_observer.last_initiator_origin().has_value());
+  EXPECT_EQ(url::Origin::Create(web_page_url),
+            nav_observer.last_initiator_origin().value());
+}
+
+}  // namespace extensions

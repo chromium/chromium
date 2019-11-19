@@ -26,11 +26,11 @@
 #include "components/sync_preferences/pref_service_mock_factory.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "content/public/common/content_switches.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if defined(OS_CHROMEOS)
-#include "chrome/browser/chromeos/settings/stub_install_attributes.h"
+#include "chromeos/tpm/stub_install_attributes.h"
 #endif
 
 using ::testing::Return;
@@ -123,7 +123,7 @@ class ProxyPolicyTest : public testing::Test {
     return std::move(prefs);
   }
 
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   base::CommandLine command_line_;
   MockConfigurationPolicyProvider provider_;
   std::unique_ptr<PolicyServiceImpl> policy_service_;

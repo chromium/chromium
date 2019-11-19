@@ -28,7 +28,8 @@
   [super configureCell:cell withStyler:styler];
   NSString* title =
       l10n_util::GetNSString(IDS_IOS_ACCOUNT_IDENTITY_CHOOSER_ADD_ACCOUNT);
-  UIImage* image = [UIImage imageNamed:@"settings_accounts_add_account"];
+  UIImage* image = [[UIImage imageNamed:@"settings_accounts_add_account"]
+      imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
   [cell configureCellWithTitle:title subtitle:nil image:image checked:NO];
 }
 

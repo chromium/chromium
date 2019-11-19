@@ -73,7 +73,8 @@ void ObjectBackedNativeHandler::Router(
       !feature_name_value->IsString()) {
     ScriptContext* script_context =
         ScriptContextSet::GetContextByV8Context(context);
-    console::AddMessage(script_context, content::CONSOLE_MESSAGE_LEVEL_ERROR,
+    console::AddMessage(script_context,
+                        blink::mojom::ConsoleMessageLevel::kError,
                         "Extension view no longer exists");
     return;
   }

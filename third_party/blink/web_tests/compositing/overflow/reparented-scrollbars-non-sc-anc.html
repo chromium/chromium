@@ -4,6 +4,12 @@
     correctly when the compositing container and the ancestor compositing
     stacking context differ.
 -->
+<script>
+if (window.internals) {
+    internals.useMockOverlayScrollbars();
+    internals.settings.setPreferCompositingToLCDTextEnabled(true);
+}
+</script>
 <style>
 #container {
   margin-right: auto;
@@ -40,11 +46,6 @@
 <script>
 if (window.testRunner)
   testRunner.dumpAsText();
-
-if (window.internals) {
-  internals.runtimeFlags.overlayScrollbarsEnabled = true;
-  internals.settings.setPreferCompositingToLCDTextEnabled(true);
-}
 
 onload = function() {
   if (window.internals) {

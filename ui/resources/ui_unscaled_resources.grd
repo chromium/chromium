@@ -18,6 +18,8 @@
         <include name="IDC_HAND_GRABBING" file="cursors/hand_grabbing.cur" type="CURSOR" />
         <include name="IDC_PAN_EAST" file="cursors/pan_east.cur" type="CURSOR" />
         <include name="IDC_PAN_MIDDLE" file="cursors/pan_middle.cur" type="CURSOR" />
+        <include name="IDC_PAN_MIDDLE_HORIZONTAL" file="cursors/pan_middle_horizontal.cur" type="CURSOR" />
+        <include name="IDC_PAN_MIDDLE_VERTICAL" file="cursors/pan_middle_vertical.cur" type="CURSOR" />
         <include name="IDC_PAN_NORTH" file="cursors/pan_north.cur" type="CURSOR" />
         <include name="IDC_PAN_NORTH_EAST" file="cursors/pan_north_east.cur" type="CURSOR" />
         <include name="IDC_PAN_NORTH_WEST" file="cursors/pan_north_west.cur" type="CURSOR" />

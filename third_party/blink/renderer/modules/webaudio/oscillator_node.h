@@ -135,6 +135,10 @@ class OscillatorNode final : public AudioScheduledSourceNode {
 
   OscillatorHandler& GetOscillatorHandler() const;
 
+  // InspectorHelperMixin
+  void ReportDidCreate() final;
+  void ReportWillBeDestroyed() final;
+
  private:
   Member<AudioParam> frequency_;
   Member<AudioParam> detune_;

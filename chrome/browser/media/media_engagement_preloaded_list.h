@@ -39,10 +39,6 @@ class MediaEngagementPreloadedList {
   // Check whether the list we have loaded is empty.
   bool empty() const;
 
-  // The names of the histograms related to timing/perf.
-  static const char kHistogramLoadTimeName[];
-  static const char kHistogramLookupTimeName[];
-
  protected:
   friend class MediaEngagementPreloadedListTest;
 

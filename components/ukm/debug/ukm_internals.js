@@ -34,6 +34,7 @@ let UkmDataSource;
  *   client_id: !Array<number>,
  *   session_id: string,
  *   sources: !Array<!UkmDataSource>,
+ *   is_sampling_enabled: boolean,
  * }}
  */
 let UkmData;
@@ -85,7 +86,7 @@ function as64Bit(num) {
 /**
  * Sets the display option of all the elements in HtmlCollection to the value
  * passed.
- * @param {!NodeList<!Element>} collection Collection of Elements.
+ * @param {!HTMLCollection<!Element>} collection Collection of Elements.
  */
 function setDisplayStyle(collection, display_value) {
   for (const el of collection) {
@@ -199,8 +200,12 @@ function createEntryTable(entry, sourceDiv) {
   entryName.textContent = entry.name;
   firstRow.appendChild(entryName);
 
+  // Sort the metrics by name, descending.
+  const sortedMetrics =
+      entry.metrics.sort((x, y) => x.name.localeCompare(y.name));
+
   // Add metrics columns.
-  for (const metric of entry.metrics) {
+  for (const metric of sortedMetrics) {
     const nextRow = document.createElement('tr');
     const metricName = createElementWithClassName('td', 'metric_name');
     metricName.textContent = metric.name;
@@ -299,6 +304,19 @@ function populateThreadIds(sources) {
 }
 
 /**
+ * Get the string representation of a UKM entry. The array of metrics are sorted
+ * by name to ensure that two entries containing the same metrics and values in
+ * different orders have identical string representation to avoid cache
+ * duplication.
+ * @param {UkmEntry} entry UKM entry to be stringified.
+ * @return {string} Normalized string representation of the entry.
+ */
+function normalizeToString(entry) {
+  entry.metrics.sort((x, y) => x.name.localeCompare(y.name));
+  return JSON.stringify(entry);
+}
+
+/**
  * This function tries to preserve UKM logs around UKM log uploads. There is
  * no way of knowing if duplicate entries for a log are actually produced
  * again after the log cut or if they older records since we don't maintain
@@ -318,11 +336,11 @@ function updateUkmCache(data) {
       CachedSources.set(key, mergedSource);
     } else {
       // Merge distinct entries from the source.
-      const existingEntries =
-          new Set(CachedSources.get(key).entries.map(e => JSON.stringify(e)));
-      for (const entry of source.entries) {
-        if (!existingEntries.has(JSON.stringify(entry))) {
-          CachedSources.get(key).entries.push(entry);
+      const existingEntries = new Set(CachedSources.get(key).entries.map(
+          cachedEntry => normalizeToString(cachedEntry)));
+      for (const sourceEntry of source.entries) {
+        if (!existingEntries.has(normalizeToString(sourceEntry))) {
+          CachedSources.get(key).entries.push(sourceEntry);
         }
       }
     }
@@ -340,21 +358,33 @@ function updateUkmData() {
       data.sources = [...CachedSources.values()];
     }
     $('state').innerText = data.state? 'ENABLED' : 'DISABLED';
-    $('clientid').innerText = as64Bit(data.client_id);
+    $('clientid').innerText = '0x' + data.client_id;
     $('sessionid').innerText = data.session_id;
+    $('is_sampling_enabled').innerText = data.is_sampling_enabled;
 
     const sourcesDiv = /** @type {!Element} */ ($('sources'));
+    removeChildren(sourcesDiv);
+
+    // Setup a title for the sources div.
+    const urlTitleElement = createElementWithClassName('span', 'url');
+    urlTitleElement.textContent = 'URL';
+    const sourceIdTitleElement = createElementWithClassName('span', 'sourceid');
+    sourceIdTitleElement.textContent = 'Source ID';
+    sourcesDiv.appendChild(urlTitleElement);
+    sourcesDiv.appendChild(sourceIdTitleElement);
+
+    // Setup the display state map, which captures the current display settings,
+    // for example, expanded state.
     const currentDisplayState = new Map();
     for (const el of document.getElementsByClassName('source_container')) {
       currentDisplayState.set(el.querySelector('.sourceid').textContent,
                               el.querySelector('.entries').style.display);
     }
-    removeChildren(sourcesDiv);
     const urlToSources = urlToSourcesMapping(
         filterSourcesUsingFormOptions(data.sources));
     for (const url of urlToSources.keys()) {
-      createUrlCard(
-          urlToSources.get(url), url, sourcesDiv, currentDisplayState);
+      const sourcesForUrl = urlToSources.get(url);
+      createUrlCard(sourcesForUrl, url, sourcesDiv, currentDisplayState);
     }
     populateThreadIds(data.sources);
   });
@@ -393,13 +423,22 @@ function filterSourcesUsingFormOptions(sources) {
       (!$('hide_no_metrics').checked || source.entries.length)
   ));
 
-  // Filter sources based on thread id.
+  // Filter sources based on thread id (High bits of UKM Recorder ID).
   const threadsFilteredSource = filteredSources.filter(source => {
+    // Get current selection for thread id. It is either -
+    // "All" for no restriction.
+    // "0" for the default thread. This is the thread that record f.e PageLoad
+    // <lowercase hex string for first 32 bit of source id> for other threads.
+    //     If a UKM is recorded with a custom source id or in renderer, it will
+    //     have a unique value for this shared by all metrics that use the
+    //     same thread.
     const selectedOption =
         $('thread_ids').options[$('thread_ids').selectedIndex];
-    return !selectedOption ||
-        (selectedOption.value === 'All') ||
-        ((source.id[0] >>> 0).toString() === selectedOption.value);
+    // Return true if either of the following is true -
+    // No option is selected or selected option is "All" or the hexadecimal
+    // representation of source id is matching.
+    return !selectedOption || (selectedOption.value === 'All') ||
+        ((source.id[0] >>> 0).toString(16) === selectedOption.value);
   });
 
   // Filter URLs based on URL selector input.

@@ -20,6 +20,10 @@ gfx::Size GLImageStub::GetSize() {
 
 unsigned GLImageStub::GetInternalFormat() { return GL_RGBA; }
 
+unsigned GLImageStub::GetDataType() {
+  return GL_UNSIGNED_BYTE;
+}
+
 GLImageStub::BindOrCopy GLImageStub::ShouldBindOrCopy() {
   return BIND;
 }

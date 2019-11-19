@@ -17,12 +17,6 @@ sync_preferences::PrefServiceSyncable* PrefServiceSyncableFromProfile(
       profile->GetPrefs());
 }
 
-sync_preferences::PrefServiceSyncable* PrefServiceSyncableIncognitoFromProfile(
-    Profile* profile) {
-  return static_cast<sync_preferences::PrefServiceSyncable*>(
-      profile->GetOffTheRecordPrefs());
-}
-
 std::unique_ptr<sync_preferences::PrefServiceSyncable>
 CreateIncognitoPrefServiceSyncable(
     sync_preferences::PrefServiceSyncable* pref_service,

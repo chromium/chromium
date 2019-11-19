@@ -33,48 +33,57 @@
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/graphics/path.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
 class ExceptionState;
 
 class MODULES_EXPORT CanvasPath {
+  DISALLOW_NEW();
+
  public:
   virtual ~CanvasPath() = default;
 
   void closePath();
-  void moveTo(float x, float y);
-  void lineTo(float x, float y);
-  void quadraticCurveTo(float cpx, float cpy, float x, float y);
-  void bezierCurveTo(float cp1x,
-                     float cp1y,
-                     float cp2x,
-                     float cp2y,
-                     float x,
-                     float y);
-  void arcTo(float x0,
-             float y0,
-             float x1,
-             float y1,
-             float radius,
+  void moveTo(double double_x, double double_y);
+  void lineTo(double double_x, double double_y);
+  void quadraticCurveTo(double double_cpx,
+                        double double_cpy,
+                        double double_x,
+                        double double_y);
+  void bezierCurveTo(double double_cp1x,
+                     double double_cp1y,
+                     double double_cp2x,
+                     double double_cp2y,
+                     double double_x,
+                     double double_y);
+  void arcTo(double double_x1,
+             double double_y1,
+             double double_x2,
+             double double_y2,
+             double double_radius,
              ExceptionState&);
-  void arc(float x,
-           float y,
-           float radius,
-           float start_angle,
-           float end_angle,
+  void arc(double double_x,
+           double double_y,
+           double double_radius,
+           double double_start_angle,
+           double double_end_angle,
            bool anticlockwise,
            ExceptionState&);
-  void ellipse(float x,
-               float y,
-               float radius_x,
-               float radius_y,
-               float rotation,
-               float start_angle,
-               float end_angle,
+  void ellipse(double double_x,
+               double double_y,
+               double double_radius_x,
+               double double_radius_y,
+               double double_rotation,
+               double double_start_angle,
+               double double_end_angle,
                bool anticlockwise,
                ExceptionState&);
-  void rect(float x, float y, float width, float height);
+  void rect(double double_x,
+            double double_y,
+            double double_width,
+            double double_height);
 
   virtual bool IsTransformInvertible() const { return true; }
   virtual AffineTransform Transform() const {

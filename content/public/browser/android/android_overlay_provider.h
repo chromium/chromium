@@ -19,7 +19,7 @@ class CONTENT_EXPORT AndroidOverlayProvider {
   /**
    * Return true if this overlays are supported on this device.
    */
-  virtual bool AreOverlaysSupported() const = 0;
+  virtual bool AreOverlaysSupported() = 0;
 
  protected:
   virtual ~AndroidOverlayProvider() {}

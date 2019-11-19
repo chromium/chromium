@@ -29,7 +29,7 @@ TEST_F(LayoutTextControlSingleLineTest, VisualOverflowCleared) {
 #else
   EXPECT_EQ(LayoutRect(-3, -3, 70, 72), input->SelfVisualOverflowRect());
 #endif
-  ToElement(input->GetNode())
+  To<Element>(input->GetNode())
       ->setAttribute(html_names::kStyleAttr, "box-shadow: initial");
   GetDocument().View()->UpdateAllLifecyclePhases(
       DocumentLifecycle::LifecycleUpdateReason::kTest);

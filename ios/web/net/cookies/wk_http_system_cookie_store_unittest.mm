@@ -11,7 +11,10 @@
 
 #import "base/test/ios/wait_util.h"
 #include "ios/net/cookies/system_cookie_store_unittest_template.h"
-#include "ios/web/public/test/test_web_thread_bundle.h"
+#include "ios/web/public/test/fakes/test_browser_state.h"
+#include "ios/web/public/test/scoped_testing_web_client.h"
+#include "ios/web/public/test/web_task_environment.h"
+#import "ios/web/web_state/ui/wk_web_view_configuration_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -22,20 +25,17 @@ namespace net {
 
 // Test class that conforms to net::SystemCookieStoreTestDelegate to exercise
 // WKHTTPSystemCookieStore.
-class API_AVAILABLE(ios(11.0)) WKHTTPSystemCookieStoreTestDelegate {
+class WKHTTPSystemCookieStoreTestDelegate {
  public:
   WKHTTPSystemCookieStoreTestDelegate() {
-    if (@available(iOS 11, *)) {
-      shared_store_ =
-          [WKWebsiteDataStore nonPersistentDataStore].httpCookieStore;
-      store_ = std::make_unique<web::WKHTTPSystemCookieStore>(shared_store_);
-    }
-  }
-
-  bool IsTestEnabled() {
-    if (@available(iOS 11, *))
-      return true;
-    return false;
+    // Using off the record browser state so it will use non-persistent
+    // datastore.
+    browser_state_.SetOffTheRecord(true);
+    web::WKWebViewConfigurationProvider& config_provider =
+        web::WKWebViewConfigurationProvider::FromBrowserState(&browser_state_);
+    shared_store_ = config_provider.GetWebViewConfiguration()
+                        .websiteDataStore.httpCookieStore;
+    store_ = std::make_unique<web::WKHTTPSystemCookieStore>(&config_provider);
   }
 
   bool IsCookieSet(NSHTTPCookie* system_cookie, NSURL* url) {
@@ -98,8 +98,9 @@ class API_AVAILABLE(ios(11.0)) WKHTTPSystemCookieStoreTestDelegate {
   SystemCookieStore* GetCookieStore() { return store_.get(); }
 
  private:
-  web::TestWebThreadBundle web_thread_;
-  WKHTTPCookieStore* shared_store_;
+  web::WebTaskEnvironment task_environment_;
+  web::TestBrowserState browser_state_;
+  WKHTTPCookieStore* shared_store_ = nil;
   std::unique_ptr<web::WKHTTPSystemCookieStore> store_;
 };
 

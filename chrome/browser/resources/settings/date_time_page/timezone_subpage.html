@@ -36,7 +36,7 @@
         <settings-dropdown-menu id="timeZoneResolveMethodDropdown"
             pref="{{prefs.generated.resolve_timezone_by_geolocation_method_short}}"
             label="$i18n{selectTimeZoneResolveMethod}"
-            hidden="[[!prefs.generated.resolve_timezone_by_geolocation_on_off.value]]"
+            disabled="[[!prefs.generated.resolve_timezone_by_geolocation_on_off.value]]"
             menu-options="[[getTimeZoneResolveMethodsList_(
                 prefs.generated.resolve_timezone_by_geolocation_method_short)]]">
         </settings-dropdown-menu>

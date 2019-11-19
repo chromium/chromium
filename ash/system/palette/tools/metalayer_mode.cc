@@ -4,16 +4,16 @@
 
 #include "ash/system/palette/tools/metalayer_mode.h"
 
+#include "ash/assistant/assistant_controller.h"
+#include "ash/public/cpp/toast_data.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/palette/palette_ids.h"
 #include "ash/system/palette/palette_utils.h"
-#include "ash/system/toast/toast_data.h"
-#include "ash/system/toast/toast_manager.h"
+#include "ash/system/toast/toast_manager_impl.h"
 #include "ash/system/tray/hover_highlight_view.h"
 #include "ash/system/tray/tray_constants.h"
-#include "ash/voice_interaction/voice_interaction_controller.h"
 #include "base/bind.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event.h"
@@ -35,17 +35,16 @@ const int kMaxStrokeGapWhenWritingMs = 1000;
 
 }  // namespace
 
-MetalayerMode::MetalayerMode(Delegate* delegate)
-    : CommonPaletteTool(delegate),
-      weak_factory_(this) {
+MetalayerMode::MetalayerMode(Delegate* delegate) : CommonPaletteTool(delegate) {
   Shell::Get()->AddPreTargetHandler(this);
-  Shell::Get()->voice_interaction_controller()->AddLocalObserver(this);
+  AssistantState::Get()->AddObserver(this);
   Shell::Get()->highlighter_controller()->AddObserver(this);
 }
 
 MetalayerMode::~MetalayerMode() {
   Shell::Get()->highlighter_controller()->RemoveObserver(this);
-  Shell::Get()->voice_interaction_controller()->RemoveLocalObserver(this);
+  if (AssistantState::Get())
+    AssistantState::Get()->RemoveObserver(this);
   Shell::Get()->RemovePreTargetHandler(this);
 }
 
@@ -151,19 +150,18 @@ void MetalayerMode::OnTouchEvent(ui::TouchEvent* event) {
   event->StopPropagation();
 }
 
-void MetalayerMode::OnVoiceInteractionStatusChanged(
-    mojom::VoiceInteractionState state) {
-  voice_interaction_state_ = state;
+void MetalayerMode::OnAssistantStatusChanged(mojom::AssistantState state) {
+  assistant_state_ = state;
   UpdateState();
 }
 
-void MetalayerMode::OnVoiceInteractionSettingsEnabled(bool enabled) {
-  voice_interaction_enabled_ = enabled;
+void MetalayerMode::OnAssistantSettingsEnabled(bool enabled) {
+  assistant_enabled_ = enabled;
   UpdateState();
 }
 
-void MetalayerMode::OnVoiceInteractionContextEnabled(bool enabled) {
-  voice_interaction_context_enabled_ = enabled;
+void MetalayerMode::OnAssistantContextEnabled(bool enabled) {
+  assistant_context_enabled_ = enabled;
   UpdateState();
 }
 
@@ -210,7 +208,7 @@ void MetalayerMode::UpdateView() {
 
   TrayPopupItemStyle style(TrayPopupItemStyle::FontStyle::DETAILED_VIEW_LABEL,
                            false /* use_unified_theme */);
-  style.set_color_style(highlight_view_->enabled()
+  style.set_color_style(highlight_view_->GetEnabled()
                             ? TrayPopupItemStyle::ColorStyle::ACTIVE
                             : TrayPopupItemStyle::ColorStyle::DISABLED);
 

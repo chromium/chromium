@@ -24,12 +24,11 @@
 
 #include "third_party/blink/renderer/platform/graphics/filters/fe_composite.h"
 
-#include "SkArithmeticImageFilter.h"
-#include "SkXfermodeImageFilter.h"
-
 #include "third_party/blink/renderer/platform/graphics/filters/paint_filter_builder.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
+#include "third_party/skia/include/effects/SkArithmeticImageFilter.h"
+#include "third_party/skia/include/effects/SkXfermodeImageFilter.h"
 
 namespace blink {
 
@@ -40,15 +39,6 @@ FEComposite::FEComposite(Filter* filter,
                          float k3,
                          float k4)
     : FilterEffect(filter), type_(type), k1_(k1), k2_(k2), k3_(k3), k4_(k4) {}
-
-FEComposite* FEComposite::Create(Filter* filter,
-                                 const CompositeOperationType& type,
-                                 float k1,
-                                 float k2,
-                                 float k3,
-                                 float k4) {
-  return MakeGarbageCollected<FEComposite>(filter, type, k1, k2, k3, k4);
-}
 
 CompositeOperationType FEComposite::Operation() const {
   return type_;

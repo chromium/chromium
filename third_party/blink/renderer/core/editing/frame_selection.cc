@@ -29,6 +29,7 @@
 #include "third_party/blink/public/platform/web_scroll_into_view_params.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
+#include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/character_data.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -84,7 +85,6 @@
 #include "third_party/blink/renderer/platform/geometry/float_quad.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/text/unicode_utilities.h"
-#include "third_party/blink/renderer/platform/wtf/text/cstring.h"
 
 #define EDIT_DEBUG 0
 
@@ -96,8 +96,8 @@ static inline bool ShouldAlwaysUseDirectionalSelection(LocalFrame* frame) {
 
 FrameSelection::FrameSelection(LocalFrame& frame)
     : frame_(frame),
-      layout_selection_(LayoutSelection::Create(*this)),
-      selection_editor_(SelectionEditor::Create(frame)),
+      layout_selection_(MakeGarbageCollected<LayoutSelection>(*this)),
+      selection_editor_(MakeGarbageCollected<SelectionEditor>(frame)),
       granularity_(TextGranularity::kCharacter),
       x_pos_for_vertical_arrow_navigation_(NoXPosForVerticalArrowNavigation()),
       focused_(frame.GetPage() &&
@@ -148,9 +148,9 @@ size_t FrameSelection::CharacterIndexForPoint(const IntPoint& point) const {
 
 VisibleSelection FrameSelection::ComputeVisibleSelectionInDOMTreeDeprecated()
     const {
-  // TODO(editing-dev): Hoist updateStyleAndLayoutIgnorePendingStylesheets
+  // TODO(editing-dev): Hoist UpdateStyleAndLayout
   // to caller. See http://crbug.com/590369 for more details.
-  GetDocument().UpdateStyleAndLayoutIgnorePendingStylesheets();
+  GetDocument().UpdateStyleAndLayout();
   return ComputeVisibleSelectionInDOMTree();
 }
 
@@ -238,6 +238,8 @@ bool FrameSelection::SetSelectionDeprecated(
   if (is_changed) {
     AssertUserSelection(new_selection, options);
     selection_editor_->SetSelectionAndEndTyping(new_selection);
+    DisplayLockUtilities::ActivateSelectionRangeIfNeeded(
+        ToEphemeralRangeInFlatTree(new_selection.ComputeRange()));
   }
   is_directional_ = options.IsDirectional();
   should_shrink_next_tap_ = options.ShouldShrinkNextTap();
@@ -258,9 +260,8 @@ void FrameSelection::DidSetSelectionDeprecated(
     // |setFocusedNodeIfNeeded()| dispatches sync events "FocusOut" and
     // "FocusIn", |frame_| may associate to another document.
     if (!IsAvailable() || GetDocument() != current_document) {
-      // Once we get test case to reach here, we should change this
-      // if-statement to |DCHECK()|.
-      NOTREACHED();
+      // editing/selection/move-selection-detached-frame-crash.html reaches
+      // here. See http://crbug.com/1015710.
       return;
     }
   }
@@ -335,9 +336,6 @@ void FrameSelection::NodeWillBeRemoved(Node& node) {
 }
 
 void FrameSelection::DidChangeFocus() {
-  // Hits in
-  // virtual/gpu/compositedscrolling/scrollbars/scrollbar-miss-mousemove-disabled.html
-  DisableCompositingQueryAsserts disabler;
   UpdateAppearance();
 }
 
@@ -422,9 +420,9 @@ void FrameSelection::Clear() {
 }
 
 bool FrameSelection::SelectionHasFocus() const {
-  // TODO(editing-dev): Hoist UpdateStyleAndLayoutIgnorePendingStylesheets
+  // TODO(editing-dev): Hoist UpdateStyleAndLayout
   // to caller. See http://crbug.com/590369 for more details.
-  GetDocument().UpdateStyleAndLayoutIgnorePendingStylesheets();
+  GetDocument().UpdateStyleAndLayout();
   if (ComputeVisibleSelectionInFlatTree().IsNone())
     return false;
   const Node* current =
@@ -522,7 +520,8 @@ bool FrameSelection::ShouldPaintCaret(const LayoutBlock& block) const {
   bool result = frame_caret_->ShouldPaintCaret(block);
   DCHECK(!result ||
          (ComputeVisibleSelectionInDOMTree().IsCaret() &&
-          IsEditablePosition(ComputeVisibleSelectionInDOMTree().Start())));
+          (IsEditablePosition(ComputeVisibleSelectionInDOMTree().Start()) ||
+           frame_->IsCaretBrowsingEnabled())));
   return result;
 }
 
@@ -536,9 +535,9 @@ bool FrameSelection::ComputeAbsoluteBounds(IntRect& anchor,
   if (!IsAvailable() || GetSelectionInDOMTree().IsNone())
     return false;
 
-  // TODO(editing-dev): The use of updateStyleAndLayoutIgnorePendingStylesheets
+  // TODO(editing-dev): The use of UpdateStyleAndLayout
   // needs to be audited.  See http://crbug.com/590369 for more details.
-  frame_->GetDocument()->UpdateStyleAndLayoutIgnorePendingStylesheets();
+  frame_->GetDocument()->UpdateStyleAndLayout();
   if (ComputeVisibleSelectionInDOMTree().IsNone()) {
     // plugins/mouse-capture-inside-shadow.html reaches here.
     return false;
@@ -564,11 +563,11 @@ bool FrameSelection::ComputeAbsoluteBounds(IntRect& anchor,
 }
 
 void FrameSelection::PaintCaret(GraphicsContext& context,
-                                const LayoutPoint& paint_offset) {
+                                const PhysicalOffset& paint_offset) {
   frame_caret_->PaintCaret(context, paint_offset);
 }
 
-bool FrameSelection::Contains(const LayoutPoint& point) {
+bool FrameSelection::Contains(const PhysicalOffset& point) {
   if (!GetDocument().GetLayoutView())
     return false;
 
@@ -633,9 +632,9 @@ void FrameSelection::SelectFrameElementInParentIfFullySelected() {
     return;
   }
 
-  // TODO(editing-dev): The use of updateStyleAndLayoutIgnorePendingStylesheets
+  // TODO(editing-dev): The use of UpdateStyleAndLayout
   // needs to be audited.  See http://crbug.com/590369 for more details.
-  GetDocument().UpdateStyleAndLayoutIgnorePendingStylesheets();
+  GetDocument().UpdateStyleAndLayout();
 
   if (!IsStartOfDocument(ComputeVisibleSelectionInDOMTree().VisibleStart()))
     return;
@@ -657,10 +656,9 @@ void FrameSelection::SelectFrameElementInParentIfFullySelected() {
   if (!owner_element_parent)
     return;
 
-  // TODO(editing-dev): The use of updateStyleAndLayoutIgnorePendingStylesheets
-  // needs to be audited.  See http://crbug.com/590369 for more details.
-  owner_element_parent->GetDocument()
-      .UpdateStyleAndLayoutIgnorePendingStylesheets();
+  // TODO(editing-dev): The use of UpdateStyleAndLayout
+  // needs to be audited. See http://crbug.com/590369 for more details.
+  owner_element_parent->GetDocument().UpdateStyleAndLayout();
 
   // This method's purpose is it to make it easier to select iframes (in order
   // to delete them).  Don't do anything if the iframe isn't deletable.
@@ -692,7 +690,7 @@ static Node* NonBoundaryShadowTreeRootNode(const Position& position) {
 
 void FrameSelection::SelectAll(SetSelectionBy set_selection_by) {
   if (auto* select_element =
-          ToHTMLSelectElementOrNull(GetDocument().FocusedElement())) {
+          DynamicTo<HTMLSelectElement>(GetDocument().FocusedElement())) {
     if (select_element->CanSelectAll()) {
       select_element->SelectAll();
       return;
@@ -792,13 +790,16 @@ void FrameSelection::SelectSubString(const Element& element,
 }
 
 void FrameSelection::NotifyAccessibilityForSelectionChange() {
-  if (GetSelectionInDOMTree().IsNone())
-    return;
   AXObjectCache* cache = GetDocument().ExistingAXObjectCache();
   if (!cache)
     return;
-  const Position& start = GetSelectionInDOMTree().ComputeStartPosition();
-  cache->SelectionChanged(start.ComputeContainerNode());
+  const Position& extent = GetSelectionInDOMTree().Extent();
+  Node* anchor = extent.ComputeContainerNode();
+  if (anchor) {
+    cache->SelectionChanged(anchor);
+  } else {
+    cache->SelectionChanged(RootEditableElementOrDocumentElement());
+  }
 }
 
 void FrameSelection::NotifyCompositorForSelectionChange() {
@@ -900,7 +901,7 @@ void FrameSelection::SetFocusedNodeIfNeeded() {
   if (Element* target =
           ComputeVisibleSelectionInDOMTreeDeprecated().RootEditableElement()) {
     // Walk up the DOM tree to search for a node to focus.
-    GetDocument().UpdateStyleAndLayoutTreeIgnorePendingStylesheets();
+    GetDocument().UpdateStyleAndLayoutTree();
     while (target) {
       // We don't want to set focus on a subframe when selecting in a parent
       // frame, so add the !isFrameElement check here. There's probably a better
@@ -917,22 +918,39 @@ void FrameSelection::SetFocusedNodeIfNeeded() {
   }
 }
 
+static EphemeralRangeInFlatTree ComputeRangeForSerialization(
+    const SelectionInDOMTree& selection_in_dom_tree) {
+  const SelectionInFlatTree& selection =
+      ConvertToSelectionInFlatTree(selection_in_dom_tree);
+  // TODO(crbug.com/1019152): Once we know the root cause of having
+  // seleciton with |base.IsNull() != extent.IsNull()|, we should get rid of
+  // this if-statement.
+  if (selection.Base().IsNull() || selection.Extent().IsNull()) {
+    DCHECK(selection.IsNone());
+    return EphemeralRangeInFlatTree();
+  }
+  const EphemeralRangeInFlatTree& range = selection.ComputeRange();
+  const PositionInFlatTree& start =
+      CreateVisiblePosition(range.StartPosition()).DeepEquivalent();
+  const PositionInFlatTree& end =
+      CreateVisiblePosition(range.EndPosition()).DeepEquivalent();
+  if (start.IsNull() || end.IsNull() || start >= end)
+    return EphemeralRangeInFlatTree();
+  return NormalizeRange(EphemeralRangeInFlatTree(start, end));
+}
+
 static String ExtractSelectedText(const FrameSelection& selection,
                                   TextIteratorBehavior behavior) {
-  const VisibleSelectionInFlatTree& visible_selection =
-      selection.ComputeVisibleSelectionInFlatTree();
   const EphemeralRangeInFlatTree& range =
-      visible_selection.ToNormalizedEphemeralRange();
+      ComputeRangeForSerialization(selection.GetSelectionInDOMTree());
   // We remove '\0' characters because they are not visibly rendered to the
   // user.
   return PlainText(range, behavior).Replace(0, "");
 }
 
 String FrameSelection::SelectedHTMLForClipboard() const {
-  const VisibleSelectionInFlatTree& visible_selection =
-      ComputeVisibleSelectionInFlatTree();
   const EphemeralRangeInFlatTree& range =
-      visible_selection.ToNormalizedEphemeralRange();
+      ComputeRangeForSerialization(GetSelectionInDOMTree());
   return CreateMarkup(
       range.StartPosition(), range.EndPosition(), kAnnotateForInterchange,
       ConvertBlocksToInlines::kNotConvert, kResolveNonLocalURLs);
@@ -958,15 +976,15 @@ String FrameSelection::SelectedTextForClipboard() const {
                  .Build());
 }
 
-LayoutRect FrameSelection::AbsoluteUnclippedBounds() const {
+PhysicalRect FrameSelection::AbsoluteUnclippedBounds() const {
   LocalFrameView* view = frame_->View();
   LayoutView* layout_view = frame_->ContentLayoutObject();
 
   if (!view || !layout_view)
-    return LayoutRect();
+    return PhysicalRect();
 
   view->UpdateLifecycleToLayoutClean();
-  return LayoutRect(layout_selection_->AbsoluteSelectionBounds());
+  return PhysicalRect(layout_selection_->AbsoluteSelectionBounds());
 }
 
 IntRect FrameSelection::ComputeRectToScroll(
@@ -988,10 +1006,10 @@ void FrameSelection::RevealSelection(const ScrollAlignment& alignment,
                                      RevealExtentOption reveal_extent_option) {
   DCHECK(IsAvailable());
 
-  // TODO(editing-dev): The use of updateStyleAndLayoutIgnorePendingStylesheets
+  // TODO(editing-dev): The use of UpdateStyleAndLayout
   // needs to be audited.  See http://crbug.com/590369 for more details.
   // Calculation of absolute caret bounds requires clean layout.
-  GetDocument().UpdateStyleAndLayoutIgnorePendingStylesheets();
+  GetDocument().UpdateStyleAndLayout();
 
   const VisibleSelection& selection = ComputeVisibleSelectionInDOMTree();
   if (selection.IsNone())
@@ -1007,9 +1025,8 @@ void FrameSelection::RevealSelection(const ScrollAlignment& alignment,
   // This function is needed to make sure that ComputeRectToScroll below has the
   // sticky offset info available before the computation.
   GetDocument().EnsurePaintLocationDataValidForNode(start.AnchorNode());
-  LayoutRect selection_rect =
-      LayoutRect(ComputeRectToScroll(reveal_extent_option));
-  if (selection_rect == LayoutRect() ||
+  PhysicalRect selection_rect(ComputeRectToScroll(reveal_extent_option));
+  if (selection_rect == PhysicalRect() ||
       !start.AnchorNode()->GetLayoutObject()->EnclosingBox())
     return;
 
@@ -1056,7 +1073,7 @@ void FrameSelection::SetShouldShowBlockCursor(bool should_show_block_cursor) {
   frame_caret_->SetShouldShowBlockCursor(should_show_block_cursor);
 }
 
-#ifndef NDEBUG
+#if DCHECK_IS_ON()
 
 void FrameSelection::ShowTreeForThis() const {
   ComputeVisibleSelectionInDOMTreeDeprecated().ShowTreeForThis();
@@ -1233,8 +1250,8 @@ void FrameSelection::ClearDocumentCachedRange() {
 }
 
 LayoutSelectionStatus FrameSelection::ComputeLayoutSelectionStatus(
-    const NGPaintFragment& text_fragment) const {
-  return layout_selection_->ComputeSelectionStatus(text_fragment);
+    const NGInlineCursor& cursor) const {
+  return layout_selection_->ComputeSelectionStatus(cursor);
 }
 
 bool FrameSelection::IsDirectional() const {
@@ -1243,7 +1260,7 @@ bool FrameSelection::IsDirectional() const {
 
 }  // namespace blink
 
-#ifndef NDEBUG
+#if DCHECK_IS_ON()
 
 void showTree(const blink::FrameSelection& sel) {
   sel.ShowTreeForThis();

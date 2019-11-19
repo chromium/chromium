@@ -10,6 +10,7 @@
 #include "base/auto_reset.h"
 #include "base/macros.h"
 #include "ui/gfx/animation/animation.h"
+#include "ui/gfx/animation/animation_container.h"
 #include "ui/gfx/animation/animation_export.h"
 
 namespace gfx {
@@ -35,6 +36,22 @@ class AnimationTestApi {
   Animation* animation_;
 
   DISALLOW_COPY_AND_ASSIGN(AnimationTestApi);
+};
+
+// For manual animation time control in tests. Creating this object will
+// pause the AnimationRunner of |container| immediately.
+class AnimationContainerTestApi {
+ public:
+  explicit AnimationContainerTestApi(AnimationContainer* container);
+  AnimationContainerTestApi(const AnimationContainerTestApi&) = delete;
+  AnimationContainerTestApi& operator=(const AnimationContainerTestApi&) =
+      delete;
+  ~AnimationContainerTestApi();
+
+  void IncrementTime(base::TimeDelta delta);
+
+ private:
+  AnimationContainer* container_;
 };
 
 }  // namespace gfx

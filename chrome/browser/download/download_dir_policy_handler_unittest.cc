@@ -11,6 +11,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "chrome/browser/download/download_dir_util.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/common/pref_names.h"
 #include "components/drive/drive_pref_names.h"
@@ -22,26 +23,12 @@
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
 
-#if defined(OS_CHROMEOS)
-#include "chrome/browser/chromeos/drive/file_system_util.h"
-#endif
-
 namespace {
 
 const char* kUserIDHash = "deadbeef";
 
 #if defined(OS_CHROMEOS)
-const char* kDriveNamePolicyVariableName = "${google_drive}";
-const base::FilePath::CharType* kRootRelativeToDriveMount =
-    FILE_PATH_LITERAL("root");
 const char* kRelativeToDriveRoot = "/home/";
-
-std::string GetExpectedDownloadDirectory() {
-  return drive::util::GetDriveMountPointPathForUserIdHash(kUserIDHash)
-      .Append(kRootRelativeToDriveMount)
-      .value();
-}
-
 #endif
 
 }  // namespace
@@ -94,7 +81,8 @@ TEST_F(DownloadDirPolicyHandlerTest, SetDownloadToDrive) {
   policy::PolicyMap policy;
   policy.Set(policy::key::kDownloadDirectory, policy::POLICY_LEVEL_MANDATORY,
              policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
-             std::make_unique<base::Value>(kDriveNamePolicyVariableName),
+             std::make_unique<base::Value>(
+                 download_dir_util::kDriveNamePolicyVariableName),
              nullptr);
   UpdateProviderPolicy(policy);
 
@@ -115,7 +103,8 @@ TEST_F(DownloadDirPolicyHandlerTest, SetDownloadToDrive) {
   EXPECT_TRUE(store_->GetValue(prefs::kDownloadDefaultDirectory, &value));
   EXPECT_TRUE(value);
   EXPECT_TRUE(value->GetAsString(&download_directory));
-  EXPECT_EQ(GetExpectedDownloadDirectory(), download_directory);
+  EXPECT_EQ(download_dir_util::kDriveNamePolicyVariableName,
+            download_directory);
 
   policy.Set(policy::key::kDownloadDirectory, policy::POLICY_LEVEL_MANDATORY,
              policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
@@ -123,12 +112,12 @@ TEST_F(DownloadDirPolicyHandlerTest, SetDownloadToDrive) {
   UpdateProviderPolicy(policy);
   EXPECT_FALSE(recommended_store_->GetValue(drive::prefs::kDisableDrive, NULL));
 
-  policy.Set(
-      policy::key::kDownloadDirectory, policy::POLICY_LEVEL_RECOMMENDED,
-      policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
-      std::make_unique<base::Value>(std::string(kDriveNamePolicyVariableName) +
-                                    kRelativeToDriveRoot),
-      nullptr);
+  policy.Set(policy::key::kDownloadDirectory, policy::POLICY_LEVEL_RECOMMENDED,
+             policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
+             std::make_unique<base::Value>(
+                 std::string(download_dir_util::kDriveNamePolicyVariableName) +
+                 kRelativeToDriveRoot),
+             nullptr);
   UpdateProviderPolicy(policy);
 
   EXPECT_FALSE(recommended_store_->GetValue(prefs::kPromptForDownload, NULL));
@@ -138,7 +127,8 @@ TEST_F(DownloadDirPolicyHandlerTest, SetDownloadToDrive) {
       recommended_store_->GetValue(prefs::kDownloadDefaultDirectory, &value));
   EXPECT_TRUE(value);
   EXPECT_TRUE(value->GetAsString(&download_directory));
-  EXPECT_EQ(GetExpectedDownloadDirectory() + kRelativeToDriveRoot,
+  EXPECT_EQ(std::string(download_dir_util::kDriveNamePolicyVariableName) +
+                kRelativeToDriveRoot,
             download_directory);
 
   policy.Set(policy::key::kDownloadDirectory, policy::POLICY_LEVEL_RECOMMENDED,

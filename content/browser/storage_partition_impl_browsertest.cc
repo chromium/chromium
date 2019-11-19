@@ -7,7 +7,6 @@
 #include <string>
 
 #include "base/test/bind_test_util.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
@@ -22,12 +21,11 @@
 #include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
-#include "services/network/public/cpp/features.h"
-#include "services/network/public/cpp/resource_response_info.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -36,19 +34,9 @@ namespace content {
 
 namespace {
 
-enum class NetworkServiceState {
-  kDisabled,
-  kEnabled,
-};
-
-class StoragePartititionImplBrowsertest
-    : public ContentBrowserTest,
-      public testing::WithParamInterface<NetworkServiceState> {
+class StoragePartititionImplBrowsertest : public ContentBrowserTest {
  public:
-  StoragePartititionImplBrowsertest() {
-    if (GetParam() == NetworkServiceState::kEnabled)
-      feature_list_.InitAndEnableFeature(network::features::kNetworkService);
-  }
+  StoragePartititionImplBrowsertest() {}
   ~StoragePartititionImplBrowsertest() override {}
 
   GURL GetTestURL() const {
@@ -58,7 +46,6 @@ class StoragePartititionImplBrowsertest
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Creates a SimpleURLLoader and starts it to download |url|. Blocks until the
@@ -97,18 +84,18 @@ void CheckSimpleURLLoaderState(network::SimpleURLLoader* url_loader,
 // Make sure that the NetworkContext returned by a StoragePartition works, both
 // with the network service enabled and with it disabled, when one is created
 // that wraps the URLRequestContext created by the BrowserContext.
-IN_PROC_BROWSER_TEST_P(StoragePartititionImplBrowsertest, NetworkContext) {
+IN_PROC_BROWSER_TEST_F(StoragePartititionImplBrowsertest, NetworkContext) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   network::mojom::URLLoaderFactoryParamsPtr params =
       network::mojom::URLLoaderFactoryParams::New();
   params->process_id = network::mojom::kBrowserProcessId;
   params->is_corb_enabled = false;
-  network::mojom::URLLoaderFactoryPtr loader_factory;
+  mojo::Remote<network::mojom::URLLoaderFactory> loader_factory;
   BrowserContext::GetDefaultStoragePartition(
       shell()->web_contents()->GetBrowserContext())
       ->GetNetworkContext()
-      ->CreateURLLoaderFactory(mojo::MakeRequest(&loader_factory),
+      ->CreateURLLoaderFactory(loader_factory.BindNewPipeAndPassReceiver(),
                                std::move(params));
 
   network::ResourceRequest request;
@@ -118,24 +105,24 @@ IN_PROC_BROWSER_TEST_P(StoragePartititionImplBrowsertest, NetworkContext) {
   network::mojom::URLLoaderPtr loader;
   loader_factory->CreateLoaderAndStart(
       mojo::MakeRequest(&loader), 2, 1, network::mojom::kURLLoadOptionNone,
-      request, client.CreateInterfacePtr(),
+      request, client.CreateRemote(),
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
 
   // Just wait until headers are received - if the right headers are received,
   // no need to read the body.
   client.RunUntilResponseBodyArrived();
-  ASSERT_TRUE(client.response_head().headers);
-  EXPECT_EQ(200, client.response_head().headers->response_code());
+  ASSERT_TRUE(client.response_head()->headers);
+  EXPECT_EQ(200, client.response_head()->headers->response_code());
 
   std::string foo_header_value;
-  ASSERT_TRUE(client.response_head().headers->GetNormalizedHeader(
+  ASSERT_TRUE(client.response_head()->headers->GetNormalizedHeader(
       "foo", &foo_header_value));
   EXPECT_EQ("bar", foo_header_value);
 }
 
 // Make sure the factory info returned from
 // |StoragePartition::GetURLLoaderFactoryForBrowserProcessIOThread()| works.
-IN_PROC_BROWSER_TEST_P(StoragePartititionImplBrowsertest,
+IN_PROC_BROWSER_TEST_F(StoragePartititionImplBrowsertest,
                        GetURLLoaderFactoryForBrowserProcessIOThread) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -154,13 +141,13 @@ IN_PROC_BROWSER_TEST_P(StoragePartititionImplBrowsertest,
 // Make sure the factory info returned from
 // |StoragePartition::GetURLLoaderFactoryForBrowserProcessIOThread()| doesn't
 // crash if it's called after the StoragePartition is deleted.
-IN_PROC_BROWSER_TEST_P(StoragePartititionImplBrowsertest,
+IN_PROC_BROWSER_TEST_F(StoragePartititionImplBrowsertest,
                        BrowserIOFactoryInfoAfterStoragePartitionGone) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   base::ScopedAllowBlockingForTesting allow_blocking;
   std::unique_ptr<ShellBrowserContext> browser_context =
-      std::make_unique<ShellBrowserContext>(true, nullptr);
+      std::make_unique<ShellBrowserContext>(true);
   auto* partition =
       BrowserContext::GetDefaultStoragePartition(browser_context.get());
   auto shared_url_loader_factory_info =
@@ -178,13 +165,13 @@ IN_PROC_BROWSER_TEST_P(StoragePartititionImplBrowsertest,
 // Make sure the factory constructed from
 // |StoragePartition::GetURLLoaderFactoryForBrowserProcessIOThread()| doesn't
 // crash if it's called after the StoragePartition is deleted.
-IN_PROC_BROWSER_TEST_P(StoragePartititionImplBrowsertest,
+IN_PROC_BROWSER_TEST_F(StoragePartititionImplBrowsertest,
                        BrowserIOFactoryAfterStoragePartitionGone) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   base::ScopedAllowBlockingForTesting allow_blocking;
   std::unique_ptr<ShellBrowserContext> browser_context =
-      std::make_unique<ShellBrowserContext>(true, nullptr);
+      std::make_unique<ShellBrowserContext>(true);
   auto* partition =
       BrowserContext::GetDefaultStoragePartition(browser_context.get());
   auto factory_owner = IOThreadSharedURLLoaderFactoryOwner::Create(
@@ -200,14 +187,14 @@ IN_PROC_BROWSER_TEST_P(StoragePartititionImplBrowsertest,
 
 // Checks that the network::URLLoaderIntercpetor works as expected with the
 // SharedURLLoaderFactory returned by StoragePartititionImpl.
-IN_PROC_BROWSER_TEST_P(StoragePartititionImplBrowsertest,
+IN_PROC_BROWSER_TEST_F(StoragePartititionImplBrowsertest,
                        URLLoaderInterceptor) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL kEchoUrl(embedded_test_server()->GetURL("/echo"));
 
   base::ScopedAllowBlockingForTesting allow_blocking;
   std::unique_ptr<ShellBrowserContext> browser_context =
-      std::make_unique<ShellBrowserContext>(true, nullptr);
+      std::make_unique<ShellBrowserContext>(true);
   auto* partition =
       BrowserContext::GetDefaultStoragePartition(browser_context.get());
 
@@ -245,20 +232,5 @@ IN_PROC_BROWSER_TEST_P(StoragePartititionImplBrowsertest,
     CheckSimpleURLLoaderState(url_loader.get(), net::OK, net::HTTP_OK);
   }
 }
-
-// NetworkServiceState::kEnabled currently DCHECKs on Android, as Android isn't
-// expected to create extra processes.
-#if defined(OS_ANDROID)
-INSTANTIATE_TEST_SUITE_P(
-    /* No test prefix */,
-    StoragePartititionImplBrowsertest,
-    ::testing::Values(NetworkServiceState::kDisabled));
-#else  // !defined(OS_ANDROID)
-INSTANTIATE_TEST_SUITE_P(
-    /* No test prefix */,
-    StoragePartititionImplBrowsertest,
-    ::testing::Values(NetworkServiceState::kDisabled,
-                      NetworkServiceState::kEnabled));
-#endif
 
 }  // namespace content

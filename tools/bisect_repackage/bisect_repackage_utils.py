@@ -8,6 +8,8 @@ These functions were mostly imported from build/scripts/common/chromium_utils
 and build/scripts/common/slave_utils.
 """
 
+from __future__ import print_function
+
 import errno
 import os
 import re
@@ -58,7 +60,7 @@ try:
     # slightly odd tactic of using #2 and #3, but not #1 and #4. That is,
     # hardlinks for files, but symbolic links for directories.
     def _WIN_LINK_FUNC(src, dst):
-      print 'linking %s -> %s' % (src, dst)
+      print('linking %s -> %s' % (src, dst))
       if os.path.isdir(src):
         if not ctypes.windll.kernel32.CreateSymbolicLinkA(
             str(dst), str(os.path.abspath(src)), 1):
@@ -154,11 +156,11 @@ def RunGsutilCommand(args):
   if gsutil.returncode:
     if (re.findall(r'status[ |=]40[1|3]', stderr) or
         stderr.startswith(CREDENTIAL_ERROR_MESSAGE)):
-      print ('Follow these steps to configure your credentials and try'
-             ' running the bisect-builds.py again.:\n'
-             '  1. Run "python %s config" and follow its instructions.\n'
-             '  2. If you have a @google.com account, use that account.\n'
-             '  3. For the project-id, just enter 0.' % gsutil_path)
+      print('Follow these steps to configure your credentials and try'
+            ' running the bisect-builds.py again.:\n'
+            '  1. Run "python %s config" and follow its instructions.\n'
+            '  2. If you have a @google.com account, use that account.\n'
+            '  3. For the project-id, just enter 0.' % gsutil_path)
       sys.exit(1)
     else:
       raise Exception('Error running the gsutil command: %s' % stderr)
@@ -252,11 +254,11 @@ def RemoveDirectory(*path):
     # Give up and use cmd.exe's rd command.
     file_path = os.path.normcase(file_path)
     for _ in xrange(3):
-      print 'RemoveDirectory running %s' % (' '.join(
-          ['cmd.exe', '/c', 'rd', '/q', '/s', file_path]))
+      print('RemoveDirectory running %s' % (' '.join(
+          ['cmd.exe', '/c', 'rd', '/q', '/s', file_path])))
       if not subprocess.call(['cmd.exe', '/c', 'rd', '/q', '/s', file_path]):
         break
-      print '  Failed'
+      print('  Failed')
       time.sleep(3)
     return
 
@@ -294,7 +296,7 @@ def RemoveDirectory(*path):
       if exception_value.errno == errno.ENOENT:
         # File does not exist, and we're trying to delete, so we can ignore the
         # failure.
-        print 'WARNING:  Failed to list %s during rmtree.  Ignoring.\n' % path
+        print('WARNING:  Failed to list %s during rmtree.  Ignoring.\n' % path)
       else:
         raise
     else:
@@ -354,22 +356,22 @@ def MakeZip(output_dir, archive_name, file_list, file_relative_dir, dir_in_zip,
   start_time = time.clock()
   # Collect files into the archive directory.
   archive_dir = os.path.join(output_dir, dir_in_zip)
-  print 'output_dir: %s, archive_name: %s' % (output_dir, archive_name)
-  print 'archive_dir: %s, remove_archive_directory: %s, exists: %s' % (
-      archive_dir, remove_archive_directory, os.path.exists(archive_dir))
+  print('output_dir: %s, archive_name: %s' % (output_dir, archive_name))
+  print('archive_dir: %s, remove_archive_directory: %s, exists: %s' %
+        (archive_dir, remove_archive_directory, os.path.exists(archive_dir)))
   if remove_archive_directory and os.path.exists(archive_dir):
     # Move it even if it's not a directory as expected. This can happen with
     # FILES.cfg archive creation where we create an archive staging directory
     # that is the same name as the ultimate archive name.
     if not os.path.isdir(archive_dir):
-      print 'Moving old "%s" file to create same name directory.' % archive_dir
+      print('Moving old "%s" file to create same name directory.' % archive_dir)
       previous_archive_file = '%s.old' % archive_dir
       MoveFile(archive_dir, previous_archive_file)
     else:
-      print 'Removing %s' % archive_dir
+      print('Removing %s' % archive_dir)
       RemoveDirectory(archive_dir)
-      print 'Now, os.path.exists(%s): %s' % (
-          archive_dir, os.path.exists(archive_dir))
+      print('Now, os.path.exists(%s): %s' % (archive_dir,
+                                             os.path.exists(archive_dir)))
   MaybeMakeDirectory(archive_dir)
   for needed_file in file_list:
     needed_file = needed_file.rstrip()
@@ -400,7 +402,8 @@ def MakeZip(output_dir, archive_name, file_list, file_relative_dir, dir_in_zip,
       if raise_error:
         raise
   end_time = time.clock()
-  print 'Took %f seconds to create archive directory.' % (end_time - start_time)
+  print(
+      'Took %f seconds to create archive directory.' % (end_time - start_time))
 
   # Pack the zip file.
   output_file = os.path.join(output_dir, '%s.zip' % archive_name)
@@ -417,7 +420,7 @@ def MakeZip(output_dir, archive_name, file_list, file_relative_dir, dir_in_zip,
   # easier then trying to do that with ZipInfo options.
   start_time = time.clock()
   if IsWindows() and not windows_zip_cmd:
-    print 'Creating %s' % output_file
+    print('Creating %s' % output_file)
 
     def _Addfiles(to_zip_file, dirname, files_to_add):
       for this_file in files_to_add:
@@ -431,7 +434,8 @@ def MakeZip(output_dir, archive_name, file_list, file_relative_dir, dir_in_zip,
           else:
             compress_method = zipfile.ZIP_DEFLATED
           to_zip_file.write(this_path, archive_name, compress_method)
-          print 'Adding %s' % archive_name
+          print('Adding %s' % archive_name)
+
     zip_file = zipfile.ZipFile(output_file, 'w', zipfile.ZIP_DEFLATED,
                                allowZip64=True)
     try:
@@ -454,7 +458,7 @@ def MakeZip(output_dir, archive_name, file_list, file_relative_dir, dir_in_zip,
       raise ExternalError('zip failed: %s => %s' %
                           (str(command), result))
   end_time = time.clock()
-  print 'Took %f seconds to create zip.' % (end_time - start_time)
+  print('Took %f seconds to create zip.' % (end_time - start_time))
   return (archive_dir, output_file)
 
 
@@ -496,7 +500,7 @@ def ExtractZip(filename, output_dir, extract_file_list=[], verbose=True):
     # TODO(hinoka): This can be multiprocessed.
     for name in zf.namelist():
       if verbose:
-        print 'Extracting %s' % name
+        print('Extracting %s' % name)
       zf.extract(name, output_dir)
       if IsMac():
         # Restore permission bits.

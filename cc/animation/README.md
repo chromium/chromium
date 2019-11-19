@@ -172,8 +172,12 @@ the animating element into a layer. The Blink
 document describes how composited animations are created in blink. Once a
 compositor animation is created it is pushed through the commit cycle.
 
+![new animation]
+
 The lifetime of a newly started cc::Animation is roughly the following:
 
+1. An update to style or a new animation triggers a new [BeginMainFrame][] via
+   [ScheduleVisualUpdate][].
 1. [blink::DocumentAnimations::UpdateAnimations][] calls [blink::Animation::PreCommit][]
    on each pending blink::Animation constructing the corresponding
    cc::Animation via [blink::Animation::CreateCompositorAnimation][] (attaching
@@ -213,6 +217,9 @@ The lifetime of a newly started cc::Animation is roughly the following:
 1. Subsequent animation ticks will now update the property nodes on the active
    tree.
 
+[new animation]: images/new-animation.png
+[BeginMainFrame]: https://cs.chromium.org/chromium/src/cc/trees/proxy_main.cc?type=cs&q=file:proxy_main%5C.cc+RequestMainFrameUpdate
+[ScheduleVisualUpdate]: https://cs.chromium.org/chromium/src/third_party/blink/renderer/core/frame/local_frame.cc?type=cs&q=file:local_frame%5C.cc+ScheduleVisualUpdate
 [blink::DocumentAnimations::UpdateAnimations]: https://cs.chromium.org/search?q=function:blink::DocumentAnimations::UpdateAnimations+GetPendingAnimations
 [blink::Animation::PreCommit]: https://cs.chromium.org/search?q=function:blink::PendingAnimations::Update+%5C-%5C>PreCommit%5C(&g=0&l=57
 [blink::Animation::CreateCompositorAnimation]: https://cs.chromium.org/search?q=function:blink::Animation::CreateCompositorAnimation+%5E%5B+%5D*AttachCompositorTimeline

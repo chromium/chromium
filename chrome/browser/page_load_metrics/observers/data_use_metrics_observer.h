@@ -7,9 +7,9 @@
 
 #include "base/macros.h"
 #include "base/sequence_checker.h"
-#include "chrome/browser/page_load_metrics/page_load_metrics_observer.h"
-#include "chrome/common/page_load_metrics/page_load_metrics.mojom.h"
-#include "chrome/common/page_load_metrics/page_load_timing.h"
+#include "components/page_load_metrics/browser/page_load_metrics_observer.h"
+#include "components/page_load_metrics/common/page_load_metrics.mojom.h"
+#include "components/page_load_metrics/common/page_load_timing.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace content {
@@ -28,21 +28,12 @@ class DataUseMetricsObserver
   // page_load_metrics::PageLoadMetricsObserver:
   ObservePolicy OnCommit(content::NavigationHandle* navigation_handle,
                          ukm::SourceId source_id) override;
-  ObservePolicy OnStart(content::NavigationHandle* navigation_handle,
-                        const GURL& currently_committed_url,
-                        bool started_in_foreground) override;
-  ObservePolicy OnHidden(
-      const page_load_metrics::mojom::PageLoadTiming& timing,
-      const page_load_metrics::PageLoadExtraInfo& extra_info) override;
-  ObservePolicy OnShown() override;
   void OnResourceDataUseObserved(
-      FrameTreeNodeId frame_tree_node_id,
+      content::RenderFrameHost* rfh,
       const std::vector<page_load_metrics::mojom::ResourceDataUpdatePtr>&
           resources) override;
   ObservePolicy ShouldObserveMimeType(
       const std::string& mime_type) const override;
-
-  bool currently_in_foreground_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

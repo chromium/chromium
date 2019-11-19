@@ -17,7 +17,7 @@
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/media/video_capture_controller.h"
 #include "media/base/video_frame.h"
@@ -63,6 +63,7 @@ class VideoCaptureBufferPoolTest
       : expected_dropped_id_(0),
         pool_(new media::VideoCaptureBufferPoolImpl(
             std::make_unique<media::VideoCaptureBufferTrackerFactoryImpl>(),
+            media::VideoCaptureBufferType::kSharedMemory,
             kTestBufferPoolSize)) {}
 
   void ExpectDroppedId(int expected_dropped_id) {
@@ -93,7 +94,7 @@ class VideoCaptureBufferPoolTest
         new Buffer(pool_, std::move(buffer_handle), buffer_id));
   }
 
-  base::test::ScopedTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   int expected_dropped_id_;
   scoped_refptr<media::VideoCaptureBufferPool> pool_;
 

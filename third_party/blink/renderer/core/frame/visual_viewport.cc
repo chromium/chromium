@@ -33,9 +33,9 @@
 #include <memory>
 
 #include "cc/input/main_thread_scrolling_reason.h"
-#include "cc/layers/picture_layer.h"
-#include "cc/layers/scrollbar_layer_interface.h"
+#include "cc/layers/scrollbar_layer_base.h"
 #include "third_party/blink/public/platform/task_type.h"
+#include "third_party/blink/public/platform/web_scroll_into_view_params.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -45,30 +45,39 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
-#include "third_party/blink/renderer/core/layout/text_autosizer.h"
+#include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
+#include "third_party/blink/renderer/core/layout/layout_box.h"
+#include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
-#include "third_party/blink/renderer/core/paint/compositing/paint_layer_compositor.h"
+#include "third_party/blink/renderer/core/page/scrolling/root_scroller_controller.h"
+#include "third_party/blink/renderer/core/page/scrolling/scrolling_coordinator.h"
+#include "third_party/blink/renderer/core/page/scrolling/snap_coordinator.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/paint/paint_property_tree_builder.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/scroll/scroll_animator_base.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar.h"
-#include "third_party/blink/renderer/core/scroll/scrollbar_theme_overlay.h"
+#include "third_party/blink/renderer/core/scroll/scrollbar_theme_overlay_mobile.h"
+#include "third_party/blink/renderer/core/scroll/smooth_scroll_sequencer.h"
 #include "third_party/blink/renderer/platform/geometry/double_rect.h"
 #include "third_party/blink/renderer/platform/geometry/float_size.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
-#include "third_party/blink/renderer/platform/graphics/paint/clip_paint_property_node.h"
+#include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
+#include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/effect_paint_property_node.h"
+#include "third_party/blink/renderer/platform/graphics/paint/foreign_layer_display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/transform_paint_property_node.h"
-#include "third_party/blink/renderer/platform/histogram.h"
+#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
+#include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
 
 namespace blink {
 
 VisualViewport::VisualViewport(Page& owner)
     : page_(&owner),
+      parent_property_tree_state_(PropertyTreeState::Uninitialized()),
       scale_(1),
+      is_pinch_gesture_active_(false),
       browser_controls_adjustment_(0),
       max_page_scale_(-1),
       track_pinch_zoom_stats_for_page_(false),
@@ -78,8 +87,6 @@ VisualViewport::VisualViewport(Page& owner)
       unique_id, CompositorElementIdNamespace::kPrimary);
   scroll_element_id_ = CompositorElementIdFromUniqueObjectId(
       unique_id, CompositorElementIdNamespace::kScroll);
-  overscroll_elasticity_element_id_ = CompositorElementIdFromUniqueObjectId(
-      unique_id, CompositorElementIdNamespace::kOverscrollElasticity);
   Reset();
 }
 
@@ -94,93 +101,110 @@ VisualViewport::GetOverscrollElasticityTransformNode() const {
 }
 
 TransformPaintPropertyNode* VisualViewport::GetPageScaleNode() const {
-  return scale_transform_node_.get();
+  return page_scale_node_.get();
 }
 
 TransformPaintPropertyNode* VisualViewport::GetScrollTranslationNode() const {
-  return translation_transform_node_.get();
+  return scroll_translation_node_.get();
 }
 
 ScrollPaintPropertyNode* VisualViewport::GetScrollNode() const {
   return scroll_node_.get();
 }
 
-void VisualViewport::UpdatePaintPropertyNodesIfNeeded(
+PaintPropertyChangeType VisualViewport::UpdatePaintPropertyNodesIfNeeded(
     PaintPropertyTreeBuilderFragmentContext& context) {
+  PaintPropertyChangeType change = PaintPropertyChangeType::kUnchanged;
+
+  if (!scroll_layer_)
+    CreateLayers();
+
   if (!needs_paint_property_update_)
-    return;
+    return change;
 
   needs_paint_property_update_ = false;
-  SetPaintArtifactCompositorNeedsUpdate();
 
+  parent_property_tree_state_ =
+      PropertyTreeState(*context.current.transform, *context.current.clip,
+                        *context.current_effect);
   auto* transform_parent = context.current.transform;
   auto* scroll_parent = context.current.scroll;
-  auto* clip_parent = context.current.clip;
-  auto* effect_parent = context.current_effect;
-
-  DCHECK(transform_parent);
   DCHECK(scroll_parent);
-  DCHECK(clip_parent);
-  DCHECK(effect_parent);
 
   {
     const auto& device_emulation_transform =
         GetChromeClient()->GetDeviceEmulationTransform();
     if (!device_emulation_transform.IsIdentity()) {
-      TransformPaintPropertyNode::State state;
-      state.matrix = device_emulation_transform;
+      TransformPaintPropertyNode::State state{device_emulation_transform};
+      state.flags.in_subtree_of_page_scale = false;
       if (!device_emulation_transform_node_) {
         device_emulation_transform_node_ = TransformPaintPropertyNode::Create(
             *transform_parent, std::move(state));
+        change = PaintPropertyChangeType::kNodeAddedOrRemoved;
       } else {
-        device_emulation_transform_node_->Update(*transform_parent,
-                                                 std::move(state));
+        change = std::max(change, device_emulation_transform_node_->Update(
+                                      *transform_parent, std::move(state)));
       }
       transform_parent = device_emulation_transform_node_.get();
-    } else {
+    } else if (device_emulation_transform_node_) {
       device_emulation_transform_node_ = nullptr;
+      change = PaintPropertyChangeType::kNodeAddedOrRemoved;
     }
   }
 
-  if (inner_viewport_container_layer_) {
-    inner_viewport_container_layer_->SetLayerState(
-        PropertyTreeState(*transform_parent, *clip_parent, *effect_parent),
-        IntPoint());
-  }
-
   {
+    DCHECK(!transform_parent->IsInSubtreeOfPageScale());
+
     TransformPaintPropertyNode::State state;
-    state.compositor_element_id = GetCompositorOverscrollElasticityElementId();
+    state.flags.in_subtree_of_page_scale = false;
     // TODO(crbug.com/877794) Should create overscroll elasticity transform node
     // based on settings.
     if (!overscroll_elasticity_transform_node_) {
       overscroll_elasticity_transform_node_ =
           TransformPaintPropertyNode::Create(*transform_parent,
                                              std::move(state));
+      change = PaintPropertyChangeType::kNodeAddedOrRemoved;
     } else {
-      overscroll_elasticity_transform_node_->Update(*transform_parent,
-                                                    std::move(state));
+      change = std::max(change, overscroll_elasticity_transform_node_->Update(
+                                    *transform_parent, std::move(state)));
     }
   }
 
   {
-    TransformPaintPropertyNode::State state;
-    state.matrix.Scale(Scale());
+    TransformPaintPropertyNode::State state{
+        TransformationMatrix().Scale(Scale())};
+    state.flags.in_subtree_of_page_scale = false;
+    state.direct_compositing_reasons = CompositingReason::kWillChangeTransform;
     state.compositor_element_id = GetCompositorElementId();
 
-    if (!scale_transform_node_) {
-      scale_transform_node_ = TransformPaintPropertyNode::Create(
+    if (!page_scale_node_) {
+      page_scale_node_ = TransformPaintPropertyNode::Create(
           *overscroll_elasticity_transform_node_.get(), std::move(state));
+      change = PaintPropertyChangeType::kNodeAddedOrRemoved;
     } else {
-      scale_transform_node_->Update(
+      auto effective_change_type = page_scale_node_->Update(
           *overscroll_elasticity_transform_node_.get(), std::move(state));
+      // As an optimization, attempt to directly update the compositor
+      // scale translation node and return kChangedOnlyCompositedValues which
+      // avoids an expensive PaintArtifactCompositor update.
+      // TODO(crbug.com/953322): We need to implement this optimization for
+      // CompositeAfterPaint as well.
+      if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
+          effective_change_type ==
+              PaintPropertyChangeType::kChangedOnlySimpleValues) {
+        if (auto* paint_artifact_compositor = GetPaintArtifactCompositor()) {
+          bool updated =
+              paint_artifact_compositor->DirectlyUpdatePageScaleTransform(
+                  *page_scale_node_);
+          if (updated) {
+            effective_change_type =
+                PaintPropertyChangeType::kChangedOnlyCompositedValues;
+            page_scale_node_->CompositorSimpleValuesUpdated();
+          }
+        }
+      }
+      change = std::max(change, effective_change_type);
     }
-  }
-
-  if (page_scale_layer_) {
-    page_scale_layer_->SetLayerState(
-        PropertyTreeState(*scale_transform_node_, *clip_parent, *effect_parent),
-        IntPoint());
   }
 
   {
@@ -195,6 +219,25 @@ void VisualViewport::UpdatePaintPropertyNodesIfNeeded(
     state.max_scroll_offset_affected_by_page_scale = true;
     state.compositor_element_id = GetCompositorScrollElementId();
 
+    if (MainFrame() && MainFrame()->GetDocument()) {
+      Document* document = MainFrame()->GetDocument();
+      bool uses_default_root_scroller =
+          &document->GetRootScrollerController().EffectiveRootScroller() ==
+          document;
+
+      // All position: fixed elements will chain scrolling directly up to the
+      // visual viewport's scroll node. In the case of a default root scroller
+      // (i.e. the LayoutView), we actually want to scroll the "full viewport".
+      // i.e. scrolling from the position: fixed element should cause the page
+      // to scroll. This is not the case when we have a different root
+      // scroller. We set |prevent_viewport_scrolling_from_inner| so the
+      // compositor can know to use the correct chaining behavior. This would be
+      // better fixed by setting the correct scroll_tree_index in PAC::Update on
+      // the fixed layer but that's a larger change. See
+      // https://crbug.com/977954 for details.
+      state.prevent_viewport_scrolling_from_inner = !uses_default_root_scroller;
+    }
+
     if (MainFrame() &&
         !MainFrame()->GetSettings()->GetThreadedScrollingEnabled()) {
       state.main_thread_scrolling_reasons =
@@ -204,73 +247,87 @@ void VisualViewport::UpdatePaintPropertyNodesIfNeeded(
     if (!scroll_node_) {
       scroll_node_ =
           ScrollPaintPropertyNode::Create(*scroll_parent, std::move(state));
+      change = PaintPropertyChangeType::kNodeAddedOrRemoved;
     } else {
-      scroll_node_->Update(*scroll_parent, std::move(state));
+      change = std::max(change,
+                        scroll_node_->Update(*scroll_parent, std::move(state)));
     }
   }
 
   {
-    TransformPaintPropertyNode::State state;
     ScrollOffset scroll_position = GetScrollOffset();
-    state.matrix.Translate(-scroll_position.Width(), -scroll_position.Height());
+    TransformPaintPropertyNode::State state{
+        FloatSize(-scroll_position.Width(), -scroll_position.Height())};
     state.scroll = scroll_node_;
-    state.is_identity_or_2d_translation = true;
-    if (!translation_transform_node_) {
-      translation_transform_node_ = TransformPaintPropertyNode::Create(
-          *scale_transform_node_, std::move(state));
+    state.direct_compositing_reasons = CompositingReason::kWillChangeTransform;
+    if (!scroll_translation_node_) {
+      scroll_translation_node_ = TransformPaintPropertyNode::Create(
+          *page_scale_node_, std::move(state));
+      change = PaintPropertyChangeType::kNodeAddedOrRemoved;
     } else {
-      translation_transform_node_->Update(*scale_transform_node_,
-                                          std::move(state));
+      auto effective_change_type =
+          scroll_translation_node_->Update(*page_scale_node_, std::move(state));
+      // As an optimization, attempt to directly update the compositor
+      // translation node and return kChangedOnlyCompositedValues which avoids
+      // an expensive PaintArtifactCompositor update.
+      // TODO(crbug.com/953322): We need to implement this optimization for
+      // CompositeAfterPaint as well.
+      if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
+          effective_change_type ==
+              PaintPropertyChangeType::kChangedOnlySimpleValues) {
+        if (auto* paint_artifact_compositor = GetPaintArtifactCompositor()) {
+          bool updated =
+              paint_artifact_compositor->DirectlyUpdateScrollOffsetTransform(
+                  *scroll_translation_node_);
+          if (updated) {
+            effective_change_type =
+                PaintPropertyChangeType::kChangedOnlyCompositedValues;
+            scroll_translation_node_->CompositorSimpleValuesUpdated();
+          }
+        }
+      }
     }
   }
 
-  if (inner_viewport_scroll_layer_) {
-    inner_viewport_scroll_layer_->SetLayerState(
-        PropertyTreeState(*translation_transform_node_, *clip_parent,
-                          *effect_parent),
-        IntPoint());
-  }
-
-  if (overlay_scrollbar_horizontal_) {
+  if (scrollbar_layer_horizontal_) {
     EffectPaintPropertyNode::State state;
     state.local_transform_space = transform_parent;
     state.direct_compositing_reasons =
         CompositingReason::kActiveOpacityAnimation;
+    state.has_active_opacity_animation = true;
     state.compositor_element_id =
         GetScrollbarElementId(ScrollbarOrientation::kHorizontalScrollbar);
     if (!horizontal_scrollbar_effect_node_) {
-      horizontal_scrollbar_effect_node_ =
-          EffectPaintPropertyNode::Create(*effect_parent, std::move(state));
+      horizontal_scrollbar_effect_node_ = EffectPaintPropertyNode::Create(
+          parent_property_tree_state_.Effect(), std::move(state));
+      change = PaintPropertyChangeType::kNodeAddedOrRemoved;
     } else {
-      horizontal_scrollbar_effect_node_->Update(*effect_parent,
-                                                std::move(state));
+      change = std::max(
+          change, horizontal_scrollbar_effect_node_->Update(
+                      parent_property_tree_state_.Effect(), std::move(state)));
     }
-
-    overlay_scrollbar_horizontal_->SetLayerState(
-        PropertyTreeState(*transform_parent, *context.current.clip,
-                          *horizontal_scrollbar_effect_node_),
-        ScrollbarOffset(ScrollbarOrientation::kHorizontalScrollbar));
   }
 
-  if (overlay_scrollbar_vertical_) {
+  if (scrollbar_layer_vertical_) {
     EffectPaintPropertyNode::State state;
     state.local_transform_space = transform_parent;
     state.direct_compositing_reasons =
         CompositingReason::kActiveOpacityAnimation;
+    state.has_active_opacity_animation = true;
     state.compositor_element_id =
         GetScrollbarElementId(ScrollbarOrientation::kVerticalScrollbar);
     if (!vertical_scrollbar_effect_node_) {
-      vertical_scrollbar_effect_node_ =
-          EffectPaintPropertyNode::Create(*effect_parent, std::move(state));
+      vertical_scrollbar_effect_node_ = EffectPaintPropertyNode::Create(
+          parent_property_tree_state_.Effect(), std::move(state));
+      change = PaintPropertyChangeType::kNodeAddedOrRemoved;
     } else {
-      vertical_scrollbar_effect_node_->Update(*effect_parent, std::move(state));
+      change = std::max(
+          change, vertical_scrollbar_effect_node_->Update(
+                      parent_property_tree_state_.Effect(), std::move(state)));
     }
-
-    overlay_scrollbar_vertical_->SetLayerState(
-        PropertyTreeState(*transform_parent, *context.current.clip,
-                          *vertical_scrollbar_effect_node_),
-        ScrollbarOffset(ScrollbarOrientation::kVerticalScrollbar));
   }
+
+  return change;
 }
 
 VisualViewport::~VisualViewport() {
@@ -282,12 +339,12 @@ void VisualViewport::Trace(blink::Visitor* visitor) {
   ScrollableArea::Trace(visitor);
 }
 
-void VisualViewport::UpdateStyleAndLayoutIgnorePendingStylesheets() const {
+void VisualViewport::UpdateStyleAndLayout() const {
   if (!MainFrame())
     return;
 
   if (Document* document = MainFrame()->GetDocument())
-    document->UpdateStyleAndLayoutIgnorePendingStylesheets();
+    document->UpdateStyleAndLayout();
 }
 
 void VisualViewport::EnqueueScrollEvent() {
@@ -306,51 +363,35 @@ void VisualViewport::SetSize(const IntSize& size) {
 
   TRACE_EVENT2("blink", "VisualViewport::setSize", "width", size.Width(),
                "height", size.Height());
-  bool width_did_change = size.Width() != size_.Width();
   size_ = size;
   needs_paint_property_update_ = true;
 
-  if (inner_viewport_container_layer_) {
-    inner_viewport_container_layer_->SetSize(gfx::Size(size_));
-    inner_viewport_scroll_layer_->CcLayer()->SetScrollable(
-        static_cast<gfx::Size>(size_));
+  TRACE_EVENT_INSTANT1("loading", "viewport", TRACE_EVENT_SCOPE_THREAD, "data",
+                       ViewportToTracedValue());
 
-    // Need to re-compute sizes for the overlay scrollbars.
-    if (overlay_scrollbar_horizontal_) {
-      DCHECK(overlay_scrollbar_vertical_);
-      SetupScrollbar(kHorizontalScrollbar);
-      SetupScrollbar(kVerticalScrollbar);
-    }
+  // Need to re-compute sizes for the overlay scrollbars.
+  if (scrollbar_layer_horizontal_) {
+    DCHECK(scrollbar_layer_vertical_);
+    UpdateScrollbarLayer(kHorizontalScrollbar);
+    UpdateScrollbarLayer(kVerticalScrollbar);
   }
 
   if (!MainFrame())
     return;
 
   EnqueueResizeEvent();
-
-  bool autosizer_needs_updating =
-      width_did_change && MainFrame()->GetSettings() &&
-      MainFrame()->GetSettings()->TextAutosizingEnabled();
-
-  if (autosizer_needs_updating) {
-    // This needs to happen after setting the m_size member since it'll be read
-    // in the update call.
-    if (TextAutosizer* text_autosizer =
-            MainFrame()->GetDocument()->GetTextAutosizer())
-      text_autosizer->UpdatePageInfoInAllFrames();
-  }
 }
 
 void VisualViewport::Reset() {
-  SetScaleAndLocation(1, FloatPoint());
+  SetScaleAndLocation(1, is_pinch_gesture_active_, FloatPoint());
 }
 
 void VisualViewport::MainFrameDidChangeSize() {
   TRACE_EVENT0("blink", "VisualViewport::mainFrameDidChangeSize");
 
   // In unit tests we may not have initialized the layer tree.
-  if (inner_viewport_scroll_layer_)
-    inner_viewport_scroll_layer_->SetSize(gfx::Size(ContentsSize()));
+  if (scroll_layer_)
+    scroll_layer_->SetBounds(gfx::Size(ContentsSize()));
 
   needs_paint_property_update_ = true;
   ClampToBoundaries();
@@ -369,16 +410,6 @@ FloatRect VisualViewport::VisibleRect(
   return FloatRect(FloatPoint(GetScrollOffset()), visible_size);
 }
 
-FloatRect VisualViewport::VisibleRectInDocument(
-    IncludeScrollbarsInRect scrollbar_inclusion) const {
-  if (!MainFrame() || !MainFrame()->View())
-    return FloatRect();
-
-  FloatPoint view_location =
-      FloatPoint(MainFrame()->View()->GetScrollableArea()->GetScrollOffset());
-  return FloatRect(view_location, VisibleRect(scrollbar_inclusion).Size());
-}
-
 FloatPoint VisualViewport::ViewportCSSPixelsToRootFrame(
     const FloatPoint& point) const {
   // Note, this is in CSS Pixels so we don't apply scale.
@@ -388,7 +419,7 @@ FloatPoint VisualViewport::ViewportCSSPixelsToRootFrame(
 }
 
 void VisualViewport::SetLocation(const FloatPoint& new_location) {
-  SetScaleAndLocation(scale_, new_location);
+  SetScaleAndLocation(scale_, is_pinch_gesture_active_, new_location);
 }
 
 void VisualViewport::Move(const ScrollOffset& delta) {
@@ -396,14 +427,14 @@ void VisualViewport::Move(const ScrollOffset& delta) {
 }
 
 void VisualViewport::SetScale(float scale) {
-  SetScaleAndLocation(scale, FloatPoint(offset_));
+  SetScaleAndLocation(scale, is_pinch_gesture_active_, FloatPoint(offset_));
 }
 
 double VisualViewport::OffsetLeft() const {
   if (!MainFrame())
     return 0;
 
-  UpdateStyleAndLayoutIgnorePendingStylesheets();
+  UpdateStyleAndLayout();
 
   return VisibleRect().X() / MainFrame()->PageZoomFactor();
 }
@@ -412,18 +443,18 @@ double VisualViewport::OffsetTop() const {
   if (!MainFrame())
     return 0;
 
-  UpdateStyleAndLayoutIgnorePendingStylesheets();
+  UpdateStyleAndLayout();
 
   return VisibleRect().Y() / MainFrame()->PageZoomFactor();
 }
 
 double VisualViewport::Width() const {
-  UpdateStyleAndLayoutIgnorePendingStylesheets();
+  UpdateStyleAndLayout();
   return VisibleWidthCSSPx();
 }
 
 double VisualViewport::Height() const {
-  UpdateStyleAndLayoutIgnorePendingStylesheets();
+  UpdateStyleAndLayout();
   return VisibleHeightCSSPx();
 }
 
@@ -432,8 +463,9 @@ double VisualViewport::ScaleForVisualViewport() const {
 }
 
 void VisualViewport::SetScaleAndLocation(float scale,
+                                         bool is_pinch_gesture_active,
                                          const FloatPoint& location) {
-  if (DidSetScaleOrLocation(scale, location)) {
+  if (DidSetScaleOrLocation(scale, is_pinch_gesture_active, location)) {
     NotifyRootFrameViewport();
     Document* document = MainFrame()->GetDocument();
     if (AXObjectCache* cache = document->ExistingAXObjectCache()) {
@@ -461,12 +493,16 @@ double VisualViewport::VisibleHeightCSSPx() const {
 }
 
 bool VisualViewport::DidSetScaleOrLocation(float scale,
+                                           bool is_pinch_gesture_active,
                                            const FloatPoint& location) {
   if (!MainFrame())
     return false;
 
   bool values_changed = false;
 
+  bool notify_page_scale_factor_changed =
+      is_pinch_gesture_active_ != is_pinch_gesture_active;
+  is_pinch_gesture_active_ = is_pinch_gesture_active;
   if (!std::isnan(scale) && !std::isinf(scale)) {
     float clamped_scale = GetPage()
                               .GetPageScaleConstraintsSet()
@@ -475,10 +511,12 @@ bool VisualViewport::DidSetScaleOrLocation(float scale,
     if (clamped_scale != scale_) {
       scale_ = clamped_scale;
       values_changed = true;
-      GetPage().GetChromeClient().PageScaleFactorChanged();
+      notify_page_scale_factor_changed = true;
       EnqueueResizeEvent();
     }
   }
+  if (notify_page_scale_factor_changed)
+    GetPage().GetChromeClient().PageScaleFactorChanged();
 
   ScrollOffset clamped_offset = ClampScrollOffset(ToScrollOffset(location));
 
@@ -497,8 +535,10 @@ bool VisualViewport::DidSetScaleOrLocation(float scale,
 
     // SVG runs with accelerated compositing disabled so no
     // ScrollingCoordinator.
-    if (ScrollingCoordinator* coordinator = GetPage().GetScrollingCoordinator())
-      coordinator->ScrollableAreaScrollLayerDidChange(this);
+    if (auto* coordinator = GetPage().GetScrollingCoordinator()) {
+      if (scroll_layer_)
+        coordinator->UpdateCompositedScrollOffset(this);
+    }
 
     EnqueueScrollEvent();
 
@@ -518,140 +558,56 @@ bool VisualViewport::DidSetScaleOrLocation(float scale,
   ClampToBoundaries();
 
   needs_paint_property_update_ = true;
-
+  if (notify_page_scale_factor_changed) {
+    TRACE_EVENT_INSTANT1("loading", "viewport", TRACE_EVENT_SCOPE_THREAD,
+                         "data", ViewportToTracedValue());
+  }
   return true;
 }
 
-bool VisualViewport::MagnifyScaleAroundAnchor(float magnify_delta,
-                                              const FloatPoint& anchor) {
-  const float old_page_scale = Scale();
-  const float new_page_scale =
-      GetPage().GetChromeClient().ClampPageScaleFactorToLimits(magnify_delta *
-                                                               old_page_scale);
-  if (new_page_scale == old_page_scale)
-    return false;
-  if (!MainFrame() || !MainFrame()->View())
-    return false;
-
-  // Keep the center-of-pinch anchor in a stable position over the course
-  // of the magnify.
-  // TODO(bokan): Looks like we call into setScaleAndLocation with infinity for
-  // the location so it seems either old or newPageScale is invalid.
-  // crbug.com/702771.
-  FloatPoint anchor_at_old_scale = anchor.ScaledBy(1.f / old_page_scale);
-  FloatPoint anchor_at_new_scale = anchor.ScaledBy(1.f / new_page_scale);
-  FloatSize anchor_delta = anchor_at_old_scale - anchor_at_new_scale;
-
-  // First try to use the anchor's delta to scroll the LocalFrameView.
-  FloatSize anchor_delta_unused_by_scroll = anchor_delta;
-
-  // Manually bubble any remaining anchor delta up to the visual viewport.
-  FloatPoint new_location(FloatPoint(GetScrollOffset()) +
-                          anchor_delta_unused_by_scroll);
-  SetScaleAndLocation(new_page_scale, new_location);
-  return true;
-}
-
-void VisualViewport::CreateLayerTree() {
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
+void VisualViewport::CreateLayers() {
+  if (scroll_layer_)
     return;
 
-  if (inner_viewport_scroll_layer_)
+  if (!GetPage().GetSettings().GetAcceleratedCompositingEnabled())
     return;
 
-  DCHECK(!overlay_scrollbar_horizontal_ && !overlay_scrollbar_vertical_ &&
-         !overscroll_elasticity_layer_ && !page_scale_layer_ &&
-         !inner_viewport_container_layer_);
+  DCHECK(!scrollbar_layer_horizontal_ && !scrollbar_layer_vertical_);
+  DCHECK(MainFrame());
+  DCHECK(MainFrame()->GetDocument());
 
   needs_paint_property_update_ = true;
 
-  // FIXME: The root transform layer should only be created on demand.
-  root_transform_layer_ = GraphicsLayer::Create(*this);
-  inner_viewport_container_layer_ = GraphicsLayer::Create(*this);
-  // TODO(crbug.com/836884) Should remove overscroll_elasticity_layer_ after
-  // BGPT landed.
-  if (!RuntimeEnabledFeatures::BlinkGenPropertyTreesEnabled()) {
-    overscroll_elasticity_layer_ = GraphicsLayer::Create(*this);
-    overscroll_elasticity_layer_->SetElementId(
-        GetCompositorOverscrollElasticityElementId());
-  }
-  page_scale_layer_ = GraphicsLayer::Create(*this);
-  inner_viewport_scroll_layer_ = GraphicsLayer::Create(*this);
+  // TODO(crbug.com/1015625): Avoid scroll_layer_.
+  scroll_layer_ = cc::Layer::Create();
+  scroll_layer_->SetScrollable(gfx::Size(size_));
+  scroll_layer_->SetBounds(gfx::Size(ContentsSize()));
+  scroll_layer_->SetElementId(GetCompositorScrollElementId());
 
   ScrollingCoordinator* coordinator = GetPage().GetScrollingCoordinator();
   DCHECK(coordinator);
-  inner_viewport_scroll_layer_->SetIsContainerForFixedPositionLayers(true);
-  if (!RuntimeEnabledFeatures::BlinkGenPropertyTreesEnabled())
-    coordinator->UpdateUserInputScrollable(this);
-
-  // Set masks to bounds so the compositor doesn't clobber a manually
-  // set inner viewport container layer size.
-  inner_viewport_container_layer_->SetMasksToBounds(
-      GetPage().GetSettings().GetMainFrameClipsContent());
-  inner_viewport_container_layer_->SetSize(gfx::Size(size_));
-
-  inner_viewport_scroll_layer_->CcLayer()->SetScrollable(
-      static_cast<gfx::Size>(size_));
-  DCHECK(MainFrame());
-  DCHECK(MainFrame()->GetDocument());
-  inner_viewport_scroll_layer_->SetElementId(GetCompositorScrollElementId());
-  page_scale_layer_->SetElementId(GetCompositorElementId());
-
-  root_transform_layer_->AddChild(inner_viewport_container_layer_.get());
-  // TODO(crbug.com/836884) Should remove overscroll_elasticity_layer_ after
-  // BGPT landed.
-  if (!RuntimeEnabledFeatures::BlinkGenPropertyTreesEnabled()) {
-    inner_viewport_container_layer_->AddChild(
-        overscroll_elasticity_layer_.get());
-    overscroll_elasticity_layer_->AddChild(page_scale_layer_.get());
-    page_scale_layer_->AddChild(inner_viewport_scroll_layer_.get());
-  } else {
-    inner_viewport_container_layer_->AddChild(page_scale_layer_.get());
-    page_scale_layer_->AddChild(inner_viewport_scroll_layer_.get());
-  }
-
-  // Ensure this class is set as the scroll layer's ScrollableArea.
-  coordinator->ScrollableAreaScrollLayerDidChange(this);
+  LayerForScrollingDidChange(coordinator->GetCompositorAnimationTimeline());
 
   InitializeScrollbars();
-}
-
-void VisualViewport::AttachLayerTree(GraphicsLayer* current_layer_tree_root) {
-  TRACE_EVENT1("blink", "VisualViewport::attachLayerTree",
-               "currentLayerTreeRoot", (bool)current_layer_tree_root);
-  if (!current_layer_tree_root) {
-    if (inner_viewport_scroll_layer_)
-      inner_viewport_scroll_layer_->RemoveAllChildren();
-    return;
-  }
-
-  if (current_layer_tree_root->Parent() &&
-      current_layer_tree_root->Parent() == inner_viewport_scroll_layer_.get())
-    return;
-
-  DCHECK(inner_viewport_scroll_layer_);
-  inner_viewport_scroll_layer_->RemoveAllChildren();
-  inner_viewport_scroll_layer_->AddChild(current_layer_tree_root);
+  coordinator->UpdateCompositedScrollOffset(this);
 }
 
 void VisualViewport::InitializeScrollbars() {
-  // Do nothing if not attached to layer tree yet - will initialize upon attach.
-  if (!inner_viewport_container_layer_)
+  // Do nothing if we haven't created the layer tree yet.
+  if (!scroll_layer_)
     return;
 
   needs_paint_property_update_ = true;
 
   if (VisualViewportSuppliesScrollbars() &&
       !GetPage().GetSettings().GetHideScrollbars()) {
-    DCHECK(!overlay_scrollbar_horizontal_);
-    DCHECK(!overlay_scrollbar_vertical_);
-    overlay_scrollbar_horizontal_ = GraphicsLayer::Create(*this);
-    overlay_scrollbar_vertical_ = GraphicsLayer::Create(*this);
-    SetupScrollbar(kHorizontalScrollbar);
-    SetupScrollbar(kVerticalScrollbar);
+    DCHECK(!scrollbar_layer_horizontal_);
+    DCHECK(!scrollbar_layer_vertical_);
+    UpdateScrollbarLayer(kHorizontalScrollbar);
+    UpdateScrollbarLayer(kVerticalScrollbar);
   } else {
-    overlay_scrollbar_horizontal_ = nullptr;
-    overlay_scrollbar_vertical_ = nullptr;
+    scrollbar_layer_horizontal_ = nullptr;
+    scrollbar_layer_vertical_ = nullptr;
   }
 
   // Ensure existing LocalFrameView scrollbars are removed if the visual
@@ -663,81 +619,48 @@ void VisualViewport::InitializeScrollbars() {
 }
 
 int VisualViewport::ScrollbarThickness() const {
-  ScrollbarThemeOverlay& theme = ScrollbarThemeOverlay::MobileTheme();
+  auto& theme = ScrollbarThemeOverlayMobile::GetInstance();
   int thickness = theme.ScrollbarThickness(kRegularScrollbar);
-  return clampTo<int>(std::floor(
-      GetPage().GetChromeClient().WindowToViewportScalar(thickness)));
+  return clampTo<int>(
+      std::floor(GetPage().GetChromeClient().WindowToViewportScalar(
+          MainFrame(), thickness)));
 }
 
-IntSize VisualViewport::ScrollbarSize(ScrollbarOrientation orientation) const {
-  if (orientation == kHorizontalScrollbar) {
-    int viewport_width = inner_viewport_container_layer_->Size().width();
-    return IntSize(viewport_width - ScrollbarThickness(), ScrollbarThickness());
-  }
-  int viewport_height = inner_viewport_container_layer_->Size().height();
-  return IntSize(ScrollbarThickness(), viewport_height - ScrollbarThickness());
-}
-
-IntPoint VisualViewport::ScrollbarOffset(
-    ScrollbarOrientation orientation) const {
-  if (orientation == kHorizontalScrollbar) {
-    int viewport_height = inner_viewport_container_layer_->Size().height();
-    return IntPoint(0, viewport_height - ScrollbarThickness());
-  }
-  int viewport_width = inner_viewport_container_layer_->Size().width();
-  return IntPoint(viewport_width - ScrollbarThickness(), 0);
-}
-
-void VisualViewport::SetupScrollbar(ScrollbarOrientation orientation) {
+void VisualViewport::UpdateScrollbarLayer(ScrollbarOrientation orientation) {
   bool is_horizontal = orientation == kHorizontalScrollbar;
-  GraphicsLayer* scrollbar_graphics_layer =
-      is_horizontal ? overlay_scrollbar_horizontal_.get()
-                    : overlay_scrollbar_vertical_.get();
-  std::unique_ptr<ScrollingCoordinator::ScrollbarLayerGroup>&
-      scrollbar_layer_group = is_horizontal ? scrollbar_layer_group_horizontal_
-                                            : scrollbar_layer_group_vertical_;
-  if (!scrollbar_graphics_layer->Parent())
-    inner_viewport_container_layer_->AddChild(scrollbar_graphics_layer);
-
-  if (!scrollbar_layer_group) {
+  scoped_refptr<cc::ScrollbarLayerBase>& scrollbar_layer =
+      is_horizontal ? scrollbar_layer_horizontal_ : scrollbar_layer_vertical_;
+  if (!scrollbar_layer) {
     ScrollingCoordinator* coordinator = GetPage().GetScrollingCoordinator();
     DCHECK(coordinator);
 
-    ScrollbarThemeOverlay& theme = ScrollbarThemeOverlay::MobileTheme();
+    auto& theme = ScrollbarThemeOverlayMobile::GetInstance();
     int thumb_thickness = clampTo<int>(
         std::floor(GetPage().GetChromeClient().WindowToViewportScalar(
-            theme.ThumbThickness())));
+            MainFrame(), theme.ThumbThickness())));
     int scrollbar_margin = clampTo<int>(
         std::floor(GetPage().GetChromeClient().WindowToViewportScalar(
-            theme.ScrollbarMargin())));
-    scrollbar_layer_group = coordinator->CreateSolidColorScrollbarLayer(
+            MainFrame(), theme.ScrollbarMargin())));
+    scrollbar_layer = coordinator->CreateSolidColorScrollbarLayer(
         orientation, thumb_thickness, scrollbar_margin, false,
         GetScrollbarElementId(orientation));
-
-    // The compositor will control the scrollbar's visibility. Set to invisible
-    // by default so scrollbars don't show up in web tests.
-    scrollbar_layer_group->layer->SetOpacity(0.f);
-    scrollbar_graphics_layer->SetContentsToCcLayer(
-        scrollbar_layer_group->layer.get(),
-        /*prevent_contents_opaque_changes=*/false);
-    scrollbar_graphics_layer->SetDrawsContent(false);
-    scrollbar_layer_group->scrollbar_layer->SetScrollElementId(
-        inner_viewport_scroll_layer_->CcLayer()->element_id());
+    scrollbar_layer->SetScrollElementId(scroll_layer_->element_id());
   }
 
-  // Use the GraphicsLayer to position the scrollbars.
-  const auto& position = ScrollbarOffset(orientation);
-  scrollbar_graphics_layer->SetPosition(FloatPoint(position));
-
-  const auto& size = ScrollbarSize(orientation);
-  scrollbar_graphics_layer->SetSize(gfx::Size(size));
-  scrollbar_graphics_layer->SetContentsRect(IntRect(IntPoint(), size));
-
-  needs_paint_property_update_ = true;
+  scrollbar_layer->SetBounds(
+      orientation == kHorizontalScrollbar
+          ? gfx::Size(size_.Width() - ScrollbarThickness(),
+                      ScrollbarThickness())
+          : gfx::Size(ScrollbarThickness(),
+                      size_.Height() - ScrollbarThickness()));
 }
 
 bool VisualViewport::VisualViewportSuppliesScrollbars() const {
   return GetPage().GetSettings().GetViewportEnabled();
+}
+
+const Document* VisualViewport::GetDocument() const {
+  return MainFrame() ? MainFrame()->GetDocument() : nullptr;
 }
 
 CompositorElementId VisualViewport::GetCompositorElementId() const {
@@ -748,11 +671,6 @@ CompositorElementId VisualViewport::GetCompositorScrollElementId() const {
   return scroll_element_id_;
 }
 
-CompositorElementId VisualViewport::GetCompositorOverscrollElasticityElementId()
-    const {
-  return overscroll_elasticity_element_id_;
-}
-
 bool VisualViewport::ScrollAnimatorEnabled() const {
   return GetPage().GetSettings().GetScrollAnimatorEnabled();
 }
@@ -761,9 +679,16 @@ ChromeClient* VisualViewport::GetChromeClient() const {
   return &GetPage().GetChromeClient();
 }
 
+SmoothScrollSequencer* VisualViewport::GetSmoothScrollSequencer() const {
+  if (!MainFrame())
+    return nullptr;
+  return &MainFrame()->GetSmoothScrollSequencer();
+}
+
 void VisualViewport::SetScrollOffset(const ScrollOffset& offset,
                                      ScrollType scroll_type,
-                                     ScrollBehavior scroll_behavior) {
+                                     ScrollBehavior scroll_behavior,
+                                     ScrollCallback on_finish) {
   // We clamp the offset here, because the ScrollAnimator may otherwise be
   // set to a non-clamped offset by ScrollableArea::setScrollOffset,
   // which may lead to incorrect scrolling behavior in RootFrameViewport down
@@ -774,7 +699,34 @@ void VisualViewport::SetScrollOffset(const ScrollOffset& offset,
   // crbug.com/626315.
   ScrollOffset new_scroll_offset = ClampScrollOffset(offset);
   ScrollableArea::SetScrollOffset(new_scroll_offset, scroll_type,
-                                  scroll_behavior);
+                                  scroll_behavior, std::move(on_finish));
+}
+
+PhysicalRect VisualViewport::ScrollIntoView(
+    const PhysicalRect& rect_in_absolute,
+    const WebScrollIntoViewParams& params) {
+  PhysicalRect scroll_snapport_rect = VisibleScrollSnapportRect();
+
+  ScrollOffset new_scroll_offset =
+      ClampScrollOffset(ScrollAlignment::GetScrollOffsetToExpose(
+          scroll_snapport_rect, rect_in_absolute, params.GetScrollAlignmentX(),
+          params.GetScrollAlignmentY(), GetScrollOffset()));
+
+  if (new_scroll_offset != GetScrollOffset()) {
+    ScrollBehavior behavior = params.GetScrollBehavior();
+    if (params.is_for_scroll_sequence) {
+      DCHECK(params.GetScrollType() == kProgrammaticScroll ||
+             params.GetScrollType() == kUserScroll);
+      if (SmoothScrollSequencer* sequencer = GetSmoothScrollSequencer()) {
+        sequencer->QueueAnimation(this, new_scroll_offset, behavior);
+      }
+    } else {
+      SetScrollOffset(new_scroll_offset, params.GetScrollType(), behavior,
+                      ScrollCallback());
+    }
+  }
+
+  return rect_in_absolute;
 }
 
 int VisualViewport::ScrollSize(ScrollbarOrientation orientation) const {
@@ -853,19 +805,6 @@ float VisualViewport::BrowserControlsAdjustment() const {
   return browser_controls_adjustment_;
 }
 
-IntRect VisualViewport::ScrollableAreaBoundingBox() const {
-  // This method should return the bounding box in the top-level
-  // LocalFrameView's coordinate space; however, VisualViewport technically
-  // isn't a child of any Frames.  Nonetheless, the VisualViewport always
-  // occupies the entire main frame so just return that.
-  LocalFrame* frame = MainFrame();
-
-  if (!frame || !frame->View())
-    return IntRect();
-
-  return frame->View()->FrameRect();
-}
-
 bool VisualViewport::UserInputScrollable(ScrollbarOrientation) const {
   // If there is a non-root fullscreen element, prevent the viewport from
   // scrolling.
@@ -897,42 +836,38 @@ scoped_refptr<base::SingleThreadTaskRunner> VisualViewport::GetTimerTaskRunner()
   return MainFrame()->GetTaskRunner(TaskType::kInternalDefault);
 }
 
+WebColorScheme VisualViewport::UsedColorScheme() const {
+  if (LocalFrame* main_frame = MainFrame()) {
+    if (Document* main_document = main_frame->GetDocument())
+      return main_document->GetLayoutView()->StyleRef().UsedColorScheme();
+  }
+  return ComputedStyle::InitialStyle().UsedColorScheme();
+}
+
 void VisualViewport::UpdateScrollOffset(const ScrollOffset& position,
                                         ScrollType scroll_type) {
-  if (!DidSetScaleOrLocation(scale_, FloatPoint(position)))
+  if (!DidSetScaleOrLocation(scale_, is_pinch_gesture_active_,
+                             FloatPoint(position))) {
     return;
+  }
   if (IsExplicitScrollType(scroll_type)) {
     NotifyRootFrameViewport();
-    if (scroll_type != kCompositorScroll && LayerForScrolling())
-      LayerForScrolling()->CcLayer()->ShowScrollbars();
+    if (scroll_type != kCompositorScroll && scroll_layer_)
+      scroll_layer_->ShowScrollbars();
   }
 }
 
-GraphicsLayer* VisualViewport::LayerForContainer() const {
-  return inner_viewport_container_layer_.get();
+cc::Layer* VisualViewport::LayerForScrolling() const {
+  return scroll_layer_.get();
 }
 
-GraphicsLayer* VisualViewport::LayerForScrolling() const {
-  return inner_viewport_scroll_layer_.get();
+cc::Layer* VisualViewport::LayerForHorizontalScrollbar() const {
+  return scrollbar_layer_horizontal_.get();
 }
 
-GraphicsLayer* VisualViewport::LayerForHorizontalScrollbar() const {
-  return overlay_scrollbar_horizontal_.get();
+cc::Layer* VisualViewport::LayerForVerticalScrollbar() const {
+  return scrollbar_layer_vertical_.get();
 }
-
-GraphicsLayer* VisualViewport::LayerForVerticalScrollbar() const {
-  return overlay_scrollbar_vertical_.get();
-}
-
-IntRect VisualViewport::ComputeInterestRect(const GraphicsLayer*,
-                                            const IntRect&) const {
-  return IntRect();
-}
-
-void VisualViewport::PaintContents(const GraphicsLayer*,
-                                   GraphicsContext&,
-                                   GraphicsLayerPaintingPhase,
-                                   const IntRect&) const {}
 
 RootFrameViewport* VisualViewport::GetRootFrameViewport() const {
   if (!MainFrame() || !MainFrame()->View())
@@ -1112,43 +1047,71 @@ ScrollbarTheme& VisualViewport::GetPageScrollbarTheme() const {
   return GetPage().GetScrollbarTheme();
 }
 
-void VisualViewport::SetOverlayScrollbarsHidden(bool hidden) {
-  ScrollableArea::SetScrollbarsHiddenIfOverlay(hidden);
-}
-
-void VisualViewport::SetPaintArtifactCompositorNeedsUpdate() const {
+PaintArtifactCompositor* VisualViewport::GetPaintArtifactCompositor() const {
   if (MainFrame() && MainFrame()->View())
-    MainFrame()->View()->SetPaintArtifactCompositorNeedsUpdate();
+    return MainFrame()->View()->GetPaintArtifactCompositor();
+  return nullptr;
 }
 
-String VisualViewport::DebugName(const GraphicsLayer* graphics_layer) const {
-  String name;
-  if (graphics_layer == inner_viewport_container_layer_.get()) {
-    name = "Inner Viewport Container Layer";
-  } else if (graphics_layer == overscroll_elasticity_layer_.get()) {
-    name = "Overscroll Elasticity Layer";
-  } else if (graphics_layer == page_scale_layer_.get()) {
-    name = "Page Scale Layer";
-  } else if (graphics_layer == inner_viewport_scroll_layer_.get()) {
-    name = "Inner Viewport Scroll Layer";
-  } else if (graphics_layer == overlay_scrollbar_horizontal_.get()) {
-    name = "Overlay Scrollbar Horizontal Layer";
-  } else if (graphics_layer == overlay_scrollbar_vertical_.get()) {
-    name = "Overlay Scrollbar Vertical Layer";
-  } else if (graphics_layer == root_transform_layer_.get()) {
-    name = "Root Transform Layer";
-  } else {
-    NOTREACHED();
+std::unique_ptr<TracedValue> VisualViewport::ViewportToTracedValue() const {
+  auto value = std::make_unique<TracedValue>();
+  IntRect viewport = VisibleContentRect();
+  value->SetInteger("x", clampTo<int>(roundf(viewport.X())));
+  value->SetInteger("y", clampTo<int>(roundf(viewport.Y())));
+  value->SetInteger("width", clampTo<int>(roundf(viewport.Width())));
+  value->SetInteger("height", clampTo<int>(roundf(viewport.Height())));
+  value->SetString("frameID",
+                   IdentifiersFactory::FrameId(GetPage().MainFrame()));
+  return value;
+}
+
+void VisualViewport::DisposeImpl() {
+  scroll_layer_.reset();
+  scrollbar_layer_horizontal_.reset();
+  scrollbar_layer_vertical_.reset();
+  device_emulation_transform_node_.reset();
+  overscroll_elasticity_transform_node_.reset();
+  page_scale_node_.reset();
+  scroll_translation_node_.reset();
+  scroll_node_.reset();
+  horizontal_scrollbar_effect_node_.reset();
+  vertical_scrollbar_effect_node_.reset();
+}
+
+void VisualViewport::Paint(GraphicsContext& context) const {
+  // TODO(crbug.com/1015625): Avoid scroll_layer_.
+  // For now disable scroll_layer_ for CAP to avoid updating unit tests.
+  if (scroll_layer_ && !RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+    PropertyTreeState state = parent_property_tree_state_;
+    state.SetTransform(*scroll_translation_node_);
+    DEFINE_STATIC_LOCAL(LiteralDebugNameClient, debug_name_client,
+                        ("Inner Viewport Scroll Layer"));
+    RecordForeignLayer(context, debug_name_client,
+                       DisplayItem::kForeignLayerViewportScroll, scroll_layer_,
+                       FloatPoint(), state);
   }
 
-  return name;
-}
+  if (scrollbar_layer_horizontal_) {
+    PropertyTreeState state = parent_property_tree_state_;
+    state.SetEffect(*horizontal_scrollbar_effect_node_);
+    DEFINE_STATIC_LOCAL(LiteralDebugNameClient, debug_name_client,
+                        ("Inner Viewport Horizontal Scrollbar"));
+    RecordForeignLayer(
+        context, debug_name_client, DisplayItem::kForeignLayerViewportScrollbar,
+        scrollbar_layer_horizontal_,
+        FloatPoint(0, size_.Height() - ScrollbarThickness()), state);
+  }
 
-const ScrollableArea* VisualViewport::GetScrollableAreaForTesting(
-    const GraphicsLayer* layer) const {
-  if (layer == inner_viewport_scroll_layer_.get())
-    return this;
-  return nullptr;
+  if (scrollbar_layer_vertical_) {
+    PropertyTreeState state = parent_property_tree_state_;
+    state.SetEffect(*vertical_scrollbar_effect_node_);
+    DEFINE_STATIC_LOCAL(LiteralDebugNameClient, debug_name_client,
+                        ("Inner Viewport Vertical Scrollbar"));
+    RecordForeignLayer(
+        context, debug_name_client, DisplayItem::kForeignLayerViewportScrollbar,
+        scrollbar_layer_vertical_,
+        FloatPoint(size_.Width() - ScrollbarThickness(), 0), state);
+  }
 }
 
 }  // namespace blink

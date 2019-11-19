@@ -12,4 +12,16 @@ CSSStyleValue* CrossThreadUnitValue::ToCSSStyleValue() {
   return CSSUnitValue::Create(value_, unit_);
 }
 
+bool CrossThreadUnitValue::operator==(
+    const CrossThreadStyleValue& other) const {
+  if (auto* o = DynamicTo<CrossThreadUnitValue>(other))
+    return value_ == o->value_ && unit_ == o->unit_;
+  return false;
+}
+
+std::unique_ptr<CrossThreadStyleValue> CrossThreadUnitValue::IsolatedCopy()
+    const {
+  return std::make_unique<CrossThreadUnitValue>(value_, unit_);
+}
+
 }  // namespace blink

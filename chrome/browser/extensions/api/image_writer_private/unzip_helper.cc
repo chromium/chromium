@@ -34,8 +34,8 @@ UnzipHelper::~UnzipHelper() {}
 void UnzipHelper::Unzip(const base::FilePath& image_path,
                         const base::FilePath& temp_dir_path) {
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-      base::CreateSingleThreadTaskRunnerWithTraits(
-          {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
+      base::CreateSingleThreadTaskRunner({base::ThreadPool(), base::MayBlock(),
+                                          base::TaskPriority::USER_VISIBLE});
   task_runner->PostTask(FROM_HERE, base::BindOnce(&UnzipHelper::UnzipImpl, this,
                                                   image_path, temp_dir_path));
 }

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_header_item.h"
 
+#import "ios/chrome/common/colors/UIColor+cr_semantic_colors.h"
 #import "ios/chrome/common/ui_util/constraints_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -18,8 +19,6 @@ CGFloat kTopMargin = 20.;
 CGFloat kBottomMargin = 15;
 // Leading margin for the label.
 CGFloat kLeadingMargin = 24.;
-// Label font color alpha.
-CGFloat kFontAlpha = .87;
 }  // namespace
 
 @interface IdentityChooserHeaderView : UITableViewHeaderFooterView
@@ -36,7 +35,7 @@ CGFloat kFontAlpha = .87;
     label.text =
         l10n_util::GetNSString(IDS_IOS_ACCOUNT_IDENTITY_CHOOSER_CHOOSE_ACCOUNT);
     label.font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
-    label.textColor = [UIColor colorWithWhite:0. alpha:kFontAlpha];
+    label.textColor = UIColor.cr_labelColor;
     [self.contentView addSubview:label];
     NSDictionary* views = @{
       @"label" : label,

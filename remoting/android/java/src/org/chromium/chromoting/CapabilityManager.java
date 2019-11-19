@@ -5,8 +5,9 @@
 package org.chromium.chromoting;
 
 import android.app.Activity;
-import android.support.annotation.IntDef;
 import android.text.TextUtils;
+
+import androidx.annotation.IntDef;
 
 import org.chromium.base.Log;
 

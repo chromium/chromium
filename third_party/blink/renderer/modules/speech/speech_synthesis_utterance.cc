@@ -26,6 +26,9 @@
 #include "third_party/blink/renderer/modules/speech/speech_synthesis_utterance.h"
 
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/modules/speech/speech_synthesis.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 
 namespace blink {
 
@@ -38,8 +41,13 @@ SpeechSynthesisUtterance* SpeechSynthesisUtterance::Create(
 SpeechSynthesisUtterance::SpeechSynthesisUtterance(ExecutionContext* context,
                                                    const String& text)
     : ContextClient(context),
-      platform_utterance_(PlatformSpeechSynthesisUtterance::Create(this)) {
-  platform_utterance_->SetText(text);
+      mojom_utterance_(mojom::blink::SpeechSynthesisUtterance::New()) {
+  // Set default values. |voice| intentionally left null.
+  mojom_utterance_->text = text;
+  mojom_utterance_->lang = String("");
+  mojom_utterance_->volume = mojom::blink::kSpeechSynthesisDoublePrefNotSet;
+  mojom_utterance_->rate = mojom::blink::kSpeechSynthesisDoublePrefNotSet;
+  mojom_utterance_->pitch = mojom::blink::kSpeechSynthesisDoublePrefNotSet;
 }
 
 SpeechSynthesisUtterance::~SpeechSynthesisUtterance() = default;
@@ -58,15 +66,81 @@ void SpeechSynthesisUtterance::setVoice(SpeechSynthesisVoice* voice) {
   // voice in the read property.
   voice_ = voice;
 
-  if (voice)
-    platform_utterance_->SetVoice(voice->PlatformVoice());
+  mojom_utterance_->voice = voice_ ? voice_->name() : String();
 }
 
 void SpeechSynthesisUtterance::Trace(blink::Visitor* visitor) {
-  visitor->Trace(platform_utterance_);
+  visitor->Trace(synthesis_);
   visitor->Trace(voice_);
   ContextClient::Trace(visitor);
   EventTargetWithInlineData::Trace(visitor);
+}
+
+void SpeechSynthesisUtterance::OnStartedSpeaking() {
+  DCHECK(synthesis_);
+  synthesis_->DidStartSpeaking(this);
+}
+
+void SpeechSynthesisUtterance::OnFinishedSpeaking() {
+  DCHECK(synthesis_);
+  finished_ = true;
+  synthesis_->DidFinishSpeaking(this);
+}
+
+void SpeechSynthesisUtterance::OnPausedSpeaking() {
+  DCHECK(synthesis_);
+  synthesis_->DidPauseSpeaking(this);
+}
+
+void SpeechSynthesisUtterance::OnResumedSpeaking() {
+  DCHECK(synthesis_);
+  synthesis_->DidResumeSpeaking(this);
+}
+
+void SpeechSynthesisUtterance::OnEncounteredWordBoundary(uint32_t char_index,
+                                                         uint32_t char_length) {
+  DCHECK(synthesis_);
+  synthesis_->WordBoundaryEventOccurred(this, char_index, char_length);
+}
+
+void SpeechSynthesisUtterance::OnEncounteredSentenceBoundary(
+    uint32_t char_index,
+    uint32_t char_length) {
+  DCHECK(synthesis_);
+  synthesis_->SentenceBoundaryEventOccurred(this, char_index, char_length);
+}
+
+void SpeechSynthesisUtterance::OnEncounteredSpeakingError() {
+  DCHECK(synthesis_);
+  finished_ = true;
+  synthesis_->SpeakingErrorOccurred(this);
+}
+
+void SpeechSynthesisUtterance::Start(SpeechSynthesis* synthesis) {
+  finished_ = false;
+
+  mojom::blink::SpeechSynthesisUtterancePtr mojom_utterance_to_send =
+      mojom_utterance_->Clone();
+  if (mojom_utterance_to_send->voice.IsNull())
+    mojom_utterance_to_send->voice = String("");
+  if (mojom_utterance_to_send->text.IsNull())
+    mojom_utterance_to_send->text = String("");
+
+  receiver_.reset();
+
+  synthesis_ = synthesis;
+  synthesis_->MojomSynthesis()->Speak(std::move(mojom_utterance_to_send),
+                                      receiver_.BindNewPipeAndPassRemote());
+
+  // Add a disconnect handler so we can cleanup appropriately.
+  receiver_.set_disconnect_handler(WTF::Bind(
+      &SpeechSynthesisUtterance::OnDisconnected, WrapWeakPersistent(this)));
+}
+
+void SpeechSynthesisUtterance::OnDisconnected() {
+  // If the remote end disconnects, just simulate that we finished normally.
+  if (!finished_)
+    OnFinishedSpeaking();
 }
 
 }  // namespace blink

@@ -27,9 +27,9 @@ using base::win::GetVersion;
 using display::win::ScreenWin;
 
 int GetDefaultButtonBoundsOffset() {
-  if (GetVersion() >= base::win::VERSION_WIN10)
+  if (GetVersion() >= base::win::Version::WIN10)
     return kWin10ButtonBoundsPositionOffset;
-  if (GetVersion() >= base::win::VERSION_WIN8)
+  if (GetVersion() >= base::win::Version::WIN8)
     return kWin8ButtonBoundsPositionOffset;
   return kWin7ButtonBoundsPositionOffset;
 }

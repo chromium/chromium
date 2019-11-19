@@ -1,7 +1,5 @@
 #include "rar.hpp"
 
-namespace third_party_unrar {
-
 const char *NullToEmpty(const char *Str)
 {
   return Str==NULL ? "":Str;
@@ -194,7 +192,7 @@ bool IsSpace(int ch)
 // values, resulting in undefined behavior in standard function.
 bool IsAlpha(int ch)
 {
-  return (ch>='A' && ch<='Z') || (ch>='a' && ch<='z');
+  return ch>='A' && ch<='Z' || ch>='a' && ch<='z';
 }
 
 
@@ -283,53 +281,49 @@ int wcsnicompc(const wchar *s1,const wchar *s2,size_t n)
 }
 
 
-// Safe strncpy: copies maxlen-1 max and always returns zero terminated dest.
-char* strncpyz(char *dest, const char *src, size_t maxlen)
+// Safe copy: copies maxlen-1 max and for maxlen>0 returns zero terminated dest.
+void strncpyz(char *dest, const char *src, size_t maxlen)
 {
   if (maxlen>0)
   {
-    strncpy(dest,src,maxlen-1);
-    dest[maxlen-1]=0;
+    while (--maxlen>0 && *src!=0)
+      *dest++=*src++;
+    *dest=0;
   }
-  return dest;
 }
 
 
-// Safe wcsncpy: copies maxlen-1 max and always returns zero terminated dest.
-wchar* wcsncpyz(wchar *dest, const wchar *src, size_t maxlen)
+// Safe copy: copies maxlen-1 max and for maxlen>0 returns zero terminated dest.
+void wcsncpyz(wchar *dest, const wchar *src, size_t maxlen)
 {
   if (maxlen>0)
   {
-    wcsncpy(dest,src,maxlen-1);
-    dest[maxlen-1]=0;
+    while (--maxlen>0 && *src!=0)
+      *dest++=*src++;
+    *dest=0;
   }
-  return dest;
 }
 
 
-// Safe strncat: resulting dest length cannot exceed maxlen and dest 
-// is always zero terminated. Note that 'maxlen' parameter defines the entire
-// dest buffer size and is not compatible with standard strncat.
-char* strncatz(char* dest, const char* src, size_t maxlen)
+// Safe append: resulting dest length cannot exceed maxlen and dest 
+// is always zero terminated. 'maxlen' parameter defines the entire
+// dest buffer size and is not compatible with wcsncat.
+void strncatz(char* dest, const char* src, size_t maxlen)
 {
-  size_t Length = strlen(dest);
-  int avail=int(maxlen - Length - 1);
-  if (avail > 0)
-    strncat(dest, src, avail);
-  return dest;
+  size_t length = strlen(dest);
+  if (maxlen > length)
+    strncpyz(dest + length, src, maxlen - length);
 }
 
 
-// Safe wcsncat: resulting dest length cannot exceed maxlen and dest 
-// is always zero terminated. Note that 'maxlen' parameter defines the entire
-// dest buffer size and is not compatible with standard wcsncat.
-wchar* wcsncatz(wchar* dest, const wchar* src, size_t maxlen)
+// Safe append: resulting dest length cannot exceed maxlen and dest 
+// is always zero terminated. 'maxlen' parameter defines the entire
+// dest buffer size and is not compatible with wcsncat.
+void wcsncatz(wchar* dest, const wchar* src, size_t maxlen)
 {
-  size_t Length = wcslen(dest);
-  int avail=int(maxlen - Length - 1);
-  if (avail > 0)
-    wcsncat(dest, src, avail);
-  return dest;
+  size_t length = wcslen(dest);
+  if (maxlen > length)
+    wcsncpyz(dest + length, src, maxlen - length);
 }
 
 
@@ -470,5 +464,3 @@ void PrintfPrepareFmt(const wchar *Org,wchar *Cvt,size_t MaxSize)
   Cvt[Dest]=0;
 }
 #endif
-
-}

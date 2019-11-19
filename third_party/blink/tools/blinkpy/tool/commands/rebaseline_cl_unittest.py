@@ -7,9 +7,9 @@ import optparse
 import textwrap
 
 from blinkpy.common.checkout.git_mock import MockGit
-from blinkpy.common.net.buildbot import Build
 from blinkpy.common.net.git_cl import TryJobStatus
 from blinkpy.common.net.git_cl_mock import MockGitCL
+from blinkpy.common.net.results_fetcher import Build
 from blinkpy.common.net.web_test_results import WebTestResults
 from blinkpy.common.path_finder import RELATIVE_WEB_TESTS
 from blinkpy.common.system.log_testing import LoggingTestCase
@@ -62,21 +62,41 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
         web_test_results = WebTestResults({
             'tests': {
                 'one': {
-                    'crash.html': {'expected': 'PASS', 'actual': 'CRASH', 'is_unexpected': True},
-                    'expected-fail.html': {'expected': 'FAIL', 'actual': 'IMAGE+TEXT'},
-                    'flaky-fail.html': {'expected': 'PASS', 'actual': 'PASS TEXT', 'is_unexpected': True},
-                    'missing.html': {'expected': 'PASS', 'actual': 'MISSING', 'is_unexpected': True},
-                    'slow-fail.html': {'expected': 'SLOW', 'actual': 'TEXT', 'is_unexpected': True},
-                    'text-fail.html': {'expected': 'PASS', 'actual': 'TEXT', 'is_unexpected': True},
+                    'crash.html': {
+                        'expected': 'PASS', 'actual': 'CRASH', 'is_unexpected': True,
+                        'artifacts': {'crash_log': ['crash.log']}},
+                    'expected-fail.html': {
+                        'expected': 'FAIL', 'actual': 'FAIL',
+                        'artifacts': {'expected_text': ['expected-fail-expected.txt'],
+                                      'actual_text': ['expected-fail-actual.txt']}},
+                    'flaky-fail.html': {
+                        'expected': 'PASS', 'actual': 'PASS FAIL', 'is_unexpected': True,
+                        'artifacts': {'expected_audio': ['flaky-fail-expected.wav'],
+                                      'actual_audio': ['flaky-fail-actual.wav']}},
+                    'missing.html': {
+                        'expected': 'PASS', 'actual': 'FAIL', 'is_unexpected': True,
+                        'artifacts': {'actual_image': ['missing-actual.png']}, 'is_missing_image': True},
+                    'slow-fail.html': {
+                        'expected': 'SLOW', 'actual': 'FAIL', 'is_unexpected': True,
+                        'artifacts': {'actual_text': ['slow-fail-actual.txt'],
+                                      'expected_text': ['slow-fail-expected.txt']}},
+                    'text-fail.html': {
+                        'expected': 'PASS', 'actual': 'FAIL', 'is_unexpected': True,
+                        'artifacts': {'actual_text': ['text-fail-actual.txt'],
+                                      'expected_text': ['text-fail-expected.txt']}},
                     'unexpected-pass.html': {'expected': 'FAIL', 'actual': 'PASS', 'is_unexpected': True},
                 },
-                'two': {'image-fail.html': {'expected': 'PASS', 'actual': 'IMAGE', 'is_unexpected': True}},
+                'two': {
+                    'image-fail.html': {
+                        'expected': 'PASS', 'actual': 'FAIL', 'is_unexpected': True,
+                        'artifacts': {'actual_image': ['image-fail-actual.png'],
+                                      'expected_image': ['image-fail-expected.png']}}},
             },
         })
 
         for build in builds:
-            self.tool.buildbot.set_results(build, web_test_results)
-            self.tool.buildbot.set_retry_sumary_json(build, json.dumps({
+            self.tool.results_fetcher.set_results(build, web_test_results)
+            self.tool.results_fetcher.set_retry_sumary_json(build, json.dumps({
                 'failures': [
                     'one/flaky-fail.html',
                     'one/missing.html',
@@ -324,7 +344,7 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
             Build('MOCK Try Linux', 6000): TryJobStatus('COMPLETED', 'FAILURE'),
         }
         for build in builds:
-            self.tool.buildbot.set_retry_sumary_json(build, json.dumps({
+            self.tool.results_fetcher.set_retry_sumary_json(build, json.dumps({
                 'failures': ['one/text-fail.html'],
                 'ignored': ['two/image-fail.html'],
             }))
@@ -338,7 +358,7 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
     def test_execute_with_no_retry_summary_downloaded(self):
         # In this example, the retry summary could not be downloaded, so
         # a warning is printed and all tests are rebaselined.
-        self.tool.buildbot.set_retry_sumary_json(
+        self.tool.results_fetcher.set_retry_sumary_json(
             Build('MOCK Try Win', 5000), None)
         exit_code = self.command.execute(self.command_options(), [], self.tool)
         self.assertEqual(exit_code, 0)
@@ -370,13 +390,13 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
                 [[
                     'python', 'echo', 'copy-existing-baselines-internal',
                     '--test', 'one/flaky-fail.html',
-                    '--suffixes', 'txt',
+                    '--suffixes', 'wav',
                     '--port-name', 'test-win-win7',
                 ]],
                 [[
                     'python', 'echo', 'rebaseline-test-internal',
                     '--test', 'one/flaky-fail.html',
-                    '--suffixes', 'txt',
+                    '--suffixes', 'wav',
                     '--port-name', 'test-win-win7',
                     '--builder', 'MOCK Try Win',
                     '--build-number', '5000',
@@ -384,7 +404,8 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
                 ]],
                 [[
                     'python', 'echo', 'optimize-baselines',
-                    '--suffixes', 'txt',
+                    '--no-manifest-update',
+                    '--suffixes', 'wav',
                     'one/flaky-fail.html',
                 ]]
             ])
@@ -406,7 +427,7 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
         ])
 
     def test_execute_missing_results_with_no_fill_missing_prompts(self):
-        self.tool.buildbot.set_results(Build('MOCK Try Win', 5000), None)
+        self.tool.results_fetcher.set_results(Build('MOCK Try Win', 5000), None)
         exit_code = self.command.execute(self.command_options(), [], self.tool)
         self.assertEqual(exit_code, 1)
         self.assertLog([
@@ -421,7 +442,7 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
         ])
 
     def test_execute_missing_results_with_fill_missing_continues(self):
-        self.tool.buildbot.set_results(Build('MOCK Try Win', 5000), None)
+        self.tool.results_fetcher.set_results(Build('MOCK Try Win', 5000), None)
         exit_code = self.command.execute(
             self.command_options(fill_missing=True),
             ['one/flaky-fail.html'], self.tool)

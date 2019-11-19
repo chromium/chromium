@@ -5,9 +5,9 @@
 #include "components/arc/arc_service_manager.h"
 
 #include "base/logging.h"
-#include "components/arc/arc_bridge_service.h"
-#include "components/arc/arc_session.h"
-#include "components/arc/arc_session_runner.h"
+#include "components/arc/session/arc_bridge_service.h"
+#include "components/arc/session/arc_session.h"
+#include "components/arc/session/arc_session_runner.h"
 
 namespace arc {
 namespace {

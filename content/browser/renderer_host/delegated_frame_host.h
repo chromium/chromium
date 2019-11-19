@@ -11,17 +11,20 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "components/viz/client/frame_evictor.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
+#include "components/viz/common/frame_timing_details_map.h"
 #include "components/viz/host/hit_test/hit_test_query.h"
 #include "components/viz/host/host_frame_sink_client.h"
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "content/browser/compositor/image_transport_factory.h"
 #include "content/browser/renderer_host/dip_util.h"
 #include "content/common/content_export.h"
-#include "services/viz/public/interfaces/compositing/compositor_frame_sink.mojom.h"
-#include "services/viz/public/interfaces/hit_test/hit_test_region_list.mojom.h"
+#include "content/common/tab_switch_time_recorder.h"
+#include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h"
+#include "services/viz/public/mojom/hit_test/hit_test_region_list.mojom.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/compositor_observer.h"
 #include "ui/compositor/layer.h"
@@ -66,6 +69,19 @@ class CONTENT_EXPORT DelegatedFrameHost
       public viz::mojom::CompositorFrameSinkClient,
       public viz::HostFrameSinkClient {
  public:
+  enum class FrameEvictionState {
+    kNotStarted = 0,          // Frame eviction is ready.
+    kPendingEvictionRequests  // Frame eviction is paused with pending requests.
+  };
+
+  class Observer {
+   public:
+    virtual void OnFrameEvictionStateChanged(FrameEvictionState new_state) = 0;
+
+   protected:
+    virtual ~Observer() = default;
+  };
+
   // |should_register_frame_sink_id| flag indicates whether DelegatedFrameHost
   // is responsible for registering the associated FrameSinkId with the
   // compositor or not. This is set only on non-aura platforms, since aura is
@@ -75,12 +91,14 @@ class CONTENT_EXPORT DelegatedFrameHost
                      bool should_register_frame_sink_id);
   ~DelegatedFrameHost() override;
 
+  void AddObserverForTesting(Observer* observer);
+  void RemoveObserverForTesting(Observer* observer);
+
   // ui::CompositorObserver implementation.
   void OnCompositingShuttingDown(ui::Compositor* compositor) override;
 
   // ui::ContextFactoryObserver implementation.
   void OnLostSharedContext() override;
-  void OnLostVizProcess() override;
 
   void ResetFallbackToFirstNavigationSurface();
 
@@ -88,8 +106,7 @@ class CONTENT_EXPORT DelegatedFrameHost
   void DidReceiveCompositorFrameAck(
       const std::vector<viz::ReturnedResource>& resources) override;
   void OnBeginFrame(const viz::BeginFrameArgs& args,
-                    const base::flat_map<uint32_t, gfx::PresentationFeedback>&
-                        feedbacks) override;
+                    const viz::FrameTimingDetailsMap& timing_details) override;
   void ReclaimResources(
       const std::vector<viz::ReturnedResource>& resources) override;
   void OnBeginFramePausedChanged(bool paused) override;
@@ -106,11 +123,19 @@ class CONTENT_EXPORT DelegatedFrameHost
       const viz::LocalSurfaceId& local_surface_id,
       viz::CompositorFrame frame,
       base::Optional<viz::HitTestRegionList> hit_test_region_list);
-  void WasHidden();
+
+  // kOccluded means the native window for the host was
+  // occluded/hidden, kOther is for other causes, e.g., a tab became a
+  // background tab.
+  enum class HiddenCause { kOccluded, kOther };
+
+  void WasHidden(HiddenCause cause);
+
   // TODO(ccameron): Include device scale factor here.
   void WasShown(const viz::LocalSurfaceId& local_surface_id,
                 const gfx::Size& dip_size,
-                bool record_presentation_time);
+                const base::Optional<RecordTabSwitchTimeRequest>&
+                    record_tab_switch_time_request);
   void EmbedSurface(const viz::LocalSurfaceId& local_surface_id,
                     const gfx::Size& dip_size,
                     cc::DeadlinePolicy deadline_policy);
@@ -135,15 +160,6 @@ class CONTENT_EXPORT DelegatedFrameHost
 
   bool CanCopyFromCompositingSurface() const;
   const viz::FrameSinkId& frame_sink_id() const { return frame_sink_id_; }
-
-  // Given the SurfaceID of a Surface that is contained within this class'
-  // Surface, find the relative transform between the Surfaces and apply it
-  // to a point. Returns false if a Surface has not yet been created or if
-  // |original_surface| is not embedded within our current Surface.
-  bool TransformPointToLocalCoordSpaceLegacy(
-      const gfx::PointF& point,
-      const viz::SurfaceId& original_surface,
-      gfx::PointF* transformed_point);
 
   void SetNeedsBeginFrames(bool needs_begin_frames);
   void SetWantsAnimateOnlyBeginFrames();
@@ -180,6 +196,14 @@ class CONTENT_EXPORT DelegatedFrameHost
     return weak_factory_.GetWeakPtr();
   }
 
+  const ui::Layer* stale_content_layer() const {
+    return stale_content_layer_.get();
+  }
+
+  FrameEvictionState frame_eviction_state() const {
+    return frame_eviction_state_;
+  }
+
  private:
   friend class DelegatedFrameHostClient;
   FRIEND_TEST_ALL_PREFIXES(RenderWidgetHostViewAuraBrowserTest,
@@ -206,6 +230,9 @@ class CONTENT_EXPORT DelegatedFrameHost
       const gfx::Size& output_size,
       viz::CopyOutputRequest::ResultFormat format,
       viz::CopyOutputRequest::CopyOutputRequestCallback callback);
+
+  void SetFrameEvictionStateAndNotifyObservers(
+      FrameEvictionState frame_eviction_state);
 
   const viz::FrameSinkId frame_sink_id_;
   DelegatedFrameHostClient* const client_;
@@ -238,15 +265,6 @@ class CONTENT_EXPORT DelegatedFrameHost
 
   viz::LocalSurfaceId first_local_surface_id_after_navigation_;
 
-#ifdef OS_CHROMEOS
-  bool seen_first_activation_ = false;
-#endif
-
-  enum class FrameEvictionState {
-    kNotStarted = 0,          // Frame eviction is ready.
-    kPendingEvictionRequests  // Frame eviction is paused with pending requests.
-  };
-
   FrameEvictionState frame_eviction_state_ = FrameEvictionState::kNotStarted;
 
   // Layer responsible for displaying the stale content for the DFHC when the
@@ -254,7 +272,11 @@ class CONTENT_EXPORT DelegatedFrameHost
   // compositor frame is submitted.
   std::unique_ptr<ui::Layer> stale_content_layer_;
 
-  base::WeakPtrFactory<DelegatedFrameHost> weak_factory_;
+  TabSwitchTimeRecorder tab_switch_time_recorder_;
+
+  base::ObserverList<Observer>::Unchecked observers_;
+
+  base::WeakPtrFactory<DelegatedFrameHost> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DelegatedFrameHost);
 };

@@ -28,6 +28,23 @@ namespace printing {
 
 namespace {
 
+scoped_refptr<base::TaskRunner> CreatePrinterHandlerTaskRunner() {
+  // USER_VISIBLE because the result is displayed in the print preview dialog.
+  static constexpr base::TaskTraits kTraits = {
+      base::ThreadPool(), base::MayBlock(), base::TaskPriority::USER_VISIBLE};
+
+#if defined(USE_CUPS)
+  // CUPS is thread safe.
+  return base::CreateTaskRunner(kTraits);
+#elif defined(OS_WIN)
+  // Windows drivers are likely not thread-safe.
+  return base::CreateSingleThreadTaskRunner(kTraits);
+#else
+  // Be conservative on unsupported platforms.
+  return base::CreateSingleThreadTaskRunner(kTraits);
+#endif
+}
+
 PrinterList EnumeratePrintersAsync() {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
@@ -53,17 +70,15 @@ base::Value FetchCapabilitiesAsync(const std::string& device_name) {
 
   VLOG(1) << "Get printer capabilities start for " << device_name;
 
-  if (!print_backend->IsValidPrinter(device_name)) {
+  PrinterBasicInfo basic_info;
+  if (!print_backend->GetPrinterBasicInfo(device_name, &basic_info)) {
     LOG(WARNING) << "Invalid printer " << device_name;
     return base::Value();
   }
 
-  PrinterBasicInfo basic_info;
-  if (!print_backend->GetPrinterBasicInfo(device_name, &basic_info))
-    return base::Value();
-
-  return GetSettingsOnBlockingPool(device_name, basic_info, additional_papers,
-                                   print_backend);
+  return GetSettingsOnBlockingTaskRunner(
+      device_name, basic_info, additional_papers,
+      /* has_secure_protocol */ false, print_backend);
 }
 
 std::string GetDefaultPrinterAsync() {
@@ -81,7 +96,8 @@ std::string GetDefaultPrinterAsync() {
 
 LocalPrinterHandlerDefault::LocalPrinterHandlerDefault(
     content::WebContents* preview_web_contents)
-    : preview_web_contents_(preview_web_contents) {}
+    : preview_web_contents_(preview_web_contents),
+      task_runner_(CreatePrinterHandlerTaskRunner()) {}
 
 LocalPrinterHandlerDefault::~LocalPrinterHandlerDefault() {}
 
@@ -90,23 +106,20 @@ void LocalPrinterHandlerDefault::Reset() {}
 void LocalPrinterHandlerDefault::GetDefaultPrinter(DefaultPrinterCallback cb) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  // USER_VISIBLE because the result is displayed in the print preview dialog.
-  base::PostTaskWithTraitsAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-      base::BindOnce(&GetDefaultPrinterAsync), std::move(cb));
+  base::PostTaskAndReplyWithResult(task_runner_.get(), FROM_HERE,
+                                   base::BindOnce(&GetDefaultPrinterAsync),
+                                   std::move(cb));
 }
 
 void LocalPrinterHandlerDefault::StartGetPrinters(
-    const AddedPrintersCallback& callback,
+    AddedPrintersCallback callback,
     GetPrintersDoneCallback done_callback) {
   VLOG(1) << "Enumerate printers start";
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  // USER_VISIBLE because the result is displayed in the print preview dialog.
-  base::PostTaskWithTraitsAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-      base::BindOnce(&EnumeratePrintersAsync),
-      base::BindOnce(&ConvertPrinterListForCallback, callback,
+  base::PostTaskAndReplyWithResult(
+      task_runner_.get(), FROM_HERE, base::BindOnce(&EnumeratePrintersAsync),
+      base::BindOnce(&ConvertPrinterListForCallback, std::move(callback),
                      std::move(done_callback)));
 }
 
@@ -115,9 +128,8 @@ void LocalPrinterHandlerDefault::StartGetCapability(
     GetCapabilityCallback cb) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  // USER_VISIBLE because the result is displayed in the print preview dialog.
-  base::PostTaskWithTraitsAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+  base::PostTaskAndReplyWithResult(
+      task_runner_.get(), FROM_HERE,
       base::BindOnce(&FetchCapabilitiesAsync, device_name), std::move(cb));
 }
 

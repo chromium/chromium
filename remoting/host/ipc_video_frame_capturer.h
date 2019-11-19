@@ -47,7 +47,7 @@ class IpcVideoFrameCapturer : public webrtc::DesktopCapturer {
   bool capture_pending_;
 
   // Used to cancel tasks pending on the capturer when it is stopped.
-  base::WeakPtrFactory<IpcVideoFrameCapturer> weak_factory_;
+  base::WeakPtrFactory<IpcVideoFrameCapturer> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(IpcVideoFrameCapturer);
 };

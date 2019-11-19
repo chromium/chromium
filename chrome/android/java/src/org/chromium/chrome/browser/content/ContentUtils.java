@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.content;
 
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.content_public.browser.WebContents;
 
 /**
@@ -14,7 +15,7 @@ public class ContentUtils {
      * @return The user agent string of Chrome.
      */
     public static String getBrowserUserAgent() {
-        return nativeGetBrowserUserAgent();
+        return ContentUtilsJni.get().getBrowserUserAgent();
     }
 
     /**
@@ -24,9 +25,12 @@ public class ContentUtils {
      * when a NavigationEntry requires the user agent to be overridden.
      */
     public static void setUserAgentOverride(WebContents webContents) {
-        nativeSetUserAgentOverride(webContents);
+        ContentUtilsJni.get().setUserAgentOverride(webContents);
     }
 
-    private static native String nativeGetBrowserUserAgent();
-    private static native void nativeSetUserAgentOverride(WebContents webContents);
+    @NativeMethods
+    interface Natives {
+        String getBrowserUserAgent();
+        void setUserAgentOverride(WebContents webContents);
+    }
 }

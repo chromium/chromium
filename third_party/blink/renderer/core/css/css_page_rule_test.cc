@@ -12,10 +12,8 @@
 
 namespace blink {
 
-using namespace css_test_helpers;
-
 TEST(CSSPageRule, Serializing) {
-  TestStyleSheet sheet;
+  css_test_helpers::TestStyleSheet sheet;
 
   const char* css_rule = "@page :left { size: auto; }";
   sheet.AddCSSRules(css_rule);
@@ -29,7 +27,7 @@ TEST(CSSPageRule, Serializing) {
 }
 
 TEST(CSSPageRule, selectorText) {
-  TestStyleSheet sheet;
+  css_test_helpers::TestStyleSheet sheet;
 
   const char* css_rule = "@page :left { size: auto; }";
   sheet.AddCSSRules(css_rule);

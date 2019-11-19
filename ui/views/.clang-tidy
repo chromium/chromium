@@ -1,0 +1,29 @@
+---
+Checks: '-*,
+         google-build-namespaces,
+         google-explicit-constructor,
+         google-readability-casting,
+         google-readability-namespace-comments,
+         modernize-avoid-bind,
+         modernize-loop-convert,
+         modernize-make-shared,
+         modernize-make-unique,
+         modernize-redundant-void-arg,
+         modernize-replace-auto-ptr,
+         modernize-replace-random-shuffle,
+         modernize-shrink-to-fit,
+         modernize-use-bool-literals,
+         modernize-use-default-member-init,
+         modernize-use-emplace,
+         modernize-use-equals-default,
+         modernize-use-noexcept,
+         modernize-use-nullptr,
+         modernize-use-override,
+         modernize-use-transparent-functors,
+         modernize-use-using,
+         readability-redundant-member-init'
+HeaderFilterRegex: 'ui/views/*'
+CheckOptions:
+  - key: modernize-use-default-member-init.UseAssignment
+    value: 1
+...

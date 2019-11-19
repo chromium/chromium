@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tab_helpers.h"
+#include "chrome/browser/ui/tabs/tab_group_id.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/unload_controller.h"
 #include "chrome/common/chrome_switches.h"
@@ -32,20 +33,18 @@ namespace chrome {
 // BrowserTabStripModelDelegate, public:
 
 BrowserTabStripModelDelegate::BrowserTabStripModelDelegate(Browser* browser)
-    : browser_(browser),
-      weak_factory_(this) {
-}
+    : browser_(browser) {}
 
-BrowserTabStripModelDelegate::~BrowserTabStripModelDelegate() {
-}
+BrowserTabStripModelDelegate::~BrowserTabStripModelDelegate() {}
 
 ////////////////////////////////////////////////////////////////////////////////
 // BrowserTabStripModelDelegate, TabStripModelDelegate implementation:
 
 void BrowserTabStripModelDelegate::AddTabAt(const GURL& url,
                                             int index,
-                                            bool foreground) {
-  chrome::AddTabAt(browser_, url, index, foreground);
+                                            bool foreground,
+                                            base::Optional<TabGroupId> group) {
+  chrome::AddTabAt(browser_, url, index, foreground, group);
 }
 
 Browser* BrowserTabStripModelDelegate::CreateNewStripWithContents(
@@ -93,8 +92,9 @@ void BrowserTabStripModelDelegate::WillAddWebContents(
 
 int BrowserTabStripModelDelegate::GetDragActions() const {
   return TabStripModelDelegate::TAB_TEAROFF_ACTION |
-      (browser_->tab_strip_model()->count() > 1
-          ? TabStripModelDelegate::TAB_MOVE_ACTION : 0);
+         (browser_->tab_strip_model()->count() > 1
+              ? TabStripModelDelegate::TAB_MOVE_ACTION
+              : 0);
 }
 
 bool BrowserTabStripModelDelegate::CanDuplicateContentsAt(int index) {
@@ -131,23 +131,6 @@ bool BrowserTabStripModelDelegate::RunUnloadListenerBeforeClosing(
 bool BrowserTabStripModelDelegate::ShouldRunUnloadListenerBeforeClosing(
     content::WebContents* contents) {
   return browser_->ShouldRunUnloadListenerBeforeClosing(contents);
-}
-
-bool BrowserTabStripModelDelegate::CanBookmarkAllTabs() const {
-  return chrome::CanBookmarkAllTabs(browser_);
-}
-
-void BrowserTabStripModelDelegate::BookmarkAllTabs() {
-  chrome::BookmarkAllTabs(browser_);
-}
-
-TabStripModelDelegate::RestoreTabType
-BrowserTabStripModelDelegate::GetRestoreTabType() {
-  return chrome::GetRestoreTabType(browser_);
-}
-
-void BrowserTabStripModelDelegate::RestoreTab() {
-  chrome::RestoreTab(browser_);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

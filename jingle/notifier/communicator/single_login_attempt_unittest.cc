@@ -8,8 +8,8 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "jingle/glue/network_service_config_test_util.h"
 #include "jingle/notifier/base/const_communicator.h"
@@ -111,7 +111,7 @@ class SingleLoginAttemptTest : public ::testing::Test {
   }
 
  private:
-  base::MessageLoop message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   jingle_glue::NetworkServiceConfigTestUtil net_config_helper_;
   const LoginSettings login_settings_;
 

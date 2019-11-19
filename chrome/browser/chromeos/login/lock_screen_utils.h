@@ -5,10 +5,14 @@
 #ifndef CHROME_BROWSER_CHROMEOS_LOGIN_LOCK_SCREEN_UTILS_H_
 #define CHROME_BROWSER_CHROMEOS_LOGIN_LOCK_SCREEN_UTILS_H_
 
-#include "ash/public/interfaces/login_user_info.mojom.h"
+#include "ash/public/cpp/login_types.h"
 #include "ui/base/ime/chromeos/input_method_manager.h"
 
 class AccountId;
+
+namespace base {
+class ListValue;
+}
 
 namespace chromeos {
 namespace lock_screen_utils {
@@ -36,8 +40,8 @@ void StopEnforcingPolicyInputMethods();
 // Update the keyboard settings for |account_id|.
 void SetKeyboardSettings(const AccountId& account_id);
 
-// Covert a ListValue of locale info to a list of mojo struct LocaleItem.
-std::vector<ash::mojom::LocaleItemPtr> FromListValueToLocaleItem(
+// Covert a ListValue of locale info to a list of ash struct LocaleItem.
+std::vector<ash::LocaleItem> FromListValueToLocaleItem(
     std::unique_ptr<base::ListValue> locales);
 
 }  // namespace lock_screen_utils

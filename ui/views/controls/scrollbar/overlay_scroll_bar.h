@@ -7,29 +7,26 @@
 
 #include "base/macros.h"
 #include "base/timer/timer.h"
-#include "ui/views/controls/scrollbar/base_scroll_bar.h"
 #include "ui/views/controls/scrollbar/base_scroll_bar_thumb.h"
+#include "ui/views/controls/scrollbar/scroll_bar.h"
 
 namespace views {
 
 // The transparent scrollbar which overlays its contents.
-class VIEWS_EXPORT OverlayScrollBar : public BaseScrollBar {
+class VIEWS_EXPORT OverlayScrollBar : public ScrollBar {
  public:
+  METADATA_HEADER(OverlayScrollBar);
+
   explicit OverlayScrollBar(bool horizontal);
   ~OverlayScrollBar() override;
 
- protected:
-  // BaseScrollBar overrides:
-  gfx::Rect GetTrackBounds() const override;
-
-  // ScrollBar overrides:
-  int GetThickness() const override;
-  bool OverlapsContent() const override;
-
-  // View overrides:
-  void Layout() override;
+  // ScrollBar:
+  gfx::Insets GetInsets() const override;
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
+  bool OverlapsContent() const override;
+  gfx::Rect GetTrackBounds() const override;
+  int GetThickness() const override;
 
  private:
   class Thumb : public BaseScrollBarThumb {

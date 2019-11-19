@@ -8,10 +8,10 @@
 #include <algorithm>
 #include <cmath>
 #include <memory>
+#include <utility>
 #include <vector>
 
 #include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
@@ -37,7 +37,6 @@
 #include "net/base/rand_callback.h"
 #include "net/log/net_log_source.h"
 #include "net/socket/udp_server_socket.h"
-#include "testing/gtest/include/gtest/gtest-param-test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using media::cast::test::GetFreeLocalPort;
@@ -152,7 +151,7 @@ class TestPatternReceiver : public media::cast::InProcessReceiver {
     if (done_callback_.is_null())
       return;
     if (expected_tones_.empty() && expected_yuv_colors_.empty()) {
-      base::ResetAndReturn(&done_callback_).Run();
+      std::move(done_callback_).Run();
     } else {
       LOG(INFO) << "Waiting to encounter " << expected_tones_.size()
                 << " more tone(s) and " << expected_yuv_colors_.size()
@@ -162,7 +161,7 @@ class TestPatternReceiver : public media::cast::InProcessReceiver {
 
   // Invoked by InProcessReceiver for each received audio frame.
   void OnAudioFrame(std::unique_ptr<media::AudioBus> audio_frame,
-                    const base::TimeTicks& playout_time,
+                    base::TimeTicks playout_time,
                     bool is_continuous) override {
     DCHECK(cast_env()->CurrentlyOn(media::cast::CastEnvironment::MAIN));
 
@@ -199,8 +198,8 @@ class TestPatternReceiver : public media::cast::InProcessReceiver {
     }
   }
 
-  void OnVideoFrame(const scoped_refptr<media::VideoFrame>& video_frame,
-                    const base::TimeTicks& playout_time,
+  void OnVideoFrame(scoped_refptr<media::VideoFrame> video_frame,
+                    base::TimeTicks playout_time,
                     bool is_continuous) override {
     DCHECK(cast_env()->CurrentlyOn(media::cast::CastEnvironment::MAIN));
 
@@ -215,7 +214,7 @@ class TestPatternReceiver : public media::cast::InProcessReceiver {
     // letterboxed content region of mostly a solid color plus a small piece of
     // "something" that's animating to keep the tab capture pipeline generating
     // new frames.
-    const gfx::Rect region = FindLetterboxedContentRegion(video_frame.get());
+    const gfx::Rect region = FindLetterboxedContentRegion(*video_frame);
     YUVColor current_color;
     current_color.y = ComputeMedianIntensityInRegionInPlane(
         region,
@@ -256,11 +255,11 @@ class TestPatternReceiver : public media::cast::InProcessReceiver {
   // Return the region that excludes the black letterboxing borders surrounding
   // the content within |frame|, if any.
   static gfx::Rect FindLetterboxedContentRegion(
-      const media::VideoFrame* frame) {
+      const media::VideoFrame& frame) {
     const int kNonBlackIntensityThreshold = 20;  // 16 plus some fuzz.
-    const int width = frame->row_bytes(media::VideoFrame::kYPlane);
-    const int height = frame->rows(media::VideoFrame::kYPlane);
-    const int stride = frame->stride(media::VideoFrame::kYPlane);
+    const int width = frame.row_bytes(media::VideoFrame::kYPlane);
+    const int height = frame.rows(media::VideoFrame::kYPlane);
+    const int stride = frame.stride(media::VideoFrame::kYPlane);
 
     gfx::Rect result;
 
@@ -268,7 +267,7 @@ class TestPatternReceiver : public media::cast::InProcessReceiver {
     // encountered.
     for (int y = height - 1; y >= 0; --y) {
       const uint8_t* const start =
-          frame->data(media::VideoFrame::kYPlane) + y * stride;
+          frame.data(media::VideoFrame::kYPlane) + y * stride;
       const uint8_t* const end = start + width;
       for (const uint8_t* p = end - 1; p >= start; --p) {
         if (*p > kNonBlackIntensityThreshold) {
@@ -283,7 +282,7 @@ class TestPatternReceiver : public media::cast::InProcessReceiver {
     // Scan from the upper-left until the first non-black pixel is encountered.
     for (int y = 0; y < result.height(); ++y) {
       const uint8_t* const start =
-          frame->data(media::VideoFrame::kYPlane) + y * stride;
+          frame.data(media::VideoFrame::kYPlane) + y * stride;
       const uint8_t* const end = start + result.width();
       for (const uint8_t* p = start; p < end; ++p) {
         if (*p > kNonBlackIntensityThreshold) {
@@ -332,18 +331,6 @@ class CastStreamingApiTestWithPixelOutput
     : public CastStreamingApiTest,
       public testing::WithParamInterface<bool> {
  public:
-  CastStreamingApiTestWithPixelOutput() {
-    std::vector<base::Feature> audio_service_oop_features = {
-        features::kAudioServiceAudioStreams,
-        features::kAudioServiceOutOfProcess};
-    if (GetParam()) {
-      // Force audio service out of process to enabled.
-      audio_service_features_.InitWithFeatures(audio_service_oop_features, {});
-    } else {
-      // Force audio service out of process to disabled.
-      audio_service_features_.InitWithFeatures({}, audio_service_oop_features);
-    }
-  }
 
   void SetUp() override {
     EnablePixelOutput();
@@ -370,7 +357,7 @@ class CastStreamingApiTestWithPixelOutput
 // Flaky on Mac: https://crbug.com/841387
 #define MAYBE_EndToEnd DISABLED_EndToEnd  // crbug.com/396413
 #endif
-IN_PROC_BROWSER_TEST_P(CastStreamingApiTestWithPixelOutput, MAYBE_EndToEnd) {
+IN_PROC_BROWSER_TEST_F(CastStreamingApiTestWithPixelOutput, MAYBE_EndToEnd) {
   std::unique_ptr<net::UDPServerSocket> receive_socket(
       new net::UDPServerSocket(NULL, net::NetLogSource()));
   receive_socket->AllowAddressReuse();
@@ -424,27 +411,9 @@ IN_PROC_BROWSER_TEST_P(CastStreamingApiTestWithPixelOutput, MAYBE_EndToEnd) {
 // Flaky on Mac https://crbug.com/841986
 #define MAYBE_RtpStreamError DISABLED_RtpStreamError
 #endif
-IN_PROC_BROWSER_TEST_P(CastStreamingApiTestWithPixelOutput,
+IN_PROC_BROWSER_TEST_F(CastStreamingApiTestWithPixelOutput,
                        MAYBE_RtpStreamError) {
   ASSERT_TRUE(RunExtensionSubtest("cast_streaming", "rtp_stream_error.html"));
 }
-
-// We run these tests with the audio service both in and out of the the browser
-// process to have waterfall coverage while the feature rolls out. It should be
-// removed after launch. Note: CastStreamingApiTestWithPixelOutput.EndToEnd is
-// the only integration test exercising audio service loopback streams, so it's
-// a very important test to have.
-#if (defined(OS_LINUX) && !defined(OS_CHROMEOS)) || defined(OS_MACOSX) || \
-    defined(OS_WIN)
-// Supported platforms.
-INSTANTIATE_TEST_SUITE_P(,
-                         CastStreamingApiTestWithPixelOutput,
-                         ::testing::Bool());
-#else
-// Platforms where the out of process audio service isn't supported
-INSTANTIATE_TEST_SUITE_P(,
-                         CastStreamingApiTestWithPixelOutput,
-                         ::testing::Values(false));
-#endif
 
 }  // namespace extensions

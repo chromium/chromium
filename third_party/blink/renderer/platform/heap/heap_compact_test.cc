@@ -8,7 +8,6 @@
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/heap/heap_test_utilities.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
-#include "third_party/blink/renderer/platform/heap/sparse_heap_bitmap.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/linked_hash_set.h"
@@ -24,7 +23,7 @@ enum VerifyArenaCompaction {
   HashTablesAreCompacted,
 };
 
-class IntWrapper : public blink::GarbageCollectedFinalized<IntWrapper> {
+class IntWrapper : public blink::GarbageCollected<IntWrapper> {
  public:
   static bool did_verify_at_least_once;
 
@@ -55,7 +54,7 @@ class IntWrapper : public blink::GarbageCollectedFinalized<IntWrapper> {
             blink::BlinkGC::kHashTableArenaIndex));
         return;
       case VectorsAreCompacted:
-        CHECK(compaction->IsCompactingVectorArenas());
+        CHECK(compaction->IsCompactingVectorArenasForTesting());
         return;
     }
   }
@@ -84,8 +83,6 @@ static_assert(WTF::IsTraceable<IntWrapper>::value,
 
 }  // namespace
 
-#if ENABLE_HEAP_COMPACTION
-
 using IntVector = blink::HeapVector<blink::Member<IntWrapper>>;
 using IntDeque = blink::HeapDeque<blink::Member<IntWrapper>>;
 using IntMap = blink::HeapHashMap<blink::Member<IntWrapper>, int>;
@@ -95,150 +92,15 @@ WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(IntMap)
 
 namespace blink {
 
-static const size_t kChunkRange = SparseHeapBitmap::kBitmapChunkRange;
-static const size_t kUnitPointer = 0x1u
-                                   << SparseHeapBitmap::kPointerAlignmentInBits;
-
-TEST(HeapCompactTest, SparseBitmapBasic) {
-  Address base = reinterpret_cast<Address>(0x10000u);
-  std::unique_ptr<SparseHeapBitmap> bitmap = SparseHeapBitmap::Create(base);
-
-  size_t double_chunk = 2 * kChunkRange;
-
-  // 101010... starting at |base|.
-  for (size_t i = 0; i < double_chunk; i += 2 * kUnitPointer)
-    bitmap->Add(base + i);
-
-  // Check that hasRange() returns a bitmap subtree, if any, for a given
-  // address.
-  EXPECT_TRUE(!!bitmap->HasRange(base, 1));
-  EXPECT_TRUE(!!bitmap->HasRange(base + kUnitPointer, 1));
-  EXPECT_FALSE(!!bitmap->HasRange(base - kUnitPointer, 1));
-
-  // Test implementation details.. that each SparseHeapBitmap node maps
-  // |s_bitmapChunkRange| ranges only.
-  EXPECT_EQ(bitmap->HasRange(base + kUnitPointer, 1),
-            bitmap->HasRange(base + 2 * kUnitPointer, 1));
-  // Second range will be just past the first.
-  EXPECT_NE(bitmap->HasRange(base, 1), bitmap->HasRange(base + kChunkRange, 1));
-
-  // Iterate a range that will encompass more than one 'chunk'.
-  SparseHeapBitmap* start =
-      bitmap->HasRange(base + 2 * kUnitPointer, double_chunk);
-  EXPECT_TRUE(!!start);
-  for (size_t i = 2 * kUnitPointer; i < double_chunk; i += 2 * kUnitPointer) {
-    EXPECT_TRUE(start->IsSet(base + i));
-    EXPECT_FALSE(start->IsSet(base + i + kUnitPointer));
+class HeapCompactTest : public TestSupportingGC {
+ public:
+  void PerformHeapCompaction() {
+    ThreadState::Current()->EnableCompactionForNextGCForTesting();
+    PreciselyCollectGarbage();
   }
-}
+};
 
-TEST(HeapCompactTest, SparseBitmapBuild) {
-  Address base = reinterpret_cast<Address>(0x10000u);
-  std::unique_ptr<SparseHeapBitmap> bitmap = SparseHeapBitmap::Create(base);
-
-  size_t double_chunk = 2 * kChunkRange;
-
-  // Create a sparse bitmap containing at least three chunks.
-  bitmap->Add(base - double_chunk);
-  bitmap->Add(base + double_chunk);
-
-  // This is sanity testing internal implementation details of
-  // SparseHeapBitmap; probing |isSet()| outside the bitmap
-  // of the range used in |hasRange()|, is not defined.
-  //
-  // Regardless, the testing here verifies that a |hasRange()| that
-  // straddles multiple internal nodes, returns a bitmap that is
-  // capable of returning correct |isSet()| results.
-  SparseHeapBitmap* start = bitmap->HasRange(
-      base - double_chunk - 2 * kUnitPointer, 4 * kUnitPointer);
-  EXPECT_TRUE(!!start);
-  EXPECT_TRUE(start->IsSet(base - double_chunk));
-  EXPECT_FALSE(start->IsSet(base - double_chunk + kUnitPointer));
-  EXPECT_FALSE(start->IsSet(base));
-  EXPECT_FALSE(start->IsSet(base + kUnitPointer));
-  EXPECT_FALSE(start->IsSet(base + double_chunk));
-  EXPECT_FALSE(start->IsSet(base + double_chunk + kUnitPointer));
-
-  start = bitmap->HasRange(base - double_chunk - 2 * kUnitPointer,
-                           2 * double_chunk + 2 * kUnitPointer);
-  EXPECT_TRUE(!!start);
-  EXPECT_TRUE(start->IsSet(base - double_chunk));
-  EXPECT_FALSE(start->IsSet(base - double_chunk + kUnitPointer));
-  EXPECT_TRUE(start->IsSet(base));
-  EXPECT_FALSE(start->IsSet(base + kUnitPointer));
-  EXPECT_TRUE(start->IsSet(base + double_chunk));
-  EXPECT_FALSE(start->IsSet(base + double_chunk + kUnitPointer));
-
-  start = bitmap->HasRange(base, 20);
-  EXPECT_TRUE(!!start);
-  // Probing for values outside of hasRange() should be considered
-  // undefined, but do it to exercise the (left) tree traversal.
-  EXPECT_TRUE(start->IsSet(base - double_chunk));
-  EXPECT_FALSE(start->IsSet(base - double_chunk + kUnitPointer));
-  EXPECT_TRUE(start->IsSet(base));
-  EXPECT_FALSE(start->IsSet(base + kUnitPointer));
-  EXPECT_TRUE(start->IsSet(base + double_chunk));
-  EXPECT_FALSE(start->IsSet(base + double_chunk + kUnitPointer));
-
-  start = bitmap->HasRange(base + kChunkRange + 2 * kUnitPointer, 2048);
-  EXPECT_TRUE(!!start);
-  // Probing for values outside of hasRange() should be considered
-  // undefined, but do it to exercise node traversal.
-  EXPECT_FALSE(start->IsSet(base - double_chunk));
-  EXPECT_FALSE(start->IsSet(base - double_chunk + kUnitPointer));
-  EXPECT_FALSE(start->IsSet(base));
-  EXPECT_FALSE(start->IsSet(base + kUnitPointer));
-  EXPECT_FALSE(start->IsSet(base + kChunkRange));
-  EXPECT_TRUE(start->IsSet(base + double_chunk));
-  EXPECT_FALSE(start->IsSet(base + double_chunk + kUnitPointer));
-}
-
-TEST(HeapCompactTest, SparseBitmapLeftExtension) {
-  Address base = reinterpret_cast<Address>(0x10000u);
-  std::unique_ptr<SparseHeapBitmap> bitmap = SparseHeapBitmap::Create(base);
-
-  SparseHeapBitmap* start = bitmap->HasRange(base, 1);
-  EXPECT_TRUE(start);
-
-  // Verify that re-adding is a no-op.
-  bitmap->Add(base);
-  EXPECT_EQ(start, bitmap->HasRange(base, 1));
-
-  // Adding an Address |A| before a single-address SparseHeapBitmap node should
-  // cause that node to  be "left extended" to use |A| as its new base.
-  bitmap->Add(base - 2 * kUnitPointer);
-  EXPECT_EQ(bitmap->HasRange(base, 1),
-            bitmap->HasRange(base - 2 * kUnitPointer, 1));
-
-  // Reset.
-  bitmap = SparseHeapBitmap::Create(base);
-
-  // If attempting same as above, but the Address |A| is outside the
-  // chunk size of a node, a new SparseHeapBitmap node needs to be
-  // created to the left of |bitmap|.
-  bitmap->Add(base - kChunkRange);
-  EXPECT_NE(bitmap->HasRange(base, 1),
-            bitmap->HasRange(base - 2 * kUnitPointer, 1));
-
-  bitmap = SparseHeapBitmap::Create(base);
-  bitmap->Add(base - kChunkRange + kUnitPointer);
-  // This address is just inside the horizon and shouldn't create a new chunk.
-  EXPECT_EQ(bitmap->HasRange(base, 1),
-            bitmap->HasRange(base - 2 * kUnitPointer, 1));
-  // ..but this one should, like for the sub-test above.
-  bitmap->Add(base - kChunkRange);
-  EXPECT_EQ(bitmap->HasRange(base, 1),
-            bitmap->HasRange(base - 2 * kUnitPointer, 1));
-  EXPECT_NE(bitmap->HasRange(base, 1), bitmap->HasRange(base - kChunkRange, 1));
-}
-
-static void PerformHeapCompaction() {
-  EXPECT_FALSE(HeapCompact::ScheduleCompactionGCForTesting(true));
-  PreciselyCollectGarbage();
-  EXPECT_FALSE(HeapCompact::ScheduleCompactionGCForTesting(false));
-}
-
-TEST(HeapCompactTest, CompactVector) {
+TEST_F(HeapCompactTest, CompactVector) {
   ClearOutOldGarbage();
 
   IntWrapper* val = IntWrapper::Create(1, VectorsAreCompacted);
@@ -254,7 +116,7 @@ TEST(HeapCompactTest, CompactVector) {
     EXPECT_EQ(val, item);
 }
 
-TEST(HeapCompactTest, CompactHashMap) {
+TEST_F(HeapCompactTest, CompactHashMap) {
   ClearOutOldGarbage();
 
   Persistent<IntMap> int_map = MakeGarbageCollected<IntMap>();
@@ -274,7 +136,7 @@ TEST(HeapCompactTest, CompactHashMap) {
     EXPECT_EQ(k.key->Value(), 100 - k.value);
 }
 
-TEST(HeapCompactTest, CompactVectorPartHashMap) {
+TEST_F(HeapCompactTest, CompactVectorPartHashMap) {
   ClearOutOldGarbage();
 
   using IntMapVector = HeapVector<IntMap>;
@@ -310,7 +172,7 @@ TEST(HeapCompactTest, CompactVectorPartHashMap) {
   }
 }
 
-TEST(HeapCompactTest, CompactHashPartVector) {
+TEST_F(HeapCompactTest, CompactHashPartVector) {
   ClearOutOldGarbage();
 
   using IntVectorMap = HeapHashMap<int, IntVector>;
@@ -345,7 +207,7 @@ TEST(HeapCompactTest, CompactHashPartVector) {
   }
 }
 
-TEST(HeapCompactTest, CompactDeques) {
+TEST_F(HeapCompactTest, CompactDeques) {
   Persistent<IntDeque> deque = MakeGarbageCollected<IntDeque>();
   for (int i = 0; i < 8; ++i) {
     deque->push_front(IntWrapper::Create(i, VectorsAreCompacted));
@@ -362,7 +224,7 @@ TEST(HeapCompactTest, CompactDeques) {
     EXPECT_EQ(static_cast<int>(7 - i), deque->at(i)->Value());
 }
 
-TEST(HeapCompactTest, CompactDequeVectors) {
+TEST_F(HeapCompactTest, CompactDequeVectors) {
   Persistent<HeapDeque<IntVector>> deque =
       MakeGarbageCollected<HeapDeque<IntVector>>();
   for (int i = 0; i < 8; ++i) {
@@ -382,7 +244,7 @@ TEST(HeapCompactTest, CompactDequeVectors) {
     EXPECT_EQ(static_cast<int>(7 - i), deque->at(i).at(i)->Value());
 }
 
-TEST(HeapCompactTest, CompactLinkedHashSet) {
+TEST_F(HeapCompactTest, CompactLinkedHashSet) {
   using OrderedHashSet = HeapLinkedHashSet<Member<IntWrapper>>;
   Persistent<OrderedHashSet> set = MakeGarbageCollected<OrderedHashSet>();
   for (int i = 0; i < 13; ++i) {
@@ -407,7 +269,7 @@ TEST(HeapCompactTest, CompactLinkedHashSet) {
   }
 }
 
-TEST(HeapCompactTest, CompactLinkedHashSetVector) {
+TEST_F(HeapCompactTest, CompactLinkedHashSetVector) {
   using OrderedHashSet = HeapLinkedHashSet<Member<IntVector>>;
   Persistent<OrderedHashSet> set = MakeGarbageCollected<OrderedHashSet>();
   for (int i = 0; i < 13; ++i) {
@@ -433,7 +295,7 @@ TEST(HeapCompactTest, CompactLinkedHashSetVector) {
   }
 }
 
-TEST(HeapCompactTest, CompactLinkedHashSetMap) {
+TEST_F(HeapCompactTest, CompactLinkedHashSetMap) {
   using Inner = HeapHashSet<Member<IntWrapper>>;
   using OrderedHashSet = HeapLinkedHashSet<Member<Inner>>;
 
@@ -464,7 +326,7 @@ TEST(HeapCompactTest, CompactLinkedHashSetMap) {
   }
 }
 
-TEST(HeapCompactTest, CompactLinkedHashSetNested) {
+TEST_F(HeapCompactTest, CompactLinkedHashSetNested) {
   using Inner = HeapLinkedHashSet<Member<IntWrapper>>;
   using OrderedHashSet = HeapLinkedHashSet<Member<Inner>>;
 
@@ -495,7 +357,7 @@ TEST(HeapCompactTest, CompactLinkedHashSetNested) {
   }
 }
 
-TEST(HeapCompactTest, CompactInlinedBackingStore) {
+TEST_F(HeapCompactTest, CompactInlinedBackingStore) {
   // Regression test: https://crbug.com/875044
   //
   // This test checks that compaction properly updates pointers to statically
@@ -529,5 +391,3 @@ TEST(HeapCompactTest, CompactInlinedBackingStore) {
 }
 
 }  // namespace blink
-
-#endif  // ENABLE_HEAP_COMPACTION

@@ -51,23 +51,27 @@
 %endif
 
 
-; PRIVATE makes a symbol private.
+; global_private makes a symbol a global but private to this shared library.
 %ifidn   __OUTPUT_FORMAT__,elf32
-  %define PRIVATE :hidden
+  %define global_private(x) global mangle(x) %+ :function hidden
 %elifidn __OUTPUT_FORMAT__,elf64
-  %define PRIVATE :hidden
+  %define global_private(x) global mangle(x) %+ :function hidden
 %elifidn __OUTPUT_FORMAT__,elfx32
-  %define PRIVATE :hidden
-%elif X64WIN
-  %define PRIVATE
+  %define global_private(x) global mangle(x) %+ :function hidden
+%elifidn __OUTPUT_FORMAT__,macho32
+  %define global_private(x) global mangle(x) %+ :private_extern
+%elifidn __OUTPUT_FORMAT__,macho64
+  %define global_private(x) global mangle(x) %+ :private_extern
 %else
-  %define PRIVATE :private_extern
+  %define global_private(x) global mangle(x)
 %endif
 
-;; typedef void (*PushAllRegistersCallback)(SafePointBarrier*, ThreadState*, intptr_t*);
-;; extern "C" void PushAllRegisters(SafePointBarrier*, ThreadState*, PushAllRegistersCallback)
+section .text
 
-        global mangle(PushAllRegisters) PRIVATE
+;; typedef void (*PushAllRegistersCallback)(ThreadState*, intptr_t*);
+;; extern "C" void PushAllRegisters(ThreadState*, PushAllRegistersCallback)
+
+        global_private(PushAllRegisters)
 
 %if X64POSIX
 
@@ -85,11 +89,11 @@ mangle(PushAllRegisters):
         push r13
         push r14
         push r15
-        ;; Pass the two first arguments unchanged (rdi, rsi)
+        ;; Pass the first argument unchanged (rdi)
         ;; and the stack pointer after pushing callee-saved
         ;; registers to the callback.
-        mov r8, rdx
-        mov rdx, rsp
+        mov r8, rsi
+        mov rsi, rsp
         call r8
         ;; Pop the callee-saved registers. None of them were
         ;; modified so no restoring is needed.
@@ -113,11 +117,11 @@ mangle(PushAllRegisters):
         push r13
         push r14
         push r15
-        ;; Pass the two first arguments unchanged (rcx, rdx)
+        ;; Pass the first argument unchanged (rcx)
         ;; and the stack pointer after pushing callee-saved
         ;; registers to the callback.
-        mov r9, r8
-        mov r8, rsp
+        mov r9, rdx
+        mov rdx, rsp
         call r9
         ;; Pop the callee-saved registers. None of them were
         ;; modified so no restoring is needed.
@@ -137,23 +141,22 @@ mangle(PushAllRegisters):
         push ebp
         push esi
         push edi
-        ;; Pass the two first arguments unchanged and the
+        ;; Pass the first argument unchanged and the
         ;; stack pointer after pushing callee-save registers
         ;; to the callback.
-        mov ecx, [esp + 28]
+        mov ecx, [esp + 24]
         push esp
-        push dword [esp + 28]
-        push dword [esp + 28]
+        push dword [esp + 24]
         call ecx
         ;; Pop arguments and the callee-saved registers.
         ;; None of the callee-saved registers were modified
         ;; so we do not need to restore them.
-        add esp, 28
+        add esp, 24
         ret
 
 
 %elif ARM
-%error "Yasm does not support arm. Use SaveRegisters_arm.S on arm."
+%error "NASM does not support arm. Use SaveRegisters_arm.S on arm."
 %else
 %error "Unsupported platform."
 %endif

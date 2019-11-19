@@ -19,10 +19,14 @@
 #include "base/synchronization/waitable_event_watcher.h"
 #include "build/build_config.h"
 #include "content/browser/child_process_launcher.h"
+#include "content/common/child_process.mojom.h"
+#include "content/common/child_process_host_impl.h"
 #include "content/public/browser/browser_child_process_host.h"
 #include "content/public/browser/child_process_data.h"
+#include "content/public/common/child_process_host.h"
 #include "content/public/common/child_process_host_delegate.h"
 #include "mojo/public/cpp/system/invitation.h"
+#include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom.h"
 
 #if defined(OS_WIN)
 #include "base/win/object_watcher.h"
@@ -48,11 +52,21 @@ class CONTENT_EXPORT BrowserChildProcessHostImpl
 #if defined(OS_WIN)
       public base::win::ObjectWatcher::Delegate,
 #endif
-      public ChildProcessLauncher::Client {
+      public ChildProcessLauncher::Client,
+      public memory_instrumentation::mojom::CoordinatorConnector {
  public:
+  // Constructs a process host with Service Manager IPC support.
   BrowserChildProcessHostImpl(content::ProcessType process_type,
                               BrowserChildProcessHostDelegate* delegate,
                               const std::string& service_name);
+
+  // Constructs a process host with |ipc_mode| determining how IPC is done.
+  // To use |IpcMode::kServiceManager|, use the above constructor instead, which
+  // also provides the child process's service name.
+  BrowserChildProcessHostImpl(content::ProcessType process_type,
+                              BrowserChildProcessHostDelegate* delegate,
+                              ChildProcessHost::IpcMode ipc_mode);
+
   ~BrowserChildProcessHostImpl() override;
 
   // Terminates all child processes and deletes each BrowserChildProcessHost
@@ -73,8 +87,8 @@ class CONTENT_EXPORT BrowserChildProcessHostImpl
   void Launch(std::unique_ptr<SandboxedProcessLauncherDelegate> delegate,
               std::unique_ptr<base::CommandLine> cmd_line,
               bool terminate_on_shutdown) override;
-  const ChildProcessData& GetData() const override;
-  ChildProcessHost* GetHost() const override;
+  const ChildProcessData& GetData() override;
+  ChildProcessHost* GetHost() override;
   ChildProcessTerminationInfo GetTerminationInfo(bool known_dead) override;
   std::unique_ptr<base::PersistentMemoryAllocator> TakeMetricsAllocator()
       override;
@@ -86,9 +100,10 @@ class CONTENT_EXPORT BrowserChildProcessHostImpl
   // ChildProcessHostDelegate implementation:
   void OnChannelInitialized(IPC::Channel* channel) override;
   void OnChildDisconnected() override;
-  const base::Process& GetProcess() const override;
+  const base::Process& GetProcess() override;
   void BindInterface(const std::string& interface_name,
                      mojo::ScopedMessagePipeHandle interface_pipe) override;
+  void BindHostReceiver(mojo::GenericPendingReceiver receiver) override;
   bool OnMessageReceived(const IPC::Message& message) override;
   void OnChannelConnected(int32_t peer_pid) override;
   void OnChannelError() override;
@@ -115,6 +130,10 @@ class CONTENT_EXPORT BrowserChildProcessHostImpl
 
   static void HistogramBadMessageTerminated(ProcessType process_type);
 
+#if defined(OS_ANDROID)
+  void EnableWarmUpConnection();
+#endif
+
   BrowserChildProcessHostDelegate* delegate() const { return delegate_; }
 
   ChildConnection* child_connection() const {
@@ -122,10 +141,15 @@ class CONTENT_EXPORT BrowserChildProcessHostImpl
   }
 
   mojo::OutgoingInvitation* GetInProcessMojoInvitation() {
-    return &mojo_invitation_;
+    return &child_process_host_->GetMojoInvitation().value();
   }
 
   IPC::Channel* child_channel() const { return channel_; }
+
+  mojom::ChildProcess* child_process() const {
+    return static_cast<ChildProcessHostImpl*>(child_process_host_.get())
+        ->child_process();
+  }
 
   typedef std::list<BrowserChildProcessHostImpl*> BrowserChildProcessList;
  private:
@@ -148,6 +172,16 @@ class CONTENT_EXPORT BrowserChildProcessHostImpl
   // ChildProcessLauncher::Client implementation.
   void OnProcessLaunched() override;
   void OnProcessLaunchFailed(int error_code) override;
+#if defined(OS_ANDROID)
+  bool CanUseWarmUpConnection() override;
+#endif
+
+  // memory_instrumentation::mojom::CoordinatorConnector implementation:
+  void RegisterCoordinatorClient(
+      mojo::PendingReceiver<memory_instrumentation::mojom::Coordinator>
+          receiver,
+      mojo::PendingRemote<memory_instrumentation::mojom::ClientProcess>
+          client_process) override;
 
   // Returns true if the process has successfully launched. Must only be called
   // on the IO thread.
@@ -167,8 +201,9 @@ class CONTENT_EXPORT BrowserChildProcessHostImpl
   std::string metrics_name_;
   BrowserChildProcessHostDelegate* delegate_;
   std::unique_ptr<ChildProcessHost> child_process_host_;
+  mojo::Receiver<memory_instrumentation::mojom::CoordinatorConnector>
+      coordinator_connector_receiver_{this};
 
-  mojo::OutgoingInvitation mojo_invitation_;
   std::unique_ptr<ChildConnection> child_connection_;
 
   std::unique_ptr<ChildProcessLauncher> child_process_;
@@ -191,7 +226,13 @@ class CONTENT_EXPORT BrowserChildProcessHostImpl
   bool is_channel_connected_;
   bool notify_child_disconnected_;
 
-  base::WeakPtrFactory<BrowserChildProcessHostImpl> weak_factory_;
+#if defined(OS_ANDROID)
+  // whether the child process can use pre-warmed up connection for better
+  // performance.
+  bool can_use_warm_up_connection_ = false;
+#endif
+
+  base::WeakPtrFactory<BrowserChildProcessHostImpl> weak_factory_{this};
 };
 
 }  // namespace content

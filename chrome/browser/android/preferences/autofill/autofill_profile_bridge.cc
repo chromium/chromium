@@ -7,10 +7,9 @@
 #include "base/android/jni_string.h"
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/android/chrome_jni_headers/AutofillProfileBridge_jni.h"
 #include "chrome/browser/browser_process.h"
-#include "components/autofill/core/browser/autofill_country.h"
-#include "components/autofill/core/common/autofill_features.h"
-#include "jni/AutofillProfileBridge_jni.h"
+#include "components/autofill/core/browser/geo/autofill_country.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_field.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_metadata.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_ui.h"
@@ -117,10 +116,6 @@ JNI_AutofillProfileBridge_GetAddressUiComponents(
       country_code, localization, language_code, &best_language_tag);
 
   for (const auto& ui_component : ui_components) {
-    if (ui_component.field == AddressField::ORGANIZATION &&
-        !base::FeatureList::IsEnabled(features::kAutofillEnableCompanyName)) {
-      continue;
-    }
     component_labels.push_back(ui_component.name);
     component_required.push_back(
         IsFieldRequired(ui_component.field, country_code));
@@ -141,4 +136,4 @@ JNI_AutofillProfileBridge_GetAddressUiComponents(
   return ConvertUTF8ToJavaString(env, best_language_tag);
 }
 
-} // namespace autofill
+}  // namespace autofill

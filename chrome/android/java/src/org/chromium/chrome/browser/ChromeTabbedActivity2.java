@@ -21,7 +21,6 @@ public class ChromeTabbedActivity2 extends ChromeTabbedActivity {
     @Override
     protected void onDeferredStartupForMultiWindowMode() {
         RecordUserAction.record("Android.MultiWindowMode.MultiInstance.Enter");
-        recordMultiWindowModeScreenSize(true, true);
     }
 
     @Override

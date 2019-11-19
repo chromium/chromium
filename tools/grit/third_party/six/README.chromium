@@ -1,0 +1,13 @@
+Name: six
+Short Name: six
+URL: https://bitbucket.org/gutworth/six/commits/tag/1.10.0
+Version: 1.10.0
+Revision: 403:e5218c3f66a2
+License: Apache License, Version 2.0
+
+Description:
+Six is a Python 2 and 3 compatibility library.
+
+Local Modifications:
+- Copied six.py as __init__.py.
+- Kept LICENSE and README.

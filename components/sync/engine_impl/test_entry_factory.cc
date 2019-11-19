@@ -4,7 +4,7 @@
 
 #include "components/sync/engine_impl/test_entry_factory.h"
 
-#include "components/sync/base/hash_util.h"
+#include "components/sync/base/client_tag_hash.h"
 #include "components/sync/syncable/directory.h"
 #include "components/sync/syncable/entry.h"
 #include "components/sync/syncable/model_neutral_mutable_entry.h"
@@ -22,7 +22,6 @@ namespace syncer {
 using syncable::Id;
 using syncable::MutableEntry;
 using syncable::UNITTEST;
-using syncable::WriteTransaction;
 
 TestEntryFactory::TestEntryFactory(syncable::Directory* dir)
     : directory_(dir), next_revision_(1) {}
@@ -33,7 +32,7 @@ int64_t TestEntryFactory::CreateUnappliedNewItemWithParent(
     const string& item_id,
     const sync_pb::EntitySpecifics& specifics,
     const string& parent_id) {
-  WriteTransaction trans(FROM_HERE, UNITTEST, directory_);
+  syncable::WriteTransaction trans(FROM_HERE, UNITTEST, directory_);
   MutableEntry entry(&trans, syncable::CREATE_NEW_UPDATE_ITEM,
                      Id::CreateFromServerId(item_id));
   DCHECK(entry.good());
@@ -51,7 +50,7 @@ int64_t TestEntryFactory::CreateUnappliedNewBookmarkItemWithParent(
     const string& item_id,
     const sync_pb::EntitySpecifics& specifics,
     const string& parent_id) {
-  WriteTransaction trans(FROM_HERE, UNITTEST, directory_);
+  syncable::WriteTransaction trans(FROM_HERE, UNITTEST, directory_);
   MutableEntry entry(&trans, syncable::CREATE_NEW_UPDATE_ITEM,
                      Id::CreateFromServerId(item_id));
   DCHECK(entry.good());
@@ -70,7 +69,7 @@ int64_t TestEntryFactory::CreateUnappliedNewItem(
     const string& item_id,
     const sync_pb::EntitySpecifics& specifics,
     bool is_unique) {
-  WriteTransaction trans(FROM_HERE, UNITTEST, directory_);
+  syncable::WriteTransaction trans(FROM_HERE, UNITTEST, directory_);
   MutableEntry entry(&trans, syncable::CREATE_NEW_UPDATE_ITEM,
                      Id::CreateFromServerId(item_id));
   DCHECK(entry.good());
@@ -97,7 +96,7 @@ void TestEntryFactory::CreateUnsyncedItem(const Id& item_id,
     DCHECK_EQ(model_type, BOOKMARKS);
   }
 
-  WriteTransaction trans(FROM_HERE, UNITTEST, directory_);
+  syncable::WriteTransaction trans(FROM_HERE, UNITTEST, directory_);
 
   MutableEntry entry(&trans, syncable::CREATE, model_type, parent_id, name);
   DCHECK(entry.good());
@@ -127,7 +126,7 @@ int64_t TestEntryFactory::CreateUnappliedAndUnsyncedBookmarkItem(
   CreateUnsyncedItem(TestIdFactory::MakeServer(name), TestIdFactory::root(),
                      name, false, BOOKMARKS, &metahandle);
 
-  WriteTransaction trans(FROM_HERE, UNITTEST, directory_);
+  syncable::WriteTransaction trans(FROM_HERE, UNITTEST, directory_);
   MutableEntry entry(&trans, syncable::GET_BY_HANDLE, metahandle);
   if (!entry.good()) {
     NOTREACHED();
@@ -152,7 +151,7 @@ int64_t TestEntryFactory::CreateSyncedItem(
     ModelType model_type,
     bool is_folder,
     const sync_pb::EntitySpecifics& specifics) {
-  WriteTransaction trans(FROM_HERE, UNITTEST, directory_);
+  syncable::WriteTransaction trans(FROM_HERE, UNITTEST, directory_);
 
   // Use the type root if it exists or the real root otherwise.
   syncable::Entry root(&trans, syncable::GET_TYPE_ROOT, model_type);
@@ -182,7 +181,7 @@ int64_t TestEntryFactory::CreateSyncedItem(
 
 int64_t TestEntryFactory::CreateTombstone(const std::string& name,
                                           ModelType model_type) {
-  WriteTransaction trans(FROM_HERE, UNITTEST, directory_);
+  syncable::WriteTransaction trans(FROM_HERE, UNITTEST, directory_);
 
   // Use the type root if it exists or the real root otherwise.
   syncable::Entry root(&trans, syncable::GET_TYPE_ROOT, model_type);
@@ -237,7 +236,7 @@ int64_t TestEntryFactory::CreateUnappliedRootNode(ModelType model_type) {
 bool TestEntryFactory::SetServerSpecificsForItem(
     int64_t meta_handle,
     const sync_pb::EntitySpecifics specifics) {
-  WriteTransaction trans(FROM_HERE, UNITTEST, directory_);
+  syncable::WriteTransaction trans(FROM_HERE, UNITTEST, directory_);
   MutableEntry entry(&trans, syncable::GET_BY_HANDLE, meta_handle);
   if (!entry.good()) {
     return false;
@@ -250,7 +249,7 @@ bool TestEntryFactory::SetServerSpecificsForItem(
 bool TestEntryFactory::SetLocalSpecificsForItem(
     int64_t meta_handle,
     const sync_pb::EntitySpecifics specifics) {
-  WriteTransaction trans(FROM_HERE, UNITTEST, directory_);
+  syncable::WriteTransaction trans(FROM_HERE, UNITTEST, directory_);
   MutableEntry entry(&trans, syncable::GET_BY_HANDLE, meta_handle);
   if (!entry.good()) {
     return false;
@@ -312,7 +311,8 @@ void TestEntryFactory::PopulateEntry(const syncable::Id& parent_id,
   entry->PutId(item_id);
   entry->PutCtime(now);
   entry->PutMtime(now);
-  entry->PutUniqueClientTag(GenerateSyncableHash(model_type, name));
+  entry->PutUniqueClientTag(
+      ClientTagHash::FromUnhashed(model_type, name).value());
   entry->PutBaseVersion(version);
   entry->PutIsUnsynced(false);
   entry->PutNonUniqueName(name);

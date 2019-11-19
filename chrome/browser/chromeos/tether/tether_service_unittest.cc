@@ -12,7 +12,7 @@
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/timer/mock_timer.h"
 #include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/prefs/browser_prefs.h"
@@ -30,12 +30,12 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/fake_power_manager_client.h"
+#include "chromeos/dbus/power/fake_power_manager_client.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power_manager/suspend.pb.h"
-#include "chromeos/dbus/power_manager_client.h"
-#include "chromeos/dbus/shill_device_client.h"
-#include "chromeos/dbus/shill_manager_client.h"
-#include "chromeos/dbus/shill_service_client.h"
+#include "chromeos/dbus/shill/shill_device_client.h"
+#include "chromeos/dbus/shill/shill_manager_client.h"
+#include "chromeos/dbus/shill/shill_service_client.h"
 #include "chromeos/network/network_connect.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_state_handler.h"
@@ -56,7 +56,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/scoped_user_manager.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -266,8 +266,8 @@ class FakeDeviceSyncClientImplFactory
   ~FakeDeviceSyncClientImplFactory() override = default;
 
   // chromeos::device_sync::DeviceSyncClientImpl::Factory:
-  std::unique_ptr<chromeos::device_sync::DeviceSyncClient> BuildInstance(
-      service_manager::Connector* connector) override {
+  std::unique_ptr<chromeos::device_sync::DeviceSyncClient> BuildInstance()
+      override {
     auto fake_device_sync_client =
         std::make_unique<chromeos::device_sync::FakeDeviceSyncClient>();
     fake_device_sync_client->NotifyReady();
@@ -284,7 +284,8 @@ class FakeSecureChannelClientImplFactory
 
   // chromeos::secure_channel::SecureChannelClientImpl::Factory:
   std::unique_ptr<chromeos::secure_channel::SecureChannelClient> BuildInstance(
-      service_manager::Connector* connector,
+      mojo::PendingRemote<chromeos::secure_channel::mojom::SecureChannel>
+          channel,
       scoped_refptr<base::TaskRunner> task_runner) override {
     return std::make_unique<
         chromeos::secure_channel::FakeSecureChannelClient>();
@@ -343,7 +344,7 @@ class TetherServiceTest : public testing::Test {
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
         base::WrapUnique(fake_chrome_user_manager_));
 
-    chromeos::PowerManagerClient::Initialize();
+    chromeos::PowerManagerClient::InitializeFake();
 
     fake_device_sync_client_ =
         std::make_unique<chromeos::device_sync::FakeDeviceSyncClient>();
@@ -560,7 +561,7 @@ class TetherServiceTest : public testing::Test {
   }
 
   const chromeos::multidevice::RemoteDeviceRefList test_devices_;
-  const content::TestBrowserThreadBundle thread_bundle_;
+  const content::BrowserTaskEnvironment task_environment_;
 
   std::unique_ptr<TestingProfile> profile_;
   chromeos::FakeChromeUserManager* fake_chrome_user_manager_;

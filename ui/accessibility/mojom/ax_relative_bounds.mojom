@@ -4,8 +4,8 @@
 
 module ax.mojom;
 
-import "ui/gfx/geometry/mojo/geometry.mojom";
-import "ui/gfx/mojo/transform.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+import "ui/gfx/mojom/transform.mojom";
 
 // See ui::RelativeBounds for documentation.
 struct AXRelativeBounds {

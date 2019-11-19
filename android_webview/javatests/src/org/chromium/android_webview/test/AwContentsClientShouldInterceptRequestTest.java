@@ -83,7 +83,7 @@ public class AwContentsClientShouldInterceptRequestTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         mWebServer.shutdown();
     }
 
@@ -246,7 +246,7 @@ public class AwContentsClientShouldInterceptRequestTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    public void testDoesNotCrashOnInvalidData() throws Throwable {
+    public void testDoesNotCrashOnInvalidData_NullInputStream() throws Throwable {
         final String aboutPageUrl = addAboutPageToTestServer(mWebServer);
 
         mShouldInterceptRequestHelper.setReturnValue(
@@ -254,16 +254,45 @@ public class AwContentsClientShouldInterceptRequestTest {
         int callCount = mShouldInterceptRequestHelper.getCallCount();
         mActivityTestRule.loadUrlAsync(mAwContents, aboutPageUrl);
         mShouldInterceptRequestHelper.waitForCallback(callCount);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testDoesNotCrashOnInvalidData_NullMimeEncodingAndZeroLengthStream()
+            throws Throwable {
+        final String aboutPageUrl = addAboutPageToTestServer(mWebServer);
 
         mShouldInterceptRequestHelper.setReturnValue(
                 new AwWebResourceResponse(null, null, new ByteArrayInputStream(new byte[0])));
-        callCount = mShouldInterceptRequestHelper.getCallCount();
+        int callCount = mShouldInterceptRequestHelper.getCallCount();
         mActivityTestRule.loadUrlAsync(mAwContents, aboutPageUrl);
         mShouldInterceptRequestHelper.waitForCallback(callCount);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testDoesNotCrashOnInvalidData_NullMimeEncodingAndInputStream() throws Throwable {
+        final String aboutPageUrl = addAboutPageToTestServer(mWebServer);
 
         mShouldInterceptRequestHelper.setReturnValue(
                 new AwWebResourceResponse(null, null, null));
-        callCount = mShouldInterceptRequestHelper.getCallCount();
+        int callCount = mShouldInterceptRequestHelper.getCallCount();
+        mActivityTestRule.loadUrlAsync(mAwContents, aboutPageUrl);
+        mShouldInterceptRequestHelper.waitForCallback(callCount);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testDoesNotCrashOnInvalidData_ResponseWithAllNullValues() throws Throwable {
+        final String aboutPageUrl = addAboutPageToTestServer(mWebServer);
+
+        mShouldInterceptRequestHelper.setReturnValue(new AwWebResourceResponse(null /* mime type */,
+                null /* encoding */, null /* input stream */, 0 /* status code */,
+                null /* reason phrase */, null /* response headers */));
+        int callCount = mShouldInterceptRequestHelper.getCallCount();
         mActivityTestRule.loadUrlAsync(mAwContents, aboutPageUrl);
         mShouldInterceptRequestHelper.waitForCallback(callCount);
     }
@@ -337,7 +366,7 @@ public class AwContentsClientShouldInterceptRequestTest {
         }
 
         @Override
-        public long skip(long n) throws IOException {
+        public long skip(long n) {
             return n;
         }
     }

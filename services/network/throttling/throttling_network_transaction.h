@@ -22,7 +22,6 @@
 
 namespace net {
 class AuthCredentials;
-class HttpRequestHeaders;
 struct HttpRequestInfo;
 class HttpResponseInfo;
 class IOBuffer;
@@ -66,7 +65,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ThrottlingNetworkTransaction
            int buf_len,
            net::CompletionOnceCallback callback) override;
   void StopCaching() override;
-  bool GetFullRequestHeaders(net::HttpRequestHeaders* headers) const override;
   int64_t GetTotalReceivedBytes() const override;
   int64_t GetTotalSentBytes() const override;
   void DoneReading() override;

@@ -77,8 +77,7 @@ void ChromeSubresourceFilterClient::MaybeAppendNavigationThrottles(
         std::make_unique<subresource_filter::
                              SubresourceFilterSafeBrowsingActivationThrottle>(
             navigation_handle, this,
-            base::CreateSingleThreadTaskRunnerWithTraits(
-                {content::BrowserThread::IO}),
+            base::CreateSingleThreadTaskRunner({content::BrowserThread::IO}),
             safe_browsing_service->database_manager()));
   }
 
@@ -148,6 +147,11 @@ void ChromeSubresourceFilterClient::ToggleForceActivationInCurrentWebContents(
   activated_via_devtools_ = force_activation;
 }
 
+const subresource_filter::ContentSubresourceFilterThrottleManager*
+ChromeSubresourceFilterClient::GetThrottleManager() const {
+  return throttle_manager_.get();
+}
+
 // static
 void ChromeSubresourceFilterClient::LogAction(SubresourceFilterAction action) {
   UMA_HISTOGRAM_ENUMERATION("SubresourceFilter.Actions2", action);
@@ -161,7 +165,7 @@ void ChromeSubresourceFilterClient::ShowUI(const GURL& url) {
 #endif
   TabSpecificContentSettings* content_settings =
       TabSpecificContentSettings::FromWebContents(web_contents());
-  content_settings->OnContentBlocked(CONTENT_SETTINGS_TYPE_ADS);
+  content_settings->OnContentBlocked(ContentSettingsType::ADS);
 
   LogAction(SubresourceFilterAction::kUIShown);
   did_show_ui_for_navigation_ = true;

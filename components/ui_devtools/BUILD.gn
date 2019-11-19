@@ -2,6 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/buildflag_header.gni")
+import("//components/ui_devtools/devtools.gni")
+
 _inspector_protocol = "//third_party/inspector_protocol"
 import("$_inspector_protocol/inspector_protocol.gni")
 
@@ -15,8 +18,12 @@ _protocol_generated = [
   "Forward.h",
   "Overlay.cpp",
   "Overlay.h",
+  "Page.cpp",
+  "Page.h",
   "Protocol.cpp",
   "Protocol.h",
+  "Tracing.h",
+  "Tracing.cpp",
 ]
 
 action("protocol_compatibility") {
@@ -56,9 +63,17 @@ inspector_protocol_generate("protocol_generated_sources") {
   outputs = _protocol_generated
 }
 
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+  flags = [ "USE_VIZ_DEVTOOLS=$use_viz_devtools" ]
+}
+
 component("ui_devtools") {
   sources = rebase_path(_protocol_generated, ".", target_gen_dir)
   sources += [
+    "agent_util.cc",
+    "agent_util.h",
+    "connector_delegate.h",
     "css_agent.cc",
     "css_agent.h",
     "devtools_base_agent.h",
@@ -71,10 +86,14 @@ component("ui_devtools") {
     "dom_agent.h",
     "overlay_agent.cc",
     "overlay_agent.h",
+    "page_agent.cc",
+    "page_agent.h",
     "root_element.cc",
     "root_element.h",
     "switches.cc",
     "switches.h",
+    "tracing_agent.cc",
+    "tracing_agent.h",
     "ui_element.cc",
     "ui_element.h",
     "ui_element_delegate.h",
@@ -88,15 +107,23 @@ component("ui_devtools") {
   }
 
   deps = [
+    ":devtools_protocol_encoding",
     ":protocol_generated_sources",
     "//base",
+    "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/system",
     "//net",
     "//ui/gfx",
   ]
 
   public_deps = [
+    ":buildflags",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
+    "//services/service_manager/public/cpp",
+    "//services/tracing/public/cpp",
+    "//services/tracing/public/mojom",
+    "//third_party/perfetto/gn:default_deps",
   ]
 }
 
@@ -107,8 +134,20 @@ static_library("test_support") {
     "ui_devtools_unittest_utils.h",
   ]
   public_deps = [
+    ":devtools_protocol_encoding",
     ":ui_devtools",
     "//testing/gmock",
+  ]
+}
+
+static_library("devtools_protocol_encoding") {
+  sources = [
+    "devtools_protocol_encoding.cc",
+    "devtools_protocol_encoding.h",
+  ]
+  deps = [
+    "//base",
+    "//third_party/inspector_protocol:crdtp",
   ]
 }
 
@@ -121,9 +160,12 @@ source_set("unit_tests") {
   }
 
   sources = [
-    #TODO(lgrey,weili): fix and enable css agent tests.
-    #"css_agent_unittest.cc",
+    "css_agent_unittest.cc",
     "devtools_server_unittest.cc",
+  ]
+
+  data = [
+    "//components/test/data/ui_devtools/test_file.cc",
   ]
 
   deps = [

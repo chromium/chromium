@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/loader/link_load_parameters.h"
 
+#include "services/network/public/mojom/referrer_policy.mojom-blink.h"
 #include "third_party/blink/renderer/platform/loader/link_header.h"
 
 namespace blink {

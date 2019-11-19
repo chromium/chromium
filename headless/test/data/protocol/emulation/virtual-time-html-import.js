@@ -2,53 +2,52 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-const htmlWithScript =
-     `<!DOCTYPE html>
-      <link rel="import" href="/import.html">
-      <script src="/script.js"></script>
-      <script type="module" src="/module.js"></script>`;
-
-const htmlImport =
-    `<script>console.log("imported html");</script>`
-
-const script =
-    `console.log("ran script");`
-
-const module =
-    `console.log("ran module");`
-
-const server = new Map([
-  ['http://test.com/index.html', { body: htmlWithScript }],
-  ['http://test.com/import.html', { body: htmlImport }],
-  ['http://test.com/script.js', { body: script }],
-  ['http://test.com/module.js',
-    { body: module,
-      headers: ['HTTP/1.1 200 OK', 'Content-Type: application/javascript'] }
-  ]]);
-
 (async function(testRunner) {
-  var {page, session, dp} = await testRunner.startBlank(
+  const {page, session, dp} = await testRunner.startBlank(
       `Tests that an html import followed by a pending script does not break ` +
       `virtual time.`);
+
+  const FetchHelper = await testRunner.loadScriptAbsolute(
+      '../fetch/resources/fetch-test.js');
+  const helper = new FetchHelper(testRunner, dp);
+  helper.setEnableLogging(false);
+  await helper.enable();
+
+  helper.onceRequest('http://test.com/index.html').fulfill(
+      FetchHelper.makeContentResponse(`
+          <!DOCTYPE html>
+          <link rel="import" href="/import.html">
+          <script src="/script.js"></script>
+          <script type="module" src="/module.js"></script>`)
+  );
+
+  helper.onceRequest('http://test.com/import.html').fulfill(
+      FetchHelper.makeContentResponse(`
+          <script>console.log("imported html");</script>`)
+  );
+
+  helper.onceRequest('http://test.com/script.js').fulfill(
+      FetchHelper.makeContentResponse(`
+          console.log("ran script");`,
+          "application/javascript")
+  );
+
+  helper.onceRequest('http://test.com/module.js').fulfill(
+      FetchHelper.makeContentResponse(`
+          console.log("ran module");`,
+          "application/javascript")
+  );
+
   await dp.Runtime.enable();
   await dp.Page.enable();
-  await dp.Network.enable();
-  await dp.Network.setRequestInterception({ patterns: [{ urlPattern: '*' }] });
-  dp.Network.onRequestIntercepted(event => {
-    let body = server.get(event.params.request.url).body || '';
-    let headers = server.get(event.params.request.url).headers || [];
-    dp.Network.continueInterceptedRequest({
-      interceptionId: event.params.interceptionId,
-      rawResponse: btoa(headers.join('\r\n') + '\r\n\r\n' + body)
-    });
-  });
 
+  let log_lines = [];
   dp.Runtime.onConsoleAPICalled(data => {
-    const text = data.params.args[0].value;
-    testRunner.log(text);
+    log_lines.push(data.params.args[0].value);
   });
 
   dp.Emulation.onVirtualTimeBudgetExpired(async data => {
+    testRunner.log(log_lines.sort());
     testRunner.completeTest();
   });
 

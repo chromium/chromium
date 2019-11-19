@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_CSS_UNIT_VALUE_H_
 
 #include "base/macros.h"
-#include "third_party/blink/renderer/core/css/css_primitive_value.h"
+#include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/cssom/css_numeric_value.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
@@ -27,7 +27,7 @@ class CORE_EXPORT CSSUnitValue final : public CSSNumericValue {
   static CSSUnitValue* Create(
       double value,
       CSSPrimitiveValue::UnitType = CSSPrimitiveValue::UnitType::kNumber);
-  static CSSUnitValue* FromCSSValue(const CSSPrimitiveValue&);
+  static CSSUnitValue* FromCSSValue(const CSSNumericLiteralValue&);
 
   CSSUnitValue(double value, CSSPrimitiveValue::UnitType unit)
       : CSSNumericValue(CSSNumericValueType(unit)),
@@ -51,11 +51,9 @@ class CORE_EXPORT CSSUnitValue final : public CSSNumericValue {
 
   // From CSSStyleValue.
   StyleValueType GetType() const final;
-  const CSSPrimitiveValue* ToCSSValue() const final;
-  const CSSPrimitiveValue* ToCSSValueWithProperty(
-      CSSPropertyID,
-      const CSSSyntaxComponent*) const final;
-  CSSCalcExpressionNode* ToCalcExpressionNode() const final;
+  const CSSNumericLiteralValue* ToCSSValue() const final;
+  const CSSPrimitiveValue* ToCSSValueWithProperty(CSSPropertyID) const final;
+  CSSMathExpressionNode* ToCalcExpressionNode() const final;
 
  private:
   double ConvertFixedLength(CSSPrimitiveValue::UnitType) const;

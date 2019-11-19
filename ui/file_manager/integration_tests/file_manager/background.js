@@ -51,7 +51,7 @@ const BASIC_LOCAL_ENTRY_SET = [
   ENTRIES.world,
   ENTRIES.desktop,
   ENTRIES.beautiful,
-  ENTRIES.photos
+  ENTRIES.photos,
 ];
 
 /**
@@ -74,7 +74,8 @@ const BASIC_DRIVE_ENTRY_SET = [
   ENTRIES.photos,
   ENTRIES.unsupported,
   ENTRIES.testDocument,
-  ENTRIES.testSharedDocument
+  ENTRIES.testSharedDocument,
+  ENTRIES.testSharedFile,
 ];
 
 /**
@@ -101,6 +102,18 @@ const COMPLEX_DRIVE_ENTRY_SET = [
 ];
 
 /**
+ * More complex entry set for DocumentsProvider that includes entries with
+ * arying permissions (such as read-only entries).
+ *
+ * @type {Array<TestEntryInfo>}
+ * @const
+ */
+const COMPLEX_DOCUMENTS_PROVIDER_ENTRY_SET = [
+  ENTRIES.hello, ENTRIES.photos, ENTRIES.readOnlyFolder, ENTRIES.readOnlyFile,
+  ENTRIES.deletableFile, ENTRIES.renamableFile
+];
+
+/**
  * Nested entry set (directories inside each other).
  *
  * @type {Array<TestEntryInfo>}
@@ -109,7 +122,7 @@ const COMPLEX_DRIVE_ENTRY_SET = [
 const NESTED_ENTRY_SET = [
   ENTRIES.directoryA,
   ENTRIES.directoryB,
-  ENTRIES.directoryC
+  ENTRIES.directoryC,
 ];
 
 /**
@@ -121,7 +134,7 @@ const NESTED_ENTRY_SET = [
  */
 const BASIC_FAKE_ENTRY_SET = [
   ENTRIES.hello,
-  ENTRIES.directoryA
+  ENTRIES.directoryA,
 ];
 
 /**
@@ -146,7 +159,8 @@ const RECENT_ENTRY_SET = [
  */
 const OFFLINE_ENTRY_SET = [
   ENTRIES.testDocument,
-  ENTRIES.testSharedDocument
+  ENTRIES.testSharedDocument,
+  ENTRIES.testSharedFile,
 ];
 
 /**
@@ -157,19 +171,20 @@ const OFFLINE_ENTRY_SET = [
  * @const
  */
 const SHARED_WITH_ME_ENTRY_SET = [
-  ENTRIES.testSharedDocument
+  ENTRIES.testSharedDocument,
+  ENTRIES.testSharedFile,
 ];
 
 /**
  * Entry set for Drive that includes team drives of various permissions and
  * nested files with various permissions.
  *
- * TODO(sashab): Add support for capabilities of Team Drive roots.
+ * TODO(sashab): Add support for capabilities of Shared Drive roots.
  *
  * @type {Array<TestEntryInfo>}
  * @const
  */
-const TEAM_DRIVE_ENTRY_SET = [
+const SHARED_DRIVE_ENTRY_SET = [
   ENTRIES.hello,
   ENTRIES.teamDriveA,
   ENTRIES.teamDriveAFile,
@@ -177,6 +192,7 @@ const TEAM_DRIVE_ENTRY_SET = [
   ENTRIES.teamDriveAHostedFile,
   ENTRIES.teamDriveB,
   ENTRIES.teamDriveBFile,
+  ENTRIES.teamDriveBDirectory,
 ];
 
 /**
@@ -271,7 +287,7 @@ async function openAndWaitForClosingDialog(
  * @param {?string} initialRoot Root path to be used as a default current
  *     directory during initialization. Can be null, for no default path.
  * @param {!Array<TestEntryInfo>>} initialLocalEntries List of initial
- *     entries to load in Google Drive (defaults to a basic entry set).
+ *     entries to load in Downloads (defaults to a basic entry set).
  * @param {!Array<TestEntryInfo>>} initialDriveEntries List of initial
  *     entries to load in Google Drive (defaults to a basic entry set).
  * @param {Object} appState App state to be passed with on opening the Files
@@ -395,7 +411,6 @@ window.addEventListener('load', () => {
     paths => {
       const roots = JSON.parse(paths);
       RootPath.DOWNLOADS = roots.downloads;
-      RootPath.DOWNLOADS_PATH = roots.downloads_path;
       RootPath.DRIVE = roots.drive;
       RootPath.ANDROID_FILES = roots.android_files;
       sendBrowserTestCommand({name: 'getTestName'}, steps.shift());
@@ -440,17 +455,15 @@ async function createShortcut(appId, directoryName) {
   chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
       'fakeMouseRightClick', appId, ['.table-row[selected]']));
 
-
   await remoteCall.waitForElement(appId, '#file-context-menu:not([hidden])');
   await remoteCall.waitForElement(
-      appId,
-      '[command="#create-folder-shortcut"]:not([hidden]):not([disabled])');
+      appId, '[command="#pin-folder"]:not([hidden]):not([disabled])');
   chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
       'fakeMouseClick', appId,
-      ['[command="#create-folder-shortcut"]:not([hidden]):not([disabled])']));
+      ['[command="#pin-folder"]:not([hidden]):not([disabled])']));
 
   await remoteCall.waitForElement(
-      appId, `.tree-item[label="${directoryName}"]`);
+      appId, `.tree-item[entry-label="${directoryName}"]`);
 }
 
 /**
@@ -468,4 +481,80 @@ async function expandTreeItem(appId, treeItem) {
 
   const expandedSubtree = treeItem + '> .tree-children[expanded]';
   await remoteCall.waitForElement(appId, expandedSubtree);
+}
+
+/**
+ * Focus the directory tree and navigates using mouse clicks.
+ *
+ * @param {!string} appId
+ * @param {!string} breadcrumbsPath Path based on the entry labels like:
+ *     /My files/Downloads/photos to item that should navigate to.
+ * @param {string=} shortcutToPath For shortcuts it navigates to a different
+ *   breadcrumbs path, like /My Drive/ShortcutName.
+ *   @return {string} the final selector used to click on the desired tree item.
+ */
+async function navigateWithDirectoryTree(
+    appId, breadcrumbsPath, shortcutToPath) {
+  const hasChildren = ' > .tree-row[has-children=true]';
+
+  // Focus the directory tree.
+  chrome.test.assertTrue(
+      !!await remoteCall.callRemoteTestUtil(
+          'focus', appId, ['#directory-tree']),
+      'focus failed: #directory-tree');
+
+  const paths = breadcrumbsPath.split('/').filter(path => path);
+  const leaf = paths.pop();
+
+  // Expand all parents of the leaf entry.
+  let query = '#directory-tree';
+  for (const parentLabel of paths) {
+    query += ` [entry-label="${parentLabel}"]`;
+    // Wait for parent element to be displayed.
+    await remoteCall.waitForElement(appId, query);
+
+    // Only expand if element isn't expanded yet.
+    const elements = await remoteCall.callRemoteTestUtil(
+        'queryAllElements', appId, [query + '[expanded]']);
+    if (!elements.length) {
+      await remoteCall.waitForElement(appId, query + hasChildren);
+      await expandTreeItem(appId, query);
+    }
+  }
+
+  // Navigate to the final entry.
+  query += ` [entry-label="${leaf}"]`;
+  await remoteCall.waitAndClickElement(appId, query);
+
+  // Wait directory to finish scanning its content.
+  await remoteCall.waitForElement(appId, `[scan-completed="${leaf}"]`);
+
+  // Wait to navigation to final entry to finish.
+  await remoteCall.waitUntilCurrentDirectoryIsChanged(
+      appId, (shortcutToPath || breadcrumbsPath));
+
+  return query;
+}
+
+/**
+ * Mounts crostini volume by clicking on the fake crostini root.
+ * @param {string} appId Files app windowId.
+ * @param {!Array<TestEntryInfo>>} initialEntries List of initial entries to
+ *     load in Crostini (defaults to a basic entry set).
+ */
+async function mountCrostini(appId, initialEntries = BASIC_CROSTINI_ENTRY_SET) {
+  const fakeLinuxFiles = '#directory-tree [root-type-icon="crostini"]';
+  const realLinxuFiles = '#directory-tree [volume-type-icon="crostini"]';
+
+  // Add entries to crostini volume, but do not mount.
+  await addEntries(['crostini'], initialEntries);
+
+  // Linux files fake root is shown.
+  await remoteCall.waitForElement(appId, fakeLinuxFiles);
+
+  // Mount crostini, and ensure real root and files are shown.
+  remoteCall.callRemoteTestUtil('fakeMouseClick', appId, [fakeLinuxFiles]);
+  await remoteCall.waitForElement(appId, realLinxuFiles);
+  const files = TestEntryInfo.getExpectedRows(BASIC_CROSTINI_ENTRY_SET);
+  await remoteCall.waitForFiles(appId, files);
 }

@@ -5,13 +5,26 @@
 #include "content/public/test/test_browser_thread.h"
 
 #include "base/macros.h"
-#include "base/message_loop/message_loop.h"
+#include "base/memory/ptr_util.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
 #include "content/browser/browser_process_sub_thread.h"
 #include "content/browser/browser_thread_impl.h"
+#include "content/browser/scheduler/browser_task_executor.h"
 
 namespace content {
+
+std::unique_ptr<TestBrowserThread> TestBrowserThread::StartIOThread() {
+  auto thread = base::WrapUnique(new TestBrowserThread(
+      BrowserThread::IO, BrowserTaskExecutor::CreateIOThread()));
+  thread->RegisterAsBrowserThread();
+  return thread;
+}
+
+TestBrowserThread::TestBrowserThread(
+    BrowserThread::ID identifier,
+    std::unique_ptr<BrowserProcessSubThread> real_thread)
+    : identifier_(identifier), real_thread_(std::move(real_thread)) {}
 
 TestBrowserThread::TestBrowserThread(BrowserThread::ID identifier)
     : identifier_(identifier),
@@ -44,29 +57,8 @@ TestBrowserThread::~TestBrowserThread() {
   //   1) TestBrowserThread::Stop()
   //   2) ~MessageLoop()
   //   3) ~TestBrowserThread()
-  // (~TestBrowserThreadBundle() does this).
+  // (~BrowserTaskEnvironment() does this).
   BrowserThreadImpl::ResetGlobalsForTesting(identifier_);
-}
-
-void TestBrowserThread::Start() {
-  CHECK(real_thread_->Start());
-  RegisterAsBrowserThread();
-}
-
-void TestBrowserThread::StartAndWaitForTesting() {
-  CHECK(real_thread_->StartAndWaitForTesting());
-  RegisterAsBrowserThread();
-}
-
-void TestBrowserThread::StartIOThread() {
-  StartIOThreadUnregistered();
-  RegisterAsBrowserThread();
-}
-
-void TestBrowserThread::StartIOThreadUnregistered() {
-  base::Thread::Options options;
-  options.message_loop_type = base::MessageLoop::TYPE_IO;
-  CHECK(real_thread_->StartWithOptions(options));
 }
 
 void TestBrowserThread::RegisterAsBrowserThread() {

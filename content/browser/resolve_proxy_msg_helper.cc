@@ -10,7 +10,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
-#include "mojo/public/cpp/bindings/interface_request.h"
 #include "net/proxy_resolution/proxy_info.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
@@ -18,8 +17,7 @@ namespace content {
 
 ResolveProxyMsgHelper::ResolveProxyMsgHelper(int render_process_host_id)
     : BrowserMessageFilter(ViewMsgStart),
-      render_process_host_id_(render_process_host_id),
-      binding_(this) {}
+      render_process_host_id_(render_process_host_id) {}
 
 void ResolveProxyMsgHelper::OverrideThreadForMessage(
     const IPC::Message& message,
@@ -45,7 +43,7 @@ void ResolveProxyMsgHelper::OnResolveProxy(const GURL& url,
   pending_requests_.push_back(PendingRequest(url, reply_msg));
 
   // If nothing is in progress, start.
-  if (!binding_.is_bound()) {
+  if (!receiver_.is_bound()) {
     DCHECK_EQ(1u, pending_requests_.size());
     StartPendingRequest();
   }
@@ -53,18 +51,18 @@ void ResolveProxyMsgHelper::OnResolveProxy(const GURL& url,
 
 ResolveProxyMsgHelper::~ResolveProxyMsgHelper() {
   DCHECK(!owned_self_);
-  DCHECK(!binding_.is_bound());
+  DCHECK(!receiver_.is_bound());
 }
 
 void ResolveProxyMsgHelper::StartPendingRequest() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(!binding_.is_bound());
+  DCHECK(!receiver_.is_bound());
   DCHECK(!pending_requests_.empty());
 
   // Start the request.
-  network::mojom::ProxyLookupClientPtr proxy_lookup_client;
-  binding_.Bind(mojo::MakeRequest(&proxy_lookup_client));
-  binding_.set_connection_error_handler(
+  mojo::PendingRemote<network::mojom::ProxyLookupClient> proxy_lookup_client =
+      receiver_.BindNewPipeAndPassRemote();
+  receiver_.set_disconnect_handler(
       base::BindOnce(&ResolveProxyMsgHelper::OnProxyLookupComplete,
                      base::Unretained(this), net::ERR_ABORTED, base::nullopt));
   owned_self_ = this;
@@ -76,7 +74,8 @@ void ResolveProxyMsgHelper::StartPendingRequest() {
 
 bool ResolveProxyMsgHelper::SendRequestToNetworkService(
     const GURL& url,
-    network::mojom::ProxyLookupClientPtr proxy_lookup_client) {
+    mojo::PendingRemote<network::mojom::ProxyLookupClient>
+        proxy_lookup_client) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   RenderProcessHost* render_process_host =
@@ -96,7 +95,7 @@ void ResolveProxyMsgHelper::OnProxyLookupComplete(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!pending_requests_.empty());
 
-  binding_.Close();
+  receiver_.reset();
 
   // Need to keep |this| alive until the end of this method, and then release
   // this reference. StartPendingRequest(), if called, will grab other

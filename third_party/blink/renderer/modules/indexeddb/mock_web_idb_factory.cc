@@ -15,10 +15,6 @@ MockWebIDBFactory::MockWebIDBFactory() = default;
 
 MockWebIDBFactory::~MockWebIDBFactory() = default;
 
-std::unique_ptr<MockWebIDBFactory> MockWebIDBFactory::Create() {
-  return base::WrapUnique(new MockWebIDBFactory());
-}
-
 void MockWebIDBFactory::GetDatabaseInfo(
     std::unique_ptr<WebIDBCallbacks> callbacks) {
   *callbacks_ptr_ = std::move(callbacks);

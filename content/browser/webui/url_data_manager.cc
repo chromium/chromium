@@ -75,22 +75,20 @@ URLDataManager::~URLDataManager() {
 
 void URLDataManager::AddDataSource(URLDataSourceImpl* source) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  base::PostTaskWithTraits(
-      FROM_HERE, {BrowserThread::IO},
-      base::BindOnce(&AddDataSourceOnIOThread,
-                     browser_context_->GetResourceContext(),
-                     base::WrapRefCounted(source)));
+  base::PostTask(FROM_HERE, {BrowserThread::IO},
+                 base::BindOnce(&AddDataSourceOnIOThread,
+                                browser_context_->GetResourceContext(),
+                                base::WrapRefCounted(source)));
 }
 
 void URLDataManager::UpdateWebUIDataSource(
     const std::string& source_name,
     std::unique_ptr<base::DictionaryValue> update) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  base::PostTaskWithTraits(
-      FROM_HERE, {BrowserThread::IO},
-      base::BindOnce(&UpdateWebUIDataSourceOnIOThread,
-                     browser_context_->GetResourceContext(), source_name,
-                     base::Owned(update.release())));
+  base::PostTask(FROM_HERE, {BrowserThread::IO},
+                 base::BindOnce(&UpdateWebUIDataSourceOnIOThread,
+                                browser_context_->GetResourceContext(),
+                                source_name, base::Owned(update.release())));
 }
 
 // static
@@ -128,9 +126,8 @@ void URLDataManager::DeleteDataSource(const URLDataSourceImpl* data_source) {
   }
   if (schedule_delete) {
     // Schedule a task to delete the DataSource back on the UI thread.
-    base::PostTaskWithTraits(
-        FROM_HERE, {BrowserThread::UI},
-        base::BindOnce(&URLDataManager::DeleteDataSources));
+    base::PostTask(FROM_HERE, {BrowserThread::UI},
+                   base::BindOnce(&URLDataManager::DeleteDataSources));
   }
 }
 
@@ -161,7 +158,7 @@ void URLDataManager::UpdateWebUIDataSource(
 bool URLDataManager::IsScheduledForDeletion(
     const URLDataSourceImpl* data_source) {
   base::AutoLock lock(g_delete_lock.Get());
-  return data_sources_ && base::ContainsValue(*data_sources_, data_source);
+  return data_sources_ && base::Contains(*data_sources_, data_source);
 }
 
 }  // namespace content

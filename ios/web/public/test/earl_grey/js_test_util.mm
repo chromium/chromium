@@ -4,13 +4,14 @@
 
 #import "ios/web/public/test/earl_grey/js_test_util.h"
 
-#import <EarlGrey/EarlGrey.h>
 #import <WebKit/WebKit.h>
 
 #import "base/test/ios/wait_util.h"
 #include "base/timer/elapsed_timer.h"
-#import "ios/web/interstitials/web_interstitial_impl.h"
-#import "ios/web/public/web_state/js/crw_js_injection_receiver.h"
+#import "ios/testing/earl_grey/earl_grey_app.h"
+#import "ios/web/public/deprecated/crw_js_injection_receiver.h"
+#import "ios/web/public/web_state.h"
+#import "ios/web/security/web_interstitial_impl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -21,15 +22,41 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 
 namespace web {
 
+// Executes |javascript| on the given |web_state|, and waits until execution is
+// completed. If |out_error| is not nil, it is set to the error resulting from
+// the execution, if one occurs. The return value is the result of the
+// JavaScript execution, or nil if script execution timed out.
+id ExecuteJavaScript(WebState* web_state,
+                     NSString* javascript,
+                     NSError* __autoreleasing* out_error) {
+  __block bool did_complete = false;
+  __block id result = nil;
+  CRWJSInjectionReceiver* receiver = web_state->GetJSInjectionReceiver();
+  [receiver executeJavaScript:javascript
+            completionHandler:^(id value, NSError* error) {
+              did_complete = true;
+              result = [value copy];
+              if (out_error)
+                *out_error = [error copy];
+            }];
+
+  // Wait for completion.
+  BOOL succeeded = WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
+    return did_complete;
+  });
+
+  return succeeded ? result : nil;
+}
+
 // Evaluates the given |script| on |interstitial|.
 void ExecuteScriptForTesting(web::WebInterstitialImpl* interstitial,
                              NSString* script,
-                             web::JavaScriptResultBlock handler) {
+                             void (^handler)(id result, NSError*)) {
   DCHECK(interstitial);
   interstitial->ExecuteJavaScript(script, handler);
 }
 
-void WaitUntilWindowIdInjected(WebState* web_state) {
+bool WaitUntilWindowIdInjected(WebState* web_state) {
   bool is_window_id_injected = false;
   bool is_timeout = false;
   bool is_unrecoverable_error = false;
@@ -52,31 +79,7 @@ void WaitUntilWindowIdInjected(WebState* web_state) {
     }
     is_timeout = timeout < timer.Elapsed();
   }
-  GREYAssertFalse(is_timeout, @"windowID injection timed out");
-  GREYAssertFalse(is_unrecoverable_error, @"script execution error");
-}
-
-id ExecuteJavaScript(WebState* web_state,
-                     NSString* javascript,
-                     NSError* __autoreleasing* out_error) {
-  __block bool did_complete = false;
-  __block id result = nil;
-  CRWJSInjectionReceiver* receiver = web_state->GetJSInjectionReceiver();
-  [receiver executeJavaScript:javascript
-            completionHandler:^(id value, NSError* error) {
-              did_complete = true;
-              result = [value copy];
-              if (out_error)
-                *out_error = [error copy];
-            }];
-
-  // Wait for completion.
-  BOOL succeeded = WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
-    return did_complete;
-  });
-  GREYAssert(succeeded, @"Script execution timed out");
-
-  return result;
+  return !is_timeout && !is_unrecoverable_error;
 }
 
 id ExecuteScriptOnInterstitial(WebState* web_state, NSString* script) {
@@ -92,8 +95,8 @@ id ExecuteScriptOnInterstitial(WebState* web_state, NSString* script) {
   BOOL succeeded = WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
     return did_finish;
   });
-  GREYAssert(succeeded, @"Script execution timed out");
-  return script_result;
+
+  return succeeded ? script_result : nil;
 }
 
 }  // namespace web

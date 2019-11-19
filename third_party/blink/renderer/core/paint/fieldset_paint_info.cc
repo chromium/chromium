@@ -9,19 +9,19 @@
 namespace blink {
 
 FieldsetPaintInfo::FieldsetPaintInfo(const ComputedStyle& fieldset_style,
-                                     LayoutSize fieldset_size,
-                                     LayoutRectOutsets fieldset_borders,
-                                     LayoutRect legend_border_box) {
+                                     const PhysicalSize& fieldset_size,
+                                     const LayoutRectOutsets& fieldset_borders,
+                                     const PhysicalRect& legend_border_box) {
   if (fieldset_style.IsHorizontalWritingMode()) {
     // horizontal-tb
-    LayoutUnit legend_size = legend_border_box.Height();
+    LayoutUnit legend_size = legend_border_box.size.height;
     LayoutUnit border_size = fieldset_borders.Top();
     LayoutUnit legend_excess_size = legend_size - border_size;
     if (legend_excess_size > LayoutUnit())
       border_outsets.SetTop(legend_excess_size / 2);
-    legend_cutout_rect = LayoutRect(legend_border_box.X(), LayoutUnit(),
-                                    legend_border_box.Width(),
-                                    std::max(legend_size, border_size));
+    legend_cutout_rect = PhysicalRect(legend_border_box.X(), LayoutUnit(),
+                                      legend_border_box.Width(),
+                                      std::max(legend_size, border_size));
   } else {
     LayoutUnit legend_size = legend_border_box.Width();
     LayoutUnit border_size;
@@ -40,12 +40,12 @@ FieldsetPaintInfo::FieldsetPaintInfo(const ComputedStyle& fieldset_style,
     }
     LayoutUnit legend_total_block_size = std::max(legend_size, border_size);
     legend_cutout_rect =
-        LayoutRect(LayoutUnit(), legend_border_box.Y(), legend_total_block_size,
-                   legend_border_box.Height());
+        PhysicalRect(LayoutUnit(), legend_border_box.offset.top,
+                     legend_total_block_size, legend_border_box.size.height);
     if (fieldset_style.IsFlippedBlocksWritingMode()) {
       // Offset cutout to right fieldset edge for vertical-rl
-      LayoutUnit clip_x = fieldset_size.Width() - legend_total_block_size;
-      legend_cutout_rect.Move(clip_x, LayoutUnit());
+      LayoutUnit clip_x = fieldset_size.width - legend_total_block_size;
+      legend_cutout_rect.offset.left += clip_x;
     }
   }
 }

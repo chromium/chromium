@@ -40,6 +40,9 @@ class ASH_EXPORT TrayInfoLabel : public ActionableView {
   bool PerformAction(const ui::Event& event) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
+  // views::View:
+  const char* GetClassName() const override;
+
  private:
   friend class TrayInfoLabelTest;
 

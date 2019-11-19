@@ -10,6 +10,8 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/services/assistant/public/mojom/assistant_audio_decoder.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace media {
 class AudioFileReader;
@@ -17,19 +19,14 @@ class AudioBus;
 class DataSource;
 }  // namespace media
 
-namespace service_manager {
-class ServiceKeepaliveRef;
-}  // namespace service_manager
-
 namespace chromeos {
 namespace assistant {
 
 class AssistantAudioDecoder : public mojom::AssistantAudioDecoder {
  public:
   AssistantAudioDecoder(
-      std::unique_ptr<service_manager::ServiceKeepaliveRef> service_ref,
-      mojom::AssistantAudioDecoderClientPtr client,
-      mojom::AssistantMediaDataSourcePtr data_source);
+      mojo::PendingRemote<mojom::AssistantAudioDecoderClient> client,
+      mojo::PendingRemote<mojom::AssistantMediaDataSource> data_source);
   ~AssistantAudioDecoder() override;
 
   // Called by |client_| on main thread.
@@ -52,8 +49,7 @@ class AssistantAudioDecoder : public mojom::AssistantAudioDecoder {
   void OnConnectionError();
   void RunCallbacksAsClosed();
 
-  const std::unique_ptr<service_manager::ServiceKeepaliveRef> service_ref_;
-  mojom::AssistantAudioDecoderClientPtr client_;
+  mojo::Remote<mojom::AssistantAudioDecoderClient> client_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   OpenDecoderCallback open_callback_;

@@ -79,7 +79,7 @@ class DeviceLocalAccountPolicyProvider
   bool store_initialized_;
   bool waiting_for_policy_refresh_;
 
-  base::WeakPtrFactory<DeviceLocalAccountPolicyProvider> weak_factory_;
+  base::WeakPtrFactory<DeviceLocalAccountPolicyProvider> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DeviceLocalAccountPolicyProvider);
 };

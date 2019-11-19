@@ -11,6 +11,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "components/viz/test/test_context_support.h"
 #include "gpu/GLES2/gl2extchromium.h"
+#include "gpu/command_buffer/common/mailbox.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace viz {
@@ -27,75 +28,19 @@ static unsigned NextContextId() {
   return s_context_id++;
 }
 
-const GLuint TestGLES2Interface::kExternalTextureId = 1337;
-
-static base::LazyInstance<base::Lock>::Leaky g_shared_namespace_lock =
-    LAZY_INSTANCE_INITIALIZER;
-
-TestGLES2Interface::Namespace* TestGLES2Interface::shared_namespace_ = nullptr;
-TestGLES2Interface::Namespace::Namespace()
-    : next_buffer_id(1),
-      next_image_id(1),
-      next_texture_id(1),
-      next_renderbuffer_id(1) {}
-
-TestGLES2Interface::Namespace::~Namespace() {
-  g_shared_namespace_lock.Get().AssertAcquired();
-  if (shared_namespace_ == this)
-    shared_namespace_ = nullptr;
-}
-
-TestGLES2Interface::TestGLES2Interface()
-    : context_id_(NextContextId()),
-      times_bind_texture_succeeds_(-1),
-      times_end_query_succeeds_(-1),
-      context_lost_(false),
-      times_map_buffer_chromium_succeeds_(-1),
-      next_program_id_(1000),
-      next_shader_id_(2000),
-      next_framebuffer_id_(1),
-      current_framebuffer_(0),
-      reshape_called_(false),
-      width_(0),
-      height_(0),
-      scale_factor_(-1.f),
-      test_support_(nullptr),
-      last_update_type_(NO_UPDATE),
-      next_insert_fence_sync_(1),
-      unpack_alignment_(4),
-      weak_ptr_factory_(this) {
+TestGLES2Interface::TestGLES2Interface() : context_id_(NextContextId()) {
   // For stream textures.
   set_have_extension_egl_image(true);
   set_max_texture_size(2048);
-
-  CreateNamespace();
 }
 
-TestGLES2Interface::~TestGLES2Interface() {
-  base::AutoLock lock(g_shared_namespace_lock.Get());
-  namespace_ = nullptr;
-}
-
-void TestGLES2Interface::CreateNamespace() {
-  base::AutoLock lock(g_shared_namespace_lock.Get());
-  if (shared_namespace_) {
-    namespace_ = shared_namespace_;
-  } else {
-    namespace_ = base::MakeRefCounted<Namespace>();
-    shared_namespace_ = namespace_.get();
-  }
-}
+TestGLES2Interface::~TestGLES2Interface() = default;
 
 void TestGLES2Interface::GenTextures(GLsizei n, GLuint* textures) {
   for (int i = 0; i < n; ++i) {
     textures[i] = NextTextureId();
-    DCHECK_NE(textures[i], kExternalTextureId);
+    textures_.insert(textures[i]);
   }
-  base::AutoLock lock(namespace_->lock);
-
-  for (int i = 0; i < n; ++i)
-    namespace_->textures.Append(textures[i],
-                                base::MakeRefCounted<TestTexture>());
 }
 
 void TestGLES2Interface::GenBuffers(GLsizei n, GLuint* buffers) {
@@ -120,12 +65,9 @@ void TestGLES2Interface::GenQueriesEXT(GLsizei n, GLuint* queries) {
 }
 
 void TestGLES2Interface::DeleteTextures(GLsizei n, const GLuint* textures) {
-  for (int i = 0; i < n; ++i)
-    RetireTextureId(textures[i]);
-  base::AutoLock lock(namespace_->lock);
   for (int i = 0; i < n; ++i) {
-    namespace_->textures.Remove(textures[i]);
-    texture_targets_.UnbindTexture(textures[i]);
+    RetireTextureId(textures[i]);
+    textures_.erase(textures[i]);
   }
 }
 
@@ -171,9 +113,7 @@ void TestGLES2Interface::BindTexture(GLenum target, GLuint texture) {
 
   if (!texture)
     return;
-  base::AutoLock lock(namespace_->lock);
-  DCHECK(namespace_->textures.ContainsId(texture));
-  texture_targets_.BindTexture(target, texture);
+  DCHECK(base::Contains(textures_, texture));
   used_textures_.insert(texture);
 }
 
@@ -247,13 +187,6 @@ void TestGLES2Interface::GetShaderPrecisionFormat(GLenum shadertype,
   }
 }
 
-void TestGLES2Interface::Viewport(GLint x,
-                                  GLint y,
-                                  GLsizei width,
-                                  GLsizei height) {}
-
-void TestGLES2Interface::ActiveTexture(GLenum target) {}
-
 void TestGLES2Interface::UseProgram(GLuint program) {
   if (!program)
     return;
@@ -267,25 +200,6 @@ GLenum TestGLES2Interface::CheckFramebufferStatus(GLenum target) {
   return GL_FRAMEBUFFER_COMPLETE;
 }
 
-void TestGLES2Interface::Scissor(GLint x,
-                                 GLint y,
-                                 GLsizei width,
-                                 GLsizei height) {}
-
-void TestGLES2Interface::DrawElements(GLenum mode,
-                                      GLsizei count,
-                                      GLenum type,
-                                      const void* indices) {}
-
-void TestGLES2Interface::ClearColor(GLclampf red,
-                                    GLclampf green,
-                                    GLclampf blue,
-                                    GLclampf alpha) {}
-
-void TestGLES2Interface::ClearStencil(GLint s) {}
-
-void TestGLES2Interface::Clear(GLbitfield mask) {}
-
 void TestGLES2Interface::Flush() {
   test_support_->CallAllSyncPointCallbacks();
 }
@@ -298,19 +212,11 @@ void TestGLES2Interface::ShallowFinishCHROMIUM() {
   test_support_->CallAllSyncPointCallbacks();
 }
 
-void TestGLES2Interface::ShallowFlushCHROMIUM() {
-}
-
-void TestGLES2Interface::Enable(GLenum cap) {}
-
-void TestGLES2Interface::Disable(GLenum cap) {}
-
 void TestGLES2Interface::BindRenderbuffer(GLenum target, GLuint renderbuffer) {
   if (!renderbuffer)
     return;
-  base::AutoLock lock_for_renderbuffer_access(namespace_->lock);
-  if (renderbuffer != 0 && namespace_->renderbuffer_set.find(renderbuffer) ==
-                               namespace_->renderbuffer_set.end()) {
+  if (renderbuffer != 0 &&
+      renderbuffer_set_.find(renderbuffer) == renderbuffer_set_.end()) {
     ADD_FAILURE() << "bindRenderbuffer called with unknown renderbuffer";
   } else if ((renderbuffer >> 16) != context_id_) {
     ADD_FAILURE()
@@ -319,7 +225,6 @@ void TestGLES2Interface::BindRenderbuffer(GLenum target, GLuint renderbuffer) {
 }
 
 void TestGLES2Interface::BindFramebuffer(GLenum target, GLuint framebuffer) {
-  base::AutoLock lock_for_framebuffer_access(namespace_->lock);
   if (framebuffer != 0 &&
       framebuffer_set_.find(framebuffer) == framebuffer_set_.end()) {
     ADD_FAILURE() << "bindFramebuffer called with unknown framebuffer";
@@ -337,17 +242,14 @@ void TestGLES2Interface::BindBuffer(GLenum target, GLuint buffer) {
     return;
   unsigned context_id = buffer >> 16;
   unsigned buffer_id = buffer & 0xffff;
-  base::AutoLock lock(namespace_->lock);
   DCHECK(buffer_id);
-  DCHECK_LT(buffer_id, namespace_->next_buffer_id);
+  DCHECK_LT(buffer_id, next_buffer_id_);
   DCHECK_EQ(context_id, context_id_);
 
-  std::unordered_map<unsigned, std::unique_ptr<Buffer>>& buffers =
-      namespace_->buffers;
-  if (buffers.count(bound_buffer_[target]) == 0)
-    buffers[bound_buffer_[target]] = base::WrapUnique(new Buffer);
+  if (buffers_.count(bound_buffer_[target]) == 0)
+    buffers_[bound_buffer_[target]] = std::make_unique<Buffer>();
 
-  buffers[bound_buffer_[target]]->target = target;
+  buffers_[bound_buffer_[target]]->target = target;
 }
 
 void TestGLES2Interface::PixelStorei(GLenum pname, GLint param) {
@@ -372,63 +274,6 @@ void TestGLES2Interface::PixelStorei(GLenum pname, GLint param) {
   }
 }
 
-void TestGLES2Interface::TexImage2D(GLenum target,
-                                    GLint level,
-                                    GLint internalformat,
-                                    GLsizei width,
-                                    GLsizei height,
-                                    GLint border,
-                                    GLenum format,
-                                    GLenum type,
-                                    const void* pixels) {}
-
-void TestGLES2Interface::TexSubImage2D(GLenum target,
-                                       GLint level,
-                                       GLint xoffset,
-                                       GLint yoffset,
-                                       GLsizei width,
-                                       GLsizei height,
-                                       GLenum format,
-                                       GLenum type,
-                                       const void* pixels) {}
-
-void TestGLES2Interface::TexStorage2DEXT(GLenum target,
-                                         GLsizei levels,
-                                         GLenum internalformat,
-                                         GLsizei width,
-                                         GLsizei height) {}
-
-void TestGLES2Interface::TexStorage2DImageCHROMIUM(GLenum target,
-                                                   GLenum internalformat,
-                                                   GLenum bufferusage,
-                                                   GLsizei width,
-                                                   GLsizei height) {}
-
-void TestGLES2Interface::FramebufferRenderbuffer(GLenum target,
-                                                 GLenum attachment,
-                                                 GLenum renderbuffertarget,
-                                                 GLuint renderbuffer) {}
-
-void TestGLES2Interface::FramebufferTexture2D(GLenum target,
-                                              GLenum attachment,
-                                              GLenum textarget,
-                                              GLuint texture,
-                                              GLint level) {}
-
-void TestGLES2Interface::RenderbufferStorage(GLenum target,
-                                             GLenum internalformat,
-                                             GLsizei width,
-                                             GLsizei height) {}
-
-void TestGLES2Interface::CompressedTexImage2D(GLenum target,
-                                              GLint level,
-                                              GLenum internalformat,
-                                              GLsizei width,
-                                              GLsizei height,
-                                              GLint border,
-                                              GLsizei image_size,
-                                              const void* data) {}
-
 GLuint TestGLES2Interface::CreateImageCHROMIUM(ClientBuffer buffer,
                                                GLsizei width,
                                                GLsizei height,
@@ -437,35 +282,23 @@ GLuint TestGLES2Interface::CreateImageCHROMIUM(ClientBuffer buffer,
          (test_capabilities_.texture_format_bgra8888 &&
           internalformat == GL_BGRA_EXT));
   GLuint image_id = NextImageId();
-  base::AutoLock lock(namespace_->lock);
-  std::unordered_set<unsigned>& images = namespace_->images;
-  images.insert(image_id);
+  images_.insert(image_id);
   return image_id;
 }
 
 void TestGLES2Interface::DestroyImageCHROMIUM(GLuint image_id) {
   RetireImageId(image_id);
-  base::AutoLock lock(namespace_->lock);
-  std::unordered_set<unsigned>& images = namespace_->images;
-  if (!images.count(image_id))
+  if (!images_.count(image_id)) {
     ADD_FAILURE() << "destroyImageCHROMIUM called on unknown image "
                   << image_id;
-  images.erase(image_id);
+  }
+  images_.erase(image_id);
 }
-
-void TestGLES2Interface::BindTexImage2DCHROMIUM(GLenum target, GLint image_id) {
-}
-
-void TestGLES2Interface::ReleaseTexImage2DCHROMIUM(GLenum target,
-                                                   GLint image_id) {}
 
 void* TestGLES2Interface::MapBufferCHROMIUM(GLuint target, GLenum access) {
-  base::AutoLock lock(namespace_->lock);
-  std::unordered_map<unsigned, std::unique_ptr<Buffer>>& buffers =
-      namespace_->buffers;
   DCHECK_GT(bound_buffer_.count(target), 0u);
-  DCHECK_GT(buffers.count(bound_buffer_[target]), 0u);
-  DCHECK_EQ(target, buffers[bound_buffer_[target]]->target);
+  DCHECK_GT(buffers_.count(bound_buffer_[target]), 0u);
+  DCHECK_EQ(target, buffers_[bound_buffer_[target]]->target);
   if (times_map_buffer_chromium_succeeds_ >= 0) {
     if (!times_map_buffer_chromium_succeeds_) {
       return nullptr;
@@ -473,17 +306,14 @@ void* TestGLES2Interface::MapBufferCHROMIUM(GLuint target, GLenum access) {
     --times_map_buffer_chromium_succeeds_;
   }
 
-  return buffers[bound_buffer_[target]]->pixels.get();
+  return buffers_[bound_buffer_[target]]->pixels.get();
 }
 
 GLboolean TestGLES2Interface::UnmapBufferCHROMIUM(GLuint target) {
-  base::AutoLock lock(namespace_->lock);
-  std::unordered_map<unsigned, std::unique_ptr<Buffer>>& buffers =
-      namespace_->buffers;
   DCHECK_GT(bound_buffer_.count(target), 0u);
-  DCHECK_GT(buffers.count(bound_buffer_[target]), 0u);
-  DCHECK_EQ(target, buffers[bound_buffer_[target]]->target);
-  buffers[bound_buffer_[target]]->pixels = nullptr;
+  DCHECK_GT(buffers_.count(bound_buffer_[target]), 0u);
+  DCHECK_EQ(target, buffers_[bound_buffer_[target]]->target);
+  buffers_[bound_buffer_[target]]->pixels = nullptr;
   return true;
 }
 
@@ -491,13 +321,10 @@ void TestGLES2Interface::BufferData(GLenum target,
                                     GLsizeiptr size,
                                     const void* data,
                                     GLenum usage) {
-  base::AutoLock lock(namespace_->lock);
-  std::unordered_map<unsigned, std::unique_ptr<Buffer>>& buffers =
-      namespace_->buffers;
   DCHECK_GT(bound_buffer_.count(target), 0u);
-  DCHECK_GT(buffers.count(bound_buffer_[target]), 0u);
-  DCHECK_EQ(target, buffers[bound_buffer_[target]]->target);
-  Buffer* buffer = buffers[bound_buffer_[target]].get();
+  DCHECK_GT(buffers_.count(bound_buffer_[target]), 0u);
+  DCHECK_EQ(target, buffers_[bound_buffer_[target]]->target);
+  Buffer* buffer = buffers_[bound_buffer_[target]].get();
   if (context_lost_) {
     buffer->pixels = nullptr;
     return;
@@ -569,25 +396,16 @@ void TestGLES2Interface::GetQueryObjectuivEXT(GLuint id,
                                               GLenum pname,
                                               GLuint* params) {
   // If the context is lost, behave as if result is available.
-  if (pname == GL_QUERY_RESULT_AVAILABLE_EXT)
+  if (pname == GL_QUERY_RESULT_AVAILABLE_EXT ||
+      pname == GL_QUERY_RESULT_AVAILABLE_NO_FLUSH_CHROMIUM_EXT) {
     *params = 1;
+  }
 }
-
-void TestGLES2Interface::DiscardFramebufferEXT(GLenum target,
-                                               GLsizei count,
-                                               const GLenum* attachments) {}
 
 void TestGLES2Interface::ProduceTextureDirectCHROMIUM(GLuint texture,
                                                       GLbyte* mailbox) {
-  static char mailbox_name1 = '1';
-  static char mailbox_name2 = '1';
-  mailbox[0] = mailbox_name1;
-  mailbox[1] = mailbox_name2;
-  mailbox[2] = '\0';
-  if (++mailbox_name1 == 0) {
-    mailbox_name1 = '1';
-    ++mailbox_name2;
-  }
+  gpu::Mailbox gpu_mailbox = gpu::Mailbox::Generate();
+  memcpy(mailbox, gpu_mailbox.name, sizeof(gpu_mailbox.name));
 }
 
 GLuint TestGLES2Interface::CreateAndConsumeTextureCHROMIUM(
@@ -631,24 +449,6 @@ GLenum TestGLES2Interface::GetGraphicsResetStatusKHR() {
   if (IsContextLost())
     return GL_UNKNOWN_CONTEXT_RESET_KHR;
   return GL_NO_ERROR;
-}
-
-scoped_refptr<TestTexture> TestGLES2Interface::BoundTexture(GLenum target) {
-  // The caller is expected to lock the namespace for texture access.
-  namespace_->lock.AssertAcquired();
-  return namespace_->textures.TextureForId(BoundTextureId(target));
-}
-
-scoped_refptr<TestTexture> TestGLES2Interface::UnboundTexture(GLuint texture) {
-  // The caller is expected to lock the namespace for texture access.
-  namespace_->lock.AssertAcquired();
-  return namespace_->textures.TextureForId(texture);
-}
-
-GLuint TestGLES2Interface::CreateExternalTexture() {
-  base::AutoLock lock(namespace_->lock);
-  namespace_->textures.Append(kExternalTextureId, new TestTexture());
-  return kExternalTextureId;
 }
 
 void TestGLES2Interface::set_times_bind_texture_succeeds(int times) {
@@ -724,10 +524,6 @@ void TestGLES2Interface::set_avoid_stencil_buffers(bool avoid_stencil_buffers) {
   test_capabilities_.avoid_stencil_buffers = avoid_stencil_buffers;
 }
 
-void TestGLES2Interface::set_enable_dc_layers(bool support) {
-  test_capabilities_.dc_layers = support;
-}
-
 void TestGLES2Interface::set_support_multisample_compatibility(bool support) {
   test_capabilities_.multisample_compatibility = support;
 }
@@ -744,69 +540,60 @@ void TestGLES2Interface::set_max_texture_size(int size) {
   test_capabilities_.max_texture_size = size;
 }
 
-size_t TestGLES2Interface::NumTextures() const {
-  base::AutoLock lock(namespace_->lock);
-  return namespace_->textures.Size();
+void TestGLES2Interface::set_supports_oop_raster(bool support) {
+  test_capabilities_.supports_oop_raster = support;
 }
 
-GLuint TestGLES2Interface::TextureAt(int i) const {
-  base::AutoLock lock(namespace_->lock);
-  return namespace_->textures.IdAt(i);
+size_t TestGLES2Interface::NumTextures() const {
+  return textures_.size();
 }
 
 GLuint TestGLES2Interface::NextTextureId() {
-  base::AutoLock lock(namespace_->lock);
-  GLuint texture_id = namespace_->next_texture_id++;
+  GLuint texture_id = next_texture_id_++;
   DCHECK(texture_id < (1 << 16));
   texture_id |= context_id_ << 16;
   return texture_id;
 }
 
 void TestGLES2Interface::RetireTextureId(GLuint id) {
-  base::AutoLock lock(namespace_->lock);
   unsigned context_id = id >> 16;
   unsigned texture_id = id & 0xffff;
   DCHECK(texture_id);
-  DCHECK_LT(texture_id, namespace_->next_texture_id);
+  DCHECK_LT(texture_id, next_texture_id_);
   DCHECK_EQ(context_id, context_id_);
 }
 
 GLuint TestGLES2Interface::NextBufferId() {
-  base::AutoLock lock(namespace_->lock);
-  GLuint buffer_id = namespace_->next_buffer_id++;
+  GLuint buffer_id = next_buffer_id_++;
   DCHECK(buffer_id < (1 << 16));
   buffer_id |= context_id_ << 16;
   return buffer_id;
 }
 
 void TestGLES2Interface::RetireBufferId(GLuint id) {
-  base::AutoLock lock(namespace_->lock);
   unsigned context_id = id >> 16;
   unsigned buffer_id = id & 0xffff;
   DCHECK(buffer_id);
-  DCHECK_LT(buffer_id, namespace_->next_buffer_id);
+  DCHECK_LT(buffer_id, next_buffer_id_);
   DCHECK_EQ(context_id, context_id_);
 }
 
 GLuint TestGLES2Interface::NextImageId() {
-  base::AutoLock lock(namespace_->lock);
-  GLuint image_id = namespace_->next_image_id++;
+  GLuint image_id = next_image_id_++;
   DCHECK(image_id < (1 << 16));
   image_id |= context_id_ << 16;
   return image_id;
 }
 
 void TestGLES2Interface::RetireImageId(GLuint id) {
-  base::AutoLock lock(namespace_->lock);
   unsigned context_id = id >> 16;
   unsigned image_id = id & 0xffff;
   DCHECK(image_id);
-  DCHECK_LT(image_id, namespace_->next_image_id);
+  DCHECK_LT(image_id, next_image_id_);
   DCHECK_EQ(context_id, context_id_);
 }
 
 GLuint TestGLES2Interface::NextFramebufferId() {
-  base::AutoLock lock_for_framebuffer_access(namespace_->lock);
   GLuint id = next_framebuffer_id_++;
   DCHECK(id < (1 << 16));
   id |= context_id_ << 16;
@@ -815,25 +602,21 @@ GLuint TestGLES2Interface::NextFramebufferId() {
 }
 
 void TestGLES2Interface::RetireFramebufferId(GLuint id) {
-  base::AutoLock lock_for_framebuffer_access(namespace_->lock);
-  DCHECK(framebuffer_set_.find(id) != framebuffer_set_.end());
+  DCHECK(base::Contains(framebuffer_set_, id));
   framebuffer_set_.erase(id);
 }
 
 GLuint TestGLES2Interface::NextRenderbufferId() {
-  base::AutoLock lock_for_renderbuffer_access(namespace_->lock);
-  GLuint id = namespace_->next_renderbuffer_id++;
+  GLuint id = next_renderbuffer_id_++;
   DCHECK(id < (1 << 16));
   id |= context_id_ << 16;
-  namespace_->renderbuffer_set.insert(id);
+  renderbuffer_set_.insert(id);
   return id;
 }
 
 void TestGLES2Interface::RetireRenderbufferId(GLuint id) {
-  base::AutoLock lock_for_renderbuffer_access(namespace_->lock);
-  DCHECK(namespace_->renderbuffer_set.find(id) !=
-         namespace_->renderbuffer_set.end());
-  namespace_->renderbuffer_set.erase(id);
+  DCHECK(base::Contains(renderbuffer_set_, id));
+  renderbuffer_set_.erase(id);
 }
 
 void TestGLES2Interface::SetMaxSamples(int max_samples) {
@@ -841,78 +624,15 @@ void TestGLES2Interface::SetMaxSamples(int max_samples) {
 }
 
 size_t TestGLES2Interface::NumFramebuffers() const {
-  base::AutoLock lock_for_framebuffer_access(namespace_->lock);
   return framebuffer_set_.size();
 }
 
 size_t TestGLES2Interface::NumRenderbuffers() const {
-  base::AutoLock lock_for_renderbuffer_access(namespace_->lock);
-  return namespace_->renderbuffer_set.size();
-}
-
-void TestGLES2Interface::CheckTextureIsBound(GLenum target) {
-  DCHECK(BoundTextureId(target));
-}
-GLuint TestGLES2Interface::BoundTextureId(GLenum target) {
-  return texture_targets_.BoundTexture(target);
-}
-
-TestGLES2Interface::TextureTargets::TextureTargets() {
-  // Initialize default bindings.
-  bound_textures_[GL_TEXTURE_2D] = 0;
-  bound_textures_[GL_TEXTURE_EXTERNAL_OES] = 0;
-  bound_textures_[GL_TEXTURE_RECTANGLE_ARB] = 0;
-}
-
-TestGLES2Interface::TextureTargets::~TextureTargets() = default;
-
-void TestGLES2Interface::TextureTargets::BindTexture(GLenum target, GLuint id) {
-  // Make sure this is a supported target by seeing if it was bound to before.
-  DCHECK(bound_textures_.find(target) != bound_textures_.end());
-  bound_textures_[target] = id;
-}
-
-void TestGLES2Interface::TexParameteri(GLenum target,
-                                       GLenum pname,
-                                       GLint param) {
-  CheckTextureIsBound(target);
-  base::AutoLock lock_for_texture_access(namespace_->lock);
-  scoped_refptr<TestTexture> texture = BoundTexture(target);
-  DCHECK(texture->IsValidParameter(pname));
-  texture->params[pname] = param;
-}
-
-void TestGLES2Interface::GetTexParameteriv(GLenum target,
-                                           GLenum pname,
-                                           GLint* value) {
-  CheckTextureIsBound(target);
-  base::AutoLock lock_for_texture_access(namespace_->lock);
-  scoped_refptr<TestTexture> texture = BoundTexture(target);
-  DCHECK(texture->IsValidParameter(pname));
-  auto it = texture->params.find(pname);
-  if (it != texture->params.end())
-    *value = it->second;
-}
-
-void TestGLES2Interface::TextureTargets::UnbindTexture(GLuint id) {
-  // Bind zero to any targets that the id is bound to.
-  for (auto it = bound_textures_.begin(); it != bound_textures_.end(); it++) {
-    if (it->second == id)
-      it->second = 0;
-  }
-}
-
-GLuint TestGLES2Interface::TextureTargets::BoundTexture(GLenum target) {
-  DCHECK(bound_textures_.find(target) != bound_textures_.end());
-  return bound_textures_[target];
+  return renderbuffer_set_.size();
 }
 
 TestGLES2Interface::Buffer::Buffer() : target(0), size(0) {}
 
 TestGLES2Interface::Buffer::~Buffer() = default;
-
-TestGLES2Interface::Image::Image() = default;
-
-TestGLES2Interface::Image::~Image() = default;
 
 }  // namespace viz

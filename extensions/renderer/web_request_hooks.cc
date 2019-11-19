@@ -11,6 +11,7 @@
 #include "extensions/common/extension_api.h"
 #include "extensions/renderer/bindings/api_binding_hooks.h"
 #include "extensions/renderer/bindings/js_runner.h"
+#include "extensions/renderer/get_script_context.h"
 #include "extensions/renderer/module_system.h"
 #include "extensions/renderer/script_context.h"
 #include "extensions/renderer/script_context_set.h"
@@ -31,8 +32,7 @@ bool WebRequestHooks::CreateCustomEvent(
 
   v8::Isolate* isolate = context->GetIsolate();
 
-  ScriptContext* script_context =
-      ScriptContextSet::GetContextByV8Context(context);
+  ScriptContext* script_context = GetScriptContextFromV8Context(context);
   v8::Local<v8::Object> internal_bindings;
   {
     ModuleSystem::NativesEnabledScope enable_natives(

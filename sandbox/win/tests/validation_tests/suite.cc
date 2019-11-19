@@ -126,7 +126,7 @@ TEST(ValidationSuite, TestAlternateDesktop) {
   runner.SetTimeout(3600000);
   runner.GetPolicy()->SetAlternateDesktop(true);
   runner.GetPolicy()->SetIntegrityLevel(INTEGRITY_LEVEL_LOW);
-  base::string16 desktop_name = runner.GetPolicy()->GetAlternateDesktop();
+  std::wstring desktop_name = runner.GetPolicy()->GetAlternateDesktop();
   desktop_name = desktop_name.substr(desktop_name.find('\\') + 1);
   wsprintf(command, L"OpenAlternateDesktop %lS", desktop_name.c_str());
   EXPECT_EQ(SBOX_TEST_DENIED, runner.RunTest(command));
@@ -148,7 +148,7 @@ TEST(ValidationSuite, TestWindows) {
   wchar_t command[1024] = {0};
 
   wsprintf(command, L"ValidWindow %Id",
-           reinterpret_cast<size_t>(::GetDesktopWindow()));
+           reinterpret_cast<size_t>(::GetShellWindow()));
   EXPECT_EQ(SBOX_TEST_DENIED, runner.RunTest(command));
 
   wsprintf(command, L"ValidWindow %Id",

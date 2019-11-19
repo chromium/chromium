@@ -196,7 +196,7 @@ TEST(ColorUtils, AlphaBlend) {
 TEST(ColorUtils, SkColorToRgbaString) {
   SkColor color = SkColorSetARGB(153, 100, 150, 200);
   std::string color_string = SkColorToRgbaString(color);
-  EXPECT_EQ(color_string, "rgba(100,150,200,.6)");
+  EXPECT_EQ(color_string, "rgba(100,150,200,0.6)");
 }
 
 TEST(ColorUtils, SkColorToRgbString) {
@@ -239,46 +239,49 @@ TEST(ColorUtils, GetColorWithMaxContrast) {
   EXPECT_EQ(old_darkest_color, GetColorWithMaxContrast(SK_ColorWHITE));
 }
 
-TEST(ColorUtils, GetColorWithMinimumContrast_ForegroundAlreadyMeetsMinimum) {
-  EXPECT_EQ(SK_ColorBLACK,
-            GetColorWithMinimumContrast(SK_ColorBLACK, SK_ColorWHITE));
+TEST(ColorUtils, BlendForMinContrast_ForegroundAlreadyMeetsMinimum) {
+  const auto result = BlendForMinContrast(SK_ColorBLACK, SK_ColorWHITE);
+  EXPECT_EQ(SK_AlphaTRANSPARENT, result.alpha);
+  EXPECT_EQ(SK_ColorBLACK, result.color);
 }
 
-TEST(ColorUtils, GetColorWithMinimumContrast_BlendDarker) {
+TEST(ColorUtils, BlendForMinContrast_BlendDarker) {
   const SkColor foreground = SkColorSetRGB(0xAA, 0xAA, 0xAA);
-  const SkColor result = GetColorWithMinimumContrast(foreground, SK_ColorWHITE);
-  EXPECT_NE(foreground, result);
-  EXPECT_GE(GetContrastRatio(result, SK_ColorWHITE),
+  const auto result = BlendForMinContrast(foreground, SK_ColorWHITE);
+  EXPECT_NE(SK_AlphaTRANSPARENT, result.alpha);
+  EXPECT_NE(foreground, result.color);
+  EXPECT_GE(GetContrastRatio(result.color, SK_ColorWHITE),
             kMinimumReadableContrastRatio);
 }
 
-TEST(ColorUtils, GetColorWithMinimumContrast_BlendLighter) {
+TEST(ColorUtils, BlendForMinContrast_BlendLighter) {
   const SkColor foreground = SkColorSetRGB(0x33, 0x33, 0x33);
-  const SkColor result = GetColorWithMinimumContrast(foreground, SK_ColorBLACK);
-  EXPECT_NE(foreground, result);
-  EXPECT_GE(GetContrastRatio(result, SK_ColorBLACK),
+  const auto result = BlendForMinContrast(foreground, SK_ColorBLACK);
+  EXPECT_NE(SK_AlphaTRANSPARENT, result.alpha);
+  EXPECT_NE(foreground, result.color);
+  EXPECT_GE(GetContrastRatio(result.color, SK_ColorBLACK),
             kMinimumReadableContrastRatio);
 }
 
-TEST(ColorUtils, GetColorWithMinimumContrast_StopsAtDarkestColor) {
+TEST(ColorUtils, BlendForMinContrast_StopsAtDarkestColor) {
   const SkColor darkest_color = SkColorSetRGB(0x44, 0x44, 0x44);
   const SkColor old_darkest_color = SetDarkestColorForTesting(darkest_color);
-  EXPECT_EQ(darkest_color,
-            GetColorWithMinimumContrast(SkColorSetRGB(0x55, 0x55, 0x55),
-                                        SkColorSetRGB(0xAA, 0xAA, 0xAA)));
+  EXPECT_EQ(darkest_color, BlendForMinContrast(SkColorSetRGB(0x55, 0x55, 0x55),
+                                               SkColorSetRGB(0xAA, 0xAA, 0xAA))
+                               .color);
 
   SetDarkestColorForTesting(old_darkest_color);
 }
 
-TEST(ColorUtils, GetBlendValueWithMinimumContrast_ComputesExpectedOpacities) {
+TEST(ColorUtils, BlendForMinContrast_ComputesExpectedOpacities) {
   const SkColor source = SkColorSetRGB(0xDE, 0xE1, 0xE6);
   const SkColor target = SkColorSetRGB(0xFF, 0xFF, 0xFF);
   const SkColor base = source;
-  SkAlpha alpha = GetBlendValueWithMinimumContrast(source, target, base, 1.11f);
+  SkAlpha alpha = BlendForMinContrast(source, base, target, 1.11f).alpha;
   EXPECT_NEAR(alpha / 255.0f, 0.4f, 0.03f);
-  alpha = GetBlendValueWithMinimumContrast(source, target, base, 1.19f);
+  alpha = BlendForMinContrast(source, base, target, 1.19f).alpha;
   EXPECT_NEAR(alpha / 255.0f, 0.65f, 0.03f);
-  alpha = GetBlendValueWithMinimumContrast(source, target, base, 1.13728f);
+  alpha = BlendForMinContrast(source, base, target, 1.13728f).alpha;
   EXPECT_NEAR(alpha / 255.0f, 0.45f, 0.03f);
 }
 
@@ -304,25 +307,26 @@ TEST(ColorUtils, BlendTowardMaxContrast_PreservesAlpha) {
   }
 }
 
-TEST(ColorUtils, FindBlendValueForContrastRatio_MatchesNaiveImplementation) {
-  const SkColor source = SkColorSetRGB(0xDE, 0xE1, 0xE6);
-  const SkColor target = SkColorSetRGB(0xFF, 0xFF, 0xFF);
-  const SkColor base = source;
-  const float contrast_ratio = 1.11f;
-  const SkAlpha alpha =
-      FindBlendValueForContrastRatio(source, target, base, contrast_ratio, 0);
+TEST(ColorUtils, BlendForMinContrast_MatchesNaiveImplementation) {
+  constexpr SkColor default_foreground = SkColorSetRGB(0xDE, 0xE1, 0xE6);
+  constexpr SkColor high_contrast_foreground = SK_ColorWHITE;
+  constexpr SkColor background = default_foreground;
+  constexpr float kContrastRatio = 1.11f;
+  const auto result = BlendForMinContrast(
+      default_foreground, background, high_contrast_foreground, kContrastRatio);
 
   // Naive implementation is direct translation of function description.
-  SkAlpha check = SK_AlphaTRANSPARENT;
-  for (SkAlpha alpha = SK_AlphaTRANSPARENT; alpha <= SK_AlphaOPAQUE; ++alpha) {
-    const SkColor blended = AlphaBlend(target, source, alpha);
-    const float contrast = GetContrastRatio(blended, base);
-    check = alpha;
-    if (contrast >= contrast_ratio)
+  SkAlpha alpha = SK_AlphaTRANSPARENT;
+  SkColor color = default_foreground;
+  for (int i = SK_AlphaTRANSPARENT; i <= SK_AlphaOPAQUE; ++i) {
+    alpha = SkAlpha{i};
+    color = AlphaBlend(high_contrast_foreground, default_foreground, alpha);
+    if (GetContrastRatio(color, background) >= kContrastRatio)
       break;
   }
 
-  EXPECT_EQ(check, alpha);
+  EXPECT_EQ(alpha, result.alpha);
+  EXPECT_EQ(color, result.color);
 }
 
 }  // namespace color_utils

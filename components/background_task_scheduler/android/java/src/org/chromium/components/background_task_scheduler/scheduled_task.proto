@@ -1,0 +1,65 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+option optimize_for = LITE_RUNTIME;
+
+package background_task_scheduler;
+
+option java_package = "org.chromium.components.background_task_scheduler";
+option java_outer_classname = "ScheduledTaskProto";
+
+message ScheduledTask {
+  enum Type {
+    ONE_OFF = 0;
+    PERIODIC = 1;
+    EXACT = 2;
+  }
+
+  // The type of the scheduled task.
+  Type type = 1;
+
+  // UTC timestamp at which an ExactTask will be triggered by AlarmManager.
+  int64 trigger_ms = 2;
+
+  message ExtraItem {
+    enum Type {
+      SINGLE = 0;
+      BOOLEAN_ARRAY = 1;
+      DOUBLE_ARRAY = 2;
+      INT_ARRAY = 3;
+      LONG_ARRAY = 4;
+      STRING_ARRAY = 5;
+      NULL = 6;
+    }
+
+    message ExtraValue {
+      oneof oneof_value {
+        bool boolean_value = 1;
+        double double_value = 2;
+        int32 int_value = 3;
+        int64 long_value = 4;
+        string string_value = 5;
+      }
+    }
+
+    // The key set for this item in the extras.
+    string key = 1;
+
+    // The type of the value associated with this item.
+    Type type = 2;
+
+    // Value set for this item in the extras. Non-array types will store only
+    // one element in this repeated field. Null types will not store any element
+    // in this field. All the types supported in the extras field can be stored
+    // in the ExtraValue message.
+    repeated ExtraValue values = 3;
+  }
+
+  // Extras for the BackgroundTask, stored for an ExactTask. OneOffTask and
+  // PeriodicTask objects store their extras through their scheduling backend
+  // (JobScheduler and GcmNetworkManager).
+  repeated ExtraItem extras = 3;
+}

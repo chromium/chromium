@@ -104,7 +104,8 @@ class VideoCaptureDeviceWin : public VideoCaptureDevice,
   void FrameReceived(const uint8_t* buffer,
                      int length,
                      const VideoCaptureFormat& format,
-                     base::TimeDelta timestamp) override;
+                     base::TimeDelta timestamp,
+                     bool flip_y) override;
   void FrameDropped(VideoCaptureFrameDropReason reason) override;
 
   bool CreateCapabilityMap();
@@ -139,6 +140,7 @@ class VideoCaptureDeviceWin : public VideoCaptureDevice,
   // These flags keep the manual/auto mode between cycles of SetPhotoOptions().
   bool white_balance_mode_manual_;
   bool exposure_mode_manual_;
+  bool focus_mode_manual_;
 
   base::TimeTicks first_ref_time_;
 

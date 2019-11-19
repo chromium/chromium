@@ -12,13 +12,15 @@
 #include "base/macros.h"
 #include "base/sync_socket.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/unguessable_token.h"
 #include "media/base/audio_parameters.h"
-#include "media/mojo/interfaces/audio_data_pipe.mojom.h"
-#include "media/mojo/interfaces/audio_output_stream.mojom.h"
-#include "mojo/public/cpp/bindings/binding.h"
-#include "mojo/public/cpp/bindings/interface_request.h"
+#include "media/mojo/mojom/audio_data_pipe.mojom.h"
+#include "media/mojo/mojom/audio_output_stream.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/buffer.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "services/audio/public/cpp/fake_stream_factory.h"
@@ -50,10 +52,10 @@ using MockDeleterCallback = StrictMock<
 class MockAudioOutputStreamProviderClient
     : public media::mojom::AudioOutputStreamProviderClient {
  public:
-  MockAudioOutputStreamProviderClient() : binding_(this) {}
+  MockAudioOutputStreamProviderClient() = default;
   ~MockAudioOutputStreamProviderClient() override {}
 
-  void Created(media::mojom::AudioOutputStreamPtr,
+  void Created(mojo::PendingRemote<media::mojom::AudioOutputStream>,
                media::mojom::ReadWriteAudioDataPipePtr) override {
     OnCreated();
   }
@@ -62,19 +64,21 @@ class MockAudioOutputStreamProviderClient
 
   MOCK_METHOD2(ConnectionError, void(uint32_t, const std::string&));
 
-  media::mojom::AudioOutputStreamProviderClientPtr MakePtr() {
-    media::mojom::AudioOutputStreamProviderClientPtr ptr;
-    binding_.Bind(mojo::MakeRequest(&ptr));
-    binding_.set_connection_error_with_reason_handler(
+  mojo::PendingRemote<media::mojom::AudioOutputStreamProviderClient>
+  MakePendingRemote() {
+    mojo::PendingRemote<media::mojom::AudioOutputStreamProviderClient>
+        pending_remote;
+    receiver_.Bind(pending_remote.InitWithNewPipeAndPassReceiver());
+    receiver_.set_disconnect_with_reason_handler(
         base::BindOnce(&MockAudioOutputStreamProviderClient::ConnectionError,
                        base::Unretained(this)));
-    return ptr;
+    return pending_remote;
   }
 
-  void CloseBinding() { binding_.Close(); }
+  void CloseReceiver() { receiver_.reset(); }
 
  private:
-  mojo::Binding<media::mojom::AudioOutputStreamProviderClient> binding_;
+  mojo::Receiver<media::mojom::AudioOutputStreamProviderClient> receiver_{this};
   DISALLOW_COPY_AND_ASSIGN(MockAudioOutputStreamProviderClient);
 };
 
@@ -95,9 +99,9 @@ class MockStreamFactory : public audio::FakeStreamFactory {
           group_id(group_id) {}
 
     bool requested = false;
-    media::mojom::AudioOutputStreamRequest stream_request;
+    mojo::PendingReceiver<media::mojom::AudioOutputStream> stream_receiver;
     media::mojom::AudioOutputStreamObserverAssociatedPtrInfo observer_info;
-    media::mojom::AudioLogPtr log;
+    mojo::Remote<media::mojom::AudioLog> log;
     const std::string output_device_id;
     const media::AudioParameters params;
     const base::UnguessableToken group_id;
@@ -110,9 +114,10 @@ class MockStreamFactory : public audio::FakeStreamFactory {
 
  private:
   void CreateOutputStream(
-      media::mojom::AudioOutputStreamRequest stream_request,
-      media::mojom::AudioOutputStreamObserverAssociatedPtrInfo observer_info,
-      media::mojom::AudioLogPtr log,
+      mojo::PendingReceiver<media::mojom::AudioOutputStream> stream_receiver,
+      mojo::PendingAssociatedRemote<media::mojom::AudioOutputStreamObserver>
+          observer,
+      mojo::PendingRemote<media::mojom::AudioLog> log,
       const std::string& output_device_id,
       const media::AudioParameters& params,
       const base::UnguessableToken& group_id,
@@ -124,9 +129,9 @@ class MockStreamFactory : public audio::FakeStreamFactory {
     EXPECT_TRUE(stream_request_data_->params.Equals(params));
     EXPECT_EQ(stream_request_data_->group_id, group_id);
     stream_request_data_->requested = true;
-    stream_request_data_->stream_request = std::move(stream_request);
-    stream_request_data_->observer_info = std::move(observer_info);
-    stream_request_data_->log = std::move(log);
+    stream_request_data_->stream_receiver = std::move(stream_receiver);
+    stream_request_data_->observer_info = std::move(observer);
+    stream_request_data_->log.Bind(std ::move(log));
     stream_request_data_->created_callback = std::move(created_callback);
   }
 
@@ -147,30 +152,31 @@ struct TestEnvironment {
             group,
             base::nullopt,
             deleter.Get(),
-            provider_client.MakePtr())) {}
+            provider_client.MakePendingRemote())) {}
 
   void RunUntilIdle() { env.RunUntilIdle(); }
 
-  base::test::ScopedTaskEnvironment env;
+  base::test::TaskEnvironment env;
   base::UnguessableToken group;
   MockDeleterCallback deleter;
   StrictMock<MockAudioOutputStreamProviderClient> provider_client;
   std::unique_ptr<AudioOutputStreamBroker> broker;
   MockStreamFactory stream_factory;
-  audio::mojom::StreamFactoryPtr factory_ptr = stream_factory.MakePtr();
+  mojo::Remote<audio::mojom::StreamFactory> factory_ptr{
+      stream_factory.MakeRemote()};
 };
 
 }  // namespace
 
 TEST(AudioOutputStreamBrokerTest, StoresProcessAndFrameId) {
-  base::test::ScopedTaskEnvironment env;
+  base::test::TaskEnvironment env;
   MockDeleterCallback deleter;
   StrictMock<MockAudioOutputStreamProviderClient> provider_client;
 
   AudioOutputStreamBroker broker(
       kRenderProcessId, kRenderFrameId, kStreamId, kDeviceId, TestParams(),
       base::UnguessableToken::Create(), base::nullopt, deleter.Get(),
-      provider_client.MakePtr());
+      provider_client.MakePendingRemote());
 
   EXPECT_EQ(kRenderProcessId, broker.render_process_id());
   EXPECT_EQ(kRenderFrameId, broker.render_frame_id());
@@ -181,7 +187,7 @@ TEST(AudioOutputStreamBrokerTest, ClientDisconnect_CallsDeleter) {
 
   EXPECT_CALL(env.deleter, Run(env.broker.release()))
       .WillOnce(testing::DeleteArg<0>());
-  env.provider_client.CloseBinding();
+  env.provider_client.CloseReceiver();
   env.RunUntilIdle();
 }
 

@@ -4,8 +4,8 @@
 
 #include <vector>
 
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
+#include "base/test/task_environment.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/features/feature.h"
@@ -21,7 +21,7 @@
 namespace extensions {
 
 TEST(ScriptContextSetTest, Lifecycle) {
-  base::MessageLoop loop;
+  base::test::SingleThreadTaskEnvironment task_environment;
   ScopedWebFrame web_frame;
   // Used by ScriptContextSet::Register().
   TestExtensionsRendererClient extensions_renderer_client;

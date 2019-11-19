@@ -5,10 +5,11 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_WEBAPKS_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_WEBAPKS_HANDLER_H_
 
-#include <vector>
+#include <memory>
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/android/webapk/webapk_handler_delegate.h"
 #include "chrome/browser/android/webapk/webapk_info.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
@@ -28,14 +29,18 @@ class WebApksHandler : public content::WebUIMessageHandler {
   // Handler for the "requestWebApksInfo" message. This requests
   // information for the installed WebAPKs and returns it to JS using
   // OnWebApkInfoReceived().
-  virtual void HandleRequestWebApksInfo(const base::ListValue* args);
+  void HandleRequestWebApksInfo(const base::ListValue* args);
+
+  // Handler for the "requestWebApkUpdate" message. This sets the
+  // update flag for a set of WebAPKs. |args| should contain the
+  // webapp IDs of the WebAPKs to update.
+  void HandleRequestWebApkUpdate(const base::ListValue* args);
 
  private:
-  // Sends information for the installed WebAPKs to JS.
-  void OnWebApkInfoRetrieved(const std::vector<WebApkInfo>& webapks_list);
+  // Called once for each installed WebAPK when the WebAPK Info is retrieved.
+  void OnWebApkInfoRetrieved(const WebApkInfo& webapk_info);
 
-  // Factory for the creating refs in callbacks.
-  base::WeakPtrFactory<WebApksHandler> weak_ptr_factory_;
+  WebApkHandlerDelegate delegate_;
 
   DISALLOW_COPY_AND_ASSIGN(WebApksHandler);
 };

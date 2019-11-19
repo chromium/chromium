@@ -1,0 +1,86 @@
+// Copyright 2015 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+struct SyncRegistrationOptions {
+  string tag = "";
+  // Minimum interval guaranteed between two Periodic Background Sync events,
+  // in ms. This must be -1 for One-Shot Sync registrations, and must be >=0
+  // for Periodic Sync registrations.
+  int64 min_interval = -1;
+};
+
+enum BackgroundSyncError {
+  NONE,
+  STORAGE,
+  NOT_FOUND,
+  NO_SERVICE_WORKER,
+  NOT_ALLOWED,
+  PERMISSION_DENIED,
+  MAX=PERMISSION_DENIED,
+};
+
+enum BackgroundSyncState {
+  PENDING,
+  FIRING,
+  REREGISTERED_WHILE_FIRING,
+};
+
+enum BackgroundSyncEventLastChance {
+  IS_NOT_LAST_CHANCE,
+  IS_LAST_CHANCE,
+};
+
+enum BackgroundSyncType {
+  ONE_SHOT,
+  PERIODIC,
+};
+
+// Minimum information required to uniquely identify a Background Sync
+// registration.
+struct BackgroundSyncRegistrationInfo {
+  // To be kept in sync with blink.mojom.kInvalidServiceWorkerRegistrationId.
+  int64 service_worker_registration_id = -1;
+
+  // The descriptive 'tag' for the sync registration. It is provided with the
+  // Register() method by the developer.
+  string tag;
+  BackgroundSyncType sync_type;
+};
+
+// Used by SyncManager for one-shot Background Sync.
+interface OneShotBackgroundSyncService {
+  // Used to register one-shot Background Sync tasks.
+  Register(SyncRegistrationOptions options,
+           int64 service_worker_registration_id)
+      => (BackgroundSyncError err, SyncRegistrationOptions? options);
+
+  // Used to indicate that the register() promise has been resolved by
+  // JavaScript code.
+  DidResolveRegistration(BackgroundSyncRegistrationInfo registration_info);
+
+  // Returns a list of all one-shot Background Sync registrations.
+  GetRegistrations(int64 service_worker_registration_id)
+      => (BackgroundSyncError err,
+          array<SyncRegistrationOptions> registrations);
+};
+
+// Used by PeriodicSyncManager for periodic Background Sync.
+interface PeriodicBackgroundSyncService {
+  // Used to register periodic Background Sync tasks.
+  Register(SyncRegistrationOptions options,
+           int64 service_worker_registration_id)
+      => (BackgroundSyncError err, SyncRegistrationOptions? options);
+
+  // Used to unregister periodic Background Sync tasks. Silently succeeds
+  // if called for non-existent periodic Background Sync registrations.
+  Unregister(int64 service_worker_registration_id, string tag)
+      => (BackgroundSyncError err);
+
+  // Returns a list of all periodic Background Sync registrations.
+  GetRegistrations(int64 service_worker_registration_id)
+      => (BackgroundSyncError err,
+          array<SyncRegistrationOptions> registrations);
+};

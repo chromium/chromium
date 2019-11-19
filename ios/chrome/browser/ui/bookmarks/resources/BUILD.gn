@@ -4,19 +4,9 @@
 
 import("//build/config/ios/asset_catalog.gni")
 
-imageset("bookmark_bar_shadow") {
-  sources = [
-    "bookmark_bar_shadow.imageset/Contents.json",
-    "bookmark_bar_shadow.imageset/bookmark_bar_shadow.png",
-    "bookmark_bar_shadow.imageset/bookmark_bar_shadow@2x.png",
-    "bookmark_bar_shadow.imageset/bookmark_bar_shadow@3x.png",
-  ]
-}
-
 imageset("bookmark_blue_check") {
   sources = [
     "bookmark_blue_check.imageset/Contents.json",
-    "bookmark_blue_check.imageset/bookmark_blue_check.png",
     "bookmark_blue_check.imageset/bookmark_blue_check@2x.png",
     "bookmark_blue_check.imageset/bookmark_blue_check@3x.png",
   ]
@@ -25,7 +15,6 @@ imageset("bookmark_blue_check") {
 imageset("bookmark_blue_folder") {
   sources = [
     "bookmark_blue_folder.imageset/Contents.json",
-    "bookmark_blue_folder.imageset/bookmark_blue_folder.png",
     "bookmark_blue_folder.imageset/bookmark_blue_folder@2x.png",
     "bookmark_blue_folder.imageset/bookmark_blue_folder@3x.png",
   ]
@@ -34,7 +23,6 @@ imageset("bookmark_blue_folder") {
 imageset("bookmark_blue_new_folder") {
   sources = [
     "bookmark_blue_new_folder.imageset/Contents.json",
-    "bookmark_blue_new_folder.imageset/bookmark_blue_new_folder.png",
     "bookmark_blue_new_folder.imageset/bookmark_blue_new_folder@2x.png",
     "bookmark_blue_new_folder.imageset/bookmark_blue_new_folder@3x.png",
   ]
@@ -43,7 +31,6 @@ imageset("bookmark_blue_new_folder") {
 imageset("bookmark_empty_star") {
   sources = [
     "bookmark_empty_star.imageset/Contents.json",
-    "bookmark_empty_star.imageset/bookmark_empty_star.png",
     "bookmark_empty_star.imageset/bookmark_empty_star@2x.png",
     "bookmark_empty_star.imageset/bookmark_empty_star@3x.png",
   ]

@@ -1,0 +1,19 @@
+Link Annotations - Page 1
+¶
+Link with destination to second page
+¶
+PDF Reference, Version 1.7,
+¶
+ Section 8.4.5 defines Annotations
+3. Hello World
+¶
+https://pdfium.googlesource.com/pdfium
+¶
+ is link in plain text, not link annotation. These are referred to
+as 
+¶
+WebLinks in PDFium
+¶
+.
+¶
+Second Page

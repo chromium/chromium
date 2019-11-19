@@ -4,10 +4,8 @@
 
 /**
  * @fileoverview Define accessibility tests for the MANAGE_PROFILE route.
+ * Non-Chrome OS only.
  */
-
-// The MANAGE_PROFILE route is non-Chrome OS only.
-GEN('#if !defined(OS_CHROMEOS)');
 
 // SettingsAccessibilityTest fixture.
 GEN_INCLUDE([
@@ -41,5 +39,3 @@ AccessibilityTest.define('SettingsAccessibilityTest', {
         },
       }),
 });
-
-GEN('#endif  // !defined(OS_CHROMEOS)');

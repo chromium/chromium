@@ -1,0 +1,33 @@
+<!doctype HTML>
+<html class="reftest-wait">
+<meta charset="utf8">
+<title>Display Locking: update while disconnected</title>
+<link rel="author" title="Vladimir Levin" href="mailto:vmpstr@chromium.org">
+<link rel="help" href="https://github.com/WICG/display-locking">
+<link rel="match" href="pass-ref.html">
+<script src="/common/reftest-wait.js"></script>
+<script src="resources/utils.js"></script>
+
+<div id="log"></div>
+
+<script>
+function finishTest(status_string) {
+  if (document.getElementById("log").innerHTML === "")
+    document.getElementById("log").innerHTML = status_string;
+  takeScreenshot();
+}
+
+function runTest() {
+  const container = document.createElement("div");
+  container.id = "container";
+
+  setInvisible(container).then(() => {
+    container.updateRendering().then(
+      () => { finishTest("PASS"); },
+      (e) => { finishTest("FAIL " + e.message); });
+  });
+}
+
+window.onload = runTest;
+</script>
+</html>

@@ -9,9 +9,9 @@
 
 #include "base/bind.h"
 #include "base/memory/free_deleter.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_checker_impl.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -61,7 +61,7 @@ void ClearReference(base::OnceClosure cb) {}
 // on the message loop, not during the original Run.
 class BindToCurrentLoopTest : public ::testing::Test {
  protected:
-  base::MessageLoop loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
 TEST_F(BindToCurrentLoopTest, RepeatingClosure) {

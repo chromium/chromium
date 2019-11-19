@@ -8,8 +8,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "base/lazy_instance.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "third_party/icu/source/common/unicode/uidna.h"
 #include "third_party/icu/source/common/unicode/utypes.h"
 #include "url/url_canon_icu.h"
@@ -61,8 +61,10 @@ struct UIDNAWrapper {
 
 }  // namespace
 
-static base::LazyInstance<UIDNAWrapper>::Leaky g_uidna =
-    LAZY_INSTANCE_INITIALIZER;
+UIDNA* GetUIDNA() {
+  static base::NoDestructor<UIDNAWrapper> uidna_wrapper;
+  return uidna_wrapper->value;
+}
 
 // Converts the Unicode input representing a hostname to ASCII using IDN rules.
 // The output must be ASCII, but is represented as wide characters.
@@ -81,7 +83,7 @@ static base::LazyInstance<UIDNAWrapper>::Leaky g_uidna =
 bool IDNToASCII(const base::char16* src, int src_len, CanonOutputW* output) {
   DCHECK(output->length() == 0);  // Output buffer is assumed empty.
 
-  UIDNA* uidna = g_uidna.Get().value;
+  UIDNA* uidna = GetUIDNA();
   DCHECK(uidna != NULL);
   while (true) {
     UErrorCode err = U_ZERO_ERROR;

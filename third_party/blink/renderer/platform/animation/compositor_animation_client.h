@@ -5,14 +5,14 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_ANIMATION_COMPOSITOR_ANIMATION_CLIENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_ANIMATION_COMPOSITOR_ANIMATION_CLIENT_H_
 
-#include "third_party/blink/public/platform/web_common.h"
+#include "third_party/blink/renderer/platform/platform_export.h"
 
 namespace blink {
 
 class CompositorAnimation;
 
 // A client for compositor representation of Animation.
-class BLINK_PLATFORM_EXPORT CompositorAnimationClient {
+class PLATFORM_EXPORT CompositorAnimationClient {
  public:
   virtual ~CompositorAnimationClient();
 

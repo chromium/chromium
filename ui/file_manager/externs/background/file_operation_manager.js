@@ -4,77 +4,70 @@
 
 /**
  * FileOperationManager: manager of file operations. Implementations of this
- * interface must @extends {cr.EventTarget}.
+ * interface must @extends {cr.EventTarget} or implement the EventTarget API on
+ * their own.
  *
  * @interface
- * @extends {EventTarget}
  */
-function FileOperationManager() {}
+class FileOperationManager extends EventTarget {
+  /**
+   * Says if there are any tasks in the queue.
+   * @return {boolean} True, if there are any tasks.
+   */
+  hasQueuedTasks() {}
 
-FileOperationManager.prototype = /** @struct */ {
-  __proto__: EventTarget.prototype,
-};
+  /**
+   * Requests the specified task to be canceled.
+   * @param {string} taskId ID of task to be canceled.
+   */
+  requestTaskCancel(taskId) {}
 
-/**
- * Says if there are any tasks in the queue.
- * @return {boolean} True, if there are any tasks.
- */
-FileOperationManager.prototype.hasQueuedTasks = function() {};
+  /**
+   * Filters the entry in the same directory
+   *
+   * @param {Array<Entry>} sourceEntries Entries of the source files.
+   * @param {DirectoryEntry|FakeEntry} targetEntry The destination entry of the
+   *     target directory.
+   * @param {boolean} isMove True if the operation is "move", otherwise (i.e.
+   *     if the operation is "copy") false.
+   * @return {Promise} Promise fulfilled with the filtered entry. This is not
+   *     rejected.
+   */
+  filterSameDirectoryEntry(sourceEntries, targetEntry, isMove) {}
 
-/**
- * Requests the specified task to be canceled.
- * @param {string} taskId ID of task to be canceled.
- */
-FileOperationManager.prototype.requestTaskCancel = function(taskId) {};
+  /**
+   * Kick off pasting.
+   *
+   * @param {Array<Entry>} sourceEntries Entries of the source files.
+   * @param {DirectoryEntry} targetEntry The destination entry of the target
+   *     directory.
+   * @param {boolean} isMove True if the operation is "move", otherwise (i.e.
+   *     if the operation is "copy") false.
+   * @param {string=} opt_taskId If the corresponding item has already created
+   *     at another places, we need to specify the ID of the item. If the
+   *     item is not created, FileOperationManager generates new ID.
+   */
+  paste(sourceEntries, targetEntry, isMove, opt_taskId) {}
 
-/**
- * Filters the entry in the same directory
- *
- * @param {Array<Entry>} sourceEntries Entries of the source files.
- * @param {DirectoryEntry|FakeEntry} targetEntry The destination entry of the
- *     target directory.
- * @param {boolean} isMove True if the operation is "move", otherwise (i.e.
- *     if the operation is "copy") false.
- * @return {Promise} Promise fulfilled with the filtered entry. This is not
- *     rejected.
- */
-FileOperationManager.prototype.filterSameDirectoryEntry = function(
-    sourceEntries, targetEntry, isMove) {};
+  /**
+   * Schedules the files deletion.
+   *
+   * @param {Array<Entry>} entries The entries.
+   */
+  deleteEntries(entries) {}
 
-/**
- * Kick off pasting.
- *
- * @param {Array<Entry>} sourceEntries Entries of the source files.
- * @param {DirectoryEntry} targetEntry The destination entry of the target
- *     directory.
- * @param {boolean} isMove True if the operation is "move", otherwise (i.e.
- *     if the operation is "copy") false.
- * @param {string=} opt_taskId If the corresponding item has already created
- *     at another places, we need to specify the ID of the item. If the
- *     item is not created, FileOperationManager generates new ID.
- */
-FileOperationManager.prototype.paste = function(
-    sourceEntries, targetEntry, isMove, opt_taskId) {};
+  /**
+   * Creates a zip file for the selection of files.
+   *
+   * @param {!Array<!Entry>} selectionEntries The selected entries.
+   * @param {!DirectoryEntry} dirEntry The directory containing the selection.
+   */
+  zipSelection(selectionEntries, dirEntry) {}
 
-/**
- * Schedules the files deletion.
- *
- * @param {Array<Entry>} entries The entries.
- */
-FileOperationManager.prototype.deleteEntries = function(entries) {};
-
-/**
- * Creates a zip file for the selection of files.
- *
- * @param {!Array<!Entry>} selectionEntries The selected entries.
- * @param {!DirectoryEntry} dirEntry The directory containing the selection.
- */
-FileOperationManager.prototype.zipSelection = function(
-    selectionEntries, dirEntry) {};
-
-/**
- * Generates new task ID.
- *
- * @return {string} New task ID.
- */
-FileOperationManager.prototype.generateTaskId = function() {};
+  /**
+   * Generates new task ID.
+   *
+   * @return {string} New task ID.
+   */
+  generateTaskId() {}
+}

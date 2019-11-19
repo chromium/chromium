@@ -37,7 +37,7 @@ namespace storage_monitor {
 
 MtabWatcherLinux::MtabWatcherLinux(const base::FilePath& mtab_path,
                                    const UpdateMtabCallback& callback)
-    : mtab_path_(mtab_path), callback_(callback), weak_ptr_factory_(this) {
+    : mtab_path_(mtab_path), callback_(callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   bool ret = file_watcher_.Watch(
       mtab_path_, false,

@@ -219,8 +219,7 @@ TransportSecurityPersister::TransportSecurityPersister(
     : transport_security_state_(state),
       writer_(profile_path.AppendASCII("TransportSecurity"), background_runner),
       foreground_runner_(base::ThreadTaskRunnerHandle::Get()),
-      background_runner_(background_runner),
-      weak_ptr_factory_(this) {
+      background_runner_(background_runner) {
   transport_security_state_->SetDelegate(this);
 
   base::PostTaskAndReplyWithResult(
@@ -236,7 +235,7 @@ TransportSecurityPersister::~TransportSecurityPersister() {
   if (writer_.HasPendingWrite())
     writer_.DoScheduledWrite();
 
-  transport_security_state_->SetDelegate(NULL);
+  transport_security_state_->SetDelegate(nullptr);
 }
 
 void TransportSecurityPersister::StateIsDirty(TransportSecurityState* state) {
@@ -294,7 +293,7 @@ bool TransportSecurityPersister::Deserialize(const std::string& serialized,
                                              TransportSecurityState* state) {
   std::unique_ptr<base::Value> value =
       base::JSONReader::ReadDeprecated(serialized);
-  base::DictionaryValue* dict_value = NULL;
+  base::DictionaryValue* dict_value = nullptr;
   if (!value.get() || !value->GetAsDictionary(&dict_value))
     return false;
 
@@ -303,7 +302,7 @@ bool TransportSecurityPersister::Deserialize(const std::string& serialized,
 
   for (base::DictionaryValue::Iterator i(*dict_value);
        !i.IsAtEnd(); i.Advance()) {
-    const base::DictionaryValue* parsed = NULL;
+    const base::DictionaryValue* parsed = nullptr;
     if (!i.value().GetAsDictionary(&parsed)) {
       LOG(WARNING) << "Could not parse entry " << i.key() << "; skipping entry";
       continue;

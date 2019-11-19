@@ -27,6 +27,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/browsing_data/core/pref_names.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
@@ -34,7 +35,6 @@
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
-#include "services/identity/public/cpp/identity_manager.h"
 
 using content::BrowserThread;
 using browsing_data::ClearBrowsingDataTab;
@@ -49,7 +49,6 @@ const char kOptionsKey[] = "options";
 // Type keys.
 const char kAppCacheKey[] = "appcache";
 const char kCacheKey[] = "cache";
-const char kChannelIDsKey[] = "serverBoundCertificates";
 const char kCookiesKey[] = "cookies";
 const char kDownloadsKey[] = "downloads";
 const char kFileSystemsKey[] = "fileSystems";
@@ -117,9 +116,6 @@ int MaskForKey(const char* key) {
     return content::BrowsingDataRemover::DATA_TYPE_INDEXED_DB;
   if (strcmp(key, extension_browsing_data_api_constants::kLocalStorageKey) == 0)
     return content::BrowsingDataRemover::DATA_TYPE_LOCAL_STORAGE;
-  if (strcmp(key,
-             extension_browsing_data_api_constants::kChannelIDsKey) == 0)
-    return content::BrowsingDataRemover::DATA_TYPE_CHANNEL_IDS;
   if (strcmp(key, extension_browsing_data_api_constants::kPasswordsKey) == 0)
     return ChromeBrowsingDataRemoverDelegate::DATA_TYPE_PASSWORDS;
   if (strcmp(key, extension_browsing_data_api_constants::kPluginDataKey) == 0)
@@ -226,9 +222,6 @@ ExtensionFunction::ResponseAction BrowsingDataSettingsFunction::Run() {
   SetDetails(selected.get(), permitted.get(),
              extension_browsing_data_api_constants::kWebSQLKey,
              delete_site_data);
-  SetDetails(selected.get(), permitted.get(),
-      extension_browsing_data_api_constants::kChannelIDsKey,
-      delete_site_data);
   SetDetails(selected.get(), permitted.get(),
              extension_browsing_data_api_constants::kServiceWorkersKey,
              delete_site_data);
@@ -358,13 +351,13 @@ bool BrowsingDataRemoverFunction::RunAsync() {
       ChromeBrowsingDataRemoverDelegate::DATA_TYPE_PLUGIN_DATA) {
     // If we're being asked to remove plugin data, check whether it's actually
     // supported.
-    PostTaskWithTraits(
-        FROM_HERE,
-        {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN,
-         base::TaskPriority::USER_VISIBLE},
-        base::BindOnce(
-            &BrowsingDataRemoverFunction::CheckRemovingPluginDataSupported,
-            this, PluginPrefs::GetForProfile(GetProfile())));
+    PostTask(FROM_HERE,
+             {base::ThreadPool(), base::MayBlock(),
+              base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN,
+              base::TaskPriority::USER_VISIBLE},
+             base::BindOnce(
+                 &BrowsingDataRemoverFunction::CheckRemovingPluginDataSupported,
+                 this, PluginPrefs::GetForProfile(GetProfile())));
   } else {
     StartRemoving();
   }
@@ -384,7 +377,7 @@ void BrowsingDataRemoverFunction::CheckRemovingPluginDataSupported(
   if (!PluginDataRemoverHelper::IsSupported(plugin_prefs.get()))
     removal_mask_ &= ~ChromeBrowsingDataRemoverDelegate::DATA_TYPE_PLUGIN_DATA;
 
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&BrowsingDataRemoverFunction::StartRemoving, this));
 }
@@ -557,8 +550,7 @@ bool BrowsingDataRemoveCacheFunction::GetRemovalMask(int* removal_mask) {
 }
 
 bool BrowsingDataRemoveCookiesFunction::GetRemovalMask(int* removal_mask) {
-  *removal_mask = content::BrowsingDataRemover::DATA_TYPE_COOKIES |
-                  content::BrowsingDataRemover::DATA_TYPE_CHANNEL_IDS;
+  *removal_mask = content::BrowsingDataRemover::DATA_TYPE_COOKIES;
   return true;
 }
 

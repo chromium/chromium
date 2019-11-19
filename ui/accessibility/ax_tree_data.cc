@@ -11,10 +11,14 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/accessibility/ax_enum_util.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 
 namespace ui {
 
-AXTreeData::AXTreeData() = default;
+AXTreeData::AXTreeData()
+    : sel_anchor_affinity(ax::mojom::TextAffinity::kUpstream),
+      sel_focus_affinity(ax::mojom::TextAffinity::kDownstream) {}
+
 AXTreeData::AXTreeData(const AXTreeData& other) = default;
 AXTreeData::~AXTreeData() = default;
 
@@ -34,7 +38,7 @@ std::string AXTreeData::ToString() const {
     result += " doctype=" + doctype;
   if (loaded)
     result += " loaded=true";
-  if (loading_progress != 0.0)
+  if (loading_progress != 0.0f)
     result += " loading_progress=" + base::NumberToString(loading_progress);
   if (!mimetype.empty())
     result += " mimetype=" + mimetype;
@@ -43,17 +47,19 @@ std::string AXTreeData::ToString() const {
   if (!title.empty())
     result += " title=" + title;
 
-  if (focus_id != -1)
+  if (focus_id != AXNode::kInvalidAXID)
     result += " focus_id=" + base::NumberToString(focus_id);
 
-  if (sel_anchor_object_id != -1) {
+  if (sel_anchor_object_id != AXNode::kInvalidAXID) {
+    result +=
+        (sel_is_backward ? " sel_is_backward=true" : " sel_is_backward=false");
     result +=
         " sel_anchor_object_id=" + base::NumberToString(sel_anchor_object_id);
     result += " sel_anchor_offset=" + base::NumberToString(sel_anchor_offset);
     result += " sel_anchor_affinity=";
     result += ui::ToString(sel_anchor_affinity);
   }
-  if (sel_focus_object_id != -1) {
+  if (sel_focus_object_id != AXNode::kInvalidAXID) {
     result +=
         " sel_focus_object_id=" + base::NumberToString(sel_focus_object_id);
     result += " sel_focus_offset=" + base::NumberToString(sel_focus_offset);

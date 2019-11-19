@@ -126,11 +126,13 @@ Font::Weight GetFontWeightFromNSFont(NSFont* font) {
 
   // Documentation is vague about what sized floating point type should be used.
   // However, numeric_limits::epsilon() for 64-bit types is too small to match
-  // the above table, so use 32-bit float.
+  // the above table, so use 32-bit float. Do not check for the success of
+  // CFNumberGetValue(). CFNumberGetValue() returns false for *any* loss of
+  // value, and a float is used here deliberately to coarsen the accuracy.
+  // There's no guarantee that any particular value for the kCTFontWeightTrait
+  // will be able to be accurately represented with a float.
   float weight_value;
-  Boolean success =
-      CFNumberGetValue(cf_weight, kCFNumberFloatType, &weight_value);
-  DCHECK(success);
+  CFNumberGetValue(cf_weight, kCFNumberFloatType, &weight_value);
   for (const auto& item : weight_map) {
     if (weight_value - item.ct_weight <= std::numeric_limits<float>::epsilon())
       return item.gfx_weight;
@@ -293,7 +295,7 @@ const std::string& PlatformFontMac::GetFontName() const {
   return font_name_;
 }
 
-std::string PlatformFontMac::GetActualFontNameForTesting() const {
+std::string PlatformFontMac::GetActualFontName() const {
   return base::SysNSStringToUTF8([native_font_ familyName]);
 }
 
@@ -307,6 +309,10 @@ const FontRenderParams& PlatformFontMac::GetFontRenderParams() {
 
 NativeFont PlatformFontMac::GetNativeFont() const {
   return [[native_font_.get() retain] autorelease];
+}
+
+sk_sp<SkTypeface> PlatformFontMac::GetNativeSkTypefaceIfAvailable() const {
+  return nullptr;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

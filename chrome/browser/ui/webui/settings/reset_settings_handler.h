@@ -111,7 +111,7 @@ class ResetSettingsHandler : public SettingsPageUIHandler {
   std::string brandcode_;
 
   // Used to cancel callbacks when JavaScript becomes disallowed.
-  base::WeakPtrFactory<ResetSettingsHandler> callback_weak_ptr_factory_;
+  base::WeakPtrFactory<ResetSettingsHandler> callback_weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ResetSettingsHandler);
 };

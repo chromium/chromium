@@ -38,8 +38,6 @@
 
 namespace blink {
 
-using namespace html_names;
-
 const int kMaxErrors = 25;
 
 XMLErrors::XMLErrors(Document* document)
@@ -99,30 +97,31 @@ static inline Element* CreateXHTMLParserErrorHeader(
     const String& error_messages) {
   const CreateElementFlags flags = CreateElementFlags::ByParser();
   Element* report_element = doc->CreateRawElement(
-      QualifiedName(g_null_atom, "parsererror", xhtmlNamespaceURI), flags);
+      QualifiedName(g_null_atom, "parsererror", html_names::xhtmlNamespaceURI),
+      flags);
 
   Vector<Attribute> report_attributes;
   report_attributes.push_back(Attribute(
-      kStyleAttr,
+      html_names::kStyleAttr,
       "display: block; white-space: pre; border: 2px solid #c77; padding: 0 "
       "1em 0 1em; margin: 1em; background-color: #fdd; color: black"));
   report_element->ParserSetAttributes(report_attributes);
 
-  Element* h3 = doc->CreateRawElement(kH3Tag, flags);
+  Element* h3 = doc->CreateRawElement(html_names::kH3Tag, flags);
   report_element->ParserAppendChild(h3);
   h3->ParserAppendChild(
       doc->createTextNode("This page contains the following errors:"));
 
-  Element* fixed = doc->CreateRawElement(kDivTag, flags);
+  Element* fixed = doc->CreateRawElement(html_names::kDivTag, flags);
   Vector<Attribute> fixed_attributes;
-  fixed_attributes.push_back(
-      Attribute(kStyleAttr, "font-family:monospace;font-size:12px"));
+  fixed_attributes.push_back(Attribute(html_names::kStyleAttr,
+                                       "font-family:monospace;font-size:12px"));
   fixed->ParserSetAttributes(fixed_attributes);
   report_element->ParserAppendChild(fixed);
 
   fixed->ParserAppendChild(doc->createTextNode(error_messages));
 
-  h3 = doc->CreateRawElement(kH3Tag, flags);
+  h3 = doc->CreateRawElement(html_names::kH3Tag, flags);
   report_element->ParserAppendChild(h3);
   h3->ParserAppendChild(doc->createTextNode(
       "Below is a rendering of the page up to the first error."));
@@ -139,22 +138,24 @@ void XMLErrors::InsertErrorMessageBlock() {
   const CreateElementFlags flags = CreateElementFlags::ByParser();
   Element* document_element = document_->documentElement();
   if (!document_element) {
-    Element* root_element = document_->CreateRawElement(kHTMLTag, flags);
-    Element* body = document_->CreateRawElement(kBodyTag, flags);
+    Element* root_element =
+        document_->CreateRawElement(html_names::kHTMLTag, flags);
+    Element* body = document_->CreateRawElement(html_names::kBodyTag, flags);
     root_element->ParserAppendChild(body);
     document_->ParserAppendChild(root_element);
     document_element = body;
   } else if (document_element->namespaceURI() == svg_names::kNamespaceURI) {
-    Element* root_element = document_->CreateRawElement(kHTMLTag, flags);
-    Element* head = document_->CreateRawElement(kHeadTag, flags);
-    Element* style = document_->CreateRawElement(kStyleTag, flags);
+    Element* root_element =
+        document_->CreateRawElement(html_names::kHTMLTag, flags);
+    Element* head = document_->CreateRawElement(html_names::kHeadTag, flags);
+    Element* style = document_->CreateRawElement(html_names::kStyleTag, flags);
     head->ParserAppendChild(style);
     style->ParserAppendChild(
         document_->createTextNode("html, body { height: 100% } parsererror + "
                                   "svg { width: 100%; height: 100% }"));
     style->FinishParsingChildren();
     root_element->ParserAppendChild(head);
-    Element* body = document_->CreateRawElement(kBodyTag, flags);
+    Element* body = document_->CreateRawElement(html_names::kBodyTag, flags);
     root_element->ParserAppendChild(body);
 
     document_->ParserRemoveChild(*document_element);
@@ -171,8 +172,9 @@ void XMLErrors::InsertErrorMessageBlock() {
 
   if (DocumentXSLT::HasTransformSourceDocument(*document_)) {
     Vector<Attribute> attributes;
-    attributes.push_back(Attribute(kStyleAttr, "white-space: normal"));
-    Element* paragraph = document_->CreateRawElement(kPTag, flags);
+    attributes.push_back(
+        Attribute(html_names::kStyleAttr, "white-space: normal"));
+    Element* paragraph = document_->CreateRawElement(html_names::kPTag, flags);
     paragraph->ParserSetAttributes(attributes);
     paragraph->ParserAppendChild(document_->createTextNode(
         "This document was created as the result of an XSL transformation. The "

@@ -17,6 +17,9 @@ public interface WebViewProviderBoundaryInterface {
             /* VisualStateCallback */ InvocationHandler callback);
     /* WebMessagePort */ InvocationHandler[] createWebMessageChannel();
     void postMessageToMainFrame(/* WebMessage */ InvocationHandler message, Uri targetOrigin);
+    void addWebMessageListener(String jsObjectName, String[] allowedOriginRules,
+            /* WebMessageListener */ InvocationHandler listener);
+    void removeWebMessageListener(String jsObjectName);
     WebViewClient getWebViewClient();
     WebChromeClient getWebChromeClient();
     /* WebViewRenderer */ InvocationHandler getWebViewRenderer();

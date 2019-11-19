@@ -13,7 +13,7 @@
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "media/cast/net/cast_transport_config.h"
 #include "media/cast/net/udp_packet_pipe.h"
 #include "media/cast/test/utility/net_utility.h"
@@ -71,28 +71,25 @@ static void UpdateCastTransportStatus(CastTransportStatus status) {
 class UdpTransportImplTest : public ::testing::Test {
  public:
   UdpTransportImplTest()
-      : scoped_task_environment_(
-            base::test::ScopedTaskEnvironment::MainThreadType::IO) {
+      : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {
     net::IPEndPoint free_local_port1 = test::GetFreeLocalPort();
     net::IPEndPoint free_local_port2 = test::GetFreeLocalPort();
 
     send_transport_ = std::make_unique<UdpTransportImpl>(
-        nullptr, scoped_task_environment_.GetMainThreadTaskRunner(),
-        free_local_port1, free_local_port2,
-        base::BindRepeating(&UpdateCastTransportStatus));
+        task_environment_.GetMainThreadTaskRunner(), free_local_port1,
+        free_local_port2, base::BindRepeating(&UpdateCastTransportStatus));
     send_transport_->SetSendBufferSize(65536);
 
     recv_transport_ = std::make_unique<UdpTransportImpl>(
-        nullptr, scoped_task_environment_.GetMainThreadTaskRunner(),
-        free_local_port2, free_local_port1,
-        base::BindRepeating(&UpdateCastTransportStatus));
+        task_environment_.GetMainThreadTaskRunner(), free_local_port2,
+        free_local_port1, base::BindRepeating(&UpdateCastTransportStatus));
     recv_transport_->SetSendBufferSize(65536);
   }
 
   ~UdpTransportImplTest() override = default;
 
  protected:
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
 
   std::unique_ptr<UdpTransportImpl> send_transport_;
 

@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.contextualsearch;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * Implements the policy that a Tap relatively far away from an existing Contextual Search

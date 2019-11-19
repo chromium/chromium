@@ -12,11 +12,11 @@
 #include "content/browser/renderer_host/render_widget_host_input_event_router.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/common/web_contents_ns_view_bridge.mojom.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_drag_dest_delegate.h"
 #include "content/public/common/child_process_host.h"
 #include "content/public/common/drop_data.h"
-#include "content/public/common/web_contents_ns_view_bridge.mojom.h"
 #include "third_party/blink/public/platform/web_input_event.h"
 #import "third_party/mozilla/NSPasteboard+Utils.h"
 #include "ui/base/clipboard/clipboard_constants.h"
@@ -28,11 +28,11 @@
 #include "ui/gfx/geometry/point.h"
 
 using blink::WebDragOperationsMask;
-using content::mojom::DraggingInfo;
 using content::DropData;
 using content::OpenURLParams;
 using content::Referrer;
 using content::WebContentsImpl;
+using remote_cocoa::mojom::DraggingInfo;
 
 namespace {
 

@@ -45,9 +45,8 @@ class ScopedPtracer {
   ScopedPtracer(pid_t pid) : pid_(pid), is_attached_(false) {
     // ptrace() delivers a SIGSTOP signal to one thread in the target process,
     // unless it is already stopped. Since we want to stop the whole process,
-    // send a signal to every thread in the process group.
-    pid_t process_group_id = getpgid(pid);
-    if (killpg(process_group_id, SIGSTOP)) {
+    // kill() it first.
+    if (kill(pid, SIGSTOP)) {
       PLOG(ERROR) << "Cannot stop the process group of " << pid;
       return;
     }
@@ -206,6 +205,9 @@ bool DumpRegion(const MappedMemoryRegion& region,
 // disk.
 bool DumpMappings(pid_t pid) {
   LOG(INFO) << "Attaching to " << pid;
+  // ptrace() is not required to read the process's memory, but the permissions
+  // to attach to the target process is.
+  // Attach anyway to make it clearer when this fails.
   ScopedPtracer tracer(pid);
   if (!tracer.IsAttached())
     return false;

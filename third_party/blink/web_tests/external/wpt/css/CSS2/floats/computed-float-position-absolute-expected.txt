@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL The computed value of float with absolute positioning when there is no box should be "none" assert_equals: [display:none] Invalid gCS(test1)['float']; expected "none" but got "left"
-Harness: the test ran to completion.
-

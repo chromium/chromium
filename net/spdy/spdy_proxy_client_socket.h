@@ -15,7 +15,6 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "net/base/completion_callback.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/net_export.h"
@@ -174,11 +173,12 @@ class NET_EXPORT_PRIVATE SpdyProxyClientSocket : public ProxyClientSocket,
   const NetLogSource source_dependency_;
 
   // The default weak pointer factory.
-  base::WeakPtrFactory<SpdyProxyClientSocket> weak_factory_;
+  base::WeakPtrFactory<SpdyProxyClientSocket> weak_factory_{this};
 
   // Only used for posting write callbacks. Weak pointers created by this
   // factory are invalidated in Disconnect().
-  base::WeakPtrFactory<SpdyProxyClientSocket> write_callback_weak_factory_;
+  base::WeakPtrFactory<SpdyProxyClientSocket> write_callback_weak_factory_{
+      this};
 
   DISALLOW_COPY_AND_ASSIGN(SpdyProxyClientSocket);
 };

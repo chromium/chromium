@@ -22,5 +22,5 @@ enum UserVerificationRequirement {
 dictionary AuthenticatorSelectionCriteria {
   AuthenticatorAttachment authenticatorAttachment;
   boolean requireResidentKey = false;
-  UserVerificationRequirement userVerification = "preferred";
+  UserVerificationRequirement userVerification;
 };

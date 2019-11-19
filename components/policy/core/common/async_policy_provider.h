@@ -70,7 +70,7 @@ class POLICY_EXPORT AsyncPolicyProvider : public ConfigurationPolicyProvider {
 
   // Used to get a WeakPtr to |this| for the update callback given to the
   // loader.
-  base::WeakPtrFactory<AsyncPolicyProvider> weak_factory_;
+  base::WeakPtrFactory<AsyncPolicyProvider> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AsyncPolicyProvider);
 };

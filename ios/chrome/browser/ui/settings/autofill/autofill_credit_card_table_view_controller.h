@@ -7,9 +7,6 @@
 
 #import "ios/chrome/browser/ui/settings/settings_root_table_view_controller.h"
 
-extern NSString* const kAutofillCreditCardTableViewId;
-extern NSString* const kAutofillCreditCardSwitchViewId;
-
 namespace ios {
 class ChromeBrowserState;
 }  // namespace ios

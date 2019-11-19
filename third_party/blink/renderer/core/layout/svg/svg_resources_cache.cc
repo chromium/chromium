@@ -217,7 +217,7 @@ SVGResourcesCache::TemporaryStyleScope::TemporaryStyleScope(
   if (styles_are_equal_)
     return;
   DCHECK(LayoutObjectCanHaveResources(layout_object_));
-  SVGElement& element = ToSVGElement(*layout_object_.GetNode());
+  auto& element = To<SVGElement>(*layout_object_.GetNode());
   SVGResources::UpdatePaints(element, nullptr, temporary_style_);
   SwitchTo(temporary_style);
 }
@@ -225,7 +225,7 @@ SVGResourcesCache::TemporaryStyleScope::TemporaryStyleScope(
 SVGResourcesCache::TemporaryStyleScope::~TemporaryStyleScope() {
   if (styles_are_equal_)
     return;
-  SVGElement& element = ToSVGElement(*layout_object_.GetNode());
+  auto& element = To<SVGElement>(*layout_object_.GetNode());
   SVGResources::ClearPaints(element, &temporary_style_);
   SwitchTo(original_style_);
 }

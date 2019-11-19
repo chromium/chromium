@@ -13,7 +13,7 @@
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/test/history_service_test_util.h"
 #include "components/omnibox/browser/shortcuts_constants.h"
@@ -60,7 +60,7 @@ class ShortcutsBackendTest : public testing::Test,
   TemplateURLService* GetTemplateURLService();
 
  private:
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir profile_dir_;
   std::unique_ptr<TemplateURLService> template_url_service_;
   std::unique_ptr<history::HistoryService> history_service_;
@@ -124,7 +124,7 @@ void ShortcutsBackendTest::SetUp() {
 
 void ShortcutsBackendTest::TearDown() {
   backend_->RemoveObserver(this);
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 }
 
 void ShortcutsBackendTest::OnShortcutsLoaded() {
@@ -140,7 +140,7 @@ void ShortcutsBackendTest::InitBackend() {
   ASSERT_FALSE(load_notified_);
   ASSERT_FALSE(backend_->initialized());
   backend_->Init();
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
   EXPECT_TRUE(load_notified_);
   EXPECT_TRUE(backend_->initialized());
 }

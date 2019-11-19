@@ -1,0 +1,23 @@
+{
+{%if key is defined %}
+  "key": "{{key}}",
+{% endif %}
+  "manifest_version": 2,
+  "name": "Automatic Clicks",
+  "version": "{{set_version}}",
+  "description": "Automatic clicks extension to communicate with the Automation API",
+{% if is_guest_manifest == '1' %}
+  "incognito": "split",
+{% endif %}
+  "background": {
+    "scripts": [
+      "autoclick.js"
+    ]
+  },
+  "permissions": [
+    "accessibilityPrivate"
+  ],
+  "automation": {
+    "desktop": true
+  }
+}

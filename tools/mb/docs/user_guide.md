@@ -166,6 +166,25 @@ information on isolates and swarming.
 In either case, any flags past `--` will be passed on to the command
 to be run inside the isolate.
 
+### mb try
+
+Tries your change on the trybots. Right now this is essentially a fancy tryjob,
+like one you could trigger via `git cl try` or via CQ dry runs. Basic usage is
+
+`mb.py try -m tryserver.chromium.linux -b linux-rel base_unittests`
+
+Your change must be uploaded to Gerrit. Local changes will not be uploaded for
+you. It uses the gerrit CL associated with your given git branch.
+
+You still have to specify the mastername (`-m`) and buildername (`-b`) arguments.
+See [trybots.py](https://cs.chromium.org/chromium/build/scripts/slave/recipe_modules/chromium_tests/trybots.py)
+for a mapping of which bots are on which tryservers, and what those bots mirror.
+Any trybot in `trybots.py` is supported; you can test your code on windows, for
+example. The tryjob will compile and run your code on windows.
+
+The target (`base_unittests`) in the example is a ninja build target. Most ninja
+unittest targets can be put here which currently runs on the bots.
+
 ### mb validate
 
 Does internal checking to make sure the config file is syntactically

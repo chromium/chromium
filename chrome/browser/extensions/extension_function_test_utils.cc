@@ -74,23 +74,24 @@ base::ListValue* ToList(base::Value* val) {
   return static_cast<base::ListValue*>(val);
 }
 
-bool HasPrivacySensitiveFields(base::DictionaryValue* val) {
+bool HasAnyPrivacySensitiveFields(base::DictionaryValue* val) {
   std::string result;
   if (val->GetString(keys::kUrlKey, &result) ||
       val->GetString(keys::kTitleKey, &result) ||
-      val->GetString(keys::kFaviconUrlKey, &result))
+      val->GetString(keys::kFaviconUrlKey, &result) ||
+      val->GetString(keys::kPendingUrlKey, &result))
     return true;
   return false;
 }
 
-std::string RunFunctionAndReturnError(UIThreadExtensionFunction* function,
+std::string RunFunctionAndReturnError(ExtensionFunction* function,
                                       const std::string& args,
                                       Browser* browser) {
   return RunFunctionAndReturnError(function, args, browser,
                                    extensions::api_test_utils::NONE);
 }
 std::string RunFunctionAndReturnError(
-    UIThreadExtensionFunction* function,
+    ExtensionFunction* function,
     const std::string& args,
     Browser* browser,
     extensions::api_test_utils::RunFunctionFlags flags) {
@@ -106,15 +107,14 @@ std::string RunFunctionAndReturnError(
   return function->GetError();
 }
 
-base::Value* RunFunctionAndReturnSingleResult(
-    UIThreadExtensionFunction* function,
-    const std::string& args,
-    Browser* browser) {
+base::Value* RunFunctionAndReturnSingleResult(ExtensionFunction* function,
+                                              const std::string& args,
+                                              Browser* browser) {
   return RunFunctionAndReturnSingleResult(function, args, browser,
                                           extensions::api_test_utils::NONE);
 }
 base::Value* RunFunctionAndReturnSingleResult(
-    UIThreadExtensionFunction* function,
+    ExtensionFunction* function,
     const std::string& args,
     Browser* browser,
     extensions::api_test_utils::RunFunctionFlags flags) {
@@ -130,7 +130,7 @@ base::Value* RunFunctionAndReturnSingleResult(
   return NULL;
 }
 
-bool RunFunction(UIThreadExtensionFunction* function,
+bool RunFunction(ExtensionFunction* function,
                  const std::string& args,
                  Browser* browser,
                  extensions::api_test_utils::RunFunctionFlags flags) {
@@ -140,7 +140,7 @@ bool RunFunction(UIThreadExtensionFunction* function,
   return RunFunction(function, std::move(parsed_args), browser, flags);
 }
 
-bool RunFunction(UIThreadExtensionFunction* function,
+bool RunFunction(ExtensionFunction* function,
                  std::unique_ptr<base::ListValue> args,
                  Browser* browser,
                  extensions::api_test_utils::RunFunctionFlags flags) {

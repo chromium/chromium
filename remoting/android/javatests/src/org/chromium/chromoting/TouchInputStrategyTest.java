@@ -71,7 +71,7 @@ public class TouchInputStrategyTest {
     @Test
     @SmallTest
     @Feature({"Chromoting"})
-    public void testOnTapWithNoEvents() throws Exception {
+    public void testOnTapWithNoEvents() {
         Assert.assertFalse(mInputStrategy.onTap(InputStub.BUTTON_LEFT));
         mInputInjector.assertEmpty();
     }
@@ -79,7 +79,7 @@ public class TouchInputStrategyTest {
     @Test
     @SmallTest
     @Feature({"Chromoting"})
-    public void testOneFingerTap() throws Exception {
+    public void testOneFingerTap() {
         injectDownEvent(0, 0, 0);
         injectUpEvent(0);
         mInputInjector.assertEmpty();
@@ -93,7 +93,7 @@ public class TouchInputStrategyTest {
     @Test
     @SmallTest
     @Feature({"Chromoting"})
-    public void testLifoTwoFingerTap() throws Exception {
+    public void testLifoTwoFingerTap() {
         // Verify that the right click coordinates occur at the point of the first tap when the
         // initial finger is lifted up last.
         injectDownEvent(0, 0, 0);
@@ -111,7 +111,7 @@ public class TouchInputStrategyTest {
     @Test
     @SmallTest
     @Feature({"Chromoting"})
-    public void testFifoTwoFingerTap() throws Exception {
+    public void testFifoTwoFingerTap() {
         // Verify that the right click coordinates occur at the point of the first tap when the
         // initial finger is lifted up first.
         injectDownEvent(0, 0, 0);
@@ -129,7 +129,7 @@ public class TouchInputStrategyTest {
     @Test
     @SmallTest
     @Feature({"Chromoting"})
-    public void testThreeFingerTap() throws Exception {
+    public void testThreeFingerTap() {
         injectDownEvent(0, 0, 0);
         injectDownEvent(1, 25, 25);
         injectDownEvent(2, 50, 50);
@@ -145,7 +145,7 @@ public class TouchInputStrategyTest {
     @Test
     @SmallTest
     @Feature({"Chromoting"})
-    public void testOneFingerTapSequence() throws Exception {
+    public void testOneFingerTapSequence() {
         int tapSequenceCount = 10;
         for (int i = 0; i < tapSequenceCount; i++) {
             injectDownEvent(0, i, i);
@@ -163,7 +163,7 @@ public class TouchInputStrategyTest {
     @Test
     @SmallTest
     @Feature({"Chromoting"})
-    public void testInvalidThenValidTap() throws Exception {
+    public void testInvalidThenValidTap() {
         // First an invalid tap, verify it is ignored.
         injectDownEvent(0, 0, 0);
         injectDownEvent(1, 25, 25);
@@ -190,7 +190,7 @@ public class TouchInputStrategyTest {
     @Test
     @SmallTest
     @Feature({"Chromoting"})
-    public void testOnPressAndHoldWithNoEvents() throws Exception {
+    public void testOnPressAndHoldWithNoEvents() {
         Assert.assertFalse(mInputStrategy.onPressAndHold(InputStub.BUTTON_LEFT));
         mInputInjector.assertEmpty();
     }
@@ -198,7 +198,7 @@ public class TouchInputStrategyTest {
     @Test
     @SmallTest
     @Feature({"Chromoting"})
-    public void testOneFingerLongPress() throws Exception {
+    public void testOneFingerLongPress() {
         injectDownEvent(0, 0, 0);
         mInputInjector.assertEmpty();
 
@@ -215,7 +215,7 @@ public class TouchInputStrategyTest {
     @Test
     @SmallTest
     @Feature({"Chromoting"})
-    public void testOneFingerLongPressThenPan() throws Exception {
+    public void testOneFingerLongPressThenPan() {
         injectDownEvent(0, 0, 0);
         mInputInjector.assertEmpty();
 
@@ -238,7 +238,7 @@ public class TouchInputStrategyTest {
     @Test
     @SmallTest
     @Feature({"Chromoting"})
-    public void testTwoFingerLongPress() throws Exception {
+    public void testTwoFingerLongPress() {
         injectDownEvent(0, 0, 0);
         injectDownEvent(1, 1, 1);
         mInputInjector.assertEmpty();
@@ -254,7 +254,7 @@ public class TouchInputStrategyTest {
     @Test
     @SmallTest
     @Feature({"Chromoting"})
-    public void testOneFingerPan() throws Exception {
+    public void testOneFingerPan() {
         injectDownEvent(0, 0, 0);
 
         // Inject a few move events to simulate a pan.
@@ -270,7 +270,7 @@ public class TouchInputStrategyTest {
     @Test
     @SmallTest
     @Feature({"Chromoting"})
-    public void testVerticalTwoFingerPan() throws Exception {
+    public void testVerticalTwoFingerPan() {
         final int fingerOnePosX = 0;
         final int fingerTwoPosX = 10;
         injectDownEvent(0, fingerOnePosX, 0);
@@ -311,7 +311,7 @@ public class TouchInputStrategyTest {
     @Test
     @SmallTest
     @Feature({"Chromoting"})
-    public void testHorizontalTwoFingerPan() throws Exception {
+    public void testHorizontalTwoFingerPan() {
         final int fingerOnePosY = 0;
         final int fingerTwoPosY = 10;
         injectDownEvent(0, 0, fingerOnePosY);
@@ -352,7 +352,7 @@ public class TouchInputStrategyTest {
     @Test
     @SmallTest
     @Feature({"Chromoting"})
-    public void testCancelledTwoFingerPan() throws Exception {
+    public void testCancelledTwoFingerPan() {
         final int fingerOnePosX = 0;
         final int fingerTwoPosX = 10;
         injectDownEvent(0, fingerOnePosX, 0);
@@ -402,7 +402,7 @@ public class TouchInputStrategyTest {
     @Test
     @SmallTest
     @Feature({"Chromoting"})
-    public void testTooManyEventsCancelsGesture() throws Exception {
+    public void testTooManyEventsCancelsGesture() {
         final int fingerOnePosX = 0;
         final int fingerTwoPosX = 10;
         injectDownEvent(0, fingerOnePosX, 0);

@@ -28,11 +28,11 @@ bool PropertyHandle::operator==(const PropertyHandle& other) const {
 unsigned PropertyHandle::GetHash() const {
   switch (handle_type_) {
     case kHandleCSSProperty:
-      return css_property_->PropertyID();
+      return static_cast<int>(css_property_->PropertyID());
     case kHandleCSSCustomProperty:
       return AtomicStringHash::GetHash(property_name_);
     case kHandlePresentationAttribute:
-      return -css_property_->PropertyID();
+      return -static_cast<int>(css_property_->PropertyID());
     case kHandleSVGAttribute:
       return QualifiedNameHash::GetHash(*svg_attribute_);
     default:

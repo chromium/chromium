@@ -22,7 +22,7 @@ enum ViewID {
   VIEW_ID_CLOSE_BUTTON,
   VIEW_ID_WINDOW_ICON,
   VIEW_ID_WINDOW_TITLE,
-  VIEW_ID_HOSTED_APP_BUTTON_CONTAINER,
+  VIEW_ID_WEB_APP_FRAME_TOOLBAR,
 
   // Tabs within a window/tab strip, counting from the left.
   VIEW_ID_TAB_0,
@@ -62,6 +62,10 @@ enum ViewID {
   VIEW_ID_MIGRATE_LOCAL_CREDIT_CARD_BUTTON,
   VIEW_ID_TRANSLATE_BUTTON,
 
+  // Location bar content settings icons.
+  VIEW_ID_CONTENT_SETTING_JAVASCRIPT,
+  VIEW_ID_CONTENT_SETTING_POPUP,
+
   // The Bookmark Bar.
   VIEW_ID_BOOKMARK_BAR,
   VIEW_ID_OTHER_BOOKMARKS,
@@ -96,6 +100,10 @@ enum ViewID {
 
   // Plus button on location bar.
   VIEW_ID_ACTION_BOX_BUTTON,
+
+  // IDs for the WebUI-based tab strip. See https://crbug.com/989131.
+  VIEW_ID_WEBUI_TAB_STRIP_TAB_COUNTER,
+  VIEW_ID_WEBUI_TAB_STRIP_NEW_TAB_BUTTON,
 };
 
 #endif  // CHROME_BROWSER_UI_VIEW_IDS_H_

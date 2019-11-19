@@ -1,16 +1,17 @@
 rootWebArea
-++form
-++++radioButton checkedState=false radioGroupIds=radioButton
-++++staticText name='Radio1'
-++++++inlineTextBox name='Radio1'
-++++lineBreak name='<newline>'
-++++++inlineTextBox name='<newline>'
-++++radioButton checkedState=false radioGroupIds=radioButton
-++++staticText name='Radio2'
-++++++inlineTextBox name='Radio2'
-++form
-++++radioButton name='Radio3' checkedState=false radioGroupIds=radioButton,radioButton
-++++radioButton name='Radio4' checkedState=true radioGroupIds=radioButton,radioButton
-++form
-++++radioButton name='Radio5' checkedState=false radioGroupIds=radioButton
-++++radioButton name='Radio6' checkedState=true radioGroupIds=radioButton
+++genericContainer ignored
+++++form
+++++++radioButton inputType='radio' checkedState=false radioGroupIds=radioButton
+++++++staticText name='Radio1'
+++++++++inlineTextBox name='Radio1'
+++++++lineBreak name='<newline>'
+++++++++inlineTextBox name='<newline>'
+++++++radioButton inputType='radio' checkedState=false radioGroupIds=radioButton
+++++++staticText name='Radio2'
+++++++++inlineTextBox name='Radio2'
+++++form
+++++++radioButton inputType='radio' name='Radio3' checkedState=false radioGroupIds=radioButton,radioButton
+++++++radioButton inputType='radio' name='Radio4' checkedState=true radioGroupIds=radioButton,radioButton
+++++form
+++++++radioButton inputType='radio' name='Radio5' checkedState=false radioGroupIds=radioButton
+++++++radioButton inputType='radio' name='Radio6' checkedState=true radioGroupIds=radioButton

@@ -21,7 +21,7 @@
           sensorProvider = sensorMocks();
           let mockDataPromise = setMockSensorDataForType(
               sensorProvider,
-              device.mojom.SensorType.RELATIVE_ORIENTATION_EULER_ANGLES,
+              "RelativeOrientationEulerAngles",
               [mockBeta, mockGamma, mockAlpha]);
           window.addEventListener("deviceorientation", handler);
           return mockDataPromise;

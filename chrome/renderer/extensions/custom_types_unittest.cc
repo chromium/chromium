@@ -100,15 +100,6 @@ TEST_F(CustomTypesTest, ChromeSettingsEventUseAfterInvalidation) {
                                 });)");
 }
 
-TEST_F(CustomTypesTest, EasyUnlockProximityRequiredUseAfterInvalidation) {
-  RunContextInvalidationTest(
-      "preferencesPrivate",
-      "chrome.preferencesPrivate.easyUnlockProximityRequired",
-      R"((function(setting) {
-           setting.onChange.addListener(function() {});
-         });)");
-}
-
 TEST_F(CustomTypesTest, ContentSettingsInvalidInvocationError) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("foo").AddPermission("contentSettings").Build();

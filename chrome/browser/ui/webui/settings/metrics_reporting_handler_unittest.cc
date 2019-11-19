@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#if defined(GOOGLE_CHROME_BUILD) && !defined(OS_CHROMEOS)
+#include "build/branding_buildflags.h"
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !defined(OS_CHROMEOS)
 
 #include "chrome/browser/ui/webui/settings/metrics_reporting_handler.h"
 
@@ -18,7 +20,7 @@
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_ui.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_ui.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -34,10 +36,10 @@ class MetricsReportingHandlerTest : public testing::Test {
  public:
   MetricsReportingHandlerTest() {
     // Local state must be set up before |handler_|.
-    local_state_.reset(new ScopedTestingLocalState(
-        TestingBrowserProcess::GetGlobal()));
+    local_state_ = std::make_unique<ScopedTestingLocalState>(
+        TestingBrowserProcess::GetGlobal());
 
-    handler_.reset(new TestingMetricsReportingHandler);
+    handler_ = std::make_unique<TestingMetricsReportingHandler>();
     handler_->set_web_ui(&test_web_ui_);
 
     EXPECT_CALL(provider_, IsInitializationComplete(testing::_)).WillRepeatedly(
@@ -75,7 +77,7 @@ class MetricsReportingHandlerTest : public testing::Test {
   policy::MockConfigurationPolicyProvider* provider() { return &provider_; }
 
  private:
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   content::TestWebUI test_web_ui_;
   std::unique_ptr<ScopedTestingLocalState> local_state_;
   std::unique_ptr<TestingMetricsReportingHandler> handler_;
@@ -124,4 +126,4 @@ TEST_F(MetricsReportingHandlerTest, PolicyChangesNotifyPage) {
 
 }  // namespace settings
 
-#endif  // defined(GOOGLE_CHROME_BUILD) && !defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && !defined(OS_CHROMEOS)

@@ -31,7 +31,7 @@ class SerialDeviceEnumerator {
 
   virtual std::vector<mojom::SerialPortInfoPtr> GetDevices() = 0;
 
-  base::Optional<base::FilePath> GetPathFromToken(
+  virtual base::Optional<base::FilePath> GetPathFromToken(
       const base::UnguessableToken& token);
 
  protected:

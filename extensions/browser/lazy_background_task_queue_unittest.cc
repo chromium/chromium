@@ -92,7 +92,8 @@ class LazyBackgroundTaskQueueTest : public ExtensionsTest {
   scoped_refptr<const Extension> CreateLazyBackgroundExtension() {
     scoped_refptr<const Extension> extension =
         ExtensionBuilder("Lazy background")
-            .SetBackgroundPage(ExtensionBuilder::BackgroundPage::EVENT)
+            .SetBackgroundContext(
+                ExtensionBuilder::BackgroundContext::EVENT_PAGE)
             .SetID("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb")
             .Build();
     ExtensionRegistry::Get(browser_context())->AddEnabled(extension);
@@ -222,7 +223,7 @@ TEST_F(LazyBackgroundTaskQueueTest, CreateLazyBackgroundPageOnExtensionLoaded) {
 
   scoped_refptr<const Extension> lazy_background =
       ExtensionBuilder("Lazy background")
-          .SetBackgroundPage(ExtensionBuilder::BackgroundPage::EVENT)
+          .SetBackgroundContext(ExtensionBuilder::BackgroundContext::EVENT_PAGE)
           .SetID("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb")
           .Build();
 

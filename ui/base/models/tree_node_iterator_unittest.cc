@@ -32,19 +32,19 @@ TEST(TreeNodeIteratorTest, Basic) {
 
   TreeNodeIterator<TestNode> iterator(&root);
   ASSERT_TRUE(iterator.has_next());
-  ASSERT_EQ(root.GetChild(0), iterator.Next());
+  ASSERT_EQ(root.children()[0].get(), iterator.Next());
 
   ASSERT_TRUE(iterator.has_next());
-  ASSERT_EQ(root.GetChild(1), iterator.Next());
+  ASSERT_EQ(root.children()[1].get(), iterator.Next());
 
   ASSERT_TRUE(iterator.has_next());
-  ASSERT_EQ(root.GetChild(2), iterator.Next());
+  ASSERT_EQ(root.children()[2].get(), iterator.Next());
 
   ASSERT_TRUE(iterator.has_next());
   ASSERT_EQ(f4, iterator.Next());
 
   ASSERT_TRUE(iterator.has_next());
-  ASSERT_EQ(f4->GetChild(0), iterator.Next());
+  ASSERT_EQ(f4->children()[0].get(), iterator.Next());
 
   ASSERT_FALSE(iterator.has_next());
 }
@@ -63,12 +63,14 @@ TEST(TreeNodeIteratorTest, Prune) {
   f4->Add(std::make_unique<TestNode>(5), 0);
   f3->Add(std::make_unique<TestNode>(7), 1);
 
-  TreeNodeIterator<TestNode> odd_iterator(&root, base::Bind(&PruneOdd));
+  TreeNodeIterator<TestNode> odd_iterator(&root,
+                                          base::BindRepeating(&PruneOdd));
   ASSERT_TRUE(odd_iterator.has_next());
   ASSERT_EQ(2, odd_iterator.Next()->value);
   ASSERT_FALSE(odd_iterator.has_next());
 
-  TreeNodeIterator<TestNode> even_iterator(&root, base::Bind(&PruneEven));
+  TreeNodeIterator<TestNode> even_iterator(&root,
+                                           base::BindRepeating(&PruneEven));
   ASSERT_TRUE(even_iterator.has_next());
   ASSERT_EQ(1, even_iterator.Next()->value);
   ASSERT_TRUE(even_iterator.has_next());

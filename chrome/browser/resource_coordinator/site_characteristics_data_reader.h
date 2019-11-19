@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_RESOURCE_COORDINATOR_SITE_CHARACTERISTICS_DATA_READER_H_
 #define CHROME_BROWSER_RESOURCE_COORDINATOR_SITE_CHARACTERISTICS_DATA_READER_H_
 
-#include "chrome/browser/resource_coordinator/local_site_characteristics_feature_usage.h"
+#include "chrome/browser/performance_manager/persistence/site_data/feature_usage.h"
 
 #include "base/callback_forward.h"
 
@@ -19,10 +19,14 @@ class SiteCharacteristicsDataReader {
   virtual ~SiteCharacteristicsDataReader() {}
 
   // Accessors for the site characteristics usage.
-  virtual SiteFeatureUsage UpdatesFaviconInBackground() const = 0;
-  virtual SiteFeatureUsage UpdatesTitleInBackground() const = 0;
-  virtual SiteFeatureUsage UsesAudioInBackground() const = 0;
-  virtual SiteFeatureUsage UsesNotificationsInBackground() const = 0;
+  virtual performance_manager::SiteFeatureUsage UpdatesFaviconInBackground()
+      const = 0;
+  virtual performance_manager::SiteFeatureUsage UpdatesTitleInBackground()
+      const = 0;
+  virtual performance_manager::SiteFeatureUsage UsesAudioInBackground()
+      const = 0;
+  virtual performance_manager::SiteFeatureUsage UsesNotificationsInBackground()
+      const = 0;
 
   // Returns true if this reader is fully initialized and serving the most
   // authoritative data. This can initially return false as the backing store is

@@ -46,7 +46,7 @@ base::TimeTicks JournalMutation::GetStartTime() const {
   return start_time_;
 }
 
-JournalOperation JournalMutation::TakeFristOperation() {
+JournalOperation JournalMutation::TakeFirstOperation() {
   JournalOperation operation = std::move(operations_list_.front());
   operations_list_.pop_front();
   return operation;

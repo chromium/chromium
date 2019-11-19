@@ -2,6 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+# Nothing outside //chrome/chrome_cleaner can depend on these targets.
+visibility = [ "//chrome/chrome_cleaner/*" ]
+
 source_set("http_status_codes") {
   sources = [
     "http_status_codes.h",
@@ -27,7 +30,7 @@ source_set("http") {
   libs = [ "Winhttp.lib" ]
 
   deps = [
-    "//base:base",
+    "//base",
     "//net/traffic_annotation",
   ]
 }
@@ -45,7 +48,7 @@ source_set("unittest_sources") {
 
   deps = [
     ":http",
-    "//base:base",
+    "//base",
     "//base/test:test_support",
     "//testing/gmock",
     "//testing/gtest",

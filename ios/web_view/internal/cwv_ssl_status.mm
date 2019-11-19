@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web/public/ssl_status.h"
+#import "ios/web/public/security/ssl_status.h"
 
 #import "ios/web_view/internal/cwv_ssl_status_internal.h"
 #include "net/base/net_errors.h"

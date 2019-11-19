@@ -20,17 +20,25 @@ DEFINE_NON_INTERPOLABLE_VALUE_TYPE(CSSDefaultNonInterpolableValue);
 
 InterpolationValue CSSDefaultInterpolationType::MaybeConvertSingle(
     const PropertySpecificKeyframe& keyframe,
-    const InterpolationEnvironment&,
+    const InterpolationEnvironment& environment,
     const InterpolationValue&,
     ConversionCheckers&) const {
-  if (!ToCSSPropertySpecificKeyframe(keyframe).Value()) {
+  const CSSValue* css_value = ToCSSPropertySpecificKeyframe(keyframe).Value();
+
+  if (!css_value) {
     DCHECK(keyframe.IsNeutral());
     return nullptr;
   }
-  return InterpolationValue(
-      InterpolableList::Create(0),
-      CSSDefaultNonInterpolableValue::Create(
-          ToCSSPropertySpecificKeyframe(keyframe).Value()));
+
+  if (RuntimeEnabledFeatures::CSSCascadeEnabled()) {
+    css_value = ToCSSInterpolationEnvironment(environment)
+                    .Resolve(GetProperty(), css_value);
+    if (!css_value)
+      return nullptr;
+  }
+
+  return InterpolationValue(std::make_unique<InterpolableList>(0),
+                            CSSDefaultNonInterpolableValue::Create(css_value));
 }
 
 void CSSDefaultInterpolationType::Apply(

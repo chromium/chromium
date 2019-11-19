@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/test/integration/profile_sync_service_harness.h"
@@ -74,6 +73,12 @@ void ChangeStringPref(int index,
     GetVerifierPrefs()->SetString(pref_name, new_value);
 }
 
+void ClearPref(int index, const char* pref_name) {
+  GetPrefs(index)->ClearPref(pref_name);
+  if (test()->use_verifier())
+    GetVerifierPrefs()->ClearPref(pref_name);
+}
+
 void ChangeFilePathPref(int index,
                         const char* pref_name,
                         const base::FilePath& new_value) {
@@ -103,14 +108,8 @@ void ChangeListPref(int index,
 }
 
 scoped_refptr<PrefStore> BuildPrefStoreFromPrefsFile(Profile* profile) {
-  profile->GetPrefs()->CommitPendingWrite();
-  // Writes are scheduled on the IO thread. The JsonPrefStore requires all
-  // access (construction, Get, Set, ReadPrefs) to be made from the same thread.
-  // So instead of reading the file from the IO thread, we simply schedule a
-  // dummy task to avoid races with writing the file and reading it.
   base::RunLoop run_loop;
-  profile->GetIOTaskRunner()->PostTask(FROM_HERE,
-                                       base::BindOnce(run_loop.QuitClosure()));
+  profile->GetPrefs()->CommitPendingWrite(run_loop.QuitClosure());
   run_loop.Run();
 
   auto pref_store = base::MakeRefCounted<JsonPrefStore>(
@@ -119,6 +118,7 @@ scoped_refptr<PrefStore> BuildPrefStoreFromPrefsFile(Profile* profile) {
   if (pref_store->ReadPrefs() != PersistentPrefStore::PREF_READ_ERROR_NONE) {
     ADD_FAILURE() << " Failed reading the prefs file into the store.";
   }
+
   return pref_store;
 }
 
@@ -207,6 +207,23 @@ bool StringPrefMatches(const char* pref_name) {
   return true;
 }
 
+bool ClearedPrefMatches(const char* pref_name) {
+  if (test()->use_verifier()) {
+    if (GetVerifierPrefs()->GetUserPrefValue(pref_name)) {
+      return false;
+    }
+  }
+
+  for (int i = 0; i < test()->num_clients(); ++i) {
+    if (GetPrefs(i)->GetUserPrefValue(pref_name)) {
+      DVLOG(1) << "Preference " << pref_name << " isn't cleared in"
+               << " profile " << i << ".";
+      return false;
+    }
+  }
+  return true;
+}
+
 bool FilePathPrefMatches(const char* pref_name) {
   base::FilePath reference_value;
   if (test()->use_verifier()) {
@@ -254,10 +271,6 @@ PrefMatchChecker::PrefMatchChecker(const char* path) : path_(path) {
 
 PrefMatchChecker::~PrefMatchChecker() {}
 
-std::string PrefMatchChecker::GetDebugMessage() const {
-  return base::StringPrintf("Waiting for pref '%s' to match", GetPath());
-}
-
 const char* PrefMatchChecker::GetPath() const {
   return path_;
 }
@@ -274,27 +287,39 @@ void PrefMatchChecker::RegisterPrefListener(PrefService* pref_service) {
 ListPrefMatchChecker::ListPrefMatchChecker(const char* path)
     : PrefMatchChecker(path) {}
 
-bool ListPrefMatchChecker::IsExitConditionSatisfied() {
+bool ListPrefMatchChecker::IsExitConditionSatisfied(std::ostream* os) {
+  *os << "Waiting for pref '" << GetPath() << "' to match";
   return preferences_helper::ListPrefMatches(GetPath());
 }
 
 BooleanPrefMatchChecker::BooleanPrefMatchChecker(const char* path)
     : PrefMatchChecker(path) {}
 
-bool BooleanPrefMatchChecker::IsExitConditionSatisfied() {
+bool BooleanPrefMatchChecker::IsExitConditionSatisfied(std::ostream* os) {
+  *os << "Waiting for pref '" << GetPath() << "' to match";
   return preferences_helper::BooleanPrefMatches(GetPath());
 }
 
 IntegerPrefMatchChecker::IntegerPrefMatchChecker(const char* path)
     : PrefMatchChecker(path) {}
 
-bool IntegerPrefMatchChecker::IsExitConditionSatisfied() {
+bool IntegerPrefMatchChecker::IsExitConditionSatisfied(std::ostream* os) {
+  *os << "Waiting for pref '" << GetPath() << "' to match";
   return preferences_helper::IntegerPrefMatches(GetPath());
 }
 
 StringPrefMatchChecker::StringPrefMatchChecker(const char* path)
     : PrefMatchChecker(path) {}
 
-bool StringPrefMatchChecker::IsExitConditionSatisfied() {
+bool StringPrefMatchChecker::IsExitConditionSatisfied(std::ostream* os) {
+  *os << "Waiting for pref '" << GetPath() << "' to match";
   return preferences_helper::StringPrefMatches(GetPath());
+}
+
+ClearedPrefMatchChecker::ClearedPrefMatchChecker(const char* path)
+    : PrefMatchChecker(path) {}
+
+bool ClearedPrefMatchChecker::IsExitConditionSatisfied(std::ostream* os) {
+  *os << "Waiting for pref '" << GetPath() << "' to match";
+  return preferences_helper::ClearedPrefMatches(GetPath());
 }

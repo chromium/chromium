@@ -49,8 +49,7 @@ ScheduledExecutorImpl::PendingTaskWithTimer::~PendingTaskWithTimer() = default;
 ScheduledExecutorImpl::ScheduledExecutorImpl(
     scoped_refptr<base::SequencedTaskRunner> timer_task_runner)
     : timer_task_runner_(timer_task_runner),
-      is_shut_down_(std::make_unique<AtomicBooleanImpl>()),
-      weak_factory_(this) {
+      is_shut_down_(std::make_unique<AtomicBooleanImpl>()) {
   DETACH_FROM_SEQUENCE(timer_sequence_checker_);
 }
 

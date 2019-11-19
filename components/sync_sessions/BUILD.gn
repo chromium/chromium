@@ -44,24 +44,25 @@ static_library("sync_sessions") {
     "synced_window_delegates_getter.h",
     "tab_node_pool.cc",
     "tab_node_pool.h",
-    "task_tracker.cc",
-    "task_tracker.h",
   ]
 
   public_deps = [
     "//components/sessions",
     "//components/sync",
+    "//components/sync_device_info",
   ]
 
   deps = [
     "//base",
     "//components/bookmarks/browser",
     "//components/favicon/core",
+    "//components/favicon_base",
     "//components/history/core/browser",
     "//components/keyed_service/core",
     "//components/prefs",
-    "//components/variations",
+    "//components/sync_user_events",
     "//components/version_info",
+    "//google_apis",
     "//ui/base:base",
     "//ui/gfx",
     "//url",
@@ -107,7 +108,6 @@ source_set("unit_tests") {
     "synced_session_tracker_unittest.cc",
     "synced_session_unittest.cc",
     "tab_node_pool_unittest.cc",
-    "task_tracker_unittest.cc",
   ]
 
   deps = [
@@ -119,10 +119,7 @@ source_set("unit_tests") {
     "//components/history/core/browser",
     "//components/prefs:test_support",
     "//components/sessions:test_support",
-    "//components/sync",
-    "//components/sync:test_support_driver",
-    "//components/sync:test_support_engine",
-    "//components/sync:test_support_model",
+    "//components/sync:test_support",
     "//testing/gmock",
     "//testing/gtest",
     "//ui/base:base",

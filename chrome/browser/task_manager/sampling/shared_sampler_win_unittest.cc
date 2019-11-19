@@ -21,7 +21,7 @@
 #include "chrome/browser/task_manager/sampling/shared_sampler_win_defines.h"
 #include "chrome/browser/task_manager/task_manager_observer.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace task_manager {
@@ -64,7 +64,8 @@ class SharedSamplerTest : public testing::Test {
 
  private:
   static scoped_refptr<base::SequencedTaskRunner> GetBlockingPoolRunner() {
-    return base::CreateSequencedTaskRunnerWithTraits({base::MayBlock()});
+    return base::CreateSequencedTaskRunner(
+        {base::ThreadPool(), base::MayBlock()});
   }
 
   void OnRefreshTypeFinished(int64_t finished_refresh_type) {
@@ -93,7 +94,7 @@ class SharedSamplerTest : public testing::Test {
   base::Time start_time_;
   base::TimeDelta cpu_time_;
 
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   scoped_refptr<base::SequencedTaskRunner> blocking_pool_runner_;
   scoped_refptr<SharedSampler> shared_sampler_;
 

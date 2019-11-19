@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/paint/nine_piece_image_grid.h"
 
+#include "base/numerics/clamped_math.h"
 #include "third_party/blink/renderer/platform/geometry/float_size.h"
 #include "third_party/blink/renderer/platform/geometry/int_size.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
@@ -88,8 +89,8 @@ NinePieceImageGrid::NinePieceImageGrid(const NinePieceImage& nine_piece_image,
   // as its height, and Wside as the border image width offset for the side, let
   // f = min(Lwidth/(Wleft+Wright), Lheight/(Wtop+Wbottom)). If f < 1, then all
   // W are reduced by multiplying them by f.
-  int border_side_width = ClampAdd(left_.width, right_.width).Max(1);
-  int border_side_height = ClampAdd(top_.width, bottom_.width).Max(1);
+  int border_side_width = base::ClampAdd(left_.width, right_.width).Max(1);
+  int border_side_height = base::ClampAdd(top_.width, bottom_.width).Max(1);
   float border_side_scale_factor =
       std::min((float)border_image_area.Width() / border_side_width,
                (float)border_image_area.Height() / border_side_height);

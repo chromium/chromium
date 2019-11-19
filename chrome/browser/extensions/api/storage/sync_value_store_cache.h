@@ -6,10 +6,12 @@
 #define CHROME_BROWSER_EXTENSIONS_API_STORAGE_SYNC_VALUE_STORE_CACHE_H_
 
 #include <memory>
+#include <string>
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
 #include "components/sync/model/syncable_service.h"
 #include "extensions/browser/api/storage/settings_observer.h"
 #include "extensions/browser/api/storage/value_store_cache.h"
@@ -36,7 +38,8 @@ class SyncValueStoreCache : public ValueStoreCache {
                       const base::FilePath& profile_path);
   ~SyncValueStoreCache() override;
 
-  syncer::SyncableService* GetSyncableService(syncer::ModelType type) const;
+  base::WeakPtr<SyncValueStoreCache> AsWeakPtr();
+  syncer::SyncableService* GetSyncableService(syncer::ModelType type);
 
   // ValueStoreCache implementation:
   void RunWithValueStoreForExtension(
@@ -52,6 +55,7 @@ class SyncValueStoreCache : public ValueStoreCache {
   bool initialized_;
   std::unique_ptr<SyncStorageBackend> app_backend_;
   std::unique_ptr<SyncStorageBackend> extension_backend_;
+  base::WeakPtrFactory<SyncValueStoreCache> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SyncValueStoreCache);
 };

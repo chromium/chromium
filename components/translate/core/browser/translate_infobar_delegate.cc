@@ -9,6 +9,7 @@
 
 #include "base/i18n/string_compare.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
 #include "components/infobars/core/infobar.h"
@@ -23,19 +24,27 @@
 #include "components/translate/core/common/translate_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 
-namespace translate {
 namespace {
-// The number of times user should consecutively translate for "Always
+
+// The default number of times user should consecutively translate for "Always
 // Translate" to automatically trigger.
 const int kAutoAlwaysThreshold = 5;
-// The number of times user should consecutively dismiss the translate infobar
-// for "Never Translate" to automatically trigger.
+// The default number of times user should consecutively dismiss the translate
+// infobar for "Never Translate" to automatically trigger.
 const int kAutoNeverThreshold = 10;
-// The maximum number of times "Always Translate" is automatically triggered.
+// The default maximum number of times "Always Translate" is automatically
+// triggered.
 const int kMaxNumberOfAutoAlways = 2;
-// The maximum number of times "Never Translate" is automatically triggered.
+// The default maximum number of times "Never Translate" is automatically
+// triggered.
 const int kMaxNumberOfAutoNever = 2;
+
 }  // namespace
+
+namespace translate {
+
+const base::Feature kTranslateAutoSnackbars{"TranslateAutoSnackbars",
+                                            base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kTranslateCompactUI{"TranslateCompactUI",
                                         base::FEATURE_ENABLED_BY_DEFAULT};
@@ -43,6 +52,8 @@ const base::Feature kTranslateCompactUI{"TranslateCompactUI",
 const size_t TranslateInfoBarDelegate::kNoIndex = TranslateUIDelegate::kNoIndex;
 
 TranslateInfoBarDelegate::~TranslateInfoBarDelegate() {
+  if (observer_)
+    observer_->OnTranslateInfoBarDelegateDestroyed(this);
 }
 
 infobars::InfoBarDelegate::InfoBarIdentifier
@@ -146,7 +157,6 @@ void TranslateInfoBarDelegate::UpdateTargetLanguage(
 }
 
 void TranslateInfoBarDelegate::Translate() {
-  DCHECK_NE(original_language_code(), target_language_code());
   ui_delegate_.Translate();
 }
 
@@ -327,8 +337,8 @@ bool TranslateInfoBarDelegate::ShouldAutoAlwaysTranslate() {
   }
 
   bool always_translate =
-      (GetTranslationAcceptedCount() >= kAutoAlwaysThreshold &&
-       GetTranslationAutoAlwaysCount() < kMaxNumberOfAutoAlways);
+      (GetTranslationAcceptedCount() >= GetAutoAlwaysThreshold() &&
+       GetTranslationAutoAlwaysCount() < GetMaximumNumberOfAutoAlways());
 
   if (always_translate) {
     // Auto-always will be triggered. Need to increment the auto-always counter.
@@ -355,8 +365,8 @@ bool TranslateInfoBarDelegate::ShouldAutoNeverTranslate() {
   int off_by_one = auto_never_count == 0 ? 1 : 0;
 
   bool never_translate =
-      (GetTranslationDeniedCount() + off_by_one >= kAutoNeverThreshold &&
-       auto_never_count < kMaxNumberOfAutoNever);
+      (GetTranslationDeniedCount() + off_by_one >= GetAutoNeverThreshold() &&
+       auto_never_count < GetMaximumNumberOfAutoNever());
   if (never_translate) {
     // Auto-never will be triggered. Need to increment the auto-never counter.
     IncrementTranslationAutoNeverCount();
@@ -465,6 +475,30 @@ void TranslateInfoBarDelegate::InfoBarDismissed() {
 TranslateInfoBarDelegate*
     TranslateInfoBarDelegate::AsTranslateInfoBarDelegate() {
   return this;
+}
+
+int TranslateInfoBarDelegate::GetAutoAlwaysThreshold() {
+  static constexpr base::FeatureParam<int> auto_always_threshold{
+      &kTranslateAutoSnackbars, "AutoAlwaysThreshold", kAutoAlwaysThreshold};
+  return auto_always_threshold.Get();
+}
+
+int TranslateInfoBarDelegate::GetAutoNeverThreshold() {
+  static constexpr base::FeatureParam<int> auto_never_threshold{
+      &kTranslateAutoSnackbars, "AutoNeverThreshold", kAutoNeverThreshold};
+  return auto_never_threshold.Get();
+}
+
+int TranslateInfoBarDelegate::GetMaximumNumberOfAutoAlways() {
+  static constexpr base::FeatureParam<int> auto_always_maximum{
+      &kTranslateAutoSnackbars, "AutoAlwaysMaximum", kMaxNumberOfAutoAlways};
+  return auto_always_maximum.Get();
+}
+
+int TranslateInfoBarDelegate::GetMaximumNumberOfAutoNever() {
+  static constexpr base::FeatureParam<int> auto_never_maximum{
+      &kTranslateAutoSnackbars, "AutoNeverMaximum", kMaxNumberOfAutoNever};
+  return auto_never_maximum.Get();
 }
 
 }  // namespace translate

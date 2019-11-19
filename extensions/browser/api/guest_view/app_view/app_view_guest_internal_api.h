@@ -10,8 +10,7 @@
 
 namespace extensions {
 
-class AppViewGuestInternalAttachFrameFunction
-    : public UIThreadExtensionFunction {
+class AppViewGuestInternalAttachFrameFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("appViewGuestInternal.attachFrame",
                              APPVIEWINTERNAL_ATTACHFRAME)
@@ -25,8 +24,7 @@ class AppViewGuestInternalAttachFrameFunction
   DISALLOW_COPY_AND_ASSIGN(AppViewGuestInternalAttachFrameFunction);
 };
 
-class AppViewGuestInternalDenyRequestFunction
-    : public UIThreadExtensionFunction {
+class AppViewGuestInternalDenyRequestFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("appViewGuestInternal.denyRequest",
                              APPVIEWINTERNAL_DENYREQUEST)

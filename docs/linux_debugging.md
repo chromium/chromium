@@ -206,22 +206,10 @@ three) but you'll still need to use `--plugin-launcher` or another approach.
 
 ### Printing Chromium types
 
-gdb 7 lets us use Python to write pretty-printers for Chromium types. The
-directory `tools/gdb/` contains a Python gdb scripts useful for Chromium code.
-There is a similar script in `thrid_party/blink/tools/gdb`, which came from
-WebKit.
-
-To include these pretty-printers with your gdb, put the following into
-`~/.gdbinit`:
-
-```python
-python
-import sys
-sys.path.insert(0, "<path/to/chromium/src>/tools/gdb/")
-import gdb_chrome
-```
-
-This will import Blink pretty-printers as well.
+gdb 7 lets us use Python to write pretty-printers for Chromium types. See
+[gdbinit](https://chromium.googlesource.com/chromium/src/+/master/docs/gdbinit.md)
+to enable pretty-printing of Chromium types.  This will import Blink
+pretty-printers as well.
 
 Pretty printers for std types shouldn't be necessary in gdb 7, but they're
 provided here in case you're using an older gdb. Put the following into
@@ -251,6 +239,39 @@ end
 
 [More STL GDB macros](http://www.yolinux.com/TUTORIALS/src/dbinit_stl_views-1.01.txt)
 
+### JsDbg -- visualize data structures in the browser
+
+JsDbg is a debugger plugin to display various Chrome data structures in a
+browser window, such as the accessibility tree, layout object tree, DOM tree,
+and others.
+[Installation instructions are here](https://github.com/MicrosoftEdge/JsDbg),
+and see [here](https://github.com/MicrosoftEdge/JsDbg/blob/master/docs/FEATURES.md)
+for screenshots and an introduction.
+
+For Googlers, please see [go/jsdbg](https://goto.google.com/jsdbg) for
+installation instructions.
+
+### Time travel debugging with rr
+
+You can use [rr](https://rr-project.org) for time travel debugging, so you
+can also step or execute backwards. This works by first recording a trace
+and then debugging based on that. I recommend installing it by compiling
+[from source](https://github.com/mozilla/rr/wiki/Building-And-Installing).
+
+Once installed, you can use it like this:
+```
+rr record out/Debug/content_shell --single-process --no-sandbox --disable-hang-monitor --single-process  --disable-seccomp-sandbox --disable-setuid-sandbox
+rr replay
+(gdb) c
+(gdb) break blink::NGBlockNode::Layout
+(gdb) rc # reverse-continue to the last Layout call
+(gdb) jsdbg # run JsDbg as described above to find the interesting object
+(gdb) watch -l box_->frame_rect_.size_.width_.value_
+(gdb) rc # reverse-continue to the last time the width was changed
+(gdb) rn # reverse-next to the previous line
+(gdb) reverse-fin # run to where this function was called from
+```
+
 ### Graphical Debugging Aid for Chromium Views
 
 The following link describes a tool that can be used on Linux, Windows and Mac under GDB.
@@ -276,13 +297,10 @@ your "gn args".
 ### Source level debug with -fdebug-compilation-dir
 
 When `strip_absolute_paths_from_debug_symbols` is enabled (which is the
-default) you need to add following command to your `~/.gdbinit` for source
-level debugging to load customized [gdbinit](../tools/gdb/gdbinit) or copy the
-content of the file to your `~/.gdbinit`.
-
-```
-source path/to/chromium/src/tools/gdb/gdbinit
-```
+default), gdb may not be able to find debug files, making source-level debugging
+impossible. See
+[gdbinit](https://chromium.googlesource.com/chromium/src/+/master/docs/gdbinit.md)
+to configure gdb to be able to find debug files.
 
 ## Core files
 
@@ -306,7 +324,7 @@ See [linux_minidump_to_core.md](linux_minidump_to_core.md)
 Many of our tests bring up windows on screen. This can be annoying (they steal
 your focus) and hard to debug (they receive extra events as you mouse over them).
 Instead, use `Xvfb` or `Xephyr` to run a nested X session to debug them, as
-outlined on [web_tests_linux.md](web_tests_linux.md).
+outlined on [testing/web_tests_linux.md](testing/web_tests_linux.md).
 
 ### Browser tests
 
@@ -314,10 +332,10 @@ By default the `browser_tests` forks a new browser for each test. To debug the
 browser side of a single test, use a command like
 
 ```
-gdb --args out/Debug/browser_tests --single_process --gtest_filter=MyTestName
+gdb --args out/Debug/browser_tests --single-process-tests --gtest_filter=MyTestName
 ```
 
-**note the underscore in `single_process`** -- this makes the test harness and
+**note the use of `single-process-tests`** -- this makes the test harness and
 browser process share the outermost process.
 
 
@@ -325,7 +343,7 @@ To debug a renderer process in this case, use the tips above about renderers.
 
 ### Web tests
 
-See [web_tests_linux.md](web_tests_linux.md) for some tips. In particular,
+See [testing/web_tests_linux.md](testing/web_tests_linux.md) for some tips. In particular,
 note that it's possible to debug a web test via `ssh`ing to a Linux box; you
 don't need anything on screen if you use `Xvfb`.
 
@@ -464,7 +482,7 @@ See the last section of [Linux Crash Dumping](linux_crash_dumping.md).
 If you break in a debugger during a drag, Chrome will have grabbed your mouse
 and keyboard so you won't be able to interact with the debugger!  To work around
 this, run via `Xephyr`. Instructions for how to use `Xephyr` are on the
-[Running web tests on Linux](web_tests_linux.md) page.
+[Running web tests on Linux](testing/web_tests_linux.md) page.
 
 ## Tracking Down Bugs
 

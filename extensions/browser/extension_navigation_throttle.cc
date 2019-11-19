@@ -4,6 +4,8 @@
 
 #include "extensions/browser/extension_navigation_throttle.h"
 
+#include <string>
+
 #include "components/guest_view/browser/guest_view_base.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
@@ -11,6 +13,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "extensions/browser/url_request_util.h"
 #include "extensions/common/constants.h"
@@ -98,9 +101,8 @@ ExtensionNavigationThrottle::WillStartOrRedirectRequest() {
     guest_view::GuestViewBase* guest =
         guest_view::GuestViewBase::FromWebContents(web_contents);
     if (url_has_extension_scheme && guest) {
-      // This variant of this logic applies to PlzNavigate top-level
-      // navigations. It is performed for subresources, and for non-PlzNavigate
-      // top navigations, in url_request_util::AllowCrossRendererResourceLoad.
+      // This only handles top-level navigations. For subresources, is is done
+      // in url_request_util::AllowCrossRendererResourceLoad.
       const std::string& owner_extension_id = guest->owner_host();
       const Extension* owner_extension =
           registry->enabled_extensions().GetByID(owner_extension_id);
@@ -119,65 +121,62 @@ ExtensionNavigationThrottle::WillStartOrRedirectRequest() {
       if (!allowed)
         return content::NavigationThrottle::BLOCK_REQUEST;
     }
+  }
 
+  // Browser-initiated requests are always considered trusted, and thus allowed.
+  //
+  // Note that GuestView navigations initiated by the embedder also count as a
+  // browser-initiated navigation.
+  if (!navigation_handle()->IsRendererInitiated())
+    return content::NavigationThrottle::PROCEED;
+
+  // All renderer-initiated navigations must have an initiator.
+  DCHECK(navigation_handle()->GetInitiatorOrigin().has_value());
+  const url::Origin& initiator_origin =
+      navigation_handle()->GetInitiatorOrigin().value();
+
+  // Navigations from chrome://, devtools:// or chrome-search:// pages need to
+  // be allowed, even if the target |url| is not web-accessible.  See also:
+  // - https://crbug.com/662602
+  // - similar checks in extensions::ResourceRequestPolicy::CanRequestResource
+  if (initiator_origin.scheme() == content::kChromeUIScheme ||
+      initiator_origin.scheme() == content::kChromeDevToolsScheme ||
+      ExtensionsBrowserClient::Get()->ShouldSchemeBypassNavigationChecks(
+          initiator_origin.scheme())) {
     return content::NavigationThrottle::PROCEED;
   }
 
-  // This is a subframe navigation to a |target_extension| resource.
-  // Enforce the web_accessible_resources restriction, and same-origin
-  // restrictions for platform apps.
-  content::RenderFrameHost* parent = navigation_handle()->GetParentFrame();
+  // An extension can initiate navigations to any of its resources.
+  if (initiator_origin == target_origin)
+    return content::NavigationThrottle::PROCEED;
 
-  // Look to see if all ancestors belong to |target_extension|. If not,
-  // then the web_accessible_resource restriction applies.
-  bool external_ancestor = false;
-  for (auto* ancestor = parent; ancestor; ancestor = ancestor->GetParent()) {
-    // Look for a match on the last committed origin. This handles the
-    // common case, and the about:blank case.
-    if (ancestor->GetLastCommittedOrigin() == target_origin)
-      continue;
-    // Look for an origin match with the last committed URL. This handles the
-    // case of sandboxed extension resources, which commit with a null origin,
-    // but are permitted to load non-webaccessible extension resources in
-    // subframes.
-    if (url::Origin::Create(ancestor->GetLastCommittedURL()) == target_origin)
-      continue;
-    // Ignore DevTools, as it is allowed to embed extension pages.
-    if (ancestor->GetLastCommittedURL().SchemeIs(
-            content::kChromeDevToolsScheme))
-      continue;
+  // Cancel cross-origin-initiator navigations to blob: or filesystem: URLs.
+  if (!url_has_extension_scheme)
+    return content::NavigationThrottle::CANCEL;
 
-    // Otherwise, we have an external ancestor.
-    external_ancestor = true;
-    break;
+  // Cross-origin-initiator navigations require that the |url| is in the
+  // manifest's "web_accessible_resources" section.
+  if (!WebAccessibleResourcesInfo::IsResourceWebAccessible(target_extension,
+                                                           url.path())) {
+    return content::NavigationThrottle::BLOCK_REQUEST;
   }
 
-  if (external_ancestor) {
-    // Cancel navigations to nested URLs, to match the main frame behavior.
-    if (!url_has_extension_scheme)
-      return content::NavigationThrottle::CANCEL;
+  // A platform app may not be loaded in an <iframe> by another origin.
+  //
+  // In fact, platform apps may not have any cross-origin iframes at all;
+  // for non-extension origins of |url| this is enforced by means of a
+  // Content Security Policy. But CSP is incapable of blocking the
+  // chrome-extension scheme. Thus, this case must be handled specially
+  // here.
+  if (target_extension->is_platform_app())
+    return content::NavigationThrottle::CANCEL;
 
-    // |url| must be in the manifest's "web_accessible_resources" section.
-    if (!WebAccessibleResourcesInfo::IsResourceWebAccessible(target_extension,
-                                                             url.path()))
-      return content::NavigationThrottle::BLOCK_REQUEST;
-
-    // A platform app may not be loaded in an <iframe> by another origin.
-    //
-    // In fact, platform apps may not have any cross-origin iframes at all; for
-    // non-extension origins of |url| this is enforced by means of a Content
-    // Security Policy. But CSP is incapable of blocking the chrome-extension
-    // scheme. Thus, this case must be handled specially here.
-    if (target_extension->is_platform_app())
-      return content::NavigationThrottle::CANCEL;
-
-    // A platform app may not load another extension in an <iframe>.
-    const Extension* parent_extension =
-        registry->enabled_extensions().GetExtensionOrAppByURL(
-            parent->GetSiteInstance()->GetSiteURL());
-    if (parent_extension && parent_extension->is_platform_app())
-      return content::NavigationThrottle::BLOCK_REQUEST;
-  }
+  // A platform app may not load another extension in an <iframe>.
+  const Extension* initiator_extension =
+      registry->enabled_extensions().GetExtensionOrAppByURL(
+          initiator_origin.GetURL());
+  if (initiator_extension && initiator_extension->is_platform_app())
+    return content::NavigationThrottle::BLOCK_REQUEST;
 
   return content::NavigationThrottle::PROCEED;
 }
@@ -189,13 +188,7 @@ ExtensionNavigationThrottle::WillStartRequest() {
 
 content::NavigationThrottle::ThrottleCheckResult
 ExtensionNavigationThrottle::WillRedirectRequest() {
-  ThrottleCheckResult result = WillStartOrRedirectRequest();
-  if (result.action() == BLOCK_REQUEST) {
-    // TODO(nick): https://crbug.com/695421 means that BLOCK_REQUEST does not
-    // work here. Once PlzNavigate is enabled 100%, just return |result|.
-    return CANCEL;
-  }
-  return result;
+  return WillStartOrRedirectRequest();
 }
 
 const char* ExtensionNavigationThrottle::GetNameForLogging() {

@@ -12,12 +12,14 @@
 #include "base/single_thread_task_runner.h"
 #include "base/stl_util.h"
 #include "base/task/post_task.h"
+#include "base/test/bind_test_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "components/services/leveldb/public/cpp/util.h"
+#include "components/services/storage/dom_storage/dom_storage_database.h"
 #include "content/browser/code_cache/generated_code_cache.h"
 #include "content/browser/code_cache/generated_code_cache_context.h"
+#include "content/browser/dom_storage/local_storage_context_mojo.h"
 #include "content/browser/dom_storage/local_storage_database.pb.h"
 #include "content/browser/gpu/shader_cache_factory.h"
 #include "content/browser/storage_partition_impl.h"
@@ -26,12 +28,10 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/storage_usage_info.h"
 #include "content/public/common/content_features.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_browser_thread.h"
-#include "content/public/test/test_browser_thread_bundle.h"
 #include "content/public/test/test_utils.h"
-#include "content/test/fake_leveldb_database.h"
-#include "net/base/features.h"
 #include "net/base/test_completion_callback.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_store.h"
@@ -47,11 +47,11 @@
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 #include "ppapi/shared_impl/ppapi_constants.h"  // nogncheck
-#include "storage/browser/fileapi/async_file_util.h"
-#include "storage/browser/fileapi/file_system_context.h"
-#include "storage/browser/fileapi/file_system_operation_context.h"
-#include "storage/browser/fileapi/isolated_context.h"
-#include "storage/common/fileapi/file_system_util.h"
+#include "storage/browser/file_system/async_file_util.h"
+#include "storage/browser/file_system/file_system_context.h"
+#include "storage/browser/file_system/file_system_operation_context.h"
+#include "storage/browser/file_system/isolated_context.h"
+#include "storage/common/file_system/file_system_util.h"
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
 
 using net::CanonicalCookie;
@@ -68,7 +68,7 @@ const char kCacheValue[] = "cached value";
 const char kTestOrigin1[] = "http://host1:1/";
 const char kTestOrigin2[] = "http://host2:1/";
 const char kTestOrigin3[] = "http://host3:1/";
-const char kTestOriginDevTools[] = "chrome-devtools://abcdefghijklmnopqrstuvw/";
+const char kTestOriginDevTools[] = "devtools://abcdefghijklmnopqrstuvw/";
 const char kTestURL[] = "http://host4/script.js";
 const char kFilterURLForCodeCache[] = "http://host5/script.js";
 
@@ -137,17 +137,14 @@ class AwaitCompletionHelper {
 
 class RemoveCookieTester {
  public:
-  explicit RemoveCookieTester(TestBrowserContext* context)
-      : get_cookie_success_(false),
-        cookie_store_(context->GetRequestContext()
-                          ->GetURLRequestContext()
-                          ->cookie_store()) {}
+  explicit RemoveCookieTester(StoragePartition* storage_partition)
+      : get_cookie_success_(false), storage_partition_(storage_partition) {}
 
   // Returns true, if the given cookie exists in the cookie store.
   bool ContainsCookie() {
     get_cookie_success_ = false;
-    cookie_store_->GetCookieListWithOptionsAsync(
-        kOrigin1.GetURL(), net::CookieOptions(),
+    storage_partition_->GetCookieManagerForBrowserProcess()->GetCookieList(
+        kOrigin1.GetURL(), net::CookieOptions::MakeAllInclusive(),
         base::BindOnce(&RemoveCookieTester::GetCookieListCallback,
                        base::Unretained(this)));
     await_completion_.BlockUntilNotified();
@@ -155,15 +152,19 @@ class RemoveCookieTester {
   }
 
   void AddCookie() {
-    cookie_store_->SetCookieWithOptionsAsync(
-        kOrigin1.GetURL(), "A=1", net::CookieOptions(),
+    CanonicalCookie::CookieInclusionStatus status;
+    std::unique_ptr<net::CanonicalCookie> cc(net::CanonicalCookie::Create(
+        kOrigin1.GetURL(), "A=1", base::Time::Now(),
+        base::nullopt /* server_time */, &status));
+    storage_partition_->GetCookieManagerForBrowserProcess()->SetCanonicalCookie(
+        *cc, kOrigin1.scheme(), net::CookieOptions::MakeAllInclusive(),
         base::BindOnce(&RemoveCookieTester::SetCookieCallback,
                        base::Unretained(this)));
     await_completion_.BlockUntilNotified();
   }
 
  private:
-  void GetCookieListCallback(const net::CookieList& cookie_list,
+  void GetCookieListCallback(const net::CookieStatusList& cookie_list,
                              const net::CookieStatusList& excluded_cookies) {
     std::string cookie_line =
         net::CanonicalCookie::BuildCookieLine(cookie_list);
@@ -177,26 +178,34 @@ class RemoveCookieTester {
   }
 
   void SetCookieCallback(CanonicalCookie::CookieInclusionStatus result) {
-    ASSERT_EQ(CanonicalCookie::CookieInclusionStatus::INCLUDE, result);
+    ASSERT_TRUE(result.IsInclude());
     await_completion_.Notify();
   }
 
   bool get_cookie_success_;
   AwaitCompletionHelper await_completion_;
-  net::CookieStore* cookie_store_;
+  StoragePartition* storage_partition_;
 
   DISALLOW_COPY_AND_ASSIGN(RemoveCookieTester);
 };
 
 class RemoveLocalStorageTester {
  public:
-  explicit RemoveLocalStorageTester(TestBrowserContext* profile)
-      : dom_storage_context_(nullptr),
-        mock_db_(&mock_data_),
-        db_binding_(&mock_db_) {
+  RemoveLocalStorageTester(content::BrowserTaskEnvironment* task_environment,
+                           TestBrowserContext* profile)
+      : task_environment_(task_environment), dom_storage_context_(nullptr) {
     dom_storage_context_ =
-        content::BrowserContext::GetDefaultStoragePartition(profile)->
-            GetDOMStorageContext();
+        content::BrowserContext::GetDefaultStoragePartition(profile)
+            ->GetDOMStorageContext();
+  }
+
+  ~RemoveLocalStorageTester() {
+    // Tests which bring up a real Local Storage context need to shut it down
+    // and wait for the database to be closed before terminating; otherwise the
+    // TestBrowserContext may fail to delete its temp dir, and it will not be
+    // happy about that.
+    static_cast<DOMStorageContextWrapper*>(dom_storage_context_)->Shutdown();
+    task_environment_->RunUntilIdle();
   }
 
   // Returns true, if the given origin URL exists.
@@ -213,39 +222,50 @@ class RemoveLocalStorageTester {
   void AddDOMStorageTestData() {
     // Note: This test depends on details of how the dom_storage library
     // stores data in the database.
-    leveldb::mojom::LevelDBDatabaseAssociatedPtr database_ptr;
-    leveldb::mojom::LevelDBDatabaseAssociatedRequest request =
-        MakeRequestAssociatedWithDedicatedPipe(&database_ptr);
-    static_cast<DOMStorageContextWrapper*>(dom_storage_context_)
-        ->SetLocalStorageDatabaseForTesting(std::move(database_ptr));
-    db_binding_.Bind(std::move(request));
 
+    static_cast<DOMStorageContextWrapper*>(dom_storage_context_)
+        ->SetLocalStorageDatabaseOpenCallbackForTesting(
+            base::BindLambdaForTesting([&](LocalStorageContextMojo* context) {
+              context->GetDatabaseForTesting().PostTaskWithThisObject(
+                  FROM_HERE, base::BindOnce(&PopulateDatabase));
+            }));
+  }
+
+  static void PopulateDatabase(const storage::DomStorageDatabase& db) {
     LocalStorageOriginMetaData data;
+    std::map<std::vector<uint8_t>, std::vector<uint8_t>> entries;
 
     base::Time now = base::Time::Now();
     data.set_last_modified(now.ToInternalValue());
     data.set_size_bytes(16);
-    mock_data_[CreateMetaDataKey(kOrigin1)] =
-        leveldb::StdStringToUint8Vector(data.SerializeAsString());
-    mock_data_[CreateDataKey(kOrigin1)] = {};
+    ASSERT_TRUE(
+        db.Put(CreateMetaDataKey(kOrigin1),
+               base::as_bytes(base::make_span(data.SerializeAsString())))
+            .ok());
+    ASSERT_TRUE(db.Put(CreateDataKey(kOrigin1), {}).ok());
 
     base::Time one_day_ago = now - base::TimeDelta::FromDays(1);
     data.set_last_modified(one_day_ago.ToInternalValue());
-    mock_data_[CreateMetaDataKey(kOrigin2)] =
-        leveldb::StdStringToUint8Vector(data.SerializeAsString());
-    mock_data_[CreateDataKey(kOrigin2)] = {};
+    ASSERT_TRUE(
+        db.Put(CreateMetaDataKey(kOrigin2),
+               base::as_bytes(base::make_span((data.SerializeAsString()))))
+            .ok());
+    ASSERT_TRUE(db.Put(CreateDataKey(kOrigin2), {}).ok());
 
     base::Time sixty_days_ago = now - base::TimeDelta::FromDays(60);
     data.set_last_modified(sixty_days_ago.ToInternalValue());
-    mock_data_[CreateMetaDataKey(kOrigin3)] =
-        leveldb::StdStringToUint8Vector(data.SerializeAsString());
-    mock_data_[CreateDataKey(kOrigin3)] = {};
+    ASSERT_TRUE(
+        db.Put(CreateMetaDataKey(kOrigin3),
+               base::as_bytes(base::make_span(data.SerializeAsString())))
+            .ok());
+    ASSERT_TRUE(db.Put(CreateDataKey(kOrigin3), {}).ok());
   }
 
  private:
-  std::vector<uint8_t> CreateDataKey(const url::Origin& origin) {
-    auto serialized_origin =
-        leveldb::StdStringToUint8Vector(origin.Serialize());
+  static std::vector<uint8_t> CreateDataKey(const url::Origin& origin) {
+    auto origin_str = origin.Serialize();
+    std::vector<uint8_t> serialized_origin(origin_str.begin(),
+                                           origin_str.end());
     std::vector<uint8_t> key = {'_'};
     key.insert(key.end(), serialized_origin.begin(), serialized_origin.end());
     key.push_back(0);
@@ -253,10 +273,11 @@ class RemoveLocalStorageTester {
     return key;
   }
 
-  std::vector<uint8_t> CreateMetaDataKey(const url::Origin& origin) {
+  static std::vector<uint8_t> CreateMetaDataKey(const url::Origin& origin) {
     const uint8_t kMetaPrefix[] = {'M', 'E', 'T', 'A', ':'};
-    auto serialized_origin =
-        leveldb::StdStringToUint8Vector(origin.Serialize());
+    auto origin_str = origin.Serialize();
+    std::vector<uint8_t> serialized_origin(origin_str.begin(),
+                                           origin_str.end());
     std::vector<uint8_t> key;
     key.reserve(base::size(kMetaPrefix) + serialized_origin.size());
     key.insert(key.end(), kMetaPrefix, kMetaPrefix + base::size(kMetaPrefix));
@@ -277,11 +298,8 @@ class RemoveLocalStorageTester {
   }
 
   // We don't own these pointers.
+  content::BrowserTaskEnvironment* const task_environment_;
   content::DOMStorageContext* dom_storage_context_;
-
-  std::map<std::vector<uint8_t>, std::vector<uint8_t>> mock_data_;
-  FakeLevelDBDatabase mock_db_;
-  mojo::AssociatedBinding<leveldb::mojom::LevelDBDatabase> db_binding_;
 
   std::vector<content::StorageUsageInfo> infos_;
 
@@ -311,8 +329,8 @@ class RemoveCodeCacheTester {
                 GURL origin_lock,
                 const std::string& data) {
     std::vector<uint8_t> data_vector(data.begin(), data.end());
-    GetCache(cache)->WriteData(url, origin_lock, base::Time::Now(),
-                               data_vector);
+    GetCache(cache)->WriteEntry(url, origin_lock, base::Time::Now(),
+                                data_vector);
     base::RunLoop().RunUntilIdle();
   }
 
@@ -338,10 +356,10 @@ class RemoveCodeCacheTester {
   }
 
   void FetchEntryCallback(const base::Time& response_time,
-                          const std::vector<uint8_t>& data) {
+                          mojo_base::BigBuffer data) {
     if (!response_time.is_null()) {
       entry_exists_ = true;
-      received_data_ = std::string(data.begin(), data.end());
+      received_data_ = std::string(data.data(), data.data() + data.size());
     } else {
       entry_exists_ = false;
     }
@@ -405,26 +423,6 @@ class RemovePluginPrivateDataTester {
                        &await_completion));
     await_completion.BlockUntilNotified();
     return data_exists_for_origin;
-  }
-
-  // Opens the file created for ClearKey (in kOrigin1) for writing. Caller
-  // needs to verify if the file was opened or not.
-  base::File OpenClearKeyFileForWrite() {
-    AwaitCompletionHelper await_completion;
-    base::File file;
-    storage::AsyncFileUtil* async_file_util =
-        filesystem_context_->GetAsyncFileUtil(
-            storage::kFileSystemTypePluginPrivate);
-    std::unique_ptr<storage::FileSystemOperationContext> operation_context =
-        std::make_unique<storage::FileSystemOperationContext>(
-            filesystem_context_);
-    async_file_util->CreateOrOpen(
-        std::move(operation_context), clearkey_file_,
-        base::File::FLAG_OPEN | base::File::FLAG_WRITE,
-        base::BindOnce(&RemovePluginPrivateDataTester::OnFileOpened,
-                       base::Unretained(this), &file, &await_completion));
-    await_completion.BlockUntilNotified();
-    return file;
   }
 
  private:
@@ -531,14 +529,6 @@ class RemovePluginPrivateDataTester {
     await_completion->Notify();
   }
 
-  void OnFileOpened(base::File* file_result,
-                    AwaitCompletionHelper* await_completion,
-                    base::File file,
-                    base::OnceClosure on_close_callback) {
-    *file_result = std::move(file);
-    await_completion->Notify();
-  }
-
   // If |origin| exists in the PluginPrivateFileSystem, set
   // |data_exists_for_origin| to true, false otherwise.
   void CheckIfDataExistsForOriginOnFileTaskRunner(
@@ -558,10 +548,9 @@ class RemovePluginPrivateDataTester {
 
     // AwaitCompletionHelper and MessageLoop don't work on a
     // SequencedTaskRunner, so post a task on the IO thread.
-    base::PostTaskWithTraits(
-        FROM_HERE, {BrowserThread::IO},
-        base::BindOnce(&AwaitCompletionHelper::Notify,
-                       base::Unretained(await_completion)));
+    base::PostTask(FROM_HERE, {BrowserThread::IO},
+                   base::BindOnce(&AwaitCompletionHelper::Notify,
+                                  base::Unretained(await_completion)));
   }
 
   // We don't own this pointer.
@@ -576,28 +565,28 @@ class RemovePluginPrivateDataTester {
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
 
 bool IsWebSafeSchemeForTest(const std::string& scheme) {
-  return scheme == "http";
+  return scheme == url::kHttpScheme;
 }
 
 bool DoesOriginMatchForUnprotectedWeb(
-    const GURL& origin,
+    const url::Origin& origin,
     storage::SpecialStoragePolicy* special_storage_policy) {
   if (IsWebSafeSchemeForTest(origin.scheme()))
-    return !special_storage_policy->IsStorageProtected(origin.GetOrigin());
+    return !special_storage_policy->IsStorageProtected(origin.GetURL());
 
   return false;
 }
 
 bool DoesOriginMatchForBothProtectedAndUnprotectedWeb(
-    const GURL& origin,
+    const url::Origin& origin,
     storage::SpecialStoragePolicy* special_storage_policy) {
   return true;
 }
 
 bool DoesOriginMatchUnprotected(
-    const GURL& origin,
+    const url::Origin& origin,
     storage::SpecialStoragePolicy* special_storage_policy) {
-  return origin.GetOrigin().scheme() != kOriginDevTools.scheme();
+  return origin.scheme() != kOriginDevTools.scheme();
 }
 
 void ClearQuotaData(content::StoragePartition* partition,
@@ -618,21 +607,19 @@ void ClearQuotaDataWithOriginMatcher(
                        base::Time::Max(), loop_to_quit->QuitClosure());
 }
 
-void ClearQuotaDataForOrigin(
-    content::StoragePartition* partition,
-    const GURL& remove_origin,
-    const base::Time delete_begin,
-    base::RunLoop* loop_to_quit) {
+void ClearQuotaDataForOrigin(content::StoragePartition* partition,
+                             const GURL& remove_origin,
+                             const base::Time delete_begin,
+                             base::RunLoop* loop_to_quit) {
   partition->ClearData(kAllQuotaRemoveMask,
                        StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL,
                        remove_origin, delete_begin, base::Time::Max(),
                        loop_to_quit->QuitClosure());
 }
 
-void ClearQuotaDataForNonPersistent(
-    content::StoragePartition* partition,
-    const base::Time delete_begin,
-    base::RunLoop* loop_to_quit) {
+void ClearQuotaDataForNonPersistent(content::StoragePartition* partition,
+                                    const base::Time delete_begin,
+                                    base::RunLoop* loop_to_quit) {
   partition->ClearData(kAllQuotaRemoveMask,
                        ~StoragePartition::QUOTA_MANAGED_STORAGE_MASK_PERSISTENT,
                        GURL(), delete_begin, base::Time::Max(),
@@ -676,8 +663,7 @@ void ClearStuff(uint32_t remove_mask,
                        run_loop->QuitClosure());
 }
 
-void ClearData(content::StoragePartition* partition,
-               base::RunLoop* run_loop) {
+void ClearData(content::StoragePartition* partition, base::RunLoop* run_loop) {
   base::Time time;
   partition->ClearData(StoragePartition::REMOVE_DATA_MASK_SHADER_CACHE,
                        StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL, GURL(),
@@ -722,26 +708,27 @@ bool FilterMatchesCookie(const CookieDeletionFilterPtr& filter,
 class StoragePartitionImplTest : public testing::Test {
  public:
   StoragePartitionImplTest()
-      : thread_bundle_(content::TestBrowserThreadBundle::IO_MAINLOOP),
+      : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP),
         browser_context_(new TestBrowserContext()) {}
 
   MockQuotaManager* GetMockManager() {
     if (!quota_manager_.get()) {
       quota_manager_ = new MockQuotaManager(
           browser_context_->IsOffTheRecord(), browser_context_->GetPath(),
-          base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::IO})
-              .get(),
+          base::CreateSingleThreadTaskRunner({BrowserThread::IO}).get(),
           browser_context_->GetSpecialStoragePolicy());
     }
     return quota_manager_.get();
   }
 
-  TestBrowserContext* browser_context() {
-    return browser_context_.get();
+  TestBrowserContext* browser_context() { return browser_context_.get(); }
+
+  content::BrowserTaskEnvironment* task_environment() {
+    return &task_environment_;
   }
 
  private:
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestBrowserContext> browser_context_;
   scoped_refptr<MockQuotaManager> quota_manager_;
 
@@ -751,7 +738,7 @@ class StoragePartitionImplTest : public testing::Test {
 class StoragePartitionShaderClearTest : public testing::Test {
  public:
   StoragePartitionShaderClearTest()
-      : thread_bundle_(content::TestBrowserThreadBundle::IO_MAINLOOP),
+      : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP),
         browser_context_(new TestBrowserContext()) {
     InitShaderCacheFactorySingleton(base::ThreadTaskRunnerHandle::Get());
     GetShaderCacheFactorySingleton()->SetCacheInfo(
@@ -782,12 +769,10 @@ class StoragePartitionShaderClearTest : public testing::Test {
 
   size_t Size() { return cache_->Size(); }
 
-  TestBrowserContext* browser_context() {
-    return browser_context_.get();
-  }
+  TestBrowserContext* browser_context() { return browser_context_.get(); }
 
  private:
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestBrowserContext> browser_context_;
 
   scoped_refptr<gpu::ShaderDiskCache> cache_;
@@ -868,8 +853,7 @@ TEST_F(StoragePartitionImplTest, RemoveQuotaManagedDataForeverBoth) {
 
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
       BrowserContext::GetDefaultStoragePartition(browser_context()));
-  partition->OverrideQuotaManagerForTesting(
-      GetMockManager());
+  partition->OverrideQuotaManagerForTesting(GetMockManager());
 
   base::RunLoop run_loop;
   base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -895,8 +879,7 @@ TEST_F(StoragePartitionImplTest, RemoveQuotaManagedDataForeverOnlyTemporary) {
 
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
       BrowserContext::GetDefaultStoragePartition(browser_context()));
-  partition->OverrideQuotaManagerForTesting(
-      GetMockManager());
+  partition->OverrideQuotaManagerForTesting(GetMockManager());
 
   base::RunLoop run_loop;
   base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -922,8 +905,7 @@ TEST_F(StoragePartitionImplTest, RemoveQuotaManagedDataForeverOnlyPersistent) {
 
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
       BrowserContext::GetDefaultStoragePartition(browser_context()));
-  partition->OverrideQuotaManagerForTesting(
-      GetMockManager());
+  partition->OverrideQuotaManagerForTesting(GetMockManager());
 
   base::RunLoop run_loop;
   base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -947,8 +929,7 @@ TEST_F(StoragePartitionImplTest, RemoveQuotaManagedDataForeverOnlyPersistent) {
 TEST_F(StoragePartitionImplTest, RemoveQuotaManagedDataForeverNeither) {
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
       BrowserContext::GetDefaultStoragePartition(browser_context()));
-  partition->OverrideQuotaManagerForTesting(
-      GetMockManager());
+  partition->OverrideQuotaManagerForTesting(GetMockManager());
 
   base::RunLoop run_loop;
   base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -974,8 +955,7 @@ TEST_F(StoragePartitionImplTest, RemoveQuotaManagedDataForeverSpecificOrigin) {
 
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
       BrowserContext::GetDefaultStoragePartition(browser_context()));
-  partition->OverrideQuotaManagerForTesting(
-      GetMockManager());
+  partition->OverrideQuotaManagerForTesting(GetMockManager());
 
   base::RunLoop run_loop;
   base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -1002,8 +982,7 @@ TEST_F(StoragePartitionImplTest, RemoveQuotaManagedDataForLastHour) {
 
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
       BrowserContext::GetDefaultStoragePartition(browser_context()));
-  partition->OverrideQuotaManagerForTesting(
-      GetMockManager());
+  partition->OverrideQuotaManagerForTesting(GetMockManager());
 
   base::RunLoop run_loop;
   base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -1033,8 +1012,7 @@ TEST_F(StoragePartitionImplTest, RemoveQuotaManagedDataForLastWeek) {
   base::RunLoop run_loop;
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
       BrowserContext::GetDefaultStoragePartition(browser_context()));
-  partition->OverrideQuotaManagerForTesting(
-      GetMockManager());
+  partition->OverrideQuotaManagerForTesting(GetMockManager());
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(&ClearQuotaDataForNonPersistent, partition,
@@ -1066,8 +1044,7 @@ TEST_F(StoragePartitionImplTest, RemoveQuotaManagedUnprotectedOrigins) {
 
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
       BrowserContext::GetDefaultStoragePartition(browser_context()));
-  partition->OverrideQuotaManagerForTesting(
-      GetMockManager());
+  partition->OverrideQuotaManagerForTesting(GetMockManager());
   partition->OverrideSpecialStoragePolicyForTesting(mock_policy.get());
 
   base::RunLoop run_loop;
@@ -1104,8 +1081,7 @@ TEST_F(StoragePartitionImplTest, RemoveQuotaManagedProtectedOrigins) {
   base::RunLoop run_loop;
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
       BrowserContext::GetDefaultStoragePartition(browser_context()));
-  partition->OverrideQuotaManagerForTesting(
-      GetMockManager());
+  partition->OverrideQuotaManagerForTesting(GetMockManager());
   partition->OverrideSpecialStoragePolicyForTesting(mock_policy.get());
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
@@ -1135,8 +1111,7 @@ TEST_F(StoragePartitionImplTest, RemoveQuotaManagedIgnoreDevTools) {
   base::RunLoop run_loop;
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
       BrowserContext::GetDefaultStoragePartition(browser_context()));
-  partition->OverrideQuotaManagerForTesting(
-      GetMockManager());
+  partition->OverrideQuotaManagerForTesting(GetMockManager());
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(&ClearQuotaDataWithOriginMatcher, partition,
@@ -1152,14 +1127,12 @@ TEST_F(StoragePartitionImplTest, RemoveQuotaManagedIgnoreDevTools) {
 }
 
 TEST_F(StoragePartitionImplTest, RemoveCookieForever) {
-  RemoveCookieTester tester(browser_context());
+  StoragePartition* partition =
+      BrowserContext::GetDefaultStoragePartition(browser_context());
 
+  RemoveCookieTester tester(partition);
   tester.AddCookie();
   ASSERT_TRUE(tester.ContainsCookie());
-
-  StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
-      BrowserContext::GetDefaultStoragePartition(browser_context()));
-  partition->SetURLRequestContext(browser_context()->GetRequestContext());
 
   base::RunLoop run_loop;
   base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -1171,15 +1144,14 @@ TEST_F(StoragePartitionImplTest, RemoveCookieForever) {
 }
 
 TEST_F(StoragePartitionImplTest, RemoveCookieLastHour) {
-  RemoveCookieTester tester(browser_context());
+  StoragePartition* partition =
+      BrowserContext::GetDefaultStoragePartition(browser_context());
 
+  RemoveCookieTester tester(partition);
   tester.AddCookie();
   ASSERT_TRUE(tester.ContainsCookie());
 
-  StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
-      BrowserContext::GetDefaultStoragePartition(browser_context()));
   base::Time an_hour_ago = base::Time::Now() - base::TimeDelta::FromHours(1);
-  partition->SetURLRequestContext(browser_context()->GetRequestContext());
 
   base::RunLoop run_loop;
   base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -1191,14 +1163,12 @@ TEST_F(StoragePartitionImplTest, RemoveCookieLastHour) {
 }
 
 TEST_F(StoragePartitionImplTest, RemoveCookieWithDeleteInfo) {
-  RemoveCookieTester tester(browser_context());
+  StoragePartition* partition =
+      BrowserContext::GetDefaultStoragePartition(browser_context());
 
+  RemoveCookieTester tester(partition);
   tester.AddCookie();
   ASSERT_TRUE(tester.ContainsCookie());
-
-  StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
-      BrowserContext::GetDefaultStoragePartition(browser_context()));
-  partition->SetURLRequestContext(browser_context()->GetRequestContext());
 
   base::RunLoop run_loop2;
   base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -1214,7 +1184,7 @@ TEST_F(StoragePartitionImplTest, RemoveUnprotectedLocalStorageForever) {
       new MockSpecialStoragePolicy;
   mock_policy->AddProtected(kOrigin1.GetURL());
 
-  RemoveLocalStorageTester tester(browser_context());
+  RemoveLocalStorageTester tester(task_environment(), browser_context());
 
   tester.AddDOMStorageTestData();
   EXPECT_TRUE(tester.DOMStorageExistsForOrigin(kOrigin1));
@@ -1249,7 +1219,7 @@ TEST_F(StoragePartitionImplTest, RemoveProtectedLocalStorageForever) {
       new MockSpecialStoragePolicy;
   mock_policy->AddProtected(kOrigin1.GetURL());
 
-  RemoveLocalStorageTester tester(browser_context());
+  RemoveLocalStorageTester tester(task_environment(), browser_context());
 
   tester.AddDOMStorageTestData();
   EXPECT_TRUE(tester.DOMStorageExistsForOrigin(kOrigin1));
@@ -1283,7 +1253,7 @@ TEST_F(StoragePartitionImplTest, RemoveProtectedLocalStorageForever) {
 }
 
 TEST_F(StoragePartitionImplTest, RemoveLocalStorageForLastWeek) {
-  RemoveLocalStorageTester tester(browser_context());
+  RemoveLocalStorageTester tester(task_environment(), browser_context());
 
   tester.AddDOMStorageTestData();
   EXPECT_TRUE(tester.DOMStorageExistsForOrigin(kOrigin1));
@@ -1316,10 +1286,6 @@ TEST_F(StoragePartitionImplTest, RemoveLocalStorageForLastWeek) {
 }
 
 TEST_F(StoragePartitionImplTest, ClearCodeCache) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(net::features::kIsolatedCodeCache);
-  ASSERT_TRUE(base::FeatureList::IsEnabled(net::features::kIsolatedCodeCache));
-
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
       BrowserContext::GetDefaultStoragePartition(browser_context()));
   // Ensure code cache is initialized.
@@ -1351,10 +1317,6 @@ TEST_F(StoragePartitionImplTest, ClearCodeCache) {
 }
 
 TEST_F(StoragePartitionImplTest, ClearCodeCacheSpecificURL) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(net::features::kIsolatedCodeCache);
-  ASSERT_TRUE(base::FeatureList::IsEnabled(net::features::kIsolatedCodeCache));
-
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
       BrowserContext::GetDefaultStoragePartition(browser_context()));
   // Ensure code cache is initialized.
@@ -1391,12 +1353,7 @@ TEST_F(StoragePartitionImplTest, ClearCodeCacheSpecificURL) {
   base::RunLoop().RunUntilIdle();
 }
 
-// TODO(https://crbug.com/925957): Flakes, especially under Fuchsia.
-TEST_F(StoragePartitionImplTest, DISABLED_ClearCodeCacheDateRange) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(net::features::kIsolatedCodeCache);
-  ASSERT_TRUE(base::FeatureList::IsEnabled(net::features::kIsolatedCodeCache));
-
+TEST_F(StoragePartitionImplTest, ClearCodeCacheDateRange) {
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
       BrowserContext::GetDefaultStoragePartition(browser_context()));
   // Ensure code cache is initialized.
@@ -1424,8 +1381,8 @@ TEST_F(StoragePartitionImplTest, DISABLED_ClearCodeCacheDateRange) {
                   origin, data);
   EXPECT_TRUE(tester.ContainsEntry(RemoveCodeCacheTester::kJs,
                                    kFilterResourceURLForCodeCache, origin));
-  tester.SetLastUseTime(RemoveCodeCacheTester::kJs, kResourceURL, origin,
-                        in_range_time);
+  tester.SetLastUseTime(RemoveCodeCacheTester::kJs,
+                        kFilterResourceURLForCodeCache, origin, in_range_time);
 
   base::RunLoop run_loop;
   base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -1446,11 +1403,7 @@ TEST_F(StoragePartitionImplTest, DISABLED_ClearCodeCacheDateRange) {
 
 TEST_F(StoragePartitionImplTest, ClearWasmCodeCache) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      std::vector<base::Feature>(
-          {net::features::kIsolatedCodeCache, blink::features::kWasmCodeCache}),
-      std::vector<base::Feature>());
-  ASSERT_TRUE(base::FeatureList::IsEnabled(net::features::kIsolatedCodeCache));
+  feature_list.InitAndEnableFeature(blink::features::kWasmCodeCache);
   ASSERT_TRUE(base::FeatureList::IsEnabled(blink::features::kWasmCodeCache));
 
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
@@ -1484,32 +1437,7 @@ TEST_F(StoragePartitionImplTest, ClearWasmCodeCache) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(StoragePartitionImplTest, ClearCodeCacheNoIsolatedCodeCache) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(net::features::kIsolatedCodeCache);
-  ASSERT_FALSE(base::FeatureList::IsEnabled(net::features::kIsolatedCodeCache));
-
-  StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
-      BrowserContext::GetDefaultStoragePartition(browser_context()));
-  base::RunLoop().RunUntilIdle();
-  // We should not create GeneratedCodeCacheContext when IsolatedCodeCache
-  // is disabled.
-  EXPECT_EQ(nullptr, partition->GetGeneratedCodeCacheContext());
-
-  base::RunLoop run_loop;
-  // This shouldn't crash.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&ClearCodeCache, partition, base::Time(), base::Time(),
-                     base::RepeatingCallback<bool(const GURL&)>(), &run_loop));
-  run_loop.Run();
-}
-
 TEST_F(StoragePartitionImplTest, ClearCodeCacheIncognito) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(net::features::kIsolatedCodeCache);
-  ASSERT_TRUE(base::FeatureList::IsEnabled(net::features::kIsolatedCodeCache));
-
   browser_context()->set_is_off_the_record(true);
 
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
@@ -1591,38 +1519,6 @@ TEST_F(StoragePartitionImplTest, RemovePluginPrivateDataForOrigin) {
   EXPECT_TRUE(tester.DataExistsForOrigin(kOrigin2));
 }
 
-TEST_F(StoragePartitionImplTest, RemovePluginPrivateDataWhileWriting) {
-  StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
-      BrowserContext::GetDefaultStoragePartition(browser_context()));
-
-  RemovePluginPrivateDataTester tester(partition->GetFileSystemContext());
-  tester.AddPluginPrivateTestData();
-  EXPECT_TRUE(tester.DataExistsForOrigin(kOrigin1));
-  EXPECT_TRUE(tester.DataExistsForOrigin(kOrigin2));
-
-  const char test_data[] = {0, 1, 2, 3, 4, 5};
-  base::File file = tester.OpenClearKeyFileForWrite();
-  EXPECT_TRUE(file.IsValid());
-  EXPECT_EQ(static_cast<int>(base::size(test_data)),
-            file.Write(0, test_data, base::size(test_data)));
-
-  base::RunLoop run_loop;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(&ClearPluginPrivateData, partition, GURL(),
-                                base::Time(), base::Time::Max(), &run_loop));
-  run_loop.Run();
-
-  EXPECT_FALSE(tester.DataExistsForOrigin(kOrigin1));
-  EXPECT_FALSE(tester.DataExistsForOrigin(kOrigin2));
-
-  const char more_data[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
-  EXPECT_EQ(static_cast<int>(base::size(more_data)),
-            file.WriteAtCurrentPos(more_data, base::size(more_data)));
-
-  base::File file2 = tester.OpenClearKeyFileForWrite();
-  EXPECT_FALSE(file2.IsValid());
-}
-
 TEST_F(StoragePartitionImplTest, RemovePluginPrivateDataAfterDeletion) {
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
       BrowserContext::GetDefaultStoragePartition(browser_context()));
@@ -1655,22 +1551,26 @@ TEST(StoragePartitionImplStaticTest, CreatePredicateForHostCookies) {
   GURL url2("https://www.example.com/");
   GURL url3("https://www.google.com/");
 
-  net::CookieOptions options;
+  base::Optional<base::Time> server_time = base::nullopt;
   CookieDeletionFilterPtr deletion_filter = CookieDeletionFilter::New();
   deletion_filter->host_name = url.host();
 
   base::Time now = base::Time::Now();
   std::vector<std::unique_ptr<CanonicalCookie>> valid_cookies;
-  valid_cookies.push_back(CanonicalCookie::Create(url, "A=B", now, options));
-  valid_cookies.push_back(CanonicalCookie::Create(url, "C=F", now, options));
+  valid_cookies.push_back(
+      CanonicalCookie::Create(url, "A=B", now, server_time));
+  valid_cookies.push_back(
+      CanonicalCookie::Create(url, "C=F", now, server_time));
   // We should match a different scheme with the same host.
-  valid_cookies.push_back(CanonicalCookie::Create(url2, "A=B", now, options));
+  valid_cookies.push_back(
+      CanonicalCookie::Create(url2, "A=B", now, server_time));
 
   std::vector<std::unique_ptr<CanonicalCookie>> invalid_cookies;
   // We don't match domain cookies.
+  invalid_cookies.push_back(CanonicalCookie::Create(
+      url2, "A=B;domain=.example.com", now, server_time));
   invalid_cookies.push_back(
-      CanonicalCookie::Create(url2, "A=B;domain=.example.com", now, options));
-  invalid_cookies.push_back(CanonicalCookie::Create(url3, "A=B", now, options));
+      CanonicalCookie::Create(url3, "A=B", now, server_time));
 
   for (const auto& cookie : valid_cookies) {
     EXPECT_TRUE(FilterMatchesCookie(deletion_filter, *cookie))

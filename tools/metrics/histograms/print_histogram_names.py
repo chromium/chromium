@@ -5,6 +5,8 @@
 
 """Prints all histogram names."""
 
+from __future__ import print_function
+
 import os
 import sys
 
@@ -22,8 +24,8 @@ def main():
     raise Error("Error parsing inputs.")
   names = extract_histograms.ExtractNames(histograms)
   for name in names:
-    print name
+    print(name)
+
 
 if __name__ == '__main__':
   main()
-

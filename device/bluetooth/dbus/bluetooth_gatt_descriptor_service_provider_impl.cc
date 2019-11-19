@@ -38,8 +38,7 @@ BluetoothGattDescriptorServiceProviderImpl::
       bus_(bus),
       delegate_(std::move(delegate)),
       object_path_(object_path),
-      characteristic_path_(characteristic_path),
-      weak_ptr_factory_(this) {
+      characteristic_path_(characteristic_path) {
   VLOG(1) << "Created Bluetooth GATT characteristic descriptor: "
           << object_path.value() << " UUID: " << uuid;
   if (!bus_)

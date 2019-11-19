@@ -22,7 +22,6 @@
 #include "extensions/browser/updater/extension_update_data.h"
 #include "extensions/browser/updater/update_data_provider.h"
 #include "extensions/browser/updater/update_service_factory.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_updater_uma.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/manifest_url_handlers.h"
@@ -30,6 +29,8 @@
 namespace extensions {
 
 namespace {
+
+UpdateService* update_service_override = nullptr;
 
 // 98% of update checks have 22 or less extensions.
 constexpr size_t kMaxExtensionsPerUpdate = 22;
@@ -81,8 +82,15 @@ UpdateService::InProgressUpdate& UpdateService::InProgressUpdate::operator=(
     UpdateService::InProgressUpdate&& other) = default;
 
 // static
+void UpdateService::SupplyUpdateServiceForTest(UpdateService* service) {
+  update_service_override = service;
+}
+
+// static
 UpdateService* UpdateService::Get(content::BrowserContext* context) {
-  return UpdateServiceFactory::GetForBrowserContext(context);
+  return update_service_override == nullptr
+             ? UpdateServiceFactory::GetForBrowserContext(context)
+             : update_service_override;
 }
 
 void UpdateService::Shutdown() {
@@ -106,9 +114,6 @@ void UpdateService::SendUninstallPing(const std::string& id,
 }
 
 bool UpdateService::CanUpdate(const std::string& extension_id) const {
-  if (!base::FeatureList::IsEnabled(
-          extensions_features::kNewExtensionUpdaterService))
-    return false;
   // It's possible to change Webstore update URL from command line (through
   // apps-gallery-update-url command line switch). When Webstore update URL is
   // different the default Webstore update URL, we won't support updating
@@ -191,14 +196,15 @@ void UpdateService::OnEvent(Events event, const std::string& extension_id) {
   }
 }
 
+bool UpdateService::IsBusy() const {
+  return !updating_extension_ids_.empty();
+}
+
 UpdateService::UpdateService(
     content::BrowserContext* browser_context,
     scoped_refptr<update_client::UpdateClient> update_client)
-    : browser_context_(browser_context),
-      update_client_(update_client),
-      weak_ptr_factory_(this) {
+    : browser_context_(browser_context), update_client_(update_client) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(update_client_);
   update_data_provider_ =
       base::MakeRefCounted<UpdateDataProvider>(browser_context_);
   AddUpdateClientObserver(this);
@@ -268,13 +274,6 @@ void UpdateService::StartUpdateCheck(
       batch_ids.push_back(it->first);
       batch_data.emplace(it->first, std::move(it->second));
     }
-
-    UMA_HISTOGRAM_COUNTS_100("Extensions.ExtensionUpdaterUpdateCalls",
-                             batch_size);
-    // This UMA histogram measures update check requests of the unified
-    // extension updater.
-    UMA_HISTOGRAM_COUNTS_100("Extensions.UnifiedExtensionUpdaterUpdateCalls",
-                             batch_size);
 
     update_client_->Update(
         batch_ids,
@@ -361,8 +360,6 @@ void UpdateService::HandleComponentUpdateErrorEvent(
 
 void UpdateService::HandleComponentUpdateFoundEvent(
     const std::string& extension_id) const {
-  UMA_HISTOGRAM_COUNTS_100("Extensions.ExtensionUpdaterUpdateFoundCount", 1);
-
   update_client::CrxUpdateItem update_item;
   if (!update_client_->GetCrxUpdateState(extension_id, &update_item)) {
     return;

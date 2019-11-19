@@ -58,9 +58,7 @@ TEST(PresentationRequestTest, TestMultipleUrlConstructorInvalidUrl) {
 }
 
 TEST(PresentationRequestTest, TestMixedContentNotCheckedForNonHttpFamily) {
-  V8TestingScope scope;
-  scope.GetExecutionContext()->GetSecurityContext().SetSecurityOrigin(
-      SecurityOrigin::CreateFromString("https://example.test"));
+  V8TestingScope scope(KURL("https://example.test"));
 
   PresentationRequest* request = PresentationRequest::Create(
       scope.GetExecutionContext(), "cast://deadbeef?param=foo",
@@ -74,9 +72,7 @@ TEST(PresentationRequestTest, TestMixedContentNotCheckedForNonHttpFamily) {
 }
 
 TEST(PresentationRequestTest, TestSingleUrlConstructorMixedContent) {
-  V8TestingScope scope;
-  scope.GetExecutionContext()->GetSecurityContext().SetSecurityOrigin(
-      SecurityOrigin::CreateFromString("https://example.test"));
+  V8TestingScope scope(KURL("https://example.test"));
 
   PresentationRequest::Create(scope.GetExecutionContext(), "http://example.com",
                               scope.GetExceptionState());
@@ -86,9 +82,7 @@ TEST(PresentationRequestTest, TestSingleUrlConstructorMixedContent) {
 }
 
 TEST(PresentationRequestTest, TestMultipleUrlConstructorMixedContent) {
-  V8TestingScope scope;
-  scope.GetExecutionContext()->GetSecurityContext().SetSecurityOrigin(
-      SecurityOrigin::CreateFromString("https://example.test"));
+  V8TestingScope scope(KURL("https://example.test"));
 
   WTF::Vector<String> urls;
   urls.push_back("http://example.com");

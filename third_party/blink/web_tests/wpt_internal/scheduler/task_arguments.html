@@ -1,0 +1,18 @@
+<!doctype html>
+<title>Scheduling API: Task Argument Passing</title>
+<link rel="author" title="Scott Haseley" href="mailto:shaseley@chromium.org">
+<link rel="help" href="https://github.com/WICG/main-thread-scheduling">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<script>
+'use strict';
+
+async_test(t => {
+  scheduler.postTask(t.step_func_done((arg1, arg2) => {
+    assert_equals(arg1, 'foo');
+    assert_equals(arg2, 10);
+  }), { priority: 'default' }, 'foo', 10);
+}, 'Test scheduler.postTask correctly passes arguments');
+
+</script>

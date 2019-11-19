@@ -12,6 +12,10 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/page_transition_types.h"
 
+namespace content {
+class WebContents;
+}
+
 class GURL;
 class PrefRegistrySimple;
 class Profile;
@@ -47,14 +51,17 @@ class ExternalProtocolHandler {
     virtual void BlockRequest() = 0;
     virtual void RunExternalProtocolDialog(
         const GURL& url,
-        int render_process_host_id,
-        int routing_id,
+        content::WebContents* web_contents,
         ui::PageTransition page_transition,
-        bool has_user_gesture) = 0;
+        bool has_user_gesture,
+        const base::Optional<url::Origin>& initiating_origin) = 0;
     virtual void LaunchUrlWithoutSecurityCheck(
         const GURL& url,
         content::WebContents* web_contents) = 0;
     virtual void FinishedProcessingCheck() = 0;
+
+    virtual void OnSetBlockState(const std::string& scheme,
+                                 ExternalProtocolHandler::BlockState state) {}
     virtual ~Delegate() {}
   };
 
@@ -73,9 +80,9 @@ class ExternalProtocolHandler {
                             BlockState state,
                             Profile* profile);
 
-  // Checks to see if the protocol is allowed, if it is whitelisted,
+  // Checks to see if the protocol is allowed, if it is allowlisted,
   // the application associated with the protocol is launched on the io thread,
-  // if it is blacklisted, returns silently. Otherwise, an
+  // if it is denylisted, returns silently. Otherwise, an
   // ExternalProtocolDialog is created asking the user. If the user accepts,
   // LaunchUrlWithoutSecurityCheck is called on the io thread and the
   // application is launched.
@@ -84,15 +91,16 @@ class ExternalProtocolHandler {
                         int render_process_host_id,
                         int render_view_routing_id,
                         ui::PageTransition page_transition,
-                        bool has_user_gesture);
+                        bool has_user_gesture,
+                        const base::Optional<url::Origin>& initiating_origin);
 
   // Starts a url using the external protocol handler with the help
-  // of shellexecute. Should only be called if the protocol is whitelisted
+  // of shellexecute. Should only be called if the protocol is allowlisted
   // (checked in LaunchUrl) or if the user explicitly allows it. (By selecting
-  // "Launch Application" in an ExternalProtocolDialog.) It is assumed that the
+  // "Open Application" in an ExternalProtocolDialog.) It is assumed that the
   // url has already been escaped, which happens in LaunchUrl.
-  // NOTE: You should Not call this function directly unless you are sure the
-  // url you have has been checked against the blacklist, and has been escaped.
+  // NOTE: You should NOT call this function directly unless you are sure the
+  // url you have has been checked against the denylist, and has been escaped.
   // All calls to this function should originate in some way from LaunchUrl.
   static void LaunchUrlWithoutSecurityCheck(const GURL& url,
                                             content::WebContents* web_contents);
@@ -123,11 +131,12 @@ class ExternalProtocolHandler {
   // This is implemented separately on each platform.
   // TODO(davidsac): Consider refactoring this to take a WebContents directly.
   // crbug.com/668289
-  static void RunExternalProtocolDialog(const GURL& url,
-                                        int render_process_host_id,
-                                        int routing_id,
-                                        ui::PageTransition page_transition,
-                                        bool has_user_gesture);
+  static void RunExternalProtocolDialog(
+      const GURL& url,
+      content::WebContents* web_contents,
+      ui::PageTransition page_transition,
+      bool has_user_gesture,
+      const base::Optional<url::Origin>& initiating_origin);
 
   // Clears the external protocol handling data.
   static void ClearData(Profile* profile);

@@ -16,18 +16,18 @@
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sync/profile_sync_test_util.h"
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/web_data_service_factory.h"
-#include "components/autofill/core/browser/autofill_profile.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/autofill_type.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/webdata/autofill_entry.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/sync/driver/profile_sync_service.h"
 #include "components/webdata/common/web_database.h"
 
 using autofill::AutofillChangeList;
@@ -384,12 +384,9 @@ AutofillKeysChecker::AutofillKeysChecker(int profile_a, int profile_b)
       profile_a_(profile_a),
       profile_b_(profile_b) {}
 
-bool AutofillKeysChecker::IsExitConditionSatisfied() {
+bool AutofillKeysChecker::IsExitConditionSatisfied(std::ostream* os) {
+  *os << "Waiting for matching autofill keys";
   return autofill_helper::KeysMatch(profile_a_, profile_b_);
-}
-
-std::string AutofillKeysChecker::GetDebugMessage() const {
-  return "Waiting for matching autofill keys";
 }
 
 AutofillProfileChecker::AutofillProfileChecker(int profile_a, int profile_b)
@@ -404,6 +401,7 @@ AutofillProfileChecker::~AutofillProfileChecker() {
 }
 
 bool AutofillProfileChecker::Wait() {
+  DLOG(WARNING) << "AutofillProfileChecker::Wait() started";
   PersonalDataLoadedObserverMock personal_data_observer;
   base::RunLoop run_loop_a;
   base::RunLoop run_loop_b;
@@ -434,21 +432,18 @@ bool AutofillProfileChecker::Wait() {
 
   pdm_a->RemoveObserver(&personal_data_observer);
   pdm_b->RemoveObserver(&personal_data_observer);
-
+  DLOG(WARNING) << "AutofillProfileChecker::Wait() completed";
   return StatusChangeChecker::Wait();
 }
 
-bool AutofillProfileChecker::IsExitConditionSatisfied() {
+bool AutofillProfileChecker::IsExitConditionSatisfied(std::ostream* os) {
+  *os << "Waiting for matching autofill profiles";
   const std::vector<AutofillProfile*>& autofill_profiles_a =
       autofill_helper::GetPersonalDataManager(profile_a_)->GetProfiles();
   const std::vector<AutofillProfile*>& autofill_profiles_b =
       autofill_helper::GetPersonalDataManager(profile_b_)->GetProfiles();
   return ProfilesMatchImpl(profile_a_, autofill_profiles_a, profile_b_,
                            autofill_profiles_b);
-}
-
-std::string AutofillProfileChecker::GetDebugMessage() const {
-  return "Waiting for matching autofill profiles";
 }
 
 void AutofillProfileChecker::OnPersonalDataChanged() {

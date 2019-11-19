@@ -20,15 +20,12 @@ SyncStatus::SyncStatus()
       num_commits_total(0),
       num_local_overwrites_total(0),
       num_server_overwrites_total(0),
-      nudge_source_notification(0),
-      nudge_source_local(0),
-      nudge_source_local_refresh(0),
-      cryptographer_ready(false),
+      cryptographer_can_encrypt(false),
       crypto_has_pending_keys(false),
       has_keystore_key(false),
-      passphrase_type(PassphraseType::IMPLICIT_PASSPHRASE),
-      num_entries_by_type(MODEL_TYPE_COUNT, 0),
-      num_to_delete_entries_by_type(MODEL_TYPE_COUNT, 0) {}
+      passphrase_type(PassphraseType::kImplicitPassphrase),
+      num_entries_by_type(ModelType::NUM_ENTRIES, 0),
+      num_to_delete_entries_by_type(ModelType::NUM_ENTRIES, 0) {}
 
 SyncStatus::SyncStatus(const SyncStatus& other) = default;
 

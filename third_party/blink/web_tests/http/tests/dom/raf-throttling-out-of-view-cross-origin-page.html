@@ -48,7 +48,9 @@ window.addEventListener('message', (e) => {
     });
   } else {
     let rafCount = e.data;
-    assert_equals(rafCount, firstRafCount, "requestAnimationFrame() callback count")
+    throttlingTest.step(() => {
+      assert_equals(rafCount, firstRafCount, "requestAnimationFrame() callback count")
+    });
     throttlingTest.done();
   }
 });

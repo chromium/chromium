@@ -5,7 +5,8 @@
 package org.chromium.components.signin.test.util;
 
 import android.accounts.Account;
-import android.support.annotation.NonNull;
+
+import androidx.annotation.NonNull;
 
 import java.util.HashMap;
 import java.util.HashSet;

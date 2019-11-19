@@ -4,8 +4,8 @@
 
 module device_test.mojom;
 
-import "ui/gfx/geometry/mojo/geometry.mojom";
-import "ui/gfx/mojo/transform.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+import "ui/gfx/mojom/transform.mojom";
 
 struct Color {
   uint8 r;
@@ -63,9 +63,10 @@ enum TrackedDeviceClass {
 };
 
 enum ControllerRole {
-  kControllerRoleInvalid,
+  kControllerRoleInvalid, // Test hook should ignore this controller.
   kControllerRoleLeft,
-  kControllerRoleRight
+  kControllerRoleRight,
+  kControllerRoleVoice // Simulates voice input such as saying "select" in WMR.
 };
 
 struct ControllerFrameData {
@@ -77,6 +78,18 @@ struct ControllerFrameData {
   PoseFrameData pose_data;
   ControllerRole role = kControllerRoleInvalid;
   bool is_valid;
+};
+
+// Event type is used by test to simulate runtime events.
+enum EventType {
+  kSessionLost,
+  kInstanceLost,
+  kNoEvent
+};
+
+// EventData is used by test to pass all event related data.
+struct EventData {
+  EventType type = kNoEvent;
 };
 
 // Tests may implement this, and register it to control behavior of devices for
@@ -116,11 +129,19 @@ interface XRTestHook {
   // the controller data of the device that the test has registered at the
   // given index, e.g. its current position and pressed buttons.
   [Sync] WaitGetControllerData(uint32 index) => (ControllerFrameData data);
+
+  // Called by the OpenXR test to simulate runtime events.
+  [Sync] WaitGetEventData() => (EventData data);
 };
 
 // Interface exposed by IsolatedXRService to allow browser tests to hook VR APIs
 // It is always hosted in the XRDevice process, but only has effects while
 // running in browser tests with mock implementations of runtimes.
-interface XRTestHookRegistration {
-  [Sync] SetTestHook(XRTestHook? hook) => ();
+interface XRServiceTestHook {
+  [Sync] SetTestHook(pending_remote<XRTestHook>? hook) => ();
+
+  // Called by tests to trigger a termination of the Device Service Process
+  // To test that the product can properly handle the service either crashing
+  // or (more expectedly) being terminated by some other running process.
+  [Sync] TerminateDeviceServiceProcessForTesting() => ();
 };

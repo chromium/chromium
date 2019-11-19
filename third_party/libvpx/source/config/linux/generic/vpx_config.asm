@@ -1,10 +1,15 @@
 @ This file was created from a .asm file
 @  using the ads2gas.pl script.
 	.syntax unified
+.equ VPX_ARCH_ARM ,  0
 .equ ARCH_ARM ,  0
+.equ VPX_ARCH_MIPS ,  0
 .equ ARCH_MIPS ,  0
+.equ VPX_ARCH_X86 ,  0
 .equ ARCH_X86 ,  0
+.equ VPX_ARCH_X86_64 ,  0
 .equ ARCH_X86_64 ,  0
+.equ VPX_ARCH_PPC ,  0
 .equ ARCH_PPC ,  0
 .equ HAVE_NEON ,  0
 .equ HAVE_NEON_ASM ,  0
@@ -69,7 +74,7 @@
 .equ CONFIG_OS_SUPPORT ,  1
 .equ CONFIG_UNIT_TESTS ,  1
 .equ CONFIG_WEBM_IO ,  1
-.equ CONFIG_LIBYUV ,  1
+.equ CONFIG_LIBYUV ,  0
 .equ CONFIG_DECODE_PERF_TESTS ,  0
 .equ CONFIG_ENCODE_PERF_TESTS ,  0
 .equ CONFIG_MULTI_RES_ENCODING ,  1
@@ -82,6 +87,8 @@
 .equ CONFIG_EXPERIMENTAL ,  0
 .equ CONFIG_SIZE_LIMIT ,  1
 .equ CONFIG_ALWAYS_ADJUST_BPM ,  0
+.equ CONFIG_BITSTREAM_DEBUG ,  0
+.equ CONFIG_MISMATCH_DEBUG ,  0
 .equ CONFIG_FP_MB_STATS ,  0
 .equ CONFIG_EMULATE_HARDWARE ,  0
 .equ CONFIG_NON_GREEDY_MV ,  0

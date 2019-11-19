@@ -14,19 +14,18 @@
 #include "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/browser_sync/profile_sync_service.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/keyed_service/core/service_access_type.h"
-#include "components/sync/device_info/device_info.h"
-#include "components/sync/device_info/device_info_sync_service.h"
-#include "components/sync/device_info/local_device_info_provider.h"
+#include "components/sync/driver/profile_sync_service.h"
 #include "components/sync/driver/sync_service.h"
-#include "components/sync/engine/net/http_bridge_network_resources.h"
 #include "components/sync/test/fake_server/entity_builder_factory.h"
 #include "components/sync/test/fake_server/fake_server.h"
 #include "components/sync/test/fake_server/fake_server_network_resources.h"
 #include "components/sync/test/fake_server/fake_server_verifier.h"
 #include "components/sync/test/fake_server/sessions_hierarchy.h"
+#include "components/sync_device_info/device_info.h"
+#include "components/sync_device_info/device_info_sync_service.h"
+#include "components/sync_device_info/local_device_info_provider.h"
 #include "ios/chrome/browser/autofill/personal_data_manager_factory.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/history/history_service_factory.h"
@@ -47,17 +46,17 @@ fake_server::FakeServer* gSyncFakeServer = nullptr;
 
 NSString* const kSyncTestErrorDomain = @"SyncTestDomain";
 
-// Overrides the network resources of the current ProfileSyncService with
-// |resources|.
-void OverrideSyncNetworkResources(
-    std::unique_ptr<syncer::NetworkResources> resources) {
+// Overrides the network callback of the current ProfileSyncService with
+// |create_http_post_provider_factory_cb|.
+void OverrideSyncNetwork(const syncer::CreateHttpPostProviderFactory&
+                             create_http_post_provider_factory_cb) {
   ios::ChromeBrowserState* browser_state =
       chrome_test_util::GetOriginalBrowserState();
   DCHECK(browser_state);
-  browser_sync::ProfileSyncService* service =
+  syncer::ProfileSyncService* service =
       ProfileSyncServiceFactory::GetAsProfileSyncServiceForBrowserState(
           browser_state);
-  service->OverrideNetworkResourcesForTest(std::move(resources));
+  service->OverrideNetworkForTest(create_http_post_provider_factory_cb);
 }
 
 }  // namespace
@@ -67,17 +66,15 @@ namespace chrome_test_util {
 void SetUpFakeSyncServer() {
   DCHECK(!gSyncFakeServer);
   gSyncFakeServer = new fake_server::FakeServer();
-  OverrideSyncNetworkResources(base::WrapUnique<syncer::NetworkResources>(
-      new fake_server::FakeServerNetworkResources(
-          gSyncFakeServer->AsWeakPtr())));
+  OverrideSyncNetwork(fake_server::CreateFakeServerHttpPostProviderFactory(
+      gSyncFakeServer->AsWeakPtr()));
 }
 
 void TearDownFakeSyncServer() {
   DCHECK(gSyncFakeServer);
   delete gSyncFakeServer;
   gSyncFakeServer = nullptr;
-  OverrideSyncNetworkResources(base::WrapUnique<syncer::NetworkResources>(
-      new syncer::HttpBridgeNetworkResources()));
+  OverrideSyncNetwork(syncer::CreateHttpPostProviderFactory());
 }
 
 void StartSync() {
@@ -183,8 +180,8 @@ void InjectAutofillProfileOnFakeSyncServer(std::string guid,
 
   std::unique_ptr<syncer::LoopbackServerEntity> entity =
       syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
-          /*non_unique_name=*/std::string(), /*client_tag=*/guid,
-          entity_specifics, 12345, 12345);
+          /*non_unique_name=*/guid, /*client_tag=*/guid, entity_specifics,
+          12345, 12345);
   gSyncFakeServer->InjectEntity(std::move(entity));
 }
 
@@ -193,17 +190,19 @@ void DeleteAutofillProfileOnFakeSyncServer(std::string guid) {
   std::vector<sync_pb::SyncEntity> autofill_profiles =
       gSyncFakeServer->GetSyncEntitiesByModelType(syncer::AUTOFILL_PROFILE);
   std::string entity_id;
+  std::string client_tag_hash;
   for (const sync_pb::SyncEntity& autofill_profile : autofill_profiles) {
     if (autofill_profile.specifics().autofill_profile().guid() == guid) {
       entity_id = autofill_profile.id_string();
+      client_tag_hash = autofill_profile.client_defined_unique_tag();
       break;
     }
   }
   // Delete the entity if it exists.
   if (!entity_id.empty()) {
     std::unique_ptr<syncer::LoopbackServerEntity> entity;
-    entity =
-        syncer::PersistentTombstoneEntity::CreateNew(entity_id, std::string());
+    entity = syncer::PersistentTombstoneEntity::CreateNew(entity_id,
+                                                          client_tag_hash);
     gSyncFakeServer->InjectEntity(std::move(entity));
   }
 }
@@ -295,9 +294,8 @@ BOOL IsTypedUrlPresentOnClient(const GURL& url,
 
   __block bool history_service_callback_called = false;
   __block int count = 0;
-  using history::OriginCountAndLastVisitMap;
   history_service->GetCountsAndLastVisitForOriginsForTesting(
-      origins, base::BindRepeating(^(const OriginCountAndLastVisitMap& result) {
+      origins, base::BindOnce(^(history::OriginCountAndLastVisitMap result) {
         auto iter = result.find(block_safe_url);
         if (iter != result.end())
           count = iter->second.first;
@@ -338,7 +336,7 @@ void DeleteTypedUrlFromClient(const GURL& url) {
       ios::HistoryServiceFactory::GetForBrowserState(
           browser_state, ServiceAccessType::EXPLICIT_ACCESS);
 
-  history_service->DeleteURL(url);
+  history_service->DeleteURLs({url});
 }
 
 void DeleteTypedUrlFromFakeSyncServer(std::string url) {

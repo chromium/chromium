@@ -45,6 +45,6 @@ js_library("cws_webview_client") {
   ]
   externs_list = [
     "$externs_path/chrome_extensions.js",
-    "../../externs/webview_tag.js",
+    "$externs_path/webview_tag.js",
   ]
 }

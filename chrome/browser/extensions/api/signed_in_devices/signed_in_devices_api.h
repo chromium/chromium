@@ -37,7 +37,7 @@ std::vector<std::unique_ptr<syncer::DeviceInfo>> GetAllSignedInDevices(
     syncer::DeviceInfoTracker* device_tracker,
     ExtensionPrefs* extension_prefs);
 
-class SignedInDevicesGetFunction : public UIThreadExtensionFunction {
+class SignedInDevicesGetFunction : public ExtensionFunction {
  protected:
   ~SignedInDevicesGetFunction() override {}
 

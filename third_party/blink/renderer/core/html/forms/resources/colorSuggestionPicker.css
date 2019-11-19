@@ -24,6 +24,11 @@
  */
 
 body {
+    --color-swatch-border-width: 1px;
+    --color-swatch-margin: 1px;
+    --color-swatch-height: 20px;
+    --color-swatch-padding: 0;
+    --color-swatch-width: 20px;
     -webkit-user-select: none;
     background-color: white;
     font: -webkit-small-control;
@@ -31,7 +36,14 @@ body {
     overflow: hidden;
 }
 
-#main {
+body.controls-refresh {
+    --color-swatch-margin: 3px;
+    --color-swatch-height: 18px;
+    --color-swatch-width: 18px;
+    --scrollbar-width: 4px;
+}
+
+.color-suggestion-picker-main {
     background-color: white;
     border: solid 1px #8899aa;
     box-shadow: inset 2px 2px 2px white,
@@ -40,19 +52,30 @@ body {
     float: left;
 }
 
+.controls-refresh .color-suggestion-picker-main {
+    border: 0;
+    box-shadow: none;
+    padding: 8px 8px 4px 8px;
+}
+
 .color-swatch {
     float: left;
-    width: 20px;
-    height: 20px;
-    margin: 1px;
-    padding: 0;
-    border: 1px solid #e0e0e0;
+    width: var(--color-swatch-width);
+    height: var(--color-swatch-height);
+    margin: var(--color-swatch-margin);
+    padding: var(--color-swatch-padding);
+    border: var(--color-swatch-border-width) solid #e0e0e0;
     border-radius: 0;
     box-sizing: content-box;
 }
 
+.controls-refresh .color-swatch {
+    border: var(--color-swatch-border-width) solid rgba(0, 0, 0, 0.19);
+    border-radius: 2px;
+}
+
 .color-swatch:focus {
-    border: 1px solid #000000;
+    border: var(--color-swatch-border-width) solid #000000;
     outline: none;
 }
 
@@ -65,7 +88,62 @@ body {
     align-items: center;
 }
 
+.controls-refresh .color-swatch-container {
+    margin: 4px;
+}
+
+.controls-refresh .color-swatch-container::-webkit-scrollbar {
+    width: var(--scrollbar-width);
+}
+
+.controls-refresh .color-swatch-container::-webkit-scrollbar-thumb {
+    background-color: #cecece;
+    border-radius: 2px;
+    height: 47px;
+    margin: 20px;
+    width: 4px;
+}
+
 .other-color {
     width: 100%;
     margin: 4px 0 0 0;
+}
+
+.controls-refresh .other-color {
+    background-color: #ffffff;
+    border-color: transparent;
+    border-radius: 2px;
+    color: #000000;
+    font-family: sans-serif;
+    font-size: 12px;
+    line-height: 16px;
+    margin: 0;
+    text-align: left;
+}
+
+.controls-refresh .other-color:hover {
+    background-color: #f3f3f3;
+}
+
+@media (forced-colors: active) {
+    .controls-refresh .color-suggestion-picker-main {
+        border: 1px solid WindowText;
+    }
+
+    .controls-refresh .color-swatch {
+        forced-color-adjust: none;
+        border-color: WindowText;
+    }
+
+    .controls-refresh .color-swatch:focus {
+        border-color: Highlight;
+    }
+
+    .controls-refresh .color-swatch-container {
+        forced-color-adjust: none;
+    }
+
+    .controls-refresh .color-swatch-container::-webkit-scrollbar-thumb {
+        background-color: WindowText;
+    }
 }

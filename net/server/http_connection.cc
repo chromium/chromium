@@ -19,7 +19,7 @@ HttpConnection::ReadIOBuffer::ReadIOBuffer()
 }
 
 HttpConnection::ReadIOBuffer::~ReadIOBuffer() {
-  data_ = NULL;  // base_ owns data_.
+  data_ = nullptr;  // base_ owns data_.
 }
 
 int HttpConnection::ReadIOBuffer::GetCapacity() const {
@@ -97,7 +97,7 @@ HttpConnection::QueuedWriteIOBuffer::QueuedWriteIOBuffer()
 }
 
 HttpConnection::QueuedWriteIOBuffer::~QueuedWriteIOBuffer() {
-  data_ = NULL;  // pending_data_ owns data_.
+  data_ = nullptr;  // pending_data_ owns data_.
 }
 
 bool HttpConnection::QueuedWriteIOBuffer::IsEmpty() const {
@@ -134,7 +134,8 @@ void HttpConnection::QueuedWriteIOBuffer::DidConsume(int size) {
     data_ += size;
   } else {  // size == GetSizeToWrite(). Updates data_ to next pending data.
     pending_data_.pop();
-    data_ = IsEmpty() ? NULL : const_cast<char*>(pending_data_.front()->data());
+    data_ =
+        IsEmpty() ? nullptr : const_cast<char*>(pending_data_.front()->data());
   }
   total_size_ -= size;
 }

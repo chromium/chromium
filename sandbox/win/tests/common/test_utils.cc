@@ -9,6 +9,8 @@
 
 #include "base/numerics/safe_conversions.h"
 
+namespace sandbox {
+
 typedef struct _REPARSE_DATA_BUFFER {
   ULONG  ReparseTag;
   USHORT  ReparseDataLength;
@@ -145,3 +147,5 @@ bool GetVariableTokenInformation(HANDLE token,
   return !!::GetTokenInformation(token, information_class, information->data(),
                                  return_length, &return_length);
 }
+
+}  // namespace sandbox

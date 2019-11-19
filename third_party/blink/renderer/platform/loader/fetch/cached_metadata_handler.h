@@ -6,12 +6,12 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_CACHED_METADATA_HANDLER_H_
 
 #include <stdint.h>
-#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-shared.h"
-#include "third_party/blink/public/mojom/loader/code_cache.mojom-shared.h"
+#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
+#include "third_party/blink/public/mojom/loader/code_cache.mojom-blink-forward.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
@@ -44,8 +44,7 @@ PLATFORM_EXPORT bool ShouldUseIsolatedCodeCache(mojom::RequestContextType,
                                                 const ResourceResponse&);
 
 // Handler class for caching operations.
-class CachedMetadataHandler
-    : public GarbageCollectedFinalized<CachedMetadataHandler> {
+class CachedMetadataHandler : public GarbageCollected<CachedMetadataHandler> {
  public:
   enum CacheType {
     kSendToPlatform,  // send cache data to blink::Platform::cacheMetadata

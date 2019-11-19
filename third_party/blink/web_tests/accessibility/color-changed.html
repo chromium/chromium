@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 
 <p id="blue" style="color: blue">Blue foreground.</p>
 
@@ -9,7 +8,7 @@
 const kBlueColor = 0xFF;
 const kGreenColor = 0x8000;
 
-  test_after_layout_and_paint(() => {
+  test(() => {
     let blue = document.getElementById('blue');
     let axBlue = accessibilityController.accessibleElementById('blue');
     assert_equals(axBlue.color, kBlueColor);

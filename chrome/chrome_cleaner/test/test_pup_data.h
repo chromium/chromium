@@ -12,6 +12,7 @@
 
 #include "chrome/chrome_cleaner/proto/shared_pup_enums.pb.h"
 #include "chrome/chrome_cleaner/pup_data/pup_data.h"
+#include "chrome/chrome_cleaner/pup_data/uws_catalog.h"
 
 namespace chrome_cleaner {
 
@@ -21,20 +22,28 @@ class SimpleTestPUP : public PUPData::PUP {
   SimpleTestPUP();
 };
 
-// This class adds test utility methods to generate raw data used by PUP Data.
-// It also add C++ arrays for easier management of the C arrays.
-class TestPUPData {
+// This class implements an UwSCatalog that can have UwS added and removed from
+// it dynamically so that each test can generate its own test values. (Compare
+// TestUwSCatalog which contains a standardized set of test UwS.) It can also
+// accept an additional set of UwS catalogs that are registered with PUPData at
+// the same time.
+//
+// It also adds test utility methods to generate raw data that used to be used
+// by PUP Data.
+// TODO(joenotcharles): Remove all the complexity of cpp_pup_footprints_ and
+// mirror_pup_footprints_.
+class TestPUPData : public UwSCatalog {
  public:
   typedef std::vector<PUPData::StaticDiskFootprint> RawDiskFootprints;
   typedef std::vector<PUPData::StaticRegistryFootprint> RawRegistryFootprints;
   typedef std::vector<PUPData::CustomMatcher> RawCustomMatchers;
 
   TestPUPData();
-  ~TestPUPData();
+  ~TestPUPData() override;
 
-  // Empties all the C++ arrays, clears the main C array, and replaces the
-  // UwSCatalogs with |test_uws_catalogs|.
-  void Reset(const PUPData::UwSCatalogs& test_uws_catalogs);
+  // Empties all the C++ arrays, clears the main C array, and registers this
+  // UwSCatalog and |additional_uws_catalogs| with PUPData.
+  void Reset(const PUPData::UwSCatalogs& additional_uws_catalogs);
 
   // Add entries to the different arrays, and set the C array to the data
   // pointers of their respective C++ arrays.
@@ -76,6 +85,16 @@ class TestPUPData {
     return PUPData::GetAllPUPs();
   }
 
+  // UwSCatalog
+
+  std::vector<UwSId> GetUwSIds() const override;
+
+  bool IsEnabledForScanning(UwSId id) const override;
+
+  bool IsEnabledForCleaning(UwSId id) const override;
+
+  std::unique_ptr<PUPData::PUP> CreatePUPForId(UwSId id) const override;
+
  private:
   // This makes sure an entry for this PUP exists in the CPP and mirror arrays
   // and return the index of the existing or newly created entry in the mirror.
@@ -90,9 +109,6 @@ class TestPUPData {
 
   // UwSCatalogs in use when the test starts, to be reset afterwards.
   const PUPData::UwSCatalogs previous_catalogs_;
-
-  // kPUPs' initial value to be reset afterward.
-  const PUPData::UwSSignature* previous_pups_;
 
   // This is to ensure that there are no other tests of this type ran in
   // parallel because we rely on static data not changing.

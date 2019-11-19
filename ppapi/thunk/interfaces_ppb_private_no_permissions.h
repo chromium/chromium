@@ -5,6 +5,9 @@
 // Please see inteface_ppb_public_stable for the documentation on the format of
 // this file.
 
+// no-include-guard-because-multiply-included
+// NOLINT(build/header_guard)
+
 #include "ppapi/thunk/interfaces_preamble.h"
 
 // These interfaces don't require private permissions. However, they only work
@@ -17,22 +20,6 @@ PROXIED_IFACE(PPB_CAMERADEVICE_PRIVATE_INTERFACE_0_1,
 
 PROXIED_IFACE(PPB_HOSTRESOLVER_PRIVATE_INTERFACE_0_1,
               PPB_HostResolver_Private_0_1)
-PROXIED_IFACE(PPB_TCPSERVERSOCKET_PRIVATE_INTERFACE_0_1,
-              PPB_TCPServerSocket_Private_0_1)
-PROXIED_IFACE(PPB_TCPSERVERSOCKET_PRIVATE_INTERFACE_0_2,
-              PPB_TCPServerSocket_Private_0_2)
-PROXIED_IFACE(PPB_TCPSOCKET_PRIVATE_INTERFACE_0_3,
-              PPB_TCPSocket_Private_0_3)
-PROXIED_IFACE(PPB_TCPSOCKET_PRIVATE_INTERFACE_0_4,
-              PPB_TCPSocket_Private_0_4)
-PROXIED_IFACE(PPB_TCPSOCKET_PRIVATE_INTERFACE_0_5,
-              PPB_TCPSocket_Private_0_5)
-PROXIED_IFACE(PPB_UDPSOCKET_PRIVATE_INTERFACE_0_2,
-              PPB_UDPSocket_Private_0_2)
-PROXIED_IFACE(PPB_UDPSOCKET_PRIVATE_INTERFACE_0_3,
-              PPB_UDPSocket_Private_0_3)
-PROXIED_IFACE(PPB_UDPSOCKET_PRIVATE_INTERFACE_0_4,
-              PPB_UDPSocket_Private_0_4)
 
 PROXIED_IFACE(PPB_NETADDRESS_PRIVATE_INTERFACE_0_1,
               PPB_NetAddress_Private_0_1)

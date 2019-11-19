@@ -35,10 +35,6 @@ class TypeConversions final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static TypeConversions* Create() {
-    return MakeGarbageCollected<TypeConversions>();
-  }
-
   TypeConversions()
       : long_(0),
         unsigned_long_(0),

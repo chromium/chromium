@@ -6,13 +6,13 @@
 
 #include <algorithm>
 
+#include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
-#include "third_party/blink/renderer/core/inspector/console_types.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -73,10 +73,6 @@ String GetConsoleLogStringForWebHoldback() {
 
 }  // namespace
 
-NetworkInformation* NetworkInformation::Create(ExecutionContext* context) {
-  return MakeGarbageCollected<NetworkInformation>(context);
-}
-
 NetworkInformation::~NetworkInformation() {
   DCHECK(!IsObserving());
 }
@@ -122,9 +118,9 @@ String NetworkInformation::effectiveType() {
   return NetworkStateNotifier::EffectiveConnectionTypeToString(effective_type_);
 }
 
-unsigned long NetworkInformation::rtt() {
+uint32_t NetworkInformation::rtt() {
   MaybeShowWebHoldbackConsoleMsg();
-  base::Optional<TimeDelta> override_rtt =
+  base::Optional<base::TimeDelta> override_rtt =
       GetNetworkStateNotifier().GetWebHoldbackHttpRtt();
   if (override_rtt) {
     return GetNetworkStateNotifier().RoundRtt(Host(), override_rtt.value());
@@ -166,14 +162,14 @@ void NetworkInformation::ConnectionChange(
     WebConnectionType type,
     double downlink_max_mbps,
     WebEffectiveConnectionType effective_type,
-    const base::Optional<TimeDelta>& http_rtt,
-    const base::Optional<TimeDelta>& transport_rtt,
+    const base::Optional<base::TimeDelta>& http_rtt,
+    const base::Optional<base::TimeDelta>& transport_rtt,
     const base::Optional<double>& downlink_mbps,
     bool save_data) {
   DCHECK(GetExecutionContext()->IsContextThread());
 
   const String host = Host();
-  unsigned long new_http_rtt_msec =
+  uint32_t new_http_rtt_msec =
       GetNetworkStateNotifier().RoundRtt(host, http_rtt);
   double new_downlink_mbps =
       GetNetworkStateNotifier().RoundMbps(host, downlink_mbps);
@@ -285,7 +281,7 @@ NetworkInformation::NetworkInformation(ExecutionContext* context)
     : ContextLifecycleObserver(context),
       web_holdback_console_message_shown_(false),
       context_stopped_(false) {
-  base::Optional<TimeDelta> http_rtt;
+  base::Optional<base::TimeDelta> http_rtt;
   base::Optional<double> downlink_mbps;
 
   GetNetworkStateNotifier().GetMetricsWithWebHoldback(
@@ -317,7 +313,7 @@ void NetworkInformation::MaybeShowWebHoldbackConsoleMsg() {
   if (!GetNetworkStateNotifier().GetWebHoldbackEffectiveType())
     return;
   GetExecutionContext()->AddConsoleMessage(ConsoleMessage::Create(
-      kOtherMessageSource, mojom::ConsoleMessageLevel::kWarning,
+      mojom::ConsoleMessageSource::kOther, mojom::ConsoleMessageLevel::kWarning,
       GetConsoleLogStringForWebHoldback()));
 }
 

@@ -4,8 +4,8 @@
 
 #include <stdint.h>
 
+#include "base/base_jni_headers/TimeUtils_jni.h"
 #include "base/time/time.h"
-#include "jni/TimeUtils_jni.h"
 
 namespace base {
 namespace android {

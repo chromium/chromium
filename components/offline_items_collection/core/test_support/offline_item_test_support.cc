@@ -22,7 +22,6 @@ std::ostream& operator<<(std::ostream& os, const OfflineItem& item) {
   os << ", is_transient: " << item.is_transient;
   os << ", is_suggested: " << item.is_suggested;
   os << ", is_accelerated: " << item.is_accelerated;
-  os << ", refresh_visuals: " << item.refresh_visuals;
   os << ", promote_origin: " << item.promote_origin;
   os << ", total_size_bytes: " << item.total_size_bytes;
   os << ", externally_removed: " << item.externally_removed;
@@ -34,6 +33,7 @@ std::ostream& operator<<(std::ostream& os, const OfflineItem& item) {
   os << ", page_url: " << item.page_url;
   os << ", original_url: " << item.original_url;
   os << ", is_off_the_record: " << item.is_off_the_record;
+  os << ", attribution: " << item.attribution;
   os << ", state: " << item.state;
   os << ", fail_state: " << item.fail_state;
   os << ", pending_state: " << item.pending_state;
@@ -65,8 +65,8 @@ std::ostream& operator<<(std::ostream& os, const OfflineItemState& state) {
       return os << "FAILED";
     case PAUSED:
       return os << "PAUSED";
-    case MAX_DOWNLOAD_STATE:
-      return os << "MAX_DOWNLOAD_STATE";
+    case NUM_ENTRIES:
+      return os << "NUM_ENTRIES";
   }
   CHECK(false) << "state=" << static_cast<int>(state);
   return os;
@@ -170,8 +170,8 @@ std::ostream& operator<<(std::ostream& os, OfflineItemFilter state) {
       return os << "FILTER_DOCUMENT";
     case FILTER_OTHER:
       return os << "FILTER_OTHER";
-    case FILTER_BOUNDARY:
-      return os << "FILTER_BOUNDARY";
+    case FILTER_NUM_ENTRIES:
+      return os << "FILTER_NUM_ENTRIES";
   }
   CHECK(false) << "state=" << static_cast<int>(state);
   return os;

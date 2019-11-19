@@ -26,11 +26,7 @@
 
 namespace blink {
 
-using namespace html_names;
-
-inline HTMLDirectoryElement::HTMLDirectoryElement(Document& document)
-    : HTMLElement(kDirTag, document) {}
-
-DEFINE_NODE_FACTORY(HTMLDirectoryElement)
+HTMLDirectoryElement::HTMLDirectoryElement(Document& document)
+    : HTMLElement(html_names::kDirTag, document) {}
 
 }  // namespace blink

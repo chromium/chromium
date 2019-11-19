@@ -1,5 +1,5 @@
 /*
- * The default style sheet used to render MathML.
+ * The default style sheet used to render MathML (MathMLCore enabled).
  *
  * Copyright (C) 2014 Google Inc. All rights reserved.
  *
@@ -35,6 +35,15 @@ math {
 math[display="block"] {
     display: block;
     text-align: center;
+}
+
+:-internal-spatial-navigation-interest {
+    outline: auto 1px -webkit-focus-ring-color;
+    box-shadow: none !important;
+}
+
+:focus {
+    outline: auto 1px -webkit-focus-ring-color;
 }
 
 /* We hide the PresentationExpression constructions that are children of a <semantics> element.

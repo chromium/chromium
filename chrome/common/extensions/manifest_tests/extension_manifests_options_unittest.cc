@@ -11,9 +11,8 @@
 #include "extensions/common/manifest_handlers/options_page_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using namespace extensions;
-
-namespace errors = extensions::manifest_errors;
+using extensions::FeatureSwitch;
+using extensions::OptionsPageInfo;
 
 namespace {
 
@@ -24,7 +23,7 @@ class OptionsPageManifestTest : public ChromeManifestTest {
   testing::AssertionResult TestOptionsUIChromeStyleAndOpenInTab() {
     // Explicitly specifying true in the manifest for options_ui.chrome_style
     // and options_ui.open_in_tab sets them both to true.
-    scoped_refptr<Extension> extension =
+    scoped_refptr<extensions::Extension> extension =
         LoadAndExpectSuccess("options_ui_flags_true.json");
     EXPECT_TRUE(OptionsPageInfo::ShouldUseChromeStyle(extension.get()));
     EXPECT_TRUE(OptionsPageInfo::ShouldOpenInTab(extension.get()));
@@ -55,7 +54,7 @@ class OptionsPageManifestTest : public ChromeManifestTest {
   // chromes-style behaviour.
   testing::AssertionResult TestOptionsPageChromeStyleAndOpenInTab(
       bool expect_open_in_tab) {
-    scoped_refptr<Extension> extension =
+    scoped_refptr<extensions::Extension> extension =
         LoadAndExpectSuccess("init_valid_options.json");
     EXPECT_FALSE(OptionsPageInfo::ShouldUseChromeStyle(extension.get()));
     if (expect_open_in_tab) {
@@ -69,7 +68,7 @@ class OptionsPageManifestTest : public ChromeManifestTest {
 
 TEST_F(OptionsPageManifestTest, OptionsPageInApps) {
   // Allow options page with absolute URL in hosted apps.
-  scoped_refptr<Extension> extension =
+  scoped_refptr<extensions::Extension> extension =
       LoadAndExpectSuccess("hosted_app_absolute_options.json");
   EXPECT_EQ("http://example.com/options.html",
             OptionsPageInfo::GetOptionsPage(extension.get()).spec());
@@ -78,18 +77,18 @@ TEST_F(OptionsPageManifestTest, OptionsPageInApps) {
   EXPECT_TRUE(!OptionsPageInfo::HasOptionsPage(extension.get()));
 
   Testcase testcases[] = {
-    // Forbid options page with relative URL in hosted apps.
-    Testcase("hosted_app_relative_options.json",
-             errors::kInvalidOptionsPageInHostedApp),
+      // Forbid options page with relative URL in hosted apps.
+      Testcase("hosted_app_relative_options.json",
+               extensions::manifest_errors::kInvalidOptionsPageInHostedApp),
 
-    // Forbid options page with non-(http|https) scheme in hosted app.
-    Testcase("hosted_app_file_options.json",
-             errors::kInvalidOptionsPageInHostedApp),
+      // Forbid options page with non-(http|https) scheme in hosted app.
+      Testcase("hosted_app_file_options.json",
+               extensions::manifest_errors::kInvalidOptionsPageInHostedApp),
 
-    // Forbid absolute URL for options page in packaged apps.
-    Testcase("packaged_app_absolute_options.json",
-             errors::kInvalidOptionsPageExpectUrlInPackage)
-  };
+      // Forbid absolute URL for options page in packaged apps.
+      Testcase(
+          "packaged_app_absolute_options.json",
+          extensions::manifest_errors::kInvalidOptionsPageExpectUrlInPackage)};
   RunTestcases(testcases, base::size(testcases), EXPECT_TYPE_ERROR);
 }
 
@@ -98,7 +97,7 @@ TEST_F(OptionsPageManifestTest, OptionsUIPage) {
   FeatureSwitch::ScopedOverride enable_flag(
       FeatureSwitch::embedded_extension_options(), true);
 
-  scoped_refptr<Extension> extension =
+  scoped_refptr<extensions::Extension> extension =
       LoadAndExpectSuccess("options_ui_page_basic.json");
   EXPECT_EQ(base::StringPrintf("chrome-extension://%s/options.html",
                                extension->id().c_str()),

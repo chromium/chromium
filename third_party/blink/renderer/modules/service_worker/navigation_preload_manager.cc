@@ -32,14 +32,14 @@ ScriptPromise NavigationPreloadManager::setHeaderValue(
                               "') is not a valid HTTP header field value."));
   }
 
-  ScriptPromiseResolver* resolver = ScriptPromiseResolver::Create(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
   registration_->SetNavigationPreloadHeader(value, resolver);
   return promise;
 }
 
 ScriptPromise NavigationPreloadManager::getState(ScriptState* script_state) {
-  ScriptPromiseResolver* resolver = ScriptPromiseResolver::Create(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
   registration_->GetNavigationPreloadState(resolver);
   return promise;
@@ -51,7 +51,7 @@ NavigationPreloadManager::NavigationPreloadManager(
 
 ScriptPromise NavigationPreloadManager::SetEnabled(bool enable,
                                                    ScriptState* script_state) {
-  ScriptPromiseResolver* resolver = ScriptPromiseResolver::Create(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
   registration_->EnableNavigationPreload(enable, resolver);
   return promise;

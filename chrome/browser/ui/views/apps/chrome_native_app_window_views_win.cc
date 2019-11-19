@@ -24,8 +24,7 @@
 #include "ui/views/win/hwnd_util.h"
 
 ChromeNativeAppWindowViewsWin::ChromeNativeAppWindowViewsWin()
-    : glass_frame_view_(NULL), is_translucent_(false), weak_ptr_factory_(this) {
-}
+    : glass_frame_view_(nullptr), is_translucent_(false) {}
 
 ChromeNativeAppWindowViewsWin::~ChromeNativeAppWindowViewsWin() {
 }

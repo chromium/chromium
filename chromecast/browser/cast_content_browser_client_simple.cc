@@ -18,5 +18,10 @@ std::unique_ptr<CastContentBrowserClient> CastContentBrowserClient::Create(
       new CastContentBrowserClient(cast_feature_list_creator));
 }
 
+// static
+std::vector<std::string> CastContentBrowserClient::GetCorsExemptHeadersList() {
+  return std::vector<std::string>();
+}
+
 }  // namespace shell
 }  // namespace chromecast

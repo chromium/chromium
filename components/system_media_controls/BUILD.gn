@@ -1,0 +1,113 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("linux/buildflags/buildflags.gni")
+
+config("media_player_weak_link") {
+  ldflags = [
+    "-weak_framework",
+    "MediaPlayer",
+  ]
+
+  visibility = [ ":system_media_controls" ]
+}
+
+component("system_media_controls") {
+  friend = [ ":unit_tests" ]
+
+  public = [
+    "system_media_controls.h",
+    "system_media_controls_observer.h",
+  ]
+
+  defines = [ "IS_SYSTEM_MEDIA_CONTROLS_IMPL" ]
+
+  deps = [
+    "//base",
+    "//ui/gfx",
+  ]
+
+  public_deps = [
+    "//skia",
+  ]
+
+  # TODO(https://crbug.com/949596): Move MPRIS and Now Playing here.
+  if (is_win) {
+    sources = [
+      "win/system_media_controls_win.cc",
+      "win/system_media_controls_win.h",
+    ]
+  } else if (use_mpris) {
+    sources = [
+      "linux/system_media_controls_linux.cc",
+      "linux/system_media_controls_linux.h",
+    ]
+    deps += [
+      "//build:branding_buildflags",
+      "//components/dbus/properties",
+      "//components/dbus/thread_linux",
+      "//dbus",
+    ]
+  } else if (is_mac) {
+    sources = [
+      "mac/now_playing_info_center_delegate.h",
+      "mac/now_playing_info_center_delegate.mm",
+      "mac/now_playing_info_center_delegate_cocoa.h",
+      "mac/now_playing_info_center_delegate_cocoa.mm",
+      "mac/remote_command_center_delegate.h",
+      "mac/remote_command_center_delegate.mm",
+      "mac/remote_command_center_delegate_cocoa.h",
+      "mac/remote_command_center_delegate_cocoa.mm",
+      "mac/system_media_controls_mac.h",
+      "mac/system_media_controls_mac.mm",
+    ]
+    deps += [ "//build:branding_buildflags" ]
+    libs = [ "Foundation.framework" ]
+
+    # MediaPlayer.framework is only available on macOS 10.12 and higher. In a
+    # release build, component() is a static_library, which does not
+    # transitively carry weak_link information. Ensure that all targets that
+    # directly or indirectly carry the weak_link on the framework.
+    all_dependent_configs = [ ":media_player_weak_link" ]
+  } else {
+    sources = [
+      "system_media_controls_stub.cc",
+    ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  if (use_mpris) {
+    sources = [
+      "linux/system_media_controls_linux_unittest.cc",
+    ]
+    deps = [
+      ":system_media_controls",
+      "//base",
+      "//base/test:test_support",
+      "//components/dbus/thread_linux",
+      "//dbus",
+      "//dbus:test_support",
+      "//testing/gmock",
+      "//testing/gtest",
+    ]
+  }
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "mock_system_media_controls.cc",
+    "mock_system_media_controls.h",
+  ]
+
+  deps = [
+    ":system_media_controls",
+    "//base",
+    "//testing/gmock",
+  ]
+}

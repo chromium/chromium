@@ -27,7 +27,6 @@ class ExecutionContextCSPDelegate final
   const SecurityOrigin* GetSecurityOrigin() override;
   const KURL& Url() const override;
   void SetSandboxFlags(SandboxFlags) override;
-  void SetAddressSpace(mojom::IPAddressSpace) override;
   void SetRequireTrustedTypes() override;
   void AddInsecureRequestPolicy(WebInsecureRequestPolicy) override;
   std::unique_ptr<SourceLocation> GetSourceLocation() override;

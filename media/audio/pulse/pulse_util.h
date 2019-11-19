@@ -50,8 +50,13 @@ void ContextStateCallback(pa_context* context, void* mainloop);
 
 pa_channel_map ChannelLayoutToPAChannelMap(ChannelLayout channel_layout);
 
-void WaitForOperationCompletion(pa_threaded_mainloop* mainloop,
-                                pa_operation* operation);
+// Blocks until pa_operation completes. If |optional_context| and/or
+// |optional_stream| are provided, the method will cancel |operation| and return
+// false if either the context or stream enter a bad state while waiting.
+bool WaitForOperationCompletion(pa_threaded_mainloop* mainloop,
+                                pa_operation* operation,
+                                pa_context* optional_context = nullptr,
+                                pa_stream* optional_stream = nullptr);
 
 base::TimeDelta GetHardwareLatency(pa_stream* stream);
 

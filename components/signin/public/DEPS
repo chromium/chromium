@@ -1,0 +1,5 @@
+include_rules = [
+  # Subdirectories of //components/signin/public must explicitly allow deps on
+  # each other based on the conceptual deps structure.
+  "-components/signin/public"
+]

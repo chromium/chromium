@@ -6,13 +6,13 @@
 #define CHROMEOS_SERVICES_DEVICE_SYNC_CRYPTAUTH_ENROLLMENT_MANAGER_H_
 
 #include <memory>
+#include <string>
 
 #include "base/macros.h"
 #include "base/observer_list.h"
+#include "base/optional.h"
 #include "base/time/time.h"
 #include "chromeos/services/device_sync/proto/cryptauth_api.pb.h"
-
-class PrefRegistrySimple;
 
 namespace chromeos {
 
@@ -36,9 +36,6 @@ class CryptAuthEnrollmentManager {
     virtual ~Observer() = default;
   };
 
-  // Registers the prefs used by this class to the given |pref_service|.
-  static void RegisterPrefs(PrefRegistrySimple* registry);
-
   CryptAuthEnrollmentManager();
   virtual ~CryptAuthEnrollmentManager();
 
@@ -48,12 +45,19 @@ class CryptAuthEnrollmentManager {
   // Begins scheduling periodic enrollment attempts.
   virtual void Start() = 0;
 
-  // Skips the waiting period and forces an enrollment immediately. If an
-  // enrollment is already in progress, this function does nothing.
-  // |invocation_reason| specifies the reason that the enrollment was triggered,
-  // which is upload to the server.
+  // Skips the waiting period and requests an immediate enrollment.
+  // |invocation_reason|: Specifies the reason that the enrollment was
+  //                      triggered, which is uploaded to the server.
+  // |session_id|: The session ID sent by CryptAuth v2 in a GCM message
+  //               requesting enrollment. Null if enrollment was not triggered
+  //               by a GCM message or if no session ID was included in the GCM
+  //               message.
+  // TODO(nohle): Change cryptauth::InvocationReason to
+  // cryptauthv2::ClientMetadata::InvocationReason when CryptAuth v1 is
+  // obsolete.
   virtual void ForceEnrollmentNow(
-      cryptauth::InvocationReason invocation_reason) = 0;
+      cryptauth::InvocationReason invocation_reason,
+      const base::Optional<std::string>& session_id) = 0;
 
   // Returns true if a successful enrollment has been recorded and this
   // enrollment has not expired.

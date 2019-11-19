@@ -6,6 +6,7 @@
 
 #include <iostream>
 
+#include "base/win/win_util.h"
 #include "base/win/windows_version.h"
 
 namespace media {
@@ -65,9 +66,8 @@ int GetCameraRotation(VideoFacingMode facing) {
 
 bool IsAutoRotationEnabled() {
   typedef BOOL(WINAPI * GetAutoRotationState)(PAR_STATE state);
-  GetAutoRotationState get_rotation_state =
-      reinterpret_cast<GetAutoRotationState>(::GetProcAddress(
-          GetModuleHandle(L"user32.dll"), "GetAutoRotationState"));
+  static const auto get_rotation_state = reinterpret_cast<GetAutoRotationState>(
+      base::win::GetUser32FunctionPointer("GetAutoRotationState"));
 
   if (get_rotation_state) {
     AR_STATE auto_rotation_state;
@@ -87,7 +87,7 @@ bool IsAutoRotationEnabled() {
 }
 
 bool IsInternalCamera(VideoFacingMode facing) {
-  if (base::win::GetVersion() < base::win::VERSION_WIN10) {
+  if (base::win::GetVersion() < base::win::Version::WIN10) {
     return true;
   }
 

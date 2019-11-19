@@ -29,33 +29,6 @@ public final class EventConstants {
     public static final String DOWNLOAD_HOME_OPENED = "download_home_opened";
 
     /**
-     * The user triggered pull to refresh. Used to help determine when to show the Chrome Home
-     * in-product help.
-     */
-    public static final String PULL_TO_REFRESH = "pull_to_refresh";
-
-    /** The contextual suggestions button was shown to the user. */
-    public static final String CONTEXTUAL_SUGGESTIONS_BUTTON_SHOWN =
-            "contextual_suggestions_button_shown";
-
-    /**
-     * The contextual suggestions bottom sheet was explicitly dismissed via a tap on its close
-     * button.
-     */
-    public static final String CONTEXTUAL_SUGGESTIONS_DISMISSED =
-            "contextual_suggestions_dismissed";
-
-    /**
-     * The contextual suggestions bottom sheet was opened.
-     */
-    public static final String CONTEXTUAL_SUGGESTIONS_OPENED = "contextual_suggestions_opened";
-
-    /**
-     * A contextual suggestion was clicked, opened in a new tab or downloaded.
-     */
-    public static final String CONTEXTUAL_SUGGESTION_TAKEN = "contextual_suggestion_taken";
-
-    /**
      * Screenshot is taken with Chrome in the foreground.
      */
     public static final String SCREENSHOT_TAKEN_CHROME_IN_FOREGROUND =
@@ -81,6 +54,11 @@ public final class EventConstants {
      * The data saver footer was used (tapped).
      */
     public static final String DATA_SAVER_DETAIL_OPENED = "data_saver_overview_opened";
+
+    /**
+     * The data saver milestone promo was used (tapped).
+     */
+    public static final String DATA_SAVER_MILESTONE_PROMO_OPENED = "data_saver_milestone_promo";
 
     /**
      * The previews verbose status view was opened.
@@ -157,6 +135,27 @@ public final class EventConstants {
 
     /** The `Translate` app menu button was clicked. */
     public static final String TRANSLATE_MENU_BUTTON_CLICKED = "translate_menu_button_clicked";
+
+    /** The keyboard accessory was used to fill address data into a form. */
+    public static final String KEYBOARD_ACCESSORY_ADDRESS_AUTOFILLED =
+            "keyboard_accessory_address_suggestion_accepted";
+
+    /** The keyboard accessory was used to fill a password form. */
+    public static final String KEYBOARD_ACCESSORY_PASSWORD_AUTOFILLED =
+            "keyboard_accessory_password_suggestion_accepted";
+
+    /** The keyboard accessory was used to fill payment data into a form. */
+    public static final String KEYBOARD_ACCESSORY_PAYMENT_AUTOFILLED =
+            "keyboard_accessory_payment_suggestion_accepted";
+
+    /** The Explore Sites tile was tapped. */
+    public static final String EXPLORE_SITES_TILE_TAPPED = "explore_sites_tile_tapped";
+
+    /** User has finished drop-to-merge to create a group. */
+    public static final String TAB_DRAG_AND_DROP_TO_GROUP = "tab_drag_and_drop_to_group";
+
+    /** User has tapped on Identity Disc. */
+    public static final String IDENTITY_DISC_USED = "identity_disc_used";
 
     /**
      * Do not instantiate.

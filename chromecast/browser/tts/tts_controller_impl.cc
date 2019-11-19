@@ -14,9 +14,9 @@
 #include "base/metrics/user_metrics.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "chromecast/chromecast_buildflags.h"
 #include "chromecast/browser/tts/tts_platform.h"
-#include "third_party/blink/public/platform/web_speech_synthesis_constants.h"
+#include "chromecast/chromecast_buildflags.h"
+#include "third_party/blink/public/mojom/speech/speech_synthesis.mojom-forward.h"
 
 #if BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
 #include "extensions/browser/extensions_browser_client.h"
@@ -67,9 +67,9 @@ bool IsFinalTtsEventType(TtsEventType event_type) {
 //
 
 UtteranceContinuousParameters::UtteranceContinuousParameters()
-    : rate(blink::kWebSpeechSynthesisDoublePrefNotSet),
-      pitch(blink::kWebSpeechSynthesisDoublePrefNotSet),
-      volume(blink::kWebSpeechSynthesisDoublePrefNotSet) {}
+    : rate(blink::mojom::kSpeechSynthesisDoublePrefNotSet),
+      pitch(blink::mojom::kSpeechSynthesisDoublePrefNotSet),
+      volume(blink::mojom::kSpeechSynthesisDoublePrefNotSet) {}
 
 //
 // VoiceData
@@ -498,11 +498,11 @@ void TtsControllerImpl::UpdateUtteranceDefaults(Utterance* utterance) {
   double volume = utterance->continuous_parameters().volume;
   // Update pitch, rate and volume to defaults if not explicity set on
   // this utterance.
-  if (rate == blink::kWebSpeechSynthesisDoublePrefNotSet)
-    rate = blink::kWebSpeechSynthesisDefaultTextToSpeechRate;
-  if (pitch == blink::kWebSpeechSynthesisDoublePrefNotSet)
-    pitch = blink::kWebSpeechSynthesisDefaultTextToSpeechPitch;
-  if (volume == blink::kWebSpeechSynthesisDoublePrefNotSet)
-    volume = blink::kWebSpeechSynthesisDefaultTextToSpeechVolume;
+  if (rate == blink::mojom::kSpeechSynthesisDoublePrefNotSet)
+    rate = blink::mojom::kSpeechSynthesisDefaultRate;
+  if (pitch == blink::mojom::kSpeechSynthesisDoublePrefNotSet)
+    pitch = blink::mojom::kSpeechSynthesisDefaultPitch;
+  if (volume == blink::mojom::kSpeechSynthesisDoublePrefNotSet)
+    volume = blink::mojom::kSpeechSynthesisDefaultVolume;
   utterance->set_continuous_parameters(rate, pitch, volume);
 }

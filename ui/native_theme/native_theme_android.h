@@ -18,7 +18,8 @@ class NativeThemeAndroid : public NativeThemeBase {
   gfx::Size GetPartSize(Part part,
                         State state,
                         const ExtraParams& extra) const override;
-  SkColor GetSystemColor(ColorId color_id) const override;
+  SkColor GetSystemColor(ColorId color_id,
+                         ColorScheme color_scheme) const override;
 
  protected:
   friend class NativeTheme;

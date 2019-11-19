@@ -15,11 +15,6 @@ namespace first_run {
 // Registers preferences related to ChromeOS first-run tutorial.
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
-// Launches the first-run dialog, based on synced user prefs. Unlike
-// MaybeLaunchDialogAfterSessionStart, this function can launch the dialog
-// at any point instead of just before session start.
-void MaybeLaunchDialogImmediately();
-
 // Probably launches first-run dialog after session start depending on synced
 // user prefs. This method should be called after user already logged in but
 // session didn't started yet.

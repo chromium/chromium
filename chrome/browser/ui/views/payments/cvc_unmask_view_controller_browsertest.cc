@@ -79,7 +79,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCvcUnmaskViewControllerTest,
   // This prevents a timeout in error cases where PAY_BUTTON is disabled.
   ASSERT_TRUE(dialog_view()
                   ->GetViewByID(static_cast<int>(DialogViewID::PAY_BUTTON))
-                  ->enabled());
+                  ->GetEnabled());
   OpenCVCPromptWithCVC(base::ASCIIToUTF16("012"));
 
   ResetEventWaiterForSequence(
@@ -108,26 +108,26 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCvcUnmaskViewControllerTest,
   // This prevents a timeout in error cases where PAY_BUTTON is disabled.
   ASSERT_TRUE(dialog_view()
                   ->GetViewByID(static_cast<int>(DialogViewID::PAY_BUTTON))
-                  ->enabled());
+                  ->GetEnabled());
   OpenCVCPromptWithCVC(base::ASCIIToUTF16(""));
   views::View* done_button = dialog_view()->GetViewByID(
       static_cast<int>(DialogViewID::CVC_PROMPT_CONFIRM_BUTTON));
-  EXPECT_FALSE(done_button->enabled());
+  EXPECT_FALSE(done_button->GetEnabled());
 
   views::Textfield* cvc_field =
       static_cast<views::Textfield*>(dialog_view()->GetViewByID(
           static_cast<int>(DialogViewID::CVC_PROMPT_TEXT_FIELD)));
   cvc_field->SetText(base::UTF8ToUTF16(""));
   cvc_field->InsertOrReplaceText(base::UTF8ToUTF16("0"));
-  EXPECT_FALSE(done_button->enabled());
+  EXPECT_FALSE(done_button->GetEnabled());
 
   cvc_field->SetText(base::UTF8ToUTF16(""));
   cvc_field->InsertOrReplaceText(base::UTF8ToUTF16("aaa"));
-  EXPECT_FALSE(done_button->enabled());
+  EXPECT_FALSE(done_button->GetEnabled());
 
   cvc_field->SetText(base::UTF8ToUTF16(""));
   cvc_field->InsertOrReplaceText(base::UTF8ToUTF16("111"));
-  EXPECT_TRUE(done_button->enabled());
+  EXPECT_TRUE(done_button->GetEnabled());
 }
 
 }  // namespace payments

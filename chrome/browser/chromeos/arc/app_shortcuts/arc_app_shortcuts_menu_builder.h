@@ -16,7 +16,6 @@
 class Profile;
 
 namespace ui {
-class MenuModel;
 class SimpleMenuModel;
 }  // namespace ui
 
@@ -36,7 +35,7 @@ class ArcAppShortcutsMenuBuilder {
 
   // Builds arc app shortcuts menu.
   using GetMenuModelCallback =
-      base::OnceCallback<void(std::unique_ptr<ui::MenuModel>)>;
+      base::OnceCallback<void(std::unique_ptr<ui::SimpleMenuModel>)>;
   void BuildMenu(const std::string& package_name,
                  std::unique_ptr<ui::SimpleMenuModel> menu_model,
                  GetMenuModelCallback callback);

@@ -120,7 +120,7 @@ class TetherConnectorImpl : public TetherConnector,
   network_handler::StringResultCallback error_callback_;
   std::unique_ptr<ConnectTetheringOperation> connect_tethering_operation_;
   base::Time connect_to_host_start_time_;
-  base::WeakPtrFactory<TetherConnectorImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<TetherConnectorImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(TetherConnectorImpl);
 };

@@ -12,7 +12,8 @@ import android.util.Property;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
-import org.chromium.base.VisibleForTesting;
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.chrome.R;
 import org.chromium.ui.interpolators.BakedBezierInterpolator;
 
@@ -152,5 +153,14 @@ public class NumberRollView extends FrameLayout {
     @VisibleForTesting
     public void endAnimationsForTesting() {
         if (mLastRollAnimator != null) mLastRollAnimator.end();
+    }
+
+    /**
+     * Update the text appearance for both {@link TextView}.
+     * @param resId The new text appearance to use.
+     */
+    public void setTextAppearance(int resId) {
+        mUpNumber.setTextAppearance(mUpNumber.getContext(), resId);
+        mDownNumber.setTextAppearance(mDownNumber.getContext(), resId);
     }
 }

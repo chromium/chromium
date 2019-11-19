@@ -47,7 +47,7 @@ function testScenario(scrollX, scrollY, zoomFactor) {
   debug('===== scrollX=' + scrollX + ', scrollY=' + scrollY + ', zoomFactor=' + zoomFactor);
 
   document.getElementById('target').contentWindow.scrollTo(scrollX, scrollY);
-  internals.setZoomFactor(zoomFactor);
+  eventSender.setPageZoomFactor(zoomFactor);
 
   debug(' *** Mouse events inside iframe ***');
   // mouse events inside iframe

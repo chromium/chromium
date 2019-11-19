@@ -26,9 +26,7 @@ void AssertValidBufferSize(int size) {
 
 }  // namespace
 
-IOBuffer::IOBuffer()
-    : data_(NULL) {
-}
+IOBuffer::IOBuffer() : data_(nullptr) {}
 
 IOBuffer::IOBuffer(int buffer_size) {
   AssertValidBufferSize(buffer_size);
@@ -46,7 +44,7 @@ IOBuffer::IOBuffer(char* data)
 
 IOBuffer::~IOBuffer() {
   delete[] data_;
-  data_ = NULL;
+  data_ = nullptr;
 }
 
 IOBufferWithSize::IOBufferWithSize(int size)
@@ -73,14 +71,13 @@ IOBufferWithSize::IOBufferWithSize(char* data, size_t size)
 IOBufferWithSize::~IOBufferWithSize() = default;
 
 StringIOBuffer::StringIOBuffer(const std::string& s)
-    : IOBuffer(static_cast<char*>(NULL)),
-      string_data_(s) {
+    : IOBuffer(static_cast<char*>(nullptr)), string_data_(s) {
   AssertValidBufferSize(s.size());
   data_ = const_cast<char*>(string_data_.data());
 }
 
 StringIOBuffer::StringIOBuffer(std::unique_ptr<std::string> s)
-    : IOBuffer(static_cast<char*>(NULL)) {
+    : IOBuffer(static_cast<char*>(nullptr)) {
   AssertValidBufferSize(s->size());
   string_data_.swap(*s.get());
   data_ = const_cast<char*>(string_data_.data());
@@ -89,7 +86,7 @@ StringIOBuffer::StringIOBuffer(std::unique_ptr<std::string> s)
 StringIOBuffer::~StringIOBuffer() {
   // We haven't allocated the buffer, so remove it before the base class
   // destructor tries to delete[] it.
-  data_ = NULL;
+  data_ = nullptr;
 }
 
 DrainableIOBuffer::DrainableIOBuffer(scoped_refptr<IOBuffer> base, int size)
@@ -124,7 +121,7 @@ void DrainableIOBuffer::SetOffset(int bytes) {
 
 DrainableIOBuffer::~DrainableIOBuffer() {
   // The buffer is owned by the |base_| instance.
-  data_ = NULL;
+  data_ = nullptr;
 }
 
 GrowableIOBuffer::GrowableIOBuffer()
@@ -160,7 +157,7 @@ char* GrowableIOBuffer::StartOfBuffer() {
 }
 
 GrowableIOBuffer::~GrowableIOBuffer() {
-  data_ = NULL;
+  data_ = nullptr;
 }
 
 PickledIOBuffer::PickledIOBuffer() : IOBuffer() {
@@ -171,7 +168,7 @@ void PickledIOBuffer::Done() {
 }
 
 PickledIOBuffer::~PickledIOBuffer() {
-  data_ = NULL;
+  data_ = nullptr;
 }
 
 WrappedIOBuffer::WrappedIOBuffer(const char* data)
@@ -179,7 +176,7 @@ WrappedIOBuffer::WrappedIOBuffer(const char* data)
 }
 
 WrappedIOBuffer::~WrappedIOBuffer() {
-  data_ = NULL;
+  data_ = nullptr;
 }
 
 }  // namespace net

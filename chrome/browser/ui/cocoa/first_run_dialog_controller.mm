@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/cocoa/first_run_dialog_controller.h"
 
 #include "base/mac/scoped_nsobject.h"
+#include "base/mac/sdk_forward_declarations.h"
 #include "chrome/browser/ui/cocoa/key_equivalent_constants.h"
 #include "chrome/browser/ui/cocoa/l10n_util.h"
 #include "chrome/grit/chromium_strings.h"
@@ -65,9 +66,24 @@ void CenterVertically(NSView* view) {
 }
 
 - (void)loadView {
+  BOOL isDarkMode = NO;
+  if (@available(macOS 10.14, *)) {
+    NSAppearanceName appearance =
+        [[NSApp effectiveAppearance] bestMatchFromAppearancesWithNames:@[
+          NSAppearanceNameAqua, NSAppearanceNameDarkAqua
+        ]];
+    isDarkMode = [appearance isEqual:NSAppearanceNameDarkAqua];
+  }
+  NSColor* topBoxColor = isDarkMode
+                             ? [NSColor colorWithCalibratedRed:0x32 / 255.0
+                                                         green:0x36 / 255.0
+                                                          blue:0x39 / 255.0
+                                                         alpha:1.0]
+                             : [NSColor whiteColor];
+
   NSBox* topBox =
       [[[NSBox alloc] initWithFrame:NSMakeRect(0, 137, 480, 52)] autorelease];
-  [topBox setFillColor:[NSColor whiteColor]];
+  [topBox setFillColor:topBoxColor];
   [topBox setBoxType:NSBoxCustom];
   [topBox setBorderType:NSNoBorder];
   [topBox setContentViewMargins:NSZeroSize];

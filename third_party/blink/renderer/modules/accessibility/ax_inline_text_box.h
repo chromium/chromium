@@ -40,9 +40,6 @@ class AXObjectCacheImpl;
 
 class AXInlineTextBox final : public AXObject {
  public:
-  static AXInlineTextBox* Create(scoped_refptr<AbstractInlineTextBox>,
-                                 AXObjectCacheImpl&);
-
   AXInlineTextBox(scoped_refptr<AbstractInlineTextBox>, AXObjectCacheImpl&);
 
  protected:
@@ -50,6 +47,8 @@ class AXInlineTextBox final : public AXObject {
   void Detach() override;
   bool IsDetached() const override { return !inline_text_box_; }
   bool IsAXInlineTextBox() const override { return true; }
+
+  bool IsLineBreakingObject() const override;
 
  public:
   ax::mojom::Role RoleValue() const override {
@@ -60,6 +59,7 @@ class AXInlineTextBox final : public AXObject {
   void TextCharacterOffsets(Vector<int>&) const override;
   void GetWordBoundaries(Vector<int>& word_starts,
                          Vector<int>& word_ends) const override;
+  unsigned TextOffsetInContainer(unsigned offset) const override;
   void GetRelativeBounds(AXObject** out_container,
                          FloatRect& out_bounds_in_container,
                          SkMatrix44& out_container_transform,

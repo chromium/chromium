@@ -36,7 +36,7 @@ class FakeFileOperations::FakeFileReader : public FileOperations::Reader {
   base::FilePath filename_;
   std::size_t filesize_ = 0;
   std::size_t read_offset_ = 0;
-  base::WeakPtrFactory<FakeFileReader> weak_ptr_factory_;
+  base::WeakPtrFactory<FakeFileReader> weak_ptr_factory_{this};
 };
 
 class FakeFileOperations::FakeFileWriter : public FileOperations::Writer {
@@ -57,7 +57,7 @@ class FakeFileOperations::FakeFileWriter : public FileOperations::Writer {
   TestIo* test_io_;
   base::FilePath filename_;
   std::vector<std::string> chunks_;
-  base::WeakPtrFactory<FakeFileWriter> weak_ptr_factory_;
+  base::WeakPtrFactory<FakeFileWriter> weak_ptr_factory_{this};
 };
 
 std::unique_ptr<FileOperations::Reader> FakeFileOperations::CreateReader() {
@@ -110,7 +110,7 @@ FakeFileOperations::TestIo::TestIo(const TestIo& other) = default;
 FakeFileOperations::TestIo::~TestIo() = default;
 
 FakeFileOperations::FakeFileReader::FakeFileReader(TestIo* test_io)
-    : test_io_(test_io), weak_ptr_factory_(this) {}
+    : test_io_(test_io) {}
 
 FakeFileOperations::FakeFileReader::~FakeFileReader() = default;
 
@@ -191,7 +191,7 @@ void FakeFileOperations::FakeFileReader::DoReadChunk(
 }
 
 FakeFileOperations::FakeFileWriter::FakeFileWriter(TestIo* test_io)
-    : test_io_(test_io), weak_ptr_factory_(this) {}
+    : test_io_(test_io) {}
 
 FakeFileOperations::FakeFileWriter::~FakeFileWriter() {
   if (state_ == FileOperations::kCreated ||

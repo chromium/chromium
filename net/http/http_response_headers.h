@@ -18,6 +18,7 @@
 #include "base/time/time.h"
 #include "net/base/net_export.h"
 #include "net/http/http_version.h"
+#include "net/log/net_log_capture_mode.h"
 
 namespace base {
 class Pickle;
@@ -30,7 +31,6 @@ class Value;
 namespace net {
 
 class HttpByteRange;
-class NetLogCaptureMode;
 
 enum ValidationType {
   VALIDATION_NONE,          // The resource is fresh.
@@ -295,8 +295,7 @@ class NET_EXPORT HttpResponseHeaders
   bool IsChunkEncoded() const;
 
   // Creates a Value for use with the NetLog containing the response headers.
-  std::unique_ptr<base::Value> NetLogCallback(
-      NetLogCaptureMode capture_mode) const;
+  base::Value NetLogParams(NetLogCaptureMode capture_mode) const;
 
   // Returns the HTTP response code.  This is 0 if the response code text seems
   // to exist but could not be parsed.  Otherwise, it defaults to 200 if the

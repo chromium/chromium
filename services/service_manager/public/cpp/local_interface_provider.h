@@ -8,6 +8,7 @@
 #include "base/macros.h"
 #include "mojo/public/cpp/bindings/interface_ptr.h"
 #include "mojo/public/cpp/bindings/interface_request.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "services/service_manager/public/cpp/export.h"
 
@@ -27,6 +28,10 @@ class LocalInterfaceProvider {
   template <typename Interface>
   void GetInterface(mojo::InterfaceRequest<Interface> request) {
     GetInterface(Interface::Name_, std::move(request.PassMessagePipe()));
+  }
+  template <typename Interface>
+  void GetInterface(mojo::PendingReceiver<Interface> receiver) {
+    GetInterface(Interface::Name_, std::move(receiver.PassPipe()));
   }
   virtual void GetInterface(const std::string& name,
                             mojo::ScopedMessagePipeHandle request_handle) = 0;

@@ -31,17 +31,8 @@ SkBitmap GetElevationIcon() {
     return SkBitmap();
 
   SHSTOCKICONINFO icon_info = { sizeof(SHSTOCKICONINFO) };
-  typedef HRESULT (STDAPICALLTYPE *GetStockIconInfo)(SHSTOCKICONID,
-                                                     UINT,
-                                                     SHSTOCKICONINFO*);
-  // Even with the runtime guard above, we have to use GetProcAddress()
-  // here, because otherwise the loader will try to resolve the function
-  // address on startup, which will break on XP.
-  GetStockIconInfo func = reinterpret_cast<GetStockIconInfo>(
-      GetProcAddress(GetModuleHandle(L"shell32.dll"), "SHGetStockIconInfo"));
-  // TODO(pkasting): Run on a background thread since this call spins a nested
-  // message loop.
-  if (FAILED((*func)(SIID_SHIELD, SHGSI_ICON | SHGSI_SMALLICON, &icon_info)))
+  if (FAILED(SHGetStockIconInfo(SIID_SHIELD, SHGSI_ICON | SHGSI_SMALLICON,
+                                &icon_info)))
     return SkBitmap();
 
   SkBitmap icon = IconUtil::CreateSkBitmapFromHICON(
@@ -59,11 +50,11 @@ SkBitmap GetElevationIcon() {
 
 ElevationIconSetter::ElevationIconSetter(views::LabelButton* button,
                                          base::OnceClosure callback)
-    : button_(button), weak_factory_(this) {
+    : button_(button) {
 #if defined(OS_WIN)
   base::PostTaskAndReplyWithResult(
-      base::CreateCOMSTATaskRunnerWithTraits(
-          {base::MayBlock(), base::TaskPriority::USER_BLOCKING})
+      base::CreateCOMSTATaskRunner({base::ThreadPool(), base::MayBlock(),
+                                    base::TaskPriority::USER_BLOCKING})
           .get(),
       FROM_HERE, base::BindOnce(&GetElevationIcon),
       base::BindOnce(&ElevationIconSetter::SetButtonIcon,

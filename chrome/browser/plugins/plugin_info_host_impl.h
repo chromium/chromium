@@ -30,16 +30,11 @@ class GURL;
 class HostContentSettingsMap;
 class Profile;
 
-namespace base {
-class SingleThreadTaskRunner;
-}
-
 namespace component_updater {
 struct ComponentInfo;
 }
 
 namespace content {
-class ResourceContext;
 struct WebPluginInfo;
 }  // namespace content
 
@@ -55,13 +50,8 @@ namespace url {
 class Origin;
 }
 
-struct PluginInfoHostImplTraits;
-
 // Implements PluginInfoHost interface.
-class PluginInfoHostImpl
-    : public base::RefCountedThreadSafe<PluginInfoHostImpl,
-                                        PluginInfoHostImplTraits>,
-      public chrome::mojom::PluginInfoHost {
+class PluginInfoHostImpl : public chrome::mojom::PluginInfoHost {
  public:
   struct GetPluginInfo_Params;
 
@@ -97,7 +87,6 @@ class PluginInfoHostImpl
 
    private:
     int render_process_id_;
-    content::ResourceContext* resource_context_;
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     extensions::ExtensionRegistry* extension_registry_;
 #endif
@@ -108,26 +97,12 @@ class PluginInfoHostImpl
     BooleanPrefMember run_all_flash_in_allow_mode_;
   };
 
-  static void Create(int render_process_id,
-                     Profile* profile,
-                     chrome::mojom::PluginInfoHostAssociatedRequest request);
-
   PluginInfoHostImpl(int render_process_id, Profile* profile);
-
-  void DestructOnBrowserThread() const;
-  void OnPluginInfoHostRequest(
-      chrome::mojom::PluginInfoHostAssociatedRequest request);
+  ~PluginInfoHostImpl() override;
 
   static void RegisterUserPrefs(user_prefs::PrefRegistrySyncable* registry);
 
  private:
-  friend struct content::BrowserThread::DeleteOnThread<
-      content::BrowserThread::UI>;
-  friend class base::DeleteHelper<PluginInfoHostImpl>;
-  friend struct PluginInfoHostImplTraits;
-
-  ~PluginInfoHostImpl() override;
-
   void ShutdownOnUIThread();
 
   // chrome::mojom::PluginInfoHost
@@ -155,27 +130,18 @@ class PluginInfoHostImpl
                            GetPluginInfoCallback callback,
                            std::unique_ptr<PluginMetadata> plugin_metadata);
 
-  // Reports usage metrics to RAPPOR and UKM.
+  // Reports usage metrics to UKM.
   void ReportMetrics(int render_frame_id,
                      const base::StringPiece& mime_type,
-                     const GURL& url,
                      const url::Origin& main_frame_origin);
 
   Context context_;
   std::unique_ptr<KeyedServiceShutdownNotifier::Subscription>
       shutdown_notifier_;
 
-  scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
-
-  // Binding is mutable so we can Close it in the const OnDestruct method
-  // (which unfortunately hops ~PluginInfoMesssageFilter to the UI thread).
-  mutable mojo::AssociatedBinding<chrome::mojom::PluginInfoHost> binding_;
+  base::WeakPtrFactory<PluginInfoHostImpl> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PluginInfoHostImpl);
-};
-
-struct PluginInfoHostImplTraits {
-  static void Destruct(const PluginInfoHostImpl* impl);
 };
 
 #endif  // CHROME_BROWSER_PLUGINS_PLUGIN_INFO_HOST_IMPL_H_

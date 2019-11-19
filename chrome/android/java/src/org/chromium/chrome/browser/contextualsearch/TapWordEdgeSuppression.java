@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.contextualsearch;
 
 import android.text.TextUtils;
 
+import org.chromium.chrome.browser.contextualsearch.ContextualSearchFieldTrial.ContextualSearchSwitch;
+
 /**
  * Implements the policy that a Tap relatively far away from the middle of a word should be
  * ignored.  When a Tap is close to the middle of the word tapped it's treated normally.
@@ -25,7 +27,8 @@ class TapWordEdgeSuppression extends ContextualSearchHeuristic {
      *        out what part of the word has been tapped.
      */
     TapWordEdgeSuppression(ContextualSearchContext contextualSearchContext) {
-        mIsSuppressionEnabled = ContextualSearchFieldTrial.isWordEdgeSuppressionEnabled();
+        mIsSuppressionEnabled = ContextualSearchFieldTrial.getSwitch(
+                ContextualSearchSwitch.IS_WORD_EDGE_SUPPRESSION_ENABLED);
         mIsConditionSatisfied = isTapNearWordEdge(contextualSearchContext);
     }
 

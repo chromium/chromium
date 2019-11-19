@@ -6,10 +6,12 @@ package org.chromium.content.browser.input;
 
 import android.content.Context;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.UserData;
-import org.chromium.base.VisibleForTesting;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.content.browser.PopupController;
 import org.chromium.content.browser.PopupController.HideablePopup;
 import org.chromium.content.browser.WindowEventObserver;
@@ -173,7 +175,8 @@ public class TextSuggestionHost implements WindowEventObserver, HideablePopup, U
      * Tells Blink to replace the active suggestion range with the specified replacement.
      */
     public void applySpellCheckSuggestion(String suggestion) {
-        nativeApplySpellCheckSuggestion(mNativeTextSuggestionHost, suggestion);
+        TextSuggestionHostJni.get().applySpellCheckSuggestion(
+                mNativeTextSuggestionHost, TextSuggestionHost.this, suggestion);
     }
 
     /**
@@ -181,21 +184,24 @@ public class TextSuggestionHost implements WindowEventObserver, HideablePopup, U
      * specified marker.
      */
     public void applyTextSuggestion(int markerTag, int suggestionIndex) {
-        nativeApplyTextSuggestion(mNativeTextSuggestionHost, markerTag, suggestionIndex);
+        TextSuggestionHostJni.get().applyTextSuggestion(
+                mNativeTextSuggestionHost, TextSuggestionHost.this, markerTag, suggestionIndex);
     }
 
     /**
      * Tells Blink to delete the active suggestion range.
      */
     public void deleteActiveSuggestionRange() {
-        nativeDeleteActiveSuggestionRange(mNativeTextSuggestionHost);
+        TextSuggestionHostJni.get().deleteActiveSuggestionRange(
+                mNativeTextSuggestionHost, TextSuggestionHost.this);
     }
 
     /**
      * Tells Blink to remove spelling markers under all instances of the specified word.
      */
     public void onNewWordAddedToDictionary(String word) {
-        nativeOnNewWordAddedToDictionary(mNativeTextSuggestionHost, word);
+        TextSuggestionHostJni.get().onNewWordAddedToDictionary(
+                mNativeTextSuggestionHost, TextSuggestionHost.this, word);
     }
 
     /**
@@ -204,7 +210,8 @@ public class TextSuggestionHost implements WindowEventObserver, HideablePopup, U
      */
     public void onSuggestionMenuClosed(boolean dismissedByItemTap) {
         if (!dismissedByItemTap) {
-            nativeOnSuggestionMenuClosed(mNativeTextSuggestionHost);
+            TextSuggestionHostJni.get().onSuggestionMenuClosed(
+                    mNativeTextSuggestionHost, TextSuggestionHost.this);
         }
         mSpellCheckPopupWindow = null;
         mTextSuggestionsPopupWindow = null;
@@ -232,12 +239,17 @@ public class TextSuggestionHost implements WindowEventObserver, HideablePopup, U
         return mSpellCheckPopupWindow;
     }
 
-    private native void nativeApplySpellCheckSuggestion(
-            long nativeTextSuggestionHostAndroid, String suggestion);
-    private native void nativeApplyTextSuggestion(
-            long nativeTextSuggestionHostAndroid, int markerTag, int suggestionIndex);
-    private native void nativeDeleteActiveSuggestionRange(long nativeTextSuggestionHostAndroid);
-    private native void nativeOnNewWordAddedToDictionary(
-            long nativeTextSuggestionHostAndroid, String word);
-    private native void nativeOnSuggestionMenuClosed(long nativeTextSuggestionHostAndroid);
+    @NativeMethods
+    interface Natives {
+        void applySpellCheckSuggestion(
+                long nativeTextSuggestionHostAndroid, TextSuggestionHost caller, String suggestion);
+        void applyTextSuggestion(long nativeTextSuggestionHostAndroid, TextSuggestionHost caller,
+                int markerTag, int suggestionIndex);
+        void deleteActiveSuggestionRange(
+                long nativeTextSuggestionHostAndroid, TextSuggestionHost caller);
+        void onNewWordAddedToDictionary(
+                long nativeTextSuggestionHostAndroid, TextSuggestionHost caller, String word);
+        void onSuggestionMenuClosed(
+                long nativeTextSuggestionHostAndroid, TextSuggestionHost caller);
+    }
 }

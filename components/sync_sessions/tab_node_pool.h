@@ -68,10 +68,8 @@ class TabNodePool {
   // pool.
   void FreeTab(SessionID tab_id);
 
-  // Fills |deleted_node_ids| with any free nodes to be deleted as proscribed
-  // by the free node low/high watermarks, in order to ensure the free node pool
-  // does not grow too large.
-  void CleanupTabNodes(std::set<int>* deleted_node_ids);
+  // Deletes all free tab nodes. Returns the IDs of the deleted nodes.
+  std::set<int> CleanupFreeTabNodes();
 
   // Deletes all known mappings for |tab_node_id|. As opposed to FreeTab(), it
   // does NOT free the node for later reuse. This is used for foreign sessions

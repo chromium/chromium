@@ -14,7 +14,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 
-#include "jni/GamepadList_jni.h"
+#include "device/gamepad/jni_headers/GamepadList_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::CheckException;
@@ -94,20 +94,11 @@ static void JNI_GamepadList_SetGamepadData(
     // be mapped to vendor and product information but it is only available at
     // kernel level and it can not be queried using class
     // android.hardware.input.InputManager.
-    base::string16 device_name;
-    base::android::ConvertJavaStringToUTF16(env, devicename, &device_name);
-    const size_t name_to_copy =
-        std::min(device_name.size(), Gamepad::kIdLengthCap - 1);
-    memcpy(pad.id, device_name.data(),
-           name_to_copy * sizeof(base::string16::value_type));
-    pad.id[name_to_copy] = 0;
+    base::string16 gamepad_id;
+    base::android::ConvertJavaStringToUTF16(env, devicename, &gamepad_id);
+    pad.SetID(gamepad_id);
 
-    base::string16 mapping_name = base::UTF8ToUTF16(mapping ? "standard" : "");
-    const size_t mapping_to_copy =
-        std::min(mapping_name.size(), Gamepad::kMappingLengthCap - 1);
-    memcpy(pad.mapping, mapping_name.data(),
-           mapping_to_copy * sizeof(base::string16::value_type));
-    pad.mapping[mapping_to_copy] = 0;
+    pad.mapping = mapping ? GamepadMapping::kStandard : GamepadMapping::kNone;
   }
 
   pad.connected = true;

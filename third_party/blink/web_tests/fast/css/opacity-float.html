@@ -20,4 +20,9 @@ if (opacity == '0.9')
     document.write('PASS');
 else
     document.write('FAIL: ' + opacity);
+
+if (window.testRunner) {
+    // Put ourselves back(?) in a locale where 0.9 is written as "0.9".
+    testRunner.setPOSIXLocale("C");
+}
 </script>

@@ -5,16 +5,12 @@
 package org.chromium.chrome.browser.permissions;
 
 import android.annotation.SuppressLint;
-import android.content.DialogInterface;
-import android.support.annotation.IntDef;
 
-import org.chromium.base.VisibleForTesting;
+import androidx.annotation.IntDef;
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.chrome.browser.ChromeActivity;
-import org.chromium.chrome.browser.ChromeFeatureList;
-import org.chromium.chrome.browser.vr.VrModuleProvider;
-import org.chromium.chrome.browser.widget.bottomsheet.BottomSheet;
-import org.chromium.chrome.browser.widget.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -35,26 +31,22 @@ import java.util.List;
  */
 public class PermissionDialogController
         implements AndroidPermissionRequester.RequestDelegate, ModalDialogProperties.Controller {
-    @IntDef({State.NOT_SHOWING, State.PROMPT_PENDING, State.PROMPT_OPEN, State.PROMPT_ACCEPTED,
-            State.PROMPT_DENIED, State.REQUEST_ANDROID_PERMISSIONS})
+    @IntDef({State.NOT_SHOWING, State.PROMPT_OPEN, State.PROMPT_ACCEPTED, State.PROMPT_DENIED,
+            State.REQUEST_ANDROID_PERMISSIONS})
     @Retention(RetentionPolicy.SOURCE)
     private @interface State {
         int NOT_SHOWING = 0;
         // We don't show prompts while Chrome Home is showing.
-        int PROMPT_PENDING = 1;
+        // int PROMPT_PENDING = 1; // Obsolete.
         int PROMPT_OPEN = 2;
         int PROMPT_ACCEPTED = 3;
         int PROMPT_DENIED = 4;
         int REQUEST_ANDROID_PERMISSIONS = 5;
     }
 
-    private PermissionDialogView mDialogView;
-    private PermissionAppModalDialogView mAppModalDialogView;
+    private PropertyModel mDialogModel;
     private PermissionDialogDelegate mDialogDelegate;
     private ModalDialogManager mModalDialogManager;
-    private DialogInterface.OnClickListener mPositiveClickListener;
-    private DialogInterface.OnClickListener mNegativeClickListener;
-    private DialogInterface.OnDismissListener mDismissListener;
 
     // As the PermissionRequestManager handles queueing for a tab and only shows prompts for active
     // tabs, we typically only have one request. This class only handles multiple requests at once
@@ -110,11 +102,6 @@ public class PermissionDialogController
         if (mState == State.NOT_SHOWING && !mRequestQueue.isEmpty()) dequeueDialog();
     }
 
-    @VisibleForTesting
-    public PermissionDialogView getCurrentDialogForTesting() {
-        return mDialogView;
-    }
-
     @Override
     public void onAndroidPermissionAccepted() {
         assert mState == State.REQUEST_ANDROID_PERMISSIONS;
@@ -150,7 +137,6 @@ public class PermissionDialogController
         assert mState == State.NOT_SHOWING;
 
         mDialogDelegate = mRequestQueue.remove(0);
-        mState = State.PROMPT_PENDING;
         ChromeActivity activity = mDialogDelegate.getTab().getActivity();
 
         // It's possible for the activity to be null if we reach here just after the user
@@ -164,35 +150,6 @@ public class PermissionDialogController
             return;
         }
 
-        // Suppress modals while Chrome Home is open. Eventually we will want to handle other cases
-        // whereby the tab is obscured so modals don't pop up on top of (e.g.) the tab switcher or
-        // the three-dot menu.
-        final BottomSheet bottomSheet = activity.getBottomSheet();
-        if (bottomSheet == null || !bottomSheet.isSheetOpen()) {
-            showDialog();
-        } else {
-            bottomSheet.addObserver(new EmptyBottomSheetObserver() {
-                @Override
-                public void onSheetClosed(int reason) {
-                    bottomSheet.removeObserver(this);
-                    if (reason == BottomSheet.StateChangeReason.NAVIGATION) {
-                        // Dismiss the prompt as it would otherwise be dismissed momentarily once
-                        // the navigation completes.
-                        // TODO(timloh): This logs a dismiss (and we also already logged a show),
-                        // even though the user didn't see anything.
-                        mDialogDelegate.onDismiss();
-                        destroyDelegate();
-                    } else {
-                        showDialog();
-                    }
-                }
-            });
-        }
-    }
-
-    private void showDialog() {
-        assert mState == State.PROMPT_PENDING;
-
         // The tab may have navigated or been closed while we were waiting for Chrome Home to close.
         if (mDialogDelegate == null) {
             mState = State.NOT_SHOWING;
@@ -200,78 +157,9 @@ public class PermissionDialogController
             return;
         }
 
-        // Set the buttons to call the appropriate delegate methods. When the dialog is dismissed,
-        // the delegate's native pointers are freed, and the next queued dialog (if any) is
-        // displayed.
-        mPositiveClickListener =
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int id) {
-                        assert mState == State.PROMPT_OPEN;
-                        mState = State.PROMPT_ACCEPTED;
-                    }
-                };
-        mNegativeClickListener =
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int id) {
-                        assert mState == State.PROMPT_OPEN;
-                        mState = State.PROMPT_DENIED;
-                    }
-                };
-
-        // Called when the dialog is dismissed. Interacting with either button in the dialog will
-        // call this handler after the primary/secondary handler.
-        mDismissListener =
-                new DialogInterface.OnDismissListener() {
-                    @Override
-                    public void onDismiss(DialogInterface dialog) {
-                        mDialogView = null;
-                        if (mDialogDelegate == null) {
-                            // We get into here if a tab navigates or is closed underneath the
-                            // prompt.
-                            mState = State.NOT_SHOWING;
-                            return;
-                        }
-                        if (mState == State.PROMPT_ACCEPTED) {
-                            // Request Android permissions if necessary. This will call back into
-                            // either onAndroidPermissionAccepted or onAndroidPermissionCanceled,
-                            // which will schedule the next permission dialog. If it returns false,
-                            // no system level permissions need to be requested, so just run the
-                            // accept callback.
-                            mState = State.REQUEST_ANDROID_PERMISSIONS;
-                            if (!AndroidPermissionRequester.requestAndroidPermissions(
-                                        mDialogDelegate.getTab(),
-                                        mDialogDelegate.getContentSettingsTypes(),
-                                        PermissionDialogController.this)) {
-                                onAndroidPermissionAccepted();
-                            }
-                        } else {
-                            // Otherwise, run the necessary delegate callback immediately and
-                            // schedule the next dialog.
-                            if (mState == State.PROMPT_DENIED) {
-                                mDialogDelegate.onCancel();
-                            } else {
-                                assert mState == State.PROMPT_OPEN;
-                                mDialogDelegate.onDismiss();
-                            }
-                            destroyDelegate();
-                            scheduleDisplay();
-                        }
-                    }
-                };
-
-        if (useAppModalDialogView()) {
-            mModalDialogManager = mDialogDelegate.getTab().getActivity().getModalDialogManager();
-            mAppModalDialogView = new PermissionAppModalDialogView(this, mDialogDelegate);
-            mModalDialogManager.showDialog(
-                    mAppModalDialogView.getDialogModel(), ModalDialogManager.ModalDialogType.APP);
-        } else {
-            mDialogView = new PermissionDialogView(mDialogDelegate);
-            mDialogView.createView(
-                    mPositiveClickListener, mNegativeClickListener, mDismissListener);
-            mDialogView.show();
-        }
+        mModalDialogManager = mDialogDelegate.getTab().getActivity().getModalDialogManager();
+        mDialogModel = PermissionDialogModel.getModel(this, mDialogDelegate);
+        mModalDialogManager.showDialog(mDialogModel, ModalDialogManager.ModalDialogType.TAB);
         mState = State.PROMPT_OPEN;
     }
 
@@ -282,15 +170,11 @@ public class PermissionDialogController
             // may be called after onClick and before onDismiss, or before both of those listeners.
             mDialogDelegate = null;
             if (mState == State.PROMPT_OPEN) {
-                if (useAppModalDialogView()) {
-                    mModalDialogManager.dismissDialog(mAppModalDialogView.getDialogModel(),
-                            DialogDismissalCause.DISMISSED_BY_NATIVE);
-                } else {
-                    mDialogView.dismiss();
-                }
+                mModalDialogManager.dismissDialog(
+                        mDialogModel, DialogDismissalCause.DISMISSED_BY_NATIVE);
             } else {
-                assert mState == State.PROMPT_PENDING || mState == State.REQUEST_ANDROID_PERMISSIONS
-                        || mState == State.PROMPT_DENIED || mState == State.PROMPT_ACCEPTED;
+                assert mState == State.REQUEST_ANDROID_PERMISSIONS || mState == State.PROMPT_DENIED
+                        || mState == State.PROMPT_ACCEPTED;
             }
         } else {
             assert mRequestQueue.contains(delegate);
@@ -301,20 +185,54 @@ public class PermissionDialogController
 
     @Override
     public void onDismiss(PropertyModel model, @DialogDismissalCause int dismissalCause) {
-        mDismissListener.onDismiss(null);
-        mAppModalDialogView = null;
+        // Called when the dialog is dismissed. Interacting with either button in the dialog will
+        // call this handler after the primary/secondary handler.
+        // When the dialog is dismissed, the delegate's native pointers are
+        // freed, and the next queued dialog (if any) is displayed.
+        mDialogModel = null;
+        if (mDialogDelegate == null) {
+            // We get into here if a tab navigates or is closed underneath the
+            // prompt.
+            mState = State.NOT_SHOWING;
+            return;
+        }
+        if (mState == State.PROMPT_ACCEPTED) {
+            // Request Android permissions if necessary. This will call back into
+            // either onAndroidPermissionAccepted or onAndroidPermissionCanceled,
+            // which will schedule the next permission dialog. If it returns false,
+            // no system level permissions need to be requested, so just run the
+            // accept callback.
+            mState = State.REQUEST_ANDROID_PERMISSIONS;
+            if (!AndroidPermissionRequester.requestAndroidPermissions(mDialogDelegate.getTab(),
+                        mDialogDelegate.getContentSettingsTypes(),
+                        PermissionDialogController.this)) {
+                onAndroidPermissionAccepted();
+            }
+        } else {
+            // Otherwise, run the necessary delegate callback immediately and
+            // schedule the next dialog.
+            if (mState == State.PROMPT_DENIED) {
+                mDialogDelegate.onCancel();
+            } else {
+                assert mState == State.PROMPT_OPEN;
+                mDialogDelegate.onDismiss();
+            }
+            destroyDelegate();
+            scheduleDisplay();
+        }
     }
 
     @Override
     public void onClick(PropertyModel model, @ModalDialogProperties.ButtonType int buttonType) {
+        assert mState == State.PROMPT_OPEN;
         switch (buttonType) {
             case ModalDialogProperties.ButtonType.POSITIVE:
-                mPositiveClickListener.onClick(null, 0);
+                mState = State.PROMPT_ACCEPTED;
                 mModalDialogManager.dismissDialog(
                         model, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
                 break;
             case ModalDialogProperties.ButtonType.NEGATIVE:
-                mNegativeClickListener.onClick(null, 0);
+                mState = State.PROMPT_DENIED;
                 mModalDialogManager.dismissDialog(
                         model, DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
                 break;
@@ -329,8 +247,13 @@ public class PermissionDialogController
         mState = State.NOT_SHOWING;
     }
 
-    private static boolean useAppModalDialogView() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.MODAL_PERMISSION_DIALOG_VIEW)
-                || VrModuleProvider.getDelegate().isInVr();
+    @VisibleForTesting
+    public boolean isDialogShownForTest() {
+        return mDialogDelegate != null;
+    }
+
+    @VisibleForTesting
+    public void clickButtonForTest(@ModalDialogProperties.ButtonType int buttonType) {
+        onClick(mDialogModel, buttonType);
     }
 }

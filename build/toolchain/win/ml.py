@@ -46,12 +46,12 @@ def MakeDeterministic(objdata):
 
   # This makes several assumptions about ml's output:
   # - Section data is in the same order as the corresponding section headers:
-  #   section headers preceeding the .debug$S section header have their data
-  #   preceeding the .debug$S section data; likewise for section headers
+  #   section headers preceding the .debug$S section header have their data
+  #   preceding the .debug$S section data; likewise for section headers
   #   following the .debug$S section.
   # - The .debug$S section contains only the absolute path to the obj file and
   #   nothing else, in particular there's only a single entry in the symbol
-  #   table refering to the .debug$S section.
+  #   table referring to the .debug$S section.
   # - There are no COFF line number entries.
   # - There's no IMAGE_SYM_CLASS_CLR_TOKEN symbol.
   # These seem to hold in practice; if they stop holding this script needs to
@@ -112,7 +112,7 @@ def MakeDeterministic(objdata):
   assert section_headers[debug_section_index].NumberOfRelocations == 0
   assert section_headers[debug_section_index].NumberOfLineNumbers == 0
 
-  # Make sure sections in front of .debug$S have their data preceeding it.
+  # Make sure sections in front of .debug$S have their data preceding it.
   for header in section_headers[:debug_section_index]:
     assert header.PointerToRawData < debug_offset
     assert header.PointerToRelocations < debug_offset
@@ -149,7 +149,7 @@ def MakeDeterministic(objdata):
   # entries around and we need to update symbol table indices in:
   # - relocations
   # - line number records (never present)
-  # - one aux symbol entries (never present in ml output)
+  # - one aux symbol entry (IMAGE_SYM_CLASS_CLR_TOKEN; not present in ml output)
   SYM = Struct('SYM',
                '8s', 'Name',
                'I', 'Value',
@@ -209,7 +209,7 @@ def MakeDeterministic(objdata):
   for header in section_headers:
     assert header.NumberOfLineNumbers == 0
 
-  # Now that all indices are updated, remove the symbol table entry refering to
+  # Now that all indices are updated, remove the symbol table entry referring to
   # .debug$S and its aux entry.
   del objdata[coff_header.PointerToSymbolTable + debug_sym * SYM.size():
               coff_header.PointerToSymbolTable + (debug_sym + 2) * SYM.size()]

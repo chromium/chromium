@@ -7,15 +7,12 @@ package org.chromium.chrome.browser.offlinepages.prefetch;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.test.InstrumentationRegistry;
-import android.util.Pair;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 
 import org.junit.Assert;
 
 import org.chromium.base.Log;
-import org.chromium.base.ThreadUtils;
-import org.chromium.base.library_loader.ProcessInitException;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.components.gcm_driver.GCMDriver;
@@ -29,13 +26,15 @@ import org.chromium.components.offline_pages.core.prefetch.proto.OfflinePages.Pa
 import org.chromium.components.offline_pages.core.prefetch.proto.OfflinePages.PageParameters;
 import org.chromium.components.offline_pages.core.prefetch.proto.OperationOuterClass.Operation;
 import org.chromium.components.offline_pages.core.prefetch.proto.StatusOuterClass;
+import org.chromium.content_public.browser.test.util.CriteriaHelper;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.util.WebServer;
+import org.chromium.net.test.util.WebServer.HTTPHeader;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.concurrent.TimeoutException;
 
 /**
  * A fake OfflinePageService.
@@ -49,6 +48,11 @@ public class TestOfflinePageService {
     // Determines how this fake service responds to requests for pages.
     private HashMap<String, PageBehavior> mPageBehaviors = new HashMap<String, PageBehavior>();
     private StatusOuterClass.Code mDefaultGenerateStatus = StatusOuterClass.Code.OK;
+
+    private boolean mForbidGeneratePageBundle;
+    public void setForbidGeneratePageBundle(boolean shouldForbid) {
+        mForbidGeneratePageBundle = shouldForbid;
+    }
 
     private static int sNextOperationIndex = 1;
     private static String newOperationName() {
@@ -102,9 +106,13 @@ public class TestOfflinePageService {
         if (request.getMethod().equals("POST")
                 && request.getURI().startsWith("/v1:GeneratePageBundle")) {
             try {
-                GeneratePageBundleRequest bundleRequest =
-                        GeneratePageBundleRequest.parseFrom(request.getBody());
-                handleGeneratePageBundle(bundleRequest, stream);
+                if (mForbidGeneratePageBundle) {
+                    respondForbidden(stream);
+                } else {
+                    GeneratePageBundleRequest bundleRequest =
+                            GeneratePageBundleRequest.parseFrom(request.getBody());
+                    handleGeneratePageBundle(bundleRequest, stream);
+                }
                 GeneratePageBundleCalled.notifyCalled();
                 return true;
             } catch (InvalidProtocolBufferException e) {
@@ -114,6 +122,13 @@ public class TestOfflinePageService {
             String suffix = request.getURI().substring(10);
             String[] nameAndQuery = suffix.split("[?]", 2);
             if (nameAndQuery.length == 2) {
+                for (HTTPHeader header : request.getHeaders()) {
+                    if (header.key.equalsIgnoreCase("range")) {
+                        // The server is not equipped to correctly handle range requests for the
+                        // initial request, as the response won't be cached.
+                        Assert.fail("received range request for page data. Range=" + header.value);
+                    }
+                }
                 if (handleRead(nameAndQuery[0], stream)) {
                     ReadCalled.notifyCalled();
                     return true;
@@ -207,11 +222,22 @@ public class TestOfflinePageService {
     /** Handle a GeneratePageBundle request. */
     private void handleGeneratePageBundle(GeneratePageBundleRequest request, OutputStream output)
             throws IOException {
-        String operationName = newOperationName();
+        String operationName = "operations/empty";
+        if (request.getPagesCount() > 0) {
+            operationName = newOperationName();
+        }
         mOperations.put(operationName, request);
         if (!writeOperationResponse(operationName, request, true, output)) {
-            mIncompleteOperations.add(operationName);
+            synchronized (mIncompleteOperations) {
+                mIncompleteOperations.add(operationName);
+            }
         }
+    }
+
+    /** Send a "Forbidden by OPS" response. */
+    private void respondForbidden(OutputStream output) throws IOException {
+        WebServer.writeResponse(
+                output, "403 Forbidden", "... request forbidden by OPS ...".getBytes());
     }
 
     /**
@@ -219,32 +245,47 @@ public class TestOfflinePageService {
      * name that was completed. Returns null if no bundle needs to be sent. If more than one bundle
      * needs to be sent, the first completed bundle is sent. This can be called repeatedly until no
      * more bundles are ready.
+     *
+     * This method is typically not called on the server thread, so access to members should be
+     * synchronized.
      */
-    public String sendPushMessage() throws InterruptedException, TimeoutException {
-        if (mIncompleteOperations.isEmpty()) {
-            return null;
+    public String sendPushMessage() {
+        CriteriaHelper.pollInstrumentationThread(() -> {
+            Boolean result;
+            synchronized (mIncompleteOperations) {
+                result = !mIncompleteOperations.isEmpty();
+            }
+            return result;
+        });
+
+        String operationName;
+        synchronized (mIncompleteOperations) {
+            operationName = mIncompleteOperations.remove(0);
         }
-        String operationName = mIncompleteOperations.remove(0);
-        final Pair<String, String> appIdAndSenderId =
-                FakeInstanceIDWithSubtype.getSubtypeAndAuthorizedEntityOfOnlyToken();
-        final String appId = appIdAndSenderId.first;
-        final String senderId = appIdAndSenderId.second;
-        ThreadUtils.runOnUiThreadBlocking(() -> {
+        final String prefetchSubtype = "com.google.chrome.OfflinePagePrefetch";
+        // We have to wait until Chrome gets the GCM token.
+        CriteriaHelper.pollInstrumentationThread(() -> {
+            try {
+                FakeInstanceIDWithSubtype.getAuthorizedEntityForSubtype(prefetchSubtype);
+                return true;
+            } catch (IllegalStateException e) {
+                return false;
+            }
+        }, "GetGCMToken not complete", 15000, 500);
+        final String senderId =
+                FakeInstanceIDWithSubtype.getAuthorizedEntityForSubtype(prefetchSubtype);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
             Context context = InstrumentationRegistry.getInstrumentation()
                                       .getTargetContext()
                                       .getApplicationContext();
 
             Bundle extras = new Bundle();
             extras.putString("pageBundle", operationName);
-            extras.putString("subtype", appId); // is this necessary?
+            extras.putString("subtype", prefetchSubtype); // is this necessary?
 
             GCMMessage message = new GCMMessage(senderId, extras);
-            try {
-                ChromeBrowserInitializer.getInstance(context).handleSynchronousStartup();
-                GCMDriver.dispatchMessage(message);
-            } catch (ProcessInitException e) {
-                Assert.fail(e.getMessage());
-            }
+            ChromeBrowserInitializer.getInstance(context).handleSynchronousStartup();
+            GCMDriver.dispatchMessage(message);
         });
         return operationName;
     }

@@ -53,7 +53,7 @@ scoped_refptr<SimpleFontData> CSSFontFaceSource::GetFontData(
   if (!IsValid())
     return nullptr;
 
-  if (IsLocal()) {
+  if (IsLocalNonBlocking()) {
     // We're local. Just return a SimpleFontData from the normal cache.
     return CreateFontData(font_description, font_selection_capabilities);
   }

@@ -12,10 +12,10 @@
 #include "base/test/test_file_util.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/visitedlink/browser/visitedlink_master.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "testing/perf/perf_test.h"
+#include "testing/perf/perf_result_reporter.h"
 #include "url/gurl.h"
 
 using base::TimeDelta;
@@ -24,24 +24,42 @@ namespace visitedlink {
 
 namespace {
 
+static constexpr char kMetricAddAndQueryMs[] = "add_and_query";
+static constexpr char kMetricTableInitMs[] = "table_initialization";
+static constexpr char kMetricLinkInitMs[] = "link_init";
+static constexpr char kMetricDatabaseFlushMs[] = "database_flush";
+static constexpr char kMetricColdLoadTimeMs[] = "cold_load_time";
+static constexpr char kMetricHotLoadTimeMs[] = "hot_load_time";
+
+perf_test::PerfResultReporter SetUpReporter(const std::string& metric_suffix) {
+  perf_test::PerfResultReporter reporter("VisitedLink.", metric_suffix);
+  reporter.RegisterImportantMetric(kMetricAddAndQueryMs, "ms");
+  reporter.RegisterImportantMetric(kMetricTableInitMs, "ms");
+  reporter.RegisterImportantMetric(kMetricLinkInitMs, "ms");
+  reporter.RegisterImportantMetric(kMetricDatabaseFlushMs, "ms");
+  reporter.RegisterImportantMetric(kMetricColdLoadTimeMs, "ms");
+  reporter.RegisterImportantMetric(kMetricHotLoadTimeMs, "ms");
+  return reporter;
+}
+
 // Designed like base/test/perf_time_logger but uses testing/perf instead of
 // base/test/perf* to report timings.
 class TimeLogger {
  public:
-  explicit TimeLogger(std::string test_name);
+  explicit TimeLogger(std::string metric_suffix);
   ~TimeLogger();
   void Done();
 
  private:
   bool logged_;
-  std::string test_name_;
+  std::string metric_suffix_;
   base::ElapsedTimer timer_;
 
   DISALLOW_COPY_AND_ASSIGN(TimeLogger);
 };
 
-TimeLogger::TimeLogger(std::string test_name)
-    : logged_(false), test_name_(std::move(test_name)) {}
+TimeLogger::TimeLogger(std::string metric_suffix)
+    : logged_(false), metric_suffix_(std::move(metric_suffix)) {}
 
 TimeLogger::~TimeLogger() {
   if (!logged_)
@@ -52,8 +70,8 @@ void TimeLogger::Done() {
   // We use a floating-point millisecond value because it is more
   // intuitive than microseconds and we want more precision than
   // integer milliseconds.
-  perf_test::PrintResult(test_name_, std::string(), std::string(),
-                         timer_.Elapsed().InMillisecondsF(), "ms", true);
+  perf_test::PerfResultReporter reporter = SetUpReporter("baseline_story");
+  reporter.AddResult(metric_suffix_, timer_.Elapsed().InMillisecondsF());
   logged_ = true;
 }
 
@@ -101,7 +119,7 @@ class VisitedLink : public testing::Test {
   void TearDown() override { base::DeleteFile(db_path_, false); }
 
  private:
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
 };
 
 } // namespace
@@ -118,7 +136,7 @@ TEST_F(VisitedLink, TestAddAndQuery) {
   ASSERT_TRUE(master.Init());
   content::RunAllTasksUntilIdle();
 
-  TimeLogger timer("Visited_link_add_and_query");
+  TimeLogger timer(kMetricAddAndQueryMs);
 
   // first check without anything in the table
   CheckVisited(master, added_prefix, 0, add_count);
@@ -144,13 +162,13 @@ TEST_F(VisitedLink, TestAddAndQuery) {
 TEST_F(VisitedLink, DISABLED_TestLoad) {
   // create a big DB
   {
-    TimeLogger table_initialization_timer("Table_initialization");
+    TimeLogger table_initialization_timer(kMetricTableInitMs);
 
     VisitedLinkMaster master(new DummyVisitedLinkEventListener(), nullptr, true,
                              true, db_path_, 0);
 
     // time init with empty table
-    TimeLogger initTimer("Empty_visited_link_init");
+    TimeLogger initTimer(kMetricLinkInitMs);
     bool success = master.Init();
     content::RunAllTasksUntilIdle();
     initTimer.Done();
@@ -163,7 +181,7 @@ TEST_F(VisitedLink, DISABLED_TestLoad) {
     FillTable(master, added_prefix, 0, load_test_add_count);
 
     // time writing the file out out
-    TimeLogger flushTimer("Visited_link_database_flush");
+    TimeLogger flushTimer(kMetricDatabaseFlushMs);
     master.RewriteFile();
     // TODO(maruel): Without calling FlushFileBuffers(master.file_); you don't
     // know really how much time it took to write the file.
@@ -222,12 +240,9 @@ TEST_F(VisitedLink, DISABLED_TestLoad) {
     hot_sum += hot_load_times[i];
   }
 
-  perf_test::PrintResult("Visited_link_cold_load_time", std::string(),
-                         std::string(), cold_sum / cold_load_times.size(), "ms",
-                         true);
-  perf_test::PrintResult("Visited_link_hot_load_time", std::string(),
-                         std::string(), hot_sum / hot_load_times.size(), "ms",
-                         true);
+  perf_test::PerfResultReporter reporter = SetUpReporter("baseline_story");
+  reporter.AddResult(kMetricColdLoadTimeMs, cold_sum / cold_load_times.size());
+  reporter.AddResult(kMetricHotLoadTimeMs, hot_sum / hot_load_times.size());
 }
 
 }  // namespace visitedlink

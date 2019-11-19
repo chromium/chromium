@@ -4,17 +4,18 @@
 
 #include "content/browser/find_in_page_client.h"
 
+#include <utility>
+
 #include "content/browser/find_request_manager.h"
 #include "content/browser/frame_host/render_frame_host_impl.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace content {
 
 FindInPageClient::FindInPageClient(FindRequestManager* find_request_manager,
                                    RenderFrameHostImpl* rfh)
-    : frame_(rfh), find_request_manager_(find_request_manager), binding_(this) {
-  blink::mojom::FindInPageClientPtr client;
-  binding_.Bind(MakeRequest(&client));
-  frame_->GetFindInPage()->SetClient(std::move(client));
+    : frame_(rfh), find_request_manager_(find_request_manager) {
+  frame_->GetFindInPage()->SetClient(receiver_.BindNewPipeAndPassRemote());
 }
 
 FindInPageClient::~FindInPageClient() {}

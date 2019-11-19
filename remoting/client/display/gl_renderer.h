@@ -146,7 +146,7 @@ class GlRenderer {
 
   base::ThreadChecker thread_checker_;
   base::WeakPtr<GlRenderer> weak_ptr_;
-  base::WeakPtrFactory<GlRenderer> weak_factory_;
+  base::WeakPtrFactory<GlRenderer> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(GlRenderer);
 };

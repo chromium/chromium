@@ -24,7 +24,6 @@ extern const char kRestartBrowser[];
 extern const char kFlagsRestartButton[];
 extern const char kFlagsRestartNotice[];
 extern const char kNeedsRestart[];
-extern const char kOwnerEmail[];
 extern const char kReturnExperimentalFeatures[];
 extern const char kShowBetaChannelPromotion[];
 extern const char kShowDevChannelPromotion[];

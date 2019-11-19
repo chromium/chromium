@@ -33,11 +33,10 @@ selection_test(
     '<div contenteditable>foo<span style="display:inline-block;width:1em;height:1em;">|</span>bar</div>',
     'Move right into empty inline block');
 
-// TODO(xiaochengh): Note that the left and right movements are asymmetric, which might be a bug.
 selection_test(
     '<div contenteditable>foo<span style="display:inline-block;width:1em;height:1em;">|</span>bar</div>',
     selection => selection.modify('move', 'left', 'character'),
-    '<div contenteditable>fo|o<span style="display:inline-block;width:1em;height:1em;"></span>bar</div>',
+    '<div contenteditable>foo|<span style="display:inline-block;width:1em;height:1em;"></span>bar</div>',
     'Move left out of empty inline block');
 
 selection_test(

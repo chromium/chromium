@@ -14,14 +14,13 @@ namespace browser_sync {
 ExtensionModelTypeController::ExtensionModelTypeController(
     syncer::ModelType type,
     syncer::OnceModelTypeStoreFactory store_factory,
-    SyncableServiceProvider syncable_service_provider,
+    base::WeakPtr<syncer::SyncableService> syncable_service,
     const base::RepeatingClosure& dump_stack,
     Profile* profile)
-    : SyncableServiceBasedModelTypeController(
-          type,
-          std::move(store_factory),
-          std::move(syncable_service_provider),
-          dump_stack),
+    : SyncableServiceBasedModelTypeController(type,
+                                              std::move(store_factory),
+                                              syncable_service,
+                                              dump_stack),
       profile_(profile) {
   DCHECK(type == syncer::EXTENSIONS || type == syncer::APPS ||
          type == syncer::THEMES);

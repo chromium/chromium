@@ -6,7 +6,6 @@
 #define CC_PAINT_SCOPED_RASTER_FLAGS_H_
 
 #include "base/containers/stack_container.h"
-#include "base/macros.h"
 #include "cc/paint/decode_stashing_image_provider.h"
 #include "cc/paint/paint_export.h"
 #include "cc/paint/paint_flags.h"
@@ -21,8 +20,12 @@ class CC_PAINT_EXPORT ScopedRasterFlags {
   ScopedRasterFlags(const PaintFlags* flags,
                     ImageProvider* image_provider,
                     const SkMatrix& ctm,
+                    int max_texture_size,
                     uint8_t alpha);
+  ScopedRasterFlags(const ScopedRasterFlags&) = delete;
   ~ScopedRasterFlags();
+
+  ScopedRasterFlags& operator=(const ScopedRasterFlags&) = delete;
 
   // The usage of these flags should not extend beyond the lifetime of this
   // object.
@@ -35,7 +38,7 @@ class CC_PAINT_EXPORT ScopedRasterFlags {
 
  private:
   void DecodeImageShader(const SkMatrix& ctm);
-  void DecodeRecordShader(const SkMatrix& ctm);
+  void DecodeRecordShader(const SkMatrix& ctm, int max_texture_size);
   void DecodeFilter();
 
   void AdjustStrokeIfNeeded(const SkMatrix& ctm);
@@ -50,8 +53,6 @@ class CC_PAINT_EXPORT ScopedRasterFlags {
   base::Optional<PaintFlags> modified_flags_;
   base::Optional<DecodeStashingImageProvider> decode_stashing_image_provider_;
   bool decode_failed_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedRasterFlags);
 };
 
 }  // namespace cc

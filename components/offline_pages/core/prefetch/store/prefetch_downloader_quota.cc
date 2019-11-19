@@ -36,7 +36,7 @@ int64_t NormalizeQuota(int64_t quota) {
 }  // namespace
 
 PrefetchDownloaderQuota::PrefetchDownloaderQuota(sql::Database* db,
-                                                 base::Clock* clock)
+                                                 const base::Clock* clock)
     : db_(db), clock_(clock) {
   DCHECK(db_);
   DCHECK(clock_);

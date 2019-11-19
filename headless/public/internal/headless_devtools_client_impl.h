@@ -25,6 +25,7 @@
 #include "headless/public/devtools/domains/dom_snapshot.h"
 #include "headless/public/devtools/domains/dom_storage.h"
 #include "headless/public/devtools/domains/emulation.h"
+#include "headless/public/devtools/domains/fetch.h"
 #include "headless/public/devtools/domains/headless_experimental.h"
 #include "headless/public/devtools/domains/heap_profiler.h"
 #include "headless/public/devtools/domains/indexeddb.h"
@@ -77,6 +78,7 @@ class HEADLESS_EXPORT HeadlessDevToolsClientImpl
   dom_snapshot::Domain* GetDOMSnapshot() override;
   dom_storage::Domain* GetDOMStorage() override;
   emulation::Domain* GetEmulation() override;
+  fetch::Domain* GetFetch() override;
   headless_experimental::Domain* GetHeadlessExperimental() override;
   heap_profiler::Domain* GetHeapProfiler() override;
   indexeddb::Domain* GetIndexedDB() override;
@@ -202,6 +204,7 @@ class HEADLESS_EXPORT HeadlessDevToolsClientImpl
   dom_snapshot::ExperimentalDomain dom_snapshot_domain_;
   dom_storage::ExperimentalDomain dom_storage_domain_;
   emulation::ExperimentalDomain emulation_domain_;
+  fetch::ExperimentalDomain fetch_domain_;
   headless_experimental::ExperimentalDomain headless_experimental_domain_;
   heap_profiler::ExperimentalDomain heap_profiler_domain_;
   indexeddb::ExperimentalDomain indexeddb_domain_;
@@ -221,7 +224,7 @@ class HEADLESS_EXPORT HeadlessDevToolsClientImpl
   target::ExperimentalDomain target_domain_;
   tracing::ExperimentalDomain tracing_domain_;
   scoped_refptr<base::SequencedTaskRunner> browser_main_thread_;
-  base::WeakPtrFactory<HeadlessDevToolsClientImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<HeadlessDevToolsClientImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(HeadlessDevToolsClientImpl);
 };

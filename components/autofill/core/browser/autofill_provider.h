@@ -7,7 +7,7 @@
 
 #include "base/time/time.h"
 #include "components/autofill/core/common/form_data.h"
-#include "components/autofill/core/common/submission_source.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 
 namespace gfx {
 class RectF;
@@ -50,7 +50,7 @@ class AutofillProvider {
   virtual void OnFormSubmitted(AutofillHandlerProxy* handler,
                                const FormData& form,
                                bool known_success,
-                               SubmissionSource source) = 0;
+                               mojom::SubmissionSource source) = 0;
 
   virtual void OnFocusNoLongerOnForm(AutofillHandlerProxy* handler) = 0;
 

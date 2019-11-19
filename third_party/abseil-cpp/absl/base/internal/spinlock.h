@@ -5,7 +5,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//      http://www.apache.org/licenses/LICENSE-2.0
+//      https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -32,6 +32,7 @@
 
 #include <stdint.h>
 #include <sys/types.h>
+
 #include <atomic>
 
 #include "absl/base/attributes.h"
@@ -47,7 +48,7 @@
 namespace absl {
 namespace base_internal {
 
-class LOCKABLE SpinLock {
+class ABSL_LOCKABLE SpinLock {
  public:
   SpinLock() : lockword_(kSpinLockCooperative) {
     ABSL_TSAN_MUTEX_CREATE(this, __tsan_mutex_not_static);
@@ -57,8 +58,10 @@ class LOCKABLE SpinLock {
   //
   //    static SpinLock lock(base_internal::kLinkerInitialized);
   //
-  // When intialized using this constructor, we depend on the fact
-  // that the linker has already initialized the memory appropriately.
+  // When initialized using this constructor, we depend on the fact
+  // that the linker has already initialized the memory appropriately. The lock
+  // is initialized in non-cooperative mode.
+  //
   // A SpinLock constructed like this can be freely used from global
   // initializers without worrying about the order in which global
   // initializers run.
@@ -76,7 +79,7 @@ class LOCKABLE SpinLock {
   ~SpinLock() { ABSL_TSAN_MUTEX_DESTROY(this, __tsan_mutex_not_static); }
 
   // Acquire this SpinLock.
-  inline void Lock() EXCLUSIVE_LOCK_FUNCTION() {
+  inline void Lock() ABSL_EXCLUSIVE_LOCK_FUNCTION() {
     ABSL_TSAN_MUTEX_PRE_LOCK(this, 0);
     if (!TryLockImpl()) {
       SlowLock();
@@ -88,7 +91,7 @@ class LOCKABLE SpinLock {
   // acquisition was successful.  If the lock was not acquired, false is
   // returned.  If this SpinLock is free at the time of the call, TryLock
   // will return true with high probability.
-  inline bool TryLock() EXCLUSIVE_TRYLOCK_FUNCTION(true) {
+  inline bool TryLock() ABSL_EXCLUSIVE_TRYLOCK_FUNCTION(true) {
     ABSL_TSAN_MUTEX_PRE_LOCK(this, __tsan_mutex_try_lock);
     bool res = TryLockImpl();
     ABSL_TSAN_MUTEX_POST_LOCK(
@@ -98,7 +101,7 @@ class LOCKABLE SpinLock {
   }
 
   // Release this SpinLock, which must be held by the calling thread.
-  inline void Unlock() UNLOCK_FUNCTION() {
+  inline void Unlock() ABSL_UNLOCK_FUNCTION() {
     ABSL_TSAN_MUTEX_PRE_UNLOCK(this, 0);
     uint32_t lock_value = lockword_.load(std::memory_order_relaxed);
     lock_value = lockword_.exchange(lock_value & kSpinLockCooperative,
@@ -176,13 +179,13 @@ class LOCKABLE SpinLock {
 
 // Corresponding locker object that arranges to acquire a spinlock for
 // the duration of a C++ scope.
-class SCOPED_LOCKABLE SpinLockHolder {
+class ABSL_SCOPED_LOCKABLE SpinLockHolder {
  public:
-  inline explicit SpinLockHolder(SpinLock* l) EXCLUSIVE_LOCK_FUNCTION(l)
+  inline explicit SpinLockHolder(SpinLock* l) ABSL_EXCLUSIVE_LOCK_FUNCTION(l)
       : lock_(l) {
     l->Lock();
   }
-  inline ~SpinLockHolder() UNLOCK_FUNCTION() { lock_->Unlock(); }
+  inline ~SpinLockHolder() ABSL_UNLOCK_FUNCTION() { lock_->Unlock(); }
 
   SpinLockHolder(const SpinLockHolder&) = delete;
   SpinLockHolder& operator=(const SpinLockHolder&) = delete;

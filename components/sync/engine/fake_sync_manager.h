@@ -42,7 +42,8 @@ class FakeSyncManager : public SyncManager {
   // to include those types that didn't fail.
   FakeSyncManager(ModelTypeSet initial_sync_ended_types,
                   ModelTypeSet progress_marker_types,
-                  ModelTypeSet configure_fail_types);
+                  ModelTypeSet configure_fail_types,
+                  bool should_fail_on_init);
   ~FakeSyncManager() override;
 
   // Returns those types that have been purged from the directory since the last
@@ -102,8 +103,9 @@ class FakeSyncManager : public SyncManager {
   UserShare* GetUserShare() override;
   ModelTypeConnector* GetModelTypeConnector() override;
   std::unique_ptr<ModelTypeConnector> GetModelTypeConnectorProxy() override;
-  const std::string cache_guid() override;
-  bool ReceivedExperiment(Experiments* experiments) override;
+  std::string cache_guid() override;
+  std::string birthday() override;
+  std::string bag_of_chips() override;
   bool HasUnsyncedItemsForTest() override;
   SyncEncryptionHandler* GetEncryptionHandler() override;
   std::vector<std::unique_ptr<ProtocolEvent>> GetBufferedProtocolEvents()
@@ -125,6 +127,7 @@ class FakeSyncManager : public SyncManager {
 
   base::ObserverList<SyncManager::Observer>::Unchecked observers_;
 
+  bool should_fail_on_init_;
   // Faked directory state.
   ModelTypeSet initial_sync_ended_types_;
   ModelTypeSet progress_marker_types_;
@@ -146,9 +149,9 @@ class FakeSyncManager : public SyncManager {
   // The most recent configure reason.
   ConfigureReason last_configure_reason_;
 
-  FakeModelTypeConnector fake_model_type_connector_;
-
   FakeSyncEncryptionHandler fake_encryption_handler_;
+
+  FakeModelTypeConnector fake_model_type_connector_;
 
   TestUserShare test_user_share_;
 

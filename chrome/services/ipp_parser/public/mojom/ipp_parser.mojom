@@ -1,0 +1,61 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Defines a mojom representation for an IPP, Internet Printing Protocol,
+// request, IppRequest, and an interface for parsing arbitrary requests into
+// this format, IppParser.
+
+module ipp_parser.mojom;
+
+[Extensible]
+enum ValueType {
+  BOOLEAN,
+  DATE,
+  INTEGER,
+  STRING,
+};
+
+union IppAttributeValue {
+  array<bool> bools;
+
+  // Per the RFC1903 DateAndTime specification, date's are serialized as a
+  // string of 11 octets.
+  array<uint8> date;
+
+  array<int32> ints;
+  array<string> strings;
+};
+
+struct IppAttribute {
+  string name;
+  int64 group_tag;
+  int64 value_tag;
+  ValueType type;
+  IppAttributeValue value;
+};
+
+struct IppMessage {
+  int64 major_version;
+  int64 minor_version;
+  int64 operation_id;
+  int64 request_id;
+  array<IppAttribute> attributes;
+};
+
+struct IppRequest {
+  string method;
+  string endpoint;
+  string http_version;
+  map<string, string> headers;
+  IppMessage ipp;
+  array<uint8> data;
+};
+
+// Implemented by the CupsIppParserService; supports parsing arbitrary IPP
+// requests.
+interface IppParser {
+  // Treats |to_parse| as an IPP request and attempts to parse into IppRequest
+  // format. Returns empty IppRequest on failure.
+  ParseIpp(array<uint8> to_parse) => (IppRequest? request);
+};

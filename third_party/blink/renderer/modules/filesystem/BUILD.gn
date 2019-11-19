@@ -6,7 +6,7 @@ import("//third_party/blink/renderer/modules/modules.gni")
 
 blink_modules_sources("filesystem") {
   sources = [
-    "async_file_system_callbacks.h",
+    "async_callback_helper.h",
     "data_transfer_item_file_system.cc",
     "data_transfer_item_file_system.h",
     "dev_tools_host_file_system.cc",
@@ -43,21 +43,10 @@ blink_modules_sources("filesystem") {
     "file_entry.h",
     "file_entry_sync.cc",
     "file_entry_sync.h",
-    "file_system_base_handle.cc",
-    "file_system_base_handle.h",
     "file_system_callbacks.cc",
     "file_system_callbacks.h",
-    "file_system_client.h",
-    "file_system_directory_handle.cc",
-    "file_system_directory_handle.h",
-    "file_system_directory_iterator.cc",
-    "file_system_directory_iterator.h",
     "file_system_dispatcher.cc",
     "file_system_dispatcher.h",
-    "file_system_file_handle.cc",
-    "file_system_file_handle.h",
-    "file_system_writer.cc",
-    "file_system_writer.h",
     "file_writer.cc",
     "file_writer.h",
     "file_writer_base.cc",
@@ -68,8 +57,6 @@ blink_modules_sources("filesystem") {
     "html_input_element_file_system.h",
     "local_file_system.cc",
     "local_file_system.h",
-    "local_file_system_client.cc",
-    "local_file_system_client.h",
     "metadata.h",
     "sync_callback_helper.h",
     "worker_global_scope_file_system.cc",
@@ -77,7 +64,7 @@ blink_modules_sources("filesystem") {
   ]
 
   deps = [
-    "//components/services/filesystem/public/interfaces:interfaces_blink",
+    "//components/services/filesystem/public/mojom:mojom_blink",
     "//third_party/blink/renderer/platform",
   ]
 }

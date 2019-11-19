@@ -30,8 +30,8 @@ class TestFileDiff(unittest.TestCase):
                  'similarity index 100%',
                  'rename from platform/modules/offscreencanvas/OWNERS',
                  'rename to platform/modules/frame_sinks/OWNERS',
-                 'diff --git a/platform/modules/frame_sinks/embedded_frame_sink.mojom ' +
-                 'b/platform/modules/frame_sinks/embedded_frame_sink.mojom']
+                 'diff --git a/mojom/frame_sinks/embedded_frame_sink.mojom ' +
+                 'b/mojom/frame_sinks/embedded_frame_sink.mojom']
         diff, remaining_lines = DiffFile.parse(lines)
         self.assertIsNotNone(diff)
         self.assertEquals(remaining_lines[0], lines[4])

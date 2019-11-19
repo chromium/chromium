@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/debug/stack_trace.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
@@ -89,11 +88,6 @@ class POLICY_EXPORT UserCloudPolicyManager : public CloudPolicyManager {
 
   // Manages external data referenced by policies.
   std::unique_ptr<CloudExternalDataManager> external_data_manager_;
-
-  // Stack trace of the previous Connect() method call.
-  // TODO(emaxx): Remove after the crashes tracked at https://crbug.com/685996
-  // are fixed.
-  base::debug::StackTrace connect_callstack_;
 
   DISALLOW_COPY_AND_ASSIGN(UserCloudPolicyManager);
 };

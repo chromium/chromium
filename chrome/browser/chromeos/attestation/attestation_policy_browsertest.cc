@@ -14,7 +14,7 @@
 #include "chrome/browser/chromeos/settings/device_settings_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chromeos/dbus/fake_cryptohome_client.h"
+#include "chromeos/dbus/cryptohome/fake_cryptohome_client.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -34,7 +34,6 @@ class AttestationDevicePolicyTest
 
   void SetUpInProcessBrowserTestFixture() override {
     DevicePolicyCrosBrowserTest::SetUpInProcessBrowserTestFixture();
-    InstallOwnerKey();
     RefreshDevicePolicy();
   }
 
@@ -63,8 +62,8 @@ class AttestationDevicePolicyTest
   // to verify a Chrome OS platform.
   PlatformVerificationFlow::Result SyncContentProtectionAttestation() {
     scoped_refptr<PlatformVerificationFlow> verifier(
-        new PlatformVerificationFlow(NULL, NULL, &fake_cryptohome_client_,
-                                     NULL));
+        new PlatformVerificationFlow(
+            nullptr, nullptr, chromeos::FakeCryptohomeClient::Get(), nullptr));
     verifier->ChallengePlatformKey(
         browser()->tab_strip_model()->GetActiveWebContents(), "fake_service_id",
         "fake_challenge", base::Bind(&AttestationDevicePolicyTest::Callback,
@@ -76,7 +75,6 @@ class AttestationDevicePolicyTest
  private:
   bool operation_complete_;
   PlatformVerificationFlow::Result result_;
-  chromeos::FakeCryptohomeClient fake_cryptohome_client_;
 
   void WaitForAsyncOperation() {
     while (!operation_complete_) {

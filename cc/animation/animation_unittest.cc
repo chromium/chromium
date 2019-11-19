@@ -55,8 +55,9 @@ TEST_F(AnimationTest, AttachDetachLayerIfTimelineAttached) {
 
   timeline_->AttachAnimation(animation_);
   EXPECT_FALSE(animation_->element_animations(keyframe_effect_id_));
-  EXPECT_FALSE(animation_->element_id_of_keyframe_effect(keyframe_effect_id_));
   EXPECT_TRUE(timeline_->needs_push_properties());
+  EXPECT_FALSE(
+      animation_->GetKeyframeEffectById(keyframe_effect_id_)->element_id());
   EXPECT_FALSE(animation_->GetKeyframeEffectById(keyframe_effect_id_)
                    ->needs_push_properties());
 
@@ -70,8 +71,8 @@ TEST_F(AnimationTest, AttachDetachLayerIfTimelineAttached) {
   EXPECT_TRUE(animation_impl_);
 
   EXPECT_FALSE(animation_impl_->element_animations(keyframe_effect_id_));
-  EXPECT_FALSE(
-      animation_impl_->element_id_of_keyframe_effect(keyframe_effect_id_));
+  EXPECT_FALSE(animation_impl_->GetKeyframeEffectById(keyframe_effect_id_)
+                   ->element_id());
   EXPECT_FALSE(animation_->GetKeyframeEffectById(keyframe_effect_id_)
                    ->needs_push_properties());
   EXPECT_FALSE(timeline_->needs_push_properties());
@@ -80,8 +81,9 @@ TEST_F(AnimationTest, AttachDetachLayerIfTimelineAttached) {
   EXPECT_EQ(animation_->GetKeyframeEffectById(keyframe_effect_id_),
             GetKeyframeEffectForElementId(element_id_));
   EXPECT_TRUE(animation_->element_animations(keyframe_effect_id_));
-  EXPECT_EQ(animation_->element_id_of_keyframe_effect(keyframe_effect_id_),
-            element_id_);
+  EXPECT_EQ(
+      animation_->GetKeyframeEffectById(keyframe_effect_id_)->element_id(),
+      element_id_);
   CheckKeyframeEffectAndTimelineNeedsPushProperties(true, keyframe_effect_id_);
 
   host_->PushPropertiesTo(host_impl_);
@@ -89,28 +91,31 @@ TEST_F(AnimationTest, AttachDetachLayerIfTimelineAttached) {
   EXPECT_EQ(animation_impl_->GetKeyframeEffectById(keyframe_effect_id_),
             GetImplKeyframeEffectForLayerId(element_id_));
   EXPECT_TRUE(animation_impl_->element_animations(keyframe_effect_id_));
-  EXPECT_EQ(animation_impl_->element_id_of_keyframe_effect(keyframe_effect_id_),
-            element_id_);
+  EXPECT_EQ(
+      animation_impl_->GetKeyframeEffectById(keyframe_effect_id_)->element_id(),
+      element_id_);
   CheckKeyframeEffectAndTimelineNeedsPushProperties(false, keyframe_effect_id_);
 
   animation_->DetachElement();
   EXPECT_FALSE(GetKeyframeEffectForElementId(element_id_));
   EXPECT_FALSE(animation_->element_animations(keyframe_effect_id_));
-  EXPECT_FALSE(animation_->element_id_of_keyframe_effect(keyframe_effect_id_));
+  EXPECT_FALSE(
+      animation_->GetKeyframeEffectById(keyframe_effect_id_)->element_id());
   CheckKeyframeEffectAndTimelineNeedsPushProperties(true, keyframe_effect_id_);
 
   host_->PushPropertiesTo(host_impl_);
 
   EXPECT_FALSE(GetImplKeyframeEffectForLayerId(element_id_));
   EXPECT_FALSE(animation_impl_->element_animations(keyframe_effect_id_));
-  EXPECT_FALSE(
-      animation_impl_->element_id_of_keyframe_effect(keyframe_effect_id_));
+  EXPECT_FALSE(animation_impl_->GetKeyframeEffectById(keyframe_effect_id_)
+                   ->element_id());
   CheckKeyframeEffectAndTimelineNeedsPushProperties(false, keyframe_effect_id_);
 
   timeline_->DetachAnimation(animation_);
   EXPECT_FALSE(animation_->animation_timeline());
   EXPECT_FALSE(animation_->element_animations(keyframe_effect_id_));
-  EXPECT_FALSE(animation_->element_id_of_keyframe_effect(keyframe_effect_id_));
+  EXPECT_FALSE(
+      animation_->GetKeyframeEffectById(keyframe_effect_id_)->element_id());
   EXPECT_TRUE(timeline_->needs_push_properties());
   EXPECT_FALSE(animation_->GetKeyframeEffectById(keyframe_effect_id_)
                    ->needs_push_properties());
@@ -168,9 +173,9 @@ TEST_F(AnimationTest, AttachDetachTimelineIfLayerAttached) {
 }
 
 TEST_F(AnimationTest, PropertiesMutate) {
-  client_.RegisterElement(element_id_, ElementListType::ACTIVE);
-  client_impl_.RegisterElement(element_id_, ElementListType::PENDING);
-  client_impl_.RegisterElement(element_id_, ElementListType::ACTIVE);
+  client_.RegisterElementId(element_id_, ElementListType::ACTIVE);
+  client_impl_.RegisterElementId(element_id_, ElementListType::PENDING);
+  client_impl_.RegisterElementId(element_id_, ElementListType::ACTIVE);
 
   host_->AddAnimationTimeline(timeline_);
 
@@ -194,6 +199,9 @@ TEST_F(AnimationTest, PropertiesMutate) {
   const int transform_x = 10;
   const int transform_y = 20;
 
+  const float start_invert = .8f;
+  const float end_invert = .6f;
+
   const double duration = 1.;
 
   AddOpacityTransitionToAnimation(animation_.get(), duration, start_opacity,
@@ -203,6 +211,8 @@ TEST_F(AnimationTest, PropertiesMutate) {
                                   transform_y, keyframe_effect_id_);
   AddAnimatedFilterToAnimation(animation_.get(), duration, start_brightness,
                                end_brightness, keyframe_effect_id_);
+  AddAnimatedBackdropFilterToAnimation(animation_.get(), duration, start_invert,
+                                       end_invert, keyframe_effect_id_);
   CheckKeyframeEffectAndTimelineNeedsPushProperties(true, keyframe_effect_id_);
 
   host_->PushPropertiesTo(host_impl_);
@@ -214,6 +224,8 @@ TEST_F(AnimationTest, PropertiesMutate) {
                                          TargetProperty::TRANSFORM));
   EXPECT_FALSE(client_.IsPropertyMutated(element_id_, ElementListType::ACTIVE,
                                          TargetProperty::FILTER));
+  EXPECT_FALSE(client_.IsPropertyMutated(element_id_, ElementListType::ACTIVE,
+                                         TargetProperty::BACKDROP_FILTER));
 
   EXPECT_FALSE(client_impl_.IsPropertyMutated(
       element_id_, ElementListType::ACTIVE, TargetProperty::OPACITY));
@@ -221,16 +233,18 @@ TEST_F(AnimationTest, PropertiesMutate) {
       element_id_, ElementListType::ACTIVE, TargetProperty::TRANSFORM));
   EXPECT_FALSE(client_impl_.IsPropertyMutated(
       element_id_, ElementListType::ACTIVE, TargetProperty::FILTER));
+  EXPECT_FALSE(client_impl_.IsPropertyMutated(
+      element_id_, ElementListType::ACTIVE, TargetProperty::BACKDROP_FILTER));
 
-  host_impl_->ActivateAnimations();
+  host_impl_->ActivateAnimations(nullptr);
 
   base::TimeTicks time;
   time += base::TimeDelta::FromSecondsD(0.1);
-  TickAnimationsTransferEvents(time, 3u);
+  TickAnimationsTransferEvents(time, 4u);
   CheckKeyframeEffectAndTimelineNeedsPushProperties(false, keyframe_effect_id_);
 
   time += base::TimeDelta::FromSecondsD(duration);
-  TickAnimationsTransferEvents(time, 3u);
+  TickAnimationsTransferEvents(time, 4u);
   CheckKeyframeEffectAndTimelineNeedsPushProperties(true, keyframe_effect_id_);
 
   client_.ExpectOpacityPropertyMutated(element_id_, ElementListType::ACTIVE,
@@ -239,6 +253,8 @@ TEST_F(AnimationTest, PropertiesMutate) {
                                          transform_x, transform_y);
   client_.ExpectFilterPropertyMutated(element_id_, ElementListType::ACTIVE,
                                       end_brightness);
+  client_.ExpectBackdropFilterPropertyMutated(
+      element_id_, ElementListType::ACTIVE, end_invert);
 
   client_impl_.ExpectOpacityPropertyMutated(
       element_id_, ElementListType::ACTIVE, end_opacity);
@@ -246,6 +262,8 @@ TEST_F(AnimationTest, PropertiesMutate) {
       element_id_, ElementListType::ACTIVE, transform_x, transform_y);
   client_impl_.ExpectFilterPropertyMutated(element_id_, ElementListType::ACTIVE,
                                            end_brightness);
+  client_impl_.ExpectBackdropFilterPropertyMutated(
+      element_id_, ElementListType::ACTIVE, end_invert);
 
   client_impl_.ExpectOpacityPropertyMutated(
       element_id_, ElementListType::PENDING, end_opacity);
@@ -253,15 +271,17 @@ TEST_F(AnimationTest, PropertiesMutate) {
       element_id_, ElementListType::PENDING, transform_x, transform_y);
   client_impl_.ExpectFilterPropertyMutated(
       element_id_, ElementListType::PENDING, end_brightness);
+  client_impl_.ExpectBackdropFilterPropertyMutated(
+      element_id_, ElementListType::PENDING, end_invert);
 }
 
 TEST_F(AnimationTest, AttachTwoAnimationsToOneLayer) {
   TestAnimationDelegate delegate1;
   TestAnimationDelegate delegate2;
 
-  client_.RegisterElement(element_id_, ElementListType::ACTIVE);
-  client_impl_.RegisterElement(element_id_, ElementListType::PENDING);
-  client_impl_.RegisterElement(element_id_, ElementListType::ACTIVE);
+  client_.RegisterElementId(element_id_, ElementListType::ACTIVE);
+  client_impl_.RegisterElementId(element_id_, ElementListType::PENDING);
+  client_impl_.RegisterElementId(element_id_, ElementListType::ACTIVE);
 
   scoped_refptr<Animation> animation1 = Animation::Create(100);
   scoped_refptr<Animation> animation2 = Animation::Create(200);
@@ -304,7 +324,7 @@ TEST_F(AnimationTest, AttachTwoAnimationsToOneLayer) {
                                   transform_y, keyframe_effect_id2);
 
   host_->PushPropertiesTo(host_impl_);
-  host_impl_->ActivateAnimations();
+  host_impl_->ActivateAnimations(nullptr);
 
   EXPECT_FALSE(delegate1.started());
   EXPECT_FALSE(delegate1.finished());
@@ -355,9 +375,9 @@ TEST_F(AnimationTest, AttachTwoAnimationsToOneLayer) {
 }
 
 TEST_F(AnimationTest, AddRemoveAnimationToNonAttachedAnimation) {
-  client_.RegisterElement(element_id_, ElementListType::ACTIVE);
-  client_impl_.RegisterElement(element_id_, ElementListType::PENDING);
-  client_impl_.RegisterElement(element_id_, ElementListType::ACTIVE);
+  client_.RegisterElementId(element_id_, ElementListType::ACTIVE);
+  client_impl_.RegisterElementId(element_id_, ElementListType::PENDING);
+  client_impl_.RegisterElementId(element_id_, ElementListType::ACTIVE);
 
   animation_->AddKeyframeEffect(
       std::make_unique<KeyframeEffect>(keyframe_effect_id_));
@@ -412,7 +432,7 @@ TEST_F(AnimationTest, AddRemoveAnimationToNonAttachedAnimation) {
   EXPECT_FALSE(client_impl_.IsPropertyMutated(
       element_id_, ElementListType::ACTIVE, TargetProperty::FILTER));
 
-  host_impl_->ActivateAnimations();
+  host_impl_->ActivateAnimations(nullptr);
 
   base::TimeTicks time;
   time += base::TimeDelta::FromSecondsD(0.1);
@@ -435,7 +455,7 @@ TEST_F(AnimationTest, AddRemoveAnimationToNonAttachedAnimation) {
 }
 
 TEST_F(AnimationTest, AddRemoveAnimationCausesSetNeedsCommit) {
-  client_.RegisterElement(element_id_, ElementListType::ACTIVE);
+  client_.RegisterElementId(element_id_, ElementListType::ACTIVE);
   host_->AddAnimationTimeline(timeline_);
   animation_->AddKeyframeEffect(
       std::make_unique<KeyframeEffect>(keyframe_effect_id_));
@@ -444,7 +464,8 @@ TEST_F(AnimationTest, AddRemoveAnimationCausesSetNeedsCommit) {
   timeline_->AttachAnimation(animation_);
   animation_->AttachElementForKeyframeEffect(element_id_, keyframe_effect_id_);
 
-  EXPECT_FALSE(client_.mutators_need_commit());
+  EXPECT_TRUE(client_.mutators_need_commit());
+  client_.set_mutators_need_commit(false);
 
   const int keyframe_model_id = AddOpacityTransitionToAnimation(
       animation_.get(), 1., .7f, .3f, false, keyframe_effect_id_);
@@ -612,8 +633,10 @@ TEST_F(AnimationTest,
   timeline_->AttachAnimation(animation_);
   EXPECT_FALSE(animation_->element_animations(keyframe_effect_id1));
   EXPECT_FALSE(animation_->element_animations(keyframe_effect_id2));
-  EXPECT_FALSE(animation_->element_id_of_keyframe_effect(keyframe_effect_id1));
-  EXPECT_FALSE(animation_->element_id_of_keyframe_effect(keyframe_effect_id2));
+  EXPECT_FALSE(
+      animation_->GetKeyframeEffectById(keyframe_effect_id1)->element_id());
+  EXPECT_FALSE(
+      animation_->GetKeyframeEffectById(keyframe_effect_id2)->element_id());
   EXPECT_TRUE(timeline_->needs_push_properties());
   EXPECT_FALSE(animation_->GetKeyframeEffectById(keyframe_effect_id1)
                    ->needs_push_properties());
@@ -629,14 +652,16 @@ TEST_F(AnimationTest,
 
   animation_->AttachElementForKeyframeEffect(element_id_, keyframe_effect_id1);
   EXPECT_TRUE(animation_->element_animations(keyframe_effect_id1));
-  EXPECT_EQ(animation_->element_id_of_keyframe_effect(keyframe_effect_id1),
-            element_id_);
+  EXPECT_EQ(
+      animation_->GetKeyframeEffectById(keyframe_effect_id1)->element_id(),
+      element_id_);
   EXPECT_TRUE(animation_->GetKeyframeEffectById(keyframe_effect_id1)
                   ->needs_push_properties());
 
   EXPECT_FALSE(animation_->element_animations(keyframe_effect_id2));
-  EXPECT_NE(animation_->element_id_of_keyframe_effect(keyframe_effect_id2),
-            element_id_);
+  EXPECT_NE(
+      animation_->GetKeyframeEffectById(keyframe_effect_id2)->element_id(),
+      element_id_);
   EXPECT_FALSE(animation_->GetKeyframeEffectById(keyframe_effect_id2)
                    ->needs_push_properties());
 
@@ -649,8 +674,9 @@ TEST_F(AnimationTest,
 
   animation_->AttachElementForKeyframeEffect(element_id_, keyframe_effect_id2);
   EXPECT_TRUE(animation_->element_animations(keyframe_effect_id2));
-  EXPECT_EQ(animation_->element_id_of_keyframe_effect(keyframe_effect_id2),
-            element_id_);
+  EXPECT_EQ(
+      animation_->GetKeyframeEffectById(keyframe_effect_id2)->element_id(),
+      element_id_);
   EXPECT_TRUE(animation_->GetKeyframeEffectById(keyframe_effect_id2)
                   ->needs_push_properties());
 
@@ -667,20 +693,24 @@ TEST_F(AnimationTest,
       animation_impl_->GetKeyframeEffectById(keyframe_effect_id2)));
 
   EXPECT_TRUE(animation_impl_->element_animations(keyframe_effect_id1));
-  EXPECT_EQ(animation_impl_->element_id_of_keyframe_effect(keyframe_effect_id1),
-            element_id_);
+  EXPECT_EQ(
+      animation_impl_->GetKeyframeEffectById(keyframe_effect_id1)->element_id(),
+      element_id_);
   EXPECT_TRUE(animation_impl_->element_animations(keyframe_effect_id2));
-  EXPECT_EQ(animation_impl_->element_id_of_keyframe_effect(keyframe_effect_id2),
-            element_id_);
+  EXPECT_EQ(
+      animation_impl_->GetKeyframeEffectById(keyframe_effect_id2)->element_id(),
+      element_id_);
 
   animation_->DetachElement();
   EXPECT_FALSE(animation_->element_animations(keyframe_effect_id1));
-  EXPECT_FALSE(animation_->element_id_of_keyframe_effect(keyframe_effect_id1));
+  EXPECT_FALSE(
+      animation_->GetKeyframeEffectById(keyframe_effect_id1)->element_id());
   EXPECT_FALSE(element_animations->HasKeyframeEffectForTesting(
       animation_->GetKeyframeEffectById(keyframe_effect_id1)));
 
   EXPECT_FALSE(animation_->element_animations(keyframe_effect_id2));
-  EXPECT_FALSE(animation_->element_id_of_keyframe_effect(keyframe_effect_id2));
+  EXPECT_FALSE(
+      animation_->GetKeyframeEffectById(keyframe_effect_id2)->element_id());
   EXPECT_FALSE(element_animations->HasKeyframeEffectForTesting(
       animation_->GetKeyframeEffectById(keyframe_effect_id2)));
 
@@ -692,13 +722,13 @@ TEST_F(AnimationTest,
   host_->PushPropertiesTo(host_impl_);
 
   EXPECT_FALSE(animation_impl_->element_animations(keyframe_effect_id1));
-  EXPECT_FALSE(
-      animation_impl_->element_id_of_keyframe_effect(keyframe_effect_id1));
+  EXPECT_FALSE(animation_impl_->GetKeyframeEffectById(keyframe_effect_id1)
+                   ->element_id());
   EXPECT_FALSE(element_animations_impl->HasKeyframeEffectForTesting(
       animation_impl_->GetKeyframeEffectById(keyframe_effect_id1)));
   EXPECT_FALSE(animation_impl_->element_animations(keyframe_effect_id2));
-  EXPECT_FALSE(
-      animation_impl_->element_id_of_keyframe_effect(keyframe_effect_id2));
+  EXPECT_FALSE(animation_impl_->GetKeyframeEffectById(keyframe_effect_id2)
+                   ->element_id());
   EXPECT_FALSE(element_animations_impl->HasKeyframeEffectForTesting(
       animation_impl_->GetKeyframeEffectById(keyframe_effect_id2)));
 
@@ -706,9 +736,11 @@ TEST_F(AnimationTest,
   EXPECT_FALSE(animation_->animation_timeline());
 
   EXPECT_FALSE(animation_->element_animations(keyframe_effect_id1));
-  EXPECT_FALSE(animation_->element_id_of_keyframe_effect(keyframe_effect_id1));
+  EXPECT_FALSE(
+      animation_->GetKeyframeEffectById(keyframe_effect_id1)->element_id());
   EXPECT_FALSE(animation_->element_animations(keyframe_effect_id2));
-  EXPECT_FALSE(animation_->element_id_of_keyframe_effect(keyframe_effect_id2));
+  EXPECT_FALSE(
+      animation_->GetKeyframeEffectById(keyframe_effect_id2)->element_id());
 
   EXPECT_TRUE(timeline_->needs_push_properties());
   EXPECT_FALSE(animation_->GetKeyframeEffectById(keyframe_effect_id1)
@@ -738,8 +770,10 @@ TEST_F(AnimationTest,
 
   EXPECT_FALSE(animation_->element_animations(keyframe_effect_id1));
   EXPECT_FALSE(animation_->element_animations(keyframe_effect_id2));
-  EXPECT_FALSE(animation_->element_id_of_keyframe_effect(keyframe_effect_id1));
-  EXPECT_FALSE(animation_->element_id_of_keyframe_effect(keyframe_effect_id2));
+  EXPECT_FALSE(
+      animation_->GetKeyframeEffectById(keyframe_effect_id1)->element_id());
+  EXPECT_FALSE(
+      animation_->GetKeyframeEffectById(keyframe_effect_id2)->element_id());
   EXPECT_TRUE(timeline_->needs_push_properties());
   EXPECT_FALSE(animation_->GetKeyframeEffectById(keyframe_effect_id1)
                    ->needs_push_properties());
@@ -822,9 +856,9 @@ TEST_F(AnimationTest,
 TEST_F(AnimationTest, TickingAnimationsFromTwoKeyframeEffects) {
   TestAnimationDelegate delegate1;
 
-  client_.RegisterElement(element_id_, ElementListType::ACTIVE);
-  client_impl_.RegisterElement(element_id_, ElementListType::PENDING);
-  client_impl_.RegisterElement(element_id_, ElementListType::ACTIVE);
+  client_.RegisterElementId(element_id_, ElementListType::ACTIVE);
+  client_impl_.RegisterElementId(element_id_, ElementListType::PENDING);
+  client_impl_.RegisterElementId(element_id_, ElementListType::ACTIVE);
 
   KeyframeEffectId keyframe_effect_id1 = animation_->NextKeyframeEffectId();
 
@@ -864,7 +898,7 @@ TEST_F(AnimationTest, TickingAnimationsFromTwoKeyframeEffects) {
   AddAnimatedTransformToAnimation(animation_.get(), duration, transform_x,
                                   transform_y, keyframe_effect_id2);
   host_->PushPropertiesTo(host_impl_);
-  host_impl_->ActivateAnimations();
+  host_impl_->ActivateAnimations(nullptr);
 
   EXPECT_FALSE(delegate1.started());
   EXPECT_FALSE(delegate1.finished());
@@ -905,6 +939,39 @@ TEST_F(AnimationTest, TickingAnimationsFromTwoKeyframeEffects) {
       element_id_, ElementListType::PENDING, end_opacity);
   client_impl_.ExpectTransformPropertyMutated(
       element_id_, ElementListType::PENDING, transform_x, transform_y);
+}
+
+TEST_F(AnimationTest, TickingState) {
+  KeyframeEffectId keyframe_effect_id = animation_->NextKeyframeEffectId();
+
+  animation_->AddKeyframeEffect(
+      std::make_unique<KeyframeEffect>(keyframe_effect_id));
+
+  host_->AddAnimationTimeline(timeline_);
+  timeline_->AttachAnimation(animation_);
+
+  const int transform_x = 10;
+  const int transform_y = 20;
+  const double duration = 1.;
+  animation_->AttachElementForKeyframeEffect(element_id_, keyframe_effect_id);
+  AddAnimatedTransformToAnimation(animation_.get(), duration, transform_x,
+                                  transform_y, keyframe_effect_id);
+  KeyframeEffect* keyframe_effect =
+      animation_->GetKeyframeEffectById(keyframe_effect_id);
+  EXPECT_FALSE(keyframe_effect->is_ticking());
+  client_.RegisterElementId(element_id_, ElementListType::ACTIVE);
+  EXPECT_TRUE(keyframe_effect->is_ticking());
+
+  client_.UnregisterElementId(element_id_, ElementListType::ACTIVE);
+  // The keyframe keeps ticking until the next call to UpdateState where it can
+  // generate a finished event.
+  EXPECT_TRUE(keyframe_effect->is_ticking());
+
+  // The next call to UpdateState should remove the animation from ticking. We
+  // could also assert that the finish event was generated if we also track the
+  // state in the KeyframeModel correctly.
+  host_->UpdateAnimationState(true, nullptr);
+  EXPECT_FALSE(keyframe_effect->is_ticking());
 }
 
 TEST_F(AnimationTest, KeyframeEffectSyncToImplTest) {

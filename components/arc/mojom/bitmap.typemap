@@ -1,0 +1,13 @@
+mojom = "//components/arc/mojom/bitmap.mojom"
+public_headers = [ "//third_party/skia/include/core/SkBitmap.h" ]
+traits_headers = [ "//components/arc/bitmap/bitmap_mojom_traits.h" ]
+sources = [
+  "//components/arc/bitmap/bitmap_mojom_traits.cc",
+]
+deps = [
+  "//skia",
+]
+public_deps = [
+  "//skia",
+]
+type_mappings = [ "arc.mojom.ArcBitmap=::SkBitmap" ]

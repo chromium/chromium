@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/compiler_specific.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/test/chromedriver/chrome/devtools_client.h"
 #include "chrome/test/chromedriver/chrome/status.h"
@@ -36,6 +37,11 @@ class FakeDevToolsClient : public DevToolsClient {
   Status SendCommand(
       const std::string& method,
       const base::DictionaryValue& params) override {
+    return SendCommandAndGetResult(method, params, nullptr);
+  }
+  Status SendCommandFromWebSocket(const std::string& method,
+                                  const base::DictionaryValue& params,
+                                  const int client_command_id) override {
     return SendCommandAndGetResult(method, params, nullptr);
   }
   Status SendCommandWithTimeout(
@@ -89,8 +95,9 @@ void AssertEvalFails(const base::DictionaryValue& command_result) {
   std::unique_ptr<base::DictionaryValue> result;
   FakeDevToolsClient client;
   client.set_result(command_result);
-  Status status = internal::EvaluateScript(
-      &client, 0, std::string(), internal::ReturnByValue, &result);
+  Status status = internal::EvaluateScript(&client, 0, std::string(),
+                                           internal::ReturnByValue,
+                                           base::TimeDelta::Max(), &result);
   ASSERT_EQ(kUnknownError, status.code());
   ASSERT_FALSE(result);
 }
@@ -101,8 +108,9 @@ TEST(EvaluateScript, CommandError) {
   std::unique_ptr<base::DictionaryValue> result;
   FakeDevToolsClient client;
   client.set_status(Status(kUnknownError));
-  Status status = internal::EvaluateScript(
-      &client, 0, std::string(), internal::ReturnByValue, &result);
+  Status status = internal::EvaluateScript(&client, 0, std::string(),
+                                           internal::ReturnByValue,
+                                           base::TimeDelta::Max(), &result);
   ASSERT_EQ(kUnknownError, status.code());
   ASSERT_FALSE(result);
 }
@@ -132,8 +140,10 @@ TEST(EvaluateScript, Ok) {
   dict.SetInteger("result.key", 100);
   FakeDevToolsClient client;
   client.set_result(dict);
-  ASSERT_TRUE(internal::EvaluateScript(
-      &client, 0, std::string(), internal::ReturnByValue, &result).IsOk());
+  ASSERT_TRUE(internal::EvaluateScript(&client, 0, std::string(),
+                                       internal::ReturnByValue,
+                                       base::TimeDelta::Max(), &result)
+                  .IsOk());
   ASSERT_TRUE(result);
   ASSERT_TRUE(result->HasKey("key"));
 }
@@ -146,7 +156,8 @@ TEST(EvaluateScriptAndGetValue, MissingType) {
   dict.SetInteger("result.value", 1);
   client.set_result(dict);
   ASSERT_TRUE(internal::EvaluateScriptAndGetValue(
-      &client, 0, std::string(), &result).IsError());
+                  &client, 0, std::string(), base::TimeDelta::Max(), &result)
+                  .IsError());
 }
 
 TEST(EvaluateScriptAndGetValue, Undefined) {
@@ -156,8 +167,8 @@ TEST(EvaluateScriptAndGetValue, Undefined) {
   dict.SetBoolean("wasThrown", false);
   dict.SetString("result.type", "undefined");
   client.set_result(dict);
-  Status status =
-      internal::EvaluateScriptAndGetValue(&client, 0, std::string(), &result);
+  Status status = internal::EvaluateScriptAndGetValue(
+      &client, 0, std::string(), base::TimeDelta::Max(), &result);
   ASSERT_EQ(kOk, status.code());
   ASSERT_TRUE(result && result->is_none());
 }
@@ -170,8 +181,8 @@ TEST(EvaluateScriptAndGetValue, Ok) {
   dict.SetString("result.type", "integer");
   dict.SetInteger("result.value", 1);
   client.set_result(dict);
-  Status status =
-      internal::EvaluateScriptAndGetValue(&client, 0, std::string(), &result);
+  Status status = internal::EvaluateScriptAndGetValue(
+      &client, 0, std::string(), base::TimeDelta::Max(), &result);
   ASSERT_EQ(kOk, status.code());
   int value;
   ASSERT_TRUE(result && result->GetAsInteger(&value));
@@ -186,8 +197,10 @@ TEST(EvaluateScriptAndGetObject, NoObject) {
   client.set_result(dict);
   bool got_object;
   std::string object_id;
-  ASSERT_TRUE(internal::EvaluateScriptAndGetObject(
-      &client, 0, std::string(), &got_object, &object_id).IsOk());
+  ASSERT_TRUE(internal::EvaluateScriptAndGetObject(&client, 0, std::string(),
+                                                   base::TimeDelta::Max(),
+                                                   &got_object, &object_id)
+                  .IsOk());
   ASSERT_FALSE(got_object);
   ASSERT_TRUE(object_id.empty());
 }
@@ -200,8 +213,10 @@ TEST(EvaluateScriptAndGetObject, Ok) {
   client.set_result(dict);
   bool got_object;
   std::string object_id;
-  ASSERT_TRUE(internal::EvaluateScriptAndGetObject(
-      &client, 0, std::string(), &got_object, &object_id).IsOk());
+  ASSERT_TRUE(internal::EvaluateScriptAndGetObject(&client, 0, std::string(),
+                                                   base::TimeDelta::Max(),
+                                                   &got_object, &object_id)
+                  .IsOk());
   ASSERT_TRUE(got_object);
   ASSERT_STREQ("id", object_id.c_str());
 }

@@ -73,6 +73,7 @@ function init()
     video.oncanplaythrough = function() {
         generateTest();
     }
+    video.preload = "auto";
     video.src = "resources/red-green.ogv";
 }
 </script>

@@ -95,11 +95,25 @@ class RenderViewContextMenuBase : public ui::SimpleMenuModel::Delegate,
 
   // RenderViewContextMenuProxy implementation.
   void AddMenuItem(int command_id, const base::string16& title) override;
+  void AddMenuItemWithIcon(int command_id,
+                           const base::string16& title,
+                           const gfx::ImageSkia& image) override;
+  void AddMenuItemWithIcon(int command_id,
+                           const base::string16& title,
+                           const gfx::VectorIcon& icon) override;
   void AddCheckItem(int command_id, const base::string16& title) override;
   void AddSeparator() override;
   void AddSubMenu(int command_id,
                   const base::string16& label,
                   ui::MenuModel* model) override;
+  void AddSubMenuWithStringIdAndIcon(int command_id,
+                                     int message_id,
+                                     ui::MenuModel* model,
+                                     const gfx::ImageSkia& image) override;
+  void AddSubMenuWithStringIdAndIcon(int command_id,
+                                     int message_id,
+                                     ui::MenuModel* model,
+                                     const gfx::VectorIcon& icon) override;
   void UpdateMenuItem(int command_id,
                       bool enabled,
                       bool hidden,

@@ -15,6 +15,7 @@
 #include "base/strings/string_util.h"
 #include "content/browser/web_package/signed_exchange_signature_header_field.h"
 #include "content/common/content_export.h"
+#include "crypto/sha2.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "url/gurl.h"
@@ -76,6 +77,9 @@ class CONTENT_EXPORT SignedExchangeEnvelope {
       const SignedExchangeSignatureHeaderField::Signature& sig) {
     signature_ = sig;
   }
+
+  // Returns the header integrity value of the loaded signed exchange.
+  net::SHA256HashValue ComputeHeaderIntegrity() const;
 
  private:
   std::vector<uint8_t> cbor_header_;

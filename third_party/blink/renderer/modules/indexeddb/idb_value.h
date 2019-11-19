@@ -12,7 +12,7 @@
 #include "third_party/blink/renderer/modules/indexeddb/idb_key.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_key_path.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/platform/shared_buffer.h"
+#include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 
 namespace blink {
 
@@ -36,9 +36,7 @@ class WebBlobInfo;
 // the values before returning them to the user.
 class MODULES_EXPORT IDBValue final {
  public:
-  static std::unique_ptr<IDBValue> Create(scoped_refptr<SharedBuffer>,
-                                          Vector<WebBlobInfo>);
-
+  IDBValue(scoped_refptr<SharedBuffer>, Vector<WebBlobInfo>);
   ~IDBValue();
 
   size_t DataSize() const { return data_ ? data_->size() : 0; }
@@ -53,8 +51,8 @@ class MODULES_EXPORT IDBValue final {
   // Injects a primary key into a value coming from the backend.
   void SetInjectedPrimaryKey(std::unique_ptr<IDBKey> primary_key,
                              IDBKeyPath primary_key_path) {
-    // If the given key is type Null, ignore it.
-    if (primary_key && primary_key->GetType() == mojom::IDBKeyType::Null)
+    // If the given key is type None, ignore it.
+    if (primary_key && primary_key->GetType() == mojom::IDBKeyType::None)
       primary_key.reset();
     primary_key_ = std::move(primary_key);
     key_path_ = std::move(primary_key_path);
@@ -84,8 +82,6 @@ class MODULES_EXPORT IDBValue final {
   DISALLOW_COPY_AND_ASSIGN(IDBValue);
 
   friend class IDBValueUnwrapper;
-
-  IDBValue(scoped_refptr<SharedBuffer>, Vector<WebBlobInfo>);
 
   // Keep this private to prevent new refs because we manually bookkeep the
   // memory to V8.

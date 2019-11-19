@@ -1,0 +1,14 @@
+<!doctype html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<p>Selecting all text should not crash.</p>
+<div id="host"></div>
+<script>
+  test(() => {
+    const root = host.createShadowRoot();
+    root.innerHTML = "<style>content::selection {color:green}</style><content>Fallback</content>";
+    const range = document.createRange();
+    range.selectNode(document.body);
+    window.getSelection().addRange(range);
+  }, "Adding ::selection style on <content> should not crash when rendering fallback.");
+</script>

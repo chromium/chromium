@@ -16,29 +16,28 @@
 namespace media {
 
 MojoAudioInputStream::MojoAudioInputStream(
-    mojom::AudioInputStreamRequest request,
-    mojom::AudioInputStreamClientPtr client,
+    mojo::PendingReceiver<mojom::AudioInputStream> receiver,
+    mojo::PendingRemote<mojom::AudioInputStreamClient> client,
     CreateDelegateCallback create_delegate_callback,
     StreamCreatedCallback stream_created_callback,
     base::OnceClosure deleter_callback)
     : stream_created_callback_(std::move(stream_created_callback)),
       deleter_callback_(std::move(deleter_callback)),
-      binding_(this, std::move(request)),
-      client_(std::move(client)),
-      weak_factory_(this) {
+      receiver_(this, std::move(receiver)),
+      client_(std::move(client)) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(stream_created_callback_);
   DCHECK(deleter_callback_);
-  // |this| owns |binding_|, so unretained is safe.
-  binding_.set_connection_error_handler(
+  // |this| owns |receiver_|, so unretained is safe.
+  receiver_.set_disconnect_handler(
       base::BindOnce(&MojoAudioInputStream::OnError, base::Unretained(this)));
-  client_.set_connection_error_handler(
+  client_.set_disconnect_handler(
       base::BindOnce(&MojoAudioInputStream::OnError, base::Unretained(this)));
   delegate_ = std::move(create_delegate_callback).Run(this);
   if (!delegate_) {
     // Failed to initialize the stream. We cannot call |deleter_callback_| yet,
     // since construction isn't done.
-    binding_.Close();
+    receiver_.reset();
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
         base::BindOnce(&MojoAudioInputStream::OnStreamError,

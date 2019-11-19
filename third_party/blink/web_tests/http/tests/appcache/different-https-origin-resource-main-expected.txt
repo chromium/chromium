@@ -1,3 +1,4 @@
+CONSOLE WARNING: Application Cache API manifest selection is deprecated and will be removed in M82, around April 2020. See https://www.chromestatus.com/features/6192449487634432 for more details.
 Test that a resource from a different https origin is not cached.
 
 FAIL: Different https origin resource is getting downloaded to cache.

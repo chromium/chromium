@@ -12,16 +12,17 @@
 #include "net/cert/multi_log_ct_verifier.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_network_session.h"
-#include "net/http/http_server_properties_impl.h"
+#include "net/http/http_server_properties.h"
 #include "net/http/http_transaction_test_util.h"
 #include "net/http/transport_security_state.h"
 #include "net/log/net_log_with_source.h"
 #include "net/proxy_resolution/proxy_resolution_service.h"
+#include "net/quic/quic_context.h"
 #include "net/socket/socket_test_util.h"
 #include "net/spdy/spdy_session_pool.h"
 #include "net/ssl/ssl_config_service_defaults.h"
 #include "net/test/gtest_util.h"
-#include "net/test/test_with_scoped_task_environment.h"
+#include "net/test/test_with_task_environment.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -34,8 +35,7 @@ namespace net {
 
 namespace {
 
-class HttpNetworkLayerTest : public PlatformTest,
-                             public WithScopedTaskEnvironment {
+class HttpNetworkLayerTest : public PlatformTest, public WithTaskEnvironment {
  protected:
   HttpNetworkLayerTest()
       : ssl_config_service_(std::make_unique<SSLConfigServiceDefaults>()) {}
@@ -59,6 +59,7 @@ class HttpNetworkLayerTest : public PlatformTest,
     session_context.proxy_resolution_service = proxy_resolution_service_.get();
     session_context.ssl_config_service = ssl_config_service_.get();
     session_context.http_server_properties = &http_server_properties_;
+    session_context.quic_context = &quic_context_;
     network_session_.reset(
         new HttpNetworkSession(HttpNetworkSession::Params(), session_context));
     factory_.reset(new HttpNetworkLayer(network_session_.get()));
@@ -271,18 +272,19 @@ class HttpNetworkLayerTest : public PlatformTest,
   DefaultCTPolicyEnforcer ct_policy_enforcer_;
   std::unique_ptr<ProxyResolutionService> proxy_resolution_service_;
   std::unique_ptr<SSLConfigService> ssl_config_service_;
+  QuicContext quic_context_;
   std::unique_ptr<HttpNetworkSession> network_session_;
   std::unique_ptr<HttpNetworkLayer> factory_;
 
  private:
-  HttpServerPropertiesImpl http_server_properties_;
+  HttpServerProperties http_server_properties_;
 };
 
 TEST_F(HttpNetworkLayerTest, CreateAndDestroy) {
   std::unique_ptr<HttpTransaction> trans;
   int rv = factory_->CreateTransaction(DEFAULT_PRIORITY, &trans);
   EXPECT_THAT(rv, IsOk());
-  EXPECT_TRUE(trans.get() != NULL);
+  EXPECT_TRUE(trans.get() != nullptr);
 }
 
 TEST_F(HttpNetworkLayerTest, Suspend) {
@@ -297,7 +299,7 @@ TEST_F(HttpNetworkLayerTest, Suspend) {
   rv = factory_->CreateTransaction(DEFAULT_PRIORITY, &trans);
   EXPECT_THAT(rv, IsError(ERR_NETWORK_IO_SUSPENDED));
 
-  ASSERT_TRUE(trans == NULL);
+  ASSERT_TRUE(trans == nullptr);
 
   factory_->OnResume();
 

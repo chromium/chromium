@@ -4,16 +4,16 @@
 
 cr.define('cr.ui', function() {
   /** @typedef {{name: string}} */
-  let Action;
+  /* #export */ let Action;
 
   /** @typedef {function(function(?cr.ui.Action))} */
-  let DeferredAction;
+  /* #export */ let DeferredAction;
 
   /**
    * @interface
    * @template T
    */
-  class StoreObserver {
+  /* #export */ class StoreObserver {
     /** @param {!T} newState */
     onStateChanged(newState) {}
   }
@@ -25,7 +25,7 @@ cr.define('cr.ui', function() {
    * associated with the store.
    * @template T
    */
-  class Store {
+  /* #export */ class Store {
     /**
      * @param {T} emptyState
      * @param {function(T, cr.ui.Action):T} reducer
@@ -158,6 +158,7 @@ cr.define('cr.ui', function() {
     }
   }
 
+  // #cr_define_end
   return {
     Action: Action,
     DeferredAction: DeferredAction,

@@ -21,6 +21,8 @@ class CORE_EXPORT LayoutNGFieldset final : public LayoutNGBlockFlow {
 
   bool CreatesNewFormattingContext() const final { return true; }
 
+  void Paint(const PaintInfo&) const final;
+
  protected:
   bool IsOfType(LayoutObjectType) const override;
 };

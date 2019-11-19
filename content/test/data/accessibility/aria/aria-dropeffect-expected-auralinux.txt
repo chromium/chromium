@@ -1,0 +1,15 @@
+[document web]
+++[section] dropeffect:copy
+++++[static] name='copy'
+++[section] dropeffect:move
+++++[static] name='move'
+++[section] dropeffect:link
+++++[static] name='link'
+++[section] dropeffect:execute
+++++[static] name='execute'
+++[section] dropeffect:popup
+++++[static] name='popup'
+++[section] dropeffect:none
+++++[static] name='none(default)'
+++[section] dropeffect:link popup
+++++[static] name='link popup'

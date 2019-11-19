@@ -9,9 +9,15 @@
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/strings/string_util.h"
 #include "third_party/zlib/google/zip.h"
 
 namespace feedback_util {
+namespace {
+
+constexpr char kAtGoogleDotCom[] = "@google.com";
+
+}  // namespace
 
 bool ZipString(const base::FilePath& filename,
                const std::string& data, std::string* compressed_logs) {
@@ -34,6 +40,11 @@ bool ZipString(const base::FilePath& filename,
   base::DeleteFile(zip_file, false);
 
   return succeed;
+}
+
+bool IsGoogleEmail(const std::string& email) {
+  return base::EndsWith(email, kAtGoogleDotCom,
+                        base::CompareCase::INSENSITIVE_ASCII);
 }
 
 }  // namespace feedback_util

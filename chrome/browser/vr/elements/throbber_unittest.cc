@@ -28,7 +28,7 @@ TEST(Throbber, CircleGrowAnimation) {
   scene.RunFirstFrameForTest();
   auto element = std::make_unique<Throbber>();
   element->SetSize(kTestSize, kTestSize);
-  element->set_corner_radius(kTestSize / 2);
+  element->SetCornerRadius(kTestSize / 2);
   element->SetScale(kInitialScale, kInitialScale, kInitialScale);
   element->SetOpacity(kInitialOpacity);
   Throbber* throbber = element.get();

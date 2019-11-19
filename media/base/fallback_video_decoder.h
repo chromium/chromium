@@ -24,12 +24,11 @@ class MEDIA_EXPORT FallbackVideoDecoder : public VideoDecoder {
   void Initialize(const VideoDecoderConfig& config,
                   bool low_delay,
                   CdmContext* cdm_context,
-                  const InitCB& init_cb,
+                  InitCB init_cb,
                   const OutputCB& output_cb,
                   const WaitingCB& waiting_cb) override;
-  void Decode(scoped_refptr<DecoderBuffer> buffer,
-              const DecodeCB& decode_cb) override;
-  void Reset(const base::RepeatingClosure& reset_cb) override;
+  void Decode(scoped_refptr<DecoderBuffer> buffer, DecodeCB decode_cb) override;
+  void Reset(base::OnceClosure reset_cb) override;
   bool NeedsBitstreamConversion() const override;
   bool CanReadWithoutStalling() const override;
   int GetMaxDecodeRequests() const override;
@@ -41,7 +40,7 @@ class MEDIA_EXPORT FallbackVideoDecoder : public VideoDecoder {
   void FallbackInitialize(const VideoDecoderConfig& config,
                           bool low_delay,
                           CdmContext* cdm_context,
-                          const InitCB& init_cb,
+                          InitCB init_cb,
                           const OutputCB& output_cb,
                           const WaitingCB& waiting_cb,
                           bool success);
@@ -51,7 +50,7 @@ class MEDIA_EXPORT FallbackVideoDecoder : public VideoDecoder {
   media::VideoDecoder* selected_decoder_ = nullptr;
   bool did_fallback_ = false;
 
-  base::WeakPtrFactory<FallbackVideoDecoder> weak_factory_;
+  base::WeakPtrFactory<FallbackVideoDecoder> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FallbackVideoDecoder);
 };

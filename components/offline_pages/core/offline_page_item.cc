@@ -6,13 +6,7 @@
 
 namespace offline_pages {
 
-OfflinePageItem::OfflinePageItem()
-    : offline_id(0),
-      file_size(0),
-      access_count(0),
-      flags(NO_FLAG),
-      system_download_id(0),
-      upgrade_attempt(0) {}
+OfflinePageItem::OfflinePageItem() = default;
 
 OfflinePageItem::OfflinePageItem(const GURL& url,
                                  int64_t offline_id,
@@ -23,11 +17,7 @@ OfflinePageItem::OfflinePageItem(const GURL& url,
       offline_id(offline_id),
       client_id(client_id),
       file_path(file_path),
-      file_size(file_size),
-      access_count(0),
-      flags(NO_FLAG),
-      system_download_id(0),
-      upgrade_attempt(0) {}
+      file_size(file_size) {}
 
 OfflinePageItem::OfflinePageItem(const GURL& url,
                                  int64_t offline_id,
@@ -41,35 +31,13 @@ OfflinePageItem::OfflinePageItem(const GURL& url,
       file_path(file_path),
       file_size(file_size),
       creation_time(creation_time),
-      last_access_time(creation_time),
-      access_count(0),
-      flags(NO_FLAG),
-      system_download_id(0),
-      upgrade_attempt(0) {}
-
-OfflinePageItem::OfflinePageItem(const GURL& url,
-                                 int64_t offline_id,
-                                 const ClientId& client_id,
-                                 const base::FilePath& file_path,
-                                 int64_t file_size,
-                                 const base::Time& creation_time,
-                                 const std::string& request_origin)
-    : url(url),
-      offline_id(offline_id),
-      client_id(client_id),
-      file_path(file_path),
-      file_size(file_size),
-      creation_time(creation_time),
-      last_access_time(creation_time),
-      access_count(0),
-      flags(NO_FLAG),
-      request_origin(request_origin),
-      system_download_id(0),
-      upgrade_attempt(0) {}
+      last_access_time(creation_time) {}
 
 OfflinePageItem::OfflinePageItem(const OfflinePageItem& other) = default;
-
-OfflinePageItem::~OfflinePageItem() {}
+OfflinePageItem::OfflinePageItem(OfflinePageItem&& other) = default;
+OfflinePageItem::~OfflinePageItem() = default;
+OfflinePageItem& OfflinePageItem::operator=(const OfflinePageItem&) = default;
+OfflinePageItem& OfflinePageItem::operator=(OfflinePageItem&&) = default;
 
 bool OfflinePageItem::operator==(const OfflinePageItem& other) const {
   return url == other.url && offline_id == other.offline_id &&
@@ -77,11 +45,11 @@ bool OfflinePageItem::operator==(const OfflinePageItem& other) const {
          file_size == other.file_size && creation_time == other.creation_time &&
          last_access_time == other.last_access_time &&
          access_count == other.access_count && title == other.title &&
-         flags == other.flags && original_url == other.original_url &&
+         flags == other.flags &&
+         original_url_if_different == other.original_url_if_different &&
          request_origin == other.request_origin &&
          system_download_id == other.system_download_id &&
-         file_missing_time == other.file_missing_time &&
-         upgrade_attempt == other.upgrade_attempt && digest == other.digest;
+         file_missing_time == other.file_missing_time && digest == other.digest;
 }
 
 bool OfflinePageItem::operator<(const OfflinePageItem& other) const {

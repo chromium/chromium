@@ -85,10 +85,15 @@ DevToolsLogReader::~DevToolsLogReader() {}
 bool DevToolsLogReader::IsHeader(std::istringstream& header_stream) const {
   std::string word;
   header_stream >> word;  // preamble
-  if (!base::MatchPattern(word, "[??????????.???][DEBUG]:")) {
+  if (!base::MatchPattern(word, "[??????????.???][DEBUG]:") &&
+      !base::MatchPattern(word, "[??????????")) {
     return false;
   }
   header_stream >> word;  // "DevTools" for DevTools commands/responses/events
+  // test for the second half of readable timestamp and read next token
+  if (base::MatchPattern(word, "????????.??????][DEBUG]:")) {
+    header_stream >> word;
+  }
   bool result = word == "DevTools";
   return result;
 }

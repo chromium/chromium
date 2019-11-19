@@ -10,8 +10,8 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "components/dom_distiller/content/browser/distiller_ui_handle.h"
 #include "content/public/browser/url_data_source.h"
+#include "content/public/browser/web_contents.h"
 
 namespace dom_distiller {
 
@@ -22,24 +22,23 @@ class DomDistillerViewerSourceTest;
 class DomDistillerViewerSource : public content::URLDataSource {
  public:
   DomDistillerViewerSource(DomDistillerServiceInterface* dom_distiller_service,
-                           const std::string& scheme,
-                           std::unique_ptr<DistillerUIHandle> ui_handle);
+                           const std::string& scheme);
   ~DomDistillerViewerSource() override;
 
   class RequestViewerHandle;
 
   // Overridden from content::URLDataSource:
-  std::string GetSource() const override;
+  std::string GetSource() override;
   void StartDataRequest(
-      const std::string& path,
-      const content::ResourceRequestInfo::WebContentsGetter& wc_getter,
+      const GURL& url,
+      const content::WebContents::Getter& wc_getter,
       const content::URLDataSource::GotDataCallback& callback) override;
-  std::string GetMimeType(const std::string& path) const override;
+  std::string GetMimeType(const std::string& path) override;
   bool ShouldServiceRequest(const GURL& url,
                             content::ResourceContext* resource_context,
-                            int render_process_id) const override;
-  std::string GetContentSecurityPolicyStyleSrc() const override;
-  std::string GetContentSecurityPolicyChildSrc() const override;
+                            int render_process_id) override;
+  std::string GetContentSecurityPolicyStyleSrc() override;
+  std::string GetContentSecurityPolicyChildSrc() override;
 
  private:
   friend class DomDistillerViewerSourceTest;
@@ -50,10 +49,6 @@ class DomDistillerViewerSource : public content::URLDataSource {
   // The service which contains all the functionality needed to interact with
   // the list of articles.
   DomDistillerServiceInterface* dom_distiller_service_;
-
-  // An object for accessing chrome-specific UI controls including external
-  // feedback and opening the distiller settings.
-  std::unique_ptr<DistillerUIHandle> distiller_ui_handle_;
 
   DISALLOW_COPY_AND_ASSIGN(DomDistillerViewerSource);
 };

@@ -4,13 +4,13 @@
             "DEFAULT": "rendering_desktop_000.wprgo"
         },
         "accu_weather_pinch_2018": {
-            "DEFAULT": "rendering_desktop_007.wprgo"
+            "DEFAULT": "rendering_desktop_f083c0f144.wprgo"
         },
         "amazon_2018": {
             "DEFAULT": "rendering_desktop_000.wprgo"
         },
         "amazon_pinch_2018": {
-            "DEFAULT": "rendering_desktop_007.wprgo"
+            "DEFAULT": "rendering_desktop_f083c0f144.wprgo"
         },
         "analog_clock_svg": {
             "DEFAULT": "rendering_desktop_002.wprgo"
@@ -37,13 +37,13 @@
             "DEFAULT": "rendering_desktop_000.wprgo"
         },
         "blogspot_pinch_2018": {
-            "DEFAULT": "rendering_desktop_007.wprgo"
+            "DEFAULT": "rendering_desktop_f083c0f144.wprgo"
         },
         "booking.com_2018": {
             "DEFAULT": "rendering_desktop_000.wprgo"
         },
         "booking_pinch_2018": {
-            "DEFAULT": "rendering_desktop_007.wprgo"
+            "DEFAULT": "rendering_desktop_f083c0f144.wprgo"
         },
         "camera_to_webgl": {
             "DEFAULT": "rendering_desktop_011.wprgo"
@@ -70,7 +70,7 @@
             "DEFAULT": "rendering_desktop_000.wprgo"
         },
         "cnn_pinch_2018": {
-            "DEFAULT": "rendering_desktop_007.wprgo"
+            "DEFAULT": "rendering_desktop_f083c0f144.wprgo"
         },
         "crafty_mind": {
             "DEFAULT": "rendering_desktop_004.wprgo"
@@ -85,7 +85,7 @@
             "DEFAULT": "rendering_desktop_000.wprgo"
         },
         "ebay_pinch_2018": {
-            "DEFAULT": "rendering_desktop_007.wprgo"
+            "DEFAULT": "rendering_desktop_f083c0f144.wprgo"
         },
         "effect_games": {
             "DEFAULT": "rendering_desktop_004.wprgo"
@@ -94,13 +94,13 @@
             "DEFAULT": "rendering_desktop_000.wprgo"
         },
         "espn_pinch_2018": {
-            "DEFAULT": "rendering_desktop_007.wprgo"
+            "DEFAULT": "rendering_desktop_f083c0f144.wprgo"
         },
         "facebook_2018": {
             "DEFAULT": "rendering_desktop_000.wprgo"
         },
         "facebook_pinch_2018": {
-            "DEFAULT": "rendering_desktop_007.wprgo"
+            "DEFAULT": "rendering_desktop_f083c0f144.wprgo"
         },
         "filter_terrain_svg": {
             "DEFAULT": "rendering_desktop_002.wprgo"
@@ -115,19 +115,19 @@
             "DEFAULT": "rendering_desktop_001.wprgo"
         },
         "gmail_pinch_2018": {
-            "DEFAULT": "rendering_desktop_007.wprgo"
+            "DEFAULT": "rendering_desktop_f083c0f144.wprgo"
         },
         "google_calendar_2018": {
             "DEFAULT": "rendering_desktop_000.wprgo"
         },
         "google_calendar_pinch_2018": {
-            "DEFAULT": "rendering_desktop_007.wprgo"
+            "DEFAULT": "rendering_desktop_f083c0f144.wprgo"
         },
         "google_docs_2018": {
             "DEFAULT": "rendering_desktop_000.wprgo"
         },
         "google_image_pinch_2018": {
-            "DEFAULT": "rendering_desktop_007.wprgo"
+            "DEFAULT": "rendering_desktop_f083c0f144.wprgo"
         },
         "google_image_search_2018": {
             "DEFAULT": "rendering_desktop_000.wprgo"
@@ -136,7 +136,7 @@
             "DEFAULT": "rendering_desktop_000.wprgo"
         },
         "google_search_pinch_2018": {
-            "DEFAULT": "rendering_desktop_007.wprgo"
+            "DEFAULT": "rendering_desktop_f083c0f144.wprgo"
         },
         "google_web_search_2018": {
             "DEFAULT": "rendering_desktop_000.wprgo"
@@ -172,10 +172,10 @@
             "DEFAULT": "rendering_desktop_004.wprgo"
         },
         "linkedin_2018": {
-            "DEFAULT": "rendering_desktop_000.wprgo"
+            "DEFAULT": "rendering_desktop_6eb5e5be2a.wprgo"
         },
         "linkedin_pinch_2018": {
-            "DEFAULT": "rendering_desktop_007.wprgo"
+            "DEFAULT": "rendering_desktop_f083c0f144.wprgo"
         },
         "man_in_blue": {
             "DEFAULT": "rendering_desktop_004.wprgo"
@@ -270,8 +270,8 @@
         "repaint_yahoo_homepage_2018": {
             "DEFAULT": "rendering_desktop_fdde4c2d8b.wprgo"
         },
-        "runway": {
-            "DEFAULT": "rendering_desktop_004.wprgo"
+        "runway_2019": {
+            "DEFAULT": "rendering_desktop_00acdd603b.wprgo"
         },
         "san_angeles": {
             "DEFAULT": "rendering_desktop_011.wprgo"
@@ -289,13 +289,13 @@
             "DEFAULT": "rendering_desktop_000.wprgo"
         },
         "twitch_pinch_2018": {
-            "DEFAULT": "rendering_desktop_007.wprgo"
+            "DEFAULT": "rendering_desktop_f083c0f144.wprgo"
         },
         "twitter_2018": {
             "DEFAULT": "rendering_desktop_000.wprgo"
         },
         "twitter_pinch_2018": {
-            "DEFAULT": "rendering_desktop_007.wprgo"
+            "DEFAULT": "rendering_desktop_f083c0f144.wprgo"
         },
         "wikipedia_2018": {
             "DEFAULT": "rendering_desktop_000.wprgo"
@@ -310,19 +310,19 @@
             "DEFAULT": "rendering_desktop_000.wprgo"
         },
         "yahoo_news_pinch_2018": {
-            "DEFAULT": "rendering_desktop_007.wprgo"
+            "DEFAULT": "rendering_desktop_f083c0f144.wprgo"
         },
         "yahoo_sports_2018": {
             "DEFAULT": "rendering_desktop_000.wprgo"
         },
         "yahoo_sports_pinch_2018": {
-            "DEFAULT": "rendering_desktop_007.wprgo"
+            "DEFAULT": "rendering_desktop_f083c0f144.wprgo"
         },
         "youtube_2018": {
             "DEFAULT": "rendering_desktop_000.wprgo"
         },
         "youtube_pinch_2018": {
-            "DEFAULT": "rendering_desktop_007.wprgo"
+            "DEFAULT": "rendering_desktop_f083c0f144.wprgo"
         }
     },
     "description": "Describes the Web Page Replay archives for a story set. Don't edit by hand! Use record_wpr for updating.",

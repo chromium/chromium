@@ -10,9 +10,12 @@
 #include "base/component_export.h"
 #include "base/memory/scoped_refptr.h"
 #include "net/http/http_response_headers.h"
-#include "services/network/public/mojom/cors.mojom-shared.h"
 
 namespace network {
+
+namespace mojom {
+enum class CorsError : int32_t;
+}
 
 struct COMPONENT_EXPORT(NETWORK_CPP_BASE) CorsErrorStatus {
   // This constructor is used by generated IPC serialization code.

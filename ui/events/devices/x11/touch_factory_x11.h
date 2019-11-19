@@ -81,7 +81,7 @@ class EVENTS_DEVICES_X11_EXPORT TouchFactory {
   int GetSlotForTrackingID(uint32_t tracking_id);
 
   // Releases the slot ID mapping to tracking ID.
-  void ReleaseSlotForTrackingID(uint32_t tracking_id);
+  void ReleaseSlot(int slot);
 
   // Whether any touch device is currently present and enabled.
   bool IsTouchDevicePresent();

@@ -22,20 +22,9 @@ void FakeNetworkDeviceHandler::SetDeviceProperty(
     const base::Closure& callback,
     const network_handler::ErrorCallback& error_callback) {}
 
-void FakeNetworkDeviceHandler::RequestRefreshIPConfigs(
-    const std::string& device_path,
-    const base::Closure& callback,
-    const network_handler::ErrorCallback& error_callback) {}
-
 void FakeNetworkDeviceHandler::RegisterCellularNetwork(
     const std::string& device_path,
     const std::string& network_id,
-    const base::Closure& callback,
-    const network_handler::ErrorCallback& error_callback) {}
-
-void FakeNetworkDeviceHandler::SetCarrier(
-    const std::string& device_path,
-    const std::string& carrier,
     const base::Closure& callback,
     const network_handler::ErrorCallback& error_callback) {}
 
@@ -67,6 +56,9 @@ void FakeNetworkDeviceHandler::ChangePin(
     const network_handler::ErrorCallback& error_callback) {}
 
 void FakeNetworkDeviceHandler::SetCellularAllowRoaming(bool allow_roaming) {}
+
+void FakeNetworkDeviceHandler::SetUsbEthernetMacAddressSource(
+    const std::string& source) {}
 
 void FakeNetworkDeviceHandler::SetWifiTDLSEnabled(
     const std::string& ip_or_mac_address,

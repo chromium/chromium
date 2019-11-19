@@ -45,6 +45,15 @@ class PLATFORM_EXPORT ScrollPaintPropertyNode
     bool user_scrollable_vertical = false;
     bool scrolls_inner_viewport = false;
     bool scrolls_outer_viewport = false;
+
+    // This bit tells the compositor whether the inner viewport should be
+    // scrolled using the full viewport mechanism (overscroll, top control
+    // movement, inner+outer panning, etc.). This can differ depending on
+    // whether the page has a non-default root scroller and is used to affect
+    // scroll chaining from fixed elements. See discussion on
+    // https://crbug.com/977954 for details.
+    bool prevent_viewport_scrolling_from_inner = false;
+
     bool max_scroll_offset_affected_by_page_scale = false;
     MainThreadScrollingReasons main_thread_scrolling_reasons =
         cc::MainThreadScrollingReason::kNotScrollingOnMain;
@@ -55,13 +64,15 @@ class PLATFORM_EXPORT ScrollPaintPropertyNode
         cc::OverscrollBehavior::kOverscrollBehaviorTypeAuto);
     base::Optional<cc::SnapContainerData> snap_container_data;
 
-    PaintPropertyChangeType CheckChange(const State& other) const {
+    PaintPropertyChangeType ComputeChange(const State& other) const {
       if (container_rect != other.container_rect ||
           contents_size != other.contents_size ||
           user_scrollable_horizontal != other.user_scrollable_horizontal ||
           user_scrollable_vertical != other.user_scrollable_vertical ||
           scrolls_inner_viewport != other.scrolls_inner_viewport ||
           scrolls_outer_viewport != other.scrolls_outer_viewport ||
+          prevent_viewport_scrolling_from_inner !=
+              other.prevent_viewport_scrolling_from_inner ||
           max_scroll_offset_affected_by_page_scale !=
               other.max_scroll_offset_affected_by_page_scale ||
           main_thread_scrolling_reasons !=
@@ -91,14 +102,18 @@ class PLATFORM_EXPORT ScrollPaintPropertyNode
     return nullptr;
   }
 
+  // The empty AnimationState struct is to meet the requirement of
+  // ObjectPaintProperties.
+  struct AnimationState {};
   PaintPropertyChangeType Update(const ScrollPaintPropertyNode& parent,
-                                 State&& state) {
+                                 State&& state,
+                                 const AnimationState& = AnimationState()) {
     auto parent_changed = SetParent(&parent);
-    auto state_changed = state_.CheckChange(state);
+    auto state_changed = state_.ComputeChange(state);
     if (state_changed != PaintPropertyChangeType::kUnchanged) {
       state_ = std::move(state);
       Validate();
-      SetChanged();
+      AddChanged(state_changed);
     }
     return std::max(parent_changed, state_changed);
   }
@@ -132,6 +147,9 @@ class PLATFORM_EXPORT ScrollPaintPropertyNode
   }
   bool ScrollsInnerViewport() const { return state_.scrolls_inner_viewport; }
   bool ScrollsOuterViewport() const { return state_.scrolls_outer_viewport; }
+  bool PreventViewportScrollingFromInner() const {
+    return state_.prevent_viewport_scrolling_from_inner;
+  }
   bool MaxScrollOffsetAffectedByPageScale() const {
     return state_.max_scroll_offset_affected_by_page_scale;
   }

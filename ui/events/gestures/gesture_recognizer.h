@@ -10,14 +10,13 @@
 #include <memory>
 #include <vector>
 
-#include "base/observer_list.h"
+#include "base/macros.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/events_export.h"
 #include "ui/events/gestures/gesture_types.h"
 #include "ui/gfx/geometry/point_f.h"
 
 namespace ui {
-class GestureRecognizerObserver;
 
 // A GestureRecognizer is an abstract base class for conversion of touch events
 // into gestures.
@@ -74,6 +73,19 @@ class EVENTS_EXPORT GestureRecognizer {
       GestureConsumer* new_consumer,
       TransferTouchesBehavior transfer_touches_behavior) = 0;
 
+  // Extracts the consumer's current pointer state as "DOWN" TouchEvents. Each
+  // TouchEvent corresponds to an active pointer.
+  virtual std::vector<std::unique_ptr<TouchEvent>> ExtractTouches(
+      GestureConsumer* consumer) = 0;
+
+  // Used to transfer a consumer's pointer state to another consumer
+  // (|consumer|). The touch events are extracted from the old consumer using
+  // ExtractTouches. These events are then re-dispatched to |consumer|, which
+  // also results in gestures restarting in the new consumer.
+  virtual void TransferTouches(
+      GestureConsumer* consumer,
+      const std::vector<std::unique_ptr<ui::TouchEvent>>& touch_events) = 0;
+
   // If a gesture is underway for |consumer| |point| is set to the last touch
   // point and true is returned. If no touch events have been processed for
   // |consumer| false is returned and |point| is untouched.
@@ -95,17 +107,7 @@ class EVENTS_EXPORT GestureRecognizer {
   // and must be cleaned up appropriately by the caller.
   virtual void RemoveGestureEventHelper(GestureEventHelper* helper) = 0;
 
-  void AddObserver(GestureRecognizerObserver* observer);
-  void RemoveObserver(GestureRecognizerObserver* observer);
-
- protected:
-  const base::ObserverList<GestureRecognizerObserver>& observers() {
-    return observers_;
-  }
-
  private:
-  base::ObserverList<GestureRecognizerObserver> observers_;
-
   DISALLOW_COPY_AND_ASSIGN(GestureRecognizer);
 };
 

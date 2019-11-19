@@ -7,8 +7,10 @@
 
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
+namespace cssvalue {
 
 // CSSGridAutoRepeatValue stores the track sizes and line numbers when the
 // auto-repeat syntax is used
@@ -25,17 +27,15 @@ namespace blink {
 // intact.
 class CSSGridAutoRepeatValue : public CSSValueList {
  public:
-  static CSSGridAutoRepeatValue* Create(CSSValueID id) {
-    return MakeGarbageCollected<CSSGridAutoRepeatValue>(id);
-  }
-
   CSSGridAutoRepeatValue(CSSValueID id)
       : CSSValueList(kGridAutoRepeatClass, kSpaceSeparator),
         auto_repeat_id_(id) {
-    DCHECK(id == CSSValueAutoFill || id == CSSValueAutoFit);
+    DCHECK(id == CSSValueID::kAutoFill || id == CSSValueID::kAutoFit);
   }
 
   String CustomCSSText() const;
+  bool Equals(const CSSGridAutoRepeatValue&) const;
+
   CSSValueID AutoRepeatID() const { return auto_repeat_id_; }
 
   void TraceAfterDispatch(blink::Visitor* visitor) {
@@ -46,7 +46,14 @@ class CSSGridAutoRepeatValue : public CSSValueList {
   const CSSValueID auto_repeat_id_;
 };
 
-DEFINE_CSS_VALUE_TYPE_CASTS(CSSGridAutoRepeatValue, IsGridAutoRepeatValue());
+}  // namespace cssvalue
+
+template <>
+struct DowncastTraits<cssvalue::CSSGridAutoRepeatValue> {
+  static bool AllowFrom(const CSSValue& value) {
+    return value.IsGridAutoRepeatValue();
+  }
+};
 
 }  // namespace blink
 

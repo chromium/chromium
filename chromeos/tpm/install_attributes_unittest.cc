@@ -13,12 +13,11 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "chromeos/dbus/constants/dbus_paths.h"
+#include "chromeos/dbus/cryptohome/cryptohome_client.h"
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
-#include "chromeos/dbus/cryptohome_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/util/tpm_util.h"
+#include "chromeos/dbus/cryptohome/tpm_util.h"
 #include "components/policy/proto/install_attributes.pb.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -44,19 +43,18 @@ static const char kTestUserDeprecated[] = "test@example.com";
 class InstallAttributesTest : public testing::Test {
  protected:
   InstallAttributesTest()
-      : scoped_task_environment_(
-            base::test::ScopedTaskEnvironment::MainThreadType::UI) {}
+      : task_environment_(base::test::TaskEnvironment::MainThreadType::UI) {}
 
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     ASSERT_TRUE(base::PathService::OverrideAndCreateIfNeeded(
         dbus_paths::FILE_INSTALL_ATTRIBUTES, GetTempPath(), true, false));
-    DBusThreadManager::Initialize();
-    install_attributes_ = std::make_unique<InstallAttributes>(
-        DBusThreadManager::Get()->GetCryptohomeClient());
+    CryptohomeClient::InitializeFake();
+    install_attributes_ =
+        std::make_unique<InstallAttributes>(CryptohomeClient::Get());
   }
 
-  void TearDown() override { DBusThreadManager::Shutdown(); }
+  void TearDown() override { CryptohomeClient::Shutdown(); }
 
   base::FilePath GetTempPath() const {
     base::FilePath temp_path = base::MakeAbsoluteFilePath(temp_dir_.GetPath());
@@ -73,7 +71,7 @@ class InstallAttributesTest : public testing::Test {
     attribute->set_value(value);
   }
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<InstallAttributes> install_attributes_;
 
@@ -86,7 +84,7 @@ class InstallAttributesTest : public testing::Test {
     InstallAttributes::LockResult result;
     install_attributes_->LockDevice(
         device_mode, domain, realm, device_id,
-        base::Bind(&CopyLockResult, &loop, &result));
+        base::BindOnce(&CopyLockResult, &loop, &result));
     loop.Run();
     return result;
   }

@@ -8,14 +8,23 @@
 
 namespace web_app {
 
+TestFileUtils::TestFileUtils() = default;
+
+TestFileUtils::TestFileUtils(const TestFileUtils&) = default;
+
+TestFileUtils::~TestFileUtils() = default;
+
 std::unique_ptr<FileUtilsWrapper> TestFileUtils::Clone() {
-  auto clone = std::make_unique<TestFileUtils>();
-  clone->remaining_disk_space_ = remaining_disk_space_;
-  return clone;
+  return std::make_unique<TestFileUtils>(*this);
 }
 
 void TestFileUtils::SetRemainingDiskSpaceSize(int remaining_disk_space) {
   remaining_disk_space_ = remaining_disk_space;
+}
+
+void TestFileUtils::SetNextDeleteFileRecursivelyResult(
+    base::Optional<bool> delete_result) {
+  delete_file_recursively_result_ = delete_result;
 }
 
 int TestFileUtils::WriteFile(const base::FilePath& filename,
@@ -35,6 +44,12 @@ int TestFileUtils::WriteFile(const base::FilePath& filename,
   }
 
   return FileUtilsWrapper::WriteFile(filename, data, size);
+}
+
+bool TestFileUtils::DeleteFileRecursively(const base::FilePath& path) {
+  return delete_file_recursively_result_
+             ? *delete_file_recursively_result_
+             : FileUtilsWrapper::DeleteFileRecursively(path);
 }
 
 }  // namespace web_app

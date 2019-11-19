@@ -28,8 +28,10 @@ typedef enum {
   USER_TYPE_ARC_KIOSK_APP = 7,
   // Active Directory user. Authenticates against Active Directory server.
   USER_TYPE_ACTIVE_DIRECTORY = 8,
+  // Web app kiosk, logs in without authentication.
+  USER_TYPE_WEB_KIOSK_APP = 9,
   // Maximum histogram value.
-  NUM_USER_TYPES = 9
+  NUM_USER_TYPES = 10
 } UserType;
 
 }  // namespace user_manager

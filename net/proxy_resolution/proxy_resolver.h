@@ -19,6 +19,7 @@
 namespace net {
 
 class NetLogWithSource;
+class NetworkIsolationKey;
 class ProxyInfo;
 
 // Interface for "proxy resolvers". A ProxyResolver fills in a list of proxies
@@ -42,8 +43,13 @@ class NET_EXPORT_PRIVATE ProxyResolver {
   // by running |callback|.  If the result code is OK then
   // the request was successful and |results| contains the proxy
   // resolution information.  In the case of asynchronous completion
-  // |*request| is written to. Call request_.reset() to cancel the request
+  // |*request| is written to. Call request_.reset() to cancel the request.
+  //
+  // |network_isolation_key| is used for any DNS lookups associated with the
+  // request, if net's HostResolver is used. If the underlying platform itself
+  // handles proxy resolution, |network_isolation_key| will be ignored.
   virtual int GetProxyForURL(const GURL& url,
+                             const NetworkIsolationKey& network_isolation_key,
                              ProxyInfo* results,
                              CompletionOnceCallback callback,
                              std::unique_ptr<Request>* request,

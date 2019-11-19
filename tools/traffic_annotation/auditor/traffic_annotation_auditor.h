@@ -14,6 +14,12 @@
 #include "tools/traffic_annotation/auditor/traffic_annotation_exporter.h"
 #include "tools/traffic_annotation/traffic_annotation.pb.h"
 
+enum class ExtractorBackend {
+  CLANG_TOOL,
+  PYTHON_SCRIPT,
+  INVALID,
+};
+
 // Holds an item of safe list rules for auditor.
 struct AuditorException {
   enum class ExceptionType {
@@ -21,7 +27,8 @@ struct AuditorException {
     MISSING,            // Ignore missing annotations.
     DIRECT_ASSIGNMENT,  // Ignore direct assignment of annotation value.
     TEST_ANNOTATION,    // Ignore usages of annotation for tests.
-    EXCEPTION_TYPE_LAST = TEST_ANNOTATION
+    MUTABLE_TAG,        // Ignore CreateMutableNetworkTrafficAnnotationTag().
+    EXCEPTION_TYPE_LAST = MUTABLE_TAG,
   } type;
 
   static bool TypeFromString(const std::string& type_string,
@@ -34,6 +41,8 @@ struct AuditorException {
       *type_value = ExceptionType::DIRECT_ASSIGNMENT;
     } else if (type_string == "test_annotation") {
       *type_value = ExceptionType::TEST_ANNOTATION;
+    } else if (type_string == "mutable_tag") {
+      *type_value = ExceptionType::MUTABLE_TAG;
     } else {
       return false;
     }
@@ -48,28 +57,29 @@ class TrafficAnnotationAuditor {
   //   |source_path|: Path to the src directory.
   //   |build_path|: Path to a compiled build directory.
   //   |clang_tool_path|: Path to the 'traffic_annotation_extractor' clang tool.
+  //   |path_filters|: Filters to limit where we're scanning the source.
   TrafficAnnotationAuditor(const base::FilePath& source_path,
                            const base::FilePath& build_path,
-                           const base::FilePath& clang_tool_path);
+                           const base::FilePath& clang_tool_path,
+                           const std::vector<std::string>& path_filters);
   ~TrafficAnnotationAuditor();
 
-  // Runs traffic_annotation_extractor clang tool and puts its output in
-  // |clang_tool_raw_output_|. If |filter_files_based_on_heuristics| flag is
-  // set, the list of files will be received from repository and heuristically
-  // filtered to only process the relevant files. If |use_compile_commands| flag
-  // is set, the list of files is extracted from compile_commands.json instead
-  // of git and will not be filtered.
-  // If clang tool returns error, and |rerun_on_errors| is true, the tool is run
-  // again to record errors.
-  // Errors are written to |errors_file| if it is not empty, otherwise
-  // LOG(ERROR).
-  bool RunClangTool(const std::vector<std::string>& path_filters,
+  // Runs traffic_annotation_extractor clang tool (or extractor.py script) and
+  // puts its output in |extractor_raw_output_|. If
+  // |filter_files_based_on_heuristics| flag is set, the list of files will be
+  // received from repository and heuristically filtered to only process the
+  // relevant files. If |use_compile_commands| flag is set, the list of files is
+  // extracted from compile_commands.json instead of git and will not be
+  // filtered.  If clang tool returns error, and |rerun_on_errors| is true, the
+  // tool is run again to record errors.  Errors are written to |errors_file| if
+  // it is not empty, otherwise LOG(ERROR).
+  bool RunExtractor(ExtractorBackend backend,
                     bool filter_files_based_on_heuristics,
                     bool use_compile_commands,
                     bool rerun_on_errors,
                     const base::FilePath& errors_file);
 
-  // Parses the output of clang tool (|clang_tool_raw_output_|) and populates
+  // Parses the output of clang tool (|extractor_raw_output_|) and populates
   // |extracted_annotations_|, |extracted_calls_|, and |errors_|.
   // Errors include not finding the file, incorrect content, or missing or not
   // provided annotations.
@@ -102,8 +112,7 @@ class TrafficAnnotationAuditor {
   // filters are passed so that the data for files that were not tested would be
   // read from annotations.xml. If |report_xml_updates| is set and
   // annotations.xml requires updates, the updates are added to |errors_|.
-  bool RunAllChecks(const std::vector<std::string>& path_filters,
-                    bool report_xml_updates);
+  bool RunAllChecks(bool report_xml_updates);
 
   // Returns a mapping of reserved unique ids' hash codes to the unique ids'
   // texts. This list includes all unique ids that are defined in
@@ -117,10 +126,10 @@ class TrafficAnnotationAuditor {
   // net/traffic_annotation/network_traffic_annotation_test_helper.h
   static std::set<int> GetReservedIDsSet();
 
-  std::string clang_tool_raw_output() const { return clang_tool_raw_output_; }
+  std::string extractor_raw_output() const { return extractor_raw_output_; }
 
-  void set_clang_tool_raw_output(const std::string& raw_output) {
-    clang_tool_raw_output_ = raw_output;
+  void set_extractor_raw_output(const std::string& raw_output) {
+    extractor_raw_output_ = raw_output;
   }
 
   const std::vector<AnnotationInstance>& extracted_annotations() const {
@@ -157,10 +166,13 @@ class TrafficAnnotationAuditor {
   // Returns the path to clang internal libraries.
   base::FilePath GetClangLibraryPath();
 
+  void ClearPathFilters() { path_filters_.clear(); }
+
  private:
   const base::FilePath source_path_;
   const base::FilePath build_path_;
   const base::FilePath clang_tool_path_;
+  std::vector<std::string> path_filters_;
 
   base::FilePath absolute_source_path_;
 
@@ -168,7 +180,7 @@ class TrafficAnnotationAuditor {
 
   TrafficAnnotationExporter exporter_;
 
-  std::string clang_tool_raw_output_;
+  std::string extractor_raw_output_;
   std::vector<AnnotationInstance> extracted_annotations_;
   std::vector<CallInstance> extracted_calls_;
   std::vector<AuditorResult> errors_;
@@ -184,16 +196,20 @@ class TrafficAnnotationAuditor {
   //  1- Not deprecated.
   //  2- OS list includes current platform.
   //  2- Has a path (is not a reserved word).
-  //  3- Path matches an item in |path_filters|.
-  void AddMissingAnnotations(const std::vector<std::string>& path_filters);
+  //  3- Path matches an item in |path_filters_|.
+  void AddMissingAnnotations();
 
-  // Generates files list to Run clang tool on. Please refer to RunClangTool
+  // Generates files list to Run clang tool on. Please refer to RunExtractor
   // function's comment.
   void GenerateFilesListForClangTool(
-      const std::vector<std::string>& path_filters,
+      ExtractorBackend backend,
       bool filter_files_based_on_heuristics,
       bool use_compile_commands,
       std::vector<std::string>* file_paths);
+
+  // Write flags to the options file, for RunExtractor.
+  void WriteClangToolOptions(FILE* options_file, bool use_compile_commands);
+  void WritePythonScriptOptions(FILE* options_file);
 
   base::FilePath gn_file_for_test_;
   std::map<std::string, bool> checked_dependencies_;

@@ -5,9 +5,9 @@
 #import "ios/chrome/browser/ui/payments/cells/autofill_profile_item.h"
 
 #import "ios/chrome/browser/ui/collection_view/cells/MDCCollectionViewCell+Chrome.h"
-#import "ios/chrome/browser/ui/colors/MDCPalette+CrAdditions.h"
 #import "ios/chrome/browser/ui/payments/cells/accessibility_util.h"
 #include "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui_util/constraints_ui_util.h"
 #import "ios/third_party/material_components_ios/src/components/Typography/src/MaterialTypography.h"
 
@@ -123,19 +123,19 @@ const CGFloat kVerticalSpacingBetweenLabels = 8;
 // Set default font and text colors for labels.
 - (void)setDefaultViewStyling {
   [self useScaledFont:NO];
-  _nameLabel.textColor = [[MDCPalette greyPalette] tint900];
+  _nameLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
   _nameLabel.numberOfLines = 0;
   _nameLabel.lineBreakMode = NSLineBreakByWordWrapping;
 
-  _addressLabel.textColor = [[MDCPalette greyPalette] tint900];
+  _addressLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
   _addressLabel.numberOfLines = 0;
   _addressLabel.lineBreakMode = NSLineBreakByWordWrapping;
 
-  _phoneNumberLabel.textColor = [[MDCPalette greyPalette] tint900];
+  _phoneNumberLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
 
-  _emailLabel.textColor = [[MDCPalette greyPalette] tint900];
+  _emailLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
 
-  _notificationLabel.textColor = [[MDCPalette cr_bluePalette] tint500];
+  _notificationLabel.textColor = [UIColor colorNamed:kBlueColor];
 }
 
 - (void)useScaledFont:(BOOL)useScaledFont {

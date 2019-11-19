@@ -23,12 +23,13 @@ namespace extensions {
 const char kTLSSocketTypeInvalidError[] =
     "Cannot listen on a socket that is already connected.";
 
-TLSSocket::TLSSocket(network::mojom::TLSClientSocketPtr tls_socket,
-                     const net::IPEndPoint& local_addr,
-                     const net::IPEndPoint& peer_addr,
-                     mojo::ScopedDataPipeConsumerHandle receive_stream,
-                     mojo::ScopedDataPipeProducerHandle send_stream,
-                     const std::string& owner_extension_id)
+TLSSocket::TLSSocket(
+    mojo::PendingRemote<network::mojom::TLSClientSocket> tls_socket,
+    const net::IPEndPoint& local_addr,
+    const net::IPEndPoint& peer_addr,
+    mojo::ScopedDataPipeConsumerHandle receive_stream,
+    mojo::ScopedDataPipeProducerHandle send_stream,
+    const std::string& owner_extension_id)
     : ResumableTCPSocket(nullptr, owner_extension_id),
       tls_socket_(std::move(tls_socket)),
       local_addr_(local_addr),
@@ -115,23 +116,24 @@ Socket::SocketType TLSSocket::GetSocketType() const {
 
 int TLSSocket::WriteImpl(net::IOBuffer* io_buffer,
                          int io_buffer_size,
-                         const net::CompletionCallback& callback) {
+                         net::CompletionOnceCallback callback) {
   if (!mojo_data_pump_)
     return net::ERR_SOCKET_NOT_CONNECTED;
-  mojo_data_pump_->Write(io_buffer, io_buffer_size,
-                         base::BindOnce(&TLSSocket::OnWriteComplete,
-                                        base::Unretained(this), callback));
+  mojo_data_pump_->Write(
+      io_buffer, io_buffer_size,
+      base::BindOnce(&TLSSocket::OnWriteComplete, base::Unretained(this),
+                     std::move(callback)));
   return net::ERR_IO_PENDING;
 }
 
-void TLSSocket::OnWriteComplete(const net::CompletionCallback& callback,
+void TLSSocket::OnWriteComplete(net::CompletionOnceCallback callback,
                                 int result) {
   if (result < 0) {
     // Write side has terminated. This can be an error or a graceful close.
     // TCPSocketEventDispatcher doesn't distinguish between the two.
     Disconnect(false /* socket_destroying */);
   }
-  callback.Run(result);
+  std::move(callback).Run(result);
 }
 
 void TLSSocket::OnReadComplete(int result,

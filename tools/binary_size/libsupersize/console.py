@@ -4,6 +4,8 @@
 
 """An interactive console for looking analyzing .size files."""
 
+from __future__ import print_function
+
 import argparse
 import atexit
 import code
@@ -21,6 +23,7 @@ import canned_queries
 import describe
 import diff
 import file_format
+import html_report
 import match_util
 import models
 import path_util
@@ -73,9 +76,11 @@ class _Session(object):
         'Print': self._PrintFunc,
         'Csv': self._CsvFunc,
         'Diff': self._DiffFunc,
+        'SaveNdjson': self._SaveNdjsonFunc,
         'ReadStringLiterals': self._ReadStringLiterals,
         'Disassemble': self._DisassembleFunc,
         'ExpandRegex': match_util.ExpandRegexIdentifierPlaceholder,
+        'SizeStats': self._SizeStats,
         'ShowExamples': self._ShowExamplesFunc,
         'canned_queries': canned_queries.CannedQueries(size_infos),
         'printed': self._printed_variables,
@@ -84,7 +89,6 @@ class _Session(object):
     self._output_directory_finder = output_directory_finder
     self._tool_prefix_finder = tool_prefix_finder
     self._size_infos = size_infos
-    self._disassemble_prefix_len = None
 
     if len(size_infos) == 1:
       self._variables['size_info'] = size_infos[0]
@@ -122,38 +126,55 @@ class _Session(object):
     elf_path = self._ElfPathForSymbol(
         size_info, tool_prefix, elf_path)
 
-    address, offset, _ = string_extract.LookupElfRodataInfo(
-        elf_path, tool_prefix)
-    adjust = offset - address
-    ret = []
-    with open(elf_path, 'rb') as f:
-      for symbol in thing:
-        if symbol.section != 'r' or (
-            not all_rodata and not symbol.IsStringLiteral()):
-          continue
-        f.seek(symbol.address + adjust)
-        data = f.read(symbol.size_without_padding)
-        # As of Oct 2017, there are ~90 symbols name .L.str(.##). These appear
-        # in the linker map file explicitly, and there doesn't seem to be a
-        # pattern as to which variables lose their kConstant name (the more
-        # common case), or which string literals don't get moved to
-        # ** merge strings (less common).
-        if symbol.IsStringLiteral() or (
-            all_rodata and data and data[-1] == '\0'):
-          ret.append((symbol, data))
-    return ret
+    return string_extract.ReadStringLiterals(
+        thing, elf_path, tool_prefix, all_rodata=all_rodata)
 
   def _DiffFunc(self, before=None, after=None, sort=True):
     """Diffs two SizeInfo objects. Returns a DeltaSizeInfo.
 
     Args:
-      before: Defaults to first size_infos[0].
-      after: Defaults to second size_infos[1].
+      before: Defaults to size_infos[0].
+      after: Defaults to size_infos[1].
       sort: When True (default), calls SymbolGroup.Sorted() after diffing.
     """
     before = before if before is not None else self._size_infos[0]
     after = after if after is not None else self._size_infos[1]
     return diff.Diff(before, after, sort=sort)
+
+  def _SaveNdjsonFunc(self, filtered_symbols, size_info=None, to_file=None):
+    """Saves a .ndjson file containing only filtered_symbols into to_file.
+
+    Args:
+      filtered_symbols: Which symbols to include
+      size_info: The size_info to filter. Defaults to size_infos[0].
+      to_file: Defaults to default.ndjson
+    """
+    size_info = size_info or self._size_infos[0]
+    to_file = to_file or 'default.ndjson'
+
+    old_raw_symbols = size_info.raw_symbols
+    size_info.raw_symbols = filtered_symbols
+    html_report.BuildReportFromSizeInfo(to_file, size_info)
+    size_info.raw_symbols = old_raw_symbols
+
+    shortname = os.path.basename(os.path.normpath(to_file))
+    msg = (
+        'Saved locally to {local}. To share, run:\n'
+        '> gsutil.py cp {local} gs://chrome-supersize/oneoffs && gsutil.py -m '
+        'acl ch -u AllUsers:R gs://chrome-supersize/oneoffs/{shortname}\n'
+        '  Then view it at https://storage.googleapis.com/chrome-supersize'
+        '/viewer.html?load_url=oneoffs%2F{shortname}')
+    print(msg.format(local=to_file, shortname=shortname))
+
+  def _SizeStats(self, size_info=None):
+    """Prints some statistics for the given size info.
+
+    Args:
+      size_info: Defaults to size_infos[0].
+    """
+    size_info = size_info or self._size_infos[0]
+    describe.WriteLines(
+        describe.DescribeSizeInfoCoverage(size_info), sys.stdout.write)
 
   def _PrintFunc(self, obj=None, verbose=False, summarize=True, recursive=False,
                  use_pager=None, to_file=None):
@@ -250,26 +271,6 @@ class _Session(object):
         'ensure {} is located beside {}, or pass its path explicitly using '
         'elf_path=').format(os.path.basename(filename), size_info.size_path)
 
-  def _DetectDisassemblePrefixLen(self, args):
-    # Look for a line that looks like:
-    # /usr/{snip}/src/out/Release/../../net/quic/core/quic_time.h:100
-    output = subprocess.check_output(args)
-    for line in output.splitlines():
-      if line and line[0] == os.path.sep and line[-1].isdigit():
-        release_idx = line.find('Release')
-        if release_idx != -1:
-          return line.count(os.path.sep, 0, release_idx)
-        dot_dot_idx = line.find('..')
-        if dot_dot_idx != -1:
-          return line.count(os.path.sep, 0, dot_dot_idx) - 1
-        out_idx = line.find(os.path.sep + 'out')
-        if out_idx != -1:
-          return line.count(os.path.sep, 0, out_idx) + 2
-        logging.warning('Could not guess source path from found path.')
-        return None
-    logging.warning('Found no source paths in objdump output.')
-    return None
-
   def _SizeInfoForSymbol(self, symbol):
     for size_info in self._size_infos:
       if symbol in size_info.raw_symbols:
@@ -291,32 +292,27 @@ class _Session(object):
                                   'passing .before_symbol or .after_symbol.')
     size_info = self._SizeInfoForSymbol(symbol)
     tool_prefix = self._ToolPrefixForSymbol(size_info)
-    elf_path = self._ElfPathForSymbol(
-        size_info, tool_prefix, elf_path)
+    elf_path = self._ElfPathForSymbol(size_info, tool_prefix, elf_path)
+    # Always use Android NDK's objdump because llvm-objdump does not seem to
+    # correctly disassemble.
+    output_directory_finder = self._output_directory_finder
+    if not output_directory_finder.Tentative():
+      output_directory_finder = path_util.OutputDirectoryFinder(
+          any_path_within_output_directory=elf_path)
+    tool_prefix = path_util.ToolPrefixFinder(
+        output_directory_finder=output_directory_finder,
+        linker_name='ld').Finalized()
 
-    args = [path_util.GetObjDumpPath(tool_prefix), '--disassemble', '--source',
-            '--line-numbers', '--start-address=0x%x' % symbol.address,
-            '--stop-address=0x%x' % symbol.end_address, elf_path]
-    # llvm-objdump does not support '--demangle' switch.
-    if not self._tool_prefix_finder.IsLld():
-      args.append('--demangle')
-    if self._disassemble_prefix_len is None:
-      prefix_len = self._DetectDisassemblePrefixLen(args)
-      if prefix_len is not None:
-        self._disassemble_prefix_len = prefix_len
-
-    if self._disassemble_prefix_len is not None:
-      output_directory = self._output_directory_finder.Tentative()
-      # Only matters for non-generated paths, so be lenient here.
-      if output_directory is None:
-        output_directory = os.path.join(path_util.SRC_ROOT, 'out', 'Release')
-        if not os.path.exists(output_directory):
-          os.makedirs(output_directory)
-
-      args += [
-          '--prefix-strip', str(self._disassemble_prefix_len),
-          '--prefix', os.path.normpath(os.path.relpath(output_directory))
-      ]
+    args = [
+        path_util.GetObjDumpPath(tool_prefix),
+        '--disassemble',
+        '--source',
+        '--line-numbers',
+        '--demangle',
+        '--start-address=0x%x' % symbol.address,
+        '--stop-address=0x%x' % symbol.end_address,
+        elf_path,
+    ]
 
     proc = subprocess.Popen(args, stdout=subprocess.PIPE)
     lines = itertools.chain(('Showing disassembly for %r' % symbol,
@@ -326,8 +322,8 @@ class _Session(object):
     proc.kill()
 
   def _ShowExamplesFunc(self):
-    print self._CreateBanner()
-    print '\n'.join([
+    print(self._CreateBanner())
+    print('\n'.join([
         '# Show pydoc for main types:',
         'import models',
         'help(models)',
@@ -360,6 +356,10 @@ class _Session(object):
         '# Diff two .size files and save result to a file:',
         'Print(Diff(size_info1, size_info2), to_file="output.txt")',
         '',
+        '# Save a .ndjson containing only the filtered symbols',
+        'filtered_symbols = size_info.raw_symbols.Filter(lambda l: l.IsPak())',
+        'SaveNdjson(filtered_symbols, size_info, to_file="oneoff_paks.ndjson")',
+        '',
         '# View per-component breakdowns, then drill into the last entry.',
         'c = canned_queries.CategorizeByChromeComponent()',
         'Print(c)',
@@ -367,7 +367,7 @@ class _Session(object):
         '',
         '# For even more inspiration, look at canned_queries.py',
         '# (and feel free to add your own!).',
-    ])
+    ]))
 
   def _CreateBanner(self):
     def keys(cls, super_keys=None):

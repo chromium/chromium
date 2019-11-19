@@ -1,0 +1,5 @@
+include_rules = [
+  "+mojo/public",
+  "+skia/public/mojom",
+  "+ui/gfx/image",
+]

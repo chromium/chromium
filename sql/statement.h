@@ -20,12 +20,12 @@ namespace sql {
 
 // Possible return values from ColumnType in a statement. These should match
 // the values in sqlite3.h.
-enum ColType {
-  COLUMN_TYPE_INTEGER = 1,
-  COLUMN_TYPE_FLOAT = 2,
-  COLUMN_TYPE_TEXT = 3,
-  COLUMN_TYPE_BLOB = 4,
-  COLUMN_TYPE_NULL = 5,
+enum class ColumnType {
+  kInteger = 1,
+  kFloat = 2,
+  kText = 3,
+  kBlob = 4,
+  kNull = 5,
 };
 
 // Normal usage:
@@ -56,7 +56,7 @@ class COMPONENT_EXPORT(SQL) Statement {
   // be valid. Use is_valid() to check if it's OK.
   void Assign(scoped_refptr<Database::StatementRef> ref);
 
-  // Resets the statement to an uninitialized state corrosponding to
+  // Resets the statement to an uninitialized state corresponding to
   // the default constructor, releasing the StatementRef.
   void Clear();
 
@@ -124,7 +124,7 @@ class COMPONENT_EXPORT(SQL) Statement {
   // "type conversion." This means requesting the value of a column of a type
   // where that type is not the native type. For safety, call ColumnType only
   // on a column before getting the value out in any way.
-  ColType ColumnType(int col) const;
+  ColumnType GetColumnType(int col) const;
 
   // These all take a 0-based argument index.
   bool ColumnBool(int col) const;

@@ -51,8 +51,8 @@ blink::mojom::ManifestManager& ManifestManagerHost::GetManifestManager() {
   if (!manifest_manager_) {
     manifest_manager_frame_ = web_contents()->GetMainFrame();
     manifest_manager_frame_->GetRemoteInterfaces()->GetInterface(
-        &manifest_manager_);
-    manifest_manager_.set_connection_error_handler(base::BindOnce(
+        manifest_manager_.BindNewPipeAndPassReceiver());
+    manifest_manager_.set_disconnect_handler(base::BindOnce(
         &ManifestManagerHost::OnConnectionError, base::Unretained(this)));
   }
   return *manifest_manager_;

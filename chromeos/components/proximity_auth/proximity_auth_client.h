@@ -22,9 +22,6 @@ class ProximityAuthClient {
  public:
   virtual ~ProximityAuthClient() {}
 
-  // Returns the authenticated username.
-  virtual std::string GetAuthenticatedUsername() const = 0;
-
   // Updates the user pod on the signin or lock screen to reflect the provided
   // screenlock state.
   virtual void UpdateScreenlockState(ScreenlockState state) = 0;

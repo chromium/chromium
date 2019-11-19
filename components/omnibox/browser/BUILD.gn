@@ -7,6 +7,7 @@ import("//build/config/jumbo.gni")
 import("//build/config/ui.gni")
 import("//components/vector_icons/vector_icons.gni")
 import("//device/vr/buildflags/buildflags.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 if (is_android) {
@@ -22,16 +23,19 @@ aggregate_vector_icons("omnibox_vector_icons") {
   icon_directory = "vector_icons"
 
   icons = [
+    "answer_calculator.icon",
     "answer_currency.icon",
     "answer_default.icon",
     "answer_dictionary.icon",
     "answer_finance.icon",
     "answer_sunrise.icon",
+    "answer_translation.icon",
     "answer_when_is.icon",
     "blank.icon",
     "bookmark.icon",
     "calculator.icon",
     "clear.icon",
+    "clock.icon",
     "drive_docs.icon",
     "drive_forms.icon",
     "drive_image.icon",
@@ -43,12 +47,11 @@ aggregate_vector_icons("omnibox_vector_icons") {
     "extension_app.icon",
     "find_in_page.icon",
     "http.icon",
-    "https_invalid.icon",
     "https_valid.icon",
     "https_valid_in_chip.icon",
     "keyword_search.icon",
+    "not_secure_warning.icon",
     "offline_pin.icon",
-    "open_in_new.icon",
     "page.icon",
     "pedal.icon",
     "plus.icon",
@@ -83,12 +86,16 @@ jumbo_static_library("browser") {
     "autocomplete_input.h",
     "autocomplete_match.cc",
     "autocomplete_match.h",
+    "autocomplete_match_classification.cc",
+    "autocomplete_match_classification.h",
     "autocomplete_match_type.cc",
     "autocomplete_match_type.h",
     "autocomplete_provider.cc",
     "autocomplete_provider.h",
     "autocomplete_provider_client.cc",
     "autocomplete_provider_client.h",
+    "autocomplete_provider_debouncer.cc",
+    "autocomplete_provider_debouncer.h",
     "autocomplete_result.cc",
     "autocomplete_result.h",
     "autocomplete_scheme_classifier.h",
@@ -100,8 +107,6 @@ jumbo_static_library("browser") {
     "builtin_provider.h",
     "clipboard_provider.cc",
     "clipboard_provider.h",
-    "contextual_suggestions_service.cc",
-    "contextual_suggestions_service.h",
     "document_provider.cc",
     "document_provider.h",
     "document_suggestions_service.cc",
@@ -124,6 +129,8 @@ jumbo_static_library("browser") {
     "keyword_extensions_delegate.h",
     "keyword_provider.cc",
     "keyword_provider.h",
+    "local_history_zero_suggest_provider.cc",
+    "local_history_zero_suggest_provider.h",
     "location_bar_model.h",
     "location_bar_model_delegate.cc",
     "location_bar_model_delegate.h",
@@ -151,6 +158,7 @@ jumbo_static_library("browser") {
     "omnibox_navigation_observer.h",
     "omnibox_pedal.cc",
     "omnibox_pedal.h",
+    "omnibox_pedal_concepts.h",
     "omnibox_pedal_implementations.cc",
     "omnibox_pedal_implementations.h",
     "omnibox_pedal_provider.cc",
@@ -162,8 +170,14 @@ jumbo_static_library("browser") {
     "omnibox_pref_names.h",
     "omnibox_view.cc",
     "omnibox_view.h",
+    "on_device_head_provider.cc",
+    "on_device_head_provider.h",
     "on_device_head_serving.cc",
     "on_device_head_serving.h",
+    "on_device_model_update_listener.cc",
+    "on_device_model_update_listener.h",
+    "remote_suggestions_service.cc",
+    "remote_suggestions_service.h",
     "scored_history_match.cc",
     "scored_history_match.h",
     "search_provider.cc",
@@ -198,8 +212,10 @@ jumbo_static_library("browser") {
 
   public_deps = [
     "//base",
+    "//base:i18n",
     "//components/history/core/browser",
     "//components/omnibox/common",
+    "//components/omnibox/resources:omnibox_resources",
     "//components/security_state/core",
     "//third_party/metrics_proto",
     "//url",
@@ -207,9 +223,8 @@ jumbo_static_library("browser") {
   deps = [
     ":buildflags",
     ":in_memory_url_index_cache_proto",
-    "//base:i18n",
     "//components/bookmarks/browser",
-    "//components/data_use_measurement/core",
+    "//components/component_updater",
     "//components/favicon/core",
     "//components/favicon_base",
     "//components/keyed_service/core",
@@ -223,6 +238,7 @@ jumbo_static_library("browser") {
     "//components/search",
     "//components/search_engines",
     "//components/sessions",
+    "//components/signin/public/identity_manager",
     "//components/strings",
     "//components/sync",
     "//components/url_formatter",
@@ -230,7 +246,6 @@ jumbo_static_library("browser") {
     "//components/variations/net",
     "//extensions/common:common_constants",
     "//net",
-    "//services/identity/public/cpp",
     "//skia",
     "//sql",
     "//third_party/protobuf:protobuf_lite",
@@ -260,7 +275,7 @@ if (is_android) {
 
     deps = [
       "//base:base_java",
-      "//third_party/android_deps:android_support_compat_java",
+      "//third_party/android_deps:com_android_support_support_compat_java",
     ]
 
     srcjar_deps = [ ":browser_java_enums_srcjar" ]
@@ -278,7 +293,6 @@ if (is_android) {
     sources = [
       "android/java/src/org/chromium/components/omnibox/SuggestionAnswer.java",
     ]
-    jni_package = "components/omnibox/browser"
   }
 }
 
@@ -352,9 +366,10 @@ bundle_data("unit_tests_bundle_data") {
   sources = [
     "//components/test/data/omnibox/Shortcuts.no_fill_into_edit.sql",
     "//components/test/data/omnibox/Shortcuts.v0.sql",
+    "//components/test/data/omnibox/Shortcuts.v1.sql",
     "//components/test/data/omnibox/in_memory_url_index_test.sql",
     "//components/test/data/omnibox/in_memory_url_index_test_limited.sql",
-    "//components/test/data/omnibox/on_device_head_test_model.bin",
+    "//components/test/data/omnibox/on_device_head_test_model_index.bin",
   ]
   outputs = [
     "{{bundle_resources_dir}}/" +
@@ -375,8 +390,8 @@ source_set("unit_tests") {
     "bookmark_provider_unittest.cc",
     "builtin_provider_unittest.cc",
     "clipboard_provider_unittest.cc",
-    "contextual_suggestions_service_unittest.cc",
     "document_provider_unittest.cc",
+    "document_suggestions_service_unittest.cc",
     "favicon_cache_unittest.cc",
     "history_provider_unittest.cc",
     "history_quick_provider_unittest.cc",
@@ -384,6 +399,7 @@ source_set("unit_tests") {
     "in_memory_url_index_types_unittest.cc",
     "in_memory_url_index_unittest.cc",
     "keyword_provider_unittest.cc",
+    "local_history_zero_suggest_provider_unittest.cc",
     "location_bar_model_impl_unittest.cc",
     "omnibox_controller_unittest.cc",
     "omnibox_edit_model_unittest.cc",
@@ -393,7 +409,9 @@ source_set("unit_tests") {
     "omnibox_pedal_unittest.cc",
     "omnibox_popup_model_unittest.cc",
     "omnibox_view_unittest.cc",
+    "on_device_head_provider_unittest.cc",
     "on_device_head_serving_unittest.cc",
+    "remote_suggestions_service_unittest.cc",
     "scored_history_match_unittest.cc",
     "search_suggestion_parser_unittest.cc",
     "shortcuts_backend_unittest.cc",
@@ -420,10 +438,14 @@ source_set("unit_tests") {
     "//components/prefs:test_support",
     "//components/search",
     "//components/search_engines",
+    "//components/search_engines:test_support",
     "//components/sessions",
+    "//components/signin/public/identity_manager:test_support",
     "//components/strings",
+    "//components/sync_preferences:test_support",
     "//components/url_formatter",
     "//components/variations",
+    "//components/variations/net:net",
     "//services/network:test_support",
     "//sql",
     "//sql:test_support",
@@ -432,5 +454,42 @@ source_set("unit_tests") {
     "//ui/base:test_support",
     "//ui/gfx:test_support",
     "//url",
+  ]
+}
+
+fuzzer_test("autocomplete_input_fuzzer") {
+  sources = [
+    "autocomplete_input_fuzzer.cc",
+  ]
+  deps = [
+    ":browser",
+    ":test_support",
+    "//base",
+    "//base:i18n",
+    "//third_party/metrics_proto:metrics_proto",
+  ]
+}
+
+fuzzer_test("omnibox_view_fuzzer") {
+  sources = [
+    "omnibox_view_fuzzer.cc",
+  ]
+  deps = [
+    ":browser",
+    "//base",
+  ]
+}
+
+fuzzer_test("search_suggestion_parser_fuzzer") {
+  sources = [
+    "search_suggestion_parser_fuzzer.cc",
+  ]
+  deps = [
+    ":browser",
+    ":test_support",
+    "//base",
+    "//base:i18n",
+    "//third_party/icu:icui18n",
+    "//third_party/metrics_proto:metrics_proto",
   ]
 }

@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.media;
 
-import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.PictureInPictureParams;
 import android.content.pm.ActivityInfo;
@@ -12,22 +12,24 @@ import android.content.pm.PackageManager;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.SystemClock;
-import android.support.annotation.Nullable;
 import android.text.format.DateUtils;
 import android.util.Rational;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
+import org.chromium.base.annotations.VerifiesOnO;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.ChromeActivity;
 import org.chromium.chrome.browser.ChromeFeatureList;
 import org.chromium.chrome.browser.infobar.InfoBarContainer;
-import org.chromium.chrome.browser.rappor.RapporServiceBridge;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tabmodel.EmptyTabModelSelectorObserver;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.util.MathUtils;
 import org.chromium.content_public.browser.WebContents;
@@ -39,13 +41,15 @@ import java.util.List;
 
 /**
  * A controller for entering Android O Picture in Picture mode with fullscreen videos.
+ *
+ * Do not inline to prevent class verification errors on pre-O runtimes.
  */
-@SuppressLint({"NewApi"})
+@VerifiesOnO
+@TargetApi(Build.VERSION_CODES.O)
 public class PictureInPictureController {
     private static final String TAG = "VideoPersist";
 
     // Metrics
-    private static final String METRICS_URL = "Media.VideoPersistence.TopFrame";
     private static final String METRICS_DURATION = "Media.VideoPersistence.Duration";
 
     private static final String METRICS_ATTEMPT_RESULT = "Media.VideoPersistence.AttemptResult";
@@ -205,23 +209,22 @@ public class PictureInPictureController {
         // Setup observers to dismiss the Activity on events that should end PiP.
         final Tab activityTab = activity.getActivityTab();
 
-        RapporServiceBridge.sampleDomainAndRegistryFromURL(METRICS_URL, activityTab.getUrl());
-
         final TabObserver tabObserver = new DismissActivityOnTabEventObserver(activity);
         final TabModelSelectorObserver tabModelSelectorObserver =
                 new DismissActivityOnTabModelSelectorEventObserver(activity);
         final WebContentsObserver webContentsObserver =
                 new DismissActivityOnWebContentsObserver(activity);
+        final TabModelSelector tabModelSelector = TabModelSelector.from(activityTab);
 
         activityTab.addObserver(tabObserver);
-        activityTab.getTabModelSelector().addObserver(tabModelSelectorObserver);
+        tabModelSelector.addObserver(tabModelSelectorObserver);
         webContents.addObserver(webContentsObserver);
 
         mOnLeavePipCallbacks.add(new Callback<ChromeActivity>() {
             @Override
             public void onResult(ChromeActivity activity2) {
                 activityTab.removeObserver(tabObserver);
-                activityTab.getTabModelSelector().removeObserver(tabModelSelectorObserver);
+                tabModelSelector.removeObserver(tabModelSelectorObserver);
                 webContents.removeObserver(webContentsObserver);
             }
         });

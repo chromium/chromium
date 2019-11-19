@@ -1,0 +1,4 @@
+file://content/browser/sms/OWNERS
+
+# COMPONENT: Blink>SMS
+# TEAM: fugu-dev@chromium.org

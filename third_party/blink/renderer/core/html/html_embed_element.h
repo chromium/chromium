@@ -33,11 +33,7 @@ class CORE_EXPORT HTMLEmbedElement final : public HTMLPlugInElement {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static HTMLEmbedElement* Create(
-      Document&,
-      const CreateElementFlags = CreateElementFlags());
-
-  HTMLEmbedElement(Document&, const CreateElementFlags);
+  HTMLEmbedElement(Document&, const CreateElementFlags = CreateElementFlags());
 
   // Returns attributes that should be checked against Trusted Types
   const AttrNameToTrustedType& GetCheckedAttributeTypes() const override;

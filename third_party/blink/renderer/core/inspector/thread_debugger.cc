@@ -29,7 +29,6 @@
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
-#include "third_party/blink/renderer/platform/wtf/time.h"
 
 namespace blink {
 
@@ -135,9 +134,9 @@ unsigned ThreadDebugger::PromiseRejected(
   else if (message.StartsWith("Uncaught "))
     message = message.Substring(0, 8) + " (in promise)" + message.Substring(8);
 
-  ReportConsoleMessage(ToExecutionContext(context), kJSMessageSource,
-                       mojom::ConsoleMessageLevel::kError, message,
-                       location.get());
+  ReportConsoleMessage(
+      ToExecutionContext(context), mojom::ConsoleMessageSource::kJavaScript,
+      mojom::ConsoleMessageLevel::kError, message, location.get());
   String url = location->Url();
   return GetV8Inspector()->exceptionThrown(
       context, ToV8InspectorStringView(default_message), exception,
@@ -190,7 +189,7 @@ bool ThreadDebugger::formatAccessorsAsProperties(v8::Local<v8::Value> value) {
 }
 
 double ThreadDebugger::currentTimeMS() {
-  return WTF::CurrentTimeMS();
+  return base::Time::Now().ToDoubleT() * 1000.0;
 }
 
 bool ThreadDebugger::isInspectableHeapObject(v8::Local<v8::Object> object) {
@@ -460,14 +459,14 @@ void ThreadDebugger::consoleTime(const v8_inspector::StringView& title) {
   // TODO(dgozman): we can save on a copy here if trace macro would take a
   // pointer with length.
   TRACE_EVENT_COPY_ASYNC_BEGIN0("blink.console",
-                                ToCoreString(title).Utf8().data(), this);
+                                ToCoreString(title).Utf8().c_str(), this);
 }
 
 void ThreadDebugger::consoleTimeEnd(const v8_inspector::StringView& title) {
   // TODO(dgozman): we can save on a copy here if trace macro would take a
   // pointer with length.
   TRACE_EVENT_COPY_ASYNC_END0("blink.console",
-                              ToCoreString(title).Utf8().data(), this);
+                              ToCoreString(title).Utf8().c_str(), this);
 }
 
 void ThreadDebugger::consoleTimeStamp(const v8_inspector::StringView& title) {
@@ -493,7 +492,7 @@ void ThreadDebugger::startRepeatingTimer(
           &ThreadDebugger::OnTimer);
   TaskRunnerTimer<ThreadDebugger>* timer_ptr = timer.get();
   timers_.push_back(std::move(timer));
-  timer_ptr->StartRepeating(TimeDelta::FromSecondsD(interval), FROM_HERE);
+  timer_ptr->StartRepeating(base::TimeDelta::FromSecondsD(interval), FROM_HERE);
 }
 
 void ThreadDebugger::cancelTimer(void* data) {

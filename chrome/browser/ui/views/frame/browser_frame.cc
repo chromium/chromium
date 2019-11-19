@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/views/frame/native_browser_frame_factory.h"
 #include "chrome/browser/ui/views/frame/system_menu_model_builder.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/common/chrome_switches.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/material_design/material_design_controller.h"
@@ -36,10 +37,6 @@
 
 #if defined(OS_CHROMEOS)
 #include "components/user_manager/user_manager.h"
-#endif
-
-#if defined(OS_LINUX)
-#include "chrome/browser/ui/views/frame/browser_command_handler_linux.h"
 #endif
 
 #if defined(USE_X11)
@@ -81,9 +78,14 @@ void BrowserFrame::InitBrowserFrame() {
   views::Widget::InitParams params = native_browser_frame_->GetWidgetParams();
   params.name = "BrowserFrame";
   params.delegate = browser_view_;
-  if (browser_view_->browser()->is_type_tabbed()) {
+  if (browser_view_->browser()->is_type_normal() ||
+      browser_view_->browser()->is_type_devtools()) {
     // Typed panel/popup can only return a size once the widget has been
     // created.
+    // DevTools counts as a popup, but DevToolsWindow::CreateDevToolsBrowser
+    // ensures there is always a size available. Without this, the tools
+    // launch on the wrong display and can have sizing issues when
+    // repositioned to the saved bounds in Widget::SetInitialBounds.
     chrome::GetSavedWindowBoundsAndShowState(browser_view_->browser(),
                                              &params.bounds,
                                              &params.show_state);
@@ -98,27 +100,24 @@ void BrowserFrame::InitBrowserFrame() {
     }
   }
 
-  Init(params);
+  Init(std::move(params));
 
   if (!native_browser_frame_->UsesNativeSystemMenu()) {
     DCHECK(non_client_view());
     non_client_view()->set_context_menu_controller(this);
   }
-
-#if defined(OS_LINUX)
-  browser_command_handler_.reset(new BrowserCommandHandlerLinux(browser_view_));
-#endif
 }
 
 int BrowserFrame::GetMinimizeButtonOffset() const {
   return native_browser_frame_->GetMinimizeButtonOffset();
 }
 
-gfx::Rect BrowserFrame::GetBoundsForTabStrip(
+gfx::Rect BrowserFrame::GetBoundsForTabStripRegion(
     const views::View* tabstrip) const {
   // This can be invoked before |browser_frame_view_| has been set.
-  return browser_frame_view_ ?
-      browser_frame_view_->GetBoundsForTabStrip(tabstrip) : gfx::Rect();
+  return browser_frame_view_
+             ? browser_frame_view_->GetBoundsForTabStripRegion(tabstrip)
+             : gfx::Rect();
 }
 
 int BrowserFrame::GetTopInset() const {
@@ -165,16 +164,18 @@ void BrowserFrame::OnBrowserViewInitViewsComplete() {
 }
 
 bool BrowserFrame::ShouldUseTheme() const {
-  // Main browser windows are always themed.
-  if (browser_view_->IsBrowserTypeNormal())
+  // Browser windows are always themed (including popups).
+  if (!web_app::AppBrowserController::IsForWebAppBrowser(
+          browser_view_->browser())) {
     return true;
+  }
 
   // The system GTK theme should always be respected if the user has opted to
   // use it.
   if (IsUsingGtkTheme(browser_view_->browser()->profile()))
     return true;
 
-  // Other window types (popups, hosted apps) on non-GTK use the default theme.
+  // Hosted apps on non-GTK use default colors.
   return false;
 }
 
@@ -206,14 +207,11 @@ const ui::ThemeProvider* BrowserFrame::GetThemeProvider() const {
 }
 
 const ui::NativeTheme* BrowserFrame::GetNativeTheme() const {
-#if defined(OS_WIN) || defined(OS_MACOSX) || defined(OS_CHROMEOS)
-  if (browser_view_->browser()->profile()->GetProfileType() ==
-          Profile::INCOGNITO_PROFILE &&
+  if (browser_view_->browser()->profile()->IsIncognitoProfile() &&
       ThemeServiceFactory::GetForProfile(browser_view_->browser()->profile())
           ->UsingDefaultTheme()) {
     return ui::NativeThemeDarkAura::instance();
   }
-#endif
   return views::Widget::GetNativeTheme();
 }
 
@@ -226,14 +224,16 @@ void BrowserFrame::OnNativeWidgetWorkspaceChanged() {
   Widget::OnNativeWidgetWorkspaceChanged();
 }
 
-void BrowserFrame::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
-  views::Widget::OnNativeThemeUpdated(observed_theme);
-  browser_view_->NativeThemeUpdated(observed_theme);
+void BrowserFrame::PropagateNativeThemeChanged() {
+  // Instead of immediately propagating the native theme change to the root
+  // view, use BrowserView's custom handling, which may regenerate the frame
+  // first, then propgate the theme change to the root view automatically.
+  browser_view_->UserChangedTheme(BrowserThemeChangeType::kNativeTheme);
 }
 
-void BrowserFrame::ShowContextMenuForView(views::View* source,
-                                          const gfx::Point& p,
-                                          ui::MenuSourceType source_type) {
+void BrowserFrame::ShowContextMenuForViewImpl(views::View* source,
+                                              const gfx::Point& p,
+                                              ui::MenuSourceType source_type) {
   if (chrome::IsRunningInForcedAppMode())
     return;
 
@@ -245,13 +245,14 @@ void BrowserFrame::ShowContextMenuForView(views::View* source,
   views::View::ConvertPointFromScreen(non_client_view(), &point_in_view_coords);
   int hit_test = non_client_view()->NonClientHitTest(point_in_view_coords);
   if (hit_test == HTCAPTION || hit_test == HTNOWHERE) {
-    menu_runner_.reset(new views::MenuRunner(
+    menu_runner_ = std::make_unique<views::MenuRunner>(
         GetSystemMenuModel(),
         views::MenuRunner::HAS_MNEMONICS | views::MenuRunner::CONTEXT_MENU,
-        base::Bind(&BrowserFrame::OnMenuClosed, base::Unretained(this))));
+        base::BindRepeating(&BrowserFrame::OnMenuClosed,
+                            base::Unretained(this)));
     menu_runner_->RunMenuAt(source->GetWidget(), nullptr,
                             gfx::Rect(p, gfx::Size(0, 0)),
-                            views::MENU_ANCHOR_TOPLEFT, source_type);
+                            views::MenuAnchorPosition::kTopLeft, source_type);
   }
 }
 

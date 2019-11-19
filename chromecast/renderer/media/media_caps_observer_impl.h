@@ -10,7 +10,8 @@
 #include "base/macros.h"
 #include "chromecast/common/mojom/media_caps.mojom.h"
 #include "chromecast/media/base/supported_codec_profile_levels_memo.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace chromecast {
@@ -18,7 +19,7 @@ namespace media {
 
 class MediaCapsObserverImpl : public mojom::MediaCapsObserver {
  public:
-  MediaCapsObserverImpl(mojom::MediaCapsObserverPtr* proxy,
+  MediaCapsObserverImpl(mojo::PendingRemote<mojom::MediaCapsObserver>* proxy,
                         SupportedCodecProfileLevelsMemo* supported_profiles);
   ~MediaCapsObserverImpl() override;
 
@@ -34,8 +35,8 @@ class MediaCapsObserverImpl : public mojom::MediaCapsObserver {
   void AddSupportedCodecProfileLevel(
       mojom::CodecProfileLevelPtr codec_profile_level) override;
 
-  std::unique_ptr<SupportedCodecProfileLevelsMemo> supported_profiles_;
-  mojo::Binding<mojom::MediaCapsObserver> binding_;
+  SupportedCodecProfileLevelsMemo* supported_profiles_;
+  mojo::Receiver<mojom::MediaCapsObserver> receiver_;
 
   DISALLOW_COPY_AND_ASSIGN(MediaCapsObserverImpl);
 };

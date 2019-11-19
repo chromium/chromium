@@ -6,15 +6,14 @@
 #define UI_OZONE_PLATFORM_DRM_GPU_DRM_GPU_DISPLAY_MANAGER_H_
 
 #include <stdint.h>
-
 #include <memory>
 #include <vector>
 
+#include "base/callback.h"
 #include "base/macros.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/ozone/common/gpu/ozone_gpu_message_params.h"
 #include "ui/ozone/platform/drm/common/display_types.h"
-#include "ui/ozone/platform/drm/common/drm_util.h"
 
 namespace display {
 class DisplayMode;
@@ -31,11 +30,11 @@ class DrmGpuDisplayManager {
  public:
   DrmGpuDisplayManager(ScreenManager* screen_manager,
                        DrmDeviceManager* drm_device_manager);
-  virtual ~DrmGpuDisplayManager();
+  ~DrmGpuDisplayManager();
 
-  const HardwareDisplayControllerInfos& hardware_infos_for_test() const {
-    return hardware_infos_;
-  }
+  // Sets a callback that will be notified when display configuration may have
+  // changed to clear the overlay configuration cache.
+  void SetClearOverlayCacheCallback(base::RepeatingClosure callback);
 
   // Returns a list of the connected displays. When this is called the list of
   // displays is refreshed.
@@ -60,34 +59,21 @@ class DrmGpuDisplayManager {
       const std::vector<display::GammaRampRGBEntry>& degamma_lut,
       const std::vector<display::GammaRampRGBEntry>& gamma_lut);
 
- protected:
-  // Virtual for testing.
-  virtual HardwareDisplayControllerInfos QueryAvailableDisplayControllerInfos(
-      int fd,
-      bool* support_all_displays) const;
-
-  // Virtual for testing.
-  virtual MovableDisplaySnapshots GenerateParamsList(
-      HardwareDisplayControllerInfos& display_infos,
-      size_t device_index);
-
-  // Notify ScreenManager of all the displays that were present before the
-  // update but are gone after the update.
-  // Virtual for testing.
-  virtual void NotifyScreenManager(
-      const std::vector<std::unique_ptr<DrmDisplay>>& new_displays,
-      const std::vector<std::unique_ptr<DrmDisplay>>& old_displays) const;
-
-  // List of available displays and their controller information. Only displays
-  // having associated crtc are included.
-  std::vector<std::unique_ptr<DrmDisplay>> displays_;
-  HardwareDisplayControllerInfos hardware_infos_;
-
  private:
   DrmDisplay* FindDisplay(int64_t display_id);
 
+  // Notify ScreenManager of all the displays that were present before the
+  // update but are gone after the update.
+  void NotifyScreenManager(
+      const std::vector<std::unique_ptr<DrmDisplay>>& new_displays,
+      const std::vector<std::unique_ptr<DrmDisplay>>& old_displays) const;
+
   ScreenManager* const screen_manager_;         // Not owned.
   DrmDeviceManager* const drm_device_manager_;  // Not owned.
+
+  std::vector<std::unique_ptr<DrmDisplay>> displays_;
+
+  base::RepeatingClosure clear_overlay_cache_callback_;
 
   DISALLOW_COPY_AND_ASSIGN(DrmGpuDisplayManager);
 };

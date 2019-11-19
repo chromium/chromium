@@ -7,6 +7,8 @@ import("//testing/libfuzzer/fuzzer_test.gni")
 component("cbor") {
   sources = [
     "constants.h",
+    "diagnostic_writer.cc",
+    "diagnostic_writer.h",
     "reader.cc",
     "reader.h",
     "values.cc",
@@ -25,6 +27,7 @@ component("cbor") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "diagnostic_writer_unittest.cc",
     "reader_unittest.cc",
     "values_unittest.cc",
     "writer_unittest.cc",

@@ -12,7 +12,7 @@
 #include "content/browser/background_fetch/background_fetch.pb.h"
 #include "content/browser/background_fetch/background_fetch_request_match_params.h"
 #include "content/browser/background_fetch/storage/database_task.h"
-#include "content/browser/cache_storage/cache_storage_cache_handle.h"
+#include "content/browser/cache_storage/cache_storage_cache.h"
 #include "storage/browser/blob/blob_data_handle.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 
@@ -42,10 +42,12 @@ class MatchRequestsTask : public DatabaseTask {
   void Start() override;
 
  private:
-  void DidOpenCache(CacheStorageCacheHandle handle,
+  void DidOpenCache(int64_t trace_id,
+                    CacheStorageCacheHandle handle,
                     blink::mojom::CacheStorageError error);
 
   void DidGetAllMatchedEntries(
+      int64_t trace_id,
       blink::mojom::CacheStorageError error,
       std::vector<CacheStorageCache::CacheEntry> entries);
 
@@ -63,13 +65,12 @@ class MatchRequestsTask : public DatabaseTask {
   CacheStorageCacheHandle handle_;
   std::vector<blink::mojom::BackgroundFetchSettledFetchPtr> settled_fetches_;
 
-  base::WeakPtrFactory<MatchRequestsTask> weak_factory_;  // Keep as last.
+  base::WeakPtrFactory<MatchRequestsTask> weak_factory_{this};  // Keep as last.
 
   DISALLOW_COPY_AND_ASSIGN(MatchRequestsTask);
 };
 
 }  // namespace background_fetch
-
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_BACKGROUND_FETCH_STORAGE_MATCH_REQUESTS_TASK_H_

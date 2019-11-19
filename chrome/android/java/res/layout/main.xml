@@ -3,7 +3,7 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
-<merge 
+<merge
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
@@ -13,10 +13,7 @@
         android:layout_height="match_parent"
         android:layout_weight="1" >
 
-        <org.chromium.chrome.browser.compositor.CompositorViewHolder
-            android:id="@+id/compositor_view_holder"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+       <include layout="@layout/compositor_view_holder"/>
 
        <FrameLayout
             android:id="@+id/overview_list_layout_holder"
@@ -33,14 +30,12 @@
         <ViewStub
             android:id="@+id/keyboard_accessory_stub"
             android:inflatedId="@+id/keyboard_accessory"
-            android:layout="@layout/keyboard_accessory"
             android:layout_height="@dimen/keyboard_accessory_height_with_shadow"
             android:layout_width="match_parent"
             android:layout_gravity="start|bottom"/>
 
         <ViewStub
             android:id="@+id/keyboard_accessory_sheet_stub"
-            android:layout="@layout/keyboard_accessory_sheet"
             android:layout_height="@dimen/keyboard_accessory_sheet_height"
             android:layout_width="match_parent"
             android:layout_gravity="start|bottom"/>
@@ -84,17 +79,24 @@
             android:visibility="gone" />
 
         <ViewStub
-            android:id="@+id/bottom_toolbar_stub"
+            android:id="@+id/bottom_controls_stub"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="start|bottom"
-            android:inflatedId="@+id/bottom_toolbar"
-            android:layout="@layout/bottom_toolbar" />
+            android:inflatedId="@+id/bottom_controls"
+            android:layout="@layout/bottom_control_container" />
 
         <ViewStub
             android:id="@+id/control_container_stub"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
+
+        <ViewStub
+            android:id="@+id/status_indicator_stub"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inflatedId="@+id/status_indicator"
+            android:layout="@layout/status_indicator_container" />
 
         <ViewStub
             android:id="@+id/empty_container_stub"

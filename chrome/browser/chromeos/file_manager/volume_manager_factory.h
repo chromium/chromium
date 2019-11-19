@@ -30,13 +30,11 @@ class VolumeManagerFactory : public BrowserContextKeyedServiceFactory {
   static VolumeManagerFactory* GetInstance();
 
  protected:
-  // BrowserContextKeyedBaseFactory overrides:
+  // BrowserContextKeyedServiceFactory overrides:
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
   bool ServiceIsCreatedWithBrowserContext() const override;
   bool ServiceIsNULLWhileTesting() const override;
-
-  // BrowserContextKeyedServiceFactory overrides:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
 

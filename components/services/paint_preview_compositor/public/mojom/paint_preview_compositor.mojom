@@ -1,0 +1,99 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module paint_preview.mojom;
+
+import "components/discardable_memory/public/mojom/discardable_shared_memory_manager.mojom";
+import "mojo/public/mojom/base/file.mojom";
+import "mojo/public/mojom/base/shared_memory.mojom";
+import "mojo/public/mojom/base/unguessable_token.mojom";
+import "skia/public/mojom/bitmap.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+import "url/mojom/url.mojom";
+
+// A request sent to the PaintPreviewCompositor to request deserialization.
+struct PaintPreviewBeginCompositeRequest {
+  // A serialized PaintPreviewProto.
+  mojo_base.mojom.ReadOnlySharedMemoryRegion proto;
+
+  // A mapping between frame GUIDs and file handles.
+  map<uint64, mojo_base.mojom.File> file_map;
+};
+
+// A struct representing the clip rect of a subframe within its parent.
+struct SubframeClipRect {
+  uint64 frame_guid;
+  gfx.mojom.Rect clip_rect;
+};
+
+// A struct representing the scroll extents and subframes of a parent frame.
+struct FrameData {
+  // The dimensions of the frame.
+  gfx.mojom.Size scroll_extents;
+
+  // This is not a map because a parent can, in theory, embed the same subframe
+  // multiple times.
+  array<SubframeClipRect> subframes;
+};
+
+// A response sent as a result of a begin composite request. It provides the
+// ID of the root frame (used for the primary UI) and the map can be used for
+// looking up the data associated with each frame.
+struct PaintPreviewBeginCompositeResponse {
+  uint64 root_frame_guid;
+  map<uint64, FrameData> frames;
+};
+
+// A compositor that converts a single paint preview into bitmaps.
+interface PaintPreviewCompositor {
+  // The status of the action requested of the compositor.
+  enum Status {
+    // The request succeeded.
+    kSuccess = 0,
+
+    // Indicates there was an issue deserializing the proto or root frame.
+    // Problematic subframes are omitted since compositing can occur without
+    // them.
+    kDeserializingFailure = 1,
+
+    // Indicates there was a failure to composite a bitmap for the requested
+    // frame. Either; 1. it failed to deserialize or 2. there was an issue with
+    // the parameters provided.
+    kCompositingFailure = 2,
+  };
+
+  // Starts the compositing process for |request|. On success returns
+  // |response| containing metadata required for UI. |status| will be non-zero
+  // on failure.
+  BeginComposite(PaintPreviewBeginCompositeRequest request) =>
+    (Status status, PaintPreviewBeginCompositeResponse? response);
+
+  // Requests a bitmap associated with |frame_guid| the dimensions and
+  // location of the bitmap will match |clip_rect| at scale |scale_factor|.
+  // Returns |bitmap| on success and will indicate failure via a non-zero
+  // |status|.
+  BitmapForFrame(uint64 frame_guid, gfx.mojom.Rect clip_rect,
+    float scale_factor) => (Status status, skia.mojom.Bitmap? bitmap);
+
+  // Sets the root frame of the compositor. Used for tracing and diagnostics.
+  SetRootFrameUrl(url.mojom.Url url);
+};
+
+// Holds a collection of PaintPreviewCompositor instances running in the same
+// process.
+interface PaintPreviewCompositorCollection {
+  // Provides an interface for managing discardable shared memory regions. Must
+  // be called before calling any methods on managed PaintPreviewCompositors.
+  SetDiscardableSharedMemoryManager(
+      pending_remote<discardable_memory.mojom.DiscardableSharedMemoryManager>
+          manager);
+
+  // Adds a PaintPreviewCompositor to the utility process. Returns an ID for
+  // the compositor.
+  CreateCompositor(pending_receiver<PaintPreviewCompositor> compositor)
+    => (mojo_base.mojom.UnguessableToken compositor_id);
+
+  // Returns a list of active compositor IDs.
+  ListCompositors() => (array<mojo_base.mojom.UnguessableToken> compositor_ids);
+};

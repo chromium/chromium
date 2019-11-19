@@ -27,31 +27,19 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_CREATE_WINDOW_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_CREATE_WINDOW_H_
 
-#include "third_party/blink/renderer/core/frame/local_dom_window.h"
-#include "third_party/blink/renderer/core/loader/frame_loader_types.h"
-#include "third_party/blink/renderer/core/loader/navigation_policy.h"
+#include "third_party/blink/public/web/web_window_features.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
-// To avoid conflicts with the CreateWindow macro from the Windows SDK...
-#undef CreateWindow
-
 namespace blink {
-class ExceptionState;
+class Frame;
 class LocalFrame;
 struct FrameLoadRequest;
-struct WebWindowFeatures;
 
-DOMWindow* CreateWindow(const String& url_string,
-                        const AtomicString& frame_name,
-                        const String& window_features_string,
-                        LocalDOMWindow& incumbent_window,
-                        LocalFrame& entered_window_frame,
-                        LocalFrame& opener_frame,
-                        ExceptionState&);
+Frame* CreateNewWindow(LocalFrame& opener_frame,
+                       FrameLoadRequest&,
+                       const AtomicString& name);
 
-void CreateWindowForRequest(const FrameLoadRequest&, LocalFrame& opener_frame);
-
-// Exposed for testing
 CORE_EXPORT WebWindowFeatures GetWindowFeaturesFromString(const String&);
 
 }  // namespace blink

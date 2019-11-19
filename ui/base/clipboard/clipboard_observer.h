@@ -17,7 +17,7 @@ class COMPONENT_EXPORT(BASE_CLIPBOARD) ClipboardObserver {
   virtual void OnClipboardDataChanged() = 0;
 
  protected:
-  virtual ~ClipboardObserver() {}
+  virtual ~ClipboardObserver() = default;
 };
 
 }  // namespace ui

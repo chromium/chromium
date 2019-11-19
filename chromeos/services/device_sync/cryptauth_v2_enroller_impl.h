@@ -72,7 +72,7 @@ class CryptAuthV2EnrollerImpl : public CryptAuthV2Enroller {
 
   static base::Optional<base::TimeDelta> GetTimeoutForState(State state);
   static base::Optional<CryptAuthEnrollmentResult::ResultCode>
-  ResultCodeErrorFromState(State state);
+  ResultCodeErrorFromTimeoutDuringState(State state);
 
   // CryptAuthV2Enroller:
   void OnAttemptStarted(
@@ -91,9 +91,10 @@ class CryptAuthV2EnrollerImpl : public CryptAuthV2Enroller {
                           std::unique_ptr<base::OneShotTimer> timer);
 
   void SetState(State state);
+  void OnTimeout();
 
   // Constructs a SyncKeysRequest with information about every key bundle
-  // contained in CryptAuthKeyBundle::AllNames().
+  // contained in CryptAuthKeyBundle::AllEnrollableNames().
   cryptauthv2::SyncKeysRequest BuildSyncKeysRequest(
       const cryptauthv2::ClientMetadata& client_metadata,
       const cryptauthv2::ClientAppMetadata& client_app_metadata,
@@ -119,6 +120,17 @@ class CryptAuthV2EnrollerImpl : public CryptAuthV2Enroller {
                      CryptAuthKeyCreator::CreateKeyData>* new_keys_to_create,
       base::flat_map<CryptAuthKeyBundle::Name, cryptauthv2::KeyDirective>*
           new_key_directives);
+
+  // A function to help ProcessSingleKeyResponse() handle the key-creation
+  // instructions.
+  base::Optional<CryptAuthEnrollmentResult::ResultCode>
+  ProcessKeyCreationInstructions(
+      const CryptAuthKeyBundle::Name& bundle_name,
+      const cryptauthv2::SyncKeysResponse::SyncSingleKeyResponse&
+          single_key_response,
+      const std::string& server_ephemeral_dh,
+      base::Optional<CryptAuthKeyCreator::CreateKeyData>* new_key_to_create,
+      base::Optional<cryptauthv2::KeyDirective>* new_key_directive);
 
   void OnSyncKeysFailure(NetworkRequestError error);
 
@@ -146,6 +158,9 @@ class CryptAuthV2EnrollerImpl : public CryptAuthV2Enroller {
   std::unique_ptr<base::OneShotTimer> timer_;
 
   State state_ = State::kNotStarted;
+
+  // The time of the last state change. Used for execution time metrics.
+  base::TimeTicks last_state_change_timestamp_;
 
   // The new ClientDirective from SyncKeysResponse. This value is stored in the
   // CryptAuthEnrollmentResult which is passed to the

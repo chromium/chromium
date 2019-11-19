@@ -74,7 +74,7 @@ class NET_EXPORT CRLSet : public base::RefCountedThreadSafe<CRLSet> {
 
   // BuiltinCRLSet() returns the default CRLSet, to be used when no CRLSet is
   // available from the network.  The default CRLSet includes a statically-
-  // configured blacklist.
+  // configured block list.
   static scoped_refptr<CRLSet> BuiltinCRLSet();
 
   // EmptyCRLSetForTesting returns a valid, but empty, CRLSet for unit tests.

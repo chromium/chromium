@@ -9,9 +9,9 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/message_loop/message_loop.h"
 #include "base/process/process.h"
 #include "base/test/multiprocess_test.h"
+#include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "ipc/ipc_channel.h"
 #include "ipc/ipc_channel_factory.h"
@@ -75,7 +75,8 @@ class IpcChannelMojoTestClient {
   IPC::Channel* channel() const { return channel_.get(); }
 
  private:
-  base::MessageLoopForIO main_message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
   mojo::ScopedMessagePipeHandle handle_;
   std::unique_ptr<IPC::Channel> channel_;
 };

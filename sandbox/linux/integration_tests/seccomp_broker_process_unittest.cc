@@ -49,7 +49,7 @@ class InitializedOpenBroker {
         syscall_broker::BrokerFilePermission::ReadOnly("/proc/cpuinfo")};
     broker_process_ = std::make_unique<syscall_broker::BrokerProcess>(
         EPERM, command_set, permissions);
-    BPF_ASSERT(broker_process_->Init(base::Bind([]() { return true; })));
+    BPF_ASSERT(broker_process_->Init(base::BindOnce([]() { return true; })));
     initialized_ = true;
   }
 

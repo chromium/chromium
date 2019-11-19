@@ -21,10 +21,10 @@ SharedBitmapIdRegistration::~SharedBitmapIdRegistration() {
 }
 
 SharedBitmapIdRegistration::SharedBitmapIdRegistration(
-    SharedBitmapIdRegistration&&) = default;
+    SharedBitmapIdRegistration&&) noexcept = default;
 
 SharedBitmapIdRegistration& SharedBitmapIdRegistration::operator=(
-    SharedBitmapIdRegistration&& other) {
+    SharedBitmapIdRegistration&& other) noexcept {
   if (layer_ptr_)
     layer_ptr_->UnregisterSharedBitmapId(id_);
   layer_ptr_ = std::move(other.layer_ptr_);

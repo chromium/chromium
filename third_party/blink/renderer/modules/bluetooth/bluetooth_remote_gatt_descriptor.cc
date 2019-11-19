@@ -4,13 +4,15 @@
 
 #include "third_party/blink/renderer/modules/bluetooth/bluetooth_remote_gatt_descriptor.h"
 
-#include <memory>
+#include <utility>
+
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/modules/bluetooth/bluetooth_error.h"
 #include "third_party/blink/renderer/modules/bluetooth/bluetooth_remote_gatt_service.h"
 #include "third_party/blink/renderer/modules/bluetooth/bluetooth_remote_gatt_utils.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
@@ -69,7 +71,7 @@ ScriptPromise BluetoothRemoteGATTDescriptor::readValue(
         script_state, CreateInvalidDescriptorError());
   }
 
-  ScriptPromiseResolver* resolver = ScriptPromiseResolver::Create(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
   GetGatt()->AddToActiveAlgorithms(resolver);
   GetService()->RemoteDescriptorReadValue(
@@ -118,6 +120,13 @@ ScriptPromise BluetoothRemoteGATTDescriptor::writeValue(
         script_state, CreateInvalidDescriptorError());
   }
 
+  if (value.IsDetached()) {
+    return ScriptPromise::RejectWithDOMException(
+        script_state,
+        MakeGarbageCollected<DOMException>(DOMExceptionCode::kInvalidStateError,
+                                           "Value buffer has been detached."));
+  }
+
   // Partial implementation of writeValue algorithm:
   // https://webbluetoothcg.github.io/web-bluetooth/#dom-bluetoothremotegattdescriptor-writevalue
 
@@ -126,16 +135,16 @@ ScriptPromise BluetoothRemoteGATTDescriptor::writeValue(
   // InvalidModificationError and abort.
   if (value.ByteLength() > 512) {
     return ScriptPromise::RejectWithDOMException(
-        script_state,
-        DOMException::Create(DOMExceptionCode::kInvalidModificationError,
-                             "Value can't exceed 512 bytes."));
+        script_state, MakeGarbageCollected<DOMException>(
+                          DOMExceptionCode::kInvalidModificationError,
+                          "Value can't exceed 512 bytes."));
   }
 
   // Let valueVector be a copy of the bytes held by value.
   Vector<uint8_t> value_vector;
   value_vector.Append(value.Bytes(), value.ByteLength());
 
-  ScriptPromiseResolver* resolver = ScriptPromiseResolver::Create(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
   GetGatt()->AddToActiveAlgorithms(resolver);
   GetService()->RemoteDescriptorWriteValue(

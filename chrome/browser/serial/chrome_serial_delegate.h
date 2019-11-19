@@ -19,6 +19,7 @@ class ChromeSerialDelegate : public content::SerialDelegate {
       content::RenderFrameHost* frame,
       std::vector<blink::mojom::SerialPortFilterPtr> filters,
       content::SerialChooser::Callback callback) override;
+  bool CanRequestPortPermission(content::RenderFrameHost* frame) override;
   bool HasPortPermission(content::RenderFrameHost* frame,
                          const device::mojom::SerialPortInfo& port) override;
   device::mojom::SerialPortManager* GetPortManager(

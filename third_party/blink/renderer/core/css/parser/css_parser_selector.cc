@@ -97,7 +97,8 @@ std::unique_ptr<CSSParserSelector> CSSParserSelector::ReleaseTagHistory() {
 
 void CSSParserSelector::PrependTagSelector(const QualifiedName& tag_q_name,
                                            bool is_implicit) {
-  std::unique_ptr<CSSParserSelector> second = CSSParserSelector::Create();
+  std::unique_ptr<CSSParserSelector> second =
+      std::make_unique<CSSParserSelector>();
   second->selector_ = std::move(selector_);
   second->tag_history_ = std::move(tag_history_);
   tag_history_ = std::move(second);

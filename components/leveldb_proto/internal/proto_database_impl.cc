@@ -11,14 +11,6 @@
 
 namespace leveldb_proto {
 
-void GetSharedDBInstance(
-    ProtoDatabaseProvider* db_provider,
-    base::OnceCallback<void(scoped_refptr<SharedProtoDatabase>)> callback) {
-  DCHECK(base::SequencedTaskRunnerHandle::IsSet());
-  db_provider->GetSharedDBInstance(std::move(callback),
-                                   base::SequencedTaskRunnerHandle::Get());
-}
-
 void RunUpdateCallback(
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
     Callbacks::UpdateCallback callback,

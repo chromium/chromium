@@ -32,7 +32,7 @@ class MODULES_EXPORT AnimationAndPaintWorkletThread final
   void ClearWorkerBackingThread() override {}
 
   // This may block the main thread.
-  static void CollectAllGarbage();
+  static void CollectAllGarbageForTesting();
 
   static WorkletThreadHolder<AnimationAndPaintWorkletThread>*
   GetWorkletThreadHolderForTesting();
@@ -50,8 +50,8 @@ class MODULES_EXPORT AnimationAndPaintWorkletThread final
 
   bool IsOwningBackingThread() const override { return false; }
 
-  WebThreadType GetThreadType() const override {
-    return WebThreadType::kAnimationAndPaintWorkletThread;
+  ThreadType GetThreadType() const override {
+    return ThreadType::kAnimationAndPaintWorkletThread;
   }
 
   void EnsureSharedBackingThread();

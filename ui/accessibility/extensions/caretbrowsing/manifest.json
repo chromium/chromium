@@ -1,6 +1,6 @@
 {
   "name": "__MSG_CARET_BROWSING_APPNAME__",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "__MSG_CARET_BROWSING_APPDESC__",
   "manifest_version": 2,
   "permissions": [

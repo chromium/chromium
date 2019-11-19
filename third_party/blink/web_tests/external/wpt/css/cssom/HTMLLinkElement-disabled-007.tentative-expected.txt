@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL HTMLLinkElement.disabled setter sets the explicitly enabled state if toggled back and forth. assert_equals: expected "rgb(0, 128, 0)" but got "rgba(0, 0, 0, 0)"
+Harness: the test ran to completion.
+

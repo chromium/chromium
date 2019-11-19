@@ -5,15 +5,14 @@
 #include "chrome/browser/chromeos/policy/login_policy_test_base.h"
 
 #include "base/values.h"
-#include "chrome/browser/chrome_notification_types.h"
-#include "chrome/browser/chromeos/login/screens/gaia_view.h"
+#include "chrome/browser/chromeos/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/chromeos/login/ui/login_display_host.h"
 #include "chrome/browser/chromeos/login/ui/login_display_webui.h"
 #include "chrome/browser/chromeos/login/wizard_controller.h"
 #include "chrome/browser/chromeos/policy/user_policy_test_helper.h"
+#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/signin_screen_handler.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/test/test_utils.h"
 #include "google_apis/gaia/fake_gaia.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -43,19 +42,15 @@ LoginPolicyTestBase::LoginPolicyTestBase() {
 
 LoginPolicyTestBase::~LoginPolicyTestBase() = default;
 
-void LoginPolicyTestBase::SetUp() {
+void LoginPolicyTestBase::SetUpInProcessBrowserTestFixture() {
+  OobeBaseTest::SetUpInProcessBrowserTestFixture();
   base::DictionaryValue mandatory;
   GetMandatoryPoliciesValue(&mandatory);
   base::DictionaryValue recommended;
   GetRecommendedPoliciesValue(&recommended);
-  user_policy_helper_.reset(new UserPolicyTestHelper(GetAccount()));
-  user_policy_helper_->Init(mandatory, recommended);
-  OobeBaseTest::SetUp();
-}
-
-void LoginPolicyTestBase::SetUpCommandLine(base::CommandLine* command_line) {
-  user_policy_helper_->UpdateCommandLine(command_line);
-  OobeBaseTest::SetUpCommandLine(command_line);
+  user_policy_helper_.reset(
+      new UserPolicyTestHelper(GetAccount(), &local_policy_server_));
+  user_policy_helper_->SetPolicy(mandatory, recommended);
 }
 
 void LoginPolicyTestBase::SetUpOnMainThread() {
@@ -74,6 +69,15 @@ std::string LoginPolicyTestBase::GetAccount() const {
 
 std::string LoginPolicyTestBase::GetIdToken() const {
   return std::string();
+}
+
+Profile* LoginPolicyTestBase::GetProfileForActiveUser() {
+  const user_manager::User* const user =
+      user_manager::UserManager::Get()->GetActiveUser();
+
+  EXPECT_NE(user, nullptr);
+
+  return chromeos::ProfileHelper::Get()->GetProfileByUser(user);
 }
 
 void LoginPolicyTestBase::GetMandatoryPoliciesValue(
@@ -101,27 +105,23 @@ void LoginPolicyTestBase::SetMergeSessionParams() {
 
 void LoginPolicyTestBase::SkipToLoginScreen() {
   chromeos::WizardController::SkipPostLoginScreensForTesting();
-  chromeos::WizardController* const wizard_controller =
-      chromeos::WizardController::default_controller();
-  ASSERT_TRUE(wizard_controller);
-  wizard_controller->SkipToLoginForTesting(chromeos::LoginScreenContext());
+  OobeBaseTest::WaitForSigninScreen();
+}
 
-  content::WindowedNotificationObserver(
-      chrome::NOTIFICATION_LOGIN_OR_LOCK_WEBUI_VISIBLE,
-      content::NotificationService::AllSources()).Wait();
+void LoginPolicyTestBase::TriggerLogIn(const std::string& user_id,
+                                       const std::string& password,
+                                       const std::string& services) {
+  chromeos::LoginDisplayHost::default_host()
+      ->GetOobeUI()
+      ->GetView<chromeos::GaiaScreenHandler>()
+      ->ShowSigninScreenForTest(user_id, password, services);
 }
 
 void LoginPolicyTestBase::LogIn(const std::string& user_id,
                                 const std::string& password,
                                 const std::string& services) {
-  chromeos::LoginDisplayHost::default_host()
-      ->GetOobeUI()
-      ->GetGaiaScreenView()
-      ->ShowSigninScreenForTest(user_id, password, services);
-
-  content::WindowedNotificationObserver(
-      chrome::NOTIFICATION_SESSION_STARTED,
-      content::NotificationService::AllSources()).Wait();
+  TriggerLogIn(user_id, password, services);
+  chromeos::test::WaitForPrimaryUserSessionStart();
 }
 
 }  // namespace policy

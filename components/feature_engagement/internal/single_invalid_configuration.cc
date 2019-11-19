@@ -4,7 +4,7 @@
 
 #include "components/feature_engagement/internal/single_invalid_configuration.h"
 
-#include "components/feature_engagement/internal/configuration.h"
+#include "components/feature_engagement/public/configuration.h"
 
 namespace feature_engagement {
 

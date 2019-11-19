@@ -15,7 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chromeos/dbus/dbus_method_call_status.h"
-#include "chromeos/dbus/shill_property_changed_observer.h"
+#include "chromeos/dbus/shill/shill_property_changed_observer.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_profile.h"
 
@@ -59,6 +59,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkProfileHandler
 
   static std::string GetSharedProfilePath();
 
+  static std::unique_ptr<NetworkProfileHandler> InitializeForTesting();
+
  protected:
   friend class AutoConnectHandlerTest;
   friend class ClientCertResolverTest;
@@ -83,7 +85,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkProfileHandler
   base::ObserverList<NetworkProfileObserver, true>::Unchecked observers_;
 
   // For Shill client callbacks
-  base::WeakPtrFactory<NetworkProfileHandler> weak_ptr_factory_;
+  base::WeakPtrFactory<NetworkProfileHandler> weak_ptr_factory_{this};
 
  private:
   DISALLOW_COPY_AND_ASSIGN(NetworkProfileHandler);

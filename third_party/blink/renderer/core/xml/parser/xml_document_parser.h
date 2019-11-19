@@ -36,11 +36,9 @@
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_client.h"
 #include "third_party/blink/renderer/platform/text/segmented_string.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/compiler.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
-#include "third_party/blink/renderer/platform/wtf/text/cstring.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 
 namespace blink {
@@ -56,8 +54,10 @@ class XMLParserContext : public RefCounted<XMLParserContext> {
   USING_FAST_MALLOC(XMLParserContext);
 
  public:
-  static scoped_refptr<XMLParserContext>
-  CreateMemoryParser(xmlSAXHandlerPtr, void* user_data, const CString& chunk);
+  static scoped_refptr<XMLParserContext> CreateMemoryParser(
+      xmlSAXHandlerPtr,
+      void* user_data,
+      const std::string& chunk);
   static scoped_refptr<XMLParserContext> CreateStringParser(xmlSAXHandlerPtr,
                                                             void* user_data);
   ~XMLParserContext();
@@ -74,16 +74,6 @@ class XMLDocumentParser final : public ScriptableDocumentParser,
   USING_GARBAGE_COLLECTED_MIXIN(XMLDocumentParser);
 
  public:
-  static XMLDocumentParser* Create(Document& document, LocalFrameView* view) {
-    return MakeGarbageCollected<XMLDocumentParser>(document, view);
-  }
-  static XMLDocumentParser* Create(DocumentFragment* fragment,
-                                   Element* element,
-                                   ParserContentPolicy parser_content_policy) {
-    return MakeGarbageCollected<XMLDocumentParser>(fragment, element,
-                                                   parser_content_policy);
-  }
-
   explicit XMLDocumentParser(Document&, LocalFrameView* = nullptr);
   XMLDocumentParser(DocumentFragment*, Element*, ParserContentPolicy);
   ~XMLDocumentParser() override;
@@ -169,7 +159,7 @@ class XMLDocumentParser final : public ScriptableDocumentParser,
   void EndDocument();
 
  private:
-  void InitializeParserContext(const CString& chunk = CString());
+  void InitializeParserContext(const std::string& chunk = std::string());
 
   void PushCurrentNode(ContainerNode*);
   void PopCurrentNode();

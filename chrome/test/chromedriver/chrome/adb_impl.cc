@@ -9,10 +9,11 @@
 
 #include "base/bind.h"
 #include "base/bind_helpers.h"
+#include "base/environment.h"
 #include "base/json/string_escape.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
-#include "base/message_loop/message_loop.h"
+#include "base/message_loop/message_loop_current.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -22,6 +23,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/time/time.h"
 #include "chrome/test/chromedriver/chrome/status.h"
+#include "chrome/test/chromedriver/constants/version.h"
 #include "chrome/test/chromedriver/net/adb_client_socket.h"
 #include "net/base/net_errors.h"
 
@@ -98,6 +100,12 @@ void SendFileOnIOThread(const std::string& device_serial,
       base::Bind(&ResponseBuffer::OnResponse, response_buffer));
 }
 
+std::string GetSerialFromEnvironment() {
+  std::unique_ptr<base::Environment> env(base::Environment::Create());
+  std::string serial;
+  return env->GetVar("ANDROID_SERIAL", &serial) ? serial : "";
+}
+
 }  // namespace
 
 AdbImpl::AdbImpl(
@@ -110,6 +118,7 @@ AdbImpl::AdbImpl(
 AdbImpl::~AdbImpl() {}
 
 Status AdbImpl::GetDevices(std::vector<std::string>* devices) {
+  const std::string& serial_from_env = GetSerialFromEnvironment();
   std::string response;
   Status status = ExecuteCommand("host:devices", &response);
   if (!status.IsOk())
@@ -120,7 +129,12 @@ Status AdbImpl::GetDevices(std::vector<std::string>* devices) {
         lines.token_piece(), base::kWhitespaceASCII,
         base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
     if (fields.size() == 2 && fields[1] == "device") {
-      devices->push_back(fields[0]);
+      if (!serial_from_env.empty() && fields[0] == serial_from_env) {
+        // Move device with matching ANDROID_SERIAL to the top.
+        devices->insert(devices->begin(), fields[0]);
+      } else {
+        devices->push_back(fields[0]);
+      }
     }
   }
   return Status(kOk);
@@ -142,12 +156,13 @@ Status AdbImpl::ForwardPort(const std::string& device_serial,
   if (*local_port_output == 0) {
     return Status(
         kUnknownError,
-        "Failed to forward ports to device " + device_serial +
-            ". No port chosen: " + response +
-            ". Perhaps your adb version is out of date. "
-            "ChromeDriver 2.39 and newer require adb version 1.0.38 or newer. "
-            "Run 'adb version' in your terminal of the host device to find "
-            "your version of adb.");
+        base::StringPrintf(
+            "Failed to forward ports to device %s. No port chosen: %s. Perhaps "
+            "your adb version is out of date. %s 2.39 and newer require adb "
+            "version 1.0.38 or newer. Run 'adb version' in your terminal of "
+            "the host device to find your version of adb.",
+            device_serial.c_str(), response.c_str(),
+            kChromeDriverProductFullName));
   }
 
   return Status(kOk);

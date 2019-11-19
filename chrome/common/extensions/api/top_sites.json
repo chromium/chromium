@@ -5,12 +5,12 @@
 [
   {
     "namespace": "topSites",
-    "description": "Use the <code>chrome.topSites</code> API to access the top sites that are displayed on the new tab page.",
+    "description": "Use the <code>chrome.topSites</code> API to access the top sites (i.e. most visited sites) that are displayed on the new tab page. These do not include shortcuts customized by the user.",
     "types": [
       {
         "id": "MostVisitedURL",
         "type": "object",
-        "description": "An object encapsulating a most visited URL, such as the URLs on the new tab page.",
+        "description": "An object encapsulating a most visited URL, such as the default shortcuts on the new tab page.",
         "properties": {
           "url": {"type": "string", "description": "The most visited URL."},
           "title": {"type": "string", "description": "The title of the page"}

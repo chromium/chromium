@@ -16,7 +16,10 @@ if (use_system_harfbuzz) {
       "//third_party:freetype_harfbuzz",
       "//third_party/freetype:freetype_source",
     ]
-    packages = [ "harfbuzz" ]
+    packages = [
+      "harfbuzz",
+      "harfbuzz-subset",
+    ]
   }
 } else {
   config("harfbuzz_config") {
@@ -70,8 +73,10 @@ if (use_system_harfbuzz) {
       "src/src/hb-aat-ltag-table.hh",
       "src/src/hb-aat-map.cc",
       "src/src/hb-aat-map.hh",
+      "src/src/hb-algs.hh",
       "src/src/hb-array.hh",
       "src/src/hb-atomic.hh",
+      "src/src/hb-bimap.hh",
       "src/src/hb-blob.cc",
       "src/src/hb-blob.hh",
       "src/src/hb-buffer-deserialize-json.hh",
@@ -86,17 +91,24 @@ if (use_system_harfbuzz) {
       "src/src/hb-cff1-interp-cs.hh",
       "src/src/hb-cff2-interp-cs.hh",
       "src/src/hb-common.cc",
+      "src/src/hb-config.hh",
       "src/src/hb-debug.hh",
-      "src/src/hb-dsalgs.hh",
+      "src/src/hb-dispatch.hh",
       "src/src/hb-face.cc",
       "src/src/hb-face.hh",
       "src/src/hb-font.cc",
       "src/src/hb-font.hh",
       "src/src/hb-ft.cc",
+      "src/src/hb-gdi.cc",
+      "src/src/hb-gdi.h",
       "src/src/hb-icu.cc",
       "src/src/hb-map.cc",
       "src/src/hb-map.hh",
+      "src/src/hb-meta.hh",
       "src/src/hb-mutex.hh",
+      "src/src/hb-number-parser.hh",
+      "src/src/hb-number.cc",
+      "src/src/hb-number.hh",
       "src/src/hb-object.hh",
       "src/src/hb-open-file.hh",
       "src/src/hb-open-type.hh",
@@ -108,6 +120,7 @@ if (use_system_harfbuzz) {
       "src/src/hb-ot-color-cbdt-table.hh",
       "src/src/hb-ot-color-colr-table.hh",
       "src/src/hb-ot-color-cpal-table.hh",
+      "src/src/hb-ot-face-table-list.hh",
       "src/src/hb-ot-face.cc",
       "src/src/hb-ot-face.hh",
       "src/src/hb-ot-font.cc",
@@ -130,7 +143,13 @@ if (use_system_harfbuzz) {
       "src/src/hb-ot-math-table.hh",
       "src/src/hb-ot-math.cc",
       "src/src/hb-ot-maxp-table.hh",
-      "src/src/hb-ot-name-language.cc",
+      "src/src/hb-ot-meta-table.hh",
+      "src/src/hb-ot-meta.cc",
+      "src/src/hb-ot-meta.h",
+      "src/src/hb-ot-metrics.cc",
+      "src/src/hb-ot-metrics.h",
+      "src/src/hb-ot-metrics.hh",
+      "src/src/hb-ot-name-language-static.hh",
       "src/src/hb-ot-name-language.hh",
       "src/src/hb-ot-name-table.hh",
       "src/src/hb-ot-name.cc",
@@ -173,6 +192,9 @@ if (use_system_harfbuzz) {
       "src/src/hb-ot-var-hvar-table.hh",
       "src/src/hb-ot-var-mvar-table.hh",
       "src/src/hb-ot-var.cc",
+      "src/src/hb-pool.hh",
+      "src/src/hb-sanitize.hh",
+      "src/src/hb-serialize.hh",
       "src/src/hb-set-digest.hh",
       "src/src/hb-set.cc",
       "src/src/hb-set.hh",
@@ -189,28 +211,54 @@ if (use_system_harfbuzz) {
       "src/src/hb-subset-cff-common.hh",
       "src/src/hb-subset-cff1.cc",
       "src/src/hb-subset-cff2.cc",
-      "src/src/hb-subset-glyf.cc",
-      "src/src/hb-subset-glyf.hh",
       "src/src/hb-subset-input.cc",
       "src/src/hb-subset-input.hh",
       "src/src/hb-subset-plan.cc",
       "src/src/hb-subset-plan.hh",
       "src/src/hb-subset.cc",
       "src/src/hb-subset.hh",
+      "src/src/hb-ucd-table.hh",
+      "src/src/hb-ucd.cc",
       "src/src/hb-unicode-emoji-table.hh",
       "src/src/hb-unicode.cc",
       "src/src/hb-unicode.hh",
       "src/src/hb-utf.hh",
-      "src/src/hb-warning.cc",
       "src/src/hb.hh",
     ]
 
     defines = [
       "HAVE_OT",
+      "HAVE_FREETYPE",
       "HAVE_ICU",
       "HAVE_ICU_BUILTIN",
       "HAVE_INTEL_ATOMIC_PRIMITIVES",
+      "HAVE_ROUNDF",
       "HB_NO_MMAP",
+
+      # Size reductions by disabling parts that we do not currently require:
+
+      # SkPDF needs subsetting but does not require subsetting of layout or CFF tables.
+      "HB_NO_SUBSET_LAYOUT",
+      "HB_NO_SUBSET_CFF",
+
+      # Fallback shaper not required, we only use the HarfBuzz internal OT shaper.
+      "HB_NO_FALLBACK_SHAPE",
+
+      # Tells HarfBuzz to use ICU instead of the own mini UCDN implementation
+      # that is part of HarfBuzz.
+      "HB_NO_UCD",
+
+      # TODO(https://crbug.com/992390): Don't use the HarfBuzz metrics
+      # implementation, as we're retrieving metrics from Skia. Consider using this
+      # implementation at least for vertical metrics.
+      "HB_NO_METRICS",
+
+      # Disable .fon file support, not needed for Chrome, and code behind this
+      # flag produces warnings in Clang. Compare https://crbug.com/1002945.
+      "HB_NO_WIN1256",
+
+      # TODO(https://crbug.com/949962): Remove once this is fixed upstream.
+      "U_DISABLE_VERSION_SUFFIX=0",
     ]
 
     if (is_component_build) {
@@ -247,20 +295,6 @@ if (use_system_harfbuzz) {
     deps = [
       "//third_party/icu:icuuc",
     ]
-
-    # TODO(https://crbug.com/894354): Change this to is_mac to revert to
-    # CoreText AAT. Remove this backstop and the whole hb-coretext build clause
-    # here once we have reliably switched to HarfBuzz AAT for one stable cycle.
-    if (false) {
-      public += [ "src/src/hb-coretext.h" ]
-      sources += [ "src/src/hb-coretext.cc" ]
-      defines += [ "HAVE_CORETEXT" ]
-      libs = [
-        "CoreFoundation.framework",
-        "CoreGraphics.framework",
-        "CoreText.framework",
-      ]
-    }
 
     if (use_glib) {
       configs += [ "//build/config/linux:glib" ]

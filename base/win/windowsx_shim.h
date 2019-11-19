@@ -18,6 +18,7 @@
 #include <windowsx.h>
 
 #undef GetNextSibling  // Same as GetWindow(hwnd, GW_HWNDNEXT)
+#undef GetFirstChild   // Same as GetTopWindow(hwnd)
 #undef IsMaximized     // Defined to IsZoomed, use IsZoomed directly instead
 #undef IsMinimized     // Defined to IsIconic, use IsIconic directly instead
 #undef IsRestored      // Macro to check that neither WS_MINIMIZE, nor

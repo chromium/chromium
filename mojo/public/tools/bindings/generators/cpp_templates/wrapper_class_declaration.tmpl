@@ -1,15 +1,22 @@
+{%- set struct_prefix = "%s.%s"|format(module_prefix, struct.name) %}
+
+{{ kythe_annotation(struct_prefix) }}
 class {{export_attribute}} {{struct.name}} {
  public:
+  template <typename T>
+  using EnableIfSame = std::enable_if_t<std::is_same<{{struct.name}}, T>::value>;
   using DataView = {{struct.name}}DataView;
   using Data_ = internal::{{struct.name}}_Data;
 
 {#--- Enums #}
 {%- for enum in struct.enums -%}
+  {{ kythe_annotation(enum|get_full_mojom_name_for_kind()) }}
   using {{enum.name}} = {{enum|get_name_for_kind(flatten_nested_kind=True)}};
 {%- endfor %}
 
 {#--- Constants #}
 {%- for constant in struct.constants %}
+  {{ kythe_annotation("%s.%s"|format(struct_prefix, constant.name)) }}
   static {{constant|format_constant_declaration(nested=True)}};
 {%- endfor %}
 
@@ -49,9 +56,7 @@ class {{export_attribute}} {{struct.name}} {
   // Equals() is a template so it is only instantiated if it is used. Thus, the
   // bindings generator does not need to know whether Equals() or == operator
   // are available for members.
-  template <typename T,
-            typename std::enable_if<std::is_same<
-                T, {{struct.name}}>::value>::type* = nullptr>
+  template <typename T, {{struct.name}}::EnableIfSame<T>* = nullptr>
   bool Equals(const T& other) const;
 
 {%- if struct|is_hashable %}
@@ -119,6 +124,7 @@ class {{export_attribute}} {{struct.name}} {
 {%  for field in struct.fields %}
 {%-   set type = field.kind|cpp_wrapper_type %}
 {%-   set name = field.name %}
+  {{ kythe_annotation("%s.%s"|format(struct_prefix, name)) }}
   {{type}} {{name}};
 {%- endfor %}
 
@@ -130,3 +136,24 @@ class {{export_attribute}} {{struct.name}} {
   DISALLOW_COPY_AND_ASSIGN({{struct.name}});
 {%- endif %}
 };
+
+// The comparison operators are templates, so they are only instantiated if they
+// are used. Thus, the bindings generator does not need to know whether
+// comparison operators are available for members.
+template <typename T, {{struct.name}}::EnableIfSame<T>* = nullptr>
+bool operator<(const T& lhs, const T& rhs);
+
+template <typename T, {{struct.name}}::EnableIfSame<T>* = nullptr>
+bool operator<=(const T& lhs, const T& rhs) {
+  return !(rhs < lhs);
+}
+
+template <typename T, {{struct.name}}::EnableIfSame<T>* = nullptr>
+bool operator>(const T& lhs, const T& rhs) {
+  return rhs < lhs;
+}
+
+template <typename T, {{struct.name}}::EnableIfSame<T>* = nullptr>
+bool operator>=(const T& lhs, const T& rhs) {
+  return !(lhs < rhs);
+}

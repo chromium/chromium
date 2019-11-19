@@ -16,6 +16,7 @@
 #include "base/message_loop/message_loop.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/viz/common/quads/compositor_frame.h"
+#include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/test/compositor_frame_helpers.h"
 #include "content/public/browser/android/synchronous_compositor.h"
 #include "content/public/test/test_synchronous_compositor_android.h"
@@ -24,7 +25,7 @@ namespace android_webview {
 
 namespace {
 // BrowserViewRenderer subclass used for enabling tests to observe
-// OnParentDrawConstraintsUpdated.
+// OnParentDrawDataUpdated.
 class TestBrowserViewRenderer : public BrowserViewRenderer {
  public:
   TestBrowserViewRenderer(
@@ -35,11 +36,10 @@ class TestBrowserViewRenderer : public BrowserViewRenderer {
 
   ~TestBrowserViewRenderer() override {}
 
-  void OnParentDrawConstraintsUpdated(
+  void OnParentDrawDataUpdated(
       CompositorFrameConsumer* compositor_frame_consumer) override {
-    BrowserViewRenderer::OnParentDrawConstraintsUpdated(
-        compositor_frame_consumer);
-    rendering_test_->OnParentDrawConstraintsUpdated();
+    BrowserViewRenderer::OnParentDrawDataUpdated(compositor_frame_consumer);
+    rendering_test_->OnParentDrawDataUpdated();
   }
 
  private:
@@ -66,7 +66,7 @@ void RenderingTest::SetUpTestHarness() {
   DCHECK(!functor_.get());
   browser_view_renderer_.reset(
       new TestBrowserViewRenderer(this, base::ThreadTaskRunnerHandle::Get()));
-  browser_view_renderer_->SetActiveCompositorID(CompositorID(0, 0));
+  browser_view_renderer_->SetActiveFrameSinkId(viz::FrameSinkId(0, 0));
   InitializeCompositor();
   std::unique_ptr<FakeWindow> window(
       new FakeWindow(browser_view_renderer_.get(), this, gfx::Rect(100, 100)));
@@ -89,7 +89,8 @@ CompositorFrameProducer* RenderingTest::GetCompositorFrameProducer() {
 void RenderingTest::InitializeCompositor() {
   DCHECK(!compositor_.get());
   DCHECK(browser_view_renderer_.get());
-  compositor_.reset(new content::TestSynchronousCompositor(0, 0));
+  compositor_.reset(
+      new content::TestSynchronousCompositor(viz::FrameSinkId(0, 0)));
   compositor_->SetClient(browser_view_renderer_.get());
 }
 
@@ -106,7 +107,7 @@ void RenderingTest::StartTest() {
 }
 
 void RenderingTest::EndTest() {
-  ui_task_runner_->PostTask(FROM_HERE, run_loop_.QuitWhenIdleClosure());
+  run_loop_.QuitWhenIdle();
 }
 
 content::SynchronousCompositor* RenderingTest::ActiveCompositor() const {
@@ -140,7 +141,6 @@ void RenderingTest::WillOnDraw() {
 bool RenderingTest::WillDrawOnRT(HardwareRendererDrawParams* params) {
   params->width = window_->surface_size().width();
   params->height = window_->surface_size().height();
-  params->is_layer = false;
   gfx::Transform transform;
   transform.matrix().asColMajorf(params->transform);
   return true;

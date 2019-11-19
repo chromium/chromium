@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_CHROMEOS_ARC_NOTIFICATION_ARC_BOOT_ERROR_NOTIFICATION_H_
 
 #include "base/macros.h"
-#include "chrome/browser/chromeos/arc/arc_session_manager.h"
+#include "chrome/browser/chromeos/arc/session/arc_session_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace content {

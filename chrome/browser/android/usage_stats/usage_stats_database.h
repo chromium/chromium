@@ -16,6 +16,7 @@
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "components/leveldb_proto/public/proto_database.h"
 
 class Profile;
@@ -45,34 +46,38 @@ class UsageStatsDatabase {
 
   using StatusCallback = base::OnceCallback<void(Error)>;
 
+  // Digital Wellbeing doesn't show activity older than a week, so 7 days is the
+  // max age for event retention.
+  constexpr static int EXPIRY_THRESHOLD_DAYS = 7;
+
   // Initializes the database with user |profile|.
   explicit UsageStatsDatabase(Profile* profile);
-
-  // Initializes the database with a |ProtoDatabase|. Useful for testing.
-  explicit UsageStatsDatabase(
-      std::unique_ptr<ProtoDatabase<WebsiteEvent>> website_event_db,
-      std::unique_ptr<ProtoDatabase<Suspension>> suspension_db,
-      std::unique_ptr<ProtoDatabase<TokenMapping>> token_mapping_db);
 
   ~UsageStatsDatabase();
 
   void GetAllEvents(EventsCallback callback);
 
-  // Get all events in range between |start| (inclusive) and |end| (exclusive),
-  // where |start| and |end| are represented by milliseconds since Unix epoch.
-  void QueryEventsInRange(int64_t start, int64_t end, EventsCallback callback);
+  // Get all events in range between |startTime| (inclusive) and |endTime|
+  // (exclusive) at second-level granularity.
+  void QueryEventsInRange(base::Time startTime,
+                          base::Time endTime,
+                          EventsCallback callback);
 
   void AddEvents(std::vector<WebsiteEvent> events, StatusCallback callback);
 
   void DeleteAllEvents(StatusCallback callback);
 
-  // Delete all events in range between |start| (inclusive) and |end|
-  // (exclusive), where |start| and |end| are represented by milliseconds since
-  // Unix epoch.
-  void DeleteEventsInRange(int64_t start, int64_t end, StatusCallback callback);
+  // Delete all events in range between |startTime| (inclusive) and
+  // |endTime| (exclusive) at second-level granularity.
+  void DeleteEventsInRange(base::Time startTime,
+                           base::Time endTime,
+                           StatusCallback callback);
 
   void DeleteEventsWithMatchingDomains(base::flat_set<std::string> domains,
                                        StatusCallback callback);
+
+  // Delete events older than EXPIRY_THRESHOLD_DAYS.
+  void ExpireEvents(base::Time now);
 
   void GetAllSuspensions(SuspensionsCallback callback);
 
@@ -87,6 +92,13 @@ class UsageStatsDatabase {
   // |mappings|. The map's key is the token, and its value is the FQDN.
   void SetTokenMappings(TokenMap mappings, StatusCallback callback);
 
+ protected:
+  // For testing only.
+  UsageStatsDatabase(
+      std::unique_ptr<ProtoDatabase<WebsiteEvent>> website_event_db,
+      std::unique_ptr<ProtoDatabase<Suspension>> suspension_db,
+      std::unique_ptr<ProtoDatabase<TokenMapping>> token_mapping_db);
+
  private:
   void InitializeDBs();
 
@@ -98,6 +110,8 @@ class UsageStatsDatabase {
 
   void OnTokenMappingInitDone(bool retry,
                               leveldb_proto::Enums::InitStatus status);
+
+  void OnWebsiteEventExpiryDone(Error error);
 
   void OnUpdateEntries(StatusCallback callback, bool isSuccess);
 
@@ -140,7 +154,7 @@ class UsageStatsDatabase {
   base::queue<base::OnceClosure> suspension_db_callbacks_;
   base::queue<base::OnceClosure> token_mapping_db_callbacks_;
 
-  base::WeakPtrFactory<UsageStatsDatabase> weak_ptr_factory_;
+  base::WeakPtrFactory<UsageStatsDatabase> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(UsageStatsDatabase);
 };

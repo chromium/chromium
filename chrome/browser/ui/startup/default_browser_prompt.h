@@ -20,8 +20,4 @@ void DefaultBrowserPromptDeclined(Profile* profile);
 // re-shown if the browser ceases to be the user's chosen default.
 void ResetDefaultBrowserPrompt(Profile* profile);
 
-// Shows a prompt UI to set the default browser on first run
-// (if necessary and permitted). Returns true if the dialog has been launched.
-bool ShowFirstRunDefaultBrowserPrompt(Profile* profile);
-
 #endif  // CHROME_BROWSER_UI_STARTUP_DEFAULT_BROWSER_PROMPT_H_

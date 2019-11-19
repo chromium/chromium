@@ -14,7 +14,6 @@
 #include "components/metrics/metrics_log.h"
 #include "components/metrics/metrics_log_store.h"
 #include "components/metrics/metrics_pref_names.h"
-#include "components/metrics/persisted_logs_metrics_impl.h"
 #include "components/metrics/test_metrics_service_client.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"

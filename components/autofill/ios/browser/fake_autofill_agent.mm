@@ -6,8 +6,8 @@
 
 #include "base/bind.h"
 #include "base/task/post_task.h"
-#include "ios/web/public/web_task_traits.h"
-#include "ios/web/public/web_thread.h"
+#include "ios/web/public/thread/web_task_traits.h"
+#include "ios/web/public/thread/web_thread.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -69,7 +69,7 @@
                                   webState:(web::WebState*)webState
                          completionHandler:
                              (SuggestionsAvailableCompletion)completion {
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {web::WebThread::UI}, base::BindOnce(^{
         NSString* key = [self keyForFormName:formName
                              fieldIdentifier:fieldIdentifier
@@ -86,13 +86,12 @@
                            frameID:(NSString*)frameID
                           webState:(web::WebState*)webState
                  completionHandler:(SuggestionsReadyCompletion)completion {
-  base::PostTaskWithTraits(
-      FROM_HERE, {web::WebThread::UI}, base::BindOnce(^{
-        NSString* key = [self keyForFormName:formName
-                             fieldIdentifier:fieldIdentifier
-                                     frameID:frameID];
-        completion(_suggestionsByFormAndFieldName[key], self);
-      }));
+  base::PostTask(FROM_HERE, {web::WebThread::UI}, base::BindOnce(^{
+                   NSString* key = [self keyForFormName:formName
+                                        fieldIdentifier:fieldIdentifier
+                                                frameID:frameID];
+                   completion(_suggestionsByFormAndFieldName[key], self);
+                 }));
 }
 
 - (void)didSelectSuggestion:(FormSuggestion*)suggestion
@@ -100,14 +99,13 @@
             fieldIdentifier:(NSString*)fieldIdentifier
                     frameID:(NSString*)frameID
           completionHandler:(SuggestionHandledCompletion)completion {
-  base::PostTaskWithTraits(
-      FROM_HERE, {web::WebThread::UI}, base::BindOnce(^{
-        NSString* key = [self keyForFormName:formName
-                             fieldIdentifier:fieldIdentifier
-                                     frameID:frameID];
-        _selectedSuggestionByFormAndFieldName[key] = suggestion;
-        completion();
-      }));
+  base::PostTask(FROM_HERE, {web::WebThread::UI}, base::BindOnce(^{
+                   NSString* key = [self keyForFormName:formName
+                                        fieldIdentifier:fieldIdentifier
+                                                frameID:frameID];
+                   _selectedSuggestionByFormAndFieldName[key] = suggestion;
+                   completion();
+                 }));
 }
 
 #pragma mark - Private Methods

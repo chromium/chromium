@@ -16,6 +16,7 @@ Must run in a git checkout, as it relies on git grep for a fast way to
 find files that reference the moved file.
 """
 
+from __future__ import print_function
 
 import optparse
 import os
@@ -175,7 +176,7 @@ def UpdatePostMove(from_path, to_path, in_blink):
     to_first, to_rest = SplitByFirstComponent(to_rest)
     visiting_directory = os.path.join(visiting_directory, from_first)
     if not from_rest or not to_rest or from_rest == to_rest:
-        break
+      break
 
 
 def MakeIncludeGuardName(path_from_root):
@@ -204,9 +205,9 @@ def UpdateIncludeGuard(old_path, new_path):
   # The file should now have three instances of the new guard: two at the top
   # of the file plus one at the bottom for the comment on the #endif.
   if new_contents.count(new_guard) != 3:
-    print ('WARNING: Could not successfully update include guard; perhaps '
-           'old guard is not per style guide? You will have to update the '
-           'include guard manually. (%s)' % new_path)
+    print('WARNING: Could not successfully update include guard; perhaps '
+          'old guard is not per style guide? You will have to update the '
+          'include guard manually. (%s)' % new_path)
 
   with open(new_path, 'w') as f:
     f.write(new_contents)
@@ -217,7 +218,7 @@ def main():
   # this in the .git directory.
   if (os.system('git rev-parse') != 0 or
       os.path.basename(os.getcwd()) == '.git'):
-    print 'Fatal: You must run in a git checkout.'
+    print('Fatal: You must run in a git checkout.')
     return 1
 
   cwd = os.getcwd()
@@ -245,14 +246,14 @@ def main():
   orig_to_path = args[-1]
 
   if len(from_paths) > 1 and not os.path.isdir(orig_to_path):
-    print 'Target %s is not a directory.' % orig_to_path
-    print
+    print('Target %s is not a directory.' % orig_to_path)
+    print()
     parser.print_help()
     return 1
 
   for from_path in from_paths:
     if not opts.error_for_non_source_file and not IsHandledFile(from_path):
-      print '%s does not appear to be a source file, skipping' % (from_path)
+      print('%s does not appear to be a source file, skipping' % (from_path))
       continue
     to_path = MakeDestinationPath(from_path, orig_to_path)
     if not opts.already_moved:

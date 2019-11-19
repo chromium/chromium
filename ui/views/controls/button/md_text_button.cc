@@ -19,6 +19,7 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/painter.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/style/typography.h"
@@ -26,33 +27,35 @@
 namespace views {
 
 // static
-LabelButton* MdTextButton::CreateSecondaryUiButton(ButtonListener* listener,
-                                                   const base::string16& text) {
+std::unique_ptr<LabelButton> MdTextButton::CreateSecondaryUiButton(
+    ButtonListener* listener,
+    const base::string16& text) {
   return MdTextButton::Create(listener, text, style::CONTEXT_BUTTON_MD);
 }
 
 // static
-LabelButton* MdTextButton::CreateSecondaryUiBlueButton(
+std::unique_ptr<LabelButton> MdTextButton::CreateSecondaryUiBlueButton(
     ButtonListener* listener,
     const base::string16& text) {
-  MdTextButton* md_button =
+  auto md_button =
       MdTextButton::Create(listener, text, style::CONTEXT_BUTTON_MD);
   md_button->SetProminent(true);
   return md_button;
 }
 
 // static
-MdTextButton* MdTextButton::Create(ButtonListener* listener,
-                                   const base::string16& text,
-                                   int button_context) {
-  MdTextButton* button = new MdTextButton(listener, button_context);
+std::unique_ptr<MdTextButton> MdTextButton::Create(ButtonListener* listener,
+                                                   const base::string16& text,
+                                                   int button_context) {
+  auto button = base::WrapUnique<MdTextButton>(
+      new MdTextButton(listener, button_context));
   button->SetText(text);
   button->SetFocusForPlatform();
 
   return button;
 }
 
-MdTextButton::~MdTextButton() {}
+MdTextButton::~MdTextButton() = default;
 
 void MdTextButton::SetProminent(bool is_prominent) {
   if (is_prominent_ == is_prominent)
@@ -60,27 +63,43 @@ void MdTextButton::SetProminent(bool is_prominent) {
 
   is_prominent_ = is_prominent;
   UpdateColors();
+  OnPropertyChanged(&is_prominent_, kPropertyEffectsNone);
+}
+
+bool MdTextButton::GetProminent() const {
+  return is_prominent_;
 }
 
 void MdTextButton::SetBgColorOverride(const base::Optional<SkColor>& color) {
   bg_color_override_ = color;
   UpdateColors();
+  OnPropertyChanged(&bg_color_override_, kPropertyEffectsNone);
 }
 
-void MdTextButton::set_corner_radius(float radius) {
+base::Optional<SkColor> MdTextButton::GetBgColorOverride() const {
+  return bg_color_override_;
+}
+
+void MdTextButton::SetCornerRadius(float radius) {
   corner_radius_ = radius;
   set_ink_drop_corner_radii(corner_radius_, corner_radius_);
+  OnPropertyChanged(&corner_radius_, kPropertyEffectsPaint);
+}
+
+float MdTextButton::GetCornerRadius() const {
+  return corner_radius_;
 }
 
 void MdTextButton::OnPaintBackground(gfx::Canvas* canvas) {
   LabelButton::OnPaintBackground(canvas);
   if (hover_animation().is_animating() || state() == STATE_HOVERED) {
-    bool is_dark_mode = GetNativeTheme()->SystemDarkModeEnabled();
+    bool should_use_dark_colors = GetNativeTheme()->ShouldUseDarkColors();
     int hover_alpha = is_prominent_ ? 0x0C : 0x05;
-    if (is_dark_mode)
+    if (should_use_dark_colors)
       hover_alpha = 0x0A;
-    const SkColor hover_color =
-        is_dark_mode && !is_prominent_ ? gfx::kGoogleBlue300 : SK_ColorBLACK;
+    const SkColor hover_color = should_use_dark_colors && !is_prominent_
+                                    ? gfx::kGoogleBlue300
+                                    : SK_ColorBLACK;
     SkScalar alpha = hover_animation().CurrentValueBetween(0, hover_alpha);
     cc::PaintFlags flags;
     flags.setColor(SkColorSetA(hover_color, alpha));
@@ -90,13 +109,13 @@ void MdTextButton::OnPaintBackground(gfx::Canvas* canvas) {
   }
 }
 
-void MdTextButton::OnNativeThemeChanged(const ui::NativeTheme* theme) {
-  LabelButton::OnNativeThemeChanged(theme);
+void MdTextButton::OnThemeChanged() {
+  LabelButton::OnThemeChanged();
   UpdateColors();
 }
 
 SkColor MdTextButton::GetInkDropBaseColor() const {
-  return color_utils::DeriveDefaultIconColor(label()->enabled_color());
+  return color_utils::DeriveDefaultIconColor(label()->GetEnabledColor());
 }
 
 void MdTextButton::StateChanged(ButtonState old_state) {
@@ -116,21 +135,22 @@ void MdTextButton::OnBlur() {
 
 std::unique_ptr<views::InkDropHighlight> MdTextButton::CreateInkDropHighlight()
     const {
-  bool is_dark_mode = GetNativeTheme()->SystemDarkModeEnabled();
+  bool should_use_dark_colors = GetNativeTheme()->ShouldUseDarkColors();
   // The prominent button hover effect is a shadow.
-  const int kYOffset = 1;
-  const int kSkiaBlurRadius = 2;
+  constexpr int kYOffset = 1;
+  constexpr int kSkiaBlurRadius = 2;
   const int shadow_alpha = is_prominent_ ? 0x3D : 0x1A;
-  const SkColor shadow_color =
-      is_dark_mode && is_prominent_ ? gfx::kGoogleBlue300 : SK_ColorBLACK;
+  const SkColor shadow_color = should_use_dark_colors && is_prominent_
+                                   ? gfx::kGoogleBlue300
+                                   : SK_ColorBLACK;
   std::vector<gfx::ShadowValue> shadows;
   // The notion of blur that gfx::ShadowValue uses is twice the Skia/CSS value.
   // Skia counts the number of pixels outside the mask area whereas
   // gfx::ShadowValue counts together the number of pixels inside and outside
   // the mask bounds.
-  shadows.push_back(gfx::ShadowValue(
+  shadows.emplace_back(
       gfx::Vector2d(0, kYOffset), 2 * kSkiaBlurRadius,
-      SkColorSetA(shadow_color, is_dark_mode ? 0x7F : shadow_alpha)));
+      SkColorSetA(shadow_color, should_use_dark_colors ? 0x7F : shadow_alpha));
   const SkColor fill_color =
       SkColorSetA(SK_ColorWHITE, is_prominent_ ? 0x0D : 0x05);
   return std::make_unique<InkDropHighlight>(
@@ -149,9 +169,10 @@ void MdTextButton::SetText(const base::string16& text) {
   UpdatePadding();
 }
 
-void MdTextButton::UpdateStyleToIndicateDefaultStatus() {
-  is_prominent_ = is_prominent_ || is_default();
+PropertyEffects MdTextButton::UpdateStyleToIndicateDefaultStatus() {
+  is_prominent_ = is_prominent_ || GetIsDefault();
   UpdateColors();
+  return kPropertyEffectsNone;
 }
 
 MdTextButton::MdTextButton(ButtonListener* listener, int button_context)
@@ -159,7 +180,7 @@ MdTextButton::MdTextButton(ButtonListener* listener, int button_context)
       is_prominent_(false) {
   SetInkDropMode(InkDropMode::ON);
   set_has_ink_drop_action_on_click(true);
-  set_corner_radius(LayoutProvider::Get()->GetCornerRadiusMetric(EMPHASIS_LOW));
+  SetCornerRadius(LayoutProvider::Get()->GetCornerRadiusMetric(EMPHASIS_LOW));
   SetHorizontalAlignment(gfx::ALIGN_CENTER);
   SetFocusForPlatform();
   const int minimum_width = LayoutProvider::Get()->GetDistanceMetric(
@@ -221,20 +242,20 @@ void MdTextButton::UpdatePadding() {
 void MdTextButton::UpdateColors() {
   bool is_disabled = state() == STATE_DISABLED;
   SkColor enabled_text_color =
-      style::GetColor(*this, label()->text_context(),
+      style::GetColor(*this, label()->GetTextContext(),
                       is_prominent_ ? style::STYLE_DIALOG_BUTTON_DEFAULT
                                     : style::STYLE_PRIMARY);
   if (!explicitly_set_normal_color()) {
     const auto colors = explicitly_set_colors();
     LabelButton::SetEnabledTextColors(enabled_text_color);
     // Disabled buttons need the disabled color explicitly set.
-    // This ensures that label()->enabled_color() returns the correct color as
+    // This ensures that label()->GetEnabledColor() returns the correct color as
     // the basis for calculating the stroke color. enabled_text_color isn't used
     // since a descendant could have overridden the label enabled color.
     if (is_disabled) {
-      LabelButton::SetTextColor(STATE_DISABLED,
-                                style::GetColor(*this, label()->text_context(),
-                                                style::STYLE_DISABLED));
+      LabelButton::SetTextColor(
+          STATE_DISABLED, style::GetColor(*this, label()->GetTextContext(),
+                                          style::STYLE_DISABLED));
     }
     set_explicitly_set_colors(colors);
   }
@@ -275,5 +296,12 @@ void MdTextButton::UpdateColors() {
           bg_color, stroke_color, corner_radius_)));
   SchedulePaint();
 }
+
+BEGIN_METADATA(MdTextButton)
+METADATA_PARENT_CLASS(LabelButton)
+ADD_PROPERTY_METADATA(MdTextButton, bool, Prominent)
+ADD_PROPERTY_METADATA(MdTextButton, float, CornerRadius)
+ADD_PROPERTY_METADATA(MdTextButton, base::Optional<SkColor>, BgColorOverride)
+END_METADATA()
 
 }  // namespace views

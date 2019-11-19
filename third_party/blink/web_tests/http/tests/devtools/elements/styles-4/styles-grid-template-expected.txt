@@ -1,0 +1,56 @@
+Tests that properties defining grid templates are correct.
+
+[expanded] 
+element.style { ()
+    grid-template-areas:
+        'a a'
+        'b b';
+    grid-template: 'a a';
+
+[expanded] 
+#container { (styles-grid…mplate.js:7 -> styles-grid-template.js:7:21)
+    grid:
+        [first-row-start] "a a" 10px [first-row-end]
+        [second-row-start] "b b" 20px / 100px;
+
+[expanded] 
+#container { (styles-grid…mplate.js:6 -> styles-grid-template.js:6:21)
+/-- overloaded --/     grid:
+        "a a" 10px
+        'b b' 20px / 100px;
+
+[expanded] 
+#container { (styles-grid…mplate.js:5 -> styles-grid-template.js:5:21)
+/-- overloaded --/     grid:
+        "a a"
+        'b b';
+
+[expanded] 
+#container { (styles-grid…mplate.js:4 -> styles-grid-template.js:4:21)
+/-- overloaded --/     grid:
+        "a a"
+        "b b";
+
+[expanded] 
+#container { (styles-grid…mplate.js:3 -> styles-grid-template.js:3:21)
+/-- overloaded --/     grid:
+        " a a "
+        " b b";
+
+[expanded] 
+#container { (styles-grid…mplate.js:2 -> styles-grid-template.js:2:21)
+/-- overloaded --/     grid: "a a";
+
+[expanded] 
+div { (user agent stylesheet)
+    display: block;
+
+======== Inherited from html ========
+[expanded] 
+html { (user agent stylesheet)
+    color: -internal-root-color;
+
+Start editing "grid-template-areas"
+Prompt text 'a a'
+'b b'
+

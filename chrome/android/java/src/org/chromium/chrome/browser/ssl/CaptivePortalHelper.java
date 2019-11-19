@@ -13,6 +13,7 @@ import android.os.Build;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -24,11 +25,11 @@ public class CaptivePortalHelper {
             "http://connectivitycheck.gstatic.com/generate_204";
 
     public static void setCaptivePortalCertificateForTesting(String spkiHash) {
-        nativeSetCaptivePortalCertificateForTesting(spkiHash);
+        CaptivePortalHelperJni.get().setCaptivePortalCertificateForTesting(spkiHash);
     }
 
     public static void setOSReportsCaptivePortalForTesting(boolean osReportsCaptivePortal) {
-        nativeSetOSReportsCaptivePortalForTesting(osReportsCaptivePortal);
+        CaptivePortalHelperJni.get().setOSReportsCaptivePortalForTesting(osReportsCaptivePortal);
     }
 
     @CalledByNative
@@ -98,8 +99,9 @@ public class CaptivePortalHelper {
 
     private CaptivePortalHelper() {}
 
-    private static native void nativeSetCaptivePortalCertificateForTesting(String spkiHash);
-
-    private static native void nativeSetOSReportsCaptivePortalForTesting(
-            boolean osReportsCaptivePortal);
+    @NativeMethods
+    interface Natives {
+        void setCaptivePortalCertificateForTesting(String spkiHash);
+        void setOSReportsCaptivePortalForTesting(boolean osReportsCaptivePortal);
+    }
 }

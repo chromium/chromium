@@ -11,11 +11,6 @@
 
 namespace blink {
 
-std::unique_ptr<IncrementLoadEventDelayCount>
-IncrementLoadEventDelayCount::Create(Document& document) {
-  return base::WrapUnique(new IncrementLoadEventDelayCount(document));
-}
-
 IncrementLoadEventDelayCount::IncrementLoadEventDelayCount(Document& document)
     : document_(&document) {
   document.IncrementLoadEventDelayCount();

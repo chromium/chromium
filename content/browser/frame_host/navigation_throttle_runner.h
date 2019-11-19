@@ -12,8 +12,6 @@
 
 namespace content {
 
-class NavigationHandleImpl;
-
 // This class owns the set of NavigationThrottles added to a NavigationHandle.
 // It is responsible for calling the various sets of events on its
 // NavigationThrottle, and notifying its delegate of the results of said events.
@@ -38,7 +36,7 @@ class CONTENT_EXPORT NavigationThrottleRunner {
         NavigationThrottle::ThrottleCheckResult result) = 0;
   };
 
-  NavigationThrottleRunner(Delegate* delegate, NavigationHandle* handle);
+  NavigationThrottleRunner(Delegate* delegate);
   ~NavigationThrottleRunner();
 
   // Will call the appropriate NavigationThrottle function based on |event| on
@@ -72,14 +70,6 @@ class CONTENT_EXPORT NavigationThrottleRunner {
 
   Delegate* delegate_;
 
-  // The NavigationHandle associated with the NavigationThrottles this
-  // NavigationThrottleRunner manages.
-  // Note: |handle_| is not defined as a NavigationHandleImpl* so that a
-  // MockNavigationHandle can be used in unit_tests. Unit tests that use a
-  // MockNavigationHandle should never call RegisterNavigationThrottles as this
-  // function expects |handle_| to be a NavigationHandleImpl instead.
-  NavigationHandle* handle_;
-
   // A list of Throttles registered for this navigation.
   std::vector<std::unique_ptr<NavigationThrottle>> throttles_;
 
@@ -88,7 +78,7 @@ class CONTENT_EXPORT NavigationThrottleRunner {
 
   // The event currently being processed.
   Event current_event_ = Event::NoEvent;
-  base::WeakPtrFactory<NavigationThrottleRunner> weak_factory_;
+  base::WeakPtrFactory<NavigationThrottleRunner> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(NavigationThrottleRunner);
 };

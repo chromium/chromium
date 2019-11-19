@@ -5,72 +5,59 @@
 #ifndef CONTENT_BROWSER_PICTURE_IN_PICTURE_PICTURE_IN_PICTURE_SERVICE_IMPL_H_
 #define CONTENT_BROWSER_PICTURE_IN_PICTURE_PICTURE_IN_PICTURE_SERVICE_IMPL_H_
 
+#include <memory>
+
 #include "base/containers/unique_ptr_adapters.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/frame_service_base.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/picture_in_picture/picture_in_picture.mojom.h"
 
 namespace content {
 
-class PictureInPictureWindowControllerImpl;
+class PictureInPictureSession;
 
 // Receives Picture-in-Picture messages from a given RenderFrame. There is one
-// PictureInPictureServiceImpl per RenderFrameHost. It talks directly to the
-// PictureInPictureWindowControllerImpl. Only one service interacts with the
-// window at a given time.
+// PictureInPictureServiceImpl per RenderFrameHost. The service gets a hold of
+// a PictureInPictureSession to which it delegates most of the interactions with
+// the rest of the Picture-in-Picture classes such as
+// PictureInPictureWindowController.
 class CONTENT_EXPORT PictureInPictureServiceImpl final
     : public content::FrameServiceBase<blink::mojom::PictureInPictureService> {
  public:
-  static void Create(RenderFrameHost*,
-                     blink::mojom::PictureInPictureServiceRequest);
+  static void Create(
+      RenderFrameHost*,
+      mojo::PendingReceiver<blink::mojom::PictureInPictureService>);
+
   static PictureInPictureServiceImpl* CreateForTesting(
       RenderFrameHost*,
-      blink::mojom::PictureInPictureServiceRequest);
+      mojo::PendingReceiver<blink::mojom::PictureInPictureService>);
 
   // PictureInPictureService implementation.
-  void StartSession(uint32_t player_id,
-                    const base::Optional<viz::SurfaceId>& surface_id,
-                    const gfx::Size& natural_size,
-                    bool show_play_pause_button,
-                    bool show_mute_button,
-                    StartSessionCallback) final;
-  void EndSession(EndSessionCallback) final;
-  void UpdateSession(uint32_t player_id,
-                     const base::Optional<viz::SurfaceId>& surface_id,
-                     const gfx::Size& natural_size,
-                     bool show_play_pause_button,
-                     bool show_mute_button) final;
-  void SetDelegate(blink::mojom::PictureInPictureDelegatePtr) final;
+  void StartSession(
+      uint32_t player_id,
+      const base::Optional<viz::SurfaceId>& surface_id,
+      const gfx::Size& natural_size,
+      bool show_play_pause_button,
+      mojo::PendingRemote<blink::mojom::PictureInPictureSessionObserver>,
+      StartSessionCallback) final;
 
-  void NotifyWindowResized(const gfx::Size&);
-
-  // Returns the player that is currently in Picture-in-Picture in the context
-  // of the frame associated with the service. Returns nullopt if there are
-  // none.
-  const base::Optional<MediaPlayerId>& player_id() const { return player_id_; }
-  void ResetPlayerId() { player_id_.reset(); }
+  PictureInPictureSession* active_session_for_testing() const {
+    return active_session_.get();
+  }
 
  private:
-  PictureInPictureServiceImpl(RenderFrameHost*,
-                              blink::mojom::PictureInPictureServiceRequest);
+  friend class PictureInPictureSession;
+
+  PictureInPictureServiceImpl(
+      RenderFrameHost*,
+      mojo::PendingReceiver<blink::mojom::PictureInPictureService>);
   ~PictureInPictureServiceImpl() override;
 
-  // Returns the PictureInPictureWindowControllerImpl associated with the
-  // WebContents. Can be null.
-  PictureInPictureWindowControllerImpl* GetController();
-
-  // Callack run when the delegate is disconnected. Only one delegate should be
-  // set at any given time.
-  void OnDelegateDisconnected();
-
-  // Implementation of ExitPictureInPicture without callback handling.
-  void ExitPictureInPictureInternal();
-
-  WebContentsImpl* web_contents_impl();
-
-  blink::mojom::PictureInPictureDelegatePtr delegate_ = nullptr;
   RenderFrameHost* render_frame_host_ = nullptr;
-  base::Optional<MediaPlayerId> player_id_;
+
+  std::unique_ptr<PictureInPictureSession> active_session_;
 
   DISALLOW_COPY_AND_ASSIGN(PictureInPictureServiceImpl);
 };

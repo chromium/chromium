@@ -4,6 +4,8 @@
 
 #include "ui/gfx/font.h"
 
+#include <algorithm>
+
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "ui/gfx/platform_font.h"
@@ -24,7 +26,7 @@ Font& Font::operator=(const Font& other) {
   return *this;
 }
 
-#if defined(OS_WIN) || defined(OS_MACOSX) || defined(OS_IOS)
+#if defined(OS_MACOSX) || defined(OS_IOS)
 Font::Font(NativeFont native_font)
     : platform_font_(PlatformFont::CreateFromNativeFont(native_font)) {
 }
@@ -72,8 +74,8 @@ const std::string& Font::GetFontName() const {
   return platform_font_->GetFontName();
 }
 
-std::string Font::GetActualFontNameForTesting() const {
-  return platform_font_->GetActualFontNameForTesting();
+std::string Font::GetActualFontName() const {
+  return platform_font_->GetActualFontName();
 }
 
 int Font::GetFontSize() const {
@@ -88,7 +90,7 @@ const FontRenderParams& Font::GetFontRenderParams() const {
   return platform_font_->GetFontRenderParams();
 }
 
-#if defined(OS_WIN) || defined(OS_MACOSX) || defined(OS_IOS)
+#if defined(OS_MACOSX) || defined(OS_IOS)
 NativeFont Font::GetNativeFont() const {
   return platform_font_->GetNativeFont();
 }
@@ -99,5 +101,22 @@ std::ostream& operator<<(std::ostream& stream, const Font::Weight weight) {
   return stream << static_cast<int>(weight);
 }
 #endif
+
+Font::Weight FontWeightFromInt(int weight) {
+  static const Font::Weight weights[] = {
+      Font::Weight::INVALID,  Font::Weight::THIN,   Font::Weight::EXTRA_LIGHT,
+      Font::Weight::LIGHT,    Font::Weight::NORMAL, Font::Weight::MEDIUM,
+      Font::Weight::SEMIBOLD, Font::Weight::BOLD,   Font::Weight::EXTRA_BOLD,
+      Font::Weight::BLACK};
+
+  const Font::Weight* next_bigger_weight = std::lower_bound(
+      std::begin(weights), std::end(weights), weight,
+      [](const Font::Weight& a, const int& b) {
+        return static_cast<std::underlying_type<Font::Weight>::type>(a) < b;
+      });
+  if (next_bigger_weight != std::end(weights))
+    return *next_bigger_weight;
+  return Font::Weight::INVALID;
+}
 
 }  // namespace gfx

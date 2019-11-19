@@ -9,7 +9,8 @@ input to grit via the -p option. This is meant to be run manually every once in
 a while and its output checked in. See tools/gritsettings/README.md for details.
 """
 
-import fnmatch
+from __future__ import print_function
+
 import os
 import re
 import sys
@@ -20,9 +21,9 @@ import sys
 #   #define IDS_FOO_MESSAGE 1234
 # With generate whitelist flag:
 #   #define IDS_FOO_MESSAGE (::ui::WhitelistedResource<1234>(), 1234)
-RESOURCE_EXTRACT_REGEX = re.compile('^#define (\S*).* (\d+)\)?$', re.MULTILINE)
+RESOURCE_EXTRACT_REGEX = re.compile(r'^#define (\S*).* (\d+)\)?$', re.MULTILINE)
 
-ORDERED_RESOURCE_IDS_REGEX = re.compile('^Resource=(\d*)$', re.MULTILINE)
+ORDERED_RESOURCE_IDS_REGEX = re.compile(r'^Resource=(\d*)$', re.MULTILINE)
 
 
 def _GetResourceNameIdPairsIter(string_to_scan):
@@ -128,7 +129,7 @@ def _GeneratePredeterminedIdsFile(ordered_resources_file, out_dir):
   output_resource_map = GenerateResourceMapping(original_resources,
                                                 ordered_resource_ids)
   for res_id in sorted(output_resource_map.keys()):
-    print "{} {}".format(output_resource_map[res_id], res_id)
+    print(output_resource_map[res_id], res_id)
 
 
 def main(argv):

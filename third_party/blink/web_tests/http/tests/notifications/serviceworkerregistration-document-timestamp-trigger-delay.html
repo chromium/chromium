@@ -1,0 +1,41 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Notifications: Verifying the exception throwing behavior, when a timestamp trigger is more than a year in the future in showNotification().</title>
+    <script src="../resources/testharness.js"></script>
+    <script src="../resources/testharnessreport.js"></script>
+    <script src="../serviceworker/resources/test-helpers.js"></script>
+  </head>
+  <body>
+    <script>
+      // Tests that the showNotification() function rejects the returned promise with a
+      // TypeError when a given notification timestamp trigger is more than a year in
+      // the future.
+      async_test(function(test) {
+          var scope = 'resources/scope/' + location.pathname,
+              workerUrl = 'resources/empty-worker.js';
+
+          testRunner.setPermission('notifications', 'granted', location.origin, location.origin);
+
+          var registration = null;
+          service_worker_unregister_and_register(test, workerUrl, scope).then(function(swRegistration) {
+              registration = swRegistration;
+              return wait_for_state(test, registration.installing, 'activated');
+          }).then(function() {
+              registration.showNotification('Title', {
+                  body: 'Hello, world!',
+                  showTrigger: new TimestampTrigger(Date.now() + 368 * 24 * 60 * 60 * 1000)
+              }).then(function() {
+                  assert_unreached('showNotification() is expected to reject.');
+              }).catch(function(error) {
+                  assert_equals(error.name, 'TypeError');
+                  assert_equals(error.message, "Failed to execute 'showNotification' on 'ServiceWorkerRegistration': Notification trigger timestamp too far ahead in the future.");
+                  test.done();
+              });
+
+          }).catch(unreached_rejection(test));
+
+      }, 'showNotification() must reject If options\'s showTrigger is a TimestampTrigger more than a year in the future.');
+    </script>
+  </body>
+</html>

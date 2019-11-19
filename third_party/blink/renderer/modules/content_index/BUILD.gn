@@ -1,0 +1,21 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/blink/renderer/modules/modules.gni")
+
+blink_modules_sources("content_index") {
+  sources = [
+    "content_description_type_converter.cc",
+    "content_description_type_converter.h",
+    "content_index.cc",
+    "content_index.h",
+    "content_index_event.cc",
+    "content_index_event.h",
+    "content_index_icon_loader.cc",
+    "content_index_icon_loader.h",
+    "service_worker_global_scope_content_index.h",
+    "service_worker_registration_content_index.cc",
+    "service_worker_registration_content_index.h",
+  ]
+}

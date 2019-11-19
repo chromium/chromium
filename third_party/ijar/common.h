@@ -22,6 +22,11 @@
 #include <stdint.h>
 #include <string.h>
 
+#ifdef _WIN32
+#define PATH_MAX 4096
+typedef int mode_t;
+#endif  // _WIN32
+
 namespace devtools_ijar {
 
 typedef unsigned long long u8;

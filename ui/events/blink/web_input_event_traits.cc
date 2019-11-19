@@ -48,26 +48,23 @@ void ApppendEventDetails(const WebMouseEvent& event, std::string* result) {
 void ApppendEventDetails(const WebMouseWheelEvent& event, std::string* result) {
   StringAppendF(result,
                 "{\n Delta: (%f, %f)\n WheelTicks: (%f, %f)\n Accel: (%f, %f)\n"
-                " ScrollByPage: %d\n HasPreciseScrollingDeltas: %d\n"
-                " Phase: (%d, %d)",
+                " DeltaUnits: %d\n Phase: (%d, %d)",
                 event.delta_x, event.delta_y, event.wheel_ticks_x,
                 event.wheel_ticks_y, event.acceleration_ratio_x,
-                event.acceleration_ratio_y, event.scroll_by_page,
-                event.has_precise_scrolling_deltas, event.phase,
-                event.momentum_phase);
+                event.acceleration_ratio_y, static_cast<int>(event.delta_units),
+                event.phase, event.momentum_phase);
 }
 
 void ApppendEventDetails(const WebGestureEvent& event, std::string* result) {
   StringAppendF(result,
                 "{\n Pos: (%f, %f)\n GlobalPos: (%f, %f)\n SourceDevice: %d\n"
-                " RawData: (%f, %f, %f, %f, %d)\n}",
+                " RawData: (%f, %f, %f, %f)\n}",
                 event.PositionInWidget().x, event.PositionInWidget().y,
                 event.PositionInScreen().x, event.PositionInScreen().y,
                 event.SourceDevice(), event.data.scroll_update.delta_x,
                 event.data.scroll_update.delta_y,
                 event.data.scroll_update.velocity_x,
-                event.data.scroll_update.velocity_y,
-                event.data.scroll_update.previous_update_in_sequence_prevented);
+                event.data.scroll_update.velocity_y);
 }
 
 void ApppendTouchPointDetails(const WebTouchPoint& point, std::string* result) {
@@ -209,6 +206,7 @@ bool WebInputEventTraits::ShouldBlockEventStream(const WebInputEvent& event) {
     case WebInputEvent::kGestureTapDown:
     case WebInputEvent::kGestureTapCancel:
     case WebInputEvent::kGesturePinchBegin:
+    case WebInputEvent::kGesturePinchUpdate:
     case WebInputEvent::kGesturePinchEnd:
       return false;
 
@@ -255,17 +253,15 @@ uint32_t WebInputEventTraits::GetUniqueTouchEventId(
 LatencyInfo WebInputEventTraits::CreateLatencyInfoForWebGestureEvent(
     const WebGestureEvent& event) {
   SourceEventType source_event_type = SourceEventType::UNKNOWN;
-  if (event.SourceDevice() ==
-      blink::WebGestureDevice::kWebGestureDeviceTouchpad) {
+  if (event.SourceDevice() == blink::WebGestureDevice::kTouchpad) {
     source_event_type = SourceEventType::WHEEL;
     if (event.GetType() >= blink::WebInputEvent::kGesturePinchTypeFirst &&
         event.GetType() <= blink::WebInputEvent::kGesturePinchTypeLast) {
       source_event_type = SourceEventType::TOUCHPAD;
     }
-  } else if (event.SourceDevice() ==
-             blink::WebGestureDevice::kWebGestureDeviceTouchscreen) {
+  } else if (event.SourceDevice() == blink::WebGestureDevice::kTouchscreen) {
     blink::WebGestureEvent::InertialPhaseState inertial_phase_state =
-        blink::WebGestureEvent::kUnknownMomentumPhase;
+        blink::WebGestureEvent::InertialPhaseState::kUnknownMomentum;
 
     switch (event.GetType()) {
       case blink::WebInputEvent::kGestureScrollBegin:
@@ -281,7 +277,8 @@ LatencyInfo WebInputEventTraits::CreateLatencyInfoForWebGestureEvent(
         break;
     }
     bool is_in_inertial_phase =
-        inertial_phase_state == blink::WebGestureEvent::kMomentumPhase;
+        inertial_phase_state ==
+        blink::WebGestureEvent::InertialPhaseState::kMomentum;
     source_event_type = is_in_inertial_phase ? SourceEventType::INERTIAL
                                              : SourceEventType::TOUCH;
   }

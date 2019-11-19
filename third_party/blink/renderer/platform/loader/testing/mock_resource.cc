@@ -34,17 +34,10 @@ MockResource* MockResource::Fetch(FetchParameters& params,
       fetcher->RequestResource(params, MockResourceFactory(), client));
 }
 
-// static
-MockResource* MockResource::Create(const ResourceRequest& request) {
-  ResourceLoaderOptions options;
-  return MakeGarbageCollected<MockResource>(request, options);
-}
-
-MockResource* MockResource::Create(const KURL& url) {
-  ResourceRequest request(url);
-  return Create(request);
-}
-
+MockResource::MockResource(const KURL& url)
+    : MockResource(ResourceRequest(url)) {}
+MockResource::MockResource(const ResourceRequest& request)
+    : MockResource(request, ResourceLoaderOptions()) {}
 MockResource::MockResource(const ResourceRequest& request,
                            const ResourceLoaderOptions& options)
     : Resource(request, ResourceType::kMock, options) {}
@@ -54,13 +47,13 @@ CachedMetadataHandler* MockResource::CreateCachedMetadataHandler(
   return MakeGarbageCollected<MockCacheHandler>(std::move(send_callback));
 }
 
-void MockResource::SetSerializedCachedMetadata(const uint8_t* data,
-                                               size_t size) {
-  Resource::SetSerializedCachedMetadata(data, size);
+void MockResource::SetSerializedCachedMetadata(mojo_base::BigBuffer data) {
+  // Resource ignores the cached metadata.
+  Resource::SetSerializedCachedMetadata(mojo_base::BigBuffer());
   MockCacheHandler* cache_handler =
       static_cast<MockCacheHandler*>(Resource::CacheHandler());
   if (cache_handler) {
-    cache_handler->Set(data, size);
+    cache_handler->Set(data.data(), data.size());
   }
 }
 

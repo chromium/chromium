@@ -18,7 +18,7 @@ class CrashUtil {
   // Helper function to request upload an existing minidump file. Returns true
   // on success, false otherwise.
   static bool RequestUploadCrashDump(const std::string& existing_minidump_path,
-                                     const std::string& crashed_process_name,
+                                     uint64_t crashed_pid,
                                      uint64_t crashed_process_start_time_ms);
 
   // Util function to get current time in ms. This is used to record

@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+FAIL Create Secure WebSocket - wsocket.extensions should be set to '' after connection is established - Connection should be opened assert_equals: extensions should be empty expected "" but got "permessage-deflate"
+PASS Create Secure WebSocket - wsocket.extensions should be set to '' after connection is established - Connection should be closed
+Harness: the test ran to completion.
+

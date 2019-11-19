@@ -1,17 +1,30 @@
-Camera App
-==========
+# Camera App
 
 Camera App is a packaged app designed to take photos and record videos.
 
-Supported systems
------------------
-Should work on any operating system, especially on Chrome OS.
+## Supported systems
 
-Compiling and installing
-------------------------
+Chrome OS. Other platforms are not guaranteed to work.
 
-To compile run "make all", then drag the camera.crx package from the build directory to Chrome. Note, that currently building on Linux only is supported. However, the crx packages should work on any other operating system without problems.
+## Installing, packaging, and testing
 
-Known issues
-------------
-<http:///crbug.com/?q=Cr%3DPlatform-Apps-Camera>
+There is a helper script `utils/cca.py` with a convenient symlink `cca` in the
+top directory. Here are some quick examples:
+
+```
+# Deploy CCA to <device>
+$ ./cca deploy <device>
+
+# Run CCA Tast tests on <device>
+$ ./cca test <device> [patterns...]
+
+# Pack CCA into a distributable .crx.
+$ ./cca pack
+```
+
+For more details, please check the usage of individual commands with the
+`--help` flag.
+
+## Known issues
+
+<https://crbug.com/?q=component%3APlatform%3EApps%3ECamera>

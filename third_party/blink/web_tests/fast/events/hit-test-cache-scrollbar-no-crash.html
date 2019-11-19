@@ -1,5 +1,9 @@
 <!DOCTYPE html>
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<script>
+if (window.internals)
+    internals.useMockOverlayScrollbars();
+</script>
 <style>
 #parent {
   overflow: scroll;
@@ -18,8 +22,6 @@
 description("Ensure hit test cache works in correct scenarios of overlay scrollbars.");
 
 if (window.internals) {
-    internals.runtimeFlags.overlayScrollbarsEnabled = true;
-
     var parentDiv = document.getElementById("parent");
     var rect = parentDiv.getBoundingClientRect();
 

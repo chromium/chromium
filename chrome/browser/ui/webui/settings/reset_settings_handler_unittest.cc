@@ -11,7 +11,7 @@
 #include "chrome/browser/ui/webui/settings/reset_settings_handler.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/browser/web_ui_data_source.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_ui.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -73,7 +73,8 @@ class ResetSettingsHandlerTest : public testing::Test {
  public:
   ResetSettingsHandlerTest() {
     google_brand::BrandForTesting brand_for_testing("");
-    handler_.reset(new TestingResetSettingsHandler(&profile_, &web_ui_));
+    handler_ =
+        std::make_unique<TestingResetSettingsHandler>(&profile_, &web_ui_);
   }
 
   TestingResetSettingsHandler* handler() { return handler_.get(); }
@@ -81,7 +82,7 @@ class ResetSettingsHandlerTest : public testing::Test {
 
  private:
   // The order here matters.
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
   content::TestWebUI web_ui_;
   std::unique_ptr<TestingResetSettingsHandler> handler_;

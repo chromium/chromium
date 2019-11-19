@@ -1,13 +1,13 @@
 Tests DOMSnapshot.getSnapshot method returning paint order indexes.
-box3
-box2
-box5
-box6
-box4
-box1
-box7
-iframe
-mydiv
-shadow-host
-shadow-div
+box3 - 2
+box2 - 3
+box5 - 4
+box6 - 5
+box4 - 6
+box1 - 7
+box7 - 8
+iframe - 9
+mydiv - 11
+shadow-host - 12
+shadow-div - 12
 

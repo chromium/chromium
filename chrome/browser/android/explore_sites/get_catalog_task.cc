@@ -49,7 +49,7 @@ std::string UpdateCurrentCatalogIfNewer(sql::MetaTable* meta_table,
   DCHECK(meta_table);
   std::string downloading_version_token;
   // See if there is a downloading catalog.
-  if (!meta_table->GetValue("downloading_catalog",
+  if (!meta_table->GetValue(ExploreSitesSchema::kDownloadingCatalogKey,
                             &downloading_version_token)) {
     // No downloading catalog means no change required.
     return current_version_token;
@@ -57,9 +57,10 @@ std::string UpdateCurrentCatalogIfNewer(sql::MetaTable* meta_table,
 
   // Update the current version.
   current_version_token = downloading_version_token;
-  if (!meta_table->SetValue("current_catalog", current_version_token))
+  if (!meta_table->SetValue(ExploreSitesSchema::kCurrentCatalogKey,
+                            current_version_token))
     return "";
-  meta_table->DeleteKey("downloading_catalog");
+  meta_table->DeleteKey(ExploreSitesSchema::kDownloadingCatalogKey);
 
   return downloading_version_token;
 }
@@ -90,13 +91,15 @@ GetCatalogSync(bool update_current, sql::Database* db) {
   // currently in use, don't change it.  This is an error, should have been
   // caught before we got here.
   std::string catalog_version_token;
-  if (!meta_table.GetValue("current_catalog", &catalog_version_token) ||
+  if (!meta_table.GetValue(ExploreSitesSchema::kCurrentCatalogKey,
+                           &catalog_version_token) ||
       catalog_version_token.empty()) {
     DVLOG(1)
         << "Didn't find current catalog value. Attempting to use downloading.";
     // If there is no current catalog, use downloading catalog and mark it as
     // current.  If there is no downloading catalog, return no catalog.
-    meta_table.GetValue("downloading_catalog", &catalog_version_token);
+    meta_table.GetValue(ExploreSitesSchema::kDownloadingCatalogKey,
+                        &catalog_version_token);
     if (catalog_version_token.empty())
       return std::make_pair(GetCatalogStatus::kNoCatalog, nullptr);
 
@@ -176,8 +179,7 @@ GetCatalogTask::GetCatalogTask(ExploreSitesStore* store,
                                CatalogCallback callback)
     : store_(store),
       update_current_(update_current),
-      callback_(std::move(callback)),
-      weak_ptr_factory_(this) {}
+      callback_(std::move(callback)) {}
 
 GetCatalogTask::~GetCatalogTask() = default;
 

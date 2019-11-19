@@ -10,7 +10,8 @@
 #include <vector>
 
 #include "base/memory/ref_counted.h"
-#include "components/services/leveldb/public/interfaces/leveldb.mojom.h"
+#include "components/services/storage/dom_storage/async_dom_storage_database.h"
+#include "components/services/storage/dom_storage/dom_storage_database.h"
 #include "content/common/content_export.h"
 #include "url/origin.h"
 
@@ -85,29 +86,33 @@ class CONTENT_EXPORT SessionStorageMetadata {
   ~SessionStorageMetadata();
 
   // For a new database, this saves the database version, clears the metadata,
-  // and returns the operations to save to disk.
-  std::vector<leveldb::mojom::BatchedOperationPtr> SetupNewDatabase();
+  // and returns the operations needed to save to disk.
+  std::vector<storage::AsyncDomStorageDatabase::BatchDatabaseTask>
+  SetupNewDatabase();
 
   // This parses the database version from the bytes that were stored on
   // disk, or if there was no version saved then passes a base::nullopt. This
-  // call is not necessary on new databases. The |upgrade_operations| are
-  // populated with any operations needed to upgrade the databases versioning
-  // metadata. Note this is different than the namespaces metadata, which will
-  // be upgraded in ParseNamespaces.
-  // Returns if the parsing is correct and we support the version read.
+  // call is not necessary on new databases. The |upgrade_tasks| are populated
+  // with any tasks needed to upgrade the databases versioning metadata. Note
+  // this is different than the namespaces metadata, which will be upgraded in
+  // ParseNamespaces.
+  //
+  // Returns |true| if the parsing is correct and we support the version read.
   bool ParseDatabaseVersion(
       base::Optional<std::vector<uint8_t>> value,
-      std::vector<leveldb::mojom::BatchedOperationPtr>* upgrade_operations);
+      std::vector<storage::AsyncDomStorageDatabase::BatchDatabaseTask>*
+          upgrade_tasks);
 
   // Parses all namespaces and maps, and stores all metadata locally. This
   // invalidates all NamespaceEntry and MapData objects. If there is a parsing
   // error, the namespaces will be cleared.If the version given to
   // |ParseDatabaseVersion| is an older version, any namespace metadata upgrades
-  // will be populated in |upgrade_operations|. This call is not necessary on
-  // new databases.
+  // will be populated in |upgrade_tasks|. This call is not necessary on new
+  // databases.
   bool ParseNamespaces(
-      std::vector<leveldb::mojom::KeyValuePtr> values,
-      std::vector<leveldb::mojom::BatchedOperationPtr>* upgrade_operations);
+      std::vector<storage::DomStorageDatabase::KeyValuePair> values,
+      std::vector<storage::AsyncDomStorageDatabase::BatchDatabaseTask>*
+          upgrade_tasks);
 
   // Parses the next map id from the given bytes. If that fails, then it uses
   // the next available id from parsing the namespaces. This call is not
@@ -115,41 +120,48 @@ class CONTENT_EXPORT SessionStorageMetadata {
   void ParseNextMapId(const std::vector<uint8_t>& map_id);
 
   // Creates new map data for the given namespace-origin area. If the area
-  // entry exists, then it will decrement the refcount of the old map. The
-  // |save_operations| save the new or modified area entry, as well as saving
-  // the next available map id.
-  // Note: It is invalid to call this method for an area that has a map with
+  // entry exists, then it will decrement the refcount of the old map. Tasks
+  // appended to |*save_tasks| if run will save the new or modified area entry
+  // to disk, as well as saving the next available map id.
+  //
+  // NOTE: It is invalid to call this method for an area that has a map with
   // only one reference.
   scoped_refptr<MapData> RegisterNewMap(
       NamespaceEntry namespace_entry,
       const url::Origin& origin,
-      std::vector<leveldb::mojom::BatchedOperationPtr>* save_operations);
+      std::vector<storage::AsyncDomStorageDatabase::BatchDatabaseTask>*
+          save_tasks);
 
   // Registers an origin-map in the |destination_namespace| from every
   // origin-map in the |source_namespace|. The |destination_namespace| must have
   // no origin-maps. All maps in the destination namespace are the same maps as
   // the source namespace. All database operations to save the namespace origin
-  // metadata are put in |save_operations|.
+  // metadata are put in |save_tasks|.
   void RegisterShallowClonedNamespace(
       NamespaceEntry source_namespace,
       NamespaceEntry destination_namespace,
-      std::vector<leveldb::mojom::BatchedOperationPtr>* save_operations);
+      std::vector<storage::AsyncDomStorageDatabase::BatchDatabaseTask>*
+          save_tasks);
 
-  // Deletes the given namespace any any maps that no longer have any
+  // Deletes the given namespace and any maps that no longer have any
   // references. This will invalidate all NamespaceEntry objects for the
   // |namespace_id|, and can invalidate any MapData objects whose reference
-  // count hits zero.
+  // count hits zero. Appends operations to |*save_tasks| which will commit the
+  // deletions to disk if run.
   void DeleteNamespace(
       const std::string& namespace_id,
-      std::vector<leveldb::mojom::BatchedOperationPtr>* delete_operations);
+      std::vector<storage::AsyncDomStorageDatabase::BatchDatabaseTask>*
+          save_tasks);
 
-  // This removes the metadata entry for this namespace-origin area. If the map
-  // at this entry isn't reference by any other area (refcount hits 0), then
-  // this will delete that map on disk and invalidate that MapData.
+  // This returns a BatchDatabaseTask to remove the metadata entry for this
+  // namespace-origin area. If the map at this entry isn't referenced by any
+  // other area (refcount hits 0), then the task will also delete that map on
+  // disk and invalidate that MapData.
   void DeleteArea(
       const std::string& namespace_id,
       const url::Origin& origin,
-      std::vector<leveldb::mojom::BatchedOperationPtr>* delete_operations);
+      std::vector<storage::AsyncDomStorageDatabase::BatchDatabaseTask>*
+          save_tasks);
 
   NamespaceEntry GetOrCreateNamespaceEntry(const std::string& namespace_id);
 

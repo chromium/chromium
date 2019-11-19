@@ -153,6 +153,12 @@ public class CafExpandedControllerActivity
     }
 
     @Override
+    protected void onDestroy() {
+        mSessionController.removeCallback(this);
+        super.onDestroy();
+    }
+
+    @Override
     public void onSessionStarted() {}
 
     @Override

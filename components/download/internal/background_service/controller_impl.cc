@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/optional.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -127,13 +126,13 @@ ControllerImpl::ControllerImpl(
       scheduler_(std::move(scheduler)),
       task_scheduler_(std::move(task_scheduler)),
       file_monitor_(std::move(file_monitor)),
-      controller_state_(State::CREATED),
-      weak_ptr_factory_(this) {
+      controller_state_(State::CREATED) {
   DCHECK(config_);
   DCHECK(log_sink_);
 }
 
 ControllerImpl::~ControllerImpl() {
+  navigation_monitor_->SetObserver(nullptr);
   base::trace_event::MemoryDumpManager::GetInstance()->UnregisterDumpProvider(
       this);
 }
@@ -213,6 +212,8 @@ void ControllerImpl::StartDownload(const DownloadParams& params) {
 void ControllerImpl::PauseDownload(const std::string& guid) {
   DCHECK(controller_state_ == State::READY ||
          controller_state_ == State::UNAVAILABLE);
+  stats::LogServiceApiAction(GetOwnerOfDownload(guid),
+                             stats::ServiceApiAction::PAUSE_DOWNLOAD);
   if (controller_state_ != State::READY)
     return;
 
@@ -235,6 +236,8 @@ void ControllerImpl::PauseDownload(const std::string& guid) {
 void ControllerImpl::ResumeDownload(const std::string& guid) {
   DCHECK(controller_state_ == State::READY ||
          controller_state_ == State::UNAVAILABLE);
+  stats::LogServiceApiAction(GetOwnerOfDownload(guid),
+                             stats::ServiceApiAction::RESUME_DOWNLOAD);
   if (controller_state_ != State::READY)
     return;
 
@@ -253,6 +256,8 @@ void ControllerImpl::ResumeDownload(const std::string& guid) {
 void ControllerImpl::CancelDownload(const std::string& guid) {
   DCHECK(controller_state_ == State::READY ||
          controller_state_ == State::UNAVAILABLE);
+  stats::LogServiceApiAction(GetOwnerOfDownload(guid),
+                             stats::ServiceApiAction::CANCEL_DOWNLOAD);
   if (controller_state_ != State::READY)
     return;
 
@@ -275,6 +280,8 @@ void ControllerImpl::ChangeDownloadCriteria(const std::string& guid,
                                             const SchedulingParams& params) {
   DCHECK(controller_state_ == State::READY ||
          controller_state_ == State::UNAVAILABLE);
+  stats::LogServiceApiAction(GetOwnerOfDownload(guid),
+                             stats::ServiceApiAction::CHANGE_CRITERIA);
   if (controller_state_ != State::READY)
     return;
 
@@ -387,8 +394,7 @@ void ControllerImpl::HandleTaskFinished(DownloadTaskType task_type,
     return;
 
   if (status != stats::ScheduledTaskStatus::CANCELLED_ON_STOP) {
-    base::ResetAndReturn(&task_finished_callbacks_[task_type])
-        .Run(needs_reschedule);
+    std::move(task_finished_callbacks_[task_type]).Run(needs_reschedule);
   }
   // TODO(dtrainor): It might be useful to log how many downloads we have
   // running when we're asked to stop processing.
@@ -437,13 +443,8 @@ void ControllerImpl::OnDownloadCreated(const DriverEntry& download) {
 
   download::Client* client = clients_->GetClient(entry->client);
   DCHECK(client);
-  using ShouldDownload = download::Client::ShouldDownload;
-  ShouldDownload should_download = client->OnDownloadStarted(
-      download.guid, download.url_chain, download.response_headers);
-  stats::LogStartDownloadResponse(entry->client, should_download);
-  if (should_download == ShouldDownload::ABORT) {
-    HandleCompleteDownload(CompletionType::ABORT, entry->guid);
-  }
+  client->OnDownloadStarted(download.guid, download.url_chain,
+                            download.response_headers);
 }
 
 void ControllerImpl::OnDownloadFailed(const DriverEntry& download,
@@ -1097,8 +1098,8 @@ void ControllerImpl::NotifyServiceOfStartup() {
   if (init_callback_.is_null())
     return;
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::ResetAndReturn(&init_callback_));
+  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                std::move(init_callback_));
 }
 
 void ControllerImpl::HandleStartDownloadResponse(
@@ -1152,7 +1153,6 @@ void ControllerImpl::HandleCompleteDownload(CompletionType type,
     DCHECK(driver_entry.has_value());
     stats::LogFilePathRenamed(driver_entry->current_file_path !=
                               entry->target_file_path);
-    stats::LogHashPresence(!driver_entry->hash256.empty());
     entry->target_file_path = driver_entry->current_file_path;
     entry->completion_time = driver_entry->completion_time;
     entry->bytes_downloaded = driver_entry->bytes_downloaded;

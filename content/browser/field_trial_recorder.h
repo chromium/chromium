@@ -7,6 +7,7 @@
 
 #include "base/threading/thread_checker.h"
 #include "content/common/field_trial_recorder.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace content {
 
@@ -15,7 +16,7 @@ class FieldTrialRecorder : public mojom::FieldTrialRecorder {
   FieldTrialRecorder();
   ~FieldTrialRecorder() override;
 
-  static void Create(mojom::FieldTrialRecorderRequest request);
+  static void Create(mojo::PendingReceiver<mojom::FieldTrialRecorder> receiver);
 
  private:
   // content::mojom::FieldTrialRecorder:

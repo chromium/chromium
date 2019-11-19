@@ -258,10 +258,10 @@ bool AomContentAxTree::GetParentIdForAXNode(int32_t ax_id, int32_t* out_param) {
 bool AomContentAxTree::GetFirstChildIdForAXNode(int32_t ax_id,
                                                 int32_t* out_param) {
   ui::AXNode* node = tree_.GetFromId(ax_id);
-  if (!node || !node->child_count())
+  if (!node || node->children().empty())
     return false;
 
-  ui::AXNode* child = node->ChildAtIndex(0);
+  ui::AXNode* child = node->children().front();
   DCHECK(child);
   *out_param = child->id();
   return true;
@@ -270,10 +270,10 @@ bool AomContentAxTree::GetFirstChildIdForAXNode(int32_t ax_id,
 bool AomContentAxTree::GetLastChildIdForAXNode(int32_t ax_id,
                                                int32_t* out_param) {
   ui::AXNode* node = tree_.GetFromId(ax_id);
-  if (!node || !node->child_count())
+  if (!node || node->children().empty())
     return false;
 
-  ui::AXNode* child = node->ChildAtIndex(node->child_count() - 1);
+  ui::AXNode* child = node->children().back();
   DCHECK(child);
   *out_param = child->id();
   return true;
@@ -284,14 +284,14 @@ bool AomContentAxTree::GetPreviousSiblingIdForAXNode(int32_t ax_id,
   ui::AXNode* node = tree_.GetFromId(ax_id);
   if (!node)
     return false;
-  int index_in_parent = node->index_in_parent();
+  size_t index_in_parent = node->index_in_parent();
 
   // Assumption: only when this node is the first child, does it not have a
   // previous sibling.
   if (index_in_parent == 0)
     return false;
 
-  ui::AXNode* sibling = node->parent()->ChildAtIndex(index_in_parent - 1);
+  ui::AXNode* sibling = node->parent()->children()[index_in_parent - 1];
   DCHECK(sibling);
   *out_param = sibling->id();
   return true;
@@ -302,14 +302,14 @@ bool AomContentAxTree::GetNextSiblingIdForAXNode(int32_t ax_id,
   ui::AXNode* node = tree_.GetFromId(ax_id);
   if (!node)
     return false;
-  int index_in_parent = node->index_in_parent();
+  size_t next_index_in_parent = node->index_in_parent() + 1;
 
   // Assumption: When this node is the last child, it does not have a next
   // sibling.
-  if (index_in_parent == (node->parent()->child_count() - 1))
+  if (next_index_in_parent == node->parent()->children().size())
     return false;
 
-  ui::AXNode* sibling = node->parent()->ChildAtIndex(index_in_parent + 1);
+  ui::AXNode* sibling = node->parent()->children()[next_index_in_parent];
   DCHECK(sibling);
   *out_param = sibling->id();
   return true;

@@ -1,0 +1,98 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/utils.js"></script>
+</head>
+<body>
+
+<div id=spacer style="height: 3000px"></div>
+<div id="container">
+  <div id="locked">
+    locked
+    <div id="child">
+      child
+    </div>
+    <div id="displayNone" style="display:none;">
+      display:none text
+    </div>
+    <div id="hidden" style="visibility:hidden;">
+      hidden text
+    </div>
+  </div>
+</div>
+
+<script>
+
+function axElementById(id) {
+  return accessibilityController.accessibleElementById(id);
+}
+
+async_test(async (t) => {
+  // Lock #locked.
+  const locked = document.getElementById("locked");
+  await setInvisibleActivatable(locked);
+  let axLocked = axElementById("locked");
+  t.step(() => { assert_false(axLocked.isIgnored); });
+
+  // Expect 7 children: 4 text nodes ("locked" and whitespace between the divs) and 3 div children.
+  // TODO(rakina): Make display:none, visiblity:hidden be ignored/not included in tree even when
+  // display locked, and make sure whitespace collapsing happen.
+  t.step(() => { assert_equals(axLocked.childrenCount, 7, "Child count after acquire"); });
+
+  // These children are special because their "isVisible" should be false.
+  const displayNoneIndex = 3;
+  t.step(() => { assert_equals(axLocked.childAtIndex(displayNoneIndex), axElementById("displayNone"));});
+  const visibilityHiddenIndex = 5;
+  t.step(() => { assert_equals(axLocked.childAtIndex(visibilityHiddenIndex), axElementById("hidden"));});
+
+  // Check all children are not ignored, and visibility:hidden & display:none child are marked as not visible.
+  for (let i = 0; i < axLocked.childrenCount; ++i) {
+    const axChild = axLocked.childAtIndex(i);
+    t.step(() => { assert_false(axChild.isIgnored, "After acquire, isIgnored is false on child #" + i); });
+    if (i == displayNoneIndex || i == visibilityHiddenIndex) {
+      t.step(() => { assert_false(axChild.isVisible, "After acquire, isVisible is false on child #" + i); });
+    } else {
+      t.step(() => { assert_true(axChild.isVisible, "After acquire, isVisible is true on child #" + i); });
+    }
+  }
+
+  // update() should trigger style & layout update in the locked tree. The ax objects might get replaced,
+  // but the structure should stay the same.
+  await locked.updateRendering();
+  axLocked = axElementById("locked");
+  t.step(() => { assert_equals(axLocked.childrenCount, 7, "Child count after update"); });
+
+  // Should stay the same as after acquiring.
+  for (let i = 0; i < axLocked.childrenCount; ++i) {
+    const axChild = axLocked.childAtIndex(i);
+    t.step(() => { assert_false(axChild.isIgnored, "After update, isIgnored is false on child #" + i); });
+    if (i == displayNoneIndex || i == visibilityHiddenIndex) {
+      t.step(() => { assert_false(axChild.isVisible, "After update, isVisible is false on child #" + i); });
+    } else {
+      t.step(() => { assert_true(axChild.isVisible, "After update, isVisible is true on child #" + i); });
+    }
+  }
+
+  // Unlock the element, and force a layout recalc.
+  await setVisible(locked);
+  locked.getBoundingClientRect();
+  axLocked = axElementById("locked");
+  // Expect 4 children: the text node "locked" and 3 div children (#child, #displayNone, and #hidden).
+  t.step(() => { assert_equals(axLocked.childrenCount, 4, "Child count after commit"); });
+
+  for (let i = 0; i < axLocked.childrenCount; ++i) {
+    const axChild = axLocked.childAtIndex(i);
+    if (axChild == axElementById("hidden") || axChild == axElementById("displayNone")) {
+      t.step(() => { assert_true(axChild.isIgnored, "After commit, isIgnored is true on child #" + i); });
+      t.step(() => { assert_false(axChild.isVisible, "After commit, isVisible is false on child #" + i); });
+    } else {
+      t.step(() => { assert_false(axChild.isIgnored, "After update, isIgnored is false on child #" + i); });
+      t.step(() => { assert_true(axChild.isVisible, "After commit, isVisible is true on child #" + i); });
+    }
+  }
+  t.done();
+}, "Nodes in activatable locked tree are exposed to accessibility tree");
+</script>
+</body>

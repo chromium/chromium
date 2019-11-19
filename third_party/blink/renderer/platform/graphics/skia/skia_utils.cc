@@ -30,12 +30,14 @@
 
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 
+#include "base/allocator/partition_allocator/partition_alloc.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_flags.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
 #include "third_party/skia/include/effects/SkCornerPathEffect.h"
-#include "third_party/skia/third_party/skcms/skcms.h"
+#include "third_party/skia/include/third_party/skcms/skcms.h"
 
 #include <algorithm>
 #include <cmath>
@@ -404,5 +406,19 @@ template void PLATFORM_EXPORT DrawPlatformFocusRing<SkPath>(const SkPath&,
                                                             cc::PaintCanvas*,
                                                             SkColor,
                                                             float width);
+
+sk_sp<SkData> TryAllocateSkData(size_t size) {
+  void* buffer = WTF::Partitions::BufferPartition()->AllocFlags(
+      base::PartitionAllocReturnNull | base::PartitionAllocZeroFill, size,
+      "SkData");
+  if (!buffer)
+    return nullptr;
+  return SkData::MakeWithProc(
+      buffer, size,
+      [](const void* buffer, void* context) {
+        WTF::Partitions::BufferPartition()->Free(const_cast<void*>(buffer));
+      },
+      /*context=*/nullptr);
+}
 
 }  // namespace blink

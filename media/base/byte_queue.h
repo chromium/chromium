@@ -15,9 +15,10 @@
 
 namespace media {
 
-// Represents a queue of bytes.
-// Data is added to the end of the queue via an Push() call and removed via
-// Pop(). The contents of the queue can be observed via the Peek() method.
+// Represents a queue of bytes. Data is added to the end of the queue via an
+// Push() call and removed via Pop(). The contents of the queue can be observed
+// via the Peek() method.
+//
 // This class manages the underlying storage of the queue and tries to minimize
 // the number of buffer copies when data is appended and removed.
 class MEDIA_EXPORT ByteQueue {
@@ -31,28 +32,30 @@ class MEDIA_EXPORT ByteQueue {
   // Appends new bytes onto the end of the queue.
   void Push(const uint8_t* data, int size);
 
-  // Get a pointer to the front of the queue and the queue size.
-  // These values are only valid until the next Push() or
-  // Pop() call.
+  // Get a pointer to the front of the queue and the queue size. These values
+  // are only valid until the next Push() or Pop() call.
   void Peek(const uint8_t** data, int* size) const;
 
   // Remove |count| bytes from the front of the queue.
   void Pop(int count);
 
  private:
-  // Returns a pointer to the front of the queue.
-  uint8_t* front() const;
+  // Default starting size for the queue.
+  enum { kDefaultQueueSize = 1024 };
 
-  std::unique_ptr<uint8_t[]> buffer_;
+  // Returns a pointer to the front of the queue.
+  uint8_t* Front() const;
 
   // Size of |buffer_|.
-  size_t size_;
+  size_t size_ = kDefaultQueueSize;
 
   // Offset from the start of |buffer_| that marks the front of the queue.
-  size_t offset_;
+  size_t offset_ = 0u;
 
-  // Number of bytes stored in the queue.
-  int used_;
+  // Number of bytes stored in |buffer_|.
+  int used_ = 0;
+
+  std::unique_ptr<uint8_t[]> buffer_;
 
   DISALLOW_COPY_AND_ASSIGN(ByteQueue);
 };

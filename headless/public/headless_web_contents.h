@@ -59,6 +59,9 @@ class HEADLESS_EXPORT HeadlessWebContents {
     virtual void RenderProcessExited(base::TerminationStatus status,
                                      int exit_code) {}
 
+    // Invoked when HeadlessWebContents is being destroyed.
+    virtual void HeadlessWebContentsDestroyed() {}
+
    protected:
     Observer() {}
     virtual ~Observer() {}

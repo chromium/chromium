@@ -10,11 +10,8 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "url/gurl.h"
-
-namespace base {
-class Value;
-}
 
 namespace network {
 class SimpleURLLoader;
@@ -43,8 +40,7 @@ class WebstoreDataFetcher : public base::SupportsWeakPtr<WebstoreDataFetcher> {
   }
 
  private:
-  void OnJsonParseSuccess(std::unique_ptr<base::Value> parsed_json);
-  void OnJsonParseFailure(const std::string& error);
+  void OnJsonParsed(data_decoder::DataDecoder::ValueOrError result);
   void OnSimpleLoaderComplete(std::unique_ptr<std::string> response_body);
 
   WebstoreDataFetcherDelegate* delegate_;

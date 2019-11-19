@@ -30,6 +30,23 @@
 
 namespace blink {
 
+scoped_refptr<TransformOperation> PerspectiveTransformOperation::Accumulate(
+    const TransformOperation& other) {
+  DCHECK(other.IsSameType(*this));
+  double other_p = ToPerspectiveTransformOperation(other).p_;
+
+  if (p_ == 0 && other_p == 0)
+    return nullptr;
+
+  // We want to solve:
+  //   -1/p + -1/p' == -1/p'', where we know p and p'.
+  //
+  // This can be rewritten as:
+  //   p'' == (p * p') / (p + p')
+  double p = (p_ * other_p) / (p_ + other_p);
+  return PerspectiveTransformOperation::Create(p);
+}
+
 scoped_refptr<TransformOperation> PerspectiveTransformOperation::Blend(
     const TransformOperation* from,
     double progress,
@@ -62,7 +79,7 @@ scoped_refptr<TransformOperation> PerspectiveTransformOperation::Blend(
 
   if (decomp.perspective_z) {
     double val = -1.0 / decomp.perspective_z;
-    return PerspectiveTransformOperation::Create(clampTo<int>(val, 0));
+    return PerspectiveTransformOperation::Create(clampTo<double>(val, 0));
   }
   return PerspectiveTransformOperation::Create(0);
 }

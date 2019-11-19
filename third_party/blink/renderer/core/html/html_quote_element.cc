@@ -27,27 +27,25 @@
 
 namespace blink {
 
-using namespace html_names;
-
-inline HTMLQuoteElement::HTMLQuoteElement(const QualifiedName& tag_name,
-                                          Document& document)
+HTMLQuoteElement::HTMLQuoteElement(const QualifiedName& tag_name,
+                                   Document& document)
     : HTMLElement(tag_name, document) {
-  DCHECK(HasTagName(kQTag) || HasTagName(kBlockquoteTag));
+  DCHECK(HasTagName(html_names::kQTag) ||
+         HasTagName(html_names::kBlockquoteTag));
 }
 
-DEFINE_ELEMENT_FACTORY_WITH_TAGNAME(HTMLQuoteElement)
-
 bool HTMLQuoteElement::IsURLAttribute(const Attribute& attribute) const {
-  return attribute.GetName() == kCiteAttr ||
+  return attribute.GetName() == html_names::kCiteAttr ||
          HTMLElement::IsURLAttribute(attribute);
 }
 
 bool HTMLQuoteElement::HasLegalLinkAttribute(const QualifiedName& name) const {
-  return name == kCiteAttr || HTMLElement::HasLegalLinkAttribute(name);
+  return name == html_names::kCiteAttr ||
+         HTMLElement::HasLegalLinkAttribute(name);
 }
 
 const QualifiedName& HTMLQuoteElement::SubResourceAttributeName() const {
-  return kCiteAttr;
+  return html_names::kCiteAttr;
 }
 
 }  // namespace blink

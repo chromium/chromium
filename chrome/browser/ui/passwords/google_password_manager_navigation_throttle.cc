@@ -5,12 +5,18 @@
 #include "chrome/browser/ui/passwords/google_password_manager_navigation_throttle.h"
 
 #include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/task/post_task.h"
+#include "base/task/task_traits.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/passwords/manage_passwords_view_utils.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
@@ -21,21 +27,70 @@ namespace {
 
 using NavigationResult =
     GooglePasswordManagerNavigationThrottle::NavigationResult;
+using content::NavigationThrottle;
+using content::WebContents;
+using content::WebContentsObserver;
 
 constexpr base::TimeDelta kTimeout = base::TimeDelta::FromSeconds(2);
 
-void NavigateToChromeSettingsPasswordsPage(
-    content::NavigationHandle* navigation_handle) {
-  navigation_handle->GetWebContents()->OpenURL(content::OpenURLParams(
-      chrome::GetSettingsUrl(chrome::kPasswordManagerSubPage),
-      navigation_handle->GetReferrer(), navigation_handle->GetFrameTreeNodeId(),
-      WindowOpenDisposition::CURRENT_TAB,
-      navigation_handle->GetPageTransition(),
-      false /* is_renderer_initiated */));
+// Helper method to make sure we don't dereference a destroyed WebContents
+// below. This is effectively a copy of the test-only
+// content::WebContentsDestroyedObserver.
+class WebContentsDestroyedObserver : public WebContentsObserver {
+ public:
+  explicit WebContentsDestroyedObserver(WebContents* web_contents)
+      : WebContentsObserver(web_contents) {}
+  ~WebContentsDestroyedObserver() override = default;
+
+  bool IsDestroyed() const { return destroyed_; }
+
+ private:
+  // WebContentsObserver:
+  void WebContentsDestroyed() override { destroyed_ = true; }
+
+  bool destroyed_ = false;
+};
+
+// This method implements an offline fallback by closing the tab corresponding
+// to the initial navigation to https://passwords.google.com, and then
+// navigating to chrome://settings/passwords instead.
+// Note: This is done async so that the original navigation gets opportunity to
+// properly tear down before the new navigation is initiated.
+void PostShowPasswordManagerAndCloseTab(
+    content::NavigationHandle* navigation_handle,
+    const base::Location& from_here = base::Location::Current()) {
+  base::PostTask(
+      from_here, {content::BrowserThread::UI},
+      base::BindOnce(
+          [](std::unique_ptr<WebContentsDestroyedObserver> observer) {
+            if (observer->IsDestroyed())
+              return;
+
+            WebContents* web_contents = observer->web_contents();
+            Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+            chrome::ShowPasswordManager(browser);
+
+            // Note: Since ShowPasswordManager() will result in either a new tab
+            // or focus an existing instance of the password settings page, the
+            // tab for the initial navigation to passwords.google.com is no
+            // longer needed. Thus we close it.
+            TabStripModel* tab_strip_model = browser->tab_strip_model();
+            int index = tab_strip_model->GetIndexOfWebContents(web_contents);
+            if (index == TabStripModel::kNoTab) {
+              DLOG(ERROR) << "Could not find index of web contents.";
+              return;
+            }
+
+            tab_strip_model->CloseWebContentsAt(
+                index, TabStripModel::CLOSE_CREATE_HISTORICAL_TAB);
+          },
+
+          std::make_unique<WebContentsDestroyedObserver>(
+              navigation_handle->GetWebContents())));
 }
 
 void RecordNavigationResult(NavigationResult result) {
-  UMA_HISTOGRAM_ENUMERATION(
+  base::UmaHistogramEnumeration(
       "PasswordManager.GooglePasswordManager.NavigationResult", result);
 }
 
@@ -44,12 +99,14 @@ void RecordSuccessOrFailure(NavigationResult result,
   RecordNavigationResult(result);
   switch (result) {
     case NavigationResult::kSuccess:
-      UMA_HISTOGRAM_TIMES("PasswordManager.GooglePasswordManager.TimeToSuccess",
-                          base::TimeTicks::Now() - navigation_start);
+      base::UmaHistogramTimes(
+          "PasswordManager.GooglePasswordManager.TimeToSuccess",
+          base::TimeTicks::Now() - navigation_start);
       return;
     case NavigationResult::kFailure:
-      UMA_HISTOGRAM_TIMES("PasswordManager.GooglePasswordManager.TimeToFailure",
-                          base::TimeTicks::Now() - navigation_start);
+      base::UmaHistogramTimes(
+          "PasswordManager.GooglePasswordManager.TimeToFailure",
+          base::TimeTicks::Now() - navigation_start);
       return;
     case NavigationResult::kTimeout:
       break;
@@ -61,10 +118,10 @@ void RecordSuccessOrFailure(NavigationResult result,
 }  // namespace
 
 // static
-std::unique_ptr<content::NavigationThrottle>
+std::unique_ptr<NavigationThrottle>
 GooglePasswordManagerNavigationThrottle::MaybeCreateThrottleFor(
     content::NavigationHandle* handle) {
-  content::WebContents* web_contents = handle->GetWebContents();
+  WebContents* web_contents = handle->GetWebContents();
   // Don't create a throttle if the user is not navigating to the Google
   // Password Manager.
   if (handle->GetURL().GetOrigin() != GURL(chrome::kGooglePasswordManagerURL))
@@ -90,7 +147,7 @@ GooglePasswordManagerNavigationThrottle::MaybeCreateThrottleFor(
 GooglePasswordManagerNavigationThrottle::
     ~GooglePasswordManagerNavigationThrottle() = default;
 
-content::NavigationThrottle::ThrottleCheckResult
+NavigationThrottle::ThrottleCheckResult
 GooglePasswordManagerNavigationThrottle::WillStartRequest() {
   timer_.Start(FROM_HERE, kTimeout, this,
                &GooglePasswordManagerNavigationThrottle::OnTimeout);
@@ -98,25 +155,25 @@ GooglePasswordManagerNavigationThrottle::WillStartRequest() {
   return NavigationThrottle::PROCEED;
 }
 
-content::NavigationThrottle::ThrottleCheckResult
+NavigationThrottle::ThrottleCheckResult
 GooglePasswordManagerNavigationThrottle::WillFailRequest() {
   if (timer_.IsRunning()) {
     timer_.Stop();
     RecordSuccessOrFailure(NavigationResult::kFailure, navigation_start_);
-    NavigateToChromeSettingsPasswordsPage(navigation_handle());
+    PostShowPasswordManagerAndCloseTab(navigation_handle());
   }
-  return content::NavigationThrottle::CANCEL_AND_IGNORE;
+  return NavigationThrottle::CANCEL;
 }
 
-content::NavigationThrottle::ThrottleCheckResult
+NavigationThrottle::ThrottleCheckResult
 GooglePasswordManagerNavigationThrottle::WillProcessResponse() {
   if (timer_.IsRunning()) {
     timer_.Stop();
     RecordSuccessOrFailure(NavigationResult::kSuccess, navigation_start_);
-    return content::NavigationThrottle::PROCEED;
+    return NavigationThrottle::PROCEED;
   }
 
-  return content::NavigationThrottle::CANCEL_AND_IGNORE;
+  return NavigationThrottle::CANCEL;
 }
 
 const char* GooglePasswordManagerNavigationThrottle::GetNameForLogging() {
@@ -125,5 +182,5 @@ const char* GooglePasswordManagerNavigationThrottle::GetNameForLogging() {
 
 void GooglePasswordManagerNavigationThrottle::OnTimeout() {
   RecordNavigationResult(NavigationResult::kTimeout);
-  NavigateToChromeSettingsPasswordsPage(navigation_handle());
+  PostShowPasswordManagerAndCloseTab(navigation_handle());
 }

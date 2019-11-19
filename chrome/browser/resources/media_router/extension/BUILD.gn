@@ -1,11 +1,5 @@
 import("src/files.gni")
 
-group("all") {
-  deps = [
-    ":media_router",
-  ]
-}
-
 declare_args() {
   # Determines whether JSCompiler should be used to typecheck
   # JavaScript code for the Media Router extension.
@@ -72,7 +66,7 @@ action("media_router") {
   outputs = [
     "$target_gen_dir/manifest.json",
   ]
-  deps = [
+  data_deps = [
     ":copy_prelude",
     ":media_router_modules",
   ]

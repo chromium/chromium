@@ -5,16 +5,16 @@
 #include "third_party/blink/renderer/platform/audio/vector_math.h"
 
 #include <algorithm>
-#include <array>
 #include <cmath>
 #include <limits>
 #include <numeric>
 #include <random>
-#include <vector>
 
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 namespace vector_math {
@@ -70,7 +70,11 @@ bool Equal(float a, float b) {
 // blink::vector_math functions.
 template <typename T>
 class TestVector {
+  STACK_ALLOCATED();
+
   class Iterator {
+    STACK_ALLOCATED();
+
    public:
     // These types are used by std::iterator_traits used by std::equal used by
     // TestVector::operator==.
@@ -163,10 +167,8 @@ class TestVector {
 // Get primary input vectors with difference memory layout and size
 // combinations.
 template <typename T>
-std::array<TestVector<const T>, kVectorSizeCount * kMemoryLayoutCount>
-GetPrimaryVectors(const T* base) {
-  std::array<TestVector<const T>, kVectorSizeCount * kMemoryLayoutCount>
-      vectors;
+Vector<TestVector<const T>> GetPrimaryVectors(const T* base) {
+  Vector<TestVector<const T>> vectors(kVectorSizeCount * kMemoryLayoutCount);
   for (auto& vector : vectors) {
     ptrdiff_t i = &vector - &vectors[0];
     ptrdiff_t memory_layout_index = i % kMemoryLayoutCount;
@@ -186,11 +188,11 @@ GetPrimaryVectors(const T* base) {
 //    and which therefore is not aligned when the primary input vector is
 //    aligned.
 template <typename T>
-std::array<TestVector<T>, 2u> GetSecondaryVectors(
+Vector<TestVector<T>> GetSecondaryVectors(
     T* base,
     const MemoryLayout* primary_memory_layout,
     size_t size) {
-  std::array<TestVector<T>, 2u> vectors;
+  Vector<TestVector<T>> vectors(2u);
   const MemoryLayout* other_memory_layout =
       &kMemoryLayouts[primary_memory_layout == &kMemoryLayouts[0]];
   CHECK_NE(primary_memory_layout, other_memory_layout);
@@ -202,7 +204,7 @@ std::array<TestVector<T>, 2u> GetSecondaryVectors(
 }
 
 template <typename T>
-std::array<TestVector<T>, 2u> GetSecondaryVectors(
+Vector<TestVector<T>> GetSecondaryVectors(
     T* base,
     const TestVector<const float>& primary_vector) {
   return GetSecondaryVectors(base, primary_vector.memory_layout(),
@@ -435,8 +437,9 @@ TEST_F(VectorMathTest, Vsvesq) {
 
 TEST_F(VectorMathTest, Zvmul) {
   constexpr float kMax = std::numeric_limits<float>::max();
-  std::vector<std::array<float, kFloatArraySize + 1u>> sources(4u);
+  Vector<Vector<float>> sources(4u);
   for (size_t i = 0u; i < sources.size(); ++i) {
+    sources[i].resize(kFloatArraySize);
     // Initialize a local source with a randomized test case source.
     std::copy_n(GetSource(i), kFloatArraySize, sources[i].begin());
     // Put +FLT_MAX and -FLT_MAX in the middle of the source. Use a different

@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
+<script src="/gen/mojo/public/interfaces/bindings/tests/test_associated_interfaces.mojom.js"></script>
+<script>
+'use strict';
+
+function SenderImpl(callback) {
+  this.callback = callback;
+}
+
+SenderImpl.prototype.echo = function(value) {
+  return Promise.resolve({value: value});
+};
+
+SenderImpl.prototype.send = function(value) {
+  if (this.callback) {
+    this.callback(value);
+  }
+};
+
+var IntegerSenderImpl = SenderImpl;
+var StringSenderImpl = SenderImpl;
+
+function IntegerSenderConnectionImpl() {
+  this.integerSenderBinding_ = null;
+}
+
+IntegerSenderConnectionImpl.prototype.getSender = function(
+    integerSenderRequest) {
+  this.integerSenderBinding_ = new mojo.AssociatedBinding(
+      mojo.test.IntegerSender, new IntegerSenderImpl(), integerSenderRequest);
+};
+
+IntegerSenderConnectionImpl.prototype.asyncGetSender = function() {
+  var integerSenderPtrInfo = new mojo.AssociatedInterfacePtrInfo();
+  var integerSenderRequest = mojo.makeRequest(integerSenderPtrInfo);
+  this.getSender(integerSenderRequest);
+  return Promise.resolve({sender: integerSenderPtrInfo});
+};
+
+function IntegerSenderConnectionAtBothEndsImpl() {
+  this.integerSender_ = null;
+}
+
+IntegerSenderConnectionAtBothEndsImpl.prototype.getSender =
+    IntegerSenderConnectionImpl.prototype.getSender;
+
+IntegerSenderConnectionAtBothEndsImpl.prototype.setSender = function(
+    integerSenderPtrInfo) {
+  this.integerSender_ = new mojo.test.IntegerSenderAssociatedPtr(
+      integerSenderPtrInfo);
+  return this.integerSender_.echo(456);
+};
+
+function IntegerSenderConnectionImplWithConnectionError() {
+  this.integerSenderBinding_ = null;
+}
+
+IntegerSenderConnectionImplWithConnectionError.prototype.getSender =
+    function(integerSenderRequest) {
+  this.integerSenderBinding_ = new mojo.AssociatedBinding(
+      mojo.test.IntegerSender, new IntegerSenderImpl(), integerSenderRequest);
+  this.integerSenderBinding_.closeWithReason(
+      {customReason: 42, description: 'hey'});
+};
+
+function SenderConnectionBindLaterImpl({getIntegerSenderCallback,
+    getStringSenderCallback} = {}) {
+  this.getIntegerSenderCallback = getIntegerSenderCallback;
+  this.getStringSenderCallback = getStringSenderCallback;
+  this.integerSenderBinding_ = null;
+  this.stringSenderBinding_ = null;
+}
+
+SenderConnectionBindLaterImpl.prototype.getIntegerSender =
+    function(integerSenderRequest) {
+  setTimeout(() => {
+    this.integerSenderBinding_ = new mojo.AssociatedBinding(
+        mojo.test.IntegerSender,
+        new IntegerSenderImpl(this.getIntegerSenderCallback),
+        integerSenderRequest);
+  }, 0);
+};
+
+SenderConnectionBindLaterImpl.prototype.getStringSender =
+    function(stringSenderRequest) {
+  this.stringSenderBinding_ = new mojo.AssociatedBinding(
+      mojo.test.StringSender,
+      new StringSenderImpl(this.getStringSenderCallback),
+      stringSenderRequest);
+};
+
+function SenderConnectionImpl({getIntegerSenderCallback,
+    getStringSenderCallback} = {}) {
+  this.getIntegerSenderCallback = getIntegerSenderCallback;
+  this.getStringSenderCallback = getStringSenderCallback;
+  this.integerSenderBinding_ = null;
+  this.stringSenderBinding_ = null;
+}
+
+SenderConnectionImpl.prototype.getIntegerSender =
+    function(integerSenderRequest) {
+  this.integerSenderBinding_ = new mojo.AssociatedBinding(
+      mojo.test.IntegerSender,
+      new IntegerSenderImpl(this.getIntegerSenderCallback),
+      integerSenderRequest);
+};
+
+SenderConnectionImpl.prototype.getStringSender =
+    function(stringSenderRequest) {
+  this.stringSenderBinding_ = new mojo.AssociatedBinding(
+      mojo.test.StringSender,
+      new StringSenderImpl(this.getStringSenderCallback),
+      stringSenderRequest);
+};
+
+promise_test(async () => {
+  var integerSenderConnection = new
+      mojo.test.IntegerSenderConnectionPtr();
+  var integerSenderConnectionBinding = new mojo.Binding(
+      mojo.test.IntegerSenderConnection,
+      new IntegerSenderConnectionImpl(),
+      mojo.makeRequest(integerSenderConnection));
+
+  // Sending AssociatedInterfaceRequest.
+  var integerSenderPtrInfo0 = new mojo.AssociatedInterfacePtrInfo();
+  var integerSenderRequest0 = mojo.makeRequest(integerSenderPtrInfo0);
+
+  var integerSender0 = new mojo.test.IntegerSenderAssociatedPtr(
+      integerSenderPtrInfo0);
+
+  integerSenderConnection.getSender(integerSenderRequest0);
+  assert_equals((await integerSender0.echo(123)).value, 123);
+
+  // Recieving AssociatedInterfacePtrInfo.
+  var integerSenderPtrInfo1 =
+      (await integerSenderConnection.asyncGetSender()).sender;
+  var integerSender1 = new mojo.test.IntegerSenderAssociatedPtr(
+      integerSenderPtrInfo1);
+  assert_equals((await integerSender1.echo(456)).value, 456);
+}, 'pass associated interfaces');
+
+// Bind to the same pipe two associated interfaces, whose implementation
+// lives at different ends. Test that the two don't interfere.
+promise_test(async () => {
+  var integerSenderConnectionAtBothEnds = new
+      mojo.test.IntegerSenderConnectionAtBothEndsPtr();
+  var integerSenderConnectionAtBothEndsBinding = new mojo.Binding(
+      mojo.test.IntegerSenderConnectionAtBothEnds,
+      new IntegerSenderConnectionAtBothEndsImpl(),
+      mojo.makeRequest(integerSenderConnectionAtBothEnds));
+
+  // Associated Interface whose Binding Impl lives on the other side.
+  // Sending AssociatedInterfaceRequest.
+  var integerSenderPtrInfo0 = new mojo.AssociatedInterfacePtrInfo();
+  var integerSenderRequest0 = mojo.makeRequest(integerSenderPtrInfo0);
+
+  var integerSender0 = new mojo.test.IntegerSenderAssociatedPtr(
+      integerSenderPtrInfo0);
+
+  integerSenderConnectionAtBothEnds.getSender(integerSenderRequest0);
+  assert_equals((await integerSender0.echo(123)).value, 123);
+
+  // Associated Interface whose Binding Impl lives on this side.
+  // Sending AssociatedInterfacePtrInfo.
+  var integerSenderPtrInfo1 = new mojo.AssociatedInterfacePtrInfo();
+  var integerSenderRequest1 = mojo.makeRequest(integerSenderPtrInfo1);
+
+  var integerSenderBinding = new mojo.AssociatedBinding(
+      mojo.test.IntegerSender, new IntegerSenderImpl(),
+      integerSenderRequest1);
+
+  assert_equals((await integerSenderConnectionAtBothEnds.setSender(
+      integerSenderPtrInfo1)).value, 456);
+}, 'associated interfaces on both ends');
+
+promise_test(async () => {
+  var integerSenderConnection = new mojo.test.IntegerSenderConnectionPtr();
+  var integerSenderConnectionBinding = new mojo.Binding(
+      mojo.test.IntegerSenderConnection,
+      new IntegerSenderConnectionImplWithConnectionError(),
+      mojo.makeRequest(integerSenderConnection));
+
+  // Sending AssociatedInterfaceRequest.
+  var integerSenderPtrInfo0 = new mojo.AssociatedInterfacePtrInfo();
+  var integerSenderRequest0 = mojo.makeRequest(integerSenderPtrInfo0);
+
+  var integerSender0 = new mojo.test.IntegerSenderAssociatedPtr(
+          integerSenderPtrInfo0);
+
+  integerSenderConnection.getSender(integerSenderRequest0);
+  await new Promise((resolve, reject) => {
+    integerSender0.ptr.setConnectionErrorHandler(function({customReason,
+        description}) {
+      assert_equals(customReason, 42);
+      assert_equals(description, 'hey');
+      resolve();
+    });
+  });
+}, 'connection error with reason');
+
+// Test that AssociatedInterfacePtr is notified with connection error when
+// the interface hasn't associated with a message pipe and the peer is
+// closed.
+promise_test(async () => {
+  var integerSenderPtrInfo = new mojo.AssociatedInterfacePtrInfo();
+  var integerSenderRequest = mojo.makeRequest(integerSenderPtrInfo);
+
+  var integerSender = new mojo.test.IntegerSenderAssociatedPtr(
+      integerSenderPtrInfo);
+
+  await new Promise((resolve, reject) => {
+    integerSender.ptr.setConnectionErrorHandler(function({customReason,
+        description}) {
+      assert_equals(customReason, 42);
+      assert_equals(description, 'hey');
+      resolve();
+    });
+    integerSenderRequest.resetWithReason({customReason: 42,
+        description: 'hey'})
+  });
+}, 'pending AssociatedInterfacePtr connection error with reason');
+
+promise_test(async () => {
+  var integerSenderConnection = new mojo.test.IntegerSenderConnectionPtr();
+  var integerSenderConnectionBinding = new mojo.Binding(
+      mojo.test.IntegerSenderConnection, new IntegerSenderConnectionImpl(),
+      mojo.makeRequest(integerSenderConnection));
+
+  // Sending AssociatedInterfaceRequest.
+  var integerSenderPtrInfo0 = new mojo.AssociatedInterfacePtrInfo();
+  var integerSenderRequest0 = mojo.makeRequest(integerSenderPtrInfo0);
+  var integerSender0 = new mojo.test.IntegerSenderAssociatedPtr(
+      integerSenderPtrInfo0);
+  integerSenderConnection.getSender(integerSenderRequest0);
+
+  // Recieving AssociatedInterfacePtrInfo.
+  var integerSenderPtrInfo1 =
+      (await integerSenderConnection.asyncGetSender()).sender;
+  var integerSender1 = new mojo.test.IntegerSenderAssociatedPtr(
+      integerSenderPtrInfo1);
+
+  // Master InterfacePtrController reset triggers connection error handler on
+  // interface endpoint clients for all associated endpoints.
+  var connectionErrorHandler0 = new Promise((resolve, reject) => {
+    integerSender0.ptr.setConnectionErrorHandler(() => {
+      resolve();
+    });
+  });
+
+  var connectionErrorHandler1 = new Promise((resolve, reject) => {
+    integerSender1.ptr.setConnectionErrorHandler(() => {
+      resolve();
+    });
+  });
+
+  setTimeout(integerSenderConnection.ptr.reset.bind(
+      integerSenderConnection.ptr), 0);
+  await Promise.all([connectionErrorHandler0, connectionErrorHandler1]);
+}, 'all endpoints connectionErrorHandler called on master interface reset');
+
+// Cache the current message and pause processing incoming messages if
+// endpoint does not have client attached yet to ensure fifo message arrival.
+promise_test(async () => {
+  var senderConnection = new mojo.test.SenderConnectionPtr();
+  var senderConnectionBindLaterImpl = new SenderConnectionBindLaterImpl();
+  var senderConnectionBinding = new mojo.Binding(
+      mojo.test.SenderConnection, senderConnectionBindLaterImpl,
+      mojo.makeRequest(senderConnection));
+
+  // AssociatedInterfaceRequest for stringSender.
+  var stringSenderPtrInfo = new mojo.AssociatedInterfacePtrInfo();
+  var stringSenderRequest = mojo.makeRequest(stringSenderPtrInfo);
+  var stringSender = new mojo.test.StringSenderAssociatedPtr(
+      stringSenderPtrInfo);
+
+  // AssociatedInterfaceRequest for integerSender.
+  var integerSenderPtrInfo = new mojo.AssociatedInterfacePtrInfo();
+  var integerSenderRequest = mojo.makeRequest(integerSenderPtrInfo);
+  var integerSender = new mojo.test.IntegerSenderAssociatedPtr(
+      integerSenderPtrInfo);
+
+  var value = await new Promise(function(resolve, reject) {
+    senderConnectionBindLaterImpl.getIntegerSenderCallback = resolve;
+    senderConnectionBindLaterImpl.getStringSenderCallback= reject;
+    senderConnection.getStringSender(stringSenderRequest);
+    senderConnection.getIntegerSender(integerSenderRequest);
+    // Test FIFO arrival order of message.
+    integerSender.send(456); // This message should arrive first.
+    stringSender.send('goodbye');
+  });
+
+  assert_equals(value, 456);
+}, 'fifo order should be preserved for messages');
+
+promise_test(async () => {
+  var senderConnection = new mojo.test.SenderConnectionPtr();
+  var senderConnectionImpl = new SenderConnectionImpl();
+  var senderConnectionBinding = new mojo.Binding(
+      mojo.test.SenderConnection, senderConnectionImpl,
+      mojo.makeRequest(senderConnection));
+
+  // AssociatedInterfaceRequest for stringSender.
+  var stringSenderPtrInfo = new mojo.AssociatedInterfacePtrInfo();
+  var stringSenderRequest = mojo.makeRequest(stringSenderPtrInfo);
+  var stringSender = new mojo.test.StringSenderAssociatedPtr(
+      stringSenderPtrInfo);
+
+  // AssociatedInterfaceRequest for integerSender.
+  var integerSenderPtrInfo = new mojo.AssociatedInterfacePtrInfo();
+  var integerSenderRequest = mojo.makeRequest(integerSenderPtrInfo);
+  var integerSender = new mojo.test.IntegerSenderAssociatedPtr(
+      integerSenderPtrInfo);
+
+  var value = await new Promise(function(resolve, reject) {
+    senderConnectionImpl.getIntegerSenderCallback = reject;
+    senderConnectionImpl.getStringSenderCallback= resolve;
+    senderConnection.getStringSender(stringSenderRequest);
+    senderConnection.getIntegerSender(integerSenderRequest);
+
+    // Wait for integerSenderBinding to be created.
+    integerSender.echo(100).then(function(result) {
+      assert_equals(result.value, 100);
+
+      // This causes this endpoint handle's endpoint client to be detached.
+      var handle = senderConnectionImpl.integerSenderBinding_.
+          interfaceEndpointClient_.passHandle();
+
+      // Cache message. Connector will pause processing incoming messages.
+      integerSender.send(456);
+      stringSender.send('goodbye');
+
+      // Closing the target endpoint handle of the cached message will cause
+      // the cached message to be discarded and the connector to resume
+      // processing incoming messages.
+      setTimeout(handle.reset.bind(handle), 0);
+    });
+  });
+
+  assert_equals(value, 'goodbye');
+}, 'discard cached message if target endpoint closed');
+
+</script>

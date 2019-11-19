@@ -22,29 +22,26 @@
 #include "third_party/blink/renderer/core/editing/visible_units.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
-#include "third_party/blink/renderer/platform/wtf/time.h"
 
 namespace blink {
 
 namespace {
 
-constexpr TimeDelta kColdModeTimerInterval = TimeDelta::FromMilliseconds(1000);
-constexpr TimeDelta kConsecutiveColdModeTimerInterval =
-    TimeDelta::FromMilliseconds(200);
+constexpr base::TimeDelta kColdModeTimerInterval =
+    base::TimeDelta::FromMilliseconds(1000);
+constexpr base::TimeDelta kConsecutiveColdModeTimerInterval =
+    base::TimeDelta::FromMilliseconds(200);
 const int kHotModeRequestTimeoutMS = 200;
 const int kInvalidHandle = -1;
 const int kDummyHandleForForcedInvocation = -2;
-constexpr TimeDelta kIdleSpellcheckTestTimeout = TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kIdleSpellcheckTestTimeout =
+    base::TimeDelta::FromSeconds(10);
 
 }  // namespace
 
 class IdleSpellCheckController::IdleCallback final
     : public ScriptedIdleTaskController::IdleTask {
  public:
-  static IdleCallback* Create(IdleSpellCheckController* controller) {
-    return MakeGarbageCollected<IdleCallback>(controller);
-  }
-
   explicit IdleCallback(IdleSpellCheckController* controller)
       : controller_(controller) {}
 
@@ -78,7 +75,8 @@ IdleSpellCheckController::IdleSpellCheckController(LocalFrame& frame)
       idle_callback_handle_(kInvalidHandle),
       frame_(frame),
       last_processed_undo_step_sequence_(0),
-      cold_mode_requester_(ColdModeSpellCheckRequester::Create(frame)),
+      cold_mode_requester_(
+          MakeGarbageCollected<ColdModeSpellCheckRequester>(frame)),
       cold_mode_timer_(frame.GetTaskRunner(TaskType::kInternalDefault),
                        this,
                        &IdleSpellCheckController::ColdModeTimerFired) {}
@@ -127,8 +125,8 @@ void IdleSpellCheckController::SetNeedsInvocation() {
 
   IdleRequestOptions* options = IdleRequestOptions::Create();
   options->setTimeout(kHotModeRequestTimeoutMS);
-  idle_callback_handle_ =
-      GetDocument().RequestIdleCallback(IdleCallback::Create(this), options);
+  idle_callback_handle_ = GetDocument().RequestIdleCallback(
+      MakeGarbageCollected<IdleCallback>(this), options);
   state_ = State::kHotModeRequested;
 }
 
@@ -143,9 +141,9 @@ void IdleSpellCheckController::SetNeedsColdModeInvocation() {
     return;
 
   DCHECK(!cold_mode_timer_.IsActive());
-  TimeDelta interval = state_ == State::kInColdModeInvocation
-                           ? kConsecutiveColdModeTimerInterval
-                           : kColdModeTimerInterval;
+  base::TimeDelta interval = state_ == State::kInColdModeInvocation
+                                 ? kConsecutiveColdModeTimerInterval
+                                 : kColdModeTimerInterval;
   cold_mode_timer_.StartOneShot(interval, FROM_HERE);
   state_ = State::kColdModeTimerStarted;
 }
@@ -159,7 +157,7 @@ void IdleSpellCheckController::ColdModeTimerFired(TimerBase*) {
   }
 
   idle_callback_handle_ = GetDocument().RequestIdleCallback(
-      IdleCallback::Create(this), IdleRequestOptions::Create());
+      MakeGarbageCollected<IdleCallback>(this), IdleRequestOptions::Create());
   state_ = State::kColdModeRequested;
 }
 
@@ -229,9 +227,9 @@ void IdleSpellCheckController::ForceInvocationForTesting() {
   if (!IsSpellCheckingEnabled())
     return;
 
-  IdleDeadline* deadline =
-      IdleDeadline::Create(CurrentTimeTicks() + kIdleSpellcheckTestTimeout,
-                           IdleDeadline::CallbackType::kCalledWhenIdle);
+  auto* deadline = MakeGarbageCollected<IdleDeadline>(
+      base::TimeTicks::Now() + kIdleSpellcheckTestTimeout,
+      IdleDeadline::CallbackType::kCalledWhenIdle);
 
   switch (state_) {
     case State::kColdModeTimerStarted:

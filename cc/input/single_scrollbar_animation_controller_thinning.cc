@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/memory/ptr_util.h"
+#include "base/numerics/ranges.h"
 #include "base/time/time.h"
 #include "cc/input/scrollbar_animation_controller.h"
 #include "cc/layers/layer_impl.h"
@@ -95,7 +96,7 @@ float SingleScrollbarAnimationControllerThinning::AnimationProgressAtTime(
     base::TimeTicks now) {
   base::TimeDelta delta = now - last_awaken_time_;
   float progress = delta.InSecondsF() / Duration().InSecondsF();
-  return std::max(std::min(progress, 1.f), 0.f);
+  return base::ClampToRange(progress, 0.0f, 1.0f);
 }
 
 const base::TimeDelta& SingleScrollbarAnimationControllerThinning::Duration() {
@@ -172,8 +173,9 @@ void SingleScrollbarAnimationControllerThinning::DidMouseMove(
   if (!scrollbar)
     return;
 
-  float distance_to_scrollbar_track = DistanceToScrollbarPart(
-      device_viewport_point, *scrollbar, ScrollbarPart::TRACK);
+  float distance_to_scrollbar_track =
+      DistanceToScrollbarPart(device_viewport_point, *scrollbar,
+                              ScrollbarPart::TRACK_BUTTONS_TICKMARKS);
   float distance_to_scrollbar_thumb = DistanceToScrollbarPart(
       device_viewport_point, *scrollbar, ScrollbarPart::THUMB);
 

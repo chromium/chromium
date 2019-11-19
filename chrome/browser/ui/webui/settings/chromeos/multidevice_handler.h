@@ -82,7 +82,6 @@ class MultideviceHandler
   void OnSetFeatureStateEnabledResult(const std::string& js_callback_id,
                                       bool success);
 
-  void RegisterPrefChangeListeners();
   void NotifySmartLockSignInEnabledChanged();
   void NotifySmartLockSignInAllowedChanged();
   // Generate android sms info dictionary containing the messages for web
@@ -126,7 +125,7 @@ class MultideviceHandler
       android_sms_app_manager_observer_;
 
   // Used to cancel callbacks when JavaScript becomes disallowed.
-  base::WeakPtrFactory<MultideviceHandler> callback_weak_ptr_factory_;
+  base::WeakPtrFactory<MultideviceHandler> callback_weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(MultideviceHandler);
 };

@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/frame/intervention.h"
 
-#include "services/service_manager/public/cpp/connector.h"
 #include "third_party/blink/public/mojom/reporting/reporting.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/frame/frame_console.h"
@@ -26,33 +25,22 @@ void Intervention::GenerateReport(const LocalFrame* frame,
 
   // Send the message to the console.
   Document* document = frame->GetDocument();
-  document->AddConsoleMessage(ConsoleMessage::Create(
-      kInterventionMessageSource, mojom::ConsoleMessageLevel::kError, message));
+  document->AddConsoleMessage(
+      ConsoleMessage::Create(mojom::ConsoleMessageSource::kIntervention,
+                             mojom::ConsoleMessageLevel::kError, message));
 
   if (!frame->Client())
     return;
 
   // Construct the intervention report.
-  InterventionReportBody* body = MakeGarbageCollected<InterventionReportBody>(
-      id, message, SourceLocation::Capture());
+  InterventionReportBody* body =
+      MakeGarbageCollected<InterventionReportBody>(id, message);
   Report* report = MakeGarbageCollected<Report>(
-      "intervention", document->Url().GetString(), body);
+      ReportType::kIntervention, document->Url().GetString(), body);
 
-  // Send the intervention report to any ReportingObservers.
+  // Send the intervention report to the Reporting API and any
+  // ReportingObservers.
   ReportingContext::From(document)->QueueReport(report);
-
-  // Send the intervention report to the Reporting API.
-  mojom::blink::ReportingServiceProxyPtr service;
-  Platform* platform = Platform::Current();
-  platform->GetConnector()->BindInterface(platform->GetBrowserServiceName(),
-                                          &service);
-  bool is_null;
-  int line_number = body->lineNumber(is_null);
-  line_number = is_null ? 0 : line_number;
-  int column_number = body->columnNumber(is_null);
-  column_number = is_null ? 0 : column_number;
-  service->QueueInterventionReport(document->Url(), message, body->sourceFile(),
-                                   line_number, column_number);
 }
 
 }  // namespace blink

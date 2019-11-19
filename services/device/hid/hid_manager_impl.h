@@ -9,8 +9,10 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observer.h"
-#include "mojo/public/cpp/bindings/binding_set.h"
-#include "mojo/public/cpp/bindings/interface_ptr_set.h"
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 #include "services/device/hid/hid_device_info.h"
 #include "services/device/hid/hid_service.h"
 #include "services/device/public/mojom/hid.mojom.h"
@@ -30,33 +32,41 @@ class HidManagerImpl : public mojom::HidManager, public HidService::Observer {
   // passed |hid_service|.
   static void SetHidServiceForTesting(std::unique_ptr<HidService> hid_service);
 
-  void AddBinding(mojom::HidManagerRequest request);
+  void AddReceiver(mojo::PendingReceiver<mojom::HidManager> receiver);
 
   // mojom::HidManager implementation:
-  void GetDevicesAndSetClient(mojom::HidManagerClientAssociatedPtrInfo client,
-                              GetDevicesCallback callback) override;
+  void GetDevicesAndSetClient(
+      mojo::PendingAssociatedRemote<mojom::HidManagerClient> client,
+      GetDevicesCallback callback) override;
   void GetDevices(GetDevicesCallback callback) override;
-  void Connect(const std::string& device_guid,
-               ConnectCallback callback) override;
+  void Connect(
+      const std::string& device_guid,
+      mojo::PendingRemote<mojom::HidConnectionClient> connection_client,
+      mojo::PendingRemote<mojom::HidConnectionWatcher> watcher,
+      ConnectCallback callback) override;
 
  private:
-  void CreateDeviceList(GetDevicesCallback callback,
-                        mojom::HidManagerClientAssociatedPtrInfo client,
-                        std::vector<mojom::HidDeviceInfoPtr> devices);
+  void CreateDeviceList(
+      GetDevicesCallback callback,
+      mojo::PendingAssociatedRemote<mojom::HidManagerClient> client,
+      std::vector<mojom::HidDeviceInfoPtr> devices);
 
-  void CreateConnection(ConnectCallback callback,
-                        scoped_refptr<HidConnection> connection);
+  void CreateConnection(
+      ConnectCallback callback,
+      mojo::PendingRemote<mojom::HidConnectionClient> connection_client,
+      mojo::PendingRemote<mojom::HidConnectionWatcher> watcher,
+      scoped_refptr<HidConnection> connection);
 
   // HidService::Observer:
   void OnDeviceAdded(mojom::HidDeviceInfoPtr device_info) override;
   void OnDeviceRemoved(mojom::HidDeviceInfoPtr device_info) override;
 
   std::unique_ptr<HidService> hid_service_;
-  mojo::BindingSet<mojom::HidManager> bindings_;
-  mojo::AssociatedInterfacePtrSet<mojom::HidManagerClient> clients_;
+  mojo::ReceiverSet<mojom::HidManager> receivers_;
+  mojo::AssociatedRemoteSet<mojom::HidManagerClient> clients_;
   ScopedObserver<HidService, HidService::Observer> hid_service_observer_;
 
-  base::WeakPtrFactory<HidManagerImpl> weak_factory_;
+  base::WeakPtrFactory<HidManagerImpl> weak_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(HidManagerImpl);
 };
 

@@ -32,6 +32,9 @@ namespace blink {
 WebGLCompressedTexturePVRTC::WebGLCompressedTexturePVRTC(
     WebGLRenderingContextBase* context)
     : WebGLExtension(context) {
+  context->ExtensionsUtil()->EnsureExtensionEnabled(
+      "GL_IMG_texture_compression_pvrtc");
+
   context->AddCompressedTextureFormat(GL_COMPRESSED_RGB_PVRTC_4BPPV1_IMG);
   context->AddCompressedTextureFormat(GL_COMPRESSED_RGB_PVRTC_2BPPV1_IMG);
   context->AddCompressedTextureFormat(GL_COMPRESSED_RGBA_PVRTC_4BPPV1_IMG);

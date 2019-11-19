@@ -11,5 +11,18 @@ async function register(worker_url, scope) {
     return `${error}`;
   }
 }
+
+async function update(scope) {
+  try {
+    const registration =
+        scope ?
+            await navigator.serviceWorker.getRegistration(scope) :
+            await navigator.serviceWorker.ready;
+    await registration.update();
+    return 'DONE';
+  } catch (error) {
+    return `${error}`;
+  }
+}
 </script>
 </html>

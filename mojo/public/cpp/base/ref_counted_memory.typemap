@@ -14,4 +14,4 @@ public_deps = [
   "//mojo/public/cpp/base",
   "//mojo/public/cpp/base:shared_typemap_traits",
 ]
-type_mappings = [ "mojo.common.mojom.RefCountedMemory=scoped_refptr<base::RefCountedMemory>[copyable_pass_by_value,nullable_is_same_type]" ]
+type_mappings = [ "mojo.common.mojom.RefCountedMemory=::scoped_refptr<::base::RefCountedMemory>[copyable_pass_by_value,nullable_is_same_type]" ]

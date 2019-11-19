@@ -6,7 +6,7 @@
 [
     SecureContext,
     Exposed=Window,
-    OriginTrialEnabled=WebXR
+    RuntimeEnabled=WebXR
 ] interface XRViewport {
   readonly attribute long x;
   readonly attribute long y;

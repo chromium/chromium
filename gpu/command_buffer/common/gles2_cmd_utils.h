@@ -218,6 +218,7 @@ class GLES2_UTILS_EXPORT GLES2Util {
   static bool IsSignedIntegerFormat(uint32_t internal_format);
   static bool IsIntegerFormat(uint32_t internal_format);
   static bool IsFloatFormat(uint32_t internal_format);
+  static bool IsFloat32Format(uint32_t internal_format);
   static uint32_t ConvertToSizedFormat(uint32_t format, uint32_t type);
   static bool IsSizedColorFormat(uint32_t internal_format);
 

@@ -4,24 +4,26 @@
 
 #include "ash/display/cros_display_config.h"
 
-#include "ash/display/cros_display_config.h"
+#include "ash/display/screen_orientation_controller.h"
 #include "ash/display/touch_calibrator_controller.h"
-#include "ash/public/interfaces/cros_display_config.mojom.h"
+#include "ash/public/mojom/cros_display_config.mojom.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/touch/ash_touch_transform_controller.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
-#include "mojo/public/cpp/bindings/associated_binding.h"
-#include "services/ws/public/cpp/input_devices/input_device_client_test_api.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "ui/display/display_switches.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/test/touch_transform_controller_test_api.h"
 #include "ui/display/manager/touch_transform_setter.h"
 #include "ui/display/test/display_manager_test_api.h"
+#include "ui/events/devices/device_data_manager_test_api.h"
 #include "ui/events/devices/touch_device_transform.h"
 #include "ui/events/devices/touchscreen_device.h"
 
@@ -40,7 +42,7 @@ void InitExternalTouchDevices(int64_t display_id) {
   ui::TouchscreenDevice touchdevice(123, ui::InputDeviceType::INPUT_DEVICE_USB,
                                     std::string("test external touch device"),
                                     gfx::Size(1000, 1000), 1);
-  ws::InputDeviceClientTestApi().SetTouchscreenDevices({touchdevice});
+  ui::DeviceDataManagerTestApi().SetTouchscreenDevices({touchdevice});
 
   std::vector<ui::TouchDeviceTransform> transforms;
   ui::TouchDeviceTransform touch_device_transform;
@@ -130,7 +132,7 @@ class CrosDisplayConfigTest : public AshTestBase {
     mojom::DisplayConfigResult result;
     base::RunLoop run_loop;
     cros_display_config_->SetDisplayProperties(
-        id, std::move(properties),
+        id, std::move(properties), mojom::DisplayConfigSource::kUser,
         base::BindOnce(&SetResult, &result, run_loop.QuitClosure()));
     run_loop.Run();
     return result;
@@ -203,10 +205,11 @@ class CrosDisplayConfigTest : public AshTestBase {
 
 TEST_F(CrosDisplayConfigTest, OnDisplayConfigChanged) {
   TestObserver observer;
-  mojom::CrosDisplayConfigObserverAssociatedPtr observer_ptr;
-  mojo::AssociatedBinding<mojom::CrosDisplayConfigObserver> binding(
-      &observer, mojo::MakeRequestAssociatedWithDedicatedPipe(&observer_ptr));
-  cros_display_config()->AddObserver(observer_ptr.PassInterface());
+  mojo::AssociatedRemote<mojom::CrosDisplayConfigObserver> observer_remote;
+  mojo::AssociatedReceiver<mojom::CrosDisplayConfigObserver> receiver(
+      &observer,
+      observer_remote.BindNewEndpointAndPassDedicatedReceiverForTesting());
+  cros_display_config()->AddObserver(observer_remote.Unbind());
   base::RunLoop().RunUntilIdle();
 
   // Adding one display should trigger one notification.
@@ -315,8 +318,8 @@ TEST_F(CrosDisplayConfigTest, SetLayoutMirroredMixed) {
   display::DisplayIdList id_list =
       display_manager()->GetMirroringDestinationDisplayIdList();
   ASSERT_EQ(2u, id_list.size());
-  EXPECT_TRUE(base::ContainsValue(id_list, displays[1].id()));
-  EXPECT_TRUE(base::ContainsValue(id_list, displays[3].id()));
+  EXPECT_TRUE(base::Contains(id_list, displays[1].id()));
+  EXPECT_TRUE(base::Contains(id_list, displays[3].id()));
 }
 
 TEST_F(CrosDisplayConfigTest, GetDisplayUnitInfoListBasic) {
@@ -331,12 +334,13 @@ TEST_F(CrosDisplayConfigTest, GetDisplayUnitInfoListBasic) {
   EXPECT_TRUE(info_0.is_primary);
   EXPECT_TRUE(info_0.is_internal);
   EXPECT_TRUE(info_0.is_enabled);
-  EXPECT_FALSE(info_0.is_tablet_mode);
+  EXPECT_FALSE(info_0.is_in_tablet_physical_state);
   EXPECT_FALSE(info_0.has_touch_support);
   EXPECT_FALSE(info_0.has_accelerometer_support);
   EXPECT_EQ(96, info_0.dpi_x);
   EXPECT_EQ(96, info_0.dpi_y);
-  EXPECT_EQ(display::Display::ROTATE_0, info_0.rotation);
+  EXPECT_EQ(mojom::DisplayRotationOptions::kZeroDegrees,
+            info_0.rotation_options);
   EXPECT_EQ("0,0 500x600", info_0.bounds.ToString());
   EXPECT_EQ("0,0,0,0", info_0.overscan.ToString());
 
@@ -347,7 +351,8 @@ TEST_F(CrosDisplayConfigTest, GetDisplayUnitInfoListBasic) {
   // Second display is left of the primary display whose width 500.
   EXPECT_EQ("500,0 400x520", info_1.bounds.ToString());
   EXPECT_EQ("0,0,0,0", info_1.overscan.ToString());
-  EXPECT_EQ(display::Display::ROTATE_0, info_1.rotation);
+  EXPECT_EQ(mojom::DisplayRotationOptions::kZeroDegrees,
+            info_1.rotation_options);
   EXPECT_FALSE(info_1.is_primary);
   EXPECT_FALSE(info_1.is_internal);
   EXPECT_TRUE(info_1.is_enabled);
@@ -419,7 +424,7 @@ TEST_F(CrosDisplayConfigTest, SetDisplayPropertiesRotation) {
 
   auto properties = mojom::DisplayConfigProperties::New();
   properties->rotation =
-      mojom::DisplayRotation::New(display::Display::ROTATE_90);
+      mojom::DisplayRotation::New(mojom::DisplayRotationOptions::k90Degrees);
   result = SetDisplayProperties(base::NumberToString(secondary.id()),
                                 std::move(properties));
   EXPECT_EQ(mojom::DisplayConfigResult::kSuccess, result);
@@ -428,7 +433,7 @@ TEST_F(CrosDisplayConfigTest, SetDisplayPropertiesRotation) {
 
   properties = mojom::DisplayConfigProperties::New();
   properties->rotation =
-      mojom::DisplayRotation::New(display::Display::ROTATE_270);
+      mojom::DisplayRotation::New(mojom::DisplayRotationOptions::k270Degrees);
   result = SetDisplayProperties(base::NumberToString(secondary.id()),
                                 std::move(properties));
   EXPECT_EQ(mojom::DisplayConfigResult::kSuccess, result);
@@ -439,7 +444,7 @@ TEST_F(CrosDisplayConfigTest, SetDisplayPropertiesRotation) {
   properties = mojom::DisplayConfigProperties::New();
   properties->set_primary = true;
   properties->rotation =
-      mojom::DisplayRotation::New(display::Display::ROTATE_180);
+      mojom::DisplayRotation::New(mojom::DisplayRotationOptions::k180Degrees);
   result = SetDisplayProperties(base::NumberToString(secondary.id()),
                                 std::move(properties));
   EXPECT_EQ(mojom::DisplayConfigResult::kSuccess, result);
@@ -486,59 +491,67 @@ TEST_F(CrosDisplayConfigTest, SetDisplayPropertiesBoundsOrigin) {
 }
 
 TEST_F(CrosDisplayConfigTest, SetDisplayPropertiesDisplayZoomFactor) {
-  UpdateDisplay("1200x600, 1600x1000#1600x1000");
-  display::DisplayIdList display_id_list =
-      display_manager()->GetCurrentDisplayIdList();
+  static std::string configs[] = {
+      "1200x600, 1600x1000#1600x1000",  // landscape
+      "600x1200, 1000x1600#1000x1600",  // portrait
+  };
+  for (auto config : configs) {
+    SCOPED_TRACE(config);
+    UpdateDisplay(config);
+    display::DisplayIdList display_id_list =
+        display_manager()->GetCurrentDisplayIdList();
 
-  const float zoom_factor_1 = 1.23f;
-  const float zoom_factor_2 = 2.34f;
+    const float zoom_factor_1 = 1.23f;
+    const float zoom_factor_2 = 2.34f;
 
-  display_manager()->UpdateZoomFactor(display_id_list[0], zoom_factor_2);
-  display_manager()->UpdateZoomFactor(display_id_list[1], zoom_factor_1);
+    display_manager()->UpdateZoomFactor(display_id_list[0], zoom_factor_2);
+    display_manager()->UpdateZoomFactor(display_id_list[1], zoom_factor_1);
 
-  EXPECT_EQ(
-      zoom_factor_2,
-      display_manager()->GetDisplayInfo(display_id_list[0]).zoom_factor());
-  EXPECT_EQ(
-      zoom_factor_1,
-      display_manager()->GetDisplayInfo(display_id_list[1]).zoom_factor());
+    EXPECT_EQ(
+        zoom_factor_2,
+        display_manager()->GetDisplayInfo(display_id_list[0]).zoom_factor());
+    EXPECT_EQ(
+        zoom_factor_1,
+        display_manager()->GetDisplayInfo(display_id_list[1]).zoom_factor());
 
-  // Set zoom factor for display 0, should not affect display 1.
-  auto properties = mojom::DisplayConfigProperties::New();
-  properties->display_zoom_factor = zoom_factor_1;
-  mojom::DisplayConfigResult result = SetDisplayProperties(
-      base::NumberToString(display_id_list[0]), std::move(properties));
-  EXPECT_EQ(mojom::DisplayConfigResult::kSuccess, result);
-  EXPECT_EQ(
-      zoom_factor_1,
-      display_manager()->GetDisplayInfo(display_id_list[0]).zoom_factor());
-  EXPECT_EQ(
-      zoom_factor_1,
-      display_manager()->GetDisplayInfo(display_id_list[1]).zoom_factor());
+    // Set zoom factor for display 0, should not affect display 1.
+    auto properties = mojom::DisplayConfigProperties::New();
+    properties->display_zoom_factor = zoom_factor_1;
+    mojom::DisplayConfigResult result = SetDisplayProperties(
+        base::NumberToString(display_id_list[0]), std::move(properties));
+    EXPECT_EQ(mojom::DisplayConfigResult::kSuccess, result);
+    EXPECT_EQ(
+        zoom_factor_1,
+        display_manager()->GetDisplayInfo(display_id_list[0]).zoom_factor());
+    EXPECT_EQ(
+        zoom_factor_1,
+        display_manager()->GetDisplayInfo(display_id_list[1]).zoom_factor());
 
-  // Set zoom factor for display 1.
-  properties = mojom::DisplayConfigProperties::New();
-  properties->display_zoom_factor = zoom_factor_2;
-  result = SetDisplayProperties(base::NumberToString(display_id_list[1]),
-                                std::move(properties));
-  EXPECT_EQ(mojom::DisplayConfigResult::kSuccess, result);
-  EXPECT_EQ(
-      zoom_factor_1,
-      display_manager()->GetDisplayInfo(display_id_list[0]).zoom_factor());
-  EXPECT_EQ(
-      zoom_factor_2,
-      display_manager()->GetDisplayInfo(display_id_list[1]).zoom_factor());
+    // Set zoom factor for display 1.
+    properties = mojom::DisplayConfigProperties::New();
+    properties->display_zoom_factor = zoom_factor_2;
+    result = SetDisplayProperties(base::NumberToString(display_id_list[1]),
+                                  std::move(properties));
+    EXPECT_EQ(mojom::DisplayConfigResult::kSuccess, result);
+    EXPECT_EQ(
+        zoom_factor_1,
+        display_manager()->GetDisplayInfo(display_id_list[0]).zoom_factor());
+    EXPECT_EQ(
+        zoom_factor_2,
+        display_manager()->GetDisplayInfo(display_id_list[1]).zoom_factor());
 
-  // Invalid zoom factor should fail.
-  const float invalid_zoom_factor = 0.01f;
-  properties = mojom::DisplayConfigProperties::New();
-  properties->display_zoom_factor = invalid_zoom_factor;
-  result = SetDisplayProperties(base::NumberToString(display_id_list[1]),
-                                std::move(properties));
-  EXPECT_EQ(mojom::DisplayConfigResult::kPropertyValueOutOfRangeError, result);
-  EXPECT_EQ(
-      zoom_factor_2,
-      display_manager()->GetDisplayInfo(display_id_list[1]).zoom_factor());
+    // Invalid zoom factor should fail.
+    const float invalid_zoom_factor = 0.01f;
+    properties = mojom::DisplayConfigProperties::New();
+    properties->display_zoom_factor = invalid_zoom_factor;
+    result = SetDisplayProperties(base::NumberToString(display_id_list[1]),
+                                  std::move(properties));
+    EXPECT_EQ(mojom::DisplayConfigResult::kPropertyValueOutOfRangeError,
+              result);
+    EXPECT_EQ(
+        zoom_factor_2,
+        display_manager()->GetDisplayInfo(display_id_list[1]).zoom_factor());
+  }
 }
 
 TEST_F(CrosDisplayConfigTest, SetDisplayMode) {
@@ -635,7 +648,7 @@ TEST_F(CrosDisplayConfigTest, CustomTouchCalibrationNonTouchDisplay) {
                                  ? display_id_list[1]
                                  : display_id_list[0];
 
-  ws::InputDeviceClientTestApi().SetTouchscreenDevices({});
+  ui::DeviceDataManagerTestApi().SetTouchscreenDevices({});
   std::string id = base::NumberToString(display_id);
 
   // Since no external touch devices are present, the calibration should fail.
@@ -701,6 +714,90 @@ TEST_F(CrosDisplayConfigTest, CustomTouchCalibrationSuccess) {
   EXPECT_TRUE(IsTouchCalibrationActive());
   mojom::TouchCalibrationPtr calibration = GetDefaultCalibration();
   EXPECT_TRUE(CompleteCustomTouchCalibration(id, std::move(calibration)));
+}
+
+TEST_F(CrosDisplayConfigTest, TabletModeAutoRotation) {
+  TestObserver observer;
+  mojo::AssociatedRemote<mojom::CrosDisplayConfigObserver> observer_remote;
+  mojo::AssociatedReceiver<mojom::CrosDisplayConfigObserver> receiver(
+      &observer,
+      observer_remote.BindNewEndpointAndPassDedicatedReceiverForTesting());
+  cros_display_config()->AddObserver(observer_remote.Unbind());
+  base::RunLoop().RunUntilIdle();
+
+  display::test::DisplayManagerTestApi(display_manager())
+      .SetFirstDisplayAsInternalDisplay();
+
+  // Setting the rotation to kAutoRotate from outside the physical tablet state
+  // is treated as a request to set the rotation to 0.
+  const display::Display& display =
+      display_manager()->GetPrimaryDisplayCandidate();
+  auto properties = mojom::DisplayConfigProperties::New();
+  properties->rotation =
+      mojom::DisplayRotation::New(mojom::DisplayRotationOptions::kAutoRotate);
+  auto result = SetDisplayProperties(base::NumberToString(display.id()),
+                                     std::move(properties));
+  EXPECT_EQ(mojom::DisplayConfigResult::kSuccess, result);
+  auto* screen_orientation_controller =
+      Shell::Get()->screen_orientation_controller();
+  EXPECT_FALSE(screen_orientation_controller->user_rotation_locked());
+  EXPECT_EQ(display::Display::ROTATE_0, display.rotation());
+
+  TabletModeControllerTestApi tablet_mode_controller_test_api;
+  tablet_mode_controller_test_api.EnterTabletMode();
+  EXPECT_TRUE(tablet_mode_controller_test_api.IsInPhysicalTabletState());
+  EXPECT_TRUE(tablet_mode_controller_test_api.IsTabletModeStarted());
+
+  // Clear out any pending observer calls.
+  base::RunLoop().RunUntilIdle();
+  observer.reset_display_changes();
+
+  properties = mojom::DisplayConfigProperties::New();
+  properties->rotation =
+      mojom::DisplayRotation::New(mojom::DisplayRotationOptions::k90Degrees);
+  result = SetDisplayProperties(base::NumberToString(display.id()),
+                                std::move(properties));
+  EXPECT_EQ(mojom::DisplayConfigResult::kSuccess, result);
+  EXPECT_TRUE(screen_orientation_controller->user_rotation_locked());
+  EXPECT_EQ(display::Display::ROTATE_90, display.rotation());
+  // OnDisplayConfigChanged() will be called twice, once as a result of the
+  // user rotation lock change, and another due to the actual display rotation
+  // change.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(2, observer.display_changes());
+
+  // Hooking up an external mouse device, should exit UI tablet mode, but the
+  // device is still in a tablet physical state, the API should still be valid
+  // for use.
+  tablet_mode_controller_test_api.AttachExternalMouse();
+  EXPECT_TRUE(tablet_mode_controller_test_api.IsInPhysicalTabletState());
+  EXPECT_FALSE(tablet_mode_controller_test_api.IsTabletModeStarted());
+
+  // Clear out any pending observer calls.
+  base::RunLoop().RunUntilIdle();
+  observer.reset_display_changes();
+
+  properties = mojom::DisplayConfigProperties::New();
+  properties->rotation =
+      mojom::DisplayRotation::New(mojom::DisplayRotationOptions::kAutoRotate);
+  result = SetDisplayProperties(base::NumberToString(display.id()),
+                                std::move(properties));
+  EXPECT_EQ(mojom::DisplayConfigResult::kSuccess, result);
+  EXPECT_FALSE(screen_orientation_controller->user_rotation_locked());
+  // Unlocking auto-rotate doesn't actually change the display rotation. It
+  // simply allows it to auto-rotate in response to accelerometer updates.
+  EXPECT_EQ(display::Display::ROTATE_90, display.rotation());
+  // This time, OnDisplayConfigChanged() will be called only once as a result of
+  // the user rotation lock change.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(1, observer.display_changes());
+
+  // Once the device is no longer in a physical tablet state, the rotation is
+  // restored.
+  tablet_mode_controller_test_api.LeaveTabletMode();
+  EXPECT_FALSE(tablet_mode_controller_test_api.IsInPhysicalTabletState());
+  EXPECT_FALSE(tablet_mode_controller_test_api.IsTabletModeStarted());
+  EXPECT_EQ(display::Display::ROTATE_0, display.rotation());
 }
 
 }  // namespace ash

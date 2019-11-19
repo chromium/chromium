@@ -1,4 +1,5 @@
 CONSOLE WARNING: line 21: Synchronous XMLHttpRequest on the main thread is deprecated because of its detrimental effects to the end user's experience. For more help, check https://xhr.spec.whatwg.org/.
+CONSOLE WARNING: Application Cache API manifest selection is deprecated and will be removed in M82, around April 2020. See https://www.chromestatus.com/features/6192449487634432 for more details.
 Test that offline applications' main resources are not affected by URL hashes.
 
 Should say SUCCESS:

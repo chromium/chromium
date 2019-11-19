@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/sensor/gyroscope.h"
 
+#include "third_party/blink/public/mojom/feature_policy/feature_policy_feature.mojom-blink.h"
+
 using device::mojom::blink::SensorType;
 
 namespace blink {

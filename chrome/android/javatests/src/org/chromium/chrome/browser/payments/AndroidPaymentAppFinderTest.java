@@ -94,6 +94,10 @@ public class AndroidPaymentAppFinderTest implements PaymentAppCreatedCallback {
 
     // PaymentAppCreatedCallback
     @Override
+    public void onGetPaymentAppsError(String errorMessage) {}
+
+    // PaymentAppCreatedCallback
+    @Override
     public void onAllPaymentAppsCreated() {
         mAllPaymentAppsCreated = true;
     }
@@ -109,7 +113,7 @@ public class AndroidPaymentAppFinderTest implements PaymentAppCreatedCallback {
     }
 
     @After
-    public void tearDown() throws Throwable {
+    public void tearDown() {
         if (mServer != null) mServer.stopAndDestroyServer();
     }
 

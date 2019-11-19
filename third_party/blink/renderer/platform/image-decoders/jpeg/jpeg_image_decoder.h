@@ -36,7 +36,11 @@ class JPEGImageReader;
 
 class PLATFORM_EXPORT JPEGImageDecoder final : public ImageDecoder {
  public:
-  JPEGImageDecoder(AlphaOption, const ColorBehavior&, size_t max_decoded_bytes);
+  JPEGImageDecoder(AlphaOption,
+                   const ColorBehavior&,
+                   size_t max_decoded_bytes,
+                   const OverrideAllowDecodeToYuv allow_decode_to_yuv,
+                   size_t offset = 0);
   ~JPEGImageDecoder() override;
 
   // ImageDecoder:
@@ -46,10 +50,9 @@ class PLATFORM_EXPORT JPEGImageDecoder final : public ImageDecoder {
   bool SetSize(unsigned width, unsigned height) override;
   IntSize DecodedYUVSize(int component) const override;
   size_t DecodedYUVWidthBytes(int component) const override;
-  bool CanDecodeToYUV() override;
   void DecodeToYUV() override;
-  void SetImagePlanes(std::unique_ptr<ImagePlanes>) override;
-  std::vector<SkISize> GetSupportedDecodeSizes() const override;
+  SkYUVColorSpace GetYUVColorSpace() const override;
+  Vector<SkISize> GetSupportedDecodeSizes() const override;
   bool HasImagePlanes() const { return image_planes_.get(); }
 
   bool OutputScanlines();
@@ -62,15 +65,25 @@ class PLATFORM_EXPORT JPEGImageDecoder final : public ImageDecoder {
   }
   void SetDecodedSize(unsigned width, unsigned height);
 
-  void SetSupportedDecodeSizes(std::vector<SkISize> sizes);
+  void SetSupportedDecodeSizes(Vector<SkISize> sizes);
+
+  // TODO(crbug.com/919627): |allow_decode_to_yuv_| is false by
+  // default and is only set true for unit tests. Remove it once
+  // JPEG YUV decoding is finished and YUV decoding is enabled by default.
   void SetDecodeToYuvForTesting(bool decode_to_yuv) {
-    decode_to_yuv_for_testing_ = decode_to_yuv;
+    allow_decode_to_yuv_ = decode_to_yuv;
   }
 
  private:
   // ImageDecoder:
   void DecodeSize() override { Decode(true); }
   void Decode(size_t) override { Decode(false); }
+  cc::YUVSubsampling GetYUVSubsampling() const override;
+  cc::ImageHeaderMetadata MakeMetadataForDecodeAcceleration() const override;
+
+  // Attempts to calculate the coded size of the JPEG image. Returns a zero
+  // initialized gfx::Size upon failure.
+  gfx::Size GetImageCodedSize() const;
 
   // Decodes the image.  If |only_size| is true, stops decoding after
   // calculating the image size.  If decoding fails but there is no more
@@ -78,10 +91,9 @@ class PLATFORM_EXPORT JPEGImageDecoder final : public ImageDecoder {
   void Decode(bool only_size);
 
   std::unique_ptr<JPEGImageReader> reader_;
-  std::unique_ptr<ImagePlanes> image_planes_;
+  const size_t offset_;
   IntSize decoded_size_;
-  std::vector<SkISize> supported_decode_sizes_;
-  bool decode_to_yuv_for_testing_ = false;
+  Vector<SkISize> supported_decode_sizes_;
 
   DISALLOW_COPY_AND_ASSIGN(JPEGImageDecoder);
 };

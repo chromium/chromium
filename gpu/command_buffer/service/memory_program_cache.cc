@@ -569,7 +569,7 @@ void MemoryProgramCache::LoadProgram(const std::string& key,
     UMA_HISTOGRAM_COUNTS_1M("GPU.ProgramCache.MemorySizeAfterKb",
                             curr_size_bytes_ / 1024);
   } else {
-    LOG(ERROR) << "Failed to parse proto file.";
+    DVLOG(2) << "Failed to parse proto file.";
   }
 }
 
@@ -620,12 +620,14 @@ MemoryProgramCache::ProgramCacheValue::ProgramCacheValue(
       interface_block_map_1_(interface_block_map_1),
       program_cache_(program_cache) {
   program_cache_->curr_size_bytes_ += data_.size();
+  program_cache->CompiledShaderCacheSuccess(shader_0_hash_);
+  program_cache->CompiledShaderCacheSuccess(shader_1_hash_);
   program_cache_->LinkedProgramCacheSuccess(program_hash);
 }
 
 MemoryProgramCache::ProgramCacheValue::~ProgramCacheValue() {
   program_cache_->curr_size_bytes_ -= data_.size();
-  program_cache_->Evict(program_hash_);
+  program_cache_->Evict(program_hash_, shader_0_hash_, shader_1_hash_);
 }
 
 }  // namespace gles2

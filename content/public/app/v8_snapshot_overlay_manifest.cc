@@ -16,8 +16,6 @@ const service_manager::Manifest& GetV8SnapshotOverlayManifest() {
   static base::NoDestructor<service_manager::Manifest> manifest {
     service_manager::ManifestBuilder()
 #if defined(OS_LINUX)
-        .PreloadFile(kV8NativesDataDescriptor,
-                     base::FilePath(FILE_PATH_LITERAL("natives_blob.bin")))
 #if defined(USE_V8_CONTEXT_SNAPSHOT)
         .PreloadFile(
             kV8ContextSnapshotDataDescriptor,
@@ -27,23 +25,26 @@ const service_manager::Manifest& GetV8SnapshotOverlayManifest() {
                      base::FilePath(FILE_PATH_LITERAL("snapshot_blob.bin")))
 #endif  // defined(USE_V8_CONTEXT_SNAPSHOT)
 #elif defined(OS_ANDROID)
-        .PreloadFile(
-            kV8NativesDataDescriptor,
-            base::FilePath(FILE_PATH_LITERAL("assets/natives_blob.bin")))
 #if defined(USE_V8_CONTEXT_SNAPSHOT)
-        .PreloadFile(kV8Snapshot32DataDescriptor,
-                     base::FilePath(FILE_PATH_LITERAL(
-                         "assets/v8_context_snapshot_32.bin")))
+#if defined(ARCH_CPU_64_BITS)
         .PreloadFile(kV8Snapshot64DataDescriptor,
                      base::FilePath(FILE_PATH_LITERAL(
                          "assets/v8_context_snapshot_64.bin")))
 #else
-        .PreloadFile(
-            kV8Snapshot32DataDescriptor,
-            base::FilePath(FILE_PATH_LITERAL("assets/snapshot_blob_32.bin")))
+        .PreloadFile(kV8Snapshot32DataDescriptor,
+                     base::FilePath(FILE_PATH_LITERAL(
+                         "assets/v8_context_snapshot_32.bin")))
+#endif
+#else
+#if defined(ARCH_CPU_64_BITS)
         .PreloadFile(
             kV8Snapshot64DataDescriptor,
             base::FilePath(FILE_PATH_LITERAL("assets/snapshot_blob_64.bin")))
+#else
+        .PreloadFile(
+            kV8Snapshot32DataDescriptor,
+            base::FilePath(FILE_PATH_LITERAL("assets/snapshot_blob_32.bin")))
+#endif
 #endif  // defined(USE_V8_CONTEXT_SNAPSHOT)
 #endif
         .Build()

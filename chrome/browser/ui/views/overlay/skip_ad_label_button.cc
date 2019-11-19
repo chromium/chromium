@@ -13,7 +13,7 @@ namespace {
 
 const int kSkipAdButtonWidth = 72;
 const int kSkipAdButtonHeight = 24;
-const int kSkipAdButtonMarginBottom = 40;
+const int kSkipAdButtonMarginBottom = 48;
 
 constexpr SkColor kSkipAdButtonTextColor = SK_ColorWHITE;
 constexpr SkColor kSkipAdButtonBorderColor = SK_ColorWHITE;
@@ -36,8 +36,8 @@ SkipAdLabelButton::SkipAdLabelButton(ButtonListener* listener)
 
   // Accessibility.
   SetFocusForPlatform();
-  SetAccessibleName(label()->text());
-  SetTooltipText(label()->text());
+  SetAccessibleName(label()->GetText());
+  SetTooltipText(label()->GetText());
   SetInstallFocusRingOnFocus(true);
 }
 

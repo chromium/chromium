@@ -10,7 +10,7 @@ List of customizable styles:
   --cr-checkbox-border-size
   --cr-checkbox-checked-box-color
   --cr-checkbox-label-color
-  --cr-checkbox-label-container (CSS mixin)
+  --cr-checkbox-label-padding-start
   --cr-checkbox-mark-color
   --cr-checkbox-ripple-checked-color
   --cr-checkbox-ripple-size
@@ -45,18 +45,20 @@ List of customizable styles:
         /* Light mode colors. */
         --cr-checkbox-checked-ripple-opacity: .2;
         --cr-checkbox-mark-color: white;
-        --cr-checkbox-ripple-unchecked-color: var(--google-grey-600);
+        --cr-checkbox-ripple-unchecked-color: var(--google-grey-900);
         --cr-checkbox-unchecked-box-color: var(--google-grey-refresh-700);
         --cr-checkbox-unchecked-ripple-opacity: .15;
       }
 
-      :host-context([dark]) {
-        /* Dark mode colors. */
-        --cr-checkbox-checked-ripple-opacity: .4;
-        --cr-checkbox-mark-color: var(--google-grey-900);
-        --cr-checkbox-ripple-unchecked-color: var(--google-grey-refresh-700);
-        --cr-checkbox-unchecked-box-color: var(--google-grey-refresh-500);
-        --cr-checkbox-unchecked-ripple-opacity: .4;
+      @media (prefers-color-scheme: dark) {
+        :host {
+          /* Dark mode colors. */
+          --cr-checkbox-checked-ripple-opacity: .4;
+          --cr-checkbox-mark-color: var(--google-grey-900);
+          --cr-checkbox-ripple-unchecked-color: var(--google-grey-refresh-500);
+          --cr-checkbox-unchecked-box-color: var(--google-grey-refresh-500);
+          --cr-checkbox-unchecked-ripple-opacity: .4;
+        }
       }
 
       :host([disabled]) {
@@ -135,24 +137,31 @@ List of customizable styles:
 
       #label-container {
         color: var(--cr-checkbox-label-color, var(--cr-primary-text-color));
-        padding-inline-start: 20px;
+        padding-inline-start: var(--cr-checkbox-label-padding-start, 20px);
         white-space: normal;
-
-        @apply --cr-checkbox-label-container;
       }
 
       :host(.no-label) #label-container {
         display: none;
       }
+
+      /* Hidden from UI, but not screen readers. */
+      #ariaDescription {
+        height: 0;
+        overflow: hidden;
+        width: 0;
+      }
     </style>
-    <!-- Mousing down then moving cursor out of this element should not trigger
-         click on the parent. With <button> this works as expected, while <div>
-         does not. -->
-    <button id="checkbox" tabindex="-1" on-focus="onButtonFocus_"
-        aria-hidden="true">
+    <div id="checkbox" tabindex$="[[tabIndex]]" role="checkbox"
+        on-keydown="onKeyDown_" on-keyup="onKeyUp_" aria-disabled="false"
+        aria-checked="false" aria-labelledby="label-container"
+        aria-describedby="ariaDescription">
       <span id="checkmark"></span>
-    </button>
-    <div id="label-container"><slot></slot></div>
+    </div>
+    <div id="label-container" aria-hidden="true" part="label-container">
+      <slot></slot>
+    </div>
+    <div id="ariaDescription">[[ariaDescription]]</div>
   </template>
   <script src="cr_checkbox.js"></script>
 </dom-module>

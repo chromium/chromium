@@ -15,7 +15,7 @@ jumbo_source_set("browser") {
   public_deps = [
     "//base",
     "//content/public/browser",
-    "//media/mojo/interfaces",
+    "//media/mojo/mojom",
     "//url",
   ]
 

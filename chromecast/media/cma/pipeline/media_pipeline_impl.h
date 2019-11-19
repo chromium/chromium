@@ -17,6 +17,7 @@
 #include "chromecast/media/cma/backend/cma_backend.h"
 #include "chromecast/media/cma/pipeline/load_type.h"
 #include "chromecast/media/cma/pipeline/media_pipeline_client.h"
+#include "media/base/time_delta_interpolator.h"
 
 namespace media {
 class AudioDecoderConfig;
@@ -55,7 +56,7 @@ class MediaPipelineImpl {
       const VideoPipelineClient& client,
       std::unique_ptr<CodedFrameProvider> frame_provider);
   void StartPlayingFrom(base::TimeDelta time);
-  void Flush(const base::Closure& flush_cb);
+  void Flush(base::OnceClosure flush_cb);
   void SetPlaybackRate(double playback_rate);
   void SetVolume(float volume);
   base::TimeDelta GetMediaTime() const;
@@ -81,9 +82,7 @@ class MediaPipelineImpl {
   void OnBufferingNotification(bool is_buffering);
 
   void UpdateMediaTime();
-
   void OnError(::media::PipelineStatus error);
-
   void ResetBitrateState();
 
   base::ThreadChecker thread_checker_;
@@ -124,6 +123,12 @@ class MediaPipelineImpl {
   bool playback_stalled_;
   base::TimeTicks playback_stalled_time_;
   bool playback_stalled_notification_sent_;
+
+  // It's used to estimate current media time when the timestamp returned by
+  // backend is invalid.
+  ::media::TimeDeltaInterpolator media_time_interpolator_;
+
+  bool waiting_for_first_have_enough_data_ = true;
 
   base::WeakPtr<MediaPipelineImpl> weak_this_;
   base::WeakPtrFactory<MediaPipelineImpl> weak_factory_;

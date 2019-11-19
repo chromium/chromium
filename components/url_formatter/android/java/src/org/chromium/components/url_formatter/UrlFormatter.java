@@ -6,7 +6,10 @@ package org.chromium.components.url_formatter;
 
 import android.text.TextUtils;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 
 /**
  * Wrapper for utilities in url_formatter.
@@ -23,7 +26,7 @@ public final class UrlFormatter {
      *  - "..." -> null
      */
     public static String fixupUrl(String uri) {
-        return TextUtils.isEmpty(uri) ? null : nativeFixupUrl(uri);
+        return TextUtils.isEmpty(uri) ? null : UrlFormatterJni.get().fixupUrl(uri);
     }
 
     /**
@@ -42,7 +45,7 @@ public final class UrlFormatter {
      * @return Formatted URL.
      */
     public static String formatUrlForDisplayOmitScheme(String uri) {
-        return nativeFormatUrlForDisplayOmitScheme(uri);
+        return UrlFormatterJni.get().formatUrlForDisplayOmitScheme(uri);
     }
 
     /**
@@ -62,7 +65,27 @@ public final class UrlFormatter {
      * @return Formatted URL.
      */
     public static String formatUrlForDisplayOmitHTTPScheme(String uri) {
-        return nativeFormatUrlForDisplayOmitHTTPScheme(uri);
+        return UrlFormatterJni.get().formatUrlForDisplayOmitHTTPScheme(uri);
+    }
+
+    /**
+     * Builds a String representation of <code>uri</code> suitable for display to the user,
+     * omitting the HTTP scheme, the username and password, trailing slash on a bare hostname,
+     * converting %20 to spaces, and removing trivial subdomains.
+     *
+     * The IDN hostname is turned to Unicode if the Unicode representation is deemed safe.
+     * For more information, see <code>url_formatter::FormatUrl(const GURL&)</code>.
+     *
+     * Example:
+     *  - "http://user:password@example.com/%20test" -> "example.com"
+     *  - "http://user:password@example.com/" -> "example.com"
+     *  - "http://www.xn--frgbolaget-q5a.se" -> "färgbolaget.se"
+     *
+     * @param uri URI to format.
+     * @return Formatted URL.
+     */
+    public static String formatUrlForDisplayOmitSchemeOmitTrivialSubdomains(String uri) {
+        return UrlFormatterJni.get().formatUrlForDisplayOmitSchemeOmitTrivialSubdomains(uri);
     }
 
     /**
@@ -75,7 +98,7 @@ public final class UrlFormatter {
      * @return Formatted URL.
      */
     public static String formatUrlForCopy(String uri) {
-        return nativeFormatUrlForCopy(uri);
+        return UrlFormatterJni.get().formatUrlForCopy(uri);
     }
 
     /**
@@ -85,7 +108,7 @@ public final class UrlFormatter {
      *         it fails to parse it.
      */
     public static String formatUrlForSecurityDisplay(String uri) {
-        return nativeFormatUrlForSecurityDisplay(uri);
+        return UrlFormatterJni.get().formatUrlForSecurityDisplay(uri);
     }
 
     /**
@@ -95,13 +118,18 @@ public final class UrlFormatter {
      *         it fails to parse it.
      */
     public static String formatUrlForSecurityDisplayOmitScheme(String uri) {
-        return nativeFormatUrlForSecurityDisplayOmitScheme(uri);
+        return UrlFormatterJni.get().formatUrlForSecurityDisplayOmitScheme(uri);
     }
 
-    private static native String nativeFixupUrl(String url);
-    private static native String nativeFormatUrlForDisplayOmitScheme(String url);
-    private static native String nativeFormatUrlForDisplayOmitHTTPScheme(String url);
-    private static native String nativeFormatUrlForCopy(String url);
-    private static native String nativeFormatUrlForSecurityDisplay(String url);
-    private static native String nativeFormatUrlForSecurityDisplayOmitScheme(String url);
+    @VisibleForTesting
+    @NativeMethods
+    public interface Natives {
+        String fixupUrl(String url);
+        String formatUrlForDisplayOmitScheme(String url);
+        String formatUrlForDisplayOmitHTTPScheme(String url);
+        String formatUrlForDisplayOmitSchemeOmitTrivialSubdomains(String url);
+        String formatUrlForCopy(String url);
+        String formatUrlForSecurityDisplay(String url);
+        String formatUrlForSecurityDisplayOmitScheme(String url);
+    }
 }

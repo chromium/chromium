@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.page_info;
 
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.content_public.browser.WebContents;
 
 /**
@@ -12,8 +13,11 @@ import org.chromium.content_public.browser.WebContents;
 public class CertificateChainHelper {
 
     public static byte[][] getCertificateChain(WebContents webContents) {
-        return nativeGetCertificateChain(webContents);
+        return CertificateChainHelperJni.get().getCertificateChain(webContents);
     }
 
-    private static native byte[][] nativeGetCertificateChain(WebContents webContents);
+    @NativeMethods
+    interface Natives {
+        byte[][] getCertificateChain(WebContents webContents);
+    }
 }

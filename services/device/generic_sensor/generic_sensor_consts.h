@@ -11,9 +11,6 @@ namespace device {
 // to be effectively equal.
 constexpr double kEpsilon = 1e-8;
 
-// Required for conversion from G/s^2 to m/s^2
-constexpr double kMeanGravity = 9.80665;
-
 // Required for conversion from Gauss to uT.
 constexpr double kMicroteslaInGauss = 100.0;
 

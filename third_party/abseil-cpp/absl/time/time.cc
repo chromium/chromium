@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//      http://www.apache.org/licenses/LICENSE-2.0
+//      https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -33,6 +33,10 @@
 
 #include "absl/time/time.h"
 
+#if defined(_MSC_VER)
+#include <winsock2.h>  // for timeval
+#endif
+
 #include <cstring>
 #include <ctime>
 #include <limits>
@@ -41,6 +45,7 @@
 #include "absl/time/internal/cctz/include/cctz/time_zone.h"
 
 namespace cctz = absl::time_internal::cctz;
+
 namespace absl {
 
 namespace {
@@ -452,8 +457,7 @@ struct tm ToTM(absl::Time t, absl::TimeZone tz) {
     tm.tm_year = static_cast<int>(cs.year() - 1900);
   }
 
-  const CivilDay cd(cs);
-  switch (GetWeekday(cd)) {
+  switch (GetWeekday(cs)) {
     case Weekday::sunday:
       tm.tm_wday = 0;
       break;
@@ -476,7 +480,7 @@ struct tm ToTM(absl::Time t, absl::TimeZone tz) {
       tm.tm_wday = 6;
       break;
   }
-  tm.tm_yday = GetYearDay(cd) - 1;
+  tm.tm_yday = GetYearDay(cs) - 1;
   tm.tm_isdst = ci.is_dst ? 1 : 0;
 
   return tm;

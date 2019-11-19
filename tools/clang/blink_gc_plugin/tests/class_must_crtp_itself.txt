@@ -1,0 +1,4 @@
+class_must_crtp_itself.cpp:11:20: warning: [blink-gc] GC base class 'GarbageCollected<blink::WrongClass>' must be specialized with the derived class 'RightClass'.
+class RightClass : GarbageCollected<WrongClass> {};
+                   ^
+1 warning generated.

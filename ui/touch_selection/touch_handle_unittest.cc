@@ -20,19 +20,13 @@ const float kDefaultDrawableSize = 10.f;
 const gfx::RectF kDefaultViewportRect(0, 0, 560, 1200);
 
 struct MockDrawableData {
-  MockDrawableData()
-      : orientation(TouchHandleOrientation::UNDEFINED),
-        alpha(0.f),
-        enabled(false),
-        visible(false),
-        rect(0, 0, kDefaultDrawableSize, kDefaultDrawableSize) {}
-  TouchHandleOrientation orientation;
-  float alpha;
-  bool mirror_horizontal;
-  bool mirror_vertical;
-  bool enabled;
-  bool visible;
-  gfx::RectF rect;
+  TouchHandleOrientation orientation = TouchHandleOrientation::UNDEFINED;
+  float alpha = 0.f;
+  bool mirror_horizontal = false;
+  bool mirror_vertical = false;
+  bool enabled = false;
+  bool visible = false;
+  gfx::RectF rect{0, 0, kDefaultDrawableSize, kDefaultDrawableSize};
 };
 
 class MockTouchHandleDrawable : public TouchHandleDrawable {
@@ -63,9 +57,7 @@ class MockTouchHandleDrawable : public TouchHandleDrawable {
   // code refactoring is completed.
   float GetDrawableHorizontalPaddingRatio() const override { return 0; }
 
-  gfx::RectF GetVisibleBounds() const override {
-    return data_->rect;
-  }
+  gfx::RectF GetVisibleBounds() const override { return data_->rect; }
 
  private:
   MockDrawableData* data_;

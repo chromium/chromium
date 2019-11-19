@@ -2,6 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//mojo/public/tools/bindings/mojom.gni")
+import("//printing/buildflags/buildflags.gni")
+
 static_library("common") {
   sources = [
     "cloud_print_cdd_conversion.cc",
@@ -23,4 +26,18 @@ static_library("common") {
     "//ui/gfx/ipc/geometry",
     "//ui/gfx/ipc/skia",
   ]
+}
+
+mojom("mojo_interfaces") {
+  sources = [
+    "print.mojom",
+  ]
+
+  public_deps = [
+    "//mojo/public/mojom/base",
+  ]
+
+  if (enable_print_preview) {
+    enabled_features = [ "enable_print_preview" ]
+  }
 }

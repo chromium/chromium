@@ -4,10 +4,11 @@
 
 package org.chromium.chrome.browser.download.home.filter;
 
-import android.support.annotation.IntDef;
 import android.text.TextUtils;
 
-import org.chromium.chrome.browser.UrlConstants;
+import androidx.annotation.IntDef;
+
+import org.chromium.chrome.browser.util.UrlConstants;
 import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.components.offline_items_collection.OfflineItemFilter;
 
@@ -63,16 +64,16 @@ public class Filters {
      */
     public static @FilterType Integer fromOfflineItem(@OfflineItemFilter int filter) {
         switch (filter) {
-            case OfflineItemFilter.FILTER_PAGE:
+            case OfflineItemFilter.PAGE:
                 return FilterType.SITES;
-            case OfflineItemFilter.FILTER_VIDEO:
+            case OfflineItemFilter.VIDEO:
                 return FilterType.VIDEOS;
-            case OfflineItemFilter.FILTER_AUDIO:
+            case OfflineItemFilter.AUDIO:
                 return FilterType.MUSIC;
-            case OfflineItemFilter.FILTER_IMAGE:
+            case OfflineItemFilter.IMAGE:
                 return FilterType.IMAGES;
-            // case OfflineItemFilter.FILTER_OTHER
-            // case OfflineItemFilter.FILTER_DOCUMENT
+            // case OfflineItemFilter.OTHER
+            // case OfflineItemFilter.DOCUMENT
             default:
                 return FilterType.OTHER;
         }

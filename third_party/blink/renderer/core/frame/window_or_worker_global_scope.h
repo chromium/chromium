@@ -34,7 +34,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_WINDOW_OR_WORKER_GLOBAL_SCOPE_H_
 
 #include "third_party/blink/renderer/bindings/core/v8/image_bitmap_source.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -67,34 +67,34 @@ class WindowOrWorkerGlobalScope {
                         EventTarget&,
                         V8Function* handler,
                         int timeout,
-                        const Vector<ScriptValue>& arguments);
+                        const HeapVector<ScriptValue>& arguments);
   static int setTimeout(ScriptState*,
                         EventTarget&,
                         const StringOrTrustedScript&,
                         int timeout,
-                        const Vector<ScriptValue>&,
+                        const HeapVector<ScriptValue>&,
                         ExceptionState&);
   static int setTimeoutFromString(ScriptState*,
                                   EventTarget&,
                                   const String& handler,
                                   int timeout,
-                                  const Vector<ScriptValue>&);
+                                  const HeapVector<ScriptValue>&);
   static int setInterval(ScriptState*,
                          EventTarget&,
                          V8Function* handler,
                          int timeout,
-                         const Vector<ScriptValue>&);
+                         const HeapVector<ScriptValue>&);
   static int setInterval(ScriptState*,
                          EventTarget&,
                          const StringOrTrustedScript&,
                          int timeout,
-                         const Vector<ScriptValue>&,
+                         const HeapVector<ScriptValue>&,
                          ExceptionState&);
   static int setIntervalFromString(ScriptState*,
                                    EventTarget&,
                                    const String& handler,
                                    int timeout,
-                                   const Vector<ScriptValue>&);
+                                   const HeapVector<ScriptValue>&);
   static void clearTimeout(EventTarget&, int timeout_id);
   static void clearInterval(EventTarget&, int timeout_id);
 

@@ -6,17 +6,19 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/message_loop/message_loop.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "base/run_loop.h"
 #include "base/test/gtest_util.h"
+#include "base/test/task_environment.h"
 #include "gpu/config/gpu_preferences.h"
 #include "media/base/limits.h"
 #include "media/mojo/clients/mojo_video_encode_accelerator.h"
-#include "media/mojo/interfaces/video_encode_accelerator.mojom.h"
+#include "media/mojo/mojom/video_encode_accelerator.mojom.h"
 #include "media/mojo/services/mojo_video_encode_accelerator_service.h"
 #include "media/video/fake_video_encode_accelerator.h"
 #include "media/video/video_encode_accelerator.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -62,22 +64,22 @@ class MojoVideoEncodeAcceleratorIntegrationTest : public ::testing::Test {
   MojoVideoEncodeAcceleratorIntegrationTest() = default;
 
   void SetUp() override {
-    mojom::VideoEncodeAcceleratorPtr mojo_vea;
-    mojo_vea_binding_ = mojo::MakeStrongBinding(
+    mojo::PendingRemote<mojom::VideoEncodeAccelerator> mojo_vea;
+    mojo_vea_receiver_ = mojo::MakeSelfOwnedReceiver(
         std::make_unique<MojoVideoEncodeAcceleratorService>(
             base::Bind(&CreateAndInitializeFakeVEA), gpu::GpuPreferences()),
-        mojo::MakeRequest(&mojo_vea));
+        mojo_vea.InitWithNewPipeAndPassReceiver());
 
     mojo_vea_.reset(new MojoVideoEncodeAccelerator(
         std::move(mojo_vea), gpu::VideoEncodeAcceleratorSupportedProfiles()));
   }
 
   void TearDown() override {
-    // The destruction of a mojo::StrongBinding closes the bound message pipe
-    // but does not destroy the implementation object(s): this needs to happen
-    // manually by Close()ing it.
-    if (mojo_vea_binding_)
-      mojo_vea_binding_->Close();
+    // The destruction of a mojo::SelfOwnedReceiver closes the bound message
+    // pipe but does not destroy the implementation object(s): this needs to
+    // happen manually by Close()ing it.
+    if (mojo_vea_receiver_)
+      mojo_vea_receiver_->Close();
   }
 
   VideoEncodeAccelerator* mojo_vea() { return mojo_vea_.get(); }
@@ -85,7 +87,7 @@ class MojoVideoEncodeAcceleratorIntegrationTest : public ::testing::Test {
   FakeVideoEncodeAccelerator* fake_vea() const {
     const auto* mojo_vea_service =
         static_cast<MojoVideoEncodeAcceleratorService*>(
-            mojo_vea_binding_->impl());
+            mojo_vea_receiver_->impl());
     return static_cast<FakeVideoEncodeAccelerator*>(
         mojo_vea_service->encoder_.get());
   }
@@ -107,10 +109,10 @@ class MojoVideoEncodeAcceleratorIntegrationTest : public ::testing::Test {
   }
 
  private:
-  const base::MessageLoop message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
 
   // This member holds on to the implementation of the "service" side.
-  mojo::StrongBindingPtr<mojom::VideoEncodeAccelerator> mojo_vea_binding_;
+  mojo::SelfOwnedReceiverRef<mojom::VideoEncodeAccelerator> mojo_vea_receiver_;
 
   // The class under test, as a generic media::VideoEncodeAccelerator.
   std::unique_ptr<VideoEncodeAccelerator> mojo_vea_;
@@ -180,14 +182,15 @@ TEST_F(MojoVideoEncodeAcceleratorIntegrationTest,
 
   const uint64_t kInvalidShMemSize =
       fake_vea()->minimum_output_buffer_size() / 2;
-  base::SharedMemory shmem;
-  shmem.CreateAnonymous(kInvalidShMemSize);
+
+  base::UnsafeSharedMemoryRegion region =
+      base::UnsafeSharedMemoryRegion::Create(kInvalidShMemSize);
 
   EXPECT_CALL(*mock_vea_client,
               NotifyError(VideoEncodeAccelerator::kInvalidArgumentError));
 
   mojo_vea()->UseOutputBitstreamBuffer(
-      BitstreamBuffer(17 /* id */, shmem.handle(), kInvalidShMemSize,
+      BitstreamBuffer(17 /* id */, std::move(region), kInvalidShMemSize,
                       0 /* offset */, base::TimeDelta()));
   base::RunLoop().RunUntilIdle();
 }
@@ -202,13 +205,13 @@ TEST_F(MojoVideoEncodeAcceleratorIntegrationTest,
   const int32_t kInvalidBistreamBufferId = -18;
 
   const uint64_t kShMemSize = fake_vea()->minimum_output_buffer_size();
-  base::SharedMemory shmem;
-  shmem.CreateAnonymous(kShMemSize);
+  base::UnsafeSharedMemoryRegion region =
+      base::UnsafeSharedMemoryRegion::Create(kShMemSize);
   EXPECT_CALL(*mock_vea_client,
               NotifyError(VideoEncodeAccelerator::kInvalidArgumentError));
 
   mojo_vea()->UseOutputBitstreamBuffer(
-      BitstreamBuffer(kInvalidBistreamBufferId, shmem.handle(), kShMemSize,
+      BitstreamBuffer(kInvalidBistreamBufferId, std::move(region), kShMemSize,
                       0 /* offset */, base::TimeDelta()));
   base::RunLoop().RunUntilIdle();
 }
@@ -222,22 +225,27 @@ TEST_F(MojoVideoEncodeAcceleratorIntegrationTest, EncodeOneFrame) {
   const int32_t kBistreamBufferId = 17;
   {
     const uint64_t kShMemSize = fake_vea()->minimum_output_buffer_size();
-    base::SharedMemory shmem;
-    shmem.CreateAnonymous(kShMemSize);
+    base::UnsafeSharedMemoryRegion region =
+        base::UnsafeSharedMemoryRegion::Create(kShMemSize);
     mojo_vea()->UseOutputBitstreamBuffer(
-        BitstreamBuffer(kBistreamBufferId, shmem.handle(), kShMemSize,
+        BitstreamBuffer(kBistreamBufferId, std::move(region), kShMemSize,
                         0 /* offset */, base::TimeDelta()));
     base::RunLoop().RunUntilIdle();
   }
 
   {
-    const scoped_refptr<VideoFrame> video_frame = VideoFrame::CreateFrame(
+    base::UnsafeSharedMemoryRegion shmem =
+        base::UnsafeSharedMemoryRegion::Create(
+            VideoFrame::AllocationSize(PIXEL_FORMAT_I420, kInputVisibleSize) *
+            2);
+    ASSERT_TRUE(shmem.IsValid());
+    base::WritableSharedMemoryMapping mapping = shmem.Map();
+    ASSERT_TRUE(mapping.IsValid());
+    const scoped_refptr<VideoFrame> video_frame = VideoFrame::WrapExternalData(
         PIXEL_FORMAT_I420, kInputVisibleSize, gfx::Rect(kInputVisibleSize),
-        kInputVisibleSize, base::TimeDelta());
-    base::SharedMemory shmem;
-    shmem.CreateAnonymous(
-        VideoFrame::AllocationSize(PIXEL_FORMAT_I420, kInputVisibleSize) * 2);
-    video_frame->AddSharedMemoryHandle(shmem.handle());
+        kInputVisibleSize, mapping.GetMemoryAsSpan<uint8_t>().data(),
+        mapping.size(), base::TimeDelta());
+    video_frame->BackWithSharedMemory(&shmem);
     const bool is_keyframe = true;
 
     EXPECT_CALL(*mock_vea_client, BitstreamBufferReady(kBistreamBufferId, _))
@@ -260,11 +268,11 @@ TEST_F(MojoVideoEncodeAcceleratorIntegrationTest,
 
   {
     const uint64_t kShMemSize = fake_vea()->minimum_output_buffer_size();
-    base::SharedMemory shmem;
-    shmem.CreateAnonymous(kShMemSize);
+    base::UnsafeSharedMemoryRegion region =
+        base::UnsafeSharedMemoryRegion::Create(kShMemSize);
     mojo_vea()->UseOutputBitstreamBuffer(
-        BitstreamBuffer(17 /* id */, shmem.handle(), kShMemSize, 0 /* offset */,
-                        base::TimeDelta()));
+        BitstreamBuffer(17 /* id */, std::move(region), kShMemSize,
+                        0 /* offset */, base::TimeDelta()));
     base::RunLoop().RunUntilIdle();
   }
 
@@ -272,15 +280,20 @@ TEST_F(MojoVideoEncodeAcceleratorIntegrationTest,
     const gfx::Size kInvalidInputVisibleSize(kInputVisibleSize.width() * 2,
                                              kInputVisibleSize.height());
 
-    const scoped_refptr<VideoFrame> video_frame =
-        VideoFrame::CreateFrame(PIXEL_FORMAT_I420, kInvalidInputVisibleSize,
-                                gfx::Rect(kInvalidInputVisibleSize),
-                                kInvalidInputVisibleSize, base::TimeDelta());
-    base::SharedMemory shmem;
-    shmem.CreateAnonymous(VideoFrame::AllocationSize(PIXEL_FORMAT_I420,
-                                                     kInvalidInputVisibleSize) *
-                          2);
-    video_frame->AddSharedMemoryHandle(shmem.handle());
+    base::UnsafeSharedMemoryRegion shmem =
+        base::UnsafeSharedMemoryRegion::Create(
+            VideoFrame::AllocationSize(PIXEL_FORMAT_I420,
+                                       kInvalidInputVisibleSize) *
+            2);
+    ASSERT_TRUE(shmem.IsValid());
+    base::WritableSharedMemoryMapping mapping = shmem.Map();
+    ASSERT_TRUE(mapping.IsValid());
+    const scoped_refptr<VideoFrame> video_frame = VideoFrame::WrapExternalData(
+        PIXEL_FORMAT_I420, kInvalidInputVisibleSize,
+        gfx::Rect(kInvalidInputVisibleSize), kInvalidInputVisibleSize,
+        mapping.GetMemoryAsSpan<uint8_t>().data(), mapping.size(),
+        base::TimeDelta());
+    video_frame->BackWithSharedMemory(&shmem);
     const bool is_keyframe = true;
 
     EXPECT_CALL(*mock_vea_client,
@@ -344,7 +357,7 @@ TEST_F(MojoVideoEncodeAcceleratorIntegrationTest,
   Initialize(mock_vea_client.get());
 
   {
-    TearDown();  // Alias for |mojo_vea_binding_| Close().
+    TearDown();  // Alias for |mojo_vea_receiver_| Close().
     base::RunLoop().RunUntilIdle();
   }
   {

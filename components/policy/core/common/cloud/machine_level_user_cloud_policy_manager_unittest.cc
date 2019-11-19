@@ -26,6 +26,7 @@ class MockMachineLevelUserCloudPolicyStore
             std::string(),
             base::FilePath(),
             base::FilePath(),
+            /* cloud_policy_has_priority= */false,
             scoped_refptr<base::SequencedTaskRunner>()) {}
 
   MOCK_METHOD0(LoadImmediately, void(void));

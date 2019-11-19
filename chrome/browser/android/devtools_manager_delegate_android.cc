@@ -252,9 +252,8 @@ DevToolsManagerDelegateAndroid::CreateNewTarget(const GURL& url) {
 }
 
 std::string DevToolsManagerDelegateAndroid::GetDiscoveryPageHTML() {
-  return ui::ResourceBundle::GetSharedInstance()
-      .GetRawDataResource(IDR_DEVTOOLS_DISCOVERY_PAGE_HTML)
-      .as_string();
+  return ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
+      IDR_DEVTOOLS_DISCOVERY_PAGE_HTML);
 }
 
 bool DevToolsManagerDelegateAndroid::IsBrowserTargetDiscoverable() {

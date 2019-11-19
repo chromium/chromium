@@ -31,7 +31,7 @@ Polymer({
         if (settings.routes.ANDROID_APPS_DETAILS) {
           map.set(
               settings.routes.ANDROID_APPS_DETAILS.path,
-              '#android-apps .subpage-arrow button');
+              '#android-apps .subpage-arrow');
         }
         return map;
       },

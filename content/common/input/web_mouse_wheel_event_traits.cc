@@ -16,7 +16,8 @@ blink::WebMouseWheelEvent::EventAction WebMouseWheelEventTraits::GetEventAction(
 #if defined(USE_AURA)
   // Scroll events generated from the mouse wheel when the control key is held
   // don't trigger scrolling. Instead, they may cause zooming.
-  if (!event.has_precise_scrolling_deltas &&
+  if (event.delta_units !=
+          ui::input_types::ScrollGranularity::kScrollByPrecisePixel &&
       (event.GetModifiers() & WebInputEvent::kControlKey)) {
     return blink::WebMouseWheelEvent::EventAction::kPageZoom;
   }

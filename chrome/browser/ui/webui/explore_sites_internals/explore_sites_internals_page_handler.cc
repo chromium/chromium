@@ -4,6 +4,7 @@
 #include "chrome/browser/ui/webui/explore_sites_internals/explore_sites_internals_page_handler.h"
 
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -11,8 +12,11 @@
 #include "chrome/browser/android/explore_sites/explore_sites_feature.h"
 #include "chrome/browser/android/explore_sites/url_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/explore_sites_internals/explore_sites_internals.mojom.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 
 namespace explore_sites {
 using chrome::android::explore_sites::ExploreSitesVariation;
@@ -28,8 +32,8 @@ std::string GetChromeFlagsSetupString() {
       return "Experiment";
     case ExploreSitesVariation::PERSONALIZED:
       return "Personalized";
-    case ExploreSitesVariation::CONDENSED:
-      return "Condensed";
+    case ExploreSitesVariation::MOST_LIKELY:
+      return "Most Likely";
     case ExploreSitesVariation::DISABLED:
       return "Disabled";
   }
@@ -37,10 +41,10 @@ std::string GetChromeFlagsSetupString() {
 }  // namespace
 
 ExploreSitesInternalsPageHandler::ExploreSitesInternalsPageHandler(
-    explore_sites_internals::mojom::PageHandlerRequest request,
+    mojo::PendingReceiver<explore_sites_internals::mojom::PageHandler> receiver,
     ExploreSitesService* explore_sites_service,
     Profile* profile)
-    : binding_(this, std::move(request)),
+    : receiver_(this, std::move(receiver)),
       explore_sites_service_(explore_sites_service),
       profile_(profile) {}
 
@@ -57,7 +61,7 @@ void ExploreSitesInternalsPageHandler::GetProperties(
 
 void ExploreSitesInternalsPageHandler::ClearCachedExploreSitesCatalog(
     ClearCachedExploreSitesCatalogCallback callback) {
-  if (ExploreSitesVariation::ENABLED != GetExploreSitesVariation()) {
+  if (ExploreSitesVariation::DISABLED == GetExploreSitesVariation()) {
     std::move(callback).Run(false);
     return;
   }
@@ -77,7 +81,7 @@ void ExploreSitesInternalsPageHandler::ForceNetworkRequest(
 void ExploreSitesInternalsPageHandler::OverrideCountryCode(
     const std::string& country_code,
     OverrideCountryCodeCallback callback) {
-  if (ExploreSitesVariation::ENABLED != GetExploreSitesVariation()) {
+  if (ExploreSitesVariation::DISABLED == GetExploreSitesVariation()) {
     std::move(callback).Run(false);
     return;
   }

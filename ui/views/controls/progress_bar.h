@@ -20,6 +20,8 @@ namespace views {
 // Progress bar is a control that indicates progress visually.
 class VIEWS_EXPORT ProgressBar : public View, public gfx::AnimationDelegate {
  public:
+  METADATA_HEADER(ProgressBar);
+
   // The preferred height parameter makes it easier to use a ProgressBar with
   // layout managers that size to preferred size.
   explicit ProgressBar(int preferred_height = 5,
@@ -29,28 +31,25 @@ class VIEWS_EXPORT ProgressBar : public View, public gfx::AnimationDelegate {
   // Overridden from View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   gfx::Size CalculatePreferredSize() const override;
-  const char* GetClassName() const override;
   void OnPaint(gfx::Canvas* canvas) override;
 
-  double current_value() const { return current_value_; }
-
+  double GetValue() const;
   // Sets the current value. Values outside of the display range of 0.0-1.0 will
   // be displayed with an infinite loading animation.
   void SetValue(double value);
 
   // The color of the progress portion.
   SkColor GetForegroundColor() const;
-  void set_foreground_color(SkColor color) { foreground_color_ = color; }
+  void SetForegroundColor(SkColor color);
+
   // The color of the portion that displays potential progress.
   SkColor GetBackgroundColor() const;
-  void set_background_color(SkColor color) { background_color_ = color; }
+  void SetBackgroundColor(SkColor color);
 
  protected:
   int preferred_height() const { return preferred_height_; }
 
  private:
-  static const char kViewClassName[];
-
   // gfx::AnimationDelegate:
   void AnimationProgressed(const gfx::Animation* animation) override;
   void AnimationEnded(const gfx::Animation* animation) override;

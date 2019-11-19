@@ -12,9 +12,7 @@
 #include "net/base/completion_once_callback.h"
 #include "net/filter/source_stream.h"
 
-namespace base {
 class FuzzedDataProvider;
-}  // namespace base
 
 namespace net {
 
@@ -26,7 +24,7 @@ class FuzzedSourceStream : public SourceStream {
  public:
   // |data_provider| is used to determine behavior of the FuzzedSourceStream.
   // It must remain valid until after the FuzzedSocket is destroyed.
-  explicit FuzzedSourceStream(base::FuzzedDataProvider* data_provider);
+  explicit FuzzedSourceStream(FuzzedDataProvider* data_provider);
   ~FuzzedSourceStream() override;
 
   // SourceStream implementation
@@ -34,6 +32,7 @@ class FuzzedSourceStream : public SourceStream {
            int buffer_size,
            CompletionOnceCallback callback) override;
   std::string Description() const override;
+  bool MayHaveMoreBytes() const override;
 
  private:
   void OnReadComplete(CompletionOnceCallback callback,
@@ -41,7 +40,7 @@ class FuzzedSourceStream : public SourceStream {
                       scoped_refptr<IOBuffer> read_buf,
                       int result);
 
-  base::FuzzedDataProvider* data_provider_;
+  FuzzedDataProvider* data_provider_;
 
   // Whether there is a pending Read().
   bool read_pending_;

@@ -1,0 +1,12 @@
+Tests we properly emit Page.downloadWillBegin.
+Downloading via a navigation: 
+{
+    frameId : <string>
+    url : http://127.0.0.1:8000/devtools/network/resources/resource.php?download=1
+}
+Downloading by clicking a link: 
+{
+    frameId : <string>
+    url : http://127.0.0.1:8000/devtools/network/resources/resource.php
+}
+

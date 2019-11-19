@@ -100,7 +100,7 @@ bool ParseChildPermissions(const std::string& base_name,
       return true;
     }
 
-    const base::Value::ListStorage& list_storage = permission_value->GetList();
+    base::span<const base::Value> list_storage = permission_value->GetList();
     for (size_t i = 0; i < list_storage.size(); ++i) {
       std::string permission_str;
       if (!list_storage[i].is_string()) {
@@ -157,7 +157,7 @@ bool APIPermissionSet::ParseFromJSON(
     // return true here anyway.
     return true;
   }
-  const base::Value::ListStorage& list_storage = permissions->GetList();
+  base::span<const base::Value> list_storage = permissions->GetList();
   for (size_t i = 0; i < list_storage.size(); ++i) {
     std::string permission_str;
     const base::Value* permission_value = nullptr;
@@ -306,7 +306,7 @@ PermissionIDSet PermissionIDSet::GetAllPermissionsWithIDs(
     const std::set<APIPermission::ID>& permission_ids) const {
   PermissionIDSet subset;
   for (const auto& permission : permissions_) {
-    if (base::ContainsKey(permission_ids, permission.id())) {
+    if (base::Contains(permission_ids, permission.id())) {
       subset.permissions_.insert(permission);
     }
   }

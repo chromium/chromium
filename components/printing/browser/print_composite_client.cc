@@ -8,16 +8,19 @@
 
 #include "base/bind.h"
 #include "base/memory/read_only_shared_memory_region.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/stl_util.h"
+#include "base/task/post_task.h"
+#include "build/build_config.h"
+#include "components/discardable_memory/service/discardable_shared_memory_manager.h"
 #include "components/printing/common/print_messages.h"
 #include "components/services/pdf_compositor/public/cpp/pdf_service_mojo_types.h"
+#include "components/strings/grit/components_strings.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
-#include "content/public/common/service_manager_connection.h"
+#include "content/public/browser/service_process_host.h"
 #include "printing/printing_utils.h"
-#include "services/service_manager/public/cpp/connector.h"
 
 namespace printing {
 
@@ -57,6 +60,14 @@ ContentToFrameMap ConvertContentInfoMap(
   return content_frame_map;
 }
 
+void BindDiscardableSharedMemoryManagerOnIOThread(
+    mojo::PendingReceiver<
+        discardable_memory::mojom::DiscardableSharedMemoryManager> receiver) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  discardable_memory::DiscardableSharedMemoryManager::Get()->Bind(
+      std::move(receiver));
+}
+
 }  // namespace
 
 PrintCompositeClient::PrintCompositeClient(content::WebContents* web_contents)
@@ -85,7 +96,7 @@ void PrintCompositeClient::RenderFrameDeleted(
     // When a subframe we are expecting is deleted, we should notify pdf
     // compositor service.
     for (int doc_cookie : iter->second) {
-      auto& compositor = GetCompositeRequest(doc_cookie);
+      auto* compositor = GetCompositeRequest(doc_cookie);
       compositor->NotifyUnavailableSubframe(frame_guid);
     }
     pending_subframe_cookies_.erase(iter);
@@ -114,7 +125,7 @@ void PrintCompositeClient::OnDidPrintFrameContent(
   // Content in |params| is sent from untrusted source; only minimal processing
   // is done here. Most of it will be directly forwarded to pdf compositor
   // service.
-  auto& compositor = GetCompositeRequest(document_cookie);
+  auto* compositor = GetCompositeRequest(document_cookie);
   auto region = params.metafile_data_region.Duplicate();
   uint64_t frame_guid = GenerateFrameGuid(render_frame_host);
   compositor->AddSubframeContent(
@@ -139,21 +150,21 @@ void PrintCompositeClient::PrintCrossProcessSubframe(
   if (!subframe_host->IsRenderFrameLive()) {
     // When the subframe is dead, no need to send message,
     // just notify the service.
-    auto& compositor = GetCompositeRequest(document_cookie);
+    auto* compositor = GetCompositeRequest(document_cookie);
     compositor->NotifyUnavailableSubframe(frame_guid);
     return;
   }
 
   auto subframe_iter = printed_subframes_.find(document_cookie);
   if (subframe_iter != printed_subframes_.end() &&
-      base::ContainsKey(subframe_iter->second, frame_guid)) {
+      base::Contains(subframe_iter->second, frame_guid)) {
     // If this frame is already printed, no need to print again.
     return;
   }
 
   auto cookie_iter = pending_subframe_cookies_.find(frame_guid);
   if (cookie_iter != pending_subframe_cookies_.end() &&
-      base::ContainsKey(cookie_iter->second, document_cookie)) {
+      base::Contains(cookie_iter->second, document_cookie)) {
     // If this frame is being printed, no need to print again.
     return;
   }
@@ -171,12 +182,44 @@ void PrintCompositeClient::DoCompositePageToPdf(
     mojom::PdfCompositor::CompositePageToPdfCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  auto& compositor = GetCompositeRequest(document_cookie);
+  auto* compositor = GetCompositeRequest(document_cookie);
   auto region = content.metafile_data_region.Duplicate();
   compositor->CompositePageToPdf(
       GenerateFrameGuid(render_frame_host), std::move(region),
       ConvertContentInfoMap(render_frame_host, content.subframe_content_info),
       base::BindOnce(&PrintCompositeClient::OnDidCompositePageToPdf,
+                     std::move(callback)));
+}
+
+void PrintCompositeClient::DoPrepareForDocumentToPdf(
+    int document_cookie,
+    mojom::PdfCompositor::PrepareForDocumentToPdfCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(!GetIsDocumentConcurrentlyComposited(document_cookie));
+
+  is_doc_concurrently_composited_set_.insert(document_cookie);
+  auto* compositor = GetCompositeRequest(document_cookie);
+  compositor->PrepareForDocumentToPdf(
+      base::BindOnce(&PrintCompositeClient::OnDidPrepareForDocumentToPdf,
+                     std::move(callback)));
+}
+
+void PrintCompositeClient::DoCompleteDocumentToPdf(
+    int document_cookie,
+    uint32_t pages_count,
+    mojom::PdfCompositor::CompleteDocumentToPdfCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(GetIsDocumentConcurrentlyComposited(document_cookie));
+
+  auto* compositor = GetCompositeRequest(document_cookie);
+
+  // Since this class owns compositor, compositor will be gone when this class
+  // is destructed. Mojo won't call its callback in that case so it is safe to
+  // use unretained |this| pointer here.
+  compositor->CompleteDocumentToPdf(
+      pages_count,
+      base::BindOnce(&PrintCompositeClient::OnDidCompleteDocumentToPdf,
+                     base::Unretained(this), document_cookie,
                      std::move(callback)));
 }
 
@@ -186,8 +229,9 @@ void PrintCompositeClient::DoCompositeDocumentToPdf(
     const PrintHostMsg_DidPrintContent_Params& content,
     mojom::PdfCompositor::CompositeDocumentToPdfCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(!GetIsDocumentConcurrentlyComposited(document_cookie));
 
-  auto& compositor = GetCompositeRequest(document_cookie);
+  auto* compositor = GetCompositeRequest(document_cookie);
   auto region = content.metafile_data_region.Duplicate();
 
   // Since this class owns compositor, compositor will be gone when this class
@@ -206,12 +250,6 @@ void PrintCompositeClient::OnDidCompositePageToPdf(
     mojom::PdfCompositor::CompositePageToPdfCallback callback,
     mojom::PdfCompositor::Status status,
     base::ReadOnlySharedMemoryRegion region) {
-  // Due to https://crbug.com/742517, we can not add and use COUNT for enums in
-  // mojo.
-  UMA_HISTOGRAM_ENUMERATION(
-      "CompositePageToPdf.Status", status,
-      static_cast<int32_t>(mojom::PdfCompositor::Status::COMPOSTING_FAILURE) +
-          1);
   std::move(callback).Run(status, std::move(region));
 }
 
@@ -224,25 +262,43 @@ void PrintCompositeClient::OnDidCompositeDocumentToPdf(
   // Clear all stored printed subframes.
   printed_subframes_.erase(document_cookie);
 
-  // Due to https://crbug.com/742517, we can not add and use COUNT for enums in
-  // mojo.
-  UMA_HISTOGRAM_ENUMERATION(
-      "CompositeDocToPdf.Status", status,
-      static_cast<int32_t>(mojom::PdfCompositor::Status::COMPOSTING_FAILURE) +
-          1);
   std::move(callback).Run(status, std::move(region));
 }
 
-mojom::PdfCompositorPtr& PrintCompositeClient::GetCompositeRequest(int cookie) {
+// static
+void PrintCompositeClient::OnDidPrepareForDocumentToPdf(
+    mojom::PdfCompositor::PrepareForDocumentToPdfCallback callback,
+    mojom::PdfCompositor::Status status) {
+  std::move(callback).Run(status);
+}
+
+void PrintCompositeClient::OnDidCompleteDocumentToPdf(
+    int document_cookie,
+    mojom::PdfCompositor::CompleteDocumentToPdfCallback callback,
+    mojom::PdfCompositor::Status status,
+    base::ReadOnlySharedMemoryRegion region) {
+  RemoveCompositeRequest(document_cookie);
+  // Clear all stored printed subframes.
+  printed_subframes_.erase(document_cookie);
+  // No longer concurrently compositing this document.
+  is_doc_concurrently_composited_set_.erase(document_cookie);
+  std::move(callback).Run(status, std::move(region));
+}
+
+bool PrintCompositeClient::GetIsDocumentConcurrentlyComposited(
+    int cookie) const {
+  return base::Contains(is_doc_concurrently_composited_set_, cookie);
+}
+
+mojom::PdfCompositor* PrintCompositeClient::GetCompositeRequest(int cookie) {
   auto iter = compositor_map_.find(cookie);
   if (iter != compositor_map_.end()) {
     DCHECK(iter->second.is_bound());
-    return iter->second;
+    return iter->second.get();
   }
 
-  auto iterator =
-      compositor_map_.emplace(cookie, CreateCompositeRequest()).first;
-  return iterator->second;
+  iter = compositor_map_.emplace(cookie, CreateCompositeRequest()).first;
+  return iter->second.get();
 }
 
 void PrintCompositeClient::RemoveCompositeRequest(int cookie) {
@@ -250,16 +306,23 @@ void PrintCompositeClient::RemoveCompositeRequest(int cookie) {
   DCHECK_EQ(erased, 1u);
 }
 
-mojom::PdfCompositorPtr PrintCompositeClient::CreateCompositeRequest() {
-  if (!connector_) {
-    service_manager::mojom::ConnectorRequest connector_request;
-    connector_ = service_manager::Connector::Create(&connector_request);
-    content::ServiceManagerConnection::GetForProcess()
-        ->GetConnector()
-        ->BindConnectorRequest(std::move(connector_request));
-  }
-  mojom::PdfCompositorPtr compositor;
-  connector_->BindInterface(mojom::kServiceName, &compositor);
+mojo::Remote<mojom::PdfCompositor>
+PrintCompositeClient::CreateCompositeRequest() {
+  auto compositor = content::ServiceProcessHost::Launch<mojom::PdfCompositor>(
+      content::ServiceProcessHost::Options()
+          .WithDisplayName(IDS_PDF_COMPOSITOR_SERVICE_DISPLAY_NAME)
+          .WithSandboxType(service_manager::SANDBOX_TYPE_PDF_COMPOSITOR)
+          .Pass());
+
+  mojo::PendingRemote<discardable_memory::mojom::DiscardableSharedMemoryManager>
+      discardable_memory_manager;
+  base::PostTask(
+      FROM_HERE, {content::BrowserThread::IO},
+      base::BindOnce(
+          &BindDiscardableSharedMemoryManagerOnIOThread,
+          discardable_memory_manager.InitWithNewPipeAndPassReceiver()));
+  compositor->SetDiscardableSharedMemoryManager(
+      std::move(discardable_memory_manager));
   compositor->SetWebContentsURL(web_contents()->GetLastCommittedURL());
   compositor->SetUserAgent(user_agent_);
   return compositor;

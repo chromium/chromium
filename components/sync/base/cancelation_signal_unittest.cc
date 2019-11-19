@@ -7,7 +7,7 @@
 #include "base/bind.h"
 #include "base/single_thread_task_runner.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
@@ -112,7 +112,7 @@ class CancelationSignalTest : public ::testing::Test {
   bool VerifyTaskNotStarted();
 
  private:
-  base::test::ScopedTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
 
   CancelationSignal signal_;
   base::WaitableEvent task_start_event_;

@@ -35,11 +35,6 @@ SurfaceElement::SurfaceElement(const viz::SurfaceId& surface_id,
 
 SurfaceElement::~SurfaceElement() = default;
 
-std::vector<std::pair<std::string, std::string>>
-SurfaceElement::GetCustomProperties() const {
-  return {};
-}
-
 void SurfaceElement::GetBounds(gfx::Rect* bounds) const {
   // We cannot really know real bounds on the surface unless we do
   // aggregation. Here we just return size of the surface.
@@ -57,16 +52,11 @@ void SurfaceElement::GetVisible(bool* visible) const {
 
 void SurfaceElement::SetVisible(bool visible) {}
 
-std::unique_ptr<protocol::Array<std::string>> SurfaceElement::GetAttributes()
-    const {
-  auto attributes = protocol::Array<std::string>::create();
-  attributes->addItem("SurfaceId");
-  attributes->addItem(surface_id_.ToString());
-  attributes->addItem("FrameSink Debug Label");
-  attributes->addItem(
+std::vector<std::string> SurfaceElement::GetAttributes() const {
+  return {
+      "SurfaceId", surface_id_.ToString(), "FrameSink Debug Label",
       frame_sink_manager_->GetFrameSinkDebugLabel(surface_id_.frame_sink_id())
-          .as_string());
-  return attributes;
+          .as_string()};
 }
 
 std::pair<gfx::NativeWindow, gfx::Rect>

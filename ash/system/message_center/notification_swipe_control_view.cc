@@ -26,13 +26,13 @@ NotificationSwipeControlView::NotificationSwipeControlView(
     message_center::MessageView* message_view)
     : message_view_(message_view) {
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::kHorizontal,
+      views::BoxLayout::Orientation::kHorizontal,
       gfx::Insets(message_center_style::kSwipeControlButtonVerticalMargin,
                   message_center_style::kSwipeControlButtonHorizontalMargin),
       message_center_style::kSwipeControlButtonHorizontalMargin));
   layout->set_cross_axis_alignment(
-      views::BoxLayout::CROSS_AXIS_ALIGNMENT_START);
-  layout->set_main_axis_alignment(views::BoxLayout::MAIN_AXIS_ALIGNMENT_END);
+      views::BoxLayout::CrossAxisAlignment::kStart);
+  layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kEnd);
 
   // Draw on its own layer to round corners
   SetPaintToLayer();
@@ -46,10 +46,10 @@ void NotificationSwipeControlView::ShowButtons(ButtonPosition button_position,
                                                bool show_snooze) {
   views::BoxLayout* layout = static_cast<views::BoxLayout*>(GetLayoutManager());
   if ((button_position == ButtonPosition::RIGHT) != base::i18n::IsRTL()) {
-    layout->set_main_axis_alignment(views::BoxLayout::MAIN_AXIS_ALIGNMENT_END);
+    layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kEnd);
   } else {
     layout->set_main_axis_alignment(
-        views::BoxLayout::MAIN_AXIS_ALIGNMENT_START);
+        views::BoxLayout::MainAxisAlignment::kStart);
   }
   ShowSettingsButton(show_settings);
   ShowSnoozeButton(show_snooze);
@@ -86,8 +86,21 @@ void NotificationSwipeControlView::UpdateButtonsVisibility() {
   int control_button_width =
       message_center_style::kSwipeControlButtonSize * control_button_count +
       message_center_style::kSwipeControlButtonHorizontalMargin *
-          (control_button_count + 1);
+          (control_button_count ? control_button_count + 1 : 0);
   message_view_->SetSlideButtonWidth(control_button_width);
+
+  // Update opacity based on the swipe progress. The swipe controls should
+  // gradually disappear as the user swipes the notification away.
+  float full_opacity_width =
+      message_center_style::kSwipeControlFullOpacityRatio *
+      control_button_width;
+  float fade_out_width = message_view_->width() - full_opacity_width;
+  DCHECK(fade_out_width > 0);
+  float swipe_progress = std::max(
+      0.0f, (fabs(gesture_amount) - full_opacity_width) / fade_out_width);
+  float opacity = std::max(0.0f, 1.0f - swipe_progress);
+
+  layer()->SetOpacity(opacity);
 }
 
 void NotificationSwipeControlView::UpdateCornerRadius(int top_radius,
@@ -108,8 +121,10 @@ void NotificationSwipeControlView::ShowSettingsButton(bool show) {
             message_center::kNotificationSettingsButtonIcon,
             message_center_style::kSwipeControlButtonImageSize,
             gfx::kChromeIconGrey));
-    settings_button_->SetImageAlignment(views::ImageButton::ALIGN_CENTER,
-                                        views::ImageButton::ALIGN_MIDDLE);
+    settings_button_->SetImageHorizontalAlignment(
+        views::ImageButton::ALIGN_CENTER);
+    settings_button_->SetImageVerticalAlignment(
+        views::ImageButton::ALIGN_MIDDLE);
     settings_button_->SetPreferredSize(
         gfx::Size(message_center_style::kSwipeControlButtonSize,
                   message_center_style::kSwipeControlButtonSize));
@@ -121,7 +136,7 @@ void NotificationSwipeControlView::ShowSettingsButton(bool show) {
     settings_button_->SetBackground(
         views::CreateSolidBackground(SK_ColorTRANSPARENT));
 
-    AddChildViewAt(settings_button_, child_count());
+    AddChildView(settings_button_);
     Layout();
   } else if (!show && settings_button_) {
     DCHECK(Contains(settings_button_));
@@ -139,8 +154,9 @@ void NotificationSwipeControlView::ShowSnoozeButton(bool show) {
             message_center::kNotificationSnoozeButtonIcon,
             message_center_style::kSwipeControlButtonImageSize,
             gfx::kChromeIconGrey));
-    snooze_button_->SetImageAlignment(views::ImageButton::ALIGN_CENTER,
-                                      views::ImageButton::ALIGN_MIDDLE);
+    snooze_button_->SetImageHorizontalAlignment(
+        views::ImageButton::ALIGN_CENTER);
+    snooze_button_->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
     snooze_button_->SetPreferredSize(
         gfx::Size(message_center_style::kSwipeControlButtonSize,
                   message_center_style::kSwipeControlButtonSize));

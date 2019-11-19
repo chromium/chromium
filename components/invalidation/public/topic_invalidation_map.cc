@@ -34,12 +34,12 @@ void TopicInvalidationMap::Insert(const Invalidation& invalidation) {
 }
 
 TopicInvalidationMap TopicInvalidationMap::GetSubsetWithTopics(
-    const TopicSet& topics) const {
+    const Topics& topics) const {
   TopicToListMap new_map;
   for (const auto& topic : topics) {
-    auto lookup = map_.find(topic);
+    auto lookup = map_.find(topic.first);
     if (lookup != map_.end()) {
-      new_map[topic] = lookup->second;
+      new_map[topic.first] = lookup->second;
     }
   }
   return TopicInvalidationMap(new_map);
@@ -119,6 +119,17 @@ TopicInvalidationMap ConvertObjectIdInvalidationMapToTopicInvalidationMap(
     topics_map.Insert(invalidation);
   }
   return topics_map;
+}
+
+ObjectIdInvalidationMap ConvertTopicInvalidationMapToObjectIdInvalidationMap(
+    const TopicInvalidationMap& topics_map) {
+  ObjectIdInvalidationMap object_ids_map;
+  std::vector<Invalidation> invalidations;
+  topics_map.GetAllInvalidations(&invalidations);
+  for (const auto& invalidation : invalidations) {
+    object_ids_map.Insert(invalidation);
+  }
+  return object_ids_map;
 }
 
 }  // namespace syncer

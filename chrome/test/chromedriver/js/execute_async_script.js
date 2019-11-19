@@ -45,17 +45,22 @@ function getAsyncScriptInfo() {
 *     If not, UnknownError will be used instead of JavaScriptError if an
 *     exception occurs during the script, and an additional error callback will
 *     be supplied to the script.
-* @param {?number} opt_timeoutMillis The timeout, in milliseconds, to use.
-*     If the timeout is exceeded and the callback has not been invoked, a error
-*     result will be saved and future invocation of the callback will be
-*     ignored.
 */
-function executeAsyncScript(script, args, isUserSupplied, opt_timeoutMillis) {
-  var info = getAsyncScriptInfo();
+function executeAsyncScript(script, args, isUserSupplied) {
+  let resolveHandle;
+  let rejectHandle;
+  var promise = new Promise((resolve, reject) => {
+    resolveHandle = resolve;
+    rejectHandle = reject;
+  });
+  const info = getAsyncScriptInfo();
   info.id++;
   delete info.result;
-  var id = info.id;
+  const id = info.id;
 
+  function isThenable(value) {
+    return typeof value === 'object' && typeof value.then === 'function';
+  }
   function report(status, value) {
     if (id != info.id)
       return;
@@ -78,24 +83,23 @@ function executeAsyncScript(script, args, isUserSupplied, opt_timeoutMillis) {
     }
     report(code, message);
   }
-  args.push(reportValue);
+  promise.then(reportValue).catch(reportScriptError);
+  args.push(resolveHandle);
   if (!isUserSupplied)
-    args.push(reportScriptError);
-
+    args.push(rejectHandle);
   try {
-    new Function(script).apply(null, args);
+    const scriptResult = new Function(script).apply(null, args);
+    // The return value is only considered if it is a promise.
+    if (isThenable(scriptResult)) {
+      const resolvedPromise = Promise.resolve(scriptResult);
+      resolvedPromise.then((value) => {
+        // Must be thenable if user-supplied.
+        if (!isUserSupplied || isThenable(value))
+          resolveHandle(value);
+      })
+      .catch(rejectHandle);
+    }
   } catch (error) {
-    reportScriptError(error);
-    return;
-  }
-
-  if (typeof(opt_timeoutMillis) != 'undefined') {
-    window.setTimeout(function() {
-      var code = isUserSupplied ? StatusCode.SCRIPT_TIMEOUT :
-                                  StatusCode.UNKNOWN_ERROR;
-      var errorMsg = 'result was not received in ' + opt_timeoutMillis / 1000 +
-                     ' seconds';
-      report(code, errorMsg);
-    }, opt_timeoutMillis);
+    rejectHandle(error);
   }
 }

@@ -13,12 +13,13 @@ import("//remoting/tools/build/remoting_localize.gni")
 generate_jni("jni_headers") {
   sources = [
     "java/src/org/chromium/chromoting/jni/Client.java",
+    "java/src/org/chromium/chromoting/jni/DirectoryService.java",
     "java/src/org/chromium/chromoting/jni/GlDisplay.java",
     "java/src/org/chromium/chromoting/jni/JniInterface.java",
     "java/src/org/chromium/chromoting/jni/JniOAuthTokenGetter.java",
+    "java/src/org/chromium/chromoting/jni/NotificationPresenter.java",
     "java/src/org/chromium/chromoting/jni/TouchEventData.java",
   ]
-  jni_package = "remoting"
 }
 
 _raw_resources_base_dir = "$target_gen_dir/credits_resources_raw/res"
@@ -81,6 +82,7 @@ remoting_localize("remoting_test_apk_manifest") {
 instrumentation_test_apk("remoting_test_apk") {
   android_manifest = "$root_gen_dir/remoting/android_test/AndroidManifest.xml"
   android_manifest_dep = ":remoting_test_apk_manifest"
+  target_sdk_version = 23
   apk_name = "ChromotingTest"
   apk_under_test = ":remoting_apk"
   java_files = [

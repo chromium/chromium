@@ -1,0 +1,96 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module content.mojom;
+
+import "mojo/public/mojom/base/file.mojom";
+import "mojo/public/mojom/base/time.mojom";
+
+// Status result enum for MHTML generation.
+// Changes to this enum must be reflected in the respective metrics enum named
+// MhtmlGenerationFinalSaveStatus in enums.xml.
+enum MhtmlSaveStatus {
+  kSuccess = 0,
+
+  // Could not properly close the file where data was written to. Determined by
+  // the browser.
+  kFileClosingError,
+
+  // Could not create the file that would be written to. Determined by the
+  // browser.
+  kFileCreationError,
+
+  // Could not write serialized data to the file. Determined by the renderer.
+  kFileWritingError,
+
+  // The DOM changed and a previously existing frame is no more. Determined by
+  // the browser.
+  kFrameNoLongerExists,
+
+  // No longer used.
+  kDeprecatedFrameSerializationForbidden,
+
+  // A render process needed for the serialization of one of the page's frame is
+  // no more. Determined by the browser.
+  kRenderProcessExited,
+
+  // There is a problem reading or writing serialized data to the Data Pipe.
+  // Determined by either browser or renderer.
+  kStreamingError
+};
+
+union MhtmlOutputHandle {
+  // Destination file handle.
+  mojo_base.mojom.File file_handle;
+
+  // Data pipe producer handle for on-the-fly hashing.
+  handle<data_pipe_producer> producer_handle;
+};
+
+struct SerializeAsMHTMLParams {
+  // MHTML boundary marker / MIME multipart boundary maker. The same
+  // |mhtml_boundary_marker| should be used for serialization of each frame.
+  string mhtml_boundary_marker;
+
+  // Whether to use binary encoding while serializing.  Binary encoding is not
+  // supported outside of Chrome, so this should not be used if the MHTML is
+  // intended for sharing.
+  bool mhtml_binary_encoding;
+
+  // Whether to remove popup overlay while serializing.
+  bool mhtml_popup_overlay_removal;
+
+  // Whether to detect problems while serializing.
+  bool mhtml_problem_detection;
+
+  // To avoid duplicating MHTML parts across frames, |digests_of_uris_to_skip|
+  // contains digests of parts that have already been serialized and should
+  // be skipped.
+  // SECURITY NOTE: Sha256 digests (rather than uris) are used to prevent
+  // disclosing uris to other renderer processes;  the digests should be
+  // generated using SHA256HashString function from crypto/sha2.h and hashing
+  // |salt + url.spec()|.
+  // This array MUST be sorted and contain no duplicates.
+  array<string> digests_of_uris_to_skip;
+
+  // Salt used for |digests_of_uris_to_skip|.
+  string salt;
+
+  // Destination handle to write MHTML data to.
+  MhtmlOutputHandle output_handle;
+};
+
+// Serialize target frame and its resources into MHTML and write it into the
+// provided output handle.  Note that when serializing multiple
+// frames, one needs to serialize the *main* frame first (the main frame
+// needs to go first according to RFC2557 + the main frame will trigger
+// generation of the MHTML header).
+interface MhtmlFileWriter {
+  // |renderer_main_thread_time| is the amount of time spent in the main
+  // thread serializing the frame.
+  SerializeAsMHTML(SerializeAsMHTMLParams params)
+    =>  (MhtmlSaveStatus status,
+        array<string> digests_of_uris_to_skip,
+        mojo_base.mojom.TimeDelta renderer_main_thread_time);
+};

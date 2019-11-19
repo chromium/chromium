@@ -3,6 +3,7 @@
 #include "base/bind.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 using testing::ElementsAre;
 
@@ -11,10 +12,10 @@ namespace scheduler {
 
 namespace {
 
-void AddToVector(std::vector<std::pair<base::TimeTicks, double>>* vector,
+void AddToVector(Vector<std::pair<base::TimeTicks, double>>* vector,
                  base::TimeTicks time,
                  double load) {
-  vector->push_back({time, load});
+  vector->push_back(std::make_pair(time, load));
 }
 
 base::TimeTicks SecondsToTime(int seconds) {
@@ -28,7 +29,7 @@ base::TimeTicks MillisecondsToTime(int milliseconds) {
 }  // namespace
 
 TEST(ThreadLoadTrackerTest, RecordTasks) {
-  std::vector<std::pair<base::TimeTicks, double>> result;
+  Vector<std::pair<base::TimeTicks, double>> result;
 
   ThreadLoadTracker thread_load_tracker(
       SecondsToTime(1),
@@ -64,7 +65,7 @@ TEST(ThreadLoadTrackerTest, RecordTasks) {
 }
 
 TEST(ThreadLoadTrackerTest, PauseAndResume) {
-  std::vector<std::pair<base::TimeTicks, double>> result;
+  Vector<std::pair<base::TimeTicks, double>> result;
 
   ThreadLoadTracker thread_load_tracker(
       SecondsToTime(1),
@@ -102,7 +103,7 @@ TEST(ThreadLoadTrackerTest, PauseAndResume) {
 }
 
 TEST(ThreadLoadTrackerTest, DisabledByDefault) {
-  std::vector<std::pair<base::TimeTicks, double>> result;
+  Vector<std::pair<base::TimeTicks, double>> result;
   ThreadLoadTracker thread_load_tracker(
       SecondsToTime(1),
       base::BindRepeating(&AddToVector, base::Unretained(&result)),
@@ -122,7 +123,7 @@ TEST(ThreadLoadTrackerTest, DisabledByDefault) {
 }
 
 TEST(ThreadLoadTrackerTest, Reset) {
-  std::vector<std::pair<base::TimeTicks, double>> result;
+  Vector<std::pair<base::TimeTicks, double>> result;
   ThreadLoadTracker thread_load_tracker(
       SecondsToTime(1),
       base::BindRepeating(&AddToVector, base::Unretained(&result)),

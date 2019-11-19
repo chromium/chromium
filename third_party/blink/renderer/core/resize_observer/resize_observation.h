@@ -13,6 +13,7 @@
 namespace blink {
 
 class Element;
+class LayoutPoint;
 class ResizeObserver;
 
 // ResizeObservation represents an element that is being observed.

@@ -22,15 +22,14 @@ class Widget;
 //  "DialogClientView".
 class VIEWS_EXPORT ClientView : public View {
  public:
-  // Internal class name
-  static const char kViewClassName[];
+  METADATA_HEADER(ClientView);
 
   // Constructs a ClientView object for the specified widget with the specified
   // contents. Since this object is created during the process of creating
   // |widget|, |contents_view| must be valid if you want the initial size of
   // the widget to be based on |contents_view|'s preferred size.
   ClientView(Widget* widget, View* contents_view);
-  ~ClientView() override {}
+  ~ClientView() override = default;
 
   // Manual RTTI ftw.
   virtual DialogClientView* AsDialogClientView();
@@ -60,8 +59,6 @@ class VIEWS_EXPORT ClientView : public View {
   gfx::Size CalculatePreferredSize() const override;
   gfx::Size GetMinimumSize() const override;
   gfx::Size GetMaximumSize() const override;
-  void Layout() override;
-  const char* GetClassName() const override;
 
  protected:
   // Overridden from View:

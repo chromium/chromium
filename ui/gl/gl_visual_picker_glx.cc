@@ -5,6 +5,8 @@
 #include "ui/gl/gl_visual_picker_glx.h"
 
 #include <algorithm>
+#include <bitset>
+#include <cstring>
 #include <numeric>
 #include <vector>
 
@@ -19,8 +21,12 @@ namespace gl {
 namespace {
 
 bool IsArgbVisual(const XVisualInfo& visual) {
-  return visual.depth == 32 && visual.red_mask == 0xff0000 &&
-         visual.green_mask == 0x00ff00 && visual.blue_mask == 0x0000ff;
+  auto bits = [](auto x) {
+    return std::bitset<8 * sizeof(decltype(x))>(x).count();
+  };
+  auto bits_rgb =
+      bits(visual.red_mask) + bits(visual.green_mask) + bits(visual.blue_mask);
+  return static_cast<std::size_t>(visual.depth) > bits_rgb;
 }
 
 }  // anonymous namespace
@@ -36,7 +42,8 @@ XVisualInfo GLVisualPickerGLX::PickBestGlVisual(
   // Find the highest scoring visual and return it.
   Visual* default_visual = DefaultVisual(display_, DefaultScreen(display_));
   int highest_score = -1;
-  XVisualInfo best_visual{0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+  XVisualInfo best_visual;
+  memset(&best_visual, 0, sizeof(best_visual));
   for (const XVisualInfo& const_visual_info : visuals) {
     int supports_gl, double_buffer, stereo, alpha_size, depth_size,
         stencil_size, num_multisample, visual_caveat;
@@ -164,6 +171,6 @@ GLVisualPickerGLX::GLVisualPickerGLX() : display_(gfx::GetXDisplay()) {
   rgba_visual_ = PickBestRgbaVisual(visuals);
 }
 
-GLVisualPickerGLX::~GLVisualPickerGLX() {}
+GLVisualPickerGLX::~GLVisualPickerGLX() = default;
 
 }  // namespace gl

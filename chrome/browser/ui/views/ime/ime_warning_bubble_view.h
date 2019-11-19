@@ -7,12 +7,12 @@
 
 #include "base/macros.h"
 #include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/toolbar/toolbar_actions_bar.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_bar_observer.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 class BrowserActionsContainer;
 class BrowserView;
-class ToolbarActionsBar;
 enum class ImeWarningBubblePermissionStatus;
 
 namespace extensions {
@@ -77,24 +77,24 @@ class ImeWarningBubbleView : public views::BubbleDialogDelegateView,
   Browser* const browser_;
 
   // True if bubble anchors to the action of the extension.
-  bool anchor_to_action_;
+  bool anchor_to_action_ = false;
 
   // The check box on the bubble view.
-  views::Checkbox* never_show_checkbox_;
+  views::Checkbox* never_show_checkbox_ = nullptr;
 
   ImeWarningBubbleResponseCallback response_callback_;
 
   // True if the warning bubble has been shown.
-  bool bubble_has_shown_;
+  bool bubble_has_shown_ = false;
 
   BrowserActionsContainer* container_;
 
   ToolbarActionsBar* toolbar_actions_bar_;
 
   ScopedObserver<ToolbarActionsBar, ToolbarActionsBarObserver>
-      toolbar_actions_bar_observer_;
+      toolbar_actions_bar_observer_{this};
 
-  base::WeakPtrFactory<ImeWarningBubbleView> weak_ptr_factory_;
+  base::WeakPtrFactory<ImeWarningBubbleView> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ImeWarningBubbleView);
 };

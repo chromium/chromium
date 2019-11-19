@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "remoting/proto/remoting/v1/generic_log_entry.pb.h"
 
 namespace jingle_xmpp {
 class XmlElement;
@@ -53,6 +54,8 @@ class ServerLogEntry {
 
   // Converts this object to an XML stanza.
   std::unique_ptr<jingle_xmpp::XmlElement> ToStanza() const;
+
+  apis::v1::GenericLogEntry ToGenericLogEntry() const;
 
  private:
   typedef std::map<std::string, std::string> ValuesMap;

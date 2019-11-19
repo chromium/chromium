@@ -7,66 +7,62 @@
 <translation id="1420684932347524586">अरेरे! यादृच्छिक RSA खासगी की व्युत्पन्न करण्यात अयशस्वी.</translation>
 <translation id="1445572445564823378">हे एक्स्टेंशन <ph name="PRODUCT_NAME" /> हळू चालत आहे. <ph name="PRODUCT_NAME" /> चे काम रिस्टोअर करण्‍यासाठी तुम्ही ते ‍अक्षम करणे आवश्‍यक आहे.</translation>
 <translation id="1468038450257740950">WebGL समर्थित नाही.</translation>
-<translation id="149347756975725155">एक्स्टेंशन आयकन '<ph name="ICON" />' लोड करणे शक्य नाही.</translation>
+<translation id="149347756975725155">एक्स्टेंशन प्रतीक '<ph name="ICON" />' लोड करणे शक्य नाही.</translation>
 <translation id="1803557475693955505">'पार्श्वभूमी पृष्ठ '<ph name="BACKGROUND_PAGE" />'  लोड करणे शक्य नाही.</translation>
 <translation id="2159915644201199628">इमेज डीकोड करणे शक्य झाले नाही: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">भाषांतर वापरले, परंतु मॅनिफेस्टमध्ये डीफॉल्ट_लोकॅल नमूद नाही.</translation>
 <translation id="2576842806987913196">या नावाने आधीपासूनच CRX फाइल उपस्थित आहे.</translation>
-<translation id="2753617847762399167">बेकायदेशीर पथ ('..' सह अचूक किंवा संबंधित): '<ph name="IMAGE_PATH" />'</translation>
-<translation id="2785530881066938471">सामग्री स्क्रिप्टसाठी '<ph name="RELATIVE_PATH" />' फाइल लोड करणे शक्य नाही. ही UTF-8 द्वारे एन्कोड केलेली नाही.</translation>
-<translation id="2903070246402204397"><ph name="EXTENSION_NAME" /> विस्तार आयडी "<ph name="EXTENSION_ID" />") प्रशासकाने ब्लॉक केलेला आहे. <ph name="ADMIN_INFO" /></translation>
+<translation id="2785530881066938471">आशय स्क्रिप्टसाठी '<ph name="RELATIVE_PATH" />' फाइल लोड करणे शक्य नाही. ही UTF-8 द्वारे एन्कोड केलेली नाही.</translation>
+<translation id="2903070246402204397"><ph name="EXTENSION_NAME" /> एक्स्टेंशन आयडी "<ph name="EXTENSION_ID" />") ॲडमिनिस्ट्रेटरने ब्लॉक केलेला आहे. <ph name="ADMIN_INFO" /></translation>
 <translation id="2988488679308982380">हे पॅकेज इंस्टॉल करणे शक्य नाही: '<ph name="ERROR_CODE" />'</translation>
 <translation id="3115238746683532089"><ph name="VENDOR_ID" /> विक्रेत्याकडील <ph name="PRODUCT_ID" /> अज्ञात उत्पादन (सिरीअल नंबर <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">crx फाइल पुनर्स्थित करण्यात अयशस्वी. फाइल वापरात आहे किंवा नाही हे पाहण्यासाठी तपासा.</translation>
 <translation id="3163201441334626963"><ph name="VENDOR_ID" /> विक्रेत्याकडील <ph name="PRODUCT_ID" /> अज्ञात उत्पादन</translation>
-<translation id="3302709122321372472">सामग्री स्क्रिप्टसाठी css '<ph name="RELATIVE_PATH" />' लोड करणे शक्य नाही.</translation>
-<translation id="3369521687965833290">विस्तार अनपॅक करणे शक्य नाही. विस्तार सुरक्षितपणे अनपॅक करण्यासाठी, आपल्या प्रोफाइल निर्देशिकेत ड्राइव्ह अक्षरासह प्रारंभ होणारा पथ असणे आणि जंक्शन, माउंट पॉइंट किंवा सिमलिंक नसणे आवश्यक आहे. आपल्या प्रोफाइलसाठी असा कोणताही पथ विद्यमान नाही.</translation>
+<translation id="3302709122321372472">आशय स्क्रिप्टसाठी css '<ph name="RELATIVE_PATH" />' लोड करणे शक्य नाही.</translation>
+<translation id="3369521687965833290">एक्स्टेंशन अनपॅक करणे शक्य नाही. एक्स्टेंशन सुरक्षितपणे अनपॅक करण्यासाठी, तुमच्या प्रोफाइल डिरेक्टरीत ड्राइव्ह अक्षरासह सुरुवात होणारा पाथ असणे आणि जंक्शन, माउंट पॉइंट किंवा सिमलिंक नसणे आवश्यक आहे. तुमच्या प्रोफाइलसाठी असा कोणताही पाथ सद्य नाही.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (सिरीअल नंबर <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="VENDOR_ID" /> विक्रेत्याकडील <ph name="PRODUCT_NAME" /> (सिरीअल नंबर <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">खासगी की साठी इनपुट मूल्य वैध पथ असावा.</translation>
 <translation id="388442998277590542">पर्याय पृष्ठ '<ph name="OPTIONS_PAGE" />' लोड करणे शक्य नाही.</translation>
-<translation id="3984413272403535372">विस्तारात साइन करताना एरर.</translation>
-<translation id="39964277676607559">सामग्री स्क्रिप्टसाठी javascript '<ph name="RELATIVE_PATH" />' लोड करणे शक्य नाही.</translation>
-<translation id="4115165561519362854">या मशीनच्या प्रशासकाला <ph name="EXTENSION_NAME" /> कडे <ph name="EXTENSION_VERSION" /> ची किमान आवृत्ती असणे आवश्यक आहे. ही त्या आवृत्तीवर (किंवा उच्च) अपडेट करेपर्यंत हे सक्षम होऊ शकत नाही.</translation>
+<translation id="3984413272403535372">एक्स्टेंशनमध्ये साइन करताना एरर.</translation>
+<translation id="39964277676607559">आशय स्क्रिप्टसाठी javascript '<ph name="RELATIVE_PATH" />' लोड करणे शक्य नाही.</translation>
+<translation id="4115165561519362854">या मशीनच्या ॲडमिनिस्ट्रेटरला <ph name="EXTENSION_NAME" /> कडे <ph name="EXTENSION_VERSION" /> ची किमान आवृत्ती असणे आवश्यक आहे. ही त्या आवृत्तीवर (किंवा उच्च) अपडेट करेपर्यंत हे सक्षम होऊ शकत नाही.</translation>
 <translation id="4233778200880751280">'<ph name="ABOUT_PAGE" />' पृष्ठाविषयी लोड करू शकलो नाही.</translation>
 <translation id="471800408830181311">खासगी की आउटपुट करण्यात अयशस्वी.</translation>
 <translation id="4811956658694082538">उपयुक्तता प्रक्रिया क्रॅश झाल्यामुळे पॅकेज इंस्टॉल करू शकलो नाही. Chrome रीस्टार्ट करून पहा आणि पुन्हा प्रयत्न करून पहा.</translation>
 <translation id="4988792151665380515">सार्वजनिक की एक्सपोर्ट करण्यात अयशस्वी.</translation>
 <translation id="5026754133087629784">वेबदृश्य: <ph name="WEBVIEW_TAG_NAME" /></translation>
-<translation id="5098647635849512368">पॅक करण्यासाठी असलेल्या निर्देशिकेचा अचूक पथ शोधणे शक्य नाही.</translation>
-<translation id="5356315618422219272">अॅपदृश्य: <ph name="APPVIEW_TAG_NAME" /></translation>
+<translation id="5098647635849512368">पॅक करण्यासाठी डिरेक्टरीमध्ये अचूक पाथ शोधू शकत नाही</translation>
+<translation id="5356315618422219272">ॲपदृश्य: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">आकार असलेल्या विंडो समर्थित नाहीत.</translation>
-<translation id="5456409301717116725">हा विस्तार मुख्य फाइल '<ph name="KEY_PATH" />' समाविष्ट करतो. तुम्ही कदाचित ते करू इच्छित नसू शकता.</translation>
+<translation id="5456409301717116725">हे एक्स्टेंशन की फाइल '<ph name="KEY_PATH" />' चा समावेश करतात. तुम्हाला कदाचित ते करणे आवश्यक नाही.</translation>
 <translation id="5486326529110362464">खासगी की साठी इनपुट मूल्य विद्यमान असणे आवश्यक आहे.</translation>
-<translation id="5627523580512561598">विस्तार <ph name="EXTENSION_NAME" /></translation>
-<translation id="5960890139610307736">ExtensionView: <ph name="EXTENSIONVIEW_TAG_NAME" /></translation>
-<translation id="5972529113578162692">या मशीनच्या प्रशासकासाठी <ph name="EXTENSION_NAME" /> इंस्टॉल करणे आवश्यक आहे. हे अनइंस्टॉल केले जाऊ शकत नाही.</translation>
+<translation id="5972529113578162692">या मशीनच्या ॲडमिनिस्ट्रेटरलााठी <ph name="EXTENSION_NAME" /> इंस्टॉल करणे आवश्यक आहे. हे अनइंस्टॉल केले जाऊ शकत नाही.</translation>
 <translation id="6027032947578871493"><ph name="VENDOR_NAME" /> कडील <ph name="PRODUCT_ID" /> अज्ञात उत्पादन (सिरीअल नंबर <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="VENDOR_ID" /> विक्रेत्याकडील <ph name="PRODUCT_NAME" /></translation>
-<translation id="6143635259298204954">विस्तार अनपॅक करू नका. विस्तार सुरक्षितपणे अनपॅक करण्यासाठी, आपल्या प्रोफाइल निदेशिकेत सिमलिंक नसलेला पथ असणे आवश्यक आहे. आपल्या प्रोफाइलसाठी असा कोणताही पथ विद्यमान नाही.</translation>
+<translation id="6143635259298204954">एक्स्टेंशन अनपॅक करू नका. एक्स्टेंशन सुरक्षितपणे अनपॅक करण्यासाठी, तुमच्या प्रोफाइल निदेशिकेत सिमलिंक नसलेला पाथ असणे आवश्यक आहे. तुमच्या प्रोफाइलसाठी असा कोणताही पाथ सद्य नाही.</translation>
 <translation id="6322279351188361895">खासगी की वाचण्यात अयशस्वी.</translation>
-<translation id="6391538222494443604">इनपुट निर्देशिका विद्यमान असणे आवश्यक आहे.</translation>
-<translation id="641087317769093025">विस्तार अनझिप करणे शक्य झाले नाही</translation>
+<translation id="6391538222494443604">इनपुट डिरेक्टरी अस्तित्वात असणे आवश्यक आहे.</translation>
+<translation id="641087317769093025">एक्स्टेंशन अनझिप करणे शक्य झाले नाही</translation>
 <translation id="6413453408918378296">आयकन पुरेसा दृश्यमान नाही '<ph name="ICON" />'.</translation>
-<translation id="6542618148162044354"><ph name="APP_NAME" /> आपल्या एका किंवा अधिक डिव्हाइसवर प्रवेशाची विनंती करीत आहे:</translation>
+<translation id="6542618148162044354"><ph name="APP_NAME" /> तुमच्या एका किंवा अधिक डिव्हाइस ॲक्सेसची विनंती करत आहे:</translation>
 <translation id="657064425229075395">पार्श्वभूमी स्क्रिप्‍ट '<ph name="BACKGROUND_SCRIPT" />' लोड करू शकले नाही.</translation>
 <translation id="6580950983454333167"><ph name="VENDOR_NAME" /> (सिरीअल नंबर <ph name="SERIAL_NUMBER" />) कडील <ph name="PRODUCT_NAME" /></translation>
-<translation id="6731255991101203740">अनझिप करण्यासाठी निर्देशिका तयार करणे शक्य झाले नाही: '<ph name="DIRECTORY_PATH" />'</translation>
 <translation id="677806580227005219">Mimehandler: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
-<translation id="6840444547062817500">या विस्ताराने स्वतःस वारंवार रीलोड केले आहे.</translation>
+<translation id="6840444547062817500">या एक्स्टेंशनने स्वतःस वारंवार रीलोड केले आहे.</translation>
 <translation id="7003844668372540529"><ph name="VENDOR_NAME" /> कडील <ph name="PRODUCT_ID" /> अज्ञात उत्पादन</translation>
 <translation id="7068383018033524534">मॅनिफेस्ट फाइल चुकीची आहे</translation>
-<translation id="7217838517480956708">या मशीनच्या प्रशासकास <ph name="EXTENSION_NAME" /> स्थापन करणे आवश्यक आहे. हे काढले किंवा सुधारित केले जाऊ शकत नाही.</translation>
+<translation id="7217838517480956708">या मशीनच्या ॲडमिनिस्ट्रेटरला <ph name="EXTENSION_NAME" /> इंस्टॉल करणे आवश्यक आहे. हे काढले किंवा सुधारित केले जाऊ शकत नाही.</translation>
 <translation id="7612608473764576263">खाजगी की साठीचे इनपुट मूल्य योग्य फॉरमॅटमध्ये असावे (PKCS#8-फॉरमॅट PEM-एंकोड केलेली RSA की).</translation>
 <translation id="7939686037314084444">एक्सटेंशन योग्यरित्या लोड होऊ शकले नाही. हे कदाचित नेटवर्क विनंत्या व्यत्यय आणू शकत नाही.</translation>
 <translation id="7972881773422714442">पर्याय: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">वापरकर्ता-समोरील</translation>
-<translation id="8047248493720652249">दुसर्‍या विस्ताराने (<ph name="EXTENSION_NAME" />) एक वेगळे फाईलनाव "<ph name="ACTUAL_FILENAME" />" निर्धारित केल्यामुळे डाउनलोड "<ph name="ATTEMPTED_FILENAME" />" ला नाव देण्यात हा विस्तार अयशस्वी झाला.</translation>
+<translation id="8047248493720652249">दुसर्‍या एक्स्टेंशनने (<ph name="EXTENSION_NAME" />) एक वेगळे फाइलनाव "<ph name="ACTUAL_FILENAME" />" निर्धारित केल्यामुळे डाउनलोड "<ph name="ATTEMPTED_FILENAME" />" ला नाव देण्यात हे एक्स्टेंशन अयशस्वी झाले.</translation>
 <translation id="8284835137979141223"><ph name="VENDOR_NAME" /> कडील <ph name="PRODUCT_NAME" /></translation>
 <translation id="8517576857589387417">मॅनिफेस्ट फाइल गहाळ किंवा वाचता न येण्यासारखी आहे</translation>
 <translation id="8636666366616799973">पॅकेज चुकीचे आहे. तपशील: '<ph name="ERROR_MESSAGE" />'.</translation>
-<translation id="8761756413268424715"><ph name="APP_NAME" /> आपल्या एका डिव्हाइसवर प्रवेशाची विनंती करीत आहे:</translation>
-<translation id="8885905466771744233">नमूद विस्तारासाठी खासगी की यापूर्वीच विद्यमान आहे. ती की पुन्हा वापरा किंवा प्रथम ती हटवा.</translation>
+<translation id="8761756413268424715"><ph name="APP_NAME" /> तुमच्या एका डिव्हाइस ॲक्सेसची विनंती करत आहे:</translation>
+<translation id="8885905466771744233">नमूद एक्स्टेंशनसाठी खासगी की यापूर्वीच विद्यमान आहे. ती की पुन्हा वापरा किंवा प्रथम ती हटवा.</translation>
 <translation id="907841381057066561">पॅकेजिंग दरम्यान तात्पुरती zip फाइल तयार करण्यात अयशस्वी.</translation>
 <translation id="941543339607623937">चुकीची खासगी की.</translation>
 </translationbundle>

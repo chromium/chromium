@@ -43,7 +43,7 @@ Testing console.log with required args while paused
             callFrames : [
                 [0] : {
                     columnNumber : 8
-                    functionName : 
+                    functionName : eval
                     lineNumber : 0
                     scriptId : <string>
                     url : 
@@ -106,7 +106,7 @@ Testing console.debug with required args while paused
             callFrames : [
                 [0] : {
                     columnNumber : 8
-                    functionName : 
+                    functionName : eval
                     lineNumber : 0
                     scriptId : <string>
                     url : 
@@ -169,7 +169,7 @@ Testing console.info with required args while paused
             callFrames : [
                 [0] : {
                     columnNumber : 8
-                    functionName : 
+                    functionName : eval
                     lineNumber : 0
                     scriptId : <string>
                     url : 
@@ -232,7 +232,7 @@ Testing console.error with required args while paused
             callFrames : [
                 [0] : {
                     columnNumber : 8
-                    functionName : 
+                    functionName : eval
                     lineNumber : 0
                     scriptId : <string>
                     url : 
@@ -295,7 +295,7 @@ Testing console.warn with required args while paused
             callFrames : [
                 [0] : {
                     columnNumber : 8
-                    functionName : 
+                    functionName : eval
                     lineNumber : 0
                     scriptId : <string>
                     url : 
@@ -358,7 +358,7 @@ Testing console.dir with required args while paused
             callFrames : [
                 [0] : {
                     columnNumber : 8
-                    functionName : 
+                    functionName : eval
                     lineNumber : 0
                     scriptId : <string>
                     url : 
@@ -421,7 +421,7 @@ Testing console.dirxml with required args while paused
             callFrames : [
                 [0] : {
                     columnNumber : 8
-                    functionName : 
+                    functionName : eval
                     lineNumber : 0
                     scriptId : <string>
                     url : 
@@ -484,7 +484,7 @@ Testing console.table with required args while paused
             callFrames : [
                 [0] : {
                     columnNumber : 8
-                    functionName : 
+                    functionName : eval
                     lineNumber : 0
                     scriptId : <string>
                     url : 
@@ -547,7 +547,7 @@ Testing console.trace with optional args while paused
             callFrames : [
                 [0] : {
                     columnNumber : 8
-                    functionName : 
+                    functionName : eval
                     lineNumber : 0
                     scriptId : <string>
                     url : 
@@ -580,7 +580,7 @@ Testing console.trace with optional args while paused
             callFrames : [
                 [0] : {
                     columnNumber : 8
-                    functionName : 
+                    functionName : eval
                     lineNumber : 0
                     scriptId : <string>
                     url : 
@@ -643,7 +643,7 @@ Testing console.clear with optional args while paused
             callFrames : [
                 [0] : {
                     columnNumber : 8
-                    functionName : 
+                    functionName : eval
                     lineNumber : 0
                     scriptId : <string>
                     url : 
@@ -676,7 +676,7 @@ Testing console.clear with optional args while paused
             callFrames : [
                 [0] : {
                     columnNumber : 8
-                    functionName : 
+                    functionName : eval
                     lineNumber : 0
                     scriptId : <string>
                     url : 
@@ -739,7 +739,7 @@ Testing console.group with optional args while paused
             callFrames : [
                 [0] : {
                     columnNumber : 8
-                    functionName : 
+                    functionName : eval
                     lineNumber : 0
                     scriptId : <string>
                     url : 
@@ -772,7 +772,7 @@ Testing console.group with optional args while paused
             callFrames : [
                 [0] : {
                     columnNumber : 8
-                    functionName : 
+                    functionName : eval
                     lineNumber : 0
                     scriptId : <string>
                     url : 
@@ -835,7 +835,7 @@ Testing console.groupCollapsed with optional args while paused
             callFrames : [
                 [0] : {
                     columnNumber : 8
-                    functionName : 
+                    functionName : eval
                     lineNumber : 0
                     scriptId : <string>
                     url : 
@@ -868,7 +868,7 @@ Testing console.groupCollapsed with optional args while paused
             callFrames : [
                 [0] : {
                     columnNumber : 8
-                    functionName : 
+                    functionName : eval
                     lineNumber : 0
                     scriptId : <string>
                     url : 
@@ -931,7 +931,7 @@ Testing console.groupEnd with optional args while paused
             callFrames : [
                 [0] : {
                     columnNumber : 8
-                    functionName : 
+                    functionName : eval
                     lineNumber : 0
                     scriptId : <string>
                     url : 
@@ -964,7 +964,7 @@ Testing console.groupEnd with optional args while paused
             callFrames : [
                 [0] : {
                     columnNumber : 8
-                    functionName : 
+                    functionName : eval
                     lineNumber : 0
                     scriptId : <string>
                     url : 

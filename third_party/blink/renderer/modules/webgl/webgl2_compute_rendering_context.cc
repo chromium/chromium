@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
 #include "third_party/blink/renderer/modules/webgl/ext_color_buffer_float.h"
 #include "third_party/blink/renderer/modules/webgl/ext_disjoint_timer_query_webgl2.h"
+#include "third_party/blink/renderer/modules/webgl/ext_float_blend.h"
 #include "third_party/blink/renderer/modules/webgl/ext_texture_filter_anisotropic.h"
 #include "third_party/blink/renderer/modules/webgl/oes_texture_float_linear.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_compressed_texture_astc.h"
@@ -29,6 +30,7 @@
 #include "third_party/blink/renderer/modules/webgl/webgl_debug_renderer_info.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_debug_shaders.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_lose_context.h"
+#include "third_party/blink/renderer/modules/webgl/webgl_video_texture.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/drawing_buffer.h"
 
 namespace blink {
@@ -53,7 +55,7 @@ static bool ShouldCreateWebGL2ComputeContext(
   if (extensions_util->SupportsExtension("GL_EXT_debug_marker")) {
     String context_label(
         String::Format("WebGL2ComputeRenderingContext-%p", context_provider));
-    gl->PushGroupMarkerEXT(0, context_label.Ascii().data());
+    gl->PushGroupMarkerEXT(0, context_label.Ascii().c_str());
   }
   return true;
 }
@@ -121,6 +123,7 @@ void WebGL2ComputeRenderingContext::RegisterContextExtensions() {
   RegisterExtension<EXTColorBufferFloat>(ext_color_buffer_float_);
   RegisterExtension<EXTDisjointTimerQueryWebGL2>(
       ext_disjoint_timer_query_web_gl2_);
+  RegisterExtension<EXTFloatBlend>(ext_float_blend_);
   RegisterExtension<EXTTextureFilterAnisotropic>(
       ext_texture_filter_anisotropic_);
   RegisterExtension<OESTextureFloatLinear>(oes_texture_float_linear_);
@@ -135,11 +138,13 @@ void WebGL2ComputeRenderingContext::RegisterContextExtensions() {
   RegisterExtension<WebGLDebugRendererInfo>(webgl_debug_renderer_info_);
   RegisterExtension<WebGLDebugShaders>(webgl_debug_shaders_);
   RegisterExtension<WebGLLoseContext>(webgl_lose_context_);
+  RegisterExtension<WebGLVideoTexture>(webgl_video_texture_, kDraftExtension);
 }
 
 void WebGL2ComputeRenderingContext::Trace(blink::Visitor* visitor) {
   visitor->Trace(ext_color_buffer_float_);
   visitor->Trace(ext_disjoint_timer_query_web_gl2_);
+  visitor->Trace(ext_float_blend_);
   visitor->Trace(ext_texture_filter_anisotropic_);
   visitor->Trace(oes_texture_float_linear_);
   visitor->Trace(webgl_compressed_texture_astc_);
@@ -151,6 +156,7 @@ void WebGL2ComputeRenderingContext::Trace(blink::Visitor* visitor) {
   visitor->Trace(webgl_debug_renderer_info_);
   visitor->Trace(webgl_debug_shaders_);
   visitor->Trace(webgl_lose_context_);
+  visitor->Trace(webgl_video_texture_);
   WebGL2ComputeRenderingContextBase::Trace(visitor);
 }
 

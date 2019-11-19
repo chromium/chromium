@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script>
+"use strict";
+
+async_test((test) => {
+  window.onload = test.step_func_done(() => {
+    let test_div = document.getElementById("test_div");
+    document.body.removeChild(test_div);
+  });
+}, 'Do not crash if an OBJECT element is removed while committing failed navigation.');
+</script>
+</head>
+<body>
+<div id="test_div">
+  <object data="INVALID"></object>
+</div>
+</body>
+</html>

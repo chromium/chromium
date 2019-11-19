@@ -31,10 +31,7 @@ GURL DecodeFromChromeContentProviderUrl(
                         base::CompareCase::SENSITIVE))
     return GURL();
   const std::string escaped = spec.substr(strlen(kChromeContentProviderUrl));
-  return GURL(net::UnescapeURLComponent(
-      escaped,
-      net::UnescapeRule::SPACES | net::UnescapeRule::PATH_SEPARATORS |
-          net::UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS));
+  return GURL(net::UnescapeBinaryURLComponent(escaped));
 }
 
 }  // namespace arc

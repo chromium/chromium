@@ -19,12 +19,9 @@ namespace auto_screen_brightness {
 // This class only supports non-decreasing sequence of control points.
 class MonotoneCubicSpline {
  public:
-  // |xs| and |ys| must have the same size with at least 2 elements. |xs| must
-  // be strictly increasing and |ys| must be monotone (non-decreasing).
-  MonotoneCubicSpline(const std::vector<double>& xs,
-                      const std::vector<double>& ys);
-
   MonotoneCubicSpline(const MonotoneCubicSpline& spline);
+
+  MonotoneCubicSpline& operator=(const MonotoneCubicSpline& spline);
 
   ~MonotoneCubicSpline();
 
@@ -35,7 +32,14 @@ class MonotoneCubicSpline {
   static base::Optional<MonotoneCubicSpline> FromString(
       const std::string& data);
 
+  // Creates a MonotoneCubicSpline if inputs are valid according to the comments
+  // for MonotoneCubicSpline's ctor. Otherwise returns nullopt.
+  static base::Optional<MonotoneCubicSpline> CreateMonotoneCubicSpline(
+      const std::vector<double>& xs,
+      const std::vector<double>& ys);
+
   bool operator==(const MonotoneCubicSpline& spline) const;
+  bool operator!=(const MonotoneCubicSpline& spline) const;
 
   // Returns interpolated value for |x|. If |x| is smaller|greater than
   // smallest|largest value in |xs_|, then smallest|largest value in |ys_| will
@@ -51,13 +55,18 @@ class MonotoneCubicSpline {
   std::string ToString() const;
 
  private:
-  const std::vector<double> xs_;
-  const std::vector<double> ys_;
+  // |xs| and |ys| must have the same size with at least 2 elements. |xs| must
+  // be strictly increasing and |ys| must be monotone (non-decreasing).
+  MonotoneCubicSpline(const std::vector<double>& xs,
+                      const std::vector<double>& ys);
 
-  const size_t num_points_;
+  std::vector<double> xs_;
+  std::vector<double> ys_;
+
+  size_t num_points_;
 
   // Tangents of control points.
-  const std::vector<double> ms_;
+  std::vector<double> ms_;
 };
 
 }  // namespace auto_screen_brightness

@@ -14,8 +14,8 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/prefs/pref_value_store.h"
-#include "mojo/public/cpp/bindings/binding_set.h"
-#include "mojo/public/cpp/bindings/strong_binding_set.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "services/preferences/public/mojom/preferences.mojom.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
 #include "services/service_manager/public/cpp/service.h"
@@ -57,8 +57,8 @@ class PrefStoreManagerImpl : public service_manager::Service {
  private:
   class ConnectorConnection;
 
-  void BindPrefStoreConnectorRequest(
-      prefs::mojom::PrefStoreConnectorRequest request,
+  void BindPrefStoreConnectorReceiver(
+      mojo::PendingReceiver<prefs::mojom::PrefStoreConnector> receiver,
       const service_manager::BindSourceInfo& source_info);
 
   // service_manager::Service:
@@ -79,7 +79,7 @@ class PrefStoreManagerImpl : public service_manager::Service {
   base::flat_map<PrefValueStore::PrefStoreType, std::unique_ptr<PrefStoreImpl>>
       read_only_pref_stores_;
 
-  mojo::StrongBindingSet<mojom::PrefStoreConnector> connector_bindings_;
+  mojo::UniqueReceiverSet<mojom::PrefStoreConnector> connector_receivers_;
   std::unique_ptr<PersistentPrefStoreImpl> persistent_pref_store_;
   std::unique_ptr<PersistentPrefStoreImpl>
       incognito_persistent_pref_store_underlay_;

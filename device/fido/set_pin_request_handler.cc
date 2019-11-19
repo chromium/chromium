@@ -18,17 +18,19 @@ SetPINRequestHandler::SetPINRequestHandler(
     service_manager::Connector* connector,
     const base::flat_set<FidoTransportProtocol>& supported_transports,
     GetPINCallback get_pin_callback,
-    FinishedCallback finished_callback)
-    : FidoRequestHandlerBase(connector, supported_transports),
+    FinishedCallback finished_callback,
+    std::unique_ptr<FidoDiscoveryFactory> fido_discovery_factory)
+    : FidoRequestHandlerBase(connector,
+                             fido_discovery_factory.get(),
+                             supported_transports),
       get_pin_callback_(std::move(get_pin_callback)),
       finished_callback_(std::move(finished_callback)),
-      weak_factory_(this) {
+      fido_discovery_factory_(std::move(fido_discovery_factory)) {
   Start();
 }
 
 SetPINRequestHandler::~SetPINRequestHandler() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
-  CancelActiveAuthenticators();
 }
 
 void SetPINRequestHandler::ProvidePIN(const std::string& old_pin,
@@ -78,17 +80,18 @@ void SetPINRequestHandler::OnTouch(FidoAuthenticator* authenticator) {
   }
 
   authenticator_ = authenticator;
-  CancelActiveAuthenticators();
 
   switch (authenticator_->Options()->client_pin_availability) {
     case AuthenticatorSupportedOptions::ClientPinAvailability::kNotSupported:
       state_ = State::kFinished;
+      CancelActiveAuthenticators(authenticator->GetId());
       finished_callback_.Run(CtapDeviceResponseCode::kCtap1ErrInvalidCommand);
       return;
 
     case AuthenticatorSupportedOptions::ClientPinAvailability::
         kSupportedAndPinSet:
       state_ = State::kGettingRetries;
+      CancelActiveAuthenticators(authenticator->GetId());
       authenticator_->GetRetries(
           base::BindOnce(&SetPINRequestHandler::OnRetriesResponse,
                          weak_factory_.GetWeakPtr()));
@@ -97,6 +100,7 @@ void SetPINRequestHandler::OnTouch(FidoAuthenticator* authenticator) {
     case AuthenticatorSupportedOptions::ClientPinAvailability::
         kSupportedButPinNotSet:
       state_ = State::kWaitingForPIN;
+      CancelActiveAuthenticators(authenticator->GetId());
       std::move(get_pin_callback_).Run(base::nullopt);
       break;
   }
@@ -107,10 +111,6 @@ void SetPINRequestHandler::OnRetriesResponse(
     base::Optional<pin::RetriesResponse> response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
   DCHECK_EQ(state_, State::kGettingRetries);
-
-  if (status == CtapDeviceResponseCode::kSuccess && !response) {
-    status = CtapDeviceResponseCode::kCtap2ErrInvalidCBOR;
-  }
 
   if (status != CtapDeviceResponseCode::kSuccess) {
     state_ = State::kFinished;
@@ -129,10 +129,6 @@ void SetPINRequestHandler::OnHaveEphemeralKey(
     base::Optional<pin::KeyAgreementResponse> response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
   DCHECK_EQ(state_, State::kGetEphemeralKey);
-
-  if (status == CtapDeviceResponseCode::kSuccess && !response) {
-    status = CtapDeviceResponseCode::kCtap2ErrInvalidCBOR;
-  }
 
   if (status != CtapDeviceResponseCode::kSuccess) {
     state_ = State::kFinished;

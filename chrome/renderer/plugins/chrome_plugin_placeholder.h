@@ -16,7 +16,8 @@
 #include "components/plugins/renderer/loadable_plugin_placeholder.h"
 #include "content/public/renderer/context_menu_client.h"
 #include "content/public/renderer/render_thread_observer.h"
-#include "mojo/public/cpp/bindings/binding_set.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 
 class ChromePluginPlaceholder final
     : public plugins::LoadablePluginPlaceholder,
@@ -44,7 +45,7 @@ class ChromePluginPlaceholder final
 
   void SetStatus(chrome::mojom::PluginStatus status);
 
-  chrome::mojom::PluginRendererPtr BindPluginRenderer();
+  mojo::PendingRemote<chrome::mojom::PluginRenderer> BindPluginRenderer();
 
  private:
   ChromePluginPlaceholder(content::RenderFrame* render_frame,
@@ -96,7 +97,7 @@ class ChromePluginPlaceholder final
   int context_menu_request_id_;  // Nonzero when request pending.
   base::string16 plugin_name_;
 
-  mojo::Binding<chrome::mojom::PluginRenderer> plugin_renderer_binding_;
+  mojo::Receiver<chrome::mojom::PluginRenderer> plugin_renderer_receiver_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ChromePluginPlaceholder);
 };

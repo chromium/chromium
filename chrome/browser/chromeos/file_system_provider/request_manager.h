@@ -186,7 +186,7 @@ class RequestManager {
   int next_id_;
   base::TimeDelta timeout_;
   base::ObserverList<Observer>::Unchecked observers_;
-  base::WeakPtrFactory<RequestManager> weak_ptr_factory_;
+  base::WeakPtrFactory<RequestManager> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(RequestManager);
 };

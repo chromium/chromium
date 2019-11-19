@@ -8,7 +8,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/offline_pages/core/offline_clock.h"
 #include "components/prefs/pref_service.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "net/base/backoff_entry.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -36,7 +36,7 @@ class PrefetchBackgroundTaskHandlerImplTest : public testing::Test {
   }
 
  protected:
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
   std::unique_ptr<PrefetchBackgroundTaskHandlerImpl> task_handler_;

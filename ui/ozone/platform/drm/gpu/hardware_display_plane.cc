@@ -65,7 +65,7 @@ HardwareDisplayPlane::HardwareDisplayPlane(uint32_t id) : id_(id) {}
 
 HardwareDisplayPlane::~HardwareDisplayPlane() {}
 
-bool HardwareDisplayPlane::CanUseForCrtc(uint32_t crtc_index) {
+bool HardwareDisplayPlane::CanUseForCrtc(uint32_t crtc_index) const {
   return crtc_mask_ & (1 << crtc_index);
 }
 
@@ -123,7 +123,7 @@ const std::vector<uint32_t>& HardwareDisplayPlane::supported_formats() const {
 }
 
 std::vector<uint64_t> HardwareDisplayPlane::ModifiersForFormat(
-    uint32_t format) {
+    uint32_t format) const {
   std::vector<uint64_t> modifiers;
 
   uint32_t format_index =

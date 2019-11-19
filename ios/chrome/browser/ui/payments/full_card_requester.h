@@ -13,7 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/payments/full_card_request.h"
-#include "components/autofill/core/browser/ui/card_unmask_prompt_controller_impl.h"
+#include "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller_impl.h"
 
 namespace autofill {
 class AutofillManager;

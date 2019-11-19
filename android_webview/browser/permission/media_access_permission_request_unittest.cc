@@ -5,6 +5,7 @@
 #include "android_webview/browser/permission/media_access_permission_request.h"
 #include "base/bind.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
 
 namespace android_webview {
 
@@ -35,21 +36,26 @@ class MediaAccessPermissionRequestTest : public testing::Test {
       std::string video_id) {
     blink::MediaStreamDevices audio_devices;
     audio_devices.push_back(blink::MediaStreamDevice(
-        blink::MEDIA_DEVICE_AUDIO_CAPTURE, first_audio_device_id_, "a2"));
+        blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE,
+        first_audio_device_id_, "a2"));
     audio_devices.push_back(blink::MediaStreamDevice(
-        blink::MEDIA_DEVICE_AUDIO_CAPTURE, audio_device_id_, "a1"));
+        blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE, audio_device_id_,
+        "a1"));
 
     blink::MediaStreamDevices video_devices;
     video_devices.push_back(blink::MediaStreamDevice(
-        blink::MEDIA_DEVICE_VIDEO_CAPTURE, first_video_device_id_, "v2"));
+        blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
+        first_video_device_id_, "v2"));
     video_devices.push_back(blink::MediaStreamDevice(
-        blink::MEDIA_DEVICE_VIDEO_CAPTURE, video_device_id_, "v1"));
+        blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE, video_device_id_,
+        "v1"));
 
     GURL origin("https://www.google.com");
     content::MediaStreamRequest request(
         0, 0, 0, origin, false, blink::MEDIA_GENERATE_STREAM, audio_id,
-        video_id, blink::MEDIA_DEVICE_AUDIO_CAPTURE,
-        blink::MEDIA_DEVICE_VIDEO_CAPTURE, false /* disable_local_echo */);
+        video_id, blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE,
+        blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
+        false /* disable_local_echo */);
 
     std::unique_ptr<TestMediaAccessPermissionRequest> permission_request;
     permission_request.reset(new TestMediaAccessPermissionRequest(
@@ -65,11 +71,11 @@ class MediaAccessPermissionRequestTest : public testing::Test {
   std::string first_audio_device_id_;
   std::string first_video_device_id_;
   blink::MediaStreamDevices devices_;
-  blink::MediaStreamRequestResult result_;
+  blink::mojom::MediaStreamRequestResult result_;
 
  private:
   void Callback(const blink::MediaStreamDevices& devices,
-                blink::MediaStreamRequestResult result,
+                blink::mojom::MediaStreamRequestResult result,
                 std::unique_ptr<content::MediaStreamUI> ui) {
     devices_ = devices;
     result_ = result;
@@ -82,16 +88,16 @@ TEST_F(MediaAccessPermissionRequestTest, TestGrantPermissionRequest) {
   request->NotifyRequestResult(true);
 
   EXPECT_EQ(2u, devices_.size());
-  EXPECT_EQ(blink::MEDIA_DEVICE_OK, result_);
+  EXPECT_EQ(blink::mojom::MediaStreamRequestResult::OK, result_);
 
   bool audio_exist = false;
   bool video_exist = false;
   for (blink::MediaStreamDevices::iterator i = devices_.begin();
        i != devices_.end(); ++i) {
-    if (i->type == blink::MEDIA_DEVICE_AUDIO_CAPTURE &&
+    if (i->type == blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE &&
         i->id == audio_device_id_) {
       audio_exist = true;
-    } else if (i->type == blink::MEDIA_DEVICE_VIDEO_CAPTURE &&
+    } else if (i->type == blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE &&
                i->id == video_device_id_) {
       video_exist = true;
     }
@@ -106,16 +112,16 @@ TEST_F(MediaAccessPermissionRequestTest, TestGrantPermissionRequestWithoutID) {
   request->NotifyRequestResult(true);
 
   EXPECT_EQ(2u, devices_.size());
-  EXPECT_EQ(blink::MEDIA_DEVICE_OK, result_);
+  EXPECT_EQ(blink::mojom::MediaStreamRequestResult::OK, result_);
 
   bool audio_exist = false;
   bool video_exist = false;
   for (blink::MediaStreamDevices::iterator i = devices_.begin();
        i != devices_.end(); ++i) {
-    if (i->type == blink::MEDIA_DEVICE_AUDIO_CAPTURE &&
+    if (i->type == blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE &&
         i->id == first_audio_device_id_) {
       audio_exist = true;
-    } else if (i->type == blink::MEDIA_DEVICE_VIDEO_CAPTURE &&
+    } else if (i->type == blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE &&
                i->id == first_video_device_id_) {
       video_exist = true;
     }
@@ -129,7 +135,7 @@ TEST_F(MediaAccessPermissionRequestTest, TestDenyPermissionRequest) {
       CreateRequest(std::string(), std::string());
   request->NotifyRequestResult(false);
   EXPECT_TRUE(devices_.empty());
-  EXPECT_EQ(blink::MEDIA_DEVICE_PERMISSION_DENIED, result_);
+  EXPECT_EQ(blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED, result_);
 }
 
 }  // namespace android_webview

@@ -9,6 +9,7 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/events/ozone/evdev/events_ozone_evdev_export.h"
 #include "ui/events/ozone/evdev/input_device_settings_evdev.h"
 #include "ui/ozone/public/input_controller.h"
@@ -58,6 +59,8 @@ class EVENTS_OZONE_EVDEV_EXPORT InputControllerEvdev : public InputController {
   void SetMouseSensitivity(int value) override;
   void SetPrimaryButtonRight(bool right) override;
   void SetMouseReverseScroll(bool enabled) override;
+  void SetMouseAcceleration(bool enabled) override;
+  void SetTouchpadAcceleration(bool enabled) override;
   void SetTapToClickPaused(bool state) override;
   void GetTouchDeviceStatus(GetTouchDeviceStatusReply reply) override;
   void GetTouchEventLog(const base::FilePath& out_dir,
@@ -67,6 +70,9 @@ class EVENTS_OZONE_EVDEV_EXPORT InputControllerEvdev : public InputController {
   void SetTouchscreensEnabled(bool enabled) override;
   void SetInternalKeyboardFilter(bool enable_filter,
                                  std::vector<DomCode> allowed_keys) override;
+  void GetGesturePropertiesService(
+      mojo::PendingReceiver<ozone::mojom::GesturePropertiesService> receiver)
+      override;
 
  private:
   // Post task to update settings.
@@ -88,10 +94,10 @@ class EVENTS_OZONE_EVDEV_EXPORT InputControllerEvdev : public InputController {
   InputDeviceFactoryEvdevProxy* input_device_factory_ = nullptr;
 
   // Keyboard state.
-  KeyboardEvdev* keyboard_;
+  KeyboardEvdev* const keyboard_;
 
   // Mouse button map.
-  MouseButtonMapEvdev* button_map_;
+  MouseButtonMapEvdev* const button_map_;
 
   // Device presence.
   bool has_mouse_ = false;
@@ -100,7 +106,7 @@ class EVENTS_OZONE_EVDEV_EXPORT InputControllerEvdev : public InputController {
   // LED state.
   bool caps_lock_led_state_ = false;
 
-  base::WeakPtrFactory<InputControllerEvdev> weak_ptr_factory_;
+  base::WeakPtrFactory<InputControllerEvdev> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(InputControllerEvdev);
 };

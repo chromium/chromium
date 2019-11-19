@@ -107,7 +107,7 @@ public class PlatformSensorAndProviderTest {
         doReturn(mSensorManager).when(mContext).getSystemService(Context.SENSOR_SERVICE);
         doAnswer(new Answer<List<Sensor>>() {
             @Override
-            public List<Sensor> answer(final InvocationOnMock invocation) throws Throwable {
+            public List<Sensor> answer(final InvocationOnMock invocation) {
                 return getMockSensors((int) (Integer) (invocation.getArguments())[0]);
             }
         })

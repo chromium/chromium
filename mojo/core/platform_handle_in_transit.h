@@ -10,10 +10,6 @@
 #include "mojo/core/scoped_process_handle.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
 
-#if defined(OS_MACOSX) && !defined(OS_IOS)
-#include <mach/mach.h>
-#endif
-
 #if defined(OS_WIN)
 #include <windows.h>
 #endif
@@ -89,19 +85,6 @@ class PlatformHandleInTransit {
       base::ProcessHandle owning_process);
 #endif
 
-#if defined(OS_MACOSX) && !defined(OS_IOS)
-  // Creates a special wrapper holding an unowned Mach port name. This may refer
-  // to a send or receive right in a remote task (process), and is used for
-  // cases where message must retain such an object as one of its attached
-  // handles. We're OK for now with leaking in any scenario where a lack of
-  // strict ownership could cause leakage. See https://crbug.com/855930 for more
-  // details.
-  static PlatformHandleInTransit CreateForMachPortName(mach_port_t name);
-
-  bool is_mach_port_name() const { return mach_port_name_ != MACH_PORT_NULL; }
-  mach_port_t mach_port_name() const { return mach_port_name_; }
-#endif
-
  private:
 #if defined(OS_WIN)
   // We don't use a ScopedHandle (or, by extension, PlatformHandle) here because
@@ -113,10 +96,6 @@ class PlatformHandleInTransit {
 
   PlatformHandle handle_;
   ScopedProcessHandle owning_process_;
-
-#if defined(OS_MACOSX) && !defined(OS_IOS)
-  mach_port_t mach_port_name_ = MACH_PORT_NULL;
-#endif
 
   DISALLOW_COPY_AND_ASSIGN(PlatformHandleInTransit);
 };

@@ -237,32 +237,4 @@ void Canvas::DrawStringRectWithFlags(const base::string16& text,
   canvas_->restore();
 }
 
-void Canvas::DrawFadedString(const base::string16& text,
-                             const FontList& font_list,
-                             SkColor color,
-                             const Rect& display_rect,
-                             int flags) {
-  // If the whole string fits in the destination then just draw it directly.
-  if (GetStringWidth(text, font_list) <= display_rect.width()) {
-    DrawStringRectWithFlags(text, font_list, color, display_rect, flags);
-    return;
-  }
-  // Align with content directionality instead of fading both ends.
-  flags &= ~TEXT_ALIGN_CENTER;
-  if (!(flags & (TEXT_ALIGN_LEFT | TEXT_ALIGN_RIGHT)))
-    flags |= TEXT_ALIGN_TO_HEAD;
-  flags |= NO_ELLIPSIS;
-
-  // TODO(tapted): Remove Canvas::DrawFadedString() - it's unused.
-  auto render_text = RenderText::CreateInstanceDeprecated();
-  Rect rect = display_rect;
-  UpdateRenderText(rect, text, font_list, flags, color, render_text.get());
-  render_text->SetElideBehavior(FADE_TAIL);
-
-  canvas_->save();
-  ClipRect(display_rect);
-  render_text->Draw(this);
-  canvas_->restore();
-}
-
 }  // namespace gfx

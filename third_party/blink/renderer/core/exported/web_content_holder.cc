@@ -4,25 +4,38 @@
 
 #include "third_party/blink/public/web/web_content_holder.h"
 
-#include "third_party/blink/renderer/core/content_capture/content_holder.h"
+#include "third_party/blink/renderer/core/dom/node.h"
+#include "third_party/blink/renderer/core/layout/layout_object.h"
 
 namespace blink {
 
-WebContentHolder::~WebContentHolder() = default;
+WebContentHolder::WebContentHolder(const WebContentHolder& other) {
+  private_ = other.private_;
+}
+
+WebContentHolder& WebContentHolder::operator=(const WebContentHolder& other) {
+  private_ = other.private_;
+  return *this;
+}
+
+WebContentHolder::~WebContentHolder() {
+  private_.Reset();
+}
 
 WebString WebContentHolder::GetValue() const {
-  return private_->GetValue();
+  return private_->nodeValue();
 }
 
 WebRect WebContentHolder::GetBoundingBox() const {
-  return private_->GetBoundingBox();
+  if (auto* layout_obj = private_->GetLayoutObject())
+    return EnclosingIntRect(layout_obj->VisualRectInDocument());
+  return IntRect();
 }
 
 uint64_t WebContentHolder::GetId() const {
-  return private_->GetId();
+  return reinterpret_cast<uint64_t>(private_.Get());
 }
 
-WebContentHolder::WebContentHolder(scoped_refptr<ContentHolder> content_holder)
-    : private_(std::move(content_holder)) {}
+WebContentHolder::WebContentHolder(Node& node) : private_(&node) {}
 
 }  // namespace blink

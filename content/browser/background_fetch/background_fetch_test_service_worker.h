@@ -29,6 +29,7 @@ class BackgroundFetchTestServiceWorker : public FakeServiceWorker {
   void set_fail_click_event(bool fail) { fail_click_event_ = fail; }
   void set_fail_fetch_fail_event(bool fail) { fail_fetch_fail_event_ = fail; }
   void set_fail_fetched_event(bool fail) { fail_fetched_event_ = fail; }
+  void delay_dispatch() { delay_dispatch_ = true; }
 
   // Sets a base::Callback that should be executed when the named event is ran.
   void set_abort_event_closure(const base::Closure& closure) {
@@ -44,9 +45,10 @@ class BackgroundFetchTestServiceWorker : public FakeServiceWorker {
     fetched_event_closure_ = closure;
   }
 
-  const blink::mojom::BackgroundFetchRegistrationPtr& last_registration()
+  const blink::mojom::BackgroundFetchRegistrationDataPtr& last_registration()
       const {
-    return last_registration_;
+    DCHECK(last_registration_);
+    return last_registration_->registration_data;
   }
 
  protected:
@@ -76,6 +78,10 @@ class BackgroundFetchTestServiceWorker : public FakeServiceWorker {
   bool fail_click_event_ = false;
   bool fail_fetch_fail_event_ = false;
   bool fail_fetched_event_ = false;
+
+  // Delays the dispatch event until the end of the test.
+  bool delay_dispatch_ = false;
+  base::OnceClosure delayed_closure_;
 
   base::Closure abort_event_closure_;
   base::Closure click_event_closure_;

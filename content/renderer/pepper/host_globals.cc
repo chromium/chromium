@@ -189,7 +189,8 @@ void HostGlobals::BroadcastLogWithSource(PP_Module pp_module,
 
 base::TaskRunner* HostGlobals::GetFileTaskRunner() {
   if (!file_task_runner_)
-    file_task_runner_ = base::CreateTaskRunnerWithTraits({base::MayBlock()});
+    file_task_runner_ =
+        base::CreateTaskRunner({base::ThreadPool(), base::MayBlock()});
   return file_task_runner_.get();
 }
 

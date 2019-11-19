@@ -5,12 +5,10 @@ Build the example, i.e. "make ppapi_example_url_loader" on Linux.
 In the "src" directory, start the test server:
 
   On Linux:
-    export PYTHONPATH=third_party/pyftpdlib:third_party/tlslite:third_party
-    python net/tools/testserver/testserver.py --port=1337 --data-dir=ppapi/examples/url_loader
+    vpython net/tools/testserver/testserver.py --port=1337 --data-dir=ppapi/examples/url_loader
 
   On Windows:
-    set PYTHONPATH=third_party\pyftpdlib;third_party\tlslite:third_party
-    python net/tools/testserver/testserver.py --port=1337 --data-dir=ppapi/examples/url_loader
+    vpython net/tools/testserver/testserver.py --port=1337 --data-dir=ppapi/examples/url_loader
 
 Then load the page:
 

@@ -6,8 +6,22 @@
 
 namespace cc {
 
+TestPaintWorkletInput::TestPaintWorkletInput(const gfx::SizeF& size)
+    : container_size_(size) {}
+
+TestPaintWorkletInput::~TestPaintWorkletInput() = default;
+
 gfx::SizeF TestPaintWorkletInput::GetSize() const {
   return container_size_;
+}
+
+int TestPaintWorkletInput::WorkletId() const {
+  return 1u;
+}
+
+const std::vector<PaintWorkletInput::PropertyKey>&
+TestPaintWorkletInput::GetPropertyKeys() const {
+  return property_keys_;
 }
 
 }  // namespace cc

@@ -5,21 +5,16 @@
 #ifndef CHROME_BROWSER_UI_ASH_LOGIN_SCREEN_CLIENT_H_
 #define CHROME_BROWSER_UI_ASH_LOGIN_SCREEN_CLIENT_H_
 
+#include "ash/public/cpp/login_screen_client.h"
 #include "ash/public/cpp/system_tray_focus_observer.h"
-#include "ash/public/interfaces/login_screen.mojom.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "base/time/time.h"
 #include "ui/base/ime/chromeos/input_method_manager.h"
 
-using AuthenticateUserWithPasswordOrPinCallback =
-    ash::mojom::LoginScreenClient::AuthenticateUserWithPasswordOrPinCallback;
-using AuthenticateUserWithExternalBinaryCallback =
-    ash::mojom::LoginScreenClient::AuthenticateUserWithExternalBinaryCallback;
-using ValidateParentAccessCodeCallback =
-    ash::mojom::LoginScreenClient::ValidateParentAccessCodeCallback;
-using EnrollUserWithExternalBinaryCallback =
-    ash::mojom::LoginScreenClient::EnrollUserWithExternalBinaryCallback;
+namespace base {
+class ListValue;
+}
 
 namespace chromeos {
 class LoginAuthRecorder;
@@ -27,7 +22,7 @@ class LoginAuthRecorder;
 
 // Handles method calls sent from ash to chrome. Also sends messages from chrome
 // to ash.
-class LoginScreenClient : public ash::mojom::LoginScreenClient {
+class LoginScreenClient : public ash::LoginScreenClient {
  public:
   // Handles method calls coming from ash into chrome.
   class Delegate {
@@ -38,14 +33,17 @@ class LoginScreenClient : public ash::mojom::LoginScreenClient {
         const AccountId& account_id,
         const std::string& password,
         bool authenticated_by_pin,
-        AuthenticateUserWithPasswordOrPinCallback callback) = 0;
+        base::OnceCallback<void(bool)> callback) = 0;
     virtual void HandleAuthenticateUserWithExternalBinary(
         const AccountId& account_id,
-        AuthenticateUserWithExternalBinaryCallback callback) = 0;
+        base::OnceCallback<void(bool)> callback) = 0;
     virtual void HandleEnrollUserWithExternalBinary(
-        EnrollUserWithExternalBinaryCallback) = 0;
+        base::OnceCallback<void(bool)> callback) = 0;
     virtual void HandleAuthenticateUserWithEasyUnlock(
         const AccountId& account_id) = 0;
+    virtual void HandleAuthenticateUserWithChallengeResponse(
+        const AccountId& account_id,
+        base::OnceCallback<void(bool)> callback) = 0;
     virtual void HandleHardlockPod(const AccountId& account_id) = 0;
     virtual void HandleOnFocusPod(const AccountId& account_id) = 0;
     virtual void HandleOnNoPodFocused() = 0;
@@ -67,9 +65,7 @@ class LoginScreenClient : public ash::mojom::LoginScreenClient {
    public:
     virtual ~ParentAccessDelegate();
 
-    virtual void ValidateParentAccessCode(
-        const std::string& access_code,
-        ValidateParentAccessCodeCallback callback) = 0;
+    virtual bool ValidateParentAccessCode(const std::string& access_code) = 0;
   };
 
   LoginScreenClient();
@@ -80,34 +76,29 @@ class LoginScreenClient : public ash::mojom::LoginScreenClient {
   // Set the object which will handle calls coming from ash.
   void SetDelegate(Delegate* delegate);
 
-  // Set the object which will handle parent access related calls coming from
-  // ash.
-  void SetParentAccessDelegate(ParentAccessDelegate* delegate);
-
-  // Returns an object which can be used to make calls to ash.
-  ash::mojom::LoginScreenPtr& login_screen();
-
   chromeos::LoginAuthRecorder* auth_recorder();
 
   void AddSystemTrayFocusObserver(ash::SystemTrayFocusObserver* observer);
   void RemoveSystemTrayFocusObserver(ash::SystemTrayFocusObserver* observer);
 
-  // ash::mojom::LoginScreenClient:
+  // ash::LoginScreenClient:
   void AuthenticateUserWithPasswordOrPin(
       const AccountId& account_id,
       const std::string& password,
       bool authenticated_by_pin,
-      AuthenticateUserWithPasswordOrPinCallback callback) override;
+      base::OnceCallback<void(bool)> callback) override;
   void AuthenticateUserWithExternalBinary(
       const AccountId& account_id,
-      AuthenticateUserWithExternalBinaryCallback callback) override;
+      base::OnceCallback<void(bool)> callback) override;
   void EnrollUserWithExternalBinary(
-      EnrollUserWithExternalBinaryCallback callback) override;
+      base::OnceCallback<void(bool)> callback) override;
   void AuthenticateUserWithEasyUnlock(const AccountId& account_id) override;
-  void ValidateParentAccessCode(
+  void AuthenticateUserWithChallengeResponse(
       const AccountId& account_id,
-      const std::string& access_code,
-      ValidateParentAccessCodeCallback callback) override;
+      base::OnceCallback<void(bool)> callback) override;
+  bool ValidateParentAccessCode(const AccountId& account_id,
+                                const std::string& access_code,
+                                base::Time validation_time) override;
   void HardlockPod(const AccountId& account_id) override;
   void OnFocusPod(const AccountId& account_id) override;
   void OnNoPodFocused() override;
@@ -118,9 +109,8 @@ class LoginScreenClient : public ash::mojom::LoginScreenClient {
   void OnMaxIncorrectPasswordAttempted(const AccountId& account_id) override;
   void FocusLockScreenApps(bool reverse) override;
   void FocusOobeDialog() override;
-  void ShowGaiaSignin(
-      bool can_close,
-      const base::Optional<AccountId>& prefilled_account) override;
+  void ShowGaiaSignin(bool can_close,
+                      const AccountId& prefilled_account) override;
   void OnRemoveUserWarningShown() override;
   void RemoveUser(const AccountId& account_id) override;
   void LaunchPublicSession(const AccountId& account_id,
@@ -129,10 +119,10 @@ class LoginScreenClient : public ash::mojom::LoginScreenClient {
   void RequestPublicSessionKeyboardLayouts(const AccountId& account_id,
                                            const std::string& locale) override;
   void ShowFeedback() override;
-  void LaunchKioskApp(const std::string& app_id) override;
-  void LaunchArcKioskApp(const AccountId& account_id) override;
   void ShowResetScreen() override;
   void ShowAccountAccessHelpApp() override;
+  void ShowParentAccessHelpApp() override;
+  void ShowLockScreenNotificationSettings() override;
   void OnFocusLeavingSystemTray(bool reverse) override;
   void OnUserActivity() override;
 
@@ -142,13 +132,7 @@ class LoginScreenClient : public ash::mojom::LoginScreenClient {
       const std::string& locale,
       std::unique_ptr<base::ListValue> keyboard_layouts);
 
-  // Lock screen mojo service in ash.
-  ash::mojom::LoginScreenPtr login_screen_;
-
-  // Binds this object to the client interface.
-  mojo::Binding<ash::mojom::LoginScreenClient> binding_;
   Delegate* delegate_ = nullptr;
-  ParentAccessDelegate* parent_access_delegate_ = nullptr;
 
   // Captures authentication related user metrics for login screen.
   std::unique_ptr<chromeos::LoginAuthRecorder> auth_recorder_;
@@ -156,7 +140,7 @@ class LoginScreenClient : public ash::mojom::LoginScreenClient {
   base::ObserverList<ash::SystemTrayFocusObserver>::Unchecked
       system_tray_focus_observers_;
 
-  base::WeakPtrFactory<LoginScreenClient> weak_ptr_factory_;
+  base::WeakPtrFactory<LoginScreenClient> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(LoginScreenClient);
 };

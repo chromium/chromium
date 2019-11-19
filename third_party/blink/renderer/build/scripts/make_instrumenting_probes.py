@@ -46,8 +46,8 @@ def to_singular(text):
     return text[:-1] if text[-1] == "s" else text
 
 
-def to_lower_case(name):
-    return name[:1].lower() + name[1:]
+def to_snake_case(name):
+    return NameStyleConverter(name).to_snake_case()
 
 
 def agent_config(config, agent_name, field):
@@ -74,7 +74,7 @@ def initialize_jinja_env(config, cache_dir):
         lstrip_blocks=True,  # so can indent control flow tags
         trim_blocks=True)
     jinja_env.filters.update({
-        "to_lower_case": to_lower_case,
+        "to_snake_case": to_snake_case,
         "to_singular": to_singular,
         "agent_name_to_class": partial(agent_name_to_class, config),
         "agent_name_to_include": partial(agent_name_to_include, config)})

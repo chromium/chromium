@@ -4,7 +4,7 @@
 
 package org.chromium.android_webview.test;
 
-import android.support.annotation.CallSuper;
+import androidx.annotation.CallSuper;
 
 import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.model.FrameworkMethod;

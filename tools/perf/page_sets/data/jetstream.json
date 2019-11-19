@@ -1,6 +1,6 @@
 {
     "archives": {
-        "http://browserbench.org/JetStream/": {
+        "JetStream": {
             "DEFAULT": "jetstream_000.wprgo"
         }
     },

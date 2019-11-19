@@ -4,6 +4,8 @@
 
 #include "device/bluetooth/bluetooth_classic_win.h"
 
+#include "base/threading/scoped_thread_priority.h"
+
 namespace device {
 namespace win {
 
@@ -12,6 +14,10 @@ BluetoothClassicWrapper::~BluetoothClassicWrapper() {}
 
 HBLUETOOTH_RADIO_FIND BluetoothClassicWrapper::FindFirstRadio(
     const BLUETOOTH_FIND_RADIO_PARAMS* params) {
+  // Mitigate the issues caused by loading DLLs on a background thread
+  // (http://crbug/973868).
+  base::ScopedThreadMayLoadLibraryOnBackgroundThread priority_boost(FROM_HERE);
+
   HANDLE radio_handle = INVALID_HANDLE_VALUE;
   HBLUETOOTH_RADIO_FIND radio_find_handle =
       BluetoothFindFirstRadio(params, &radio_handle);

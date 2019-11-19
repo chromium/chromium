@@ -40,7 +40,7 @@ class ClonedInstallDetector {
   // task.
   void SaveMachineId(PrefService* local_state, const std::string& raw_id);
 
-  base::WeakPtrFactory<ClonedInstallDetector> weak_ptr_factory_;
+  base::WeakPtrFactory<ClonedInstallDetector> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ClonedInstallDetector);
 };

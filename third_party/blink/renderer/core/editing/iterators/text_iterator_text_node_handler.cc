@@ -60,8 +60,8 @@ StringAndOffsetRange ComputeTextAndOffsetsForEmission(
     String string = mapping.GetText().Substring(
         unit.TextContentStart(),
         unit.TextContentEnd() - unit.TextContentStart());
-    // TODO(xiaochengh): This seems wrong... Add real handling.
-    return {string, 0, 0};
+    string.Replace(kNoBreakSpaceCharacter, kSpaceCharacter);
+    return {string, 0, string.length()};
   }
   return {mapping.GetText(), unit.TextContentStart(), unit.TextContentEnd()};
 }

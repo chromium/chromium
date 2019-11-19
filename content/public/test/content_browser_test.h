@@ -18,7 +18,6 @@
 
 namespace content {
 class Shell;
-class ShellMainDelegate;
 
 // Base class for browser tests which use content_shell.
 class ContentBrowserTest : public BrowserTestBase {
@@ -59,12 +58,6 @@ class ContentBrowserTest : public BrowserTestBase {
   // browser shutdown). To avoid this, the following pool is recycled after each
   // time code is directly executed.
   base::mac::ScopedNSAutoreleasePool* pool_ = nullptr;
-#endif
-
-#if defined(OS_ANDROID)
-  // For all other platforms, this is done automatically when calling into
-  // ContentMain. For Android we set things up manually.
-  std::unique_ptr<ShellMainDelegate> shell_main_delegate_;
 #endif
 
   // Used to detect incorrect overriding of PreRunTestOnMainThread() with

@@ -85,8 +85,7 @@ DomainReliabilityMonitor::DomainReliabilityMonitor(
           DomainReliabilityScheduler::Params::GetFromFieldTrialsOrDefaults()),
       dispatcher_(time_.get()),
       context_manager_(this),
-      discard_uploads_set_(false),
-      weak_factory_(this) {
+      discard_uploads_set_(false) {
   net::NetworkChangeNotifier::AddNetworkChangeObserver(this);
 }
 
@@ -102,8 +101,7 @@ DomainReliabilityMonitor::DomainReliabilityMonitor(
           DomainReliabilityScheduler::Params::GetFromFieldTrialsOrDefaults()),
       dispatcher_(time_.get()),
       context_manager_(this),
-      discard_uploads_set_(false),
-      weak_factory_(this) {
+      discard_uploads_set_(false) {
   net::NetworkChangeNotifier::AddNetworkChangeObserver(this);
 }
 

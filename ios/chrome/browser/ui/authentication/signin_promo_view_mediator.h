@@ -15,6 +15,10 @@
 @class SigninPromoViewConfigurator;
 @protocol SigninPromoViewConsumer;
 
+namespace signin_metrics {
+enum class AccessPoint;
+}
+
 namespace ios {
 class ChromeBrowserState;
 
@@ -22,8 +26,9 @@ class ChromeBrowserState;
 // way to go backwards. All states can be skipped except |NeverVisible| and
 // |Invalid|.
 enum class SigninPromoViewState {
-  // Initial state. When -[SigninPromoViewMediator signinPromoViewRemoved]  is
-  // called with that state, no metrics is recorded.
+  // Initial state. When -[SigninPromoViewMediator
+  // signinPromoViewIsRemoved] is called with that state, no metrics is
+  // recorded.
   NeverVisible = 0,
   // None of the buttons has been used yet.
   Unused,
@@ -51,13 +56,18 @@ class PrefRegistrySyncable;
 
 // Chrome identity used to configure the view in a warm state mode. Otherwise
 // contains nil.
-@property(nonatomic, readonly) ChromeIdentity* defaultIdentity;
+@property(nonatomic, strong, readonly) ChromeIdentity* defaultIdentity;
 
 // Sign-in promo view state.
-@property(nonatomic) ios::SigninPromoViewState signinPromoViewState;
+@property(nonatomic, assign) ios::SigninPromoViewState signinPromoViewState;
 
 // YES if the sign-in interaction controller is shown.
-@property(nonatomic, readonly, getter=isSigninInProgress) BOOL signinInProgress;
+@property(nonatomic, assign, readonly, getter=isSigninInProgress)
+    BOOL signinInProgress;
+
+// Returns YES if the sign-in promo view is |Invalid|, |Closed| or invisible.
+@property(nonatomic, assign, readonly, getter=isInvalidClosedOrNeverVisible)
+    BOOL invalidClosedOrNeverVisible;
 
 // Registers the feature preferences.
 + (void)registerBrowserStatePrefs:(user_prefs::PrefRegistrySyncable*)registry;
@@ -86,19 +96,16 @@ class PrefRegistrySyncable;
 // Increments the "shown" counter used for histograms. Called when the signin
 // promo view is visible. If the sign-in promo is already visible, this method
 // does nothing.
-- (void)signinPromoViewVisible;
+- (void)signinPromoViewIsVisible;
 
 // Called when the sign-in promo view is hidden. If the sign-in promo view has
 // never been shown, or it is already hidden, this method does nothing.
-- (void)signinPromoViewHidden;
+- (void)signinPromoViewIsHidden;
 
 // Called when the sign-in promo view is removed from the view hierarchy (it or
 // one of its superviews is removed). The mediator should not be used after this
 // called.
-- (void)signinPromoViewRemoved;
-
-// Returns YES if the sign-in promo view is |Invalid|, |Closed| or |Invisible|.
-- (BOOL)isInvalidClosedOrNeverVisible;
+- (void)signinPromoViewIsRemoved;
 
 @end
 

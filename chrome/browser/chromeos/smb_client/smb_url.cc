@@ -4,7 +4,11 @@
 
 #include "chrome/browser/chromeos/smb_client/smb_url.h"
 
+#include <vector>
+
 #include "base/strings/strcat.h"
+#include "base/strings/string_piece.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/chromeos/smb_client/smb_constants.h"
 #include "url/url_canon_stdstring.h"
@@ -76,6 +80,12 @@ std::string SmbUrl::GetHost() const {
   return url_.substr(host_.begin, host_.len);
 }
 
+std::string SmbUrl::GetShare() const {
+  DCHECK(IsValid());
+
+  return share_;
+}
+
 const std::string& SmbUrl::ToString() const {
   DCHECK(IsValid());
 
@@ -123,11 +133,11 @@ void SmbUrl::CanonicalizeSmbUrl(const std::string& url) {
   canonical_output.push_back('/');
   canonical_output.push_back('/');
 
-  url::Component unused_path;
+  url::Component path;
   if (!(url::CanonicalizeHost(url.c_str(), initial_parsed.host,
                               &canonical_output, &host_) &&
         url::CanonicalizePath(url.c_str(), initial_parsed.path,
-                              &canonical_output, &unused_path))) {
+                              &canonical_output, &path))) {
     Reset();
     return;
   }
@@ -140,6 +150,20 @@ void SmbUrl::CanonicalizeSmbUrl(const std::string& url) {
   }
 
   canonical_output.Complete();
+
+  if (path.is_nonempty()) {
+    // Extract share name, which is the first path element.
+    // Paths always start with '/', but extra '/'s are not removed.
+    // So both "smb://foo" and "smb://foo//bar/" have the share name "", but
+    // "smb://foo/bar/" has the share name "bar".
+    std::string path_str = url_.substr(path.begin, path.len);
+    std::vector<base::StringPiece> split_path = base::SplitStringPiece(
+        path_str, "/", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+    if (split_path.size() >= 2) {
+      DCHECK_EQ(split_path[0], "");
+      share_ = split_path[1].as_string();
+    }
+  }
 
   DCHECK(host_.is_nonempty());
   DCHECK_EQ(url_.substr(scheme.begin, scheme.len), kSmbScheme);

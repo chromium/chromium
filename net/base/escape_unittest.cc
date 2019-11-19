@@ -204,6 +204,48 @@ TEST(EscapeTest, UnescapeURLComponent) {
       {"(%E2%80%AF)(%E2%81%9F)(%E3%80%80)", UnescapeRule::NORMAL,
        "(%E2%80%AF)(%E2%81%9F)(%E3%80%80)"},
 
+      // Default Ignorable and Formatting characters should not be unescaped.
+      {"(%E2%81%A5)(%EF%BF%B0)(%EF%BF%B8)", UnescapeRule::NORMAL,
+       "(%E2%81%A5)(%EF%BF%B0)(%EF%BF%B8)"},
+      {"(%F3%A0%82%80)(%F3%A0%83%BF)(%F3%A0%87%B0)", UnescapeRule::NORMAL,
+       "(%F3%A0%82%80)(%F3%A0%83%BF)(%F3%A0%87%B0)"},
+      {"(%F3%A0%BF%BF)(%C2%AD)(%CD%8F)", UnescapeRule::NORMAL,
+       "(%F3%A0%BF%BF)(%C2%AD)(%CD%8F)"},
+      {"(%D8%80%20)(%D8%85)(%DB%9D)(%DC%8F)(%E0%A3%A2)", UnescapeRule::NORMAL,
+       "(%D8%80%20)(%D8%85)(%DB%9D)(%DC%8F)(%E0%A3%A2)"},
+      {"(%E1%85%9F)(%E1%85%A0)(%E1%9E%B4)(%E1%9E%B5)", UnescapeRule::NORMAL,
+       "(%E1%85%9F)(%E1%85%A0)(%E1%9E%B4)(%E1%9E%B5)"},
+      {"(%E1%A0%8B)(%E1%A0%8C)(%E1%A0%8D)(%E1%A0%8E)", UnescapeRule::NORMAL,
+       "(%E1%A0%8B)(%E1%A0%8C)(%E1%A0%8D)(%E1%A0%8E)"},
+      {"(%E2%80%8B)(%E2%80%8C)(%E2%80%8D)(%E2%81%A0)", UnescapeRule::NORMAL,
+       "(%E2%80%8B)(%E2%80%8C)(%E2%80%8D)(%E2%81%A0)"},
+      {"(%E2%81%A1)(%E2%81%A2)(%E2%81%A3)(%E2%81%A4)", UnescapeRule::NORMAL,
+       "(%E2%81%A1)(%E2%81%A2)(%E2%81%A3)(%E2%81%A4)"},
+      {"(%E3%85%A4)(%EF%BB%BF)(%EF%BE%A0)(%EF%BF%B9)", UnescapeRule::NORMAL,
+       "(%E3%85%A4)(%EF%BB%BF)(%EF%BE%A0)(%EF%BF%B9)"},
+      {"(%EF%BF%BB)(%F0%91%82%BD)(%F0%91%83%8D)", UnescapeRule::NORMAL,
+       "(%EF%BF%BB)(%F0%91%82%BD)(%F0%91%83%8D)"},
+      {"(%F0%93%90%B0)(%F0%93%90%B8)", UnescapeRule::NORMAL,
+       "(%F0%93%90%B0)(%F0%93%90%B8)"},
+      // General Punctuation - Deprecated (U+206A--206F)
+      {"(%E2%81%AA)(%E2%81%AD)(%E2%81%AF)", UnescapeRule::NORMAL,
+       "(%E2%81%AA)(%E2%81%AD)(%E2%81%AF)"},
+      // Variation selectors (U+FE00--FE0F)
+      {"(%EF%B8%80)(%EF%B8%8C)(%EF%B8%8D)", UnescapeRule::NORMAL,
+       "(%EF%B8%80)(%EF%B8%8C)(%EF%B8%8D)"},
+      // Shorthand format controls (U+1BCA0--1BCA3)
+      {"(%F0%9B%B2%A0)(%F0%9B%B2%A1)(%F0%9B%B2%A3)", UnescapeRule::NORMAL,
+       "(%F0%9B%B2%A0)(%F0%9B%B2%A1)(%F0%9B%B2%A3)"},
+      // Musical symbols beams and slurs (U+1D173--1D17A)
+      {"(%F0%9D%85%B3)(%F0%9D%85%B9)(%F0%9D%85%BA)", UnescapeRule::NORMAL,
+       "(%F0%9D%85%B3)(%F0%9D%85%B9)(%F0%9D%85%BA)"},
+      // Tags block (U+E0000--E007F), includes unassigned points
+      {"(%F3%A0%80%80)(%F3%A0%80%81)(%F3%A0%81%8F)", UnescapeRule::NORMAL,
+       "(%F3%A0%80%80)(%F3%A0%80%81)(%F3%A0%81%8F)"},
+      // Ideographic-specific variation selectors (U+E0100--E01EF)
+      {"(%F3%A0%84%80)(%F3%A0%84%90)(%F3%A0%87%AF)", UnescapeRule::NORMAL,
+       "(%F3%A0%84%80)(%F3%A0%84%90)(%F3%A0%87%AF)"},
+
       // Two spoofing characters in a row should not be unescaped.
       {"%D8%9C%D8%9C", UnescapeRule::NORMAL, "%D8%9C%D8%9C"},
       // Non-spoofing characters surrounded by spoofing characters should be
@@ -268,7 +310,7 @@ TEST(EscapeTest, UnescapeURLComponent) {
   EXPECT_EQ(expected, UnescapeURLComponent(input, UnescapeRule::NORMAL));
 }
 
-TEST(EscapeTest, UnescapeAndDecodeUTF8URLComponent) {
+TEST(EscapeTest, UnescapeAndDecodeUTF8URLComponentWithAdjustments) {
   const UnescapeAndDecodeCase unescape_cases[] = {
     { "%",
       "%",
@@ -321,9 +363,11 @@ TEST(EscapeTest, UnescapeAndDecodeUTF8URLComponent) {
                                      UnescapeRule::REPLACE_PLUS_WITH_SPACE);
     EXPECT_EQ(std::string(unescape_case.query_unescaped), unescaped);
 
+    // The adjustments argument is covered by the next test.
+    //
     // TODO: Need to test unescape_spaces and unescape_percent.
-    base::string16 decoded = UnescapeAndDecodeUTF8URLComponent(
-        unescape_case.input, UnescapeRule::NORMAL);
+    base::string16 decoded = UnescapeAndDecodeUTF8URLComponentWithAdjustments(
+        unescape_case.input, UnescapeRule::NORMAL, nullptr);
     EXPECT_EQ(base::WideToUTF16(unescape_case.decoded), decoded);
   }
 }
@@ -411,13 +455,8 @@ TEST(EscapeTest, UnescapeBinaryURLComponent) {
   };
 
   for (const auto& test_case : kTestCases) {
-    std::string output;
-    UnescapeBinaryURLComponent(test_case.input, test_case.rules, &output);
-    EXPECT_EQ(std::string(test_case.output), output);
-    // Also test in-place unescaping.
-    output = test_case.input;
-    UnescapeBinaryURLComponent(output, test_case.rules, &output);
-    EXPECT_EQ(std::string(test_case.output), output);
+    EXPECT_EQ(test_case.output,
+              UnescapeBinaryURLComponent(test_case.input, test_case.rules));
   }
 
   // Test NULL character unescaping, which can't be tested above since those are
@@ -430,13 +469,64 @@ TEST(EscapeTest, UnescapeBinaryURLComponent) {
   expected.push_back(0);
   expected.push_back(0);
   expected.append("9Test");
-  std::string output;
-  UnescapeBinaryURLComponent(input, &output);
-  EXPECT_EQ(expected, output);
-  // Also test in-place unescaping.
-  output = input;
-  UnescapeBinaryURLComponent(output, &output);
-  EXPECT_EQ(expected, output);
+  EXPECT_EQ(expected, UnescapeBinaryURLComponent(input));
+}
+
+TEST(EscapeTest, UnescapeBinaryURLComponentSafe) {
+  const struct TestCase {
+    const char* input;
+    // Expected output. Null if call is expected to fail when
+    // |fail_on_path_separators| is false.
+    const char* expected_output;
+    // Whether |input| has any escaped path separators.
+    bool has_path_separators;
+  } kTestCases[] = {
+      // Spaces, percents, and invalid UTF-8 characters are all successfully
+      // unescaped.
+      {"%20%25foo%81", " %foo\x81", false},
+
+      // Characters disallowed unconditionally.
+      {"foo%00", nullptr, false},
+      {"foo%01", nullptr, false},
+      {"foo%0A", nullptr, false},
+      {"foo%0D", nullptr, false},
+
+      // Path separators.
+      {"foo%2F", "foo/", true},
+      {"foo%5C", "foo\\", true},
+
+      // Characters that are considered invalid to escape are ignored if passed
+      // in unescaped.
+      {"foo\x01\r/\\", "foo\x01\r/\\", false},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.input);
+
+    std::string output = "foo";
+    if (!test_case.expected_output) {
+      EXPECT_FALSE(UnescapeBinaryURLComponentSafe(
+          test_case.input, false /* fail_on_path_separators */, &output));
+      EXPECT_TRUE(output.empty());
+      EXPECT_FALSE(UnescapeBinaryURLComponentSafe(
+          test_case.input, true /* fail_on_path_separators */, &output));
+      EXPECT_TRUE(output.empty());
+      continue;
+    }
+    EXPECT_TRUE(UnescapeBinaryURLComponentSafe(
+        test_case.input, false /* fail_on_path_separators */, &output));
+    EXPECT_EQ(test_case.expected_output, output);
+    if (test_case.has_path_separators) {
+      EXPECT_FALSE(UnescapeBinaryURLComponentSafe(
+          test_case.input, true /* fail_on_path_separators */, &output));
+      EXPECT_TRUE(output.empty());
+    } else {
+      output = "foo";
+      EXPECT_TRUE(UnescapeBinaryURLComponentSafe(
+          test_case.input, true /* fail_on_path_separators */, &output));
+      EXPECT_EQ(test_case.expected_output, output);
+    }
+  }
 }
 
 TEST(EscapeTest, EscapeForHTML) {
@@ -520,6 +610,11 @@ TEST(EscapeTest, ContainsEncodedBytes) {
   // Should be looking for byte values, not UTF-8 character values.
   EXPECT_TRUE(ContainsEncodedBytes("caf%C3%A9", {'\xc3'}));
   EXPECT_FALSE(ContainsEncodedBytes("caf%C3%A9", {'\xe9'}));
+}
+
+TEST(EscapeTest, EscapeNonASCII) {
+  EXPECT_EQ("abc\n%2580%80", EscapeNonASCIIAndPercent("abc\n%80\x80"));
+  EXPECT_EQ("abc\n%80%80", EscapeNonASCII("abc\n%80\x80"));
 }
 
 }  // namespace

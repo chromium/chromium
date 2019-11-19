@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ui/views_bridge_mac/cocoa_mouse_capture.h"
+#import "components/remote_cocoa/app_shim/mouse_capture.h"
 
 #import <Cocoa/Cocoa.h>
 
 #import "base/mac/scoped_nsobject.h"
 #include "base/macros.h"
+#import "components/remote_cocoa/app_shim/mouse_capture_delegate.h"
 #import "ui/base/test/cocoa_helper.h"
 #import "ui/events/test/cocoa_test_event_utils.h"
-#import "ui/views_bridge_mac/cocoa_mouse_capture_delegate.h"
 
 // Simple test view that counts calls to -[NSView mouseDown:].
 @interface CocoaMouseCaptureTestView : NSView {
@@ -30,7 +30,7 @@
 
 @end
 
-namespace views_bridge_mac {
+namespace remote_cocoa {
 namespace {
 
 // Simple capture delegate that just counts events forwarded.
@@ -39,7 +39,7 @@ class TestCaptureDelegate : public CocoaMouseCaptureDelegate {
   explicit TestCaptureDelegate(NSWindow* window)
       : event_count_(0), capture_lost_count_(0), window_(window) {}
 
-  void Acquire() { mouse_capture_.reset(new CocoaMouseCapture(this)); }
+  void Acquire() { mouse_capture_ = std::make_unique<CocoaMouseCapture>(this); }
   bool IsActive() { return mouse_capture_ && mouse_capture_->IsActive(); }
   void SimulateDestroy() { mouse_capture_.reset(); }
 
@@ -62,7 +62,7 @@ class TestCaptureDelegate : public CocoaMouseCaptureDelegate {
 
 }  // namespace
 
-typedef ui::CocoaTest CocoaMouseCaptureTest;
+using CocoaMouseCaptureTest = ui::CocoaTest;
 
 // Test that a new capture properly "steals" capture from an existing one.
 TEST_F(CocoaMouseCaptureTest, OnCaptureLost) {
@@ -128,4 +128,4 @@ TEST_F(CocoaMouseCaptureTest, CaptureEvents) {
   EXPECT_EQ(2, [view mouseDownCount]);
 }
 
-}  // namespace views_bridge_mac
+}  // namespace remote_cocoa

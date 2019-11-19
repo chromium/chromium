@@ -29,8 +29,9 @@ scoped_refptr<gl::GLSurface> ImageTransportSurface::CreateNativeSurface(
   DCHECK_NE(surface_handle, kNullSurfaceHandle);
   // On Android, the surface_handle is the id of the surface in the
   // GpuSurfaceTracker/GpuSurfaceLookup
-  ANativeWindow* window =
-      GpuSurfaceLookup::GetInstance()->AcquireNativeWidget(surface_handle);
+  bool can_be_used_with_surface_control = false;
+  ANativeWindow* window = GpuSurfaceLookup::GetInstance()->AcquireNativeWidget(
+      surface_handle, &can_be_used_with_surface_control);
   if (!window) {
     LOG(WARNING) << "Failed to acquire native widget.";
     return nullptr;
@@ -38,7 +39,8 @@ scoped_refptr<gl::GLSurface> ImageTransportSurface::CreateNativeSurface(
   scoped_refptr<gl::GLSurface> surface;
 
   if (delegate &&
-      delegate->GetFeatureInfo()->feature_flags().android_surface_control) {
+      delegate->GetFeatureInfo()->feature_flags().android_surface_control &&
+      can_be_used_with_surface_control) {
     surface = new gl::GLSurfaceEGLSurfaceControl(
         window, base::ThreadTaskRunnerHandle::Get());
   } else {

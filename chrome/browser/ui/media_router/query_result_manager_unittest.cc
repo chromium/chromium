@@ -9,8 +9,8 @@
 #include "base/macros.h"
 #include "chrome/browser/media/router/media_sinks_observer.h"
 #include "chrome/browser/media/router/test/mock_media_router.h"
-#include "chrome/common/media_router/media_source_helper.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "chrome/common/media_router/media_source.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -66,7 +66,7 @@ class QueryResultManagerTest : public ::testing::Test {
            (default_source && source && *default_source.get() == *source);
   }
 
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   MockMediaRouter mock_router_;
   QueryResultManager query_result_manager_;
   MockObserver mock_observer_;
@@ -81,7 +81,7 @@ MATCHER_P(VectorSetEquals, expected, "") {
     return false;
 
   for (size_t i = 0; i < expected.size(); ++i) {
-    if (!base::ContainsValue(arg, expected[i]))
+    if (!base::Contains(arg, expected[i]))
       return false;
   }
   return true;
@@ -112,7 +112,7 @@ TEST_F(QueryResultManagerTest, StartStopSinksQuery) {
       query_result_manager_.GetSourcesForCastMode(MediaCastMode::PRESENTATION);
   EXPECT_EQ(0u, actual_sources.size());
 
-  MediaSource source(MediaSourceForPresentationUrl(GURL("http://foo.com")));
+  MediaSource source(MediaSource::ForPresentationUrl(GURL("http://foo.com")));
   EXPECT_CALL(mock_router_, RegisterMediaSinksObserver(_))
       .WillOnce(Return(true));
   query_result_manager_.SetSourcesForCastMode(
@@ -121,7 +121,7 @@ TEST_F(QueryResultManagerTest, StartStopSinksQuery) {
 
   cast_modes = query_result_manager_.GetSupportedCastModes();
   EXPECT_EQ(1u, cast_modes.size());
-  EXPECT_TRUE(base::ContainsKey(cast_modes, MediaCastMode::PRESENTATION));
+  EXPECT_TRUE(base::Contains(cast_modes, MediaCastMode::PRESENTATION));
   actual_sources =
       query_result_manager_.GetSourcesForCastMode(MediaCastMode::PRESENTATION);
   EXPECT_EQ(1u, actual_sources.size());
@@ -129,7 +129,7 @@ TEST_F(QueryResultManagerTest, StartStopSinksQuery) {
 
   // Register a different set of sources for the same cast mode.
   MediaSource another_source(
-      MediaSourceForPresentationUrl(GURL("http://bar.com")));
+      MediaSource::ForPresentationUrl(GURL("http://bar.com")));
   EXPECT_CALL(mock_router_, UnregisterMediaSinksObserver(_));
   EXPECT_CALL(mock_router_, RegisterMediaSinksObserver(_))
       .WillOnce(Return(true));
@@ -139,7 +139,7 @@ TEST_F(QueryResultManagerTest, StartStopSinksQuery) {
 
   cast_modes = query_result_manager_.GetSupportedCastModes();
   EXPECT_EQ(1u, cast_modes.size());
-  EXPECT_TRUE(base::ContainsKey(cast_modes, MediaCastMode::PRESENTATION));
+  EXPECT_TRUE(base::Contains(cast_modes, MediaCastMode::PRESENTATION));
   actual_sources =
       query_result_manager_.GetSourcesForCastMode(MediaCastMode::PRESENTATION);
   EXPECT_EQ(1u, actual_sources.size());
@@ -161,10 +161,10 @@ TEST_F(QueryResultManagerTest, MultipleQueries) {
   MediaSink sink3("sinkId3", "Sink 3", SinkIconType::CAST);
   MediaSink sink4("sinkId4", "Sink 4", SinkIconType::CAST);
   MediaSource presentation_source1 =
-      MediaSourceForPresentationUrl(GURL("http://bar.com"));
+      MediaSource::ForPresentationUrl(GURL("http://bar.com"));
   MediaSource presentation_source2 =
-      MediaSourceForPresentationUrl(GURL("http://baz.com"));
-  MediaSource tab_source = MediaSourceForTab(123);
+      MediaSource::ForPresentationUrl(GURL("http://baz.com"));
+  MediaSource tab_source = MediaSource::ForTab(123);
 
   query_result_manager_.AddObserver(&mock_observer_);
   DiscoverSinks(MediaCastMode::PRESENTATION, presentation_source1);
@@ -261,12 +261,12 @@ TEST_F(QueryResultManagerTest, MultipleUrls) {
   const MediaSink sink3("sinkId3", "Sink 3", SinkIconType::CAST);
   const MediaSink sink4("sinkId4", "Sink 4", SinkIconType::CAST);
   const MediaSource source_a(
-      MediaSourceForPresentationUrl(GURL("http://urlA.com")));
+      MediaSource::ForPresentationUrl(GURL("http://urlA.com")));
   const MediaSource source_b(
-      MediaSourceForPresentationUrl(GURL("http://urlB.com")));
+      MediaSource::ForPresentationUrl(GURL("http://urlB.com")));
   const MediaSource source_c(
-      MediaSourceForPresentationUrl(GURL("http://urlC.com")));
-  const MediaSource source_tab(MediaSourceForTab(1));
+      MediaSource::ForPresentationUrl(GURL("http://urlC.com")));
+  const MediaSource source_tab(MediaSource::ForTab(1));
   // The sources are in decreasing order of priority.
   const std::vector<MediaSource> presentation_sources = {source_a, source_b,
                                                          source_c};
@@ -368,7 +368,7 @@ TEST_F(QueryResultManagerTest, MultipleUrls) {
 
 TEST_F(QueryResultManagerTest, AddInvalidSource) {
   const MediaSource source(
-      MediaSourceForPresentationUrl(GURL("http://url.com")));
+      MediaSource::ForPresentationUrl(GURL("http://url.com")));
 
   EXPECT_CALL(mock_router_, RegisterMediaSinksObserver(_))
       .WillOnce(Return(true));
@@ -383,11 +383,10 @@ TEST_F(QueryResultManagerTest, AddInvalidSource) {
   const auto& cast_mode_sources = query_result_manager_.cast_mode_sources_;
   const auto& presentation_sources =
       cast_mode_sources.at(MediaCastMode::PRESENTATION);
-  EXPECT_TRUE(
-      base::ContainsKey(cast_mode_sources, MediaCastMode::PRESENTATION));
+  EXPECT_TRUE(base::Contains(cast_mode_sources, MediaCastMode::PRESENTATION));
   EXPECT_EQ(presentation_sources.size(), 1u);
   EXPECT_EQ(presentation_sources.at(0), source);
-  EXPECT_FALSE(base::ContainsKey(cast_mode_sources, MediaCastMode::TAB_MIRROR));
+  EXPECT_FALSE(base::Contains(cast_mode_sources, MediaCastMode::TAB_MIRROR));
 }
 
 }  // namespace media_router

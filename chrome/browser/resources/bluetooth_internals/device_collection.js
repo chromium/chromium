@@ -15,7 +15,7 @@ cr.define('device_collection', function() {
    * by default.
    * @enum {number}
    */
-  var ConnectionStatus = {
+  const ConnectionStatus = {
     DISCONNECTED: 0,
     CONNECTING: 1,
     CONNECTED: 2,
@@ -39,8 +39,8 @@ cr.define('device_collection', function() {
      * @param {string} address
      */
     getByAddress(address) {
-      for (var i = 0; i < this.length; i++) {
-        var device = this.item(i);
+      for (let i = 0; i < this.length; i++) {
+        const device = this.item(i);
         if (address == device.address) {
           return device;
         }
@@ -54,11 +54,11 @@ cr.define('device_collection', function() {
      */
     addOrUpdate(deviceInfo) {
       deviceInfo.removed = false;
-      var oldDeviceInfo = this.getByAddress(deviceInfo.address);
+      const oldDeviceInfo = this.getByAddress(deviceInfo.address);
 
       if (oldDeviceInfo) {
         // Update rssi if it's valid
-        var rssi = (deviceInfo.rssi && deviceInfo.rssi.value) ||
+        const rssi = (deviceInfo.rssi && deviceInfo.rssi.value) ||
             (oldDeviceInfo.rssi && oldDeviceInfo.rssi.value);
 
         // The connectionStatus and connectionMessage properties may not exist
@@ -78,7 +78,7 @@ cr.define('device_collection', function() {
      * @param {!bluetooth.mojom.DeviceInfo} deviceInfo
      */
     remove(deviceInfo) {
-      var device = this.getByAddress(deviceInfo.address);
+      const device = this.getByAddress(deviceInfo.address);
       assert(device, 'Device does not exist.');
       device.removed = true;
       this.updateIndex(this.indexOf(device));
@@ -90,7 +90,8 @@ cr.define('device_collection', function() {
      * @param {number} status The new connection status.
      */
     updateConnectionStatus(address, status) {
-      var device = assert(this.getByAddress(address), 'Device does not exist');
+      const device =
+          assert(this.getByAddress(address), 'Device does not exist');
       device.connectionStatus = status;
       this.updateIndex(this.indexOf(device));
     }

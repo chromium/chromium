@@ -1,15 +1,11 @@
 # Reproducing libFuzzer and AFL crashes
 
-libFuzzer and AFL crashes can be reproduced easily with the
-[ClusterFuzz Reproduce Tool]. However, if you are unable to use the tool (e.g.
-unsupported platform, some other tool issue), you can still reproduce the crash
-manually using the steps below:
-
 *** note
 **Requirements:** For Windows, you must convert the forward slashes (/) to
 backslashes (\\) in the commands below and use `set` command instead of `export`
 to set the environment variable (step 4). Note that these commands are intended
-to be used with cmd.exe, not PowerShell.
+to be used with cmd.exe, not PowerShell. Also, you may find [these tips] on how
+to debug an ASAN instrumented binary helpful.
 ***
 
 [TOC]
@@ -106,6 +102,32 @@ out/fuzz/$FUZZER_NAME -timeout=25 -rss_limit_mb=2048 -print_final_stats=1 $CORPU
 Waiting for a crash to occur may take some time (up to 1hr), but if it happens,
 you will be able to test the fix locally and/or somehow debug the issue.
 
-[ClusterFuzz Reproduce Tool]: https://github.com/google/clusterfuzz-tools
+## Minimizing a crash input (optional)
+
+ClusterFuzz does crash input minimization automatically, and a typical crash
+report has two testcases available for downloading:
+
+* An original testcase that has triggered the crash;
+* A minimized testcase that is smaller than the original but triggers the same
+  crash.
+
+If you would like to further minimize a testcase, run the fuzz target with the
+two additional arguments:
+
+* `-minimize_crash=1`
+* `-exact_artifact_path=<output_filename_for_minimized_testcase>`
+
+The full command would be:
+
+```
+out/fuzz/$FUZZER_NAME -minimize_crash=1 -exact_artifact_path=<minimized_testcase_path> $TESTCASE_PATH
+```
+
+This might be useful for large testcases that make it hard to identify a root
+cause of a crash. You can leave the minimization running locally for a while
+(e.g. overnight) for better results.
+
+
 [File a bug]: https://bugs.chromium.org/p/chromium/issues/entry?component=Tools%3EStability%3ElibFuzzer&comment=What%20problem%20are%20you%20seeing
 [here]: getting_started.md#symbolize-stacktrace
+[these tips]: https://github.com/google/sanitizers/wiki/AddressSanitizerWindowsPort#debugging

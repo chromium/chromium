@@ -18,7 +18,7 @@ InkDropHighlightTestApi::InkDropHighlightTestApi(
     : ui::test::MultiLayerAnimatorTestController(this),
       ink_drop_highlight_(ink_drop_highlight) {}
 
-InkDropHighlightTestApi::~InkDropHighlightTestApi() {}
+InkDropHighlightTestApi::~InkDropHighlightTestApi() = default;
 
 std::vector<ui::LayerAnimator*> InkDropHighlightTestApi::GetLayerAnimators() {
   std::vector<ui::LayerAnimator*> animators;

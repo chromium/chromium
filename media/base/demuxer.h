@@ -43,8 +43,8 @@ class MEDIA_EXPORT DemuxerHost {
   // Stops execution of the pipeline due to a fatal error. Do not call this
   // method with PIPELINE_OK. Stopping is not immediate so demuxers must be
   // prepared to soft fail on subsequent calls. E.g., if Demuxer::Seek() is
-  // called after an unrecoverable error the provided PipelineStatusCB must be
-  // called with an error.
+  // called after an unrecoverable error the provided PipelineStatusCallback
+  // must be called with an error.
   virtual void OnDemuxerError(PipelineStatus error) = 0;
 
  protected:
@@ -84,7 +84,7 @@ class MEDIA_EXPORT Demuxer : public MediaResource {
   // lifetime of the demuxer. Don't delete it!  |status_cb| must only be run
   // after this method has returned.
   virtual void Initialize(DemuxerHost* host,
-                          const PipelineStatusCB& status_cb) = 0;
+                          PipelineStatusCallback status_cb) = 0;
 
   // Aborts any pending read operations that the demuxer is involved with; any
   // read aborted will be aborted with a status of kAborted. Future reads will
@@ -119,8 +119,7 @@ class MEDIA_EXPORT Demuxer : public MediaResource {
 
   // Carry out any actions required to seek to the given time, executing the
   // callback upon completion.
-  virtual void Seek(base::TimeDelta time,
-                    const PipelineStatusCB& status_cb) = 0;
+  virtual void Seek(base::TimeDelta time, PipelineStatusCallback status_cb) = 0;
 
   // Stops this demuxer.
   //

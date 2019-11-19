@@ -40,8 +40,7 @@ class CORE_EXPORT CustomElementReactionStack final
   friend class CustomElementReactionStackTestSupport;
 
   using ElementReactionQueueMap =
-      HeapHashMap<TraceWrapperMember<Element>,
-                  Member<CustomElementReactionQueue>>;
+      HeapHashMap<Member<Element>, Member<CustomElementReactionQueue>>;
   ElementReactionQueueMap map_;
 
   using ElementQueue = HeapVector<Member<Element>, 1>;

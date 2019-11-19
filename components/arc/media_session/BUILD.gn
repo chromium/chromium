@@ -11,6 +11,7 @@ static_library("media_session") {
   deps = [
     "//components/arc:arc_base",
     "//components/keyed_service/content",
+    "//content/public/browser",
     "//content/public/common",
     "//services/media_session/public/cpp",
     "//services/media_session/public/mojom",

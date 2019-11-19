@@ -28,15 +28,15 @@ class UrlLoadingNotifier : public KeyedService {
   // Removes |observer| from the list of observers.
   void RemoveObserver(UrlLoadingObserverBridge* observer);
 
-  // The loader will open |url| in the current tab. Next state will be
-  // one of: TabFailedToOpenUrl, TabDidPrerenderUrl,
-  // TabDidReloadUrl or TabDidOpenUrl.
-  void TabWillOpenUrl(const GURL& url, ui::PageTransition transition_type);
+  // The loader will load |url| in the current tab. Next state will be
+  // one of: TabFailedToLoadUrl, TabDidPrerenderUrl,
+  // TabDidReloadUrl or TabDidLoadUrl.
+  void TabWillLoadUrl(const GURL& url, ui::PageTransition transition_type);
 
-  // The loader didn't succeed opening the requested |url|. Reason
+  // The loader didn't succeed loading the requested |url|. Reason
   // can, for example be an incognito mismatch or an induced crash.
-  // It is possible that the url was opened, but in another tab.
-  void TabFailedToOpenUrl(const GURL& url, ui::PageTransition transition_type);
+  // It is possible that the url was loaded, but in another tab.
+  void TabFailedToLoadUrl(const GURL& url, ui::PageTransition transition_type);
 
   // The loader replaced the load with a prerendering.
   void TabDidPrerenderUrl(const GURL& url, ui::PageTransition transition_type);
@@ -45,14 +45,16 @@ class UrlLoadingNotifier : public KeyedService {
   void TabDidReloadUrl(const GURL& url, ui::PageTransition transition_type);
 
   // The loader initiated the |url| loading successfully.
-  void TabDidOpenUrl(const GURL& url, ui::PageTransition transition_type);
+  void TabDidLoadUrl(const GURL& url, ui::PageTransition transition_type);
 
-  // The loader will open |url| in a new tab. Next state will be
-  // NewTabDidOpenUrl.
-  void NewTabWillOpenUrl(const GURL& url, bool in_incognito);
+  // The loader will load |url| in a new tab. |user_initiated| is true of the
+  // request is explicitly user initiated, and false otherwise (like the
+  // opening on an NTP on startup or requesting the help page). Next state will
+  // be NewTabDidLoadUrl.
+  void NewTabWillLoadUrl(const GURL& url, bool user_initiated);
 
   // The loader initiated the |url| loading in a new tab successfully.
-  void NewTabDidOpenUrl(const GURL& url, bool in_incognito);
+  void NewTabDidLoadUrl(const GURL& url, bool user_initiated);
 
   // The loader will switch to an existing tab with |URL| instead of loading it.
   // Next state will be: DidSwitchToTabWithUrl.

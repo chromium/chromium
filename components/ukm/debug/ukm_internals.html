@@ -15,17 +15,12 @@
   <title>UKM Debug page</title>
   <div class="ukm_collection_status">
     <div>
-      <div class="left_align"> Metrics Collection is
-        <span id="state"></span>
-        (Session: <span id="sessionid"></span>)
-      </div>
-      <div class="right_align">ClientId:
-        <span id="clientid"/>
-      </div>
+      <div> Metrics Collection is <span id="state"/></div>
+      <div> Session: <span id="sessionid"/></div>
+      <div> Client_id: <span id="clientid"/></div>
+      <div> Event Sampling Enabled: <span id="is_sampling_enabled"/></div>
     </div>
   </div>
-  <div id="warnings"></div>
-  <div id="sources"></div>
   <div>
     <div class='labels'> Recorder Ids: </div>
     <select id="thread_ids" class="hex_list"></select>
@@ -39,16 +34,17 @@
     <input id="url_select" type="text" value=".*" class="text" pattern="[A-Za-z0-9\._\*\|\?\+]*" maxlength="256"></input>
   </div>
   <div>
-    <input id="hide_no_metrics" class="checkbox" type="checkbox" checked> Hide Sources With No Metric </input>
+    <input id="hide_no_metrics" class="checkbox" type="checkbox" checked> Hide Sources with no Events </input>
   </div>
   <div>
-    <input id="hide_no_url" class="checkbox" type="checkbox" checked> Hide Sources With No URL </input>
+    <input id="hide_no_url" class="checkbox" type="checkbox" checked> Hide Sources with no URLs </input>
   </div>
   <div>
-    <input id="include_cache" class="checkbox" type="checkbox" checked> Include Cached Sources (since this page load) </input>
+    <input id="include_cache" class="checkbox" type="checkbox" checked> Include cached Sources (since this page load) </input>
   </div>
   <button id="toggle_expand"></button>
   <button id="clear">Clear</button>
   <button id="refresh">Refresh</button>
+  <div id="sources"></div>
   <script src="ukm_internals.js"></script>
 </html>

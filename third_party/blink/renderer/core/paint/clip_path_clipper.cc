@@ -82,7 +82,7 @@ base::Optional<FloatRect> ClipPathClipper::LocalClipPathBoundingBox(
   FloatRect reference_box = LocalReferenceBox(object);
   ClipPathOperation& clip_path = *object.StyleRef().ClipPath();
   if (clip_path.GetType() == ClipPathOperation::SHAPE) {
-    ShapeClipPathOperation& shape = ToShapeClipPathOperation(clip_path);
+    ShapeClipPathOperation& shape = To<ShapeClipPathOperation>(clip_path);
     if (!shape.IsValid())
       return base::nullopt;
     FloatRect bounding_box = shape.GetPath(reference_box).BoundingRect();
@@ -91,8 +91,8 @@ base::Optional<FloatRect> ClipPathClipper::LocalClipPathBoundingBox(
   }
 
   DCHECK_EQ(clip_path.GetType(), ClipPathOperation::REFERENCE);
-  LayoutSVGResourceClipper* clipper =
-      ResolveElementReference(object, ToReferenceClipPathOperation(clip_path));
+  LayoutSVGResourceClipper* clipper = ResolveElementReference(
+      object, To<ReferenceClipPathOperation>(clip_path));
   if (!clipper)
     return base::nullopt;
 
@@ -117,12 +117,12 @@ static bool IsClipPathOperationValid(
     const LayoutObject& search_scope,
     LayoutSVGResourceClipper*& resource_clipper) {
   if (clip_path.GetType() == ClipPathOperation::SHAPE) {
-    if (!ToShapeClipPathOperation(clip_path).IsValid())
+    if (!To<ShapeClipPathOperation>(clip_path).IsValid())
       return false;
   } else {
     DCHECK_EQ(clip_path.GetType(), ClipPathOperation::REFERENCE);
     resource_clipper = ResolveElementReference(
-        search_scope, ToReferenceClipPathOperation(clip_path));
+        search_scope, To<ReferenceClipPathOperation>(clip_path));
     if (!resource_clipper)
       return false;
     SECURITY_DCHECK(!resource_clipper->NeedsLayout());
@@ -135,7 +135,7 @@ static bool IsClipPathOperationValid(
 
 ClipPathClipper::ClipPathClipper(GraphicsContext& context,
                                  const LayoutObject& layout_object,
-                                 const LayoutPoint& paint_offset)
+                                 const PhysicalOffset& paint_offset)
     : context_(context),
       layout_object_(layout_object),
       paint_offset_(paint_offset) {
@@ -177,7 +177,7 @@ ClipPathClipper::~ClipPathClipper() {
     return;
   DrawingRecorder recorder(context_, layout_object_, DisplayItem::kSVGClip);
   context_.Save();
-  context_.Translate(paint_offset_.X(), paint_offset_.Y());
+  context_.Translate(paint_offset_.left, paint_offset_.top);
 
   SVGClipExpansionCycleHelper locks;
   bool is_first = true;
@@ -249,7 +249,7 @@ base::Optional<Path> ClipPathClipper::PathBasedClip(
   }
 
   DCHECK_EQ(clip_path.GetType(), ClipPathOperation::SHAPE);
-  auto& shape = ToShapeClipPathOperation(clip_path);
+  auto& shape = To<ShapeClipPathOperation>(clip_path);
   return base::Optional<Path>(shape.GetPath(reference_box));
 }
 

@@ -25,6 +25,7 @@
 
 // See https://webaudio.github.io/web-audio-api/#channelsplitternode
 [
+    Exposed=Window,
     Constructor(BaseAudioContext context, optional ChannelSplitterOptions options),
     RaisesException=Constructor,
     Measure

@@ -232,7 +232,7 @@ const FindInPageEntry kFindInPageEntryZero = {{0.0, 0.0}, 0};
   DCHECK(position.is_list());
 
   // Position should always be of length 3, from [index,x,y].
-  const base::Value::ListStorage& positionList = position.GetList();
+  base::span<const base::Value> positionList = position.GetList();
   if (positionList.size() != 3)
     return kFindInPageEntryZero;
 

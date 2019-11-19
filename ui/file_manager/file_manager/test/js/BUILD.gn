@@ -12,7 +12,7 @@ js_library("chrome_api_test_impl") {
 js_library("chrome_file_manager_private_test_impl") {
   deps = [
     ":chrome_api_test_impl",
-    "../../background/js:mock_volume_manager",
+    "//ui/file_manager/file_manager/background/js:mock_volume_manager",
   ]
 }
 
@@ -25,8 +25,8 @@ js_library("strings") {
 js_library("test_util") {
   deps = [
     ":chrome_file_manager_private_test_impl",
-    "../../background/js:runtime_loaded_test_util",
-    "../../foreground/js:constants",
+    "//ui/file_manager/file_manager/background/js:runtime_loaded_test_util",
+    "//ui/file_manager/file_manager/foreground/js:constants",
     "//ui/webui/resources/js:webui_resource_test",
   ]
 }

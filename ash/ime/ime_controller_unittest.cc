@@ -8,7 +8,7 @@
 
 #include "ash/ime/mode_indicator_observer.h"
 #include "ash/ime/test_ime_controller_client.h"
-#include "ash/public/interfaces/ime_info.mojom.h"
+#include "ash/public/mojom/ime_info.mojom.h"
 #include "ash/shell.h"
 #include "ash/system/ime/ime_observer.h"
 #include "ash/system/tray/system_tray_notifier.h"
@@ -16,6 +16,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/ime/chromeos/extension_ime_util.h"
+#include "ui/display/manager/display_manager.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/widget/widget.h"
 
@@ -178,7 +179,7 @@ TEST_F(ImeControllerTest, SwitchIme) {
   EXPECT_EQ(0, client.switch_ime_count_);
 
   // After setting the client the requests are forwarded.
-  controller->SetClient(client.CreateInterfacePtr());
+  controller->SetClient(client.CreateRemote());
   controller->SwitchToNextIme();
   controller->FlushMojoForTesting();
   EXPECT_EQ(1, client.next_ime_count_);
@@ -203,7 +204,7 @@ TEST_F(ImeControllerTest, SwitchIme) {
 TEST_F(ImeControllerTest, SwitchImeWithAccelerator) {
   ImeController* controller = Shell::Get()->ime_controller();
   TestImeControllerClient client;
-  controller->SetClient(client.CreateInterfacePtr());
+  controller->SetClient(client.CreateRemote());
 
   const ui::Accelerator convert(ui::VKEY_CONVERT, ui::EF_NONE);
   const ui::Accelerator non_convert(ui::VKEY_NONCONVERT, ui::EF_NONE);
@@ -270,7 +271,7 @@ TEST_F(ImeControllerTest, SetCapsLock) {
   controller->SetCapsLockEnabled(true);
   EXPECT_EQ(0, client.set_caps_lock_count_);
 
-  controller->SetClient(client.CreateInterfacePtr());
+  controller->SetClient(client.CreateRemote());
 
   controller->SetCapsLockEnabled(true);
   controller->FlushMojoForTesting();
@@ -351,6 +352,28 @@ TEST_F(ImeControllerTest, ShowModeIndicator) {
   // size.
   gfx::Rect bounds3 = widget3->GetWindowBoundsInScreen();
   EXPECT_LT(bounds3.bottom(), screen_bounds.bottom());
+}
+
+TEST_F(ImeControllerTest, MirroringChanged) {
+  UpdateDisplay("500x500,500x500");
+  // The controller is already an observer of the display_manager
+  ImeController* controller = Shell::Get()->ime_controller();
+  TestImeControllerClient client;
+  controller->SetClient(client.CreateRemote());
+
+  display::DisplayManager* display_manager = Shell::Get()->display_manager();
+  display_manager->SetMultiDisplayMode(display::DisplayManager::MIRRORING);
+  display_manager->UpdateDisplays();
+  controller->FlushMojoForTesting();
+  EXPECT_TRUE(client.is_mirroring_);
+
+  UpdateDisplay("500x500");
+  controller->FlushMojoForTesting();
+  EXPECT_FALSE(client.is_mirroring_);
+
+  UpdateDisplay("500x500,500x500");
+  controller->FlushMojoForTesting();
+  EXPECT_TRUE(client.is_mirroring_);
 }
 
 }  // namespace

@@ -17,4 +17,7 @@ const base::Feature kSyncForceDisableScryptForCustomPassphrase{
 const base::Feature kSyncE2ELatencyMeasurement = {
     "SyncE2ELatencyMeasurement", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kDoNotSyncFaviconDataTypes{
+    "DoNotSyncFaviconDataTypes", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace switches

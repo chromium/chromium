@@ -38,7 +38,7 @@ class InvalidationService;
 namespace syncer {
 
 class ChangeProcessor;
-class SyncBackendHostCore;
+class SyncEngineBackend;
 class SyncBackendRegistrar;
 class SyncPrefs;
 
@@ -56,6 +56,7 @@ class SyncEngineImpl : public SyncEngine, public InvalidationHandler {
 
   // SyncEngine implementation.
   void Initialize(InitParams params) override;
+  bool IsInitialized() const override;
   void TriggerRefresh(const ModelTypeSet& types) override;
   void UpdateCredentials(const SyncCredentials& credentials) override;
   void InvalidateCredentials() override;
@@ -63,6 +64,8 @@ class SyncEngineImpl : public SyncEngine, public InvalidationHandler {
   void StartSyncingWithServer() override;
   void SetEncryptionPassphrase(const std::string& passphrase) override;
   void SetDecryptionPassphrase(const std::string& passphrase) override;
+  void AddTrustedVaultDecryptionKeys(const std::vector<std::string>& keys,
+                                     base::OnceClosure done_cb) override;
   void StopSyncingForShutdown() override;
   void Shutdown(ShutdownReason reason) override;
   void ConfigureDataTypes(ConfigureParams params) override;
@@ -91,6 +94,7 @@ class SyncEngineImpl : public SyncEngine, public InvalidationHandler {
                           bool empty_jar,
                           const base::Closure& callback) override;
   void SetInvalidationsForSessionsEnabled(bool enabled) override;
+  void GetNigoriNodeForDebugging(AllNodesCallback callback) override;
 
   // InvalidationHandler implementation.
   void OnInvalidatorStateChange(InvalidatorState state) override;
@@ -121,9 +125,9 @@ class SyncEngineImpl : public SyncEngine, public InvalidationHandler {
       const WeakHandle<DataTypeDebugInfoListener> debug_info_listener,
       std::unique_ptr<ModelTypeConnector> model_type_connector,
       const std::string& cache_guid,
-      const std::string& session_name,
       const std::string& birthday,
-      const std::string& bag_of_chips);
+      const std::string& bag_of_chips,
+      const std::string& last_keystore_key);
 
   // Forwards a ProtocolEvent to the host. Will not be called unless a call to
   // SetForwardProtocolEvents() explicitly requested that we start forwarding
@@ -159,23 +163,16 @@ class SyncEngineImpl : public SyncEngine, public InvalidationHandler {
   SyncEngineHost* host() { return host_; }
 
  private:
-  friend class SyncBackendHostCore;
-
-  // Checks if we have received a notice to turn on experimental datatypes
-  // (via the nigori node) and informs the frontend if that is the case.
-  // Note: it is illegal to call this before the backend is initialized.
-  void AddExperimentalTypes();
+  friend class SyncEngineBackend;
 
   // Handles backend initialization failure.
   void HandleInitializationFailureOnFrontendLoop();
 
-  // Called from Core::OnSyncCycleCompleted to handle updating frontend
-  // thread components.
+  // Called from SyncEngineBackend::OnSyncCycleCompleted to handle updating
+  // frontend thread components.
   void HandleSyncCycleCompletedOnFrontendLoop(
-      const SyncCycleSnapshot& snapshot);
-
-  // For convenience, checks if initialization state is INITIALIZED.
-  bool initialized() const { return initialized_; }
+      const SyncCycleSnapshot& snapshot,
+      const std::string& last_keystore_key);
 
   // Let the front end handle the actionable error event.
   void HandleActionableErrorEventOnFrontendLoop(
@@ -196,10 +193,10 @@ class SyncEngineImpl : public SyncEngine, public InvalidationHandler {
   // Name used for debugging (set from profile_->GetDebugName()).
   const std::string name_;
 
-  // Our core, which communicates directly to the syncapi. Use refptr instead
-  // of WeakHandle because |core_| is created on UI loop but released on
+  // Our backend, which communicates directly to the syncapi. Use refptr instead
+  // of WeakHandle because |backend_| is created on UI loop but released on
   // sync loop.
-  scoped_refptr<SyncBackendHostCore> core_;
+  scoped_refptr<SyncEngineBackend> backend_;
 
   // A handle referencing the main interface for non-blocking sync types. This
   // object is owned because in production code it is a proxy object.
@@ -213,7 +210,7 @@ class SyncEngineImpl : public SyncEngine, public InvalidationHandler {
   // out in StopSyncingForShutdown().
   SyncEngineHost* host_ = nullptr;
 
-  // A pointer to the registrar; owned by |core_|.
+  // A pointer to the registrar; owned by |backend_|.
   SyncBackendRegistrar* registrar_ = nullptr;
 
   invalidation::InvalidationService* invalidator_;
@@ -224,7 +221,7 @@ class SyncEngineImpl : public SyncEngine, public InvalidationHandler {
   // Checks that we're on the same thread this was constructed on (UI thread).
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::WeakPtrFactory<SyncEngineImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<SyncEngineImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SyncEngineImpl);
 };

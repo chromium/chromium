@@ -8,23 +8,20 @@
 
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/plugins/flash_temporary_permission_tracker.h"
 #include "chrome/browser/plugins/plugin_finder.h"
 #include "chrome/browser/plugins/plugin_metadata.h"
 #include "chrome/browser/plugins/plugin_utils.h"
-#include "chrome/browser/plugins/plugins_field_trial.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/render_messages.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_service.h"
+#include "content/public/browser/notification_types.h"
 #include "content/public/browser/plugin_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
-#include "content/public/browser/resource_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_constants.h"
 
@@ -43,13 +40,14 @@ class ProfileContentSettingObserver : public content_settings::Observer {
       const ContentSettingsPattern& secondary_pattern,
       ContentSettingsType content_type,
       const std::string& resource_identifier) override {
-    if (content_type != CONTENT_SETTINGS_TYPE_PLUGINS)
+    if (content_type != ContentSettingsType::PLUGINS)
       return;
 
+    // We must purge the plugin list cache when the plugin content setting
+    // changes, because the content setting affects the visibility of Flash.
     HostContentSettingsMap* map =
         HostContentSettingsMapFactory::GetForProfile(profile_);
-    if (PluginUtils::ShouldPreferHtmlOverPlugins(map))
-      PluginService::GetInstance()->PurgePluginListCache(profile_, false);
+    PluginService::GetInstance()->PurgePluginListCache(profile_, false);
 
     const GURL primary(primary_pattern.ToString());
     if (primary.is_valid()) {
@@ -118,20 +116,18 @@ ChromePluginServiceFilter* ChromePluginServiceFilter::GetInstance() {
   return base::Singleton<ChromePluginServiceFilter>::get();
 }
 
-void ChromePluginServiceFilter::RegisterResourceContext(Profile* profile,
-                                                        const void* context) {
+void ChromePluginServiceFilter::RegisterProfile(Profile* profile) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   base::AutoLock lock(lock_);
-  resource_context_map_[context] = std::make_unique<ContextInfo>(
+  browser_context_map_[profile] = std::make_unique<ContextInfo>(
       PluginPrefs::GetForProfile(profile),
       HostContentSettingsMapFactory::GetForProfile(profile),
       FlashTemporaryPermissionTracker::Get(profile), profile);
 }
 
-void ChromePluginServiceFilter::UnregisterResourceContext(
-    const void* context) {
+void ChromePluginServiceFilter::UnregisterProfile(Profile* profile) {
   base::AutoLock lock(lock_);
-  resource_context_map_.erase(context);
+  browser_context_map_.erase(profile);
 }
 
 void ChromePluginServiceFilter::OverridePluginForFrame(
@@ -166,7 +162,6 @@ void ChromePluginServiceFilter::AuthorizeAllPlugins(
 bool ChromePluginServiceFilter::IsPluginAvailable(
     int render_process_id,
     int render_frame_id,
-    const void* context,
     const GURL& plugin_content_url,
     const url::Origin& main_frame_origin,
     content::WebPluginInfo* plugin) {
@@ -185,23 +180,25 @@ bool ChromePluginServiceFilter::IsPluginAvailable(
     }
   }
 
+  content::RenderProcessHost* rph =
+      content::RenderProcessHost::FromID(render_process_id);
+  if (!rph)
+    return false;
+
   // Check whether the plugin is disabled.
-  auto context_info_it = resource_context_map_.find(context);
+  auto context_info_it = browser_context_map_.find(rph->GetBrowserContext());
   // The context might not be found because RenderFrameMessageFilter might
   // outlive the Profile (the context is unregistered during the Profile
   // destructor).
-  if (context_info_it == resource_context_map_.end())
+  if (context_info_it == browser_context_map_.end())
     return false;
 
   const ContextInfo* context_info = context_info_it->second.get();
   if (!context_info->plugin_prefs.get()->IsPluginEnabled(*plugin))
     return false;
 
-  // If PreferHtmlOverPlugins is enabled and the plugin is Flash, we do
-  // additional checks.
-  if (plugin->name == base::ASCIIToUTF16(content::kFlashPluginName) &&
-      PluginUtils::ShouldPreferHtmlOverPlugins(
-          context_info->host_content_settings_map.get())) {
+  // Do additional checks for Flash.
+  if (plugin->name == base::ASCIIToUTF16(content::kFlashPluginName)) {
     // Check the content setting first, and always respect the ALLOW or BLOCK
     // state. When IsPluginAvailable() is called to check whether a plugin
     // should be advertised, |url| has the same origin as |main_frame_origin|.
@@ -212,8 +209,6 @@ bool ChromePluginServiceFilter::IsPluginAvailable(
         context_info_it->second->host_content_settings_map.get();
     ContentSetting flash_setting = PluginUtils::GetFlashPluginContentSetting(
         settings_map, main_frame_origin, plugin_content_url, &is_managed);
-    flash_setting = PluginsFieldTrial::EffectiveContentSetting(
-        settings_map, CONTENT_SETTINGS_TYPE_PLUGINS, flash_setting);
 
     if (flash_setting == CONTENT_SETTING_ALLOW)
       return true;
@@ -246,15 +241,13 @@ bool ChromePluginServiceFilter::CanLoadPlugin(int render_process_id,
   if (!details)
     return false;
 
-  return (ContainsKey(details->authorized_plugins, path) ||
-          ContainsKey(details->authorized_plugins, base::FilePath()));
+  return (base::Contains(details->authorized_plugins, path) ||
+          base::Contains(details->authorized_plugins, base::FilePath()));
 }
 
 ChromePluginServiceFilter::ChromePluginServiceFilter() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   registrar_.Add(this, content::NOTIFICATION_RENDERER_PROCESS_CLOSED,
-                 content::NotificationService::AllSources());
-  registrar_.Add(this, chrome::NOTIFICATION_PLUGIN_ENABLE_STATUS_CHANGED,
                  content::NotificationService::AllSources());
 }
 
@@ -265,28 +258,12 @@ void ChromePluginServiceFilter::Observe(
     const content::NotificationSource& source,
     const content::NotificationDetails& details) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  switch (type) {
-    case content::NOTIFICATION_RENDERER_PROCESS_CLOSED: {
-      int render_process_id =
-          content::Source<content::RenderProcessHost>(source).ptr()->GetID();
+  DCHECK_EQ(content::NOTIFICATION_RENDERER_PROCESS_CLOSED, type);
+  int render_process_id =
+      content::Source<content::RenderProcessHost>(source).ptr()->GetID();
 
-      base::AutoLock auto_lock(lock_);
-      plugin_details_.erase(render_process_id);
-      break;
-    }
-    case chrome::NOTIFICATION_PLUGIN_ENABLE_STATUS_CHANGED: {
-      Profile* profile = content::Source<Profile>(source).ptr();
-      PluginService::GetInstance()->PurgePluginListCache(profile, false);
-      if (profile && profile->HasOffTheRecordProfile()) {
-        PluginService::GetInstance()->PurgePluginListCache(
-            profile->GetOffTheRecordProfile(), false);
-      }
-      break;
-    }
-    default: {
-      NOTREACHED();
-    }
-  }
+  base::AutoLock auto_lock(lock_);
+  plugin_details_.erase(render_process_id);
 }
 
 ChromePluginServiceFilter::ProcessDetails*

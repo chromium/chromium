@@ -11,7 +11,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "chrome/browser/supervised_user/supervised_user_site_list.h"
 #include "extensions/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -63,7 +63,7 @@ class SupervisedUserURLFilterTest : public ::testing::Test,
                           supervised_user_error_page::MANUAL);
   }
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   base::RunLoop run_loop_;
   SupervisedUserURLFilter filter_;
   SupervisedUserURLFilter::FilteringBehavior behavior_;
@@ -318,8 +318,6 @@ TEST_F(SupervisedUserURLFilterTest, HasFilteredScheme) {
   EXPECT_TRUE(
       SupervisedUserURLFilter::HasFilteredScheme(GURL("ftp://example.com")));
   EXPECT_TRUE(
-      SupervisedUserURLFilter::HasFilteredScheme(GURL("gopher://example.com")));
-  EXPECT_TRUE(
       SupervisedUserURLFilter::HasFilteredScheme(GURL("ws://example.com")));
   EXPECT_TRUE(
       SupervisedUserURLFilter::HasFilteredScheme(GURL("wss://example.com")));
@@ -333,6 +331,8 @@ TEST_F(SupervisedUserURLFilterTest, HasFilteredScheme) {
       SupervisedUserURLFilter::HasFilteredScheme(GURL("chrome://example.com")));
   EXPECT_FALSE(
       SupervisedUserURLFilter::HasFilteredScheme(GURL("wtf://example.com")));
+  EXPECT_FALSE(
+      SupervisedUserURLFilter::HasFilteredScheme(GURL("gopher://example.com")));
 }
 
 TEST_F(SupervisedUserURLFilterTest, HostMatchesPattern) {
@@ -687,4 +687,19 @@ TEST_F(SupervisedUserURLFilterTest, GoogleFamiliesAlwaysAllowed) {
   EXPECT_TRUE(IsURLWhitelisted("http://families.google.com/"));
   EXPECT_FALSE(IsURLWhitelisted("https://families.google.com:8080/"));
   EXPECT_FALSE(IsURLWhitelisted("https://subdomain.families.google.com/"));
+}
+
+TEST_F(SupervisedUserURLFilterTest, PlayTermsAlwaysAllowed) {
+  filter_.SetDefaultFilteringBehavior(SupervisedUserURLFilter::BLOCK);
+  EXPECT_TRUE(IsURLWhitelisted("https://play.google.com/about/play-terms"));
+  EXPECT_TRUE(IsURLWhitelisted("https://play.google.com/about/play-terms/"));
+  EXPECT_TRUE(IsURLWhitelisted(
+      "https://play.google.com/intl/pt-BR_pt/about/play-terms/"));
+  EXPECT_TRUE(
+      IsURLWhitelisted("https://play.google.com/about/play-terms/index.html"));
+  EXPECT_FALSE(IsURLWhitelisted("http://play.google.com/about/play-terms/"));
+  EXPECT_FALSE(
+      IsURLWhitelisted("https://subdomain.play.google.com/about/play-terms/"));
+  EXPECT_FALSE(IsURLWhitelisted("https://play.google.com/"));
+  EXPECT_FALSE(IsURLWhitelisted("https://play.google.com/about"));
 }

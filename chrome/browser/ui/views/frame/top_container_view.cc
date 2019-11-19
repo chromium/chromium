@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 
 #include "chrome/browser/ui/views/frame/browser_frame.h"
+#include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "ui/views/paint_info.h"

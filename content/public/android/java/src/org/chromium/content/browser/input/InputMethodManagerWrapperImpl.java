@@ -24,7 +24,7 @@ import java.lang.reflect.Method;
  */
 public class InputMethodManagerWrapperImpl implements InputMethodManagerWrapper {
     private static final boolean DEBUG_LOGS = false;
-    private static final String TAG = "cr_IMM";
+    private static final String TAG = "IMM";
 
     private final Context mContext;
 

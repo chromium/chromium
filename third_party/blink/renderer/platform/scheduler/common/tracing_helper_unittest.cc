@@ -4,8 +4,6 @@
 
 #include "third_party/blink/renderer/platform/scheduler/common/tracing_helper.h"
 
-#include <unordered_set>
-
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace blink {

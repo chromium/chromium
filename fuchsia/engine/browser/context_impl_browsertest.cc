@@ -12,116 +12,111 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
-#include "fuchsia/engine/common.h"
-#include "fuchsia/engine/test/test_common.h"
+#include "fuchsia/base/fit_adapter.h"
+#include "fuchsia/base/frame_test_util.h"
+#include "fuchsia/base/result_receiver.h"
+#include "fuchsia/base/test_navigation_listener.h"
+#include "fuchsia/engine/switches.h"
 #include "fuchsia/engine/test/web_engine_browser_test.h"
-#include "net/cookies/cookie_store.h"
-#include "net/url_request/url_request_context.h"
-#include "net/url_request/url_request_context_getter.h"
-#include "testing/gmock/include/gmock/gmock.h"
+#include "services/network/public/mojom/cookie_manager.mojom.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/url_constants.h"
 
-using testing::_;
-using testing::Field;
-using testing::InvokeWithoutArgs;
-
-// Use a shorter name for NavigationEvent, because it is
-// referenced frequently in this file.
-using NavigationDetails = chromium::web::NavigationEvent;
+namespace {
 
 // Defines a suite of tests that exercise browser-level configuration and
 // functionality.
 class ContextImplTest : public cr_fuchsia::WebEngineBrowserTest {
  public:
   ContextImplTest() = default;
-  ~ContextImplTest() = default;
+  ~ContextImplTest() override = default;
 
  protected:
-  // Creates a Frame with |navigation_observer_| attached.
-  chromium::web::FramePtr CreateFrame() {
-    return WebEngineBrowserTest::CreateFrame(&navigation_observer_);
+  // Creates a Frame with |navigation_listener_| attached.
+  fuchsia::web::FramePtr CreateFrame() {
+    return WebEngineBrowserTest::CreateFrame(&navigation_listener_);
   }
 
-  // Synchronously gets a list of cookies for this BrowserContext.
-  net::CookieList GetCookies();
+  // Synchronously gets the list of all cookies from the fuchsia.web.Context.
+  std::vector<fuchsia::web::Cookie> GetCookies() {
+    base::RunLoop get_cookies_loop;
 
-  testing::StrictMock<cr_fuchsia::MockNavigationObserver> navigation_observer_;
+    // Connect to the Context's CookieManager and request all the cookies.
+    fuchsia::web::CookieManagerPtr cookie_manager;
+    context()->GetCookieManager(cookie_manager.NewRequest());
+    fuchsia::web::CookiesIteratorPtr cookies_iterator;
+    cookie_manager->GetCookieList(nullptr, nullptr,
+                                  cookies_iterator.NewRequest());
+
+    // |cookies_iterator| will disconnect once after the last cookies have been
+    // returned by GetNext().
+    cookies_iterator.set_error_handler([&](zx_status_t status) {
+      EXPECT_EQ(ZX_ERR_PEER_CLOSED, status);
+      get_cookies_loop.Quit();
+    });
+    std::vector<fuchsia::web::Cookie> cookies;
+
+    // std::function<> must be used here because fit::function<> is move-only
+    // and this callback will be used both for the initial GetNext() call, and
+    // for the follow-up calls made each time GetNext() results are received.
+    std::function<void(std::vector<fuchsia::web::Cookie>)> get_next_callback =
+        [&](std::vector<fuchsia::web::Cookie> new_cookies) {
+          cookies.insert(cookies.end(),
+                         std::make_move_iterator(new_cookies.begin()),
+                         std::make_move_iterator(new_cookies.end()));
+          cookies_iterator->GetNext(get_next_callback);
+        };
+    cookies_iterator->GetNext(get_next_callback);
+
+    get_cookies_loop.Run();
+
+    return cookies;
+  }
+
+  cr_fuchsia::TestNavigationListener navigation_listener_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(ContextImplTest);
 };
 
-void OnCookiesReceived(net::CookieList* output,
-                       base::OnceClosure on_received_cb,
-                       const net::CookieList& cookies,
-                       const net::CookieStatusList& excluded_cookies) {
-  *output = cookies;
-  std::move(on_received_cb).Run();
-}
+}  // namespace
 
-net::CookieList ContextImplTest::GetCookies() {
-  net::CookieStore* cookie_store =
-      content::BrowserContext::GetDefaultStoragePartition(
-          context_impl()->browser_context_for_test())
-          ->GetURLRequestContext()
-          ->GetURLRequestContext()
-          ->cookie_store();
-
-  base::RunLoop run_loop;
-  net::CookieList cookies;
-  base::PostTaskWithTraits(
-      FROM_HERE, {content::BrowserThread::IO},
-      base::BindOnce(
-          &net::CookieStore::GetAllCookiesAsync, base::Unretained(cookie_store),
-          base::BindOnce(&OnCookiesReceived, base::Unretained(&cookies),
-                         run_loop.QuitClosure())));
-  run_loop.Run();
-  return cookies;
-}
-
-// Verifies that the BrowserContext has a working cookie store by setting
-// cookies in the content layer and then querying the CookieStore afterward.
-IN_PROC_BROWSER_TEST_F(ContextImplTest, VerifyPersistentCookieStore) {
+// BrowserContext with persistent storage stores cookies such that they can
+// be retrieved via the CookieManager API.
+IN_PROC_BROWSER_TEST_F(ContextImplTest, PersistentCookieStore) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  GURL cookie_url(embedded_test_server()->GetURL("/set-cookie?foo=bar"));
-  chromium::web::FramePtr frame = CreateFrame();
+  fuchsia::web::FramePtr frame = CreateFrame();
 
-  chromium::web::NavigationControllerPtr nav;
-  frame->GetNavigationController(nav.NewRequest());
+  fuchsia::web::NavigationControllerPtr controller;
+  frame->GetNavigationController(controller.NewRequest());
 
-  {
-    base::RunLoop run_loop;
-    EXPECT_CALL(navigation_observer_, MockableOnNavigationStateChanged(_))
-        .WillOnce(testing::InvokeWithoutArgs([&run_loop] { run_loop.Quit(); }));
+  const GURL kSetCookieUrl(
+      embedded_test_server()->GetURL("/set-cookie?foo=bar"));
+  cr_fuchsia::LoadUrlAndExpectResponse(
+      controller.get(), fuchsia::web::LoadUrlParams(), kSetCookieUrl.spec());
+  navigation_listener_.RunUntilUrlEquals(kSetCookieUrl);
 
-    nav->LoadUrl(cookie_url.spec(), nullptr);
-    run_loop.Run();
-  }
-
-  auto cookies = GetCookies();
-  bool found = false;
-  for (auto c : cookies) {
-    if (c.Name() == "foo" && c.Value() == "bar") {
-      found = true;
-      break;
-    }
-  }
-  EXPECT_TRUE(found);
+  std::vector<fuchsia::web::Cookie> cookies = GetCookies();
+  ASSERT_EQ(cookies.size(), 1u);
+  ASSERT_TRUE(cookies[0].has_id());
+  ASSERT_TRUE(cookies[0].id().has_name());
+  ASSERT_TRUE(cookies[0].has_value());
+  EXPECT_EQ(cookies[0].id().name(), "foo");
+  EXPECT_EQ(cookies[0].value(), "bar");
 
   // Check that the cookie persists beyond the lifetime of the Frame by
   // releasing the Frame and re-querying the CookieStore.
   frame.Unbind();
   base::RunLoop().RunUntilIdle();
 
-  found = false;
-  for (auto c : cookies) {
-    if (c.Name() == "foo" && c.Value() == "bar") {
-      found = true;
-      break;
-    }
-  }
-  EXPECT_TRUE(found);
+  cookies = GetCookies();
+  ASSERT_EQ(cookies.size(), 1u);
+  ASSERT_TRUE(cookies[0].has_id());
+  ASSERT_TRUE(cookies[0].id().has_name());
+  ASSERT_TRUE(cookies[0].has_value());
+  EXPECT_EQ(cookies[0].id().name(), "foo");
+  EXPECT_EQ(cookies[0].value(), "bar");
 }
 
 // Suite for tests which run the BrowserContext in incognito mode (no data
@@ -132,7 +127,7 @@ class IncognitoContextImplTest : public ContextImplTest {
   ~IncognitoContextImplTest() override = default;
 
   void SetUp() override {
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(kIncognitoSwitch);
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kIncognito);
     ContextImplTest::SetUp();
   }
 
@@ -143,44 +138,37 @@ class IncognitoContextImplTest : public ContextImplTest {
 // Verify that the browser can be initialized without a persistent data
 // directory.
 IN_PROC_BROWSER_TEST_F(IncognitoContextImplTest, NavigateFrame) {
-  chromium::web::FramePtr frame = CreateFrame();
+  fuchsia::web::FramePtr frame = CreateFrame();
 
-  chromium::web::NavigationControllerPtr controller;
+  fuchsia::web::NavigationControllerPtr controller;
   frame->GetNavigationController(controller.NewRequest());
 
-  base::RunLoop run_loop;
-  EXPECT_CALL(navigation_observer_,
-              MockableOnNavigationStateChanged(
-                  Field(&NavigationDetails::url, url::kAboutBlankURL)))
-      .WillOnce(InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
-  controller->LoadUrl(url::kAboutBlankURL, nullptr);
-  run_loop.Run();
+  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
+      controller.get(), fuchsia::web::LoadUrlParams(), url::kAboutBlankURL));
+  navigation_listener_.RunUntilUrlEquals(GURL(url::kAboutBlankURL));
 
   frame.Unbind();
 }
 
-IN_PROC_BROWSER_TEST_F(IncognitoContextImplTest, VerifyInMemoryCookieStore) {
+// In-memory cookie store stores cookies, and is accessible via CookieManager.
+IN_PROC_BROWSER_TEST_F(IncognitoContextImplTest, InMemoryCookieStore) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  GURL cookie_url(embedded_test_server()->GetURL("/set-cookie?foo=bar"));
-  chromium::web::FramePtr frame = CreateFrame();
+  fuchsia::web::FramePtr frame = CreateFrame();
 
-  chromium::web::NavigationControllerPtr nav;
-  frame->GetNavigationController(nav.NewRequest());
+  fuchsia::web::NavigationControllerPtr controller;
+  frame->GetNavigationController(controller.NewRequest());
 
-  base::RunLoop run_loop;
-  EXPECT_CALL(navigation_observer_, MockableOnNavigationStateChanged(_))
-      .WillOnce(testing::InvokeWithoutArgs([&run_loop] { run_loop.Quit(); }));
+  const GURL kSetCookieUrl(
+      embedded_test_server()->GetURL("/set-cookie?foo=bar"));
+  cr_fuchsia::LoadUrlAndExpectResponse(
+      controller.get(), fuchsia::web::LoadUrlParams(), kSetCookieUrl.spec());
+  navigation_listener_.RunUntilUrlEquals(kSetCookieUrl);
 
-  nav->LoadUrl(cookie_url.spec(), nullptr);
-  run_loop.Run();
-
-  auto cookies = GetCookies();
-  bool found = false;
-  for (auto c : cookies) {
-    if (c.Name() == "foo" && c.Value() == "bar") {
-      found = true;
-      break;
-    }
-  }
-  EXPECT_TRUE(found);
+  std::vector<fuchsia::web::Cookie> cookies = GetCookies();
+  ASSERT_EQ(cookies.size(), 1u);
+  ASSERT_TRUE(cookies[0].has_id());
+  ASSERT_TRUE(cookies[0].id().has_name());
+  ASSERT_TRUE(cookies[0].has_value());
+  EXPECT_EQ(cookies[0].id().name(), "foo");
+  EXPECT_EQ(cookies[0].value(), "bar");
 }

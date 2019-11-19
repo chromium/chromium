@@ -1,0 +1,33 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/protobuf/proto_library.gni")
+
+assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
+
+component("media_analytics") {
+  defines = [ "IS_MEDIA_ANALYTICS_CLIENT_IMPL" ]
+
+  deps = [
+    ":media_perception_proto",
+    "//base",
+    "//chromeos/dbus:common",
+    "//dbus",
+  ]
+
+  sources = [
+    "fake_media_analytics_client.cc",
+    "fake_media_analytics_client.h",
+    "media_analytics_client.cc",
+    "media_analytics_client.h",
+  ]
+}
+
+proto_library("media_perception_proto") {
+  sources = [
+    "media_perception.proto",
+  ]
+
+  proto_out_dir = "chromeos/dbus/media_perception"
+}

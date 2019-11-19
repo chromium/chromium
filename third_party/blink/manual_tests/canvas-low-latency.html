@@ -19,7 +19,7 @@ let r_ctx = r_canvas.getContext("2d");
 init(r_ctx);
 
 let ll_canvas = document.getElementById("low");
-let ll_ctx = ll_canvas.getContext("2d", {lowLatency: true});
+let ll_ctx = ll_canvas.getContext("2d", {desynchronized: true});
 
 function init(ctx) {
   ctx.fillStyle='#0000';

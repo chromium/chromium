@@ -26,6 +26,20 @@ async_test(function(test) {
       assert_equals(typeof reports[0].body.lineNumber, "number");
       assert_equals(typeof reports[0].body.columnNumber, "number");
       assert_equals(typeof reports[0].body.message, "string");
+
+      // Ensure the toJSON call is successful.
+      const reportJSON = reports[0].toJSON();
+      assert_equals(reportJSON.type, reports[0].type);
+      assert_equals(reportJSON.url, reports[0].url);
+      assert_equals(typeof reportJSON.body, "object");
+      assert_equals(reportJSON.body.id, reports[0].body.id);
+      assert_equals(reportJSON.body.message, reports[0].body.message);
+      assert_equals(reportJSON.body.sourceFile, reports[0].body.sourceFile);
+      assert_equals(reportJSON.body.lineNumber, reports[0].body.lineNumber);
+      assert_equals(reportJSON.body.columnNumber, reports[0].body.columnNumber);
+      // Ensure that report can be successfully JSON serialized.
+      assert_false(JSON.stringify(reports[0]) === "{}");
+      assert_equals(JSON.stringify(reports[0]), JSON.stringify(reportJSON));
     });
 
     test.done();

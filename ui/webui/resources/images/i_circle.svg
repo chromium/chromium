@@ -1,14 +1,1 @@
-<svg width="36px" height="36px"
-     viewBox="0 0 36 36" version="1.1"
-     xmlns="http://www.w3.org/2000/svg"
-     xmlns:xlink="http://www.w3.org/1999/xlink">
-  <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-    <path d="M18,0 C8.064,0 0,8.064 0,18 C0,27.936 8.064,36 18,36
-             C27.936,36 36,27.936 36,18 C36,8.064 27.936,0 18,0 L18,0 Z
-             M18,32 C10.2825,32 4,25.7175 4,18 C4,10.2825 10.2825,4 18,4
-             C25.7175,4 32,10.2825 32,18 C32,25.7175 25.7175,32 18,32
-             L18,32 Z M16,27 L20,27 L20,17 L16,17 L16,27 L16,27 Z M16,13
-             L20,13 L20,9 L16,9 L16,13 L16,13 Z"
-          fill="#5A5A5A"></path>
-  </g>
-</svg>
+<svg width="36" height="36" xmlns="http://www.w3.org/2000/svg"><path d="M18 0C8.064 0 0 8.064 0 18s8.064 18 18 18 18-8.064 18-18S27.936 0 18 0zm0 32c-7.717 0-14-6.282-14-14 0-7.717 6.283-14 14-14 7.718 0 14 6.283 14 14 0 7.718-6.282 14-14 14zm-2-5h4V17h-4v10zm0-14h4V9h-4v4z" fill="#5A5A5A" fill-rule="evenodd"/></svg>

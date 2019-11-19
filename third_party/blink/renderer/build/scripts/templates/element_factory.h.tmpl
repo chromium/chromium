@@ -16,9 +16,9 @@ class {{namespace}}Element;
 
 class {{namespace}}ElementFactory {
  public:
-  // If |localName| is unknown, nullptr is returned.
+  // If |local_name| is unknown, nullptr is returned.
   static {{namespace}}Element* Create(
-      const AtomicString& localName,
+      const AtomicString& local_name,
       Document&,
       const CreateElementFlags flags);
 };

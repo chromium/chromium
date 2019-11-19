@@ -13,7 +13,6 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
-#include "content/public/common/content_features.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -21,13 +20,14 @@ namespace chromeos {
 
 namespace {
 
-constexpr int kBluetoothPairingDialogHeight = 350;
+constexpr int kBluetoothPairingDialogHeight = 375;
 
 void AddBluetoothStrings(content::WebUIDataSource* html_source) {
   struct {
     const char* name;
     int id;
   } localized_strings[] = {
+      {"bluetoothPairDeviceTitle", IDS_SETTINGS_BLUETOOTH_PAIR_DEVICE_TITLE},
       {"ok", IDS_OK},
       {"cancel", IDS_CANCEL},
       {"close", IDS_CLOSE},
@@ -68,9 +68,8 @@ BluetoothPairingDialog::BluetoothPairingDialog(
     const base::string16& name_for_display,
     bool paired,
     bool connected)
-    : SystemWebDialogDelegate(
-          GURL(chrome::kChromeUIBluetoothPairingURL),
-          l10n_util::GetStringUTF16(IDS_SETTINGS_BLUETOOTH_PAIR_DEVICE_TITLE)),
+    : SystemWebDialogDelegate(GURL(chrome::kChromeUIBluetoothPairingURL),
+                              base::string16() /* title */),
       address_(address) {
   device_data_.SetString("address", address);
   device_data_.SetString("name", name_for_display);
@@ -104,13 +103,9 @@ BluetoothPairingDialogUI::BluetoothPairingDialogUI(content::WebUI* web_ui)
 
   AddBluetoothStrings(source);
   source->AddLocalizedString("title", IDS_SETTINGS_BLUETOOTH_PAIR_DEVICE_TITLE);
-  source->SetJsonPath("strings.js");
+  source->UseStringsJs();
 #if BUILDFLAG(OPTIMIZE_WEBUI)
-  source->UseGzip();
-  source->SetDefaultResource(
-      base::FeatureList::IsEnabled(features::kWebUIPolymer2)
-          ? IDR_BLUETOOTH_PAIRING_DIALOG_VULCANIZED_P2_HTML
-          : IDR_BLUETOOTH_PAIRING_DIALOG_VULCANIZED_HTML);
+  source->SetDefaultResource(IDR_BLUETOOTH_PAIRING_DIALOG_VULCANIZED_HTML);
   source->AddResourcePath("crisper.js",
                           IDR_BLUETOOTH_PAIRING_DIALOG_CRISPER_JS);
 #else

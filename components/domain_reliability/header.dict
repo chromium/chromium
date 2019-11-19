@@ -1,0 +1,23 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Directive names
+"report-uri"
+"max-age"
+"includeSubDomains"
+
+# Directive separators
+";"
+"="
+" "
+
+# Some sample directive values
+"https://a/"
+"5"
+
+# See Unquote and set_quote_chars in header.cc
+"\""
+"'"
+"<"
+">"

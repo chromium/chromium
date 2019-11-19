@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//testing/libfuzzer/fuzzer_test.gni")
+
 if (is_android) {
   import("//build/config/android/rules.gni")
 }
@@ -51,6 +53,18 @@ source_set("unit_tests") {
     "//ui/gfx",
     "//ui/gfx/geometry",
     "//url",
+  ]
+}
+
+fuzzer_test("favicon_url_parser_fuzzer") {
+  sources = [
+    "favicon_url_parser_fuzzer.cc",
+  ]
+
+  deps = [
+    ":favicon_base",
+    "//base",
+    "//base:i18n",
   ]
 }
 

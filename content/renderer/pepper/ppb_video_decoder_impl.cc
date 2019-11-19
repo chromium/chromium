@@ -162,14 +162,16 @@ int32_t PPB_VideoDecoder_Impl::Decode(
 
   PPB_Buffer_Impl* buffer = static_cast<PPB_Buffer_Impl*>(enter.object());
   DCHECK_GE(bitstream_buffer->id, 0);
+  // TODO(crbug.com/844456): The shared memory buffer probably can be read-only,
+  // but only after PPB_Buffer_Impl is updated to deal with that.
   media::BitstreamBuffer decode_buffer(bitstream_buffer->id,
-                                       buffer->shared_memory()->handle(),
+                                       buffer->shared_memory().Duplicate(),
                                        bitstream_buffer->size);
   if (!SetBitstreamBufferCallback(bitstream_buffer->id, callback))
     return PP_ERROR_BADARGUMENT;
 
   FlushCommandBuffer();
-  decoder_->Decode(decode_buffer);
+  decoder_->Decode(std::move(decode_buffer));
   return PP_OK_COMPLETIONPENDING;
 }
 

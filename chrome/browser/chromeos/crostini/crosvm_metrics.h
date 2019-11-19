@@ -64,7 +64,7 @@ class CrosvmMetrics {
 
   base::FilePath slash_proc_ = base::FilePath("/proc");
 
-  base::WeakPtrFactory<CrosvmMetrics> weak_ptr_factory_;
+  base::WeakPtrFactory<CrosvmMetrics> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(CrosvmMetrics);
 };

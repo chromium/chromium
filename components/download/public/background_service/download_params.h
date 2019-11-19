@@ -107,6 +107,9 @@ struct RequestParams {
   // If the request will fetch HTTP error response body and treat them as
   // a successful download.
   bool fetch_error_body;
+
+  // Whether the download is not trustworthy and requires safe browsing checks.
+  bool require_safety_checks;
 };
 
 // The parameters that describe a download request made to the DownloadService.

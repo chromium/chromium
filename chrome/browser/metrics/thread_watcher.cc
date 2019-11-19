@@ -12,6 +12,7 @@
 #include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/macros.h"
+#include "base/metrics/histogram.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_tokenizer.h"
@@ -26,18 +27,139 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/logging_chrome.h"
 #include "components/metrics/call_stack_profile_metrics_provider.h"
+#include "components/omnibox/browser/omnibox_event_global_tracker.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/notification_observer.h"
+#include "content/public/browser/notification_registrar.h"
 #include "content/public/browser/notification_service.h"
 
+#if !defined(OS_ANDROID)
+#include "chrome/browser/metrics/browser_activity_watcher.h"
+#endif
+
 using content::BrowserThread;
+
+namespace {
+
+// This class ensures that the thread watching is actively taking place. Only
+// one instance of this class exists.
+class ThreadWatcherObserver : public content::NotificationObserver {
+ public:
+  // |wakeup_interval| specifies how often to wake up thread watchers due to
+  // new user activity.
+  static void Start(const base::TimeDelta& wakeup_interval);
+  static void Stop();
+
+ private:
+  explicit ThreadWatcherObserver(const base::TimeDelta& wakeup_interval);
+  ~ThreadWatcherObserver() override;
+
+  // content::NotificationObserver:
+  void Observe(int type,
+               const content::NotificationSource& source,
+               const content::NotificationDetails& details) override;
+
+  // Called when a URL is opened from the Omnibox.
+  void OnURLOpenedFromOmnibox(OmniboxLog* log);
+
+  // Called when user activity is detected.
+  void OnUserActivityDetected();
+
+#if !defined(OS_ANDROID)
+  std::unique_ptr<BrowserActivityWatcher> browser_activity_watcher_;
+#endif
+
+  content::NotificationRegistrar registrar_;
+
+  // This is the last time when woke all thread watchers up.
+  base::TimeTicks last_wakeup_time_;
+
+  // It is the time interval between wake up calls to thread watchers.
+  const base::TimeDelta wakeup_interval_;
+
+  // Subscription for receiving callbacks that a URL was opened from the
+  // omnibox.
+  std::unique_ptr<base::CallbackList<void(OmniboxLog*)>::Subscription>
+      omnibox_url_opened_subscription_;
+
+  DISALLOW_COPY_AND_ASSIGN(ThreadWatcherObserver);
+};
+
+ThreadWatcherObserver* g_thread_watcher_observer_ = nullptr;
+
+ThreadWatcherObserver::ThreadWatcherObserver(
+    const base::TimeDelta& wakeup_interval)
+    : last_wakeup_time_(base::TimeTicks::Now()),
+      wakeup_interval_(wakeup_interval) {
+  DCHECK(!g_thread_watcher_observer_);
+  g_thread_watcher_observer_ = this;
+
+#if !defined(OS_ANDROID)
+  browser_activity_watcher_ = std::make_unique<BrowserActivityWatcher>(
+      base::BindRepeating(&ThreadWatcherObserver::OnUserActivityDetected,
+                          base::Unretained(this)));
+#endif
+
+  registrar_.Add(this, content::NOTIFICATION_LOAD_START,
+                 content::NotificationService::AllSources());
+  registrar_.Add(this, content::NOTIFICATION_LOAD_STOP,
+                 content::NotificationService::AllSources());
+  registrar_.Add(this, content::NOTIFICATION_RENDERER_PROCESS_CLOSED,
+                 content::NotificationService::AllSources());
+  registrar_.Add(this, content::NOTIFICATION_RENDER_WIDGET_HOST_HANG,
+                 content::NotificationService::AllSources());
+  omnibox_url_opened_subscription_ =
+      OmniboxEventGlobalTracker::GetInstance()->RegisterCallback(
+          base::Bind(&ThreadWatcherObserver::OnURLOpenedFromOmnibox,
+                     base::Unretained(this)));
+}
+
+ThreadWatcherObserver::~ThreadWatcherObserver() {
+  DCHECK_EQ(this, g_thread_watcher_observer_);
+  g_thread_watcher_observer_ = nullptr;
+}
+
+// static
+void ThreadWatcherObserver::Start(const base::TimeDelta& wakeup_interval) {
+  DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
+  new ThreadWatcherObserver(wakeup_interval);
+}
+
+// static
+void ThreadWatcherObserver::Stop() {
+  DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
+  delete g_thread_watcher_observer_;
+}
+
+void ThreadWatcherObserver::Observe(
+    int type,
+    const content::NotificationSource& source,
+    const content::NotificationDetails& details) {
+  OnUserActivityDetected();
+}
+
+void ThreadWatcherObserver::OnURLOpenedFromOmnibox(OmniboxLog* log) {
+  OnUserActivityDetected();
+}
+
+void ThreadWatcherObserver::OnUserActivityDetected() {
+  // There is some user activity, see if thread watchers are to be awakened.
+  base::TimeTicks now = base::TimeTicks::Now();
+  if ((now - last_wakeup_time_) < wakeup_interval_)
+    return;
+  last_wakeup_time_ = now;
+  WatchDogThread::PostTask(FROM_HERE,
+                           base::Bind(&ThreadWatcherList::WakeUpAll));
+}
+
+}  // namespace
 
 // ThreadWatcher methods and members.
 ThreadWatcher::ThreadWatcher(const WatchingParams& params)
     : thread_id_(params.thread_id),
       thread_name_(params.thread_name),
-      watched_runner_(
-          base::CreateSingleThreadTaskRunnerWithTraits({params.thread_id})),
+      watched_runner_(base::CreateSingleThreadTaskRunner({params.thread_id})),
       sleep_time_(params.sleep_time),
       unresponsive_time_(params.unresponsive_time),
       ping_time_(base::TimeTicks::Now()),
@@ -50,8 +172,7 @@ ThreadWatcher::ThreadWatcher(const WatchingParams& params)
       unresponsive_count_(0),
       hung_processing_complete_(false),
       unresponsive_threshold_(params.unresponsive_threshold),
-      crash_on_hang_(params.crash_on_hang),
-      weak_ptr_factory_(this) {
+      crash_on_hang_(params.crash_on_hang) {
   DCHECK(WatchDogThread::CurrentlyOnWatchDogThread());
   Initialize();
 }
@@ -355,7 +476,7 @@ void ThreadWatcherList::StartWatchingAll(
                    &unresponsive_threshold,
                    &crash_on_hang_threads);
 
-  ThreadWatcherObserver::SetupNotifications(
+  ThreadWatcherObserver::Start(
       base::TimeDelta::FromSeconds(kSleepSeconds * unresponsive_threshold));
 
   WatchDogThread::PostTask(
@@ -377,7 +498,7 @@ void ThreadWatcherList::StartWatchingAll(
 // static
 void ThreadWatcherList::StopWatchingAll() {
   // TODO(rtenneti): Enable ThreadWatcher.
-  ThreadWatcherObserver::RemoveNotifications();
+  ThreadWatcherObserver::Stop();
   DeleteAll();
 }
 
@@ -510,8 +631,8 @@ void ThreadWatcherList::InitializeAndStartWatching(
   DCHECK(WatchDogThread::CurrentlyOnWatchDogThread());
 
   // Disarm the startup timebomb, even if stop has been called.
-  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
-                           base::BindOnce(&DisarmStartupTimeBomb));
+  base::PostTask(FROM_HERE, {BrowserThread::UI},
+                 base::BindOnce(&DisarmStartupTimeBomb));
 
   // This method is deferred in relationship to its StopWatchingAll()
   // counterpart. If a previous initialization has already happened, or if
@@ -606,92 +727,6 @@ ThreadWatcher* ThreadWatcherList::Find(const BrowserThread::ID& thread_id) {
 void ThreadWatcherList::SetStopped(bool stopped) {
   DCHECK(WatchDogThread::CurrentlyOnWatchDogThread());
   g_stopped_ = stopped;
-}
-
-// ThreadWatcherObserver methods and members.
-//
-// static
-ThreadWatcherObserver*
-ThreadWatcherObserver::g_thread_watcher_observer_ = nullptr;
-
-ThreadWatcherObserver::ThreadWatcherObserver(
-    const base::TimeDelta& wakeup_interval)
-    : last_wakeup_time_(base::TimeTicks::Now()),
-      wakeup_interval_(wakeup_interval) {
-  CHECK(!g_thread_watcher_observer_);
-  g_thread_watcher_observer_ = this;
-}
-
-ThreadWatcherObserver::~ThreadWatcherObserver() {
-  DCHECK(this == g_thread_watcher_observer_);
-  g_thread_watcher_observer_ = nullptr;
-}
-
-// static
-void ThreadWatcherObserver::SetupNotifications(
-    const base::TimeDelta& wakeup_interval) {
-  DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
-  ThreadWatcherObserver* observer = new ThreadWatcherObserver(wakeup_interval);
-  observer->registrar_.Add(
-      observer,
-      chrome::NOTIFICATION_BROWSER_OPENED,
-      content::NotificationService::AllBrowserContextsAndSources());
-  observer->registrar_.Add(observer,
-                           chrome::NOTIFICATION_BROWSER_CLOSED,
-                           content::NotificationService::AllSources());
-  observer->registrar_.Add(observer,
-                           chrome::NOTIFICATION_TAB_PARENTED,
-                           content::NotificationService::AllSources());
-  observer->registrar_.Add(observer,
-                           chrome::NOTIFICATION_TAB_CLOSING,
-                           content::NotificationService::AllSources());
-  observer->registrar_.Add(observer,
-                           content::NOTIFICATION_LOAD_START,
-                           content::NotificationService::AllSources());
-  observer->registrar_.Add(observer,
-                           content::NOTIFICATION_LOAD_STOP,
-                           content::NotificationService::AllSources());
-  observer->registrar_.Add(observer,
-                           content::NOTIFICATION_RENDERER_PROCESS_CLOSED,
-                           content::NotificationService::AllSources());
-  observer->registrar_.Add(observer,
-                           content::NOTIFICATION_RENDER_WIDGET_HOST_HANG,
-                           content::NotificationService::AllSources());
-  observer->omnibox_url_opened_subscription_ =
-      OmniboxEventGlobalTracker::GetInstance()->RegisterCallback(
-          base::Bind(&ThreadWatcherObserver::OnURLOpenedFromOmnibox,
-                     base::Unretained(observer)));
-}
-
-// static
-void ThreadWatcherObserver::RemoveNotifications() {
-  DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
-  if (!g_thread_watcher_observer_)
-    return;
-  g_thread_watcher_observer_->registrar_.RemoveAll();
-  delete g_thread_watcher_observer_;
-}
-
-void ThreadWatcherObserver::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  OnUserActivityDetected();
-}
-
-void ThreadWatcherObserver::OnURLOpenedFromOmnibox(OmniboxLog* log) {
-  OnUserActivityDetected();
-}
-
-void ThreadWatcherObserver::OnUserActivityDetected() {
-  // There is some user activity, see if thread watchers are to be awakened.
-  base::TimeTicks now = base::TimeTicks::Now();
-  if ((now - last_wakeup_time_) < wakeup_interval_)
-    return;
-  last_wakeup_time_ = now;
-  WatchDogThread::PostTask(
-      FROM_HERE,
-      base::Bind(&ThreadWatcherList::WakeUpAll));
 }
 
 // WatchDogThread methods and members.

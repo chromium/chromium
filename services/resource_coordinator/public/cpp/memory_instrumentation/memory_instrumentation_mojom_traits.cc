@@ -89,6 +89,42 @@ bool EnumTraits<memory_instrumentation::mojom::LevelOfDetail,
 }
 
 // static
+memory_instrumentation::mojom::Determinism
+EnumTraits<memory_instrumentation::mojom::Determinism,
+           base::trace_event::MemoryDumpDeterminism>::
+    ToMojom(base::trace_event::MemoryDumpDeterminism determinism) {
+  switch (determinism) {
+    case base::trace_event::MemoryDumpDeterminism::NONE:
+      return memory_instrumentation::mojom::Determinism::NONE;
+    case base::trace_event::MemoryDumpDeterminism::FORCE_GC:
+      return memory_instrumentation::mojom::Determinism::FORCE_GC;
+    default:
+      CHECK(false) << "Invalid type: " << static_cast<uint8_t>(determinism);
+      // This should not be reached. Just return a random value.
+      return memory_instrumentation::mojom::Determinism::NONE;
+  }
+}
+
+// static
+bool EnumTraits<memory_instrumentation::mojom::Determinism,
+                base::trace_event::MemoryDumpDeterminism>::
+    FromMojom(memory_instrumentation::mojom::Determinism input,
+              base::trace_event::MemoryDumpDeterminism* out) {
+  switch (input) {
+    case memory_instrumentation::mojom::Determinism::NONE:
+      *out = base::trace_event::MemoryDumpDeterminism::NONE;
+      break;
+    case memory_instrumentation::mojom::Determinism::FORCE_GC:
+      *out = base::trace_event::MemoryDumpDeterminism::FORCE_GC;
+      break;
+    default:
+      NOTREACHED() << "Invalid type: " << static_cast<uint8_t>(input);
+      return false;
+  }
+  return true;
+}
+
+// static
 bool StructTraits<memory_instrumentation::mojom::RequestArgsDataView,
                   base::trace_event::MemoryDumpRequestArgs>::
     Read(memory_instrumentation::mojom::RequestArgsDataView input,
@@ -97,6 +133,8 @@ bool StructTraits<memory_instrumentation::mojom::RequestArgsDataView,
   if (!input.ReadDumpType(&out->dump_type))
     return false;
   if (!input.ReadLevelOfDetail(&out->level_of_detail))
+    return false;
+  if (!input.ReadDeterminism(&out->determinism))
     return false;
   return true;
 }

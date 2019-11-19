@@ -8,13 +8,13 @@
 
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
+#include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/identity_manager/access_token_info.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
+#include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "content/public/browser/network_service_instance.h"
 #include "google_apis/gaia/gaia_constants.h"
-#include "services/identity/public/cpp/identity_manager.h"
-#include "services/identity/public/cpp/primary_account_access_token_fetcher.h"
-#include "services/identity/public/cpp/primary_account_mutator.h"
 
 namespace {
 const net::BackoffEntry::Policy kForceSigninVerifierBackoffPolicy = {
@@ -37,11 +37,12 @@ const char kForceSigninVerificationSuccessTimeMetricsName[] =
 const char kForceSigninVerificationFailureTimeMetricsName[] =
     "Signin.ForceSigninVerificationTime.Failure";
 
-ForceSigninVerifier::ForceSigninVerifier(Profile* profile)
+ForceSigninVerifier::ForceSigninVerifier(
+    signin::IdentityManager* identity_manager)
     : has_token_verified_(false),
       backoff_entry_(&kForceSigninVerifierBackoffPolicy),
       creation_time_(base::TimeTicks::Now()),
-      identity_manager_(IdentityManagerFactory::GetForProfile(profile)) {
+      identity_manager_(identity_manager) {
   content::GetNetworkConnectionTracker()->AddNetworkConnectionObserver(this);
   UMA_HISTOGRAM_BOOLEAN(kForceSigninVerificationMetricsName,
                         ShouldSendRequest());
@@ -54,7 +55,7 @@ ForceSigninVerifier::~ForceSigninVerifier() {
 
 void ForceSigninVerifier::OnAccessTokenFetchComplete(
     GoogleServiceAuthError error,
-    identity::AccessTokenInfo token_info) {
+    signin::AccessTokenInfo token_info) {
   if (error.state() != GoogleServiceAuthError::NONE) {
     if (error.IsPersistentError()) {
       UMA_HISTOGRAM_MEDIUM_TIMES(kForceSigninVerificationFailureTimeMetricsName,
@@ -126,11 +127,11 @@ void ForceSigninVerifier::SendRequestIfNetworkAvailable(
   // It is safe to use Unretained(this) here given that the callback
   // will not be invoked if this object is deleted.
   access_token_fetcher_ =
-      std::make_unique<identity::PrimaryAccountAccessTokenFetcher>(
+      std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
           "force_signin_verifier", identity_manager_, oauth2_scopes,
           base::BindOnce(&ForceSigninVerifier::OnAccessTokenFetchComplete,
                          base::Unretained(this)),
-          identity::PrimaryAccountAccessTokenFetcher::Mode::kImmediate);
+          signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate);
 }
 
 bool ForceSigninVerifier::ShouldSendRequest() {
@@ -145,12 +146,12 @@ void ForceSigninVerifier::CloseAllBrowserWindows() {
   if (!primary_account_mutator)
     return;
   primary_account_mutator->ClearPrimaryAccount(
-      identity::PrimaryAccountMutator::ClearAccountsAction::kRemoveAll,
+      signin::PrimaryAccountMutator::ClearAccountsAction::kRemoveAll,
       signin_metrics::AUTHENTICATION_FAILED_WITH_FORCE_SIGNIN,
       signin_metrics::SignoutDelete::IGNORE_METRIC);
 }
 
-identity::PrimaryAccountAccessTokenFetcher*
+signin::PrimaryAccountAccessTokenFetcher*
 ForceSigninVerifier::GetAccessTokenFetcherForTesting() {
   return access_token_fetcher_.get();
 }

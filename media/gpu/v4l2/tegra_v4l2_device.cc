@@ -64,15 +64,26 @@ int TegraV4L2Device::Ioctl(int flags, void* arg) {
     return ret;
 
   // Workarounds for Tegra's broken closed-source V4L2 interface.
-  struct v4l2_format* format;
   switch (flags) {
-    // VIDIOC_G_FMT returns 0 planes for multiplanar formats with 1 plane.
-    case static_cast<int>(VIDIOC_G_FMT):
-      format = static_cast<struct v4l2_format*>(arg);
-      if (V4L2_TYPE_IS_MULTIPLANAR(format->type) &&
-          format->fmt.pix_mp.num_planes == 0)
-        format->fmt.pix_mp.num_planes = 1;
+    case static_cast<int>(VIDIOC_S_FMT): {
+      struct v4l2_format format;
+      memcpy(&format, arg, sizeof(struct v4l2_format));
+      v4l2_format_cache_[static_cast<enum v4l2_buf_type>(format.type)] = format;
       break;
+    }
+    case static_cast<int>(VIDIOC_G_FMT): {
+      // The driver doesn't fill values of returned v4l2_format correctly. Set
+      // the value that is previously passed to driver via VIDIOC_S_FMT.
+      struct v4l2_format* format = static_cast<struct v4l2_format*>(arg);
+      const auto it = v4l2_format_cache_.find(
+          static_cast<enum v4l2_buf_type>(format->type));
+      if (it != v4l2_format_cache_.end()) {
+        format->fmt.pix_mp.pixelformat = it->second.fmt.pix_mp.pixelformat;
+        if (format->fmt.pix_mp.num_planes == 0)
+          format->fmt.pix_mp.num_planes = it->second.fmt.pix_mp.num_planes;
+      }
+      break;
+    }
     default:
       break;
   }
@@ -120,7 +131,7 @@ bool TegraV4L2Device::ClearDevicePollInterrupt() {
 }
 
 bool TegraV4L2Device::Initialize() {
-  VLOGF(2);
+  DVLOGF(3);
   static bool initialized = []() {
     if (!dlopen("/usr/lib/libtegrav4l2.so",
                 RTLD_NOW | RTLD_GLOBAL | RTLD_NODELETE)) {
@@ -153,7 +164,7 @@ bool TegraV4L2Device::Initialize() {
 }
 
 bool TegraV4L2Device::Open(Type type, uint32_t /* v4l2_pixfmt */) {
-  VLOGF(2);
+  DVLOGF(3);
   return OpenInternal(type);
 }
 
@@ -184,7 +195,7 @@ bool TegraV4L2Device::OpenInternal(Type type) {
 }
 
 void TegraV4L2Device::Close() {
-  VLOGF(2) << "device_fd= " << device_fd_;
+  DVLOGF(3) << "device_fd= " << device_fd_;
   if (device_fd_ != -1) {
     TegraV4L2_Close(device_fd_);
     device_fd_ = -1;
@@ -195,7 +206,7 @@ std::vector<base::ScopedFD> TegraV4L2Device::GetDmabufsForV4L2Buffer(
     int /* index */,
     size_t num_planes,
     enum v4l2_buf_type /* buf_type */) {
-  VLOGF(2);
+  DVLOGF(3);
   std::vector<base::ScopedFD> dmabuf_fds;
   // Tegra does not actually provide dmabuf fds currently. Fill the vector with
   // invalid descriptors to prevent the caller from failing on an empty vector

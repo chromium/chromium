@@ -13,60 +13,27 @@
 
 #include "base/bind.h"
 #include "base/optional.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "dbus/object_path.h"
+#include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/dbus/bluetooth_adapter_client.h"
 #include "device/bluetooth/dbus/bluetooth_device_client.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 namespace device {
 
-namespace {
-
-base::Optional<std::array<uint8_t, 6>> ParseAddress(
-    const std::string& address_str) {
-  // First check the str has the expected format.
-  static constexpr size_t kCanonicalAddressLength = 17;
-  if (address_str.size() != kCanonicalAddressLength)
-    return base::nullopt;
-
-  for (size_t i = 0; i < address_str.size(); ++i) {
-    const char character = address_str[i];
-
-    bool is_separator = (i + 1) % 3 == 0;
-    bool valid_address_character =
-        is_separator ? (character == ':') : base::IsHexDigit(character);
-
-    if (!valid_address_character)
-      return base::nullopt;
-  }
-
-  // Remove the separator and then parse the result.
-  std::string numbers_only;
-  base::RemoveChars(address_str, ":", &numbers_only);
-
-  std::vector<uint8_t> address_vector;
-  bool success = base::HexStringToBytes(numbers_only, &address_vector);
-  DCHECK(success);
-
-  std::array<uint8_t, 6> address_array;
-  std::copy_n(address_vector.begin(), 6, address_array.begin());
-
-  return address_array;
+void BluetoothSystem::Create(
+    mojo::PendingReceiver<mojom::BluetoothSystem> receiver,
+    mojo::PendingRemote<mojom::BluetoothSystemClient> client) {
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<BluetoothSystem>(std::move(client)),
+      std::move(receiver));
 }
 
-}  // namespace
-
-void BluetoothSystem::Create(mojom::BluetoothSystemRequest request,
-                             mojom::BluetoothSystemClientPtr client) {
-  mojo::MakeStrongBinding(std::make_unique<BluetoothSystem>(std::move(client)),
-                          std::move(request));
-}
-
-BluetoothSystem::BluetoothSystem(mojom::BluetoothSystemClientPtr client) {
-  client_ptr_ = std::move(client);
+BluetoothSystem::BluetoothSystem(
+    mojo::PendingRemote<mojom::BluetoothSystemClient> client)
+    : client_(std::move(client)) {
   GetBluetoothAdapterClient()->AddObserver(this);
 
   std::vector<dbus::ObjectPath> object_paths =
@@ -129,7 +96,7 @@ void BluetoothSystem::AdapterPropertyChanged(
   if (properties->powered.name() == property_name)
     UpdateStateAndNotifyIfNecessary();
   else if (properties->discovering.name() == property_name)
-    client_ptr_->OnScanStateChanged(GetScanStateFromActiveAdapter());
+    client_->OnScanStateChanged(GetScanStateFromActiveAdapter());
 }
 
 void BluetoothSystem::GetState(GetStateCallback callback) {
@@ -157,7 +124,7 @@ void BluetoothSystem::SetPowered(bool powered, SetPoweredCallback callback) {
 
   DCHECK_NE(state_, State::kTransitioning);
   state_ = State::kTransitioning;
-  client_ptr_->OnStateChanged(state_);
+  client_->OnStateChanged(state_);
 
   GetBluetoothAdapterClient()
       ->GetProperties(active_adapter_.value())
@@ -241,9 +208,9 @@ void BluetoothSystem::GetAvailableDevices(
   std::vector<mojom::BluetoothDeviceInfoPtr> devices;
   for (const auto& device_path : device_paths) {
     auto* properties = GetBluetoothDeviceClient()->GetProperties(device_path);
-    base::Optional<std::array<uint8_t, 6>> parsed_address =
-        ParseAddress(properties->address.value());
-    if (!parsed_address) {
+    std::array<uint8_t, 6> parsed_address;
+    if (!BluetoothDevice::ParseAddress(properties->address.value(),
+                                       parsed_address)) {
       LOG(WARNING) << "Failed to parse device address '"
                    << properties->address.value() << "' for "
                    << device_path.value();
@@ -251,7 +218,7 @@ void BluetoothSystem::GetAvailableDevices(
     }
 
     auto device_info = mojom::BluetoothDeviceInfo::New();
-    device_info->address = std::move(parsed_address.value());
+    device_info->address = std::move(parsed_address);
     device_info->name = properties->name.is_valid()
                             ? base::make_optional(properties->name.value())
                             : base::nullopt;
@@ -291,7 +258,7 @@ void BluetoothSystem::UpdateStateAndNotifyIfNecessary() {
   }
 
   if (old_state != state_)
-    client_ptr_->OnStateChanged(state_);
+    client_->OnStateChanged(state_);
 }
 
 BluetoothSystem::ScanState BluetoothSystem::GetScanStateFromActiveAdapter() {

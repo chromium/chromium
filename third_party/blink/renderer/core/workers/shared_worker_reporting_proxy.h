@@ -18,7 +18,7 @@ class WebSharedWorkerImpl;
 // and owned by WebSharedWorkerImpl on the main thread, accessed from a worker
 // thread, and destroyed on the main thread.
 class SharedWorkerReportingProxy final
-    : public GarbageCollectedFinalized<SharedWorkerReportingProxy>,
+    : public GarbageCollected<SharedWorkerReportingProxy>,
       public WorkerReportingProxy {
  public:
   SharedWorkerReportingProxy(WebSharedWorkerImpl*,
@@ -31,11 +31,10 @@ class SharedWorkerReportingProxy final
   void ReportException(const WTF::String&,
                        std::unique_ptr<SourceLocation>,
                        int exception_id) override;
-  void ReportConsoleMessage(MessageSource,
+  void ReportConsoleMessage(mojom::ConsoleMessageSource,
                             mojom::ConsoleMessageLevel,
                             const String& message,
                             SourceLocation*) override;
-  void DidFetchScript() override;
   void DidFailToFetchClassicScript() override;
   void DidFailToFetchModuleScript() override;
   void DidEvaluateClassicScript(bool success) override;

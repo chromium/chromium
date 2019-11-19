@@ -23,9 +23,8 @@ namespace cors {
 
 // A class to implement CORS-preflight cache that is defined in the fetch spec,
 // https://fetch.spec.whatwg.org/#concept-cache.
-// TODO(toyoshim): Consider to replace the oldest entry with the new one when
-// we have too much cached entries. Also, we want to clear all cached entries
-// when users' network configuration is changed.
+// TODO(toyoshim): We may consider to clear all cached entries when users'
+// network configuration is changed.
 class COMPONENT_EXPORT(NETWORK_CPP) PreflightCache final {
  public:
   PreflightCache();
@@ -39,25 +38,27 @@ class COMPONENT_EXPORT(NETWORK_CPP) PreflightCache final {
 
   // Consults with cached results, and decides if we can skip CORS-preflight or
   // not.
-  bool CheckIfRequestCanSkipPreflight(
-      const std::string& origin,
-      const GURL& url,
-      mojom::FetchCredentialsMode credentials_mode,
-      const std::string& method,
-      const net::HttpRequestHeaders& headers,
-      bool is_revalidating);
-
-  // Counts cached origins for testing.
-  size_t CountOriginsForTesting() const;
+  bool CheckIfRequestCanSkipPreflight(const std::string& origin,
+                                      const GURL& url,
+                                      mojom::CredentialsMode credentials_mode,
+                                      const std::string& method,
+                                      const net::HttpRequestHeaders& headers,
+                                      bool is_revalidating);
 
   // Counts cached entries for testing.
   size_t CountEntriesForTesting() const;
 
+  // Purges one cache entry if number of entries is larger than |max_entries|
+  // for testing.
+  void MayPurgeForTesting(size_t max_entries, size_t purge_unit);
+
  private:
-  // A map for caching. The outer map takes an origin to find a per-origin
-  // cache map, and the inner map takes an URL to find a cached entry.
-  std::map<std::string /* origin */,
-           std::map<std::string /* url */, std::unique_ptr<PreflightResult>>>
+  void MayPurge(size_t max_entries, size_t purge_unit);
+
+  // A map for caching. This is accessed by a pair of origin and url strings
+  // to find a cached entry.
+  std::map<std::pair<std::string /* origin */, std::string /* url */>,
+           std::unique_ptr<PreflightResult>>
       cache_;
 
   DISALLOW_COPY_AND_ASSIGN(PreflightCache);

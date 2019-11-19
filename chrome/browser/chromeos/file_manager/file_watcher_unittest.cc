@@ -9,8 +9,8 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
-#include "base/task/task_scheduler/task_scheduler.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
+#include "content/public/test/browser_task_environment.h"
 #include "google_apis/drive/test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -25,13 +25,12 @@ class FileManagerFileWatcherTest : public testing::Test {
   // Use IO_MAINLOOP so FilePathWatcher works in the fake FILE thread, which
   // is actually shared with the main thread.
   FileManagerFileWatcherTest()
-      : thread_bundle_(content::TestBrowserThreadBundle::IO_MAINLOOP) {
-  }
+      : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP) {}
 
-  void FlushMessageLoopTasks() { thread_bundle_.RunUntilIdle(); }
+  void FlushMessageLoopTasks() { task_environment_.RunUntilIdle(); }
 
  private:
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
 };
 
 TEST_F(FileManagerFileWatcherTest, AddAndRemoveOneExtensionId) {

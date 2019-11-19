@@ -1,2 +1,0 @@
-CONSOLE ERROR: line 4: The XSS Auditor refused to execute a script in 'http://localhost:8000/security/xssAuditor/resources/echo-intertag.pl?inHead=1&q=%3Cframeset%3E%3Cframe%20src=%27data:text/html,%3Cscript%3Ealert(0)%3C/script%3E%27%3E%3C/frameset%3E' because its source code was found within the request. The server sent an 'X-XSS-Protection' header requesting this behavior.
-

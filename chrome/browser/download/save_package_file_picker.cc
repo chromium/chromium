@@ -32,11 +32,6 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if defined(OS_CHROMEOS)
-#include "chrome/browser/chromeos/drive/download_handler.h"
-#include "chrome/browser/chromeos/drive/file_system_util.h"
-#endif
-
 using content::RenderProcessHost;
 using content::SavePageType;
 using content::WebContents;
@@ -50,29 +45,6 @@ bool g_should_prompt_for_filename = true;
 void OnSavePackageDownloadCreated(download::DownloadItem* download) {
   ChromeDownloadManagerDelegate::DisableSafeBrowsing(download);
 }
-
-#if defined(OS_CHROMEOS)
-void OnSavePackageDownloadCreatedChromeOS(Profile* profile,
-                                          const base::FilePath& drive_path,
-                                          download::DownloadItem* download) {
-  drive::DownloadHandler::GetForProfile(profile)->SetDownloadParams(
-      drive_path, download);
-  OnSavePackageDownloadCreated(download);
-}
-
-// Trampoline callback between SubstituteDriveDownloadPath() and |callback|.
-void ContinueSettingUpDriveDownload(
-    const content::SavePackagePathPickedCallback& callback,
-    content::SavePageType save_type,
-    Profile* profile,
-    const base::FilePath& drive_path,
-    const base::FilePath& drive_tmp_download_path) {
-  if (drive_tmp_download_path.empty())  // Substitution failed.
-    return;
-  callback.Run(drive_tmp_download_path, save_type, base::Bind(
-      &OnSavePackageDownloadCreatedChromeOS, profile, drive_path));
-}
-#endif
 
 // Adds "Webpage, HTML Only" type to FileTypeInfo.
 void AddHtmlOnlyFileTypeInfo(
@@ -128,16 +100,10 @@ void AddCompleteFileTypeInfo(
 // error pages (failed DNS lookups, SSL errors, etc), which shouldn't affect
 // functionality.
 bool IsErrorPage(content::WebContents* web_contents) {
-  if (base::FeatureList::IsEnabled(
-          features::kSupervisedUserCommittedInterstitials)) {
-    if (web_contents->GetController().GetActiveEntry() == NULL)
-      return false;
-    return web_contents->GetController()
-               .GetLastCommittedEntry()
-               ->GetPageType() == content::PAGE_TYPE_ERROR;
-  }
-  // Fallback if someone ever disables committed interstitials.
-  return web_contents->ShowingInterstitialPage();
+  if (web_contents->GetController().GetActiveEntry() == NULL)
+    return false;
+  return web_contents->GetController().GetLastCommittedEntry()->GetPageType() ==
+         content::PAGE_TYPE_ERROR;
 }
 
 }  // anonymous namespace
@@ -203,7 +169,7 @@ SavePackageFilePicker::SavePackageFilePicker(
       save_types_.push_back(content::SAVE_PAGE_TYPE_AS_ONLY_HTML);
     }
 
-    if (ShouldSaveAsMHTML()) {
+    if (can_save_as_complete_) {
       AddSingleFileFileTypeInfo(&file_type_info);
       save_types_.push_back(content::SAVE_PAGE_TYPE_AS_MHTML);
     }
@@ -296,27 +262,6 @@ void SavePackageFilePicker::FileSelected(
   base::i18n::NormalizeFileNameEncoding(&path_copy);
 
   download_prefs_->SetSaveFilePath(path_copy.DirName());
-
-#if defined(OS_CHROMEOS)
-  if (drive::util::IsUnderDriveMountPoint(path_copy)) {
-    // Here's a map to the callback chain:
-    // SubstituteDriveDownloadPath ->
-    //   ContinueSettingUpDriveDownload ->
-    //     callback_ = SavePackage::OnPathPicked ->
-    //       download_created_callback = OnSavePackageDownloadCreatedChromeOS
-    Profile* profile = Profile::FromBrowserContext(
-        process->GetBrowserContext());
-    drive::DownloadHandler* drive_download_handler =
-        drive::DownloadHandler::GetForProfile(profile);
-    drive_download_handler->SubstituteDriveDownloadPath(
-        path_copy, NULL, base::Bind(&ContinueSettingUpDriveDownload,
-                                    callback_,
-                                    save_type,
-                                    profile,
-                                    path_copy));
-    return;
-  }
-#endif
 
   callback_.Run(path_copy, save_type,
                 base::Bind(&OnSavePackageDownloadCreated));

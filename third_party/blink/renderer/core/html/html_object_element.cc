@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/core/html/html_object_element.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/script_event_listener.h"
+#include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/dom/attribute.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
@@ -45,24 +46,17 @@
 
 namespace blink {
 
-using namespace html_names;
-
-inline HTMLObjectElement::HTMLObjectElement(Document& document,
-                                            const CreateElementFlags flags)
-    : HTMLPlugInElement(kObjectTag,
+HTMLObjectElement::HTMLObjectElement(Document& document,
+                                     const CreateElementFlags flags)
+    : HTMLPlugInElement(html_names::kObjectTag,
                         document,
                         flags,
                         kShouldNotPreferPlugInsForImages),
-      use_fallback_content_(false) {}
+      use_fallback_content_(false) {
+  EnsureUserAgentShadowRoot();
+}
 
 inline HTMLObjectElement::~HTMLObjectElement() = default;
-
-HTMLObjectElement* HTMLObjectElement::Create(Document& document,
-                                             const CreateElementFlags flags) {
-  auto* element = MakeGarbageCollected<HTMLObjectElement>(document, flags);
-  element->EnsureUserAgentShadowRoot();
-  return element;
-}
 
 void HTMLObjectElement::Trace(Visitor* visitor) {
   ListedElement::Trace(visitor);
@@ -85,7 +79,7 @@ LayoutEmbeddedContent* HTMLObjectElement::ExistingLayoutEmbeddedContent()
 
 bool HTMLObjectElement::IsPresentationAttribute(
     const QualifiedName& name) const {
-  if (name == kBorderAttr)
+  if (name == html_names::kBorderAttr)
     return true;
   return HTMLPlugInElement::IsPresentationAttribute(name);
 }
@@ -94,7 +88,7 @@ void HTMLObjectElement::CollectStyleForPresentationAttribute(
     const QualifiedName& name,
     const AtomicString& value,
     MutableCSSPropertyValueSet* style) {
-  if (name == kBorderAttr)
+  if (name == html_names::kBorderAttr)
     ApplyBorderAttributeToStyle(value, style);
   else
     HTMLPlugInElement::CollectStyleForPresentationAttribute(name, value, style);
@@ -103,9 +97,9 @@ void HTMLObjectElement::CollectStyleForPresentationAttribute(
 void HTMLObjectElement::ParseAttribute(
     const AttributeModificationParams& params) {
   const QualifiedName& name = params.name;
-  if (name == kFormAttr) {
+  if (name == html_names::kFormAttr) {
     FormAttributeChanged();
-  } else if (name == kTypeAttr) {
+  } else if (name == html_names::kTypeAttr) {
     SetServiceType(params.new_value.LowerASCII());
     wtf_size_t pos = service_type_.Find(";");
     if (pos != kNotFound)
@@ -114,17 +108,17 @@ void HTMLObjectElement::ParseAttribute(
     // Should we suppress the reload stuff when a persistable widget-type is
     // specified?
     ReloadPluginOnAttributeChange(name);
-  } else if (name == kDataAttr) {
+  } else if (name == html_names::kDataAttr) {
     SetUrl(StripLeadingAndTrailingHTMLSpaces(params.new_value));
     if (GetLayoutObject() && IsImageType()) {
       SetNeedsPluginUpdate(true);
       if (!image_loader_)
-        image_loader_ = HTMLImageLoader::Create(this);
+        image_loader_ = MakeGarbageCollected<HTMLImageLoader>(this);
       image_loader_->UpdateFromElement(ImageLoader::kUpdateIgnorePreviousError);
     } else {
       ReloadPluginOnAttributeChange(name);
     }
-  } else if (name == kClassidAttr) {
+  } else if (name == html_names::kClassidAttr) {
     class_id_ = params.new_value;
     ReloadPluginOnAttributeChange(name);
   } else {
@@ -196,8 +190,9 @@ bool HTMLObjectElement::HasFallbackContent() const {
   for (Node* child = firstChild(); child; child = child->nextSibling()) {
     // Ignore whitespace-only text, and <param> tags, any other content is
     // fallback content.
-    if (child->IsTextNode()) {
-      if (!ToText(child)->ContainsOnlyWhitespaceOrEmpty())
+    auto* child_text_node = DynamicTo<Text>(child);
+    if (child_text_node) {
+      if (!child_text_node->ContainsOnlyWhitespaceOrEmpty())
         return true;
     } else if (!IsHTMLParamElement(*child)) {
       return true;
@@ -225,12 +220,12 @@ void HTMLObjectElement::ReloadPluginOnAttributeChange(
   // the updating of certain attributes should bring about "redetermination"
   // of what the element contains.
   bool needs_invalidation;
-  if (name == kTypeAttr) {
-    needs_invalidation =
-        !FastHasAttribute(kClassidAttr) && !FastHasAttribute(kDataAttr);
-  } else if (name == kDataAttr) {
-    needs_invalidation = !FastHasAttribute(kClassidAttr);
-  } else if (name == kClassidAttr) {
+  if (name == html_names::kTypeAttr) {
+    needs_invalidation = !FastHasAttribute(html_names::kClassidAttr) &&
+                         !FastHasAttribute(html_names::kDataAttr);
+  } else if (name == html_names::kDataAttr) {
+    needs_invalidation = !FastHasAttribute(html_names::kClassidAttr);
+  } else if (name == html_names::kClassidAttr) {
     needs_invalidation = true;
   } else {
     NOTREACHED();
@@ -238,7 +233,7 @@ void HTMLObjectElement::ReloadPluginOnAttributeChange(
   }
   SetNeedsPluginUpdate(true);
   if (needs_invalidation)
-    LazyReattachIfNeeded();
+    ReattachOnPluginChangeIfNeeded();
 }
 
 // TODO(schenney): crbug.com/572908 This should be unified with
@@ -311,34 +306,43 @@ void HTMLObjectElement::RemovedFrom(ContainerNode& insertion_point) {
 void HTMLObjectElement::ChildrenChanged(const ChildrenChange& change) {
   if (isConnected() && !UseFallbackContent()) {
     SetNeedsPluginUpdate(true);
-    LazyReattachIfNeeded();
+    ReattachOnPluginChangeIfNeeded();
   }
   HTMLPlugInElement::ChildrenChanged(change);
 }
 
 bool HTMLObjectElement::IsURLAttribute(const Attribute& attribute) const {
-  return attribute.GetName() == kCodebaseAttr ||
-         attribute.GetName() == kDataAttr ||
-         (attribute.GetName() == kUsemapAttr && attribute.Value()[0] != '#') ||
+  return attribute.GetName() == html_names::kCodebaseAttr ||
+         attribute.GetName() == html_names::kDataAttr ||
+         (attribute.GetName() == html_names::kUsemapAttr &&
+          attribute.Value()[0] != '#') ||
          HTMLPlugInElement::IsURLAttribute(attribute);
 }
 
 bool HTMLObjectElement::HasLegalLinkAttribute(const QualifiedName& name) const {
-  return name == kClassidAttr || name == kDataAttr || name == kCodebaseAttr ||
+  return name == html_names::kClassidAttr || name == html_names::kDataAttr ||
+         name == html_names::kCodebaseAttr ||
          HTMLPlugInElement::HasLegalLinkAttribute(name);
 }
 
 const QualifiedName& HTMLObjectElement::SubResourceAttributeName() const {
-  return kDataAttr;
+  return html_names::kDataAttr;
 }
 
 const AtomicString HTMLObjectElement::ImageSourceURL() const {
-  return getAttribute(kDataAttr);
+  return FastGetAttribute(html_names::kDataAttr);
 }
 
 void HTMLObjectElement::ReattachFallbackContent() {
-  if (!GetDocument().InStyleRecalc())
-    LazyReattachIfAttached();
+  if (!GetDocument().InStyleRecalc()) {
+    // TODO(futhark): Currently needs kSubtreeStyleChange because a style recalc
+    // for the object element does not detect the changed need for descendant
+    // style when we have a change in HTMLObjectElement::ChildrenCanHaveStyle().
+    SetNeedsStyleRecalc(
+        kSubtreeStyleChange,
+        StyleChangeReasonForTracing::Create(style_change_reason::kUseFallback));
+    SetForceReattachLayoutTree();
+  }
 }
 
 void HTMLObjectElement::RenderFallbackContent(Frame* frame) {
@@ -365,9 +369,6 @@ void HTMLObjectElement::RenderFallbackContent(Frame* frame) {
   }
 
   use_fallback_content_ = true;
-
-  // TODO(schenney): crbug.com/572908 Style gets recalculated which is
-  // suboptimal.
   ReattachFallbackContent();
 }
 
@@ -388,14 +389,15 @@ bool HTMLObjectElement::IsExposed() const {
 }
 
 bool HTMLObjectElement::ContainsJavaApplet() const {
-  if (MIMETypeRegistry::IsJavaAppletMIMEType(getAttribute(kTypeAttr)))
+  if (MIMETypeRegistry::IsJavaAppletMIMEType(
+          FastGetAttribute(html_names::kTypeAttr)))
     return true;
 
   for (HTMLElement& child : Traversal<HTMLElement>::ChildrenOf(*this)) {
     if (IsHTMLParamElement(child) &&
         DeprecatedEqualIgnoringCase(child.GetNameAttribute(), "type") &&
         MIMETypeRegistry::IsJavaAppletMIMEType(
-            child.getAttribute(kValueAttr).GetString()))
+            child.FastGetAttribute(html_names::kValueAttr).GetString()))
       return true;
     if (IsHTMLObjectElement(child) &&
         ToHTMLObjectElement(child).ContainsJavaApplet())
@@ -415,7 +417,7 @@ HTMLFormElement* HTMLObjectElement::formOwner() const {
 }
 
 bool HTMLObjectElement::IsInteractiveContent() const {
-  return FastHasAttribute(kUsemapAttr);
+  return FastHasAttribute(html_names::kUsemapAttr);
 }
 
 bool HTMLObjectElement::UseFallbackContent() const {
@@ -428,6 +430,25 @@ bool HTMLObjectElement::WillUseFallbackContentAtLayout() const {
 
 void HTMLObjectElement::AssociateWith(HTMLFormElement* form) {
   AssociateByParser(form);
+}
+
+bool HTMLObjectElement::DidFinishLoading() const {
+  if (!isConnected())
+    return false;
+  if (OwnedPlugin())
+    return true;
+  if (auto* frame = ContentFrame()) {
+    if (!frame->IsLoading())
+      return true;
+  }
+  if (ImageLoader() && !HasPendingActivity() && IsImageType())
+    return true;
+
+  return UseFallbackContent();
+}
+
+int HTMLObjectElement::DefaultTabIndex() const {
+  return 0;
 }
 
 const HTMLObjectElement* ToHTMLObjectElementFromListedElement(

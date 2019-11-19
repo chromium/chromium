@@ -4,7 +4,8 @@
 
 #include "third_party/blink/renderer/core/html/portal/document_portals.h"
 
-#include "third_party/blink/renderer/core/html/portal/html_portal_element.h"
+#include "third_party/blink/renderer/core/html/portal/portal_contents.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink {
 
@@ -25,27 +26,20 @@ DocumentPortals& DocumentPortals::From(Document& document) {
 DocumentPortals::DocumentPortals(Document& document)
     : Supplement<Document>(document) {}
 
-void DocumentPortals::OnPortalInserted(HTMLPortalElement* portal) {
+void DocumentPortals::RegisterPortalContents(PortalContents* portal) {
   portals_.push_back(portal);
 }
 
-void DocumentPortals::OnPortalRemoved(HTMLPortalElement* portal) {
-  portals_.EraseAt(portals_.Find(portal));
-}
-
-HTMLPortalElement* DocumentPortals::GetPortal(
-    const base::UnguessableToken& token) const {
-  for (HTMLPortalElement* portal : portals_) {
-    if (portal->GetToken() == token)
-      return portal;
-  }
-
-  return nullptr;
+void DocumentPortals::DeregisterPortalContents(PortalContents* portal) {
+  wtf_size_t index = portals_.Find(portal);
+  if (index != WTF::kNotFound)
+    portals_.EraseAt(index);
 }
 
 void DocumentPortals::Trace(Visitor* visitor) {
   Supplement<Document>::Trace(visitor);
   visitor->Trace(portals_);
+  visitor->Trace(activating_portal_);
 }
 
 }  // namespace blink

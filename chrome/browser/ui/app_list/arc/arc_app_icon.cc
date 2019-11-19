@@ -15,6 +15,7 @@
 #include "base/files/file_util.h"
 #include "base/lazy_instance.h"
 #include "base/macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/post_task.h"
 #include "chrome/browser/image_decoder.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
@@ -91,6 +92,9 @@ struct ArcAppIcon::ReadResult {
 ////////////////////////////////////////////////////////////////////////////////
 // ArcAppIcon::Source
 
+// Initializes the ImageSkia with placeholder bitmaps, decoded from
+// compiled-into-the-binary resources such as IDR_APP_DEFAULT_ICON, and
+// schedules the asynchronous loading of the app's actual bitmaps.
 class ArcAppIcon::Source : public gfx::ImageSkiaSource {
  public:
   Source(const base::WeakPtr<ArcAppIcon>& host, int resource_size_in_dip);
@@ -207,13 +211,13 @@ void ArcAppIcon::DecodeRequest::OnImageDecoded(const SkBitmap& bitmap) {
               << "x" << bitmap.height() << ". Expected " << expected_dim << ".";
       host_->MaybeRequestIcon(descriptor_.scale_factor);
     } else {
-      host_->Update(descriptor_.scale_factor,
-                    skia::ImageOperations::Resize(
-                        bitmap, skia::ImageOperations::RESIZE_BEST,
-                        expected_dim, expected_dim));
+      host_->UpdateUncompressed(descriptor_.scale_factor,
+                                skia::ImageOperations::Resize(
+                                    bitmap, skia::ImageOperations::RESIZE_BEST,
+                                    expected_dim, expected_dim));
     }
   } else {
-    host_->Update(descriptor_.scale_factor, bitmap);
+    host_->UpdateUncompressed(descriptor_.scale_factor, bitmap);
   }
 
   host_->DiscardDecodeRequest(this);
@@ -245,21 +249,48 @@ bool ArcAppIcon::IsSafeDecodingDisabledForTesting() {
 ArcAppIcon::ArcAppIcon(content::BrowserContext* context,
                        const std::string& app_id,
                        int resource_size_in_dip,
-                       Observer* observer)
+                       Observer* observer,
+                       bool serve_compressed_icons)
     : context_(context),
       app_id_(app_id),
       mapped_app_id_(GetAppFromAppOrGroupId(context, app_id)),
       resource_size_in_dip_(resource_size_in_dip),
       observer_(observer),
-      weak_ptr_factory_(this) {
+      serve_compressed_icons_(serve_compressed_icons) {
   CHECK(observer_ != nullptr);
-  auto source = std::make_unique<Source>(weak_ptr_factory_.GetWeakPtr(),
-                                         resource_size_in_dip);
-  gfx::Size resource_size(resource_size_in_dip, resource_size_in_dip);
-  image_skia_ = gfx::ImageSkia(std::move(source), resource_size);
+
+  if (!serve_compressed_icons_) {
+    auto source = std::make_unique<Source>(weak_ptr_factory_.GetWeakPtr(),
+                                           resource_size_in_dip);
+    gfx::Size resource_size(resource_size_in_dip, resource_size_in_dip);
+    image_skia_ = gfx::ImageSkia(std::move(source), resource_size);
+  }
+
+  const std::vector<ui::ScaleFactor>& scale_factors =
+      ui::GetSupportedScaleFactors();
+  for (const auto& scale_factor : scale_factors)
+    incomplete_scale_factors_.insert({scale_factor, base::Time::Now()});
 }
 
 ArcAppIcon::~ArcAppIcon() {
+}
+
+void ArcAppIcon::LoadSupportedScaleFactors() {
+  if (serve_compressed_icons_) {
+    for (auto scale_factor : incomplete_scale_factors_)
+      LoadForScaleFactor(scale_factor.first);
+  } else {
+    // Calling GetRepresentation indirectly calls LoadForScaleFactor but also
+    // first initializes image_skia_ with the placeholder icons (e.g.
+    // IDR_APP_DEFAULT_ICON), via ArcAppIcon::Source::GetImageForScale.
+    for (auto scale_factor : incomplete_scale_factors_)
+      image_skia_.GetRepresentation(
+          ui::GetScaleForScaleFactor(scale_factor.first));
+  }
+}
+
+bool ArcAppIcon::EverySupportedScaleFactorIsLoaded() const {
+  return incomplete_scale_factors_.empty();
 }
 
 void ArcAppIcon::LoadForScaleFactor(ui::ScaleFactor scale_factor) {
@@ -275,8 +306,9 @@ void ArcAppIcon::LoadForScaleFactor(ui::ScaleFactor scale_factor) {
   if (path.empty())
     return;
 
-  base::PostTaskWithTraitsAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+  base::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::USER_VISIBLE},
       base::BindOnce(
           &ArcAppIcon::ReadOnFileThread, scale_factor, path,
           prefs->MaybeGetIconPathForDefaultApp(mapped_app_id_, descriptor)),
@@ -288,9 +320,10 @@ void ArcAppIcon::MaybeRequestIcon(ui::ScaleFactor scale_factor) {
   ArcAppListPrefs* prefs = ArcAppListPrefs::Get(context_);
   DCHECK(prefs);
 
-  // ArcAppListPrefs notifies ArcAppModelBuilder via Observer when icon is ready
-  // and ArcAppModelBuilder refreshes the icon of the corresponding item by
-  // calling LoadScaleFactor.
+  // ArcAppListPrefs notifies the ArcAppIconLoader (which is an
+  // ArcAppListPrefs::Observer) when the icon is updated, and
+  // ArcAppIconLoader::OnAppIconUpdated calls ArcAppIcon::LoadForScaleFactor on
+  // the corresponding ArcAppIcon.
   prefs->MaybeRequestIcon(
       mapped_app_id_,
       ArcAppIconDescriptor(resource_size_in_dip_, scale_factor));
@@ -348,6 +381,12 @@ void ArcAppIcon::OnIconRead(
     MaybeRequestIcon(read_result->scale_factor);
 
   if (!read_result->unsafe_icon_data.empty()) {
+    if (serve_compressed_icons_) {
+      UpdateCompressed(read_result->scale_factor,
+                       std::move(read_result->unsafe_icon_data));
+      return;
+    }
+
     decode_requests_.emplace_back(std::make_unique<DecodeRequest>(
         weak_ptr_factory_.GetWeakPtr(),
         ArcAppIconDescriptor(resource_size_in_dip_, read_result->scale_factor),
@@ -371,7 +410,8 @@ void ArcAppIcon::OnIconRead(
   }
 }
 
-void ArcAppIcon::Update(ui::ScaleFactor scale_factor, const SkBitmap& bitmap) {
+void ArcAppIcon::UpdateUncompressed(ui::ScaleFactor scale_factor,
+                                    const SkBitmap& bitmap) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   gfx::ImageSkiaRep image_rep(bitmap, ui::GetScaleForScaleFactor(scale_factor));
@@ -381,6 +421,34 @@ void ArcAppIcon::Update(ui::ScaleFactor scale_factor, const SkBitmap& bitmap) {
   image_skia_.AddRepresentation(image_rep);
   image_skia_.RemoveUnsupportedRepresentationsForScale(image_rep.scale());
 
+  if (icon_loaded_count_++ < 5) {
+    base::UmaHistogramTimes(
+        "Arc.IconLoadFromFileTime.uncompressedFirst5",
+        base::Time::Now() - incomplete_scale_factors_[scale_factor]);
+  } else {
+    base::UmaHistogramTimes(
+        "Arc.IconLoadFromFileTime.uncompressedOthers",
+        base::Time::Now() - incomplete_scale_factors_[scale_factor]);
+  }
+  incomplete_scale_factors_.erase(scale_factor);
+  observer_->OnIconUpdated(this);
+}
+
+void ArcAppIcon::UpdateCompressed(ui::ScaleFactor scale_factor,
+                                  std::string data) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  compressed_images_[scale_factor] = std::move(data);
+
+  if (icon_loaded_count_++ < 5) {
+    base::UmaHistogramTimes(
+        "Arc.IconLoadFromFileTime.compressedFirst5",
+        base::Time::Now() - incomplete_scale_factors_[scale_factor]);
+  } else {
+    base::UmaHistogramTimes(
+        "Arc.IconLoadFromFileTime.compressedOthers",
+        base::Time::Now() - incomplete_scale_factors_[scale_factor]);
+  }
+  incomplete_scale_factors_.erase(scale_factor);
   observer_->OnIconUpdated(this);
 }
 

@@ -224,8 +224,7 @@ callback may result in the deletion of the current (calling) object. As
 further expanded upon in [Code Patterns](code-patterns.md), features and
 changes should be designed such that any callback invocation is the last
 bit of code executed, and that the callback is accessed via the stack (such
-as through the use of either `base::ResetAndReturn(callback_).Run()` or
-`std::move(callback_).Run()`.
+as through the use of `std::move(callback_).Run()`.
 
 ### Specs: What Are They Good For
 

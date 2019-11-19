@@ -13,8 +13,8 @@
 #include "base/gtest_prod_util.h"
 #include "base/strings/nullable_string16.h"
 #include "base/strings/string16.h"
+#include "content/browser/dom_storage/dom_storage_types.h"
 #include "content/common/content_export.h"
-#include "content/common/dom_storage/dom_storage_types.h"
 #include "sql/database.h"
 
 namespace base {

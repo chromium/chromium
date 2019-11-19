@@ -11,10 +11,9 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/callback_helpers.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "mojo/public/cpp/bindings/message.h"
@@ -28,13 +27,13 @@ namespace {
 class MessageAccumulator : public MessageReceiver {
  public:
   MessageAccumulator() {}
-  explicit MessageAccumulator(const base::Closure& closure)
-      : closure_(closure) {}
+  explicit MessageAccumulator(base::OnceClosure closure)
+      : closure_(std::move(closure)) {}
 
   bool Accept(Message* message) override {
     queue_.Push(message);
-    if (!closure_.is_null())
-      base::ResetAndReturn(&closure_).Run();
+    if (closure_)
+      std::move(closure_).Run();
     return true;
   }
 
@@ -42,13 +41,13 @@ class MessageAccumulator : public MessageReceiver {
 
   void Pop(Message* message) { queue_.Pop(message); }
 
-  void set_closure(const base::Closure& closure) { closure_ = closure; }
+  void set_closure(base::OnceClosure closure) { closure_ = std::move(closure); }
 
   size_t size() const { return queue_.size(); }
 
  private:
   MessageQueue queue_;
-  base::Closure closure_;
+  base::OnceClosure closure_;
 };
 
 class ConnectorDeletingMessageAccumulator : public MessageAccumulator {
@@ -110,7 +109,7 @@ class ConnectorTest : public testing::Test {
   ScopedMessagePipeHandle handle1_;
 
  private:
-  base::MessageLoop loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
 TEST_F(ConnectorTest, Basic) {
@@ -406,9 +405,9 @@ TEST_F(ConnectorTest, WaitForIncomingMessageWithReentrancy) {
   ASSERT_EQ(2, accumulator.number_of_calls());
 }
 
-void ForwardErrorHandler(bool* called, const base::Closure& callback) {
+void ForwardErrorHandler(bool* called, base::OnceClosure callback) {
   *called = true;
-  callback.Run();
+  std::move(callback).Run();
 }
 
 TEST_F(ConnectorTest, RaiseError) {
@@ -416,13 +415,13 @@ TEST_F(ConnectorTest, RaiseError) {
   Connector connector0(std::move(handle0_), Connector::SINGLE_THREADED_SEND,
                        base::ThreadTaskRunnerHandle::Get());
   bool error_handler_called0 = false;
-  connector0.set_connection_error_handler(base::Bind(
+  connector0.set_connection_error_handler(base::BindOnce(
       &ForwardErrorHandler, &error_handler_called0, run_loop.QuitClosure()));
 
   Connector connector1(std::move(handle1_), Connector::SINGLE_THREADED_SEND,
                        base::ThreadTaskRunnerHandle::Get());
   bool error_handler_called1 = false;
-  connector1.set_connection_error_handler(base::Bind(
+  connector1.set_connection_error_handler(base::BindOnce(
       &ForwardErrorHandler, &error_handler_called1, run_loop2.QuitClosure()));
 
   const char kText[] = "hello world";
@@ -463,9 +462,9 @@ TEST_F(ConnectorTest, RaiseError) {
 }
 
 void PauseConnectorAndRunClosure(Connector* connector,
-                                 const base::Closure& closure) {
+                                 base::OnceClosure closure) {
   connector->PauseIncomingMethodCallProcessing();
-  closure.Run();
+  std::move(closure).Run();
 }
 
 TEST_F(ConnectorTest, PauseWithQueuedMessages) {
@@ -485,7 +484,7 @@ TEST_F(ConnectorTest, PauseWithQueuedMessages) {
   base::RunLoop run_loop;
   // Configure the accumulator such that it pauses after the first message is
   // received.
-  MessageAccumulator accumulator(base::Bind(
+  MessageAccumulator accumulator(base::BindOnce(
       &PauseConnectorAndRunClosure, &connector1, run_loop.QuitClosure()));
   connector1.set_incoming_receiver(&accumulator);
 
@@ -497,11 +496,11 @@ TEST_F(ConnectorTest, PauseWithQueuedMessages) {
 }
 
 void AccumulateWithNestedLoop(MessageAccumulator* accumulator,
-                              const base::Closure& closure) {
+                              base::OnceClosure closure) {
   base::RunLoop nested_run_loop(base::RunLoop::Type::kNestableTasksAllowed);
   accumulator->set_closure(nested_run_loop.QuitClosure());
   nested_run_loop.Run();
-  closure.Run();
+  std::move(closure).Run();
 }
 
 TEST_F(ConnectorTest, ProcessWhenNested) {
@@ -522,8 +521,8 @@ TEST_F(ConnectorTest, ProcessWhenNested) {
   MessageAccumulator accumulator;
   // When the accumulator gets the first message it spins a nested message
   // loop. The loop is quit when another message is received.
-  accumulator.set_closure(base::Bind(&AccumulateWithNestedLoop, &accumulator,
-                                     run_loop.QuitClosure()));
+  accumulator.set_closure(base::BindOnce(&AccumulateWithNestedLoop,
+                                         &accumulator, run_loop.QuitClosure()));
   connector1.set_incoming_receiver(&accumulator);
 
   run_loop.Run();
@@ -544,9 +543,9 @@ TEST_F(ConnectorTest, DestroyOnDifferentThreadAfterClose) {
   base::RunLoop run_loop;
   another_thread.task_runner()->PostTaskAndReply(
       FROM_HERE,
-      base::Bind(
+      base::BindOnce(
           [](std::unique_ptr<Connector> connector) { connector.reset(); },
-          base::Passed(std::move(connector))),
+          std::move(connector)),
       run_loop.QuitClosure());
 
   run_loop.Run();

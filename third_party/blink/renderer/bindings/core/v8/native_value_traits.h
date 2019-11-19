@@ -7,7 +7,7 @@
 
 #include <type_traits>
 #include "third_party/blink/renderer/bindings/core/v8/idl_types_base.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "v8/include/v8.h"
 
 namespace blink {

@@ -38,49 +38,6 @@ using extensions::ExtensionsAPIClient;
 using guest_view::GuestViewManager;
 using guest_view::TestGuestViewManagerFactory;
 
-namespace {
-
-class RenderProcessHostObserverForExit
-    : public content::RenderProcessHostObserver {
- public:
-  explicit RenderProcessHostObserverForExit(
-      content::RenderProcessHost* observed_host)
-      : render_process_host_exited_(false), observed_host_(observed_host) {
-    observed_host->AddObserver(this);
-  }
-
-  void WaitUntilRenderProcessHostKilled() {
-    if (render_process_host_exited_)
-      return;
-    message_loop_runner_ = new content::MessageLoopRunner;
-    message_loop_runner_->Run();
-  }
-
-  base::TerminationStatus termination_status() const { return status_; }
-
- private:
-  void RenderProcessExited(
-      content::RenderProcessHost* host,
-      const content::ChildProcessTerminationInfo& info) override {
-    DCHECK(observed_host_ == host);
-    render_process_host_exited_ = true;
-    status_ = info.status;
-    observed_host_->RemoveObserver(this);
-    if (message_loop_runner_.get()) {
-      message_loop_runner_->Quit();
-    }
-  }
-
-  bool render_process_host_exited_;
-  content::RenderProcessHost* observed_host_;
-  scoped_refptr<content::MessageLoopRunner> message_loop_runner_;
-  base::TerminationStatus status_;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderProcessHostObserverForExit);
-};
-
-}  // namespace
-
 class AppViewTest : public extensions::PlatformAppBrowserTest {
  public:
   AppViewTest() {
@@ -230,7 +187,9 @@ IN_PROC_BROWSER_TEST_F(AppViewTest, KillGuestWithInvalidInstanceID) {
           ->GetProcess();
 
   // Monitor |bad_app|'s RenderProcessHost for its exiting.
-  RenderProcessHostObserverForExit exit_observer(bad_app_render_process_host);
+  content::RenderProcessHostWatcher exit_observer(
+      bad_app_render_process_host,
+      content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
 
   // Choosing a |guest_instance_id| which does not exist.
   int invalid_guest_instance_id =
@@ -240,7 +199,8 @@ IN_PROC_BROWSER_TEST_F(AppViewTest, KillGuestWithInvalidInstanceID) {
   extensions::AppViewGuest::CompletePendingRequest(
       browser()->profile(), GURL("about:blank"), invalid_guest_instance_id,
       bad_app->id(), bad_app_render_process_host);
-  exit_observer.WaitUntilRenderProcessHostKilled();
+  exit_observer.Wait();
+  EXPECT_FALSE(exit_observer.did_exit_normally());
 }
 
 IN_PROC_BROWSER_TEST_F(AppViewTest, KillGuestCommunicatingWithWrongAppView) {
@@ -264,10 +224,11 @@ IN_PROC_BROWSER_TEST_F(AppViewTest, KillGuestCommunicatingWithWrongAppView) {
   // app sends a request to the host.
   int guest_instance_id =
       extensions::AppViewGuest::GetAllRegisteredInstanceIdsForTesting()[0];
-  RenderProcessHostObserverForExit bad_app_obs(
+  content::RenderProcessHostWatcher bad_app_obs(
       extensions::ProcessManager::Get(browser()->profile())
           ->GetBackgroundHostForExtension(bad_app->id())
-          ->render_process_host());
+          ->render_process_host(),
+      content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
   std::unique_ptr<base::DictionaryValue> fake_embed_request_param(
       new base::DictionaryValue);
   fake_embed_request_param->SetInteger(appview::kGuestInstanceID,
@@ -275,7 +236,8 @@ IN_PROC_BROWSER_TEST_F(AppViewTest, KillGuestCommunicatingWithWrongAppView) {
   fake_embed_request_param->SetString(appview::kEmbedderID, host_app->id());
   extensions::AppRuntimeEventRouter::DispatchOnEmbedRequestedEvent(
       browser()->profile(), std::move(fake_embed_request_param), bad_app);
-  bad_app_obs.WaitUntilRenderProcessHostKilled();
+  bad_app_obs.Wait();
+  EXPECT_FALSE(bad_app_obs.did_exit_normally());
   // Now ask the guest to continue embedding.
   ASSERT_TRUE(
       ExecuteScript(extensions::ProcessManager::Get(browser()->profile())

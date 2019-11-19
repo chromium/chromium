@@ -4,27 +4,33 @@
 
 #import "ios/chrome/browser/ui/autofill/manual_fill/credential.h"
 
+#include "base/strings/sys_string_conversions.h"
+#include "url/gurl.h"
+
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-@implementation ManualFillCredential
+@interface ManualFillCredential () {
+  // iVar to backup URL.
+  GURL _URL;
+}
+@end
 
-@synthesize username = _username;
-@synthesize password = _password;
-@synthesize siteName = _siteName;
-@synthesize host = _host;
+@implementation ManualFillCredential
 
 - (instancetype)initWithUsername:(NSString*)username
                         password:(NSString*)password
                         siteName:(NSString*)siteName
-                            host:(NSString*)host {
+                            host:(NSString*)host
+                             URL:(const GURL&)URL {
   self = [super init];
   if (self) {
     _host = [host copy];
     _siteName = [siteName copy];
     _username = [username copy];
     _password = [password copy];
+    _URL = URL;
   }
   return self;
 }
@@ -52,17 +58,27 @@
   if (![otherObject.siteName isEqual:self.siteName]) {
     return NO;
   }
+  if (otherObject.URL != self.URL) {
+    return NO;
+  }
   return YES;
 }
 
 - (NSUInteger)hash {
-  return [self.host hash] ^ [self.username hash] ^ [self.password hash];
+  return [base::SysUTF8ToNSString(self.URL.spec()) hash] ^
+         [self.username hash] ^ [self.password hash];
 }
 
 - (NSString*)description {
   return [NSString
-      stringWithFormat:@"<%@ (%p): username: %@, siteName: %@, host: %@>",
-                       NSStringFromClass([self class]), self, self.username,
-                       self.siteName, self.host];
+      stringWithFormat:
+          @"<%@ (%p): username: %@, siteName: %@, host: %@, URL: %@>",
+          NSStringFromClass([self class]), self, self.username, self.siteName,
+          self.host, base::SysUTF8ToNSString(self.URL.spec())];
 }
+
+- (const GURL&)URL {
+  return _URL;
+}
+
 @end

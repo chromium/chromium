@@ -6,18 +6,15 @@
 
 #include <memory>
 
-#include "ash/public/interfaces/constants.mojom.h"
-#include "chrome/browser/chromeos/accessibility/accessibility_manager.h"
+#include "ash/public/cpp/accessibility_controller.h"
 #include "chrome/browser/chromeos/accessibility/event_handler_common.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/service_manager_connection.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_host.h"
-#include "services/service_manager/public/cpp/connector.h"
 #include "third_party/blink/public/platform/web_mouse_event.h"
 #include "ui/content_accelerators/accelerator_util.h"
 #include "ui/events/blink/web_input_event.h"
@@ -25,44 +22,38 @@
 
 namespace chromeos {
 
-SelectToSpeakEventHandlerDelegate::SelectToSpeakEventHandlerDelegate()
-    : binding_(this) {
-  // Connect to ash's AccessibilityController interface.
-  ash::mojom::AccessibilityControllerPtr accessibility_controller;
-  content::ServiceManagerConnection::GetForProcess()
-      ->GetConnector()
-      ->BindInterface(ash::mojom::kServiceName, &accessibility_controller);
-
+SelectToSpeakEventHandlerDelegate::SelectToSpeakEventHandlerDelegate() {
   // Set this object as the SelectToSpeakEventHandlerDelegate.
-  ash::mojom::SelectToSpeakEventHandlerDelegatePtr ptr;
-  binding_.Bind(mojo::MakeRequest(&ptr));
-  accessibility_controller->SetSelectToSpeakEventHandlerDelegate(
-      std::move(ptr));
+  ash::AccessibilityController::Get()->SetSelectToSpeakEventHandlerDelegate(
+      this);
 }
 
-SelectToSpeakEventHandlerDelegate::~SelectToSpeakEventHandlerDelegate() =
-    default;
+SelectToSpeakEventHandlerDelegate::~SelectToSpeakEventHandlerDelegate() {
+  if (auto* controller = ash::AccessibilityController::Get())
+    controller->SetSelectToSpeakEventHandlerDelegate(nullptr);
+}
 
 void SelectToSpeakEventHandlerDelegate::DispatchKeyEvent(
-    std::unique_ptr<ui::Event> event) {
+    const ui::KeyEvent& event) {
   // We can only call the STS extension on the UI thread, make sure we
   // don't ever try to run this code on some other thread.
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
-  DCHECK(event->IsKeyEvent());
 
   extensions::ExtensionHost* host = chromeos::GetAccessibilityExtensionHost(
       extension_misc::kSelectToSpeakExtensionId);
   if (!host)
     return;
 
-  const ui::KeyEvent* key_event = event->AsKeyEvent();
+  const ui::KeyEvent* key_event = event.AsKeyEvent();
   chromeos::ForwardKeyToExtension(*key_event, host);
 }
 
 void SelectToSpeakEventHandlerDelegate::DispatchMouseEvent(
-    std::unique_ptr<ui::Event> event) {
+    const ui::MouseEvent& event) {
+  // We can only call the STS extension on the UI thread, make sure we
+  // don't ever try to run this code on some other thread.
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
-  DCHECK(event->IsMouseEvent());
+
   extensions::ExtensionHost* host = chromeos::GetAccessibilityExtensionHost(
       extension_misc::kSelectToSpeakExtensionId);
   if (!host)
@@ -72,8 +63,7 @@ void SelectToSpeakEventHandlerDelegate::DispatchMouseEvent(
   if (!rvh)
     return;
 
-  const ui::MouseEvent* mouse_event = event->AsMouseEvent();
-  rvh->GetWidget()->ForwardMouseEvent(ui::MakeWebMouseEvent(*mouse_event));
+  rvh->GetWidget()->ForwardMouseEvent(ui::MakeWebMouseEvent(event));
 }
 
 }  // namespace chromeos

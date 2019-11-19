@@ -3,251 +3,247 @@
 // found in the LICENSE file.
 
 /** @fileoverview Suite of tests for extension-kiosk-dialog. */
-cr.define('extension_kiosk_mode_tests', function() {
-  /** @enum {string} */
-  let TestNames = {
-    AddButton: 'AddButton',
-    AddError: 'AddError',
-    AutoLaunch: 'AutoLaunch',
-    Bailout: 'Bailout',
-    Layout: 'Layout',
-    Updated: 'Updated',
-  };
 
+import {KioskBrowserProxyImpl} from 'chrome://extensions/extensions.js';
 
-  let suiteName = 'kioskModeTests';
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-  suite(suiteName, function() {
+import {flushTasks} from '../test_util.m.js';
+import {TestKioskBrowserProxy} from './test_kiosk_browser_proxy.js';
 
-    /** @type {extensions.KioskBrowserProxy} */
-    let browserProxy;
+window.extension_kiosk_mode_tests = {};
+extension_kiosk_mode_tests.suiteName = 'kioskModeTests';
+/** @enum {string} */
+extension_kiosk_mode_tests.TestNames = {
+  AddButton: 'AddButton',
+  AddError: 'AddError',
+  AutoLaunch: 'AutoLaunch',
+  Bailout: 'Bailout',
+  Layout: 'Layout',
+  Updated: 'Updated',
+};
 
-    /** @type {extensions.KioskDialog} */
-    let dialog;
+suite(extension_kiosk_mode_tests.suiteName, function() {
+  /** @type {KioskBrowserProxy} */
+  let browserProxy;
 
-    /** @type {!Array<!KioskApp>} */
-    const basicApps = [
-      {
-        id: 'app_1',
-        name: 'App1 Name',
-        iconURL: '',
-        autoLaunch: false,
-        isLoading: false,
-      },
-      {
-        id: 'app_2',
-        name: 'App2 Name',
-        iconURL: '',
-        autoLaunch: false,
-        isLoading: false,
-      },
-    ];
+  /** @type {ExtensionsKioskDialogElement} */
+  let dialog;
 
-    /** @param {!KioskAppSettings} */
-    function setAppSettings(settings) {
-      const appSettings = {
-        apps: [],
-        disableBailout: false,
-        hasAutoLaunchApp: false,
-      };
+  /** @type {!Array<!KioskApp>} */
+  const basicApps = [
+    {
+      id: 'app_1',
+      name: 'App1 Name',
+      iconURL: '',
+      autoLaunch: false,
+      isLoading: false,
+    },
+    {
+      id: 'app_2',
+      name: 'App2 Name',
+      iconURL: '',
+      autoLaunch: false,
+      isLoading: false,
+    },
+  ];
 
-      browserProxy.setAppSettings(Object.assign({}, appSettings, settings));
-    }
+  /** @param {!KioskAppSettings} */
+  function setAppSettings(settings) {
+    const appSettings = {
+      apps: [],
+      disableBailout: false,
+      hasAutoLaunchApp: false,
+    };
 
-    /** @param {!KioskSettings} */
-    function setInitialSettings(settings) {
-      const initialSettings = {
-        kioskEnabled: true,
-        autoLaunchEnabled: false,
-      };
+    browserProxy.setAppSettings(Object.assign({}, appSettings, settings));
+  }
 
-      browserProxy.setInitialSettings(
-          Object.assign({}, initialSettings, settings));
-    }
+  /** @param {!KioskSettings} */
+  function setInitialSettings(settings) {
+    const initialSettings = {
+      kioskEnabled: true,
+      autoLaunchEnabled: false,
+    };
 
-    /** @return {!Promise} */
-    function initPage() {
-      PolymerTest.clearBody();
-      browserProxy.reset();
-      dialog = document.createElement('extensions-kiosk-dialog');
-      document.body.appendChild(dialog);
+    browserProxy.setInitialSettings(
+        Object.assign({}, initialSettings, settings));
+  }
 
-      return browserProxy.whenCalled('getKioskAppSettings')
-          .then(() => PolymerTest.flushTasks());
-    }
+  /** @return {!Promise} */
+  function initPage() {
+    PolymerTest.clearBody();
+    browserProxy.reset();
+    dialog = document.createElement('extensions-kiosk-dialog');
+    document.body.appendChild(dialog);
 
-    setup(function() {
-      browserProxy = new TestKioskBrowserProxy();
-      setAppSettings({apps: basicApps.slice(0)});
-      extensions.KioskBrowserProxyImpl.instance_ = browserProxy;
+    return browserProxy.whenCalled('getKioskAppSettings')
+        .then(() => flushTasks());
+  }
 
-      return initPage();
-    });
+  setup(function() {
+    browserProxy = new TestKioskBrowserProxy();
+    setAppSettings({apps: basicApps.slice(0)});
+    KioskBrowserProxyImpl.instance_ = browserProxy;
 
-    test(assert(TestNames.Layout), function() {
-      const apps = basicApps.slice(0);
-      apps[1].autoLaunch = true;
-      apps[1].isLoading = true;
-      setAppSettings({apps: apps, hasAutoLaunchApp: true});
+    return initPage();
+  });
 
-      return initPage()
-          .then(() => {
-            const items = dialog.shadowRoot.querySelectorAll('.list-item');
-            expectEquals(items.length, 2);
-            expectTrue(items[0].textContent.includes(basicApps[0].name));
-            expectTrue(items[1].textContent.includes(basicApps[1].name));
-            // Second item should show the auto-lauch label.
-            expectTrue(items[0].querySelector('span').hidden);
-            expectFalse(items[1].querySelector('span').hidden);
-            // No permission to edit auto-launch so buttons should be hidden.
-            expectTrue(items[0].querySelector('paper-button').hidden);
-            expectTrue(items[1].querySelector('paper-button').hidden);
-            // Bailout checkbox should be hidden when auto-launch editing
-            // disabled.
-            expectTrue(dialog.$$('cr-checkbox').hidden);
+  test(assert(extension_kiosk_mode_tests.TestNames.Layout), function() {
+    const apps = basicApps.slice(0);
+    apps[1].autoLaunch = true;
+    apps[1].isLoading = true;
+    setAppSettings({apps: apps, hasAutoLaunchApp: true});
 
-            MockInteractions.tap(
-                items[0].querySelector('.icon-delete-gray button'));
-            Polymer.dom.flush();
-            return browserProxy.whenCalled('removeKioskApp');
-          })
-          .then(appId => {
-            expectEquals(appId, basicApps[0].id);
-          });
-    });
+    return initPage()
+        .then(() => {
+          const items = dialog.shadowRoot.querySelectorAll('.list-item');
+          expectEquals(items.length, 2);
+          expectTrue(items[0].textContent.includes(basicApps[0].name));
+          expectTrue(items[1].textContent.includes(basicApps[1].name));
+          // Second item should show the auto-lauch label.
+          expectTrue(items[0].querySelector('span').hidden);
+          expectFalse(items[1].querySelector('span').hidden);
+          // No permission to edit auto-launch so buttons should be hidden.
+          expectTrue(items[0].querySelector('cr-button').hidden);
+          expectTrue(items[1].querySelector('cr-button').hidden);
+          // Bailout checkbox should be hidden when auto-launch editing
+          // disabled.
+          expectTrue(dialog.$$('cr-checkbox').hidden);
 
-    test(assert(TestNames.AutoLaunch), function() {
-      const apps = basicApps.slice(0);
-      apps[1].autoLaunch = true;
-      setAppSettings({apps: apps, hasAutoLaunchApp: true});
-      setInitialSettings({autoLaunchEnabled: true});
+          items[0].querySelector('.icon-delete-gray').click();
+          flush();
+          return browserProxy.whenCalled('removeKioskApp');
+        })
+        .then(appId => {
+          expectEquals(appId, basicApps[0].id);
+        });
+  });
 
-      let buttons;
-      return initPage()
-          .then(() => {
-            buttons =
-                dialog.shadowRoot.querySelectorAll('.list-item paper-button');
-            // Has permission to edit auto-launch so buttons should be seen.
-            expectFalse(buttons[0].hidden);
-            expectFalse(buttons[1].hidden);
+  test(assert(extension_kiosk_mode_tests.TestNames.AutoLaunch), function() {
+    const apps = basicApps.slice(0);
+    apps[1].autoLaunch = true;
+    setAppSettings({apps: apps, hasAutoLaunchApp: true});
+    setInitialSettings({autoLaunchEnabled: true});
 
-            MockInteractions.tap(buttons[0]);
-            return browserProxy.whenCalled('enableKioskAutoLaunch');
-          })
-          .then(appId => {
-            expectEquals(appId, basicApps[0].id);
+    let buttons;
+    return initPage()
+        .then(() => {
+          buttons = dialog.shadowRoot.querySelectorAll('.list-item cr-button');
+          // Has permission to edit auto-launch so buttons should be seen.
+          expectFalse(buttons[0].hidden);
+          expectFalse(buttons[1].hidden);
 
-            MockInteractions.tap(buttons[1]);
-            return browserProxy.whenCalled('disableKioskAutoLaunch');
-          })
-          .then(appId => {
-            expectEquals(appId, basicApps[1].id);
-          });
-    });
+          buttons[0].click();
+          return browserProxy.whenCalled('enableKioskAutoLaunch');
+        })
+        .then(appId => {
+          expectEquals(appId, basicApps[0].id);
 
-    test(assert(TestNames.Bailout), function() {
-      const apps = basicApps.slice(0);
-      apps[1].autoLaunch = true;
-      setAppSettings({apps: apps, hasAutoLaunchApp: true});
-      setInitialSettings({autoLaunchEnabled: true});
+          buttons[1].click();
+          return browserProxy.whenCalled('disableKioskAutoLaunch');
+        })
+        .then(appId => {
+          expectEquals(appId, basicApps[1].id);
+        });
+  });
 
-      expectFalse(dialog.$['confirm-dialog'].open);
+  test(assert(extension_kiosk_mode_tests.TestNames.Bailout), function() {
+    const apps = basicApps.slice(0);
+    apps[1].autoLaunch = true;
+    setAppSettings({apps: apps, hasAutoLaunchApp: true});
+    setInitialSettings({autoLaunchEnabled: true});
 
-      let bailoutCheckbox;
-      return initPage()
-          .then(() => {
-            bailoutCheckbox = dialog.$$('cr-checkbox');
-            // Bailout checkbox should be usable when auto-launching.
-            expectFalse(bailoutCheckbox.hidden);
-            expectFalse(bailoutCheckbox.disabled);
-            expectFalse(bailoutCheckbox.checked);
+    expectFalse(dialog.$['confirm-dialog'].open);
 
-            // Making sure canceling doesn't change anything.
-            bailoutCheckbox.click();
-            Polymer.dom.flush();
-            expectTrue(dialog.$['confirm-dialog'].open);
+    let bailoutCheckbox;
+    return initPage()
+        .then(() => {
+          bailoutCheckbox = dialog.$$('cr-checkbox');
+          // Bailout checkbox should be usable when auto-launching.
+          expectFalse(bailoutCheckbox.hidden);
+          expectFalse(bailoutCheckbox.disabled);
+          expectFalse(bailoutCheckbox.checked);
 
-            MockInteractions.tap(
-                dialog.$['confirm-dialog'].querySelector('.cancel-button'));
-            Polymer.dom.flush();
-            expectFalse(bailoutCheckbox.checked);
-            expectFalse(dialog.$['confirm-dialog'].open);
-            expectTrue(dialog.$.dialog.open);
+          // Making sure canceling doesn't change anything.
+          bailoutCheckbox.click();
+          flush();
+          expectTrue(dialog.$['confirm-dialog'].open);
 
-            // Accepting confirmation dialog should trigger browserProxy call.
-            bailoutCheckbox.click();
-            Polymer.dom.flush();
-            expectTrue(dialog.$['confirm-dialog'].open);
+          dialog.$['confirm-dialog'].querySelector('.cancel-button').click();
+          flush();
+          expectFalse(bailoutCheckbox.checked);
+          expectFalse(dialog.$['confirm-dialog'].open);
+          expectTrue(dialog.$.dialog.open);
 
-            MockInteractions.tap(
-                dialog.$['confirm-dialog'].querySelector('.action-button'));
-            Polymer.dom.flush();
-            expectTrue(bailoutCheckbox.checked);
-            expectFalse(dialog.$['confirm-dialog'].open);
-            expectTrue(dialog.$.dialog.open);
-            return browserProxy.whenCalled('setDisableBailoutShortcut');
-          })
-          .then(disabled => {
-            expectTrue(disabled);
+          // Accepting confirmation dialog should trigger browserProxy call.
+          bailoutCheckbox.click();
+          flush();
+          expectTrue(dialog.$['confirm-dialog'].open);
 
-            // Test clicking on checkbox again should simply re-enable bailout.
-            browserProxy.reset();
-            bailoutCheckbox.click();
-            expectFalse(bailoutCheckbox.checked);
-            expectFalse(dialog.$['confirm-dialog'].open);
-            return browserProxy.whenCalled('setDisableBailoutShortcut');
-          })
-          .then(disabled => {
-            expectFalse(disabled);
-          });
-    });
+          dialog.$['confirm-dialog'].querySelector('.action-button').click();
+          flush();
+          expectTrue(bailoutCheckbox.checked);
+          expectFalse(dialog.$['confirm-dialog'].open);
+          expectTrue(dialog.$.dialog.open);
+          return browserProxy.whenCalled('setDisableBailoutShortcut');
+        })
+        .then(disabled => {
+          expectTrue(disabled);
 
-    test(assert(TestNames.AddButton), function() {
-      const addButton = dialog.$['add-button'];
-      expectTrue(!!addButton);
-      expectTrue(addButton.disabled);
+          // Test clicking on checkbox again should simply re-enable bailout.
+          browserProxy.reset();
+          bailoutCheckbox.click();
+          expectFalse(bailoutCheckbox.checked);
+          expectFalse(dialog.$['confirm-dialog'].open);
+          return browserProxy.whenCalled('setDisableBailoutShortcut');
+        })
+        .then(disabled => {
+          expectFalse(disabled);
+        });
+  });
 
-      const addInput = dialog.$['add-input'];
-      addInput.value = 'blah';
-      expectFalse(addButton.disabled);
+  test(assert(extension_kiosk_mode_tests.TestNames.AddButton), function() {
+    const addButton = dialog.$['add-button'];
+    expectTrue(!!addButton);
+    expectTrue(addButton.disabled);
 
-      MockInteractions.tap(addButton);
-      return browserProxy.whenCalled('addKioskApp').then(appId => {
-        expectEquals(appId, 'blah');
-      });
-    });
+    const addInput = dialog.$['add-input'];
+    addInput.value = 'blah';
+    expectFalse(addButton.disabled);
 
-    test(assert(TestNames.Updated), function() {
-      const items = dialog.shadowRoot.querySelectorAll('.list-item');
-      expectTrue(items[0].textContent.includes(basicApps[0].name));
-
-      const newName = 'completely different name';
-
-      cr.webUIListenerCallback('kiosk-app-updated', {
-        id: basicApps[0].id,
-        name: newName,
-        iconURL: '',
-        autoLaunch: false,
-        isLoading: false,
-      });
-
-      expectFalse(items[0].textContent.includes(basicApps[0].name));
-      expectTrue(items[0].textContent.includes(newName));
-    });
-
-    test(assert(TestNames.AddError), function() {
-      const addInput = dialog.$['add-input'];
-
-      expectFalse(!!addInput.invalid);
-      cr.webUIListenerCallback('kiosk-app-error', basicApps[0].id);
-
-      expectTrue(!!addInput.invalid);
-      expectTrue(addInput.errorMessage.includes(basicApps[0].id));
+    addButton.click();
+    return browserProxy.whenCalled('addKioskApp').then(appId => {
+      expectEquals(appId, 'blah');
     });
   });
 
-  return {
-    suiteName: suiteName,
-    TestNames: TestNames,
-  };
+  test(assert(extension_kiosk_mode_tests.TestNames.Updated), function() {
+    const items = dialog.shadowRoot.querySelectorAll('.list-item');
+    expectTrue(items[0].textContent.includes(basicApps[0].name));
+
+    const newName = 'completely different name';
+
+    window.cr.webUIListenerCallback('kiosk-app-updated', {
+      id: basicApps[0].id,
+      name: newName,
+      iconURL: '',
+      autoLaunch: false,
+      isLoading: false,
+    });
+
+    expectFalse(items[0].textContent.includes(basicApps[0].name));
+    expectTrue(items[0].textContent.includes(newName));
+  });
+
+  test(assert(extension_kiosk_mode_tests.TestNames.AddError), function() {
+    const addInput = dialog.$['add-input'];
+
+    expectFalse(!!addInput.invalid);
+    window.cr.webUIListenerCallback('kiosk-app-error', basicApps[0].id);
+
+    expectTrue(!!addInput.invalid);
+    expectTrue(addInput.errorMessage.includes(basicApps[0].id));
+  });
 });

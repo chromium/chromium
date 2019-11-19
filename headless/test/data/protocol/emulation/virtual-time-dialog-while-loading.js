@@ -2,23 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-const server = new Map([
-  ['http://test.com/index.html',
-     '<html><body><script>alert("No pasarán!");</script></body></html>']]);
-
 (async function(testRunner) {
-  var {page, session, dp} = await testRunner.startBlank(
+  const {page, session, dp} = await testRunner.startBlank(
       'Tests that virtual time pausing during loading of main resource ' +
       'works correctly when dialog is shown while page loads.');
-  await dp.Network.enable();
-  await dp.Network.setRequestInterception({ patterns: [{ urlPattern: '*' }] });
-  dp.Network.onRequestIntercepted(event => {
-    let body = server.get(event.params.request.url);
-    dp.Network.continueInterceptedRequest({
-      interceptionId: event.params.interceptionId,
-      rawResponse: btoa(body)
-    });
-  });
+
+  const FetchHelper = await testRunner.loadScriptAbsolute(
+      '../fetch/resources/fetch-test.js');
+  const helper = new FetchHelper(testRunner, dp);
+  await helper.enable();
+
+  helper.onceRequest('http://test.com/index.html').fulfill(
+      FetchHelper.makeContentResponse(`
+          <html><body><script>alert("No pasarán!");</script></body></html>`)
+  );
 
   dp.Page.onJavascriptDialogOpening(event => {
     dp.Page.handleJavaScritpDialog({accept: true});

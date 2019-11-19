@@ -100,7 +100,7 @@ class InterruptedPoissonProcess {
   // Fast pseudo random number generator.
   std::mt19937 mt_rand_;
 
-  base::WeakPtrFactory<InterruptedPoissonProcess> weak_factory_;
+  base::WeakPtrFactory<InterruptedPoissonProcess> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(InterruptedPoissonProcess);
 };

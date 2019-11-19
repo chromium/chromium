@@ -12,6 +12,7 @@
 #include "base/macros.h"
 #include "build/build_config.h"
 #include "sandbox/linux/bpf_dsl/policy.h"
+#include "sandbox/linux/seccomp-bpf/sandbox_bpf.h"
 #include "services/service_manager/sandbox/export.h"
 #include "services/service_manager/sandbox/linux/bpf_base_policy_linux.h"
 #include "services/service_manager/sandbox/sandbox_type.h"
@@ -60,7 +61,9 @@ class SERVICE_MANAGER_SANDBOX_EXPORT SandboxSeccompBPF {
   // external policy.
   static bool StartSandboxWithExternalPolicy(
       std::unique_ptr<sandbox::bpf_dsl::Policy> policy,
-      base::ScopedFD proc_fd);
+      base::ScopedFD proc_fd,
+      sandbox::SandboxBPF::SeccompLevel seccomp_level =
+          sandbox::SandboxBPF::SeccompLevel::SINGLE_THREADED);
 
   // The "baseline" policy can be a useful base to build a sandbox policy.
   static std::unique_ptr<sandbox::bpf_dsl::Policy> GetBaselinePolicy();

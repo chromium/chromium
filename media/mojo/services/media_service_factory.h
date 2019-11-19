@@ -19,6 +19,10 @@
 #include "services/service_manager/public/cpp/service.h"
 #include "services/service_manager/public/mojom/service.mojom.h"
 
+namespace gpu {
+class GpuMemoryBufferFactory;
+}  // namespace gpu
+
 namespace media {
 
 class MediaGpuChannelManager;
@@ -42,6 +46,7 @@ CreateGpuMediaService(
     const gpu::GpuFeatureInfo& gpu_feature_info,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     base::WeakPtr<MediaGpuChannelManager> media_gpu_channel_manager,
+    gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory,
     AndroidOverlayMojoFactoryCB android_overlay_factory_cb,
     CdmProxyFactoryCB cdm_proxy_factory_cb);
 

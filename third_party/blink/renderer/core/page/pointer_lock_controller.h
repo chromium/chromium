@@ -29,6 +29,7 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/platform/geometry/float_point.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
@@ -37,16 +38,18 @@ namespace blink {
 class Element;
 class Document;
 class Page;
+class PointerLockOptions;
 class WebMouseEvent;
 
+// This class handles mouse pointer lock and unlock, and dispatching mouse
+// events when locked. See: https://w3c.github.io/pointerlock
 class CORE_EXPORT PointerLockController final
     : public GarbageCollected<PointerLockController> {
  public:
-  static PointerLockController* Create(Page*);
-
   explicit PointerLockController(Page*);
 
-  void RequestPointerLock(Element* target);
+  void RequestPointerLock(Element* target,
+                          const PointerLockOptions* options = nullptr);
   void RequestPointerUnlock();
   void ElementRemoved(Element*);
   void DocumentDetached(Document*);
@@ -61,6 +64,10 @@ class CORE_EXPORT PointerLockController final
                                 const Vector<WebMouseEvent>& predicted_events,
                                 const AtomicString& event_type);
 
+  // Fetch the locked mouse position when pointer is locked. The values are not
+  // changed if pointer is not locked.
+  void GetPointerLockPosition(FloatPoint* lock_position,
+                              FloatPoint* lock_screen_position);
   void Trace(blink::Visitor*);
 
  private:
@@ -72,6 +79,11 @@ class CORE_EXPORT PointerLockController final
   bool lock_pending_;
   Member<Element> element_;
   Member<Document> document_of_removed_element_while_waiting_for_unlock_;
+
+  // Store the locked position so that the event position keeps unchanged when
+  // in locked states. These values only get set when entering lock states.
+  FloatPoint pointer_lock_position_;
+  FloatPoint pointer_lock_screen_position_;
 
   DISALLOW_COPY_AND_ASSIGN(PointerLockController);
 };

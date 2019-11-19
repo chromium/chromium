@@ -26,7 +26,7 @@
 #include "base/memory/ptr_util.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_container.h"
 #include "third_party/blink/renderer/core/svg/svg_resource_client.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
 namespace blink {
@@ -116,7 +116,7 @@ class SVGResources {
   void ResourceDestroyed(LayoutSVGResourceContainer*);
   void ClearReferencesTo(LayoutSVGResourceContainer*);
 
-#ifndef NDEBUG
+#if DCHECK_IS_ON()
   void Dump(const LayoutObject*);
 #endif
 
@@ -147,10 +147,6 @@ class SVGResources {
     ClipperFilterMaskerData()
         : clipper(nullptr), filter(nullptr), masker(nullptr) {}
 
-    static std::unique_ptr<ClipperFilterMaskerData> Create() {
-      return base::WrapUnique(new ClipperFilterMaskerData);
-    }
-
     LayoutSVGResourceClipper* clipper;
     LayoutSVGResourceFilter* filter;
     LayoutSVGResourceMasker* masker;
@@ -164,10 +160,6 @@ class SVGResources {
    public:
     MarkerData()
         : marker_start(nullptr), marker_mid(nullptr), marker_end(nullptr) {}
-
-    static std::unique_ptr<MarkerData> Create() {
-      return std::make_unique<MarkerData>();
-    }
 
     LayoutSVGResourceMarker* marker_start;
     LayoutSVGResourceMarker* marker_mid;
@@ -184,10 +176,6 @@ class SVGResources {
 
    public:
     FillStrokeData() : fill(nullptr), stroke(nullptr) {}
-
-    static std::unique_ptr<FillStrokeData> Create() {
-      return std::make_unique<FillStrokeData>();
-    }
 
     LayoutSVGResourcePaintServer* fill;
     LayoutSVGResourcePaintServer* stroke;

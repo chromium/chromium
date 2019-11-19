@@ -18,6 +18,10 @@ namespace cc {
 struct OverscrollBehavior;
 }
 
+namespace gfx {
+class PointF;
+}
+
 namespace ui {
 
 class OverscrollRefreshHandler;
@@ -37,12 +41,12 @@ class UI_ANDROID_EXPORT OverscrollRefresh {
   // capping the impulse per event.
   enum { kMinPullsToActivate = 3 };
 
-  explicit OverscrollRefresh(OverscrollRefreshHandler* handler);
+  OverscrollRefresh(OverscrollRefreshHandler* handler, float dpi_scale);
 
   virtual ~OverscrollRefresh();
 
   // Scroll event stream listening methods.
-  void OnScrollBegin();
+  void OnScrollBegin(const gfx::PointF& pos);
   // Returns whether the refresh was activated.
   void OnScrollEnd(const gfx::Vector2dF& velocity);
 
@@ -62,7 +66,8 @@ class UI_ANDROID_EXPORT OverscrollRefresh {
   // Notify the effect of the latest scroll offset and overflow properties.
   // The effect will be disabled when the offset is non-zero or overflow is
   // hidden. Note: All dimensions are in device pixels.
-  void OnFrameUpdated(const gfx::Vector2dF& content_scroll_offset,
+  void OnFrameUpdated(const gfx::SizeF& viewport_size,
+                      const gfx::Vector2dF& content_scroll_offset,
                       bool root_overflow_y_hidden);
 
   // Reset the effect to its inactive state, immediately detaching and
@@ -97,6 +102,10 @@ class UI_ANDROID_EXPORT OverscrollRefresh {
     ENABLED,
   } scroll_consumption_state_;
 
+  float viewport_width_;
+  float scroll_begin_x_;
+  float scroll_begin_y_;
+  const float edge_width_;
   gfx::Vector2dF cumulative_scroll_;
   OverscrollRefreshHandler* const handler_;
 

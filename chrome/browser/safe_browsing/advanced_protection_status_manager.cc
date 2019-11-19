@@ -12,12 +12,13 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/common/safe_browsing_prefs.h"
+#include "components/safe_browsing/features.h"
+#include "components/signin/public/identity_manager/accounts_mutator.h"
+#include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/oauth2_id_token_decoder.h"
-#include "services/identity/public/cpp/accounts_mutator.h"
-#include "services/identity/public/cpp/primary_account_access_token_fetcher.h"
 
 using content::BrowserThread;
 
@@ -35,37 +36,28 @@ const base::TimeDelta kMinimumRefreshDelay = base::TimeDelta::FromMinutes(1);
 // AdvancedProtectionStatusManager
 ////////////////////////////////////////////////////////////////////////////////
 AdvancedProtectionStatusManager::AdvancedProtectionStatusManager(
-    Profile* profile)
-    : profile_(profile),
-      identity_manager_(nullptr),
-      access_token_fetcher_(nullptr),
-      is_under_advanced_protection_(false),
-      minimum_delay_(kMinimumRefreshDelay) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (profile_->IsOffTheRecord())
-    return;
-
-  Initialize();
-  MaybeRefreshOnStartUp();
-}
+    PrefService* pref_service,
+    signin::IdentityManager* identity_manager)
+    : AdvancedProtectionStatusManager(pref_service,
+                                      identity_manager,
+                                      kMinimumRefreshDelay) {}
 
 void AdvancedProtectionStatusManager::Initialize() {
-  identity_manager_ = IdentityManagerFactory::GetForProfile(profile_);
   SubscribeToSigninEvents();
 }
 
 void AdvancedProtectionStatusManager::MaybeRefreshOnStartUp() {
   // Retrieves advanced protection service status from primary account's info.
-  CoreAccountInfo core_info = identity_manager_->GetPrimaryAccountInfo();
+  CoreAccountInfo core_info =
+      identity_manager_->GetUnconsentedPrimaryAccountInfo();
   if (core_info.account_id.empty())
     return;
 
   is_under_advanced_protection_ = core_info.is_under_advanced_protection;
 
-  if (profile_->GetPrefs()->HasPrefPath(
-          prefs::kAdvancedProtectionLastRefreshInUs)) {
+  if (pref_service_->HasPrefPath(prefs::kAdvancedProtectionLastRefreshInUs)) {
     last_refreshed_ = base::Time::FromDeltaSinceWindowsEpoch(
-        base::TimeDelta::FromMicroseconds(profile_->GetPrefs()->GetInt64(
+        base::TimeDelta::FromMicroseconds(pref_service_->GetInt64(
             prefs::kAdvancedProtectionLastRefreshInUs)));
     if (is_under_advanced_protection_)
       ScheduleNextRefresh();
@@ -86,11 +78,11 @@ void AdvancedProtectionStatusManager::Shutdown() {
 AdvancedProtectionStatusManager::~AdvancedProtectionStatusManager() {}
 
 void AdvancedProtectionStatusManager::SubscribeToSigninEvents() {
-  IdentityManagerFactory::GetForProfile(profile_)->AddObserver(this);
+  identity_manager_->AddObserver(this);
 }
 
 void AdvancedProtectionStatusManager::UnsubscribeFromSigninEvents() {
-  IdentityManagerFactory::GetForProfile(profile_)->RemoveObserver(this);
+  identity_manager_->RemoveObserver(this);
 }
 
 bool AdvancedProtectionStatusManager::IsRefreshScheduled() {
@@ -99,9 +91,8 @@ bool AdvancedProtectionStatusManager::IsRefreshScheduled() {
 
 void AdvancedProtectionStatusManager::OnExtendedAccountInfoUpdated(
     const AccountInfo& info) {
-  // Ignore update if |profile_| is in incognito mode, or the updated account
-  // is not the primary account.
-  if (profile_->IsOffTheRecord() || !IsPrimaryAccount(info))
+  // Ignore update if the updated account is not the primary account.
+  if (!IsUnconsentedPrimaryAccount(info))
     return;
 
   if (info.is_under_advanced_protection) {
@@ -115,28 +106,24 @@ void AdvancedProtectionStatusManager::OnExtendedAccountInfoUpdated(
 
 void AdvancedProtectionStatusManager::OnExtendedAccountInfoRemoved(
     const AccountInfo& info) {
-  if (profile_->IsOffTheRecord())
-    return;
-
   // If user signed out primary account, cancel refresh.
-  std::string primary_account_id = GetPrimaryAccountId();
-  if (!primary_account_id.empty() && primary_account_id == info.account_id) {
+  CoreAccountId unconsented_primary_account_id =
+      GetUnconsentedPrimaryAccountId();
+  if (!unconsented_primary_account_id.empty() &&
+      unconsented_primary_account_id == info.account_id) {
     is_under_advanced_protection_ = false;
     OnAdvancedProtectionDisabled();
   }
 }
 
-void AdvancedProtectionStatusManager::OnPrimaryAccountSet(
+void AdvancedProtectionStatusManager::OnUnconsentedPrimaryAccountChanged(
     const CoreAccountInfo& account_info) {
   // TODO(crbug.com/926204): remove IdentityManager ensures that primary account
   // always has valid refresh token when it is set.
   if (account_info.is_under_advanced_protection)
     OnAdvancedProtectionEnabled();
-}
-
-void AdvancedProtectionStatusManager::OnPrimaryAccountCleared(
-    const CoreAccountInfo& account_info) {
-  OnAdvancedProtectionDisabled();
+  else
+    OnAdvancedProtectionDisabled();
 }
 
 void AdvancedProtectionStatusManager::OnAdvancedProtectionEnabled() {
@@ -152,9 +139,9 @@ void AdvancedProtectionStatusManager::OnAdvancedProtectionDisabled() {
 }
 
 void AdvancedProtectionStatusManager::OnAccessTokenFetchComplete(
-    std::string account_id,
+    CoreAccountId account_id,
     GoogleServiceAuthError error,
-    identity::AccessTokenInfo token_info) {
+    signin::AccessTokenInfo token_info) {
   DCHECK(access_token_fetcher_);
 
   if (is_under_advanced_protection_) {
@@ -181,10 +168,11 @@ void AdvancedProtectionStatusManager::OnAccessTokenFetchComplete(
 }
 
 void AdvancedProtectionStatusManager::RefreshAdvancedProtectionStatus() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  std::string primary_account_id = GetPrimaryAccountId();
-  if (!identity_manager_ || primary_account_id.empty())
+  CoreAccountId unconsented_primary_account_id =
+      GetUnconsentedPrimaryAccountId();
+  if (!identity_manager_ || unconsented_primary_account_id.empty())
     return;
 
   // If there's already a request going on, do nothing.
@@ -196,16 +184,16 @@ void AdvancedProtectionStatusManager::RefreshAdvancedProtectionStatus() {
   scopes.insert(GaiaConstants::kOAuth1LoginScope);
 
   access_token_fetcher_ =
-      std::make_unique<identity::PrimaryAccountAccessTokenFetcher>(
+      std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
           "advanced_protection_status_manager", identity_manager_, scopes,
           base::BindOnce(
               &AdvancedProtectionStatusManager::OnAccessTokenFetchComplete,
-              base::Unretained(this), primary_account_id),
-          identity::PrimaryAccountAccessTokenFetcher::Mode::kImmediate);
+              base::Unretained(this), unconsented_primary_account_id),
+          signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate);
 }
 
 void AdvancedProtectionStatusManager::ScheduleNextRefresh() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CancelFutureRefresh();
   base::Time now = base::Time::Now();
   const base::TimeDelta time_since_last_refresh =
@@ -226,37 +214,30 @@ void AdvancedProtectionStatusManager::CancelFutureRefresh() {
 
 void AdvancedProtectionStatusManager::UpdateLastRefreshTime() {
   last_refreshed_ = base::Time::Now();
-  profile_->GetPrefs()->SetInt64(
+  pref_service_->SetInt64(
       prefs::kAdvancedProtectionLastRefreshInUs,
       last_refreshed_.ToDeltaSinceWindowsEpoch().InMicroseconds());
 }
 
-// static
-bool AdvancedProtectionStatusManager::IsUnderAdvancedProtection(
-    Profile* profile) {
-  Profile* original_profile =
-      profile->IsOffTheRecord() ? profile->GetOriginalProfile() : profile;
-
-  return original_profile &&
-         AdvancedProtectionStatusManagerFactory::GetInstance()
-             ->GetForBrowserContext(
-                 static_cast<content::BrowserContext*>(original_profile))
-             ->is_under_advanced_protection();
+bool AdvancedProtectionStatusManager::RequestsAdvancedProtectionVerdicts() {
+  return is_under_advanced_protection();
 }
 
-bool AdvancedProtectionStatusManager::IsPrimaryAccount(
+bool AdvancedProtectionStatusManager::IsUnconsentedPrimaryAccount(
     const CoreAccountInfo& account_info) {
   return !account_info.account_id.empty() &&
-         account_info.account_id == GetPrimaryAccountId();
+         account_info.account_id == GetUnconsentedPrimaryAccountId();
 }
 
 void AdvancedProtectionStatusManager::OnGetIDToken(
-    const std::string& account_id,
+    const CoreAccountId& account_id,
     const std::string& id_token) {
   // Skips if the ID token is not for the primary account. Or user is no longer
   // signed in.
-  std::string primary_account_id = GetPrimaryAccountId();
-  if (primary_account_id.empty() || account_id != primary_account_id)
+  CoreAccountId unconsented_primary_account_id =
+      GetUnconsentedPrimaryAccountId();
+  if (unconsented_primary_account_id.empty() ||
+      account_id != unconsented_primary_account_id)
     return;
 
   gaia::TokenServiceFlags service_flags = gaia::ParseServiceFlags(id_token);
@@ -266,7 +247,7 @@ void AdvancedProtectionStatusManager::OnGetIDToken(
   if (is_under_advanced_protection_ !=
       service_flags.is_under_advanced_protection) {
     identity_manager_->GetAccountsMutator()->UpdateAccountInfo(
-        GetPrimaryAccountId(), false,
+        GetUnconsentedPrimaryAccountId(), false,
         service_flags.is_under_advanced_protection);
   } else if (service_flags.is_under_advanced_protection) {
     OnAdvancedProtectionEnabled();
@@ -276,21 +257,24 @@ void AdvancedProtectionStatusManager::OnGetIDToken(
 }
 
 AdvancedProtectionStatusManager::AdvancedProtectionStatusManager(
-    Profile* profile,
+    PrefService* pref_service,
+    signin::IdentityManager* identity_manager,
     const base::TimeDelta& min_delay)
-    : profile_(profile),
-      identity_manager_(nullptr),
+    : pref_service_(pref_service),
+      identity_manager_(identity_manager),
       is_under_advanced_protection_(false),
       minimum_delay_(min_delay) {
-  if (profile_->IsOffTheRecord())
-    return;
+  DCHECK(identity_manager_);
+  DCHECK(pref_service_);
+
   Initialize();
   MaybeRefreshOnStartUp();
 }
 
-std::string AdvancedProtectionStatusManager::GetPrimaryAccountId() const {
-  return identity_manager_ ? identity_manager_->GetPrimaryAccountId()
-                           : std::string();
+CoreAccountId AdvancedProtectionStatusManager::GetUnconsentedPrimaryAccountId()
+    const {
+  return identity_manager_ ? identity_manager_->GetUnconsentedPrimaryAccountId()
+                           : CoreAccountId();
 }
 
 }  // namespace safe_browsing

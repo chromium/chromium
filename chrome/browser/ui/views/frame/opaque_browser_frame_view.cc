@@ -10,22 +10,23 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/browser/themes/theme_properties.h"
-#include "chrome/browser/ui/extensions/hosted_app_browser_controller.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/frame/browser_frame.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/hosted_app_button_container.h"
 #include "chrome/browser/ui/views/frame/opaque_browser_frame_view_layout.h"
 #include "chrome/browser/ui/views/frame/opaque_browser_frame_view_platform_specific.h"
 #include "chrome/browser/ui/views/tab_icon_view.h"
 #include "chrome/browser/ui/views/tabs/new_tab_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/browser/ui/views/web_apps/web_app_frame_toolbar_view.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -67,9 +68,8 @@ class CaptionButtonBackgroundImageSource : public gfx::CanvasImageSource {
                                      int dest_width,
                                      int dest_height,
                                      bool draw_mirrored)
-      : gfx::CanvasImageSource(
-            bg_image.isNull() ? gfx::Size(1, 1) : bg_image.size(),
-            false),
+      : gfx::CanvasImageSource(bg_image.isNull() ? gfx::Size(1, 1)
+                                                 : bg_image.size()),
         bg_image_(bg_image),
         source_x_(source_x),
         source_y_(source_y),
@@ -169,7 +169,7 @@ void OpaqueBrowserFrameView::InitViews() {
   if (browser_view()->ShouldShowWindowIcon()) {
     window_icon_ = new TabIconView(this, this);
     window_icon_->set_is_light(true);
-    window_icon_->set_id(VIEW_ID_WINDOW_ICON);
+    window_icon_->SetID(VIEW_ID_WINDOW_ICON);
     AddChildView(window_icon_);
     window_icon_->Update();
   }
@@ -178,28 +178,30 @@ void OpaqueBrowserFrameView::InitViews() {
   window_title_->SetVisible(browser_view()->ShouldShowWindowTitle());
   window_title_->SetSubpixelRenderingEnabled(false);
   window_title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  window_title_->set_id(VIEW_ID_WINDOW_TITLE);
+  window_title_->SetID(VIEW_ID_WINDOW_TITLE);
   AddChildView(window_title_);
 
-  extensions::HostedAppBrowserController* controller =
-      browser_view()->browser()->hosted_app_controller();
-  if (controller && controller->ShouldShowHostedAppButtonContainer()) {
-    set_hosted_app_button_container(new HostedAppButtonContainer(
-        frame(), browser_view(), GetCaptionColor(kActive),
-        GetCaptionColor(kInactive)));
-    AddChildView(hosted_app_button_container());
+  web_app::AppBrowserController* controller =
+      browser_view()->browser()->app_controller();
+  if (controller && controller->HasTitlebarToolbar()) {
+    set_web_app_frame_toolbar(
+        AddChildView(std::make_unique<WebAppFrameToolbarView>(
+            frame(), browser_view(),
+            GetCaptionColor(BrowserFrameActiveState::kActive),
+            GetCaptionColor(BrowserFrameActiveState::kInactive))));
   }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 // OpaqueBrowserFrameView, BrowserNonClientFrameView implementation:
 
-gfx::Rect OpaqueBrowserFrameView::GetBoundsForTabStrip(
+gfx::Rect OpaqueBrowserFrameView::GetBoundsForTabStripRegion(
     const views::View* tabstrip) const {
   if (!tabstrip)
     return gfx::Rect();
 
-  return layout_->GetBoundsForTabStrip(tabstrip->GetPreferredSize(), width());
+  return layout_->GetBoundsForTabStripRegion(tabstrip->GetPreferredSize(),
+                                             width());
 }
 
 int OpaqueBrowserFrameView::GetTopInset(bool restored) const {
@@ -260,16 +262,16 @@ int OpaqueBrowserFrameView::NonClientHitTest(const gfx::Point& point) {
     return frame_component;
 
   // Then see if the point is within any of the window controls.
-  if (close_button_ && close_button_->visible() &&
+  if (close_button_ && close_button_->GetVisible() &&
       close_button_->GetMirroredBounds().Contains(point))
     return HTCLOSE;
-  if (restore_button_ && restore_button_->visible() &&
+  if (restore_button_ && restore_button_->GetVisible() &&
       restore_button_->GetMirroredBounds().Contains(point))
     return HTMAXBUTTON;
-  if (maximize_button_ && maximize_button_->visible() &&
+  if (maximize_button_ && maximize_button_->GetVisible() &&
       maximize_button_->GetMirroredBounds().Contains(point))
     return HTMAXBUTTON;
-  if (minimize_button_ && minimize_button_->visible() &&
+  if (minimize_button_ && minimize_button_->GetVisible() &&
       minimize_button_->GetMirroredBounds().Contains(point))
     return HTMINBUTTON;
 
@@ -346,19 +348,18 @@ void OpaqueBrowserFrameView::ButtonPressed(views::Button* sender,
     frame()->Restore();
   } else if (sender == close_button_) {
     frame()->CloseWithReason(views::Widget::ClosedReason::kCloseButtonClicked);
-  }
-}
-
-void OpaqueBrowserFrameView::OnMenuButtonClicked(views::MenuButton* source,
-                                                 const gfx::Point& point,
-                                                 const ui::Event* event) {
+  } else if (sender == window_icon_) {
 #if defined(OS_LINUX)
-  views::MenuRunner menu_runner(frame()->GetSystemMenuModel(),
-                                views::MenuRunner::HAS_MNEMONICS);
-  menu_runner.RunMenuAt(browser_view()->GetWidget(), window_icon_,
-                        window_icon_->GetBoundsInScreen(),
-                        views::MENU_ANCHOR_TOPLEFT, ui::MENU_SOURCE_MOUSE);
+    // TODO(pbos): Figure out / document why this is Linux only. This needs a
+    // comment.
+    views::MenuRunner menu_runner(frame()->GetSystemMenuModel(),
+                                  views::MenuRunner::HAS_MNEMONICS);
+    menu_runner.RunMenuAt(
+        browser_view()->GetWidget(), window_icon_->button_controller(),
+        window_icon_->GetBoundsInScreen(), views::MenuAnchorPosition::kTopLeft,
+        ui::MENU_SOURCE_MOUSE);
 #endif
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -441,7 +442,7 @@ bool OpaqueBrowserFrameView::IsTabStripVisible() const {
 
 bool OpaqueBrowserFrameView::IsToolbarVisible() const {
   return browser_view()->IsToolbarVisible() &&
-      !browser_view()->toolbar()->GetPreferredSize().IsEmpty();
+         !browser_view()->toolbar()->GetPreferredSize().IsEmpty();
 }
 
 int OpaqueBrowserFrameView::GetTabStripHeight() const {
@@ -456,9 +457,10 @@ int OpaqueBrowserFrameView::GetTopAreaHeight() const {
   const int non_client_top_height = layout_->NonClientTopHeight(false);
   if (!browser_view()->IsTabStripVisible())
     return non_client_top_height;
-  return std::max(non_client_top_height,
-                  GetBoundsForTabStrip(browser_view()->tabstrip()).bottom() -
-                      GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP));
+  return std::max(
+      non_client_top_height,
+      GetBoundsForTabStripRegion(browser_view()->tabstrip()).bottom() -
+          GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP));
 }
 
 bool OpaqueBrowserFrameView::UseCustomFrame() const {
@@ -494,7 +496,8 @@ void OpaqueBrowserFrameView::OnPaint(gfx::Canvas* canvas) {
 
   const bool active = ShouldPaintAsActive();
   SkColor frame_color = GetFrameColor();
-  window_title_->SetEnabledColor(GetCaptionColor(kUseCurrent));
+  window_title_->SetEnabledColor(
+      GetCaptionColor(BrowserFrameActiveState::kUseCurrent));
   window_title_->SetBackgroundColor(frame_color);
   frame_background_->set_frame_color(frame_color);
   frame_background_->set_use_custom_frame(frame()->UseCustomFrame());
@@ -579,7 +582,7 @@ views::Button* OpaqueBrowserFrameView::CreateImageButton(int normal_image_id,
     // (&processed_bg_image) to create a local copy, so it's safe for this
     // to be locally scoped.
     button->SetBackgroundImage(
-        tp->GetColor(ThemeProperties::COLOR_BUTTON_BACKGROUND),
+        tp->GetColor(ThemeProperties::COLOR_CONTROL_BUTTON_BACKGROUND),
         (processed_bg_image.isNull() ? nullptr : &processed_bg_image),
         tp->GetImageSkiaNamed(mask_image_id));
   }
@@ -591,7 +594,7 @@ void OpaqueBrowserFrameView::InitWindowCaptionButton(
     int accessibility_string_id,
     ViewID view_id) {
   button->SetAccessibleName(l10n_util::GetStringUTF16(accessibility_string_id));
-  button->set_id(view_id);
+  button->SetID(view_id);
   AddChildView(button);
 }
 
@@ -672,8 +675,6 @@ bool OpaqueBrowserFrameView::ShouldShowWindowTitleBar() const {
 
   // Do not show caption buttons if the window manager is forcefully providing a
   // title bar (e.g., in Ubuntu Unity, if the window is maximized).
-  if (!views::ViewsDelegate::GetInstance())
-    return true;
   return !views::ViewsDelegate::GetInstance()->WindowManagerProvidesTitleBar(
       IsMaximized());
 }
@@ -701,28 +702,21 @@ void OpaqueBrowserFrameView::PaintRestoredFrameBorder(
 
 void OpaqueBrowserFrameView::PaintMaximizedFrameBorder(
     gfx::Canvas* canvas) const {
-  frame_background_->set_maximized_top_inset(
-      GetTopInset(true) - GetTopInset(false));
+  frame_background_->set_maximized_top_inset(GetTopInset(true) -
+                                             GetTopInset(false));
   frame_background_->PaintMaximized(canvas, this);
 }
 
 void OpaqueBrowserFrameView::PaintClientEdge(gfx::Canvas* canvas) const {
   const bool tabstrip_visible = browser_view()->IsTabStripVisible();
-  gfx::Rect client_bounds =
+  const gfx::Rect client_bounds =
       layout_->CalculateClientAreaBounds(width(), height());
-  int y = client_bounds.y();
-  // If the toolbar isn't going to draw a top edge for us, draw one ourselves.
-  if (!tabstrip_visible) {
-    const gfx::Rect line_bounds(client_bounds.x(), client_bounds.y() - 1,
-                                client_bounds.width(), 1);
-    BrowserView::Paint1pxHorizontalLine(canvas, GetToolbarTopSeparatorColor(),
-                                        line_bounds, true);
-  }
 
   // In maximized mode, the only edge to draw is the top one, so we're done.
   if (IsFrameCondensed())
     return;
 
+  int y = client_bounds.y();
   const gfx::Rect toolbar_bounds = browser_view()->toolbar()->bounds();
   if (tabstrip_visible) {
     // The client edges start at the top of the toolbar.
@@ -730,7 +724,7 @@ void OpaqueBrowserFrameView::PaintClientEdge(gfx::Canvas* canvas) const {
   }
 
   // For popup windows, draw location bar sides.
-  SkColor location_bar_border_color =
+  const SkColor location_bar_border_color =
       browser_view()->toolbar()->location_bar()->GetOpaqueBorderColor(
           browser_view()->IsIncognito());
   if (!tabstrip_visible && IsToolbarVisible()) {

@@ -24,6 +24,7 @@ NSString* const kImportDataImportCellId = @"kImportDataImportCellId";
 // The accessibility identifier of the Keep Data Separate cell.
 NSString* const kImportDataKeepSeparateCellId =
     @"kImportDataKeepSeparateCellId";
+NSString* const kImportDataContinueButtonId = @"kImportDataContinueButtonId";
 
 namespace {
 
@@ -89,7 +90,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
               style:UIBarButtonItemStyleDone
              target:self
              action:@selector(didTapContinue)];
-
+  self.navigationItem.rightBarButtonItem.accessibilityIdentifier =
+      kImportDataContinueButtonId;
   [self loadModel];
 }
 
@@ -126,7 +128,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
       [[TableViewTextItem alloc] initWithType:ItemTypeFooter];
   item.text = l10n_util::GetNSStringF(IDS_IOS_OPTIONS_IMPORT_DATA_HEADER,
                                       base::SysNSStringToUTF16(_fromEmail));
-  item.textColor = UIColor.blackColor;
   return item;
 }
 

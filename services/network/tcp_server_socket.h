@@ -12,7 +12,8 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "mojo/public/cpp/bindings/interface_request.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/ip_endpoint.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/mojom/tcp_socket.mojom.h"
@@ -36,9 +37,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) TCPServerSocket
     ~Delegate() {}
 
     // Invoked when a new connection is accepted. The delegate should take
-    // ownership of |socket| and set up binding for |request|.
-    virtual void OnAccept(std::unique_ptr<TCPConnectedSocket> socket,
-                          mojom::TCPConnectedSocketRequest request) = 0;
+    // ownership of |socket| and set up binding for |receiver|.
+    virtual void OnAccept(
+        std::unique_ptr<TCPConnectedSocket> socket,
+        mojo::PendingReceiver<mojom::TCPConnectedSocket> receiver) = 0;
   };
 
   // Constructs a TCPServerSocket. |delegate| must outlive |this|. When a new
@@ -61,7 +63,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) TCPServerSocket
              net::IPEndPoint* local_addr_out);
 
   // TCPServerSocket implementation.
-  void Accept(mojom::SocketObserverPtr observer,
+  void Accept(mojo::PendingRemote<mojom::SocketObserver> observer,
               AcceptCallback callback) override;
 
   // Replaces the underlying socket implementation with |socket| in tests.
@@ -69,11 +71,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) TCPServerSocket
 
  private:
   struct PendingAccept {
-    PendingAccept(AcceptCallback callback, mojom::SocketObserverPtr observer);
+    PendingAccept(AcceptCallback callback,
+                  mojo::PendingRemote<mojom::SocketObserver> observer);
     ~PendingAccept();
 
     AcceptCallback callback;
-    mojom::SocketObserverPtr observer;
+    mojo::PendingRemote<mojom::SocketObserver> observer;
   };
   // Invoked when socket_->Accept() completes.
   void OnAcceptCompleted(int result);
@@ -87,7 +90,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) TCPServerSocket
   std::unique_ptr<net::StreamSocket> accepted_socket_;
   net::NetworkTrafficAnnotationTag traffic_annotation_;
 
-  base::WeakPtrFactory<TCPServerSocket> weak_factory_;
+  base::WeakPtrFactory<TCPServerSocket> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(TCPServerSocket);
 };

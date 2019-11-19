@@ -49,7 +49,7 @@ class LayoutButton final : public LayoutFlexibleBox {
   bool CreatesAnonymousWrapper() const override { return true; }
 
   bool HasControlClip() const override;
-  LayoutRect ControlClipRect(const LayoutPoint&) const override;
+  PhysicalRect ControlClipRect(const PhysicalOffset&) const override;
 
   LayoutUnit BaselinePosition(FontBaseline,
                               bool first_line,

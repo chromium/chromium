@@ -25,19 +25,19 @@ waterfalls, and various tryservers, as described in [Using the GPU Bots].
 [Using the GPU Bots]: gpu_testing.md#Using-the-GPU-Bots
 
 All of the physical hardware for the bots lives in the Swarming pool, and most
-of it in the Chrome-GPU Swarming pool. The waterfall bots are simply virtual
-machines which spawn Swarming tasks with the appropriate tags to get them to run
-on the desired GPU and operating system type. So, for example, the [Win10
-Release (NVIDIA)] bot is actually a virtual machine which spawns all of its jobs
-with the Swarming parameters:
+of it in the chromium.tests.gpu Swarming pool. The waterfall bots are simply
+virtual machines which spawn Swarming tasks with the appropriate tags to get
+them to run on the desired GPU and operating system type. So, for example, the
+[Win10 x64 Release (NVIDIA)] bot is actually a virtual machine which spawns all
+of its jobs with the Swarming parameters:
 
-[Win10 Release (NVIDIA)]: https://ci.chromium.org/p/chromium/builders/luci.chromium.ci/Win10%20Release%20%28NVIDIA%29
+[Win10 x64 Release (NVIDIA)]: https://ci.chromium.org/p/chromium/builders/ci/Win10%20x64%20Release%20%28NVIDIA%29
 
 ```json
 {
     "gpu": "10de:1cb3-23.21.13.8816",
     "os": "Windows-10",
-    "pool": "Chrome-GPU"
+    "pool": "chromium.tests.gpu"
 }
 ```
 
@@ -219,14 +219,17 @@ In the [chromium/src] workspace:
 
 In the [infradata/config] workspace (Google internal only, sorry):
 
-*   [configs/chromium-swarm/bots.cfg]
-    *   Defines a `Chrome-GPU` Swarming pool which contains most of the
+*   [gpu.star]
+    *   Defines a `chromium.tests.gpu` Swarming pool which contains most of the
         specialized hardware: as of this writing, the Windows and Linux NVIDIA
         bots, the Windows AMD bots, and the MacBook Pros with NVIDIA and AMD
         GPUs. New GPU hardware should be added to this pool.
 
 [infradata/config]:                https://chrome-internal.googlesource.com/infradata/config
-[configs/chromium-swarm/bots.cfg]: https://chrome-internal.googlesource.com/infradata/config/+/master/configs/chromium-swarm/bots.cfg
+[bot_config.py]:                   https://chrome-internal.googlesource.com/infradata/config/+/master/configs/chromium-swarm/scripts/bot_config.py
+[gpu.star]:                        https://chrome-internal.googlesource.com/infradata/config/+/master/configs/chromium-swarm/starlark/bots/chromium/gpu.star
+[main.star]:                       https://chrome-internal.googlesource.com/infradata/config/+/master/main.star
+[vms.cfg]:                         https://chrome-internal.googlesource.com/infradata/config/+/master/configs/gce-provider/vms.cfg
 
 ## Walkthroughs of various maintenance scenarios
 
@@ -250,29 +253,49 @@ for the hosts.
 
     1.  File a Chrome Infrastructure Labs ticket requesting 2 virtual machines
         for the testers. See this [example ticket](http://crbug.com/838975).
+    1.  Follow the instructions below to add an association between those VM
+        names and the bot names you're adding to [`gpu.star`][gpu.star] and
+        regenerate the auto-generated files.
 
-1. If you need a non-Mac VM, VMs are allocated using the Machine Provider APIs:
+1. If you need a non-Mac VM, VMs are allocated using the GCE Provider APIs:
 
     1.  Create a CL in the [`infradata/config`][infradata/config] (Google
         internal) workspace which does the following. Git configure your
-        user.email to @google.com if necessary. See
-        [example CL](https://chrome-internal-review.googlesource.com/718221)
-        for relevant Linux sections and
-        [example CL](https://chrome-internal-review.googlesource.com/715834)
-        for Windows.
-    1.  Adds a new "bot_group" block in the Chromium GPU FYI section of
-        [`configs/chromium-swarm/bots.cfg`][bots.cfg]. If setting up a Release/
-        Debug bot pair, you would add two separate bot_group blocks. If
-        setting up a new optional tryserver, for example, you would add one
-        new bot_group block. Copy the closest configuration you can find
-        -- for example, Windows, Android, etc.
-    1.  In [`configs/gce-backend/managers.cfg`][managers.cfg], choose a zone
-        in which to allocate the VMs. Make sure that you choose one with the
-        correct configuration (either gce-trusty or win10) and find a zone
-        which hasn't yet reached its maximum allocation. Increase the
-        maximum_size by the number of VMs being allocated.
-    1.  Get this reviewed and landed. This step associates the VM with the
-        bot's name on the waterfall.
+        user.email to @google.com if necessary. For reference, see these example
+        CLs:
+
+        1. [Adding both Linux and Windows
+        VMs](https://chrome-internal-review.googlesource.com/1068669) for
+        trybots.
+        1. [Adding a Linux
+        VM](https://chrome-internal-review.googlesource.com/1095060) for
+        a waterfall bot.
+        1. [Adding a Windows
+        VM](https://chrome-internal-review.googlesource.com/1111456) for a
+        waterfall bot.
+
+    1.  Edit [gpu.star] to add an entry for the new bot. Currently, the only way
+        to limit the number of concurrent builds per bot is to limit the number
+        of VMs associated with it. This means that each new bot requires a new
+        prefix. Add your new entry to the correct block:
+        1. Put waterfall bots under `gpu_ci_bots`. For example: <br>
+           `gce_thin_trusty('linux-fyi-skiarenderer-vulkan-nvidia', 'us-east1-c')`
+           or <br> `gce_thin_win10('win10-fyi-release-amd-rx-550')`.
+        1. Put trybots under the appropriate `gpu_try_bots` block (optional GPU
+           trybots, ANGLE trybots, etc.). For example: <br>
+           `gce_trusty_pair('gpu-fyi-try-linux-intel-exp')`.
+
+    1.  Run [main.star] to regenerate `configs/chromium-swarm/bots.cfg` and
+        'configs/gce-provider/vms.cfg'. Double-check your work there.
+
+        Note that previously [vms.cfg] had to be editted manually. Part of the
+        difficulty was in choosing a zone. This should soon no longer be
+        necessary per [crbug.com/942301](http://crbug.com/942301), but consult
+        with the Chrome Infra team to find out which of the
+        [zones](https://cloud.google.com/compute/docs/regions-zones/) has
+        available capacity.
+    1.  Get this reviewed and landed. This step associates the VM or pool of VMs
+        with the bot's name on the waterfall.
 
 ### How to add a new tester bot to the chromium.gpu.fyi waterfall
 
@@ -302,14 +325,20 @@ Builder].
     to determine the PCI IDs of the GPUs in the bots. (These instructions will
     need to be updated for Android bots which don't have PCI buses.)
 
-    1.  Make sure to add these new machines to the Chrome-GPU Swarming pool by
-        creating a CL against [`configs/chromium-swarm/bots.cfg`][bots.cfg] in
-        the [infradata/config] (Google internal) workspace. Git configure your
-        user.email to @google.com if necessary. Here is an [example
-        CL](https://chrome-internal-review.googlesource.com/524420).
+    1.  Make sure to add these new machines to the chromium.tests.gpu Swarming
+        pool by creating a CL against [gpu.star] in the [infradata/config]
+        (Google internal) workspace. Git configure your user.email to
+        @google.com if necessary. Here is one [example
+        CL](https://chrome-internal-review.googlesource.com/913528) and a
+        [second
+        example](https://chrome-internal-review.googlesource.com/1111456).
 
-1.  Allocate new virtual machines for the bots as described in
-    [How to set up new virtual machine instances].
+    1.  Run [main.star] to regenerate `configs/chromium-swarm/bots.cfg`.
+        Double-check your work there.
+
+1.  Allocate new virtual machines for the bots as described in [How to set up
+    new virtual machine
+    instances](#How-to-set-up-new-virtual-machine-instances).
 
 1.  Create a CL in the Chromium workspace which does the following. Here's an
     [example CL](https://chromium-review.googlesource.com/1041164).
@@ -317,8 +346,8 @@ Builder].
         1.  The swarming dimensions are crucial. These must match the GPU and
             OS type of the physical hardware in the Swarming pool. This is what
             causes the VMs to spawn their tests on the correct hardware. Make
-            sure to use the Chrome-GPU pool, and that the new machines were
-            specifically added to that pool.
+            sure to use the chromium.tests.gpu pool, and that the new machines
+            were specifically added to that pool.
         1.  Make triply sure that there are no collisions between the new
             hardware you're adding and hardware already in the Swarming pool.
             For example, it used to be the case that all of the Windows NVIDIA
@@ -388,7 +417,6 @@ Builder].
    will cause the builders to fail. You can and should prepare the tools/build
    CL in advance, but make sure it doesn't land until the bot's on the console.
 
-[bots.cfg]:            https://chrome-internal.googlesource.com/infradata/config/+/master/configs/chromium-swarm/bots.cfg
 [infradata/config]:    https://chrome-internal.googlesource.com/infradata/config/
 [cr-buildbucket.cfg]:  https://chromium.googlesource.com/chromium/src/+/master/infra/config/cr-buildbucket.cfg
 [luci-milo.cfg]:  https://chromium.googlesource.com/chromium/src/+/master/infra/config/luci-milo.cfg
@@ -440,10 +468,10 @@ particular GPU type. Let's consider that we are adding a manually-triggered
 trybot for the Win7 NVIDIA GPUs in Release mode. We will call the new bot
 `gpu_manual_try_win7_nvidia_rel`.
 
-1.  Allocate new virtual machines for the bots as described in
-    [How to set up new virtual machine instances]. The "dimensions" tag in the
-    new bot_group block contains the name of the trybot, e.g.:
-    "builder:gpu_manual_try_win7_nvidia_rel".
+1.  Allocate new virtual machines for the bots as described in [How to set up
+    new virtual machine
+    instances](#How-to-set-up-new-virtual-machine-instances), following the
+    "trybot" instructions.
 
 1.  Create a CL in the Chromium workspace which does the following. Here's an
     [example CL](https://chromium-review.googlesource.com/1044767).
@@ -500,136 +528,129 @@ chrome-infra team if this doesn't work as expected.)
 [go/chromecals]: http://go/chromecals
 
 
-### How to add a new "optional" try bot
+### How to add a new try bot that runs a subset of tests or extra tests
 
-TODO(kbr): the naming of the "optional" try bots is confusing and
-unfortunate. They should probably be renamed to something like "extratests" or
-"extra_tests", so perhaps a new naming convention of "gpu_win_extratests_rel" or
-"win_gpu_extratests_rel". Unfortunately making this change at this point
-requires touching tons of files across many workspaces and is unlikely to happen
-unless someone highly motivated wants to pick up the task.
+Several projects (ANGLE, Dawn) run custom tests using the Chromium recipes. They
+use try bot bot configs that run subsets of Chromium or additional slower tests
+that can't be run on the main CQ.
 
-The "optional" GPU try bots are a concession to the reality that there are some
-long-running GPU test suites that simply can not run against every Chromium CL.
-They run some additional tests that are usually run only on the
-chromium.gpu.fyi waterfall. Some of these tests, like the WebGL 2.0 conformance
-suite, are intended to be run on the normal try bots once hardware capacity is
-available. Some are not intended to ever run on the normal try bots.
+These try bots are a little different because they mirror waterfall bots that
+don't actually exist. The waterfall bots' specifications exist only to tell
+these try bots which tests to run.
 
-The optional try bots are a little different because they mirror waterfall bots
-that don't actually exist. The waterfall bots' specifications exist only to
-tell the optional try bots which tests to run.
+Let's say that you intended to add a new such custom try bot on Windows. Call it
+`win-myproject-rel` for example. You will need to add a "fake" mirror bot for
+each GPU family the tests you will need to run. For a GPU type of
+"CoolNewGPUType" in this example you could add a "fake" bot named "MyProject GPU
+Win10 Release (CoolNewGPUType)".
 
-Let's say that you intended to add a new such optional try bot on Windows. Call
-it `win_new_optional_tests_rel` for example. Now, if you wanted to just add
-this GPU type to the existing `win_optional_gpu_tests_rel` try bot, you'd
-just follow the instructions above
-([How to start running tests on a new GPU type on an existing try bot](#How-to-start-running-tests-on-a-new-GPU-type-on-an-existing-try-bot)). The steps below describe how to spin up
-an entire new optional try bot.
-
+1.  Allocate new virtual machines for the bots as described in [How to set up
+    new virtual machine
+    instances](#How-to-set-up-new-virtual-machine-instances).
 1.  Make sure that you have some swarming capacity for the new GPU type. Since
     it's not running against all Chromium CLs you don't need the recommended 30
     minimum bots, though ~10 would be good.
-1.  Create a CL in the Chromium workspace:
-    1.  Add your new bot (for example, "Optional Win7 Release
+1.  Create a CL in the Chromium workspace the does the following. Here's an
+    [example CL](https://crrev.com/c/1554296).
+    1.  Add your new bot (for example, "MyProject GPU Win10 Release
         (CoolNewGPUType)") to the chromium.gpu.fyi waterfall in
-        [waterfalls.pyl]. (Note, this is a bad example: the
-        "optional" bots have special semantics in this script. You'd probably
-        want to define some new category of bot if you didn't intend to add
-        this to `win_optional_gpu_tests_rel`.)
-    1.  Re-run the script to regenerate the JSON files.
-1.  Land the above CL.
-1.  Create a CL in the tools/build workspace:
-    1.  Modify `masters/master.tryserver.chromium.win`'s [master.cfg] and
-        [slaves.cfg] to add the new tryserver. Follow the pattern for the
-        existing `win_optional_gpu_tests_rel` tryserver. Namely, add the new
-        entry to master.cfg, and add the new tryserver to the
-        `optional_builders` list in `slaves.cfg`.
-    1.  Modify [`chromium_gpu_fyi.py`][chromium_gpu_fyi.py] to add the new
-        "Optional Win7 Release (CoolNewGPUType)" entry.
-    1.  Modify [`trybots.py`][trybots.py] to add
-        the new `win_new_optional_tests_rel` try bot, mirroring "Optional
-        Win7 Release (CoolNewGPUType)".
-1.  Land the above CL and request an off-hours restart of the
-    tryserver.chromium.win waterfall.
-1.  Now you can send CLs to the new bot with:
-    `git cl try -m tryserver.chromium.win -b win_new_optional_tests_rel`
+        [waterfalls.pyl].
+    1.  Re-run [`src/testing/buildbot/generate_buildbot_json.py`][generate_buildbot_json.py] to regenerate the JSON files.
+    1.  Update [`cr-buildbucket.cfg`][cr-buildbucket.cfg] to add `win-myproject-rel`.
+    1.  Update [`luci-milo.cfg`][luci-milo.cfg] to include `win-myproject-rel`.
+    1.  Update [`luci-scheduler.cfg`][luci-scheduler.cfg] to include "MyProject GPU Win10 Release
+        (CoolNewGPUType)".
+    1.  Update [`src/tools/mb/mb_config.pyl`][mb_config.pyl] to include `win-myproject-rel`.
+    1.  Also add your fake bot to [`src/testing/buildbot/generate_buildbot_json.py`][generate_buildbot_json.py] in the list of `get_bots_that_do_not_actually_exist` section.
+1. *After* the Chromium-side CL lands and the bot is on the console, create a CL
+    in the [`tools/build`][tools/build] workspace which does the
+    following. Here's an [example CL](https://crrev.com/c/1554272).
+    1.  Adds "MyProject GPU Win10 Release
+        (CoolNewGPUType)" to [`chromium_gpu_fyi.py`][chromium_gpu_fyi.py] in
+        `scripts/slave/recipe_modules/chromium_tests/`. You can copy a similar
+        step.
+    1.  Adds `win-myproject-rel` to [`trybots.py`][trybots.py] in the same folder.
+        This is where you associate "MyProject GPU Win10 Release
+        (CoolNewGPUType)" with `win-myproject-rel`. See the sample CL for an example.
+    1.  Get this reviewed and landed. This step tells the Chromium recipe about
+        the newly-deployed waterfall bot, so it knows which JSON file to load
+        out of src/testing/buildbot and which entry to look at.
+1.  After your CLs land you should be able to find and run `win-myproject-rel` on CLs
+    using Choose Trybots in Gerrit.
 
-[master.cfg]: https://chromium.googlesource.com/chromium/tools/build/+/master/masters/master.tryserver.chromium.win/master.cfg
-[slaves.cfg]: https://chromium.googlesource.com/chromium/tools/build/+/master/masters/master.tryserver.chromium.win/slaves.cfg
+### How to test and deploy a driver and/or OS update
 
-### How to test and deploy a driver update
-
-Let's say that you want to roll out an update to the graphics drivers on one of
-the configurations like the Win7 NVIDIA bots. The responsible way to do this is
-to run the new driver on one of the waterfalls for a day or two to make sure
-the tests are running reliably green before rolling out the driver update
-everywhere. To do this:
+Let's say that you want to roll out an update to the graphics drivers or the OS
+on one of the configurations like the Linux NVIDIA bots. In order to verify
+that the new driver or OS won't destabilize Chromium's commit queue,
+it's necessary to run the new driver or OS on one of the waterfalls for a day
+or two to make sure the tests are reliably green before rolling out the driver
+or OS update. To do this:
 
 1.  Make sure that all of the current Swarming jobs for this OS and GPU
-    configuration are targeted at the "stable" version of the driver in
-    [waterfalls.pyl].
-1.  File a `Build Infrastructure` bug, component `Infra>Labs`, to have ~4 of the
-    physical machines already in the Swarming pool upgraded to the new version
-    of the driver.
+    configuration are targeted at the "stable" version of the driver and the OS
+    in [waterfalls.pyl] and [mixins.pyl]. Make sure that there are "named"
+    stable versions of the driver and the OS there, which target the
+    _TARGETED_DRIVER_VERSIONS and _TARGETED_OS_VERSIONS dictionaries
+    in [bot_config.py] (Google internal).
+1.  File a `Build Infrastructure` bug, component `Infra>Labs`, to have ~4 of
+    the physical machines already in the Swarming pool upgraded to the new
+    version of the driver or the OS.
 1.  If an "experimental" version of this bot doesn't yet exist, follow the
     instructions above for [How to add a new tester bot to the chromium.gpu.fyi
     waterfall](#How-to-add-a-new-tester-bot-to-the-chromium_gpu_fyi-waterfall)
     to deploy one.
-1.  Have this experimental bot target the new version of the driver in
-    [waterfalls.pyl].
+1.  Have this experimental bot target the new version of the driver or the OS
+    in [waterfalls.pyl] and [mixins.pyl]. [Sample CL][sample driver cl].
 1.  Hopefully, the new machine will pass the pixel tests. If it doesn't, then
-    unfortunately, it'll be necessary to follow the instructions on
-    [updating the pixel tests] to temporarily suppress the failures on this
-    particular configuration. Keep the time window for these test suppressions
-    as narrow as possible.
+    it'll be necessary to follow the instructions on
+    [updating Gold baselines (step #4)][updating gold baselines].
 1.  Watch the new machine for a day or two to make sure it's stable.
-1.  When it is, update [mixins.pyl] to add a mixin to *optionally* use
-    the new driver version. The syntax looks like this:
-<pre>
-  'win10_nvidia_quadro_p400_upgrade': {
-    'swarming': {
-      'optional_dimensions': {
-        # Wait 10 minutes for this new driver version and then fall back to the
-        # current "stable" driver version. The format for optional dimensions
-        # is: expiration: [{key, value}, ..].
-        600: [
-          {
-            'gpu': '10de:1cb3-24.21.14.1195',
-          }
-        ],
-      },
+1.  When it is, update [bot_config.py] (Google internal) to *add* a mapping
+    between the new driver version and the "stable" version. For example:
+
+    ```
+    _TARGETED_DRIVER_VERSIONS = {
+      # NVIDIA Quadro P400, Ubuntu Stable version
+      '10de:1cb3-384.90': 'nvidia-quadro-p400-ubuntu-stable',
+      # NVIDIA Quadro P400, new Ubuntu Stable version
+      '10de:1cb3-410.78': 'nvidia-quadro-p400-ubuntu-stable',
+      # ...
     }
-  },
-</pre>
+    ```
 
-    The new driver version should match the one just added for the
-    experimental bot. A separate mixin must be used because the syntax
-    is different from these optional, or fallback, dimensions. See
-    [https://chromium-review.googlesource.com/1376653](https://chromium-review.googlesource.com/1376653)
-    for an example of how this was used to perform a recent OS
-    upgrade. [This
-    CL](https://chromium-review.googlesource.com/1396604) shows an
-    example of an actual driver upgrade, but using older "trigger
-    script" functionality no longer recommended for this purpose.
+    And/or a mapping between the new OS version and the "stable" version.
+    For example:
 
-1.  In the same CL, modify [waterfalls.pyl], adding that mixin to all
-    of the bots being upgraded. Note that it must just be *added*; it
-    does not *replace* the bot's current "stable" graphics driver mixin.
-1.  After that lands, ask the Chrome Infrastructure Labs team to roll out the
+    ```
+    _TARGETED_OS_VERSIONS = {
+      # Linux NVIDIA Quadro P400
+      '10de:1cb3': {
+        'Ubuntu-14.04': 'linux-nvidia-stable',
+        'Ubuntu-19.04': 'linux-nvidia-stable',
+      },
+      # ...
+    }
+    ```
+
+    The new driver or OS version should match the one just added for the
+    experimental bot. Get this CL reviewed and landed.
+    [Sample CL (Google internal)][sample targeted version cl].
+1.  After it lands, ask the Chrome Infrastructure Labs team to roll out the
     driver update across all of the similarly configured bots in the swarming
     pool.
 1.  If necessary, update pixel test expectations and remove the suppressions
     added above.
-1.  Remove the upgrade mixin from [mixins.pyl] and the references from
-    [waterfalls.pyl], and change the bot's stable dimensions to the upgraded
-    ones.
+1.  Remove the old driver or OS version from [bot_config.py], leaving the
+    "stable" driver version pointing at the newly upgraded version.
 
 Note that we leave the experimental bot in place. We could reclaim it, but it
 seems worthwhile to continuously test the "next" version of graphics drivers as
 well as the current stable ones.
 
-[updating the pixel tests]: https://www.chromium.org/developers/testing/gpu-testing/#TOC-Updating-and-Adding-New-Pixel-Tests-to-the-GPU-Bots
+[sample driver cl]: https://chromium-review.googlesource.com/c/chromium/src/+/1726875
+[sample targeted version cl]: https://chrome-internal-review.googlesource.com/c/infradata/config/+/1602377
+[updating gold baselines]: https://chromium.googlesource.com/chromium/src/+/HEAD/docs/gpu/pixel_wrangling.md#how-to-keep-the-bots-green
 
 ## Credentials for various servers
 

@@ -113,7 +113,7 @@ void StatsReportingController::OnOwnershipTaken(
 }
 
 StatsReportingController::StatsReportingController(PrefService* local_state)
-    : local_state_(local_state), weak_factory_(this) {
+    : local_state_(local_state) {
   setting_subscription_ = CrosSettings::Get()->AddSettingsObserver(
       kStatsReportingPref,
       base::BindRepeating(&StatsReportingController::NotifyObservers,

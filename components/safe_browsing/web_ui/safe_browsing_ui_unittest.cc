@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #include "components/safe_browsing/web_ui/safe_browsing_ui.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
-#include "content/public/test/test_browser_thread_bundle.h"
 #include "content/public/test/test_web_ui.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -40,7 +40,7 @@ class SafeBrowsingUITest : public testing::Test {
  protected:
   int member_int_;
   content::TestWebUI web_ui_;
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   content::TestBrowserContext browser_context_;
 };
 

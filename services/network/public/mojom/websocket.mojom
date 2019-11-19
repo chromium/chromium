@@ -4,6 +4,7 @@
 
 module network.mojom;
 
+import "mojo/public/mojom/base/read_only_buffer.mojom";
 import "url/mojom/url.mojom";
 import "services/network/public/mojom/network_param.mojom";
 import "services/network/public/mojom/ip_endpoint.mojom";
@@ -37,6 +38,10 @@ struct WebSocketHandshakeResponse {
   IPEndPoint remote_endpoint;
   array<HttpHeader> headers;
   string headers_text;
+  // Sub-protocol the server selected, or empty if no sub-protocol was selected.
+  string selected_protocol;
+  // The list of extensions negotiated for the connection.
+  string extensions;
 };
 
 // This interface is for HTTP Authentication.
@@ -49,41 +54,42 @@ interface AuthenticationHandler {
                  IPEndPoint remote_endpoint) => (AuthCredentials? credentials);
 };
 
-interface WebSocketClient {
-  OnFailChannel(string reason);
-
+interface WebSocketHandshakeClient {
   // Notify the renderer that the browser has started an opening handshake.
-  OnStartOpeningHandshake(WebSocketHandshakeRequest request);
+  OnOpeningHandshakeStarted(WebSocketHandshakeRequest request);
 
-  // Notify the renderer that the browser has finished an opening handshake.
-  // This message precedes AddChannelResponse.
-  // |response| may contains cookie-related headers when the client has
+  // Called when the connection is established.
+  // |response| may contain cookie-related headers when the client has
   // an access to raw cookie information.
-  OnFinishOpeningHandshake(WebSocketHandshakeResponse response);
+  // |readable| is readable datapipe to receive data from browser.
+  OnConnectionEstablished(pending_remote<WebSocket> socket,
+                          pending_receiver<WebSocketClient> client_receiver,
+                          WebSocketHandshakeResponse response,
+                          handle<data_pipe_consumer> readable);
+};
 
-  // Response to an AddChannelRequest. |selected_protocol| is the sub-protocol
-  // the server selected, or empty if no sub-protocol was selected.
-  // |extensions| is the list of extensions negotiated for the connection.
-  OnAddChannelResponse(string selected_protocol, string extensions);
-
+interface WebSocketClient {
   // Receive a non-control frame from the remote server.
   // - |fin| indicates that this frame is the last in the current message.
   // - |type| is the type of the message. On the first frame of a message, it
   //   must be set to either WebSocketMessageType.TEXT or
   //   WebSocketMessageType.BINARY. On subsequent frames, it must be set to
   //   WebSocketMessageType.CONTINUATION, and the type is the same as that of
-  //   the first message. If |type| is WebSocketMessageType.TEXT, then the
-  //   concatenation of the |data| from every frame in the message must be valid
-  //   UTF-8. If |fin| is not set, |data| must be non-empty.
-  OnDataFrame(bool fin, WebSocketMessageType type, array<uint8> data);
+  //   the first message.
+  // - |data_length| is the length of data and actual data is read via
+  //   |readable| on WebSocketHandshakeClient.OnConnectionEstablished.
+  //   If |type| is WebSocketMessageType.TEXT, then the concatenation of all
+  //   the frames in the message must be valid UTF-8.
+  //   If |fin| is not set, |data_length| must be non-zero.
+  OnDataFrame(bool fin,
+              WebSocketMessageType type,
+              uint64 data_length);
 
-  // Add |quota| tokens of send quota for the channel. |quota| must be a
-  // positive integer. Both the browser and the renderer set send quota for the
-  // other side, and check that quota has not been exceeded when receiving
-  // messages.  Both sides start a new channel with a quota of 0, and must wait
-  // for a FlowControl message before calling SendFrame. The total available
-  // quota on one side must never exceed 0x7FFFFFFFFFFFFFFF tokens.
-  OnFlowControl(int64 quota);
+  // Add |quota| bytes of send quota. |quota| must be positive. Initial quota
+  // is 0. The renderer will wait for an AddSendFlowControlQuota() message
+  // before forwarding any messages to the browser. Total quota must never
+  // exceed 0x7FFFFFFFFFFFFFFF bytes.
+  AddSendFlowControlQuota(int64 quota);
 
   // Drop the channel.
   //
@@ -110,20 +116,7 @@ interface WebSocket {
   // The client side may observe the following disconnection reason from the
   // service side:
   const uint32 kInsufficientResources = 1;
-
-  // Open new WebSocket connection to |socket_url|. |requested_protocols| is a
-  // list of tokens identifying sub-protocols the renderer would like to use,
-  // as described in RFC6455 "Subprotocols Using the WebSocket Protocol".
-  // |additional_headers| are miscellaneous HTTP headers to be added to the
-  // request. Headers semantically relevant to the WebSocket handshake such
-  // as "sec-websocket-protocol" and "origin" are handled separately, (e.g.,
-  // "sec-websocket-protocol" is constructed from  |requested_protocols| in
-  // this message).
-  AddChannelRequest(url.mojom.Url url,
-                    array<string> requested_protocols,
-                    url.mojom.Url first_party_for_cookies,
-                    array<HttpHeader> additional_headers,
-                    WebSocketClient client);
+  const uint32 kInternalFailure = 2;
 
   // Send a non-control frame to the remote server.
   // - |fin| indicates that this frame is the last in the current message.
@@ -134,15 +127,15 @@ interface WebSocket {
   //   the first message. If |type| is WebSocketMessageType.TEXT, then the
   //   concatenation of the |data| from every frame in the message must be valid
   //   UTF-8. If |fin| is not set, |data| must be non-empty.
-  SendFrame(bool fin, WebSocketMessageType type, array<uint8> data);
+  SendFrame(bool fin,
+            WebSocketMessageType type,
+            mojo_base.mojom.ReadOnlyBuffer data);
 
-  // Add |quota| tokens of send quota for the channel. |quota| must be a
-  // positive integer. Both the browser and the renderer set send quota for the
-  // other side, and check that quota has not been exceeded when receiving
-  // messages.  Both sides start a new channel with a quota of 0, and must wait
-  // for a FlowControl message before calling SendFrame. The total available
-  // quota on one side must never exceed 0x7FFFFFFFFFFFFFFF tokens.
-  SendFlowControl(int64 quota);
+  // Let browser to start receiving WebSocket data frames from network stream.
+  // TODO(yoichio): Remove this by move Connect() after checking throttle at
+  // WebSocketChannelImpl::Connect so that OnAddChannelResponse is
+  // actual signal to start receive data frame.
+  StartReceiving();
 
   // Close the channel gracefully.
   //

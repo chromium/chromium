@@ -37,18 +37,15 @@
 
 namespace blink {
 
-namespace {
-// |kHistoryStateSymbolKey| is a key for a cached attribute for History.state.
-// TODO(peria): Do not use this cached attribute directly.
-constexpr char kHistoryStateSymbolKey[] = "History#State";
-}
+const V8PrivateProperty::SymbolKey kPrivatePropertyState;
 
 // Save the state value to a hidden attribute in the V8PopStateEvent, and return
 // it, for convenience.
 static v8::Local<v8::Value> CacheState(ScriptState* script_state,
                                        v8::Local<v8::Object> pop_state_event,
                                        v8::Local<v8::Value> state) {
-  V8PrivateProperty::GetPopStateEventState(script_state->GetIsolate())
+  V8PrivateProperty::GetSymbol(script_state->GetIsolate(),
+                               kPrivatePropertyState)
       .Set(pop_state_event, state);
   return state;
 }
@@ -58,7 +55,7 @@ void V8PopStateEvent::StateAttributeGetterCustom(
   v8::Isolate* isolate = info.GetIsolate();
   ScriptState* script_state = ScriptState::Current(isolate);
   V8PrivateProperty::Symbol property_symbol =
-      V8PrivateProperty::GetPopStateEventState(isolate);
+      V8PrivateProperty::GetSymbol(isolate, kPrivatePropertyState);
   v8::Local<v8::Value> result;
 
   if (property_symbol.GetOrUndefined(info.Holder()).ToLocal(&result) &&
@@ -94,7 +91,7 @@ void V8PopStateEvent::StateAttributeGetterCustom(
   bool is_same_state = history->IsSameAsCurrentState(event->SerializedState());
   if (is_same_state) {
     V8PrivateProperty::Symbol history_state =
-        V8PrivateProperty::GetSymbol(isolate, kHistoryStateSymbolKey);
+        V8PrivateProperty::GetHistoryStateSymbol(info.GetIsolate());
     v8::Local<v8::Value> v8_history_value =
         ToV8(history, info.Holder(), isolate);
     if (v8_history_value.IsEmpty())

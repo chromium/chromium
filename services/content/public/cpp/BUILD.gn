@@ -2,12 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//services/content/public/features.gni")
-
-buildflag_header("buildflags") {
-  header = "buildflags.h"
-  flags = [ "ENABLE_REMOTE_NAVIGABLE_CONTENTS_VIEW=$enable_remote_navigable_contents_view" ]
-}
+import("//build/config/ui.gni")
 
 component("cpp") {
   output_name = "content_service_cpp"
@@ -28,7 +23,6 @@ component("cpp") {
   defines = [ "IS_CONTENT_SERVICE_CPP_IMPL" ]
 
   public_deps = [
-    ":buildflags",
     "//base",
     "//net",
     "//services/content/public/mojom",
@@ -41,15 +35,8 @@ component("cpp") {
   ]
 
   deps = []
-  if (toolkit_views) {
+  if (toolkit_views && !is_chromecast) {
     deps += [ "//ui/views" ]
-
-    if (enable_remote_navigable_contents_view) {
-      deps += [
-        "//services/ws/public/mojom",
-        "//ui/views/mus/remote_view:remote_view_host",
-      ]
-    }
   }
 
   if (use_aura) {

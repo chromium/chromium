@@ -11,6 +11,7 @@
 
 namespace blink {
 
+enum class OriginTrialFeature;
 class ScriptState;
 struct WrapperTypeInfo;
 
@@ -19,7 +20,7 @@ using InstallOriginTrialFeaturesFunction = void (*)(const WrapperTypeInfo*,
                                                     v8::Local<v8::Object>,
                                                     v8::Local<v8::Function>);
 
-using InstallPendingOriginTrialFeatureFunction = void (*)(const String&,
+using InstallPendingOriginTrialFeatureFunction = void (*)(OriginTrialFeature,
                                                           const ScriptState*);
 
 // Sets the function to be called by |InstallOriginTrialFeatures|. The function
@@ -51,7 +52,7 @@ PLATFORM_EXPORT void InstallOriginTrialFeatures(const WrapperTypeInfo*,
 // objects. If the target object hasn't been created, nothing is installed. The
 // enabled feature will be instead be installed when the object is created
 // (avoids forcing the creation of objects prematurely).
-PLATFORM_EXPORT void InstallPendingOriginTrialFeature(const String&,
+PLATFORM_EXPORT void InstallPendingOriginTrialFeature(OriginTrialFeature,
                                                       const ScriptState*);
 
 }  // namespace blink

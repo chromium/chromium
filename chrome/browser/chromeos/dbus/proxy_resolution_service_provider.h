@@ -111,7 +111,7 @@ class ProxyResolutionServiceProvider
   scoped_refptr<base::SingleThreadTaskRunner> origin_thread_;
   network::mojom::NetworkContext* network_context_for_test_ = nullptr;
   bool use_network_context_for_test_ = false;
-  base::WeakPtrFactory<ProxyResolutionServiceProvider> weak_ptr_factory_;
+  base::WeakPtrFactory<ProxyResolutionServiceProvider> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ProxyResolutionServiceProvider);
 };

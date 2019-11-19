@@ -49,10 +49,8 @@ bool FrameNavigationState::IsValidUrl(const GURL& url) {
       return true;
   }
   // Allow about:blank and about:srcdoc.
-  if (url.spec() == url::kAboutBlankURL ||
-      url.spec() == content::kAboutSrcDocURL) {
+  if (url.IsAboutBlank() || url.IsAboutSrcdoc())
     return true;
-  }
   return allow_extension_scheme_ && url.scheme() == kExtensionScheme;
 }
 

@@ -51,9 +51,8 @@ class ServerBase(object):
         self._platform = port_obj.host.platform
         self._output_dir = output_dir
 
-        # On Mac and Linux tmpdir is set to '/tmp' for (i) consistency
-        # and (ii) because it is hardcoded in the Apache
-        # ScoreBoardFile directive.
+        # On Mac and Linux tmpdir is set to '/tmp' for (i) consistency and
+        # (ii) because it is hardcoded in the Apache ScoreBoardFile directive.
         tmpdir = tempfile.gettempdir()
         if self._platform.is_mac() or self._platform.is_linux():
             tmpdir = '/tmp'
@@ -71,6 +70,10 @@ class ServerBase(object):
         # Subclasses may override these fields.
         self._env = None
         self._cwd = None
+        # TODO(robertma): There is a risk of deadlocks since we don't read from
+        # the pipes until the subprocess exits. For now, subclasses need to
+        # either make sure server processes don't spam on stdout/stderr, or
+        # redirect them to files.
         self._stdout = self._executive.PIPE
         self._stderr = self._executive.PIPE
         self._process = None

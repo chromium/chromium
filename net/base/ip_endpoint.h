@@ -65,6 +65,7 @@ class NET_EXPORT IPEndPoint {
 
   bool operator<(const IPEndPoint& that) const;
   bool operator==(const IPEndPoint& that) const;
+  bool operator!=(const IPEndPoint& that) const;
 
  private:
   IPAddress address_;

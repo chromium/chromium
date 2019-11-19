@@ -11,20 +11,22 @@
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "base/test/task_environment.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_errors.h"
 #include "net/base/proxy_server.h"
 #include "net/proxy_resolution/mock_proxy_resolver.h"
 #include "net/proxy_resolution/proxy_info.h"
 #include "net/proxy_resolution/proxy_resolve_dns_operation.h"
-#include "net/proxy_resolution/proxy_resolver_v8_tracing.h"
 #include "net/test/event_waiter.h"
 #include "net/test/gtest_util.h"
+#include "services/proxy_resolver/proxy_resolver_v8_tracing.h"
 #include "services/service_manager/public/cpp/service_context_ref.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 using net::test::IsError;
 using net::test::IsOk;
@@ -40,7 +42,7 @@ class TestRequestClient : public mojom::ProxyResolverRequestClient {
   };
 
   explicit TestRequestClient(
-      mojo::InterfaceRequest<mojom::ProxyResolverRequestClient> request);
+      mojo::PendingReceiver<mojom::ProxyResolverRequestClient> receiver);
 
   void WaitForResult();
 
@@ -53,27 +55,28 @@ class TestRequestClient : public mojom::ProxyResolverRequestClient {
   void ReportResult(int32_t error, const net::ProxyInfo& results) override;
   void Alert(const std::string& message) override;
   void OnError(int32_t line_number, const std::string& message) override;
-  void ResolveDns(const std::string& hostname,
-                  net::ProxyResolveDnsOperation operation,
-                  mojom::HostResolverRequestClientPtr client) override;
+  void ResolveDns(
+      const std::string& hostname,
+      net::ProxyResolveDnsOperation operation,
+      const net::NetworkIsolationKey& network_isolation_key,
+      mojo::PendingRemote<mojom::HostResolverRequestClient> client) override;
 
-  // Mojo error handler.
-  void OnConnectionError();
+  void OnDisconnect();
 
   bool done_ = false;
   net::Error error_ = net::ERR_FAILED;
   net::ProxyInfo results_;
 
-  mojo::Binding<mojom::ProxyResolverRequestClient> binding_;
+  mojo::Receiver<mojom::ProxyResolverRequestClient> receiver_;
 
   net::EventWaiter<Event> event_waiter_;
 };
 
 TestRequestClient::TestRequestClient(
-    mojo::InterfaceRequest<mojom::ProxyResolverRequestClient> request)
-    : binding_(this, std::move(request)) {
-  binding_.set_connection_error_handler(base::Bind(
-      &TestRequestClient::OnConnectionError, base::Unretained(this)));
+    mojo::PendingReceiver<mojom::ProxyResolverRequestClient> receiver)
+    : receiver_(this, std::move(receiver)) {
+  receiver_.set_disconnect_handler(
+      base::BindOnce(&TestRequestClient::OnDisconnect, base::Unretained(this)));
 }
 
 void TestRequestClient::WaitForResult() {
@@ -98,21 +101,26 @@ void TestRequestClient::Alert(const std::string& message) {}
 void TestRequestClient::OnError(int32_t line_number,
                                 const std::string& message) {}
 
-void TestRequestClient::ResolveDns(const std::string& hostname,
-                                   net::ProxyResolveDnsOperation operation,
-                                   mojom::HostResolverRequestClientPtr client) {
-}
+void TestRequestClient::ResolveDns(
+    const std::string& hostname,
+    net::ProxyResolveDnsOperation operation,
+    const net::NetworkIsolationKey& network_isolation_key,
+    mojo::PendingRemote<mojom::HostResolverRequestClient> client) {}
 
-void TestRequestClient::OnConnectionError() {
+void TestRequestClient::OnDisconnect() {
   event_waiter_.NotifyEvent(CONNECTION_ERROR);
 }
 
-class MockProxyResolverV8Tracing : public net::ProxyResolverV8Tracing {
+class MockProxyResolverV8Tracing : public ProxyResolverV8Tracing {
  public:
+  // TODO(mmenke): This struct violates the Google style guide, as structs
+  // aren't allowed to have private members. Fix that.
   struct Job {
     GURL url;
+    net::NetworkIsolationKey network_isolation_key;
     net::ProxyInfo* results;
     bool cancelled = false;
+
     void Complete(int result) {
       DCHECK(!callback_.is_null());
       std::move(callback_).Run(result);
@@ -137,10 +145,8 @@ class MockProxyResolverV8Tracing : public net::ProxyResolverV8Tracing {
       if (job_->WasCompleted())
         return;
       job_->cancelled = true;
-      if (!resolver_->cancel_callback_.is_null()) {
-        resolver_->cancel_callback_.Run();
-        resolver_->cancel_callback_.Reset();
-      }
+      if (resolver_->cancel_callback_)
+        std::move(resolver_->cancel_callback_).Run();
     }
 
     net::LoadState GetLoadState() override {
@@ -156,6 +162,7 @@ class MockProxyResolverV8Tracing : public net::ProxyResolverV8Tracing {
 
   // ProxyResolverV8Tracing overrides.
   void GetProxyForURL(const GURL& url,
+                      const net::NetworkIsolationKey& network_isolation_key,
                       net::ProxyInfo* results,
                       net::CompletionOnceCallback callback,
                       std::unique_ptr<net::ProxyResolver::Request>* request,
@@ -168,22 +175,24 @@ class MockProxyResolverV8Tracing : public net::ProxyResolverV8Tracing {
   }
 
  private:
-  base::Closure cancel_callback_;
+  base::OnceClosure cancel_callback_;
   std::vector<std::unique_ptr<Job>> pending_jobs_;
 };
 
 void MockProxyResolverV8Tracing::GetProxyForURL(
     const GURL& url,
+    const net::NetworkIsolationKey& network_isolation_key,
     net::ProxyInfo* results,
     net::CompletionOnceCallback callback,
     std::unique_ptr<net::ProxyResolver::Request>* request,
     std::unique_ptr<Bindings> bindings) {
-  pending_jobs_.push_back(base::WrapUnique(new Job()));
+  pending_jobs_.push_back(std::make_unique<Job>());
   auto* pending_job = pending_jobs_.back().get();
   pending_job->url = url;
+  pending_job->network_isolation_key = network_isolation_key;
   pending_job->results = results;
   pending_job->SetCallback(std::move(callback));
-  request->reset(new RequestImpl(pending_job, this));
+  *request = std::make_unique<RequestImpl>(pending_job, this);
 }
 
 void MockProxyResolverV8Tracing::WaitForCancel() {
@@ -205,16 +214,15 @@ class ProxyResolverImplTest : public testing::Test {
     std::unique_ptr<MockProxyResolverV8Tracing> mock_resolver =
         std::make_unique<MockProxyResolverV8Tracing>();
     mock_proxy_resolver_ = mock_resolver.get();
-    resolver_impl_ = std::make_unique<ProxyResolverImpl>(
-        std::move(mock_resolver),
-        std::unique_ptr<service_manager::ServiceContextRef>());
+    resolver_impl_ =
+        std::make_unique<ProxyResolverImpl>(std::move(mock_resolver));
     resolver_ = resolver_impl_.get();
   }
 
-  ~ProxyResolverImplTest() override {}
+  ~ProxyResolverImplTest() override = default;
 
  protected:
-  base::test::ScopedTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
   MockProxyResolverV8Tracing* mock_proxy_resolver_;
 
   std::unique_ptr<ProxyResolverImpl> resolver_impl_;
@@ -222,15 +230,16 @@ class ProxyResolverImplTest : public testing::Test {
 };
 
 TEST_F(ProxyResolverImplTest, GetProxyForUrl) {
-  mojom::ProxyResolverRequestClientPtr client_ptr;
-  TestRequestClient client(mojo::MakeRequest(&client_ptr));
+  mojo::PendingRemote<mojom::ProxyResolverRequestClient> remote_client;
+  TestRequestClient client(remote_client.InitWithNewPipeAndPassReceiver());
 
-  resolver_->GetProxyForUrl(GURL(GURL("http://example.com")),
-                            std::move(client_ptr));
+  resolver_->GetProxyForUrl(GURL("http://example.com"),
+                            net::NetworkIsolationKey(),
+                            std::move(remote_client));
   ASSERT_EQ(1u, mock_proxy_resolver_->pending_jobs().size());
   MockProxyResolverV8Tracing::Job* job =
       mock_proxy_resolver_->pending_jobs()[0].get();
-  EXPECT_EQ(GURL(GURL("http://example.com")), job->url);
+  EXPECT_EQ(GURL("http://example.com"), job->url);
 
   job->results->UsePacString(
       "PROXY proxy.example.com:1; "
@@ -269,15 +278,33 @@ TEST_F(ProxyResolverImplTest, GetProxyForUrl) {
   EXPECT_EQ(net::ProxyServer::SCHEME_DIRECT, servers[5].scheme());
 }
 
-TEST_F(ProxyResolverImplTest, GetProxyForUrlFailure) {
-  mojom::ProxyResolverRequestClientPtr client_ptr;
-  TestRequestClient client(mojo::MakeRequest(&client_ptr));
+TEST_F(ProxyResolverImplTest, GetProxyForUrlWithNetworkIsolationKey) {
+  const url::Origin kOrigin(url::Origin::Create(GURL("https://origin.test/")));
+  const net::NetworkIsolationKey kNetworkIsolationKey(kOrigin, kOrigin);
 
-  resolver_->GetProxyForUrl(GURL("http://example.com"), std::move(client_ptr));
+  mojo::PendingRemote<mojom::ProxyResolverRequestClient> remote_client;
+  TestRequestClient client(remote_client.InitWithNewPipeAndPassReceiver());
+
+  resolver_->GetProxyForUrl(GURL("http://example.com"), kNetworkIsolationKey,
+                            std::move(remote_client));
   ASSERT_EQ(1u, mock_proxy_resolver_->pending_jobs().size());
   MockProxyResolverV8Tracing::Job* job =
       mock_proxy_resolver_->pending_jobs()[0].get();
-  EXPECT_EQ(GURL(GURL("http://example.com")), job->url);
+  EXPECT_EQ(GURL("http://example.com"), job->url);
+  EXPECT_EQ(kNetworkIsolationKey, job->network_isolation_key);
+}
+
+TEST_F(ProxyResolverImplTest, GetProxyForUrlFailure) {
+  mojo::PendingRemote<mojom::ProxyResolverRequestClient> remote_client;
+  TestRequestClient client(remote_client.InitWithNewPipeAndPassReceiver());
+
+  resolver_->GetProxyForUrl(GURL("http://example.com"),
+                            net::NetworkIsolationKey(),
+                            std::move(remote_client));
+  ASSERT_EQ(1u, mock_proxy_resolver_->pending_jobs().size());
+  MockProxyResolverV8Tracing::Job* job =
+      mock_proxy_resolver_->pending_jobs()[0].get();
+  EXPECT_EQ(GURL("http://example.com"), job->url);
   job->Complete(net::ERR_FAILED);
   client.WaitForResult();
 
@@ -288,18 +315,21 @@ TEST_F(ProxyResolverImplTest, GetProxyForUrlFailure) {
 }
 
 TEST_F(ProxyResolverImplTest, GetProxyForUrlMultiple) {
-  mojom::ProxyResolverRequestClientPtr client_ptr1;
-  TestRequestClient client1(mojo::MakeRequest(&client_ptr1));
-  mojom::ProxyResolverRequestClientPtr client_ptr2;
-  TestRequestClient client2(mojo::MakeRequest(&client_ptr2));
+  mojo::PendingRemote<mojom::ProxyResolverRequestClient> remote_client1;
+  TestRequestClient client1(remote_client1.InitWithNewPipeAndPassReceiver());
+  mojo::PendingRemote<mojom::ProxyResolverRequestClient> remote_client2;
+  TestRequestClient client2(remote_client2.InitWithNewPipeAndPassReceiver());
 
-  resolver_->GetProxyForUrl(GURL("http://example.com"), std::move(client_ptr1));
+  resolver_->GetProxyForUrl(GURL("http://example.com"),
+                            net::NetworkIsolationKey(),
+                            std::move(remote_client1));
   resolver_->GetProxyForUrl(GURL("https://example.com"),
-                            std::move(client_ptr2));
+                            net::NetworkIsolationKey(),
+                            std::move(remote_client2));
   ASSERT_EQ(2u, mock_proxy_resolver_->pending_jobs().size());
   MockProxyResolverV8Tracing::Job* job1 =
       mock_proxy_resolver_->pending_jobs()[0].get();
-  EXPECT_EQ(GURL(GURL("http://example.com")), job1->url);
+  EXPECT_EQ(GURL("http://example.com"), job1->url);
   MockProxyResolverV8Tracing::Job* job2 =
       mock_proxy_resolver_->pending_jobs()[1].get();
   EXPECT_EQ(GURL("https://example.com"), job2->url);
@@ -330,25 +360,29 @@ TEST_F(ProxyResolverImplTest, GetProxyForUrlMultiple) {
 }
 
 TEST_F(ProxyResolverImplTest, DestroyClient) {
-  mojom::ProxyResolverRequestClientPtr client_ptr;
-  std::unique_ptr<TestRequestClient> client(
-      new TestRequestClient(mojo::MakeRequest(&client_ptr)));
+  mojo::PendingRemote<mojom::ProxyResolverRequestClient> remote_client;
+  auto client = std::make_unique<TestRequestClient>(
+      remote_client.InitWithNewPipeAndPassReceiver());
 
-  resolver_->GetProxyForUrl(GURL("http://example.com"), std::move(client_ptr));
+  resolver_->GetProxyForUrl(GURL("http://example.com"),
+                            net::NetworkIsolationKey(),
+                            std::move(remote_client));
   ASSERT_EQ(1u, mock_proxy_resolver_->pending_jobs().size());
   const MockProxyResolverV8Tracing::Job* job =
       mock_proxy_resolver_->pending_jobs()[0].get();
-  EXPECT_EQ(GURL(GURL("http://example.com")), job->url);
+  EXPECT_EQ(GURL("http://example.com"), job->url);
   job->results->UsePacString("PROXY proxy.example.com:8080");
   client.reset();
   mock_proxy_resolver_->WaitForCancel();
 }
 
 TEST_F(ProxyResolverImplTest, DestroyService) {
-  mojom::ProxyResolverRequestClientPtr client_ptr;
-  TestRequestClient client(mojo::MakeRequest(&client_ptr));
+  mojo::PendingRemote<mojom::ProxyResolverRequestClient> remote_client;
+  TestRequestClient client(remote_client.InitWithNewPipeAndPassReceiver());
 
-  resolver_->GetProxyForUrl(GURL("http://example.com"), std::move(client_ptr));
+  resolver_->GetProxyForUrl(GURL("http://example.com"),
+                            net::NetworkIsolationKey(),
+                            std::move(remote_client));
   ASSERT_EQ(1u, mock_proxy_resolver_->pending_jobs().size());
   resolver_impl_.reset();
   client.event_waiter().WaitForEvent(TestRequestClient::CONNECTION_ERROR);

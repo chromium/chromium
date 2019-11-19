@@ -34,6 +34,7 @@ policy.Conflict;
 
 /**
  * @typedef {{
+ *    ignored?: boolean,
  *    name: string,
  *    level: string,
  *    link: ?string,
@@ -41,6 +42,7 @@ policy.Conflict;
  *    source: string,
  *    error: string,
  *    value: any,
+ *    allSourcesMerged: ?boolean,
  *    conflicts: ?Array<!Conflict>,
  * }}
  */
@@ -123,6 +125,13 @@ cr.define('policy', function() {
         this.setLabelAndShow_(
             '.directory-api-id', status.directoryApiId || notSpecifiedString);
         this.setLabelAndShow_('.client-id', status.clientId);
+        //For off-hours policy, indicate if it's active or not.
+        if (status.isOffHoursActive != null) {
+          this.setLabelAndShow_(
+              '.is-offhours-active',
+              loadTimeData.getString(
+                  status.isOffHoursActive ? 'offHoursActive' : 'offHoursNotActive'));
+        }
       } else if (scope == 'machine') {
         // For machine policy, set the appropriate title and populate
         // machine enrollment status with the information that applies
@@ -144,6 +153,12 @@ cr.define('policy', function() {
         // Populate the user gaia id.
         this.setLabelAndShow_('.gaia-id', status.gaiaId || notSpecifiedString);
         this.setLabelAndShow_('.client-id', status.clientId);
+        if (status.isAffiliated != null) {
+          this.setLabelAndShow_(
+              '.is-affiliated',
+              loadTimeData.getString(
+                  status.isAffiliated ? 'isAffiliatedYes' : 'isAffiliatedNo'));
+        }
       }
       this.setLabelAndShow_(
           '.time-since-last-refresh', status.timeSinceLastRefresh, false);
@@ -172,10 +187,7 @@ cr.define('policy', function() {
     // Set up the prototype chain.
     __proto__: HTMLDivElement.prototype,
 
-    decorate: function() {
-      this.querySelector('.policy.row')
-          .addEventListener('click', this.toggleExpanded_);
-    },
+    decorate: function() {},
 
     /** @param {Conflict} conflict */
     initialize(conflict) {
@@ -210,7 +222,7 @@ cr.define('policy', function() {
      */
     decorate: function() {
       const toggle = this.querySelector('.policy.row .toggle');
-      toggle.addEventListener('click', this.toggleExpanded_);
+      toggle.addEventListener('click', this.toggleExpanded_.bind(this));
     },
 
     /** @param {Policy} policy */
@@ -222,10 +234,16 @@ cr.define('policy', function() {
       this.unset_ = policy.value === undefined;
 
       /** @private {boolean} */
-      this.hasMessages_ = !!policy.error;
+      this.hasErrors_ = !!policy.error;
+
+      /** @private {boolean} */
+      this.hasWarnings_ = !!policy.warning;
 
       /** @private {boolean} */
       this.hasConflicts_ = !!policy.conflicts;
+
+      /** @private {boolean} */
+      this.isMergedValue_ = !!policy.allSourcesMerged;
 
       // Populate the name column.
       const nameDisplay = this.querySelector('.name .link span');
@@ -265,18 +283,27 @@ cr.define('policy', function() {
         const valueRowContentDisplay = this.querySelector('.value.row .value');
         valueRowContentDisplay.textContent = policy.value;
 
-        const messageRowContentDisplay =
-            this.querySelector('.messages.row .value');
-        messageRowContentDisplay.textContent = policy.error;
+        const errorRowContentDisplay = this.querySelector('.errors.row .value');
+        errorRowContentDisplay.textContent = policy.error;
+        const warningRowContentDisplay =
+            this.querySelector('.warnings.row .value');
+        warningRowContentDisplay.textContent = policy.warning;
 
         const messagesDisplay = this.querySelector('.messages');
-        const messagesNotice =
-            this.hasMessages_ ? loadTimeData.getString('warning') : '';
-        const conflictsNotice =
-            this.hasConflicts_ ? loadTimeData.getString('conflict') : '';
-        const notice = (messagesNotice && conflictsNotice) ?
-            loadTimeData.getString('warningAndConflicts') :
-            messagesNotice || conflictsNotice || loadTimeData.getString('ok');
+        const errorsNotice =
+            this.hasErrors_ ? loadTimeData.getString('error') : '';
+        const warningsNotice =
+            this.hasWarnings_ ? loadTimeData.getString('warning') : '';
+        const conflictsNotice = this.hasConflicts_ && !this.isMergedValue_ ?
+            loadTimeData.getString('conflict') :
+            '';
+        const ignoredNotice =
+            this.policy.ignored ? loadTimeData.getString('ignored') : '';
+        const notice =
+            [errorsNotice, warningsNotice, ignoredNotice, conflictsNotice]
+                .filter(x => !!x)
+                .join(', ') ||
+            loadTimeData.getString('ok');
         messagesDisplay.textContent = notice;
 
 
@@ -298,26 +325,26 @@ cr.define('policy', function() {
      * @private
      */
     toggleExpanded_: function() {
-      // <if expr="not android">
-      const row = this.parentElement.parentElement;
-      const messageRowDisplay = row.querySelector('.messages.row');
-      const valueRowDisplay = row.querySelector('.value.row');
+      const warningRowDisplay = this.querySelector('.warnings.row');
+      const errorRowDisplay = this.querySelector('.errors.row');
+      const valueRowDisplay = this.querySelector('.value.row');
       valueRowDisplay.hidden = !valueRowDisplay.hidden;
       if (valueRowDisplay.hidden) {
-        row.classList.remove('expanded');
+        this.classList.remove('expanded');
       } else {
-        row.classList.add('expanded');
+        this.classList.add('expanded');
       }
 
-      const messagesDisplay = row.querySelector('.messages');
       this.querySelector('.show-more').hidden = !valueRowDisplay.hidden;
       this.querySelector('.show-less').hidden = valueRowDisplay.hidden;
-      if (messagesDisplay.textContent !== loadTimeData.getString('ok')) {
-        messageRowDisplay.hidden = !messageRowDisplay.hidden;
+      if (this.hasWarnings_) {
+        warningRowDisplay.hidden = !warningRowDisplay.hidden;
       }
-      row.querySelectorAll('.policy-conflict-data')
+      if (this.hasErrors_) {
+        errorRowDisplay.hidden = !errorRowDisplay.hidden;
+      }
+      this.querySelectorAll('.policy-conflict-data')
           .forEach(row => row.hidden = !row.hidden);
-      // </if>
     },
   };
 
@@ -483,7 +510,7 @@ cr.define('policy', function() {
                       link:
                           knownPolicyNames === policyNames.chrome.policyNames &&
                               knownPolicyNamesSet.has(name) ?
-                          `https://chromium.org/administrators/policy-list-3#${
+                          `https://cloud.google.com/docs/chrome-enterprise/policies/?policy=${
                               name}` :
                           undefined,
                     },

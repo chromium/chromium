@@ -62,7 +62,6 @@ public class ChromeSurveyControllerTest {
         mTestController = new TestChromeSurveyController();
         mTestController.setTabModelSelector(mSelector);
         mSharedPreferences = ContextUtils.getAppSharedPreferences();
-        mSharedPreferences.edit().clear().apply();
         Assert.assertNull("Tab should be null", mTestController.getLastTabInfobarShown());
         Map<String, Boolean> featureMap = new ArrayMap<>();
         featureMap.put(ChromeFeatureList.HORIZONTAL_TAB_SWITCHER_ANDROID, true);
@@ -71,7 +70,6 @@ public class ChromeSurveyControllerTest {
 
     @After
     public void after() {
-        mSharedPreferences.edit().clear().apply();
         RecordHistogram.setDisabledForTests(false);
     }
 

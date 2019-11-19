@@ -60,29 +60,21 @@ namespace base {
 
 namespace {
 
-#if !defined(OS_MACOSX) && !defined(OS_FUCHSIA)
 // Each thread will open the shared memory.  Each thread will take a different 4
 // byte int pointer, and keep changing it, with some small pauses in between.
 // Verify that each thread's value in the shared memory is always correct.
 class MultipleThreadMain : public PlatformThread::Delegate {
  public:
-  explicit MultipleThreadMain(int16_t id) : id_(id) {}
-  ~MultipleThreadMain() override = default;
+  static const uint32_t kDataSize = 1024;
 
-  static void CleanUp() {
-    SharedMemory memory;
-    memory.Delete(s_test_name_);
-  }
+  MultipleThreadMain(int16_t id, SharedMemoryHandle handle)
+      : id_(id), shm_(handle, false) {}
+  ~MultipleThreadMain() override = default;
 
   // PlatformThread::Delegate interface.
   void ThreadMain() override {
-    const uint32_t kDataSize = 1024;
-    SharedMemory memory;
-    bool rv = memory.CreateNamedDeprecated(s_test_name_, true, kDataSize);
-    EXPECT_TRUE(rv);
-    rv = memory.Map(kDataSize);
-    EXPECT_TRUE(rv);
-    int* ptr = static_cast<int*>(memory.memory()) + id_;
+    EXPECT_TRUE(shm_.Map(kDataSize));
+    int* ptr = static_cast<int*>(shm_.memory()) + id_;
     EXPECT_EQ(0, *ptr);
 
     for (int idx = 0; idx < 100; idx++) {
@@ -93,20 +85,15 @@ class MultipleThreadMain : public PlatformThread::Delegate {
     // Reset back to 0 for the next test that uses the same name.
     *ptr = 0;
 
-    memory.Close();
+    shm_.Unmap();
   }
 
  private:
   int16_t id_;
-
-  static const char s_test_name_[];
+  SharedMemory shm_;
 
   DISALLOW_COPY_AND_ASSIGN(MultipleThreadMain);
 };
-
-const char MultipleThreadMain::s_test_name_[] =
-    "SharedMemoryOpenThreadTest";
-#endif  // !defined(OS_MACOSX) && !defined(OS_FUCHSIA)
 
 enum class Mode {
   Default,
@@ -133,125 +120,6 @@ class SharedMemoryTest : public ::testing::TestWithParam<Mode> {
 
 }  // namespace
 
-// Android/Mac/Fuchsia doesn't support SharedMemory::Open/Delete/
-// CreateNamedDeprecated(openExisting=true)
-#if !defined(OS_ANDROID) && !defined(OS_MACOSX) && !defined(OS_FUCHSIA)
-
-TEST_P(SharedMemoryTest, OpenClose) {
-  const uint32_t kDataSize = 1024;
-  std::string test_name = "SharedMemoryOpenCloseTest";
-
-  // Open two handles to a memory segment, confirm that they are mapped
-  // separately yet point to the same space.
-  SharedMemory memory1;
-  bool rv = memory1.Delete(test_name);
-  EXPECT_TRUE(rv);
-  rv = memory1.Delete(test_name);
-  EXPECT_TRUE(rv);
-  rv = memory1.Open(test_name, false);
-  EXPECT_FALSE(rv);
-  rv = memory1.CreateNamedDeprecated(test_name, false, kDataSize);
-  EXPECT_TRUE(rv);
-  rv = memory1.Map(kDataSize);
-  EXPECT_TRUE(rv);
-  SharedMemory memory2;
-  rv = memory2.Open(test_name, false);
-  EXPECT_TRUE(rv);
-  rv = memory2.Map(kDataSize);
-  EXPECT_TRUE(rv);
-  EXPECT_NE(memory1.memory(), memory2.memory());  // Compare the pointers.
-
-  // Make sure we don't segfault. (it actually happened!)
-  ASSERT_NE(memory1.memory(), static_cast<void*>(nullptr));
-  ASSERT_NE(memory2.memory(), static_cast<void*>(nullptr));
-
-  // Write data to the first memory segment, verify contents of second.
-  memset(memory1.memory(), '1', kDataSize);
-  EXPECT_EQ(memcmp(memory1.memory(), memory2.memory(), kDataSize), 0);
-
-  // Close the first memory segment, and verify the second has the right data.
-  memory1.Close();
-  char* start_ptr = static_cast<char*>(memory2.memory());
-  char* end_ptr = start_ptr + kDataSize;
-  for (char* ptr = start_ptr; ptr < end_ptr; ptr++)
-    EXPECT_EQ(*ptr, '1');
-
-  // Close the second memory segment.
-  memory2.Close();
-
-  rv = memory1.Delete(test_name);
-  EXPECT_TRUE(rv);
-  rv = memory2.Delete(test_name);
-  EXPECT_TRUE(rv);
-}
-
-TEST_P(SharedMemoryTest, OpenExclusive) {
-  const uint32_t kDataSize = 1024;
-  const uint32_t kDataSize2 = 2048;
-  std::ostringstream test_name_stream;
-  test_name_stream << "SharedMemoryOpenExclusiveTest."
-                   << Time::Now().ToDoubleT();
-  std::string test_name = test_name_stream.str();
-
-  // Open two handles to a memory segment and check that
-  // open_existing_deprecated works as expected.
-  SharedMemory memory1;
-  bool rv = memory1.CreateNamedDeprecated(test_name, false, kDataSize);
-  EXPECT_TRUE(rv);
-
-  // Memory1 knows it's size because it created it.
-  EXPECT_EQ(memory1.requested_size(), kDataSize);
-
-  rv = memory1.Map(kDataSize);
-  EXPECT_TRUE(rv);
-
-  // The mapped memory1 must be at least the size we asked for.
-  EXPECT_GE(memory1.mapped_size(), kDataSize);
-
-  // The mapped memory1 shouldn't exceed rounding for allocation granularity.
-  EXPECT_LT(memory1.mapped_size(),
-            kDataSize + SysInfo::VMAllocationGranularity());
-
-  memset(memory1.memory(), 'G', kDataSize);
-
-  SharedMemory memory2;
-  // Should not be able to create if openExisting is false.
-  rv = memory2.CreateNamedDeprecated(test_name, false, kDataSize2);
-  EXPECT_FALSE(rv);
-
-  // Should be able to create with openExisting true.
-  rv = memory2.CreateNamedDeprecated(test_name, true, kDataSize2);
-  EXPECT_TRUE(rv);
-
-  // Memory2 shouldn't know the size because we didn't create it.
-  EXPECT_EQ(memory2.requested_size(), 0U);
-
-  // We should be able to map the original size.
-  rv = memory2.Map(kDataSize);
-  EXPECT_TRUE(rv);
-
-  // The mapped memory2 must be at least the size of the original.
-  EXPECT_GE(memory2.mapped_size(), kDataSize);
-
-  // The mapped memory2 shouldn't exceed rounding for allocation granularity.
-  EXPECT_LT(memory2.mapped_size(),
-            kDataSize2 + SysInfo::VMAllocationGranularity());
-
-  // Verify that opening memory2 didn't truncate or delete memory 1.
-  char* start_ptr = static_cast<char*>(memory2.memory());
-  char* end_ptr = start_ptr + kDataSize;
-  for (char* ptr = start_ptr; ptr < end_ptr; ptr++) {
-    EXPECT_EQ(*ptr, 'G');
-  }
-
-  memory1.Close();
-  memory2.Close();
-
-  rv = memory1.Delete(test_name);
-  EXPECT_TRUE(rv);
-}
-#endif  // !defined(OS_ANDROID) && !defined(OS_MACOSX) && !defined(OS_FUCHSIA)
-
 // Check that memory is still mapped after its closed.
 TEST_P(SharedMemoryTest, CloseNoUnmap) {
   const size_t kDataSize = 4096;
@@ -275,19 +143,22 @@ TEST_P(SharedMemoryTest, CloseNoUnmap) {
   EXPECT_EQ(nullptr, memory.memory());
 }
 
-#if !defined(OS_MACOSX) && !defined(OS_FUCHSIA)
 // Create a set of N threads to each open a shared memory segment and write to
 // it. Verify that they are always reading/writing consistent data.
 TEST_P(SharedMemoryTest, MultipleThreads) {
   const int kNumThreads = 5;
 
-  MultipleThreadMain::CleanUp();
   // On POSIX we have a problem when 2 threads try to create the shmem
   // (a file) at exactly the same time, since create both creates the
   // file and zerofills it.  We solve the problem for this unit test
   // (make it not flaky) by starting with 1 thread, then
   // intentionally don't clean up its shmem before running with
   // kNumThreads.
+
+  SharedMemoryCreateOptions options;
+  options.size = MultipleThreadMain::kDataSize;
+  SharedMemory shm;
+  EXPECT_TRUE(shm.Create(options));
 
   int threadcounts[] = { 1, kNumThreads };
   for (auto numthreads : threadcounts) {
@@ -300,7 +171,8 @@ TEST_P(SharedMemoryTest, MultipleThreads) {
     // Spawn the threads.
     for (int16_t index = 0; index < numthreads; index++) {
       PlatformThreadHandle pth;
-      thread_delegates[index] = new MultipleThreadMain(index);
+      thread_delegates[index] =
+          new MultipleThreadMain(index, shm.handle().Duplicate());
       EXPECT_TRUE(PlatformThread::Create(0, thread_delegates[index], &pth));
       thread_handles[index] = pth;
     }
@@ -311,9 +183,7 @@ TEST_P(SharedMemoryTest, MultipleThreads) {
       delete thread_delegates[index];
     }
   }
-  MultipleThreadMain::CleanUp();
 }
-#endif
 
 // Allocate private (unique) shared memory with an empty string for a
 // name.  Make sure several of them don't point to the same thing as
@@ -354,7 +224,7 @@ TEST_P(SharedMemoryTest, AnonymousPrivate) {
     }
   }
 
-  for (int i = 0; i < count; i++) {
+  for (i = 0; i < count; i++) {
     memories[i].Close();
   }
 }
@@ -734,12 +604,7 @@ TEST_P(SharedMemoryTest, UnsafeImageSection) {
                            PAGE_READONLY | SEC_IMAGE, 0, 0, kTestSectionName));
   EXPECT_TRUE(section_handle.IsValid());
 
-  // Check direct opening by name, from handle and duplicated from handle.
-  SharedMemory shared_memory_open;
-  EXPECT_TRUE(shared_memory_open.Open(kTestSectionName, true));
-  EXPECT_FALSE(shared_memory_open.Map(1));
-  EXPECT_EQ(nullptr, shared_memory_open.memory());
-
+  // Check opening from handle and duplicated from handle.
   SharedMemory shared_memory_handle_local(
       SharedMemoryHandle(section_handle.Take(), 1, UnguessableToken::Create()),
       true);
@@ -764,89 +629,6 @@ TEST_P(SharedMemoryTest, UnsafeImageSection) {
   EXPECT_EQ(nullptr, shared_memory_handle_no_query.memory());
 }
 #endif  // defined(OS_WIN)
-
-// iOS does not allow multiple processes.
-// Android ashmem does not support named shared memory.
-// Fuchsia SharedMemory does not support named shared memory.
-// Mac SharedMemory does not support named shared memory. crbug.com/345734
-#if !defined(OS_IOS) && !defined(OS_ANDROID) && !defined(OS_MACOSX) && \
-    !defined(OS_FUCHSIA)
-// On POSIX it is especially important we test shmem across processes,
-// not just across threads.  But the test is enabled on all platforms.
-class SharedMemoryProcessTest : public MultiProcessTest {
- public:
-  static void CleanUp() {
-    SharedMemory memory;
-    memory.Delete(s_test_name_);
-  }
-
-  static int TaskTestMain() {
-    int errors = 0;
-    SharedMemory memory;
-    bool rv = memory.CreateNamedDeprecated(s_test_name_, true, s_data_size_);
-    EXPECT_TRUE(rv);
-    if (rv != true)
-      errors++;
-    rv = memory.Map(s_data_size_);
-    EXPECT_TRUE(rv);
-    if (rv != true)
-      errors++;
-    int* ptr = static_cast<int*>(memory.memory());
-
-    // This runs concurrently in multiple processes. Writes need to be atomic.
-    subtle::Barrier_AtomicIncrement(ptr, 1);
-    memory.Close();
-    return errors;
-  }
-
-  static const char s_test_name_[];
-  static const uint32_t s_data_size_;
-};
-
-const char SharedMemoryProcessTest::s_test_name_[] = "MPMem";
-const uint32_t SharedMemoryProcessTest::s_data_size_ = 1024;
-
-TEST_F(SharedMemoryProcessTest, SharedMemoryAcrossProcesses) {
-  const int kNumTasks = 5;
-
-  SharedMemoryProcessTest::CleanUp();
-
-  // Create a shared memory region. Set the first word to 0.
-  SharedMemory memory;
-  bool rv = memory.CreateNamedDeprecated(s_test_name_, true, s_data_size_);
-  ASSERT_TRUE(rv);
-  rv = memory.Map(s_data_size_);
-  ASSERT_TRUE(rv);
-  int* ptr = static_cast<int*>(memory.memory());
-  *ptr = 0;
-
-  // Start |kNumTasks| processes, each of which atomically increments the first
-  // word by 1.
-  Process processes[kNumTasks];
-  for (auto& index : processes) {
-    index = SpawnChild("SharedMemoryTestMain");
-    ASSERT_TRUE(index.IsValid());
-  }
-
-  // Check that each process exited correctly.
-  int exit_code = 0;
-  for (const auto& index : processes) {
-    EXPECT_TRUE(index.WaitForExit(&exit_code));
-    EXPECT_EQ(0, exit_code);
-  }
-
-  // Check that the shared memory region reflects |kNumTasks| increments.
-  ASSERT_EQ(kNumTasks, *ptr);
-
-  memory.Close();
-  SharedMemoryProcessTest::CleanUp();
-}
-
-MULTIPROCESS_TEST_MAIN(SharedMemoryTestMain) {
-  return SharedMemoryProcessTest::TaskTestMain();
-}
-#endif  // !defined(OS_IOS) && !defined(OS_ANDROID) && !defined(OS_MACOSX) &&
-        // !defined(OS_FUCHSIA)
 
 #if !(defined(OS_MACOSX) && !defined(OS_IOS))
 // The Mach functionality is tested in shared_memory_mac_unittest.cc.

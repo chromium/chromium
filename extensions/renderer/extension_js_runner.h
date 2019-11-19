@@ -38,7 +38,7 @@ class ExtensionJSRunner : public JSRunner {
   // The associated ScriptContext. Guaranteed to outlive this object.
   ScriptContext* const script_context_;
 
-  base::WeakPtrFactory<ExtensionJSRunner> weak_factory_;
+  base::WeakPtrFactory<ExtensionJSRunner> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ExtensionJSRunner);
 };

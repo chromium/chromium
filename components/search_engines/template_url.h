@@ -71,9 +71,25 @@ class TemplateURLRef {
   // TemplateURLRef::ReplaceSearchTerms methods.  By default, only search_terms
   // is required and is passed in the constructor.
   struct SearchTermsArgs {
+    SearchTermsArgs();
     explicit SearchTermsArgs(const base::string16& search_terms);
     SearchTermsArgs(const SearchTermsArgs& other);
     ~SearchTermsArgs();
+
+    // If the search request is from the omnibox, this enum may specify details
+    // about how the user last interacted with the omnibox.
+    //
+    // These values are used as HTTP GET parameter values. Entries should not be
+    // renumbered and numeric values should never be reused.
+    enum class OmniboxFocusType {
+      // The default value. This is used for any search requests without any
+      // special interaction annotation, including: normal omnibox searches,
+      // as-you-type omnibox suggestions, as well as non-omnibox searches.
+      DEFAULT = 0,
+
+      // This search request is triggered by the user focusing the omnibox.
+      ON_FOCUS = 1,
+    };
 
     struct ContextualSearchParams {
       ContextualSearchParams();
@@ -135,7 +151,11 @@ class TemplateURLRef {
     base::string16 original_query;
 
     // The type the original input query was identified as.
-    metrics::OmniboxInputType input_type;
+    metrics::OmniboxInputType input_type = metrics::OmniboxInputType::EMPTY;
+
+    // If the search request is from the omnibox, this may specify how the user
+    // last interacted with the omnibox.
+    OmniboxFocusType omnibox_focus_type = OmniboxFocusType::DEFAULT;
 
     // The optional assisted query stats, aka AQS, used for logging purposes.
     // This string contains impressions of all autocomplete matches shown
@@ -146,18 +166,19 @@ class TemplateURLRef {
     std::string assisted_query_stats;
 
     // TODO: Remove along with "aq" CGI param.
-    int accepted_suggestion;
+    int accepted_suggestion = NO_SUGGESTIONS_AVAILABLE;
 
     // The 0-based position of the cursor within the query string at the time
     // the request was issued.  Set to base::string16::npos if not used.
-    size_t cursor_position;
+    size_t cursor_position = base::string16::npos;
 
     // The URL of the current webpage to be used for experimental zero-prefix
     // suggestions.
     std::string current_page_url;
 
     // Which omnibox the user used to type the prefix.
-    metrics::OmniboxEventProto::PageClassification page_classification;
+    metrics::OmniboxEventProto::PageClassification page_classification =
+        metrics::OmniboxEventProto::INVALID_SPEC;
 
     // Optional session token.
     std::string session_token;
@@ -176,7 +197,7 @@ class TemplateURLRef {
     // about the query portion of the URL.  Since neither TemplateURLRef nor
     // indeed TemplateURL know whether a TemplateURL is the default search
     // engine, callers instead must set this manually.
-    bool append_extra_query_params_from_command_line;
+    bool append_extra_query_params_from_command_line = false;
 
     // The raw content of an image thumbnail that will be used as a query for
     // search-by-image frontend.
@@ -191,7 +212,7 @@ class TemplateURLRef {
 
     // True if the search was made using the app list search box. Otherwise, the
     // search was made using the omnibox.
-    bool from_app_list;
+    bool from_app_list = false;
 
     ContextualSearchParams contextual_search_params;
   };
@@ -323,18 +344,20 @@ class TemplateURLRef {
     GOOGLE_ASSISTED_QUERY_STATS,
     GOOGLE_BASE_URL,
     GOOGLE_BASE_SUGGEST_URL,
+    GOOGLE_CONTEXTUAL_SEARCH_VERSION,
+    GOOGLE_CONTEXTUAL_SEARCH_CONTEXT_DATA,
     GOOGLE_CURRENT_PAGE_URL,
     GOOGLE_CURSOR_POSITION,
     GOOGLE_IMAGE_ORIGINAL_HEIGHT,
     GOOGLE_IMAGE_ORIGINAL_WIDTH,
     GOOGLE_IMAGE_SEARCH_SOURCE,
     GOOGLE_IMAGE_THUMBNAIL,
+    GOOGLE_IMAGE_THUMBNAIL_BASE64,
     GOOGLE_IMAGE_URL,
     GOOGLE_INPUT_TYPE,
     GOOGLE_IOS_SEARCH_LANGUAGE,
     GOOGLE_NTP_IS_THEMED,
-    GOOGLE_CONTEXTUAL_SEARCH_VERSION,
-    GOOGLE_CONTEXTUAL_SEARCH_CONTEXT_DATA,
+    GOOGLE_OMNIBOX_FOCUS_TYPE,
     GOOGLE_ORIGINAL_QUERY_FOR_SUGGESTION,
     GOOGLE_PAGE_CLASSIFICATION,
     GOOGLE_PREFETCH_QUERY,
@@ -628,6 +651,7 @@ class TemplateURL {
   base::Time last_visited() const { return data_.last_visited; }
 
   bool created_by_policy() const { return data_.created_by_policy; }
+  bool created_from_play_api() const { return data_.created_from_play_api; }
 
   int usage_count() const { return data_.usage_count; }
 

@@ -9,7 +9,7 @@
 #include "base/macros.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/graphics/paint_invalidation_reason.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
@@ -38,8 +38,8 @@ class CORE_EXPORT ObjectPaintInvalidator {
   void InvalidateDisplayItemClientsIncludingNonCompositingDescendants(
       PaintInvalidationReason);
 
-  // The caller should ensure the painting layer has been SetNeedsRepaint before
-  // calling this function.
+  // The caller should ensure the painting layer has been SetNeedsRepaint
+  // before calling this function.
   void InvalidateDisplayItemClient(const DisplayItemClient&,
                                    PaintInvalidationReason);
 

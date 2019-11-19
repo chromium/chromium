@@ -8,9 +8,12 @@
 #include "base/gtest_prod_util.h"
 #include "base/strings/string16.h"
 #include "build/build_config.h"
-#include "chrome/browser/ui/browser.h"
 #include "content/public/browser/page_navigator.h"
 #include "ui/gfx/image/image.h"
+
+#if !defined(OS_ANDROID)
+class Browser;
+#endif
 
 class DownloadUIModel;
 
@@ -45,9 +48,9 @@ class DownloadCommands {
 #if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_MACOSX)
   bool IsDownloadPdf() const;
   bool CanOpenPdfInSystemViewer() const;
+  Browser* GetBrowser() const;
 #endif
 
-  Browser* GetBrowser() const;
   GURL GetLearnMoreURLForInterruptedDownload() const;
   void CopyFileAsImageToClipboard();
   bool CanBeCopiedToClipboard() const;

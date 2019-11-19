@@ -9,9 +9,9 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
-#include "components/arc/arc_bridge_service.h"
-#include "components/arc/common/power.mojom.h"
+#include "base/test/task_environment.h"
+#include "components/arc/mojom/power.mojom.h"
+#include "components/arc/session/arc_bridge_service.h"
 #include "components/arc/test/connection_holder_util.h"
 #include "components/arc/test/fake_power_instance.h"
 #include "components/arc/test/fake_wake_lock_instance.h"
@@ -27,8 +27,7 @@ using device::mojom::WakeLockType;
 class ArcWakeLockBridgeTest : public testing::Test {
  public:
   ArcWakeLockBridgeTest()
-      : scoped_task_environment_(
-            base::test::ScopedTaskEnvironment::MainThreadType::MOCK_TIME),
+      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         wake_lock_provider_(
             connector_factory_.RegisterInstance(device::mojom::kServiceName)) {
     bridge_service_ = std::make_unique<ArcBridgeService>();
@@ -98,7 +97,7 @@ class ArcWakeLockBridgeTest : public testing::Test {
   }
 
  private:
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
 
   service_manager::TestConnectorFactory connector_factory_;
   device::TestWakeLockProvider wake_lock_provider_;

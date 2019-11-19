@@ -18,10 +18,12 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
+import org.chromium.chrome.browser.ChromeActivity;
 import org.chromium.chrome.browser.ChromeSwitches;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
+import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.ui.resources.ResourceManager;
 
 /**
@@ -32,7 +34,8 @@ import org.chromium.ui.resources.ResourceManager;
 @MinAndroidSdkLevel(Build.VERSION_CODES.LOLLIPOP)
 public class CompositorVisibilityTest {
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public ChromeActivityTestRule<? extends ChromeActivity> mActivityTestRule =
+            new ChromeActivityTestRule(ChromeTabbedActivity.class);
 
     private CompositorView mCompositorView;
 

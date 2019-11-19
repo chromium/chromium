@@ -37,8 +37,7 @@ information about synchronizing GPU work.
 Fences are typically generated or inserted on the client using a sequential
 counter. The corresponding GL API is `GenSyncTokenCHROMIUM` which generates the
 fence using `CommandBufferProxyImpl::GenerateFenceSyncRelease()`, and also adds
-the fence to the command buffer using the internal `InsertFenceSyncCHROMIUM`
-command.
+the fence to the command buffer using the internal `InsertFenceSync` command.
 
 ## Verification
 
@@ -100,8 +99,8 @@ for scheduled tasks, but the wait can also be performed when running the
 
 Sync tokens are completed when the fence is released in the GPU process by
 calling `SyncPointClientState::ReleaseFenceSync()`. For GL command buffers, the
-`InsertFenceSyncCHROMIUM` command, which contains the release count generated in
-the client, calls this when executed in the service. This issues callbacks and
+`InsertFenceSync` command, which contains the release count generated in the
+client, calls this when executed in the service. This issues callbacks and
 allows waiting command buffers to resume their work.
 
 ## Correctness

@@ -8,12 +8,12 @@
 
 #include "base/threading/platform_thread.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/arc/arc_bridge_service.h"
 #include "components/arc/arc_service_manager.h"
+#include "components/arc/session/arc_bridge_service.h"
 #include "components/arc/test/fake_arc_session.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "content/public/browser/tts_controller.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace arc {
@@ -39,8 +39,10 @@ class TestableTtsController : public content::TtsController {
 
   // Unimplemented.
   bool IsSpeaking() override { return false; }
-  void SpeakOrEnqueue(content::TtsUtterance* utterance) override {}
+  void SpeakOrEnqueue(
+      std::unique_ptr<content::TtsUtterance> utterance) override {}
   void Stop() override {}
+  void Stop(const GURL& source_url) override {}
   void Pause() override {}
   void Resume() override {}
   void GetVoices(content::BrowserContext* browser_context,
@@ -58,6 +60,10 @@ class TestableTtsController : public content::TtsController {
   }
   void SetTtsPlatform(content::TtsPlatform* tts_platform) override {}
   int QueueSize() override { return 0; }
+
+  void StripSSML(
+      const std::string& utterance,
+      base::OnceCallback<void(const std::string&)> callback) override {}
 
   int last_utterance_id_;
   content::TtsEventType last_event_type_;
@@ -89,7 +95,7 @@ class ArcTtsServiceTest : public testing::Test {
   }
 
  private:
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<ArcServiceManager> arc_service_manager_;
   std::unique_ptr<TestingProfile> testing_profile_;
   std::unique_ptr<TestableTtsController> tts_controller_;

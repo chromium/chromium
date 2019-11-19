@@ -193,9 +193,10 @@ class PolicyOpcode {
   uint32_t GetOptions() const { return options_; }
 
   // Sets the stored options such as kPolNegateEval.
-  void SetOptions(uint32_t options) {
-    options_ = base::checked_cast<uint16_t>(options);
-  }
+  void SetOptions(uint32_t options) { options_ = options; }
+
+  // Returns the parameter of the function the opcode concerns.
+  uint16_t GetParameter() const { return parameter_; }
 
  private:
   static const size_t kArgumentCount = 4;  // The number of supported argument.
@@ -214,10 +215,7 @@ class PolicyOpcode {
                             MatchContext* match);
   OpcodeID opcode_id_;
   int16_t parameter_;
-  // TODO(cpu): Making |options_| a uint32_t would avoid casting, but causes
-  // test failures.  Somewhere code is relying on the size of this struct.
-  // http://crbug.com/420296
-  uint16_t options_;
+  uint32_t options_;
   OpcodeArgument arguments_[PolicyOpcode::kArgumentCount];
 };
 

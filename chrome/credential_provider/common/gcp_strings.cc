@@ -4,6 +4,8 @@
 
 #include "chrome/credential_provider/common/gcp_strings.h"
 
+#include "build/branding_buildflags.h"
+
 namespace credential_provider {
 
 // Names of keys returned on json data from UI process.
@@ -16,11 +18,15 @@ const char kKeyMdmIdToken[] = "mdm_id_token";
 const char kKeyPassword[] = "password";
 const char kKeyRefreshToken[] = "refresh_token";
 const char kKeyAccessToken[] = "access_token";
+const char kKeyMdmAccessToken[] = "mdm_access_token";
 const char kKeySID[] = "sid";
 const char kKeyTokenHandle[] = "token_handle";
 const char kKeyUsername[] = "user_name";
 const char kKeyDomain[] = "domain";
 const char kKeyExitCode[] = "exit_code";
+
+// AD attributes related to the device.
+const char kKeyIsAdJoinedUser[] = "is_ad_joined_user";
 
 // Name of registry value that holds user properties.
 const wchar_t kUserTokenHandle[] = L"th";
@@ -45,6 +51,7 @@ const wchar_t kRegUpdaterClientStateAppPath[] =
     L"SOFTWARE\\Google\\Update\\ClientState\\" GCPW_UPDATE_CLIENT_GUID;
 const wchar_t kRegUpdaterClientsAppPath[] =
     L"SOFTWARE\\Google\\Update\\Clients\\" GCPW_UPDATE_CLIENT_GUID;
+const wchar_t kRegUsageStatsName[] = L"usagestats";
 
 // Chrome is being opened to show the credential provider logon page.  This
 // page is always shown in incognito mode.
@@ -66,6 +73,10 @@ const char kGaiaIdSwitch[] = "gaia-id";
 // for GCPW.
 const char kGcpwEndpointPathSwitch[] = "gcpw-endpoint-path";
 
+// Allows specifying additional oauth scopes for the access token being passed
+// to GCPW.
+const char kGcpwAdditionalOauthScopes[] = "gcpw-additional-oauth-scopes";
+
 // Parameter appended to sign in URL to pass valid signin domains to the inline
 // login handler. These domains are separated by ','.
 const char kEmailDomainsSigninPromoParameter[] = "emailDomains";
@@ -75,10 +86,10 @@ const char kGcpwEndpointPathPromoParameter[] = "gcpw_endpoint_path";
 
 const wchar_t kRunAsCrashpadHandlerEntryPoint[] = L"RunAsCrashpadHandler";
 
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 const wchar_t kRegHkcuAccountsPath[] = L"Software\\Google\\Accounts";
 #else
 const wchar_t kRegHkcuAccountsPath[] = L"Software\\Chromium\\Accounts";
-#endif  // defined(GOOGLE_CHROME_BUILD)
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 }  // namespace credential_provider

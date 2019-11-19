@@ -188,8 +188,10 @@ void RelaunchNotificationController::ShowRelaunchNotification(
 
   if (last_notification_style_ == NotificationStyle::kRecommended) {
     // Show the dialog if there has been a level change.
-    if (level != last_level_)
-      NotifyRelaunchRecommended();
+    if (level != last_level_) {
+      NotifyRelaunchRecommended(level ==
+                                UpgradeDetector::UPGRADE_ANNOYANCE_HIGH);
+    }
 
     // If this is the final showing (the one at the "high" level), start the
     // timer to reshow the bubble at each "elevated to high" interval.
@@ -230,7 +232,7 @@ void RelaunchNotificationController::HandleRelaunchRequiredState(
 
   // Make no changes if the new deadline is not in the future and the browser is
   // within the grace period of the previous deadline. The user has already been
-  // given the three-minute countdown so just let it go.
+  // given the fifteen-minutes countdown so just let it go.
   const base::Time now = clock_->Now();
   if (timer_.IsRunning()) {
     const base::Time& desired_run_time = timer_.desired_run_time();
@@ -239,7 +241,7 @@ void RelaunchNotificationController::HandleRelaunchRequiredState(
       return;
   }
 
-  // Compute the new deadline (minimally three minutes into the future).
+  // Compute the new deadline (minimally fifteen minutes into the future).
   const base::Time deadline =
       std::max(high_deadline, now) + kRelaunchGracePeriod;
 
@@ -271,18 +273,20 @@ void RelaunchNotificationController::StartReshowTimer() {
 
 void RelaunchNotificationController::OnReshowRelaunchRecommended() {
   DCHECK_EQ(last_notification_style_, NotificationStyle::kRecommended);
-  NotifyRelaunchRecommended();
+  NotifyRelaunchRecommended(true);
   StartReshowTimer();
 }
 
-void RelaunchNotificationController::NotifyRelaunchRecommended() {
+void RelaunchNotificationController::NotifyRelaunchRecommended(
+    bool past_deadline) {
   last_relaunch_notification_time_ = clock_->Now();
-  DoNotifyRelaunchRecommended();
+  DoNotifyRelaunchRecommended(past_deadline);
 }
 
-void RelaunchNotificationController::DoNotifyRelaunchRecommended() {
+void RelaunchNotificationController::DoNotifyRelaunchRecommended(
+    bool past_deadline) {
   platform_impl_.NotifyRelaunchRecommended(
-      upgrade_detector_->upgrade_detected_time());
+      upgrade_detector_->upgrade_detected_time(), past_deadline);
 }
 
 void RelaunchNotificationController::NotifyRelaunchRequired() {

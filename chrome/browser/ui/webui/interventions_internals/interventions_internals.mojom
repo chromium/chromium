@@ -58,7 +58,7 @@ interface InterventionsInternalsPageHandler {
   GetPreviewsFlagsDetails() => (array<PreviewsFlag> flags);
 
   // Inject the client side page object.
-  SetClientPage(InterventionsInternalsPage page);
+  SetClientPage(pending_remote<InterventionsInternalsPage> page);
 
   // Change the status of ignoring blacklist to |ignored|. |ignored| will
   // indicate whether the blacklist decision would be ignored when deciding if a

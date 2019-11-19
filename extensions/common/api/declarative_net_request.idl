@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// The <code>chrome.declarativeNetRequest</code> API is used to block or
-// redirect network requests by specifying declarative rules.
+// The <code>chrome.declarativeNetRequest</code> API is used to block or modify
+// network requests by specifying declarative rules.
 [generate_error_messages]
 namespace declarativeNetRequest {
   // This describes the resource type of the network request.
@@ -33,15 +33,83 @@ namespace declarativeNetRequest {
     thirdParty
   };
 
+  // This describes the headers which can be removed from the network request.
+  enum RemoveHeaderType {
+    cookie,
+    referer,
+    setCookie
+  };
+
   // Describes the kind of action to take if a given RuleCondition matches.
   enum RuleActionType {
     // Block the network request.
     block,
     // Redirect the network request.
     redirect,
-    // Allow the network request. The request won't be blocked even if there
-    // is a blocking rule which matches it.
-    allow
+    // Allow the network request. The request won't be intercepted if there is
+    // an allow rule which matches it.
+    allow,
+    // Upgrade the network request url's scheme to https if the request is http
+    // or ftp.
+    upgradeScheme,
+    // Remove request/response headers from the network request.
+    removeHeaders
+  };
+
+  // Represents a query key-value pair.
+  dictionary QueryKeyValue {
+    DOMString key;
+    DOMString value;
+  };
+
+  // Describes modification to the url query.
+  dictionary QueryTransform {
+     // The list of query keys to be removed.
+     DOMString[]? removeParams;
+     // The list of query key-value pairs to be added or replaced.
+     QueryKeyValue[]? addOrReplaceParams;
+  };
+
+  // Describes modification to various url components.
+  dictionary URLTransform {
+     // The new scheme for the request. Allowed values are "http", "https",
+     // "ftp" and "chrome-extension".
+     DOMString? scheme;
+
+     // The new host for the request.
+     DOMString? host;
+
+     // The new port for the request. If empty, the existing port is cleared.
+     DOMString? port;
+
+     // The new path for the request. If empty, the existing path is cleared.
+     DOMString? path;
+
+     // The new query for the request. Should be either empty, in which case the
+     // existing query is cleared; or should begin with '?'.
+     DOMString? query;
+
+     // Add, remove or replace query key-value pairs.
+     QueryTransform? queryTransform;
+
+     // The new fragment for the request. Should be either empty, in which case
+     // the existing fragment is cleared; or should begin with '#'.
+     DOMString? fragment;
+
+     // The new username for the request.
+     DOMString? username;
+
+     // The new password for the request.
+     DOMString? password;
+  };
+
+  dictionary Redirect {
+     // Path relative to the extension directory. Should start with '/'.
+     DOMString? extensionPath;
+     // Url transformations to perform.
+     URLTransform? transform;
+     // The redirect url. Redirects to JavaScript urls are not allowed.
+     DOMString? url;
   };
 
   dictionary RuleCondition {
@@ -66,6 +134,9 @@ namespace declarativeNetRequest {
     //
     // If omitted, all urls are matched. An empty string is not allowed.
     //
+    // A pattern beginning with <code>||*</code> is not allowed. Use
+    // <code>*</code> instead.
+    //
     // Note: The <code>urlFilter</code> must be composed of only ASCII
     // characters. This is matched against a url where the host is encoded in
     // the punycode format (in case of internationalized domains) and any other
@@ -74,6 +145,11 @@ namespace declarativeNetRequest {
     // <code>urlFilter</code> will be matched against the url
     // http://abc.xn--p1ai/?q=%D1%84.
     DOMString? urlFilter;
+
+    // TODO(crbug.com/974391): Add documentation once the implementation is
+    // complete.
+    [nodoc]
+    DOMString? regexFilter;
 
     // Whether the <code>urlFilter</code> is case sensitive. Default is true.
     boolean? isUrlFilterCaseSensitive;
@@ -88,8 +164,8 @@ namespace declarativeNetRequest {
     DOMString[]? domains;
 
     // The rule will not match network requests originating from the list of
-    // <code>excludedDomains</code>. If the list is empty or omitted, no domains
-    // are excluded. This takes precedence over <code>domains</code>.
+    // <code> excludedDomains</code>. If the list is empty or omitted, no domains
+    // are excluded. This takes precedence over <code> domains</code>.
     //
     // Note: sub-domains like "a.example.com" are also allowed.
     // The entries must consist of only ascii characters. Use punycode encoding
@@ -116,16 +192,22 @@ namespace declarativeNetRequest {
     // The type of action to perform.
     RuleActionType type;
 
-    // The redirect url. Only valid if RuleActionType is "redirect".
-    DOMString? redirectUrl;
+    // Describes how the redirect should be performed. Only valid for redirect
+    // rules.
+    Redirect? redirect;
+
+    // The headers to remove from the request. Only valid if RuleActionType is
+    // "removeHeaders".
+    RemoveHeaderType[]? removeHeadersList;
   };
 
   dictionary Rule {
     // An id which uniquely identifies a rule. Mandatory and should be >= 1.
     long id;
 
-    // Rule priority. Mandatory for redirect rules and should be >= 1. This is
-    // used to break ties between multiple matching redirect rules.
+    // Rule priority. Mandatory for redirect and upgradeScheme rules and should
+    // be >= 1. This is used to break ties between multiple matching redirect
+    // rules.
     long? priority;
 
     // The condition under which this rule is triggered.
@@ -135,17 +217,107 @@ namespace declarativeNetRequest {
     RuleAction action;
   };
 
+  [nodoc]
+  enum SourceType {
+    // The rule is specified in a JSON file within the extension's package.
+    manifest,
+    // The rule is a dynamic rule added by the extension using
+    // $(ref:declarativeNetRequest.updateDynamicRules).
+    dynamic
+  };
+
+  [nodoc]
+  dictionary MatchedRule {
+    // A matching rule's ID.
+    long ruleId;
+
+    // The source of the rule.
+    SourceType sourceType;
+  };
+
+  [nodoc]
+  dictionary MatchedRuleInfo {
+    MatchedRule rule;
+
+    // The time the rule was matched. Timestamps will correspond to the
+    // Javascript convention for times, i.e. number of milliseconds since the
+    // epoch.
+    double timeStamp;
+
+    // The tabId of the tab from which the request originated if the tab is
+    // still active. Else -1.
+    long tabId;
+  };
+
+  [nodoc]
+  dictionary MatchedRulesFilter {
+    // If specified, only matches rules for the given tab.
+    long? tabId;
+
+    // If specified, only matches rules after the given timestamp.
+    long? minTimeStamp;
+  };
+
+  [nodoc]
+  dictionary RulesMatchedDetails {
+     // Rules matching the given filter.
+     MatchedRuleInfo[] rulesMatchedInfo;
+  };
+
+  // TODO(crbug.com/1017934): Add documentation once the implementation is
+  // complete.
+  [nodoc]
+  dictionary RequestDetails {
+    DOMString requestId;
+    DOMString url;
+    DOMString? initiator;
+    DOMString method;
+    long frameId;
+    long parentFrameId;
+    long tabId;
+    ResourceType type;
+  };
+
+  [nodoc]
+  dictionary MatchedRuleInfoDebug {
+    MatchedRule rule;
+    RequestDetails request;
+  };
+
   callback EmptyCallback = void();
   callback GetAllowedPagesCallback = void(DOMString[] result);
   callback GetRulesCallback = void(Rule[] rules);
+  callback GetMatchedRulesCallback = void(RulesMatchedDetails details);
 
   interface Functions {
 
-    // TODO(crbug.com/930961): Enable documentation for these functions once
-    // they are implemented.
-    [nodoc] static void addDynamicRules(Rule[] rules, optional EmptyCallback callback);
-    [nodoc] static void removeDynamicRules(long[] rule_ids, optional EmptyCallback callback);
-    [nodoc] static void getDynamicRules(GetRulesCallback callback);
+    // Modify the current set of dynamic rules for the extension. The rules
+    // with IDs listed in <code>rule_ids_to_remove</code> are first removed,
+    // and then the rules given in <code>rules_to_add</code> are added. This
+    // update happens as a single atomic operation: either all specified rules
+    // are added and removed, or an error is returned.
+    // These rules are persisted across browser sessions.
+    // Any ids in <code>rule_ids_to_remove</code> that are not present will be
+    // ignored.
+    // Note that static rules specified as part of the extension package can
+    // not be removed using this function.
+    // Note: <a href="#property-MAX_NUMBER_OF_DYNAMIC_RULES">
+    // MAX_NUMBER_OF_DYNAMIC_RULES</a> is the maximum number of dynamic rules an
+    // extension can add.
+    // |rule_ids_to_remove|: The IDs of rules to remove.
+    // |rules_to_add|: The rules to add.
+    // |callback|: Called once the update is complete or has failed. In case of
+    // an error, $(ref:runtime.lastError) will be set to denote the error
+    // message and no change will be made to the rule set. This can happen for
+    // multiple reasons, such as invalid rule format, duplicate rule ID, rule
+    // count limit exceeded, internal errors, and others.
+    static void updateDynamicRules(long[] rule_ids_to_remove, Rule[] rules_to_add,
+        optional EmptyCallback callback);
+
+    // Returns the current set of dynamic rules for the extension.
+    // |callback|: Called with the set of dynamic rules. An error might be
+    // raised in case of transient internal errors.
+    static void getDynamicRules(GetRulesCallback callback);
 
     // Adds <code>page_patterns</code> to the set of allowed pages. Requests
     // from these pages are not intercepted by the extension. These are
@@ -158,11 +330,11 @@ namespace declarativeNetRequest {
     // <a href="/extensions/match_patterns">match patterns</a> which are to be
     // allowed.
     // |callback|: Called after the <code>page_patterns</code> have been added.
-    // chrome.runtime.lastError will be set in case of an error, for example if
+    // $(ref:runtime.lastError) will be set in case of an error, for example if
     // an invalid page pattern is specified or the extension exceeded the
     // maximum page patterns limit.
-
-    static void addAllowedPages(DOMString[] page_patterns, optional EmptyCallback callback);
+    static void addAllowedPages(DOMString[] page_patterns,
+        optional EmptyCallback callback);
 
     // Removes <code>page_patterns</code> from the set of allowed pages.
     // Note: Removing page patterns is atomic. In case of an error, no page
@@ -171,12 +343,27 @@ namespace declarativeNetRequest {
     // <a href="/extensions/match_patterns">match patterns</a> which are to be
     // removed.
     // |callback|: Called after the <code>page_patterns</code> have been
-    // removed. chrome.runtime.lastError will be set in case of an error.
-    static void removeAllowedPages(DOMString[] page_patterns, optional EmptyCallback callback);
+    // removed. $(ref:runtime.lastError) will be set in case of an error.
+    static void removeAllowedPages(DOMString[] page_patterns,
+        optional EmptyCallback callback);
 
     // Returns the current set of allowed pages.
     // |callback|: Called with the set of currently allowed pages.
     static void getAllowedPages(GetAllowedPagesCallback callback);
+
+    // TODO(crbug.com/967942): Add documentation once implementation is
+    // complete.
+    [nodoc]
+    static void getMatchedRules(optional MatchedRulesFilter filter,
+        GetMatchedRulesCallback callback);
+
+    // Sets whether to automatically badge extension's icon to the matched
+    // action count for a tab. This preference is persisted across sessions and
+    // is false by default.
+    // TODO(crbug.com/973211): Add documentation once implementation is
+    // complete.
+    [nodoc]
+    static void setActionCountAsBadgeText(boolean enable);
   };
 
   interface Properties {
@@ -187,5 +374,15 @@ namespace declarativeNetRequest {
     // resources file. Any excess rules will be ignored and an install warning
     // will be raised.
     [value=30000] static long MAX_NUMBER_OF_RULES();
+
+    // The maximum number of dynamic rules that an extension can add.
+    [value=5000] static long MAX_NUMBER_OF_DYNAMIC_RULES();
+  };
+
+  interface Events {
+    // TODO(crbug.com/1017934): Add documentation once the implementation is
+    // complete.
+    [nodoc]
+    static void onRuleMatchedDebug(MatchedRuleInfoDebug event);
   };
 };

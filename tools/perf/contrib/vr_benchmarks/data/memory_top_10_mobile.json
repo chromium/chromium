@@ -1,0 +1,42 @@
+{
+    "archives": {
+        "http_en_m_wikipedia_org_wiki_Science": {
+            "DEFAULT": "memory_top_10_mobile_001.wprgo"
+        },
+        "http_m_intl_taobao_com_group_purchase_html": {
+            "DEFAULT": "memory_top_10_mobile_001.wprgo"
+        },
+        "http_m_taobao_com_channel_act_mobile_20131111_women_html": {
+            "DEFAULT": "memory_top_10_mobile_000.wprgo"
+        },
+        "http_m_youtube_com_results_q_science": {
+            "DEFAULT": "memory_top_10_mobile_001.wprgo"
+        },
+        "http_search_yahoo_com_search__ylt_p_google": {
+            "DEFAULT": "memory_top_10_mobile_001.wprgo"
+        },
+        "http_www_amazon_com_gp_aw_s_k_nexus": {
+            "DEFAULT": "memory_top_10_mobile_001.wprgo"
+        },
+        "http_www_baidu_com_s_word_google": {
+            "DEFAULT": "memory_top_10_mobile_001.wprgo"
+        },
+        "http_yandex_ru_touchsearch_text_science": {
+            "DEFAULT": "memory_top_10_mobile_001.wprgo"
+        },
+        "https_m_facebook_com_rihanna": {
+            "DEFAULT": "memory_top_10_mobile_001.wprgo"
+        },
+        "https_mobile_twitter_com_justinbieber_skip_interstitial_true": {
+            "DEFAULT": "memory_top_10_mobile_001.wprgo"
+        },
+        "https_www_google_co_uk_hl_en_q_science": {
+            "DEFAULT": "memory_top_10_mobile_001.wprgo"
+        },
+        "https_www_google_com_hl_en_q_science": {
+            "DEFAULT": "memory_top_10_mobile_000.wprgo"
+        }
+    },
+    "description": "Describes the Web Page Replay archives for a story set. Don't edit by hand! Use record_wpr for updating.",
+    "platform_specific": true
+}

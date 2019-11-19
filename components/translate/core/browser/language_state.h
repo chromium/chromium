@@ -32,7 +32,7 @@ class LanguageState {
                    bool is_main_frame,
                    bool reload,
                    const std::string& href_translate,
-                   bool navigation_from_dse);
+                   bool navigation_from_google);
 
   // Should be called when the language of the page has been determined.
   // |page_needs_translation| when false indicates that the browser should not
@@ -80,7 +80,7 @@ class LanguageState {
   bool HasLanguageChanged() const;
 
   std::string href_translate() const { return href_translate_; }
-  bool navigation_from_dse() const { return navigation_from_dse_; }
+  bool navigation_from_google() const { return navigation_from_google_; }
 
   std::string GetPredefinedTargetLanguage() const {
     return predefined_target_language_;
@@ -141,9 +141,9 @@ class LanguageState {
   // current navigation, if it was specified.
   std::string href_translate_;
 
-  // True when the current page was the result of a navigation originated in the
-  // origin of the user's default search engine.
-  bool navigation_from_dse_ = false;
+  // True when the current page was the result of a navigation originated in a
+  // Google origin.
+  bool navigation_from_google_ = false;
 
   // Target language set by client.
   std::string predefined_target_language_;

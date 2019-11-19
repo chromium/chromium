@@ -1,8 +1,0 @@
-Tests that cross-domain WebSocket cookies are not reported.
-
-new WebSocket('ws://127.0.0.1:8000/inspector-protocol/network/resources/cookie.pl')
-Set-Cookie: name=value
-
-new WebSocket('ws://devtools.oopif.test:8000/inspector-protocol/network/resources/cookie.pl')
-Set-Cookie: undefined
-

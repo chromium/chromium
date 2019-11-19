@@ -25,4 +25,12 @@ bool PowerButtonScreenshotControllerTestApi::TriggerVolumeDownTimer() {
   return true;
 }
 
+bool PowerButtonScreenshotControllerTestApi::TriggerVolumeUpTimer() {
+  if (!controller_->volume_up_timer_.IsRunning())
+    return false;
+
+  controller_->volume_up_timer_.FireNow();
+  return true;
+}
+
 }  // namespace ash

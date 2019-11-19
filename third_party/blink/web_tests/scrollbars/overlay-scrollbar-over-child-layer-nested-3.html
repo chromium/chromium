@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<script>
+if (window.internals)
+  internals.useMockOverlayScrollbars();
+</script>
+<div style="position: relative; width: 200px; height: 200px; overflow: scroll">
+  <!-- The intermediate div's overflow is hidden. -->
+  <div style="position: relative; width: 210px; height: 80px; overflow: hidden">
+    <div style="position: absolute; z-index: 5; background: green; width: 300px; height: 100px"></div>
+  </div>
+  <div style="height: 210px"></div>
+</div>

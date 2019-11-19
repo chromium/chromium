@@ -16,13 +16,13 @@ namespace chromeos {
 class KioskAppDataDelegate {
  public:
   // Invoked to get the root directory for storing cached icon files.
-  virtual void GetKioskAppIconCacheDir(base::FilePath* cache_dir) = 0;
+  virtual void GetKioskAppIconCacheDir(base::FilePath* cache_dir) const = 0;
 
   // Invoked when kiosk app data or status has changed.
-  virtual void OnKioskAppDataChanged(const std::string& app_id) = 0;
+  virtual void OnKioskAppDataChanged(const std::string& app_id) const = 0;
 
   // Invoked when failed to load web store data of an app.
-  virtual void OnKioskAppDataLoadFailure(const std::string& app_id) = 0;
+  virtual void OnKioskAppDataLoadFailure(const std::string& app_id) const = 0;
 
  protected:
   virtual ~KioskAppDataDelegate() {}

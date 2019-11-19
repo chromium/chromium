@@ -13,13 +13,13 @@
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
 #include "base/version.h"
+#include "extensions/browser/content_verifier_delegate.h"
 
 namespace extensions {
 
 // A helper class for keeping track of data for the ContentVerifier that should
 // only be accessed on the IO thread.
-class ContentVerifierIOData
-    : public base::RefCountedThreadSafe<ContentVerifierIOData> {
+class ContentVerifierIOData {
  public:
   struct ExtensionData {
     // Set of images file paths used within the browser process.
@@ -27,15 +27,18 @@ class ContentVerifierIOData
     // Set of file paths used as background scripts, pages or content scripts.
     std::unique_ptr<std::set<base::FilePath>> background_or_content_paths;
     base::Version version;
+    ContentVerifierDelegate::VerifierSourceType source_type;
 
     ExtensionData(
         std::unique_ptr<std::set<base::FilePath>> browser_image_paths,
         std::unique_ptr<std::set<base::FilePath>> background_or_content_paths,
-        const base::Version& version);
+        const base::Version& version,
+        ContentVerifierDelegate::VerifierSourceType source_type);
     ~ExtensionData();
   };
 
   ContentVerifierIOData();
+  ~ContentVerifierIOData();
 
   void AddData(const std::string& extension_id,
                std::unique_ptr<ExtensionData> data);
@@ -46,11 +49,10 @@ class ContentVerifierIOData
   // be retained or used on other threads.
   const ExtensionData* GetData(const std::string& extension_id);
 
- protected:
-  friend class base::RefCountedThreadSafe<ContentVerifierIOData>;
-  virtual ~ContentVerifierIOData();
-
+ private:
   std::map<std::string, std::unique_ptr<ExtensionData>> data_map_;
+
+  DISALLOW_COPY_AND_ASSIGN(ContentVerifierIOData);
 };
 
 }  // namespace extensions

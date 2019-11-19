@@ -7,6 +7,24 @@
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 
+namespace {
+
+blink::EUserSelect UsedValueOfUserSelect(const blink::Node& node) {
+  auto* html_element = blink::DynamicTo<blink::HTMLElement>(node);
+  if (html_element && html_element->IsTextControl())
+    return blink::EUserSelect::kText;
+  if (!node.GetLayoutObject())
+    return blink::EUserSelect::kNone;
+
+  const blink::ComputedStyle* style = node.GetLayoutObject()->Style();
+  if (style->UserModify() != blink::EUserModify::kReadOnly)
+    return blink::EUserSelect::kText;
+
+  return style->UserSelect();
+}
+
+}  // namespace
+
 namespace blink {
 
 // If a node can contain candidates for VisiblePositions, return the offset of
@@ -28,8 +46,8 @@ int EditingAlgorithm<Traversal>::LastOffsetForEditing(const Node* node) {
   DCHECK(node);
   if (!node)
     return 0;
-  if (node->IsCharacterDataNode())
-    return static_cast<int>(ToCharacterData(node)->length());
+  if (auto* character_data = DynamicTo<CharacterData>(node))
+    return static_cast<int>(character_data->length());
 
   if (Traversal::HasChildren(*node))
     return Traversal::CountChildren(*node);

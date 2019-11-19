@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/modules/websockets/websocket_channel.h"
 #include "third_party/blink/renderer/modules/websockets/websocket_channel_client.h"
 #include "third_party/blink/renderer/modules/websockets/websocket_channel_impl.h"
+#include "third_party/blink/renderer/modules/websockets/websocket_common.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/timer.h"
@@ -69,6 +70,12 @@ class MODULES_EXPORT DOMWebSocket : public EventTargetWithInlineData,
   USING_GARBAGE_COLLECTED_MIXIN(DOMWebSocket);
 
  public:
+  // These definitions are required by V8DOMWebSocket.
+  static constexpr auto kConnecting = WebSocketCommon::kConnecting;
+  static constexpr auto kOpen = WebSocketCommon::kOpen;
+  static constexpr auto kClosing = WebSocketCommon::kClosing;
+  static constexpr auto kClosed = WebSocketCommon::kClosed;
+
   // DOMWebSocket instances must be used with a wrapper since this class's
   // lifetime management is designed assuming the V8 holds a ref on it while
   // hasPendingActivity() returns true.
@@ -82,8 +89,6 @@ class MODULES_EXPORT DOMWebSocket : public EventTargetWithInlineData,
 
   explicit DOMWebSocket(ExecutionContext*);
   ~DOMWebSocket() override;
-
-  enum State { kConnecting = 0, kOpen = 1, kClosing = 2, kClosed = 3 };
 
   void Connect(const String& url,
                const Vector<String>& protocols,
@@ -104,7 +109,7 @@ class MODULES_EXPORT DOMWebSocket : public EventTargetWithInlineData,
   void close(uint16_t code, ExceptionState&);
 
   const KURL& url() const;
-  State readyState() const;
+  WebSocketCommon::State readyState() const;
   uint64_t bufferedAmount() const;
 
   String protocol() const;
@@ -134,7 +139,8 @@ class MODULES_EXPORT DOMWebSocket : public EventTargetWithInlineData,
   // WebSocketChannelClient functions.
   void DidConnect(const String& subprotocol, const String& extensions) override;
   void DidReceiveTextMessage(const String& message) override;
-  void DidReceiveBinaryMessage(std::unique_ptr<Vector<char>>) override;
+  void DidReceiveBinaryMessage(
+      const Vector<base::span<const char>>& data) override;
   void DidError() override;
   void DidConsumeBufferedAmount(uint64_t) override;
   void DidStartClosingHandshake() override;
@@ -144,11 +150,9 @@ class MODULES_EXPORT DOMWebSocket : public EventTargetWithInlineData,
 
   void Trace(blink::Visitor*) override;
 
-  static bool IsValidSubprotocolString(const String&);
-
  private:
   // FIXME: This should inherit blink::EventQueue.
-  class EventQueue final : public GarbageCollectedFinalized<EventQueue> {
+  class EventQueue final : public GarbageCollected<EventQueue> {
    public:
     static EventQueue* Create(EventTarget* target) {
       return MakeGarbageCollected<EventQueue>(target);
@@ -246,9 +250,8 @@ class MODULES_EXPORT DOMWebSocket : public EventTargetWithInlineData,
 
   Member<WebSocketChannel> channel_;
 
-  State state_;
+  WebSocketCommon common_;
 
-  KURL url_;
   String origin_string_;
 
   uint64_t buffered_amount_;
@@ -264,8 +267,6 @@ class MODULES_EXPORT DOMWebSocket : public EventTargetWithInlineData,
   Member<EventQueue> event_queue_;
 
   bool buffered_amount_update_task_pending_;
-
-  bool was_autoupgraded_to_wss_;
 };
 
 }  // namespace blink

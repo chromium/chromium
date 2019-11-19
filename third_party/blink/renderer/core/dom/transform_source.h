@@ -22,7 +22,7 @@
 
 #include <libxml/tree.h>
 #include "base/macros.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 

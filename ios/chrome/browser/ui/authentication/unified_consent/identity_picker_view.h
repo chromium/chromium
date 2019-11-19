@@ -7,9 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-// Accessibility identifier.
-extern NSString* const kIdentityPickerViewIdentifier;
-
 // Displays the name, email and avatar of a chrome identity, as a control.
 // An down arrow is also displayed on the right of the control, to invite the
 // user to tap and select another chrome identity. To get the tap event, see:

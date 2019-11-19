@@ -13,6 +13,7 @@
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
+#include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/content_settings/content_setting_bubble_model_delegate.h"
@@ -60,11 +61,11 @@ class ToolbarRowView : public views::View {
 
   ~ToolbarRowView() override {}
 
-  void Init(views::View* back,
-            views::View* forward,
-            views::View* reload,
-            views::View* location_bar) {
-    GridLayout* layout = SetLayoutManager(std::make_unique<GridLayout>(this));
+  void Init(std::unique_ptr<views::View> back,
+            std::unique_ptr<views::View> forward,
+            std::unique_ptr<views::View> reload,
+            std::unique_ptr<views::View> location_bar) {
+    GridLayout* layout = SetLayoutManager(std::make_unique<GridLayout>());
 
     const int related_horizontal_spacing =
         ChromeLayoutProvider::Get()->GetDistanceMetric(
@@ -88,10 +89,10 @@ class ToolbarRowView : public views::View {
     column_set->AddPaddingColumn(0, related_horizontal_spacing);
 
     layout->StartRow(0, 0);
-    layout->AddView(back);
-    layout->AddView(forward);
-    layout->AddView(reload);
-    layout->AddView(location_bar);
+    layout->AddView(std::move(back));
+    layout->AddView(std::move(forward));
+    layout->AddView(std::move(reload));
+    layout->AddView(std::move(location_bar));
   }
 
  private:
@@ -139,7 +140,7 @@ SimpleWebViewDialog::~SimpleWebViewDialog() {
 }
 
 void SimpleWebViewDialog::StartLoad(const GURL& url) {
-  if (!web_view_container_.get())
+  if (!web_view_container_)
     web_view_container_.reset(new views::WebView(profile_));
   web_view_ = web_view_container_.get();
   web_view_->set_owned_by_client();
@@ -165,43 +166,51 @@ void SimpleWebViewDialog::Init() {
   SetBackground(views::CreateSolidBackground(kDialogColor));
 
   // Back/Forward buttons.
-  back_ = new views::ImageButton(this);
-  back_->set_triggerable_event_flags(ui::EF_LEFT_MOUSE_BUTTON |
-                                     ui::EF_MIDDLE_MOUSE_BUTTON);
-  back_->set_tag(IDC_BACK);
-  back_->SetImageAlignment(views::ImageButton::ALIGN_RIGHT,
-                           views::ImageButton::ALIGN_TOP);
-  back_->SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_BACK));
-  back_->SetAccessibleName(l10n_util::GetStringUTF16(IDS_ACCNAME_BACK));
-  back_->set_id(VIEW_ID_BACK_BUTTON);
+  auto back = std::make_unique<views::ImageButton>(this);
+  back->set_triggerable_event_flags(ui::EF_LEFT_MOUSE_BUTTON |
+                                    ui::EF_MIDDLE_MOUSE_BUTTON);
+  back->set_tag(IDC_BACK);
+  back->SetImageHorizontalAlignment(views::ImageButton::ALIGN_RIGHT);
+  back->SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_BACK));
+  back->SetAccessibleName(l10n_util::GetStringUTF16(IDS_ACCNAME_BACK));
+  back->SetID(VIEW_ID_BACK_BUTTON);
+  back_ = back.get();
 
-  forward_ = new views::ImageButton(this);
-  forward_->set_triggerable_event_flags(ui::EF_LEFT_MOUSE_BUTTON |
-                                        ui::EF_MIDDLE_MOUSE_BUTTON);
-  forward_->set_tag(IDC_FORWARD);
-  forward_->SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_FORWARD));
-  forward_->SetAccessibleName(l10n_util::GetStringUTF16(IDS_ACCNAME_FORWARD));
-  forward_->set_id(VIEW_ID_FORWARD_BUTTON);
+  auto forward = std::make_unique<views::ImageButton>(this);
+  forward->set_triggerable_event_flags(ui::EF_LEFT_MOUSE_BUTTON |
+                                       ui::EF_MIDDLE_MOUSE_BUTTON);
+  forward->set_tag(IDC_FORWARD);
+  forward->SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_FORWARD));
+  forward->SetAccessibleName(l10n_util::GetStringUTF16(IDS_ACCNAME_FORWARD));
+  forward->SetID(VIEW_ID_FORWARD_BUTTON);
+  forward_ = forward.get();
 
   // Location bar.
-  location_bar_ = new LocationBarView(nullptr, profile_, command_updater_.get(),
-                                      this, true);
+  auto location_bar = std::make_unique<LocationBarView>(
+      nullptr, profile_, command_updater_.get(), this, true);
+  location_bar_ = location_bar.get();
 
   // Reload button.
-  reload_ = new ReloadButton(command_updater_.get());
-  reload_->set_triggerable_event_flags(ui::EF_LEFT_MOUSE_BUTTON |
-                                       ui::EF_MIDDLE_MOUSE_BUTTON);
-  reload_->set_tag(IDC_RELOAD);
-  reload_->SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_RELOAD));
-  reload_->SetAccessibleName(l10n_util::GetStringUTF16(IDS_ACCNAME_RELOAD));
-  reload_->set_id(VIEW_ID_RELOAD_BUTTON);
+  auto reload = std::make_unique<ReloadButton>(command_updater_.get());
+  reload->set_triggerable_event_flags(ui::EF_LEFT_MOUSE_BUTTON |
+                                      ui::EF_MIDDLE_MOUSE_BUTTON);
+  reload->set_tag(IDC_RELOAD);
+  reload->SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_RELOAD));
+  reload->SetAccessibleName(l10n_util::GetStringUTF16(IDS_ACCNAME_RELOAD));
+  reload->SetID(VIEW_ID_RELOAD_BUTTON);
+  reload_ = reload.get();
 
   // Use separate view to setup custom background.
-  ToolbarRowView* toolbar_row = new ToolbarRowView;
-  toolbar_row->Init(back_, forward_, reload_, location_bar_);
+  auto toolbar_row = std::make_unique<ToolbarRowView>();
+  toolbar_row->Init(std::move(back), std::move(forward), std::move(reload),
+                    std::move(location_bar));
+  // Add the views as child views before the grid layout is installed. This
+  // ensures ownership is more clear.
+  ToolbarRowView* toolbar_row_ptr = AddChildView(std::move(toolbar_row));
+  AddChildView(web_view_);
 
   // Layout.
-  GridLayout* layout = SetLayoutManager(std::make_unique<GridLayout>(this));
+  GridLayout* layout = SetLayoutManager(std::make_unique<GridLayout>());
 
   views::ColumnSet* column_set = layout->AddColumnSet(0);
   column_set->AddColumn(GridLayout::FILL, GridLayout::FILL, 1,
@@ -215,12 +224,12 @@ void SimpleWebViewDialog::Init() {
 
   // Setup layout rows.
   layout->StartRow(0, 0);
-  layout->AddView(toolbar_row);
+  layout->AddExistingView(toolbar_row_ptr);
 
   layout->AddPaddingRow(0, kInnerMargin);
 
   layout->StartRow(1, 1);
-  layout->AddView(web_view_container_.get());
+  layout->AddExistingView(web_view_);
   layout->AddPaddingRow(0, kInnerMargin);
 
   LoadImages();
@@ -344,7 +353,9 @@ void SimpleWebViewDialog::LoadImages() {
   forward_->SetImage(views::Button::STATE_DISABLED,
                      tp->GetImageSkiaNamed(IDR_FORWARD_D));
 
-  reload_->LoadImages();
+  reload_->SetColors(
+      tp->GetColor(ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON),
+      tp->GetColor(ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON_INACTIVE));
 }
 
 void SimpleWebViewDialog::UpdateButtons() {

@@ -20,6 +20,9 @@ namespace {
 class SecureHashSHA256 : public SecureHash {
  public:
   SecureHashSHA256() {
+    // Ensure that CPU features detection is performed before using
+    // BoringSSL. This will enable hw accelerated implementations.
+    EnsureOpenSSLInit();
     SHA256_Init(&ctx_);
   }
 

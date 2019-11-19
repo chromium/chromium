@@ -1,18 +1,4 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
 
-<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-a11y-announcer/iron-a11y-announcer.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-list/iron-list.html">
-<link rel="import" href="command_manager.html">
-<link rel="import" href="item.html">
-<link rel="import" href="shared_style.html">
-<link rel="import" href="store_client.html">
-<link rel="import" href="strings.html">
-<link rel="import" href="util.html">
-<link rel="import" href="chrome://resources/html/list_property_update_behavior.html">
-
-<dom-module id="bookmarks-list">
-  <template>
     <style include="shared-style">
       :host {
         color: var(--cr-secondary-text-color);
@@ -62,6 +48,3 @@
         hidden$="[[!isEmptyList_(displayedList_.length)]]">
       [[emptyListMessage_(searchTerm_)]]
     </div>
-  </template>
-  <script src="list.js"></script>
-</dom-module>

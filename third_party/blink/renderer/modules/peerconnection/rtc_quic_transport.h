@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/execution_context/context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
+#include "third_party/blink/renderer/modules/peerconnection/adapters/p2p_quic_transport.h"
 #include "third_party/blink/renderer/modules/peerconnection/adapters/quic_transport_proxy.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_ice_transport.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_quic_parameters.h"
@@ -28,6 +29,26 @@ enum class RTCQuicTransportState {
   kClosed,
   kFailed
 };
+
+// The number of datagrams we are willing to buffer send side.
+//
+// This buffer exists to account for the thread hop delay in knowing if the
+// QUIC connection is congestion control blocked or not. Ideally it should
+// stay small to keep latency for sending datagrams low, but a higher value
+// allows for higher throughput.
+//
+// Note: This value is not based upon measurements, but a guess for suitable
+// throughput. More investigation could be done to tune this value.
+const uint16_t kMaxBufferedSendDatagrams = 5;
+
+// The number of datagrams we are willing to buffer on the receive side before
+// dropping them. This is so that if the main thread freezes datagrams aren't
+// lost, without buffering them indefinitely.
+//
+// This value was chosen because the max datagram size is ~1.2 KB, meaning
+// a max ~6MB of buffering, which currently is the same arbitrary value used for
+// buffering stream data currently.
+const uint32_t kMaxBufferedRecvDatagrams = 5000;
 
 // The RTCQuicTransport does not need to be ActiveScriptWrappable since the
 // RTCIceTransport to which it is attached holds a strong reference to it as
@@ -94,6 +115,13 @@ class MODULES_EXPORT RTCQuicTransport final
   // endpoint's listen() function to begin a connection.
   DOMArrayBuffer* getKey() const;
 
+  // The maximum datagram size in bytes allowed with sendDatagram.
+  // Before the transport has become connected this will be 0.
+  uint16_t maxDatagramLength(bool& is_null) const {
+    is_null = !max_datagram_length_.has_value();
+    return max_datagram_length_.value_or(0);
+  }
+
   String state() const;
   // Note: The listen/connect functions encourage an API user to connect()
   // before the remote endpoint has called listen(), which can result in the
@@ -124,6 +152,30 @@ class MODULES_EXPORT RTCQuicTransport final
 
   void stop();
   RTCQuicStream* createStream(ExceptionState& exception_state);
+  // Throws InvalidStateError if called when previous promise returned from
+  // readyToSendDatagram is still pending. Resolves when transport is not
+  // blocked by congestion control for sending a datagram. This will resolve
+  // immediately if transport is not blocked.
+  ScriptPromise readyToSendDatagram(ScriptState* script_state,
+                                    ExceptionState& exception_state);
+  // Note: This deviates from the spec, which returns a promise that fulfills if
+  // the datagram is acked/lost. See unresolved issue:
+  // https://github.com/w3c/webrtc-quic/issues/117
+  void sendDatagram(const DOMArrayPiece& data, ExceptionState& exception_state);
+  // Throws InvalidStateError if called when previous promise returned from
+  // receiveDatagrams is still pending. If datagrams have been buffered since
+  // the last call to receiveDatagrams, this will resolve immediately with the
+  // buffered datagrams. Otherwise it will resolve when a datagram is received.
+  // When too many datagrams are buffered they will be dropped. This will be
+  // reflected in the stats.
+  //
+  // Note: This deviates from the spec, which specifies adding a null value to
+  // the end of the sequence if datagrams are dropped. Instead, stats includes
+  // numReceivedDatagramsDropped. See issue:
+  // https://github.com/w3c/webrtc-quic/issues/124
+  ScriptPromise receiveDatagrams(ScriptState* script_state,
+                                 ExceptionState& exception_state);
+
   // Resolves the promise with an RTCQuicTransportStats dictionary.
   ScriptPromise getStats(ScriptState* script_state,
                          ExceptionState& exception_state);
@@ -152,13 +204,15 @@ class MODULES_EXPORT RTCQuicTransport final
   };
 
   // QuicTransportProxy::Delegate overrides;
-  void OnConnected() override;
+  void OnConnected(P2PQuicNegotiatedParams negotiated_params) override;
   void OnConnectionFailed(const std::string& error_details,
                           bool from_remote) override;
   void OnRemoteStopped() override;
   void OnStream(QuicStreamProxy* stream_proxy) override;
   void OnStats(uint32_t request_id,
                const P2PQuicTransportStats& stats) override;
+  void OnDatagramSent() override;
+  void OnDatagramReceived(Vector<uint8_t> datagram) override;
 
   // Starts the underlying QUIC connection, by creating the underlying QUIC
   // transport objects and starting the QUIC handshake.
@@ -178,9 +232,13 @@ class MODULES_EXPORT RTCQuicTransport final
     return (state_ == RTCQuicTransportState::kClosed ||
             state_ == RTCQuicTransportState::kFailed);
   }
+  bool CanWriteDatagram() const {
+    return num_buffered_sent_datagrams_ < kMaxBufferedSendDatagrams;
+  }
   bool RaiseExceptionIfClosed(ExceptionState& exception_state) const;
+  bool RaiseExceptionIfNotConnected(ExceptionState& exception_state) const;
   bool RaiseExceptionIfStarted(ExceptionState& exception_state) const;
-  void RejectPendingStatsPromises();
+  void RejectPendingPromises();
 
   Member<RTCIceTransport> transport_;
   RTCQuicTransportState state_ = RTCQuicTransportState::kNew;
@@ -199,6 +257,17 @@ class MODULES_EXPORT RTCQuicTransport final
   // Maps from the ID of the stats request to the promise to be resolved.
   HeapHashMap<uint32_t, Member<ScriptPromiseResolver>> stats_promise_map_;
   uint32_t get_stats_id_counter_ = 0;
+  // The number of datagrams that have been given to QUIC but not sent on the
+  // network yet. This could be due to congestion control.
+  int num_buffered_sent_datagrams_ = 0;
+  // The number of datagrams that dropped because the RTCQuicTransport has
+  // received more datagrams than its max buffer size and there is no way to
+  // indicate backpressure to the send side.
+  uint32_t num_dropped_received_datagrams_ = 0;
+  HeapVector<Member<DOMArrayBuffer>> received_datagrams_;
+  base::Optional<uint16_t> max_datagram_length_;
+  Member<ScriptPromiseResolver> receive_datagrams_promise_;
+  Member<ScriptPromiseResolver> ready_to_send_datagram_promise_;
 };
 
 }  // namespace blink

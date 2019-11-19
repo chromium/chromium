@@ -1,12 +1,12 @@
 <html>
-	<style>
-		#composited {
-			width: 1800px;
-			height: 10px;
-			transform: translateZ(0);
-			background-color: blue;
-		}
-	</style>
+    <style>
+        #composited {
+            width: 1800px;
+            height: 10px;
+            will-change: transform;
+            background-color: blue;
+        }
+    </style>
     <script>
         function startTest() {
             if (window.testRunner) {
@@ -18,9 +18,9 @@
         
         function finishTest() {
             setTimeout(function() {
-				document.getElementById('layer-tree').innerText = internals.layerTreeAsText(document);
-				testRunner.notifyDone();
-			}, 0);
+                document.getElementById('layer-tree').innerText = internals.layerTreeAsText(document);
+                testRunner.notifyDone();
+            }, 0);
         }
         </script>
     </head>

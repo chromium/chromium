@@ -5,15 +5,21 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_OBJECT_FACTORY_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_OBJECT_FACTORY_H_
 
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "base/memory/scoped_refptr.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
 
 class ComputedStyle;
 class LayoutBlock;
 class LayoutBlockFlow;
+enum class LegacyLayout;
+class LayoutProgress;
 class LayoutTableCaption;
 class LayoutTableCell;
+class LayoutText;
+class LayoutTextFragment;
 class Node;
 
 // Helper class for creation of certain LayoutObject-derived objects that may
@@ -28,12 +34,31 @@ class LayoutObjectFactory {
   // LayoutObject. Otherwise it will be assumed to be a Document node, in which
   // case the LayoutObject created will be anonymous. The |style| reference
   // passed will only be used to determine which object type to create.
-  static LayoutBlockFlow* CreateBlockFlow(Node&, const ComputedStyle&);
-  static LayoutBlock* CreateFlexibleBox(Node&, const ComputedStyle&);
-  static LayoutBlockFlow* CreateListItem(Node&, const ComputedStyle&);
-  static LayoutTableCaption* CreateTableCaption(Node&, const ComputedStyle&);
-  static LayoutTableCell* CreateTableCell(Node&, const ComputedStyle&);
-  static LayoutBlock* CreateFieldset(Node&, const ComputedStyle&);
+  static LayoutBlockFlow* CreateBlockFlow(Node&,
+                                          const ComputedStyle&,
+                                          LegacyLayout);
+  static LayoutBlock* CreateFlexibleBox(Node&,
+                                        const ComputedStyle&,
+                                        LegacyLayout);
+  static LayoutBlockFlow* CreateListItem(Node&,
+                                         const ComputedStyle&,
+                                         LegacyLayout);
+  static LayoutTableCaption* CreateTableCaption(Node&,
+                                                const ComputedStyle&,
+                                                LegacyLayout);
+  static LayoutTableCell* CreateTableCell(Node&,
+                                          const ComputedStyle&,
+                                          LegacyLayout);
+  static LayoutBlock* CreateFieldset(Node&, const ComputedStyle&, LegacyLayout);
+  static LayoutText* CreateText(Node*, scoped_refptr<StringImpl>, LegacyLayout);
+  static LayoutTextFragment* CreateTextFragment(Node*,
+                                                StringImpl*,
+                                                int start_offset,
+                                                int length,
+                                                LegacyLayout);
+  static LayoutProgress* CreateProgress(Node* node,
+                                        const ComputedStyle& style,
+                                        LegacyLayout legacy);
 };
 
 }  // namespace blink

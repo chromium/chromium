@@ -1,0 +1,313 @@
+{
+  // All feature policy (https://github.com/w3c/webappsec-feature-policy)
+  // features are defined here.
+  // All Features have to be defined in FeaturePolicyFeature enum as well
+  // (defined in third_party/blink/public/mojom/feature_policy/feature_policy.mojom).
+  // The enum value has to have the same name as the feature name here.
+  // This list is used to generate "feature_policy_helper.cc".
+  // TODO(yashard): Add all feature policy features here.
+
+  parameters: {
+    // "depends_on" specifies relationship to runtime features defined
+    // in "runtime_enabled_features.json5":
+    // depends_on: ["feature1", "feature2", ...]
+    // * If the depends_on features are *only* runtime features, the feature is
+    //   available if any of the runtime features are enabled.
+    // * If the depends_on list includes origin trial features, the feature is
+    //   available if any of the origin trial features are enabled.
+    depends_on: {
+      default: [],
+      valid_type: "list",
+    },
+    // feature_policy_name: "FEATURE_NAME" is used to specify the policy name
+    // which gets parsed from the header or the allow attribute.
+    feature_policy_name: {
+    },
+  },
+
+  data: [
+    {
+      name: "Accelerometer",
+      feature_policy_name: "accelerometer",
+    },
+    {
+      name: "AmbientLightSensor",
+      feature_policy_name: "ambient-light-sensor",
+      depends_on: ["SensorExtraClasses"],
+    },
+    {
+      name: "Autoplay",
+      feature_policy_name: "autoplay",
+    },
+    {
+      name: "Camera",
+      feature_policy_name: "camera",
+    },
+    {
+      name: "ClientHintDPR",
+      feature_policy_name: "ch-dpr",
+      depends_on: ["FeaturePolicyForClientHints"],
+    },
+    {
+      name: "ClientHintDeviceMemory",
+      feature_policy_name: "ch-device-memory",
+      depends_on: ["FeaturePolicyForClientHints"],
+    },
+    {
+      name: "ClientHintDownlink",
+      feature_policy_name: "ch-downlink",
+      depends_on: ["FeaturePolicyForClientHints"],
+    },
+    {
+      name: "ClientHintECT",
+      feature_policy_name: "ch-ect",
+      depends_on: ["FeaturePolicyForClientHints"],
+    },
+    {
+      name: "ClientHintLang",
+      feature_policy_name: "ch-lang",
+      depends_on: ["FeaturePolicyForClientHints"],
+    },
+    {
+      name: "ClientHintRTT",
+      feature_policy_name: "ch-rtt",
+      depends_on: ["FeaturePolicyForClientHints"],
+    },
+    {
+      name: "ClientHintUA",
+      feature_policy_name: "ch-ua",
+      depends_on: ["FeaturePolicyForClientHints"],
+    },
+    {
+      name: "ClientHintUAArch",
+      feature_policy_name: "ch-ua-arch",
+      depends_on: ["FeaturePolicyForClientHints"],
+    },
+    {
+      name: "ClientHintUAPlatform",
+      feature_policy_name: "ch-ua-platform",
+      depends_on: ["FeaturePolicyForClientHints"],
+    },
+    {
+      name: "ClientHintUAModel",
+      feature_policy_name: "ch-ua-model",
+      depends_on: ["FeaturePolicyForClientHints"],
+    },
+    {
+      name: "ClientHintViewportWidth",
+      feature_policy_name: "ch-viewport-width",
+      depends_on: ["FeaturePolicyForClientHints"],
+    },
+    {
+      name: "ClientHintWidth",
+      feature_policy_name: "ch-width",
+      depends_on: ["FeaturePolicyForClientHints"],
+    },
+    {
+      name: "DocumentAccess",
+      feature_policy_name: "document-access",
+      depends_on: ["ExperimentalProductivityFeatures"],
+    },
+    {
+      name: "DocumentDomain",
+      feature_policy_name: "document-domain",
+    },
+    {
+      name: "DocumentWrite",
+      feature_policy_name: "document-write",
+      depends_on: ["ExperimentalProductivityFeatures"],
+    },
+    {
+      name: "DownloadsWithoutUserActivation",
+      feature_policy_name: "downloads-without-user-activation",
+      depends_on: ["FeaturePolicyForSandbox"],
+    },
+    {
+      name: "EncryptedMedia",
+      feature_policy_name: "encrypted-media",
+    },
+    {
+      name: "ExecutionWhileOutOfViewport",
+      feature_policy_name: "execution-while-out-of-viewport",
+      depends_on: ["FreezeFramesOnVisibility"],
+    },
+    {
+      name: "ExecutionWhileNotRendered",
+      feature_policy_name: "execution-while-not-rendered",
+      depends_on: ["FreezeFramesOnVisibility"],
+    },
+    {
+      name: "FocusWithoutUserActivation",
+      feature_policy_name: "focus-without-user-activation",
+      depends_on: ["BlockingFocusWithoutUserActivation"],
+    },
+    {
+      name: "FontDisplay",
+      feature_policy_name: "font-display-late-swap",
+      depends_on: ["ExperimentalProductivityFeatures"],
+    },
+    {
+      name: "FormSubmission",
+      feature_policy_name: "forms",
+      depends_on: ["FeaturePolicyForSandbox"],
+    },
+    {
+      name: "Fullscreen",
+      feature_policy_name: "fullscreen",
+    },
+    {
+      name: "Frobulate",
+      feature_policy_name: "frobulate",
+      depends_on: ["OriginTrialsSampleAPI"],
+    },
+    {
+      name: "Geolocation",
+      feature_policy_name: "geolocation",
+    },
+    {
+      name: "Gyroscope",
+      feature_policy_name: "gyroscope",
+    },
+    {
+      name: "Hid",
+      feature_policy_name: "hid",
+      depends_on: ["WebHID"],
+    },
+    {
+      name: "IdleDetection",
+      feature_policy_name: "idle-detection",
+      depends_on: ["IdleDetection"],
+    },
+    {
+      name: "LayoutAnimations",
+      feature_policy_name: "layout-animations",
+      depends_on: ["ExperimentalProductivityFeatures"],
+    },
+    {
+      name: "LazyLoad",
+      feature_policy_name: "lazyload",
+      depends_on: ["ExperimentalProductivityFeatures"],
+    },
+    {
+      name: "LoadingFrameDefaultEager",
+      feature_policy_name: "loading-frame-default-eager",
+      depends_on: ["ExperimentalProductivityFeatures"]
+    },
+    {
+      name: "Magnetometer",
+      feature_policy_name: "magnetometer",
+    },
+    {
+      name: "Microphone",
+      feature_policy_name: "microphone",
+    },
+    {
+      name: "MidiFeature",
+      feature_policy_name: "midi",
+    },
+    {
+      name: "Modals",
+      feature_policy_name: "modals",
+      depends_on: ["FeaturePolicyForSandbox"],
+    },
+    {
+      name: "OrientationLock",
+      feature_policy_name: "orientation-lock",
+      depends_on: ["FeaturePolicyForSandbox"],
+    },
+    {
+      name: "OversizedImages",
+      feature_policy_name: "oversized-images",
+      depends_on: ["UnoptimizedImagePolicies"],
+    },
+    {
+      name: "Payment",
+      feature_policy_name: "payment",
+      depends_on: ["PaymentRequest"],
+    },
+    {
+      name: "PictureInPicture",
+      feature_policy_name: "picture-in-picture",
+      depends_on: ["PictureInPictureAPI"],
+    },
+    {
+      name: "PointerLock",
+      feature_policy_name: "pointer-lock",
+      depends_on: ["FeaturePolicyForSandbox"],
+    },
+    {
+      name: "Popups",
+      feature_policy_name: "popups",
+      depends_on: ["FeaturePolicyForSandbox"],
+    },
+    {
+      name: "Presentation",
+      feature_policy_name: "presentation",
+      depends_on: ["FeaturePolicyForSandbox"],
+    },
+    {
+      name: "Script",
+      feature_policy_name: "scripts",
+      depends_on: ["FeaturePolicyForSandbox"],
+    },
+    {
+      name: "Serial",
+      feature_policy_name: "serial",
+      depends_on: ["Serial"],
+    },
+    {
+      name: "SyncScript",
+      feature_policy_name: "sync-script",
+      depends_on: ["ExperimentalProductivityFeatures"],
+    },
+    {
+      name: "SyncXHR",
+      feature_policy_name: "sync-xhr",
+    },
+    {
+      name: "TopNavigation",
+      feature_policy_name: "top-navigation",
+      depends_on: ["FeaturePolicyForSandbox"],
+    },
+    {
+      name: "UnoptimizedLosslessImages",
+      feature_policy_name: "unoptimized-lossless-images",
+      depends_on: ["UnoptimizedImagePolicies"],
+    },
+    {
+      name: "UnoptimizedLosslessImagesStrict",
+      feature_policy_name: "unoptimized-lossless-images-strict",
+      depends_on: ["UnoptimizedImagePolicies"],
+    },
+    {
+      name: "UnoptimizedLossyImages",
+      feature_policy_name: "unoptimized-lossy-images",
+      depends_on: ["UnoptimizedImagePolicies"],
+    },
+    {
+      name: "UnsizedMedia",
+      feature_policy_name: "unsized-media",
+      depends_on: ["UnsizedMediaPolicy"],
+    },
+    {
+      name: "Usb",
+      feature_policy_name: "usb",
+      depends_on: ["WebUSB"],
+    },
+    {
+      name: "VerticalScroll",
+      feature_policy_name: "vertical-scroll",
+      depends_on: ["ExperimentalProductivityFeatures"],
+    },
+    {
+      name: "WakeLock",
+      feature_policy_name: "wake-lock",
+      depends_on: ["WakeLock"],
+    },
+    {
+      name: "WebXr",
+      feature_policy_name: "xr-spatial-tracking",
+      depends_on: ["WebXR"],
+    },
+  ],
+}

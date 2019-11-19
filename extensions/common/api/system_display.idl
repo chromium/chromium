@@ -91,8 +91,8 @@ namespace system.display {
     // True if the display mode is currently selected.
     boolean isSelected;
 
-    // True if this mode is interlaced.
-    boolean isInterlaced;
+    // True if this mode is interlaced, false if not provided.
+    boolean? isInterlaced;
   };
 
   // Layout position, i.e. edge of parent that the display is attached to.
@@ -163,12 +163,12 @@ namespace system.display {
     // for $(ref:enableUnifiedDesktop).
     boolean isUnified;
 
-    // True when the display is in tablet mode. This may be set for touch
-    // devices where hasAccelerometerSupport is true, e.g. when an app opens in
-    // tablet mode. The default value is false.
+    // True when the device is in a tablet physical state (e.g. device is
+    // flipped or detached), which is independent from the state of the UI which
+    // maybe in tablet or clamshell modes.
     // Provided for ChromeOS Settings UI only. TODO(stevenjb): Remove when
     // Settings switches to a mojo API.
-    [nodoc] boolean? isTabletMode;
+    [nodoc] boolean? isInTabletPhysicalState;
 
     // The number of pixels per inch along the x-axis.
     double dpiX;
@@ -179,6 +179,8 @@ namespace system.display {
     // The display's clockwise rotation in degrees relative to the vertical
     // position.
     // Currently exposed only on ChromeOS. Will be set to 0 on other platforms.
+    // A value of -1 will be interpreted as auto-rotate when the device is in
+    // a physical tablet state.
     long rotation;
 
     // The display's logical bounds.

@@ -69,6 +69,8 @@ class S2LangQuadTreeNode {
   // Empty string if a null-leaf contains given |cell|.
   // |level_ptr| is set to the level (see S2CellId::level) of the leaf. (-1 if
   // |cell| matches an internal node).
+  // |cell|'s face needs to match the face of data used to create the tree;
+  // there is no check in place to verify that.
   std::string Get(const S2CellId& cell, int* level_ptr) const;
   std::string Get(const S2CellId& cell) const {
     int level;

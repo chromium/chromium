@@ -108,6 +108,7 @@ class MEDIA_EXPORT AudioOutputDevice : public AudioRendererSink,
   void Stop() override;
   void Play() override;
   void Pause() override;
+  void Flush() override;
   bool SetVolume(double volume) override;
   OutputDeviceInfo GetOutputDeviceInfo() override;
   void GetOutputDeviceInfoAsync(OutputDeviceInfoCB info_cb) override;
@@ -160,6 +161,7 @@ class MEDIA_EXPORT AudioOutputDevice : public AudioRendererSink,
   void CreateStreamOnIOThread();
   void PlayOnIOThread();
   void PauseOnIOThread();
+  void FlushOnIOThread();
   void ShutDownOnIOThread();
   void SetVolumeOnIOThread(double volume);
 
@@ -197,7 +199,7 @@ class MEDIA_EXPORT AudioOutputDevice : public AudioRendererSink,
 
   // The media session ID used to identify which input device to be started.
   // Only used by Unified IO.
-  int session_id_;
+  base::UnguessableToken session_id_;
 
   // ID of hardware output device to be used (provided |session_id_| is zero)
   const std::string device_id_;

@@ -18,7 +18,7 @@ std::string BoundsString(const ViewModel& model) {
   for (int i = 0; i < model.view_size(); ++i) {
     if (i != 0)
       result += " ";
-    result += base::IntToString(model.ideal_bounds(i).x());
+    result += base::NumberToString(model.ideal_bounds(i).x());
   }
   return result;
 }
@@ -29,7 +29,7 @@ std::string ViewIDsString(const ViewModel& model) {
   for (int i = 0; i < model.view_size(); ++i) {
     if (i != 0)
       result += " ";
-    result += base::IntToString(model.view_at(i)->id());
+    result += base::NumberToString(model.view_at(i)->GetID());
   }
   return result;
 }
@@ -50,9 +50,9 @@ TEST(ViewModel, BasicAssertions) {
 
 TEST(ViewModel, Move) {
   View v1, v2, v3;
-  v1.set_id(0);
-  v2.set_id(1);
-  v3.set_id(2);
+  v1.SetID(0);
+  v2.SetID(1);
+  v3.SetID(2);
   ViewModel model;
   model.Add(&v1, 0);
   model.Add(&v2, 1);
@@ -66,9 +66,9 @@ TEST(ViewModel, Move) {
 
 TEST(ViewModel, MoveViewOnly) {
   View v1, v2, v3;
-  v1.set_id(0);
-  v2.set_id(1);
-  v3.set_id(2);
+  v1.SetID(0);
+  v2.SetID(1);
+  v3.SetID(2);
   ViewModel model;
   model.Add(&v1, 0);
   model.Add(&v2, 1);

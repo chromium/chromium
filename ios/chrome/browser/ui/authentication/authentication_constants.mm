@@ -8,21 +8,15 @@
 #error "This file requires ARC support."
 #endif
 
-const CGFloat kAuthenticationHeaderImageHeight = 88.;
+const CGFloat kAuthenticationHeaderImageHeight = 180.;
 
 const UIFontTextStyle kAuthenticationTitleFontStyle = UIFontTextStyleTitle1;
 const UIFontTextStyle kAuthenticationTextFontStyle = UIFontTextStyleSubheadline;
 
-const int kAuthenticationHeaderBackgroundColor = 0xf8f9fa;
 const CGFloat kAuthenticationHorizontalMargin = 16.;
 const CGFloat kAuthenticationHeaderTitleMargin = 19.;
 
-const CGFloat kAuthenticationTitleColorAlpha = 0.87;
-const CGFloat kAuthenticationTextColorAlpha = 0.54;
-
 const CGFloat kAuthenticationSeparatorColorAlpha = 0.12;
 const CGFloat kAuthenticationSeparatorHeight = 1;
-
-const int kAuthenticationCheckmarkColor = 0x1A73E8;
 
 NSString* const kAuthenticationHeaderImageName = @"unified_consent_header";

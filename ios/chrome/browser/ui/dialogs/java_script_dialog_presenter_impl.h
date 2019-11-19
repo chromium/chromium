@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_DIALOGS_JAVA_SCRIPT_DIALOG_PRESENTER_IMPL_H_
 #define IOS_CHROME_BROWSER_UI_DIALOGS_JAVA_SCRIPT_DIALOG_PRESENTER_IMPL_H_
 
-#include "ios/web/public/java_script_dialog_presenter.h"
+#include "ios/web/public/ui/java_script_dialog_presenter.h"
 
 @class AlertCoordinator;
 @class DialogPresenter;
@@ -17,7 +17,7 @@ class JavaScriptDialogPresenterImpl final
     : public web::JavaScriptDialogPresenter {
  public:
   explicit JavaScriptDialogPresenterImpl(DialogPresenter* dialogPresenter);
-  ~JavaScriptDialogPresenterImpl();
+  ~JavaScriptDialogPresenterImpl() override;
 
   void RunJavaScriptDialog(web::WebState* web_state,
                            const GURL& origin_url,

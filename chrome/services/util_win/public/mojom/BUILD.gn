@@ -10,13 +10,6 @@ mojom("mojom") {
   ]
 
   public_deps = [
-    ":constants",
     "//mojo/public/mojom/base",
-  ]
-}
-
-mojom("constants") {
-  sources = [
-    "constants.mojom",
   ]
 }

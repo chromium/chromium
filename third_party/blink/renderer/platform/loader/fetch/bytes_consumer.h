@@ -10,7 +10,6 @@
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/network/encoded_form_data.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/wtf/compiler.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -24,10 +23,7 @@ class ExecutionContext;
 // BytesConsumer has four states: waiting, readable, closed and errored. Once
 // the state becomes closed or errored, it will never change. |readable| means
 // that the BytesConsumer is ready to read non-empty bytes synchronously.
-// A BytesConsumer should be retained by TraceWrapperMember, not Member, as
-// a subclass has a reference to a v8::Value.
-class PLATFORM_EXPORT BytesConsumer
-    : public GarbageCollectedFinalized<BytesConsumer> {
+class PLATFORM_EXPORT BytesConsumer : public GarbageCollected<BytesConsumer> {
  public:
   enum class Result {
     kOk,

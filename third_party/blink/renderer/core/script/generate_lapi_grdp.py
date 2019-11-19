@@ -5,6 +5,7 @@
 
 import sys
 import os
+import re
 
 
 def main():
@@ -40,42 +41,42 @@ def main():
     -->'''
 
     resource_list_in_header_file = ''
-    modules = set()
-
+    # A list of (name, path)
+    modules = []
     for root, _, filenames in sorted(os.walk(input_path)):
-        relroot = os.path.relpath(root, input_path)
-        if relroot == '.':
-            # We don't include top-level files under resources/layered_api,
-            # including generated resources.grdp.
-            continue
+        # A directory represents a built-in module if
+        #  - it contains index.mjs (web-exposed module) or
+        #  - the directory name is 'internal' (private module)
+        if 'index.mjs' in filenames or re.search(r'\binternal$', root):
+            # Get e.g. "kKvStorage" for kv-storage.
+            module_name = os.path.relpath(root, input_path)
+            module_name = "k" + re.sub(r'\W', '', module_name.title())
+            modules.append((module_name, root))
 
-        # Get e.g. "kKvStorage" for kv-storage.
-        module_name = relroot.split('/')[0]
-        module_name = "k" + module_name.title().replace('-', '')
-        modules.add(module_name)
-
-        for filename in sorted(filenames):
-            if filename.startswith('.') or filename.startswith(
-                    'README') or filename.startswith('OWNERS'):
-                continue
-            relpath = os.path.relpath(os.path.join(root, filename), input_path)
-            relpath = relpath.replace('\\', '/')
-            resource_id = relpath
-            resource_id = resource_id.replace('/', '_')
-            resource_id = resource_id.replace('-', '_')
-            resource_id = resource_id.replace('.', '_')
-            resource_id = resource_id.upper()
-            resource_id = "IDR_LAYERED_API_" + resource_id
-            resource_list_in_header_file += \
-                '    {"%s",\n     %s,\n     Module::%s},\n' % (relpath, resource_id, module_name)
-            print >> output_grdp_file, (
-                '  <include name="%s" file="%s/%s" type="BINDATA" skip_minify="true" compress="gzip"/>'
-                % (resource_id, input_relative_path, relpath))
-        resource_list_in_header_file += '\n'
+    for module_name, module_path in modules:
+        for root, _, filenames in sorted(os.walk(module_path)):
+            for filename in sorted(filenames):
+                if filename.startswith('.') or filename.startswith(
+                        'README') or filename.startswith('OWNERS'):
+                    continue
+                relpath = os.path.relpath(os.path.join(root, filename), input_path)
+                relpath = relpath.replace('\\', '/')
+                resource_id = relpath
+                resource_id = resource_id.replace('/', '_')
+                resource_id = resource_id.replace('-', '_')
+                resource_id = resource_id.replace('.', '_')
+                resource_id = resource_id.upper()
+                resource_id = "IDR_LAYERED_API_" + resource_id
+                resource_list_in_header_file += \
+                    '    {"%s",\n     %s,\n     Module::%s},\n' % (relpath, resource_id, module_name)
+                print >> output_grdp_file, (
+                    '  <include name="%s" file="%s/%s" type="BINDATA" skip_minify="true" compress="gzip"/>'
+                    % (resource_id, input_relative_path, relpath))
+            resource_list_in_header_file += '\n'
     print >> output_grdp_file, '</grit-part>'
 
     module_list_in_header_file = ''
-    for module in modules:
+    for module, _ in modules:
         module_list_in_header_file += ('  %s,\n' % module)
 
     print >> output_module_header_file, '''// Copyright 2019 The Chromium Authors. All rights reserved.

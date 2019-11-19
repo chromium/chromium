@@ -21,7 +21,6 @@ class SyncFileSystemService;
 class SyncFileSystemServiceFactory : public BrowserContextKeyedServiceFactory {
  public:
   static SyncFileSystemService* GetForProfile(Profile* profile);
-  static SyncFileSystemService* FindForProfile(Profile* profile);
   static SyncFileSystemServiceFactory* GetInstance();
 
   // This overrides the local/remote service for testing.

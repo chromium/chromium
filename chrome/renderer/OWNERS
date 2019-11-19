@@ -3,12 +3,17 @@
 per-file BUILD.gn=*
 
 # Page Load Histogram files.
-per-file loadtimes_extension_bindings*=file://chrome/renderer/page_load_metrics/OWNERS
+per-file loadtimes_extension_bindings*=file://components/page_load_metrics/OWNERS
 # Instant/Search files.
 per-file instant_restricted_id_cache*=file://chrome/browser/search/OWNERS
+
+# For security review.
+per-file browser_exposed_renderer_interfaces.cc=set noparent
+per-file browser_exposed_renderer_interfaces.cc=file://ipc/SECURITY_OWNERS
 
 # Content client.
 per-file chrome_content_renderer_client_browsertest.cc=*
 per-file chrome_content_renderer_client.cc=*
 per-file chrome_content_renderer_client.h=*
 per-file chrome_content_renderer_client_unittest.cc=*
+# COMPONENT: Internals>Services>Network

@@ -78,6 +78,8 @@ class UI_BASE_EXPORT Accelerator {
 
   base::TimeTicks time_stamp() const { return time_stamp_; }
 
+  int source_device_id() const { return source_device_id_; }
+
   bool IsShiftDown() const;
   bool IsCtrlDown() const;
   bool IsAltDown() const;
@@ -86,6 +88,11 @@ class UI_BASE_EXPORT Accelerator {
 
   // Returns a string with the localized shortcut if any.
   base::string16 GetShortcutText() const;
+
+#if defined(OS_MACOSX)
+  base::string16 KeyCodeToMacSymbol() const;
+#endif
+  base::string16 KeyCodeToName() const;
 
   void set_interrupted_by_mouse_event(bool interrupted_by_mouse_event) {
     interrupted_by_mouse_event_ = interrupted_by_mouse_event;
@@ -98,11 +105,6 @@ class UI_BASE_EXPORT Accelerator {
  private:
   base::string16 ApplyLongFormModifiers(base::string16 shortcut) const;
   base::string16 ApplyShortFormModifiers(base::string16 shortcut) const;
-
-#if defined(OS_MACOSX)
-  base::string16 KeyCodeToMacSymbol(KeyboardCode key_code) const;
-#endif
-  base::string16 KeyCodeToName(KeyboardCode key_code) const;
 
   // The keycode (VK_...).
   KeyboardCode key_code_;
@@ -121,6 +123,9 @@ class UI_BASE_EXPORT Accelerator {
   // TOGGLE_APP_LIST and TOGGLE_APP_LIST_FULLSCREEN are disabled when mouse
   // press/release occurs between search key down and up. See crbug.com/665897)
   bool interrupted_by_mouse_event_;
+
+  // The |source_device_id_| of the KeyEvent.
+  int source_device_id_ = ui::ED_UNKNOWN_DEVICE;
 };
 
 // An interface that classes that want to register for keyboard accelerators

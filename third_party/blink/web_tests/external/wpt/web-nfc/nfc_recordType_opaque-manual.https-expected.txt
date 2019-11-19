@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Test that write and read data succeed when recordType is set to 'opaque'. promise_test: Unhandled rejection with value: object "ReferenceError: NFCWriter is not defined"
-Harness: the test ran to completion.
-

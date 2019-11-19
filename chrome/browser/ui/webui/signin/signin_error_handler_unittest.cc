@@ -71,7 +71,7 @@ class SigninErrorHandlerTest : public BrowserWithTestWindowTest {
     chrome::NewTab(browser());
     web_ui()->set_web_contents(
         browser()->tab_strip_model()->GetActiveWebContents());
-    signin_error_ui_.reset(new SigninErrorUI(web_ui()));
+    signin_error_ui_ = std::make_unique<SigninErrorUI>(web_ui());
   }
 
   void TearDown() override {
@@ -85,7 +85,7 @@ class SigninErrorHandlerTest : public BrowserWithTestWindowTest {
     auto handler = std::make_unique<TestingSigninErrorHandler>(
         browser(), false /* is_system_profile */, web_ui());
     handler_ = handler.get();
-    signin_error_ui_.reset(new SigninErrorUI(web_ui()));
+    signin_error_ui_ = std::make_unique<SigninErrorUI>(web_ui());
     web_ui()->AddMessageHandler(std::move(handler));
   }
 
@@ -102,8 +102,8 @@ class SigninErrorHandlerTest : public BrowserWithTestWindowTest {
   content::TestWebUI* web_ui() { return web_ui_.get(); }
 
   // BrowserWithTestWindowTest
-  BrowserWindow* CreateBrowserWindow() override {
-    return new DialogTestBrowserWindow;
+  std::unique_ptr<BrowserWindow> CreateBrowserWindow() override {
+    return std::make_unique<DialogTestBrowserWindow>();
   }
 
  private:

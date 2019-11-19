@@ -1,8 +1,6 @@
 # The following tests fail with UserActivationSameOriginVisibility plus UAv2.
 crbug.com/922725 http/tests/media/autoplay/document-user-activation-cross-origin-feature-policy-disabled.html [ Failure ]
 crbug.com/922725 http/tests/media/autoplay/document-user-activation-cross-origin-feature-policy-header.html [ Failure ]
-crbug.com/922725 virtual/user-activation-v2/http/tests/media/autoplay/document-user-activation-cross-origin-feature-policy-disabled.html [ Failure ]
-crbug.com/922725 virtual/user-activation-v2/http/tests/media/autoplay/document-user-activation-cross-origin-feature-policy-header.html [ Failure ]
 
 # Resultant images are different because LocalFrameRoot is not the main frame.
 crbug.com/910979 http/tests/html/validation-bubble-oopif-clip.html [ Failure ]
@@ -14,7 +12,9 @@ crbug.com/933880 external/wpt/FileAPI/url/url-with-xhr.any.html [ Failure ]
 crbug.com/933880 external/wpt/service-workers/service-worker/request-end-to-end.https.html [ Failure ]
 crbug.com/933880 http/tests/inspector-protocol/network/interception-take-stream.js [ Failure ]
 crbug.com/933880 http/tests/inspector-protocol/network/raw-headers-for-protected-document.js [ Failure ]
-crbug.com/933880 http/tests/inspector-protocol/network/raw-headers-for-websocket.js [ Failure ]
 crbug.com/933880 http/tests/inspector-protocol/network/security-info-on-response.js [ Failure ]
 crbug.com/933880 http/tests/inspector-protocol/network/xhr-interception-auth-fail.js [ Failure ]
 crbug.com/933880 http/tests/misc/redirect-to-about-blank.html [ Timeout ]
+
+# Test is for OOPIF-specific behavior.
+Bug(none) http/tests/inspector-protocol/fetch/fetch-oopif.js [ Skip ]

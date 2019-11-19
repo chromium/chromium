@@ -35,8 +35,7 @@ ForwardingAudioStreamFactory::Core::Core(
       owner_(std::move(owner)),
       broker_factory_(std::move(broker_factory)),
       group_id_(base::UnguessableToken::Create()),
-      connector_(std::move(connector)),
-      weak_ptr_factory_(this) {
+      connector_(std::move(connector)) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(owner_);
   DCHECK(broker_factory_);
@@ -62,7 +61,8 @@ void ForwardingAudioStreamFactory::Core::CreateInputStream(
     uint32_t shared_memory_count,
     bool enable_agc,
     audio::mojom::AudioProcessingConfigPtr processing_config,
-    mojom::RendererAudioInputStreamFactoryClientPtr renderer_factory_client) {
+    mojo::PendingRemote<mojom::RendererAudioInputStreamFactoryClient>
+        renderer_factory_client) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   // |this| owns |inputs_|, so Unretained is safe.
@@ -96,7 +96,7 @@ void ForwardingAudioStreamFactory::Core::CreateOutputStream(
     const std::string& device_id,
     const media::AudioParameters& params,
     const base::Optional<base::UnguessableToken>& processing_id,
-    media::mojom::AudioOutputStreamProviderClientPtr client) {
+    mojo::PendingRemote<media::mojom::AudioOutputStreamProviderClient> client) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   // |this| owns |outputs_|, so Unretained is safe.
@@ -118,7 +118,8 @@ void ForwardingAudioStreamFactory::Core::CreateLoopbackStream(
     const media::AudioParameters& params,
     uint32_t shared_memory_count,
     bool mute_source,
-    mojom::RendererAudioInputStreamFactoryClientPtr renderer_factory_client) {
+    mojo::PendingRemote<mojom::RendererAudioInputStreamFactoryClient>
+        renderer_factory_client) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(loopback_source);
 
@@ -159,7 +160,7 @@ void ForwardingAudioStreamFactory::Core::AddLoopbackSink(
     AudioStreamBroker::LoopbackSink* sink) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   loopback_sinks_.insert(sink);
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&ForwardingAudioStreamFactory::LoopbackStreamStarted,
                      owner_));
@@ -169,7 +170,7 @@ void ForwardingAudioStreamFactory::Core::RemoveLoopbackSink(
     AudioStreamBroker::LoopbackSink* sink) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   loopback_sinks_.erase(sink);
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&ForwardingAudioStreamFactory::LoopbackStreamStopped,
                      owner_));
@@ -207,7 +208,7 @@ ForwardingAudioStreamFactory::ForwardingAudioStreamFactory(
     media::UserInputMonitorBase* user_input_monitor,
     std::unique_ptr<service_manager::Connector> connector,
     std::unique_ptr<AudioStreamBrokerFactory> broker_factory)
-    : WebContentsObserver(web_contents), core_(), weak_ptr_factory_(this) {
+    : WebContentsObserver(web_contents), core_() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   core_ =
       std::make_unique<Core>(weak_ptr_factory_.GetWeakPtr(), user_input_monitor,
@@ -220,19 +221,19 @@ ForwardingAudioStreamFactory::~ForwardingAudioStreamFactory() {
   // as it doesn't post in case it is already executed on the right thread. That
   // causes issues in unit tests where the UI thread and the IO thread are the
   // same.
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::IO},
       base::BindOnce([](std::unique_ptr<Core>) {}, std::move(core_)));
 }
 
 void ForwardingAudioStreamFactory::LoopbackStreamStarted() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  web_contents()->IncrementCapturerCount(gfx::Size());
+  web_contents()->IncrementCapturerCount(gfx::Size(), /* stay_hidden */ false);
 }
 
 void ForwardingAudioStreamFactory::LoopbackStreamStopped() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  web_contents()->DecrementCapturerCount();
+  web_contents()->DecrementCapturerCount(/* stay_hidden */ false);
 }
 
 void ForwardingAudioStreamFactory::SetMuted(bool muted) {
@@ -242,7 +243,7 @@ void ForwardingAudioStreamFactory::SetMuted(bool muted) {
 
     // Unretained is safe since the destruction of |core_| will be posted to the
     // IO thread later.
-    base::PostTaskWithTraits(
+    base::PostTask(
         FROM_HERE, {BrowserThread::IO},
         base::BindOnce(&Core::SetMuted, base::Unretained(core_.get()), muted));
   }
@@ -260,12 +261,11 @@ void ForwardingAudioStreamFactory::FrameDeleted(
 
   // Unretained is safe since the destruction of |core_| will be posted to the
   // IO thread later.
-  base::PostTaskWithTraits(
-      FROM_HERE, {BrowserThread::IO},
-      base::BindOnce(&Core::CleanupStreamsBelongingTo,
-                     base::Unretained(core_.get()),
-                     render_frame_host->GetProcess()->GetID(),
-                     render_frame_host->GetRoutingID()));
+  base::PostTask(FROM_HERE, {BrowserThread::IO},
+                 base::BindOnce(&Core::CleanupStreamsBelongingTo,
+                                base::Unretained(core_.get()),
+                                render_frame_host->GetProcess()->GetID(),
+                                render_frame_host->GetRoutingID()));
 }
 
 void ForwardingAudioStreamFactory::Core::CleanupStreamsBelongingTo(
@@ -317,10 +317,10 @@ audio::mojom::StreamFactory* ForwardingAudioStreamFactory::Core::GetFactory() {
     TRACE_EVENT_INSTANT1(
         "audio", "ForwardingAudioStreamFactory: Binding new factory",
         TRACE_EVENT_SCOPE_THREAD, "group", group_id_.GetLowForSerialization());
-    connector_->BindInterface(audio::mojom::kServiceName,
-                              mojo::MakeRequest(&remote_factory_));
+    connector_->Connect(audio::mojom::kServiceName,
+                        remote_factory_.BindNewPipeAndPassReceiver());
     // Unretained is safe because |this| owns |remote_factory_|.
-    remote_factory_.set_connection_error_handler(base::BindOnce(
+    remote_factory_.set_disconnect_handler(base::BindOnce(
         &ForwardingAudioStreamFactory::Core::ResetRemoteFactoryPtr,
         base::Unretained(this)));
 

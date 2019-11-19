@@ -40,11 +40,11 @@ void TestWebUI::HandleReceivedMessage(const std::string& handler_name,
     callback.Run(args);
 }
 
-WebContents* TestWebUI::GetWebContents() const {
+WebContents* TestWebUI::GetWebContents() {
   return web_contents_;
 }
 
-WebUIController* TestWebUI::GetController() const {
+WebUIController* TestWebUI::GetController() {
   return controller_.get();
 }
 
@@ -52,15 +52,15 @@ void TestWebUI::SetController(std::unique_ptr<WebUIController> controller) {
   controller_ = std::move(controller);
 }
 
-float TestWebUI::GetDeviceScaleFactor() const {
+float TestWebUI::GetDeviceScaleFactor() {
   return 1.0f;
 }
 
-const base::string16& TestWebUI::GetOverriddenTitle() const {
+const base::string16& TestWebUI::GetOverriddenTitle() {
   return temp_string_;
 }
 
-int TestWebUI::GetBindings() const {
+int TestWebUI::GetBindings() {
   return bindings_;
 }
 

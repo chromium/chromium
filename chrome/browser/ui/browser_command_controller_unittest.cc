@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/stl_util.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
@@ -25,8 +26,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "components/signin/core/browser/account_consistency_method.h"
-#include "components/signin/core/browser/signin_pref_names.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #include "content/public/browser/native_web_keyboard_event.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -114,10 +114,16 @@ TEST_F(BrowserCommandControllerTest, IsReservedCommandOrKey) {
 }
 
 TEST_F(BrowserCommandControllerTest, IsReservedCommandOrKeyIsApp) {
-  browser()->app_name_ = "app";
-  ASSERT_TRUE(browser()->is_app());
+  Browser::CreateParams params = Browser::CreateParams::CreateForApp(
+      "app",
+      /*trusted_source=*/true, browser()->window()->GetBounds(), profile(),
+      /*user_gesture=*/true);
+  params.window = browser()->window();
+  set_browser(new Browser(params));
 
-  // When is_app(), no keys are reserved.
+  ASSERT_TRUE(browser()->is_type_app());
+
+  // When is_type_app(), no keys are reserved.
 #if defined(OS_CHROMEOS)
   EXPECT_FALSE(browser()->command_controller()->IsReservedCommandOrKey(
       IDC_BACK, content::NativeWebKeyboardEvent(ui::KeyEvent(
@@ -161,8 +167,7 @@ TEST_F(BrowserCommandControllerTest, IncognitoCommands) {
   testprofile->SetGuestSession(true);
   chrome::BrowserCommandController ::
       UpdateSharedCommandsForIncognitoAvailability(
-          browser()->command_controller(),
-          testprofile);
+          browser()->command_controller(), testprofile);
   EXPECT_TRUE(chrome::IsCommandEnabled(browser(), IDC_OPTIONS));
   EXPECT_FALSE(chrome::IsCommandEnabled(browser(), IDC_IMPORT_SETTINGS));
   EXPECT_FALSE(chrome::IsCommandEnabled(browser(), IDC_SHOW_SIGNIN));
@@ -172,8 +177,7 @@ TEST_F(BrowserCommandControllerTest, IncognitoCommands) {
                                       IncognitoModePrefs::FORCED);
   chrome::BrowserCommandController ::
       UpdateSharedCommandsForIncognitoAvailability(
-          browser()->command_controller(),
-          testprofile);
+          browser()->command_controller(), testprofile);
   EXPECT_FALSE(chrome::IsCommandEnabled(browser(), IDC_OPTIONS));
   EXPECT_FALSE(chrome::IsCommandEnabled(browser(), IDC_IMPORT_SETTINGS));
   EXPECT_FALSE(chrome::IsCommandEnabled(browser(), IDC_SHOW_SIGNIN));
@@ -184,8 +188,13 @@ TEST_F(BrowserCommandControllerTest, AppFullScreen) {
   EXPECT_TRUE(chrome::IsCommandEnabled(browser(), IDC_FULLSCREEN));
 
   // Enabled for app windows.
-  browser()->app_name_ = "app";
-  ASSERT_TRUE(browser()->is_app());
+  Browser::CreateParams params = Browser::CreateParams::CreateForApp(
+      "app",
+      /*trusted_source=*/true, browser()->window()->GetBounds(), profile(),
+      /*user_gesture=*/true);
+  params.window = browser()->window();
+  set_browser(new Browser(params));
+  ASSERT_TRUE(browser()->is_type_app());
   browser()->command_controller()->FullscreenStateChanged();
   EXPECT_TRUE(chrome::IsCommandEnabled(browser(), IDC_FULLSCREEN));
 }
@@ -221,10 +230,7 @@ TEST_F(BrowserCommandControllerTest, AvatarAcceleratorEnabledOnDesktop) {
   EXPECT_EQ(enabled, command_updater->IsCommandEnabled(IDC_SHOW_AVATAR_MENU));
 }
 
-TEST_F(BrowserCommandControllerTest, AvatarMenuAlwaysDisabledInIncognitoMode) {
-  if (!profiles::IsMultipleProfilesEnabled())
-    return;
-
+TEST_F(BrowserCommandControllerTest, AvatarMenuAlwaysEnabledInIncognitoMode) {
   // Set up a profile with an off the record profile.
   TestingProfile::Builder normal_builder;
   std::unique_ptr<TestingProfile> original_profile = normal_builder.Build();
@@ -238,8 +244,8 @@ TEST_F(BrowserCommandControllerTest, AvatarMenuAlwaysDisabledInIncognitoMode) {
   chrome::BrowserCommandController command_controller(otr_browser.get());
   const CommandUpdater* command_updater = &command_controller;
 
-  // The avatar menu should be disabled.
-  EXPECT_FALSE(command_updater->IsCommandEnabled(IDC_SHOW_AVATAR_MENU));
+  // The avatar menu should be enabled.
+  EXPECT_TRUE(command_updater->IsCommandEnabled(IDC_SHOW_AVATAR_MENU));
   // The command line is reset at the end of every test by the test suite.
 }
 
@@ -303,8 +309,8 @@ class BrowserCommandControllerFullscreenTest
   Browser* GetBrowser() { return BrowserWithTestWindowTest::browser(); }
 
   // BrowserWithTestWindowTest overrides:
-  BrowserWindow* CreateBrowserWindow() override {
-    return new FullscreenTestBrowserWindow(this);
+  std::unique_ptr<BrowserWindow> CreateBrowserWindow() override {
+    return std::make_unique<FullscreenTestBrowserWindow>(this);
   }
 
  private:
@@ -349,7 +355,7 @@ TEST_F(BrowserCommandControllerFullscreenTest,
     { IDC_FOCUS_PREVIOUS_PANE,     true,     false,     false,     false    },
     { IDC_FOCUS_BOOKMARKS,         true,     false,     false,     false    },
     { IDC_DEVELOPER_MENU,          true,     false,     false,     false    },
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     { IDC_FEEDBACK,                true,     false,     false,     false    },
 #endif
     { IDC_OPTIONS,                 true,     false,     false,     false    },
@@ -358,6 +364,9 @@ TEST_F(BrowserCommandControllerFullscreenTest,
     { IDC_VIEW_PASSWORDS,          true,     false,     false,     false    },
     { IDC_ABOUT,                   true,     false,     false,     false    },
     { IDC_SHOW_APP_MENU,           true,     false,     false,     false    },
+    { IDC_SEND_TAB_TO_SELF,        true,     false,     false,     false    },
+    { IDC_SEND_TAB_TO_SELF_SINGLE_TARGET,
+                                   true,     false,     false,     false    },
     { IDC_FULLSCREEN,              true,     false,     true,      true     },
     { IDC_CLOSE_TAB,               true,     true,      true,      false    },
     { IDC_CLOSE_WINDOW,            true,     true,      true,      false    },

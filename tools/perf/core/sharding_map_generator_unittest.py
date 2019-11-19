@@ -70,15 +70,17 @@ class TestShardingMapGenerator(unittest.TestCase):
 
     self.assertEquals(
       sharding_map['0']['benchmarks'],
-      collections.OrderedDict([('bar_benchmark', {})]))
+      collections.OrderedDict([('bar_benchmark', {'abridged': False})]))
 
     self.assertEquals(
       sharding_map['1']['benchmarks'],
-      collections.OrderedDict([('foo_benchmark', {'end': 2})]))
+      collections.OrderedDict([('foo_benchmark',
+                                {'end': 2, 'abridged': False})]))
 
     self.assertEquals(
       sharding_map['2']['benchmarks'],
-      collections.OrderedDict([('foo_benchmark', {'begin': 2})]))
+      collections.OrderedDict([('foo_benchmark',
+                                {'begin': 2, 'abridged': False})]))
 
   def testGeneratePerfSharding(self):
     test_data_dir = os.path.join(os.path.dirname(__file__), 'test_data')

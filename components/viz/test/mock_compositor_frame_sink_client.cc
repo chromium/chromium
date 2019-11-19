@@ -10,16 +10,12 @@
 
 namespace viz {
 
-MockCompositorFrameSinkClient::MockCompositorFrameSinkClient()
-    : binding_(this) {}
-
+MockCompositorFrameSinkClient::MockCompositorFrameSinkClient() = default;
 MockCompositorFrameSinkClient::~MockCompositorFrameSinkClient() = default;
 
-mojom::CompositorFrameSinkClientPtr
-MockCompositorFrameSinkClient::BindInterfacePtr() {
-  mojom::CompositorFrameSinkClientPtr ptr;
-  binding_.Bind(MakeRequest(&ptr));
-  return ptr;
+mojo::PendingRemote<mojom::CompositorFrameSinkClient>
+MockCompositorFrameSinkClient::BindInterfaceRemote() {
+  return receiver_.BindNewPipeAndPassRemote();
 }
 
 }  // namespace viz

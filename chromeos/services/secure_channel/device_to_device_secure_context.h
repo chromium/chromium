@@ -76,7 +76,7 @@ class DeviceToDeviceSecureContext : public SecureContext {
   // The last sequence number of the message received.
   int last_decode_sequence_number_;
 
-  base::WeakPtrFactory<DeviceToDeviceSecureContext> weak_ptr_factory_;
+  base::WeakPtrFactory<DeviceToDeviceSecureContext> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DeviceToDeviceSecureContext);
 };

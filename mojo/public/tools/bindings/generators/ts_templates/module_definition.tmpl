@@ -1,0 +1,11 @@
+{%- if not use_es_modules %}
+namespace {{module.namespace}} {
+{% endif %}
+{#--- Constants #}
+{%- for constant in module.constants %}
+export const {{constant.name}}: {{constant.kind|typescript_type_with_nullability}} =
+  {{constant|constant_value}};
+{%- endfor %}
+{%- if not use_es_modules %}
+} // namespace {{module.namespace}}
+{% endif %}

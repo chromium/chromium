@@ -28,7 +28,7 @@ ArcAppsPrivateAPI::GetFactoryInstance() {
 }
 
 ArcAppsPrivateAPI::ArcAppsPrivateAPI(content::BrowserContext* context)
-    : context_(context), scoped_prefs_observer_(this) {
+    : context_(context) {
   extensions::EventRouter::Get(context_)->RegisterObserver(
       this, api::arc_apps_private::OnInstalled::kEventName);
 }

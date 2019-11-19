@@ -18,14 +18,14 @@
 #include "base/macros.h"
 #include "base/memory/free_deleter.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/sequence_checker.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/scoped_blocking_call.h"
-#include "base/threading/thread_checker.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_handle.h"
@@ -76,11 +76,11 @@ class RegistryReader {
     key_.Open(HKEY_LOCAL_MACHINE, key, KEY_QUERY_VALUE);
   }
 
-  ~RegistryReader() { DCHECK_CALLED_ON_VALID_THREAD(thread_checker_); }
+  ~RegistryReader() { DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_); }
 
   bool ReadString(const base::char16* name,
                   DnsSystemSettings::RegString* out) const {
-    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     out->set = false;
     if (!key_.Valid()) {
       // Assume that if the |key_| is invalid then the key is missing.
@@ -96,7 +96,7 @@ class RegistryReader {
 
   bool ReadDword(const base::char16* name,
                  DnsSystemSettings::RegDword* out) const {
-    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     out->set = false;
     if (!key_.Valid()) {
       // Assume that if the |key_| is invalid then the key is missing.
@@ -113,7 +113,7 @@ class RegistryReader {
  private:
   base::win::RegKey key_;
 
-  THREAD_CHECKER(thread_checker_);
+  SEQUENCE_CHECKER(sequence_checker_);
 
   DISALLOW_COPY_AND_ASSIGN(RegistryReader);
 };
@@ -132,7 +132,7 @@ std::unique_ptr<IP_ADAPTER_ADDRESSES, base::FreeDeleter> ReadIpHelper(
        tries++) {
     out.reset(static_cast<PIP_ADAPTER_ADDRESSES>(malloc(len)));
     memset(out.get(), 0, len);
-    rv = GetAdaptersAddresses(AF_UNSPEC, flags, NULL, out.get(), &len);
+    rv = GetAdaptersAddresses(AF_UNSPEC, flags, nullptr, out.get(), &len);
   }
   if (rv != NO_ERROR)
     out.reset();
@@ -242,7 +242,7 @@ HostsParseWinResult AddLocalhostEntries(DnsHosts* hosts) {
   // The order of adapters is the network binding order, so stick to the
   // first good adapter for each family.
   for (const IP_ADAPTER_ADDRESSES* adapter = addresses.get();
-       adapter != NULL && (!have_ipv4 || !have_ipv6);
+       adapter != nullptr && (!have_ipv4 || !have_ipv6);
        adapter = adapter->Next) {
     if (adapter->OperStatus != IfOperStatusUp)
       continue;
@@ -251,8 +251,7 @@ HostsParseWinResult AddLocalhostEntries(DnsHosts* hosts) {
 
     for (const IP_ADAPTER_UNICAST_ADDRESS* address =
              adapter->FirstUnicastAddress;
-         address != NULL;
-         address = address->Next) {
+         address != nullptr; address = address->Next) {
       IPEndPoint ipe;
       if (!ipe.FromSockAddr(address->Address.lpSockaddr,
                             address->Address.iSockaddrLength)) {
@@ -276,10 +275,10 @@ class RegistryWatcher {
   typedef base::Callback<void(bool succeeded)> CallbackType;
   RegistryWatcher() {}
 
-  ~RegistryWatcher() { DCHECK_CALLED_ON_VALID_THREAD(thread_checker_); }
+  ~RegistryWatcher() { DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_); }
 
   bool Watch(const base::char16* key, const CallbackType& callback) {
-    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DCHECK(!callback.is_null());
     DCHECK(callback_.is_null());
     callback_ = callback;
@@ -291,7 +290,7 @@ class RegistryWatcher {
   }
 
   void OnObjectSignaled() {
-    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DCHECK(!callback_.is_null());
     if (key_.StartWatching(base::Bind(&RegistryWatcher::OnObjectSignaled,
                                       base::Unretained(this)))) {
@@ -306,7 +305,7 @@ class RegistryWatcher {
   CallbackType callback_;
   base::win::RegKey key_;
 
-  THREAD_CHECKER(thread_checker_);
+  SEQUENCE_CHECKER(sequence_checker_);
 
   DISALLOW_COPY_AND_ASSIGN(RegistryWatcher);
 };
@@ -506,7 +505,7 @@ ConfigParseWinResult ConvertSettingsToDnsConfig(
   // The order of adapters is the network binding order, so stick to the
   // first good adapter.
   for (const IP_ADAPTER_ADDRESSES* adapter = settings.addresses.get();
-       adapter != NULL && config->nameservers.empty();
+       adapter != nullptr && config->nameservers.empty();
        adapter = adapter->Next) {
     if (adapter->OperStatus != IfOperStatusUp)
       continue;
@@ -515,8 +514,7 @@ ConfigParseWinResult ConvertSettingsToDnsConfig(
 
     for (const IP_ADAPTER_DNS_SERVER_ADDRESS* address =
              adapter->FirstDnsServerAddress;
-         address != NULL;
-         address = address->Next) {
+         address != nullptr; address = address->Next) {
       IPEndPoint ipe;
       if (ipe.FromSockAddr(address->Address.lpSockaddr,
                            address->Address.iSockaddrLength)) {
@@ -566,7 +564,7 @@ ConfigParseWinResult ConvertSettingsToDnsConfig(
   return result;
 }
 
-// Watches registry and HOSTS file for changes. Must live on a thread which
+// Watches registry and HOSTS file for changes. Must live on a sequence which
 // allows IO.
 class DnsConfigServiceWin::Watcher
     : public NetworkChangeNotifier::IPAddressObserver {
@@ -641,7 +639,7 @@ class DnsConfigServiceWin::Watcher
   DISALLOW_COPY_AND_ASSIGN(Watcher);
 };
 
-// Reads config from registry and IpHelper. All work performed in TaskScheduler.
+// Reads config from registry and IpHelper. All work performed in ThreadPool.
 class DnsConfigServiceWin::ConfigReader : public SerialWorker {
  public:
   explicit ConfigReader(DnsConfigServiceWin* service)
@@ -673,7 +671,7 @@ class DnsConfigServiceWin::ConfigReader : public SerialWorker {
     } else {
       LOG(WARNING) << "Failed to read DnsConfig.";
       // Try again in a while in case DnsConfigWatcher missed the signal.
-      base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
           FROM_HERE, base::BindOnce(&ConfigReader::WorkNow, this),
           base::TimeDelta::FromSeconds(kRetryIntervalSeconds));
     }
@@ -686,7 +684,7 @@ class DnsConfigServiceWin::ConfigReader : public SerialWorker {
 };
 
 // Reads hosts from HOSTS file and fills in localhost and local computer name if
-// necessary. All work performed in TaskScheduler.
+// necessary. All work performed in ThreadPool.
 class DnsConfigServiceWin::HostsReader : public SerialWorker {
  public:
   explicit HostsReader(DnsConfigServiceWin* service)
@@ -731,13 +729,16 @@ class DnsConfigServiceWin::HostsReader : public SerialWorker {
   DISALLOW_COPY_AND_ASSIGN(HostsReader);
 };
 
-DnsConfigServiceWin::DnsConfigServiceWin()
-    : config_reader_(new ConfigReader(this)),
-      hosts_reader_(new HostsReader(this)) {}
+DnsConfigServiceWin::DnsConfigServiceWin() {
+  // Allow constructing on one sequence and living on another.
+  DETACH_FROM_SEQUENCE(sequence_checker_);
+}
 
 DnsConfigServiceWin::~DnsConfigServiceWin() {
-  config_reader_->Cancel();
-  hosts_reader_->Cancel();
+  if (config_reader_)
+    config_reader_->Cancel();
+  if (hosts_reader_)
+    hosts_reader_->Cancel();
 }
 
 void DnsConfigServiceWin::ReadNow() {
@@ -746,6 +747,10 @@ void DnsConfigServiceWin::ReadNow() {
 }
 
 bool DnsConfigServiceWin::StartWatching() {
+  if (!config_reader_)
+    config_reader_ = base::MakeRefCounted<ConfigReader>(this);
+  if (!hosts_reader_)
+    hosts_reader_ = base::MakeRefCounted<HostsReader>(this);
   // TODO(szym): re-start watcher if that makes sense. http://crbug.com/116139
   watcher_.reset(new Watcher(this));
   UMA_HISTOGRAM_ENUMERATION("AsyncDNS.WatchStatus", DNS_CONFIG_WATCH_STARTED,

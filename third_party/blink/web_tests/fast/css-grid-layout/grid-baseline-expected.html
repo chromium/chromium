@@ -43,14 +43,13 @@ before text
 after text
 </div>
 
-<!-- This flexbox has a baseline flexitem, but it's orthogonal so it doesn't
-participate in baseline alignment. Instead, the baseline is the first flex
-item's baseline. -->
+<!-- This grid has a baseline item, it's orthogonal but it still participates
+in baseline alignment. -->
 <div>
 before text
 <div class="inline-flexbox" style="height: 40px">
-    <div style="align-self: flex-end">baseline</div>
-    <div style="align-self: baseline; writing-mode: vertical-rl"></div>
+    <div style="align-self: flex-end">below</div>
+    <div style="align-self: baseline; margin-top: 20px"></div>
     <div style="align-self: flex-start">above</div>
 </div>
 after text
@@ -84,12 +83,12 @@ should align with the middle
 of the grey box
 </div>
 
-<!-- If there are no flexitems, align to the bottom of the box. -->
+<!-- If there are no flexitems, align to the bottom of the margin box. -->
 <div>
-should align with the bottom
+should align below the bottom
 <div class="empty inline-flexbox" style="width: 30px; height: 30px">
 </div>
-of the grey box
+of the black line
 </div>
 
 <!-- If the griditem has not a natural baseline, align to the bottom of the box. -->

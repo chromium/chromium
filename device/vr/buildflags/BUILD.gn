@@ -10,10 +10,10 @@ buildflag_header("buildflags") {
   header = "buildflags.h"
   flags = [
     "ENABLE_ARCORE=$enable_arcore",
-    "ENABLE_ISOLATED_XR_SERVICE=$enable_isolated_xr_service",
     "ENABLE_OCULUS_VR=$enable_oculus_vr",
     "ENABLE_OPENVR=$enable_openvr",
     "ENABLE_VR=$enable_vr",
     "ENABLE_WINDOWS_MR=$enable_windows_mr",
+    "ENABLE_OPENXR=$enable_openxr",
   ]
 }

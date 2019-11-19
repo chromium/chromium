@@ -116,6 +116,10 @@ component("crypto") {
     ]
   }
 
+  if (is_chromeos) {
+    sources += [ "nss_util_chromeos.cc" ]
+  }
+
   defines = [ "CRYPTO_IMPLEMENTATION" ]
 
   if (is_nacl) {

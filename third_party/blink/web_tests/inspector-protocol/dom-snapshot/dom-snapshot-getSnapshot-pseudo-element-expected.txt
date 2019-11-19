@@ -126,7 +126,7 @@ Tests DOMSnapshot.getSnapshot exports layout tree nodes associated with pseudo e
       "nodeName": "<pseudo:first-letter>",
       "nodeValue": "",
       "backendNodeId": "<number>",
-      "layoutNodeIndex": 4,
+      "layoutNodeIndex": 5,
       "pseudoType": "first-letter"
     },
     {
@@ -166,7 +166,7 @@ Tests DOMSnapshot.getSnapshot exports layout tree nodes associated with pseudo e
       "nodeName": "<pseudo:first-letter>",
       "nodeValue": "",
       "backendNodeId": "<number>",
-      "layoutNodeIndex": 8,
+      "layoutNodeIndex": 9,
       "pseudoType": "first-letter"
     },
     {
@@ -217,7 +217,7 @@ Tests DOMSnapshot.getSnapshot exports layout tree nodes associated with pseudo e
       "nodeName": "<pseudo:first-letter>",
       "nodeValue": "",
       "backendNodeId": "<number>",
-      "layoutNodeIndex": 13,
+      "layoutNodeIndex": 14,
       "pseudoType": "first-letter"
     },
     {
@@ -225,7 +225,7 @@ Tests DOMSnapshot.getSnapshot exports layout tree nodes associated with pseudo e
       "nodeName": "<pseudo:before>",
       "nodeValue": "",
       "backendNodeId": "<number>",
-      "layoutNodeIndex": 15,
+      "layoutNodeIndex": 19,
       "pseudoType": "before"
     },
     {
@@ -292,16 +292,6 @@ Tests DOMSnapshot.getSnapshot exports layout tree nodes associated with pseudo e
         "width": 10,
         "height": 10
       },
-      "styleIndex": 1
-    },
-    {
-      "domNodeIndex": 11,
-      "boundingBox": {
-        "x": 8,
-        "y": 18,
-        "width": 10,
-        "height": 10
-      },
       "layoutText": "I",
       "inlineTextNodes": [
         {
@@ -315,6 +305,16 @@ Tests DOMSnapshot.getSnapshot exports layout tree nodes associated with pseudo e
           "numCharacters": 1
         }
       ],
+      "styleIndex": 1
+    },
+    {
+      "domNodeIndex": 11,
+      "boundingBox": {
+        "x": 8,
+        "y": 18,
+        "width": 10,
+        "height": 10
+      },
       "styleIndex": 1
     },
     {
@@ -368,16 +368,6 @@ Tests DOMSnapshot.getSnapshot exports layout tree nodes associated with pseudo e
         "width": 10,
         "height": 10
       },
-      "styleIndex": 1
-    },
-    {
-      "domNodeIndex": 15,
-      "boundingBox": {
-        "x": 8,
-        "y": 18,
-        "width": 10,
-        "height": 10
-      },
       "layoutText": "I",
       "inlineTextNodes": [
         {
@@ -391,6 +381,16 @@ Tests DOMSnapshot.getSnapshot exports layout tree nodes associated with pseudo e
           "numCharacters": 1
         }
       ],
+      "styleIndex": 1
+    },
+    {
+      "domNodeIndex": 15,
+      "boundingBox": {
+        "x": 8,
+        "y": 18,
+        "width": 10,
+        "height": 10
+      },
       "styleIndex": 1
     },
     {
@@ -464,16 +464,6 @@ Tests DOMSnapshot.getSnapshot exports layout tree nodes associated with pseudo e
         "width": 10,
         "height": 10
       },
-      "styleIndex": 2
-    },
-    {
-      "domNodeIndex": 20,
-      "boundingBox": {
-        "x": 8,
-        "y": 110,
-        "width": 10,
-        "height": 10
-      },
       "layoutText": "s",
       "inlineTextNodes": [
         {
@@ -490,14 +480,14 @@ Tests DOMSnapshot.getSnapshot exports layout tree nodes associated with pseudo e
       "styleIndex": 2
     },
     {
-      "domNodeIndex": 21,
+      "domNodeIndex": 20,
       "boundingBox": {
         "x": 8,
         "y": 110,
-        "width": 200,
+        "width": 10,
         "height": 10
       },
-      "styleIndex": 0
+      "styleIndex": 2
     },
     {
       "domNodeIndex": 21,
@@ -576,6 +566,16 @@ Tests DOMSnapshot.getSnapshot exports layout tree nodes associated with pseudo e
           "numCharacters": 1
         }
       ],
+      "styleIndex": 0
+    },
+    {
+      "domNodeIndex": 21,
+      "boundingBox": {
+        "x": 8,
+        "y": 110,
+        "width": 200,
+        "height": 10
+      },
       "styleIndex": 0
     },
     {

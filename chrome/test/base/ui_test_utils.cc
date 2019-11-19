@@ -17,7 +17,9 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
+#include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind_test_util.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
@@ -30,22 +32,26 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/find_bar/find_notification_details.h"
 #include "chrome/browser/ui/find_bar/find_tab_helper.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/find_in_page_observer.h"
+#include "chrome/test/base/find_result_waiter.h"
 #include "components/app_modal/app_modal_dialog_queue.h"
 #include "components/app_modal/javascript_app_modal_dialog.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/download/public/common/download_item.h"
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
+#include "components/omnibox/browser/omnibox_controller_emitter.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
+#include "components/omnibox/browser/omnibox_popup_model.h"
+#include "components/omnibox/browser/omnibox_view.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/navigation_controller.h"
@@ -65,9 +71,7 @@
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_monster.h"
 #include "net/cookies/cookie_store.h"
-#include "net/test/python_utils.h"
-#include "net/url_request/url_request_context.h"
-#include "net/url_request/url_request_context_getter.h"
+#include "net/cookies/cookie_util.h"
 #include "services/device/public/mojom/geoposition.mojom.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
@@ -75,6 +79,12 @@
 
 #if defined(OS_WIN)
 #include <windows.h>
+#endif
+
+#if defined(TOOLKIT_VIEWS)
+#include "chrome/browser/ui/browser_window.h"
+#include "ui/views/view.h"
+#include "ui/views/widget/widget.h"
 #endif
 
 using content::NavigationController;
@@ -89,11 +99,10 @@ namespace {
 
 Browser* WaitForBrowserNotInSet(std::set<Browser*> excluded_browsers) {
   Browser* new_browser = GetBrowserNotInSet(excluded_browsers);
-  if (new_browser == NULL) {
-    BrowserAddedObserver observer;
-    new_browser = observer.WaitForSingleNewBrowser();
+  if (!new_browser) {
+    new_browser = WaitForBrowserToOpen();
     // The new browser should never be in |excluded_browsers|.
-    DCHECK(!base::ContainsKey(excluded_browsers, new_browser));
+    DCHECK(!base::Contains(excluded_browsers, new_browser));
   }
   return new_browser;
 }
@@ -152,6 +161,79 @@ class AppModalDialogWaiter : public app_modal::AppModalDialogObserver {
   DISALLOW_COPY_AND_ASSIGN(AppModalDialogWaiter);
 };
 
+class BrowserChangeObserver : public BrowserListObserver {
+ public:
+  enum class ChangeType {
+    kAdded,
+    kRemoved,
+  };
+
+  BrowserChangeObserver(Browser* browser, ChangeType type)
+      : browser_(browser), type_(type) {
+    BrowserList::AddObserver(this);
+  }
+
+  ~BrowserChangeObserver() override { BrowserList::RemoveObserver(this); }
+
+  Browser* Wait() {
+    run_loop_.Run();
+    return browser_;
+  }
+
+  // BrowserListObserver:
+  void OnBrowserAdded(Browser* browser) override {
+    if (type_ == ChangeType::kAdded) {
+      browser_ = browser;
+      run_loop_.Quit();
+    }
+  }
+
+  void OnBrowserRemoved(Browser* browser) override {
+    if (browser_ && browser_ != browser)
+      return;
+
+    if (type_ == ChangeType::kRemoved) {
+      browser_ = browser;
+      run_loop_.Quit();
+    }
+  }
+
+ private:
+  Browser* browser_;
+  ChangeType type_;
+  base::RunLoop run_loop_;
+
+  DISALLOW_COPY_AND_ASSIGN(BrowserChangeObserver);
+};
+
+class AutocompleteChangeObserver : public OmniboxControllerEmitter::Observer {
+ public:
+  explicit AutocompleteChangeObserver(Profile* profile) {
+    scoped_observer_.Add(
+        OmniboxControllerEmitter::GetForBrowserContext(profile));
+  }
+
+  ~AutocompleteChangeObserver() override = default;
+
+  void Wait() { run_loop_.Run(); }
+
+  // OmniboxControllerEmitter::Observer:
+  void OnOmniboxQuery(AutocompleteController* controller,
+                      const AutocompleteInput& input) override {}
+  void OnOmniboxResultChanged(bool default_match_changed,
+                              AutocompleteController* controller) override {
+    if (run_loop_.running())
+      run_loop_.Quit();
+  }
+
+ private:
+  base::RunLoop run_loop_;
+  ScopedObserver<OmniboxControllerEmitter, OmniboxControllerEmitter::Observer>
+      scoped_observer_{this};
+
+  DISALLOW_COPY_AND_ASSIGN(AutocompleteChangeObserver);
+};
+
 }  // namespace
 
 bool GetCurrentTabTitle(const Browser* browser, base::string16* title) {
@@ -177,7 +259,6 @@ void NavigateToURLWithPost(Browser* browser, const GURL& url) {
   std::string post_data("test=body");
   params.post_data = network::ResourceRequestBody::CreateFromBytes(
       post_data.data(), post_data.size());
-  params.uses_post = true;
 
   NavigateToURL(&params);
 }
@@ -207,16 +288,14 @@ NavigateToURLWithDispositionBlockUntilNavigationsComplete(
   for (auto* browser : *BrowserList::GetInstance())
     initial_browsers.insert(browser);
 
-  content::WindowedNotificationObserver tab_added_observer(
-      chrome::NOTIFICATION_TAB_ADDED,
-      content::NotificationService::AllSources());
+  AllBrowserTabAddedWaiter tab_added_waiter;
 
   browser->OpenURL(OpenURLParams(
       url, Referrer(), disposition, ui::PAGE_TRANSITION_TYPED, false));
   if (browser_test_flags & BROWSER_TEST_WAIT_FOR_BROWSER)
     browser = WaitForBrowserNotInSet(initial_browsers);
   if (browser_test_flags & BROWSER_TEST_WAIT_FOR_TAB)
-    tab_added_observer.Wait();
+    tab_added_waiter.Wait();
   if (!(browser_test_flags & BROWSER_TEST_WAIT_FOR_NAVIGATION)) {
     // Some other flag caused the wait prior to this.
     return nullptr;
@@ -339,6 +418,23 @@ app_modal::JavaScriptAppModalDialog* WaitForAppModalDialog() {
   return waiter.Wait();
 }
 
+#if defined(TOOLKIT_VIEWS)
+void WaitForViewVisibility(Browser* browser, ViewID vid, bool visible) {
+  views::View* view = views::Widget::GetWidgetForNativeWindow(
+                          browser->window()->GetNativeWindow())
+                          ->GetContentsView()
+                          ->GetViewByID(vid);
+  ASSERT_TRUE(view);
+  if (view->GetVisible() == visible)
+    return;
+
+  base::RunLoop run_loop;
+  auto subscription = view->AddVisibleChangedCallback(run_loop.QuitClosure());
+  run_loop.Run();
+  EXPECT_EQ(visible, view->GetVisible());
+}
+#endif
+
 int FindInPage(WebContents* tab,
                const base::string16& search_string,
                bool forward,
@@ -348,7 +444,7 @@ int FindInPage(WebContents* tab,
   FindTabHelper* find_tab_helper = FindTabHelper::FromWebContents(tab);
   find_tab_helper->StartFinding(search_string, forward, match_case,
                                 true /* run_synchronously_for_testing */);
-  FindInPageNotificationObserver observer(tab);
+  FindResultWaiter observer(tab);
   observer.Wait();
   if (ordinal)
     *ordinal = observer.active_match_ordinal();
@@ -369,19 +465,27 @@ void DownloadURL(Browser* browser, const GURL& download_url) {
   observer->WaitForFinished();
 }
 
-void SendToOmniboxAndSubmit(LocationBar* location_bar,
+void WaitForAutocompleteDone(Browser* browser) {
+  auto* controller = browser->window()
+                         ->GetLocationBar()
+                         ->GetOmniboxView()
+                         ->model()
+                         ->autocomplete_controller();
+  while (!controller->done())
+    AutocompleteChangeObserver(browser->profile()).Wait();
+}
+
+void SendToOmniboxAndSubmit(Browser* browser,
                             const std::string& input,
                             base::TimeTicks match_selection_timestamp) {
+  LocationBar* location_bar = browser->window()->GetLocationBar();
   OmniboxView* omnibox = location_bar->GetOmniboxView();
-  omnibox->model()->OnSetFocus(false);
+  omnibox->model()->OnSetFocus(/*control_down=*/false,
+                               /*suppress_on_focus_suggestions=*/false);
   omnibox->SetUserText(base::ASCIIToUTF16(input));
   location_bar->AcceptInput(match_selection_timestamp);
-  while (!omnibox->model()->autocomplete_controller()->done()) {
-    content::WindowedNotificationObserver observer(
-        chrome::NOTIFICATION_AUTOCOMPLETE_CONTROLLER_RESULT_READY,
-        content::NotificationService::AllSources());
-    observer.Wait();
-  }
+
+  WaitForAutocompleteDone(browser);
 }
 
 Browser* GetBrowserNotInSet(const std::set<Browser*>& excluded_browsers) {
@@ -396,8 +500,9 @@ namespace {
 
 void GetCookieCallback(base::RepeatingClosure callback,
                        net::CookieList* cookies,
-                       const net::CookieList& cookie_list) {
-  *cookies = cookie_list;
+                       const net::CookieStatusList& cookie_list,
+                       const net::CookieStatusList& excluded_cookies) {
+  *cookies = net::cookie_util::StripStatuses(cookie_list);
   callback.Run();
 }
 
@@ -412,30 +517,15 @@ void GetCookies(const GURL& url,
     base::RunLoop loop;
     auto* storage_partition =
         contents->GetMainFrame()->GetProcess()->GetStoragePartition();
-    net::CookieOptions options;
     net::CookieList cookie_list;
     storage_partition->GetCookieManagerForBrowserProcess()->GetCookieList(
-        url, options,
+        url, net::CookieOptions::MakeAllInclusive(),
         base::BindOnce(GetCookieCallback, loop.QuitClosure(), &cookie_list));
     loop.Run();
 
     *value = net::CanonicalCookie::BuildCookieLine(cookie_list);
     *value_size = static_cast<int>(value->size());
   }
-}
-
-WindowedTabAddedNotificationObserver::WindowedTabAddedNotificationObserver(
-    const content::NotificationSource& source)
-    : WindowedNotificationObserver(chrome::NOTIFICATION_TAB_ADDED, source),
-      added_tab_(NULL) {
-}
-
-void WindowedTabAddedNotificationObserver::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  added_tab_ = content::Details<WebContents>(details).ptr();
-  content::WindowedNotificationObserver::Observe(type, source, details);
 }
 
 UrlLoadObserver::UrlLoadObserver(const GURL& url,
@@ -458,48 +548,24 @@ void UrlLoadObserver::Observe(
   WindowedNotificationObserver::Observe(type, source, details);
 }
 
-BrowserAddedObserver::BrowserAddedObserver()
-    : notification_observer_(
-          chrome::NOTIFICATION_BROWSER_OPENED,
-          content::NotificationService::AllSources()) {
-  for (auto* browser : *BrowserList::GetInstance())
-    original_browsers_.insert(browser);
-}
-
-BrowserAddedObserver::~BrowserAddedObserver() {
-}
-
-Browser* BrowserAddedObserver::WaitForSingleNewBrowser() {
-  notification_observer_.Wait();
-  // Ensure that only a single new browser has appeared.
-  EXPECT_EQ(original_browsers_.size() + 1, chrome::GetTotalBrowserCount());
-  return GetBrowserNotInSet(original_browsers_);
-}
-
 HistoryEnumerator::HistoryEnumerator(Profile* profile) {
-  scoped_refptr<content::MessageLoopRunner> message_loop_runner =
-      new content::MessageLoopRunner;
+  base::RunLoop run_loop;
+  base::CancelableTaskTracker tracker;
 
-  history::HistoryService* hs = HistoryServiceFactory::GetForProfile(
-      profile, ServiceAccessType::EXPLICIT_ACCESS);
-  hs->QueryHistory(base::string16(),
-                   history::QueryOptions(),
-                   base::Bind(&HistoryEnumerator::HistoryQueryComplete,
-                              base::Unretained(this),
-                              message_loop_runner->QuitClosure()),
-                   &tracker_);
-  message_loop_runner->Run();
+  HistoryServiceFactory::GetForProfile(profile,
+                                       ServiceAccessType::EXPLICIT_ACCESS)
+      ->QueryHistory(
+          base::string16(), history::QueryOptions(),
+          base::BindLambdaForTesting([&](history::QueryResults results) {
+            for (const auto& item : results)
+              urls_.push_back(item.url());
+            run_loop.Quit();
+          }),
+          &tracker);
+  run_loop.Run();
 }
 
 HistoryEnumerator::~HistoryEnumerator() {}
-
-void HistoryEnumerator::HistoryQueryComplete(
-    const base::Closure& quit_task,
-    history::QueryResults* results) {
-  for (size_t i = 0; i < results->size(); ++i)
-    urls_.push_back((*results)[i].url());
-  quit_task.Run();
-}
 
 // Wait for HistoryService to load.
 class WaitHistoryLoadedObserver : public history::HistoryServiceObserver {
@@ -538,6 +604,66 @@ void WaitForHistoryToLoad(history::HistoryService* history_service) {
     scoped_observer.Add(history_service);
     runner->Run();
   }
+}
+
+Browser* WaitForBrowserToOpen() {
+  return BrowserChangeObserver(nullptr,
+                               BrowserChangeObserver::ChangeType::kAdded)
+      .Wait();
+}
+
+void WaitForBrowserToClose(Browser* browser) {
+  BrowserChangeObserver(browser, BrowserChangeObserver::ChangeType::kRemoved)
+      .Wait();
+}
+
+TabAddedWaiter::TabAddedWaiter(Browser* browser) {
+  browser->tab_strip_model()->AddObserver(this);
+}
+
+void TabAddedWaiter::Wait() {
+  run_loop_.Run();
+}
+
+void TabAddedWaiter::OnTabStripModelChanged(
+    TabStripModel* tab_strip_model,
+    const TabStripModelChange& change,
+    const TabStripSelectionChange& selection) {
+  if (change.type() == TabStripModelChange::kInserted)
+    run_loop_.Quit();
+}
+
+AllBrowserTabAddedWaiter::AllBrowserTabAddedWaiter() {
+  BrowserList::AddObserver(this);
+  for (const Browser* browser : *BrowserList::GetInstance())
+    browser->tab_strip_model()->AddObserver(this);
+}
+
+AllBrowserTabAddedWaiter::~AllBrowserTabAddedWaiter() {
+  BrowserList::RemoveObserver(this);
+}
+
+content::WebContents* AllBrowserTabAddedWaiter::Wait() {
+  run_loop_.Run();
+  return web_contents_;
+}
+
+void AllBrowserTabAddedWaiter::OnTabStripModelChanged(
+    TabStripModel* tab_strip_model,
+    const TabStripModelChange& change,
+    const TabStripSelectionChange& selection) {
+  if (web_contents_)
+    return;
+
+  if (change.type() != TabStripModelChange::kInserted)
+    return;
+
+  web_contents_ = change.GetInsert()->contents[0].contents;
+  run_loop_.Quit();
+}
+
+void AllBrowserTabAddedWaiter::OnBrowserAdded(Browser* browser) {
+  browser->tab_strip_model()->AddObserver(this);
 }
 
 }  // namespace ui_test_utils

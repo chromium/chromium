@@ -1,0 +1,14 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://drafts.css-houdini.org/css-animationworklet/#worklet-group-effect
+// TODO(majidvp): Get rid of this in favor using KeyframeEffect interface directly.
+[
+    Exposed=AnimationWorklet,
+    RuntimeEnabled=AnimationWorklet
+] interface WorkletAnimationEffect {
+  EffectTiming getTiming();
+  ComputedEffectTiming getComputedTiming();
+  attribute double? localTime;
+};

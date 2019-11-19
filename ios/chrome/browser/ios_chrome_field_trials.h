@@ -16,7 +16,7 @@ class IOSChromeFieldTrials : public variations::PlatformFieldTrials {
   ~IOSChromeFieldTrials() override {}
 
   // variations::PlatformFieldTrials:
-  void SetupFieldTrials() override {}
+  void SetupFieldTrials() override;
   void SetupFeatureControllingFieldTrials(
       bool has_seed,
       base::FeatureList* feature_list) override;

@@ -15,7 +15,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/chromeos/settings/device_settings_test_helper.h"
-#include "chromeos/dbus/fake_power_manager_client.h"
+#include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/system_clock/system_clock_client.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 
@@ -107,7 +107,8 @@ class DeviceOffHoursControllerSimpleTest
 
   void SetUp() override {
     chromeos::DeviceSettingsTestBase::SetUp();
-    chromeos::SystemClockClient::Initialize(nullptr /* bus */);
+    chromeos::SystemClockClient::InitializeFake();
+    system_clock_client()->SetServiceIsAvailable(false);
 
     device_settings_service_->SetDeviceOffHoursControllerForTesting(
         std::make_unique<policy::off_hours::DeviceOffHoursController>());
@@ -115,7 +116,10 @@ class DeviceOffHoursControllerSimpleTest
         device_settings_service_->device_off_hours_controller();
   }
 
-  void TearDown() override { chromeos::SystemClockClient::Shutdown(); }
+  void TearDown() override {
+    chromeos::SystemClockClient::Shutdown();
+    chromeos::DeviceSettingsTestBase::TearDown();
+  }
 
   void UpdateDeviceSettings() {
     device_policy_->Build();
@@ -153,6 +157,7 @@ class DeviceOffHoursControllerSimpleTest
 };
 
 TEST_F(DeviceOffHoursControllerSimpleTest, CheckOffHoursUnset) {
+  system_clock_client()->SetServiceIsAvailable(true);
   system_clock_client()->SetNetworkSynchronized(true);
   system_clock_client()->NotifyObserversSystemClockUpdated();
   em::ChromeDeviceSettingsProto& proto(device_policy_->payload());
@@ -169,6 +174,7 @@ TEST_F(DeviceOffHoursControllerSimpleTest, CheckOffHoursUnset) {
 }
 
 TEST_F(DeviceOffHoursControllerSimpleTest, CheckOffHoursModeOff) {
+  system_clock_client()->SetServiceIsAvailable(true);
   system_clock_client()->SetNetworkSynchronized(true);
   system_clock_client()->NotifyObserversSystemClockUpdated();
   em::ChromeDeviceSettingsProto& proto(device_policy_->payload());
@@ -194,6 +200,7 @@ TEST_F(DeviceOffHoursControllerSimpleTest, CheckOffHoursModeOff) {
 }
 
 TEST_F(DeviceOffHoursControllerSimpleTest, CheckOffHoursModeOn) {
+  system_clock_client()->SetServiceIsAvailable(true);
   system_clock_client()->SetNetworkSynchronized(true);
   system_clock_client()->NotifyObserversSystemClockUpdated();
   em::ChromeDeviceSettingsProto& proto(device_policy_->payload());
@@ -217,7 +224,37 @@ TEST_F(DeviceOffHoursControllerSimpleTest, CheckOffHoursModeOn) {
                   .guest_mode_enabled());
 }
 
+TEST_F(DeviceOffHoursControllerSimpleTest,
+       CheckOffHoursEnabledBeforeSystemClockUpdated) {
+  system_clock_client()->SetServiceIsAvailable(false);
+  em::ChromeDeviceSettingsProto& proto(device_policy_->payload());
+  proto.mutable_guest_mode_enabled()->set_guest_mode_enabled(false);
+  UpdateDeviceSettings();
+  int current_day_of_week = ExtractDayOfWeek(base::Time::Now());
+  SetOffHoursPolicyToProto(
+      &proto,
+      OffHoursPolicy(
+          kUtcTimezone,
+          {WeeklyTimeInterval(
+              WeeklyTime(current_day_of_week, 0, 0),
+              WeeklyTime(NextDayOfWeek(current_day_of_week),
+                         TimeDelta::FromHours(10).InMilliseconds(), 0))}));
+  UpdateDeviceSettings();
+  // Trust the time until response from SystemClock is received.
+  EXPECT_TRUE(device_off_hours_controller()->is_off_hours_mode());
+
+  // SystemClock is updated.
+  system_clock_client()->SetServiceIsAvailable(true);
+  system_clock_client()->SetNetworkSynchronized(false);
+  system_clock_client()->NotifyObserversSystemClockUpdated();
+  UpdateDeviceSettings();
+
+  // Response from SystemClock arrived, stop trusting the time.
+  EXPECT_FALSE(device_off_hours_controller()->is_off_hours_mode());
+}
+
 TEST_F(DeviceOffHoursControllerSimpleTest, NoNetworkSynchronization) {
+  system_clock_client()->SetServiceIsAvailable(true);
   system_clock_client()->SetNetworkSynchronized(false);
   system_clock_client()->NotifyObserversSystemClockUpdated();
   em::ChromeDeviceSettingsProto& proto(device_policy_->payload());
@@ -242,6 +279,7 @@ TEST_F(DeviceOffHoursControllerSimpleTest, NoNetworkSynchronization) {
 
 TEST_F(DeviceOffHoursControllerSimpleTest,
        IsCurrentSessionAllowedOnlyForOffHours) {
+  system_clock_client()->SetServiceIsAvailable(true);
   EXPECT_FALSE(
       device_off_hours_controller()->IsCurrentSessionAllowedOnlyForOffHours());
 
@@ -305,6 +343,7 @@ class DeviceOffHoursControllerFakeClockTest
 };
 
 TEST_F(DeviceOffHoursControllerFakeClockTest, FakeClock) {
+  system_clock_client()->SetServiceIsAvailable(true);
   EXPECT_FALSE(device_off_hours_controller()->is_off_hours_mode());
   int current_day_of_week = ExtractDayOfWeek(clock()->Now());
   em::ChromeDeviceSettingsProto& proto(device_policy_->payload());
@@ -326,6 +365,7 @@ TEST_F(DeviceOffHoursControllerFakeClockTest, FakeClock) {
 }
 
 TEST_F(DeviceOffHoursControllerFakeClockTest, CheckSendSuspendDone) {
+  system_clock_client()->SetServiceIsAvailable(true);
   int current_day_of_week = ExtractDayOfWeek(clock()->Now());
   LOG(ERROR) << "day " << current_day_of_week;
   em::ChromeDeviceSettingsProto& proto(device_policy_->payload());
@@ -359,6 +399,7 @@ class DeviceOffHoursControllerUpdateTest
 };
 
 TEST_P(DeviceOffHoursControllerUpdateTest, CheckUpdateOffHoursPolicy) {
+  system_clock_client()->SetServiceIsAvailable(true);
   em::ChromeDeviceSettingsProto& proto(device_policy_->payload());
   SetOffHoursPolicyToProto(&proto, off_hours_policy());
   AdvanceTestClock(advance_clock());

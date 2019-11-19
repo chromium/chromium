@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<!-- VectorRaster warning is ignored because we intentionally want the width to
+     be greater than 200. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:targetApi="21"
+    tools:ignore="VectorRaster"
+    android:width="224dp"
+    android:height="107dp"
+    android:viewportWidth="224"
+    android:viewportHeight="107">
+    <path android:fillColor="#F1F3F4"
+        android:fillType="nonZero"
+        android:pathData="M156.91,3.733l18.155,31.59l-90.126,-1.508l12.968,-31.662z"
+        android:strokeColor="#00000000"
+        android:strokeWidth="1"/>
+</vector>

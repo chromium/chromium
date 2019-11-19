@@ -31,6 +31,9 @@ class PositionCache {
   virtual const mojom::Geoposition* FindPosition(
       const WifiData& wifi_data) const = 0;
 
+  // Returns the number of cached position responses stored in the cache.
+  virtual size_t GetPositionCacheSize() const = 0;
+
   // Returns most recently used position, or an invalid Geoposition if
   // SetLastUsedNetworkPosition wasn't called yet.
   virtual const mojom::Geoposition& GetLastUsedNetworkPosition() const = 0;

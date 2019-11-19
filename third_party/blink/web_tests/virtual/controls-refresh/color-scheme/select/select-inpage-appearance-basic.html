@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<script src="../../../../resources/run-after-layout-and-paint.js"></script>
+<script src="../../../../fast/forms/resources/common.js"></script>
+<body>
+
+<!-- no style for reference -->
+<select><option>unstyled</option></select> <br>
+
+<!-- rtl -->
+<select dir="rtl"><option>right-to-left</option></select> <br>
+
+<!-- focused -->
+<select id="focusTarget"><option>focused</option></select> <br>
+
+<!-- hovered -->
+<select id="hoverTarget"><option>hovered</option></select> <br>
+
+<!-- disabled -->
+<select disabled><option>disabled</option></select> <br>
+
+<!-- colored text -->
+<select style="color:darkturquoise"><option>turquoise text</option></select> <br>
+
+<!-- border -->
+<select style="border: 3px solid lime;"><option>thick lime border</option></select>
+<select style="border-radius: 6px;"><option>border-radius: 6px</option></select> <br>
+
+<!-- background -->
+<select style="background: linear-gradient(to bottom, #dea 0%,#9c7 44%,#494 100%);"><option>gradient background</option></select> <br>
+
+<!-- shadow -->
+<select style="box-shadow: 4px 4px 10px rgba(255,0,0,0.5), inset 4px 4px 4px rgba(0,255,0,0.5);"><option>box-shadow</option></select> <br>
+
+<!-- arrow clipped -->
+<select style="width: 24px; height: 5px;"><option>size: 8px</option></select>
+<select style="width: 8px; height: 8px;"><option>size: 8px</option></select> <br>
+
+<!-- size -->
+<select style="width: 16px; height: 16px;"><option>size: 16px</option></select>
+<select style="width: 24px; height: 24px;"><option>size: 24px</option></select>
+<select style="width: 26px; height: 20px;"><option>width: 26px; height: 20px</option></select>
+<select style="width: 60px; height: 60px;"><option>size: 60px</option></select> <br>
+
+<!-- zoom -->
+<select style="zoom: 1.5;"><option>zoom: 1.5</option></select>
+<select style="zoom: 3;"><option>zoom: 3</option></select> <br>
+
+<script>
+
+runAfterLayoutAndPaint(function() {
+  let focusTarget = document.getElementById('focusTarget');
+  focusTarget.focus();
+
+  let hoverTarget = document.getElementById('hoverTarget');
+  hoverOverElement(hoverTarget);
+}, true);
+
+</script>
+</body>

@@ -8,6 +8,7 @@
 #include "base/macros.h"
 #include "third_party/blink/renderer/core/css/css_property_id_templates.h"
 #include "third_party/blink/renderer/core/css/cssom/style_property_map_read_only_main_thread.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
 
 namespace blink {
 
@@ -31,7 +32,6 @@ class CORE_EXPORT PrepopulatedComputedStylePropertyMap
   PrepopulatedComputedStylePropertyMap(
       const Document&,
       const ComputedStyle&,
-      Node* styled_node,
       const Vector<CSSPropertyID>& native_properties,
       const Vector<AtomicString>& custom_properties);
 
@@ -54,7 +54,6 @@ class CORE_EXPORT PrepopulatedComputedStylePropertyMap
                             const ComputedStyle&,
                             const AtomicString& property_name);
 
-  Member<Node> styled_node_;
   HeapHashMap<CSSPropertyID, Member<const CSSValue>> native_values_;
   HeapHashMap<AtomicString, Member<const CSSValue>> custom_values_;
 

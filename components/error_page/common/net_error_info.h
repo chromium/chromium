@@ -71,6 +71,9 @@ enum NetworkErrorPageEvent {
   // A list containing at least one item of offline content suggestions was
   // shown in the collapsed/hidden state.
   NETWORK_ERROR_PAGE_OFFLINE_SUGGESTIONS_SHOWN_COLLAPSED = 28,
+  // The error page was shown because the device is offline (this is the dino
+  // page).
+  NETWORK_ERROR_PAGE_OFFLINE_ERROR_SHOWN = 29,
 
   NETWORK_ERROR_PAGE_EVENT_MAX,
 };

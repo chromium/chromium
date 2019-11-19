@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import base64
+import datetime
 import json
 import logging
 import re
@@ -208,13 +209,59 @@ class WPTGitHub(object):
             state=item['state'],
             labels=labels)
 
+    def recent_failing_chromium_exports(self):
+        """Fetches open PRs with an export label, failing status, and updated
+        within the last month.
+
+        API doc: https://developer.github.com/v3/search/#search-issues-and-pull-requests
+
+        Returns:
+            A list of PullRequest namedtuples.
+        """
+        one_month_ago = datetime.date.today() - datetime.timedelta(days=31)
+        path = (
+            '/search/issues'
+            '?q=repo:{}/{}%20type:pr+is:open%20label:{}%20status:failure%20updated:>{}'
+            '&sort=updated'
+            '&page=1'
+            '&per_page={}'
+        ).format(
+            WPT_GH_ORG,
+            WPT_GH_REPO_NAME,
+            EXPORT_PR_LABEL,
+            one_month_ago.isoformat(),
+            MAX_PER_PAGE
+        )
+
+        failing_prs = []
+        while path is not None:
+            response = self.request(path, method='GET')
+            if response.status_code == 200:
+                if response.data['incomplete_results']:
+                    raise GitHubError('complete results', 'incomplete results',
+                                      'fetch failing open chromium exports', path)
+
+                prs = [self.make_pr_from_item(item) for item in response.data['items']]
+                failing_prs += prs
+            else:
+                raise GitHubError(200, response.status_code,
+                                  'fetch failing open chromium exports', path)
+            path = self.extract_link_next(response.getheader('Link'))
+
+        _log.info('Fetched %d PRs from GitHub.', len(failing_prs))
+        return failing_prs
+
     @memoized
     def all_pull_requests(self):
-        """Fetches all (open and closed) PRs with the export label.
+        """Fetches the most recent (open and closed) PRs with the export label.
 
         The maximum number of PRs is pr_history_window. Search endpoint is used
-        instead of listing PRs, because we need to filter by labels.
-        API doc: https://developer.github.com/v3/search/#search-issues
+        instead of listing PRs, because we need to filter by labels. Note that
+        there are already more than MAX_PR_HISTORY_WINDOW export PRs, so we
+        can't really find *all* of them; we fetch the most recently updated ones
+        because we only check whether recent commits have been exported.
+
+        API doc: https://developer.github.com/v3/search/#search-issues-and-pull-requests
 
         Returns:
             A list of PullRequest namedtuples.
@@ -222,6 +269,7 @@ class WPTGitHub(object):
         path = (
             '/search/issues'
             '?q=repo:{}/{}%20type:pr%20label:{}'
+            '&sort=updated'
             '&page=1'
             '&per_page={}'
         ).format(
@@ -252,6 +300,26 @@ class WPTGitHub(object):
 
         _log.info('Fetched %d PRs from GitHub.', len(all_prs))
         return all_prs
+
+    def get_branch_statuses(self, branch_name):
+        """Gets the status of a PR.
+
+        API doc: https://developer.github.com/v3/repos/statuses/#get-the-combined-status-for-a-specific-ref
+
+        Returns:
+            The list of check statuses of the PR.
+        """
+        path = '/repos/{}/{}/commits/{}/status'.format(
+            WPT_GH_ORG,
+            WPT_GH_REPO_NAME,
+            branch_name
+        )
+        response = self.request(path, method='GET')
+
+        if response.status_code != 200:
+            raise GitHubError(200, response.status_code, 'get the statuses of PR %d' % branch_name)
+
+        return response.data['statuses']
 
     def get_pr_branch(self, pr_number):
         """Gets the remote branch name of a PR.
@@ -343,16 +411,9 @@ class WPTGitHub(object):
 
     def pr_for_chromium_commit(self, chromium_commit):
         """Returns a PR corresponding to the given ChromiumCommit, or None."""
-        pull_request = self.pr_with_change_id(chromium_commit.change_id())
-        if pull_request:
-            return pull_request
-        # The Change ID can't be used for commits made via Rietveld,
-        # so we fall back to trying to use commit position here.
-        # Note that Gerrit returns ToT+1 as the commit positions for in-flight
-        # CLs, but they are scrubbed from the PR description and hence would
-        # not be mismatched to random Chromium commits in the fallback.
-        # TODO(robertma): Remove this fallback after Rietveld becomes read-only.
-        return self.pr_with_position(chromium_commit.position)
+        # We rely on Change-Id because Gerrit returns ToT+1 as the commit
+        # positions for in-flight CLs, whereas Change-Id is permanent.
+        return self.pr_with_change_id(chromium_commit.change_id())
 
     def pr_with_change_id(self, target_change_id):
         for pull_request in self.all_pull_requests():
@@ -360,14 +421,6 @@ class WPTGitHub(object):
             # CLs in one PR. (The exporter always creates one PR for each CL.)
             change_ids = self.extract_metadata('Change-Id: ', pull_request.body, all_matches=True)
             if target_change_id in change_ids:
-                return pull_request
-        return None
-
-    def pr_with_position(self, position):
-        for pull_request in self.all_pull_requests():
-            # Same as above, search all 'Cr-Commit-Position's.
-            pr_commit_positions = self.extract_metadata('Cr-Commit-Position: ', pull_request.body, all_matches=True)
-            if position in pr_commit_positions:
                 return pull_request
         return None
 

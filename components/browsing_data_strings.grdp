@@ -31,17 +31,31 @@
   <message name="IDS_DEL_CACHE_COUNTER_ALMOST_EMPTY_BASIC" desc="A counter showing that the user's cache is almost empty and explaining that the cache is used to speed up the loading of websites.">
     Frees up less than 1 MB. Some sites may load more slowly on your next visit.
   </message>
-  <message name="IDS_DEL_PASSWORDS_COUNTER" desc="A counter showing how many passwords the user has.">
+  <message name="IDS_DEL_PASSWORDS_COUNTER" desc="A counter showing how many passwords the user has. The list of example domains associated with the user's passwords is denoted by the placeholder DOMAIN_LIST.">
     {COUNT, plural,
      =0 {None}
-     =1 {1 password}
-     other {# passwords}}
+     =1 {1 password (for <ph name="DOMAIN_LIST">$1<ex>google.com</ex></ph>)}
+     =2 {2 passwords (for <ph name="DOMAIN_LIST">$1<ex>google.com, chrome.com</ex></ph>)}
+     other {# passwords (for <ph name="DOMAIN_LIST">$1<ex>google.com, chrome.com, and 2 more</ex></ph>)}}
   </message>
-  <message name="IDS_DEL_PASSWORDS_COUNTER_SYNCED" desc="A counter showing how many passwords the user has and that they are synced.">
+  <message name="IDS_DEL_PASSWORDS_COUNTER_SYNCED" desc="A counter showing how many passwords the user has and that they are synced. The list of example domains associated with the user's passwords is denoted by the placeholder DOMAIN_LIST.">
     {COUNT, plural,
      =0 {None}
-     =1 {1 password (synced)}
-     other {# passwords (synced)}}
+     =1 {1 password (for <ph name="DOMAIN_LIST">$1<ex>google.com</ex></ph>, synced)}
+     =2 {2 passwords (for <ph name="DOMAIN_LIST">$1<ex>google.com, chrome.com</ex></ph>, synced)}
+     other {# passwords (for <ph name="DOMAIN_LIST">$1<ex>google.com, chrome.com, and 2 more</ex></ph>, synced)}}
+  </message>
+  <message name="IDS_DEL_PASSWORDS_DOMAINS_DISPLAY" desc="This message is shown alongside the passwords count displaying example domains. If there is at least one password, we will show at most two example domain names, denoted by the placeholders EXAMPLE_DOMAIN_1 and EXAMPLE_DOMAIN_2. If there are more than two domains, we will also say 'and X more.'">
+    {COUNT, plural,
+     =0 {None}
+     =1 {<ph name="EXAMPLE_DOMAIN_1">$1<ex>youtube.com</ex></ph>}
+     =2 {<ph name="EXAMPLE_DOMAIN_1">$1<ex>youtube.com</ex></ph>, <ph name="EXAMPLE_DOMAIN_2">$2<ex>google.com</ex></ph>}
+     other {<ph name="EXAMPLE_DOMAIN_1">$1<ex>youtube.com</ex></ph>, <ph name="EXAMPLE_DOMAIN_2">$2<ex>google.com</ex></ph>, <ph name="AND_MORE">$3<ex>and 4 more</ex></ph>}}
+  </message>
+  <message name="IDS_DEL_PASSWORDS_COUNTER_AND_X_MORE" desc="This message is added at the end of a sentence enumerating example domains where passwords would be deleted, e.g.: 'youtube.com, mail.google.com, and 4 more'">
+    {COUNT, plural,
+    =1 {and 1 more}
+    other {and # more}}
   </message>
   <message name="IDS_DEL_SIGNIN_DATA_COUNTER" desc="A counter showing how many sign-in data items the user has.">
     {COUNT, plural,

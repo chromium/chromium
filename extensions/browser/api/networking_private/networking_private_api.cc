@@ -486,9 +486,6 @@ NetworkingPrivateGetEnabledNetworkTypesFunction::Run() {
     } else if (type == ::onc::network_type::kWiFi) {
       enabled_networks_list->AppendString(
           private_api::ToString(private_api::NETWORK_TYPE_WIFI));
-    } else if (type == ::onc::network_type::kWimax) {
-      enabled_networks_list->AppendString(
-          private_api::ToString(private_api::NETWORK_TYPE_WIMAX));
     } else if (type == ::onc::network_type::kCellular) {
       enabled_networks_list->AppendString(
           private_api::ToString(private_api::NETWORK_TYPE_CELLULAR));

@@ -22,8 +22,8 @@ namespace blink {
 
 TextPainterBase::TextPainterBase(GraphicsContext& context,
                                  const Font& font,
-                                 const LayoutPoint& text_origin,
-                                 const LayoutRect& text_bounds,
+                                 const PhysicalOffset& text_origin,
+                                 const PhysicalRect& text_bounds,
                                  bool horizontal)
     : graphics_context_(context),
       font_(font),
@@ -347,8 +347,8 @@ float ComputeDecorationThickness(const ComputedStyle* style,
 
 void TextPainterBase::ComputeDecorationInfo(
     DecorationInfo& decoration_info,
-    const LayoutPoint& box_origin,
-    LayoutPoint local_origin,
+    const PhysicalOffset& box_origin,
+    PhysicalOffset local_origin,
     LayoutUnit width,
     FontBaseline baseline_type,
     const ComputedStyle& style,

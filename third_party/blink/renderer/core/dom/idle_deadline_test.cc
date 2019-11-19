@@ -5,12 +5,11 @@
 #include "third_party/blink/renderer/core/dom/idle_deadline.h"
 
 #include "base/single_thread_task_runner.h"
+#include "base/test/test_mock_time_task_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/testing/scoped_scheduler_overrider.h"
-#include "third_party/blink/renderer/platform/testing/wtf/scoped_mock_clock.h"
-#include "third_party/blink/renderer/platform/wtf/time.h"
 
 namespace blink {
 namespace {
@@ -28,6 +27,9 @@ class MockIdleDeadlineScheduler final : public ThreadScheduler {
   bool ShouldYieldForHighPriorityWork() override { return true; }
   bool CanExceedIdleDeadlineIfRequired() const override { return false; }
   void PostIdleTask(const base::Location&, Thread::IdleTask) override {}
+  void PostDelayedIdleTask(const base::Location&,
+                           base::TimeDelta,
+                           Thread::IdleTask) override {}
   void PostNonNestableIdleTask(const base::Location&,
                                Thread::IdleTask) override {}
   std::unique_ptr<PageScheduler> CreatePageScheduler(
@@ -56,11 +58,15 @@ class MockIdleDeadlineScheduler final : public ThreadScheduler {
 
   void RemoveTaskObserver(Thread::TaskObserver* task_observer) override {}
 
-  void AddRAILModeObserver(scheduler::WebRAILModeObserver*) override {}
+  void AddRAILModeObserver(RAILModeObserver*) override {}
+
+  void RemoveRAILModeObserver(RAILModeObserver const*) override {}
 
   scheduler::NonMainThreadSchedulerImpl* AsNonMainThreadScheduler() override {
     return nullptr;
   }
+
+  void SetV8Isolate(v8::Isolate* isolate) override {}
 
  private:
   DISALLOW_COPY_AND_ASSIGN(MockIdleDeadlineScheduler);
@@ -70,24 +76,30 @@ class MockIdleDeadlineScheduler final : public ThreadScheduler {
 
 class IdleDeadlineTest : public testing::Test {
  public:
-  void SetUp() override { clock_.Advance(TimeDelta::FromSeconds(1)); }
+  void SetUp() override {
+    test_task_runner_ = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+  }
 
- private:
-  WTF::ScopedMockClock clock_;
+ protected:
+  scoped_refptr<base::TestMockTimeTaskRunner> test_task_runner_;
 };
 
 TEST_F(IdleDeadlineTest, DeadlineInFuture) {
-  IdleDeadline* deadline =
-      IdleDeadline::Create(TimeTicks() + TimeDelta::FromSecondsD(1.25),
-                           IdleDeadline::CallbackType::kCalledWhenIdle);
+  auto* deadline = MakeGarbageCollected<IdleDeadline>(
+      base::TimeTicks() + base::TimeDelta::FromSecondsD(1.25),
+      IdleDeadline::CallbackType::kCalledWhenIdle);
+  deadline->SetTickClockForTesting(test_task_runner_->GetMockTickClock());
+  test_task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(1));
   // Note: the deadline is computed with reduced resolution.
   EXPECT_FLOAT_EQ(250.0, deadline->timeRemaining());
 }
 
 TEST_F(IdleDeadlineTest, DeadlineInPast) {
-  IdleDeadline* deadline =
-      IdleDeadline::Create(TimeTicks() + TimeDelta::FromSecondsD(0.75),
-                           IdleDeadline::CallbackType::kCalledWhenIdle);
+  auto* deadline = MakeGarbageCollected<IdleDeadline>(
+      base::TimeTicks() + base::TimeDelta::FromSecondsD(0.75),
+      IdleDeadline::CallbackType::kCalledWhenIdle);
+  deadline->SetTickClockForTesting(test_task_runner_->GetMockTickClock());
+  test_task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(1));
   EXPECT_FLOAT_EQ(0, deadline->timeRemaining());
 }
 
@@ -95,9 +107,11 @@ TEST_F(IdleDeadlineTest, YieldForHighPriorityWork) {
   MockIdleDeadlineScheduler scheduler;
   ScopedSchedulerOverrider scheduler_overrider(&scheduler);
 
-  IdleDeadline* deadline =
-      IdleDeadline::Create(TimeTicks() + TimeDelta::FromSecondsD(1.25),
-                           IdleDeadline::CallbackType::kCalledWhenIdle);
+  auto* deadline = MakeGarbageCollected<IdleDeadline>(
+      base::TimeTicks() + base::TimeDelta::FromSecondsD(1.25),
+      IdleDeadline::CallbackType::kCalledWhenIdle);
+  deadline->SetTickClockForTesting(test_task_runner_->GetMockTickClock());
+  test_task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(1));
   EXPECT_FLOAT_EQ(0, deadline->timeRemaining());
 }
 

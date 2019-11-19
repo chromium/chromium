@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+
+<!--
+Copyright 2018 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Autofill Assistant Test</title>
+
+    <script>
+      var removeButton = function() {
+        var button = document.getElementById("button");
+        button.parentNode.removeChild(button);
+      }
+
+      var removeTouchArea = function(element) {
+        var touch_area = document.getElementById(element);
+        touch_area.parentNode.removeChild(touch_area);
+      }
+
+      var moveTouchAreaTwoAndThree = function() {
+        var touch_area_two = document.getElementById("touch_area_two");
+        setTimeout(function(){touch_area_two.style.left = "100px";}, 100);
+        setTimeout(function(){touch_area_two.style.left = "200px";}, 200);
+        setTimeout(function(){touch_area_two.style.left = "300px";}, 300);
+        setTimeout(function(){touch_area_two.style.left = "100px";}, 400);
+        setTimeout(function(){touch_area_two.style.left = "200px";}, 500);
+        setTimeout(function(){touch_area_two.style.left = "300px";}, 600);
+
+        var touch_area_three = document.getElementById("touch_area_three");
+        setTimeout(function(){touch_area_three.style.top += "100px";}, 100);
+        setTimeout(function(){touch_area_three.style.top += "200px";}, 200);
+        setTimeout(function(){touch_area_three.style.top += "300px";}, 300);
+        setTimeout(function(){touch_area_three.style.top += "400px";}, 400);
+        setTimeout(function(){touch_area_three.style.top += "500px";}, 500);
+        setTimeout(function(){touch_area_three.style.top += "600px";}, 600);
+      }
+
+      var incrementCounter = function(element) {
+        element.value = parseInt(element.value) + 1;
+      }
+
+      var randomizePosition = function(element) {
+        with(element.style) {
+            // Multiplying by 2 will sometimes move elements out of view,
+            // forcing the browser to scroll to them first.
+            left = 2 * Math.floor(Math.random() * window.innerWidth) +'px';
+            top = 2 * Math.floor(Math.random() * window.innerHeight) + 'px';
+        }
+      }
+
+      var flipPosition = function(element, point_a, point_b) {
+        // Flip between the specified positions.
+        with(element.style) {
+          if (left == point_a.left && top == point_a.top) {
+            left = point_b.left;
+            top = point_b.top;
+          } else {
+            left = point_a.left;
+            top = point_a.top;
+          }
+        }
+      }
+    </script>
+
+    <style>
+      #full_height_section {
+        height: 100vh;
+      }
+
+      #touch_area_three {
+        position: absolute;
+      }
+
+      #terms-and-conditions {
+        position: absolute;
+        z-index: -1;
+        left: -9999px;
+      }
+
+      #terms-and-conditions::before {
+          content: "before";
+      }
+
+      #with_inner_text span::before {
+          content: "before";
+      }
+
+      #button::before {
+          content: "before";
+          display: none;
+      }
+
+      label[for="terms-and-conditions"] {
+        padding-left: 48px;
+        position: relative;
+        display: inline-block;
+        min-height: 48px;
+        font-weight: normal;
+      }
+
+      label[for="terms-and-conditions"]:before {
+        content: "";
+        width: 32px;
+        height: 32px;
+        line-height: 32px;
+        border: 1px solid #acacac;
+        position: absolute;
+        z-index: 0;
+        top: 0;
+        left: 0;
+        text-align: center;
+      }
+
+      #terms-and-conditions:checked + label[for="terms-and-conditions"]:before {
+        content: "\2714";
+      }
+
+      #random_moving_button {
+        position: absolute;
+        left: 200px;
+        top: 200px;
+      }
+
+      #moving_button {
+        position: absolute;
+        left: 400px;
+        top: 400px;
+      }
+    </style>
+  </head>
+
+  <body onload="moveTouchAreaTwoAndThree()">
+    <!-- Touch area can be accessed without needing scroll.-->
+    <div>
+      <p id="touch_area_one" ontouchend="removeTouchArea('touch_area_one')">
+        Touchable Area One</p>
+      <br>
+    </div>
+
+    <!--
+    Intentionally make this section has the full height of the window
+    to force scroll when operating on the elements below not in this
+    section.
+    -->
+    <div id="full_height_section">
+      <p>Blank Section</p>
+    </div>
+
+    <div>
+      <p id="touch_area_two" ontouchend="removeTouchArea('touch_area_two')">
+        Touchable Area Two</p>
+      <br>
+    </div>
+
+    <div>
+      <p id="touch_area_three" ontouchend="removeTouchArea('touch_area_three')">
+        Touchable Area Three</p>
+      <br>
+    </div>
+
+    <div>
+      <button id="button" type="button" onclick=
+          "removeButton()">Test Button</button>
+      <br>
+    </div>
+
+    <div>
+      <select id="select">
+        <option value="one">One</option>
+        <option value="two">Two</option>
+        <option value="three">Three</option>
+      </select>
+    </div>
+
+    <div>
+      <input id="input1" type="field" value="helloworld1" />
+    </div>
+    <div>
+      <input id="input2" type="field" value="helloworld2" />
+    </div>
+    <div>
+      <input id="input3" type="field" value="helloworld3" />
+    </div>
+    <div>
+      <input id="input4" type="field" value="helloworld4" />
+    </div>
+    <div>
+      <input id="input5" type="field" value="helloworld5" />
+    </div>
+    <div>
+      <input id="uppercase_input" type="field" value="HELLOWORLD6" />
+    </div>
+    <div>
+      <input id="input6" type="field" value="" />
+    </div>
+
+    <div>
+      <input id="input_js_event_listener" type="text">
+      <!-- Uses the 'key' property of a keydown event. -->
+      <script>
+        var t = document.getElementById("input_js_event_listener");
+        t.addEventListener('keydown', e => {
+          var value = e.target.value;
+          e.preventDefault();
+          e.target.value = value + e.key;
+        });
+      </script>
+    </div>
+
+    <div>
+      <input id="input_js_event_with_timeout" type="text">
+      <!-- Uses the 'key' property of a keydown event. -->
+      <script>
+        var t = document.getElementById("input_js_event_with_timeout");
+        t.addEventListener('keydown', e => {
+        var value = e.target.value;
+        if (value.length === 3) {
+          e.preventDefault();
+          setTimeout(() => {e.target.value = value + ' ' + e.key}, 10);
+        }
+      });
+      </script>
+    </div>
+
+    <div id="testOuterHtml"><span>Span</span><p>Paragraph</p></div>
+
+    <div id="hidden" style="display: none;">This text is hidden</div>
+
+    <div id="scroll-me" style="background-color: green; height: 40px; width: 100%;"></div>
+
+    <iframe id="iframe" name="test_iframe" width="100%" height="500" src=
+        "autofill_assistant_target_website_iframe_one.html"></iframe>
+
+    <iframe id="iframeExternal" name="test_iframe_external" width="100%" height="500" src=
+        "http://localhost:8081/autofill_assistant_external_iframe.html"></iframe>
+
+    <input type="checkbox" id="terms-and-conditions" />
+    <label for="terms-and-conditions" >
+      <a href="#">I have read and understood <br />the terms and conditions</a>
+    </label>
+
+    <script>
+      let upperCaseInput = document.querySelector("#uppercase_input");
+      document.addEventListener('keyup', () => {
+        upperCaseInput.value = upperCaseInput.value.toUpperCase();
+      });
+    </script>
+
+    <div id="with_inner_text">
+      <span>hello</span>
+      <span>hello, world</span>
+      <span style="display: none">world</span>
+    </div>
+
+    <p># Clicks (random moving): <input id="random_moving_click_counter" type="field" value="0" readonly/> </p>
+    <div>
+      <button id="random_moving_button" type="button" onclick=
+          "incrementCounter(document.getElementById('random_moving_click_counter')); randomizePosition(this);">Random Moving Button</button>
+      <br>
+    </div>
+
+    <p># Clicks (static): <input id="static_click_counter" type="field" value="0" readonly/> </p>
+    <div>
+      <button id="static_button" type="button" onclick=
+          "incrementCounter(document.getElementById('static_click_counter'));">Static Button</button>
+      <br>
+    </div>
+
+    <p># Clicks (moving): <input id="moving_click_counter" type="field" value="0" readonly/> </p>
+    <div>
+      <button id="moving_button" type="button" onclick=
+          "incrementCounter(document.getElementById('moving_click_counter'));
+           var point_a = new Object(), point_b = new Object();
+           point_a.left = '400px';
+           point_a.top = '400px';
+           point_b.left = window.innerWidth+'px';
+           point_b.top = window.innerHeight+'px';
+           flipPosition(this, point_b, point_a);">Moving Button</button>
+      <br>
+    </div>
+
+    <div id="before_scroll_container"/>
+    <div id="scroll_container" style="width:100px;height:100px;overflow:auto;">
+      <div id="scroll_item_1" style="width:50px;height:50px">1</div>
+      <div id="scroll_item_2" style="width:50px;height:50px">2</div>
+      <!-- elements below this point cannot be seen except by scrolling
+           within the container. -->
+      <div id="scroll_item_3" style="width:50px;height:50px">3</div>
+      <div id="scroll_item_4" style="width:50px;height:50px">4</div>
+      <div id="scroll_item_5" style="width:50px;height:50px">5</div>
+    </div>
+    <div id="after_scroll_container"/>
+  </body>
+</html>

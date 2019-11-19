@@ -11,8 +11,8 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
+#include "base/test/task_environment.h"
 #include "remoting/protocol/authenticator.h"
 #include "remoting/protocol/protocol_mock_objects.h"
 #include "remoting/protocol/validating_authenticator.h"
@@ -77,7 +77,7 @@ class ValidatingAuthenticatorTest : public testing::Test {
   std::unique_ptr<ValidatingAuthenticator> validating_authenticator_;
 
  private:
-  base::MessageLoop message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
 
   DISALLOW_COPY_AND_ASSIGN(ValidatingAuthenticatorTest);
 };

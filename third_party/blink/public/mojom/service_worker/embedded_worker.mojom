@@ -7,8 +7,11 @@ module blink.mojom;
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
+import "services/network/public/mojom/url_loader_factory.mojom";
 import "third_party/blink/public/mojom/devtools/console_message.mojom";
 import "third_party/blink/public/mojom/devtools/devtools_agent.mojom";
+import "third_party/blink/public/mojom/worker/subresource_loader_updater.mojom";
+import "third_party/blink/public/mojom/loader/fetch_client_settings_object.mojom";
 import "third_party/blink/public/mojom/loader/url_loader_factory_bundle.mojom";
 import "third_party/blink/public/mojom/renderer_preference_watcher.mojom";
 import "third_party/blink/public/mojom/renderer_preferences.mojom";
@@ -19,7 +22,6 @@ import "third_party/blink/public/mojom/service_worker/service_worker_installed_s
 import "third_party/blink/public/mojom/service_worker/service_worker_event_status.mojom";
 import "third_party/blink/public/mojom/service_worker/service_worker_provider.mojom";
 import "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom";
-import "third_party/blink/public/mojom/v8_cache_options.mojom";
 import "third_party/blink/public/mojom/worker/worker_content_settings_proxy.mojom";
 import "third_party/blink/public/mojom/web_feature/web_feature.mojom";
 import "url/mojom/url.mojom";
@@ -30,54 +32,89 @@ struct EmbeddedWorkerStartParams {
   // The id of the service worker being started. This remains fixed even if the
   // worker is stopped and restarted, or even if the browser restarts.
   int64 service_worker_version_id;
+
   // This service worker's registration's scope:
   // https://w3c.github.io/ServiceWorker/#service-worker-registration-scope
   url.mojom.Url scope;
+
   // This service worker's script url:
   // https://w3c.github.io/ServiceWorker/#dom-serviceworker-scripturl
   url.mojom.Url script_url;
+
   // This service worker's script type:
   // https://w3c.github.io/ServiceWorker/#dfn-type
   ScriptType script_type;
+
+  // The outside fetch client settings object. This is used for top-level script
+  // fetch.
+  FetchClientSettingsObject outside_fetch_client_settings_object;
+
   // The string used for "user-agent" HTTP header.
   string user_agent;
-  // The id to talk with the DevTools agent for the worker.
-  int32 worker_devtools_agent_route_id;
+
+  // The id this service worker uses as render_frame_id in
+  // network::ResourceRequests it makes.
+  int32 service_worker_route_id;
+
   // Unique token identifying this worker for DevTools.
   mojo_base.mojom.UnguessableToken devtools_worker_token;
+
   // When true, worker script evaluation is blocked until
   // EmbeddedWorkerInstanceClient::ResumeAfterDownload() is called.
   // This isn't used when off-the-main-thread script fetch is enabled. The
   // browser process is responsible for delaying execution.
   bool pause_after_download;
+
+  // The URL of the service worker script that should skip throttles when
+  // loaded, because the browser process has already started loading it and
+  // already throttled the request. For more detail, during the service worker
+  // update check, the browser process fetches the scripts of the incumbent
+  // service worker. If an update is found in a script, the browser pauses the
+  // load for that script and starts the new service worker. When this service
+  // worker requests that script, the browser will resume the load.
+  //
+  // If there is no such script, this is the empty URL.
+  url.mojom.Url script_url_to_skip_throttling;
+
   // True if starting the worker should wait until DevTools gets ready.
   bool wait_for_debugger;
+
   // True if this service worker has been installed.
   bool is_installed;
-  // Determines how eagerly V8 creates the code cache.
-  V8CacheOptions v8_cache_options;
+
   // Used to set up fetch requests.
   RendererPreferences renderer_preferences;
 
   // Used to talk to the service worker from the browser process.
-  ServiceWorker& service_worker_request;
-  // S13nServiceWorker: cloned and passed to each controllee to directly
-  // dispatch events from the controllees.
-  ControllerServiceWorker& controller_request;
+  pending_receiver<ServiceWorker> service_worker_receiver;
+
+  // Cloned and passed to each controllee to directly dispatch events from the
+  // controllees.
+  pending_receiver<ControllerServiceWorker> controller_receiver;
+
   // Information to transfer installed scripts from the browser to the renderer.
   ServiceWorkerInstalledScriptsInfo? installed_scripts_info;
+
   // Interface for the renderer to send the status updates to the browser.
-  associated EmbeddedWorkerInstanceHost instance_host;
-  // Information for creating ServiceWorkerProviderContext on the renderer.
+  pending_associated_remote<EmbeddedWorkerInstanceHost> instance_host;
+
+  // Information for talking to the ServiceWorkerContainerHost, and other
+  // params.
   ServiceWorkerProviderInfoForStartWorker provider_info;
+
   // Interface for the renderer to query the content settings in the browser.
   WorkerContentSettingsProxy content_settings_proxy;
+
   // Interface for keeping track of the renderer preferences.
   RendererPreferenceWatcher& preference_watcher_request;
-  // S13nServiceWorker: Used to load subresources in the service worker.
-  // This allows the service worker to load chrome-extension:// URLs which
-  // the renderer's default loader factory can't load.
-  URLLoaderFactoryBundle? subresource_loader_factories;
+
+  // Used to load subresources in the service worker.  This allows the service
+  // worker to load chrome-extension:// URLs which the renderer's default
+  // loader factory can't load.
+  URLLoaderFactoryBundle subresource_loader_factories;
+
+  // Used for updating subresource loaders after NetworkService crash etc.
+  pending_receiver<SubresourceLoaderUpdater> subresource_loader_updater;
 };
 
 // Holds timing information about the start worker sequence for UMA.
@@ -108,11 +145,6 @@ interface EmbeddedWorkerInstanceClient {
   // The response is sent back via EmbeddedWorkerInstanceHost.OnStopped().
   StopWorker();
   ResumeAfterDownload();
-  AddMessageToConsole(ConsoleMessageLevel level, string message);
-  // Returns a DevToolsAgent interface for this embedded worker, used for
-  // remote debugging. See DevToolsAgent for details.
-  BindDevToolsAgent(associated DevToolsAgentHost agent_host,
-                    associated DevToolsAgent& agent);
 };
 
 // EmbeddedWorkerInstanceHost is the browser-side ("Host") of
@@ -123,7 +155,6 @@ interface EmbeddedWorkerInstanceClient {
 // EmbeddedWorkerInstanceClient, so it lives on the same message pipe as
 // EmbeddedWorkerInstanceClient.
 interface EmbeddedWorkerInstanceHost {
-  // S13nServiceWorker:
   // Called when the worker requests to be terminated. The worker will request
   // to be terminated when it realizes it has been idle for some time. The
   // browser doesn't terminate the worker when there are inflight events or
@@ -147,10 +178,11 @@ interface EmbeddedWorkerInstanceHost {
 
   // The following are called during startup:
   //
-  // Indicates that the worker is ready for inspection. This message is needed
-  // because DevTools requires the shadow page to have been created before
-  // inspecting the worker.
-  OnReadyForInspection();
+  // Indicates that the worker is ready for inspection, passes a DevToolsAgent
+  // interface for this embedded worker and requests a corresponding host.
+  // See DevToolsAgent for details.
+  OnReadyForInspection(pending_remote<blink.mojom.DevToolsAgent> agent,
+                       pending_receiver<blink.mojom.DevToolsAgentHost> agent_host);
   // Indicates that the worker has finished loading the main script.
   //
   // This is only called for new (non-installed) workers. It's used so the
@@ -171,7 +203,7 @@ interface EmbeddedWorkerInstanceHost {
                     int32 column_number, url.mojom.Url source_url);
 
   // Reports that a console message was emitted to the worker's console.
-  OnReportConsoleMessage(int32 source_identifier,
+  OnReportConsoleMessage(ConsoleMessageSource source,
                          ConsoleMessageLevel message_level,
                          mojo_base.mojom.String16 message, int32 line_number,
                          url.mojom.Url source_url);

@@ -33,8 +33,6 @@ namespace blink {
 
 enum ShouldSendReferrer { kMaybeSendReferrer, kNeverSendReferrer };
 
-enum ShouldSetOpener { kMaybeSetOpener, kNeverSetOpener };
-
 enum ReasonForCallingAllowPlugins {
   kAboutToInstantiatePlugin,
   kNotAboutToInstantiatePlugin
@@ -81,6 +79,7 @@ enum class ClientNavigationReason {
   kMetaTagRefresh,
   kPageBlock,
   kReload,
+  kNone
 };
 }  // namespace blink
 

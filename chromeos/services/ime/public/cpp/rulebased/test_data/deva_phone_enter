@@ -1,0 +1,14 @@
+# Created from RulebasedImeTest.DevaPhone_Enter
+engine_id: DEVA_PHONE
+key_events {
+  code: KEY_N
+  shift: false
+  altgr: false
+  caps_lock: false
+}
+key_events {
+  code: ENTER
+  shift: false
+  altgr: false
+  caps_lock: false
+}

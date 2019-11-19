@@ -22,9 +22,9 @@ class SingleThreadTaskRunner;
 // ScopedMockTimeMessageLoopTaskRunner, the underlying TestMockTimeTaskRunner's
 // methods must be used instead to pump tasks.
 //
-// DEPRECATED: Use a TestMockTimeTaskRunner::Type::kBoundToThread instead of a
-// MessageLoop + ScopedMockTimeMessageLoopTaskRunner.
-// TODO(gab): Remove usage of this API and delete it.
+// Note: Use TaskEnvironment + TimeSource::MOCK_TIME instead of this in unit
+// tests. In browser tests you unfortunately still need this at the moment to
+// mock delayed tasks on the main thread...
 class ScopedMockTimeMessageLoopTaskRunner {
  public:
   ScopedMockTimeMessageLoopTaskRunner();

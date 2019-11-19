@@ -8,7 +8,7 @@ typedef (DOMString or TrustedScript) ScriptString;
 
 [
     Exposed=Window,
-    OriginTrialEnabled=TrustedDOMTypes
+    RuntimeEnabled=TrustedDOMTypes
 ] interface TrustedScript {
     stringifier;
 };

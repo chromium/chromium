@@ -9,13 +9,13 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/webrtc/webrtc_content_browsertest_base.h"
 #include "content/public/common/content_switches.h"
-#include "content/public/common/webrtc_ip_handling_policy.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "media/audio/audio_manager.h"
 #include "media/base/media_switches.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/blink/public/common/peerconnection/webrtc_ip_handling_policy.h"
 
 namespace content {
 
@@ -58,24 +58,23 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcDataBrowserTest, CallWithDataOnly) {
   MakeTypicalPeerConnectionCall("callWithDataOnly();");
 }
 
-#if defined(MEMORY_SANITIZER)
-// Fails under MemorySanitizer: http://crbug.com/405951
-#define MAYBE_CallWithSctpDataOnly DISABLED_CallWithSctpDataOnly
-#else
-#define MAYBE_CallWithSctpDataOnly CallWithSctpDataOnly
-#endif
-IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcDataBrowserTest,
-                       MAYBE_CallWithSctpDataOnly) {
+IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcDataBrowserTest, CallWithSctpDataOnly) {
   MakeTypicalPeerConnectionCall("callWithSctpDataOnly();");
 }
 
 // This test will make a PeerConnection-based call and test an unreliable text
 // dataChannel and audio and video tracks.
 // TODO(mallinath) - Remove this test after rtp based data channel is disabled.
-IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcDataBrowserTest, CallWithDataAndMedia) {
+// Flaky. crbug.com/986872
+#if defined(OS_LINUX) || defined(OS_WIN)
+#define MAYBE_CallWithDataAndMedia DISABLED_CallWithDataAndMedia
+#else
+#define MAYBE_CallWithDataAndMedia CallWithDataAndMedia
+#endif
+IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcDataBrowserTest,
+                       MAYBE_CallWithDataAndMedia) {
   MakeTypicalPeerConnectionCall("callWithDataAndMedia();");
 }
-
 
 #if defined(MEMORY_SANITIZER)
 // Fails under MemorySanitizer: http://crbug.com/405951

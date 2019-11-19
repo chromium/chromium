@@ -6,14 +6,13 @@
 #define ASH_LOCK_SCREEN_ACTION_LOCK_SCREEN_NOTE_LAUNCHER_H_
 
 #include "ash/ash_export.h"
+#include "ash/tray_action/tray_action.h"
 #include "ash/tray_action/tray_action_observer.h"
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/scoped_observer.h"
 
 namespace ash {
-
-class TrayAction;
 
 // A helper class for requesting a lock screen app that provides a callback run
 // when the action launch process finishes (both successfuly or with a failure).
@@ -49,7 +48,7 @@ class ASH_EXPORT LockScreenNoteLauncher : public TrayActionObserver {
   // The callback provided to |Run|.
   LaunchCallback callback_;
 
-  ScopedObserver<TrayAction, TrayActionObserver> tray_action_observer_;
+  ScopedObserver<TrayAction, TrayActionObserver> tray_action_observer_{this};
 
   DISALLOW_COPY_AND_ASSIGN(LockScreenNoteLauncher);
 };

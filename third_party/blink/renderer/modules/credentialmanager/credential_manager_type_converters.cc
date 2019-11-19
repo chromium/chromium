@@ -7,6 +7,8 @@
 #include <algorithm>
 #include <utility>
 
+#include "build/build_config.h"
+#include "third_party/blink/public/mojom/webauthn/authenticator.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/array_buffer_or_array_buffer_view.h"
 #include "third_party/blink/renderer/modules/credentialmanager/authenticator_selection_criteria.h"
 #include "third_party/blink/renderer/modules/credentialmanager/cable_authentication_data.h"
@@ -21,16 +23,17 @@
 #include "third_party/blink/renderer/modules/credentialmanager/public_key_credential_request_options.h"
 #include "third_party/blink/renderer/modules/credentialmanager/public_key_credential_rp_entity.h"
 #include "third_party/blink/renderer/modules/credentialmanager/public_key_credential_user_entity.h"
-#include "third_party/blink/renderer/platform/wtf/time.h"
 
 namespace {
 // Time to wait for an authenticator to successfully complete an operation.
-constexpr TimeDelta kAdjustedTimeoutLower = TimeDelta::FromSeconds(1);
-constexpr TimeDelta kAdjustedTimeoutUpper = TimeDelta::FromMinutes(1);
+constexpr base::TimeDelta kAdjustedTimeoutLower =
+    base::TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kAdjustedTimeoutUpper =
+    base::TimeDelta::FromMinutes(10);
 
-WTF::TimeDelta AdjustTimeout(uint32_t timeout) {
-  WTF::TimeDelta adjusted_timeout;
-  adjusted_timeout = WTF::TimeDelta::FromMilliseconds(timeout);
+base::TimeDelta AdjustTimeout(uint32_t timeout) {
+  base::TimeDelta adjusted_timeout;
+  adjusted_timeout = base::TimeDelta::FromMilliseconds(timeout);
   return std::max(kAdjustedTimeoutLower,
                   std::min(kAdjustedTimeoutUpper, adjusted_timeout));
 }
@@ -116,12 +119,16 @@ TypeConverter<CredentialManagerError, AuthenticatorStatus>::Convert(
   switch (status) {
     case blink::mojom::blink::AuthenticatorStatus::NOT_ALLOWED_ERROR:
       return CredentialManagerError::NOT_ALLOWED;
+    case blink::mojom::blink::AuthenticatorStatus::ABORT_ERROR:
+      return CredentialManagerError::ABORT;
     case blink::mojom::blink::AuthenticatorStatus::UNKNOWN_ERROR:
       return CredentialManagerError::UNKNOWN;
     case blink::mojom::blink::AuthenticatorStatus::PENDING_REQUEST:
       return CredentialManagerError::PENDING_REQUEST;
     case blink::mojom::blink::AuthenticatorStatus::INVALID_DOMAIN:
       return CredentialManagerError::INVALID_DOMAIN;
+    case blink::mojom::blink::AuthenticatorStatus::INVALID_ICON_URL:
+      return CredentialManagerError::INVALID_ICON_URL;
     case blink::mojom::blink::AuthenticatorStatus::CREDENTIAL_EXCLUDED:
       return CredentialManagerError::CREDENTIAL_EXCLUDED;
     case blink::mojom::blink::AuthenticatorStatus::CREDENTIAL_NOT_RECOGNIZED:
@@ -143,6 +150,15 @@ TypeConverter<CredentialManagerError, AuthenticatorStatus>::Convert(
     case blink::mojom::blink::AuthenticatorStatus::
         USER_VERIFICATION_UNSUPPORTED:
       return CredentialManagerError::ANDROID_USER_VERIFICATION_UNSUPPORTED;
+    case blink::mojom::blink::AuthenticatorStatus::
+        PROTECTION_POLICY_INCONSISTENT:
+      return CredentialManagerError::PROTECTION_POLICY_INCONSISTENT;
+    case blink::mojom::blink::AuthenticatorStatus::OPAQUE_DOMAIN:
+      return CredentialManagerError::OPAQUE_DOMAIN;
+    case blink::mojom::blink::AuthenticatorStatus::INVALID_PROTOCOL:
+      return CredentialManagerError::INVALID_PROTOCOL;
+    case blink::mojom::blink::AuthenticatorStatus::BAD_RELYING_PARTY_ID:
+      return CredentialManagerError::BAD_RELYING_PARTY_ID;
     case blink::mojom::blink::AuthenticatorStatus::SUCCESS:
       NOTREACHED();
       break;
@@ -157,7 +173,7 @@ Vector<uint8_t> ConvertFixedSizeArray(
     const blink::ArrayBufferOrArrayBufferView& buffer,
     unsigned length) {
   if (buffer.IsArrayBuffer() &&
-      (buffer.GetAsArrayBuffer()->ByteLength() != length)) {
+      (buffer.GetAsArrayBuffer()->DeprecatedByteLengthAsUnsigned() != length)) {
     return Vector<uint8_t>();
   }
 
@@ -177,7 +193,7 @@ TypeConverter<Vector<uint8_t>, blink::ArrayBufferOrArrayBufferView>::Convert(
   Vector<uint8_t> vector;
   if (buffer.IsArrayBuffer()) {
     vector.Append(static_cast<uint8_t*>(buffer.GetAsArrayBuffer()->Data()),
-                  buffer.GetAsArrayBuffer()->ByteLength());
+                  buffer.GetAsArrayBuffer()->DeprecatedByteLengthAsUnsigned());
   } else {
     DCHECK(buffer.IsArrayBufferView());
     vector.Append(static_cast<uint8_t*>(
@@ -197,7 +213,8 @@ PublicKeyCredentialType TypeConverter<PublicKeyCredentialType, String>::Convert(
 }
 
 // static
-AuthenticatorTransport TypeConverter<AuthenticatorTransport, String>::Convert(
+base::Optional<AuthenticatorTransport>
+TypeConverter<base::Optional<AuthenticatorTransport>, String>::Convert(
     const String& transport) {
   if (transport == "usb")
     return AuthenticatorTransport::USB;
@@ -209,8 +226,7 @@ AuthenticatorTransport TypeConverter<AuthenticatorTransport, String>::Convert(
     return AuthenticatorTransport::CABLE;
   if (transport == "internal")
     return AuthenticatorTransport::INTERNAL;
-  NOTREACHED();
-  return AuthenticatorTransport::USB;
+  return base::nullopt;
 }
 
 // static
@@ -283,8 +299,11 @@ TypeConverter<AuthenticatorSelectionCriteriaPtr,
   mojo_criteria->authenticator_attachment =
       ConvertTo<AuthenticatorAttachment>(criteria->authenticatorAttachment());
   mojo_criteria->require_resident_key = criteria->requireResidentKey();
-  mojo_criteria->user_verification =
-      ConvertTo<UserVerificationRequirement>(criteria->userVerification());
+  mojo_criteria->user_verification = UserVerificationRequirement::PREFERRED;
+  if (criteria->hasUserVerification()) {
+    mojo_criteria->user_verification =
+        ConvertTo<UserVerificationRequirement>(criteria->userVerification());
+  }
   return mojo_criteria;
 }
 
@@ -297,7 +316,10 @@ TypeConverter<PublicKeyCredentialUserEntityPtr,
   entity->id = ConvertTo<Vector<uint8_t>>(user->id());
   entity->name = user->name();
   if (user->hasIcon()) {
-    entity->icon = blink::KURL(blink::KURL(), user->icon());
+    if (user->icon().IsEmpty())
+      entity->icon = blink::KURL();
+    else
+      entity->icon = blink::KURL(user->icon());
   }
   entity->display_name = user->displayName();
   return entity;
@@ -312,9 +334,15 @@ TypeConverter<PublicKeyCredentialRpEntityPtr,
   if (rp->hasId()) {
     entity->id = rp->id();
   }
+  if (!rp->name()) {
+    return nullptr;
+  }
   entity->name = rp->name();
   if (rp->hasIcon()) {
-    entity->icon = blink::KURL(blink::KURL(), rp->icon());
+    if (rp->icon().IsEmpty())
+      entity->icon = blink::KURL();
+    else
+      entity->icon = blink::KURL(rp->icon());
   }
   return entity;
 }
@@ -331,8 +359,11 @@ TypeConverter<PublicKeyCredentialDescriptorPtr,
   mojo_descriptor->id = ConvertTo<Vector<uint8_t>>(descriptor->id());
   if (descriptor->hasTransports() && !descriptor->transports().IsEmpty()) {
     for (const auto& transport : descriptor->transports()) {
-      mojo_descriptor->transports.push_back(
-          ConvertTo<AuthenticatorTransport>(transport));
+      auto maybe_transport(
+          ConvertTo<base::Optional<AuthenticatorTransport>>(transport));
+      if (maybe_transport) {
+        mojo_descriptor->transports.push_back(*maybe_transport);
+      }
     }
   } else {
     mojo_descriptor->transports = {
@@ -433,6 +464,8 @@ TypeConverter<PublicKeyCredentialCreationOptionsPtr,
     }
   }
 
+  mojo_options->protection_policy = blink::mojom::ProtectionPolicy::UNSPECIFIED;
+  mojo_options->enforce_protection_policy = false;
   if (options->hasExtensions()) {
     auto* extensions = options->extensions();
     if (extensions->hasCableRegistration()) {
@@ -444,6 +477,32 @@ TypeConverter<PublicKeyCredentialCreationOptionsPtr,
     }
     if (extensions->hasHmacCreateSecret()) {
       mojo_options->hmac_create_secret = extensions->hmacCreateSecret();
+    }
+    if (extensions->hasAppidExclude()) {
+      mojo_options->appid_exclude = extensions->appidExclude();
+    }
+#if defined(OS_ANDROID)
+    if (extensions->hasUvm()) {
+      mojo_options->user_verification_methods = extensions->uvm();
+    }
+#endif
+    if (extensions->hasCredentialProtectionPolicy()) {
+      const auto& policy = extensions->credentialProtectionPolicy();
+      if (policy == "userVerificationOptional") {
+        mojo_options->protection_policy = blink::mojom::ProtectionPolicy::NONE;
+      } else if (policy == "userVerificationOptionalWithCredentialIDList") {
+        mojo_options->protection_policy =
+            blink::mojom::ProtectionPolicy::UV_OR_CRED_ID_REQUIRED;
+      } else if (policy == "userVerificationRequired") {
+        mojo_options->protection_policy =
+            blink::mojom::ProtectionPolicy::UV_REQUIRED;
+      } else {
+        return nullptr;
+      }
+    }
+    if (extensions->hasEnforceCredentialProtectionPolicy() &&
+        extensions->enforceCredentialProtectionPolicy()) {
+      mojo_options->enforce_protection_policy = true;
     }
   }
 
@@ -509,8 +568,11 @@ TypeConverter<PublicKeyCredentialRequestOptionsPtr,
     }
   }
 
-  mojo_options->user_verification =
-      ConvertTo<UserVerificationRequirement>(options->userVerification());
+  mojo_options->user_verification = UserVerificationRequirement::PREFERRED;
+  if (options->hasUserVerification()) {
+    mojo_options->user_verification =
+        ConvertTo<UserVerificationRequirement>(options->userVerification());
+  }
 
   if (options->hasExtensions()) {
     auto* extensions = options->extensions();
@@ -520,14 +582,24 @@ TypeConverter<PublicKeyCredentialRequestOptionsPtr,
     if (extensions->hasCableAuthentication()) {
       Vector<CableAuthenticationPtr> mojo_data;
       for (auto& data : extensions->cableAuthentication()) {
+        if (data->version() != 1) {
+          continue;
+        }
         CableAuthenticationPtr mojo_cable =
             CableAuthentication::From(data.Get());
         if (mojo_cable) {
           mojo_data.push_back(std::move(mojo_cable));
         }
       }
-      mojo_options->cable_authentication_data = std::move(mojo_data);
+      if (mojo_data.size() > 0) {
+        mojo_options->cable_authentication_data = std::move(mojo_data);
+      }
     }
+#if defined(OS_ANDROID)
+    if (extensions->hasUvm()) {
+      mojo_options->user_verification_methods = extensions->uvm();
+    }
+#endif
   }
 
   return mojo_options;

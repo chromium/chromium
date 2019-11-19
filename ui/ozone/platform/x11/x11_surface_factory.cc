@@ -4,6 +4,8 @@
 
 #include "ui/ozone/platform/x11/x11_surface_factory.h"
 
+#include <memory>
+
 #include "gpu/vulkan/buildflags.h"
 #include "ui/gfx/x/x11.h"
 #include "ui/gfx/x/x11_types.h"
@@ -13,6 +15,7 @@
 #include "ui/ozone/platform/x11/gl_ozone_glx.h"
 #include "ui/ozone/platform/x11/gl_surface_egl_ozone_x11.h"
 #include "ui/ozone/platform/x11/gl_surface_egl_readback_x11.h"
+#include "ui/ozone/platform/x11/x11_canvas_surface.h"
 
 #if BUILDFLAG(ENABLE_VULKAN)
 #include "gpu/vulkan/x/vulkan_implementation_x11.h"
@@ -95,9 +98,16 @@ GLOzone* X11SurfaceFactory::GetGLOzone(gl::GLImplementation implementation) {
 
 #if BUILDFLAG(ENABLE_VULKAN)
 std::unique_ptr<gpu::VulkanImplementation>
-X11SurfaceFactory::CreateVulkanImplementation() {
+X11SurfaceFactory::CreateVulkanImplementation(bool allow_protected_memory,
+                                              bool enforce_protected_memory) {
   return std::make_unique<gpu::VulkanImplementationX11>();
 }
 #endif
+
+std::unique_ptr<SurfaceOzoneCanvas> X11SurfaceFactory::CreateCanvasForWidget(
+    gfx::AcceleratedWidget widget,
+    base::TaskRunner* task_runner) {
+  return std::make_unique<X11CanvasSurface>(widget, task_runner);
+}
 
 }  // namespace ui

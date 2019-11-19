@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<script src="../../../../../resources/testharness.js"></script>
+<script src="../../../../../resources/testharnessreport.js"></script>
+<script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
+<script src="file:///gen/third_party/blink/public/mojom/page/spatial_navigation.mojom.js"></script>
+<script src="../../../../../fast/spatial-navigation/resources/mock-snav-service.js"></script>
+<script src="../../../../../fast/spatial-navigation/resources/snav-testharness.js"></script>
+
+<div>
+  <input type='checkbox' id='cb' name='checkbox' checked=''>
+  <label for='checkbox'>checkbox</label>
+</div>
+
+<div>
+  <input type='radio' name='r' value='A' id='a' checked=''> A<br>
+  <input type='radio' name='r' value='B' id='b'> B<br>
+  <input type='radio' name='r' value='C' id='c'> C
+</div>
+
+<script>
+  let cb = document.getElementById('cb');
+  let a = document.getElementById('a');
+  let b = document.getElementById('b');
+  let c = document.getElementById('c');
+
+  test(() => {
+    snav.triggerMove('Down'); // Move interest to cb.
+
+    assert_true(cb.checked);
+
+    eventSender.keyDown('Enter');
+
+    assert_false(cb.checked);
+
+    assert_true(a.checked);
+    assert_false(b.checked);
+    assert_false(c.checked);
+
+    snav.triggerMove('Down');
+    snav.triggerMove('Down'); // Move interest to b.
+
+    eventSender.keyDown('Enter');
+
+    assert_false(a.checked);
+    assert_true(b.checked);
+    assert_false(c.checked);
+
+  }, 'Ensure press enter key on checkbox and radio change the check state.');
+
+</script>

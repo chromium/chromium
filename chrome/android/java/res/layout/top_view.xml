@@ -5,6 +5,7 @@
 
 <org.chromium.chrome.browser.contacts_picker.TopView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
@@ -14,12 +15,59 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:layout_marginBottom="12dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="16dp" />
+        android:layout_marginStart="15dp"
+        android:layout_marginEnd="16dp"
+        android:textAppearance="@style/TextAppearance.BlackBody" />
+
+    <org.chromium.chrome.browser.ui.widget.WrappingLayout
+        android:id="@+id/chip_container"
+        android:layout_below="@id/explanation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingStart="15dp"
+        app:horizontalSpacing="10dp">
+
+        <org.chromium.ui.widget.ChipView
+            android:id="@+id/icon_filter"
+            android:gravity="center"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            style="@style/SuggestionChip" />
+
+        <org.chromium.ui.widget.ChipView
+            android:id="@+id/names_filter"
+            android:gravity="center"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            style="@style/SuggestionChip" />
+
+        <org.chromium.ui.widget.ChipView
+            android:id="@+id/address_filter"
+            android:gravity="center"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            style="@style/SuggestionChip" />
+
+        <org.chromium.ui.widget.ChipView
+            android:id="@+id/email_filter"
+            android:gravity="center"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            style="@style/SuggestionChip" />
+
+        <org.chromium.ui.widget.ChipView
+            android:id="@+id/tel_filter"
+            android:gravity="center"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            style="@style/SuggestionChip" />
+    </org.chromium.chrome.browser.ui.widget.WrappingLayout>
 
     <LinearLayout
         android:id="@+id/content"
-        android:layout_below="@id/explanation"
+        android:layout_below="@id/chip_container"
+        android:visibility="gone"
         style="@style/ListItemContainer">
 
         <include layout="@layout/checkbox_layout" />

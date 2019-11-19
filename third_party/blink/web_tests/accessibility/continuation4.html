@@ -1,13 +1,12 @@
 <!DOCTYPE HTML>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 
 <div id="before">Before</div>
 <div><span><p id="after">After</p></span></div>
 
 <script>
-  test_after_layout_and_paint(function(t) {
+  test(function(t) {
     var axBefore = accessibilityController.accessibleElementById("before");
     assert_equals(axBefore.childAtIndex(0).name, "Before");
     var axAfter = accessibilityController.accessibleElementById("after");

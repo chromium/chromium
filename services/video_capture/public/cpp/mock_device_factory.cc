@@ -16,23 +16,26 @@ void MockDeviceFactory::GetDeviceInfos(GetDeviceInfosCallback callback) {
 
 void MockDeviceFactory::CreateDevice(
     const std::string& device_id,
-    video_capture::mojom::DeviceRequest device_request,
+    mojo::PendingReceiver<video_capture::mojom::Device> device_receiver,
     CreateDeviceCallback callback) {
-  DoCreateDevice(device_id, &device_request, callback);
+  DoCreateDevice(device_id, &device_receiver, callback);
 }
 
 void MockDeviceFactory::AddSharedMemoryVirtualDevice(
     const media::VideoCaptureDeviceInfo& device_info,
-    video_capture::mojom::ProducerPtr producer,
+    mojo::PendingRemote<video_capture::mojom::Producer> producer,
     bool send_buffer_handles_to_producer_as_raw_file_descriptors,
-    video_capture::mojom::SharedMemoryVirtualDeviceRequest virtual_device) {
-  DoAddVirtualDevice(device_info, producer.get(), &virtual_device);
+    mojo::PendingReceiver<video_capture::mojom::SharedMemoryVirtualDevice>
+        virtual_device_receiver) {
+  DoAddVirtualDevice(device_info, std::move(producer),
+                     std::move(virtual_device_receiver));
 }
 
 void MockDeviceFactory::AddTextureVirtualDevice(
     const media::VideoCaptureDeviceInfo& device_info,
-    video_capture::mojom::TextureVirtualDeviceRequest virtual_device) {
-  DoAddTextureVirtualDevice(device_info, &virtual_device);
+    mojo::PendingReceiver<video_capture::mojom::TextureVirtualDevice>
+        virtual_device_receiver) {
+  DoAddTextureVirtualDevice(device_info, std::move(virtual_device_receiver));
 }
 
 }  // namespace video_capture

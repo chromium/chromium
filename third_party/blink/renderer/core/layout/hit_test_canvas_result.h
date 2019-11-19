@@ -10,12 +10,8 @@
 namespace blink {
 
 class CORE_EXPORT HitTestCanvasResult final
-    : public GarbageCollectedFinalized<HitTestCanvasResult> {
+    : public GarbageCollected<HitTestCanvasResult> {
  public:
-  static HitTestCanvasResult* Create(String id, Member<Element> control) {
-    return MakeGarbageCollected<HitTestCanvasResult>(id, control);
-  }
-
   HitTestCanvasResult(String id, Member<Element> control);
 
   String GetId() const;

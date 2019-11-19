@@ -1,0 +1,5 @@
+document
+++group
+++dialog Window.IsModal=true
+++++description Name='This is the now active dialog. Of course it should be in the tree. '
+++++button Name='This is in the active dialog and should be in the tree.'

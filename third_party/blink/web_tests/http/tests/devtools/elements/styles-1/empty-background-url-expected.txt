@@ -4,7 +4,7 @@ Tests that empty url in the property value does not break inspector.
 element.style { ()
 
 [expanded] 
-#inspected { (<style>…</style>)
+#inspected { (<style>)
     background-image: url();
 
 [expanded] 

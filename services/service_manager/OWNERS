@@ -1,7 +1,7 @@
-ben@chromium.org
 jam@chromium.org
 rockot@google.com
 sky@chromium.org
 
 per-file manifest.json=set noparent
 per-file manifest.json=file://ipc/SECURITY_OWNERS
+# COMPONENT: Internals>Services

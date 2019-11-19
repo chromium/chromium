@@ -1,9 +1,5 @@
-benwells@chromium.org
-estark@chromium.org
-felt@chromium.org
-meacer@chromium.org
-patricialor@chromium.org
-raymes@chromium.org
+file://chrome/browser/ui/page_info/OWNERS
+per-file safety_tip*=jdeblasio@chromium.org
 
 # COMPONENT: UI>Browser>Bubbles>PageInfo
 # TEAM: security-enamel@chromium.org

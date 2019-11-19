@@ -1,0 +1,19 @@
+<html>
+  <head><title>so many ports wow</title></head>
+  <body>
+    <script>
+      var port1 = cast.__platform__.PortConnector.bind('port1');
+      var port2 = cast.__platform__.PortConnector.bind('port2');
+      var port3 = cast.__platform__.PortConnector.bind('port3');
+
+      function ackMsg(msg) {
+        this.postMessage('ack ' + msg.data);
+        return true;
+      }
+
+      port1.onmessage = ackMsg.bind(port1);
+      port2.onmessage = ackMsg.bind(port2);
+      port3.onmessage = ackMsg.bind(port3);
+    </script>
+  </body>
+</html>

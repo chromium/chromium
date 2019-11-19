@@ -4,7 +4,10 @@
 
 #include "fuchsia/engine/test/web_engine_browser_test.h"
 
+#include <fuchsia/web/cpp/fidl.h>
+
 #include "base/fuchsia/fuchsia_logging.h"
+#include "base/run_loop.h"
 #include "fuchsia/engine/browser/web_engine_browser_context.h"
 #include "fuchsia/engine/browser/web_engine_browser_main_parts.h"
 #include "fuchsia/engine/browser/web_engine_content_browser_client.h"
@@ -32,25 +35,30 @@ void WebEngineBrowserTest::PreRunTestOnMainThread() {
   }
 }
 
+void WebEngineBrowserTest::TearDownOnMainThread() {
+  navigation_listener_bindings_.CloseAll();
+}
+
 void WebEngineBrowserTest::PostRunTestOnMainThread() {
   // Unbind the Context while the message loops are still alive.
   context_.Unbind();
+
+  // Shutting down the context needs to run connection error handlers
+  // etc which normally are what causes the main loop to exit. Since in
+  // tests we are not running a main loop indefinitely, we want to let those
+  // things run, just as they would in production, before shutting down. This
+  // makes the main loop run until breaking the connection completes.
+  base::RunLoop().RunUntilIdle();
 }
 
-void WebEngineBrowserTest::TearDownOnMainThread() {
-  navigation_observer_bindings_.CloseAll();
-}
-
-chromium::web::FramePtr WebEngineBrowserTest::CreateFrame(
-    chromium::web::NavigationEventObserver* observer) {
-  chromium::web::FramePtr frame;
+fuchsia::web::FramePtr WebEngineBrowserTest::CreateFrame(
+    fuchsia::web::NavigationEventListener* listener) {
+  fuchsia::web::FramePtr frame;
   context_->CreateFrame(frame.NewRequest());
 
-  if (observer) {
-    fidl::InterfaceRequest<chromium::web::NavigationEventObserver>
-        observer_request;
-    frame->SetNavigationEventObserver(
-        navigation_observer_bindings_.AddBinding(observer));
+  if (listener) {
+    frame->SetNavigationEventListener(
+        navigation_listener_bindings_.AddBinding(listener));
   }
 
   // Pump the messages so that the caller can use the Frame instance
@@ -70,7 +78,7 @@ ContextImpl* WebEngineBrowserTest::context_impl() const {
   return WebEngineMainDelegate::GetInstanceForTest()
       ->browser_client()
       ->main_parts_for_test()
-      ->context();
+      ->context_for_test();
 }
 
 }  // namespace cr_fuchsia

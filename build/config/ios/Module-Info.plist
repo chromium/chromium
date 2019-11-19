@@ -20,5 +20,7 @@
   <string>????</string>
   <key>CFBundleVersion</key>
   <string>1</string>
+  <key>NSPrincipalClass</key>
+  <string>${XCTEST_BUNDLE_PRINCIPAL_CLASS}</string>
 </dict>
 </plist>

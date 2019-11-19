@@ -9,8 +9,9 @@
 #include "base/logging.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/service_manager/public/cpp/connector.h"
 #include "services/service_manager/public/cpp/constants.h"
 #include "services/service_manager/public/cpp/service.h"
@@ -103,8 +104,8 @@ class TestTargetService : public Service {
 class ServiceManagerListenerTest : public testing::Test, public Service {
  public:
   ServiceManagerListenerTest()
-      : service_manager_(nullptr, GetTestManifests()) {}
-
+      : service_manager_(GetTestManifests(),
+                         ServiceManager::ServiceExecutablePolicy::kSupported) {}
   ~ServiceManagerListenerTest() override = default;
 
   Connector* connector() { return service_binding_.GetConnector(); }
@@ -113,27 +114,28 @@ class ServiceManagerListenerTest : public testing::Test, public Service {
     service_binding_.Bind(
         RegisterServiceInstance(kTestServiceName, kTestSelfPid));
 
-    mojom::ServiceManagerPtr service_manager;
-    connector()->BindInterface(mojom::kServiceName, &service_manager);
+    mojo::Remote<mojom::ServiceManager> service_manager;
+    connector()->Connect(mojom::kServiceName,
+                         service_manager.BindNewPipeAndPassReceiver());
 
-    mojom::ServiceManagerListenerPtr listener_proxy;
-    listener_ =
-        std::make_unique<TestListener>(mojo::MakeRequest(&listener_proxy));
+    mojo::PendingRemote<mojom::ServiceManagerListener> listener_proxy;
+    listener_ = std::make_unique<TestListener>(
+        listener_proxy.InitWithNewPipeAndPassReceiver());
     service_manager->AddListener(std::move(listener_proxy));
     listener_->WaitForInit();
   }
 
   mojom::ServiceRequest RegisterServiceInstance(const std::string& service_name,
                                                 uint32_t fake_pid) {
-    mojom::ServicePtr proxy;
-    mojom::ServiceRequest request = mojo::MakeRequest(&proxy);
-    mojom::PIDReceiverPtr pid_receiver;
+    mojo::PendingRemote<mojom::Service> service;
+    auto receiver = service.InitWithNewPipeAndPassReceiver();
+    mojo::Remote<mojom::ProcessMetadata> metadata;
     service_manager_.RegisterService(
         Identity(service_name, kSystemInstanceGroup, base::Token{},
                  base::Token::CreateRandom()),
-        std::move(proxy), mojo::MakeRequest(&pid_receiver));
-    pid_receiver->SetPID(fake_pid);
-    return request;
+        std::move(service), metadata.BindNewPipeAndPassReceiver());
+    metadata->SetPID(fake_pid);
+    return std::move(receiver);
   }
 
   void WaitForServiceStarted(Identity* out_identity, uint32_t* out_pid) {
@@ -141,7 +143,7 @@ class ServiceManagerListenerTest : public testing::Test, public Service {
   }
 
  private:
-  base::test::ScopedTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
   ServiceManager service_manager_;
   ServiceBinding service_binding_{this};
   std::unique_ptr<TestListener> listener_;

@@ -12,10 +12,11 @@
 #include "base/memory/ptr_util.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
 #include "chrome/browser/chromeos/policy/cloud_external_data_manager_base.h"
 #include "chrome/browser/chromeos/policy/cloud_external_data_manager_base_test_util.h"
@@ -206,6 +207,10 @@ IN_PROC_BROWSER_TEST_F(DevicePolicyCloudExternalDataManagerTest,
             ComputeExternalDataCacheDirectorySize());
 
   ClearDeviceNativePrintersExternalData();
+  // We have to wait until
+  // CloudExternalDataManagerBase::Backend::OnMetadataUpdated(), which is
+  // responsible for removing outdated external policy files, is completed.
+  content::RunAllTasksUntilIdle();
   // Check that policy data was cleared.
   EXPECT_EQ(0, ComputeExternalDataCacheDirectorySize());
 }

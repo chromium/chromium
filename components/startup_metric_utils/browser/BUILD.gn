@@ -17,8 +17,6 @@ group("browser") {
 
 static_library("lib") {
   sources = [
-    "pref_names.cc",
-    "pref_names.h",
     "startup_metric_utils.cc",
     "startup_metric_utils.h",
   ]

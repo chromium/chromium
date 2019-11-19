@@ -27,7 +27,8 @@ CrashReportDatabase::Report::Report()
       uploaded(false),
       last_upload_attempt_time(0),
       upload_attempts(0),
-      upload_explicitly_requested(false) {}
+      upload_explicitly_requested(false),
+      total_size(0u) {}
 
 CrashReportDatabase::NewReport::NewReport()
     : writer_(std::make_unique<FileWriter>()),

@@ -13,9 +13,9 @@
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/signin/core/browser/account_consistency_method.h"
 #include "components/signin/core/browser/account_reconcilor.h"
 #include "components/signin/core/browser/signin_header_helper.h"
+#include "components/signin/public/base/account_consistency_method.h"
 #include "google_apis/gaia/gaia_auth_consumer.h"
 
 class AboutSigninInternals;
@@ -24,7 +24,7 @@ class GoogleServiceAuthError;
 class SigninClient;
 class Profile;
 
-namespace identity {
+namespace signin {
 class IdentityManager;
 }
 
@@ -39,7 +39,7 @@ class ProcessDiceHeaderDelegate {
   // Asks the delegate to enable sync for the |account_id|.
   // Called after the account was seeded in the account tracker service and
   // after the refresh token was fetched and updated in the token service.
-  virtual void EnableSync(const std::string& account_id) = 0;
+  virtual void EnableSync(const CoreAccountId& account_id) = 0;
 
   // Handles a failure in the token exchange (i.e. shows the error to the user).
   virtual void HandleTokenExchangeFailure(
@@ -55,7 +55,7 @@ class DiceResponseHandler : public KeyedService {
   static DiceResponseHandler* GetForProfile(Profile* profile);
 
   DiceResponseHandler(SigninClient* signin_client,
-                      identity::IdentityManager* identity_manager,
+                      signin::IdentityManager* identity_manager,
                       AccountReconcilor* account_reconcilor,
                       AboutSigninInternals* about_signin_internals,
                       signin::AccountConsistencyMethod account_consistency,
@@ -120,11 +120,6 @@ class DiceResponseHandler : public KeyedService {
   // Deletes the token fetcher.
   void DeleteTokenFetcher(DiceTokenFetcher* token_fetcher);
 
-  // Returns true if it is acceptable to get a new token for the account.
-  // Always returns true when using kDice.
-  bool CanGetTokenForAccount(const std::string& gaia_id,
-                             const std::string& email);
-
   // Process the Dice signin action.
   void ProcessDiceSigninHeader(
       const std::string& gaia_id,
@@ -152,7 +147,7 @@ class DiceResponseHandler : public KeyedService {
                               const GoogleServiceAuthError& error);
 
   SigninClient* signin_client_;
-  identity::IdentityManager* identity_manager_;
+  signin::IdentityManager* identity_manager_;
   AccountReconcilor* account_reconcilor_;
   AboutSigninInternals* about_signin_internals_;
   signin::AccountConsistencyMethod account_consistency_;

@@ -8,8 +8,8 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "third_party/blink/renderer/core/animation/interpolable_shadow.h"
 #include "third_party/blink/renderer/core/animation/list_interpolation_functions.h"
-#include "third_party/blink/renderer/core/animation/shadow_interpolation_functions.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
@@ -25,9 +25,9 @@ namespace {
 const ShadowList* GetShadowList(const CSSProperty& property,
                                 const ComputedStyle& style) {
   switch (property.PropertyID()) {
-    case CSSPropertyBoxShadow:
+    case CSSPropertyID::kBoxShadow:
       return style.BoxShadow();
-    case CSSPropertyTextShadow:
+    case CSSPropertyID::kTextShadow:
       return style.TextShadow();
     default:
       NOTREACHED();
@@ -44,8 +44,8 @@ InterpolationValue CSSShadowListInterpolationType::ConvertShadowList(
   const ShadowDataVector& shadows = shadow_list->Shadows();
   return ListInterpolationFunctions::CreateList(
       shadows.size(), [&shadows, zoom](wtf_size_t index) {
-        return ShadowInterpolationFunctions::ConvertShadowData(shadows[index],
-                                                               zoom);
+        return InterpolationValue(
+            InterpolableShadow::Create(shadows[index], zoom));
       });
 }
 
@@ -68,18 +68,11 @@ InterpolationValue CSSShadowListInterpolationType::MaybeConvertInitial(
 class InheritedShadowListChecker
     : public CSSInterpolationType::CSSConversionChecker {
  public:
-  static std::unique_ptr<InheritedShadowListChecker> Create(
-      const CSSProperty& property,
-      scoped_refptr<ShadowList> shadow_list) {
-    return base::WrapUnique(
-        new InheritedShadowListChecker(property, std::move(shadow_list)));
-  }
-
- private:
   InheritedShadowListChecker(const CSSProperty& property,
                              scoped_refptr<ShadowList> shadow_list)
       : property_(property), shadow_list_(std::move(shadow_list)) {}
 
+ private:
   bool IsValid(const StyleResolverState& state,
                const InterpolationValue& underlying) const final {
     const ShadowList* inherited_shadow_list =
@@ -102,7 +95,7 @@ InterpolationValue CSSShadowListInterpolationType::MaybeConvertInherit(
     return nullptr;
   const ShadowList* inherited_shadow_list =
       GetShadowList(CssProperty(), *state.ParentStyle());
-  conversion_checkers.push_back(InheritedShadowListChecker::Create(
+  conversion_checkers.push_back(std::make_unique<InheritedShadowListChecker>(
       CssProperty(),
       const_cast<ShadowList*>(inherited_shadow_list)));  // Take ref.
   return ConvertShadowList(inherited_shadow_list,
@@ -113,18 +106,18 @@ InterpolationValue CSSShadowListInterpolationType::MaybeConvertValue(
     const CSSValue& value,
     const StyleResolverState*,
     ConversionCheckers&) const {
-  if (value.IsIdentifierValue() &&
-      ToCSSIdentifierValue(value).GetValueID() == CSSValueNone)
+  auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
+  if (identifier_value && identifier_value->GetValueID() == CSSValueID::kNone)
     return CreateNeutralValue();
 
   if (!value.IsBaseValueList())
     return nullptr;
 
-  const CSSValueList& value_list = ToCSSValueList(value);
+  const auto& value_list = To<CSSValueList>(value);
   return ListInterpolationFunctions::CreateList(
       value_list.length(), [&value_list](wtf_size_t index) {
-        return ShadowInterpolationFunctions::MaybeConvertCSSValue(
-            value_list.Item(index));
+        return InterpolationValue(
+            InterpolableShadow::MaybeConvertCSSValue(value_list.Item(index)));
       });
 }
 
@@ -134,7 +127,12 @@ PairwiseInterpolationValue CSSShadowListInterpolationType::MaybeMergeSingles(
   return ListInterpolationFunctions::MaybeMergeSingles(
       std::move(start), std::move(end),
       ListInterpolationFunctions::LengthMatchingStrategy::kPadToLargest,
-      WTF::BindRepeating(ShadowInterpolationFunctions::MaybeMergeSingles));
+      WTF::BindRepeating(
+          [](InterpolationValue&& start_item, InterpolationValue&& end_item) {
+            return InterpolableShadow::MaybeMergeSingles(
+                std::move(start_item.interpolable_value),
+                std::move(end_item.interpolable_value));
+          }));
 }
 
 InterpolationValue
@@ -152,9 +150,10 @@ void CSSShadowListInterpolationType::Composite(
   ListInterpolationFunctions::Composite(
       underlying_value_owner, underlying_fraction, *this, value,
       ListInterpolationFunctions::LengthMatchingStrategy::kPadToLargest,
+      WTF::BindRepeating(InterpolableShadow::CompatibleForCompositing),
       WTF::BindRepeating(
-          ShadowInterpolationFunctions::NonInterpolableValuesAreCompatible),
-      WTF::BindRepeating(ShadowInterpolationFunctions::Composite));
+          ListInterpolationFunctions::VerifyNoNonInterpolableValues),
+      WTF::BindRepeating(InterpolableShadow::Composite));
 }
 
 static scoped_refptr<ShadowList> CreateShadowList(
@@ -166,12 +165,11 @@ static scoped_refptr<ShadowList> CreateShadowList(
   wtf_size_t length = interpolable_list.length();
   if (length == 0)
     return nullptr;
-  const NonInterpolableList& non_interpolable_list =
-      ToNonInterpolableList(*non_interpolable_value);
   ShadowDataVector shadows;
-  for (wtf_size_t i = 0; i < length; i++)
-    shadows.push_back(ShadowInterpolationFunctions::CreateShadowData(
-        *interpolable_list.Get(i), non_interpolable_list.Get(i), state));
+  for (wtf_size_t i = 0; i < length; i++) {
+    shadows.push_back(To<InterpolableShadow>(interpolable_list.Get(i))
+                          ->CreateShadowData(state));
+  }
   return ShadowList::Adopt(shadows);
 }
 
@@ -182,10 +180,10 @@ void CSSShadowListInterpolationType::ApplyStandardPropertyValue(
   scoped_refptr<ShadowList> shadow_list =
       CreateShadowList(interpolable_value, non_interpolable_value, state);
   switch (CssProperty().PropertyID()) {
-    case CSSPropertyBoxShadow:
+    case CSSPropertyID::kBoxShadow:
       state.Style()->SetBoxShadow(std::move(shadow_list));
       return;
-    case CSSPropertyTextShadow:
+    case CSSPropertyID::kTextShadow:
       state.Style()->SetTextShadow(std::move(shadow_list));
       return;
     default:

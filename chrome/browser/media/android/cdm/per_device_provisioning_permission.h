@@ -30,7 +30,9 @@ class RenderFrameHost;
 // Requests permission to allow MediaDrmBridge to use per-device provisioning.
 // The |callback| is guaranteed to be called with whether the permission was
 // allowed by the user. The decision is not persisted and does not affect any
-// persisted settings, e.g. content settings.
+// persisted settings, e.g. content settings. However, the last response is
+// saved in memory, and if another request for the same origin happens within 15
+// minutes, the previous response is used.
 void RequestPerDeviceProvisioningPermission(
     content::RenderFrameHost* render_frame_host,
     base::OnceCallback<void(bool)> callback);

@@ -1,0 +1,5 @@
+[document web]
+++[dialog]
+++++[static] name='Nonmodal'
+++[dialog] modal
+++++[static] name='Modal'

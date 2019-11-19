@@ -9,8 +9,8 @@ deps = [
   "//ui/gfx/ipc",
 ]
 type_mappings = [
-  "content.mojom.SyncCompositorDemandDrawHwParams=content::SyncCompositorDemandDrawHwParams",
-  "content.mojom.SyncCompositorSetSharedMemoryParams=content::SyncCompositorSetSharedMemoryParams",
-  "content.mojom.SyncCompositorDemandDrawSwParams=content::SyncCompositorDemandDrawSwParams",
-  "content.mojom.SyncCompositorCommonRendererParams=content::SyncCompositorCommonRendererParams",
+  "content.mojom.SyncCompositorDemandDrawHwParams=::content::SyncCompositorDemandDrawHwParams",
+  "content.mojom.SyncCompositorSetSharedMemoryParams=::content::SyncCompositorSetSharedMemoryParams",
+  "content.mojom.SyncCompositorDemandDrawSwParams=::content::SyncCompositorDemandDrawSwParams",
+  "content.mojom.SyncCompositorCommonRendererParams=::content::SyncCompositorCommonRendererParams",
 ]

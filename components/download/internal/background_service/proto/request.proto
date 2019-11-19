@@ -19,4 +19,5 @@ message RequestParams {
   optional string method = 2;
   repeated RequestHeader headers = 3;
   optional bool fetch_error_body = 4;
+  optional bool require_safety_checks = 5 [default = true];
 }

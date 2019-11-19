@@ -6,7 +6,6 @@
 
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/browsertest_util.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_uninstall_dialog.h"
@@ -15,7 +14,6 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/web_application_info.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -26,15 +24,6 @@
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/value_builder.h"
-
-#if defined(OS_CHROMEOS)
-#include "ash/public/cpp/shell_window_ids.h"
-#include "ash/public/interfaces/constants.mojom.h"
-#include "ash/public/interfaces/shell_test_api.test-mojom-test-utils.h"
-#include "content/public/common/service_manager_connection.h"
-#include "services/service_manager/public/cpp/connector.h"
-#include "ui/aura/test/mus/change_completion_waiter.h"
-#endif
 
 namespace {
 
@@ -61,25 +50,6 @@ void SetUninstallURL(extensions::ExtensionPrefs* prefs,
   prefs->UpdateExtensionPref(extension_id, kUninstallUrlPrefKey,
                              std::make_unique<base::Value>(kUninstallUrl));
 }
-
-#if defined(OS_CHROMEOS)
-// Returns the number of child windows in the AppList container on ChromeOS.
-// Blocks until the ash service responds.
-int GetWindowCountForAppListContainer() {
-  // Wait for window visibility to stabilize.
-  aura::test::WaitForAllChangesToComplete();
-
-  ash::mojom::ShellTestApiPtr shell_test_api;
-  content::ServiceManagerConnection::GetForProcess()
-      ->GetConnector()
-      ->BindInterface(ash::mojom::kServiceName, &shell_test_api);
-  ash::mojom::ShellTestApiAsyncWaiter waiter(shell_test_api.get());
-  int child_window_count = 0;
-  waiter.GetChildWindowCountInContainer(ash::kShellWindowId_AppListContainer,
-                                        &child_window_count);
-  return child_window_count;
-}
-#endif
 
 class TestExtensionUninstallDialogDelegate
     : public extensions::ExtensionUninstallDialog::Delegate {
@@ -164,61 +134,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogViewBrowserTest,
 }
 
 #if defined(OS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogViewBrowserTest,
-                       ParentWindowIsAppList) {
-  scoped_refptr<const extensions::Extension> extension(BuildTestExtension());
-  extensions::ExtensionSystem::Get(browser()->profile())
-      ->extension_service()
-      ->AddExtension(extension.get());
-
-  // Initially the AppList window should have no children.
-  EXPECT_EQ(0, GetWindowCountForAppListContainer());
-
-  // Open the extension uninstall dialog without a browser parent window. This
-  // occurs when the dialog is opened from the Launcher.
-  std::unique_ptr<extensions::ExtensionUninstallDialog> dialog;
-  dialog = extensions::ExtensionUninstallDialog::Create(browser()->profile(),
-                                                        nullptr, nullptr);
-  dialog->ConfirmUninstall(extension.get(),
-                           extensions::UNINSTALL_REASON_FOR_TESTING,
-                           extensions::UNINSTALL_SOURCE_APP_LIST);
-
-  // Verify that a child dialog window has been added to the AppList as a child.
-  EXPECT_EQ(1, GetWindowCountForAppListContainer());
-}
-
-IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogViewBrowserTest,
-                       ParentWindowIsBrowser) {
-  scoped_refptr<const extensions::Extension> extension(BuildTestExtension());
-  extensions::ExtensionSystem::Get(browser()->profile())
-      ->extension_service()
-      ->AddExtension(extension.get());
-
-  // When the uninstall dialog is launched from a browser, the AppList should
-  // never be the parent.
-  EXPECT_EQ(0, GetWindowCountForAppListContainer());
-
-  // Open the extension uninstall dialog with a browser parent window. This is
-  // occurs when the dialog is opened from chrome://extensions rather than the
-  // launcher.
-  std::unique_ptr<extensions::ExtensionUninstallDialog> dialog;
-  dialog = extensions::ExtensionUninstallDialog::Create(
-      browser()->profile(), browser()->window()->GetNativeWindow(), nullptr);
-  dialog->ConfirmUninstall(extension.get(),
-                           extensions::UNINSTALL_REASON_FOR_TESTING,
-                           extensions::UNINSTALL_SOURCE_FOR_TESTING);
-
-  // Verify that the uninstall dialog is not parented to the AppList.
-  EXPECT_EQ(0, GetWindowCountForAppListContainer());
-}
-
 // Test that we don't crash when uninstalling an extension from a bookmark app
 // window in Ash. Context: crbug.com/825554
 IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogViewBrowserTest,
                        BookmarkAppWindowAshCrash) {
-  base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitAndEnableFeature(features::kDesktopPWAWindowing);
-
   scoped_refptr<const extensions::Extension> extension(BuildTestExtension());
   extensions::ExtensionSystem::Get(browser()->profile())
       ->extension_service()

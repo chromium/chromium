@@ -49,10 +49,10 @@
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
-#include "storage/browser/fileapi/file_system_backend.h"
-#include "storage/browser/fileapi/file_system_context.h"
-#include "storage/common/fileapi/file_system_info.h"
-#include "storage/common/fileapi/file_system_util.h"
+#include "storage/browser/file_system/file_system_backend.h"
+#include "storage/browser/file_system/file_system_context.h"
+#include "storage/common/file_system/file_system_info.h"
+#include "storage/common/file_system/file_system_util.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 
 using content::BrowserThread;

@@ -1,7 +1,7 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-button/paper-button.html">
 <link rel="import" href="../lifetime_browser_proxy.html">
 <link rel="import" href="reset_browser_proxy.html">
 <link rel="import" href="../settings_shared_css.html">
@@ -22,10 +22,10 @@
         </span>
       </div>
       <div slot="button-container">
-        <paper-button class="cancel-button" on-click="onCancelTap_"
-            id="cancel">$i18n{cancel}</paper-button>
-        <paper-button class="action-button" id="powerwash"
-            on-click="onRestartTap_">$i18n{powerwashDialogButton}</paper-button>
+        <cr-button class="cancel-button" on-click="onCancelTap_"
+            id="cancel">$i18n{cancel}</cr-button>
+        <cr-button class="action-button" id="powerwash"
+            on-click="onRestartTap_">$i18n{powerwashDialogButton}</cr-button>
       </div>
     </cr-dialog>
   </template>

@@ -12,6 +12,7 @@
 #include "base/base_export.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
+#include "build/build_config.h"
 
 namespace base {
 
@@ -131,6 +132,31 @@ BASE_EXPORT std::vector<StringPiece> SplitStringPieceUsingSubstr(
     StringPiece delimiter,
     WhitespaceHandling whitespace,
     SplitResult result_type);
+
+#if defined(OS_WIN) && defined(BASE_STRING16_IS_STD_U16STRING)
+BASE_EXPORT std::vector<std::wstring> SplitString(WStringPiece input,
+                                                  WStringPiece separators,
+                                                  WhitespaceHandling whitespace,
+                                                  SplitResult result_type);
+
+BASE_EXPORT std::vector<WStringPiece> SplitStringPiece(
+    WStringPiece input,
+    WStringPiece separators,
+    WhitespaceHandling whitespace,
+    SplitResult result_type);
+
+BASE_EXPORT std::vector<std::wstring> SplitStringUsingSubstr(
+    WStringPiece input,
+    WStringPiece delimiter,
+    WhitespaceHandling whitespace,
+    SplitResult result_type);
+
+BASE_EXPORT std::vector<WStringPiece> SplitStringPieceUsingSubstr(
+    WStringPiece input,
+    WStringPiece delimiter,
+    WhitespaceHandling whitespace,
+    SplitResult result_type);
+#endif
 
 }  // namespace base
 

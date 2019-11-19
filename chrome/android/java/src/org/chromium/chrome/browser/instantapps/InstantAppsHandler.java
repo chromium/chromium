@@ -12,16 +12,18 @@ import android.os.Build;
 import android.os.SystemClock;
 import android.provider.Browser;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
-import org.chromium.base.VisibleForTesting;
 import org.chromium.base.metrics.CachedMetrics.EnumeratedHistogramSample;
 import org.chromium.base.metrics.CachedMetrics.TimesHistogramSample;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.ShortcutHelper;
 import org.chromium.chrome.browser.externalnav.ExternalNavigationDelegateImpl;
-import org.chromium.chrome.browser.preferences.ChromePreferenceManager;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.util.IntentUtils;
 import org.chromium.content_public.browser.WebContents;
@@ -330,8 +332,8 @@ public class InstantAppsHandler {
 
     /** @return Whether Chrome is the default browser on the device. */
     private boolean isChromeDefaultHandler(Context context) {
-        return ChromePreferenceManager.getInstance().readBoolean(
-                ChromePreferenceManager.CHROME_DEFAULT_BROWSER, false);
+        return SharedPreferencesManager.getInstance().readBoolean(
+                ChromePreferenceKeys.CHROME_DEFAULT_BROWSER, false);
     }
 
     /**

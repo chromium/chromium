@@ -52,7 +52,7 @@ public class AdvancedMockContextTest {
     @SmallTest
     public void testComponentCallbacksForTargetContext() {
         Context targetContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        Application targetApplication = (Application) targetContext.getApplicationContext();
+        Application targetApplication = BaseJUnit4ClassRunner.getApplication();
         AdvancedMockContext context = new AdvancedMockContext(targetContext);
         Callback1 callback1 = new Callback1();
         Callback2 callback2 = new Callback2();

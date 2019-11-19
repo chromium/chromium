@@ -17,6 +17,7 @@
 #include <vector>
 
 #include "base/logging.h"
+#include "base/memory/ptr_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -26,10 +27,13 @@
 #include "chrome/browser/ui/libgtkui/select_file_dialog_impl.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/events/platform/x11/x11_event_source.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/strings/grit/ui_strings.h"
-#include "ui/views/widget/desktop_aura/desktop_window_tree_host_x11.h"
+#include "ui/views/widget/desktop_aura/desktop_window_tree_host_linux.h"
+
+#if defined(USE_X11)
+#include "ui/events/platform/x11/x11_event_source.h"  // nogncheck
+#endif
 
 namespace {
 
@@ -62,10 +66,11 @@ void OnFileFilterDataDestroyed(std::string* file_extension) {
   delete file_extension;
 }
 
-// Runs DesktopWindowTreeHostX11::EnableEventListening() when the file-picker
+// Runs DesktopWindowTreeHostLinux::EnableEventListening() when the file-picker
 // is closed.
-void OnFilePickerDestroy(base::Closure* callback) {
-  callback->Run();
+void OnFilePickerDestroy(base::OnceClosure* callback_raw) {
+  std::unique_ptr<base::OnceClosure> callback = base::WrapUnique(callback_raw);
+  std::move(*callback).Run();
 }
 
 }  // namespace
@@ -184,16 +189,16 @@ void SelectFileDialogImplGTK::SelectFileImpl(
 
   // Disable input events handling in the host window to make this dialog modal.
   if (owning_window) {
-    aura::WindowTreeHost* host = owning_window->GetHost();
+    views::DesktopWindowTreeHostLinux* host =
+        static_cast<views::DesktopWindowTreeHostLinux*>(
+            owning_window->GetHost());
     if (host) {
       // In some circumstances (e.g. dialog from flash plugin) the mouse has
       // been captured and by turning off event listening, it is never
       // released. So we manually ensure there is no current capture.
       host->ReleaseCapture();
-      std::unique_ptr<base::Closure> callback =
-          views::DesktopWindowTreeHostX11::GetHostForXID(
-              host->GetAcceleratedWidget())
-              ->DisableEventListening();
+      std::unique_ptr<base::OnceClosure> callback =
+          std::make_unique<base::OnceClosure>(host->DisableEventListening());
       // OnFilePickerDestroy() is called when |dialog| destroyed, which allows
       // to invoke the callback function to re-enable event handling on the
       // owning window.
@@ -210,8 +215,12 @@ void SelectFileDialogImplGTK::SelectFileImpl(
 
   // We need to call gtk_window_present after making the widgets visible to make
   // sure window gets correctly raised and gets focus.
+#if defined(USE_X11)
   gtk_window_present_with_time(
       GTK_WINDOW(dialog), ui::X11EventSource::GetInstance()->GetTimestamp());
+#else
+  gtk_window_present(GTK_WINDOW(dialog));
+#endif
 }
 
 void SelectFileDialogImplGTK::AddFilters(GtkFileChooser* chooser) {

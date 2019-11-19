@@ -24,8 +24,7 @@ ReadingListModelImpl::ReadingListModelImpl(
       clock_(clock),
       pref_service_(pref_service),
       has_unseen_(false),
-      loaded_(false),
-      weak_ptr_factory_(this) {
+      loaded_(false) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(clock_);
   if (storage) {

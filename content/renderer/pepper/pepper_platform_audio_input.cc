@@ -166,13 +166,14 @@ bool PepperPlatformAudioInput::Initialize(
       device_id.empty() ? media::AudioDeviceDescription::kDefaultDeviceId
                         : device_id,
       client->pp_instance(),
-      base::Bind(&PepperPlatformAudioInput::OnDeviceOpened, this));
+      base::BindOnce(&PepperPlatformAudioInput::OnDeviceOpened, this));
   pending_open_device_ = true;
 
   return true;
 }
 
-void PepperPlatformAudioInput::InitializeOnIOThread(int session_id) {
+void PepperPlatformAudioInput::InitializeOnIOThread(
+    const base::UnguessableToken& session_id) {
   DCHECK(io_task_runner_->BelongsToCurrentThread());
 
   if (ipc_startup_state_ != kStopped)
@@ -241,8 +242,8 @@ void PepperPlatformAudioInput::OnDeviceOpened(int request_id,
     label_ = label;
 
     if (client_) {
-      int session_id = device_manager->GetSessionID(
-          PP_DEVICETYPE_DEV_AUDIOCAPTURE, label);
+      base::UnguessableToken session_id =
+          device_manager->GetSessionID(PP_DEVICETYPE_DEV_AUDIOCAPTURE, label);
       io_task_runner_->PostTask(
           FROM_HERE,
           base::BindOnce(&PepperPlatformAudioInput::InitializeOnIOThread, this,

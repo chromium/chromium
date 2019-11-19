@@ -50,7 +50,8 @@ bool ViewsContentMainDelegate::BasicStartupComplete(int* exit_code) {
   content::SetContentClient(&content_client_);
 
   logging::LoggingSettings settings;
-  settings.logging_dest = logging::LOG_TO_SYSTEM_DEBUG_LOG;
+  settings.logging_dest =
+      logging::LOG_TO_SYSTEM_DEBUG_LOG | logging::LOG_TO_STDERR;
   bool success = logging::InitLogging(settings);
   CHECK(success);
 #if defined(OS_WIN)
@@ -87,7 +88,8 @@ void ViewsContentMainDelegate::PreCreateMainMessageLoop() {
 
 content::ContentBrowserClient*
     ViewsContentMainDelegate::CreateContentBrowserClient() {
-  browser_client_.reset(new ViewsContentBrowserClient(views_content_client_));
+  browser_client_ =
+      std::make_unique<ViewsContentBrowserClient>(views_content_client_);
   return browser_client_.get();
 }
 

@@ -18,10 +18,6 @@
 #include <pthread.h>
 #endif
 
-namespace heap_profiling {
-class ScopedAllowAlloc;
-}  // namespace heap_profiling
-
 namespace ui {
 class TLSDestructionCheckerForX11;
 }
@@ -157,15 +153,17 @@ class BASE_EXPORT ThreadLocalStorage {
   // If you are working in code that runs during thread destruction, contact the
   // base OWNERs for advice and then make a friend request.
   //
-  // Returns |true| if Chrome's implementation of TLS has been destroyed during
-  // thread destruction. Attempting to call Slot::Get() during destruction is
-  // disallowed and will hit a DCHECK. Any code that relies on TLS during thread
-  // destruction must first check this method before calling Slot::Get().
-  friend class base::SamplingHeapProfiler;
-  friend class base::internal::ThreadLocalStorageTestInternal;
-  friend class base::trace_event::MallocDumpProvider;
+  // Returns |true| if Chrome's implementation of TLS is being or has been
+  // destroyed during thread destruction. Attempting to call Slot::Get() during
+  // destruction is disallowed and will hit a DCHECK. Any code that relies on
+  // TLS during thread destruction must first check this method before calling
+  // Slot::Get().
+  friend class SequenceCheckerImpl;
+  friend class SamplingHeapProfiler;
+  friend class ThreadCheckerImpl;
+  friend class internal::ThreadLocalStorageTestInternal;
+  friend class trace_event::MallocDumpProvider;
   friend class debug::GlobalActivityTracker;
-  friend class heap_profiling::ScopedAllowAlloc;
   friend class ui::TLSDestructionCheckerForX11;
   static bool HasBeenDestroyed();
 

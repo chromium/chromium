@@ -49,8 +49,6 @@ using ::testing::StrictMock;
 namespace gpu {
 namespace gles2 {
 
-using namespace cmds;
-
 class GLES2DecoderGeometryInstancingTest : public GLES2DecoderWithShaderTest {
  public:
   GLES2DecoderGeometryInstancingTest() : GLES2DecoderWithShaderTest() {}
@@ -80,7 +78,7 @@ void GLES2DecoderManualInitTest::DirtyStateMaskTest(GLuint color_bits,
                                                     bool depth_mask,
                                                     GLuint front_stencil_mask,
                                                     GLuint back_stencil_mask) {
-  ColorMask color_mask_cmd;
+  cmds::ColorMask color_mask_cmd;
   color_mask_cmd.Init((color_bits & 0x1000) != 0,
                       (color_bits & 0x0100) != 0,
                       (color_bits & 0x0010) != 0,
@@ -88,17 +86,17 @@ void GLES2DecoderManualInitTest::DirtyStateMaskTest(GLuint color_bits,
   EXPECT_EQ(error::kNoError, ExecuteCmd(color_mask_cmd));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
 
-  DepthMask depth_mask_cmd;
+  cmds::DepthMask depth_mask_cmd;
   depth_mask_cmd.Init(depth_mask);
   EXPECT_EQ(error::kNoError, ExecuteCmd(depth_mask_cmd));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
 
-  StencilMaskSeparate front_stencil_mask_cmd;
+  cmds::StencilMaskSeparate front_stencil_mask_cmd;
   front_stencil_mask_cmd.Init(GL_FRONT, front_stencil_mask);
   EXPECT_EQ(error::kNoError, ExecuteCmd(front_stencil_mask_cmd));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
 
-  StencilMaskSeparate back_stencil_mask_cmd;
+  cmds::StencilMaskSeparate back_stencil_mask_cmd;
   back_stencil_mask_cmd.Init(GL_BACK, back_stencil_mask);
   EXPECT_EQ(error::kNoError, ExecuteCmd(back_stencil_mask_cmd));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
@@ -117,7 +115,7 @@ void GLES2DecoderManualInitTest::DirtyStateMaskTest(GLuint color_bits,
   EXPECT_CALL(*gl_, DrawArrays(GL_TRIANGLES, 0, kNumVertices))
       .Times(1)
       .RetiresOnSaturation();
-  DrawArrays draw_cmd;
+  cmds::DrawArrays draw_cmd;
   draw_cmd.Init(GL_TRIANGLES, 0, kNumVertices);
   EXPECT_EQ(error::kNoError, ExecuteCmd(draw_cmd));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
@@ -126,7 +124,7 @@ void GLES2DecoderManualInitTest::DirtyStateMaskTest(GLuint color_bits,
 // Test that with an RGB backbuffer if we set the color mask to 1,1,1,1 it is
 // set to 1,1,1,0 at Draw time but is 1,1,1,1 at query time.
 TEST_P(GLES2DecoderRGBBackbufferTest, RGBBackbufferColorMask) {
-  ColorMask cmd;
+  cmds::ColorMask cmd;
   cmd.Init(true, true, true, true);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
@@ -146,7 +144,7 @@ TEST_P(GLES2DecoderRGBBackbufferTest, RGBBackbufferColorMask) {
   EXPECT_CALL(*gl_, DrawArrays(GL_TRIANGLES, 0, kNumVertices))
       .Times(1)
       .RetiresOnSaturation();
-  DrawArrays draw_cmd;
+  cmds::DrawArrays draw_cmd;
   draw_cmd.Init(GL_TRIANGLES, 0, kNumVertices);
   EXPECT_EQ(error::kNoError, ExecuteCmd(draw_cmd));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
@@ -155,12 +153,12 @@ TEST_P(GLES2DecoderRGBBackbufferTest, RGBBackbufferColorMask) {
       .WillOnce(Return(GL_NO_ERROR))
       .WillOnce(Return(GL_NO_ERROR))
       .RetiresOnSaturation();
-  typedef GetIntegerv::Result Result;
-  Result* result = static_cast<Result*>(shared_memory_address_);
+  auto* result =
+      static_cast<cmds::GetIntegerv::Result*>(shared_memory_address_);
   EXPECT_CALL(*gl_, GetIntegerv(GL_COLOR_WRITEMASK, result->GetData()))
       .Times(0);
   result->size = 0;
-  GetIntegerv cmd2;
+  cmds::GetIntegerv cmd2;
   cmd2.Init(GL_COLOR_WRITEMASK, shared_memory_id_, shared_memory_offset_);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd2));
   EXPECT_EQ(
@@ -177,7 +175,7 @@ TEST_P(GLES2DecoderRGBBackbufferTest, RGBBackbufferColorMask) {
 // draw time but querying it returns true.
 TEST_P(GLES2DecoderRGBBackbufferTest, RGBBackbufferDepthMask) {
   EXPECT_CALL(*gl_, DepthMask(true)).Times(0).RetiresOnSaturation();
-  DepthMask cmd;
+  cmds::DepthMask cmd;
   cmd.Init(true);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
@@ -197,7 +195,7 @@ TEST_P(GLES2DecoderRGBBackbufferTest, RGBBackbufferDepthMask) {
   EXPECT_CALL(*gl_, DrawArrays(GL_TRIANGLES, 0, kNumVertices))
       .Times(1)
       .RetiresOnSaturation();
-  DrawArrays draw_cmd;
+  cmds::DrawArrays draw_cmd;
   draw_cmd.Init(GL_TRIANGLES, 0, kNumVertices);
   EXPECT_EQ(error::kNoError, ExecuteCmd(draw_cmd));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
@@ -206,12 +204,12 @@ TEST_P(GLES2DecoderRGBBackbufferTest, RGBBackbufferDepthMask) {
       .WillOnce(Return(GL_NO_ERROR))
       .WillOnce(Return(GL_NO_ERROR))
       .RetiresOnSaturation();
-  typedef GetIntegerv::Result Result;
-  Result* result = static_cast<Result*>(shared_memory_address_);
+  auto* result =
+      static_cast<cmds::GetIntegerv::Result*>(shared_memory_address_);
   EXPECT_CALL(*gl_, GetIntegerv(GL_DEPTH_WRITEMASK, result->GetData()))
       .Times(0);
   result->size = 0;
-  GetIntegerv cmd2;
+  cmds::GetIntegerv cmd2;
   cmd2.Init(GL_DEPTH_WRITEMASK, shared_memory_id_, shared_memory_offset_);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd2));
   EXPECT_EQ(
@@ -226,7 +224,7 @@ TEST_P(GLES2DecoderRGBBackbufferTest, RGBBackbufferDepthMask) {
 TEST_P(GLES2DecoderRGBBackbufferTest, RGBBackbufferStencilMask) {
   const GLint kMask = 123;
   EXPECT_CALL(*gl_, StencilMask(kMask)).Times(0).RetiresOnSaturation();
-  StencilMask cmd;
+  cmds::StencilMask cmd;
   cmd.Init(kMask);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
@@ -246,7 +244,7 @@ TEST_P(GLES2DecoderRGBBackbufferTest, RGBBackbufferStencilMask) {
   EXPECT_CALL(*gl_, DrawArrays(GL_TRIANGLES, 0, kNumVertices))
       .Times(1)
       .RetiresOnSaturation();
-  DrawArrays draw_cmd;
+  cmds::DrawArrays draw_cmd;
   draw_cmd.Init(GL_TRIANGLES, 0, kNumVertices);
   EXPECT_EQ(error::kNoError, ExecuteCmd(draw_cmd));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
@@ -255,12 +253,12 @@ TEST_P(GLES2DecoderRGBBackbufferTest, RGBBackbufferStencilMask) {
       .WillOnce(Return(GL_NO_ERROR))
       .WillOnce(Return(GL_NO_ERROR))
       .RetiresOnSaturation();
-  typedef GetIntegerv::Result Result;
-  Result* result = static_cast<Result*>(shared_memory_address_);
+  auto* result =
+      static_cast<cmds::GetIntegerv::Result*>(shared_memory_address_);
   EXPECT_CALL(*gl_, GetIntegerv(GL_STENCIL_WRITEMASK, result->GetData()))
       .Times(0);
   result->size = 0;
-  GetIntegerv cmd2;
+  cmds::GetIntegerv cmd2;
   cmd2.Init(GL_STENCIL_WRITEMASK, shared_memory_id_, shared_memory_offset_);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd2));
   EXPECT_EQ(
@@ -272,7 +270,7 @@ TEST_P(GLES2DecoderRGBBackbufferTest, RGBBackbufferStencilMask) {
 
 // Test that if an FBO is bound we get the correct masks.
 TEST_P(GLES2DecoderRGBBackbufferTest, RGBBackbufferColorMaskFBO) {
-  ColorMask cmd;
+  cmds::ColorMask cmd;
   cmd.Init(true, true, true, true);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
@@ -298,7 +296,7 @@ TEST_P(GLES2DecoderRGBBackbufferTest, RGBBackbufferColorMaskFBO) {
   EXPECT_CALL(*gl_, DrawArrays(GL_TRIANGLES, 0, kNumVertices))
       .Times(1)
       .RetiresOnSaturation();
-  DrawArrays draw_cmd;
+  cmds::DrawArrays draw_cmd;
   draw_cmd.Init(GL_TRIANGLES, 0, kNumVertices);
   EXPECT_EQ(error::kNoError, ExecuteCmd(draw_cmd));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
@@ -319,7 +317,7 @@ TEST_P(GLES2DecoderRGBBackbufferTest, RGBBackbufferColorMaskFBO) {
   EXPECT_CALL(*gl_, GenTextures(_, _))
       .WillOnce(SetArgPointee<1>(kNewServiceId))
       .RetiresOnSaturation();
-  GenHelper<GenTexturesImmediate>(kNewClientId);
+  GenHelper<cmds::GenTexturesImmediate>(kNewClientId);
   DoBindTexture(GL_TEXTURE_2D, kNewClientId, kNewServiceId);
   // Pass some data so the texture will be marked as cleared.
   DoTexImage2D(GL_TEXTURE_2D, 0, kFormat, kWidth, kHeight, 0, kFormat,
@@ -389,7 +387,7 @@ TEST_P(GLES2DecoderManualInitTest, DepthEnableWithDepth) {
   init.bind_generates_resource = true;
   InitDecoder(init);
 
-  Enable cmd;
+  cmds::Enable cmd;
   cmd.Init(GL_DEPTH_TEST);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
@@ -410,7 +408,7 @@ TEST_P(GLES2DecoderManualInitTest, DepthEnableWithDepth) {
   EXPECT_CALL(*gl_, DrawArrays(GL_TRIANGLES, 0, kNumVertices))
       .Times(1)
       .RetiresOnSaturation();
-  DrawArrays draw_cmd;
+  cmds::DrawArrays draw_cmd;
   draw_cmd.Init(GL_TRIANGLES, 0, kNumVertices);
   EXPECT_EQ(error::kNoError, ExecuteCmd(draw_cmd));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
@@ -419,13 +417,13 @@ TEST_P(GLES2DecoderManualInitTest, DepthEnableWithDepth) {
       .WillOnce(Return(GL_NO_ERROR))
       .WillOnce(Return(GL_NO_ERROR))
       .RetiresOnSaturation();
-  typedef GetIntegerv::Result Result;
-  Result* result = static_cast<Result*>(shared_memory_address_);
+  auto* result =
+      static_cast<cmds::GetIntegerv::Result*>(shared_memory_address_);
   EXPECT_CALL(*gl_, GetIntegerv(GL_DEPTH_TEST, _))
       .Times(0)
       .RetiresOnSaturation();
   result->size = 0;
-  GetIntegerv cmd2;
+  cmds::GetIntegerv cmd2;
   cmd2.Init(GL_DEPTH_TEST, shared_memory_id_, shared_memory_offset_);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd2));
   EXPECT_EQ(decoder_->GetGLES2Util()->GLGetNumValuesReturned(GL_DEPTH_TEST),
@@ -440,7 +438,7 @@ TEST_P(GLES2DecoderManualInitTest, DepthEnableWithoutRequestedDepth) {
   init.bind_generates_resource = true;
   InitDecoder(init);
 
-  Enable cmd;
+  cmds::Enable cmd;
   cmd.Init(GL_DEPTH_TEST);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
@@ -461,7 +459,7 @@ TEST_P(GLES2DecoderManualInitTest, DepthEnableWithoutRequestedDepth) {
   EXPECT_CALL(*gl_, DrawArrays(GL_TRIANGLES, 0, kNumVertices))
       .Times(1)
       .RetiresOnSaturation();
-  DrawArrays draw_cmd;
+  cmds::DrawArrays draw_cmd;
   draw_cmd.Init(GL_TRIANGLES, 0, kNumVertices);
   EXPECT_EQ(error::kNoError, ExecuteCmd(draw_cmd));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
@@ -470,13 +468,13 @@ TEST_P(GLES2DecoderManualInitTest, DepthEnableWithoutRequestedDepth) {
       .WillOnce(Return(GL_NO_ERROR))
       .WillOnce(Return(GL_NO_ERROR))
       .RetiresOnSaturation();
-  typedef GetIntegerv::Result Result;
-  Result* result = static_cast<Result*>(shared_memory_address_);
+  auto* result =
+      static_cast<cmds::GetIntegerv::Result*>(shared_memory_address_);
   EXPECT_CALL(*gl_, GetIntegerv(GL_DEPTH_TEST, _))
       .Times(0)
       .RetiresOnSaturation();
   result->size = 0;
-  GetIntegerv cmd2;
+  cmds::GetIntegerv cmd2;
   cmd2.Init(GL_DEPTH_TEST, shared_memory_id_, shared_memory_offset_);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd2));
   EXPECT_EQ(decoder_->GetGLES2Util()->GLGetNumValuesReturned(GL_DEPTH_TEST),
@@ -492,7 +490,7 @@ TEST_P(GLES2DecoderManualInitTest, StencilEnableWithStencil) {
   init.bind_generates_resource = true;
   InitDecoder(init);
 
-  Enable cmd;
+  cmds::Enable cmd;
   cmd.Init(GL_STENCIL_TEST);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
@@ -514,7 +512,7 @@ TEST_P(GLES2DecoderManualInitTest, StencilEnableWithStencil) {
   EXPECT_CALL(*gl_, DrawArrays(GL_TRIANGLES, 0, kNumVertices))
       .Times(1)
       .RetiresOnSaturation();
-  DrawArrays draw_cmd;
+  cmds::DrawArrays draw_cmd;
   draw_cmd.Init(GL_TRIANGLES, 0, kNumVertices);
   EXPECT_EQ(error::kNoError, ExecuteCmd(draw_cmd));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
@@ -523,13 +521,13 @@ TEST_P(GLES2DecoderManualInitTest, StencilEnableWithStencil) {
       .WillOnce(Return(GL_NO_ERROR))
       .WillOnce(Return(GL_NO_ERROR))
       .RetiresOnSaturation();
-  typedef GetIntegerv::Result Result;
-  Result* result = static_cast<Result*>(shared_memory_address_);
+  auto* result =
+      static_cast<cmds::GetIntegerv::Result*>(shared_memory_address_);
   EXPECT_CALL(*gl_, GetIntegerv(GL_STENCIL_TEST, _))
       .Times(0)
       .RetiresOnSaturation();
   result->size = 0;
-  GetIntegerv cmd2;
+  cmds::GetIntegerv cmd2;
   cmd2.Init(GL_STENCIL_TEST, shared_memory_id_, shared_memory_offset_);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd2));
   EXPECT_EQ(decoder_->GetGLES2Util()->GLGetNumValuesReturned(GL_STENCIL_TEST),
@@ -544,7 +542,7 @@ TEST_P(GLES2DecoderManualInitTest, StencilEnableWithoutRequestedStencil) {
   init.bind_generates_resource = true;
   InitDecoder(init);
 
-  Enable cmd;
+  cmds::Enable cmd;
   cmd.Init(GL_STENCIL_TEST);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
@@ -565,7 +563,7 @@ TEST_P(GLES2DecoderManualInitTest, StencilEnableWithoutRequestedStencil) {
   EXPECT_CALL(*gl_, DrawArrays(GL_TRIANGLES, 0, kNumVertices))
       .Times(1)
       .RetiresOnSaturation();
-  DrawArrays draw_cmd;
+  cmds::DrawArrays draw_cmd;
   draw_cmd.Init(GL_TRIANGLES, 0, kNumVertices);
   EXPECT_EQ(error::kNoError, ExecuteCmd(draw_cmd));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
@@ -574,13 +572,13 @@ TEST_P(GLES2DecoderManualInitTest, StencilEnableWithoutRequestedStencil) {
       .WillOnce(Return(GL_NO_ERROR))
       .WillOnce(Return(GL_NO_ERROR))
       .RetiresOnSaturation();
-  typedef GetIntegerv::Result Result;
-  Result* result = static_cast<Result*>(shared_memory_address_);
+  auto* result =
+      static_cast<cmds::GetIntegerv::Result*>(shared_memory_address_);
   EXPECT_CALL(*gl_, GetIntegerv(GL_STENCIL_TEST, _))
       .Times(0)
       .RetiresOnSaturation();
   result->size = 0;
-  GetIntegerv cmd2;
+  cmds::GetIntegerv cmd2;
   cmd2.Init(GL_STENCIL_TEST, shared_memory_id_, shared_memory_offset_);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd2));
   EXPECT_EQ(decoder_->GetGLES2Util()->GLGetNumValuesReturned(GL_STENCIL_TEST),
@@ -685,7 +683,7 @@ TEST_P(GLES2DecoderWithShaderTest, DrawArraysNoAttributesSucceeds) {
   EXPECT_CALL(*gl_, DrawArrays(GL_TRIANGLES, 0, kNumVertices))
       .Times(1)
       .RetiresOnSaturation();
-  DrawArrays cmd;
+  cmds::DrawArrays cmd;
   cmd.Init(GL_TRIANGLES, 0, kNumVertices);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
@@ -696,7 +694,7 @@ TEST_P(GLES2DecoderWithShaderTest, DrawArraysSimulatedAttrib0OverflowFails) {
   const GLsizei kLargeCount = 0x40000000;
   SetupTexture();
   EXPECT_CALL(*gl_, DrawArrays(_, _, _)).Times(0).RetiresOnSaturation();
-  DrawArrays cmd;
+  cmds::DrawArrays cmd;
   cmd.Init(GL_TRIANGLES, 0, kLargeCount);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_OUT_OF_MEMORY, GetGLError());
@@ -708,7 +706,7 @@ TEST_P(GLES2DecoderWithShaderTest, DrawArraysSimulatedAttrib0PosToNegFails) {
   const GLsizei kLargeCount = 0x7FFFFFFF;
   SetupTexture();
   EXPECT_CALL(*gl_, DrawArrays(_, _, _)).Times(0).RetiresOnSaturation();
-  DrawArrays cmd;
+  cmds::DrawArrays cmd;
   cmd.Init(GL_TRIANGLES, 0, kLargeCount);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_OUT_OF_MEMORY, GetGLError());
@@ -722,7 +720,7 @@ TEST_P(GLES2DecoderWithShaderTest, DrawArraysSimulatedAttrib0OOMFails) {
   AddExpectationsForSimulatedAttrib0WithError(
       kFakeLargeCount, 0, GL_OUT_OF_MEMORY);
   EXPECT_CALL(*gl_, DrawArrays(_, _, _)).Times(0).RetiresOnSaturation();
-  DrawArrays cmd;
+  cmds::DrawArrays cmd;
   cmd.Init(GL_TRIANGLES, 0, kFakeLargeCount);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_OUT_OF_MEMORY, GetGLError());
@@ -759,7 +757,7 @@ TEST_P(GLES2DecoderWithShaderTest, DrawArraysBadTextureUsesBlack) {
         .RetiresOnSaturation();
   }
   SetupExpectationsForApplyingDefaultDirtyState();
-  DrawArrays cmd;
+  cmds::DrawArrays cmd;
   cmd.Init(GL_TRIANGLES, 0, kNumVertices);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
@@ -769,7 +767,7 @@ TEST_P(GLES2DecoderWithShaderTest, DrawArraysMissingAttributesFails) {
   DoEnableVertexAttribArray(1);
 
   EXPECT_CALL(*gl_, DrawArrays(_, _, _)).Times(0);
-  DrawArrays cmd;
+  cmds::DrawArrays cmd;
   cmd.Init(GL_TRIANGLES, 0, kNumVertices);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_INVALID_OPERATION, GetGLError());
@@ -780,7 +778,7 @@ TEST_P(GLES2DecoderWithShaderTest,
   DoEnableVertexAttribArray(1);
 
   EXPECT_CALL(*gl_, DrawArrays(_, _, _)).Times(0);
-  DrawArrays cmd;
+  cmds::DrawArrays cmd;
   cmd.Init(GL_TRIANGLES, 0, 0);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
@@ -792,7 +790,7 @@ TEST_P(GLES2DecoderWithShaderTest, DrawArraysIntOverflow) {
   GLint large = std::numeric_limits<GLint>::max();
 
   EXPECT_CALL(*gl_, DrawArrays(_, _, _)).Times(0);
-  DrawArrays cmd;
+  cmds::DrawArrays cmd;
   cmd.Init(GL_TRIANGLES, large, large);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_INVALID_OPERATION, GetGLError());
@@ -809,7 +807,7 @@ TEST_P(GLES2DecoderWithShaderTest, DrawArraysValidAttributesSucceeds) {
   EXPECT_CALL(*gl_, DrawArrays(GL_TRIANGLES, 0, kNumVertices))
       .Times(1)
       .RetiresOnSaturation();
-  DrawArrays cmd;
+  cmds::DrawArrays cmd;
   cmd.Init(GL_TRIANGLES, 0, kNumVertices);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
@@ -838,7 +836,7 @@ TEST_P(GLES2DecoderManualInitTest, InitVertexAttributes) {
   EXPECT_CALL(*gl_, DrawArrays(GL_TRIANGLES, 0, kNumVertices))
       .Times(1)
       .RetiresOnSaturation();
-  DrawArrays cmd;
+  cmds::DrawArrays cmd;
   cmd.Init(GL_TRIANGLES, 0, kNumVertices);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
@@ -868,7 +866,7 @@ TEST_P(GLES2DecoderWithShaderTest, DrawArraysDeletedBufferFails) {
   DeleteVertexBuffer();
 
   EXPECT_CALL(*gl_, DrawArrays(_, _, _)).Times(0);
-  DrawArrays cmd;
+  cmds::DrawArrays cmd;
   cmd.Init(GL_TRIANGLES, 0, kNumVertices);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_INVALID_OPERATION, GetGLError());
@@ -882,7 +880,7 @@ TEST_P(GLES2DecoderWithShaderTest, DrawArraysDeletedProgramSucceeds) {
 
   EXPECT_CALL(*gl_, DrawArrays(_, _, _)).Times(1).RetiresOnSaturation();
   EXPECT_CALL(*gl_, DeleteProgram(kServiceProgramId)).Times(1);
-  DrawArrays cmd;
+  cmds::DrawArrays cmd;
   cmd.Init(GL_TRIANGLES, 0, kNumVertices);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
@@ -893,7 +891,7 @@ TEST_P(GLES2DecoderWithShaderTest, DrawArraysWithInvalidModeFails) {
   DoVertexAttribPointer(1, 2, GL_FLOAT, 0, 0);
 
   EXPECT_CALL(*gl_, DrawArrays(_, _, _)).Times(0);
-  DrawArrays cmd;
+  cmds::DrawArrays cmd;
   cmd.Init(GL_QUADS, 0, 1);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_INVALID_ENUM, GetGLError());
@@ -908,7 +906,7 @@ TEST_P(GLES2DecoderWithShaderTest, DrawArraysInvalidCountFails) {
 
   // Try start > 0
   EXPECT_CALL(*gl_, DrawArrays(_, _, _)).Times(0);
-  DrawArrays cmd;
+  cmds::DrawArrays cmd;
   cmd.Init(GL_TRIANGLES, 1, kNumVertices);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_INVALID_OPERATION, GetGLError());
@@ -949,7 +947,7 @@ TEST_P(GLES2DecoderWithShaderTest, DrawArraysInstancedANGLEFails) {
   EXPECT_CALL(*gl_, DrawArraysInstancedANGLE(_, _, _, _))
       .Times(0)
       .RetiresOnSaturation();
-  DrawArraysInstancedANGLE cmd;
+  cmds::DrawArraysInstancedANGLE cmd;
   cmd.Init(GL_TRIANGLES, 0, kNumVertices, 1);
   EXPECT_EQ(error::kUnknownCommand, ExecuteCmd(cmd));
 }
@@ -964,7 +962,7 @@ TEST_P(GLES2DecoderWithShaderTest, VertexAttribDivisorANGLEFails) {
       .Times(0)
       .RetiresOnSaturation();
 
-  VertexAttribDivisorANGLE cmd;
+  cmds::VertexAttribDivisorANGLE cmd;
   cmd.Init(0, 1);
   EXPECT_EQ(error::kUnknownCommand, ExecuteCmd(cmd));
 }
@@ -976,7 +974,7 @@ TEST_P(GLES2DecoderGeometryInstancingTest,
   EXPECT_CALL(*gl_, DrawArraysInstancedANGLE(_, _, _, _))
       .Times(0)
       .RetiresOnSaturation();
-  DrawArraysInstancedANGLE cmd;
+  cmds::DrawArraysInstancedANGLE cmd;
   cmd.Init(GL_TRIANGLES, 0, kNumVertices, 1);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_INVALID_OPERATION, GetGLError());
@@ -1001,7 +999,7 @@ TEST_P(GLES2DecoderGeometryInstancingTest,
   EXPECT_CALL(*gl_, VertexAttribDivisorANGLE(0, 1))
       .Times(1)
       .RetiresOnSaturation();
-  DrawArraysInstancedANGLE cmd;
+  cmds::DrawArraysInstancedANGLE cmd;
   cmd.Init(GL_TRIANGLES, 0, kNumVertices, 3);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
@@ -1012,7 +1010,7 @@ TEST_P(GLES2DecoderGeometryInstancingTest,
   DoEnableVertexAttribArray(1);
 
   EXPECT_CALL(*gl_, DrawArraysInstancedANGLE(_, _, _, _)).Times(0);
-  DrawArraysInstancedANGLE cmd;
+  cmds::DrawArraysInstancedANGLE cmd;
   cmd.Init(GL_TRIANGLES, 0, kNumVertices, 1);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_INVALID_OPERATION, GetGLError());
@@ -1023,7 +1021,7 @@ TEST_P(GLES2DecoderGeometryInstancingTest,
   DoEnableVertexAttribArray(1);
 
   EXPECT_CALL(*gl_, DrawArraysInstancedANGLE(_, _, _, _)).Times(0);
-  DrawArraysInstancedANGLE cmd;
+  cmds::DrawArraysInstancedANGLE cmd;
   cmd.Init(GL_TRIANGLES, 0, 0, 1);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
@@ -1045,7 +1043,7 @@ TEST_P(GLES2DecoderGeometryInstancingTest,
   EXPECT_CALL(*gl_, DrawArraysInstancedANGLE(GL_TRIANGLES, 0, kNumVertices, 1))
       .Times(1)
       .RetiresOnSaturation();
-  DrawArraysInstancedANGLE cmd;
+  cmds::DrawArraysInstancedANGLE cmd;
   cmd.Init(GL_TRIANGLES, 0, kNumVertices, 1);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
@@ -1057,7 +1055,7 @@ TEST_P(GLES2DecoderGeometryInstancingTest,
   DoVertexAttribPointer(1, 2, GL_FLOAT, 0, 0);
 
   EXPECT_CALL(*gl_, DrawArraysInstancedANGLE(_, _, _, _)).Times(0);
-  DrawArraysInstancedANGLE cmd;
+  cmds::DrawArraysInstancedANGLE cmd;
   cmd.Init(GL_QUADS, 0, 1, 1);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_INVALID_ENUM, GetGLError());
@@ -1072,7 +1070,7 @@ TEST_P(GLES2DecoderGeometryInstancingTest,
   DoVertexAttribPointer(1, 2, GL_FLOAT, 0, 0);
 
   EXPECT_CALL(*gl_, DrawArraysInstancedANGLE(_, _, _, _)).Times(0);
-  DrawArraysInstancedANGLE cmd;
+  cmds::DrawArraysInstancedANGLE cmd;
   cmd.Init(GL_TRIANGLES, 0, 1, -1);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_INVALID_VALUE, GetGLError());
@@ -1094,7 +1092,7 @@ TEST_P(GLES2DecoderGeometryInstancingTest,
       DrawArraysInstancedANGLE(GL_TRIANGLES, 0, kNumVertices, kNumVertices / 2))
       .Times(1)
       .RetiresOnSaturation();
-  DrawArraysInstancedANGLE cmd;
+  cmds::DrawArraysInstancedANGLE cmd;
   cmd.Init(GL_TRIANGLES, 0, kNumVertices, kNumVertices / 2);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
@@ -1118,7 +1116,7 @@ TEST_P(GLES2DecoderGeometryInstancingTest,
       DrawArrays(GL_TRIANGLES, 0, kNumVertices))
       .Times(1)
       .RetiresOnSaturation();
-  DrawArrays cmd;
+  cmds::DrawArrays cmd;
   cmd.Init(GL_TRIANGLES, 0, kNumVertices);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
@@ -1140,7 +1138,7 @@ TEST_P(GLES2DecoderGeometryInstancingTest,
       DrawArraysInstancedANGLE(GL_TRIANGLES, 0, kNumVertices, kNumVertices))
       .Times(1)
       .RetiresOnSaturation();
-  DrawArraysInstancedANGLE cmd;
+  cmds::DrawArraysInstancedANGLE cmd;
   cmd.Init(GL_TRIANGLES, 0, kNumVertices, kNumVertices);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
@@ -1157,7 +1155,7 @@ TEST_P(GLES2DecoderGeometryInstancingTest, DrawArraysInstancedANGLELargeFails) {
   EXPECT_CALL(*gl_, DrawArraysInstancedANGLE(_, _, _, _))
       .Times(0)
       .RetiresOnSaturation();
-  DrawArraysInstancedANGLE cmd;
+  cmds::DrawArraysInstancedANGLE cmd;
   cmd.Init(GL_TRIANGLES, 0, kNumVertices, kNumVertices + 1);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_INVALID_OPERATION, GetGLError());
@@ -1188,7 +1186,7 @@ TEST_P(GLES2DecoderGeometryInstancingTest,
       DrawArraysInstancedANGLE(GL_TRIANGLES, 0, kNumVertices / 2, kNumVertices))
       .Times(1)
       .RetiresOnSaturation();
-  DrawArraysInstancedANGLE cmd;
+  cmds::DrawArraysInstancedANGLE cmd;
   cmd.Init(GL_TRIANGLES, 0, kNumVertices / 2, kNumVertices);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
@@ -1207,7 +1205,7 @@ TEST_P(GLES2DecoderGeometryInstancingTest,
   EXPECT_CALL(*gl_, DrawArraysInstancedANGLE(_, _, _, _))
       .Times(0)
       .RetiresOnSaturation();
-  DrawArraysInstancedANGLE cmd;
+  cmds::DrawArraysInstancedANGLE cmd;
   cmd.Init(GL_TRIANGLES, 0, kNumVertices, 1);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_INVALID_OPERATION, GetGLError());
@@ -1227,7 +1225,7 @@ TEST_P(GLES2DecoderGeometryInstancingTest,
   EXPECT_CALL(*gl_, DrawArrays(_, _, _))
       .Times(0)
       .RetiresOnSaturation();
-  DrawArrays cmd;
+  cmds::DrawArrays cmd;
   cmd.Init(GL_TRIANGLES, 0, kNumVertices);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_INVALID_OPERATION, GetGLError());
@@ -1246,7 +1244,7 @@ TEST_P(GLES2DecoderWithShaderTest, DrawElementsNoAttributesSucceeds) {
                            BufferOffset(kValidIndexRangeStart * 2)))
       .Times(1)
       .RetiresOnSaturation();
-  DrawElements cmd;
+  cmds::DrawElements cmd;
   cmd.Init(GL_TRIANGLES,
            kValidIndexRangeCount,
            GL_UNSIGNED_SHORT,
@@ -1260,7 +1258,7 @@ TEST_P(GLES2DecoderWithShaderTest, DrawElementsMissingAttributesFails) {
   DoEnableVertexAttribArray(1);
 
   EXPECT_CALL(*gl_, DrawElements(_, _, _, _)).Times(0);
-  DrawElements cmd;
+  cmds::DrawElements cmd;
   cmd.Init(GL_TRIANGLES,
            kValidIndexRangeCount,
            GL_UNSIGNED_SHORT,
@@ -1275,7 +1273,7 @@ TEST_P(GLES2DecoderWithShaderTest,
   DoEnableVertexAttribArray(1);
 
   EXPECT_CALL(*gl_, DrawElements(_, _, _, _)).Times(0);
-  DrawElements cmd;
+  cmds::DrawElements cmd;
   cmd.Init(GL_TRIANGLES, 0, GL_UNSIGNED_SHORT, kValidIndexRangeStart * 2);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
@@ -1286,7 +1284,7 @@ TEST_P(GLES2DecoderWithShaderTest, DrawElementsExtraAttributesFails) {
   DoEnableVertexAttribArray(6);
 
   EXPECT_CALL(*gl_, DrawElements(_, _, _, _)).Times(0);
-  DrawElements cmd;
+  cmds::DrawElements cmd;
   cmd.Init(GL_TRIANGLES,
            kValidIndexRangeCount,
            GL_UNSIGNED_SHORT,
@@ -1310,7 +1308,7 @@ TEST_P(GLES2DecoderWithShaderTest, DrawElementsValidAttributesSucceeds) {
                            BufferOffset(kValidIndexRangeStart * 2)))
       .Times(1)
       .RetiresOnSaturation();
-  DrawElements cmd;
+  cmds::DrawElements cmd;
   cmd.Init(GL_TRIANGLES,
            kValidIndexRangeCount,
            GL_UNSIGNED_SHORT,
@@ -1330,7 +1328,7 @@ TEST_P(GLES2DecoderWithShaderTest, DrawElementsDeletedBufferFails) {
   DeleteIndexBuffer();
 
   EXPECT_CALL(*gl_, DrawElements(_, _, _, _)).Times(0);
-  DrawElements cmd;
+  cmds::DrawElements cmd;
   cmd.Init(GL_TRIANGLES,
            kValidIndexRangeCount,
            GL_UNSIGNED_SHORT,
@@ -1348,7 +1346,7 @@ TEST_P(GLES2DecoderWithShaderTest, DrawElementsDeletedProgramSucceeds) {
 
   EXPECT_CALL(*gl_, DrawElements(_, _, _, _)).Times(1);
   EXPECT_CALL(*gl_, DeleteProgram(kServiceProgramId)).Times(1);
-  DrawElements cmd;
+  cmds::DrawElements cmd;
   cmd.Init(GL_TRIANGLES,
            kValidIndexRangeCount,
            GL_UNSIGNED_SHORT,
@@ -1363,7 +1361,7 @@ TEST_P(GLES2DecoderWithShaderTest, DrawElementsWithInvalidModeFails) {
   DoVertexAttribPointer(1, 2, GL_FLOAT, 0, 0);
 
   EXPECT_CALL(*gl_, DrawElements(_, _, _, _)).Times(0);
-  DrawElements cmd;
+  cmds::DrawElements cmd;
   cmd.Init(GL_QUADS,
            kValidIndexRangeCount,
            GL_UNSIGNED_SHORT,
@@ -1385,7 +1383,7 @@ TEST_P(GLES2DecoderWithShaderTest, DrawElementsInvalidCountFails) {
 
   // Try start > 0
   EXPECT_CALL(*gl_, DrawElements(_, _, _, _)).Times(0);
-  DrawElements cmd;
+  cmds::DrawElements cmd;
   cmd.Init(GL_TRIANGLES, kNumIndices, GL_UNSIGNED_SHORT, 2);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_INVALID_OPERATION, GetGLError());
@@ -1404,7 +1402,7 @@ TEST_P(GLES2DecoderWithShaderTest, DrawElementsOutOfRangeIndicesFails) {
   DoVertexAttribPointer(1, 2, GL_FLOAT, 0, 0);
 
   EXPECT_CALL(*gl_, DrawElements(_, _, _, _)).Times(0);
-  DrawElements cmd;
+  cmds::DrawElements cmd;
   cmd.Init(GL_TRIANGLES,
            kInvalidIndexRangeCount,
            GL_UNSIGNED_SHORT,
@@ -1420,7 +1418,7 @@ TEST_P(GLES2DecoderWithShaderTest, DrawElementsOddOffsetForUint16Fails) {
   DoVertexAttribPointer(1, 2, GL_FLOAT, 0, 0);
 
   EXPECT_CALL(*gl_, DrawElements(_, _, _, _)).Times(0);
-  DrawElements cmd;
+  cmds::DrawElements cmd;
   cmd.Init(GL_TRIANGLES, kInvalidIndexRangeCount, GL_UNSIGNED_SHORT, 1);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_INVALID_OPERATION, GetGLError());
@@ -1437,7 +1435,7 @@ TEST_P(GLES2DecoderWithShaderTest, DrawElementsInstancedANGLEFails) {
   EXPECT_CALL(*gl_, DrawElementsInstancedANGLE(_, _, _, _, _))
       .Times(0)
       .RetiresOnSaturation();
-  DrawElementsInstancedANGLE cmd;
+  cmds::DrawElementsInstancedANGLE cmd;
   cmd.Init(GL_TRIANGLES,
            kValidIndexRangeCount,
            GL_UNSIGNED_SHORT,
@@ -1454,7 +1452,7 @@ TEST_P(GLES2DecoderGeometryInstancingTest,
   EXPECT_CALL(*gl_, DrawElementsInstancedANGLE(_, _, _, _, _))
       .Times(0)
       .RetiresOnSaturation();
-  DrawElementsInstancedANGLE cmd;
+  cmds::DrawElementsInstancedANGLE cmd;
   cmd.Init(GL_TRIANGLES,
            kValidIndexRangeCount,
            GL_UNSIGNED_SHORT,
@@ -1490,7 +1488,7 @@ TEST_P(GLES2DecoderGeometryInstancingTest,
   EXPECT_CALL(*gl_, VertexAttribDivisorANGLE(0, 1))
       .Times(1)
       .RetiresOnSaturation();
-  DrawElementsInstancedANGLE cmd;
+  cmds::DrawElementsInstancedANGLE cmd;
   cmd.Init(GL_TRIANGLES,
            kValidIndexRangeCount,
            GL_UNSIGNED_SHORT,
@@ -1506,7 +1504,7 @@ TEST_P(GLES2DecoderGeometryInstancingTest,
   DoEnableVertexAttribArray(1);
 
   EXPECT_CALL(*gl_, DrawElementsInstancedANGLE(_, _, _, _, _)).Times(0);
-  DrawElementsInstancedANGLE cmd;
+  cmds::DrawElementsInstancedANGLE cmd;
   cmd.Init(GL_TRIANGLES,
            kValidIndexRangeCount,
            GL_UNSIGNED_SHORT,
@@ -1522,7 +1520,7 @@ TEST_P(GLES2DecoderGeometryInstancingTest,
   DoEnableVertexAttribArray(1);
 
   EXPECT_CALL(*gl_, DrawElementsInstancedANGLE(_, _, _, _, _)).Times(0);
-  DrawElementsInstancedANGLE cmd;
+  cmds::DrawElementsInstancedANGLE cmd;
   cmd.Init(GL_TRIANGLES, 0, GL_UNSIGNED_SHORT, kValidIndexRangeStart * 2, 1);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
@@ -1552,7 +1550,7 @@ TEST_P(GLES2DecoderGeometryInstancingTest,
       .Times(1)
       .RetiresOnSaturation();
 
-  DrawElementsInstancedANGLE cmd;
+  cmds::DrawElementsInstancedANGLE cmd;
   cmd.Init(GL_TRIANGLES,
            kValidIndexRangeCount,
            GL_UNSIGNED_SHORT,
@@ -1569,7 +1567,7 @@ TEST_P(GLES2DecoderGeometryInstancingTest,
   DoVertexAttribPointer(1, 2, GL_FLOAT, 0, 0);
 
   EXPECT_CALL(*gl_, DrawElementsInstancedANGLE(_, _, _, _, _)).Times(0);
-  DrawElementsInstancedANGLE cmd;
+  cmds::DrawElementsInstancedANGLE cmd;
   cmd.Init(GL_QUADS,
            kValidIndexRangeCount,
            GL_UNSIGNED_SHORT,
@@ -1613,7 +1611,7 @@ TEST_P(GLES2DecoderGeometryInstancingTest,
                                  kNumVertices / 2))
       .Times(1)
       .RetiresOnSaturation();
-  DrawElementsInstancedANGLE cmd;
+  cmds::DrawElementsInstancedANGLE cmd;
   cmd.Init(GL_TRIANGLES,
            kValidIndexRangeCount,
            GL_UNSIGNED_SHORT,
@@ -1651,7 +1649,7 @@ TEST_P(GLES2DecoderGeometryInstancingTest,
                    BufferOffset(kValidIndexRangeStart * 2)))
       .Times(1)
       .RetiresOnSaturation();
-  DrawElements cmd;
+  cmds::DrawElements cmd;
   cmd.Init(GL_TRIANGLES,
            kValidIndexRangeCount,
            GL_UNSIGNED_SHORT,
@@ -1681,7 +1679,7 @@ TEST_P(GLES2DecoderGeometryInstancingTest,
                                  kNumVertices))
       .Times(1)
       .RetiresOnSaturation();
-  DrawElementsInstancedANGLE cmd;
+  cmds::DrawElementsInstancedANGLE cmd;
   cmd.Init(GL_TRIANGLES,
            kValidIndexRangeCount,
            GL_UNSIGNED_SHORT,
@@ -1704,7 +1702,7 @@ TEST_P(GLES2DecoderGeometryInstancingTest,
   EXPECT_CALL(*gl_, DrawElementsInstancedANGLE(_, _, _, _, _))
       .Times(0)
       .RetiresOnSaturation();
-  DrawElementsInstancedANGLE cmd;
+  cmds::DrawElementsInstancedANGLE cmd;
   cmd.Init(GL_TRIANGLES,
            kValidIndexRangeCount,
            GL_UNSIGNED_SHORT,
@@ -1740,7 +1738,7 @@ TEST_P(GLES2DecoderGeometryInstancingTest,
   EXPECT_CALL(*gl_, DrawElementsInstancedANGLE(_, _, _, _, _))
       .Times(0)
       .RetiresOnSaturation();
-  DrawElementsInstancedANGLE cmd;
+  cmds::DrawElementsInstancedANGLE cmd;
   cmd.Init(GL_TRIANGLES,
            kValidIndexRangeCount,
            GL_UNSIGNED_SHORT,
@@ -1772,7 +1770,7 @@ TEST_P(GLES2DecoderGeometryInstancingTest,
                                  kNumVertices))
       .Times(1)
       .RetiresOnSaturation();
-  DrawElementsInstancedANGLE cmd;
+  cmds::DrawElementsInstancedANGLE cmd;
   cmd.Init(GL_TRIANGLES,
            kValidIndexRangeCount,
            GL_UNSIGNED_SHORT,
@@ -1796,7 +1794,7 @@ TEST_P(GLES2DecoderGeometryInstancingTest,
   EXPECT_CALL(*gl_, DrawElementsInstancedANGLE(_, _, _, _, _))
       .Times(0)
       .RetiresOnSaturation();
-  DrawElementsInstancedANGLE cmd;
+  cmds::DrawElementsInstancedANGLE cmd;
   cmd.Init(GL_TRIANGLES,
            kValidIndexRangeCount,
            GL_UNSIGNED_SHORT,
@@ -1821,7 +1819,7 @@ TEST_P(GLES2DecoderGeometryInstancingTest,
   EXPECT_CALL(*gl_, DrawElements(_, _, _, _))
       .Times(0)
       .RetiresOnSaturation();
-  DrawElements cmd;
+  cmds::DrawElements cmd;
   cmd.Init(GL_TRIANGLES,
            kValidIndexRangeCount,
            GL_UNSIGNED_SHORT,
@@ -1850,7 +1848,7 @@ TEST_P(GLES2DecoderWithShaderTest, DrawArraysClearsAfterTexImage2DNULL) {
   EXPECT_CALL(*gl_, DrawArrays(GL_TRIANGLES, 0, kNumVertices))
       .Times(1)
       .RetiresOnSaturation();
-  DrawArrays cmd;
+  cmds::DrawArrays cmd;
   cmd.Init(GL_TRIANGLES, 0, kNumVertices);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
@@ -1888,7 +1886,7 @@ TEST_P(GLES2DecoderWithShaderTest, DrawElementsClearsAfterTexImage2DNULL) {
                            BufferOffset(kValidIndexRangeStart * 2)))
       .Times(1)
       .RetiresOnSaturation();
-  DrawElements cmd;
+  cmds::DrawElements cmd;
   cmd.Init(GL_TRIANGLES,
            kValidIndexRangeCount,
            GL_UNSIGNED_SHORT,
@@ -1917,7 +1915,7 @@ TEST_P(GLES2DecoderWithShaderTest, DrawClearsAfterTexImage2DNULLInFBO) {
   EXPECT_CALL(*gl_, GenTextures(_, _))
       .WillOnce(SetArgPointee<1>(kFBOServiceTextureId))
       .RetiresOnSaturation();
-  GenHelper<GenTexturesImmediate>(kFBOClientTextureId);
+  GenHelper<cmds::GenTexturesImmediate>(kFBOClientTextureId);
 
   // Setup "render to" texture.
   DoBindTexture(GL_TEXTURE_2D, kFBOClientTextureId, kFBOServiceTextureId);
@@ -1960,7 +1958,7 @@ TEST_P(GLES2DecoderWithShaderTest, DrawClearsAfterTexImage2DNULLInFBO) {
   EXPECT_CALL(*gl_, DrawArrays(GL_TRIANGLES, 0, kNumVertices))
       .Times(1)
       .RetiresOnSaturation();
-  DrawArrays cmd;
+  cmds::DrawArrays cmd;
   cmd.Init(GL_TRIANGLES, 0, kNumVertices);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
@@ -1981,7 +1979,7 @@ TEST_P(GLES2DecoderWithShaderTest, DrawWitFBOThatCantClearDoesNotDraw) {
   EXPECT_CALL(*gl_, GenTextures(_, _))
       .WillOnce(SetArgPointee<1>(kFBOServiceTextureId))
       .RetiresOnSaturation();
-  GenHelper<GenTexturesImmediate>(kFBOClientTextureId);
+  GenHelper<cmds::GenTexturesImmediate>(kFBOClientTextureId);
 
   // Setup "render to" texture.
   DoBindTexture(GL_TEXTURE_2D, kFBOClientTextureId, kFBOServiceTextureId);
@@ -2004,7 +2002,7 @@ TEST_P(GLES2DecoderWithShaderTest, DrawWitFBOThatCantClearDoesNotDraw) {
       .WillOnce(Return(GL_FRAMEBUFFER_UNSUPPORTED))
       .RetiresOnSaturation();
   EXPECT_CALL(*gl_, DrawArrays(_, _, _)).Times(0).RetiresOnSaturation();
-  DrawArrays cmd;
+  cmds::DrawArrays cmd;
   cmd.Init(GL_TRIANGLES, 0, kNumVertices);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_INVALID_FRAMEBUFFER_OPERATION, GetGLError());
@@ -2050,7 +2048,7 @@ TEST_P(GLES2DecoderWithShaderTest, DrawClearsAfterRenderbufferStorageInFBO) {
   EXPECT_CALL(*gl_, DrawArrays(GL_TRIANGLES, 0, kNumVertices))
       .Times(1)
       .RetiresOnSaturation();
-  DrawArrays cmd;
+  cmds::DrawArrays cmd;
   cmd.Init(GL_TRIANGLES, 0, kNumVertices);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
@@ -2114,7 +2112,7 @@ TEST_P(GLES2DecoderManualInitTest, DrawArraysClearsAfterTexImage2DNULLCubemap) {
   EXPECT_CALL(*gl_, DrawArrays(GL_TRIANGLES, 0, kNumVertices))
       .Times(1)
       .RetiresOnSaturation();
-  DrawArrays cmd;
+  cmds::DrawArrays cmd;
   cmd.Init(GL_TRIANGLES, 0, kNumVertices);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
 }
@@ -2128,7 +2126,7 @@ TEST_P(GLES2DecoderWithShaderTest,
   EXPECT_CALL(*gl_, GenTextures(_, _))
       .WillOnce(SetArgPointee<1>(kFBOServiceTextureId))
       .RetiresOnSaturation();
-  GenHelper<GenTexturesImmediate>(kFBOClientTextureId);
+  GenHelper<cmds::GenTexturesImmediate>(kFBOClientTextureId);
 
   // Setup "render to" texture.
   DoBindTexture(GL_TEXTURE_2D, kFBOClientTextureId, kFBOServiceTextureId);
@@ -2187,7 +2185,7 @@ TEST_P(GLES2DecoderWithShaderTest,
   EXPECT_CALL(*gl_, DrawArrays(GL_TRIANGLES, 0, kNumVertices))
       .Times(1)
       .RetiresOnSaturation();
-  DrawArrays cmd;
+  cmds::DrawArrays cmd;
   cmd.Init(GL_TRIANGLES, 0, kNumVertices);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
@@ -2204,7 +2202,7 @@ TEST_P(GLES2DecoderWithShaderTest,
   EXPECT_CALL(*gl_, GenTextures(_, _))
       .WillOnce(SetArgPointee<1>(kFBOServiceTextureId))
       .RetiresOnSaturation();
-  GenHelper<GenTexturesImmediate>(kFBOClientTextureId);
+  GenHelper<cmds::GenTexturesImmediate>(kFBOClientTextureId);
 
   // Setup "render to" texture that is cleared.
   DoBindTexture(GL_TEXTURE_2D, kFBOClientTextureId, kFBOServiceTextureId);
@@ -2241,7 +2239,7 @@ TEST_P(GLES2DecoderWithShaderTest,
   EXPECT_CALL(*gl_, DrawArrays(GL_TRIANGLES, 0, kNumVertices))
       .Times(1)
       .RetiresOnSaturation();
-  DrawArrays cmd;
+  cmds::DrawArrays cmd;
   cmd.Init(GL_TRIANGLES, 0, kNumVertices);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
@@ -2330,7 +2328,7 @@ TEST_P(GLES2DecoderManualInitTest, DrawClearsDepthTexture) {
   EXPECT_CALL(*gl_, DrawArrays(GL_TRIANGLES, 0, kNumVertices))
       .Times(1)
       .RetiresOnSaturation();
-  DrawArrays cmd;
+  cmds::DrawArrays cmd;
   cmd.Init(GL_TRIANGLES, 0, kNumVertices);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
@@ -2406,7 +2404,7 @@ TEST_P(GLES2DecoderManualInitTest, DrawClearsLargeTexture) {
   EXPECT_CALL(*gl_, DrawArrays(GL_TRIANGLES, 0, kNumVertices))
       .Times(1)
       .RetiresOnSaturation();
-  DrawArrays cmd;
+  cmds::DrawArrays cmd;
   cmd.Init(GL_TRIANGLES, 0, kNumVertices);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
@@ -2417,7 +2415,7 @@ TEST_P(GLES3DecoderTest, DrawNoProgram) {
   SetupAllNeededVertexBuffers();
 
   EXPECT_CALL(*gl_, DrawArrays(GL_TRIANGLES, _, _)).Times(0);
-  DrawArrays cmd;
+  cmds::DrawArrays cmd;
   cmd.Init(GL_TRIANGLES, 0, kNumVertices);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
@@ -2425,7 +2423,7 @@ TEST_P(GLES3DecoderTest, DrawNoProgram) {
 
 TEST_P(GLES2DecoderTest, ClearInvalidValue) {
   EXPECT_CALL(*gl_, Clear(_)).Times(0);
-  Clear cmd;
+  cmds::Clear cmd;
   cmd.Init(0xffffffff);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_INVALID_VALUE, GetGLError());

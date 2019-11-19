@@ -35,7 +35,7 @@ GpuMemoryBufferManagerSingleton::GpuMemoryBufferManagerSingleton(int client_id)
           base::BindRepeating(&content::GetGpuService),
           client_id,
           std::make_unique<gpu::GpuMemoryBufferSupport>(),
-          base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::IO})) {
+          base::CreateSingleThreadTaskRunner({BrowserThread::IO})) {
   DCHECK(!g_gpu_memory_buffer_manager);
   g_gpu_memory_buffer_manager = this;
 }

@@ -42,7 +42,7 @@ void RenderViewImpl::UpdateFontRenderingFromRendererPrefs() {
 }
 
 void RenderViewImpl::UpdateThemePrefs() {
-  WebThemeEngineImpl::cacheScrollBarMetrics(
+  WebThemeEngineDefault::cacheScrollBarMetrics(
       renderer_preferences_.vertical_scroll_bar_width_in_dips,
       renderer_preferences_.horizontal_scroll_bar_height_in_dips,
       renderer_preferences_.arrow_bitmap_height_vertical_scroll_bar_in_dips,

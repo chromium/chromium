@@ -6,11 +6,7 @@
 
 #include <memory>
 
-#include "base/feature_list.h"
 #include "base/files/file_util.h"
-#include "base/metrics/field_trial.h"
-#include "base/metrics/field_trial_param_associator.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/run_loop.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/string_number_conversions.h"
@@ -26,8 +22,7 @@
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
-#include "components/variations/variations_params_manager.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -38,8 +33,6 @@ namespace {
 constexpr int kTestTimeDeltaInMinutes = 100;
 constexpr int kTestTimeSufficentInMinutes = 110;
 constexpr int kTestTimeInsufficientInMinutes = 90;
-constexpr char kGroupName[] = "Enabled";
-constexpr char kNewTabFieldTrialName[] = "NewTabFieldTrial";
 constexpr char kTestProfileName[] = "test-profile";
 constexpr char kTestObservedSessionTimeKey[] = "test_observed_session_time_key";
 
@@ -103,7 +96,7 @@ class FeatureTrackerTest : public testing::Test {
   std::unique_ptr<MockTestFeatureTracker> mock_feature_tracker_;
 
  private:
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
 
   DISALLOW_COPY_AND_ASSIGN(FeatureTrackerTest);
 };
@@ -150,21 +143,6 @@ class FeatureTrackerParamsTest : public testing::Test {
     testing_profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(testing_profile_manager_->SetUp());
-
-    // Set up the NewTabInProductHelp field trial.
-    base::FieldTrial* new_tab_trial = base::FieldTrialList::CreateFieldTrial(
-        kNewTabFieldTrialName, kGroupName);
-    trials_[kIPHNewTabFeature.name] = new_tab_trial;
-
-    std::unique_ptr<base::FeatureList> feature_list =
-        std::make_unique<base::FeatureList>();
-    feature_list->RegisterFieldTrialOverride(
-        kIPHNewTabFeature.name, base::FeatureList::OVERRIDE_ENABLE_FEATURE,
-        new_tab_trial);
-
-    scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
-    ASSERT_EQ(new_tab_trial,
-              base::FeatureList::GetFieldTrial(kIPHNewTabFeature));
   }
 
   void TearDown() override {
@@ -174,25 +152,17 @@ class FeatureTrackerParamsTest : public testing::Test {
   }
 
   void SetFeatureParams(const base::Feature& feature,
-                        std::map<std::string, std::string> params) {
-    ASSERT_TRUE(
-        base::FieldTrialParamAssociator::GetInstance()
-            ->AssociateFieldTrialParams(trials_[feature.name]->trial_name(),
-                                        kGroupName, params));
-    std::map<std::string, std::string> actualParams;
-    EXPECT_TRUE(
-        base::GetFieldTrialParamsByFeature(kIPHNewTabFeature, &actualParams));
-    EXPECT_EQ(params, actualParams);
+                        const FieldTrialParams& params) {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(kIPHNewTabFeature,
+                                                            params);
   }
 
  protected:
   std::unique_ptr<TestingProfileManager> testing_profile_manager_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::map<std::string, base::FieldTrial*> trials_;
-  variations::testing::VariationParamsManager params_manager_;
 
  private:
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
 
   DISALLOW_COPY_AND_ASSIGN(FeatureTrackerParamsTest);
 };

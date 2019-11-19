@@ -9,11 +9,11 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/android/chrome_jni_headers/AutoFetchNotifier_jni.h"
 #include "chrome/browser/offline_pages/android/offline_page_auto_fetcher_service.h"
 #include "chrome/browser/offline_pages/android/offline_page_auto_fetcher_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_android.h"
-#include "jni/AutoFetchNotifier_jni.h"
 
 namespace offline_pages {
 
@@ -58,14 +58,16 @@ void AutoFetchCancellationComplete() {
 }
 
 void ShowAutoFetchCompleteNotification(const base::string16& pageTitle,
-                                       const std::string& url,
+                                       const std::string& original_url,
+                                       const std::string& final_url,
                                        int android_tab_id,
                                        int64_t offline_id) {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_AutoFetchNotifier_showCompleteNotification(
       env,
       base::android::ConvertUTF8ToJavaString(env, base::UTF16ToUTF8(pageTitle)),
-      base::android::ConvertUTF8ToJavaString(env, url), android_tab_id,
+      base::android::ConvertUTF8ToJavaString(env, original_url),
+      base::android::ConvertUTF8ToJavaString(env, final_url), android_tab_id,
       offline_id);
 }
 

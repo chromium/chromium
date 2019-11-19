@@ -47,11 +47,9 @@
 
 namespace blink {
 
-using namespace html_names;
-
 struct EntityDescription {
   UChar entity;
-  const CString& reference;
+  const std::string& reference;
   EntityMask mask;
 };
 
@@ -71,8 +69,8 @@ static inline void AppendCharactersReplacingEntitiesInternal(
           entity_maps[entity_index].mask & entity_mask) {
         result.Append(text + position_after_last_entity,
                       i - position_after_last_entity);
-        const CString& replacement = entity_maps[entity_index].reference;
-        result.Append(replacement.data(), replacement.length());
+        const std::string& replacement = entity_maps[entity_index].reference;
+        result.Append(replacement.c_str(), replacement.length());
         position_after_last_entity = i + 1;
         break;
       }
@@ -88,14 +86,14 @@ void MarkupFormatter::AppendCharactersReplacingEntities(
     unsigned offset,
     unsigned length,
     EntityMask entity_mask) {
-  DEFINE_STATIC_LOCAL(const CString, amp_reference, ("&amp;"));
-  DEFINE_STATIC_LOCAL(const CString, lt_reference, ("&lt;"));
-  DEFINE_STATIC_LOCAL(const CString, gt_reference, ("&gt;"));
-  DEFINE_STATIC_LOCAL(const CString, quot_reference, ("&quot;"));
-  DEFINE_STATIC_LOCAL(const CString, nbsp_reference, ("&nbsp;"));
-  DEFINE_STATIC_LOCAL(const CString, tab_reference, ("&#9;"));
-  DEFINE_STATIC_LOCAL(const CString, line_feed_reference, ("&#10;"));
-  DEFINE_STATIC_LOCAL(const CString, carriage_return_reference, ("&#13;"));
+  DEFINE_STATIC_LOCAL(const std::string, amp_reference, ("&amp;"));
+  DEFINE_STATIC_LOCAL(const std::string, lt_reference, ("&lt;"));
+  DEFINE_STATIC_LOCAL(const std::string, gt_reference, ("&gt;"));
+  DEFINE_STATIC_LOCAL(const std::string, quot_reference, ("&quot;"));
+  DEFINE_STATIC_LOCAL(const std::string, nbsp_reference, ("&nbsp;"));
+  DEFINE_STATIC_LOCAL(const std::string, tab_reference, ("&#9;"));
+  DEFINE_STATIC_LOCAL(const std::string, line_feed_reference, ("&#10;"));
+  DEFINE_STATIC_LOCAL(const std::string, carriage_return_reference, ("&#13;"));
 
   static const EntityDescription kEntityMaps[] = {
       {'&', amp_reference, kEntityAmp},
@@ -158,7 +156,7 @@ void MarkupFormatter::AppendStartMarkup(StringBuilder& result,
       NOTREACHED();
       break;
     case Node::kCommentNode:
-      AppendComment(result, ToComment(node).data());
+      AppendComment(result, To<Comment>(node).data());
       break;
     case Node::kDocumentNode:
       AppendXMLDeclaration(result, To<Document>(node));
@@ -166,18 +164,18 @@ void MarkupFormatter::AppendStartMarkup(StringBuilder& result,
     case Node::kDocumentFragmentNode:
       break;
     case Node::kDocumentTypeNode:
-      AppendDocumentType(result, ToDocumentType(node));
+      AppendDocumentType(result, To<DocumentType>(node));
       break;
     case Node::kProcessingInstructionNode:
       AppendProcessingInstruction(result,
-                                  ToProcessingInstruction(node).target(),
-                                  ToProcessingInstruction(node).data());
+                                  To<ProcessingInstruction>(node).target(),
+                                  To<ProcessingInstruction>(node).data());
       break;
     case Node::kElementNode:
       NOTREACHED();
       break;
     case Node::kCdataSectionNode:
-      AppendCDATASection(result, ToCDATASection(node).data());
+      AppendCDATASection(result, To<CDATASection>(node).data());
       break;
     case Node::kAttributeNode:
       NOTREACHED();
@@ -379,7 +377,7 @@ void MarkupFormatter::AppendCDATASection(StringBuilder& result,
 }
 
 EntityMask MarkupFormatter::EntityMaskForText(const Text& text) const {
-  if (!SerializeAsHTMLDocument(text))
+  if (!SerializeAsHTML())
     return kEntityMaskInPCDATA;
 
   // TODO(hajimehoshi): We need to switch EditingStrategy.
@@ -388,11 +386,15 @@ EntityMask MarkupFormatter::EntityMaskForText(const Text& text) const {
     parent_name = &(text.parentElement())->TagQName();
 
   if (parent_name &&
-      (*parent_name == kScriptTag || *parent_name == kStyleTag ||
-       *parent_name == kXmpTag || *parent_name == kIFrameTag ||
-       *parent_name == kPlaintextTag || *parent_name == kNoembedTag ||
-       *parent_name == kNoframesTag ||
-       (*parent_name == kNoscriptTag && text.GetDocument().GetFrame() &&
+      (*parent_name == html_names::kScriptTag ||
+       *parent_name == html_names::kStyleTag ||
+       *parent_name == html_names::kXmpTag ||
+       *parent_name == html_names::kIFrameTag ||
+       *parent_name == html_names::kPlaintextTag ||
+       *parent_name == html_names::kNoembedTag ||
+       *parent_name == html_names::kNoframesTag ||
+       (*parent_name == html_names::kNoscriptTag &&
+        text.GetDocument().GetFrame() &&
         text.GetDocument().CanExecuteScripts(kNotAboutToExecuteScript))))
     return kEntityMaskInCDATA;
   return kEntityMaskInHTMLPCDATA;
@@ -405,7 +407,7 @@ EntityMask MarkupFormatter::EntityMaskForText(const Text& text) const {
 // separate end tag.
 // 4. Other elements self-close.
 bool MarkupFormatter::ShouldSelfClose(const Element& element) const {
-  if (SerializeAsHTMLDocument(element))
+  if (SerializeAsHTML())
     return false;
   if (element.HasChildren())
     return false;
@@ -414,10 +416,8 @@ bool MarkupFormatter::ShouldSelfClose(const Element& element) const {
   return true;
 }
 
-bool MarkupFormatter::SerializeAsHTMLDocument(const Node& node) const {
-  if (serialization_type_ == SerializationType::kForcedXML)
-    return false;
-  return node.GetDocument().IsHTMLDocument();
+bool MarkupFormatter::SerializeAsHTML() const {
+  return serialization_type_ == SerializationType::kHTML;
 }
 
 }  // namespace blink

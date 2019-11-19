@@ -13,16 +13,14 @@
 #include "base/task/lazy_task_runner.h"
 #include "build/build_config.h"
 #include "chrome/common/chrome_paths.h"
-
-#if defined(OS_MACOSX)
 #include "components/crash/content/app/crashpad.h"
-#endif
 
 namespace {
 
 base::LazySequencedTaskRunner g_collect_stats_consent_task_runner =
     LAZY_SEQUENCED_TASK_RUNNER_INITIALIZER(
-        base::TaskTraits(base::MayBlock(),
+        base::TaskTraits(base::ThreadPool(),
+                         base::MayBlock(),
                          base::TaskPriority::USER_VISIBLE,
                          base::TaskShutdownBehavior::BLOCK_SHUTDOWN));
 
@@ -80,6 +78,10 @@ bool GoogleUpdateSettings::GetCollectStatsConsent() {
 bool GoogleUpdateSettings::SetCollectStatsConsent(bool consented) {
 #if defined(OS_MACOSX)
   crash_reporter::SetUploadConsent(consented);
+#elif defined(OS_LINUX)
+  if (crash_reporter::IsCrashpadEnabled()) {
+    crash_reporter::SetUploadConsent(consented);
+  }
 #endif
 
   base::FilePath consent_dir;

@@ -8,13 +8,13 @@
 #include <map>
 #include <memory>
 
-#include "ash/assistant/model/assistant_cache_model_observer.h"
-#include "ash/assistant/model/assistant_interaction_model_observer.h"
+#include "ash/assistant/model/assistant_suggestions_model_observer.h"
 #include "ash/assistant/model/assistant_ui_model_observer.h"
-#include "ash/assistant/ui/base/assistant_scroll_view.h"
+#include "ash/assistant/ui/main_stage/animated_container_view.h"
 #include "ash/assistant/ui/main_stage/suggestion_chip_view.h"
 #include "base/component_export.h"
 #include "base/macros.h"
+#include "base/memory/scoped_refptr.h"
 #include "chromeos/services/assistant/public/mojom/assistant.mojom.h"
 #include "ui/views/controls/scroll_view.h"
 
@@ -30,9 +30,8 @@ class AssistantViewDelegate;
 // laying out SuggestionChipViews in response to Assistant interaction model
 // suggestion events.
 class COMPONENT_EXPORT(ASSISTANT_UI) SuggestionContainerView
-    : public AssistantScrollView,
-      public AssistantCacheModelObserver,
-      public AssistantInteractionModelObserver,
+    : public AnimatedContainerView,
+      public AssistantSuggestionsModelObserver,
       public AssistantUiModelObserver,
       public views::ButtonListener {
  public:
@@ -43,21 +42,16 @@ class COMPONENT_EXPORT(ASSISTANT_UI) SuggestionContainerView
   explicit SuggestionContainerView(AssistantViewDelegate* delegate);
   ~SuggestionContainerView() override;
 
-  // AssistantScrollView:
+  // AnimatedContainerView:
   const char* GetClassName() const override;
   gfx::Size CalculatePreferredSize() const override;
   int GetHeightForWidth(int width) const override;
   void OnContentsPreferredSizeChanged(views::View* content_view) override;
 
-  // AssistantCacheModelObserver:
+  // AssistantSuggestionsModelObserver:
   void OnConversationStartersChanged(
       const std::map<int, const AssistantSuggestion*>& conversation_starters)
       override;
-
-  // AssistantInteractionModelObserver:
-  void OnResponseChanged(
-      const std::shared_ptr<AssistantResponse>& response) override;
-  void OnResponseCleared() override;
 
   // AssistantUiModelObserver:
   void OnUiVisibilityChanged(
@@ -69,17 +63,23 @@ class COMPONENT_EXPORT(ASSISTANT_UI) SuggestionContainerView
   // views::ButtonListener:
   void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
+  // The suggestion chip that was pressed by the user, or nullptr if no chip was
+  // pressed.
+  const SuggestionChipView* selected_chip() const { return selected_chip_; }
+
  private:
   void InitLayout();
 
+  // AnimatedContainerView:
+  void HandleResponse(const AssistantResponse& response) override;
+  void OnAllViewsRemoved() override;
+
   void OnSuggestionsChanged(
       const std::map<int, const AssistantSuggestion*>& suggestions);
-  void OnSuggestionsCleared();
+  void AddSuggestionChip(const AssistantSuggestion& suggestion, int id);
 
   // Invoked on suggestion chip icon downloaded event.
   void OnSuggestionChipIconDownloaded(int id, const gfx::ImageSkia& icon);
-
-  AssistantViewDelegate* const delegate_;  // Owned by Shell.
 
   views::BoxLayout* layout_manager_;  // Owned by view hierarchy.
 
@@ -92,8 +92,11 @@ class COMPONENT_EXPORT(ASSISTANT_UI) SuggestionContainerView
   // false otherwise.
   bool has_received_response_ = false;
 
+  const SuggestionChipView* selected_chip_ = nullptr;
+
   // Weak pointer factory used for image downloading requests.
-  base::WeakPtrFactory<SuggestionContainerView> download_request_weak_factory_;
+  base::WeakPtrFactory<SuggestionContainerView> download_request_weak_factory_{
+      this};
 
   DISALLOW_COPY_AND_ASSIGN(SuggestionContainerView);
 };

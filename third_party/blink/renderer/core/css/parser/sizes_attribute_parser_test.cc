@@ -87,8 +87,8 @@ TEST(SizesAttributeParserTest, Basic) {
   data.three_d_enabled = true;
   data.media_type = media_type_names::kScreen;
   data.strict_mode = true;
-  data.display_mode = kWebDisplayModeBrowser;
-  MediaValues* media_values = MediaValuesCached::Create(data);
+  data.display_mode = blink::mojom::DisplayMode::kBrowser;
+  auto* media_values = MakeGarbageCollected<MediaValuesCached>(data);
 
   for (unsigned i = 0; test_cases[i].input; ++i) {
     SizesAttributeParser parser(media_values, test_cases[i].input);
@@ -168,8 +168,8 @@ TEST(SizesAttributeParserTest, FloatViewportWidth) {
   data.three_d_enabled = true;
   data.media_type = media_type_names::kScreen;
   data.strict_mode = true;
-  data.display_mode = kWebDisplayModeBrowser;
-  MediaValues* media_values = MediaValuesCached::Create(data);
+  data.display_mode = blink::mojom::DisplayMode::kBrowser;
+  auto* media_values = MakeGarbageCollected<MediaValuesCached>(data);
 
   for (unsigned i = 0; test_cases[i].input; ++i) {
     SizesAttributeParser parser(media_values, test_cases[i].input);

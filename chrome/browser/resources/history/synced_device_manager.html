@@ -2,10 +2,9 @@
 
 <link rel="import" href="chrome://resources/html/cr/ui/focus_grid.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-list/iron-list.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-button/paper-button.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_action_menu/cr_action_menu.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.html">
-<link rel="import" href="chrome://resources/cr_elements/paper_button_style_css.html">
 <link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
 <link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
 <link rel="import" href="shared_style.html">
@@ -14,7 +13,7 @@
 
 <dom-module id="history-synced-device-manager">
   <template>
-    <style include="shared-style cr-shared-style paper-button-style">
+    <style include="shared-style cr-shared-style">
       :host {
         display: block;
         overflow: auto;
@@ -28,8 +27,10 @@
         width: 594.5px;
       }
 
-      :host-context([dark]) #illustration {
-        background-image: url(images/sign_in_promo_dark.svg);
+      @media (prefers-color-scheme: dark) {
+        #illustration {
+          background-image: url(images/sign_in_promo_dark.svg);
+        }
       }
 
       #no-synced-tabs {
@@ -86,15 +87,15 @@
       <div id="illustration"></div>
       <div id="sign-in-promo">$i18n{signInPromo}</div>
       <div id="sign-in-promo-desc">$i18n{signInPromoDesc}</div>
-      <paper-button id="sign-in-button" class="action-button"
+      <cr-button id="sign-in-button" class="action-button"
           on-click="onSignInTap_">
         $i18n{signInButton}
-      </paper-button>
+      </cr-button>
     </div>
 
     <cr-lazy-render id="menu">
       <template>
-        <cr-action-menu>
+        <cr-action-menu role-description="$i18n{menu}">
           <button id="menuOpenButton" class="dropdown-item"
               on-click="onOpenAllTap_">
             $i18n{openAll}

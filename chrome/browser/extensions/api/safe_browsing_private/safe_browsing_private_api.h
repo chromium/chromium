@@ -9,8 +9,7 @@
 
 namespace extensions {
 
-class SafeBrowsingPrivateGetReferrerChainFunction
-    : public UIThreadExtensionFunction {
+class SafeBrowsingPrivateGetReferrerChainFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("safeBrowsingPrivate.getReferrerChain",
                              SAFEBROWSINGPRIVATE_GETREFERRERCHAIN)

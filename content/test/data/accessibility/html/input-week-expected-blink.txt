@@ -1,6 +1,6 @@
 rootWebArea
 ++genericContainer
-++++dateTime
+++++dateTime inputType='week'
 ++++++genericContainer
 ++++++++genericContainer
 ++++++++++staticText name='Week '

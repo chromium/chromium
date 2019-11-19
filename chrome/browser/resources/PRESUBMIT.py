@@ -100,6 +100,20 @@ def RunOptimizeWebUiTests(input_api, output_api):
   return input_api.canned_checks.RunUnitTests(input_api, output_api, tests)
 
 
+def _CheckSvgsOptimized(input_api, output_api):
+  results = []
+  try:
+    import sys
+    old_sys_path = sys.path[:]
+    cwd = input_api.PresubmitLocalPath()
+    sys.path += [input_api.os_path.join(cwd, '..', '..', '..', 'tools')]
+    from resources import svgo_presubmit
+    results += svgo_presubmit.CheckOptimized(input_api, output_api)
+  finally:
+    sys.path = old_sys_path
+  return results
+
+
 def _CheckWebDevStyle(input_api, output_api):
   results = []
 
@@ -108,8 +122,8 @@ def _CheckWebDevStyle(input_api, output_api):
     old_sys_path = sys.path[:]
     cwd = input_api.PresubmitLocalPath()
     sys.path += [input_api.os_path.join(cwd, '..', '..', '..', 'tools')]
-    import web_dev_style.presubmit_support
-    results += web_dev_style.presubmit_support.CheckStyle(input_api, output_api)
+    from web_dev_style import presubmit_support
+    results += presubmit_support.CheckStyle(input_api, output_api)
   finally:
     sys.path = old_sys_path
 
@@ -126,6 +140,7 @@ def _CheckChangeOnUploadOrCommit(input_api, output_api):
   affected_files = [input_api.os_path.basename(f.LocalPath()) for f in affected]
   if webui_sources.intersection(set(affected_files)):
     results += RunOptimizeWebUiTests(input_api, output_api)
+  results += _CheckSvgsOptimized(input_api, output_api)
   results += _CheckWebDevStyle(input_api, output_api)
   results += input_api.canned_checks.CheckPatchFormatted(input_api, output_api,
                                                          check_js=True)

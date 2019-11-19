@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/platform/heap/heap_allocator.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl_hash.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 
 namespace blink {
@@ -31,8 +32,8 @@ namespace blink {
 // across worklet threads. All access to this class should be mutex-guarded,
 // and any data passed in or read out is copied to ensure that this object's
 // internal state can be safely destructed from the main thread.
-class CORE_EXPORT WorkletModuleResponsesMap
-    : public GarbageCollectedFinalized<WorkletModuleResponsesMap> {
+class CORE_EXPORT WorkletModuleResponsesMap final
+    : public GarbageCollected<WorkletModuleResponsesMap> {
  public:
   WorkletModuleResponsesMap() = default;
 
@@ -59,6 +60,8 @@ class CORE_EXPORT WorkletModuleResponsesMap
 
  private:
   class Entry final {
+    USING_FAST_MALLOC(Entry);
+
    public:
     enum class State { kFetching, kFetched, kFailed };
     Entry() = default;

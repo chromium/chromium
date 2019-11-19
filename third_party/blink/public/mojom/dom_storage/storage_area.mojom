@@ -48,7 +48,8 @@ interface StorageArea {
   // wasn't exceeded.
   const uint32 kPerStorageAreaOverQuotaAllowance = 102400; // 100 KiB
 
-  AddObserver(associated StorageAreaObserver observer);
+  // Adds an observer to monitor changes to the StorageArea.
+  AddObserver(pending_associated_remote<StorageAreaObserver> observer);
 
   // Set the database entry for |key| to |value|.
   // Takes an optional |client_old_value| (see ShouldSendOldValueOnMutations()):
@@ -87,6 +88,6 @@ interface StorageArea {
 
   // Returns all key/value pairs.
   [Sync]
-  GetAll(associated StorageAreaGetAllCallback complete_callback)
+  GetAll(pending_associated_remote<StorageAreaGetAllCallback> complete_callback)
     => (bool success, array<KeyValue> data);
 };

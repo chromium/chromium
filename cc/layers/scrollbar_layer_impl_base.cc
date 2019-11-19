@@ -5,6 +5,8 @@
 #include "cc/layers/scrollbar_layer_impl_base.h"
 
 #include <algorithm>
+
+#include "base/numerics/ranges.h"
 #include "cc/trees/effect_node.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "cc/trees/scroll_node.h"
@@ -213,7 +215,7 @@ gfx::Rect ScrollbarLayerImplBase::ComputeThumbQuadRectWithThumbThicknessScale(
   float maximum = scroll_layer_length() - clip_layer_length();
 
   // With the length known, we can compute the thumb's position.
-  float clamped_current_pos = std::min(std::max(current_pos(), 0.f), maximum);
+  float clamped_current_pos = base::ClampToRange(current_pos(), 0.0f, maximum);
 
   int thumb_offset = TrackStart();
   if (maximum > 0) {
@@ -280,6 +282,53 @@ ScrollbarLayerImplBase::GetScrollbarAnimator() const {
 
 bool ScrollbarLayerImplBase::HasFindInPageTickmarks() const {
   return false;
+}
+
+bool ScrollbarLayerImplBase::SupportsDragSnapBack() const {
+  return false;
+}
+
+gfx::Rect ScrollbarLayerImplBase::BackButtonRect() const {
+  return gfx::Rect(0, 0);
+}
+
+gfx::Rect ScrollbarLayerImplBase::ForwardButtonRect() const {
+  return gfx::Rect(0, 0);
+}
+
+gfx::Rect ScrollbarLayerImplBase::BackTrackRect() const {
+  return gfx::Rect(0, 0);
+}
+
+gfx::Rect ScrollbarLayerImplBase::ForwardTrackRect() const {
+  return gfx::Rect(0, 0);
+}
+
+// This manages identifying which part of a composited scrollbar got hit based
+// on the position_in_widget.
+ScrollbarPart ScrollbarLayerImplBase::IdentifyScrollbarPart(
+    const gfx::PointF position_in_widget) const {
+  const gfx::Point pointer_location(position_in_widget.x(),
+                                    position_in_widget.y());
+  if (BackButtonRect().Contains(pointer_location))
+    return ScrollbarPart::BACK_BUTTON;
+
+  if (ForwardButtonRect().Contains(pointer_location))
+    return ScrollbarPart::FORWARD_BUTTON;
+
+  if (ComputeThumbQuadRect().Contains(pointer_location))
+    return ScrollbarPart::THUMB;
+
+  if (BackTrackRect().Contains(pointer_location))
+    return ScrollbarPart::BACK_TRACK;
+
+  if (ForwardTrackRect().Contains(pointer_location))
+    return ScrollbarPart::FORWARD_TRACK;
+
+  // TODO(arakeri): Once crbug.com/952314 is fixed, add a DCHECK to verify that
+  // the point that is passed in is within the TrackRect. Also, please note that
+  // hit testing other scrollbar parts is not yet implemented.
+  return ScrollbarPart::NO_PART;
 }
 
 }  // namespace cc

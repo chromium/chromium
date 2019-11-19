@@ -91,7 +91,7 @@ class IpcFileOperations : public FileOperations {
     // The associated RequestHandler.
     RequestHandler* request_handler;
 
-    base::WeakPtrFactory<SharedState> weak_ptr_factory;
+    base::WeakPtrFactory<SharedState> weak_ptr_factory{this};
 
    private:
     DISALLOW_COPY_AND_ASSIGN(SharedState);

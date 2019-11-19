@@ -72,7 +72,7 @@ FloatPoint CompositorScrollOffsetAnimationCurve::TargetValue() const {
   return FloatPoint(target.x(), target.y());
 }
 
-void CompositorScrollOffsetAnimationCurve::UpdateTarget(TimeDelta time,
+void CompositorScrollOffsetAnimationCurve::UpdateTarget(base::TimeDelta time,
                                                         FloatPoint new_target) {
   curve_->UpdateTarget(time, gfx::ScrollOffset(new_target.X(), new_target.Y()));
 }

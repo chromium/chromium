@@ -6,10 +6,6 @@
 
 namespace prefs {
 
-// The value to use for Accept-Languages HTTP header when making an HTTP
-// request.
-const char kAcceptLanguages[] = "intl.accept_languages";
-
 // The application locale.
 const char kApplicationLocale[] = "intl.app_locale";
 

@@ -146,6 +146,7 @@ class ModuleSnapshot {
   //! Windows with incremental linking. On other platforms \a age will always be
   //! `0`.
   //!
+  //! \sa BuildID()
   //! \sa DebugFileName()
   virtual void UUIDAndAge(crashpad::UUID* uuid, uint32_t* age) const = 0;
 
@@ -158,6 +159,20 @@ class ModuleSnapshot {
   //!
   //! \sa UUIDAndAge()
   virtual std::string DebugFileName() const = 0;
+
+  //! \brief Returns the module’s build ID.
+  //!
+  //! On ELF platforms, the build ID is a variable-length byte stream that
+  //! identifies a library uniquely, and is usually used to look up its debug
+  //! symbols when stored separately. This will return an empty vector if it is
+  //! unsupported.
+  //!
+  //! BuildID() and UUIDAndAge() are never available in the same place. When
+  //! UUIDAndAge() is unavailable, it will be filled out with the contents of
+  //! BuildID() (either 0-padded or truncated) and age will be zero.
+  //!
+  //! \sa UUIDAndAge()
+  virtual std::vector<uint8_t> BuildID() const = 0;
 
   //! \brief Returns string annotations recorded in the module.
   //!

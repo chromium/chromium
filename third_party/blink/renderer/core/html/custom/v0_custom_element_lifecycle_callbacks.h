@@ -39,7 +39,7 @@ namespace blink {
 class Element;
 
 class V0CustomElementLifecycleCallbacks
-    : public GarbageCollectedFinalized<V0CustomElementLifecycleCallbacks> {
+    : public GarbageCollected<V0CustomElementLifecycleCallbacks> {
  public:
   virtual ~V0CustomElementLifecycleCallbacks() = default;
 

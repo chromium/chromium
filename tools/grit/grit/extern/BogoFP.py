@@ -9,6 +9,7 @@ Usage:
     grit.py -h grit.extern.BogoFP xmb /tmp/foo
 """
 
+from __future__ import print_function
 
 import grit.extern.FP
 

@@ -30,6 +30,7 @@
 
 namespace blink {
 
+class CSSFunctionValue;
 class CSSValue;
 class StyleResolverState;
 
@@ -42,6 +43,8 @@ class CORE_EXPORT FilterOperationResolver {
                                                  const CSSValue&);
   static FilterOperations CreateOffscreenFilterOperations(const CSSValue&,
                                                           const Font&);
+  static double ResolveNumericArgumentForFunction(
+      const CSSFunctionValue& filter);
 };
 
 }  // namespace blink

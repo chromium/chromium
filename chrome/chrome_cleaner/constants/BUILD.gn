@@ -5,6 +5,9 @@
 import("//build/util/process_version.gni")
 import("//chrome/chrome_cleaner/constants/args.gni")
 
+# Nothing outside //chrome/chrome_cleaner can depend on these targets.
+visibility = [ "//chrome/chrome_cleaner/*" ]
+
 process_version("version_header") {
   sources = [
     cleaner_branding_path,
@@ -35,12 +38,40 @@ process_version("software_reporter_tool_branding_header") {
   output = "$target_gen_dir/software_reporter_tool_branding.h"
 }
 
+process_version("chrome_cleaner_version_resource") {
+  template_file = "chrome_cleaner.rc.version"
+
+  sources = [
+    "chrome_cleanup_tool_exe.ver",
+    cleaner_branding_path,
+    version_path,
+  ]
+
+  output = "$target_gen_dir/chrome_cleaner.rc"
+}
+
+process_version("reporter_version_resource") {
+  template_file = "chrome_cleaner.rc.version"
+
+  sources = [
+    "software_reporter_tool_exe.ver",
+    reporter_branding_path,
+    version_path,
+  ]
+
+  output = "$target_gen_dir/chrome_reporter.rc"
+}
+
 source_set("common_strings") {
   sources = [
     "chrome_cleaner_switches.cc",
     "chrome_cleaner_switches.h",
     "common_registry_names.cc",
     "common_registry_names.h",
+  ]
+
+  public_deps = [
+    "//chrome/chrome_cleaner:buildflags",
   ]
 }
 

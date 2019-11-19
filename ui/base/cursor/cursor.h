@@ -7,7 +7,8 @@
 
 #include "build/build_config.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "ui/base/cursor/cursor_type.h"
+#include "ui/base/cursor/cursor_size.h"
+#include "ui/base/cursor/types/cursor_types.h"
 #include "ui/base/ui_base_export.h"
 #include "ui/gfx/geometry/point.h"
 
@@ -47,12 +48,8 @@ class UI_BASE_EXPORT Cursor {
 
   CursorType native_type() const { return native_type_; }
   PlatformCursor platform() const { return platform_cursor_; }
-  float device_scale_factor() const {
-    return device_scale_factor_;
-  }
-  void set_device_scale_factor(float device_scale_factor) {
-    device_scale_factor_ = device_scale_factor;
-  }
+  float device_scale_factor() const { return device_scale_factor_; }
+  void set_device_scale_factor(float scale) { device_scale_factor_ = scale; }
 
   SkBitmap GetBitmap() const;
   void set_custom_bitmap(const SkBitmap& bitmap) { custom_bitmap_ = bitmap; }
@@ -62,65 +59,35 @@ class UI_BASE_EXPORT Cursor {
     custom_hotspot_ = hotspot;
   }
 
+  // Note: custom cursor comparison may perform expensive pixel equality checks!
+  bool operator==(const Cursor& cursor) const;
+  bool operator!=(const Cursor& cursor) const { return !(*this == cursor); }
+
   bool operator==(CursorType type) const { return native_type_ == type; }
-  bool operator==(const Cursor& cursor) const {
-    return native_type_ == cursor.native_type_ &&
-           platform_cursor_ == cursor.platform_cursor_ &&
-           device_scale_factor_ == cursor.device_scale_factor_ &&
-           custom_bitmap_.info() == cursor.custom_bitmap_.info() &&
-           custom_bitmap_.rowBytes() == cursor.custom_bitmap_.rowBytes() &&
-           custom_bitmap_.getPixels() == cursor.custom_bitmap_.getPixels() &&
-           custom_hotspot_ == cursor.custom_hotspot_;
-  }
   bool operator!=(CursorType type) const { return native_type_ != type; }
-  bool operator!=(const Cursor& cursor) const {
-    return native_type_ != cursor.native_type_ ||
-           platform_cursor_ != cursor.platform_cursor_ ||
-           device_scale_factor_ != cursor.device_scale_factor_ ||
-           custom_bitmap_.info() != cursor.custom_bitmap_.info() ||
-           custom_bitmap_.rowBytes() != cursor.custom_bitmap_.rowBytes() ||
-           custom_bitmap_.getPixels() != cursor.custom_bitmap_.getPixels() ||
-           custom_hotspot_ != cursor.custom_hotspot_;
-  }
 
-  void operator=(const Cursor& cursor) {
-    Assign(cursor);
-  }
-
-  // Checks if the data in |rhs| was created from the same input data.
-  //
-  // This is subtly different from operator==, as we need this to be a
-  // lightweight operation instead of performing pixel equality checks on
-  // arbitrary sized SkBitmaps. So we check the internal SkBitmap generation
-  // IDs, which are per-process, monotonically increasing ids which get changed
-  // whenever there's a modification to the pixel data. This means that this
-  // method can have false negatives: two SkBitmap instances made with the same
-  // input data (but which weren't copied from each other) can have equal pixel
-  // data, but different generation ids.
-  bool IsSameAs(const Cursor& rhs) const;
+  void operator=(const Cursor& cursor);
 
  private:
-  void Assign(const Cursor& cursor);
-
 #if defined(USE_AURA)
   SkBitmap GetDefaultBitmap() const;
   gfx::Point GetDefaultHotspot() const;
 #endif
 
-  // See definitions above.
-  CursorType native_type_;
+  // The basic cursor type.
+  CursorType native_type_ = CursorType::kNull;
 
-  PlatformCursor platform_cursor_;
+  // The native platform cursor.
+  PlatformCursor platform_cursor_ = 0;
 
   // The device scale factor for the cursor.
-  float device_scale_factor_;
+  float device_scale_factor_ = 0.0f;
 
-  // The bitmap for the cursor. This is only used when it is custom cursor type.
-  SkBitmap custom_bitmap_;
-
-  // The hotspot for the cursor. This is only used when it is custom cursor
-  // type.
+  // The hotspot for the cursor. This is only used for the custom cursor type.
   gfx::Point custom_hotspot_;
+
+  // The bitmap for the cursor. This is only used for the custom cursor type.
+  SkBitmap custom_bitmap_;
 };
 
 }  // namespace ui

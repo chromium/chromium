@@ -11,8 +11,8 @@ let whenPageIsPopulatedForTest;
 /** @type {function()} */
 let disableAutoupdateForTests;
 
-/** @type {mojom.SiteEngagementDetailsProviderProxy} */
-let uiHandler;
+/** @type {mojom.SiteEngagementDetailsProviderRemote} */
+let engagementDetailsProvider;
 
 (function() {
 let resolvePageIsPopulated = null;
@@ -25,7 +25,7 @@ whenPageIsPopulatedForTest = function() {
 };
 
 function initialize() {
-  uiHandler = mojom.SiteEngagementDetailsProvider.getProxy();
+  engagementDetailsProvider = mojom.SiteEngagementDetailsProvider.getRemote();
 
   /** @type {?HTMLElement} */
   const engagementTableBody = $('engagement-table-body');
@@ -132,7 +132,8 @@ function initialize() {
    */
   function handleBaseScoreChange(origin, e) {
     const baseScoreInput = e.target;
-    uiHandler.setSiteEngagementBaseScoreForUrl(origin, baseScoreInput.value);
+    engagementDetailsProvider.setSiteEngagementBaseScoreForUrl(
+        origin, baseScoreInput.value);
     baseScoreInput.barCellRef.style.width = (baseScoreInput.value * 4) + 'px';
     baseScoreInput.blur();
     enableAutoupdate();
@@ -207,13 +208,11 @@ function initialize() {
   /**
    * Retrieve site engagement info and render the engagement table.
    */
-  function updateEngagementTable() {
+  async function updateEngagementTable() {
     // Populate engagement table.
-    uiHandler.getSiteEngagementDetails().then((response) => {
-      info = response.info;
-      renderTable();
-      resolvePageIsPopulated();
-    });
+    ({info} = await engagementDetailsProvider.getSiteEngagementDetails());
+    renderTable();
+    resolvePageIsPopulated();
   }
 
   updateEngagementTable();

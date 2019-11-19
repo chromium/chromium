@@ -35,9 +35,6 @@ class CastNetworkDelegate : public net::NetworkDelegateImpl {
 
  private:
   // net::NetworkDelegate implementation:
-  bool OnCanAccessFile(const net::URLRequest& request,
-                       const base::FilePath& original_path,
-                       const base::FilePath& absolute_path) const override;
   int OnBeforeURLRequest(net::URLRequest* request,
                          net::CompletionOnceCallback callback,
                          GURL* new_url) override;

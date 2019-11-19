@@ -18,8 +18,8 @@
 #include "chrome/browser/ui/views/payments/payment_request_row_view.h"
 #include "chrome/browser/ui/views/payments/payment_request_views_util.h"
 #include "components/payments/content/payment_request_state.h"
-#include "components/payments/core/autofill_payment_instrument.h"
-#include "components/payments/core/payment_instrument.h"
+#include "components/payments/core/autofill_payment_app.h"
+#include "components/payments/core/payment_app.h"
 #include "components/payments/core/strings_util.h"
 #include "components/strings/grit/components_strings.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -51,23 +51,23 @@ enum class PaymentMethodViewControllerTags : int {
 
 class PaymentMethodListItem : public PaymentRequestItemList::Item {
  public:
-  // Does not take ownership of |instrument|, which should not be null and
-  // should outlive this object. |list| is the PaymentRequestItemList object
-  // that will own this.
-  PaymentMethodListItem(PaymentInstrument* instrument,
+  // Does not take ownership of |app|, which should not be null and should
+  // outlive this object. |list| is the PaymentRequestItemList object that will
+  // own this.
+  PaymentMethodListItem(PaymentApp* app,
                         PaymentRequestSpec* spec,
                         PaymentRequestState* state,
                         PaymentRequestItemList* list,
                         PaymentRequestDialogView* dialog,
                         bool selected)
-      : PaymentRequestItemList::Item(spec,
-                                     state,
-                                     list,
-                                     selected,
-                                     /*clickable=*/true,
-                                     /*show_edit_button=*/instrument->type() ==
-                                         PaymentInstrument::Type::AUTOFILL),
-        instrument_(instrument),
+      : PaymentRequestItemList::Item(
+            spec,
+            state,
+            list,
+            selected,
+            /*clickable=*/true,
+            /*show_edit_button=*/app->type() == PaymentApp::Type::AUTOFILL),
+        app_(app),
         dialog_(dialog) {
     Init();
   }
@@ -75,24 +75,24 @@ class PaymentMethodListItem : public PaymentRequestItemList::Item {
 
  private:
   void ShowEditor() {
-    switch (instrument_->type()) {
-      case PaymentInstrument::Type::AUTOFILL:
+    switch (app_->type()) {
+      case PaymentApp::Type::AUTOFILL:
         // Since we are a list item, we only care about the on_edited callback.
         dialog_->ShowCreditCardEditor(
             BackNavigationType::kPaymentSheet,
             static_cast<int>(PaymentMethodViewControllerTags::MAX_TAG),
             /*on_edited=*/
-            base::BindOnce(&PaymentRequestState::SetSelectedInstrument,
-                           base::Unretained(state()), instrument_),
+            base::BindOnce(
+                &PaymentRequestState::SetSelectedApp, state()->AsWeakPtr(),
+                app_,
+                PaymentRequestState::SectionSelectionStatus::kEditedSelected),
             /*on_added=*/
             base::OnceCallback<void(const autofill::CreditCard&)>(),
-            static_cast<AutofillPaymentInstrument*>(instrument_)
-                ->credit_card());
+            static_cast<AutofillPaymentApp*>(app_)->credit_card());
         return;
-      case PaymentInstrument::Type::NATIVE_MOBILE_APP:
-      case PaymentInstrument::Type::SERVICE_WORKER_APP:
-        // We cannot edit a native mobile app instrument and service worker
-        // based payment instrument.
+      case PaymentApp::Type::NATIVE_MOBILE_APP:
+      case PaymentApp::Type::SERVICE_WORKER_APP:
+        // We cannot edit a native mobile app and service worker app.
         return;
     }
     NOTREACHED();
@@ -100,9 +100,8 @@ class PaymentMethodListItem : public PaymentRequestItemList::Item {
 
   // PaymentRequestItemList::Item:
   std::unique_ptr<views::View> CreateExtraView() override {
-    std::unique_ptr<views::ImageView> icon_view = CreateInstrumentIconView(
-        instrument_->icon_resource_id(), instrument_->icon_image_skia(),
-        instrument_->GetLabel());
+    std::unique_ptr<views::ImageView> icon_view = CreateAppIconView(
+        app_->icon_resource_id(), app_->icon_image_skia(), app_->GetLabel());
     return icon_view;
   }
 
@@ -113,21 +112,21 @@ class PaymentMethodListItem : public PaymentRequestItemList::Item {
     card_info_container->set_can_process_events_within_subtree(false);
 
     auto box_layout = std::make_unique<views::BoxLayout>(
-        views::BoxLayout::kVertical,
+        views::BoxLayout::Orientation::kVertical,
         gfx::Insets(kPaymentRequestRowVerticalInsets, 0));
     box_layout->set_cross_axis_alignment(
-        views::BoxLayout::CROSS_AXIS_ALIGNMENT_START);
+        views::BoxLayout::CrossAxisAlignment::kStart);
     card_info_container->SetLayoutManager(std::move(box_layout));
 
-    base::string16 label = instrument_->GetLabel();
+    base::string16 label = app_->GetLabel();
     if (!label.empty())
       card_info_container->AddChildView(new views::Label(label));
-    base::string16 sublabel = instrument_->GetSublabel();
+    base::string16 sublabel = app_->GetSublabel();
     if (!sublabel.empty())
       card_info_container->AddChildView(new views::Label(sublabel));
     base::string16 missing_info;
-    if (!instrument_->IsCompleteForPayment()) {
-      missing_info = instrument_->GetMissingInfoLabel();
+    if (!app_->IsCompleteForPayment()) {
+      missing_info = app_->GetMissingInfoLabel();
       auto missing_info_label =
           std::make_unique<views::Label>(missing_info, CONTEXT_BODY_TEXT_SMALL);
       missing_info_label->SetEnabledColor(
@@ -145,7 +144,8 @@ class PaymentMethodListItem : public PaymentRequestItemList::Item {
 
   void SelectedStateChanged() override {
     if (selected()) {
-      state()->SetSelectedInstrument(instrument_);
+      state()->SetSelectedApp(
+          app_, PaymentRequestState::SectionSelectionStatus::kSelected);
       dialog_->GoBack();
     }
   }
@@ -155,16 +155,18 @@ class PaymentMethodListItem : public PaymentRequestItemList::Item {
   }
 
   bool CanBeSelected() override {
-    // If an instrument can't be selected, PerformSelectionFallback is called,
-    // where the instrument can be made complete.
-    return instrument_->IsCompleteForPayment();
+    // If an app can't be selected because it's not complete,
+    // PerformSelectionFallback is called, where the app can be made complete.
+    // This applies only to AutofillPaymentApp, each one of which is a credit
+    // card, so PerformSelectionFallback will open the card editor.
+    return app_->IsCompleteForPayment();
   }
 
   void PerformSelectionFallback() override { ShowEditor(); }
 
   void EditButtonPressed() override { ShowEditor(); }
 
-  PaymentInstrument* instrument_;
+  PaymentApp* app_;
   PaymentRequestDialogView* dialog_;
 
   DISALLOW_COPY_AND_ASSIGN(PaymentMethodListItem);
@@ -188,12 +190,12 @@ PaymentMethodViewController::PaymentMethodViewController(
     PaymentRequestDialogView* dialog)
     : PaymentRequestSheetController(spec, state, dialog),
       payment_method_list_(dialog) {
-  const std::vector<std::unique_ptr<PaymentInstrument>>& available_instruments =
-      state->available_instruments();
-  for (const auto& instrument : available_instruments) {
+  const std::vector<std::unique_ptr<PaymentApp>>& available_apps =
+      state->available_apps();
+  for (const auto& app : available_apps) {
     auto item = std::make_unique<PaymentMethodListItem>(
-        instrument.get(), spec, state, &payment_method_list_, dialog,
-        instrument.get() == state->selected_instrument());
+        app.get(), spec, state, &payment_method_list_, dialog,
+        app.get() == state->selected_app());
     payment_method_list_.AddItem(std::move(item));
   }
 }
@@ -206,10 +208,11 @@ base::string16 PaymentMethodViewController::GetSheetTitle() {
 }
 
 void PaymentMethodViewController::FillContentView(views::View* content_view) {
-  auto layout = std::make_unique<views::BoxLayout>(views::BoxLayout::kVertical);
-  layout->set_main_axis_alignment(views::BoxLayout::MAIN_AXIS_ALIGNMENT_START);
+  auto layout = std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical);
+  layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kStart);
   layout->set_cross_axis_alignment(
-      views::BoxLayout::CROSS_AXIS_ALIGNMENT_STRETCH);
+      views::BoxLayout::CrossAxisAlignment::kStretch);
   content_view->SetLayoutManager(std::move(layout));
 
   base::string16 sub_header =
@@ -219,53 +222,39 @@ void PaymentMethodViewController::FillContentView(views::View* content_view) {
 
   std::unique_ptr<views::View> list_view =
       payment_method_list_.CreateListView();
-  list_view->set_id(
+  list_view->SetID(
       static_cast<int>(DialogViewID::PAYMENT_METHOD_SHEET_LIST_VIEW));
   content_view->AddChildView(list_view.release());
 }
 
-std::unique_ptr<views::View>
-PaymentMethodViewController::CreateExtraFooterView() {
-  if (!spec()->supports_basic_card())
-    return nullptr;
-
-  auto extra_view = std::make_unique<views::View>();
-
-  extra_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::kHorizontal, gfx::Insets(),
-      kPaymentRequestButtonSpacing));
-
-  views::LabelButton* button = views::MdTextButton::CreateSecondaryUiButton(
-      this, l10n_util::GetStringUTF16(IDS_PAYMENTS_ADD_CARD));
-  button->set_tag(static_cast<int>(
-      PaymentMethodViewControllerTags::ADD_CREDIT_CARD_BUTTON));
-  button->set_id(
-      static_cast<int>(DialogViewID::PAYMENT_METHOD_ADD_CARD_BUTTON));
-  button->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
-  extra_view->AddChildView(button);
-
-  return extra_view;
-}
-
 void PaymentMethodViewController::ButtonPressed(views::Button* sender,
                                                 const ui::Event& event) {
-  switch (sender->tag()) {
-    case static_cast<int>(
-        PaymentMethodViewControllerTags::ADD_CREDIT_CARD_BUTTON):
-      // Only provide the |on_added| callback, in response to this button.
-      dialog()->ShowCreditCardEditor(
-          BackNavigationType::kPaymentSheet,
-          static_cast<int>(PaymentMethodViewControllerTags::MAX_TAG),
-          /*on_edited=*/base::OnceClosure(),
-          /*on_added=*/
-          base::BindOnce(&PaymentRequestState::AddAutofillPaymentInstrument,
-                         base::Unretained(state()), /*selected=*/true),
-          /*credit_card=*/nullptr);
-      break;
-    default:
-      PaymentRequestSheetController::ButtonPressed(sender, event);
-      break;
+  if (sender->tag() == GetSecondaryButtonTag()) {
+    // Only provide the |on_added| callback, in response to this button.
+    dialog()->ShowCreditCardEditor(
+        BackNavigationType::kPaymentSheet,
+        static_cast<int>(PaymentMethodViewControllerTags::MAX_TAG),
+        /*on_edited=*/base::OnceClosure(),
+        /*on_added=*/
+        base::BindOnce(&PaymentRequestState::AddAutofillPaymentApp,
+                       state()->AsWeakPtr(), /*selected=*/true),
+        /*credit_card=*/nullptr);
+  } else {
+    PaymentRequestSheetController::ButtonPressed(sender, event);
   }
+}
+
+base::string16 PaymentMethodViewController::GetSecondaryButtonLabel() {
+  return l10n_util::GetStringUTF16(IDS_PAYMENTS_ADD_CARD);
+}
+
+int PaymentMethodViewController::GetSecondaryButtonTag() {
+  return static_cast<int>(
+      PaymentMethodViewControllerTags::ADD_CREDIT_CARD_BUTTON);
+}
+
+int PaymentMethodViewController::GetSecondaryButtonId() {
+  return static_cast<int>(DialogViewID::PAYMENT_METHOD_ADD_CARD_BUTTON);
 }
 
 }  // namespace payments

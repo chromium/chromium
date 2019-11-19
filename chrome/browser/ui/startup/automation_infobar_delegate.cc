@@ -31,6 +31,14 @@ bool AutomationInfoBarDelegate::ShouldExpire(
   return false;
 }
 
+bool AutomationInfoBarDelegate::ShouldAnimate() const {
+  // Animating the infobar also animates the content area size which can trigger
+  // a flood of page layout, compositing, texture reallocations, etc.  Since
+  // this infobar is primarily used for automated testing do not animate the
+  // infobar to reduce noise in tests.
+  return false;
+}
+
 base::string16 AutomationInfoBarDelegate::GetMessageText() const {
   return l10n_util::GetStringUTF16(IDS_CONTROLLED_BY_AUTOMATION);
 }

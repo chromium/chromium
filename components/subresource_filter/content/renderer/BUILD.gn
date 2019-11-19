@@ -4,8 +4,6 @@
 
 static_library("renderer") {
   sources = [
-    "ad_delay_renderer_metadata_provider.cc",
-    "ad_delay_renderer_metadata_provider.h",
     "ad_resource_tracker.cc",
     "ad_resource_tracker.h",
     "subresource_filter_agent.cc",

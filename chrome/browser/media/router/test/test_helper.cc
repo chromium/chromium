@@ -55,8 +55,8 @@ MockCastAppDiscoveryService::StartObservingMediaSinks(
   return callbacks_.Add(callback);
 }
 
-MockDialAppDiscoveryService::MockDialAppDiscoveryService()
-    : DialAppDiscoveryService(/*connector=*/nullptr) {}
+MockDialAppDiscoveryService::MockDialAppDiscoveryService() = default;
+
 MockDialAppDiscoveryService::~MockDialAppDiscoveryService() = default;
 
 void MockDialAppDiscoveryService::FetchDialAppInfo(

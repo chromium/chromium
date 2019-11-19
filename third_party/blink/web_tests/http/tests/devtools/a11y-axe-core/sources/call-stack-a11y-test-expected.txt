@@ -1,0 +1,7 @@
+Testing accessibility in the call stack sidebar pane.
+Set timer for test function.
+Call stack pane content: Show blackboxed framesNot paused(anonymous)test.js:20callWithAsyncStacktest.js:13call1wrapper.js:1Promise.then (async)callWithAsyncStacktest.js:17call2VM wrapper.js:1Promise.then (async)callWithAsyncStacktest.js:17call3VM wrapper.js:1Promise.then (async)callWithAsyncStacktest.js:17call4VM wrapper.js:1Promise.then (async)callWithAsyncStacktest.js:17call5VM wrapper.js:1Promise.then (async)callWithAsyncStacktest.js:17testFunctiontest.js:20setTimeout (async)scheduleTestFunctionVM:3(anonymous)VM:1Show more
+Running the axe-core linter on the call stack sidebar pane.
+aXe violations: []
+
+

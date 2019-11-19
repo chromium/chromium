@@ -4,6 +4,7 @@
 
 #include "remoting/host/resources.h"
 
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "remoting/base/string_resources.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -25,11 +26,11 @@ class ResourcesTest : public testing::Test {
 // TODO(alexeypa): Reenable the test once http://crbug.com/269143 (ChromeOS) and
 // http://crbug.com/268043 (MacOS) are fixed.
 TEST_F(ResourcesTest, DISABLED_ProductName) {
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   std::string expected_product_name = "Chrome Remote Desktop";
-#else  // defined(GOOGLE_CHROME_BUILD)
+#else   // BUILDFLAG(GOOGLE_CHROME_BRANDING)
   std::string expected_product_name = "Chromoting";
-#endif  // !defined(GOOGLE_CHROME_BUILD)
+#endif  // BUILDFLAGdefined(GOOGLE_CRANDING)
 
   // Chrome-style i18n is not used on Windows or Android.
 #if defined(OS_WIN) || defined(OS_ANDROID)

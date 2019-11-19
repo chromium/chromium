@@ -2,7 +2,8 @@
 
 <link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
 <link rel="import" href="chrome://resources/cr_elements/icons.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-button/paper-button.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
+<link rel="import" href="cups_printer_dialog_util.html">
 <link rel="import" href="cups_printer_shared_css.html">
 <link rel="import" href="cups_printers_browser_proxy.html">
 
@@ -17,7 +18,7 @@
       <array-selector id="arraySelector" items="[[printers]]"
           selected="{{selectedPrinter}}">
       </array-selector>
-      <template is="dom-repeat" items="[[printers]]">
+      <template is="dom-repeat" items="[[printers]]" sort="sort_">
         <button class="list-item" on-click="onSelect_">
           [[item.printerName]]
         </button>
@@ -30,10 +31,8 @@
   <template>
     <style include="settings-shared">
       #dialog {
-        --cr-dialog-body-container: {
-          /* Force a bottom border regardless of scroll state. */
-          border-bottom: 1px solid var(--paper-grey-300);
-        };
+        /* Force a bottom border regardless of scroll state. */
+        --cr-dialog-body-border-bottom: 1px solid var(--paper-grey-300);
       }
       #dialog [slot=body] {
         height: 350px;
@@ -55,4 +54,37 @@
     </cr-dialog>
   </template>
   <script src="cups_add_printer_dialog_elements.js"></script>
+</dom-module>
+
+<dom-module id="printer-dialog-error">
+  <template>
+    <style>
+      #error-wrap {
+        display: flex;
+      }
+
+      #error-container {
+        height: 20px;
+        margin-top: 10px;
+      }
+
+      #error-icon {
+       --iron-icon-fill-color: var(--google-red-600);
+      }
+
+      #error-message {
+        color: var(--google-red-600);
+        font-size: 10px;
+        margin-inline-start: 5px;
+      }
+    </style>
+    <div id="error-container" hidden="[[!errorText]]">
+      <div id="error-wrap">
+        <iron-icon id="error-icon" icon="cr:warning"></iron-icon>
+        <div id="error-message">
+          [[errorText]]
+        </div>
+      </div>
+    </div>
+  </template>
 </dom-module>

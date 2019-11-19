@@ -15,10 +15,10 @@
 #include "base/callback.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
+#include "components/payments/content/android/jni_headers/PaymentManifestParser_jni.h"
 #include "components/payments/content/developer_console_logger.h"
 #include "components/payments/core/error_logger.h"
 #include "content/public/browser/web_contents.h"
-#include "jni/PaymentManifestParser_jni.h"
 #include "url/gurl.h"
 
 namespace payments {
@@ -131,7 +131,6 @@ PaymentManifestParserAndroid::~PaymentManifestParserAndroid() {}
 
 void PaymentManifestParserAndroid::ParsePaymentMethodManifest(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcaller,
     const base::android::JavaParamRef<jstring>& jcontent,
     const base::android::JavaParamRef<jobject>& jcallback) {
   parser_.ParsePaymentMethodManifest(
@@ -142,7 +141,6 @@ void PaymentManifestParserAndroid::ParsePaymentMethodManifest(
 
 void PaymentManifestParserAndroid::ParseWebAppManifest(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcaller,
     const base::android::JavaParamRef<jstring>& jcontent,
     const base::android::JavaParamRef<jobject>& jcallback) {
   parser_.ParseWebAppManifest(
@@ -152,8 +150,7 @@ void PaymentManifestParserAndroid::ParseWebAppManifest(
 }
 
 void PaymentManifestParserAndroid::DestroyPaymentManifestParserAndroid(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcaller) {
+    JNIEnv* env) {
   delete this;
 }
 

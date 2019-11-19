@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 async function testFunction() {
-  /** @type {test.mojom.TestPageHandlerProxy} */
-  let proxy = test.mojom.TestPageHandler.getProxy()
+  /** @type {test.mojom.TestPageHandlerRemote} */
+  let remote = test.mojom.TestPageHandler.getRemote()
 
   // Type infers {?{values: !Array<!string>}} from Promise return type.
-  let result = await proxy.method1(' ', 5);
+  let result = await remote.method1(' ', 5);
 
   /** @type {Array<string>} */
   let values = result.values;

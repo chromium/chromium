@@ -44,7 +44,7 @@ void AppendStringAsByteArray(const std::string& data,
 // EasyUnlockClient::Create).
 class EasyUnlockClientImpl : public EasyUnlockClient {
  public:
-  EasyUnlockClientImpl() : proxy_(NULL), weak_ptr_factory_(this) {}
+  EasyUnlockClientImpl() : proxy_(nullptr) {}
 
   ~EasyUnlockClientImpl() override = default;
 
@@ -179,7 +179,7 @@ class EasyUnlockClientImpl : public EasyUnlockClient {
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
-  base::WeakPtrFactory<EasyUnlockClientImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<EasyUnlockClientImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(EasyUnlockClientImpl);
 };
@@ -203,8 +203,8 @@ EasyUnlockClient::EasyUnlockClient() = default;
 EasyUnlockClient::~EasyUnlockClient() = default;
 
 // static
-EasyUnlockClient* EasyUnlockClient::Create() {
-  return new EasyUnlockClientImpl();
+std::unique_ptr<EasyUnlockClient> EasyUnlockClient::Create() {
+  return std::make_unique<EasyUnlockClientImpl>();
 }
 
 }  // namespace chromeos

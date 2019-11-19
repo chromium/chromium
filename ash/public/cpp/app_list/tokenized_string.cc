@@ -13,7 +13,7 @@
 
 using base::i18n::BreakIterator;
 
-namespace app_list {
+namespace ash {
 
 TokenizedString::TokenizedString(const base::string16& text) : text_(text) {
   Tokenize();
@@ -44,4 +44,4 @@ void TokenizedString::Tokenize() {
   }
 }
 
-}  // namespace app_list
+}  // namespace ash

@@ -116,8 +116,7 @@ class TestStateMachineEventRewriterOld : public EventRewriter {
                EventType to_type,
                EventRewriteStatus to_status) {
     RewriteResult r = {to_state, to_type, to_status};
-    rules_.insert(std::pair<RewriteCase, RewriteResult>(
-        RewriteCase(from_state, from_type), r));
+    rules_.emplace(RewriteCase(from_state, from_type), r);
   }
   EventRewriteStatus RewriteEvent(
       const Event& event,

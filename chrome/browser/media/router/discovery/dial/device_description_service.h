@@ -19,7 +19,6 @@
 
 namespace media_router {
 
-class DataDecoder;
 class DeviceDescriptionFetcher;
 class SafeDialDeviceDescriptionParser;
 
@@ -61,7 +60,6 @@ class DeviceDescriptionService {
                                    const std::string& error_message)>;
 
   DeviceDescriptionService(
-      DataDecoder* data_decoder,
       const DeviceDescriptionParseSuccessCallback& success_cb,
       const DeviceDescriptionParseErrorCallback& error_cb);
   virtual ~DeviceDescriptionService();

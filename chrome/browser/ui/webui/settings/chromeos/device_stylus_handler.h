@@ -12,14 +12,11 @@
 #include "base/scoped_observer.h"
 #include "chrome/browser/chromeos/note_taking_helper.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
+#include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/input_device_event_observer.h"
 
 namespace base {
 class ListValue;
-}
-
-namespace ui {
-class InputDeviceManager;
 }
 
 namespace chromeos {
@@ -63,9 +60,10 @@ class StylusHandler : public ::settings::SettingsPageUIHandler,
   std::set<std::string> note_taking_app_ids_;
 
   // Observer registration.
-  ScopedObserver<NoteTakingHelper, NoteTakingHelper::Observer> note_observer_;
-  ScopedObserver<ui::InputDeviceManager, ui::InputDeviceEventObserver>
-      input_observer_;
+  ScopedObserver<NoteTakingHelper, NoteTakingHelper::Observer> note_observer_{
+      this};
+  ScopedObserver<ui::DeviceDataManager, ui::InputDeviceEventObserver>
+      input_observer_{this};
 
   DISALLOW_COPY_AND_ASSIGN(StylusHandler);
 };

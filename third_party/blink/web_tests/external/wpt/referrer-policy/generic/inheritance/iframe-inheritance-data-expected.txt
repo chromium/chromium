@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL iframes with data url uses no referrer assert_equals: expected (undefined) undefined but got (string) "FAILURE"
+Harness: the test ran to completion.
+

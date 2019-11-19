@@ -71,7 +71,7 @@ DrawingRecorder::~DrawingRecorder() {
 #endif
 
   context_.GetPaintController().CreateAndAppend<DrawingDisplayItem>(
-      client_, type_, picture, known_to_be_opaque_);
+      client_, type_, std::move(picture), known_to_be_opaque_);
 }
 
 }  // namespace blink

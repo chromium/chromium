@@ -2,23 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# Deletes libsystem.dylib from the build dir, since it shadows
-# /usr/lib/libSystem.dylib on macOS.
-# TODO(thakis): Remove this after a while.
-action("clean_up_old_dylib") {
-  script = "//build/rm.py"
-  stamp = "$target_gen_dir/clean_up_stamp"
-  outputs = [
-    stamp,
-  ]
-  args = [
-    "--stamp",
-    rebase_path(stamp, root_build_dir),
-    "-f",
-    "libsystem.dylib",
-  ]
-}
-
 component("system") {
   output_name = "mojo_public_system_cpp"
 
@@ -30,10 +13,14 @@ component("system") {
     "data_pipe.h",
     "data_pipe_drainer.cc",
     "data_pipe_drainer.h",
+    "data_pipe_producer.cc",
+    "data_pipe_producer.h",
     "data_pipe_utils.cc",
     "data_pipe_utils.h",
-    "file_data_pipe_producer.cc",
-    "file_data_pipe_producer.h",
+    "file_data_source.cc",
+    "file_data_source.h",
+    "filtered_data_source.cc",
+    "filtered_data_source.h",
     "functions.h",
     "handle.h",
     "handle_signal_tracker.cc",
@@ -52,8 +39,8 @@ component("system") {
     "scope_to_message_pipe.h",
     "simple_watcher.cc",
     "simple_watcher.h",
-    "string_data_pipe_producer.cc",
-    "string_data_pipe_producer.h",
+    "string_data_source.cc",
+    "string_data_source.h",
     "system_export.h",
     "trap.cc",
     "trap.h",
@@ -67,16 +54,13 @@ component("system") {
     # This file refers to a the base::File::File(path, flags)
     # constructor which does not exist in nacl builds, and the code
     # here is unused in nacl builds anyway.
-    sources -= [ "file_data_pipe_producer.cc" ]
+    sources -= [ "file_data_source.cc" ]
   }
 
   public_deps = [
     "//base",
     "//mojo/public/c/system",
     "//mojo/public/cpp/platform",
-  ]
-  deps = [
-    ":clean_up_old_dylib",
   ]
 
   defines = [ "MOJO_CPP_SYSTEM_IMPLEMENTATION" ]

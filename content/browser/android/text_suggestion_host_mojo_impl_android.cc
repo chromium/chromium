@@ -5,7 +5,7 @@
 #include "content/browser/android/text_suggestion_host_mojo_impl_android.h"
 
 #include "content/browser/android/text_suggestion_host_android.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 namespace content {
 
@@ -16,10 +16,10 @@ TextSuggestionHostMojoImplAndroid::TextSuggestionHostMojoImplAndroid(
 // static
 void TextSuggestionHostMojoImplAndroid::Create(
     TextSuggestionHostAndroid* text_suggestion_host,
-    blink::mojom::TextSuggestionHostRequest request) {
-  mojo::MakeStrongBinding(
+    mojo::PendingReceiver<blink::mojom::TextSuggestionHost> receiver) {
+  mojo::MakeSelfOwnedReceiver(
       std::make_unique<TextSuggestionHostMojoImplAndroid>(text_suggestion_host),
-      std::move(request));
+      std::move(receiver));
 }
 
 void TextSuggestionHostMojoImplAndroid::StartSuggestionMenuTimer() {

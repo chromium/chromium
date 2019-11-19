@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<script src="../../../../../resources/testharness.js"></script>
+<script src="../../../../../resources/testharnessreport.js"></script>
+<script src='../../../../../resources/gesture-util.js'></script>
+<style>
+  body, html {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+  }
+  div {
+    width: 50%;
+    height: 50%;
+    position: absolute;
+    left: 25%;
+    top: 25%;
+    background-color: green;
+  }
+</style>
+<div></div>
+<script>
+  var PINCH_ZOOM_COUNTER = 2920;
+
+  promise_test(async () => {
+    await pinchBy(2, 400, 300, SPEED_INSTANT, GestureSourceType.MOUSE_INPUT);
+    assert_true(internals.isUseCounted(document, PINCH_ZOOM_COUNTER));
+  }, "Pinch zoom should update UseCounter.");
+</script>

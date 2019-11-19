@@ -28,6 +28,6 @@ void FakeModelTypeProcessor::OnCommitCompleted(
 
 void FakeModelTypeProcessor::OnUpdateReceived(
     const sync_pb::ModelTypeState& type_state,
-    const UpdateResponseDataList& updates) {}
+    UpdateResponseDataList updates) {}
 
 }  // namespace syncer

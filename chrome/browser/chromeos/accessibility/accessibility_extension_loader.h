@@ -36,7 +36,7 @@ class AccessibilityExtensionLoader {
 
   base::Closure unload_callback_;
 
-  base::WeakPtrFactory<AccessibilityExtensionLoader> weak_ptr_factory_;
+  base::WeakPtrFactory<AccessibilityExtensionLoader> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AccessibilityExtensionLoader);
 };

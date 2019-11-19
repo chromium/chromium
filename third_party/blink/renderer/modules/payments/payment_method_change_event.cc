@@ -28,8 +28,8 @@ const String& PaymentMethodChangeEvent::methodName() const {
 const ScriptValue PaymentMethodChangeEvent::methodDetails(
     ScriptState* script_state) const {
   if (method_details_.IsEmpty())
-    return ScriptValue::CreateNull(script_state);
-  return ScriptValue(script_state,
+    return ScriptValue::CreateNull(script_state->GetIsolate());
+  return ScriptValue(script_state->GetIsolate(),
                      method_details_.GetAcrossWorld(script_state));
 }
 
@@ -47,7 +47,7 @@ PaymentMethodChangeEvent::PaymentMethodChangeEvent(
                                 init),
       method_name_(init->methodName()) {
   if (init->hasMethodDetails()) {
-    method_details_.Set(init->methodDetails().GetIsolate(),
+    method_details_.Set(script_state->GetIsolate(),
                         init->methodDetails().V8Value());
   }
 }

@@ -22,8 +22,7 @@
 #include "base/sequenced_task_runner.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
-#include "content/common/content_export.h"
-#include "content/common/dom_storage/dom_storage_types.h"
+#include "content/browser/dom_storage/dom_storage_types.h"
 #include "third_party/leveldatabase/src/include/leveldb/status.h"
 
 namespace url {
@@ -51,7 +50,7 @@ namespace content {
 // This class is not thread safe. Read-only methods (ReadAreaValues,
 // ReadNamespacesAndOrigins, and OnMemoryDump) may be called on any thread.
 // Methods that modify the database must be called on the same thread.
-class CONTENT_EXPORT SessionStorageDatabase
+class SessionStorageDatabase
     : public base::RefCountedDeleteOnSequence<SessionStorageDatabase> {
  public:
   // |file_path| is the path to the directory where the database will be

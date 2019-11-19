@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
 #include "third_party/blink/renderer/platform/graphics/paint/hit_test_display_item.h"
+#include "third_party/blink/renderer/platform/graphics/paint/scroll_hit_test_display_item.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/skia/include/core/SkRegion.h"
 
@@ -58,9 +59,8 @@ void ComputeChunkDerivedData(const DisplayItemList& display_items,
         item.IsDrawing()) {
       const auto& drawing = static_cast<const DrawingDisplayItem&>(item);
       if (drawing.GetPaintRecord() && drawing.KnownToBeOpaque()) {
-        known_to_be_opaque_region.op(
-            SkIRect(EnclosedIntRect(drawing.VisualRect())),
-            SkRegion::kUnion_Op);
+        known_to_be_opaque_region.op(SkIRect(drawing.VisualRect()),
+                                     SkRegion::kUnion_Op);
       }
     }
 
@@ -68,11 +68,29 @@ void ComputeChunkDerivedData(const DisplayItemList& display_items,
       const auto& hit_test = static_cast<const HitTestDisplayItem&>(item);
       if (!chunk.hit_test_data)
         chunk.hit_test_data = std::make_unique<HitTestData>();
-      chunk.hit_test_data->Append(hit_test.GetHitTestRect());
+      chunk.hit_test_data->AppendTouchActionRect(hit_test.GetHitTestRect());
     }
+
+    // Because ScrollHitTestDisplayItems force new paint chunks (see:
+    // PaintChunker::IncrementDisplayItemIndex), they should only be the first
+    // item in a paint chunk.
+    DCHECK(!item.IsScrollHitTest() || item.Equals(*items.begin()));
   }
 
-  if (known_to_be_opaque_region.contains(EnclosingIntRect(chunk.bounds)))
+  // Because ScrollHitTestDisplayItems force new paint chunks (see:
+  // PaintChunker::IncrementDisplayItemIndex), they should only be the first
+  // item in a paint chunk.
+  if (items.begin()->IsScrollHitTest()) {
+    const auto& scroll_hit_test_item =
+        static_cast<const ScrollHitTestDisplayItem&>(*items.begin());
+    if (!chunk.hit_test_data)
+      chunk.hit_test_data = std::make_unique<HitTestData>();
+    chunk.hit_test_data->SetScrollHitTest(
+        scroll_hit_test_item.scroll_offset_node(),
+        scroll_hit_test_item.scroll_container_bounds());
+  }
+
+  if (known_to_be_opaque_region.contains(chunk.bounds))
     chunk.known_to_be_opaque = true;
 
   if (items.begin() != items.end()) {
@@ -86,9 +104,7 @@ class DebugDrawingClient final : public DisplayItemClient {
  public:
   DebugDrawingClient() { Invalidate(PaintInvalidationReason::kUncacheable); }
   String DebugName() const final { return "DebugDrawing"; }
-  LayoutRect VisualRect() const final {
-    return LayoutRect(LayoutRect::InfiniteIntRect());
-  }
+  IntRect VisualRect() const final { return LayoutRect::InfiniteIntRect(); }
 };
 
 }  // namespace
@@ -164,11 +180,10 @@ sk_sp<PaintRecord> PaintArtifact::GetPaintRecord(
 }
 
 void PaintArtifact::FinishCycle() {
-  // BlinkGenPropertyTrees uses PaintController::ClearPropertyTreeChangedStateTo
-  // for clearing the property tree changed state at the end of paint instead of
-  // in FinishCycle. See: LocalFrameView::RunPaintLifecyclePhase.
+  // Until CompositeAfterPaint, PaintController::ClearPropertyTreeChangedStateTo
+  // is used for clearing the property tree changed state at the end of paint
+  // instead of in FinishCycle. See: LocalFrameView::RunPaintLifecyclePhase.
   bool clear_property_tree_changed =
-      !RuntimeEnabledFeatures::BlinkGenPropertyTreesEnabled() ||
       RuntimeEnabledFeatures::CompositeAfterPaintEnabled();
   for (auto& chunk : chunks_) {
     chunk.client_is_just_created = false;

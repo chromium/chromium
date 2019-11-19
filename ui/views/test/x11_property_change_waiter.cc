@@ -4,10 +4,12 @@
 
 #include "ui/views/test/x11_property_change_waiter.h"
 
+#include <utility>
+
 #include "base/run_loop.h"
-#include "ui/base/x/x11_window_event_manager.h"
 #include "ui/events/platform/platform_event_source.h"
 #include "ui/events/platform/scoped_event_dispatcher.h"
+#include "ui/events/x/x11_window_event_manager.h"
 #include "ui/gfx/x/x11.h"
 #include "ui/gfx/x/x11_atom_cache.h"
 
@@ -19,8 +21,8 @@ X11PropertyChangeWaiter::X11PropertyChangeWaiter(XID window,
   // Ensure that we are listening to PropertyNotify events for |window|. This
   // is not the case for windows which were not created by
   // DesktopWindowTreeHostX11.
-  x_window_events_.reset(
-      new ui::XScopedEventSelector(x_window_, PropertyChangeMask));
+  x_window_events_ =
+      std::make_unique<ui::XScopedEventSelector>(x_window_, PropertyChangeMask);
 
   // Override the dispatcher so that we get events before
   // DesktopWindowTreeHostX11 does. We must do this because
@@ -29,7 +31,7 @@ X11PropertyChangeWaiter::X11PropertyChangeWaiter(XID window,
       ui::PlatformEventSource::GetInstance()->OverrideDispatcher(this);
 }
 
-X11PropertyChangeWaiter::~X11PropertyChangeWaiter() {}
+X11PropertyChangeWaiter::~X11PropertyChangeWaiter() = default;
 
 void X11PropertyChangeWaiter::Wait() {
   if (!wait_)
@@ -64,7 +66,7 @@ uint32_t X11PropertyChangeWaiter::DispatchEvent(
 
   wait_ = false;
   if (!quit_closure_.is_null())
-    quit_closure_.Run();
+    std::move(quit_closure_).Run();
   return ui::POST_DISPATCH_PERFORM_DEFAULT;
 }
 

@@ -1,0 +1,316 @@
+/* Copyright (C) 2019 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+body {
+  font: 12px sans-serif;
+}
+
+.calendar-picker {
+  background-color: #ffffff;
+  border-radius: 2px;
+}
+
+.calendar-table-view {
+  border: 0;
+}
+
+.calendar-table-header-view {
+  background-color: #ffffff;
+  border: 0;
+  height: 29px;
+}
+
+.week-day-label {
+  line-height: 28px;
+}
+
+.calendar-navigation-button {
+  -webkit-align-self: center;
+  background-color: #ffffff;
+  border: 1px solid transparent;
+  color: #101010;
+  padding: 0;
+  text-align: center;
+  width: 28px;
+}
+
+.calendar-navigation-button svg {
+  padding-top: 4px;
+}
+
+.calendar-navigation-button:hover {
+  background-color: #E5E5E5;
+}
+
+.calendar-navigation-button:disabled {
+  background-color: #FFFFFF;
+}
+
+.calendar-navigation-button:disabled path {
+  fill: rgba(16, 16, 16, 0.3);
+}
+
+.calendar-title {
+  -webkit-align-self: flex-start;
+  flex: 1;
+  text-align: left;
+}
+
+.month-popup-button {
+  border: 0 !important;
+  font-weight: bold;
+  padding: 0;
+}
+
+.month-popup-button:focus {
+  outline: auto 1px -webkit-focus-ring-color !important;
+}
+
+.month-popup-button:disabled {
+  background-color: #FFFFFF;
+  color: rgba(16, 16, 16, 0.3);
+}
+
+.month-popup-button:disabled polygon {
+  fill: rgba(16, 16, 16, 0.3) !important;
+}
+
+.month-popup-button .disclosure-triangle {
+  margin: 0;
+  margin-inline-start: 4px;
+  margin-inline-end: 1px;
+}
+
+.week-number-cell {
+  border: 1px solid transparent !important;
+}
+
+.day-cell {
+  background-color: #ffffff;
+  border: 1px solid transparent !important;
+  border-radius: 2px;
+  color: #767676;
+  padding: 1px;
+  text-align: center;
+}
+
+.day-cell.current-month {
+  color: #101010;
+}
+
+.day-cell.highlighted,
+.month-button.highlighted,
+.week-number-cell.highlighted {
+  background-color: #E5E5E5;
+}
+
+.day-cell.selected,
+.month-button.selected,
+.week-number-cell.selected {
+  background-color: #CECECE;
+  font-weight: bold;
+}
+
+.day-cell.highlighted.today,
+.day-cell.today,
+.month-button.today {
+  background-color: #6E6E6E;
+  border: 0;
+  color: #FFFFFF;
+  font-weight: bold;
+}
+
+.day-cell.selected.today,
+.month-button.selected.today {
+  border: 2px solid #CECECE !important;
+}
+
+.day-cell.disabled,
+.day-cell.disabled.today,
+.month-button[aria-disabled="true"],
+.week-number-cell.disabled {
+  background-color: #FFFFFF;
+  color: rgba(16, 16, 16, 0.3);
+}
+
+.today-button-refresh {
+  border: 1px solid transparent;
+  bottom: 12px;
+  color: #0078D4;
+  font-size: 12px;
+  height: 20px;
+  padding: 4px;
+  position: absolute;
+  right: 20px;
+  width: auto;
+}
+
+.today-button-refresh:hover {
+  background-color: #E5E5E5;
+}
+
+.today-button-refresh:disabled {
+  background-color: #FFFFFF;
+  color: rgba(16, 16, 16, 0.3);
+}
+
+.year-list-view {
+  border: 0;
+}
+
+.scrubby-scroll-bar {
+  border: 0;
+}
+
+.scrubby-scroll-thumb {
+  width: 4px;
+}
+
+.year-list-cell {
+  border: 0;
+}
+
+.year-list-cell .label {
+  background-color: #EFEFEF;
+  border-color: #CECECE;
+  margin-bottom: 1px;
+}
+
+.month-button {
+  border: 1px solid transparent !important;
+  border-radius: 2px;
+  color: #101010;
+}
+
+.datetimelocal-picker .calendar-picker {
+  border: 0;
+  border-right: 1px solid #CECECE;
+}
+
+.datetimelocal-picker .time-picker {
+  border: 0;
+  height: 254px;
+  position: absolute;
+  right: 3px;
+  top: 12px;
+}
+
+/* These forced colors mode styles override the default styling for elements
+ * when forced colors mode is enabled.
+ */
+@media (forced-colors: active) {
+  .calendar-navigation-button {
+    background-color: Window;
+    color: WindowText;
+    forced-color-adjust: none;
+  }
+
+  .calendar-navigation-button:hover {
+    background-color: Window;
+    border-color: Highlight;
+  }
+
+  .calendar-navigation-button:disabled {
+    background-color: Window;
+    border-color: transparent;
+  }
+
+  .calendar-navigation-button path {
+    fill: WindowText;
+  }
+
+  .calendar-navigation-button:disabled path {
+    fill: GrayText;
+  }
+
+  .month-popup-button polygon {
+    fill: WindowText !important;
+  }
+
+  .month-popup-button:disabled polygon {
+    fill: GrayText !important;
+  }
+
+  .week-number-cell  {
+    background-color: Window;
+    color: WindowText;
+    forced-color-adjust: none;
+  }
+
+  .day-cell {
+    background-color: Window;
+    color: GrayText;
+    forced-color-adjust: none;
+  }
+
+  .month-button {
+    background-color: Window;
+    color: WindowText;
+    forced-color-adjust: none;
+  }
+
+  .day-cell.current-month {
+    color: WindowText;
+  }
+
+  .day-cell.highlighted,
+  .month-button.highlighted,
+  .week-number-cell.highlighted {
+    background-color: Window;
+    border-color: Highlight !important;
+  }
+
+  .day-cell.selected,
+  .month-button.selected,
+  .week-number-cell.selected {
+    background-color: Highlight;
+    color: Window;
+  }
+
+  .day-cell.highlighted.today,
+  .day-cell.today,
+  .month-button.today {
+    background-color: Highlight;
+    border: 2px solid Window !important;
+    color: Window;
+  }
+
+  .day-cell.selected.today,
+  .month-button.selected.today {
+    border: 1px solid Window !important;
+  }
+
+  .day-cell.disabled,
+  .day-cell.disabled.today,
+  .month-button[aria-disabled="true"],
+  .week-number-cell.disabled {
+    background-color: Window;
+    border: 0 !important;
+    color: GrayText;
+  }
+
+  .today-button-refresh {
+    background-color: Window;
+    color: LinkText;
+    forced-color-adjust: none;
+  }
+
+  .today-button-refresh:hover {
+    background-color: Window;
+    border-color: Highlight;
+  }
+
+  .today-button-refresh:disabled {
+    background-color: Window;
+    border-color: transparent;
+    color: GrayText;
+    forced-color-adjust: none;
+  }
+
+  .scrubby-scroll-thumb {
+    background-color: WindowText;
+    forced-color-adjust: none;
+  }
+}

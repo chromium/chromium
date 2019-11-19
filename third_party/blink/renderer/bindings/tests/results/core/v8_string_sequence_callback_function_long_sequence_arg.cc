@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 
 namespace blink {
 
@@ -60,6 +61,11 @@ v8::Maybe<Vector<String>> V8StringSequenceCallbackFunctionLongSequenceArg::Invok
   // step: Prepare to run a callback with stored settings.
   v8::Context::BackupIncumbentScope backup_incumbent_scope(
       IncumbentScriptState()->GetContext());
+
+  if (UNLIKELY(ScriptForbiddenScope::IsScriptForbidden())) {
+    ScriptForbiddenScope::ThrowScriptForbiddenException(GetIsolate());
+    return v8::Nothing<Vector<String>>();
+  }
 
   v8::Local<v8::Function> function;
   // callback function's invoke:
@@ -118,11 +124,6 @@ v8::Maybe<Vector<String>> V8StringSequenceCallbackFunctionLongSequenceArg::Invok
     else
       return v8::Just<Vector<String>>(native_result);
   }
-}
-
-v8::Maybe<Vector<String>> V8PersistentCallbackFunction<V8StringSequenceCallbackFunctionLongSequenceArg>::Invoke(bindings::V8ValueOrScriptWrappableAdapter callback_this_value, const Vector<int32_t>& arg) {
-  return Proxy()->Invoke(
-      callback_this_value, arg);
 }
 
 }  // namespace blink

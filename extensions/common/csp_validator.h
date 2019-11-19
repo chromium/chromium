@@ -132,10 +132,11 @@ std::string GetEffectiveSandoxedPageCSP(const std::string& policy,
 bool ContentSecurityPolicyIsSandboxed(
     const std::string& policy, Manifest::Type type);
 
-// Returns whether the given |isolated_world_csp| is secure. If not, populates
-// |error|.
-bool IsSecureIsolatedWorldCSP(const std::string& isolated_world_csp,
-                              base::string16* error);
+// Returns whether the given |content_security_policy| prevents remote scripts.
+// If not, populates |error|.
+bool DoesCSPDisallowRemoteCode(const std::string& content_security_policy,
+                               base::StringPiece manifest_key,
+                               base::string16* error);
 
 }  // namespace csp_validator
 

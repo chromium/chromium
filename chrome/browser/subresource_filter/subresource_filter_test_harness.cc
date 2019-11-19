@@ -54,13 +54,6 @@ void SubresourceFilterTestHarness::SetUp() {
 
   NavigateAndCommit(GURL("https://example.first"));
 
-  system_request_context_getter_ =
-      base::MakeRefCounted<net::TestURLRequestContextGetter>(
-          base::CreateSingleThreadTaskRunnerWithTraits(
-              {content::BrowserThread::IO}));
-  TestingBrowserProcess::GetGlobal()->SetSystemRequestContext(
-      system_request_context_getter_.get());
-
   // Set up safe browsing service with the fake database manager.
   //
   // TODO(csharrison): This is a bit ugly. See if the instructions in
@@ -120,8 +113,6 @@ void SubresourceFilterTestHarness::TearDown() {
   // all cleanup related to these classes actually happens.
   TestingBrowserProcess::GetGlobal()->SetRulesetService(nullptr);
   TestingBrowserProcess::GetGlobal()->SetSafeBrowsingService(nullptr);
-  TestingBrowserProcess::GetGlobal()->SetSystemRequestContext(nullptr);
-  system_request_context_getter_ = nullptr;
 
   base::RunLoop().RunUntilIdle();
 

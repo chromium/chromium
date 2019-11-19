@@ -7,8 +7,8 @@
 #include <utility>
 
 #include "base/unguessable_token.h"
-#include "content/public/common/url_loader_throttle.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "url/origin.h"
 
 namespace content {
@@ -48,7 +48,7 @@ SignedExchangeCertFetcherFactoryImpl::CreateFetcherAndStart(
     SignedExchangeReporter* reporter) {
   DCHECK(url_loader_factory_);
   DCHECK(url_loader_throttles_getter_);
-  std::vector<std::unique_ptr<URLLoaderThrottle>> throttles =
+  std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles =
       std::move(url_loader_throttles_getter_).Run();
   return SignedExchangeCertFetcher::CreateAndStart(
       std::move(url_loader_factory_), std::move(throttles), cert_url,

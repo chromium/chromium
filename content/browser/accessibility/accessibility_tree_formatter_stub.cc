@@ -15,7 +15,7 @@ class AccessibilityTreeFormatterStub
   ~AccessibilityTreeFormatterStub() override;
 
  private:
-  const base::FilePath::StringType GetExpectedFileSuffix() override;
+  base::FilePath::StringType GetExpectedFileSuffix() override;
   const std::string GetAllowEmptyString() override;
   const std::string GetAllowString() override;
   const std::string GetDenyString() override;
@@ -35,11 +35,11 @@ AccessibilityTreeFormatter::Create() {
 }
 
 // static
-std::vector<AccessibilityTreeFormatter::FormatterFactory>
+std::vector<AccessibilityTreeFormatter::TestPass>
 AccessibilityTreeFormatter::GetTestPasses() {
   return {
-      &AccessibilityTreeFormatterBlink::CreateBlink,
-      &AccessibilityTreeFormatter::Create,
+      {"blink", &AccessibilityTreeFormatterBlink::CreateBlink},
+      {"native", &AccessibilityTreeFormatter::Create},
   };
 }
 #endif
@@ -63,7 +63,7 @@ base::string16 AccessibilityTreeFormatterStub::ProcessTreeForOutput(
   return base::NumberToString16(id_value);
 }
 
-const base::FilePath::StringType
+base::FilePath::StringType
 AccessibilityTreeFormatterStub::GetExpectedFileSuffix() {
   return base::FilePath::StringType();
 }

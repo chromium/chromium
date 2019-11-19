@@ -13,7 +13,7 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/supports_user_data.h"
-#include "ios/web/public/url_data_source_ios.h"
+#include "ios/web/public/webui/url_data_source_ios.h"
 #include "ios/web/webui/url_data_manager_ios.h"
 #include "net/url_request/url_request_job_factory.h"
 

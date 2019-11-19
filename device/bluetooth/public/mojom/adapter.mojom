@@ -55,7 +55,8 @@ interface Adapter {
   // Creates a GATT connection to the device with |address| and returns a
   // Device if the connection was succesful. The GATT connection is tied to the
   // the lifetime of the Device message pipe.
-  ConnectToDevice(string address) => (ConnectResult result, Device? device);
+  ConnectToDevice(string address) =>
+      (ConnectResult result, pending_remote<Device>? device);
 
   // Retrieves the list of the devices known by the adapter including Connected
   // Devices, GATT Connected Devices, Paired Devices and Devices discovered
@@ -66,11 +67,11 @@ interface Adapter {
   GetInfo() => (AdapterInfo info);
 
   // Sets the client that listens for the adapter's events.
-  SetClient(AdapterClient client);
+  SetClient(pending_remote<AdapterClient> client);
 
   // Requests the adapter to start a new discovery session. Returns null if
   // session not created successfully.
-  StartDiscoverySession() => (DiscoverySession? session);
+  StartDiscoverySession() => (pending_remote<DiscoverySession>? session);
 };
 
 interface AdapterClient {

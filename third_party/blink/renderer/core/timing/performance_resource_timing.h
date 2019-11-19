@@ -32,19 +32,23 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_PERFORMANCE_RESOURCE_TIMING_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_PERFORMANCE_RESOURCE_TIMING_H_
 
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "third_party/blink/public/mojom/timing/performance_mark_or_measure.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/timing/worker_timing_container.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
 #include "third_party/blink/renderer/core/timing/performance_entry.h"
 #include "third_party/blink/renderer/core/timing/performance_server_timing.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
-#include "third_party/blink/renderer/platform/wtf/time.h"
 
 namespace blink {
 
 class ResourceLoadTiming;
 struct WebResourceTimingInfo;
 
-class CORE_EXPORT PerformanceResourceTiming : public PerformanceEntry {
+class CORE_EXPORT PerformanceResourceTiming
+    : public PerformanceEntry,
+      public mojom::blink::WorkerTimingContainer {
   DEFINE_WRAPPERTYPEINFO();
   friend class PerformanceResourceTimingTest;
 
@@ -52,18 +56,16 @@ class CORE_EXPORT PerformanceResourceTiming : public PerformanceEntry {
   // This constructor is for PerformanceNavigationTiming.
   // Related doc: https://goo.gl/uNecAj.
   PerformanceResourceTiming(const AtomicString& name,
-                            TimeTicks time_origin,
+                            base::TimeTicks time_origin,
+                            bool is_secure_context,
                             const WebVector<WebServerTimingInfo>&);
-  PerformanceResourceTiming(const WebResourceTimingInfo&,
-                            TimeTicks time_origin,
-                            const AtomicString& initiator_type);
+  PerformanceResourceTiming(
+      const WebResourceTimingInfo&,
+      base::TimeTicks time_origin,
+      const AtomicString& initiator_type,
+      mojo::PendingReceiver<mojom::blink::WorkerTimingContainer>
+          worker_timing_receiver);
   ~PerformanceResourceTiming() override;
-  static PerformanceResourceTiming* Create(const WebResourceTimingInfo& info,
-                                           TimeTicks time_origin,
-                                           const AtomicString& initiator_type) {
-    return MakeGarbageCollected<PerformanceResourceTiming>(info, time_origin,
-                                                           initiator_type);
-  }
 
   AtomicString entryType() const override;
   PerformanceEntryType EntryTypeEnum() const override;
@@ -83,11 +85,15 @@ class CORE_EXPORT PerformanceResourceTiming : public PerformanceEntry {
   DOMHighResTimeStamp requestStart() const;
   DOMHighResTimeStamp responseStart() const;
   virtual DOMHighResTimeStamp responseEnd() const;
-  unsigned long long transferSize() const;
-  unsigned long long encodedBodySize() const;
-  unsigned long long decodedBodySize() const;
+  uint64_t transferSize() const;
+  uint64_t encodedBodySize() const;
+  uint64_t decodedBodySize() const;
   const HeapVector<Member<PerformanceServerTiming>>& serverTiming() const;
+  const HeapVector<Member<PerformanceEntry>>& workerTiming() const;
 
+  // Implements blink::mojom::blink::WorkerTimingContainer
+  void AddPerformanceEntry(
+      mojom::blink::PerformanceMarkOrMeasurePtr entry) override;
   void Trace(blink::Visitor*) override;
 
  protected:
@@ -96,7 +102,7 @@ class CORE_EXPORT PerformanceResourceTiming : public PerformanceEntry {
   virtual AtomicString AlpnNegotiatedProtocol() const;
   virtual AtomicString ConnectionInfo() const;
 
-  TimeTicks TimeOrigin() const { return time_origin_; }
+  base::TimeTicks TimeOrigin() const { return time_origin_; }
 
  private:
   static AtomicString GetNextHopProtocol(
@@ -108,26 +114,27 @@ class CORE_EXPORT PerformanceResourceTiming : public PerformanceEntry {
   virtual ResourceLoadTiming* GetResourceLoadTiming() const;
   virtual bool AllowTimingDetails() const;
   virtual bool DidReuseConnection() const;
-  virtual unsigned long long GetTransferSize() const;
-  virtual unsigned long long GetEncodedBodySize() const;
-  virtual unsigned long long GetDecodedBodySize() const;
+  virtual uint64_t GetTransferSize() const;
+  virtual uint64_t GetEncodedBodySize() const;
+  virtual uint64_t GetDecodedBodySize() const;
 
   AtomicString initiator_type_;
   AtomicString alpn_negotiated_protocol_;
   AtomicString connection_info_;
-  TimeTicks time_origin_;
+  base::TimeTicks time_origin_;
   scoped_refptr<ResourceLoadTiming> timing_;
-  TimeTicks last_redirect_end_time_;
-  TimeTicks response_end_;
-  unsigned long long transfer_size_;
-  unsigned long long encoded_body_size_;
-  unsigned long long decoded_body_size_;
-  bool did_reuse_connection_;
-  bool allow_timing_details_;
-  bool allow_redirect_details_;
-  bool allow_negative_value_;
+  base::TimeTicks last_redirect_end_time_;
+  base::TimeTicks response_end_;
+  uint64_t transfer_size_ = 0;
+  uint64_t encoded_body_size_ = 0;
+  uint64_t decoded_body_size_ = 0;
+  bool did_reuse_connection_ = false;
+  bool allow_timing_details_ = false;
+  bool allow_redirect_details_ = false;
+  bool allow_negative_value_ = false;
   bool is_secure_context_ = false;
   HeapVector<Member<PerformanceServerTiming>> server_timing_;
+  HeapVector<Member<PerformanceEntry>> worker_timing_;
 };
 
 }  // namespace blink

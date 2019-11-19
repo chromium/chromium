@@ -1,0 +1,29 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="fi">
+<translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> välilehteä ei ole käytetty vähään aikaan. Suljetaanko ne?</translation>
+<translation id="1181037720776840403">Poista</translation>
+<translation id="125153950246128346">Näytä toinen välilehti napauttamalla</translation>
+<translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> välilehti}other{<ph name="TABS_COUNT_MANY" /> välilehteä}}</translation>
+<translation id="257674075312929031">Ryhmä</translation>
+<translation id="2613747923081026172">Luo ryhmä</translation>
+<translation id="2671423594960767771">Jaa ryhmä</translation>
+<translation id="2977480621796371840">Poista ryhmästä</translation>
+<translation id="4212246570487010370">Jatka selaamista</translation>
+<translation id="4648718555153979859">Välilehtesi on koottu tänne</translation>
+<translation id="5007392906805964215">Tarkista</translation>
+<translation id="5073204694187207510">Piilota koko näytön ruudukko</translation>
+<translation id="5082793167783849073">Luo ryhmä vertaillaksesi sivuja nopeasti. Aloita koskettamalla linkkiä pitkään.</translation>
+<translation id="5580090775658607195"><ph name="TAB_COUNT" /> välilehteä ryhmiteltiin</translation>
+<translation id="5792534911093536736">Lisää välilehtiä</translation>
+<translation id="58326064309361797">Ryhmittele välilehtiä vetämällä niitä</translation>
+<translation id="6040143037577758943">Sulje</translation>
+<translation id="6193448654517602979">Valitse välilehdet</translation>
+<translation id="6615455863669487791">Näytä</translation>
+<translation id="6840760312327750441">Kun haluat ryhmitellä välilehtiä, kosketa yhtä pitkään. Vedä se sitten toisen välilehden päälle.</translation>
+<translation id="7151209024774799310">Poista välilehtiä ryhmästä</translation>
+<translation id="7559245342362162951">Näytä ryhmän välilehdet koko näytön ruudukossa</translation>
+<translation id="9150694013019234766">Vaihda välilehteä välilehtiryhmässä näytön alalaidassa</translation>
+<translation id="9169594135889675189">Luo ryhmään uusi välilehti</translation>
+<translation id="959682366969460160">Järjestä</translation>
+</translationbundle>

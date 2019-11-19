@@ -25,6 +25,7 @@ static_library("zoom") {
     "//content/public/common",
     "//ipc",
     "//net",
+    "//third_party/blink/public/common",
     "//url",
   ]
 }

@@ -84,8 +84,7 @@ URLRequestFailedJob::URLRequestFailedJob(URLRequest* request,
     : URLRequestJob(request, network_delegate),
       phase_(phase),
       net_error_(net_error),
-      total_received_bytes_(0),
-      weak_factory_(this) {
+      total_received_bytes_(0) {
   CHECK_GE(phase, URLRequestFailedJob::FailurePhase::START);
   CHECK_LE(phase, URLRequestFailedJob::FailurePhase::READ_ASYNC);
   CHECK_LT(net_error, OK);

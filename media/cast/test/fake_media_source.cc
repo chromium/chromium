@@ -94,8 +94,7 @@ FakeMediaSource::FakeMediaSource(
       video_frame_rate_numerator_(video_config.max_frame_rate),
       video_frame_rate_denominator_(1),
       video_first_pts_(0),
-      video_first_pts_set_(false),
-      weak_factory_(this) {
+      video_first_pts_set_(false) {
   CHECK(output_audio_params_.IsValid());
   audio_bus_factory_.reset(
       new TestAudioBusFactory(audio_config.channels, audio_config.rtp_timebase,

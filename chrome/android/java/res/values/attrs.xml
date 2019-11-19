@@ -7,8 +7,6 @@
     <declare-styleable name="HyperlinkPreference">
         <!-- The URL to load when the preference is clicked -->
         <attr name="url" format="string" />
-        <!-- True if the hyperlink should look like an <a> element. Default is false. -->
-        <attr name="imitateWebLink" format="boolean" />
     </declare-styleable>
 
     <declare-styleable name="LearnMorePreference">
@@ -39,30 +37,8 @@
         <attr name="floatLabelHint" format="reference|string" />
     </declare-styleable>
 
-    <declare-styleable name="EmptyAlertEditText">
-        <attr name="alertMessage" format="string" />
-    </declare-styleable>
-
-    <declare-styleable name="PaddedFrameLayout">
-        <attr name="maxChildWidth" format="dimension" />
-        <attr name="maxChildHeight" format="dimension" />
-    </declare-styleable>
-
-    <declare-styleable name="BoundedView">
-        <attr name="maxWidth" format="dimension" />
-        <attr name="maxWidthLandscape" format="dimension" />
-        <attr name="maxWidthPortrait" format="dimension" />
-        <attr name="maxHeight" format="dimension" />
-    </declare-styleable>
-
-    <declare-styleable name="MaterialProgressBar">
-        <attr name="colorBackground" format="reference|color" />
-        <attr name="colorProgress" format="reference|color" />
-        <attr name="colorSecondaryProgress" format="reference|color" />
-    </declare-styleable>
-
-    <declare-styleable name="RadioButtonWithDescription">
-        <attr name="titleText" format="string" />
+    <declare-styleable name="BookmarkTextInputLayout">
+        <attr name="emptyErrorMessage" format="string" />
     </declare-styleable>
 
     <declare-styleable name="SpinnerPreference">
@@ -72,23 +48,17 @@
         <attr name="singleLine" format="boolean" />
     </declare-styleable>
 
-    <declare-styleable name="ListMenuButton">
-        <!-- Used to customize the width of the popup menu. -->
-        <attr name="menuWidth" format="reference|dimension" />
+    <declare-styleable name="TileGridLayout">
+        <attr name="minHorizontalSpacing" format="dimension"/>
     </declare-styleable>
 
-    <declare-styleable name="TextViewWithCompoundDrawables">
-        <attr name="drawableWidth" format="dimension"/>
-        <attr name="drawableHeight" format="dimension"/>
-        <!-- drawableTint wasn't added in Android until API level 23. -->
-        <attr name="chromeDrawableTint" format="color"/>
+    <declare-styleable name="ExploreSitesTileView">
+        <attr name="iconCornerRadius" format="dimension"/>
     </declare-styleable>
 
-    <declare-styleable name="AsyncViewStub">
-        <!-- Supply an identifier for the layout resource to inflate when the AsyncViewStub
-             becomes visible or when forced to do so. The layout resource must be a
-             valid reference to a layout. -->
-        <attr name="layout" format="reference" />
-        <attr name="autoInflate" format="boolean" />
+    <declare-styleable name="ChromeTextInputLayout">
+        <attr name="hintTextAppearance" format="reference" />
+        <attr name="hint" format="reference|string" />
+        <attr name="errorTextAppearance" format="reference" />
     </declare-styleable>
 </resources>

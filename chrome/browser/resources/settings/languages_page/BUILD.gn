@@ -11,8 +11,11 @@ js_type_check("closure_compile") {
     ":languages_browser_proxy",
     ":languages_page",
     ":languages_types",
-    ":manage_input_methods_page",
   ]
+
+  if (is_chromeos) {
+    deps += [ ":manage_input_methods_page" ]
+  }
 }
 
 js_library("languages_browser_proxy") {
@@ -34,10 +37,11 @@ js_library("languages") {
   deps = [
     ":languages_browser_proxy",
     ":languages_types",
-    "../prefs:prefs",
+    "../prefs",
     "../prefs:prefs_types",
     "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:cr",
+    "//ui/webui/resources/js:i18n_behavior",
     "//ui/webui/resources/js:promise_resolver",
   ]
   externs_list = [
@@ -74,9 +78,8 @@ js_library("languages_types") {
 
 js_library("manage_input_methods_page") {
   deps = [
-    ":languages",
     ":languages_types",
-    "../prefs:prefs",
+    "../prefs",
   ]
   externs_list = [ "$externs_path/language_settings_private.js" ]
 }

@@ -11,4 +11,4 @@ deps = [
 public_deps = [
   "//services/network/public/cpp:cpp_base",
 ]
-type_mappings = [ "network.mojom.CorsErrorStatus=network::CorsErrorStatus" ]
+type_mappings = [ "network.mojom.CorsErrorStatus=::network::CorsErrorStatus" ]

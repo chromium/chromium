@@ -19,7 +19,7 @@ static_library("net") {
   ]
   deps = [
     "//base",
-    "//components/google/core/browser",
+    "//components/google/core/common",
     "//components/metrics",
     "//components/variations/field_trial_config",
     "//components/variations/proto",

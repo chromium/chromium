@@ -350,5 +350,33 @@ promise_test(async (t) => {
     testGamepadStateAllDisconnected();
 }, "Remove all connection event listeners while handling a gamepad ID change.");
 
+promise_test(async (t) => {
+    disconnectGamepads();
+    testGamepadStateAllDisconnected();
+
+    // Connect two gamepads.
+    let connectPromise1 = onGamepadEventWithIndex('gamepadconnected', 0);
+    let connectPromise2 = onGamepadEventWithIndex('gamepadconnected', 1);
+    connectGamepads(2);
+    await Promise.all([connectPromise1, connectPromise2]);
+
+    // Ensure that the gamepad state is already updated inside the listener.
+    let disconnectListener = () => {
+        let gamepads = navigator.getGamepads();
+        assert_equals(gamepads[0], null);
+        assert_equals(gamepads[1], null);
+    };
+    window.addEventListener('gamepaddisconnected', disconnectListener);
+
+    // Disconnect both gamepads.
+    let disconnectPromise1 = onGamepadEventWithIndex('gamepaddisconnected', 0);
+    let disconnectPromise2 = onGamepadEventWithIndex('gamepaddisconnected', 1);
+    disconnectGamepads();
+    await Promise.all([disconnectPromise1, disconnectPromise2]);
+
+    window.removeEventListener('gamepaddisconnected', disconnectListener);
+    testGamepadStateAllDisconnected();
+}, "Query state inside multiple callbacks does not cause re-entrancy");
+
 </script>
 </body>

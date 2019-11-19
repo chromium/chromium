@@ -4,6 +4,8 @@
 
 #include <stdint.h>
 
+#include <utility>
+
 #include "base/win/scoped_variant.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -207,6 +209,17 @@ TEST(ScopedVariantTest, ScopedVariant) {
     ScopedVariant disp_var(&faker);
     EXPECT_EQ(VT_DISPATCH, disp_var.type());
     EXPECT_EQ(&faker, V_DISPATCH(disp_var.ptr()));
+    EXPECT_EQ(1, faker.ref_count());
+  }
+  EXPECT_EQ(0, faker.ref_count());
+
+  {
+    ScopedVariant ref1(&faker);
+    EXPECT_EQ(1, faker.ref_count());
+    ScopedVariant ref2(std::move(ref1));
+    EXPECT_EQ(1, faker.ref_count());
+    ScopedVariant ref3;
+    ref3 = std::move(ref2);
     EXPECT_EQ(1, faker.ref_count());
   }
   EXPECT_EQ(0, faker.ref_count());

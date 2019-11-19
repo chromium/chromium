@@ -16,6 +16,10 @@ class RenderText;
 class Size;
 }  // namespace gfx
 
+namespace ui {
+struct AXNodeData;
+}  // namespace ui
+
 namespace views {
 
 class Widget;
@@ -36,6 +40,7 @@ class VIEWS_EXPORT TooltipAura : public Tooltip, public WidgetObserver {
 
   friend class test::TooltipAuraTestApi;
   gfx::RenderText* GetRenderTextForTest();
+  void GetAccessibleNodeDataForTest(ui::AXNodeData* node_data);
 
   // Adjusts the bounds given by the arguments to fit inside the desktop
   // and returns the adjusted bounds.
@@ -61,11 +66,11 @@ class VIEWS_EXPORT TooltipAura : public Tooltip, public WidgetObserver {
   std::unique_ptr<TooltipView> tooltip_view_;
 
   // The widget containing the tooltip. May be NULL.
-  Widget* widget_;
+  Widget* widget_ = nullptr;
 
   // The window we're showing the tooltip for. Never NULL and valid while
   // showing.
-  aura::Window* tooltip_window_;
+  aura::Window* tooltip_window_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(TooltipAura);
 };

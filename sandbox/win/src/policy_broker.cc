@@ -55,6 +55,8 @@ bool InitGlobalNt() {
   INIT_GLOBAL_NT(QuerySection);
   INIT_GLOBAL_NT(QueryVirtualMemory);
   INIT_GLOBAL_NT(UnmapViewOfSection);
+  INIT_GLOBAL_NT(SignalAndWaitForSingleObject);
+  INIT_GLOBAL_NT(WaitForSingleObject);
 
   INIT_GLOBAL_RTL(RtlAllocateHeap);
   INIT_GLOBAL_RTL(RtlAnsiStringToUnicodeString);

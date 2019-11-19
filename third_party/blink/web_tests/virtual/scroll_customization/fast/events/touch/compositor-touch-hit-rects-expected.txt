@@ -1,0 +1,49 @@
+This tests verifies the hit test regions given to the compositor. It can only be run in DumpRenderTree. The outputted rects should cover the hit test regions of all the listed elements. Enable visualize mode to quickly validate graphically.
+
+normalFlow: layer(785x1530) has hit test rect (13,128 290x12)
+
+inlineOverflow: layer(785x1578) has hit test rect (13,145 17x1)
+inlineOverflow: layer(785x1578) has hit test rect (13,146 152x10)
+inlineOverflow: layer(785x1578) has hit test rect (13,156 42x10)
+inlineOverflow: layer(785x1578) has hit test rect (13,166 17x1)
+
+absoluteChildContainer: layer(785x1722) has hit test rect (13,172 290x12)
+absoluteChildContainer: layer(785x1722) has hit test rect (320,173 142x12)
+
+relativeChildContainer: layer(785x1802) has hit test rect (13,189 290x22)
+relativeChildContainer: layer(785x1802) has hit test rect (314,199 142x12)
+
+fixed: layer(52x12) has hit test rect (0,0 52x12)
+
+translate: layer(785x1930) has hit test rect (13,216 290x14)
+translate: layer(785x1930) has hit test rect (314,219 288x12)
+
+transform2d: layer(785x2010) has hit test rect (16,236 284x20)
+
+overhangingContainer: layer(785x2058) has hit test rect (13,262 290x12)
+overhangingContainer: layer(785x2058) has hit test rect (14,274 102x10)
+overhangingContainer: layer(785x2058) has hit test rect (14,284 111x10)
+overhangingContainer: layer(785x2058) has hit test rect (14,294 102x11)
+
+transform3d: layer(288x12) has hit test rect (0,0 288x12)
+transform3d: layer(785x2202) has hit test rect (13,315 290x14)
+
+negativeOffsetChild: layer(211x13) has hit test rect (0,1 102x12)
+
+continuation: layer(785x2330) has hit test rect (13,366 290x12)
+
+inlineAbsoluteChildContainer: layer(785x2378) has hit test rect (320,393 252x12)
+
+list: layer(785x2426) has hit test rect (13,413 290x14)
+list: layer(785x2426) has hit test rect (354,414 248x12)
+list: layer(785x2426) has hit test rect (341,415 5x10)
+
+styleModified: layer(785x2548) has hit test rect (13,437 290x22)
+
+containsSvg: layer(785x2596) has hit test rect (13,464 290x16)
+
+svgline: layer(785x2644) has hit test rect (13,489 22x3)
+
+tablecell: layer(785x2692) has hit test rect (45,518 32x11)
+
+

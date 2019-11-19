@@ -48,3 +48,4 @@ Changed the symbolizer to act in a passthrough mode when reading from stdin, so
     adb logcat can be piped through it to symbolize on the fly.
 
 Made the symbolizer agnostic to the width of pointers.
+Clamping the padding on symbolized names to 80 columns.

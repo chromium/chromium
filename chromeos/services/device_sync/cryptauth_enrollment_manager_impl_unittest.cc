@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/base64url.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
@@ -19,6 +18,7 @@
 #include "chromeos/services/device_sync/fake_cryptauth_gcm_manager.h"
 #include "chromeos/services/device_sync/mock_sync_scheduler.h"
 #include "chromeos/services/device_sync/pref_names.h"
+#include "chromeos/services/device_sync/value_string_encoding.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -167,7 +167,7 @@ class DeviceSyncCryptAuthEnrollmentManagerImplTest
         secure_message_delegate_->GetPrivateKeyForPublicKey(public_key_);
     secure_message_delegate_->set_next_public_key(public_key_);
 
-    CryptAuthEnrollmentManager::RegisterPrefs(pref_service_.registry());
+    CryptAuthEnrollmentManagerImpl::RegisterPrefs(pref_service_.registry());
     pref_service_.SetUserPref(
         prefs::kCryptAuthEnrollmentIsRecoveringFromFailure,
         std::make_unique<base::Value>(false));
@@ -177,18 +177,10 @@ class DeviceSyncCryptAuthEnrollmentManagerImplTest
     pref_service_.SetUserPref(
         prefs::kCryptAuthEnrollmentReason,
         std::make_unique<base::Value>(cryptauth::INVOCATION_REASON_UNKNOWN));
-
-    std::string public_key_b64, private_key_b64;
-    base::Base64UrlEncode(public_key_,
-                          base::Base64UrlEncodePolicy::INCLUDE_PADDING,
-                          &public_key_b64);
-    base::Base64UrlEncode(private_key_,
-                          base::Base64UrlEncodePolicy::INCLUDE_PADDING,
-                          &private_key_b64);
-    pref_service_.SetString(prefs::kCryptAuthEnrollmentUserPublicKey,
-                            public_key_b64);
-    pref_service_.SetString(prefs::kCryptAuthEnrollmentUserPrivateKey,
-                            private_key_b64);
+    pref_service_.Set(prefs::kCryptAuthEnrollmentUserPublicKey,
+                      util::EncodeAsValueString(public_key_));
+    pref_service_.Set(prefs::kCryptAuthEnrollmentUserPrivateKey,
+                      util::EncodeAsValueString(private_key_));
 
     ON_CALL(*sync_scheduler(), GetStrategy())
         .WillByDefault(Return(SyncScheduler::Strategy::PERIODIC_REFRESH));
@@ -265,7 +257,7 @@ class DeviceSyncCryptAuthEnrollmentManagerImplTest
 
 TEST_F(DeviceSyncCryptAuthEnrollmentManagerImplTest, RegisterPrefs) {
   TestingPrefServiceSimple pref_service;
-  CryptAuthEnrollmentManager::RegisterPrefs(pref_service.registry());
+  CryptAuthEnrollmentManagerImpl::RegisterPrefs(pref_service.registry());
   EXPECT_TRUE(pref_service.FindPreference(
       prefs::kCryptAuthEnrollmentLastEnrollmentTimeSeconds));
   EXPECT_TRUE(pref_service.FindPreference(
@@ -304,7 +296,7 @@ TEST_F(DeviceSyncCryptAuthEnrollmentManagerImplTest, InitWithDefaultPrefs) {
   base::TimeDelta elapsed_time = clock.Now() - base::Time::FromDoubleT(0);
 
   TestingPrefServiceSimple pref_service;
-  CryptAuthEnrollmentManager::RegisterPrefs(pref_service.registry());
+  CryptAuthEnrollmentManagerImpl::RegisterPrefs(pref_service.registry());
 
   TestCryptAuthEnrollmentManager enrollment_manager(
       &clock, std::make_unique<MockCryptAuthEnrollerFactory>(),
@@ -354,7 +346,8 @@ TEST_F(DeviceSyncCryptAuthEnrollmentManagerImplTest, ForceEnrollment) {
 
   EXPECT_CALL(*sync_scheduler(), ForceSync());
   enrollment_manager_.ForceEnrollmentNow(
-      cryptauth::INVOCATION_REASON_SERVER_INITIATED);
+      cryptauth::INVOCATION_REASON_SERVER_INITIATED,
+      base::nullopt /* session_id */);
 
   auto completion_callback =
       FireSchedulerForEnrollment(cryptauth::INVOCATION_REASON_SERVER_INITIATED);
@@ -459,7 +452,8 @@ TEST_F(DeviceSyncCryptAuthEnrollmentManagerImplTest, ReenrollOnGCMPushMessage) {
   enrollment_manager_.Start();
 
   // Simulate receiving a GCM push message, forcing the device to re-enroll.
-  gcm_manager_.PushReenrollMessage();
+  gcm_manager_.PushReenrollMessage(base::nullopt /* session_id */,
+                                   base::nullopt /* feature_type */);
   auto completion_callback =
       FireSchedulerForEnrollment(cryptauth::INVOCATION_REASON_SERVER_INITIATED);
 

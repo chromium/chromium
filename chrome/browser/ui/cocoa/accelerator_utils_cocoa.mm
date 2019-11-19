@@ -52,10 +52,10 @@ bool IsChromeAccelerator(const ui::Accelerator& accelerator, Profile* profile) {
   return CommandForKeyEvent(event).found();
 }
 
-ui::Accelerator GetPrimaryChromeAcceleratorForBookmarkPage() {
+ui::Accelerator GetPrimaryChromeAcceleratorForBookmarkTab() {
   const ui::Accelerator* accelerator =
       AcceleratorsCocoa::GetInstance()->GetAcceleratorForCommand(
-          IDC_BOOKMARK_PAGE);
+          IDC_BOOKMARK_THIS_TAB);
 
   return accelerator ? *accelerator : ui::Accelerator();
 }

@@ -188,7 +188,7 @@ void PluginList::GetPluginPathsToLoad(
   }
 
   for (const base::FilePath& path : extra_plugin_paths) {
-    if (base::ContainsValue(*plugin_paths, path))
+    if (base::Contains(*plugin_paths, path))
       continue;
     plugin_paths->push_back(path);
   }

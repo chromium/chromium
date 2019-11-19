@@ -2,13 +2,6 @@
 <script src="../../resources/testharness.js"></script>
 <script src="../../resources/testharnessreport.js"></script>
 <script>
-function getPropertyDescriptor(name) {
-  return (
-      Object.getOwnPropertyDescriptor(ServiceWorkerContainer.prototype, name) ||
-      // FIXME: Remove this when http://crbug.com/43394 is fixed.
-      Object.getOwnPropertyDescriptor(navigator.serviceWorker, name));
-}
-
 test(function() {
   assert_true('ServiceWorkerContainer' in window,
               'the constructor should be defined');

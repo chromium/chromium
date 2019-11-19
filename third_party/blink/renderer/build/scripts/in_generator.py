@@ -98,13 +98,8 @@ class Maker(object):
         parser = optparse.OptionParser()
 
         parser.add_option("--gperf", default="gperf")
-        parser.add_option("--developer_dir",
-                          help='Path to Xcode.')
         parser.add_option("--output_dir", default=os.getcwd())
         options, args = parser.parse_args()
-
-        if options.developer_dir:
-            os.environ['DEVELOPER_DIR'] = options.developer_dir
 
         writer = self._writer_class(args)
         writer.set_gperf_path(options.gperf)

@@ -46,8 +46,8 @@ base::TimeDelta IssueManager::GetAutoDismissTimeout(
 
 IssueManager::IssueManager()
     : top_issue_(nullptr),
-      task_runner_(base::CreateSingleThreadTaskRunnerWithTraits(
-          {content::BrowserThread::UI})) {}
+      task_runner_(
+          base::CreateSingleThreadTaskRunner({content::BrowserThread::UI})) {}
 
 IssueManager::~IssueManager() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

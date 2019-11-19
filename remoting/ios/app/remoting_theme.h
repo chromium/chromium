@@ -17,6 +17,10 @@
 @property(class, nonatomic, readonly) UIColor* connectionViewBackgroundColor;
 @property(class, nonatomic, readonly) UIColor* connectionViewForegroundColor;
 @property(class, nonatomic, readonly) UIColor* firstLaunchViewBackgroundColor;
+@property(class, nonatomic, readonly) UIColor* dialogBackgroundColor;
+@property(class, nonatomic, readonly) UIColor* dialogTextColor;
+@property(class, nonatomic, readonly) UIColor* dialogPrimaryButtonTextColor;
+@property(class, nonatomic, readonly) UIColor* dialogSecondaryButtonTextColor;
 @property(class, nonatomic, readonly) UIColor* flatButtonTextColor;
 @property(class, nonatomic, readonly) UIColor* hostCellTitleColor;
 @property(class, nonatomic, readonly) UIColor* hostCellStatusTextColor;

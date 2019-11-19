@@ -10,7 +10,7 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/sequenced_task_runner.h"
-#include "jni/PowerSaveBlocker_jni.h"
+#include "services/device/wake_lock/power_save_blocker/jni_headers/PowerSaveBlocker_jni.h"
 #include "ui/android/view_android.h"
 
 namespace device {

@@ -1,0 +1,27 @@
+EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
+EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
+EDITING DELEGATE: webViewDidChange:WebViewDidChangeNotification
+layer at (0,0) size 800x600
+  LayoutView at (0,0) size 800x600
+layer at (0,0) size 800x600
+  LayoutBlockFlow {HTML} at (0,0) size 800x600
+    LayoutBlockFlow {BODY} at (0,0) size 800x584
+      LayoutBlockFlow (anonymous) at (0,0) size 800x213
+        LayoutText {#text} at (208,193) size 4x19
+          text run at (208,193) width 4: " "
+        LayoutImage {IMG} at (212,105) size 76x103
+        LayoutText {#text} at (0,0) size 0x0
+      LayoutBlockFlow {UL} at (0,229) size 800x20
+        LayoutListItem {LI} at (40,0) size 760x20
+          LayoutListMarker (anonymous) at (-18,0) size 7x19: bullet
+          LayoutText {#text} at (0,0) size 288x19
+            text run at (0,0) width 288: "Abe should be outside the frame and inside it."
+layer at (0,0) size 208x208
+  LayoutIFrame {IFRAME} at (0,0) size 208x208 [border: (4px solid #000000)]
+    layer at (0,0) size 200x200
+      LayoutView at (0,0) size 200x200
+    layer at (0,0) size 200x200
+      LayoutBlockFlow {HTML} at (0,0) size 200x200
+        LayoutBlockFlow {BODY} at (8,8) size 184x184 [bgcolor=#FFFFE0]
+          LayoutImage {IMG} at (0,0) size 76x103
+          LayoutText {#text} at (0,0) size 0x0

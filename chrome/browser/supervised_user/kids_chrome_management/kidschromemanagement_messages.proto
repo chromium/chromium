@@ -1,0 +1,70 @@
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package kids_chrome_management;
+
+import "families_common.proto";
+
+message ListFamilyMembersRequest {
+  // Must always be "mine" (enforced by the API config). Required.
+  optional string family_id = 1;
+
+  // Next id: 2
+}
+
+message ListFamilyMembersResponse {
+  // Obfuscated Gaia ID of the calling user. Required.
+  optional string self_obfuscated_gaia_id = 1;
+
+  // List of family members from the family requested. Required.
+  // Contains at least the Head of Household.
+  // Throws an exception and fails if the user is not in any family.
+  repeated FamilyMember members = 2;
+
+  // Next id: 3
+}
+
+message RequestRestrictedUrlAccessRequest {
+  // Must be "me". Required.
+  optional string person_id = 1;
+
+  // URL of the restricted website to which the access is requested. Required.
+  // URL scheme must be https, http or ftp.
+  optional string url = 2;
+
+  // Next id: 3
+}
+
+message RequestRestrictedUrlAccessResponse {
+  // Next id: 1
+}
+
+message ClassifyUrlRequest {
+  // Must be "me". Required.
+  optional string person_id = 1;
+
+  // The URL to be classified. Required.
+  optional string url = 2;
+
+  // Region_code is a 2-letter ISO 3166-1 code. Required.
+  // When set, uses specific logic to classify URLs for that region.
+  optional string region_code = 3;
+}
+
+message ClassifyUrlResponse {
+  enum DisplayClassification {
+    UNKNOWN_DISPLAY_CLASSIFICATION = 0;
+
+    // Allow url to be displayed
+    ALLOWED = 1;
+
+    // Block url and allow kid to request parent for permission
+    RESTRICTED = 2;
+  }
+
+  // URL classification. Required.
+  optional DisplayClassification display_classification = 1;
+
+  // Next id: 2
+}

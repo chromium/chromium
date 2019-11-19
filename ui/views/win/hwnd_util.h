@@ -5,6 +5,7 @@
 #ifndef UI_VIEWS_WIN_HWND_UTIL_H_
 #define UI_VIEWS_WIN_HWND_UTIL_H_
 
+#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/views_export.h"
@@ -28,6 +29,12 @@ VIEWS_EXPORT HWND HWNDForNativeWindow(const gfx::NativeWindow window);
 
 VIEWS_EXPORT gfx::Rect GetWindowBoundsForClientBounds(
     View* view, const gfx::Rect& client_bounds);
-}
+
+// Shows |window|'s system menu (at a specified |point| in screen physical
+// coordinates).
+VIEWS_EXPORT void ShowSystemMenuAtScreenPixelLocation(HWND window,
+                                                      const gfx::Point& point);
+
+}  // namespace views
 
 #endif  // UI_VIEWS_WIN_HWND_UTIL_H_

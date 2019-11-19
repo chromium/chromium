@@ -14,9 +14,11 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "components/offline_pages/core/offline_page_types.h"
 #include "components/offline_pages/core/prefetch/prefetch_dispatcher.h"
+#include "components/offline_pages/core/prefetch/server_forbidden_check_request.h"
 #include "components/offline_pages/core/prefetch/suggestions_provider.h"
-#include "components/offline_pages/core/prefetch/tasks/get_thumbnail_info_task.h"
+#include "components/offline_pages/core/prefetch/tasks/get_visuals_info_task.h"
 #include "components/offline_pages/task/task_queue.h"
 #include "components/version_info/channel.h"
 #include "net/url_request/url_request_context_getter.h"
@@ -99,7 +101,7 @@ class PrefetchDispatcherImpl : public PrefetchDispatcher,
   // prefetched.
   void AddSuggestions(std::vector<PrefetchSuggestion> suggestions);
 
-  // The methods below control the  downloading of thumbnails for the provided
+  // The methods below control the  downloading of visuals for the provided
   // prefetch items IDs. They are called multiple times for the same article,
   // when they reach different points in the pipeline to increase the likeliness
   // of the thumbnail to be available. The existence of the thumbnail is
@@ -111,21 +113,31 @@ class PrefetchDispatcherImpl : public PrefetchDispatcher,
   // throughout the calls. It should be moved into a separate class (possibly
   // internal to the implementation) to make it easier to maintain and
   // understand.
-  void FetchThumbnails(std::unique_ptr<IdsVector> remaining_ids,
-                       bool is_first_attempt);
-  void ThumbnailExistenceChecked(const int64_t offline_id,
-                                 ClientId client_id,
-                                 std::unique_ptr<IdsVector> remaining_ids,
-                                 bool is_first_attempt,
-                                 bool thumbnail_exists);
-  void ThumbnailInfoReceived(const int64_t offline_id,
-                             std::unique_ptr<IdsVector> remaining_ids,
-                             bool is_first_attempt,
-                             GetThumbnailInfoTask::Result result);
-  void ThumbnailFetchComplete(const int64_t offline_id,
+  void FetchVisuals(std::unique_ptr<IdsVector> remaining_ids,
+                    bool is_first_attempt);
+  void VisualsAvailabilityChecked(int64_t offline_id,
+                                  ClientId client_id,
+                                  std::unique_ptr<IdsVector> remaining_ids,
+                                  bool is_first_attempt,
+                                  VisualsAvailability availability);
+  void VisualsInfoReceived(int64_t offline_id,
+                           std::unique_ptr<IdsVector> remaining_ids,
+                           bool is_first_attempt,
+                           VisualsAvailability availability,
+                           GetVisualsInfoTask::Result result);
+  void ThumbnailFetchComplete(int64_t offline_id,
                               std::unique_ptr<IdsVector> remaining_ids,
                               bool is_first_attempt,
-                              const std::string& image_data);
+                              const GURL& favicon_url,
+                              const std::string& thumbnail);
+  void FetchFavicon(int64_t offline_id,
+                    std::unique_ptr<IdsVector> remaining_ids,
+                    bool is_first_attempt,
+                    const GURL& favicon_url);
+  void FaviconFetchComplete(int64_t offline_id,
+                            std::unique_ptr<IdsVector> remaining_ids,
+                            bool is_first_attempt,
+                            const std::string& favicon_data);
 
   PrefService* pref_service_;
   PrefetchService* service_;
@@ -133,8 +145,7 @@ class PrefetchDispatcherImpl : public PrefetchDispatcher,
   bool needs_pipeline_processing_ = false;
   bool suspended_ = false;
   std::unique_ptr<PrefetchBackgroundTask> background_task_;
-
-  base::WeakPtrFactory<PrefetchDispatcherImpl> weak_factory_;
+  base::WeakPtrFactory<PrefetchDispatcherImpl> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PrefetchDispatcherImpl);
 };

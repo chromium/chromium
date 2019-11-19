@@ -1,22 +1,41 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="am">
+<translation id="1482734542997480527"><ph name="ENROLLMENT_DOMAIN" /> ይህን መሣሪያ ያቀናብራል እና እንቅስቃሴዎን ሊከታተለው ይችላል።</translation>
 <translation id="1510238584712386396">ማስጀመሪያ</translation>
 <translation id="1734367976349034509">ይህ መሣሪያ በድርጅት የሚቀናበር ነው</translation>
+<translation id="1930797645656624981">የ Chrome OS ግቤት ዘዴ አገልግሎት</translation>
+<translation id="1979103255016296513">የይለፍ ቃል ለውጥ ማድረጊያ ጊዜው አልፏል</translation>
 <translation id="2049639323467105390">ይህ መሣሪያ በ<ph name="DOMAIN" /> ነው የሚቀናበረው።</translation>
 <translation id="2083960536266308407">በማያ ገጹ ላይ ምንም አልተገኘም</translation>
 <translation id="2338501278241028356">በአቅራቢያ ያሉ መሣሪያዎችን ለማግኘት ብሉቱዝን ያብሩ</translation>
 <translation id="2805756323405976993">መተግበሪያዎች</translation>
 <translation id="2872961005593481000">ዝጋ</translation>
-<translation id="3147142846278915599">ማስጀመሪያ (መተግበሪያዎችን በማመሳሰል ላይ...)</translation>
+<translation id="3008341117444806826">አድስ</translation>
+<translation id="3838338534323494292">አዲስ የይለፍ ቃል</translation>
+<translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> ይህን መሣሪያ የሚያቀናብር ሲሆን የተጎበኙ ድረ-ገጾች፣ የይለፍ ቃላት እና ኢሜይል ጨምሮ የሁሉም የተጠቃሚ እንቅስቃሴ መዳረሻ አለው።</translation>
+<translation id="4227825898293920515">የይለፍ ቃል በ <ph name="TIME" /> ውስጥ አገልግሎት ጊዜው ያበቃል</translation>
+<translation id="4429881212383817840">የKerberos ቲኬት ጊዜው በቅርቡ ያበቃል</translation>
+<translation id="445059817448385655">የቀድሞው የይለፍ ቃል</translation>
+<translation id="467510802200863975">የይለፍ ቃላትዎ አይዛመዱም</translation>
 <translation id="4731797938093519117">የወላጅ መዳረሻ</translation>
+<translation id="4890353053343094602">ወዲያውኑ አዲስ ይምረጡ</translation>
 <translation id="5212543919916444558">እኔ ላግዝ የምችልበት ምንም ነገር በእርስዎ ማያ ገጽ ላይ አላገኘሁም።
 ማንኛውም ነገር እኔን ለመጠየቅ ማይክሮፎኑን መታ አድርገው ይሞክሩ።</translation>
 <translation id="5222676887888702881">ዘግተህ ውጣ</translation>
+<translation id="5317780077021120954">አስቀምጥ</translation>
+<translation id="5332948983412042822">አሁን አዲስ ይምረጡ</translation>
 <translation id="5457599981699367932">እንደ እንግዳ ያስሱ</translation>
 <translation id="54609108002486618">የተቀናበረ</translation>
 <translation id="5832805196449965646">ሰው አክል</translation>
 <translation id="5895138241574237353">እንደገና ጀምር</translation>
+<translation id="6058625436358447366">ለማጠናቀቅ፣ የእርስዎን አሮጌ እና አዲስ የይለፍ ቃላት ያስገቡ</translation>
+<translation id="6106186594183574873">ለማጠናቀቅ፣ የእርስዎን ይለፍ ቃል ያስገቡ</translation>
+<translation id="6146993107019042706">ለማጠናቀቅ፣ የእርስዎን አዲስ የይለፍ ቃል ያስገቡ</translation>
 <translation id="7658239707568436148">ይቅር</translation>
+<translation id="7690294790491645610">አዲስ የይለፍ ቃል ያረጋግጡ</translation>
+<translation id="808894953321890993">የይለፍ ቃል ለውጥ</translation>
+<translation id="8747900814994928677">ለውጥን አረጋግጥ</translation>
+<translation id="910415269708673980">የ<ph name="PRINCIPAL_NAME" /> ቲኬትን ያድሱ</translation>
 <translation id="9111102763498581341">ክፈት</translation>
 </translationbundle>

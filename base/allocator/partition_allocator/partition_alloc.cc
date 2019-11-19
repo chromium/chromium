@@ -55,7 +55,6 @@ PartitionRoot::~PartitionRoot() = default;
 PartitionRootGeneric::PartitionRootGeneric() = default;
 PartitionRootGeneric::~PartitionRootGeneric() = default;
 PartitionAllocatorGeneric::PartitionAllocatorGeneric() = default;
-PartitionAllocatorGeneric::~PartitionAllocatorGeneric() = default;
 
 subtle::SpinLock& GetLock() {
   static NoDestructor<subtle::SpinLock> s_initialized_lock;
@@ -64,9 +63,110 @@ subtle::SpinLock& GetLock() {
 static bool g_initialized = false;
 
 void (*internal::PartitionRootBase::gOomHandlingFunction)() = nullptr;
-PartitionAllocHooks::AllocationHook* PartitionAllocHooks::allocation_hook_ =
-    nullptr;
-PartitionAllocHooks::FreeHook* PartitionAllocHooks::free_hook_ = nullptr;
+std::atomic<bool> PartitionAllocHooks::hooks_enabled_(false);
+subtle::SpinLock PartitionAllocHooks::set_hooks_lock_;
+std::atomic<PartitionAllocHooks::AllocationObserverHook*>
+    PartitionAllocHooks::allocation_observer_hook_(nullptr);
+std::atomic<PartitionAllocHooks::FreeObserverHook*>
+    PartitionAllocHooks::free_observer_hook_(nullptr);
+std::atomic<PartitionAllocHooks::AllocationOverrideHook*>
+    PartitionAllocHooks::allocation_override_hook_(nullptr);
+std::atomic<PartitionAllocHooks::FreeOverrideHook*>
+    PartitionAllocHooks::free_override_hook_(nullptr);
+std::atomic<PartitionAllocHooks::ReallocOverrideHook*>
+    PartitionAllocHooks::realloc_override_hook_(nullptr);
+
+void PartitionAllocHooks::SetObserverHooks(AllocationObserverHook* alloc_hook,
+                                           FreeObserverHook* free_hook) {
+  subtle::SpinLock::Guard guard(set_hooks_lock_);
+
+  // Chained hooks are not supported. Registering a non-null hook when a
+  // non-null hook is already registered indicates somebody is trying to
+  // overwrite a hook.
+  CHECK((!allocation_observer_hook_ && !free_observer_hook_) ||
+        (!alloc_hook && !free_hook))
+      << "Overwriting already set observer hooks";
+  allocation_observer_hook_ = alloc_hook;
+  free_observer_hook_ = free_hook;
+
+  hooks_enabled_ = allocation_observer_hook_ || allocation_override_hook_;
+}
+
+void PartitionAllocHooks::SetOverrideHooks(AllocationOverrideHook* alloc_hook,
+                                           FreeOverrideHook* free_hook,
+                                           ReallocOverrideHook realloc_hook) {
+  subtle::SpinLock::Guard guard(set_hooks_lock_);
+
+  CHECK((!allocation_override_hook_ && !free_override_hook_ &&
+         !realloc_override_hook_) ||
+        (!alloc_hook && !free_hook && !realloc_hook))
+      << "Overwriting already set override hooks";
+  allocation_override_hook_ = alloc_hook;
+  free_override_hook_ = free_hook;
+  realloc_override_hook_ = realloc_hook;
+
+  hooks_enabled_ = allocation_observer_hook_ || allocation_override_hook_;
+}
+
+void PartitionAllocHooks::AllocationObserverHookIfEnabled(
+    void* address,
+    size_t size,
+    const char* type_name) {
+  if (AllocationObserverHook* hook =
+          allocation_observer_hook_.load(std::memory_order_relaxed)) {
+    hook(address, size, type_name);
+  }
+}
+
+bool PartitionAllocHooks::AllocationOverrideHookIfEnabled(
+    void** out,
+    int flags,
+    size_t size,
+    const char* type_name) {
+  if (AllocationOverrideHook* hook =
+          allocation_override_hook_.load(std::memory_order_relaxed)) {
+    return hook(out, flags, size, type_name);
+  }
+  return false;
+}
+
+void PartitionAllocHooks::FreeObserverHookIfEnabled(void* address) {
+  if (FreeObserverHook* hook =
+          free_observer_hook_.load(std::memory_order_relaxed)) {
+    hook(address);
+  }
+}
+
+bool PartitionAllocHooks::FreeOverrideHookIfEnabled(void* address) {
+  if (FreeOverrideHook* hook =
+          free_override_hook_.load(std::memory_order_relaxed)) {
+    return hook(address);
+  }
+  return false;
+}
+
+void PartitionAllocHooks::ReallocObserverHookIfEnabled(void* old_address,
+                                                       void* new_address,
+                                                       size_t size,
+                                                       const char* type_name) {
+  // Report a reallocation as a free followed by an allocation.
+  AllocationObserverHook* allocation_hook =
+      allocation_observer_hook_.load(std::memory_order_relaxed);
+  FreeObserverHook* free_hook =
+      free_observer_hook_.load(std::memory_order_relaxed);
+  if (allocation_hook && free_hook) {
+    free_hook(old_address);
+    allocation_hook(new_address, size, type_name);
+  }
+}
+bool PartitionAllocHooks::ReallocOverrideHookIfEnabled(size_t* out,
+                                                       void* address) {
+  if (ReallocOverrideHook* hook =
+          realloc_override_hook_.load(std::memory_order_relaxed)) {
+    return hook(out, address);
+  }
+  return false;
+}
 
 static void PartitionAllocBaseInit(internal::PartitionRootBase* root) {
   DCHECK(!root->initialized);
@@ -97,13 +197,9 @@ void PartitionRoot::Init(size_t num_buckets, size_t max_allocation) {
 
   this->num_buckets = num_buckets;
   this->max_allocation = max_allocation;
-  size_t i;
-  for (i = 0; i < this->num_buckets; ++i) {
+  for (size_t i = 0; i < this->num_buckets; ++i) {
     internal::PartitionBucket* bucket = &this->buckets()[i];
-    if (!i)
-      bucket->Init(kAllocationGranularity);
-    else
-      bucket->Init(i << kBucketShift);
+    bucket->Init(i == 0 ? kAllocationGranularity : (i << kBucketShift));
   }
 }
 
@@ -259,10 +355,7 @@ void* PartitionReallocGenericFlags(PartitionRootGeneric* root,
                                    size_t new_size,
                                    const char* type_name) {
 #if defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
-  // Make MEMORY_TOOL_REPLACES_ALLOCATOR behave the same for max size
-  // as other alloc code.
-  if (new_size > kGenericMaxDirectMapped)
-    return nullptr;
+  CHECK_MAX_SIZE_OR_RETURN_NULLPTR(new_size, flags);
   void* result = realloc(ptr, new_size);
   CHECK(result || flags & PartitionAllocReturnNull);
   return result;
@@ -280,39 +373,51 @@ void* PartitionReallocGenericFlags(PartitionRootGeneric* root,
     internal::PartitionExcessiveAllocationSize();
   }
 
-  internal::PartitionPage* page = internal::PartitionPage::FromPointer(
-      internal::PartitionCookieFreePointerAdjust(ptr));
-  // TODO(palmer): See if we can afford to make this a CHECK.
-  DCHECK(root->IsValidPage(page));
+  const bool hooks_enabled = PartitionAllocHooks::AreHooksEnabled();
+  bool overridden = false;
+  size_t actual_old_size;
+  if (UNLIKELY(hooks_enabled)) {
+    overridden = PartitionAllocHooks::ReallocOverrideHookIfEnabled(
+        &actual_old_size, ptr);
+  }
+  if (LIKELY(!overridden)) {
+    internal::PartitionPage* page = internal::PartitionPage::FromPointer(
+        internal::PartitionCookieFreePointerAdjust(ptr));
+    // TODO(palmer): See if we can afford to make this a CHECK.
+    DCHECK(root->IsValidPage(page));
 
-  if (UNLIKELY(page->bucket->is_direct_mapped())) {
-    // We may be able to perform the realloc in place by changing the
-    // accessibility of memory pages and, if reducing the size, decommitting
-    // them.
-    if (PartitionReallocDirectMappedInPlace(root, page, new_size)) {
-      PartitionAllocHooks::ReallocHookIfEnabled(ptr, ptr, new_size, type_name);
+    if (UNLIKELY(page->bucket->is_direct_mapped())) {
+      // We may be able to perform the realloc in place by changing the
+      // accessibility of memory pages and, if reducing the size, decommitting
+      // them.
+      if (PartitionReallocDirectMappedInPlace(root, page, new_size)) {
+        if (UNLIKELY(hooks_enabled)) {
+          PartitionAllocHooks::ReallocObserverHookIfEnabled(ptr, ptr, new_size,
+                                                            type_name);
+        }
+        return ptr;
+      }
+    }
+
+    const size_t actual_new_size = root->ActualSize(new_size);
+    actual_old_size = PartitionAllocGetSize(ptr);
+
+    // TODO: note that tcmalloc will "ignore" a downsizing realloc() unless the
+    // new size is a significant percentage smaller. We could do the same if we
+    // determine it is a win.
+    if (actual_new_size == actual_old_size) {
+      // Trying to allocate a block of size |new_size| would give us a block of
+      // the same size as the one we've already got, so re-use the allocation
+      // after updating statistics (and cookies, if present).
+      page->set_raw_size(internal::PartitionCookieSizeAdjustAdd(new_size));
+#if DCHECK_IS_ON()
+      // Write a new trailing cookie when it is possible to keep track of
+      // |new_size| via the raw size pointer.
+      if (page->get_raw_size_ptr())
+        internal::PartitionCookieWriteValue(static_cast<char*>(ptr) + new_size);
+#endif
       return ptr;
     }
-  }
-
-  size_t actual_new_size = root->ActualSize(new_size);
-  size_t actual_old_size = PartitionAllocGetSize(ptr);
-
-  // TODO: note that tcmalloc will "ignore" a downsizing realloc() unless the
-  // new size is a significant percentage smaller. We could do the same if we
-  // determine it is a win.
-  if (actual_new_size == actual_old_size) {
-    // Trying to allocate a block of size |new_size| would give us a block of
-    // the same size as the one we've already got, so re-use the allocation
-    // after updating statistics (and cookies, if present).
-    page->set_raw_size(internal::PartitionCookieSizeAdjustAdd(new_size));
-#if DCHECK_IS_ON()
-    // Write a new trailing cookie when it is possible to keep track of
-    // |new_size| via the raw size pointer.
-    if (page->get_raw_size_ptr())
-      internal::PartitionCookieWriteValue(static_cast<char*>(ptr) + new_size);
-#endif
-    return ptr;
   }
 
   // This realloc cannot be resized in-place. Sadness.
@@ -388,14 +493,14 @@ static size_t PartitionPurgePage(internal::PartitionPage* page, bool discard) {
     size_t slot_index = (reinterpret_cast<char*>(entry) - ptr) / slot_size;
     DCHECK(slot_index < num_slots);
     slot_usage[slot_index] = 0;
-    entry = internal::PartitionFreelistEntry::Transform(entry->next);
+    entry = internal::EncodedPartitionFreelistEntry::Decode(entry->next);
 #if !defined(OS_WIN)
     // If we have a slot where the masked freelist entry is 0, we can actually
     // discard that freelist entry because touching a discarded page is
     // guaranteed to return original content or 0. (Note that this optimization
     // won't fire on big-endian machines because the masking function is
     // negation.)
-    if (!internal::PartitionFreelistEntry::Transform(entry))
+    if (!internal::PartitionFreelistEntry::Encode(entry))
       last_slot = slot_index;
 #endif
   }
@@ -429,25 +534,33 @@ static size_t PartitionPurgePage(internal::PartitionPage* page, bool discard) {
       DCHECK(truncated_slots > 0);
       size_t num_new_entries = 0;
       page->num_unprovisioned_slots += static_cast<uint16_t>(truncated_slots);
+
       // Rewrite the freelist.
-      internal::PartitionFreelistEntry** entry_ptr = &page->freelist_head;
+      internal::PartitionFreelistEntry* head = nullptr;
+      internal::PartitionFreelistEntry* back = head;
       for (size_t slot_index = 0; slot_index < num_slots; ++slot_index) {
         if (slot_usage[slot_index])
           continue;
+
         auto* entry = reinterpret_cast<internal::PartitionFreelistEntry*>(
             ptr + (slot_size * slot_index));
-        *entry_ptr = internal::PartitionFreelistEntry::Transform(entry);
-        entry_ptr = reinterpret_cast<internal::PartitionFreelistEntry**>(entry);
+        if (!head) {
+          head = entry;
+          back = entry;
+        } else {
+          back->next = internal::PartitionFreelistEntry::Encode(entry);
+          back = entry;
+        }
         num_new_entries++;
 #if !defined(OS_WIN)
         last_slot = slot_index;
 #endif
       }
-      // Terminate the freelist chain.
-      *entry_ptr = nullptr;
-      // The freelist head is stored unmasked.
-      page->freelist_head =
-          internal::PartitionFreelistEntry::Transform(page->freelist_head);
+
+      page->freelist_head = head;
+      if (back)
+        back->next = internal::PartitionFreelistEntry::Encode(nullptr);
+
       DCHECK(num_new_entries == num_slots - page->num_allocated_slots);
       // Discard the memory.
       DiscardSystemPages(begin_ptr, unprovisioned_bytes);

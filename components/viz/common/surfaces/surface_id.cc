@@ -43,4 +43,9 @@ bool SurfaceId::IsSameOrNewerThan(const SurfaceId& other) const {
   return (*this == other) || IsNewerThan(other);
 }
 
+bool SurfaceId::HasSameEmbedTokenAs(const SurfaceId& other) const {
+  return local_surface_id_.embed_token() ==
+         other.local_surface_id_.embed_token();
+}
+
 }  // namespace viz

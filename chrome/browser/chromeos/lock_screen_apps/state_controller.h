@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "ash/public/interfaces/tray_action.mojom.h"
+#include "ash/public/mojom/tray_action.mojom.h"
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -16,20 +16,20 @@
 #include "base/scoped_observer.h"
 #include "chrome/browser/chromeos/lock_screen_apps/app_manager.h"
 #include "chrome/browser/chromeos/lock_screen_apps/state_observer.h"
-#include "chromeos/dbus/power_manager_client.h"
+#include "chromeos/dbus/power/power_manager_client.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/common/api/app_runtime.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "ui/aura/window.h"
+#include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/input_device_event_observer.h"
 
 class PrefRegistrySimple;
 class Profile;
-
-namespace aura {
-class Window;
-}
 
 namespace base {
 class TickClock;
@@ -48,14 +48,6 @@ namespace lock_screen_data {
 class LockScreenItemStorage;
 }
 }  // namespace extensions
-
-namespace session_manager {
-class SessionManager;
-}
-
-namespace ui {
-class InputDeviceManager;
-}
 
 namespace lock_screen_apps {
 
@@ -88,7 +80,8 @@ class StateController : public ash::mojom::TrayActionClient,
 
   // Sets the tray action that should be used by |StateController|.
   // Has to be called before |Initialize|.
-  void SetTrayActionPtrForTesting(ash::mojom::TrayActionPtr tray_action_ptr);
+  void SetTrayActionForTesting(
+      mojo::PendingRemote<ash::mojom::TrayAction> tray_action);
   void FlushTrayActionForTesting();
   // Sets the callback that will be run when the state controller is fully
   // initialized and ready for action.
@@ -220,8 +213,8 @@ class StateController : public ash::mojom::TrayActionClient,
 
   base::ObserverList<StateObserver>::Unchecked observers_;
 
-  mojo::Binding<ash::mojom::TrayActionClient> binding_;
-  ash::mojom::TrayActionPtr tray_action_ptr_;
+  mojo::Receiver<ash::mojom::TrayActionClient> receiver_{this};
+  mojo::Remote<ash::mojom::TrayAction> tray_action_;
 
   std::unique_ptr<LockScreenProfileCreator> lock_screen_profile_creator_;
 
@@ -251,18 +244,19 @@ class StateController : public ash::mojom::TrayActionClient,
   // for the associated app has been previosly seen (and closed) by the user.
   std::unique_ptr<FirstAppRunToastManager> first_app_run_toast_manager_;
 
-  ScopedObserver<aura::Window, aura::WindowObserver> note_window_observer_;
+  ScopedObserver<aura::Window, aura::WindowObserver> note_window_observer_{
+      this};
   ScopedObserver<extensions::AppWindowRegistry,
                  extensions::AppWindowRegistry::Observer>
-      app_window_observer_;
+      app_window_observer_{this};
   ScopedObserver<session_manager::SessionManager,
                  session_manager::SessionManagerObserver>
-      session_observer_;
-  ScopedObserver<ui::InputDeviceManager, ui::InputDeviceEventObserver>
-      input_devices_observer_;
+      session_observer_{this};
+  ScopedObserver<ui::DeviceDataManager, ui::InputDeviceEventObserver>
+      input_devices_observer_{this};
   ScopedObserver<chromeos::PowerManagerClient,
                  chromeos::PowerManagerClient::Observer>
-      power_manager_client_observer_;
+      power_manager_client_observer_{this};
 
   // If set, this callback will be run when the state controller is fully
   // initialized. It can be used to throttle tests until state controller
@@ -274,7 +268,7 @@ class StateController : public ash::mojom::TrayActionClient,
   // lifetime metrics.
   const base::TickClock* tick_clock_ = nullptr;
 
-  base::WeakPtrFactory<StateController> weak_ptr_factory_;
+  base::WeakPtrFactory<StateController> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(StateController);
 };

@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-FAIL The number of frames must be a positive integer greater than 1, or we fallback to the previously-set easing createDiv is not defined
-FAIL The serialization of frames is 'frames(n)', n is the number of frames createDiv is not defined
-Harness: the test ran to completion.
-

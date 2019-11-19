@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//   http://www.apache.org/licenses/LICENSE-2.0
+//   https://www.apache.org/licenses/LICENSE-2.0
 //
 //   Unless required by applicable law or agreed to in writing, software
 //   distributed under the License is distributed on an "AS IS" BASIS,
@@ -46,6 +46,56 @@ void BM_Step_Days(benchmark::State& state) {
   }
 }
 BENCHMARK(BM_Step_Days);
+
+void BM_GetWeekday(benchmark::State& state) {
+  const cctz::civil_day c(2014, 8, 22);
+  while (state.KeepRunning()) {
+    benchmark::DoNotOptimize(cctz::get_weekday(c));
+  }
+}
+BENCHMARK(BM_GetWeekday);
+
+void BM_NextWeekday(benchmark::State& state) {
+  const cctz::civil_day kStart(2014, 8, 22);
+  const cctz::civil_day kDays[7] = {
+      kStart + 0, kStart + 1, kStart + 2, kStart + 3,
+      kStart + 4, kStart + 5, kStart + 6,
+  };
+  const cctz::weekday kWeekdays[7] = {
+      cctz::weekday::monday,   cctz::weekday::tuesday, cctz::weekday::wednesday,
+      cctz::weekday::thursday, cctz::weekday::friday,  cctz::weekday::saturday,
+      cctz::weekday::sunday,
+  };
+  while (state.KeepRunningBatch(7 * 7)) {
+    for (const auto from : kDays) {
+      for (const auto to : kWeekdays) {
+        benchmark::DoNotOptimize(cctz::next_weekday(from, to));
+      }
+    }
+  }
+}
+BENCHMARK(BM_NextWeekday);
+
+void BM_PrevWeekday(benchmark::State& state) {
+  const cctz::civil_day kStart(2014, 8, 22);
+  const cctz::civil_day kDays[7] = {
+      kStart + 0, kStart + 1, kStart + 2, kStart + 3,
+      kStart + 4, kStart + 5, kStart + 6,
+  };
+  const cctz::weekday kWeekdays[7] = {
+      cctz::weekday::monday,   cctz::weekday::tuesday, cctz::weekday::wednesday,
+      cctz::weekday::thursday, cctz::weekday::friday,  cctz::weekday::saturday,
+      cctz::weekday::sunday,
+  };
+  while (state.KeepRunningBatch(7 * 7)) {
+    for (const auto from : kDays) {
+      for (const auto to : kWeekdays) {
+        benchmark::DoNotOptimize(cctz::prev_weekday(from, to));
+      }
+    }
+  }
+}
+BENCHMARK(BM_PrevWeekday);
 
 const char RFC3339_full[] = "%Y-%m-%dT%H:%M:%E*S%Ez";
 const char RFC3339_sec[] = "%Y-%m-%dT%H:%M:%S%Ez";

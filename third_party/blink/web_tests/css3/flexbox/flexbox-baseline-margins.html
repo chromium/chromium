@@ -60,26 +60,29 @@ bottom of
       <div class="flex-one" style="background-color: lightgrey;"></div>
   </div>
 </div>
-the grey
-<div class="inline-flexbox margin border" style="width: 30px; height: 30px;"></div>
-box.
-</div>
-
-<div>
-Should align
-with the
-<div class="inline-block">
-  <div class="flexbox" style="background-color: pink">
-      <div class="flex-one border padding margin" style="background-color: lightgrey;"></div>
-  </div>
-</div>
-middle of
-<div class="inline-flexbox margin border padding"></div>
 the grey box.
 </div>
 
 <div>
-Should align with the top
+Should align with the
+<div class="inline-block">
+  <div class="flexbox" style="background-color: white">
+      <div class="flex-one border padding margin" style="background-color: lightgrey;"></div>
+  </div>
+</div>
+bottom of the pink box.
+</div>
+
+<div>
+Should align 8px
+<div class="inline-flexbox margin border" style="width: 30px; height: 30px;"></div>
+below the bottom
+<div class="inline-flexbox margin border padding"></div>
+of the pink box.
+</div>
+
+<div>
+Should align with the bottom
 <div class="inline-block border margin padding" style="background-color: pink">
   <div class="flexbox border margin padding" style="width: 50px; height: 50px; background-color: pink">
       <div style="width: 200px; overflow: scroll; background-color: lightgrey; margin-top: 4px; border-top: 9px solid pink;"></div>
@@ -89,13 +92,13 @@ of the horizontal scrollbar.
 </div>
 
 <div>
-Should align 10px above the
+Should align 10px below the
 <div class="inline-block" style="background-color: pink">
   <div class="flexbox" style="width: 50px; height: 50px; background-color: pink">
-      <div style="width: 200px; overflow: scroll; background-color: lightgrey; padding-bottom: 10px"></div>
+      <div style="width: 200px; overflow: scroll; background-color: lightgrey; padding-bottom: 10px; border-bottom: 10px solid pink;"></div>
   </div>
 </div>
-horizontal scrollbar, if one is visible.
+of the horizontal scrollbar, if one is visible.
 </div>
 
 </body>

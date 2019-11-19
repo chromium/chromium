@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/cocoa/test/cocoa_profile_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/favicon_base/favicon_types.h"
+#include "components/sessions/content/content_test_helper.h"
 #include "components/sessions/core/serialized_navigation_entry_test_helper.h"
 #include "components/sessions/core/tab_restore_service_impl.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -59,7 +60,7 @@ class HistoryMenuBridgeTest : public CocoaProfileTest {
     ASSERT_TRUE(profile()->CreateHistoryService(/*delete_file=*/true,
                                                 /*no_db=*/false));
     profile()->CreateFaviconService();
-    bridge_.reset(new MockBridge(profile()));
+    bridge_ = std::make_unique<MockBridge>(profile());
   }
 
   // We are a friend of HistoryMenuBridge (and have access to
@@ -115,8 +116,7 @@ class HistoryMenuBridgeTest : public CocoaProfileTest {
     tab->id = SessionID::FromSerializedValue(id);
     tab->current_navigation_index = 0;
     tab->navigations.push_back(
-        sessions::SerializedNavigationEntryTestHelper::CreateNavigation(url,
-                                                                        title));
+        sessions::ContentTestHelper::CreateNavigation(url, title));
     return tab;
   }
 

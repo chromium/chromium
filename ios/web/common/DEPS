@@ -1,0 +1,13 @@
+include_rules = [
+  # common interfaces cannot depend on private web code.
+  "-ios/web",
+  "+ios/web/common",
+  "+ios/web/public",
+]
+
+specific_include_rules = {
+  # Implementations of common interfaces can depend on private web code.
+  "^.*\.(cc|mm)$": [
+    "+ios/web",
+  ],
+}

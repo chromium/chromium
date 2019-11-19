@@ -13,15 +13,18 @@
 # This script can be used to verify that all of the global text symbols in
 # a Mach-O file are accounted for in an order file.
 
-if [ ${#} -ne 2 ] ; then
-  echo "usage: ${0} LAST_SYMBOL MACH_O_FILE" >& 2
+if [ ${#} -ne 3 ] ; then
+  echo "usage: ${0} LAST_SYMBOL MACH_O_FILE BIN_SEARCH_PATH" >& 2
   exit 1
 fi
 
 LAST_SYMBOL=${1}
 MACH_O_FILE=${2}
+BIN_SEARCH_PATH=${3}
+NM_PATH="${BIN_SEARCH_PATH}nm"
+OTOOL_PATH="${BIN_SEARCH_PATH}otool"
 
-SYMBOLS=$(nm -gjn "${MACH_O_FILE}" -s __TEXT __text)
+SYMBOLS=$("${NM_PATH}" -gjn "${MACH_O_FILE}" -s __TEXT __text)
 if [ ${?} -ne 0 ] || [ -z "${SYMBOLS}" ] ; then
   echo "${0}: no symbols in ${MACH_O_FILE}" >& 2
   exit 1
@@ -40,7 +43,7 @@ if [ ${?} -eq 0 ] || [ -n "${UNORDERED_SYMBOLS}" ] ; then
   exit 1
 fi
 
-LIBS=$(otool -L "${MACH_O_FILE}")
+LIBS=$("${OTOOL_PATH}" -L "${MACH_O_FILE}")
 if [ ${?} -ne 0 ] ; then
   echo "${0}: failed to get libraries in ${MACH_O_FILE}" >& 2
   exit 1

@@ -7,54 +7,68 @@
 <translation id="1037492556044956303">S'ha afegit <ph name="DEVICE_NAME" /></translation>
 <translation id="1056775291175587022">Cap xarxa</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="108486256082349153">Mòbil: <ph name="ADDRESS" /></translation>
 <translation id="109942774857561566">M'avorreixo</translation>
 <translation id="1104084341931202936">Mostra la configuració d'accessibilitat</translation>
 <translation id="1104621072296271835">Els teus dispositius funcionen encara millor junts</translation>
 <translation id="112308213915226829">Amaga el prestatge automàticament</translation>
 <translation id="1153356358378277386">Dispositius vinculats</translation>
+<translation id="1175572348579024023">Desplaça</translation>
+<translation id="1178581264944972037">Posa en pausa</translation>
 <translation id="1195412055398077112">ajusta la mida</translation>
 <translation id="119944043368869598">Esborra-ho tot</translation>
-<translation id="123828989343052515">Escriptori nou</translation>
 <translation id="1247372569136754018">Micròfon (intern)</translation>
+<translation id="1249456112629248620"><ph name="FEATURE_NAME" /> L'administrador aplica aquesta opció de configuració.</translation>
 <translation id="1252999807265626933">S'està carregant amb: <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Quin temps fa?</translation>
 <translation id="1267032506238418139">Canvi de drecera</translation>
 <translation id="1270290102613614947">Teclat en pantalla desactivat</translation>
 <translation id="1272079795634619415">Atura</translation>
+<translation id="1275285675049378717">S'està alimentant el <ph name="POWER_SOURCE" /></translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
+<translation id="1287638800910363800"><ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="SIGNAL_STRENGTH" /> d'intensitat del senyal, gestionada per l'administrador</translation>
 <translation id="1289185460362160437">Pots tornar <ph name="COME_BACK_DAY_OF_WEEK" /> a les <ph name="COME_BACK_TIME" />.</translation>
 <translation id="1290331692326790741">Senyal feble</translation>
 <translation id="1293264513303784526">Dispositiu USB-C (port esquerre)</translation>
 <translation id="1294929383540927798">Canvia la configuració de notificacions de la pantalla de bloqueig</translation>
+<translation id="1301069673413256657">GSM</translation>
 <translation id="1302880136325416935">Mostra la configuració del Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1316069254387866896">Mostra sempre el prestatge</translation>
-<translation id="1346748346194534595">A la dreta</translation>
+<translation id="1331336659607007576"><ph name="PHONE_NAME" />, <ph name="SIGNAL_STRENGTH" /> d'intensitat del senyal, <ph name="BATTERY_STATUS" /> de bateria al telèfon</translation>
+<translation id="1341651618736211726">Menú addicional</translation>
+<translation id="1346748346194534595">Dreta</translation>
 <translation id="1351937230027495976">Replega el menú</translation>
 <translation id="1383876407941801731">Cerca</translation>
 <translation id="1419738280318246476">Desbloqueja el dispositiu per dur a terme l'acció que indica la notificació</translation>
+<translation id="1420408895951708260">Activa o desactiva la funció Llum nocturna. <ph name="STATE_TEXT" /></translation>
+<translation id="1426410128494586442">Sí</translation>
 <translation id="1455242230282523554">Mostra la configuració d'idioma</translation>
-<translation id="1467432559032391204">A l'esquerra</translation>
+<translation id="1460620680449458626">El volum està silenciat.</translation>
+<translation id="1467432559032391204">Esquerra</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
+<translation id="1516740043221086139">El mode No molestis està activat.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Mostra la configuració de les notificacions. Les notificacions estan desactivades per a una aplicació.}other{Mostra la configuració de les notificacions. Les notificacions estan desactivades per a # aplicacions.}}</translation>
 <translation id="1525508553941733066">IGNORA</translation>
-<translation id="1537254971476575106">Lupa de pantalla completa</translation>
 <translation id="15373452373711364">Cursor del ratolí gran</translation>
+<translation id="1546492247443594934">Escriptori 2</translation>
 <translation id="1550523713251050646">Feu clic per veure més opcions</translation>
 <translation id="1570871743947603115">Activa o desactiva el Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Accedir a tota la teva activitat d'aquesta sessió.</translation>
 <translation id="1608626060424371292">Suprimeix aquest usuari</translation>
-<translation id="1621499497873603021">Temps que queda fins que no s'esgoti la bateria: <ph name="TIME_LEFT" /></translation>
 <translation id="1654477262762802994">Inicia una consulta per veu</translation>
 <translation id="1658406695958299976">Encara no s'ha pogut verificar la contrasenya. Nota: si fa poc que has canviat la contrasenya, la nova s'aplicarà un cop hagis tancat la sessió. Fes servir la contrasenya anterior aquí.</translation>
+<translation id="1661469207525701666"><ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, gestionada per l'administrador</translation>
 <translation id="1677472565718498478">Temps restant: <ph name="TIME" /></translation>
 <translation id="1698760176351776263">Adreça IPv6: <ph name="ADDRESS" /></translation>
 <translation id="1743570585616704562">No s'ha reconegut</translation>
 <translation id="1746730358044914197">Els mètodes d'introducció estan configurats per l'administrador.</translation>
 <translation id="1747827819627189109">Teclat en pantalla activat</translation>
 <translation id="1761222317188459878">Activa o desactiva la connexió a la xarxa. <ph name="STATE_TEXT" /></translation>
+<translation id="1771761307086386028">Desplaça't cap a la dreta</translation>
 <translation id="1812997170047690955">Què hi ha a la pantalla?</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1836215606488044471">Assistent (s'està carregant...)</translation>
+<translation id="1838895407229022812">La funció Llum nocturna està desactivada.</translation>
 <translation id="1850504506766569011">La Wi-Fi està desactivada.</translation>
 <translation id="1864454756846565995">Dispositiu USB-C (port posterior)</translation>
 <translation id="1882897271359938046">S'està replicant <ph name="DISPLAY_NAME" /></translation>
@@ -62,28 +76,35 @@
 <translation id="1919743966458266018">La drecera per obrir el gestor de tasques ha canviat. Utilitzeu <ph name="NEW_SHORTCUT" /> en lloc de la drecera <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Clics automàtics</translation>
 <translation id="1928739107511554905">Per obtenir l'actualització, utilitza la pantalla tàctil per reiniciar Chromebook amb el teclat connectat.</translation>
-<translation id="1942830294380034169">Botó de desbordament</translation>
 <translation id="1951012854035635156">Assistent</translation>
 <translation id="1957803754585243749">0°</translation>
 <translation id="1957958912175573503">Estableix el teu idioma</translation>
+<translation id="1962969542251276847">Pantalla de bloqueig</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
+<translation id="1972950159383891558">Hola, <ph name="USERNAME" /></translation>
+<translation id="1978498689038657292">Introducció de text</translation>
 <translation id="1993072747612765854">Obtén més informació sobre l'última actualització de: <ph name="SYSTEM_APP_NAME" /></translation>
 <translation id="1995660704900986789">Apaga</translation>
-<translation id="1999763610967697511">Arrossega i deixa anar</translation>
 <translation id="2012624427112548395">Ctrl+Cerca+H</translation>
 <translation id="2016340657076538683">Escriu un missatge</translation>
 <translation id="2050339315714019657">Vertical</translation>
+<translation id="2053685863250070766"><ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, <ph name="SIGNAL_STRENGTH" /> d'intensitat del senyal</translation>
 <translation id="2067602449040652523">Brillantor del teclat</translation>
 <translation id="209965399369889474">No hi ha connexió a la xarxa</translation>
+<translation id="2126242104232412123">Escriptori nou</translation>
 <translation id="2127372758936585790">Carregador de baix consum</translation>
 <translation id="2135456203358955318">Lupa acoblada</translation>
 <translation id="2144487987174258011">Reinicia per actualitzar Adobe Flash Player</translation>
+<translation id="2148902151539191989">ENRERE</translation>
 <translation id="2208323208084708176">Mode d'escriptori unificat</translation>
 <translation id="2220572644011485463">PIN o contrasenya</translation>
+<translation id="2222338659135520253">Cal iniciar la sessió</translation>
 <translation id="225680501294068881">S'estan cercant dispositius...</translation>
 <translation id="2268130516524549846">S'ha desactivat el Bluetooth</translation>
 <translation id="2268813581635650749">Tanca la sessió de tots els usuaris</translation>
+<translation id="2277103315734023688">Avança</translation>
 <translation id="2292698582925480719">Escala de visualització</translation>
+<translation id="2298170939937364391">La lupa de pantalla completa està activada. Torna a prémer Ctrl+Cerca+M per desactivar-la.</translation>
 <translation id="2302092602801625023">Family Link gestiona aquest compte</translation>
 <translation id="2303600792989757991">Commuta la visió general de la finestra</translation>
 <translation id="2339073806695260576">Toca el botó del llapis òptic al prestatge per escriure una nota, fer una captura de pantalla o bé utilitzar-lo com a punter làser o lupa.</translation>
@@ -93,28 +114,27 @@
 <translation id="2359808026110333948">Continua</translation>
 <translation id="2365393535144473978">En activar les dades mòbils s'activarà el Bluetooth.</translation>
 <translation id="2391579633712104609">180°</translation>
-<translation id="239188844683466770">Activa o desactiva el mode No molestis</translation>
 <translation id="2412593942846481727">Hi ha una actualització disponible</translation>
 <translation id="2413728805700750528"><ph name="DISPLAY_NAME" /> és una sessió gestionada per <ph name="DOMAIN" /></translation>
-<translation id="2416346634399901812">Connectat a <ph name="NETWORK_NAME" /></translation>
 <translation id="2427507373259914951">Fes clic amb el botó esquerre</translation>
 <translation id="2429753432712299108">El dispositiu Bluetooth "<ph name="DEVICE_NAME" />" sol·licita permís per emparellar-se. Abans d'acceptar, comproveu que aquesta clau d'accés es mostri al dispositiu: <ph name="PASSKEY" />.</translation>
 <translation id="2482878487686419369">Notificacions</translation>
 <translation id="2484513351006226581">Prem <ph name="KEYBOARD_SHORTCUT" /> per canviar el disseny del teclat.</translation>
 <translation id="2501920221385095727">Tecles permanents</translation>
 <translation id="2509468283778169019">BLOQ MAJ està activat.</translation>
-<translation id="2532589005999780174">Mode d'alt contrast</translation>
+<translation id="2542089167727451762">Toca la teva imatge de perfil</translation>
 <translation id="255671100581129685">L'Assistent de Google no està disponible a les sessions públiques.</translation>
+<translation id="256712445991462162">la lupa acoblada</translation>
 <translation id="2575685495496069081">L'inici de sessió múltiple s'ha desactivat</translation>
 <translation id="2582112259361606227">Reinicia per actualitzar</translation>
-<translation id="2597972630681408282">Llum nocturna: <ph name="NIGHT_LIGHT_STATUS" /></translation>
 <translation id="2617342710774726426">La targeta SIM està bloquejada</translation>
+<translation id="2621713457727696555">Protegida</translation>
 <translation id="2653659639078652383">Envia</translation>
+<translation id="2658778018866295321">Fes clic i arrossega</translation>
 <translation id="2700493154570097719">Defineix el teu teclat</translation>
 <translation id="2718395828230677721">Llum nocturna</translation>
 <translation id="2727977024730340865">S'ha connectat a un carregador de baix consum. És possible que la càrrega de la bateria no sigui fiable.</translation>
 <translation id="2761704814324807722">Safata d'estat. Hora: <ph name="TIME" />, <ph name="BATTERY" /></translation>
-<translation id="277257480934873581">S'està tornant a connectar a la xarxa <ph name="NAME" /></translation>
 <translation id="2792498699870441125">Alt+Cerca</translation>
 <translation id="2803734122639935495">Per desbloquejar el dispositiu, introdueix la contrasenya</translation>
 <translation id="2819276065543622893">Ara se us tancarà la sessió.</translation>
@@ -124,18 +144,17 @@
 <translation id="2872961005593481000">Apaga</translation>
 <translation id="2878884018241093801">No hi ha cap element recent</translation>
 <translation id="2903844815300039659">Estàs connectat a <ph name="NAME" />, <ph name="STRENGTH" /></translation>
-<translation id="2911940648265863620">Estàs compartint la pantalla</translation>
 <translation id="2942350706960889382">Lupa acoblada</translation>
 <translation id="2942516765047364088">Posició del prestatge</translation>
 <translation id="2946119680249604491">Afegeix una connexió</translation>
 <translation id="2961963223658824723">S'ha produït un error. Torna-ho a provar d'aquí a uns quants segons.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2970920913501714344">Instal·lar aplicacions, extensions i temes.</translation>
+<translation id="2977598380246111477">Número següent</translation>
 <translation id="2995447421581609334">Mostra els dispositius d'emissió</translation>
 <translation id="2996462380875591307">La lupa acoblada està activada. Torna a prémer Ctrl+Cerca+D per desactivar-la.</translation>
 <translation id="3000461861112256445">Àudio mono</translation>
 <translation id="3009178788565917040">Sortida</translation>
-<translation id="3019353588588144572">Temps restant fins que la bateria no estigui totalment carregada: <ph name="TIME_REMAINING" /></translation>
 <translation id="3051128274746680507">El perfil del teu usuari supervisat se suprimirà aviat. Inicia la sessió per obtenir més informació.</translation>
 <translation id="3055162170959710888">Avui has fet servir aquest dispositiu durant <ph name="USED_TIME" /></translation>
 <translation id="3077734595579995578">maj</translation>
@@ -143,6 +162,7 @@
 <translation id="3087734570205094154">Part inferior</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3126069444801937830">Reinicia per actualitzar</translation>
+<translation id="3139942575505304791">Escriptori 1</translation>
 <translation id="315116470104423982">Dades mòbils</translation>
 <translation id="3151786313568798007">Orientació</translation>
 <translation id="3153444934357957346">Només pots tenir <ph name="MULTI_PROFILE_USER_LIMIT" /> comptes com a màxim en un inici de sessió múltiple.</translation>
@@ -150,7 +170,10 @@
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Connectat a un dispositiu}other{Connectat a # dispositius}}</translation>
 <translation id="3226991577105957773"><ph name="COUNT" /> més</translation>
 <translation id="3236488194889173876">No hi ha cap xarxa mòbil disponible</translation>
+<translation id="3249513730522716925">La finestra <ph name="WINDOW_TITLE" /> ha passat de l'escriptori <ph name="ACTIVE_DESK" /> a l'escriptori <ph name="TARGET_DESK" /></translation>
 <translation id="3255483164551725916">Què pots fer?</translation>
+<translation id="3277674767125718685">El volum està activat.</translation>
+<translation id="3290356915286466215">No protegida</translation>
 <translation id="3294437725009624529">Convidat</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> pot iniciar la sessió més tard.</translation>
 <translation id="3321628682574733415">Codi parental incorrecte</translation>
@@ -159,8 +182,10 @@
 <translation id="3364721542077212959">Eines del llapis òptic</translation>
 <translation id="3368922792935385530">Connectat</translation>
 <translation id="3371140690572404006">Dispositiu USB-C (port frontal dret)</translation>
+<translation id="3386978599540877378">la lupa de pantalla completa</translation>
 <translation id="3400357268283240774">Configuració addicional</translation>
 <translation id="3413817803639110246">Encara no hi ha res per veure</translation>
+<translation id="343571671045587506">Edita el recordatori</translation>
 <translation id="3445925074670675829">Dispositiu USB-C</translation>
 <translation id="3454224730401036106">La connexió ha canviat a una xarxa més segura</translation>
 <translation id="3465223694362104965">Des del darrer inici de sessió, s'ha connectat un altre teclat a aquest dispositiu. Abans d'utilitzar-lo, assegura't que hi confiïs.</translation>
@@ -168,7 +193,10 @@
 <translation id="3510164367642747937">Ressalta el cursor del ratolí</translation>
 <translation id="3513798432020909783">Compte gestionat per <ph name="MANAGER_EMAIL" /></translation>
 <translation id="3573179567135747900">Torna a canviar a "<ph name="FROM_LOCALE" />" (requereix reiniciar)</translation>
+<translation id="3576141592585647168">Canvia la zona horària</translation>
+<translation id="3593646759913489391"><ph name="NETWORK_NAME" />, gestionada per l'administrador</translation>
 <translation id="3595596368722241419">Bateria carregada.</translation>
+<translation id="3604801046548457007">S'ha creat l'escriptori <ph name="DESK_TITILE" /></translation>
 <translation id="3606978283550408104">S'ha connectat la pantalla Braille.</translation>
 <translation id="3621202678540785336">Entrada</translation>
 <translation id="3626281679859535460">Brillantor</translation>
@@ -187,104 +215,130 @@
 <translation id="3846575436967432996">No hi ha informació de xarxa disponible</translation>
 <translation id="385051799172605136">Enrere</translation>
 <translation id="3891340733213178823">Premeu Ctrl+Maj+Q dues vegades per tancar la sessió.</translation>
-<translation id="3893630138897523026">ChromeVox (comentaris de veu)</translation>
+<translation id="3893630138897523026">ChromeVox (avisos de veu)</translation>
 <translation id="3897533311200664389">Inicia una consulta de text</translation>
 <translation id="3899995891769452915">Entrada de veu</translation>
 <translation id="3900355044994618856">La sessió finalitzarà d'aquí a <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="3901991538546252627">S'està connectant amb <ph name="NAME" /></translation>
 <translation id="394485226368336402">Configuració d'àudio</translation>
+<translation id="3962859241508114581">Pista anterior</translation>
 <translation id="397105322502079400">S’està calculant...</translation>
+<translation id="3977512764614765090">La bateria s'està carregant i està a un <ph name="PERCENTAGE" />%.</translation>
 <translation id="3995138139523574647">Dispositiu USB-C (port posterior dret)</translation>
 <translation id="4017989525502048489">Punter làser</translation>
+<translation id="4021716437419160885">Desplaça't cap avall</translation>
+<translation id="4042660782729322247">Estàs compartint la pantalla</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Desactivades en una aplicació}other{Desactivades en # aplicacions}}</translation>
 <translation id="4072264167173457037">Senyal mitjà</translation>
+<translation id="4112140312785995938">Retrocedeix</translation>
 <translation id="4129129681837227511">Per veure notificacions a la pantalla de bloqueig, desbloqueja el dispositiu per canviar aquesta opció</translation>
 <translation id="4146833061457621061">Reprodueix música</translation>
 <translation id="4181841719683918333">Idiomes</translation>
 <translation id="4195877955194704651">Botó Clics automàtics</translation>
 <translation id="4217571870635786043">Dictat</translation>
+<translation id="421885205185866088">PIN de la targeta intel·ligent per a <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="4239069858505860023">GPRS</translation>
 <translation id="4261870227682513959">Mostra la configuració de notificacions. Les notificacions estan desactivades.</translation>
 <translation id="4269883910223712419">L'administrador d'aquest dispositiu pot dur a terme les accions següents:</translation>
 <translation id="4279490309300973883">S'està creant una rèplica</translation>
-<translation id="4281007048406351813">Afegeix 1 minut al temporitzador</translation>
-<translation id="4292681942966152062">S'està activant <ph name="NETWORK_NAME" /></translation>
+<translation id="4296136865091727875">Esborra les <ph name="COUNT" /> notificacions</translation>
+<translation id="4303223480529385476">Desplega l'àrea d'estat</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Has premut la tecla de drecera de l'alt contrast. Vols activar-lo?</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
 <translation id="4338109981321384717">Lupa</translation>
 <translation id="4351433414020964307">L'Assistent s'està carregant...</translation>
-<translation id="435527878592612277">Selecciona la teva foto</translation>
+<translation id="4356930093361201197">Mode d'alt contrast</translation>
 <translation id="4378551569595875038">S'està connectant...</translation>
 <translation id="4379531060876907730">Aquestes són les eines del llapis òptic</translation>
+<translation id="4383956581743965695">-<ph name="TIME_SINCE_EXPIRATION" /></translation>
 <translation id="4389184120735010762">Has premut la tecla de drecera de la lupa acoblada. Vols activar-la?</translation>
 <translation id="4421231901400348175">Es comparteix el control de la pantalla amb <ph name="HELPER_NAME" /> mitjançant l'Assistència remota.</translation>
 <translation id="4430019312045809116">Volum</translation>
 <translation id="4450893287417543264">No ho tornis a mostrar</translation>
+<translation id="4477350412780666475">Pista següent</translation>
+<translation id="4477892968187500306">Aquest dispositiu pot contenir aplicacions que Google no ha verificat.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Dispositius desvinculats</translation>
-<translation id="4508225577814909926"><ph name="NAME" />: s'està connectant...</translation>
+<translation id="4505050298327493054">Escriptori actiu.</translation>
 <translation id="4513946894732546136">Comentaris</translation>
 <translation id="4527045527269911712">El dispositiu Bluetooth "<ph name="DEVICE_NAME" />" sol·licita permís per emparellar-se.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> per completar la càrrega</translation>
 <translation id="4544944664594876241">La drecera per bloquejar la pantalla ha canviat. Utilitzeu <ph name="NEW_SHORTCUT" /> en lloc de la drecera <ph name="OLD_SHORTCUT" />.</translation>
+<translation id="4561267230861221837">3G</translation>
 <translation id="4570957409596482333">Botó Escolta la selecció</translation>
 <translation id="4585337515783392668">Deixa d'emetre en un receptor desconegut</translation>
 <translation id="4628757576491864469">Dispositius</translation>
 <translation id="4659419629803378708">S'ha activat ChromeVox</translation>
+<translation id="4665114317261903604">Activa o desactiva el mode No molestis. <ph name="STATE_TEXT" /></translation>
 <translation id="4696813013609194136">Desbloqueja el dispositiu amb el codi parental</translation>
+<translation id="4731797938093519117">Accés parental</translation>
 <translation id="4734965478015604180">Horitzontal</translation>
 <translation id="4774338217796918551">Pots tornar demà a les <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Contrasenya per a <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4778095205580009397">L'Assistent de Google no està disponible en les sessions de demostració.</translation>
 <translation id="479989351350248267">cerca</translation>
 <translation id="4804818685124855865">Desconnecta</translation>
+<translation id="4814539958450445987">Pantalla d'inici de sessió</translation>
+<translation id="4831034276697007977">Confirmes que vols desactivar els clics automàtics?</translation>
 <translation id="4849058404725798627">Ressalta l'objecte amb el focus del teclat</translation>
 <translation id="485592688953820832">No facis res (pausa)</translation>
+<translation id="4868492592575313542">activada</translation>
 <translation id="4872237917498892622">Alt+Cerca o Maj</translation>
 <translation id="4890187583552566966">L'administrador ha desactivat l'Assistent de Google.</translation>
 <translation id="4895488851634969361">La bateria està carregada.</translation>
 <translation id="490375751687810070">Vertical</translation>
 <translation id="4905614135390995787">La drecera per activar/desactivar el mode d'alt contrast ha canviat. A partir d'ara, utilitza <ph name="NEW_SHORTCUT" /> en lloc de la drecera <ph name="OLD_SHORTCUT" />.</translation>
+<translation id="490788395437447240"><ph name="BATTERY_PERCENTAGE" />% de bateria</translation>
 <translation id="4917385247580444890">Forta</translation>
 <translation id="4918086044614829423">Accepta</translation>
 <translation id="4924411785043111640">Reinicia i restableix</translation>
+<translation id="4943005740606146647"><ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="SIGNAL_STRENGTH" /> d'intensitat del senyal</translation>
+<translation id="495046168593986294">Desplaça't cap amunt</translation>
 <translation id="4961318399572185831">Emet la pantalla</translation>
 <translation id="5030687792513154421">S'ha acabat el temps</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> s'ha connectat a un altre telèfon</translation>
 <translation id="5083553833479578423">Desbloqueja més funcions de l'Assistent.</translation>
 <translation id="5136175204352732067">S'ha connectat un altre teclat</translation>
+<translation id="5164328133545158294"><ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, <ph name="SIGNAL_STRENGTH" /> d'intensitat del senyal</translation>
 <translation id="5168181903108465623">Dispositius d'emissió disponibles</translation>
 <translation id="5207949376430453814">Ressalta la marca d'inserció de text</translation>
 <translation id="5222676887888702881">Tanca la sessió</translation>
 <translation id="523505283826916779">Configuració d'accessibilitat</translation>
+<translation id="5260676007519551770">Escriptori 4</translation>
 <translation id="5283198616748585639">Afegeix 1 minut</translation>
 <translation id="5302048478445481009">Idioma</translation>
 <translation id="5313326810920013265">Configuració del Bluetooth</translation>
 <translation id="5331975486040154427">Dispositiu USB-C (port posterior esquerre)</translation>
 <translation id="5379115545237091094">Massa intents</translation>
+<translation id="5388865552779376172"><ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /></translation>
 <translation id="5397578532367286026">El gestor (<ph name="MANAGER_EMAIL" />) pot revisar l'ús i l'historial d'aquest usuari a chrome.com.</translation>
 <translation id="5430931332414098647">Compartició de xarxa instantània</translation>
 <translation id="5431825016875453137">OpenVPN/L2TP</translation>
 <translation id="544691375626129091">Ja s'han afegit tots els usuaris disponibles a aquesta sessió.</translation>
 <translation id="5465662442746197494">Necessiteu ajuda?</translation>
 <translation id="5496819745535887422">L'administrador està canviant la versió del dispositiu a una d'anterior. Quan es reiniciï el dispositiu, se'n suprimiran totes les dades.</translation>
+<translation id="5519195206574732858">LTE</translation>
 <translation id="553675580533261935">S'està tancant la sessió</translation>
 <translation id="5537725057119320332">Emet</translation>
 <translation id="5548285847212963613">L'extensió "<ph name="EXTENSION_NAME" />" pot ajudar a connectar-se a aquesta xarxa.</translation>
 <translation id="554893713779400387">Activa o desactiva el dictat</translation>
 <translation id="5571066253365925590">S'ha activat el Bluetooth</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
-<translation id="5600837773213129531">Prem Ctrl+Alt+Z per desactivar els comentaris de veu.</translation>
+<translation id="5600837773213129531">Prem Ctrl+Alt+Z per desactivar els avisos de veu.</translation>
+<translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Connector per al micròfon</translation>
 <translation id="5669267381087807207">S'està activant</translation>
 <translation id="5673434351075758678">Després de sincronitzar la configuració, canvia <ph name="FROM_LOCALE" /> per <ph name="TO_LOCALE" />.</translation>
+<translation id="5682642926269496722">L'Assistent de Google no està disponible per al compte d'usuari actual.</translation>
 <translation id="5691772641933328258">L'empremta digital no s'ha reconegut</translation>
 <translation id="5710450975648804523">Mode No molestis activat</translation>
+<translation id="573413375004481890">Com que aquest dispositiu no ha pogut admetre totes les pantalles, se n'ha desconnectat una</translation>
 <translation id="574392208103952083">Mitjà</translation>
 <translation id="5744083938413354016">Tocar i arrossegar</translation>
 <translation id="5750765938512549687">El Bluetooth està desactivat</translation>
-<translation id="5777841717266010279">Voleu deixar de compartir la pantalla?</translation>
-<translation id="57838592816432529">Silencia</translation>
+<translation id="576453121877257266">La funció Llum nocturna està activada.</translation>
+<translation id="5777841717266010279">Vols aturar la compartició de pantalla?</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5837036133683224804">Atura <ph name="ROUTE_TITLE" /> a <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">Desactivat</translation>
@@ -302,23 +356,28 @@
 <translation id="598882571027504733">Per obtenir l'actualització, reinicia Chromebook amb el teclat connectat.</translation>
 <translation id="5992218262414051481">El mode d'alt contrast està activat. Torna a prémer Ctrl+Cerca+H per desactivar-lo.</translation>
 <translation id="6018164090099858612">S'està sortint del mode de rèplica</translation>
+<translation id="602001110135236999">Desplaça't cap a l'esquerra</translation>
+<translation id="6040143037577758943">Tanca</translation>
 <translation id="6043212731627905357">Aquest monitor i el teu <ph name="DEVICE_TYPE" /> no s'entenen (el monitor no és compatible).</translation>
 <translation id="6043994281159824495">Tanca la sessió ara</translation>
-<translation id="6047696787498798094">La pantalla es deixarà de compartir quan canvieu d'usuari. Voleu continuar?</translation>
+<translation id="6047696787498798094">La compartició de pantalla s'aturarà quan canviïs d'usuari. Vols continuar?</translation>
+<translation id="6054305421211936131">Inicia la sessió amb la targeta intel·ligent</translation>
 <translation id="6062360702481658777">Es tancarà la sessió automàticament d'aquí a <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6064337552080329342">No s'ha pogut verificar la contrasenya. Torna-ho a provar.</translation>
 <translation id="607652042414456612">El vostre ordinador està visible als dispositius Bluetooth propers i apareixerà com a "<ph name="NAME" />" amb l'adreça <ph name="ADDRESS" />.</translation>
-<translation id="6106745654298855237">S'està carregant: <ph name="POWER_SOURCE" /></translation>
+<translation id="6120841317807235082"><ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, <ph name="SIGNAL_STRENGTH" /> d'intensitat del senyal, gestionada per l'administrador</translation>
+<translation id="612734058257491180">L'Assistent de Google no està disponible a les sessions de convidat.</translation>
 <translation id="615957422585914272">Mostra el teclat en pantalla</translation>
 <translation id="6164005077879661055">Tots els fitxers i les dades locals associats amb l'usuari supervisat se suprimiran permanentment quan aquest usuari supervisat se suprimeixi. És possible que el gestor encara pugui veure els llocs web visitats i la configuració d'aquest usuari supervisat a la pàgina <ph name="MANAGEMENT_URL" />.</translation>
 <translation id="6165508094623778733">Més informació</translation>
+<translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">Bloquejada en horitzontal</translation>
 <translation id="6259254695169772643">Fes servir el llapis òptic per seleccionar</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: s'està activant...</translation>
+<translation id="6283712521836204486">El mode No molestis està desactivat.</translation>
 <translation id="6284232397434400372">S'ha canviat la resolució</translation>
 <translation id="6297287540776456956">Utilitza el llapis òptic per seleccionar una part</translation>
 <translation id="6310121235600822547"><ph name="DISPLAY_NAME" /> s'ha canviat a <ph name="ROTATION" /></translation>
-<translation id="6344698853700675736">Activa o desactiva la funció Llum nocturna</translation>
 <translation id="6376931439017688372">El Bluetooth està activat</translation>
 <translation id="639644700271529076">Bloq Maj està desactivat</translation>
 <translation id="6406704438230478924">AltGr</translation>
@@ -330,6 +389,7 @@
 <translation id="6459472438155181876">S'està ampliant la pantalla a <ph name="DISPLAY_NAME" /></translation>
 <translation id="6482559668224714696">Lupa de pantalla completa</translation>
 <translation id="6490471652906364588">Dispositiu USB-C (port dret)</translation>
+<translation id="649452524636452238">PIN de la targeta intel·ligent</translation>
 <translation id="6501401484702599040">S'està emetent la pantalla a <ph name="RECEIVER_NAME" /></translation>
 <translation id="6521655319214113338">Entrada d'escriptura a mà</translation>
 <translation id="6528179044667508675">No molestis</translation>
@@ -338,48 +398,59 @@
 <translation id="6559976592393364813">Pregunta a l'administrador</translation>
 <translation id="6585808820553845416">La sessió finalitzarà d'aquí a <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6627638273713273709">Cerca+Maj+K</translation>
+<translation id="6637729079642709226">Canvia l'hora</translation>
 <translation id="6650933572246256093">El dispositiu Bluetooth "<ph name="DEVICE_NAME" />" sol·licita permís per emparellar-se. Introduïu-hi aquesta contrasenya: <ph name="PASSKEY" />.</translation>
 <translation id="6657585470893396449">Contrasenya</translation>
 <translation id="6665545700722362599">Concedir permís als llocs web, a les aplicacions i a les extensions per utilitzar els serveis d'ubicació o el micròfon, la càmera o altres funcions del dispositiu.</translation>
+<translation id="6670153871843998651">Escriptori 3</translation>
+<translation id="6676604402165549692"><ph name="NETWORK_NAME" />, <ph name="SIGNAL_STRENGTH" /> d'intensitat del senyal, gestionada per l'administrador</translation>
 <translation id="6691659475504239918">Cerca+Maj+H</translation>
 <translation id="6696025732084565524">El teclat extraïble necessita una actualització molt important</translation>
 <translation id="6700713906295497288">Botó del menú d'IME</translation>
 <translation id="6713285437468012787">El dispositiu Bluetooth "<ph name="DEVICE_NAME" />" s'ha vinculat i ja està disponible per a tots els usuaris. Podeu eliminar la vinculació a Configuració.</translation>
 <translation id="6715542151869432661">No s'ha trobat cap dispositiu mòbil.</translation>
-<translation id="671928215901716392">Bloqueja la pantalla</translation>
 <translation id="6723839937902243910">Bateria</translation>
+<translation id="6727969043791803658">Connectat, <ph name="BATTERY_PERCENTAGE" />% de bateria</translation>
 <translation id="6751826523481687655">La traça del rendiment està activada</translation>
-<translation id="6785414152754474415">La bateria està carregada fins al <ph name="PERCENTAGE" />% i s'està carregant.</translation>
+<translation id="6752912906630585008">L'escriptori <ph name="REMOVED_DESK" /> s'ha suprimit i s'ha fusionat amb l'escriptori <ph name="RECEIVE_DESK" /></translation>
+<translation id="6777216307882431711">S'estan alimentant els dispositius USB-C connectats</translation>
+<translation id="6780359977073194850"><ph name="NETWORK_NAME" />, <ph name="SIGNAL_STRENGTH" /> d'intensitat del senyal</translation>
+<translation id="6790428901817661496">Reprodueix</translation>
 <translation id="6803622936009808957">No s'ha pogut fer la rèplica de les pantalles, perquè no s'ha trobat cap resolució compatible. S'està entrant al mode d'escriptori ampliat.</translation>
 <translation id="6820676911989879663">Fes una pausa</translation>
 <translation id="683971173229319003">Cerca + L</translation>
 <translation id="6857811139397017780">Activa <ph name="NETWORKSERVICE" /></translation>
+<translation id="6878400149835617132">S'ha desactivat la drecera</translation>
 <translation id="6910714959251846841">Aquesta actualització requereix executar la funció Powerwash al dispositiu. Obtén més informació sobre l'última actualització de <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6911468394164995108">Connecta't a una altra xarxa...</translation>
+<translation id="6919251195245069855">No s'ha reconegut la targeta intel·ligent. Torna-ho a provar.</translation>
 <translation id="6972754398087986839">Comença</translation>
 <translation id="6981982820502123353">Accessibilitat</translation>
 <translation id="698231206551913481">Tots els fitxers i les dades locals associats amb aquest usuari se suprimiran definitivament quan aquest usuari se suprimeixi.</translation>
 <translation id="7015766095477679451">Pots tornar a aquesta hora: <ph name="COME_BACK_TIME" />.</translation>
 <translation id="7025533177575372252">Connecta <ph name="DEVICE_NAME" /> al telèfon</translation>
 <translation id="7029814467594812963">Tanca la sessió</translation>
+<translation id="7042322267639375032">Replega l'àrea d'estat</translation>
 <translation id="7066646422045619941">L'administrador ha desactivat aquesta xarxa.</translation>
 <translation id="7067196344162293536">Rotació automàtica</translation>
 <translation id="7068360136237591149">Obre fitxers</translation>
 <translation id="7076293881109082629">Inicia la sessió</translation>
+<translation id="7088960765736518739">Accés amb interruptors</translation>
 <translation id="7092922358121866860">Mostra la configuració de Llum nocturna</translation>
 <translation id="7098389117866926363">Dispositiu USB-C (port posterior esquerre)</translation>
 <translation id="7131634465328662194">La sessió es tancarà automàticament.</translation>
 <translation id="7143207342074048698">S'està connectant</translation>
 <translation id="7165278925115064263">Alt+Maj+K</translation>
 <translation id="7168224885072002358">Es revertirà a la resolució anterior d'aquí a <ph name="TIMEOUT_SECONDS" /></translation>
-<translation id="7222902781030499995">Atura el temporitzador</translation>
 <translation id="7256634071279256947">Micròfon posterior</translation>
 <translation id="726276584504105859">Arrossega-la aquí per utilitzar la pantalla dividida</translation>
+<translation id="7262906531272962081">Crea un recordatori</translation>
 <translation id="7303365578352795231">S'està responent en un altre dispositiu.</translation>
+<translation id="7305884605064981971">EDGE</translation>
 <translation id="7348093485538360975">Teclat en pantalla</translation>
 <translation id="735745346212279324">VPN desconnectada</translation>
 <translation id="7377169924702866686">Bloq Maj està activat.</translation>
-<translation id="7384299914270925461"><ph name="SIGN" /><ph name="MINUTES_REMAINING" />:<ph name="SECONDS_REMAINING" /> s</translation>
+<translation id="7378594059915113390">Controls multimèdia</translation>
 <translation id="7398254312354928459">S'ha canviat la connexió de xarxa</translation>
 <translation id="7405710164030118432">Introdueix el codi d'accés parental de Family Link per desbloquejar el dispositiu</translation>
 <translation id="742594950370306541">La càmera s'està utilitzant.</translation>
@@ -389,18 +460,21 @@
 <translation id="7526573455193969409">És possible que la xarxa estigui supervisada</translation>
 <translation id="7536035074519304529">Adreça IP: <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">Ara toca anar a dormir</translation>
+<translation id="75510698954995432"><ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, <ph name="SIGNAL_STRENGTH" /> d'intensitat del senyal, <ph name="BATTERY_STATUS" /> de bateria al telèfon</translation>
 <translation id="7561014039265304140"><ph name="DISPLAY_NAME" /> no admet <ph name="SPECIFIED_RESOLUTION" />. S'ha canviat la resolució per <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="7562368315689366235">Paleta d'emoji</translation>
 <translation id="7564874036684306347">Moure finestres a un altre escriptori pot provocar un comportament imprevist. És possible que les notificacions, les finestres i els quadres de diàleg següents quedin dividits entre escriptoris.</translation>
+<translation id="7568294522609223312">Desactiva els clics automàtics</translation>
 <translation id="7569509451529460200">S'ha activat el braille i ChromeVox</translation>
 <translation id="7593891976182323525">Cerca o Maj</translation>
+<translation id="7600875258240007829">Mostra totes les notificacions</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (propietari)</translation>
 <translation id="7647488630410863958">Desbloqueja el dispositiu per veure les notificacions</translation>
 <translation id="7649070708921625228">Ajuda</translation>
-<translation id="7654687942625752712">Mantén premudes les dues tecles de volum durant cinc segons per desactivar els comentaris de veu.</translation>
-<translation id="7692480393933218409">S'estan carregant els dispositius USB-C connectats</translation>
+<translation id="7654687942625752712">Mantén premudes les dues tecles de volum durant cinc segons per desactivar els avisos de veu.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 notificació}other{# notificacions}}</translation>
+<translation id="7749443890790263709">S'ha assolit el nombre màxim d'escriptoris.</translation>
 <translation id="776344839111254542">Fes clic per veure els detalls de l'actualització</translation>
 <translation id="7780159184141939021">Gira la pantalla</translation>
 <translation id="7796353162336583443">Toca el botó del llapis òptic al prestatge per escriure una nota, fer una captura de pantalla, utilitzar l'Assistent de Google o fer-lo servir com a punter làser o lupa.</translation>
@@ -408,7 +482,6 @@
 <translation id="7814236020522506259"><ph name="HOUR" /> i <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Senyal potent</translation>
 <translation id="7837740436429729974">S'ha esgotat el temps</translation>
-<translation id="7842211907556571265">S'està connectant a <ph name="NETWORK_NAME" /></translation>
 <translation id="7842569679327885685">Advertiment: funció experimental</translation>
 <translation id="7846634333498149051">Teclat</translation>
 <translation id="7868900307798234037">Has desbloquejat el dispositiu amb empremta digital</translation>
@@ -419,12 +492,12 @@
 <translation id="7904094684485781019">L'administrador d'aquest compte no ha permès l'inici de sessió múltiple.</translation>
 <translation id="7933084174919150729">L'Assistent de Google només està disponible per al perfil principal.</translation>
 <translation id="79341161159229895">Compte gestionat per <ph name="FIRST_PARENT_EMAIL" /> i <ph name="SECOND_PARENT_EMAIL" /></translation>
+<translation id="7955885781510802139">Mode d'alt contrast</translation>
 <translation id="7977927628060636163">S'estan cercant xarxes mòbils…</translation>
 <translation id="7982789257301363584">Xarxa</translation>
 <translation id="7984197416080286869">Has intentat desbloquejar el dispositiu amb empremta digital massa vegades</translation>
 <translation id="7994370417837006925">Inici de sessió múltiple</translation>
 <translation id="8000066093800657092">No hi ha cap xarxa</translation>
-<translation id="8029241286966751120">La lupa de pantalla completa està activada. Torna a prémer Ctrl+Cerca+M per desactivar-la.</translation>
 <translation id="8030169304546394654">Desconnectat</translation>
 <translation id="8054466585765276473">S'està calculant el temps de la bateria.</translation>
 <translation id="8061464966246066292">Contrast alt</translation>
@@ -434,29 +507,32 @@
 <translation id="813913629614996137">S'està inicialitzant…</translation>
 <translation id="8142441511840089262">Fes doble clic</translation>
 <translation id="8142699993796781067">Xarxa privada</translation>
+<translation id="8152092012181020186">Prem Ctrl+W per tancar.</translation>
 <translation id="8167567890448493835">S'està utilitzant <ph name="LOCALE_NAME" /></translation>
 <translation id="8190698733819146287">Personalitza idiomes i introducció de text...</translation>
 <translation id="8192202700944119416">S'han amagat les notificacions.</translation>
 <translation id="8203795194971602413">Fes clic amb el botó dret</translation>
 <translation id="8236042855478648955">Ara toca fer una pausa</translation>
+<translation id="826107067893790409">Prem Retorn per desbloquejar-lo per a <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Suprimeix</translation>
 <translation id="8297006494302853456">Feble</translation>
 <translation id="8308637677604853869">Menú anterior</translation>
-<translation id="8332664326438198339">Torna al menú d'aplicacions</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8351131234907093545">Crea una nota</translation>
 <translation id="8375916635258623388"><ph name="DEVICE_NAME" /> i el teu telèfon es connectaran automàticament</translation>
+<translation id="8388750414311082622">L'últim escriptori no es pot suprimir.</translation>
 <translation id="8392451568018454956">Menú d'opcions per a <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8394567579869570560">El teu pare o la teva mare han bloquejat aquest dispositiu</translation>
-<translation id="8406981827175133772">Lupa de pantalla completa</translation>
 <translation id="8425213833346101688">Canvia</translation>
 <translation id="8427213022735114808">El dictat envia la teva veu a Google per permetre l'escriptura per veu en qualsevol camp de text.</translation>
 <translation id="8428213095426709021">Configuració</translation>
 <translation id="8433186206711564395">Configuració de la xarxa</translation>
 <translation id="8433977262951327081">La drecera per mostrar el quadre d'ajuda amb el menú d'opcions d'introducció al prestatge ha canviat. Fes servir <ph name="NEW_SHORTCUT" /> en lloc de la drecera <ph name="OLD_SHORTCUT" />.</translation>
+<translation id="8444246603146515890">L'escriptori <ph name="DESK_TITILE" /> està activat</translation>
 <translation id="8452135315243592079">Falta la targeta SIM</translation>
 <translation id="8454013096329229812">La Wi-Fi està activada.</translation>
 <translation id="847056008324733326">Configuració de l'escala de visualització</translation>
+<translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> té la funció <ph name="FEATURE_NAME" /> <ph name="FEATURE_STATE" />.</translation>
 <translation id="8477270416194247200">Prem Alt+Cerca o Maj per cancel·lar.</translation>
 <translation id="8513108775083588393">Rotació automàtica</translation>
 <translation id="8517041960877371778">És possible que el dispositiu <ph name="DEVICE_TYPE" /> no es carregui mentre està encès.</translation>
@@ -469,6 +545,7 @@
 <translation id="8673028979667498656">270°</translation>
 <translation id="8676770494376880701">S'ha connectat un carregador de baix consum</translation>
 <translation id="8683506306463609433">Traça del rendiment activa</translation>
+<translation id="8721053961083920564">Activa o desactiva el volum. <ph name="STATE_TEXT" /></translation>
 <translation id="8734991477317290293">Pot ser que estigui provant de robar-te les combinacions de tecles</translation>
 <translation id="8735953464173050365">Mostra la configuració del teclat. S'ha seleccionat <ph name="KEYBOARD_NAME" />.</translation>
 <translation id="875593634123171288">Mostra la configuració de la VPN</translation>
@@ -481,30 +558,40 @@
 <translation id="8877788021141246043">Estableix un recordatori</translation>
 <translation id="8878886163241303700">Ampliació de la pantalla</translation>
 <translation id="890616557918890486">Canvia la font</translation>
+<translation id="8909138438987180327">La bateria està a un <ph name="PERCENTAGE" />%.</translation>
+<translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">L'Assistent de Google no parla aquest idioma.</translation>
+<translation id="8936501819958976551">desactivada</translation>
 <translation id="8938800817013097409">Dispositiu USB-C (port posterior dret)</translation>
 <translation id="8940956008527784070">Bateria baixa (<ph name="PERCENTAGE" />%)</translation>
+<translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">S'està utilitzant <ph name="IME_NAME" /></translation>
 <translation id="899350903320462459">Desbloqueja el dispositiu com a <ph name="LOGIN_ID" /> per dur a terme l'acció que indica la notificació</translation>
 <translation id="8995603266996330174">Gestionat per <ph name="DOMAIN" /></translation>
+<translation id="9017320285115481645">Introdueix el codi d'accés parental de Family Link.</translation>
 <translation id="9029474291399787231">Hi ha disponible una actualització d'Adobe Flash Player</translation>
 <translation id="9056839673611986238">El dispositiu es revertirà a una versió anterior</translation>
 <translation id="9070640332319875144">Configuració de l'Assistent</translation>
+<translation id="9072519059834302790">Temps restant perquè s'esgoti la bateria: <ph name="TIME_LEFT" />.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
 <translation id="9080206825613744995">S'està fent servir el micròfon.</translation>
+<translation id="9084606467167974638">Commuta la posició del menú</translation>
 <translation id="9089416786594320554">Mètodes d'introducció</translation>
 <translation id="9091626656156419976">S'ha suprimit la pantalla <ph name="DISPLAY_NAME" /></translation>
+<translation id="9092415813919137737"><ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, <ph name="SIGNAL_STRENGTH" /> d'intensitat del senyal, gestionada per l'administrador</translation>
 <translation id="9151726767154816831">Reinicieu i feu un Powerwash per actualitzar.</translation>
 <translation id="9179259655489829027">Aquesta funció et permet accedir ràpidament als usuaris que han iniciat la sessió sense haver d'introduir la contrasenya. Utilitza aquesta funció només amb comptes de confiança.</translation>
+<translation id="9183456764293710005">Lupa de pantalla completa</translation>
 <translation id="9193626018745640770">S'està emetent contingut en un receptor desconegut</translation>
 <translation id="9194617393863864469">Inicia la sessió amb un altre usuari...</translation>
-<translation id="9201131092683066720">La bateria està carregada fins al <ph name="PERCENTAGE" />%.</translation>
 <translation id="9210037371811586452">S'està sortint del mode d'escriptori unificat</translation>
+<translation id="9211681782751733685">Temps restant perquè es carregui totalment la bateria: <ph name="TIME_REMAINING" />.</translation>
 <translation id="9215934040295798075">Estableix fons de pantalla</translation>
 <translation id="921989828232331238">El teu pare o la teva mare han bloquejat el dispositiu per a tot el dia</translation>
 <translation id="923686485342484400">Premeu Control+Maj+Q dues vegades per tancar la sessió.</translation>
 <translation id="938963181863597773">Què tinc programat al calendari?</translation>
 <translation id="945522503751344254">Envia suggeriments</translation>
 <translation id="98515147261107953">Horitzontal</translation>
+<translation id="990277280839877440">La finestra <ph name="WINDOW_TITILE" /> s'ha tancat.</translation>
 </translationbundle>

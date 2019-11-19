@@ -26,7 +26,7 @@
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_prefs.h"
-#include "extensions/browser/extension_system.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/notification_types.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/test/extension_test_message_listener.h"
@@ -36,7 +36,7 @@
 #endif
 
 namespace keys = extension_management_api_constants;
-namespace util = extension_function_test_utils;
+namespace test_utils = extension_function_test_utils;
 
 namespace extensions {
 
@@ -179,19 +179,17 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementApiBrowserTest,
       new ManagementCreateAppShortcutFunction());
   create_shortcut_function->set_user_gesture(true);
   ManagementCreateAppShortcutFunction::SetAutoConfirmForTest(true);
-  util::RunFunctionAndReturnSingleResult(
+  test_utils::RunFunctionAndReturnSingleResult(
       create_shortcut_function.get(),
-      base::StringPrintf("[\"%s\"]", app_id.c_str()),
-      browser());
+      base::StringPrintf("[\"%s\"]", app_id.c_str()), browser());
 
   create_shortcut_function = new ManagementCreateAppShortcutFunction();
   create_shortcut_function->set_user_gesture(true);
   ManagementCreateAppShortcutFunction::SetAutoConfirmForTest(false);
   EXPECT_TRUE(base::MatchPattern(
-      util::RunFunctionAndReturnError(
+      test_utils::RunFunctionAndReturnError(
           create_shortcut_function.get(),
-          base::StringPrintf("[\"%s\"]", app_id.c_str()),
-          browser()),
+          base::StringPrintf("[\"%s\"]", app_id.c_str()), browser()),
       keys::kCreateShortcutCanceledError));
 }
 
@@ -209,7 +207,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementApiBrowserTest,
   scoped_refptr<ManagementGetAllFunction> function =
       new ManagementGetAllFunction();
   std::unique_ptr<base::Value> result(
-      util::RunFunctionAndReturnSingleResult(function.get(), "[]", browser()));
+      test_utils::RunFunctionAndReturnSingleResult(function.get(), "[]",
+                                                   browser()));
   base::ListValue* list;
   ASSERT_TRUE(result->GetAsList(&list));
   EXPECT_EQ(1U, list->GetSize());
@@ -218,8 +217,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementApiBrowserTest,
   ASSERT_TRUE(CrashEnabledExtension(extension->id()));
 
   function = new ManagementGetAllFunction();
-  result.reset(util::RunFunctionAndReturnSingleResult(
-      function.get(), "[]", browser()));
+  result.reset(test_utils::RunFunctionAndReturnSingleResult(function.get(),
+                                                            "[]", browser()));
   ASSERT_TRUE(result->GetAsList(&list));
   EXPECT_EQ(1U, list->GetSize());
 }
@@ -244,17 +243,14 @@ class ExtensionManagementApiEscalationTest :
         scoped_temp_dir_.GetPath().AppendASCII("permissions2.crx"), pem_path,
         base::FilePath());
 
-    ExtensionService* service = ExtensionSystem::Get(browser()->profile())->
-        extension_service();
-
     // Install low-permission version of the extension.
     ASSERT_TRUE(InstallExtension(path_v1, 1));
-    EXPECT_TRUE(service->GetExtensionById(kId, false) != NULL);
+    EXPECT_TRUE(extension_registry()->enabled_extensions().GetByID(kId));
 
     // Update to a high-permission version - it should get disabled.
     EXPECT_FALSE(UpdateExtension(kId, path_v2, -1));
-    EXPECT_TRUE(service->GetExtensionById(kId, false) == NULL);
-    EXPECT_TRUE(service->GetExtensionById(kId, true) != NULL);
+    EXPECT_FALSE(extension_registry()->enabled_extensions().GetByID(kId));
+    EXPECT_TRUE(extension_registry()->disabled_extensions().GetByID(kId));
     EXPECT_TRUE(ExtensionPrefs::Get(browser()->profile())
                     ->DidExtensionEscalatePermissions(kId));
   }
@@ -271,7 +267,7 @@ class ExtensionManagementApiEscalationTest :
       function->set_user_gesture(true);
     function->SetRenderFrameHost(browser()->tab_strip_model()->
         GetActiveWebContents()->GetMainFrame());
-    bool response = util::RunFunction(
+    bool response = test_utils::RunFunction(
         function.get(), base::StringPrintf("[\"%s\", %s]", kId, enabled_string),
         browser(), api_test_utils::NONE);
     if (expected_error.empty()) {
@@ -294,8 +290,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementApiEscalationTest,
                        DisabledReason) {
   scoped_refptr<ManagementGetFunction> function =
       new ManagementGetFunction();
-  std::unique_ptr<base::Value> result(util::RunFunctionAndReturnSingleResult(
-      function.get(), base::StringPrintf("[\"%s\"]", kId), browser()));
+  std::unique_ptr<base::Value> result(
+      test_utils::RunFunctionAndReturnSingleResult(
+          function.get(), base::StringPrintf("[\"%s\"]", kId), browser()));
   ASSERT_TRUE(result.get() != NULL);
   ASSERT_TRUE(result->is_dict());
   base::DictionaryValue* dict =
@@ -344,15 +341,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementApiEscalationTest,
     // Register the target extension with extension service.
     scoped_refptr<const Extension> target_extension =
         ExtensionBuilder("TargetExtension").SetID(kId).Build();
-    ExtensionService* const service =
-        ExtensionSystem::Get(browser()->profile())->extension_service();
-    service->AddExtension(target_extension.get());
+    extension_service()->AddExtension(target_extension.get());
     SetEnabled(false, true, std::string(), source_extension);
     SetEnabled(true, true, std::string(), source_extension);
-    const Extension* extension = ExtensionSystem::Get(browser()->profile())
-                                     ->extension_service()
-                                     ->GetExtensionById(kId, false);
-    EXPECT_TRUE(extension);
+    EXPECT_TRUE(extension_registry()->enabled_extensions().GetByID(kId));
   }
 }
 

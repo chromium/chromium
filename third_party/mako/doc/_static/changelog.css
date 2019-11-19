@@ -1,0 +1,7 @@
+a.changeset-link {
+	visibility: hidden;
+}
+
+li:hover a.changeset-link {
+   visibility: visible;
+}

@@ -4,7 +4,7 @@ class MockColorChooser {
   constructor() {
     this.bindingSet_ = new mojo.BindingSet(blink.mojom.ColorChooserFactory);
     this.interceptor_ = new MojoInterfaceInterceptor(
-        blink.mojom.ColorChooserFactory.name);
+        blink.mojom.ColorChooserFactory.name, "context", true);
     this.interceptor_.oninterfacerequest =
         e => this.bindingSet_.addBinding(this, e.handle);
     this.interceptor_.start();

@@ -1,0 +1,33 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "InlineTextBox 'Find-in-page 'findme', then click here)'",
+          "rect": [18, 130, 251, 39],
+          "reason": "disappeared"
+        },
+        {
+          "object": "InlineTextBox 'To be changed: findme (Manual testing:'",
+          "rect": [18, 130, 251, 39],
+          "reason": "disappeared"
+        },
+        {
+          "object": "InlineTextBox 'After change'",
+          "rect": [18, 130, 82, 19],
+          "reason": "appeared"
+        },
+        {
+          "object": "VerticalScrollbar",
+          "rect": [295, 102, 15, 400],
+          "reason": "scroll control"
+        }
+      ]
+    }
+  ]
+}
+

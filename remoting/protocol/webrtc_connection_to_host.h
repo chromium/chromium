@@ -45,6 +45,7 @@ class WebrtcConnectionToHost : public ConnectionToHost,
   void Connect(std::unique_ptr<Session> session,
                scoped_refptr<TransportContext> transport_context,
                HostEventCallback* event_callback) override;
+  void Disconnect(ErrorCode error) override;
   const SessionConfig& config() override;
   ClipboardStub* clipboard_forwarder() override;
   HostStub* host_stub() override;

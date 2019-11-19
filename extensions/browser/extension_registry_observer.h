@@ -18,6 +18,34 @@ class ExtensionRegistry;
 
 // Observer for ExtensionRegistry. Exists in a separate header file to reduce
 // the include file burden for typical clients of ExtensionRegistry.
+//
+// There are separate event categories for loading (the OnExtensionLoaded,
+// OnExtensionReady and OnExtensionUnloaded events) and installing (the
+// OnExtensionWillBeInstalled, OnExtensionInstalled and OnExtensionUninstalled)
+// extensions.
+//
+// For example, comparing OnExtensionLoaded and OnExtensionInstalled,
+// OnExtensionLoaded is called whenever an extension is added to the "enabled"
+// set of the extension registry. This includes:
+//
+//  - Extensions being loaded at Chrome startup.
+//  - Extensions being reloaded:
+//    * as part of an update.
+//    * from a crash.
+//    * from a disabled state (if the user toggled disabled -> enabled).
+//    * as part of internal bookkeeping (we reload extensions on file access
+//      being granted, for instance).
+//    * if the extension requested it (chrome.runtime.reload()).
+//    * probably others.
+//  - New extensions being loaded for the first time (as part of installation).
+//
+// OnExtensionInstalled is called when a *new* extension is added, *or* when an
+// extension is updated to a *new* version. It is not called for existing
+// extensions being loaded at startup, etc. In a common run of Chrome, you
+// probably won't get many "OnInstalled" events.
+//
+// As a general rule, most sites should observe OnExtensionLoaded, because they
+// want to see "what are the enabled extensions".
 class ExtensionRegistryObserver {
  public:
   virtual ~ExtensionRegistryObserver() {}

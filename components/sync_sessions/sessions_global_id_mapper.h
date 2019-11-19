@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/time/time.h"
-#include "components/sync/user_events/global_id_mapper.h"
+#include "components/sync_user_events/global_id_mapper.h"
 
 namespace sync_sessions {
 

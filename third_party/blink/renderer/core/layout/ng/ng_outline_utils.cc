@@ -5,11 +5,11 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_outline_utils.h"
 
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
-#include "third_party/blink/renderer/core/paint/ng/ng_paint_fragment.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 
 namespace blink {
-
 
 bool NGOutlineUtils::HasPaintedOutline(const ComputedStyle& style,
                                        const Node* node) {
@@ -21,23 +21,31 @@ bool NGOutlineUtils::HasPaintedOutline(const ComputedStyle& style,
   return true;
 }
 
-bool NGOutlineUtils::IsInlineOutlineNonpaintingFragment(
-    const NGPhysicalFragment& physical_fragment) {
-  LayoutObject* layout_object = physical_fragment.GetLayoutObject();
-  if (!layout_object)
-    return false;
+bool NGOutlineUtils::ShouldPaintOutline(
+    const NGPhysicalBoxFragment& physical_fragment) {
+  const LayoutObject* layout_object = physical_fragment.GetLayoutObject();
+  DCHECK(layout_object);
   if (!layout_object->IsLayoutInline())
-    return false;
+    return true;
+
+  // A |LayoutInline| can be split across multiple objects. The first fragment
+  // produced should paint the outline for *all* fragments.
   if (layout_object->IsElementContinuation()) {
-    // If continuation root did generate a fragment,
-    // this fragment should not paint.
-    if (layout_object->GetNode()->GetLayoutObject()->FirstInlineFragment())
-      return true;
+    // If the |LayoutInline|'s continuation-root generated a fragment, we
+    // shouldn't paint the outline.
+    DCHECK(layout_object->ContinuationRoot());
+    NGInlineCursor cursor;
+    cursor.MoveTo(*layout_object->ContinuationRoot());
+    if (cursor)
+      return false;
   }
-  if (!layout_object->FirstInlineFragment())
-    return false;
-  return &layout_object->FirstInlineFragment()->PhysicalFragment() !=
-         &physical_fragment;
+
+  // The first fragment paints all outlines. Check if this is the first fragment
+  // for the |layout_object|.
+  NGInlineCursor cursor;
+  cursor.MoveTo(*layout_object);
+  DCHECK(cursor);
+  return cursor.CurrentBoxFragment() == &physical_fragment;
 }
 
 }  // namespace blink

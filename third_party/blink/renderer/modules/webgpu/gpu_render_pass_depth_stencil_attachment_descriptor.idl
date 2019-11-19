@@ -1,0 +1,15 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://gpuweb.github.io/gpuweb/
+
+dictionary GPURenderPassDepthStencilAttachmentDescriptor {
+    required GPUTextureView attachment;
+
+    required (GPULoadOp or float) depthLoadValue;
+    required GPUStoreOp depthStoreOp;
+
+    required (GPULoadOp or unsigned long) stencilLoadValue;
+    required GPUStoreOp stencilStoreOp;
+};

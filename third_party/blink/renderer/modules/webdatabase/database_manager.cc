@@ -134,7 +134,7 @@ Database* DatabaseManager::OpenDatabaseInternal(
     const String& name,
     const String& expected_version,
     const String& display_name,
-    unsigned estimated_size,
+    uint32_t estimated_size,
     V8DatabaseCallback* creation_callback,
     bool set_version_in_new_database,
     DatabaseError& error,
@@ -170,7 +170,7 @@ Database* DatabaseManager::OpenDatabase(ExecutionContext* context,
                                         const String& name,
                                         const String& expected_version,
                                         const String& display_name,
-                                        unsigned estimated_size,
+                                        uint32_t estimated_size,
                                         V8DatabaseCallback* creation_callback,
                                         DatabaseError& error,
                                         String& error_message) {
@@ -199,8 +199,9 @@ String DatabaseManager::FullPathForDatabase(const SecurityOrigin* origin,
 
 void DatabaseManager::LogErrorMessage(ExecutionContext* context,
                                       const String& message) {
-  context->AddConsoleMessage(ConsoleMessage::Create(
-      kStorageMessageSource, mojom::ConsoleMessageLevel::kError, message));
+  context->AddConsoleMessage(
+      ConsoleMessage::Create(mojom::ConsoleMessageSource::kStorage,
+                             mojom::ConsoleMessageLevel::kError, message));
 }
 
 }  // namespace blink

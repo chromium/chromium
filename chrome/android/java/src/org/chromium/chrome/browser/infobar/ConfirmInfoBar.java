@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.infobar;
 
 import android.graphics.Bitmap;
 
+import androidx.annotation.ColorRes;
+
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.chrome.browser.ResourceId;
 
@@ -24,9 +26,9 @@ public class ConfirmInfoBar extends InfoBar {
     /** Text shown on the link, e.g. "Learn more". */
     private final String mLinkText;
 
-    protected ConfirmInfoBar(int iconDrawableId, Bitmap iconBitmap, String message,
-            String linkText, String primaryButtonText, String secondaryButtonText) {
-        super(iconDrawableId, iconBitmap, message);
+    protected ConfirmInfoBar(int iconDrawableId, @ColorRes int iconTintId, Bitmap iconBitmap,
+            String message, String linkText, String primaryButtonText, String secondaryButtonText) {
+        super(iconDrawableId, iconTintId, message, iconBitmap);
         mPrimaryButtonText = primaryButtonText;
         mSecondaryButtonText = secondaryButtonText;
         mLinkText = linkText;
@@ -75,8 +77,8 @@ public class ConfirmInfoBar extends InfoBar {
             String linkText, String buttonOk, String buttonCancel) {
         int drawableId = ResourceId.mapToDrawableId(enumeratedIconId);
 
-        ConfirmInfoBar infoBar = new ConfirmInfoBar(drawableId, iconBitmap, message, linkText,
-                buttonOk, buttonCancel);
+        ConfirmInfoBar infoBar = new ConfirmInfoBar(
+                drawableId, 0, iconBitmap, message, linkText, buttonOk, buttonCancel);
 
         return infoBar;
     }

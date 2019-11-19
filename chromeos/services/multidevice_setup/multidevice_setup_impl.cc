@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <utility>
+#include <vector>
+
 #include "chromeos/services/multidevice_setup/multidevice_setup_impl.h"
 
 #include "base/memory/ptr_util.h"
@@ -157,18 +160,18 @@ MultiDeviceSetupImpl::~MultiDeviceSetupImpl() {
 }
 
 void MultiDeviceSetupImpl::SetAccountStatusChangeDelegate(
-    mojom::AccountStatusChangeDelegatePtr delegate) {
-  delegate_notifier_->SetAccountStatusChangeDelegatePtr(std::move(delegate));
+    mojo::PendingRemote<mojom::AccountStatusChangeDelegate> delegate) {
+  delegate_notifier_->SetAccountStatusChangeDelegateRemote(std::move(delegate));
 }
 
 void MultiDeviceSetupImpl::AddHostStatusObserver(
-    mojom::HostStatusObserverPtr observer) {
-  host_status_observers_.AddPtr(std::move(observer));
+    mojo::PendingRemote<mojom::HostStatusObserver> observer) {
+  host_status_observers_.Add(std::move(observer));
 }
 
 void MultiDeviceSetupImpl::AddFeatureStateObserver(
-    mojom::FeatureStateObserverPtr observer) {
-  feature_state_observers_.AddPtr(std::move(observer));
+    mojo::PendingRemote<mojom::FeatureStateObserver> observer) {
+  feature_state_observers_.Add(std::move(observer));
 }
 
 void MultiDeviceSetupImpl::GetEligibleHostDevices(
@@ -179,18 +182,20 @@ void MultiDeviceSetupImpl::GetEligibleHostDevices(
     eligible_remote_devices.push_back(remote_device_ref.GetRemoteDevice());
   }
 
-  // Sort from most-recently-updated to least-recently-updated. The timestamp
-  // used is provided by the back-end and indicates the last time at which the
-  // device's metadata was updated on the server. Note that this does not
-  // provide us with the last time that a user actually used this device, but it
-  // is a good estimate.
-  std::sort(eligible_remote_devices.begin(), eligible_remote_devices.end(),
-            [](const auto& first_device, const auto& second_device) {
-              return first_device.last_update_time_millis >
-                     second_device.last_update_time_millis;
-            });
-
   std::move(callback).Run(eligible_remote_devices);
+}
+
+void MultiDeviceSetupImpl::GetEligibleActiveHostDevices(
+    GetEligibleActiveHostDevicesCallback callback) {
+  std::vector<mojom::HostDevicePtr> eligible_active_hosts;
+  for (const auto& host_device :
+       eligible_host_devices_provider_->GetEligibleActiveHostDevices()) {
+    eligible_active_hosts.push_back(
+        mojom::HostDevice::New(host_device.remote_device.GetRemoteDevice(),
+                               host_device.connectivity_status));
+  }
+
+  std::move(callback).Run(std::move(eligible_active_hosts));
 }
 
 void MultiDeviceSetupImpl::SetHostDevice(const std::string& host_device_id,
@@ -276,7 +281,7 @@ void MultiDeviceSetupImpl::RetrySetHostNow(RetrySetHostNowCallback callback) {
 void MultiDeviceSetupImpl::TriggerEventForDebugging(
     mojom::EventTypeForDebugging type,
     TriggerEventForDebuggingCallback callback) {
-  if (!delegate_notifier_->delegate_ptr_) {
+  if (!delegate_notifier_->delegate_remote_) {
     PA_LOG(ERROR) << "MultiDeviceSetupImpl::TriggerEventForDebugging(): No "
                   << "delgate has been set; cannot proceed.";
     std::move(callback).Run(false /* success */);
@@ -286,7 +291,7 @@ void MultiDeviceSetupImpl::TriggerEventForDebugging(
   PA_LOG(VERBOSE) << "MultiDeviceSetupImpl::TriggerEventForDebugging(" << type
                   << ") called.";
   mojom::AccountStatusChangeDelegate* delegate =
-      delegate_notifier_->delegate_ptr_.get();
+      delegate_notifier_->delegate_remote_.get();
 
   switch (type) {
     case mojom::EventTypeForDebugging::kNewUserPotentialHostExists:
@@ -325,19 +330,14 @@ void MultiDeviceSetupImpl::OnHostStatusChange(
         host_status_with_device.host_device()->GetRemoteDevice();
   }
 
-  host_status_observers_.ForAllPtrs(
-      [&status_for_callback,
-       &device_for_callback](mojom::HostStatusObserver* observer) {
-        observer->OnHostStatusChanged(status_for_callback, device_for_callback);
-      });
+  for (auto& observer : host_status_observers_)
+    observer->OnHostStatusChanged(status_for_callback, device_for_callback);
 }
 
 void MultiDeviceSetupImpl::OnFeatureStatesChange(
     const FeatureStateManager::FeatureStatesMap& feature_states_map) {
-  feature_state_observers_.ForAllPtrs(
-      [&feature_states_map](mojom::FeatureStateObserver* observer) {
-        observer->OnFeatureStatesChanged(feature_states_map);
-      });
+  for (auto& observer : feature_state_observers_)
+    observer->OnFeatureStatesChanged(feature_states_map);
 }
 
 bool MultiDeviceSetupImpl::AttemptSetHost(const std::string& host_device_id) {

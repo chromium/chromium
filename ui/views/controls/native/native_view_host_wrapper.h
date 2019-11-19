@@ -21,7 +21,7 @@ class NativeViewHost;
 // native view when attached, detached, moved and sized.
 class NativeViewHostWrapper {
  public:
-  virtual ~NativeViewHostWrapper() {}
+  virtual ~NativeViewHostWrapper() = default;
 
   // Called at the end of NativeViewHost::Attach, allowing the wrapper to
   // perform platform-specific operations that need to occur to complete
@@ -49,6 +49,7 @@ class NativeViewHostWrapper {
   // Sets the height of the top region where gfx::NativeView shouldn't be
   // targeted.
   virtual void SetHitTestTopInset(int top_inset) = 0;
+  virtual int GetHitTestTopInset() const = 0;
 
   // Installs a clip on the gfx::NativeView. These values are in the coordinate
   // space of the Widget, so if this method is called from ShowWidget

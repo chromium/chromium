@@ -24,8 +24,11 @@
 #include "base/task_runner_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/supervised_user/experimental/supervised_user_blacklist.h"
+#include "chrome/browser/supervised_user/kids_management_url_checker_client.h"
+#include "chrome/common/chrome_features.h"
 #include "components/policy/core/browser/url_blacklist_manager.h"
 #include "components/policy/core/browser/url_util.h"
+#include "components/safe_search_api/safe_search/safe_search_url_checker_client.h"
 #include "components/url_matcher/url_matcher.h"
 #include "components/variations/service/variations_service.h"
 #include "content/public/browser/browser_thread.h"
@@ -40,10 +43,11 @@
 #endif
 
 using content::BrowserThread;
-using net::registry_controlled_domains::EXCLUDE_UNKNOWN_REGISTRIES;
 using net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES;
+using net::registry_controlled_domains::EXCLUDE_UNKNOWN_REGISTRIES;
 using net::registry_controlled_domains::GetCanonicalHostRegistryLength;
-using policy::URLBlacklist;
+using policy::url_util::CreateConditionSet;
+using policy::url_util::FilterToComponents;
 using url_matcher::URLMatcher;
 using url_matcher::URLMatcherConditionSet;
 
@@ -87,8 +91,7 @@ namespace {
 
 // URL schemes not in this list (e.g., file:// and chrome://) will always be
 // allowed.
-const char* const kFilteredSchemes[] = {"http",   "https", "ftp",
-                                        "gopher", "ws",    "wss"};
+const char* const kFilteredSchemes[] = {"http", "https", "ftp", "ws", "wss"};
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 const char* const kCrxDownloadUrls[] = {
@@ -99,6 +102,10 @@ const char* const kCrxDownloadUrls[] = {
 // Whitelisted origins:
 const char kFamiliesSecureUrl[] = "https://families.google.com/";
 const char kFamiliesUrl[] = "http://families.google.com/";
+
+// Play Store terms of service path:
+const char kPlayStoreHost[] = "play.google.com";
+const char kPlayTermsPath[] = "/about/play-terms";
 
 // This class encapsulates all the state that is required during construction of
 // a new SupervisedUserURLFilter::Contents.
@@ -141,17 +148,15 @@ URLMatcherConditionSet::ID FilterBuilder::AddPattern(
   std::string path;
   std::string query;
   bool match_subdomains = true;
-  if (!URLBlacklist::FilterToComponents(pattern, &scheme, &host,
-                                        &match_subdomains, &port, &path,
-                                        &query)) {
+  if (!FilterToComponents(pattern, &scheme, &host, &match_subdomains, &port,
+                          &path, &query)) {
     LOG(ERROR) << "Invalid pattern " << pattern;
     return -1;
   }
 
   scoped_refptr<URLMatcherConditionSet> condition_set =
-      URLBlacklist::CreateConditionSet(
-          &contents_->url_matcher, ++matcher_id_,
-          scheme, host, match_subdomains, port, path, query, true);
+      CreateConditionSet(&contents_->url_matcher, ++matcher_id_, scheme, host,
+                         match_subdomains, port, path, query, true);
   all_conditions_.push_back(std::move(condition_set));
   return matcher_id_;
 }
@@ -210,10 +215,10 @@ SupervisedUserURLFilter::SupervisedUserURLFilter()
     : default_behavior_(ALLOW),
       contents_(new Contents()),
       blacklist_(nullptr),
-      blocking_task_runner_(base::CreateTaskRunnerWithTraits(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-           base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})),
-      weak_ptr_factory_(this) {}
+      blocking_task_runner_(base::CreateTaskRunner(
+          {base::ThreadPool(), base::MayBlock(),
+           base::TaskPriority::BEST_EFFORT,
+           base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})) {}
 
 SupervisedUserURLFilter::~SupervisedUserURLFilter() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -331,8 +336,18 @@ SupervisedUserURLFilter::GetFilteringBehaviorForURL(
   static const base::NoDestructor<base::flat_set<GURL>> kWhitelistedOrigins(
       base::flat_set<GURL>({GURL(kFamiliesUrl).GetOrigin(),
                             GURL(kFamiliesSecureUrl).GetOrigin()}));
-  if (base::ContainsKey(*kWhitelistedOrigins, effective_url.GetOrigin()))
+  if (base::Contains(*kWhitelistedOrigins, effective_url.GetOrigin()))
     return ALLOW;
+
+  // Check Play Store terms of service.
+  // path_piece is checked separetly from the host to match international pages
+  // like https://play.google.com/intl/pt-BR_pt/about/play-terms/.
+  if (effective_url.SchemeIs(url::kHttpsScheme) &&
+      effective_url.host_piece() == kPlayStoreHost &&
+      effective_url.path_piece().find(kPlayTermsPath) !=
+          base::StringPiece::npos) {
+    return ALLOW;
+  }
 
   // Check manual blacklists and whitelists.
   FilteringBehavior manual_result =
@@ -518,8 +533,25 @@ void SupervisedUserURLFilter::SetManualURLs(std::map<GURL, bool> url_map) {
 
 void SupervisedUserURLFilter::InitAsyncURLChecker(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
-  net::NetworkTrafficAnnotationTag traffic_annotation =
-      net::DefineNetworkTrafficAnnotation("supervised_user_url_filter", R"(
+  std::string country;
+  variations::VariationsService* variations_service =
+      g_browser_process->variations_service();
+  if (variations_service) {
+    country = variations_service->GetStoredPermanentCountry();
+    if (country.empty())
+      country = variations_service->GetLatestCountry();
+  }
+
+  std::unique_ptr<safe_search_api::URLCheckerClient> url_checker_client;
+
+  if ((base::FeatureList::IsEnabled(
+          features::kKidsManagementUrlClassification))) {
+    url_checker_client =
+        std::make_unique<KidsManagementURLCheckerClient>(country);
+  } else {
+    // TODO(crbug.com/940454): remove safe_search_checker
+    net::NetworkTrafficAnnotationTag traffic_annotation =
+        net::DefineNetworkTrafficAnnotation("supervised_user_url_filter", R"(
         semantics {
           sender: "Supervised Users"
           description:
@@ -539,19 +571,13 @@ void SupervisedUserURLFilter::InitAsyncURLChecker(
             "family dashboard."
           policy_exception_justification: "Not implemented."
         })");
-
-  // Prefer using the permanent stored country, which may be unavailable during
-  // the first run. In that case, try to use the latest country instead.
-  std::string country;
-  variations::VariationsService* variations_service =
-      g_browser_process->variations_service();
-  if (variations_service) {
-    country = variations_service->GetStoredPermanentCountry();
-    if (country.empty())
-      country = variations_service->GetLatestCountry();
+    url_checker_client =
+        std::make_unique<safe_search_api::SafeSearchURLCheckerClient>(
+            std::move(url_loader_factory), traffic_annotation, country);
   }
+
   async_url_checker_ = std::make_unique<safe_search_api::URLChecker>(
-      std::move(url_loader_factory), traffic_annotation, country);
+      std::move(url_checker_client));
 }
 
 void SupervisedUserURLFilter::ClearAsyncURLChecker() {
@@ -571,11 +597,11 @@ void SupervisedUserURLFilter::Clear() {
   async_url_checker_.reset();
 }
 
-void SupervisedUserURLFilter::AddObserver(Observer* observer) const {
+void SupervisedUserURLFilter::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }
 
-void SupervisedUserURLFilter::RemoveObserver(Observer* observer) const {
+void SupervisedUserURLFilter::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 

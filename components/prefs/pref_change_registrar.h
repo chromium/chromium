@@ -40,7 +40,7 @@ class COMPONENTS_PREFS_EXPORT PrefChangeRegistrar final : public PrefObserver {
   // the preference that is changing as its parameter.
   //
   // Only one observer may be registered per path.
-  void Add(const std::string& path, const base::Closure& obs);
+  void Add(const std::string& path, const base::RepeatingClosure& obs);
   void Add(const std::string& path, const NamedChangeCallback& obs);
 
   // Removes the pref observer registered for |path|.
@@ -67,7 +67,7 @@ class COMPONENTS_PREFS_EXPORT PrefChangeRegistrar final : public PrefObserver {
   void OnPreferenceChanged(PrefService* service,
                            const std::string& pref_name) override;
 
-  static void InvokeUnnamedCallback(const base::Closure& callback,
+  static void InvokeUnnamedCallback(const base::RepeatingClosure& callback,
                                     const std::string& pref_name);
 
   using ObserverMap = std::map<std::string, NamedChangeCallback>;

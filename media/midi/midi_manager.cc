@@ -20,10 +20,6 @@ using Sample = base::HistogramBase::Sample;
 using midi::mojom::PortState;
 using midi::mojom::Result;
 
-// If many users have more devices, this number will be increased.
-// But the number is expected to be big enough for now.
-constexpr Sample kMaxUmaDevices = 31;
-
 // Used to count events for usage histogram. The item order should not be
 // changed, and new items should be just appended.
 enum class Usage {
@@ -34,9 +30,10 @@ enum class Usage {
   INITIALIZED,
   INPUT_PORT_ADDED,
   OUTPUT_PORT_ADDED,
+  ERROR_OBSERVED,
 
   // New items should be inserted here, and |MAX| should point the last item.
-  MAX = OUTPUT_PORT_ADDED,
+  MAX = ERROR_OBSERVED,
 };
 
 // Used to count events for transaction usage histogram. The item order should
@@ -71,8 +68,8 @@ MidiManager::~MidiManager() {
     session_thread_runner_ = nullptr;
   }
 
-  UMA_HISTOGRAM_ENUMERATION("Media.Midi.ResultOnShutdown", result_,
-                            static_cast<Sample>(Result::MAX) + 1);
+  if (result_ == Result::INITIALIZATION_ERROR)
+    ReportUsage(Usage::ERROR_OBSERVED);
 
   UMA_HISTOGRAM_ENUMERATION(
       "Media.Midi.SendReceiveUsage",
@@ -202,11 +199,6 @@ void MidiManager::CompleteInitialization(Result result) {
   if (!session_thread_runner_)
     return;
   DCHECK(session_thread_runner_->BelongsToCurrentThread());
-
-  UMA_HISTOGRAM_ENUMERATION("Media.Midi.InputPorts", input_ports_.size(),
-                            kMaxUmaDevices + 1);
-  UMA_HISTOGRAM_ENUMERATION("Media.Midi.OutputPorts", output_ports_.size(),
-                            kMaxUmaDevices + 1);
 
   DCHECK(clients_.empty());
   initialization_state_ = InitializationState::COMPLETED;

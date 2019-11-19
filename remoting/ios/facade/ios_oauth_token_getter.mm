@@ -46,9 +46,7 @@ void IosOauthTokenGetter::CallWithToken(TokenCallback on_access_token) {
 }
 
 void IosOauthTokenGetter::InvalidateCache() {
-  // TODO(crbug.com/782071): Implement this once we make the caller invalidate
-  // the cache.
-  NOTIMPLEMENTED();
+  [RemotingService.instance.authentication invalidateCache];
 }
 
 base::WeakPtr<IosOauthTokenGetter> IosOauthTokenGetter::GetWeakPtr() {

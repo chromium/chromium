@@ -8,7 +8,7 @@
 #import <CoreGraphics/CoreGraphics.h>
 #import <WebKit/WebKit.h>
 
-#include "ios/web/public/user_agent.h"
+#include "ios/web/common/user_agent.h"
 
 @protocol CRWContextMenuDelegate;
 

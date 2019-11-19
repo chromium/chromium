@@ -4,6 +4,9 @@
 
 #include "media/learning/common/learning_task.h"
 
+#include "base/hash/hash.h"
+#include "base/no_destructor.h"
+
 namespace media {
 namespace learning {
 
@@ -22,6 +25,16 @@ LearningTask::LearningTask(
 LearningTask::LearningTask(const LearningTask&) = default;
 
 LearningTask::~LearningTask() = default;
+
+LearningTask::Id LearningTask::GetId() const {
+  return base::PersistentHash(name);
+}
+
+// static
+const LearningTask& LearningTask::Empty() {
+  static const base::NoDestructor<LearningTask> empty_task;
+  return *empty_task;
+}
 
 }  // namespace learning
 }  // namespace media

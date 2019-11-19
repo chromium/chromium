@@ -6,26 +6,29 @@
 #define NET_SOCKET_UDP_NET_LOG_PARAMETERS_H_
 
 #include "net/base/network_change_notifier.h"
-#include "net/log/net_log_parameters_callback.h"
+#include "net/log/net_log_event_type.h"
+
+namespace base {
+class Value;
+}
 
 namespace net {
 
+class NetLogWithSource;
 class IPEndPoint;
 
-// Creates a NetLog callback that returns parameters describing a UDP
-// receive/send event.  |bytes| are only logged when byte logging is
-// enabled.  |address| may be NULL.  |address| (if given) and |bytes|
-// must be valid for the life of the callback.
-NetLogParametersCallback CreateNetLogUDPDataTranferCallback(
-    int byte_count,
-    const char* bytes,
-    const IPEndPoint* address);
+// Emits a NetLog event with parameters describing a UDP receive/send event.
+// |bytes| are only logged when byte logging is enabled.  |address| may be
+// nullptr.
+void NetLogUDPDataTransfer(const NetLogWithSource& net_log,
+                           NetLogEventType type,
+                           int byte_count,
+                           const char* bytes,
+                           const IPEndPoint* address);
 
-// Creates a NetLog callback that returns parameters describing a UDP
-// connect event.  |address| cannot be NULL, and must remain valid for
-// the lifetime of the callback.
-NetLogParametersCallback CreateNetLogUDPConnectCallback(
-    const IPEndPoint* address,
+// Creates NetLog parameters describing a UDP connect event.
+base::Value CreateNetLogUDPConnectParams(
+    const IPEndPoint& address,
     NetworkChangeNotifier::NetworkHandle network);
 
 }  // namespace net

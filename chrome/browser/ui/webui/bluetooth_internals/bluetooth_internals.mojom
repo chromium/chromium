@@ -6,7 +6,24 @@ module mojom;
 
 import "device/bluetooth/public/mojom/adapter.mojom";
 
+// Handles requests from chrome://bluetooth-internals to enable or disable the
+// usage of Bluetooth debug logs. The debug logs to be enabled reside in the
+// kernel as well within BlueZ/NewBlue. Note that these logs are text-only and
+// do not include captured packets from btmon.
+interface DebugLogsChangeHandler {
+  // Enables or disables debug logs, depending on the value of
+  // |should_debug_logs_be_enabled|.
+  ChangeDebugLogsState(bool should_debug_logs_be_enabled);
+};
+
 interface BluetoothInternalsHandler {
   // Gets an Adapter interface. Returns null if Bluetooth is not supported.
-  GetAdapter() => (bluetooth.mojom.Adapter? adapter);
+  GetAdapter() => (pending_remote<bluetooth.mojom.Adapter>? adapter);
+
+  // Retrieves a handler for changing the state of debug logs. If debug logs are
+  // not supported (e.g., the required flags are disabled or the logged-in user
+  // is not eligible), null is returned. When a valid handler is returned, an
+  // extra boolean is provided which represents the initial state of the toggle.
+  GetDebugLogsChangeHandler() => (DebugLogsChangeHandler? handler,
+                                  bool initial_toggle_value);
 };

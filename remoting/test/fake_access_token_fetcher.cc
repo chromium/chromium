@@ -16,25 +16,25 @@ FakeAccessTokenFetcher::~FakeAccessTokenFetcher() = default;
 
 void FakeAccessTokenFetcher::GetAccessTokenFromAuthCode(
     const std::string& auth_code,
-    const AccessTokenCallback& callback) {
+    AccessTokenCallback callback) {
   if (fail_access_token_from_auth_code_) {
     // Empty strings are returned in failure cases.
-    callback.Run(std::string(), std::string());
+    std::move(callback).Run(std::string(), std::string());
   } else {
-    callback.Run(kFakeAccessTokenFetcherAccessTokenValue,
-                 kFakeAccessTokenFetcherRefreshTokenValue);
+    std::move(callback).Run(kFakeAccessTokenFetcherAccessTokenValue,
+                            kFakeAccessTokenFetcherRefreshTokenValue);
   }
 }
 
 void FakeAccessTokenFetcher::GetAccessTokenFromRefreshToken(
     const std::string& refresh_token,
-    const AccessTokenCallback& callback) {
+    AccessTokenCallback callback) {
   if (fail_access_token_from_refresh_token_) {
     // Empty strings are returned in failure cases.
-    callback.Run(std::string(), std::string());
+    std::move(callback).Run(std::string(), std::string());
   } else {
-    callback.Run(kFakeAccessTokenFetcherAccessTokenValue,
-                 kFakeAccessTokenFetcherRefreshTokenValue);
+    std::move(callback).Run(kFakeAccessTokenFetcherAccessTokenValue,
+                            kFakeAccessTokenFetcherRefreshTokenValue);
   }
 }
 

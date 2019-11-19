@@ -23,7 +23,7 @@ void IdentityProvider::RemoveObserver(Observer* observer) {
 IdentityProvider::IdentityProvider() {}
 
 void IdentityProvider::ProcessRefreshTokenUpdateForAccount(
-    const std::string& account_id) {
+    const CoreAccountId& account_id) {
   if (account_id != GetActiveAccountId()) {
     diagnostic_info_.token_update_for_not_active_account_count++;
     return;
@@ -34,7 +34,7 @@ void IdentityProvider::ProcessRefreshTokenUpdateForAccount(
 }
 
 void IdentityProvider::ProcessRefreshTokenRemovalForAccount(
-    const std::string& account_id) {
+    const CoreAccountId& account_id) {
   if (account_id != GetActiveAccountId()) {
     diagnostic_info_.token_removal_for_not_active_account_count++;
     return;

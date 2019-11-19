@@ -9,8 +9,7 @@
 namespace notifier {
 
 WeakXmppClient::WeakXmppClient(jingle_xmpp::TaskParent* parent)
-    : jingle_xmpp::XmppClient(parent),
-      weak_ptr_factory_(this) {}
+    : jingle_xmpp::XmppClient(parent) {}
 
 WeakXmppClient::~WeakXmppClient() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

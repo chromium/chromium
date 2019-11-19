@@ -159,7 +159,7 @@ class LogSourceAccessManager {
   scoped_refptr<base::SequencedTaskRunner> task_runner_for_anonymizer_;
   scoped_refptr<feedback::AnonymizerToolContainer> anonymizer_container_;
 
-  base::WeakPtrFactory<LogSourceAccessManager> weak_factory_;
+  base::WeakPtrFactory<LogSourceAccessManager> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(LogSourceAccessManager);
 };

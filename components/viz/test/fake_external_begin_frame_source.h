@@ -51,6 +51,8 @@ class FakeExternalBeginFrameSource : public BeginFrameSource {
 
   size_t num_observers() const { return observers_.size(); }
 
+  using BeginFrameSource::RequestCallbackOnGpuAvailable;
+
  private:
   void PostTestOnBeginFrame();
 
@@ -65,7 +67,7 @@ class FakeExternalBeginFrameSource : public BeginFrameSource {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::WeakPtrFactory<FakeExternalBeginFrameSource> weak_ptr_factory_;
+  base::WeakPtrFactory<FakeExternalBeginFrameSource> weak_ptr_factory_{this};
 };
 
 }  // namespace viz

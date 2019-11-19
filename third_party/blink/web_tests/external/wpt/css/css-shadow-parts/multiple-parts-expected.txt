@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+FAIL Double-part in selected host is styled assert_equals: expected "rgb(0, 128, 0)" but got "rgb(255, 0, 0)"
+PASS Single-part-1 in selected host is not styled
+PASS Single-part-2 in selected host is not styled
+Harness: the test ran to completion.
+

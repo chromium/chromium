@@ -11,7 +11,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_monitor_source.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/time/clock.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
@@ -52,7 +52,7 @@ class FakeRelaunchNotificationController
   using RelaunchNotificationController::kRelaunchGracePeriod;
 
  private:
-  void DoNotifyRelaunchRecommended() override {
+  void DoNotifyRelaunchRecommended(bool /*past_deadline*/) override {
     delegate_->NotifyRelaunchRecommended();
   }
 
@@ -126,7 +126,6 @@ class FakeUpgradeDetector : public UpgradeDetector {
 class StubPowerMonitorSource : public base::PowerMonitorSource {
  public:
   // base::PowerMonitorSource:
-  void Shutdown() override {}
   bool IsOnBatteryPowerImpl() override { return false; }
 };
 
@@ -137,17 +136,21 @@ class StubPowerMonitorSource : public base::PowerMonitorSource {
 class RelaunchNotificationControllerTest : public ::testing::Test {
  protected:
   RelaunchNotificationControllerTest()
-      : scoped_task_environment_(
-            base::test::ScopedTaskEnvironment::MainThreadType::MOCK_TIME,
-            base::test::ScopedTaskEnvironment::ExecutionMode::QUEUED),
+      : task_environment_(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME,
+            base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED),
         scoped_local_state_(TestingBrowserProcess::GetGlobal()),
-        upgrade_detector_(scoped_task_environment_.GetMockClock(),
-                          scoped_task_environment_.GetMockTickClock()) {
+        upgrade_detector_(task_environment_.GetMockClock(),
+                          task_environment_.GetMockTickClock()) {
     auto mock_power_monitor_source = std::make_unique<StubPowerMonitorSource>();
     mock_power_monitor_source_ = mock_power_monitor_source.get();
-    power_monitor_ = std::make_unique<base::PowerMonitor>(
-        std::move(mock_power_monitor_source));
+    base::PowerMonitor::Initialize(std::move(mock_power_monitor_source));
   }
+
+  ~RelaunchNotificationControllerTest() override {
+    base::PowerMonitor::ShutdownForTesting();
+  }
+
   UpgradeDetector* upgrade_detector() { return &upgrade_detector_; }
   FakeUpgradeDetector& fake_upgrade_detector() { return upgrade_detector_; }
 
@@ -158,28 +161,25 @@ class RelaunchNotificationControllerTest : public ::testing::Test {
         prefs::kRelaunchNotification, std::make_unique<base::Value>(value));
   }
 
-  // Returns the ScopedTaskEnvironment's MockClock.
-  const base::Clock* GetMockClock() {
-    return scoped_task_environment_.GetMockClock();
-  }
+  // Returns the TaskEnvironment's MockClock.
+  const base::Clock* GetMockClock() { return task_environment_.GetMockClock(); }
 
-  // Returns the ScopedTaskEnvironment's MockTickClock.
+  // Returns the TaskEnvironment's MockTickClock.
   const base::TickClock* GetMockTickClock() {
-    return scoped_task_environment_.GetMockTickClock();
+    return task_environment_.GetMockTickClock();
   }
 
   // Fast-forwards virtual time by |delta|.
   void FastForwardBy(base::TimeDelta delta) {
-    scoped_task_environment_.FastForwardBy(delta);
+    task_environment_.FastForwardBy(delta);
   }
 
-  void RunUntilIdle() { scoped_task_environment_.RunUntilIdle(); }
+  void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
  private:
-  std::unique_ptr<base::PowerMonitor> power_monitor_;
   // Owned by power_monitor_. Use this to simulate a power suspend and resume.
   StubPowerMonitorSource* mock_power_monitor_source_ = nullptr;
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   ScopedTestingLocalState scoped_local_state_;
   FakeUpgradeDetector upgrade_detector_;
 
@@ -197,7 +197,14 @@ TEST_F(RelaunchNotificationControllerTest, CreateDestroy) {
 // Without the browser.relaunch_notification preference set, the controller
 // should not be observing the UpgradeDetector, and should therefore never
 // attempt to show any notifications.
-TEST_F(RelaunchNotificationControllerTest, PolicyUnset) {
+
+// TODO(1004568) Disabled due to race condition.
+#if defined(THREAD_SANATIZER)
+#define MAYBE_PolicyUnset DISABLED_PolicyUnset
+#else
+#define MAYBE_PolicyUnset PolicyUnset
+#endif
+TEST_F(RelaunchNotificationControllerTest, MAYBE_PolicyUnset) {
   ::testing::StrictMock<MockControllerDelegate> mock_controller_delegate;
 
   FakeRelaunchNotificationController controller(

@@ -6,10 +6,13 @@
 list.
 '''
 
-import types
+from __future__ import print_function
+
+import six
 
 from grit.gather import interface
 from grit import clique
+from grit import exception
 from grit import tclib
 
 
@@ -75,17 +78,17 @@ class SkeletonGatherer(interface.GathererBase):
 
     out = []
     for ix in range(len(self.skeleton_)):
-      if isinstance(self.skeleton_[ix], types.StringTypes):
+      if isinstance(self.skeleton_[ix], six.string_types):
         if skeleton_gatherer:
           # Make sure the skeleton is like the original
-          assert(isinstance(skeleton_gatherer.skeleton_[ix], types.StringTypes))
+          assert(isinstance(skeleton_gatherer.skeleton_[ix], six.string_types))
           out.append(skeleton_gatherer.skeleton_[ix])
         else:
           out.append(self.skeleton_[ix])
       else:
         if skeleton_gatherer:  # Make sure the skeleton is like the original
           assert(not isinstance(skeleton_gatherer.skeleton_[ix],
-                                types.StringTypes))
+                                six.string_types))
         msg = self.skeleton_[ix].MessageForLanguage(lang,
                                                     pseudo_if_not_available,
                                                     fallback_to_english)

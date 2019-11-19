@@ -4,11 +4,14 @@
 
 mojom = "//content/public/common/resource_type.mojom"
 public_headers = [ "//content/public/common/resource_type.h" ]
-traits_headers = [ "//content/public/common/resource_type_struct_traits.h" ]
+traits_headers = [ "//content/public/common/resource_type_mojom_traits.h" ]
 sources = [
-  "//content/public/common/resource_type_struct_traits.cc",
+  "//content/public/common/resource_type_mojom_traits.cc",
+]
+public_deps = [
+  "//content/public/common:resource_type_header",
 ]
 deps = [
   "//content:export",
 ]
-type_mappings = [ "content.mojom.ResourceType=content::ResourceType" ]
+type_mappings = [ "content.mojom.ResourceType=::content::ResourceType" ]

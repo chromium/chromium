@@ -6,8 +6,13 @@ package org.chromium.chrome.browser.preferences.website;
 
 import android.util.Pair;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.Callback;
+import org.chromium.base.CommandLine;
 import org.chromium.chrome.browser.ContentSettingsType;
+import org.chromium.content_public.browser.ContentFeatureList;
+import org.chromium.content_public.common.ContentSwitches;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -20,6 +25,8 @@ import java.util.Map;
  * that the user has set for them.
  */
 public class WebsitePermissionsFetcher {
+    private WebsitePreferenceBridge mWebsitePreferenceBridge;
+
     /**
      * A callback to pass to WebsitePermissionsFetcher. This is run when the
      * website permissions have been fetched.
@@ -44,22 +51,6 @@ public class WebsitePermissionsFetcher {
             return new OriginAndEmbedder(origin, embedder);
         }
 
-        private static boolean isEqual(Object o1, Object o2) {
-            // Returns true iff o1 == o2, handling nulls.
-            return (o1 == o2) || (o1 != null && o1.equals(o2));
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            // Prior to KitKat, android.util.Pair would crash with a NullPointerException in this
-            // method. This override specialises the post-Kitkat implementation to this class, and
-            // correctly handles nulls.
-            if (!(o instanceof OriginAndEmbedder)) return false;
-
-            OriginAndEmbedder p = (OriginAndEmbedder) o;
-            return isEqual(p.first, first) && isEqual(p.second, second);
-        }
-
         @Override
         public int hashCode() {
             // This is the calculation used by Arrays#hashCode().
@@ -82,6 +73,7 @@ public class WebsitePermissionsFetcher {
      */
     public WebsitePermissionsFetcher(boolean fetchSiteImportantInfo) {
         mFetchSiteImportantInfo = fetchSiteImportantInfo;
+        mWebsitePreferenceBridge = new WebsitePreferenceBridge();
     }
 
     /**
@@ -101,20 +93,20 @@ public class WebsitePermissionsFetcher {
         // Midi sysex access permission is per-origin and per-embedder.
         queue.add(new PermissionInfoFetcher(PermissionInfo.Type.MIDI));
         // Cookies are stored per-host.
-        queue.add(new ExceptionInfoFetcher(ContentSettingsType.CONTENT_SETTINGS_TYPE_COOKIES));
+        queue.add(new ExceptionInfoFetcher(ContentSettingsType.COOKIES));
         // Local storage info is per-origin.
         queue.add(new LocalStorageInfoFetcher());
         // Website storage is per-host.
         queue.add(new WebStorageInfoFetcher());
         // Popup exceptions are host-based patterns (unless we start
         // synchronizing popup exceptions with desktop Chrome).
-        queue.add(new ExceptionInfoFetcher(ContentSettingsType.CONTENT_SETTINGS_TYPE_POPUPS));
+        queue.add(new ExceptionInfoFetcher(ContentSettingsType.POPUPS));
         // Ads exceptions are host-based.
-        queue.add(new ExceptionInfoFetcher(ContentSettingsType.CONTENT_SETTINGS_TYPE_ADS));
+        queue.add(new ExceptionInfoFetcher(ContentSettingsType.ADS));
         // JavaScript exceptions are host-based patterns.
-        queue.add(new ExceptionInfoFetcher(ContentSettingsType.CONTENT_SETTINGS_TYPE_JAVASCRIPT));
+        queue.add(new ExceptionInfoFetcher(ContentSettingsType.JAVASCRIPT));
         // Sound exceptions are host-based patterns.
-        queue.add(new ExceptionInfoFetcher(ContentSettingsType.CONTENT_SETTINGS_TYPE_SOUND));
+        queue.add(new ExceptionInfoFetcher(ContentSettingsType.SOUND));
         // Protected media identifier permission is per-origin and per-embedder.
         queue.add(new PermissionInfoFetcher(PermissionInfo.Type.PROTECTED_MEDIA_IDENTIFIER));
         // Notification permission is per-origin.
@@ -124,19 +116,26 @@ public class WebsitePermissionsFetcher {
         // Micropohone capture permission is per-origin and per-embedder.
         queue.add(new PermissionInfoFetcher(PermissionInfo.Type.MICROPHONE));
         // Background sync permission is per-origin.
-        queue.add(new ExceptionInfoFetcher(
-                ContentSettingsType.CONTENT_SETTINGS_TYPE_BACKGROUND_SYNC));
+        queue.add(new ExceptionInfoFetcher(ContentSettingsType.BACKGROUND_SYNC));
         // Automatic Downloads permission is per-origin.
-        queue.add(new ExceptionInfoFetcher(
-                ContentSettingsType.CONTENT_SETTINGS_TYPE_AUTOMATIC_DOWNLOADS));
+        queue.add(new ExceptionInfoFetcher(ContentSettingsType.AUTOMATIC_DOWNLOADS));
         // Autoplay permission is per-origin.
-        queue.add(new ExceptionInfoFetcher(ContentSettingsType.CONTENT_SETTINGS_TYPE_AUTOPLAY));
+        queue.add(new ExceptionInfoFetcher(ContentSettingsType.AUTOPLAY));
         // USB device permission is per-origin and per-embedder.
-        queue.add(new UsbInfoFetcher());
+        queue.add(new ChooserExceptionInfoFetcher(ContentSettingsType.USB_GUARD));
         // Clipboard info is per-origin.
         queue.add(new PermissionInfoFetcher(PermissionInfo.Type.CLIPBOARD));
         // Sensors permission is per-origin.
         queue.add(new PermissionInfoFetcher(PermissionInfo.Type.SENSORS));
+        CommandLine commandLine = CommandLine.getInstance();
+        if (commandLine.hasSwitch(ContentSwitches.ENABLE_EXPERIMENTAL_WEB_PLATFORM_FEATURES)) {
+            // Bluetooth scanning permission is per-origin.
+            queue.add(new ExceptionInfoFetcher(ContentSettingsType.BLUETOOTH_SCANNING));
+        }
+        if (ContentFeatureList.isEnabled(ContentFeatureList.WEB_NFC)) {
+            // NFC permission is per-origin and per-embedder.
+            queue.add(new PermissionInfoFetcher(PermissionInfo.Type.NFC));
+        }
 
         queue.add(new PermissionsAvailableCallbackRunner(callback));
 
@@ -166,7 +165,7 @@ public class WebsitePermissionsFetcher {
             queue.add(new PermissionInfoFetcher(PermissionInfo.Type.GEOLOCATION));
         } else if (category.showSites(SiteSettingsCategory.Type.COOKIES)) {
             // Cookies exceptions are patterns.
-            queue.add(new ExceptionInfoFetcher(ContentSettingsType.CONTENT_SETTINGS_TYPE_COOKIES));
+            queue.add(new ExceptionInfoFetcher(ContentSettingsType.COOKIES));
         } else if (category.showSites(SiteSettingsCategory.Type.USE_STORAGE)) {
             // Local storage info is per-origin.
             queue.add(new LocalStorageInfoFetcher());
@@ -181,43 +180,51 @@ public class WebsitePermissionsFetcher {
         } else if (category.showSites(SiteSettingsCategory.Type.POPUPS)) {
             // Popup exceptions are host-based patterns (unless we start
             // synchronizing popup exceptions with desktop Chrome.)
-            queue.add(new ExceptionInfoFetcher(ContentSettingsType.CONTENT_SETTINGS_TYPE_POPUPS));
+            queue.add(new ExceptionInfoFetcher(ContentSettingsType.POPUPS));
         } else if (category.showSites(SiteSettingsCategory.Type.ADS)) {
             // Ads exceptions are host-based.
-            queue.add(new ExceptionInfoFetcher(ContentSettingsType.CONTENT_SETTINGS_TYPE_ADS));
+            queue.add(new ExceptionInfoFetcher(ContentSettingsType.ADS));
         } else if (category.showSites(SiteSettingsCategory.Type.JAVASCRIPT)) {
             // JavaScript exceptions are host-based patterns.
-            queue.add(
-                    new ExceptionInfoFetcher(ContentSettingsType.CONTENT_SETTINGS_TYPE_JAVASCRIPT));
+            queue.add(new ExceptionInfoFetcher(ContentSettingsType.JAVASCRIPT));
         } else if (category.showSites(SiteSettingsCategory.Type.SOUND)) {
             // Sound exceptions are host-based patterns.
-            queue.add(new ExceptionInfoFetcher(ContentSettingsType.CONTENT_SETTINGS_TYPE_SOUND));
+            queue.add(new ExceptionInfoFetcher(ContentSettingsType.SOUND));
         } else if (category.showSites(SiteSettingsCategory.Type.NOTIFICATIONS)) {
             // Push notification permission is per-origin.
             queue.add(new PermissionInfoFetcher(PermissionInfo.Type.NOTIFICATION));
         } else if (category.showSites(SiteSettingsCategory.Type.BACKGROUND_SYNC)) {
             // Background sync info is per-origin.
-            queue.add(new ExceptionInfoFetcher(
-                    ContentSettingsType.CONTENT_SETTINGS_TYPE_BACKGROUND_SYNC));
+            queue.add(new ExceptionInfoFetcher(ContentSettingsType.BACKGROUND_SYNC));
         } else if (category.showSites(SiteSettingsCategory.Type.AUTOMATIC_DOWNLOADS)) {
             // Automatic downloads info is per-origin.
-            queue.add(new ExceptionInfoFetcher(
-                    ContentSettingsType.CONTENT_SETTINGS_TYPE_AUTOMATIC_DOWNLOADS));
+            queue.add(new ExceptionInfoFetcher(ContentSettingsType.AUTOMATIC_DOWNLOADS));
         } else if (category.showSites(SiteSettingsCategory.Type.PROTECTED_MEDIA)) {
             // Protected media identifier permission is per-origin and per-embedder.
             queue.add(new PermissionInfoFetcher(PermissionInfo.Type.PROTECTED_MEDIA_IDENTIFIER));
         } else if (category.showSites(SiteSettingsCategory.Type.AUTOPLAY)) {
             // Autoplay permission is per-origin.
-            queue.add(new ExceptionInfoFetcher(ContentSettingsType.CONTENT_SETTINGS_TYPE_AUTOPLAY));
+            queue.add(new ExceptionInfoFetcher(ContentSettingsType.AUTOPLAY));
         } else if (category.showSites(SiteSettingsCategory.Type.USB)) {
             // USB device permission is per-origin.
-            queue.add(new UsbInfoFetcher());
+            queue.add(new ChooserExceptionInfoFetcher(ContentSettingsType.USB_GUARD));
         } else if (category.showSites(SiteSettingsCategory.Type.CLIPBOARD)) {
             // Clipboard permission is per-origin.
             queue.add(new PermissionInfoFetcher(PermissionInfo.Type.CLIPBOARD));
         } else if (category.showSites(SiteSettingsCategory.Type.SENSORS)) {
             // Sensors permission is per-origin.
             queue.add(new PermissionInfoFetcher(PermissionInfo.Type.SENSORS));
+        } else if (category.showSites(SiteSettingsCategory.Type.BLUETOOTH_SCANNING)) {
+            CommandLine commandLine = CommandLine.getInstance();
+            if (commandLine.hasSwitch(ContentSwitches.ENABLE_EXPERIMENTAL_WEB_PLATFORM_FEATURES)) {
+                // Bluetooth scanning permission is per-origin.
+                queue.add(new ExceptionInfoFetcher(ContentSettingsType.BLUETOOTH_SCANNING));
+            }
+        } else if (category.showSites(SiteSettingsCategory.Type.NFC)) {
+            if (ContentFeatureList.isEnabled(ContentFeatureList.WEB_NFC)) {
+                // NFC permission is per-origin and per-embedder.
+                queue.add(new PermissionInfoFetcher(PermissionInfo.Type.NFC));
+            }
         }
         queue.add(new PermissionsAvailableCallbackRunner(callback));
         queue.next();
@@ -248,8 +255,9 @@ public class WebsitePermissionsFetcher {
         for (exceptionType = 0; exceptionType < ContentSettingException.Type.NUM_ENTRIES;
                 exceptionType++) {
             if (contentSettingsType
-                    == ContentSettingException.getContentSettingsType(exceptionType))
+                    == ContentSettingException.getContentSettingsType(exceptionType)) {
                 break;
+            }
         }
         assert contentSettingsType
                 == ContentSettingException.getContentSettingsType(exceptionType)
@@ -257,7 +265,7 @@ public class WebsitePermissionsFetcher {
                         + contentSettingsType;
 
         for (ContentSettingException exception :
-                WebsitePreferenceBridge.getContentSettingsExceptions(contentSettingsType)) {
+                mWebsitePreferenceBridge.getContentSettingsExceptions(contentSettingsType)) {
             // The pattern "*" represents the default setting, not a specific website.
             if (exception.getPattern().equals("*")) continue;
             String address = exception.getPattern();
@@ -304,7 +312,7 @@ public class WebsitePermissionsFetcher {
 
         @Override
         public void run() {
-            for (PermissionInfo info : WebsitePreferenceBridge.getPermissionInfo(mType)) {
+            for (PermissionInfo info : mWebsitePreferenceBridge.getPermissionInfo(mType)) {
                 String origin = info.getOrigin();
                 if (origin == null) continue;
                 String embedder = mType == PermissionInfo.Type.SENSORS ? null : info.getEmbedder();
@@ -313,11 +321,19 @@ public class WebsitePermissionsFetcher {
         }
     }
 
-    private class UsbInfoFetcher extends Task {
+    private class ChooserExceptionInfoFetcher extends Task {
+        final @ContentSettingsType int mChooserDataType;
+
+        public ChooserExceptionInfoFetcher(@ContentSettingsType int type) {
+            mChooserDataType = SiteSettingsCategory.objectChooserDataTypeFromGuard(type);
+        }
+
         @Override
         public void run() {
-            for (ChosenObjectInfo info : WebsitePreferenceBridge.getChosenObjectInfo(
-                         ContentSettingsType.CONTENT_SETTINGS_TYPE_USB_CHOOSER_DATA)) {
+            if (mChooserDataType == -1) return;
+
+            for (ChosenObjectInfo info :
+                    mWebsitePreferenceBridge.getChosenObjectInfo(mChooserDataType)) {
                 String origin = info.getOrigin();
                 if (origin == null) continue;
                 findOrCreateSite(origin, info.getEmbedder()).addChosenObjectInfo(info);
@@ -341,7 +357,7 @@ public class WebsitePermissionsFetcher {
     private class LocalStorageInfoFetcher extends Task {
         @Override
         public void runAsync(final TaskQueue queue) {
-            WebsitePreferenceBridge.fetchLocalStorageInfo(new Callback<HashMap>() {
+            mWebsitePreferenceBridge.fetchLocalStorageInfo(new Callback<HashMap>() {
                 @Override
                 public void onResult(HashMap result) {
                     for (Object o : result.entrySet()) {
@@ -361,7 +377,7 @@ public class WebsitePermissionsFetcher {
     private class WebStorageInfoFetcher extends Task {
         @Override
         public void runAsync(final TaskQueue queue) {
-            WebsitePreferenceBridge.fetchStorageInfo(new Callback<ArrayList>() {
+            mWebsitePreferenceBridge.fetchStorageInfo(new Callback<ArrayList>() {
                 @Override
                 public void onResult(ArrayList result) {
                     @SuppressWarnings("unchecked")
@@ -389,5 +405,11 @@ public class WebsitePermissionsFetcher {
         public void run() {
             mCallback.onWebsitePermissionsAvailable(mSites.values());
         }
+    }
+
+    @VisibleForTesting
+    public void setWebsitePreferenceBridgeForTesting(
+            WebsitePreferenceBridge websitePreferenceBridge) {
+        mWebsitePreferenceBridge = websitePreferenceBridge;
     }
 }

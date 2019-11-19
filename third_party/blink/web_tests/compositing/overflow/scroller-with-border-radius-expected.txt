@@ -1,3 +1,0 @@
-No border radius (should be using composited scrolling): Pass.
-Has border radius (should also be using composited scrolling): Pass.
-

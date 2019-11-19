@@ -208,6 +208,8 @@ animation.startTime = 6000;  // 6 seconds
 
 ### Lifecycle of an Animation
 
+![Lifecycle]
+
 1.  An [Animation][] is created via CSS<sup>1</sup> or `element.animate()`.
 2.  At the start of the next frame the [Animation][] and its [AnimationEffect][]
     are updated with the currentTime of the [DocumentTimeline][].
@@ -232,6 +234,7 @@ the same style resolve. An unfortunate side effect of this is that style
 resolution can cause style to get dirtied, this is currently a
 [code health bug](http://crbug.com/492887).
 
+[Lifecycle]: images/lifecycle.png
 [SampledEffect]: https://cs.chromium.org/search/?q=class:blink::SampledEffect
 
 ### [KeyframeEffect][]

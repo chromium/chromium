@@ -4,17 +4,18 @@
 
 module content.mojom;
 
+import "cc/mojom/touch_action.mojom";
 import "content/common/input/synchronous_compositor.mojom";
 import "content/common/native_types.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/time.mojom";
-import "services/ws/public/mojom/ime/ime.mojom";
-import "third_party/blink/public/web/selection_menu_behavior.mojom";
-import "ui/events/mojo/event.mojom";
-import "ui/events/mojo/event_constants.mojom";
-import "ui/gfx/geometry/mojo/geometry.mojom";
-import "ui/gfx/range/mojo/range.mojom";
-import "ui/latency/mojo/latency_info.mojom";
+import "third_party/blink/public/mojom/selection_menu/selection_menu_behavior.mojom";
+import "ui/base/ime/mojom/ime_types.mojom";
+import "ui/events/mojom/event.mojom";
+import "ui/events/mojom/event_constants.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+import "ui/gfx/range/mojom/range.mojom";
+import "ui/latency/mojom/latency_info.mojom";
 
 
 // These structs are purposely duplicated from ui/events/mojom/event.mojom.
@@ -47,6 +48,7 @@ struct PointerData {
   PointerType pointer_type;
   int32 movement_x;
   int32 movement_y;
+  bool is_raw_movement_event;
   gfx.mojom.PointF widget_position;
   gfx.mojom.PointF screen_position;
   MouseData? mouse_data;
@@ -62,10 +64,9 @@ struct WheelData {
   int32 resending_plugin_id;
   uint8 phase;
   uint8 momentum_phase;
-  bool scroll_by_page;
-  bool has_precise_scrolling_deltas;
   Cancelability cancelable;
   uint8 event_action;
+  uint8 delta_units;
 };
 
 struct MouseData {
@@ -76,13 +77,12 @@ struct MouseData {
 struct ScrollUpdate {
   float velocity_x;
   float velocity_y;
-  bool previous_update_in_sequence_prevented;
 };
 
 struct ScrollData {
   float delta_x;
   float delta_y;
-  ScrollUnits delta_units;
+  ScrollGranularity delta_units;
   bool target_viewport;
   InertialPhaseState inertial_phase;
   bool synthetic;
@@ -90,8 +90,18 @@ struct ScrollData {
   ScrollUpdate? update_details;
 };
 
-struct PinchData {
+struct PinchBeginData {
+  bool needs_wheel_event;
+};
+
+struct PinchUpdateData {
   float scale;
+  bool zoom_disabled;
+  bool needs_wheel_event;
+};
+
+struct PinchEndData {
+  bool needs_wheel_event;
 };
 
 struct FlingData {
@@ -103,6 +113,7 @@ struct FlingData {
 
 struct TapData {
   int32 tap_count;
+  bool needs_wheel_event;
 };
 
 struct GestureData {
@@ -115,7 +126,9 @@ struct GestureData {
   int32 resending_plugin_id;
   gfx.mojom.Size? contact_size;
   ScrollData? scroll_data;
-  PinchData? pinch_data;
+  PinchBeginData? pinch_begin_data;
+  PinchUpdateData? pinch_update_data;
+  PinchEndData? pinch_end_data;
   TapData? tap_data;
   FlingData? fling_data;
 };
@@ -149,16 +162,22 @@ struct Event {
 };
 
 struct TouchActionOptional {
-  TouchAction touch_action;
+  cc.mojom.TouchAction touch_action;
 };
 
 // Interface exposed by the browser to the renderer. The messages
 // contained in here are state changes that the renderer has taken
 // that the browser must be aware of.
 interface WidgetInputHandlerHost {
+  // Call platform Fallback Cursor Mode APIs.
+  [EnableIf=is_android]
+  FallbackCursorModeLockCursor(bool left, bool right, bool up, bool down);
+  [EnableIf=is_android]
+  FallbackCursorModeSetCursorVisibility(bool visible);
+
   // When the renderer's main thread computes the touch action, send this to the
   // browser.
-  SetTouchActionFromMain(TouchAction touch_action);
+  SetTouchActionFromMain(cc.mojom.TouchAction touch_action);
 
   // The whitelisted touch action and the associated unique touch event id
   // for a new touch point sent by the compositor. The unique touch event id is
@@ -166,7 +185,7 @@ interface WidgetInputHandlerHost {
   // with the correct touch event. The input event ack state is needed when
   // the touchstart message was not sent to the renderer and the touch
   // actions need to be reset and the touch ack timeout needs to be started.
-  SetWhiteListedTouchAction(TouchAction touch_action,
+  SetWhiteListedTouchAction(cc.mojom.TouchAction touch_action,
                             uint32 unique_touch_event_id,
                             InputEventAckState state);
 
@@ -220,15 +239,18 @@ interface WidgetInputHandler {
   // Sends the cursor visibility state to the render widget.
   CursorVisibilityChanged(bool visible);
 
+  // Notifies the RenderWidget when toggle fallback cursor mode on/off.
+  FallbackCursorModeToggled(bool is_on);
+
   // This message sends a string being composed with an input method.
   ImeSetComposition(mojo_base.mojom.String16 text,
-                    array<ws.mojom.ImeTextSpan> ime_text_spans,
+                    array<ui.mojom.ImeTextSpan> ime_text_spans,
                     gfx.mojom.Range range, int32 start, int32 end);
 
   // This message deletes the current composition, inserts specified text, and
   // moves the cursor.
   ImeCommitText(mojo_base.mojom.String16 text,
-                array<ws.mojom.ImeTextSpan> ime_text_spans,
+                array<ui.mojom.ImeTextSpan> ime_text_spans,
                 gfx.mojom.Range range, int32 relative_cursor_position) => ();
 
   // This message inserts the ongoing composition.
@@ -270,9 +292,9 @@ interface WidgetInputHandler {
   // Attach the synchronous compositor interface. This method only
   // should be called for Android WebView.
   AttachSynchronousCompositor(
-      SynchronousCompositorControlHost control_host,
-      associated SynchronousCompositorHost host,
-      associated SynchronousCompositor& compositor_request);
+      pending_remote<SynchronousCompositorControlHost> control_host,
+      pending_associated_remote<SynchronousCompositorHost> host,
+      pending_associated_receiver<SynchronousCompositor> compositor_request);
 };
 
 // This interface provides the input actions associated with the RenderFrame.
@@ -284,7 +306,7 @@ interface FrameInputHandler {
   // Sets the text composition to be between the given start and end offsets in
   // the currently focused editable field.
   SetCompositionFromExistingText(
-      int32 start, int32 end, array<ws.mojom.ImeTextSpan> ime_text_spans);
+      int32 start, int32 end, array<ui.mojom.ImeTextSpan> ime_text_spans);
 
   // Deletes the current selection plus the specified number of characters
   // before and after the selection or caret.
@@ -363,6 +385,7 @@ interface FrameInputHandler {
   // Return an associated WidgetInputHandler interface so that input
   // messages to the widget associated with this frame can be sent
   // serially.
-  GetWidgetInputHandler(associated WidgetInputHandler& interface_request,
-                        WidgetInputHandlerHost host);
+  GetWidgetInputHandler(
+      pending_associated_receiver<WidgetInputHandler> interface_request,
+      pending_remote<WidgetInputHandlerHost> host);
 };

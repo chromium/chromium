@@ -4,6 +4,7 @@
 
 #include "chrome/browser/permissions/permission_request_impl.h"
 
+#include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/permissions/permission_util.h"
 #include "chrome/grit/generated_resources.h"
@@ -23,13 +24,13 @@ PermissionRequestImpl::PermissionRequestImpl(
     const GURL& request_origin,
     ContentSettingsType content_settings_type,
     bool has_gesture,
-    const PermissionDecidedCallback& permission_decided_callback,
-    const base::Closure delete_callback)
+    PermissionDecidedCallback permission_decided_callback,
+    base::OnceClosure delete_callback)
     : request_origin_(request_origin),
       content_settings_type_(content_settings_type),
       has_gesture_(has_gesture),
-      permission_decided_callback_(permission_decided_callback),
-      delete_callback_(delete_callback),
+      permission_decided_callback_(std::move(permission_decided_callback)),
+      delete_callback_(std::move(delete_callback)),
       is_finished_(false) {}
 
 PermissionRequestImpl::~PermissionRequestImpl() {
@@ -39,21 +40,21 @@ PermissionRequestImpl::~PermissionRequestImpl() {
 PermissionRequest::IconId PermissionRequestImpl::GetIconId() const {
 #if defined(OS_ANDROID)
   switch (content_settings_type_) {
-    case CONTENT_SETTINGS_TYPE_GEOLOCATION:
+    case ContentSettingsType::GEOLOCATION:
       return IDR_ANDROID_INFOBAR_GEOLOCATION;
-    case CONTENT_SETTINGS_TYPE_NOTIFICATIONS:
+    case ContentSettingsType::NOTIFICATIONS:
       return IDR_ANDROID_INFOBAR_NOTIFICATIONS;
-    case CONTENT_SETTINGS_TYPE_MIDI_SYSEX:
+    case ContentSettingsType::MIDI_SYSEX:
       return IDR_ANDROID_INFOBAR_MIDI;
-    case CONTENT_SETTINGS_TYPE_PROTECTED_MEDIA_IDENTIFIER:
+    case ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER:
       return IDR_ANDROID_INFOBAR_PROTECTED_MEDIA_IDENTIFIER;
-    case CONTENT_SETTINGS_TYPE_MEDIASTREAM_MIC:
+    case ContentSettingsType::MEDIASTREAM_MIC:
       return IDR_ANDROID_INFOBAR_MEDIA_STREAM_MIC;
-    case CONTENT_SETTINGS_TYPE_MEDIASTREAM_CAMERA:
+    case ContentSettingsType::MEDIASTREAM_CAMERA:
       return IDR_ANDROID_INFOBAR_MEDIA_STREAM_CAMERA;
-    case CONTENT_SETTINGS_TYPE_ACCESSIBILITY_EVENTS:
+    case ContentSettingsType::ACCESSIBILITY_EVENTS:
       return IDR_ANDROID_INFOBAR_ACCESSIBILITY_EVENTS;
-    case CONTENT_SETTINGS_TYPE_CLIPBOARD_READ:
+    case ContentSettingsType::CLIPBOARD_READ:
       return IDR_ANDROID_INFOBAR_CLIPBOARD;
     default:
       NOTREACHED();
@@ -61,26 +62,26 @@ PermissionRequest::IconId PermissionRequestImpl::GetIconId() const {
   }
 #else
   switch (content_settings_type_) {
-    case CONTENT_SETTINGS_TYPE_GEOLOCATION:
+    case ContentSettingsType::GEOLOCATION:
       return vector_icons::kLocationOnIcon;
-    case CONTENT_SETTINGS_TYPE_NOTIFICATIONS:
+    case ContentSettingsType::NOTIFICATIONS:
       return vector_icons::kNotificationsIcon;
 #if defined(OS_CHROMEOS)
     // TODO(xhwang): fix this icon, see crrev.com/863263007
-    case CONTENT_SETTINGS_TYPE_PROTECTED_MEDIA_IDENTIFIER:
+    case ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER:
       return kProductIcon;
 #endif
-    case CONTENT_SETTINGS_TYPE_MIDI_SYSEX:
+    case ContentSettingsType::MIDI_SYSEX:
       return vector_icons::kMidiIcon;
-    case CONTENT_SETTINGS_TYPE_PLUGINS:
+    case ContentSettingsType::PLUGINS:
       return kExtensionIcon;
-    case CONTENT_SETTINGS_TYPE_MEDIASTREAM_MIC:
+    case ContentSettingsType::MEDIASTREAM_MIC:
       return vector_icons::kMicIcon;
-    case CONTENT_SETTINGS_TYPE_MEDIASTREAM_CAMERA:
+    case ContentSettingsType::MEDIASTREAM_CAMERA:
       return vector_icons::kVideocamIcon;
-    case CONTENT_SETTINGS_TYPE_ACCESSIBILITY_EVENTS:
+    case ContentSettingsType::ACCESSIBILITY_EVENTS:
       return vector_icons::kAccessibilityIcon;
-    case CONTENT_SETTINGS_TYPE_CLIPBOARD_READ:
+    case ContentSettingsType::CLIPBOARD_READ:
       return kContentPasteIcon;
     default:
       NOTREACHED();
@@ -90,34 +91,68 @@ PermissionRequest::IconId PermissionRequestImpl::GetIconId() const {
 }
 
 #if defined(OS_ANDROID)
+base::string16 PermissionRequestImpl::GetTitleText() const {
+  int message_id;
+  switch (content_settings_type_) {
+    case ContentSettingsType::GEOLOCATION:
+      message_id = IDS_GEOLOCATION_PERMISSION_TITLE;
+      break;
+    case ContentSettingsType::NOTIFICATIONS:
+      message_id = IDS_NOTIFICATIONS_PERMISSION_TITLE;
+      break;
+    case ContentSettingsType::MIDI_SYSEX:
+      message_id = IDS_MIDI_SYSEX_PERMISSION_TITLE;
+      break;
+    case ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER:
+      message_id = IDS_PROTECTED_MEDIA_IDENTIFIER_PERMISSION_TITLE;
+      break;
+    case ContentSettingsType::MEDIASTREAM_MIC:
+      message_id = IDS_MEDIA_CAPTURE_AUDIO_ONLY_PERMISSION_TITLE;
+      break;
+    case ContentSettingsType::MEDIASTREAM_CAMERA:
+      message_id = IDS_MEDIA_CAPTURE_VIDEO_ONLY_PERMISSION_TITLE;
+      break;
+    case ContentSettingsType::ACCESSIBILITY_EVENTS:
+      message_id = IDS_ACCESSIBILITY_EVENTS_PERMISSION_TITLE;
+      break;
+    case ContentSettingsType::CLIPBOARD_READ:
+      message_id = IDS_CLIPBOARD_PERMISSION_TITLE;
+      break;
+    default:
+      NOTREACHED();
+      return base::string16();
+  }
+  return l10n_util::GetStringUTF16(message_id);
+}
+
 base::string16 PermissionRequestImpl::GetMessageText() const {
   int message_id;
   switch (content_settings_type_) {
-    case CONTENT_SETTINGS_TYPE_GEOLOCATION:
+    case ContentSettingsType::GEOLOCATION:
       message_id = IDS_GEOLOCATION_INFOBAR_TEXT;
       break;
-    case CONTENT_SETTINGS_TYPE_NOTIFICATIONS:
+    case ContentSettingsType::NOTIFICATIONS:
       message_id = IDS_NOTIFICATIONS_INFOBAR_TEXT;
       break;
-    case CONTENT_SETTINGS_TYPE_MIDI_SYSEX:
+    case ContentSettingsType::MIDI_SYSEX:
       message_id = IDS_MIDI_SYSEX_INFOBAR_TEXT;
       break;
-    case CONTENT_SETTINGS_TYPE_PROTECTED_MEDIA_IDENTIFIER:
+    case ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER:
       message_id =
           media::MediaDrmBridge::IsPerOriginProvisioningSupported()
               ? IDS_PROTECTED_MEDIA_IDENTIFIER_PER_ORIGIN_PROVISIONING_INFOBAR_TEXT
               : IDS_PROTECTED_MEDIA_IDENTIFIER_PER_DEVICE_PROVISIONING_INFOBAR_TEXT;
       break;
-    case CONTENT_SETTINGS_TYPE_MEDIASTREAM_MIC:
+    case ContentSettingsType::MEDIASTREAM_MIC:
       message_id = IDS_MEDIA_CAPTURE_AUDIO_ONLY_INFOBAR_TEXT;
       break;
-    case CONTENT_SETTINGS_TYPE_MEDIASTREAM_CAMERA:
+    case ContentSettingsType::MEDIASTREAM_CAMERA:
       message_id = IDS_MEDIA_CAPTURE_VIDEO_ONLY_INFOBAR_TEXT;
       break;
-    case CONTENT_SETTINGS_TYPE_ACCESSIBILITY_EVENTS:
+    case ContentSettingsType::ACCESSIBILITY_EVENTS:
       message_id = IDS_ACCESSIBILITY_EVENTS_INFOBAR_TEXT;
       break;
-    case CONTENT_SETTINGS_TYPE_CLIPBOARD_READ:
+    case ContentSettingsType::CLIPBOARD_READ:
       message_id = IDS_CLIPBOARD_INFOBAR_TEXT;
       break;
     default:
@@ -129,38 +164,60 @@ base::string16 PermissionRequestImpl::GetMessageText() const {
       url_formatter::FormatUrlForSecurityDisplay(
           GetOrigin(), url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
 }
+
+base::string16 PermissionRequestImpl::GetQuietTitleText() const {
+  if (content_settings_type_ == ContentSettingsType::NOTIFICATIONS) {
+    return l10n_util::GetStringFUTF16(
+        IDS_NOTIFICATION_QUIET_PERMISSION_PROMPT_TITLE,
+        url_formatter::FormatUrlForSecurityDisplay(
+            GetOrigin(), url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
+  }
+
+  NOTREACHED();
+  return GetTitleText();
+}
+
+base::string16 PermissionRequestImpl::GetQuietMessageText() const {
+  if (content_settings_type_ == ContentSettingsType::NOTIFICATIONS) {
+    return l10n_util::GetStringUTF16(
+        IDS_NOTIFICATION_QUIET_PERMISSION_PROMPT_MESSAGE);
+  }
+
+  NOTREACHED();
+  return GetMessageText();
+}
 #endif
 
 base::string16 PermissionRequestImpl::GetMessageTextFragment() const {
   int message_id;
   switch (content_settings_type_) {
-    case CONTENT_SETTINGS_TYPE_GEOLOCATION:
+    case ContentSettingsType::GEOLOCATION:
       message_id = IDS_GEOLOCATION_INFOBAR_PERMISSION_FRAGMENT;
       break;
-    case CONTENT_SETTINGS_TYPE_NOTIFICATIONS:
+    case ContentSettingsType::NOTIFICATIONS:
       message_id = IDS_NOTIFICATION_PERMISSIONS_FRAGMENT;
       break;
-    case CONTENT_SETTINGS_TYPE_MIDI_SYSEX:
+    case ContentSettingsType::MIDI_SYSEX:
       message_id = IDS_MIDI_SYSEX_PERMISSION_FRAGMENT;
       break;
 #if defined(OS_ANDROID) || defined(OS_CHROMEOS)
-    case CONTENT_SETTINGS_TYPE_PROTECTED_MEDIA_IDENTIFIER:
+    case ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER:
       message_id = IDS_PROTECTED_MEDIA_IDENTIFIER_PERMISSION_FRAGMENT;
       break;
 #endif
-    case CONTENT_SETTINGS_TYPE_PLUGINS:
+    case ContentSettingsType::PLUGINS:
       message_id = IDS_FLASH_PERMISSION_FRAGMENT;
       break;
-    case CONTENT_SETTINGS_TYPE_MEDIASTREAM_MIC:
+    case ContentSettingsType::MEDIASTREAM_MIC:
       message_id = IDS_MEDIA_CAPTURE_AUDIO_ONLY_PERMISSION_FRAGMENT;
       break;
-    case CONTENT_SETTINGS_TYPE_MEDIASTREAM_CAMERA:
+    case ContentSettingsType::MEDIASTREAM_CAMERA:
       message_id = IDS_MEDIA_CAPTURE_VIDEO_ONLY_PERMISSION_FRAGMENT;
       break;
-    case CONTENT_SETTINGS_TYPE_ACCESSIBILITY_EVENTS:
+    case ContentSettingsType::ACCESSIBILITY_EVENTS:
       message_id = IDS_ACCESSIBILITY_EVENTS_PERMISSION_FRAGMENT;
       break;
-    case CONTENT_SETTINGS_TYPE_CLIPBOARD_READ:
+    case ContentSettingsType::CLIPBOARD_READ:
       message_id = IDS_CLIPBOARD_PERMISSION_FRAGMENT;
       break;
     default:
@@ -175,20 +232,20 @@ GURL PermissionRequestImpl::GetOrigin() const {
 }
 
 void PermissionRequestImpl::PermissionGranted() {
-  permission_decided_callback_.Run(CONTENT_SETTING_ALLOW);
+  std::move(permission_decided_callback_).Run(CONTENT_SETTING_ALLOW);
 }
 
 void PermissionRequestImpl::PermissionDenied() {
-  permission_decided_callback_.Run(CONTENT_SETTING_BLOCK);
+  std::move(permission_decided_callback_).Run(CONTENT_SETTING_BLOCK);
 }
 
 void PermissionRequestImpl::Cancelled() {
-  permission_decided_callback_.Run(CONTENT_SETTING_DEFAULT);
+  std::move(permission_decided_callback_).Run(CONTENT_SETTING_DEFAULT);
 }
 
 void PermissionRequestImpl::RequestFinished() {
   is_finished_ = true;
-  delete_callback_.Run();
+  std::move(delete_callback_).Run();
 }
 
 PermissionRequestType PermissionRequestImpl::GetPermissionRequestType()

@@ -65,10 +65,10 @@
     {
         event = e;
         debug("\nJust zoomed");
-        shouldBe("event.clientX", "83");
-        shouldBe("event.clientY", "83");
-        shouldBe("event.pageX", "83");
-        shouldBe("event.pageY", "83");
+        shouldBeCloseTo("event.clientX", "83.3333", 0.0001);
+        shouldBeCloseTo("event.clientY", "83.3333", 0.0001);
+        shouldBeCloseTo("event.pageX", "83.3333", 0.0001);
+        shouldBeCloseTo("event.pageX", "83.3333", 0.0001);
     }
     window.addEventListener("click", justZoomed, false);
     zoomPageIn();
@@ -97,10 +97,10 @@
     {
         event = e;
         debug("\nZoomed and scrolled");
-        shouldBe("event.clientX", "83");
-        shouldBe("event.clientY", "83");
-        shouldBe("event.pageX", "133");
-        shouldBe("event.pageY", "133");
+        shouldBeCloseTo("event.clientX", "83.3333", 0.0001);
+        shouldBeCloseTo("event.clientY", "83.3333", 0.0001);
+        shouldBeCloseTo("event.pageX", "133.3333", 0.0001);
+        shouldBeCloseTo("event.pageY", "133.3333", 0.0001);
     }
     window.addEventListener("click", zoomedAndScrolled, false);
     zoomPageIn();

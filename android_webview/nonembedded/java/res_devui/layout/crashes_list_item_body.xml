@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Copyright 2019 The Chromium Authors. All rights reserved.  Use of this
+  source code is governed by a BSD-style license that can be found in the
+  LICENSE file.
+-->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="2dp"
+    android:paddingBottom="2dp"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="?android:attr/expandableListPreferredItemPaddingLeft"
+        android:paddingEnd="100dp"
+        android:orientation="vertical">
+
+        <include layout="@layout/two_line_sublist_item"
+            android:id="@+id/variations"/>
+
+        <include layout="@layout/two_line_sublist_item"
+            android:id="@+id/upload_status"/>
+
+        <!--suppress HardcodedText -->
+        <Button
+            android:id="@+id/crash_report_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:text="File bug report"
+            android:textAllCaps="false" />
+
+    </LinearLayout>
+
+    <!-- horizontal divider -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="16dp"
+        android:background="?android:attr/listDivider"/>
+
+</LinearLayout>

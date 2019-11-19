@@ -27,4 +27,6 @@ dictionary RTCQuicTransportStats {
   unsigned long long blockedFramesReceived;
   unsigned long long blockedFramesSent;
   unsigned long long connectivityProbingPacketsReceived;
+  unsigned long numReceivedDatagramsDropped;
+  unsigned long numDatagramsLost;
 };

@@ -57,10 +57,10 @@ instrumentation_test_apk("webview_ui_test_app_test_apk") {
     ":webview_ui_test_app_java",
     "//base:base_java",
     "//base:base_java_test_support",
-    "//third_party/android_deps:android_support_annotations_java",
+    "//third_party/android_deps:androidx_annotation_annotation_java",
+    "//third_party/android_sdk:android_test_base_java",
     "//third_party/android_support_test_runner:rules_java",
     "//third_party/android_support_test_runner:runner_java",
-    "//third_party/android_tools:android_test_base_java",
     "//third_party/espresso:espresso_all_java",
     "//third_party/hamcrest:hamcrest_java",
     "//third_party/junit",
@@ -69,4 +69,5 @@ instrumentation_test_apk("webview_ui_test_app_test_apk") {
   data = [
     "test/data/",
   ]
+  additional_apks = [ system_webview_apk_target ]
 }

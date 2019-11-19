@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+  <include name="IDR_CELLULAR_SETUP_MOJOM_HTML"
+      file="${mojom_root}/chromeos/services/cellular_setup/public/mojom/cellular_setup.mojom.html"
+      use_base_dir="false"
+      type="BINDATA"
+      compress="gzip" />
+  <include name="IDR_CELLULAR_SETUP_MOJOM_LITE_JS"
+      file="${mojom_root}/chromeos/services/cellular_setup/public/mojom/cellular_setup.mojom-lite.js"
+      use_base_dir="false"
+      type="BINDATA"
+      compress="gzip" />
+</grit-part>

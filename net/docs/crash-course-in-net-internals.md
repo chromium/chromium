@@ -19,7 +19,7 @@ Events view, which will be all this document covers.
 
 The top level network stack object is the URLRequestContext.  The Events view
 has information for all Chrome URLRequestContexts that are hooked up to the
-single, global, ChromeNetLog object.  This includes both incognito and
+single, global, NetLog object.  This includes both incognito and
 non-incognito profiles, among other things.  The Events view only shows events
 for the period that net-internals was open and running, and is incrementally
 updated as events occur.  The code attempts to add a top level event for

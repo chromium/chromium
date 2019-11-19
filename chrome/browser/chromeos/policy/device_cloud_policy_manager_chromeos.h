@@ -27,10 +27,14 @@ namespace chromeos {
 class InstallAttributes;
 
 namespace attestation {
+
 class AttestationPolicyObserver;
 class EnrollmentPolicyObserver;
-}
-}
+class EnrollmentCertificateUploader;
+class MachineCertificateUploader;
+
+}  // namespace attestation
+}  // namespace chromeos
 
 class PrefRegistrySimple;
 class PrefService;
@@ -43,6 +47,7 @@ class HeartbeatScheduler;
 class SchemaRegistry;
 class StatusUploader;
 class SystemLogUploader;
+class LookupKeyUploader;
 
 enum class ZeroTouchEnrollmentMode { DISABLED, ENABLED, FORCED, HANDS_OFF };
 
@@ -143,6 +148,20 @@ class DeviceCloudPolicyManagerChromeOS : public CloudPolicyManager {
         component_policy_disabled_for_testing;
   }
 
+  // Return a pointer to the enrollment certificate uploader. The callers do
+  // not take ownership of that pointer.
+  chromeos::attestation::EnrollmentCertificateUploader*
+  GetEnrollmentCertificateUploader() {
+    return enrollment_certificate_uploader_.get();
+  }
+
+  // Return a pointer to the machine certificate uploader. The callers do
+  // not take ownership of that pointer.
+  chromeos::attestation::MachineCertificateUploader*
+  GetMachineCertificateUploader() {
+    return machine_certificate_uploader_.get();
+  }
+
  private:
   // Saves the state keys received from |session_manager_client_|.
   void OnStateKeysUpdated();
@@ -184,10 +203,17 @@ class DeviceCloudPolicyManagerChromeOS : public CloudPolicyManager {
   // PrefService instance to read the policy refresh rate from.
   PrefService* local_state_;
 
+  std::unique_ptr<chromeos::attestation::EnrollmentCertificateUploader>
+      enrollment_certificate_uploader_;
   std::unique_ptr<chromeos::attestation::EnrollmentPolicyObserver>
       enrollment_policy_observer_;
+  std::unique_ptr<chromeos::attestation::MachineCertificateUploader>
+      machine_certificate_uploader_;
   std::unique_ptr<chromeos::attestation::AttestationPolicyObserver>
       attestation_policy_observer_;
+
+  // Uploader for remote server unlock related lookup keys.
+  std::unique_ptr<LookupKeyUploader> lookup_key_uploader_;
 
   // Wrapper schema registry that will track the signin profile schema registry
   // once it is passed to this class.

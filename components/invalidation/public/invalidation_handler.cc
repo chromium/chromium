@@ -12,4 +12,8 @@ InvalidationHandler::InvalidationHandler() {
 InvalidationHandler::~InvalidationHandler() {
 }
 
+bool InvalidationHandler::IsPublicTopic(const Topic& topic) const {
+  return false;
+}
+
 }  // namespace syncer

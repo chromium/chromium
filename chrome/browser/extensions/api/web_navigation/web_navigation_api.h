@@ -11,6 +11,7 @@
 #include <map>
 #include <set>
 
+#include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "chrome/browser/extensions/api/web_navigation/frame_navigation_state.h"
@@ -19,8 +20,6 @@
 #include "chrome/browser/ui/browser_tab_strip_tracker.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
@@ -52,8 +51,7 @@ class WebNavigationTabObserver
       content::NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
-  void DocumentLoadedInFrame(
-      content::RenderFrameHost* render_frame_host) override;
+  void DOMContentLoaded(content::RenderFrameHost* render_frame_host) override;
   void DidFinishLoad(content::RenderFrameHost* render_frame_host,
                      const GURL& validated_url) override;
   void DidFailLoad(content::RenderFrameHost* render_frame_host,
@@ -97,19 +95,14 @@ class WebNavigationTabObserver
   // the tab strip and is ready to dispatch events.
   std::unique_ptr<Event> pending_on_before_navigate_event_;
 
-  // Used for tracking registrations to redirect notifications.
-  content::NotificationRegistrar registrar_;
-
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 
   DISALLOW_COPY_AND_ASSIGN(WebNavigationTabObserver);
 };
 
-// Observes navigation notifications and routes them as events to the extension
-// system.
+// Tracks new tab navigations and routes them as events to the extension system.
 class WebNavigationEventRouter : public TabStripModelObserver,
-                                 public BrowserTabStripTrackerDelegate,
-                                 public content::NotificationObserver {
+                                 public BrowserTabStripTrackerDelegate {
  public:
   explicit WebNavigationEventRouter(Profile* profile);
   ~WebNavigationEventRouter() override;
@@ -117,7 +110,7 @@ class WebNavigationEventRouter : public TabStripModelObserver,
   // Router level handler for the creation of WebContents. Stores information
   // about the newly created WebContents. This information is later used when
   // the WebContents for the tab is added to the tabstrip and we receive the
-  // TAB_ADDED notification.
+  // TabStripModelChanged insertion.
   void RecordNewWebContents(content::WebContents* source_web_contents,
                             int source_render_process_id,
                             int source_render_frame_id,
@@ -127,18 +120,42 @@ class WebNavigationEventRouter : public TabStripModelObserver,
 
  private:
   // Used to cache the information about newly created WebContents objects.
-  struct PendingWebContents{
+  // Will run |on_destroy_| if/when the target WebContents is destroyed.
+  class PendingWebContents : public content::WebContentsObserver {
+   public:
     PendingWebContents();
-    PendingWebContents(content::WebContents* source_web_contents,
-                       content::RenderFrameHost* source_frame_host,
-                       content::WebContents* target_web_contents,
-                       const GURL& target_url);
-    ~PendingWebContents();
+    ~PendingWebContents() override;
 
-    content::WebContents* source_web_contents;
-    content::RenderFrameHost* source_frame_host;
-    content::WebContents* target_web_contents;
-    GURL target_url;
+    void Set(int source_tab_id,
+             int source_render_process_id,
+             int source_extension_frame_id,
+             content::WebContents* target_web_contents,
+             const GURL& target_url,
+             base::OnceCallback<void(content::WebContents*)> on_destroy);
+
+    // content::WebContentsObserver:
+    void WebContentsDestroyed() override;
+
+    int source_tab_id() const { return source_tab_id_; }
+    int source_render_process_id() const { return source_render_process_id_; }
+    int source_extension_frame_id() const { return source_extension_frame_id_; }
+    content::WebContents* target_web_contents() const {
+      return target_web_contents_;
+    }
+    GURL target_url() const { return target_url_; }
+
+   private:
+    // The Extensions API ID for the source tab.
+    int source_tab_id_ = -1;
+    // The source frame's RenderProcessHost ID.
+    int source_render_process_id_ = -1;
+    // The Extensions API ID for the source frame.
+    int source_extension_frame_id_ = -1;
+    content::WebContents* target_web_contents_ = nullptr;
+    GURL target_url_;
+    base::OnceCallback<void(content::WebContents*)> on_destroy_;
+
+    DISALLOW_COPY_AND_ASSIGN(PendingWebContents);
   };
 
   // BrowserTabStripTrackerDelegate implementation.
@@ -150,25 +167,16 @@ class WebNavigationEventRouter : public TabStripModelObserver,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
 
-  // content::NotificationObserver implementation.
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
-
-  // Handler for the NOTIFICATION_TAB_ADDED event. The method takes the details
-  // of such an event and creates a JSON formated extension event from it.
+  // The method takes the details of such an event and creates a JSON formatted
+  // extension event from it.
   void TabAdded(content::WebContents* tab);
 
-  // Handler for NOTIFICATION_WEB_CONTENTS_DESTROYED. If |tab| is in
-  // |pending_web_contents_|, it is removed.
-  void TabDestroyed(content::WebContents* tab);
+  // Removes |tab| from |pending_web_contents_| if it is there.
+  void PendingWebContentsDestroyed(content::WebContents* tab);
 
   // Mapping pointers to WebContents objects to information about how they got
   // created.
   std::map<content::WebContents*, PendingWebContents> pending_web_contents_;
-
-  // Used for tracking registrations to navigation notifications.
-  content::NotificationRegistrar registrar_;
 
   // The profile that owns us via ExtensionService.
   Profile* profile_;
@@ -179,14 +187,14 @@ class WebNavigationEventRouter : public TabStripModelObserver,
 };
 
 // API function that returns the state of a given frame.
-class WebNavigationGetFrameFunction : public UIThreadExtensionFunction {
+class WebNavigationGetFrameFunction : public ExtensionFunction {
   ~WebNavigationGetFrameFunction() override {}
   ResponseAction Run() override;
   DECLARE_EXTENSION_FUNCTION("webNavigation.getFrame", WEBNAVIGATION_GETFRAME)
 };
 
 // API function that returns the states of all frames in a given tab.
-class WebNavigationGetAllFramesFunction : public UIThreadExtensionFunction {
+class WebNavigationGetAllFramesFunction : public ExtensionFunction {
   ~WebNavigationGetAllFramesFunction() override {}
   ResponseAction Run() override;
   DECLARE_EXTENSION_FUNCTION("webNavigation.getAllFrames",

@@ -10,8 +10,7 @@
 
 namespace feature_engagement {
 
-DisplayLockControllerImpl::DisplayLockControllerImpl()
-    : weak_ptr_factory_(this) {}
+DisplayLockControllerImpl::DisplayLockControllerImpl() {}
 
 DisplayLockControllerImpl::~DisplayLockControllerImpl() = default;
 

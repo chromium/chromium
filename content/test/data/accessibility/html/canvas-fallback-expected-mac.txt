@@ -1,0 +1,21 @@
+AXWebArea
+++AXGroup
+++++AXGroup
+++++++AXStaticText AXValue='Static fallback'
+++++AXGroup
+++++++AXStaticText AXValue='<newline>    '
+++++++AXGroup AXTitle='Aria hidden paragraph in fallback content'
+++++++++AXStaticText AXValue='Line breaking content in a fallback'
+++++++AXStaticText AXValue='<newline>    '
+++++++AXGroup AXTitle='Visibility hidden paragraph in fallback content'
+++++++++AXStaticText AXValue='This is another paragraph in fallback'
+++++++AXStaticText AXValue='<newline>    '
+++++++AXHeading AXTitle='Aria hidden paragraph in fallback content' AXValue='1'
+++++++++AXStaticText AXValue='Aria hidden paragraph in fallback content'
+++++++AXStaticText AXValue='<newline>    '
+++++++AXHeading AXValue='1'
+++++++++AXStaticText AXValue='Display none text in fallback content '
+++++++AXStaticText AXValue='<newline>    '
+++++++AXHeading AXValue='2'
+++++++++AXStaticText AXValue='Visibility hidden paragraph in fallback content'
+++++++AXStaticText AXValue='<newline>  '

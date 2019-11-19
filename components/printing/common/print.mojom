@@ -1,0 +1,49 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module printing.mojom;
+
+import "mojo/public/mojom/base/shared_memory.mojom";
+import "mojo/public/mojom/base/values.mojom";
+
+// Interface implemented by a class that desires to render print documents for
+// Chrome print preview.
+interface PrintRenderer {
+  // Creates a preview document for print preview using the provided
+  // |job_settings|.
+  // The returned |preview_document_region| contains the preview document data
+  // as a flattened PDF. It will be invalid if errors occurred while rendering
+  // the preview document.
+  CreatePreviewDocument(mojo_base.mojom.DictionaryValue job_settings)
+      => (mojo_base.mojom.ReadOnlySharedMemoryRegion? preview_document_region);
+};
+
+// Render process interface exposed to the browser to handle most of the
+// printing grunt work for RenderView.
+interface PrintRenderFrame {
+  // Tells the RenderFrame to switch the CSS to print media type, render every
+  // requested page, and then switch back the CSS to display media type.
+  PrintRequestedPages();
+
+  // Tells the RenderFrame to switch the CSS to print media type, render every
+  // requested page using the print preview document's frame/node, and then
+  // switch the CSS back to display media type.
+  PrintForSystemDialog();
+
+  // Tells the RenderFrame to initiate print preview for the entire document.
+  // Optionally provides a |print_renderer| to render print documents.
+  [EnableIf=enable_print_preview]
+  InitiatePrintPreview(associated PrintRenderer? print_renderer,
+                       bool has_selection);
+
+  // Tells the RenderFrame that the print preview dialog was closed.
+  [EnableIf=enable_print_preview]
+  OnPrintPreviewDialogClosed();
+
+  // Tells the RenderFrame whether printing is enabled or not.
+  SetPrintingEnabled(bool enabled);
+
+  // Tells the RenderFrame that printing is done so it can clean up.
+  PrintingDone(bool success);
+};

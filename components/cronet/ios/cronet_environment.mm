@@ -4,9 +4,9 @@
 
 #include "components/cronet/ios/cronet_environment.h"
 
+#include <atomic>
 #include <utility>
 
-#include "base/atomicops.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
@@ -15,7 +15,7 @@
 #include "base/files/scoped_file.h"
 #include "base/mac/foundation_util.h"
 #include "base/macros.h"
-#include "base/message_loop/message_loop.h"
+#include "base/message_loop/message_pump_type.h"
 #include "base/path_service.h"
 #include "base/single_thread_task_runner.h"
 #include "base/synchronization/waitable_event.h"
@@ -27,15 +27,17 @@
 #include "components/prefs/pref_filter.h"
 #include "ios/net/cookies/cookie_store_ios.h"
 #include "ios/net/cookies/cookie_store_ios_client.h"
-#include "ios/web/public/global_state/ios_global_state.h"
-#include "ios/web/public/global_state/ios_global_state_configuration.h"
-#include "ios/web/public/user_agent.h"
+#include "ios/web/common/user_agent.h"
+#include "ios/web/public/init/ios_global_state.h"
+#include "ios/web/public/init/ios_global_state_configuration.h"
+#include "net/base/http_user_agent_settings.h"
 #include "net/base/network_change_notifier.h"
+#include "net/base/network_isolation_key.h"
 #include "net/base/url_util.h"
 #include "net/cert/cert_verifier.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/mapped_host_resolver.h"
-#include "net/http/http_server_properties_impl.h"
+#include "net/http/http_server_properties.h"
 #include "net/http/http_stream_factory.h"
 #include "net/http/http_transaction_factory.h"
 #include "net/http/http_util.h"
@@ -45,10 +47,8 @@
 #include "net/log/net_log_util.h"
 #include "net/proxy_resolution/proxy_resolution_service.h"
 #include "net/socket/ssl_client_socket.h"
-#include "net/ssl/channel_id_service.h"
 #include "net/ssl/ssl_key_logger_impl.h"
-#include "net/third_party/quic/core/quic_versions.h"
-#include "net/url_request/http_user_agent_settings.h"
+#include "net/third_party/quiche/src/quic/core/quic_versions.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_context_storage.h"
@@ -176,8 +176,8 @@ void CronetEnvironment::StartNetLogOnNetworkThread(const base::FilePath& path,
     return;
 
   net::NetLogCaptureMode capture_mode =
-      log_bytes ? net::NetLogCaptureMode::IncludeSocketBytes()
-                : net::NetLogCaptureMode::Default();
+      log_bytes ? net::NetLogCaptureMode::kEverything
+                : net::NetLogCaptureMode::kDefault;
 
   file_net_log_observer_ =
       net::FileNetLogObserver::CreateUnbounded(path, nullptr);
@@ -251,7 +251,7 @@ void CronetEnvironment::Start() {
   // Threads setup.
   file_thread_.reset(new base::Thread("Chrome File Thread"));
   file_thread_->StartWithOptions(
-      base::Thread::Options(base::MessageLoop::TYPE_IO, 0));
+      base::Thread::Options(base::MessagePumpType::IO, 0));
   // Fetching the task_runner will create the shared thread if necessary.
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
       ios_global_state::GetSharedNetworkIOThreadTaskRunner();
@@ -259,7 +259,7 @@ void CronetEnvironment::Start() {
     network_io_thread_.reset(
         new CronetNetworkThread("Chrome Network IO Thread", this));
     network_io_thread_->StartWithOptions(
-        base::Thread::Options(base::MessageLoop::TYPE_IO, 0));
+        base::Thread::Options(base::MessagePumpType::IO, 0));
   }
 
   net::SetCookieStoreIOSClient(new CronetCookieStoreIOSClient(
@@ -267,7 +267,7 @@ void CronetEnvironment::Start() {
 
   main_context_getter_ = new CronetURLRequestContextGetter(
       this, CronetEnvironment::GetNetworkThreadTaskRunner());
-  base::subtle::MemoryBarrier();
+  std::atomic_thread_fence(std::memory_order_seq_cst);
   PostToNetworkThread(FROM_HERE,
                       base::Bind(&CronetEnvironment::InitializeOnNetworkThread,
                                  base::Unretained(this)));
@@ -279,7 +279,7 @@ void CronetEnvironment::CleanUpOnNetworkThread() {
 
   // TODO(lilyhoughton) this can only be run once, so right now leaking it.
   // Should be be called when the _last_ CronetEnvironment is destroyed.
-  // base::TaskScheduler* ts = base::TaskScheduler::GetInstance();
+  // base::ThreadPoolInstance* ts = base::ThreadPoolInstance::Get();
   // if (ts)
   //  ts->Shutdown();
 
@@ -359,9 +359,11 @@ void CronetEnvironment::InitializeOnNetworkThread() {
   effective_experimental_options_ =
       std::move(config->effective_experimental_options);
 
+  // TODO(crbug.com/934402): Use a shared HostResolverManager instead of a
+  // global HostResolver.
   std::unique_ptr<net::MappedHostResolver> mapped_host_resolver(
       new net::MappedHostResolver(
-          net::HostResolver::CreateDefaultResolver(nullptr)));
+          net::HostResolver::CreateStandaloneResolver(nullptr)));
 
   if (!config->storage_path.empty()) {
     cronet_prefs_manager_ = std::make_unique<CronetPrefsManager>(
@@ -399,8 +401,8 @@ void CronetEnvironment::InitializeOnNetworkThread() {
     url::SchemeHostPort quic_hint_server("https", quic_hint.host(),
                                          quic_hint.port());
     main_context_->http_server_properties()->SetQuicAlternativeService(
-        quic_hint_server, alternative_service, base::Time::Max(),
-        quic::QuicTransportVersionVector());
+        quic_hint_server, net::NetworkIsolationKey(), alternative_service,
+        base::Time::Max(), quic::ParsedQuicVersionVector());
   }
 
   main_context_->transport_security_state()

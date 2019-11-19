@@ -10,12 +10,10 @@
 
 @keyframes anim1 { }
 </style>
+  <script src="../resources/testharness.js"></script>
+  <script src="../resources/testharnessreport.js"></script>
   <script type="text/javascript" charset="utf-8">
-    if (window.testRunner) {
-        testRunner.dumpAsText();
-        testRunner.waitUntilDone();
-    }
-
+    var asyncHandle = async_test("Test removal of animation shorthand property");
     const kProperties = [
       "animationName",
       "animationDuration",
@@ -60,7 +58,7 @@
           el.style[kProperties[i]] = curEl.values[i];
         }
       });
-      setTimeout(remove, 0);
+      asyncHandle.step_timeout(asyncHandle.step_func(remove), 0);
     }
 
     function remove() {
@@ -68,7 +66,7 @@
         var el = document.getElementById(curEl.id);
         el.style.removeProperty("animation");
       });
-      setTimeout(test, 0);
+      asyncHandle.step_timeout(asyncHandle.step_func_done(test), 0);
     }
 
     function test() {
@@ -80,21 +78,12 @@
         for (var i=0; i < kProperties.length; i++) {
           var computedValue = elStyle[kProperties[i]];
           var expectedValue = kExpectedResults[i];
-          if (computedValue == expectedValue)
-            resultsString += "Testing " + kProperties[i] + " on " + curEl.id + ": PASS" + "<br>";
-          else
-            resultsString += "Testing " + kProperties[i] + " on " + curEl.id + " expected <code>" + expectedValue + "</code> got <code>" + computedValue + "</code>: FAIL" + "<br>";
-
+          assert_equals(computedValue, expectedValue, "Testing " + kProperties[i] + " on " + curEl.id + " expected " + expectedValue);
         }
       });
-
-      var results = document.getElementById('result');
-      results.innerHTML = resultsString;
-      if (window.testRunner)
-          testRunner.notifyDone();
     }
 
-    window.addEventListener('load', start, false);
+    window.addEventListener('load', asyncHandle.step_func(start), false);
   </script>
 </head>
 <body>
@@ -106,7 +95,6 @@
 <div id="f" class="box"></div>
 <div id="g" class="box"></div>
 <div id="h" class="box"></div>
-<div id="result">
 </div>
 </body>
 </html>

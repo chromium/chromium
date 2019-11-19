@@ -15,16 +15,17 @@
 #include "base/strings/string16.h"
 #include "base/task/post_task.h"
 #include "base/win/scoped_handle.h"
-#include "chrome/chrome_cleaner/interfaces/parser_interface.mojom.h"
+#include "chrome/chrome_cleaner/mojom/parser_interface.mojom.h"
 #include "chrome/chrome_cleaner/parsers/parser_utils/parse_tasks_remaining_counter.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 
 namespace chrome_cleaner {
 
 SandboxedShortcutParser::SandboxedShortcutParser(
     MojoTaskRunner* mojo_task_runner,
-    mojom::ParserPtr* parser_ptr)
-    : mojo_task_runner_(mojo_task_runner), parser_ptr_(parser_ptr) {}
+    mojo::Remote<mojom::Parser>* parser)
+    : mojo_task_runner_(mojo_task_runner), parser_(parser) {}
 
 void SandboxedShortcutParser::ParseShortcut(
     base::win::ScopedHandle shortcut_handle,
@@ -32,12 +33,11 @@ void SandboxedShortcutParser::ParseShortcut(
   mojo_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
-          [](mojom::ParserPtr* parser_ptr, mojo::ScopedHandle handle,
+          [](mojo::Remote<mojom::Parser>* parser, mojo::ScopedHandle handle,
              mojom::Parser::ParseShortcutCallback callback) {
-            (*parser_ptr)
-                ->ParseShortcut(std::move(handle), std::move(callback));
+            (*parser)->ParseShortcut(std::move(handle), std::move(callback));
           },
-          parser_ptr_, mojo::WrapPlatformFile(shortcut_handle.Take()),
+          parser_, mojo::WrapPlatformFile(shortcut_handle.Take()),
           std::move(callback)));
 }
 
@@ -45,8 +45,9 @@ void SandboxedShortcutParser::FindAndParseChromeShortcutsInFoldersAsync(
     const std::vector<base::FilePath>& folders,
     const FilePathSet& chrome_exe_locations,
     ShortcutsParsingDoneCallback callback) {
-  base::PostTaskWithTraits(
-      FROM_HERE, {base::MayBlock(), base::WithBaseSyncPrimitives()},
+  base::PostTask(
+      FROM_HERE,
+      {base::ThreadPool(), base::MayBlock(), base::WithBaseSyncPrimitives()},
       base::BindOnce(
           &SandboxedShortcutParser::FindAndParseChromeShortcutsInFolders,
           base::Unretained(this), folders, chrome_exe_locations,

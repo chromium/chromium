@@ -16,7 +16,7 @@
 #include "base/bind.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "components/drive/service/dummy_drive_service.h"
@@ -420,7 +420,7 @@ class DriveUploaderTest : public testing::Test {
   void SetUp() override { ASSERT_TRUE(temp_dir_.CreateUniqueTempDir()); }
 
  protected:
-  base::test::ScopedTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
 };
 
@@ -438,7 +438,8 @@ TEST_F(DriveUploaderTest, UploadExisting0KB) {
 
   MockDriveServiceWithUploadExpectation mock_service(local_path, data.size());
   DriveUploader uploader(&mock_service,
-                         base::ThreadTaskRunnerHandle::Get().get(), nullptr);
+                         base::ThreadTaskRunnerHandle::Get().get(),
+                         mojo::NullRemote());
   std::vector<test_util::ProgressInfo> upload_progress_values;
   uploader.UploadExistingFile(
       kTestInitiateUploadResourceId, local_path, kTestMimeType,
@@ -471,7 +472,8 @@ TEST_F(DriveUploaderTest, UploadExisting512KB) {
 
   MockDriveServiceWithUploadExpectation mock_service(local_path, data.size());
   DriveUploader uploader(&mock_service,
-                         base::ThreadTaskRunnerHandle::Get().get(), nullptr);
+                         base::ThreadTaskRunnerHandle::Get().get(),
+                         mojo::NullRemote());
   std::vector<test_util::ProgressInfo> upload_progress_values;
   uploader.UploadExistingFile(
       kTestInitiateUploadResourceId, local_path, kTestMimeType,
@@ -506,7 +508,8 @@ TEST_F(DriveUploaderTest, UploadExisting2MB) {
 
   MockDriveServiceWithUploadExpectation mock_service(local_path, data.size());
   DriveUploader uploader(&mock_service,
-                         base::ThreadTaskRunnerHandle::Get().get(), nullptr);
+                         base::ThreadTaskRunnerHandle::Get().get(),
+                         mojo::NullRemote());
   std::vector<test_util::ProgressInfo> upload_progress_values;
   uploader.UploadExistingFile(
       kTestInitiateUploadResourceId, local_path, kTestMimeType,
@@ -541,7 +544,8 @@ TEST_F(DriveUploaderTest, InitiateUploadFail) {
 
   MockDriveServiceNoConnectionAtInitiate mock_service;
   DriveUploader uploader(&mock_service,
-                         base::ThreadTaskRunnerHandle::Get().get(), nullptr);
+                         base::ThreadTaskRunnerHandle::Get().get(),
+                         mojo::NullRemote());
   uploader.UploadExistingFile(
       kTestInitiateUploadResourceId, local_path, kTestMimeType,
       UploadExistingFileOptions(),
@@ -566,7 +570,8 @@ TEST_F(DriveUploaderTest, MultipartUploadFail) {
 
   MockDriveServiceNoConnectionAtInitiate mock_service;
   DriveUploader uploader(&mock_service,
-                         base::ThreadTaskRunnerHandle::Get().get(), nullptr);
+                         base::ThreadTaskRunnerHandle::Get().get(),
+                         mojo::NullRemote());
   uploader.UploadExistingFile(
       kTestInitiateUploadResourceId, local_path, kTestMimeType,
       UploadExistingFileOptions(),
@@ -591,7 +596,8 @@ TEST_F(DriveUploaderTest, InitiateUploadNoConflict) {
 
   MockDriveServiceWithUploadExpectation mock_service(local_path, data.size());
   DriveUploader uploader(&mock_service,
-                         base::ThreadTaskRunnerHandle::Get().get(), nullptr);
+                         base::ThreadTaskRunnerHandle::Get().get(),
+                         mojo::NullRemote());
   UploadExistingFileOptions options;
   options.etag = kTestETag;
   uploader.UploadExistingFile(kTestInitiateUploadResourceId,
@@ -620,7 +626,8 @@ TEST_F(DriveUploaderTest, MultipartUploadConflict) {
 
   MockDriveServiceWithUploadExpectation mock_service(local_path, data.size());
   DriveUploader uploader(&mock_service,
-                         base::ThreadTaskRunnerHandle::Get().get(), nullptr);
+                         base::ThreadTaskRunnerHandle::Get().get(),
+                         mojo::NullRemote());
   UploadExistingFileOptions options;
   options.etag = kDestinationETag;
   uploader.UploadExistingFile(kTestInitiateUploadResourceId,
@@ -649,7 +656,8 @@ TEST_F(DriveUploaderTest, InitiateUploadConflict) {
 
   MockDriveServiceWithUploadExpectation mock_service(local_path, data.size());
   DriveUploader uploader(&mock_service,
-                         base::ThreadTaskRunnerHandle::Get().get(), nullptr);
+                         base::ThreadTaskRunnerHandle::Get().get(),
+                         mojo::NullRemote());
   UploadExistingFileOptions options;
   options.etag = kDestinationETag;
   uploader.UploadExistingFile(
@@ -674,7 +682,8 @@ TEST_F(DriveUploaderTest, ResumeUploadFail) {
 
   MockDriveServiceNoConnectionAtResume mock_service;
   DriveUploader uploader(&mock_service,
-                         base::ThreadTaskRunnerHandle::Get().get(), nullptr);
+                         base::ThreadTaskRunnerHandle::Get().get(),
+                         mojo::NullRemote());
   uploader.UploadExistingFile(
       kTestInitiateUploadResourceId, local_path, kTestMimeType,
       UploadExistingFileOptions(),
@@ -698,7 +707,8 @@ TEST_F(DriveUploaderTest, GetUploadStatusFail) {
 
   MockDriveServiceNoConnectionAtGetUploadStatus mock_service;
   DriveUploader uploader(&mock_service,
-                         base::ThreadTaskRunnerHandle::Get().get(), nullptr);
+                         base::ThreadTaskRunnerHandle::Get().get(),
+                         mojo::NullRemote());
   uploader.ResumeUploadFile(GURL(kTestUploadExistingFileURL),
                             local_path,
                             kTestMimeType,
@@ -717,7 +727,8 @@ TEST_F(DriveUploaderTest, NonExistingSourceFile) {
   std::unique_ptr<FileResource> entry;
 
   DriveUploader uploader(nullptr,  // nullptr, the service won't be used.
-                         base::ThreadTaskRunnerHandle::Get().get(), nullptr);
+                         base::ThreadTaskRunnerHandle::Get().get(),
+                         mojo::NullRemote());
   uploader.UploadExistingFile(
       kTestInitiateUploadResourceId,
       temp_dir_.GetPath().AppendASCII("_this_path_should_not_exist_"),
@@ -743,7 +754,8 @@ TEST_F(DriveUploaderTest, ResumeUpload) {
 
   MockDriveServiceWithUploadExpectation mock_service(local_path, data.size());
   DriveUploader uploader(&mock_service,
-                         base::ThreadTaskRunnerHandle::Get().get(), nullptr);
+                         base::ThreadTaskRunnerHandle::Get().get(),
+                         mojo::NullRemote());
   // Emulate the situation that the only first part is successfully uploaded,
   // but not the latter half.
   mock_service.set_received_bytes(512 * 1024);
@@ -868,7 +880,7 @@ TEST_F(DriveUploaderTest, BatchProcessing) {
   // Prepare test target.
   MockDriveServiceForBatchProcessing service;
   DriveUploader uploader(&service, base::ThreadTaskRunnerHandle::Get().get(),
-                         nullptr);
+                         mojo::NullRemote());
 
   struct {
     DriveApiErrorCode error;
@@ -924,7 +936,7 @@ TEST_F(DriveUploaderTest, BatchProcessingWithError) {
   // Prepare test target.
   MockDriveServiceForBatchProcessing service;
   DriveUploader uploader(&service, base::ThreadTaskRunnerHandle::Get().get(),
-                         nullptr);
+                         mojo::NullRemote());
 
   struct {
     DriveApiErrorCode error;

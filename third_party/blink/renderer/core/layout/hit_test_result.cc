@@ -46,8 +46,6 @@
 
 namespace blink {
 
-using namespace html_names;
-
 HitTestResult::HitTestResult()
     : hit_test_request_(HitTestRequest::kReadOnly | HitTestRequest::kActive),
       cacheable_(true),
@@ -64,6 +62,7 @@ HitTestResult::HitTestResult(const HitTestResult& other)
     : hit_test_request_(other.hit_test_request_),
       cacheable_(other.cacheable_),
       inner_node_(other.InnerNode()),
+      inert_node_(other.InertNode()),
       inner_element_(other.InnerElement()),
       inner_possibly_pseudo_node_(other.inner_possibly_pseudo_node_),
       point_in_inner_node_frame_(other.point_in_inner_node_frame_),
@@ -90,7 +89,7 @@ HitTestResult& HitTestResult::operator=(const HitTestResult& other) {
 
 bool HitTestResult::EqualForCacheability(const HitTestResult& other) const {
   return hit_test_request_.EqualForCacheability(other.hit_test_request_) &&
-         inner_node_ == other.InnerNode() &&
+         inner_node_ == other.InnerNode() && inert_node_ == other.InertNode() &&
          inner_element_ == other.InnerElement() &&
          inner_possibly_pseudo_node_ == other.InnerPossiblyPseudoNode() &&
          point_in_inner_node_frame_ == other.point_in_inner_node_frame_ &&
@@ -107,6 +106,7 @@ void HitTestResult::CacheValues(const HitTestResult& other) {
 
 void HitTestResult::PopulateFromCachedResult(const HitTestResult& other) {
   inner_node_ = other.InnerNode();
+  inert_node_ = other.InertNode();
   inner_element_ = other.InnerElement();
   inner_possibly_pseudo_node_ = other.InnerPossiblyPseudoNode();
   point_in_inner_node_frame_ = other.point_in_inner_node_frame_;
@@ -126,6 +126,7 @@ void HitTestResult::PopulateFromCachedResult(const HitTestResult& other) {
 
 void HitTestResult::Trace(blink::Visitor* visitor) {
   visitor->Trace(inner_node_);
+  visitor->Trace(inert_node_);
   visitor->Trace(inner_element_);
   visitor->Trace(inner_possibly_pseudo_node_);
   visitor->Trace(inner_url_element_);
@@ -175,7 +176,7 @@ void HitTestResult::SetToShadowHostIfInRestrictedShadowRoot() {
 
 HTMLAreaElement* HitTestResult::ImageAreaForImage() const {
   DCHECK(inner_node_);
-  HTMLImageElement* image_element = ToHTMLImageElementOrNull(inner_node_);
+  HTMLImageElement* image_element = ToHTMLImageElementOrNull(inner_node_.Get());
   if (!image_element && inner_node_->IsInShadowTree()) {
     if (inner_node_->ContainingShadowRoot()->IsUserAgent()) {
       image_element = ToHTMLImageElementOrNull(inner_node_->OwnerShadowHost());
@@ -187,7 +188,7 @@ HTMLAreaElement* HitTestResult::ImageAreaForImage() const {
     return nullptr;
 
   HTMLMapElement* map = image_element->GetTreeScope().GetImageMap(
-      image_element->FastGetAttribute(kUsemapAttr));
+      image_element->FastGetAttribute(html_names::kUsemapAttr));
   if (!map)
     return nullptr;
 
@@ -201,18 +202,43 @@ void HitTestResult::SetInnerNode(Node* n) {
     inner_element_ = nullptr;
     return;
   }
+
+  if (RuntimeEnabledFeatures::InertAttributeEnabled()) {
+    if (GetHitTestRequest().RetargetForInert()) {
+      if (n->IsInert()) {
+        if (!inert_node_)
+          inert_node_ = n;
+
+        return;
+      }
+
+      if (inert_node_ && n != inert_node_ &&
+          !n->IsShadowIncludingInclusiveAncestorOf(*inert_node_)) {
+        return;
+      }
+    }
+  }
+
   inner_possibly_pseudo_node_ = n;
-  if (n->IsPseudoElement())
-    n = ToPseudoElement(n)->InnerNodeForHitTesting();
+  if (auto* pseudo_element = DynamicTo<PseudoElement>(n))
+    n = pseudo_element->InnerNodeForHitTesting();
   inner_node_ = n;
   if (HTMLAreaElement* area = ImageAreaForImage()) {
     inner_node_ = area;
     inner_possibly_pseudo_node_ = area;
   }
-  if (inner_node_->IsElementNode())
-    inner_element_ = ToElement(inner_node_);
+  if (auto* element = DynamicTo<Element>(inner_node_.Get()))
+    inner_element_ = element;
   else
     inner_element_ = FlatTreeTraversal::ParentElement(*inner_node_);
+}
+
+void HitTestResult::SetInertNode(Node* n) {
+  // Don't overwrite an existing value for inert_node_
+  if (inert_node_)
+    DCHECK(n == inert_node_);
+
+  inert_node_ = n;
 }
 
 void HitTestResult::SetURLElement(Element* n) {
@@ -247,8 +273,8 @@ String HitTestResult::Title(TextDirection& dir) const {
     inner_node_->UpdateDistributionForFlatTreeTraversal();
   for (Node* title_node = inner_node_.Get(); title_node;
        title_node = FlatTreeTraversal::Parent(*title_node)) {
-    if (title_node->IsElementNode()) {
-      String title = ToElement(title_node)->title();
+    if (auto* element = DynamicTo<Element>(title_node)) {
+      String title = element->title();
       if (!title.IsNull()) {
         if (LayoutObject* layout_object = title_node->GetLayoutObject())
           dir = layout_object->StyleRef().Direction();
@@ -265,7 +291,7 @@ const AtomicString& HitTestResult::AltDisplayString() const {
     return g_null_atom;
 
   if (auto* image = ToHTMLImageElementOrNull(*inner_node_or_image_map_image))
-    return image->getAttribute(kAltAttr);
+    return image->FastGetAttribute(html_names::kAltAttr);
 
   if (auto* input = ToHTMLInputElementOrNull(*inner_node_or_image_map_image))
     return input->Alt();
@@ -312,13 +338,13 @@ KURL HitTestResult::AbsoluteImageURL() const {
       (IsHTMLInputElement(*inner_node_or_image_map_image) &&
        ToHTMLInputElement(inner_node_or_image_map_image)->type() ==
            input_type_names::kImage))
-    url_string = ToElement(*inner_node_or_image_map_image).ImageSourceURL();
+    url_string = To<Element>(*inner_node_or_image_map_image).ImageSourceURL();
   else if ((inner_node_or_image_map_image->GetLayoutObject() &&
             inner_node_or_image_map_image->GetLayoutObject()->IsImage()) &&
            (IsHTMLEmbedElement(*inner_node_or_image_map_image) ||
             IsHTMLObjectElement(*inner_node_or_image_map_image) ||
             IsSVGImageElement(*inner_node_or_image_map_image)))
-    url_string = ToElement(*inner_node_or_image_map_image).ImageSourceURL();
+    url_string = To<Element>(*inner_node_or_image_map_image).ImageSourceURL();
   if (url_string.IsEmpty())
     return KURL();
 
@@ -392,7 +418,11 @@ bool HitTestResult::IsContentEditable() const {
 ListBasedHitTestBehavior HitTestResult::AddNodeToListBasedTestResult(
     Node* node,
     const HitTestLocation& location,
-    const LayoutRect& rect) {
+    const PhysicalRect& rect) {
+  // If we are in the process of retargeting for `inert`, continue.
+  if (GetHitTestRequest().RetargetForInert() && InertNode() && !InnerNode())
+    return kContinueHitTesting;
+
   // If not a list-based test, stop testing because the hit has been found.
   if (!GetHitTestRequest().ListBased())
     return kStopHitTesting;
@@ -413,6 +443,10 @@ ListBasedHitTestBehavior HitTestResult::AddNodeToListBasedTestResult(
     Node* node,
     const HitTestLocation& location,
     const Region& region) {
+  // If we are in the process of retargeting for `inert`, continue.
+  if (GetHitTestRequest().RetargetForInert() && InertNode() && !InnerNode())
+    return kContinueHitTesting;
+
   // If not a list-based test, stop testing because the hit has been found.
   if (!GetHitTestRequest().ListBased())
     return kStopHitTesting;
@@ -447,6 +481,9 @@ void HitTestResult::Append(const HitTestResult& other) {
     canvas_region_id_ = other.CanvasRegionId();
   }
 
+  if (!inert_node_ && other.InertNode())
+    SetInertNode(other.InertNode());
+
   if (other.list_based_test_result_) {
     NodeSet& set = MutableListBasedTestResult();
     for (NodeSet::const_iterator it = other.list_based_test_result_->begin(),
@@ -470,7 +507,7 @@ HitTestResult::NodeSet& HitTestResult::MutableListBasedTestResult() {
 
 HitTestLocation HitTestResult::ResolveRectBasedTest(
     Node* resolved_inner_node,
-    const LayoutPoint& resolved_point_in_main_frame) {
+    const PhysicalOffset& resolved_point_in_main_frame) {
   point_in_inner_node_frame_ = resolved_point_in_main_frame;
   SetInnerNode(nullptr);
   list_based_test_result_ = nullptr;
@@ -481,7 +518,7 @@ HitTestLocation HitTestResult::ResolveRectBasedTest(
   // never use it so shouldn't bother with the cost of computing it.
   DCHECK(resolved_inner_node);
   if (auto* layout_object = resolved_inner_node->GetLayoutObject())
-    layout_object->UpdateHitTestResult(*this, LayoutPoint());
+    layout_object->UpdateHitTestResult(*this, PhysicalOffset());
 
   return HitTestLocation(resolved_point_in_main_frame);
 }
@@ -491,9 +528,9 @@ Node* HitTestResult::InnerNodeOrImageMapImage() const {
     return nullptr;
 
   HTMLImageElement* image_map_image_element = nullptr;
-  if (auto* area = ToHTMLAreaElementOrNull(inner_node_))
+  if (auto* area = DynamicTo<HTMLAreaElement>(inner_node_.Get()))
     image_map_image_element = area->ImageElement();
-  else if (auto* map = ToHTMLMapElementOrNull(inner_node_))
+  else if (auto* map = DynamicTo<HTMLMapElement>(inner_node_.Get()))
     image_map_image_element = map->ImageElement();
 
   if (!image_map_image_element)

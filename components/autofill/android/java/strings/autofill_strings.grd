@@ -22,7 +22,7 @@
     <output filename="values-tl/autofill_strings.xml" lang="fil" type="android" />
     <output filename="values-fr/autofill_strings.xml" lang="fr" type="android" />
     <output filename="values-gu/autofill_strings.xml" lang="gu" type="android" />
-    <output filename="values-iw/autofill_strings.xml" lang="he" type="android" />
+    <output filename="values-iw/autofill_strings.xml" lang="iw" type="android" />
     <output filename="values-hi/autofill_strings.xml" lang="hi" type="android" />
     <output filename="values-hr/autofill_strings.xml" lang="hr" type="android" />
     <output filename="values-hu/autofill_strings.xml" lang="hu" type="android" />

@@ -1,5 +1,0 @@
-overflow-y isn't a valid property for ::first-letter. We'd crash when extracting innerText, because the implementation expects that the first letter text is a direct child of the ::first-letter pseudo object. The paged overflow / multicol implementation would violate this assumption by inserting a flow thread object between the ::first-letter pseudo object and the actual text.
-
-PASS if no crash or assertion failure.
-
-x

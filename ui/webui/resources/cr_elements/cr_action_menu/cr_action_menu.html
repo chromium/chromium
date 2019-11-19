@@ -1,6 +1,8 @@
 <link rel="import" href="../../html/polymer.html">
 
 <link rel="import" href="../../html/assert.html">
+<link rel="import" href="../../html/cr.html">
+<link rel="import" href="../../html/cr/ui/focus_row.html">
 <link rel="import" href="../../html/cr/ui/focus_without_ink.html">
 <link rel="import" href="../../html/util.html">
 <link rel="import" href="../shared_vars_css.html">
@@ -17,8 +19,6 @@
         min-width: 128px;
         outline: none;
         padding: 0;
-
-        @apply --cr-action-menu-dialog;
       }
 
       :host dialog::backdrop {
@@ -26,6 +26,7 @@
       }
 
       :host ::slotted(.dropdown-item) {
+        -webkit-tap-highlight-color: transparent;
         background: none;
         border: none;
         border-radius: 0;
@@ -49,7 +50,7 @@
       }
 
       :host ::slotted(.dropdown-item:not([disabled])) {
-        @apply --cr-actionable;
+        cursor: pointer;
       }
 
       :host ::slotted(.dropdown-item:focus) {
@@ -63,9 +64,9 @@
         padding: 8px 0;
       }
     </style>
-    <dialog id="dialog" tabindex="0" on-close="onNativeDialogClose_" role="menu"
-        aria-label$="[[ariaLabel]]">
-      <div class="item-wrapper" tabindex="-1">
+    <dialog id="dialog" on-close="onNativeDialogClose_"
+        role="application" aria-roledescription$="[[roleDescription]]">
+      <div id="wrapper" class="item-wrapper" role="menu" tabindex="-1">
         <slot id="contentNode"></slot>
       </div>
     </dialog>

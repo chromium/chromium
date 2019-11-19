@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_SERVICE_WORKER_RESPOND_WITH_OBSERVER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SERVICE_WORKER_RESPOND_WITH_OBSERVER_H_
 
-#include "third_party/blink/public/mojom/service_worker/service_worker_error_type.mojom-shared.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_error_type.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/execution_context/context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -25,28 +25,28 @@ class WaitUntilObserver;
 // each event should implement the procedure of the three behaviors by
 // overriding onResponseFulfilled, onResponseRejected and onNoResponse.
 class MODULES_EXPORT RespondWithObserver
-    : public GarbageCollectedFinalized<RespondWithObserver>,
-      public ContextLifecycleObserver {
+    : public GarbageCollected<RespondWithObserver>,
+      public ContextClient {
   USING_GARBAGE_COLLECTED_MIXIN(RespondWithObserver);
 
  public:
   virtual ~RespondWithObserver() = default;
 
-  void ContextDestroyed(ExecutionContext*) override;
-
   void WillDispatchEvent();
   void DidDispatchEvent(DispatchEventResult dispatch_result);
 
-  // The respondWith() observes the promise until the given promise is resolved
-  // or rejected and then delays calling ServiceWorkerGlobalScopeClient::
-  // didHandle*Event() in order to notify the result to the client.
+  // Observes the given promise and calls OnResponseRejected() or
+  // OnResponseFulfilled() when it settles. It also keeps the event alive by
+  // telling the event's WaitUntilObserver to observe the promise. The result of
+  // RespondWith() is therefore reported back before the event finishes.
   void RespondWith(ScriptState*, ScriptPromise, ExceptionState&);
 
   // Called when the respondWith() promise was rejected.
   virtual void OnResponseRejected(mojom::ServiceWorkerResponseError) = 0;
 
   // Called when the respondWith() promise was fulfilled.
-  virtual void OnResponseFulfilled(const ScriptValue&,
+  virtual void OnResponseFulfilled(ScriptState*,
+                                   const ScriptValue&,
                                    ExceptionState::ContextType,
                                    const char* interface_name,
                                    const char* property_name) = 0;
@@ -59,14 +59,15 @@ class MODULES_EXPORT RespondWithObserver
  protected:
   RespondWithObserver(ExecutionContext*, int event_id, WaitUntilObserver*);
   const int event_id_;
-  TimeTicks event_dispatch_time_;
+  base::TimeTicks event_dispatch_time_;
 
  private:
   class ThenFunction;
 
   void ResponseWasRejected(mojom::ServiceWorkerResponseError,
                            const ScriptValue&);
-  void ResponseWasFulfilled(ExceptionState::ContextType,
+  void ResponseWasFulfilled(ScriptState* state,
+                            ExceptionState::ContextType,
                             const char* interface_name,
                             const char* property_name,
                             const ScriptValue&);

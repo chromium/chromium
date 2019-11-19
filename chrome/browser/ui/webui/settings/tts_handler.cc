@@ -11,6 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/speech/extension_api/tts_engine_extension_api.h"
 #include "chrome/browser/speech/extension_api/tts_engine_extension_observer.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/tts_controller.h"
@@ -24,7 +25,7 @@
 #include "ui/base/l10n/l10n_util.h"
 
 namespace settings {
-TtsHandler::TtsHandler() : weak_factory_(this) {}
+TtsHandler::TtsHandler() {}
 
 TtsHandler::~TtsHandler() {
   content::TtsController::GetInstance()->RemoveVoicesChangedDelegate(this);
@@ -65,7 +66,7 @@ void TtsHandler::HandleGetTtsExtensions(const base::ListValue* args) {
 
           extensions::OptionsPageInfo::GetOptionsPage(extension).spec());
     }
-    responses.GetList().push_back(std::move(response));
+    responses.Append(std::move(response));
   }
 
   FireWebUIListener("tts-extensions-updated", responses);
@@ -99,7 +100,7 @@ void TtsHandler::OnVoicesChanged() {
     response.SetString("fullLanguageCode", voice.lang);
     response.SetInteger("languageScore", language_score);
     response.SetString("extensionId", voice.engine_id);
-    responses.GetList().push_back(std::move(response));
+    responses.Append(std::move(response));
   }
   AllowJavascript();
   FireWebUIListener("all-voice-data-updated", responses);
@@ -138,18 +139,19 @@ void TtsHandler::HandlePreviewTtsVoice(const base::ListValue* args) {
   json->GetString("name", &name);
   json->GetString("extension", &extension_id);
 
-  content::TtsUtterance* utterance =
+  std::unique_ptr<content::TtsUtterance> utterance =
       content::TtsUtterance::Create((Profile::FromWebUI(web_ui())));
   utterance->SetText(text);
   utterance->SetVoiceName(name);
   utterance->SetEngineId(extension_id);
-  utterance->SetSrcUrl(GURL("chrome://settings/manageAccessibility/tts"));
+  utterance->SetSrcUrl(
+      GURL(chrome::GetOSSettingsUrl("manageAccessibility/tts")));
   utterance->SetEventDelegate(this);
   content::TtsController::GetInstance()->Stop();
 
   base::Value result(true /* preview started */);
   FireWebUIListener("tts-preview-state-changed", result);
-  content::TtsController::GetInstance()->SpeakOrEnqueue(utterance);
+  content::TtsController::GetInstance()->SpeakOrEnqueue(std::move(utterance));
 }
 
 void TtsHandler::RegisterMessages() {

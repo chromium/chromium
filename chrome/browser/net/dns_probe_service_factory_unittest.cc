@@ -17,11 +17,12 @@
 #include "chrome/browser/net/dns_probe_service.h"
 #include "chrome/browser/net/dns_probe_test_util.h"
 #include "components/error_page/common/net_error_info.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::RunLoop;
-using content::TestBrowserThreadBundle;
+using content::BrowserTaskEnvironment;
 using error_page::DnsProbeStatus;
 
 namespace chrome_browser_net {
@@ -45,11 +46,13 @@ class DnsProbeServiceTest : public testing::Test {
     return network_context_.get();
   }
 
-  network::mojom::DnsConfigChangeManagerPtr GetDnsConfigChangeManager() {
-    network::mojom::DnsConfigChangeManagerPtr dns_config_change_manager_ptr;
+  mojo::Remote<network::mojom::DnsConfigChangeManager>
+  GetDnsConfigChangeManager() {
+    mojo::Remote<network::mojom::DnsConfigChangeManager>
+        dns_config_change_manager_remote;
     dns_config_change_manager_ = std::make_unique<FakeDnsConfigChangeManager>(
-        mojo::MakeRequest(&dns_config_change_manager_ptr));
-    return dns_config_change_manager_ptr;
+        dns_config_change_manager_remote.BindNewPipeAndPassReceiver());
+    return dns_config_change_manager_remote;
   }
 
   void ConfigureTest(
@@ -98,7 +101,7 @@ class DnsProbeServiceTest : public testing::Test {
   }
 
   base::SimpleTestTickClock tick_clock_;
-  TestBrowserThreadBundle bundle_;
+  BrowserTaskEnvironment task_environment_;
   std::unique_ptr<FakeHostResolverNetworkContext> network_context_;
   std::unique_ptr<FakeDnsConfigChangeManager> dns_config_change_manager_;
   std::unique_ptr<DnsProbeService> service_;

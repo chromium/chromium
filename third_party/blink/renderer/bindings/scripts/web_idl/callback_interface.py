@@ -1,48 +1,103 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from .extended_attribute import ExtendedAttributeList
-from .utilities import assert_no_extra_args
+from .code_generator_info import CodeGeneratorInfo
+from .composition_parts import WithCodeGeneratorInfo
+from .composition_parts import WithComponent
+from .composition_parts import WithDebugInfo
+from .composition_parts import WithExtendedAttributes
+from .constant import Constant
+from .operation import Operation
+from .operation import OperationGroup
+
+from .ir_map import IRMap
+from .make_copy import make_copy
+from .user_defined_type import UserDefinedType
 
 
-# https://heycam.github.io/webidl/#idl-interfaces
-class CallbackInterface(object):
+class CallbackInterface(UserDefinedType, WithExtendedAttributes,
+                        WithCodeGeneratorInfo, WithComponent, WithDebugInfo):
+    """https://heycam.github.io/webidl/#idl-interfaces"""
 
-    def __init__(self, **kwargs):
-        self._identifier = kwargs.pop('identifier')
-        self._attributes = tuple(kwargs.pop('attributes', []))
-        self._operations = tuple(kwargs.pop('operations', []))
-        self._constants = tuple(kwargs.pop('constants', []))
-        self._inherited_interface_name = kwargs.pop('inherited_interface_name', None)
-        self._extended_attribute_list = kwargs.pop('extended_attribute_list', ExtendedAttributeList())
-        assert_no_extra_args(kwargs)
+    class IR(IRMap.IR, WithExtendedAttributes, WithCodeGeneratorInfo,
+             WithComponent, WithDebugInfo):
+        def __init__(self,
+                     identifier,
+                     constants=None,
+                     operations=None,
+                     extended_attributes=None,
+                     component=None,
+                     debug_info=None):
+            if constants is None:
+                constants = []
+            if operations is None:
+                operations = []
+            assert isinstance(constants, (list, tuple))
+            assert isinstance(operations, (list, tuple))
+            assert all(
+                isinstance(constant, Constant.IR) for constant in constants)
+            assert all(
+                isinstance(operation, Operation.IR)
+                for operation in operations)
 
-        if any(attribute.is_static for attribute in self.attributes):
-            raise ValueError('Static attributes must not be defined on a callback interface')
-        if any(operation.is_static for operation in self.operations):
-            raise ValueError('Static operations must not be defined on a callback interface')
+            IRMap.IR.__init__(
+                self,
+                identifier=identifier,
+                kind=IRMap.IR.Kind.CALLBACK_INTERFACE)
+            WithExtendedAttributes.__init__(self, extended_attributes)
+            WithCodeGeneratorInfo.__init__(self)
+            WithComponent.__init__(self, component)
+            WithDebugInfo.__init__(self, debug_info)
 
-    @property
-    def identifier(self):
-        return self._identifier
+            self.attributes = []
+            self.constants = constants
+            self.operations = operations
+            self.operation_groups = []
+            self.constructors = []
+            self.constructor_groups = []
 
-    @property
-    def attributes(self):
-        return self._attributes
+    def __init__(self, ir):
+        assert isinstance(ir, CallbackInterface.IR)
 
-    @property
-    def operations(self):
-        return self._operations
+        ir = make_copy(ir)
+        UserDefinedType.__init__(self, ir.identifier)
+        WithExtendedAttributes.__init__(self, ir.extended_attributes)
+        WithCodeGeneratorInfo.__init__(
+            self, CodeGeneratorInfo(ir.code_generator_info))
+        WithComponent.__init__(self, components=ir.components)
+        WithDebugInfo.__init__(self, ir.debug_info)
+        self._constants = tuple([
+            Constant(constant_ir, owner=self) for constant_ir in ir.constants
+        ])
+        self._operations = tuple([
+            Operation(operation_ir, owner=self)
+            for operation_ir in ir.operations
+        ])
+        self._operation_groups = tuple([
+            OperationGroup(
+                operation_group_ir,
+                filter(lambda x: x.identifier == operation_group_ir.identifier,
+                       self._operations),
+                owner=self) for operation_group_ir in ir.operation_groups
+        ])
 
     @property
     def constants(self):
+        """Returns constants."""
         return self._constants
 
     @property
-    def inherited_interface_name(self):
-        return self._inherited_interface_name
+    def operations(self):
+        """Returns operations."""
+        return self._operations
 
     @property
-    def extended_attribute_list(self):
-        return self._extended_attribute_list
+    def operation_groups(self):
+        """Returns groups of overloaded operations."""
+        return self._operation_groups
+
+    # UserDefinedType overrides
+    @property
+    def is_callback_interface(self):
+        return True

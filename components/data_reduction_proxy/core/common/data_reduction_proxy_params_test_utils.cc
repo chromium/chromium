@@ -10,13 +10,12 @@ namespace data_reduction_proxy {
 
 TestDataReductionProxyParams::TestDataReductionProxyParams()
     : override_non_secure_proxies_(false) {
-  proxies_for_http_.push_back(DataReductionProxyServer(
-      net::ProxyServer::FromURI("origin.net:80", net::ProxyServer::SCHEME_HTTP),
-      ProxyServer::CORE));
-  proxies_for_http_.push_back(DataReductionProxyServer(
-      net::ProxyServer::FromURI("fallback.net:80",
-                                net::ProxyServer::SCHEME_HTTP),
-      ProxyServer::CORE));
+  proxies_for_http_.push_back(
+      DataReductionProxyServer(net::ProxyServer::FromURI(
+          "origin.net:80", net::ProxyServer::SCHEME_HTTP)));
+  proxies_for_http_.push_back(
+      DataReductionProxyServer(net::ProxyServer::FromURI(
+          "fallback.net:80", net::ProxyServer::SCHEME_HTTP)));
   }
 
   TestDataReductionProxyParams::~TestDataReductionProxyParams() {}
@@ -35,10 +34,9 @@ TestDataReductionProxyParams::TestDataReductionProxyParams()
     proxies_for_http_.clear();
     for (const auto& ps : proxies) {
       if (override_non_secure_proxies_ && ps.proxy_server().is_https()) {
-        proxies_for_http_.push_back(DataReductionProxyServer(
-            net::ProxyServer::FromURI("origin.net:80",
-                                      net::ProxyServer::SCHEME_HTTP),
-            ProxyServer::CORE));
+        proxies_for_http_.push_back(
+            DataReductionProxyServer(net::ProxyServer::FromURI(
+                "origin.net:80", net::ProxyServer::SCHEME_HTTP)));
       } else {
         proxies_for_http_.push_back(ps);
       }
@@ -50,6 +48,15 @@ TestDataReductionProxyParams::TestDataReductionProxyParams()
     if (override_non_secure_proxies_)
       return proxies_for_http_;
     return DataReductionProxyParams::proxies_for_http();
+}
+
+net::ProxyList TestDataReductionProxyParams::GetAllConfiguredProxies() const {
+  return configured_proxies_;
+}
+
+void TestDataReductionProxyParams::SetConfiguredProxies(
+    const net::ProxyList& configured_proxies) {
+  configured_proxies_ = configured_proxies;
 }
 
 }  // namespace data_reduction_proxy

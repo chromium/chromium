@@ -25,8 +25,10 @@ class CONTENT_EXPORT TouchEmulatorClient {
   virtual void ForwardEmulatedTouchEvent(const blink::WebTouchEvent& event,
                                          RenderWidgetHostViewBase* target) = 0;
   virtual void SetCursor(const WebCursor& cursor) = 0;
+  // |target| is the view associated with the corresponding input event.
   virtual void ShowContextMenuAtPoint(const gfx::Point& point,
-                                      const ui::MenuSourceType source_type) = 0;
+                                      const ui::MenuSourceType source_type,
+                                      RenderWidgetHostViewBase* target) = 0;
 };
 
 }  // namespace content

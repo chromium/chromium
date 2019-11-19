@@ -16,6 +16,7 @@
 #include "components/viz/common/quads/yuv_video_draw_quad.h"
 #include "media/base/video_frame.h"
 #include "media/renderers/video_resource_updater.h"
+#include "third_party/blink/public/platform/web_vector.h"
 
 namespace blink {
 
@@ -110,13 +111,15 @@ void VideoFrameResourceProvider::AppendQuads(
 
   gfx::Rect visible_quad_rect = quad_rect;
   gfx::Rect clip_rect;
+  gfx::RRectF rounded_corner_bounds;
   bool is_clipped = false;
   float draw_opacity = 1.0f;
   int sorting_context_id = 0;
 
-  resource_updater_->AppendQuads(
-      render_pass, std::move(frame), transform, quad_rect, visible_quad_rect,
-      clip_rect, is_clipped, is_opaque, draw_opacity, sorting_context_id);
+  resource_updater_->AppendQuads(render_pass, std::move(frame), transform,
+                                 quad_rect, visible_quad_rect,
+                                 rounded_corner_bounds, clip_rect, is_clipped,
+                                 is_opaque, draw_opacity, sorting_context_id);
 }
 
 void VideoFrameResourceProvider::ReleaseFrameResources() {
@@ -124,15 +127,19 @@ void VideoFrameResourceProvider::ReleaseFrameResources() {
 }
 
 void VideoFrameResourceProvider::PrepareSendToParent(
-    const std::vector<viz::ResourceId>& resource_ids,
-    std::vector<viz::TransferableResource>* transferable_resources) {
-  resource_provider_->PrepareSendToParent(resource_ids, transferable_resources,
-                                          context_provider_);
+    const WebVector<viz::ResourceId>& resource_ids,
+    WebVector<viz::TransferableResource>* transferable_resources) {
+  std::vector<viz::TransferableResource> resources_list;
+  resource_provider_->PrepareSendToParent(
+      const_cast<WebVector<viz::ResourceId>&>(resource_ids).ReleaseVector(),
+      &resources_list, context_provider_);
+  *transferable_resources = std::move(resources_list);
 }
 
 void VideoFrameResourceProvider::ReceiveReturnsFromParent(
-    const std::vector<viz::ReturnedResource>& transferable_resources) {
-  resource_provider_->ReceiveReturnsFromParent(transferable_resources);
+    const Vector<viz::ReturnedResource>& transferable_resources) {
+  resource_provider_->ReceiveReturnsFromParent(
+      WebVector<viz::ReturnedResource>(transferable_resources).ReleaseVector());
 }
 
 }  // namespace blink

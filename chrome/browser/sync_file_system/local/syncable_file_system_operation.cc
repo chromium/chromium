@@ -16,11 +16,11 @@
 #include "content/public/browser/browser_thread.h"
 #include "net/url_request/url_request.h"
 #include "storage/browser/blob/shareable_file_reference.h"
-#include "storage/browser/fileapi/file_system_context.h"
-#include "storage/browser/fileapi/file_system_operation.h"
-#include "storage/browser/fileapi/file_system_operation_context.h"
-#include "storage/browser/fileapi/file_system_url.h"
-#include "storage/browser/fileapi/file_writer_delegate.h"
+#include "storage/browser/file_system/file_system_context.h"
+#include "storage/browser/file_system/file_system_operation.h"
+#include "storage/browser/file_system/file_system_operation_context.h"
+#include "storage/browser/file_system/file_system_url.h"
+#include "storage/browser/file_system/file_writer_delegate.h"
 
 using storage::FileSystemURL;
 
@@ -359,7 +359,7 @@ SyncableFileSystemOperation::SyncableFileSystemOperation(
     const FileSystemURL& url,
     storage::FileSystemContext* file_system_context,
     std::unique_ptr<storage::FileSystemOperationContext> operation_context)
-    : url_(url), weak_factory_(this) {
+    : url_(url) {
   DCHECK(file_system_context);
   SyncFileSystemBackend* backend =
       SyncFileSystemBackend::GetBackend(file_system_context);

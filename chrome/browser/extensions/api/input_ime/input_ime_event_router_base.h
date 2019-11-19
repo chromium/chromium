@@ -22,7 +22,7 @@ class InputImeEventRouterBase {
   virtual ~InputImeEventRouterBase();
 
   // Gets the input method engine if the extension is active.
-  virtual input_method::InputMethodEngineBase* GetActiveEngine(
+  virtual input_method::InputMethodEngineBase* GetEngineIfActive(
       const std::string& extension_id) = 0;
 
   Profile* GetProfile() const { return profile_; }

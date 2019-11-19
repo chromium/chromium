@@ -1,0 +1,10 @@
+<html>
+  <body>
+    <script>
+      var bear = document.createElement('video');
+      bear.onerror = function() { document.title = 'error'; }
+      bear.onloadeddata = function() { document.title = 'loaded'; }
+      bear.src = 'bear-vp8a.webm';
+    </script>
+  </body>
+</html>

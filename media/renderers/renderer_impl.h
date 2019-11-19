@@ -55,10 +55,9 @@ class MEDIA_EXPORT RendererImpl : public Renderer {
   // Renderer implementation.
   void Initialize(MediaResource* media_resource,
                   RendererClient* client,
-                  const PipelineStatusCB& init_cb) final;
-  void SetCdm(CdmContext* cdm_context,
-              const CdmAttachedCB& cdm_attached_cb) final;
-  void Flush(const base::Closure& flush_cb) final;
+                  PipelineStatusCallback init_cb) final;
+  void SetCdm(CdmContext* cdm_context, CdmAttachedCB cdm_attached_cb) final;
+  void Flush(base::OnceClosure flush_cb) final;
   void StartPlayingFrom(base::TimeDelta time) final;
   void SetPlaybackRate(double playback_rate) final;
   void SetVolume(float volume) final;
@@ -166,7 +165,8 @@ class MEDIA_EXPORT RendererImpl : public Renderer {
   //   - A non-waiting to waiting transition indicates underflow has occurred
   //     and PausePlayback() should be called
   void OnBufferingStateChange(DemuxerStream::Type type,
-                              BufferingState new_buffering_state);
+                              BufferingState new_buffering_state,
+                              BufferingStateChangeReason reason);
 
   // Handles the buffering notifications that we might get while an audio or a
   // video stream is being restarted. In those cases we don't want to report
@@ -207,8 +207,8 @@ class MEDIA_EXPORT RendererImpl : public Renderer {
   RendererClient* client_;
 
   // Temporary callback used for Initialize() and Flush().
-  PipelineStatusCB init_cb_;
-  base::Closure flush_cb_;
+  PipelineStatusCallback init_cb_;
+  base::OnceClosure flush_cb_;
 
   std::unique_ptr<RendererClientInternal> audio_renderer_client_;
   std::unique_ptr<RendererClientInternal> video_renderer_client_;
@@ -262,7 +262,7 @@ class MEDIA_EXPORT RendererImpl : public Renderer {
   bool pending_video_track_change_ = false;
 
   base::WeakPtr<RendererImpl> weak_this_;
-  base::WeakPtrFactory<RendererImpl> weak_factory_;
+  base::WeakPtrFactory<RendererImpl> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(RendererImpl);
 };

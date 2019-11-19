@@ -1,0 +1,8 @@
+Layout test for WebKit bug 85581.
+
+This tests that the contents of a table do not overflow when the table contains an image with percentage height. For this test to pass, the blue rectangle should be entirely within the table border and/or you should see a 'PASS' message below.
+
+Height of table: 306
+Height of table contents: 280
+PASS: Table contents do not overflow outside of table border.
+

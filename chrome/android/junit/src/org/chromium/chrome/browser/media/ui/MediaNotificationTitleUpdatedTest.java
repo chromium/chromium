@@ -51,8 +51,10 @@ public class MediaNotificationTitleUpdatedTest extends MediaNotificationManagerT
 
         getManager().mThrottler.mManager = getManager();
         doCallRealMethod().when(getManager()).onServiceStarted(any(ListenerService.class));
-        doCallRealMethod().when(mMockAppHooks).startForegroundService(any(Intent.class));
-        mTabHolder = new MediaNotificationTestTabHolder(TAB_ID_1, "about:blank", "title1");
+        doCallRealMethod()
+                .when(mMockForegroundServiceUtils)
+                .startForegroundService(any(Intent.class));
+        mTabHolder = createMediaNotificationTestTabHolder(TAB_ID_1, "about:blank", "title1");
     }
 
     @Test
@@ -134,7 +136,7 @@ public class MediaNotificationTitleUpdatedTest extends MediaNotificationManagerT
         mTabHolder.simulateMediaSessionStateChanged(false, false);
 
         MediaNotificationTestTabHolder newTabHolder =
-                new MediaNotificationTestTabHolder(TAB_ID_2, "about:blank", "title2");
+                createMediaNotificationTestTabHolder(TAB_ID_2, "about:blank", "title2");
 
         newTabHolder.simulateMediaSessionStateChanged(true, false);
         newTabHolder.simulateTitleUpdated("title3");
@@ -158,7 +160,7 @@ public class MediaNotificationTitleUpdatedTest extends MediaNotificationManagerT
         assertEquals("title1", getDisplayedTitle());
 
         MediaNotificationTestTabHolder newTabHolder =
-                new MediaNotificationTestTabHolder(TAB_ID_2, "about:blank", "title2");
+                createMediaNotificationTestTabHolder(TAB_ID_2, "about:blank", "title2");
 
         newTabHolder.simulateMediaSessionStateChanged(true, false);
         newTabHolder.simulateTitleUpdated("title3");
@@ -184,7 +186,7 @@ public class MediaNotificationTitleUpdatedTest extends MediaNotificationManagerT
     }
 
     @Test
-    public void testMediaMetadataResetsAfterSameOriginNavigation() throws Throwable {
+    public void testMediaMetadataResetsAfterSameOriginNavigation() {
         mTabHolder.simulateNavigation("https://example.com/", false);
         mTabHolder.simulateMediaSessionStateChanged(true, false);
         mTabHolder.simulateMediaSessionMetadataChanged(new MediaMetadata("title2", "", ""));
@@ -197,7 +199,7 @@ public class MediaNotificationTitleUpdatedTest extends MediaNotificationManagerT
     }
 
     @Test
-    public void testMediaMetadataPersistsAfterSameDocumentNavigation() throws Throwable {
+    public void testMediaMetadataPersistsAfterSameDocumentNavigation() {
         mTabHolder.simulateNavigation("https://example.com/", false);
         mTabHolder.simulateMediaSessionStateChanged(true, false);
         mTabHolder.simulateMediaSessionMetadataChanged(new MediaMetadata("title2", "", ""));

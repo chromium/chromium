@@ -1,0 +1,10 @@
+This is a testharness.js-based test.
+PASS Property list-style-image value 'none' computes to 'none'
+PASS Property list-style-image value 'url("https://web-platform.test/")' computes to 'url("https://web-platform.test/")'
+PASS Property list-style-image value 'linear-gradient(to left bottom, red , blue )' computes to 'linear-gradient(to left bottom, rgb(255, 0, 0), rgb(0, 0, 255))'
+PASS Property list-style-image value 'radial-gradient(10px at 20px 30px, rgb(255, 0, 0), rgb(0, 0, 255))' computes to 'radial-gradient(10px at 20px 30px, rgb(255, 0, 0), rgb(0, 0, 255))'
+FAIL Property list-style-image value 'radial-gradient(circle calc(-0.5em + 10px) at calc(-1em + 10px) calc(-2em + 10px), rgb(255, 0, 0), rgb(0, 0, 255))' computes to 'radial-gradient(0px at -30px -70px, rgb(255, 0, 0), rgb(0, 0, 255))' assert_equals: expected "radial-gradient(0px at -30px -70px, rgb(255, 0, 0), rgb(0, 0, 255))" but got "radial-gradient(calc(-0.5em + 10px) at calc(-1em + 10px) calc(-2em + 10px), rgb(255, 0, 0), rgb(0, 0, 255))"
+FAIL Property list-style-image value 'radial-gradient(ellipse calc(-0.5em + 10px) calc(0.5em + 10px) at 20px 30px, rgb(255, 0, 0), rgb(0, 0, 255))' computes to 'radial-gradient(0px 30px at 20px 30px, rgb(255, 0, 0), rgb(0, 0, 255))' assert_equals: expected "radial-gradient(0px 30px at 20px 30px, rgb(255, 0, 0), rgb(0, 0, 255))" but got "radial-gradient(calc(-0.5em + 10px) calc(0.5em + 10px) at 20px 30px, rgb(255, 0, 0), rgb(0, 0, 255))"
+FAIL Property list-style-image value 'radial-gradient(ellipse calc(0.5em + 10px) calc(-0.5em + 10px) at 20px 30px, rgb(255, 0, 0), rgb(0, 0, 255))' computes to 'radial-gradient(30px 0px at 20px 30px, rgb(255, 0, 0), rgb(0, 0, 255))' assert_equals: expected "radial-gradient(30px 0px at 20px 30px, rgb(255, 0, 0), rgb(0, 0, 255))" but got "radial-gradient(calc(0.5em + 10px) calc(-0.5em + 10px) at 20px 30px, rgb(255, 0, 0), rgb(0, 0, 255))"
+Harness: the test ran to completion.
+

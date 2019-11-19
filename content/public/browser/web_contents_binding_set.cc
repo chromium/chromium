@@ -17,12 +17,14 @@ void WebContentsBindingSet::Binder::OnRequestForFrame(
   NOTREACHED();
 }
 
+void WebContentsBindingSet::Binder::CloseAllBindings() {
+  NOTREACHED();
+}
+
 WebContentsBindingSet::WebContentsBindingSet(WebContents* web_contents,
-                                             const std::string& interface_name,
-                                             std::unique_ptr<Binder> binder)
+                                             const std::string& interface_name)
     : remove_callback_(static_cast<WebContentsImpl*>(web_contents)
-                           ->AddBindingSet(interface_name, this)),
-      binder_(std::move(binder)) {}
+                           ->AddBindingSet(interface_name, this)) {}
 
 WebContentsBindingSet::~WebContentsBindingSet() {
   remove_callback_.Run();
@@ -37,20 +39,15 @@ WebContentsBindingSet* WebContentsBindingSet::GetForWebContents(
 }
 
 void WebContentsBindingSet::CloseAllBindings() {
-  binder_for_testing_.reset();
-  binder_.reset();
+  binder_->CloseAllBindings();
+  binder_ = nullptr;
 }
 
 void WebContentsBindingSet::OnRequestForFrame(
     RenderFrameHost* render_frame_host,
     mojo::ScopedInterfaceEndpointHandle handle) {
-  if (binder_for_testing_) {
-    binder_for_testing_->OnRequestForFrame(render_frame_host,
-                                           std::move(handle));
-    return;
-  }
-  DCHECK(binder_);
-  binder_->OnRequestForFrame(render_frame_host, std::move(handle));
+  if (binder_)
+    binder_->OnRequestForFrame(render_frame_host, std::move(handle));
 }
 
 }  // namespace content

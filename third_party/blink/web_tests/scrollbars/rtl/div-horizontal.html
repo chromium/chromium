@@ -16,7 +16,7 @@ test(function() {
     var outerRTL = document.getElementById("outer-rtl");
     var innerRTL = document.getElementById("inner-rtl");
     outerLTR.scrollLeft = 0;
-    outerRTL.scrollLeft = 0;
+    outerRTL.scrollLeft = -115;
 
     // Verify the widths of the outer RTL elements are the same as the widths of the outer LTR elements.
     assert_equals(outerLTR.offsetWidth, outerRTL.offsetWidth);

@@ -105,8 +105,8 @@ ui::WindowShowState ChromeNativeAppWindowViewsAura::GetRestoredState() const {
   return GetRestorableState(restore_state);
 }
 
-bool ChromeNativeAppWindowViewsAura::IsAlwaysOnTop() const {
-  return widget()->IsAlwaysOnTop();
+ui::ZOrderLevel ChromeNativeAppWindowViewsAura::GetZOrderLevel() const {
+  return widget()->GetZOrderLevel();
 }
 
 void ChromeNativeAppWindowViewsAura::UpdateShape(

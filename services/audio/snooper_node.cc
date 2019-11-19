@@ -39,6 +39,12 @@ constexpr int kStepBasisHz = 1000;
 // data extraction.
 constexpr int kResamplerRequestSize = 3 * media::SincResampler::kKernelSize;
 
+// Returns the deviation, around an estimated reference time, beyond which a
+// SnooperNode considers a skip in input/output to have occurred.
+base::TimeDelta GetReferenceTimeSkipThreshold(base::TimeDelta bus_duration) {
+  return bus_duration / 2;
+}
+
 }  // namespace
 
 // static
@@ -62,6 +68,7 @@ SnooperNode::SnooperNode(const media::AudioParameters& input_params,
       buffer_(
           Helper::TimeToFrames(kDelayBufferSize, input_params_.sample_rate())),
       write_position_(kNullPosition),
+      checkpoint_time_(base::TimeTicks::Min()),
       read_position_(kNullPosition),
       correction_fps_(0),
       resampler_(
@@ -118,13 +125,36 @@ void SnooperNode::OnData(const media::AudioBus& input_bus,
   if (write_position_ == kNullPosition) {
     write_position_ = kWriteStartPosition;
   } else {
+    const base::TimeDelta threshold =
+        GetReferenceTimeSkipThreshold(input_bus_duration_);
     const base::TimeDelta delta = reference_time - write_reference_time_;
-    if (delta >= input_bus_duration_) {
+    if (delta < -threshold) {
+      TRACE_EVENT_INSTANT1("audio", "SnooperNode Discards Input",
+                           TRACE_EVENT_SCOPE_THREAD, "wait_time_remaining (μs)",
+                           (-delta).InMicroseconds());
+      // It's illegal to back-track the |write_position_| and/or attempt to
+      // "rewrite history" in the delay buffer. Thus, simply drop input until it
+      // catches up. Events such as this are generally only caused by device-
+      // switching in audio::OutputController, where the delay timestamps may
+      // shift. http://crbug.com/934770
+      return;
+    } else if (delta > threshold) {
       TRACE_EVENT_INSTANT1("audio", "SnooperNode Input Gap",
                            TRACE_EVENT_SCOPE_THREAD, "gap (μs)",
                            delta.InMicroseconds());
+      // Skip the |write_position_| forward, which will create a zero-fill gap
+      // in the delay buffer.
       write_position_ +=
           Helper::TimeToFrames(delta, input_params_.sample_rate());
+    } else {
+      // Normal case: Continue writing into the delay buffer at the current
+      // |write_position_|.
+      //
+      // Note that, if input was being discarded (in the prior OnData() call),
+      // there will be no "recovery adjustment" to the |write_position_|.
+      // Instead, any significant jump in |write_reference_time_| will cause
+      // Render() to gradually re-synchronize the audio. There will be no
+      // zero-fill gap inserted into the delay buffer.
     }
   }
 
@@ -132,6 +162,41 @@ void SnooperNode::OnData(const media::AudioBus& input_bus,
 
   write_position_ += input_bus.frames();
   write_reference_time_ = reference_time + input_bus_duration_;
+}
+
+base::Optional<base::TimeTicks> SnooperNode::SuggestLatestRenderTime(
+    FrameTicks duration) {
+  DCHECK_GE(duration, 0);
+
+  const base::TimeTicks last_checkpoint_time = checkpoint_time_;
+  {
+    base::AutoLock scoped_lock(lock_);
+    if (write_position_ == kNullPosition) {
+      return base::nullopt;  // OnData() never called yet.
+    }
+    checkpoint_time_ = write_reference_time_;
+  }
+
+  // Do not suggest any changes if OnData() has not been called since the last
+  // call to this method. This may indicate an input discontinuity is occurring.
+  if (checkpoint_time_ == last_checkpoint_time) {
+    return base::nullopt;
+  }
+
+  // Suggest a render time by working backwards from the end time of the data
+  // currently recorded in the delay buffer. Subtract from the end time: 1) the
+  // maximum duration prebufferred in the resampler; 2) the duration to be
+  // rendered; 3) a safety margin (to help avoid underruns when the machine is
+  // under high stress).
+  const base::TimeDelta max_resampler_prebuffer_duration = Helper::FramesToTime(
+      kResamplerRequestSize + media::SincResampler::kKernelSize,
+      input_params_.sample_rate());
+  const base::TimeDelta render_duration =
+      Helper::FramesToTime(duration, output_params_.sample_rate());
+  const base::TimeDelta safety_margin =
+      GetReferenceTimeSkipThreshold(render_duration);
+  return checkpoint_time_ - max_resampler_prebuffer_duration - render_duration -
+         safety_margin;
 }
 
 void SnooperNode::Render(base::TimeTicks reference_time,
@@ -172,8 +237,10 @@ void SnooperNode::Render(base::TimeTicks reference_time,
         estimated_output_position + std::lround(resampler_.BufferedFrames());
     DCHECK_EQ(correction_fps_, 0);
   } else {
+    const base::TimeDelta threshold =
+        GetReferenceTimeSkipThreshold(output_bus_duration_);
     const base::TimeDelta delta = reference_time - render_reference_time_;
-    if (delta < output_bus_duration_) {  // Normal case: No gap.
+    if (delta.magnitude() < threshold) {  // Normal case: No gap.
       // Compute the drift, which is the number of frames the resampler is
       // behind in reading from the delay buffer. This calculation also accounts
       // for the frames buffered within the resampler.
@@ -191,28 +258,24 @@ void SnooperNode::Render(base::TimeTicks reference_time,
       // this prevents excessive "churn" within the resampler, where otherwise
       // it would be recomputing its convolution kernel too often.
       const int fps_step = input_params_.sample_rate() / kStepBasisHz;
+      DCHECK_GT(fps_step, 0);
 
-      // Adjust the correction rate (and resampling ratio) based on how
-      // different the target correction FPS is from the current correction
-      // FPS. If more than two steps away, make an aggressive adjustment. If
-      // only more than one step away, nudge the current rate by just one
-      // step. Otherwise, leave the current rate unchanged.
+      // Adjust the correction rate (and resampling ratio) if the above-computed
+      // |target_correction_fps| is more than one |fps_step| different than the
+      // current |correction_fps_|. Otherwise, leave the current rate unchanged,
+      // to avoid reconfiguring the resampler too often.
       const int diff = target_correction_fps - correction_fps_;
-      if (std::abs(diff) > 2 * fps_step) {
-        UpdateCorrectionRate(target_correction_fps);
-      } else if (diff > fps_step) {
-        UpdateCorrectionRate(correction_fps_ + fps_step);
-      } else if (diff < -fps_step) {
-        UpdateCorrectionRate(correction_fps_ - fps_step);
+      if (diff > fps_step || diff < -fps_step) {
+        UpdateCorrectionRate(correction_fps_ + ((diff / fps_step) * fps_step));
       } else {
         // No correction necessary.
       }
-    } else /* if (delta >= threshold) */ {  // Gap detected.
-      TRACE_EVENT_INSTANT1("audio", "SnooperNode Render Gap",
-                           TRACE_EVENT_SCOPE_THREAD, "gap (μs)",
+    } else {  // Some type of rewind, fast-forward, or a rendering gap.
+      TRACE_EVENT_INSTANT1("audio", "SnooperNode Render Skip",
+                           TRACE_EVENT_SCOPE_THREAD, "delta (μs)",
                            delta.InMicroseconds());
 
-      // Rather than flush and re-prime the resampler, just skip-ahead its next
+      // Rather than flush and re-prime the resampler, just seek to its next
       // read-from position.
       read_position_ +=
           Helper::TimeToFrames(delta, input_params_.sample_rate());

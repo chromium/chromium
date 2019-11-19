@@ -141,8 +141,8 @@ suite('ChooserExceptionList', function() {
     assertEquals(exception.chooserType, actualException.chooserType);
     assertDeepEquals(exception.object, actualException.object);
 
-    let sites = exception.sites;
-    let actualSites = actualException.sites;
+    const sites = exception.sites;
+    const actualSites = actualException.sites;
     assertEquals(sites.length, actualSites.length);
     for (let i = 0; i < sites.length; ++i) {
       assertSiteOriginsEquals(sites[i], actualSites[i]);
@@ -221,12 +221,12 @@ suite('ChooserExceptionList', function() {
               assertTrue(!!siteListEntry);
 
               // Ensure that the action menu container is hidden.
-              const dotsMenu = siteListEntry.$$('#actionMenuButtonContainer');
+              const dotsMenu = siteListEntry.$$('#actionMenuButton');
               assertTrue(!!dotsMenu);
               assertTrue(dotsMenu.hidden);
 
               // Ensure that the reset button is not hidden.
-              const resetButton = siteListEntry.$$('#resetSiteContainer');
+              const resetButton = siteListEntry.$$('#resetSite');
               assertTrue(!!resetButton);
               assertFalse(resetButton.hidden);
 
@@ -260,12 +260,12 @@ suite('ChooserExceptionList', function() {
               assertTrue(!!siteListEntry);
 
               // Ensure that the action menu container is hidden.
-              const dotsMenu = siteListEntry.$$('#actionMenuButtonContainer');
+              const dotsMenu = siteListEntry.$$('#actionMenuButton');
               assertTrue(!!dotsMenu);
               assertTrue(dotsMenu.hidden);
 
               // Ensure that the reset button is hidden.
-              const resetButton = siteListEntry.$$('#resetSiteContainer');
+              const resetButton = siteListEntry.$$('#resetSite');
               assertTrue(!!resetButton);
               assertTrue(resetButton.hidden);
 
@@ -304,12 +304,12 @@ suite('ChooserExceptionList', function() {
               // The first site exception is a policy provided exception, so
               // only the policy indicator should be visible;
               const policyProvidedDotsMenu =
-                  siteListEntries[0].$$('#actionMenuButtonContainer');
+                  siteListEntries[0].$$('#actionMenuButton');
               assertTrue(!!policyProvidedDotsMenu);
               assertTrue(policyProvidedDotsMenu.hidden);
 
               const policyProvidedResetButton =
-                  siteListEntries[0].$$('#resetSiteContainer');
+                  siteListEntries[0].$$('#resetSite');
               assertTrue(!!policyProvidedResetButton);
               assertTrue(policyProvidedResetButton.hidden);
 
@@ -320,12 +320,12 @@ suite('ChooserExceptionList', function() {
               // The second site exception is a user provided exception, so only
               // the reset button should be visible.
               const userProvidedDotsMenu =
-                  siteListEntries[1].$$('#actionMenuButtonContainer');
+                  siteListEntries[1].$$('#actionMenuButton');
               assertTrue(!!userProvidedDotsMenu);
               assertTrue(userProvidedDotsMenu.hidden);
 
               const userProvidedResetButton =
-                  siteListEntries[1].$$('#resetSiteContainer');
+                  siteListEntries[1].$$('#resetSite');
               assertTrue(!!userProvidedResetButton);
               assertFalse(userProvidedResetButton.hidden);
 
@@ -346,7 +346,10 @@ suite('ChooserExceptionList', function() {
         .then(function(chooserType) {
           assertEquals(settings.ChooserType.USB_DEVICES, chooserType);
           assertEquals(0, testElement.chooserExceptions.length);
-          assertFalse(testElement.$$('#empty-list-message').hidden);
+          const emptyListMessage = testElement.$$('#empty-list-message');
+          assertFalse(emptyListMessage.hidden);
+          assertEquals(
+              'No USB devices found', emptyListMessage.textContent.trim());
         });
   });
 
@@ -378,16 +381,16 @@ suite('ChooserExceptionList', function() {
           assertTrue(!!siteListEntry);
 
           // Assert that the action button is hidden.
-          const dotsMenu = siteListEntry.$$('#actionMenuButtonContainer');
+          const dotsMenu = siteListEntry.$$('#actionMenuButton');
           assertTrue(!!dotsMenu);
           assertTrue(dotsMenu.hidden);
 
           // Assert that the reset button is visible.
-          const resetButton = siteListEntry.$$('#resetSiteContainer');
+          const resetButton = siteListEntry.$$('#resetSite');
           assertTrue(!!resetButton);
           assertFalse(resetButton.hidden);
 
-          resetButton.querySelector('button').click();
+          resetButton.click();
           return browserProxy.whenCalled('resetChooserExceptionForSite');
         })
         .then(function(args) {

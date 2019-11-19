@@ -167,7 +167,8 @@ def CheckHistogramXml(input_api, output_api):
                      'ppapi/thunk/interfaces_ppb_private_no_permissions.h',
                      'ppapi/thunk/interfaces_ppb_public_dev_channel.h',
                      'ppapi/thunk/interfaces_ppb_public_dev.h',
-                     'ppapi/thunk/interfaces_ppb_public_stable.h')
+                     'ppapi/thunk/interfaces_ppb_public_stable.h',
+                     'ppapi/thunk/interfaces_ppb_public_socket.h')
   HISTOGRAM_XML_FILE = 'tools/metrics/histograms/enums.xml'
   interface_changes = []
   has_histogram_xml_change = False

@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
@@ -27,7 +28,8 @@ using testing::MatchesRegex;
 
 class LayoutObjectTest : public RenderingTest {
  public:
-  LayoutObjectTest() : RenderingTest(EmptyLocalFrameClient::Create()) {}
+  LayoutObjectTest()
+      : RenderingTest(MakeGarbageCollected<EmptyLocalFrameClient>()) {}
 
  protected:
   template <bool should_have_wrapper>
@@ -56,7 +58,7 @@ TEST_F(LayoutObjectTest, LayoutDecoratedNameCalledWithPositionedObject) {
   DCHECK(div);
   LayoutObject* obj = div->GetLayoutObject();
   DCHECK(obj);
-  EXPECT_THAT(obj->DecoratedName().Ascii().data(),
+  EXPECT_THAT(obj->DecoratedName().Ascii(),
               MatchesRegex("LayoutN?G?BlockFlow \\(positioned\\)"));
 }
 
@@ -139,8 +141,7 @@ TEST_F(
   EXPECT_EQ(layout_object->ContainingBlockForFixedPosition(), GetLayoutView());
   auto offset =
       layout_object->OffsetFromContainer(containing_blocklayout_object);
-  EXPECT_EQ(offset.Width().ToInt(), 2);
-  EXPECT_EQ(offset.Height().ToInt(), 10);
+  EXPECT_EQ(PhysicalOffset(2, 10), offset);
 }
 
 TEST_F(LayoutObjectTest, ContainingBlockFixedLayoutObjectInTransformedDiv) {
@@ -214,8 +215,7 @@ TEST_F(
       EPosition::kFixed));
 
   auto offset = layout_object->OffsetFromContainer(span_layout_object);
-  EXPECT_EQ(offset.Width().ToInt(), 20);
-  EXPECT_EQ(offset.Height().ToInt(), 10);
+  EXPECT_EQ(PhysicalOffset(20, 10), offset);
 
   // Sanity check: Make sure we don't generate anonymous objects.
   EXPECT_EQ(nullptr, body_layout_object->SlowFirstChild()->NextSibling());
@@ -241,7 +241,7 @@ TEST_F(LayoutObjectTest, PaintingLayerOfOverflowClipLayerUnderColumnSpanAll) {
 
   LayoutObject* overflow_clip_object =
       GetLayoutObjectByElementId("overflow-clip-layer");
-  LayoutBlock* columns = ToLayoutBlock(GetLayoutObjectByElementId("columns"));
+  LayoutBlock* columns = To<LayoutBlock>(GetLayoutObjectByElementId("columns"));
   EXPECT_EQ(columns->Layer(), overflow_clip_object->PaintingLayer());
 }
 
@@ -280,10 +280,10 @@ TEST_F(LayoutObjectTest, InlineFloatMismatch) {
       ToLayoutBoxModelObject(GetLayoutObjectByElementId("span"));
   if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
     // 10px for margin.
-    EXPECT_EQ(LayoutSize(10, 0), float_obj->OffsetFromAncestor(span));
+    EXPECT_EQ(PhysicalOffset(10, 0), float_obj->OffsetFromAncestor(span));
   } else {
     // 10px for margin, -40px because float is to the left of the span.
-    EXPECT_EQ(LayoutSize(-30, 0), float_obj->OffsetFromAncestor(span));
+    EXPECT_EQ(PhysicalOffset(-30, 0), float_obj->OffsetFromAncestor(span));
   }
 }
 
@@ -484,7 +484,7 @@ TEST_F(LayoutObjectTest, AssociatedLayoutObjectOfFirstLetterSplit) {
   Node* sample = GetDocument().getElementById("sample");
   Node* first_letter = sample->firstChild();
   // Split "abc" into "a" "bc"
-  ToText(first_letter)->splitText(1, ASSERT_NO_EXCEPTION);
+  To<Text>(first_letter)->splitText(1, ASSERT_NO_EXCEPTION);
   UpdateAllLifecyclePhasesForTest();
 
   const LayoutTextFragment* layout_object0 =
@@ -533,8 +533,8 @@ TEST_F(LayoutObjectTest, VisualRect) {
     MOCK_CONST_METHOD0(VisualRectRespectsVisibility, bool());
 
    private:
-    LayoutRect LocalVisualRectIgnoringVisibility() const override {
-      return LayoutRect(10, 10, 20, 20);
+    PhysicalRect LocalVisualRectIgnoringVisibility() const override {
+      return PhysicalRect(10, 10, 20, 20);
     }
     const char* GetName() const final { return "MockLayoutObject"; }
     void UpdateLayout() final {}
@@ -546,16 +546,16 @@ TEST_F(LayoutObjectTest, VisualRect) {
   MockLayoutObject mock_object;
   auto style = ComputedStyle::Create();
   mock_object.SetStyle(style.get());
-  EXPECT_EQ(LayoutRect(10, 10, 20, 20), mock_object.LocalVisualRect());
-  EXPECT_EQ(LayoutRect(10, 10, 20, 20), mock_object.LocalVisualRect());
+  EXPECT_EQ(PhysicalRect(10, 10, 20, 20), mock_object.LocalVisualRect());
+  EXPECT_EQ(PhysicalRect(10, 10, 20, 20), mock_object.LocalVisualRect());
 
   style->SetVisibility(EVisibility::kHidden);
   EXPECT_CALL(mock_object, VisualRectRespectsVisibility())
       .WillOnce(Return(true));
-  EXPECT_EQ(LayoutRect(), mock_object.LocalVisualRect());
+  EXPECT_TRUE(mock_object.LocalVisualRect().IsEmpty());
   EXPECT_CALL(mock_object, VisualRectRespectsVisibility())
       .WillOnce(Return(false));
-  EXPECT_EQ(LayoutRect(10, 10, 20, 20), mock_object.LocalVisualRect());
+  EXPECT_EQ(PhysicalRect(10, 10, 20, 20), mock_object.LocalVisualRect());
 }
 
 TEST_F(LayoutObjectTest, DisplayContentsInlineWrapper) {
@@ -584,7 +584,7 @@ TEST_F(LayoutObjectTest, DisplayContentsAddInlineWrapper) {
   ASSERT_TRUE(text);
   ExpectAnonymousInlineWrapperFor<false>(text);
 
-  div->SetInlineStyleProperty(CSSPropertyColor, "pink");
+  div->SetInlineStyleProperty(CSSPropertyID::kColor, "pink");
   UpdateAllLifecyclePhasesForTest();
   ExpectAnonymousInlineWrapperFor<true>(text);
 }
@@ -597,7 +597,7 @@ TEST_F(LayoutObjectTest, DisplayContentsRemoveInlineWrapper) {
   ASSERT_TRUE(text);
   ExpectAnonymousInlineWrapperFor<true>(text);
 
-  div->RemoveInlineStyleProperty(CSSPropertyColor);
+  div->RemoveInlineStyleProperty(CSSPropertyID::kColor);
   UpdateAllLifecyclePhasesForTest();
   ExpectAnonymousInlineWrapperFor<false>(text);
 }
@@ -637,7 +637,7 @@ TEST_F(LayoutObjectTest, DisplayContentsWrapperInTable) {
 
   ExpectAnonymousInlineWrapperFor<true>(contents->firstChild());
 
-  none->SetInlineStyleProperty(CSSPropertyDisplay, "inline");
+  none->SetInlineStyleProperty(CSSPropertyID::kDisplay, "inline");
   UpdateAllLifecyclePhasesForTest();
   ASSERT_TRUE(none->GetLayoutObject());
   LayoutObject* inline_parent = none->GetLayoutObject()->Parent();
@@ -663,7 +663,7 @@ TEST_F(LayoutObjectTest, DisplayContentsWrapperInTableSection) {
 
   ExpectAnonymousInlineWrapperFor<true>(contents->firstChild());
 
-  none->SetInlineStyleProperty(CSSPropertyDisplay, "inline");
+  none->SetInlineStyleProperty(CSSPropertyID::kDisplay, "inline");
   UpdateAllLifecyclePhasesForTest();
   ASSERT_TRUE(none->GetLayoutObject());
   LayoutObject* inline_parent = none->GetLayoutObject()->Parent();
@@ -689,7 +689,7 @@ TEST_F(LayoutObjectTest, DisplayContentsWrapperInTableRow) {
 
   ExpectAnonymousInlineWrapperFor<true>(contents->firstChild());
 
-  none->SetInlineStyleProperty(CSSPropertyDisplay, "inline");
+  none->SetInlineStyleProperty(CSSPropertyID::kDisplay, "inline");
   UpdateAllLifecyclePhasesForTest();
   ASSERT_TRUE(none->GetLayoutObject());
   LayoutObject* inline_parent = none->GetLayoutObject()->Parent();
@@ -716,12 +716,13 @@ TEST_F(LayoutObjectTest, DisplayContentsWrapperInTableCell) {
 
   ExpectAnonymousInlineWrapperFor<true>(contents->firstChild());
 
-  none->SetInlineStyleProperty(CSSPropertyDisplay, "inline");
+  none->SetInlineStyleProperty(CSSPropertyID::kDisplay, "inline");
   UpdateAllLifecyclePhasesForTest();
   ASSERT_TRUE(none->GetLayoutObject());
   EXPECT_EQ(cell->GetLayoutObject(), none->GetLayoutObject()->Parent());
 }
 
+#if DCHECK_IS_ON()
 TEST_F(LayoutObjectTest, DumpLayoutObject) {
   // Test dumping for debugging, in particular that newlines and non-ASCII
   // characters are escaped as expected.
@@ -739,7 +740,7 @@ lime'>
 
   StringBuilder result;
   block->DumpLayoutObject(result, false, 0);
-  EXPECT_THAT(result.ToString().Utf8().data(),
+  EXPECT_THAT(result.ToString().Utf8(),
               MatchesRegex("LayoutN?G?BlockFlow\tDIV id=\"block\" "
                            "style=\"background:\\\\nlime\""));
 
@@ -751,6 +752,7 @@ lime'>
              "\\u0421\\u0440\\u0435\\u045C\\u0435\\u043D "
              "\\u0440\\u043E\\u0434\\u0435\\u043D\\u0434\\u0435\\u043D\\n\""));
 }
+#endif  // DCHECK_IS_ON()
 
 TEST_F(LayoutObjectTest, DisplayContentsSVGGElementInHTML) {
   SetBodyInnerHTML(R"HTML(
@@ -759,7 +761,7 @@ TEST_F(LayoutObjectTest, DisplayContentsSVGGElementInHTML) {
   )HTML");
 
   Element* span = GetDocument().getElementById("span");
-  SVGGElement* svg_element = SVGGElement::Create(GetDocument());
+  auto* svg_element = MakeGarbageCollected<SVGGElement>(GetDocument());
   Text* text = Text::Create(GetDocument(), "text");
   svg_element->appendChild(text);
   span->appendChild(svg_element);
@@ -938,7 +940,7 @@ TEST_F(LayoutObjectSimTest, HitTestForOcclusionInIframe) {
   EXPECT_EQ(result.InnerNode(), target);
 
   Element* occluder = GetDocument().getElementById("occluder");
-  occluder->SetInlineStyleProperty(CSSPropertyMarginTop, "-150px");
+  occluder->SetInlineStyleProperty(CSSPropertyID::kMarginTop, "-150px");
   GetDocument().View()->UpdateAllLifecyclePhases(
       DocumentLifecycle::LifecycleUpdateReason::kTest);
   result = target->GetLayoutObject()->HitTestForOcclusion();
@@ -978,15 +980,10 @@ TEST_F(LayoutObjectSimTest, FirstLineBackgroundImage) {
   static_cast<ImageObserver*>(image_resource_content)
       ->Changed(image_resource_content->GetImage());
 
-  if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
-    // The block itself doesn't paint the first line, so we don't need to
-    // invalidate it for the image change in the first line style.
-    EXPECT_FALSE(target_object->ShouldDoFullPaintInvalidation());
-  } else {
-    // In legacy layout mode, the block is the layout object of the first line's
-    // root line box, so we invalidate it.
-    EXPECT_TRUE(target_object->ShouldDoFullPaintInvalidation());
-  }
+  // The block is the layout object of the first line's root line box, so we
+  // invalidate it.
+  EXPECT_TRUE(target_object->ShouldDoFullPaintInvalidation());
+
   auto* first_line1 =
       GetDocument().getElementById("first-line1")->GetLayoutObject();
   EXPECT_TRUE(first_line1->ShouldDoFullPaintInvalidation());
@@ -1041,6 +1038,62 @@ TEST_F(LayoutObjectTest, FirstLineBackgroundImageAddBlockBackgroundImageCrash) {
       "background-image: url(data:image/gif;base64,"
       "R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==)");
   UpdateAllLifecyclePhasesForTest();
+}
+
+TEST_F(LayoutObjectTest, FirstLineBackgroundImageChangeStyleCrash) {
+  SetBodyInnerHTML(R"HTML(
+    <style id="style">
+      #target::first-line {
+        background-image: url(data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==);
+      }
+    </style>
+    <div id="target">Target</div>
+  )HTML");
+
+  // These should not crash.
+  GetDocument().getElementById("target")->setAttribute(html_names::kStyleAttr,
+                                                       "color: blue");
+  UpdateAllLifecyclePhasesForTest();
+
+  GetDocument().getElementById("target")->setAttribute(html_names::kStyleAttr,
+                                                       "display: none");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* style_element = GetDocument().getElementById("style");
+  style_element->setTextContent(style_element->textContent() + "dummy");
+  UpdateAllLifecyclePhasesForTest();
+}
+
+TEST_F(LayoutObjectTest, NeedsLayoutOverflowRecalc) {
+  if (!RuntimeEnabledFeatures::LayoutNGEnabled())
+    return;
+
+  SetBodyInnerHTML(R"HTML(
+    <div id='wrapper'>
+      <div id='target'>foo</div>
+      <div id='other'>bar</div>
+    </div>
+  )HTML");
+
+  auto* wrapper = GetLayoutObjectByElementId("wrapper");
+  auto* target = GetLayoutObjectByElementId("target");
+  auto* other = GetLayoutObjectByElementId("other");
+
+  DCHECK(wrapper);
+  DCHECK(target);
+  DCHECK(other);
+
+  EXPECT_FALSE(wrapper->NeedsLayoutOverflowRecalc());
+  EXPECT_FALSE(target->NeedsLayoutOverflowRecalc());
+  EXPECT_FALSE(other->NeedsLayoutOverflowRecalc());
+
+  auto* target_element = GetDocument().getElementById("target");
+  target_element->SetInnerHTMLFromString("baz");
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_FALSE(wrapper->NeedsLayoutOverflowRecalc());
+  EXPECT_FALSE(target->NeedsLayoutOverflowRecalc());
+  EXPECT_FALSE(other->NeedsLayoutOverflowRecalc());
 }
 
 }  // namespace blink

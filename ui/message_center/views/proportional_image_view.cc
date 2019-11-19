@@ -48,7 +48,7 @@ const char* ProportionalImageView::GetClassName() const {
 }
 
 gfx::Size ProportionalImageView::GetImageDrawingSize() {
-  if (!visible())
+  if (!GetVisible())
     return gfx::Size();
 
   gfx::Size max_size = max_image_size_;

@@ -19,20 +19,50 @@ function drawImageToCanvas() {
   canvas.width = image.width;
   canvas.height = image.height;
 
-  canvas.getContext('2d').drawImage(image, 0, 0, canvas.width, canvas.height);
-  chartColorTransform(canvas);
+  var context2D = canvas.getContext('2d');
+  if (context2D) {
+    context2D.drawImage(image, 0, 0, canvas.width, canvas.height);
+    chartColorTransform(canvas);
+    return;
+  }
+
+  console.error('FAIL: 2d <canvas> is required for this test');
+  if (window.testRunner)
+    testRunner.notifyDone();
+}
+
+function getCanvasPixelDataAtPoint(canvas, x, y) {
+  var context2D = canvas.getContext('2d');
+  if (context2D)
+    return context2D.getImageData(x, y, 1, 1).data;
+
+  var gl = canvas.getContext('webgl');
+  if (gl.getParameter(gl.UNPACK_FLIP_Y_WEBGL))
+    y = canvas.height - y;
+  var data = new Uint8Array(4);
+  gl.readPixels(x, y, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, data);
+  return data;
 }
 
 function getCanvasColor(canvas, i) {
+  /*
+   * Convert the Munsell color index i to a point x,y in the chart image.
+   */
   var x = 40 + (i % 6) * (canvas.width / 6);
   var y = 40 + Math.floor(i / 6) * (canvas.height / 4);
+
+  /*
+   * Read the RGBA pixel from the canvas at the point x,y then return the
+   * RGB values (the Munsell chart test image has no alpha channel).
+   */
   try {
-    var data = canvas.getContext('2d').getImageData(x, y, 1, 1).data;
+    var data = getCanvasPixelDataAtPoint(canvas, x, y);
     if (data[3] == 255)
       return { rgb: [data[0], data[1], data[2]] };
+    console.error('FAIL: invalid canvas pixel alpha channel: ' + data[3]);
     return { rgb: [0, 0, 0] };
   } catch (error) {
-    console.error(error);
+    console.error('FAIL: ' + error);  // security error: tainted <canvas>
     return { rgb: [255, 255, 255] };
   }
 }
@@ -92,8 +122,8 @@ function drawRule(size) {
 
 function chartColorTransform(canvas) {
   /*
-   * Add header over table of color names, acutal and expected values, and the
-   * per color error (Euclidean distance).
+   * Add header over table of color names, actual and expected values, and the
+   * per color error dE (Euclidean distance).
    */
   log(pad('Color') + pad('Actual') + pad('Expected') + 'dE');
   drawRule();
@@ -101,7 +131,8 @@ function chartColorTransform(canvas) {
   var totalSquaredError = 0.0;
 
   /*
-   * Report per color error dE, by comparing with the expected Munsell colors.
+   * Report per color error dE, by comparing with the expected Munsell colors,
+   * and accumulate dE * dE in the totalSquaredError.
    */
   for (var i = 0; i < 24;) {
     var expected = getMunsellColor(i);

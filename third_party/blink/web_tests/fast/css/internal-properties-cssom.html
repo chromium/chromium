@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<style id="style">
+    #color {
+        color: red;
+    }
+    #visited_color {
+        -internal-visited-color: red;
+    }
+    #visited_color:visited {
+        -internal-visited-color: red;
+    }
+    #zoom {
+        zoom: 2;
+    }
+    #effective_zoom {
+        -internal-effective-zoom: 4;
+    }
+</style>
+<div id="container">
+    <a href="" id="color"></a>
+    <a href="" id="visited_color"></a>
+    <div id="zoom"></div>
+    <div id="effective_zoom"></div>
+</div>
+<script>
+
+const elements = Array.from(container.children);
+
+test(() => {
+    for (let element of elements) {
+        let names = Array.from(getComputedStyle(element));
+        assert_true(names.every(x => !x.startsWith('-internal')));
+    }
+}, 'Internal properties do not appear in enumeration of computed style (CSSOM)');
+
+test(() => {
+    for (let rule of style.sheet.cssRules) {
+        let names = Array.from(rule.style);
+        assert_true(names.every(x => !x.startsWith('-internal')));
+    }
+}, 'Internal properties do not appear in enumeration of specified style (CSSOM)');
+
+test(() => {
+    for (let element of elements) {
+        let cs = getComputedStyle(element);
+        assert_equals(cs.getPropertyValue('-internal-visited-color'), '');
+        assert_equals(cs['-internal-visited-color'], undefined);
+        assert_equals(cs.internalVisitedColor, undefined);
+    }
+}, '-internal-visited-color does not appear on computed style (CSSOM)');
+
+test(() => {
+    for (let rule of style.sheet.cssRules) {
+        assert_equals(rule.style.getPropertyValue('-internal-visited-color'), '');
+        assert_equals(rule.style['-internal-visited-color'], undefined);
+        assert_equals(rule.style.internalVisitedColor, undefined);
+    }
+}, '-internal-visited-color does not appear on specified style (CSSOM)');
+
+test(() => {
+    for (let rule of style.sheet.cssRules) {
+        rule.style.setProperty('-internal-visited-color', 'red');
+        assert_equals(rule.style.getPropertyValue('-internal-visited-color'), '');
+        rule.style['-internal-visited-color'] = 'red';
+        assert_equals(rule.style.getPropertyValue('-internal-visited-color'), '');
+    }
+}, '-internal-visited-color may not be set on specified style (CSSOM)');
+
+test(() => {
+    for (let element of elements) {
+        let names = Array.from(element.computedStyleMap()).map(x => x[0]);
+        assert_true(names.every(x => !x.startsWith('-internal')));
+    }
+}, 'Internal properties do not appear in enumeration of computed style (CSS Typed OM)');
+
+test(() => {
+    for (let rule of style.sheet.cssRules) {
+        let names = Array.from(rule.styleMap).map(x => x[0]);
+        assert_true(names.every(x => !x.startsWith('-internal')));
+    }
+}, 'Internal properties do not appear in enumeration of specified style (CSS Typed OM)');
+
+test(() => {
+    for (let element of elements) {
+        let cs = element.computedStyleMap();
+        assert_throws(new TypeError(), () => {
+            assert_equals(cs.get('-internal-visited-color'), '');
+        }, 'get() should throw when attempting to access internal property');
+    }
+}, '-internal-visited-color does not appear on computed style (CSS Typed OM)');
+
+test(() => {
+    for (let rule of style.sheet.cssRules) {
+        assert_throws(new TypeError(), () => {
+            assert_equals(rule.styleMap.get('-internal-visited-color'), '');
+        }, 'get() should throw when attempting to access internal property');
+    }
+}, '-internal-visited-color does not appear on specified style (CSS Typed OM)');
+
+test(() => {
+    for (let rule of style.sheet.cssRules) {
+        assert_throws(new TypeError(), () => {
+            assert_equals(rule.styleMap.set('-internal-visited-color'), 'red');
+        }, 'set() should throw when attempting to access internal property');
+    }
+}, '-internal-visited-color may not be set on specified style (CSS Typed OM)');
+
+</script>

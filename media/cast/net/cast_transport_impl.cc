@@ -121,8 +121,7 @@ CastTransportImpl::CastTransportImpl(
                                                         : nullptr,
              transport_.get(),
              transport_task_runner),
-      last_byte_acked_for_audio_(0),
-      weak_factory_(this) {
+      last_byte_acked_for_audio_(0) {
   DCHECK(clock);
   DCHECK(transport_client_);
   DCHECK(transport_);

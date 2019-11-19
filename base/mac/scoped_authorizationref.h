@@ -7,6 +7,7 @@
 
 #include <Security/Authorization.h>
 
+#include "base/base_export.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 
@@ -16,7 +17,7 @@
 namespace base {
 namespace mac {
 
-class ScopedAuthorizationRef {
+class BASE_EXPORT ScopedAuthorizationRef {
  public:
   explicit ScopedAuthorizationRef(AuthorizationRef authorization = NULL)
       : authorization_(authorization) {
@@ -24,14 +25,14 @@ class ScopedAuthorizationRef {
 
   ~ScopedAuthorizationRef() {
     if (authorization_) {
-      AuthorizationFree(authorization_, kAuthorizationFlagDestroyRights);
+      FreeInternal();
     }
   }
 
   void reset(AuthorizationRef authorization = NULL) {
     if (authorization_ != authorization) {
       if (authorization_) {
-        AuthorizationFree(authorization_, kAuthorizationFlagDestroyRights);
+        FreeInternal();
       }
       authorization_ = authorization;
     }
@@ -71,6 +72,13 @@ class ScopedAuthorizationRef {
   }
 
  private:
+  // Calling AuthorizationFree, defined in Security.framework, from an inline
+  // function, results in link errors when linking dynamically with
+  // libbase.dylib. So wrap the call in an un-inlined method. This method
+  // doesn't check if |authorization_| is null; that check should be in the
+  // inlined callers.
+  void FreeInternal();
+
   AuthorizationRef authorization_;
 
   DISALLOW_COPY_AND_ASSIGN(ScopedAuthorizationRef);

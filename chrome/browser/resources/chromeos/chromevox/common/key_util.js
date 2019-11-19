@@ -8,12 +8,12 @@
  */
 
 
-goog.provide('cvox.KeyUtil');
-goog.provide('cvox.SimpleKeyEvent');
+goog.provide('KeyUtil');
+goog.provide('SimpleKeyEvent');
 
 goog.require('Msgs');
-goog.require('cvox.ChromeVox');
-goog.require('cvox.KeySequence');
+goog.require('ChromeVox');
+goog.require('KeySequence');
 
 /**
  * @typedef {{ctrlKey: (boolean|undefined),
@@ -21,38 +21,38 @@ goog.require('cvox.KeySequence');
  *            shiftKey: (boolean|undefined),
  *            keyCode: (number|undefined)}}
  */
-cvox.SimpleKeyEvent;
+var SimpleKeyEvent;
 
 /**
  * Create the namespace
  * @constructor
  */
-cvox.KeyUtil = function() {};
+KeyUtil = function() {};
 
 /**
  * The time in ms at which the ChromeVox Sticky Mode key was pressed.
  * @type {number}
  */
-cvox.KeyUtil.modeKeyPressTime = 0;
+KeyUtil.modeKeyPressTime = 0;
 
 /**
  * Indicates if sequencing is currently active for building a keyboard shortcut.
  * @type {boolean}
  */
-cvox.KeyUtil.sequencing = false;
+KeyUtil.sequencing = false;
 
 /**
  * The previous KeySequence when sequencing is ON.
- * @type {cvox.KeySequence}
+ * @type {KeySequence}
  */
-cvox.KeyUtil.prevKeySequence = null;
+KeyUtil.prevKeySequence = null;
 
 
 /**
  * The sticky key sequence.
- * @type {cvox.KeySequence}
+ * @type {KeySequence}
  */
-cvox.KeyUtil.stickyKeySequence = null;
+KeyUtil.stickyKeySequence = null;
 
 /**
  * Maximum number of key codes the sequence buffer may hold. This is the max
@@ -61,17 +61,17 @@ cvox.KeyUtil.stickyKeySequence = null;
  * @const
  * @type {number}
  */
-cvox.KeyUtil.maxSeqLength = 2;
+KeyUtil.maxSeqLength = 2;
 
 
 /**
  * Convert a key event into a Key Sequence representation.
  *
- * @param {Event|cvox.SimpleKeyEvent} keyEvent The keyEvent to convert.
- * @return {cvox.KeySequence} A key sequence representation of the key event.
+ * @param {Event|SimpleKeyEvent} keyEvent The keyEvent to convert.
+ * @return {KeySequence} A key sequence representation of the key event.
  */
-cvox.KeyUtil.keyEventToKeySequence = function(keyEvent) {
-  var util = cvox.KeyUtil;
+KeyUtil.keyEventToKeySequence = function(keyEvent) {
+  var util = KeyUtil;
   if (util.prevKeySequence &&
       (util.maxSeqLength == util.prevKeySequence.length())) {
     // Reset the sequence buffer if max sequence length is reached.
@@ -84,7 +84,7 @@ cvox.KeyUtil.keyEventToKeySequence = function(keyEvent) {
       util.sequencing || keyEvent['keyPrefix'] || keyEvent['stickyMode'];
 
   // Create key sequence.
-  var keySequence = new cvox.KeySequence(keyEvent);
+  var keySequence = new KeySequence(keyEvent);
 
   // Check if the Cvox key should be considered as pressed because the
   // modifier key combination is active.
@@ -113,20 +113,19 @@ cvox.KeyUtil.keyEventToKeySequence = function(keyEvent) {
 
   // Repeated keys pressed.
   var currTime = new Date().getTime();
-  if (cvox.KeyUtil.isDoubleTapKey(keySequence) && util.prevKeySequence &&
+  if (KeyUtil.isDoubleTapKey(keySequence) && util.prevKeySequence &&
       keySequence.equals(util.prevKeySequence)) {
     var prevTime = util.modeKeyPressTime;
     var delta = currTime - prevTime;
-    if (prevTime > 0 && delta > 100 && delta < 300) {  // Double tap
+    if (prevTime > 0 && delta > 100 && delta < 300) /* Double tap */ {
       keySequence = util.prevKeySequence;
       keySequence.doubleTap = true;
       util.prevKeySequence = null;
       util.sequencing = false;
       // Resets the search key state tracked for ChromeOS because in OOBE,
       // we never get a key up for the key down (keyCode 91).
-      if (cvox.ChromeVox.isChromeOS &&
-          keyEvent.keyCode == cvox.KeyUtil.getStickyKeyCode()) {
-        cvox.ChromeVox.searchKeyHeld = false;
+      if (keyEvent.keyCode == KeyUtil.getStickyKeyCode()) {
+        ChromeVox.searchKeyHeld = false;
       }
       return keySequence;
     }
@@ -146,7 +145,7 @@ cvox.KeyUtil.keyEventToKeySequence = function(keyEvent) {
  * @param {number} keyCode key code.
  * @return {string} A string representation of the key event.
  */
-cvox.KeyUtil.keyCodeToString = function(keyCode) {
+KeyUtil.keyCodeToString = function(keyCode) {
   if (keyCode == 17) {
     return 'Ctrl';
   }
@@ -157,13 +156,7 @@ cvox.KeyUtil.keyCodeToString = function(keyCode) {
     return 'Shift';
   }
   if ((keyCode == 91) || (keyCode == 93)) {
-    if (cvox.ChromeVox.isChromeOS) {
-      return 'Search';
-    } else if (cvox.ChromeVox.isMac) {
-      return 'Cmd';
-    } else {
-      return 'Win';
-    }
+    return 'Search';
   }
   // TODO(rshearer): This is a hack to work around the special casing of the
   // sticky mode string that used to happen in keyEventToString. We won't need
@@ -189,7 +182,7 @@ cvox.KeyUtil.keyCodeToString = function(keyCode) {
  * @param {string} keyString Modifier key.
  * @return {number} Key code.
  */
-cvox.KeyUtil.modStringToKeyCode = function(keyString) {
+KeyUtil.modStringToKeyCode = function(keyString) {
   switch (keyString) {
     case 'Ctrl':
       return 17;
@@ -209,10 +202,10 @@ cvox.KeyUtil.modStringToKeyCode = function(keyString) {
  *
  * @return {Array<number>} Array of key codes.
  */
-cvox.KeyUtil.cvoxModKeyCodes = function() {
-  var modKeyCombo = cvox.ChromeVox.modKeyStr.split(/\+/g);
+KeyUtil.cvoxModKeyCodes = function() {
+  var modKeyCombo = ChromeVox.modKeyStr.split(/\+/g);
   var modKeyCodes = modKeyCombo.map(function(keyString) {
-    return cvox.KeyUtil.modStringToKeyCode(keyString);
+    return KeyUtil.modStringToKeyCode(keyString);
   });
   return modKeyCodes;
 };
@@ -220,14 +213,14 @@ cvox.KeyUtil.cvoxModKeyCodes = function() {
 /**
  * Checks if the specified key code is a key used for switching into a sequence
  * mode. Sequence switch keys are specified in
- * cvox.KeyUtil.sequenceSwitchKeyCodes
+ * KeyUtil.sequenceSwitchKeyCodes
  *
- * @param {!cvox.KeySequence} rhKeySeq The key sequence to check.
+ * @param {!KeySequence} rhKeySeq The key sequence to check.
  * @return {boolean} true if it is a sequence switch keycode, false otherwise.
  */
-cvox.KeyUtil.isSequenceSwitchKeyCode = function(rhKeySeq) {
-  for (var i = 0; i < cvox.ChromeVox.sequenceSwitchKeyCodes.length; i++) {
-    var lhKeySeq = cvox.ChromeVox.sequenceSwitchKeyCodes[i];
+KeyUtil.isSequenceSwitchKeyCode = function(rhKeySeq) {
+  for (var i = 0; i < ChromeVox.sequenceSwitchKeyCodes.length; i++) {
+    var lhKeySeq = ChromeVox.sequenceSwitchKeyCodes[i];
     if (lhKeySeq.equals(rhKeySeq)) {
       return true;
     }
@@ -242,9 +235,8 @@ cvox.KeyUtil.isSequenceSwitchKeyCode = function(rhKeySeq) {
  * @param {number} keyCode The key code.
  * @return {string} Returns a string description.
  */
-cvox.KeyUtil.getReadableNameForKeyCode = function(keyCode) {
+KeyUtil.getReadableNameForKeyCode = function(keyCode) {
   var msg = Msgs.getMsg.bind(Msgs);
-  var cros = cvox.ChromeVox.isChromeOS;
   if (keyCode == 0) {
     return 'Power button';
   } else if (keyCode == 17) {
@@ -256,13 +248,7 @@ cvox.KeyUtil.getReadableNameForKeyCode = function(keyCode) {
   } else if (keyCode == 9) {
     return 'Tab';
   } else if ((keyCode == 91) || (keyCode == 93)) {
-    if (cros) {
-      return 'Search';
-    } else if (cvox.ChromeVox.isMac) {
-      return 'Cmd';
-    } else {
-      return 'Win';
-    }
+    return 'Search';
   } else if (keyCode == 8) {
     return 'Backspace';
   } else if (keyCode == 32) {
@@ -286,31 +272,31 @@ cvox.KeyUtil.getReadableNameForKeyCode = function(keyCode) {
   } else if (keyCode == 27) {
     return 'Escape';
   } else if (keyCode == 112) {
-    return cros ? msg('back_key') : 'F1';
+    return msg('back_key');
   } else if (keyCode == 113) {
-    return cros ? msg('forward_key') : 'F2';
+    return msg('forward_key');
   } else if (keyCode == 114) {
-    return cros ? msg('refresh_key') : 'F3';
+    return msg('refresh_key');
   } else if (keyCode == 115) {
-    return cros ? msg('toggle_full_screen_key') : 'F4';
+    return msg('toggle_full_screen_key');
   } else if (keyCode == 116) {
-    return cros ? msg('window_overview_key') : 'F5';
+    return msg('window_overview_key');
   } else if (keyCode == 117) {
-    return cros ? msg('brightness_down_key') : 'F6';
+    return msg('brightness_down_key');
   } else if (keyCode == 118) {
-    return cros ? msg('brightness_up_key') : 'F7';
+    return msg('brightness_up_key');
   } else if (keyCode == 119) {
-    return cros ? msg('volume_mute_key') : 'F8';
+    return msg('volume_mute_key');
   } else if (keyCode == 120) {
-    return cros ? msg('volume_down_key') : 'F9';
+    return msg('volume_down_key');
   } else if (keyCode == 121) {
-    return cros ? msg('volume_up_key') : 'F10';
+    return msg('volume_up_key');
   } else if (keyCode == 122) {
     return 'F11';
   } else if (keyCode == 123) {
     return 'F12';
   } else if (keyCode == 153) {
-    return cros ? msg('assistant_key') : '';
+    return msg('assistant_key');
   } else if (keyCode == 186) {
     return 'Semicolon';
   } else if (keyCode == 187) {
@@ -346,13 +332,8 @@ cvox.KeyUtil.getReadableNameForKeyCode = function(keyCode) {
  *
  * @return {number} The platform specific sticky key keycode.
  */
-cvox.KeyUtil.getStickyKeyCode = function() {
-  // TODO (rshearer): This should not be hard-coded here.
-  var stickyKeyCode = 45;  // Insert for Linux and Windows
-  if (cvox.ChromeVox.isChromeOS || cvox.ChromeVox.isMac) {
-    stickyKeyCode = 91;  // GUI key (Search/Cmd) for ChromeOs and Mac
-  }
-  return stickyKeyCode;
+KeyUtil.getStickyKeyCode = function() {
+  return 91;  // Search.
 };
 
 
@@ -364,7 +345,7 @@ cvox.KeyUtil.getStickyKeyCode = function() {
  *     a keyboard shortcut.
  * @return {?string} Readable string representation of the input.
  */
-cvox.KeyUtil.getReadableNameForStr = function(keyStr) {
+KeyUtil.getReadableNameForStr = function(keyStr) {
   // TODO (clchen): Refactor this function away since it is no longer used.
   return null;
 };
@@ -386,7 +367,7 @@ cvox.KeyUtil.getReadableNameForStr = function(keyStr) {
  *   Shift
  *   Meta
  *
- * @param {cvox.KeySequence} keySequence The KeySequence object.
+ * @param {KeySequence} keySequence The KeySequence object.
  * @param {boolean=} opt_readableKeyCode Whether or not to return a readable
  * string description instead of a string with a pound symbol and a keycode.
  * Default is false.
@@ -394,7 +375,7 @@ cvox.KeyUtil.getReadableNameForStr = function(keyStr) {
  * to false.
  * @return {string} Readable string representation of the KeySequence object.
  */
-cvox.KeyUtil.keySequenceToString = function(
+KeyUtil.keySequenceToString = function(
     keySequence, opt_readableKeyCode, opt_modifiers) {
   // TODO(rshearer): Move this method and the getReadableNameForKeyCode and the
   // method to KeySequence after we refactor isModifierActive (when the modifie
@@ -430,7 +411,7 @@ cvox.KeyUtil.keySequenceToString = function(
           modifier = 'Ctrl';
           break;
         case 'searchKeyHeld':
-          var searchKey = cvox.KeyUtil.getReadableNameForKeyCode(91);
+          var searchKey = KeyUtil.getReadableNameForKeyCode(91);
           modifier = searchKey;
           break;
         case 'altKey':
@@ -443,7 +424,7 @@ cvox.KeyUtil.keySequenceToString = function(
           modifier = 'Shift';
           break;
         case 'metaKey':
-          var metaKey = cvox.KeyUtil.getReadableNameForKeyCode(91);
+          var metaKey = KeyUtil.getReadableNameForKeyCode(91);
           modifier = metaKey;
           break;
         case 'keyCode':
@@ -452,9 +433,9 @@ cvox.KeyUtil.keySequenceToString = function(
           // we've already added that into the string above.
           if (!keySequence.isModifierKey(keyCode) && !opt_modifiers) {
             if (opt_readableKeyCode) {
-              tempStr += cvox.KeyUtil.getReadableNameForKeyCode(keyCode);
+              tempStr += KeyUtil.getReadableNameForKeyCode(keyCode);
             } else {
-              tempStr += cvox.KeyUtil.keyCodeToString(keyCode);
+              tempStr += KeyUtil.keyCodeToString(keyCode);
             }
           }
       }
@@ -487,14 +468,14 @@ cvox.KeyUtil.keySequenceToString = function(
 
 /**
  * Looks up if the given key sequence is triggered via double tap.
- * @param {cvox.KeySequence} key The key.
+ * @param {KeySequence} key The key.
  * @return {boolean} True if key is triggered via double tap.
  */
-cvox.KeyUtil.isDoubleTapKey = function(key) {
+KeyUtil.isDoubleTapKey = function(key) {
   var isSet = false;
   var originalState = key.doubleTap;
   key.doubleTap = true;
-  for (var i = 0, keySeq; keySeq = cvox.KeySequence.doubleTapCache[i]; i++) {
+  for (var i = 0, keySeq; keySeq = KeySequence.doubleTapCache[i]; i++) {
     if (keySeq.equals(key)) {
       isSet = true;
       break;

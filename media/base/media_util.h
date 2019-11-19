@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "media/base/encryption_scheme.h"
 #include "media/base/media_export.h"
 #include "media/base/media_log.h"
 
@@ -18,11 +17,6 @@ namespace media {
 // Simply returns an empty vector. {Audio|Video}DecoderConfig are often
 // constructed with empty extra data.
 MEDIA_EXPORT std::vector<uint8_t> EmptyExtraData();
-
-// The following helper functions return new instances of EncryptionScheme that
-// indicate widely used settings.
-MEDIA_EXPORT EncryptionScheme Unencrypted();
-MEDIA_EXPORT EncryptionScheme AesCtrEncryptionScheme();
 
 // Helpers for PPAPI UMAs. There wasn't an obvious place to put them in
 // //content/renderer/pepper.

@@ -156,7 +156,7 @@ class TouchEventsViewTest : public ViewEventTestBase {
   void DoTestOnMessageLoop() override {
     // ui_controls::SendTouchEvents which uses InjectTouchInput API only works
     // on Windows 8 and up.
-    if (base::win::GetVersion() <= base::win::VERSION_WIN7) {
+    if (base::win::GetVersion() <= base::win::Version::WIN7) {
       Done();
       return;
     }
@@ -203,7 +203,7 @@ class TouchEventsRecursiveViewTest : public TouchEventsViewTest {
   void DoTestOnMessageLoop() override {
     // ui_controls::SendTouchEvents which uses InjectTouchInput API only works
     // on Windows 8 and up.
-    if (base::win::GetVersion() <= base::win::VERSION_WIN7) {
+    if (base::win::GetVersion() <= base::win::Version::WIN7) {
       Done();
       return;
     }

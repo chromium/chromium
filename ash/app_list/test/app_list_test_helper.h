@@ -8,24 +8,20 @@
 #include <memory>
 
 #include "ash/app_list/app_list_metrics.h"
-#include "ash/app_list/model/app_list_view_state.h"
 #include "ash/app_list/test/test_app_list_client.h"
-
-namespace app_list {
-class AppListView;
-}  // namespace app_list
 
 namespace ash {
 
 class AppListControllerImpl;
+class AppListView;
+enum class AppListViewState;
 
 class AppListTestHelper {
  public:
   AppListTestHelper();
   ~AppListTestHelper();
 
-  // Show the app list in |display_id|, and wait until animation and mojo calls
-  // finish.
+  // Show the app list in |display_id|, and wait until animation finishes.
   // Note: we usually don't care about the show source in tests.
   void ShowAndRunLoop(uint64_t display_id);
 
@@ -33,37 +29,34 @@ class AppListTestHelper {
   void Show(uint64_t display_id);
 
   // Show the app list in |display_id| triggered with |show_source|, and wait
-  // until animation and mojo calls finish.
-  void ShowAndRunLoop(uint64_t display_id,
-                      app_list::AppListShowSource show_source);
+  // until animation finishes.
+  void ShowAndRunLoop(uint64_t display_id, AppListShowSource show_source);
 
-  // Dismiss the app list, and wait until animation and mojo calls finish.
+  // Dismiss the app list, and wait until animation finishes.
   void DismissAndRunLoop();
 
   // Dismiss the app list.
   void Dismiss();
 
-  // Toggle the app list in |display_id|, and wait until animation and mojo
-  // calls finish.
+  // Toggle the app list in |display_id|, and wait until animation finishes.
   // Note: we usually don't care about the show source in tests.
   void ToggleAndRunLoop(uint64_t display_id);
 
   // Toggle the app list in |display_id| triggered with |show_source|, and wait
-  // until animation and mojo calls finish.
-  void ToggleAndRunLoop(uint64_t display_id,
-                        app_list::AppListShowSource show_source);
+  // until animation finishes.
+  void ToggleAndRunLoop(uint64_t display_id, AppListShowSource show_source);
 
   // Check the visibility value of the app list and its target.
   // Fails in tests if either one doesn't match |visible|,.
   void CheckVisibility(bool visible);
 
   // Check the current app list view state.
-  void CheckState(app_list::AppListViewState state);
+  void CheckState(ash::AppListViewState state);
 
-  // Run all pending in message loop and flush all mojo calls.
+  // Run all pending in message loop to wait for animation to finish.
   void WaitUntilIdle();
 
-  app_list::AppListView* GetAppListView();
+  AppListView* GetAppListView();
 
  private:
   AppListControllerImpl* app_list_controller_ = nullptr;

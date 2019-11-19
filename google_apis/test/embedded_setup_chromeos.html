@@ -29,8 +29,6 @@ gaia.chromeOSLogin.registerHtml5Listener = function() {
           gaia.chromeOSLogin.initialized_ = true;
           goFirstPage();
         }
-        // Repeat clearOldAttempts as soon as we got parent.
-        gaia.chromeOSLogin.clearOldAttempts();
     }
   };
   window.addEventListener('message', onMessage);
@@ -39,14 +37,6 @@ gaia.chromeOSLogin.registerHtml5Listener = function() {
       type: 'gaia_saml_api',
       call: {method: 'initialize', requestedVersion: 1}}, '/');
 }
-
-gaia.chromeOSLogin.clearOldAttempts = function() {
-  var msg = {
-    'method': 'clearOldAttempts'
-  };
-  gaia.chromeOSLogin.parent_webview_.postMessage(msg,
-      gaia.chromeOSLogin.parent_webview_url_);
-};
 
 gaia.chromeOSLogin.attemptLogin = function(email, password) {
   var msg = {
@@ -142,6 +132,45 @@ function onLoad() {
   gaia.chromeOSLogin.registerHtml5Listener();
 }
 
+function sendSetPrimaryActionLabel(label) {
+  gaia.chromeOSLogin.parent_webview_.postMessage({
+      method: 'setPrimaryActionLabel',
+      value: label
+    },
+    gaia.chromeOSLogin.parent_webview_url_);
+}
+
+function sendSetPrimaryActionEnabled(enabled) {
+  gaia.chromeOSLogin.parent_webview_.postMessage({
+      method: 'setPrimaryActionEnabled',
+      value: enabled
+    },
+    gaia.chromeOSLogin.parent_webview_url_);
+}
+
+function sendSetSecondaryActionLabel(label) {
+  gaia.chromeOSLogin.parent_webview_.postMessage({
+      method: 'setSecondaryActionLabel',
+      value: label
+    },
+    gaia.chromeOSLogin.parent_webview_url_);
+}
+
+function sendSetSecondaryActionEnabled(enabled) {
+  gaia.chromeOSLogin.parent_webview_.postMessage({
+      method: 'setSecondaryActionEnabled',
+      value: enabled
+    },
+    gaia.chromeOSLogin.parent_webview_url_);
+}
+
+function sendSetAllActionsEnabled(enabled) {
+  gaia.chromeOSLogin.parent_webview_.postMessage({
+      method: 'setAllActionsEnabled',
+      value: enabled
+    },
+    gaia.chromeOSLogin.parent_webview_url_);
+}
 </script>
 </head>
 <body onload='onLoad();'>

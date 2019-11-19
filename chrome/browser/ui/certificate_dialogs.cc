@@ -42,12 +42,12 @@ enum CertFileType {
 void WriterCallback(const base::FilePath& path, const std::string& data) {
   int bytes_written = base::WriteFile(path, data.data(), data.size());
   if (bytes_written != static_cast<ssize_t>(data.size())) {
-    LOG(ERROR) << "Writing " << path.value() << " ("
-               << data.size() << "B) returned " << bytes_written;
+    LOG(ERROR) << "Writing " << path.value() << " (" << data.size()
+               << "B) returned " << bytes_written;
   }
 }
 
-std::string WrapAt64(const std::string &str) {
+std::string WrapAt64(const std::string& str) {
   std::string result;
   for (size_t i = 0; i < str.size(); i += 64) {
     result.append(str, i, 64);  // Append clamps the len arg internally.
@@ -62,9 +62,8 @@ std::string GetBase64String(CERTCertificate* cert) {
     return std::string();
   std::string base64;
   base::Base64Encode(der_cert, &base64);
-  return "-----BEGIN CERTIFICATE-----\r\n" +
-      WrapAt64(base64) +
-      "-----END CERTIFICATE-----\r\n";
+  return "-----BEGIN CERTIFICATE-----\r\n" + WrapAt64(base64) +
+         "-----END CERTIFICATE-----\r\n";
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -127,7 +126,8 @@ Exporter::~Exporter() {
     select_file_dialog_->ListenerDestroyed();
 }
 
-void Exporter::FileSelected(const base::FilePath& path, int index,
+void Exporter::FileSelected(const base::FilePath& path,
+                            int index,
                             void* params) {
   std::string data;
   switch (index - 1) {
@@ -142,8 +142,8 @@ void Exporter::FileSelected(const base::FilePath& path, int index,
       data = x509_certificate_model::GetCMSString(cert_chain_list_, 0, 1);
       break;
     case kPkcs7Chain:
-      data = x509_certificate_model::GetCMSString(
-          cert_chain_list_, 0, cert_chain_list_.size());
+      data = x509_certificate_model::GetCMSString(cert_chain_list_, 0,
+                                                  cert_chain_list_.size());
       break;
     case kBase64:
     default:
@@ -152,8 +152,8 @@ void Exporter::FileSelected(const base::FilePath& path, int index,
   }
 
   if (!data.empty()) {
-    base::PostTaskWithTraits(FROM_HERE, {base::MayBlock()},
-                             base::BindOnce(&WriterCallback, path, data));
+    base::PostTask(FROM_HERE, {base::ThreadPool(), base::MayBlock()},
+                   base::BindOnce(&WriterCallback, path, data));
   }
 
   delete this;
@@ -191,11 +191,9 @@ void ShowCertSelectFileDialog(ui::SelectFileDialog* select_file_dialog,
       l10n_util::GetStringUTF16(IDS_CERT_EXPORT_TYPE_PKCS7_CHAIN));
   file_type_info.include_all_files = true;
   select_file_dialog->SelectFile(
-      type, base::string16(),
-      suggested_path, &file_type_info,
+      type, base::string16(), suggested_path, &file_type_info,
       1,  // 1-based index for |file_type_info.extensions| to specify default.
-      FILE_PATH_LITERAL("crt"),
-      parent, params);
+      FILE_PATH_LITERAL("crt"), parent, params);
 }
 
 void ShowCertExportDialog(content::WebContents* web_contents,

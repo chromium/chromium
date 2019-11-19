@@ -86,18 +86,44 @@ class DecodedImageTrackerTest : public testing::Test {
 TEST_F(DecodedImageTrackerTest, QueueImageLocksImages) {
   bool locked = false;
   decoded_image_tracker()->QueueImageDecode(
-      CreateDiscardablePaintImage(gfx::Size(1, 1)),
+      CreateDiscardablePaintImage(gfx::Size(1, 1)), gfx::ColorSpace(),
       base::BindOnce([](bool* locked, bool success) { *locked = true; },
                      base::Unretained(&locked)));
   EXPECT_TRUE(locked);
   EXPECT_EQ(1u, image_controller()->num_locked_images());
 }
 
+TEST_F(DecodedImageTrackerTest, Colorspace) {
+  bool locked = false;
+  gfx::ColorSpace decoded_color_space(
+      gfx::ColorSpace::PrimaryID::XYZ_D50,
+      gfx::ColorSpace::TransferID::IEC61966_2_1);
+  gfx::ColorSpace srgb_color_space = gfx::ColorSpace::CreateSRGB();
+  auto paint_image = CreateDiscardablePaintImage(gfx::Size(1, 1));
+  decoded_image_tracker()->QueueImageDecode(
+      paint_image, decoded_color_space,
+      base::BindOnce([](bool* locked, bool success) { *locked = true; },
+                     base::Unretained(&locked)));
+
+  // Check that the decoded color space images are locked, but if the color
+  // space differs then that image is not locked. Note that we use the high
+  // filter quality here, since it shouldn't matter and the checks should
+  // succeed anyway.
+  DrawImage locked_draw_image(
+      paint_image, SkIRect::MakeWH(1, 1), kHigh_SkFilterQuality, SkMatrix::I(),
+      PaintImage::kDefaultFrameIndex, decoded_color_space);
+  EXPECT_TRUE(image_controller()->IsDrawImageLocked(locked_draw_image));
+  DrawImage srgb_draw_image(paint_image, SkIRect::MakeWH(1, 1),
+                            kHigh_SkFilterQuality, SkMatrix::I(),
+                            PaintImage::kDefaultFrameIndex, srgb_color_space);
+  EXPECT_FALSE(image_controller()->IsDrawImageLocked(srgb_draw_image));
+}
+
 TEST_F(DecodedImageTrackerTest, ImagesTimeOut) {
   // Add an image, this will start a 250ms timeout to release it.
   bool locked = false;
   decoded_image_tracker()->QueueImageDecode(
-      CreateDiscardablePaintImage(gfx::Size(1, 1)),
+      CreateDiscardablePaintImage(gfx::Size(1, 1)), gfx::ColorSpace(),
       base::BindOnce([](bool* locked, bool success) { *locked = true; },
                      base::Unretained(&locked)));
   EXPECT_TRUE(locked);
@@ -109,7 +135,7 @@ TEST_F(DecodedImageTrackerTest, ImagesTimeOut) {
 
   // Add an image, this will not start a new timeout, as one is pending.
   decoded_image_tracker()->QueueImageDecode(
-      CreateDiscardablePaintImage(gfx::Size(1, 1)),
+      CreateDiscardablePaintImage(gfx::Size(1, 1)), gfx::ColorSpace(),
       base::BindOnce([](bool* locked, bool success) { *locked = true; },
                      base::Unretained(&locked)));
   EXPECT_TRUE(locked);
@@ -130,7 +156,7 @@ TEST_F(DecodedImageTrackerTest, ImageUsedInDraw) {
   bool locked = false;
   auto paint_image_1 = CreateDiscardablePaintImage(gfx::Size(1, 1));
   decoded_image_tracker()->QueueImageDecode(
-      paint_image_1,
+      paint_image_1, gfx::ColorSpace(),
       base::BindOnce([](bool* locked, bool success) { *locked = true; },
                      base::Unretained(&locked)));
   EXPECT_TRUE(locked);
@@ -138,7 +164,7 @@ TEST_F(DecodedImageTrackerTest, ImageUsedInDraw) {
 
   auto paint_image_2 = CreateDiscardablePaintImage(gfx::Size(1, 1));
   decoded_image_tracker()->QueueImageDecode(
-      paint_image_2,
+      paint_image_2, gfx::ColorSpace(),
       base::BindOnce([](bool* locked, bool success) { *locked = true; },
                      base::Unretained(&locked)));
   EXPECT_TRUE(locked);
@@ -146,9 +172,11 @@ TEST_F(DecodedImageTrackerTest, ImageUsedInDraw) {
 
   // Create dummy draw images for each:
   DrawImage draw_image_1(paint_image_1, SkIRect::MakeWH(1, 1),
-                         kHigh_SkFilterQuality, SkMatrix::I(), 0);
+                         kHigh_SkFilterQuality, SkMatrix::I(), 0,
+                         gfx::ColorSpace());
   DrawImage draw_image_2(paint_image_2, SkIRect::MakeWH(1, 1),
-                         kHigh_SkFilterQuality, SkMatrix::I(), 0);
+                         kHigh_SkFilterQuality, SkMatrix::I(), 0,
+                         gfx::ColorSpace());
 
   // Both should be in the cache:
   EXPECT_TRUE(image_controller()->IsDrawImageLocked(draw_image_1));
@@ -166,13 +194,13 @@ TEST_F(DecodedImageTrackerTest, UnlockAllImages) {
   // Insert two images:
   bool locked = false;
   decoded_image_tracker()->QueueImageDecode(
-      CreateDiscardablePaintImage(gfx::Size(1, 1)),
+      CreateDiscardablePaintImage(gfx::Size(1, 1)), gfx::ColorSpace(),
       base::BindOnce([](bool* locked, bool success) { *locked = true; },
                      base::Unretained(&locked)));
   EXPECT_TRUE(locked);
   EXPECT_EQ(1u, image_controller()->num_locked_images());
   decoded_image_tracker()->QueueImageDecode(
-      CreateDiscardablePaintImage(gfx::Size(1, 1)),
+      CreateDiscardablePaintImage(gfx::Size(1, 1)), gfx::ColorSpace(),
       base::BindOnce([](bool* locked, bool success) { *locked = true; },
                      base::Unretained(&locked)));
   EXPECT_TRUE(locked);

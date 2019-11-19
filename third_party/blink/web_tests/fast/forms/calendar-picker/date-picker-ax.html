@@ -7,8 +7,7 @@
   <script src="resources/calendar-picker-common.js"></script>
 </head>
 <body>
-<p id="description"></p>
-<div id="console"></div>
+
 <input type="date" id="date1" value="2000-01-02">
 
 <script>
@@ -18,10 +17,10 @@ async_test((t) => {
 
     accessibilityController.setNotificationListener(function(axnode, type) {
         if (type == 'Focus') {
-            console.log('Focused: ' + escapeHTML(accessibilityController.focusedElement.name.replace(/,/g, '')));
+            console.log('Focused: ' + accessibilityController.focusedElement.name.replace(/,/g, ''));
         } else if (type == 'MarkDirty') {
             if (++markDirtyCounter == 2) {
-                testButtonDescription();
+                setTimeout(testButtonDescription, 0);
             } else if (markDirtyCounter == 3) {
                 // Highlight 2000-02 in the month popup.
                 setTimeout(function() { eventSender.keyDown('ArrowRight'); }, 0);

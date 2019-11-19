@@ -28,9 +28,6 @@ namespace blink {
 
 class PLATFORM_EXPORT FEDropShadow final : public FilterEffect {
  public:
-  static FEDropShadow*
-  Create(Filter*, float, float, float, float, const Color&, float);
-
   FEDropShadow(Filter*, float, float, float, float, const Color&, float);
 
   // Compute which destination area will be affected when applying a drop

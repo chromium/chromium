@@ -16,16 +16,16 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "components/autofill/core/browser/address_normalizer.h"
 #include "components/autofill/core/browser/address_normalizer_impl.h"
 #include "components/autofill/core/browser/autofill_field.h"
-#include "components/autofill/core/browser/autofill_profile.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/autofill_type.h"
-#include "components/autofill/core/browser/country_names.h"
-#include "components/autofill/core/browser/credit_card.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/geo/country_names.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -455,6 +455,38 @@ TEST_F(AutofillFieldFillerTest, FillFormField_NoValidity) {
                            /*city=*/ASCIIToUTF16("Elysium"));
 }
 
+// Tests that using only client side validation, if the country is empty, the
+// address fields will get filled regardless of their invalidity.
+TEST_F(AutofillFieldFillerTest, FillFormField_Validity_CountryEmpty) {
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillProfileClientValidation},
+      /*disabled_features=*/{features::kAutofillProfileServerValidation});
+  AutofillProfile profile = test::GetFullProfile();
+  profile.SetRawInfo(ADDRESS_HOME_COUNTRY, ASCIIToUTF16(""));
+  profile.SetValidityState(ADDRESS_HOME_STATE, AutofillProfile::INVALID,
+                           AutofillProfile::CLIENT);
+  profile.SetValidityState(EMAIL_ADDRESS, AutofillProfile::INVALID,
+                           AutofillProfile::CLIENT);
+
+  AutofillField field_state;
+  field_state.set_heuristic_type(ADDRESS_HOME_STATE);
+  AutofillField field_email;
+  field_email.set_heuristic_type(EMAIL_ADDRESS);
+
+  FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
+  // State is filled, because it's an address field.
+  filler.FillFormField(field_state, profile, &field_state,
+                       /*cvc=*/base::string16());
+  EXPECT_EQ(ASCIIToUTF16("CA"), field_state.value);
+
+  // Email is not filled, because it's not an address field, and it doesn't
+  // depend on the country.
+  filler.FillFormField(field_email, profile, &field_email,
+                       /*cvc=*/base::string16());
+  EXPECT_EQ(ASCIIToUTF16(""), field_email.value);
+}
+
 struct AutofillFieldFillerTestCase {
   HtmlFieldType field_type;
   size_t field_max_length;
@@ -726,14 +758,14 @@ class AutofillSelectWithStatesTest
         std::unique_ptr<Storage>(new NullStorage), "en-US");
     // Make sure the normalizer is done initializing its member(s) in
     // background task(s).
-    scoped_task_environment_.RunUntilIdle();
+    task_environment_.RunUntilIdle();
   }
 
  protected:
   AddressNormalizer* normalizer() { return normalizer_.get(); }
 
  private:
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   std::unique_ptr<AddressNormalizerImpl> normalizer_;
 
   DISALLOW_COPY_AND_ASSIGN(AutofillSelectWithStatesTest);

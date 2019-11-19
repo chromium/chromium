@@ -14,6 +14,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "content/public/browser/media_stream_request.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
 
 class MediaStreamDevicesController;
 class Profile;
@@ -97,7 +98,7 @@ class MediaStreamDevicesController {
   ContentSetting GetContentSetting(
       ContentSettingsType content_type,
       const content::MediaStreamRequest& request,
-      blink::MediaStreamRequestResult* denial_reason) const;
+      blink::mojom::MediaStreamRequestResult* denial_reason) const;
 
   // Returns true if clicking allow on the dialog should give access to the
   // requested devices.
@@ -110,7 +111,7 @@ class MediaStreamDevicesController {
   // through the lifetime of the request.
   ContentSetting audio_setting_;
   ContentSetting video_setting_;
-  blink::MediaStreamRequestResult denial_reason_;
+  blink::mojom::MediaStreamRequestResult denial_reason_;
 
   content::WebContents* web_contents_;
 

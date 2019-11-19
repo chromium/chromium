@@ -7,20 +7,22 @@
 #include <algorithm>
 
 #include "ash/metrics/user_metrics_recorder.h"
-#include "ash/session/session_controller.h"
+#include "ash/public/cpp/system_tray_client.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/model/system_tray_model.h"
+#include "ash/system/network/tray_network_state_model.h"
 #include "ash/system/tray/system_menu_button.h"
 #include "ash/system/tray/tri_view.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
-#include "chromeos/network/device_state.h"
 #include "chromeos/network/network_connect.h"
-#include "chromeos/network/network_state.h"
-#include "chromeos/network/network_state_handler.h"
+#include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
+#include "net/base/ip_address.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/button.h"
@@ -29,11 +31,12 @@
 #include "ui/views/layout/layout_manager.h"
 #include "ui/views/widget/widget.h"
 
-using chromeos::DeviceState;
-using chromeos::NetworkHandler;
-using chromeos::NetworkState;
-using chromeos::NetworkStateHandler;
-using chromeos::NetworkTypePattern;
+using chromeos::network_config::mojom::ConnectionStateType;
+using chromeos::network_config::mojom::DeviceStateProperties;
+using chromeos::network_config::mojom::DeviceStateType;
+using chromeos::network_config::mojom::NetworkStateProperties;
+using chromeos::network_config::mojom::NetworkStatePropertiesPtr;
+using chromeos::network_config::mojom::NetworkType;
 
 namespace ash {
 namespace tray {
@@ -53,14 +56,27 @@ constexpr int kBubbleMargin = 8;
 constexpr int kBubbleShadowElevation = 2;
 
 bool IsSecondaryUser() {
-  SessionController* session_controller = Shell::Get()->session_controller();
+  SessionControllerImpl* session_controller =
+      Shell::Get()->session_controller();
   return session_controller->IsActiveUserSessionStarted() &&
          !session_controller->IsUserPrimary();
 }
 
-bool IsWifiEnabled() {
-  return NetworkHandler::Get()->network_state_handler()->IsTechnologyEnabled(
-      chromeos::NetworkTypePattern::WiFi());
+bool NetworkTypeIsConfigurable(NetworkType type) {
+  switch (type) {
+    case NetworkType::kVPN:
+    case NetworkType::kWiFi:
+      return true;
+    case NetworkType::kAll:
+    case NetworkType::kCellular:
+    case NetworkType::kEthernet:
+    case NetworkType::kMobile:
+    case NetworkType::kTether:
+    case NetworkType::kWireless:
+      return false;
+  }
+  NOTREACHED();
+  return false;
 }
 
 }  // namespace
@@ -115,7 +131,7 @@ class NetworkStateListDetailedView::InfoBubble
 
   void OnBeforeBubbleWidgetInit(views::Widget::InitParams* params,
                                 views::Widget* widget) const override {
-    params->shadow_type = views::Widget::InitParams::SHADOW_TYPE_DROP;
+    params->shadow_type = views::Widget::InitParams::ShadowType::kDrop;
     params->shadow_elevation = kBubbleShadowElevation;
     params->name = "NetworkStateListDetailedView::InfoBubble";
   }
@@ -138,9 +154,8 @@ class InfoThrobberLayout : public views::LayoutManager {
   void Layout(views::View* host) override {
     gfx::Size max_size(GetMaxChildSize(host));
     // Center each child view within |max_size|.
-    for (int i = 0; i < host->child_count(); ++i) {
-      views::View* child = host->child_at(i);
-      if (!child->visible())
+    for (auto* child : host->children()) {
+      if (!child->GetVisible())
         continue;
       gfx::Size child_size = child->GetPreferredSize();
       gfx::Point origin;
@@ -161,16 +176,12 @@ class InfoThrobberLayout : public views::LayoutManager {
 
  private:
   gfx::Size GetMaxChildSize(const views::View* host) const {
-    int width = 0, height = 0;
-    for (int i = 0; i < host->child_count(); ++i) {
-      const views::View* child = host->child_at(i);
-      if (!child->visible())
-        continue;
-      gfx::Size child_size = child->GetPreferredSize();
-      width = std::max(width, child_size.width());
-      height = std::max(height, child_size.width());
+    gfx::Size max_size;
+    for (const auto* child : host->children()) {
+      if (child->GetVisible())
+        max_size.SetToMax(child->GetPreferredSize());
     }
-    return gfx::Size(width, height);
+    return max_size;
   }
 
   DISALLOW_COPY_AND_ASSIGN(InfoThrobberLayout);
@@ -186,14 +197,37 @@ NetworkStateListDetailedView::NetworkStateListDetailedView(
     : TrayDetailedView(delegate),
       list_type_(list_type),
       login_(login),
+      model_(Shell::Get()->system_tray_model()->network_state_model()),
       info_button_(nullptr),
       settings_button_(nullptr),
       info_bubble_(nullptr) {}
 
 NetworkStateListDetailedView::~NetworkStateListDetailedView() {
+  model_->RemoveObserver(this);
   if (info_bubble_)
     info_bubble_->OnNetworkStateListDetailedViewIsDeleting();
   ResetInfoBubble();
+}
+
+void NetworkStateListDetailedView::ToggleInfoBubbleForTesting() {
+  ToggleInfoBubble();
+}
+
+const char* NetworkStateListDetailedView::GetClassName() const {
+  return "NetworkStateListDetailedView";
+}
+
+void NetworkStateListDetailedView::Init() {
+  CreateScrollableList();
+  CreateTitleRow(list_type_ == ListType::LIST_TYPE_NETWORK
+                     ? IDS_ASH_STATUS_TRAY_NETWORK
+                     : IDS_ASH_STATUS_TRAY_VPN);
+
+  model_->AddObserver(this);
+  Update();
+
+  if (list_type_ == LIST_TYPE_NETWORK && IsWifiEnabled())
+    ScanAndStartTimer();
 }
 
 void NetworkStateListDetailedView::Update() {
@@ -203,20 +237,12 @@ void NetworkStateListDetailedView::Update() {
   Layout();
 }
 
-void NetworkStateListDetailedView::ToggleInfoBubbleForTesting() {
-  ToggleInfoBubble();
+void NetworkStateListDetailedView::ActiveNetworkStateChanged() {
+  Update();
 }
 
-void NetworkStateListDetailedView::Init() {
-  CreateScrollableList();
-  CreateTitleRow(list_type_ == ListType::LIST_TYPE_NETWORK
-                     ? IDS_ASH_STATUS_TRAY_NETWORK
-                     : IDS_ASH_STATUS_TRAY_VPN);
-
+void NetworkStateListDetailedView::NetworkListChanged() {
   Update();
-
-  if (list_type_ == LIST_TYPE_NETWORK && IsWifiEnabled())
-    ScanAndStartTimer();
 }
 
 void NetworkStateListDetailedView::HandleButtonPressed(views::Button* sender,
@@ -228,8 +254,6 @@ void NetworkStateListDetailedView::HandleButtonPressed(views::Button* sender,
 
   if (sender == settings_button_)
     ShowSettings();
-
-  CloseBubble();
 }
 
 void NetworkStateListDetailedView::HandleViewClicked(views::View* view) {
@@ -240,32 +264,38 @@ void NetworkStateListDetailedView::HandleViewClicked(views::View* view) {
   if (!IsNetworkEntry(view, &guid))
     return;
 
-  const NetworkState* network =
-      NetworkHandler::Get()->network_state_handler()->GetNetworkStateFromGuid(
-          guid);
-  bool can_connect = network && !network->IsConnectingOrConnected();
+  model_->cros_network_config()->GetNetworkState(
+      guid, base::BindOnce(&NetworkStateListDetailedView::HandleViewClickedImpl,
+                           weak_ptr_factory_.GetWeakPtr()));
+}
+
+void NetworkStateListDetailedView::HandleViewClickedImpl(
+    NetworkStatePropertiesPtr network) {
   if (network) {
-    if (network->IsDefaultCellular())
-      can_connect = false;  // Default Cellular network is not connectable.
-    if (!network->connectable() && IsSecondaryUser()) {
-      // Secondary users can only connect to fully configured networks.
-      can_connect = false;
+    // Attempt a network connection if the network is not connected and:
+    // * The network is connectable or
+    // * The active user is primary and the network is configurable
+    bool can_connect =
+        network->connection_state == ConnectionStateType::kNotConnected &&
+        (network->connectable ||
+         (!IsSecondaryUser() && NetworkTypeIsConfigurable(network->type)));
+    if (can_connect) {
+      Shell::Get()->metrics()->RecordUserMetricsAction(
+          list_type_ == LIST_TYPE_VPN
+              ? UMA_STATUS_AREA_CONNECT_TO_VPN
+              : UMA_STATUS_AREA_CONNECT_TO_CONFIGURED_NETWORK);
+      chromeos::NetworkConnect::Get()->ConnectToNetworkId(network->guid);
+      return;
     }
   }
-  if (can_connect) {
-    Shell::Get()->metrics()->RecordUserMetricsAction(
-        list_type_ == LIST_TYPE_VPN
-            ? UMA_STATUS_AREA_CONNECT_TO_VPN
-            : UMA_STATUS_AREA_CONNECT_TO_CONFIGURED_NETWORK);
-    chromeos::NetworkConnect::Get()->ConnectToNetworkId(network->guid());
-    return;
-  }
+  // If the network is no longer available or not connectable or configurable,
+  // show the Settings UI.
   Shell::Get()->metrics()->RecordUserMetricsAction(
       list_type_ == LIST_TYPE_VPN
           ? UMA_STATUS_AREA_SHOW_VPN_CONNECTION_DETAILS
           : UMA_STATUS_AREA_SHOW_NETWORK_CONNECTION_DETAILS);
-  Shell::Get()->system_tray_model()->client_ptr()->ShowNetworkSettings(
-      network ? network->guid() : std::string());
+  Shell::Get()->system_tray_model()->client()->ShowNetworkSettings(
+      network ? network->guid : std::string());
 }
 
 void NetworkStateListDetailedView::CreateExtraTitleRowButtons() {
@@ -287,8 +317,10 @@ void NetworkStateListDetailedView::ShowSettings() {
   Shell::Get()->metrics()->RecordUserMetricsAction(
       list_type_ == LIST_TYPE_VPN ? UMA_STATUS_AREA_VPN_SETTINGS_OPENED
                                   : UMA_STATUS_AREA_NETWORK_SETTINGS_OPENED);
-  Shell::Get()->system_tray_model()->client_ptr()->ShowNetworkSettings(
-      std::string());
+  CloseBubble();  // Deletes |this|.
+  Shell::Get()->system_tray_model()->client()->ShowNetworkSettings(
+      model_->default_network() ? model_->default_network()->guid
+                                : std::string());
 }
 
 void NetworkStateListDetailedView::UpdateHeaderButtons() {
@@ -296,8 +328,7 @@ void NetworkStateListDetailedView::UpdateHeaderButtons() {
     if (login_ == LoginStatus::NOT_LOGGED_IN) {
       // When not logged in, only enable the settings button if there is a
       // default (i.e. connected or connecting) network to show settings for.
-      settings_button_->SetEnabled(
-          !!NetworkHandler::Get()->network_state_handler()->DefaultNetwork());
+      settings_button_->SetEnabled(model_->default_network());
     } else {
       // Otherwise, enable if showing settings is allowed. There are situations
       // (supervised user creation flow) when the session is started but UI flow
@@ -319,11 +350,14 @@ void NetworkStateListDetailedView::UpdateScanningBar() {
   if (!is_wifi_enabled && network_scan_repeating_timer_.IsRunning())
     network_scan_repeating_timer_.Stop();
 
-  const bool scanning_bar_visible =
-      is_wifi_enabled &&
-      NetworkHandler::Get()->network_state_handler()->GetScanningByType(
-          NetworkTypePattern::WiFi() | NetworkTypePattern::Tether());
-
+  bool scanning_bar_visible = false;
+  if (is_wifi_enabled) {
+    const DeviceStateProperties* wifi = model_->GetDevice(NetworkType::kWiFi);
+    const DeviceStateProperties* tether =
+        model_->GetDevice(NetworkType::kTether);
+    scanning_bar_visible =
+        (wifi && wifi->scanning) || (tether && tether->scanning);
+  }
   ShowProgress(-1, scanning_bar_visible);
 }
 
@@ -353,40 +387,49 @@ void NetworkStateListDetailedView::OnInfoBubbleDestroyed() {
 }
 
 views::View* NetworkStateListDetailedView::CreateNetworkInfoView() {
-  NetworkStateHandler* handler = NetworkHandler::Get()->network_state_handler();
-
-  std::string ip_address, ipv6_address;
-  const NetworkState* network = handler->DefaultNetwork();
-  if (network) {
-    ip_address = network->GetIpAddress();
-    const DeviceState* device = handler->GetDeviceState(network->device_path());
-    if (device)
-      ipv6_address = device->GetIpAddressByType(shill::kTypeIPv6);
+  std::string ipv4_address, ipv6_address;
+  const NetworkStateProperties* network = model_->default_network();
+  const DeviceStateProperties* device =
+      network ? model_->GetDevice(network->type) : nullptr;
+  if (device) {
+    if (device->ipv4_address)
+      ipv4_address = device->ipv4_address->ToString();
+    if (device->ipv6_address)
+      ipv6_address = device->ipv6_address->ToString();
   }
 
-  std::string ethernet_address, wifi_address;
+  std::string ethernet_address, wifi_address, cellular_address;
   if (list_type_ == LIST_TYPE_NETWORK) {
-    ethernet_address = handler->FormattedHardwareAddressForType(
-        NetworkTypePattern::Ethernet());
-    wifi_address =
-        handler->FormattedHardwareAddressForType(NetworkTypePattern::WiFi());
+    const DeviceStateProperties* ethernet =
+        model_->GetDevice(NetworkType::kEthernet);
+    if (ethernet && ethernet->mac_address)
+      ethernet_address = *ethernet->mac_address;
+    const DeviceStateProperties* wifi = model_->GetDevice(NetworkType::kWiFi);
+    if (wifi && wifi->mac_address)
+      wifi_address = *wifi->mac_address;
+    const DeviceStateProperties* cellular =
+        model_->GetDevice(NetworkType::kCellular);
+    if (cellular && cellular->mac_address)
+      cellular_address = *cellular->mac_address;
   }
 
   base::string16 bubble_text;
-  auto add_line = [&bubble_text](const std::string& address, int ids) {
-    if (!address.empty()) {
-      if (!bubble_text.empty())
-        bubble_text += base::ASCIIToUTF16("\n");
+  auto maybe_add_mac_address = [&bubble_text](const std::string& address,
+                                              int ids) {
+    if (address.empty())
+      return;
 
-      bubble_text +=
-          l10n_util::GetStringFUTF16(ids, base::UTF8ToUTF16(address));
-    }
+    if (!bubble_text.empty())
+      bubble_text += base::ASCIIToUTF16("\n");
+
+    bubble_text += l10n_util::GetStringFUTF16(ids, base::UTF8ToUTF16(address));
   };
 
-  add_line(ip_address, IDS_ASH_STATUS_TRAY_IP_ADDRESS);
-  add_line(ipv6_address, IDS_ASH_STATUS_TRAY_IPV6_ADDRESS);
-  add_line(ethernet_address, IDS_ASH_STATUS_TRAY_ETHERNET_ADDRESS);
-  add_line(wifi_address, IDS_ASH_STATUS_TRAY_WIFI_ADDRESS);
+  maybe_add_mac_address(ipv4_address, IDS_ASH_STATUS_TRAY_IP_ADDRESS);
+  maybe_add_mac_address(ipv6_address, IDS_ASH_STATUS_TRAY_IPV6_ADDRESS);
+  maybe_add_mac_address(ethernet_address, IDS_ASH_STATUS_TRAY_ETHERNET_ADDRESS);
+  maybe_add_mac_address(wifi_address, IDS_ASH_STATUS_TRAY_WIFI_ADDRESS);
+  maybe_add_mac_address(cellular_address, IDS_ASH_STATUS_TRAY_CELLULAR_ADDRESS);
 
   // Avoid an empty bubble in the unlikely event that there is no network
   // information at all.
@@ -412,8 +455,13 @@ void NetworkStateListDetailedView::CallRequestScan() {
     return;
 
   VLOG(1) << "Requesting Network Scan.";
-  NetworkHandler::Get()->network_state_handler()->RequestScan(
-      NetworkTypePattern::WiFi() | NetworkTypePattern::Tether());
+  model_->cros_network_config()->RequestNetworkScan(NetworkType::kWiFi);
+  model_->cros_network_config()->RequestNetworkScan(NetworkType::kTether);
+}
+
+bool NetworkStateListDetailedView::IsWifiEnabled() {
+  return model_->GetDeviceState(NetworkType::kWiFi) ==
+         DeviceStateType::kEnabled;
 }
 
 }  // namespace tray

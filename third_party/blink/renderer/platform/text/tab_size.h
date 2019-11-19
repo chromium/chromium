@@ -5,15 +5,18 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_TAB_SIZE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_TAB_SIZE_H_
 
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
+enum class TabSizeValueType { kLength, kSpace };
+
 struct TabSize {
   DISALLOW_NEW();
-  TabSize(float pixels) : float_value_(pixels), is_spaces_(0) {}
-
-  TabSize(int spaces) : float_value_(spaces), is_spaces_(1) {}
+  TabSize(float num_or_length,
+          TabSizeValueType is_spaces = TabSizeValueType::kSpace)
+      : float_value_(num_or_length),
+        is_spaces_(static_cast<unsigned>(is_spaces)) {}
 
   bool IsSpaces() const { return is_spaces_; }
 

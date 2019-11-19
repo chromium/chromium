@@ -5,10 +5,9 @@
 #include "content/test/test_navigation_url_loader_delegate.h"
 
 #include "base/run_loop.h"
+#include "content/browser/navigation_subresource_loader_params.h"
 #include "content/common/navigation_params.h"
-#include "content/common/navigation_subresource_loader_params.h"
 #include "content/public/browser/global_request_id.h"
-#include "content/public/browser/navigation_data.h"
 #include "services/network/public/cpp/resource_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -45,31 +44,32 @@ void TestNavigationURLLoaderDelegate::WaitForRequestStarted() {
 
 void TestNavigationURLLoaderDelegate::ReleaseURLLoaderClientEndpoints() {
   url_loader_client_endpoints_ = nullptr;
+  response_body_.reset();
 }
 
 void TestNavigationURLLoaderDelegate::OnRequestRedirected(
     const net::RedirectInfo& redirect_info,
-    const scoped_refptr<network::ResourceResponse>& response) {
+    const scoped_refptr<network::ResourceResponse>& response_head) {
   redirect_info_ = redirect_info;
-  redirect_response_ = response;
+  redirect_response_ = response_head;
   ASSERT_TRUE(request_redirected_);
   request_redirected_->Quit();
 }
 
 void TestNavigationURLLoaderDelegate::OnResponseStarted(
-    const scoped_refptr<network::ResourceResponse>& response,
     network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
-    std::unique_ptr<NavigationData> navigation_data,
+    const scoped_refptr<network::ResourceResponse>& response_head,
+    mojo::ScopedDataPipeConsumerHandle response_body,
     const GlobalRequestID& request_id,
     bool is_download,
     NavigationDownloadPolicy download_policy,
-    bool is_stream,
     base::Optional<SubresourceLoaderParams> subresource_loader_params) {
-  response_ = response;
+  response_head_ = response_head;
+  response_body_ = std::move(response_body);
   url_loader_client_endpoints_ = std::move(url_loader_client_endpoints);
-  if (response->head.ssl_info.has_value())
-    ssl_info_ = *response->head.ssl_info;
-  is_download_ = is_download && IsNavigationDownloadAllowed(download_policy);
+  if (response_head->head.ssl_info.has_value())
+    ssl_info_ = *response_head->head.ssl_info;
+  is_download_ = is_download && download_policy.IsDownloadAllowed();
   if (response_started_)
     response_started_->Quit();
 }

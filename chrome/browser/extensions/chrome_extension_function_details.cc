@@ -21,9 +21,8 @@
 #include "extensions/browser/extension_function_dispatcher.h"
 
 ChromeExtensionFunctionDetails::ChromeExtensionFunctionDetails(
-    UIThreadExtensionFunction* function)
-    : function_(function) {
-}
+    ExtensionFunction* function)
+    : function_(function) {}
 
 ChromeExtensionFunctionDetails::~ChromeExtensionFunctionDetails() {
 }

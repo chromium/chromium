@@ -9,7 +9,7 @@
 
 #include "base/strings/string_util.h"
 #include "base/values.h"
-#include "third_party/libxml/chromium/libxml_utils.h"
+#include "third_party/libxml/chromium/xml_reader.h"
 
 namespace data_decoder {
 
@@ -69,7 +69,7 @@ base::Value* AddChildToElement(base::Value* element, base::Value child) {
   if (!children)
     children = element->SetKey(mojom::XmlParser::kChildrenKey,
                                base::Value(base::Value::Type::LIST));
-  children->GetList().push_back(std::move(child));
+  children->Append(std::move(child));
   return &children->GetList().back();
 }
 
@@ -103,9 +103,7 @@ void PopulateAttributes(base::Value* node_value, XmlReader* xml_reader) {
 
 }  // namespace
 
-XmlParser::XmlParser(
-    std::unique_ptr<service_manager::ServiceContextRef> service_ref)
-    : service_ref_(std::move(service_ref)) {}
+XmlParser::XmlParser() = default;
 
 XmlParser::~XmlParser() = default;
 

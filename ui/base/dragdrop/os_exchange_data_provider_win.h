@@ -9,6 +9,7 @@
 #include <shlobj.h>
 #include <stddef.h>
 #include <wrl/client.h>
+#include <utility>
 
 #include <memory>
 #include <string>
@@ -34,18 +35,9 @@ class DataObjectImpl : public DownloadFileObserver,
                        public IDataObject,
                        public IDataObjectAsyncCapability {
  public:
-  class Observer {
-   public:
-    virtual void OnWaitForData() = 0;
-    virtual void OnDataObjectDisposed() = 0;
-   protected:
-    virtual ~Observer() { }
-  };
-
   DataObjectImpl();
 
   // Accessors.
-  void set_observer(Observer* observer) { observer_ = observer; }
   void set_in_drag_loop(bool in_drag_loop) { in_drag_loop_ = in_drag_loop; }
 
   // Number of known formats.
@@ -105,7 +97,7 @@ class DataObjectImpl : public DownloadFileObserver,
     FORMATETC format_etc;
     STGMEDIUM* medium;
     bool owns_medium;
-    scoped_refptr<DownloadFileProvider> downloader;
+    std::unique_ptr<DownloadFileProvider> downloader;
 
     StoredDataInfo(const FORMATETC& format_etc, STGMEDIUM* medium);
     ~StoredDataInfo();
@@ -120,7 +112,6 @@ class DataObjectImpl : public DownloadFileObserver,
   bool in_drag_loop_;
   bool in_async_mode_;
   bool async_operation_started_;
-  Observer* observer_;
 };
 
 class UI_BASE_EXPORT OSExchangeDataProviderWin
@@ -154,6 +145,13 @@ class UI_BASE_EXPORT OSExchangeDataProviderWin
   void SetURL(const GURL& url, const base::string16& title) override;
   void SetFilename(const base::FilePath& path) override;
   void SetFilenames(const std::vector<FileInfo>& filenames) override;
+  // Test only method for adding virtual file content to the data store. The
+  // first value in the pair is the file display name, the second is a string
+  // providing the file content.
+  void SetVirtualFileContentsForTesting(
+      const std::vector<std::pair<base::FilePath, std::string>>&
+          filenames_and_contents,
+      DWORD tymed) override;
   void SetPickledData(const ClipboardFormatType& format,
                       const base::Pickle& data) override;
   void SetFileContents(const base::FilePath& filename,
@@ -166,6 +164,12 @@ class UI_BASE_EXPORT OSExchangeDataProviderWin
                       base::string16* title) const override;
   bool GetFilename(base::FilePath* path) const override;
   bool GetFilenames(std::vector<FileInfo>* filenames) const override;
+  bool HasVirtualFilenames() const override;
+  bool GetVirtualFilenames(std::vector<FileInfo>* filenames) const override;
+  bool GetVirtualFilesAsTempFiles(
+      base::OnceCallback<
+          void(const std::vector<std::pair<base::FilePath, base::FilePath>>&)>
+          callback) const override;
   bool GetPickledData(const ClipboardFormatType& format,
                       base::Pickle* data) const override;
   bool GetFileContents(base::FilePath* filename,
@@ -178,13 +182,17 @@ class UI_BASE_EXPORT OSExchangeDataProviderWin
   bool HasHtml() const override;
   bool HasCustomFormat(const ClipboardFormatType& format) const override;
   void SetDownloadFileInfo(
-      const OSExchangeData::DownloadFileInfo& download_info) override;
+      OSExchangeData::DownloadFileInfo* download_info) override;
   void SetDragImage(const gfx::ImageSkia& image_skia,
                     const gfx::Vector2d& cursor_offset) override;
   gfx::ImageSkia GetDragImage() const override;
   gfx::Vector2d GetDragImageOffset() const override;
 
  private:
+  void SetVirtualFileContentAtIndexForTesting(base::span<const uint8_t> data,
+                                              DWORD tymed,
+                                              size_t index);
+
   scoped_refptr<DataObjectImpl> data_;
   Microsoft::WRL::ComPtr<IDataObject> source_object_;
 

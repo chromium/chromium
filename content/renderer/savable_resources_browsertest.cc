@@ -44,9 +44,9 @@ class SavableResourcesTest : public ContentBrowserTest {
     // Convert local file path to file URL.
     GURL file_url = net::FilePathToFileURL(page_file_path);
     // Load the test file.
-    NavigateToURL(shell(), file_url);
+    EXPECT_TRUE(NavigateToURL(shell(), file_url));
 
-    PostTaskToInProcessRendererAndWait(base::Bind(
+    PostTaskToInProcessRendererAndWait(base::BindOnce(
         &SavableResourcesTest::CheckResources, base::Unretained(this),
         page_file_path, expected_resources_matcher,
         expected_subframe_urls_matcher, file_url,

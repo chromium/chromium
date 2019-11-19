@@ -1,0 +1,31 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/jumbo.gni")
+
+assert(is_fuchsia)
+
+jumbo_component("fuchsia") {
+  output_name = "ui_base_ime_fuchsia"
+
+  sources = [
+    "input_method_fuchsia.cc",
+    "input_method_fuchsia.h",
+    "input_method_keyboard_controller_fuchsia.cc",
+    "input_method_keyboard_controller_fuchsia.h",
+  ]
+
+  defines = [ "IS_UI_BASE_IME_FUCHSIA_IMPL" ]
+
+  public_deps = [
+    "//third_party/fuchsia-sdk/sdk:sys_cpp",
+    "//third_party/fuchsia-sdk/sdk:ui_input",
+    "//ui/base/ime",
+    "//ui/events",
+  ]
+
+  deps = [
+    "//ui/events:dom_keycode_converter",
+  ]
+}

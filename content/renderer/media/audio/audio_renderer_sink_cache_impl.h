@@ -42,7 +42,7 @@ class CONTENT_EXPORT AudioRendererSinkCacheImpl
   ~AudioRendererSinkCacheImpl() final;
 
   media::OutputDeviceInfo GetSinkInfo(int source_render_frame_id,
-                                      int session_id,
+                                      const base::UnguessableToken& session_id,
                                       const std::string& device_id) final;
 
   scoped_refptr<media::AudioRendererSink> GetSink(

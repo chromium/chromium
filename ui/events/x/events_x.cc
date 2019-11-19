@@ -8,8 +8,7 @@
 #include <string.h>
 #include <cmath>
 
-#include "base/memory/singleton.h"
-#include "base/stl_util.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -24,51 +23,6 @@
 #include "ui/gfx/x/x11.h"
 #include "ui/gfx/x/x11_atom_cache.h"
 #include "ui/gfx/x/x11_types.h"
-
-namespace {
-
-unsigned int UpdateX11EventFlags(int ui_flags, unsigned int old_x_flags) {
-  static struct {
-    int ui;
-    int x;
-  } flags[] = {
-      {ui::EF_SHIFT_DOWN, ShiftMask},
-      {ui::EF_CAPS_LOCK_ON, LockMask},
-      {ui::EF_CONTROL_DOWN, ControlMask},
-      {ui::EF_ALT_DOWN, Mod1Mask},
-      {ui::EF_NUM_LOCK_ON, Mod2Mask},
-      {ui::EF_MOD3_DOWN, Mod3Mask},
-      {ui::EF_COMMAND_DOWN, Mod4Mask},
-      {ui::EF_ALTGR_DOWN, Mod5Mask},
-      {ui::EF_LEFT_MOUSE_BUTTON, Button1Mask},
-      {ui::EF_MIDDLE_MOUSE_BUTTON, Button2Mask},
-      {ui::EF_RIGHT_MOUSE_BUTTON, Button3Mask},
-  };
-  unsigned int new_x_flags = old_x_flags;
-  for (size_t i = 0; i < base::size(flags); ++i) {
-    if (ui_flags & flags[i].ui)
-      new_x_flags |= flags[i].x;
-    else
-      new_x_flags &= ~flags[i].x;
-  }
-  return new_x_flags;
-}
-
-unsigned int UpdateX11EventButton(int ui_flag, unsigned int old_x_button) {
-  switch (ui_flag) {
-    case ui::EF_LEFT_MOUSE_BUTTON:
-      return Button1;
-    case ui::EF_MIDDLE_MOUSE_BUTTON:
-      return Button2;
-    case ui::EF_RIGHT_MOUSE_BUTTON:
-      return Button3;
-    default:
-      return old_x_button;
-  }
-  NOTREACHED();
-}
-
-}  // namespace
 
 namespace ui {
 
@@ -135,22 +89,13 @@ void ReleaseCopiedNativeEvent(const PlatformEvent& native_event) {
   delete native_event;
 }
 
-void ClearTouchIdIfReleased(const PlatformEvent& native_event) {
-  ClearTouchIdIfReleasedFromXEvent(*native_event);
-}
-
 int GetTouchId(const PlatformEvent& native_event) {
   return GetTouchIdFromXEvent(*native_event);
 }
 
 PointerDetails GetTouchPointerDetailsFromNative(
     const PlatformEvent& native_event) {
-  return PointerDetails(EventPointerType::POINTER_TYPE_TOUCH,
-                        GetTouchIdFromXEvent(*native_event),
-                        GetTouchRadiusXFromXEvent(*native_event),
-                        GetTouchRadiusYFromXEvent(*native_event),
-                        GetTouchForceFromXEvent(*native_event),
-                        GetTouchAngleFromXEvent(*native_event));
+  return GetTouchPointerDetailsFromXEvent(*native_event);
 }
 
 bool GetScrollOffsets(const PlatformEvent& native_event,
@@ -173,55 +118,6 @@ bool GetFlingData(const PlatformEvent& native_event,
                   bool* is_cancel) {
   return GetFlingDataFromXEvent(*native_event, vx, vy, vx_ordinal, vy_ordinal,
                                 is_cancel);
-}
-
-void UpdateX11EventForFlags(Event* event) {
-  XEvent* xev = event->native_event();
-  if (!xev)
-    return;
-  switch (xev->type) {
-    case KeyPress:
-    case KeyRelease:
-      xev->xkey.state = UpdateX11EventFlags(event->flags(), xev->xkey.state);
-      break;
-    case ButtonPress:
-    case ButtonRelease:
-      xev->xbutton.state =
-          UpdateX11EventFlags(event->flags(), xev->xbutton.state);
-      break;
-    case GenericEvent: {
-      XIDeviceEvent* xievent = static_cast<XIDeviceEvent*>(xev->xcookie.data);
-      DCHECK(xievent);
-      xievent->mods.effective =
-          UpdateX11EventFlags(event->flags(), xievent->mods.effective);
-      break;
-    }
-    default:
-      break;
-  }
-}
-
-void UpdateX11EventForChangedButtonFlags(MouseEvent* event) {
-  XEvent* xev = event->native_event();
-  if (!xev)
-    return;
-  switch (xev->type) {
-    case ButtonPress:
-    case ButtonRelease:
-      xev->xbutton.button = UpdateX11EventButton(event->changed_button_flags(),
-                                                 xev->xbutton.button);
-      break;
-    case GenericEvent: {
-      XIDeviceEvent* xievent = static_cast<XIDeviceEvent*>(xev->xcookie.data);
-      CHECK(xievent && (xievent->evtype == XI_ButtonPress ||
-                        xievent->evtype == XI_ButtonRelease));
-      xievent->detail =
-          UpdateX11EventButton(event->changed_button_flags(), xievent->detail);
-      break;
-    }
-    default:
-      break;
-  }
 }
 
 }  // namespace ui

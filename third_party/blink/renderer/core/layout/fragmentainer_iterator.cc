@@ -19,7 +19,7 @@ FragmentainerIterator::FragmentainerIterator(
   // This is how rectangles typically are represented in layout, i.e. with the
   // block direction coordinate flipped, if writing mode is vertical-rl.
   LayoutRect bounds_in_flow_thread = physical_bounding_box_in_flow_thread;
-  flow_thread_.FlipForWritingMode(bounds_in_flow_thread);
+  flow_thread_.DeprecatedFlipForWritingMode(bounds_in_flow_thread);
 
   if (flow_thread_.IsHorizontalWritingMode()) {
     logical_top_in_flow_thread_ = bounds_in_flow_thread.Y();
@@ -28,6 +28,7 @@ FragmentainerIterator::FragmentainerIterator(
     logical_top_in_flow_thread_ = bounds_in_flow_thread.X();
     logical_bottom_in_flow_thread_ = bounds_in_flow_thread.MaxX();
   }
+  bounding_box_is_empty_ = bounds_in_flow_thread.IsEmpty();
 
   // Jump to the first interesting column set.
   current_column_set_ = flow_thread.ColumnSetAtBlockOffset(
@@ -81,9 +82,23 @@ LayoutUnit FragmentainerIterator::FragmentainerLogicalTopInFlowThread() const {
 
 LayoutRect FragmentainerIterator::ClipRectInFlowThread() const {
   DCHECK(!AtEnd());
-  LayoutRect clip_rect = CurrentGroup().FlowThreadPortionOverflowRectAt(
-      current_fragmentainer_index_);
-  flow_thread_.FlipForWritingMode(clip_rect);
+  LayoutRect clip_rect;
+  // An empty bounding box rect would typically be 0,0 0x0, so it would be
+  // placed in the first column always. However, the first column might not have
+  // a top edge clip (see FlowThreadPortionOverflowRectAt()). This might cause
+  // artifacts to paint outside of the column container. To avoid this
+  // situation, and since the logical bounding box is empty anyway, use the
+  // portion rect instead which is bounded on all sides. Note that we don't
+  // return an empty clip here, because an empty clip indicates that we have an
+  // empty column which may be treated differently by the calling code.
+  if (bounding_box_is_empty_) {
+    clip_rect =
+        CurrentGroup().FlowThreadPortionRectAt(current_fragmentainer_index_);
+  } else {
+    clip_rect = CurrentGroup().FlowThreadPortionOverflowRectAt(
+        current_fragmentainer_index_);
+  }
+  flow_thread_.DeprecatedFlipForWritingMode(clip_rect);
   return clip_rect;
 }
 

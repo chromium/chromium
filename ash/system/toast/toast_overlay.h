@@ -8,13 +8,13 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
 #include "base/optional.h"
 #include "base/strings/string16.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/keyboard/keyboard_controller_observer.h"
 
 namespace gfx {
 class Rect;
@@ -26,12 +26,12 @@ class Widget;
 
 namespace ash {
 
-class ToastManagerTest;
+class ToastManagerImplTest;
 class ToastOverlayView;
 class ToastOverlayButton;
 
 class ASH_EXPORT ToastOverlay : public ui::ImplicitAnimationObserver,
-                                public keyboard::KeyboardControllerObserver {
+                                public KeyboardControllerObserver {
  public:
   class ASH_EXPORT Delegate {
    public:
@@ -60,7 +60,7 @@ class ASH_EXPORT ToastOverlay : public ui::ImplicitAnimationObserver,
   void UpdateOverlayBounds();
 
  private:
-  friend class ToastManagerTest;
+  friend class ToastManagerImplTest;
 
   class ToastDisplayObserver;
 
@@ -71,9 +71,8 @@ class ASH_EXPORT ToastOverlay : public ui::ImplicitAnimationObserver,
   void OnImplicitAnimationsScheduled() override;
   void OnImplicitAnimationsCompleted() override;
 
-  // keyboard::KeyboardControllerObserver:
-  void OnKeyboardWorkspaceOccludedBoundsChanged(
-      const gfx::Rect& new_bounds) override;
+  // KeyboardControllerObserver:
+  void OnKeyboardOccludedBoundsChanged(const gfx::Rect& new_bounds) override;
 
   views::Widget* widget_for_testing();
   ToastOverlayButton* dismiss_button_for_testing();

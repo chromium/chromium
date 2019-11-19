@@ -2,29 +2,74 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/common/features.gni")
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/grit/grit_rule.gni")
+import("//tools/polymer/polymer.gni")
 import("../optimize_webui.gni")
 
-optimize_webui("build") {
-  deps = []
-  host = "downloads"
-  html_in_files = [ "downloads.html" ]
-  html_out_files = [ "vulcanized.html" ]
-  html_out_files_polymer2 = [ "vulcanized.p2.html" ]
-  input = rebase_path(".", root_build_dir)
-  insert_in_head = "<base href=chrome://downloads>"
-  js_out_files = [ "crisper.js" ]
-  excludes = [
-    "chrome://resources/js/mojo_bindings_lite.js",
-    "chrome://downloads/downloads.mojom-lite.js",
-  ]
+if (optimize_webui) {
+  downloads_pak_file = "downloads_resources.pak"
+  unpak_folder = "downloads_resources.unpak"
+
+  optimize_webui("build") {
+    host = "downloads"
+    html_in_files = [ "downloads.html" ]
+    html_out_files = [ "vulcanized.html" ]
+    input = rebase_path("$target_gen_dir/$unpak_folder", root_build_dir)
+    js_out_files = [ "downloads.js" ]
+    js_module_in_files = [ "downloads.js" ]
+    excludes = [
+      "chrome://resources/js/cr.m.js",
+      "chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js",
+      "downloads.mojom-lite.js",
+    ]
+
+    deps = [
+      ":unpak",
+      "../../../../ui/webui/resources:modulize",
+    ]
+  }
+
+  unpak("unpak") {
+    pak_file = downloads_pak_file
+    out_folder = unpak_folder
+
+    deps = [
+      ":flattened_resources",
+    ]
+  }
+
+  grit("flattened_resources") {
+    source = "downloads_resources.grd"
+
+    # The .grd contains references to generated files.
+    source_is_generated = true
+
+    defines = chrome_grit_defines
+    outputs = [
+      "grit/downloads_resources.h",
+      "grit/downloads_resources_map.cc",
+      "grit/downloads_resources_map.h",
+      downloads_pak_file,
+    ]
+    deps = [
+      ":polymer3_elements",
+      "//chrome/browser/ui/webui/downloads:mojo_bindings_js",
+    ]
+    grit_flags = [
+      "-E",
+      "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
+    ]
+    output_dir = "$root_gen_dir/chrome/browser/resources/downloads"
+  }
 }
 
 js_type_check("closure_compile") {
+  is_polymer3 = true
   deps = [
     ":browser_proxy",
     ":constants",
-    ":downloads",
     ":item",
     ":manager",
     ":search_service",
@@ -35,29 +80,20 @@ js_type_check("closure_compile") {
 js_library("browser_proxy") {
   deps = [
     "//chrome/browser/ui/webui/downloads:mojo_bindings_js_library_for_compile",
-    "//ui/webui/resources/js:cr",
+    "//ui/webui/resources/js:cr.m",
   ]
   externs_list = [ "externs.js" ]
 }
 
 js_library("constants") {
-  deps = [
-    "//ui/webui/resources/js:cr",
-  ]
-}
-
-js_library("downloads") {
-  deps = [
-    ":manager",
-    "//ui/webui/resources/js:cr",
-  ]
 }
 
 js_library("icon_loader") {
   deps = [
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:icon",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:icon.m",
+    "//ui/webui/resources/js:promise_resolver.m",
   ]
 }
 
@@ -66,13 +102,12 @@ js_library("item") {
     ":browser_proxy",
     ":constants",
     ":icon_loader",
-    "//third_party/polymer/v1_0/components-chromium/paper-behaviors:paper-inky-focus-behavior-extracted",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:load_time_data",
-    "//ui/webui/resources/js:util",
-    "//ui/webui/resources/js/cr/ui:focus_row",
-    "//ui/webui/resources/js/cr/ui:focus_row_behavior",
-    "//ui/webui/resources/js/cr/ui:focus_without_ink",
+    "//ui/webui/resources/cr_elements/cr_toast:cr_toast_manager.m",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:load_time_data.m",
+    "//ui/webui/resources/js:util.m",
+    "//ui/webui/resources/js/cr/ui:focus_row_behavior.m",
+    "//ui/webui/resources/js/cr/ui:focus_without_ink.m",
   ]
 }
 
@@ -82,13 +117,14 @@ js_library("manager") {
     ":item",
     ":search_service",
     ":toolbar",
-    "//third_party/polymer/v1_0/components-chromium/iron-list:iron-list-extracted",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:find_shortcut_behavior",
-    "//ui/webui/resources/js:load_time_data",
-    "//ui/webui/resources/js:util",
-    "//ui/webui/resources/js/cr:ui",
-    "//ui/webui/resources/js/cr/ui:command",
+    "//third_party/polymer/v3_0/components-chromium/iron-a11y-announcer",
+    "//third_party/polymer/v3_0/components-chromium/iron-list",
+    "//ui/webui/resources/cr_elements/cr_toast:cr_toast_manager.m",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:find_shortcut_behavior.m",
+    "//ui/webui/resources/js:load_time_data.m",
+    "//ui/webui/resources/js:promise_resolver.m",
+    "//ui/webui/resources/js:util.m",
   ]
   externs_list = [ "$externs_path/chrome_send.js" ]
 }
@@ -96,8 +132,8 @@ js_library("manager") {
 js_library("search_service") {
   deps = [
     ":browser_proxy",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:load_time_data",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:load_time_data.m",
   ]
 }
 
@@ -105,10 +141,44 @@ js_library("toolbar") {
   deps = [
     ":browser_proxy",
     ":search_service",
-    "//third_party/polymer/v1_0/components-chromium/iron-a11y-announcer:iron-a11y-announcer-extracted",
-    "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu",
-    "//ui/webui/resources/cr_elements/cr_toolbar:cr_toolbar",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:util",
+    "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu.m",
+    "//ui/webui/resources/cr_elements/cr_toast:cr_toast_manager.m",
+    "//ui/webui/resources/cr_elements/cr_toolbar:cr_toolbar.m",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:load_time_data.m",
+    "//ui/webui/resources/js:util.m",
   ]
+}
+
+group("polymer3_elements") {
+  deps = [
+    ":icons_module",
+    ":item_module",
+    ":manager_module",
+    ":toolbar_module",
+  ]
+}
+
+polymer_modulizer("item") {
+  html_file = "item.html"
+  js_file = "item.js"
+  html_type = "v3-ready"
+}
+
+polymer_modulizer("manager") {
+  html_file = "manager.html"
+  js_file = "manager.js"
+  html_type = "v3-ready"
+}
+
+polymer_modulizer("toolbar") {
+  html_file = "toolbar.html"
+  js_file = "toolbar.js"
+  html_type = "v3-ready"
+}
+
+polymer_modulizer("icons") {
+  html_file = "icons.html"
+  js_file = "icons.js"
+  html_type = "v3-ready"
 }

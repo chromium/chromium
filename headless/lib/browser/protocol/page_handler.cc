@@ -19,26 +19,18 @@ namespace {
 const double kScaleMaxVal = 200;
 const double kScaleMinVal = 10;
 
-void PDFCreated(std::unique_ptr<PageHandler::PrintToPDFCallback> callback,
-                HeadlessPrintManager::PrintResult print_result,
-                scoped_refptr<base::RefCountedMemory> data) {
-  std::unique_ptr<base::DictionaryValue> response;
-  if (print_result == HeadlessPrintManager::PRINT_SUCCESS) {
-    callback->sendSuccess(protocol::Binary::fromRefCounted(data));
-  } else {
-    callback->sendFailure(Response::Error(
-        HeadlessPrintManager::PrintResultToString(print_result)));
-  }
-}
 
 }  // namespace
 #endif  // BUILDFLAG(ENABLE_PRINTING)
 
-PageHandler::PageHandler(base::WeakPtr<HeadlessBrowserImpl> browser,
+PageHandler::PageHandler(scoped_refptr<content::DevToolsAgentHost> agent_host,
+                         base::WeakPtr<HeadlessBrowserImpl> browser,
                          content::WebContents* web_contents)
     : DomainHandler(Page::Metainfo::domainName, browser),
+      agent_host_(agent_host),
       web_contents_(web_contents) {
   DCHECK(web_contents_);
+  DCHECK(agent_host_);
 }
 
 PageHandler::~PageHandler() = default;
@@ -62,6 +54,7 @@ void PageHandler::PrintToPDF(Maybe<bool> landscape,
                              Maybe<String> header_template,
                              Maybe<String> footer_template,
                              Maybe<bool> prefer_css_page_size,
+                             Maybe<String> transfer_mode,
                              std::unique_ptr<PrintToPDFCallback> callback) {
 #if BUILDFLAG(ENABLE_PRINTING)
   HeadlessPrintSettings settings;
@@ -136,14 +129,41 @@ void PageHandler::PrintToPDF(Maybe<bool> landscape,
       margin_right_in_inch * printing::kPointsPerInch;
   settings.prefer_css_page_size = prefer_css_page_size.fromMaybe(false);
 
+  bool return_as_stream = transfer_mode.fromMaybe("") ==
+                          Page::PrintToPDF::TransferModeEnum::ReturnAsStream;
   HeadlessPrintManager::FromWebContents(web_contents_)
-      ->GetPDFContents(web_contents_->GetMainFrame(), settings,
-                       base::BindOnce(&PDFCreated, std::move(callback)));
+      ->GetPDFContents(
+          web_contents_->GetMainFrame(), settings,
+          base::BindOnce(&PageHandler::PDFCreated, weak_factory_.GetWeakPtr(),
+                         return_as_stream, std::move(callback)));
 #else
   callback->sendFailure(Response::Error("Printing is not enabled"));
   return;
 #endif  // BUILDFLAG(ENABLE_PRINTING)
 }
+
+#if BUILDFLAG(ENABLE_PRINTING)
+void PageHandler::PDFCreated(
+    bool returnAsStream,
+    std::unique_ptr<PageHandler::PrintToPDFCallback> callback,
+    HeadlessPrintManager::PrintResult print_result,
+    scoped_refptr<base::RefCountedMemory> data) {
+  std::unique_ptr<base::DictionaryValue> response;
+  if (print_result != HeadlessPrintManager::PRINT_SUCCESS) {
+    callback->sendFailure(Response::Error(
+        HeadlessPrintManager::PrintResultToString(print_result)));
+    return;
+  }
+
+  if (!returnAsStream) {
+    callback->sendSuccess(protocol::Binary::fromRefCounted(data),
+                          Maybe<std::string>());
+    return;
+  }
+  std::string handle = agent_host_->CreateIOStreamFromData(data);
+  callback->sendSuccess(protocol::Binary(), handle);
+}
+#endif  // BUILDFLAG(ENABLE_PRINTING)
 
 }  // namespace protocol
 }  // namespace headless

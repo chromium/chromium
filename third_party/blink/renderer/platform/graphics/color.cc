@@ -30,7 +30,6 @@
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/decimal.h"
 #include "third_party/blink/renderer/platform/wtf/dtoa.h"
-#include "third_party/blink/renderer/platform/wtf/hex_number.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
@@ -226,15 +225,8 @@ bool Color::SetFromString(const String& name) {
 }
 
 String Color::Serialized() const {
-  if (!HasAlpha()) {
-    StringBuilder builder;
-    builder.ReserveCapacity(7);
-    builder.Append('#');
-    HexNumber::AppendByteAsHex(Red(), builder, HexNumber::kLowercase);
-    HexNumber::AppendByteAsHex(Green(), builder, HexNumber::kLowercase);
-    HexNumber::AppendByteAsHex(Blue(), builder, HexNumber::kLowercase);
-    return builder.ToString();
-  }
+  if (!HasAlpha())
+    return String::Format("#%02x%02x%02x", Red(), Green(), Blue());
 
   StringBuilder result;
   result.ReserveCapacity(28);

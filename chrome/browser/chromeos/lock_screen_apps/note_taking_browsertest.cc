@@ -4,7 +4,7 @@
 
 #include "apps/launcher.h"
 #include "ash/public/cpp/ash_switches.h"
-#include "ash/public/interfaces/tray_action.mojom.h"
+#include "ash/public/mojom/tray_action.mojom.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
 #include "base/scoped_observer.h"

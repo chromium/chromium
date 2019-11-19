@@ -1,0 +1,25 @@
+Tests that fetching the tree for a node without an AXNode functions correctly.
+
+WebArea
+  main
+    article
+      *Ignored
+{
+  "nodeId": "<string>",
+  "ignored": true,
+  "ignoredReasons": [
+    {
+      "name": "notRendered",
+      "value": {
+        "type": "boolean",
+        "value": true
+      }
+    }
+  ],
+  "role": {
+    "type": "internalRole",
+    "value": "Ignored"
+  },
+  "domNode": "div#hidden"
+}
+

@@ -205,7 +205,7 @@ class PlatformKeysService : public KeyedService {
   KeyPermissions key_permissions_;
   std::unique_ptr<SelectDelegate> select_delegate_;
   base::queue<std::unique_ptr<Task>> tasks_;
-  base::WeakPtrFactory<PlatformKeysService> weak_factory_;
+  base::WeakPtrFactory<PlatformKeysService> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PlatformKeysService);
 };

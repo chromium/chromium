@@ -1,0 +1,85 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module chromeos.assistant.mojom;
+
+import "mojo/public/mojom/base/time.mojom";
+import "url/mojom/url.mojom";
+
+// Enumeration of notification types.
+enum AssistantNotificationType {
+  // A notification of type |kInAssistant| will only be displayed within
+  // Assistant UI. If Assistant UI is not visible at the time of notification
+  // creation, the notification will be queued up until Assistant UI becomes
+  // visible. When Assistant UI dismisses, notifications of this type are
+  // dismissed.
+  kInAssistant,
+
+  // A notification of type |kPreferInAssistant| may be shown in either
+  // Assistant UI or the Message Center, depending on Assistant visibility
+  // state. If Assistant UI is not visible, notifications of this type will
+  // show immediately in the Message Center unless the user has opted out of
+  // seeing system notifications. Once Assistant UI becomes visible, or if it
+  // is already visible at the time of notification creation, notifications of
+  // this type are converted to notifications of type |kInAssistant| and they
+  // will finish out their lifetimes as in-Assistant notifications.
+  kPreferInAssistant,
+
+  // A notification of type |kSystem| will only be displayed within the Message
+  // Center. It is immediately added to the Message Center regardless of
+  // Assistant UI visibility state, although it may not be added if the user has
+  // opted out of seeing system notifications.
+  kSystem,
+};
+
+// Models a notification button.
+struct AssistantNotificationButton {
+  // Display text of the button.
+  string label;
+
+  // Optional URL to open when the tap action is invoked on the button.
+  url.mojom.Url action_url;
+};
+
+// Models an Assistant notification.
+struct AssistantNotification {
+  // Type of the notification.
+  AssistantNotificationType type = AssistantNotificationType.kSystem;
+
+  // Title of the notification.
+  string title;
+
+  // Body text of the notification.
+  string message;
+
+  // Optional URL to open when the tap action is invoked on the notification
+  // main UI.
+  url.mojom.Url action_url;
+
+  // List of buttons in the notification.
+  array<AssistantNotificationButton> buttons;
+
+  // An id that uniquely identifies a notification on the client.
+  string client_id;
+
+  // An id that uniquely identifies a notification on the server.
+  string server_id;
+
+  // Used to fetch notification contents.
+  string consistency_token;
+  string opaque_token;
+
+  // Key that can be used to group multiple notifications together.
+  string grouping_key;
+
+  // Obfuscated Gaia id of the intended recipient of the user.
+  string obfuscated_gaia_id;
+
+  // Whether this notification can turn on the display if it was off.
+  bool is_high_priority = false;
+
+  // When the notification should expire.
+  // Expressed as milliseconds since Unix Epoch.
+  mojo_base.mojom.Time? expiry_time;
+};

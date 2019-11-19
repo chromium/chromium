@@ -45,7 +45,10 @@ class ChromeExtensionTestNotificationObserver
   content::BrowserContext* GetBrowserContext();
 
   // ExtensionActionAPI::Observer:
-  void OnPageActionsUpdated(content::WebContents* contents) override;
+  void OnExtensionActionUpdated(
+      ExtensionAction* extension_action,
+      content::WebContents* web_contents,
+      content::BrowserContext* browser_context) override;
 
   Browser* const browser_;
 

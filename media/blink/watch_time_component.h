@@ -13,7 +13,7 @@
 #include "media/base/timestamp_constants.h"
 #include "media/base/watch_time_keys.h"
 #include "media/blink/media_blink_export.h"
-#include "media/mojo/interfaces/watch_time_recorder.mojom.h"
+#include "media/mojo/mojom/watch_time_recorder.mojom.h"
 
 namespace media {
 

@@ -32,10 +32,11 @@ class NativeDesktopMediaList : public DesktopMediaListBase {
   friend class Worker;
 
   // Refresh() posts a task for the |worker_| to update list of windows, get
-  // thumbnails and schedule next refresh.
-  void Refresh() override;
+  // thumbnails and schedules next refresh.
+  void Refresh(bool update_thumnails) override;
 
-  void RefreshForAuraWindows(std::vector<SourceDescription> sources);
+  void RefreshForAuraWindows(std::vector<SourceDescription> sources,
+                             bool update_thumnails);
   void UpdateNativeThumbnailsFinished();
 
 #if defined(USE_AURA)
@@ -58,7 +59,7 @@ class NativeDesktopMediaList : public DesktopMediaListBase {
   int pending_aura_capture_requests_ = 0;
   bool pending_native_thumbnail_capture_ = false;
 #endif
-  base::WeakPtrFactory<NativeDesktopMediaList> weak_factory_;
+  base::WeakPtrFactory<NativeDesktopMediaList> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(NativeDesktopMediaList);
 };

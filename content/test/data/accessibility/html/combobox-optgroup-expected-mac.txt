@@ -1,0 +1,8 @@
+AXWebArea AXRoleDescription='HTML content'
+++AXGroup AXRoleDescription='group'
+++++AXPopUpButton AXRoleDescription='pop up button' AXValue='Mercedes Label'
+++++++AXMenu AXRoleDescription='menu'
+++++++++AXMenuItem AXRoleDescription='menu item' AXValue='Volvo Label'
+++++++++AXMenuItem AXRoleDescription='menu item' AXValue='Saab Label'
+++++++++AXMenuItem AXRoleDescription='menu item' AXValue='Mercedes Label'
+++++++++AXMenuItem AXRoleDescription='menu item' AXValue='Audi Label'

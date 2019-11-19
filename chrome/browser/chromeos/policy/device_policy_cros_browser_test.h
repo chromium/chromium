@@ -9,8 +9,9 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "chrome/browser/chromeos/login/test/device_state_mixin.h"
 #include "chrome/browser/chromeos/policy/device_policy_builder.h"
-#include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 
 namespace chromeos {
@@ -23,14 +24,6 @@ class DevicePolicyCrosTestHelper {
  public:
   DevicePolicyCrosTestHelper();
   ~DevicePolicyCrosTestHelper();
-
-  // Marks the device as enterprise-owned. Must be called to make device
-  // policies apply Chrome-wide. If this is not called, device policies will
-  // affect CrosSettings only.
-  static void MarkAsEnterpriseOwnedBy(const std::string& user_name);
-
-  // Calls MarkAsEnterpriseOwnedBy() with the user from |device_policy_|.
-  void MarkAsEnterpriseOwned();
 
   // Writes the owner key to disk. To be called before installing a policy.
   void InstallOwnerKey();
@@ -47,23 +40,10 @@ class DevicePolicyCrosTestHelper {
 };
 
 // Used to test Device policy changes in Chrome OS.
-class DevicePolicyCrosBrowserTest : public InProcessBrowserTest {
+class DevicePolicyCrosBrowserTest : public MixinBasedInProcessBrowserTest {
  protected:
   DevicePolicyCrosBrowserTest();
   ~DevicePolicyCrosBrowserTest() override;
-
-  void SetUp() override;
-  void SetUpInProcessBrowserTestFixture() override;
-
-  virtual void MarkOwnership();
-
-  // Marks the device as enterprise-owned. Must be called to make device
-  // policies apply Chrome-wide. If this is not called, device policies will
-  // affect CrosSettings only.
-  void MarkAsEnterpriseOwned();
-
-  // Writes the owner key to disk. To be called before installing a policy.
-  void InstallOwnerKey();
 
   // Reinstalls |device_policy_| as the policy (to be used when it was
   // recently changed).
@@ -78,6 +58,10 @@ class DevicePolicyCrosBrowserTest : public InProcessBrowserTest {
   }
 
   DevicePolicyBuilder* device_policy() { return test_helper_.device_policy(); }
+
+  chromeos::DeviceStateMixin device_state_{
+      &mixin_host_,
+      chromeos::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
 
  private:
   DevicePolicyCrosTestHelper test_helper_;

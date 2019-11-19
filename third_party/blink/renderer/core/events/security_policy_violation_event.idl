@@ -31,7 +31,8 @@ enum SecurityPolicyViolationEventDisposition {
 
 [
   Constructor(DOMString type),
-  Constructor(DOMString type, SecurityPolicyViolationEventInit eventInitDict)
+  Constructor(DOMString type, SecurityPolicyViolationEventInit eventInitDict),
+  Exposed=(Window,Worker)
 ] interface SecurityPolicyViolationEvent : Event {
     // TODO(foolip): The spec says "documentURL".
     [Measure] readonly attribute DOMString documentURI;

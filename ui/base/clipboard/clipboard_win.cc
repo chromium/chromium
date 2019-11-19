@@ -15,7 +15,7 @@
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/message_loop/message_loop.h"
+#include "base/message_loop/message_loop_current.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -230,7 +230,7 @@ Clipboard* Clipboard::Create() {
 // ClipboardWin implementation.
 ClipboardWin::ClipboardWin() {
   if (base::MessageLoopCurrentForUI::IsSet())
-    clipboard_owner_.reset(new base::win::MessageWindow());
+    clipboard_owner_ = std::make_unique<base::win::MessageWindow>();
 }
 
 ClipboardWin::~ClipboardWin() {
@@ -238,19 +238,19 @@ ClipboardWin::~ClipboardWin() {
 
 void ClipboardWin::OnPreShutdown() {}
 
-uint64_t ClipboardWin::GetSequenceNumber(ClipboardType type) const {
-  DCHECK_EQ(type, CLIPBOARD_TYPE_COPY_PASTE);
+uint64_t ClipboardWin::GetSequenceNumber(ClipboardBuffer buffer) const {
+  DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
   return ::GetClipboardSequenceNumber();
 }
 
 bool ClipboardWin::IsFormatAvailable(const ClipboardFormatType& format,
-                                     ClipboardType type) const {
-  DCHECK_EQ(type, CLIPBOARD_TYPE_COPY_PASTE);
+                                     ClipboardBuffer buffer) const {
+  DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
   return ::IsClipboardFormatAvailable(format.ToFormatEtc().cfFormat) != FALSE;
 }
 
-void ClipboardWin::Clear(ClipboardType type) {
-  DCHECK_EQ(type, CLIPBOARD_TYPE_COPY_PASTE);
+void ClipboardWin::Clear(ClipboardBuffer buffer) {
+  DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
   ScopedClipboard clipboard;
   if (!clipboard.Acquire(GetClipboardWindow()))
     return;
@@ -258,7 +258,7 @@ void ClipboardWin::Clear(ClipboardType type) {
   ::EmptyClipboard();
 }
 
-void ClipboardWin::ReadAvailableTypes(ClipboardType type,
+void ClipboardWin::ReadAvailableTypes(ClipboardBuffer buffer,
                                       std::vector<base::string16>* types,
                                       bool* contains_filenames) const {
   if (!types || !contains_filenames) {
@@ -294,8 +294,9 @@ void ClipboardWin::ReadAvailableTypes(ClipboardType type,
   ::GlobalUnlock(hdata);
 }
 
-void ClipboardWin::ReadText(ClipboardType type, base::string16* result) const {
-  DCHECK_EQ(type, CLIPBOARD_TYPE_COPY_PASTE);
+void ClipboardWin::ReadText(ClipboardBuffer buffer,
+                            base::string16* result) const {
+  DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
   if (!result) {
     NOTREACHED();
     return;
@@ -318,9 +319,9 @@ void ClipboardWin::ReadText(ClipboardType type, base::string16* result) const {
   TrimAfterNull(result);
 }
 
-void ClipboardWin::ReadAsciiText(ClipboardType type,
+void ClipboardWin::ReadAsciiText(ClipboardBuffer buffer,
                                  std::string* result) const {
-  DCHECK_EQ(type, CLIPBOARD_TYPE_COPY_PASTE);
+  DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
   if (!result) {
     NOTREACHED();
     return;
@@ -343,12 +344,12 @@ void ClipboardWin::ReadAsciiText(ClipboardType type,
   TrimAfterNull(result);
 }
 
-void ClipboardWin::ReadHTML(ClipboardType type,
+void ClipboardWin::ReadHTML(ClipboardBuffer buffer,
                             base::string16* markup,
                             std::string* src_url,
                             uint32_t* fragment_start,
                             uint32_t* fragment_end) const {
-  DCHECK_EQ(type, CLIPBOARD_TYPE_COPY_PASTE);
+  DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
 
   markup->clear();
   // TODO(dcheng): Remove these checks, I don't think they should be optional.
@@ -400,15 +401,15 @@ void ClipboardWin::ReadHTML(ClipboardType type,
   *fragment_end = base::checked_cast<uint32_t>(end);
 }
 
-void ClipboardWin::ReadRTF(ClipboardType type, std::string* result) const {
-  DCHECK_EQ(type, CLIPBOARD_TYPE_COPY_PASTE);
+void ClipboardWin::ReadRTF(ClipboardBuffer buffer, std::string* result) const {
+  DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
 
   ReadData(ClipboardFormatType::GetRtfType(), result);
   TrimAfterNull(result);
 }
 
-SkBitmap ClipboardWin::ReadImage(ClipboardType type) const {
-  DCHECK_EQ(type, CLIPBOARD_TYPE_COPY_PASTE);
+SkBitmap ClipboardWin::ReadImage(ClipboardBuffer buffer) const {
+  DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
 
   // Acquire the clipboard.
   ScopedClipboard clipboard;
@@ -424,7 +425,7 @@ SkBitmap ClipboardWin::ReadImage(ClipboardType type) const {
   int color_table_length = 0;
 
   // For more information on BITMAPINFOHEADER and biBitCount definition,
-  // see https://docs.microsoft.com/en-us/previous-versions//dd183376(v=vs.85)
+  // see https://docs.microsoft.com/en-us/windows/win32/wmdm/-bitmapinfoheader
   switch (bitmap->bmiHeader.biBitCount) {
     case 1:
     case 4:
@@ -453,7 +454,7 @@ SkBitmap ClipboardWin::ReadImage(ClipboardType type) const {
                           false, 0, &dst_bits);
 
   {
-    base::win::ScopedCreateDC hdc(CreateCompatibleDC(NULL));
+    base::win::ScopedCreateDC hdc(CreateCompatibleDC(nullptr));
     HBITMAP old_hbitmap =
         static_cast<HBITMAP>(SelectObject(hdc.Get(), dst_hbitmap));
     ::SetDIBitsToDevice(hdc.Get(), 0, 0, bitmap->bmiHeader.biWidth,
@@ -492,10 +493,10 @@ SkBitmap ClipboardWin::ReadImage(ClipboardType type) const {
   return skia_bitmap;
 }
 
-void ClipboardWin::ReadCustomData(ClipboardType clipboard_type,
+void ClipboardWin::ReadCustomData(ClipboardBuffer buffer,
                                   const base::string16& type,
                                   base::string16* result) const {
-  DCHECK_EQ(clipboard_type, CLIPBOARD_TYPE_COPY_PASTE);
+  DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
 
   // Acquire the clipboard.
   ScopedClipboard clipboard;
@@ -556,8 +557,9 @@ void ClipboardWin::ReadData(const ClipboardFormatType& format,
   ::GlobalUnlock(data);
 }
 
-void ClipboardWin::WriteObjects(ClipboardType type, const ObjectMap& objects) {
-  DCHECK_EQ(type, CLIPBOARD_TYPE_COPY_PASTE);
+void ClipboardWin::WritePortableRepresentations(ClipboardBuffer buffer,
+                                                const ObjectMap& objects) {
+  DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
 
   ScopedClipboard clipboard;
   if (!clipboard.Acquire(GetClipboardWindow()))
@@ -565,10 +567,22 @@ void ClipboardWin::WriteObjects(ClipboardType type, const ObjectMap& objects) {
 
   ::EmptyClipboard();
 
-  for (ObjectMap::const_iterator iter = objects.begin(); iter != objects.end();
-       ++iter) {
-    DispatchObject(static_cast<ObjectType>(iter->first), iter->second);
-  }
+  for (const auto& object : objects)
+    DispatchPortableRepresentation(object.first, object.second);
+}
+
+void ClipboardWin::WritePlatformRepresentations(
+    ClipboardBuffer buffer,
+    std::vector<Clipboard::PlatformRepresentation> platform_representations) {
+  DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
+
+  ScopedClipboard clipboard;
+  if (!clipboard.Acquire(GetClipboardWindow()))
+    return;
+
+  ::EmptyClipboard();
+
+  DispatchPlatformRepresentations(std::move(platform_representations));
 }
 
 void ClipboardWin::WriteText(const char* text_data, size_t text_len) {
@@ -616,14 +630,14 @@ void ClipboardWin::WriteBookmark(const char* title_data,
 }
 
 void ClipboardWin::WriteWebSmartPaste() {
-  DCHECK(clipboard_owner_->hwnd() != NULL);
+  DCHECK(clipboard_owner_->hwnd() != nullptr);
   ::SetClipboardData(
       ClipboardFormatType::GetWebKitSmartPasteType().ToFormatEtc().cfFormat,
-      NULL);
+      nullptr);
 }
 
 void ClipboardWin::WriteBitmap(const SkBitmap& in_bitmap) {
-  HDC dc = ::GetDC(NULL);
+  HDC dc = ::GetDC(nullptr);
 
   SkBitmap bitmap;
   // Either points bitmap at in_bitmap, or allocates and converts pixels.
@@ -647,10 +661,11 @@ void ClipboardWin::WriteBitmap(const SkBitmap& in_bitmap) {
 
   // ::CreateDIBSection allocates memory for us to copy our bitmap into.
   // Unfortunately, we can't write the created bitmap to the clipboard,
-  // (see http://msdn2.microsoft.com/en-us/library/ms532292.aspx)
+  // (see
+  // https://docs.microsoft.com/en-us/windows/win32/api/wingdi/nf-wingdi-createdibsection)
   void* bits;
   HBITMAP source_hbitmap =
-      ::CreateDIBSection(dc, &bm_info, DIB_RGB_COLORS, &bits, NULL, 0);
+      ::CreateDIBSection(dc, &bm_info, DIB_RGB_COLORS, &bits, nullptr, 0);
 
   if (bits && source_hbitmap) {
     // Copy the bitmap out of shared memory and into GDI
@@ -662,7 +677,7 @@ void ClipboardWin::WriteBitmap(const SkBitmap& in_bitmap) {
   }
 
   ::DeleteObject(source_hbitmap);
-  ::ReleaseDC(NULL, dc);
+  ::ReleaseDC(nullptr, dc);
 }
 
 void ClipboardWin::WriteData(const ClipboardFormatType& format,
@@ -685,9 +700,9 @@ void ClipboardWin::WriteBitmapFromHandle(HBITMAP source_hbitmap,
   // For this reason, we create a new bitmap, copy the bits over, and then
   // write that to the clipboard.
 
-  HDC dc = ::GetDC(NULL);
-  HDC compatible_dc = ::CreateCompatibleDC(NULL);
-  HDC source_dc = ::CreateCompatibleDC(NULL);
+  HDC dc = ::GetDC(nullptr);
+  HDC compatible_dc = ::CreateCompatibleDC(nullptr);
+  HDC source_dc = ::CreateCompatibleDC(nullptr);
 
   // This is the HBITMAP we will eventually write to the clipboard
   HBITMAP hbitmap = ::CreateCompatibleBitmap(dc, size.width(), size.height());
@@ -695,7 +710,7 @@ void ClipboardWin::WriteBitmapFromHandle(HBITMAP source_hbitmap,
     // Failed to create the bitmap
     ::DeleteDC(compatible_dc);
     ::DeleteDC(source_dc);
-    ::ReleaseDC(NULL, dc);
+    ::ReleaseDC(nullptr, dc);
     return;
   }
 
@@ -723,13 +738,13 @@ void ClipboardWin::WriteBitmapFromHandle(HBITMAP source_hbitmap,
   ::DeleteObject(old_source);
   ::DeleteDC(compatible_dc);
   ::DeleteDC(source_dc);
-  ::ReleaseDC(NULL, dc);
+  ::ReleaseDC(nullptr, dc);
 
   WriteToClipboard(CF_BITMAP, hbitmap);
 }
 
 void ClipboardWin::WriteToClipboard(unsigned int format, HANDLE handle) {
-  DCHECK(clipboard_owner_->hwnd() != NULL);
+  DCHECK(clipboard_owner_->hwnd() != nullptr);
   if (handle && !::SetClipboardData(format, handle)) {
     DCHECK(ERROR_CLIPBOARD_NOT_OPEN != GetLastError());
     FreeData(format, handle);
@@ -738,9 +753,9 @@ void ClipboardWin::WriteToClipboard(unsigned int format, HANDLE handle) {
 
 HWND ClipboardWin::GetClipboardWindow() const {
   if (!clipboard_owner_)
-    return NULL;
+    return nullptr;
 
-  if (clipboard_owner_->hwnd() == NULL)
+  if (clipboard_owner_->hwnd() == nullptr)
     clipboard_owner_->Create(base::Bind(&ClipboardOwnerWndProc));
 
   return clipboard_owner_->hwnd();

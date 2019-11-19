@@ -1,0 +1,199 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "cc/mojom/touch_action.mojom";
+import "mojo/public/mojom/base/string16.mojom";
+import "skia/public/mojom/skcolor.mojom";
+import "third_party/blink/public/mojom/devtools/console_message.mojom";
+import "third_party/blink/public/mojom/frame/fullscreen.mojom";
+import "third_party/blink/public/mojom/frame/lifecycle.mojom";
+import "url/mojom/origin.mojom";
+import "url/mojom/url.mojom";
+
+// Implemented in Browser, this interface defines frame-specific methods that will
+// be invoked from the render process (e.g. content::RenderFrameHostImpl).
+//
+// Note that this is different than content/common/frame.mojom in that the
+// methods defined here are called directly in Blink without passing through
+// content. In the future this interface will likely host more methods as the
+// Onion Soup project advances, which can potentially lead to the removal of
+// content/common/frame.mojom if enough code is moved to Blink.
+interface LocalFrameHost {
+
+  // Request to the browser that the frame wishes to enter fullscreen mode.
+  EnterFullscreen(FullscreenOptions options);
+
+  // Request to the browser to exit fullscreen mode.
+  ExitFullscreen();
+
+  // Notifies the browser that the current frame has either become or is no
+  // longer fullscreen.
+  FullscreenStateChanged(bool is_fullscreen);
+
+  // Register a new handler for URL requests with the given scheme. |scheme|,
+  // |url|, and |title| are provided directly from javascript. See
+  // https://html.spec.whatwg.org/multipage/system-state.html#custom-handlers
+  // |user_gesture| indicates if the javascript API was called in context of
+  // having an active transient user gesture.
+  RegisterProtocolHandler(string scheme, url.mojom.Url url,
+                          mojo_base.mojom.String16 title, bool user_gesture);
+
+  // Unregister the registered handler for URL requests with the given scheme.
+  // |scheme|, and |url| are provided directly from javascript. See
+  // https://html.spec.whatwg.org/multipage/system-state.html#custom-handlers
+  // |user_gesture| indicates if the javascript API was called in context of
+  // having an active transient user gesture.
+  UnregisterProtocolHandler(string scheme, url.mojom.Url url, bool user_gesture);
+
+  // Indication that the associated frame has displayed inactive content
+  // (such as an image) from an insecure source. Inactive content cannot spread
+  // to other frames.
+  DidDisplayInsecureContent();
+
+  // Indication that the associated frame contains a form that submits to an
+  // insecure target url.
+  DidContainInsecureFormAction();
+
+  // Indicates that a child frame requires its parent frame to send it information
+  // about whether it is occluded or has visual effects applied, in order to
+  // service IntersectionObserver's that track visibility.
+  SetNeedsOcclusionTracking(bool needs_tracking);
+
+  // Notifies the browser that the current frame has changed its lifecycle
+  // state.
+  LifecycleStateChanged(blink.mojom.FrameLifecycleState state);
+
+  // Evicts the page from the back/forward cache due to e.g., JavaScript
+  // execution.
+  EvictFromBackForwardCache();
+
+  // Notifies the browser that the associated frame has changed its visibility
+  // status. Visibility status changes occur when the frame moves in/out
+  // of the viewport, or the need for a layout object changes, e.g. if the
+  // frame owner assigns a display: none style.
+  VisibilityChanged(blink.mojom.FrameVisibility visibility);
+
+  // Notifies the browser that the associated frame has changed theme color.
+  // This will only be called on main-frames only. |theme_color| is optional
+  // and indicates if a theme color has been specified or not, e.g. removal
+  // of a theme color meta tag  will generate a null value.
+  DidChangeThemeColor(skia.mojom.SkColor? theme_color);
+
+  // Sent by the renderer when the associated frame becomes focused.
+  DidFocusFrame();
+
+  // Sent when the frame starts enforcing an insecure request policy. Sending
+  // this information in DidCommitProvisionalLoad isn't sufficient; this
+  // message is needed because, for example, a document can dynamically insert
+  // a <meta> tag that causes strict mixed content checking to be enforced.
+  //
+  // Argument |policy_bitmap| represents blink::WebInsecureRequestPolicy uint8
+  // bitfield.
+  EnforceInsecureRequestPolicy(uint8 policy_bitmap);
+
+  // Elements of |set| are hashes of hosts to upgrade.
+  EnforceInsecureNavigationsSet(array<uint32> set);
+
+  // Sent by the blink's FrameScheduler when a list of active features
+  // the scheduler tracks changes.
+  // See blink::scheduler::SchedulingPolicy::Feature for the meaning
+  // of the individual bits.
+  // TODO(altimin): Move into a separate scheduling interface.
+  DidChangeActiveSchedulerTrackedFeatures(uint64 features_mask);
+};
+
+// Implemented in Blink, this interface defines frame-specific methods that will
+// be invoked from the browser process (e.g. content::RenderFrameHostImpl).
+//
+// Note that this is different than content/common/frame.mojom in that the
+// methods defined here are handled directly in Blink without passing through
+// content. In the future this interface will likely host more methods as the
+// Onion Soup project advances, which can potentially lead to the removal of
+// content/common/frame.mojom if enough code is moved to Blink.
+interface LocalFrame {
+  // Retrieves the text surrounding the current selection for the frame up to
+  // the length specified by |max_length|, along with its start and end offsets.
+  GetTextSurroundingSelection(uint32 max_length)
+      => (mojo_base.mojom.String16 content, uint32 start_offset,
+          uint32 end_offset);
+
+  // Creates an intervention report in the frame with contents |id| and
+  // |message|, returns once the report has been queued. |id| identifies the
+  // intervention that occurred. |message| is a human-readable string that
+  // can provide additional context to the cause of the intervention.
+  SendInterventionReport(string id, string message);
+
+  // Notifies the RenderFrame about a user activation detected in the browser side
+  // (e.g. during Android voice search).
+  NotifyUserActivation();
+
+  // Add message to the frame console.
+  AddMessageToConsole(ConsoleMessageLevel level, string message,
+                    bool discard_duplicates);
+
+  // Sent to a frame when one of its remote children finishes loading, so that the
+  // frame can update its loading state.
+  CheckCompleted();
+};
+
+// Implemented in Browser, this interface defines frame-specific methods that will
+// be invoked from the render process (e.g. blink::RemoteFrame).
+//
+// Note that this is different than content/common/frame.mojom in that the
+// methods defined here are called directly in Blink without passing through
+// content. In the future this interface will likely host more methods as the
+// Onion Soup project advances, which can potentially lead to the removal of
+// content/common/frame.mojom if enough code is moved to Blink.
+interface RemoteFrameHost {
+  // Notifies that an effective touch action has been calculated from an
+  // ancestor of the associated RemoteFrame and should be propogated to
+  // the associated LocalFrame in the other render process.
+  SetInheritedEffectiveTouchAction(cc.mojom.TouchAction touch_action);
+
+  // Notifies the browser that the associated frame has changed its visibility
+  // status. Visibility status changes occur when the frame moves in/out
+  // of the viewport, or the need for a layout object changes, e.g. if the
+  // frame owner assigns a display: none style.
+  VisibilityChanged(blink.mojom.FrameVisibility visibility);
+
+  // Sent by the renderer when the frame becomes focused.
+  DidFocusFrame();
+};
+
+// Implemented in Blink, this interface defines frame-specific methods that will
+// be invoked from the browser process (e.g. content::RenderFrameProxyHost).
+//
+// Note that this is different than content/common/frame.mojom in that the
+// methods defined here are handled directly in Blink without passing through
+// content. In the future this interface will likely host more methods as the
+// Onion Soup project advances, which can potentially lead to the removal of
+// content/common/frame.mojom if enough code is moved to Blink.
+interface RemoteFrame {
+  // Sent to a frame proxy when its real frame is preparing to enter fullscreen
+  // in another process.  Actually entering fullscreen will be done separately as
+  // part of ViewMsg_Resize, once the browser process has resized the tab for
+  // fullscreen.
+  WillEnterFullscreen();
+
+  // Resets the replicated ContentSecurityPolicy on the remote frame's
+  // SecurityContext. Used to reset CSP from the previous document on
+  // a cross-document navigation.
+  ResetReplicatedContentSecurityPolicy();
+
+  // Update replicated set for enforcement of insecure navigations. |set|
+  // is a hashed set of host/port pairs. See
+  // SecurityContext::SetInsecureNavigationsSet.
+  EnforceInsecureNavigationsSet(array<uint32> set);
+
+  // Update the replicated origin. Used when the frame is navigated to a
+  // new origin.
+  SetReplicatedOrigin(url.mojom.Origin origin,
+    bool is_potentially_trustworthy_unique_origin);
+
+  // Sent to dispatch a load event in the frame's owner element.
+  // (eg. the iframe, portal, or object element).
+  DispatchLoadEventForFrameOwner();
+};

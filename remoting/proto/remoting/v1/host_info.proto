@@ -1,0 +1,79 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option java_multiple_files = true;
+option optimize_for = LITE_RUNTIME;
+
+package remoting.apis.v1;
+
+// Represents a Chrome Remote Desktop host instance.  It includes static data
+// from when the host was first registered as well as transient data such as
+// the signaling ID and the last heartbeat time.
+message HostInfo {
+  // Host identity. Normally a UUID.
+  optional string host_id = 1;
+
+  // Public key for the host. Must be a 2048-bit RSA key encoded with BASE64.
+  optional string public_key = 2;
+
+  // A readable name shown to the user.
+  optional string host_name = 3;
+
+  // Time when the host was created (milliseconds since 01/01/1970 GMT).
+  optional int64 created_time = 4;
+
+  // Most recent JabberID.
+  optional string jabber_id = 5;
+
+  // JID-like ID of the form user@domain.com/chromoting_ftl_<reg ID>.
+  optional string ftl_id = 6;
+
+  // Status of the host.
+  enum Status {
+    // Field was not set.
+    STATUS_UNSET = 0;
+    // The host is offline.
+    OFFLINE = 1;
+    // The host is online.
+    ONLINE = 2;
+  }
+  // The current online status of the host based on the last heartbeat seen.
+  optional Status status = 7 [default = OFFLINE];
+
+  // Host offline reason.  See also:
+  // - chromium/src/remoting/host/heartbeat_sender.h
+  // - kHostExitCodeStrings in chromium/src/remoting/host/host_exit_codes.cc
+  optional string host_offline_reason = 8;
+
+  // Time when the host was last online (milliseconds since 01/01/1970 GMT).
+  optional int64 last_seen_time = 9;
+
+  // State of the host registration process.
+  enum RegistrationState {
+    // Field was not set.
+    REGISTRATION_STATE_UNSET = 0;
+    // The service is waiting for the host to send its signaling ID.
+    WAITING_FOR_HOST_STATUS = 1;
+    // The service has timed out waiting for the host to send its signaling ID.
+    TIMED_OUT_WAITING_FOR_HOST_STATUS = 2;
+    // The host has sent its signaling ID and completed registration.
+    HOST_STATUS_RECEIVED = 3;
+  }
+  // The registration state of the host.
+  optional RegistrationState registration_state = 10;
+
+  // A RegEx used to validate an incoming third-party auth URL from the host.
+  repeated string token_url_pattern = 11;
+
+  // Version of the Me2Me/It2Me host software installed on the host.
+  optional string host_version = 12;
+
+  // Operating system type of the host.
+  optional string host_os_name = 13;
+
+  // Operating system version of the host.
+  optional string host_os_version = 14;
+}

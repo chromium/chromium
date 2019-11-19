@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+testRunner.waitUntilDone();
+</script>
+<script src='../../../fast/forms/resources/picker-common.js'></script>
+</head>
+<body>
+<input type='color' id='color'>
+
+<p id='description' style='opacity: 0'></p>
+<div id='console' style='opacity: 0'></div>
+
+<script>
+openPicker(document.getElementById('color'), openPickerSuccessfulCallback, () => testRunner.notifyDone());
+
+function openPickerSuccessfulCallback() {
+  popupWindow.focus();
+  const popupDocument = popupWindow.document;
+  const hueSlider = popupDocument.querySelector('hue-slider');
+  const hueSliderRect = hueSlider.getBoundingClientRect();
+  eventSender.mouseMoveTo(hueSliderRect.left + (hueSliderRect.width / 2), hueSliderRect.top);
+  eventSender.mouseDown();
+  eventSender.mouseUp();
+  testRunner.notifyDone();
+}
+</script>
+</body>
+</html>

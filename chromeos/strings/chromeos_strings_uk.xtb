@@ -1,22 +1,41 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="uk">
+<translation id="1482734542997480527">Сайт <ph name="ENROLLMENT_DOMAIN" /> керує цим пристроєм і може відстежувати ваші дії.</translation>
 <translation id="1510238584712386396">Панель запуску</translation>
 <translation id="1734367976349034509">Цим пристроєм керує адміністратор підприємства</translation>
+<translation id="1930797645656624981">Сервіс методів введення в ОС Chrome</translation>
+<translation id="1979103255016296513">Час для зміни пароля минув</translation>
 <translation id="2049639323467105390">Цим пристроєм керує домен <ph name="DOMAIN" />.</translation>
 <translation id="2083960536266308407">На екрані не знайдено проблемних елементів</translation>
 <translation id="2338501278241028356">Щоб знайти пристрої поблизу, увімкніть Bluetooth</translation>
 <translation id="2805756323405976993">Додатки</translation>
 <translation id="2872961005593481000">Завершити роботу</translation>
-<translation id="3147142846278915599">Панель запуску (синхронізація додатків…)</translation>
+<translation id="3008341117444806826">ОНОВИТИ</translation>
+<translation id="3838338534323494292">Новий пароль</translation>
+<translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> керує цим пристроєм і має доступ до всіх дій користувача, зокрема відвіданих сторінок, паролів і електронних листів.</translation>
+<translation id="4227825898293920515">Термін дії пароля закінчиться через <ph name="TIME" /></translation>
+<translation id="4429881212383817840">Термін дії квитка Kerberos незабаром минає</translation>
+<translation id="445059817448385655">Старий пароль</translation>
+<translation id="467510802200863975">Паролі не збігаються</translation>
 <translation id="4731797938093519117">Батьківський доступ</translation>
+<translation id="4890353053343094602">Негайно виберіть новий</translation>
 <translation id="5212543919916444558">На екрані не знайдено елементів, проблеми з якими я можу вирішити.
 Торкніться значка мікрофона, щоб поставити запитання.</translation>
 <translation id="5222676887888702881">Вийти</translation>
+<translation id="5317780077021120954">Зберегти</translation>
+<translation id="5332948983412042822">Виберіть новий зараз</translation>
 <translation id="5457599981699367932">Переглядати в режимі гостя</translation>
 <translation id="54609108002486618">Керований</translation>
 <translation id="5832805196449965646">Додати користувача</translation>
 <translation id="5895138241574237353">Перезапустити</translation>
+<translation id="6058625436358447366">Щоб завершити, введіть старий і новий паролі</translation>
+<translation id="6106186594183574873">Щоб завершити, введіть старий пароль</translation>
+<translation id="6146993107019042706">Щоб завершити, введіть новий пароль</translation>
 <translation id="7658239707568436148">Скасувати</translation>
+<translation id="7690294790491645610">Підтвердьте новий пароль</translation>
+<translation id="808894953321890993">Змінити пароль</translation>
+<translation id="8747900814994928677">Підтвердити зміни</translation>
+<translation id="910415269708673980">Оновити квиток для користувача <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9111102763498581341">Розблокувати</translation>
 </translationbundle>

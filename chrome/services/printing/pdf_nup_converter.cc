@@ -51,9 +51,7 @@ void RunCallbackWithConversionResult(Callback callback,
 
 }  // namespace
 
-PdfNupConverter::PdfNupConverter(
-    std::unique_ptr<service_manager::ServiceContextRef> service_ref)
-    : service_ref_(std::move(service_ref)) {}
+PdfNupConverter::PdfNupConverter() = default;
 
 PdfNupConverter::~PdfNupConverter() {}
 

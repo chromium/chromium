@@ -16,7 +16,6 @@ import org.chromium.chrome.browser.ChromeSwitches;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.MainActivityStartCallback;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 /** Web payments test for data URL.  */
@@ -37,13 +36,12 @@ public class PaymentRequestDataUrlTest implements MainActivityStartCallback {
             this);
 
     @Override
-    public void onMainActivityStarted()
-            throws InterruptedException, ExecutionException, TimeoutException {}
+    public void onMainActivityStarted() {}
 
     @Test
     @MediumTest
     @Feature({"Payments"})
-    public void test() throws InterruptedException, ExecutionException, TimeoutException {
+    public void test() throws TimeoutException {
         mPaymentRequestTestRule.openPageAndClickNode("buy");
         mPaymentRequestTestRule.expectResultContains(
                 new String[] {"PaymentRequest is not defined"});

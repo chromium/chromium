@@ -32,10 +32,12 @@
 
 #include <memory>
 
+#include "base/callback.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "mojo/public/cpp/bindings/interface_request.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
+#include "third_party/blink/public/mojom/websockets/websocket_connector.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_url.h"
@@ -56,14 +58,16 @@
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/modules/websockets/inspector_websocket_events.h"
 #include "third_party/blink/renderer/modules/websockets/websocket_channel_client.h"
-#include "third_party/blink/renderer/modules/websockets/websocket_handle_impl.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/unique_identifier.h"
 #include "third_party/blink/renderer/platform/network/network_log.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
+#include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_impl.h"
 
 namespace blink {
 
@@ -77,7 +81,7 @@ enum WebSocketOpCode {
 }  // namespace
 
 class WebSocketChannelImpl::BlobLoader final
-    : public GarbageCollectedFinalized<WebSocketChannelImpl::BlobLoader>,
+    : public GarbageCollected<WebSocketChannelImpl::BlobLoader>,
       public FileReaderLoaderClient {
  public:
   BlobLoader(scoped_refptr<BlobDataHandle>,
@@ -100,14 +104,12 @@ class WebSocketChannelImpl::BlobLoader final
   std::unique_ptr<FileReaderLoader> loader_;
 };
 
-class WebSocketChannelImpl::Message
-    : public GarbageCollectedFinalized<WebSocketChannelImpl::Message> {
+class WebSocketChannelImpl::Message final
+    : public GarbageCollected<WebSocketChannelImpl::Message> {
  public:
-  explicit Message(const CString&);
+  Message(const std::string&, base::OnceClosure completion_callback);
   explicit Message(scoped_refptr<BlobDataHandle>);
-  explicit Message(DOMArrayBuffer*);
-  // For WorkerWebSocketChannel
-  explicit Message(std::unique_ptr<Vector<char>>, MessageType);
+  Message(DOMArrayBuffer*, base::OnceClosure completion_callback);
   // Close message
   Message(uint16_t code, const String& reason);
 
@@ -115,12 +117,12 @@ class WebSocketChannelImpl::Message
 
   MessageType type;
 
-  CString text;
+  std::string text;
   scoped_refptr<BlobDataHandle> blob_data_handle;
   Member<DOMArrayBuffer> array_buffer;
-  std::unique_ptr<Vector<char>> vector_data;
   uint16_t code;
   String reason;
+  base::OnceClosure completion_callback;
 };
 
 WebSocketChannelImpl::BlobLoader::BlobLoader(
@@ -160,13 +162,12 @@ struct WebSocketChannelImpl::ConnectInfo {
 
 // static
 WebSocketChannelImpl* WebSocketChannelImpl::CreateForTesting(
-    Document* document,
+    ExecutionContext* execution_context,
     WebSocketChannelClient* client,
     std::unique_ptr<SourceLocation> location,
-    WebSocketHandle* handle,
     std::unique_ptr<WebSocketHandshakeThrottle> handshake_throttle) {
   auto* channel = MakeGarbageCollected<WebSocketChannelImpl>(
-      document, client, std::move(location), base::WrapUnique(handle));
+      execution_context, client, std::move(location));
   channel->handshake_throttle_ = std::move(handshake_throttle);
   return channel;
 }
@@ -177,8 +178,7 @@ WebSocketChannelImpl* WebSocketChannelImpl::Create(
     WebSocketChannelClient* client,
     std::unique_ptr<SourceLocation> location) {
   auto* channel = MakeGarbageCollected<WebSocketChannelImpl>(
-      execution_context, client, std::move(location),
-      std::make_unique<WebSocketHandleImpl>());
+      execution_context, client, std::move(location));
   channel->handshake_throttle_ =
       channel->GetBaseFetchContext()->CreateWebSocketHandshakeThrottle();
   return channel;
@@ -187,48 +187,48 @@ WebSocketChannelImpl* WebSocketChannelImpl::Create(
 WebSocketChannelImpl::WebSocketChannelImpl(
     ExecutionContext* execution_context,
     WebSocketChannelClient* client,
-    std::unique_ptr<SourceLocation> location,
-    std::unique_ptr<WebSocketHandle> handle)
-    : handle_(std::move(handle)),
-      client_(client),
+    std::unique_ptr<SourceLocation> location)
+    : client_(client),
       identifier_(CreateUniqueIdentifier()),
+      message_chunks_(execution_context->GetTaskRunner(TaskType::kNetworking)),
       execution_context_(execution_context),
-      sending_quota_(0),
-      received_data_size_for_flow_control_(0),
-      sent_size_of_top_message_(0),
       location_at_construction_(std::move(location)),
-      throttle_passed_(false),
+      client_receiver_(this),
+      readable_watcher_(
+          FROM_HERE,
+          mojo::SimpleWatcher::ArmingPolicy::MANUAL,
+          execution_context->GetTaskRunner(TaskType::kNetworking)),
       file_reading_task_runner_(
           execution_context->GetTaskRunner(TaskType::kFileReading)) {
   if (auto* scope = DynamicTo<WorkerGlobalScope>(*execution_context_))
     scope->EnsureFetcher();
 }
 
-WebSocketChannelImpl::~WebSocketChannelImpl() {
-  DCHECK(!blob_loader_);
-}
+WebSocketChannelImpl::~WebSocketChannelImpl() = default;
 
-bool WebSocketChannelImpl::Connect(
-    const KURL& url,
-    const String& protocol,
-    network::mojom::blink::WebSocketPtr socket_ptr) {
+bool WebSocketChannelImpl::Connect(const KURL& url, const String& protocol) {
   NETWORK_DVLOG(1) << this << " Connect()";
-  if (!handle_)
-    return false;
 
-  if (GetBaseFetchContext()->ShouldBlockWebSocketByMixedContentCheck(url))
+  if (GetBaseFetchContext()->ShouldBlockWebSocketByMixedContentCheck(url)) {
+    has_initiated_opening_handshake_ = false;
     return false;
+  }
 
-  if (auto* scheduler = execution_context_->GetScheduler())
-    connection_handle_for_scheduler_ = scheduler->OnActiveConnectionCreated();
+  if (auto* scheduler = execution_context_->GetScheduler()) {
+    feature_handle_for_scheduler_ = scheduler->RegisterFeature(
+        SchedulingPolicy::Feature::kWebSocket,
+        {SchedulingPolicy::DisableAggressiveThrottling(),
+         SchedulingPolicy::RecordMetricsForBackForwardCache()});
+  }
 
   if (MixedContentChecker::IsMixedContent(
           execution_context_->GetSecurityOrigin(), url)) {
     String message =
         "Connecting to a non-secure WebSocket server from a secure origin is "
         "deprecated.";
-    execution_context_->AddConsoleMessage(ConsoleMessage::Create(
-        kJSMessageSource, mojom::ConsoleMessageLevel::kWarning, message));
+    execution_context_->AddConsoleMessage(
+        ConsoleMessage::Create(mojom::ConsoleMessageSource::kJavaScript,
+                               mojom::ConsoleMessageLevel::kWarning, message));
   }
 
   url_ = url;
@@ -252,14 +252,34 @@ bool WebSocketChannelImpl::Connect(
     return true;
   }
 
-  handle_->Connect(
-      std::move(socket_ptr), url, protocols,
-      GetBaseFetchContext()->GetSiteForCookies(),
-      execution_context_->UserAgent(), this,
-      execution_context_->GetTaskRunner(TaskType::kNetworking).get());
+  mojo::Remote<mojom::blink::WebSocketConnector> connector;
+  if (execution_context_->GetInterfaceProvider()) {
+    execution_context_->GetInterfaceProvider()->GetInterface(
+        connector.BindNewPipeAndPassReceiver(
+            execution_context_->GetTaskRunner(TaskType::kWebSocket)));
+  } else {
+    // Create a fake request. This will lead to a closed WebSocket due to
+    // a mojo connection error.
+    ignore_result(connector.BindNewPipeAndPassReceiver());
+  }
+
+  connector->Connect(
+      url, protocols, GetBaseFetchContext()->GetSiteForCookies(),
+      execution_context_->UserAgent(),
+      handshake_client_receiver_.BindNewPipeAndPassRemote(
+          execution_context_->GetTaskRunner(TaskType::kWebSocket)));
+  handshake_client_receiver_.set_disconnect_with_reason_handler(
+      WTF::Bind(&WebSocketChannelImpl::OnConnectionError,
+                WrapWeakPersistent(this), FROM_HERE));
+  has_initiated_opening_handshake_ = true;
 
   if (handshake_throttle_) {
-    handshake_throttle_->ThrottleHandshake(url, this);
+    // The use of WrapWeakPersistent is safe and motivated by the fact that if
+    // the WebSocket is no longer referenced, there's no point in keeping it
+    // alive just to receive the throttling result.
+    handshake_throttle_->ThrottleHandshake(
+        url, WTF::Bind(&WebSocketChannelImpl::OnCompletion,
+                       WrapWeakPersistent(this)));
   } else {
     // Treat no throttle as success.
     throttle_passed_ = true;
@@ -273,24 +293,29 @@ bool WebSocketChannelImpl::Connect(
   return true;
 }
 
-bool WebSocketChannelImpl::Connect(const KURL& url, const String& protocol) {
-  network::mojom::blink::WebSocketPtr socket_ptr;
-  auto socket_request = mojo::MakeRequest(
-      &socket_ptr, execution_context_->GetTaskRunner(TaskType::kWebSocket));
-  service_manager::InterfaceProvider* interface_provider =
-      execution_context_->GetInterfaceProvider();
-  if (interface_provider)
-    interface_provider->GetInterface(std::move(socket_request));
-  return Connect(url, protocol, std::move(socket_ptr));
-}
-
-void WebSocketChannelImpl::Send(const CString& message) {
-  NETWORK_DVLOG(1) << this << " Send(" << message << ") (CString argument)";
+WebSocketChannel::SendResult WebSocketChannelImpl::Send(
+    const std::string& message,
+    base::OnceClosure completion_callback) {
+  NETWORK_DVLOG(1) << this << " Send(" << message << ") (std::string argument)";
   probe::DidSendWebSocketMessage(execution_context_, identifier_,
                                  WebSocketOpCode::kOpCodeText, true,
-                                 message.data(), message.length());
-  messages_.push_back(MakeGarbageCollected<Message>(message));
+                                 message.c_str(), message.length());
+  if (messages_.empty() &&
+      MaybeSendSynchronously(network::mojom::blink::WebSocketMessageType::TEXT,
+                             message)) {
+    return SendResult::SENT_SYNCHRONOUSLY;
+  }
+
+  messages_.push_back(
+      MakeGarbageCollected<Message>(message, std::move(completion_callback)));
+
   ProcessSendQueue();
+
+  // If we managed to flush this message synchronously after all, it would mean
+  // that the callback was fired re-entrantly, which would be bad.
+  DCHECK(!messages_.empty());
+
+  return SendResult::CALLBACK_WILL_BE_CALLED;
 }
 
 void WebSocketChannelImpl::Send(
@@ -309,52 +334,42 @@ void WebSocketChannelImpl::Send(
   ProcessSendQueue();
 }
 
-void WebSocketChannelImpl::Send(const DOMArrayBuffer& buffer,
-                                unsigned byte_offset,
-                                unsigned byte_length) {
+WebSocketChannel::SendResult WebSocketChannelImpl::Send(
+    const DOMArrayBuffer& buffer,
+    unsigned byte_offset,
+    unsigned byte_length,
+    base::OnceClosure completion_callback) {
   NETWORK_DVLOG(1) << this << " Send(" << buffer.Data() << ", " << byte_offset
                    << ", " << byte_length << ") "
                    << "(DOMArrayBuffer argument)";
   probe::DidSendWebSocketMessage(
       execution_context_, identifier_, WebSocketOpCode::kOpCodeBinary, true,
       static_cast<const char*>(buffer.Data()) + byte_offset, byte_length);
-  // buffer.slice copies its contents.
-  // FIXME: Reduce copy by sending the data immediately when we don't need to
-  // queue the data.
-  messages_.push_back(MakeGarbageCollected<Message>(
-      buffer.Slice(byte_offset, byte_offset + byte_length)));
-  ProcessSendQueue();
-}
+  if (messages_.empty() &&
+      MaybeSendSynchronously(
+          network::mojom::blink::WebSocketMessageType::BINARY,
+          base::make_span(static_cast<const char*>(buffer.Data()) + byte_offset,
+                          byte_length))) {
+    return SendResult::SENT_SYNCHRONOUSLY;
+  }
 
-void WebSocketChannelImpl::SendTextAsCharVector(
-    std::unique_ptr<Vector<char>> data) {
-  NETWORK_DVLOG(1) << this << " SendTextAsCharVector("
-                   << static_cast<void*>(data.get()) << ", " << data->size()
-                   << ")";
-  probe::DidSendWebSocketMessage(execution_context_, identifier_,
-                                 WebSocketOpCode::kOpCodeText, true,
-                                 data->data(), data->size());
+  // buffer.Slice copies its contents.
   messages_.push_back(MakeGarbageCollected<Message>(
-      std::move(data), kMessageTypeTextAsCharVector));
-  ProcessSendQueue();
-}
+      buffer.Slice(byte_offset, byte_offset + byte_length),
+      std::move(completion_callback)));
 
-void WebSocketChannelImpl::SendBinaryAsCharVector(
-    std::unique_ptr<Vector<char>> data) {
-  NETWORK_DVLOG(1) << this << " SendBinaryAsCharVector("
-                   << static_cast<void*>(data.get()) << ", " << data->size()
-                   << ")";
-  probe::DidSendWebSocketMessage(execution_context_, identifier_,
-                                 WebSocketOpCode::kOpCodeBinary, true,
-                                 data->data(), data->size());
-  messages_.push_back(MakeGarbageCollected<Message>(
-      std::move(data), kMessageTypeBinaryAsCharVector));
   ProcessSendQueue();
+
+  // If we managed to flush this message synchronously after all, it would mean
+  // that the callback was fired re-entrantly, which would be bad.
+  DCHECK(!messages_.empty());
+
+  return SendResult::CALLBACK_WILL_BE_CALLED;
 }
 
 void WebSocketChannelImpl::Close(int code, const String& reason) {
+  DCHECK_EQ(GetState(), State::kOpen);
   NETWORK_DVLOG(1) << this << " Close(" << code << ", " << reason << ")";
-  DCHECK(handle_);
   uint16_t code_to_send = static_cast<uint16_t>(
       code == kCloseEventCodeNotSpecified ? kCloseEventCodeNoStatusRcvd : code);
   messages_.push_back(MakeGarbageCollected<Message>(code_to_send, reason));
@@ -381,8 +396,9 @@ void WebSocketChannelImpl::Fail(const String& reason,
     location = location_at_construction_->Clone();
   }
 
-  execution_context_->AddConsoleMessage(ConsoleMessage::Create(
-      kJSMessageSource, level, message, std::move(location)));
+  execution_context_->AddConsoleMessage(
+      ConsoleMessage::Create(mojom::ConsoleMessageSource::kJavaScript, level,
+                             message, std::move(location)));
   // |reason| is only for logging and should not be provided for scripts,
   // hence close reason must be empty in tearDownFailedConnection.
   TearDownFailedConnection();
@@ -396,188 +412,37 @@ void WebSocketChannelImpl::Disconnect() {
         "data", InspectorWebSocketEvent::Data(execution_context_, identifier_));
     probe::DidCloseWebSocket(execution_context_, identifier_);
   }
-  connection_handle_for_scheduler_.reset();
+
   AbortAsyncOperations();
-  handshake_throttle_.reset();
-  handle_.reset();
-  client_ = nullptr;
-  identifier_ = 0;
+  Dispose();
 }
 
-WebSocketChannelImpl::Message::Message(const CString& text)
-    : type(kMessageTypeText), text(text) {}
-
-WebSocketChannelImpl::Message::Message(
-    scoped_refptr<BlobDataHandle> blob_data_handle)
-    : type(kMessageTypeBlob), blob_data_handle(std::move(blob_data_handle)) {}
-
-WebSocketChannelImpl::Message::Message(DOMArrayBuffer* array_buffer)
-    : type(kMessageTypeArrayBuffer), array_buffer(array_buffer) {}
-
-WebSocketChannelImpl::Message::Message(
-    std::unique_ptr<Vector<char>> vector_data,
-    MessageType type)
-    : type(type), vector_data(std::move(vector_data)) {
-  DCHECK(type == kMessageTypeTextAsCharVector ||
-         type == kMessageTypeBinaryAsCharVector);
-}
-
-WebSocketChannelImpl::Message::Message(uint16_t code, const String& reason)
-    : type(kMessageTypeClose), code(code), reason(reason) {}
-
-void WebSocketChannelImpl::SendInternal(
-    WebSocketHandle::MessageType message_type,
-    const char* data,
-    wtf_size_t total_size,
-    uint64_t* consumed_buffered_amount) {
-  WebSocketHandle::MessageType frame_type =
-      sent_size_of_top_message_ ? WebSocketHandle::kMessageTypeContinuation
-                                : message_type;
-  DCHECK_GE(total_size, sent_size_of_top_message_);
-  // The first cast is safe since the result of min() never exceeds
-  // the range of wtf_size_t. The second cast is necessary to compile
-  // min() on ILP32.
-  wtf_size_t size = static_cast<wtf_size_t>(
-      std::min(sending_quota_,
-               static_cast<uint64_t>(total_size - sent_size_of_top_message_)));
-  bool final = (sent_size_of_top_message_ + size == total_size);
-
-  handle_->Send(final, frame_type, data + sent_size_of_top_message_, size);
-
-  sent_size_of_top_message_ += size;
-  sending_quota_ -= size;
-  *consumed_buffered_amount += size;
-
-  if (final) {
-    messages_.pop_front();
-    sent_size_of_top_message_ = 0;
-  }
-}
-
-void WebSocketChannelImpl::ProcessSendQueue() {
-  DCHECK(handle_);
-  uint64_t consumed_buffered_amount = 0;
-  while (!messages_.IsEmpty() && !blob_loader_) {
-    Message* message = messages_.front().Get();
-    CHECK(message);
-    if (sending_quota_ == 0 && message->type != kMessageTypeClose)
-      break;
-    switch (message->type) {
-      case kMessageTypeText:
-        SendInternal(WebSocketHandle::kMessageTypeText, message->text.data(),
-                     message->text.length(), &consumed_buffered_amount);
-        break;
-      case kMessageTypeBlob:
-        CHECK(!blob_loader_);
-        CHECK(message);
-        CHECK(message->blob_data_handle);
-        blob_loader_ = MakeGarbageCollected<BlobLoader>(
-            message->blob_data_handle, this, file_reading_task_runner_);
-        break;
-      case kMessageTypeArrayBuffer:
-        CHECK(message->array_buffer);
-        SendInternal(WebSocketHandle::kMessageTypeBinary,
-                     static_cast<const char*>(message->array_buffer->Data()),
-                     message->array_buffer->ByteLength(),
-                     &consumed_buffered_amount);
-        break;
-      case kMessageTypeTextAsCharVector:
-        CHECK(message->vector_data);
-        SendInternal(WebSocketHandle::kMessageTypeText,
-                     message->vector_data->data(), message->vector_data->size(),
-                     &consumed_buffered_amount);
-        break;
-      case kMessageTypeBinaryAsCharVector:
-        CHECK(message->vector_data);
-        SendInternal(WebSocketHandle::kMessageTypeBinary,
-                     message->vector_data->data(), message->vector_data->size(),
-                     &consumed_buffered_amount);
-        break;
-      case kMessageTypeClose: {
-        // No message should be sent from now on.
-        DCHECK_EQ(messages_.size(), 1u);
-        DCHECK_EQ(sent_size_of_top_message_, 0u);
-        handshake_throttle_.reset();
-        handle_->Close(message->code, message->reason);
-        messages_.pop_front();
-        break;
-      }
-    }
-  }
-  if (client_ && consumed_buffered_amount > 0)
-    client_->DidConsumeBufferedAmount(consumed_buffered_amount);
-}
-
-void WebSocketChannelImpl::FlowControlIfNecessary() {
-  if (!handle_ || received_data_size_for_flow_control_ <
-                      kReceivedDataSizeForFlowControlHighWaterMark) {
+void WebSocketChannelImpl::CancelHandshake() {
+  NETWORK_DVLOG(1) << this << " CancelHandshake()";
+  if (GetState() != State::kConnecting)
     return;
-  }
-  handle_->FlowControl(received_data_size_for_flow_control_);
-  received_data_size_for_flow_control_ = 0;
+
+  // This may still disconnect even if the handshake is complete if we haven't
+  // got the message yet.
+  // TODO(ricea): Plumb it through to the network stack to fix the race
+  // condition.
+  Disconnect();
 }
 
-void WebSocketChannelImpl::InitialFlowControl() {
-  DCHECK_EQ(received_data_size_for_flow_control_, 0u);
-  DCHECK(handle_);
-  handle_->FlowControl(kReceivedDataSizeForFlowControlHighWaterMark * 2);
+void WebSocketChannelImpl::ApplyBackpressure() {
+  backpressure_ = true;
 }
 
-void WebSocketChannelImpl::AbortAsyncOperations() {
-  if (blob_loader_) {
-    blob_loader_->Cancel();
-    blob_loader_.Clear();
-  }
+void WebSocketChannelImpl::RemoveBackpressure() {
+  backpressure_ = false;
+  ConsumePendingDataFrames();
 }
 
-void WebSocketChannelImpl::HandleDidClose(bool was_clean,
-                                          uint16_t code,
-                                          const String& reason) {
-  handshake_throttle_.reset();
-  handle_.reset();
-  AbortAsyncOperations();
-  if (!client_) {
-    return;
-  }
-  WebSocketChannelClient* client = client_;
-  client_ = nullptr;
-  WebSocketChannelClient::ClosingHandshakeCompletionStatus status =
-      was_clean ? WebSocketChannelClient::kClosingHandshakeComplete
-                : WebSocketChannelClient::kClosingHandshakeIncomplete;
-  client->DidClose(status, code, reason);
-}
-
-void WebSocketChannelImpl::DidConnect(WebSocketHandle* handle,
-                                      const String& selected_protocol,
-                                      const String& extensions) {
-  NETWORK_DVLOG(1) << this << " DidConnect(" << handle << ", "
-                   << String(selected_protocol) << ", " << String(extensions)
-                   << ")";
-
-  DCHECK(handle_);
-  DCHECK_EQ(handle, handle_.get());
-  DCHECK(client_);
-
-  if (!throttle_passed_) {
-    connect_info_ =
-        std::make_unique<ConnectInfo>(selected_protocol, extensions);
-    return;
-  }
-
-  InitialFlowControl();
-
-  handshake_throttle_.reset();
-
-  client_->DidConnect(selected_protocol, extensions);
-}
-
-void WebSocketChannelImpl::DidStartOpeningHandshake(
-    WebSocketHandle* handle,
+void WebSocketChannelImpl::OnOpeningHandshakeStarted(
     network::mojom::blink::WebSocketHandshakeRequestPtr request) {
-  NETWORK_DVLOG(1) << this << " DidStartOpeningHandshake(" << handle << ")";
-
-  DCHECK(handle_);
-  DCHECK_EQ(handle, handle_.get());
+  DCHECK_EQ(GetState(), State::kConnecting);
+  NETWORK_DVLOG(1) << this << " OnOpeningHandshakeStarted("
+                   << request->url.GetString() << ")";
 
   TRACE_EVENT_INSTANT1(
       "devtools.timeline", "WebSocketSendHandshakeRequest",
@@ -588,14 +453,17 @@ void WebSocketChannelImpl::DidStartOpeningHandshake(
   handshake_request_ = std::move(request);
 }
 
-void WebSocketChannelImpl::DidFinishOpeningHandshake(
-    WebSocketHandle* handle,
-    network::mojom::blink::WebSocketHandshakeResponsePtr response) {
-  NETWORK_DVLOG(1) << this << " DidFinishOpeningHandshake(" << handle << ")";
-
-  DCHECK(handle_);
-  DCHECK_EQ(handle, handle_.get());
-
+void WebSocketChannelImpl::OnConnectionEstablished(
+    mojo::PendingRemote<network::mojom::blink::WebSocket> websocket,
+    mojo::PendingReceiver<network::mojom::blink::WebSocketClient>
+        client_receiver,
+    network::mojom::blink::WebSocketHandshakeResponsePtr response,
+    mojo::ScopedDataPipeConsumerHandle readable) {
+  DCHECK_EQ(GetState(), State::kConnecting);
+  const String& protocol = response->selected_protocol;
+  const String& extensions = response->extensions;
+  NETWORK_DVLOG(1) << this << " OnConnectionEstablished(" << protocol << ", "
+                   << extensions << ")";
   TRACE_EVENT_INSTANT1(
       "devtools.timeline", "WebSocketReceiveHandshakeResponse",
       TRACE_EVENT_SCOPE_THREAD, "data",
@@ -604,97 +472,66 @@ void WebSocketChannelImpl::DidFinishOpeningHandshake(
                                               handshake_request_.get(),
                                               response.get());
   handshake_request_ = nullptr;
-}
 
-void WebSocketChannelImpl::DidFail(WebSocketHandle* handle,
-                                   const String& message) {
-  NETWORK_DVLOG(1) << this << " DidFail(" << handle << ", " << String(message)
-                   << ")";
+  // From now on, we will detect mojo errors via |client_receiver_|.
+  handshake_client_receiver_.reset();
+  client_receiver_.Bind(
+      std::move(client_receiver),
+      execution_context_->GetTaskRunner(TaskType::kNetworking));
+  client_receiver_.set_disconnect_with_reason_handler(
+      WTF::Bind(&WebSocketChannelImpl::OnConnectionError,
+                WrapWeakPersistent(this), FROM_HERE));
 
-  connection_handle_for_scheduler_.reset();
+  DCHECK(!websocket_);
+  websocket_.Bind(std::move(websocket),
+                  execution_context_->GetTaskRunner(TaskType::kNetworking));
+  readable_ = std::move(readable);
+  const MojoResult mojo_result = readable_watcher_.Watch(
+      readable_.get(), MOJO_HANDLE_SIGNAL_READABLE,
+      MOJO_WATCH_CONDITION_SATISFIED,
+      WTF::BindRepeating(&WebSocketChannelImpl::OnReadable,
+                         WrapWeakPersistent(this)));
+  DCHECK_EQ(mojo_result, MOJO_RESULT_OK);
 
-  DCHECK(handle_);
-  DCHECK_EQ(handle, handle_.get());
-
-  // This function is called when the browser is required to fail the
-  // WebSocketConnection. Hence we fail this channel by calling
-  // |this->failAsError| function.
-  FailAsError(message);
-}
-
-void WebSocketChannelImpl::DidReceiveData(WebSocketHandle* handle,
-                                          bool fin,
-                                          WebSocketHandle::MessageType type,
-                                          const char* data,
-                                          size_t size) {
-  NETWORK_DVLOG(1) << this << " DidReceiveData(" << handle << ", " << fin
-                   << ", " << type << ", (" << static_cast<const void*>(data)
-                   << ", " << size << "))";
-
-  DCHECK(handle_);
-  DCHECK_EQ(handle, handle_.get());
-  DCHECK(client_);
-  // Non-final frames cannot be empty.
-  DCHECK(fin || size);
-
-  switch (type) {
-    case WebSocketHandle::kMessageTypeText:
-      DCHECK(receiving_message_data_.IsEmpty());
-      receiving_message_type_is_text_ = true;
-      break;
-    case WebSocketHandle::kMessageTypeBinary:
-      DCHECK(receiving_message_data_.IsEmpty());
-      receiving_message_type_is_text_ = false;
-      break;
-    case WebSocketHandle::kMessageTypeContinuation:
-      DCHECK(!receiving_message_data_.IsEmpty());
-      break;
-  }
-
-  receiving_message_data_.Append(data, SafeCast<uint32_t>(size));
-  received_data_size_for_flow_control_ += size;
-  FlowControlIfNecessary();
-  if (!fin) {
+  if (!throttle_passed_) {
+    connect_info_ = std::make_unique<ConnectInfo>(protocol, extensions);
     return;
   }
-  auto opcode = receiving_message_type_is_text_
-                    ? WebSocketOpCode::kOpCodeText
-                    : WebSocketOpCode::kOpCodeBinary;
-  probe::DidReceiveWebSocketMessage(execution_context_, identifier_, opcode,
-                                    false, receiving_message_data_.data(),
-                                    receiving_message_data_.size());
-  if (receiving_message_type_is_text_) {
-    String message = receiving_message_data_.IsEmpty()
-                         ? g_empty_string
-                         : String::FromUTF8(receiving_message_data_.data(),
-                                            receiving_message_data_.size());
-    receiving_message_data_.clear();
-    if (message.IsNull()) {
-      FailAsError("Could not decode a text frame as UTF-8.");
-    } else {
-      client_->DidReceiveTextMessage(message);
-    }
-  } else {
-    std::unique_ptr<Vector<char>> binary_data =
-        std::make_unique<Vector<char>>();
-    binary_data->swap(receiving_message_data_);
-    client_->DidReceiveBinaryMessage(std::move(binary_data));
-  }
+
+  DCHECK_EQ(GetState(), State::kOpen);
+  websocket_->StartReceiving();
+  handshake_throttle_.reset();
+  client_->DidConnect(protocol, extensions);
 }
 
-void WebSocketChannelImpl::DidClose(WebSocketHandle* handle,
-                                    bool was_clean,
-                                    uint16_t code,
-                                    const String& reason) {
-  NETWORK_DVLOG(1) << this << " DidClose(" << handle << ", " << was_clean
-                   << ", " << code << ", " << String(reason) << ")";
+void WebSocketChannelImpl::OnDataFrame(
+    bool fin,
+    network::mojom::blink::WebSocketMessageType type,
+    uint64_t data_length) {
+  DCHECK_EQ(GetState(), State::kOpen);
+  NETWORK_DVLOG(1) << this << " OnDataFrame(" << fin << ", " << type << ", "
+                   << "(data_length = " << data_length << "))";
+  pending_data_frames_.push_back(
+      DataFrame(fin, type, static_cast<uint32_t>(data_length)));
+  ConsumePendingDataFrames();
+}
 
-  connection_handle_for_scheduler_.reset();
+void WebSocketChannelImpl::AddSendFlowControlQuota(int64_t quota) {
+  // TODO(yhirano): This should be DCHECK_EQ(GetState(), State::kOpen).
+  DCHECK(GetState() == State::kOpen || GetState() == State::kConnecting);
+  NETWORK_DVLOG(1) << this << " AddSendFlowControlQuota(" << quota << ")";
 
-  DCHECK(handle_);
-  DCHECK_EQ(handle, handle_.get());
+  sending_quota_ += quota;
+  ProcessSendQueue();
+}
 
-  handle_.reset();
+void WebSocketChannelImpl::OnDropChannel(bool was_clean,
+                                         uint16_t code,
+                                         const String& reason) {
+  // TODO(yhirano): This should be DCHECK_EQ(GetState(), State::kOpen).
+  DCHECK(GetState() == State::kOpen || GetState() == State::kConnecting);
+  NETWORK_DVLOG(1) << this << " OnDropChannel(" << was_clean << ", " << code
+                   << ", " << reason << ")";
 
   if (identifier_) {
     TRACE_EVENT_INSTANT1(
@@ -707,97 +544,11 @@ void WebSocketChannelImpl::DidClose(WebSocketHandle* handle,
   HandleDidClose(was_clean, code, reason);
 }
 
-void WebSocketChannelImpl::DidReceiveFlowControl(WebSocketHandle* handle,
-                                                 int64_t quota) {
-  NETWORK_DVLOG(1) << this << " DidReceiveFlowControl(" << handle << ", "
-                   << quota << ")";
+void WebSocketChannelImpl::OnClosingHandshake() {
+  DCHECK_EQ(GetState(), State::kOpen);
+  NETWORK_DVLOG(1) << this << " OnClosingHandshake()";
 
-  DCHECK(handle_);
-  DCHECK_EQ(handle, handle_.get());
-  DCHECK_GE(quota, 0);
-
-  sending_quota_ += quota;
-  ProcessSendQueue();
-}
-
-void WebSocketChannelImpl::DidStartClosingHandshake(WebSocketHandle* handle) {
-  NETWORK_DVLOG(1) << this << " DidStartClosingHandshake(" << handle << ")";
-
-  DCHECK(handle_);
-  DCHECK_EQ(handle, handle_.get());
-
-  if (client_)
-    client_->DidStartClosingHandshake();
-}
-
-void WebSocketChannelImpl::OnSuccess() {
-  DCHECK(!throttle_passed_);
-  DCHECK(handshake_throttle_);
-  throttle_passed_ = true;
-  handshake_throttle_ = nullptr;
-  if (connect_info_) {
-    // No flow control quota is supplied to the browser until we are ready to
-    // receive messages. This fixes crbug.com/786776.
-    InitialFlowControl();
-
-    client_->DidConnect(std::move(connect_info_->selected_protocol),
-                        std::move(connect_info_->extensions));
-    connect_info_.reset();
-  }
-}
-
-void WebSocketChannelImpl::OnError(const WebString& console_message) {
-  DCHECK(!throttle_passed_);
-  DCHECK(handshake_throttle_);
-  handshake_throttle_ = nullptr;
-  FailAsError(console_message);
-}
-
-void WebSocketChannelImpl::DidFinishLoadingBlob(DOMArrayBuffer* buffer) {
-  blob_loader_.Clear();
-  DCHECK(handle_);
-  // The loaded blob is always placed on |messages_[0]|.
-  DCHECK_GT(messages_.size(), 0u);
-  DCHECK_EQ(messages_.front()->type, kMessageTypeBlob);
-  // We replace it with the loaded blob.
-  messages_.front() = MakeGarbageCollected<Message>(buffer);
-  ProcessSendQueue();
-}
-
-void WebSocketChannelImpl::DidFailLoadingBlob(FileErrorCode error_code) {
-  blob_loader_.Clear();
-  if (error_code == FileErrorCode::kAbortErr) {
-    // The error is caused by cancel().
-    return;
-  }
-  // FIXME: Generate human-friendly reason message.
-  FailAsError("Failed to load Blob: error code = " +
-              String::Number(static_cast<unsigned>(error_code)));
-}
-
-void WebSocketChannelImpl::TearDownFailedConnection() {
-  // |handle_| and |client_| can be null here.
-  connection_handle_for_scheduler_.reset();
-  handshake_throttle_.reset();
-
-  if (client_)
-    client_->DidError();
-
-  HandleDidClose(false, kCloseEventCodeAbnormalClosure, String());
-}
-
-bool WebSocketChannelImpl::ShouldDisallowConnection(const KURL& url) {
-  DCHECK(handle_);
-  SubresourceFilter* subresource_filter =
-      GetBaseFetchContext()->GetSubresourceFilter();
-  if (!subresource_filter)
-    return false;
-  return !subresource_filter->AllowWebSocketConnection(url);
-}
-
-BaseFetchContext* WebSocketChannelImpl::GetBaseFetchContext() const {
-  ResourceFetcher* resource_fetcher = execution_context_->Fetcher();
-  return static_cast<BaseFetchContext*>(&resource_fetcher->Context());
+  client_->DidStartClosingHandshake();
 }
 
 ExecutionContext* WebSocketChannelImpl::GetExecutionContext() {
@@ -810,6 +561,443 @@ void WebSocketChannelImpl::Trace(blink::Visitor* visitor) {
   visitor->Trace(client_);
   visitor->Trace(execution_context_);
   WebSocketChannel::Trace(visitor);
+}
+
+WebSocketChannelImpl::Message::Message(const std::string& text,
+                                       base::OnceClosure completion_callback)
+    : type(kMessageTypeText),
+      text(text),
+      completion_callback(std::move(completion_callback)) {}
+
+WebSocketChannelImpl::Message::Message(
+    scoped_refptr<BlobDataHandle> blob_data_handle)
+    : type(kMessageTypeBlob), blob_data_handle(std::move(blob_data_handle)) {}
+
+WebSocketChannelImpl::Message::Message(DOMArrayBuffer* array_buffer,
+                                       base::OnceClosure completion_callback)
+    : type(kMessageTypeArrayBuffer),
+      array_buffer(array_buffer),
+      completion_callback(std::move(completion_callback)) {}
+
+WebSocketChannelImpl::Message::Message(uint16_t code, const String& reason)
+    : type(kMessageTypeClose), code(code), reason(reason) {}
+
+WebSocketChannelImpl::State WebSocketChannelImpl::GetState() const {
+  if (!has_initiated_opening_handshake_) {
+    return State::kConnecting;
+  }
+  if (client_receiver_.is_bound() && throttle_passed_) {
+    return State::kOpen;
+  }
+  if (handshake_client_receiver_.is_bound() || client_receiver_.is_bound()) {
+    return State::kConnecting;
+  }
+  return State::kDisconnected;
+}
+
+void WebSocketChannelImpl::SendInternal(
+    network::mojom::blink::WebSocketMessageType message_type,
+    const char* data,
+    wtf_size_t total_size,
+    uint64_t* consumed_buffered_amount) {
+  network::mojom::blink::WebSocketMessageType frame_type =
+      sent_size_of_top_message_
+          ? network::mojom::blink::WebSocketMessageType::CONTINUATION
+          : message_type;
+  DCHECK_GE(total_size, sent_size_of_top_message_);
+  // The first cast is safe since the result of min() never exceeds
+  // the range of wtf_size_t. The second cast is necessary to compile
+  // min() on ILP32.
+  wtf_size_t size = static_cast<wtf_size_t>(
+      std::min(sending_quota_,
+               static_cast<uint64_t>(total_size - sent_size_of_top_message_)));
+  bool final = (sent_size_of_top_message_ + size == total_size);
+
+  SendAndAdjustQuota(final, frame_type,
+                     base::make_span(data + sent_size_of_top_message_, size),
+                     consumed_buffered_amount);
+
+  sent_size_of_top_message_ += size;
+
+  if (final) {
+    base::OnceClosure completion_callback =
+        std::move(messages_.front()->completion_callback);
+    if (!completion_callback.is_null())
+      std::move(completion_callback).Run();
+    messages_.pop_front();
+    sent_size_of_top_message_ = 0;
+  }
+}
+
+void WebSocketChannelImpl::SendAndAdjustQuota(
+    bool fin,
+    network::mojom::blink::WebSocketMessageType type,
+    base::span<const char> data,
+    uint64_t* consumed_buffered_amount) {
+  base::span<const uint8_t> data_to_pass(
+      reinterpret_cast<const uint8_t*>(data.data()), data.size());
+  websocket_->SendFrame(fin, type, data_to_pass);
+
+  sending_quota_ -= data.size();
+  *consumed_buffered_amount += data.size();
+}
+
+bool WebSocketChannelImpl::MaybeSendSynchronously(
+    network::mojom::blink::WebSocketMessageType frame_type,
+    base::span<const char> data) {
+  DCHECK(messages_.empty());
+  if (data.size() > sending_quota_)
+    return false;
+
+  uint64_t consumed_buffered_amount = 0;
+  SendAndAdjustQuota(true, frame_type, data, &consumed_buffered_amount);
+  if (client_ && consumed_buffered_amount > 0)
+    client_->DidConsumeBufferedAmount(consumed_buffered_amount);
+
+  return true;
+}
+
+void WebSocketChannelImpl::ProcessSendQueue() {
+  // TODO(yhirano): This should be DCHECK_EQ(GetState(), State::kOpen).
+  DCHECK(GetState() == State::kOpen || GetState() == State::kConnecting);
+  uint64_t consumed_buffered_amount = 0;
+  while (!messages_.IsEmpty() && !blob_loader_) {
+    Message* message = messages_.front().Get();
+    CHECK(message);
+    if (sending_quota_ == 0 && message->type != kMessageTypeClose)
+      break;
+    switch (message->type) {
+      case kMessageTypeText:
+        SendInternal(network::mojom::blink::WebSocketMessageType::TEXT,
+                     message->text.data(),
+                     static_cast<wtf_size_t>(message->text.length()),
+                     &consumed_buffered_amount);
+        break;
+      case kMessageTypeBlob:
+        CHECK(!blob_loader_);
+        CHECK(message);
+        CHECK(message->blob_data_handle);
+        blob_loader_ = MakeGarbageCollected<BlobLoader>(
+            message->blob_data_handle, this, file_reading_task_runner_);
+        break;
+      case kMessageTypeArrayBuffer:
+        CHECK(message->array_buffer);
+        SendInternal(network::mojom::blink::WebSocketMessageType::BINARY,
+                     static_cast<const char*>(message->array_buffer->Data()),
+                     message->array_buffer->DeprecatedByteLengthAsUnsigned(),
+                     &consumed_buffered_amount);
+        break;
+      case kMessageTypeClose: {
+        // No message should be sent from now on.
+        DCHECK_EQ(messages_.size(), 1u);
+        DCHECK_EQ(sent_size_of_top_message_, 0u);
+        handshake_throttle_.reset();
+        websocket_->StartClosingHandshake(
+            message->code,
+            message->reason.IsNull() ? g_empty_string : message->reason);
+        messages_.pop_front();
+        break;
+      }
+    }
+  }
+  if (client_ && consumed_buffered_amount > 0)
+    client_->DidConsumeBufferedAmount(consumed_buffered_amount);
+}
+
+void WebSocketChannelImpl::AbortAsyncOperations() {
+  if (blob_loader_) {
+    blob_loader_->Cancel();
+    blob_loader_.Clear();
+  }
+}
+
+void WebSocketChannelImpl::HandleDidClose(bool was_clean,
+                                          uint16_t code,
+                                          const String& reason) {
+  DCHECK_NE(GetState(), State::kDisconnected);
+  WebSocketChannelClient::ClosingHandshakeCompletionStatus status =
+      was_clean ? WebSocketChannelClient::kClosingHandshakeComplete
+                : WebSocketChannelClient::kClosingHandshakeIncomplete;
+  client_->DidClose(status, code, reason);
+  AbortAsyncOperations();
+  Dispose();
+}
+
+void WebSocketChannelImpl::OnCompletion(
+    const base::Optional<WebString>& console_message) {
+  DCHECK(!throttle_passed_);
+  DCHECK(handshake_throttle_);
+  handshake_throttle_ = nullptr;
+
+  if (GetState() == State::kDisconnected) {
+    return;
+  }
+  DCHECK_EQ(GetState(), State::kConnecting);
+  if (console_message) {
+    FailAsError(*console_message);
+    return;
+  }
+
+  throttle_passed_ = true;
+  if (connect_info_) {
+    websocket_->StartReceiving();
+    client_->DidConnect(std::move(connect_info_->selected_protocol),
+                        std::move(connect_info_->extensions));
+    connect_info_.reset();
+    DCHECK_EQ(GetState(), State::kOpen);
+  }
+}
+
+void WebSocketChannelImpl::DidFinishLoadingBlob(DOMArrayBuffer* buffer) {
+  DCHECK_EQ(GetState(), State::kOpen);
+
+  blob_loader_.Clear();
+  // The loaded blob is always placed on |messages_[0]|.
+  DCHECK_GT(messages_.size(), 0u);
+  DCHECK_EQ(messages_.front()->type, kMessageTypeBlob);
+  // We replace it with the loaded blob.
+  messages_.front() =
+      MakeGarbageCollected<Message>(buffer, base::OnceClosure());
+  ProcessSendQueue();
+}
+
+void WebSocketChannelImpl::DidFailLoadingBlob(FileErrorCode error_code) {
+  DCHECK_EQ(GetState(), State::kOpen);
+
+  blob_loader_.Clear();
+  if (error_code == FileErrorCode::kAbortErr) {
+    // The error is caused by cancel().
+    return;
+  }
+  // FIXME: Generate human-friendly reason message.
+  FailAsError("Failed to load Blob: error code = " +
+              String::Number(static_cast<unsigned>(error_code)));
+}
+
+void WebSocketChannelImpl::TearDownFailedConnection() {
+  if (GetState() == State::kDisconnected) {
+    return;
+  }
+  client_->DidError();
+  if (GetState() == State::kDisconnected) {
+    return;
+  }
+  HandleDidClose(false, kCloseEventCodeAbnormalClosure, String());
+}
+
+bool WebSocketChannelImpl::ShouldDisallowConnection(const KURL& url) {
+  SubresourceFilter* subresource_filter =
+      GetBaseFetchContext()->GetSubresourceFilter();
+  if (!subresource_filter)
+    return false;
+  return !subresource_filter->AllowWebSocketConnection(url);
+}
+
+BaseFetchContext* WebSocketChannelImpl::GetBaseFetchContext() const {
+  ResourceFetcher* resource_fetcher = execution_context_->Fetcher();
+  return static_cast<BaseFetchContext*>(&resource_fetcher->Context());
+}
+
+void WebSocketChannelImpl::OnReadable(MojoResult result,
+                                      const mojo::HandleSignalsState& state) {
+  DCHECK_EQ(GetState(), State::kOpen);
+  NETWORK_DVLOG(2) << this << " OnReadable mojo_result=" << result;
+  if (result != MOJO_RESULT_OK) {
+    // We don't detect mojo errors on data pipe. Mojo connection errors will
+    // be detected via |client_receiver_|.
+    return;
+  }
+  ConsumePendingDataFrames();
+}
+
+void WebSocketChannelImpl::ConsumePendingDataFrames() {
+  DCHECK_EQ(GetState(), State::kOpen);
+  while (!pending_data_frames_.empty() && !backpressure_ &&
+         GetState() == State::kOpen) {
+    DataFrame& data_frame = pending_data_frames_.front();
+    NETWORK_DVLOG(2) << " ConsumePendingDataFrame frame=(" << data_frame.fin
+                     << ", " << data_frame.type
+                     << ", (data_length = " << data_frame.data_length << "))";
+    if (data_frame.data_length == 0) {
+      ConsumeDataFrame(data_frame.fin, data_frame.type, nullptr, 0);
+      pending_data_frames_.pop_front();
+      continue;
+    }
+
+    const void* buffer;
+    uint32_t readable_size;
+    const MojoResult begin_result = readable_->BeginReadData(
+        &buffer, &readable_size, MOJO_READ_DATA_FLAG_NONE);
+    if (begin_result == MOJO_RESULT_SHOULD_WAIT) {
+      readable_watcher_.ArmOrNotify();
+      return;
+    }
+    if (begin_result == MOJO_RESULT_FAILED_PRECONDITION) {
+      // |client_receiver_| will catch the connection error.
+      return;
+    }
+    DCHECK_EQ(begin_result, MOJO_RESULT_OK);
+
+    if (readable_size >= data_frame.data_length) {
+      ConsumeDataFrame(data_frame.fin, data_frame.type,
+                       static_cast<const char*>(buffer),
+                       data_frame.data_length);
+      const MojoResult end_result =
+          readable_->EndReadData(data_frame.data_length);
+      DCHECK_EQ(end_result, MOJO_RESULT_OK);
+      pending_data_frames_.pop_front();
+      continue;
+    }
+
+    DCHECK_LT(readable_size, data_frame.data_length);
+    ConsumeDataFrame(false, data_frame.type, static_cast<const char*>(buffer),
+                     readable_size);
+    const MojoResult end_result = readable_->EndReadData(readable_size);
+    DCHECK_EQ(end_result, MOJO_RESULT_OK);
+    data_frame.type = network::mojom::blink::WebSocketMessageType::CONTINUATION;
+    data_frame.data_length -= readable_size;
+  }
+}
+
+void WebSocketChannelImpl::ConsumeDataFrame(
+    bool fin,
+    network::mojom::blink::WebSocketMessageType type,
+    const char* data,
+    size_t size) {
+  DCHECK_EQ(GetState(), State::kOpen);
+  DCHECK(!backpressure_);
+  // Non-final frames cannot be empty.
+  DCHECK(fin || size > 0);
+
+  switch (type) {
+    case network::mojom::blink::WebSocketMessageType::CONTINUATION:
+      break;
+    case network::mojom::blink::WebSocketMessageType::TEXT:
+      DCHECK_EQ(message_chunks_.GetSize(), 0u);
+      receiving_message_type_is_text_ = true;
+      break;
+    case network::mojom::blink::WebSocketMessageType::BINARY:
+      DCHECK_EQ(message_chunks_.GetSize(), 0u);
+      receiving_message_type_is_text_ = false;
+      break;
+  }
+
+  const size_t message_size_so_far = message_chunks_.GetSize();
+  if (message_size_so_far > std::numeric_limits<wtf_size_t>::max()) {
+    message_chunks_.Clear();
+    FailAsError("Message size is too large.");
+    return;
+  }
+
+  // TODO(yoichio): Do this after EndReadData by reading |message_chunks_|
+  // instead.
+  if (receiving_message_type_is_text_ && received_text_is_all_ascii_) {
+    for (size_t i = 0; i < size; i++) {
+      if (!IsASCII(data[i])) {
+        received_text_is_all_ascii_ = false;
+        break;
+      }
+    }
+  }
+
+  if (!fin) {
+    message_chunks_.Append(base::make_span(data, size));
+    return;
+  }
+
+  Vector<base::span<const char>> chunks = message_chunks_.GetView();
+  if (size > 0) {
+    chunks.push_back(base::make_span(data, size));
+  }
+  auto opcode = receiving_message_type_is_text_
+                    ? WebSocketOpCode::kOpCodeText
+                    : WebSocketOpCode::kOpCodeBinary;
+  probe::DidReceiveWebSocketMessage(execution_context_, identifier_, opcode,
+                                    false, chunks);
+
+  if (receiving_message_type_is_text_) {
+    String message = GetTextMessage(
+        chunks, static_cast<wtf_size_t>(message_size_so_far + size));
+    if (message.IsNull()) {
+      FailAsError("Could not decode a text frame as UTF-8.");
+    } else {
+      client_->DidReceiveTextMessage(message);
+    }
+  } else {
+    client_->DidReceiveBinaryMessage(chunks);
+  }
+  message_chunks_.Clear();
+  received_text_is_all_ascii_ = true;
+}
+
+String WebSocketChannelImpl::GetTextMessage(
+    const Vector<base::span<const char>>& chunks,
+    wtf_size_t size) {
+  DCHECK(receiving_message_type_is_text_);
+
+  if (size == 0) {
+    return g_empty_string;
+  }
+
+  // We can skip UTF8 encoding if received text contains only ASCII.
+  // We do this in order to avoid constructing a temporary buffer.
+  if (received_text_is_all_ascii_) {
+    LChar* buffer;
+    scoped_refptr<StringImpl> string_impl =
+        StringImpl::CreateUninitialized(size, buffer);
+    size_t index = 0;
+    for (const auto& chunk : chunks) {
+      DCHECK_LE(index + chunk.size(), size);
+      memcpy(buffer + index, chunk.data(), chunk.size());
+      index += chunk.size();
+    }
+    DCHECK_EQ(index, size);
+    return String(std::move(string_impl));
+  }
+
+  Vector<char> flatten;
+  base::span<const char> span;
+  if (chunks.size() > 1) {
+    flatten.ReserveCapacity(size);
+    for (const auto& chunk : chunks) {
+      flatten.Append(chunk.data(), static_cast<wtf_size_t>(chunk.size()));
+    }
+    span = base::make_span(flatten.data(), flatten.size());
+  } else if (chunks.size() == 1) {
+    span = chunks[0];
+  }
+  DCHECK_EQ(span.size(), size);
+  return String::FromUTF8(span.data(), span.size());
+}
+
+void WebSocketChannelImpl::OnConnectionError(const base::Location& set_from,
+                                             uint32_t custom_reason,
+                                             const std::string& description) {
+  DCHECK_NE(GetState(), State::kDisconnected);
+  NETWORK_DVLOG(1) << " OnConnectionError("
+                   << " reason: " << custom_reason
+                   << ", description:" << description
+                   << "), set_from:" << set_from.ToString();
+  String message = "Unknown reason";
+  if (custom_reason == network::mojom::blink::WebSocket::kInternalFailure) {
+    message = String::FromUTF8(description.c_str(), description.size());
+  }
+
+  // This function is called when the implementation in the network service is
+  // required to fail the WebSocket connection. Hence we fail this channel by
+  // calling FailAsError function.
+  FailAsError(message);
+}
+
+void WebSocketChannelImpl::Dispose() {
+  has_initiated_opening_handshake_ = true;
+  feature_handle_for_scheduler_.reset();
+  handshake_throttle_.reset();
+  websocket_.reset();
+  readable_watcher_.Cancel();
+  handshake_client_receiver_.reset();
+  client_receiver_.reset();
+  identifier_ = 0;
 }
 
 std::ostream& operator<<(std::ostream& ostream,

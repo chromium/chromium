@@ -1,7 +1,7 @@
 # Documentation Best Practices
 
-"Say what you mean, simply and directly." - [Brian Kernighan]
-(http://en.wikipedia.org/wiki/The_Elements_of_Programming_Style)
+"Say what you mean, simply and directly." -
+[Brian Kernighan](http://en.wikipedia.org/wiki/The_Elements_of_Programming_Style)
 
 [TOC]
 
@@ -43,7 +43,7 @@ docs are in bad shape:
 
 Documentation is an art. There is no perfect document, there are only proven
 methods and prudent guidelines. See
-go/g3doc-style#good.
+[Better is better than perfect](https://github.com/google/styleguide/blob/gh-pages/docguide/philosophy.md#better-is-better-than-perfect).
 
 ## Documentation is the story of your code
 

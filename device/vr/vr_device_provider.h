@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "device/vr/public/mojom/isolated_xr_service.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace device {
 
@@ -21,7 +22,8 @@ class VRDeviceProvider {
   virtual void Initialize(
       base::RepeatingCallback<void(mojom::XRDeviceId id,
                                    mojom::VRDisplayInfoPtr,
-                                   mojom::XRRuntimePtr)> add_device_callback,
+                                   mojo::PendingRemote<mojom::XRRuntime>)>
+          add_device_callback,
       base::RepeatingCallback<void(mojom::XRDeviceId id)>
           remove_device_callback,
       base::OnceClosure initialization_complete) = 0;

@@ -15,6 +15,12 @@ using ::testing::Return;
 using ::testing::SaveArg;
 using ::testing::_;
 
+ACTION_TEMPLATE(MoveArg,
+                HAS_1_TEMPLATE_PARAMS(int, k),
+                AND_1_VALUE_PARAMS(out)) {
+  *out = std::move(::testing::get<k>(args));
+}
+
 namespace media {
 
 MockMediaCryptoContext::MockMediaCryptoContext(bool has_media_crypto_context)
@@ -26,8 +32,8 @@ MockMediaCryptoContext::MockMediaCryptoContext(bool has_media_crypto_context)
   ON_CALL(*this, RegisterPlayer(_, _))
       .WillByDefault(DoAll(SaveArg<0>(&new_key_cb), SaveArg<1>(&cdm_unset_cb),
                            Return(kRegistrationId)));
-  ON_CALL(*this, SetMediaCryptoReadyCB(_))
-      .WillByDefault(SaveArg<0>(&media_crypto_ready_cb));
+  ON_CALL(*this, SetMediaCryptoReadyCB_(_))
+      .WillByDefault(MoveArg<0>(&media_crypto_ready_cb));
 
   // Don't set any expectation on the number of correct calls to
   // UnregisterPlayer, but expect no calls with the wrong registration id.

@@ -21,13 +21,6 @@ void SetResizableStyleMask(NSWindow* window, bool resizable) {
   [window setStyleMask:style_mask];
 }
 
-// Returns the level for windows that are configured to be always on top.
-// This is not a constant because NSFloatingWindowLevel is a macro defined
-// as a function call.
-NSInteger AlwaysOnTopWindowLevel() {
-  return NSFloatingWindowLevel;
-}
-
 }  // namespace
 
 namespace gfx {
@@ -40,23 +33,6 @@ void SetNSWindowCanFullscreen(NSWindow* window, bool allow_fullscreen) {
     behavior |= NSWindowCollectionBehaviorFullScreenPrimary;
   else
     behavior &= ~NSWindowCollectionBehaviorFullScreenPrimary;
-  [window setCollectionBehavior:behavior];
-}
-
-bool IsNSWindowAlwaysOnTop(NSWindow* window) {
-  return [window level] == AlwaysOnTopWindowLevel();
-}
-
-void SetNSWindowAlwaysOnTop(NSWindow* window,
-                            bool always_on_top) {
-  [window setLevel:(always_on_top ? AlwaysOnTopWindowLevel()
-                                  : NSNormalWindowLevel)];
-  // Since always-on-top windows have a higher window level than
-  // NSNormalWindowLevel, they will default to
-  // NSWindowCollectionBehaviorTransient. Set the value explicitly here to match
-  // normal windows.
-  NSWindowCollectionBehavior behavior =
-      [window collectionBehavior] | NSWindowCollectionBehaviorManaged;
   [window setCollectionBehavior:behavior];
 }
 

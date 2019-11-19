@@ -31,8 +31,6 @@ class HTMLOListElement final : public HTMLElement {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  DECLARE_NODE_FACTORY(HTMLOListElement);
-
   explicit HTMLOListElement(Document&);
 
   int StartConsideringItemCount() const {

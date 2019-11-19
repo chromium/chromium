@@ -39,19 +39,14 @@ class BluetoothLowEnergyApiTestChromeOs : public PlatformAppBrowserTest {
   }
 
   void TearDownOnMainThread() override {
-    PlatformAppBrowserTest::TearDownOnMainThread();
+    owner_settings_service_.reset();
     settings_helper_.RestoreRealDeviceSettingsProvider();
+    PlatformAppBrowserTest::TearDownOnMainThread();
     user_manager_enabler_.reset();
     fake_user_manager_ = nullptr;
   }
 
  protected:
-  chromeos::FakeChromeUserManager* fake_user_manager_;
-  std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
-
-  chromeos::ScopedCrosSettingsTestHelper settings_helper_;
-  std::unique_ptr<chromeos::FakeOwnerSettingsService> owner_settings_service_;
-
   void EnterKioskSession() {
     fake_user_manager_ = new chromeos::FakeChromeUserManager();
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
@@ -72,6 +67,12 @@ class BluetoothLowEnergyApiTestChromeOs : public PlatformAppBrowserTest {
   chromeos::KioskAppManager* manager() const {
     return chromeos::KioskAppManager::Get();
   }
+
+  chromeos::FakeChromeUserManager* fake_user_manager_;
+  std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
+
+  chromeos::ScopedCrosSettingsTestHelper settings_helper_;
+  std::unique_ptr<chromeos::FakeOwnerSettingsService> owner_settings_service_;
 };
 
 IN_PROC_BROWSER_TEST_F(BluetoothLowEnergyApiTestChromeOs,

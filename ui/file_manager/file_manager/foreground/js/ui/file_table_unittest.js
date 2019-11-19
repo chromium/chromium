@@ -107,7 +107,7 @@ function testExportAndRestoreColumnConfigWithHiddenColumns() {
 
   // Change some column widths, then capture then.
   for (let i = 0; i < model.size; i++) {
-    model.setWidth(i, (i+1) * 50);
+    model.setWidth(i, (i + 1) * 50);
   }
   // Hide a column.
   model.setVisible(INDEX, false);
@@ -134,7 +134,7 @@ function testExportAndRestoreColumnConfigWithShowingColumn() {
 
   // Change some column widths, then capture then.
   for (let i = 0; i < model.size; i++) {
-    model.setWidth(i, (i+1) * 50);
+    model.setWidth(i, (i + 1) * 50);
   }
   // Hide a column.
   model.setVisible(INDEX, false);
@@ -163,7 +163,7 @@ function testExportAndRestoreColumnConfigWithHidingColumn() {
 
   // Change some column widths, then capture then.
   for (let i = 0; i < model.size; i++) {
-    model.setWidth(i, (i+1) * 50);
+    model.setWidth(i, (i + 1) * 50);
   }
   // Verify the precondition.
   assertTrue(model.isVisible(INDEX));

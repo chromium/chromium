@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+FAIL BroadcastChannel'ing a tainted ImageBitmap to a COOP+COEP popup assert_equals: expected "Got failure as expected." but got "Got message, expected failure."
+FAIL Messaging a tainted ImageBitMap via serialize/deserialize to a COEP shared worker assert_equals: expected "Got failure as expected." but got "Got message, expected failure."
+FAIL Messaging a tainted ImageBitMap via transfer to a COEP shared worker assert_equals: expected "Got failure as expected." but got "Got message, expected failure."
+Harness: the test ran to completion.
+

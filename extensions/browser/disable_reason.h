@@ -17,6 +17,9 @@ namespace disable_reason {
 // Also carefully consider if your reason should sync to other devices, and if
 // so, add it to kKnownSyncableDisableReasons in
 // chrome/browser/extensions/extension_sync_service.cc.
+// Finally, consider whether your disable reason applies to component
+// extensions. Reference/update the existing list of applicable reasons in
+// ExtensionsPrefs::ClearInapplicableDisableReasonsForComponentExtension.
 enum DisableReason {
   DISABLE_NONE = 0,
   DISABLE_USER_ACTION = 1 << 0,

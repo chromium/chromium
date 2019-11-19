@@ -42,21 +42,16 @@ void EqualPowerPanner::Pan(double azimuth,
                            AudioBus* output_bus,
                            uint32_t frames_to_process,
                            AudioBus::ChannelInterpretation) {
-  bool is_input_safe = input_bus &&
-                       (input_bus->NumberOfChannels() == 1 ||
-                        input_bus->NumberOfChannels() == 2) &&
-                       frames_to_process <= input_bus->length();
-  DCHECK(is_input_safe);
-  if (!is_input_safe)
-    return;
+  DCHECK(input_bus);
+  DCHECK_LE(frames_to_process, input_bus->length());
+  DCHECK_GE(input_bus->NumberOfChannels(), 1u);
+  DCHECK_LE(input_bus->NumberOfChannels(), 2u);
 
   unsigned number_of_input_channels = input_bus->NumberOfChannels();
 
-  bool is_output_safe = output_bus && output_bus->NumberOfChannels() == 2 &&
-                        frames_to_process <= output_bus->length();
-  DCHECK(is_output_safe);
-  if (!is_output_safe)
-    return;
+  DCHECK(output_bus);
+  DCHECK_EQ(output_bus->NumberOfChannels(), 2u);
+  DCHECK_LE(frames_to_process, output_bus->length());
 
   const float* source_l = input_bus->Channel(0)->Data();
   const float* source_r =
@@ -181,21 +176,16 @@ void EqualPowerPanner::PanWithSampleAccurateValues(
     AudioBus* output_bus,
     uint32_t frames_to_process,
     AudioBus::ChannelInterpretation) {
-  bool is_input_safe = input_bus &&
-                       (input_bus->NumberOfChannels() == 1 ||
-                        input_bus->NumberOfChannels() == 2) &&
-                       frames_to_process <= input_bus->length();
-  DCHECK(is_input_safe);
-  if (!is_input_safe)
-    return;
+  DCHECK(input_bus);
+  DCHECK_LE(frames_to_process, input_bus->length());
+  DCHECK_GE(input_bus->NumberOfChannels(), 1u);
+  DCHECK_LE(input_bus->NumberOfChannels(), 2u);
 
   unsigned number_of_input_channels = input_bus->NumberOfChannels();
 
-  bool is_output_safe = output_bus && output_bus->NumberOfChannels() == 2 &&
-                        frames_to_process <= output_bus->length();
-  DCHECK(is_output_safe);
-  if (!is_output_safe)
-    return;
+  DCHECK(output_bus);
+  DCHECK_EQ(output_bus->NumberOfChannels(), 2u);
+  DCHECK_LE(frames_to_process, output_bus->length());
 
   const float* source_l = input_bus->Channel(0)->Data();
   const float* source_r =
@@ -205,8 +195,10 @@ void EqualPowerPanner::PanWithSampleAccurateValues(
   float* destination_r =
       output_bus->ChannelByType(AudioBus::kChannelRight)->MutableData();
 
-  if (!source_l || !source_r || !destination_l || !destination_r)
-    return;
+  DCHECK(source_l);
+  DCHECK(source_r);
+  DCHECK(destination_l);
+  DCHECK(destination_r);
 
   int n = frames_to_process;
 

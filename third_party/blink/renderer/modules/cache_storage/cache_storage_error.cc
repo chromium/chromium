@@ -7,6 +7,7 @@
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/modules/cache_storage/cache.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
 
@@ -43,34 +44,36 @@ String GetDefaultMessage(mojom::CacheStorageError web_error) {
 DOMException* CacheStorageError::CreateException(
     mojom::CacheStorageError web_error,
     const String& message) {
-  String final_message = message ? message : GetDefaultMessage(web_error);
+  String final_message =
+      !message.IsEmpty() ? message : GetDefaultMessage(web_error);
   switch (web_error) {
     case mojom::CacheStorageError::kSuccess:
       // This function should only be called with an error.
       break;
     case mojom::CacheStorageError::kErrorExists:
-      return DOMException::Create(DOMExceptionCode::kInvalidAccessError,
-                                  final_message);
+      return MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kInvalidAccessError, final_message);
     case mojom::CacheStorageError::kErrorStorage:
-      return DOMException::Create(DOMExceptionCode::kUnknownError,
-                                  final_message);
+      return MakeGarbageCollected<DOMException>(DOMExceptionCode::kUnknownError,
+                                                final_message);
     case mojom::CacheStorageError::kErrorNotFound:
-      return DOMException::Create(DOMExceptionCode::kNotFoundError,
-                                  final_message);
+      return MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNotFoundError, final_message);
     case mojom::CacheStorageError::kErrorQuotaExceeded:
-      return DOMException::Create(DOMExceptionCode::kQuotaExceededError,
-                                  final_message);
+      return MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kQuotaExceededError, final_message);
     case mojom::CacheStorageError::kErrorCacheNameNotFound:
-      return DOMException::Create(DOMExceptionCode::kNotFoundError,
-                                  final_message);
+      return MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNotFoundError, final_message);
     case mojom::CacheStorageError::kErrorQueryTooLarge:
-      return DOMException::Create(DOMExceptionCode::kAbortError, final_message);
+      return MakeGarbageCollected<DOMException>(DOMExceptionCode::kAbortError,
+                                                final_message);
     case mojom::CacheStorageError::kErrorNotImplemented:
-      return DOMException::Create(DOMExceptionCode::kNotSupportedError,
-                                  final_message);
+      return MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNotSupportedError, final_message);
     case mojom::CacheStorageError::kErrorDuplicateOperation:
-      return DOMException::Create(DOMExceptionCode::kInvalidStateError,
-                                  final_message);
+      return MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kInvalidStateError, final_message);
   }
   NOTREACHED();
   return nullptr;

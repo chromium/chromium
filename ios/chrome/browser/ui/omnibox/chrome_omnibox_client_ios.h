@@ -34,10 +34,6 @@ class ChromeOmniboxClientIOS : public OmniboxClient {
   const GURL& GetURL() const override;
   bool IsLoading() const override;
   bool IsPasteAndGoEnabled() const override;
-  bool IsInstantNTP() const override;
-  bool IsSearchResultsPage() const override;
-  bool IsNewTabPage(const GURL& url) const override;
-  bool IsHomePage(const GURL& url) const override;
   bool IsDefaultSearchProviderEnabled() const override;
   const SessionID& GetSessionID() const override;
   bookmarks::BookmarkModel* GetBookmarkModel() override;

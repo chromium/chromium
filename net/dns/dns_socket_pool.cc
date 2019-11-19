@@ -42,8 +42,8 @@ DnsSocketPool::DnsSocketPool(ClientSocketFactory* socket_factory,
                              const RandIntCallback& rand_int_callback)
     : socket_factory_(socket_factory),
       rand_int_callback_(rand_int_callback),
-      net_log_(NULL),
-      nameservers_(NULL),
+      net_log_(nullptr),
+      nameservers_(nullptr),
       initialized_(false) {}
 
 void DnsSocketPool::InitializeInternal(
@@ -64,7 +64,8 @@ std::unique_ptr<StreamSocket> DnsSocketPool::CreateTCPSocket(
 
   return std::unique_ptr<StreamSocket>(
       socket_factory_->CreateTransportClientSocket(
-          AddressList((*nameservers_)[server_index]), NULL, net_log_, source));
+          AddressList((*nameservers_)[server_index]), nullptr, net_log_,
+          source));
 }
 
 std::unique_ptr<DatagramClientSocket> DnsSocketPool::CreateConnectedSocket(

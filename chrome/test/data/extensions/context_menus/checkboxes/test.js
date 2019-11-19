@@ -2,15 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-window.onload = function() {
-  createFirstCheckbox()
-      .then(createSecondCheckbox)
-      .then(checkSecondCheckbox)
-      .then(createNormalMenuItem)
-      .then(function() {
-        chrome.test.sendMessage('Menu created');
-      });
-};
+createFirstCheckbox()
+    .then(createSecondCheckbox)
+    .then(checkSecondCheckbox)
+    .then(createNormalMenuItem)
+    .then(function() {
+      chrome.test.sendMessage('Menu created');
+    });
 
 function createFirstCheckbox() {
   return new Promise(function(resolve, reject) {

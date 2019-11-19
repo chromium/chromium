@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher.h"
 #include "chrome/browser/profiles/profile.h"
@@ -82,7 +83,7 @@ DashboardPrivateShowPermissionPromptForDelegatedInstallFunction::Run() {
             .get();
   }
 
-  scoped_refptr<WebstoreInstallHelper> helper = new WebstoreInstallHelper(
+  auto helper = base::MakeRefCounted<WebstoreInstallHelper>(
       this, params_->details.id, params_->details.manifest, icon_url);
 
   // The helper will call us back via OnWebstoreParseSuccess or

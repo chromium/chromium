@@ -15,6 +15,9 @@
 #include "extensions/browser/api/socket/socket.h"
 #include "extensions/browser/api/socket/tcp_socket.h"
 #include "extensions/common/api/socket.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/completion_once_callback.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/tcp_socket.mojom.h"
@@ -31,13 +34,13 @@ class MojoDataPump;
 
 class TCPSocket : public Socket {
  public:
-  using UpgradeToTLSCallback =
-      base::OnceCallback<void(int,
-                              network::mojom::TLSClientSocketPtr,
-                              const net::IPEndPoint&,
-                              const net::IPEndPoint&,
-                              mojo::ScopedDataPipeConsumerHandle,
-                              mojo::ScopedDataPipeProducerHandle)>;
+  using UpgradeToTLSCallback = base::OnceCallback<void(
+      int,
+      mojo::PendingRemote<network::mojom::TLSClientSocket>,
+      const net::IPEndPoint&,
+      const net::IPEndPoint&,
+      mojo::ScopedDataPipeConsumerHandle,
+      mojo::ScopedDataPipeProducerHandle)>;
 
   // Constuctor for when |socket_mode_| is unknown. The |socket_mode_| will be
   // filled in when the consumer calls Listen/Connect.
@@ -45,7 +48,7 @@ class TCPSocket : public Socket {
             const std::string& owner_extension_id);
 
   // Created using TCPServerSocket::Accept().
-  TCPSocket(network::mojom::TCPConnectedSocketPtr socket,
+  TCPSocket(mojo::PendingRemote<network::mojom::TCPConnectedSocket> socket,
             mojo::ScopedDataPipeConsumerHandle receive_stream,
             mojo::ScopedDataPipeProducerHandle send_stream,
             const base::Optional<net::IPEndPoint>& remote_addr,
@@ -58,13 +61,13 @@ class TCPSocket : public Socket {
   void Disconnect(bool socket_destroying) override;
   void Bind(const std::string& address,
             uint16_t port,
-            const CompletionCallback& callback) override;
+            net::CompletionOnceCallback callback) override;
   void Read(int count, ReadCompletionCallback callback) override;
-  void RecvFrom(int count, const RecvFromCompletionCallback& callback) override;
+  void RecvFrom(int count, RecvFromCompletionCallback callback) override;
   void SendTo(scoped_refptr<net::IOBuffer> io_buffer,
               int byte_count,
               const net::IPEndPoint& address,
-              const CompletionCallback& callback) override;
+              net::CompletionOnceCallback callback) override;
   void SetKeepAlive(bool enable,
                     int delay,
                     SetKeepAliveCallback callback) override;
@@ -93,7 +96,7 @@ class TCPSocket : public Socket {
  protected:
   int WriteImpl(net::IOBuffer* io_buffer,
                 int io_buffer_size,
-                const net::CompletionCallback& callback) override;
+                net::CompletionOnceCallback callback) override;
 
  private:
   // Connects a client TCP socket. This is done on the UI thread because
@@ -103,7 +106,7 @@ class TCPSocket : public Socket {
       content::StoragePartition* storage_partition,
       content::BrowserContext* browser_context,
       const net::AddressList& remote_address_list,
-      network::mojom::TCPConnectedSocketRequest request,
+      mojo::PendingReceiver<network::mojom::TCPConnectedSocket> receiver,
       network::mojom::NetworkContext::CreateTCPConnectedSocketCallback
           callback);
   static void OnConnectCompleteOnUIThread(
@@ -128,7 +131,7 @@ class TCPSocket : public Socket {
       content::BrowserContext* browser_context,
       const net::IPEndPoint& local_addr,
       int backlog,
-      network::mojom::TCPServerSocketRequest request,
+      mojo::PendingReceiver<network::mojom::TCPServerSocket> receiver,
       network::mojom::NetworkContext::CreateTCPServerSocketCallback callback);
   static void OnListenCompleteOnUIThread(
       const scoped_refptr<base::SequencedTaskRunner>& original_task_runner,
@@ -137,21 +140,23 @@ class TCPSocket : public Socket {
       const base::Optional<net::IPEndPoint>& local_addr);
   void OnListenComplete(int result,
                         const base::Optional<net::IPEndPoint>& local_addr);
-  void OnAccept(int result,
-                const base::Optional<net::IPEndPoint>& remote_addr,
-                network::mojom::TCPConnectedSocketPtr connected_socket,
-                mojo::ScopedDataPipeConsumerHandle receive_stream,
-                mojo::ScopedDataPipeProducerHandle send_stream);
-  void OnWriteComplete(const net::CompletionCallback& callback, int result);
+  void OnAccept(
+      int result,
+      const base::Optional<net::IPEndPoint>& remote_addr,
+      mojo::PendingRemote<network::mojom::TCPConnectedSocket> connected_socket,
+      mojo::ScopedDataPipeConsumerHandle receive_stream,
+      mojo::ScopedDataPipeProducerHandle send_stream);
+  void OnWriteComplete(net::CompletionOnceCallback callback, int result);
   void OnReadComplete(int result, scoped_refptr<net::IOBuffer> io_buffer);
-  void OnUpgradeToTLSComplete(UpgradeToTLSCallback callback,
-                              network::mojom::TLSClientSocketPtr tls_socket,
-                              const net::IPEndPoint& local_addr,
-                              const net::IPEndPoint& peer_addr,
-                              int result,
-                              mojo::ScopedDataPipeConsumerHandle receive_stream,
-                              mojo::ScopedDataPipeProducerHandle send_stream,
-                              const base::Optional<net::SSLInfo>& ssl_info);
+  void OnUpgradeToTLSComplete(
+      UpgradeToTLSCallback callback,
+      mojo::PendingRemote<network::mojom::TLSClientSocket> tls_socket,
+      const net::IPEndPoint& local_addr,
+      const net::IPEndPoint& peer_addr,
+      int result,
+      mojo::ScopedDataPipeConsumerHandle receive_stream,
+      mojo::ScopedDataPipeProducerHandle send_stream,
+      const base::Optional<net::SSLInfo>& ssl_info);
 
   content::StoragePartition* GetStoragePartitionHelper();
 
@@ -168,9 +173,9 @@ class TCPSocket : public Socket {
   SocketMode socket_mode_;
 
   // CLIENT mode.
-  network::mojom::TCPConnectedSocketPtr client_socket_;
+  mojo::Remote<network::mojom::TCPConnectedSocket> client_socket_;
   // SERVER mode.
-  network::mojom::TCPServerSocketPtr server_socket_;
+  mojo::Remote<network::mojom::TCPServerSocket> server_socket_;
 
   net::CompletionOnceCallback connect_callback_;
   ListenCallback listen_callback_;
@@ -189,7 +194,7 @@ class TCPSocket : public Socket {
 
   // WeakPtr is used when posting tasks to |task_runner_| which might outlive
   // |this|.
-  base::WeakPtrFactory<TCPSocket> weak_factory_;
+  base::WeakPtrFactory<TCPSocket> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(TCPSocket);
 };
@@ -202,11 +207,12 @@ class ResumableTCPSocket : public TCPSocket {
   ResumableTCPSocket(content::BrowserContext* browser_context,
                      const std::string& owner_extension_id);
   // Created using TCPServerSocket::Accept().
-  ResumableTCPSocket(network::mojom::TCPConnectedSocketPtr socket,
-                     mojo::ScopedDataPipeConsumerHandle receive_stream,
-                     mojo::ScopedDataPipeProducerHandle send_stream,
-                     const base::Optional<net::IPEndPoint>& remote_addr,
-                     const std::string& owner_extension_id);
+  ResumableTCPSocket(
+      mojo::PendingRemote<network::mojom::TCPConnectedSocket> socket,
+      mojo::ScopedDataPipeConsumerHandle receive_stream,
+      mojo::ScopedDataPipeProducerHandle send_stream,
+      const base::Optional<net::IPEndPoint>& remote_addr,
+      const std::string& owner_extension_id);
 
   ~ResumableTCPSocket() override;
 

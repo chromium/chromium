@@ -4,19 +4,21 @@
 
 package org.chromium.chrome.browser.preferences.autofill;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.preference.PreferenceFragment;
+import android.support.v7.preference.PreferenceFragmentCompat;
+import android.support.v7.preference.PreferenceScreen;
 import android.util.Pair;
+import android.view.View;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.payments.AndroidPaymentAppFactory;
 import org.chromium.chrome.browser.payments.ServiceWorkerPaymentAppBridge;
-import org.chromium.chrome.browser.preferences.PreferenceUtils;
 import org.chromium.chrome.browser.preferences.TextMessagePreference;
 
 import java.util.Map;
@@ -24,12 +26,22 @@ import java.util.Map;
 /**
  * Preference fragment to allow users to control use of the Android payment apps on device.
  */
-public class AndroidPaymentAppsFragment extends PreferenceFragment {
+public class AndroidPaymentAppsFragment extends PreferenceFragmentCompat {
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        PreferenceUtils.addPreferencesFromResource(this, R.xml.blank_preference_fragment_screen);
+    public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         getActivity().setTitle(R.string.payment_apps_title);
+
+        // Create blank preference screen.
+        PreferenceScreen screen = getPreferenceManager().createPreferenceScreen(getStyledContext());
+        setPreferenceScreen(screen);
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        // Disable animations of preference changes (crbug.com/986241).
+        getListView().setItemAnimator(null);
     }
 
     @Override
@@ -57,15 +69,14 @@ public class AndroidPaymentAppsFragment extends PreferenceFragment {
             Map<String, Pair<String, Bitmap>> serviceWorkerAppsInfo) {
         if (androidAppsInfo.isEmpty() && serviceWorkerAppsInfo.isEmpty()) return;
 
-        AndroidPaymentAppPreference pref = null;
         for (Map.Entry<String, Pair<String, Drawable>> app : androidAppsInfo.entrySet()) {
-            pref = new AndroidPaymentAppPreference(getActivity());
+            AndroidPaymentAppPreference pref = new AndroidPaymentAppPreference(getStyledContext());
             pref.setTitle(app.getValue().first);
             pref.setIcon(app.getValue().second);
             getPreferenceScreen().addPreference(pref);
         }
         for (Map.Entry<String, Pair<String, Bitmap>> app : serviceWorkerAppsInfo.entrySet()) {
-            pref = new AndroidPaymentAppPreference(getActivity());
+            AndroidPaymentAppPreference pref = new AndroidPaymentAppPreference(getStyledContext());
             pref.setTitle(app.getValue().first);
             pref.setSummary(app.getKey());
             pref.setIcon(app.getValue().second == null
@@ -73,12 +84,14 @@ public class AndroidPaymentAppsFragment extends PreferenceFragment {
                             : new BitmapDrawable(getResources(), app.getValue().second));
             getPreferenceScreen().addPreference(pref);
         }
-        // Add a divider line at the bottom of the last preference to separate it from below
-        // TextMessagePreference.
-        if (pref != null) pref.setDrawDivider(true);
 
-        TextMessagePreference textPreference = new TextMessagePreference(getActivity(), null);
-        textPreference.setTitle(getActivity().getString(R.string.payment_apps_usage_message));
+        TextMessagePreference textPreference = new TextMessagePreference(getStyledContext(), null);
+        textPreference.setTitle(R.string.payment_apps_usage_message);
+        textPreference.setDividerAllowedBelow(false);
         getPreferenceScreen().addPreference(textPreference);
+    }
+
+    private Context getStyledContext() {
+        return getPreferenceManager().getContext();
     }
 }

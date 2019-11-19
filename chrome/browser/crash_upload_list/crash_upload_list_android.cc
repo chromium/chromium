@@ -12,7 +12,7 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_macros_local.h"
-#include "jni/MinidumpUploadService_jni.h"
+#include "chrome/android/chrome_jni_headers/MinidumpUploadService_jni.h"
 #include "ui/base/text/bytes_formatting.h"
 
 namespace {
@@ -58,10 +58,14 @@ bool CrashUploadListAndroid::DidBrowserCrashRecently() {
 }
 
 std::vector<UploadList::UploadInfo> CrashUploadListAndroid::LoadUploadList() {
-  // First load the list of successfully uploaded logs.
-  std::vector<UploadInfo> uploads = TextLogUploadList::LoadUploadList();
-  // Then load the unsuccessful uploads.
+  std::vector<UploadInfo> uploads;
   LoadUnsuccessfulUploadList(&uploads);
+
+  std::vector<UploadInfo> complete_uploads =
+      TextLogUploadList::LoadUploadList();
+  for (auto info : complete_uploads) {
+    uploads.push_back(info);
+  }
   return uploads;
 }
 

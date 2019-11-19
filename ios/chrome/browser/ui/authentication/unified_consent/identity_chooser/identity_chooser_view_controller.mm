@@ -11,7 +11,6 @@
 #import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_item.h"
 #import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_view_controller_presentation_delegate.h"
 #import "ios/chrome/browser/ui/list_model/list_item+Controller.h"
-#import "ios/third_party/material_components_ios/src/components/Dialogs/src/MaterialDialogs.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -57,6 +56,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
+  [super viewDidDisappear:animated];
   [self.presentationDelegate identityChooserViewControllerDidDisappear:self];
 }
 

@@ -12,15 +12,15 @@ CryptAuthKeyRegistry::CryptAuthKeyRegistry() = default;
 
 CryptAuthKeyRegistry::~CryptAuthKeyRegistry() = default;
 
-const CryptAuthKeyRegistry::KeyBundleMap&
-CryptAuthKeyRegistry::enrolled_key_bundles() const {
-  return enrolled_key_bundles_;
+const CryptAuthKeyRegistry::KeyBundleMap& CryptAuthKeyRegistry::key_bundles()
+    const {
+  return key_bundles_;
 }
 
 const CryptAuthKeyBundle* CryptAuthKeyRegistry::GetKeyBundle(
     CryptAuthKeyBundle::Name name) const {
-  auto it = enrolled_key_bundles_.find(name);
-  if (it == enrolled_key_bundles_.end())
+  auto it = key_bundles_.find(name);
+  if (it == key_bundles_.end())
     return nullptr;
 
   return &it->second;
@@ -28,20 +28,20 @@ const CryptAuthKeyBundle* CryptAuthKeyRegistry::GetKeyBundle(
 
 const CryptAuthKey* CryptAuthKeyRegistry::GetActiveKey(
     CryptAuthKeyBundle::Name name) const {
-  auto it_bundle = enrolled_key_bundles_.find(name);
-  if (it_bundle == enrolled_key_bundles_.end())
+  auto it_bundle = key_bundles_.find(name);
+  if (it_bundle == key_bundles_.end())
     return nullptr;
 
   return it_bundle->second.GetActiveKey();
 }
 
-void CryptAuthKeyRegistry::AddEnrolledKey(CryptAuthKeyBundle::Name name,
-                                          const CryptAuthKey& key) {
-  auto it_bundle = enrolled_key_bundles_.find(name);
+void CryptAuthKeyRegistry::AddKey(CryptAuthKeyBundle::Name name,
+                                  const CryptAuthKey& key) {
+  auto it_bundle = key_bundles_.find(name);
 
   // If a bundle with |name| does not already exist, create one.
-  if (it_bundle == enrolled_key_bundles_.end()) {
-    auto it_success_pair = enrolled_key_bundles_.try_emplace(name, name);
+  if (it_bundle == key_bundles_.end()) {
+    auto it_success_pair = key_bundles_.try_emplace(name, name);
     DCHECK(it_success_pair.second);
 
     it_bundle = it_success_pair.first;
@@ -54,8 +54,8 @@ void CryptAuthKeyRegistry::AddEnrolledKey(CryptAuthKeyBundle::Name name,
 
 void CryptAuthKeyRegistry::SetActiveKey(CryptAuthKeyBundle::Name name,
                                         const std::string& handle) {
-  auto it_bundle = enrolled_key_bundles_.find(name);
-  DCHECK(it_bundle != enrolled_key_bundles_.end());
+  auto it_bundle = key_bundles_.find(name);
+  DCHECK(it_bundle != key_bundles_.end());
 
   it_bundle->second.SetActiveKey(handle);
 
@@ -63,8 +63,8 @@ void CryptAuthKeyRegistry::SetActiveKey(CryptAuthKeyBundle::Name name,
 }
 
 void CryptAuthKeyRegistry::DeactivateKeys(CryptAuthKeyBundle::Name name) {
-  auto it_bundle = enrolled_key_bundles_.find(name);
-  DCHECK(it_bundle != enrolled_key_bundles_.end());
+  auto it_bundle = key_bundles_.find(name);
+  DCHECK(it_bundle != key_bundles_.end());
 
   it_bundle->second.DeactivateKeys();
 
@@ -73,8 +73,8 @@ void CryptAuthKeyRegistry::DeactivateKeys(CryptAuthKeyBundle::Name name) {
 
 void CryptAuthKeyRegistry::DeleteKey(CryptAuthKeyBundle::Name name,
                                      const std::string& handle) {
-  auto it_bundle = enrolled_key_bundles_.find(name);
-  DCHECK(it_bundle != enrolled_key_bundles_.end());
+  auto it_bundle = key_bundles_.find(name);
+  DCHECK(it_bundle != key_bundles_.end());
 
   it_bundle->second.DeleteKey(handle);
 
@@ -84,11 +84,11 @@ void CryptAuthKeyRegistry::DeleteKey(CryptAuthKeyBundle::Name name,
 void CryptAuthKeyRegistry::SetKeyDirective(
     CryptAuthKeyBundle::Name name,
     const cryptauthv2::KeyDirective& key_directive) {
-  auto it_bundle = enrolled_key_bundles_.find(name);
+  auto it_bundle = key_bundles_.find(name);
 
   // If a bundle with |name| does not already exist, create one.
-  if (it_bundle == enrolled_key_bundles_.end()) {
-    auto it_success_pair = enrolled_key_bundles_.try_emplace(name, name);
+  if (it_bundle == key_bundles_.end()) {
+    auto it_success_pair = key_bundles_.try_emplace(name, name);
     DCHECK(it_success_pair.second);
     it_bundle = it_success_pair.first;
   }

@@ -38,16 +38,14 @@ const CGFloat kWidthLandscapeSplitViewOnLargeIPad = 678.0;
 
 - (BOOL)application:(UIApplication*)application
     didFinishLaunchingWithOptions:(NSDictionary*)launchOptions {
-  // Configure application window size for multitasking tests.
+  BOOL returnValue = [super application:application
+          didFinishLaunchingWithOptions:launchOptions];
+  // Adjust window size for multitasking tests.
   CGSize newWindowSize = [self windowSize];
-  self.window = [[ChromeOverlayWindow alloc]
-      initWithFrame:CGRectMake(0, 0, newWindowSize.width,
-                               newWindowSize.height)];
+  self.window.frame =
+      CGRectMake(0, 0, newWindowSize.width, newWindowSize.height);
 
-  BOOL inBackground =
-      [application applicationState] == UIApplicationStateBackground;
-  return [[self appState] requiresHandlingAfterLaunchWithOptions:launchOptions
-                                                 stateBackground:inBackground];
+  return returnValue;
 }
 
 // Returns true if test is running on 12.9 inch iPad Pro. Otherwise, it's

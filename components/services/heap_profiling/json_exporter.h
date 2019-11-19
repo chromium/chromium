@@ -5,12 +5,12 @@
 #ifndef COMPONENTS_SERVICES_HEAP_PROFILING_JSON_EXPORTER_H_
 #define COMPONENTS_SERVICES_HEAP_PROFILING_JSON_EXPORTER_H_
 
-#include <iosfwd>
+#include <map>
+#include <string>
+#include <unordered_map>
 #include <vector>
 
-#include "base/values.h"
-#include "components/services/heap_profiling/allocation_event.h"
-#include "components/services/heap_profiling/public/cpp/stream.h"
+#include "components/services/heap_profiling/allocation.h"
 #include "components/services/heap_profiling/public/mojom/heap_profiling_service.mojom.h"
 #include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom.h"
 
@@ -23,7 +23,7 @@ struct ExportParams {
   ~ExportParams();
 
   // Allocation events to export.
-  AllocationCountMap allocs;
+  AllocationMap allocs;
 
   // VM map of all regions in the process.
   std::vector<memory_instrumentation::mojom::VmRegionPtr> maps;
@@ -39,10 +39,6 @@ struct ExportParams {
   // The type of browser [browser, renderer, gpu] that is being heap-dumped.
   mojom::ProcessType process_type = mojom::ProcessType::OTHER;
 
-  // Only allocations exceeding this size or count will be exported.
-  size_t min_size_threshold = 0;
-  size_t min_count_threshold = 0;
-
   // Whether or not the paths should be stripped from mapped files. Doing so
   // anonymizes the trace, since the paths could potentially contain a username.
   // However, it prevents symbolization of locally built instances of Chrome.
@@ -56,18 +52,11 @@ struct ExportParams {
   // parameter, and tells the caller the next unused ID.
   // See https://crbug.com/808066.
   size_t next_id = 1;
-
-  // When sampling is enabled, each allocation is recorded with probability
-  // (size / sampling_rate). The resulting exported JSON needs to be
-  // appropriately updated to reflect de-sampled values.
-  // A |sampling_rate| of 1 is equivalent to recording all allocations.
-  size_t sampling_rate = 1;
 };
 
 // Creates a JSON string representing a JSON dictionary that contains memory
 // maps and v2 format stack traces.
-void ExportMemoryMapsAndV2StackTraceToJSON(ExportParams* params,
-                                           std::ostream& out);
+std::string ExportMemoryMapsAndV2StackTraceToJSON(ExportParams* params);
 
 }  // namespace heap_profiling
 

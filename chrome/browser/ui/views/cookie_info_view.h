@@ -5,17 +5,17 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_COOKIE_INFO_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_COOKIE_INFO_VIEW_H_
 
+#include <memory>
 #include <string>
 #include <vector>
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/strings/string16.h"
-#include "ui/views/view.h"
+#include "ui/views/controls/scroll_view.h"
 
 namespace views {
 class GridLayout;
-class Label;
 class Textfield;
 }
 
@@ -27,7 +27,7 @@ class CanonicalCookie;
 // CookieInfoView
 //
 //  Responsible for displaying a tabular grid of Cookie information.
-class CookieInfoView : public views::View {
+class CookieInfoView : public views::ScrollView {
  public:
   CookieInfoView();
   ~CookieInfoView() override;
@@ -46,33 +46,25 @@ class CookieInfoView : public views::View {
  protected:
   // views::View:
   void ViewHierarchyChanged(
-      const ViewHierarchyChangedDetails& details) override;
+      const views::ViewHierarchyChangedDetails& details) override;
 
  private:
   // Layout helper routines.
-  void AddLabelRow(int layout_id,
-                   views::GridLayout* layout,
-                   views::Label* label,
-                   views::Textfield* textfield);
+  views::Textfield* AddLabelRow(int layout_id,
+                                views::GridLayout* layout,
+                                int label_message_id);
 
   // Sets up the view layout.
   void Init();
 
   // Individual property labels
-  views::Label* name_label_;
-  views::Textfield* name_value_field_;
-  views::Label* content_label_;
-  views::Textfield* content_value_field_;
-  views::Label* domain_label_;
-  views::Textfield* domain_value_field_;
-  views::Label* path_label_;
-  views::Textfield* path_value_field_;
-  views::Label* send_for_label_;
-  views::Textfield* send_for_value_field_;
-  views::Label* created_label_;
-  views::Textfield* created_value_field_;
-  views::Label* expires_label_;
-  views::Textfield* expires_value_field_;
+  views::Textfield* name_value_field_ = nullptr;
+  views::Textfield* content_value_field_ = nullptr;
+  views::Textfield* domain_value_field_ = nullptr;
+  views::Textfield* path_value_field_ = nullptr;
+  views::Textfield* send_for_value_field_ = nullptr;
+  views::Textfield* created_value_field_ = nullptr;
+  views::Textfield* expires_value_field_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(CookieInfoView);
 };

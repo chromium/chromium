@@ -1,0 +1,8 @@
+ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
+++IA2_ROLE_TEXT_FRAME xml-roles:time
+++++ROLE_SYSTEM_STATICTEXT name='role'
+++IA2_ROLE_TEXT_FRAME xml-roles:time
+++++ROLE_SYSTEM_STATICTEXT name='element (no name)'
+++ROLE_SYSTEM_STATICTEXT name=' '
+++IA2_ROLE_TEXT_FRAME name='include me' xml-roles:time
+++++ROLE_SYSTEM_STATICTEXT name='element (with name)'

@@ -4,6 +4,7 @@
 
 import("//build/config/locales.gni")
 import("//chrome/common/features.gni")
+import("//chromeos/components/media_app_ui/media_app_ui.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//ui/base/ui_features.gni")
 import("chrome_repack_locales.gni")
@@ -58,12 +59,12 @@ template("chrome_repack_percent") {
     }
     if (is_chromeos) {
       sources += [
-        "$root_gen_dir/ash/components/resources/ash_components_resources_${percent}_percent.pak",
+        "$root_gen_dir/ash/app_list/resources/app_list_resources_${percent}_percent.pak",
         "$root_gen_dir/ash/login/resources/login_resources_${percent}_percent.pak",
         "$root_gen_dir/ui/chromeos/resources/ui_chromeos_resources_${percent}_percent.pak",
       ]
       deps += [
-        "//ash/components/resources",
+        "//ash/app_list/resources",
         "//ash/login/resources",
         "//ui/chromeos/resources",
       ]
@@ -71,10 +72,6 @@ template("chrome_repack_percent") {
     if (enable_extensions) {
       sources += [ "$root_gen_dir/extensions/extensions_browser_resources_${percent}_percent.pak" ]
       deps += [ "//extensions:extensions_browser_resources" ]
-    }
-    if (enable_app_list) {
-      sources += [ "$root_gen_dir/ash/app_list/resources/app_list_resources_${percent}_percent.pak" ]
-      deps += [ "//ash/app_list/resources" ]
     }
 
     output = "${invoker.output_dir}/chrome_${percent}_percent.pak"
@@ -97,7 +94,7 @@ template("chrome_extra_paks") {
       "$root_gen_dir/chrome/invalidations_resources.pak",
       "$root_gen_dir/chrome/net_internals_resources.pak",
       "$root_gen_dir/chrome/quota_internals_resources.pak",
-      "$root_gen_dir/chrome/translate_internals_resources.pak",
+      "$root_gen_dir/components/autofill/core/browser/autofill_address_rewriter_resources.pak",
       "$root_gen_dir/components/components_resources.pak",
       "$root_gen_dir/content/browser/tracing/tracing_resources.pak",
       "$root_gen_dir/content/content_resources.pak",
@@ -112,8 +109,8 @@ template("chrome_extra_paks") {
       "//chrome/browser/resources:invalidations_resources",
       "//chrome/browser/resources:net_internals_resources",
       "//chrome/browser/resources:quota_internals_resources",
-      "//chrome/browser/resources:translate_internals_resources",
       "//chrome/common:resources",
+      "//components/autofill/core/browser:autofill_address_rewriter_resources",
       "//components/resources",
       "//content:resources",
       "//content/browser/tracing:resources",
@@ -135,15 +132,23 @@ template("chrome_extra_paks") {
     } else {
       # New paks should be added here by default.
       sources += [
+        "$root_gen_dir/chrome/bookmarks_resources.pak",
         "$root_gen_dir/chrome/component_extension_resources.pak",
+        "$root_gen_dir/chrome/dev_ui_resources.pak",
+        "$root_gen_dir/chrome/downloads_resources.pak",
         "$root_gen_dir/chrome/local_ntp_resources.pak",
+        "$root_gen_dir/chrome/new_tab_page_resources.pak",
         "$root_gen_dir/chrome/settings_resources.pak",
         "$root_gen_dir/content/browser/devtools/devtools_resources.pak",
         "$root_gen_dir/headless/headless_lib_resources.pak",
       ]
       deps += [
+        "//chrome/browser/resources:bookmarks_resources",
         "//chrome/browser/resources:component_extension_resources",
+        "//chrome/browser/resources:dev_ui_paks",
+        "//chrome/browser/resources:downloads_resources",
         "//chrome/browser/resources:local_ntp_resources",
+        "//chrome/browser/resources:new_tab_page_resources",
         "//chrome/browser/resources:settings_resources",
         "//content/browser/devtools:devtools_resources",
         "//headless:resources",
@@ -152,22 +157,34 @@ template("chrome_extra_paks") {
     if (is_chromeos) {
       sources += [
         "$root_gen_dir/ash/public/cpp/resources/ash_public_unscaled_resources.pak",
+        "$root_gen_dir/chrome/camera_resources.pak",
+        "$root_gen_dir/chrome/cellular_setup_resources.pak",
         "$root_gen_dir/chrome/multidevice_setup_resources.pak",
+        "$root_gen_dir/chrome/os_settings_resources.pak",
+        "$root_gen_dir/chromeos/chromeos_help_app_resources.pak",
+        "$root_gen_dir/chromeos/chromeos_media_app_bundle_resources.pak",
+        "$root_gen_dir/chromeos/chromeos_media_app_resources.pak",
         "$root_gen_dir/chromeos/chromeos_resources.pak",
         "$root_gen_dir/third_party/ink/ink_resources.pak",
         "$root_gen_dir/ui/file_manager/file_manager_resources.pak",
       ]
       deps += [
         "//ash/public/cpp/resources:ash_public_unscaled_resources",
+        "//chrome/browser/resources:os_settings_resources",
+        "//chrome/browser/resources/chromeos:camera_resources",
+        "//chrome/browser/resources/chromeos:cellular_setup_resources",
         "//chrome/browser/resources/chromeos:multidevice_setup_resources",
         "//chromeos/resources",
+        "//chromeos/resources:help_app_resources",
+        "//chromeos/resources:media_app_bundle_resources",
+        "//chromeos/resources:media_app_resources",
         "//third_party/ink:ink_resources",
         "//ui/file_manager:resources",
       ]
     }
     if (!is_android && !is_chromeos) {
-      sources += [ "$root_gen_dir/chrome/onboarding_welcome_resources.pak" ]
-      deps += [ "//chrome/browser/resources:onboarding_welcome_resources" ]
+      sources += [ "$root_gen_dir/chrome/welcome_resources.pak" ]
+      deps += [ "//chrome/browser/resources:welcome_resources" ]
     }
     if (enable_extensions) {
       sources += [
@@ -186,6 +203,10 @@ template("chrome_extra_paks") {
       sources += [ "$root_gen_dir/chrome/print_preview_resources.pak" ]
       deps += [ "//chrome/browser/resources:print_preview_resources" ]
     }
+    if (enable_webui_tab_strip) {
+      sources += [ "$root_gen_dir/chrome/tab_strip_resources.pak" ]
+      deps += [ "//chrome/browser/resources:tab_strip_resources" ]
+    }
   }
 }
 
@@ -195,7 +216,7 @@ template("chrome_extra_paks") {
 # * resources.pak
 # * locale .pak files
 #
-# Paramters:
+# Parameters:
 #   output_dir [required]: Directory to output .pak files. Locale .pak files
 #       will always be place in $output_dir/locales
 #   additional_extra_paks: List of extra .pak sources for resources.pak.

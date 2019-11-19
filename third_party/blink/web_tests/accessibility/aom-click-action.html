@@ -2,7 +2,6 @@
 <script src="../resources/gc.js"></script>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 <script src="../http/tests/resources/permissions-helper.js"></script>
 <script src="resources/aom-helper.js"></script>
 
@@ -14,7 +13,7 @@ Spec: https://wicg.github.io/aom/spec/
 
 -->
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     assert_true(internals.runtimeFlags.accessibilityObjectModelEnabled);
 }, "Make sure that Accessibility Object Model is enabled");
 </script>
@@ -22,7 +21,7 @@ test_after_layout_and_paint(function(t) {
 <button id="target1">Target</button>
 
 <script>
-async_test_after_layout_and_paint(function(t) {
+async_test(function(t) {
   enableAccessibilityEventsPermission().then(function() {
     var target1 = document.getElementById("target1");
     var axTarget1 = accessibilityController.accessibleElementById("target1");
@@ -42,7 +41,7 @@ async_test_after_layout_and_paint(function(t) {
 <button id="target2">Target</button>
 
 <script>
-async_test_after_layout_and_paint(function(t) {
+async_test(function(t) {
   enableAccessibilityEventsPermission().then(function() {
     var target2 = document.getElementById("target2");
     var axTarget2 = accessibilityController.accessibleElementById("target2");
@@ -63,7 +62,7 @@ async_test_after_layout_and_paint(function(t) {
 <button id="target3b">Target with preventDefault</button>
 
 <script>
-async_test_after_layout_and_paint(function(t) {
+async_test(function(t) {
   enableAccessibilityEventsPermission().then(function() {
     var target3a = document.getElementById("target3a");
     var target3b = document.getElementById("target3b");
@@ -109,7 +108,7 @@ async_test_after_layout_and_paint(function(t) {
 </p>
 
 <script>
-async_test_after_layout_and_paint(function(t) {
+async_test(function(t) {
   enableAccessibilityEventsPermission().then(function() {
     var p4 = document.getElementById("p4");
     var axTarget4 = accessibilityController.accessibleElementById("target4");
@@ -135,7 +134,7 @@ async_test_after_layout_and_paint(function(t) {
 </section>
 
 <script>
-async_test_after_layout_and_paint(function(t) {
+async_test(function(t) {
   enableAccessibilityEventsPermission().then(function() {
     var section5 = document.getElementById("section5");
     var ul5 = document.getElementById("ul5");
@@ -204,7 +203,7 @@ async_test_after_layout_and_paint(function(t) {
 </section>
 
 <script>
-async_test_after_layout_and_paint(function(t) {
+async_test(function(t) {
   enableAccessibilityEventsPermission().then(function() {
     var ul6a = document.getElementById("ul6a");
     var ul6b = document.getElementById("ul6b");
@@ -233,7 +232,7 @@ async_test_after_layout_and_paint(function(t) {
 <p id="container7" aria-label="Container7"></p>
 
 <script>
-async_test_after_layout_and_paint(function(t) {
+async_test(function(t) {
   enableAccessibilityEventsPermission().then(function() {
     var container7 = document.getElementById("container7");
     var axContainer7 = accessibilityController.accessibleElementById(

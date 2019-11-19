@@ -179,7 +179,7 @@ class VIEWS_EXPORT LayoutProvider {
                                              SkColor color) const;
 
  private:
-  DefaultTypographyProvider typography_provider_;
+  TypographyProvider typography_provider_;
 
   DISALLOW_COPY_AND_ASSIGN(LayoutProvider);
 };

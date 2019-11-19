@@ -145,6 +145,16 @@ function waitForConnectionToStabilize(peerConnection) {
   });
 }
 
+function waitForConnectionToStabilizeIfNeeded(peerConnection) {
+  return new Promise((resolve, reject) => {
+    if (peerConnection.signalingState == 'stable') {
+      resolve();
+      return;
+    }
+    return waitForConnectionToStabilize(peerConnection).then(resolve);
+  });
+}
+
 // This very basic video verification algorithm will be satisfied if any
 // pixels are changed.
 function isVideoPlaying(pixels, previousPixels) {
@@ -230,6 +240,12 @@ function assertNotEquals(expected, actual) {
 
 function assertTrue(booleanExpression, description) {
   if (!booleanExpression) {
+    failTest(description);
+  }
+}
+
+function assertFalse(booleanExpression, description) {
+  if (!!booleanExpression) {
     failTest(description);
   }
 }

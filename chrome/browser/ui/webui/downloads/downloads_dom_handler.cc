@@ -8,6 +8,7 @@
 #include <functional>
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/bind_helpers.h"
@@ -30,6 +31,7 @@
 #include "chrome/browser/download/drag_download_item.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/downloads/downloads.mojom.h"
 #include "chrome/browser/ui/webui/fileicon_source.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -44,6 +46,9 @@
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/filename_util.h"
 #include "ui/base/l10n/time_format.h"
 #include "ui/gfx/image/image.h"
@@ -78,13 +83,13 @@ void CountDownloadsDOMEvents(DownloadsDOMEvent event) {
 }  // namespace
 
 DownloadsDOMHandler::DownloadsDOMHandler(
-    downloads::mojom::PageHandlerRequest request,
-    downloads::mojom::PagePtr page,
+    mojo::PendingReceiver<downloads::mojom::PageHandler> receiver,
+    mojo::PendingRemote<downloads::mojom::Page> page,
     content::DownloadManager* download_manager,
     content::WebUI* web_ui)
     : list_tracker_(download_manager, std::move(page)),
       web_ui_(web_ui),
-      binding_(this, std::move(request)) {
+      receiver_(this, std::move(receiver)) {
   // Create our fileicon data source.
   content::URLDataSource::Add(
       Profile::FromBrowserContext(download_manager->GetBrowserContext()),

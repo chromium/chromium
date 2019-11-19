@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_COMMON_SIMPLE_THREAD_SCHEDULER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_COMMON_SIMPLE_THREAD_SCHEDULER_H_
 
+#include <memory>
+
 #include "base/macros.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 
@@ -37,11 +39,17 @@ class SimpleThreadScheduler : public ThreadScheduler {
 
   // Those tasks are simply ignored (we assume there's no idle period).
   void PostIdleTask(const base::Location&, Thread::IdleTask) override;
+  void PostDelayedIdleTask(const base::Location&,
+                           base::TimeDelta delay,
+                           Thread::IdleTask) override;
   void PostNonNestableIdleTask(const base::Location&,
                                Thread::IdleTask) override;
 
   // Do nothing (the observer won't get notified).
-  void AddRAILModeObserver(WebRAILModeObserver*) override;
+  void AddRAILModeObserver(RAILModeObserver*) override;
+
+  // Do nothing.
+  void RemoveRAILModeObserver(RAILModeObserver const*) override;
 
   // Return the thread task runner (there's no separate task runner for them).
   scoped_refptr<base::SingleThreadTaskRunner> V8TaskRunner() override;
@@ -62,11 +70,13 @@ class SimpleThreadScheduler : public ThreadScheduler {
 
   // Unsupported. The observer won't get called. May break some functionalities
   // that rely on the task observer.
-  void AddTaskObserver(base::MessageLoop::TaskObserver*) override;
-  void RemoveTaskObserver(base::MessageLoop::TaskObserver*) override;
+  void AddTaskObserver(base::TaskObserver*) override;
+  void RemoveTaskObserver(base::TaskObserver*) override;
 
   // Return nullptr.
   NonMainThreadSchedulerImpl* AsNonMainThreadScheduler() override;
+
+  void SetV8Isolate(v8::Isolate* isolate) override {}
 
  private:
   DISALLOW_COPY_AND_ASSIGN(SimpleThreadScheduler);

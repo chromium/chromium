@@ -14,9 +14,6 @@ namespace webcrypto {
 
 class AlgorithmImplementation;
 
-std::unique_ptr<blink::WebCryptoDigestor> CreateDigestorImplementation(
-    blink::WebCryptoAlgorithmId algorithm);
-
 std::unique_ptr<AlgorithmImplementation> CreateShaImplementation();
 std::unique_ptr<AlgorithmImplementation> CreateAesCbcImplementation();
 std::unique_ptr<AlgorithmImplementation> CreateAesCtrImplementation();

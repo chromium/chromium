@@ -30,10 +30,12 @@ class BrowserContext;
 }
 
 namespace extensions {
+class ChannelEndpoint;
 class Extension;
 class ExtensionHost;
 class MessagingDelegate;
 struct MessagingEndpoint;
+struct PortContext;
 
 // This class manages message and event passing between renderer processes.
 // It maintains a list of processes that are listening to events and a set of
@@ -80,8 +82,7 @@ class MessageService : public BrowserContextKeyedAPI,
   // and every listening context owned by that extension. |channel_name| is
   // an optional identifier for use by extension developers. |opener_port| is an
   // optional pre-opened port that should be attached to the opened channel.
-  void OpenChannelToExtension(int source_process_id,
-                              int source_routing_id,
+  void OpenChannelToExtension(const ChannelEndpoint& source,
                               const PortId& source_port_id,
                               const MessagingEndpoint& source_endpoint,
                               std::unique_ptr<MessagePort> opener_port,
@@ -92,28 +93,28 @@ class MessageService : public BrowserContextKeyedAPI,
   // Same as above, but opens a channel to the tab with the given ID.  Messages
   // are restricted to that tab, so if there are multiple tabs in that process,
   // only the targeted tab will receive messages.
-  void OpenChannelToTab(int source_process_id,
-                        int source_routing_id,
+  void OpenChannelToTab(const ChannelEndpoint& source,
                         const PortId& source_port_id,
                         int tab_id,
                         int frame_id,
                         const std::string& extension_id,
                         const std::string& channel_name);
 
-  void OpenChannelToNativeApp(int source_process_id,
-                              int source_routing_id,
+  void OpenChannelToNativeApp(const ChannelEndpoint& source,
                               const PortId& source_port_id,
                               const std::string& native_app_name);
 
-  // Mark the given port as opened by the frame identified by
-  // (process_id, routing_id).
-  void OpenPort(const PortId& port_id, int process_id, int routing_id);
+  // Marks the given port as opened by |port_context| in the render process
+  // with id |process_id|.
+  void OpenPort(const PortId& port_id,
+                int process_id,
+                const PortContext& port_context);
 
-  // Closes the given port in the given frame. If this was the last frame or if
-  // |force_close| is true, then the other side is closed as well.
+  // Closes the given port in the given |port_context|. If this was the last
+  // context or if |force_close| is true, then the other side is closed as well.
   void ClosePort(const PortId& port_id,
                  int process_id,
-                 int routing_id,
+                 const PortContext& port_context,
                  bool force_close);
 
   base::WeakPtr<MessagePort::ChannelDelegate> GetChannelDelegate() {
@@ -136,9 +137,9 @@ class MessageService : public BrowserContextKeyedAPI,
   using PendingChannelMap = std::map<ChannelId, PendingMessagesQueue>;
 
   // A map of channel ID to information about the extension that is waiting
-  // for that channel to open. Used for lazy background pages.
-  using PendingLazyBackgroundPageChannelMap =
-      std::map<ChannelId, LazyContextId>;
+  // for that channel to open. Used for lazy background pages or Service
+  // Workers.
+  using PendingLazyContextChannelMap = std::map<ChannelId, LazyContextId>;
 
   // Common implementation for opening a channel configured by |params|.
   //
@@ -155,6 +156,7 @@ class MessageService : public BrowserContextKeyedAPI,
   void ClosePortImpl(const PortId& port_id,
                      int process_id,
                      int routing_id,
+                     int worker_thread_id,
                      bool force_close,
                      const std::string& error_message);
 
@@ -188,10 +190,10 @@ class MessageService : public BrowserContextKeyedAPI,
                        MessageChannel* channel,
                        const Message& message);
 
-  // Potentially registers a pending task with the background task queue
+  // Potentially registers a pending task with lazy context task queue
   // to open a channel. Returns true if a task was queued.
   // Takes ownership of |params| if true is returned.
-  bool MaybeAddPendingLazyBackgroundPageOpenChannelTask(
+  bool MaybeAddPendingLazyContextOpenChannelTask(
       content::BrowserContext* context,
       const Extension* extension,
       std::unique_ptr<OpenChannelParams>* params,
@@ -200,22 +202,23 @@ class MessageService : public BrowserContextKeyedAPI,
   // Callbacks for background task queue tasks. The queue passes in an
   // ExtensionHost to its task callbacks, though some of our callbacks don't
   // use that argument.
-  void PendingLazyBackgroundPageOpenChannel(
+  void PendingLazyContextOpenChannel(
       std::unique_ptr<OpenChannelParams> params,
-      int source_process_id,
       std::unique_ptr<LazyContextTaskQueue::ContextInfo> context_info);
-  void PendingLazyBackgroundPageClosePort(
+  void PendingLazyContextClosePort(
       const PortId& port_id,
       int process_id,
       int routing_id,
+      int worker_thread_id,
       bool force_close,
       const std::string& error_message,
       std::unique_ptr<LazyContextTaskQueue::ContextInfo> context_info) {
-    if (context_info)
-      ClosePortImpl(port_id, process_id, routing_id, force_close,
-                    error_message);
+    if (context_info) {
+      ClosePortImpl(port_id, process_id, routing_id, worker_thread_id,
+                    force_close, error_message);
+    }
   }
-  void PendingLazyBackgroundPagePostMessage(
+  void PendingLazyContextPostMessage(
       const PortId& port_id,
       const Message& message,
       std::unique_ptr<LazyContextTaskQueue::ContextInfo> context_info) {
@@ -243,9 +246,9 @@ class MessageService : public BrowserContextKeyedAPI,
   // between an incognito page and an app or extension, and any pending messages
   // queued to be sent on those channels.
   PendingChannelMap pending_incognito_channels_;
-  PendingLazyBackgroundPageChannelMap pending_lazy_background_page_channels_;
+  PendingLazyContextChannelMap pending_lazy_context_channels_;
 
-  base::WeakPtrFactory<MessageService> weak_factory_;
+  base::WeakPtrFactory<MessageService> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(MessageService);
 };

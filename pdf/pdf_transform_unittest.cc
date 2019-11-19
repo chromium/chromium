@@ -210,26 +210,25 @@ TEST(PdfTransformTest, CalculateScaledClipBoxOffset) {
 TEST(PdfTransformTest, CalculateNonScaledClipBoxOffset) {
   int page_width = kDefaultWidth;
   int page_height = kDefaultHeight;
-  constexpr gfx::Rect rect(kDefaultWidth, kDefaultHeight);
   PdfRectangle clip_box;
   double offset_x;
   double offset_y;
 
   // |rect|, page size and |clip_box| are the same.
   InitializeBoxToDefaultPortraitValues(&clip_box);
-  CalculateNonScaledClipBoxOffset(rect, 0, page_width, page_height, clip_box,
+  CalculateNonScaledClipBoxOffset(0, page_width, page_height, clip_box,
                                   &offset_x, &offset_y);
   EXPECT_DOUBLE_EQ(0, offset_x);
   EXPECT_DOUBLE_EQ(0, offset_y);
-  CalculateNonScaledClipBoxOffset(rect, 1, page_width, page_height, clip_box,
+  CalculateNonScaledClipBoxOffset(1, page_width, page_height, clip_box,
                                   &offset_x, &offset_y);
   EXPECT_DOUBLE_EQ(0, offset_x);
   EXPECT_DOUBLE_EQ(0, offset_y);
-  CalculateNonScaledClipBoxOffset(rect, 2, page_width, page_height, clip_box,
+  CalculateNonScaledClipBoxOffset(2, page_width, page_height, clip_box,
                                   &offset_x, &offset_y);
   EXPECT_DOUBLE_EQ(0, offset_x);
   EXPECT_DOUBLE_EQ(0, offset_y);
-  CalculateNonScaledClipBoxOffset(rect, 3, page_width, page_height, clip_box,
+  CalculateNonScaledClipBoxOffset(3, page_width, page_height, clip_box,
                                   &offset_x, &offset_y);
   EXPECT_DOUBLE_EQ(180, offset_x);
   EXPECT_DOUBLE_EQ(-180, offset_y);
@@ -237,19 +236,19 @@ TEST(PdfTransformTest, CalculateNonScaledClipBoxOffset) {
   // Smaller |clip_box|.
   clip_box.top /= 4;
   clip_box.right /= 2;
-  CalculateNonScaledClipBoxOffset(rect, 0, page_width, page_height, clip_box,
+  CalculateNonScaledClipBoxOffset(0, page_width, page_height, clip_box,
                                   &offset_x, &offset_y);
   EXPECT_DOUBLE_EQ(0, offset_x);
   EXPECT_DOUBLE_EQ(594, offset_y);
-  CalculateNonScaledClipBoxOffset(rect, 1, page_width, page_height, clip_box,
+  CalculateNonScaledClipBoxOffset(1, page_width, page_height, clip_box,
                                   &offset_x, &offset_y);
   EXPECT_DOUBLE_EQ(0, offset_x);
   EXPECT_DOUBLE_EQ(0, offset_y);
-  CalculateNonScaledClipBoxOffset(rect, 2, page_width, page_height, clip_box,
+  CalculateNonScaledClipBoxOffset(2, page_width, page_height, clip_box,
                                   &offset_x, &offset_y);
   EXPECT_DOUBLE_EQ(306, offset_x);
   EXPECT_DOUBLE_EQ(0, offset_y);
-  CalculateNonScaledClipBoxOffset(rect, 3, page_width, page_height, clip_box,
+  CalculateNonScaledClipBoxOffset(3, page_width, page_height, clip_box,
                                   &offset_x, &offset_y);
   EXPECT_DOUBLE_EQ(486, offset_x);
   EXPECT_DOUBLE_EQ(414, offset_y);
@@ -258,19 +257,19 @@ TEST(PdfTransformTest, CalculateNonScaledClipBoxOffset) {
   InitializeBoxToDefaultPortraitValues(&clip_box);
   page_width += 10;
   page_height += 20;
-  CalculateNonScaledClipBoxOffset(rect, 0, page_width, page_height, clip_box,
+  CalculateNonScaledClipBoxOffset(0, page_width, page_height, clip_box,
                                   &offset_x, &offset_y);
   EXPECT_DOUBLE_EQ(0, offset_x);
   EXPECT_DOUBLE_EQ(20, offset_y);
-  CalculateNonScaledClipBoxOffset(rect, 1, page_width, page_height, clip_box,
+  CalculateNonScaledClipBoxOffset(1, page_width, page_height, clip_box,
                                   &offset_x, &offset_y);
   EXPECT_DOUBLE_EQ(0, offset_x);
   EXPECT_DOUBLE_EQ(0, offset_y);
-  CalculateNonScaledClipBoxOffset(rect, 2, page_width, page_height, clip_box,
+  CalculateNonScaledClipBoxOffset(2, page_width, page_height, clip_box,
                                   &offset_x, &offset_y);
   EXPECT_DOUBLE_EQ(10, offset_x);
   EXPECT_DOUBLE_EQ(0, offset_y);
-  CalculateNonScaledClipBoxOffset(rect, 3, page_width, page_height, clip_box,
+  CalculateNonScaledClipBoxOffset(3, page_width, page_height, clip_box,
                                   &offset_x, &offset_y);
   EXPECT_DOUBLE_EQ(200, offset_x);
   EXPECT_DOUBLE_EQ(-170, offset_y);
@@ -296,8 +295,8 @@ TEST(PdfTransformTest, ReversedMediaBox) {
   EXPECT_DOUBLE_EQ(0, offset_x);
   EXPECT_DOUBLE_EQ(792, offset_y);
 
-  CalculateNonScaledClipBoxOffset(rect, 0, page_width, page_height,
-                                  media_box_b491160, &offset_x, &offset_y);
+  CalculateNonScaledClipBoxOffset(0, page_width, page_height, media_box_b491160,
+                                  &offset_x, &offset_y);
   EXPECT_DOUBLE_EQ(0, offset_x);
   EXPECT_DOUBLE_EQ(792, offset_y);
 
@@ -311,7 +310,7 @@ TEST(PdfTransformTest, ReversedMediaBox) {
   EXPECT_DOUBLE_EQ(0, offset_x);
   EXPECT_DOUBLE_EQ(0, offset_y);
 
-  CalculateNonScaledClipBoxOffset(rect, 0, page_width, page_height, clip_box,
+  CalculateNonScaledClipBoxOffset(0, page_width, page_height, clip_box,
                                   &offset_x, &offset_y);
   EXPECT_DOUBLE_EQ(0, offset_x);
   EXPECT_DOUBLE_EQ(0, offset_y);
@@ -326,7 +325,7 @@ TEST(PdfTransformTest, ReversedMediaBox) {
   EXPECT_DOUBLE_EQ(0, offset_x);
   EXPECT_DOUBLE_EQ(0, offset_y);
 
-  CalculateNonScaledClipBoxOffset(rect, 0, page_width, page_height, clip_box,
+  CalculateNonScaledClipBoxOffset(0, page_width, page_height, clip_box,
                                   &offset_x, &offset_y);
   EXPECT_DOUBLE_EQ(0, offset_x);
   EXPECT_DOUBLE_EQ(0, offset_y);

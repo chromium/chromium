@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_SYNC_PASSWORD_SYNCABLE_SERVICE_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_SYNC_PASSWORD_SYNCABLE_SERVICE_H_
 
+#include <map>
 #include <memory>
 #include <string>
 #include <vector>
@@ -41,6 +42,7 @@ class PasswordSyncableService : public syncer::SyncableService {
   ~PasswordSyncableService() override;
 
   // syncer::SyncableService:
+  void WaitUntilReadyToSync(base::OnceClosure done) override;
   syncer::SyncMergeResult MergeDataAndStartSyncing(
       syncer::ModelType type,
       const syncer::SyncDataList& initial_sync_data,
@@ -64,11 +66,6 @@ class PasswordSyncableService : public syncer::SyncableService {
   // Map from password sync tag to password form.
   typedef std::map<std::string, autofill::PasswordForm*> PasswordEntryMap;
 
-  // The type of PasswordStoreSync::AddLoginImpl,
-  // PasswordStoreSync::UpdateLoginImpl and PasswordStoreSync::RemoveLoginImpl.
-  typedef PasswordStoreChangeList (PasswordStoreSync::*DatabaseOperation)(
-      const autofill::PasswordForm& form);
-
   struct SyncEntries;
 
   // Retrieves the entries from password db and fills both |password_entries|
@@ -78,7 +75,7 @@ class PasswordSyncableService : public syncer::SyncableService {
       PasswordEntryMap* passwords_entry_map) const;
 
   // Uses the |PasswordStore| APIs to change entries.
-  void WriteToPasswordStore(const SyncEntries& entries);
+  void WriteToPasswordStore(const SyncEntries& entries, bool is_merge);
 
   // Examines |data|, an entry in sync db, and updates |sync_entries| or
   // |updated_db_entries| accordingly. An element is removed from
@@ -89,23 +86,10 @@ class PasswordSyncableService : public syncer::SyncableService {
       SyncEntries* sync_entries,
       syncer::SyncChangeList* updated_db_entries);
 
-  // Calls |operation| for each element in |entries| and appends the changes to
-  // |all_changes|.
-  void WriteEntriesToDatabase(
-      DatabaseOperation operation,
-      const std::vector<std::unique_ptr<autofill::PasswordForm>>& entries,
-      PasswordStoreChangeList* all_changes);
-
   // Returns true if corrupted passwords should be deleted from the local
   // database when merging data.
-  // There are two features that handle recovering lost passwords.
-  // RecoverPasswordsForSyncUsers recovers passwords for sync users when merging
-  // data with Sync. If that feature is disabled, this method returns false.
-  // Other feature, DeleteCorruptedPasswords, is introduced after the first
-  // feature and recovers both Sync and non-Sync users internally in
-  // LoginDatabase. When that feature is enabled, this method returns false.
-  // After launching DeleteCorruptedPasswords, RecoverPasswordsForSyncUsers
-  // and related code is to be cleaned up.
+  // This is true if the feature DeleteCorruptedPasswords is disabled, as it
+  // recovers both Sync and non-Sync users internally in LoginDatabase.
   bool ShouldRecoverPasswordsDuringMerge() const;
 
   // The factory that creates sync errors. |SyncError| has rich data

@@ -109,10 +109,8 @@ class ImageRepPNG : public ImageRep {
   ImageRepPNG() : ImageRep(Image::kImageRepPNG) {
   }
 
-  ImageRepPNG(const std::vector<ImagePNGRep>& image_png_reps)
-      : ImageRep(Image::kImageRepPNG),
-        image_png_reps_(image_png_reps) {
-  }
+  explicit ImageRepPNG(const std::vector<ImagePNGRep>& image_png_reps)
+      : ImageRep(Image::kImageRepPNG), image_png_reps_(image_png_reps) {}
 
   ~ImageRepPNG() override {}
 
@@ -125,11 +123,11 @@ class ImageRepPNG : public ImageRep {
     if (!size_cache_) {
       for (auto it = image_reps().begin(); it != image_reps().end(); ++it) {
         if (it->scale == 1.0f) {
-          size_cache_.reset(new gfx::Size(it->Size()));
+          size_cache_ = it->Size();
           return *size_cache_;
         }
       }
-      size_cache_.reset(new gfx::Size);
+      size_cache_ = gfx::Size();
     }
 
     return *size_cache_;
@@ -141,32 +139,29 @@ class ImageRepPNG : public ImageRep {
   std::vector<ImagePNGRep> image_png_reps_;
 
   // Cached to avoid having to parse the raw data multiple times.
-  mutable std::unique_ptr<gfx::Size> size_cache_;
+  mutable base::Optional<gfx::Size> size_cache_;
 
   DISALLOW_COPY_AND_ASSIGN(ImageRepPNG);
 };
 
 class ImageRepSkia : public ImageRep {
  public:
-  // Takes ownership of |image|.
-  explicit ImageRepSkia(ImageSkia* image)
-      : ImageRep(Image::kImageRepSkia),
-        image_(image) {
-  }
+  explicit ImageRepSkia(ImageSkia image)
+      : ImageRep(Image::kImageRepSkia), image_(image) {}
 
   ~ImageRepSkia() override {}
 
-  int Width() const override { return image_->width(); }
+  int Width() const override { return image_.width(); }
 
-  int Height() const override { return image_->height(); }
+  int Height() const override { return image_.height(); }
 
-  gfx::Size Size() const override { return image_->size(); }
+  gfx::Size Size() const override { return image_.size(); }
 
-  const ImageSkia* image() const { return image_.get(); }
-  ImageSkia* image() { return image_.get(); }
+  const ImageSkia* image() const { return &image_; }
+  ImageSkia* image() { return &image_; }
 
  private:
-  std::unique_ptr<ImageSkia> image_;
+  ImageSkia image_;
 
   DISALLOW_COPY_AND_ASSIGN(ImageRepSkia);
 };
@@ -238,7 +233,7 @@ class ImageRepCocoa : public ImageRep {
 // themselves not threadsafe.
 class ImageStorage : public base::RefCounted<ImageStorage> {
  public:
-  ImageStorage(Image::RepresentationType default_type)
+  explicit ImageStorage(Image::RepresentationType default_type)
       : default_representation_type_(default_type)
 #if defined(OS_MACOSX) && !defined(OS_IOS)
         ,
@@ -269,7 +264,7 @@ class ImageStorage : public base::RefCounted<ImageStorage> {
     RepresentationMap::const_iterator it = representations_.find(rep_type);
     if (it == representations_.end()) {
       CHECK(!must_exist);
-      return NULL;
+      return nullptr;
     }
     return it->second.get();
   }
@@ -277,7 +272,7 @@ class ImageStorage : public base::RefCounted<ImageStorage> {
   const ImageRep* AddRepresentation(std::unique_ptr<ImageRep> rep) const {
     DCHECK(IsOnValidSequence());
     Image::RepresentationType type = rep->type();
-    auto result = representations_.insert(std::make_pair(type, std::move(rep)));
+    auto result = representations_.emplace(type, std::move(rep));
 
     // insert should not fail (implies that there was already a representation
     // of that type in the map).
@@ -324,7 +319,7 @@ class ImageStorage : public base::RefCounted<ImageStorage> {
 }  // namespace internal
 
 Image::Image() {
-  // |storage_| is NULL for empty Images.
+  // |storage_| is null for empty Images.
 }
 
 Image::Image(const std::vector<ImagePNGRep>& image_reps) {
@@ -345,8 +340,7 @@ Image::Image(const std::vector<ImagePNGRep>& image_reps) {
 Image::Image(const ImageSkia& image) {
   if (!image.isNull()) {
     storage_ = new internal::ImageStorage(Image::kImageRepSkia);
-    AddRepresentation(
-        std::make_unique<internal::ImageRepSkia>(new ImageSkia(image)));
+    AddRepresentation(std::make_unique<internal::ImageRepSkia>(image));
   }
 }
 
@@ -416,8 +410,8 @@ const ImageSkia* Image::ToImageSkia() const {
       case kImageRepPNG: {
         const internal::ImageRepPNG* png_rep =
             GetRepresentation(kImageRepPNG, true)->AsImageRepPNG();
-        scoped_rep.reset(new internal::ImageRepSkia(
-            internal::ImageSkiaFromPNG(png_rep->image_reps())));
+        scoped_rep = std::make_unique<internal::ImageRepSkia>(
+            internal::ImageSkiaFromPNG(png_rep->image_reps()));
         break;
       }
 #if defined(OS_IOS)
@@ -425,16 +419,16 @@ const ImageSkia* Image::ToImageSkia() const {
         const internal::ImageRepCocoaTouch* native_rep =
             GetRepresentation(kImageRepCocoaTouch, true)
                 ->AsImageRepCocoaTouch();
-        scoped_rep.reset(new internal::ImageRepSkia(
-            new ImageSkia(ImageSkiaFromUIImage(native_rep->image()))));
+        scoped_rep = std::make_unique<internal::ImageRepSkia>(
+            ImageSkia(ImageSkiaFromUIImage(native_rep->image())));
         break;
       }
 #elif defined(OS_MACOSX)
       case kImageRepCocoa: {
         const internal::ImageRepCocoa* native_rep =
             GetRepresentation(kImageRepCocoa, true)->AsImageRepCocoa();
-        scoped_rep.reset(new internal::ImageRepSkia(
-            new ImageSkia(ImageSkiaFromNSImage(native_rep->image()))));
+        scoped_rep = std::make_unique<internal::ImageRepSkia>(
+            ImageSkia(ImageSkiaFromNSImage(native_rep->image())));
         break;
       }
 #endif
@@ -456,15 +450,15 @@ UIImage* Image::ToUIImage() const {
       case kImageRepPNG: {
         const internal::ImageRepPNG* png_rep =
             GetRepresentation(kImageRepPNG, true)->AsImageRepPNG();
-        scoped_rep.reset(new internal::ImageRepCocoaTouch(
-            internal::UIImageFromPNG(png_rep->image_reps())));
+        scoped_rep = std::make_unique<internal::ImageRepCocoaTouch>(
+            internal::UIImageFromPNG(png_rep->image_reps()));
         break;
       }
       case kImageRepSkia: {
         const internal::ImageRepSkia* skia_rep =
             GetRepresentation(kImageRepSkia, true)->AsImageRepSkia();
         UIImage* image = UIImageFromImageSkia(*skia_rep->image());
-        scoped_rep.reset(new internal::ImageRepCocoaTouch(image));
+        scoped_rep = std::make_unique<internal::ImageRepCocoaTouch>(image);
         break;
       }
       default:
@@ -487,8 +481,9 @@ NSImage* Image::ToNSImage() const {
       case kImageRepPNG: {
         const internal::ImageRepPNG* png_rep =
             GetRepresentation(kImageRepPNG, true)->AsImageRepPNG();
-        scoped_rep.reset(new internal::ImageRepCocoa(internal::NSImageFromPNG(
-            png_rep->image_reps(), default_representation_color_space)));
+        scoped_rep =
+            std::make_unique<internal::ImageRepCocoa>(internal::NSImageFromPNG(
+                png_rep->image_reps(), default_representation_color_space));
         break;
       }
       case kImageRepSkia: {
@@ -496,7 +491,7 @@ NSImage* Image::ToNSImage() const {
             GetRepresentation(kImageRepSkia, true)->AsImageRepSkia();
         NSImage* image = NSImageFromImageSkiaWithColorSpace(*skia_rep->image(),
             default_representation_color_space);
-        scoped_rep.reset(new internal::ImageRepCocoa(image));
+        scoped_rep = std::make_unique<internal::ImageRepCocoa>(image);
         break;
       }
       default:
@@ -525,7 +520,7 @@ scoped_refptr<base::RefCountedMemory> Image::As1xPNGBytes() const {
     return new base::RefCountedBytes();
   }
 
-  scoped_refptr<base::RefCountedMemory> png_bytes(NULL);
+  scoped_refptr<base::RefCountedMemory> png_bytes;
   switch (DefaultRepresentationType()) {
 #if defined(OS_IOS)
     case kImageRepCocoaTouch: {

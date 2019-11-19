@@ -19,9 +19,6 @@ SettingsHelpPageBrowserTest.prototype = {
   browsePreload: 'chrome://help/',
 
   /** @override */
-  extraLibraries: PolymerTest.getLibraries(ROOT_PATH),
-
-  /** @override */
   setUp: function() {
     // Intentionally bypassing SettingsPageBrowserTest#setUp.
     PolymerTest.prototype.setUp.call(this);

@@ -18,7 +18,7 @@ interface NaClRendererHost {
   [Sync]
   ReportLoadStatus(NaClErrorCode load_status) => ();
 
-  ProvideExitControl(NaClExitControl exit_control);
+  ProvideExitControl(pending_remote<NaClExitControl> exit_control);
 };
 
 // When this interface is closed, it indicates that the NaCl loader process

@@ -28,17 +28,20 @@ class ConfirmInfoBar : public InfoBarView,
   explicit ConfirmInfoBar(std::unique_ptr<ConfirmInfoBarDelegate> delegate);
   ~ConfirmInfoBar() override;
 
- private:
   // InfoBarView:
   void Layout() override;
   void ButtonPressed(views::Button* sender, const ui::Event& event) override;
-  int ContentMinimumWidth() const override;
 
   // views::LinkListener:
   void LinkClicked(views::Link* source, int event_flags) override;
 
+ protected:
+  // InfoBarView:
+  int ContentMinimumWidth() const override;
+
   ConfirmInfoBarDelegate* GetDelegate();
 
+ private:
   // Creates a button suitable for use as either OK or Cancel.
   views::MdTextButton* CreateButton(ConfirmInfoBarDelegate::InfoBarButton type);
 

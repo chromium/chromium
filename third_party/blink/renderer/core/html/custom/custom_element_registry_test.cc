@@ -4,8 +4,6 @@
 
 #include "third_party/blink/renderer/core/html/custom/custom_element_registry.h"
 
-#include <memory>
-
 #include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/web/web_custom_element.h"
@@ -29,6 +27,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
@@ -79,7 +78,7 @@ TEST_F(CustomElementRegistryTest,
   Element* element = CreateElement("a-a").InDocument(&GetDocument());
   Registry().AddCandidate(*element);
 
-  Document* other_document = HTMLDocument::CreateForTest();
+  auto* other_document = MakeGarbageCollected<HTMLDocument>();
   other_document->AppendChild(element);
   EXPECT_EQ(other_document, element->ownerDocument())
       << "sanity: another document should have adopted an element on append";
@@ -399,7 +398,7 @@ TEST_F(CustomElementRegistryTest, adoptedCallback) {
       static_cast<LogUpgradeDefinition*>(Registry().DefinitionForName("a-a"));
 
   definition->Clear();
-  Document* other_document = HTMLDocument::CreateForTest();
+  auto* other_document = MakeGarbageCollected<HTMLDocument>();
   {
     CEReactionsScope reactions;
     other_document->adoptNode(element, ASSERT_NO_EXCEPTION);

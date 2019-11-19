@@ -5,24 +5,17 @@
 #include "chromecast/media/cma/backend/media_pipeline_backend_for_mixer.h"
 
 #include <time.h>
+
 #include <limits>
 
 #include "base/bind.h"
 #include "base/single_thread_task_runner.h"
 #include "base/time/time.h"
-#include "build/build_config.h"
 #include "chromecast/base/task_runner_impl.h"
+#include "chromecast/media/base/monotonic_clock.h"
 #include "chromecast/media/cma/backend/audio_decoder_for_mixer.h"
 #include "chromecast/media/cma/backend/av_sync.h"
 #include "chromecast/media/cma/backend/video_decoder_for_mixer.h"
-
-#if defined(OS_LINUX)
-#include "chromecast/media/cma/backend/audio_buildflags.h"
-#endif  // defined(OS_LINUX)
-
-#if defined(OS_FUCHSIA)
-#include <zircon/syscalls.h>
-#endif  // defined(OS_FUCHSIA)
 
 namespace {
 
@@ -37,9 +30,13 @@ namespace media {
 
 MediaPipelineBackendForMixer::MediaPipelineBackendForMixer(
     const MediaPipelineDeviceParams& params)
-    : state_(kStateUninitialized), params_(params) {}
+    : state_(kStateUninitialized), params_(params), weak_factory_(this) {
+  weak_this_ = weak_factory_.GetWeakPtr();
+}
 
-MediaPipelineBackendForMixer::~MediaPipelineBackendForMixer() {}
+MediaPipelineBackendForMixer::~MediaPipelineBackendForMixer() {
+  DCHECK(GetTaskRunner()->RunsTasksInCurrentSequence());
+}
 
 MediaPipelineBackendForMixer::AudioDecoder*
 MediaPipelineBackendForMixer::CreateAudioDecoder() {
@@ -48,7 +45,7 @@ MediaPipelineBackendForMixer::CreateAudioDecoder() {
     return nullptr;
   audio_decoder_ = std::make_unique<AudioDecoderForMixer>(this);
   if (video_decoder_ && !av_sync_ && !IsIgnorePtsMode()) {
-    av_sync_ = AvSync::Create(GetTaskRunner(), this);
+    av_sync_ = AvSync::Create(this);
   }
   return audio_decoder_.get();
 }
@@ -62,7 +59,7 @@ MediaPipelineBackendForMixer::CreateVideoDecoder() {
   video_decoder_->SetObserver(this);
   DCHECK(video_decoder_.get());
   if (audio_decoder_ && !av_sync_ && !IsIgnorePtsMode()) {
-    av_sync_ = AvSync::Create(GetTaskRunner(), this);
+    av_sync_ = AvSync::Create(this);
   }
   return video_decoder_.get();
 }
@@ -199,6 +196,13 @@ int64_t MediaPipelineBackendForMixer::GetCurrentPts() {
   int64_t video_pts = INT64_MIN;
   int64_t audio_pts = INT64_MIN;
 
+  // Decoders will do funky things if you ask them what the PTS is before
+  // playback has started, so deal with that here.
+  if (!playback_started_ ||
+      start_playback_timestamp_us_ > MonotonicClockNow()) {
+    return INT64_MIN;
+  }
+
   if (video_decoder_ && video_decoder_->GetCurrentPts(&timestamp, &pts))
     video_pts = pts;
   if (audio_decoder_)
@@ -228,21 +232,9 @@ MediaPipelineBackendForMixer::GetTaskRunner() const {
   return static_cast<TaskRunnerImpl*>(params_.task_runner)->runner();
 }
 
-#if defined(OS_LINUX)
 int64_t MediaPipelineBackendForMixer::MonotonicClockNow() const {
-  timespec now = {0, 0};
-#if BUILDFLAG(MEDIA_CLOCK_MONOTONIC_RAW)
-  clock_gettime(CLOCK_MONOTONIC_RAW, &now);
-#else
-  clock_gettime(CLOCK_MONOTONIC, &now);
-#endif // MEDIA_CLOCK_MONOTONIC_RAW
-  return base::TimeDelta::FromTimeSpec(now).InMicroseconds();
+  return media::MonotonicClockNow();
 }
-#elif defined(OS_FUCHSIA)
-int64_t MediaPipelineBackendForMixer::MonotonicClockNow() const {
-  return zx_clock_get(ZX_CLOCK_MONOTONIC) / 1000;
-}
-#endif
 
 bool MediaPipelineBackendForMixer::IsIgnorePtsMode() const {
   return params_.sync_type ==
@@ -255,7 +247,7 @@ void MediaPipelineBackendForMixer::VideoReadyToPlay() {
   GetTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(&MediaPipelineBackendForMixer::OnVideoReadyToPlay,
-                     base::Unretained(this)));
+                     weak_this_));
 }
 
 void MediaPipelineBackendForMixer::OnVideoReadyToPlay() {

@@ -26,7 +26,6 @@
 #include "ui/views/window/dialog_delegate.h"
 
 namespace views {
-class Label;
 class LabelButton;
 class MenuRunner;
 class TreeView;
@@ -80,9 +79,7 @@ class BookmarkEditorView : public BookmarkEditor,
   ~BookmarkEditorView() override;
 
   // views::DialogDelegateView:
-  base::string16 GetDialogButtonLabel(ui::DialogButton button) const override;
   bool IsDialogButtonEnabled(ui::DialogButton button) const override;
-  views::View* CreateExtraView() override;
   ui::ModalType GetModalType() const override;
   bool CanResize() const override;
   bool ShouldShowCloseButton() const override;
@@ -118,9 +115,9 @@ class BookmarkEditorView : public BookmarkEditor,
   void Show(gfx::NativeWindow parent);
 
   // views::ContextMenuController:
-  void ShowContextMenuForView(views::View* source,
-                              const gfx::Point& point,
-                              ui::MenuSourceType source_type) override;
+  void ShowContextMenuForViewImpl(views::View* source,
+                                  const gfx::Point& point,
+                                  ui::MenuSourceType source_type) override;
 
  private:
   friend class BookmarkEditorViewTest;
@@ -134,15 +131,15 @@ class BookmarkEditorView : public BookmarkEditor,
                            bool ids_reassigned) override {}
   void BookmarkNodeMoved(bookmarks::BookmarkModel* model,
                          const bookmarks::BookmarkNode* old_parent,
-                         int old_index,
+                         size_t old_index,
                          const bookmarks::BookmarkNode* new_parent,
-                         int new_index) override;
+                         size_t new_index) override;
   void BookmarkNodeAdded(bookmarks::BookmarkModel* model,
                          const bookmarks::BookmarkNode* parent,
-                         int index) override;
+                         size_t index) override;
   void BookmarkNodeRemoved(bookmarks::BookmarkModel* model,
                            const bookmarks::BookmarkNode* parent,
-                           int index,
+                           size_t index,
                            const bookmarks::BookmarkNode* node,
                            const std::set<GURL>& removed_urls) override;
   void BookmarkAllUserNodesRemoved(bookmarks::BookmarkModel* model,
@@ -233,22 +230,16 @@ class BookmarkEditorView : public BookmarkEditor,
   std::unique_ptr<EditorTreeModel> tree_model_;
 
   // Displays star folder.
-  views::TreeView* tree_view_;
+  views::TreeView* tree_view_ = nullptr;
 
   // Used to create a new folder.
-  std::unique_ptr<views::LabelButton> new_folder_button_;
-
-  // The label for the url text field.
-  views::Label* url_label_;
+  views::LabelButton* new_folder_button_ = nullptr;
 
   // The text field used for editing the URL.
-  views::Textfield* url_tf_;
-
-  // The label for the title text field.
-  views::Label* title_label_;
+  views::Textfield* url_tf_ = nullptr;
 
   // The text field used for editing the title.
-  views::Textfield* title_tf_;
+  views::Textfield* title_tf_ = nullptr;
 
   // Initial parent to select. Is only used if |details_.existing_node| is
   // NULL.
@@ -265,10 +256,10 @@ class BookmarkEditorView : public BookmarkEditor,
 
   // If true, we're running the menu for the bookmark bar or other bookmarks
   // nodes.
-  bool running_menu_for_root_;
+  bool running_menu_for_root_ = false;
 
   // Is the tree shown?
-  bool show_tree_;
+  const bool show_tree_;
 
   // List of deleted bookmark folders.
   std::vector<int64_t> deletes_;

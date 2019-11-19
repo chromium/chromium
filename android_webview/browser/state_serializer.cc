@@ -4,7 +4,9 @@
 
 #include "android_webview/browser/state_serializer.h"
 
+#include <memory>
 #include <string>
+#include <vector>
 
 #include "base/pickle.h"
 #include "base/time/time.h"
@@ -14,6 +16,7 @@
 #include "content/public/browser/restore_type.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/page_state.h"
+#include "content/public/common/referrer.h"
 
 // Reasons for not re-using TabNavigation under chrome/ as of 20121116:
 // * Android WebView has different requirements for fields to store since
@@ -187,11 +190,22 @@ bool RestoreNavigationEntryFromPickle(uint32_t state_version,
                                       base::PickleIterator* iterator,
                                       content::NavigationEntry* entry) {
   DCHECK(IsSupportedVersion(state_version));
+
+  GURL deserialized_url;
   {
     string url;
     if (!iterator->ReadString(&url))
       return false;
-    entry->SetURL(GURL(url));
+    deserialized_url = GURL(url);
+
+    // Note: The url will be cloberred by the SetPageState call below (see how
+    // RecursivelyGenerateFrameEntries uses PageState data to create
+    // FrameNavigationEntries).
+    //
+    // Nevertheless, we call SetURL here to temporarily set the URL, because it
+    // modifies the state that might be depended on in some calls below (e.g.
+    // the SetVirtualURL call).
+    entry->SetURL(deserialized_url);
   }
 
   {
@@ -201,8 +215,11 @@ bool RestoreNavigationEntryFromPickle(uint32_t state_version,
     entry->SetVirtualURL(GURL(virtual_url));
   }
 
+  content::Referrer deserialized_referrer;
   {
-    content::Referrer referrer;
+    // Note: The referrer will be cloberred by the SetPageState call below (see
+    // how RecursivelyGenerateFrameEntries uses PageState data to create
+    // FrameNavigationEntries).
     string referrer_url;
     int policy;
 
@@ -211,9 +228,8 @@ bool RestoreNavigationEntryFromPickle(uint32_t state_version,
     if (!iterator->ReadInt(&policy))
       return false;
 
-    referrer.url = GURL(referrer_url);
-    referrer.policy = static_cast<network::mojom::ReferrerPolicy>(policy);
-    entry->SetReferrer(referrer);
+    deserialized_referrer.url = GURL(referrer_url);
+    deserialized_referrer.policy = content::Referrer::ConvertToPolicy(policy);
   }
 
   {
@@ -227,8 +243,37 @@ bool RestoreNavigationEntryFromPickle(uint32_t state_version,
     string content_state;
     if (!iterator->ReadString(&content_state))
       return false;
-    entry->SetPageState(
-        content::PageState::CreateFromEncodedData(content_state));
+
+    // In legacy output of WebViewProvider.saveState, the |content_state|
+    // might be empty - we need to gracefully handle such data when
+    // it is deserialized via WebViewProvider.restoreState.
+    if (content_state.empty()) {
+      // Ensure that the deserialized/restored content::NavigationEntry (and
+      // the content::FrameNavigationEntry underneath) has a valid PageState.
+      entry->SetPageState(content::PageState::CreateFromURL(deserialized_url));
+
+      // The |deserialized_referrer| might be inconsistent with the referrer
+      // embedded inside the PageState set above.  Nevertheless, to minimize
+      // changes to behavior of old session restore entries, we restore the
+      // deserialized referrer here.
+      //
+      // TODO(lukasza): Consider including the |deserialized_referrer| in the
+      // PageState set above + drop the SetReferrer call below.  This will
+      // slightly change the legacy behavior, but will make PageState and
+      // Referrer consistent.
+      entry->SetReferrer(deserialized_referrer);
+    } else {
+      // Note that PageState covers and will clobber some of the values covered
+      // by data within |iterator| (e.g. URL and referrer).
+      entry->SetPageState(
+          content::PageState::CreateFromEncodedData(content_state));
+
+      // |deserialized_url| and |deserialized_referrer| are redundant wrt
+      // PageState, but they should be consistent / in-sync.
+      DCHECK_EQ(deserialized_url, entry->GetURL());
+      DCHECK_EQ(deserialized_referrer.url, entry->GetReferrer().url);
+      DCHECK_EQ(deserialized_referrer.policy, entry->GetReferrer().policy);
+    }
   }
 
   {

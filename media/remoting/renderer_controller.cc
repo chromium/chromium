@@ -100,18 +100,17 @@ MediaObserverClient::ReasonToSwitchToLocal GetSwitchReason(
 }  // namespace
 
 RendererController::RendererController(
-    mojom::RemotingSourceRequest source_request,
-    mojom::RemoterPtr remoter)
+    mojo::PendingReceiver<mojom::RemotingSource> source_receiver,
+    mojo::PendingRemote<mojom::Remoter> remoter)
 #if BUILDFLAG(ENABLE_MEDIA_REMOTING_RPC)
     : rpc_broker_(base::BindRepeating(&RendererController::SendMessageToSink,
                                       base::Unretained(this))),
 #else
     :
 #endif
-      binding_(this, std::move(source_request)),
+      receiver_(this, std::move(source_receiver)),
       remoter_(std::move(remoter)),
-      clock_(base::DefaultTickClock::GetInstance()),
-      weak_factory_(this) {
+      clock_(base::DefaultTickClock::GetInstance()) {
   DCHECK(remoter_);
 }
 

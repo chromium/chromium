@@ -13,13 +13,27 @@ import org.chromium.chrome.R;
 import org.chromium.ui.modelutil.RecyclerViewAdapter;
 
 /** Factory to create CategoryCardViewHolder objects. */
-class CategoryCardViewHolderFactory implements RecyclerViewAdapter.ViewHolderFactory<
+public class CategoryCardViewHolderFactory implements RecyclerViewAdapter.ViewHolderFactory<
         CategoryCardViewHolderFactory.CategoryCardViewHolder> {
+
     /** View holder for the recycler view. */
     public static class CategoryCardViewHolder extends RecyclerView.ViewHolder {
         public CategoryCardViewHolder(View view) {
             super(view);
         }
+    }
+
+    /** Override this method to change the resource that is used for category cards. */
+    protected int getCategoryCardViewResource() {
+        return R.layout.explore_sites_category_card_view;
+    }
+
+    /**
+     * Override this method to change the resource that is used for site tiles within the category
+     * cards.
+     */
+    protected int getTileViewResource() {
+        return R.layout.explore_sites_tile_view;
     }
 
     @Override
@@ -28,9 +42,12 @@ class CategoryCardViewHolderFactory implements RecyclerViewAdapter.ViewHolderFac
         View view;
         switch (viewType) {
             case CategoryCardAdapter.ViewType.CATEGORY:
-                view = LayoutInflater.from(parent.getContext())
-                               .inflate(R.layout.explore_sites_category_card_view, parent,
-                                       /* attachToRoot = */ false);
+                ExploreSitesCategoryCardView category =
+                        (ExploreSitesCategoryCardView) LayoutInflater.from(parent.getContext())
+                                .inflate(getCategoryCardViewResource(), parent,
+                                        /* attachToRoot = */ false);
+                category.setTileResource(getTileViewResource());
+                view = category;
                 break;
             case CategoryCardAdapter.ViewType.LOADING:
                 view = LayoutInflater.from(parent.getContext())

@@ -40,12 +40,7 @@ bool NativeViewGLSurfaceEGLX11::InitializeNativeWindow() {
                           size_.height(), 0, CopyFromParent, InputOutput,
                           CopyFromParent, CWBackPixmap | CWBitGravity, &swa);
   XMapWindow(x11_display, window_);
-
-  // The event source can be nullptr in tests, when we don't care about Exposes.
-  if (PlatformEventSource* source = PlatformEventSource::GetInstance()) {
-    XSelectInput(x11_display, window_, ExposureMask);
-    source->AddPlatformEventDispatcher(this);
-  }
+  XSelectInput(x11_display, window_, ExposureMask);
   XFlush(x11_display);
 
   return true;
@@ -55,9 +50,6 @@ void NativeViewGLSurfaceEGLX11::Destroy() {
   NativeViewGLSurfaceEGL::Destroy();
 
   if (window_) {
-    if (PlatformEventSource* source = PlatformEventSource::GetInstance())
-      source->RemovePlatformEventDispatcher(this);
-
     Display* x11_display = GetNativeDisplay();
     XDestroyWindow(x11_display, window_);
     window_ = 0;

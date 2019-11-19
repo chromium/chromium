@@ -23,6 +23,8 @@ class FakeTestTokenStorage : public TestTokenStorage {
   // TestTokenStorage interface.
   std::string FetchRefreshToken() override;
   bool StoreRefreshToken(const std::string& refresh_token) override;
+  std::string FetchUserEmail() override;
+  bool StoreUserEmail(const std::string& user_email) override;
   std::string FetchAccessToken() override;
   bool StoreAccessToken(const std::string& access_token) override;
   std::string FetchDeviceId() override;

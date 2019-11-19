@@ -68,6 +68,14 @@ class URLRequestInfoTest : public RenderViewTest {
     return web_request.HttpMethod();
   }
 
+  blink::mojom::RequestContextType GetContext() {
+    WebURLRequest web_request;
+    URLRequestInfoData data = info_->GetData();
+    if (!CreateWebURLRequest(pp_instance_, &data, GetMainFrame(), &web_request))
+      return blink::mojom::RequestContextType::UNSPECIFIED;
+    return web_request.GetRequestContext();
+  }
+
   WebString GetHeaderValue(const char* field) {
     WebURLRequest web_request;
     URLRequestInfoData data = info_->GetData();
@@ -204,6 +212,11 @@ TEST_F(URLRequestInfoTest, SetHeaders) {
       SetStringProperty(PP_URLREQUESTPROPERTY_HEADERS, "foo: bar\nbar: baz"));
   EXPECT_STREQ("bar", GetHeaderValue("foo").Utf8().data());
   EXPECT_STREQ("baz", GetHeaderValue("bar").Utf8().data());
+}
+
+TEST_F(URLRequestInfoTest, RequestContext) {
+  // Test context is PLUGIN.
+  EXPECT_EQ(blink::mojom::RequestContextType::PLUGIN, GetContext());
 }
 
 // TODO(bbudge) Unit tests for AppendDataToBody, AppendFileToBody.

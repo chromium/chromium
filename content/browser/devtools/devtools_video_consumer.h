@@ -10,6 +10,7 @@
 #include "base/time/time.h"
 #include "components/viz/host/client_frame_sink_video_capturer.h"
 #include "content/common/content_export.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "ui/gfx/geometry/size.h"
 
 class SkBitmap;
@@ -66,7 +67,8 @@ class CONTENT_EXPORT DevToolsVideoConsumer
       base::ReadOnlySharedMemoryRegion data,
       ::media::mojom::VideoFrameInfoPtr info,
       const gfx::Rect& content_rect,
-      viz::mojom::FrameSinkVideoConsumerFrameCallbacksPtr callbacks) override;
+      mojo::PendingRemote<viz::mojom::FrameSinkVideoConsumerFrameCallbacks>
+          callbacks) override;
   void OnStopped() override;
 
   // Default min frame size is 1x1, as otherwise, nothing would be captured.

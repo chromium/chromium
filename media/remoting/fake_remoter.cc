@@ -13,7 +13,7 @@
 #include "build/buildflag.h"
 #include "media/media_buildflags.h"
 #include "media/remoting/renderer_controller.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(ENABLE_MEDIA_REMOTING_RPC)
@@ -24,9 +24,9 @@ namespace media {
 namespace remoting {
 
 FakeRemotingDataStreamSender::FakeRemotingDataStreamSender(
-    mojom::RemotingDataStreamSenderRequest request,
+    mojo::PendingReceiver<mojom::RemotingDataStreamSender> receiver,
     mojo::ScopedDataPipeConsumerHandle consumer_handle)
-    : binding_(this, std::move(request)),
+    : receiver_(this, std::move(receiver)),
       data_pipe_reader_(std::move(consumer_handle)),
       send_frame_count_(0),
       cancel_in_flight_count_(0) {}
@@ -113,10 +113,9 @@ void FakeRemotingDataStreamSender::CancelInFlightData() {
   ++cancel_in_flight_count_;
 }
 
-FakeRemoter::FakeRemoter(mojom::RemotingSourcePtr source, bool start_will_fail)
-    : source_(std::move(source)),
-      start_will_fail_(start_will_fail),
-      weak_factory_(this) {}
+FakeRemoter::FakeRemoter(mojo::PendingRemote<mojom::RemotingSource> source,
+                         bool start_will_fail)
+    : source_(std::move(source)), start_will_fail_(start_will_fail) {}
 
 FakeRemoter::~FakeRemoter() = default;
 
@@ -135,18 +134,20 @@ void FakeRemoter::Start() {
 void FakeRemoter::StartDataStreams(
     mojo::ScopedDataPipeConsumerHandle audio_pipe,
     mojo::ScopedDataPipeConsumerHandle video_pipe,
-    mojom::RemotingDataStreamSenderRequest audio_sender_request,
-    mojom::RemotingDataStreamSenderRequest video_sender_request) {
+    mojo::PendingReceiver<mojom::RemotingDataStreamSender>
+        audio_sender_receiver,
+    mojo::PendingReceiver<mojom::RemotingDataStreamSender>
+        video_sender_receiver) {
   if (audio_pipe.is_valid()) {
     VLOG(2) << "Has audio";
     audio_stream_sender_.reset(new FakeRemotingDataStreamSender(
-        std::move(audio_sender_request), std::move(audio_pipe)));
+        std::move(audio_sender_receiver), std::move(audio_pipe)));
   }
 
   if (video_pipe.is_valid()) {
     VLOG(2) << "Has video";
     video_stream_sender_.reset(new FakeRemotingDataStreamSender(
-        std::move(video_sender_request), std::move(video_pipe)));
+        std::move(video_sender_receiver), std::move(video_pipe)));
   }
 }
 
@@ -180,24 +181,26 @@ FakeRemoterFactory::FakeRemoterFactory(bool start_will_fail)
 
 FakeRemoterFactory::~FakeRemoterFactory() = default;
 
-void FakeRemoterFactory::Create(mojom::RemotingSourcePtr source,
-                                mojom::RemoterRequest request) {
-  mojo::MakeStrongBinding(
+void FakeRemoterFactory::Create(
+    mojo::PendingRemote<mojom::RemotingSource> source,
+    mojo::PendingReceiver<mojom::Remoter> receiver) {
+  mojo::MakeSelfOwnedReceiver(
       std::make_unique<FakeRemoter>(std::move(source), start_will_fail_),
-      std::move(request));
+      std::move(receiver));
 }
 
 // static
 std::unique_ptr<RendererController> FakeRemoterFactory::CreateController(
     bool start_will_fail) {
-  mojom::RemotingSourcePtr remoting_source;
-  auto remoting_source_request = mojo::MakeRequest(&remoting_source);
-  mojom::RemoterPtr remoter;
+  mojo::PendingRemote<mojom::RemotingSource> remoting_source;
+  auto remoting_source_receiver =
+      remoting_source.InitWithNewPipeAndPassReceiver();
+  mojo::PendingRemote<mojom::Remoter> remoter;
   FakeRemoterFactory remoter_factory(start_will_fail);
   remoter_factory.Create(std::move(remoting_source),
-                         mojo::MakeRequest(&remoter));
+                         remoter.InitWithNewPipeAndPassReceiver());
   return std::make_unique<RendererController>(
-      std::move(remoting_source_request), std::move(remoter));
+      std::move(remoting_source_receiver), std::move(remoter));
 }
 
 }  // namespace remoting

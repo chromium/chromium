@@ -30,7 +30,7 @@ IN_PROC_BROWSER_TEST_F(WebClipboardImplTest, PasteRTF) {
 
   FrameFocusedObserver focus_observer(shell()->web_contents()->GetMainFrame());
   // paste_listener.html takes RTF from the clipboard and sets the title.
-  NavigateToURL(shell(), GetTestUrl(".", "paste_listener.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), GetTestUrl(".", "paste_listener.html")));
   focus_observer.Wait();
 
   const base::string16 expected_title = base::UTF8ToUTF16(rtf_content);

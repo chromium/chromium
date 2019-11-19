@@ -91,13 +91,15 @@ void ExtensionSettingsUIBrowserTest::AddManagedPolicyProvider() {
 }
 
 void ExtensionSettingsUIBrowserTest::SetAutoConfirmUninstall() {
-  uninstall_auto_confirm_.reset(new extensions::ScopedTestDialogAutoConfirm(
-      extensions::ScopedTestDialogAutoConfirm::ACCEPT));
+  uninstall_auto_confirm_ =
+      std::make_unique<extensions::ScopedTestDialogAutoConfirm>(
+          extensions::ScopedTestDialogAutoConfirm::ACCEPT);
 }
 
 void ExtensionSettingsUIBrowserTest::EnableErrorConsole() {
-  error_console_override_.reset(new extensions::FeatureSwitch::ScopedOverride(
-      extensions::FeatureSwitch::error_console(), true));
+  error_console_override_ =
+      std::make_unique<extensions::FeatureSwitch::ScopedOverride>(
+          extensions::FeatureSwitch::error_console(), true);
 }
 
 void ExtensionSettingsUIBrowserTest::SetDevModeEnabled(bool enabled) {
@@ -276,7 +278,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsActivityLogTest, TestActivityLogVisible) {
   // The querySelectors and shadowRoots are used here in order to penetrate
   // multiple nested shadow DOMs created by Polymer components
   // in the chrome://extensions page.
-  // See chrome/browser/resources/md_extensions for the Polymer code.
+  // See chrome/browser/resources/extensions for the Polymer code.
   // This test only serves as an end to end test, and most of the functionality
   // is covered in the JS unit tests.
   bool has_api_call = false;
@@ -287,8 +289,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionsActivityLogTest, TestActivityLogVisible) {
              manager.shadowRoot.querySelector('extensions-activity-log');
          let activityLogHistory =
              activityLog.shadowRoot.querySelector('activity-log-history');
-         activityLogHistory.whenDataFetched().then(() => {
-             Polymer.dom.flush();
+         const polymerPath =
+             'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+         Promise.all([
+           activityLogHistory.whenDataFetched(),
+           import(polymerPath),
+         ]).then((results) => {
+             const polymerModule = results[1];
+             polymerModule.flush();
              let item = activityLogHistory.shadowRoot.querySelector(
                  'activity-log-history-item');
              let activityKey = item.shadowRoot.getElementById('activity-key');

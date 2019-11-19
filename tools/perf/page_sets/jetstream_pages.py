@@ -6,10 +6,11 @@ import json
 from page_sets import press_story
 from telemetry import story
 from telemetry.util import statistics
-from telemetry.value import list_of_scalar_values
+
 
 class JetstreamStory(press_story.PressStory):
-  URL='http://browserbench.org/JetStream/'
+  URL = 'http://browserbench.org/JetStream/'
+  NAME = 'JetStream'
 
   def __init__(self, ps):
     super(JetstreamStory, self).__init__(ps)
@@ -39,9 +40,7 @@ class JetstreamStory(press_story.PressStory):
 
     all_score_lists = []
     for k, v in result.iteritems():
-      self.AddJavascriptMetricValue(list_of_scalar_values.ListOfScalarValues(
-          self, k.replace('.', '_'), 'score', v['result'],
-          important=False))
+      self.AddMeasurement(k.replace('.', '_'), 'score', v['result'])
       # Collect all test scores to compute geometric mean.
       for i, score in enumerate(v['result']):
         if len(all_score_lists) <= i:
@@ -50,9 +49,7 @@ class JetstreamStory(press_story.PressStory):
     all_scores = []
     for score_list in all_score_lists:
       all_scores.append(statistics.GeometricMean(score_list))
-    self.AddJavascriptMetricSummaryValue(
-        list_of_scalar_values.ListOfScalarValues(
-        None, 'Score', 'score', all_scores))
+    self.AddMeasurement('Score', 'score', all_scores)
 
 
 class JetstreamStorySet(story.StorySet):

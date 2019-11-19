@@ -282,22 +282,22 @@ static void AddWidevine(
 #endif
 
   // Session types.
-  bool cdm_supports_temporary_session = base::ContainsValue(
+  bool cdm_supports_temporary_session = base::Contains(
       capability->session_types, media::CdmSessionType::kTemporary);
   if (!cdm_supports_temporary_session) {
     DVLOG(1) << "Temporary session must be supported.";
     return;
   }
 
-  bool cdm_supports_persistent_license = base::ContainsValue(
+  bool cdm_supports_persistent_license = base::Contains(
       capability->session_types, media::CdmSessionType::kPersistentLicense);
   auto persistent_license_support =
       GetPersistentLicenseSupport(cdm_supports_persistent_license);
 
   // TODO(xhwang): Check more conditions as needed.
   auto persistent_usage_record_support =
-      base::ContainsValue(capability->session_types,
-                          media::CdmSessionType::kPersistentUsageRecord)
+      base::Contains(capability->session_types,
+                     media::CdmSessionType::kPersistentUsageRecord)
           ? EmeSessionTypeSupport::SUPPORTED
           : EmeSessionTypeSupport::NOT_SUPPORTED;
 

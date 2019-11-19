@@ -164,15 +164,18 @@ void SVGShapePainter::FillShape(GraphicsContext& context,
                                 SkPath::FillType fill_type) {
   switch (layout_svg_shape_.GeometryCodePath()) {
     case kRectGeometryFastPath:
-      context.DrawRect(layout_svg_shape_.ObjectBoundingBox(), flags);
+      context.DrawRect(layout_svg_shape_.ObjectBoundingBox(), flags,
+                       DarkModeFilter::ElementRole::kSVG);
       break;
     case kEllipseGeometryFastPath:
-      context.DrawOval(layout_svg_shape_.ObjectBoundingBox(), flags);
+      context.DrawOval(layout_svg_shape_.ObjectBoundingBox(), flags,
+                       DarkModeFilter::ElementRole::kSVG);
       break;
     default: {
       PathWithTemporaryWindingRule path_with_winding(
           layout_svg_shape_.GetPath(), fill_type);
-      context.DrawPath(path_with_winding.GetSkPath(), flags);
+      context.DrawPath(path_with_winding.GetSkPath(), flags,
+                       DarkModeFilter::ElementRole::kSVG);
     }
   }
 }
@@ -184,17 +187,20 @@ void SVGShapePainter::StrokeShape(GraphicsContext& context,
 
   switch (layout_svg_shape_.GeometryCodePath()) {
     case kRectGeometryFastPath:
-      context.DrawRect(layout_svg_shape_.ObjectBoundingBox(), flags);
+      context.DrawRect(layout_svg_shape_.ObjectBoundingBox(), flags,
+                       DarkModeFilter::ElementRole::kSVG);
       break;
     case kEllipseGeometryFastPath:
-      context.DrawOval(layout_svg_shape_.ObjectBoundingBox(), flags);
+      context.DrawOval(layout_svg_shape_.ObjectBoundingBox(), flags,
+                       DarkModeFilter::ElementRole::kSVG);
       break;
     default:
       DCHECK(layout_svg_shape_.HasPath());
       const Path* use_path = &layout_svg_shape_.GetPath();
       if (layout_svg_shape_.HasNonScalingStroke())
         use_path = &layout_svg_shape_.NonScalingStrokePath();
-      context.DrawPath(use_path->GetSkPath(), flags);
+      context.DrawPath(use_path->GetSkPath(), flags,
+                       DarkModeFilter::ElementRole::kSVG);
   }
 }
 
@@ -219,7 +225,7 @@ void SVGShapePainter::PaintMarkers(const PaintInfo& paint_info,
   float stroke_width = layout_svg_shape_.StrokeWidth();
 
   for (const MarkerPosition& marker_position : *marker_positions) {
-    if (const LayoutSVGResourceMarker* marker = SVGMarkerData::MarkerForType(
+    if (LayoutSVGResourceMarker* marker = SVGMarkerData::MarkerForType(
             marker_position.type, marker_start, marker_mid, marker_end)) {
       PaintMarker(paint_info, *marker, marker_position, stroke_width);
     }
@@ -227,9 +233,11 @@ void SVGShapePainter::PaintMarkers(const PaintInfo& paint_info,
 }
 
 void SVGShapePainter::PaintMarker(const PaintInfo& paint_info,
-                                  const LayoutSVGResourceMarker& marker,
+                                  LayoutSVGResourceMarker& marker,
                                   const MarkerPosition& position,
                                   float stroke_width) {
+  marker.ClearInvalidationMask();
+
   if (!marker.ShouldPaint())
     return;
 

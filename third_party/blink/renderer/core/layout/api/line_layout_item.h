@@ -12,7 +12,7 @@
 #include "third_party/blink/renderer/core/paint/object_paint_invalidator.h"
 
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_table_deleted_value_type.h"
 
 namespace blink {
@@ -81,7 +81,7 @@ class LineLayoutItem {
     return layout_object_->IsDescendantOf(item.layout_object_);
   }
 
-  void UpdateHitTestResult(HitTestResult& result, const LayoutPoint& point) {
+  void UpdateHitTestResult(HitTestResult& result, const PhysicalOffset& point) {
     return layout_object_->UpdateHitTestResult(result, point);
   }
 
@@ -234,9 +234,9 @@ class LineLayoutItem {
   }
 
   bool HitTestAllPhases(HitTestResult& result,
-                        const HitTestLocation& location_in_container,
-                        const LayoutPoint& accumulated_offset) {
-    return layout_object_->HitTestAllPhases(result, location_in_container,
+                        const HitTestLocation& hit_test_location,
+                        const PhysicalOffset& accumulated_offset) {
+    return layout_object_->HitTestAllPhases(result, hit_test_location,
                                             accumulated_offset);
   }
 
@@ -256,7 +256,7 @@ class LineLayoutItem {
 
   // TODO(dgrogan/eae): Can we change this to GlobalToLocal and vice versa
   // instead of having 4 methods? See localToAbsoluteQuad below.
-  PositionWithAffinity PositionForPoint(const LayoutPoint& point) {
+  PositionWithAffinity PositionForPoint(const PhysicalOffset& point) {
     return layout_object_->PositionForPoint(point);
   }
 
@@ -269,16 +269,6 @@ class LineLayoutItem {
     return LineLayoutItem(layout_object_->PreviousInPreOrder(stay_within));
   }
 
-  FloatQuad LocalToAbsoluteQuad(const FloatQuad& quad,
-                                MapCoordinatesFlags mode = 0) const {
-    return layout_object_->LocalToAbsoluteQuad(quad, mode);
-  }
-
-  FloatPoint LocalToAbsolute(const FloatPoint& local_point = FloatPoint(),
-                             MapCoordinatesFlags flags = 0) const {
-    return layout_object_->LocalToAbsolute(local_point, flags);
-  }
-
   bool HasOverflowClip() const { return layout_object_->HasOverflowClip(); }
 
   // TODO(dgrogan/eae): Can we instead add a TearDown method to the API
@@ -287,10 +277,10 @@ class LineLayoutItem {
     return layout_object_->DocumentBeingDestroyed();
   }
 
-  LayoutRect VisualRectForInlineBox() const {
+  IntRect VisualRectForInlineBox() const {
     return layout_object_->VisualRectForInlineBox();
   }
-  LayoutRect PartialInvalidationVisualRectForInlineBox() const {
+  IntRect PartialInvalidationVisualRectForInlineBox() const {
     return layout_object_->PartialInvalidationVisualRectForInlineBox();
   }
 
@@ -326,7 +316,7 @@ class LineLayoutItem {
     static const bool safe_to_compare_to_empty_or_deleted = true;
   };
 
-#ifndef NDEBUG
+#if DCHECK_IS_ON()
 
   const char* GetName() const { return layout_object_->GetName(); }
 

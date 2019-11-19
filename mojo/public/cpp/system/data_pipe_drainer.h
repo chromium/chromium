@@ -37,7 +37,7 @@ class MOJO_CPP_SYSTEM_EXPORT DataPipeDrainer {
   mojo::ScopedDataPipeConsumerHandle source_;
   mojo::SimpleWatcher handle_watcher_;
 
-  base::WeakPtrFactory<DataPipeDrainer> weak_factory_;
+  base::WeakPtrFactory<DataPipeDrainer> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DataPipeDrainer);
 };

@@ -24,45 +24,87 @@ class ChromiumDepGraph {
     // It is provided here from manual lookups. Note that licenseUrl must provide textual content
     // rather than be an html page.
     final def FALLBACK_PROPERTIES = [
-        'com_google_errorprone_error_prone_annotations': new DependencyDescription(
+        'com_github_kevinstern_software_and_algorithms': new PropertyOverride(
+            licenseUrl: "https://raw.githubusercontent.com/KevinStern/software-and-algorithms/master/LICENSE"),
+        'com_google_auto_auto_common': new PropertyOverride(
+            licenseUrl: "https://www.apache.org/licenses/LICENSE-2.0.txt",
+            licenseName: "Apache 2.0"),
+        'com_google_auto_service_auto_service': new PropertyOverride(
+            licenseUrl: "https://www.apache.org/licenses/LICENSE-2.0.txt",
+            licenseName: "Apache 2.0"),
+        'com_google_auto_service_auto_service_annotations': new PropertyOverride(
+            licenseUrl: "https://www.apache.org/licenses/LICENSE-2.0.txt",
+            licenseName: "Apache 2.0"),
+        'com_google_code_findbugs_jFormatString': new PropertyOverride(
+            licenseUrl: "https://raw.githubusercontent.com/spotbugs/spotbugs/master/spotbugs/licenses/LICENSE.txt"),
+        'com_google_errorprone_error_prone_annotations': new PropertyOverride(
             url: "https://errorprone.info/",
             licenseUrl: "https://www.apache.org/licenses/LICENSE-2.0.txt",
             licenseName: "Apache 2.0"),
-        'com_google_googlejavaformat_google_java_format': new DependencyDescription(
+        'com_google_googlejavaformat_google_java_format': new PropertyOverride(
             url: "https://github.com/google/google-java-format",
             licenseUrl: "https://www.apache.org/licenses/LICENSE-2.0.txt",
             licenseName: "Apache 2.0"),
-        'com_google_guava_guava': new DependencyDescription(
+        'com_google_guava_failureaccess': new PropertyOverride(
             url: "https://github.com/google/guava",
             licenseUrl: "https://www.apache.org/licenses/LICENSE-2.0.txt",
             licenseName: "Apache 2.0"),
-        'org_codehaus_mojo_animal_sniffer_annotations': new DependencyDescription(
+        'com_google_guava_guava': new PropertyOverride(
+            url: "https://github.com/google/guava",
+            licenseUrl: "https://www.apache.org/licenses/LICENSE-2.0.txt",
+            licenseName: "Apache 2.0"),
+        'com_google_guava_listenablefuture':  new PropertyOverride(
+            url: "https://github.com/google/guava",
+            licenseUrl: "https://www.apache.org/licenses/LICENSE-2.0.txt",
+            licenseName: "Apache 2.0"),
+        'org_codehaus_mojo_animal_sniffer_annotations': new PropertyOverride(
             url: "http://www.mojohaus.org/animal-sniffer/animal-sniffer-annotations/",
             licenseUrl: "https://raw.githubusercontent.com/mojohaus/animal-sniffer/master/animal-sniffer-annotations/pom.xml",
             licensePath: "licenses/Codehaus_License-2009.txt",
             licenseName: "MIT"),
-        'org_checkerframework_checker_compat_qual' :new DependencyDescription(
-            licenseUrl: "https://raw.githubusercontent.com/typetools/checker-framework/master/LICENSE.txt",
-            licenseName: "GPL v2 with the classpath exception"),
-        'com_google_protobuf_protobuf_lite' :new DependencyDescription(
+        'com_google_protobuf_protobuf_lite': new PropertyOverride(
             url: "https://github.com/protocolbuffers/protobuf/blob/master/java/lite.md",
             licenseUrl: "https://raw.githubusercontent.com/protocolbuffers/protobuf/master/LICENSE",
             licenseName: "BSD"),
-        'com_google_ar_core' :new DependencyDescription(
+        'com_google_ar_core': new PropertyOverride(
             url: "https://github.com/google-ar/arcore-android-sdk",
             licenseUrl: "https://raw.githubusercontent.com/google-ar/arcore-android-sdk/master/LICENSE",
             licenseName: "Apache 2.0"),
+        'javax_annotation_jsr250_api': new PropertyOverride(
+            isShipped: false,  // Annotations are stripped by R8.
+            licenseName: "CDDLv1.0",
+            licensePath: "licenses/CDDLv1.0.txt"),
+        'net_sf_kxml_kxml2': new PropertyOverride(
+            licenseUrl: "https://raw.githubusercontent.com/stefanhaustein/kxml2/master/license.txt",
+            licenseName: "MIT"),
+        'org_checkerframework_checker_compat_qual': new PropertyOverride(
+            licenseUrl: "https://raw.githubusercontent.com/typetools/checker-framework/master/LICENSE.txt",
+            licenseName: "GPL v2 with the classpath exception"),
+        'org_checkerframework_checker_qual': new PropertyOverride(
+            licenseUrl: "https://raw.githubusercontent.com/typetools/checker-framework/master/LICENSE.txt",
+            licenseName: "GPL v2 with the classpath exception"),
+        'org_checkerframework_dataflow': new PropertyOverride(
+            licenseUrl: "https://raw.githubusercontent.com/typetools/checker-framework/master/LICENSE.txt",
+            licenseName: "GPL v2 with the classpath exception"),
+        'org_checkerframework_javacutil': new PropertyOverride(
+            licenseUrl: "https://raw.githubusercontent.com/typetools/checker-framework/master/LICENSE.txt",
+            licenseName: "GPL v2 with the classpath exception"),
+        'org_pcollections_pcollections': new PropertyOverride(
+            licenseUrl: "https://raw.githubusercontent.com/hrldcpr/pcollections/master/LICENSE")
     ]
 
     Project project
+    boolean skipLicenses
 
     void collectDependencies() {
-        def androidConfig = project.configurations.getByName('compile').resolvedConfiguration
+        def compileConfig = project.configurations.getByName('compile').resolvedConfiguration
+        def buildCompileConfig = project.configurations.getByName('buildCompile').resolvedConfiguration
+        def testCompileConfig = project.configurations.getByName('testCompile').resolvedConfiguration
         List<String> topLevelIds = []
         Set<ResolvedConfiguration> deps = []
-        deps += androidConfig.firstLevelModuleDependencies
-        deps += project.configurations.getByName('annotationProcessor').resolvedConfiguration
-                .firstLevelModuleDependencies
+        deps += compileConfig.firstLevelModuleDependencies
+        deps += buildCompileConfig.firstLevelModuleDependencies
+        deps += testCompileConfig.firstLevelModuleDependencies
 
         deps.each { dependency ->
             topLevelIds.add(makeModuleId(dependency.module))
@@ -71,11 +113,35 @@ class ChromiumDepGraph {
 
         topLevelIds.each { id -> dependencies.get(id).visible = true }
 
-        androidConfig.resolvedArtifacts.each { artifact ->
+        testCompileConfig.resolvedArtifacts.each { artifact ->
             def dep = dependencies.get(makeModuleId(artifact))
             assert dep != null : "No dependency collected for artifact ${artifact.name}"
-
             dep.supportsAndroid = true
+            dep.testOnly = true
+        }
+
+        buildCompileConfig.resolvedArtifacts.each { artifact ->
+            def id = makeModuleId(artifact)
+            def dep = dependencies.get(id)
+            assert dep != null : "No dependency collected for artifact ${artifact.name}"
+            dep.testOnly = false
+        }
+
+        compileConfig.resolvedArtifacts.each { artifact ->
+            def id = makeModuleId(artifact)
+            def dep = dependencies.get(id)
+            assert dep != null : "No dependency collected for artifact ${artifact.name}"
+            dep.supportsAndroid = true
+            dep.testOnly = false
+            dep.isShipped = true
+        }
+
+        // Has a side-effect of ensuring we don't have any stale fallbackProperties.
+        FALLBACK_PROPERTIES.each { id, fallbackProperties ->
+            if (fallbackProperties?.isShipped != null) {
+              def dep = dependencies.get(id)
+              dep.isShipped = fallbackProperties.isShipped
+            }
         }
     }
 
@@ -137,9 +203,11 @@ class ChromiumDepGraph {
                                 List<String> childModules) {
         def pom = getPomFromArtifact(artifact.id.componentIdentifier).file
         def pomContent = new XmlSlurper(false, false).parse(pom)
-        String licenseName
-        String licenseUrl
-        (licenseName, licenseUrl) = resolveLicenseInformation(id, pomContent)
+        String licenseName = ''
+        String licenseUrl = ''
+        if (!skipLicenses) {
+            (licenseName, licenseUrl) = resolveLicenseInformation(id, pomContent)
+        }
 
         // Get rid of irrelevant indent that might be present in the XML file.
         def description = pomContent.description?.text()?.trim()?.replaceAll(/\s+/, " ")
@@ -161,11 +229,13 @@ class ChromiumDepGraph {
                 url: pomContent.url?.text(),
                 displayName: pomContent.name?.text(),
                 exclude: false,
+                cipdSuffix: "cr0",
         ))
     }
 
     private customizeDep(DependencyDescription dep) {
         if (dep.id?.startsWith("com_google_android_")) {
+            project.logger.debug("Using Android license for ${dep.id}")
             dep.licenseUrl = ""
             // This should match fetch_all._ANDROID_SDK_LICENSE_PATH.
             dep.licensePath = "licenses/Android_SDK_License-December_9_2016.txt"
@@ -173,21 +243,39 @@ class ChromiumDepGraph {
                 dep.url = "https://developers.google.com/android/guides/setup"
             }
         } else if (dep.licenseUrl?.equals("http://openjdk.java.net/legal/gplv2+ce.html")) {
+            project.logger.debug("Detected GPL v2 /w classpath license for ${dep.id}")
             // This avoids using html in a LICENSE file.
             dep.licenseUrl = ""
+            dep.licenseName = "GPL v2 with the classpath exception"
             dep.licensePath = "licenses/GNU_v2_with_Classpath_Exception_1991.txt"
-        } else {
-            def fallbackProperties = FALLBACK_PROPERTIES.get(dep.id)
-            if (fallbackProperties != null) {
-                project.logger.debug("Using fallback properties for ${dep.id}")
-                dep.licenseName = fallbackProperties.licenseName
-                dep.licenseUrl = fallbackProperties.licenseUrl
-                if (fallbackProperties.licensePath != null) {
-                    dep.licensePath = fallbackProperties.licensePath
-                }
-                if (dep.url?.isEmpty()) {
-                    dep.url = fallbackProperties.url
-                }
+        }
+
+        def fallbackProperties = FALLBACK_PROPERTIES.get(dep.id)
+        if (fallbackProperties != null) {
+            project.logger.debug("Using fallback properties for ${dep.id}")
+            if (fallbackProperties.licenseName != null) {
+              dep.licenseName = fallbackProperties.licenseName
+            }
+            if (fallbackProperties.licenseUrl != null) {
+              dep.licenseUrl = fallbackProperties.licenseUrl
+            }
+            if (fallbackProperties.licensePath != null) {
+                dep.licensePath = fallbackProperties.licensePath
+            }
+            if (fallbackProperties.url != null) {
+                dep.url = fallbackProperties.url
+            }
+            if (fallbackProperties.cipdSuffix != null) {
+              dep.cipdSuffix = fallbackProperties.cipdSuffix
+            }
+        }
+
+        if (skipLicenses) {
+            dep.licenseName = ''
+            dep.licensePath = ''
+            dep.licenseUrl = ''
+            if (dep.id?.endsWith('license')) {
+                dep.exclude = true
             }
         }
 
@@ -218,8 +306,17 @@ class ChromiumDepGraph {
         String group, name, version, extension, displayName, description, url
         String licenseName, licenseUrl, licensePath
         String fileName
-        boolean supportsAndroid, visible, exclude
+        boolean supportsAndroid, visible, exclude, testOnly, isShipped
+        boolean licenseAndroidCompatible
         ComponentIdentifier componentId
         List<String> children
+        String cipdSuffix
+    }
+
+    static class PropertyOverride {
+      String url
+      String licenseName, licenseUrl, licensePath
+      String cipdSuffix
+      Boolean isShipped
     }
 }

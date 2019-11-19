@@ -11,7 +11,6 @@
 namespace blink {
 
 class FontCustomPlatformData;
-class SharedBuffer;
 
 class BinaryDataFontFaceSource final : public CSSFontFaceSource {
  public:

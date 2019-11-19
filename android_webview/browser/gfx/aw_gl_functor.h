@@ -18,7 +18,7 @@ class AwGLFunctor {
   explicit AwGLFunctor(const JavaObjectWeakGlobalRef& java_ref);
   ~AwGLFunctor();
 
-  void Destroy(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
+  void Destroy(JNIEnv* env);
   void DeleteHardwareRenderer(JNIEnv* env,
                               const base::android::JavaParamRef<jobject>& obj);
   void RemoveFromCompositorFrameProducer(

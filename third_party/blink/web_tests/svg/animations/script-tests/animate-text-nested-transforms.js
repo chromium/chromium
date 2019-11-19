@@ -33,10 +33,10 @@ function executeTest() {
         ["animation", 0.001, startSample],
         ["animation", 39.999, endSample]
     ];
-    
+
     runAnimationTest(expectedValues);
 }
 
 window.clickX = 310;
-window.clickY = 30;
+window.clickY = 28;
 var successfullyParsed = true;

@@ -8,7 +8,6 @@
 typedef (Float32Array or Float64Array or DOMMatrix) RotationMatrixType;
 
 [
-    RuntimeEnabled=Sensor,
     SecureContext,
     Exposed=Window
 ] interface OrientationSensor : Sensor {

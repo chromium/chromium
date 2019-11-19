@@ -1,0 +1,90 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module printing.mojom;
+
+import "components/discardable_memory/public/mojom/discardable_shared_memory_manager.mojom";
+import "mojo/public/mojom/base/shared_memory.mojom";
+import "url/mojom/url.mojom";
+
+interface PdfCompositor {
+  // The status of composition and conversion execution.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum Status {
+    kSuccess = 0,
+    kHandleMapError = 1,
+    kContentFormatError = 2,
+    kCompositingFailure = 3,
+  };
+
+  // Provides an interface for managing discardable shared memory regions. Must
+  // be called before other methods on this interface if performing compositing
+  // operations.
+  SetDiscardableSharedMemoryManager(
+      pending_remote<discardable_memory.mojom.DiscardableSharedMemoryManager>
+          manager);
+
+  // Notifies that a subframe is unavailable, such as the render frame process
+  // hosting it crashed or terminated. The subframe will be composited with no
+  // content in the composited result.
+  // |frame_guid| is this subframe's global unique id.
+  NotifyUnavailableSubframe(uint64 frame_guid);
+
+  // Adds the content of a subframe for composition.
+  // |frame_guid| is this subframe's global unique id.
+  // |serialized_content| is a buffer of a serialized Skia picture which
+  //                      has the painted content of this frame.
+  // |subframe_content_map| records content id and its corresponding frame's
+  //                        global unique id.
+  AddSubframeContent(
+      uint64 frame_guid,
+      mojo_base.mojom.ReadOnlySharedMemoryRegion serialized_content,
+      map<uint32, uint64> subframe_content_info);
+
+  // Requests to composite a page and convert it into a PDF file.
+  // |frame_guid| is the global unique id of the frame to be composited.
+  // |sk_region| is a buffer of a Skia MultiPictureDocument which has
+  //             the drawing content of this frame or a page of this frame.
+  // |subframe_content_map| records content id and its corresponding frame's
+  //                        global unique id.
+  CompositePageToPdf(uint64 frame_guid,
+                     mojo_base.mojom.ReadOnlySharedMemoryRegion sk_region,
+                     map<uint32, uint64> subframe_content_info)
+      => (Status status,
+          mojo_base.mojom.ReadOnlySharedMemoryRegion? pdf_region);
+
+  // Requests to composite the entire document and convert it into a PDF file.
+  // All the arguments carry the same meaning as CompositePageToPdf() above,
+  // except this call doesn't have |page_num|.  Cannot be used in conjunction
+  // with PrepareForDocumentToPdf()/CompleteDocumentToPdf().
+  CompositeDocumentToPdf(uint64 frame_guid,
+                         mojo_base.mojom.ReadOnlySharedMemoryRegion sk_region,
+                         map<uint32, uint64> subframe_content_info)
+      => (Status status,
+          mojo_base.mojom.ReadOnlySharedMemoryRegion? pdf_region);
+
+  // Notifies that composition is to collect individual pages from
+  // CompositePageToPdf() concurrently into a document.  Must be issued once
+  // prior to any CompositePageToPdf() calls in order for concurrent collection
+  // to be performed.
+  PrepareForDocumentToPdf()
+      => (Status status);
+
+  // Signals that all pages for a composite document have been sent via
+  // CompositePageToPdf(), allowing for document composition to be wrapped up.
+  // Is to be used in conjunction with PrepareForDocumentToPdf(), which must be
+  // made prior to this and any CompositePageToPdf() calls.  This must be called
+  // exactly once to wrap up the document.
+  CompleteDocumentToPdf(uint32 pages_count)
+      => (Status status,
+          mojo_base.mojom.ReadOnlySharedMemoryRegion? pdf_region);
+
+  // Sets the URL which is committed in the main frame of the WebContents,
+  // for use in crash diagnosis.
+  SetWebContentsURL(url.mojom.Url url);
+
+  // Sets the user-agent string for the document.
+  SetUserAgent(string user_agent);
+};

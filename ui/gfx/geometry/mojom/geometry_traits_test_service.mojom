@@ -1,0 +1,50 @@
+// Copyright 2016 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module gfx.mojom;
+
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
+// All functions on this interface echo their arguments to test StructTraits
+// serialization and deserialization.
+interface GeometryTraitsTestService {
+  [Sync]
+  EchoPoint(Point p) => (Point pass);
+
+  [Sync]
+  EchoPointF(PointF p) => (PointF pass);
+
+  [Sync]
+  EchoPoint3F(Point3F p) => (Point3F pass);
+
+  [Sync]
+  EchoSize(Size s) => (Size pass);
+
+  [Sync]
+  EchoSizeF(SizeF s) => (SizeF pass);
+
+  [Sync]
+  EchoRect(Rect r) => (Rect pass);
+
+  [Sync]
+  EchoRectF(RectF r) => (RectF pass);
+
+  [Sync]
+  EchoInsets(Insets i) => (Insets pass);
+
+  [Sync]
+  EchoInsetsF(InsetsF i) => (InsetsF pass);
+
+  [Sync]
+  EchoVector2d(Vector2d v) => (Vector2d pass);
+
+  [Sync]
+  EchoVector2dF(Vector2dF v) => (Vector2dF pass);
+
+  [Sync]
+  EchoVector3dF(Vector3dF v) => (Vector3dF pass);
+
+  [Sync]
+  EchoQuaternion(Quaternion q) => (Quaternion pass);
+};

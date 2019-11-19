@@ -121,7 +121,7 @@ void SetBlockingObserverForCurrentThread(BlockingObserver* blocking_observer) {
   tls_blocking_observer.Get().Set(blocking_observer);
 }
 
-void ClearBlockingObserverForTesting() {
+void ClearBlockingObserverForCurrentThread() {
   tls_blocking_observer.Get().Set(nullptr);
 }
 

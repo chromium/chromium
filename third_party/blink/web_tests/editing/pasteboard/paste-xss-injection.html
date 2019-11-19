@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
+<script>
+selection_test(
+  '<div contenteditable>te|st</div>',
+  selection => {
+    selection.setClipboardData('<math><xss style=display:block>t<style>X<a title="</style><img src onerror=alert(1)>">.<a>.');
+    selection.document.execCommand('paste');
+  },
+  '<div contenteditable>te<br>t<style>X<a title="</style><img src>">.<a>.|</a>st</div>',
+  'Paste blocks script injection');
+</script>

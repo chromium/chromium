@@ -7,13 +7,14 @@
 #include <utility>
 
 #include "ash/resources/vector_icons/vector_icons.h"
-#include "ash/session/session_controller.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/bluetooth/tray_bluetooth_helper.h"
 #include "ash/system/unified/feature_pod_button.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "base/i18n/number_formatting.h"
+#include "base/strings/string_number_conversions.h"
 #include "services/device/public/cpp/bluetooth/bluetooth_utils.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -74,7 +75,8 @@ void BluetoothFeaturePodController::UpdateButton() {
   // * the active user is the primary user, and
   // * the session is not in lock screen
   // The changes will affect the primary user's preferences.
-  SessionController* session_controller = Shell::Get()->session_controller();
+  SessionControllerImpl* session_controller =
+      Shell::Get()->session_controller();
   button_->SetEnabled(!session_controller->IsActiveUserSessionStarted() ||
                       (session_controller->IsUserPrimary() &&
                        !session_controller->IsScreenLocked()));
@@ -113,12 +115,21 @@ void BluetoothFeaturePodController::UpdateButton() {
         IDS_ASH_STATUS_TRAY_BLUETOOTH_MULTIPLE_DEVICES_CONNECTED_TOOLTIP,
         device_count));
   } else if (connected_devices.size() == 1) {
+    const device::mojom::BluetoothDeviceInfoPtr& device =
+        connected_devices.back();
     const base::string16 device_name =
-        device::GetBluetoothDeviceNameForDisplay(connected_devices.back());
+        device::GetBluetoothDeviceNameForDisplay(device);
     button_->SetVectorIcon(kUnifiedMenuBluetoothConnectedIcon);
     button_->SetLabel(device_name);
-    button_->SetSubLabel(l10n_util::GetStringUTF16(
-        IDS_ASH_STATUS_TRAY_BLUETOOTH_DEVICE_CONNECTED_LABEL));
+
+    if (device->battery_info) {
+      button_->SetSubLabel(l10n_util::GetStringFUTF16(
+          IDS_ASH_STATUS_TRAY_BLUETOOTH_DEVICE_BATTERY_PERCENTAGE_LABEL,
+          base::NumberToString16(device->battery_info->battery_percentage)));
+    } else {
+      button_->SetSubLabel(l10n_util::GetStringUTF16(
+          IDS_ASH_STATUS_TRAY_BLUETOOTH_DEVICE_CONNECTED_LABEL));
+    }
     SetTooltipState(l10n_util::GetStringFUTF16(
         IDS_ASH_STATUS_TRAY_BLUETOOTH_DEVICE_CONNECTED_TOOLTIP, device_name));
   } else {
@@ -133,10 +144,17 @@ void BluetoothFeaturePodController::UpdateButton() {
 
 void BluetoothFeaturePodController::SetTooltipState(
     const base::string16& tooltip_state) {
-  button_->SetIconTooltip(l10n_util::GetStringFUTF16(
-      IDS_ASH_STATUS_TRAY_BLUETOOTH_TOGGLE_TOOLTIP, tooltip_state));
-  button_->SetLabelTooltip(l10n_util::GetStringFUTF16(
-      IDS_ASH_STATUS_TRAY_BLUETOOTH_SETTINGS_TOOLTIP, tooltip_state));
+  if (button_->GetEnabled()) {
+    button_->SetIconTooltip(l10n_util::GetStringFUTF16(
+        IDS_ASH_STATUS_TRAY_BLUETOOTH_TOGGLE_TOOLTIP, tooltip_state));
+    button_->SetLabelTooltip(l10n_util::GetStringFUTF16(
+        IDS_ASH_STATUS_TRAY_BLUETOOTH_SETTINGS_TOOLTIP, tooltip_state));
+  } else {
+    // Do not show "Toggle" text in tooltip when the button is disabled (e.g.
+    // when the screen is locked or for secondary users).
+    button_->SetIconTooltip(tooltip_state);
+    button_->SetLabelTooltip(tooltip_state);
+  }
 }
 
 void BluetoothFeaturePodController::OnBluetoothSystemStateChanged() {

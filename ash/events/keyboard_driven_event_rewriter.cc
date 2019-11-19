@@ -4,7 +4,8 @@
 
 #include "ash/events/keyboard_driven_event_rewriter.h"
 
-#include "ash/session/session_controller.h"
+#include "ash/keyboard/keyboard_util.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ui/chromeos/events/event_rewriter_chromeos.h"
 #include "ui/events/event.h"
@@ -54,8 +55,7 @@ ui::EventRewriteStatus KeyboardDrivenEventRewriter::Rewrite(
   const ui::KeyEvent& key_event = static_cast<const ui::KeyEvent&>(event);
   ui::KeyboardCode key_code = key_event.key_code();
 
-  if (key_code != ui::VKEY_LEFT && key_code != ui::VKEY_RIGHT &&
-      key_code != ui::VKEY_UP && key_code != ui::VKEY_DOWN &&
+  if (!ash::keyboard_util::IsArrowKeyCode(key_code) &&
       key_code != ui::VKEY_RETURN && key_code != ui::VKEY_F6) {
     return ui::EVENT_REWRITE_CONTINUE;
   }
@@ -65,8 +65,7 @@ ui::EventRewriteStatus KeyboardDrivenEventRewriter::Rewrite(
       key_event.code(), key_event.GetDomKey(), key_event.key_code()};
 
   if (arrow_to_tab_rewriting_enabled_) {
-    if (key_code == ui::VKEY_LEFT || key_code == ui::VKEY_RIGHT ||
-        key_code == ui::VKEY_UP || key_code == ui::VKEY_DOWN) {
+    if (ash::keyboard_util::IsArrowKeyCode(key_code)) {
       const ui::KeyEvent tab_event(ui::ET_KEY_PRESSED, ui::VKEY_TAB,
                                    ui::EF_NONE);
       state.code = tab_event.code();

@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "ash/public/cpp/ash_switches.h"
-#include "ash/public/interfaces/tray_action.mojom.h"
+#include "ash/public/mojom/tray_action.mojom.h"
 #include "ash/session/test_session_controller_client.h"
 #include "base/base64.h"
 #include "base/bind.h"
@@ -20,7 +20,7 @@
 #include "base/test/scoped_command_line.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
-#include "chrome/browser/chromeos/arc/arc_session_manager.h"
+#include "chrome/browser/chromeos/arc/session/arc_session_manager.h"
 #include "chrome/browser/chromeos/lock_screen_apps/app_manager.h"
 #include "chrome/browser/chromeos/lock_screen_apps/fake_lock_screen_profile_creator.h"
 #include "chrome/browser/chromeos/lock_screen_apps/first_app_run_toast_manager.h"
@@ -37,15 +37,15 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "chromeos/dbus/fake_power_manager_client.h"
+#include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power_manager/suspend.pb.h"
 #include "components/arc/arc_service_manager.h"
-#include "components/arc/arc_session.h"
+#include "components/arc/session/arc_session.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/web_contents_tester.h"
 #include "extensions/browser/api/lock_screen_data/lock_screen_item_storage.h"
@@ -55,10 +55,13 @@
 #include "extensions/common/api/app_runtime.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/value_builder.h"
-#include "services/ws/public/cpp/input_devices/input_device_client_test_api.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
-#include "ui/events/devices/input_device_manager.h"
+#include "ui/events/devices/device_data_manager.h"
+#include "ui/events/devices/device_data_manager_test_api.h"
 
 using ash::mojom::CloseLockScreenNoteReason;
 using ash::mojom::LockScreenNoteOrigin;
@@ -266,19 +269,19 @@ class TestStateObserver : public lock_screen_apps::StateObserver {
 
 class TestTrayAction : public ash::mojom::TrayAction {
  public:
-  TestTrayAction() : binding_(this) {}
+  TestTrayAction() = default;
 
   ~TestTrayAction() override = default;
 
-  ash::mojom::TrayActionPtr CreateInterfacePtrAndBind() {
-    ash::mojom::TrayActionPtr ptr;
-    binding_.Bind(mojo::MakeRequest(&ptr));
-    return ptr;
+  mojo::PendingRemote<ash::mojom::TrayAction> CreateRemoteAndBind() {
+    mojo::PendingRemote<ash::mojom::TrayAction> remote;
+    receiver_.Bind(remote.InitWithNewPipeAndPassReceiver());
+    return remote;
   }
 
-  void SetClient(ash::mojom::TrayActionClientPtr client,
+  void SetClient(mojo::PendingRemote<ash::mojom::TrayActionClient> client,
                  TrayActionState state) override {
-    client_ = std::move(client);
+    client_.Bind(std::move(client));
     EXPECT_EQ(TrayActionState::kNotAvailable, state);
   }
 
@@ -298,8 +301,8 @@ class TestTrayAction : public ash::mojom::TrayAction {
   void ClearObservedStates() { observed_states_.clear(); }
 
  private:
-  mojo::Binding<ash::mojom::TrayAction> binding_;
-  ash::mojom::TrayActionClientPtr client_;
+  mojo::Receiver<ash::mojom::TrayAction> receiver_{this};
+  mojo::Remote<ash::mojom::TrayActionClient> client_;
 
   std::vector<TrayActionState> observed_states_;
 
@@ -388,14 +391,13 @@ class LockScreenAppStateTest : public BrowserWithTestWindowTest {
     SetUpStylusAvailability();
 
     session_manager_ = std::make_unique<session_manager::SessionManager>();
-    session_manager_->SessionStarted();
     session_manager_->SetSessionState(
         session_manager::SessionState::LOGIN_PRIMARY);
 
     // Initialize arc session manager - NoteTakingHelper expects it to be set.
     arc_session_manager_ = std::make_unique<arc::ArcSessionManager>(
         std::make_unique<arc::ArcSessionRunner>(
-            base::Bind(&ArcSessionFactory)));
+            base::BindRepeating(&ArcSessionFactory)));
 
     chromeos::NoteTakingHelper::Initialize();
 
@@ -415,8 +417,8 @@ class LockScreenAppStateTest : public BrowserWithTestWindowTest {
     tick_clock_.Advance(base::TimeDelta::FromMilliseconds(1));
 
     state_controller_ = std::make_unique<lock_screen_apps::StateController>();
-    state_controller_->SetTrayActionPtrForTesting(
-        tray_action_.CreateInterfacePtrAndBind());
+    state_controller_->SetTrayActionForTesting(
+        tray_action_.CreateRemoteAndBind());
     state_controller_->SetTickClockForTesting(&tick_clock_);
     state_controller_->SetLockScreenLockScreenProfileCreatorForTesting(
         std::move(profile_creator));
@@ -468,7 +470,7 @@ class LockScreenAppStateTest : public BrowserWithTestWindowTest {
   void SetStylusEnabled() {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         ash::switches::kAshForceEnableStylusTools);
-    ws::InputDeviceClientTestApi()
+    ui::DeviceDataManagerTestApi()
         .NotifyObserversTouchscreenDeviceConfigurationChanged();
   }
 

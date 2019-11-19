@@ -41,12 +41,6 @@ class CompositionEvent final : public UIEvent {
   }
 
   static CompositionEvent* Create(const AtomicString& type,
-                                  AbstractView* view,
-                                  const String& data) {
-    return MakeGarbageCollected<CompositionEvent>(type, view, data);
-  }
-
-  static CompositionEvent* Create(const AtomicString& type,
                                   const CompositionEventInit* initializer) {
     return MakeGarbageCollected<CompositionEvent>(type, initializer);
   }

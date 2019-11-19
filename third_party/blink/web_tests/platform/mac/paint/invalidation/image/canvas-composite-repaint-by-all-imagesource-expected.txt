@@ -1,17 +1,6 @@
 {
   "layers": [
     {
-      "name": "LayoutView #document",
-      "bounds": [800, 600],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [785, 600],
-      "drawsContent": false
-    },
-    {
       "name": "Scrolling Contents Layer",
       "bounds": [785, 928],
       "contentsOpaque": true,
@@ -460,21 +449,36 @@
       ]
     },
     {
-      "name": "LayoutVideo VIDEO id='video'",
-      "position": [15, 854],
+      "name": "ContentsLayer for LayoutVideo VIDEO id='video'",
       "bounds": [150, 60],
-      "drawsContent": false
+      "transform": 1
     },
     {
       "name": "LayoutFlexibleBox (relative positioned) DIV class='sizing-small phase-ready state-stopped'",
-      "position": [15, 854],
-      "bounds": [150, 60]
+      "bounds": [150, 60],
+      "transform": 1
     },
     {
-      "name": "LayoutBlockFlow (positioned) DIV",
-      "position": [15, 854],
+      "name": "Squashing Layer (first squashed layer: LayoutNGBlockFlow (positioned) DIV)",
       "bounds": [150, 60],
-      "drawsContent": false
+      "transform": 1
+    },
+    {
+      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "position": [785, 0],
+      "bounds": [15, 600],
+      "contentsOpaque": true
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [15, 854, 0, 1]
+      ]
     }
   ]
 }

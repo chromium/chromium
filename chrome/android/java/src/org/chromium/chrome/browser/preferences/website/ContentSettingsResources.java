@@ -9,11 +9,13 @@ import android.content.res.Resources;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import android.support.annotation.Nullable;
+
+import androidx.annotation.Nullable;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.ChromeFeatureList;
 import org.chromium.chrome.browser.ContentSettingsType;
 
 import java.util.HashMap;
@@ -95,102 +97,128 @@ public class ContentSettingsResources {
         ThreadUtils.assertOnUiThread();
         if (sResourceInfo == null) {
             Map<Integer, ResourceItem> localMap = new HashMap<Integer, ResourceItem>();
-            localMap.put(ContentSettingsType.CONTENT_SETTINGS_TYPE_ADS,
+            localMap.put(ContentSettingsType.ADS,
                     new ResourceItem(R.drawable.web_asset, R.string.ads_permission_title,
                             R.string.ads_permission_title, ContentSettingValues.ALLOW,
                             ContentSettingValues.BLOCK, 0,
                             R.string.website_settings_category_ads_blocked));
-            localMap.put(ContentSettingsType.CONTENT_SETTINGS_TYPE_AUTOMATIC_DOWNLOADS,
+            localMap.put(ContentSettingsType.AUTOMATIC_DOWNLOADS,
                     new ResourceItem(R.drawable.infobar_downloading,
                             R.string.automatic_downloads_permission_title,
                             R.string.automatic_downloads_permission_title, ContentSettingValues.ASK,
                             ContentSettingValues.BLOCK, R.string.website_settings_category_ask, 0));
-            localMap.put(ContentSettingsType.CONTENT_SETTINGS_TYPE_AUTOPLAY,
+            localMap.put(ContentSettingsType.AUTOPLAY,
                     new ResourceItem(R.drawable.settings_autoplay, R.string.autoplay_title,
                             R.string.autoplay_title, ContentSettingValues.ALLOW,
                             ContentSettingValues.BLOCK,
                             R.string.website_settings_category_autoplay_allowed, 0));
-            localMap.put(ContentSettingsType.CONTENT_SETTINGS_TYPE_BACKGROUND_SYNC,
+            localMap.put(ContentSettingsType.BACKGROUND_SYNC,
                     new ResourceItem(R.drawable.permission_background_sync,
                             R.string.background_sync_permission_title,
                             R.string.background_sync_permission_title, ContentSettingValues.ALLOW,
                             ContentSettingValues.BLOCK,
                             R.string.website_settings_category_allowed_recommended, 0));
-            localMap.put(ContentSettingsType.CONTENT_SETTINGS_TYPE_CLIPBOARD_READ,
+            localMap.put(ContentSettingsType.BLUETOOTH_SCANNING,
+                    new ResourceItem(R.drawable.ic_bluetooth_searching_black_24dp,
+                            R.string.website_settings_bluetooth_scanning,
+                            R.string.website_settings_bluetooth_scanning, ContentSettingValues.ASK,
+                            ContentSettingValues.BLOCK,
+                            R.string.website_settings_category_bluetooth_scanning_ask, 0));
+            localMap.put(ContentSettingsType.CLIPBOARD_READ,
                     new ResourceItem(R.drawable.ic_content_paste_grey600_24dp,
                             R.string.clipboard_permission_title,
                             R.string.clipboard_permission_title, ContentSettingValues.ASK,
                             ContentSettingValues.BLOCK,
                             R.string.website_settings_category_clipboard_ask,
                             R.string.website_settings_category_clipboard_blocked));
-            localMap.put(ContentSettingsType.CONTENT_SETTINGS_TYPE_COOKIES,
+            localMap.put(ContentSettingsType.COOKIES,
                     new ResourceItem(R.drawable.permission_cookie, R.string.cookies_title,
                             R.string.cookies_title, ContentSettingValues.ALLOW,
                             ContentSettingValues.BLOCK,
                             R.string.website_settings_category_cookie_allowed, 0));
-            localMap.put(ContentSettingsType.CONTENT_SETTINGS_TYPE_GEOLOCATION,
+            localMap.put(ContentSettingsType.GEOLOCATION,
                     new ResourceItem(R.drawable.permission_location,
                             R.string.website_settings_device_location,
                             R.string.geolocation_permission_title, ContentSettingValues.ASK,
                             ContentSettingValues.BLOCK,
                             R.string.website_settings_category_location_ask, 0));
-            localMap.put(ContentSettingsType.CONTENT_SETTINGS_TYPE_JAVASCRIPT,
+            localMap.put(ContentSettingsType.JAVASCRIPT,
                     new ResourceItem(R.drawable.permission_javascript,
                             R.string.javascript_permission_title,
                             R.string.javascript_permission_title, ContentSettingValues.ALLOW,
                             ContentSettingValues.BLOCK,
                             R.string.website_settings_category_javascript_allowed, 0));
-            localMap.put(ContentSettingsType.CONTENT_SETTINGS_TYPE_MEDIASTREAM_CAMERA,
+            localMap.put(ContentSettingsType.MEDIASTREAM_CAMERA,
                     new ResourceItem(R.drawable.ic_videocam_white_24dp,
                             R.string.website_settings_use_camera, R.string.camera_permission_title,
                             ContentSettingValues.ASK, ContentSettingValues.BLOCK,
                             R.string.website_settings_category_camera_ask, 0));
-            localMap.put(ContentSettingsType.CONTENT_SETTINGS_TYPE_MEDIASTREAM_MIC,
+            localMap.put(ContentSettingsType.MEDIASTREAM_MIC,
                     new ResourceItem(R.drawable.permission_mic, R.string.website_settings_use_mic,
                             R.string.mic_permission_title, ContentSettingValues.ASK,
                             ContentSettingValues.BLOCK, R.string.website_settings_category_mic_ask,
                             0));
-            localMap.put(ContentSettingsType.CONTENT_SETTINGS_TYPE_MIDI_SYSEX,
+            localMap.put(ContentSettingsType.MIDI_SYSEX,
                     new ResourceItem(R.drawable.permission_midi, 0,
-                                 R.string.midi_sysex_permission_title, null, null, 0, 0));
-            localMap.put(ContentSettingsType.CONTENT_SETTINGS_TYPE_NOTIFICATIONS,
+                            R.string.midi_sysex_permission_title, null, null, 0, 0));
+            localMap.put(ContentSettingsType.NFC,
+                    new ResourceItem(R.drawable.ic_settings_nfc, R.string.nfc_permission_title,
+                            R.string.nfc_permission_title, ContentSettingValues.ASK,
+                            ContentSettingValues.BLOCK, R.string.website_settings_category_nfc_ask,
+                            R.string.website_settings_category_nfc_blocked));
+            localMap.put(ContentSettingsType.NOTIFICATIONS,
                     new ResourceItem(R.drawable.permission_push_notification,
                             R.string.push_notifications_permission_title,
                             R.string.push_notifications_permission_title, ContentSettingValues.ASK,
                             ContentSettingValues.BLOCK,
                             R.string.website_settings_category_notifications_ask, 0));
-            localMap.put(ContentSettingsType.CONTENT_SETTINGS_TYPE_POPUPS,
+            localMap.put(ContentSettingsType.POPUPS,
                     new ResourceItem(R.drawable.permission_popups, R.string.popup_permission_title,
                             R.string.popup_permission_title, ContentSettingValues.ALLOW,
                             ContentSettingValues.BLOCK, 0,
                             R.string.website_settings_category_popups_redirects_blocked));
             // PROTECTED_MEDIA_IDENTIFIER uses 3-state preference so some values are not used.
             // If 3-state becomes more common we should update localMaps to support it better.
-            localMap.put(ContentSettingsType.CONTENT_SETTINGS_TYPE_PROTECTED_MEDIA_IDENTIFIER,
+            localMap.put(ContentSettingsType.PROTECTED_MEDIA_IDENTIFIER,
                     new ResourceItem(R.drawable.permission_protected_media,
                             org.chromium.chrome.R.string.protected_content,
                             org.chromium.chrome.R.string.protected_content,
                             ContentSettingValues.ASK, ContentSettingValues.BLOCK, 0, 0));
-            localMap.put(ContentSettingsType.CONTENT_SETTINGS_TYPE_SOUND,
+            int sensorsPermissionTitle = R.string.motion_sensors_permission_title;
+            int sensorsAllowedDescription =
+                    R.string.website_settings_category_motion_sensors_allowed;
+            int sensorsBlockedDescription =
+                    R.string.website_settings_category_motion_sensors_blocked;
+            try {
+                if (ChromeFeatureList.isEnabled(ChromeFeatureList.GENERIC_SENSOR_EXTRA_CLASSES)) {
+                    sensorsPermissionTitle = R.string.sensors_permission_title;
+                    sensorsAllowedDescription = R.string.website_settings_category_sensors_allowed;
+                    sensorsBlockedDescription = R.string.website_settings_category_sensors_blocked;
+                }
+            } catch (IllegalArgumentException e) {
+                // We can hit this in tests that use the @Features annotation, as it calls
+                // ChromeFeatureList.setTestFeatures() with a map that should not need to contain
+                // ChromeFeatureList.GENERIC_SENSOR_EXTRA_CLASSES.
+            }
+            localMap.put(ContentSettingsType.SENSORS,
+                    new ResourceItem(R.drawable.settings_sensors, sensorsPermissionTitle,
+                            sensorsPermissionTitle, ContentSettingValues.ALLOW,
+                            ContentSettingValues.BLOCK, sensorsAllowedDescription,
+                            sensorsBlockedDescription));
+            localMap.put(ContentSettingsType.SOUND,
                     new ResourceItem(R.drawable.ic_volume_up_grey600_24dp,
                             R.string.sound_permission_title, R.string.sound_permission_title,
                             ContentSettingValues.ALLOW, ContentSettingValues.BLOCK,
                             R.string.website_settings_category_sound_allowed,
                             R.string.website_settings_category_sound_blocked));
-            localMap.put(ContentSettingsType.CONTENT_SETTINGS_TYPE_USB_CHOOSER_DATA,
+            localMap.put(ContentSettingsType.USB_CHOOSER_DATA,
                     new ResourceItem(R.drawable.settings_usb, 0, 0, ContentSettingValues.ASK,
                             ContentSettingValues.BLOCK, 0, 0));
-            localMap.put(ContentSettingsType.CONTENT_SETTINGS_TYPE_USB_GUARD,
+            localMap.put(ContentSettingsType.USB_GUARD,
                     new ResourceItem(R.drawable.settings_usb, R.string.website_settings_usb,
                             R.string.website_settings_usb, ContentSettingValues.ASK,
                             ContentSettingValues.BLOCK, R.string.website_settings_category_usb_ask,
                             R.string.website_settings_category_usb_blocked));
-            localMap.put(ContentSettingsType.CONTENT_SETTINGS_TYPE_SENSORS,
-                    new ResourceItem(R.drawable.settings_sensors, R.string.sensors_permission_title,
-                            R.string.sensors_permission_title, ContentSettingValues.ALLOW,
-                            ContentSettingValues.BLOCK,
-                            R.string.website_settings_category_sensors_allowed,
-                            R.string.website_settings_category_sensors_blocked));
             sResourceInfo = localMap;
         }
         return sResourceInfo;
@@ -359,7 +387,7 @@ public class ContentSettingsResources {
      *         Blocked states, in that order.
      */
     public static int[] getTriStateSettingDescriptionIDs(int contentType) {
-        if (contentType == ContentSettingsType.CONTENT_SETTINGS_TYPE_PROTECTED_MEDIA_IDENTIFIER) {
+        if (contentType == ContentSettingsType.PROTECTED_MEDIA_IDENTIFIER) {
             // The recommended setting is different on different android versions depending on
             // whether per-origin provisioning is available. See https://crbug.com/904883.
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {

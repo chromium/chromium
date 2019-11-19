@@ -33,25 +33,16 @@
 
 namespace blink {
 
-class USVStringOrTrustedURL;
-class ExceptionState;
 class HTMLSourceElement final : public HTMLElement {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
   class Listener;
 
-  DECLARE_NODE_FACTORY(HTMLSourceElement);
-
   explicit HTMLSourceElement(Document&);
   ~HTMLSourceElement() override;
 
-  // Returns attributes that should be checked against Trusted Types
-  const AttrNameToTrustedType& GetCheckedAttributeTypes() const override;
-
   const AtomicString& type() const;
-  void SetSrc(const String&);
-  void SetSrc(const USVStringOrTrustedURL&, ExceptionState&);
   void setType(const AtomicString&);
 
   void ScheduleErrorEvent();

@@ -9,8 +9,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/language_item"
     android:layout_marginStart="0dp"
-    android:paddingStart="@dimen/pref_languages_padding"
-    android:paddingEnd="@dimen/pref_languages_padding"
+    android:paddingStart="@dimen/draggable_list_item_padding"
+    android:paddingEnd="@dimen/draggable_list_item_padding"
     style="@style/ListItemContainer">
 
     <org.chromium.ui.widget.ChromeImageView
@@ -39,14 +39,14 @@
 
     </LinearLayout>
 
-    <org.chromium.chrome.browser.widget.ListMenuButton
+    <org.chromium.chrome.browser.ui.widget.ListMenuButton
         android:id="@+id/more"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:paddingStart="@dimen/selectable_list_layout_row_padding"
         android:paddingEnd="@dimen/selectable_list_layout_row_padding"
         android:background="@null"
-        android:src="@drawable/ic_more_vert_black_24dp"
+        android:src="@drawable/ic_more_vert_24dp"
         app:menuWidth="@dimen/pref_languages_item_popup_width"
         app:tint="@color/standard_mode_tint"
         tools:ignore="ContentDescription" />

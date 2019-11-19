@@ -31,6 +31,6 @@ interface PdfToEmfConverter {
 interface PdfToEmfConverterFactory {
   CreateConverter(mojo_base.mojom.ReadOnlySharedMemoryRegion pdf_region,
                   PdfRenderSettings render_settings,
-                  PdfToEmfConverterClient client) =>
-      (PdfToEmfConverter converter, uint32 page_count);
+                  pending_remote<PdfToEmfConverterClient> client)
+      => (pending_remote<PdfToEmfConverter> converter, uint32 page_count);
 };

@@ -6,7 +6,7 @@
 #define COMPONENTS_ARC_APP_PERMISSIONS_ARC_APP_PERMISSIONS_BRIDGE_H_
 
 #include "base/macros.h"
-#include "components/arc/common/app_permissions.mojom.h"
+#include "components/arc/mojom/app_permissions.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace content {

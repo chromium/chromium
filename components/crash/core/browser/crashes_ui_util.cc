@@ -15,7 +15,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/upload_list/upload_list.h"
 
-namespace crash {
+namespace crash_reporter {
 
 const CrashesUILocalizedString kCrashesUILocalizedStrings[] = {
     {"bugLinkText", IDS_CRASH_BUG_LINK_LABEL},
@@ -85,4 +85,4 @@ void UploadListToValue(UploadList* upload_list, base::ListValue* out_value) {
   }
 }
 
-}  // namespace crash
+}  // namespace crash_reporter

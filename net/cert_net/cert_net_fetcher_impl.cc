@@ -99,8 +99,6 @@ const int kMaxResponseSizeInBytesForAia = 64 * 1024;
 // The default timeout in seconds for fetch requests.
 const int kTimeoutSeconds = 15;
 
-class RequestCore;
-struct RequestParams;
 class Job;
 
 struct JobToRequestParamsComparator;
@@ -113,13 +111,15 @@ struct JobComparator {
 // owned types doesn't come until C++17.
 using JobSet = std::map<Job*, std::unique_ptr<Job>, JobComparator>;
 
+}  // namespace
+
 // AsyncCertNetFetcherImpl manages URLRequests in an async fashion on the
 // URLRequestContexts's task runner thread.
 //
 //  * Schedules
 //  * De-duplicates requests
 //  * Handles timeouts
-class AsyncCertNetFetcherImpl {
+class CertNetFetcherImpl::AsyncCertNetFetcherImpl {
  public:
   // Initializes AsyncCertNetFetcherImpl using the specified URLRequestContext
   // for issuing requests. |context| must remain valid until Shutdown() is
@@ -135,20 +135,18 @@ class AsyncCertNetFetcherImpl {
   void Fetch(std::unique_ptr<RequestParams> request_params,
              scoped_refptr<RequestCore> request);
 
+  // Removes |job| from the in progress jobs and transfers ownership to the
+  // caller.
+  std::unique_ptr<Job> RemoveJob(Job* job);
+
   // Cancels outstanding jobs, which stops network requests and signals the
   // corresponding RequestCores that the requests have completed.
   void Shutdown();
 
  private:
-  friend class Job;
-
   // Finds a job with a matching RequestPararms or returns nullptr if there was
   // no match.
   Job* FindJob(const RequestParams& params);
-
-  // Removes |job| from the in progress jobs and transfers ownership to the
-  // caller.
-  std::unique_ptr<Job> RemoveJob(Job* job);
 
   // The in-progress jobs. This set does not contain the job which is actively
   // invoking callbacks (OnJobCompleted).
@@ -161,6 +159,8 @@ class AsyncCertNetFetcherImpl {
 
   DISALLOW_COPY_AND_ASSIGN(AsyncCertNetFetcherImpl);
 };
+
+namespace {
 
 // Policy for which URLs are allowed to be fetched. This is called both for the
 // initial URL and for each redirect. Returns OK on success or a net error
@@ -196,9 +196,12 @@ enum HttpMethod {
   HTTP_METHOD_POST,
 };
 
+}  // namespace
+
 // RequestCore tracks an outstanding call to Fetch(). It is
 // reference-counted for ease of sharing between threads.
-class RequestCore : public base::RefCountedThreadSafe<RequestCore> {
+class CertNetFetcherImpl::RequestCore
+    : public base::RefCountedThreadSafe<RequestCore> {
  public:
   explicit RequestCore(scoped_refptr<base::SingleThreadTaskRunner> task_runner)
       : completion_event_(base::WaitableEvent::ResetPolicy::MANUAL,
@@ -273,7 +276,7 @@ class RequestCore : public base::RefCountedThreadSafe<RequestCore> {
   DISALLOW_COPY_AND_ASSIGN(RequestCore);
 };
 
-struct RequestParams {
+struct CertNetFetcherImpl::RequestParams {
   RequestParams();
 
   bool operator<(const RequestParams& other) const;
@@ -291,31 +294,36 @@ struct RequestParams {
   DISALLOW_COPY_AND_ASSIGN(RequestParams);
 };
 
-RequestParams::RequestParams()
+CertNetFetcherImpl::RequestParams::RequestParams()
     : http_method(HTTP_METHOD_GET), max_response_bytes(0) {}
 
-bool RequestParams::operator<(const RequestParams& other) const {
+bool CertNetFetcherImpl::RequestParams::operator<(
+    const RequestParams& other) const {
   return std::tie(url, http_method, max_response_bytes, timeout) <
          std::tie(other.url, other.http_method, other.max_response_bytes,
                   other.timeout);
 }
 
+namespace {
+
 // Job tracks an outstanding URLRequest as well as all of the pending requests
 // for it.
 class Job : public URLRequest::Delegate {
  public:
-  Job(std::unique_ptr<RequestParams> request_params,
-      AsyncCertNetFetcherImpl* parent);
+  Job(std::unique_ptr<CertNetFetcherImpl::RequestParams> request_params,
+      CertNetFetcherImpl::AsyncCertNetFetcherImpl* parent);
   ~Job() override;
 
-  const RequestParams& request_params() const { return *request_params_; }
+  const CertNetFetcherImpl::RequestParams& request_params() const {
+    return *request_params_;
+  }
 
   // Creates a request and attaches it to the job. When the job completes it
   // will notify the request of completion through OnJobCompleted.
-  void AttachRequest(scoped_refptr<RequestCore> request);
+  void AttachRequest(scoped_refptr<CertNetFetcherImpl::RequestCore> request);
 
   // Removes |request| from the job.
-  void DetachRequest(RequestCore* request);
+  void DetachRequest(CertNetFetcherImpl::RequestCore* request);
 
   // Creates and starts a URLRequest for the job. After the URLRequest has
   // completed, OnJobCompleted() will be invoked and all the registered requests
@@ -363,10 +371,10 @@ class Job : public URLRequest::Delegate {
   void FailRequest(Error error);
 
   // The requests attached to this job.
-  std::vector<scoped_refptr<RequestCore>> requests_;
+  std::vector<scoped_refptr<CertNetFetcherImpl::RequestCore>> requests_;
 
   // The input parameters for starting a URLRequest.
-  std::unique_ptr<RequestParams> request_params_;
+  std::unique_ptr<CertNetFetcherImpl::RequestParams> request_params_;
 
   // The URLRequest response information.
   std::vector<uint8_t> response_body_;
@@ -379,12 +387,14 @@ class Job : public URLRequest::Delegate {
   base::OneShotTimer timer_;
 
   // Non-owned pointer to the AsyncCertNetFetcherImpl that created this job.
-  AsyncCertNetFetcherImpl* parent_;
+  CertNetFetcherImpl::AsyncCertNetFetcherImpl* parent_;
 
   DISALLOW_COPY_AND_ASSIGN(Job);
 };
 
-void RequestCore::CancelJob() {
+}  // namespace
+
+void CertNetFetcherImpl::RequestCore::CancelJob() {
   if (!task_runner_->RunsTasksInCurrentSequence()) {
     task_runner_->PostTask(FROM_HERE,
                            base::BindOnce(&RequestCore::CancelJob, this));
@@ -400,7 +410,7 @@ void RequestCore::CancelJob() {
   SignalImmediateError();
 }
 
-void RequestCore::SignalImmediateError() {
+void CertNetFetcherImpl::RequestCore::SignalImmediateError() {
   // These data members are normally only written on the network thread, but it
   // is safe to write here from either thread. This is because
   // SignalImmediateError is only to be called before this request is attached
@@ -416,8 +426,10 @@ void RequestCore::SignalImmediateError() {
   completion_event_.Signal();
 }
 
-Job::Job(std::unique_ptr<RequestParams> request_params,
-         AsyncCertNetFetcherImpl* parent)
+namespace {
+
+Job::Job(std::unique_ptr<CertNetFetcherImpl::RequestParams> request_params,
+         CertNetFetcherImpl::AsyncCertNetFetcherImpl* parent)
     : request_params_(std::move(request_params)), parent_(parent) {}
 
 Job::~Job() {
@@ -425,12 +437,13 @@ Job::~Job() {
   Stop();
 }
 
-void Job::AttachRequest(scoped_refptr<RequestCore> request) {
+void Job::AttachRequest(
+    scoped_refptr<CertNetFetcherImpl::RequestCore> request) {
   request->AttachedToJob(this);
   requests_.push_back(std::move(request));
 }
 
-void Job::DetachRequest(RequestCore* request) {
+void Job::DetachRequest(CertNetFetcherImpl::RequestCore* request) {
   std::unique_ptr<Job> delete_this;
 
   auto it = std::find(requests_.begin(), requests_.end(), request);
@@ -483,15 +496,15 @@ void Job::StartURLRequest(URLRequestContext* context) {
                                         this, traffic_annotation);
   if (request_params_->http_method == HTTP_METHOD_POST)
     url_request_->set_method("POST");
-  url_request_->SetLoadFlags(LOAD_DO_NOT_SAVE_COOKIES |
-                             LOAD_DO_NOT_SEND_COOKIES);
+  url_request_->set_allow_credentials(false);
   url_request_->Start();
 
   // Start a timer to limit how long the job runs for.
-  if (request_params_->timeout > base::TimeDelta())
-    timer_.Start(
-        FROM_HERE, request_params_->timeout,
-        base::Bind(&Job::FailRequest, base::Unretained(this), ERR_TIMED_OUT));
+  if (request_params_->timeout > base::TimeDelta()) {
+    timer_.Start(FROM_HERE, request_params_->timeout,
+                 base::BindOnce(&Job::FailRequest, base::Unretained(this),
+                                ERR_TIMED_OUT));
+  }
 }
 
 void Job::Cancel() {
@@ -524,8 +537,7 @@ void Job::OnResponseStarted(URLRequest* request, int net_error) {
   }
 
   if (request->GetResponseCode() != 200) {
-    // TODO(eroman): Use a more specific error code.
-    FailRequest(ERR_FAILED);
+    FailRequest(ERR_HTTP_RESPONSE_CODE_FAILURE);
     return;
   }
 
@@ -610,13 +622,16 @@ void Job::FailRequest(Error error) {
   OnUrlRequestCompleted(result);
 }
 
-AsyncCertNetFetcherImpl::AsyncCertNetFetcherImpl(URLRequestContext* context)
+}  // namespace
+
+CertNetFetcherImpl::AsyncCertNetFetcherImpl::AsyncCertNetFetcherImpl(
+    URLRequestContext* context)
     : context_(context) {
   // Allow creation to happen from another thread.
   thread_checker_.DetachFromThread();
 }
 
-AsyncCertNetFetcherImpl::~AsyncCertNetFetcherImpl() {
+CertNetFetcherImpl::AsyncCertNetFetcherImpl::~AsyncCertNetFetcherImpl() {
   DCHECK(thread_checker_.CalledOnValidThread());
   jobs_.clear();
 }
@@ -625,7 +640,7 @@ bool JobComparator::operator()(const Job* job1, const Job* job2) const {
   return job1->request_params() < job2->request_params();
 }
 
-void AsyncCertNetFetcherImpl::Fetch(
+void CertNetFetcherImpl::AsyncCertNetFetcherImpl::Fetch(
     std::unique_ptr<RequestParams> request_params,
     scoped_refptr<RequestCore> request) {
   DCHECK(thread_checker_.CalledOnValidThread());
@@ -647,7 +662,7 @@ void AsyncCertNetFetcherImpl::Fetch(
   job->StartURLRequest(context_);
 }
 
-void AsyncCertNetFetcherImpl::Shutdown() {
+void CertNetFetcherImpl::AsyncCertNetFetcherImpl::Shutdown() {
   DCHECK(thread_checker_.CalledOnValidThread());
   for (const auto& job : jobs_) {
     job.first->Cancel();
@@ -655,14 +670,19 @@ void AsyncCertNetFetcherImpl::Shutdown() {
   jobs_.clear();
 }
 
+namespace {
+
 struct JobToRequestParamsComparator {
   bool operator()(const JobSet::value_type& job,
-                  const RequestParams& value) const {
+                  const CertNetFetcherImpl::RequestParams& value) const {
     return job.first->request_params() < value;
   }
 };
 
-Job* AsyncCertNetFetcherImpl::FindJob(const RequestParams& params) {
+}  // namespace
+
+Job* CertNetFetcherImpl::AsyncCertNetFetcherImpl::FindJob(
+    const RequestParams& params) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   // The JobSet is kept in sorted order so items can be found using binary
@@ -674,7 +694,8 @@ Job* AsyncCertNetFetcherImpl::FindJob(const RequestParams& params) {
   return nullptr;
 }
 
-std::unique_ptr<Job> AsyncCertNetFetcherImpl::RemoveJob(Job* job) {
+std::unique_ptr<Job> CertNetFetcherImpl::AsyncCertNetFetcherImpl::RemoveJob(
+    Job* job) {
   DCHECK(thread_checker_.CalledOnValidThread());
   auto it = jobs_.find(job);
   CHECK(it != jobs_.end());
@@ -683,9 +704,12 @@ std::unique_ptr<Job> AsyncCertNetFetcherImpl::RemoveJob(Job* job) {
   return owned_job;
 }
 
+namespace {
+
 class CertNetFetcherRequestImpl : public CertNetFetcher::Request {
  public:
-  explicit CertNetFetcherRequestImpl(scoped_refptr<RequestCore> core)
+  explicit CertNetFetcherRequestImpl(
+      scoped_refptr<CertNetFetcherImpl::RequestCore> core)
       : core_(std::move(core)) {
     DCHECK(core_);
   }
@@ -703,121 +727,120 @@ class CertNetFetcherRequestImpl : public CertNetFetcher::Request {
   }
 
  private:
-  scoped_refptr<RequestCore> core_;
-};
-
-class CertNetFetcherImpl : public CertNetFetcher {
- public:
-  explicit CertNetFetcherImpl(URLRequestContext* context)
-      : task_runner_(base::ThreadTaskRunnerHandle::Get()), context_(context) {}
-
-  void Shutdown() override {
-    DCHECK(task_runner_->RunsTasksInCurrentSequence());
-    if (impl_) {
-      impl_->Shutdown();
-      impl_.reset();
-    }
-    context_ = nullptr;
-  }
-
-  std::unique_ptr<Request> FetchCaIssuers(const GURL& url,
-                                          int timeout_milliseconds,
-                                          int max_response_bytes) override {
-    std::unique_ptr<RequestParams> request_params(new RequestParams);
-
-    request_params->url = url;
-    request_params->http_method = HTTP_METHOD_GET;
-    request_params->timeout = GetTimeout(timeout_milliseconds);
-    request_params->max_response_bytes =
-        GetMaxResponseBytes(max_response_bytes, kMaxResponseSizeInBytesForAia);
-
-    return DoFetch(std::move(request_params));
-  }
-
-  std::unique_ptr<Request> FetchCrl(const GURL& url,
-                                    int timeout_milliseconds,
-                                    int max_response_bytes) override {
-    std::unique_ptr<RequestParams> request_params(new RequestParams);
-
-    request_params->url = url;
-    request_params->http_method = HTTP_METHOD_GET;
-    request_params->timeout = GetTimeout(timeout_milliseconds);
-    request_params->max_response_bytes =
-        GetMaxResponseBytes(max_response_bytes, kMaxResponseSizeInBytesForCrl);
-
-    return DoFetch(std::move(request_params));
-  }
-
-  WARN_UNUSED_RESULT std::unique_ptr<Request> FetchOcsp(
-      const GURL& url,
-      int timeout_milliseconds,
-      int max_response_bytes) override {
-    std::unique_ptr<RequestParams> request_params(new RequestParams);
-
-    request_params->url = url;
-    request_params->http_method = HTTP_METHOD_GET;
-    request_params->timeout = GetTimeout(timeout_milliseconds);
-    request_params->max_response_bytes =
-        GetMaxResponseBytes(max_response_bytes, kMaxResponseSizeInBytesForAia);
-
-    return DoFetch(std::move(request_params));
-  }
-
- private:
-  ~CertNetFetcherImpl() override {
-    // The fetcher must be shutdown (at which point |context_| will be set to
-    // null) before destruction.
-    DCHECK(!context_);
-  }
-
-  void DoFetchOnNetworkSequence(std::unique_ptr<RequestParams> request_params,
-                                scoped_refptr<RequestCore> request) {
-    DCHECK(task_runner_->RunsTasksInCurrentSequence());
-
-    if (!context_) {
-      // The fetcher might have been shutdown between when this task was posted
-      // and when it is running. In this case, signal the request and do not
-      // start a network request.
-      request->SignalImmediateError();
-      return;
-    }
-
-    if (!impl_) {
-      impl_.reset(new AsyncCertNetFetcherImpl(context_));
-    }
-
-    impl_->Fetch(std::move(request_params), request);
-  }
-
-  std::unique_ptr<Request> DoFetch(
-      std::unique_ptr<RequestParams> request_params) {
-    scoped_refptr<RequestCore> request_core = new RequestCore(task_runner_);
-
-    // If the fetcher has already been shutdown, DoFetchOnNetworkSequence will
-    // signal the request with an error. However, if the fetcher shuts down
-    // before DoFetchOnNetworkSequence runs and PostTask still returns true,
-    // then the request will hang (that is, WaitForResult will not return).
-    if (!task_runner_->PostTask(
-            FROM_HERE,
-            base::BindOnce(&CertNetFetcherImpl::DoFetchOnNetworkSequence, this,
-                           std::move(request_params), request_core))) {
-      request_core->SignalImmediateError();
-    }
-
-    return std::make_unique<CertNetFetcherRequestImpl>(std::move(request_core));
-  }
-
- private:
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-  // Not owned. |context_| must stay valid until Shutdown() is called.
-  URLRequestContext* context_ = nullptr;
-  std::unique_ptr<AsyncCertNetFetcherImpl> impl_;
+  scoped_refptr<CertNetFetcherImpl::RequestCore> core_;
 };
 
 }  // namespace
 
-scoped_refptr<CertNetFetcher> CreateCertNetFetcher(URLRequestContext* context) {
-  return base::MakeRefCounted<CertNetFetcherImpl>(context);
+CertNetFetcherImpl::CertNetFetcherImpl()
+    : task_runner_(base::ThreadTaskRunnerHandle::Get()) {}
+
+CertNetFetcherImpl::~CertNetFetcherImpl() {
+  // The fetcher must be shutdown (at which point |context_| will be set to
+  // null) before destruction.
+  DCHECK(!context_);
+}
+
+void CertNetFetcherImpl::SetURLRequestContext(URLRequestContext* context) {
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  context_ = context;
+}
+
+// static
+base::TimeDelta CertNetFetcherImpl::GetDefaultTimeoutForTesting() {
+  return GetTimeout(CertNetFetcher::DEFAULT);
+}
+
+void CertNetFetcherImpl::Shutdown() {
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  if (impl_) {
+    impl_->Shutdown();
+    impl_.reset();
+  }
+  context_ = nullptr;
+}
+
+std::unique_ptr<CertNetFetcher::Request> CertNetFetcherImpl::FetchCaIssuers(
+    const GURL& url,
+    int timeout_milliseconds,
+    int max_response_bytes) {
+  std::unique_ptr<RequestParams> request_params(new RequestParams);
+
+  request_params->url = url;
+  request_params->http_method = HTTP_METHOD_GET;
+  request_params->timeout = GetTimeout(timeout_milliseconds);
+  request_params->max_response_bytes =
+      GetMaxResponseBytes(max_response_bytes, kMaxResponseSizeInBytesForAia);
+
+  return DoFetch(std::move(request_params));
+}
+
+std::unique_ptr<CertNetFetcher::Request> CertNetFetcherImpl::FetchCrl(
+    const GURL& url,
+    int timeout_milliseconds,
+    int max_response_bytes) {
+  std::unique_ptr<RequestParams> request_params(new RequestParams);
+
+  request_params->url = url;
+  request_params->http_method = HTTP_METHOD_GET;
+  request_params->timeout = GetTimeout(timeout_milliseconds);
+  request_params->max_response_bytes =
+      GetMaxResponseBytes(max_response_bytes, kMaxResponseSizeInBytesForCrl);
+
+  return DoFetch(std::move(request_params));
+}
+
+std::unique_ptr<CertNetFetcher::Request> CertNetFetcherImpl::FetchOcsp(
+    const GURL& url,
+    int timeout_milliseconds,
+    int max_response_bytes) {
+  std::unique_ptr<RequestParams> request_params(new RequestParams);
+
+  request_params->url = url;
+  request_params->http_method = HTTP_METHOD_GET;
+  request_params->timeout = GetTimeout(timeout_milliseconds);
+  request_params->max_response_bytes =
+      GetMaxResponseBytes(max_response_bytes, kMaxResponseSizeInBytesForAia);
+
+  return DoFetch(std::move(request_params));
+}
+
+void CertNetFetcherImpl::DoFetchOnNetworkSequence(
+    std::unique_ptr<RequestParams> request_params,
+    scoped_refptr<RequestCore> request) {
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+
+  if (!context_) {
+    // The fetcher might have been shutdown between when this task was posted
+    // and when it is running. In this case, signal the request and do not
+    // start a network request.
+    request->SignalImmediateError();
+    return;
+  }
+
+  if (!impl_) {
+    impl_.reset(new AsyncCertNetFetcherImpl(context_));
+  }
+
+  impl_->Fetch(std::move(request_params), request);
+}
+
+std::unique_ptr<CertNetFetcherImpl::Request> CertNetFetcherImpl::DoFetch(
+    std::unique_ptr<RequestParams> request_params) {
+  scoped_refptr<RequestCore> request_core = new RequestCore(task_runner_);
+
+  // If the fetcher has already been shutdown, DoFetchOnNetworkSequence will
+  // signal the request with an error. However, if the fetcher shuts down
+  // before DoFetchOnNetworkSequence runs and PostTask still returns true,
+  // then the request will hang (that is, WaitForResult will not return).
+  if (!task_runner_->PostTask(
+          FROM_HERE,
+          base::BindOnce(&CertNetFetcherImpl::DoFetchOnNetworkSequence, this,
+                         std::move(request_params), request_core))) {
+    request_core->SignalImmediateError();
+  }
+
+  return std::make_unique<CertNetFetcherRequestImpl>(std::move(request_core));
 }
 
 }  // namespace net

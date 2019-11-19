@@ -300,12 +300,6 @@ than whatever would normally service them in the browser process.
 The current way to set up that sort of thing looks like
 [this](https://cs.chromium.org/chromium/src/third_party/blink/web_tests/battery-status/resources/mock-battery-monitor.js?rcl=be6e0001855f7f1cfc26205d0ff5a2b5b324fcbd&l=19).
 
-*** aside
-**NOTE:** The above approach to mocking in JS no longer applies when using
-the new recommended `DocumentInterfaceBroker` approach to exposing interfaces
-to documents. New JS mocking support is in development for this.
-***
-
 #### Feature Impls That Depend on Blink Headers
 In the course of servicifying a feature that has Blink as a client, you might
 encounter cases where the feature implementation has dependencies on Blink

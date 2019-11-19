@@ -9,19 +9,15 @@
 
 #include "base/macros.h"
 #include "services/data_decoder/public/mojom/json_parser.mojom.h"
-#include "services/service_manager/public/cpp/service_context_ref.h"
 
 namespace data_decoder {
 
 class JsonParserImpl : public mojom::JsonParser {
  public:
-  explicit JsonParserImpl(
-      std::unique_ptr<service_manager::ServiceContextRef> service_ref);
+  JsonParserImpl();
   ~JsonParserImpl() override;
 
  private:
-  const std::unique_ptr<service_manager::ServiceContextRef> service_ref_;
-
   // mojom::JsonParser implementation.
   void Parse(const std::string& json, ParseCallback callback) override;
 

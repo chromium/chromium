@@ -1,0 +1,34 @@
+{
+  "layers": [
+    {
+      "name": "LayoutView #document",
+      "bounds": [800, 600],
+      "drawsContent": false,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "Scrolling Layer",
+      "bounds": [800, 600],
+      "drawsContent": false
+    },
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "NGPhysicalBoxFragment LayoutNGBlockFlow (positioned) \u003Cpseudo:after\u003E",
+          "rect": [138, 8, 100, 100],
+          "reason": "style change"
+        },
+        {
+          "object": "NGPhysicalBoxFragment LayoutNGBlockFlow DIV class='hitregion'",
+          "rect": [8, 8, 100, 100],
+          "reason": "background"
+        }
+      ]
+    }
+  ]
+}
+

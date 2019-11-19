@@ -18,7 +18,7 @@ class VIEWS_EXPORT ColorChooserListener {
   virtual void OnColorChooserDialogClosed() = 0;
 
  protected:
-  virtual ~ColorChooserListener() {}
+  virtual ~ColorChooserListener() = default;
 };
 
 }  // namespace views

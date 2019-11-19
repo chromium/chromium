@@ -42,8 +42,8 @@ function assert_calc_expression_on_width_attr(expression, expected) {
 
   // Test calc with "valueAsString"
   rect.setAttribute('width', '20px'); // reset to normal value
-  assert_throws(new SyntaxError, function() {rect.width.baseVal.valueAsString = expression});
-  assert_equals(rect.width.baseVal.value, 20);
+  rect.width.baseVal.valueAsString = expression;
+  assert_approx_equals(rect.width.baseVal.value, expected, EPSILON);
 }
 
 function assert_calc_expression_on_markerWidth_attr(expression, expected) {
@@ -67,8 +67,8 @@ function assert_calc_expression_on_markerWidth_attr(expression, expected) {
 
   // Test calc with "valueAsString"
   marker.setAttribute('markerWidth', '20px'); // reset to normal value
-  assert_throws(new SyntaxError, function() {marker.markerWidth.baseVal.valueAsString = expression});
-  assert_equals(marker.markerWidth.baseVal.value, 20);
+  marker.markerWidth.baseVal.valueAsString = expression;
+  assert_approx_equals(marker.markerWidth.baseVal.value, expected, EPSILON);
 }
 
 function assert_calc_expression(expression, expected) {

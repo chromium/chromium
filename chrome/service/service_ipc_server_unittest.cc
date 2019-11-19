@@ -8,12 +8,13 @@
 
 #include "base/bind.h"
 #include "base/bind_helpers.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -78,12 +79,13 @@ class ServiceIPCServerTest : public ::testing::Test {
 
  protected:
   FakeServiceIPCServerClient service_process_client_;
-  base::MessageLoopForUI main_message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::SingleThreadTaskEnvironment::MainThreadType::UI};
   base::Thread io_thread_;
   base::WaitableEvent shutdown_event_;
   std::unique_ptr<ServiceIPCServer> server_;
   service_manager::InterfaceProvider remote_interfaces_;
-  chrome::mojom::ServiceProcessPtr service_process_;
+  mojo::Remote<chrome::mojom::ServiceProcess> service_process_;
 };
 
 ServiceIPCServerTest::ServiceIPCServerTest()
@@ -94,7 +96,7 @@ ServiceIPCServerTest::ServiceIPCServerTest()
 void ServiceIPCServerTest::SetUp() {
   base::Thread::Options options;
   mojo::MessagePipe channel;
-  options.message_loop_type = base::MessageLoop::TYPE_IO;
+  options.message_pump_type = base::MessagePumpType::IO;
   ASSERT_TRUE(io_thread_.StartWithOptions(options));
 
   server_.reset(new ServiceIPCServer(&service_process_client_,
@@ -127,7 +129,8 @@ void ServiceIPCServerTest::ConnectClientChannel() {
   remote_interfaces_.Bind(
       std::move(service_process_client_.interface_provider_));
 
-  remote_interfaces_.GetInterface(&service_process_);
+  remote_interfaces_.GetInterface(
+      service_process_.BindNewPipeAndPassReceiver());
   service_process_->Hello(base::DoNothing());
   PumpLoops();
 }

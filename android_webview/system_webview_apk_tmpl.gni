@@ -2,33 +2,59 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//android_webview/variables.gni")
 import("//base/android/proguard/proguard.gni")
-import("//build/config/android/chrome_version.gni")
 import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
 import("//build/config/locales.gni")
+import("//build/util/version.gni")
+import("//chrome/android/trichrome.gni")
+import("//tools/v8_context_snapshot/v8_context_snapshot.gni")
+import("//weblayer/variables.gni")
+
+declare_args() {
+  # Android package name to use when compiling the system_webview_apk and
+  # trichrome_webview_apk targets. This should be used if the Android build
+  # on which you are going to install WebView is configured to load a
+  # different package name than the default used in AOSP.
+  system_webview_package_name = "com.android.webview"
+}
 
 template("system_webview_apk_tmpl") {
   android_apk(target_name) {
     forward_variables_from(invoker, "*")
 
     deps += [
-      "//android_webview:assets",
-      "//android_webview/apk:webview_license_activity_java",
-      "//android_webview/apk:webview_license_provider_java",
+      "//android_webview:locale_pak_assets",
+      "//android_webview:pak_file_assets",
       "//android_webview/glue",
+      "//android_webview/nonembedded:nonembedded_java",
       "//android_webview/support_library:support_lib_glue_java",
       "//base:base_java",
     ]
+
+    target_sdk_version = android_sdk_version
+    product_config_java_packages = [ webview_product_config_java_package ]
+
+    if (webview_includes_weblayer) {
+      deps += [ "//weblayer:locale_pak_assets" ]
+      product_config_java_packages += [ weblayer_product_config_java_package ]
+    }
 
     if (!defined(alternative_android_sdk_dep)) {
       alternative_android_sdk_dep = webview_framework_dep
     }
 
-    shared_resources = true
+    if (webview_devui_show_icon) {
+      deps += [ "//android_webview/nonembedded:devui_launcher_icon_resources" ]
+    }
 
     _use_trichrome_library =
         defined(use_trichrome_library) && use_trichrome_library
+
+    if (!_use_trichrome_library) {
+      deps += [ "//android_webview:monochrome_webview_assets" ]
+    }
 
     if (!_use_trichrome_library) {
       shared_libraries = [ "//android_webview:libwebviewchromium" ]
@@ -45,21 +71,47 @@ template("system_webview_apk_tmpl") {
         secondary_abi_loadable_modules =
             [ "$_secondary_out_dir/libcrashpad_handler_trampoline.so" ]
       }
+      shared_resources = true
     } else {
       uncompress_shared_libraries = true
+
+      app_as_shared_lib = true
 
       # Include placeholder libraries to ensure we are treated as the desired
       # architecture.
       if (android_64bit_target_cpu) {
-        shared_libraries = [ "//android_webview:monochrome" ]
+        if (defined(is_64_bit_browser) && is_64_bit_browser) {
+          native_lib_placeholders = [ "libdummy.so" ]
+          if (build_apk_secondary_abi) {
+            secondary_abi_shared_libraries = [ "//android_webview:monochrome_64($android_secondary_abi_toolchain)" ]
+            _trampoline = "//third_party/crashpad/crashpad/handler:crashpad_handler_trampoline($android_secondary_abi_toolchain)"
+            deps += [ _trampoline ]
+            _secondary_out_dir = get_label_info(_trampoline, "root_out_dir")
+            secondary_abi_loadable_modules =
+                [ "$_secondary_out_dir/libcrashpad_handler_trampoline.so" ]
+            deps += [ "//android_webview:v8_snapshot_secondary_abi_assets" ]
+          }
+        } else {
+          shared_libraries = [ "//android_webview:monochrome" ]
+          deps += [ "//third_party/crashpad/crashpad/handler:crashpad_handler_trampoline" ]
+          loadable_modules =
+              [ "$root_out_dir/libcrashpad_handler_trampoline.so" ]
+          if (build_apk_secondary_abi) {
+            secondary_native_lib_placeholders = [ "libdummy.so" ]
+            if (use_v8_context_snapshot) {
+              deps +=
+                  [ "//tools/v8_context_snapshot:v8_context_snapshot_assets" ]
+            } else {
+              deps += [ "//v8:v8_external_startup_data_assets" ]
+            }
+          }
+        }
+      } else if (defined(is_64_bit_browser) && is_64_bit_browser) {
+        shared_libraries = [ "//android_webview:monochrome_64" ]
         deps += [
           "//third_party/crashpad/crashpad/handler:crashpad_handler_trampoline",
         ]
         loadable_modules = [ "$root_out_dir/libcrashpad_handler_trampoline.so" ]
-
-        if (build_apk_secondary_abi) {
-          secondary_native_lib_placeholders = [ "libdummy.so" ]
-        }
       } else {
         native_lib_placeholders = [ "libdummy.so" ]
       }
@@ -76,7 +128,8 @@ template("system_webview_apk_tmpl") {
 
     aapt_locale_whitelist = locales
 
-    resource_blacklist_regex = "[/-]xxxhdpi[/-]"
+    # Match drawables, but not mipmaps.
+    resource_blacklist_regex = "drawable[^/]*-xxxhdpi"
 
     # Exception rationale in https://crbug.com/691733.
     resource_blacklist_exceptions = [
@@ -87,15 +140,13 @@ template("system_webview_apk_tmpl") {
     # Used as an additional apk in test scripts.
     never_incremental = true
 
-    if (is_java_debug) {
-      enable_multidex = true
-    } else {
+    if (!is_java_debug) {
       proguard_enabled = true
       if (!defined(proguard_configs)) {
         proguard_configs = []
       }
       proguard_configs += [
-        "//android_webview/apk/java/proguard.flags",
+        "//android_webview/nonembedded/java/proguard.flags",
         "//base/android/proguard/chromium_apk.flags",
         "//base/android/proguard/chromium_code.flags",
       ]
@@ -112,9 +163,17 @@ template("system_webview_apk_tmpl") {
 
     if (!defined(version_code)) {
       if (_use_trichrome_library) {
-        version_code = trichrome_version_code
+        if (defined(is_64_bit_browser) && is_64_bit_browser) {
+          version_code = trichrome_64_32_version_code
+        } else {
+          version_code = trichrome_version_code
+        }
+      } else if (android_channel == "dev") {
+        version_code = webview_dev_version_code
+      } else if (android_channel == "beta") {
+        version_code = webview_beta_version_code
       } else {
-        version_code = webview_version_code
+        version_code = webview_stable_version_code
       }
     }
     if (!defined(version_name)) {

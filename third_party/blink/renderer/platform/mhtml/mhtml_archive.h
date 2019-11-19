@@ -31,11 +31,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_MHTML_MHTML_ARCHIVE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_MHTML_MHTML_ARCHIVE_H_
 
-#include "third_party/blink/public/mojom/loader/mhtml_load_result.mojom-shared.h"
+#include "third_party/blink/public/mojom/loader/mhtml_load_result.mojom-blink-forward.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
-#include "third_party/blink/renderer/platform/wtf/time.h"
+
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -47,7 +47,6 @@ const char kContentIdScheme[] = "cid";
 
 class ArchiveResource;
 class KURL;
-class SharedBuffer;
 
 struct SerializedResource;
 
@@ -71,7 +70,7 @@ class PLATFORM_EXPORT MHTMLArchive final
                                   const KURL&,
                                   const String& title,
                                   const String& mime_type,
-                                  WTF::Time date,
+                                  base::Time date,
                                   Vector<char>& output_buffer);
 
   // Serializes SerializedResource as an MHTML part and appends it in
@@ -104,7 +103,7 @@ class PLATFORM_EXPORT MHTMLArchive final
   ArchiveResource* SubresourceForURL(const KURL&) const;
 
   // The purported creation date (as expressed by the Date: header).
-  WTF::Time Date() const { return date_; }
+  base::Time Date() const { return date_; }
 
   void Trace(blink::Visitor*);
   blink::mojom::MHTMLLoadResult LoadResult() const { return load_result_; }
@@ -118,7 +117,7 @@ class PLATFORM_EXPORT MHTMLArchive final
   void AddSubresource(ArchiveResource*);
   static bool CanLoadArchive(const KURL&);
 
-  WTF::Time date_;
+  base::Time date_;
   Member<ArchiveResource> main_resource_;
   SubArchiveResources subresources_;
   blink::mojom::MHTMLLoadResult load_result_;

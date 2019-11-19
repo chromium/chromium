@@ -12,7 +12,7 @@ namespace device_sync {
 // ID constants used in GCM for CryptAuth-related calls.
 extern const char kCryptAuthGcmAppId[];
 extern const char kCryptAuthGcmSenderId[];
-extern const char kCryptAuthGcmInstanceIdAuthorizedEntity[];
+extern const char kCryptAuthV2EnrollmentAuthorizedEntity[];
 
 }  // namespace device_sync
 

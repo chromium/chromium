@@ -31,7 +31,6 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/renderer/platform/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/graphics/image_decoding_store.h"
 #include "third_party/blink/renderer/platform/graphics/image_frame_generator.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
@@ -41,7 +40,8 @@
 #include "third_party/blink/renderer/platform/graphics/test/mock_image_decoder.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
-#include "third_party/blink/renderer/platform/shared_buffer.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkPixmap.h"
 #include "third_party/skia/include/core/SkSurface.h"
@@ -86,7 +86,7 @@ class DeferredImageDecoderTest : public testing::Test,
     ImageDecodingStore::Instance().SetCacheLimitInBytes(1024 * 1024);
     data_ = SharedBuffer::Create(kWhitePNG, sizeof(kWhitePNG));
     frame_count_ = 1;
-    std::unique_ptr<MockImageDecoder> decoder = MockImageDecoder::Create(this);
+    auto decoder = std::make_unique<MockImageDecoder>(this);
     actual_decoder_ = decoder.get();
     actual_decoder_->SetSize(1, 1);
     lazy_decoder_ = DeferredImageDecoder::CreateForTesting(std::move(decoder));
@@ -95,7 +95,7 @@ class DeferredImageDecoderTest : public testing::Test,
     decode_request_count_ = 0;
     repetition_count_ = kAnimationNone;
     status_ = ImageFrame::kFrameComplete;
-    frame_duration_ = TimeDelta();
+    frame_duration_ = base::TimeDelta();
     decoded_size_ = actual_decoder_->Size();
   }
 
@@ -111,7 +111,7 @@ class DeferredImageDecoderTest : public testing::Test,
 
   ImageFrame::Status GetStatus(size_t index) override { return status_; }
 
-  TimeDelta FrameDuration() const override { return frame_duration_; }
+  base::TimeDelta FrameDuration() const override { return frame_duration_; }
 
   IntSize DecodedSize() const override { return decoded_size_; }
 
@@ -153,12 +153,12 @@ class DeferredImageDecoderTest : public testing::Test,
   size_t frame_count_;
   int repetition_count_;
   ImageFrame::Status status_;
-  TimeDelta frame_duration_;
+  base::TimeDelta frame_duration_;
   IntSize decoded_size_;
 };
 
 TEST_F(DeferredImageDecoderTest, drawIntoPaintRecord) {
-  lazy_decoder_->SetData(data_, true);
+  lazy_decoder_->SetData(data_, true /* all_data_received */);
   PaintImage image = CreatePaintImage();
   ASSERT_TRUE(image);
   EXPECT_EQ(1, image.width());
@@ -180,22 +180,69 @@ TEST_F(DeferredImageDecoderTest, drawIntoPaintRecordProgressive) {
       SharedBuffer::Create(data_->Data(), data_->size() - 10);
 
   // Received only half the file.
-  lazy_decoder_->SetData(partial_data, false);
+  lazy_decoder_->SetData(partial_data, false /* all_data_received */);
   PaintRecorder recorder;
   cc::PaintCanvas* temp_canvas = recorder.beginRecording(100, 100);
   PaintImage image =
       CreatePaintImage(PaintImage::CompletionState::PARTIALLY_DONE);
+  ASSERT_TRUE(image);
   temp_canvas->drawImage(image, 0, 0);
   canvas_->drawPicture(recorder.finishRecordingAsPicture());
 
   // Fully received the file and draw the PaintRecord again.
-  lazy_decoder_->SetData(data_, true);
+  lazy_decoder_->SetData(data_, true /* all_data_received */);
   image = CreatePaintImage();
   ASSERT_TRUE(image);
   temp_canvas = recorder.beginRecording(100, 100);
   temp_canvas->drawImage(image, 0, 0);
   canvas_->drawPicture(recorder.finishRecordingAsPicture());
   EXPECT_EQ(SkColorSetARGB(255, 255, 255, 255), bitmap_.getColor(0, 0));
+}
+
+TEST_F(DeferredImageDecoderTest, allDataReceivedPriorToDecodeNonIncrementally) {
+  // The image is received completely at once.
+  lazy_decoder_->SetData(data_, true /* all_data_received */);
+  PaintImage image = CreatePaintImage();
+  ASSERT_TRUE(image);
+  ASSERT_TRUE(image.GetImageHeaderMetadata());
+  EXPECT_TRUE(
+      image.GetImageHeaderMetadata()->all_data_received_prior_to_decode);
+}
+
+TEST_F(DeferredImageDecoderTest, allDataReceivedPriorToDecodeIncrementally) {
+  // The image is received in two parts, but a PaintImageGenerator is created
+  // only after all the data is received.
+  scoped_refptr<SharedBuffer> partial_data =
+      SharedBuffer::Create(data_->Data(), data_->size() - 10);
+  lazy_decoder_->SetData(partial_data, false /* all_data_received */);
+  lazy_decoder_->SetData(data_, true /* all_data_received */);
+  PaintImage image = CreatePaintImage();
+  ASSERT_TRUE(image);
+  ASSERT_TRUE(image.GetImageHeaderMetadata());
+  EXPECT_TRUE(
+      image.GetImageHeaderMetadata()->all_data_received_prior_to_decode);
+}
+
+TEST_F(DeferredImageDecoderTest, notAllDataReceivedPriorToDecode) {
+  // The image is received in two parts, and a PaintImageGenerator is created
+  // for each one. In real usage, it's likely that the software image decoder
+  // will start working with partial data.
+  scoped_refptr<SharedBuffer> partial_data =
+      SharedBuffer::Create(data_->Data(), data_->size() - 10);
+  lazy_decoder_->SetData(partial_data, false /* all_data_received */);
+  PaintImage image =
+      CreatePaintImage(PaintImage::CompletionState::PARTIALLY_DONE);
+  ASSERT_TRUE(image);
+  ASSERT_TRUE(image.GetImageHeaderMetadata());
+  EXPECT_FALSE(
+      image.GetImageHeaderMetadata()->all_data_received_prior_to_decode);
+
+  lazy_decoder_->SetData(data_, true /* all_data_received */);
+  image = CreatePaintImage();
+  ASSERT_TRUE(image);
+  ASSERT_TRUE(image.GetImageHeaderMetadata());
+  EXPECT_FALSE(
+      image.GetImageHeaderMetadata()->all_data_received_prior_to_decode);
 }
 
 static void RasterizeMain(cc::PaintCanvas* canvas, sk_sp<PaintRecord> record) {
@@ -209,7 +256,7 @@ static void RasterizeMain(cc::PaintCanvas* canvas, sk_sp<PaintRecord> record) {
 #define MAYBE_decodeOnOtherThread decodeOnOtherThread
 #endif
 TEST_F(DeferredImageDecoderTest, MAYBE_decodeOnOtherThread) {
-  lazy_decoder_->SetData(data_, true);
+  lazy_decoder_->SetData(data_, true /* all_data_received */);
   PaintImage image = CreatePaintImage();
   ASSERT_TRUE(image);
   EXPECT_EQ(1, image.width());
@@ -223,12 +270,12 @@ TEST_F(DeferredImageDecoderTest, MAYBE_decodeOnOtherThread) {
 
   // Create a thread to rasterize PaintRecord.
   std::unique_ptr<Thread> thread = Platform::Current()->CreateThread(
-      ThreadCreationParams(WebThreadType::kTestThread)
+      ThreadCreationParams(ThreadType::kTestThread)
           .SetThreadNameForTest("RasterThread"));
   PostCrossThreadTask(
       *thread->GetTaskRunner(), FROM_HERE,
-      CrossThreadBind(&RasterizeMain, CrossThreadUnretained(canvas_.get()),
-                      record));
+      CrossThreadBindOnce(&RasterizeMain, CrossThreadUnretained(canvas_.get()),
+                          record));
   thread.reset();
   EXPECT_EQ(0, decode_request_count_);
   EXPECT_EQ(SkColorSetARGB(255, 255, 255, 255), bitmap_.getColor(0, 0));
@@ -236,7 +283,7 @@ TEST_F(DeferredImageDecoderTest, MAYBE_decodeOnOtherThread) {
 
 TEST_F(DeferredImageDecoderTest, singleFrameImageLoading) {
   status_ = ImageFrame::kFramePartial;
-  lazy_decoder_->SetData(data_, false);
+  lazy_decoder_->SetData(data_, false /* all_data_received */);
   EXPECT_FALSE(lazy_decoder_->FrameIsReceivedAtIndex(0));
   PaintImage image = CreatePaintImage();
   ASSERT_TRUE(image);
@@ -245,7 +292,7 @@ TEST_F(DeferredImageDecoderTest, singleFrameImageLoading) {
 
   status_ = ImageFrame::kFrameComplete;
   data_->Append(" ", 1u);
-  lazy_decoder_->SetData(data_, true);
+  lazy_decoder_->SetData(data_, true /* all_data_received */);
   EXPECT_FALSE(actual_decoder_);
   EXPECT_TRUE(lazy_decoder_->FrameIsReceivedAtIndex(0));
 
@@ -257,51 +304,51 @@ TEST_F(DeferredImageDecoderTest, singleFrameImageLoading) {
 TEST_F(DeferredImageDecoderTest, multiFrameImageLoading) {
   repetition_count_ = 10;
   frame_count_ = 1;
-  frame_duration_ = TimeDelta::FromMilliseconds(10);
+  frame_duration_ = base::TimeDelta::FromMilliseconds(10);
   status_ = ImageFrame::kFramePartial;
-  lazy_decoder_->SetData(data_, false);
+  lazy_decoder_->SetData(data_, false /* all_data_received */);
 
   PaintImage image = CreatePaintImage();
   ASSERT_TRUE(image);
   EXPECT_FALSE(lazy_decoder_->FrameIsReceivedAtIndex(0));
   // Anything <= 10ms is clamped to 100ms. See the implementaiton for details.
-  EXPECT_EQ(TimeDelta::FromMilliseconds(100),
+  EXPECT_EQ(base::TimeDelta::FromMilliseconds(100),
             lazy_decoder_->FrameDurationAtIndex(0));
 
   frame_count_ = 2;
-  frame_duration_ = TimeDelta::FromMilliseconds(20);
+  frame_duration_ = base::TimeDelta::FromMilliseconds(20);
   status_ = ImageFrame::kFrameComplete;
   data_->Append(" ", 1u);
-  lazy_decoder_->SetData(data_, false);
+  lazy_decoder_->SetData(data_, false /* all_data_received */);
 
   image = CreatePaintImage();
   ASSERT_TRUE(image);
   EXPECT_TRUE(lazy_decoder_->FrameIsReceivedAtIndex(0));
   EXPECT_TRUE(lazy_decoder_->FrameIsReceivedAtIndex(1));
-  EXPECT_EQ(TimeDelta::FromMilliseconds(20),
+  EXPECT_EQ(base::TimeDelta::FromMilliseconds(20),
             lazy_decoder_->FrameDurationAtIndex(1));
   EXPECT_TRUE(actual_decoder_);
 
   frame_count_ = 3;
-  frame_duration_ = TimeDelta::FromMilliseconds(30);
+  frame_duration_ = base::TimeDelta::FromMilliseconds(30);
   status_ = ImageFrame::kFrameComplete;
-  lazy_decoder_->SetData(data_, true);
+  lazy_decoder_->SetData(data_, true /* all_data_received */);
   EXPECT_FALSE(actual_decoder_);
   EXPECT_TRUE(lazy_decoder_->FrameIsReceivedAtIndex(0));
   EXPECT_TRUE(lazy_decoder_->FrameIsReceivedAtIndex(1));
   EXPECT_TRUE(lazy_decoder_->FrameIsReceivedAtIndex(2));
-  EXPECT_EQ(TimeDelta::FromMilliseconds(100),
+  EXPECT_EQ(base::TimeDelta::FromMilliseconds(100),
             lazy_decoder_->FrameDurationAtIndex(0));
-  EXPECT_EQ(TimeDelta::FromMilliseconds(20),
+  EXPECT_EQ(base::TimeDelta::FromMilliseconds(20),
             lazy_decoder_->FrameDurationAtIndex(1));
-  EXPECT_EQ(TimeDelta::FromMilliseconds(30),
+  EXPECT_EQ(base::TimeDelta::FromMilliseconds(30),
             lazy_decoder_->FrameDurationAtIndex(2));
   EXPECT_EQ(10, lazy_decoder_->RepetitionCount());
 }
 
 TEST_F(DeferredImageDecoderTest, decodedSize) {
   decoded_size_ = IntSize(22, 33);
-  lazy_decoder_->SetData(data_, true);
+  lazy_decoder_->SetData(data_, true /* all_data_received */);
   PaintImage image = CreatePaintImage();
   ASSERT_TRUE(image);
   EXPECT_EQ(decoded_size_.Width(), image.width());
@@ -321,13 +368,13 @@ TEST_F(DeferredImageDecoderTest, decodedSize) {
 
 TEST_F(DeferredImageDecoderTest, smallerFrameCount) {
   frame_count_ = 1;
-  lazy_decoder_->SetData(data_, false);
+  lazy_decoder_->SetData(data_, false /* all_data_received */);
   EXPECT_EQ(frame_count_, lazy_decoder_->FrameCount());
   frame_count_ = 2;
-  lazy_decoder_->SetData(data_, false);
+  lazy_decoder_->SetData(data_, false /* all_data_received */);
   EXPECT_EQ(frame_count_, lazy_decoder_->FrameCount());
   frame_count_ = 0;
-  lazy_decoder_->SetData(data_, true);
+  lazy_decoder_->SetData(data_, true /* all_data_received */);
   EXPECT_EQ(frame_count_, lazy_decoder_->FrameCount());
 }
 
@@ -373,7 +420,7 @@ TEST_F(DeferredImageDecoderTest, data) {
   scoped_refptr<SharedBuffer> original_buffer =
       SharedBuffer::Create(data_->Data(), data_->size());
   EXPECT_EQ(original_buffer->size(), data_->size());
-  lazy_decoder_->SetData(original_buffer, false);
+  lazy_decoder_->SetData(original_buffer, false /* all_data_received */);
   scoped_refptr<SharedBuffer> new_buffer = lazy_decoder_->Data();
   EXPECT_EQ(original_buffer->size(), new_buffer->size());
   const Vector<char> original_data = original_buffer->CopyAs<Vector<char>>();
@@ -394,9 +441,9 @@ class MultiFrameDeferredImageDecoderTest : public DeferredImageDecoderTest {
 
 TEST_F(MultiFrameDeferredImageDecoderTest, PaintImage) {
   frame_count_ = 2;
-  frame_duration_ = TimeDelta::FromMilliseconds(20);
+  frame_duration_ = base::TimeDelta::FromMilliseconds(20);
   last_complete_frame_ = 0u;
-  lazy_decoder_->SetData(data_, false);
+  lazy_decoder_->SetData(data_, false /* all_data_received */);
 
   // Only the first frame is complete.
   PaintImage image = CreatePaintImage();
@@ -413,7 +460,7 @@ TEST_F(MultiFrameDeferredImageDecoderTest, PaintImage) {
 
   // Send some more data but the frame status remains the same.
   last_complete_frame_ = 0u;
-  lazy_decoder_->SetData(data_, false);
+  lazy_decoder_->SetData(data_, false /* all_data_received */);
   PaintImage updated_image = CreatePaintImage();
   ASSERT_TRUE(updated_image);
   EXPECT_EQ(updated_image.GetFrameMetadata().size(), 2u);
@@ -430,7 +477,7 @@ TEST_F(MultiFrameDeferredImageDecoderTest, PaintImage) {
 
   // Mark all frames complete.
   last_complete_frame_ = 1u;
-  lazy_decoder_->SetData(data_, true);
+  lazy_decoder_->SetData(data_, true /* all_data_received */);
   PaintImage complete_image = CreatePaintImage();
   ASSERT_TRUE(complete_image);
   EXPECT_EQ(complete_image.GetFrameMetadata().size(), 2u);
@@ -446,9 +493,9 @@ TEST_F(MultiFrameDeferredImageDecoderTest, PaintImage) {
 
 TEST_F(MultiFrameDeferredImageDecoderTest, FrameDurationOverride) {
   frame_count_ = 2;
-  frame_duration_ = TimeDelta::FromMilliseconds(5);
+  frame_duration_ = base::TimeDelta::FromMilliseconds(5);
   last_complete_frame_ = 1u;
-  lazy_decoder_->SetData(data_, true);
+  lazy_decoder_->SetData(data_, true /* all_data_received */);
 
   // If the frame duration is below a threshold, we override it to a constant
   // value of 100 ms.

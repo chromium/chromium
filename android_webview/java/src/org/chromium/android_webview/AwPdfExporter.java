@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 
 /**
  * Export the android webview as a PDF.
@@ -84,7 +85,8 @@ public class AwPdfExporter {
         mResultCallback = resultCallback;
         mAttributes = attributes;
         mFd = fd;
-        nativeExportToPdf(mNativeAwPdfExporter, mFd.getFd(), pages, cancellationSignal);
+        AwPdfExporterJni.get().exportToPdf(
+                mNativeAwPdfExporter, AwPdfExporter.this, mFd.getFd(), pages, cancellationSignal);
     }
 
     @CalledByNative
@@ -159,6 +161,9 @@ public class AwPdfExporter {
         return mAttributes.getMinMargins().getBottomMils();
     }
 
-    private native void nativeExportToPdf(
-            long nativeAwPdfExporter, int fd, int[] pages, CancellationSignal cancellationSignal);
+    @NativeMethods
+    interface Natives {
+        void exportToPdf(long nativeAwPdfExporter, AwPdfExporter caller, int fd, int[] pages,
+                CancellationSignal cancellationSignal);
+    }
 }

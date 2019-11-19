@@ -18,26 +18,31 @@ def effective_overload_set(F):  # pylint: disable=invalid-name
     """Returns the effective overload set of an overloaded function.
 
     An effective overload set is the set of overloaded functions + signatures
-    (type list of arguments, with optional and variadic arguments included or
-    not), and is used in the overload resolution algorithm.
+    derived from the set F by transforming it into the distinct permutations of
+    function invocations possible given the argument types. It is used by the
+    overload resolution algorithm.
 
-    For example, given input [f1(optional long x), f2(DOMString s)], the output
-    is informally [f1(), f1(long), f2(DOMString)], and formally
-    [(f1, [], []), (f1, [long], [optional]), (f2, [DOMString], [required])].
+    For example, given input:
+    [
+        f1(DOMString a),
+        f2(Node a, DOMString b, double... c),
+        f3(),
+        f4(Event a, DOMString b, optional DOMString c, double... d)
+    ]
 
-    Currently the optionality list is a list of |is_optional| booleans (True
-    means optional, False means required); to support variadics this needs to
-    be tri-valued as required, optional, or variadic.
+    The output is:
+    [
+        (f1, [DOMString], [required]),
+        (f2, [Node, DOMString], [required, required]),
+        (f2, [Node, DOMString, double], [required, required, variadic]),
+        (f2, [Node, DOMString, double, double], [required, required, variadic, variadic]),
+        (f3, [], []),
+        (f4, [Event, DOMString], [required, required],
+        (f4, [Event, DOMString, DOMString], [required, required, optional]),
+        (f4, [Event, DOMString, DOMString, double], [required, required, optional, variadic])
+    ]
 
-    Formally:
-    An effective overload set represents the allowable invocations for a
-    particular operation, constructor (specified with [Constructor] or
-    [NamedConstructor]), or callback function.
-
-    An additional argument N (argument count) is needed when overloading
-    variadics, but we don't use that currently.
-
-    Spec: http://heycam.github.io/webidl/#dfn-effective-overload-set
+    Spec: http://heycam.github.io/webidl/#dfn-effective-overload-set.
 
     Formally the input and output lists are sets, but methods are stored
     internally as dicts, which can't be stored in a set because they are not
@@ -45,64 +50,121 @@ def effective_overload_set(F):  # pylint: disable=invalid-name
 
     Arguments:
         F: list of overloads for a given callable name.
-        value_reader: an OverloadSetValueReader instance.
 
     Returns:
-        S: list of tuples of the form (callable, type list, optionality list).
+        S: list of tuples of the form:
+        (callable, tuple(type list), tuple(optionality list)).
     """
     # Code closely follows the algorithm in the spec, for clarity and
     # correctness, and hence is not very Pythonic.
 
-    # 1. Initialize S to ∅.
+    # 1. Let S be an ordered set.
     # (We use a list because we can't use a set, as noted above.)
     S = []  # pylint: disable=invalid-name
 
-    # 2. Let F be a set with elements as follows, according to the kind of
+    # 2. Let F be an ordered set with items as follows, according to the kind of
     # effective overload set:
     # (Passed as argument, nothing to do.)
 
-    # 3. & 4. (maxarg, m) are only needed for variadics, not used.
+    # 3. Let maxarg be the maximum number of arguments the operations,
+    # constructor extended attributes or callback functions in F are declared
+    # to take. For variadic operations and constructor extended attributes,
+    # the argument on which the ellipsis appears counts as a single argument.
+    # Note: So void f(long x, long... y); is considered to be declared to take
+    # two arguments.
+    # X is the "callable".
+    maxarg = max([len(X['arguments']) for X in F])
+
+    # 4. Let max be max(maxarg, N).
+    # Per: https://github.com/heycam/webidl/issues/600.
+
+    # The effective overload set as defined in the Web IDL spec is used at
+    # runtime as an input to the overload resolution algorithm. The runtime
+    # portion of the overload resolution algorithm includes coercing arguments
+    # into the proper type. To perform that coercion, the effective overload set
+    # must produce variadic entries in the type list to match the number of
+    # arguments supplied for the invocation (N) of the function.
+
+    # Our use of the effective overload set, however, is limited to determining
+    # which function overload should handle the invocation. Coercion of
+    # arguments is a separate problem making N irrelevant and max always equal
+    # to maxarg.
 
     # 5. For each operation, extended attribute or callback function X in F:
-    for X in F:  # X is the "callable". pylint: disable=invalid-name
+    for X in F:  # pylint: disable=invalid-name
+        # 5.1. Let arguments be the list of arguments X is declared to take.
         arguments = X['arguments']  # pylint: disable=invalid-name
-        # 1. Let n be the number of arguments X is declared to take.
+        # 5.2. Let n be the size of arguments.
         n = len(arguments)  # pylint: disable=invalid-name
-        # 2. Let t0..n−1 be a list of types, where ti is the type of X’s
-        # argument at index i.
-        # (“type list”)
-        t = tuple(argument['idl_type_object']  # pylint: disable=invalid-name
-                  for argument in arguments)
-        # 3. Let o0..n−1 be a list of optionality values, where oi is “variadic”
-        # if X’s argument at index i is a final, variadic argument, “optional”
-        # if the argument is optional, and “required” otherwise.
-        # (“optionality list”)
-        # (We’re just using a boolean for optional/variadic vs. required.)
-        o = tuple(argument['is_optional']  # pylint: disable=invalid-name
-                  or argument['is_variadic']
-                  for argument in arguments)
-        # 4. Add to S the tuple <X, t0..n−1, o0..n−1>.
-        S.append((X, t, o))
-        # 5. If X is declared to be variadic, then:
-        # (Not used, so not implemented.)
-        # 6. Initialize i to n−1.
+        # 5.3. Let types be a type list.
+        # 5.4. Let optionalityValues be an optionality list.
+        types, optionality_values = [], []
+
+        # 5.5. For each argument in arguments:
+        for argument in arguments:
+            # 5.5.1. Append the type of argument to types.
+            types.append(argument['idl_type_object'])
+            # 5.5.2. Append "variadic" to optionalityValues if argument is a
+            # final, variadic argument, "optional" if argument is optional,
+            # and "required" otherwise.
+            if argument['is_variadic']:
+                optionality_values.append('variadic')
+            elif argument['is_optional']:
+                optionality_values.append('optional')
+            else:
+                optionality_values.append('required')
+
+        # 5.6. Append the tuple (X, types, optionalityValues) to S.
+        S.append((X, tuple(types), tuple(optionality_values)))
+
+        # 5.7. If X is declared to be variadic, then:
+        if optionality_values and optionality_values[-1] == 'variadic':
+            # 5.7.1. For each i in the range n to max - 1, inclusive:
+            for i in range(n, maxarg):
+                # 5.7.1.1. Let t be a type list.
+                # 5.7.1.2. Let o be an optionality list.
+                type_list, optionality_list = [], []
+                # 5.7.1.3. For each j in the range 0 to n-1, inclusive:
+                for j in range(0, n):
+                    # 5.7.1.3.1. Append types[j] to t.
+                    type_list.append(types[j])
+                    # 5.7.1.3.2. Append optionalityValues[j] to o.
+                    optionality_list.append(optionality_values[j])
+                # 5.7.1.4. For each j in the range n to i, inclusive:
+                for j in range(n, i + 1):
+                    # 5.7.1.4.1. Append types[n - 1] to t.
+                    type_list.append(types[n - 1])
+                    # 5.7.1.4.2. Append "variadic" to o.
+                    optionality_list.append('variadic')
+                # 5.7.1.5. Append the tuple (X, t, o) to S.
+                S.append((X, tuple(type_list), tuple(optionality_list)))
+        # 5.8. Let i be n - 1.
         i = n - 1
-        # 7. While i ≥ 0:
-        # Spec bug (fencepost error); should be “While i > 0:”
-        # https://www.w3.org/Bugs/Public/show_bug.cgi?id=25590
-        while i > 0:
-            # 1. If argument i of X is not optional, then break this loop.
-            if not o[i]:
+
+        # 5.9. While i ≥ 0:
+        while i >= 0:
+            # 5.9.1. If arguments[i] is not optional (i.e., it is not marked as
+            # "optional" and is not a final, variadic argument), then break.
+            if optionality_values[i] == 'required':
                 break
-            # 2. Otherwise, add to S the tuple <X, t0..i−1, o0..i−1>.
-            S.append((X, t[:i], o[:i]))
-            # 3. Set i to i−1.
+
+            # 5.9.2. Let t be a type list.
+            # 5.9.3. Let o be an optionality list.
+            type_list, optionality_list = [], []
+            # 5.9.4. For each j in the range 0 to i-1, inclusive:
+            for j in range(0, i):
+                # 5.9.4.1. Append types[j] to t.
+                type_list.append(types[j])
+                # 5.9.4.2. Append optionalityValues[j] to o.
+                optionality_list.append(optionality_values[j])
+            # 5.9.5. Append the tuple (X, t, o) to S.
+            # Note: if i is 0, this means to add to S the tuple (X, « », « »);
+            # (where "« »" represents an empty list).
+            S.append((X, tuple(type_list), tuple(optionality_list)))
+            # 5.9.6. Set i to i−1.
             i = i - 1
-        # 8. If n > 0 and all arguments of X are optional, then add to S the
-        # tuple <X, (), ()> (where “()” represents the empty list).
-        if n > 0 and all(oi for oi in o):
-            S.append((X, (), ()))
-    # 6. The effective overload set is S.
+
+    # 6. Return S.
     return S
 
 

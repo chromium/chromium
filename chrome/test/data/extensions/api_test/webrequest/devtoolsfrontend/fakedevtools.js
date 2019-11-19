@@ -10,8 +10,8 @@ window.onload = function() {
         'Fake devtools loaded. Going to notify test extension via ' +
         completionUrl);
 
-    // Cannot do "location.href = completionUrl" because chrome-devtools://...
-    // disallows top-level navigation to a non-chrome-devtools:-URL.
+    // Cannot do "location.href = completionUrl" because devtools://...
+    // disallows top-level navigation to a non-devtools:-URL.
     new Image().src = completionUrl;
   }
 };

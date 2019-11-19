@@ -15,13 +15,13 @@ using blink::WebView;
 
 namespace visitedlink {
 
-VisitedLinkSlave::VisitedLinkSlave() : binding_(this), weak_factory_(this) {}
+VisitedLinkSlave::VisitedLinkSlave() = default;
 
 VisitedLinkSlave::~VisitedLinkSlave() {
   FreeTable();
 }
 
-base::Callback<void(mojom::VisitedLinkNotificationSinkRequest)>
+base::Callback<void(mojo::PendingReceiver<mojom::VisitedLinkNotificationSink>)>
 VisitedLinkSlave::GetBindCallback() {
   return base::Bind(&VisitedLinkSlave::Bind, weak_factory_.GetWeakPtr());
 }
@@ -80,8 +80,9 @@ void VisitedLinkSlave::FreeTable() {
   table_length_ = 0;
 }
 
-void VisitedLinkSlave::Bind(mojom::VisitedLinkNotificationSinkRequest request) {
-  binding_.Bind(std::move(request));
+void VisitedLinkSlave::Bind(
+    mojo::PendingReceiver<mojom::VisitedLinkNotificationSink> receiver) {
+  receiver_.Bind(std::move(receiver));
 }
 
 }  // namespace visitedlink

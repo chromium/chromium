@@ -8,8 +8,8 @@
 
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
+#include "base/test/task_environment.h"
 #include "components/cronet/native/test/test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -25,8 +25,9 @@ class BufferTest : public ::testing::Test {
                                        Cronet_BufferPtr buffer);
   bool on_destroy_called() const { return on_destroy_called_; }
 
-  // Provide a message loop for use by TestExecutor instances.
-  base::MessageLoop message_loop_;
+  // Provide a task environment for use by TestExecutor instances. Do not
+  // initialize the ThreadPool as this is done by the Cronet_Engine
+  base::test::SingleThreadTaskEnvironment task_environment_;
 
  private:
   void set_on_destroy_called(bool value) { on_destroy_called_ = value; }

@@ -319,9 +319,9 @@ class _Generator(object):
                      'static_cast<const base::DictionaryValue*>(&value);')
         if self._generate_error_messages:
           c.Append('std::set<std::string> keys;')
-      for prop in type_.properties.itervalues():
+      for prop in type_.properties.values():
         c.Concat(self._InitializePropertyToDefault(prop, 'out'))
-      for prop in type_.properties.itervalues():
+      for prop in type_.properties.values():
         if self._generate_error_messages:
           c.Append('keys.insert("%s");' % (prop.name))
         c.Concat(self._GenerateTypePopulateProperty(prop, 'dict', 'out'))
@@ -444,7 +444,7 @@ class _Generator(object):
     c = Code()
     (c.Sblock('std::unique_ptr<base::DictionaryValue> %s::ToValue() const {' %
           cpp_namespace)
-        .Append('std::unique_ptr<base::DictionaryValue> value('
+        .Append('std::unique_ptr<base::DictionaryValue> to_value_result('
                     'new base::DictionaryValue());')
         .Append()
     )
@@ -470,7 +470,7 @@ class _Generator(object):
       # it will always be a pointer.
       is_ptr = prop.optional or prop.type_.property_type == PropertyType.ANY
       c.Cblock(self._CreateValueFromType(
-          'value->SetWithoutPathExpansion("%s", %%s);' % prop.name,
+          'to_value_result->SetWithoutPathExpansion("%s", %%s);' % prop.name,
           prop.name,
           prop.type_,
           prop_var,
@@ -481,11 +481,11 @@ class _Generator(object):
 
     if type_.additional_properties is not None:
       if type_.additional_properties.property_type == PropertyType.ANY:
-        c.Append('value->MergeDictionary(&additional_properties);')
+        c.Append('to_value_result->MergeDictionary(&additional_properties);')
       else:
         (c.Sblock('for (const auto& it : additional_properties) {')
           .Cblock(self._CreateValueFromType(
-              'value->SetWithoutPathExpansion(it.first, %s);',
+              'to_value_result->SetWithoutPathExpansion(it.first, %s);',
               type_.additional_properties.name,
               type_.additional_properties,
               'it.second'))
@@ -493,7 +493,7 @@ class _Generator(object):
         )
 
     return (c.Append()
-             .Append('return value;')
+             .Append('return to_value_result;')
            .Eblock('}'))
 
   def _GenerateChoiceTypeToValue(self, cpp_namespace, type_):

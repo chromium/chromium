@@ -3,10 +3,7 @@
 # found in the LICENSE file.
 
 declare_args() {
-  # The svn revisions that belong to the git hashes in DEPS. Used to cause full
-  # rebuilds on libc++ rolls.
-  clang_format_svn_revision = "346566"
-  libcxx_svn_revision = "354212"
-  libcxxabi_svn_revision = "354284"
-  libunwind_svn_revision = "348981"
+  # The libc++ svn revision that belongs to the git hash in DEPS. Used to cause
+  # full rebuilds on libc++ rolls.
+  libcxx_svn_revision = "375504"
 }

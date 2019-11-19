@@ -47,7 +47,7 @@ runInAnimationWorklet(
   animation.play();
 
   if (window.testRunner) {
-    waitTwoAnimationFrames(_ => {
+    waitForAnimationFrames(3, _ => {
       testRunner.notifyDone();
     });
   }

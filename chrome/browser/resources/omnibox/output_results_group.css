@@ -19,7 +19,7 @@ output-results-details {
 
 table {
   --header-bg-color: #fafafa;
-  --row-hover-color: #fafafa;
+  --row-hover-color: #f5f5f5;
 
   background-color: white;
   border: 1px solid var(--border-color);
@@ -35,6 +35,7 @@ table {
 }
 
 .body tr {
+  /* sufficient to display 4 lines at 14px with 5px vert padding */
   height: 66px;
 }
 
@@ -43,7 +44,17 @@ table {
   max-height: 56px;
 }
 
+.body tr.thin {
+  /* sufficient to display 2 lines at 14px with 5px vert padding */
+  height: 38px;
+}
+
+.body tr.thin td > * {
+  max-height: 28px;
+}
+
 .body td {
+  white-space: pre-wrap;
   word-break: break-all;
 }
 
@@ -52,7 +63,7 @@ table {
 }
 
 .body td.elided:not(:hover) {
-  white-space: nowrap;
+  white-space: pre;
 }
 
 .body td:not(:hover) * {
@@ -73,7 +84,13 @@ table {
   white-space: pre-wrap;
 }
 
-.body tr:hover td {
+.body tr.thin:nth-child(even) {
+  background-color: #fafafa;
+}
+
+.body tr:hover,
+/* must explicitly select .thin tr's to override above .thin styling */
+.body tr.thin:hover {
   background-color: var(--row-hover-color);
 }
 
@@ -85,6 +102,10 @@ td {
 th {
   padding: 11px 5px 5px;
   text-align: start;
+}
+
+tbody.head th {
+  border-top: 1px solid var(--border-color);
 }
 
 .header-container {
@@ -212,6 +233,20 @@ th {
   color: red;
 }
 
+.cell-additional-info a {
+  background-image: url(../../../../third_party/blink/renderer/modules/media_controls/resources/ic_download.svg);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  display: block;
+  height: 16px;
+  width: 16px;
+}
+
+.cell-additional-info:not(:hover) a {
+  visibility: hidden;
+}
+
 /* boolean cells */
 
 .check-mark,
@@ -219,7 +254,6 @@ th {
   background-position: center;
   background-repeat: no-repeat;
   background-size: contain;
-  font-size: 0;
   height: 16px;
   width: 16px;
 }
@@ -266,10 +300,10 @@ img:not([src]),
 
 /* filter */
 
-.filtered-highlighted {
+.body tr.filtered-highlighted:not(:hover) {
   background-color: rgb(208, 240, 255);
 }
 
-.filtered-highlighted-nested {
+.body tr.filtered-highlighted:not(:hover) td.filtered-highlighted-nested {
   background-color: rgb(208, 255, 208);
 }

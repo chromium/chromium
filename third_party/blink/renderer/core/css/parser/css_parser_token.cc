@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/css/css_markup.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_property_parser.h"
+#include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -85,9 +86,10 @@ double CSSParserToken::NumericValue() const {
   return numeric_value_;
 }
 
-CSSPropertyID CSSParserToken::ParseAsUnresolvedCSSPropertyID() const {
+CSSPropertyID CSSParserToken::ParseAsUnresolvedCSSPropertyID(
+    CSSParserMode mode) const {
   DCHECK_EQ(type_, static_cast<unsigned>(kIdentToken));
-  return UnresolvedCSSPropertyID(Value());
+  return UnresolvedCSSPropertyID(Value(), mode);
 }
 
 AtRuleDescriptorID CSSParserToken::ParseAsAtRuleDescriptorID() const {
@@ -97,17 +99,17 @@ AtRuleDescriptorID CSSParserToken::ParseAsAtRuleDescriptorID() const {
 
 CSSValueID CSSParserToken::Id() const {
   if (type_ != kIdentToken)
-    return CSSValueInvalid;
+    return CSSValueID::kInvalid;
   if (id_ < 0)
-    id_ = CssValueKeywordID(Value());
+    id_ = static_cast<int>(CssValueKeywordID(Value()));
   return static_cast<CSSValueID>(id_);
 }
 
 CSSValueID CSSParserToken::FunctionId() const {
   if (type_ != kFunctionToken)
-    return CSSValueInvalid;
+    return CSSValueID::kInvalid;
   if (id_ < 0)
-    id_ = CssValueKeywordID(Value());
+    id_ = static_cast<int>(CssValueKeywordID(Value()));
   return static_cast<CSSValueID>(id_);
 }
 

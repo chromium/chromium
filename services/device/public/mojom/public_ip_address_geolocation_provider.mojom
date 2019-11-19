@@ -14,5 +14,5 @@ import "services/device/public/mojom/geolocation.mojom";
 // WARNING: DO NOT USE WITHOUT PRIVACY REVIEW.
 interface PublicIpAddressGeolocationProvider {
   CreateGeolocation(network.mojom.MutablePartialNetworkTrafficAnnotationTag tag,
-                    Geolocation& request);
+                    pending_receiver<Geolocation> receiver);
 };

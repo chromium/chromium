@@ -30,7 +30,7 @@ bool matchesOrigin(const url::Origin& origin, const GURL& url) {
 namespace password_manager {
 
 PasswordFormData CreateTestPasswordFormDataByOrigin(const char* origin_url) {
-  PasswordFormData data = {PasswordForm::SCHEME_HTML,
+  PasswordFormData data = {PasswordForm::Scheme::kHtml,
                            origin_url,
                            origin_url,
                            "login_element",

@@ -12,11 +12,13 @@ namespace ash {
 // enum, you should update DownEventMetric in
 // ash/metrics/pointer_metrics_recorder.h as well.
 enum class AppType {
-  OTHERS = 0,
+  NON_APP = 0,
   BROWSER,
   CHROME_APP,
   ARC_APP,
-  APP_TYPE_LAST = ARC_APP,
+  CROSTINI_APP,
+  SYSTEM_APP,
+  APP_TYPE_LAST = SYSTEM_APP,
 };
 
 const int kAppCount = static_cast<int>(AppType::APP_TYPE_LAST) + 1;

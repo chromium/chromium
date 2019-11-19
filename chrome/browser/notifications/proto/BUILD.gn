@@ -6,7 +6,10 @@ import("//third_party/protobuf/proto_library.gni")
 
 proto_library("proto") {
   sources = [
+    "client_state.proto",
     "icon.proto",
+    "impression.proto",
     "notification_data.proto",
+    "notification_entry.proto",
   ]
 }

@@ -19,6 +19,8 @@ TypeConverter<blink::ServiceWorkerStatusCode,
       return blink::ServiceWorkerStatusCode::kErrorEventWaitUntilRejected;
     case blink::mojom::ServiceWorkerEventStatus::ABORTED:
       return blink::ServiceWorkerStatusCode::kErrorAbort;
+    case blink::mojom::ServiceWorkerEventStatus::TIMEOUT:
+      return blink::ServiceWorkerStatusCode::kErrorTimeout;
   }
   NOTREACHED() << status;
   return blink::ServiceWorkerStatusCode::kErrorFailed;

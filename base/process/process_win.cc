@@ -9,10 +9,13 @@
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/process/kill.h"
-#include "base/test/clang_coverage.h"
 #include "base/threading/thread_restrictions.h"
 
 #include <windows.h>
+
+#if BUILDFLAG(CLANG_COVERAGE)
+#include "base/test/clang_coverage.h"
+#endif
 
 namespace {
 
@@ -162,10 +165,14 @@ bool Process::Terminate(int exit_code, bool wait) const {
       DPLOG(ERROR) << "Error waiting for process exit";
     Exited(exit_code);
   } else {
-    // The process can't be terminated, perhaps because it has already
-    // exited or is in the process of exiting. A non-zero timeout is necessary
-    // here for the same reasons as above.
-    DPLOG(ERROR) << "Unable to terminate process";
+    // The process can't be terminated, perhaps because it has already exited or
+    // is in the process of exiting. An error code of ERROR_ACCESS_DENIED is the
+    // undocumented-but-expected result if the process has already exited or
+    // started exiting when TerminateProcess is called, so don't print an error
+    // message in that case.
+    if (GetLastError() != ERROR_ACCESS_DENIED)
+      DPLOG(ERROR) << "Unable to terminate process";
+    // A non-zero timeout is necessary here for the same reasons as above.
     if (::WaitForSingleObject(Handle(), kWaitMs) == WAIT_OBJECT_0) {
       DWORD actual_exit;
       Exited(::GetExitCodeProcess(Handle(), &actual_exit) ? actual_exit

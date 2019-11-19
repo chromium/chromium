@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.instantapps;
 
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.content_public.browser.WebContents;
 
 /**
@@ -15,24 +16,27 @@ public class InstantAppsSettings {
      * Check whether the instant app at the given url should be opened by default.
      */
     public static boolean isInstantAppDefault(WebContents webContents, String url) {
-        return nativeGetInstantAppDefault(webContents, url);
+        return InstantAppsSettingsJni.get().getInstantAppDefault(webContents, url);
     }
 
     /**
      * Remember that the instant app at the given url should be opened by default.
      */
     public static void setInstantAppDefault(WebContents webContents, String url) {
-        nativeSetInstantAppDefault(webContents, url);
+        InstantAppsSettingsJni.get().setInstantAppDefault(webContents, url);
     }
 
     /**
      * Check whether the banner promoting an instant app should be shown.
      */
     public static boolean shouldShowBanner(WebContents webContents, String url) {
-        return nativeShouldShowBanner(webContents, url);
+        return InstantAppsSettingsJni.get().shouldShowBanner(webContents, url);
     }
 
-    private static native boolean nativeGetInstantAppDefault(WebContents webContents, String url);
-    private static native void nativeSetInstantAppDefault(WebContents webContents, String url);
-    private static native boolean nativeShouldShowBanner(WebContents webContents, String url);
+    @NativeMethods
+    interface Natives {
+        boolean getInstantAppDefault(WebContents webContents, String url);
+        void setInstantAppDefault(WebContents webContents, String url);
+        boolean shouldShowBanner(WebContents webContents, String url);
+    }
 }

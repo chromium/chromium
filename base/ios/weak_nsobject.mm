@@ -4,7 +4,6 @@
 
 #include "base/ios/weak_nsobject.h"
 
-#include "base/mac/scoped_nsautorelease_pool.h"
 #include "base/mac/scoped_nsobject.h"
 
 namespace {
@@ -34,23 +33,24 @@ WeakContainer::~WeakContainer() {}
 + (scoped_refptr<base::WeakContainer>)containerForObject:(id)object {
   if (object == nil)
     return nullptr;
-  // The autoreleasePool is needed here as the call to objc_getAssociatedObject
+  // The autoreleasepool is needed here as the call to objc_getAssociatedObject
   // returns an autoreleased object which is better released sooner than later.
-  base::mac::ScopedNSAutoreleasePool pool;
-  CRBWeakNSProtocolSentinel* sentinel =
-      objc_getAssociatedObject(object, &sentinelObserverKey_);
-  if (!sentinel) {
-    base::scoped_nsobject<CRBWeakNSProtocolSentinel> newSentinel(
-        [[CRBWeakNSProtocolSentinel alloc]
-            initWithContainer:new base::WeakContainer(object)]);
-    sentinel = newSentinel;
-    objc_setAssociatedObject(object, &sentinelObserverKey_, sentinel,
-                             OBJC_ASSOCIATION_RETAIN);
-    // The retain count is 2. One retain is due to the alloc, the other to the
-    // association with the weak object.
-    DCHECK_EQ(2u, [sentinel retainCount]);
+  @autoreleasepool {
+    CRBWeakNSProtocolSentinel* sentinel =
+        objc_getAssociatedObject(object, &sentinelObserverKey_);
+    if (!sentinel) {
+      base::scoped_nsobject<CRBWeakNSProtocolSentinel> newSentinel(
+          [[CRBWeakNSProtocolSentinel alloc]
+              initWithContainer:new base::WeakContainer(object)]);
+      sentinel = newSentinel;
+      objc_setAssociatedObject(object, &sentinelObserverKey_, sentinel,
+                               OBJC_ASSOCIATION_RETAIN);
+      // The retain count is 2. One retain is due to the alloc, the other to the
+      // association with the weak object.
+      DCHECK_EQ(2u, [sentinel retainCount]);
+    }
+    return [sentinel container];
   }
-  return [sentinel container];
 }
 
 - (id)initWithContainer:(scoped_refptr<base::WeakContainer>)container {

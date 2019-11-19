@@ -110,6 +110,8 @@ Error MapSystemError(logging::SystemErrorCode os_error) {
       return ERR_INSUFFICIENT_RESOURCES;
     case EMFILE:  // Too many open files.
       return ERR_INSUFFICIENT_RESOURCES;
+    case ENOPROTOOPT:  // Protocol option not supported.
+      return ERR_NOT_IMPLEMENTED;
 #if defined(OS_FUCHSIA)
     case EIO:
       // FDIO maps all unrecognized errors to EIO. If you see this message then

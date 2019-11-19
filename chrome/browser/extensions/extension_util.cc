@@ -21,7 +21,6 @@
 #include "chrome/browser/extensions/shared_module_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/webui/extensions/extension_icon_source.h"
 #include "chrome/browser/web_applications/extensions/bookmark_app_util.h"
 #include "chrome/common/chrome_features.h"
@@ -47,16 +46,13 @@
 
 #if defined(OS_CHROMEOS)
 #include "chrome/browser/chromeos/file_manager/app_id.h"
+#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #endif
 
 namespace extensions {
 namespace util {
 
 namespace {
-// The entry into the prefs used to flag an extension as installed by custodian.
-// It is relevant only for supervised users.
-const char kWasInstalledByCustodianPrefName[] = "was_installed_by_custodian";
-
 // Returns |extension_id|. See note below.
 std::string ReloadExtensionIfEnabled(const std::string& extension_id,
                                      content::BrowserContext* context) {
@@ -78,6 +74,25 @@ std::string ReloadExtensionIfEnabled(const std::string& extension_id,
 }
 
 }  // namespace
+
+bool SiteHasIsolatedStorage(const GURL& extension_site_url,
+                            content::BrowserContext* context) {
+  const Extension* extension = ExtensionRegistry::Get(context)
+                                   ->enabled_extensions()
+                                   .GetExtensionOrAppByURL(extension_site_url);
+
+#if defined(OS_CHROMEOS)
+  const bool is_policy_extension =
+      extension && Manifest::IsPolicyLocation(extension->location());
+  Profile* profile = Profile::FromBrowserContext(context);
+  if (profile && chromeos::ProfileHelper::IsSigninProfile(profile) &&
+      is_policy_extension) {
+    return true;
+  }
+#endif
+
+  return extension && AppIsolationInfo::HasIsolatedStorage(extension);
+}
 
 void SetIsIncognitoEnabled(const std::string& extension_id,
                            content::BrowserContext* context,
@@ -131,16 +146,6 @@ void SetIsIncognitoEnabled(const std::string& extension_id,
   }
 }
 
-bool CanCrossIncognito(const Extension* extension,
-                       content::BrowserContext* context) {
-  // We allow the extension to see events and data from another profile iff it
-  // uses "spanning" behavior and it has incognito access. "split" mode
-  // extensions only see events for a matching profile.
-  CHECK(extension);
-  return IsIncognitoEnabled(extension->id(), context) &&
-         !IncognitoInfo::IsSplitMode(extension);
-}
-
 bool CanLoadInIncognito(const Extension* extension,
                         content::BrowserContext* context) {
   CHECK(extension);
@@ -170,53 +175,6 @@ void SetAllowFileAccess(const std::string& extension_id,
   ExtensionPrefs::Get(context)->SetAllowFileAccess(extension_id, allow);
 
   ReloadExtensionIfEnabled(extension_id, context);
-}
-
-void SetWasInstalledByCustodian(const std::string& extension_id,
-                                content::BrowserContext* context,
-                                bool installed_by_custodian) {
-  if (installed_by_custodian == WasInstalledByCustodian(extension_id, context))
-    return;
-
-  ExtensionPrefs* prefs = ExtensionPrefs::Get(context);
-
-  prefs->UpdateExtensionPref(
-      extension_id, kWasInstalledByCustodianPrefName,
-      installed_by_custodian ? std::make_unique<base::Value>(true) : nullptr);
-  ExtensionService* service =
-      ExtensionSystem::Get(context)->extension_service();
-
-  if (!installed_by_custodian) {
-    // If installed_by_custodian changes to false, the extension may need to
-    // be unloaded now.
-    service->ReloadExtension(extension_id);
-    return;
-  }
-
-  ExtensionRegistry* registry = ExtensionRegistry::Get(context);
-  // If it is already enabled, do nothing.
-  if (registry->enabled_extensions().Contains(extension_id))
-    return;
-
-  // If the extension was disabled due to management policy, try to re-enable
-  // it. Example is a pre-installed extension that was disabled when a
-  // supervised user flag has been received.
-  // Note: EnableExtension will fail if the extension still needs to be disabled
-  // due to manangement policy.
-  if (registry->disabled_extensions().Contains(extension_id) &&
-      prefs->GetDisableReasons(extension_id) ==
-          disable_reason::DISABLE_BLOCKED_BY_POLICY) {
-    service->EnableExtension(extension_id);
-  }
-}
-
-bool WasInstalledByCustodian(const std::string& extension_id,
-                             content::BrowserContext* context) {
-  bool installed_by_custodian = false;
-  ExtensionPrefs* prefs = ExtensionPrefs::Get(context);
-  prefs->ReadPrefAsBoolean(extension_id, kWasInstalledByCustodianPrefName,
-                           &installed_by_custodian);
-  return installed_by_custodian;
 }
 
 bool IsAppLaunchable(const std::string& extension_id,
@@ -309,36 +267,10 @@ const gfx::ImageSkia& GetDefaultExtensionIcon() {
       IDR_EXTENSION_DEFAULT_ICON);
 }
 
-bool IsNewBookmarkAppsEnabled() {
-#if defined(OS_MACOSX)
-  return base::FeatureList::IsEnabled(features::kBookmarkApps) ||
-         base::FeatureList::IsEnabled(features::kAppBanners) ||
-         banners::AppBannerManager::IsExperimentalAppBannersEnabled();
-#else
-  return true;
-#endif
-}
-
-bool CanHostedAppsOpenInWindows() {
-#if defined(OS_MACOSX)
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-             ::switches::kEnableHostedAppsInWindows) ||
-         base::FeatureList::IsEnabled(features::kDesktopPWAWindowing);
-#else
-  return true;
-#endif
-}
-
-bool IsExtensionSupervised(const Extension* extension, Profile* profile) {
-  return WasInstalledByCustodian(extension->id(), profile) &&
-         profile->IsSupervised();
-}
-
 const Extension* GetInstalledPwaForUrl(
     content::BrowserContext* context,
     const GURL& url,
     base::Optional<LaunchContainer> launch_container_filter) {
-  DCHECK(base::FeatureList::IsEnabled(::features::kDesktopPWAWindowing));
   const ExtensionPrefs* prefs = ExtensionPrefs::Get(context);
   for (scoped_refptr<const Extension> app :
        ExtensionRegistry::Get(context)->enabled_extensions()) {
@@ -354,34 +286,6 @@ const Extension* GetInstalledPwaForUrl(
       return app.get();
   }
   return nullptr;
-}
-
-const Extension* GetPwaForSecureActiveTab(Browser* browser) {
-  switch (browser->location_bar_model()->GetSecurityLevel(true)) {
-    case security_state::SECURITY_LEVEL_COUNT:
-      NOTREACHED();
-      FALLTHROUGH;
-    case security_state::NONE:
-    case security_state::HTTP_SHOW_WARNING:
-    case security_state::DANGEROUS:
-      return nullptr;
-    case security_state::EV_SECURE:
-    case security_state::SECURE:
-    case security_state::SECURE_WITH_POLICY_INSTALLED_CERT:
-      break;
-  }
-  content::WebContents* web_contents =
-      browser->tab_strip_model()->GetActiveWebContents();
-  return GetInstalledPwaForUrl(
-      web_contents->GetBrowserContext(),
-      web_contents->GetMainFrame()->GetLastCommittedURL());
-}
-
-bool IsWebContentsInAppWindow(content::WebContents* web_contents) {
-  // TODO(loyso): Unify this check as a util (including
-  // MaybeCreateHostedAppController).
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
-  return browser && browser->hosted_app_controller();
 }
 
 }  // namespace util

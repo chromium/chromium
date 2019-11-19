@@ -16,9 +16,10 @@
 #include "base/macros.h"
 #include "build/build_config.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_utils.h"
+#include "extensions/browser/sandboxed_unpacker.h"
 #include "extensions/common/extension.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -139,12 +140,12 @@ class ExtensionServiceTestBase : public testing::Test {
   base::ScopedTempDir temp_dir_;
 
   // Destroying at_exit_manager_ will delete all LazyInstances, so it must come
-  // after thread_bundle_ in the destruction order.
+  // after task_environment_ in the destruction order.
   base::ShadowingAtExitManager at_exit_manager_;
 
   // The MessageLoop is used by RenderViewHostTestEnabler, so this must be
   // created before it.
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
 
   // Enable creation of WebContents without initializing a renderer.
   content::RenderViewHostTestEnabler rvh_test_enabler_;
@@ -180,6 +181,10 @@ class ExtensionServiceTestBase : public testing::Test {
   chromeos::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
   chromeos::ScopedTestUserManager test_user_manager_;
 #endif
+
+  // An override that ignores CRX3 publisher signatures.
+  SandboxedUnpacker::ScopedVerifierFormatOverrideForTest
+      verifier_format_override_;
 
   DISALLOW_COPY_AND_ASSIGN(ExtensionServiceTestBase);
 };

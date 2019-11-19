@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 window.onload = () => {
-  const FILES_APP_ORIGIN = 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj';
+  const FILES_APP_ORIGIN =
+      'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj';
   let messageSource;
 
   const content = document.querySelector('#content');
@@ -19,12 +20,14 @@ window.onload = () => {
       case 'html':
         content.textContent = '';
         contentChanged(null);
-        fetch(event.data.src).then((response) => {
-          return response.text();
-        }).then((text) => {
-          content.textContent = text;
-          contentChanged(text);
-        });
+        fetch(event.data.src)
+            .then((response) => {
+              return response.text();
+            })
+            .then((text) => {
+              content.textContent = text;
+              contentChanged(text);
+            });
         break;
       case 'audio':
       case 'video':
@@ -35,13 +38,15 @@ window.onload = () => {
         content.remove();
         content.onload = (e) => contentChanged(e.target.src);
         content.src = event.data.src;
-        content.decode().then(() => {
-            content.removeAttribute('generic-thumbnail');
-            document.body.appendChild(content);
-        }).catch(() => {
-            content.setAttribute('generic-thumbnail', 'image');
-            document.body.appendChild(content);
-        });
+        content.decode()
+            .then(() => {
+              content.removeAttribute('generic-thumbnail');
+              document.body.appendChild(content);
+            })
+            .catch(() => {
+              content.setAttribute('generic-thumbnail', 'image');
+              document.body.appendChild(content);
+            });
         break;
       default:
         content.onload = (e) => contentChanged(e.target.src);

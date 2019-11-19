@@ -101,16 +101,6 @@ class TestSignatureMatcher : public SignatureMatcherAPI {
     matched_version_informations_[NormalizePath(path)] = information;
   }
 
-  size_t CountMatchDigestCalled() {
-    base::AutoLock lock(lock_);
-    return matched_digests_.size();
-  }
-
-  bool IsMatchDigestCalled(const base::FilePath& path) {
-    base::AutoLock lock(lock_);
-    return matched_digests_.find(NormalizePath(path)) != matched_digests_.end();
-  }
-
   void MatchBaseName(const base::FilePath& path,
                      const std::string& identifier) {
     base::AutoLock lock(lock_);

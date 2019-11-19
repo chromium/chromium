@@ -13,7 +13,7 @@ namespace mojo {
 template <>
 struct StructTraits<network::mojom::HttpRequestHeadersDataView,
                     blink::HTTPHeaderMap> {
-  static WTF::Vector<network::mojom::blink::HttpRequestHeaderKeyValuePair>
+  static WTF::Vector<network::mojom::blink::HttpRequestHeaderKeyValuePairPtr>
   headers(const blink::HTTPHeaderMap& map);
 
   static bool Read(network::mojom::HttpRequestHeadersDataView data,

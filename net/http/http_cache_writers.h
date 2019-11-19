@@ -283,7 +283,7 @@ class NET_EXPORT_PRIVATE HttpCache::Writers {
   // end of DoLoop().
   base::OnceClosure cache_callback_;  // Callback for cache_.
 
-  base::WeakPtrFactory<Writers> weak_factory_;
+  base::WeakPtrFactory<Writers> weak_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(Writers);
 };
 

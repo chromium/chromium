@@ -12,6 +12,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "mojo/core/broker_host.h"
 #include "mojo/core/channel.h"
 #include "mojo/core/configuration.h"
 #include "mojo/core/core.h"
@@ -33,14 +34,15 @@ enum class MessageType : uint32_t {
   REQUEST_PORT_MERGE,
   REQUEST_INTRODUCTION,
   INTRODUCE,
-#if defined(OS_WIN) || (defined(OS_MACOSX) && !defined(OS_IOS))
+#if defined(OS_WIN)
   RELAY_EVENT_MESSAGE,
 #endif
   BROADCAST_EVENT,
-#if defined(OS_WIN) || (defined(OS_MACOSX) && !defined(OS_IOS))
+#if defined(OS_WIN)
   EVENT_MESSAGE_FROM_RELAY,
 #endif
   ACCEPT_PEER,
+  BIND_BROKER_HOST,
 };
 
 struct Header {
@@ -110,7 +112,13 @@ struct IntroductionData {
   ports::NodeName name;
 };
 
-#if defined(OS_WIN) || (defined(OS_MACOSX) && !defined(OS_IOS))
+// This message is just a PlatformHandle. The data struct here has only a
+// padding field to ensure an aligned, non-zero-length payload.
+struct BindBrokerHostData {
+  uint64_t padding;
+};
+
+#if defined(OS_WIN)
 // This struct is followed by the full payload of a message to be relayed.
 struct RelayEventMessageData {
   ports::NodeName destination;
@@ -373,7 +381,22 @@ void NodeChannel::Broadcast(Channel::MessagePtr message) {
   WriteChannelMessage(std::move(broadcast_message));
 }
 
-#if defined(OS_WIN) || (defined(OS_MACOSX) && !defined(OS_IOS))
+void NodeChannel::BindBrokerHost(PlatformHandle broker_host_handle) {
+#if !defined(OS_MACOSX) && !defined(OS_NACL) && !defined(OS_FUCHSIA)
+  DCHECK(broker_host_handle.is_valid());
+  BindBrokerHostData* data;
+  std::vector<PlatformHandle> handles;
+  handles.push_back(std::move(broker_host_handle));
+  Channel::MessagePtr message =
+      CreateMessage(MessageType::BIND_BROKER_HOST, sizeof(BindBrokerHostData),
+                    handles.size(), &data);
+  data->padding = 0;
+  message->SetHandles(std::move(handles));
+  WriteChannelMessage(std::move(message));
+#endif
+}
+
+#if defined(OS_WIN)
 void NodeChannel::RelayEventMessage(const ports::NodeName& destination,
                                     Channel::MessagePtr message) {
 #if defined(OS_WIN)
@@ -437,7 +460,7 @@ void NodeChannel::EventMessageFromRelay(const ports::NodeName& source,
   relayed_message->SetHandles(message->TakeHandles());
   WriteChannelMessage(std::move(relayed_message));
 }
-#endif  // defined(OS_WIN) || (defined(OS_MACOSX) && !defined(OS_IOS))
+#endif  // defined(OS_WIN)
 
 NodeChannel::NodeChannel(Delegate* delegate,
                          ConnectionParams connection_params,
@@ -459,6 +482,17 @@ NodeChannel::NodeChannel(Delegate* delegate,
 
 NodeChannel::~NodeChannel() {
   ShutDown();
+}
+
+void NodeChannel::CreateAndBindLocalBrokerHost(
+    PlatformHandle broker_host_handle) {
+#if !defined(OS_MACOSX) && !defined(OS_NACL) && !defined(OS_FUCHSIA)
+  // Self-owned.
+  ConnectionParams connection_params(
+      PlatformChannelEndpoint(std::move(broker_host_handle)));
+  new BrokerHost(remote_process_handle_.get(), std::move(connection_params),
+                 process_error_callback_);
+#endif
 }
 
 void NodeChannel::OnChannelMessage(const void* payload,
@@ -606,7 +640,7 @@ void NodeChannel::OnChannelMessage(const void* payload,
       break;
     }
 
-#if defined(OS_WIN) || (defined(OS_MACOSX) && !defined(OS_IOS))
+#if defined(OS_WIN)
     case MessageType::RELAY_EVENT_MESSAGE: {
       base::ProcessHandle from_process;
       {
@@ -630,9 +664,6 @@ void NodeChannel::OnChannelMessage(const void* payload,
           DLOG(ERROR) << "Dropping invalid relay message.";
           break;
         }
-#if defined(OS_MACOSX) && !defined(OS_IOS)
-        message->SetHandles(std::move(handles));
-#endif
         delegate_->OnRelayEventMessage(remote_node_name_, from_process,
                                        data->destination, std::move(message));
         return;
@@ -656,8 +687,8 @@ void NodeChannel::OnChannelMessage(const void* payload,
       return;
     }
 
-#if defined(OS_WIN) || (defined(OS_MACOSX) && !defined(OS_IOS))
-    case MessageType::EVENT_MESSAGE_FROM_RELAY:
+#if defined(OS_WIN)
+    case MessageType::EVENT_MESSAGE_FROM_RELAY: {
       const EventMessageFromRelayData* data;
       if (GetMessagePayload(payload, payload_size, &data)) {
         size_t num_bytes = payload_size - sizeof(*data);
@@ -675,8 +706,8 @@ void NodeChannel::OnChannelMessage(const void* payload,
         return;
       }
       break;
-
-#endif  // defined(OS_WIN) || (defined(OS_MACOSX) && !defined(OS_IOS))
+    }
+#endif  // defined(OS_WIN)
 
     case MessageType::ACCEPT_PEER: {
       const AcceptPeerData* data;
@@ -687,6 +718,13 @@ void NodeChannel::OnChannelMessage(const void* payload,
       }
       break;
     }
+
+    case MessageType::BIND_BROKER_HOST:
+      if (handles.size() == 1) {
+        CreateAndBindLocalBrokerHost(std::move(handles[0]));
+        return;
+      }
+      break;
 
     default:
       // Ignore unrecognized message types, allowing for future extensibility.

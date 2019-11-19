@@ -13,10 +13,11 @@
 #include "base/command_line.h"
 #include "base/files/file.h"
 #include "base/i18n/icu_util.h"
-#include "base/message_loop/message_loop.h"
+#include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/task/task_scheduler/task_scheduler.h"
+#include "base/task/single_thread_task_executor.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
 #include "mojo/core/embedder/embedder.h"
@@ -56,10 +57,14 @@ using remoting::protocol::PairingRegistry;
 namespace remoting {
 
 int Me2MeNativeMessagingHostMain(int argc, char** argv) {
-  // This object instance is required by Chrome code (such as MessageLoop).
+  // This object instance is required by Chrome code (such as
+  // SingleThreadTaskExecutor).
   base::AtExitManager exit_manager;
 
   base::CommandLine::Init(argc, argv);
+  const base::CommandLine* command_line =
+      base::CommandLine::ForCurrentProcess();
+
   remoting::InitHostLogging();
 
 #if defined(OS_MACOSX)
@@ -88,25 +93,42 @@ int Me2MeNativeMessagingHostMain(int argc, char** argv) {
   }
 #endif  // defined(REMOTING_ENABLE_BREAKPAD)
 
-  base::TaskScheduler::CreateAndStartWithDefaultParams("Me2Me");
+  base::ThreadPoolInstance::CreateAndStartWithDefaultParams("Me2Me");
 
   mojo::core::Init();
 
   // An IO thread is needed for the pairing registry and URL context getter.
   base::Thread io_thread("io_thread");
   io_thread.StartWithOptions(
-      base::Thread::Options(base::MessageLoop::TYPE_IO, 0));
+      base::Thread::Options(base::MessagePumpType::IO, 0));
 
-  base::MessageLoopForUI message_loop;
+  base::SingleThreadTaskExecutor main_task_executor(base::MessagePumpType::UI);
   base::RunLoop run_loop;
 
   scoped_refptr<DaemonController> daemon_controller =
       DaemonController::Create();
 
+#if defined(OS_MACOSX)
+  if (command_line->HasSwitch(kCheckPermissionSwitchName)) {
+    int exit_code;
+    daemon_controller->CheckPermission(
+        /* it2me */ false,
+        // base::BindOnce cannot bind a capturing lambda, so the "captured"
+        // parameters are bound manually. This is safe because the run-loop is
+        // run to completion within this scope.
+        base::BindOnce(
+            [](int* exit_code, base::RunLoop* run_loop, bool perm) {
+              *exit_code = (perm ? kSuccessExitCode : kNoPermissionExitCode);
+              run_loop->Quit();
+            },
+            &exit_code, &run_loop));
+    run_loop.Run();
+    return exit_code;
+  }
+#endif  // defined(OS_MACOSX)
+
   // Pass handle of the native view to the controller so that the UAC prompts
   // are focused properly.
-  const base::CommandLine* command_line =
-      base::CommandLine::ForCurrentProcess();
   int64_t native_view_handle = 0;
   if (command_line->HasSwitch(kParentWindowSwitchName)) {
     std::string native_view =
@@ -251,7 +273,7 @@ int Me2MeNativeMessagingHostMain(int argc, char** argv) {
 
   std::unique_ptr<ChromotingHostContext> context =
       ChromotingHostContext::Create(new remoting::AutoThreadTaskRunner(
-          message_loop.task_runner(), run_loop.QuitClosure()));
+          main_task_executor.task_runner(), run_loop.QuitClosure()));
 
   // Create the native messaging host.
   std::unique_ptr<extensions::NativeMessageHost> host(
@@ -268,7 +290,7 @@ int Me2MeNativeMessagingHostMain(int argc, char** argv) {
   run_loop.Run();
 
   // Block until tasks blocking shutdown have completed their execution.
-  base::TaskScheduler::GetInstance()->Shutdown();
+  base::ThreadPoolInstance::Get()->Shutdown();
 
   return kSuccessExitCode;
 }

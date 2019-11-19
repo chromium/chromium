@@ -1,0 +1,17 @@
+Name: One Euro Filter
+Short Name: 1€ filter
+URL: http://cristal.univ-lille.fr/~casiez/1euro/
+Version: 0
+License: BSD
+License File: LICENSE
+Security Critical: no
+
+Description:
+1€ Filter is a simple speed-based low-pass filter for noisy input in
+interactive systems.
+
+Local Modifications:
+1. Separate source code from headers
+2. Add namespaces
+3. Add tests
+4. Added Clone and Reset functions

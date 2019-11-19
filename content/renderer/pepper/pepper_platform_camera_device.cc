@@ -4,16 +4,17 @@
 
 #include "content/renderer/pepper/pepper_platform_camera_device.h"
 
+#include <utility>
+
 #include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/logging.h"
-#include "content/renderer/media/video_capture_impl_manager.h"
 #include "content/renderer/pepper/gfx_conversion.h"
 #include "content/renderer/pepper/pepper_camera_device_host.h"
 #include "content/renderer/pepper/pepper_media_device_manager.h"
 #include "content/renderer/render_frame_impl.h"
 #include "content/renderer/render_thread_impl.h"
 #include "media/base/bind_to_current_loop.h"
+#include "third_party/blink/public/platform/modules/video_capture/web_video_capture_impl_manager.h"
 
 namespace content {
 
@@ -23,30 +24,28 @@ PepperPlatformCameraDevice::PepperPlatformCameraDevice(
     PepperCameraDeviceHost* handler)
     : render_frame_id_(render_frame_id),
       device_id_(device_id),
-      session_id_(0),
       handler_(handler),
       pending_open_device_(false),
-      pending_open_device_id_(-1),
-      weak_factory_(this) {
+      pending_open_device_id_(-1) {
   // We need to open the device and obtain the label and session ID before
   // initializing.
   PepperMediaDeviceManager* const device_manager = GetMediaDeviceManager();
   if (device_manager) {
     pending_open_device_id_ = device_manager->OpenDevice(
         PP_DEVICETYPE_DEV_VIDEOCAPTURE, device_id, handler->pp_instance(),
-        base::Bind(&PepperPlatformCameraDevice::OnDeviceOpened,
-                   weak_factory_.GetWeakPtr()));
+        base::BindOnce(&PepperPlatformCameraDevice::OnDeviceOpened,
+                       weak_factory_.GetWeakPtr()));
     pending_open_device_ = true;
   }
 }
 
 void PepperPlatformCameraDevice::GetSupportedVideoCaptureFormats() {
   DCHECK(thread_checker_.CalledOnValidThread());
-  VideoCaptureImplManager* manager =
+  blink::WebVideoCaptureImplManager* manager =
       RenderThreadImpl::current()->video_capture_impl_manager();
   manager->GetDeviceSupportedFormats(
       session_id_,
-      media::BindToCurrentLoop(base::Bind(
+      media::BindToCurrentLoop(base::BindOnce(
           &PepperPlatformCameraDevice::OnDeviceSupportedFormatsEnumerated,
           weak_factory_.GetWeakPtr())));
 }
@@ -54,8 +53,8 @@ void PepperPlatformCameraDevice::GetSupportedVideoCaptureFormats() {
 void PepperPlatformCameraDevice::DetachEventHandler() {
   DCHECK(thread_checker_.CalledOnValidThread());
   handler_ = nullptr;
-  if (!release_device_cb_.is_null()) {
-    base::ResetAndReturn(&release_device_cb_).Run();
+  if (release_device_cb_) {
+    std::move(release_device_cb_).Run();
   }
   if (!label_.empty()) {
     PepperMediaDeviceManager* const device_manager = GetMediaDeviceManager();
@@ -74,7 +73,7 @@ void PepperPlatformCameraDevice::DetachEventHandler() {
 
 PepperPlatformCameraDevice::~PepperPlatformCameraDevice() {
   DCHECK(thread_checker_.CalledOnValidThread());
-  DCHECK(release_device_cb_.is_null());
+  DCHECK(!release_device_cb_);
   DCHECK(label_.empty());
   DCHECK(!pending_open_device_);
 }
@@ -94,7 +93,7 @@ void PepperPlatformCameraDevice::OnDeviceOpened(int request_id,
     label_ = label;
     session_id_ =
         device_manager->GetSessionID(PP_DEVICETYPE_DEV_VIDEOCAPTURE, label);
-    VideoCaptureImplManager* manager =
+    blink::WebVideoCaptureImplManager* manager =
         RenderThreadImpl::current()->video_capture_impl_manager();
     release_device_cb_ = manager->UseDevice(session_id_);
   }

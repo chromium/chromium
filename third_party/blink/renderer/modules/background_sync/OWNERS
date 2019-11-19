@@ -1,5 +1,2 @@
-iclelland@chromium.org
-jkarlin@chromium.org
-peter@chromium.org
-
+file://chrome/browser/background_sync/OWNERS
 # COMPONENT: Blink>BackgroundSync

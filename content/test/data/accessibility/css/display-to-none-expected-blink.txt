@@ -1,0 +1,10 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer
+++++++++staticText name='Cats'
+++++++++++inlineTextBox name='Cats'
+++++++genericContainer ignored invisible name='checkbox'
+++++++genericContainer
+++++++++staticText name='done'
+++++++++++inlineTextBox name='done'

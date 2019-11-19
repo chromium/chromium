@@ -10,7 +10,7 @@ Valid Certificate
         <DIV >
 The connection to this site is using a valid, trusted server certificate.
         </DIV>
-        <BUTTON class=security-certificate-button text-button type=button >
+        <BUTTON class=security-certificate-button text-button type=button role=button aria-haspopup=true >
 View certificate
         </BUTTON>
     </DIV>

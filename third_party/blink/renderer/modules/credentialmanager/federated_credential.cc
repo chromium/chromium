@@ -37,8 +37,8 @@ FederatedCredential* FederatedCredential::Create(
     scoped_refptr<const SecurityOrigin> provider,
     const String& name,
     const KURL& icon_url) {
-  return MakeGarbageCollected<FederatedCredential>(id, provider, name,
-                                                   icon_url);
+  return MakeGarbageCollected<FederatedCredential>(
+      id, provider, name, icon_url.IsEmpty() ? blink::KURL() : icon_url);
 }
 
 FederatedCredential::FederatedCredential(

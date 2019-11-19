@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/chromeos/policy/auto_enrollment_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
+#include "components/policy/core/common/cloud/device_management_service.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 #include "third_party/protobuf/src/google/protobuf/repeated_field.h"
 
@@ -26,9 +27,6 @@ class DeviceManagementResponse;
 }
 
 namespace policy {
-
-class DeviceManagementService;
-class DeviceManagementRequestJob;
 
 // Interacts with the device management service and determines whether this
 // machine should automatically enter the Enterprise Enrollment screen during
@@ -91,6 +89,7 @@ class AutoEnrollmentClientImpl
 
  private:
   typedef bool (AutoEnrollmentClientImpl::*RequestCompletionHandler)(
+      policy::DeviceManagementService::Job*,
       DeviceManagementStatus,
       int,
       const enterprise_management::DeviceManagementResponse&);
@@ -133,18 +132,21 @@ class AutoEnrollmentClientImpl
   // NextStep().
   void HandleRequestCompletion(
       RequestCompletionHandler handler,
+      policy::DeviceManagementService::Job* job,
       DeviceManagementStatus status,
       int net_error,
       const enterprise_management::DeviceManagementResponse& response);
 
   // Parses the server response to a bucket download request.
   bool OnBucketDownloadRequestCompletion(
+      policy::DeviceManagementService::Job* job,
       DeviceManagementStatus status,
       int net_error,
       const enterprise_management::DeviceManagementResponse& response);
 
   // Parses the server response to a device state request.
   bool OnDeviceStateRequestCompletion(
+      policy::DeviceManagementService::Job* job,
       DeviceManagementStatus status,
       int net_error,
       const enterprise_management::DeviceManagementResponse& response);
@@ -192,7 +194,7 @@ class AutoEnrollmentClientImpl
 
   // Used to communicate with the device management service.
   DeviceManagementService* device_management_service_;
-  std::unique_ptr<DeviceManagementRequestJob> request_job_;
+  std::unique_ptr<DeviceManagementService::Job> request_job_;
 
   // PrefService where the protocol's results are cached.
   PrefService* local_state_;

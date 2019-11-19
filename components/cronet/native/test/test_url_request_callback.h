@@ -67,8 +67,13 @@ class TestUrlRequestCallback {
     int64_t received_byte_count = 0;
   };
 
+  // TODO(crbug.com/969048): Make these private with public accessors.
   std::vector<std::unique_ptr<UrlResponseInfo>> redirect_response_info_list_;
   std::vector<std::string> redirect_url_list_;
+  // Owned by UrlRequest, only valid until UrlRequest is destroyed.
+  Cronet_UrlResponseInfoPtr original_response_info_ = nullptr;
+  // |response_info_| is copied from |original_response_info_|, valid after
+  // UrlRequest is destroyed.
   std::unique_ptr<UrlResponseInfo> response_info_;
   // Owned by UrlRequest, only valid until UrlRequest is destroyed.
   Cronet_ErrorPtr last_error_ = nullptr;

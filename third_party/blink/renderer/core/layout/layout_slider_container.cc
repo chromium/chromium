@@ -56,7 +56,7 @@ inline static bool HasVerticalAppearance(HTMLInputElement* input) {
   if (!input->GetLayoutObject() || !input->GetLayoutObject()->Style())
     return false;
   const ComputedStyle& slider_style = input->GetLayoutObject()->StyleRef();
-  return slider_style.Appearance() == kSliderVerticalPart;
+  return slider_style.EffectiveAppearance() == kSliderVerticalPart;
 }
 
 void LayoutSliderContainer::ComputeLogicalHeight(

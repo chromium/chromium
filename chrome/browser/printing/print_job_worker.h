@@ -13,7 +13,6 @@
 #include "base/threading/thread.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/browser/printing/printer_query.h"
 #include "content/public/browser/browser_thread.h"
 #include "printing/page_number.h"
 #include "printing/print_job_constants.h"
@@ -24,7 +23,6 @@ namespace printing {
 class PrintJob;
 class PrintedDocument;
 class PrintedPage;
-class PrinterQuery;
 
 // Worker thread code. It manages the PrintingContext, which can be blocking
 // and/or run a message loop. This is the object that generates most
@@ -33,9 +31,11 @@ class PrinterQuery;
 // PrintJob always outlives its worker instance.
 class PrintJobWorker {
  public:
-  PrintJobWorker(int render_process_id,
-                 int render_frame_id,
-                 PrinterQuery* query);
+  using SettingsCallback =
+      base::OnceCallback<void(std::unique_ptr<PrintSettings>,
+                              PrintingContext::Result)>;
+
+  PrintJobWorker(int render_process_id, int render_frame_id);
   virtual ~PrintJobWorker();
 
   void SetPrintJob(PrintJob* print_job);
@@ -51,15 +51,16 @@ class PrintJobWorker {
                    bool has_selection,
                    MarginType margin_type,
                    bool is_scripted,
-                   bool is_modifiable);
+                   bool is_modifiable,
+                   SettingsCallback callback);
 
   // Set the new print settings from a dictionary value.
-  void SetSettings(base::Value new_settings);
+  void SetSettings(base::Value new_settings, SettingsCallback callback);
 
 #if defined(OS_CHROMEOS)
   // Set the new print settings from a POD type.
-  void SetSettingsFromPOD(
-      std::unique_ptr<printing::PrintSettings> new_settings);
+  void SetSettingsFromPOD(std::unique_ptr<printing::PrintSettings> new_settings,
+                          SettingsCallback callback);
 #endif
 
   /* The following functions may only be called after calling SetPrintJob(). */
@@ -130,27 +131,29 @@ class PrintJobWorker {
   // Asks the user for print settings. Must be called on the UI thread.
   // Required on Mac and Linux. Windows can display UI from non-main threads,
   // but sticks with this for consistency.
-  void GetSettingsWithUI(
-      int document_page_count,
-      bool has_selection,
-      bool is_scripted);
+  void GetSettingsWithUI(int document_page_count,
+                         bool has_selection,
+                         bool is_scripted,
+                         SettingsCallback callback);
 
   // Called on the UI thread to update the print settings.
-  void UpdatePrintSettings(base::Value new_settings);
+  void UpdatePrintSettings(base::Value new_settings, SettingsCallback callback);
 
 #if defined(OS_CHROMEOS)
   // Called on the UI thread to update the print settings.
   void UpdatePrintSettingsFromPOD(
-      std::unique_ptr<printing::PrintSettings> new_settings);
+      std::unique_ptr<printing::PrintSettings> new_settings,
+      SettingsCallback callback);
 #endif
 
-  // Reports settings back to |query_|.
-  void GetSettingsDone(PrintingContext::Result result);
+  // Reports settings back to |callback|.
+  void GetSettingsDone(SettingsCallback callback,
+                       PrintingContext::Result result);
 
   // Use the default settings. When using GTK+ or Mac, this can still end up
   // displaying a dialog. So this needs to happen from the UI thread on these
   // systems.
-  void UseDefaultSettings();
+  void UseDefaultSettings(SettingsCallback callback);
 
   // Printing context delegate.
   const std::unique_ptr<PrintingContext::Delegate> printing_context_delegate_;
@@ -160,10 +163,6 @@ class PrintJobWorker {
 
   // The printed document. Only has read-only access.
   scoped_refptr<PrintedDocument> document_;
-
-  // The printer query that owns this worker thread at creation. It will own
-  // the object until DetachWorker() is called.
-  PrinterQuery* query_ = nullptr;
 
   // The print job owning this worker thread. It is guaranteed to outlive this
   // object and should be set with SetPrintJob().
@@ -179,7 +178,7 @@ class PrintJobWorker {
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   // Used to generate a WeakPtr for callbacks.
-  base::WeakPtrFactory<PrintJobWorker> weak_factory_;
+  base::WeakPtrFactory<PrintJobWorker> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PrintJobWorker);
 };

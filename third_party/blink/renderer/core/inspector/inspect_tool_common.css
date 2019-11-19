@@ -1,0 +1,41 @@
+/*
+ * Copyright 2019 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+body {
+    margin: 0;
+    padding: 0;
+    font-size: 13px;
+    color: #222;
+}
+
+body.platform-linux {
+    font-family: Roboto, Ubuntu, Arial, sans-serif;
+}
+
+body.platform-mac {
+    color: rgb(48, 57, 66);
+    font-family: '.SFNSDisplay-Regular', 'Helvetica Neue', 'Lucida Grande', sans-serif;
+}
+
+body.platform-windows {
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+}
+
+.fill {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+}
+
+#canvas {
+    pointer-events: none;
+}
+
+.hidden {
+    display: none !important;
+}

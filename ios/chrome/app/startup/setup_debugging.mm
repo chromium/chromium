@@ -18,9 +18,34 @@ namespace {
 
 #if !defined(NDEBUG)
 
+// Swizzles [UIColor colorNamed:] to trigger a DCHECK if an invalid color is
+// attempted to be loaded.
+void SwizzleUIColorColorNamed() {
+  // The original implementation of [UIColor colorNamed:].
+  // Called by the new implementation.
+  static IMP originalImp;
+  IMP* originalImpPtr = &originalImp;
+
+  id swizzleBlock = ^(id self, NSString* colorName) {
+    // Call the original [UIColor colorNamed:] method.
+    UIColor* (*imp)(id, SEL, id) =
+        (UIColor * (*)(id, SEL, id)) * originalImpPtr;
+    Class aClass = objc_getClass("UIColor");
+    UIColor* color = imp(aClass, @selector(colorNamed:), colorName);
+    DCHECK(color) << "Missing color: " << base::SysNSStringToUTF8(colorName);
+    return color;
+  };
+
+  Method method = class_getClassMethod([UIColor class], @selector(colorNamed:));
+  DCHECK(method);
+
+  IMP blockImp = imp_implementationWithBlock(swizzleBlock);
+  originalImp = method_setImplementation(method, blockImp);
+}
+
 // Swizzles [UIImage imageNamed:] to trigger a DCHECK if an invalid image is
 // attempted to be loaded.
-void swizzleUIImageImageNamed() {
+void SwizzleUIImageImageNamed() {
   // Retained by the swizzle block.
   NSMutableSet* whiteList = [NSMutableSet set];
 
@@ -61,7 +86,7 @@ void swizzleUIImageImageNamed() {
   originalImp = method_setImplementation(method, blockImp);
 }
 
-#endif  // !defined(NDEBUG) && TARGET_IPHONE_SIMULATOR
+#endif  // !defined(NDEBUG)
 
 }  // namespace
 
@@ -75,8 +100,9 @@ void swizzleUIImageImageNamed() {
 #endif
 
 #if !defined(NDEBUG)
-  // Enable the detection of missing image assets.
-  swizzleUIImageImageNamed();
+  // Enable the detection of missing assets.
+  SwizzleUIColorColorNamed();
+  SwizzleUIImageImageNamed();
 #endif
 }
 

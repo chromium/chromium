@@ -1,0 +1,88 @@
+<link rel="import" href="../../html/polymer.html">
+
+<link rel="import" href="../hidden_style_css.html">
+<link rel="import" href="../shared_vars_css.html">
+
+<dom-module id="cr-tabs">
+  <template>
+    <style include="cr-hidden-style">
+      :host {
+        --cr-tabs-height: 48px;
+        cursor: pointer;
+        display: flex;
+        flex-direction: row;
+        font-size: var(--cr-tabs-font-size, 14px);
+        font-weight: 500;
+        height: var(--cr-tabs-height);
+        position: relative;
+        user-select: none;
+      }
+
+      .tab {
+        align-items: center;
+        color: var(--cr-secondary-text-color);
+        display: flex;
+        flex: auto;
+        height: 100%;
+        justify-content: center;
+        opacity: .8;
+        transition: opacity 100ms cubic-bezier(.4, 0, 1, 1);
+      }
+
+      :host(:not(.keyboard-focus)) .tab {
+        outline: none;
+      }
+
+      .selected {
+        color: var(--google-blue-600);
+        opacity: 1;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        .selected {
+          color: var(--google-blue-refresh-300);
+        }
+      }
+
+      .selected:focus {
+        font-weight: 700;
+      }
+
+      #selectionBar {
+        --cr-tabs-selection-bar-width: 2px;
+        border-bottom-color: var(--google-blue-600);
+        border-bottom-style: solid;
+        border-bottom-width: var(--cr-tabs-selection-bar-width);
+        height: 0;
+        left: 0;
+        position: absolute;
+        right: 0;
+        top: calc(var(--cr-tabs-height) - var(--cr-tabs-selection-bar-width));
+        transform: scale(0);
+        transform-origin: left center;
+        transition: transform;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        #selectionBar {
+          border-bottom-color: var(--google-blue-refresh-300);
+        }
+      }
+
+      #selectionBar.expand {
+        transition-duration: 150ms;
+        transition-timing-function: cubic-bezier(.4, 0, 1, 1);
+      }
+
+      #selectionBar.contract {
+        transition-duration: 180ms;
+        transition-timing-function: cubic-bezier(0, 0, .2, 1);
+      }
+    </style>
+    <template is="dom-repeat" items="[[tabNames]]" on-dom-change="updateUi_">
+      <div class="tab" role="tab" on-click="onTabClick_">[[item]]</div>
+    </template>
+    <div id="selectionBar"></div>
+  </template>
+  <script src="cr_tabs.js"></script>
+</dom-module>

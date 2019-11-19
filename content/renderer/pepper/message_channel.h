@@ -194,13 +194,13 @@ class MessageChannel :
 
   // A callback to invoke at shutdown to ensure we unregister ourselves as
   // Observers for sync messages.
-  base::Closure unregister_observer_callback_;
+  base::OnceClosure unregister_observer_callback_;
 
   v8::StdGlobalValueMap<std::string, v8::FunctionTemplate> template_cache_;
 
   // This is used to ensure pending tasks will not fire after this object is
   // destroyed.
-  base::WeakPtrFactory<MessageChannel> weak_ptr_factory_;
+  base::WeakPtrFactory<MessageChannel> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(MessageChannel);
 };

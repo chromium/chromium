@@ -5,7 +5,6 @@
 #include "third_party/blink/public/web/web_page_importance_signals.h"
 
 #include "third_party/blink/public/web/web_view_client.h"
-#include "third_party/blink/renderer/platform/histogram.h"
 
 namespace blink {
 
@@ -22,11 +21,6 @@ void WebPageImportanceSignals::SetHadFormInteraction() {
 }
 
 void WebPageImportanceSignals::OnCommitLoad() {
-  DEFINE_STATIC_LOCAL(
-      EnumerationHistogram, had_form_interaction_histogram,
-      ("PageImportanceSignals.HadFormInteraction.OnCommitLoad", 2));
-  had_form_interaction_histogram.Count(had_form_interaction_);
-
   Reset();
 }
 

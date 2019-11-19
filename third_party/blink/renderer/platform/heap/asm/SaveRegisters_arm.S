@@ -30,8 +30,8 @@
 
 
 /*
- * typedef void (*PushAllRegistersCallback)(SafePointBarrier*, ThreadState*, intptr_t*);
- * extern "C" void PushAllRegisters(SafePointBarrier*, ThreadState*, PushAllRegistersCallback)
+ * typedef void (*PushAllRegistersCallback)(ThreadState*, intptr_t*);
+ * extern "C" void PushAllRegisters(ThreadState*, PushAllRegistersCallback)
  */
 
 .type PushAllRegisters, %function
@@ -63,13 +63,13 @@ PushAllRegisters:
 #endif
         /* Push all callee-saved registers and save return address. */
         push {r4-r11, lr}
-        /* Pass the two first arguments unchanged (r0, r1)
+        /* Pass the first argument unchanged (r0)
          * and pass the stack pointer after pushing callee-saved
          * registers to the callback function.
          */
-        mov r3, r2
-        mov r2, sp
-        blx r3
+        mov r2, r1
+        mov r1, sp
+        blx r2
         /* Discard all the registers, and pop lr into pc which returns
          * and switches mode if needed.
          */

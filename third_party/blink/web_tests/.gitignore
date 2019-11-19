@@ -1,2 +1,3 @@
+wpt_internal/MANIFEST.json
 # Ignore compiled java tests:
 java/*.class

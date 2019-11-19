@@ -41,7 +41,7 @@ void FakeBluetoothGattServiceClient::Properties::Get(
     dbus::PropertyBase* property,
     dbus::PropertySet::GetCallback callback) {
   VLOG(1) << "Get " << property->name();
-  callback.Run(false);
+  std::move(callback).Run(false);
 }
 
 void FakeBluetoothGattServiceClient::Properties::GetAll() {
@@ -50,13 +50,12 @@ void FakeBluetoothGattServiceClient::Properties::GetAll() {
 
 void FakeBluetoothGattServiceClient::Properties::Set(
     dbus::PropertyBase* property,
-    dbus::PropertySet::GetCallback callback) {
+    dbus::PropertySet::SetCallback callback) {
   VLOG(1) << "Set " << property->name();
-  callback.Run(false);
+  std::move(callback).Run(false);
 }
 
-FakeBluetoothGattServiceClient::FakeBluetoothGattServiceClient()
-    : weak_ptr_factory_(this) {}
+FakeBluetoothGattServiceClient::FakeBluetoothGattServiceClient() {}
 
 FakeBluetoothGattServiceClient::~FakeBluetoothGattServiceClient() = default;
 

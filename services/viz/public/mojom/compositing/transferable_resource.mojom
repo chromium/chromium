@@ -1,0 +1,51 @@
+// Copyright 2016 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module viz.mojom;
+
+import "gpu/ipc/common/mailbox_holder.mojom";
+import "gpu/ipc/common/vulkan_ycbcr_info.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+import "ui/gfx/mojom/buffer_types.mojom";
+import "ui/gfx/mojom/color_space.mojom";
+
+// Corresponds to viz::ResourceFormat.
+enum ResourceFormat {
+  RGBA_8888,
+  RGBA_4444,
+  BGRA_8888,
+  ALPHA_8,
+  LUMINANCE_8,
+  RGB_565,
+  BGR_565,
+  ETC1,
+  RED_8,
+  RG_88,
+  LUMINANCE_F16,
+  RGBA_F16,
+  R16_EXT,
+  RGBX_8888,
+  BGRX_8888,
+  RGBX_1010102,
+  BGRX_1010102,
+  YVU_420,
+  YUV_420_BIPLANAR,
+  P010,
+};
+
+// See components/viz/common/resources/transferable_resource.h.
+struct TransferableResource {
+  uint32 id;
+  ResourceFormat format;
+  uint32 filter;
+  gfx.mojom.Size size;
+  gpu.mojom.MailboxHolder mailbox_holder;
+  bool read_lock_fences_enabled;
+  bool is_software;
+  bool is_overlay_candidate;
+  bool is_backed_by_surface_texture;
+  bool wants_promotion_hint;
+  gfx.mojom.ColorSpace color_space;
+  gpu.mojom.VulkanYCbCrInfo ? ycbcr_info;
+};

@@ -10,10 +10,6 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 
-namespace network {
-class SharedURLLoaderFactory;
-}
-
 // A class that gives access to the Chromoting service.
 namespace remoting {
 
@@ -35,9 +31,8 @@ class ServiceClient {
    protected:
     virtual ~Delegate() {}
   };
-  ServiceClient(
-      const std::string& chromoting_hosts_url,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+
+  explicit ServiceClient(const std::string& remoting_server_endpoint);
   ~ServiceClient();
 
   // Register a host.

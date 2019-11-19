@@ -6,6 +6,12 @@ Running: init
 Running: revealNode
 Node revealed in the Elements panel
 
+Running: revealRemovedNode
+Removed node not revealed
+
+Running: revealNodeWithRemovedParent
+Node with removed parent not revealed
+
 Running: revealUILocation
 UILocation bar.js:2:1 revealed in the Sources panel
 

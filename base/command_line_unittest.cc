@@ -13,6 +13,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -107,14 +108,14 @@ TEST(CommandLineTest, CommandLineConstructor) {
 
 TEST(CommandLineTest, CommandLineFromString) {
 #if defined(OS_WIN)
-  CommandLine cl = CommandLine::FromString(StrCat(
-      {STRING16_LITERAL("program --foo= -bAr  /Spaetzel=pierogi /Baz flim "),
-       STRING16_LITERAL("--other-switches=\"--dog=canine --cat=feline\" "),
-       STRING16_LITERAL("-spaetzle=Crepe   -=loosevalue  FLAN "),
-       STRING16_LITERAL("--input-translation=\"45\"--output-rotation "),
-       STRING16_LITERAL("--quotes="), kTrickyQuoted, STRING16_LITERAL(" "),
-       STRING16_LITERAL("-- -- --not-a-switch "),
-       STRING16_LITERAL("\"in the time of submarines...\"")}));
+  CommandLine cl = CommandLine::FromString(
+      L"program --foo= -bAr  /Spaetzel=pierogi /Baz flim "
+      L"--other-switches=\"--dog=canine --cat=feline\" "
+      L"-spaetzle=Crepe   -=loosevalue  FLAN "
+      L"--input-translation=\"45\"--output-rotation "
+      L"--quotes=" +
+      kTrickyQuoted +
+      L" -- -- --not-a-switch \"in the time of submarines...\"");
 
   EXPECT_FALSE(cl.GetCommandLineString().empty());
   EXPECT_FALSE(cl.HasSwitch("cruller"));
@@ -171,7 +172,7 @@ TEST(CommandLineTest, CommandLineFromString) {
 // Tests behavior with an empty input string.
 TEST(CommandLineTest, EmptyString) {
 #if defined(OS_WIN)
-  CommandLine cl_from_string = CommandLine::FromString(string16());
+  CommandLine cl_from_string = CommandLine::FromString(std::wstring());
   EXPECT_TRUE(cl_from_string.GetCommandLineString().empty());
   EXPECT_TRUE(cl_from_string.GetProgram().empty());
   EXPECT_EQ(1U, cl_from_string.argv().size());
@@ -204,11 +205,11 @@ TEST(CommandLineTest, GetArgumentsString) {
   cl.AppendArg(kFifthArgName);
 
 #if defined(OS_WIN)
-  CommandLine::StringType expected_first_arg(UTF8ToUTF16(kFirstArgName));
-  CommandLine::StringType expected_second_arg(UTF8ToUTF16(kSecondArgName));
-  CommandLine::StringType expected_third_arg(UTF8ToUTF16(kThirdArgName));
-  CommandLine::StringType expected_fourth_arg(UTF8ToUTF16(kFourthArgName));
-  CommandLine::StringType expected_fifth_arg(UTF8ToUTF16(kFifthArgName));
+  CommandLine::StringType expected_first_arg(UTF8ToWide(kFirstArgName));
+  CommandLine::StringType expected_second_arg(UTF8ToWide(kSecondArgName));
+  CommandLine::StringType expected_third_arg(UTF8ToWide(kThirdArgName));
+  CommandLine::StringType expected_fourth_arg(UTF8ToWide(kFourthArgName));
+  CommandLine::StringType expected_fifth_arg(UTF8ToWide(kFifthArgName));
 #elif defined(OS_POSIX) || defined(OS_FUCHSIA)
   CommandLine::StringType expected_first_arg(kFirstArgName);
   CommandLine::StringType expected_second_arg(kSecondArgName);
@@ -292,15 +293,16 @@ TEST(CommandLineTest, AppendSwitches) {
 
 #if defined(OS_WIN)
   EXPECT_EQ(
-      StrCat({STRING16_LITERAL("Program "), STRING16_LITERAL("--switch1 "),
-              STRING16_LITERAL("--switch2=value "),
-              STRING16_LITERAL("--switch3=\"a value with spaces\" "),
-              STRING16_LITERAL("--switch4=\"\\\"a value with quotes\\\"\" "),
-              // Even though the switches are unique, appending can add
-              // repeat switches to argv.
-              STRING16_LITERAL("--quotes=\"\\\"a value with quotes\\\"\" "),
-              STRING16_LITERAL("--quotes=\""), kTrickyQuoted,
-              STRING16_LITERAL("\"")}),
+      L"Program "
+      L"--switch1 "
+      L"--switch2=value "
+      L"--switch3=\"a value with spaces\" "
+      L"--switch4=\"\\\"a value with quotes\\\"\" "
+      // Even though the switches are unique, appending can add repeat
+      // switches to argv.
+      L"--quotes=\"\\\"a value with quotes\\\"\" "
+      L"--quotes=\"" +
+          kTrickyQuoted + L"\"",
       cl.GetCommandLineString());
 #endif
 }
@@ -357,12 +359,12 @@ TEST(CommandLineTest, AppendArguments) {
 // against regressions.
 TEST(CommandLineTest, ProgramQuotes) {
   // Check that quotes are not added for paths without spaces.
-  const FilePath kProgram(STRING16_LITERAL("Program"));
+  const FilePath kProgram(L"Program");
   CommandLine cl_program(kProgram);
   EXPECT_EQ(kProgram.value(), cl_program.GetProgram().value());
   EXPECT_EQ(kProgram.value(), cl_program.GetCommandLineString());
 
-  const FilePath kProgramPath(STRING16_LITERAL("Program Path"));
+  const FilePath kProgramPath(L"Program Path");
 
   // Check that quotes are not returned from GetProgram().
   CommandLine cl_program_path(kProgramPath);
@@ -370,13 +372,12 @@ TEST(CommandLineTest, ProgramQuotes) {
 
   // Check that quotes are added to command line string paths containing spaces.
   CommandLine::StringType cmd_string(cl_program_path.GetCommandLineString());
-  EXPECT_EQ(STRING16_LITERAL("\"Program Path\""), cmd_string);
+  EXPECT_EQ(L"\"Program Path\"", cmd_string);
 
   // Check the optional quoting of placeholders in programs.
-  CommandLine cl_quote_placeholder(FilePath(STRING16_LITERAL("%1")));
-  EXPECT_EQ(STRING16_LITERAL("%1"),
-            cl_quote_placeholder.GetCommandLineString());
-  EXPECT_EQ(STRING16_LITERAL("\"%1\""),
+  CommandLine cl_quote_placeholder(FilePath(L"%1"));
+  EXPECT_EQ(L"%1", cl_quote_placeholder.GetCommandLineString());
+  EXPECT_EQ(L"\"%1\"",
             cl_quote_placeholder.GetCommandLineStringWithPlaceholders());
 }
 #endif
@@ -441,9 +442,9 @@ TEST(CommandLineTest, PrependComplexWrapper) {
 }
 
 TEST(CommandLineTest, RemoveSwitch) {
-  std::string switch1 = "switch1";
-  std::string switch2 = "switch2";
-  std::string value2 = "value";
+  const std::string switch1 = "switch1";
+  const std::string switch2 = "switch2";
+  const std::string value2 = "value";
 
   CommandLine cl(FilePath(FILE_PATH_LITERAL("Program")));
 
@@ -453,12 +454,127 @@ TEST(CommandLineTest, RemoveSwitch) {
   EXPECT_TRUE(cl.HasSwitch(switch1));
   EXPECT_TRUE(cl.HasSwitch(switch2));
   EXPECT_EQ(value2, cl.GetSwitchValueASCII(switch2));
+  EXPECT_THAT(cl.argv(),
+              testing::ElementsAre(FILE_PATH_LITERAL("Program"),
+                                   FILE_PATH_LITERAL("--switch1"),
+                                   FILE_PATH_LITERAL("--switch2=value")));
 
   cl.RemoveSwitch(switch1);
 
   EXPECT_FALSE(cl.HasSwitch(switch1));
   EXPECT_TRUE(cl.HasSwitch(switch2));
   EXPECT_EQ(value2, cl.GetSwitchValueASCII(switch2));
+  EXPECT_THAT(cl.argv(),
+              testing::ElementsAre(FILE_PATH_LITERAL("Program"),
+                                   FILE_PATH_LITERAL("--switch2=value")));
+}
+
+TEST(CommandLineTest, RemoveSwitchWithValue) {
+  const std::string switch1 = "switch1";
+  const std::string switch2 = "switch2";
+  const std::string value2 = "value";
+
+  CommandLine cl(FilePath(FILE_PATH_LITERAL("Program")));
+
+  cl.AppendSwitch(switch1);
+  cl.AppendSwitchASCII(switch2, value2);
+
+  EXPECT_TRUE(cl.HasSwitch(switch1));
+  EXPECT_TRUE(cl.HasSwitch(switch2));
+  EXPECT_EQ(value2, cl.GetSwitchValueASCII(switch2));
+  EXPECT_THAT(cl.argv(),
+              testing::ElementsAre(FILE_PATH_LITERAL("Program"),
+                                   FILE_PATH_LITERAL("--switch1"),
+                                   FILE_PATH_LITERAL("--switch2=value")));
+
+  cl.RemoveSwitch(switch2);
+
+  EXPECT_TRUE(cl.HasSwitch(switch1));
+  EXPECT_FALSE(cl.HasSwitch(switch2));
+  EXPECT_THAT(cl.argv(), testing::ElementsAre(FILE_PATH_LITERAL("Program"),
+                                              FILE_PATH_LITERAL("--switch1")));
+}
+
+TEST(CommandLineTest, RemoveSwitchDropsMultipleSameSwitches) {
+  const std::string switch1 = "switch1";
+  const std::string value2 = "value2";
+
+  CommandLine cl(FilePath(FILE_PATH_LITERAL("Program")));
+
+  cl.AppendSwitch(switch1);
+  cl.AppendSwitchASCII(switch1, value2);
+
+  EXPECT_TRUE(cl.HasSwitch(switch1));
+  EXPECT_EQ(value2, cl.GetSwitchValueASCII(switch1));
+  EXPECT_THAT(cl.argv(),
+              testing::ElementsAre(FILE_PATH_LITERAL("Program"),
+                                   FILE_PATH_LITERAL("--switch1"),
+                                   FILE_PATH_LITERAL("--switch1=value2")));
+
+  cl.RemoveSwitch(switch1);
+
+  EXPECT_FALSE(cl.HasSwitch(switch1));
+  EXPECT_THAT(cl.argv(), testing::ElementsAre(FILE_PATH_LITERAL("Program")));
+}
+
+TEST(CommandLineTest, AppendAndRemoveSwitchWithDefaultPrefix) {
+  CommandLine cl(FilePath(FILE_PATH_LITERAL("Program")));
+
+  cl.AppendSwitch("foo");
+  EXPECT_THAT(cl.argv(), testing::ElementsAre(FILE_PATH_LITERAL("Program"),
+                                              FILE_PATH_LITERAL("--foo")));
+  EXPECT_EQ(0u, cl.GetArgs().size());
+
+  cl.RemoveSwitch("foo");
+  EXPECT_THAT(cl.argv(), testing::ElementsAre(FILE_PATH_LITERAL("Program")));
+  EXPECT_EQ(0u, cl.GetArgs().size());
+}
+
+TEST(CommandLineTest, AppendAndRemoveSwitchWithAlternativePrefix) {
+  CommandLine cl(FilePath(FILE_PATH_LITERAL("Program")));
+
+  cl.AppendSwitch("-foo");
+  EXPECT_THAT(cl.argv(), testing::ElementsAre(FILE_PATH_LITERAL("Program"),
+                                              FILE_PATH_LITERAL("-foo")));
+  EXPECT_EQ(0u, cl.GetArgs().size());
+
+  cl.RemoveSwitch("foo");
+  EXPECT_THAT(cl.argv(), testing::ElementsAre(FILE_PATH_LITERAL("Program")));
+  EXPECT_EQ(0u, cl.GetArgs().size());
+}
+
+TEST(CommandLineTest, AppendAndRemoveSwitchPreservesOtherSwitchesAndArgs) {
+  CommandLine cl(FilePath(FILE_PATH_LITERAL("Program")));
+
+  cl.AppendSwitch("foo");
+  cl.AppendSwitch("bar");
+  cl.AppendArg("arg");
+  EXPECT_THAT(cl.argv(), testing::ElementsAre(FILE_PATH_LITERAL("Program"),
+                                              FILE_PATH_LITERAL("--foo"),
+                                              FILE_PATH_LITERAL("--bar"),
+                                              FILE_PATH_LITERAL("arg")));
+  EXPECT_THAT(cl.GetArgs(), testing::ElementsAre(FILE_PATH_LITERAL("arg")));
+
+  cl.RemoveSwitch("foo");
+  EXPECT_THAT(cl.argv(), testing::ElementsAre(FILE_PATH_LITERAL("Program"),
+                                              FILE_PATH_LITERAL("--bar"),
+                                              FILE_PATH_LITERAL("arg")));
+  EXPECT_THAT(cl.GetArgs(), testing::ElementsAre(FILE_PATH_LITERAL("arg")));
+}
+
+TEST(CommandLineTest, MultipleSameSwitch) {
+  const CommandLine::CharType* argv[] = {
+      FILE_PATH_LITERAL("program"),
+      FILE_PATH_LITERAL("--foo=one"),  // --foo first time
+      FILE_PATH_LITERAL("-baz"),
+      FILE_PATH_LITERAL("--foo=two")  // --foo second time
+  };
+  CommandLine cl(size(argv), argv);
+
+  EXPECT_TRUE(cl.HasSwitch("foo"));
+  EXPECT_TRUE(cl.HasSwitch("baz"));
+
+  EXPECT_EQ("two", cl.GetSwitchValueASCII("foo"));
 }
 
 } // namespace base

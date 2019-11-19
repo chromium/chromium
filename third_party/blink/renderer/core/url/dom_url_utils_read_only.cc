@@ -26,22 +26,16 @@
 
 #include "third_party/blink/renderer/core/url/dom_url_utils_read_only.h"
 
-#include "third_party/blink/renderer/bindings/core/v8/usv_string_or_trusted_url.h"
-#include "third_party/blink/renderer/core/trustedtypes/trusted_url.h"
 #include "third_party/blink/renderer/platform/weborigin/known_ports.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
 namespace blink {
 
-String DOMURLUtilsReadOnly::href(ExceptionState&) {
+String DOMURLUtilsReadOnly::href() {
   const KURL& kurl = Url();
   if (kurl.IsNull())
     return Input();
   return kurl.GetString();
-}
-
-void DOMURLUtilsReadOnly::href(USVStringOrTrustedURL& result) {
-  result.SetUSVString(href());
 }
 
 String DOMURLUtilsReadOnly::origin(const KURL& kurl) {

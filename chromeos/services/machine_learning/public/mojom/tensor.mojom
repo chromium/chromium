@@ -6,10 +6,12 @@
 // This module is derived from the Feature proto definition of TensorFlow.
 // See /tensorflow/core/example/feature.proto in the TensorFlow code.
 
-// NOTE: This mojom should be kept in sync with the copy in Chromium OS's repo
-// in src/platform2/ml/mojom/.
-// Example: A backwards-compatible interface change can be made in Chromium OS
-// first, then replicated and used here later.
+// NOTE: This mojom exists in two places and must be kept in sync:
+//       Chromium:  //chromeos/services/machine_learning/public/mojom/
+//       Chrome OS: src/platform2/ml/mojom/
+// Example: A backwards-compatible mojom change (and corresponding
+// implementation change) can be made in Chrome OS first, then replicated to the
+// client (Chromium) later.
 
 module chromeos.machine_learning.mojom;
 

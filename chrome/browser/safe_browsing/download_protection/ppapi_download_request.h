@@ -66,7 +66,7 @@ class PPAPIDownloadRequest {
       const base::FilePath& default_file_path,
       const std::vector<base::FilePath::StringType>& alternate_extensions,
       Profile* profile,
-      const CheckDownloadCallback& callback,
+      CheckDownloadCallback callback,
       DownloadProtectionService* service,
       scoped_refptr<SafeBrowsingDatabaseManager> database_manager);
 
@@ -165,7 +165,7 @@ class PPAPIDownloadRequest {
 
   bool is_extended_reporting_;
 
-  base::WeakPtrFactory<PPAPIDownloadRequest> weakptr_factory_;
+  base::WeakPtrFactory<PPAPIDownloadRequest> weakptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PPAPIDownloadRequest);
 };

@@ -732,8 +732,8 @@ class AudioEncoder::Pcm16Impl : public AudioEncoder::ImplBase {
                                  int source_offset,
                                  int buffer_fill_offset,
                                  int num_samples) final {
-    audio_bus->ToInterleavedPartial(
-        source_offset, num_samples, sizeof(int16_t),
+    audio_bus->ToInterleavedPartial<SignedInt16SampleTypeTraits>(
+        source_offset, num_samples,
         buffer_.get() + buffer_fill_offset * num_channels_);
   }
 

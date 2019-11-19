@@ -29,23 +29,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_AUDIO_IO_CALLBACK_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_AUDIO_IO_CALLBACK_H_
 
-#include "base/time/time.h"
+#include "third_party/blink/renderer/platform/audio/audio_callback_metric_reporter.h"
 
 namespace blink {
 
 class AudioBus;
-
-// For the calculation of "render capacity". The render capacity can be
-// calculated by dividing |render_duration| by |callback_interval|.
-struct AudioIOCallbackMetric {
-  // The time interval in seconds between the onset of previous callback
-  // function and the current one.
-  double callback_interval;
-
-  // The time duration spent on rendering render quanta (i.e. batch pulling of
-  // audio graph) per a device callback request.
-  double render_duration;
-};
 
 struct AudioIOPosition {
   // Audio stream position in seconds.
@@ -63,7 +51,7 @@ class AudioIOCallback {
   virtual void Render(AudioBus* destination_bus,
                       uint32_t frames_to_process,
                       const AudioIOPosition& output_position,
-                      const AudioIOCallbackMetric& metric) = 0;
+                      const AudioCallbackMetric& metric) = 0;
 
   virtual ~AudioIOCallback() = default;
 };

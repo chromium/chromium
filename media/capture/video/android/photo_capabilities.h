@@ -20,11 +20,23 @@ class PhotoCapabilities {
   // A Java counterpart will be generated for this enum.
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.media
   enum class AndroidMeteringMode {
-    NOT_SET,
+    NOT_SET,  // Update Java code if this value is not equal 0.
     NONE,
     FIXED,
     SINGLE_SHOT,
     CONTINUOUS,
+
+    NUM_ENTRIES
+  };
+
+  // A Java counterpart will be generated for this enum.
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.media
+  enum class MeteringModeType {
+    FOCUS,
+    EXPOSURE,
+    WHITE_BALANCE,
+
+    NUM_ENTRIES
   };
 
   // Fill light modes from Java side, equivalent to media.mojom::FillLightMode,
@@ -32,57 +44,86 @@ class PhotoCapabilities {
   // A Java counterpart will be generated for this enum.
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.media
   enum class AndroidFillLightMode {
-    NOT_SET,
+    NOT_SET,  // Update Java code when this value is not equal 0.
     OFF,
     AUTO,
     FLASH,
+
+    NUM_ENTRIES
+  };
+
+  // A Java counterpart will be generated for this enum.
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.media
+  enum class PhotoCapabilityBool {
+    SUPPORTS_TORCH,
+    TORCH,
+    RED_EYE_REDUCTION,
+
+    NUM_ENTRIES
+  };
+
+  // A Java counterpart will be generated for this enum.
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.media
+  enum class PhotoCapabilityDouble {
+    MIN_ZOOM,
+    MAX_ZOOM,
+    CURRENT_ZOOM,
+    STEP_ZOOM,
+
+    MIN_FOCUS_DISTANCE,
+    MAX_FOCUS_DISTANCE,
+    CURRENT_FOCUS_DISTANCE,
+    STEP_FOCUS_DISTANCE,
+
+    MIN_EXPOSURE_COMPENSATION,
+    MAX_EXPOSURE_COMPENSATION,
+    CURRENT_EXPOSURE_COMPENSATION,
+    STEP_EXPOSURE_COMPENSATION,
+
+    MIN_EXPOSURE_TIME,
+    MAX_EXPOSURE_TIME,
+    CURRENT_EXPOSURE_TIME,
+    STEP_EXPOSURE_TIME,
+
+    NUM_ENTRIES
+  };
+
+  // A Java counterpart will be generated for this enum.
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.media
+  enum class PhotoCapabilityInt {
+    MIN_ISO,
+    MAX_ISO,
+    CURRENT_ISO,
+    STEP_ISO,
+
+    MIN_HEIGHT,
+    MAX_HEIGHT,
+    CURRENT_HEIGHT,
+    STEP_HEIGHT,
+
+    MIN_WIDTH,
+    MAX_WIDTH,
+    CURRENT_WIDTH,
+    STEP_WIDTH,
+
+    MIN_COLOR_TEMPERATURE,
+    MAX_COLOR_TEMPERATURE,
+    CURRENT_COLOR_TEMPERATURE,
+    STEP_COLOR_TEMPERATURE,
+
+    NUM_ENTRIES
   };
 
   explicit PhotoCapabilities(base::android::ScopedJavaLocalRef<jobject> object);
   ~PhotoCapabilities();
 
-  int getMinIso() const;
-  int getMaxIso() const;
-  int getCurrentIso() const;
-  int getStepIso() const;
-  int getMinHeight() const;
-  int getMaxHeight() const;
-  int getCurrentHeight() const;
-  int getStepHeight() const;
-  int getMinWidth() const;
-  int getMaxWidth() const;
-  int getCurrentWidth() const;
-  int getStepWidth() const;
-  double getMinZoom() const;
-  double getMaxZoom() const;
-  double getCurrentZoom() const;
-  double getStepZoom() const;
-  double getCurrentFocusDistance() const;
-  double getMaxFocusDistance() const;
-  double getMinFocusDistance() const;
-  double getStepFocusDistance() const;
-  AndroidMeteringMode getFocusMode() const;
-  std::vector<AndroidMeteringMode> getFocusModes() const;
-  AndroidMeteringMode getExposureMode() const;
-  std::vector<AndroidMeteringMode> getExposureModes() const;
-  double getMinExposureCompensation() const;
-  double getMaxExposureCompensation() const;
-  double getCurrentExposureCompensation() const;
-  double getStepExposureCompensation() const;
-  double getMinExposureTime() const;
-  double getMaxExposureTime() const;
-  double getCurrentExposureTime() const;
-  double getStepExposureTime() const;
-  AndroidMeteringMode getWhiteBalanceMode() const;
-  std::vector<AndroidMeteringMode> getWhiteBalanceModes() const;
-  std::vector<AndroidFillLightMode> getFillLightModes() const;
-  bool getSupportsTorch() const;
-  bool getTorch() const;
-  bool getRedEyeReduction() const;
-  int getMinColorTemperature() const;
-  int getMaxColorTemperature() const;
-  int getCurrentColorTemperature() const;
-  int getStepColorTemperature() const;
+  int getInt(PhotoCapabilityInt capability) const;
+  double getDouble(PhotoCapabilityDouble capability) const;
+  bool getBool(PhotoCapabilityBool capability) const;
+  std::vector<AndroidFillLightMode> getFillLightModeArray() const;
+  AndroidMeteringMode getMeteringMode(MeteringModeType type) const;
+  std::vector<AndroidMeteringMode> getMeteringModeArray(
+      MeteringModeType type) const;
 
  private:
   const base::android::ScopedJavaLocalRef<jobject> object_;

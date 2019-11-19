@@ -33,6 +33,7 @@ enum class MatchingAlgorithm {
   DEFAULT,
   // All words are considered for a prefix search.
   ALWAYS_PREFIX_SEARCH,
+  kMaxValue = ALWAYS_PREFIX_SEARCH,
 };
 
 using QueryWordVector = std::vector<query_parser::QueryWord>;

@@ -197,7 +197,7 @@ class ASH_EXPORT ScreenRotationAnimator {
   base::Optional<ScreenRotationRequest> current_async_rotation_request_;
   display::Display::Rotation target_rotation_ = display::Display::ROTATE_0;
   std::unique_ptr<ui::ScopedAnimationDurationScaleMode> animation_scale_mode_;
-  base::WeakPtrFactory<ScreenRotationAnimator> weak_factory_;
+  base::WeakPtrFactory<ScreenRotationAnimator> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ScreenRotationAnimator);
 };

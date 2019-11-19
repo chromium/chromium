@@ -9,39 +9,35 @@
 #include "ui/views/controls/button/button.h"
 
 namespace ash {
-class InkDropButtonListener;
-class ShelfView;
+class Shelf;
+class ShelfButtonDelegate;
 
 // Button used for items on the shelf.
 class ASH_EXPORT ShelfButton : public views::Button {
  public:
-  explicit ShelfButton(ShelfView* shelf_view);
+  ShelfButton(Shelf* shelf, ShelfButtonDelegate* shelf_button_delegate);
   ~ShelfButton() override;
 
-  // views::View
-  bool OnMousePressed(const ui::MouseEvent& event) override;
-  void OnMouseReleased(const ui::MouseEvent& event) override;
-  void OnMouseCaptureLost() override;
-  bool OnMouseDragged(const ui::MouseEvent& event) override;
+  // views::Button:
+  const char* GetClassName() const override;
   void AboutToRequestFocusFromTabTraversal(bool reverse) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-  bool GetTooltipText(const gfx::Point& p,
-                      base::string16* tooltip) const override;
+  void NotifyClick(const ui::Event& event) override;
+  std::unique_ptr<views::InkDrop> CreateInkDrop() override;
+
+  Shelf* shelf() { return shelf_; }
 
  protected:
-  ShelfView* shelf_view() { return shelf_view_; }
-
-  // views::Button
-  void NotifyClick(const ui::Event& event) override;
-  bool ShouldEnterPushedState(const ui::Event& event) override;
-  std::unique_ptr<views::InkDrop> CreateInkDrop() override;
-  const char* GetClassName() const override;
+  ShelfButtonDelegate* shelf_button_delegate() {
+    return shelf_button_delegate_;
+  }
 
  private:
-  // The shelf view hosting this button.
-  ShelfView* shelf_view_;
+  // The shelf instance that this button belongs to. Unowned.
+  Shelf* const shelf_;
 
-  InkDropButtonListener* listener_;
+  // A class to which this button delegates handling some of its events.
+  ShelfButtonDelegate* const shelf_button_delegate_;
 
   DISALLOW_COPY_AND_ASSIGN(ShelfButton);
 };

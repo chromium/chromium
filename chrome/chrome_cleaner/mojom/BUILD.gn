@@ -1,0 +1,91 @@
+# Copyright 2018 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+# Nothing outside //chrome/chrome_cleaner can depend on these targets.
+visibility = [ "//chrome/chrome_cleaner/*" ]
+
+template("chrome_cleaner_mojom") {
+  mojom(target_name) {
+    # chrome_cleaner does not interface with blink or any language except C++,
+    # so build only the basic (cpp) interface variant.
+    disable_variants = true
+
+    # Forward all other variables unchanged.
+    forward_variables_from(invoker, "*", [ "disable_variants" ])
+  }
+}
+
+chrome_cleaner_mojom("chrome_prompt_interface") {
+  sources = [
+    "chrome_prompt.mojom",
+  ]
+
+  deps = [
+    ":footprints_interface",
+  ]
+
+  # NOTE: We avoid scrambling message IDs here because these messages cross an
+  # IPC boundary to an external program built from a different source tree.
+  scramble_message_ids = false
+}
+
+chrome_cleaner_mojom("footprints_interface") {
+  sources = [
+    "footprints.mojom",
+  ]
+}
+
+chrome_cleaner_mojom("engine_sandbox_interface") {
+  sources = [
+    "cleaner_engine_requests.mojom",
+    "engine_file_requests.mojom",
+    "engine_requests.mojom",
+    "engine_sandbox.mojom",
+    "pup.mojom",
+    "string16_embedded_nulls.mojom",
+    "windows_handle.mojom",
+  ]
+  deps = [
+    ":footprints_interface",
+    "//mojo/public/mojom/base",
+  ]
+}
+
+chrome_cleaner_mojom("parser_interface") {
+  sources = [
+    "parser_interface.mojom",
+  ]
+  deps = [
+    "//mojo/public/mojom/base",
+  ]
+}
+
+chrome_cleaner_mojom("zip_archiver_interface") {
+  sources = [
+    "zip_archiver.mojom",
+  ]
+}
+
+chrome_cleaner_mojom("engine_sandbox_test_interface") {
+  testonly = true
+
+  sources = [
+    "test_pup_typemap.mojom",
+    "test_string16_embedded_nulls.mojom",
+  ]
+
+  deps = [
+    ":engine_sandbox_interface",
+  ]
+}
+
+chrome_cleaner_mojom("mojo_sandbox_hooks_test_interface") {
+  testonly = true
+
+  sources = [
+    "test_mojo_sandbox_hooks.mojom",
+  ]
+}

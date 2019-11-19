@@ -4,15 +4,15 @@
 
 #include "third_party/blink/renderer/core/paint/rounded_inner_rect_clipper.h"
 
+#include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/platform/geometry/float_rounded_rect.h"
-#include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 
 namespace blink {
 
 RoundedInnerRectClipper::RoundedInnerRectClipper(
     GraphicsContext& context,
-    const LayoutRect& rect,
+    const PhysicalRect& rect,
     const FloatRoundedRect& clip_rect)
     : context_(context) {
   Vector<FloatRoundedRect> rounded_rect_clips;
@@ -24,8 +24,8 @@ RoundedInnerRectClipper::RoundedInnerRectClipper(
     if (!clip_rect.GetRadii().TopLeft().IsEmpty() ||
         !clip_rect.GetRadii().BottomRight().IsEmpty()) {
       FloatRect top_corner(clip_rect.Rect().X(), clip_rect.Rect().Y(),
-                           rect.MaxX() - clip_rect.Rect().X(),
-                           rect.MaxY() - clip_rect.Rect().Y());
+                           rect.Right() - clip_rect.Rect().X(),
+                           rect.Bottom() - clip_rect.Rect().Y());
       FloatRoundedRect::Radii top_corner_radii;
       top_corner_radii.SetTopLeft(clip_rect.GetRadii().TopLeft());
       rounded_rect_clips.push_back(
@@ -44,14 +44,14 @@ RoundedInnerRectClipper::RoundedInnerRectClipper(
         !clip_rect.GetRadii().BottomLeft().IsEmpty()) {
       FloatRect top_corner(rect.X().ToFloat(), clip_rect.Rect().Y(),
                            clip_rect.Rect().MaxX() - rect.X().ToFloat(),
-                           rect.MaxY() - clip_rect.Rect().Y());
+                           rect.Bottom() - clip_rect.Rect().Y());
       FloatRoundedRect::Radii top_corner_radii;
       top_corner_radii.SetTopRight(clip_rect.GetRadii().TopRight());
       rounded_rect_clips.push_back(
           FloatRoundedRect(top_corner, top_corner_radii));
 
       FloatRect bottom_corner(clip_rect.Rect().X(), rect.Y().ToFloat(),
-                              rect.MaxX() - clip_rect.Rect().X(),
+                              rect.Right() - clip_rect.Rect().X(),
                               clip_rect.Rect().MaxY() - rect.Y().ToFloat());
       FloatRoundedRect::Radii bottom_corner_radii;
       bottom_corner_radii.SetBottomLeft(clip_rect.GetRadii().BottomLeft());

@@ -5,10 +5,11 @@
 #include "base/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/data_reduction_proxy/data_reduction_proxy_chrome_settings.h"
+#include "chrome/browser/data_reduction_proxy/data_reduction_proxy_chrome_settings_factory.h"
 #include "chrome/browser/data_use_measurement/chrome_data_use_measurement.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_config_service_client_test_utils.h"
@@ -54,13 +55,12 @@ class DataUseMeasurementBrowserTestWithDataSaverEnabled
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     net::HostPortPair host_port_pair = embedded_test_server()->host_port_pair();
-    std::string config = data_reduction_proxy::EncodeConfig(CreateConfig(
-        "TheSessionKeyYay!", 1000, 0,
-        data_reduction_proxy::ProxyServer_ProxyScheme_HTTP,
-        host_port_pair.host(), host_port_pair.port(),
-        data_reduction_proxy::ProxyServer::CORE,
-        data_reduction_proxy::ProxyServer_ProxyScheme_HTTP, "fallback.net", 80,
-        data_reduction_proxy::ProxyServer::UNSPECIFIED_TYPE, 0.5f, false));
+    std::string config = data_reduction_proxy::EncodeConfig(
+        CreateConfig("TheSessionKeyYay!", 1000, 0,
+                     data_reduction_proxy::ProxyServer_ProxyScheme_HTTP,
+                     host_port_pair.host(), host_port_pair.port(),
+                     data_reduction_proxy::ProxyServer_ProxyScheme_HTTP,
+                     "fallback.net", 80, 0.5f, false));
     command_line->AppendSwitchASCII(
         data_reduction_proxy::switches::kDataReductionProxyServerClientConfig,
         config);
@@ -78,9 +78,11 @@ class DataUseMeasurementBrowserTestWithDataSaverEnabled
 
  protected:
   void EnableDataSaver(bool enabled) {
-    PrefService* prefs = browser()->profile()->GetPrefs();
-    prefs->SetBoolean(::prefs::kDataSaverEnabled, enabled);
-    base::RunLoop().RunUntilIdle();
+    data_reduction_proxy::DataReductionProxySettings*
+        data_reduction_proxy_settings =
+            DataReductionProxyChromeSettingsFactory::GetForBrowserContext(
+                browser()->profile());
+    data_reduction_proxy_settings->SetDataReductionProxyEnabled(enabled);
   }
 
   const base::HistogramTester& histogram_tester() { return histogram_tester_; }

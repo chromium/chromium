@@ -69,6 +69,8 @@ class ASH_EXPORT LoginUserMenuView : public LoginBaseBubbleView,
   RemoveUserButton* remove_user_button_ = nullptr;
   views::Label* username_label_ = nullptr;
 
+  base::string16 warning_message_;
+
   DISALLOW_COPY_AND_ASSIGN(LoginUserMenuView);
 };
 

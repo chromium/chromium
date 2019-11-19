@@ -6,7 +6,7 @@
 
 #include <vector>
 
-#include "ash/public/interfaces/wallpaper.mojom.h"
+#include "ash/public/cpp/wallpaper_controller_observer.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/macros.h"
@@ -20,12 +20,9 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/constants/chromeos_switches.h"
-#include "mojo/public/cpp/bindings/associated_binding.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/http_response.h"
-#include "net/url_request/test_url_fetcher_factory.h"
-#include "net/url_request/url_fetcher_impl.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 
@@ -121,26 +118,21 @@ bool CreateJPEGImage(int width,
   return true;
 }
 
-class TestWallpaperObserver : public ash::mojom::WallpaperObserver {
+class TestWallpaperObserver : public ash::WallpaperControllerObserver {
  public:
-  TestWallpaperObserver() : finished_(false), observer_binding_(this) {
-    ash::mojom::WallpaperObserverAssociatedPtrInfo ptr_info;
-    observer_binding_.Bind(mojo::MakeRequest(&ptr_info));
-    WallpaperControllerClient::Get()->AddObserver(std::move(ptr_info));
+  TestWallpaperObserver() {
+    WallpaperControllerClient::Get()->AddObserver(this);
   }
 
-  ~TestWallpaperObserver() override = default;
+  ~TestWallpaperObserver() override {
+    WallpaperControllerClient::Get()->RemoveObserver(this);
+  }
 
-  // ash::mojom::WallpaperObserver:
-  void OnWallpaperChanged(uint32_t image_id) override {
+  // ash::WallpaperControllerObserver:
+  void OnWallpaperChanged() override {
     finished_ = true;
     base::RunLoop::QuitCurrentWhenIdleDeprecated();
   }
-
-  void OnWallpaperColorsChanged(
-      const std::vector<SkColor>& prominent_colors) override {}
-
-  void OnWallpaperBlurChanged(bool blurred) override {}
 
   // Wait until the wallpaper update is completed.
   void WaitForWallpaperChanged() {
@@ -151,10 +143,7 @@ class TestWallpaperObserver : public ash::mojom::WallpaperObserver {
   void Reset() { finished_ = false; }
 
  private:
-  bool finished_;
-
-  // The binding this instance uses to implement ash::mojom::WallpaperObserver.
-  mojo::AssociatedBinding<ash::mojom::WallpaperObserver> observer_binding_;
+  bool finished_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(TestWallpaperObserver);
 };
@@ -263,13 +252,8 @@ IN_PROC_BROWSER_TEST_F(CustomizationWallpaperDownloaderBrowserTest,
 
   // Verify the customized default wallpaper has replaced the built-in default
   // wallpaper.
-  base::RunLoop run_loop;
-  WallpaperControllerClient::Get()->GetWallpaperImage(
-      base::BindLambdaForTesting([&run_loop](const gfx::ImageSkia& image) {
-        run_loop.Quit();
-        EXPECT_TRUE(ImageIsNearColor(image, kCustomizedDefaultWallpaperColor));
-      }));
-  run_loop.Run();
+  gfx::ImageSkia image = WallpaperControllerClient::Get()->GetWallpaperImage();
+  EXPECT_TRUE(ImageIsNearColor(image, kCustomizedDefaultWallpaperColor));
   EXPECT_EQ(1U, num_attempts());
 }
 
@@ -295,13 +279,8 @@ IN_PROC_BROWSER_TEST_F(CustomizationWallpaperDownloaderBrowserTest,
 
   // Verify the customized default wallpaper has replaced the built-in default
   // wallpaper.
-  base::RunLoop run_loop;
-  WallpaperControllerClient::Get()->GetWallpaperImage(
-      base::BindLambdaForTesting([&run_loop](const gfx::ImageSkia& image) {
-        run_loop.Quit();
-        EXPECT_TRUE(ImageIsNearColor(image, kCustomizedDefaultWallpaperColor));
-      }));
-  run_loop.Run();
+  gfx::ImageSkia image = WallpaperControllerClient::Get()->GetWallpaperImage();
+  EXPECT_TRUE(ImageIsNearColor(image, kCustomizedDefaultWallpaperColor));
   EXPECT_EQ(2U, num_attempts());
 }
 

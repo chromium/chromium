@@ -1,5 +1,0 @@
-# For ease in testing path reflections, pass any path component containing <'"
-# (and subsequent characters) as the "q" query paramter to the script identified
-# by the path components preceeding it.
-RewriteEngine on
-RewriteRule ^([^<"']*)/(.*) /security/xssAuditor/resources/$1?q=$2 [L,NS]

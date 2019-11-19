@@ -6,8 +6,7 @@
 
 [
   Constructor(DOMString type, optional FormDataEventInit eventInitDict),
-  Exposed=Window,
-  RuntimeEnabled=FormDataEvent
+  Exposed=Window
 ]
 interface FormDataEvent : Event {
   readonly attribute FormData formData;

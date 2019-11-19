@@ -37,7 +37,7 @@ class DevToolsBrowserContextManager : public BrowserListObserver {
   base::flat_map<std::string, content::DevToolsManagerDelegate::DisposeCallback>
       pending_context_disposals_;
 
-  base::WeakPtrFactory<DevToolsBrowserContextManager> weak_factory_;
+  base::WeakPtrFactory<DevToolsBrowserContextManager> weak_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(DevToolsBrowserContextManager);
 };
 

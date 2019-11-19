@@ -26,14 +26,12 @@ class LocalVideoFrameInput : public VideoFrameInput {
             video_sender.get() ?
                 video_sender->CreateVideoFrameFactory().release() : nullptr) {}
 
-  void InsertRawVideoFrame(const scoped_refptr<media::VideoFrame>& video_frame,
-                           const base::TimeTicks& capture_time) final {
-    cast_environment_->PostTask(CastEnvironment::MAIN,
-                                FROM_HERE,
-                                base::Bind(&VideoSender::InsertRawVideoFrame,
-                                           video_sender_,
-                                           video_frame,
-                                           capture_time));
+  void InsertRawVideoFrame(scoped_refptr<media::VideoFrame> video_frame,
+                           base::TimeTicks capture_time) final {
+    cast_environment_->PostTask(
+        CastEnvironment::MAIN, FROM_HERE,
+        base::BindRepeating(&VideoSender::InsertRawVideoFrame, video_sender_,
+                            std::move(video_frame), capture_time));
   }
 
   scoped_refptr<VideoFrame> MaybeCreateOptimizedFrame(
@@ -100,9 +98,7 @@ std::unique_ptr<CastSender> CastSender::Create(
 
 CastSenderImpl::CastSenderImpl(scoped_refptr<CastEnvironment> cast_environment,
                                CastTransport* const transport_sender)
-    : cast_environment_(cast_environment),
-      transport_sender_(transport_sender),
-      weak_factory_(this) {
+    : cast_environment_(cast_environment), transport_sender_(transport_sender) {
   CHECK(cast_environment.get());
 }
 

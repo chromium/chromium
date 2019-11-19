@@ -1,0 +1,9 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+'use strict';
+
+let worker = new Worker('./resources/bind-intercepted-interface-in-worker.js');
+fetch_tests_from_worker(worker);
+</script>

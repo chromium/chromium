@@ -27,5 +27,5 @@ AutocompleteSchemeClassifierImpl::GetInputTypeForScheme(
   }
 
   // iOS does not support registration of external schemes.
-  return metrics::OmniboxInputType::INVALID;
+  return metrics::OmniboxInputType::EMPTY;
 }

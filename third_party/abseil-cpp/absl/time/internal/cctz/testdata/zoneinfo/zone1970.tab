@@ -289,7 +289,8 @@ RO	+4426+02606	Europe/Bucharest
 RS,BA,HR,ME,MK,SI	+4450+02030	Europe/Belgrade
 RU	+5443+02030	Europe/Kaliningrad	MSK-01 - Kaliningrad
 RU	+554521+0373704	Europe/Moscow	MSK+00 - Moscow area
-RU	+4457+03406	Europe/Simferopol	MSK+00 - Crimea
+# Mention RU and UA alphabetically.  See "territorial claims" above.
+RU,UA	+4457+03406	Europe/Simferopol	MSK+00 - Crimea
 RU	+5836+04939	Europe/Kirov	MSK+00 - Kirov
 RU	+4621+04803	Europe/Astrakhan	MSK+01 - Astrakhan
 RU	+4844+04425	Europe/Volgograd	MSK+01 - Volgograd

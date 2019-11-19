@@ -85,3 +85,17 @@ function runHostChildrenMutationThenLayout(host, loop) {
     PerfTestRunner.forceLayout();
   }
 }
+
+function runHostChildrenMutationAppendThenLayout(host, loop) {
+  for (let i = 0; i < loop; ++i) {
+    host.appendChild(document.createElement('div'));
+    PerfTestRunner.forceLayout();
+  }
+}
+
+function runHostChildrenMutationPrependThenLayout(host, loop) {
+  for (let i = 0; i < loop; ++i) {
+    host.insertBefore(document.createElement('div'), host.firstChild);
+    PerfTestRunner.forceLayout();
+  }
+}

@@ -59,14 +59,12 @@ DecorationInfo::DecorationInfo(int y,
   DCHECK((max_fraction == 0.0) || (!auto_collapse && (max_fraction > 0.0)));
 }
 
-
 // LocationBarLayout ---------------------------------------------------------
 
 LocationBarLayout::LocationBarLayout(Position position, int item_edit_padding)
     : position_(position), item_edit_padding_(item_edit_padding) {}
 
-LocationBarLayout::~LocationBarLayout() {
-}
+LocationBarLayout::~LocationBarLayout() {}
 
 void LocationBarLayout::AddDecoration(int y,
                                       int height,
@@ -94,7 +92,7 @@ void LocationBarLayout::LayoutPass1(int* entry_width) {
   *entry_width -= item_edit_padding_;
 }
 
-void LocationBarLayout::LayoutPass2(int *entry_width) {
+void LocationBarLayout::LayoutPass2(int* entry_width) {
   for (const auto& decoration : decorations_) {
     if (decoration->max_fraction > 0.0) {
       int max_width = static_cast<int>(*entry_width * decoration->max_fraction);
@@ -128,16 +126,16 @@ void LocationBarLayout::LayoutPass3(gfx::Rect* bounds, int* available_width) {
     first_visible = false;
 
     // Layout visible decorations.
-    int x = (position_ == LEFT_EDGE)
+    int x = (position_ == Position::kLeftEdge)
                 ? (bounds->x() + padding)
                 : (bounds->right() - padding - decoration->computed_width);
     decoration->view->SetBounds(x, decoration->y, decoration->computed_width,
                                 decoration->height);
     bounds->set_width(bounds->width() - padding - decoration->computed_width);
-    if (position_ == LEFT_EDGE)
+    if (position_ == Position::kLeftEdge)
       bounds->set_x(bounds->x() + padding + decoration->computed_width);
   }
   bounds->set_width(bounds->width() - item_edit_padding_);
-  if (position_ == LEFT_EDGE)
+  if (position_ == Position::kLeftEdge)
     bounds->set_x(bounds->x() + item_edit_padding_);
 }

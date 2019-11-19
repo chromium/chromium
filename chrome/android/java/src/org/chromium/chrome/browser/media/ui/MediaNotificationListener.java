@@ -49,4 +49,10 @@ public interface MediaNotificationListener {
      * @param action The kind of the initated action.
      */
     void onMediaSessionAction(int action);
+
+    /**
+     * Called when the user performed a seek action through Media Session.
+     * @param action The position to seek to in ms.
+     */
+    void onMediaSessionSeekTo(long pos);
 }

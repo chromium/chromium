@@ -11,6 +11,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <map>
 #include <vector>
 
 #include "base/macros.h"
@@ -85,6 +86,10 @@ class TegraV4L2Device : public V4L2Device {
 
   // The actual device fd.
   int device_fd_ = -1;
+
+  // The v4l2_format cache passed to the driver via VIDIOC_S_FMT. The key is
+  // v4l2_buf_type.
+  std::map<enum v4l2_buf_type, struct v4l2_format> v4l2_format_cache_;
 
   DISALLOW_COPY_AND_ASSIGN(TegraV4L2Device);
 };

@@ -1,11 +1,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
+    <script src=../../resources/testharness.js></script>
+    <script src=../../resources/testharnessreport.js></script>
+</head>
+<body>
+    <div id="target"></div>
     <script type="text/javascript">
-    function runTest()
-    {
-        if (window.testRunner)
-            testRunner.dumpAsText();
-
+    test(() => {
         var target = document.getElementById("target");
 
         var xmlns = "http://www.w3.org/XML/1998/namespace";
@@ -23,13 +24,11 @@
         var serializer = new XMLSerializer();
         var xmlString = serializer.serializeToString(target);
 
-        var outputText = document.getElementById("output");
+        var outputText = document.createElement('div');
         outputText.textContent = xmlString;
-    }
+
+        assert_equals(outputText.textContent, "<div xmlns=\"http://www.w3.org/1999/xhtml\" id=\"target\"><xml:foo xml:space=\"preserve\"/><xml:bar xml:space=\"default\"/></div>");
+    }, 'XMLSerializer with xml namespace');
     </script>
-</head>
-    <body onload="runTest()">
-        <div id="target"/>
-        <div id="output"/>
-    </body>
+</body>
 </html>

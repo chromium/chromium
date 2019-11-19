@@ -9,7 +9,9 @@
 
 #include "ash/app_list/app_list_export.h"
 #include "base/memory/weak_ptr.h"
+#include "base/timer/timer.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/view_targeter_delegate.h"
 
 namespace gfx {
 class SlideAnimation;
@@ -21,14 +23,15 @@ class InkDropMask;
 class InkDropRipple;
 }  // namespace views
 
-namespace app_list {
+namespace ash {
 
 class AppListView;
 class ContentsView;
 
 // A tile item for the expand arrow on the start page.
 class APP_LIST_EXPORT ExpandArrowView : public views::Button,
-                                        public views::ButtonListener {
+                                        public views::ButtonListener,
+                                        public views::ViewTargeterDelegate {
  public:
   ExpandArrowView(ContentsView* contents_view, AppListView* app_list_view);
   ~ExpandArrowView() override;
@@ -44,11 +47,18 @@ class APP_LIST_EXPORT ExpandArrowView : public views::Button,
   bool OnKeyPressed(const ui::KeyEvent& event) override;
   void OnFocus() override;
   void OnBlur() override;
+  const char* GetClassName() const override;
 
   // Overridden from views::InkDropHost:
   std::unique_ptr<views::InkDrop> CreateInkDrop() override;
   std::unique_ptr<views::InkDropMask> CreateInkDropMask() const override;
   std::unique_ptr<views::InkDropRipple> CreateInkDropRipple() const override;
+
+  void MaybeEnableHintingAnimation(bool enabled);
+
+  bool IsHintingAnimationRunningForTest() {
+    return hinting_animation_timer_.IsRunning();
+  }
 
  private:
   // gfx::AnimationDelegate overrides:
@@ -62,6 +72,10 @@ class APP_LIST_EXPORT ExpandArrowView : public views::Button,
   void ScheduleHintingAnimation(bool is_first_time);
   void StartHintingAnimation();
   void ResetHintingAnimation();
+
+  // views::ViewTargeterDelegate:
+  bool DoesIntersectRect(const views::View* target,
+                         const gfx::Rect& rect) const override;
 
   ContentsView* const contents_view_;
   AppListView* const app_list_view_;  // Owned by the views hierarchy.
@@ -79,11 +93,13 @@ class APP_LIST_EXPORT ExpandArrowView : public views::Button,
   // The y position offset of the arrow in this view.
   int arrow_y_offset_;
 
-  base::WeakPtrFactory<ExpandArrowView> weak_ptr_factory_;
+  base::OneShotTimer hinting_animation_timer_;
+
+  base::WeakPtrFactory<ExpandArrowView> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ExpandArrowView);
 };
 
-}  // namespace app_list
+}  // namespace ash
 
 #endif  // ASH_APP_LIST_VIEWS_EXPAND_ARROW_VIEW_H_

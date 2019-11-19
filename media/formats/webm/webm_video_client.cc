@@ -6,21 +6,22 @@
 
 #include "media/base/video_decoder_config.h"
 #include "media/formats/webm/webm_constants.h"
-#include "third_party/libaom/av1_buildflags.h"
+#include "media/media_buildflags.h"
 
 namespace media {
 
 namespace {
 
 // Tries to parse |data| to extract the VP9 Profile ID, or returns Profile 0.
-media::VideoCodecProfile GetVP9CodecProfile(const std::vector<uint8_t>& data) {
+media::VideoCodecProfile GetVP9CodecProfile(const std::vector<uint8_t>& data,
+                                            bool is_probably_10bit) {
   // VP9 CodecPrivate (http://wiki.webmproject.org/vp9-codecprivate) might have
   // Profile information in the first field, if present.
   constexpr uint8_t kVP9ProfileFieldId = 0x01;
   constexpr uint8_t kVP9ProfileFieldLength = 1;
   if (data.size() < 3 || data[0] != kVP9ProfileFieldId ||
       data[1] != kVP9ProfileFieldLength || data[2] > 3) {
-    return VP9PROFILE_PROFILE0;
+    return is_probably_10bit ? VP9PROFILE_PROFILE2 : VP9PROFILE_PROFILE0;
   }
 
   return static_cast<VideoCodecProfile>(
@@ -52,9 +53,19 @@ void WebMVideoClient::Reset() {
 bool WebMVideoClient::InitializeConfig(
     const std::string& codec_id,
     const std::vector<uint8_t>& codec_private,
-    const EncryptionScheme& encryption_scheme,
+    EncryptionScheme encryption_scheme,
     VideoDecoderConfig* config) {
   DCHECK(config);
+
+  bool is_8bit = true;
+  VideoColorSpace color_space = VideoColorSpace::REC709();
+  if (colour_parsed_) {
+    WebMColorMetadata color_metadata = colour_parser_.GetWebMColorMetadata();
+    color_space = color_metadata.color_space;
+    if (color_metadata.hdr_metadata.has_value())
+      config->set_hdr_metadata(*color_metadata.hdr_metadata);
+    is_8bit = color_metadata.BitsPerChannel <= 8;
+  }
 
   VideoCodec video_codec = kUnknownVideoCodec;
   VideoCodecProfile profile = VIDEO_CODEC_PROFILE_UNKNOWN;
@@ -63,7 +74,9 @@ bool WebMVideoClient::InitializeConfig(
     profile = VP8PROFILE_ANY;
   } else if (codec_id == "V_VP9") {
     video_codec = kCodecVP9;
-    profile = GetVP9CodecProfile(codec_private);
+    profile = GetVP9CodecProfile(
+        codec_private, color_space.ToGfxColorSpace().IsHDR() ||
+                           config->hdr_metadata().has_value() || !is_8bit);
 #if BUILDFLAG(ENABLE_AV1_DECODER)
   } else if (codec_id == "V_AV1") {
     // TODO(dalecurtis): AV1 profiles in WebM are not finalized, this needs
@@ -76,9 +89,6 @@ bool WebMVideoClient::InitializeConfig(
     MEDIA_LOG(ERROR, media_log_) << "Unsupported video codec_id " << codec_id;
     return false;
   }
-
-  VideoPixelFormat format =
-      (alpha_mode_ == 1) ? PIXEL_FORMAT_I420A : PIXEL_FORMAT_I420;
 
   if (pixel_width_ <= 0 || pixel_height_ <= 0)
     return false;
@@ -121,15 +131,12 @@ bool WebMVideoClient::InitializeConfig(
   }
   gfx::Size natural_size = gfx::Size(display_width_, display_height_);
 
-  VideoColorSpace color_space = VideoColorSpace::REC709();
-  if (colour_parsed_) {
-    WebMColorMetadata color_metadata = colour_parser_.GetWebMColorMetadata();
-    color_space = color_metadata.color_space;
-    config->set_hdr_metadata(color_metadata.hdr_metadata);
-  }
-  config->Initialize(video_codec, profile, format, color_space,
-                     VIDEO_ROTATION_0, coded_size, visible_rect, natural_size,
-                     codec_private, encryption_scheme);
+  config->Initialize(video_codec, profile,
+                     alpha_mode_ == 1
+                         ? VideoDecoderConfig::AlphaMode::kHasAlpha
+                         : VideoDecoderConfig::AlphaMode::kIsOpaque,
+                     color_space, kNoTransformation, coded_size, visible_rect,
+                     natural_size, codec_private, encryption_scheme);
   return config->IsValidConfig();
 }
 

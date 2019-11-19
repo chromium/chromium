@@ -13,9 +13,11 @@
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
-#include "components/gcm_driver/common/gcm_messages.h"
+#include "components/gcm_driver/common/gcm_message.h"
 #include "components/gcm_driver/gcm_activity.h"
 #include "components/gcm_driver/registration_info.h"
+#include "google_apis/gaia/core_account_id.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/network/public/mojom/proxy_resolving_socket.mojom-forward.h"
 
 namespace base {
@@ -142,7 +144,7 @@ class GCMClient {
 
   // Information about account.
   struct AccountTokenInfo {
-    std::string account_id;
+    CoreAccountId account_id;
     std::string email;
     std::string access_token;
   };
@@ -230,12 +232,16 @@ class GCMClient {
   virtual ~GCMClient();
 
   // Begins initialization of the GCM Client. This will not trigger a
-  // connection.
+  // connection. Must be called on |io_task_runner|.
   // |chrome_build_info|: chrome info, i.e., version, channel and etc.
   // |store_path|: path to the GCM store.
   // |blocking_task_runner|: for running blocking file tasks.
-  // |get_socket_factory_callback|: a callback that can accept a request for a
-  //     network::mojom::ProxyResolvingSocketFactoryPtr. It needs to be safe to
+  // |io_task_runner|: for running IO tasks. When provided, it could be a
+  //     wrapper on top of base::ThreadTaskRunnerHandle::Get() to provide power
+  //     management featueres so that a delayed task posted to it can wake the
+  //     system up from sleep to perform the task.
+  // |get_socket_factory_callback|: a callback that can accept a receiver for a
+  //     network::mojom::ProxyResolvingSocketFactory. It needs to be safe to
   //     run on any thread.
   // |delegate|: the delegate whose methods will be called asynchronously in
   //     response to events and messages.
@@ -243,8 +249,9 @@ class GCMClient {
       const ChromeBuildInfo& chrome_build_info,
       const base::FilePath& store_path,
       const scoped_refptr<base::SequencedTaskRunner>& blocking_task_runner,
-      base::RepeatingCallback<
-          void(network::mojom::ProxyResolvingSocketFactoryRequest)>
+      scoped_refptr<base::SequencedTaskRunner> io_task_runner,
+      base::RepeatingCallback<void(
+          mojo::PendingReceiver<network::mojom::ProxyResolvingSocketFactory>)>
           get_socket_factory_callback,
       const scoped_refptr<network::SharedURLLoaderFactory>& url_loader_factory,
       network::NetworkConnectionTracker* network_connection_tracker_,
@@ -318,7 +325,7 @@ class GCMClient {
 
   // Removes the account mapping related to |account_id| from the persistent
   // store.
-  virtual void RemoveAccountMapping(const std::string& account_id) = 0;
+  virtual void RemoveAccountMapping(const CoreAccountId& account_id) = 0;
 
   // Sets last token fetch time in persistent store.
   virtual void SetLastTokenFetchTime(const base::Time& time) = 0;

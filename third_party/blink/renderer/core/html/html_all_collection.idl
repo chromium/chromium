@@ -27,6 +27,7 @@
 // https://html.spec.whatwg.org/C/#the-htmlallcollection-interface
 
 [
+    Exposed=Window,
     Custom=LegacyCallAsFunction,
     LegacyUnenumerableNamedProperties
 ] interface HTMLAllCollection {

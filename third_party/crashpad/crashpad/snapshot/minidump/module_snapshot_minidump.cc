@@ -14,13 +14,15 @@
 
 #include "snapshot/minidump/module_snapshot_minidump.h"
 
+#include <stddef.h>
 #include <string.h>
 
+#include "base/logging.h"
 #include "minidump/minidump_extensions.h"
 #include "snapshot/minidump/minidump_annotation_reader.h"
-#include "snapshot/minidump/minidump_string_reader.h"
 #include "snapshot/minidump/minidump_simple_string_dictionary_reader.h"
 #include "snapshot/minidump/minidump_string_list_reader.h"
+#include "snapshot/minidump/minidump_string_reader.h"
 #include "util/misc/pdb_structures.h"
 
 namespace crashpad {
@@ -33,13 +35,13 @@ ModuleSnapshotMinidump::ModuleSnapshotMinidump()
       annotations_simple_map_(),
       annotation_objects_(),
       uuid_(),
+      build_id_(),
       name_(),
+      debug_file_name_(),
       age_(0),
-      initialized_() {
-}
+      initialized_() {}
 
-ModuleSnapshotMinidump::~ModuleSnapshotMinidump() {
-}
+ModuleSnapshotMinidump::~ModuleSnapshotMinidump() {}
 
 bool ModuleSnapshotMinidump::Initialize(
     FileReaderInterface* file_reader,
@@ -63,31 +65,66 @@ bool ModuleSnapshotMinidump::Initialize(
 
   ReadMinidumpUTF16String(file_reader, minidump_module_.ModuleNameRva, &name_);
 
-  if (minidump_module_.CvRecord.Rva != 0) {
-    CodeViewRecordPDB70 cv;
-
-    if (!file_reader->SeekSet(minidump_module_.CvRecord.Rva)) {
-      return false;
-    }
-
-    if (!file_reader->ReadExactly(&cv, sizeof(cv))) {
-      return false;
-    }
-
-    if (cv.signature == 'SDSR') {
-      age_ = cv.age;
-      uuid_ = cv.uuid;
-    } else if (cv.signature != '01BN') {
-      LOG(ERROR) << "Bad CodeView signature in module";
-      return false;
-    } else {
-      LOG(ERROR) << "NB10 not supported";
-      return false;
-    }
+  if (minidump_module_.CvRecord.Rva != 0 &&
+      !InitializeModuleCodeView(file_reader)) {
+    return false;
   }
 
   INITIALIZATION_STATE_SET_VALID(initialized_);
   return true;
+}
+
+bool ModuleSnapshotMinidump::InitializeModuleCodeView(
+    FileReaderInterface* file_reader) {
+  uint32_t signature;
+
+  DCHECK_NE(minidump_module_.CvRecord.Rva, 0u);
+
+  if (minidump_module_.CvRecord.DataSize < sizeof(signature)) {
+    LOG(ERROR) << "CodeView record in module too small to contain signature";
+    return false;
+  }
+
+  if (!file_reader->SeekSet(minidump_module_.CvRecord.Rva)) {
+    return false;
+  }
+
+  std::vector<uint8_t> cv_record;
+  cv_record.resize(minidump_module_.CvRecord.DataSize);
+
+  if (!file_reader->ReadExactly(cv_record.data(), cv_record.size())) {
+    return false;
+  }
+
+  signature = *reinterpret_cast<uint32_t*>(cv_record.data());
+
+  if (signature == CodeViewRecordPDB70::kSignature) {
+    if (cv_record.size() < offsetof(CodeViewRecordPDB70, pdb_name)) {
+      LOG(ERROR) << "CodeView record in module marked as PDB70 but too small";
+      return false;
+    }
+
+    auto cv_record_pdb70 =
+        reinterpret_cast<CodeViewRecordPDB70*>(cv_record.data());
+
+    age_ = cv_record_pdb70->age;
+    uuid_ = cv_record_pdb70->uuid;
+
+    std::copy(cv_record.begin() + offsetof(CodeViewRecordPDB70, pdb_name),
+              cv_record.end(),
+              std::back_inserter(debug_file_name_));
+    return true;
+  }
+
+  if (signature == CodeViewRecordBuildID::kSignature) {
+    std::copy(cv_record.begin() + offsetof(CodeViewRecordBuildID, build_id),
+              cv_record.end(),
+              std::back_inserter(build_id_));
+    return true;
+  }
+
+  LOG(ERROR) << "Bad CodeView signature in module";
+  return false;
 }
 
 std::string ModuleSnapshotMinidump::Name() const {
@@ -138,10 +175,10 @@ void ModuleSnapshotMinidump::SourceVersion(uint16_t* version_0,
 ModuleSnapshot::ModuleType ModuleSnapshotMinidump::GetModuleType() const {
   INITIALIZATION_STATE_DCHECK_VALID(initialized_);
   switch (minidump_module_.VersionInfo.dwFileType) {
-  case VFT_APP:
-    return kModuleTypeExecutable;
-  case VFT_DLL:
-    return kModuleTypeSharedLibrary;
+    case VFT_APP:
+      return kModuleTypeExecutable;
+    case VFT_DLL:
+      return kModuleTypeSharedLibrary;
   }
   return kModuleTypeUnknown;
 }
@@ -155,8 +192,12 @@ void ModuleSnapshotMinidump::UUIDAndAge(crashpad::UUID* uuid,
 
 std::string ModuleSnapshotMinidump::DebugFileName() const {
   INITIALIZATION_STATE_DCHECK_VALID(initialized_);
-  NOTREACHED();  // https://crashpad.chromium.org/bug/10
-  return std::string();
+  return debug_file_name_;
+}
+
+std::vector<uint8_t> ModuleSnapshotMinidump::BuildID() const {
+  INITIALIZATION_STATE_DCHECK_VALID(initialized_);
+  return build_id_;
 }
 
 std::vector<std::string> ModuleSnapshotMinidump::AnnotationsVector() const {
@@ -201,7 +242,7 @@ bool ModuleSnapshotMinidump::InitializeModuleCrashpadInfo(
 
   MinidumpModuleCrashpadInfo minidump_module_crashpad_info;
   if (minidump_module_crashpad_info_location->DataSize <
-          sizeof(minidump_module_crashpad_info)) {
+      sizeof(minidump_module_crashpad_info)) {
     LOG(ERROR) << "minidump_module_crashpad_info size mismatch";
     return false;
   }
@@ -216,7 +257,7 @@ bool ModuleSnapshotMinidump::InitializeModuleCrashpadInfo(
   }
 
   if (minidump_module_crashpad_info.version !=
-          MinidumpModuleCrashpadInfo::kVersion) {
+      MinidumpModuleCrashpadInfo::kVersion) {
     LOG(ERROR) << "minidump_module_crashpad_info version mismatch";
     return false;
   }

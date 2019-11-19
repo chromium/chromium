@@ -14,12 +14,10 @@
 #include "base/optional.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
-#include "base/task/task_scheduler/task_scheduler.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/values.h"
-#include "ios/web/public/user_agent.h"
-#include "mojo/public/cpp/system/message_pipe.h"
-#include "services/service_manager/public/cpp/manifest.h"
-#include "services/service_manager/public/mojom/service.mojom.h"
+#include "ios/web/common/user_agent.h"
+#include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "ui/base/layout.h"
 #include "url/url_util.h"
 
@@ -36,14 +34,11 @@ namespace net {
 class SSLInfo;
 }
 
-namespace service_manager {
-class Service;
-}
-
 namespace web {
 
 class BrowserState;
 class BrowserURLRewriter;
+class SerializableUserDataManager;
 class WebClient;
 class WebMainParts;
 class WebState;
@@ -91,6 +86,14 @@ class WebClient {
   // browser would return true for "chrome://about" URL.
   virtual bool IsAppSpecificURL(const GURL& url) const;
 
+  // Returns true if URL should not be restored.
+  virtual bool ShouldBlockUrlDuringRestore(const GURL& url,
+                                           WebState* web_state) const;
+
+  // Allow embedder to inject data.
+  virtual void AddSerializableData(
+      web::SerializableUserDataManager* user_data_manager,
+      web::WebState* web_state);
   // Returns text to be displayed for an unsupported plugin.
   virtual base::string16 GetPluginNotSupportedText() const;
 
@@ -138,58 +141,54 @@ class WebClient {
   virtual NSString* GetDocumentStartScriptForMainFrame(
       BrowserState* browser_state) const;
 
-  // Handles an incoming service request from the Service Manager.
-  virtual std::unique_ptr<service_manager::Service> HandleServiceRequest(
-      const std::string& service_name,
-      service_manager::mojom::ServiceRequest request);
-
-  // Allows the embedder to augment service manifests for existing services.
-  // Specifically, the sets of exposed and required capabilities, interface
-  // filter capabilities (deprecated), and packaged services will be taken from
-  // the returned Manifest and amended to those of the existing Manifest for the
-  // service named |name|.
-  //
-  // If no overlay is provided for the service, this returns |base::nullopt|.
-  virtual base::Optional<service_manager::Manifest> GetServiceManifestOverlay(
-      base::StringPiece name);
-
   // Allows the embedder to bind an interface request for a WebState-scoped
   // interface that originated from the main frame of |web_state|. Called if
-  // |web_state| could not bind the request for |interface_name| itself.
-  virtual void BindInterfaceRequestFromMainFrame(
+  // |web_state| could not bind the receiver itself.
+  virtual void BindInterfaceReceiverFromMainFrame(
       WebState* web_state,
-      const std::string& interface_name,
-      mojo::ScopedMessagePipeHandle interface_pipe) {}
+      mojo::GenericPendingReceiver receiver) {}
 
   // Informs the embedder that a certificate error has occurred. |cert_error| is
   // a network error code defined in //net/base/net_error_list.h. If
-  // |overridable| is true, the user can ignore the error and continue. The
-  // embedder can call the |callback| asynchronously (an argument of true means
-  // that |cert_error| should be ignored and web// should load the page).
+  // |overridable| is true, the user can ignore the error and continue.
+  // |navigation_id| is retrieved from NavigationContext::GetNavigationId() and
+  // indicates which navigation triggered the certificate error. The embedder
+  // can call the |callback| asynchronously (an argument of true means that
+  // |cert_error| should be ignored and web// should load the page).
   virtual void AllowCertificateError(
       WebState* web_state,
       int cert_error,
       const net::SSLInfo& ssl_info,
       const GURL& request_url,
       bool overridable,
+      int64_t navigation_id,
       const base::Callback<void(bool)>& callback);
 
-  // Returns the information to display when a navigation error occurs.
-  // |error| and |error_html| are always valid pointers. Embedder may set
-  // |error_html| to an HTML page containing the details of the error and maybe
-  // links to more info.
+  // Calls the given |callback| with the contents of an error page to display
+  // when a navigation error occurs. |error| is always a valid pointer. The
+  // string passed to |callback| will be nil if no error page should be
+  // displayed. Otherwise, this string will contain the details of the error
+  // and maybe links to more info. |info| will have a value for SSL cert errors
+  // and otherwise be nullopt. |navigation_id| is passed into this method so
+  // that in the case of an SSL cert error, the blocking page can be associated
+  // with the tab.
   virtual void PrepareErrorPage(WebState* web_state,
                                 const GURL& url,
                                 NSError* error,
                                 bool is_post,
                                 bool is_off_the_record,
-                                NSString** error_html);
+                                const base::Optional<net::SSLInfo>& info,
+                                int64_t navigation_id,
+                                base::OnceCallback<void(NSString*)> callback);
 
   // Allows upper layers to inject experimental flags to the web layer.
   // TODO(crbug.com/734150): Clean up this flag after experiment. If need for a
   // second flag arises before clean up, consider generalizing to an experiment
   // flags struct instead of adding a bool method for each experiment.
   virtual bool IsSlimNavigationManagerEnabled() const;
+
+  // Instructs the embedder to return a container that is attached to a window.
+  virtual UIView* GetWindowedContainer();
 };
 
 }  // namespace web

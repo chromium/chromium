@@ -4,12 +4,14 @@
 
 #include "ash/wm/splitview/split_view_highlight_view.h"
 
+#include "ash/display/screen_orientation_controller.h"
 #include "ash/shell.h"
 #include "ash/wm/overview/rounded_rect_view.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/view.h"
+#include "ui/views/widget/widget.h"
 
 namespace ash {
 
@@ -78,9 +80,10 @@ SplitViewHighlightView::SplitViewHighlightView(bool is_right_or_bottom)
 
 SplitViewHighlightView::~SplitViewHighlightView() = default;
 
-void SplitViewHighlightView::SetBounds(const gfx::Rect& bounds,
-                                       bool landscape,
-                                       bool animate) {
+void SplitViewHighlightView::SetBounds(
+    const gfx::Rect& bounds,
+    bool landscape,
+    const base::Optional<SplitviewAnimationType>& animation_type) {
   if (bounds == this->bounds() && landscape == landscape_)
     return;
 
@@ -94,7 +97,9 @@ void SplitViewHighlightView::SetBounds(const gfx::Rect& bounds,
   const bool slides_from_right = base::i18n::IsRTL() && landscape
                                      ? !is_right_or_bottom_
                                      : is_right_or_bottom_;
-  if (slides_from_right && animate && !offset.IsZero()) {
+  if (!offset.IsZero() && animation_type &&
+      (slides_from_right ||
+       *animation_type == SPLITVIEW_ANIMATION_PREVIEW_AREA_NIX_INSET)) {
     gfx::Rect old_left_top_bounds = left_top_->bounds();
     gfx::Rect old_right_middle_bounds = right_bottom_->bounds();
     gfx::Rect old_middle_bounds = middle_->bounds();
@@ -137,20 +142,20 @@ void SplitViewHighlightView::SetBounds(const gfx::Rect& bounds,
   right_bottom_bounds = GetMirroredRect(right_bottom_bounds);
   middle_bounds = GetMirroredRect(middle_bounds);
 
-  // If |animate|, calculate the needed transform from old bounds to new bounds
-  // and apply it. Otherwise set the new bounds and reset the transforms on all
-  // items.
-  if (animate) {
+  // If |animation_type| has a value, calculate the needed transform from old
+  // bounds to new bounds and apply it. Otherwise set the new bounds and reset
+  // the transforms on all items.
+  if (animation_type) {
     DoSplitviewTransformAnimation(
-        middle_->layer(), SPLITVIEW_ANIMATION_PREVIEW_AREA_SLIDE_IN_OUT,
+        middle_->layer(), *animation_type,
         CalculateTransformFromRects(middle_->bounds(), middle_bounds,
                                     landscape));
     DoSplitviewTransformAnimation(
-        left_top_->layer(), SPLITVIEW_ANIMATION_PREVIEW_AREA_SLIDE_IN_OUT,
+        left_top_->layer(), *animation_type,
         CalculateTransformFromRects(left_top_->bounds(), left_top_bounds,
                                     landscape));
     DoSplitviewTransformAnimation(
-        right_bottom_->layer(), SPLITVIEW_ANIMATION_PREVIEW_AREA_SLIDE_IN_OUT,
+        right_bottom_->layer(), *animation_type,
         CalculateTransformFromRects(right_bottom_->bounds(),
                                     right_bottom_bounds, landscape));
   } else {
@@ -170,43 +175,78 @@ void SplitViewHighlightView::SetColor(SkColor color) {
   middle_->layer()->SetColor(color);
 }
 
-void SplitViewHighlightView::OnIndicatorTypeChanged(
-    IndicatorState indicator_state) {
-  if (indicator_state == IndicatorState::kNone) {
-    DoSplitviewOpacityAnimation(layer(),
-                                SPLITVIEW_ANIMATION_HIGHLIGHT_FADE_OUT);
+void SplitViewHighlightView::OnWindowDraggingStateChanged(
+    SplitViewDragIndicators::WindowDraggingState window_dragging_state,
+    SplitViewDragIndicators::WindowDraggingState previous_window_dragging_state,
+    bool previews_only,
+    bool can_dragged_window_be_snapped) {
+  // No top indicator for dragging from the top in portrait orientation.
+  if (window_dragging_state ==
+          SplitViewDragIndicators::WindowDraggingState::kFromTop &&
+      !IsCurrentScreenOrientationLandscape() && !is_right_or_bottom_) {
     return;
   }
 
-  if (SplitViewDragIndicators::IsPreviewAreaState(indicator_state)) {
-    const bool is_preview_on_left_or_top =
-        SplitViewDragIndicators::IsPreviewAreaOnLeftTopOfScreen(
-            indicator_state);
-    const bool should_fade_in = is_right_or_bottom_ ? !is_preview_on_left_or_top
-                                                    : is_preview_on_left_or_top;
+  const SplitViewController::SnapPosition preview_position =
+      SplitViewDragIndicators::GetSnapPosition(window_dragging_state);
+  const SplitViewController::SnapPosition previous_preview_position =
+      SplitViewDragIndicators::GetSnapPosition(previous_window_dragging_state);
+
+  if (window_dragging_state ==
+      SplitViewDragIndicators::WindowDraggingState::kNoDrag) {
+    if (previous_preview_position == SplitViewController::NONE) {
+      DoSplitviewOpacityAnimation(layer(),
+                                  SPLITVIEW_ANIMATION_HIGHLIGHT_FADE_OUT);
+      return;
+    }
+    if (is_right_or_bottom_ != IsPhysicalLeftOrTop(previous_preview_position)) {
+      DoSplitviewOpacityAnimation(layer(),
+                                  SPLITVIEW_ANIMATION_PREVIEW_AREA_FADE_OUT);
+    }
+    return;
+  }
+
+  // Set the color according to |can_dragged_window_be_snapped|.
+  SetColor(can_dragged_window_be_snapped ? SK_ColorWHITE : SK_ColorBLACK);
+
+  if (preview_position != SplitViewController::NONE) {
     DoSplitviewOpacityAnimation(
-        layer(), should_fade_in ? SPLITVIEW_ANIMATION_PREVIEW_AREA_FADE_IN
-                                : SPLITVIEW_ANIMATION_OTHER_HIGHLIGHT_FADE_OUT);
+        layer(), is_right_or_bottom_ != IsPhysicalLeftOrTop(preview_position)
+                     ? SPLITVIEW_ANIMATION_PREVIEW_AREA_FADE_IN
+                     : SPLITVIEW_ANIMATION_OTHER_HIGHLIGHT_FADE_OUT);
     return;
   }
 
-  // No need to update left/top highlight view for right indicator state and
-  // also no need to update right/bottom highlight view for left indicator
-  // state.
-  if ((!is_right_or_bottom_ &&
-       SplitViewDragIndicators::IsRightIndicatorState(indicator_state)) ||
-      (is_right_or_bottom_ &&
-       SplitViewDragIndicators::IsLeftIndicatorState(indicator_state))) {
+  if (previous_preview_position != SplitViewController::NONE) {
+    // There was a snap preview showing, but now the user has dragged away from
+    // the edge of the screen, so that the preview should go away.
+    if (is_right_or_bottom_ != IsPhysicalLeftOrTop(previous_preview_position)) {
+      // This code is for the preview. If |previews_only|, just fade out. Else
+      // fade in from |kPreviewAreaHighlightOpacity| to |kHighlightOpacity|.
+      DoSplitviewOpacityAnimation(
+          layer(), previews_only ? SPLITVIEW_ANIMATION_HIGHLIGHT_FADE_OUT
+                                 : SPLITVIEW_ANIMATION_HIGHLIGHT_FADE_IN);
+    } else {
+      // This code is for the other highlight. If |previews_only|, just stay
+      // hidden (in other words, do nothing). Else fade in.
+      DCHECK_EQ(0.f, layer()->opacity());
+      if (!previews_only) {
+        DoSplitviewOpacityAnimation(
+            layer(), SPLITVIEW_ANIMATION_OTHER_HIGHLIGHT_FADE_IN);
+      }
+    }
     return;
   }
-  SetColor(SplitViewDragIndicators::IsCannotSnapState(indicator_state)
-               ? SK_ColorBLACK
-               : SK_ColorWHITE);
-  DoSplitviewOpacityAnimation(layer(),
-                              Shell::Get()->split_view_controller()->state() ==
-                                      SplitViewController::NO_SNAP
-                                  ? SPLITVIEW_ANIMATION_HIGHLIGHT_FADE_IN
-                                  : SPLITVIEW_ANIMATION_HIGHLIGHT_FADE_OUT);
+
+  // The drag just started, and not in a snap area. If |previews_only|, there is
+  // nothing to do. Else fade in.
+  DCHECK_EQ(SplitViewDragIndicators::WindowDraggingState::kNoDrag,
+            previous_window_dragging_state);
+  DCHECK_EQ(0.f, layer()->opacity());
+  if (!previews_only) {
+    DoSplitviewOpacityAnimation(layer(), SPLITVIEW_ANIMATION_HIGHLIGHT_FADE_IN);
+    return;
+  }
 }
 
 }  // namespace ash

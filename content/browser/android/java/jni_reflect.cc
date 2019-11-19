@@ -7,10 +7,10 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 
-#include "jni/AccessibleObject_jni.h"
-#include "jni/Class_jni.h"
-#include "jni/Method_jni.h"
-#include "jni/Modifier_jni.h"
+#include "content/browser/reflection_jni_headers/AccessibleObject_jni.h"
+#include "content/browser/reflection_jni_headers/Class_jni.h"
+#include "content/browser/reflection_jni_headers/Method_jni.h"
+#include "content/browser/reflection_jni_headers/Modifier_jni.h"
 
 using base::android::ConvertJavaStringToUTF8;
 using base::android::JavaRef;

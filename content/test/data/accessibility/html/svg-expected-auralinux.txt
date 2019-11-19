@@ -2,4 +2,4 @@
 ++[section]
 ++++[document frame] name='svg'
 ++++++[section]
-++++++++[text] name='Test'
+++++++++[static] name='Test'

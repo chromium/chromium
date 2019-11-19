@@ -1,0 +1,4 @@
+document
+++group
+++++button Name='details tag' ExpandCollapse.ExpandCollapseState='Collapsed'
+++++++description Name='details tag'

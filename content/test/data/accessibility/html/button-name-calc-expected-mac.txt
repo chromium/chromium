@@ -6,5 +6,15 @@ AXWebArea
 ++AXButton AXTitle='LabelledBy4' AXHelp='DescribedBy4'
 ++AXButton AXTitle='InnerText5' AXHelp='DescribedBy5'
 ++AXButton AXTitle='Outer inner'
+++++AXStaticText
+++++AXGroup
+++++++AXStaticText
 ++AXButton AXTitle='Outer inner1'
+++++AXStaticText
+++++AXGroup AXDescription='inner1'
+++++++AXStaticText
 ++AXButton AXTitle='Outer grandchild'
+++++AXStaticText
+++++AXGroup
+++++++AXGroup
+++++++++AXStaticText

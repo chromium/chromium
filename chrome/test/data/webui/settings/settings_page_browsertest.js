@@ -4,13 +4,8 @@
 
 /** @fileoverview Prototype for Settings page tests. */
 
-/** @const {string} Path to root from chrome/test/data/webui/settings/. */
-// eslint-disable-next-line no-var
-var ROOT_PATH = '../../../../../';
-
 // Polymer BrowserTest fixture.
-GEN_INCLUDE(
-    [ROOT_PATH + 'chrome/test/data/webui/polymer_browser_test_base.js']);
+GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 
 /**
  * @constructor
@@ -25,10 +20,11 @@ SettingsPageBrowserTest.prototype = {
   browsePreload: 'chrome://settings/',
 
   /** @override */
-  extraLibraries: PolymerTest.getLibraries(ROOT_PATH).concat([
+  extraLibraries: [
+    ...PolymerTest.prototype.extraLibraries,
     '../fake_chrome_event.js',
     'fake_settings_private.js',
-  ]),
+  ],
 
   /** @type {?SettingsBasicPageElement} */
   basicPage: null,

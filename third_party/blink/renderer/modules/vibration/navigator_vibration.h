@@ -46,7 +46,7 @@ enum NavigatorVibrationType {
 };
 
 class MODULES_EXPORT NavigatorVibration final
-    : public GarbageCollectedFinalized<NavigatorVibration>,
+    : public GarbageCollected<NavigatorVibration>,
       public Supplement<Navigator>,
       public ContextLifecycleObserver {
   USING_GARBAGE_COLLECTED_MIXIN(NavigatorVibration);

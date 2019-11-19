@@ -8,12 +8,6 @@ namespace extensions {
 namespace cast {
 namespace api {
 
-BookmarksFunction::~BookmarksFunction() {}
-
-void BookmarksFunction::Destruct() const {
-  delete this;
-}
-
 BookmarksStubFunction::~BookmarksStubFunction() {}
 
 ExtensionFunction::ResponseAction BookmarksStubFunction::Run() {

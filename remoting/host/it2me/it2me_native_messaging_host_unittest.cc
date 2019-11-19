@@ -35,6 +35,7 @@
 #include "remoting/host/setup/test_util.h"
 #include "remoting/protocol/errors.h"
 #include "remoting/protocol/ice_config.h"
+#include "remoting/signaling/log_to_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace remoting {
@@ -47,7 +48,6 @@ const char kTestAccessCode[] = "888888";
 constexpr base::TimeDelta kTestAccessCodeLifetime =
     base::TimeDelta::FromSeconds(666);
 const char kTestClientUsername[] = "some_user@gmail.com";
-const char kTestBotJid[] = "remoting@bot.talk.google.com";
 const char kTestStunServer[] = "test_relay_server.com";
 
 void VerifyId(std::unique_ptr<base::DictionaryValue> response,
@@ -90,7 +90,6 @@ base::DictionaryValue CreateConnectMessage(int id) {
   connect_message.SetString("type", "connect");
   connect_message.SetString("xmppServerAddress", "talk.google.com:5222");
   connect_message.SetBoolean("xmppServerUseTls", true);
-  connect_message.SetString("directoryBotJid", kTestBotJid);
   connect_message.SetString("userName", kTestClientUsername);
   connect_message.SetString("authServiceWithToken", "oauth2:sometoken");
   connect_message.Set("iceConfig",
@@ -118,10 +117,11 @@ class MockIt2MeHost : public It2MeHost {
   void Connect(std::unique_ptr<ChromotingHostContext> context,
                std::unique_ptr<base::DictionaryValue> policies,
                std::unique_ptr<It2MeConfirmationDialogFactory> dialog_factory,
+               std::unique_ptr<RegisterSupportHostRequest> register_request,
+               std::unique_ptr<LogToServer> log_to_server,
                base::WeakPtr<It2MeHost::Observer> observer,
                std::unique_ptr<SignalStrategy> signal_strategy,
                const std::string& username,
-               const std::string& directory_bot_jid,
                const protocol::IceConfig& ice_config) override;
   void Disconnect() override;
 
@@ -137,21 +137,22 @@ void MockIt2MeHost::Connect(
     std::unique_ptr<ChromotingHostContext> context,
     std::unique_ptr<base::DictionaryValue> policies,
     std::unique_ptr<It2MeConfirmationDialogFactory> dialog_factory,
+    std::unique_ptr<RegisterSupportHostRequest> register_request,
+    std::unique_ptr<LogToServer> log_to_server,
     base::WeakPtr<It2MeHost::Observer> observer,
     std::unique_ptr<SignalStrategy> signal_strategy,
     const std::string& username,
-    const std::string& directory_bot_jid,
     const protocol::IceConfig& ice_config) {
   DCHECK(context->ui_task_runner()->BelongsToCurrentThread());
 
   // Verify that parameters are passed correctly.
   EXPECT_EQ(username, kTestClientUsername);
-  EXPECT_EQ(directory_bot_jid, kTestBotJid);
   EXPECT_EQ(ice_config.stun_servers[0].hostname(), kTestStunServer);
 
   host_context_ = std::move(context);
   observer_ = std::move(observer);
   signal_strategy_ = std::move(signal_strategy);
+  register_request_ = std::move(register_request);
 
   OnPolicyUpdate(std::move(policies));
 
@@ -564,8 +565,7 @@ void It2MeNativeMessagingHostTest::StartHost() {
   pipe_->Start(std::move(it2me_host), std::move(channel));
 
   // Notify the test that the host has finished starting up.
-  test_message_loop_->task_runner()->PostTask(
-      FROM_HERE, test_run_loop_->QuitClosure());
+  test_run_loop_->Quit();
 }
 
 void It2MeNativeMessagingHostTest::ExitTest() {
@@ -640,7 +640,7 @@ TEST_F(It2MeNativeMessagingHostTest,
   connect_message.SetBoolean("noDialogs", true);
   WriteMessageToInputPipe(connect_message);
   VerifyConnectResponses(next_id);
-#if defined(OS_CHROMEOS)
+#if defined(OS_CHROMEOS) || !defined(NDEBUG)
   EXPECT_FALSE(factory_raw_ptr_->host->enable_dialogs());
 #else
   EXPECT_TRUE(factory_raw_ptr_->host->enable_dialogs());

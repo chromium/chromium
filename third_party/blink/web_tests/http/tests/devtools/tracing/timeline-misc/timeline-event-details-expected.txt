@@ -1,8 +1,0 @@
-Checks the Product property in details pane for a node with URL.
-
-Cleared ProductRegistryImpl
-Adding entry: *.google.com
-
-Script: www.google.com:1337
-: Google
-

@@ -1,9 +1,8 @@
 <!DOCTYPE html>
-<script src="../../resources/js-test.js"></script>
-
+<title>Test that XMLSerializer quotes the attribute characters specified in 'https://dvcs.w3.org/hg/innerhtml/raw-file/tip/index.html#dfn-concept-serialize-xml-attributes', the W3C spec</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
 <script>
-description('Test that XMLSerializer quotes the attribute characters specified in <a href="https://dvcs.w3.org/hg/innerhtml/raw-file/tip/index.html#dfn-concept-serialize-xml-attributes">the W3C spec</a>.');
-
 var attrValue = '< > & " \' \xA0';
 
 // HTML case.
@@ -11,7 +10,7 @@ var attrValue = '< > & " \' \xA0';
 // Steps 1-3 under the "Escaping a string" heading are relevant to attributes.
 window.htmlElement = document.createElement('div');
 htmlElement.setAttribute('quoteme', attrValue);
-shouldBe('htmlElement.outerHTML', '"<div quoteme=\\"< > &amp; &quot; \' &nbsp;\\"><' + '/div>"');
+assert_equals(htmlElement.outerHTML, "<div quoteme=\"< > &amp; &quot; ' &nbsp;\"></div>");
 
 // XML case.
 // DOM parsing and serialization: https://dvcs.w3.org/hg/innerhtml/raw-file/tip/index.html#dfn-concept-serialize-xml-attributes
@@ -19,5 +18,6 @@ shouldBe('htmlElement.outerHTML', '"<div quoteme=\\"< > &amp; &quot; \' &nbsp;\\
 var xmlDocument = document.implementation.createDocument('http://www.w3.org/1999/xhtml', 'html', null);
 window.xmlElement = xmlDocument.createElement('div');
 xmlElement.setAttribute('quoteme', attrValue);
-shouldBe('(new XMLSerializer()).serializeToString(xmlElement)', '"<div xmlns=\\"http://www.w3.org/1999/xhtml\\" quoteme=\\"&lt; &gt; &amp; &quot; \' \\xA0\\"><' + '/div>"');
+assert_equals((new XMLSerializer()).serializeToString(xmlElement), "<div xmlns=\"http://www.w3.org/1999/xhtml\" quoteme=\"&lt; &gt; &amp; &quot; ' \xA0\"></div>");
+done();
 </script>

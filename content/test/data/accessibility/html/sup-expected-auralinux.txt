@@ -1,5 +1,5 @@
 [document web]
 ++[paragraph]
-++++[text] name='This text contains'
+++++[static] name='This text contains'
 ++++[superscript] name='superscript'
-++++[text] name='text.'
+++++[static] name='text.'

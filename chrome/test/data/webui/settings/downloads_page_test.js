@@ -32,7 +32,7 @@ class TestDownloadsBrowserProxy extends TestBrowserProxy {
 let downloadsPage = null;
 
 /** @type {?TestDownloadsBrowserProxy} */
-let DownloadsBrowserProxy = null;
+const DownloadsBrowserProxy = null;
 
 suite('DownloadsHandler', function() {
   setup(function() {

@@ -1,0 +1,44 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+package mojo_fuzzer;
+
+import "mach_message.proto";
+
+// Extension to MachMessage that enables fuzzing the internal structure of
+// the Mojo message data.
+message MojoMessage {
+  extend mach_fuzzer.MachMessage { optional MojoMessage mojo_message = 100; }
+
+  // For inline message data, controls the first uint64 of the message data,
+  // which should be the length of |data|. If this is not set, then the byte
+  // length of |data| will be used instead.
+  optional uint64 data_length = 1;
+
+  // Inline message data to send. To fuzz OOL message sending, use a
+  // descriptor on MachMessage.
+  required bytes data = 2;
+}
+
+message ChannelMac {
+  enum EndpointType {
+    LOCAL = 0;
+    REMOTE = 1;
+  }
+
+  // Controls what endpoint type should be used when setting up the channel
+  // for fuzzing.
+  required EndpointType endpoint_type = 1;
+
+  // If false, then a second channel will be created to properly handshake
+  // the Channel. If true, then the fuzzer will not handshake the channel
+  // to let the handshake protocol be fuzzed.
+  required bool fuzz_handshake = 2;
+
+  // Messages to enqueue on the channel. These are sent directly to the
+  // channel's Mach port and do not go through Channel::Write().
+  repeated mach_fuzzer.MachMessage messages = 3;
+}

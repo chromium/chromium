@@ -5,8 +5,6 @@
 #ifndef CHROMEOS_SERVICES_DEVICE_SYNC_CRYPTAUTH_KEY_CREATOR_IMPL_H_
 #define CHROMEOS_SERVICES_DEVICE_SYNC_CRYPTAUTH_KEY_CREATOR_IMPL_H_
 
-#include "chromeos/services/device_sync/cryptauth_key_creator.h"
-
 #include <memory>
 #include <string>
 #include <utility>
@@ -18,6 +16,7 @@
 #include "base/optional.h"
 #include "chromeos/services/device_sync/cryptauth_key.h"
 #include "chromeos/services/device_sync/cryptauth_key_bundle.h"
+#include "chromeos/services/device_sync/cryptauth_key_creator.h"
 
 namespace chromeos {
 
@@ -60,9 +59,9 @@ class CryptAuthKeyCreatorImpl : public CryptAuthKeyCreator {
                                     const std::string& public_key,
                                     const std::string& private_key);
   void OnSymmetricKeyDerived(CryptAuthKeyBundle::Name bundle_name,
-                             const std::string& symmetric_key,
-                             const std::string& handle);
+                             const std::string& symmetric_key);
 
+  size_t num_keys_to_create_ = 0;
   base::flat_map<CryptAuthKeyBundle::Name, CreateKeyData> keys_to_create_;
   base::flat_map<CryptAuthKeyBundle::Name, CryptAuthKey> new_keys_;
   base::Optional<CryptAuthKey> server_ephemeral_dh_;

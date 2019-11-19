@@ -15,6 +15,7 @@
 
 cr-toggle {
   align-self: center;
+  margin-inline-end: 12px;
 }
 
 /* Line heights of 20 pixels title (#titleContainer) and 20 pixels value

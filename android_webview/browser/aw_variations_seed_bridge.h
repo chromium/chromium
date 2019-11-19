@@ -16,6 +16,9 @@ namespace android_webview {
 // Otherwise, return null.
 std::unique_ptr<variations::SeedResponse> GetAndClearJavaSeed();
 
+// Returns true if the variations seed that was loaded is fresh.
+bool IsSeedFresh();
+
 }  // namespace android_webview
 
 #endif  // ANDROID_WEBVIEW_BROWSER_AW_VARIATIONS_SEED_BRIDGE_H_

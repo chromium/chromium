@@ -1,0 +1,19 @@
+Name: Lottie Web
+Short Name: lottie-web
+URL: https://github.com/airbnb/lottie-web
+Version: v5.5.2
+License: MIT
+License File: LICENSE
+Security Critical: no
+
+Description:
+Lottie is a library for Android, iOS, Web, and Windows that parses Adobe After Effects animations exported as json with Bodymovin and renders them natively on mobile and on the web.
+
+The library imported here is the lottie-web library which is a javascript file that can run animations on the web.
+
+Local Modifications:
+The library has been modified to be able to run on javascript worker thread which provides performance benefits and some level of security sandboxing. The library has its document and window references removed. All XMLHttpRequest have also been removed. This means the animation will not load external assests like images and fonts. A wrapper function has been added to handle messages sent to the worker thread from the main thread.
+
+Generating Minified Version:
+To generate the minified version use node's uglify-js-
+$ node uglifyjs --compress --mangle reserved=['onmessage', 'postMessage'] lottie_worker.js -o lottie_worker.min.js -b beautify=false,ascii_only=true

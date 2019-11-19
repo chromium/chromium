@@ -30,6 +30,7 @@ public class HostBrowserLauncherParams {
     private int mSource;
     private boolean mForceNavigation;
     private long mLaunchTimeMs;
+    private long mSplashShownTimeMs;
     private String mSelectedShareTargetActivityClassName;
 
     /**
@@ -37,7 +38,8 @@ public class HostBrowserLauncherParams {
      * in the Android Manifest.
      */
     public static HostBrowserLauncherParams createForIntent(Context context, Intent intent,
-            String hostBrowserPackageName, boolean dialogShown, long launchTimeMs) {
+            String hostBrowserPackageName, boolean dialogShown, long launchTimeMs,
+            long splashShownTimeMs) {
         Bundle metadata = WebApkUtils.readMetaData(context);
         if (metadata == null) return null;
 
@@ -90,7 +92,8 @@ public class HostBrowserLauncherParams {
 
         return new HostBrowserLauncherParams(hostBrowserPackageName,
                 hostBrowserMajorChromiumVersion, dialogShown, intent, startUrl, source,
-                forceNavigation, launchTimeMs, selectedShareTargetActivityClassName);
+                forceNavigation, launchTimeMs, splashShownTimeMs,
+                selectedShareTargetActivityClassName);
     }
 
     private static Bundle fetchActivityMetaData(
@@ -199,7 +202,7 @@ public class HostBrowserLauncherParams {
     private HostBrowserLauncherParams(String hostBrowserPackageName,
             int hostBrowserMajorChromiumVersion, boolean dialogShown, Intent originalIntent,
             String startUrl, int source, boolean forceNavigation, long launchTimeMs,
-            String selectedShareTargetActivityClassName) {
+            long splashShownTimeMs, String selectedShareTargetActivityClassName) {
         mHostBrowserPackageName = hostBrowserPackageName;
         mHostBrowserMajorChromiumVersion = hostBrowserMajorChromiumVersion;
         mDialogShown = dialogShown;
@@ -208,6 +211,7 @@ public class HostBrowserLauncherParams {
         mSource = source;
         mForceNavigation = forceNavigation;
         mLaunchTimeMs = launchTimeMs;
+        mSplashShownTimeMs = splashShownTimeMs;
         mSelectedShareTargetActivityClassName = selectedShareTargetActivityClassName;
     }
 
@@ -259,6 +263,14 @@ public class HostBrowserLauncherParams {
      */
     public long getLaunchTimeMs() {
         return mLaunchTimeMs;
+    }
+
+    /**
+     * Returns timestamp that the splash screen was shown. Returns -1 if the splash screen is not
+     * shown by the ShellAPK.
+     */
+    public long getSplashShownTimeMs() {
+        return mSplashShownTimeMs;
     }
 
     /** Returns the class name of the share activity that the user selected. */

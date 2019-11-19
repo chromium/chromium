@@ -7,10 +7,8 @@
 #include <memory>
 
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/test/ash_test_base.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
-#include "chromeos/dbus/power_manager_client.h"
-#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_unittest_util.h"
@@ -38,17 +36,13 @@ class TestObserver : public PowerStatus::Observer {
 
 }  // namespace
 
-class PowerStatusTest : public testing::Test {
+class PowerStatusTest : public AshTestBase {
  public:
-  PowerStatusTest()
-      : scoped_task_environment_(
-            base::test::ScopedTaskEnvironment::MainThreadType::UI),
-        power_status_(NULL) {}
+  PowerStatusTest() = default;
   ~PowerStatusTest() override = default;
 
   void SetUp() override {
-    chromeos::PowerManagerClient::Initialize();
-    PowerStatus::Initialize();
+    AshTestBase::SetUp();
     power_status_ = PowerStatus::Get();
     test_observer_.reset(new TestObserver);
     power_status_->AddObserver(test_observer_.get());
@@ -57,13 +51,11 @@ class PowerStatusTest : public testing::Test {
   void TearDown() override {
     power_status_->RemoveObserver(test_observer_.get());
     test_observer_.reset();
-    PowerStatus::Shutdown();
-    chromeos::PowerManagerClient::Shutdown();
+    AshTestBase::TearDown();
   }
 
  protected:
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
-  PowerStatus* power_status_;  // Not owned.
+  PowerStatus* power_status_ = nullptr;  // Not owned.
   std::unique_ptr<TestObserver> test_observer_;
 
  private:

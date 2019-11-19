@@ -6,12 +6,16 @@
 '''Unit test that checks some of util functions.
 '''
 
+from __future__ import print_function
+
 import os
 import sys
 if __name__ == '__main__':
   sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
 import unittest
+
+import six
 
 from grit import util
 
@@ -52,8 +56,8 @@ class UtilUnittest(unittest.TestCase):
     self.failUnless(util.CanonicalLanguage('no_no_bokmal') == 'no-NO-BOKMAL')
 
   def testUnescapeHtml(self):
-    self.failUnless(util.UnescapeHtml('&#1010;') == unichr(1010))
-    self.failUnless(util.UnescapeHtml('&#xABcd;') == unichr(43981))
+    self.failUnless(util.UnescapeHtml('&#1010;') == six.unichr(1010))
+    self.failUnless(util.UnescapeHtml('&#xABcd;') == six.unichr(43981))
 
   def testRelativePath(self):
     """ Verify that MakeRelativePath works in some tricky cases."""
@@ -82,7 +86,7 @@ class UtilUnittest(unittest.TestCase):
       with open('testfile', 'wb') as f:
         f.write(data)
       if util.ReadFile('testfile', encoding) != expected_result:
-        print (util.ReadFile('testfile', encoding), expected_result)
+        print(util.ReadFile('testfile', encoding), expected_result)
       self.failUnless(util.ReadFile('testfile', encoding) == expected_result)
 
     test_std_newline = '\xEF\xBB\xBFabc\ndef'  # EF BB BF is UTF-8 BOM

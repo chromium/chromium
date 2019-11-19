@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_METRICS_STABILITY_METRICS_HELPER_H_
 #define COMPONENTS_METRICS_STABILITY_METRICS_HELPER_H_
 
+#include <string>
+
 #include "base/macros.h"
 #include "base/optional.h"
 #include "base/process/kill.h"
@@ -14,6 +16,18 @@ class PrefRegistrySimple;
 class PrefService;
 
 namespace metrics {
+
+// The values here correspond to values in the Stability message in
+// system_profile.proto. It is intentional that we're only tracking a subset,
+// but more values can get added to this.
+// This must stay 1-1 with the StabilityEventType enum in enums.xml.
+enum class StabilityEventType {
+  kPageLoad = 2,
+  kRendererCrash = 3,
+  kExtensionCrash = 5,
+  kBrowserCrash = 16,
+  kMaxValue = kBrowserCrash
+};
 
 class SystemProfileProto;
 
@@ -66,6 +80,9 @@ class StabilityMetricsHelper {
   // another platform, server-side processing code needs to be updated for that
   // platform to use the new data. Server-side currently assumes Android-only.
   void IncreaseGpuCrashCount();
+
+  // Records a histogram for the input |stability_event_type|.
+  static void RecordStabilityEvent(StabilityEventType stability_event_type);
 
  private:
   // Increments an Integer pref value specified by |path|.

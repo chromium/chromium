@@ -26,7 +26,7 @@
 #include "content/public/common/url_constants.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/cookies/canonical_cookie.h"
-#include "third_party/blink/public/mojom/appcache/appcache_info.mojom.h"
+#include "net/cookies/cookie_util.h"
 #include "url/gurl.h"
 
 namespace {
@@ -41,11 +41,15 @@ bool SameDomainOrHost(const GURL& gurl1, const GURL& gurl2) {
 }  // namespace
 
 LocalSharedObjectsContainer::LocalSharedObjectsContainer(Profile* profile)
-    : appcaches_(new CannedBrowsingDataAppCacheHelper(profile)),
+    : appcaches_(new CannedBrowsingDataAppCacheHelper(
+          content::BrowserContext::GetDefaultStoragePartition(profile)
+              ->GetAppCacheService())),
       cookies_(new CannedBrowsingDataCookieHelper(
           content::BrowserContext::GetDefaultStoragePartition(profile))),
       databases_(new CannedBrowsingDataDatabaseHelper(profile)),
-      file_systems_(new CannedBrowsingDataFileSystemHelper(profile)),
+      file_systems_(new CannedBrowsingDataFileSystemHelper(
+          content::BrowserContext::GetDefaultStoragePartition(profile)
+              ->GetFileSystemContext())),
       indexed_dbs_(new CannedBrowsingDataIndexedDBHelper(
           content::BrowserContext::GetDefaultStoragePartition(profile)
               ->GetIndexedDBContext())),
@@ -66,7 +70,7 @@ LocalSharedObjectsContainer::~LocalSharedObjectsContainer() {
 
 size_t LocalSharedObjectsContainer::GetObjectCount() const {
   size_t count = 0;
-  count += appcaches()->GetAppCacheCount();
+  count += appcaches()->GetCount();
   count += cookies()->GetCookieCount();
   count += databases()->GetCount();
   count += file_systems()->GetCount();
@@ -162,18 +166,60 @@ size_t LocalSharedObjectsContainer::GetObjectCountForDomain(
   }
 
   // Count the AppCache manifest files for the domain of the given |origin|.
-  typedef BrowsingDataAppCacheHelper::OriginAppCacheInfoMap
-      OriginAppCacheInfoMap;
-  const OriginAppCacheInfoMap& map = appcaches()->GetOriginAppCacheInfoMap();
-  for (auto it = map.begin(); it != map.end(); ++it) {
-    const std::vector<blink::mojom::AppCacheInfo>& info_vector = it->second;
-    for (auto info = info_vector.begin(); info != info_vector.end(); ++info) {
-      if (SameDomainOrHost(origin, info->manifest_url))
-        ++count;
-    }
+  for (const auto& storage_origin : appcaches()->GetOrigins()) {
+    if (SameDomainOrHost(origin, storage_origin.GetURL()))
+      ++count;
   }
 
   return count;
+}
+
+size_t LocalSharedObjectsContainer::GetDomainCount() const {
+  std::set<base::StringPiece> hosts;
+
+  for (const auto& it : cookies()->origin_cookie_set_map()) {
+    for (const auto& cookie : *it.second) {
+      hosts.insert(cookie.Domain());
+    }
+  }
+
+  for (const auto& origin : local_storages()->GetOrigins())
+    hosts.insert(origin.host());
+
+  for (const auto& origin : session_storages()->GetOrigins())
+    hosts.insert(origin.host());
+
+  for (const auto& origin : indexed_dbs()->GetOrigins())
+    hosts.insert(origin.host());
+
+  for (const auto& origin : service_workers()->GetOrigins())
+    hosts.insert(origin.host());
+
+  for (const auto& info : shared_workers()->GetSharedWorkerInfo())
+    hosts.insert(info.constructor_origin.host());
+
+  for (const auto& origin : cache_storages()->GetOrigins())
+    hosts.insert(origin.host());
+
+  for (const auto& origin : file_systems()->GetOrigins())
+    hosts.insert(origin.host());
+
+  for (const auto& origin : databases()->GetOrigins())
+    hosts.insert(origin.host());
+
+  for (const auto& origin : appcaches()->GetOrigins())
+    hosts.insert(origin.host());
+
+  std::set<std::string> domains;
+  for (const base::StringPiece& host : hosts) {
+    std::string domain = net::registry_controlled_domains::GetDomainAndRegistry(
+        host, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+    if (!domain.empty())
+      domains.insert(std::move(domain));
+    else
+      domains.insert(host.as_string());
+  }
+  return domains.size();
 }
 
 void LocalSharedObjectsContainer::Reset() {

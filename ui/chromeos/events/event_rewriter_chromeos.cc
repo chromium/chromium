@@ -10,20 +10,23 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
+#include "base/metrics/user_metrics.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "device/udev_linux/scoped_udev.h"
 #include "ui/base/ime/chromeos/ime_keyboard.h"
 #include "ui/base/ime/chromeos/input_method_manager.h"
 #include "ui/chromeos/events/modifier_key.h"
 #include "ui/chromeos/events/pref_names.h"
-#include "ui/events/devices/input_device_manager.h"
+#include "ui/events/devices/device_data_manager.h"
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
@@ -41,6 +44,11 @@ const int kHotrodRemoteVendorId = 0x0471;
 const int kHotrodRemoteProductId = 0x21cc;
 const int kUnknownVendorId = -1;
 const int kUnknownProductId = -1;
+
+// Flag masks for remapping alt+click or search+click to right click.
+constexpr int kAltLeftButton = (ui::EF_ALT_DOWN | ui::EF_LEFT_MOUSE_BUTTON);
+constexpr int kSearchLeftButton =
+    (ui::EF_COMMAND_DOWN | ui::EF_LEFT_MOUSE_BUTTON);
 
 // Table of properties of remappable keys and/or remapping targets (not
 // strictly limited to "modifiers").
@@ -65,8 +73,7 @@ const struct ModifierRemapping {
   const char* pref_name;
   EventRewriterChromeOS::MutableKeyState result;
 } kModifierRemappings[] = {
-    {// kModifierRemappingCtrl references this entry by index.
-     ui::EF_CONTROL_DOWN,
+    {ui::EF_CONTROL_DOWN,
      ui::chromeos::ModifierKey::kControlKey,
      prefs::kLanguageRemapControlKeyTo,
      {ui::EF_CONTROL_DOWN, ui::DomCode::CONTROL_LEFT, ui::DomKey::CONTROL,
@@ -108,13 +115,8 @@ const struct ModifierRemapping {
      ui::chromeos::ModifierKey::kAssistantKey,
      prefs::kLanguageRemapAssistantKeyTo,
      {ui::EF_NONE, ui::DomCode::LAUNCH_ASSISTANT, ui::DomKey::LAUNCH_ASSISTANT,
-      ui::VKEY_ASSISTANT}},
-    {ui::EF_NONE,
-     ui::chromeos::ModifierKey::kNumModifierKeys,
-     prefs::kLanguageRemapDiamondKeyTo,
-     {ui::EF_NONE, ui::DomCode::F15, ui::DomKey::F15, ui::VKEY_F15}}};
+      ui::VKEY_ASSISTANT}}};
 
-const ModifierRemapping* kModifierRemappingCtrl = &kModifierRemappings[0];
 const ModifierRemapping* kModifierRemappingNeoMod3 = &kModifierRemappings[1];
 
 // Gets a remapped key for |pref_name| key. For example, to find out which
@@ -164,11 +166,6 @@ const ModifierRemapping* GetSearchRemappedKey(
   }
 
   return GetRemappedKey(pref_name, delegate);
-}
-
-bool HasDiamondKey() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      ::chromeos::switches::kHasChromeOSDiamondKey);
 }
 
 bool IsISOLevel5ShiftUsedByCurrentInputMethod() {
@@ -268,7 +265,7 @@ ui::DomCode RelocateModifier(ui::DomCode code, ui::DomKeyLocation location) {
 // Returns true if |mouse_event| was generated from a touchpad device.
 bool IsFromTouchpadDevice(const ui::MouseEvent& mouse_event) {
   for (const ui::InputDevice& touchpad :
-       ui::InputDeviceManager::GetInstance()->GetTouchpadDevices()) {
+       ui::DeviceDataManager::GetInstance()->GetTouchpadDevices()) {
     if (touchpad.id == mouse_event.source_device_id())
       return true;
   }
@@ -294,7 +291,50 @@ bool GetDeviceProperty(const base::FilePath& device_path,
   return true;
 }
 
+// Returns whether |key_code| appears as one of the key codes that might be
+// remapped by table mappings.
+bool IsKeyCodeInMappings(ui::KeyboardCode key_code,
+                         const KeyboardRemapping* mappings,
+                         size_t num_mappings) {
+  for (size_t i = 0; i < num_mappings; ++i) {
+    const KeyboardRemapping& map = mappings[i];
+    if (key_code == map.condition.key_code) {
+      return true;
+    }
+  }
+  return false;
+}
+
+// Returns true if all bits in |flag_mask| are set in |flags|.
+bool AreFlagsSet(int flags, int flag_mask) {
+  return (flags & flag_mask) == flag_mask;
+}
+
 }  // namespace
+
+///////////////////////////////////////////////////////////////////////////////
+
+EventRewriterChromeOS::MutableKeyState::MutableKeyState()
+    : MutableKeyState(0, ui::DomCode::NONE, 0, ui::KeyboardCode::VKEY_NONAME) {}
+
+EventRewriterChromeOS::MutableKeyState::MutableKeyState(
+    const ui::KeyEvent* key_event)
+    : MutableKeyState(key_event->flags(),
+                      key_event->code(),
+                      key_event->GetDomKey(),
+                      key_event->key_code()) {}
+
+EventRewriterChromeOS::MutableKeyState::MutableKeyState(
+    int input_flags,
+    ui::DomCode input_code,
+    ui::DomKey::Base input_key,
+    ui::KeyboardCode input_key_code)
+    : flags(input_flags),
+      code(input_code),
+      key(input_key),
+      key_code(input_key_code) {}
+
+///////////////////////////////////////////////////////////////////////////////
 
 EventRewriterChromeOS::EventRewriterChromeOS(
     Delegate* delegate,
@@ -376,8 +416,11 @@ ui::EventRewriteStatus EventRewriterChromeOS::RewriteEvent(
     std::unique_ptr<ui::Event>* rewritten_event) {
   if ((event.type() == ui::ET_KEY_PRESSED) ||
       (event.type() == ui::ET_KEY_RELEASED)) {
-    return RewriteKeyEvent(static_cast<const ui::KeyEvent&>(event),
-                           rewritten_event);
+    ui::EventRewriteStatus status =
+        RewriteKeyEvent(*((&event)->AsKeyEvent()), rewritten_event);
+    RewriteKeyEventInContext(*((&event)->AsKeyEvent()), rewritten_event,
+                             &status);
+    return status;
   }
   if ((event.type() == ui::ET_MOUSE_PRESSED) ||
       (event.type() == ui::ET_MOUSE_RELEASED)) {
@@ -403,6 +446,15 @@ ui::EventRewriteStatus EventRewriterChromeOS::RewriteEvent(
 ui::EventRewriteStatus EventRewriterChromeOS::NextDispatchEvent(
     const ui::Event& last_event,
     std::unique_ptr<ui::Event>* new_event) {
+  if (dispatched_key_events_.size()) {
+    *new_event = std::move(dispatched_key_events_.back());
+    dispatched_key_events_.pop_back();
+
+    if (dispatched_key_events_.size())
+      return ui::EVENT_REWRITE_DISPATCH_ANOTHER;
+    return ui::EVENT_REWRITE_REWRITTEN;
+  }
+
   if (sticky_keys_controller_) {
     // In the case of sticky keys, we know what the events obtained here are:
     // modifier key releases that match the ones previously discarded. So, we
@@ -478,6 +530,176 @@ bool EventRewriterChromeOS::HasAssistantKeyOnKeyboard(
 
   *has_assistant_key = devinfo.HasKeyEvent(KEY_ASSISTANT);
   return true;
+}
+
+bool EventRewriterChromeOS::RewriteModifierKeys(const ui::KeyEvent& key_event,
+                                                MutableKeyState* state) {
+  DCHECK(key_event.type() == ui::ET_KEY_PRESSED ||
+         key_event.type() == ui::ET_KEY_RELEASED);
+
+  if (!delegate_ || !delegate_->RewriteModifierKeys())
+    return false;
+
+  // Preserve a copy of the original before rewriting |state| based on
+  // user preferences, device configuration, and certain IME properties.
+  MutableKeyState incoming = *state;
+  state->flags = ui::EF_NONE;
+  int characteristic_flag = ui::EF_NONE;
+  bool exact_event = false;
+
+  // First, remap the key code.
+  const ModifierRemapping* remapped_key = nullptr;
+  // Remapping based on DomKey.
+  switch (incoming.key) {
+    case ui::DomKey::ALT_GRAPH:
+      // The Neo2 codes modifiers such that CapsLock appears as VKEY_ALTGR,
+      // but AltGraph (right Alt) also appears as VKEY_ALTGR in Neo2,
+      // as it does in other layouts. Neo2's "Mod3" is represented in
+      // EventFlags by a combination of AltGr+Mod3, while its "Mod4" is
+      // AltGr alone.
+      if (IsISOLevel5ShiftUsedByCurrentInputMethod()) {
+        if (incoming.code == ui::DomCode::CAPS_LOCK) {
+          characteristic_flag = ui::EF_ALTGR_DOWN | ui::EF_MOD3_DOWN;
+          remapped_key =
+              GetRemappedKey(prefs::kLanguageRemapCapsLockKeyTo, delegate_);
+        } else {
+          characteristic_flag = ui::EF_ALTGR_DOWN;
+          remapped_key = GetSearchRemappedKey(delegate_, GetLastKeyboardType());
+        }
+      }
+      if (remapped_key && remapped_key->result.key_code == ui::VKEY_CAPITAL)
+        remapped_key = kModifierRemappingNeoMod3;
+      break;
+    case ui::DomKey::ALT_GRAPH_LATCH:
+      if (key_event.type() == ui::ET_KEY_PRESSED) {
+        pressed_modifier_latches_ |= ui::EF_ALTGR_DOWN;
+      } else {
+        pressed_modifier_latches_ &= ~ui::EF_ALTGR_DOWN;
+        if (used_modifier_latches_ & ui::EF_ALTGR_DOWN)
+          used_modifier_latches_ &= ~ui::EF_ALTGR_DOWN;
+        else
+          latched_modifier_latches_ |= ui::EF_ALTGR_DOWN;
+      }
+      // Rewrite to AltGraph. When this key is used like a regular modifier,
+      // the web-exposed result looks like a use of the regular modifier.
+      // When it's used as a latch, the web-exposed result is a vacuous
+      // modifier press-and-release, which should be harmless, but preserves
+      // the event for applications using the |code| (e.g. remoting).
+      state->key = ui::DomKey::ALT_GRAPH;
+      state->key_code = ui::VKEY_ALTGR;
+      exact_event = true;
+      break;
+    default:
+      break;
+  }
+
+  // Remapping based on DomCode.
+  switch (incoming.code) {
+    // On Chrome OS, Caps_Lock with Mod3Mask is sent when Caps Lock is pressed
+    // (with one exception: when IsISOLevel5ShiftUsedByCurrentInputMethod() is
+    // true, the key generates XK_ISO_Level3_Shift with Mod3Mask, not
+    // Caps_Lock).
+    case ui::DomCode::CAPS_LOCK:
+      // This key is already remapped to Mod3 in remapping based on DomKey. Skip
+      // more remapping.
+      if (IsISOLevel5ShiftUsedByCurrentInputMethod() && remapped_key)
+        break;
+
+      characteristic_flag = ui::EF_CAPS_LOCK_ON;
+      remapped_key =
+          GetRemappedKey(prefs::kLanguageRemapCapsLockKeyTo, delegate_);
+      break;
+    case ui::DomCode::META_LEFT:
+    case ui::DomCode::META_RIGHT:
+      characteristic_flag = ui::EF_COMMAND_DOWN;
+      remapped_key = GetSearchRemappedKey(delegate_, GetLastKeyboardType());
+      // Default behavior is Super key, hence don't remap the event if the pref
+      // is unavailable.
+      break;
+    case ui::DomCode::CONTROL_LEFT:
+    case ui::DomCode::CONTROL_RIGHT:
+      characteristic_flag = ui::EF_CONTROL_DOWN;
+      remapped_key =
+          GetRemappedKey(prefs::kLanguageRemapControlKeyTo, delegate_);
+      break;
+    case ui::DomCode::ALT_LEFT:
+    case ui::DomCode::ALT_RIGHT:
+      // ALT key
+      characteristic_flag = ui::EF_ALT_DOWN;
+      remapped_key = GetRemappedKey(prefs::kLanguageRemapAltKeyTo, delegate_);
+      break;
+    case ui::DomCode::ESCAPE:
+      remapped_key =
+          GetRemappedKey(prefs::kLanguageRemapEscapeKeyTo, delegate_);
+      break;
+    case ui::DomCode::BACKSPACE:
+      remapped_key =
+          GetRemappedKey(prefs::kLanguageRemapBackspaceKeyTo, delegate_);
+      break;
+    case ui::DomCode::LAUNCH_ASSISTANT:
+      remapped_key =
+          GetRemappedKey(prefs::kLanguageRemapAssistantKeyTo, delegate_);
+      break;
+    default:
+      break;
+  }
+
+  if (remapped_key) {
+    state->key_code = remapped_key->result.key_code;
+    state->code = remapped_key->result.code;
+    state->key = remapped_key->result.key;
+    incoming.flags |= characteristic_flag;
+    characteristic_flag = remapped_key->flag;
+    if (incoming.key_code == ui::VKEY_CAPITAL) {
+      // Caps Lock is rewritten to another key event, remove EF_CAPS_LOCK_ON
+      // flag to prevent the keyboard's Caps Lock state being synced to the
+      // rewritten key event's flag in InputMethodChromeOS.
+      incoming.flags &= ~ui::EF_CAPS_LOCK_ON;
+    }
+    if (remapped_key->remap_to == ui::chromeos::ModifierKey::kCapsLockKey)
+      characteristic_flag |= ui::EF_CAPS_LOCK_ON;
+    state->code = RelocateModifier(
+        state->code, ui::KeycodeConverter::DomCodeToLocation(incoming.code));
+  }
+
+  // Next, remap modifier bits.
+  state->flags |= GetRemappedModifierMasks(key_event, incoming.flags);
+
+  // If the DomKey is not a modifier before remapping but is after, set the
+  // modifier latches for the later non-modifier key's modifier states.
+  bool non_modifier_to_modifier =
+      !ui::KeycodeConverter::IsDomKeyForModifier(incoming.key) &&
+      ui::KeycodeConverter::IsDomKeyForModifier(state->key);
+  if (key_event.type() == ui::ET_KEY_PRESSED) {
+    state->flags |= characteristic_flag;
+    if (non_modifier_to_modifier)
+      pressed_modifier_latches_ |= characteristic_flag;
+  } else {
+    state->flags &= ~characteristic_flag;
+    if (non_modifier_to_modifier)
+      pressed_modifier_latches_ &= ~characteristic_flag;
+  }
+
+  if (key_event.type() == ui::ET_KEY_PRESSED) {
+    if (!ui::KeycodeConverter::IsDomKeyForModifier(state->key)) {
+      used_modifier_latches_ |= pressed_modifier_latches_;
+      latched_modifier_latches_ = ui::EF_NONE;
+    }
+  }
+
+  // Implement the Caps Lock modifier here, rather than in the
+  // AcceleratorController, so that the event is visible to apps (see
+  // crbug.com/775743).
+  if (key_event.type() == ui::ET_KEY_RELEASED &&
+      state->key_code == ui::VKEY_CAPITAL) {
+    ::chromeos::input_method::ImeKeyboard* ime_keyboard =
+        ime_keyboard_for_testing_
+            ? ime_keyboard_for_testing_
+            : ::chromeos::input_method::InputMethodManager::Get()
+                  ->GetImeKeyboard();
+    ime_keyboard->SetCapsLockEnabled(!ime_keyboard->CapsLockIsEnabled());
+  }
+  return exact_event;
 }
 
 void EventRewriterChromeOS::DeviceKeyPressedOrReleased(int device_id) {
@@ -562,6 +784,28 @@ int EventRewriterChromeOS::GetRemappedModifierMasks(const ui::Event& event,
     }
   }
   return rewritten_flags | unmodified_flags;
+}
+
+bool EventRewriterChromeOS::ShouldRemapToRightClick(
+    const ui::MouseEvent& mouse_event,
+    int flags,
+    int* matched_mask) const {
+  *matched_mask = 0;
+  if (base::FeatureList::IsEnabled(
+          ::chromeos::features::kUseSearchClickForRightClick)) {
+    if (AreFlagsSet(flags, kSearchLeftButton)) {
+      *matched_mask = kSearchLeftButton;
+    }
+  } else {
+    if (AreFlagsSet(flags, kAltLeftButton)) {
+      *matched_mask = kAltLeftButton;
+    }
+  }
+
+  return (*matched_mask != 0) &&
+         ((mouse_event.type() == ui::ET_MOUSE_PRESSED) ||
+          pressed_device_ids_.count(mouse_event.source_device_id())) &&
+         IsFromTouchpadDevice(mouse_event);
 }
 
 ui::EventRewriteStatus EventRewriterChromeOS::RewriteKeyEvent(
@@ -730,192 +974,6 @@ ui::EventRewriteStatus EventRewriterChromeOS::RewriteScrollEvent(
   return status;
 }
 
-bool EventRewriterChromeOS::RewriteModifierKeys(const ui::KeyEvent& key_event,
-                                                MutableKeyState* state) {
-  DCHECK(key_event.type() == ui::ET_KEY_PRESSED ||
-         key_event.type() == ui::ET_KEY_RELEASED);
-
-  if (!delegate_ || !delegate_->RewriteModifierKeys())
-    return false;
-
-  // Preserve a copy of the original before rewriting |state| based on
-  // user preferences, device configuration, and certain IME properties.
-  MutableKeyState incoming = *state;
-  state->flags = ui::EF_NONE;
-  int characteristic_flag = ui::EF_NONE;
-  bool exact_event = false;
-
-  // First, remap the key code.
-  const ModifierRemapping* remapped_key = nullptr;
-  // Remapping based on DomKey.
-  switch (incoming.key) {
-    // On Chrome OS, F15 (XF86XK_Launch6) with NumLock (Mod2Mask) is sent
-    // when Diamond key is pressed.
-    case ui::DomKey::F15:
-      // When diamond key is not available, the configuration UI for Diamond
-      // key is not shown. Therefore, ignore the kLanguageRemapDiamondKeyTo
-      // syncable pref.
-      if (HasDiamondKey())
-        remapped_key =
-            GetRemappedKey(prefs::kLanguageRemapDiamondKeyTo, delegate_);
-      // Default behavior of F15 is Control, even if --has-chromeos-diamond-key
-      // is absent, according to unit test comments.
-      if (!remapped_key) {
-        DCHECK_EQ(ui::VKEY_CONTROL, kModifierRemappingCtrl->result.key_code);
-        remapped_key = kModifierRemappingCtrl;
-      }
-      break;
-    case ui::DomKey::ALT_GRAPH:
-      // The Neo2 codes modifiers such that CapsLock appears as VKEY_ALTGR,
-      // but AltGraph (right Alt) also appears as VKEY_ALTGR in Neo2,
-      // as it does in other layouts. Neo2's "Mod3" is represented in
-      // EventFlags by a combination of AltGr+Mod3, while its "Mod4" is
-      // AltGr alone.
-      if (IsISOLevel5ShiftUsedByCurrentInputMethod()) {
-        if (incoming.code == ui::DomCode::CAPS_LOCK) {
-          characteristic_flag = ui::EF_ALTGR_DOWN | ui::EF_MOD3_DOWN;
-          remapped_key =
-              GetRemappedKey(prefs::kLanguageRemapCapsLockKeyTo, delegate_);
-        } else {
-          characteristic_flag = ui::EF_ALTGR_DOWN;
-          remapped_key = GetSearchRemappedKey(delegate_, GetLastKeyboardType());
-        }
-      }
-      if (remapped_key && remapped_key->result.key_code == ui::VKEY_CAPITAL)
-        remapped_key = kModifierRemappingNeoMod3;
-      break;
-    case ui::DomKey::ALT_GRAPH_LATCH:
-      if (key_event.type() == ui::ET_KEY_PRESSED) {
-        pressed_modifier_latches_ |= ui::EF_ALTGR_DOWN;
-      } else {
-        pressed_modifier_latches_ &= ~ui::EF_ALTGR_DOWN;
-        if (used_modifier_latches_ & ui::EF_ALTGR_DOWN)
-          used_modifier_latches_ &= ~ui::EF_ALTGR_DOWN;
-        else
-          latched_modifier_latches_ |= ui::EF_ALTGR_DOWN;
-      }
-      // Rewrite to AltGraph. When this key is used like a regular modifier,
-      // the web-exposed result looks like a use of the regular modifier.
-      // When it's used as a latch, the web-exposed result is a vacuous
-      // modifier press-and-release, which should be harmless, but preserves
-      // the event for applications using the |code| (e.g. remoting).
-      state->key = ui::DomKey::ALT_GRAPH;
-      state->key_code = ui::VKEY_ALTGR;
-      exact_event = true;
-      break;
-    default:
-      break;
-  }
-
-  // Remapping based on DomCode.
-  switch (incoming.code) {
-    // On Chrome OS, Caps_Lock with Mod3Mask is sent when Caps Lock is pressed
-    // (with one exception: when IsISOLevel5ShiftUsedByCurrentInputMethod() is
-    // true, the key generates XK_ISO_Level3_Shift with Mod3Mask, not
-    // Caps_Lock).
-    case ui::DomCode::CAPS_LOCK:
-      // This key is already remapped to Mod3 in remapping based on DomKey. Skip
-      // more remapping.
-      if (IsISOLevel5ShiftUsedByCurrentInputMethod() && remapped_key)
-        break;
-
-      characteristic_flag = ui::EF_CAPS_LOCK_ON;
-      remapped_key =
-          GetRemappedKey(prefs::kLanguageRemapCapsLockKeyTo, delegate_);
-      break;
-    case ui::DomCode::META_LEFT:
-    case ui::DomCode::META_RIGHT:
-      characteristic_flag = ui::EF_COMMAND_DOWN;
-      remapped_key = GetSearchRemappedKey(delegate_, GetLastKeyboardType());
-      // Default behavior is Super key, hence don't remap the event if the pref
-      // is unavailable.
-      break;
-    case ui::DomCode::CONTROL_LEFT:
-    case ui::DomCode::CONTROL_RIGHT:
-      characteristic_flag = ui::EF_CONTROL_DOWN;
-      remapped_key =
-          GetRemappedKey(prefs::kLanguageRemapControlKeyTo, delegate_);
-      break;
-    case ui::DomCode::ALT_LEFT:
-    case ui::DomCode::ALT_RIGHT:
-      // ALT key
-      characteristic_flag = ui::EF_ALT_DOWN;
-      remapped_key = GetRemappedKey(prefs::kLanguageRemapAltKeyTo, delegate_);
-      break;
-    case ui::DomCode::ESCAPE:
-      remapped_key =
-          GetRemappedKey(prefs::kLanguageRemapEscapeKeyTo, delegate_);
-      break;
-    case ui::DomCode::BACKSPACE:
-      remapped_key =
-          GetRemappedKey(prefs::kLanguageRemapBackspaceKeyTo, delegate_);
-      break;
-    case ui::DomCode::LAUNCH_ASSISTANT:
-      remapped_key =
-          GetRemappedKey(prefs::kLanguageRemapAssistantKeyTo, delegate_);
-      break;
-    default:
-      break;
-  }
-
-  if (remapped_key) {
-    state->key_code = remapped_key->result.key_code;
-    state->code = remapped_key->result.code;
-    state->key = remapped_key->result.key;
-    incoming.flags |= characteristic_flag;
-    characteristic_flag = remapped_key->flag;
-    if (incoming.key_code == ui::VKEY_CAPITAL) {
-      // Caps Lock is rewritten to another key event, remove EF_CAPS_LOCK_ON
-      // flag to prevent the keyboard's Caps Lock state being synced to the
-      // rewritten key event's flag in InputMethodChromeOS.
-      incoming.flags &= ~ui::EF_CAPS_LOCK_ON;
-    }
-    if (remapped_key->remap_to == ui::chromeos::ModifierKey::kCapsLockKey)
-      characteristic_flag |= ui::EF_CAPS_LOCK_ON;
-    state->code = RelocateModifier(
-        state->code, ui::KeycodeConverter::DomCodeToLocation(incoming.code));
-  }
-
-  // Next, remap modifier bits.
-  state->flags |= GetRemappedModifierMasks(key_event, incoming.flags);
-
-  // If the DomKey is not a modifier before remapping but is after, set the
-  // modifier latches for the later non-modifier key's modifier states.
-  bool non_modifier_to_modifier =
-      !ui::KeycodeConverter::IsDomKeyForModifier(incoming.key) &&
-      ui::KeycodeConverter::IsDomKeyForModifier(state->key);
-  if (key_event.type() == ui::ET_KEY_PRESSED) {
-    state->flags |= characteristic_flag;
-    if (non_modifier_to_modifier)
-      pressed_modifier_latches_ |= characteristic_flag;
-  } else {
-    state->flags &= ~characteristic_flag;
-    if (non_modifier_to_modifier)
-      pressed_modifier_latches_ &= ~characteristic_flag;
-  }
-
-  if (key_event.type() == ui::ET_KEY_PRESSED) {
-    if (!ui::KeycodeConverter::IsDomKeyForModifier(state->key)) {
-      used_modifier_latches_ |= pressed_modifier_latches_;
-      latched_modifier_latches_ = ui::EF_NONE;
-    }
-  }
-
-  // Implement the Caps Lock modifier here, rather than in the
-  // AcceleratorController, so that the event is visible to apps (see
-  // crbug.com/775743).
-  if (key_event.type() == ui::ET_KEY_RELEASED &&
-      state->key_code == ui::VKEY_CAPITAL) {
-    ::chromeos::input_method::ImeKeyboard* ime_keyboard =
-        ime_keyboard_for_testing_
-            ? ime_keyboard_for_testing_
-            : ::chromeos::input_method::InputMethodManager::Get()
-                  ->GetImeKeyboard();
-    ime_keyboard->SetCapsLockEnabled(!ime_keyboard->CapsLockIsEnabled());
-  }
-  return exact_event;
-}
-
 void EventRewriterChromeOS::RewriteNumPadKeys(const ui::KeyEvent& key_event,
                                               MutableKeyState* state) {
   DCHECK(key_event.type() == ui::ET_KEY_PRESSED ||
@@ -1060,21 +1118,58 @@ void EventRewriterChromeOS::RewriteFunctionKeys(const ui::KeyEvent& key_event,
   CHECK(key_event.type() == ui::ET_KEY_PRESSED ||
         key_event.type() == ui::ET_KEY_RELEASED);
 
-  if ((state->key_code >= ui::VKEY_F1) && (state->key_code <= ui::VKEY_F12)) {
-    // By default the top row (F1-F12) keys are system keys for back, forward,
-    // brightness, volume, etc. However, windows for v2 apps can optionally
-    // request raw function keys for these keys.
-    const bool top_row_keys_are_function_keys =
-        delegate_ && delegate_->TopRowKeysAreFunctionKeys();
-    const bool search_is_pressed = (state->flags & ui::EF_COMMAND_DOWN) != 0;
+  // Some action key codes are mapped to standard VKEY and DomCode values
+  // during event to KeyEvent translation. However, in Chrome, different VKEY
+  // combinations trigger those actions. This table maps event VKEYs to the
+  // right action VKEYs.
+  // TODO(dtor): Either add proper accelerators for VKEY_ZOOM or move
+  // from VKEY_MEDIA_LAUNCH_APP2 to VKEY_ZOOM.
+  static const KeyboardRemapping kActionToActionKeys[] = {
+      // Zoom toggle is actually through VKEY_MEDIA_LAUNCH_APP2.
+      {{ui::EF_NONE, ui::VKEY_ZOOM},
+       {ui::EF_NONE, ui::DomCode::ZOOM_TOGGLE, ui::DomKey::ZOOM_TOGGLE,
+        ui::VKEY_MEDIA_LAUNCH_APP2}},
+  };
 
+  // Map certain action keys to the right VKey and modifier.
+  RewriteWithKeyboardRemappings(kActionToActionKeys,
+                                base::size(kActionToActionKeys), *state, state);
+
+  // Some key codes have a Dom code but no VKEY value assigned. They're mapped
+  // to VKEY values here.
+  if (state->key_code == ui::VKEY_UNKNOWN) {
+    if (state->code == ui::DomCode::SHOW_ALL_WINDOWS) {
+      // Show all windows is through VKEY_MEDIA_LAUNCH_APP1.
+      state->key_code = ui::VKEY_MEDIA_LAUNCH_APP1;
+      state->key = ui::DomKey::F4;
+    } else if (state->code == ui::DomCode::DISPLAY_TOGGLE_INT_EXT) {
+      // Display toggle is through control + VKEY_MEDIA_LAUNCH_APP2.
+      state->flags |= ui::EF_CONTROL_DOWN;
+      state->key_code = ui::VKEY_MEDIA_LAUNCH_APP2;
+      state->key = ui::DomKey::F12;
+    }
+  }
+
+  const auto iter = device_id_to_info_.find(key_event.source_device_id());
+  KeyboardTopRowLayout layout = kKbdTopRowLayoutDefault;
+  if (iter != device_id_to_info_.end()) {
+    layout = iter->second.top_row_layout;
+  }
+
+  const bool search_is_pressed = (state->flags & ui::EF_COMMAND_DOWN) != 0;
+  if (layout == kKbdTopRowLayoutWilco) {
+    if (RewriteTopRowKeysForLayoutWilco(key_event, search_is_pressed, state)) {
+      return;
+    }
+  } else if ((state->key_code >= ui::VKEY_F1) &&
+             (state->key_code <= ui::VKEY_F12)) {
     //  Search? Top Row   Result
     //  ------- --------  ------
     //  No      Fn        Unchanged
     //  No      System    Fn -> System
     //  Yes     Fn        Fn -> System
     //  Yes     System    Search+Fn -> Fn
-    if (top_row_keys_are_function_keys == search_is_pressed) {
+    if (ForceTopRowAsFunctionKeys() == search_is_pressed) {
       // Rewrite the F1-F12 keys on a Chromebook keyboard to system keys.
       // This is the original Chrome OS layout.
       static const KeyboardRemapping kFkeysToSystemKeys1[] = {
@@ -1142,11 +1237,6 @@ void EventRewriterChromeOS::RewriteFunctionKeys(const ui::KeyEvent& key_event,
            {ui::EF_NONE, ui::DomCode::VOLUME_UP, ui::DomKey::AUDIO_VOLUME_UP,
             ui::VKEY_VOLUME_UP}},
       };
-
-      const auto iter = device_id_to_info_.find(key_event.source_device_id());
-      KeyboardTopRowLayout layout = kKbdTopRowLayoutDefault;
-      if (iter != device_id_to_info_.end())
-        layout = iter->second.top_row_layout;
 
       const KeyboardRemapping* mapping = nullptr;
       size_t mappingSize = 0u;
@@ -1230,21 +1320,275 @@ int EventRewriterChromeOS::RewriteModifierClick(
   // Note that this behavior is limited to mouse events coming from touchpad
   // devices. https://crbug.com/890648.
 
-  // Remap Alt+Button1 to Button3.
-  const int kAltLeftButton = (ui::EF_ALT_DOWN | ui::EF_LEFT_MOUSE_BUTTON);
-  if (((*flags & kAltLeftButton) == kAltLeftButton) &&
-      ((mouse_event.type() == ui::ET_MOUSE_PRESSED) ||
-       pressed_device_ids_.count(mouse_event.source_device_id())) &&
-      IsFromTouchpadDevice(mouse_event)) {
-    *flags &= ~kAltLeftButton;
+  // Remap either Alt+Button1 or Search+Button1 to Button3 based on
+  // flag/setting.
+  int matched_mask;
+  if (ShouldRemapToRightClick(mouse_event, *flags, &matched_mask)) {
+    *flags &= ~matched_mask;
     *flags |= ui::EF_RIGHT_MOUSE_BUTTON;
-    if (mouse_event.type() == ui::ET_MOUSE_PRESSED)
+    if (mouse_event.type() == ui::ET_MOUSE_PRESSED) {
       pressed_device_ids_.insert(mouse_event.source_device_id());
-    else
+      if (matched_mask == kSearchLeftButton) {
+        base::RecordAction(
+            base::UserMetricsAction("SearchClickMappedToRightClick"));
+      } else {
+        DCHECK(matched_mask == kAltLeftButton);
+        base::RecordAction(
+            base::UserMetricsAction("AltClickMappedToRightClick"));
+      }
+    } else {
       pressed_device_ids_.erase(mouse_event.source_device_id());
+    }
     return ui::EF_RIGHT_MOUSE_BUTTON;
   }
   return ui::EF_NONE;
+}
+
+void EventRewriterChromeOS::RewriteKeyEventInContext(
+    const ui::KeyEvent& key_event,
+    std::unique_ptr<ui::Event>* rewritten_event,
+    ui::EventRewriteStatus* status) {
+  DCHECK(status);
+
+  if (*status == EventRewriteStatus::EVENT_REWRITE_DISCARD)
+    return;
+
+  MutableKeyState current_key_state;
+  auto key_state_comparator =
+      [&current_key_state](
+          const std::pair<MutableKeyState, MutableKeyState>& key_state) {
+        return (current_key_state.code == key_state.first.code) &&
+               (current_key_state.key == key_state.first.key) &&
+               (current_key_state.key_code == key_state.first.key_code);
+      };
+
+  const int mapped_flag = ModifierDomKeyToEventFlag(key_event.GetDomKey());
+
+  if (key_event.type() == ET_KEY_PRESSED) {
+    current_key_state = MutableKeyState(
+        rewritten_event->get()
+            ? static_cast<const ui::KeyEvent*>(rewritten_event->get())
+            : &key_event);
+    MutableKeyState original_key_state(&key_event);
+    auto iter = std::find_if(pressed_key_states_.begin(),
+                             pressed_key_states_.end(), key_state_comparator);
+
+    // When a key is pressed, store |current_key_state| if it is not stored
+    // before.
+    if (iter == pressed_key_states_.end()) {
+      pressed_key_states_.push_back(
+          std::make_pair(current_key_state, original_key_state));
+    }
+
+    return;
+  }
+
+  DCHECK_EQ(key_event.type(), ET_KEY_RELEASED);
+
+  if (mapped_flag != EF_NONE) {
+    // The released key is a modifier
+
+    DomKey::Base current_key = key_event.GetDomKey();
+    auto key_state_iter = pressed_key_states_.begin();
+    int event_flags = rewritten_event->get() ? (*rewritten_event)->flags()
+                                             : key_event.flags();
+    rewritten_event->reset();
+
+    // Iterate the keys being pressed. Release the key events which satisfy one
+    // of the following conditions:
+    // (1) the key event's original key code (before key event rewriting if
+    // any) is the same with the key to be released.
+    // (2) the key event is rewritten and its original flags are influenced by
+    // the key to be released.
+    // Example: Press the Launcher button, Press the Up Arrow button, Release
+    // the Launcher button. When Launcher is released: the key event whose key
+    // code is Launcher should be released because it satisfies the condition 1;
+    // the key event whose key code is PageUp should be released because it
+    // satisfies the condition 2.
+    while (key_state_iter != pressed_key_states_.end()) {
+      const bool is_rewritten =
+          (key_state_iter->first.key != key_state_iter->second.key);
+      const bool flag_affected = key_state_iter->second.flags & mapped_flag;
+      const bool should_release = key_state_iter->second.key == current_key ||
+                                  (flag_affected && is_rewritten);
+
+      if (should_release) {
+        // If the key should be released, create a key event for it.
+        std::unique_ptr<ui::KeyEvent> dispatched_event =
+            std::make_unique<ui::KeyEvent>(
+                key_event.type(), key_state_iter->first.key_code,
+                key_state_iter->first.code, event_flags,
+                key_state_iter->first.key, key_event.time_stamp());
+        if (!rewritten_event->get())
+          *rewritten_event = std::move(dispatched_event);
+        else
+          dispatched_key_events_.push_back(std::move(dispatched_event));
+
+        key_state_iter = pressed_key_states_.erase(key_state_iter);
+        continue;
+      }
+      key_state_iter++;
+    }
+
+    if (dispatched_key_events_.empty()) {
+      *status = rewritten_event->get()
+                    ? EventRewriteStatus::EVENT_REWRITE_REWRITTEN
+                    : EventRewriteStatus::EVENT_REWRITE_DISCARD;
+    } else {
+      *status = EventRewriteStatus::EVENT_REWRITE_DISPATCH_ANOTHER;
+    }
+  } else {
+    // The released key is not a modifier
+
+    current_key_state = MutableKeyState(
+        rewritten_event->get()
+            ? static_cast<const ui::KeyEvent*>(rewritten_event->get())
+            : &key_event);
+    auto iter = std::find_if(pressed_key_states_.begin(),
+                             pressed_key_states_.end(), key_state_comparator);
+    if (iter != pressed_key_states_.end()) {
+      pressed_key_states_.erase(iter);
+    } else {
+      // Event rewriting may create a meaningless key event.
+      // For example: press the Up Arrow button, press the Launcher button,
+      // release the Up Arrow. When the Up Arrow button is released, key event
+      // rewriting happens. However, the rewritten event is not among
+      // |pressed_key_states_|. So it should be blocked and the original event
+      // should be propagated.
+      rewritten_event->reset();
+      *status = EventRewriteStatus::EVENT_REWRITE_CONTINUE;
+    }
+  }
+}
+
+// The keyboard layout for Wilco has a slightly different top-row layout, emits
+// both Fn and action keys from kernel and has key events with Dom codes and no
+// VKey value == VKEY_UNKNOWN. Depending on the state of the search key and
+// force-function-key preference, function keys have to be mapped to action keys
+// or vice versa.
+//
+//  Search  force function keys key code   Result
+//  ------- ------------------- --------   ------
+//  No        No                Function   Unchanged
+//  Yes       No                Function   Fn -> Action
+//  No        Yes               Function   Unchanged
+//  Yes       Yes               Function   Fn -> Action
+//  No        No                Action     Unchanged
+//  Yes       No                Action     Action -> Fn
+//  No        Yes               Action     Action -> Fn
+//  Yes       Yes               Action     Unchanged
+bool EventRewriterChromeOS::RewriteTopRowKeysForLayoutWilco(
+    const ui::KeyEvent& key_event,
+    bool search_is_pressed,
+    ui::EventRewriterChromeOS::MutableKeyState* state) {
+  // When the kernel issues an function key (Fn modifier help down) and the
+  // search key is pressed, the function key needs to be mapped to its
+  // corresponding action key. This table defines those function-to-action
+  // mappings.
+  static const KeyboardRemapping kFnkeysToActionKeys[] = {
+      {{ui::EF_NONE, ui::VKEY_F1},
+       {ui::EF_NONE, ui::DomCode::BROWSER_BACK, ui::DomKey::BROWSER_BACK,
+        ui::VKEY_BROWSER_BACK}},
+      {{ui::EF_NONE, ui::VKEY_F2},
+       {ui::EF_NONE, ui::DomCode::BROWSER_REFRESH, ui::DomKey::BROWSER_REFRESH,
+        ui::VKEY_BROWSER_REFRESH}},
+      // Map F3 to VKEY_MEDIA_LAUNCH_APP2 + EF_NONE == toggle full screen:
+      {{ui::EF_NONE, ui::VKEY_F3},
+       {ui::EF_NONE, ui::DomCode::ZOOM_TOGGLE, ui::DomKey::ZOOM_TOGGLE,
+        ui::VKEY_MEDIA_LAUNCH_APP2}},
+      // Map F4 to VKEY_MEDIA_LAUNCH_APP1 + EF_NONE == overview:
+      {{ui::EF_NONE, ui::VKEY_F4},
+       {ui::EF_NONE, ui::DomCode::F4, ui::DomKey::F4,
+        ui::VKEY_MEDIA_LAUNCH_APP1}},
+      {{ui::EF_NONE, ui::VKEY_F5},
+       {ui::EF_NONE, ui::DomCode::BRIGHTNESS_DOWN, ui::DomKey::BRIGHTNESS_DOWN,
+        ui::VKEY_BRIGHTNESS_DOWN}},
+      {{ui::EF_NONE, ui::VKEY_F6},
+       {ui::EF_NONE, ui::DomCode::BRIGHTNESS_UP, ui::DomKey::BRIGHTNESS_UP,
+        ui::VKEY_BRIGHTNESS_UP}},
+      {{ui::EF_NONE, ui::VKEY_F7},
+       {ui::EF_NONE, ui::DomCode::VOLUME_MUTE, ui::DomKey::AUDIO_VOLUME_MUTE,
+        ui::VKEY_VOLUME_MUTE}},
+      {{ui::EF_NONE, ui::VKEY_F8},
+       {ui::EF_NONE, ui::DomCode::VOLUME_DOWN, ui::DomKey::AUDIO_VOLUME_DOWN,
+        ui::VKEY_VOLUME_DOWN}},
+      {{ui::EF_NONE, ui::VKEY_F9},
+       {ui::EF_NONE, ui::DomCode::VOLUME_UP, ui::DomKey::AUDIO_VOLUME_UP,
+        ui::VKEY_VOLUME_UP}},
+      // Note: F10 and F11 are left as-is since no action is associated with
+      // these keys.
+      {{ui::EF_NONE, ui::VKEY_F10},
+       {ui::EF_NONE, ui::DomCode::F10, ui::DomKey::F10, ui::VKEY_F10}},
+      {{ui::EF_NONE, ui::VKEY_F11},
+       {ui::EF_NONE, ui::DomCode::F11, ui::DomKey::F11, ui::VKEY_F11}},
+      {{ui::EF_NONE, ui::VKEY_F12},
+       // Map F12 to VKEY_MEDIA_LAUNCH_APP2 + EF_CONTROL_DOWN == toggle mirror
+       // mode:
+       {ui::EF_CONTROL_DOWN, ui::DomCode::F12, ui::DomKey::F12,
+        ui::VKEY_MEDIA_LAUNCH_APP2}},
+  };
+
+  // When the kernel issues an action key (default mode) and the search key is
+  // pressed, the action key needs to be mapped back to its corresponding
+  // action key. This table defines those action-to-function mappings. Note:
+  // this table is essentially the dual of kFnToActionLeys above.
+  static const KeyboardRemapping kActionToFnKeys[] = {
+      {{ui::EF_NONE, ui::VKEY_BROWSER_BACK},
+       {ui::EF_NONE, ui::DomCode::F1, ui::DomKey::F1, ui::VKEY_F1}},
+      {{ui::EF_NONE, ui::VKEY_BROWSER_REFRESH},
+       {ui::EF_NONE, ui::DomCode::F2, ui::DomKey::F2, ui::VKEY_F2}},
+      {{ui::EF_NONE, ui::VKEY_MEDIA_LAUNCH_APP1},
+       {ui::EF_NONE, ui::DomCode::F4, ui::DomKey::F4, ui::VKEY_F4}},
+      {{ui::EF_NONE, ui::VKEY_BRIGHTNESS_DOWN},
+       {ui::EF_NONE, ui::DomCode::F5, ui::DomKey::F5, ui::VKEY_F5}},
+      {{ui::EF_NONE, ui::VKEY_BRIGHTNESS_UP},
+       {ui::EF_NONE, ui::DomCode::F6, ui::DomKey::F6, ui::VKEY_F6}},
+      {{ui::EF_NONE, ui::VKEY_VOLUME_MUTE},
+       {ui::EF_NONE, ui::DomCode::F7, ui::DomKey::F7, ui::VKEY_F7}},
+      {{ui::EF_NONE, ui::VKEY_VOLUME_DOWN},
+       {ui::EF_NONE, ui::DomCode::F8, ui::DomKey::F8, ui::VKEY_F8}},
+      {{ui::EF_NONE, ui::VKEY_VOLUME_UP},
+       {ui::EF_NONE, ui::DomCode::F9, ui::DomKey::F9, ui::VKEY_F9}},
+      // Do not change the order of the next two entries. The remapping of
+      // VKEY_MEDIA_LAUNCH_APP2 with Control held down must appear before
+      // VKEY_MEDIA_LAUNCH_APP2 by itself to be considered.
+      {{ui::EF_CONTROL_DOWN, ui::VKEY_MEDIA_LAUNCH_APP2},
+       {ui::EF_NONE, ui::DomCode::F12, ui::DomKey::F12, ui::VKEY_F12}},
+      {{ui::EF_NONE, ui::VKEY_MEDIA_LAUNCH_APP2},
+       {ui::EF_NONE, ui::DomCode::F3, ui::DomKey::F3, ui::VKEY_F3}},
+  };
+
+  ui::EventRewriterChromeOS::MutableKeyState incoming_without_command = *state;
+  incoming_without_command.flags &= ~ui::EF_COMMAND_DOWN;
+
+  if ((state->key_code >= ui::VKEY_F1) && (state->key_code <= ui::VKEY_F12)) {
+    // Incoming key code is a Fn key. Check if it needs to be mapped back to its
+    // corresponding action key.
+    if (search_is_pressed) {
+      return RewriteWithKeyboardRemappings(kFnkeysToActionKeys,
+                                           base::size(kFnkeysToActionKeys),
+                                           incoming_without_command, state);
+    }
+    return true;
+  } else if (IsKeyCodeInMappings(state->key_code, kActionToFnKeys,
+                                 base::size(kActionToFnKeys))) {
+    // Incoming key code is an action key. Check if it needs to be mapped back
+    // to its corresponding function key.
+    if (search_is_pressed != ForceTopRowAsFunctionKeys()) {
+      return RewriteWithKeyboardRemappings(kActionToFnKeys,
+                                           base::size(kActionToFnKeys),
+                                           incoming_without_command, state);
+    }
+
+    // At this point we know search_is_pressed == ForceTopRowAsFunctionKeys().
+    // If they're both true, they cancel each other. Thus we can clear the
+    // search-key modifier flag.
+    state->flags &= ~ui::EF_COMMAND_DOWN;
+
+    return true;
+  }
+
+  return false;
 }
 
 void EventRewriterChromeOS::KeyboardDeviceAddedInternal(
@@ -1256,12 +1600,16 @@ void EventRewriterChromeOS::KeyboardDeviceAddedInternal(
   device_id_to_info_[device_id] = {type, layout};
 }
 
+bool EventRewriterChromeOS::ForceTopRowAsFunctionKeys() const {
+  return delegate_ && delegate_->TopRowKeysAreFunctionKeys();
+}
+
 EventRewriterChromeOS::DeviceType EventRewriterChromeOS::KeyboardDeviceAdded(
     int device_id) {
-  if (!ui::InputDeviceManager::HasInstance())
+  if (!ui::DeviceDataManager::HasInstance())
     return kDeviceUnknown;
   const std::vector<ui::InputDevice>& keyboard_devices =
-      ui::InputDeviceManager::GetInstance()->GetKeyboardDevices();
+      ui::DeviceDataManager::GetInstance()->GetKeyboardDevices();
   for (const auto& keyboard : keyboard_devices) {
     if (keyboard.id == device_id) {
       const DeviceType type = GetDeviceType(keyboard);

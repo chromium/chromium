@@ -101,21 +101,21 @@
 
       audit.define('1: imag periodicwave test', (task, should) => {
         verifyPeriodicWaveOutput(
-            should, {imag: [0, 2]}, generateReference(Math.sin), 2.7232e-5)
+            should, {imag: [0, 2]}, generateReference(Math.sin), 2.7262e-5)
             .then(() => task.done());
       });
 
       audit.define('2: imag periodicwave test', (task, should) => {
         verifyPeriodicWaveOutput(
             should, {imag: [0, 2], disableNormalization: false},
-            generateReference(Math.sin), 2.7232e-5)
+            generateReference(Math.sin), 2.7262e-5)
             .then(() => task.done());
       });
 
       audit.define('3: imag periodicwave test', (task, should) => {
         verifyPeriodicWaveOutput(
             should, {imag: [0, 2], disableNormalization: true},
-            generateReference(x => 2 * Math.sin(x)), 5.4464e-5)
+            generateReference(x => 2 * Math.sin(x)), 5.4524-5)
             .then(() => task.done());
       });
 

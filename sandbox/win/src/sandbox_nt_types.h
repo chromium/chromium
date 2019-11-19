@@ -10,28 +10,30 @@
 namespace sandbox {
 
 struct NtExports {
-  NtAllocateVirtualMemoryFunction       AllocateVirtualMemory;
-  NtCloseFunction                       Close;
-  NtDuplicateObjectFunction             DuplicateObject;
-  NtFreeVirtualMemoryFunction           FreeVirtualMemory;
-  NtMapViewOfSectionFunction            MapViewOfSection;
-  NtProtectVirtualMemoryFunction        ProtectVirtualMemory;
-  NtQueryInformationProcessFunction     QueryInformationProcess;
-  NtQueryObjectFunction                 QueryObject;
-  NtQuerySectionFunction                QuerySection;
-  NtQueryVirtualMemoryFunction          QueryVirtualMemory;
-  NtUnmapViewOfSectionFunction          UnmapViewOfSection;
-  RtlAllocateHeapFunction               RtlAllocateHeap;
-  RtlAnsiStringToUnicodeStringFunction  RtlAnsiStringToUnicodeString;
-  RtlCompareUnicodeStringFunction       RtlCompareUnicodeString;
-  RtlCreateHeapFunction                 RtlCreateHeap;
-  RtlCreateUserThreadFunction           RtlCreateUserThread;
-  RtlDestroyHeapFunction                RtlDestroyHeap;
-  RtlFreeHeapFunction                   RtlFreeHeap;
-  _strnicmpFunction                     _strnicmp;
-  strlenFunction                        strlen;
-  wcslenFunction                        wcslen;
-  memcpyFunction                        memcpy;
+  NtAllocateVirtualMemoryFunction        AllocateVirtualMemory;
+  NtCloseFunction                        Close;
+  NtDuplicateObjectFunction              DuplicateObject;
+  NtFreeVirtualMemoryFunction            FreeVirtualMemory;
+  NtMapViewOfSectionFunction             MapViewOfSection;
+  NtProtectVirtualMemoryFunction         ProtectVirtualMemory;
+  NtQueryInformationProcessFunction      QueryInformationProcess;
+  NtQueryObjectFunction                  QueryObject;
+  NtQuerySectionFunction                 QuerySection;
+  NtQueryVirtualMemoryFunction           QueryVirtualMemory;
+  NtUnmapViewOfSectionFunction           UnmapViewOfSection;
+  NtSignalAndWaitForSingleObjectFunction SignalAndWaitForSingleObject;
+  NtWaitForSingleObjectFunction          WaitForSingleObject;
+  RtlAllocateHeapFunction                RtlAllocateHeap;
+  RtlAnsiStringToUnicodeStringFunction   RtlAnsiStringToUnicodeString;
+  RtlCompareUnicodeStringFunction        RtlCompareUnicodeString;
+  RtlCreateHeapFunction                  RtlCreateHeap;
+  RtlCreateUserThreadFunction            RtlCreateUserThread;
+  RtlDestroyHeapFunction                 RtlDestroyHeap;
+  RtlFreeHeapFunction                    RtlFreeHeap;
+  _strnicmpFunction                      _strnicmp;
+  strlenFunction                         strlen;
+  wcslenFunction                         wcslen;
+  memcpyFunction                         memcpy;
 };
 
 // This is the value used for the ntdll level allocator.

@@ -26,13 +26,7 @@
 
 class ProfileMenuControllerTest : public CocoaProfileTest {
  public:
-  ProfileMenuControllerTest() {
-    item_.reset([[NSMenuItem alloc] initWithTitle:@"Users"
-                                           action:nil
-                                    keyEquivalent:@""]);
-    controller_.reset(
-        [[ProfileMenuController alloc] initWithMainMenuItem:item_]);
-  }
+  ProfileMenuControllerTest() { RebuildController(); }
 
   void SetUp() override {
     CocoaProfileTest::SetUp();
@@ -40,6 +34,14 @@ class ProfileMenuControllerTest : public CocoaProfileTest {
 
     // Spin the runloop so |-initializeMenu| gets called.
     chrome::testing::NSRunLoopRunAllPending();
+  }
+
+  void RebuildController() {
+    item_.reset([[NSMenuItem alloc] initWithTitle:@"Users"
+                                           action:nil
+                                    keyEquivalent:@""]);
+    controller_.reset(
+        [[ProfileMenuController alloc] initWithMainMenuItem:item_]);
   }
 
   void TestBottomItems() {
@@ -246,4 +248,24 @@ TEST_F(ProfileMenuControllerTest, DeleteActiveProfile) {
   const bool io_was_allowed = base::ThreadRestrictions::SetIOAllowed(false);
   [controller() activeBrowserChangedTo:NULL];
   base::ThreadRestrictions::SetIOAllowed(io_was_allowed);
+}
+
+TEST_F(ProfileMenuControllerTest, AddProfileDisabled) {
+  PrefService* local_state = g_browser_process->local_state();
+  local_state->SetBoolean(prefs::kBrowserAddPersonEnabled, false);
+
+  RebuildController();
+  // Spin the runloop so |-initializeMenu| gets called.
+  chrome::testing::NSRunLoopRunAllPending();
+
+  NSMenu* menu = [controller() menu];
+  NSInteger count = [menu numberOfItems];
+
+  ASSERT_GE(count, 2);
+
+  NSMenuItem* item = [menu itemAtIndex:count - 2];
+  EXPECT_TRUE([item isSeparatorItem]);
+
+  item = [menu itemAtIndex:count - 1];
+  EXPECT_EQ(@selector(editProfile:), [item action]);
 }

@@ -351,7 +351,7 @@ void ContentSettingsStore::SetExtensionContentSettingFromList(
     ContentSettingsType content_settings_type =
         content_settings_helpers::StringToContentSettingsType(
             content_settings_type_str);
-    if (content_settings_type == CONTENT_SETTINGS_TYPE_DEFAULT) {
+    if (content_settings_type == ContentSettingsType::DEFAULT) {
       // We'll end up with DEFAULT here if the type string isn't recognised.
       // This could be if it's a string from an old settings type that has been
       // deleted. DCHECK to make sure this is the case (not some random string).

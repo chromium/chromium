@@ -9,6 +9,8 @@ import json
 import sys
 
 from core import path_util
+path_util.AddTelemetryToPath()
+
 from core import benchmark_finders
 
 

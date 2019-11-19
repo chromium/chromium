@@ -15,7 +15,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/bookmarks/browser/bookmark_node.h"
-#include "ui/base/clipboard/clipboard_types.h"
+#include "ui/base/clipboard/clipboard_buffer.h"
 #include "url/gurl.h"
 
 #if defined(TOOLKIT_VIEWS)
@@ -131,7 +131,7 @@ struct BookmarkNodeData {
 
   // Reads bookmarks from the specified clipboard. Prefers data written via
   // WriteToClipboard() but will also attempt to read a plain bookmark.
-  bool ReadFromClipboard(ui::ClipboardType type);
+  bool ReadFromClipboard(ui::ClipboardBuffer buffer);
 
 #if defined(TOOLKIT_VIEWS)
   // Writes elements to data. If there is only one element and it is a URL

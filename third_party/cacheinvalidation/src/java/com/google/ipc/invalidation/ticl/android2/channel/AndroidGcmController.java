@@ -96,9 +96,9 @@ public class AndroidGcmController {
    */
   private boolean shouldFetchToken() {
     String pkgName = context.getPackageName();
-    return AndroidChannelPreferences.getRegistrationToken(context).isEmpty()
-        || AndroidChannelPreferences.getAppVersion(context)
-           < CommonUtils.getPackageVersion(context, pkgName);
+    return AndroidChannelPreferences.getRegistrationToken().isEmpty()
+            || AndroidChannelPreferences.getAppVersion()
+            < CommonUtils.getPackageVersion(context, pkgName);
   }
 
   /**
@@ -112,10 +112,10 @@ public class AndroidGcmController {
   public void initializeGcm(boolean useGcmUpstream) {
     if (useGcmUpstream) {
       logger.info("Initializing Gcm. Use Gcm Upstream Sender Service");
-      AndroidChannelPreferences.setGcmChannelType(context, GcmChannelType.GCM_UPSTREAM);
+      AndroidChannelPreferences.setGcmChannelType(GcmChannelType.GCM_UPSTREAM);
     } else {
       logger.info("Initializing Gcm updated.");
-      AndroidChannelPreferences.setGcmChannelType(context, GcmChannelType.UPDATED);
+      AndroidChannelPreferences.setGcmChannelType(GcmChannelType.UPDATED);
     }
     if (shouldFetchToken()) {
       fetchToken();
@@ -132,7 +132,7 @@ public class AndroidGcmController {
   public void fetchToken() {
     // Clear the current token. If the call to InstanceID#getToken fails a new token will be fetched
     // on the next call to {@code initializeGcm}.
-    AndroidChannelPreferences.setRegistrationToken(context, "");
+    AndroidChannelPreferences.setRegistrationToken("");
 
     // The GMS client library requires the corresponding version of Google Play Services APK to be
     // installed on the device.
@@ -197,7 +197,7 @@ public class AndroidGcmController {
     
     String echoToken = data.getString(C2dmConstants.ECHO_PARAM);
     if (echoToken != null) {
-      AndroidChannelPreferences.setEchoToken(context, echoToken);
+        AndroidChannelPreferences.setEchoToken(echoToken);
     }
   }
 }

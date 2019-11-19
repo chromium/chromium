@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/container_node.h"
 #include "third_party/blink/renderer/core/dom/parser_content_policy.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
@@ -60,7 +61,10 @@ class CORE_EXPORT DocumentFragment : public ContainerNode {
       delete;  // This will catch anyone doing an unnecessary check.
 };
 
-DEFINE_NODE_TYPE_CASTS(DocumentFragment, IsDocumentFragment());
+template <>
+struct DowncastTraits<DocumentFragment> {
+  static bool AllowFrom(const Node& node) { return node.IsDocumentFragment(); }
+};
 
 }  // namespace blink
 

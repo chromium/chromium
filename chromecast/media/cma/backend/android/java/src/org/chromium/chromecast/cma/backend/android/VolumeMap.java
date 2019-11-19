@@ -53,16 +53,29 @@ public final class VolumeMap {
         }
     };
 
+    private static int getStreamMinVolume(int streamType) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            return getAudioManager().getStreamMinVolume(streamType);
+        }
+        //  Try to use reflection in case API is hidden.
+        try {
+            return (int) getAudioManager()
+                    .getClass()
+                    .getMethod("getStreamMinVolume", int.class)
+                    .invoke(sAudioManager, streamType);
+        } catch (Exception e) {
+            Log.w(TAG, "Unsupported Android SDK version: " + Build.VERSION.SDK_INT, e);
+            return 0;
+        }
+    };
+
     private static final SparseIntArray MIN_VOLUME_INDEX = new SparseIntArray(4) {
         {
-            append(AudioManager.STREAM_MUSIC,
-                    getAudioManager().getStreamMinVolume(AudioManager.STREAM_MUSIC));
-            append(AudioManager.STREAM_ALARM,
-                    getAudioManager().getStreamMinVolume(AudioManager.STREAM_ALARM));
-            append(AudioManager.STREAM_SYSTEM,
-                    getAudioManager().getStreamMinVolume(AudioManager.STREAM_SYSTEM));
+            append(AudioManager.STREAM_MUSIC, getStreamMinVolume(AudioManager.STREAM_MUSIC));
+            append(AudioManager.STREAM_ALARM, getStreamMinVolume(AudioManager.STREAM_ALARM));
+            append(AudioManager.STREAM_SYSTEM, getStreamMinVolume(AudioManager.STREAM_SYSTEM));
             append(AudioManager.STREAM_VOICE_CALL,
-                    getAudioManager().getStreamMinVolume(AudioManager.STREAM_VOICE_CALL));
+                    getStreamMinVolume(AudioManager.STREAM_VOICE_CALL));
         }
     };
 

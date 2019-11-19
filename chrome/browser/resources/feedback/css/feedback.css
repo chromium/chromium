@@ -43,7 +43,7 @@ body {
 }
 
 .content {
-  color: #646464;
+  color: #444;
   flex-grow: 1;
   font-size: 12px;
   margin: 20px;
@@ -94,13 +94,21 @@ body {
 }
 
 .content .text-field-container > input[type=checkbox] {
-  margin-right: 9px;
+  margin-inline-end: 9px;
 }
 
 .content .checkbox-field-container {
   -webkit-align-items: center;
   display: -webkit-flex;
   height: 29px;
+}
+
+#assistant-checkbox-container {
+  align-items: flex-start;
+  line-height: 20px;
+  margin-bottom: 20px;
+  margin-top: 7px;
+  vertical-align: text-top;
 }
 
 #screenshot-container {
@@ -132,15 +140,18 @@ body {
   width: 200px;
 }
 
-.content #screenshot-label {
+.content #screenshot-chk-label {
   flex: auto;
 }
 
+.content #sys-info-container {
+  margin-inline-end: 130px;
+}
+
 .content #privacy-note {
-  color: #969696;
   font-size: 12px;
   line-height: 20px;
-  margin-bottom: 20px;
+  margin-bottom: 0;
   margin-top: 20px;
   text-align: justify;
   text-justify: inter-word;
@@ -157,6 +168,18 @@ body {
 
 .content .top-buttons {
   position: absolute;
+}
+
+#bottom-buttons-container {
+  margin: 0;
+}
+
+.content .bottom-buttons {
+  margin-bottom: 20px;
+  margin-inline-end: 20px;
+  margin-inline-start: 20px;
+  margin-top: 0;
+  position: static;
 }
 
 .content .remove-file-button {
@@ -204,19 +227,4 @@ button.white-button {
 button.blue-button {
   color: #fff;
   text-shadow: 1px sharp drop shadow rgb(45, 106, 218);
-}
-
-.srt-image {
-  display: block;
-  height: 50px;
-  margin-bottom: 20px;
-  margin-inline-end: auto;
-  margin-inline-start: 40px;
-  margin-top: 120px;
-}
-
-.srt-body {
-  font-size: 14px;
-  line-height: 24px;
-  margin: 0 40px;
 }

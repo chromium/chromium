@@ -1,0 +1,20 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://gpuweb.github.io/gpuweb/
+
+typedef unsigned long GPUBufferUsageFlags;
+[
+    Exposed(Window WebGPU, Worker WebGPU)
+] interface GPUBufferUsage {
+    const GPUBufferUsageFlags MAP_READ = 1;
+    const GPUBufferUsageFlags MAP_WRITE = 2;
+    const GPUBufferUsageFlags COPY_SRC = 4;
+    const GPUBufferUsageFlags COPY_DST = 8;
+    const GPUBufferUsageFlags INDEX = 16;
+    const GPUBufferUsageFlags VERTEX = 32;
+    const GPUBufferUsageFlags UNIFORM = 64;
+    const GPUBufferUsageFlags STORAGE = 128;
+    const GPUBufferUsageFlags INDIRECT = 256;
+};

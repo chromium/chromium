@@ -5,6 +5,9 @@
 module mirroring.mojom;
 
 // Errors occurred in a mirroring session.
+// These values are persisted to logs and are tied to
+// MirroringServiceErrorType in tools/metrics/histograms/enums.xml. Do not
+// reorder or remove entries.
 enum SessionError {
   ANSWER_TIME_OUT,                // ANSWER timeout.
   ANSWER_NOT_OK,                  // Not OK answer response.

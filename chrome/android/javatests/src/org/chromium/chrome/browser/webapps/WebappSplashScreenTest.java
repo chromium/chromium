@@ -24,18 +24,17 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ApiCompatibilityUtils;
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.task.PostTask;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeSwitches;
 import org.chromium.chrome.browser.ShortcutHelper;
-import org.chromium.chrome.browser.metrics.SameActivityWebappUmaCache;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabTestUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.content_public.browser.UiThreadTaskTraits;
+import org.chromium.webapk.lib.common.splash.R;
 
 /**
  * Tests for splash screens.
@@ -68,7 +67,7 @@ public class WebappSplashScreenTest {
     @Test
     @SmallTest
     @Feature({"Webapps"})
-    public void testDefaultBackgroundColor() throws Exception {
+    public void testDefaultBackgroundColor() {
         ViewGroup splashScreen = mActivityTestRule.startWebappActivityAndWaitForSplashScreen();
         ColorDrawable background = (ColorDrawable) splashScreen.getBackground();
 
@@ -79,31 +78,91 @@ public class WebappSplashScreenTest {
     }
 
     @Test
-    @DisabledTest
     @SmallTest
     @Feature({"Webapps"})
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public void testThemeColorWhenNotSpecified() throws Exception {
+    public void testThemeColorWhenNotSpecified() {
         mActivityTestRule.startWebappActivityAndWaitForSplashScreen();
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) return;
 
+        // Status bar color should be white on M+ to match CCTs and WebAPK shell.
+        int expectedColor = Color.WHITE;
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            expectedColor = Color.BLACK;
+        }
         Assert.assertEquals(
-                Color.BLACK, mActivityTestRule.getActivity().getWindow().getStatusBarColor());
+                expectedColor, mActivityTestRule.getActivity().getWindow().getStatusBarColor());
     }
 
     @Test
     @SmallTest
     @Feature({"Webapps"})
-    public void testHidesAfterFirstPaint() throws Exception {
+    public void testHidesAfterFirstPaint() {
         mActivityTestRule.startWebappActivityAndWaitForSplashScreen();
         Assert.assertTrue(mActivityTestRule.isSplashScreenVisible());
 
-        ThreadUtils.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                TabTestUtils.simulateFirstVisuallyNonEmptyPaint(
-                        mActivityTestRule.getActivity().getActivityTab());
-            }
+        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
+                () -> TabTestUtils.simulateFirstVisuallyNonEmptyPaint(
+                                mActivityTestRule.getActivity().getActivityTab()));
+
+        mActivityTestRule.waitUntilSplashscreenHides();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Webapps"})
+    public void testHidesAfterCrash() {
+        mActivityTestRule.startWebappActivityAndWaitForSplashScreen();
+        Assert.assertTrue(mActivityTestRule.isSplashScreenVisible());
+
+        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
+                () -> TabTestUtils.simulateCrash(
+                                mActivityTestRule.getActivity().getActivityTab(), true));
+
+        mActivityTestRule.waitUntilSplashscreenHides();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Webapps"})
+    public void testHidesAfterLoadCompletes() {
+        mActivityTestRule.startWebappActivityAndWaitForSplashScreen();
+        Assert.assertTrue(mActivityTestRule.isSplashScreenVisible());
+
+        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
+                () -> TabTestUtils.simulatePageLoadFinished(
+                                mActivityTestRule.getActivity().getActivityTab()));
+
+        mActivityTestRule.waitUntilSplashscreenHides();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Webapps"})
+    public void testHidesAfterLoadFails() {
+        mActivityTestRule.startWebappActivityAndWaitForSplashScreen();
+        Assert.assertTrue(mActivityTestRule.isSplashScreenVisible());
+
+        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
+                () -> TabTestUtils.simulatePageLoadFailed(
+                                mActivityTestRule.getActivity().getActivityTab(), 0));
+
+        mActivityTestRule.waitUntilSplashscreenHides();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Webapps"})
+    public void testHidesAfterMultipleEvents() {
+        mActivityTestRule.startWebappActivityAndWaitForSplashScreen();
+        Assert.assertTrue(mActivityTestRule.isSplashScreenVisible());
+
+        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
+            Tab tab = mActivityTestRule.getActivity().getActivityTab();
+
+            TabTestUtils.simulatePageLoadFinished(tab);
+            TabTestUtils.simulatePageLoadFailed(tab, 0);
+            TabTestUtils.simulateFirstVisuallyNonEmptyPaint(tab);
         });
 
         mActivityTestRule.waitUntilSplashscreenHides();
@@ -112,162 +171,30 @@ public class WebappSplashScreenTest {
     @Test
     @SmallTest
     @Feature({"Webapps"})
-    public void testHidesAfterCrash() throws Throwable {
-        mActivityTestRule.startWebappActivityAndWaitForSplashScreen();
-        Assert.assertTrue(mActivityTestRule.isSplashScreenVisible());
-
-        ThreadUtils.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                TabTestUtils.simulateCrash(mActivityTestRule.getActivity().getActivityTab(), true);
-            }
-        });
-
-        mActivityTestRule.waitUntilSplashscreenHides();
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Webapps"})
-    public void testHidesAfterLoadCompletes() throws Exception {
-        mActivityTestRule.startWebappActivityAndWaitForSplashScreen();
-        Assert.assertTrue(mActivityTestRule.isSplashScreenVisible());
-
-        ThreadUtils.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                TabTestUtils.simulatePageLoadFinished(
-                        mActivityTestRule.getActivity().getActivityTab());
-            }
-        });
-
-        mActivityTestRule.waitUntilSplashscreenHides();
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Webapps"})
-    public void testHidesAfterLoadFails() throws Exception {
-        mActivityTestRule.startWebappActivityAndWaitForSplashScreen();
-        Assert.assertTrue(mActivityTestRule.isSplashScreenVisible());
-
-        ThreadUtils.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                TabTestUtils.simulatePageLoadFailed(
-                        mActivityTestRule.getActivity().getActivityTab(), 0);
-            }
-        });
-
-        mActivityTestRule.waitUntilSplashscreenHides();
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Webapps"})
-    public void testHidesAfterMultipleEvents() throws Exception {
-        mActivityTestRule.startWebappActivityAndWaitForSplashScreen();
-        Assert.assertTrue(mActivityTestRule.isSplashScreenVisible());
-
-        ThreadUtils.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Tab tab = mActivityTestRule.getActivity().getActivityTab();
-
-                TabTestUtils.simulatePageLoadFinished(tab);
-                TabTestUtils.simulatePageLoadFailed(tab, 0);
-                TabTestUtils.simulateFirstVisuallyNonEmptyPaint(tab);
-            }
-        });
-
-        mActivityTestRule.waitUntilSplashscreenHides();
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Webapps"})
-    public void testUmaOnNativeLoad() throws Exception {
+    public void testUmaOnNativeLoad() {
         mActivityTestRule.startWebappActivityAndWaitForSplashScreen();
 
         // Tests UMA values.
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        SameActivityWebappUmaCache.HISTOGRAM_SPLASHSCREEN_BACKGROUNDCOLOR,
-                        SameActivityWebappUmaCache.SplashColorStatus.DEFAULT));
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        SameActivityWebappUmaCache.HISTOGRAM_SPLASHSCREEN_THEMECOLOR,
-                        SameActivityWebappUmaCache.SplashColorStatus.DEFAULT));
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        SameActivityWebappUmaCache.HISTOGRAM_SPLASHSCREEN_ICON_TYPE,
-                        SameActivityWebappUmaCache.SplashIconType.NONE));
-
-        // Tests UMA counts.
-        Assert.assertEquals(1,
-                getHistogramTotalCountFor(
-                        SameActivityWebappUmaCache.HISTOGRAM_SPLASHSCREEN_BACKGROUNDCOLOR,
-                        SameActivityWebappUmaCache.SplashColorStatus.NUM_ENTRIES));
-        Assert.assertEquals(1,
-                getHistogramTotalCountFor(
-                        SameActivityWebappUmaCache.HISTOGRAM_SPLASHSCREEN_THEMECOLOR,
-                        SameActivityWebappUmaCache.SplashColorStatus.NUM_ENTRIES));
-        Assert.assertEquals(1,
-                getHistogramTotalCountFor(
-                        SameActivityWebappUmaCache.HISTOGRAM_SPLASHSCREEN_ICON_TYPE,
-                        SameActivityWebappUmaCache.SplashIconType.NUM_ENTRIES));
-
-        // Given that there is no icon, the ICON_SIZE UMA should not be recorded.
         Assert.assertEquals(0,
-                getHistogramTotalCountFor(
-                        SameActivityWebappUmaCache.HISTOGRAM_SPLASHSCREEN_ICON_SIZE, 50));
-
-        // DURATION and HIDES UMA should not have been recorded yet.
-        Assert.assertFalse(hasHistogramEntry(
-                WebappSplashScreenController.HISTOGRAM_SPLASHSCREEN_DURATION, 3000));
-        Assert.assertEquals(0,
-                getHistogramTotalCountFor(WebappSplashScreenController.HISTOGRAM_SPLASHSCREEN_HIDES,
-                        WebappSplashScreenController.SplashHidesReason.NUM_ENTRIES));
+                getHistogramTotalCountFor(WebappSplashDelegate.HISTOGRAM_SPLASHSCREEN_HIDES,
+                        SplashController.SplashHidesReason.NUM_ENTRIES));
     }
 
     @Test
     @SmallTest
     @Feature({"Webapps"})
-    public void testUmaWhenSplashHides() throws Exception {
+    public void testUmaWhenSplashHides() {
         mActivityTestRule.startWebappActivityAndWaitForSplashScreen();
-        ThreadUtils.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                TabTestUtils.simulateFirstVisuallyNonEmptyPaint(
-                        mActivityTestRule.getActivity().getActivityTab());
-            }
-        });
+        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
+                () -> TabTestUtils.simulateFirstVisuallyNonEmptyPaint(
+                                mActivityTestRule.getActivity().getActivityTab()));
 
         mActivityTestRule.waitUntilSplashscreenHides();
 
-        // DURATION and HIDES should now have a value.
-        Assert.assertTrue(hasHistogramEntry(
-                WebappSplashScreenController.HISTOGRAM_SPLASHSCREEN_DURATION, 10000));
+        // HIDES should now have a value.
         Assert.assertEquals(1,
-                getHistogramTotalCountFor(WebappSplashScreenController.HISTOGRAM_SPLASHSCREEN_HIDES,
-                        WebappSplashScreenController.SplashHidesReason.NUM_ENTRIES));
-
-        // The other UMA records should not have changed.
-        Assert.assertEquals(1,
-                getHistogramTotalCountFor(
-                        SameActivityWebappUmaCache.HISTOGRAM_SPLASHSCREEN_BACKGROUNDCOLOR,
-                        SameActivityWebappUmaCache.SplashColorStatus.NUM_ENTRIES));
-        Assert.assertEquals(1,
-                getHistogramTotalCountFor(
-                        SameActivityWebappUmaCache.HISTOGRAM_SPLASHSCREEN_THEMECOLOR,
-                        SameActivityWebappUmaCache.SplashColorStatus.NUM_ENTRIES));
-        Assert.assertEquals(1,
-                getHistogramTotalCountFor(
-                        SameActivityWebappUmaCache.HISTOGRAM_SPLASHSCREEN_ICON_TYPE,
-                        SameActivityWebappUmaCache.SplashIconType.NUM_ENTRIES));
-        Assert.assertEquals(0,
-                getHistogramTotalCountFor(
-                        SameActivityWebappUmaCache.HISTOGRAM_SPLASHSCREEN_ICON_SIZE, 50));
+                getHistogramTotalCountFor(WebappSplashDelegate.HISTOGRAM_SPLASHSCREEN_HIDES,
+                        SplashController.SplashHidesReason.NUM_ENTRIES));
     }
 
     @Test
@@ -277,7 +204,7 @@ public class WebappSplashScreenTest {
         // Register a properly-sized icon for the splash screen.
         Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         int thresholdSize = context.getResources().getDimensionPixelSize(
-                R.dimen.webapp_splash_image_size_threshold);
+                R.dimen.webapp_splash_image_size_minimum);
         int size = thresholdSize + 1;
         Bitmap splashBitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
         String bitmapString = ShortcutHelper.encodeBitmapAsString(splashBitmap);
@@ -299,40 +226,6 @@ public class WebappSplashScreenTest {
         int[] rules = ((RelativeLayout.LayoutParams) splashText.getLayoutParams()).getRules();
         Assert.assertEquals(RelativeLayout.TRUE, rules[RelativeLayout.ALIGN_PARENT_BOTTOM]);
         Assert.assertEquals(0, rules[RelativeLayout.BELOW]);
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Webapps"})
-    public void testSmallSplashScreenAppears() throws Exception {
-        // Register a smaller icon for the splash screen.
-        Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        int thresholdSize = context.getResources().getDimensionPixelSize(
-                R.dimen.webapp_splash_image_size_threshold);
-        int size = context.getResources().getDimensionPixelSize(
-                R.dimen.webapp_splash_image_size_minimum);
-        Bitmap splashBitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
-        String bitmapString = ShortcutHelper.encodeBitmapAsString(splashBitmap);
-
-        TestFetchStorageCallback callback = new TestFetchStorageCallback();
-        WebappRegistry.getInstance().register(WebappActivityTestRule.WEBAPP_ID, callback);
-        callback.waitForCallback(0);
-        callback.getStorage().updateSplashScreenImage(bitmapString);
-
-        ViewGroup splashScreen = mActivityTestRule.startWebappActivityAndWaitForSplashScreen();
-        Assert.assertTrue(mActivityTestRule.isSplashScreenVisible());
-
-        // The icon is centered within a fixed-size area on the splash screen.
-        ImageView splashImage =
-                (ImageView) splashScreen.findViewById(R.id.webapp_splash_screen_icon);
-        Assert.assertEquals(thresholdSize, splashImage.getMeasuredWidth());
-        Assert.assertEquals(thresholdSize, splashImage.getMeasuredHeight());
-
-        // The web app name is anchored to the icon.
-        TextView splashText = (TextView) splashScreen.findViewById(R.id.webapp_splash_screen_name);
-        int[] rules = ((RelativeLayout.LayoutParams) splashText.getLayoutParams()).getRules();
-        Assert.assertEquals(0, rules[RelativeLayout.ALIGN_PARENT_BOTTOM]);
-        Assert.assertEquals(R.id.webapp_splash_screen_icon, rules[RelativeLayout.BELOW]);
     }
 
     @Test
@@ -375,7 +268,7 @@ public class WebappSplashScreenTest {
     @Test
     @SmallTest
     @Feature({"Webapps"})
-    public void testSplashScreenAppearsWithoutRegisteredSplashImage() throws Exception {
+    public void testSplashScreenAppearsWithoutRegisteredSplashImage() {
         // Don't register anything for the web app, which represents apps that were added to the
         // home screen before splash screen images were downloaded.
         ViewGroup splashScreen = mActivityTestRule.startWebappActivityAndWaitForSplashScreen();
@@ -396,5 +289,16 @@ public class WebappSplashScreenTest {
         Assert.assertEquals(0, rules[RelativeLayout.BELOW]);
         Assert.assertEquals(0, rules[RelativeLayout.CENTER_IN_PARENT]);
         Assert.assertEquals(R.id.webapp_splash_space, rules[RelativeLayout.ABOVE]);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Webapps"})
+    public void testSplashScreenWithSynchronousLayoutInflation() {
+        WebappActivity.setOverrideCoreCount(2);
+
+        mActivityTestRule.startWebappActivityAndWaitForSplashScreen();
+        Assert.assertTrue(mActivityTestRule.isSplashScreenVisible());
+        Assert.assertTrue(mActivityTestRule.getActivity().isInitialLayoutInflationComplete());
     }
 }

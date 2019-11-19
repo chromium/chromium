@@ -6,7 +6,7 @@
 
 #include <string>
 
-#include "build/build_config.h"
+#include "media/media_buildflags.h"
 
 namespace media {
 
@@ -24,60 +24,19 @@ const base::Token kClearKeyCdmDifferentGuid{0xc3914773474bdb02ull,
 // this ID is based on the pepper plugin MIME type.
 const char kClearKeyCdmFileSystemId[] = "application_x-ppapi-clearkey-cdm";
 
-// Note: This file must be in sync with cdm_paths.gni.
-// TODO(xhwang): Improve how we enable platform specific path. See
-// http://crbug.com/468584
-#if (defined(OS_MACOSX) || defined(OS_WIN)) && \
-    (defined(ARCH_CPU_X86) || defined(ARCH_CPU_X86_64))
-#define CDM_USE_PLATFORM_SPECIFIC_PATH
-#endif
+base::FilePath GetPlatformSpecificDirectory(
+    const base::FilePath& cdm_base_path) {
+  // CDM_PLATFORM_SPECIFIC_PATH is specified in cdm_paths.gni.
+  const std::string kPlatformSpecific = BUILDFLAG(CDM_PLATFORM_SPECIFIC_PATH);
+  if (kPlatformSpecific.empty())
+    return base::FilePath();
 
-#if defined(CDM_USE_PLATFORM_SPECIFIC_PATH)
-
-// Special path used in chrome components.
-const char kPlatformSpecific[] = "_platform_specific";
-
-// Name of the component platform in the manifest.
-const char kComponentPlatform[] =
-#if defined(OS_MACOSX)
-    "mac";
-#elif defined(OS_WIN)
-    "win";
-#elif defined(OS_CHROMEOS)
-    "cros";
-#elif defined(OS_LINUX)
-    "linux";
-#else
-    "unsupported_platform";
-#endif
-
-// Name of the component architecture in the manifest.
-const char kComponentArch[] =
-#if defined(ARCH_CPU_X86)
-    "x86";
-#elif defined(ARCH_CPU_X86_64)
-    "x64";
-#elif defined(ARCH_CPU_ARMEL)
-    "arm";
-#else
-    "unsupported_arch";
-#endif
-
-base::FilePath GetPlatformSpecificDirectory(const std::string& cdm_base_path) {
-  base::FilePath path;
-  const std::string kPlatformArch =
-      std::string(kComponentPlatform) + "_" + kComponentArch;
-  return path.AppendASCII(cdm_base_path)
-      .AppendASCII(kPlatformSpecific)
-      .AppendASCII(kPlatformArch);
+  return cdm_base_path.AppendASCII(kPlatformSpecific).NormalizePathSeparators();
 }
 
-#else  // defined(CDM_USE_PLATFORM_SPECIFIC_PATH)
-
 base::FilePath GetPlatformSpecificDirectory(const std::string& cdm_base_path) {
-  return base::FilePath();
+  return GetPlatformSpecificDirectory(
+      base::FilePath::FromUTF8Unsafe(cdm_base_path));
 }
-
-#endif  // defined(CDM_USE_PLATFORM_SPECIFIC_PATH)
 
 }  // namespace media

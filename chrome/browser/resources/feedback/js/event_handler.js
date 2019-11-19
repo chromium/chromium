@@ -166,7 +166,6 @@ class FeedbackRequest {
       this.onSystemInfoReadyCallback_ = this.sendReportNow;
       return;
     }
-
     this.sendReportNow();
   }
 
@@ -186,7 +185,9 @@ class FeedbackRequest {
         this.feedbackInfo_, function(result, landingPageType) {
           if (result == chrome.feedbackPrivate.Status.SUCCESS) {
             console.log('Feedback: Report sent for request with ID ' + ID);
-            if (FLOW != chrome.feedbackPrivate.FeedbackFlow.LOGIN) {
+            if (FLOW != chrome.feedbackPrivate.FeedbackFlow.LOGIN &&
+                landingPageType !=
+                    chrome.feedbackPrivate.LandingPageType.NO_LANDING_PAGE) {
               const landingPage = landingPageType ==
                       chrome.feedbackPrivate.LandingPageType.NORMAL ?
                   FEEDBACK_LANDING_PAGE :
@@ -198,6 +199,9 @@ class FeedbackRequest {
                 'Feedback: Report for request with ID ' + ID +
                 ' will be sent later.');
           }
+          if (FLOW == chrome.feedbackPrivate.FeedbackFlow.LOGIN) {
+            chrome.feedbackPrivate.loginFeedbackComplete();
+          }
         });
   }
 
@@ -208,6 +212,10 @@ class FeedbackRequest {
   onWindowClosed() {
     if (!this.reportIsBeingSent_) {
       this.isRequestCanceled_ = true;
+      if (this.feedbackInfo_.flow ==
+          chrome.feedbackPrivate.FeedbackFlow.LOGIN) {
+        chrome.feedbackPrivate.loginFeedbackComplete();
+      }
     }
   }
 }

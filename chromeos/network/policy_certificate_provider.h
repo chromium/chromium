@@ -5,10 +5,13 @@
 #ifndef CHROMEOS_NETWORK_POLICY_CERTIFICATE_PROVIDER_H_
 #define CHROMEOS_NETWORK_POLICY_CERTIFICATE_PROVIDER_H_
 
+#include <set>
+#include <string>
 #include <vector>
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "chromeos/network/onc/certificate_scope.h"
 
 namespace net {
 class X509Certificate;
@@ -28,11 +31,9 @@ class PolicyCertificateProvider {
    public:
     virtual ~Observer() = default;
 
-    // Is called every time the list of policy-set server and authority
+    // Called every time the list of policy-set server and authority
     // certificates changes.
-    virtual void OnPolicyProvidedCertsChanged(
-        const net::CertificateList& all_server_and_authority_certs,
-        const net::CertificateList& trust_anchors) = 0;
+    virtual void OnPolicyProvidedCertsChanged() = 0;
   };
 
   virtual void AddPolicyProvidedCertsObserver(Observer* observer) = 0;
@@ -40,25 +41,34 @@ class PolicyCertificateProvider {
 
   // Returns all server and authority certificates successfully parsed from ONC,
   // independent of their trust bits.
-  virtual net::CertificateList GetAllServerAndAuthorityCertificates() const = 0;
+  virtual net::CertificateList GetAllServerAndAuthorityCertificates(
+      const chromeos::onc::CertificateScope& scope) const = 0;
 
   // Returns all authority certificates successfully parsed from ONC,
   // independent of their trust bits.
-  virtual net::CertificateList GetAllAuthorityCertificates() const = 0;
+  virtual net::CertificateList GetAllAuthorityCertificates(
+      const chromeos::onc::CertificateScope& scope) const = 0;
 
   // Returns the server and authority certificates which were successfully
   // parsed from ONC and were granted web trust. This means that the
   // certificates had the "Web" trust bit set, and this
   // UserNetworkConfigurationUpdater instance was created with
   // |allow_trusted_certs_from_policy| = true.
-  virtual net::CertificateList GetWebTrustedCertificates() const = 0;
+  virtual net::CertificateList GetWebTrustedCertificates(
+      const chromeos::onc::CertificateScope& scope) const = 0;
 
   // Returns the server and authority certificates which were successfully
   // parsed from ONC and did not request or were not granted web trust.
   // This is equivalent to calling |GetAllServerAndAuthorityCertificates| and
   // then removing all certificates returned by |GetWebTrustedCertificates| from
   // the result.
-  virtual net::CertificateList GetCertificatesWithoutWebTrust() const = 0;
+  virtual net::CertificateList GetCertificatesWithoutWebTrust(
+      const chromeos::onc::CertificateScope& scope) const = 0;
+
+  // Lists extension IDs for which policy-provided certificates have been
+  // specified.
+  virtual const std::set<std::string>& GetExtensionIdsWithPolicyCertificates()
+      const = 0;
 };
 
 }  // namespace chromeos

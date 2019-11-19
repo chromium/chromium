@@ -10,51 +10,51 @@
 
 #import <CoreFoundation/CoreFoundation.h>
 
-#import "remoting/ios/domain/host_info.h"
+#include <algorithm>
+
 #import "remoting/ios/domain/user_info.h"
-#import "remoting/ios/facade/host_info.h"
-#import "remoting/ios/facade/host_list_fetcher.h"
 #import "remoting/ios/facade/remoting_authentication.h"
 #import "remoting/ios/facade/remoting_service.h"
 
 #include "base/bind.h"
-#include "base/i18n/time_formatting.h"
 #include "base/logging.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/strings/utf_string_conversions.h"
-#include "net/url_request/url_fetcher.h"
 #include "remoting/base/string_resources.h"
+#include "remoting/client/chromoting_client_runtime.h"
+#include "remoting/ios/facade/directory_client.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace remoting {
 
 namespace {
 
-bool IsValidErrorCode(int error_code) {
-#define HTTP_STATUS(label, code, reason) \
-  if (error_code == code)                \
-    return true;
-#include "net/http/http_status_code_list.h"
-#undef HTTP_STATUS
-  return false;
+HostListService::FetchFailureReason MapError(grpc::StatusCode status_code) {
+  switch (status_code) {
+    case grpc::StatusCode::UNAVAILABLE:
+    case grpc::StatusCode::DEADLINE_EXCEEDED:
+      return HostListService::FetchFailureReason::NETWORK_ERROR;
+    case grpc::StatusCode::PERMISSION_DENIED:
+    case grpc::StatusCode::UNAUTHENTICATED:
+      return HostListService::FetchFailureReason::AUTH_ERROR;
+    default:
+      return HostListService::FetchFailureReason::UNKNOWN_ERROR;
+  }
 }
 
-std::string GetRequestErrorMessage(int error_code) {
-  if (IsValidErrorCode(error_code)) {
-    std::string error_phrase =
-        net::GetHttpReasonPhrase(static_cast<net::HttpStatusCode>(error_code));
-    return l10n_util::GetStringFUTF8(IDS_SERVER_COMMUNICATION_ERROR,
-                                     base::UTF8ToUTF16(error_phrase));
+// Returns true if |h1| should sort before |h2|.
+bool CompareHost(const apis::v1::HostInfo& h1, const apis::v1::HostInfo& h2) {
+  // Online hosts always sort before offline hosts.
+  if (h1.status() != h2.status()) {
+    return h1.status() == apis::v1::HostInfo_Status_ONLINE;
   }
 
-  switch (error_code) {
-    case net::URLFetcher::RESPONSE_CODE_INVALID:
-      return l10n_util::GetStringUTF8(IDS_ERROR_NETWORK_ERROR);
-    default:
-      return l10n_util::GetStringFUTF8(IDS_SERVER_COMMUNICATION_ERROR,
-                                       base::NumberToString16(error_code));
+  // Sort by host name.
+  int name_compare = h1.host_name().compare(h2.host_name());
+  if (name_compare != 0) {
+    return name_compare < 0;
   }
+
+  // Sort by last seen time if names are identical.
+  return h1.last_seen_time() < h2.last_seen_time();
 }
 
 }  // namespace
@@ -65,6 +65,24 @@ HostListService* HostListService::GetInstance() {
 }
 
 HostListService::HostListService() : weak_factory_(this) {
+  token_getter_ =
+      ChromotingClientRuntime::GetInstance()->CreateOAuthTokenGetter();
+  directory_client_ = std::make_unique<DirectoryClient>(token_getter_.get());
+  Init();
+}
+
+HostListService::HostListService(
+    std::unique_ptr<DirectoryClient> directory_client)
+    : weak_factory_(this) {
+  directory_client_ = std::move(directory_client);
+  Init();
+}
+
+HostListService::~HostListService() {
+  [NSNotificationCenter.defaultCenter removeObserver:user_update_observer_];
+}
+
+void HostListService::Init() {
   auto weak_this = weak_factory_.GetWeakPtr();
   user_update_observer_ = [NSNotificationCenter.defaultCenter
       addObserverForName:kUserDidUpdate
@@ -76,10 +94,6 @@ HostListService::HostListService() : weak_factory_(this) {
                   weak_this->OnUserUpdated(user != nil);
                 }
               }];
-}
-
-HostListService::~HostListService() {
-  [NSNotificationCenter.defaultCenter removeObserver:user_update_observer_];
 }
 
 std::unique_ptr<HostListService::CallbackSubscription>
@@ -95,43 +109,12 @@ HostListService::RegisterFetchFailureCallback(
 }
 
 void HostListService::RequestFetch() {
-  auto weak_this = weak_factory_.GetWeakPtr();
-  [RemotingService.instance.authentication
-      callbackWithAccessToken:^(RemotingAuthenticationStatus status,
-                                NSString* userEmail, NSString* accessToken) {
-        if (status == RemotingAuthenticationStatusSuccess) {
-          if (weak_this) {
-            weak_this->StartHostListFetch(base::SysNSStringToUTF8(accessToken));
-          }
-          return;
-        }
-
-        FetchFailureReason failureReason;
-        switch (status) {
-          case RemotingAuthenticationStatusNetworkError:
-            failureReason = FetchFailureReason::NETWORK_ERROR;
-            break;
-          case RemotingAuthenticationStatusAuthError:
-            failureReason = FetchFailureReason::AUTH_ERROR;
-            break;
-          default:
-            NOTREACHED();
-            failureReason = FetchFailureReason::NETWORK_ERROR;
-        }
-        if (weak_this) {
-          weak_this->HandleFetchFailure(failureReason, 0);
-        }
-      }];
-}
-
-void HostListService::SetHostListFetcherForTesting(
-    std::unique_ptr<HostListFetcher> fetcher) {
-  host_list_fetcher_ = std::move(fetcher);
-}
-
-// static
-std::unique_ptr<HostListService> HostListService::CreateInstanceForTesting() {
-  return std::make_unique<HostListService>();
+  if (state_ == State::FETCHING) {
+    return;
+  }
+  SetState(State::FETCHING);
+  directory_client_->GetHostList(base::BindOnce(
+      &HostListService::HandleHostListResult, weak_factory_.GetWeakPtr()));
 }
 
 void HostListService::SetState(State state) {
@@ -147,46 +130,32 @@ void HostListService::SetState(State state) {
   host_list_state_callbacks_.Notify();
 }
 
-void HostListService::StartHostListFetch(const std::string& access_token) {
-  if (state_ == State::FETCHING) {
-    return;
-  }
-  SetState(State::FETCHING);
-  if (!host_list_fetcher_) {
-    host_list_fetcher_.reset(new HostListFetcher(
-        ChromotingClientRuntime::GetInstance()->url_requester()));
-  }
-  host_list_fetcher_->RetrieveHostlist(
-      access_token, base::BindOnce(&HostListService::HandleHostListResult,
-                                   weak_factory_.GetWeakPtr()));
-}
-
 void HostListService::HandleHostListResult(
-    int responseCode,
-    const std::vector<remoting::HostInfo>& hostlist) {
-  if (responseCode == net::HTTP_OK) {
-    hosts_ = hostlist;
-    SetState(State::FETCHED);
+    const grpc::Status& status,
+    const apis::v1::GetHostListResponse& response) {
+  if (!status.ok()) {
+    HandleFetchFailure(status);
+    return;
+  }
+  hosts_.clear();
+  for (const auto& host : response.hosts()) {
+    hosts_.push_back(host);
+  }
+  std::sort(hosts_.begin(), hosts_.end(), &CompareHost);
+  SetState(State::FETCHED);
+}
+
+void HostListService::HandleFetchFailure(const grpc::Status& status) {
+  SetState(State::NOT_FETCHED);
+
+  if (status.error_code() == grpc::StatusCode::CANCELLED) {
     return;
   }
 
-  if (responseCode != HostListFetcher::RESPONSE_CODE_CANCELLED) {
-    if (responseCode == net::HTTP_UNAUTHORIZED) {
-      [RemotingService.instance.authentication logout];
-    } else {
-      HandleFetchFailure(FetchFailureReason::REQUEST_ERROR, responseCode);
-    }
-  }
-  SetState(State::NOT_FETCHED);
-}
-
-void HostListService::HandleFetchFailure(FetchFailureReason reason,
-                                         int error_code) {
   last_fetch_failure_ = std::make_unique<FetchFailureInfo>();
-  last_fetch_failure_->reason = reason;
-  last_fetch_failure_->error_code = error_code;
+  last_fetch_failure_->reason = MapError(status.error_code());
 
-  switch (reason) {
+  switch (last_fetch_failure_->reason) {
     case FetchFailureReason::NETWORK_ERROR:
       last_fetch_failure_->localized_description =
           l10n_util::GetStringUTF8(IDS_ERROR_NETWORK_ERROR);
@@ -195,24 +164,20 @@ void HostListService::HandleFetchFailure(FetchFailureReason reason,
       last_fetch_failure_->localized_description =
           l10n_util::GetStringUTF8(IDS_ERROR_OAUTH_TOKEN_INVALID);
       break;
-    case FetchFailureReason::REQUEST_ERROR:
-      last_fetch_failure_->localized_description =
-          GetRequestErrorMessage(error_code);
-      break;
     default:
-      NOTREACHED();
+      last_fetch_failure_->localized_description = status.error_message();
   }
   LOG(WARNING) << "Failed to fetch host list: "
                << last_fetch_failure_->localized_description
-               << " reason: " << static_cast<int>(reason)
-               << ", error_code: " << error_code;
+               << " reason: " << static_cast<int>(last_fetch_failure_->reason);
   fetch_failure_callbacks_.Notify();
+  if (last_fetch_failure_->reason == FetchFailureReason::AUTH_ERROR) {
+    [RemotingService.instance.authentication logout];
+  }
 }
 
 void HostListService::OnUserUpdated(bool is_user_signed_in) {
-  if (host_list_fetcher_) {
-    host_list_fetcher_->CancelFetch();
-  }
+  directory_client_->CancelPendingRequests();
   SetState(State::NOT_FETCHED);
   if (is_user_signed_in) {
     RequestFetch();

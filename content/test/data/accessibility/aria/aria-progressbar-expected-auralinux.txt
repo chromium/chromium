@@ -1,0 +1,4 @@
+[document web]
+++[progress bar] current=3.000000 minimum=1.000000 maximum=37.000000
+++[progress bar] current=3.000000 minimum=1.000000 maximum=96.000000
+++[progress bar] current=0.000000 minimum=0.000000 maximum=10.000000

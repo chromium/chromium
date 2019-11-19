@@ -15,7 +15,7 @@
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_discovery_filter.h"
 #include "device/bluetooth/bluetooth_discovery_session_outcome.h"
-#include "device/bluetooth/bluetooth_uuid.h"
+#include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 #include "device/bluetooth/public/mojom/test/fake_bluetooth.mojom.h"
 #include "device/bluetooth/test/fake_peripheral.h"
 #include "device/bluetooth/test/fake_remote_gatt_characteristic.h"
@@ -39,8 +39,8 @@ device::BluetoothDevice::ManufacturerDataMap ToManufacturerDataMap(
 }  // namespace
 
 FakeCentral::FakeCentral(mojom::CentralState state,
-                         mojom::FakeCentralRequest request)
-    : state_(state), binding_(this, std::move(request)) {}
+                         mojo::PendingReceiver<mojom::FakeCentral> receiver)
+    : state_(state), receiver_(this, std::move(receiver)) {}
 
 void FakeCentral::SimulatePreconnectedPeripheral(
     const std::string& address,
@@ -66,8 +66,10 @@ void FakeCentral::SimulatePreconnectedPeripheral(
 void FakeCentral::SimulateAdvertisementReceived(
     mojom::ScanResultPtr scan_result_ptr,
     SimulateAdvertisementReceivedCallback callback) {
-  // TODO(https://crbug.com/719826): Add a DCHECK to proceed only if a scan is
-  // currently in progress.
+  if (NumDiscoverySessions() == 0) {
+    std::move(callback).Run();
+    return;
+  }
   auto* fake_peripheral = GetFakePeripheral(scan_result_ptr->device_address);
   const bool is_new_device = fake_peripheral == nullptr;
   if (is_new_device) {
@@ -114,6 +116,47 @@ void FakeCentral::SimulateAdvertisementReceived(
     }
   }
 
+  std::move(callback).Run();
+}
+
+void FakeCentral::SetState(mojom::CentralState new_state,
+                           SetStateCallback callback) {
+  // In real devices, when a powered on adapter is added, we notify that it was
+  // added and then that it was powered on. When an adapter is removed, we
+  // notify that it was powered off and then that it was removed. The following
+  // logic simulates this behavior.
+  if (new_state == state_) {
+    std::move(callback).Run();
+    return;
+  }
+
+  const mojom::CentralState old_state = state_;
+  state_ = new_state;
+  auto notify_present_changed = [this]() {
+    NotifyAdapterPresentChanged(IsPresent());
+  };
+  auto notify_powered_changed = [this]() {
+    NotifyAdapterPoweredChanged(IsPowered());
+  };
+
+  switch (old_state) {
+    case mojom::CentralState::ABSENT:
+      notify_present_changed();
+      if (new_state == mojom::CentralState::POWERED_ON)
+        notify_powered_changed();
+      break;
+    case mojom::CentralState::POWERED_OFF:
+      if (new_state == mojom::CentralState::ABSENT)
+        notify_present_changed();
+      else
+        notify_powered_changed();
+      break;
+    case mojom::CentralState::POWERED_ON:
+      notify_powered_changed();
+      if (new_state == mojom::CentralState::ABSENT)
+        notify_present_changed();
+      break;
+  }
   std::move(callback).Run();
 }
 
@@ -458,14 +501,13 @@ bool FakeCentral::IsPresent() const {
 
 bool FakeCentral::IsPowered() const {
   switch (state_) {
+    case mojom::CentralState::ABSENT:
+    // SetState() calls IsPowered() to notify observers properly when an adapter
+    // being removed is simulated, so it should return false.
     case mojom::CentralState::POWERED_OFF:
       return false;
     case mojom::CentralState::POWERED_ON:
       return true;
-    case mojom::CentralState::ABSENT:
-      // Clients shouldn't call IsPowered() when the adapter is not present.
-      NOTREACHED();
-      return false;
   }
   NOTREACHED();
   return false;
@@ -542,60 +584,66 @@ device::BluetoothLocalGattService* FakeCentral::GetGattService(
   return nullptr;
 }
 
+base::WeakPtr<device::BluetoothAdapter> FakeCentral::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 bool FakeCentral::SetPoweredImpl(bool powered) {
   NOTREACHED();
   return false;
 }
 
-void FakeCentral::AddDiscoverySession(
-    device::BluetoothDiscoveryFilter* discovery_filter,
-    const base::Closure& callback,
-    DiscoverySessionErrorCallback error_callback) {
-  if (!IsPresent()) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            std::move(error_callback),
-            device::UMABluetoothDiscoverySessionOutcome::ADAPTER_NOT_PRESENT));
-    return;
-  }
-
-  ++num_discovery_sessions_;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                base::BindOnce(callback));
-}
-
-void FakeCentral::RemoveDiscoverySession(
-    device::BluetoothDiscoveryFilter* discovery_filter,
-    const base::Closure& callback,
-    DiscoverySessionErrorCallback error_callback) {
-  if (!IsPresent()) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            std::move(error_callback),
-            device::UMABluetoothDiscoverySessionOutcome::ADAPTER_NOT_PRESENT));
-    return;
-  }
-
-  if (num_discovery_sessions_ == 0) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(error_callback),
-                       device::UMABluetoothDiscoverySessionOutcome::UNKNOWN));
-    return;
-  }
-
-  --num_discovery_sessions_;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                base::BindOnce(callback));
-}
-
-void FakeCentral::SetDiscoveryFilter(
+void FakeCentral::UpdateFilter(
     std::unique_ptr<device::BluetoothDiscoveryFilter> discovery_filter,
-    const base::Closure& callback,
-    DiscoverySessionErrorCallback error_callback) {
-  NOTREACHED();
+    DiscoverySessionResultCallback callback) {
+  if (!IsPresent()) {
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            std::move(callback), /*is_error=*/true,
+            device::UMABluetoothDiscoverySessionOutcome::ADAPTER_NOT_PRESENT));
+    return;
+  }
+
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), /*is_error=*/false,
+                     device::UMABluetoothDiscoverySessionOutcome::SUCCESS));
+}
+
+void FakeCentral::StartScanWithFilter(
+    std::unique_ptr<device::BluetoothDiscoveryFilter> discovery_filter,
+    DiscoverySessionResultCallback callback) {
+  if (!IsPresent()) {
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            std::move(callback), /*is_error=*/true,
+            device::UMABluetoothDiscoverySessionOutcome::ADAPTER_NOT_PRESENT));
+    return;
+  }
+
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), /*is_error=*/false,
+                     device::UMABluetoothDiscoverySessionOutcome::SUCCESS));
+}
+
+void FakeCentral::StopScan(DiscoverySessionResultCallback callback) {
+  if (!IsPresent()) {
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            std::move(callback), /*is_error=*/false,
+            device::UMABluetoothDiscoverySessionOutcome::ADAPTER_NOT_PRESENT));
+    return;
+  }
+
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          std::move(callback), /*is_error=*/false,
+          device::UMABluetoothDiscoverySessionOutcome::ADAPTER_NOT_PRESENT));
 }
 
 void FakeCentral::RemovePairingDelegateInternal(

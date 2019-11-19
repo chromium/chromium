@@ -11,9 +11,9 @@
 CloseBubbleOnTabActivationHelper::CloseBubbleOnTabActivationHelper(
     views::BubbleDialogDelegateView* owner_bubble,
     Browser* browser)
-    : owner_bubble_(owner_bubble), tab_strip_observer_(this) {
+    : owner_bubble_(owner_bubble) {
   DCHECK(owner_bubble_);
-  tab_strip_observer_.Add(browser->tab_strip_model());
+  browser->tab_strip_model()->AddObserver(this);
 }
 
 CloseBubbleOnTabActivationHelper::~CloseBubbleOnTabActivationHelper() = default;

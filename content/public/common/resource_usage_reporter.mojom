@@ -4,7 +4,7 @@
 
 module content.mojom;
 
-// Mirror of blink::WebCache::ResourceTypeStat.
+// Mirror of blink::WebCacheResourceTypeStat.
 // Note: These are size_t in blink.
 struct ResourceTypeStat {
   uint64 count = 0;
@@ -14,7 +14,7 @@ struct ResourceTypeStat {
 };
 
 // Blink resource cache statistics. Mirror of
-// blink::WebCache::ResourceTypeStats.
+// blink::WebCacheResourceTypeStats.
 struct ResourceTypeStats {
   ResourceTypeStat images;
   ResourceTypeStat css_style_sheets;

@@ -7,43 +7,35 @@
 #include "base/metrics/field_trial_param_associator.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/run_loop.h"
-#include "base/strings/stringprintf.h"
 #include "base/task/post_task.h"
-#include "base/task/task_scheduler/task_scheduler.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/values_test_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/metrics/subprocess_metrics_provider.h"
-#include "chrome/browser/previews/previews_service.h"
 #include "chrome/browser/previews/previews_service_factory.h"
 #include "chrome/browser/previews/previews_ui_tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ssl/cert_verifier_browser_test.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_features.h"
 #include "components/optimization_guide/hints_component_info.h"
+#include "components/optimization_guide/hints_component_util.h"
+#include "components/optimization_guide/optimization_guide_constants.h"
+#include "components/optimization_guide/optimization_guide_features.h"
 #include "components/optimization_guide/optimization_guide_service.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/optimization_guide/test_hints_component_creator.h"
-#include "components/previews/content/previews_decider_impl.h"
-#include "components/previews/content/previews_optimization_guide.h"
-#include "components/previews/content/previews_ui_service.h"
-#include "components/previews/core/previews_constants.h"
 #include "components/previews/core/previews_features.h"
 #include "components/previews/core/previews_switches.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
-#include "net/reporting/reporting_policy.h"
-#include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
-#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/network_quality_tracker.h"
 
 namespace {
@@ -53,7 +45,7 @@ void RetryForHistogramUntilCountReached(base::HistogramTester* histogram_tester,
                                         const std::string& histogram_name,
                                         size_t count) {
   while (true) {
-    base::TaskScheduler::GetInstance()->FlushForTesting();
+    base::ThreadPoolInstance::Get()->FlushForTesting();
     base::RunLoop().RunUntilIdle();
 
     content::FetchHistogramsFromChildProcesses();
@@ -132,6 +124,12 @@ class PreviewsBrowserTest : public InProcessBrowserTest {
     cmd->AppendSwitch(previews::switches::kIgnorePreviewsBlacklist);
   }
 
+  void TearDown() override {
+    scoped_feature_list_.Reset();
+
+    InProcessBrowserTest::TearDown();
+  }
+
   const GURL& https_url() const { return https_url_; }
   const GURL& https_no_transform_url() const { return https_no_transform_url_; }
   const GURL& https_hint_setup_url() const { return https_hint_setup_url_; }
@@ -160,11 +158,10 @@ class PreviewsBrowserTest : public InProcessBrowserTest {
   void MonitorResourceRequest(const net::test_server::HttpRequest& request) {
     // This method is called on embedded test server thread. Post the
     // information on UI thread.
-    base::PostTaskWithTraits(
+    base::PostTask(
         FROM_HERE, {content::BrowserThread::UI},
         base::BindOnce(&PreviewsBrowserTest::MonitorResourceRequestOnUIThread,
                        base::Unretained(this), request));
-    base::RunLoop().RunUntilIdle();
   }
 
   void MonitorResourceRequestOnUIThread(
@@ -190,6 +187,7 @@ class PreviewsBrowserTest : public InProcessBrowserTest {
     return std::move(response);
   }
 
+  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
   std::unique_ptr<net::EmbeddedTestServer> http_server_;
   GURL https_url_;
@@ -218,7 +216,7 @@ IN_PROC_BROWSER_TEST_F(PreviewsBrowserTest, NoScriptPreviewsDisabled) {
   EXPECT_FALSE(noscript_css_requested());
 
   // Verify info bar not presented via histogram check.
-  histogram_tester.ExpectTotalCount("Previews.InfoBarAction.NoScript", 0);
+  histogram_tester.ExpectTotalCount("Previews.PreviewShown.NoScript", 0);
 }
 
 // This test class enables NoScriptPreviews but without OptimizationHints.
@@ -230,7 +228,8 @@ class PreviewsNoScriptBrowserTest : public PreviewsBrowserTest {
 
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        {previews::features::kPreviews, previews::features::kOptimizationHints,
+        {previews::features::kPreviews,
+         optimization_guide::features::kOptimizationHints,
          previews::features::kNoScriptPreviews,
          data_reduction_proxy::features::
              kDataReductionProxyEnabledWithNetworkService},
@@ -252,26 +251,17 @@ class PreviewsNoScriptBrowserTest : public PreviewsBrowserTest {
   void SetUpNoScriptWhitelist(const GURL& hint_setup_url) {
     const optimization_guide::HintsComponentInfo& component_info =
         test_hints_component_creator_.CreateHintsComponentInfoWithPageHints(
-            optimization_guide::proto::NOSCRIPT, {hint_setup_url.host()}, {});
+            optimization_guide::proto::NOSCRIPT, {hint_setup_url.host()}, "*",
+            {});
 
     base::HistogramTester histogram_tester;
-
-    // Register a QuitClosure for when the next hint update is started below.
-    base::RunLoop run_loop;
-    PreviewsServiceFactory::GetForProfile(
-        Profile::FromBrowserContext(browser()
-                                        ->tab_strip_model()
-                                        ->GetActiveWebContents()
-                                        ->GetBrowserContext()))
-        ->previews_ui_service()
-        ->previews_decider_impl()
-        ->previews_opt_guide()
-        ->ListenForNextUpdateForTesting(run_loop.QuitClosure());
 
     g_browser_process->optimization_guide_service()->MaybeUpdateHintsComponent(
         component_info);
 
-    run_loop.Run();
+    RetryForHistogramUntilCountReached(
+        &histogram_tester,
+        optimization_guide::kComponentHintsUpdatedResultHistogramString, 1);
 
     // Navigate to |hint_setup_url| to prime the OptimizationGuide hints for the
     // url's host and ensure that they have been loaded from the store (via
@@ -279,9 +269,17 @@ class PreviewsNoScriptBrowserTest : public PreviewsBrowserTest {
     ui_test_utils::NavigateToURL(browser(), hint_setup_url);
 
     RetryForHistogramUntilCountReached(
-        &histogram_tester,
-        previews::kPreviewsOptimizationGuideOnLoadedHintResultHistogramString,
+        &histogram_tester, optimization_guide::kLoadedHintLocalHistogramString,
         1);
+  }
+
+  void TearDown() override {
+    // Make sure to reset the other feature list first, otherwise we hit a
+    // DCHECK where the feature lists aren't reset in the same order they are
+    // set up.
+    PreviewsBrowserTest::TearDown();
+
+    scoped_feature_list_.Reset();
   }
 
  private:
@@ -291,16 +289,16 @@ class PreviewsNoScriptBrowserTest : public PreviewsBrowserTest {
 };
 
 #if defined(OS_WIN) || defined(OS_MACOSX) || defined(OS_CHROMEOS)
-#define DISABLE_ON_WIN_MAC_CHROMESOS(x) DISABLED_##x
+#define DISABLE_ON_WIN_MAC_CHROMEOS(x) DISABLED_##x
 #else
-#define DISABLE_ON_WIN_MAC_CHROMESOS(x) x
+#define DISABLE_ON_WIN_MAC_CHROMEOS(x) x
 #endif
 
 // Loads a webpage that has both script and noscript tags and also requests
 // a script resource. Verifies that the noscript tag is evaluated and the
 // script resource is not loaded.
 IN_PROC_BROWSER_TEST_F(PreviewsNoScriptBrowserTest,
-                       DISABLE_ON_WIN_MAC_CHROMESOS(NoScriptPreviewsEnabled)) {
+                       DISABLE_ON_WIN_MAC_CHROMEOS(NoScriptPreviewsEnabled)) {
   GURL url = https_url();
 
   // Whitelist NoScript for https_hint_setup_url()'s' host.
@@ -315,12 +313,31 @@ IN_PROC_BROWSER_TEST_F(PreviewsNoScriptBrowserTest,
 
   // Verify info bar presented via histogram check.
   RetryForHistogramUntilCountReached(&histogram_tester,
-                                     "Previews.InfoBarAction.NoScript", 1);
+                                     "Previews.PreviewShown.NoScript", 1);
 }
 
 IN_PROC_BROWSER_TEST_F(
     PreviewsNoScriptBrowserTest,
-    DISABLE_ON_WIN_MAC_CHROMESOS(NoScriptPreviewsEnabledButHttpRequest)) {
+    DISABLE_ON_WIN_MAC_CHROMEOS(NoScriptPreviewsEnabled_Incognito)) {
+  GURL url = https_url();
+
+  // Whitelist NoScript for https_hint_setup_url()'s' host.
+  SetUpNoScriptWhitelist(https_hint_setup_url());
+
+  base::HistogramTester histogram_tester;
+  Browser* incognito = CreateIncognitoBrowser();
+  ASSERT_FALSE(PreviewsServiceFactory::GetForProfile(incognito->profile()));
+  ASSERT_TRUE(PreviewsServiceFactory::GetForProfile(browser()->profile()));
+
+  ui_test_utils::NavigateToURL(incognito, url);
+
+  // Verify JS was loaded indicating that NoScript preview was not triggered.
+  EXPECT_FALSE(noscript_css_requested());
+  EXPECT_TRUE(noscript_js_requested());
+}
+
+IN_PROC_BROWSER_TEST_F(PreviewsNoScriptBrowserTest,
+                       DISABLE_ON_WIN_MAC_CHROMEOS(NoScriptPreviewsForHttp)) {
   GURL url = http_url();
 
   // Whitelist NoScript for http_hint_setup_url() host.
@@ -328,13 +345,13 @@ IN_PROC_BROWSER_TEST_F(
 
   ui_test_utils::NavigateToURL(browser(), url);
 
-  // Verify loaded js resource but not css triggered by noscript tag.
-  EXPECT_TRUE(noscript_js_requested());
-  EXPECT_FALSE(noscript_css_requested());
+  // Verify loaded noscript tag triggered css resource but not js one.
+  EXPECT_TRUE(noscript_css_requested());
+  EXPECT_FALSE(noscript_js_requested());
 }
 
 IN_PROC_BROWSER_TEST_F(PreviewsNoScriptBrowserTest,
-                       DISABLE_ON_WIN_MAC_CHROMESOS(
+                       DISABLE_ON_WIN_MAC_CHROMEOS(
                            NoScriptPreviewsEnabledButNoTransformDirective)) {
   GURL url = https_no_transform_url();
 
@@ -354,7 +371,7 @@ IN_PROC_BROWSER_TEST_F(PreviewsNoScriptBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(
     PreviewsNoScriptBrowserTest,
-    DISABLE_ON_WIN_MAC_CHROMESOS(NoScriptPreviewsEnabledHttpRedirectToHttps)) {
+    DISABLE_ON_WIN_MAC_CHROMEOS(NoScriptPreviewsEnabledHttpRedirectToHttps)) {
   GURL url = redirect_url();
 
   // Whitelist NoScript for http_hint_setup_url() host.
@@ -369,12 +386,12 @@ IN_PROC_BROWSER_TEST_F(
 
   // Verify info bar presented via histogram check.
   RetryForHistogramUntilCountReached(&histogram_tester,
-                                     "Previews.InfoBarAction.NoScript", 1);
+                                     "Previews.PreviewShown.NoScript", 1);
 }
 
 IN_PROC_BROWSER_TEST_F(
     PreviewsNoScriptBrowserTest,
-    DISABLE_ON_WIN_MAC_CHROMESOS(NoScriptPreviewsRecordsOptOut)) {
+    DISABLE_ON_WIN_MAC_CHROMEOS(NoScriptPreviewsRecordsOptOut)) {
   GURL url = redirect_url();
 
   // Whitelist NoScript for http_hint_setup_url()'s' host.
@@ -401,7 +418,7 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(
     PreviewsNoScriptBrowserTest,
-    DISABLE_ON_WIN_MAC_CHROMESOS(NoScriptPreviewsEnabledByWhitelist)) {
+    DISABLE_ON_WIN_MAC_CHROMEOS(NoScriptPreviewsEnabledByWhitelist)) {
   GURL url = https_url();
 
   // Whitelist NoScript for https_hint_setup_url()'s' host.
@@ -416,7 +433,7 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(
     PreviewsNoScriptBrowserTest,
-    DISABLE_ON_WIN_MAC_CHROMESOS(NoScriptPreviewsNotEnabledByWhitelist)) {
+    DISABLE_ON_WIN_MAC_CHROMEOS(NoScriptPreviewsNotEnabledByWhitelist)) {
   GURL url = https_url();
 
   // Whitelist random site for NoScript.
@@ -427,147 +444,4 @@ IN_PROC_BROWSER_TEST_F(
   // Verify loaded js resource but not css triggered by noscript tag.
   EXPECT_TRUE(noscript_js_requested());
   EXPECT_FALSE(noscript_css_requested());
-}
-
-namespace {
-
-class PreviewsReportingBrowserTest : public CertVerifierBrowserTest {
- public:
-  PreviewsReportingBrowserTest()
-      : https_server_(net::test_server::EmbeddedTestServer::TYPE_HTTPS) {}
-  ~PreviewsReportingBrowserTest() override = default;
-
-  void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {network::features::kReporting, previews::features::kPreviews,
-         previews::features::kClientLoFi,
-         data_reduction_proxy::features::
-             kDataReductionProxyEnabledWithNetworkService},
-        {network::features::kNetworkErrorLogging});
-    CertVerifierBrowserTest::SetUp();
-    // Make report delivery happen instantly.
-    net::ReportingPolicy policy;
-    policy.delivery_interval = base::TimeDelta::FromSeconds(0);
-    net::ReportingPolicy::UsePolicyForTesting(policy);
-  }
-
-  void SetUpOnMainThread() override {
-    CertVerifierBrowserTest::SetUpOnMainThread();
-
-    g_browser_process->network_quality_tracker()
-        ->ReportEffectiveConnectionTypeForTesting(
-            net::EFFECTIVE_CONNECTION_TYPE_2G);
-
-    host_resolver()->AddRule("*", "127.0.0.1");
-
-    main_frame_response_ =
-        std::make_unique<net::test_server::ControllableHttpResponse>(
-            server(), "/lofi_test");
-    upload_response_ =
-        std::make_unique<net::test_server::ControllableHttpResponse>(server(),
-                                                                     "/upload");
-    mock_cert_verifier()->set_default_result(net::OK);
-    ASSERT_TRUE(server()->Start());
-  }
-
-  void SetUpCommandLine(base::CommandLine* cmd) override {
-    CertVerifierBrowserTest::SetUpCommandLine(cmd);
-    cmd->AppendSwitch("enable-spdy-proxy-auth");
-
-    // Due to race conditions, it's possible that blacklist data is not loaded
-    // at the time of first navigation. That may prevent Preview from
-    // triggering, and causing the test to flake.
-    cmd->AppendSwitch(previews::switches::kIgnorePreviewsBlacklist);
-  }
-
-  net::EmbeddedTestServer* server() { return &https_server_; }
-  int port() const { return https_server_.port(); }
-
-  net::test_server::ControllableHttpResponse* main_frame_response() {
-    return main_frame_response_.get();
-  }
-
-  net::test_server::ControllableHttpResponse* upload_response() {
-    return upload_response_.get();
-  }
-
-  GURL GetReportingEnabledURL() const {
-    return GURL(base::StringPrintf("https://example.com:%d/lofi_test", port()));
-  }
-
-  GURL GetCollectorURL() const {
-    return GURL(base::StringPrintf("https://example.com:%d/upload", port()));
-  }
-
-  std::string GetReportToHeader() const {
-    return "Report-To: {\"endpoints\":[{\"url\":\"" + GetCollectorURL().spec() +
-           "\"}],\"max_age\":86400}\r\n";
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-  net::EmbeddedTestServer https_server_;
-  std::unique_ptr<net::test_server::ControllableHttpResponse>
-      main_frame_response_;
-  std::unique_ptr<net::test_server::ControllableHttpResponse> upload_response_;
-
-  DISALLOW_COPY_AND_ASSIGN(PreviewsReportingBrowserTest);
-};
-
-std::unique_ptr<base::Value> ParseReportUpload(const std::string& payload) {
-  auto parsed_payload = base::test::ParseJsonDeprecated(payload);
-  // Clear out any non-reproducible fields.
-  for (auto& report : parsed_payload->GetList()) {
-    report.RemoveKey("age");
-    auto* user_agent =
-        report.FindKeyOfType("user_agent", base::Value::Type::STRING);
-    if (user_agent != nullptr)
-      *user_agent = base::Value("Mozilla/1.0");
-  }
-  return parsed_payload;
-}
-
-}  // namespace
-
-// Checks that the intervention is reported during a LoFi load.
-IN_PROC_BROWSER_TEST_F(PreviewsReportingBrowserTest,
-                       TestReportingHeadersSentForLoFiPreview) {
-  NavigateParams params(browser(), GetReportingEnabledURL(),
-                        ui::PAGE_TRANSITION_LINK);
-  Navigate(&params);
-
-  main_frame_response()->WaitForRequest();
-  main_frame_response()->Send(
-      "HTTP/1.1 200 OK\r\n"
-      "Content-Type: text/html\r\n"
-      "Empty page \r\n");
-  main_frame_response()->Send(GetReportToHeader());
-  main_frame_response()->Send("\r\n");
-  main_frame_response()->Done();
-
-  upload_response()->WaitForRequest();
-  auto actual = ParseReportUpload(upload_response()->http_request()->content);
-  upload_response()->Send("HTTP/1.1 204 OK\r\n");
-  upload_response()->Send("\r\n");
-  upload_response()->Done();
-
-  // Verify the contents of the report that we received.
-  EXPECT_TRUE(actual != nullptr);
-  auto expected = base::test::ParseJsonDeprecated(base::StringPrintf(
-      R"text(
-        [
-          {
-            "body": {
-              "message": "Modified page load behavior on the page because )text"
-      R"text(the page was expected to take a long amount of time to load. )text"
-      R"text(https://www.chromestatus.com/feature/5148050062311424"
-            },
-            "type": "intervention",
-            "url": "https://example.com:%d/lofi_test",
-            "user_agent": "Mozilla/1.0"
-          }
-        ]
-      )text",
-      port()));
-  EXPECT_EQ(*expected, *actual);
 }

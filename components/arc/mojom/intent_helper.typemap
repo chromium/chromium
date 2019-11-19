@@ -1,0 +1,16 @@
+# Copyright 2016 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+mojom = "//components/arc/mojom/intent_helper.mojom"
+public_headers = [ "//components/arc/intent_helper/intent_filter.h" ]
+traits_headers =
+    [ "//components/arc/intent_helper/intent_filter_mojom_traits.h" ]
+sources = [
+  "//components/arc/intent_helper/intent_filter_mojom_traits.cc",
+]
+type_mappings = [
+  "arc.mojom.IntentFilter=::arc::IntentFilter[move_only]",
+  "arc.mojom.AuthorityEntry=::arc::IntentFilter::AuthorityEntry[move_only]",
+  "arc.mojom.PatternMatcher=::arc::IntentFilter::PatternMatcher[move_only]",
+]

@@ -144,7 +144,7 @@ class RulesCacheDelegate {
   base::ObserverList<Observer>::Unchecked observers_;
 
   // Use this factory to generate weak pointers bound to the UI thread.
-  base::WeakPtrFactory<RulesCacheDelegate> weak_ptr_factory_;
+  base::WeakPtrFactory<RulesCacheDelegate> weak_ptr_factory_{this};
 };
 
 }  // namespace extensions

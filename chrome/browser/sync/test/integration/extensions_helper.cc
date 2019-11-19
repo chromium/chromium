@@ -152,11 +152,9 @@ ExtensionsMatchChecker::~ExtensionsMatchChecker() {
   }
 }
 
-std::string ExtensionsMatchChecker::GetDebugMessage() const {
-  return "Waiting for extensions to match";
-}
+bool ExtensionsMatchChecker::IsExitConditionSatisfied(std::ostream* os) {
+  *os << "Waiting for extensions to match";
 
-bool ExtensionsMatchChecker::IsExitConditionSatisfied() {
   auto it = profiles_.begin();
   Profile* profile0 = *it;
   ++it;

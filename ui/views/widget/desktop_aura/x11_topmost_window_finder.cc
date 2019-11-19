@@ -8,15 +8,13 @@
 
 #include "ui/aura/client/screen_position_client.h"
 #include "ui/aura/window.h"
-#include "ui/gfx/x/x11.h"
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_x11.h"
 
 namespace views {
 
-X11TopmostWindowFinder::X11TopmostWindowFinder() : toplevel_(x11::None) {}
+X11TopmostWindowFinder::X11TopmostWindowFinder() = default;
 
-X11TopmostWindowFinder::~X11TopmostWindowFinder() {
-}
+X11TopmostWindowFinder::~X11TopmostWindowFinder() = default;
 
 aura::Window* X11TopmostWindowFinder::FindLocalProcessWindowAt(
     const gfx::Point& screen_loc_in_pixels,
@@ -25,19 +23,16 @@ aura::Window* X11TopmostWindowFinder::FindLocalProcessWindowAt(
   ignore_ = ignore;
 
   std::vector<aura::Window*> local_process_windows =
-      DesktopWindowTreeHostX11::GetAllOpenWindows();
-  bool found_local_process_window = false;
-  for (size_t i = 0; i < local_process_windows.size(); ++i) {
-    if (ShouldStopIteratingAtLocalProcessWindow(local_process_windows[i])) {
-      found_local_process_window = true;
-      break;
-    }
-  }
-  if (!found_local_process_window)
-    return NULL;
+      DesktopWindowTreeHostLinux::GetAllOpenWindows();
+  if (std::none_of(local_process_windows.cbegin(), local_process_windows.cend(),
+                   [this](auto* window) {
+                     return ShouldStopIteratingAtLocalProcessWindow(window);
+                   }))
+    return nullptr;
 
   ui::EnumerateTopLevelWindows(this);
-  return DesktopWindowTreeHostX11::GetContentWindowForXID(toplevel_);
+  return DesktopWindowTreeHostLinux::GetContentWindowForWidget(
+      static_cast<gfx::AcceleratedWidget>(toplevel_));
 }
 
 XID X11TopmostWindowFinder::FindWindowAt(
@@ -51,8 +46,8 @@ bool X11TopmostWindowFinder::ShouldStopIterating(XID xid) {
   if (!ui::IsWindowVisible(xid))
     return false;
 
-  aura::Window* window =
-      views::DesktopWindowTreeHostX11::GetContentWindowForXID(xid);
+  auto* window = DesktopWindowTreeHostLinux::GetContentWindowForWidget(
+      static_cast<gfx::AcceleratedWidget>(xid));
   if (window) {
     if (ShouldStopIteratingAtLocalProcessWindow(window)) {
       toplevel_ = xid;
@@ -78,21 +73,18 @@ bool X11TopmostWindowFinder::ShouldStopIteratingAtLocalProcessWindow(
   if (!window->IsVisible())
     return false;
 
-  DesktopWindowTreeHostX11* host =
-      DesktopWindowTreeHostX11::GetHostForXID(
-          window->GetHost()->GetAcceleratedWidget());
-  if (!host->GetX11RootWindowOuterBounds().Contains(screen_loc_in_pixels_))
+  auto* host = DesktopWindowTreeHostLinux::GetHostForWidget(
+      window->GetHost()->GetAcceleratedWidget());
+  if (!static_cast<DesktopWindowTreeHostX11*>(host)
+           ->GetXRootWindowOuterBounds()
+           .Contains(screen_loc_in_pixels_))
     return false;
-
-  ::Region shape = host->GetWindowShape();
-  if (!shape)
-    return true;
 
   aura::client::ScreenPositionClient* screen_position_client =
       aura::client::GetScreenPositionClient(window->GetRootWindow());
   gfx::Point window_loc(screen_loc_in_pixels_);
   screen_position_client->ConvertPointFromScreen(window, &window_loc);
-  return XPointInRegion(shape, window_loc.x(), window_loc.y()) == x11::True;
+  return host->ContainsPointInXRegion(window_loc);
 }
 
 }  // namespace views

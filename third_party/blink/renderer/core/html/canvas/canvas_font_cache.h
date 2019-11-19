@@ -20,17 +20,14 @@ namespace blink {
 class ComputedStyle;
 class Document;
 class FontCachePurgePreventer;
+class HTMLCanvasElement;
 
 class CORE_EXPORT CanvasFontCache final
-    : public GarbageCollectedFinalized<CanvasFontCache>,
+    : public GarbageCollected<CanvasFontCache>,
       public Thread::TaskObserver {
   USING_PRE_FINALIZER(CanvasFontCache, Dispose);
 
  public:
-  static CanvasFontCache* Create(Document& document) {
-    return MakeGarbageCollected<CanvasFontCache>(document);
-  }
-
   explicit CanvasFontCache(Document&);
 
   MutableCSSPropertyValueSet* ParseFont(const String&);
@@ -43,7 +40,9 @@ class CORE_EXPORT CanvasFontCache final
   unsigned HardMaxFonts();
 
   void WillUseCurrentFont() { SchedulePruningIfNeeded(); }
-  bool GetFontUsingDefaultStyle(const String&, Font&);
+  bool GetFontUsingDefaultStyle(HTMLCanvasElement& canvas,
+                                const String&,
+                                Font&);
 
   // TaskObserver implementation
   void DidProcessTask(const base::PendingTask&) override;

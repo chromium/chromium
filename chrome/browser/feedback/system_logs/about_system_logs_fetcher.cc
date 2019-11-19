@@ -21,7 +21,8 @@ namespace system_logs {
 
 SystemLogsFetcher* BuildAboutSystemLogsFetcher() {
   const bool scrub_data = false;
-  SystemLogsFetcher* fetcher = new SystemLogsFetcher(scrub_data);
+  // We aren't anonymizing, so we can pass null for the 1st party IDs.
+  SystemLogsFetcher* fetcher = new SystemLogsFetcher(scrub_data, nullptr);
 
   fetcher->AddSource(std::make_unique<ChromeInternalLogSource>());
   fetcher->AddSource(std::make_unique<MemoryDetailsLogSource>());

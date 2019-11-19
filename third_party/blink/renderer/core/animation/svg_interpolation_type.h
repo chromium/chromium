@@ -7,11 +7,13 @@
 
 #include "third_party/blink/renderer/core/animation/interpolation_type.h"
 
+#include "third_party/blink/renderer/core/core_export.h"
+
 namespace blink {
 
 class SVGPropertyBase;
 
-class SVGInterpolationType : public InterpolationType {
+class CORE_EXPORT SVGInterpolationType : public InterpolationType {
  protected:
   SVGInterpolationType(const QualifiedName& attribute)
       : InterpolationType(PropertyHandle(attribute)) {}

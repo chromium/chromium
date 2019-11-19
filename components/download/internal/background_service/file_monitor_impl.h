@@ -49,7 +49,7 @@ class FileMonitorImpl : public FileMonitor {
   const base::TimeDelta file_keep_alive_time_;
 
   scoped_refptr<base::SequencedTaskRunner> file_thread_task_runner_;
-  base::WeakPtrFactory<FileMonitorImpl> weak_factory_;
+  base::WeakPtrFactory<FileMonitorImpl> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FileMonitorImpl);
 };

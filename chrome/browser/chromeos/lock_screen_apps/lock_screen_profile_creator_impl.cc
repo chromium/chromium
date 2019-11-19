@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/one_shot_event.h"
 #include "base/strings/string16.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
@@ -19,7 +20,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/common/safe_browsing_prefs.h"
 #include "extensions/browser/extension_system.h"
-#include "extensions/common/one_shot_event.h"
 
 namespace lock_screen_apps {
 
@@ -28,8 +28,7 @@ LockScreenProfileCreatorImpl::LockScreenProfileCreatorImpl(
     const base::TickClock* tick_clock)
     : primary_profile_(primary_profile),
       tick_clock_(tick_clock),
-      note_taking_helper_observer_(this),
-      weak_ptr_factory_(this) {}
+      note_taking_helper_observer_(this) {}
 
 LockScreenProfileCreatorImpl::~LockScreenProfileCreatorImpl() {}
 
@@ -69,9 +68,10 @@ void LockScreenProfileCreatorImpl::InitializeImpl() {
   // before testing for lock screen enabled app existence.
   extensions::ExtensionSystem::Get(primary_profile_)
       ->ready()
-      .Post(FROM_HERE,
-            base::Bind(&LockScreenProfileCreatorImpl::OnExtensionSystemReady,
-                       weak_ptr_factory_.GetWeakPtr()));
+      .Post(
+          FROM_HERE,
+          base::BindOnce(&LockScreenProfileCreatorImpl::OnExtensionSystemReady,
+                         weak_ptr_factory_.GetWeakPtr()));
 }
 
 void LockScreenProfileCreatorImpl::OnExtensionSystemReady() {

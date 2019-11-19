@@ -11,9 +11,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-CWV_EXPORT
 // Used to configure feature flags during runtime. Flags are persisted across
 // app restarts.
+CWV_EXPORT
 @interface CWVFlags : NSObject
 
 // Whether or not sync and wallet features are communicating with the sandbox

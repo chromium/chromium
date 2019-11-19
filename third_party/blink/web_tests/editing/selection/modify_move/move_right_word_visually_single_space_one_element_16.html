@@ -1,0 +1,80 @@
+<!doctype html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../assert_selection.js"></script>
+<script>
+if (window.internals)
+  internals.settings.setEditingBehavior('win');
+
+selection_test(
+  '<div contenteditable dir="rtl">|שנב abc סטז</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">|שנב abc סטז</div>',
+  '16-0 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">ש|נב abc סטז</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">|שנב abc סטז</div>',
+  '16-1 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">שנ|ב abc סטז</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">|שנב abc סטז</div>',
+  '16-2 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">שנב| abc סטז</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">|שנב abc סטז</div>',
+  '16-3 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">שנב |abc סטז</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">|שנב abc סטז</div>',
+  '16-4 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">שנב a|bc סטז</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">שנב |abc סטז</div>',
+  '16-5 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">שנב ab|c סטז</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">שנב |abc סטז</div>',
+  '16-6 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">שנב abc| סטז</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">שנב |abc סטז</div>',
+  '16-7 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">שנב abc |סטז</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">שנב |abc סטז</div>',
+  '16-8 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">שנב abc ס|טז</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">שנב abc |סטז</div>',
+  '16-9 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">שנב abc סט|ז</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">שנב abc |סטז</div>',
+  '16-10 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">שנב abc סטז|</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">שנב abc |סטז</div>',
+  '16-11 right word');
+</script>

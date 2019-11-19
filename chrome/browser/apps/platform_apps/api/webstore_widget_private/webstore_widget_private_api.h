@@ -15,7 +15,7 @@ namespace chrome_apps {
 namespace api {
 
 class WebstoreWidgetPrivateInstallWebstoreItemFunction
-    : public UIThreadExtensionFunction {
+    : public ExtensionFunction {
  public:
   WebstoreWidgetPrivateInstallWebstoreItemFunction();
 
@@ -25,7 +25,7 @@ class WebstoreWidgetPrivateInstallWebstoreItemFunction
  protected:
   ~WebstoreWidgetPrivateInstallWebstoreItemFunction() override;
 
-  // UIThreadExtensionFunction overrides.
+  // ExtensionFunction overrides.
   ResponseAction Run() override;
 
  private:

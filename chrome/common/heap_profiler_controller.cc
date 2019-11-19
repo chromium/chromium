@@ -7,30 +7,23 @@
 #include <cmath>
 
 #include "base/bind.h"
-#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/metrics/metrics_hashes.h"
-#include "base/profiler/stack_sampling_profiler.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/process/process_metrics.h"
 #include "base/rand_util.h"
 #include "base/sampling_heap_profiler/module_cache.h"
 #include "base/sampling_heap_profiler/sampling_heap_profiler.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/task/post_task.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "components/metrics/call_stack_profile_builder.h"
-#include "content/public/common/content_switches.h"
+#include "components/metrics/call_stack_profile_metrics_provider.h"
 
 namespace {
 
-constexpr char kMetadataSizeField[] = "HeapProfiler.AllocationInBytes";
+// Sets heap sampling interval in bytes.
+const char kHeapProfilerSamplingRate[] = "sampling-rate";
 
-constexpr base::Feature kSamplingHeapProfilerFeature{
-    "SamplingHeapProfiler", base::FEATURE_DISABLED_BY_DEFAULT};
-
-constexpr char kSamplingHeapProfilerFeatureSamplingRateKB[] =
-    "sampling-rate-kb";
-
-constexpr size_t kDefaultSamplingRateKB = 128;
 constexpr base::TimeDelta kHeapCollectionInterval =
     base::TimeDelta::FromHours(24);
 
@@ -40,93 +33,69 @@ base::TimeDelta RandomInterval(base::TimeDelta mean) {
   return -std::log(base::RandDouble()) * mean;
 }
 
-class SampleMetadataRecorder : public metrics::MetadataRecorder {
- public:
-  SampleMetadataRecorder()
-      : field_hash_(base::HashMetricName(kMetadataSizeField)) {}
-
-  void SetCurrentSampleSize(size_t size) { current_sample_size_ = size; }
-
-  std::pair<uint64_t, int64_t> GetHashAndValue() const override {
-    return std::make_pair(field_hash_, current_sample_size_);
-  }
-
- private:
-  const uint64_t field_hash_;
-  size_t current_sample_size_ = 0;
-};
-
 }  // namespace
 
-HeapProfilerController::HeapProfilerController() = default;
-HeapProfilerController::~HeapProfilerController() = default;
+HeapProfilerController::HeapProfilerController()
+    : stopped_(base::MakeRefCounted<StoppedFlag>()) {}
 
-void HeapProfilerController::StartIfEnabled() {
-  DCHECK(!started_);
-  size_t sampling_rate_kb = 0;
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(switches::kSamplingHeapProfiler)) {
-    unsigned value;
-    bool parsed = base::StringToUint(
-        command_line->GetSwitchValueASCII(switches::kSamplingHeapProfiler),
-        &value);
-    sampling_rate_kb = parsed ? value : kDefaultSamplingRateKB;
-  }
-
-  bool on_trial = base::FeatureList::IsEnabled(kSamplingHeapProfilerFeature);
-  if (on_trial && !sampling_rate_kb) {
-    sampling_rate_kb = std::max(
-        base::GetFieldTrialParamByFeatureAsInt(
-            kSamplingHeapProfilerFeature,
-            kSamplingHeapProfilerFeatureSamplingRateKB, kDefaultSamplingRateKB),
-        0);
-  }
-
-  if (!sampling_rate_kb)
-    return;
-
-  started_ = true;
-  auto* profiler = base::SamplingHeapProfiler::Get();
-  profiler->SetSamplingInterval(sampling_rate_kb * 1024);
-  profiler->Start();
-
-  ScheduleNextSnapshot();
+HeapProfilerController::~HeapProfilerController() {
+  stopped_->data.Set();
 }
 
-void HeapProfilerController::ScheduleNextSnapshot() {
-  if (!task_runner_) {
-    task_runner_ =
-        base::CreateTaskRunnerWithTraits({base::TaskPriority::BEST_EFFORT});
+void HeapProfilerController::Start() {
+  if (!base::FeatureList::IsEnabled(
+          metrics::CallStackProfileMetricsProvider::kHeapProfilerReporting)) {
+    return;
   }
-  task_runner_->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&HeapProfilerController::TakeSnapshot,
-                     weak_factory_.GetWeakPtr()),
+  int sampling_rate = base::GetFieldTrialParamByFeatureAsInt(
+      metrics::CallStackProfileMetricsProvider::kHeapProfilerReporting,
+      kHeapProfilerSamplingRate, 0);
+  if (sampling_rate > 0)
+    base::SamplingHeapProfiler::Get()->SetSamplingInterval(sampling_rate);
+  base::SamplingHeapProfiler::Get()->Start();
+  ScheduleNextSnapshot(stopped_);
+}
+
+// static
+void HeapProfilerController::ScheduleNextSnapshot(
+    scoped_refptr<StoppedFlag> stopped) {
+  base::PostDelayedTask(
+      FROM_HERE, {base::ThreadPool(), base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(&HeapProfilerController::TakeSnapshot, std::move(stopped)),
       RandomInterval(kHeapCollectionInterval));
 }
 
-void HeapProfilerController::TakeSnapshot() {
+// static
+void HeapProfilerController::TakeSnapshot(
+    scoped_refptr<StoppedFlag> stopped) {
+  if (stopped->data.IsSet())
+    return;
   RetrieveAndSendSnapshot();
-  ScheduleNextSnapshot();
+  ScheduleNextSnapshot(std::move(stopped));
 }
 
+// static
 void HeapProfilerController::RetrieveAndSendSnapshot() {
   std::vector<base::SamplingHeapProfiler::Sample> samples =
       base::SamplingHeapProfiler::Get()->GetSamples(0);
   if (samples.empty())
     return;
 
+  size_t malloc_usage =
+      base::ProcessMetrics::CreateCurrentProcessMetrics()->GetMallocUsage();
+  int malloc_usage_mb = static_cast<int>(malloc_usage >> 20);
+  base::UmaHistogramMemoryLargeMB("Memory.HeapProfiler.Browser.Malloc",
+                                  malloc_usage_mb);
+
   base::ModuleCache module_cache;
-  SampleMetadataRecorder metadata_recorder;
   metrics::CallStackProfileParams params(
       metrics::CallStackProfileParams::BROWSER_PROCESS,
       metrics::CallStackProfileParams::UNKNOWN_THREAD,
       metrics::CallStackProfileParams::PERIODIC_HEAP_COLLECTION);
-  metrics::CallStackProfileBuilder profile_builder(params, nullptr,
-                                                   &metadata_recorder);
+  metrics::CallStackProfileBuilder profile_builder(params);
 
   for (const base::SamplingHeapProfiler::Sample& sample : samples) {
-    std::vector<base::StackSamplingProfiler::Frame> frames;
+    std::vector<base::Frame> frames;
     frames.reserve(sample.stack.size());
     for (const void* frame : sample.stack) {
       uintptr_t address = reinterpret_cast<uintptr_t>(frame);
@@ -134,9 +103,11 @@ void HeapProfilerController::RetrieveAndSendSnapshot() {
           module_cache.GetModuleForAddress(address);
       frames.emplace_back(address, module);
     }
-    metadata_recorder.SetCurrentSampleSize(sample.total);
-    profile_builder.RecordMetadata();
-    profile_builder.OnSampleCompleted(std::move(frames));
+    size_t count = std::max<size_t>(
+        static_cast<size_t>(
+            std::llround(static_cast<double>(sample.total) / sample.size)),
+        1);
+    profile_builder.OnSampleCompleted(std::move(frames), sample.total, count);
   }
 
   profile_builder.OnProfileCompleted(base::TimeDelta(), base::TimeDelta());

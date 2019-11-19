@@ -18,7 +18,6 @@ class SequencedTaskRunner;
 }
 
 namespace net {
-class ChannelIDService;
 class CookieCryptoDelegate;
 class CookieStore;
 class NetLog;
@@ -60,11 +59,6 @@ struct CONTENT_EXPORT CookieStoreConfig {
   // CookieCryptoDelegate must outlive any cookie store created with this
   // config.
   net::CookieCryptoDelegate* crypto_delegate;
-
-  // Provides the cookie store with a pointer to the corresponding
-  // ChannelIDService that should be used with that cookie store. The
-  // ChannelIDService must outlive any cookie store created with this config.
-  net::ChannelIDService* channel_id_service;
 
   // Callbacks for data load events will be performed on |client_task_runner|.
   // If nullptr, uses the task runner for BrowserThread::IO.

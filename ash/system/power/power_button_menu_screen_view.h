@@ -38,6 +38,9 @@ class ASH_EXPORT PowerButtonMenuScreenView : public views::View,
   // Schedules an animation to show or hide the view.
   void ScheduleShowHideAnimation(bool show);
 
+  // views::View:
+  const char* GetClassName() const override;
+
  private:
   class PowerButtonMenuBackgroundView;
 

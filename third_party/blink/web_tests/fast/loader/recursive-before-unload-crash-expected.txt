@@ -1,4 +1,0 @@
-CONSOLE ERROR: Blocked alert('onbeforeunload called, and iframe hasn't been added yet.') during beforeunload.
-ALERT: Adding iframe
-Could not load the requested resource.
-Error code: -102 (net::ERR_CONNECTION_REFUSED)

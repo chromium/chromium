@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-mojom = "//services/viz/privileged/interfaces/gl/context_lost_reason.mojom"
+mojom = "//services/viz/privileged/mojom/gl/context_lost_reason.mojom"
 public_headers = [ "//gpu/command_buffer/common/constants.h" ]
 traits_headers =
     [ "//services/viz/privileged/cpp/context_lost_reason_traits.h" ]
@@ -10,4 +10,5 @@ public_deps = [
   "//gpu/command_buffer/common",
 ]
 
-type_mappings = [ "viz.mojom.ContextLostReason=gpu::error::ContextLostReason" ]
+type_mappings =
+    [ "viz.mojom.ContextLostReason=::gpu::error::ContextLostReason" ]

@@ -1,30 +1,20 @@
 {
   "layers": [
     {
-      "name": "LayoutView #document",
-      "bounds": [800, 600],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [800, 600],
-      "drawsContent": false
-    },
-    {
       "name": "Scrolling Contents Layer",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutBlockFlow (positioned) DIV id='composited-parent'",
+      "name": "LayoutNGBlockFlow (positioned) DIV id='composited-parent'",
+      "position": [-100, -100],
       "bounds": [200, 200],
       "backgroundColor": "#000000",
       "transform": 1
     },
     {
-      "name": "LayoutBlockFlow (positioned) DIV id='software-parent'",
+      "name": "LayoutNGBlockFlow (positioned) DIV id='software-parent'",
       "bounds": [200, 200],
       "backgroundColor": "#008000"
     }
@@ -36,7 +26,7 @@
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
-        [230, 230, 0, 1]
+        [330, 330, 0, 1]
       ]
     }
   ]

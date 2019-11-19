@@ -97,8 +97,7 @@ TEST(ValuesStructTraitsTest, DictionaryValue) {
   storage.emplace_back(
       "list", std::make_unique<base::Value>(base::Value::ListStorage()));
 
-  base::Value in(
-      base::Value::DictStorage(std::move(storage), base::KEEP_LAST_OF_DUPES));
+  base::Value in(base::Value::DictStorage(std::move(storage)));
   base::Value out;
   ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Value>(&in, &out));
   EXPECT_EQ(in, out);

@@ -26,11 +26,10 @@ TEST_F(CSSComputedStyleDeclarationTest, CleanAncestorsNoRecalc) {
   EXPECT_TRUE(GetDocument().NeedsLayoutTreeUpdate());
 
   Element* target = GetDocument().getElementById("target");
-  CSSComputedStyleDeclaration* computed =
-      CSSComputedStyleDeclaration::Create(target);
+  auto* computed = MakeGarbageCollected<CSSComputedStyleDeclaration>(target);
 
-  EXPECT_STREQ("rgb(0, 128, 0)",
-               computed->GetPropertyValue(CSSPropertyColor).Utf8().data());
+  EXPECT_EQ("rgb(0, 128, 0)",
+            computed->GetPropertyValue(CSSPropertyID::kColor));
   EXPECT_TRUE(GetDocument().NeedsLayoutTreeUpdate());
 }
 
@@ -55,11 +54,10 @@ TEST_F(CSSComputedStyleDeclarationTest, CleanShadowAncestorsNoRecalc) {
   EXPECT_TRUE(GetDocument().NeedsLayoutTreeUpdate());
 
   Element* target = shadow_root.getElementById("target");
-  CSSComputedStyleDeclaration* computed =
-      CSSComputedStyleDeclaration::Create(target);
+  auto* computed = MakeGarbageCollected<CSSComputedStyleDeclaration>(target);
 
-  EXPECT_STREQ("rgb(0, 128, 0)",
-               computed->GetPropertyValue(CSSPropertyColor).Utf8().data());
+  EXPECT_EQ("rgb(0, 128, 0)",
+            computed->GetPropertyValue(CSSPropertyID::kColor));
   EXPECT_TRUE(GetDocument().NeedsLayoutTreeUpdate());
 }
 
@@ -84,25 +82,39 @@ TEST_F(CSSComputedStyleDeclarationTest, NeedsAdjacentStyleRecalc) {
   Element* container = GetDocument().getElementById("container");
   Element* c_span = GetDocument().getElementById("c");
   Element* d_span = GetDocument().getElementById("d");
+
   d_span->setAttribute("style", "color:pink");
 
-  EXPECT_TRUE(GetDocument().NeedsLayoutTreeUpdate());
-  EXPECT_TRUE(GetDocument().NeedsLayoutTreeUpdateForNode(*d_span));
+  EXPECT_FALSE(GetDocument().NeedsLayoutTreeUpdate());
+  EXPECT_FALSE(GetDocument().NeedsLayoutTreeUpdateForNode(*d_span));
   EXPECT_FALSE(GetDocument().NeedsLayoutTreeUpdateForNode(*c_span));
   EXPECT_FALSE(GetDocument().NeedsLayoutTreeUpdateForNode(*c_span, true));
   EXPECT_FALSE(container->NeedsAdjacentStyleRecalc());
 
-  CSSComputedStyleDeclaration* computed =
-      CSSComputedStyleDeclaration::Create(c_span);
+  auto* computed = MakeGarbageCollected<CSSComputedStyleDeclaration>(c_span);
 
-  EXPECT_STREQ("rgb(0, 128, 0)",
-               computed->GetPropertyValue(CSSPropertyColor).Utf8().data());
+  EXPECT_EQ("rgb(0, 128, 0)",
+            computed->GetPropertyValue(CSSPropertyID::kColor));
+
+  d_span->setAttribute("style", "color:green");
 
   EXPECT_TRUE(GetDocument().NeedsLayoutTreeUpdate());
   EXPECT_TRUE(GetDocument().NeedsLayoutTreeUpdateForNode(*d_span));
   EXPECT_TRUE(GetDocument().NeedsLayoutTreeUpdateForNode(*c_span));
   EXPECT_FALSE(GetDocument().NeedsLayoutTreeUpdateForNode(*c_span, true));
   EXPECT_TRUE(container->NeedsAdjacentStyleRecalc());
+}
+
+TEST_F(CSSComputedStyleDeclarationTest,
+       NoCrashWhenCallingGetPropertyCSSValueWithVariable) {
+  UpdateAllLifecyclePhasesForTest();
+  Element* target = GetDocument().body();
+  auto* computed = MakeGarbageCollected<CSSComputedStyleDeclaration>(target);
+  ASSERT_TRUE(computed);
+  const CSSValue* result =
+      computed->GetPropertyCSSValue(CSSPropertyID::kVariable);
+  EXPECT_FALSE(result);
+  // Don't crash.
 }
 
 }  // namespace blink

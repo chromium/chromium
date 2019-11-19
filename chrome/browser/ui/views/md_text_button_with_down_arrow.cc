@@ -32,9 +32,8 @@ MdTextButtonWithDownArrow::MdTextButtonWithDownArrow(ButtonListener* listener,
 
 MdTextButtonWithDownArrow::~MdTextButtonWithDownArrow() = default;
 
-void MdTextButtonWithDownArrow::OnNativeThemeChanged(
-    const ui::NativeTheme* theme) {
-  MdTextButton::OnNativeThemeChanged(theme);
+void MdTextButtonWithDownArrow::OnThemeChanged() {
+  MdTextButton::OnThemeChanged();
 
   // The icon's color is derived from the label's |enabled_color|, which might
   // have changed as the result of the theme change.
@@ -44,7 +43,7 @@ void MdTextButtonWithDownArrow::OnNativeThemeChanged(
 void MdTextButtonWithDownArrow::SetDropArrowImage() {
   gfx::ImageSkia drop_arrow_image = gfx::CreateVectorIcon(
       kMenuDropArrowIcon,
-      color_utils::DeriveDefaultIconColor(label()->enabled_color()));
+      color_utils::DeriveDefaultIconColor(label()->GetEnabledColor()));
   SetImage(Button::STATE_NORMAL, drop_arrow_image);
 }
 

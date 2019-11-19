@@ -7,7 +7,7 @@
 
 #include "base/macros.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "ios/web/public/referrer.h"
+#include "ios/web/public/navigation/referrer.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 

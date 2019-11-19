@@ -17,8 +17,6 @@ extern const char kAppShellAllowRoaming[];
 extern const char kAppShellHostWindowSize[];
 extern const char kAppShellPreferredNetwork[];
 #endif
-extern const char kAppShellRefreshToken[];
-extern const char kAppShellUser[];
 #if defined(OS_LINUX) && !defined(OS_CHROMEOS)
 extern const char kCrashDumpsDir[];
 extern const char kEnableReporting[];

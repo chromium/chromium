@@ -3,7 +3,9 @@
 # found in the LICENSE file.
 
 typemaps = [
+  "//third_party/blink/common/bluetooth/web_bluetooth_device_id.typemap",
   "//third_party/blink/common/feature_policy/feature_policy.typemap",
+  "//third_party/blink/common/frame/frame_policy.typemap",
   "//third_party/blink/common/messaging/cloneable_message.typemap",
   "//third_party/blink/common/messaging/transferable_message.typemap",
 ]

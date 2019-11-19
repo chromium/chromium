@@ -13,13 +13,12 @@
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/sql_init_error_message_ids.h"
-#include "chrome/browser/sync/glue/sync_start_util.h"
 #include "chrome/browser/ui/profile_error_dialog.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/payments/content/payment_manifest_web_data_service.h"
 #include "components/search_engines/keyword_web_data_service.h"
-#include "components/signin/core/browser/webdata/token_web_data.h"
+#include "components/signin/public/webdata/token_web_data.h"
 #include "components/webdata_services/web_data_service_wrapper.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -177,8 +176,7 @@ KeyedService* WebDataServiceFactory::BuildServiceInstanceFor(
   const base::FilePath& profile_path = context->GetPath();
   return new WebDataServiceWrapper(
       profile_path, g_browser_process->GetApplicationLocale(),
-      base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::UI}),
-      sync_start_util::GetFlareForSyncableService(profile_path),
+      base::CreateSingleThreadTaskRunner({BrowserThread::UI}),
       base::BindRepeating(&ProfileErrorCallback));
 }
 

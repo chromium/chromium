@@ -10,7 +10,6 @@
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/debug/debugger.h"
-#include "build/build_config.h"
 #include "components/web_cache/renderer/web_cache_impl.h"
 #include "content/public/common/content_constants.h"
 #include "content/public/common/content_switches.h"
@@ -30,12 +29,10 @@
 #include "content/shell/test_runner/web_frame_test_proxy.h"
 #include "content/shell/test_runner/web_test_interfaces.h"
 #include "content/shell/test_runner/web_test_runner.h"
-#include "content/shell/test_runner/web_view_test_proxy.h"
 #include "media/base/audio_latency.h"
 #include "media/base/mime_util.h"
 #include "media/media_buildflags.h"
 #include "third_party/blink/public/platform/web_audio_latency_hint.h"
-#include "third_party/blink/public/platform/web_media_stream_center.h"
 #include "third_party/blink/public/platform/web_rtc_peer_connection_handler.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/public/web/blink.h"
@@ -48,7 +45,6 @@
 using blink::WebAudioDevice;
 using blink::WebFrame;
 using blink::WebLocalFrame;
-using blink::WebMediaStreamCenter;
 using blink::WebPlugin;
 using blink::WebPluginParams;
 using blink::WebRTCPeerConnectionHandler;
@@ -77,20 +73,8 @@ void WebTestContentRendererClient::RenderFrameCreated(
 void WebTestContentRendererClient::RenderViewCreated(RenderView* render_view) {
   new ShellRenderViewObserver(render_view);
 
-  // TODO(https://crbug.com/545684): Does this function need to exist? Can
-  // this all just be in the CreateWebViewTestProxy() or does
-  // RenderViewCreated() get manually invoked by the test runner?
-  test_runner::WebViewTestProxy* proxy = GetWebViewTestProxy(render_view);
-  proxy->Reset();
-
   BlinkTestRunner* test_runner = BlinkTestRunner::Get(render_view);
   test_runner->Reset(false /* for_new_test */);
-}
-
-WebThemeEngine* WebTestContentRendererClient::OverrideThemeEngine() {
-  return WebTestRenderThreadObserver::GetInstance()
-      ->test_interfaces()
-      ->ThemeEngine();
 }
 
 std::unique_ptr<blink::WebMediaStreamRendererFactory>
@@ -114,7 +98,7 @@ void WebTestContentRendererClient::
   // We always expose GC to web tests.
   std::string flags("--expose-gc");
   auto* command_line = base::CommandLine::ForCurrentProcess();
-  v8::V8::SetFlagsFromString(flags.c_str(), static_cast<int>(flags.size()));
+  v8::V8::SetFlagsFromString(flags.c_str(), flags.size());
   if (!command_line->HasSwitch(switches::kStableReleaseMode)) {
     blink::WebRuntimeFeatures::EnableTestOnlyFeatures(true);
   }
@@ -131,16 +115,6 @@ bool WebTestContentRendererClient::IsIdleMediaSuspendEnabled() {
   // Disable idle media suspend to avoid web tests getting into accidentally
   // bad states if they take too long to run.
   return false;
-}
-
-bool WebTestContentRendererClient::SuppressLegacyTLSVersionConsoleMessage() {
-#if defined(OS_MACOSX)
-  // Blink uses an outdated test server on older versions of macOS. Until those
-  // are fixed, suppress the warning. See https://crbug.com/905831.
-  return true;
-#else
-  return false;
-#endif
 }
 
 }  // namespace content

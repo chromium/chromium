@@ -7,9 +7,10 @@ package org.chromium.policy.test.annotations;
 import android.content.Context;
 import android.os.Bundle;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.junit.Assert;
 
-import org.chromium.base.VisibleForTesting;
 import org.chromium.base.test.BaseTestResult.PreTestHook;
 import org.chromium.policy.AbstractAppRestrictionsProvider;
 import org.chromium.policy.test.PolicyData;

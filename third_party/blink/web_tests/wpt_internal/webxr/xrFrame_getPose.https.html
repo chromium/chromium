@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/webxr/resources/webxr_util.js"></script>
+<script src="/webxr/resources/webxr_test_constants.js"></script>
+<canvas />
+
+<script>
+
+// This test is Chromium-specific because it uses the default human eye height
+// of 1.6 meters defined in xr_stationary_reference_space.cc
+let testName = "XRFrame.getPose works between eye-level and floor-level spaces";
+
+let fakeDeviceInitParams = TRACKED_IMMERSIVE_DEVICE;
+
+let testFunction = function(session, fakeDeviceController, t) {
+  return Promise.all([
+    session.requestReferenceSpace('local'),
+    session.requestReferenceSpace('local-floor')
+  ]).then((spaces) => new Promise((resolve) => {
+    function onFrame(time, xrFrame) {
+      // eye-level space starts out with originOffset = identity matrix
+      let eye_level = spaces[0];
+
+      // Make sure going between eye-level and floor-level spaces takes the
+      // estimated eye height into account.
+      let floor_level = spaces[1];
+      let eye_level_from_floor_level = xrFrame.getPose(eye_level, floor_level);
+      assert_equals(eye_level_from_floor_level.transform.position.y, 1.6);
+
+      // Finished test.
+      resolve();
+    }
+
+    session.requestAnimationFrame(onFrame);
+  }));
+};
+
+xr_session_promise_test(
+  testName, testFunction, fakeDeviceInitParams, 'immersive-vr', { 'requiredFeatures': ['local-floor'] });
+
+</script>

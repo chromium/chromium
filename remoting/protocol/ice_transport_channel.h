@@ -131,7 +131,7 @@ class IceTransportChannel : public sigslot::has_slots<> {
 
   base::ThreadChecker thread_checker_;
 
-  base::WeakPtrFactory<IceTransportChannel> weak_factory_;
+  base::WeakPtrFactory<IceTransportChannel> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(IceTransportChannel);
 };

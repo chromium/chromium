@@ -11,7 +11,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
-#include "jni/NestedSystemMessageHandler_jni.h"
+#include "content/public/test/android/test_support_content_jni_headers/NestedSystemMessageHandler_jni.h"
 
 namespace {
 

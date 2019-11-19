@@ -56,7 +56,7 @@ class AudioAPI : public BrowserContextKeyedAPI, public AudioService::Observer {
   DISALLOW_COPY_AND_ASSIGN(AudioAPI);
 };
 
-class AudioGetInfoFunction : public UIThreadExtensionFunction {
+class AudioGetInfoFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("audio.getInfo", AUDIO_GETINFO)
 
@@ -65,7 +65,7 @@ class AudioGetInfoFunction : public UIThreadExtensionFunction {
   ResponseAction Run() override;
 };
 
-class AudioGetDevicesFunction : public UIThreadExtensionFunction {
+class AudioGetDevicesFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("audio.getDevices", AUDIO_GETDEVICES)
 
@@ -74,7 +74,7 @@ class AudioGetDevicesFunction : public UIThreadExtensionFunction {
   ResponseAction Run() override;
 };
 
-class AudioSetActiveDevicesFunction : public UIThreadExtensionFunction {
+class AudioSetActiveDevicesFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("audio.setActiveDevices", AUDIO_SETACTIVEDEVICES)
 
@@ -83,7 +83,7 @@ class AudioSetActiveDevicesFunction : public UIThreadExtensionFunction {
   ResponseAction Run() override;
 };
 
-class AudioSetPropertiesFunction : public UIThreadExtensionFunction {
+class AudioSetPropertiesFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("audio.setProperties", AUDIO_SETPROPERTIES)
 
@@ -92,7 +92,7 @@ class AudioSetPropertiesFunction : public UIThreadExtensionFunction {
   ResponseAction Run() override;
 };
 
-class AudioSetMuteFunction : public UIThreadExtensionFunction {
+class AudioSetMuteFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("audio.setMute", AUDIO_SETMUTE)
 
@@ -101,7 +101,7 @@ class AudioSetMuteFunction : public UIThreadExtensionFunction {
   ResponseAction Run() override;
 };
 
-class AudioGetMuteFunction : public UIThreadExtensionFunction {
+class AudioGetMuteFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("audio.getMute", AUDIO_GETMUTE)
 

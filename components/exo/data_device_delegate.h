@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "components/exo/data_offer.h"
 
 namespace base {
 class TimeTicks;
@@ -21,7 +22,6 @@ class PointF;
 namespace exo {
 
 class DataDevice;
-class DataOffer;
 class Surface;
 enum class DndAction;
 
@@ -34,7 +34,7 @@ class DataDeviceDelegate {
 
   // Called when DataOffer object is delivered from a client. DataDeviceDelegate
   // has responsibility to release the returned DataOffer object.
-  virtual DataOffer* OnDataOffer() = 0;
+  virtual DataOffer* OnDataOffer(DataOffer::Purpose purpose) = 0;
 
   // Called during a drag operation when pointer enters |surface|.
   virtual void OnEnter(Surface* surface,

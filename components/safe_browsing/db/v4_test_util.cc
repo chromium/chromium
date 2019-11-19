@@ -131,16 +131,8 @@ TestV4GetHashProtocolManagerFactory::CreateProtocolManager(
   return std::move(pm);
 }
 
-FullHash GetFullHash(const GURL& url) {
-  std::string host;
-  std::string path;
-  V4ProtocolManagerUtil::CanonicalizeUrl(url, &host, &path, nullptr);
-
-  return crypto::SHA256HashString(host + path);
-}
-
 FullHashInfo GetFullHashInfo(const GURL& url, const ListIdentifier& list_id) {
-  return FullHashInfo(GetFullHash(url), list_id,
+  return FullHashInfo(V4ProtocolManagerUtil::GetFullHash(url), list_id,
                       base::Time::Now() + base::TimeDelta::FromMinutes(5));
 }
 

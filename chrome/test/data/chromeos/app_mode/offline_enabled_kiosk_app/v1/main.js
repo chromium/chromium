@@ -11,9 +11,5 @@ chrome.app.runtime.onLaunched.addListener(function(launchData) {
     chrome.experimental.power.requestKeepAwake(function() {});
 
   chrome.app.window.create('app_main.html',
-      { 'width': 1920,
-        'height': 1080 },
-      function(window) {
-        window.close();
-  });
+      { 'width': 1920, 'height': 1080 });
 });

@@ -24,9 +24,12 @@
 #include "content/public/browser/session_storage_namespace.h"
 #include "content/public/common/referrer.h"
 #include "extensions/buildflags/buildflags.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/common/prerender/prerender_rel_type.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "components/guest_view/browser/guest_view_base.h"
@@ -41,12 +44,8 @@ namespace prerender {
 
 namespace {
 
-static_assert(PrerenderRelTypePrerender == 0x1,
-              "RelTypeHistogrameEnum must match PrerenderRelType");
-static_assert(PrerenderRelTypeNext == 0x2,
-              "RelTypeHistogramEnum must match PrerenderRelType");
 constexpr int kRelTypeHistogramEnumMax =
-    (PrerenderRelTypePrerender | PrerenderRelTypeNext) + 1;
+    (blink::kPrerenderRelTypePrerender | blink::kPrerenderRelTypeNext) + 1;
 
 void RecordLinkManagerAdded(const uint32_t rel_types) {
   UMA_HISTOGRAM_ENUMERATION("Prerender.RelTypesLinkAdded",
@@ -60,9 +59,10 @@ void RecordLinkManagerStarting(const uint32_t rel_types) {
                             kRelTypeHistogramEnumMax);
 }
 
-chrome::mojom::PrerenderDispatcherAssociatedPtr GetPrerenderDispatcher(
-    int child_id) {
-  chrome::mojom::PrerenderDispatcherAssociatedPtr prerender_dispatcher;
+mojo::AssociatedRemote<chrome::mojom::PrerenderDispatcher>
+GetPrerenderDispatcher(int child_id) {
+  mojo::AssociatedRemote<chrome::mojom::PrerenderDispatcher>
+      prerender_dispatcher;
   content::RenderProcessHost* render_process_host =
       content::RenderProcessHost::FromID(child_id);
   if (render_process_host) {
@@ -88,7 +88,7 @@ class PrerenderLinkManager::PendingPrerenderManager
   ~PendingPrerenderManager() override { CHECK(observed_launchers_.empty()); }
 
   void ObserveLauncher(PrerenderContents* launcher) {
-    DCHECK_EQ(FINAL_STATUS_MAX, launcher->final_status());
+    DCHECK_EQ(FINAL_STATUS_UNKNOWN, launcher->final_status());
     bool inserted = observed_launchers_.insert(launcher).second;
     if (inserted)
       launcher->AddObserver(this);
@@ -139,6 +139,7 @@ void PrerenderLinkManager::OnAddPrerender(int launcher_child_id,
                                           const GURL& url,
                                           uint32_t rel_types,
                                           const content::Referrer& referrer,
+                                          const url::Origin& initiator_origin,
                                           const gfx::Size& size,
                                           int render_view_route_id) {
   DCHECK_EQ(nullptr, FindByLauncherChildIdAndPrerenderId(launcher_child_id,
@@ -160,17 +161,17 @@ void PrerenderLinkManager::OnAddPrerender(int launcher_child_id,
       manager_->GetPrerenderContentsForRoute(launcher_child_id,
                                              render_view_route_id);
   if (prerender_contents &&
-      prerender_contents->final_status() != FINAL_STATUS_MAX) {
+      prerender_contents->final_status() != FINAL_STATUS_UNKNOWN) {
     // The launcher is a prerender about to be destroyed asynchronously, but
     // its AddLinkRelPrerender message raced with shutdown. Ignore it.
     DCHECK_NE(FINAL_STATUS_USED, prerender_contents->final_status());
     return;
   }
 
-  LinkPrerender
-      prerender(launcher_child_id, prerender_id, url, rel_types, referrer, size,
-                render_view_route_id, manager_->GetCurrentTimeTicks(),
-                prerender_contents);
+  LinkPrerender prerender(launcher_child_id, prerender_id, url, rel_types,
+                          referrer, initiator_origin, size,
+                          render_view_route_id, manager_->GetCurrentTimeTicks(),
+                          prerender_contents);
   prerenders_.push_back(prerender);
   RecordLinkManagerAdded(rel_types);
   if (prerender_contents)
@@ -232,6 +233,7 @@ PrerenderLinkManager::LinkPrerender::LinkPrerender(
     const GURL& url,
     uint32_t rel_types,
     const content::Referrer& referrer,
+    const url::Origin& initiator_origin,
     const gfx::Size& size,
     int render_view_route_id,
     TimeTicks creation_time,
@@ -241,6 +243,7 @@ PrerenderLinkManager::LinkPrerender::LinkPrerender(
       url(url),
       rel_types(rel_types),
       referrer(referrer),
+      initiator_origin(initiator_origin),
       size(size),
       render_view_route_id(render_view_route_id),
       creation_time(creation_time),
@@ -350,7 +353,7 @@ void PrerenderLinkManager::StartPrerenders() {
       abandoned_prerenders.pop_front();
     }
 
-    if (!(PrerenderRelTypePrerender & it->rel_types)) {
+    if (!(blink::kPrerenderRelTypePrerender & it->rel_types)) {
       prerenders_.erase(it);
       continue;
     }
@@ -358,7 +361,7 @@ void PrerenderLinkManager::StartPrerenders() {
     std::unique_ptr<PrerenderHandle> handle =
         manager_->AddPrerenderFromLinkRelPrerender(
             it->launcher_child_id, it->render_view_route_id, it->url,
-            it->rel_types, it->referrer, it->size);
+            it->rel_types, it->referrer, it->initiator_origin, it->size);
     if (!handle) {
       // This prerender couldn't be launched, it's gone.
       prerenders_.erase(it);
@@ -383,7 +386,8 @@ void PrerenderLinkManager::StartPrerenders() {
       IPC::ChannelProxy* channel = render_process_host->GetChannel();
       // |channel| might be NULL in tests.
       if (channel) {
-        chrome::mojom::PrerenderDispatcherAssociatedPtr prerender_dispatcher;
+        mojo::AssociatedRemote<chrome::mojom::PrerenderDispatcher>
+            prerender_dispatcher;
         channel->GetRemoteAssociatedInterface(&prerender_dispatcher);
         prerender_dispatcher->PrerenderStop(it->prerender_id);
       }
@@ -475,8 +479,9 @@ void PrerenderLinkManager::OnPrerenderStart(
   if (!prerender)
     return;
 
-  chrome::mojom::PrerenderDispatcherAssociatedPtr prerender_dispatcher =
-      GetPrerenderDispatcher(prerender->launcher_child_id);
+  mojo::AssociatedRemote<chrome::mojom::PrerenderDispatcher>
+      prerender_dispatcher =
+          GetPrerenderDispatcher(prerender->launcher_child_id);
   if (prerender_dispatcher)
     prerender_dispatcher->PrerenderStart(prerender->prerender_id);
 }
@@ -487,8 +492,9 @@ void PrerenderLinkManager::OnPrerenderStopLoading(
   if (!prerender)
     return;
 
-  chrome::mojom::PrerenderDispatcherAssociatedPtr prerender_dispatcher =
-      GetPrerenderDispatcher(prerender->launcher_child_id);
+  mojo::AssociatedRemote<chrome::mojom::PrerenderDispatcher>
+      prerender_dispatcher =
+          GetPrerenderDispatcher(prerender->launcher_child_id);
   if (prerender_dispatcher)
     prerender_dispatcher->PrerenderStopLoading(prerender->prerender_id);
 }
@@ -499,8 +505,9 @@ void PrerenderLinkManager::OnPrerenderDomContentLoaded(
   if (!prerender)
     return;
 
-  chrome::mojom::PrerenderDispatcherAssociatedPtr prerender_dispatcher =
-      GetPrerenderDispatcher(prerender->launcher_child_id);
+  mojo::AssociatedRemote<chrome::mojom::PrerenderDispatcher>
+      prerender_dispatcher =
+          GetPrerenderDispatcher(prerender->launcher_child_id);
   if (prerender_dispatcher)
     prerender_dispatcher->PrerenderDomContentLoaded(prerender->prerender_id);
 }
@@ -511,8 +518,9 @@ void PrerenderLinkManager::OnPrerenderStop(
   if (!prerender)
     return;
 
-  chrome::mojom::PrerenderDispatcherAssociatedPtr prerender_dispatcher =
-      GetPrerenderDispatcher(prerender->launcher_child_id);
+  mojo::AssociatedRemote<chrome::mojom::PrerenderDispatcher>
+      prerender_dispatcher =
+          GetPrerenderDispatcher(prerender->launcher_child_id);
   if (prerender_dispatcher)
     prerender_dispatcher->PrerenderStop(prerender->prerender_id);
 

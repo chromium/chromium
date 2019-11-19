@@ -24,28 +24,11 @@
 #include "ui/base/buildflags.h"
 #include "ui/base/ui_base_switches.h"
 
-#ifdef V8_USE_EXTERNAL_STARTUP_DATA
-#include "gin/v8_initializer.h"
-#endif
-
-#if defined(OS_ANDROID)
-#include "base/message_loop/message_loop.h"
-#include "content/app/mojo/mojo_init.h"
-#include "content/common/url_schemes.h"
-#include "content/public/common/content_paths.h"
-#include "content/public/test/nested_message_pump_android.h"
-#include "content/shell/browser/shell_content_browser_client.h"
-#include "content/shell/common/shell_content_client.h"
-#include "ui/base/ui_base_paths.h"
-#endif
+#if defined(OS_WIN)
+#include "base/win/win_util.h"
+#endif  // OS_WIN
 
 namespace content {
-
-#if defined(OS_ANDROID)
-std::unique_ptr<base::MessagePump> CreateMessagePumpForUI() {
-  return std::unique_ptr<base::MessagePump>(new NestedMessagePumpAndroid());
-}
-#endif
 
 class ContentBrowserTestSuite : public ContentTestSuiteBase {
  public:
@@ -56,47 +39,17 @@ class ContentBrowserTestSuite : public ContentTestSuiteBase {
 
  protected:
   void Initialize() override {
-#if defined(OS_ANDROID)
-    base::i18n::AllowMultipleInitializeCallsForTesting();
-    base::i18n::InitializeICU();
-
-#ifdef V8_USE_EXTERNAL_STARTUP_DATA
-    gin::V8Initializer::LoadV8Snapshot();
-    gin::V8Initializer::LoadV8Natives();
-#endif
-
-    // This needs to be done before base::TestSuite::Initialize() is called,
-    // as it also tries to set MessagePumpForUIFactory.
-    if (!base::MessageLoop::InitMessagePumpForUIFactory(
-            &CreateMessagePumpForUI))
-      VLOG(0) << "MessagePumpForUIFactory already set, unable to override.";
-
-    // For all other platforms, we call ContentMain for browser tests which goes
-    // through the normal browser initialization paths. For Android, we must set
-    // things up manually.
-    content_client_.reset(new ShellContentClient);
-    browser_content_client_.reset(new ShellContentBrowserClient());
-    SetContentClient(content_client_.get());
-    SetBrowserClientForTesting(browser_content_client_.get());
-
-    content::RegisterContentSchemes(false);
-    RegisterPathProvider();
-    ui::RegisterPathProvider();
-    RegisterInProcessThreads();
-
-    InitializeMojo();
-#endif
-
-    // Browser tests are expected not to tear-down various globals.
+    // Browser tests are expected not to tear-down various globals and may
+    // complete with the thread priority being above NORMAL.
     base::TestSuite::DisableCheckForLeakedGlobals();
+    base::TestSuite::DisableCheckForThreadPriorityAtTestEnd();
 
     ContentTestSuiteBase::Initialize();
-  }
 
 #if defined(OS_ANDROID)
-  std::unique_ptr<ShellContentClient> content_client_;
-  std::unique_ptr<ShellContentBrowserClient> browser_content_client_;
+    RegisterInProcessThreads();
 #endif
+  }
 
   DISALLOW_COPY_AND_ASSIGN(ContentBrowserTestSuite);
 };
@@ -120,9 +73,11 @@ class ContentTestLauncherDelegate : public TestLauncherDelegate {
   }
 
  protected:
+#if !defined(OS_ANDROID)
   ContentMainDelegate* CreateContentMainDelegate() override {
     return new ShellMainDelegate(true);
   }
+#endif
 
  private:
   DISALLOW_COPY_AND_ASSIGN(ContentTestLauncherDelegate);
@@ -136,6 +91,11 @@ int main(int argc, char** argv) {
   if (parallel_jobs > 1U) {
     parallel_jobs /= 2U;
   }
+#if defined(OS_WIN)
+  // Load and pin user32.dll to avoid having to load it once tests start while
+  // on the main thread loop where blocking calls are disallowed.
+  base::win::PinUser32();
+#endif  // OS_WIN
   content::ContentTestLauncherDelegate launcher_delegate;
   return LaunchTests(&launcher_delegate, parallel_jobs, argc, argv);
 }

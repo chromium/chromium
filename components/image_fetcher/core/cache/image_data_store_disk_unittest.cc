@@ -11,7 +11,7 @@
 #include "base/files/scoped_file.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -45,31 +45,33 @@ class CachedImageFetcherImageDataStoreDiskTest : public testing::Test {
     RunUntilIdle();
   }
 
-  void PrepareDataStore(bool initialize) {
+  void PrepareDataStore(bool initialize, bool setup_for_needs_transcoding) {
     CreateDataStore();
     InitializeDataStore();
-    SaveData(kImageKey);
+    SaveData(kImageKey, setup_for_needs_transcoding);
 
     if (!initialize) {
       CreateDataStore();
     }
   }
 
-  void AssertDataPresent(const std::string& key) {
-    AssertDataPresent(key, kImageData);
+  void AssertDataPresent(const std::string& key, bool needs_transcoding) {
+    AssertDataPresent(key, kImageData, needs_transcoding);
   }
 
-  void AssertDataPresent(const std::string& key, const std::string& data) {
-    EXPECT_CALL(*this, DataCallback(data));
+  void AssertDataPresent(const std::string& key,
+                         const std::string& data,
+                         bool needs_transcoding) {
+    EXPECT_CALL(*this, DataCallback(needs_transcoding, data));
     data_store()->LoadImage(
-        key,
+        key, needs_transcoding,
         base::BindOnce(&CachedImageFetcherImageDataStoreDiskTest::DataCallback,
                        base::Unretained(this)));
     RunUntilIdle();
   }
 
-  void SaveData(const std::string& key) {
-    data_store()->SaveImage(key, kImageData);
+  void SaveData(const std::string& key, bool needs_transcoding) {
+    data_store()->SaveImage(key, kImageData, needs_transcoding);
     RunUntilIdle();
   }
 
@@ -82,7 +84,7 @@ class CachedImageFetcherImageDataStoreDiskTest : public testing::Test {
   ImageDataStore* data_store() { return data_store_.get(); }
 
   MOCK_METHOD0(OnInitialized, void());
-  MOCK_METHOD1(DataCallback, void(std::string));
+  MOCK_METHOD2(DataCallback, void(bool, std::string));
   MOCK_METHOD1(KeysCallback, void(std::vector<std::string>));
 
  private:
@@ -90,7 +92,7 @@ class CachedImageFetcherImageDataStoreDiskTest : public testing::Test {
 
   ScopedTempDir temp_dir_;
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
 
   DISALLOW_COPY_AND_ASSIGN(CachedImageFetcherImageDataStoreDiskTest);
 };
@@ -99,11 +101,11 @@ TEST_F(CachedImageFetcherImageDataStoreDiskTest, SanityTest) {
   CreateDataStore();
   InitializeDataStore();
 
-  SaveData(kImageKey);
-  AssertDataPresent(kImageKey);
+  SaveData(kImageKey, /* needs_transcoding */ false);
+  AssertDataPresent(kImageKey, /* needs_transcoding */ false);
 
   DeleteData(kImageKey);
-  AssertDataPresent(kImageKey, "");
+  AssertDataPresent(kImageKey, "", /* needs_transcoding */ false);
 }
 
 TEST_F(CachedImageFetcherImageDataStoreDiskTest, Init) {
@@ -115,47 +117,50 @@ TEST_F(CachedImageFetcherImageDataStoreDiskTest, Init) {
 }
 
 TEST_F(CachedImageFetcherImageDataStoreDiskTest, InitWithExistingDirectory) {
-  PrepareDataStore(/* initialize */ true);
+  PrepareDataStore(/* initialize */ true, /* needs_transcoding */ false);
 
   // Recreating the data store shouldn't wipe the directory.
   CreateDataStore();
   InitializeDataStore();
 
-  AssertDataPresent(kImageKey);
+  AssertDataPresent(kImageKey, /* needs_transcoding */ false);
 }
 
 TEST_F(CachedImageFetcherImageDataStoreDiskTest, SaveBeforeInit) {
-  PrepareDataStore(/* initialize */ false);
+  PrepareDataStore(/* initialize */ false, /* needs_transcoding */ false);
   // No data should be present (empty string).
-  AssertDataPresent(kImageKey, "");
+  AssertDataPresent(kImageKey, "", /* needs_transcoding */ false);
 }
 
 TEST_F(CachedImageFetcherImageDataStoreDiskTest, Save) {
-  PrepareDataStore(/* initialize */ true);
-  AssertDataPresent(kImageKey);
+  PrepareDataStore(/* initialize */ true, /* needs_transcoding */ false);
+  AssertDataPresent(kImageKey, /* needs_transcoding */ false);
+
+  PrepareDataStore(/* initialize */ true, /* needs_transcoding */ true);
+  AssertDataPresent(kImageKey, /* needs_transcoding */ true);
 }
 
 TEST_F(CachedImageFetcherImageDataStoreDiskTest, DeleteBeforeInit) {
-  PrepareDataStore(/* initialize */ false);
+  PrepareDataStore(/* initialize */ false, /* needs_transcoding */ false);
 
   DeleteData(kImageKey);
 
   InitializeDataStore();
   // Delete should have failed, data still there.
-  AssertDataPresent(kImageKey);
+  AssertDataPresent(kImageKey, /* needs_transcoding */ false);
 }
 
 TEST_F(CachedImageFetcherImageDataStoreDiskTest, Delete) {
-  PrepareDataStore(/* initialize */ true);
+  PrepareDataStore(/* initialize */ true, /* needs_transcoding */ false);
 
   DeleteData(kImageKey);
 
   // Should be empty string (not present).
-  AssertDataPresent(kImageKey, "");
+  AssertDataPresent(kImageKey, "", /* needs_transcoding */ false);
 }
 
 TEST_F(CachedImageFetcherImageDataStoreDiskTest, GetAllKeysBeforeInit) {
-  PrepareDataStore(/* initialize */ false);
+  PrepareDataStore(/* initialize */ false, /* needs_transcoding */ false);
 
   // Should return empty vector even though there is a file present.
   EXPECT_CALL(*this, KeysCallback(std::vector<std::string>()));
@@ -166,7 +171,7 @@ TEST_F(CachedImageFetcherImageDataStoreDiskTest, GetAllKeysBeforeInit) {
 }
 
 TEST_F(CachedImageFetcherImageDataStoreDiskTest, GetAllKeys) {
-  PrepareDataStore(/* initialize */ true);
+  PrepareDataStore(/* initialize */ true, /* needs_transcoding */ false);
 
   // Should return empty vector even though there is a file present.
   EXPECT_CALL(*this, KeysCallback(std::vector<std::string>({kImageKey})));
@@ -181,10 +186,11 @@ TEST_F(CachedImageFetcherImageDataStoreDiskTest,
   CreateDataStore();
   InitializeDataStore();
 
-  SaveData(kImageKey);
-  EXPECT_CALL(*this, DataCallback(kImageData));
+  SaveData(kImageKey, /* needs_transcoding */ false);
+  EXPECT_CALL(*this, DataCallback(false, kImageData));
   data_store()->LoadImage(
       kImageKey,
+      /* needs_transcoding */ false,
       base::BindOnce(&CachedImageFetcherImageDataStoreDiskTest::DataCallback,
                      base::Unretained(this)));
   DeleteData(kImageKey);

@@ -54,7 +54,7 @@ Polymer({
     /**
      * The kerberos realm (AD Domain), the machine is part of.
      */
-    realm: {type: String, observer: 'realmChanged_'},
+    realm: {type: String},
     /**
      * The user kerberos default realm. Used for autocompletion.
      */
@@ -221,6 +221,10 @@ Polymer({
         this.errorState == ACTIVE_DIRECTORY_ERROR_STATE.BAD_AUTH_PASSWORD;
     this.unlockPasswordInvalid =
         this.errorState == ACTIVE_DIRECTORY_ERROR_STATE.BAD_UNLOCK_PASSWORD;
+
+    // Clear password.
+    if (this.errorState == ACTIVE_DIRECTORY_ERROR_STATE.NONE)
+      this.$.passwordInput.value = '';
     this.errorStateLocked_ = false;
   },
 

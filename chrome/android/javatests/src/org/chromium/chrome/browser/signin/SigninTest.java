@@ -4,16 +4,16 @@
 
 package org.chromium.chrome.browser.signin;
 
-import android.app.Activity;
-import android.app.DialogFragment;
-import android.app.Fragment;
 import android.app.Instrumentation.ActivityMonitor;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.preference.Preference;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.filters.MediumTest;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.preference.Preference;
 import android.widget.Button;
 
 import org.junit.After;
@@ -28,11 +28,14 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeSwitches;
+import org.chromium.chrome.browser.SyncFirstSetupCompleteSource;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
 import org.chromium.chrome.browser.preferences.MainPreferences;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.PrefServiceBridge;
 import org.chromium.chrome.browser.preferences.Preferences;
-import org.chromium.chrome.browser.preferences.SignInPreference;
+import org.chromium.chrome.browser.preferences.sync.AccountManagementFragment;
+import org.chromium.chrome.browser.preferences.sync.SignInPreference;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.sync.ProfileSyncService;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -42,6 +45,8 @@ import org.chromium.chrome.test.util.ChromeRestriction;
 import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.signin.ChromeSigninController;
+import org.chromium.components.signin.metrics.SignoutReason;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
 
 /**
@@ -221,13 +226,13 @@ public class SigninTest {
         mContext = InstrumentationRegistry.getTargetContext();
         final TestSignInAllowedObserver signinAllowedObserver = new TestSignInAllowedObserver();
 
-        ThreadUtils.runOnUiThreadBlocking(() -> {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
             // This call initializes the ChromeSigninController to use our test context.
             ChromeSigninController.get();
 
             // Start observing the SigninManager.
             mTestSignInObserver = new TestSignInObserver();
-            mSigninManager = SigninManager.get();
+            mSigninManager = IdentityServicesProvider.getSigninManager();
             mSigninManager.addSignInStateObserver(mTestSignInObserver);
 
             // Get these handles in the UI thread.
@@ -257,8 +262,8 @@ public class SigninTest {
     }
 
     @After
-    public void tearDown() throws Exception {
-        ThreadUtils.runOnUiThreadBlocking(() -> {
+    public void tearDown() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
             mBookmarks.removeObserver(mTestBookmarkModelObserver);
 
             mSigninManager.removeSignInStateObserver(mTestSignInObserver);
@@ -279,13 +284,13 @@ public class SigninTest {
         SigninTestUtil.addTestAccount();
         signInToSingleAccount();
 
-        ThreadUtils.runOnUiThreadBlocking(() -> {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
             // Verify that the account isn't managed.
             Assert.assertNull(mSigninManager.getManagementDomain());
 
             // Verify that the password manager is enabled by default.
-            Assert.assertTrue(mPrefService.isRememberPasswordsEnabled());
-            Assert.assertFalse(mPrefService.isRememberPasswordsManaged());
+            Assert.assertTrue(mPrefService.getBoolean(Pref.REMEMBER_PASSWORDS_ENABLED));
+            Assert.assertFalse(mPrefService.isManagedPreference(Pref.REMEMBER_PASSWORDS_ENABLED));
         });
 
         // Verify that its preference UI is enabled.
@@ -302,7 +307,7 @@ public class SigninTest {
         // Sign out now.
         signOut();
 
-        ThreadUtils.runOnUiThreadBlocking(() -> {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
             // Verify that the profile data hasn't been wiped when signing out of a normal
             // account. We check that by looking for the test bookmark from setUp().
             Assert.assertEquals(1, mBookmarks.getChildCount(mBookmarks.getMobileFolderId()));
@@ -317,16 +322,16 @@ public class SigninTest {
         final Preferences prefActivity = mActivityTestRule.startPreferences(null);
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
-        // Create a monitor to catch the AccountSigninActivity when it is created.
+        // Create a monitor to catch the SigninActivity when it is created.
         ActivityMonitor monitor = InstrumentationRegistry.getInstrumentation().addMonitor(
-                AccountSigninActivity.class.getName(), null, false);
+                SigninActivity.class.getName(), null, false);
 
         // Click sign in.
-        ThreadUtils.runOnUiThreadBlocking(() -> clickSigninPreference(prefActivity));
+        TestThreadUtils.runOnUiThreadBlocking(() -> clickSigninPreference(prefActivity));
 
         // Pick the mock account.
-        AccountSigninActivity signinActivity =
-                (AccountSigninActivity) InstrumentationRegistry.getInstrumentation().waitForMonitor(
+        SigninActivity signinActivity =
+                (SigninActivity) InstrumentationRegistry.getInstrumentation().waitForMonitor(
                         monitor);
         Button positiveButton = (Button) signinActivity.findViewById(R.id.positive_button);
         // Press 'sign in'.
@@ -340,7 +345,10 @@ public class SigninTest {
         // Sync doesn't actually start up until we finish the sync setup. This usually happens
         // in the resume of the Main activity, but we forcefully do this here.
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
-        ThreadUtils.runOnUiThreadBlocking(() -> ProfileSyncService.get().setFirstSetupComplete());
+        TestThreadUtils.runOnUiThreadBlocking(
+                ()
+                        -> ProfileSyncService.get().setFirstSetupComplete(
+                                SyncFirstSetupCompleteSource.BASIC_FLOW));
         prefActivity.finish();
 
         // Verify that signin succeeded.
@@ -360,7 +368,7 @@ public class SigninTest {
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
         // Click on the signout button.
-        ThreadUtils.runOnUiThreadBlocking(() -> clickSignOut(prefActivity));
+        TestThreadUtils.runOnUiThreadBlocking(() -> clickSignOut(prefActivity));
 
         // Accept the warning dialog.
         acceptAlertDialogWithTag(prefActivity, AccountManagementFragment.SIGN_OUT_DIALOG_TAG);
@@ -376,7 +384,7 @@ public class SigninTest {
     }
 
     private static MainPreferences getMainPreferences(Preferences prefActivity) {
-        Fragment fragment = prefActivity.getFragmentForTest();
+        Fragment fragment = prefActivity.getMainFragment();
         Assert.assertNotNull(fragment);
         Assert.assertTrue(fragment instanceof MainPreferences);
         return (MainPreferences) fragment;
@@ -392,7 +400,7 @@ public class SigninTest {
     }
 
     private static void clickSignOut(Preferences prefActivity) {
-        Fragment fragment = prefActivity.getFragmentForTest();
+        Fragment fragment = prefActivity.getMainFragment();
         Assert.assertNotNull(fragment);
         Assert.assertTrue(fragment instanceof AccountManagementFragment);
         AccountManagementFragment managementFragment = (AccountManagementFragment) fragment;
@@ -403,7 +411,7 @@ public class SigninTest {
         signOutPref.getOnPreferenceClickListener().onPreferenceClick(signOutPref);
     }
 
-    private void acceptAlertDialogWithTag(Activity activity, String tag) {
+    private void acceptAlertDialogWithTag(AppCompatActivity activity, String tag) {
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         DialogFragment fragment = ActivityUtils.waitForFragment(activity, tag);
         AlertDialog dialog = (AlertDialog) fragment.getDialog();

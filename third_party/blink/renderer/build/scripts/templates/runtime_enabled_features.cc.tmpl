@@ -14,7 +14,7 @@ namespace blink {
 
 RuntimeEnabledFeatures::Backup::Backup()
   : {% for feature in standard_features -%}
-{% if feature.origin_trial_feature_name %}
+{% if feature.in_origin_trial %}
     {{feature.name.to_class_data_member()}}(RuntimeEnabledFeatures::{{feature.name}}EnabledByRuntimeFlag())
 {% else %}
     {{feature.name.to_class_data_member()}}(RuntimeEnabledFeatures::{{feature.name}}Enabled())
@@ -83,6 +83,26 @@ void RuntimeEnabledFeatures::SetFeatureEnabledFromString(
   }
   DLOG(ERROR) << "RuntimeEnabledFeature not recognized: " << name;
 }
+
+{% for feature in origin_trial_controlled_features %}
+
+bool RuntimeEnabledFeatures::{{feature.name}}Enabled(const FeatureContext* context) {
+  {% for depends_on in feature.depends_on %}
+  if (!RuntimeEnabledFeatures::{{depends_on}}Enabled(context))
+    return false;
+  {% endfor %}
+  if (RuntimeEnabledFeatures::{{feature.name}}EnabledByRuntimeFlag())
+    return true;
+{% if not feature.origin_trial_feature_name %}
+  // The feature does not have an origin trial name and its runtime flag
+  // is not enabled.
+  return false;
+{% else %}
+  return context && context->FeatureEnabled(OriginTrialFeature::k{{feature.name}});
+{% endif %}
+}
+
+{% endfor %}
 
 {% for feature in standard_features %}
 {% if feature.status_type == 'str' %}

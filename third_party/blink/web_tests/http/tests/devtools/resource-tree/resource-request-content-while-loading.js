@@ -40,7 +40,7 @@
     }
   }
 
-  function contentLoaded(content) {
+  function contentLoaded({ content, error, isEncoded }) {
     TestRunner.addResult('Resource url: ' + resource.url);
     TestRunner.addResult('Resource content: ' + content);
     TestRunner.completeTest();

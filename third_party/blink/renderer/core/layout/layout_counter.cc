@@ -37,7 +37,7 @@
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
-#ifndef NDEBUG
+#if DCHECK_IS_ON()
 #include <stdio.h>
 #endif
 
@@ -122,7 +122,7 @@ static inline bool AreElementsSiblings(const Element& first,
 static LayoutObject* NextInPreOrder(const LayoutObject& object,
                                     const Element* stay_within,
                                     bool skip_descendants = false) {
-  Element* self = ToElement(object.GetNode());
+  auto* self = To<Element>(object.GetNode());
   DCHECK(self);
   Element* next =
       skip_descendants
@@ -185,13 +185,13 @@ static bool PlanCounter(LayoutObject& object,
         is_reset = false;
         return true;
       }
-      if (auto* olist = ToHTMLOListElementOrNull(*e)) {
+      if (auto* olist = DynamicTo<HTMLOListElement>(*e)) {
         value = olist->StartConsideringItemCount();
         is_reset = true;
         return true;
       }
-      if (IsHTMLUListElement(*e) || IsHTMLMenuElement(*e) ||
-          IsHTMLDirectoryElement(*e)) {
+      if (IsA<HTMLUListElement>(*e) || IsHTMLMenuElement(*e) ||
+          IsA<HTMLDirectoryElement>(*e)) {
         value = 0;
         is_reset = true;
         return true;
@@ -225,7 +225,7 @@ static bool FindPlaceForCounter(LayoutObject& counter_owner,
   // We cannot stop searching for counters with the same identifier before we
   // also check this layout object, because it may affect the positioning in the
   // tree of our counter.
-  Element* counter_owner_element = ToElement(counter_owner.GetNode());
+  auto* counter_owner_element = To<Element>(counter_owner.GetNode());
   Element* search_end_element =
       PreviousSiblingOrParentRespectingContainment(*counter_owner_element);
   Element* current_element =
@@ -364,7 +364,7 @@ static bool FindPlaceForCounter(LayoutObject& counter_owner,
 }
 
 static inline Element* ParentElement(LayoutObject& object) {
-  return ToElement(object.GetNode())->parentElement();
+  return To<Element>(object.GetNode())->parentElement();
 }
 
 static CounterNode* MakeCounterNodeIfNeeded(LayoutObject& object,
@@ -512,7 +512,7 @@ scoped_refptr<StringImpl> LayoutCounter::OriginalText() const {
 }
 
 void LayoutCounter::UpdateCounter() {
-  SetText(OriginalText());
+  SetTextIfNeeded(OriginalText());
 }
 
 void LayoutCounter::Invalidate() {
@@ -715,7 +715,7 @@ void LayoutCounter::LayoutObjectStyleChanged(LayoutObject& layout_object,
 
 }  // namespace blink
 
-#ifndef NDEBUG
+#if DCHECK_IS_ON()
 
 void showCounterLayoutObjectTree(const blink::LayoutObject* layout_object,
                                  const char* counter_name) {
@@ -743,4 +743,4 @@ void showCounterLayoutObjectTree(const blink::LayoutObject* layout_object,
   fflush(stderr);
 }
 
-#endif  // NDEBUG
+#endif  // DCHECK_IS_ON()

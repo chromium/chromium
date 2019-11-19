@@ -5,6 +5,7 @@
 ''' Base class for postprocessing of RC files.
 '''
 
+from __future__ import print_function
 
 class PostProcessor(object):
   ''' Base class for postprocessing of the RC file data before being

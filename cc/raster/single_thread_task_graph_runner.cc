@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/threading/simple_thread.h"
-#include "base/threading/thread_restrictions.h"
 #include "base/trace_event/trace_event.h"
 
 namespace cc {
@@ -83,8 +82,6 @@ void SingleThreadTaskGraphRunner::WaitForTasksToFinishRunning(
 
   {
     base::AutoLock lock(lock_);
-    // http://crbug.com/902823
-    base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait;
 
     auto* task_namespace = work_queue_.GetNamespaceForToken(token);
 

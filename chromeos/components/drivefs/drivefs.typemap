@@ -13,4 +13,4 @@ deps = [
   "//components/drive",
 ]
 
-type_mappings = [ "drivefs.mojom.FileError=drive::FileError" ]
+type_mappings = [ "drivefs.mojom.FileError=::drive::FileError" ]

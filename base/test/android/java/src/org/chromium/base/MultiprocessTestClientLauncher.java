@@ -36,7 +36,7 @@ import javax.annotation.concurrent.GuardedBy;
  */
 @JNINamespace("base::android")
 public final class MultiprocessTestClientLauncher {
-    private static final String TAG = "cr_MProcTCLauncher";
+    private static final String TAG = "MProcTCLauncher";
 
     private static final int CONNECTION_TIMEOUT_MS = 10 * 1000;
 
@@ -157,7 +157,7 @@ public final class MultiprocessTestClientLauncher {
                     return false;
                 }
                 try {
-                    mConnectedCondition.awaitNanos(timeoutNs);
+                    timeoutNs = mConnectedCondition.awaitNanos(timeoutNs);
                 } catch (InterruptedException ie) {
                     Log.e(TAG, "Interrupted while waiting for connection.");
                 }
@@ -200,6 +200,8 @@ public final class MultiprocessTestClientLauncher {
     @CalledByNative
     private static int launchClient(
             final String[] commandLine, final FileDescriptorInfo[] filesToMap) {
+        assert Looper.myLooper() != Looper.getMainLooper();
+
         initLauncherThread();
 
         final MultiprocessTestClientLauncher launcher =

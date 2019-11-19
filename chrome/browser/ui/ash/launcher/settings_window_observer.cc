@@ -11,7 +11,6 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "components/strings/grit/components_strings.h"
-#include "services/ws/public/mojom/window_manager.mojom.h"
 #include "ui/aura/window.h"
 #include "ui/base/class_property.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -49,8 +48,9 @@ SettingsWindowObserver::~SettingsWindowObserver() {
 void SettingsWindowObserver::OnNewSettingsWindow(Browser* settings_browser) {
   aura::Window* window = settings_browser->window()->GetNativeWindow();
   window->SetTitle(l10n_util::GetStringUTF16(IDS_SETTINGS_TITLE));
-  const ash::ShelfID shelf_id(app_list::kInternalAppIdSettings);
-  window->SetProperty(ash::kShelfIDKey, new std::string(shelf_id.Serialize()));
+  const ash::ShelfID shelf_id(ash::kInternalAppIdSettings);
+  window->SetProperty(ash::kShelfIDKey, shelf_id.Serialize());
+  window->SetProperty(ash::kAppIDKey, shelf_id.app_id);
   window->SetProperty<int>(ash::kShelfItemTypeKey, ash::TYPE_APP);
   aura_window_tracker_->Add(window);
 }

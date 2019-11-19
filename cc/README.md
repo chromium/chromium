@@ -71,7 +71,7 @@ RenderPass has been drawn to.
 Chosen by cc's clients and can be used as a stable identifier across updates.
 For example, blink uses ElementIDs as a stable id for the object (opaque to cc)
 that is responsible for a composited animation. Some additional information in
-[element_id.h](https://codesearch.chromium.org/chromium/src/cc/trees/element_id.h)
+[element_id.h](https://codesearch.chromium.org/chromium/src/cc/paint/element_id.h)
 
 ### DirectRenderer
 An abstraction that provides an API for the Display to draw a fully-aggregated

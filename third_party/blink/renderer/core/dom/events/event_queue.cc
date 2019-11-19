@@ -31,12 +31,9 @@
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
-
-EventQueue* EventQueue::Create(ExecutionContext* context, TaskType task_type) {
-  return MakeGarbageCollected<EventQueue>(context, task_type);
-}
 
 EventQueue::EventQueue(ExecutionContext* context, TaskType task_type)
     : ContextLifecycleObserver(context),
@@ -60,7 +57,8 @@ bool EventQueue::EnqueueEvent(const base::Location& from_here, Event& event) {
   DCHECK(event.target());
   DCHECK(GetExecutionContext());
 
-  probe::AsyncTaskScheduled(GetExecutionContext(), event.type(), &event);
+  probe::AsyncTaskScheduled(GetExecutionContext(), event.type(),
+                            event.async_task_id());
 
   bool was_added = queued_events_.insert(&event).is_new_entry;
   DCHECK(was_added);  // It should not have already been in the list.
@@ -99,7 +97,7 @@ void EventQueue::DispatchEvent(Event* event) {
 
   DCHECK(GetExecutionContext());
 
-  probe::AsyncTask async_task(GetExecutionContext(), event);
+  probe::AsyncTask async_task(GetExecutionContext(), event->async_task_id());
   EventTarget* target = event->target();
   if (LocalDOMWindow* window = target->ToLocalDOMWindow())
     window->DispatchEvent(*event, nullptr);
@@ -118,7 +116,7 @@ void EventQueue::Close(ExecutionContext* context) {
 
 void EventQueue::DoCancelAllEvents(ExecutionContext* context) {
   for (const auto& queued_event : queued_events_)
-    probe::AsyncTaskCanceled(context, queued_event);
+    probe::AsyncTaskCanceled(context, queued_event->async_task_id());
   queued_events_.clear();
 }
 

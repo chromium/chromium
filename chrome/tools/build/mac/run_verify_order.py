@@ -15,12 +15,8 @@ if __name__ == '__main__':
       description='A wrapper around verify_order that writes a stamp file.')
   parser.add_argument('--stamp', action='store', type=str,
       help='Touch this stamp file on success.')
-  parser.add_argument('--developer_dir', required=False,
-                      help='Path to Xcode.')
 
   args, unknown_args = parser.parse_known_args()
-  if args.developer_dir:
-    os.environ['DEVELOPER_DIR'] = args.developer_dir
 
   this_script_dir = os.path.dirname(sys.argv[0])
   rv = subprocess.check_call(

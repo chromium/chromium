@@ -38,6 +38,14 @@ class FindNotificationDetails {
 
   bool final_update() const { return final_update_; }
 
+  bool operator==(const FindNotificationDetails& other) const {
+    return std::tie(request_id_, number_of_matches_, selection_rect_,
+                    active_match_ordinal_, final_update_) ==
+           std::tie(other.request_id_, other.number_of_matches_,
+                    other.selection_rect_, other.active_match_ordinal_,
+                    other.final_update_);
+  }
+
  private:
   int request_id_;    // The find-in-page request whose results we're returning.
   int number_of_matches_;  // How many matches were found.

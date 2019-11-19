@@ -16,12 +16,13 @@
 #include "base/run_loop.h"
 #include "base/scoped_observer.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_io_thread.h"
-#include "device/test/usb_test_gadget.h"
-#include "device/usb/usb_device.h"
 #include "services/device/hid/hid_service.h"
 #include "services/device/public/mojom/hid.mojom.h"
+#include "services/device/test/usb_test_gadget.h"
+#include "services/device/usb/usb_device.h"
+#include "services/device/usb/usb_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace device {
@@ -148,19 +149,20 @@ class TestIoCallback {
 class HidConnectionTest : public testing::Test {
  public:
   HidConnectionTest()
-      : scoped_task_environment_(
-            base::test::ScopedTaskEnvironment::MainThreadType::UI),
+      : task_environment_(base::test::TaskEnvironment::MainThreadType::UI),
         io_thread_(base::TestIOThread::kAutoStart) {}
 
  protected:
   void SetUp() override {
-    if (!UsbTestGadget::IsTestEnabled())
+    if (!UsbTestGadget::IsTestEnabled() || !usb_service_)
       return;
 
     service_ = HidService::Create();
     ASSERT_TRUE(service_);
 
-    test_gadget_ = UsbTestGadget::Claim(io_thread_.task_runner());
+    usb_service_ = UsbService::Create();
+    test_gadget_ =
+        UsbTestGadget::Claim(usb_service_.get(), io_thread_.task_runner());
     ASSERT_TRUE(test_gadget_);
     ASSERT_TRUE(test_gadget_->SetType(UsbTestGadget::HID_ECHO));
 
@@ -170,10 +172,11 @@ class HidConnectionTest : public testing::Test {
     ASSERT_FALSE(device_guid_.empty());
   }
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   base::TestIOThread io_thread_;
   std::unique_ptr<HidService> service_;
   std::unique_ptr<UsbTestGadget> test_gadget_;
+  std::unique_ptr<UsbService> usb_service_;
   std::string device_guid_;
 };
 

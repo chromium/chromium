@@ -10,13 +10,13 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
-#include "components/arc/arc_bridge_service.h"
+#include "base/test/task_environment.h"
 #include "components/arc/bluetooth/bluetooth_type_converters.h"
-#include "components/arc/common/bluetooth.mojom.h"
+#include "components/arc/mojom/bluetooth.mojom.h"
+#include "components/arc/session/arc_bridge_service.h"
 #include "components/arc/test/connection_holder_util.h"
 #include "components/arc/test/fake_bluetooth_instance.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
@@ -209,7 +209,7 @@ class ArcBluetoothBridgeTest : public testing::Test {
   std::unique_ptr<FakeBluetoothInstance> fake_bluetooth_instance_;
   std::unique_ptr<ArcBluetoothBridge> arc_bluetooth_bridge_;
   scoped_refptr<device::BluetoothAdapter> adapter_;
-  base::MessageLoop message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   base::RunLoop get_adapter_run_loop_;
 };
 

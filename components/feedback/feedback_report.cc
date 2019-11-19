@@ -12,6 +12,7 @@
 #include "base/guid.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/threading/thread_task_runner_handle.h"
 
 namespace feedback {
 
@@ -57,8 +58,17 @@ FeedbackReport::FeedbackReport(
                      base::WrapRefCounted<FeedbackReport>(this)));
 }
 
+FeedbackReport::FeedbackReport(
+    base::FilePath path,
+    std::unique_ptr<std::string> data,
+    scoped_refptr<base::SequencedTaskRunner> task_runner)
+    : file_(path), data_(std::move(data)), reports_task_runner_(task_runner) {}
+
 // static
 const char FeedbackReport::kCrashReportIdsKey[]  = "crash_report_ids";
+
+// static
+const char FeedbackReport::kAllCrashReportIdsKey[] = "all_crash_report_ids";
 
 // static
 void FeedbackReport::LoadReportsAndQueue(const base::FilePath& user_dir,
@@ -74,9 +84,11 @@ void FeedbackReport::LoadReportsAndQueue(const base::FilePath& user_dir,
        !name.empty();
        name = enumerator.Next()) {
     auto data = std::make_unique<std::string>();
-    if (ReadFileToString(name, data.get()))
-      callback.Run(std::move(data));
-    base::DeleteFile(name, false);
+    if (ReadFileToString(name, data.get())) {
+      callback.Run(base::MakeRefCounted<FeedbackReport>(
+          std::move(name), std::move(data),
+          base::ThreadTaskRunnerHandle::Get()));
+    }
   }
 }
 

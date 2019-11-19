@@ -7,7 +7,6 @@ package com.android.webview.chromium;
 import dalvik.system.BaseDexClassLoader;
 
 import org.chromium.base.Log;
-import org.chromium.base.process_launcher.ChildProcessService.SplitApkWorkaroundResult;
 
 import java.io.File;
 import java.lang.reflect.Array;
@@ -28,15 +27,9 @@ public class SplitApkWorkaround {
      * Use reflection to correct the cache entry during WebView zygote startup.
      * This function runs in the WebView zygote, which cannot make any binder calls to the framework
      * and is a very restricted environment.
-     *
-     * @param realRun If false, don't actually change any state in the framework; just verify that
-     *               the reflection succeeds.
-     * @return a value from Result describing what happened.
      */
     @SuppressWarnings("unchecked")
-    public static @SplitApkWorkaroundResult int apply(boolean realRun) {
-        int matchingEntries = 0;
-        int exceptionEntries = 0;
+    public static void apply() {
         try {
             // Retrieve all the required classes and fields first, such that if any of the lookups
             // fail, we won't have done anything yet.
@@ -96,22 +89,18 @@ public class SplitApkWorkaround {
                                 newCacheKey += ":" + path.getPath();
                             }
 
-                            matchingEntries++;
-                            if (realRun) {
-                                // Add a new entry to the cache which maps the new, correct key to
-                                // the same classloader object. We do not remove the previous entry
-                                // from the cache, in case something attempts to look it up by the
-                                // old key for some reason - it shouldn't cause a problem for there
-                                // to be multiple entries mapping to the same classloader.
-                                loaders.put(newCacheKey, cl);
-                                Log.i(TAG, "Fixed classloader cache entry for " + newCacheKey);
-                            }
+                            // Add a new entry to the cache which maps the new, correct key to
+                            // the same classloader object. We do not remove the previous entry
+                            // from the cache, in case something attempts to look it up by the
+                            // old key for some reason - it shouldn't cause a problem for there
+                            // to be multiple entries mapping to the same classloader.
+                            loaders.put(newCacheKey, cl);
+                            Log.i(TAG, "Fixed classloader cache entry for " + newCacheKey);
                         }
                     } catch (Exception e) {
                         // We log and ignore it here so we can continue looping through the cache,
                         // in the hope that the one that threw an exception wasn't the one we
                         // were looking for.
-                        exceptionEntries++;
                         Log.w(TAG, "Caught exception while attempting to fix classloader cache", e);
                     }
                 }
@@ -120,24 +109,7 @@ public class SplitApkWorkaround {
             // If we got an exception at this point we assume that we failed to fix it, since we
             // didn't get as far as iterating over the cache entries.
             Log.w(TAG, "Caught exception while attempting to fix classloader cache", e);
-            return SplitApkWorkaroundResult.TOPLEVEL_EXCEPTION;
+            throw new RuntimeException(e);
         }
-
-        // If we found at least one matching entry, then don't worry about exceptions that happened
-        // during the loop; we likely found the correct classloader, and the one that triggered an
-        // exception was probably not relevant. Distinguish one vs multiple entries, though,
-        // because multiple matches is unexpected (only one case in the code is supposed to create
-        // this situation).
-        if (matchingEntries == 1) return SplitApkWorkaroundResult.ONE_ENTRY;
-        if (matchingEntries > 1) return SplitApkWorkaroundResult.MULTIPLE_ENTRIES;
-
-        // If we didn't find any matching entries, but did get an exception during the loop, then
-        // report this, as we might have taken the exception while trying to access the entry we
-        // needed to fix.
-        if (exceptionEntries > 0) return SplitApkWorkaroundResult.LOOP_EXCEPTION;
-
-        // Otherwise, we just didn't find any entries at all, which is probably fine; not all
-        // configurations actually trigger the bug.
-        return SplitApkWorkaroundResult.NO_ENTRIES;
     }
 }

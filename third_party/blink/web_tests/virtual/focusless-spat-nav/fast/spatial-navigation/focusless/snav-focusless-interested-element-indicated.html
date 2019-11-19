@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<link rel="match" href="snav-focusless-interested-indicated-expected.html">
+<script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
+<script src="file:///gen/third_party/blink/public/mojom/page/spatial_navigation.mojom.js"></script>
+<script src="../../../../../fast/spatial-navigation/resources/mock-snav-service.js"></script>
+<script src="../../../../../fast/spatial-navigation/resources/snav-testharness.js"></script>
+
+<style>
+  div {
+    width: 100px;
+    height: 100px;
+    margin: 5px;
+    border: 1px solid black;
+  }
+</style>
+
+<div id="first" tabindex="0">First</div>
+<div id="second" tabindex="0">Second</div>
+<div id="third" tabindex="0">Third</div>
+
+<script>
+  testRunner.waitUntilDone();
+  addEventListener('load', () => {
+    snav.triggerMove("Down");
+    snav.triggerMove("Down");
+    requestAnimationFrame(t => {
+      testRunner.notifyDone();
+    });
+  });
+</script>

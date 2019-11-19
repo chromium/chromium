@@ -4,9 +4,9 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="resources/test-helpers.js"></script>
 <script>
-
-const kFeature = 675;  // From UseCounter.h
-const kDeprecatedFeature = 166;  // From Deprecation.h
+// Dummy values for features.
+const kFeature = 675;
+const kDeprecatedFeature = 166;
 
 function isUseCounted(win, feature) {
   return win.internals.isUseCounted(win.document, feature);

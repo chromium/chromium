@@ -9,8 +9,7 @@
 
 #include "base/macros.h"
 #include "net/base/net_export.h"
-
-class GURL;
+#include "url/gurl.h"
 
 namespace base {
 class Value;
@@ -36,7 +35,7 @@ class NET_EXPORT ReportingHeaderParser {
     DISCARDED_JSON_TOO_BIG = 3,
     DISCARDED_JSON_INVALID = 4,
     PARSED = 5,
-
+    REMOVED_EMPTY = 6,
     MAX
   };
 
@@ -50,7 +49,9 @@ class NET_EXPORT ReportingHeaderParser {
     DISCARDED_ENDPOINTS_NOT_LIST = 6,
 
     PARSED = 7,
-
+    REMOVED_TTL_ZERO = 8,
+    REMOVED_EMPTY = 9,
+    DISCARDED_INCLUDE_SUBDOMAINS_NOT_ALLOWED = 10,
     MAX
   };
 
@@ -62,11 +63,12 @@ class NET_EXPORT ReportingHeaderParser {
     DISCARDED_URL_INSECURE = 4,
     DISCARDED_PRIORITY_NOT_INTEGER = 5,
     DISCARDED_WEIGHT_NOT_INTEGER = 6,
-    DISCARDED_WEIGHT_NOT_POSITIVE = 7,
+    DISCARDED_WEIGHT_NEGATIVE = 7,
 
-    REMOVED = 8,
+    REMOVED = 8,  // Obsolete: removing for max_age: 0 is done on a group basis.
     SET_REJECTED_BY_DELEGATE = 9,
     SET = 10,
+    DISCARDED_PRIORITY_NEGATIVE = 11,
 
     MAX
   };

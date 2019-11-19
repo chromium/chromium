@@ -10,20 +10,21 @@
 
 namespace audio {
 
-LogFactoryManager::LogFactoryManager() {}
+LogFactoryManager::LogFactoryManager() = default;
 
 LogFactoryManager::~LogFactoryManager() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
 }
 
-void LogFactoryManager::Bind(mojom::LogFactoryManagerRequest request,
-                             TracedServiceRef context_ref) {
+void LogFactoryManager::Bind(
+    mojo::PendingReceiver<mojom::LogFactoryManager> receiver,
+    TracedServiceRef context_ref) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
-  bindings_.AddBinding(this, std::move(request), std::move(context_ref));
+  receivers_.Add(this, std::move(receiver), std::move(context_ref));
 }
 
 void LogFactoryManager::SetLogFactory(
-    media::mojom::AudioLogFactoryPtr log_factory) {
+    mojo::PendingRemote<media::mojom::AudioLogFactory> log_factory) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
   log_factory_adapter_.SetLogFactory(std::move(log_factory));
 }

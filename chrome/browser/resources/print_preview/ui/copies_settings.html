@@ -1,0 +1,18 @@
+<style include="print-preview-shared">
+   #collate {
+     margin-inline-start: 16px;
+   }
+</style>
+<print-preview-number-settings-section max-value="999" min-value="1"
+    default-value="1" input-label="$i18n{copiesLabel}"
+    input-aria-label="$i18n{copiesLabel}"
+    disabled="[[disabled]]" current-value="{{currentValue_}}"
+    input-valid="{{inputValid_}}" hint-message="$i18n{copiesInstruction}">
+  <div slot="opt-inside-content" class="checkbox" aria-live="polite"
+      hidden$="[[collateHidden_(currentValue_, inputValid_)]]">
+    <cr-checkbox id="collate" on-change="onCollateChange_"
+        disabled="[[disabled]]" aria-labelledby="copies-collate-label">
+      <span id="copies-collate-label">$i18n{optionCollate}</span>
+    </cr-checkbox>
+  </div>
+</print-preview-number-settings-section>

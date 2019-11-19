@@ -13,7 +13,9 @@
 #include "base/timer/timer.h"
 #include "components/safe_browsing/common/safe_browsing.mojom.h"
 #include "components/safe_browsing/db/database_manager.h"
+#include "components/safe_browsing/proto/realtimeapi.pb.h"
 #include "content/public/common/resource_type.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/http/http_request_headers.h"
 #include "url/gurl.h"
 
@@ -56,13 +58,18 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker,
                               bool /* proceed */,
                               bool /* showed_interstitial */)>;
 
+  // Constructor for SafeBrowsingUrlCheckerImpl. |real_time_lookup_enabled|
+  // indicates whether or not the profile has enabled real time URL lookups, as
+  // computed by the RealTimePolicyEngine. This must be computed in advance,
+  // since this class only exists on the IO thread.
   SafeBrowsingUrlCheckerImpl(
       const net::HttpRequestHeaders& headers,
       int load_flags,
       content::ResourceType resource_type,
       bool has_user_gesture,
       scoped_refptr<UrlCheckerDelegate> url_checker_delegate,
-      const base::Callback<content::WebContents*()>& web_contents_getter);
+      const base::Callback<content::WebContents*()>& web_contents_getter,
+      bool real_time_lookup_enabled);
 
   ~SafeBrowsingUrlCheckerImpl() override;
 
@@ -96,7 +103,7 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker,
    private:
     // Used in the mojo interface case.
     CheckUrlCallback callback_;
-    mojom::UrlCheckNotifierPtr slow_check_notifier_;
+    mojo::Remote<mojom::UrlCheckNotifier> slow_check_notifier_;
 
     // Used in the native call case.
     NativeCheckUrlCallback native_callback_;
@@ -108,7 +115,13 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker,
                               SBThreatType threat_type,
                               const ThreatMetadata& metadata) override;
 
-  void OnCheckUrlTimeout();
+  void OnCheckUrlForHighConfidenceAllowlist(bool did_match_allowlist) override;
+
+  void OnTimeout();
+
+  void OnUrlResult(const GURL& url,
+                   SBThreatType threat_type,
+                   const ThreatMetadata& metadata);
 
   void CheckUrlImpl(const GURL& url,
                     const std::string& method,
@@ -122,11 +135,23 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker,
 
   void OnBlockingPageComplete(bool proceed);
 
+  // Helper method that checks whether |url|'s reputation can be checked using
+  // real time lookups.
+  bool CanPerformFullURLLookup(const GURL& url);
+
   SBThreatType CheckWebUIUrls(const GURL& url);
 
   // Returns false if this object has been destroyed by the callback. In that
   // case none of the members of this object should be touched again.
   bool RunNextCallback(bool proceed, bool showed_interstitial);
+
+  // Called when the |request| from the real-time lookup service is sent.
+  void OnRTLookupRequest(std::unique_ptr<RTLookupRequest> request);
+
+  // Called when the |response| from the real-time lookup service is received.
+  void OnRTLookupResponse(std::unique_ptr<RTLookupResponse> response);
+
+  void SetWebUIToken(int token);
 
   enum State {
     // Haven't started checking or checking is complete.
@@ -165,12 +190,19 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker,
   // than the size of |urls_|, the URL at |next_index_| is being processed.
   size_t next_index_ = 0;
 
+  // Token used for displaying url real time lookup pings. A single token is
+  // sufficient since real time check only happens on main frame url.
+  int url_web_ui_token_ = -1;
+
   State state_ = STATE_NONE;
 
   // Timer to abort the SafeBrowsing check if it takes too long.
   base::OneShotTimer timer_;
 
-  base::WeakPtrFactory<SafeBrowsingUrlCheckerImpl> weak_factory_;
+  // Whether real time lookup is enabled for this request.
+  bool real_time_lookup_enabled_;
+
+  base::WeakPtrFactory<SafeBrowsingUrlCheckerImpl> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SafeBrowsingUrlCheckerImpl);
 };

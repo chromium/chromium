@@ -21,7 +21,7 @@ dictionary RequestInit {
     RequestRedirect redirect;
     DOMString integrity;
     boolean keepalive;
-    [OriginTrialEnabled=PriorityHints] RequestImportance importance;
+    [RuntimeEnabled=PriorityHints] RequestImportance importance;
     AbortSignal? signal;
     // TODO(domfarolino): add support for RequestInit window member.
     //any window; // can only be set to null

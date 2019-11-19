@@ -10,7 +10,8 @@ traits_headers = [ "//chrome/services/file_util/public/mojom/safe_archive_analyz
 
 public_deps = [
   "//chrome/common/safe_browsing:proto",
+  "//components/safe_browsing:buildflags",
   "//components/safe_browsing:csd_proto",
 ]
 
-type_mappings = [ "chrome.mojom.SafeArchiveAnalyzerResults=safe_browsing::ArchiveAnalyzerResults" ]
+type_mappings = [ "chrome.mojom.SafeArchiveAnalyzerResults=::safe_browsing::ArchiveAnalyzerResults" ]

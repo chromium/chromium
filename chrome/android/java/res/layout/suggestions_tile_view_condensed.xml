@@ -4,7 +4,7 @@
      found in the LICENSE file. -->
 
 <!-- A site suggestion tile. -->
-<org.chromium.chrome.browser.suggestions.SuggestionsTileView
+<org.chromium.chrome.browser.suggestions.tile.SuggestionsTileView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -16,4 +16,4 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         layout="@layout/tile_view_modern_condensed" />
-</org.chromium.chrome.browser.suggestions.SuggestionsTileView>
+</org.chromium.chrome.browser.suggestions.tile.SuggestionsTileView>

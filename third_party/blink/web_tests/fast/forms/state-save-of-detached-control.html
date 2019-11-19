@@ -3,7 +3,7 @@
 <head>
 <script src="../../resources/js-test.js"></script>
 </head>
-<body onload="runTest()">
+<body onload="setTimeout(runTest, 1)">
 <p>Test to NOT save state of a detached form control.</p>
 <div id="console"></div>
 
@@ -13,6 +13,7 @@
 </form>
 
 <script>
+window.jsTestIsAsync = true;
 var i1;
 
 function runTest()
@@ -21,8 +22,6 @@ function runTest()
     var state = document.getElementById('emptyOnFirstVisit');
     if (!state.value) {
         // First visit.
-        if (window.testRunner)
-            testRunner.waitUntilDone();
         state.value = 'visited';
 
         form1.innerHTML = '<input name=user id=input1>';
@@ -34,9 +33,7 @@ function runTest()
     } else {
         // Second visit.
         shouldBe('document.getElementById("input2").value', '""'); // Not 'value1'.
-
-        if (window.testRunner)
-            testRunner.notifyDone();
+        finishJSTest();
     }
  }
 </script>

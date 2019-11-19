@@ -9,9 +9,15 @@
 
 #import "ios/chrome/browser/ui/translate/translate_notification_handler.h"
 
-// Presents translate notifications using MDCSnackbar.
+@protocol SnackbarCommands;
+
+// Presents translate notifications snackbars.
 @interface TranslateNotificationPresenter
     : NSObject <TranslateNotificationHandler>
+
+- (instancetype)initWithDispatcher:(id<SnackbarCommands>)dispatcher
+    NS_DESIGNATED_INITIALIZER;
+- (instancetype)init NS_UNAVAILABLE;
 
 @end
 

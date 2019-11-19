@@ -37,8 +37,7 @@ Browser* FindTabbedBrowser(Profile* profile,
                            int64_t display_id = display::kInvalidDisplayId);
 
 // Finds an existing browser window of any kind.
-Browser* FindAnyBrowser(Profile* profile,
-                        bool match_original_profiles);
+Browser* FindAnyBrowser(Profile* profile, bool match_original_profiles);
 
 // Find an existing browser window with the provided profile. Searches in the
 // order of last activation. Only browsers that have been active can be

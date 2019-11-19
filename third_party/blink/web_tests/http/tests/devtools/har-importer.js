@@ -14,7 +14,7 @@
       url: request.url(),
       documentURL: request.documentURL,
       initiator: request.initiator(),
-      requestFormData: await(request.requestFormData()),
+      requestFormData: await (request.requestFormData()),
       connectionId: request.connectionId,
       requestMethod: request.requestMethod,
       requestHeaders: request.requestHeaders(),
@@ -27,13 +27,14 @@
       transferSize: request.transferSize,
       cached: request.cached(),
       cachedInMemory: request.cachedInMemory(),
-      contentData: await(request.contentData()),
+      contentData: await (request.contentData()),
       remoteAddress: request.remoteAddress(),
       resourceType: request.resourceType(),
       priority: request.priority(),
       finished: request.finished,
       timing: request.timing,
-      endTime: request.endTime
+      endTime: request.endTime,
+      frames: request.frames()
     };
   }));
   TestRunner.addResult(
@@ -198,8 +199,7 @@ const harJson = {
           '_blocked_proxy': 0.4910000000000001
         },
         'serverIPAddress': '[::1]',
-        '_initiator':
-            {'type': 'parser', 'url': 'http://localhost/', 'lineNumber': 1},
+        '_initiator': 'bad_initiator_string',
         '_priority': 'Low',
         'connection': '2945',
         'pageref': 'page_1'
@@ -258,6 +258,168 @@ const harJson = {
         '_resourceType': 'fetch',
         'connection': '2945',
         'pageref': 'page_1'
+      },
+      {
+        'startedDateTime': '2019-04-18T17:23:48.174Z',
+        'time': 33045.93599960208,
+        'request': {
+          'method': 'GET',
+          'url': 'ws://localhost:8880/echo',
+          'httpVersion': 'HTTP/1.1',
+          'headers': [
+            {
+              'name': 'Pragma',
+              'value': 'no-cache'
+            },
+            {
+              'name': 'Origin',
+              'value': 'http://localhost:8000'
+            },
+            {
+              'name': 'Accept-Encoding',
+              'value': 'gzip, deflate, br'
+            },
+            {
+              'name': 'Host',
+              'value': 'localhost:8880'
+            },
+            {
+              'name': 'Accept-Language',
+              'value': 'en-US,en;q=0.9'
+            },
+            {
+              'name': 'Sec-WebSocket-Key',
+              'value': 'EBTeYTo1PMrIJhQV3KCyLA=='
+            },
+            {
+              'name': 'User-Agent',
+              'value': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3762.0 Safari/537.36'
+            },
+            {
+              'name': 'Upgrade',
+              'value': 'websocket'
+            },
+            {
+              'name': 'Sec-WebSocket-Extensions',
+              'value': 'permessage-deflate; client_max_window_bits'
+            },
+            {
+              'name': 'Cache-Control',
+              'value': 'no-cache'
+            },
+            {
+              'name': 'Connection',
+              'value': 'Upgrade'
+            },
+            {
+              'name': 'Sec-WebSocket-Version',
+              'value': '13'
+            }
+          ],
+          'queryString': [],
+          'cookies': [],
+          'headersSize': 506,
+          'bodySize': 0
+        },
+        'response': {
+          'status': 101,
+          'statusText': 'Switching Protocols',
+          'httpVersion': 'HTTP/1.1',
+          'headers': [
+            {
+              'name': 'Sec-WebSocket-Accept',
+              'value': 'U81HpQbqlT7cIvlTLbf4dTv7m5w='
+            },
+            {
+              'name': 'Connection',
+              'value': 'Upgrade'
+            },
+            {
+              'name': 'Sec-WebSocket-Extensions',
+              'value': 'permessage-deflate'
+            },
+            {
+              'name': 'Upgrade',
+              'value': 'websocket'
+            }
+          ],
+          'cookies': [],
+          'content': {
+            'size': 0,
+            'mimeType': 'x-unknown',
+            'compression': 175
+          },
+          'redirectURL': '',
+          'headersSize': 175,
+          'bodySize': -175,
+          '_transferSize': 0
+        },
+        'cache': {},
+        'timings': {
+          'blocked': -1,
+          'dns': -1,
+          'ssl': -1,
+          'connect': -1,
+          'send': 0,
+          'wait': 33045.93599960208,
+          'receive': 0,
+          '_blocked_queueing': -1
+        },
+        'serverIPAddress': '',
+        '_initiator': {
+          'type': 'script',
+          'stack': {
+            'callFrames': [
+              {
+                'functionName': '',
+                'scriptId': '73',
+                'url': '',
+                'lineNumber': 0,
+                'columnNumber': 5
+              }
+            ]
+          }
+        },
+        '_priority': null,
+        '_resourceType': 'websocket',
+        '_webSocketMessages': [
+          {
+            'type': 'send',
+            'time': 1555608234.452854,
+            'opcode': 1,
+            'data': 'message one'
+          },
+          {
+            'type': 'receive',
+            'time': 1555608234.454548,
+            'opcode': 1,
+            'data': 'message one'
+          },
+          {
+            'type': 'send',
+            'time': 1555608237.98099,
+            'opcode': 1,
+            'data': 'message two'
+          },
+          {
+            'type': 'receive',
+            'time': 1555608237.9821968,
+            'opcode': 1,
+            'data': 'message two'
+          },
+          {
+            'type': 'send',
+            'time': 1555608261.219595,
+            'opcode': 2,
+            'data': 'YmluYXJ5IG1lc3NhZ2U='
+          },
+          {
+            'type': 'receive',
+            'time': 1555608261.2207098,
+            'opcode': 2,
+            'data': 'YmluYXJ5IG1lc3NhZ2U='
+          }
+        ]
       }
     ]
   }

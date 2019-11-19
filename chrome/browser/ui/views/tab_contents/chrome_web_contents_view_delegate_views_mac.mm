@@ -5,6 +5,7 @@
 #import "chrome/browser/ui/views/tab_contents/chrome_web_contents_view_delegate_views_mac.h"
 
 #include "chrome/browser/ui/sad_tab_helper.h"
+#include "chrome/browser/ui/tab_contents/chrome_web_contents_view_handle_drop.h"
 #include "chrome/browser/ui/views/sad_tab_view.h"
 #include "chrome/browser/ui/views/tab_contents/chrome_web_contents_view_focus_helper.h"
 #include "content/public/browser/web_contents.h"
@@ -47,6 +48,12 @@ bool ChromeWebContentsViewDelegateViewsMac::Focus() {
 
 bool ChromeWebContentsViewDelegateViewsMac::TakeFocus(bool reverse) {
   return GetFocusHelper()->TakeFocus(reverse);
+}
+
+void ChromeWebContentsViewDelegateViewsMac::OnPerformDrop(
+    const content::DropData& drop_data,
+    DropCompletionCallback callback) {
+  HandleOnPerformDrop(web_contents_, drop_data, std::move(callback));
 }
 
 content::WebContentsViewDelegate* CreateWebContentsViewDelegate(

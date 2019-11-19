@@ -16,6 +16,89 @@
 namespace base {
 namespace i18n {
 
+#define EXPECT_MATCH_IGNORE_CASE(find_this, in_this, ex_start, ex_len)         \
+  {                                                                            \
+    size_t index = 0;                                                          \
+    size_t length = 0;                                                         \
+    EXPECT_TRUE(StringSearchIgnoringCaseAndAccents(find_this, in_this, &index, \
+                                                   &length));                  \
+    EXPECT_EQ(ex_start, index);                                                \
+    EXPECT_EQ(ex_len, length);                                                 \
+    index = 0;                                                                 \
+    length = 0;                                                                \
+    EXPECT_TRUE(                                                               \
+        StringSearch(find_this, in_this, &index, &length, false, true));       \
+    EXPECT_EQ(ex_start, index);                                                \
+    EXPECT_EQ(ex_len, length);                                                 \
+  }
+
+#define EXPECT_MATCH_SENSITIVE(find_this, in_this, ex_start, ex_len)    \
+  {                                                                     \
+    size_t index = 0;                                                   \
+    size_t length = 0;                                                  \
+    EXPECT_TRUE(                                                        \
+        StringSearch(find_this, in_this, &index, &length, true, true)); \
+    EXPECT_EQ(ex_start, index);                                         \
+    EXPECT_EQ(ex_len, length);                                          \
+  }
+
+#define EXPECT_MATCH_IGNORE_CASE_BACKWARDS(find_this, in_this, ex_start,  \
+                                           ex_len)                        \
+  {                                                                       \
+    size_t index = 0;                                                     \
+    size_t length = 0;                                                    \
+    EXPECT_TRUE(                                                          \
+        StringSearch(find_this, in_this, &index, &length, false, false)); \
+    EXPECT_EQ(ex_start, index);                                           \
+    EXPECT_EQ(ex_len, length);                                            \
+  }
+
+#define EXPECT_MATCH_SENSITIVE_BACKWARDS(find_this, in_this, ex_start, ex_len) \
+  {                                                                            \
+    size_t index = 0;                                                          \
+    size_t length = 0;                                                         \
+    EXPECT_TRUE(                                                               \
+        StringSearch(find_this, in_this, &index, &length, true, false));       \
+    EXPECT_EQ(ex_start, index);                                                \
+    EXPECT_EQ(ex_len, length);                                                 \
+  }
+
+#define EXPECT_MISS_IGNORE_CASE(find_this, in_this)                      \
+  {                                                                      \
+    size_t index = 0;                                                    \
+    size_t length = 0;                                                   \
+    EXPECT_FALSE(StringSearchIgnoringCaseAndAccents(find_this, in_this,  \
+                                                    &index, &length));   \
+    index = 0;                                                           \
+    length = 0;                                                          \
+    EXPECT_FALSE(                                                        \
+        StringSearch(find_this, in_this, &index, &length, false, true)); \
+  }
+
+#define EXPECT_MISS_SENSITIVE(find_this, in_this)                       \
+  {                                                                     \
+    size_t index = 0;                                                   \
+    size_t length = 0;                                                  \
+    EXPECT_FALSE(                                                       \
+        StringSearch(find_this, in_this, &index, &length, true, true)); \
+  }
+
+#define EXPECT_MISS_IGNORE_CASE_BACKWARDS(find_this, in_this)             \
+  {                                                                       \
+    size_t index = 0;                                                     \
+    size_t length = 0;                                                    \
+    EXPECT_FALSE(                                                         \
+        StringSearch(find_this, in_this, &index, &length, false, false)); \
+  }
+
+#define EXPECT_MISS_SENSITIVE_BACKWARDS(find_this, in_this)              \
+  {                                                                      \
+    size_t index = 0;                                                    \
+    size_t length = 0;                                                   \
+    EXPECT_FALSE(                                                        \
+        StringSearch(find_this, in_this, &index, &length, true, false)); \
+  }
+
 // Note on setting default locale for testing: The current default locale on
 // the Mac trybot is en_US_POSIX, with which primary-level collation strength
 // string search is case-sensitive, when normally it should be
@@ -28,37 +111,35 @@ TEST(StringSearchTest, ASCII) {
   if (locale_is_posix)
     SetICUDefaultLocale("en_US");
 
-  size_t index = 0;
-  size_t length = 0;
+  EXPECT_MATCH_IGNORE_CASE(ASCIIToUTF16("hello"), ASCIIToUTF16("hello world"),
+                           0U, 5U);
 
-  EXPECT_TRUE(StringSearchIgnoringCaseAndAccents(
-      ASCIIToUTF16("hello"), ASCIIToUTF16("hello world"), &index, &length));
-  EXPECT_EQ(0U, index);
-  EXPECT_EQ(5U, length);
+  EXPECT_MISS_IGNORE_CASE(ASCIIToUTF16("h    e l l o"),
+                          ASCIIToUTF16("h   e l l o"));
 
-  EXPECT_FALSE(StringSearchIgnoringCaseAndAccents(
-      ASCIIToUTF16("h    e l l o"), ASCIIToUTF16("h   e l l o"),
-      &index, &length));
+  EXPECT_MATCH_IGNORE_CASE(ASCIIToUTF16("aabaaa"), ASCIIToUTF16("aaabaabaaa"),
+                           4U, 6U);
 
-  EXPECT_TRUE(StringSearchIgnoringCaseAndAccents(
-      ASCIIToUTF16("aabaaa"), ASCIIToUTF16("aaabaabaaa"), &index, &length));
-  EXPECT_EQ(4U, index);
-  EXPECT_EQ(6U, length);
+  EXPECT_MISS_IGNORE_CASE(ASCIIToUTF16("searching within empty string"),
+                          string16());
 
-  EXPECT_FALSE(StringSearchIgnoringCaseAndAccents(
-      ASCIIToUTF16("searching within empty string"), string16(),
-      &index, &length));
+  EXPECT_MATCH_IGNORE_CASE(string16(),
+                           ASCIIToUTF16("searching for empty string"), 0U, 0U);
 
-  EXPECT_TRUE(StringSearchIgnoringCaseAndAccents(
-      string16(), ASCIIToUTF16("searching for empty string"), &index, &length));
-  EXPECT_EQ(0U, index);
-  EXPECT_EQ(0U, length);
+  EXPECT_MATCH_IGNORE_CASE(ASCIIToUTF16("case insensitivity"),
+                           ASCIIToUTF16("CaSe InSeNsItIvItY"), 0U, 18U);
 
-  EXPECT_TRUE(StringSearchIgnoringCaseAndAccents(
-      ASCIIToUTF16("case insensitivity"), ASCIIToUTF16("CaSe InSeNsItIvItY"),
-      &index, &length));
-  EXPECT_EQ(0U, index);
-  EXPECT_EQ(18U, length);
+  EXPECT_MATCH_SENSITIVE(ASCIIToUTF16("aabaaa"), ASCIIToUTF16("aaabaabaaa"), 4U,
+                         6U);
+
+  EXPECT_MISS_SENSITIVE(ASCIIToUTF16("searching within empty string"),
+                        string16());
+
+  EXPECT_MATCH_SENSITIVE(string16(), ASCIIToUTF16("searching for empty string"),
+                         0U, 0U);
+
+  EXPECT_MISS_SENSITIVE(ASCIIToUTF16("case insensitivity"),
+                        ASCIIToUTF16("CaSe InSeNsItIvItY"));
 
   if (locale_is_posix)
     SetICUDefaultLocale(default_locale.data());
@@ -89,94 +170,98 @@ TEST(StringSearchTest, UnicodeLocaleIndependent) {
   if (locale_is_posix)
     SetICUDefaultLocale("en_US");
 
-  size_t index = 0;
-  size_t length = 0;
+  EXPECT_MATCH_IGNORE_CASE(e_base, e_with_acute_accent, 0U,
+                           e_with_acute_accent.size());
 
-  EXPECT_TRUE(StringSearchIgnoringCaseAndAccents(
-      e_base, e_with_acute_accent, &index, &length));
-  EXPECT_EQ(0U, index);
-  EXPECT_EQ(e_with_acute_accent.size(), length);
+  EXPECT_MATCH_IGNORE_CASE(e_with_acute_accent, e_base, 0U, e_base.size());
 
-  EXPECT_TRUE(StringSearchIgnoringCaseAndAccents(
-      e_with_acute_accent, e_base, &index, &length));
-  EXPECT_EQ(0U, index);
-  EXPECT_EQ(e_base.size(), length);
+  EXPECT_MATCH_IGNORE_CASE(e_base, e_with_acute_combining_mark, 0U,
+                           e_with_acute_combining_mark.size());
 
-  EXPECT_TRUE(StringSearchIgnoringCaseAndAccents(
-      e_base, e_with_acute_combining_mark, &index, &length));
-  EXPECT_EQ(0U, index);
-  EXPECT_EQ(e_with_acute_combining_mark.size(), length);
+  EXPECT_MATCH_IGNORE_CASE(e_with_acute_combining_mark, e_base, 0U,
+                           e_base.size());
 
-  EXPECT_TRUE(StringSearchIgnoringCaseAndAccents(
-      e_with_acute_combining_mark, e_base, &index, &length));
-  EXPECT_EQ(0U, index);
-  EXPECT_EQ(e_base.size(), length);
+  EXPECT_MATCH_IGNORE_CASE(e_with_acute_combining_mark, e_with_acute_accent, 0U,
+                           e_with_acute_accent.size());
 
-  EXPECT_TRUE(StringSearchIgnoringCaseAndAccents(
-      e_with_acute_combining_mark, e_with_acute_accent,
-      &index, &length));
-  EXPECT_EQ(0U, index);
-  EXPECT_EQ(e_with_acute_accent.size(), length);
+  EXPECT_MATCH_IGNORE_CASE(e_with_acute_accent, e_with_acute_combining_mark, 0U,
+                           e_with_acute_combining_mark.size());
 
-  EXPECT_TRUE(StringSearchIgnoringCaseAndAccents(
-      e_with_acute_accent, e_with_acute_combining_mark,
-      &index, &length));
-  EXPECT_EQ(0U, index);
-  EXPECT_EQ(e_with_acute_combining_mark.size(), length);
+  EXPECT_MATCH_IGNORE_CASE(e_with_acute_combining_mark,
+                           e_with_grave_combining_mark, 0U,
+                           e_with_grave_combining_mark.size());
 
-  EXPECT_TRUE(StringSearchIgnoringCaseAndAccents(
-      e_with_acute_combining_mark, e_with_grave_combining_mark,
-      &index, &length));
-  EXPECT_EQ(0U, index);
-  EXPECT_EQ(e_with_grave_combining_mark.size(), length);
+  EXPECT_MATCH_IGNORE_CASE(e_with_grave_combining_mark,
+                           e_with_acute_combining_mark, 0U,
+                           e_with_acute_combining_mark.size());
 
-  EXPECT_TRUE(StringSearchIgnoringCaseAndAccents(
-      e_with_grave_combining_mark, e_with_acute_combining_mark,
-      &index, &length));
-  EXPECT_EQ(0U, index);
-  EXPECT_EQ(e_with_acute_combining_mark.size(), length);
+  EXPECT_MATCH_IGNORE_CASE(e_with_acute_combining_mark, e_with_grave_accent, 0U,
+                           e_with_grave_accent.size());
 
-  EXPECT_TRUE(StringSearchIgnoringCaseAndAccents(
-      e_with_acute_combining_mark, e_with_grave_accent, &index, &length));
-  EXPECT_EQ(0U, index);
-  EXPECT_EQ(e_with_grave_accent.size(), length);
+  EXPECT_MATCH_IGNORE_CASE(e_with_grave_accent, e_with_acute_combining_mark, 0U,
+                           e_with_acute_combining_mark.size());
 
-  EXPECT_TRUE(StringSearchIgnoringCaseAndAccents(
-      e_with_grave_accent, e_with_acute_combining_mark, &index, &length));
-  EXPECT_EQ(0U, index);
-  EXPECT_EQ(e_with_acute_combining_mark.size(), length);
+  EXPECT_MATCH_IGNORE_CASE(E_with_acute_accent, e_with_acute_accent, 0U,
+                           e_with_acute_accent.size());
 
-  EXPECT_TRUE(StringSearchIgnoringCaseAndAccents(
-      E_with_acute_accent, e_with_acute_accent, &index, &length));
-  EXPECT_EQ(0U, index);
-  EXPECT_EQ(e_with_acute_accent.size(), length);
+  EXPECT_MATCH_IGNORE_CASE(E_with_grave_accent, e_with_acute_accent, 0U,
+                           e_with_acute_accent.size());
 
-  EXPECT_TRUE(StringSearchIgnoringCaseAndAccents(
-      E_with_grave_accent, e_with_acute_accent, &index, &length));
-  EXPECT_EQ(0U, index);
-  EXPECT_EQ(e_with_acute_accent.size(), length);
+  EXPECT_MATCH_IGNORE_CASE(E_with_acute_combining_mark, e_with_grave_accent, 0U,
+                           e_with_grave_accent.size());
 
-  EXPECT_TRUE(StringSearchIgnoringCaseAndAccents(
-      E_with_acute_combining_mark, e_with_grave_accent, &index, &length));
-  EXPECT_EQ(0U, index);
-  EXPECT_EQ(e_with_grave_accent.size(), length);
+  EXPECT_MATCH_IGNORE_CASE(E_with_grave_combining_mark, e_with_acute_accent, 0U,
+                           e_with_acute_accent.size());
 
-  EXPECT_TRUE(StringSearchIgnoringCaseAndAccents(
-      E_with_grave_combining_mark, e_with_acute_accent, &index, &length));
-  EXPECT_EQ(0U, index);
-  EXPECT_EQ(e_with_acute_accent.size(), length);
+  EXPECT_MATCH_IGNORE_CASE(E_base, e_with_grave_accent, 0U,
+                           e_with_grave_accent.size());
 
-  EXPECT_TRUE(StringSearchIgnoringCaseAndAccents(
-      E_base, e_with_grave_accent, &index, &length));
-  EXPECT_EQ(0U, index);
-  EXPECT_EQ(e_with_grave_accent.size(), length);
+  EXPECT_MISS_IGNORE_CASE(a_with_acute_accent, e_with_acute_accent);
 
-  EXPECT_FALSE(StringSearchIgnoringCaseAndAccents(
-      a_with_acute_accent, e_with_acute_accent, &index, &length));
+  EXPECT_MISS_IGNORE_CASE(a_with_acute_combining_mark,
+                          e_with_acute_combining_mark);
 
-  EXPECT_FALSE(StringSearchIgnoringCaseAndAccents(
-      a_with_acute_combining_mark, e_with_acute_combining_mark,
-      &index, &length));
+  EXPECT_MISS_SENSITIVE(e_base, e_with_acute_accent);
+
+  EXPECT_MISS_SENSITIVE(e_with_acute_accent, e_base);
+
+  EXPECT_MISS_SENSITIVE(e_base, e_with_acute_combining_mark);
+
+  EXPECT_MISS_SENSITIVE(e_with_acute_combining_mark, e_base);
+
+  EXPECT_MATCH_SENSITIVE(e_with_acute_combining_mark, e_with_acute_accent, 0U,
+                         1U);
+
+  EXPECT_MATCH_SENSITIVE(e_with_acute_accent, e_with_acute_combining_mark, 0U,
+                         2U);
+
+  EXPECT_MISS_SENSITIVE(e_with_acute_combining_mark,
+                        e_with_grave_combining_mark);
+
+  EXPECT_MISS_SENSITIVE(e_with_grave_combining_mark,
+                        e_with_acute_combining_mark);
+
+  EXPECT_MISS_SENSITIVE(e_with_acute_combining_mark, e_with_grave_accent);
+
+  EXPECT_MISS_SENSITIVE(e_with_grave_accent, e_with_acute_combining_mark);
+
+  EXPECT_MISS_SENSITIVE(E_with_acute_accent, e_with_acute_accent);
+
+  EXPECT_MISS_SENSITIVE(E_with_grave_accent, e_with_acute_accent);
+
+  EXPECT_MISS_SENSITIVE(E_with_acute_combining_mark, e_with_grave_accent);
+
+  EXPECT_MISS_SENSITIVE(E_with_grave_combining_mark, e_with_acute_accent);
+
+  EXPECT_MISS_SENSITIVE(E_base, e_with_grave_accent);
+
+  EXPECT_MISS_SENSITIVE(a_with_acute_accent, e_with_acute_accent);
+
+  EXPECT_MISS_SENSITIVE(a_with_acute_combining_mark,
+                        e_with_acute_combining_mark);
+
+  EXPECT_MATCH_SENSITIVE(a_with_acute_combining_mark,
+                         a_with_acute_combining_mark, 0U, 2U);
 
   if (locale_is_posix)
     SetICUDefaultLocale(default_locale.data());
@@ -191,14 +276,33 @@ TEST(StringSearchTest, UnicodeLocaleDependent) {
 
   EXPECT_TRUE(StringSearchIgnoringCaseAndAccents(a_base, a_with_ring, nullptr,
                                                  nullptr));
+  EXPECT_TRUE(StringSearch(a_base, a_with_ring, nullptr, nullptr, false, true));
 
   const char* default_locale = uloc_getDefault();
   SetICUDefaultLocale("da");
 
   EXPECT_FALSE(StringSearchIgnoringCaseAndAccents(a_base, a_with_ring, nullptr,
                                                   nullptr));
+  EXPECT_FALSE(
+      StringSearch(a_base, a_with_ring, nullptr, nullptr, false, true));
 
   SetICUDefaultLocale(default_locale);
+}
+
+TEST(StringSearchTest, SearchBackwards) {
+  std::string default_locale(uloc_getDefault());
+  bool locale_is_posix = (default_locale == "en_US_POSIX");
+  if (locale_is_posix)
+    SetICUDefaultLocale("en_US");
+
+  EXPECT_MATCH_IGNORE_CASE_BACKWARDS(ASCIIToUTF16("ab"), ASCIIToUTF16("ABAB"),
+                                     2U, 2U);
+  EXPECT_MATCH_SENSITIVE_BACKWARDS(ASCIIToUTF16("ab"), ASCIIToUTF16("abab"), 2U,
+                                   2U);
+  EXPECT_MISS_SENSITIVE_BACKWARDS(ASCIIToUTF16("ab"), ASCIIToUTF16("ABAB"));
+
+  if (locale_is_posix)
+    SetICUDefaultLocale(default_locale.data());
 }
 
 TEST(StringSearchTest, FixedPatternMultipleSearch) {
@@ -210,13 +314,27 @@ TEST(StringSearchTest, FixedPatternMultipleSearch) {
   size_t index = 0;
   size_t length = 0;
 
+  // Search "foo" over multiple texts.
+  FixedPatternStringSearch query1(ASCIIToUTF16("foo"), true);
+  EXPECT_TRUE(query1.Search(ASCIIToUTF16("12foo34"), &index, &length, true));
+  EXPECT_EQ(2U, index);
+  EXPECT_EQ(3U, length);
+  EXPECT_FALSE(query1.Search(ASCIIToUTF16("bye"), &index, &length, true));
+  EXPECT_FALSE(query1.Search(ASCIIToUTF16("FOO"), &index, &length, true));
+  EXPECT_TRUE(query1.Search(ASCIIToUTF16("foobarfoo"), &index, &length, true));
+  EXPECT_EQ(0U, index);
+  EXPECT_EQ(3U, length);
+  EXPECT_TRUE(query1.Search(ASCIIToUTF16("foobarfoo"), &index, &length, false));
+  EXPECT_EQ(6U, index);
+  EXPECT_EQ(3U, length);
+
   // Search "hello" over multiple texts.
-  FixedPatternStringSearchIgnoringCaseAndAccents query(ASCIIToUTF16("hello"));
-  EXPECT_TRUE(query.Search(ASCIIToUTF16("12hello34"), &index, &length));
+  FixedPatternStringSearchIgnoringCaseAndAccents query2(ASCIIToUTF16("hello"));
+  EXPECT_TRUE(query2.Search(ASCIIToUTF16("12hello34"), &index, &length));
   EXPECT_EQ(2U, index);
   EXPECT_EQ(5U, length);
-  EXPECT_FALSE(query.Search(ASCIIToUTF16("bye"), &index, &length));
-  EXPECT_TRUE(query.Search(ASCIIToUTF16("hELLo"), &index, &length));
+  EXPECT_FALSE(query2.Search(ASCIIToUTF16("bye"), &index, &length));
+  EXPECT_TRUE(query2.Search(ASCIIToUTF16("hELLo"), &index, &length));
   EXPECT_EQ(0U, index);
   EXPECT_EQ(5U, length);
 

@@ -179,7 +179,7 @@ HighlighterResultView::HighlighterResultView(aura::Window* root_window) {
       Shell::GetContainer(root_window, kShellWindowId_OverlayContainer);
   params.layer_type = ui::LAYER_SOLID_COLOR;
 
-  widget_->Init(params);
+  widget_->Init(std::move(params));
   widget_->Show();
   widget_->SetContentsView(this);
   widget_->SetFullscreen(true);

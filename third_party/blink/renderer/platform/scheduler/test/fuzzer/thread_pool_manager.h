@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_TEST_FUZZER_THREAD_POOL_MANAGER_H_
 
 #include <memory>
-#include <vector>
 
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
@@ -14,6 +13,8 @@
 #include "base/time/time.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/scheduler/test/fuzzer/proto/sequence_manager_test_description.pb.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace base {
 namespace sequence_manager {
@@ -24,6 +25,8 @@ class ThreadManager;
 // Used by the SequenceManagerFuzzerProcessor to manage threads and synchronize
 // their clocks.
 class PLATFORM_EXPORT ThreadPoolManager {
+  USING_FAST_MALLOC(ThreadPoolManager);
+
  public:
   explicit ThreadPoolManager(SequenceManagerFuzzerProcessor* processor);
   ~ThreadPoolManager();
@@ -32,13 +35,13 @@ class PLATFORM_EXPORT ThreadPoolManager {
   void CreateThread(
       const google::protobuf::RepeatedPtrField<
           SequenceManagerTestDescription::Action>& initial_thread_actions,
-      TimeTicks initial_time);
+      base::TimeTicks initial_time);
 
   // Advances the mock tick clock of all the threads synchronously.
   // Note that this doesn't guarantee advancing the thread's clock to |time|.
   // The clock is advanced to the minimum desired time of all the owned threads.
   void AdvanceClockSynchronouslyToTime(ThreadManager* thread_manager,
-                                       TimeTicks time);
+                                       base::TimeTicks time);
 
   // Advances the mock tick clock of all the threads synchronously.
   // Note that this doesn't guarantee advancing the thread's clock by the next
@@ -59,7 +62,7 @@ class PLATFORM_EXPORT ThreadPoolManager {
   void WaitForAllThreads();
 
   // (Thread Safe)
-  std::vector<ThreadManager*> GetAllThreadManagers();
+  Vector<ThreadManager*> GetAllThreadManagers();
 
   // (Thread Safe) Used to return the thread manager of the |thread_id|'s entry
   // in |threads_| (modulo the number of entries).
@@ -95,7 +98,7 @@ class PLATFORM_EXPORT ThreadPoolManager {
   Lock lock_;
 
   // Used to synchronize virtual time across all threads.
-  TimeTicks next_time_;
+  base::TimeTicks next_time_;
 
   // Condition to ensure that all threads have their desired next time
   // computed, and thus the global |next_time_| can be computed as their
@@ -138,14 +141,14 @@ class PLATFORM_EXPORT ThreadPoolManager {
   // Threads that are being managed/synchronized. For unit testing purposes,
   // make sure not to create threads at the same time (if the ordering matters)
   // since in this case the order will not be deterministic.
-  std::vector<std::unique_ptr<SimpleThread>> threads_;
+  Vector<std::unique_ptr<SimpleThread>> threads_;
 
   // ThreadManager instances associated to the managed threads. Values are not
   // stored in any particular order and there might not exist a manager for all
   // managed threads at any point in time (SimpleThread instances are created
   // before their corresponding ThreadManager, as this must happen on the actual
   // thread).
-  std::vector<ThreadManager*> thread_managers_;
+  Vector<ThreadManager*> thread_managers_;
 };
 
 }  // namespace sequence_manager

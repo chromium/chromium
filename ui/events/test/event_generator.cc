@@ -128,6 +128,11 @@ void EventGenerator::ClickLeftButton() {
   ReleaseLeftButton();
 }
 
+void EventGenerator::ClickRightButton() {
+  PressRightButton();
+  ReleaseRightButton();
+}
+
 void EventGenerator::DoubleClickLeftButton() {
   flags_ &= ~ui::EF_IS_DOUBLE_CLICK;
   ClickLeftButton();
@@ -346,7 +351,7 @@ void EventGenerator::GestureScrollSequence(const gfx::Point& start,
                                            const base::TimeDelta& step_delay,
                                            int steps) {
   GestureScrollSequenceWithCallback(start, end, step_delay, steps,
-                                    base::Bind(&DummyCallback));
+                                    base::BindRepeating(&DummyCallback));
 }
 
 void EventGenerator::GestureScrollSequenceWithCallback(

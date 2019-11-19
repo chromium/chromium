@@ -10,15 +10,13 @@
 #include "ash/root_window_settings.h"
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
-#include "ash/wm/root_window_finder.h"
+#include "ash/wm/window_util.h"
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "ui/aura/client/screen_position_client.h"
 #include "ui/aura/env.h"
-#include "ui/aura/mus/window_tree_host_mus.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/display/display.h"
 #include "ui/display/display_finder.h"
 #include "ui/display/manager/display_manager.h"
@@ -91,7 +89,7 @@ ScreenAsh::ScreenAsh() = default;
 ScreenAsh::~ScreenAsh() = default;
 
 gfx::Point ScreenAsh::GetCursorScreenPoint() {
-  return Shell::Get()->aura_env()->last_mouse_location();
+  return aura::Env::GetInstance()->last_mouse_location();
 }
 
 bool ScreenAsh::IsWindowUnderCursor(gfx::NativeWindow window) {
@@ -100,7 +98,7 @@ bool ScreenAsh::IsWindowUnderCursor(gfx::NativeWindow window) {
 }
 
 gfx::NativeWindow ScreenAsh::GetWindowAtScreenPoint(const gfx::Point& point) {
-  aura::Window* root_window = wm::GetRootWindowAt(point);
+  aura::Window* root_window = window_util::GetRootWindowAt(point);
   aura::client::ScreenPositionClient* position_client =
       aura::client::GetScreenPositionClient(root_window);
 
@@ -123,21 +121,6 @@ display::Display ScreenAsh::GetDisplayNearestWindow(
     gfx::NativeView window) const {
   if (!window)
     return GetPrimaryDisplay();
-
-  if (::features::IsSingleProcessMash()) {
-    // In IsSingleProcessMash() ScreenAsh is also called from non-ash code.
-    // Non-ash code creates aura Windows that are not parented to Ash's root
-    // Windows. Check for this first.
-    aura::WindowTreeHostMus* window_tree_host_mus =
-        aura::WindowTreeHostMus::ForWindow(window);
-    if (window_tree_host_mus) {
-      // WindowTreeHostMus::GetDisplay() can return an invalid display (i.e.
-      // with ID == |kInvalidDisplayID|) if that display is being removed. Use
-      // the primary display instead.
-      const auto display = window_tree_host_mus->GetDisplay();
-      return display.is_valid() ? display : GetPrimaryDisplay();
-    }
-  }
 
   const aura::Window* root_window = window->GetRootWindow();
   if (!root_window)

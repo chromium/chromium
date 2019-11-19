@@ -30,6 +30,7 @@ ContextMenuParams ContextMenuParamsBuilder::Build(
   params.selection_text = data.selected_text.Utf16();
   params.selection_start_offset = data.selection_start_offset;
   params.title_text = data.title_text.Utf16();
+  params.alt_text = data.alt_text.Utf16();
   params.misspelled_word = data.misspelled_word.Utf16();
   params.spellcheck_enabled = data.is_spell_checking_enabled;
   params.is_editable = data.is_editable;
@@ -41,11 +42,6 @@ ContextMenuParams ContextMenuParamsBuilder::Build(
   params.referrer_policy = data.referrer_policy;
   params.suggested_filename = data.suggested_filename.Utf16();
   params.input_field_type = data.input_field_type;
-
-  if (!data.image_response.IsNull()) {
-    GetContentClient()->renderer()->AddImageContextMenuProperties(
-        data.image_response, data.is_placeholder_image, &params.properties);
-  }
 
   for (size_t i = 0; i < data.dictionary_suggestions.size(); ++i)
     params.dictionary_suggestions.push_back(

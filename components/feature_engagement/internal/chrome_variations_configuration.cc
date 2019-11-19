@@ -11,14 +11,16 @@
 #include <utility>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "components/feature_engagement/internal/configuration.h"
 #include "components/feature_engagement/internal/stats.h"
+#include "components/feature_engagement/public/configuration.h"
+#include "components/feature_engagement/public/feature_configurations.h"
 #include "components/feature_engagement/public/feature_list.h"
 
 namespace {
@@ -299,21 +301,41 @@ void ChromeVariationsConfiguration::ParseFeatureConfig(
 
   DVLOG(3) << "Parsing feature config for " << feature->name;
 
-  // Initially all new configurations are considered invalid.
-  FeatureConfig& config = configs_[feature->name];
-  config.valid = false;
-  uint32_t parse_errors = 0;
-
   std::map<std::string, std::string> params;
   bool result = base::GetFieldTrialParamsByFeature(*feature, &params);
+  // No |result| means that there was no server side configuration, or the
+  // feature was disabled. The feature could be disabled either because it
+  // is not configured to be base::FEATURE_ENABLED_BY_DEFAULT, or it has been
+  // disabled from the server.
   if (!result) {
+    // Some features have a checked in client side configuration, and for those
+    // use that and and record success, otherwise fall back to invalid
+    // configuration below.
+    if (MaybeAddClientSideFeatureConfig(feature)) {
+      stats::RecordConfigParsingEvent(
+          stats::ConfigParsingEvent::SUCCESS_FROM_SOURCE);
+      DVLOG(3) << "Read checked in config for " << feature->name;
+      return;
+    }
+
+    // No server-side, nor client side configuration available, but the feature
+    // was passed in as one of all the feature available, so give it an invalid
+    // config.
+    FeatureConfig& config = configs_[feature->name];
+    config.valid = false;
+
     stats::RecordConfigParsingEvent(
         stats::ConfigParsingEvent::FAILURE_NO_FIELD_TRIAL);
     // Returns early. If no field trial, ConfigParsingEvent::FAILURE will not be
     // recorded.
-    DVLOG(3) << "No field trial for " << feature->name;
+    DVLOG(3) << "No field trial or checked in config for " << feature->name;
     return;
   }
+
+  // Initially all new configurations are considered invalid.
+  FeatureConfig& config = configs_[feature->name];
+  config.valid = false;
+  uint32_t parse_errors = 0;
 
   for (const auto& it : params) {
     const std::string& key = it.first;
@@ -420,6 +442,19 @@ void ChromeVariationsConfiguration::ParseFeatureConfig(
     stats::RecordConfigParsingEvent(
         stats::ConfigParsingEvent::FAILURE_TRIGGER_EVENT_MISSING);
   }
+}
+
+bool ChromeVariationsConfiguration::MaybeAddClientSideFeatureConfig(
+    const base::Feature* feature) {
+  if (!base::FeatureList::IsEnabled(*feature))
+    return false;
+
+  DCHECK(configs_.find(feature->name) == configs_.end());
+  if (auto config = GetClientSideFeatureConfig(feature)) {
+    configs_[feature->name] = *config;
+    return true;
+  }
+  return false;
 }
 
 const FeatureConfig& ChromeVariationsConfiguration::GetFeatureConfig(

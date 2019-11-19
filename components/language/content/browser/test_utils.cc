@@ -6,7 +6,7 @@
 
 namespace language {
 
-MockGeoLocation::MockGeoLocation() : binding_(this) {}
+MockGeoLocation::MockGeoLocation() {}
 MockGeoLocation::~MockGeoLocation() {}
 
 void MockGeoLocation::SetHighAccuracy(bool high_accuracy) {}
@@ -17,8 +17,8 @@ void MockGeoLocation::QueryNextPosition(QueryNextPositionCallback callback) {
 }
 
 void MockGeoLocation::BindGeoLocation(
-    device::mojom::GeolocationRequest request) {
-  binding_.Bind(std::move(request));
+    mojo::PendingReceiver<device::mojom::Geolocation> receiver) {
+  receiver_.Bind(std::move(receiver));
 }
 
 void MockGeoLocation::MoveToLocation(float latitude, float longitude) {
@@ -28,19 +28,20 @@ void MockGeoLocation::MoveToLocation(float latitude, float longitude) {
 
 MockIpGeoLocationProvider::MockIpGeoLocationProvider(
     MockGeoLocation* mock_geo_location)
-    : mock_geo_location_(mock_geo_location), binding_(this) {}
+    : mock_geo_location_(mock_geo_location) {}
 
 MockIpGeoLocationProvider::~MockIpGeoLocationProvider() {}
 
 void MockIpGeoLocationProvider::Bind(mojo::ScopedMessagePipeHandle handle) {
-  binding_.Bind(device::mojom::PublicIpAddressGeolocationProviderRequest(
-      std::move(handle)));
+  receiver_.Bind(
+      mojo::PendingReceiver<device::mojom::PublicIpAddressGeolocationProvider>(
+          std::move(handle)));
 }
 
 void MockIpGeoLocationProvider::CreateGeolocation(
     const net::MutablePartialNetworkTrafficAnnotationTag& /* unused */,
-    device::mojom::GeolocationRequest request) {
-  mock_geo_location_->BindGeoLocation(std::move(request));
+    mojo::PendingReceiver<device::mojom::Geolocation> receiver) {
+  mock_geo_location_->BindGeoLocation(std::move(receiver));
 }
 
 }  // namespace language

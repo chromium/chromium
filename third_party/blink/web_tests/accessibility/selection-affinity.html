@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 
 <div id="main" role="main">
 
@@ -13,7 +12,7 @@
 <div id="console"></div>
 
 <script>
-    test_after_layout_and_paint(function()
+    test(function()
     {
         // Create a range selecting more and more characters of text until
         // the bounding rect has a nonzero width, indicating we got the first
@@ -65,7 +64,9 @@
         var axRoot = accessibilityController.rootElement;
         assert_equals(axRoot.selectionAnchorObject.role, "AXRole: AXStaticText");
         assert_equals(axRoot.selectionAnchorObject.name, "a-b-c-d-e-f-g-h-i-j-k-l-m-n-o-p-q-r-s-t-u-v-w-x-y-z");
+        assert_equals(axRoot.selectionFocusOffset, endCharIndex - startCharIndex);
         assert_equals(axRoot.selectionAnchorOffset, endCharIndex - startCharIndex);
+        assert_equals(axRoot.selectionFocusAffinity, "upstream");
         assert_equals(axRoot.selectionAnchorAffinity, "upstream");
 
         // Click to place the cursor at the beginning of the next line.
@@ -83,6 +84,8 @@
         assert_equals(axRoot.selectionAnchorObject.role, "AXRole: AXStaticText");
         assert_equals(axRoot.selectionAnchorObject.name, "a-b-c-d-e-f-g-h-i-j-k-l-m-n-o-p-q-r-s-t-u-v-w-x-y-z");
         assert_equals(axRoot.selectionAnchorOffset, endCharIndex - startCharIndex);
+        assert_equals(axRoot.selectionFocusOffset, endCharIndex - startCharIndex);
         assert_equals(axRoot.selectionAnchorAffinity, "downstream");
+        assert_equals(axRoot.selectionFocusAffinity, "downstream");
     }, "Test upstream and downstream affinity of text selection.");
 </script>

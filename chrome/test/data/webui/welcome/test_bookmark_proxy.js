@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/** @implements {nux.BookmarkProxy} */
-class TestBookmarkProxy extends TestBrowserProxy {
+import {TestBrowserProxy} from '../test_browser_proxy.m.js';
+
+/** @implements {BookmarkProxy} */
+export class TestBookmarkProxy extends TestBrowserProxy {
   constructor() {
     super([
       'addBookmark',
@@ -25,7 +27,7 @@ class TestBookmarkProxy extends TestBrowserProxy {
   isBookmarkBarShown() {
     this.methodCalled('isBookmarkBarShown');
 
-    // TODO(scottchen): make changable to test both true/false cases.
+    // TODO(hcarmona): make changeable to test both true/false cases.
     return Promise.resolve(true);
   }
 

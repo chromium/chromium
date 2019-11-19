@@ -21,7 +21,6 @@ namespace content {
 MockInputDispositionHandler::MockInputDispositionHandler()
     : input_router_(nullptr),
       ack_count_(0),
-      unexpected_event_ack_called_(false),
       ack_event_type_(WebInputEvent::kUndefined),
       ack_state_(INPUT_EVENT_ACK_STATE_UNKNOWN) {}
 
@@ -69,12 +68,6 @@ void MockInputDispositionHandler::OnGestureEventAck(
   VLOG(1) << __FUNCTION__ << " called!";
   acked_gesture_event_ = event.event;
   RecordAckCalled(event.event.GetType(), ack_result);
-}
-
-void MockInputDispositionHandler::OnUnexpectedEventAck(
-    UnexpectedEventAckType type) {
-  VLOG(1) << __FUNCTION__ << " called!";
-  unexpected_event_ack_called_ = true;
 }
 
 size_t MockInputDispositionHandler::GetAndResetAckCount() {

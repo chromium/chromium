@@ -11,6 +11,7 @@
 #include <map>
 #include <memory>
 #include <set>
+#include <string>
 #include <vector>
 
 #include "base/compiler_specific.h"
@@ -21,6 +22,7 @@
 #include "base/win/scoped_gdi_object.h"
 #include "base/win/win_util.h"
 #include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/platform/ax_fragment_root_delegate_win.h"
 #include "ui/base/ime/input_method_observer.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/base/win/window_event_target.h"
@@ -31,6 +33,7 @@
 #include "ui/gfx/win/window_impl.h"
 #include "ui/views/views_export.h"
 #include "ui/views/win/pen_event_processor.h"
+#include "ui/views/win/scoped_enable_unadjusted_mouse_events_win.h"
 #include "ui/views/window/window_resize_utils.h"
 
 namespace gfx {
@@ -52,6 +55,10 @@ namespace views {
 class FullscreenHandler;
 class HWNDMessageHandlerDelegate;
 
+namespace test {
+class DesktopWindowTreeHostWinTestApi;
+}
+
 // These two messages aren't defined in winuser.h, but they are sent to windows
 // with captions. They appear to paint the window caption and frame.
 // Unfortunately if you override the standard non-client rendering as we do
@@ -60,13 +67,13 @@ class HWNDMessageHandlerDelegate;
 // window and paint the standard caption/title over the top of the custom one.
 // So we need to handle these messages in CustomFrameWindow to prevent this
 // from happening.
-const int WM_NCUAHDRAWCAPTION = 0xAE;
-const int WM_NCUAHDRAWFRAME = 0xAF;
+constexpr int WM_NCUAHDRAWCAPTION = 0xAE;
+constexpr int WM_NCUAHDRAWFRAME = 0xAF;
 
 // The HWNDMessageHandler sends this message to itself on
 // WM_WINDOWPOSCHANGING. It's used to inform the client if a
 // WM_WINDOWPOSCHANGED won't be received.
-const int WM_WINDOWSIZINGFINISHED = WM_USER;
+constexpr int WM_WINDOWSIZINGFINISHED = WM_USER;
 
 // An object that handles messages for a HWND that implements the views
 // "Custom Frame" look. The purpose of this class is to isolate the windows-
@@ -76,9 +83,12 @@ const int WM_WINDOWSIZINGFINISHED = WM_USER;
 // TODO(beng): This object should eventually *become* the WindowImpl.
 class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
                                         public ui::InputMethodObserver,
-                                        public ui::WindowEventTarget {
+                                        public ui::WindowEventTarget,
+                                        public ui::AXFragmentRootDelegateWin {
  public:
-  explicit HWNDMessageHandler(HWNDMessageHandlerDelegate* delegate);
+  // See WindowImpl for details on |debugging_id|.
+  HWNDMessageHandler(HWNDMessageHandlerDelegate* delegate,
+                     const std::string& debugging_id);
   ~HWNDMessageHandler() override;
 
   void Init(HWND parent, const gfx::Rect& bounds);
@@ -179,9 +189,18 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
   }
   bool is_translucent() const { return is_translucent_; }
 
+  std::unique_ptr<aura::ScopedEnableUnadjustedMouseEvents>
+  RegisterUnadjustedMouseEvent();
+  void set_using_wm_input(bool using_wm_input) {
+    using_wm_input_ = using_wm_input;
+  }
+  bool using_wm_input() { return using_wm_input_; }
+
  private:
-  typedef std::set<DWORD> TouchIDs;
-  enum class DwmFrameState { OFF, ON };
+  friend class ::views::test::DesktopWindowTreeHostWinTestApi;
+
+  using TouchIDs = std::set<DWORD>;
+  enum class DwmFrameState { kOff, kOn };
 
   // Overridden from WindowImpl:
   HICON GetDefaultWindowIcon() const override;
@@ -213,6 +232,10 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
                                WPARAM w_param,
                                LPARAM l_param,
                                bool* handled) override;
+  LRESULT HandleInputMessage(unsigned int message,
+                             WPARAM w_param,
+                             LPARAM l_param,
+                             bool* handled) override;
   LRESULT HandleScrollMessage(unsigned int message,
                               WPARAM w_param,
                               LPARAM l_param,
@@ -228,9 +251,14 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
   void ApplyPanGestureScroll(int scroll_x, int scroll_y) override;
   void ApplyPanGestureFling(int scroll_x, int scroll_y) override;
   void ApplyPanGestureScrollBegin(int scroll_x, int scroll_y) override;
-  void ApplyPanGestureScrollEnd() override;
+  void ApplyPanGestureScrollEnd(bool transitioning_to_pinch) override;
   void ApplyPanGestureFlingBegin() override;
   void ApplyPanGestureFlingEnd() override;
+
+  // Overridden from AXFragmentRootDelegateWin.
+  gfx::NativeViewAccessible GetChildOfAXFragmentRoot() override;
+  gfx::NativeViewAccessible GetParentOfAXFragmentRoot() override;
+  bool IsAXFragmentRootAControlElement() override;
 
   void ApplyPanGestureEvent(int scroll_x,
                             int scroll_y,
@@ -366,6 +394,7 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
     CR_MESSAGE_HANDLER_EX(WM_SYSKEYDOWN, OnKeyEvent)
     CR_MESSAGE_HANDLER_EX(WM_SYSKEYUP, OnKeyEvent)
 
+    CR_MESSAGE_HANDLER_EX(WM_INPUT, OnInputEvent)
     // IME Events.
     CR_MESSAGE_HANDLER_EX(WM_IME_SETCONTEXT, OnImeMessages)
     CR_MESSAGE_HANDLER_EX(WM_IME_STARTCOMPOSITION, OnImeMessages)
@@ -456,6 +485,7 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
   LRESULT OnGetObject(UINT message, WPARAM w_param, LPARAM l_param);
   LRESULT OnImeMessages(UINT message, WPARAM w_param, LPARAM l_param);
   void OnInitMenu(HMENU menu);
+  LRESULT OnInputEvent(UINT message, WPARAM w_param, LPARAM l_param);
   void OnInputLangChange(DWORD character_set, HKL input_language_id);
   LRESULT OnKeyEvent(UINT message, WPARAM w_param, LPARAM l_param);
   void OnKillFocus(HWND focused_window);
@@ -494,7 +524,7 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
   // Receives Windows Session Change notifications.
   void OnSessionChange(WPARAM status_code);
 
-  typedef std::vector<ui::TouchEvent> TouchEvents;
+  using TouchEvents = std::vector<ui::TouchEvent>;
   // Helper to handle the list of touch events passed in. We need this because
   // touch events on windows don't fire if we enter a modal loop in the context
   // of a touch event.
@@ -575,6 +605,9 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
   // Updates |rect| to adhere to the |aspect_ratio| of the window. |param|
   // refers to the edge of the window being sized.
   void SizeRectToAspectRatio(UINT param, gfx::Rect* rect);
+
+  // Get the cursor position, which may be mocked if running a test
+  POINT GetCursorPos() const;
 
   HWNDMessageHandlerDelegate* delegate_;
 
@@ -750,12 +783,18 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
   // the first message after frame type changes.
   bool needs_dwm_frame_clear_ = true;
 
+  // True if is handling mouse WM_INPUT messages.
+  bool using_wm_input_ = false;
+
   // This is a map of the HMONITOR to full screeen window instance. It is safe
   // to keep a raw pointer to the HWNDMessageHandler instance as we track the
   // window destruction and ensure that the map is cleaned up.
   using FullscreenWindowMonitorMap = std::map<HMONITOR, HWNDMessageHandler*>;
   static base::LazyInstance<FullscreenWindowMonitorMap>::DestructorAtExit
       fullscreen_monitor_map_;
+
+  // Populated if the cursor position is being mocked for testing purposes.
+  base::Optional<gfx::Point> mock_cursor_position_;
 
   // The WeakPtrFactories below (one inside the
   // CR_MSG_MAP_CLASS_DECLARATIONS macro and autohide_factory_) must
@@ -764,7 +803,7 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
   CR_MSG_MAP_CLASS_DECLARATIONS(HWNDMessageHandler)
 
   // The factory used to lookup appbar autohide edges.
-  base::WeakPtrFactory<HWNDMessageHandler> autohide_factory_;
+  base::WeakPtrFactory<HWNDMessageHandler> autohide_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(HWNDMessageHandler);
 };

@@ -40,7 +40,8 @@ class TestAppMenuModelAdapter : public AppMenuModelAdapter {
                             std::move(model),
                             nullptr,
                             ui::MENU_SOURCE_TYPE_LAST,
-                            base::OnceClosure()) {}
+                            base::OnceClosure(),
+                            false /* is_tablet_mode */) {}
 
  private:
   // AppMenuModelAdapter overrides:
@@ -108,14 +109,14 @@ TEST_F(NotificationMenuControllerTest, NotificationsArriveAfterBuilt) {
   BuildMenu();
 
   // There should only be two items in the context menu.
-  EXPECT_EQ(2, root_menu_item_view()->GetSubmenu()->child_count());
+  EXPECT_EQ(2u, root_menu_item_view()->GetSubmenu()->children().size());
 
   // Add a notification.
   BuildAndSendNotification(kTestAppId, std::string("notification_id"));
 
   // NotificationMenuController should have added a third item, the
   // container for NotificationMenuView, to the menu.
-  EXPECT_EQ(3, root_menu_item_view()->GetSubmenu()->child_count());
+  EXPECT_EQ(3u, root_menu_item_view()->GetSubmenu()->children().size());
 }
 
 // Tests that NotificationMenuController adds and removes the container
@@ -128,20 +129,20 @@ TEST_F(NotificationMenuControllerTest, NotificationsExistBeforeMenuIsBuilt) {
 
   // Build the menu, the container should be added.
   BuildMenu();
-  EXPECT_EQ(3, root_menu_item_view()->GetSubmenu()->child_count());
+  EXPECT_EQ(3u, root_menu_item_view()->GetSubmenu()->children().size());
 
   // Remove the notification, this should result in the NotificationMenuView
   // container being removed.
   message_center::MessageCenter::Get()->RemoveNotification(notification_id,
                                                            true);
 
-  EXPECT_EQ(2, root_menu_item_view()->GetSubmenu()->child_count());
+  EXPECT_EQ(2u, root_menu_item_view()->GetSubmenu()->children().size());
 
   // Add the same notification.
   BuildAndSendNotification(kTestAppId, notification_id);
 
   // The container MenuItemView should be added again.
-  EXPECT_EQ(3, root_menu_item_view()->GetSubmenu()->child_count());
+  EXPECT_EQ(3u, root_menu_item_view()->GetSubmenu()->children().size());
 }
 
 // Tests that adding multiple notifications for kTestAppId does not add
@@ -155,7 +156,7 @@ TEST_F(NotificationMenuControllerTest, MultipleNotifications) {
   BuildMenu();
 
   // Only one container MenuItemView should be added.
-  EXPECT_EQ(3, root_menu_item_view()->GetSubmenu()->child_count());
+  EXPECT_EQ(3u, root_menu_item_view()->GetSubmenu()->children().size());
 
   message_center::MessageCenter* message_center =
       message_center::MessageCenter::Get();
@@ -163,13 +164,13 @@ TEST_F(NotificationMenuControllerTest, MultipleNotifications) {
   message_center->RemoveNotification(notification_id_0, true);
 
   // The container should still exist.
-  EXPECT_EQ(3, root_menu_item_view()->GetSubmenu()->child_count());
+  EXPECT_EQ(3u, root_menu_item_view()->GetSubmenu()->children().size());
 
   // Remove the final notification.
   message_center->RemoveNotification(notification_id_1, true);
 
   // The container should be removed.
-  EXPECT_EQ(2, root_menu_item_view()->GetSubmenu()->child_count());
+  EXPECT_EQ(2u, root_menu_item_view()->GetSubmenu()->children().size());
 }
 
 }  // namespace ash

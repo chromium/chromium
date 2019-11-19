@@ -11,7 +11,8 @@
 
 #include "base/files/file.h"
 #include "base/files/file_util.h"
-#include "base/memory/shared_memory.h"
+#include "base/files/scoped_file.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "base/process/process_handle.h"
 #include "build/build_config.h"
 #include "mojo/core/test/mojo_test_base.h"
@@ -21,6 +22,9 @@
 
 #if defined(OS_WIN)
 #include <windows.h>
+#include "base/win/scoped_handle.h"
+#elif defined(OS_MACOSX) && !defined(OS_IOS)
+#include "base/mac/scoped_mach_port.h"
 #endif
 
 #if defined(OS_WIN)
@@ -113,31 +117,36 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(ReadPlatformFile, PlatformWrapperTest, h) {
 TEST_F(PlatformWrapperTest, WrapPlatformSharedMemoryRegion) {
   // Allocate a new platform shared buffer and write a message into it.
   const std::string kMessage = "Hello, world!";
-  base::SharedMemory buffer;
-  buffer.CreateAndMapAnonymous(kMessage.size());
-  CHECK(buffer.memory());
+  auto region = base::UnsafeSharedMemoryRegion::Create(kMessage.size());
+  base::WritableSharedMemoryMapping buffer = region.Map();
+  CHECK(buffer.IsValid());
   memcpy(buffer.memory(), kMessage.data(), kMessage.size());
 
   RunTestClient("ReadPlatformSharedBuffer", [&](MojoHandle h) {
     // Wrap the shared memory handle and send it to the child along with the
     // expected message.
-    base::SharedMemoryHandle memory_handle =
-        base::SharedMemory::DuplicateHandle(buffer.handle());
+    base::subtle::PlatformSharedMemoryRegion platform_region =
+        base::UnsafeSharedMemoryRegion::TakeHandleForSerialization(
+            region.Duplicate());
     MojoPlatformHandle os_buffer;
     os_buffer.struct_size = sizeof(MojoPlatformHandle);
     os_buffer.type = SHARED_BUFFER_PLATFORM_HANDLE_TYPE;
 #if defined(OS_WIN)
-    os_buffer.value = reinterpret_cast<uint64_t>(memory_handle.GetHandle());
-#elif defined(OS_MACOSX) && !defined(OS_IOS)
-    os_buffer.value = static_cast<uint64_t>(memory_handle.GetMemoryObject());
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
-    os_buffer.value = static_cast<uint64_t>(memory_handle.GetHandle());
+    os_buffer.value =
+        reinterpret_cast<uint64_t>(platform_region.PassPlatformHandle().Take());
+#elif defined(OS_MACOSX) && !defined(OS_IOS) || defined(OS_FUCHSIA) || \
+    defined(OS_ANDROID)
+    os_buffer.value =
+        static_cast<uint64_t>(platform_region.PassPlatformHandle().release());
+#elif defined(OS_POSIX)
+    os_buffer.value = static_cast<uint64_t>(
+        platform_region.PassPlatformHandle().fd.release());
 #else
 #error Unsupported platform
 #endif
 
     MojoSharedBufferGuid mojo_guid;
-    base::UnguessableToken guid = memory_handle.GetGUID();
+    base::UnguessableToken guid = platform_region.GetGUID();
     mojo_guid.high = guid.GetHighForSerialization();
     mojo_guid.low = guid.GetLowForSerialization();
 
@@ -167,8 +176,8 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(ReadPlatformSharedBuffer,
   // Check the message in the buffer
   ExpectBufferContents(wrapped_handle, 0, message);
 
-  // Now unwrap the buffer and verify that the base::SharedMemoryHandle also
-  // works as expected.
+  // Now unwrap the buffer and verify that the
+  // base::subtle::PlatformSharedMemoryRegion also works as expected.
   MojoPlatformHandle os_buffer;
   os_buffer.struct_size = sizeof(MojoPlatformHandle);
   uint32_t num_handles = 1;
@@ -180,33 +189,35 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(ReadPlatformSharedBuffer,
                                 &num_handles, &size, &mojo_guid, &access_mode));
   EXPECT_EQ(MOJO_PLATFORM_SHARED_MEMORY_REGION_ACCESS_MODE_UNSAFE, access_mode);
 
+  auto mode = base::subtle::PlatformSharedMemoryRegion::Mode::kUnsafe;
   base::UnguessableToken guid =
       base::UnguessableToken::Deserialize(mojo_guid.high, mojo_guid.low);
 #if defined(OS_WIN)
   ASSERT_EQ(MOJO_PLATFORM_HANDLE_TYPE_WINDOWS_HANDLE, os_buffer.type);
-  base::SharedMemoryHandle memory_handle(
-      reinterpret_cast<HANDLE>(os_buffer.value), size, guid);
+  auto platform_handle =
+      base::win::ScopedHandle(reinterpret_cast<HANDLE>(os_buffer.value));
 #elif defined(OS_FUCHSIA)
   ASSERT_EQ(MOJO_PLATFORM_HANDLE_TYPE_FUCHSIA_HANDLE, os_buffer.type);
-  base::SharedMemoryHandle memory_handle(
-      static_cast<zx_handle_t>(os_buffer.value), size, guid);
+  auto platform_handle = zx::vmo(static_cast<zx_handle_t>(os_buffer.value));
 #elif defined(OS_MACOSX) && !defined(OS_IOS)
   ASSERT_EQ(MOJO_PLATFORM_HANDLE_TYPE_MACH_PORT, os_buffer.type);
-  base::SharedMemoryHandle memory_handle(
-      static_cast<mach_port_t>(os_buffer.value), size, guid);
+  auto platform_handle =
+      base::mac::ScopedMachSendRight(static_cast<mach_port_t>(os_buffer.value));
 #elif defined(OS_POSIX)
   ASSERT_EQ(MOJO_PLATFORM_HANDLE_TYPE_FILE_DESCRIPTOR, os_buffer.type);
-  base::SharedMemoryHandle memory_handle(
-      base::FileDescriptor(static_cast<int>(os_buffer.value), false), size,
-      guid);
+  auto platform_handle = base::ScopedFD(static_cast<int>(os_buffer.value));
 #endif
+  base::subtle::PlatformSharedMemoryRegion platform_region =
+      base::subtle::PlatformSharedMemoryRegion::Take(std::move(platform_handle),
+                                                     mode, size, guid);
+  base::UnsafeSharedMemoryRegion region =
+      base::UnsafeSharedMemoryRegion::Deserialize(std::move(platform_region));
+  ASSERT_TRUE(region.IsValid());
 
-  base::SharedMemory memory(memory_handle, false);
-  memory.Map(message.size());
-  ASSERT_TRUE(memory.memory());
-
+  base::WritableSharedMemoryMapping mapping = region.Map();
+  ASSERT_TRUE(mapping.memory());
   EXPECT_TRUE(std::equal(message.begin(), message.end(),
-                         static_cast<const char*>(memory.memory())));
+                         static_cast<const char*>(mapping.memory())));
 
   // Verify that the received buffer's internal GUID was preserved in transit.
   EXPECT_EQ(MOJO_RESULT_OK, WaitForSignals(h, MOJO_HANDLE_SIGNAL_READABLE));

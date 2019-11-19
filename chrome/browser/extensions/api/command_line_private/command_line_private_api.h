@@ -9,7 +9,7 @@
 
 namespace extensions {
 
-class CommandLinePrivateHasSwitchFunction : public UIThreadExtensionFunction {
+class CommandLinePrivateHasSwitchFunction : public ExtensionFunction {
   DECLARE_EXTENSION_FUNCTION("commandLinePrivate.hasSwitch",
                              COMMANDLINEPRIVATE_HASSWITCH)
  protected:

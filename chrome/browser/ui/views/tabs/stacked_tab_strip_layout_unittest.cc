@@ -12,7 +12,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/view.h"
 #include "ui/views/view_model.h"
@@ -51,9 +51,9 @@ class StackedTabStripLayoutTest : public testing::Test {
       PrepareChildViewsFromString(data.start_bounds);
     else
       PrepareChildViewsFromString(data.expected_bounds);
-    layout_.reset(new StackedTabStripLayout(
-                     gfx::Size(data.tab_size, 10), data.tab_overlap,
-                     data.stacked_offset, 4, &view_model_));
+    layout_ = std::make_unique<StackedTabStripLayout>(
+        gfx::Size(data.tab_size, 10), data.tab_overlap, data.stacked_offset, 4,
+        &view_model_);
     if (data.start_bounds.empty()) {
       PrepareChildViewsFromString(data.expected_bounds);
       layout_->Reset(data.initial_x, data.width, data.pinned_tab_count,
@@ -126,7 +126,7 @@ class StackedTabStripLayoutTest : public testing::Test {
     return view_model_.ideal_bounds(index).x();
   }
 
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<StackedTabStripLayout> layout_;
   views::ViewModel view_model_;
 

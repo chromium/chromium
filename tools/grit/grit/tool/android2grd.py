@@ -4,13 +4,16 @@
 
 """The 'grit android2grd' tool."""
 
+from __future__ import print_function
 
 import getopt
 import os.path
-import StringIO
 import sys
 from xml.dom import Node
 import xml.dom.minidom
+
+import six
+from six import StringIO
 
 import grit.node.empty
 from grit.node import node_io
@@ -21,7 +24,6 @@ from grit.tool import interface
 from grit import grd_reader
 from grit import lazy_re
 from grit import tclib
-from grit import util
 
 
 # The name of a string in strings.xml
@@ -32,12 +34,12 @@ _CHAR_LIMIT = lazy_re.compile(r'\[CHAR-LIMIT=(\d+)\]')
 
 # Finds String.Format() style format specifiers such as "%-5.2f".
 _FORMAT_SPECIFIER = lazy_re.compile(
-  '%'
-  '([1-9][0-9]*\$|<)?'            # argument_index
-  '([-#+ 0,(]*)'                  # flags
-  '([0-9]+)?'                     # width
-  '(\.[0-9]+)?'                   # precision
-  '([bBhHsScCdoxXeEfgGaAtT%n])')  # conversion
+  r'%'
+  r'([1-9][0-9]*\$|<)?'            # argument_index
+  r'([-#+ 0,(]*)'                  # flags
+  r'([0-9]+)?'                     # width
+  r'(\.[0-9]+)?'                   # precision
+  r'([bBhHsScCdoxXeEfgGaAtT%n])')  # conversion
 
 
 class Android2Grd(interface.Tool):
@@ -161,8 +163,8 @@ OPTIONS may be any of the following:
     """
     args = self.ParseOptions(args)
     if len(args) != 1:
-      print ('Tool requires one argument, the path to the Android '
-             'strings.xml resource file to be converted.')
+      print('Tool requires one argument, the path to the Android '
+            'strings.xml resource file to be converted.')
       return 2
     self.SetOptions(opts)
 
@@ -174,7 +176,7 @@ OPTIONS may be any of the following:
 
     # Do the hard work -- convert the Android dom to grd file contents.
     grd_dom = self.AndroidDomToGrdDom(android_dom)
-    grd_string = unicode(grd_dom)
+    grd_string = six.text_type(grd_dom)
 
     # Write the grd string to a file in grd_dir.
     grd_filename = self.name + '.grd'
@@ -194,7 +196,7 @@ OPTIONS may be any of the following:
     """
 
     # Start with a basic skeleton for the .grd file.
-    root = grd_reader.Parse(StringIO.StringIO(
+    root = grd_reader.Parse(StringIO(
       '''<?xml version="1.0" encoding="UTF-8"?>
          <grit base_dir="." latest_public_release="0"
              current_release="1" source_lang_id="en">
@@ -243,12 +245,12 @@ OPTIONS may be any of the following:
         description = ' '.join(child.data.split())
       elif child.nodeType == Node.ELEMENT_NODE:
         if child.tagName != 'string':
-          print 'Warning: ignoring unknown tag <%s>' % child.tagName
+          print('Warning: ignoring unknown tag <%s>' % child.tagName)
         else:
           translatable = self.IsTranslatable(child)
           raw_name = child.getAttribute('name')
           if not _STRING_NAME.match(raw_name):
-            print 'Error: illegal string name: %s' % raw_name
+            print('Error: illegal string name: %s' % raw_name)
           grd_name = 'IDS_' + raw_name.upper()
           # Transform the <string> node contents into a tclib.Message, taking
           # care to handle whitespace transformations and escaped characters,
@@ -291,14 +293,14 @@ OPTIONS may be any of the following:
           placeholder_text = self.__FormatPlaceholderText(node)
           placeholder_example = node.getAttribute('example')
           if not placeholder_example:
-            print ('Info: placeholder does not contain an example: %s' %
-                   node.toxml())
+            print('Info: placeholder does not contain an example: %s' %
+                  node.toxml())
             placeholder_example = placeholder_id.upper()
           msg.AppendPlaceholder(tclib.Placeholder(placeholder_id,
               placeholder_text, placeholder_example))
         else:
-          print ('Warning: removing tag <%s> which must be inside a '
-                 'placeholder: %s' % (node.tagName, node.toxml()))
+          print('Warning: removing tag <%s> which must be inside a '
+                'placeholder: %s' % (node.tagName, node.toxml()))
           msg.AppendText(self.__FormatPlaceholderText(node))
 
       # Handle other nodes.
@@ -348,17 +350,17 @@ OPTIONS may be any of the following:
     output = ''.join(output)
 
     if is_quoted_section:
-      print 'Warning: unbalanced quotes in string: %s' % android_string
+      print('Warning: unbalanced quotes in string: %s' % android_string)
 
     if is_backslash_sequence:
-      print 'Warning: trailing backslash in string: %s' % android_string
+      print('Warning: trailing backslash in string: %s' % android_string)
 
     # Check for format specifiers outside of placeholder tags.
     if not inside_placeholder:
       format_specifier = _FORMAT_SPECIFIER.search(output)
       if format_specifier:
-        print ('Warning: format specifiers are not inside a placeholder '
-               '<xliff:g/> tag: %s' % output)
+        print('Warning: format specifiers are not inside a placeholder '
+              '<xliff:g/> tag: %s' % output)
 
     return output
 
@@ -380,15 +382,15 @@ OPTIONS may be any of the following:
     declare a string resource along with a programmatic id.
     """
     if not description:
-      print 'Warning: no description for %s' % grd_name
+      print('Warning: no description for %s' % grd_name)
     # Check that we actually fit within the character limit we've specified.
     match = _CHAR_LIMIT.search(description)
     if match:
       char_limit = int(match.group(1))
       msg_content = msg.GetRealContent()
       if len(msg_content) > char_limit:
-        print ('Warning: char-limit for %s is %d, but length is %d: %s' %
-               (grd_name, char_limit, len(msg_content), msg_content))
+        print('Warning: char-limit for %s is %d, but length is %d: %s' %
+              (grd_name, char_limit, len(msg_content), msg_content))
     return message.MessageNode.Construct(parent=messages_node,
                                          name=grd_name,
                                          message=msg,
@@ -476,7 +478,7 @@ OPTIONS may be any of the following:
     if android_string.hasAttribute('translatable'):
       value = android_string.getAttribute('translatable').lower()
       if value not in ('true', 'false'):
-        print 'Warning: translatable attribute has invalid value: %s' % value
+        print('Warning: translatable attribute has invalid value: %s' % value)
       return value == 'true'
     else:
       return True

@@ -4,7 +4,6 @@
 #include "third_party/blink/renderer/modules/peerconnection/rtc_quic_stream.h"
 
 #include "base/containers/span.h"
-#include "base/metrics/histogram_macros.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -97,19 +96,6 @@ uint32_t RTCQuicStream::maxWriteBufferedAmount() const {
   return kWriteBufferSize;
 }
 
-static ReadIntoResult GetReadIntoResult(uint32_t read_amount, bool read_fin) {
-  if (read_fin) {
-    if (read_amount > 0) {
-      return ReadIntoResult::kSomeDataWithFin;
-    }
-    return ReadIntoResult::kNoDataWithFin;
-  }
-  if (read_amount > 0) {
-    return ReadIntoResult::kSomeDataNoFin;
-  }
-  return ReadIntoResult::kNoDataNoFin;
-}
-
 RTCQuicStreamReadResult* RTCQuicStream::readInto(
     NotShared<DOMUint8Array> data,
     ExceptionState& exception_state) {
@@ -131,28 +117,10 @@ RTCQuicStreamReadResult* RTCQuicStream::readInto(
       state_ = RTCQuicStreamState::kClosing;
     }
   }
-  UMA_HISTOGRAM_ENUMERATION("RTCQuicStream.ReadIntoResult",
-                            GetReadIntoResult(read_amount, read_fin_));
-  // Collects metrics for how large the read is. This histogram has a max of
-  // 24MB and 50 buckets.
-  UMA_HISTOGRAM_CUSTOM_COUNTS("RTCQuicStream.ReadIntoAmountBytes", read_amount,
-                              1, 24000000, 50);
   auto* result = RTCQuicStreamReadResult::Create();
   result->setAmount(read_amount);
   result->setFinished(read_fin_);
   return result;
-}
-
-static WriteUsage GetWriteUsage(uint32_t write_amount, bool write_fin) {
-  // It's not possible to write nothing.
-  DCHECK(write_amount > 0 || write_fin);
-  if (write_fin) {
-    if (write_amount > 0) {
-      return WriteUsage::kSomeDataWithFin;
-    }
-    return WriteUsage::kNoDataWithFin;
-  }
-  return WriteUsage::kSomeDataNoFin;
 }
 
 void RTCQuicStream::write(const RTCQuicStreamWriteParameters* data,
@@ -185,12 +153,6 @@ void RTCQuicStream::write(const RTCQuicStreamWriteParameters* data,
     memcpy(data_vector.data(), write_data->Data(), write_data->length());
     write_buffered_amount_ += write_data->length();
   }
-  UMA_HISTOGRAM_ENUMERATION("RTCQuicStream.WriteUsage",
-                            GetWriteUsage(data_vector.size(), finish));
-  // Collects metrics for how large the write is. This histogram has a max of
-  // 24MB and 50 buckets.
-  UMA_HISTOGRAM_CUSTOM_COUNTS("RTCQuicStream.WriteAmountBytes",
-                              data_vector.size(), 1, 24000000, 50);
   proxy_->WriteData(std::move(data_vector), finish);
   if (finish) {
     wrote_fin_ = true;
@@ -225,8 +187,8 @@ ScriptPromise RTCQuicStream::waitForReadable(ScriptState* script_state,
         String::Number(kReadBufferSize) + ".");
     return ScriptPromise();
   }
-  ScriptPromiseResolver* promise_resolver =
-      ScriptPromiseResolver::Create(script_state);
+  auto* promise_resolver =
+      MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = promise_resolver->Promise();
   if (received_fin_ || receive_buffer_.size() >= amount) {
     promise_resolver->Resolve();
@@ -245,8 +207,8 @@ ScriptPromise RTCQuicStream::waitForWriteBufferedAmountBelow(
   if (RaiseIfNotWritable(exception_state)) {
     return ScriptPromise();
   }
-  ScriptPromiseResolver* promise_resolver =
-      ScriptPromiseResolver::Create(script_state);
+  auto* promise_resolver =
+      MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = promise_resolver->Promise();
   if (write_buffered_amount_ <= threshold) {
     promise_resolver->Resolve();

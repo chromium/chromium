@@ -13,6 +13,14 @@ TestExtensionActionAPIObserver::TestExtensionActionAPIObserver(
   scoped_observer_.Add(ExtensionActionAPI::Get(context));
 }
 
+TestExtensionActionAPIObserver::TestExtensionActionAPIObserver(
+    content::BrowserContext* context,
+    const ExtensionId& extension_id,
+    const std::set<content::WebContents*>& contents_to_observe)
+    : TestExtensionActionAPIObserver(context, extension_id) {
+  contents_to_observe_ = contents_to_observe;
+}
+
 TestExtensionActionAPIObserver::~TestExtensionActionAPIObserver() = default;
 
 void TestExtensionActionAPIObserver::Wait() {
@@ -25,7 +33,10 @@ void TestExtensionActionAPIObserver::OnExtensionActionUpdated(
     content::BrowserContext* browser_context) {
   if (extension_action->extension_id() == extension_id_) {
     last_web_contents_ = web_contents;
-    run_loop_.QuitWhenIdle();
+    contents_to_observe_.erase(web_contents);
+
+    if (contents_to_observe_.empty())
+      run_loop_.QuitWhenIdle();
   }
 }
 

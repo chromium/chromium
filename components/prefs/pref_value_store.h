@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PREFS_PREF_VALUE_STORE_H_
 #define COMPONENTS_PREFS_PREF_VALUE_STORE_H_
 
+#include <functional>
 #include <map>
 #include <memory>
 #include <string>
@@ -32,7 +33,7 @@ class PrefStore;
 // be called on the UI thread.
 class COMPONENTS_PREFS_EXPORT PrefValueStore {
  public:
-  typedef base::Callback<void(const std::string&)> PrefChangedCallback;
+  using PrefChangedCallback = base::Callback<void(const std::string&)>;
 
   // Delegate used to observe certain events in the |PrefValueStore|'s lifetime.
   class Delegate {

@@ -13,6 +13,7 @@
 typedef unsigned GLenum;
 typedef int GLsizei;
 typedef int GLint;
+typedef unsigned int GLuint;
 
 namespace gpu {
 namespace gles2 {
@@ -22,8 +23,10 @@ class GPU_GLES2_EXPORT MultiDrawManager {
   enum class DrawFunction {
     DrawArrays,
     DrawArraysInstanced,
+    DrawArraysInstancedBaseInstance,
     DrawElements,
     DrawElementsInstanced,
+    DrawElementsInstancedBaseVertexBaseInstance,
   };
 
   struct GPU_GLES2_EXPORT ResultData {
@@ -36,6 +39,8 @@ class GPU_GLES2_EXPORT MultiDrawManager {
     std::vector<GLsizei> offsets;
     std::vector<const void*> indices;
     std::vector<GLsizei> instance_counts;
+    std::vector<GLint> basevertices;
+    std::vector<GLuint> baseinstances;
 
     ResultData();
     ~ResultData();
@@ -61,6 +66,12 @@ class GPU_GLES2_EXPORT MultiDrawManager {
                                 const GLsizei* counts,
                                 const GLsizei* instance_counts,
                                 GLsizei drawcount);
+  bool MultiDrawArraysInstancedBaseInstance(GLenum mode,
+                                            const GLint* firsts,
+                                            const GLsizei* counts,
+                                            const GLsizei* instance_counts,
+                                            const GLuint* baseinstances,
+                                            GLsizei drawcount);
   bool MultiDrawElements(GLenum mode,
                          const GLsizei* counts,
                          GLenum type,
@@ -72,6 +83,15 @@ class GPU_GLES2_EXPORT MultiDrawManager {
                                   const GLsizei* offsets,
                                   const GLsizei* instance_counts,
                                   GLsizei drawcount);
+  bool MultiDrawElementsInstancedBaseVertexBaseInstance(
+      GLenum mode,
+      const GLsizei* counts,
+      GLenum type,
+      const GLsizei* offsets,
+      const GLsizei* instance_counts,
+      const GLint* basevertices,
+      const GLuint* baseinstances,
+      GLsizei drawcount);
 
  private:
   void ResizeArrays();
@@ -83,6 +103,13 @@ class GPU_GLES2_EXPORT MultiDrawManager {
                                   GLenum mode,
                                   GLenum type,
                                   GLsizei drawcount);
+  void CopyArraysHelper(GLsizei drawcount,
+                        const GLint* firsts,
+                        const GLsizei* counts,
+                        const GLsizei* offsets,
+                        const GLsizei* instance_counts,
+                        const GLint* basevertices,
+                        const GLuint* baseinstances);
 
   enum class DrawState {
     Begin,

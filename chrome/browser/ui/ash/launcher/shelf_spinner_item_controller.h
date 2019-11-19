@@ -29,19 +29,15 @@ class ShelfSpinnerItemController : public ash::ShelfItemDelegate {
 
   virtual void SetHost(const base::WeakPtr<ShelfSpinnerController>& host);
 
-  base::TimeDelta GetActiveTime() const;
+  base::Time start_time() const { return start_time_; }
 
   // ash::ShelfItemDelegate:
-  void ItemSelected(std::unique_ptr<ui::Event> event,
-                    int64_t display_id,
-                    ash::ShelfLaunchSource source,
-                    ItemSelectedCallback callback) override;
   void ExecuteCommand(bool from_context_menu,
                       int64_t command_id,
                       int32_t event_flags,
                       int64_t display_id) override;
   void GetContextMenu(int64_t display_id,
-                      GetMenuModelCallback callback) override;
+                      GetContextMenuCallback callback) override;
   void Close() override;
 
  private:

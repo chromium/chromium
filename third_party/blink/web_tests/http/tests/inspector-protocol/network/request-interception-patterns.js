@@ -73,11 +73,11 @@
    */
   async function testUrls() {
     requestInterceptionWaitingMap.clear();
-    session.evaluate(`fetch('../network/resources/small-test-1.txt')`);
+    session.evaluate(`fetch('../network/resources/small-test-1.txt').then(r => r.text())`);
     await new Promise(resolve => responseWasReceivedCallback = resolve);
-    session.evaluate(`fetch('../network/resources/small-test-2.txt')`);
+    session.evaluate(`fetch('../network/resources/small-test-2.txt').then(r => r.text())`);
     await new Promise(resolve => responseWasReceivedCallback = resolve);
-    session.evaluate(`fetch('../resources/test-page.html')`);
+    session.evaluate(`fetch('../resources/test-page.html').then(r => r.text())`);
     await new Promise(resolve => responseWasReceivedCallback = resolve);
     testRunner.log('');
   }

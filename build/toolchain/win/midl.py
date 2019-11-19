@@ -2,10 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import division
+from __future__ import print_function
+
 import array
 import difflib
 import distutils.dir_util
 import filecmp
+import io
 import operator
 import os
 import re
@@ -15,6 +19,8 @@ import subprocess
 import sys
 import tempfile
 import uuid
+
+from functools import reduce
 
 
 def ZapTimestamp(filename):
@@ -43,66 +49,75 @@ def ZapTimestamp(filename):
     # There might be more custom data after that, but these 3 blocks are always
     # there for file-level metadata.
     # All data is little-endian in the file.
-    assert contents[0:8] == 'MSFT\x02\x00\x01\x00'
+    assert contents[0:8] == b'MSFT\x02\x00\x01\x00'
     ntypes, = struct.unpack_from('<I', contents, 0x20)
     custom_off, custom_len = struct.unpack_from(
         '<II', contents, 0x54 + 4*ntypes + 11*16)
     assert custom_len >= 0x54
     # First: Type string (0x8), followed by 0x3e characters.
-    assert contents[custom_off:custom_off+6] == '\x08\x00\x3e\x00\x00\x00'
+    assert contents[custom_off:custom_off + 6] == b'\x08\x00\x3e\x00\x00\x00'
     assert re.match(
-        'Created by MIDL version 8\.\d\d\.\d{4} at ... Jan 1. ..:..:.. 2038\n',
-        contents[custom_off+6:custom_off+6+0x3e])
+        br'Created by MIDL version 8\.\d\d\.\d{4} at ... Jan 1. ..:..:.. 2038\n',
+        contents[custom_off + 6:custom_off + 6 + 0x3e])
     # Second: Type uint32 (0x13) storing 0x7fffffff (followed by WW / 0x57 pad)
     assert contents[custom_off+6+0x3e:custom_off+6+0x3e+8] == \
-        '\x13\x00\xff\xff\xff\x7f\x57\x57'
+        b'\x13\x00\xff\xff\xff\x7f\x57\x57'
     # Third: Type uint32 (0x13) storing MIDL compiler version.
-    assert contents[custom_off+6+0x3e+8:custom_off+6+0x3e+8+2] == '\x13\x00'
+    assert contents[custom_off + 6 + 0x3e + 8:custom_off + 6 + 0x3e + 8 +
+                    2] == b'\x13\x00'
     # Replace "Created by" string with fixed string, and fixed MIDL version with
     # 8.1.622 always.
-    contents = (contents[0:custom_off+6] +
-        'Created by MIDL version 8.xx.xxxx at a redacted point in time\n' +
+    contents = (
+        contents[0:custom_off + 6] +
+        b'Created by MIDL version 8.xx.xxxx at a redacted point in time\n' +
         # uint32 (0x13) val 0x7fffffff, WW, uint32 (0x13), val 0x0801026e, WW
-        '\x13\x00\xff\xff\xff\x7f\x57\x57\x13\x00\x6e\x02\x01\x08\x57\x57' +
+        b'\x13\x00\xff\xff\xff\x7f\x57\x57\x13\x00\x6e\x02\x01\x08\x57\x57' +
         contents[custom_off + 0x54:])
   else:
     contents = re.sub(
-        'File created by MIDL compiler version 8\.\d\d\.\d{4} \*/\r\n'
-        '/\* at ... Jan 1. ..:..:.. 2038',
-        'File created by MIDL compiler version 8.xx.xxxx */\r\n'
-        '/* at a redacted point in time',
-        contents)
+        br'File created by MIDL compiler version 8\.\d\d\.\d{4} \*/\r\n'
+        br'/\* at ... Jan 1. ..:..:.. 2038',
+        br'File created by MIDL compiler version 8.xx.xxxx */\r\n'
+        br'/* at a redacted point in time', contents)
     contents = re.sub(
-        '    Oicf, W1, Zp8, env=(.....) \(32b run\), '
-        'target_arch=(AMD64|X86) 8\.\d\d\.\d{4}',
-        '    Oicf, W1, Zp8, env=\\1 (32b run), target_arch=\\2 8.xx.xxxx',
+        br'    Oicf, W1, Zp8, env=(.....) \(32b run\), '
+        br'target_arch=(AMD64|X86) 8\.\d\d\.\d{4}',
+        br'    Oicf, W1, Zp8, env=\1 (32b run), target_arch=\2 8.xx.xxxx',
         contents)
     # TODO(thakis): If we need more hacks than these, try to verify checked-in
     # outputs when we're using the hermetic toolchain.
     # midl.exe older than 8.1.622 omit '//' after #endif, fix that:
-    contents = contents.replace('#endif !_MIDL_USE_GUIDDEF_',
-                                '#endif // !_MIDL_USE_GUIDDEF_')
+    contents = contents.replace(b'#endif !_MIDL_USE_GUIDDEF_',
+                                b'#endif // !_MIDL_USE_GUIDDEF_')
     # midl.exe puts the midl version into code in one place.  To have
     # predictable output, lie about the midl version if it's not 8.1.622.
     # This is unfortunate, but remember that there's beauty too in imperfection.
-    contents = contents.replace('0x801026c, /* MIDL Version 8.1.620 */',
-                                '0x801026e, /* MIDL Version 8.1.622 */')
+    contents = contents.replace(b'0x801026c, /* MIDL Version 8.1.620 */',
+                                b'0x801026e, /* MIDL Version 8.1.622 */')
   open(filename, 'wb').write(contents)
 
 
 def overwrite_cls_guid_h(h_file, dynamic_guid):
   contents = open(h_file, 'rb').read()
-  contents = re.sub('class DECLSPEC_UUID\("[^"]*"\)',
-                    'class DECLSPEC_UUID("%s")' % str(dynamic_guid), contents)
+  contents = re.sub(br'class DECLSPEC_UUID\("[^"]*"\)',
+                    br'class DECLSPEC_UUID("%s")' % str(dynamic_guid).encode(),
+                    contents)
   open(h_file, 'wb').write(contents)
 
 
 def overwrite_cls_guid_iid(iid_file, dynamic_guid):
   contents = open(iid_file, 'rb').read()
   hexuuid = '0x%08x,0x%04x,0x%04x,' % dynamic_guid.fields[0:3]
-  hexuuid += ','.join('0x%02x' % ord(b) for b in dynamic_guid.bytes[8:])
-  contents = re.sub(r'MIDL_DEFINE_GUID\(CLSID, ([^,]*),[^)]*\)',
-                    r'MIDL_DEFINE_GUID(CLSID, \1,%s)' % hexuuid, contents)
+
+  # dynamic_guid.bytes is a bytestring in Py3, but a normal string in Py2.
+  if sys.version_info.major == 2:
+    hexuuid += ','.join('0x%02x' % ord(b) for b in dynamic_guid.bytes[8:])
+  else:
+    hexuuid += ','.join('0x%02x' % b for b in dynamic_guid.bytes[8:])
+
+  contents = re.sub(br'MIDL_DEFINE_GUID\(CLSID, ([^,]*),[^)]*\)',
+                    br'MIDL_DEFINE_GUID(CLSID, \1,%s)' % hexuuid.encode(),
+                    contents)
   open(iid_file, 'wb').write(contents)
 
 
@@ -111,27 +126,34 @@ def overwrite_cls_guid_tlb(tlb_file, dynamic_guid):
   # section contains type descriptions, and the first type should be our
   # coclass.  It points to the type's GUID in section 6, the GUID section.
   contents = open(tlb_file, 'rb').read()
-  assert contents[0:8] == 'MSFT\x02\x00\x01\x00'
+  assert contents[0:8] == b'MSFT\x02\x00\x01\x00'
   ntypes, = struct.unpack_from('<I', contents, 0x20)
   type_off, type_len = struct.unpack_from('<II', contents, 0x54 + 4*ntypes)
-  assert ord(contents[type_off]) == 0x25, "expected coclass"
+
+  # contents is a bytestring in Python 3, but a normal string in Py2.
+  if sys.version_info.major == 2:
+    coclass = ord(contents[type_off])
+  else:
+    coclass = contents[type_off]
+  assert coclass == 0x25, "expected coclass"
+
   guidind = struct.unpack_from('<I', contents, type_off + 0x2c)[0]
   guid_off, guid_len = struct.unpack_from(
       '<II', contents, 0x54 + 4*ntypes + 5*16)
   assert guidind + 14 <= guid_len
-  contents = array.array('c', contents)
+  contents = array.array('B', contents)
   struct.pack_into('<IHH8s', contents, guid_off + guidind,
                    *(dynamic_guid.fields[0:3] + (dynamic_guid.bytes[8:],)))
   # The GUID is correct now, but there's also a GUID hashtable in section 5.
   # Need to recreate that too.  Since the hash table uses chaining, it's
   # easiest to recompute it from scratch rather than trying to patch it up.
-  hashtab = [0xffffffff] * (0x80 / 4)
+  hashtab = [0xffffffff] * (0x80 // 4)
   for guidind in range(guid_off, guid_off + guid_len, 24):
     guidbytes, typeoff, nextguid = struct.unpack_from(
         '<16sII', contents, guidind)
     words = struct.unpack('<8H', guidbytes)
     # midl seems to use the following simple hash function for GUIDs:
-    guidhash = reduce(operator.xor, [w for w in words]) % (0x80 / 4)
+    guidhash = reduce(operator.xor, [w for w in words]) % (0x80 // 4)
     nextguid = hashtab[guidhash]
     struct.pack_into('<I', contents, guidind + 0x14, nextguid)
     hashtab[guidhash] = guidind - guid_off
@@ -151,11 +173,10 @@ def overwrite_cls_guid(h_file, iid_file, tlb_file, dynamic_guid):
   overwrite_cls_guid_tlb(tlb_file, dynamic_guid)
 
 
-def main(arch, outdir, dynamic_guid, tlb, h, dlldata, iid, proxy, idl, *flags):
+def main(arch, gendir, outdir, dynamic_guid, tlb, h, dlldata, iid, proxy, idl,
+         *flags):
   # Copy checked-in outputs to final location.
-  THIS_DIR = os.path.abspath(os.path.dirname(__file__))
-  source = os.path.join(THIS_DIR, '..', '..', '..',
-      'third_party', 'win_build_output', outdir.replace('gen/', 'midl/'))
+  source = gendir
   if os.path.isdir(os.path.join(source, os.path.basename(idl))):
     source = os.path.join(source, os.path.basename(idl))
   source = os.path.join(source, arch.split('.')[1])  # Append 'x86' or 'x64'.
@@ -199,13 +220,13 @@ def main(arch, outdir, dynamic_guid, tlb, h, dlldata, iid, proxy, idl, *flags):
     # to filter is pairs of lines that look like this:
     # Processing C:\Program Files (x86)\Microsoft SDKs\...\include\objidl.idl
     # objidl.idl
-    lines = out.splitlines()
+    lines = out.decode('utf-8').splitlines()
     prefixes = ('Processing ', '64 bit Processing ')
     processing = set(os.path.basename(x)
                      for x in lines if x.startswith(prefixes))
     for line in lines:
       if not line.startswith(prefixes) and line not in processing:
-        print line
+        print(line)
     if popen.returncode != 0:
       return popen.returncode
 
@@ -215,18 +236,19 @@ def main(arch, outdir, dynamic_guid, tlb, h, dlldata, iid, proxy, idl, *flags):
     # Now compare the output in tmp_dir to the copied-over outputs.
     diff = filecmp.dircmp(tmp_dir, outdir)
     if diff.diff_files:
-      print 'midl.exe output different from files in %s, see %s' \
-          % (outdir, tmp_dir)
+      print('midl.exe output different from files in %s, see %s' % (outdir,
+                                                                    tmp_dir))
       for f in diff.diff_files:
         if f.endswith('.tlb'): continue
         fromfile = os.path.join(outdir, f)
         tofile = os.path.join(tmp_dir, f)
-        print ''.join(difflib.unified_diff(open(fromfile, 'U').readlines(),
-                                           open(tofile, 'U').readlines(),
-                                           fromfile, tofile))
+        print(''.join(
+            difflib.unified_diff(
+                io.open(fromfile).readlines(),
+                io.open(tofile).readlines(), fromfile, tofile)))
       delete_tmp_dir = False
-      print 'To rebaseline:'
-      print '  copy /y %s\* %s' % (tmp_dir, source)
+      print('To rebaseline:')
+      print(r'  copy /y %s\* %s' % (tmp_dir, source))
       sys.exit(1)
     return 0
   finally:

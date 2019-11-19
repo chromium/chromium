@@ -16,6 +16,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/strings/string16.h"
 #include "components/omnibox/browser/autocomplete_match.h"
+#include "components/omnibox/browser/in_memory_url_index_types.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 
 class AutocompleteInput;
@@ -43,6 +44,7 @@ typedef std::vector<metrics::OmniboxEventProto_ProviderInfo> ProvidersInfo;
 // Clipboard URL                                                       |  800
 // Zero Suggest (most visited, Android only)                           |  600--
 // Zero Suggest (default, may be overridden by server)                 |  100
+// Local History Zero Suggest                                          |  500--
 //
 // UNKNOWN input type:
 // --------------------------------------------------------------------|-----
@@ -64,7 +66,8 @@ typedef std::vector<metrics::OmniboxEventProto_ProviderInfo> ProvidersInfo;
 // Search Secondary Provider (past query in history)                   |  200*
 // Search Secondary Provider (navigational suggestion)                 |  150++
 // Search Secondary Provider (suggestion)                              |  100++
-// Non Personalized On Device Head Suggest Provider                    |   99--
+// Non Personalized On Device Head Suggest Provider                    |    *
+//                  (default value 99--, can be changed by Finch)
 // Document Suggestions (*experimental): value controlled by Finch     |    *
 //
 // URL input type:
@@ -85,6 +88,7 @@ typedef std::vector<metrics::OmniboxEventProto_ProviderInfo> ProvidersInfo;
 // Search Secondary Provider (past query in history)                   |  200*
 // Search Secondary Provider (navigational suggestion)                 |  150++
 // Search Secondary Provider (suggestion)                              |  100++
+// Non Personalized On Device Head Suggest Provider                    |   99--
 //
 // QUERY input type:
 // --------------------------------------------------------------------|-----
@@ -103,7 +107,8 @@ typedef std::vector<metrics::OmniboxEventProto_ProviderInfo> ProvidersInfo;
 // Search Secondary Provider (past query in history)                   |  200*
 // Search Secondary Provider (navigational suggestion)                 |  150++
 // Search Secondary Provider (suggestion)                              |  100++
-// Non Personalized On Device Head Suggest Provider                    |   99--
+// Non Personalized On Device Head Suggest Provider                    |    *
+//                  (default value 99--, can be changed by Finch)
 //
 // (A search keyword is a keyword with a replacement string; a bookmark keyword
 // is a keyword with no replacement string, that is, a shortcut for a URL.)
@@ -145,6 +150,7 @@ class AutocompleteProvider
     TYPE_CLIPBOARD = 1 << 8,
     TYPE_DOCUMENT = 1 << 9,
     TYPE_ON_DEVICE_HEAD = 1 << 10,
+    TYPE_ZERO_SUGGEST_LOCAL_HISTORY = 1 << 11,
   };
 
   explicit AutocompleteProvider(Type type);
@@ -218,6 +224,10 @@ class AutocompleteProvider
   // method and include the response in their estimate.
   virtual size_t EstimateMemoryUsage() const;
 
+  // Returns a suggested upper bound for how many matches this provider should
+  // return.
+  size_t provider_max_matches() const { return provider_max_matches_; }
+
   // Returns the set of matches for the current query.
   const ACMatches& matches() const { return matches_; }
 
@@ -232,61 +242,64 @@ class AutocompleteProvider
 
   typedef std::multimap<base::char16, base::string16> WordMap;
 
-  // Returns a map mapping characters to groups of words from |text| that start
-  // with those characters, ordered lexicographically descending so that longer
-  // words appear before their prefixes (if any) within a particular
-  // equal_range().
-  static WordMap CreateWordMapForString(const base::string16& text);
-
-  // Finds all instances of the words from |find_words| within |text|, adds
-  // classifications to |original_class| according to the logic described below,
-  // and returns the result.
+  // Finds the matches for |find_text| in |text|, classifies those matches,
+  // merges those classifications with |original_class|, and returns the merged
+  // classifications.
+  // If |text_is_search_query| is false, matches are classified as MATCH, and
+  // non-matches are classified as NONE. Otherwise, if |text_is_search_query| is
+  // true, matches are classified as NONE, and non-matches are classified as
+  // MATCH. This is done to mimic the behavior of SearchProvider which decorates
+  // matches according to the approach used by Google Suggest.
+  // |find_text| and |text| will be lowercased.
   //
-  //   - if |text_is_search_query| is false, the function adds
-  //   ACMatchClassification::MATCH markers for all such instances.
+  //   For example, given
+  //     |find_text| is "sp new",
+  //     |text| is "Sports and News at sports.somesite.com - visit us!",
+  //     |text_is_search_query| is false, and
+  //     |original_class| is {{0, NONE}, {19, URL}, {38, NONE}} (marking
+  //     "sports.somesite.com" as a URL),
+  //   Then this will return
+  //     {{0, MATCH}, {2, NONE}, {11, MATCH}, {14, NONE}, {19, URL|MATCH},
+  //     {21, URL}, {38, NONE}}; i.e.,
+  //     "Sports and News at sports.somesite.com - visit us!"
+  //      ^ ^        ^  ^    ^ ^                ^
+  //      0 2        11 14  19 21               38
+  //      M N        M  N  U|M U                N
   //
-  //   For example, given the |text|
-  //   "Sports and News at sports.somesite.com - visit us!" and |original_class|
-  //   {{0, NONE}, {18, URL}, {37, NONE}} (marking "sports.somesite.com" as a
-  //   URL), calling with |find_text| set to "sp ew" would return
-  //   {{0, MATCH}, {2, NONE}, {12, MATCH}, {14, NONE}, {18, URL|MATCH},
-  //   {20, URL}, {37, NONE}}.
-  //
-  //
-  //   - if |text_is_search_query| is true, applies the same logic, but uses
-  //   NONE for the matching text and MATCH for the non-matching text. This is
-  //   done to mimic the behavior of SearchProvider which decorates matches
-  //   according to the approach used by Google Suggest.
-  //
-  //   For example, given that |text| corresponds to a search query "panama
-  //   canal" and |original class| is {{0, NONE}}, calling with |find_text| set
-  //   to "canal" would return {{0,MATCH}, {7, NONE}}.
-  //
-  // |find_text| is provided as the original string used to create
-  // |find_words|. This is supplied because it's common for this to be a prefix
-  // of |text|, so we can quickly check for that and mark that entire substring
-  // as a match before proceeding with the more generic algorithm.
-  //
-  // |find_words| should be as constructed by CreateWordMapForString(find_text).
-  //
-  // |find_text| (and thus |find_words|) are expected to be lowercase. |text|
-  // will be lowercase in this function.
+  //   For example, given
+  //     |find_text| is "canal",
+  //     |text| is "panama canal",
+  //     |text_is_search_query| is true, and
+  //     |original_class| is {{0, NONE}},
+  //   Then this will return
+  //     {{0,MATCH}, {7, NONE}}; i.e.,
+  //     "panama canal"
+  //      ^      ^
+  //      0 M    7 N
   static ACMatchClassifications ClassifyAllMatchesInString(
       const base::string16& find_text,
-      const WordMap& find_words,
       const base::string16& text,
       const bool text_is_search_query,
       const ACMatchClassifications& original_class = ACMatchClassifications());
 
-  // A suggested upper bound for how many matches a provider should return.
-  // TODO(pkasting): http://b/1111299 , http://b/933133 This should go away once
-  // we have good relevance heuristics; the controller should handle all
-  // culling.
-  static const size_t kMaxMatches;
+  // Used to determine if we're in keyword mode, if experimental keyword
+  // mode is enabled, and if we're confident that the user is intentionally
+  // (not accidentally) in keyword mode. Combined, this method returns
+  // whether the caller should perform steps that are only valid in this state.
+  static bool InExplicitExperimentalKeywordMode(const AutocompleteInput& input,
+                                                const base::string16& keyword);
+
+  // Uses the keyword entry mode in |input| (and possibly compare the length
+  // of the user input vs |keyword|) to decide if the user intentionally
+  // entered keyword mode.
+  static bool IsExplicitlyInKeywordMode(const AutocompleteInput& input,
+                                        const base::string16& keyword);
 
  protected:
   friend class base::RefCountedThreadSafe<AutocompleteProvider>;
   FRIEND_TEST_ALL_PREFIXES(BookmarkProviderTest, InlineAutocompletion);
+  FRIEND_TEST_ALL_PREFIXES(AutocompleteResultTest,
+                           DemoteOnDeviceSearchSuggestions);
 
   typedef std::pair<bool, base::string16> FixupReturn;
 
@@ -313,6 +326,8 @@ class AutocompleteProvider
   // NOTE: For a view-source: URL, this will trim from after "view-source:" and
   // return 0.
   static size_t TrimHttpPrefix(base::string16* url);
+
+  const size_t provider_max_matches_;
 
   ACMatches matches_;
   bool done_;

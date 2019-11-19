@@ -4,13 +4,14 @@
 
 #include "components/arc/disk_quota/arc_disk_quota_bridge.h"
 
+#include <utility>
+
 #include "base/bind.h"
 #include "base/memory/singleton.h"
 #include "base/optional.h"
-#include "chromeos/dbus/cryptohome_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "components/arc/arc_bridge_service.h"
+#include "chromeos/dbus/cryptohome/cryptohome_client.h"
 #include "components/arc/arc_browser_context_keyed_service_factory_base.h"
+#include "components/arc/session/arc_bridge_service.h"
 
 namespace arc {
 
@@ -54,50 +55,45 @@ ArcDiskQuotaBridge::~ArcDiskQuotaBridge() {
 }
 
 void ArcDiskQuotaBridge::IsQuotaSupported(IsQuotaSupportedCallback callback) {
-  chromeos::DBusThreadManager::Get()->GetCryptohomeClient()->IsQuotaSupported(
-      base::BindOnce(
-          [](IsQuotaSupportedCallback callback, base::Optional<bool> result) {
-            LOG_IF(ERROR, !result.has_value())
-                << "Failed to retrieve result from IsQuotaSupported call.";
-            std::move(callback).Run(result.value_or(false));
-          },
-          std::move(callback)));
+  chromeos::CryptohomeClient::Get()->IsQuotaSupported(base::BindOnce(
+      [](IsQuotaSupportedCallback callback, base::Optional<bool> result) {
+        LOG_IF(ERROR, !result.has_value())
+            << "Failed to retrieve result from IsQuotaSupported call.";
+        std::move(callback).Run(result.value_or(false));
+      },
+      std::move(callback)));
 }
 
 void ArcDiskQuotaBridge::GetCurrentSpaceForUid(
     uint32_t uid,
     GetCurrentSpaceForUidCallback callback) {
-  chromeos::DBusThreadManager::Get()
-      ->GetCryptohomeClient()
-      ->GetCurrentSpaceForUid(
-          uid, base::BindOnce(
-                   [](GetCurrentSpaceForUidCallback callback, int uid,
-                      base::Optional<int64_t> result) {
-                     LOG_IF(ERROR, !result.has_value())
-                         << "Failed to retrieve result from "
-                            "GetCurrentSpaceForUid for android uid="
-                         << uid;
-                     std::move(callback).Run(result.value_or(-1LL));
-                   },
-                   std::move(callback), uid));
+  chromeos::CryptohomeClient::Get()->GetCurrentSpaceForUid(
+      uid, base::BindOnce(
+               [](GetCurrentSpaceForUidCallback callback, int uid,
+                  base::Optional<int64_t> result) {
+                 LOG_IF(ERROR, !result.has_value())
+                     << "Failed to retrieve result from "
+                        "GetCurrentSpaceForUid for android uid="
+                     << uid;
+                 std::move(callback).Run(result.value_or(-1LL));
+               },
+               std::move(callback), uid));
 }
 
 void ArcDiskQuotaBridge::GetCurrentSpaceForGid(
     uint32_t gid,
     GetCurrentSpaceForGidCallback callback) {
-  chromeos::DBusThreadManager::Get()
-      ->GetCryptohomeClient()
-      ->GetCurrentSpaceForGid(
-          gid, base::BindOnce(
-                   [](GetCurrentSpaceForGidCallback callback, int gid,
-                      base::Optional<int64_t> result) {
-                     LOG_IF(ERROR, !result.has_value())
-                         << "Failed to retrieve result from "
-                            "GetCurrentSpaceForGid for android gid="
-                         << gid;
-                     std::move(callback).Run(result.value_or(-1LL));
-                   },
-                   std::move(callback), gid));
+  chromeos::CryptohomeClient::Get()->GetCurrentSpaceForGid(
+      gid, base::BindOnce(
+               [](GetCurrentSpaceForGidCallback callback, int gid,
+                  base::Optional<int64_t> result) {
+                 LOG_IF(ERROR, !result.has_value())
+                     << "Failed to retrieve result from "
+                        "GetCurrentSpaceForGid for android gid="
+                     << gid;
+                 std::move(callback).Run(result.value_or(-1LL));
+               },
+               std::move(callback), gid));
 }
 
 }  // namespace arc

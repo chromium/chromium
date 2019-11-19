@@ -22,7 +22,7 @@ class MediaStreamDevicePermissionContext : public PermissionContextBase {
                         const GURL& requesting_origin,
                         const GURL& embedding_origin,
                         bool user_gesture,
-                        const BrowserPermissionCallback& callback) override;
+                        BrowserPermissionCallback callback) override;
 
   // TODO(xhwang): GURL.GetOrigin() shouldn't be used as the origin. Need to
   // refactor to use url::Origin. crbug.com/527149 is filed for this.

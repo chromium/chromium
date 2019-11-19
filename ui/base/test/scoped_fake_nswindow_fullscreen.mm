@@ -13,7 +13,7 @@
 #import "base/mac/scoped_objc_class_swizzler.h"
 #import "base/mac/sdk_forward_declarations.h"
 #include "base/macros.h"
-#include "base/message_loop/message_loop.h"
+#include "base/message_loop/message_loop_current.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_task_runner_handle.h"
 
@@ -61,14 +61,14 @@ class ScopedFakeNSWindowFullscreen::Impl {
     }
   }
 
-  IMP SetStyleMaskImplementation() {
-    return set_style_mask_swizzler_.GetOriginalImplementation();
+  void OriginalSetStyleMask(id receiver, SEL selector, NSUInteger mask) {
+    return set_style_mask_swizzler_.InvokeOriginal<void, NSUInteger>(
+        receiver, selector, mask);
   }
 
   NSUInteger StyleMaskForWindow(NSWindow* window) {
-    NSUInteger actual_style_mask = reinterpret_cast<NSUInteger>(
-        style_mask_swizzler_.GetOriginalImplementation()(window,
-                                                         @selector(styleMask)));
+    auto actual_style_mask = style_mask_swizzler_.InvokeOriginal<NSUInteger>(
+        window, @selector(styleMask));
     if (window_ != window || !style_as_fullscreen_)
       return actual_style_mask;
 
@@ -193,7 +193,7 @@ class ScopedFakeNSWindowFullscreen::Impl {
 
 ScopedFakeNSWindowFullscreen::ScopedFakeNSWindowFullscreen() {
   DCHECK(!g_fake_fullscreen_impl);
-  impl_.reset(new Impl);
+  impl_ = std::make_unique<Impl>();
   g_fake_fullscreen_impl = impl_.get();
 }
 
@@ -233,7 +233,7 @@ void ScopedFakeNSWindowFullscreen::FinishTransition() {
     NOTREACHED() << "Can't set NSFullScreenWindowMask while faking fullscreen.";
   }
   newMask &= ~NSFullScreenWindowMask;
-  g_fake_fullscreen_impl->SetStyleMaskImplementation()(self, _cmd, newMask);
+  g_fake_fullscreen_impl->OriginalSetStyleMask(self, _cmd, newMask);
 }
 
 @end

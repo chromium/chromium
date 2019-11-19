@@ -120,6 +120,8 @@ class BlinkIDLParser(IDLParser):
                                  optimize=optimize,
                                  write_tables=write_tables,
                                  picklefile=picklefile)
+        # See IDLParser.__init__() why we set defaulted_states.
+        self.yaccobj.defaulted_states = {}
         self.parse_debug = debug
         self.verbose = verbose
         self.mute_error = mute_error

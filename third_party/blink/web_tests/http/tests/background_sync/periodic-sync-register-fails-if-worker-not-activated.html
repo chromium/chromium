@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>periodicSync.register() is rejected when the service worker is not active yet</title>
+  <script src="../resources/permissions-helper.js"></script>
+  <script src="../resources/testharness.js"></script>
+  <script src="../resources/testharnessreport.js"></script>
+  <script src="../serviceworker/resources/test-helpers.js"></script>
+</head>
+
+<body>
+  <script>
+    async_test(test => {
+      const workerUrl = '/resources/empty-worker.js';
+      const workerScope = '/resources/scope/' + location.pathname;
+      PermissionsHelper.setPermission('periodic-background-sync', 'granted')
+        .then(() => {
+          return service_worker_unregister_and_register(
+              test, workerUrl, workerScope);
+        })
+        .then(serviceWorkerRegistration => {
+          assert_not_equals(
+              serviceWorkerRegistration.installing, null,
+              'The worker should be installing');
+          assert_equals(
+              serviceWorkerRegistration.active, null,
+              'The worker should not be active yet');
+          return serviceWorkerRegistration.periodicSync.register(
+              'abcde', { minInterval: 1000 });
+        })
+        .then(periodicSyncRegistration => {
+          assert_unreached(
+              'periodicSync.register() must not succeed without an active service worker');
+        }, error => {
+          assert_equals(error.name, 'InvalidStateError');
+          assert_equals(
+              error.message, 'Registration failed - no active Service Worker');
+          return service_worker_unregister_and_done(test, workerScope);
+        })
+        .catch(unreached_rejection(test));
+    }, 'periodicSync.register() is rejected when the service worker is not active yet');
+  </script>
+</body>
+
+</html>

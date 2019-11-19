@@ -13,9 +13,10 @@ import static org.chromium.chrome.browser.download.DownloadForegroundService.cle
 import static org.chromium.chrome.browser.download.DownloadSnackbarController.INVALID_NOTIFICATION_ID;
 
 import android.app.Notification;
-import android.support.annotation.IntDef;
 import android.support.test.filters.SmallTest;
 import android.support.v4.app.ServiceCompat;
+
+import androidx.annotation.IntDef;
 
 import org.junit.After;
 import org.junit.Before;

@@ -2,11 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-mojom = "//services/viz/public/interfaces/compositing/selection.mojom"
+mojom = "//services/viz/public/mojom/compositing/selection.mojom"
 public_headers = [
   "//components/viz/common/quads/selection.h",
   "//ui/gfx/selection_bound.h",
 ]
 traits_headers =
-    [ "//services/viz/public/cpp/compositing/selection_struct_traits.h" ]
-type_mappings = [ "viz.mojom.Selection=viz::Selection<gfx::SelectionBound>" ]
+    [ "//services/viz/public/cpp/compositing/selection_mojom_traits.h" ]
+type_mappings =
+    [ "viz.mojom.Selection=::viz::Selection<::gfx::SelectionBound>" ]

@@ -5,13 +5,12 @@
 #ifndef CC_ANIMATION_KEYFRAME_EFFECT_H_
 #define CC_ANIMATION_KEYFRAME_EFFECT_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "cc/animation/animation_events.h"
 #include "cc/animation/animation_export.h"
 #include "cc/animation/element_animations.h"
-#include "cc/trees/element_id.h"
+#include "cc/paint/element_id.h"
 #include "cc/trees/mutator_host_client.h"
 #include "cc/trees/target_property.h"
 #include "ui/gfx/geometry/box_f.h"
@@ -41,7 +40,10 @@ typedef size_t KeyframeEffectId;
 class CC_ANIMATION_EXPORT KeyframeEffect {
  public:
   explicit KeyframeEffect(KeyframeEffectId id);
+  KeyframeEffect(const KeyframeEffect&) = delete;
   virtual ~KeyframeEffect();
+
+  KeyframeEffect& operator=(const KeyframeEffect&) = delete;
 
   static std::unique_ptr<KeyframeEffect> Create(KeyframeEffectId id);
   std::unique_ptr<KeyframeEffect> CreateImplInstance() const;
@@ -117,21 +119,21 @@ class CC_ANIMATION_EXPORT KeyframeEffect {
   bool HasTickingKeyframeModel() const;
   size_t TickingKeyframeModelsCount() const;
 
-  bool HasNonDeletedKeyframeModel() const;
+  bool AffectsCustomProperty() const;
 
-  bool HasOnlyTranslationTransforms(ElementListType list_type) const;
+  bool HasNonDeletedKeyframeModel() const;
 
   bool AnimationsPreserveAxisAlignment() const;
 
-  // Sets |start_scale| to the maximum of starting keyframe_model scale along
-  // any dimension at any destination in active KeyframeModels. Returns false
-  // if the starting scale cannot be computed.
-  bool AnimationStartScale(ElementListType, float* start_scale) const;
-
-  // Sets |max_scale| to the maximum scale along any dimension at any
-  // destination in active KeyframeModels. Returns false if the maximum scale
-  // cannot be computed.
-  bool MaximumTargetScale(ElementListType, float* max_scale) const;
+  // Gets scales transform animations. On return, |maximum_scale| is the maximum
+  // scale along any dimension at any destination in active scale animations,
+  // and |starting_scale| is the maximum of starting animation scale along any
+  // dimension at any destination in active scale animations. They are set to
+  // kNotScaled if there is no active scale animation or the scales cannot be
+  // computed. Returns false if the scales cannot be computed.
+  bool GetAnimationScales(ElementListType,
+                          float* maximum_scale,
+                          float* starting_scale) const;
 
   // Returns true if there is a keyframe_model that is either currently
   // animating the given property or scheduled to animate this property in the
@@ -167,6 +169,7 @@ class CC_ANIMATION_EXPORT KeyframeEffect {
  private:
   void StartKeyframeModels(base::TimeTicks monotonic_time);
   void PromoteStartedKeyframeModels(AnimationEvents* events);
+  void PurgeDeletedKeyframeModels();
 
   void MarkKeyframeModelsForDeletion(base::TimeTicks, AnimationEvents* events);
   void MarkFinishedKeyframeModels(base::TimeTicks monotonic_time);
@@ -202,8 +205,6 @@ class CC_ANIMATION_EXPORT KeyframeEffect {
   base::TimeTicks last_tick_time_;
 
   bool needs_push_properties_;
-
-  DISALLOW_COPY_AND_ASSIGN(KeyframeEffect);
 };
 
 }  // namespace cc

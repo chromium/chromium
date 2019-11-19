@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<style>
+  p { width: 1px; height: 1px; }
+  @media (prefers-color-scheme: no-preference) { p { width: 2px; } }
+  @media (prefers-color-scheme: light) { p { width: 3px; } }
+  @media (prefers-color-scheme: dark) { p { width: 4px; } }
+  @media (prefers-reduced-motion: no-preference) { p { height: 2px; } }
+  @media (prefers-reduced-motion: reduce) { p { height: 3px; } }
+  @media (prefers-color-scheme: dark) and (prefers-reduced-motion: reduce) { p { width: 999px; height: 999px; } }
+</style>
+<p id="p">

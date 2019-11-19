@@ -1,36 +1,35 @@
 <!DOCTYPE html>
 <title>DocumentType.cloneNode()</title>
 <link rel="help" href="https://dom.spec.whatwg.org/#dom-node-clonenode">
-<script src="../../resources/js-test.js"></script>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
 <script>
-description('Tests cloneNode for DocumentType.');
-
-shouldBeNonNull("document.doctype");
-shouldBe("document.doctype.parentNode", "document");
+assert_not_equals(document.doctype, null);
+assert_equals(document.doctype.parentNode, document);
 
 var cd = document.doctype.cloneNode(false);
-shouldBeNonNull("cd");
-shouldBe("cd.publicId", "document.doctype.publicId");
-shouldBe("cd.systemId", "document.doctype.systemId");
-shouldBe("cd.parentNode", "null");
-shouldBe("cd.ownerDocument", "document");
+assert_not_equals(cd, null);
+assert_equals(cd.publicId, document.doctype.publicId);
+assert_equals(cd.systemId, document.doctype.systemId);
+assert_equals(cd.parentNode, null);
+assert_equals(cd.ownerDocument, document);
 
 var doc = document.implementation.createDocument(null, null, null);
 cd = doc.importNode(cd, true);
 
-shouldBe("cd.publicId", "document.doctype.publicId");
-shouldBe("cd.systemId", "document.doctype.systemId");
-shouldBe("cd.parentNode", "null");
-shouldBe("cd.ownerDocument", "doc");
+assert_equals(cd.publicId, document.doctype.publicId);
+assert_equals(cd.systemId, document.doctype.systemId);
+assert_equals(cd.parentNode, null);
+assert_equals(cd.ownerDocument, doc);
 doc.appendChild(cd);
-shouldBe("cd.parentNode", "doc");
+assert_equals(cd.parentNode, doc);
 
 var cd = document.implementation.createDocumentType(
 	"a", "b", "c").cloneNode(false);
-shouldBe("cd.name", "'a'");
-shouldBe("cd.publicId", "'b'");
-shouldBe("cd.systemId", "'c'");
-shouldBe("cd.parentNode", "null");
-shouldBe("cd.ownerDocument", "document");
-
+assert_equals(cd.name, 'a');
+assert_equals(cd.publicId, 'b');
+assert_equals(cd.systemId, 'c');
+assert_equals(cd.parentNode, null);
+assert_equals(cd.ownerDocument, document);
+done();
 </script>

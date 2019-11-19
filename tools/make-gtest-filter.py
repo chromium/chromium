@@ -20,6 +20,8 @@ Outputs filter for only test at line 123
 > make-gtest-filter.py --line=123 ./myfile_unittest.cc
 """
 
+from __future__ import print_function
+
 import argparse
 import fileinput
 import re
@@ -61,7 +63,7 @@ if args.class_only:
   fixtures = set([t.split('.')[0] for t in tests])
   test_filters = [c + '.*' for c in fixtures]
   instantiation_filters = ['*/' + c + '.*/*' for c in fixtures]
-  print ':'.join(test_filters + instantiation_filters)
+  print(':'.join(test_filters + instantiation_filters))
 else:
   instantiations = ['*/' + c + '/*' for c in tests]
-  print ':'.join(tests + instantiations)
+  print(':'.join(tests + instantiations))

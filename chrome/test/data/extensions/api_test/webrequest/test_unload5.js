@@ -10,7 +10,7 @@ runTests([
   function startXMLHttpRequestAndRemoveFrame() {
     const hostname = 'slow-resourcetype-xhr-immediately-remove-frame';
     const url = getSlowURL(hostname);
-    const initiator = 'chrome-extension://' + chrome.runtime.id;
+    const initiator = getServerDomain(initiators.WEB_INITIATED, hostname)
     const mainUrl = getPageWithFrame('empty.html', hostname);
 
     expect([
@@ -81,7 +81,7 @@ runTests([
   function startXMLHttpRequestAndRemoveTab() {
     const hostname = 'slow-resourcetype-xhr-immediately-remove-tab';
     const url = getSlowURL(hostname);
-    const initiator = 'chrome-extension://' + chrome.runtime.id;
+    const initiator = getServerDomain(initiators.WEB_INITIATED, hostname)
     const mainUrl = getServerURL('empty.html', hostname);
 
     expect([

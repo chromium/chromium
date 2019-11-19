@@ -1,0 +1,28 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "LayoutBlockFlow div id='contentBox'",
+          "rect": [8, 72, 402, 402],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutSVGRoot svg",
+          "rect": [47, 111, 324, 324],
+          "reason": "paint property change"
+        },
+        {
+          "object": "LayoutSVGRoot svg",
+          "rect": [8, 154, 102, 238],
+          "reason": "paint property change"
+        }
+      ]
+    }
+  ]
+}
+

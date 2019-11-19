@@ -6,7 +6,7 @@
 
 #include <stdint.h>
 
-#include "ash/public/interfaces/constants.mojom.h"
+#include "ash/public/mojom/constants.mojom.h"
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/strings/string_number_conversions.h"
@@ -14,11 +14,10 @@
 #include "chrome/browser/ui/ash/ash_util.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/common/service_manager_connection.h"
+#include "content/public/browser/system_connector.h"
 #include "services/service_manager/public/cpp/connector.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
-#include "ui/events/devices/input_device_manager.h"
 #include "ui/events/devices/touchscreen_device.h"
 
 using content::BrowserThread;
@@ -37,18 +36,17 @@ const uint16_t kDeviceIds[] = {0x0457, 0x266e, 0x222a};
 // Returns true if |vendor_id| is a valid vendor id that may be made the primary
 // display.
 bool IsWhiteListedVendorId(uint16_t vendor_id) {
-  return base::ContainsValue(kDeviceIds, vendor_id);
+  return base::Contains(kDeviceIds, vendor_id);
 }
 
 }  // namespace
 
-OobeDisplayChooser::OobeDisplayChooser()
-    : scoped_observer_(this), weak_ptr_factory_(this) {
+OobeDisplayChooser::OobeDisplayChooser() {
   // |connector| may be null in tests.
-  auto* connector = ash_util::GetServiceManagerConnector();
+  auto* connector = content::GetSystemConnector();
   if (connector) {
-    connector->BindInterface(ash::mojom::kServiceName,
-                             &cros_display_config_ptr_);
+    connector->Connect(ash::mojom::kServiceName,
+                       cros_display_config_.BindNewPipeAndPassReceiver());
   }
 }
 
@@ -66,21 +64,20 @@ void OobeDisplayChooser::TryToPlaceUiOnTouchDisplay() {
       display::Screen::GetScreen()->GetPrimaryDisplay();
 
   if (primary_display.is_valid() && !TouchSupportAvailable(primary_display)) {
-    base::PostTaskWithTraits(
-        FROM_HERE, {BrowserThread::UI},
-        base::BindOnce(&OobeDisplayChooser::MaybeMoveToTouchDisplay,
-                       weak_ptr_factory_.GetWeakPtr()));
+    base::PostTask(FROM_HERE, {BrowserThread::UI},
+                   base::BindOnce(&OobeDisplayChooser::MaybeMoveToTouchDisplay,
+                                  weak_ptr_factory_.GetWeakPtr()));
   }
 }
 
 void OobeDisplayChooser::MaybeMoveToTouchDisplay() {
-  ui::InputDeviceManager* input_device_manager =
-      ui::InputDeviceManager::GetInstance();
-  if (input_device_manager->AreDeviceListsComplete() &&
-      input_device_manager->AreTouchscreenTargetDisplaysValid()) {
+  ui::DeviceDataManager* device_data_manager =
+      ui::DeviceDataManager::GetInstance();
+  if (device_data_manager->AreDeviceListsComplete() &&
+      device_data_manager->AreTouchscreenTargetDisplaysValid()) {
     MoveToTouchDisplay();
-  } else if (!scoped_observer_.IsObserving(input_device_manager)) {
-    scoped_observer_.Add(input_device_manager);
+  } else if (!scoped_observer_.IsObserving(device_data_manager)) {
+    scoped_observer_.Add(device_data_manager);
   }
 }
 
@@ -89,17 +86,18 @@ void OobeDisplayChooser::MoveToTouchDisplay() {
 
   scoped_observer_.RemoveAll();
 
-  const ui::InputDeviceManager* input_device_manager =
-      ui::InputDeviceManager::GetInstance();
+  const ui::DeviceDataManager* device_data_manager =
+      ui::DeviceDataManager::GetInstance();
   for (const ui::TouchscreenDevice& device :
-       input_device_manager->GetTouchscreenDevices()) {
+       device_data_manager->GetTouchscreenDevices()) {
     if (IsWhiteListedVendorId(device.vendor_id) &&
         device.target_display_id != display::kInvalidDisplayId) {
       auto config_properties = ash::mojom::DisplayConfigProperties::New();
       config_properties->set_primary = true;
-      cros_display_config_ptr_->SetDisplayProperties(
+      cros_display_config_->SetDisplayProperties(
           base::NumberToString(device.target_display_id),
-          std::move(config_properties), base::DoNothing());
+          std::move(config_properties), ash::mojom::DisplayConfigSource::kUser,
+          base::DoNothing());
       break;
     }
   }

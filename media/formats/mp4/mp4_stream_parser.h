@@ -52,8 +52,8 @@ class MEDIA_EXPORT MP4StreamParser : public StreamParser {
   bool Parse(const uint8_t* buf, int size) override;
 
   // Calculates the rotation value from the track header display matricies.
-  VideoRotation CalculateRotation(const TrackHeader& track,
-                                  const MovieHeader& movie);
+  VideoTransformation CalculateRotation(const TrackHeader& track,
+                                        const MovieHeader& movie);
 
  private:
   enum State {

@@ -70,7 +70,7 @@ class WindowOcclusionChangeBuilderTest : public test::AuraTestBase {
 // Test that window occlusion info is updated after commit.
 TEST_F(WindowOcclusionChangeBuilderTest, SingleWindow) {
   SkRegion region;
-  region.setRect(1, 2, 3, 4);
+  region.setRect({1, 2, 3, 4});
 
   for (const auto state :
        {Window::OcclusionState::VISIBLE, Window::OcclusionState::OCCLUDED,
@@ -101,14 +101,14 @@ TEST_F(WindowOcclusionChangeBuilderTest, MultipleWindow) {
   auto window1 = CreateTestWindow(&delegate1);
   const Window::OcclusionState state1 = Window::OcclusionState::VISIBLE;
   SkRegion region1;
-  region1.setRect(1, 2, 3, 4);
+  region1.setRect({1, 2, 3, 4});
   builder->Add(window1.get(), state1, region1);
 
   OcclusionTrackWindowDelegate delegate2;
   auto window2 = CreateTestWindow(&delegate2);
   const Window::OcclusionState state2 = Window::OcclusionState::OCCLUDED;
   SkRegion region2;
-  region2.setRect(5, 6, 7, 8);
+  region2.setRect({5, 6, 7, 8});
   builder->Add(window2.get(), state2, region2);
 
   // Changes should not be applied before Commit call.
@@ -138,7 +138,7 @@ TEST_F(WindowOcclusionChangeBuilderTest, MultipleChanges) {
   builder->Add(window.get(), Window::OcclusionState::HIDDEN, SkRegion());
 
   SkRegion region;
-  region.setRect(1, 2, 3, 4);
+  region.setRect({1, 2, 3, 4});
   builder->Add(window.get(), Window::OcclusionState::OCCLUDED, region);
 
   // All changes are committed when builder is released.

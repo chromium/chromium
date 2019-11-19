@@ -12,7 +12,6 @@
 <translation id="2159915644201199628">Imaginea nu a putut fi decodificată: „<ph name="IMAGE_NAME" />”</translation>
 <translation id="2350172092385603347">A fost utilizată localizarea, dar nu s-a specificat default_locale în manifest.</translation>
 <translation id="2576842806987913196">Există deja un fișier CRX cu acest nume.</translation>
-<translation id="2753617847762399167">Cale nevalidă (absolută sau relativă cu „..”): „<ph name="IMAGE_PATH" />”</translation>
 <translation id="2785530881066938471">Nu se poate încărca fișierul „<ph name="RELATIVE_PATH" />” pentru scriptul de conținut. Fișierul nu are codificare UTF-8.</translation>
 <translation id="2903070246402204397">Extensia <ph name="EXTENSION_NAME" /> (cu ID-ul „<ph name="EXTENSION_ID" />”) este blocată de administrator. <ph name="ADMIN_INFO" /></translation>
 <translation id="2988488679308982380">Nu s-a putut instala pachetul: „<ph name="ERROR_CODE" />”</translation>
@@ -38,8 +37,6 @@
 <translation id="5436430103864390185">Ferestrele cu formă personalizată nu sunt acceptate.</translation>
 <translation id="5456409301717116725">Această extensie include fișierul cheie „<ph name="KEY_PATH" />”. Probabil că nu doriți să faceți asta.</translation>
 <translation id="5486326529110362464">Trebuie să existe o valoarea introdusă pentru cheia privată.</translation>
-<translation id="5627523580512561598">extensie <ph name="EXTENSION_NAME" /></translation>
-<translation id="5960890139610307736">ExtensionView: <ph name="EXTENSIONVIEW_TAG_NAME" /></translation>
 <translation id="5972529113578162692">Administratorul acestui computer solicită ca <ph name="EXTENSION_NAME" /> să fie instalată. Aceasta nu poate fi dezinstalată.</translation>
 <translation id="6027032947578871493">Produs necunoscut <ph name="PRODUCT_ID" /> de la <ph name="VENDOR_NAME" /> (numărul de serie <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> de la furnizorul <ph name="VENDOR_ID" /></translation>
@@ -51,7 +48,6 @@
 <translation id="6542618148162044354">„<ph name="APP_NAME" />” solicită accesul la cel puțin unul dintre dispozitivele tale:</translation>
 <translation id="657064425229075395">Scriptul de fundal „<ph name="BACKGROUND_SCRIPT" />” nu a putut fi încărcat.</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" /> de la <ph name="VENDOR_NAME" /> (număr de serie <ph name="SERIAL_NUMBER" />)</translation>
-<translation id="6731255991101203740">Nu s-a putut crea directorul pentru dezarhivare: „<ph name="DIRECTORY_PATH" />”</translation>
 <translation id="677806580227005219">Handler MIME: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
 <translation id="6840444547062817500">Această extensie s-a reîncărcat automat prea frecvent.</translation>
 <translation id="7003844668372540529">Produs necunoscut <ph name="PRODUCT_ID" /> de la <ph name="VENDOR_NAME" /></translation>

@@ -1,7 +1,6 @@
 <!DOCTYPE HTML>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 
 <div class="container">
   <svg id="svg1">
@@ -10,7 +9,7 @@
 </div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
   var axSvg1 = accessibilityController.accessibleElementById("svg1");
   assert_equals(axSvg1.name, "svg1-title");
   assert_equals(axSvg1.nameFrom, "relatedElement");

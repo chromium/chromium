@@ -12,13 +12,14 @@
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/window/frame_buttons.h"
 
+typedef union _GdkEvent GdkEvent;
+
 namespace aura {
 class Window;
 }
 
 namespace base {
 class CommandLine;
-class Environment;
 }
 
 namespace color_utils {
@@ -26,7 +27,7 @@ struct HSL;
 }
 
 namespace ui {
-class Accelerator;
+class KeyEvent;
 }
 
 namespace libgtkui {
@@ -34,20 +35,6 @@ namespace libgtkui {
 extern const color_utils::HSL kDefaultTintFrameIncognito;
 
 void GtkInitFromCommandLine(const base::CommandLine& command_line);
-
-// Returns the name of the ".desktop" file associated with our running process.
-std::string GetDesktopName(base::Environment* env);
-
-guint GetGdkKeyCodeForAccelerator(const ui::Accelerator& accelerator);
-
-GdkModifierType GetGdkModifierForAccelerator(
-    const ui::Accelerator& accelerator);
-
-// Translates event flags into plaform independent event flags.
-int EventFlagsFromGdkState(guint state);
-
-// Style a GTK button as a BlueButton
-void TurnButtonBlue(GtkWidget* button);
 
 // Sets |dialog| as transient for |parent|, which will keep it on top and center
 // it above |parent|. Do nothing if |parent| is nullptr.
@@ -67,7 +54,6 @@ void ParseButtonLayout(const std::string& button_string,
                        std::vector<views::FrameButton>* leading_buttons,
                        std::vector<views::FrameButton>* trailing_buttons);
 
-void* GetGdkSharedLibrary();
 void* GetGtkSharedLibrary();
 
 class CairoSurface {
@@ -187,6 +173,28 @@ SkColor GetSeparatorColor(const std::string& css_selector);
 // Get a GtkSettings property as a C++ string.
 std::string GetGtkSettingsStringProperty(GtkSettings* settings,
                                          const gchar* prop_name);
+
+// Get current GdkDisplay instance
+GdkDisplay* GetGdkDisplay();
+
+// Xkb Events store group attribute into XKeyEvent::state bit field, along with
+// other state-related info, while GdkEventKey objects have separate fields for
+// that purpose, they are ::state and ::group. This function is responsible for
+// recomposing them into a single bit field value when translating GdkEventKey
+// into XKeyEvent. This is similar to XkbBuildCoreState(), but assumes state is
+// an uint rather than an uchar.
+//
+// More details:
+// https://gitlab.freedesktop.org/xorg/proto/xorgproto/blob/master/include/X11/extensions/XKB.h#L372
+int BuildXkbStateFromGdkEvent(unsigned int state, unsigned char group);
+
+// Translates |key_event| into a GdkEvent. GdkEvent::key::window is the only
+// field not set by this function, callers must set it, as the way for
+// retrieving it may vary depending on the event being processed. E.g: for IME
+// Context impl, X11 window XID is obtained through Event::target() which is
+// root aura::Window targeted by that key event.
+GdkEvent* GdkEventFromKeyEvent(const ui::KeyEvent& key_event);
+
 }  // namespace libgtkui
 
 #endif  // CHROME_BROWSER_UI_LIBGTKUI_GTK_UTIL_H_

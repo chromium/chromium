@@ -1,0 +1,14 @@
+# Copyright 2018 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+mojom = "//ui/gfx/mojom/font_render_params.mojom"
+public_headers = [ "//ui/gfx/font_render_params.h" ]
+traits_headers = [ "//ui/gfx/mojom/font_render_params_mojom_traits.h" ]
+public_deps = [
+  "//ui/gfx",
+]
+type_mappings = [
+  "gfx.mojom.Hinting=::gfx::FontRenderParams::Hinting",
+  "gfx.mojom.SubpixelRendering=::gfx::FontRenderParams::SubpixelRendering",
+]

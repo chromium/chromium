@@ -107,8 +107,7 @@ HostVerifierImpl::HostVerifierImpl(
       pref_service_(pref_service),
       clock_(clock),
       retry_timer_(std::move(retry_timer)),
-      sync_timer_(std::move(sync_timer)),
-      weak_ptr_factory_(this) {
+      sync_timer_(std::move(sync_timer)) {
   host_backend_delegate_->AddObserver(this);
   device_sync_client_->AddObserver(this);
 

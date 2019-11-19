@@ -1,0 +1,41 @@
+<!doctype HTML>
+<html class="reftest-wait">
+<meta charset="utf8">
+<title>Display Locking: iframe locking</title>
+<link rel="author" title="Vladimir Levin" href="mailto:vmpstr@chromium.org">
+<link rel="help" href="https://github.com/WICG/display-locking">
+<link rel="match" href="locked-iframe-doesnt-paint-contents-ref.html">
+<script src="/common/reftest-wait.js"></script>
+<script src="../resources/utils.js"></script>
+
+<style>
+div {
+  background: blue;
+}
+</style>
+
+<div>lorem ipsum</div>
+<iframe id="frame" width=400 height=200 srcdoc='
+  <style>
+  div {
+    background: lightgreen;
+  }
+  </style>
+  <div>dolor sit amet</div>
+'></iframe>
+<div>consectetur adipiscing elit</div>
+
+<script>
+async function runTest() {
+  const container = document.getElementById("frame");
+  await setInvisible(container);
+  takeScreenshot();
+}
+
+window.onload = () => {
+  requestAnimationFrame(() => {
+    requestAnimationFrame(runTest);
+  });
+};
+</script>
+</html>

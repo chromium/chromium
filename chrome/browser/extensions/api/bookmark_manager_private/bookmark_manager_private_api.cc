@@ -16,7 +16,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
-#include "chrome/browser/bookmarks/bookmark_stats.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/bookmarks/bookmark_api_constants.h"
 #include "chrome/browser/extensions/api/bookmarks/bookmark_api_helpers.h"
@@ -37,6 +36,7 @@
 #include "components/undo/bookmark_undo_service.h"
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/render_view_host.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "extensions/browser/extension_function_dispatcher.h"
@@ -57,20 +57,13 @@ namespace bookmark_keys = bookmark_api_constants;
 namespace bookmark_manager_private = api::bookmark_manager_private;
 namespace CanPaste = api::bookmark_manager_private::CanPaste;
 namespace Copy = api::bookmark_manager_private::Copy;
-namespace CreateWithMetaInfo =
-    api::bookmark_manager_private::CreateWithMetaInfo;
 namespace Cut = api::bookmark_manager_private::Cut;
 namespace Drop = api::bookmark_manager_private::Drop;
 namespace GetSubtree = api::bookmark_manager_private::GetSubtree;
-namespace GetMetaInfo = api::bookmark_manager_private::GetMetaInfo;
 namespace Paste = api::bookmark_manager_private::Paste;
-namespace RedoInfo = api::bookmark_manager_private::GetRedoInfo;
 namespace RemoveTrees = api::bookmark_manager_private::RemoveTrees;
-namespace SetMetaInfo = api::bookmark_manager_private::SetMetaInfo;
 namespace SortChildren = api::bookmark_manager_private::SortChildren;
 namespace StartDrag = api::bookmark_manager_private::StartDrag;
-namespace UndoInfo = api::bookmark_manager_private::GetUndoInfo;
-namespace UpdateMetaInfo = api::bookmark_manager_private::UpdateMetaInfo;
 
 namespace {
 
@@ -119,9 +112,8 @@ CreateNodeDataElementFromBookmarkNode(const BookmarkNode& node) {
     element.url.reset(new std::string(node.url().spec()));
 
   element.title = base::UTF16ToUTF8(node.GetTitle());
-  for (int i = 0; i < node.child_count(); ++i) {
-    element.children.push_back(
-        CreateNodeDataElementFromBookmarkNode(*node.GetChild(i)));
+  for (const auto& child : node.children()) {
+    element.children.push_back(CreateNodeDataElementFromBookmarkNode(*child));
   }
 
   return element;
@@ -170,6 +162,14 @@ bookmark_manager_private::BookmarkNodeData CreateApiBookmarkNodeData(
   return node_data;
 }
 
+bool HasPermanentNodes(const std::vector<const BookmarkNode*>& list) {
+  for (const BookmarkNode* node : list) {
+    if (node->is_permanent_node())
+      return true;
+  }
+  return false;
+}
+
 }  // namespace
 
 BookmarkManagerPrivateEventRouter::BookmarkManagerPrivateEventRouter(
@@ -200,58 +200,9 @@ void BookmarkManagerPrivateEventRouter::BookmarkModelBeingDeleted(
   bookmark_model_ = NULL;
 }
 
-void BookmarkManagerPrivateEventRouter::OnWillChangeBookmarkMetaInfo(
-    BookmarkModel* model,
-    const BookmarkNode* node) {
-  DCHECK(prev_meta_info_.empty());
-  if (node->GetMetaInfoMap())
-    prev_meta_info_ = *node->GetMetaInfoMap();
-}
-
-void BookmarkManagerPrivateEventRouter::BookmarkMetaInfoChanged(
-    BookmarkModel* model,
-    const BookmarkNode* node) {
-  const BookmarkNode::MetaInfoMap* new_meta_info = node->GetMetaInfoMap();
-  bookmark_manager_private::MetaInfoFields changes;
-
-  // Identify changed/removed fields:
-  for (BookmarkNode::MetaInfoMap::const_iterator it = prev_meta_info_.begin();
-       it != prev_meta_info_.end();
-       ++it) {
-    if (!new_meta_info) {
-      changes.additional_properties[it->first] = "";
-    } else {
-      auto new_meta_field = new_meta_info->find(it->first);
-      if (new_meta_field == new_meta_info->end()) {
-        changes.additional_properties[it->first] = "";
-      } else if (it->second != new_meta_field->second) {
-        changes.additional_properties[it->first] = new_meta_field->second;
-      }
-    }
-  }
-
-  // Identify added fields:
-  if (new_meta_info) {
-    for (auto it = new_meta_info->cbegin(); it != new_meta_info->cend(); ++it) {
-      auto prev_meta_field = prev_meta_info_.find(it->first);
-      if (prev_meta_field == prev_meta_info_.end())
-        changes.additional_properties[it->first] = it->second;
-    }
-  }
-
-  prev_meta_info_.clear();
-  DispatchEvent(events::BOOKMARK_MANAGER_PRIVATE_ON_META_INFO_CHANGED,
-                bookmark_manager_private::OnMetaInfoChanged::kEventName,
-                bookmark_manager_private::OnMetaInfoChanged::Create(
-                    base::NumberToString(node->id()), changes));
-}
-
 BookmarkManagerPrivateAPI::BookmarkManagerPrivateAPI(
     content::BrowserContext* browser_context)
     : browser_context_(browser_context) {
-  EventRouter* event_router = EventRouter::Get(browser_context);
-  event_router->RegisterObserver(
-      this, bookmark_manager_private::OnMetaInfoChanged::kEventName);
 }
 
 BookmarkManagerPrivateAPI::~BookmarkManagerPrivateAPI() {}
@@ -373,6 +324,10 @@ bool ClipboardBookmarkManagerFunction::CopyOrCut(bool cut,
     error_ = bookmark_keys::kModifyManagedError;
     return false;
   }
+  if (cut && HasPermanentNodes(nodes)) {
+    error_ = bookmark_keys::kModifySpecialError;
+    return false;
+  }
   bookmarks::CopyToClipboard(model, nodes, cut);
   return true;
 }
@@ -412,15 +367,18 @@ bool BookmarkManagerPrivatePasteFunction::RunOnReady() {
   // No need to test return value, if we got an empty list, we insert at end.
   if (params->selected_id_list)
     GetNodesFromVector(model, *params->selected_id_list, &nodes);
-  int highest_index = -1;  // -1 means insert at end of list.
+  int highest_index = -1;
   for (size_t i = 0; i < nodes.size(); ++i) {
     // + 1 so that we insert after the selection.
     int index = parent_node->GetIndexOf(nodes[i]) + 1;
     if (index > highest_index)
       highest_index = index;
   }
+  size_t insertion_index = (highest_index == -1)
+                               ? parent_node->children().size()
+                               : size_t{highest_index};
 
-  bookmarks::PasteFromClipboard(model, parent_node, highest_index);
+  bookmarks::PasteFromClipboard(model, parent_node, insertion_index);
   return true;
 }
 
@@ -488,12 +446,9 @@ bool BookmarkManagerPrivateStartDragFunction::RunOnReady() {
     source = ui::DragDropTypes::DRAG_EVENT_SOURCE_TOUCH;
 
   chrome::DragBookmarks(GetProfile(),
-                        {
-                            std::move(nodes), params->drag_node_index,
-                            platform_util::GetViewForWindow(
-                                web_contents->GetTopLevelNativeWindow()),
-                            source,
-                        });
+                        {std::move(nodes), params->drag_node_index,
+                         web_contents->GetContentNativeView(), source,
+                         gfx::Point(params->x, params->y)});
 
   return true;
 }
@@ -513,26 +468,20 @@ bool BookmarkManagerPrivateDropFunction::RunOnReady() {
     return false;
 
   content::WebContents* web_contents = GetSenderWebContents();
-  if (GetViewType(web_contents) != VIEW_TYPE_TAB_CONTENTS) {
-    NOTREACHED();
-    return false;
-  }
+  DCHECK_EQ(VIEW_TYPE_TAB_CONTENTS, GetViewType(web_contents));
 
-  int drop_index;
+  size_t drop_index;
   if (params->index)
-    drop_index = *params->index;
+    drop_index = size_t{*params->index};
   else
-    drop_index = drop_parent->child_count();
+    drop_index = drop_parent->children().size();
 
   BookmarkManagerPrivateDragEventRouter* router =
       BookmarkManagerPrivateDragEventRouter::FromWebContents(web_contents);
 
   DCHECK(router);
   const BookmarkNodeData* drag_data = router->GetBookmarkNodeData();
-  if (drag_data == NULL) {
-    NOTREACHED() <<"Somehow we're dropping null bookmark data";
-    return false;
-  }
+  DCHECK_NE(nullptr, drag_data) << "Somehow we're dropping null bookmark data";
   const bool copy = false;
   chrome::DropBookmarks(
       GetProfile(), *drag_data, drop_parent, drop_index, copy);
@@ -565,153 +514,6 @@ bool BookmarkManagerPrivateGetSubtreeFunction::RunOnReady() {
   else
     bookmark_api_helpers::AddNode(managed, node, &nodes, true);
   results_ = GetSubtree::Results::Create(nodes);
-  return true;
-}
-
-bool BookmarkManagerPrivateCanEditFunction::RunOnReady() {
-  PrefService* prefs = user_prefs::UserPrefs::Get(GetProfile());
-  SetResult(std::make_unique<base::Value>(
-      prefs->GetBoolean(bookmarks::prefs::kEditBookmarksEnabled)));
-  return true;
-}
-
-bool BookmarkManagerPrivateRecordLaunchFunction::RunOnReady() {
-  RecordBookmarkLaunch(NULL, BOOKMARK_LAUNCH_LOCATION_MANAGER);
-  return true;
-}
-
-bool BookmarkManagerPrivateCreateWithMetaInfoFunction::RunOnReady() {
-  if (!EditBookmarksEnabled())
-    return false;
-
-  std::unique_ptr<CreateWithMetaInfo::Params> params(
-      CreateWithMetaInfo::Params::Create(*args_));
-  EXTENSION_FUNCTION_VALIDATE(params);
-
-  BookmarkModel* model =
-      BookmarkModelFactory::GetForBrowserContext(GetProfile());
-  const BookmarkNode* node = CreateBookmarkNode(
-      model, params->bookmark, &params->meta_info.additional_properties);
-  if (!node)
-    return false;
-
-  api::bookmarks::BookmarkTreeNode result_node =
-      bookmark_api_helpers::GetBookmarkTreeNode(GetManagedBookmarkService(),
-                                                node, false, false);
-  results_ = CreateWithMetaInfo::Results::Create(result_node);
-
-  return true;
-}
-
-bool BookmarkManagerPrivateGetMetaInfoFunction::RunOnReady() {
-  std::unique_ptr<GetMetaInfo::Params> params(
-      GetMetaInfo::Params::Create(*args_));
-  EXTENSION_FUNCTION_VALIDATE(params);
-
-  if (params->id) {
-    const BookmarkNode* node = GetBookmarkNodeFromId(*params->id);
-    if (!node)
-      return false;
-
-    if (params->key) {
-      std::string value;
-      if (node->GetMetaInfo(*params->key, &value)) {
-        GetMetaInfo::Results::Value result;
-        result.as_string.reset(new std::string(value));
-        results_ = GetMetaInfo::Results::Create(result);
-      }
-    } else {
-      GetMetaInfo::Results::Value result;
-      result.as_object.reset(new GetMetaInfo::Results::Value::Object);
-
-      const BookmarkNode::MetaInfoMap* meta_info = node->GetMetaInfoMap();
-      if (meta_info) {
-        BookmarkNode::MetaInfoMap::const_iterator itr;
-        base::DictionaryValue& temp = result.as_object->additional_properties;
-        for (itr = meta_info->begin(); itr != meta_info->end(); itr++) {
-          temp.SetKey(itr->first, base::Value(itr->second));
-        }
-      }
-      results_ = GetMetaInfo::Results::Create(result);
-    }
-  } else {
-    if (params->key) {
-      error_ = bookmark_api_constants::kInvalidParamError;
-      return true;
-    }
-
-    BookmarkModel* model =
-        BookmarkModelFactory::GetForBrowserContext(GetProfile());
-    const BookmarkNode* node = model->root_node();
-
-    GetMetaInfo::Results::Value result;
-    result.as_object.reset(new GetMetaInfo::Results::Value::Object);
-
-    bookmark_api_helpers::GetMetaInfo(*node,
-        &result.as_object->additional_properties);
-
-    results_ = GetMetaInfo::Results::Create(result);
-  }
-
-  return true;
-}
-
-bool BookmarkManagerPrivateSetMetaInfoFunction::RunOnReady() {
-  if (!EditBookmarksEnabled())
-    return false;
-
-  std::unique_ptr<SetMetaInfo::Params> params(
-      SetMetaInfo::Params::Create(*args_));
-  EXTENSION_FUNCTION_VALIDATE(params);
-
-  const BookmarkNode* node = GetBookmarkNodeFromId(params->id);
-  if (!node)
-    return false;
-
-  if (!CanBeModified(node))
-    return false;
-
-  BookmarkModel* model =
-      BookmarkModelFactory::GetForBrowserContext(GetProfile());
-  if (model->is_permanent_node(node)) {
-    error_ = bookmark_keys::kModifySpecialError;
-    return false;
-  }
-
-  model->SetNodeMetaInfo(node, params->key, params->value);
-  return true;
-}
-
-bool BookmarkManagerPrivateUpdateMetaInfoFunction::RunOnReady() {
-  if (!EditBookmarksEnabled())
-    return false;
-
-  std::unique_ptr<UpdateMetaInfo::Params> params(
-      UpdateMetaInfo::Params::Create(*args_));
-  EXTENSION_FUNCTION_VALIDATE(params);
-
-  const BookmarkNode* node = GetBookmarkNodeFromId(params->id);
-  if (!node)
-    return false;
-
-  if (!CanBeModified(node))
-    return false;
-
-  BookmarkModel* model =
-      BookmarkModelFactory::GetForBrowserContext(GetProfile());
-  if (model->is_permanent_node(node)) {
-    error_ = bookmark_keys::kModifySpecialError;
-    return false;
-  }
-
-  BookmarkNode::MetaInfoMap new_meta_info(
-      params->meta_info_changes.additional_properties);
-  if (node->GetMetaInfoMap()) {
-    new_meta_info.insert(node->GetMetaInfoMap()->begin(),
-                         node->GetMetaInfoMap()->end());
-  }
-  model->SetNodeMetaInfoMap(node, new_meta_info);
-
   return true;
 }
 
@@ -752,30 +554,6 @@ bool BookmarkManagerPrivateRedoFunction::RunOnReady() {
 
   BookmarkUndoServiceFactory::GetForProfile(GetProfile())->undo_manager()->
       Redo();
-  return true;
-}
-
-bool BookmarkManagerPrivateGetUndoInfoFunction::RunOnReady() {
-  UndoManager* undo_manager =
-      BookmarkUndoServiceFactory::GetForProfile(GetProfile())->undo_manager();
-
-  UndoInfo::Results::Result result;
-  result.enabled = undo_manager->undo_count() > 0;
-  result.label = base::UTF16ToUTF8(undo_manager->GetUndoLabel());
-
-  results_ = UndoInfo::Results::Create(result);
-  return true;
-}
-
-bool BookmarkManagerPrivateGetRedoInfoFunction::RunOnReady() {
-  UndoManager* undo_manager =
-      BookmarkUndoServiceFactory::GetForProfile(GetProfile())->undo_manager();
-
-  RedoInfo::Results::Result result;
-  result.enabled = undo_manager->redo_count() > 0;
-  result.label = base::UTF16ToUTF8(undo_manager->GetRedoLabel());
-
-  results_ = RedoInfo::Results::Create(result);
   return true;
 }
 

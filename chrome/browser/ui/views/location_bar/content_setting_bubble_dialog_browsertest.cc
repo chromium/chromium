@@ -69,20 +69,21 @@ void ContentSettingBubbleDialogTest::ApplyContentSettingsForType(
   TabSpecificContentSettings* content_settings =
       TabSpecificContentSettings::FromWebContents(web_contents);
   switch (content_type) {
-    case CONTENT_SETTINGS_TYPE_GEOLOCATION:
+    case ContentSettingsType::GEOLOCATION:
       content_settings->OnGeolocationPermissionSet(GURL::EmptyGURL(), false);
       break;
-    case CONTENT_SETTINGS_TYPE_AUTOMATIC_DOWNLOADS: {
+    case ContentSettingsType::AUTOMATIC_DOWNLOADS: {
       // Automatic downloads are handled by DownloadRequestLimiter.
       DownloadRequestLimiter::TabDownloadState* tab_download_state =
           g_browser_process->download_request_limiter()->GetDownloadState(
-              web_contents, web_contents, true);
+              web_contents, true);
       tab_download_state->set_download_seen();
       tab_download_state->SetDownloadStatusAndNotify(
+          url::Origin::Create(web_contents->GetVisibleURL()),
           DownloadRequestLimiter::DOWNLOADS_NOT_ALLOWED);
       break;
     }
-    case CONTENT_SETTINGS_TYPE_POPUPS: {
+    case ContentSettingsType::POPUPS: {
       GURL url(
           embedded_test_server()->GetURL("/popup_blocker/popup-many-10.html"));
       ui_test_utils::NavigateToURL(browser(), url);
@@ -92,9 +93,8 @@ void ContentSettingBubbleDialogTest::ApplyContentSettingsForType(
       EXPECT_EQ(10u, helper->GetBlockedPopupsCount());
       break;
     }
-    case CONTENT_SETTINGS_TYPE_PLUGINS: {
-      const base::string16 plugin_name = base::ASCIIToUTF16("plugin_name");
-      content_settings->OnContentBlockedWithDetail(content_type, plugin_name);
+    case ContentSettingsType::PLUGINS: {
+      content_settings->OnContentBlocked(content_type);
       break;
     }
 
@@ -135,23 +135,22 @@ void ContentSettingBubbleDialogTest::ShowUi(const std::string& name) {
     ContentSettingsType content_type;
     ContentSettingImageModel::ImageType image_type;
   } content_settings_values[] = {
-      {"cookies", CONTENT_SETTINGS_TYPE_COOKIES, ImageType::COOKIES},
-      {"images", CONTENT_SETTINGS_TYPE_IMAGES, ImageType::IMAGES},
-      {"javascript", CONTENT_SETTINGS_TYPE_JAVASCRIPT, ImageType::JAVASCRIPT},
-      {"plugins", CONTENT_SETTINGS_TYPE_PLUGINS, ImageType::PLUGINS},
-      {"popups", CONTENT_SETTINGS_TYPE_POPUPS, ImageType::POPUPS},
-      {"geolocation", CONTENT_SETTINGS_TYPE_GEOLOCATION,
-       ImageType::GEOLOCATION},
-      {"ppapi_broker", CONTENT_SETTINGS_TYPE_PPAPI_BROKER,
+      {"cookies", ContentSettingsType::COOKIES, ImageType::COOKIES},
+      {"images", ContentSettingsType::IMAGES, ImageType::IMAGES},
+      {"javascript", ContentSettingsType::JAVASCRIPT, ImageType::JAVASCRIPT},
+      {"plugins", ContentSettingsType::PLUGINS, ImageType::PLUGINS},
+      {"popups", ContentSettingsType::POPUPS, ImageType::POPUPS},
+      {"geolocation", ContentSettingsType::GEOLOCATION, ImageType::GEOLOCATION},
+      {"ppapi_broker", ContentSettingsType::PPAPI_BROKER,
        ImageType::PPAPI_BROKER},
-      {"mixed_script", CONTENT_SETTINGS_TYPE_MIXEDSCRIPT,
+      {"mixed_script", ContentSettingsType::MIXEDSCRIPT,
        ImageType::MIXEDSCRIPT},
-      {"protocol_handlers", CONTENT_SETTINGS_TYPE_PROTOCOL_HANDLERS,
+      {"protocol_handlers", ContentSettingsType::PROTOCOL_HANDLERS,
        ImageType::PROTOCOL_HANDLERS},
-      {"automatic_downloads", CONTENT_SETTINGS_TYPE_AUTOMATIC_DOWNLOADS,
+      {"automatic_downloads", ContentSettingsType::AUTOMATIC_DOWNLOADS,
        ImageType::AUTOMATIC_DOWNLOADS},
-      {"midi_sysex", CONTENT_SETTINGS_TYPE_MIDI_SYSEX, ImageType::MIDI_SYSEX},
-      {"ads", CONTENT_SETTINGS_TYPE_ADS, ImageType::ADS},
+      {"midi_sysex", ContentSettingsType::MIDI_SYSEX, ImageType::MIDI_SYSEX},
+      {"ads", ContentSettingsType::ADS, ImageType::ADS},
   };
   for (auto content_settings : content_settings_values) {
     if (name == content_settings.name) {

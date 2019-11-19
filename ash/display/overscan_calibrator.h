@@ -11,6 +11,7 @@
 #include "base/macros.h"
 #include "ui/compositor/layer_delegate.h"
 #include "ui/display/display.h"
+#include "ui/display/display_observer.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -22,7 +23,8 @@ namespace ash {
 
 // This is used to show the visible feedback to the user's operations for
 // calibrating display overscan settings.
-class ASH_EXPORT OverscanCalibrator : public ui::LayerDelegate {
+class ASH_EXPORT OverscanCalibrator : public ui::LayerDelegate,
+                                      public display::DisplayObserver {
  public:
   OverscanCalibrator(const display::Display& target_display,
                      const gfx::Insets& initial_insets);
@@ -41,14 +43,20 @@ class ASH_EXPORT OverscanCalibrator : public ui::LayerDelegate {
 
   const gfx::Insets& insets() const { return insets_; }
 
- private:
   // ui::LayerDelegate overrides:
   void OnPaintLayer(const ui::PaintContext& context) override;
   void OnDeviceScaleFactorChanged(float old_device_scale_factor,
                                   float new_device_scale_factor) override;
 
+  // DisplayObserver:
+  void OnDisplayMetricsChanged(const display::Display& display,
+                               uint32_t changed_metrics) override;
+
+ private:
+  void UpdateUILayer();
+
   // The target display.
-  const display::Display display_;
+  display::Display display_;
 
   // The current insets.
   gfx::Insets insets_;

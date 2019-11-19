@@ -13,7 +13,7 @@
 #include "base/containers/circular_deque.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/message_loop/message_loop.h"
+#include "base/message_loop/message_pump_type.h"
 #include "base/rand_util.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread.h"
@@ -58,8 +58,7 @@ class Buffer : public PacketPipe {
   Buffer(size_t buffer_size, double max_megabits_per_second)
       : buffer_size_(0),
         max_buffer_size_(buffer_size),
-        max_megabits_per_second_(max_megabits_per_second),
-        weak_factory_(this) {
+        max_megabits_per_second_(max_megabits_per_second) {
     CHECK_GT(max_buffer_size_, 0UL);
     CHECK_GT(max_megabits_per_second, 0);
   }
@@ -112,7 +111,7 @@ class Buffer : public PacketPipe {
   size_t buffer_size_;
   size_t max_buffer_size_;
   double max_megabits_per_second_;  // megabits per second
-  base::WeakPtrFactory<Buffer> weak_factory_;
+  base::WeakPtrFactory<Buffer> weak_factory_{this};
 };
 
 std::unique_ptr<PacketPipe> NewBuffer(size_t buffer_size, double bandwidth) {
@@ -140,7 +139,7 @@ std::unique_ptr<PacketPipe> NewRandomDrop(double drop_fraction) {
 
 class SimpleDelayBase : public PacketPipe {
  public:
-  SimpleDelayBase() : weak_factory_(this) {}
+  SimpleDelayBase() {}
   ~SimpleDelayBase() override = default;
 
   void Send(std::unique_ptr<Packet> packet) override {
@@ -159,7 +158,7 @@ class SimpleDelayBase : public PacketPipe {
     pipe_->Send(std::move(packet));
   }
 
-  base::WeakPtrFactory<SimpleDelayBase> weak_factory_;
+  base::WeakPtrFactory<SimpleDelayBase> weak_factory_{this};
 };
 
 class ConstantDelay : public SimpleDelayBase {
@@ -220,8 +219,7 @@ class RandomSortedDelay : public PacketPipe {
                     double seconds_between_extra_delay)
       : random_delay_(random_delay),
         extra_delay_(extra_delay),
-        seconds_between_extra_delay_(seconds_between_extra_delay),
-        weak_factory_(this) {}
+        seconds_between_extra_delay_(seconds_between_extra_delay) {}
 
   void Send(std::unique_ptr<Packet> packet) final {
     buffer_.push_back(std::move(packet));
@@ -290,7 +288,7 @@ class RandomSortedDelay : public PacketPipe {
   double extra_delay_;
   double seconds_between_extra_delay_;
   base::TimeTicks next_send_;
-  base::WeakPtrFactory<RandomSortedDelay> weak_factory_;
+  base::WeakPtrFactory<RandomSortedDelay> weak_factory_{this};
 };
 
 std::unique_ptr<PacketPipe> NewRandomSortedDelay(
@@ -306,8 +304,7 @@ class NetworkGlitchPipe : public PacketPipe {
   NetworkGlitchPipe(double average_work_time, double average_outage_time)
       : works_(false),
         max_work_time_(average_work_time * 2),
-        max_outage_time_(average_outage_time * 2),
-        weak_factory_(this) {}
+        max_outage_time_(average_outage_time * 2) {}
 
   void InitOnIOThread(
       const scoped_refptr<base::SingleThreadTaskRunner>& task_runner,
@@ -337,7 +334,7 @@ class NetworkGlitchPipe : public PacketPipe {
   bool works_;
   double max_work_time_;
   double max_outage_time_;
-  base::WeakPtrFactory<NetworkGlitchPipe> weak_factory_;
+  base::WeakPtrFactory<NetworkGlitchPipe> weak_factory_{this};
 };
 
 std::unique_ptr<PacketPipe> NewNetworkGlitchPipe(double average_work_time,
@@ -350,14 +347,8 @@ std::unique_ptr<PacketPipe> NewNetworkGlitchPipe(double average_work_time,
 // Internal buffer object for a client of the IPP model.
 class InterruptedPoissonProcess::InternalBuffer : public PacketPipe {
  public:
-  InternalBuffer(base::WeakPtr<InterruptedPoissonProcess> ipp,
-                 size_t size)
-      : ipp_(ipp),
-        stored_size_(0),
-        stored_limit_(size),
-        clock_(NULL),
-        weak_factory_(this) {
-  }
+  InternalBuffer(base::WeakPtr<InterruptedPoissonProcess> ipp, size_t size)
+      : ipp_(ipp), stored_size_(0), stored_limit_(size), clock_(NULL) {}
 
   void Send(std::unique_ptr<Packet> packet) final {
     // Drop if buffer is full.
@@ -408,7 +399,7 @@ class InterruptedPoissonProcess::InternalBuffer : public PacketPipe {
   base::circular_deque<std::unique_ptr<Packet>> buffer_;
   base::circular_deque<base::TimeTicks> buffer_time_;
   const base::TickClock* clock_;
-  base::WeakPtrFactory<InternalBuffer> weak_factory_;
+  base::WeakPtrFactory<InternalBuffer> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(InternalBuffer);
 };
@@ -424,8 +415,7 @@ InterruptedPoissonProcess::InterruptedPoissonProcess(
       coef_variance_(coef_variance),
       rate_index_(0),
       on_state_(true),
-      mt_rand_(rand_seed),
-      weak_factory_(this) {
+      mt_rand_(rand_seed) {
   DCHECK(!average_rates.empty());
   ComputeRates();
 }
@@ -693,11 +683,10 @@ class UDPProxyImpl : public UDPProxy {
         proxy_thread_("media::cast::test::UdpProxy Thread"),
         to_dest_pipe_(std::move(to_dest_pipe)),
         from_dest_pipe_(std::move(from_dest_pipe)),
-        blocked_(false),
-        weak_factory_(this) {
+        blocked_(false) {
     base::ScopedAllowBlockingForTesting allow_blocking;
     proxy_thread_.StartWithOptions(
-        base::Thread::Options(base::MessageLoop::TYPE_IO, 0));
+        base::Thread::Options(base::MessagePumpType::IO, 0));
     base::WaitableEvent start_event(
         base::WaitableEvent::ResetPolicy::AUTOMATIC,
         base::WaitableEvent::InitialState::NOT_SIGNALED);
@@ -855,7 +844,7 @@ class UDPProxyImpl : public UDPProxy {
   // For sending.
   bool blocked_;
 
-  base::WeakPtrFactory<UDPProxyImpl> weak_factory_;
+  base::WeakPtrFactory<UDPProxyImpl> weak_factory_{this};
 };
 
 void PacketSender::Send(std::unique_ptr<Packet> packet) {

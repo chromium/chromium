@@ -15,7 +15,7 @@
 #include "components/storage_monitor/removable_device_constants.h"
 #include "components/storage_monitor/storage_monitor.h"
 #include "components/storage_monitor/test_storage_monitor.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -67,10 +67,10 @@ class MediaStorageUtilTest : public testing::Test {
     TestStorageMonitor::Destroy();
   }
 
-  void RunUntilIdle() { test_browser_thread_bundle_.RunUntilIdle(); }
+  void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
  private:
-  content::TestBrowserThreadBundle test_browser_thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   TestStorageMonitor* monitor_;
   base::ScopedTempDir scoped_temp_dir_;
 };
@@ -81,8 +81,9 @@ TEST_F(MediaStorageUtilTest, MediaDeviceAttached) {
   // Create a dummy mount point with DCIM Directory.
   base::FilePath mount_point(CreateMountPoint(true));
   ASSERT_FALSE(mount_point.empty());
-  base::PostTaskWithTraits(
-      FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
+  base::PostTask(
+      FROM_HERE,
+      {base::ThreadPool(), base::TaskPriority::BEST_EFFORT, base::MayBlock()},
       base::BindOnce(&MediaStorageUtilTest::CheckDCIMDeviceType,
                      base::Unretained(this), mount_point));
   RunUntilIdle();
@@ -94,8 +95,9 @@ TEST_F(MediaStorageUtilTest, NonMediaDeviceAttached) {
   // Create a dummy mount point without DCIM Directory.
   base::FilePath mount_point(CreateMountPoint(false));
   ASSERT_FALSE(mount_point.empty());
-  base::PostTaskWithTraits(
-      FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
+  base::PostTask(
+      FROM_HERE,
+      {base::ThreadPool(), base::TaskPriority::BEST_EFFORT, base::MayBlock()},
       base::BindOnce(&MediaStorageUtilTest::CheckNonDCIMDeviceType,
                      base::Unretained(this), mount_point));
   RunUntilIdle();

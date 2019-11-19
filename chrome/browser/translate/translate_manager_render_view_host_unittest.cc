@@ -54,6 +54,7 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/notification_details.h"
 #include "content/public/browser/notification_registrar.h"
+#include "content/public/browser/notification_source.h"
 #include "content/public/browser/notification_types.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
@@ -61,14 +62,11 @@
 #include "content/public/test/test_renderer_host.h"
 #include "mojo/public/cpp/bindings/binding.h"
 #include "net/base/net_errors.h"
-#include "net/url_request/test_url_fetcher_factory.h"
-#include "net/url_request/url_fetcher_delegate.h"
-#include "net/url_request/url_request_status.h"
-#include "net/url_request/url_request_test_util.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/blink/public/web/web_context_menu_data.h"
+#include "third_party/blink/public/common/context_menu_data/edit_flags.h"
+#include "third_party/blink/public/common/context_menu_data/media_type.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 
@@ -250,8 +248,8 @@ class TranslateManagerRenderViewHostTest
     details.adopted_language = lang;
     ChromeTranslateClient::FromWebContents(web_contents())
         ->translate_driver()
-        .RegisterPage(fake_page_.BindToNewPagePtr(), details,
-                      page_translatable);
+        ->RegisterPage(fake_page_.BindToNewPageRemote(), details,
+                       page_translatable);
   }
 
   void SimulateOnPageTranslated(const std::string& source_lang,
@@ -376,7 +374,7 @@ class TranslateManagerRenderViewHostTest
 
   TestRenderViewContextMenu* CreateContextMenu() {
     content::ContextMenuParams params;
-    params.media_type = blink::WebContextMenuData::kMediaTypeNone;
+    params.media_type = blink::ContextMenuDataMediaType::kNone;
     params.x = 0;
     params.y = 0;
     params.has_image_contents = true;
@@ -390,7 +388,7 @@ class TranslateManagerRenderViewHostTest
     params.writing_direction_left_to_right = 0;
     params.writing_direction_right_to_left = 0;
 #endif  // OS_MACOSX
-    params.edit_flags = blink::WebContextMenuData::kCanTranslate;
+    params.edit_flags = blink::ContextMenuDataEditFlags::kCanTranslate;
     return new TestRenderViewContextMenu(web_contents()->GetMainFrame(),
                                          params);
   }
@@ -427,7 +425,7 @@ class TranslateManagerRenderViewHostTest
     ChromeTranslateClient::CreateForWebContents(web_contents());
     ChromeTranslateClient::FromWebContents(web_contents())
         ->translate_driver()
-        .set_translate_max_reload_attempts(0);
+        ->set_translate_max_reload_attempts(0);
 
     infobar_observer_.Add(infobar_service());
   }
@@ -581,7 +579,7 @@ TEST_F(TranslateManagerRenderViewHostTest, FetchLanguagesFromTranslateServer) {
     const std::string& lang = server_languages[i];
     if (lang == "xx")
       continue;
-    EXPECT_TRUE(base::ContainsValue(current_supported_languages, lang))
+    EXPECT_TRUE(base::Contains(current_supported_languages, lang))
         << "lang=" << lang;
   }
 }
@@ -886,7 +884,7 @@ TEST_F(TranslateManagerRenderViewHostTest, Reload) {
   // immediately.
   ChromeTranslateClient::FromWebContents(web_contents())
       ->translate_driver()
-      .set_translate_max_reload_attempts(100);
+      ->set_translate_max_reload_attempts(100);
   ReloadAndWait(true);
   EXPECT_FALSE(TranslateUiVisible());
 }

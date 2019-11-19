@@ -18,8 +18,14 @@ D3D11BufferMock::~D3D11BufferMock() = default;
 D3D11DeviceMock::D3D11DeviceMock() = default;
 D3D11DeviceMock::~D3D11DeviceMock() = default;
 
+DXGIDeviceMock::DXGIDeviceMock() = default;
+DXGIDeviceMock::~DXGIDeviceMock() = default;
+
 DXGIDevice2Mock::DXGIDevice2Mock() = default;
 DXGIDevice2Mock::~DXGIDevice2Mock() = default;
+
+DXGIAdapterMock::DXGIAdapterMock() = default;
+DXGIAdapterMock::~DXGIAdapterMock() = default;
 
 DXGIAdapter3Mock::DXGIAdapter3Mock() = default;
 DXGIAdapter3Mock::~DXGIAdapter3Mock() = default;
@@ -38,6 +44,14 @@ D3D11VideoContext1Mock::~D3D11VideoContext1Mock() = default;
 
 D3D11VideoDecoderMock::D3D11VideoDecoderMock() = default;
 D3D11VideoDecoderMock::~D3D11VideoDecoderMock() = default;
+
+D3D11VideoProcessorMock::D3D11VideoProcessorMock() = default;
+D3D11VideoProcessorMock::~D3D11VideoProcessorMock() = default;
+
+D3D11VideoProcessorEnumeratorMock::D3D11VideoProcessorEnumeratorMock() =
+    default;
+D3D11VideoProcessorEnumeratorMock::~D3D11VideoProcessorEnumeratorMock() =
+    default;
 
 D3D11CryptoSessionMock::D3D11CryptoSessionMock() = default;
 D3D11CryptoSessionMock::~D3D11CryptoSessionMock() = default;

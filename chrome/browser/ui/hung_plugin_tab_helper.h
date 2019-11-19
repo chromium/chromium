@@ -68,15 +68,11 @@ class HungPluginTabHelper
   // state accordingly. The plugin must not have an infobar already.
   void ShowBar(int child_id, PluginState* state);
 
-  // Closes the infobar associated with the given state. Note that this can
-  // be called even if the bar is not opened, in which case it will do nothing.
-  void CloseBar(PluginState* state);
-
   // All currently hung plugins.
   std::map<int, std::unique_ptr<PluginState>> hung_plugins_;
 
   ScopedObserver<infobars::InfoBarManager, infobars::InfoBarManager::Observer>
-      infobar_observer_;
+      infobar_observer_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 

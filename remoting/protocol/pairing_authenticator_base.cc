@@ -20,7 +20,7 @@ const jingle_xmpp::StaticQName kPairingFailedTag =
 const jingle_xmpp::StaticQName kPairingErrorAttribute = { "", "error" };
 }  // namespace
 
-PairingAuthenticatorBase::PairingAuthenticatorBase() : weak_factory_(this) {}
+PairingAuthenticatorBase::PairingAuthenticatorBase() {}
 PairingAuthenticatorBase::~PairingAuthenticatorBase() = default;
 
 Authenticator::State PairingAuthenticatorBase::state() const {

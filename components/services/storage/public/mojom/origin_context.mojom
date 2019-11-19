@@ -1,0 +1,14 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module storage.mojom;
+
+// An OriginContext exposes various storage backend interfaces scoped to a
+// single security origin and a single Partition. See
+// |Partition.BindOriginContext()|.
+//
+// It is safe for the browser to broker OriginContext endpoints to the Storage
+// Service if the renderer is known to be rendering content from the relevant
+// origin.
+interface OriginContext {};

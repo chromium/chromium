@@ -5,21 +5,26 @@
 package org.chromium.chrome.browser.permissions;
 
 import android.app.Activity;
-import android.content.DialogInterface;
 import android.content.pm.PackageManager;
-import android.support.v7.app.AlertDialog;
 import android.util.SparseArray;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.annotation.StringRes;
+
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ContentSettingsType;
 import org.chromium.chrome.browser.metrics.WebApkUma;
-import org.chromium.chrome.browser.preferences.PrefServiceBridge;
+import org.chromium.chrome.browser.preferences.website.WebsitePreferenceBridge;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.webapps.WebApkActivity;
 import org.chromium.ui.base.PermissionCallback;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modaldialog.DialogDismissalCause;
+import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
+import org.chromium.ui.modaldialog.ModalDialogProperties;
+import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -45,7 +50,7 @@ public class AndroidPermissionRequester {
             WindowAndroid windowAndroid, int[] contentSettingsTypes) {
         SparseArray<String[]> permissionsToRequest = new SparseArray<>();
         for (int i = 0; i < contentSettingsTypes.length; i++) {
-            String[] permissions = PrefServiceBridge.getAndroidPermissionsForContentSetting(
+            String[] permissions = WebsitePreferenceBridge.getAndroidPermissionsForContentSetting(
                     contentSettingsTypes[i]);
             if (permissions == null) continue;
             List<String> missingPermissions = new ArrayList<>();
@@ -122,24 +127,19 @@ public class AndroidPermissionRequester {
                 if (allRequestable && !deniedContentSettings.isEmpty() && activity != null) {
                     int deniedStringId = -1;
                     if (deniedContentSettings.size() == 2
+                            && deniedContentSettings.contains(ContentSettingsType.MEDIASTREAM_MIC)
                             && deniedContentSettings.contains(
-                                       ContentSettingsType.CONTENT_SETTINGS_TYPE_MEDIASTREAM_MIC)
-                            && deniedContentSettings.contains(
-                                       ContentSettingsType
-                                               .CONTENT_SETTINGS_TYPE_MEDIASTREAM_CAMERA)) {
+                                    ContentSettingsType.MEDIASTREAM_CAMERA)) {
                         deniedStringId =
                                 R.string.infobar_missing_microphone_camera_permissions_text;
                     } else if (deniedContentSettings.size() == 1) {
-                        if (deniedContentSettings.contains(
-                                    ContentSettingsType.CONTENT_SETTINGS_TYPE_GEOLOCATION)) {
+                        if (deniedContentSettings.contains(ContentSettingsType.GEOLOCATION)) {
                             deniedStringId = R.string.infobar_missing_location_permission_text;
                         } else if (deniedContentSettings.contains(
-                                           ContentSettingsType
-                                                   .CONTENT_SETTINGS_TYPE_MEDIASTREAM_MIC)) {
+                                           ContentSettingsType.MEDIASTREAM_MIC)) {
                             deniedStringId = R.string.infobar_missing_microphone_permission_text;
                         } else if (deniedContentSettings.contains(
-                                           ContentSettingsType
-                                                   .CONTENT_SETTINGS_TYPE_MEDIASTREAM_CAMERA)) {
+                                           ContentSettingsType.MEDIASTREAM_CAMERA)) {
                             deniedStringId = R.string.infobar_missing_camera_permission_text;
                         }
                     }
@@ -148,28 +148,9 @@ public class AndroidPermissionRequester {
                             != -1 : "Invalid combination of missing content settings: "
                                     + deniedContentSettings;
 
-                    View view = activity.getLayoutInflater().inflate(
-                            R.layout.update_permissions_dialog, null);
-                    TextView dialogText = (TextView) view.findViewById(R.id.text);
-                    dialogText.setText(deniedStringId);
-
-                    AlertDialog.Builder builder =
-                            new AlertDialog.Builder(activity, R.style.Theme_Chromium_AlertDialog);
-                    builder.setView(view);
-                    builder.setPositiveButton(R.string.infobar_update_permissions_button_text,
-                            new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int id) {
-                                    requestAndroidPermissions(tab, contentSettingsTypes, delegate);
-                                }
-                            });
-                    builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
-                        @Override
-                        public void onCancel(DialogInterface dialog) {
-                            delegate.onAndroidPermissionCanceled();
-                        }
-                    });
-                    builder.create().show();
+                    showMissingPermissionDialog(activity, deniedStringId,
+                            () -> requestAndroidPermissions(tab, contentSettingsTypes, delegate),
+                            delegate::onAndroidPermissionCanceled);
                 } else if (deniedContentSettings.isEmpty()) {
                     delegate.onAndroidPermissionAccepted();
                 } else {
@@ -190,5 +171,51 @@ public class AndroidPermissionRequester {
             WebApkUma.recordAndroidRuntimePermissionPromptInWebApk(permissions);
         }
         return true;
+    }
+
+    /**
+     * Shows a dialog that informs the user about a missing Android permission.
+     * @param activity Current Activity. It should implement {@link ModalDialogManagerHolder}.
+     * @param messageId The message that is shown on the dialog.
+     * @param onPositiveButtonClicked Runnable that is executed on positive button click.
+     * @param onCancelled Runnable that is executed on cancellation.
+     */
+    public static void showMissingPermissionDialog(Activity activity, @StringRes int messageId,
+            Runnable onPositiveButtonClicked, Runnable onCancelled) {
+        assert activity instanceof ModalDialogManagerHolder
+            : "Activity should implement ModalDialogManagerHolder";
+        final ModalDialogManager modalDialogManager =
+                ((ModalDialogManagerHolder) activity).getModalDialogManager();
+        assert modalDialogManager != null : "ModalDialogManager is null";
+
+        ModalDialogProperties.Controller controller = new ModalDialogProperties.Controller() {
+            @Override
+            public void onClick(PropertyModel model, int buttonType) {
+                if (buttonType == ModalDialogProperties.ButtonType.POSITIVE) {
+                    onPositiveButtonClicked.run();
+                    modalDialogManager.dismissDialog(
+                            model, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
+                }
+            }
+
+            @Override
+            public void onDismiss(PropertyModel model, int dismissalCause) {
+                if (dismissalCause != DialogDismissalCause.POSITIVE_BUTTON_CLICKED) {
+                    onCancelled.run();
+                }
+            }
+        };
+        View view = activity.getLayoutInflater().inflate(R.layout.update_permissions_dialog, null);
+        TextView dialogText = view.findViewById(R.id.text);
+        dialogText.setText(messageId);
+        PropertyModel dialogModel =
+                new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
+                        .with(ModalDialogProperties.CUSTOM_VIEW, view)
+                        .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
+                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT,
+                                activity.getString(R.string.infobar_update_permissions_button_text))
+                        .with(ModalDialogProperties.CONTROLLER, controller)
+                        .build();
+        modalDialogManager.showDialog(dialogModel, ModalDialogManager.ModalDialogType.APP);
     }
 }

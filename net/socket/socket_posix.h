@@ -44,7 +44,8 @@ class NET_EXPORT_PRIVATE SocketPosix
   // to be accepted, but must not be actually connected.
   int AdoptUnconnectedSocket(SocketDescriptor socket);
 
-  // Releases ownership of |socket_fd_| to caller.
+  // Releases ownership of |socket_fd_| to caller. There must be no pending
+  // write.
   SocketDescriptor ReleaseConnectedSocket();
 
   int Bind(const SockaddrStorage& address);
@@ -119,7 +120,8 @@ class NET_EXPORT_PRIVATE SocketPosix
   int DoWrite(IOBuffer* buf, int buf_len);
   void WriteCompleted();
 
-  void StopWatchingAndCleanUp();
+  // |close_socket| indicates whether the socket should also be closed.
+  void StopWatchingAndCleanUp(bool close_socket);
 
   SocketDescriptor socket_fd_;
 

@@ -9,20 +9,22 @@
 #include <string>
 #include <utility>
 
-#include "ash/public/interfaces/ime_controller.mojom.h"
-#include "ash/public/interfaces/ime_info.mojom.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "ash/public/mojom/ime_controller.mojom.h"
+#include "ash/public/mojom/ime_info.mojom-forward.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 
 class TestImeController : ash::mojom::ImeController {
  public:
   TestImeController();
   ~TestImeController() override;
 
-  // Returns a mojo interface pointer bound to this object.
-  ash::mojom::ImeControllerPtr CreateInterfacePtr();
+  // Returns a mojo remote for this object.
+  mojo::PendingRemote<ash::mojom::ImeController> CreateRemote();
 
   // ash::mojom::ImeController:
-  void SetClient(ash::mojom::ImeControllerClientPtr client) override;
+  void SetClient(
+      mojo::PendingRemote<ash::mojom::ImeControllerClient> client) override;
   void RefreshIme(const std::string& current_ime_id,
                   std::vector<ash::mojom::ImeInfoPtr> available_imes,
                   std::vector<ash::mojom::ImeMenuItemPtr> menu_items) override;
@@ -52,7 +54,7 @@ class TestImeController : ash::mojom::ImeController {
   bool is_voice_enabled_ = false;
 
  private:
-  mojo::Binding<ash::mojom::ImeController> binding_;
+  mojo::Receiver<ash::mojom::ImeController> receiver_{this};
 
   DISALLOW_COPY_AND_ASSIGN(TestImeController);
 };

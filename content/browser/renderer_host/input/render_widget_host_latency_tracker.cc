@@ -5,12 +5,12 @@
 #include "content/browser/renderer_host/input/render_widget_host_latency_tracker.h"
 
 #include <stddef.h>
+#include <string>
 
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
-#include "components/rappor/public/rappor_utils.h"
 #include "content/browser/renderer_host/render_widget_host_delegate.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
@@ -114,7 +114,7 @@ void RenderWidgetHostLatencyTracker::OnInputEvent(
   if (event.GetType() == WebInputEvent::kTouchStart) {
     const WebTouchEvent& touch_event =
         *static_cast<const WebTouchEvent*>(&event);
-    DCHECK(touch_event.touches_length >= 1);
+    DCHECK_GE(touch_event.touches_length, static_cast<unsigned>(1));
     active_multi_finger_gesture_ = touch_event.touches_length != 1;
   }
 
@@ -143,9 +143,7 @@ void RenderWidgetHostLatencyTracker::OnInputEvent(
       timestamp_original = timestamp_now;
 
     latency->AddLatencyNumberWithTimestamp(
-        ui::INPUT_EVENT_LATENCY_ORIGINAL_COMPONENT,
-        timestamp_original,
-        1);
+        ui::INPUT_EVENT_LATENCY_ORIGINAL_COMPONENT, timestamp_original);
   }
 
   latency->AddLatencyNumberWithTraceName(
@@ -165,14 +163,16 @@ void RenderWidgetHostLatencyTracker::OnInputEvent(
           has_seen_first_gesture_scroll_update_
               ? ui::INPUT_EVENT_LATENCY_SCROLL_UPDATE_ORIGINAL_COMPONENT
               : ui::INPUT_EVENT_LATENCY_FIRST_SCROLL_UPDATE_ORIGINAL_COMPONENT,
-          original_event_timestamp, 1);
+          original_event_timestamp);
       latency->AddLatencyNumberWithTimestamp(
           ui::INPUT_EVENT_LATENCY_SCROLL_UPDATE_LAST_EVENT_COMPONENT,
-          original_event_timestamp, 1);
+          original_event_timestamp);
     }
 
     has_seen_first_gesture_scroll_update_ = true;
     latency->set_scroll_update_delta(
+        static_cast<const WebGestureEvent&>(event).data.scroll_update.delta_y);
+    latency->set_predicted_scroll_update_delta(
         static_cast<const WebGestureEvent&>(event).data.scroll_update.delta_y);
   }
 }

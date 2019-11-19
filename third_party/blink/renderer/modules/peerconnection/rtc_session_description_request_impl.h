@@ -79,15 +79,8 @@ class RTCSessionDescriptionRequestImpl final
   void Clear();
 
   RTCCreateSessionDescriptionOperation operation_;
-  // This request object is held by WebRTCPeerConnectionHandler, which doesn't
-  // support wrapper-tracing. Thus, this object holds the underlying callback
-  // functions as persistent handles. This is acceptable because the request
-  // object will be discarded in a limited time due to success, failure, or
-  // destruction of the execution context.
-  Member<V8PersistentCallbackFunction<V8RTCSessionDescriptionCallback>>
-      success_callback_;
-  Member<V8PersistentCallbackFunction<V8RTCPeerConnectionErrorCallback>>
-      error_callback_;
+  Member<V8RTCSessionDescriptionCallback> success_callback_;
+  Member<V8RTCPeerConnectionErrorCallback> error_callback_;
 
   Member<RTCPeerConnection> requester_;
 };

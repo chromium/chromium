@@ -1,17 +1,17 @@
 Tests cookie pane rendering in Network panel
 
 --------------------------
+Request Cookies
 Name
 Value
 Domain
 Path
 Expires / Max-Age
 Size
-HTTP
+HttpOnly
 Secure
 SameSite
-Request Cookies					33
+Name	Value	Domain	Path	Expires / Max-Age	Size	HttpOnly	Secure	SameSite
 mycookie	myvalue	N/A	N/A	N/A	17
 myother	myvalue2	N/A	N/A	N/A	16
-Response Cookies					0
 

@@ -10,7 +10,8 @@
 #include "content/common/content_export.h"
 #include "content/common/input/input_handler.mojom.h"
 #include "content/renderer/render_frame_impl.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 
 namespace content {
 class MainThreadEventQueue;
@@ -41,7 +42,7 @@ class CONTENT_EXPORT FrameInputHandlerImpl : public mojom::FrameInputHandler {
  public:
   static void CreateMojoService(
       base::WeakPtr<RenderFrameImpl> render_frame,
-      mojom::FrameInputHandlerRequest request);
+      mojo::PendingReceiver<mojom::FrameInputHandler> receiver);
 
   void SetCompositionFromExistingText(
       int32_t start,
@@ -78,8 +79,8 @@ class CONTENT_EXPORT FrameInputHandlerImpl : public mojom::FrameInputHandler {
   void ScrollFocusedEditableNodeIntoRect(const gfx::Rect& rect) override;
   void MoveCaret(const gfx::Point& point) override;
   void GetWidgetInputHandler(
-      mojom::WidgetInputHandlerAssociatedRequest interface_request,
-      mojom::WidgetInputHandlerHostPtr host) override;
+      mojo::PendingAssociatedReceiver<mojom::WidgetInputHandler> receiver,
+      mojo::PendingRemote<mojom::WidgetInputHandlerHost> host) override;
 
  private:
   ~FrameInputHandlerImpl() override;
@@ -97,16 +98,17 @@ class CONTENT_EXPORT FrameInputHandlerImpl : public mojom::FrameInputHandler {
     bool original_pasting_value_;
   };
 
-  FrameInputHandlerImpl(base::WeakPtr<RenderFrameImpl> render_frame,
-                        mojom::FrameInputHandlerRequest request);
+  FrameInputHandlerImpl(
+      base::WeakPtr<RenderFrameImpl> render_frame,
+      mojo::PendingReceiver<mojom::FrameInputHandler> receiver);
 
   void RunOnMainThread(base::OnceClosure closure);
-  void BindNow(mojom::FrameInputHandlerRequest request);
+  void BindNow(mojo::PendingReceiver<mojom::FrameInputHandler> receiver);
   void ExecuteCommandOnMainThread(const std::string& command,
                                   UpdateState state);
   void Release();
 
-  mojo::Binding<mojom::FrameInputHandler> binding_;
+  mojo::Receiver<mojom::FrameInputHandler> receiver_{this};
 
   // |render_frame_| should only be accessed on the main thread. Use
   // GetRenderFrame so that it will DCHECK this for you.
@@ -116,7 +118,7 @@ class CONTENT_EXPORT FrameInputHandlerImpl : public mojom::FrameInputHandler {
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
 
   base::WeakPtr<FrameInputHandlerImpl> weak_this_;
-  base::WeakPtrFactory<FrameInputHandlerImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<FrameInputHandlerImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FrameInputHandlerImpl);
 };

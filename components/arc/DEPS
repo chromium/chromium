@@ -3,6 +3,8 @@ include_rules = [
   "+chromeos/constants",
   "+chromeos/cryptohome",
   "+chromeos/dbus",
+  "+chromeos/system",
+  "+components/guest_os",
   "+components/account_id",
   "+components/exo",
   "+components/keyed_service",
@@ -11,13 +13,16 @@ include_rules = [
   "+components/session_manager/core",
   "+components/timers",
   "+components/user_manager",
-  "+media/base/video_codecs.h",
+  "+components/user_prefs",
+  "+components/version_info",
+  "+content/public/browser",
+  "+media/base",
   "+media/video/video_encode_accelerator.h",
   "+mojo",
-  "+storage/browser/fileapi",
+  "+storage/browser/file_system",
   "+third_party/re2",
   "+third_party/skia",
-  "+ui/base/ime",
+  "+ui/base",
   "+ui/gfx/geometry",
   "+ui/gfx/range/range.h",
 ]
@@ -35,6 +40,6 @@ specific_include_rules = {
     "+ui/aura",
   ],
   ".*_unittest.cc": [
-    "+content/public/test/test_browser_thread_bundle.h"
+    "+content/public/test/browser_task_environment.h"
   ],
 }

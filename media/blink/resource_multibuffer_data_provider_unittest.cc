@@ -22,6 +22,8 @@
 #include "net/base/net_errors.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_util.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/platform/web_network_state_notifier.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_error.h"
@@ -42,6 +44,7 @@ using blink::WebURLResponse;
 namespace media {
 
 const char kHttpUrl[] = "http://test";
+const char kHttpsUrl[] = "https://test";
 const char kHttpRedirect[] = "http://test/ing";
 const char kEtag[] = "\"arglebargle glopy-glyf?\"";
 
@@ -51,13 +54,14 @@ const int kHttpPartialContent = 206;
 
 enum NetworkState { NONE, LOADED, LOADING };
 
-static bool got_frfr = false;
+static bool want_frfr = false;
 
-// Predicate that tests that request disallows compressed data.
+// Predicate that checks the Chrome-Proxy and Accept-Encoding request headers.
 static bool CorrectAcceptEncodingAndProxy(const blink::WebURLRequest& request) {
   std::string chrome_proxy =
       request.HttpHeaderField(WebString::FromUTF8("chrome-proxy")).Utf8();
-  if (chrome_proxy != (got_frfr ? "" : "frfr")) {
+  bool has_frfr = chrome_proxy == "frfr";
+  if (has_frfr != want_frfr) {
     return false;
   }
 
@@ -82,6 +86,7 @@ class ResourceMultiBufferDataProviderTest : public testing::Test {
   }
 
   void Initialize(const char* url, int first_position) {
+    want_frfr = false;
     gurl_ = GURL(url);
     url_data_ = url_index_->GetByUrl(gurl_, UrlData::CORS_UNSPECIFIED);
     url_data_->set_etag(kEtag);
@@ -101,13 +106,12 @@ class ResourceMultiBufferDataProviderTest : public testing::Test {
   }
 
   void Start() {
-    got_frfr = false;
     loader_->Start();
   }
 
   void FullResponse(int64_t instance_size, bool ok = true) {
     WebURLResponse response(gurl_);
-    response.SetHTTPHeaderField(
+    response.SetHttpHeaderField(
         WebString::FromUTF8("Content-Length"),
         WebString::FromUTF8(base::StringPrintf("%" PRId64, instance_size)));
     response.SetExpectedContentLength(instance_size);
@@ -133,7 +137,7 @@ class ResourceMultiBufferDataProviderTest : public testing::Test {
                        bool chunked,
                        bool accept_ranges) {
     WebURLResponse response(gurl_);
-    response.SetHTTPHeaderField(
+    response.SetHttpHeaderField(
         WebString::FromUTF8("Content-Range"),
         WebString::FromUTF8(
             base::StringPrintf("bytes "
@@ -143,7 +147,7 @@ class ResourceMultiBufferDataProviderTest : public testing::Test {
     // HTTP 1.1 doesn't permit Content-Length with Transfer-Encoding: chunked.
     int64_t content_length = -1;
     if (chunked) {
-      response.SetHTTPHeaderField(WebString::FromUTF8("Transfer-Encoding"),
+      response.SetHttpHeaderField(WebString::FromUTF8("Transfer-Encoding"),
                                   WebString::FromUTF8("chunked"));
     } else {
       content_length = last_position - first_position + 1;
@@ -152,7 +156,7 @@ class ResourceMultiBufferDataProviderTest : public testing::Test {
 
     // A server isn't required to return Accept-Ranges even though it might.
     if (accept_ranges) {
-      response.SetHTTPHeaderField(WebString::FromUTF8("Accept-Ranges"),
+      response.SetHttpHeaderField(WebString::FromUTF8("Accept-Ranges"),
                                   WebString::FromUTF8("bytes"));
     }
 
@@ -245,7 +249,7 @@ TEST_F(ResourceMultiBufferDataProviderTest, BadHttpResponse) {
 
   WebURLResponse response(gurl_);
   response.SetHttpStatusCode(404);
-  response.SetHTTPStatusText("Not Found\n");
+  response.SetHttpStatusText("Not Found\n");
   loader_->DidReceiveResponse(response);
 }
 
@@ -302,7 +306,7 @@ TEST_F(ResourceMultiBufferDataProviderTest, InvalidPartialResponse) {
   EXPECT_CALL(*this, RedirectCallback(scoped_refptr<UrlData>(nullptr)));
 
   WebURLResponse response(gurl_);
-  response.SetHTTPHeaderField(
+  response.SetHttpHeaderField(
       WebString::FromUTF8("Content-Range"),
       WebString::FromUTF8(base::StringPrintf("bytes "
                                              "%d-%d/%d",
@@ -319,6 +323,53 @@ TEST_F(ResourceMultiBufferDataProviderTest, TestRedirects) {
   Redirect(kHttpRedirect);
   FullResponse(1024);
   StopWhenLoad();
+}
+
+TEST_F(ResourceMultiBufferDataProviderTest, TestChromeProxyHeader) {
+  struct TestCase {
+    std::string label;
+    bool enable_save_data;
+    std::string url;
+    bool want_chrome_proxy;
+  };
+  const TestCase kTestCases[]{
+      {
+          "SaveData on, HTTP URL: chrome-proxy should exist.",
+          true,
+          kHttpUrl,
+          true,
+      },
+      {
+          "SaveData off, HTTP URL: chrome-proxy should not exist.",
+          false,
+          kHttpUrl,
+          false,
+      },
+      {
+          "SaveData on, HTTPS URL: chrome-proxy should not exist.",
+          true,
+          kHttpsUrl,
+          false,
+      },
+      {
+          "SaveData off, HTTPS URL: chrome-proxy should not exist.",
+          false,
+          kHttpsUrl,
+          false,
+      },
+  };
+  for (const TestCase& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.label);
+    blink::WebNetworkStateNotifier::SetSaveDataEnabled(
+        test_case.enable_save_data);
+
+    Initialize(test_case.url.c_str(), 0);
+    want_frfr = test_case.want_chrome_proxy;
+
+    Start();
+    FullResponse(1024);
+    StopWhenLoad();
+  }
 }
 
 }  // namespace media

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src='/resources/testharnessreport.js'></script>
+<iframe id="target-iframe1"
+  src="http://localhost:8080/misc/resources/cross-origin-subframe-for-scrolling.html" 
+  style="height: 100px; width: 100px; overflow-y: scroll; position: absolute; left: 50px; top: 50px">
+</iframe>
+<iframe id="target-iframe2"
+  src="http://localhost:8080/misc/resources/cross-origin-subframe-for-scrolling.html"
+  style="height: 100px; width: 100px; overflow-y: scroll; position: absolute; left: 50px; top: 200px">
+</iframe>
+
+<script>
+var scroll_test = async_test("Verify that two sibling cross-origin iframes " +
+    "both correctly scroll on scrollbar mouse clicks.");
+
+var last_frame_scrolled;
+var iframe1 = document.getElementById("target-iframe1");
+var iframe2 = document.getElementById("target-iframe2");
+
+function handleMessage(event) {
+  if (event.data.scrolled == 1 && last_frame_scrolled == 1) {
+    scroll_test.step(() => {
+      assert_greater_than(event.data.scrollTop, 0,
+          "iframe1 scroll offset greater than 0.")} );
+    last_frame_scrolled = 2;
+    iframe2.contentWindow.postMessage(
+        {clickScrollbar: true, frame_id: 2, left: iframe2.offsetLeft,
+        top: iframe2.offsetTop}, "*");
+  } else if (event.data.scrolled == 2) {
+    scroll_test.step(() => {
+        assert_greater_than(event.data.scrollTop, 0,
+            "iframe2 scroll offset greater than 0.")} );
+    scroll_test.done();
+  } else if (event.data.scrolled != 1){
+    assert_unreached("Received invalid postMessage from subframe.");
+  }
+}
+
+window.addEventListener("message", handleMessage);
+
+iframe1.onload = (() => {
+  last_frame_scrolled = 1;
+  console.log('posting');
+  iframe1.contentWindow.postMessage({clickScrollbar: true, frame_id: 1,
+      left: iframe1.offsetLeft, top: iframe1.offsetTop}, "*");
+});
+
+</script>
+

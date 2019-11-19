@@ -90,6 +90,9 @@ class MediaSinkInternal {
   const MediaSink& sink() const { return sink_; }
   MediaSink& sink() { return sink_; }
 
+  // TOOD(jrw): Use this method where appropriate.
+  const MediaSink::Id& id() const { return sink_.id(); }
+
   void set_dial_data(const DialSinkExtraData& dial_data);
 
   // Must only be called if the sink is a DIAL sink.

@@ -10,7 +10,7 @@
 #include "base/mac/scoped_block.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
-#include "components/autofill/core/browser/credit_card.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/payments/payments_service_url.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
@@ -98,7 +98,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   // In the case of server cards, open the Payments editing page instead.
   if (_creditCard.record_type() == autofill::CreditCard::FULL_SERVER_CARD ||
       _creditCard.record_type() == autofill::CreditCard::MASKED_SERVER_CARD) {
-    GURL paymentsURL = autofill::payments::GetManageInstrumentsUrl(0);
+    GURL paymentsURL = autofill::payments::GetManageInstrumentsUrl();
     OpenNewTabCommand* command =
         [OpenNewTabCommand commandWithURLFromChrome:paymentsURL];
     [self.dispatcher closeSettingsUIAndOpenURL:command];
@@ -159,6 +159,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       _creditCard, GetApplicationContext()->GetApplicationLocale());
   cardholderNameitem.textFieldEnabled = isEditing;
   cardholderNameitem.autofillUIType = AutofillUITypeCreditCardHolderFullName;
+  cardholderNameitem.hideIcon = !isEditing;
   [model addItem:cardholderNameitem
       toSectionWithIdentifier:SectionIdentifierFields];
 
@@ -176,8 +177,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
   cardNumberItem.textFieldEnabled = isEditing;
   cardNumberItem.autofillUIType = AutofillUITypeCreditCardNumber;
   cardNumberItem.keyboardType = UIKeyboardTypeNumberPad;
-  cardNumberItem.identifyingIcon =
-      [self cardTypeIconFromNetwork:_creditCard.network().c_str()];
+  cardNumberItem.hideIcon = !isEditing;
+  // Hide credit card icon when editing.
+  if (!isEditing) {
+    cardNumberItem.identifyingIcon =
+        [self cardTypeIconFromNetwork:_creditCard.network().c_str()];
+  }
   [model addItem:cardNumberItem
       toSectionWithIdentifier:SectionIdentifierFields];
 
@@ -191,6 +196,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   expirationMonthItem.textFieldEnabled = isEditing;
   expirationMonthItem.autofillUIType = AutofillUITypeCreditCardExpMonth;
   expirationMonthItem.keyboardType = UIKeyboardTypeNumberPad;
+  expirationMonthItem.hideIcon = !isEditing;
   [model addItem:expirationMonthItem
       toSectionWithIdentifier:SectionIdentifierFields];
 
@@ -205,6 +211,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   expirationYearItem.autofillUIType = AutofillUITypeCreditCardExpYear;
   expirationYearItem.keyboardType = UIKeyboardTypeNumberPad;
   expirationYearItem.returnKeyType = UIReturnKeyDone;
+  expirationYearItem.hideIcon = !isEditing;
   [model addItem:expirationYearItem
       toSectionWithIdentifier:SectionIdentifierFields];
 
@@ -260,7 +267,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   cell.selectionStyle = UITableViewCellSelectionStyleNone;
 
   NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:indexPath];
-  AutofillEditCell* editCell = base::mac::ObjCCast<AutofillEditCell>(cell);
+  TableViewTextEditCell* editCell =
+      base::mac::ObjCCast<TableViewTextEditCell>(cell);
   editCell.textField.delegate = self;
   switch (itemType) {
     case ItemTypeCardholderName:
@@ -296,10 +304,17 @@ typedef NS_ENUM(NSInteger, ItemType) {
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
   if (self.tableView.editing) {
     UITableViewCell* cell = [self.tableView cellForRowAtIndexPath:indexPath];
-    AutofillEditCell* textFieldCell =
-        base::mac::ObjCCastStrict<AutofillEditCell>(cell);
+    TableViewTextEditCell* textFieldCell =
+        base::mac::ObjCCastStrict<TableViewTextEditCell>(cell);
     [textFieldCell.textField becomeFirstResponder];
   }
+}
+
+#pragma mark - UIAdaptivePresentationControllerDelegate
+
+- (BOOL)presentationControllerShouldDismiss:
+    (UIPresentationController*)presentationController {
+  return !self.tableView.editing;
 }
 
 #pragma mark - Actions

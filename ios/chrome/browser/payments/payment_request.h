@@ -15,9 +15,9 @@
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/address_normalization_manager.h"
 #include "components/autofill/core/browser/address_normalizer_impl.h"
-#include "components/autofill/core/browser/credit_card.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/payments/core/journey_logger.h"
-#include "components/payments/core/payment_instrument.h"
+#include "components/payments/core/payment_app.h"
 #include "components/payments/core/payment_options_provider.h"
 #include "components/payments/core/payment_request_base_delegate.h"
 #include "components/payments/core/payments_profile_comparator.h"
@@ -34,7 +34,7 @@ class RegionDataLoader;
 }  // namespace autofill
 
 namespace payments {
-class AutofillPaymentInstrument;
+class AutofillPaymentApp;
 class CurrencyFormatter;
 class PaymentDetails;
 class PaymentDetailsModifier;
@@ -68,7 +68,7 @@ requestFullCreditCard:(const autofill::CreditCard&)creditCard
 // Called when a native iOS payment app should be launched.
 - (void)paymentInstrument:(payments::IOSPaymentInstrument*)paymentInstrument
     launchAppWithUniversalLink:(GURL)universalLink
-            instrumentDelegate:(payments::PaymentInstrument::Delegate*)delegate;
+            instrumentDelegate:(payments::PaymentApp::Delegate*)delegate;
 
 @end
 
@@ -114,7 +114,6 @@ class PaymentRequest : public PaymentOptionsProvider,
   autofill::PersonalDataManager* GetPersonalDataManager() override;
   const std::string& GetApplicationLocale() const override;
   bool IsIncognito() const override;
-  bool IsSslCertificateValid() override;
   const GURL& GetLastCommittedURL() const override;
   void DoFullCardRequest(
       const autofill::CreditCard& credit_card,
@@ -150,12 +149,12 @@ class PaymentRequest : public PaymentOptionsProvider,
 
   // Returns the total object of this payment request, taking into account the
   // applicable modifier for |selected_instrument|, if any.
-  const PaymentItem& GetTotal(PaymentInstrument* selected_instrument) const;
+  const PaymentItem& GetTotal(PaymentApp* selected_instrument) const;
 
   // Returns the display items for this payment request, taking into account the
   // applicable modifier for |selected_instrument|, if any.
   std::vector<PaymentItem> GetDisplayItems(
-      PaymentInstrument* selected_instrument) const;
+      PaymentApp* selected_instrument) const;
 
   // Updates the payment details of the |web_payment_request_|. It also updates
   // the cached references to the shipping options in |web_payment_request_| as
@@ -250,9 +249,9 @@ class PaymentRequest : public PaymentOptionsProvider,
     return supported_card_types_set_;
   }
 
-  // Creates and adds an AutofillPaymentInstrument to the list of payment
+  // Creates and adds an AutofillPaymentApp to the list of payment
   // instruments by making a copy of |credit_card|.
-  virtual AutofillPaymentInstrument* CreateAndAddAutofillPaymentInstrument(
+  virtual AutofillPaymentApp* CreateAndAddAutofillPaymentInstrument(
       const autofill::CreditCard& credit_card);
 
   // Updates the given |credit_card| in the PersonalDataManager if the user is
@@ -262,18 +261,18 @@ class PaymentRequest : public PaymentOptionsProvider,
 
   // Returns the available payment methods for this user that match a supported
   // type specified in |web_payment_request_|.
-  const std::vector<PaymentInstrument*>& payment_methods() const {
+  const std::vector<PaymentApp*>& payment_methods() const {
     return payment_methods_;
   }
 
   // Returns the currently selected payment method for this PaymentRequest flow
   // if there is one. Returns nullptr if there is no selected payment method.
-  PaymentInstrument* selected_payment_method() const {
+  PaymentApp* selected_payment_method() const {
     return selected_payment_method_;
   }
 
   // Sets the currently selected payment method for this PaymentRequest flow.
-  void set_selected_payment_method(PaymentInstrument* payment_method) {
+  void set_selected_payment_method(PaymentApp* payment_method) {
     selected_payment_method_ = payment_method;
   }
 
@@ -323,7 +322,7 @@ class PaymentRequest : public PaymentOptionsProvider,
   // Returns the first applicable modifier in the Payment Request for the
   // |selected_instrument|.
   const PaymentDetailsModifier* GetApplicableModifier(
-      PaymentInstrument* selected_instrument) const;
+      PaymentApp* selected_instrument) const;
 
   // Fetches the autofill profiles for this user from the PersonalDataManager,
   // and stores copies of them, owned by this PaymentRequest, in profile_cache_.
@@ -353,10 +352,10 @@ class PaymentRequest : public PaymentOptionsProvider,
   // methods.
   void PopulateAvailablePaymentMethods();
 
-  // Creates and adds an AutofillPaymentInstrument to the list of payment
+  // Creates and adds an AutofillPaymentApp to the list of payment
   // instruments by making a copy of |credit_card|. Updates PersonalDataManager
   // if not in incognito mode and |may_update_personal_data_manager| is true.
-  AutofillPaymentInstrument* CreateAndAddAutofillPaymentInstrument(
+  AutofillPaymentApp* CreateAndAddAutofillPaymentInstrument(
       const autofill::CreditCard& credit_card,
       bool may_update_personal_data_manager);
 
@@ -421,10 +420,10 @@ class PaymentRequest : public PaymentOptionsProvider,
   // them. Therefore, payment methods are fetched once and their copies are
   // cached here. Whenever payment methods are requested a vector of pointers to
   // these copies are returned.
-  std::vector<std::unique_ptr<PaymentInstrument>> payment_method_cache_;
+  std::vector<std::unique_ptr<PaymentApp>> payment_method_cache_;
 
-  std::vector<PaymentInstrument*> payment_methods_;
-  PaymentInstrument* selected_payment_method_;
+  std::vector<PaymentApp*> payment_methods_;
+  PaymentApp* selected_payment_method_;
 
   // A vector of supported basic card networks.
   std::vector<std::string> supported_card_networks_;
@@ -463,6 +462,8 @@ class PaymentRequest : public PaymentOptionsProvider,
   // Finds all iOS payment instruments for the url payment methods requested by
   // the merchant.
   IOSPaymentInstrumentFinder ios_instrument_finder_;
+
+  base::WeakPtrFactory<PaymentRequest> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PaymentRequest);
 };

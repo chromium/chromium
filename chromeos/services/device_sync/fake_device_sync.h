@@ -41,9 +41,15 @@ class FakeDeviceSync : public DeviceSyncBase {
           remote_devices);
   void InvokePendingSetSoftwareFeatureStateCallback(
       mojom::NetworkRequestResult result_code);
+  void InvokePendingSetFeatureStatusCallback(
+      mojom::NetworkRequestResult result_code);
   void InvokePendingFindEligibleDevicesCallback(
       mojom::NetworkRequestResult result_code,
       mojom::FindEligibleDevicesResponsePtr find_eligible_devices_response_ptr);
+  void InvokePendingGetDevicesActivityStatusCallback(
+      mojom::NetworkRequestResult result_code,
+      base::Optional<std::vector<mojom::DeviceActivityStatusPtr>>
+          get_devices_activity_status_response);
   void InvokePendingGetDebugInfoCallback(mojom::DebugInfoPtr debug_info_ptr);
 
  protected:
@@ -58,9 +64,15 @@ class FakeDeviceSync : public DeviceSyncBase {
       bool enabled,
       bool is_exclusive,
       SetSoftwareFeatureStateCallback callback) override;
+  void SetFeatureStatus(const std::string& device_instance_id,
+                        multidevice::SoftwareFeature feature,
+                        FeatureStatusChange status_change,
+                        SetFeatureStatusCallback callback) override;
   void FindEligibleDevices(multidevice::SoftwareFeature software_feature,
                            FindEligibleDevicesCallback callback) override;
   void GetDebugInfo(GetDebugInfoCallback callback) override;
+  void GetDevicesActivityStatus(
+      GetDevicesActivityStatusCallback callback) override;
 
  private:
   bool force_enrollment_now_completed_success_ = true;
@@ -71,7 +83,10 @@ class FakeDeviceSync : public DeviceSyncBase {
   std::queue<GetSyncedDevicesCallback> get_synced_devices_callback_queue_;
   std::queue<SetSoftwareFeatureStateCallback>
       set_software_feature_state_callback_queue_;
+  std::queue<SetFeatureStatusCallback> set_feature_status_callback_queue_;
   std::queue<FindEligibleDevicesCallback> find_eligible_devices_callback_queue_;
+  std::queue<GetDevicesActivityStatusCallback>
+      get_devices_activity_status_callback_queue_;
   std::queue<GetDebugInfoCallback> get_debug_info_callback_queue_;
 
   DISALLOW_COPY_AND_ASSIGN(FakeDeviceSync);

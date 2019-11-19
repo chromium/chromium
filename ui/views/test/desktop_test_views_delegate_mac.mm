@@ -8,9 +8,9 @@
 
 namespace views {
 
-DesktopTestViewsDelegate::DesktopTestViewsDelegate() {}
+DesktopTestViewsDelegate::DesktopTestViewsDelegate() = default;
 
-DesktopTestViewsDelegate::~DesktopTestViewsDelegate() {}
+DesktopTestViewsDelegate::~DesktopTestViewsDelegate() = default;
 
 void DesktopTestViewsDelegate::OnBeforeWidgetInit(
     Widget::InitParams* params,

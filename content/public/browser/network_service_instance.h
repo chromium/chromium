@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/callback_list.h"
+#include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 
@@ -27,10 +28,6 @@ class NetworkService;
 }
 }  // namespace network
 
-namespace service_manager {
-class Connector;
-}  // namespace service_manager
-
 namespace content {
 
 // Returns a pointer to the NetworkService, creating / re-creating it as needed.
@@ -41,33 +38,14 @@ namespace content {
 // This method can only be called on the UI thread.
 CONTENT_EXPORT network::mojom::NetworkService* GetNetworkService();
 
-// Similar to GetNetworkService(), but will create the NetworkService from a
-// service manager connector if needed. If network service is disabled,
-// |connector| will be ignored and this method is identical to
-// GetNetworkService().
-// This method can only be called on the UI thread.
-CONTENT_EXPORT network::mojom::NetworkService* GetNetworkServiceFromConnector(
-    service_manager::Connector* connector);
-
-// Registers |handler| to run (on UI thread) after NetworkServicePtr encounters
-// an error.  Note that there are no ordering guarantees wrt error handlers for
-// other interfaces (e.g. NetworkContextPtr and/or URLLoaderFactoryPtr).
-//
-// Can only be called on the UI thread.  No-op if NetworkService is disabled.
-CONTENT_EXPORT std::unique_ptr<base::CallbackList<void()>::Subscription>
-RegisterNetworkServiceCrashHandler(base::RepeatingClosure handler);
-
-// When network service is disabled, returns the in-process NetworkService
-// pointer which is used to ease transition to network service.
-// Must only be called on the IO thread.  Must not be called if the network
-// service is enabled.
-CONTENT_EXPORT network::NetworkService* GetNetworkServiceImpl();
-
+// Only on ChromeOS since it's only used there.
+#if defined(OS_CHROMEOS)
 // Returns the global NetworkChangeNotifier instance.
 CONTENT_EXPORT net::NetworkChangeNotifier* GetNetworkChangeNotifier();
+#endif
 
-// Call |FlushForTesting()| on cached |NetworkServicePtr|. For testing only.
-// Must only be called on the UI thread.
+// Call |FlushForTesting()| on cached |mojo::Remote<NetworkService>|. For
+// testing only. Must only be called on the UI thread.
 CONTENT_EXPORT void FlushNetworkServiceInstanceForTesting();
 
 // Returns a NetworkConnectionTracker that can be used to subscribe for

@@ -4,7 +4,9 @@
 # found in the LICENSE file.
 """Prints if the the terminal is likely to understand ANSI codes."""
 
+from __future__ import print_function
+
 import os
 
 # Add more terminals here as needed.
-print 'ANSICON' in os.environ
+print('ANSICON' in os.environ)

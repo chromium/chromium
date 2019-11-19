@@ -40,17 +40,17 @@ let nullToNan = x => (x === null ? NaN : x);
 function setMockMotionData(sensorProvider, motionData) {
   const degToRad = Math.PI / 180;
   return Promise.all([
-      setMockSensorDataForType(sensorProvider, device.mojom.SensorType.ACCELEROMETER, [
+      setMockSensorDataForType(sensorProvider, "Accelerometer", [
           nullToNan(motionData.accelerationIncludingGravityX),
           nullToNan(motionData.accelerationIncludingGravityY),
           nullToNan(motionData.accelerationIncludingGravityZ),
       ]),
-      setMockSensorDataForType(sensorProvider, device.mojom.SensorType.LINEAR_ACCELERATION, [
+      setMockSensorDataForType(sensorProvider, "LinearAccelerationSensor", [
           nullToNan(motionData.accelerationX),
           nullToNan(motionData.accelerationY),
           nullToNan(motionData.accelerationZ),
       ]),
-      setMockSensorDataForType(sensorProvider, device.mojom.SensorType.GYROSCOPE, [
+      setMockSensorDataForType(sensorProvider, "Gyroscope", [
           nullToNan(motionData.rotationRateAlpha) * degToRad,
           nullToNan(motionData.rotationRateBeta) * degToRad,
           nullToNan(motionData.rotationRateGamma) * degToRad,
@@ -60,8 +60,7 @@ function setMockMotionData(sensorProvider, motionData) {
 
 function setMockOrientationData(sensorProvider, orientationData) {
   let sensorType = orientationData.absolute
-      ? device.mojom.SensorType.ABSOLUTE_ORIENTATION_EULER_ANGLES
-      : device.mojom.SensorType.RELATIVE_ORIENTATION_EULER_ANGLES;
+      ? "AbsoluteOrientationEulerAngles" : "RelativeOrientationEulerAngles";
   return setMockSensorDataForType(sensorProvider, sensorType, [
       nullToNan(orientationData.beta),
       nullToNan(orientationData.gamma),

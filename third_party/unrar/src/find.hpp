@@ -1,8 +1,6 @@
 #ifndef _RAR_FINDDATA_
 #define _RAR_FINDDATA_
 
-namespace third_party_unrar {
-
 enum FINDDATA_FLAGS {
   FDDF_SECONDDIR=1  // Second encounter of same directory in SCAN_GETDIRSTWICE ScanTree mode.
 };
@@ -47,7 +45,5 @@ class FindFile
     bool Next(FindData *fd,bool GetSymLink=false);
     static bool FastFind(const wchar *FindMask,FindData *fd,bool GetSymLink=false);
 };
-
-}  // namespace third_party_unrar
 
 #endif

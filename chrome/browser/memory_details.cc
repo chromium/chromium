@@ -148,7 +148,7 @@ void MemoryDetails::StartFetch() {
 
   // In order to process this request, we need to use the plugin information.
   // However, plugin process information is only available from the IO thread.
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&MemoryDetails::CollectChildInfoOnIOThread, this));
 }
@@ -209,9 +209,9 @@ void MemoryDetails::CollectChildInfoOnIOThread() {
   }
 
   // Now go do expensive memory lookups in a thread pool.
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE,
-      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&MemoryDetails::CollectProcessData, this, child_info));
 }

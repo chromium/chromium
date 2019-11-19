@@ -226,8 +226,9 @@ void PnaclComponentInstallerPolicy::ComponentReady(
     const base::FilePath& install_dir,
     std::unique_ptr<base::DictionaryValue> manifest) {
   CheckVersionCompatiblity(version);
-  base::PostTaskWithTraits(
-      FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
+  base::PostTask(
+      FROM_HERE,
+      {base::ThreadPool(), base::TaskPriority::BEST_EFFORT, base::MayBlock()},
       base::BindOnce(&OverrideDirPnaclComponent, install_dir));
 }
 

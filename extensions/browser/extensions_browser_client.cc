@@ -44,12 +44,6 @@ ExtensionsBrowserClient::CreateUpdateClient(content::BrowserContext* context) {
   return scoped_refptr<update_client::UpdateClient>(nullptr);
 }
 
-std::unique_ptr<ExtensionApiFrameIdMapHelper>
-ExtensionsBrowserClient::CreateExtensionApiFrameIdMapHelper(
-    ExtensionApiFrameIdMap* map) {
-  return nullptr;
-}
-
 std::unique_ptr<content::BluetoothChooser>
 ExtensionsBrowserClient::CreateBluetoothChooser(
     content::RenderFrameHost* frame,
@@ -66,12 +60,6 @@ void ExtensionsBrowserClient::ReportError(
 bool ExtensionsBrowserClient::IsActivityLoggingEnabled(
     content::BrowserContext* context) {
   return false;
-}
-
-ExtensionNavigationUIData*
-ExtensionsBrowserClient::GetExtensionNavigationUIData(
-    net::URLRequest* request) {
-  return nullptr;
 }
 
 void ExtensionsBrowserClient::GetTabAndWindowIdForWebContents(
@@ -104,6 +92,16 @@ UserScriptListener* ExtensionsBrowserClient::GetUserScriptListener() {
 
 std::string ExtensionsBrowserClient::GetUserAgent() const {
   return std::string();
+}
+
+bool ExtensionsBrowserClient::ShouldSchemeBypassNavigationChecks(
+    const std::string& scheme) const {
+  return false;
+}
+
+bool ExtensionsBrowserClient::ShouldForceWebRequestExtraHeaders(
+    content::BrowserContext* context) const {
+  return false;
 }
 
 }  // namespace extensions

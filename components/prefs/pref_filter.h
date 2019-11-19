@@ -22,15 +22,15 @@ class COMPONENTS_PREFS_EXPORT PrefFilter {
  public:
   // A pair of pre-write and post-write callbacks.
   using OnWriteCallbackPair =
-      std::pair<base::Closure, base::Callback<void(bool success)>>;
+      std::pair<base::OnceClosure, base::OnceCallback<void(bool success)>>;
 
   // A callback to be invoked when |prefs| have been read (and possibly
   // pre-modified) and are now ready to be handed back to this callback's
   // builder. |schedule_write| indicates whether a write should be immediately
   // scheduled (typically because the |prefs| were pre-modified).
   using PostFilterOnLoadCallback =
-      base::Callback<void(std::unique_ptr<base::DictionaryValue> prefs,
-                          bool schedule_write)>;
+      base::OnceCallback<void(std::unique_ptr<base::DictionaryValue> prefs,
+                              bool schedule_write)>;
 
   virtual ~PrefFilter() {}
 
@@ -42,7 +42,7 @@ class COMPONENTS_PREFS_EXPORT PrefFilter {
   // PersistentPrefStores should handle this to make the reads look synchronous
   // to external users (see SegregatedPrefStore::ReadPrefs() for an example).
   virtual void FilterOnLoad(
-      const PostFilterOnLoadCallback& post_filter_on_load_callback,
+      PostFilterOnLoadCallback post_filter_on_load_callback,
       std::unique_ptr<base::DictionaryValue> pref_store_contents) = 0;
 
   // Receives notification when a pref store value is changed, before Observers

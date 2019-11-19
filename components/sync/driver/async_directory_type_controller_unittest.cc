@@ -15,7 +15,7 @@
 #include "base/run_loop.h"
 #include "base/sequenced_task_runner.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -104,7 +104,7 @@ class AsyncDirectoryTypeControllerFake : public AsyncDirectoryTypeController {
                                      base::Closure(),
                                      sync_service,
                                      sync_client,
-                                     GROUP_DB,
+                                     GROUP_PASSWORD,
                                      nullptr),
         blocked_(false),
         mock_(mock),
@@ -175,8 +175,8 @@ class AsyncDirectoryTypeControllerFake : public AsyncDirectoryTypeController {
 class SyncAsyncDirectoryTypeControllerTest : public testing::Test {
  public:
   SyncAsyncDirectoryTypeControllerTest()
-      : scoped_task_environment_(
-            base::test::ScopedTaskEnvironment::MainThreadType::UI),
+      : task_environment_(
+            base::test::SingleThreadTaskEnvironment::MainThreadType::UI),
         backend_thread_("dbthread") {}
 
   void SetUp() override {
@@ -250,7 +250,7 @@ class SyncAsyncDirectoryTypeControllerTest : public testing::Test {
 
   static void SignalDone(WaitableEvent* done) { done->Signal(); }
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   base::Thread backend_thread_;
 
   StartCallbackMock start_callback_;

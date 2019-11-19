@@ -7,6 +7,8 @@
 
 #include "components/exo/surface_observer.h"
 #include "components/exo/surface_tree_host.h"
+#include "ui/accessibility/ax_node_data.h"
+#include "ui/accessibility/ax_tree_id.h"
 #include "ui/aura/window_observer.h"
 #include "ui/views/widget/widget_delegate.h"
 
@@ -21,7 +23,7 @@ class FullscreenShellSurface : public SurfaceTreeHost,
                                public views::WidgetDelegate,
                                public views::View {
  public:
-  explicit FullscreenShellSurface(Surface* surface);
+  FullscreenShellSurface();
   ~FullscreenShellSurface() override;
 
   // Set the callback to run when the user wants the shell surface to be closed.
@@ -41,6 +43,10 @@ class FullscreenShellSurface : public SurfaceTreeHost,
 
   // Set the startup ID for the surface.
   void SetStartupId(const char* startup_id);
+
+  // Set the Surface in use. Will replace root_surface_ if a surface is
+  // currently set. Will remove root_surface_ if |surface| is nullptr.
+  void SetSurface(Surface* surface);
 
   void Maximize();
 
@@ -74,7 +80,15 @@ class FullscreenShellSurface : public SurfaceTreeHost,
   // Overridden from aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override;
 
+  // Overridden from ui::View
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+
+  void SetChildAxTreeId(ui::AXTreeID child_ax_tree_id);
+
  private:
+  // Keep the bounds in sync with the root surface bounds.
+  void UpdateHostWindowBounds() override;
+
   void CreateFullscreenShellSurfaceWidget(ui::WindowShowState show_state);
   void CommitWidget();
   bool OnPreWidgetCommit();
@@ -85,6 +99,7 @@ class FullscreenShellSurface : public SurfaceTreeHost,
   base::Optional<std::string> startup_id_;
   base::RepeatingClosure close_callback_;
   base::OnceClosure surface_destroyed_callback_;
+  ui::AXTreeID child_ax_tree_id_ = ui::AXTreeIDUnknown();
 
   DISALLOW_COPY_AND_ASSIGN(FullscreenShellSurface);
 };

@@ -19,7 +19,7 @@ import org.chromium.media.MediaCodecUtil.MimeTypes;
 @JNINamespace("media")
 @MainDex
 class MediaCodecBridgeBuilder {
-    private static final String TAG = "cr_MediaCodecBridge";
+    private static final String TAG = "MediaCodecBridge";
 
     @CalledByNative
     static MediaCodecBridge createVideoDecoder(String mime, @CodecType int codecType,

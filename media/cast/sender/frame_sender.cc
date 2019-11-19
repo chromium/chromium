@@ -79,8 +79,7 @@ FrameSender::FrameSender(scoped_refptr<CastEnvironment> cast_environment,
       picture_lost_at_receiver_(false),
       rtp_timebase_(config.rtp_timebase),
       is_audio_(config.rtp_payload_type <= RtpPayloadType::AUDIO_LAST),
-      max_ack_delay_(config.max_playout_delay),
-      weak_factory_(this) {
+      max_ack_delay_(config.max_playout_delay) {
   DCHECK(transport_sender_);
   DCHECK_GT(rtp_timebase_, 0);
   DCHECK(congestion_control_);

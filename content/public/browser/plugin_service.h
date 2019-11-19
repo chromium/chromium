@@ -27,14 +27,15 @@ namespace content {
 
 class BrowserContext;
 class PluginServiceFilter;
-class ResourceContext;
 struct PepperPluginInfo;
 struct WebPluginInfo;
 
 // This must be created on the main thread but it's only called on the IO/file
-// thread. This is an asynchronous wrapper around the PluginList interface for
-// querying plugin information. This must be used instead of that to avoid
-// doing expensive disk operations on the IO/UI threads.
+// thread unless otherwise noted. This is an asynchronous wrapper around the
+// PluginList interface for querying plugin information. This must be used
+// instead of that to avoid doing expensive disk operations on the IO/UI
+// threads.
+// TODO(http://crbug.com/990013): Only use this on the UI thread.
 class CONTENT_EXPORT PluginService {
  public:
   using GetPluginsCallback =
@@ -69,9 +70,9 @@ class CONTENT_EXPORT PluginService {
   // Gets plugin info for an individual plugin and filters the plugins using
   // the |context| and renderer IDs. This will report whether the data is stale
   // via |is_stale| and returns whether or not the plugin can be found.
+  // This must be called from the UI thread.
   virtual bool GetPluginInfo(int render_process_id,
                              int render_frame_id,
-                             ResourceContext* context,
                              const GURL& url,
                              const url::Origin& main_frame_origin,
                              const std::string& mime_type,
@@ -83,17 +84,20 @@ class CONTENT_EXPORT PluginService {
   // Get plugin info by plugin path (including disabled plugins). Returns true
   // if the plugin is found and WebPluginInfo has been filled in |info|. This
   // will use cached data in the plugin list.
+  // This can be called from any thread.
   virtual bool GetPluginInfoByPath(const base::FilePath& plugin_path,
                                    WebPluginInfo* info) = 0;
 
   // Returns the display name for the plugin identified by the given path. If
   // the path doesn't identify a plugin, or the plugin has no display name,
   // this will attempt to generate a display name from the path.
+  // This can be called from any thread.
   virtual base::string16 GetPluginDisplayNameByPath(
       const base::FilePath& plugin_path) = 0;
 
   // Asynchronously loads plugins if necessary and then calls back to the
   // provided function on the calling sequence on completion.
+  // This can be called from any thread.
   virtual void GetPlugins(GetPluginsCallback callback) = 0;
 
   // Returns information about a pepper plugin if it exists, otherwise nullptr.

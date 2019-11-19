@@ -57,8 +57,7 @@ void LocationArbitrator::StartProvider(bool enable_high_accuracy) {
   enable_high_accuracy_ = enable_high_accuracy;
 
   if (providers_.empty()) {
-    RegisterSystemProvider();
-    RegisterNetworkProvider();
+    RegisterProviders();
   }
   DoStartProviders();
 }
@@ -99,22 +98,24 @@ void LocationArbitrator::RegisterProvider(
   providers_.push_back(std::move(provider));
 }
 
-void LocationArbitrator::RegisterSystemProvider() {
-  std::unique_ptr<LocationProvider> provider;
-  if (custom_location_provider_getter_)
-    provider = custom_location_provider_getter_.Run();
+void LocationArbitrator::RegisterProviders() {
+  if (custom_location_provider_getter_) {
+    auto custom_provider = custom_location_provider_getter_.Run();
+    if (custom_provider) {
+      RegisterProvider(std::move(custom_provider));
+      return;
+    }
+  }
 
-  // Use the default system provider if the custom provider is null.
-  if (!provider)
-    provider = NewSystemLocationProvider();
-  RegisterProvider(std::move(provider));
-}
-
-void LocationArbitrator::RegisterNetworkProvider() {
-  if (!url_loader_factory_)
+  auto system_provider = NewSystemLocationProvider();
+  if (system_provider) {
+    RegisterProvider(std::move(system_provider));
     return;
+  }
 
-  RegisterProvider(NewNetworkLocationProvider(url_loader_factory_, api_key_));
+  if (url_loader_factory_) {
+    RegisterProvider(NewNetworkLocationProvider(url_loader_factory_, api_key_));
+  }
 }
 
 void LocationArbitrator::OnLocationUpdate(
@@ -156,8 +157,7 @@ LocationArbitrator::NewNetworkLocationProvider(
 
 std::unique_ptr<LocationProvider>
 LocationArbitrator::NewSystemLocationProvider() {
-#if defined(OS_WIN) || defined(OS_MACOSX) || defined(OS_LINUX) || \
-    defined(OS_FUCHSIA)
+#if defined(OS_MACOSX) || defined(OS_LINUX) || defined(OS_FUCHSIA)
   return nullptr;
 #else
   return device::NewSystemLocationProvider();

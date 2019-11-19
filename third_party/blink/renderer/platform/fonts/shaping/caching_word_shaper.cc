@@ -56,7 +56,7 @@ float CachingWordShaper::Width(const TextRun& run,
       if (run.Rtl())
         width -= word_result->Width();
       if (glyph_bounds) {
-        FloatRect adjusted_bounds = word_result->Bounds();
+        FloatRect adjusted_bounds = word_result->DeprecatedInkBounds();
         // Translate glyph bounds to the current glyph position which
         // is the total width before this glyph.
         adjusted_bounds.SetX(adjusted_bounds.X() + width);

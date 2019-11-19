@@ -90,15 +90,7 @@ NSString* const kURLAndDistillationDateFormat = @"%s • %@";
   URLCell.metadataLabel.text = self.distillationSizeText;
   URLCell.cellUniqueIdentifier = base::SysUTF8ToNSString(self.entryURL.host());
   URLCell.accessibilityTraits |= UIAccessibilityTraitButton;
-  // If the background color specified by the styler is opaque, use it as the
-  // subview backround colors as well.
-  UIColor* backgroundColor = styler.tableViewBackgroundColor;
-  if (AreCGFloatsEqual(CGColorGetAlpha(backgroundColor.CGColor), 1.0)) {
-    URLCell.faviconContainerView.backgroundColor = backgroundColor;
-    URLCell.titleLabel.backgroundColor = backgroundColor;
-    URLCell.URLLabel.backgroundColor = backgroundColor;
-    URLCell.metadataLabel.backgroundColor = backgroundColor;
-  }
+
   if (styler.cellTitleColor)
     URLCell.titleLabel.textColor = styler.cellTitleColor;
   [URLCell.faviconView configureWithAttributes:self.attributes];

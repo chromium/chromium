@@ -20,7 +20,7 @@ namespace extensions {
 
 // A function that is only available in tests.
 // Prior to running, checks that we are in a testing process.
-class TestExtensionFunction : public UIThreadExtensionFunction {
+class TestExtensionFunction : public ExtensionFunction {
  protected:
   ~TestExtensionFunction() override;
 
@@ -61,7 +61,7 @@ class TestLogFunction : public TestExtensionFunction {
   ResponseAction Run() override;
 };
 
-class TestSendMessageFunction : public UIThreadExtensionFunction {
+class TestSendMessageFunction : public ExtensionFunction {
  public:
   TestSendMessageFunction();
   DECLARE_EXTENSION_FUNCTION("test.sendMessage", UNKNOWN)

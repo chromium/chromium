@@ -8,11 +8,12 @@
 
 #include "base/macros.h"
 #include "chrome/browser/chromeos/policy/secondary_google_account_signin_policy_handler.h"
+#include "chromeos/constants/chromeos_pref_names.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_value_map.h"
-#include "components/signin/core/browser/signin_pref_names.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace policy {
@@ -24,7 +25,8 @@ class SecondaryGoogleAccountSigninPolicyHandlerTest : public testing::Test {
   void SetPolicy(std::unique_ptr<base::Value> value) {
     policies_.Set(key::kSecondaryGoogleAccountSigninAllowed,
                   POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
-                  POLICY_SOURCE_CLOUD, std::move(value), nullptr);
+                  POLICY_SOURCE_CLOUD, std::move(value),
+                  nullptr /* external_data_fetcher */);
   }
 
   void ApplyPolicySettings(bool value) {
@@ -32,12 +34,29 @@ class SecondaryGoogleAccountSigninPolicyHandlerTest : public testing::Test {
     handler_.ApplyPolicySettings(policies_, &prefs_);
   }
 
-  bool GetAccountConsistencyPref(bool* pref) {
-    return prefs_.GetBoolean(prefs::kAccountConsistencyMirrorRequired, pref);
+  bool GetMirrorAccountConsistencyPref() {
+    bool pref = false;
+    bool success =
+        prefs_.GetBoolean(prefs::kAccountConsistencyMirrorRequired, &pref);
+    EXPECT_TRUE(success);
+    return pref;
   }
 
   void SetAccountConsistencyPref(bool pref) {
     prefs_.SetBoolean(prefs::kAccountConsistencyMirrorRequired, pref);
+  }
+
+  bool GetSecondaryGoogleAccountSigninAllowedPref() {
+    bool pref = false;
+    bool success = prefs_.GetBoolean(
+        chromeos::prefs::kSecondaryGoogleAccountSigninAllowed, &pref);
+    EXPECT_TRUE(success);
+    return pref;
+  }
+
+  void SetSecondaryGoogleAccountSigninPref(bool pref) {
+    prefs_.SetBoolean(chromeos::prefs::kSecondaryGoogleAccountSigninAllowed,
+                      pref);
   }
 
  private:
@@ -48,33 +67,50 @@ class SecondaryGoogleAccountSigninPolicyHandlerTest : public testing::Test {
   DISALLOW_COPY_AND_ASSIGN(SecondaryGoogleAccountSigninPolicyHandlerTest);
 };
 
+// If the policy is set to true, it should not override the default pref values
+// (set to true in this test case).
 TEST_F(SecondaryGoogleAccountSigninPolicyHandlerTest,
-       CheckSigninAllowedDoesNotChangeDefaultTruePreference) {
+       SettingPolicyToTrueDoesNotChangeDefaultPreferencesSetToTrue) {
+  // Set prefs to |true|.
   SetAccountConsistencyPref(true);
+  SetSecondaryGoogleAccountSigninPref(true);
+  // Set policy to |true|.
   ApplyPolicySettings(true /* policy value */);
 
-  bool preference = false;
-  EXPECT_TRUE(GetAccountConsistencyPref(&preference));
-  EXPECT_TRUE(preference);
+  // Test that the prefs should be set to |true|.
+  EXPECT_TRUE(GetMirrorAccountConsistencyPref());
+  EXPECT_TRUE(GetSecondaryGoogleAccountSigninAllowedPref());
 }
 
+// If the policy is set to true, it should not override the default pref values
+// (set to false in this test case).
 TEST_F(SecondaryGoogleAccountSigninPolicyHandlerTest,
-       CheckSigninAllowedDoesNotChangeDefaultFalsePreference) {
+       SettingPolicyToTrueDoesNotChangeDefaultPreferencesSetToFalse) {
+  // Set prefs to |false|.
   SetAccountConsistencyPref(false);
+  SetSecondaryGoogleAccountSigninPref(false);
+  // Set policy to |true|.
   ApplyPolicySettings(true /* policy value */);
 
-  bool preference = true;
-  EXPECT_TRUE(GetAccountConsistencyPref(&preference));
-  EXPECT_FALSE(preference);
+  // Test that the prefs should be set to |false|.
+  EXPECT_FALSE(GetMirrorAccountConsistencyPref());
+  EXPECT_FALSE(GetSecondaryGoogleAccountSigninAllowedPref());
 }
 
 TEST_F(SecondaryGoogleAccountSigninPolicyHandlerTest,
-       CheckSigninDisallowedEnablesMirror) {
+       SettingPolicyToFalseEnablesMirror) {
+  SetAccountConsistencyPref(false);
   ApplyPolicySettings(false /* policy value */);
 
-  bool preference = false;
-  EXPECT_TRUE(GetAccountConsistencyPref(&preference));
-  EXPECT_TRUE(preference);
+  EXPECT_TRUE(GetMirrorAccountConsistencyPref());
+}
+
+TEST_F(SecondaryGoogleAccountSigninPolicyHandlerTest,
+       SettingPolicyToFalseDisablesSecondaryAccountSignins) {
+  SetSecondaryGoogleAccountSigninPref(true);
+  ApplyPolicySettings(false /* policy value */);
+
+  EXPECT_FALSE(GetSecondaryGoogleAccountSigninAllowedPref());
 }
 
 }  // namespace policy

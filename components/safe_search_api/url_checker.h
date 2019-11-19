@@ -5,22 +5,14 @@
 #ifndef COMPONENTS_SAFE_SEARCH_API_URL_CHECKER_H_
 #define COMPONENTS_SAFE_SEARCH_API_URL_CHECKER_H_
 
-#include <stddef.h>
-
+#include <list>
 #include <memory>
-#include <vector>
 
 #include "base/callback_forward.h"
 #include "base/containers/mru_cache.h"
-#include "base/macros.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
-#include "net/traffic_annotation/network_traffic_annotation.h"
+#include "components/safe_search_api/url_checker_client.h"
 #include "url/gurl.h"
-
-namespace network {
-class SharedURLLoaderFactory;
-}  // namespace network
 
 namespace base {
 struct Feature;
@@ -34,29 +26,22 @@ enum class Classification { SAFE, UNSAFE };
 // Visible for testing.
 extern const base::Feature kAllowAllGoogleUrls;
 
-// This class uses the SafeSearch API to check the SafeSearch classification
-// of the content on a given URL and returns the result asynchronously
-// via a callback.
+// This class uses one implementation of URLCheckerClient to check the
+// classification of the content on a given URL and returns the result
+// asynchronously via a callback. It is also responsible for the synchronous
+// logic such as caching, the injected URLCheckerClient is who makes the
+// async request.
 class URLChecker {
  public:
-  // Returns whether |url| should be blocked. Called from CheckURL.
+  // Used to report whether |url| should be blocked. Called from CheckURL.
   using CheckCallback = base::OnceCallback<
       void(const GURL&, Classification classification, bool /* uncertain */)>;
 
-  // |country| should be a two-letter country code (ISO 3166-1 alpha-2), e.g.,
-  // "us".
-  URLChecker(scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-             const net::NetworkTrafficAnnotationTag& traffic_annotation,
-             const std::string& country);
-  URLChecker(scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-             const net::NetworkTrafficAnnotationTag& traffic_annotation,
-             const std::string& country,
+  explicit URLChecker(std::unique_ptr<URLCheckerClient> async_checker);
+
+  URLChecker(std::unique_ptr<URLCheckerClient> async_checker,
              size_t cache_size);
-  URLChecker(scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-             const net::NetworkTrafficAnnotationTag& traffic_annotation,
-             const std::string& country,
-             size_t cache_size,
-             const std::string& api_key);
+
   ~URLChecker();
 
   // Returns whether |callback| was run synchronously.
@@ -76,14 +61,11 @@ class URLChecker {
   };
   using CheckList = std::list<std::unique_ptr<Check>>;
 
-  void OnSimpleLoaderComplete(CheckList::iterator it,
-                              std::unique_ptr<std::string> response_body);
+  void OnAsyncCheckComplete(CheckList::iterator it,
+                            const GURL& url,
+                            ClientClassification classification);
 
-  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  const net::NetworkTrafficAnnotationTag traffic_annotation_;
-  const std::string country_;
-  const std::string api_key_;
-
+  std::unique_ptr<URLCheckerClient> async_checker_;
   CheckList checks_in_progress_;
 
   base::MRUCache<GURL, CheckResult> cache_;

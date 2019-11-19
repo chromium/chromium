@@ -80,7 +80,7 @@ class NET_EXPORT ElementsUploadDataStream : public UploadDataStream {
   // Set to actual error if read fails, otherwise set to net::OK.
   int read_error_;
 
-  base::WeakPtrFactory<ElementsUploadDataStream> weak_ptr_factory_;
+  base::WeakPtrFactory<ElementsUploadDataStream> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ElementsUploadDataStream);
 };

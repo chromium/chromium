@@ -19,17 +19,14 @@ using bookmarks_helper::SetURL;
 using sync_timing_helper::PrintResult;
 using sync_timing_helper::TimeMutualSyncCycle;
 
-static const int kNumBookmarks = 150;
+static const size_t kNumBookmarks = 150;
 
 class BookmarksSyncPerfTest : public SyncTest {
  public:
-  BookmarksSyncPerfTest()
-      : SyncTest(TWO_CLIENT),
-        url_number_(0),
-        url_title_number_(0) {}
+  BookmarksSyncPerfTest() : SyncTest(TWO_CLIENT) {}
 
   // Adds |num_urls| new unique bookmarks to the bookmark bar for |profile|.
-  void AddURLs(int profile, int num_urls);
+  void AddURLs(int profile, size_t num_urls);
 
   // Updates the URL for all bookmarks in the bookmark bar for |profile|.
   void UpdateURLs(int profile);
@@ -38,7 +35,7 @@ class BookmarksSyncPerfTest : public SyncTest {
   void RemoveURLs(int profile);
 
   // Returns the number of bookmarks stored in the bookmark bar for |profile|.
-  int GetURLCount(int profile);
+  size_t GetURLCount(int profile);
 
  private:
   // Returns a new unique bookmark URL.
@@ -47,36 +44,31 @@ class BookmarksSyncPerfTest : public SyncTest {
   // Returns a new unique bookmark title.
   std::string NextIndexedURLTitle();
 
-  int url_number_;
-  int url_title_number_;
+  size_t url_number_ = 0;
+  size_t url_title_number_ = 0;
   DISALLOW_COPY_AND_ASSIGN(BookmarksSyncPerfTest);
 };
 
-void BookmarksSyncPerfTest::AddURLs(int profile, int num_urls) {
-  for (int i = 0; i < num_urls; ++i) {
+void BookmarksSyncPerfTest::AddURLs(int profile, size_t num_urls) {
+  for (size_t i = 0; i < num_urls; ++i) {
     ASSERT_TRUE(AddURL(profile, 0, NextIndexedURLTitle(),
                        GURL(NextIndexedURL())) != nullptr);
   }
 }
 
 void BookmarksSyncPerfTest::UpdateURLs(int profile) {
-  for (int i = 0;
-       i < GetBookmarkBarNode(profile)->child_count();
-       ++i) {
-    ASSERT_TRUE(SetURL(profile,
-                       GetBookmarkBarNode(profile)->GetChild(i),
-                       GURL(NextIndexedURL())));
-  }
+  for (const auto& child : GetBookmarkBarNode(profile)->children())
+    ASSERT_TRUE(SetURL(profile, child.get(), GURL(NextIndexedURL())));
 }
 
 void BookmarksSyncPerfTest::RemoveURLs(int profile) {
-  while (!GetBookmarkBarNode(profile)->empty()) {
+  while (!GetBookmarkBarNode(profile)->children().empty()) {
     Remove(profile, GetBookmarkBarNode(profile), 0);
   }
 }
 
-int BookmarksSyncPerfTest::GetURLCount(int profile) {
-  return GetBookmarkBarNode(profile)->child_count();
+size_t BookmarksSyncPerfTest::GetURLCount(int profile) {
+  return GetBookmarkBarNode(profile)->children().size();
 }
 
 std::string BookmarksSyncPerfTest::NextIndexedURL() {
@@ -102,6 +94,6 @@ IN_PROC_BROWSER_TEST_F(BookmarksSyncPerfTest, P0) {
 
   RemoveURLs(0);
   dt = TimeMutualSyncCycle(GetClient(0), GetClient(1));
-  ASSERT_EQ(0, GetURLCount(1));
+  ASSERT_EQ(0u, GetURLCount(1));
   PrintResult("bookmarks", "delete_bookmarks", dt);
 }

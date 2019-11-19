@@ -90,9 +90,7 @@ void RecordError(cast_channel::ChannelError channel_error,
            cast_channel::ChallengeReplyError::CERT_PARSING_FAILED ||
        last_error.challenge_reply_error ==
            cast_channel::ChallengeReplyError::CANNOT_EXTRACT_PUBLIC_KEY) ||
-      (last_error.net_return_value <=
-           net::ERR_CERT_COMMON_NAME_INVALID &&  // CERT_XXX errors
-       last_error.net_return_value > net::ERR_CERT_END) ||
+      net::IsCertificateError(last_error.net_return_value) ||
       last_error.channel_event ==
           cast_channel::ChannelEvent::SSL_SOCKET_CONNECT_FAILED ||
       last_error.channel_event ==
@@ -211,8 +209,7 @@ CastMediaSinkServiceImpl::CastMediaSinkServiceImpl(
       allow_all_ips_(allow_all_ips),
       dial_media_sink_service_(dial_media_sink_service),
       task_runner_(cast_socket_service_->task_runner()),
-      clock_(base::DefaultClock::GetInstance()),
-      weak_ptr_factory_(this) {
+      clock_(base::DefaultClock::GetInstance()) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
   DCHECK(cast_socket_service_);
   DCHECK(network_monitor_);

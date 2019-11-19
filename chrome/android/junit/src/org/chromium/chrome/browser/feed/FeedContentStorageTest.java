@@ -13,10 +13,10 @@ import static org.mockito.Mockito.verify;
 
 import android.support.test.filters.SmallTest;
 
+import com.google.android.libraries.feed.api.host.storage.CommitResult;
+import com.google.android.libraries.feed.api.host.storage.ContentMutation;
 import com.google.android.libraries.feed.common.Result;
 import com.google.android.libraries.feed.common.functional.Consumer;
-import com.google.android.libraries.feed.host.storage.CommitResult;
-import com.google.android.libraries.feed.host.storage.ContentMutation;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -154,7 +154,7 @@ public class FeedContentStorageTest {
     }
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         MockitoAnnotations.initMocks(this);
         mContentStorage = new FeedContentStorage(mBridge);
     }

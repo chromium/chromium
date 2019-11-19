@@ -4,13 +4,13 @@
 
 #include "third_party/blink/renderer/modules/screen_orientation/screen_orientation_controller_impl.h"
 
-#include <map>
 #include <memory>
 
-#include "mojo/public/cpp/bindings/associated_interface_ptr.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/modules/screen_orientation/web_lock_orientation_callback.h"
+#include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
 namespace blink {
 
@@ -54,14 +54,17 @@ class ScreenOrientationControllerImplTest : public PageTestBase {
   void SetUp() override {
     PageTestBase::SetUp(IntSize());
     ScreenOrientationControllerImpl::ProvideTo(GetFrame());
-    device::mojom::blink::ScreenOrientationAssociatedPtr screen_orientation;
-    mojo::MakeRequestAssociatedWithDedicatedPipe(&screen_orientation);
-    Controller()->SetScreenOrientationAssociatedPtrForTests(
+    mojo::AssociatedRemote<device::mojom::blink::ScreenOrientation>
+        screen_orientation;
+    ignore_result(
+        screen_orientation.BindNewEndpointAndPassDedicatedReceiverForTesting());
+    Controller()->SetScreenOrientationAssociatedRemoteForTests(
         std::move(screen_orientation));
   }
 
   void TearDown() override {
-    Controller()->SetScreenOrientationAssociatedPtrForTests(nullptr);
+    Controller()->SetScreenOrientationAssociatedRemoteForTests(
+        mojo::AssociatedRemote<device::mojom::blink::ScreenOrientation>());
   }
 
   ScreenOrientationControllerImpl* Controller() {
@@ -120,25 +123,25 @@ TEST_F(ScreenOrientationControllerImplTest, CancelPending_DoubleLock) {
 // Test that when a LockError message is received, the request is set as failed
 // with the correct values.
 TEST_F(ScreenOrientationControllerImplTest, LockRequest_Error) {
-  std::map<LockResult, blink::WebLockOrientationError> errors;
-  errors[LockResult::SCREEN_ORIENTATION_LOCK_RESULT_ERROR_NOT_AVAILABLE] =
-      blink::kWebLockOrientationErrorNotAvailable;
-  errors[LockResult::SCREEN_ORIENTATION_LOCK_RESULT_ERROR_FULLSCREEN_REQUIRED] =
-      blink::kWebLockOrientationErrorFullscreenRequired;
-  errors[LockResult::SCREEN_ORIENTATION_LOCK_RESULT_ERROR_CANCELED] =
-      blink::kWebLockOrientationErrorCanceled;
+  HashMap<LockResult, blink::WebLockOrientationError, WTF::IntHash<LockResult>>
+      errors;
+  errors.insert(LockResult::SCREEN_ORIENTATION_LOCK_RESULT_ERROR_NOT_AVAILABLE,
+                blink::kWebLockOrientationErrorNotAvailable);
+  errors.insert(
+      LockResult::SCREEN_ORIENTATION_LOCK_RESULT_ERROR_FULLSCREEN_REQUIRED,
+      blink::kWebLockOrientationErrorFullscreenRequired);
+  errors.insert(LockResult::SCREEN_ORIENTATION_LOCK_RESULT_ERROR_CANCELED,
+                blink::kWebLockOrientationErrorCanceled);
 
-  for (std::map<LockResult, blink::WebLockOrientationError>::const_iterator it =
-           errors.begin();
-       it != errors.end(); ++it) {
+  for (auto it = errors.begin(); it != errors.end(); ++it) {
     MockLockOrientationCallback::LockOrientationResultHolder callback_results;
     LockOrientation(
         blink::kWebScreenOrientationLockPortraitPrimary,
         std::make_unique<MockLockOrientationCallback>(&callback_results));
-    RunLockResultCallback(GetRequestId(), it->first);
+    RunLockResultCallback(GetRequestId(), it->key);
     EXPECT_FALSE(callback_results.succeeded_);
     EXPECT_TRUE(callback_results.failed_);
-    EXPECT_EQ(it->second, callback_results.error_);
+    EXPECT_EQ(it->value, callback_results.error_);
   }
 }
 

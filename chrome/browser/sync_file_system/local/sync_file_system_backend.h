@@ -10,15 +10,14 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync_file_system/sync_callbacks.h"
 #include "chrome/browser/sync_file_system/sync_status_code.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
-#include "storage/browser/fileapi/file_system_backend.h"
-#include "storage/browser/fileapi/file_system_quota_util.h"
-#include "storage/browser/fileapi/sandbox_file_system_backend_delegate.h"
-#include "storage/browser/fileapi/task_runner_bound_observer_list.h"
+#include "storage/browser/file_system/file_system_backend.h"
+#include "storage/browser/file_system/file_system_quota_util.h"
+#include "storage/browser/file_system/sandbox_file_system_backend_delegate.h"
+#include "storage/browser/file_system/task_runner_bound_observer_list.h"
+
+class Profile;
 
 namespace sync_file_system {
 
@@ -81,34 +80,19 @@ class SyncFileSystemBackend : public storage::FileSystemBackend {
   void set_sync_context(LocalFileSyncContext* sync_context);
 
  private:
-  class ProfileHolder : public content::NotificationObserver {
-   public:
-    explicit ProfileHolder(Profile* profile);
-
-    // NotificationObserver override.
-    void Observe(int type,
-                 const content::NotificationSource& source,
-                 const content::NotificationDetails& details) override;
-
-    Profile* GetProfile();
-
-   private:
-    content::NotificationRegistrar registrar_;
-    Profile* profile_;
-  };
-
   // Not owned.
-  storage::FileSystemContext* context_;
+  storage::FileSystemContext* context_ = nullptr;
 
   std::unique_ptr<LocalFileChangeTracker> change_tracker_;
   scoped_refptr<LocalFileSyncContext> sync_context_;
 
-  // Should be accessed on the UI thread.
-  std::unique_ptr<ProfileHolder> profile_holder_;
+  // |profile_| will initially be valid but may be destroyed before |this|, so
+  // it should be checked before being accessed.
+  Profile* profile_;
 
   // A flag to skip the initialization sequence of SyncFileSystemService for
   // testing.
-  bool skip_initialize_syncfs_service_for_testing_;
+  bool skip_initialize_syncfs_service_for_testing_ = false;
 
   storage::SandboxFileSystemBackendDelegate* GetDelegate() const;
 

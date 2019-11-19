@@ -30,9 +30,8 @@ AutocompleteMatch VerbatimMatchForURL(
         destination_url,
         !AutocompleteInput::HasHTTPScheme(input.text()));
     match.description = destination_description;
-    AutocompleteMatch::ClassifyLocationInString(
-        base::string16::npos, 0, match.description.length(),
-        ACMatchClassification::NONE, &match.description_class);
+    if (!match.description.empty())
+      match.description_class.push_back({0, ACMatchClassification::NONE});
   } else {
     client->Classify(input.text(), false, true,
                      input.current_page_classification(), &match, nullptr);

@@ -27,6 +27,11 @@ enum MobileSessionShutdownType {
   MOBILE_SESSION_SHUTDOWN_TYPE_COUNT,
 };
 
+// Percentage of battery level which is assumed low enough to have possibly
+// been the reason for the previous session ending in an unclean shutdown.
+// Percent rpresented by a value between 0 and 1.
+extern const float kCriticallyLowBatteryLevel;
+
 class MobileSessionShutdownMetricsProvider : public metrics::MetricsProvider {
  public:
   explicit MobileSessionShutdownMetricsProvider(
@@ -39,6 +44,9 @@ class MobileSessionShutdownMetricsProvider : public metrics::MetricsProvider {
       metrics::ChromeUserMetricsExtension* uma_proto) override;
 
  protected:
+  // Returns the shutdown type of the last session.
+  MobileSessionShutdownType GetLastShutdownType();
+
   // Provides information on the last session environment, used to decide what
   // stability metrics to provide in ProvidePreviousSessionData.
   // These methods are virtual to be overridden in the tests.

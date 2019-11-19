@@ -8,6 +8,7 @@
 #include "base/base_export.h"
 #include "base/logging.h"
 #include "base/macros.h"
+#include "base/thread_annotations.h"
 #include "build/build_config.h"
 
 #if defined(OS_WIN)
@@ -71,6 +72,102 @@ void LockImpl::Unlock() {
   DCHECK_EQ(rv, 0) << ". " << strerror(rv);
 }
 #endif
+
+// This is an implementation used for AutoLock templated on the lock type.
+template <class LockType>
+class SCOPED_LOCKABLE BasicAutoLock {
+ public:
+  struct AlreadyAcquired {};
+
+  explicit BasicAutoLock(LockType& lock) EXCLUSIVE_LOCK_FUNCTION(lock)
+      : lock_(lock) {
+    lock_.Acquire();
+  }
+
+  BasicAutoLock(LockType& lock, const AlreadyAcquired&)
+      EXCLUSIVE_LOCKS_REQUIRED(lock)
+      : lock_(lock) {
+    lock_.AssertAcquired();
+  }
+
+  ~BasicAutoLock() UNLOCK_FUNCTION() {
+    lock_.AssertAcquired();
+    lock_.Release();
+  }
+
+ private:
+  LockType& lock_;
+  DISALLOW_COPY_AND_ASSIGN(BasicAutoLock);
+};
+
+// This is an implementation used for AutoUnlock templated on the lock type.
+template <class LockType>
+class BasicAutoUnlock {
+ public:
+  explicit BasicAutoUnlock(LockType& lock) : lock_(lock) {
+    // We require our caller to have the lock.
+    lock_.AssertAcquired();
+    lock_.Release();
+  }
+
+  ~BasicAutoUnlock() { lock_.Acquire(); }
+
+ private:
+  LockType& lock_;
+  DISALLOW_COPY_AND_ASSIGN(BasicAutoUnlock);
+};
+
+// This is an implementation used for AutoLockMaybe templated on the lock type.
+template <class LockType>
+class SCOPED_LOCKABLE BasicAutoLockMaybe {
+ public:
+  explicit BasicAutoLockMaybe(LockType* lock) EXCLUSIVE_LOCK_FUNCTION(lock)
+      : lock_(lock) {
+    if (lock_)
+      lock_->Acquire();
+  }
+
+  ~BasicAutoLockMaybe() UNLOCK_FUNCTION() {
+    if (lock_) {
+      lock_->AssertAcquired();
+      lock_->Release();
+    }
+  }
+
+ private:
+  LockType* const lock_;
+  DISALLOW_COPY_AND_ASSIGN(BasicAutoLockMaybe);
+};
+
+// This is an implementation used for ReleasableAutoLock templated on the lock
+// type.
+template <class LockType>
+class SCOPED_LOCKABLE BasicReleasableAutoLock {
+ public:
+  explicit BasicReleasableAutoLock(LockType* lock) EXCLUSIVE_LOCK_FUNCTION(lock)
+      : lock_(lock) {
+    DCHECK(lock_);
+    lock_->Acquire();
+  }
+
+  ~BasicReleasableAutoLock() UNLOCK_FUNCTION() {
+    if (lock_) {
+      lock_->AssertAcquired();
+      lock_->Release();
+    }
+  }
+
+  void Release() UNLOCK_FUNCTION() {
+    DCHECK(lock_);
+    lock_->AssertAcquired();
+    lock_->Release();
+    lock_ = nullptr;
+  }
+
+ private:
+  LockType* lock_;
+  DISALLOW_COPY_AND_ASSIGN(BasicReleasableAutoLock);
+};
 
 }  // namespace internal
 }  // namespace base

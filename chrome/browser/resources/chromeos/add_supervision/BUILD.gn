@@ -1,0 +1,35 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+
+js_type_check("closure_compile") {
+  deps = [
+    ":add_supervision",
+    ":add_supervision_api_server",
+    ":post_message_api",
+  ]
+}
+
+js_library("post_message_api") {
+  deps = []
+}
+
+js_library("add_supervision_api_server") {
+  deps = [
+    ":post_message_api",
+    "//chrome/browser/ui/webui/chromeos/add_supervision:mojo_bindings_js_library_for_compile",
+  ]
+}
+
+js_library("add_supervision") {
+  deps = [
+    ":add_supervision_api_server",
+    "//ui/webui/resources/js:load_time_data",
+  ]
+  externs_list = [
+    "$externs_path/chrome_extensions.js",
+    "$externs_path/webview_tag.js",
+  ]
+}

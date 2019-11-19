@@ -28,17 +28,13 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-// The ArenaString implementation is not included in the open-source release. Do
-// not include this file in the distribution.
-
 #include <google/protobuf/arenastring.h>
 
 namespace google {
 namespace protobuf {
 namespace internal {
 
-::std::string* ArenaStringPtr::MutableNoArena(
-     const ::std::string* default_value) {
+::std::string* ArenaStringPtr::MutableNoArena(const ::std::string* default_value) {
   if (ptr_ == default_value) {
     CreateInstanceNoArena(default_value);
   }
@@ -49,7 +45,6 @@ void ArenaStringPtr::DestroyNoArena(const ::std::string* default_value) {
   if (ptr_ != default_value) {
     delete ptr_;
   }
-  ptr_ = NULL;
 }
 
 }  // namespace internal

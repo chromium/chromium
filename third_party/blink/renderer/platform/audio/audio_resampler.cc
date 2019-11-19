@@ -64,18 +64,12 @@ void AudioResampler::Process(AudioSourceProvider* provider,
                              AudioBus* destination_bus,
                              uint32_t frames_to_process) {
   DCHECK(provider);
-  if (!provider)
-    return;
 
   unsigned number_of_channels = kernels_.size();
 
   // Make sure our configuration matches the bus we're rendering to.
-  bool channels_match =
-      (destination_bus &&
-       destination_bus->NumberOfChannels() == number_of_channels);
-  DCHECK(channels_match);
-  if (!channels_match)
-    return;
+  DCHECK(destination_bus);
+  DCHECK_EQ(destination_bus->NumberOfChannels(), number_of_channels);
 
   // Setup the source bus.
   for (unsigned i = 0; i < number_of_channels; ++i) {
@@ -85,8 +79,6 @@ void AudioResampler::Process(AudioSourceProvider* provider,
     float* fill_pointer =
         kernels_[i]->GetSourcePointer(frames_to_process, &frames_needed);
     DCHECK(fill_pointer);
-    if (!fill_pointer)
-      return;
 
     source_bus_->SetChannelMemory(i, fill_pointer, frames_needed);
   }

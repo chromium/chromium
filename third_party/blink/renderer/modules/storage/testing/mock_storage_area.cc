@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/storage/testing/mock_storage_area.h"
 
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
@@ -11,22 +12,23 @@ namespace blink {
 MockStorageArea::MockStorageArea() = default;
 MockStorageArea::~MockStorageArea() = default;
 
-mojom::blink::StorageAreaPtr MockStorageArea::GetInterfacePtr() {
-  mojom::blink::StorageAreaPtr result;
-  bindings_.AddBinding(this, MakeRequest(&result));
+mojo::PendingRemote<mojom::blink::StorageArea>
+MockStorageArea::GetInterfaceRemote() {
+  mojo::PendingRemote<mojom::blink::StorageArea> result;
+  receivers_.Add(this, result.InitWithNewPipeAndPassReceiver());
   return result;
 }
 
-mojom::blink::StorageAreaAssociatedPtr
-MockStorageArea::GetAssociatedInterfacePtr() {
-  mojom::blink::StorageAreaAssociatedPtr result;
-  associated_bindings_.AddBinding(
-      this, MakeRequestAssociatedWithDedicatedPipe(&result));
-  return result;
+mojo::PendingAssociatedRemote<mojom::blink::StorageArea>
+MockStorageArea::GetAssociatedInterfaceRemote() {
+  mojo::AssociatedRemote<mojom::blink::StorageArea> result;
+  associated_receivers_.Add(
+      this, result.BindNewEndpointAndPassDedicatedReceiverForTesting());
+  return result.Unbind();
 }
 
 void MockStorageArea::AddObserver(
-    mojom::blink::StorageAreaObserverAssociatedPtrInfo observer) {
+    mojo::PendingAssociatedRemote<mojom::blink::StorageAreaObserver> observer) {
   ++observer_count_;
 }
 
@@ -66,13 +68,14 @@ void MockStorageArea::Get(const Vector<uint8_t>& key, GetCallback callback) {
 }
 
 void MockStorageArea::GetAll(
-    mojom::blink::StorageAreaGetAllCallbackAssociatedPtrInfo complete_callback,
+    mojo::PendingAssociatedRemote<mojom::blink::StorageAreaGetAllCallback>
+        complete_callback,
     GetAllCallback callback) {
-  mojom::blink::StorageAreaGetAllCallbackAssociatedPtr complete_ptr;
-  complete_ptr.Bind(std::move(complete_callback));
+  mojo::AssociatedRemote<mojom::blink::StorageAreaGetAllCallback>
+      complete_remote(std::move(complete_callback));
   pending_callbacks_.push_back(
       WTF::Bind(&mojom::blink::StorageAreaGetAllCallback::Complete,
-                std::move(complete_ptr)));
+                std::move(complete_remote)));
 
   observed_get_all_ = true;
   std::move(callback).Run(true, std::move(get_all_return_values_));

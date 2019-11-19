@@ -11,7 +11,8 @@
 
 #include "base/macros.h"
 #include "base/memory/singleton.h"
-#include "components/arc/common/app.mojom.h"
+#include "components/arc/mojom/app.mojom.h"
+#include "components/sync/protocol/sync.pb.h"
 
 class Profile;
 class SyncTest;
@@ -26,6 +27,8 @@ class SyncArcPackageHelper {
  public:
   static SyncArcPackageHelper* GetInstance();
 
+  static sync_pb::EntitySpecifics GetTestSpecifics(size_t id);
+
   void SetupTest(SyncTest* test);
 
   void InstallPackageWithIndex(Profile* profile, size_t id);
@@ -38,7 +41,11 @@ class SyncArcPackageHelper {
 
   bool AllProfilesHaveSamePackageDetails();
 
-  void SetupArcService(Profile* profile);
+  void EnableArcService(Profile* profile);
+
+  void DisableArcService(Profile* profile);
+
+  void SendRefreshPackageList(Profile* profile);
 
  private:
   friend struct base::DefaultSingletonTraits<SyncArcPackageHelper>;

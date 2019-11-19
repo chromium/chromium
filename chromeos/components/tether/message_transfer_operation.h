@@ -200,7 +200,7 @@ class MessageTransferOperation {
   base::flat_map<multidevice::RemoteDeviceRef,
                  std::unique_ptr<base::OneShotTimer>>
       remote_device_to_timer_map_;
-  base::WeakPtrFactory<MessageTransferOperation> weak_ptr_factory_;
+  base::WeakPtrFactory<MessageTransferOperation> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(MessageTransferOperation);
 };

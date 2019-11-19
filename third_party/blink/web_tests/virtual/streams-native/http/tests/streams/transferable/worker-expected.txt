@@ -1,8 +1,0 @@
-CONSOLE ERROR: line 2: Uncaught TypeError: Failed to execute 'postMessage' on 'DedicatedWorkerGlobalScope': Value at index 0 is an untransferable 'null' value.
-CONSOLE ERROR: line 2: Uncaught TypeError: Failed to execute 'postMessage' on 'DedicatedWorkerGlobalScope': Value at index 0 is an untransferable 'null' value.
-This is a testharness.js-based test.
-FAIL worker.postMessage should be able to transfer a ReadableStream promise_test: Unhandled rejection with value: "BAD: TypeError: Cannot read property 'constructor' of null"
-FAIL postMessage in a worker should be able to transfer a ReadableStream promise_test: Unhandled rejection with value: object "TypeError: Cannot read property 'constructor' of null"
-FAIL terminating a worker should not error the stream promise_test: Unhandled rejection with value: "error in worker"
-Harness: the test ran to completion.
-

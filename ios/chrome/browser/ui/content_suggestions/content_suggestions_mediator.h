@@ -9,6 +9,7 @@
 
 #include <memory>
 
+#include "components/prefs/pref_service.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_data_source.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_metrics_recorder.h"
@@ -44,13 +45,14 @@ class ReadingListModel;
 
 // Initialize the mediator with the |contentService| to mediate.
 - (nullable instancetype)
-initWithContentService:
-    (nonnull ntp_snippets::ContentSuggestionsService*)contentService
-      largeIconService:(nonnull favicon::LargeIconService*)largeIconService
-        largeIconCache:(nullable LargeIconCache*)largeIconCache
-       mostVisitedSite:
-           (std::unique_ptr<ntp_tiles::MostVisitedSites>)mostVisitedSites
-      readingListModel:(nonnull ReadingListModel*)readingListModel
+    initWithContentService:
+        (nonnull ntp_snippets::ContentSuggestionsService*)contentService
+          largeIconService:(nonnull favicon::LargeIconService*)largeIconService
+            largeIconCache:(nullable LargeIconCache*)largeIconCache
+           mostVisitedSite:
+               (std::unique_ptr<ntp_tiles::MostVisitedSites>)mostVisitedSites
+          readingListModel:(nonnull ReadingListModel*)readingListModel
+               prefService:(nonnull PrefService*)prefService
     NS_DESIGNATED_INITIALIZER;
 
 - (nullable instancetype)init NS_UNAVAILABLE;
@@ -67,9 +69,6 @@ initWithContentService:
 // means to show the header, but not any content or footer.
 @property(nullable, nonatomic, strong)
     PrefBackedBoolean* contentArticlesExpanded;
-// Whether the contents secction should be hidden completely.
-@property(nullable, nonatomic, strong)
-    PrefBackedBoolean* contentArticlesEnabled;
 // Whether to force the reload the Reading List section next time it is updated.
 // Reset to NO after actual reload.
 @property(nonatomic, assign) BOOL readingListNeedsReload;

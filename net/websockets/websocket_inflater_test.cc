@@ -195,7 +195,7 @@ TEST(WebSocketInflaterTest, LargeRandomDeflateInflate) {
   for (size_t i = 0; i < size; ++i)
     input.push_back(static_cast<char>(generator.Generate()));
 
-  ASSERT_TRUE(deflater.AddBytes(&input[0], input.size()));
+  ASSERT_TRUE(deflater.AddBytes(input.data(), input.size()));
   ASSERT_TRUE(deflater.Finish());
 
   compressed = deflater.GetOutput(deflater.CurrentOutputSize());

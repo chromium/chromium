@@ -12,8 +12,8 @@
 #include "base/strings/sys_string_conversions.h"
 #include "ios/chrome/browser/signin/feature_flags.h"
 #include "ios/net/cookies/system_cookie_util.h"
+#include "ios/web/common/features.h"
 #include "ios/web/public/browser_state.h"
-#include "ios/web/public/features.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -80,7 +80,6 @@ GaiaAuthFetcherIOSNSURLSessionBridge::GaiaAuthFetcherIOSNSURLSessionBridge(
     web::BrowserState* browser_state)
     : GaiaAuthFetcherIOSBridge(delegate, browser_state) {
   DCHECK(base::FeatureList::IsEnabled(kUseNSURLSessionForGaiaSigninRequests));
-  DCHECK(base::FeatureList::IsEnabled(web::features::kWKHTTPSystemCookieStore));
   url_session_delegate_ = [[GaiaAuthFetcherIOSURLSessionDelegate alloc] init];
   url_session_delegate_.bridge = this;
 }
@@ -116,15 +115,21 @@ void GaiaAuthFetcherIOSNSURLSessionBridge::SetCanonicalCookiesFromResponse(
   network::mojom::CookieManager* cookie_manager =
       GetBrowserState()->GetCookieManager();
   for (NSHTTPCookie* cookie : cookies) {
+    net::CookieOptions options;
+    options.set_include_httponly();
+    // Permit it to set a SameSite cookie if it wants to.
+    options.set_same_site_cookie_context(
+        net::CookieOptions::SameSiteCookieContext::SAME_SITE_STRICT);
     cookie_manager->SetCanonicalCookie(
         net::CanonicalCookieFromSystemCookie(cookie, base::Time::Now()),
-        base::SysNSStringToUTF8(response.URL.scheme), /*modify_http_only=*/true,
+        base::SysNSStringToUTF8(response.URL.scheme), options,
         base::DoNothing());
   }
 }
 
 void GaiaAuthFetcherIOSNSURLSessionBridge::FetchPendingRequestWithCookies(
-    const std::vector<net::CanonicalCookie>& cookies) {
+    const net::CookieStatusList& cookies_with_statuses,
+    const net::CookieStatusList& excluded_cookies) {
   DCHECK(!url_session_);
   url_session_ = CreateNSURLSession(url_session_delegate_);
   url_session_delegate_.requestSession = url_session_;
@@ -139,9 +144,10 @@ void GaiaAuthFetcherIOSNSURLSessionBridge::FetchPendingRequestWithCookies(
                                                          error:error];
                       }];
   NSMutableArray* http_cookies =
-      [[NSMutableArray alloc] initWithCapacity:cookies.size()];
-  for (const net::CanonicalCookie& cookie : cookies) {
-    [http_cookies addObject:net::SystemCookieFromCanonicalCookie(cookie)];
+      [[NSMutableArray alloc] initWithCapacity:cookies_with_statuses.size()];
+  for (const auto& cookie_with_status : cookies_with_statuses) {
+    [http_cookies addObject:net::SystemCookieFromCanonicalCookie(
+                                cookie_with_status.cookie)];
   }
   [url_session_.configuration.HTTPCookieStorage
       storeCookies:http_cookies

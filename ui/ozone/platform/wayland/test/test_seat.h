@@ -14,8 +14,8 @@ namespace wl {
 
 extern const struct wl_seat_interface kTestSeatImpl;
 
+class MockPointer;
 class TestKeyboard;
-class TestPointer;
 class TestTouch;
 
 // Manages a global wl_seat object.
@@ -29,8 +29,8 @@ class TestSeat : public GlobalObject {
   TestSeat();
   ~TestSeat() override;
 
-  void set_pointer(TestPointer* pointer) { pointer_ = pointer; }
-  TestPointer* pointer() const { return pointer_; }
+  void set_pointer(MockPointer* pointer) { pointer_ = pointer; }
+  MockPointer* pointer() const { return pointer_; }
 
   void set_keyboard(TestKeyboard* keyboard) { keyboard_ = keyboard; }
   TestKeyboard* keyboard() const { return keyboard_; }
@@ -39,7 +39,7 @@ class TestSeat : public GlobalObject {
   TestTouch* touch() const { return touch_; }
 
  private:
-  TestPointer* pointer_;
+  MockPointer* pointer_;
   TestKeyboard* keyboard_;
   TestTouch* touch_;
 

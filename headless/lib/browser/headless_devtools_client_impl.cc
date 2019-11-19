@@ -54,6 +54,7 @@ HeadlessDevToolsClientImpl::HeadlessDevToolsClientImpl()
       dom_snapshot_domain_(this),
       dom_storage_domain_(this),
       emulation_domain_(this),
+      fetch_domain_(this),
       headless_experimental_domain_(this),
       heap_profiler_domain_(this),
       indexeddb_domain_(this),
@@ -71,8 +72,7 @@ HeadlessDevToolsClientImpl::HeadlessDevToolsClientImpl()
       security_domain_(this),
       service_worker_domain_(this),
       target_domain_(this),
-      tracing_domain_(this),
-      weak_ptr_factory_(this) {}
+      tracing_domain_(this) {}
 
 HeadlessDevToolsClientImpl::~HeadlessDevToolsClientImpl() {
   if (parent_client_)
@@ -86,8 +86,8 @@ void HeadlessDevToolsClientImpl::AttachToExternalHost(
 }
 
 void HeadlessDevToolsClientImpl::InitBrowserMainThread() {
-  browser_main_thread_ = base::CreateSingleThreadTaskRunnerWithTraits(
-      {content::BrowserThread::UI});
+  browser_main_thread_ =
+      base::CreateSingleThreadTaskRunner({content::BrowserThread::UI});
 }
 
 void HeadlessDevToolsClientImpl::ChannelClosed() {
@@ -226,6 +226,7 @@ bool HeadlessDevToolsClientImpl::DispatchMessageReply(
       }
     } else if (message_dict.GetDictionary("error", &result_dict)) {
       auto null_value = std::make_unique<base::Value>();
+      base::Value* null_value_ptr = null_value.get();
       DLOG(ERROR) << "Error in method call result: " << *result_dict;
       if (browser_main_thread_) {
         browser_main_thread_->PostTask(
@@ -233,7 +234,7 @@ bool HeadlessDevToolsClientImpl::DispatchMessageReply(
             base::BindOnce(
                 &HeadlessDevToolsClientImpl::DispatchMessageReplyWithResultTask,
                 weak_ptr_factory_.GetWeakPtr(), std::move(null_value),
-                std::move(callback.callback_with_result), null_value.get()));
+                std::move(callback.callback_with_result), null_value_ptr));
       } else {
         std::move(callback.callback_with_result).Run(*null_value);
       }
@@ -367,6 +368,10 @@ dom_storage::Domain* HeadlessDevToolsClientImpl::GetDOMStorage() {
 
 emulation::Domain* HeadlessDevToolsClientImpl::GetEmulation() {
   return &emulation_domain_;
+}
+
+fetch::Domain* HeadlessDevToolsClientImpl::GetFetch() {
+  return &fetch_domain_;
 }
 
 headless_experimental::Domain*

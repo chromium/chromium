@@ -73,6 +73,11 @@ class AndroidPolicyWriter(xml_formatted_writer.XMLFormattedWriter):
 
     items = policy.get('items')
     if items is not None:
+      items = [
+          item for item in items
+          if ('supported_on' not in item or
+              self.IsPolicyOrItemSupportedOnPlatform(item, 'android'))
+      ]
       entries = [item['caption'] for item in items]
       values = [item['value'] for item in items]
       self.AddStringArrayResource(name + 'Entries', entries)

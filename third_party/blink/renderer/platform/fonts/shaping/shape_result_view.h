@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_SHAPE_RESULT_VIEW_H_
 
 #include <memory>
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
@@ -110,7 +111,6 @@ class PLATFORM_EXPORT ShapeResultView final
   unsigned NumGlyphs() const { return num_glyphs_; }
   float Width() const { return width_; }
   LayoutUnit SnappedWidth() const { return LayoutUnit::FromFloatCeil(width_); }
-  const FloatRect& Bounds() const { return glyph_bounding_box_; }
   TextDirection Direction() const {
     return static_cast<TextDirection>(direction_);
   }
@@ -136,6 +136,10 @@ class PLATFORM_EXPORT ShapeResultView final
                                 GraphemeClusterCallback,
                                 void* context) const;
 
+  // Computes and returns the ink bounds (or visual overflow rect). This is
+  // quite expensive and involves measuring each glyph accumulating the bounds.
+  FloatRect ComputeInkBounds() const;
+
   scoped_refptr<const SimpleFontData> PrimaryFont() const {
     return primary_font_;
   }
@@ -144,7 +148,6 @@ class PLATFORM_EXPORT ShapeResultView final
  private:
   template <class ShapeResultType>
   ShapeResultView(const ShapeResultType*);
-  unsigned ComputeStartIndex() const;
 
   struct RunInfoPart;
   template <class ShapeResultType>
@@ -152,20 +155,28 @@ class PLATFORM_EXPORT ShapeResultView final
                             unsigned start_index,
                             unsigned end_index);
   void AddSegments(const Segment*, size_t);
-  template <bool is_horizontal_run>
-  void ComputeBoundsForPart(const RunInfoPart&, float origin);
 
   unsigned CharacterIndexOffsetForGlyphData(const RunInfoPart&) const;
 
+  template <bool is_horizontal_run, bool has_glyph_offsets>
+  void ComputePartInkBounds(const ShapeResultView::RunInfoPart&,
+                            float run_advance,
+                            FloatRect* ink_bounds) const;
+
   // Common signatures with ShapeResult, to templatize algorithms.
-  const Vector<std::unique_ptr<RunInfoPart>, 4>& RunsOrParts() const {
-    return parts_;
+  base::span<const RunInfoPart> RunsOrParts() const { return Parts(); }
+
+  base::span<RunInfoPart> Parts() {
+    return {reinterpret_cast<RunInfoPart*>(parts_), num_parts_};
+  }
+  base::span<const RunInfoPart> Parts() const {
+    return {reinterpret_cast<const RunInfoPart*>(parts_), num_parts_};
   }
   unsigned StartIndexOffsetForRun() const { return char_index_offset_; }
 
   scoped_refptr<const SimpleFontData> primary_font_;
 
-  mutable unsigned start_index_;  // Cached and updated by ComputeStartIndex.
+  unsigned start_index_;
   unsigned num_characters_;
   unsigned num_glyphs_ : 30;
 
@@ -182,10 +193,34 @@ class PLATFORM_EXPORT ShapeResultView final
   unsigned char_index_offset_;
 
   float width_;
-  FloatRect glyph_bounding_box_;
-  Vector<std::unique_ptr<RunInfoPart>, 4> parts_;
+  wtf_size_t num_parts_ = 0;
 
+  // TODO(yosin): We should declare |RunInoPart| in this file to avoid using
+  // dummy struct.
+  // Note: To avoid declaring |RunInfoPart| here, we use dummy struct.
+  struct {
+    void* alignment;
+  } parts_[];
+
+ private:
   friend class ShapeResult;
+
+  template <bool has_glyph_offsets>
+  float ForEachGlyphImpl(float initial_advance,
+                         GlyphCallback,
+                         void* context,
+                         const RunInfoPart& part) const;
+
+  template <bool has_glyph_offsets>
+  float ForEachGlyphImpl(float initial_advance,
+                         unsigned from,
+                         unsigned to,
+                         unsigned index_offset,
+                         GlyphCallback,
+                         void* context,
+                         const RunInfoPart& part) const;
+
+  DISALLOW_COPY_AND_ASSIGN(ShapeResultView);
 };
 
 }  // namespace blink

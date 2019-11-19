@@ -4,7 +4,7 @@
 
 package org.chromium.content.browser.input;
 
-import org.chromium.base.VisibleForTesting;
+import androidx.annotation.VisibleForTesting;
 
 /**
  * A simple class to set start and end in int type.

@@ -2,8 +2,6 @@ This is a testharness.js-based test.
 PASS Element.animate() should be exposed.
 PASS Element.getAnimations() should not be exposed without experimental web platform features enabled.
 This test is expected to fail in LayoutTests/webexposed.
-PASS Animation constructor should not be exposed without experimental web platform features enabled.
-This test is expected to fail in LayoutTests/webexposed.
 PASS Timeline should not be exposed without experimental web platform features enabled.
 This test is expected to fail in LayoutTests/webexposed.
 PASS document.timeline should not be exposed without experimental web platform features enabled.

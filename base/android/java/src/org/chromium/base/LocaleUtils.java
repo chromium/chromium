@@ -9,6 +9,8 @@ import android.os.Build;
 import android.os.LocaleList;
 import android.text.TextUtils;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.annotations.CalledByNative;
 
 import java.util.ArrayList;
@@ -184,19 +186,9 @@ public class LocaleUtils {
         return languageTag.substring(0, pos);
     }
 
-    /** @return true if the language is supported by Chrome. */
-    public static boolean isLanguageSupported(String language) {
-        for (String languageTag : BuildConfig.COMPRESSED_LOCALES) {
-            if (toLanguage(languageTag).equals(language)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     /**
-     * @return a comma separated language tags string that represents a default locale.
-     *         Each language tag is well-formed IETF BCP 47 language tag with language and country
+     * @return a language tag string that represents the default locale.
+     *         The language tag is well-formed IETF BCP 47 language tag with language and country
      *         code.
      */
     @CalledByNative

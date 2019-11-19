@@ -1,0 +1,46 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+import("//build/config/ui.gni")
+import("//media/gpu/args.gni")
+import("//tools/generate_stubs/rules.gni")
+import("//ui/gl/features.gni")
+import("//ui/ozone/ozone.gni")
+
+assert(is_mac)
+
+import("//build/config/mac/mac_sdk.gni")
+
+source_set("mac") {
+  defines = [ "MEDIA_GPU_IMPLEMENTATION" ]
+  visibility = [ "//media/gpu" ]
+
+  sources = [
+    "vt_video_decode_accelerator_mac.cc",
+    "vt_video_decode_accelerator_mac.h",
+    "vt_video_encode_accelerator_mac.cc",
+    "vt_video_encode_accelerator_mac.h",
+  ]
+  public_deps = [
+    "//third_party/webrtc_overrides:webrtc_component",
+  ]
+  libs = [
+    "CoreFoundation.framework",
+    "CoreMedia.framework",
+    "Foundation.framework",
+    "IOSurface.framework",
+    "QuartzCore.framework",
+    "VideoToolbox.framework",
+  ]
+  deps = [
+    "//base",
+    "//components/crash/core/common:crash_key",
+    "//gpu/ipc/service",
+    "//media",
+    "//media/gpu:common",
+    "//ui/gfx/geometry",
+    "//ui/gl",
+  ]
+}

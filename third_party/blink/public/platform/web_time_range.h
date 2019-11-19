@@ -35,15 +35,55 @@
 
 namespace blink {
 
-struct WebTimeRange {
+class WebTimeRange {
+ public:
   WebTimeRange() : start(0), end(0) {}
   WebTimeRange(double s, double e) : start(s), end(e) {}
 
   double start;
   double end;
+
+  inline bool IsPointInRange(double point) const {
+    return start <= point && point < end;
+  }
+
+  inline bool IsOverlappingRange(const WebTimeRange& range) const {
+    return IsPointInRange(range.start) || IsPointInRange(range.end) ||
+           range.IsPointInRange(start);
+  }
+
+  inline bool IsContiguousWithRange(const WebTimeRange& range) const {
+    return range.start == end || range.end == start;
+  }
+
+  inline WebTimeRange UnionWithOverlappingOrContiguousRange(
+      const WebTimeRange& range) const {
+    WebTimeRange ret;
+
+    ret.start = std::min(start, range.start);
+    ret.end = std::max(end, range.end);
+
+    return ret;
+  }
+
+  inline bool IsBeforeRange(const WebTimeRange& range) const {
+    return range.start >= end;
+  }
 };
 
-typedef WebVector<WebTimeRange> WebTimeRanges;
+class BLINK_PLATFORM_EXPORT WebTimeRanges : public WebVector<WebTimeRange> {
+ public:
+  // Expose base constructors.
+  using WebVector<WebTimeRange>::WebVector;
+
+  void IntersectWith(const WebTimeRanges& other);
+  void UnionWith(const WebTimeRanges& other);
+  void Add(double start, double end);
+  bool Contain(double time) const;
+  double Nearest(double new_playback_position,
+                 double current_playback_position) const;
+  void Invert();
+};
 
 }  // namespace blink
 

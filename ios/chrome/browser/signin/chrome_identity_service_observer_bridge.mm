@@ -13,7 +13,7 @@
 
 ChromeIdentityServiceObserverBridge::ChromeIdentityServiceObserverBridge(
     id<ChromeIdentityServiceObserver> observer)
-    : observer_(observer), scoped_observer_(this) {
+    : observer_(observer) {
   DCHECK(observer_);
   scoped_observer_.Add(
       ios::GetChromeBrowserProvider()->GetChromeIdentityService());

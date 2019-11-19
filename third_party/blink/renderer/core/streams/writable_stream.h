@@ -5,19 +5,19 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STREAMS_WRITABLE_STREAM_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STREAMS_WRITABLE_STREAM_H_
 
+#include "base/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
-#include "v8/include/v8.h"
 
 namespace blink {
 
+class ExceptionState;
 class MessagePort;
+class ScriptState;
+class UnderlyingSinkBase;
 
 // This is an implementation of the corresponding IDL interface.
-// Use TraceWrapperMember to hold a reference to an instance of this class.
 class CORE_EXPORT WritableStream : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -32,6 +32,14 @@ class CORE_EXPORT WritableStream : public ScriptWrappable {
                                 ScriptValue underlying_sink,
                                 ScriptValue strategy,
                                 ExceptionState&);
+
+  // Creates a WritableStream from C++. If |high_water_mark| is set to 0 then
+  // piping to this writable stream will not work, because there will always be
+  // backpressure. Usually 1 is the right choice.
+  static WritableStream* CreateWithCountQueueingStrategy(
+      ScriptState*,
+      UnderlyingSinkBase*,
+      size_t high_water_mark);
 
   // IDL defined functions
   virtual bool locked(ScriptState*, ExceptionState&) const = 0;

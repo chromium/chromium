@@ -11,12 +11,11 @@
 #include "base/run_loop.h"
 #include "base/task/post_task.h"
 #include "content/browser/utility_process_host.h"
-#include "content/browser/utility_process_host_client.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/common/bind_interface_helpers.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/test_service.mojom.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 
 namespace content {
@@ -30,7 +29,7 @@ class MojoSandboxTest : public ContentBrowserTest {
 
   void SetUpOnMainThread() override {
     base::RunLoop run_loop;
-    base::PostTaskWithTraitsAndReply(
+    base::PostTaskAndReply(
         FROM_HERE, {BrowserThread::IO},
         base::BindOnce(&MojoSandboxTest::StartUtilityProcessOnIoThread,
                        base::Unretained(this)),
@@ -40,7 +39,7 @@ class MojoSandboxTest : public ContentBrowserTest {
 
   void TearDownOnMainThread() override {
     base::RunLoop run_loop;
-    base::PostTaskWithTraitsAndReply(
+    base::PostTaskAndReply(
         FROM_HERE, {BrowserThread::IO},
         base::BindOnce(&MojoSandboxTest::StopUtilityProcessOnIoThread,
                        base::Unretained(this)),
@@ -53,7 +52,7 @@ class MojoSandboxTest : public ContentBrowserTest {
 
  private:
   void StartUtilityProcessOnIoThread() {
-    host_.reset(new UtilityProcessHost(nullptr, nullptr));
+    host_.reset(new UtilityProcessHost());
     host_->SetMetricsName("mojo_sandbox_test_process");
     ASSERT_TRUE(host_->Start());
   }
@@ -66,12 +65,19 @@ class MojoSandboxTest : public ContentBrowserTest {
 IN_PROC_BROWSER_TEST_F(MojoSandboxTest, SubprocessSharedBuffer) {
   // Ensures that a shared buffer can be created within a sandboxed process.
 
-  mojom::TestServicePtr test_service;
-  BindInterface(host_.get(), &test_service);
+  mojo::Remote<mojom::TestService> test_service;
+  base::PostTask(
+      FROM_HERE, {BrowserThread::IO},
+      base::BindOnce(
+          [](UtilityProcessHost* host,
+             mojo::PendingReceiver<mojom::TestService> receiver) {
+            host->GetChildProcess()->BindReceiver(std::move(receiver));
+          },
+          host_.get(), test_service.BindNewPipeAndPassReceiver()));
 
   bool got_response = false;
   base::RunLoop run_loop;
-  test_service.set_connection_error_handler(run_loop.QuitClosure());
+  test_service.set_disconnect_handler(run_loop.QuitClosure());
   test_service->CreateSharedBuffer(
       kTestMessage,
       base::BindOnce(

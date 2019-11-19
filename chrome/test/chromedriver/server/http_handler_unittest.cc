@@ -126,6 +126,13 @@ TEST(HttpHandlerTest, HandleCommand) {
   ASSERT_EQ(json, response.body());
 }
 
+TEST(HttpHandlerTest, StandardResponse_ErrorNoMessage) {
+  HttpHandler handler("/");
+  Status status = Status(kUnexpectedAlertOpen);
+  ASSERT_NO_FATAL_FAILURE(handler.PrepareStandardResponse(
+      "not used", status, std::make_unique<base::Value>(), "1234"));
+}
+
 TEST(MatchesCommandTest, DiffMethod) {
   CommandMapping command(kPost, "path", base::Bind(&DummyCommand, Status(kOk)));
   std::string session_id;

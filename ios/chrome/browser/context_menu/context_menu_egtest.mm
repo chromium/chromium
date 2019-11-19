@@ -2,32 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import <EarlGrey/EarlGrey.h>
 #import <UIKit/UIKit.h>
 #import <XCTest/XCTest.h>
 
 #include "base/bind.h"
+#import "base/mac/foundation_util.h"
 #import "base/test/ios/wait_util.h"
 #include "components/strings/grit/components_strings.h"
-#include "ios/chrome/browser/ui/util/ui_util.h"
+#import "ios/chrome/browser/ui/fullscreen/test/fullscreen_app_interface.h"
 #include "ios/chrome/grit/ios_strings.h"
-#import "ios/chrome/test/app/chrome_test_util.h"
-#import "ios/chrome/test/app/histogram_test_util.h"
-#import "ios/chrome/test/app/settings_test_util.h"
-#import "ios/chrome/test/app/tab_test_util.h"
-#import "ios/chrome/test/app/web_view_interaction_test_util.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
-#include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#import "ios/public/provider/chrome/browser/ui/fullscreen_provider.h"
 #import "ios/testing/earl_grey/disabled_test_macros.h"
-#import "ios/web/public/test/earl_grey/web_view_matchers.h"
+#import "ios/testing/earl_grey/earl_grey_test.h"
 #include "ios/web/public/test/element_selector.h"
-#import "ios/web/public/web_state/ui/crw_web_view_proxy.h"
-#import "ios/web/public/web_state/web_state.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "url/gurl.h"
@@ -40,9 +32,8 @@ using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::ContextMenuCopyButton;
 using chrome_test_util::OmniboxText;
 using chrome_test_util::OpenLinkInNewTabButton;
-using chrome_test_util::SystemSelectionCallout;
 using chrome_test_util::SystemSelectionCalloutCopyButton;
-using web::test::ElementSelector;
+using chrome_test_util::WebViewMatcher;
 
 namespace {
 // Directory containing the |kLogoPagePath| and |kLogoPageImageSourcePath|
@@ -128,11 +119,9 @@ void WaitForContextMenuItemDisappeared(
 
 // Long press on |element_id| to trigger context menu.
 void LongPressElement(const char* element_id) {
-  id<GREYMatcher> web_view_matcher =
-      web::WebViewInWebState(chrome_test_util::GetCurrentWebState());
-  [[EarlGrey selectElementWithMatcher:web_view_matcher]
+  [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
       performAction:chrome_test_util::LongPressElementForContextMenu(
-                        ElementSelector::ElementSelectorId(element_id),
+                        [ElementSelector selectorWithElementID:element_id],
                         true /* menu should appear */)];
 }
 
@@ -145,20 +134,6 @@ void TapOnContextMenuButton(id<GREYMatcher> context_menu_item_button) {
   WaitForContextMenuItemDisappeared(context_menu_item_button);
 }
 
-// A simple wrapper that sleeps for 1s to wait for the animation, triggered from
-// opening a new tab through context menu, to finish before selecting tab.
-// TODO(crbug.com/643792): Remove this function when the bug is fixed.
-void SelectTabAtIndexInCurrentMode(NSUInteger index) {
-  // Delay for 1 second.
-  GREYCondition* myCondition = [GREYCondition conditionWithName:@"delay"
-                                                          block:^BOOL {
-                                                            return NO;
-                                                          }];
-  [myCondition waitWithTimeout:1];
-
-  chrome_test_util::SelectTabAtIndexInCurrentMode(index);
-}
-
 }  // namespace
 
 // Context menu tests for Chrome.
@@ -167,13 +142,13 @@ void SelectTabAtIndexInCurrentMode(NSUInteger index) {
 
 @implementation ContextMenuTestCase
 
-+ (void)setUp {
-  [super setUp];
-  chrome_test_util::SetContentSettingsBlockPopups(CONTENT_SETTING_ALLOW);
++ (void)setUpForTestCase {
+  [super setUpForTestCase];
+  [ChromeEarlGrey setContentSettings:CONTENT_SETTING_ALLOW];
 }
 
 + (void)tearDown {
-  chrome_test_util::SetContentSettingsBlockPopups(CONTENT_SETTING_DEFAULT);
+  [ChromeEarlGrey setContentSettings:CONTENT_SETTING_DEFAULT];
   [super tearDown];
 }
 
@@ -191,7 +166,7 @@ void SelectTabAtIndexInCurrentMode(NSUInteger index) {
 - (void)testOpenImageInCurrentTabFromContextMenu {
   const GURL pageURL = self.testServer->GetURL(kLogoPagePath);
   [ChromeEarlGrey loadURL:pageURL];
-  [ChromeEarlGrey waitForWebViewContainingText:kLogoPageText];
+  [ChromeEarlGrey waitForWebStateContainingText:kLogoPageText];
 
   LongPressElement(kLogoPageChromiumImageId);
   TapOnContextMenuButton(OpenImageButton());
@@ -208,13 +183,13 @@ void SelectTabAtIndexInCurrentMode(NSUInteger index) {
 - (void)testOpenImageInNewTabFromContextMenu {
   const GURL pageURL = self.testServer->GetURL(kLogoPagePath);
   [ChromeEarlGrey loadURL:pageURL];
-  [ChromeEarlGrey waitForWebViewContainingText:kLogoPageText];
+  [ChromeEarlGrey waitForWebStateContainingText:kLogoPageText];
 
   LongPressElement(kLogoPageChromiumImageId);
   TapOnContextMenuButton(OpenImageInNewTabButton());
 
   [ChromeEarlGrey waitForMainTabCount:2];
-  SelectTabAtIndexInCurrentMode(1U);
+  [ChromeEarlGrey selectTabAtIndex:1];
   [ChromeEarlGrey waitForPageToFinishLoading];
 
   // Verify url.
@@ -227,14 +202,15 @@ void SelectTabAtIndexInCurrentMode(NSUInteger index) {
 - (void)testContextMenuOpenInNewTab {
   const GURL initialURL = self.testServer->GetURL(kInitialPageUrl);
   [ChromeEarlGrey loadURL:initialURL];
-  [ChromeEarlGrey waitForWebViewContainingText:kInitialPageDestinationLinkText];
+  [ChromeEarlGrey
+      waitForWebStateContainingText:kInitialPageDestinationLinkText];
 
   LongPressElement(kInitialPageDestinationLinkId);
   TapOnContextMenuButton(OpenLinkInNewTabButton());
 
   [ChromeEarlGrey waitForMainTabCount:2];
-  SelectTabAtIndexInCurrentMode(1U);
-  [ChromeEarlGrey waitForWebViewContainingText:kDestinationPageText];
+  [ChromeEarlGrey selectTabAtIndex:1];
+  [ChromeEarlGrey waitForWebStateContainingText:kDestinationPageText];
 
   // Verify url.
   const GURL destinationURL = self.testServer->GetURL(kDestinationPageUrl);
@@ -247,28 +223,36 @@ void SelectTabAtIndexInCurrentMode(NSUInteger index) {
   const GURL imageURL = self.testServer->GetURL(kLogoPageImageSourcePath);
   [ChromeEarlGrey loadURL:imageURL];
 
-  // Calculate a point inside the displayed image. Javascript can not be used to
-  // find the element because no DOM exists.  If the viewport is adjusted using
-  // the contentInset, the top inset needs to be added to the touch point.
-  id<CRWWebViewProxy> webViewProxy =
-      chrome_test_util::GetCurrentWebState()->GetWebViewProxy();
-  BOOL usesContentInset =
-      webViewProxy.shouldUseViewContentInset ||
-      ios::GetChromeBrowserProvider()->GetFullscreenProvider()->IsInitialized();
-  CGFloat topInset = usesContentInset ? webViewProxy.contentInset.top : 0.0;
-  CGPoint point = CGPointMake(
-      CGRectGetMidX([chrome_test_util::GetActiveViewController() view].bounds),
-      topInset + 20.0);
+  // Calculate a point inside the displayed image.
+  CGFloat topInset = 0.0;
+  if ([ChromeEarlGrey webStateWebViewUsesContentInset] ||
+      [FullscreenAppInterface isFullscreenInitialized]) {
+    topInset = [FullscreenAppInterface currentViewportInsets].top;
+  }
+  CGPoint pointOnImage = CGPointZero;
+  // Offset by at least status bar height.
+  pointOnImage.y = topInset + 25.0;
+  pointOnImage.x = [ChromeEarlGrey webStateWebViewSize].width / 2.0;
 
-  id<GREYMatcher> web_view_matcher =
-      web::WebViewInWebState(chrome_test_util::GetCurrentWebState());
-  [[EarlGrey selectElementWithMatcher:web_view_matcher]
-      performAction:grey_longPressAtPointWithDuration(
-                        point, kGREYLongPressDefaultDuration)];
+  // Duration should match |kContextMenuLongPressDuration| as defined in
+  // web_view_actions.mm.
+  [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
+      performAction:grey_longPressAtPointWithDuration(pointOnImage, 1.0)];
 
   TapOnContextMenuButton(OpenImageInNewTabButton());
   [ChromeEarlGrey waitForMainTabCount:2];
-  SelectTabAtIndexInCurrentMode(1U);
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-result"
+  // TODO(crbug.com/643792): Remove this wait the bug is fixed.
+  // Delay for 1 second before selecting tab.
+  [[GREYCondition conditionWithName:@"delay"
+                              block:^BOOL {
+                                return NO;
+                              }] waitWithTimeout:1];
+#pragma clang diagnostic pop
+  [ChromeEarlGrey selectTabAtIndex:1];
+
   [ChromeEarlGrey waitForPageToFinishLoading];
 
   // Verify url.
@@ -276,53 +260,30 @@ void SelectTabAtIndexInCurrentMode(NSUInteger index) {
       assertWithMatcher:grey_notNil()];
 }
 
-// Tests that the element fetch duration is logged once.
-- (void)testContextMenuElementFetchDurationMetric {
-  chrome_test_util::HistogramTester histogramTester;
-
-  const GURL pageURL = self.testServer->GetURL(kLogoPagePath);
-  [ChromeEarlGrey loadURL:pageURL];
-  [ChromeEarlGrey waitForWebViewContainingText:kLogoPageText];
-
-  LongPressElement(kLogoPageChromiumImageId);
-  TapOnContextMenuButton(OpenImageButton());
-  [ChromeEarlGrey waitForPageToFinishLoading];
-
-  histogramTester.ExpectTotalCount("ContextMenu.DOMElementFetchDuration", 1,
-                                   ^(NSString* error) {
-                                     GREYFail(error);
-                                   });
-}
-
 // Tests that system touches are cancelled when the context menu is shown.
 - (void)testContextMenuCancelSystemTouchesMetric {
-  chrome_test_util::HistogramTester histogramTester;
-
   const GURL pageURL = self.testServer->GetURL(kLogoPagePath);
   [ChromeEarlGrey loadURL:pageURL];
-  [ChromeEarlGrey waitForWebViewContainingText:kLogoPageText];
+  [ChromeEarlGrey waitForWebStateContainingText:kLogoPageText];
 
   LongPressElement(kLogoPageChromiumImageId);
   TapOnContextMenuButton(OpenImageButton());
   [ChromeEarlGrey waitForPageToFinishLoading];
 
-  // Verify that system touches were cancelled.
-  histogramTester.ExpectTotalCount("ContextMenu.CancelSystemTouches", 1,
-                                   ^(NSString* error) {
-                                     GREYFail(error);
-                                   });
+  // Verify that system touches were cancelled by ensuring the system text
+  // selection callout is not displayed.
+  [[EarlGrey selectElementWithMatcher:SystemSelectionCalloutCopyButton()]
+      assertWithMatcher:grey_nil()];
 }
 
 // Tests that the system selected text callout is displayed instead of the
 // context menu when user long presses on plain text.
 - (void)testContextMenuSelectedTextCallout {
-  chrome_test_util::HistogramTester histogramTester;
-
   // Load the destination page directly because it has a plain text message on
   // it.
   const GURL destinationURL = self.testServer->GetURL(kDestinationPageUrl);
   [ChromeEarlGrey loadURL:destinationURL];
-  [ChromeEarlGrey waitForWebViewContainingText:kDestinationPageText];
+  [ChromeEarlGrey waitForWebStateContainingText:kDestinationPageText];
 
   LongPressElement(kDestinationPageTextId);
 
@@ -331,21 +292,16 @@ void SelectTabAtIndexInCurrentMode(NSUInteger index) {
       assertWithMatcher:grey_nil()];
 
   // Verify that system text selection callout is displayed.
-  [[[EarlGrey selectElementWithMatcher:SystemSelectionCalloutCopyButton()]
-      inRoot:SystemSelectionCallout()] assertWithMatcher:grey_notNil()];
-
-  // Verify that system touches were not cancelled.
-  histogramTester.ExpectTotalCount("ContextMenu.CancelSystemTouches", 0,
-                                   ^(NSString* error) {
-                                     GREYFail(error);
-                                   });
+  [[EarlGrey selectElementWithMatcher:SystemSelectionCalloutCopyButton()]
+      assertWithMatcher:grey_notNil()];
 }
 
 // Tests cancelling the context menu.
 - (void)testDismissContextMenu {
   const GURL initialURL = self.testServer->GetURL(kInitialPageUrl);
   [ChromeEarlGrey loadURL:initialURL];
-  [ChromeEarlGrey waitForWebViewContainingText:kInitialPageDestinationLinkText];
+  [ChromeEarlGrey
+      waitForWebStateContainingText:kInitialPageDestinationLinkText];
 
   // Display the context menu twice.
   for (NSInteger i = 0; i < 2; i++) {
@@ -355,7 +311,7 @@ void SelectTabAtIndexInCurrentMode(NSUInteger index) {
     [[EarlGrey selectElementWithMatcher:OpenLinkInNewTabButton()]
         assertWithMatcher:grey_notNil()];
 
-    if (IsIPadIdiom()) {
+    if ([ChromeEarlGrey isIPadIdiom]) {
       // Tap the tools menu to dismiss the popover.
       [[EarlGrey selectElementWithMatcher:chrome_test_util::ToolsMenuButton()]
           performAction:grey_tap()];
@@ -380,7 +336,8 @@ void SelectTabAtIndexInCurrentMode(NSUInteger index) {
 - (void)testAppropriateContextMenu {
   const GURL initialURL = self.testServer->GetURL(kInitialPageUrl);
   [ChromeEarlGrey loadURL:initialURL];
-  [ChromeEarlGrey waitForWebViewContainingText:kInitialPageDestinationLinkText];
+  [ChromeEarlGrey
+      waitForWebStateContainingText:kInitialPageDestinationLinkText];
 
   LongPressElement(kInitialPageDestinationLinkId);
 
@@ -401,7 +358,7 @@ void SelectTabAtIndexInCurrentMode(NSUInteger index) {
       selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
                                    IDS_IOS_CONTENT_CONTEXT_COPY)]
       assertWithMatcher:grey_sufficientlyVisible()];
-  if (!IsIPadIdiom()) {
+  if (![ChromeEarlGrey isIPadIdiom]) {
     [[EarlGrey selectElementWithMatcher:
                    chrome_test_util::ButtonWithAccessibilityLabelId(IDS_CANCEL)]
         assertWithMatcher:grey_sufficientlyVisible()];

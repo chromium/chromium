@@ -58,6 +58,10 @@ class MEDIA_EXPORT AudioOutputDispatcher {
   // Called by AudioOutputProxy when the stream is closed.
   virtual void CloseStream(AudioOutputProxy* stream_proxy) = 0;
 
+  // Called by AudioOutputProxy to flush the stream.  This should only be
+  // called when a stream is stopped.
+  virtual void FlushStream(AudioOutputProxy* stream_proxy) = 0;
+
  protected:
   AudioManager* audio_manager() const { return audio_manager_; }
 

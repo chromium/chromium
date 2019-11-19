@@ -1,6 +1,5 @@
 include_rules = [
   "+components/client_update_protocol",
-  "+components/data_use_measurement/core",
   "+components/variations",
   "+components/prefs",
   "+net",

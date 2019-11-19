@@ -5,8 +5,9 @@
 #ifndef ASH_SYSTEM_CAST_UNIFIED_CAST_DETAILED_VIEW_CONTROLLER_H_
 #define ASH_SYSTEM_CAST_UNIFIED_CAST_DETAILED_VIEW_CONTROLLER_H_
 
-#include "ash/cast_config_controller.h"
+#include "ash/public/cpp/cast_config_controller.h"
 #include "ash/system/unified/detailed_view_controller.h"
+#include "base/macros.h"
 
 namespace ash {
 namespace tray {
@@ -17,8 +18,7 @@ class DetailedViewDelegate;
 class UnifiedSystemTrayController;
 
 // Controller of Cast detailed view in UnifiedSystemTray.
-class UnifiedCastDetailedViewController : public DetailedViewController,
-                                          public CastConfigControllerObserver {
+class UnifiedCastDetailedViewController : public DetailedViewController {
  public:
   explicit UnifiedCastDetailedViewController(
       UnifiedSystemTrayController* tray_controller);
@@ -26,9 +26,6 @@ class UnifiedCastDetailedViewController : public DetailedViewController,
 
   // DetailedViewControllerBase:
   views::View* CreateView() override;
-
-  // CastConfigControllerObserver:
-  void OnDevicesUpdated(std::vector<mojom::SinkAndRoutePtr> devices) override;
 
  private:
   const std::unique_ptr<DetailedViewDelegate> detailed_view_delegate_;

@@ -8,6 +8,8 @@
 This module works much like the rm posix command.
 """
 
+from __future__ import print_function
+
 import argparse
 import os
 import sys
@@ -25,7 +27,7 @@ def Main():
       os.remove(f)
     except OSError:
       if not args.force:
-        print >>sys.stderr, "'%s' does not exist" % f
+        print("'%s' does not exist" % f, file=sys.stderr)
         return 1
 
   with open(args.stamp, 'w'):

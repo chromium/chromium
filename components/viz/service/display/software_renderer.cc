@@ -17,6 +17,8 @@
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/quads/tile_draw_quad.h"
+#include "components/viz/common/skia_helper.h"
+#include "components/viz/common/viz_utils.h"
 #include "components/viz/service/display/output_surface.h"
 #include "components/viz/service/display/output_surface_frame.h"
 #include "components/viz/service/display/renderer_utils.h"
@@ -137,7 +139,7 @@ void SoftwareRenderer::SetScissorTestRect(const gfx::Rect& scissor_rect) {
 void SoftwareRenderer::SetClipRect(const gfx::Rect& rect) {
   if (!current_canvas_)
     return;
-  // Skia applies the current matrix to clip rects so we reset it temporary.
+  // Skia applies the current matrix to clip rects so we reset it temporarily.
   SkMatrix current_matrix = current_canvas_->getTotalMatrix();
   current_canvas_->resetMatrix();
   // SetClipRect is assumed to be applied temporarily, on an
@@ -148,6 +150,22 @@ void SoftwareRenderer::SetClipRect(const gfx::Rect& rect) {
             current_canvas_->imageInfo().height());
   current_canvas_->clipRect(gfx::RectToSkRect(rect));
   current_canvas_->setMatrix(current_matrix);
+}
+
+void SoftwareRenderer::SetClipRRect(const gfx::RRectF& rrect) {
+  if (!current_canvas_)
+    return;
+
+  gfx::Transform screen_transform =
+      current_frame()->window_matrix * current_frame()->projection_matrix;
+  SkRRect result;
+  if (SkRRect(rrect).transform(screen_transform.matrix(), &result)) {
+    // Skia applies the current matrix to clip rects so we reset it temporarily.
+    SkMatrix current_matrix = current_canvas_->getTotalMatrix();
+    current_canvas_->resetMatrix();
+    current_canvas_->clipRRect(result, true);
+    current_canvas_->setMatrix(current_matrix);
+  }
 }
 
 void SoftwareRenderer::ClearCanvas(SkColor color) {
@@ -211,6 +229,9 @@ void SoftwareRenderer::DoDrawQuad(const DrawQuad* quad,
     SetClipRect(scissor_rect_);
   }
 
+  if (ShouldApplyRoundedCorner(quad))
+    SetClipRRect(quad->shared_quad_state->rounded_corner_bounds);
+
   gfx::Transform quad_rect_matrix;
   QuadRectTransform(&quad_rect_matrix,
                     quad->shared_quad_state->quad_to_target_transform,
@@ -263,36 +284,36 @@ void SoftwareRenderer::DoDrawQuad(const DrawQuad* quad,
   }
 
   switch (quad->material) {
-    case DrawQuad::DEBUG_BORDER:
+    case DrawQuad::Material::kDebugBorder:
       DrawDebugBorderQuad(DebugBorderDrawQuad::MaterialCast(quad));
       break;
-    case DrawQuad::PICTURE_CONTENT:
+    case DrawQuad::Material::kPictureContent:
       DrawPictureQuad(PictureDrawQuad::MaterialCast(quad));
       break;
-    case DrawQuad::RENDER_PASS:
+    case DrawQuad::Material::kRenderPass:
       DrawRenderPassQuad(RenderPassDrawQuad::MaterialCast(quad));
       break;
-    case DrawQuad::SOLID_COLOR:
+    case DrawQuad::Material::kSolidColor:
       DrawSolidColorQuad(SolidColorDrawQuad::MaterialCast(quad));
       break;
-    case DrawQuad::TEXTURE_CONTENT:
+    case DrawQuad::Material::kTextureContent:
       DrawTextureQuad(TextureDrawQuad::MaterialCast(quad));
       break;
-    case DrawQuad::TILED_CONTENT:
+    case DrawQuad::Material::kTiledContent:
       DrawTileQuad(TileDrawQuad::MaterialCast(quad));
       break;
-    case DrawQuad::SURFACE_CONTENT:
+    case DrawQuad::Material::kSurfaceContent:
       // Surface content should be fully resolved to other quad types before
       // reaching a direct renderer.
       NOTREACHED();
       break;
-    case DrawQuad::INVALID:
-    case DrawQuad::YUV_VIDEO_CONTENT:
-    case DrawQuad::STREAM_VIDEO_CONTENT:
+    case DrawQuad::Material::kInvalid:
+    case DrawQuad::Material::kYuvVideoContent:
+    case DrawQuad::Material::kStreamVideoContent:
       DrawUnsupportedQuad(quad);
       NOTREACHED();
       break;
-    case DrawQuad::VIDEO_HOLE:
+    case DrawQuad::Material::kVideoHole:
       // VideoHoleDrawQuad should only be used by Cast, and should
       // have been replaced by cast-specific OverlayProcessor before
       // reach here. In non-cast build, an untrusted render could send such
@@ -471,8 +492,9 @@ void SoftwareRenderer::DrawRenderPassQuad(const RenderPassDrawQuad* quad) {
       SkIRect result_rect;
       // TODO(ajuma): Apply the filter in the same pass as the content where
       // possible (e.g. when there's no origin offset). See crbug.com/308201.
-      filter_image = ApplyImageFilter(image_filter.get(), quad, source_bitmap,
-                                      &result_rect);
+      filter_image =
+          ApplyImageFilter(image_filter.get(), quad, source_bitmap,
+                           /* offset_expanded_bounds = */ true, &result_rect);
       if (result_rect.isEmpty()) {
         return;
       }
@@ -493,12 +515,11 @@ void SoftwareRenderer::DrawRenderPassQuad(const RenderPassDrawQuad* quad) {
 
   sk_sp<SkShader> shader;
   if (!filter_image) {
-    shader =
-        SkShader::MakeBitmapShader(source_bitmap, SkShader::kClamp_TileMode,
-                                   SkShader::kClamp_TileMode, &content_mat);
+    shader = source_bitmap.makeShader(SkTileMode::kClamp, SkTileMode::kClamp,
+                                      &content_mat);
   } else {
-    shader = filter_image->makeShader(SkShader::kClamp_TileMode,
-                                      SkShader::kClamp_TileMode, &content_mat);
+    shader = filter_image->makeShader(SkTileMode::kClamp, SkTileMode::kClamp,
+                                      &content_mat);
   }
 
   if (quad->mask_resource_id()) {
@@ -517,15 +538,15 @@ void SoftwareRenderer::DrawRenderPassQuad(const RenderPassDrawQuad* quad) {
 
     current_paint_.setMaskFilter(
         SkShaderMaskFilter::Make(mask_lock.sk_image()->makeShader(
-            SkShader::kClamp_TileMode, SkShader::kClamp_TileMode, &mask_mat)));
+            SkTileMode::kClamp, SkTileMode::kClamp, &mask_mat)));
   }
 
-  // If we have a background filter shader, render its results first.
-  sk_sp<SkShader> background_filter_shader =
-      GetBackgroundFilterShader(quad, SkShader::kClamp_TileMode);
-  if (background_filter_shader) {
+  // If we have a backdrop filter shader, render its results first.
+  sk_sp<SkShader> backdrop_filter_shader =
+      GetBackdropFilterShader(quad, SkTileMode::kClamp);
+  if (backdrop_filter_shader) {
     SkPaint paint;
-    paint.setShader(std::move(background_filter_shader));
+    paint.setShader(std::move(backdrop_filter_shader));
     paint.setMaskFilter(current_paint_.refMaskFilter());
     current_canvas_->drawRect(dest_visible_rect, paint);
   }
@@ -612,9 +633,11 @@ void SoftwareRenderer::CopyDrawnRenderPass(
       result_format, geometry.result_selection, bitmap));
 }
 
+#if defined(OS_WIN)
 void SoftwareRenderer::SetEnableDCLayers(bool enable) {
   NOTIMPLEMENTED();
 }
+#endif
 
 void SoftwareRenderer::DidChangeVisibility() {
   if (visible_)
@@ -627,55 +650,58 @@ void SoftwareRenderer::GenerateMipmap() {
   NOTIMPLEMENTED();
 }
 
-bool SoftwareRenderer::ShouldApplyBackgroundFilters(
-    const RenderPassDrawQuad* quad,
-    const cc::FilterOperations* backdrop_filters) const {
+bool SoftwareRenderer::ShouldApplyBackdropFilters(
+    const cc::FilterOperations* backdrop_filters,
+    const RenderPassDrawQuad* quad) const {
   if (!backdrop_filters)
+    return false;
+  if (quad->shared_quad_state->opacity == 0.f)
     return false;
   DCHECK(!backdrop_filters->IsEmpty());
   return true;
 }
 
-// If non-null, auto_bounds will be filled with the automatically-computed
-// destination bounds. If null, the output will be the same size as the
-// input bitmap.
+// Applies |filter| to |to_filter| bitmap. |result_rect| will be filled with the
+// automatically-computed destination bounds. If |offset_expanded_bounds| is
+// true, the bitmap will be offset for any pixel-moving filters. This function
+// is called for both filters and backdrop_filters. The difference between those
+// two paths is that the filter path wants to offset to the expanded bounds
+// (including border for pixel moving filters) when drawing the bitmap into the
+// canvas, while the backdrop filter path needs to keep the origin unmoved (at
+// quad->rect origin) so that it gets put in the right spot relative to the
+// underlying backdrop.
 sk_sp<SkImage> SoftwareRenderer::ApplyImageFilter(
     SkImageFilter* filter,
     const RenderPassDrawQuad* quad,
     const SkBitmap& to_filter,
-    SkIRect* auto_bounds) const {
+    bool offset_expanded_bounds,
+    SkIRect* result_rect) const {
+  DCHECK(result_rect);
   if (!filter)
     return nullptr;
 
   SkMatrix local_matrix;
   local_matrix.setTranslate(quad->filters_origin.x(), quad->filters_origin.y());
   local_matrix.postScale(quad->filters_scale.x(), quad->filters_scale.y());
-  SkIRect dst_rect;
-  if (auto_bounds) {
-    dst_rect =
-        filter->filterBounds(gfx::RectToSkIRect(quad->rect), local_matrix,
-                             SkImageFilter::kForward_MapDirection);
-    *auto_bounds = dst_rect;
-  } else {
-    dst_rect = to_filter.bounds();
-  }
-
+  *result_rect =
+      filter->filterBounds(gfx::RectToSkIRect(quad->rect), local_matrix,
+                           SkImageFilter::kForward_MapDirection);
+  gfx::Point canvas_offset =
+      offset_expanded_bounds ? gfx::Point(result_rect->x(), result_rect->y())
+                             : quad->rect.origin();
   SkImageInfo dst_info =
-      SkImageInfo::MakeN32Premul(dst_rect.width(), dst_rect.height());
+      SkImageInfo::MakeN32Premul(result_rect->width(), result_rect->height());
   sk_sp<SkSurface> surface = SkSurface::MakeRaster(dst_info);
-
-  if (!surface) {
+  if (!surface)
     return nullptr;
-  }
 
   SkPaint paint;
   // Treat subnormal float values as zero for performance.
   cc::ScopedSubnormalFloatDisabler disabler;
   paint.setImageFilter(filter->makeWithLocalMatrix(local_matrix));
-  surface->getCanvas()->translate(-dst_rect.x(), -dst_rect.y());
+  surface->getCanvas()->translate(-canvas_offset.x(), -canvas_offset.y());
   surface->getCanvas()->drawBitmap(to_filter, quad->rect.x(), quad->rect.y(),
                                    &paint);
-
   return surface->makeImageSnapshot();
 }
 
@@ -692,35 +718,58 @@ SkBitmap SoftwareRenderer::GetBackdropBitmap(
 
 gfx::Rect SoftwareRenderer::GetBackdropBoundingBoxForRenderPassQuad(
     const RenderPassDrawQuad* quad,
-    const gfx::Transform& contents_device_transform,
     const cc::FilterOperations* backdrop_filters,
+    base::Optional<gfx::RRectF> backdrop_filter_bounds_input,
+    gfx::Transform contents_device_transform,
+    gfx::Transform* backdrop_filter_bounds_transform,
+    base::Optional<gfx::RRectF>* backdrop_filter_bounds,
     gfx::Rect* unclipped_rect) const {
-  // TODO(916318): This function needs to compute the backdrop
-  // filter clip rect and return it.
-  DCHECK(ShouldApplyBackgroundFilters(quad, backdrop_filters));
+  DCHECK(backdrop_filter_bounds_transform);
+  DCHECK(backdrop_filter_bounds);
+  DCHECK(unclipped_rect);
+
+  // |backdrop_filter_bounds| is a rounded rect in [-0.5,0.5] space that
+  // represents |backdrop_filter_bounds_input| as a fraction of the space
+  // defined by |quad->rect|, not including its offset.
+  *backdrop_filter_bounds = gfx::RRectF();
+  if (!backdrop_filter_bounds_input ||
+      !GetScaledRRectF(quad->rect, backdrop_filter_bounds_input.value(),
+                       &backdrop_filter_bounds->value())) {
+    backdrop_filter_bounds->reset();
+  }
+
+  // |backdrop_rect| is now the bounding box of clip_region, in window pixel
+  // coordinates, and with flip applied.
   gfx::Rect backdrop_rect = gfx::ToEnclosingRect(cc::MathUtil::MapClippedRect(
       contents_device_transform, QuadVertexRect()));
-
-  SkMatrix matrix;
-  matrix.setScale(quad->filters_scale.x(), quad->filters_scale.y());
-  backdrop_rect = backdrop_filters->MapRectReverse(backdrop_rect, matrix);
 
   *unclipped_rect = backdrop_rect;
   backdrop_rect.Intersect(MoveFromDrawToWindowSpace(
       current_frame()->current_render_pass->output_rect));
 
+  // Shift to the space of the captured backdrop image.
+  *backdrop_filter_bounds_transform = contents_device_transform;
+  backdrop_filter_bounds_transform->PostTranslate(-backdrop_rect.x(),
+                                                  -backdrop_rect.y());
+
   return backdrop_rect;
 }
 
-sk_sp<SkShader> SoftwareRenderer::GetBackgroundFilterShader(
+sk_sp<SkShader> SoftwareRenderer::GetBackdropFilterShader(
     const RenderPassDrawQuad* quad,
-    SkShader::TileMode content_tile_mode) const {
+    SkTileMode content_tile_mode) const {
   const cc::FilterOperations* backdrop_filters =
-      BackgroundFiltersForPass(quad->render_pass_id);
-  const cc::FilterOperations* regular_filters =
-      FiltersForPass(quad->render_pass_id);
-  if (!ShouldApplyBackgroundFilters(quad, backdrop_filters))
+      BackdropFiltersForPass(quad->render_pass_id);
+  if (!ShouldApplyBackdropFilters(backdrop_filters, quad))
     return nullptr;
+  base::Optional<gfx::RRectF> backdrop_filter_bounds_input =
+      BackdropFilterBoundsForPass(quad->render_pass_id);
+  DCHECK(!FiltersForPass(quad->render_pass_id))
+      << "Filters should always be in a separate Effect node";
+  if (backdrop_filter_bounds_input.has_value()) {
+    backdrop_filter_bounds_input->Scale(quad->filters_scale.x(),
+                                        quad->filters_scale.y());
+  }
 
   gfx::Transform quad_rect_matrix;
   QuadRectTransform(&quad_rect_matrix,
@@ -731,9 +780,13 @@ sk_sp<SkShader> SoftwareRenderer::GetBackgroundFilterShader(
       quad_rect_matrix;
   contents_device_transform.FlattenTo2d();
 
+  base::Optional<gfx::RRectF> backdrop_filter_bounds;
+  gfx::Transform backdrop_filter_bounds_transform;
   gfx::Rect unclipped_rect;
   gfx::Rect backdrop_rect = GetBackdropBoundingBoxForRenderPassQuad(
-      quad, contents_device_transform, backdrop_filters, &unclipped_rect);
+      quad, backdrop_filters, backdrop_filter_bounds_input,
+      contents_device_transform, &backdrop_filter_bounds_transform,
+      &backdrop_filter_bounds, &unclipped_rect);
 
   // Figure out the transformations to move it back to pixel space.
   gfx::Transform contents_device_transform_inverse;
@@ -744,41 +797,73 @@ sk_sp<SkShader> SoftwareRenderer::GetBackgroundFilterShader(
       contents_device_transform_inverse.matrix();
   filter_backdrop_transform.preTranslate(backdrop_rect.x(), backdrop_rect.y());
 
-  // Draw what's behind, and apply the filter to it.
   SkBitmap backdrop_bitmap = GetBackdropBitmap(backdrop_rect);
+  gfx::Point image_offset = gfx::Point(0, 0);
+  if (backdrop_filter_bounds.has_value()) {
+    gfx::Rect filter_clip = gfx::ToEnclosingRect(cc::MathUtil::MapClippedRect(
+        backdrop_filter_bounds_transform, backdrop_filter_bounds->rect()));
+    filter_clip.Intersect(
+        gfx::Rect(backdrop_bitmap.width(), backdrop_bitmap.height()));
+    if (filter_clip.IsEmpty())
+      return nullptr;
+    // Crop the source image to the backdrop_filter_bounds.
+    sk_sp<SkImage> cropped_image = SkImage::MakeFromBitmap(backdrop_bitmap);
+    cropped_image = cropped_image->makeSubset(RectToSkIRect(filter_clip));
+    cropped_image->asLegacyBitmap(&backdrop_bitmap);
+    image_offset = filter_clip.origin();
+  }
 
   gfx::Vector2dF clipping_offset =
       (unclipped_rect.top_right() - backdrop_rect.top_right()) +
       (backdrop_rect.bottom_left() - unclipped_rect.bottom_left());
 
-  // Update the backdrop filter to include "regular" filters and opacity.
-  cc::FilterOperations backdrop_filters_plus_effects = *backdrop_filters;
-  if (regular_filters) {
-    for (const auto& filter_op : regular_filters->operations())
-      backdrop_filters_plus_effects.Append(filter_op);
-  }
-  if (quad->shared_quad_state->opacity < 1.0) {
-    backdrop_filters_plus_effects.Append(
-        cc::FilterOperation::CreateOpacityFilter(
-            quad->shared_quad_state->opacity));
-  }
-
-  // TODO(916318): This function needs to apply the backdrop filter
-  // clip rect to the image.
-  sk_sp<SkImageFilter> filter =
+  sk_sp<cc::PaintFilter> paint_filter =
       cc::RenderSurfaceFilters::BuildImageFilter(
-          backdrop_filters_plus_effects,
+          *backdrop_filters,
           gfx::SizeF(backdrop_bitmap.width(), backdrop_bitmap.height()),
-          clipping_offset)
-          ->cached_sk_filter_;
-  sk_sp<SkImage> filter_backdrop_image =
-      ApplyImageFilter(filter.get(), quad, backdrop_bitmap, nullptr);
+          clipping_offset);
+  if (!paint_filter)
+    return nullptr;
+  sk_sp<SkImageFilter> filter = paint_filter->cached_sk_filter_;
 
-  if (!filter_backdrop_image)
+  // TODO(989238): Software renderer does not support/implement kClamp_TileMode.
+  SkIRect result_rect;
+  sk_sp<SkImage> filtered_image =
+      ApplyImageFilter(filter.get(), quad, backdrop_bitmap,
+                       /* offset_expanded_bounds = */ false, &result_rect);
+  if (!filtered_image)
     return nullptr;
 
-  return filter_backdrop_image->makeShader(content_tile_mode, content_tile_mode,
-                                           &filter_backdrop_transform);
+  // Use an SkBitmap to paint the rrect-clipped filtered image.
+  SkImageInfo info =
+      SkImageInfo::MakeN32Premul(backdrop_rect.width(), backdrop_rect.height());
+  SkBitmap bitmap;
+  bitmap.allocPixels(info, info.minRowBytes());
+  SkCanvas canvas(bitmap);
+
+  // Clip the filtered image to the (rounded) bounding box of the element.
+  if (backdrop_filter_bounds) {
+    canvas.setMatrix(backdrop_filter_bounds_transform.matrix());
+    canvas.clipRRect(SkRRect(*backdrop_filter_bounds), SkClipOp::kIntersect,
+                     true /* antialias */);
+    canvas.resetMatrix();
+  }
+
+  // Paint the filtered backdrop image with opacity.
+  SkPaint paint;
+  if (quad->shared_quad_state->opacity < 1.0) {
+    paint.setImageFilter(
+        SkiaHelper::BuildOpacityFilter(quad->shared_quad_state->opacity));
+  }
+
+  // Now paint the pre-filtered image onto the canvas.
+  SkRect src_rect =
+      SkRect::MakeXYWH(0, 0, backdrop_bitmap.width(), backdrop_bitmap.height());
+  SkRect dst_rect = src_rect.makeOffset(image_offset.x(), image_offset.y());
+  canvas.drawImageRect(filtered_image, src_rect, dst_rect, &paint);
+
+  return SkImage::MakeFromBitmap(bitmap)->makeShader(
+      content_tile_mode, content_tile_mode, &filter_backdrop_transform);
 }
 
 void SoftwareRenderer::UpdateRenderPassTextures(

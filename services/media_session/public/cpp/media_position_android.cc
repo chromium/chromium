@@ -1,0 +1,21 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "services/media_session/public/cpp/media_position.h"
+
+#include "services/media_session/public/cpp/android/media_session_jni_headers/MediaPosition_jni.h"
+
+using base::android::ScopedJavaLocalRef;
+
+namespace media_session {
+
+base::android::ScopedJavaLocalRef<jobject> MediaPosition::CreateJavaObject(
+    JNIEnv* env) const {
+  return Java_MediaPosition_create(
+      env, duration_.InMilliseconds(), position_.InMilliseconds(),
+      playback_rate_,
+      (last_updated_time_ - base::TimeTicks::UnixEpoch()).InMilliseconds());
+}
+
+}  // namespace media_session

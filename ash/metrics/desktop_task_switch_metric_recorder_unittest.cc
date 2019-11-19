@@ -45,12 +45,12 @@ class DesktopTaskSwitchMetricRecorderTest : public AshTestBase {
   // recorded.
   int GetActionCount() const;
 
-  // Creates a positionable window such that wm::IsWindowUserPositionable(...)
-  // would retun true.
+  // Creates a positionable window such that
+  // window_util::IsWindowUserPositionable(...) would return true.
   std::unique_ptr<aura::Window> CreatePositionableWindow() const;
 
   // Creates a non-positionable window such that
-  // wm::IsWindowUserPositionable(...) would retun false.
+  // window_util::IsWindowUserPositionable(...) would return false.
   std::unique_ptr<aura::Window> CreateNonPositionableWindow() const;
 
   // Wrapper to notify the test target's OnWindowActivated(...) method that
@@ -263,7 +263,7 @@ class DesktopTaskSwitchMetricRecorderWithShellIntegrationTest
   int GetActionCount() const;
 
   // Creates a positionable window with the given |bounds| such that
-  // wm::IsWindowUserPositionable(...) would retun true.
+  // window_util::IsWindowUserPositionable(...) would return true.
   aura::Window* CreatePositionableWindowInShellWithBounds(
       const gfx::Rect& bounds);
 

@@ -32,6 +32,9 @@ class StubCrosSettingsProvider : public CrosSettingsProvider {
 
   bool current_user_is_owner() const { return current_user_is_owner_; }
 
+  // Sets in-memory setting at |path| to value |in_value|.
+  void Set(const std::string& path, const base::Value& in_value);
+
   // Convenience forms of Set(). These methods will replace any existing value
   // at that |path|, even if it has a different type.
   void SetBoolean(const std::string& path, bool in_value);
@@ -40,9 +43,6 @@ class StubCrosSettingsProvider : public CrosSettingsProvider {
   void SetString(const std::string& path, const std::string& in_value);
 
  private:
-  // CrosSettingsProvider implementation:
-  void DoSet(const std::string& path, const base::Value& value) override;
-
   // Initializes settings to their defaults.
   void SetDefaults();
 

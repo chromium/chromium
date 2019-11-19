@@ -60,7 +60,7 @@ void LayoutSVGPath::UpdateMarkers() {
   marker_positions_.clear();
 
   if (!StyleRef().SvgStyle().HasMarkers() ||
-      !SVGResources::SupportsMarkers(*ToSVGGraphicsElement(GetElement())))
+      !SVGResources::SupportsMarkers(*To<SVGGraphicsElement>(GetElement())))
     return;
 
   SVGResources* resources =

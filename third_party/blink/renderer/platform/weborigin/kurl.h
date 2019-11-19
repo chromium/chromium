@@ -30,7 +30,8 @@
 #include <iosfwd>
 #include <memory>
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "url/third_party/mozilla/url_parse.h"
@@ -322,6 +323,13 @@ namespace WTF {
 template <>
 struct DefaultHash<blink::KURL> {
   typedef blink::KURLHash Hash;
+};
+
+template <>
+struct CrossThreadCopier<blink::KURL> {
+  STATIC_ONLY(CrossThreadCopier);
+  typedef blink::KURL Type;
+  static Type Copy(const blink::KURL& url) { return url.Copy(); }
 };
 
 }  // namespace WTF

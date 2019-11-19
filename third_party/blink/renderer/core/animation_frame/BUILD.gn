@@ -1,0 +1,15 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/blink/renderer/core/core.gni")
+
+blink_core_sources("animation_frame") {
+  sources = [
+    "worker_animation_frame_provider.cc",
+    "worker_animation_frame_provider.h",
+  ]
+  deps = [
+    "//mojo/public/cpp/bindings:bindings",
+  ]
+}

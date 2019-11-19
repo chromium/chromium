@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.tab.Tab;
 
 /**
@@ -81,8 +82,8 @@ public class SimpleConfirmInfoBarBuilder {
         Activity activity = tab.getWindowAndroid().getActivity().get();
         Bitmap drawable = activity == null || drawableId == 0 ? null
                 : BitmapFactory.decodeResource(activity.getResources(), drawableId);
-        nativeCreate(tab, infobarTypeIdentifier, drawable, message, primaryText, secondaryText,
-                linkText, autoExpire, listener);
+        SimpleConfirmInfoBarBuilderJni.get().create(tab, infobarTypeIdentifier, drawable, message,
+                primaryText, secondaryText, linkText, autoExpire, listener);
     }
 
     @CalledByNative
@@ -100,8 +101,11 @@ public class SimpleConfirmInfoBarBuilder {
         return listener == null ? false : listener.onInfoBarLinkClicked();
     }
 
-    private static native void nativeCreate(Tab tab, int infobarTypeIdentifier, Bitmap drawable,
-            String message, String primaryText, String secondaryText, String linkText,
-            boolean autoExpire, Object listener);
+    @NativeMethods
+    interface Natives {
+        void create(Tab tab, int infobarTypeIdentifier, Bitmap drawable, String message,
+                String primaryText, String secondaryText, String linkText, boolean autoExpire,
+                Object listener);
+    }
 }
 

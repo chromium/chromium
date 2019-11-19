@@ -1,0 +1,40 @@
+<!doctype HTML>
+<html class="reftest-wait">
+<meta charset="utf8">
+<title>Display Locking: acquire infinite timeout</title>
+<link rel="author" title="Vladimir Levin" href="mailto:vmpstr@chromium.org">
+<link rel="help" href="https://github.com/WICG/display-locking">
+<link rel="match" href="pass-ref.html">
+<script src="/common/reftest-wait.js"></script>
+<script src="resources/utils.js"></script>
+
+<style>
+#container {
+  width: 100px;
+  height: 100px;
+}
+</style>
+
+<div id="log"></div>
+
+<script>
+function finishTest(status_string) {
+  if (document.getElementById("log").innerHTML === "")
+    document.getElementById("log").innerHTML = status_string;
+  takeScreenshot();
+}
+
+function runTest() {
+  const container = document.createElement("div");
+  container.id = "container";
+  setInvisible(container).then(() => {
+    document.body.appendChild(container);
+    setTimeout(() => { finishTest("PASS"); }, 100);
+  });
+}
+
+window.onload = runTest;
+</script>
+
+
+</html>

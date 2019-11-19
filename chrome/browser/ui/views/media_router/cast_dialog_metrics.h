@@ -9,6 +9,8 @@
 #include "base/time/time.h"
 #include "chrome/browser/media/router/media_router_metrics.h"
 
+class Profile;
+
 namespace media_router {
 
 // Records UMA metrics for the behavior of a Cast dialog. A new recorder
@@ -21,7 +23,7 @@ class CastDialogMetrics {
   // |initialization_time| is when the dialog UI started initializing. We use
   // this value as the baseline for how long the dialog took to paint, load
   // sinks, etc.
-  explicit CastDialogMetrics(const base::Time& initialization_time);
+  CastDialogMetrics(const base::Time& initialization_time, Profile* profile);
   virtual ~CastDialogMetrics();
 
   // Records the time it took to load sinks when called for the first time. This

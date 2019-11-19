@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<title>Tests mouse autoscroll interactions on a non-custom composited div scrollbar.</title>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../../resources/gesture-util.js"></script>
+<script src="../../../resources/scrollbar-util.js"></script>
+<style>
+.appearance {
+  width: 100px;
+  height: 100px;
+  overflow: scroll;
+  border: 1px solid black;
+}
+.location {
+  position: absolute;
+  top: 100px;
+  left: 100px;
+}
+.fast {
+  will-change: transform;
+}
+.space {
+  height: 2000px;
+  width: 2000px;
+}
+
+</style>
+
+<!-- Composited non-custom fast scroller -->
+<div id="scroller" class="appearance location fast">
+  <div id="divContent" class="space"></div>
+</div>
+
+<script>
+  // Turn off animated scrolling. The "conditionHolds" API expects the scrollTop to
+  // *not* change for 10 frames. This will fail since the last GSU would still be
+  // animating if animated scrolling were on.
+  if (window.internals)
+    internals.settings.setScrollAnimatorEnabled(false);
+
+  const scroller = document.getElementById("scroller");
+  const scrollerRect = scroller.getBoundingClientRect();
+
+  const TRACK_WIDTH = calculateScrollbarThickness();
+  const BUTTON_WIDTH = TRACK_WIDTH;
+  const SCROLL_CORNER = TRACK_WIDTH;
+  const SCROLL_DELTA = 400;
+  const MAX_SCROLLER_OFFSET = 1915;
+  const PRESS_DURATION = 1000;
+
+  promise_test (async () => {
+    await waitForCompositorCommit();
+    scroller.scrollTop = 0;
+
+    // TODO(arakeri): Split the mousePressOn API calls to mouseDownAt, waitFor
+    // and mouseUpAt once crbug.com/979408 is fixed.
+    const down_arrow_x = scrollerRect.right - BUTTON_WIDTH / 2;
+    const down_arrow_y = scrollerRect.bottom - SCROLL_CORNER - BUTTON_WIDTH / 2;
+    await mousePressOn(down_arrow_x, down_arrow_y, PRESS_DURATION);
+    var err = `Autoscroll down failed (scroller.scrollTop = ${scroller.scrollTop})`;
+
+    // Verify that autoscroll happened.
+    assert_greater_than(scroller.scrollTop, SCROLL_DELTA, err);
+
+    // Since autoscroll for arrows happens at 800 px per second, verify that the
+    // scrollTop has not reached the end.
+    assert_less_than(scroller.scrollTop, MAX_SCROLLER_OFFSET, "Reached scroller end.");
+
+    await waitForCompositorCommit();
+    const current_offset = scroller.scrollTop;
+    err = `scroller.scrollTop = ${scroller.scrollTop} current_offset = ${current_offset}`;
+    await conditionHolds(() => { return scroller.scrollTop == current_offset; }, err);
+  },"Test autoscroll down and autoscroll stop.");
+
+  promise_test (async () => {
+    await waitForCompositorCommit();
+    scroller.scrollTop = 0;
+
+    // TODO(arakeri): Split the mousePressOn API calls to mouseDownAt, waitFor
+    // and mouseUpAt once crbug.com/979408 is fixed. In its current state, the
+    // test will ensure that track autoscroll happens successfully and that the
+    // autoscroll aborts when thumb reaches the pointer.
+    const trackscroll_x = scrollerRect.right - BUTTON_WIDTH / 2;
+    const trackscroll_y = scrollerRect.bottom - SCROLL_CORNER - BUTTON_WIDTH;
+    await mousePressOn(trackscroll_x, trackscroll_y, PRESS_DURATION);
+    var err = `Autoscroll down failed (scroller.scrollTop = ${scroller.scrollTop})`;
+
+    // Verify that track autoscroll happened.
+    assert_greater_than(scroller.scrollTop, SCROLL_DELTA, err);
+
+    // Verify that the track autoscroll actually stops as expected. Since track
+    // autoscroll in this particular case is 1480 px/sec (i.e 74 * 20), holding the
+    // pointer pressed for 1000ms (i.e PRESS_DURATION) would've continued scrolling to
+    // around 1100px. The fact it stops short even though the pointer remains pressed
+    // verifies that the track autoscroll was canceled.
+    assert_less_than(scroller.scrollTop, 800, "Track autosroll did not end.");
+
+    const current_offset = scroller.scrollTop;
+    err = `scroller.scrollTop = ${scroller.scrollTop} current_offset = ${current_offset}`;
+    await conditionHolds(() => { return scroller.scrollTop == current_offset; }, err);
+  },"Test track autoscroll down and autoscroll stop.");
+
+  promise_test (async () => {
+    await waitForCompositorCommit();
+    scroller.scrollTop = MAX_SCROLLER_OFFSET;
+
+    // Schedule a scroller height increment 500ms out and immediately initiate autoscroll.
+    const content = document.getElementById("divContent");
+    const originalDivHeight = content.clientHeight;
+    const extendedDivHeight = originalDivHeight + 500;
+    setTimeout(function() {
+      content.setAttribute("style","height:" + extendedDivHeight + "px");
+    }, 500);
+
+    const down_arrow_x = scrollerRect.right - BUTTON_WIDTH / 2;
+    const down_arrow_y = scrollerRect.bottom - SCROLL_CORNER - BUTTON_WIDTH / 2;
+
+    // Keep the mouse pressed for 1000ms. Before this call completes, the previously
+    // scheduled scroller height increment kicks in. At this point, the autoscrolling
+    // is expected to take place. This should prove that scrolling occured *after* the
+    // scroller length was extended (as long as the pointer was kept pressed).
+    await mousePressOn(down_arrow_x, down_arrow_y, PRESS_DURATION);
+    var err = `Infinite autoscroll down failed (scroller.scrollTop = ${scroller.scrollTop})`;
+
+    // Verify that autoscroll took place beyond the old bounds. If there is a regression here,
+    // the scroller.scrollTop would've stayed at MAX_SCROLLER_OFFSET.
+    assert_greater_than(scroller.scrollTop, MAX_SCROLLER_OFFSET, err);
+
+    // Reset the scroller dimensions.
+    content.setAttribute("style","height:" + originalDivHeight + "px");
+  },"Test infinite scrolling when content is extended dynamically.");
+
+  promise_test (async () => {
+    scroller.scrollTop = 0;
+    const SCROLL_TOP = 100;
+
+    const down_arrow_x = scrollerRect.right - BUTTON_WIDTH / 2;
+    const down_arrow_y = scrollerRect.bottom - SCROLL_CORNER - BUTTON_WIDTH / 2;
+
+    // Keep the mouse pressed on the down arrow.
+    await mouseMoveTo(down_arrow_x, down_arrow_y);
+    await mouseDownAt(down_arrow_x, down_arrow_y);
+
+    // Wait for a bit for the autoscroll to start. In the call below, the first 250ms
+    // is spent waiting for the autoscroll to start. After 250ms, autoscroll initiates
+    // with a velocity of 800px/sec. So, in the remaining time (of 250ms), the duration
+    // should be enough to take the scroller beyond the expected threshold (SCROLL_TOP).
+    // Note that the expected SCROLL_TOP here is 100px. If scrolling crosses this value,
+    // it should suffice as proof that autoscrolling works as expected.
+    await waitForMs(500);
+    await waitFor(() => { return scroller.scrollTop >= SCROLL_TOP; },
+    `scroller.scrollTop = ${scroller.scrollTop} never reached ${SCROLL_TOP}`);
+
+    // Without releasing the mouse, move away from the arrow.
+    await mouseMoveTo(down_arrow_x, down_arrow_y - 20);
+
+    // Now that the mouse is away, record the scrolltop and ensure that no scrolling happens.
+    const current_scrolltop = scroller.scrollTop;
+    await conditionHolds(() => { return current_scrolltop == scroller.scrollTop; },
+    `Condition did not hold [scroller.scrollTop = ${scroller.scrollTop}]`);
+
+    // Now move back on the arrow and verify that auto-scrolling starts immediately. There
+    // should not be the 250ms pause before starting autoscroll since the mouse was never released.
+    await mouseMoveTo(down_arrow_x, down_arrow_y);
+
+    // Allow some time for queued GSU's to fire.
+    await waitFor(() => { return scroller.scrollTop >= current_scrolltop; },
+    `Animation did not restart [scroller.scrollTop = ${scroller.scrollTop}]`);
+
+    // TODO(arakeri): This was supposed to be mouseUpAt (because the mouse should be released at
+    // end of the test). However, due to crbug.com/979408, the mouseUpAt API can't be used reliably.
+    // Once the bug is fixed, the line below needs to be updated. The point of using mouseClickOn
+    // for now is to ensure that we get a pointerup at the end of the test.
+    await mouseClickOn(down_arrow_x, down_arrow_y);
+  },"Test autoscroll play/pause when pointer moves in and out of arrow bounds.");
+</script>

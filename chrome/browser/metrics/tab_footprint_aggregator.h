@@ -10,7 +10,6 @@
 
 #include "base/process/process_handle.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "services/resource_coordinator/public/cpp/coordination_unit_id.h"
 
 namespace ukm {
 class UkmRecorder;
@@ -26,8 +25,7 @@ class TabFootprintAggregator {
   TabFootprintAggregator();
   ~TabFootprintAggregator();
 
-  typedef resource_coordinator::CoordinationUnitID::CoordinationUnitTypeId
-      PageId;
+  typedef uint64_t PageId;
 
   // Tracks the process identified by |pid| as the host of the main-frame for
   // the tab identified by |page_id|. |pmf_kb| should be the private memory

@@ -49,7 +49,8 @@ std::unique_ptr<RemoteCommandJob> CreateSetVolumeJob(
       base::WrapUnique<RemoteCommandJob>(new DeviceCommandSetVolumeJob());
   auto set_volume_command_proto = GenerateSetVolumeCommandProto(
       base::TimeTicks::Now() - issued_time, volume);
-  EXPECT_TRUE(job->Init(base::TimeTicks::Now(), set_volume_command_proto));
+  EXPECT_TRUE(
+      job->Init(base::TimeTicks::Now(), set_volume_command_proto, nullptr));
   EXPECT_EQ(kUniqueID, job->unique_id());
   EXPECT_EQ(RemoteCommandJob::NOT_STARTED, job->status());
   return job;
@@ -94,7 +95,7 @@ TEST_F(DeviceCommandSetVolumeTest, NonMuted) {
   const int kVolume = 45;
   auto job = CreateSetVolumeJob(test_start_time_, kVolume);
   EXPECT_TRUE(
-      job->Run(base::TimeTicks::Now(),
+      job->Run(base::Time::Now(), base::TimeTicks::Now(),
                base::BindOnce(&VerifyResults, base::Unretained(&run_loop_),
                               base::Unretained(job.get()), kVolume, false)));
   run_loop_.Run();
@@ -104,7 +105,7 @@ TEST_F(DeviceCommandSetVolumeTest, Muted) {
   const int kVolume = 0;
   auto job = CreateSetVolumeJob(test_start_time_, kVolume);
   EXPECT_TRUE(
-      job->Run(base::TimeTicks::Now(),
+      job->Run(base::Time::Now(), base::TimeTicks::Now(),
                base::BindOnce(&VerifyResults, base::Unretained(&run_loop_),
                               base::Unretained(job.get()), kVolume, true)));
   run_loop_.Run();
@@ -115,14 +116,15 @@ TEST_F(DeviceCommandSetVolumeTest, VolumeOutOfRange) {
   std::unique_ptr<RemoteCommandJob> job(new DeviceCommandSetVolumeJob());
   auto set_volume_command_proto = GenerateSetVolumeCommandProto(
       base::TimeTicks::Now() - test_start_time_, kVolume);
-  EXPECT_FALSE(job->Init(base::TimeTicks::Now(), set_volume_command_proto));
+  EXPECT_FALSE(
+      job->Init(base::TimeTicks::Now(), set_volume_command_proto, nullptr));
   EXPECT_EQ(RemoteCommandJob::INVALID, job->status());
 }
 
 TEST_F(DeviceCommandSetVolumeTest, CommandTimeout) {
   auto delta = base::TimeDelta::FromMinutes(10);
   auto job = CreateSetVolumeJob(test_start_time_ - delta, 50);
-  EXPECT_FALSE(job->Run(base::TimeTicks::Now(),
+  EXPECT_FALSE(job->Run(base::Time::Now(), base::TimeTicks::Now(),
                         RemoteCommandJob::FinishedCallback()));
   EXPECT_EQ(RemoteCommandJob::EXPIRED, job->status());
 }

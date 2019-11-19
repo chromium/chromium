@@ -27,8 +27,8 @@ namespace {
 
 void OnExtractFeaturesJsResult(const DistillablePageDetector* detector,
                                base::Callback<void(bool)> callback,
-                               const base::Value* result) {
-  callback.Run(detector->Classify(CalculateDerivedFeaturesFromJSON(result)));
+                               base::Value result) {
+  callback.Run(detector->Classify(CalculateDerivedFeaturesFromJSON(&result)));
 }
 
 }  // namespace
@@ -43,23 +43,61 @@ void IsDistillablePageForDetector(content::WebContents* web_contents,
     return;
   }
   std::string extract_features_js =
-      ui::ResourceBundle::GetSharedInstance()
-          .GetRawDataResource(IDR_EXTRACT_PAGE_FEATURES_JS)
-          .as_string();
+      ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
+          IDR_EXTRACT_PAGE_FEATURES_JS);
   RunIsolatedJavaScript(
       main_frame, extract_features_js,
-      base::Bind(OnExtractFeaturesJsResult, detector, callback));
+      base::BindOnce(OnExtractFeaturesJsResult, detector, callback));
 }
 
-void SetDelegate(content::WebContents* web_contents,
-                 DistillabilityDelegate delegate) {
+std::ostream& operator<<(std::ostream& os, const DistillabilityResult& result) {
+  os << "DistillabilityResult: { is_distillable: " << result.is_distillable
+     << ", is_last: " << result.is_last
+     << ", is_mobile_friendly: " << result.is_mobile_friendly << " }";
+  return os;
+}
+
+void AddObserver(content::WebContents* web_contents,
+                 DistillabilityObserver* observer) {
+  DCHECK(observer);
   CHECK(web_contents);
   DistillabilityDriver::CreateForWebContents(web_contents);
 
   DistillabilityDriver* driver =
       DistillabilityDriver::FromWebContents(web_contents);
   CHECK(driver);
-  driver->SetDelegate(delegate);
+  base::ObserverList<DistillabilityObserver>* observer_list =
+      driver->GetObserverList();
+  if (!observer_list->HasObserver(observer)) {
+    observer_list->AddObserver(observer);
+  }
+}
+
+void RemoveObserver(content::WebContents* web_contents,
+                    DistillabilityObserver* observer) {
+  DCHECK(observer);
+  CHECK(web_contents);
+  DistillabilityDriver::CreateForWebContents(web_contents);
+
+  DistillabilityDriver* driver =
+      DistillabilityDriver::FromWebContents(web_contents);
+  CHECK(driver);
+  base::ObserverList<DistillabilityObserver>* observer_list =
+      driver->GetObserverList();
+  if (observer_list->HasObserver(observer)) {
+    observer_list->RemoveObserver(observer);
+  }
+}
+
+base::Optional<DistillabilityResult> GetLatestResult(
+    content::WebContents* web_contents) {
+  CHECK(web_contents);
+  DistillabilityDriver::CreateForWebContents(web_contents);
+
+  DistillabilityDriver* driver =
+      DistillabilityDriver::FromWebContents(web_contents);
+  CHECK(driver);
+  return driver->GetLatestResult();
 }
 
 }  // namespace dom_distiller

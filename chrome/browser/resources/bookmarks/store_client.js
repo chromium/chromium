@@ -2,19 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {StoreClient as CrUiStoreClient} from 'chrome://resources/js/cr/ui/store_client.m.js';
+import {StoreObserver} from 'chrome://resources/js/cr/ui/store.m.js';
+import {Store} from './store.js';
+import {BookmarksPageState} from './types.js';
+
 /**
  * @fileoverview Defines StoreClient, a Polymer behavior to tie a front-end
  * element to back-end data from the store.
  */
 
-cr.define('bookmarks', function() {
   /**
    * @polymerBehavior
    */
   const BookmarksStoreClientImpl = {
     /**
      * @param {string} localProperty
-     * @param {function(!BookmarksPageState)} valueGetter
+     * @param {function(Object)} valueGetter
      */
     watch: function(localProperty, valueGetter) {
       this.watch_(localProperty, valueGetter);
@@ -28,21 +32,19 @@ cr.define('bookmarks', function() {
     },
 
     /**
-     * @return {bookmarks.Store}
+     * @return {Store}
      */
     getStore: function() {
-      return bookmarks.Store.getInstance();
+      return Store.getInstance();
     },
   };
 
   /**
    * @polymerBehavior
-   * @implements {cr.ui.StoreObserver<BookmarksPageState>}
+   * @implements {StoreObserver<BookmarksPageState>}
    */
-  const StoreClient = [cr.ui.StoreClient, BookmarksStoreClientImpl];
+  export const StoreClient = [
+    CrUiStoreClient,
+    BookmarksStoreClientImpl
+  ];
 
-  return {
-    BookmarksStoreClientImpl: BookmarksStoreClientImpl,
-    StoreClient: StoreClient,
-  };
-});

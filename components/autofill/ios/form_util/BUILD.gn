@@ -19,6 +19,7 @@ source_set("form_util") {
   deps = [
     "//base",
     "//ios/web/public",
+    "//ios/web/public/js_messaging",
   ]
 }
 
@@ -54,6 +55,7 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//ios/web/public/js_messaging",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
     "//ios/web/web_state/js",

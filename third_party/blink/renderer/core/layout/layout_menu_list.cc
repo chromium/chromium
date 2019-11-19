@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/layout/layout_menu_list.h"
 
 #include <math.h>
+#include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -49,15 +50,16 @@ LayoutMenuList::LayoutMenuList(Element* element)
       inner_block_height_(LayoutUnit()),
       options_width_(0),
       last_active_index_(-1) {
-  DCHECK(IsHTMLSelectElement(element));
+  DCHECK(IsA<HTMLSelectElement>(element));
 }
 
 LayoutMenuList::~LayoutMenuList() = default;
 
-// FIXME: Instead of this hack we should add a ShadowRoot to <select> with no
-// insertion point to prevent children from rendering.
 bool LayoutMenuList::IsChildAllowed(LayoutObject* object,
                                     const ComputedStyle&) const {
+  // For a size=1 <select>, we only render the active option through the
+  // anonymous inner_block_ plus button_text_. We do not allow adding layout
+  // objects for options or optgroups.
   return object->IsAnonymous();
 }
 
@@ -91,12 +93,14 @@ void LayoutMenuList::CreateInnerBlock() {
   }
 
   // Create an anonymous block.
+  LegacyLayout legacy =
+      ForceLegacyLayout() ? LegacyLayout::kForce : LegacyLayout::kAuto;
   DCHECK(!FirstChild());
-  inner_block_ =
-      LayoutBlockFlow::CreateAnonymous(&GetDocument(), CreateInnerStyle());
+  inner_block_ = LayoutBlockFlow::CreateAnonymous(&GetDocument(),
+                                                  CreateInnerStyle(), legacy);
 
   button_text_ =
-      LayoutText::CreateEmptyAnonymous(GetDocument(), MutableStyle());
+      LayoutText::CreateEmptyAnonymous(GetDocument(), Style(), legacy);
   // We need to set the text explicitly though it was specified in the
   // constructor because LayoutText doesn't refer to the text
   // specified in the constructor in a case of re-transforming.
@@ -134,9 +138,8 @@ void LayoutMenuList::AdjustInnerStyle(ComputedStyle& inner_style) const {
 
   Length padding_start = Length::Fixed(
       LayoutTheme::GetTheme().PopupInternalPaddingStart(StyleRef()));
-  Length padding_end =
-      Length::Fixed(LayoutTheme::GetTheme().PopupInternalPaddingEnd(
-          GetFrameView()->GetChromeClient(), StyleRef()));
+  Length padding_end = Length::Fixed(
+      LayoutTheme::GetTheme().PopupInternalPaddingEnd(GetFrame(), StyleRef()));
   inner_style.SetPaddingLeft(StyleRef().Direction() == TextDirection::kLtr
                                  ? padding_start
                                  : padding_end);
@@ -160,7 +163,7 @@ void LayoutMenuList::AdjustInnerStyle(ComputedStyle& inner_style) const {
 }
 
 HTMLSelectElement* LayoutMenuList::SelectElement() const {
-  return ToHTMLSelectElement(GetNode());
+  return To<HTMLSelectElement>(GetNode());
 }
 
 void LayoutMenuList::AddChild(LayoutObject* new_child,
@@ -193,7 +196,7 @@ void LayoutMenuList::StyleDidChange(StyleDifference diff,
   if (!inner_block_)
     CreateInnerBlock();
 
-  button_text_->SetStyle(MutableStyle());
+  button_text_->SetStyle(Style());
   UpdateInnerStyle();
   UpdateInnerBlockHeight();
 }
@@ -206,6 +209,11 @@ void LayoutMenuList::UpdateInnerBlockHeight() {
 }
 
 void LayoutMenuList::UpdateOptionsWidth() const {
+  if (ShouldApplySizeContainment()) {
+    options_width_ = 0;
+    return;
+  }
+
   float max_option_width = 0;
 
   for (auto* const option : SelectElement()->GetOptionList()) {
@@ -245,7 +253,7 @@ void LayoutMenuList::UpdateFromElement() {
       Locale& locale = select->GetLocale();
       String localized_number_string =
           locale.ConvertToLocalizedNumber(String::Number(selected_count));
-      text = locale.QueryString(WebLocalizedString::kSelectMenuListText,
+      text = locale.QueryString(IDS_FORM_SELECT_MENU_LIST_TEXT,
                                 localized_number_string);
       DCHECK(!option_style_);
     }
@@ -275,10 +283,10 @@ void LayoutMenuList::SetText(const String& s) {
     // s.impl() into the text and have things align correctly...
     // crbug.com/485982
     is_empty_ = true;
-    button_text_->SetText(StringImpl::Create(" ", 1), true);
+    button_text_->ForceSetText(StringImpl::Create(" ", 1));
   } else {
     is_empty_ = false;
-    button_text_->SetText(s.Impl(), true);
+    button_text_->ForceSetText(s.Impl());
   }
   // LayoutMenuList::ControlClipRect() depends on inner_block_->ContentsSize().
   SetNeedsPaintPropertyUpdate();
@@ -290,19 +298,19 @@ String LayoutMenuList::GetText() const {
   return button_text_ && !is_empty_ ? button_text_->GetText() : String();
 }
 
-LayoutRect LayoutMenuList::ControlClipRect(
-    const LayoutPoint& additional_offset) const {
+PhysicalRect LayoutMenuList::ControlClipRect(
+    const PhysicalOffset& additional_offset) const {
   // Clip to the intersection of the content box and the content box for the
   // inner box. This will leave room for the arrows which sit in the inner box
   // padding, and if the inner box ever spills out of the outer box, that will
   // get clipped too.
-  LayoutRect outer_box = PhysicalContentBoxRect();
-  outer_box.MoveBy(additional_offset);
+  PhysicalRect outer_box = PhysicalContentBoxRect();
+  outer_box.offset += additional_offset;
 
-  LayoutRect inner_box(
-      additional_offset + inner_block_->Location() +
-          LayoutSize(inner_block_->PaddingLeft(), inner_block_->PaddingTop()),
-      inner_block_->ContentSize());
+  PhysicalRect inner_box(additional_offset + inner_block_->PhysicalLocation() +
+                             PhysicalOffset(inner_block_->PaddingLeft(),
+                                            inner_block_->PaddingTop()),
+                         inner_block_->ContentSize());
 
   return Intersection(outer_box, inner_box);
 }
@@ -326,7 +334,7 @@ void LayoutMenuList::ComputeLogicalHeight(
     LayoutUnit logical_height,
     LayoutUnit logical_top,
     LogicalExtentComputedValues& computed_values) const {
-  if (StyleRef().HasAppearance())
+  if (StyleRef().HasEffectiveAppearance())
     logical_height = inner_block_height_ + BorderAndPaddingHeight();
   LayoutBox::ComputeLogicalHeight(logical_height, logical_top, computed_values);
 }

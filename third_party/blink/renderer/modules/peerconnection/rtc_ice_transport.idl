@@ -34,7 +34,6 @@ enum RTCIceGatheringState {
    ConstructorCallWith=ExecutionContext,
    Exposed=Window,
    Measure,
-   OriginTrialEnabled=RTCIceTransportExtension,
    SecureContext
 ] interface RTCIceTransport : EventTarget {
     // TODO(github.com/w3c/webrtc-ice/issues/4): role is non-null in the
@@ -53,10 +52,10 @@ enum RTCIceGatheringState {
 
     // The following is defined in the WebRTC-ICE extension specification.
     // https://w3c.github.io/webrtc-ice/#rtcicetransport*
-    [RaisesException] void gather(RTCIceGatherOptions options);
-    [RaisesException] void start(RTCIceParameters remoteParameters, optional RTCIceRole role = "controlled");
-    void stop();
-    [RaisesException] void addRemoteCandidate(RTCIceCandidate remoteCandidate);
+    [RuntimeEnabled=RTCIceTransportExtension, RaisesException] void gather(RTCIceGatherOptions options);
+    [RuntimeEnabled=RTCIceTransportExtension, RaisesException] void start(RTCIceParameters remoteParameters, optional RTCIceRole role = "controlled");
+    [RuntimeEnabled=RTCIceTransportExtension] void stop();
+    [RuntimeEnabled=RTCIceTransportExtension, RaisesException] void addRemoteCandidate(RTCIceCandidate remoteCandidate);
     // TODO(crbug.com/864871): Implement onerror.
-    attribute EventHandler onicecandidate;
+    [RuntimeEnabled=RTCIceTransportExtension] attribute EventHandler onicecandidate;
 };

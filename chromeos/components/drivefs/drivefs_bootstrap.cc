@@ -7,18 +7,20 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "chromeos/components/drivefs/pending_connection_manager.h"
+#include "chromeos/components/drivefs/mojom/drivefs.mojom.h"
+#include "chromeos/components/mojo_bootstrap/pending_connection_manager.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"
 #include "mojo/public/cpp/system/invitation.h"
 
 namespace drivefs {
 
 DriveFsBootstrapListener::DriveFsBootstrapListener()
-    : bootstrap_(mojo::MakeProxy(mojom::DriveFsBootstrapPtrInfo(
-          invitation_.AttachMessagePipe("drivefs-bootstrap"),
-          mojom::DriveFsBootstrap::Version_))),
+    : bootstrap_(invitation_.AttachMessagePipe("drivefs-bootstrap"),
+                 mojom::DriveFsBootstrap::Version_),
       pending_token_(base::UnguessableToken::Create()) {
-  PendingConnectionManager::Get().ExpectOpenIpcChannel(
+  mojo_bootstrap::PendingConnectionManager::Get().ExpectOpenIpcChannel(
       pending_token_,
       base::BindOnce(&DriveFsBootstrapListener::AcceptMojoConnection,
                      base::Unretained(this)));
@@ -26,13 +28,14 @@ DriveFsBootstrapListener::DriveFsBootstrapListener()
 
 DriveFsBootstrapListener::~DriveFsBootstrapListener() {
   if (pending_token_) {
-    PendingConnectionManager::Get().CancelExpectedOpenIpcChannel(
-        pending_token_);
+    mojo_bootstrap::PendingConnectionManager::Get()
+        .CancelExpectedOpenIpcChannel(pending_token_);
     pending_token_ = {};
   }
 }
 
-mojom::DriveFsBootstrapPtr DriveFsBootstrapListener::bootstrap() {
+mojo::PendingRemote<mojom::DriveFsBootstrap>
+DriveFsBootstrapListener::bootstrap() {
   return std::move(bootstrap_);
 }
 
@@ -61,22 +64,20 @@ class DriveFsConnectionImpl : public DriveFsConnection {
 
   base::UnguessableToken Connect(mojom::DriveFsDelegate* delegate,
                                  base::OnceClosure on_disconnected) override {
-    delegate_binding_ =
-        std::make_unique<mojo::Binding<mojom::DriveFsDelegate>>(delegate);
+    delegate_receiver_ =
+        std::make_unique<mojo::Receiver<mojom::DriveFsDelegate>>(delegate);
     on_disconnected_ = std::move(on_disconnected);
 
-    auto bootstrap = bootstrap_listener_->bootstrap();
+    auto bootstrap =
+        mojo::Remote<mojom::DriveFsBootstrap>(bootstrap_listener_->bootstrap());
     auto token = bootstrap_listener_->pending_token();
 
-    mojom::DriveFsDelegatePtr delegate_ptr;
-    delegate_binding_->Bind(mojo::MakeRequest(&delegate_ptr));
-    delegate_binding_->set_connection_error_handler(base::BindOnce(
+    bootstrap->Init(std::move(config_), drivefs_.BindNewPipeAndPassReceiver(),
+                    delegate_receiver_->BindNewPipeAndPassRemote());
+
+    delegate_receiver_->set_disconnect_handler(base::BindOnce(
         &DriveFsConnectionImpl::OnMojoConnectionError, base::Unretained(this)));
-
-    bootstrap->Init(std::move(config_), mojo::MakeRequest(&drivefs_),
-                    std::move(delegate_ptr));
-
-    drivefs_.set_connection_error_handler(base::BindOnce(
+    drivefs_.set_disconnect_handler(base::BindOnce(
         &DriveFsConnectionImpl::OnMojoConnectionError, base::Unretained(this)));
 
     return token;
@@ -97,8 +98,8 @@ class DriveFsConnectionImpl : public DriveFsConnection {
   const std::unique_ptr<DriveFsBootstrapListener> bootstrap_listener_;
   mojom::DriveFsConfigurationPtr config_;
 
-  std::unique_ptr<mojo::Binding<mojom::DriveFsDelegate>> delegate_binding_;
-  mojom::DriveFsPtr drivefs_;
+  std::unique_ptr<mojo::Receiver<mojom::DriveFsDelegate>> delegate_receiver_;
+  mojo::Remote<mojom::DriveFs> drivefs_;
 
   base::OnceClosure on_disconnected_;
 

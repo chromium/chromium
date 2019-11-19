@@ -15,7 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/resource_request_info.h"
+#include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/background_fetch/background_fetch.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
@@ -120,7 +120,7 @@ class CONTENT_EXPORT BackgroundFetchDelegate {
   // |wc_getter| can be null, which means this is running from a worker context.
   virtual void GetPermissionForOrigin(
       const url::Origin& origin,
-      const ResourceRequestInfo::WebContentsGetter& wc_getter,
+      const WebContents::Getter& wc_getter,
       GetPermissionForOriginCallback callback) = 0;
 
   // Creates a new download grouping identified by |job_unique_id|. Further

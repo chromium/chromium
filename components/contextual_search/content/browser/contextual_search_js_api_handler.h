@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/macros.h"
-#include "components/contextual_search/content/common/contextual_search_js_api_service.mojom.h"
+#include "components/contextual_search/content/common/mojom/contextual_search_js_api_service.mojom.h"
 
 namespace contextual_search {
 

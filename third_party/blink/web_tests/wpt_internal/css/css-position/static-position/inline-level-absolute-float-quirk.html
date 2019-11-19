@@ -1,0 +1,9 @@
+<!DOCTYPE html>
+<link rel="help" href="https://crbug.com/980908" />
+<link rel="match" href="inline-level-absolute-float-quirk-ref.html" />
+<meta name="assert" content="Tests the static position of an inline-level absolute-positioned element." />
+<p>Test passes if there is a filled green square and <strong>no red</strong>.</p>
+<div style="overflow: hidden;">
+  <div style="display: inline; position: absolute; width: 100px; height: 100px; background: green;"></div>
+  <div style="float: left; width: 100px; height: 100px; background: red;"></div>
+</div>

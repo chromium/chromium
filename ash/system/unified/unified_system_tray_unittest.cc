@@ -7,7 +7,10 @@
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/system/unified/unified_slider_bubble_controller.h"
+#include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/test/ash_test_base.h"
+#include "ui/display/display.h"
+#include "ui/display/screen.h"
 
 namespace ash {
 
@@ -25,6 +28,10 @@ class UnifiedSystemTrayTest : public AshTestBase {
   UnifiedSliderBubbleController::SliderType GetSliderBubbleType() {
     return GetPrimaryUnifiedSystemTray()
         ->slider_bubble_controller_->slider_type_;
+  }
+
+  UnifiedSystemTrayBubble* GetUnifiedSystemTrayBubble() {
+    return GetPrimaryUnifiedSystemTray()->bubble_.get();
   }
 
  private:
@@ -50,6 +57,28 @@ TEST_F(UnifiedSystemTrayTest, ShowVolumeSliderBubble) {
   // This does not force the shelf to automatically show. Regression tests for
   // crbug.com/729188
   EXPECT_FALSE(status->ShouldShowShelf());
+}
+
+TEST_F(UnifiedSystemTrayTest, ShowBubble_MultipleDisplays_OpenedOnSameDisplay) {
+  // Initialize two displays with 800x800 resolution.
+  UpdateDisplay("400+400-800x600,1220+400-800x600");
+  auto* screen = display::Screen::GetScreen();
+  EXPECT_EQ(2, screen->GetNumDisplays());
+
+  // The tray bubble for each display should be opened on the same display.
+  // See crbug.com/937420.
+  for (int i = 0; i < screen->GetNumDisplays(); ++i) {
+    auto* system_tray = GetPrimaryUnifiedSystemTray();
+    system_tray->ShowBubble(true /* show_by_click */);
+    const gfx::Rect primary_display_bounds = GetPrimaryDisplay().bounds();
+    const gfx::Rect tray_bubble_bounds =
+        GetPrimaryUnifiedSystemTray()->GetBubbleBoundsInScreen();
+    EXPECT_TRUE(primary_display_bounds.Contains(tray_bubble_bounds))
+        << "primary display bounds=" << primary_display_bounds.ToString()
+        << ", tray bubble bounds=" << tray_bubble_bounds.ToString();
+
+    SwapPrimaryDisplay();
+  }
 }
 
 }  // namespace ash

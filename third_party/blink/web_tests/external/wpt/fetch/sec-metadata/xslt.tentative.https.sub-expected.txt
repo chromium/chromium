@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-PASS Same-Origin xslt
-FAIL Same-site xslt assert_not_equals: got disallowed value "No header has been recorded"
-FAIL Cross-site xslt assert_not_equals: got disallowed value "No header has been recorded"
-Harness: the test ran to completion.
-

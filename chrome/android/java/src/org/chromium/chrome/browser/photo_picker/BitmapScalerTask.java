@@ -12,29 +12,33 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * A worker task to scale bitmaps in the background.
  */
 class BitmapScalerTask extends AsyncTask<Bitmap> {
-    private final LruCache<String, Bitmap> mCache;
+    private final LruCache<String, PickerCategoryView.Thumbnail> mCache;
     private final String mFilePath;
     private final int mSize;
     private final Bitmap mBitmap;
+    private final String mVideoDuration;
 
     /**
      * A BitmapScalerTask constructor.
      */
-    public BitmapScalerTask(
-            LruCache<String, Bitmap> cache, String filePath, int size, Bitmap bitmap) {
+    public BitmapScalerTask(LruCache<String, PickerCategoryView.Thumbnail> cache, Bitmap bitmap,
+            String filePath, String videoDuration, int size) {
         mCache = cache;
         mFilePath = filePath;
         mSize = size;
         mBitmap = bitmap;
+        mVideoDuration = videoDuration;
     }
 
     /**
      * Scales the image provided. Called on a non-UI thread.
-     * @param params Ignored, do not use.
      * @return A sorted list of images (by last-modified first).
      */
     @Override
@@ -52,14 +56,16 @@ class BitmapScalerTask extends AsyncTask<Bitmap> {
 
     /**
      * Communicates the results back to the client. Called on the UI thread.
-     * @param result The resulting scaled bitmap.
+     * @param bitmap The resulting scaled bitmap.
      */
     @Override
-    protected void onPostExecute(Bitmap result) {
+    protected void onPostExecute(Bitmap bitmap) {
         if (isCancelled()) {
             return;
         }
 
-        mCache.put(mFilePath, result);
+        List<Bitmap> bitmaps = new ArrayList<>(1);
+        bitmaps.add(bitmap);
+        mCache.put(mFilePath, new PickerCategoryView.Thumbnail(bitmaps, mVideoDuration));
     }
 }

@@ -34,23 +34,18 @@ function init()
   gl.viewport(0, 0, 200, 200);
   gl.clearColor(1, 0, 0, 1); // red
   gl.clear(gl.COLOR_BUFFER_BIT);
-  if (window.testRunner) {
-      testRunner.waitUntilDone();
-      testRunner.dumpAsTextWithPixelResults();
-  }
-  runAfterLayoutAndPaint(drawGreen);
+  runAfterLayoutAndPaint(drawGreen, true);
 }
 
 function drawGreen()
 {
   gl.clearColor(0, 1, 0, 1); // green
   gl.clear(gl.COLOR_BUFFER_BIT);
-  if (window.testRunner) {
-      testRunner.notifyDone();
-  } else
-      window.setInterval(function() {
-        document.getElementById('canvas').classList.toggle('border');
-      }, 50);
+  if (!window.testRunner) {
+    window.setInterval(function() {
+      document.getElementById('canvas').classList.toggle('border');
+    }, 50);
+  }
 }
 
 </script>

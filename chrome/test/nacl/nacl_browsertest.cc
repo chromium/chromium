@@ -285,9 +285,9 @@ class NaClBrowserTestPnaclDebug : public NaClBrowserTestPnacl {
     // (see note in chrome/browser/nacl_host/test/nacl_gdb_browsertest.cc)
 #if defined(OS_WIN)
     if (base::win::OSInfo::GetInstance()->wow64_status() ==
-        base::win::OSInfo::WOW64_DISABLED &&
-        base::win::OSInfo::GetInstance()->architecture() ==
-        base::win::OSInfo::X86_ARCHITECTURE) {
+            base::win::OSInfo::WOW64_DISABLED &&
+        base::win::OSInfo::GetArchitecture() ==
+            base::win::OSInfo::X86_ARCHITECTURE) {
       return true;
     }
 #endif

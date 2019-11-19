@@ -17,6 +17,7 @@
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
 #include "content/public/browser/notification_source.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "ui/base/accelerators/media_keys_listener.h"
 
@@ -32,7 +33,6 @@ namespace extensions {
 
 class ActiveTabPermissionGranter;
 class Extension;
-class ExtensionRegistry;
 
 // The ExtensionKeybindingRegistry is a class that handles the cross-platform
 // logic for keyboard accelerators. See platform-specific implementations for
@@ -186,7 +186,7 @@ class ExtensionKeybindingRegistry : public content::NotificationObserver,
 
   // Listen to extension load, unloaded notifications.
   ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      extension_registry_observer_;
+      extension_registry_observer_{this};
 
   // Keeps track of whether shortcut handling is currently suspended. Shortcuts
   // are suspended briefly while capturing which shortcut to assign to an

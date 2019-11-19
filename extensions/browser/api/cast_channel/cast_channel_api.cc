@@ -420,7 +420,7 @@ void CastChannelSendFunction::AsyncWorkStart() {
     return;
   }
   socket->transport()->SendMessage(
-      message_to_send, base::Bind(&CastChannelSendFunction::OnSend, this));
+      message_to_send, base::BindOnce(&CastChannelSendFunction::OnSend, this));
 }
 
 void CastChannelSendFunction::OnSend(int result) {
@@ -458,7 +458,7 @@ void CastChannelCloseFunction::AsyncWorkStart() {
                        api::cast_channel::CHANNEL_ERROR_INVALID_CHANNEL_ID);
     AsyncWorkCompleted();
   } else {
-    socket->Close(base::Bind(&CastChannelCloseFunction::OnClose, this));
+    socket->Close(base::BindOnce(&CastChannelCloseFunction::OnClose, this));
   }
 }
 
@@ -515,8 +515,8 @@ void CastChannelAPI::CastMessageHandler::OnError(
       OnError::Create(channel_info, error_info);
   std::unique_ptr<Event> event(new Event(
       events::CAST_CHANNEL_ON_ERROR, OnError::kEventName, std::move(results)));
-  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
-                           base::BindOnce(ui_dispatch_cb_, std::move(event)));
+  base::PostTask(FROM_HERE, {BrowserThread::UI},
+                 base::BindOnce(ui_dispatch_cb_, std::move(event)));
 }
 
 void CastChannelAPI::CastMessageHandler::OnMessage(
@@ -536,8 +536,8 @@ void CastChannelAPI::CastMessageHandler::OnMessage(
   std::unique_ptr<Event> event(new Event(events::CAST_CHANNEL_ON_MESSAGE,
                                          OnMessage::kEventName,
                                          std::move(results)));
-  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
-                           base::BindOnce(ui_dispatch_cb_, std::move(event)));
+  base::PostTask(FROM_HERE, {BrowserThread::UI},
+                 base::BindOnce(ui_dispatch_cb_, std::move(event)));
 }
 
 }  // namespace extensions

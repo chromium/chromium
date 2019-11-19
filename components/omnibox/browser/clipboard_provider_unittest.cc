@@ -17,6 +17,7 @@
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/omnibox/browser/mock_autocomplete_provider_client.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/open_from_clipboard/fake_clipboard_recent_content.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_client.h"
@@ -62,6 +63,12 @@ class ClipboardProviderTest : public testing::Test,
   void SetClipboardImage(const gfx::Image& image) {
     clipboard_content_.SetClipboardImage(image,
                                          base::TimeDelta::FromMinutes(10));
+  }
+
+  bool IsClipboardEmpty() {
+    return clipboard_content_.GetRecentURLFromClipboard() == base::nullopt &&
+           clipboard_content_.GetRecentTextFromClipboard() == base::nullopt &&
+           clipboard_content_.GetRecentImageFromClipboard() == base::nullopt;
   }
 
   AutocompleteInput CreateAutocompleteInput(bool from_omnibox_focus) {
@@ -140,4 +147,20 @@ TEST_F(ClipboardProviderTest, MatchesImage) {
                                          &template_url_service, clipboard_age,
                                          image_bytes);
   ASSERT_GE(provider_->matches().size(), 1U);
+}
+
+TEST_F(ClipboardProviderTest, DeleteMatch) {
+  base::test::ScopedFeatureList feature_list;
+  base::Feature textFeature = omnibox::kEnableClipboardProviderTextSuggestions;
+  feature_list.InitAndEnableFeature(textFeature);
+  auto template_url_service = std::make_unique<TemplateURLService>(
+      /*initializers=*/nullptr, /*count=*/0);
+  client_->set_template_url_service(std::move(template_url_service));
+  SetClipboardText(base::UTF8ToUTF16(kClipboardText));
+  provider_->Start(CreateAutocompleteInput(true), false);
+  ASSERT_EQ(provider_->matches().size(), 1U);
+
+  provider_->DeleteMatch(provider_->matches().back());
+  ASSERT_EQ(provider_->matches().size(), 0U);
+  ASSERT_TRUE(IsClipboardEmpty());
 }

@@ -19,7 +19,7 @@ TEST_F(ValidAppManifestTest, ValidApp) {
   AddPattern(&expected_patterns, "http://www.google.com/mail/*");
   AddPattern(&expected_patterns, "http://www.google.com/foobar/*");
   EXPECT_EQ(expected_patterns, extension->web_extent());
-  EXPECT_EQ(extensions::LAUNCH_CONTAINER_TAB,
+  EXPECT_EQ(extensions::LaunchContainer::kLaunchContainerTab,
             extensions::AppLaunchInfo::GetLaunchContainer(extension.get()));
   EXPECT_EQ(GURL("http://www.google.com/mail/"),
             extensions::AppLaunchInfo::GetLaunchWebURL(extension.get()));
@@ -31,6 +31,6 @@ TEST_F(ValidAppManifestTest, AllowUnrecognizedPermissions) {
   base::Value* permissions =
       manifest.FindKeyOfType("permissions", base::Value::Type::LIST);
   ASSERT_TRUE(permissions);
-  permissions->GetList().emplace_back("not-a-valid-permission");
+  permissions->Append("not-a-valid-permission");
   LoadAndExpectSuccess(ManifestData(std::move(manifest), ""));
 }

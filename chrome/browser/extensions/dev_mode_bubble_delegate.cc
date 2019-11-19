@@ -66,8 +66,12 @@ base::string16 DevModeBubbleDelegate::GetOverflowText(
             overflow_count);
 }
 
+base::string16 DevModeBubbleDelegate::GetLearnMoreLabel() const {
+  return base::string16();
+}
+
 GURL DevModeBubbleDelegate::GetLearnMoreUrl() const {
-  return GURL(chrome::kChromeUIExtensionsURL);
+  return GURL();
 }
 
 base::string16 DevModeBubbleDelegate::GetActionButtonLabel() const {

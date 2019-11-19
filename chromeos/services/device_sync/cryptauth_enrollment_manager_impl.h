@@ -6,16 +6,20 @@
 #define CHROMEOS_SERVICES_DEVICE_SYNC_CRYPTAUTH_ENROLLMENT_MANAGER_IMPL_H_
 
 #include <memory>
+#include <string>
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/optional.h"
 #include "base/time/time.h"
 #include "chromeos/services/device_sync/cryptauth_enrollment_manager.h"
+#include "chromeos/services/device_sync/cryptauth_feature_type.h"
 #include "chromeos/services/device_sync/cryptauth_gcm_manager.h"
 #include "chromeos/services/device_sync/proto/cryptauth_api.pb.h"
 #include "chromeos/services/device_sync/sync_scheduler.h"
 
+class PrefRegistrySimple;
 class PrefService;
 
 namespace base {
@@ -34,6 +38,22 @@ class CryptAuthEnroller;
 class CryptAuthEnrollerFactory;
 
 // Concrete CryptAuthEnrollmentManager implementation.
+//
+// This implementation considers three sources of enrollment requests:
+//  1) A sync scheduler requests periodic enrollments and handles any failed
+//     attempts.
+//  2) The enrollment manager listens to the GCM manager for re-enrollment
+//     requests.
+//  3) The ForceEnrollmentNow() method allows for immediate requests.
+//
+// When an enrollment has been requested, this implementation generates a user
+// key pair, if one doesn't already exists, and persists these keys as
+// preferences. Thus, the user key pair should never rotate.
+//
+// This implementation also determines the times between enrollment attempts,
+// which is roughly 30 days after a successful enrollments and 10 minutes after
+// a failed enrollment attempt, exponentially increasing for consecutive
+// failures. An enrollment is considered "invalid" after 45 days.
 class CryptAuthEnrollmentManagerImpl : public CryptAuthEnrollmentManager,
                                        public SyncScheduler::Delegate,
                                        public CryptAuthGCMManager::Observer {
@@ -66,12 +86,16 @@ class CryptAuthEnrollmentManagerImpl : public CryptAuthEnrollmentManager,
     static Factory* factory_instance_;
   };
 
+  // Registers the prefs used by this class to the given |pref_service|.
+  static void RegisterPrefs(PrefRegistrySimple* registry);
+
   ~CryptAuthEnrollmentManagerImpl() override;
 
   // CryptAuthEnrollmentManager:
   void Start() override;
   void ForceEnrollmentNow(
-      cryptauth::InvocationReason invocation_reason) override;
+      cryptauth::InvocationReason invocation_reason,
+      const base::Optional<std::string>& session_id) override;
   bool IsEnrollmentValid() const override;
   base::Time GetLastEnrollmentTime() const override;
   base::TimeDelta GetTimeToNextAttempt() const override;
@@ -108,7 +132,9 @@ class CryptAuthEnrollmentManagerImpl : public CryptAuthEnrollmentManager,
  private:
   // CryptAuthGCMManager::Observer:
   void OnGCMRegistrationResult(bool success) override;
-  void OnReenrollMessage() override;
+  void OnReenrollMessage(
+      const base::Optional<std::string>& session_id,
+      const base::Optional<CryptAuthFeatureType>& feature_type) override;
 
   // Callback when a new keypair is generated.
   void OnKeyPairGenerated(const std::string& public_key,
@@ -162,7 +188,7 @@ class CryptAuthEnrollmentManagerImpl : public CryptAuthEnrollmentManager,
   // instance will be created for each individual attempt.
   std::unique_ptr<CryptAuthEnroller> cryptauth_enroller_;
 
-  base::WeakPtrFactory<CryptAuthEnrollmentManagerImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<CryptAuthEnrollmentManagerImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(CryptAuthEnrollmentManagerImpl);
 };

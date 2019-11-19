@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/startup/credential_provider_signin_info_fetcher_win.h"
 
 #include "base/logging.h"
+#include "base/strings/string_split.h"
 #include "base/syslog_logging.h"
 #include "chrome/credential_provider/common/gcp_strings.h"
 #include "google_apis/gaia/gaia_oauth_client.h"
@@ -34,6 +35,7 @@ CredentialProviderSigninInfoFetcher::~CredentialProviderSigninInfoFetcher() =
 
 void CredentialProviderSigninInfoFetcher::SetCompletionCallbackAndStart(
     const std::string& access_token,
+    const std::string& additional_mdm_oauth_scopes,
     FetchCompletionCallback completion_callback) {
   DCHECK(!completion_callback.is_null());
   completion_callback_ = std::move(completion_callback);
@@ -41,7 +43,13 @@ void CredentialProviderSigninInfoFetcher::SetCompletionCallbackAndStart(
 
   // Scopes needed to fetch the full name of the user as well as an id token
   // used for MDM registration.
-  std::vector<std::string> access_scopes{"email", "profile", "openid"};
+  std::vector<std::string> access_scopes = {"email", "profile", "openid"};
+
+  std::vector<std::string> extra_scopes(
+      base::SplitString(additional_mdm_oauth_scopes, ",", base::TRIM_WHITESPACE,
+                        base::SPLIT_WANT_NONEMPTY));
+  access_scopes.insert(access_scopes.end(), extra_scopes.begin(),
+                       extra_scopes.end());
 
   scoped_access_token_fetcher_->Start(gaia_urls->oauth2_chrome_client_id(),
                                       gaia_urls->oauth2_chrome_client_secret(),
@@ -59,6 +67,7 @@ void CredentialProviderSigninInfoFetcher::OnGetTokenInfoResponse(
 
 void CredentialProviderSigninInfoFetcher::OnGetUserInfoResponse(
     std::unique_ptr<base::DictionaryValue> user_info) {
+  DCHECK(!mdm_access_token_.empty());
   DCHECK(!mdm_id_token_.empty());
   DCHECK(full_name_.empty());
   bool has_error =
@@ -79,11 +88,13 @@ void CredentialProviderSigninInfoFetcher::OnNetworkError(int response_code) {
 
 void CredentialProviderSigninInfoFetcher::OnGetTokenSuccess(
     const TokenResponse& token_response) {
+  DCHECK(mdm_access_token_.empty());
   DCHECK(mdm_id_token_.empty());
   DCHECK(full_name_.empty());
+  mdm_access_token_ = token_response.access_token;
   mdm_id_token_ = token_response.id_token;
 
-  if (mdm_id_token_.empty() || token_response.access_token.empty()) {
+  if (mdm_access_token_.empty() || mdm_id_token_.empty()) {
     WriteResultsIfFinished(true);
     return;
   }
@@ -107,13 +118,15 @@ void CredentialProviderSigninInfoFetcher::WriteResultsIfFinished(
     bool has_error) {
   DCHECK(completion_callback_);
 
-  if (!has_error &&
-      (mdm_id_token_.empty() || full_name_.empty() || token_handle_.empty())) {
+  if (!has_error && (mdm_access_token_.empty() || mdm_id_token_.empty() ||
+                     full_name_.empty() || token_handle_.empty())) {
     return;
   }
 
   base::Value fetch_result(base::Value::Type::DICTIONARY);
   if (!has_error) {
+    fetch_result.SetKey(credential_provider::kKeyMdmAccessToken,
+                        base::Value(mdm_access_token_));
     fetch_result.SetKey(credential_provider::kKeyMdmIdToken,
                         base::Value(mdm_id_token_));
     fetch_result.SetKey(credential_provider::kKeyFullname,

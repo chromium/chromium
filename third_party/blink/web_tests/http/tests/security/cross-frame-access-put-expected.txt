@@ -154,16 +154,16 @@ ALERT: PASS: window.top should be topOld and is.
 ALERT: PASS: window.addEventListener should be 'function addEventListener() { [native code] }' and is.
 ALERT: PASS: window.alert should be 'function alert() { [native code] }' and is.
 ALERT: PASS: window.atob should be 'function atob() { [native code] }' and is.
-ALERT: PASS: window.blur should be 'function () { [native code] }' and is.
+ALERT: PASS: window.blur should be 'function blur() { [native code] }' and is.
 ALERT: PASS: window.btoa should be 'function btoa() { [native code] }' and is.
 ALERT: PASS: window.captureEvents should be 'function captureEvents() { [native code] }' and is.
 ALERT: PASS: window.clearInterval should be 'function clearInterval() { [native code] }' and is.
 ALERT: PASS: window.clearTimeout should be 'function clearTimeout() { [native code] }' and is.
-ALERT: PASS: window.close should be 'function () { [native code] }' and is.
+ALERT: PASS: window.close should be 'function close() { [native code] }' and is.
 ALERT: PASS: window.confirm should be 'function confirm() { [native code] }' and is.
 ALERT: PASS: window.eval should be 'function eval() { [native code] }' and is.
 ALERT: PASS: window.find should be 'function find() { [native code] }' and is.
-ALERT: PASS: window.focus should be 'function () { [native code] }' and is.
+ALERT: PASS: window.focus should be 'function focus() { [native code] }' and is.
 ALERT: PASS: window.getComputedStyle should be 'function getComputedStyle() { [native code] }' and is.
 ALERT: PASS: window.getMatchedCSSRules should be 'undefined' and is.
 ALERT: PASS: window.getSelection should be 'function getSelection() { [native code] }' and is.

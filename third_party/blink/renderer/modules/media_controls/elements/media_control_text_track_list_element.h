@@ -22,7 +22,6 @@ class MediaControlTextTrackListElement final
   bool WillRespondToMouseClickEvents() override;
 
   void SetIsWanted(bool) final;
-  Element* PopupAnchor() const final;
 
  private:
   void DefaultEventHandler(Event&) override;
@@ -33,7 +32,7 @@ class MediaControlTextTrackListElement final
   // the "Off" item when the parameter is null.
   Element* CreateTextTrackListItem(TextTrack*);
 
-  // Creates the header element of the text track list (modern only).
+  // Creates the header element of the text track list.
   Element* CreateTextTrackHeaderItem();
 };
 

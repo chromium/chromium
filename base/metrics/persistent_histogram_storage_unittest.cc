@@ -50,9 +50,7 @@ class PersistentHistogramStorageTest : public testing::Test {
   DISALLOW_COPY_AND_ASSIGN(PersistentHistogramStorageTest);
 };
 
-// This test is disabled on OS_IOS because of crbug.com/836789. This is fine as
-// PersistentHistogramStorage is only used on OS_WIN now.
-#if !defined(OS_NACL) && !defined(OS_IOS)
+#if !defined(OS_NACL)
 TEST_F(PersistentHistogramStorageTest, HistogramWriteTest) {
   auto persistent_histogram_storage =
       std::make_unique<PersistentHistogramStorage>(
@@ -72,6 +70,6 @@ TEST_F(PersistentHistogramStorageTest, HistogramWriteTest) {
   EXPECT_TRUE(DirectoryExists(test_storage_dir()));
   EXPECT_FALSE(IsDirectoryEmpty(test_storage_dir()));
 }
-#endif  // !defined(OS_NACL) && !defined(OS_IOS)
+#endif  // !defined(OS_NACL)
 
 }  // namespace base

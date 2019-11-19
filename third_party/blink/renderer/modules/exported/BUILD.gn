@@ -5,7 +5,6 @@ import("//third_party/blink/renderer/modules/modules.gni")
 
 blink_modules_sources("exported") {
   sources = [
-    "web_apply_constraints_request.cc",
     "web_ax_context.cc",
     "web_ax_object.cc",
     "web_crypto_normalize.cc",
@@ -13,14 +12,19 @@ blink_modules_sources("exported") {
     "web_dom_media_stream_track.cc",
     "web_embedded_worker_impl.cc",
     "web_embedded_worker_impl.h",
-    "web_storage_event_dispatcher_impl.cc",
     "web_user_media_request.cc",
   ]
 
   defines = [ "BLINK_MODULES_IMPLEMENTATION=1" ]
+
+  deps = [
+    "//ui/accessibility:ax_enums_mojo_blink",
+  ]
 }
 
 static_library("test_support") {
+  testonly = true
+
   deps = [
     "//skia",
     "//third_party/blink/renderer/core:testing",

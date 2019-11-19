@@ -50,7 +50,7 @@ interface WakeLock {
   // on its wake lock whenever *any* of its clients make a request to do so
   // and turns off its wake lock only when *all* its clients that had
   // previously called RequestWakelock() cancel their requests.
-  AddClient(WakeLock& wake_lock);
+  AddClient(pending_receiver<WakeLock> wake_lock);
 
   // Change the wake lock type. Has no effect if the current wakelock is shared
   // by more than one client (by AddClient()). Has no effect on Android.

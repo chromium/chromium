@@ -1,0 +1,11 @@
+# Copyright 2017 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+mojom = "//components/sync/mojom/syncer.mojom"
+public_headers = [ "//components/sync/model/string_ordinal.h" ]
+traits_headers = [ "//components/sync/mojom/syncer_mojom_traits.h" ]
+deps = [
+  "//components/sync:sync",
+]
+type_mappings = [ "syncer.mojom.StringOrdinal=::syncer::StringOrdinal" ]

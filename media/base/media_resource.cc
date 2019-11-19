@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "media/base/media_resource.h"
+#include "base/no_destructor.h"
+#include "url/origin.h"
 
 namespace media {
 
@@ -10,9 +12,11 @@ MediaResource::MediaResource() = default;
 
 MediaResource::~MediaResource() = default;
 
-MediaUrlParams MediaResource::GetMediaUrlParams() const {
+const MediaUrlParams& MediaResource::GetMediaUrlParams() const {
   NOTREACHED();
-  return MediaUrlParams{GURL(), GURL()};
+  static base::NoDestructor<MediaUrlParams> instance{
+      GURL(), GURL(), url::Origin(), false, false};
+  return *instance;
 }
 
 MediaResource::Type MediaResource::GetType() const {
@@ -26,6 +30,12 @@ DemuxerStream* MediaResource::GetFirstStream(DemuxerStream::Type type) {
       return stream;
   }
   return nullptr;
+}
+
+void MediaResource::ForwardDurationChangeToDemuxerHost(
+    base::TimeDelta duration) {
+  // Only implemented by MediaUrlDemuxer, for the MediaPlayerRendererClient.
+  NOTREACHED();
 }
 
 }  // namespace media

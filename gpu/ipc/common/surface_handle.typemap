@@ -4,7 +4,7 @@
 
 mojom = "//gpu/ipc/common/surface_handle.mojom"
 public_headers = [ "//gpu/ipc/common/surface_handle.h" ]
-traits_headers = [ "//gpu/ipc/common/surface_handle_struct_traits.h" ]
+traits_headers = [ "//gpu/ipc/common/surface_handle_mojom_traits.h" ]
 public_deps = [
   "//ui/gfx:native_widget_types",
 ]

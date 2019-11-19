@@ -11,8 +11,10 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/ranges.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -79,7 +81,7 @@ float AveragePower(const media::AudioBus& buffer) {
 
   // Update accumulated average results, with clamping for sanity.
   const float average_power =
-      std::max(0.0f, std::min(1.0f, sum_power / (frames * channels)));
+      base::ClampToRange(sum_power / (frames * channels), 0.0f, 1.0f);
 
   // Convert average power level to dBFS units, and pin it down to zero if it
   // is insignificantly small.
@@ -93,9 +95,58 @@ float AveragePower(const media::AudioBus& buffer) {
 #endif  // AUDIO_POWER_MONITORING
 
 #if defined(AUDIO_PROCESSING_IN_AUDIO_SERVICE)
-bool CanRunApm() {
-  return base::FeatureList::IsEnabled(features::kWebRtcApmInAudioService);
+
+bool SamplesNeedClamping(const media::AudioBus& bus) {
+  const auto IsOutOfRange = [](float sample) {
+    // See comment in CopySamplesWithClamping() for why the conditional is
+    // written this way.
+    if (UNLIKELY(!(sample >= -1.f && sample <= 1.f))) {
+      return true;
+    }
+    return false;
+  };
+
+  const int frames = bus.frames();
+  for (int i = 0; i < bus.channels(); ++i) {
+    auto* const channel = bus.channel(i);
+    if (UNLIKELY(std::any_of(channel, channel + frames, IsOutOfRange))) {
+      return true;
+    }
+  }
+  return false;
 }
+
+void CopySamplesWithClamping(const media::AudioBus& src_bus,
+                             media::AudioBus* dest_bus) {
+  DCHECK_EQ(src_bus.channels(), dest_bus->channels());
+  DCHECK_EQ(src_bus.frames(), dest_bus->frames());
+
+  const auto ToClampedSample = [](float sample) {
+    // First check for all the invalid cases with a single conditional to
+    // optimize for the typical (data ok) case. Different cases are handled
+    // inside of the conditional. The condition is written like this to catch
+    // NaN. It cannot be simplified to "channel[j] < -1.f || channel[j] > 1.f",
+    // which isn't equivalent.
+    if (UNLIKELY(!(sample >= -1.f && sample <= 1.f))) {
+      // Don't just set all bad values to 0. If a value like 1.0001 is produced
+      // due to floating-point shenanigans, 1 will sound better than 0.
+      if (sample < -1.f) {
+        return -1.f;
+      } else {
+        // channel[j] > 1 or NaN.
+        return 1.f;
+      }
+    }
+    return sample;
+  };
+
+  const int frames = src_bus.frames();
+  for (int i = 0; i < src_bus.channels(); ++i) {
+    auto* const src = src_bus.channel(i);
+    std::transform(src, src + frames, dest_bus->channel(i), ToClampedSample);
+  }
+}
+
 #endif  // defined(AUDIO_PROCESSING_IN_AUDIO_SERVICE)
 
 }  // namespace
@@ -104,8 +155,8 @@ bool CanRunApm() {
 InputController::ProcessingHelper::ProcessingHelper(
     const media::AudioParameters& params,
     media::AudioProcessingSettings processing_settings,
-    mojom::AudioProcessorControlsRequest controls_request)
-    : binding_(this, std::move(controls_request)),
+    mojo::PendingReceiver<mojom::AudioProcessorControls> controls_receiver)
+    : receiver_(this, std::move(controls_receiver)),
       params_(params),
       audio_processor_(
           std::make_unique<media::AudioProcessor>(params,
@@ -125,8 +176,7 @@ void InputController::ProcessingHelper::ChangeMonitoredStream(
     return;
 
   if (monitored_output_stream_) {
-    monitored_output_stream_->StopSnooping(this,
-                                           Snoopable::SnoopingMode::kRealtime);
+    monitored_output_stream_->StopSnooping(this);
     if (!stream) {
       audio_processor_->set_has_reverse_stream(false);
     }
@@ -134,24 +184,39 @@ void InputController::ProcessingHelper::ChangeMonitoredStream(
   monitored_output_stream_ = stream;
   if (!monitored_output_stream_) {
     output_params_ = media::AudioParameters();
+    clamped_bus_.reset();
     return;
   }
   output_params_ = monitored_output_stream_->GetAudioParameters();
   audio_processor_->set_has_reverse_stream(true);
-  monitored_output_stream_->StartSnooping(this,
-                                          Snoopable::SnoopingMode::kRealtime);
+  monitored_output_stream_->StartSnooping(this);
 }
 
 void InputController::ProcessingHelper::OnData(const media::AudioBus& audio_bus,
                                                base::TimeTicks reference_time,
                                                double volume) {
   TRACE_EVENT0("audio", "APM AnalyzePlayout");
+
   // OnData gets called when the InputController is snooping on an output stream
   // for audio processing purposes. |audio_bus| contains the data from the
   // snooped-upon output stream, not the input stream's data.
   // |volume| is applied in the WebRTC mixer in the renderer, so we don't have
   // to inform the |audio_processor_| of the new volume.
-  audio_processor_->AnalyzePlayout(audio_bus, output_params_, reference_time);
+
+  // If there are out-of-range samples, clamp them.
+  const media::AudioBus* bus_to_analyze = &audio_bus;
+  if (SamplesNeedClamping(audio_bus)) {
+    if (!clamped_bus_ || clamped_bus_->channels() != audio_bus.channels() ||
+        clamped_bus_->frames() != audio_bus.frames()) {
+      clamped_bus_ =
+          media::AudioBus::Create(audio_bus.channels(), audio_bus.frames());
+    }
+    CopySamplesWithClamping(audio_bus, clamped_bus_.get());
+    bus_to_analyze = clamped_bus_.get();
+  }
+
+  audio_processor_->AnalyzePlayout(*bus_to_analyze, output_params_,
+                                   reference_time);
 }
 
 void InputController::ProcessingHelper::GetStats(GetStatsCallback callback) {
@@ -334,8 +399,7 @@ InputController::InputController(
       type_(type),
       user_input_monitor_(user_input_monitor),
       stream_monitor_coordinator_(stream_monitor_coordinator),
-      processing_config_(std::move(processing_config)),
-      weak_ptr_factory_(this) {
+      processing_config_(std::move(processing_config)) {
   DCHECK_CALLED_ON_VALID_THREAD(owning_thread_);
   DCHECK(handler_);
   DCHECK(sync_writer_);
@@ -343,12 +407,13 @@ InputController::InputController(
 
 #if defined(AUDIO_PROCESSING_IN_AUDIO_SERVICE)
   if (processing_config_) {
-    if (processing_config_->settings.requires_apm() && CanRunApm()) {
+    if (processing_config_->settings.requires_apm() &&
+        media::IsWebRtcApmInAudioServiceEnabled()) {
       processing_helper_.emplace(
           params, processing_config_->settings,
-          std::move(processing_config_->controls_request));
+          std::move(processing_config_->controls_receiver));
     } else {
-      processing_config_->controls_request.ResetWithReason(0, "");
+      processing_config_->controls_receiver.reset();
     }
   }
 #endif  // defined(AUDIO_PROCESSING_IN_AUDIO_SERVICE)
@@ -514,6 +579,9 @@ void InputController::SetVolume(double volume) {
   if (!stream_)
     return;
 
+  std::string log_string = base::StringPrintf("AIC::SetVolume: %.2f", volume);
+  handler_->OnLog(log_string);
+
   // Only ask for the maximum volume at first call and use cached value
   // for remaining function calls.
   if (!max_volume_) {
@@ -554,7 +622,6 @@ void InputController::OnStreamActive(Snoopable* output_stream) {
       if (output_stream)
         stream_->SetOutputDeviceForAec(output_stream->GetDeviceId());
       break;
-    case media::EchoCancellationType::kAec2:
     case media::EchoCancellationType::kAec3:
 #if defined(AUDIO_PROCESSING_IN_AUDIO_SERVICE)
       if (processing_helper_)
@@ -582,7 +649,10 @@ void InputController::DoCreate(media::AudioManager* audio_manager,
   DCHECK_CALLED_ON_VALID_THREAD(owning_thread_);
   DCHECK(!stream_);
   SCOPED_UMA_HISTOGRAM_TIMER("Media.AudioInputController.CreateTime");
-  handler_->OnLog("AIC::DoCreate");
+  std::string log_string = base::StringPrintf(
+      "AIC::DoCreate: device_id=%s, enable_agc=%d, params=%s",
+      device_id.c_str(), enable_agc, params.AsHumanReadableString().c_str());
+  handler_->OnLog(log_string);
 
 #if defined(AUDIO_POWER_MONITORING)
   // We only do power measurements for UMA stats for low latency streams, and
@@ -628,6 +698,8 @@ void InputController::DoCreate(media::AudioManager* audio_manager,
   // Send initial muted state along with OnCreated, to avoid races.
   is_muted_ = stream_->IsMuted();
   handler_->OnCreated(is_muted_);
+  log_string = base::StringPrintf("AIC::OnCreated: is_muted=%d", is_muted_);
+  handler_->OnLog(log_string);
 
   check_muted_state_timer_.Start(FROM_HERE, kCheckMutedStateInterval, this,
                                  &InputController::CheckMutedState);
@@ -653,7 +725,7 @@ void InputController::DoLogAudioLevels(float level_dbfs,
     LogMicrophoneMuteResult(MICROPHONE_IS_MUTED);
     handler_->OnLog("AIC::OnData: microphone is muted!");
     // Return early if microphone is muted. No need to adding logs and UMA stats
-    // of audio levels if we know that the micropone is muted.
+    // of audio levels if we know that the microphone is muted.
     return;
   }
 
@@ -796,6 +868,9 @@ void InputController::CheckMutedState() {
   if (new_state != is_muted_) {
     is_muted_ = new_state;
     handler_->OnMuted(is_muted_);
+    std::string log_string =
+        base::StringPrintf("AIC::OnMuted: is_muted=%d", is_muted_);
+    handler_->OnLog(log_string);
   }
 }
 
@@ -803,7 +878,6 @@ void InputController::CheckMutedState() {
 void InputController::UpdateVolumeAndAPMStats(
     base::Optional<double> new_volume) {
   DCHECK_CALLED_ON_VALID_THREAD(owning_thread_);
-  processing_helper_->GetAudioProcessor()->UpdateInternalStats();
   if (new_volume)
     SetVolume(*new_volume);
 }

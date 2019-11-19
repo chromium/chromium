@@ -171,16 +171,13 @@ WebSocketBasicHandshakeStream::WebSocketBasicHandshakeStream(
     WebSocketStreamRequestAPI* request,
     WebSocketEndpointLockManager* websocket_endpoint_lock_manager)
     : result_(HandshakeResult::INCOMPLETE),
-      state_(std::move(connection),
-             using_proxy,
-             false /* http_09_on_non_default_ports_enabled */),
+      state_(std::move(connection), using_proxy),
       connect_delegate_(connect_delegate),
       http_response_info_(nullptr),
       requested_sub_protocols_(std::move(requested_sub_protocols)),
       requested_extensions_(std::move(requested_extensions)),
       stream_request_(request),
-      websocket_endpoint_lock_manager_(websocket_endpoint_lock_manager),
-      weak_ptr_factory_(this) {
+      websocket_endpoint_lock_manager_(websocket_endpoint_lock_manager) {
   DCHECK(connect_delegate);
   DCHECK(request);
 }
@@ -203,7 +200,17 @@ int WebSocketBasicHandshakeStream::InitializeStream(
     CompletionOnceCallback callback) {
   DCHECK(request_info->traffic_annotation.is_valid());
   url_ = request_info->url;
-  state_.Initialize(request_info, can_send_early, priority, net_log);
+  // The WebSocket may receive a socket in the early data state from
+  // HttpNetworkTransaction, which means it must call ConfirmHandshake() for
+  // requests that need replay protection. However, the first request on any
+  // WebSocket stream is a GET with an idempotent request
+  // (https://tools.ietf.org/html/rfc6455#section-1.3), so there is no need to
+  // call ConfirmHandshake().
+  //
+  // Data after the WebSockets handshake may not be replayable, but the
+  // handshake is guaranteed to be confirmed once the HTTP response is received.
+  DCHECK(can_send_early);
+  state_.Initialize(request_info, priority, net_log);
   return OK;
 }
 
@@ -396,15 +403,12 @@ std::unique_ptr<WebSocketStream> WebSocketBasicHandshakeStream::Upgrade() {
           state_.read_buf(), sub_protocol_, extensions_);
   DCHECK(extension_params_.get());
   if (extension_params_->deflate_enabled) {
-    RecordDeflateMode(
-        extension_params_->deflate_parameters.client_context_take_over_mode());
-
     return std::make_unique<WebSocketDeflateStream>(
         std::move(basic_stream), extension_params_->deflate_parameters,
         std::make_unique<WebSocketDeflatePredictorImpl>());
-  } else {
-    return basic_stream;
   }
+
+  return basic_stream;
 }
 
 base::WeakPtr<WebSocketHandshakeStreamBase>

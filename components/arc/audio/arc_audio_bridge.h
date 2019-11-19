@@ -9,8 +9,8 @@
 
 #include "base/macros.h"
 #include "chromeos/audio/cras_audio_handler.h"
-#include "components/arc/common/audio.mojom.h"
-#include "components/arc/connection_observer.h"
+#include "components/arc/mojom/audio.mojom.h"
+#include "components/arc/session/connection_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace content {
@@ -46,14 +46,14 @@ class ArcAudioBridge : public KeyedService,
   // chromeos::CrasAudioHandler::AudioObserver overrides.
   void OnAudioNodesChanged() override;
   void OnOutputNodeVolumeChanged(uint64_t node_id, int volume) override;
-  void OnOutputMuteChanged(bool mute_on, bool system_adjust) override;
+  void OnOutputMuteChanged(bool mute_on) override;
 
   void SendSwitchState(bool headphone_inserted, bool microphone_inserted);
   void SendVolumeState();
 
   ArcBridgeService* const arc_bridge_service_;  // Owned by ArcServiceManager.
 
-  chromeos::CrasAudioHandler* cras_audio_handler_ = nullptr;
+  chromeos::CrasAudioHandler* cras_audio_handler_;
 
   int volume_ = 0;  // Volume range: 0-100.
   bool muted_ = false;

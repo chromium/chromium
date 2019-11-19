@@ -91,6 +91,9 @@ config("dav1d_config") {
     "libdav1d/include/dav1d",
     platform_config_root,
   ]
+  if (is_win && !is_clang) {
+    include_dirs += [ "libdav1d/include/compat/msvc" ]
+  }
 }
 
 dav1d_copts = [
@@ -98,10 +101,17 @@ dav1d_copts = [
   "-D_POSIX_C_SOURCE=200112L",
 ]
 
-if (!is_win) {
+if (is_win) {
+  if (!is_clang) {
+    dav1d_copts += [ "/wd4028" ]
+  }
+} else {
   dav1d_copts += [ "-std=c99" ]
   if (needs_stack_alignment) {
     dav1d_copts += [ stackalign_flag ]
+  }
+  if (is_mac) {
+    dav1d_copts += [ "-D_DARWIN_C_SOURCE" ]
   }
 }
 

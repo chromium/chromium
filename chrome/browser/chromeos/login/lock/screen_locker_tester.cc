@@ -4,12 +4,10 @@
 
 #include "chrome/browser/chromeos/login/lock/screen_locker_tester.h"
 
+#include <cstdint>
 #include <string>
 
-#include "ash/public/cpp/ash_switches.h"
-#include "ash/public/interfaces/constants.mojom.h"
-#include "ash/public/interfaces/login_screen_test_api.test-mojom-test-utils.h"
-#include "base/command_line.h"
+#include "ash/public/cpp/login_screen_test_api.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -27,23 +25,11 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
-#include "content/public/common/service_manager_connection.h"
 #include "content/public/test/test_utils.h"
-#include "services/service_manager/public/cpp/connector.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
 namespace {
-
-// Helper to use inside a loop instead of using RunLoop::RunUntilIdle() to avoid
-// the loop being a busy loop that prevents renderer from doing its job. Use
-// only when there is no better way to synchronize.
-void GiveItSomeTime(base::TimeDelta delta) {
-  base::RunLoop run_loop;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, run_loop.QuitClosure(), delta);
-  run_loop.Run();
-}
 
 bool IsScreenLockerLocked() {
   return ScreenLocker::default_screen_locker() &&
@@ -93,11 +79,7 @@ class LoginAttemptObserver : public AuthStatusConsumer {
 
 }  // namespace
 
-ScreenLockerTester::ScreenLockerTester() {
-  content::ServiceManagerConnection::GetForProcess()
-      ->GetConnector()
-      ->BindInterface(ash::mojom::kServiceName, &test_api_);
-}
+ScreenLockerTester::ScreenLockerTester() = default;
 
 ScreenLockerTester::~ScreenLockerTester() = default;
 
@@ -127,55 +109,28 @@ void ScreenLockerTester::SetUnlockPassword(const AccountId& account_id,
 }
 
 bool ScreenLockerTester::IsLocked() {
-  if (!IsScreenLockerLocked())
-    return false;
-
-  // Check from ash's perspective.
-  ash::mojom::LoginScreenTestApiAsyncWaiter login_screen(test_api_.get());
-  bool is_ui_shown;
-  login_screen.IsLockShown(&is_ui_shown);
-  return IsScreenLockerLocked() && is_ui_shown;
+  return IsScreenLockerLocked() && ash::LoginScreenTestApi::IsLockShown();
 }
 
-bool ScreenLockerTester::IsRestartButtonShown() {
-  if (!IsScreenLockerLocked())
-    return false;
-
-  ash::mojom::LoginScreenTestApiAsyncWaiter login_screen(test_api_.get());
-  bool is_restart_button_shown;
-  login_screen.IsRestartButtonShown(&is_restart_button_shown);
-  return IsScreenLockerLocked() && is_restart_button_shown;
+bool ScreenLockerTester::IsLockRestartButtonShown() {
+  return IsScreenLockerLocked() &&
+         ash::LoginScreenTestApi::IsRestartButtonShown();
 }
 
-bool ScreenLockerTester::IsShutdownButtonShown() {
-  if (!IsScreenLockerLocked())
-    return false;
+bool ScreenLockerTester::IsLockShutdownButtonShown() {
+  return IsScreenLockerLocked() &&
+         ash::LoginScreenTestApi::IsShutdownButtonShown();
+}
 
-  ash::mojom::LoginScreenTestApiAsyncWaiter login_screen(test_api_.get());
-  bool is_shutdown_button_shown;
-  login_screen.IsShutdownButtonShown(&is_shutdown_button_shown);
-  return IsScreenLockerLocked() && is_shutdown_button_shown;
+bool ScreenLockerTester::IsAuthErrorBubbleShown() {
+  return IsScreenLockerLocked() &&
+         ash::LoginScreenTestApi::IsAuthErrorBubbleShown();
 }
 
 void ScreenLockerTester::UnlockWithPassword(const AccountId& account_id,
                                             const std::string& password) {
-  ash::mojom::LoginScreenTestApiAsyncWaiter login_screen(test_api_.get());
-  login_screen.SubmitPassword(account_id, password);
+  ash::LoginScreenTestApi::SubmitPassword(account_id, password);
   base::RunLoop().RunUntilIdle();
 }
 
-int64_t ScreenLockerTester::GetUiUpdateCount() {
-  ash::mojom::LoginScreenTestApiAsyncWaiter login_screen(test_api_.get());
-  int64_t ui_update_count = 0;
-  login_screen.GetUiUpdateCount(&ui_update_count);
-  return ui_update_count;
-}
-
-// Blocks until LoginShelfView::ui_update_count() is greater then
-// |previous_update_count|.
-void ScreenLockerTester::WaitForUiUpdate(int64_t previous_update_count) {
-  while (GetUiUpdateCount() <= previous_update_count) {
-    GiveItSomeTime(base::TimeDelta::FromMilliseconds(100));
-  }
-}
 }  // namespace chromeos

@@ -53,7 +53,7 @@ class TestNetworkInterceptor {
   std::unique_ptr<Impl> impl_;
   std::unique_ptr<content::URLLoaderInterceptor> interceptor_;
 
-  base::WeakPtrFactory<TestNetworkInterceptor> weak_factory_;
+  base::WeakPtrFactory<TestNetworkInterceptor> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(TestNetworkInterceptor);
 };

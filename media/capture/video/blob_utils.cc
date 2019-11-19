@@ -98,9 +98,7 @@ mojom::BlobPtr RotateAndBlobify(const uint8_t* buffer,
   }
 
   uint32_t src_format;
-  if (pixel_format == VideoPixelFormat::PIXEL_FORMAT_UYVY)
-    src_format = libyuv::FOURCC_UYVY;
-  else if (pixel_format == VideoPixelFormat::PIXEL_FORMAT_YUY2)
+  if (pixel_format == VideoPixelFormat::PIXEL_FORMAT_YUY2)
     src_format = libyuv::FOURCC_YUY2;
   else if (pixel_format == VideoPixelFormat::PIXEL_FORMAT_I420)
     src_format = libyuv::FOURCC_I420;

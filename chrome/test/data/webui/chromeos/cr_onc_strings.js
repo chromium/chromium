@@ -13,7 +13,7 @@
 
 var CrOncTest = CrOncTest || {};
 
-CrOncTest.overrideCrOncStrings = function() {
+CrOncTest.overrideOncStrings = function() {
   // From network_element_localized_string_provider.cc:AddOncLocalizedStrings.
   var oncKeys = {
     'OncConnected': 'OncConnected',
@@ -77,7 +77,6 @@ CrOncTest.overrideCrOncStrings = function() {
     'OncWiFi-Security_WPA-PSK': 'OncWiFi-Security_WPA-PSK',
     'OncWiFi-Security_WEP-8021X': 'OncWiFi-Security_WEP-8021X',
     'OncWiFi-SignalStrength': 'OncWiFi-SignalStrength',
-    'OncWiMAX-EAP-Identity': 'OncWiMAX-EAP-Identity',
     'Oncipv4-Gateway': 'Oncipv4-Gateway',
     'Oncipv4-IPAddress': 'Oncipv4-IPAddress',
     'Oncipv4-RoutingPrefix': 'Oncipv4-RoutingPrefix',
@@ -98,20 +97,23 @@ CrOncTest.overrideCrOncStrings = function() {
  */
 CrOncTest.convertToManagedProperties = function(properties) {
   'use strict';
-  if (!properties) {
+  if (properties === undefined) {
     return undefined;
   }
-  var result = {};
-  var keys = Object.keys(properties);
   if (typeof properties != 'object') {
     return {Active: properties};
   }
+  const unmanagedProperties = [
+    'ConnectionState',
+    'GUID',
+    /* ManagedCellularProperties.SIMLockStatus */ 'LockType',
+    'Source',
+    'Type',
+  ];
+  var result = {};
+  var keys = Object.keys(properties);
   for (var i = 0; i < keys.length; ++i) {
     var k = keys[i];
-    const unmanagedProperties = [
-      'ConnectionState', 'GUID',
-      /* ManagedCellularProperties.SIMLockStatus */ 'LockType', 'Source', 'Type'
-    ];
     if (unmanagedProperties.includes(k)) {
       result[k] = properties[k];
     } else {

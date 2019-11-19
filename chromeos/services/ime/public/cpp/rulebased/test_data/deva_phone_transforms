@@ -1,0 +1,20 @@
+# Created from RulebasedImeTest.Transforms_deva_phone
+engine_id: DEVA_PHONE
+key_events {
+  code: PERIOD
+  shift: false
+  altgr: false
+  caps_lock: false
+}
+key_events {
+  code: PERIOD
+  shift: false
+  altgr: false
+  caps_lock: false
+}
+key_events {
+  code: DIGIT0
+  shift: true
+  altgr: false
+  caps_lock: false
+}

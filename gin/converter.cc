@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include "base/strings/string_util.h"
 #include "v8/include/v8.h"
 
 using v8::ArrayBuffer;
@@ -151,6 +152,29 @@ bool Converter<std::string>::FromV8(Isolate* isolate,
   return true;
 }
 
+Local<Value> Converter<base::string16>::ToV8(Isolate* isolate,
+                                             const base::string16& val) {
+  return String::NewFromTwoByte(isolate,
+                                reinterpret_cast<const uint16_t*>(val.data()),
+                                v8::NewStringType::kNormal, val.size())
+      .ToLocalChecked();
+}
+
+bool Converter<base::string16>::FromV8(Isolate* isolate,
+                                       Local<Value> val,
+                                       base::string16* out) {
+  if (!val->IsString())
+    return false;
+  Local<String> str = Local<String>::Cast(val);
+  int length = str->Length();
+  // Note that the reinterpret cast is because on Windows string16 is an alias
+  // to wstring, and hence has character type wchar_t not uint16_t.
+  str->Write(isolate,
+             reinterpret_cast<uint16_t*>(base::WriteInto(out, length + 1)), 0,
+             length);
+  return true;
+}
+
 Local<Value> Converter<Local<Function>>::ToV8(Isolate* isolate,
                                               Local<Function> val) {
   return val.As<Value>();
@@ -237,6 +261,14 @@ v8::Local<v8::String> StringToSymbol(v8::Isolate* isolate,
   return String::NewFromUtf8(isolate, val.data(),
                              v8::NewStringType::kInternalized,
                              static_cast<uint32_t>(val.length()))
+      .ToLocalChecked();
+}
+
+v8::Local<v8::String> StringToSymbol(v8::Isolate* isolate,
+                                     const base::StringPiece16& val) {
+  return String::NewFromTwoByte(isolate,
+                                reinterpret_cast<const uint16_t*>(val.data()),
+                                v8::NewStringType::kInternalized, val.length())
       .ToLocalChecked();
 }
 

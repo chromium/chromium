@@ -63,12 +63,12 @@ void DeclaredStylePropertyMap::SetCustomProperty(
     return;
   CSSStyleSheet::RuleMutationScope mutation_scope(owner_rule_);
 
-  DCHECK(value.IsVariableReferenceValue());
-  CSSVariableData* variable_data =
-      ToCSSVariableReferenceValue(value).VariableDataValue();
+  auto* variable_data =
+      To<CSSVariableReferenceValue>(value).VariableDataValue();
   GetStyleRule()->MutableProperties().SetProperty(
-      CSSPropertyVariable,
-      *CSSCustomPropertyDeclaration::Create(property_name, variable_data));
+      CSSPropertyID::kVariable,
+      *MakeGarbageCollected<CSSCustomPropertyDeclaration>(property_name,
+                                                          variable_data));
 }
 
 void DeclaredStylePropertyMap::RemoveProperty(CSSPropertyID property_id) {

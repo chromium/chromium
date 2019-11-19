@@ -154,11 +154,10 @@ URLRequestTestJob::URLRequestTestJob(URLRequest* request,
       stage_(WAITING),
       priority_(DEFAULT_PRIORITY),
       offset_(0),
-      async_buf_(NULL),
+      async_buf_(nullptr),
       async_buf_size_(0),
       response_headers_length_(0),
-      async_reads_(false),
-      weak_factory_(this) {}
+      async_reads_(false) {}
 
 URLRequestTestJob::URLRequestTestJob(URLRequest* request,
                                      NetworkDelegate* network_delegate,
@@ -173,12 +172,10 @@ URLRequestTestJob::URLRequestTestJob(URLRequest* request,
       offset_(0),
       async_buf_(nullptr),
       async_buf_size_(0),
-      response_headers_(new net::HttpResponseHeaders(
-          net::HttpUtil::AssembleRawHeaders(response_headers.c_str(),
-                                            response_headers.size()))),
+      response_headers_(base::MakeRefCounted<net::HttpResponseHeaders>(
+          net::HttpUtil::AssembleRawHeaders(response_headers))),
       response_headers_length_(response_headers.size()),
-      async_reads_(false),
-      weak_factory_(this) {}
+      async_reads_(false) {}
 
 URLRequestTestJob::~URLRequestTestJob() {
   base::Erase(g_pending_jobs.Get(), this);
@@ -244,8 +241,8 @@ void URLRequestTestJob::StartAsync() {
 
 void URLRequestTestJob::SetResponseHeaders(
     const std::string& response_headers) {
-  response_headers_ = new HttpResponseHeaders(net::HttpUtil::AssembleRawHeaders(
-      response_headers.c_str(), response_headers.size()));
+  response_headers_ = base::MakeRefCounted<HttpResponseHeaders>(
+      net::HttpUtil::AssembleRawHeaders(response_headers));
   response_headers_length_ = response_headers.size();
 }
 

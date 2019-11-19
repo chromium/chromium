@@ -1,0 +1,592 @@
+<!doctype html>
+<!--
+Copyright 2018 The Immersive Web Community Group
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+the Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+-->
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1, user-scalable=no'>
+    <meta name='mobile-web-app-capable' content='yes'>
+    <meta name='apple-mobile-web-app-capable' content='yes'>
+
+    <!-- Origin Trial Token, feature = WebXR Device API, origin = https://immersive-web.github.io, expires = 2018-08-28 -->
+<meta http-equiv="origin-trial" data-feature="WebXR Device API" data-expires="2018-08-28" content="AnNpu7ceXvLew05ccD8Zr1OZsdZiB2hLQKK82kTTMDwF7oRKtP3QEJ4RzkeHrmB8Sq0vSV6ZNmszpBCZ0I8p9gAAAABceyJvcmlnaW4iOiJodHRwczovL2ltbWVyc2l2ZS13ZWIuZ2l0aHViLmlvOjQ0MyIsImZlYXR1cmUiOiJXZWJYUkRldmljZSIsImV4cGlyeSI6MTUzNTQxNDQwMH0=">
+
+    <title>AR Plane Detection</title>
+
+    <link href='../css/common.css' rel='stylesheet'></link>
+
+    <!--The polyfill is not needed for browser that have native API support,
+        but is linked by these samples for wider compatibility.-->
+    <!--script src='https://cdn.jsdelivr.net/npm/webxr-polyfill@latest/build/webxr-polyfill.js'></script-->
+    <script src='../js/xrray-polyfill.js' type='module'></script>
+    <script src='../js/webxr-polyfill.js'></script>
+
+    <script src='../js/webxr-button.js'></script>
+  </head>
+  <body>
+    <header>
+      <details open>
+        <summary>AR Plane Detection with Anchors</summary>
+        This sample demonstrates using the Plane Detection feature with Anchors,
+        including implementation of synchronous hit test in JavaScript
+        leveraging obtained plane data and anchors API to position objects.
+        <p>
+          <input id="useReticle" type="checkbox" checked>
+          <label for="useReticle">Use reticle for placement</label><br/>
+
+          <input id="useReticleRays" type="checkbox" checked>
+          <label for="useReticleRays">Hit-test rays visible</label><br/>
+
+          <input id="useReticleOrigin" type="checkbox" checked>
+          <label for="useReticleOrigin">Reticle coordinate system visible</label><br/>
+
+          <input id="usePlaneOrigin" type="checkbox" checked>
+          <label for="usePlaneOrigin">Plane coordinate system visible</label><br/>
+
+          <input id="enlargedPlanesEnabled" type="checkbox">
+          <label for="enlargedPlanesEnabled">Extend planes by 20cm</label><br/>
+
+          <input id="extendPlanesEnabled" type="checkbox">
+          <label for="extendPlanesEnabled">Extend bottom-most plane to infinity</label><br/>
+          <a class="back" href="./index.html">Back</a>
+        </p>
+      </details>
+    </header>
+    <script type="module">
+      import {hitTest, filterHitTestResults, extendPolygon, transform_point_by_matrix} from '../js/hit-test.js';
+      import {Scene} from '../js/cottontail/src/scenes/scene.js';
+      import {Renderer, createWebGLContext} from '../js/cottontail/src/core/renderer.js';
+      import {Gltf2Node} from '../js/cottontail/src/nodes/gltf2.js';
+      import {PlaneNode} from '../js/cottontail/src/nodes/plane-node.js';
+      import {RayNode} from '../js/cottontail/src/nodes/ray-node.js';
+      import {QueryArgs} from '../js/cottontail/src/util/query-args.js';
+      import {FallbackHelper} from '../js/cottontail/src/util/fallback-helper.js';
+      import {Node} from '../js/cottontail/src/core/node.js';
+      import {DropShadowNode} from '../js/cottontail/src/nodes/drop-shadow.js';
+      import {vec3, vec4} from '../js/cottontail/src/math/gl-matrix.js';
+      import {runUnitTests} from '../js/hit-test-unittests.js';
+
+      runUnitTests();
+
+      // If requested, initialize the WebXR polyfill
+      if (QueryArgs.getBool('allowPolyfill', false)) {
+        var polyfill = new WebXRPolyfill();
+      }
+
+      const useReticle = document.getElementById('useReticle');
+      const useReticleRays = document.getElementById('useReticleRays');
+      const useReticleOrigin = document.getElementById('useReticleOrigin');
+      const usePlaneOrigin = document.getElementById('usePlaneOrigin');
+      const enlargedPlanesEnabled = document.getElementById('enlargedPlanesEnabled');
+      const extendPlanesEnabled = document.getElementById('extendPlanesEnabled');
+
+      const flowerEnabled = true;
+
+      let all_plane_origins = [];
+      let all_extended_planes = [];
+
+      usePlaneOrigin.addEventListener('input', element =>{
+        console.log("Changing state of plane origins, count:", all_plane_origins.length);
+        all_plane_origins.forEach(ray => {
+          ray.visible = usePlaneOrigin.checked
+          for (let child of ray.children) {
+            child.visible = usePlaneOrigin.checked;
+          }
+        });
+      });
+
+      enlargedPlanesEnabled.addEventListener('input', element => {
+        console.log("Changing state of enlarged planes, count:", all_extended_planes.length);
+        all_extended_planes.forEach(plane => plane.visible = enlargedPlanesEnabled.checked);
+      });
+
+      // XR globals.
+      let xrButton = null;
+      let xrRefSpace = null;
+
+      // WebGL scene globals.
+      let gl = null;
+      let renderer = null;
+      let scene = new Scene();
+      scene.enableStats(false);
+
+      // Visualise the origin.
+      {
+        let xRay = new RayNode({direction : [5, 0, 0], baseColor : [1, 0, 0, 1]});
+        let yRay = new RayNode({direction : [0, 5, 0], baseColor : [0, 1, 0, 1]});
+        let zRay = new RayNode({direction : [0, 0, 5], baseColor : [0, 0, 1, 1]});
+
+        scene.addNode(xRay);
+        scene.addNode(yRay);
+        scene.addNode(zRay);
+      }
+
+      // ------------------------------
+      // Create "crosshair" out of 4 rays for debugging
+      let rayObject = new Node();
+      rayObject.visible = useReticleRays.checked;
+
+      // top
+      let ray1 = new RayNode({ baseColor : [0, 0, 1, 1] });
+      vec3.set(ray1.translation, 0, 0.05, 0);
+      rayObject.addNode(ray1);
+
+      // left
+      let ray2 = new RayNode({ baseColor : [0, 1, 0, 1] });
+      vec3.set(ray2.translation, -0.05, 0, 0);
+      rayObject.addNode(ray2);
+
+      // right
+      let ray3 = new RayNode({ baseColor : [1, 0, 0, 1] });
+      vec3.set(ray3.translation, 0.05, 0, 0);
+      rayObject.addNode(ray3);
+
+      // bottom
+      let ray4 = new RayNode({ baseColor : [1, 1, 0, 1] });
+      vec3.set(ray4.translation, 0, -0.05, 0);
+      rayObject.addNode(ray4);
+
+      scene.addNode(rayObject);
+
+      useReticleRays.addEventListener('input', element => {
+        console.log("Changing state of reticle rays", useReticleRays.checked);
+        rayObject.visible = useReticleRays.checked;
+        for (let child of rayObject.children) {
+          child.visible = useReticleRays.checked;
+        }
+      });
+      // ------------------------------
+
+      let arObject = new Node();
+      arObject.visible = false;
+
+      let reticle = new DropShadowNode({
+        baseColor : [1, 0, 0],
+        shadow_inner_alpha : 0.6,
+        shadow_inner_radius : 0.2,
+        shadow_outer_radius : 0.4,
+      });
+      vec3.set(reticle.scale, 0.3, 0.3, 0.3);
+      arObject.addNode(reticle);
+
+      // Create reticle's frame of reference out of 3 rays for debugging
+      let reticleFrameOfReference = new Node();
+      reticleFrameOfReference.visible = useReticleOrigin.checked;
+
+      let xRay = new RayNode({direction : [5, 0, 0], baseColor : [1, 0, 0, 1]});
+      let yRay = new RayNode({direction : [0, 5, 0], baseColor : [0, 1, 0, 1]});
+      let zRay = new RayNode({direction : [0, 0, 5], baseColor : [0, 0, 1, 1]});
+
+      reticleFrameOfReference.addNode(xRay);
+      reticleFrameOfReference.addNode(yRay);
+      reticleFrameOfReference.addNode(zRay);
+
+      arObject.addNode(reticleFrameOfReference);
+      scene.addNode(arObject);
+
+      useReticleOrigin.addEventListener('input', element =>{
+        console.log("Changing state of reticle origins", useReticleOrigin.checked);
+        reticleFrameOfReference.visible = useReticleOrigin.checked;
+      });
+
+      let flowerNode = new Node();
+      flowerNode.visible = false;
+
+      if(flowerEnabled) {
+        let flower = new Gltf2Node({url: '../../media/gltf/sunflower/sunflower.gltf'});
+        flowerNode.addNode(flower);
+
+        // Having a really simple drop shadow underneath an object helps ground
+        // it in the world without adding much complexity.
+        let shadow = new DropShadowNode();
+        vec3.set(shadow.scale, 0.15, 0.15, 0.15);
+        flowerNode.addNode(shadow);
+      }
+
+      arObject.addNode(flowerNode);
+
+      const MAX_FLOWERS = 30;
+      let flowers = [];
+
+      // Ensure the background is transparent for AR.
+      scene.clear = false;
+
+      function initXR() {
+        xrButton = new XRDeviceButton({
+          onRequestSession: onRequestSession,
+          onEndSession: onEndSession,
+          textEnterXRTitle: "START AR",
+          textXRNotFoundTitle: "AR NOT FOUND",
+          textExitXRTitle: "EXIT  AR",
+          supportedSessionTypes: ['immersive-ar'],
+          height: 36,
+        });
+        document.querySelector('header').appendChild(xrButton.domElement);
+      }
+
+      function onRequestSession() {
+        navigator.xr.requestSession('immersive-ar').then((session) => {
+          session.mode = 'immersive-ar';
+          xrButton.setSession(session);
+          onSessionStarted(session);
+        });
+      }
+
+      function onSessionStarted(session) {
+        session.addEventListener('end', onSessionEnded);
+        session.addEventListener('select', onSelect);
+
+        if (!gl) {
+          gl = createWebGLContext({
+            xrCompatible: true,
+            alpha : true,
+          });
+
+          renderer = new Renderer(gl);
+          gl.lineWidth(5);
+
+          scene.setRenderer(renderer);
+        }
+
+        session.updateRenderState({
+            baseLayer: new XRWebGLLayer(session, gl)
+        });
+
+        session.updateWorldTrackingState({
+          "planeDetectionState" : { "enabled" : true}
+        });
+
+        session.requestReferenceSpace('local').then((refSpace) => {
+          xrRefSpace = refSpace;
+          session.requestAnimationFrame(onXRFrame);
+        });
+      }
+
+      function onEndSession(session) {
+        session.end();
+      }
+
+      function onSessionEnded(event) {
+        xrButton.setSession(null);
+      }
+
+      function onCreateAnchor(anchor) {
+        console.debug("Anchor created");
+
+        anchor.context = {};
+
+        let sceneObject = flowerNode.clone();
+        sceneObject.visible = false;
+
+        let xRay = new RayNode({direction : [5, 0, 0], baseColor : [1, 0, 0, 1]});
+        let yRay = new RayNode({direction : [0, 5, 0], baseColor : [0, 1, 0, 1]});
+        let zRay = new RayNode({direction : [0, 0, 5], baseColor : [0, 0, 1, 1]});
+
+        sceneObject.addNode(xRay);
+        sceneObject.addNode(yRay);
+        sceneObject.addNode(zRay);
+
+        scene.addNode(sceneObject);
+        flowers.push(sceneObject);
+
+        anchor.context.sceneObject = sceneObject;
+        sceneObject.anchor = anchor;
+
+        // For performance reasons if we add too many objects start
+        // removing the oldest ones to keep the scene complexity
+        // from growing too much.
+        if (flowers.length > MAX_FLOWERS) {
+          let oldFlower = flowers.shift();
+          oldFlower.anchor.detach();
+          scene.removeNode(oldFlower);
+        }
+      }
+
+      // Creates new anchor for object and places it there.
+      function addARObjectAt(session, frame, plane, pose, space) {
+        if(plane != null) {
+          plane.createAnchor(pose, space).then(onCreateAnchor);
+        } else {
+          session.createAnchor(pose, space).then(onCreateAnchor);
+        }
+      }
+
+      function DOMPointFromVec4(vector) {
+        return new DOMPointReadOnly(vector[0], vector[1], vector[2], vector[3]);
+      }
+
+      let rayOrigin = vec4.create();
+      let rayDirection = vec4.create();
+
+      function onSelect(event) {
+        if (useReticle.checked && arObject.visible) {
+          // If we're using the reticle then we've already got a mesh positioned
+          // at the latest hit point and we should just use it's matrix to save
+          // an unnecessary requestHitTest call.
+          addARObjectAt(event.frame.session,
+                        event.frame,
+                        arObject.plane,
+                        new XRRigidTransform(arObject.hitPoint),
+                        arObject.space);
+        } else {
+          if(!event.frame.worldInformation.detectedPlanes) {
+            console.log("No planes detected, placing an anchor at origin.");
+            addARObjectAt(event.frame.session,
+                          event.frame,
+                          null,
+                          new XRRigidTransform({x : 0, y : 0, z : 0, w : 1}),
+                          xrRefSpace);
+            return;
+          }
+
+          console.log("Detected some planes, length:", event.frame.worldInformation.detectedPlanes.length);
+
+          // Otherwise we'll use the target ray from the input source that generated
+          // this event to fire off a new hit test.
+          let inputPose = event.frame.getPose(event.inputSource.targetRaySpace, xrRefSpace);
+          if (inputPose) {
+            let targetRay = new XRRay(inputPose.transform);
+            vec4.set(rayOrigin,
+                targetRay.origin.x,
+                targetRay.origin.y,
+                targetRay.origin.z,
+                targetRay.origin.w);
+            vec4.set(rayDirection,
+                targetRay.direction.x,
+                targetRay.direction.y,
+                targetRay.direction.z,
+                targetRay.direction.w);
+
+            let ray = new XRRay(DOMPointFromVec4(rayOrigin), DOMPointFromVec4(rayDirection));
+
+            const hitTestResults = hitTest(event.frame, ray, xrRefSpace);
+            const hitTestFiltered = filterHitTestResults(hitTestResults,
+                                                         extendPlanesEnabled.checked,
+                                                         false,
+                                                         enlargedPlanesEnabled.checked);
+
+            if (hitTestFiltered.length) {
+              let hitResult = hitTestFiltered[0];
+              addARObjectAt(event.frame.session,
+                            event.frame,
+                            hitResult.plane,
+                            new XRRigidTransform(hitResult.point_on_plane),
+                            hitResult.plane.planeSpace);
+            } else {
+              console.log("Missed everything, placing an anchor at origin.");
+              addARObjectAt(event.frame.session,
+                            event.frame,
+                            null,
+                            new XRRigidTransform({x : 0, y : 0, z : 0, w: 1}),
+                            xrRefSpace);
+            }
+          }
+        }
+      }
+
+      function addPlaneToScene(frame, plane, timestamp) {
+        if(typeof XRPlane.counter == 'undefined') {
+          XRPlane.counter = 1;
+          XRPlane.colors = [
+            [0.0, 0.0, 1.0, 0.2],   // blue
+            [1.0, 0.0, 0.0, 0.2],   // red
+            [0.0, 1.0, 0.0, 0.2],   // green
+            [0.0, 1.0, 1.0, 0.2],   // aqua
+            [1.0, 0.0, 1.0, 0.2],   // fuchsia
+            [1.0, 1.0, 0.0, 0.2],   // yellow
+          ];
+        }
+
+        if(typeof plane.id == 'undefined') {
+          // new plane
+          console.log("Adding plane, id:", XRPlane.counter);
+
+          plane.id = XRPlane.counter;
+          XRPlane.counter++;
+
+          let plane_node = new PlaneNode({
+            polygon : plane.polygon,
+            baseColor : XRPlane.colors[(plane.id - 1) % XRPlane.colors.length],
+          });
+
+          let planeFrameOfReference = new Node();
+          planeFrameOfReference.visible = usePlaneOrigin.checked;
+
+          let xRay = new RayNode({direction : [5, 0, 0], baseColor : [1, 0, 0, 1]});
+          let yRay = new RayNode({direction : [0, 5, 0], baseColor : [0, 1, 0, 1]});
+          let zRay = new RayNode({direction : [0, 0, 5], baseColor : [0, 0, 1, 1]});
+
+          plane_node.origins = planeFrameOfReference;
+          all_plane_origins.push(planeFrameOfReference);
+
+          planeFrameOfReference.addNode(xRay);
+          planeFrameOfReference.addNode(yRay);
+          planeFrameOfReference.addNode(zRay);
+
+          plane_node.addNode(planeFrameOfReference);
+
+          plane.scene_node = plane_node;
+          plane.scene_node.matrix = frame.getPose(plane.planeSpace, xrRefSpace).transform.matrix;
+
+          plane.extended_polygon = extendPolygon(plane.polygon);
+          plane.extended_polygon_node = new PlaneNode({
+            polygon : plane.extended_polygon,
+            baseColor : plane_node.baseColor.map(element => element * 0.6)
+          });
+          plane.extended_polygon_node.visible = enlargedPlanesEnabled.checked;
+          plane.scene_node.addNode(plane.extended_polygon_node);
+          all_extended_planes.push(plane.extended_polygon_node);
+
+          scene.addNode(plane.scene_node);
+        }
+        else if(plane.lastChangedTime == timestamp)
+        {
+          // old plane that was updated in current frame
+          plane.scene_node.onPlaneChanged(plane.polygon);
+          plane.scene_node.matrix = frame.getPose(plane.planeSpace, xrRefSpace).transform.matrix;
+          plane.extended_polygon = extendPolygon(plane.polygon);
+          plane.extended_polygon_node.onPlaneChanged(plane.extended_polygon);
+        }
+      }
+
+      // Set with all planes detected in a previous frame.
+      let all_previous_planes = new Set();
+      // Set with all anchors tracked in a previous frame.
+      let all_previous_anchors = new Set();
+
+      // Called every time a XRSession requests that a new frame be drawn.
+      async function onXRFrame(t, frame) {
+        let session = frame.session;
+
+        session.requestAnimationFrame(onXRFrame);
+
+        let pose = frame.getViewerPose(xrRefSpace);
+
+        let detected_planes = frame.worldInformation.detectedPlanes;
+
+        // Check if any of the old planes is no longer present in detected planes set.
+        // If it's no longer present, it was removed - clean up after.
+        all_previous_planes.forEach(plane => {
+          if(!detected_planes.has(plane)) {
+            console.log("Removing plane, id:", plane.id);
+
+            let index = all_plane_origins.findIndex(
+              element => element === plane.scene_node.origins);
+            if(index != -1){
+              all_plane_origins.splice(index, 1);
+            }
+
+            index = all_extended_planes.findIndex(
+              element => element === plane.extended_polygon_node);
+            if(index != -1){
+              all_extended_planes.splice(index, 1);
+            }
+
+            scene.removeNode(plane.scene_node);
+          }
+        });
+
+        // Store currently detected planes to check against them in subsequent frame.
+        all_previous_planes = detected_planes;
+
+        // Process all currently detected planes.
+        detected_planes.forEach(plane => {
+          addPlaneToScene(frame, plane, t);
+        });
+
+        const tracked_anchors = frame.trackedAnchors;
+
+        if(tracked_anchors){
+          all_previous_anchors.forEach(anchor => {
+            if(!tracked_anchors.has(anchor)){
+              scene.removeNode(anchor.sceneObject);
+            }
+          });
+
+          tracked_anchors.forEach(anchor => {
+            if(t == anchor.lastChangedTime) {
+              anchor.context.sceneObject.matrix = frame.getPose(anchor.anchorSpace, xrRefSpace).transform.matrix;
+              anchor.context.sceneObject.visible = true;
+            }
+          });
+
+          all_previous_anchors = tracked_anchors;
+        } else {
+          all_previous_anchors.forEach(anchor => {
+            scene.removeNode(anchor.sceneObject);
+          });
+
+          all_previous_anchors = new Set();
+        }
+
+        // If requested, use the pose to cast a reticle into the scene using a
+        // continuous hit test. For the moment we're just using the flower
+        // as the "reticle".
+        if (useReticle.checked && pose && pose.transform.matrix) {
+          vec4.set(rayOrigin, 0, 0, 0, 1);
+          vec4.transformMat4(rayOrigin, rayOrigin, pose.transform.matrix);
+
+          vec4.set(rayDirection, 0, 0, -1, 0);
+          vec4.transformMat4(rayDirection, rayDirection, pose.transform.matrix);
+          vec4.normalize(rayDirection, rayDirection);
+
+          const ray = new XRRay(DOMPointFromVec4(rayOrigin), DOMPointFromVec4(rayDirection));
+
+          rayObject.matrix = ray.matrix.slice();
+          rayObject.visible = true;
+
+          const hitTestResults = hitTest(frame, ray, xrRefSpace);
+          const hitTestFiltered = filterHitTestResults(hitTestResults,
+                                                       extendPlanesEnabled.checked,
+                                                       false,
+                                                       enlargedPlanesEnabled.checked);
+
+          if(hitTestFiltered && hitTestFiltered.length > 0) {
+            // Reticle position is always up-to-date wrt the hittest result.
+            let hitResult = hitTestFiltered[0];
+            arObject.visible = true;
+            arObject.matrix = hitResult.hitMatrix;
+
+            // Store data that'll be needed for anchor creation.
+            arObject.plane = hitResult.plane;
+            arObject.space = hitResult.plane.planeSpace;
+            arObject.hitPoint = hitResult.point_on_plane;
+
+          } else {
+            arObject.visible = false;
+          }
+        } else {
+          arObject.visible = false;
+          rayObject.visible = false;
+        }
+
+        await scene.waitForComplete();
+
+        scene.startFrame();
+        scene.drawXRFrame(frame, pose);
+        scene.endFrame();
+      }
+
+      // Start the XR application.
+      initXR();
+    </script>
+  </body>
+</html>

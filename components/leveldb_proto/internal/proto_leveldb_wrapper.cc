@@ -173,14 +173,14 @@ void GetEntryFromTaskRunner(LevelDB* database,
 
 ProtoLevelDBWrapper::ProtoLevelDBWrapper(
     const scoped_refptr<base::SequencedTaskRunner>& task_runner)
-    : task_runner_(task_runner), weak_ptr_factory_(this) {
+    : task_runner_(task_runner) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
 ProtoLevelDBWrapper::ProtoLevelDBWrapper(
     const scoped_refptr<base::SequencedTaskRunner>& task_runner,
     LevelDB* db)
-    : task_runner_(task_runner), db_(db), weak_ptr_factory_(this) {
+    : task_runner_(task_runner), db_(db) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 

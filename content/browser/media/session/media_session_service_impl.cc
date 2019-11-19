@@ -32,10 +32,10 @@ MediaSessionServiceImpl::~MediaSessionServiceImpl() {
 // static
 void MediaSessionServiceImpl::Create(
     RenderFrameHost* render_frame_host,
-    blink::mojom::MediaSessionServiceRequest request) {
+    mojo::PendingReceiver<blink::mojom::MediaSessionService> receiver) {
   MediaSessionServiceImpl* impl =
       new MediaSessionServiceImpl(render_frame_host);
-  impl->Bind(std::move(request));
+  impl->Bind(std::move(receiver));
 }
 
 RenderFrameHost* MediaSessionServiceImpl::GetRenderFrameHost() {
@@ -56,8 +56,8 @@ void MediaSessionServiceImpl::FlushForTesting() {
 }
 
 void MediaSessionServiceImpl::SetClient(
-    blink::mojom::MediaSessionClientPtr client) {
-  client_ = std::move(client);
+    mojo::PendingRemote<blink::mojom::MediaSessionClient> client) {
+  client_ = mojo::Remote<blink::mojom::MediaSessionClient>(std::move(client));
 }
 
 void MediaSessionServiceImpl::SetPlaybackState(
@@ -66,6 +66,14 @@ void MediaSessionServiceImpl::SetPlaybackState(
   MediaSessionImpl* session = GetMediaSession();
   if (session)
     session->OnMediaSessionPlaybackStateChanged(this);
+}
+
+void MediaSessionServiceImpl::SetPositionState(
+    const base::Optional<media_session::MediaPosition>& position) {
+  position_ = position;
+  MediaSessionImpl* session = GetMediaSession();
+  if (session)
+    session->RebuildAndNotifyMediaPositionChanged();
 }
 
 void MediaSessionServiceImpl::SetMetadata(
@@ -129,9 +137,9 @@ MediaSessionImpl* MediaSessionServiceImpl::GetMediaSession() {
 }
 
 void MediaSessionServiceImpl::Bind(
-    blink::mojom::MediaSessionServiceRequest request) {
-  binding_.reset(new mojo::Binding<blink::mojom::MediaSessionService>(
-      this, std::move(request)));
+    mojo::PendingReceiver<blink::mojom::MediaSessionService> receiver) {
+  receiver_.reset(new mojo::Receiver<blink::mojom::MediaSessionService>(
+      this, std::move(receiver)));
 }
 
 }  // namespace content

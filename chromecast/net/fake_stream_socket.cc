@@ -73,6 +73,8 @@ class SocketBuffer {
   DISALLOW_COPY_AND_ASSIGN(SocketBuffer);
 };
 
+FakeStreamSocket::FakeStreamSocket() : FakeStreamSocket(net::IPEndPoint()) {}
+
 FakeStreamSocket::FakeStreamSocket(const net::IPEndPoint& local_address)
     : local_address_(local_address),
       buffer_(std::make_unique<SocketBuffer>()),
@@ -87,6 +89,10 @@ FakeStreamSocket::~FakeStreamSocket() {
 void FakeStreamSocket::SetPeer(FakeStreamSocket* peer) {
   DCHECK(peer);
   peer_ = peer;
+}
+
+void FakeStreamSocket::SetBadSenderMode(bool bad_sender) {
+  bad_sender_mode_ = bad_sender;
 }
 
 int FakeStreamSocket::Read(net::IOBuffer* buf,
@@ -105,8 +111,12 @@ int FakeStreamSocket::Write(
   if (!peer_) {
     return net::ERR_SOCKET_NOT_CONNECTED;
   }
-  peer_->buffer_->Write(buf->data(), buf_len);
-  return buf_len;
+  int amount_to_send = buf_len;
+  if (bad_sender_mode_) {
+    amount_to_send = std::min(buf_len, buf_len / 2 + 1);
+  }
+  peer_->buffer_->Write(buf->data(), amount_to_send);
+  return amount_to_send;
 }
 
 int FakeStreamSocket::SetReceiveBufferSize(int32_t /* size */) {

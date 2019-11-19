@@ -8,7 +8,7 @@
 #include "base/macros.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/graphics/compositing_reasons.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
@@ -37,12 +37,9 @@ class CORE_EXPORT CompositingReasonFinder {
   static bool RequiresCompositingForScrollableFrame(const LayoutView&);
   static CompositingReasons CompositingReasonsForAnimation(
       const ComputedStyle&);
-  static bool RequiresCompositingForOpacityAnimation(const ComputedStyle&);
-  static bool RequiresCompositingForFilterAnimation(const ComputedStyle&);
-  static bool RequiresCompositingForBackdropFilterAnimation(
+  static CompositingReasons CompositingReasonsForWillChange(
       const ComputedStyle&);
-  static bool RequiresCompositingForTransformAnimation(const ComputedStyle&);
-  static bool RequiresCompositingForTransform(const LayoutObject&);
+  static bool RequiresCompositingFor3DTransform(const LayoutObject&);
   static bool RequiresCompositingForRootScroller(const PaintLayer&);
 
   static bool RequiresCompositingForScrollDependentPosition(const PaintLayer&);

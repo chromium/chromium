@@ -21,11 +21,9 @@ void CollectedCookiesInfoBarDelegate::Create(InfoBarService* infobar_service) {
 }
 
 CollectedCookiesInfoBarDelegate::CollectedCookiesInfoBarDelegate()
-    : ConfirmInfoBarDelegate() {
-}
+    : ConfirmInfoBarDelegate() {}
 
-CollectedCookiesInfoBarDelegate::~CollectedCookiesInfoBarDelegate() {
-}
+CollectedCookiesInfoBarDelegate::~CollectedCookiesInfoBarDelegate() {}
 
 infobars::InfoBarDelegate::InfoBarIdentifier
 CollectedCookiesInfoBarDelegate::GetIdentifier() const {

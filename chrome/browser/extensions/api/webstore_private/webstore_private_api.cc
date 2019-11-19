@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/lazy_instance.h"
 #include "base/macros.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -19,10 +20,12 @@
 #include "base/version.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/extensions/api/webstore_private/extension_install_status.h"
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/install_tracker.h"
+#include "chrome/browser/extensions/scoped_active_install.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
@@ -32,6 +35,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/crx_file/id_util.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/gpu_feature_checker.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
@@ -39,9 +43,9 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/manifest_constants.h"
 #include "net/base/load_flags.h"
 #include "net/url_request/url_request.h"
-#include "services/identity/public/cpp/identity_manager.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
@@ -59,6 +63,7 @@ namespace CompleteInstall = api::webstore_private::CompleteInstall;
 namespace GetBrowserLogin = api::webstore_private::GetBrowserLogin;
 namespace GetEphemeralAppsEnabled =
     api::webstore_private::GetEphemeralAppsEnabled;
+namespace GetExtensionStatus = api::webstore_private::GetExtensionStatus;
 namespace GetIsLauncherEnabled = api::webstore_private::GetIsLauncherEnabled;
 namespace GetStoreLogin = api::webstore_private::GetStoreLogin;
 namespace GetWebGLStatus = api::webstore_private::GetWebGLStatus;
@@ -234,7 +239,7 @@ WebstorePrivateBeginInstallWithManifest3Function::Run() {
             .get();
   }
 
-  scoped_refptr<WebstoreInstallHelper> helper = new WebstoreInstallHelper(
+  auto helper = base::MakeRefCounted<WebstoreInstallHelper>(
       this, details().id, details().manifest, icon_url);
 
   // The helper will call us back via OnWebstoreParseSuccess or
@@ -726,6 +731,67 @@ WebstorePrivateGetReferrerChainFunction::Run() {
   return RespondNow(
       ArgumentList(api::webstore_private::GetReferrerChain::Results::Create(
           serialized_referrer_proto)));
+}
+
+WebstorePrivateGetExtensionStatusFunction::
+    WebstorePrivateGetExtensionStatusFunction()
+    : chrome_details_(this) {}
+WebstorePrivateGetExtensionStatusFunction::
+    ~WebstorePrivateGetExtensionStatusFunction() = default;
+
+ExtensionFunction::ResponseAction
+WebstorePrivateGetExtensionStatusFunction::Run() {
+  std::unique_ptr<GetExtensionStatus::Params> params(
+      GetExtensionStatus::Params::Create(*args_));
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  Profile* profile = chrome_details_.GetProfile();
+  const ExtensionId& extension_id = params->id;
+
+  if (!crx_file::id_util::IdIsValid(extension_id)) {
+    return RespondNow(Error(kWebstoreInvalidIdError));
+  }
+
+  ExtensionInstallStatus status =
+      GetWebstoreExtensionInstallStatus(extension_id, profile);
+  api::webstore_private::ExtensionInstallStatus api_status =
+      api::webstore_private::EXTENSION_INSTALL_STATUS_NONE;
+  switch (status) {
+    case kCanRequest:
+      api_status = api::webstore_private::ExtensionInstallStatus::
+          EXTENSION_INSTALL_STATUS_CAN_REQUEST;
+      break;
+    case kRequestPending:
+      api_status = api::webstore_private::ExtensionInstallStatus::
+          EXTENSION_INSTALL_STATUS_REQUEST_PENDING;
+      break;
+    case kBlockedByPolicy:
+      api_status = api::webstore_private::ExtensionInstallStatus::
+          EXTENSION_INSTALL_STATUS_BLOCKED_BY_POLICY;
+      break;
+    case kInstallable:
+      api_status = api::webstore_private::ExtensionInstallStatus::
+          EXTENSION_INSTALL_STATUS_INSTALLABLE;
+      break;
+    case kEnabled:
+      api_status = api::webstore_private::ExtensionInstallStatus::
+          EXTENSION_INSTALL_STATUS_ENABLED;
+      break;
+    case kDisabled:
+      api_status = api::webstore_private::ExtensionInstallStatus::
+          EXTENSION_INSTALL_STATUS_DISABLED;
+      break;
+    case kTerminated:
+      api_status = api::webstore_private::ExtensionInstallStatus::
+          EXTENSION_INSTALL_STATUS_TERMINATED;
+      break;
+    case kBlacklisted:
+      api_status = api::webstore_private::ExtensionInstallStatus::
+          EXTENSION_INSTALL_STATUS_BLACKLISTED;
+      break;
+  }
+  return RespondNow(
+      OneArgument(GetExtensionStatus::Results::Create(api_status)));
 }
 
 }  // namespace extensions

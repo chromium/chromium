@@ -10,5 +10,12 @@ login.createScreen('MultiDeviceSetupScreen', 'multidevice-setup', function() {
     get defaultControl() {
       return $('multidevice-setup-impl');
     },
+
+    /**
+     * This is called after resources are updated.
+     */
+    updateLocalizedContent: function() {
+      $('multidevice-setup-impl').updateLocalizedContent();
+    },
   };
 });

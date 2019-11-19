@@ -500,41 +500,76 @@ TEST(UrlUtilTest, GetIdentityFromURL) {
     const char* const expected_username;
     const char* const expected_password;
   } tests[] = {
-    {
-      "http://username:password@google.com",
-      "username",
-      "password",
-    },
-    { // Test for http://crbug.com/19200
-      "http://username:p@ssword@google.com",
-      "username",
-      "p@ssword",
-    },
-    { // Special URL characters should be unescaped.
-      "http://username:p%3fa%26s%2fs%23@google.com",
-      "username",
-      "p?a&s/s#",
-    },
-    { // Username contains %20.
-      "http://use rname:password@google.com",
-      "use rname",
-      "password",
-    },
-    { // Keep %00 as is.
-      "http://use%00rname:password@google.com",
-      "use%00rname",
-      "password",
-    },
-    { // Use a '+' in the username.
-      "http://use+rname:password@google.com",
-      "use+rname",
-      "password",
-    },
-    { // Use a '&' in the password.
-      "http://username:p&ssword@google.com",
-      "username",
-      "p&ssword",
-    },
+      {
+          "http://username:password@google.com",
+          "username",
+          "password",
+      },
+      {
+          // Test for http://crbug.com/19200
+          "http://username:p@ssword@google.com",
+          "username",
+          "p@ssword",
+      },
+      {
+          // Special URL characters should be unescaped.
+          "http://username:p%3fa%26s%2fs%23@google.com",
+          "username",
+          "p?a&s/s#",
+      },
+      {
+          // Username contains %20, password %25.
+          "http://use rname:password%25@google.com",
+          "use rname",
+          "password%",
+      },
+      {
+          // Username and password contain forward / backward slashes.
+          "http://username%2F:password%5C@google.com",
+          "username/",
+          "password\\",
+      },
+      {
+          // Keep %00 and %01 as-is, and ignore other escaped characters when
+          // present.
+          "http://use%00rname%20:pass%01word%25@google.com",
+          "use%00rname%20",
+          "pass%01word%25",
+      },
+      {
+          // Keep CR and LF as-is.
+          "http://use%0Arname:pass%0Dword@google.com",
+          "use%0Arname",
+          "pass%0Dword",
+      },
+      {
+          // Use a '+' in the username.
+          "http://use+rname:password@google.com",
+          "use+rname",
+          "password",
+      },
+      {
+          // Use a '&' in the password.
+          "http://username:p&ssword@google.com",
+          "username",
+          "p&ssword",
+      },
+      {
+          // These UTF-8 characters are considered unsafe to unescape by
+          // UnescapeURLComponent, but raise no special concerns as part of the
+          // identity portion of a URL.
+          "http://%F0%9F%94%92:%E2%80%82@google.com",
+          "\xF0\x9F\x94\x92",
+          "\xE2\x80\x82",
+      },
+      {
+          // Leave invalid UTF-8 alone, and leave valid UTF-8 characters alone
+          // if there's also an invalid character in the string - strings should
+          // not be partially unescaped.
+          "http://%81:%E2%80%82%E2%80@google.com",
+          "%81",
+          "%E2%80%82%E2%80",
+      },
   };
   for (const auto& test : tests) {
     SCOPED_TRACE(test.input_url);
@@ -543,8 +578,8 @@ TEST(UrlUtilTest, GetIdentityFromURL) {
     base::string16 username, password;
     GetIdentityFromURL(url, &username, &password);
 
-    EXPECT_EQ(ASCIIToUTF16(test.expected_username), username);
-    EXPECT_EQ(ASCIIToUTF16(test.expected_password), password);
+    EXPECT_EQ(base::UTF8ToUTF16(test.expected_username), username);
+    EXPECT_EQ(base::UTF8ToUTF16(test.expected_password), password);
   }
 }
 

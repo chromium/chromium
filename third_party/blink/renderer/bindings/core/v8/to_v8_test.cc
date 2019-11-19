@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/core/testing/garbage_collected_script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 #define TEST_TOV8(expected, value) \
@@ -36,7 +37,7 @@ void TestToV8(V8TestingScope* scope,
   if (String(expected) != actual_string) {
     ADD_FAILURE_AT(path, line_number)
         << "toV8 returns an incorrect value.\n  Actual: "
-        << actual_string.Utf8().data() << "\nExpected: " << expected;
+        << actual_string.Utf8() << "\nExpected: " << expected;
     return;
   }
 }
@@ -55,6 +56,8 @@ class GarbageCollectedHolderForToV8Test
 };
 
 class OffHeapGarbageCollectedHolder {
+  STACK_ALLOCATED();
+
  public:
   OffHeapGarbageCollectedHolder(
       GarbageCollectedScriptWrappable* script_wrappable)
@@ -104,20 +107,21 @@ TEST(ToV8Test, string) {
 
 TEST(ToV8Test, numeric) {
   V8TestingScope scope;
-  TEST_TOV8("0", static_cast<int>(0));
-  TEST_TOV8("1", static_cast<int>(1));
-  TEST_TOV8("-1", static_cast<int>(-1));
-
-  TEST_TOV8("-2", static_cast<long>(-2));
-  TEST_TOV8("2", static_cast<unsigned>(2));
-  TEST_TOV8("2", static_cast<unsigned long>(2));
+  TEST_TOV8("0", static_cast<int32_t>(0));
+  TEST_TOV8("1", static_cast<int32_t>(1));
+  TEST_TOV8("-1", static_cast<int32_t>(-1));
+  TEST_TOV8("2", static_cast<uint32_t>(2));
 
   TEST_TOV8("-2147483648", std::numeric_limits<int32_t>::min());
   TEST_TOV8("2147483647", std::numeric_limits<int32_t>::max());
   TEST_TOV8("4294967295", std::numeric_limits<uint32_t>::max());
   // v8::Number can represent exact numbers in [-(2^53-1), 2^53-1].
-  TEST_TOV8("-9007199254740991", -9007199254740991);  // -(2^53-1)
-  TEST_TOV8("9007199254740991", 9007199254740991);    // 2^53-1
+  TEST_TOV8("-9007199254740991",
+            static_cast<int64_t>(-9007199254740991));  // -(2^53-1)
+  TEST_TOV8("9007199254740991",
+            static_cast<int64_t>(9007199254740991));  // 2^53-1
+  TEST_TOV8("9007199254740991",
+            static_cast<uint64_t>(9007199254740991));  // 2^53-1
 
   TEST_TOV8("0.5", static_cast<double>(0.5));
   TEST_TOV8("-0.5", static_cast<float>(-0.5));
@@ -148,7 +152,7 @@ TEST(ToV8Test, undefinedType) {
 
 TEST(ToV8Test, scriptValue) {
   V8TestingScope scope;
-  ScriptValue value(scope.GetScriptState(),
+  ScriptValue value(scope.GetIsolate(),
                     v8::Number::New(scope.GetIsolate(), 1234));
 
   TEST_TOV8("1234", value);
@@ -169,25 +173,25 @@ TEST(ToV8Test, stringVectors) {
 
 TEST(ToV8Test, basicTypeVectors) {
   V8TestingScope scope;
-  Vector<int> int_vector;
-  int_vector.push_back(42);
-  int_vector.push_back(23);
-  TEST_TOV8("42,23", int_vector);
+  Vector<int32_t> int32_vector;
+  int32_vector.push_back(42);
+  int32_vector.push_back(23);
+  TEST_TOV8("42,23", int32_vector);
 
-  Vector<long> long_vector;
-  long_vector.push_back(31773);
-  long_vector.push_back(404);
-  TEST_TOV8("31773,404", long_vector);
+  Vector<int64_t> int64_vector;
+  int64_vector.push_back(31773);
+  int64_vector.push_back(404);
+  TEST_TOV8("31773,404", int64_vector);
 
-  Vector<unsigned> unsigned_vector;
-  unsigned_vector.push_back(1);
-  unsigned_vector.push_back(2);
-  TEST_TOV8("1,2", unsigned_vector);
+  Vector<uint32_t> uint32_vector;
+  uint32_vector.push_back(1);
+  uint32_vector.push_back(2);
+  TEST_TOV8("1,2", uint32_vector);
 
-  Vector<unsigned long> unsigned_long_vector;
-  unsigned_long_vector.push_back(1001);
-  unsigned_long_vector.push_back(2002);
-  TEST_TOV8("1001,2002", unsigned_long_vector);
+  Vector<uint64_t> uint64_vector;
+  uint64_vector.push_back(1001);
+  uint64_vector.push_back(2002);
+  TEST_TOV8("1001,2002", uint64_vector);
 
   Vector<float> float_vector;
   float_vector.push_back(0.125);
@@ -296,7 +300,7 @@ TEST(ToV8Test, heapVector) {
 
 TEST(ToV8Test, withScriptState) {
   V8TestingScope scope;
-  ScriptValue value(scope.GetScriptState(),
+  ScriptValue value(scope.GetIsolate(),
                     v8::Number::New(scope.GetIsolate(), 1234.0));
 
   v8::Local<v8::Value> actual = ToV8(value, scope.GetScriptState());

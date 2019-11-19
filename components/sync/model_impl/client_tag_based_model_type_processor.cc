@@ -15,13 +15,12 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "components/sync/base/data_type_histogram.h"
-#include "components/sync/base/hash_util.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/time.h"
 #include "components/sync/engine/commit_queue.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/engine/model_type_processor_proxy.h"
-#include "components/sync/model_impl/processor_entity_tracker.h"
+#include "components/sync/model_impl/processor_entity.h"
 #include "components/sync/protocol/proto_memory_estimations.h"
 #include "components/sync/protocol/proto_value_conversions.h"
 
@@ -29,28 +28,8 @@ namespace syncer {
 
 namespace {
 
-bool CompareProtoTimeStamp(const int64_t left, const int64_t right) {
-  return left > right;
-}
-
-// This function use quick select algorithm (std::nth_element) to find the |n|th
-// bigest number in the vector |time_stamps|.
-int64_t FindTheNthBigestProtoTimeStamp(std::vector<int64_t> time_stamps,
-                                       size_t n) {
-  DCHECK(n);
-
-  if (n > time_stamps.size())
-    return 0;
-
-  std::nth_element(time_stamps.begin(), time_stamps.begin() + n - 1,
-                   time_stamps.end(), &CompareProtoTimeStamp);
-
-  return time_stamps[n - 1];
-}
-
 int CountNonTombstoneEntries(
-    const std::map<std::string, std::unique_ptr<ProcessorEntityTracker>>&
-        entities) {
+    const std::map<ClientTagHash, std::unique_ptr<ProcessorEntity>>& entities) {
   int count = 0;
   for (const auto& kv : entities) {
     if (!kv.second->metadata().is_deleted()) {
@@ -64,13 +43,19 @@ void LogNonReflectionUpdateFreshnessToUma(ModelType type,
                                           base::Time remote_modification_time) {
   const base::TimeDelta latency = base::Time::Now() - remote_modification_time;
 
-  UMA_HISTOGRAM_LONG_TIMES("Sync.NonReflectionUpdateFreshnessPossiblySkewed",
-                           latency);
+  UMA_HISTOGRAM_CUSTOM_TIMES("Sync.NonReflectionUpdateFreshnessPossiblySkewed2",
+                             latency,
+                             /*min=*/base::TimeDelta::FromMilliseconds(100),
+                             /*max=*/base::TimeDelta::FromDays(7),
+                             /*bucket_count=*/50);
 
-  base::UmaHistogramLongTimes(
-      std::string("Sync.NonReflectionUpdateFreshnessPossiblySkewed.") +
+  base::UmaHistogramCustomTimes(
+      std::string("Sync.NonReflectionUpdateFreshnessPossiblySkewed2.") +
           ModelTypeToHistogramSuffix(type),
-      latency);
+      latency,
+      /*min=*/base::TimeDelta::FromMilliseconds(100),
+      /*max=*/base::TimeDelta::FromDays(7),
+      /*bucket_count=*/50);
 }
 
 }  // namespace
@@ -89,9 +74,7 @@ ClientTagBasedModelTypeProcessor::ClientTagBasedModelTypeProcessor(
     : type_(type),
       bridge_(nullptr),
       dump_stack_(dump_stack),
-      commit_only_(commit_only),
-      weak_ptr_factory_for_controller_(this),
-      weak_ptr_factory_for_worker_(this) {
+      commit_only_(commit_only) {
   ResetState(CLEAR_METADATA);
 }
 
@@ -141,11 +124,15 @@ void ClientTagBasedModelTypeProcessor::ModelReadyToSync(
     EntityMetadataMap metadata_map(batch->TakeAllMetadata());
 
     for (auto it = metadata_map.begin(); it != metadata_map.end(); it++) {
-      std::unique_ptr<ProcessorEntityTracker> entity =
-          ProcessorEntityTracker::CreateFromMetadata(it->first, &it->second);
-      storage_key_to_tag_hash_[entity->storage_key()] =
-          entity->metadata().client_tag_hash();
-      entities_[entity->metadata().client_tag_hash()] = std::move(entity);
+      std::unique_ptr<sync_pb::EntityMetadata> metadata(std::move(it->second));
+      // As CreateFromMetadata() takes sync_pb::EntityMetadata by value, move it
+      // to avoid copying.
+      std::unique_ptr<ProcessorEntity> entity =
+          ProcessorEntity::CreateFromMetadata(it->first, std::move(*metadata));
+      ClientTagHash client_tag_hash =
+          ClientTagHash::FromHashed(entity->metadata().client_tag_hash());
+      storage_key_to_tag_hash_[entity->storage_key()] = client_tag_hash;
+      entities_[client_tag_hash] = std::move(entity);
     }
     model_type_state_ = batch->GetModelTypeState();
   } else {
@@ -164,10 +151,6 @@ void ClientTagBasedModelTypeProcessor::ModelReadyToSync(
   ConnectIfReady();
 }
 
-bool ClientTagBasedModelTypeProcessor::IsModelReadyOrError() const {
-  return model_error_ || model_ready_to_sync_;
-}
-
 bool ClientTagBasedModelTypeProcessor::IsAllowingChanges() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Changes can be handled correctly even before pending data is loaded.
@@ -175,24 +158,35 @@ bool ClientTagBasedModelTypeProcessor::IsAllowingChanges() const {
 }
 
 void ClientTagBasedModelTypeProcessor::ConnectIfReady() {
-  if (!IsModelReadyOrError() || !start_callback_)
+  if (!start_callback_) {
     return;
-
+  }
   if (model_error_) {
     activation_request_.error_handler.Run(model_error_.value());
     start_callback_.Reset();
     return;
   }
-
-  DCHECK(model_ready_to_sync_);
+  if (!model_ready_to_sync_) {
+    return;
+  }
 
   if (!model_type_state_.has_cache_guid()) {
+    // Initialize the cache_guid for old clients that didn't persist it.
     model_type_state_.set_cache_guid(activation_request_.cache_guid);
-  } else if (model_type_state_.cache_guid() != activation_request_.cache_guid) {
-    // There is a mismatch between the cache guid stored in |model_type_state_|
-    // and the one received from sync and stored it |activation_request_|. This
-    // indicates that the stored metadata are invalid (e.g. has been
-    // manipulated) and don't belong to the current syncing client.
+  }
+  // Check for invalid persisted metadata.
+  if (model_type_state_.cache_guid() != activation_request_.cache_guid ||
+      model_type_state_.progress_marker().data_type_id() !=
+          GetSpecificsFieldNumberFromModelType(type_)) {
+    // There is a mismatch between the cache guid or the data type id stored in
+    // |model_type_state_| and the one received from sync. This indicates that
+    // the stored metadata are invalid (e.g. has been manipulated) and don't
+    // belong to the current syncing client.
+    if (model_type_state_.progress_marker().data_type_id() !=
+        GetSpecificsFieldNumberFromModelType(type_)) {
+      UMA_HISTOGRAM_ENUMERATION("Sync.PersistedModelTypeIdMismatch",
+                                ModelTypeHistogramValue(type_));
+    }
     ClearMetadataAndResetState();
 
     // The model is still ready to sync (with the same |bridge_|) - replay
@@ -203,8 +197,9 @@ void ClientTagBasedModelTypeProcessor::ConnectIfReady() {
   }
 
   // Cache GUID verification earlier above guarantees the user is the same.
+  // TODO(https://crbug.com/959157): Use CoreAccountId instead of std::string.
   model_type_state_.set_authenticated_account_id(
-      activation_request_.authenticated_account_id);
+      activation_request_.authenticated_account_id.id);
 
   // For commit-only types, no updates are expected and hence we can consider
   // initial_sync_done(), reflecting that sync is enabled.
@@ -298,12 +293,24 @@ std::string ClientTagBasedModelTypeProcessor::TrackedAccountId() {
   return model_type_state_.authenticated_account_id();
 }
 
+std::string ClientTagBasedModelTypeProcessor::TrackedCacheGuid() {
+  // Returning non-empty here despite !IsTrackingMetadata() has weird semantics,
+  // e.g. initial updates are being fetched but we haven't received the response
+  // (i.e. prior to exercising MergeSyncData()). Let's be cautious and hide the
+  // cache GUID.
+  if (!IsTrackingMetadata()) {
+    return "";
+  }
+  return model_type_state_.cache_guid();
+}
+
 void ClientTagBasedModelTypeProcessor::ReportError(const ModelError& error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Ignore all errors after the first.
-  if (model_error_)
+  if (model_error_) {
     return;
+  }
 
   model_error_ = error;
 
@@ -316,14 +323,14 @@ void ClientTagBasedModelTypeProcessor::ReportError(const ModelError& error) {
     DisconnectSync();
   }
 
-  if (start_callback_) {
-    // Tell sync about the error instead of connecting.
-    ConnectIfReady();
-  } else if (activation_request_.error_handler) {
-    // Connecting was already initiated; just tell sync about the error instead
-    // of going through ConnectIfReady().
+  // Shouldn't connect anymore.
+  start_callback_.Reset();
+  if (activation_request_.error_handler) {
+    // Tell sync about the error.
     activation_request_.error_handler.Run(error);
   }
+  // If the error handler isn't ready yet, we defer reporting the error until it
+  // becomes available which happens in ConnectIfReady() upon OnSyncStarting().
 }
 
 base::Optional<ModelError> ClientTagBasedModelTypeProcessor::GetError() const {
@@ -367,7 +374,7 @@ void ClientTagBasedModelTypeProcessor::Put(
   DCHECK(IsAllowingChanges());
   DCHECK(data);
   DCHECK(!data->is_deleted());
-  DCHECK(!data->non_unique_name.empty());
+  DCHECK(!data->name.empty());
   DCHECK(!data->specifics.has_encrypted());
   DCHECK_EQ(type_, GetModelTypeFromSpecifics(data->specifics));
 
@@ -376,30 +383,48 @@ void ClientTagBasedModelTypeProcessor::Put(
     return;
   }
 
-  ProcessorEntityTracker* entity = GetEntityForStorageKey(storage_key);
+  ProcessorEntity* entity = GetEntityForStorageKey(storage_key);
   if (entity == nullptr) {
     // The bridge is creating a new entity. The bridge may or may not populate
     // |data->client_tag_hash|, so let's ask for the client tag if needed.
-    if (data->client_tag_hash.empty()) {
+    if (data->client_tag_hash.value().empty()) {
       data->client_tag_hash = GetClientTagHash(storage_key, *data);
     } else if (bridge_->SupportsGetClientTag()) {
       // If the Put() call already included the client tag, let's verify that
       // it's consistent with the bridge's regular GetClientTag() function (if
       // supported by the bridge).
-      DCHECK_EQ(data->client_tag_hash,
-                GenerateSyncableHash(type_, bridge_->GetClientTag(*data)));
+      DCHECK_EQ(
+          data->client_tag_hash,
+          ClientTagHash::FromUnhashed(type_, bridge_->GetClientTag(*data)));
     }
-
-    if (data->creation_time.is_null())
-      data->creation_time = base::Time::Now();
-    if (data->modification_time.is_null())
-      data->modification_time = data->creation_time;
-    entity = CreateEntity(storage_key, *data);
+    // If another entity exists for the same client_tag_hash, it could be the
+    // case that the bridge has deleted this entity but the tombstone hasn't
+    // been sent to the server yet, and the bridge is trying to re-create this
+    // entity with a new storage key. In such case, we should reuse the existing
+    // entity.
+    entity = GetEntityForTagHash(data->client_tag_hash);
+    if (entity != nullptr) {
+      DCHECK(storage_key != entity->storage_key());
+      DCHECK(entity->metadata().is_deleted());
+      // Remove the old storage key from the processor, the entity, and the
+      // corresponding metadata record.
+      storage_key_to_tag_hash_.erase(entity->storage_key());
+      metadata_change_list->ClearMetadata(entity->storage_key());
+      entity->ClearStorageKey();
+      // Populate the new storage key in the existing entity.
+      entity->SetStorageKey(storage_key);
+      storage_key_to_tag_hash_[storage_key] = data->client_tag_hash;
+    } else {
+      if (data->creation_time.is_null())
+        data->creation_time = base::Time::Now();
+      if (data->modification_time.is_null())
+        data->modification_time = data->creation_time;
+      entity = CreateEntity(storage_key, *data);
+    }
   } else if (entity->MatchesData(*data)) {
     // Ignore changes that don't actually change anything.
     UMA_HISTOGRAM_ENUMERATION("Sync.ModelTypeRedundantPut",
-                              ModelTypeToHistogramInt(type_),
-                              static_cast<int>(MODEL_TYPE_COUNT));
+                              ModelTypeHistogramValue(type_));
     return;
   }
 
@@ -420,7 +445,7 @@ void ClientTagBasedModelTypeProcessor::Delete(
     return;
   }
 
-  ProcessorEntityTracker* entity = GetEntityForStorageKey(storage_key);
+  ProcessorEntity* entity = GetEntityForStorageKey(storage_key);
   if (entity == nullptr) {
     // Missing is as good as deleted as far as the model is concerned.
     return;
@@ -438,13 +463,13 @@ void ClientTagBasedModelTypeProcessor::UpdateStorageKey(
     const EntityData& entity_data,
     const std::string& storage_key,
     MetadataChangeList* metadata_change_list) {
-  const std::string& client_tag_hash = entity_data.client_tag_hash;
-  DCHECK(!client_tag_hash.empty());
+  const ClientTagHash& client_tag_hash = entity_data.client_tag_hash;
+  DCHECK(!client_tag_hash.value().empty());
   DCHECK(!storage_key.empty());
   DCHECK(!bridge_->SupportsGetStorageKey());
   DCHECK(model_type_state_.initial_sync_done());
 
-  ProcessorEntityTracker* entity = GetEntityForTagHash(client_tag_hash);
+  ProcessorEntity* entity = GetEntityForTagHash(client_tag_hash);
   DCHECK(entity);
 
   DCHECK(entity->storage_key().empty());
@@ -472,9 +497,9 @@ void ClientTagBasedModelTypeProcessor::UntrackEntityForStorageKey(
 }
 
 void ClientTagBasedModelTypeProcessor::UntrackEntityForClientTagHash(
-    const std::string& client_tag_hash) {
+    const ClientTagHash& client_tag_hash) {
   DCHECK(model_type_state_.initial_sync_done());
-  DCHECK(!client_tag_hash.empty());
+  DCHECK(!client_tag_hash.value().empty());
   // Is a no-op if no entity for |client_tag_hash| is tracked.
   DCHECK(GetEntityForTagHash(client_tag_hash) == nullptr ||
          GetEntityForTagHash(client_tag_hash)->storage_key().empty());
@@ -483,7 +508,7 @@ void ClientTagBasedModelTypeProcessor::UntrackEntityForClientTagHash(
 
 bool ClientTagBasedModelTypeProcessor::IsEntityUnsynced(
     const std::string& storage_key) {
-  ProcessorEntityTracker* entity = GetEntityForStorageKey(storage_key);
+  ProcessorEntity* entity = GetEntityForStorageKey(storage_key);
   if (entity == nullptr) {
     return false;
   }
@@ -493,7 +518,7 @@ bool ClientTagBasedModelTypeProcessor::IsEntityUnsynced(
 
 base::Time ClientTagBasedModelTypeProcessor::GetEntityCreationTime(
     const std::string& storage_key) const {
-  const ProcessorEntityTracker* entity = GetEntityForStorageKey(storage_key);
+  const ProcessorEntity* entity = GetEntityForStorageKey(storage_key);
   if (entity == nullptr) {
     return base::Time();
   }
@@ -502,7 +527,7 @@ base::Time ClientTagBasedModelTypeProcessor::GetEntityCreationTime(
 
 base::Time ClientTagBasedModelTypeProcessor::GetEntityModificationTime(
     const std::string& storage_key) const {
-  const ProcessorEntityTracker* entity = GetEntityForStorageKey(storage_key);
+  const ProcessorEntity* entity = GetEntityForStorageKey(storage_key);
   if (entity == nullptr) {
     return base::Time();
   }
@@ -525,7 +550,7 @@ void ClientTagBasedModelTypeProcessor::NudgeForCommitIfNeeded() {
 
 bool ClientTagBasedModelTypeProcessor::HasLocalChanges() const {
   for (const auto& kv : entities_) {
-    ProcessorEntityTracker* entity = kv.second.get();
+    ProcessorEntity* entity = kv.second.get();
     if (entity->RequiresCommitRequest()) {
       return true;
     }
@@ -538,11 +563,17 @@ void ClientTagBasedModelTypeProcessor::GetLocalChanges(
     GetLocalChangesCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_GT(max_entries, 0U);
-  DCHECK(!model_error_);
+  // If there is a model error, it must have been reported already but hasn't
+  // reached the sync engine yet. In this case return directly to avoid
+  // interactions with the bridge.
+  if (model_error_) {
+    std::move(callback).Run(CommitRequestDataList());
+    return;
+  }
 
   std::vector<std::string> entities_requiring_data;
   for (const auto& kv : entities_) {
-    ProcessorEntityTracker* entity = kv.second.get();
+    ProcessorEntity* entity = kv.second.get();
     if (entity->RequiresCommitData()) {
       entities_requiring_data.push_back(entity->storage_key());
     }
@@ -578,7 +609,7 @@ void ClientTagBasedModelTypeProcessor::OnCommitCompleted(
   metadata_change_list->UpdateModelTypeState(model_type_state_);
 
   for (const CommitResponseData& data : response_list) {
-    ProcessorEntityTracker* entity = GetEntityForTagHash(data.client_tag_hash);
+    ProcessorEntity* entity = GetEntityForTagHash(data.client_tag_hash);
     if (entity == nullptr) {
       NOTREACHED() << "Received commit response for missing item."
                    << " type: " << ModelTypeToString(type_)
@@ -586,7 +617,7 @@ void ClientTagBasedModelTypeProcessor::OnCommitCompleted(
       continue;
     }
 
-    entity->ReceiveCommitResponse(data, commit_only_);
+    entity->ReceiveCommitResponse(data, commit_only_, type_);
 
     if (commit_only_) {
       if (!entity->IsUnsynced()) {
@@ -620,33 +651,29 @@ void ClientTagBasedModelTypeProcessor::OnCommitCompleted(
   }
 
   base::Optional<ModelError> error = bridge_->ApplySyncChanges(
-      std::move(metadata_change_list), entity_change_list);
+      std::move(metadata_change_list), std::move(entity_change_list));
   if (error) {
     ReportError(*error);
   }
 }
 
-// Returns an updates list that has client tag hashes populated for every
-// update entity.
-UpdateResponseDataList PopulateClientTagsForWalletData(
-    const ModelType& type,
-    ModelTypeSyncBridge* bridge,
-    const UpdateResponseDataList& updates) {
+// Populates the client tag hashes for every update entity in |updates|.
+void PopulateClientTagsForWalletData(const ModelType& type,
+                                     ModelTypeSyncBridge* bridge,
+                                     UpdateResponseDataList* updates) {
   DCHECK(bridge->SupportsGetClientTag());
   UpdateResponseDataList updates_with_client_tags;
-  for (const UpdateResponseData& update : updates) {
-    if (update.entity->parent_id == "0") {
+  for (std::unique_ptr<UpdateResponseData>& update : *updates) {
+    DCHECK(update);
+    if (update->entity->parent_id == "0") {
       // Ignore the permanent root node. Other places in this file detect them
       // by having empty client tags; this cannot be used for wallet_data as no
       // wallet_data entity has a client tag.
       continue;
     }
-    updates_with_client_tags.push_back(update);
-    updates_with_client_tags.back().entity =
-        update.entity->UpdateClientTagHash(GenerateSyncableHash(
-            type, bridge->GetClientTag(update.entity.value())));
+    update->entity->client_tag_hash = ClientTagHash::FromUnhashed(
+        type, bridge->GetClientTag(*update->entity));
   }
-  return updates_with_client_tags;
 }
 
 // Returns whether the state has a version_watermark based GC directive, which
@@ -659,7 +686,7 @@ bool HasClearAllDirective(const sync_pb::ModelTypeState& model_type_state) {
 
 void ClientTagBasedModelTypeProcessor::OnUpdateReceived(
     const sync_pb::ModelTypeState& model_type_state,
-    const UpdateResponseDataList& updates) {
+    UpdateResponseDataList updates) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(model_ready_to_sync_);
   DCHECK(!model_error_);
@@ -667,9 +694,6 @@ void ClientTagBasedModelTypeProcessor::OnUpdateReceived(
   if (!ValidateUpdate(model_type_state, updates)) {
     return;
   }
-
-  const UpdateResponseDataList* updates_to_process = &updates;
-  UpdateResponseDataList pre_processed_updates;
 
   if (type_ == AUTOFILL_WALLET_DATA) {
     // The client tag based processor requires client tags to function properly.
@@ -679,9 +703,7 @@ void ClientTagBasedModelTypeProcessor::OnUpdateReceived(
     // fully use client tags, or to use a different processor.
     // TODO(crbug.com/874001): Remove this feature-specific logic when the right
     // solution for Wallet data has been decided.
-    pre_processed_updates =
-        PopulateClientTagsForWalletData(type_, bridge_, updates);
-    updates_to_process = &pre_processed_updates;
+    PopulateClientTagsForWalletData(type_, bridge_, &updates);
   }
 
   base::Optional<ModelError> error;
@@ -695,10 +717,9 @@ void ClientTagBasedModelTypeProcessor::OnUpdateReceived(
   // has.
   bool is_initial_sync = !model_type_state_.initial_sync_done();
   if (is_initial_sync || HasClearAllDirective(model_type_state)) {
-    error = OnFullUpdateReceived(model_type_state, *updates_to_process);
+    error = OnFullUpdateReceived(model_type_state, std::move(updates));
   } else {
-    error = OnIncrementalUpdateReceived(model_type_state, *updates_to_process);
-    ExpireEntriesIfNeeded(model_type_state.progress_marker());
+    error = OnIncrementalUpdateReceived(model_type_state, std::move(updates));
   }
 
   if (error) {
@@ -706,48 +727,52 @@ void ClientTagBasedModelTypeProcessor::OnUpdateReceived(
     return;
   }
 
-  if (is_initial_sync &&
-      activation_request_.storage_option == STORAGE_IN_MEMORY) {
+  if (is_initial_sync) {
     base::TimeDelta configuration_duration =
         base::Time::Now() - activation_request_.configuration_start_time;
     base::UmaHistogramCustomTimes(
-        base::StringPrintf("Sync.ModelTypeConfigurationTime.Ephemeral.%s",
-                           ModelTypeToHistogramSuffix(type_)),
+        base::StringPrintf(
+            "Sync.ModelTypeConfigurationTime.%s.%s",
+            (activation_request_.sync_mode == SyncMode::kTransportOnly)
+                ? "Ephemeral"
+                : "Persistent",
+            ModelTypeToHistogramSuffix(type_)),
         configuration_duration,
         /*min=*/base::TimeDelta::FromMilliseconds(1),
         /*min=*/base::TimeDelta::FromSeconds(60),
         /*buckets=*/50);
   }
 
-  // If there were trackers with empty storage keys, they should have been
+  // If there were entities with empty storage keys, they should have been
   // updated by bridge as part of ApplySyncChanges.
   DCHECK(AllStorageKeysPopulated());
   // There may be new reasons to commit by the time this function is done.
   NudgeForCommitIfNeeded();
 }
 
-ProcessorEntityTracker* ClientTagBasedModelTypeProcessor::ProcessUpdate(
-    const UpdateResponseData& update,
-    EntityChangeList* entity_changes) {
-  const EntityData& data = update.entity.value();
-  const std::string& client_tag_hash = data.client_tag_hash;
+ProcessorEntity* ClientTagBasedModelTypeProcessor::ProcessUpdate(
+    std::unique_ptr<UpdateResponseData> update,
+    EntityChangeList* entity_changes,
+    std::string* storage_key_to_clear) {
+  const EntityData& data = *update->entity;
+  const ClientTagHash& client_tag_hash = data.client_tag_hash;
 
   // Filter out updates without a client tag hash (including permanent nodes,
   // which have server tags instead).
-  if (client_tag_hash.empty()) {
+  if (client_tag_hash.value().empty()) {
     return nullptr;
   }
 
   // Filter out unexpected client tag hashes.
   if (!data.is_deleted() && bridge_->SupportsGetClientTag() &&
       client_tag_hash !=
-          GenerateSyncableHash(type_, bridge_->GetClientTag(data))) {
+          ClientTagHash::FromUnhashed(type_, bridge_->GetClientTag(data))) {
     DLOG(WARNING) << "Received unexpected client tag hash: " << client_tag_hash
                   << " for " << ModelTypeToString(type_);
     return nullptr;
   }
 
-  ProcessorEntityTracker* entity = GetEntityForTagHash(client_tag_hash);
+  ProcessorEntity* entity = GetEntityForTagHash(client_tag_hash);
 
   // Handle corner cases first.
   if (entity == nullptr && data.is_deleted()) {
@@ -759,130 +784,147 @@ ProcessorEntityTracker* ClientTagBasedModelTypeProcessor::ProcessUpdate(
   }
 
   if (entity) {
-    entity->RecordEntityUpdateLatency(update.response_version, type_);
+    entity->RecordEntityUpdateLatency(update->response_version, type_);
   }
 
-  if (entity && entity->UpdateIsReflection(update.response_version)) {
+  if (entity && entity->UpdateIsReflection(update->response_version)) {
     // Seen this update before; just ignore it.
     return nullptr;
   }
 
+  // Cache update encryption key name in case |update| will be moved away into
+  // ResolveConflict().
+  const std::string update_encryption_key_name = update->encryption_key_name;
+  ConflictResolution resolution_type = ConflictResolution::kTypeSize;
   if (entity && entity->IsUnsynced()) {
     // Handle conflict resolution.
-    ConflictResolution::Type resolution_type =
-        ResolveConflict(update, entity, entity_changes);
+    resolution_type = ResolveConflict(std::move(update), entity, entity_changes,
+                                      storage_key_to_clear);
     UMA_HISTOGRAM_ENUMERATION("Sync.ResolveConflict", resolution_type,
-                              ConflictResolution::TYPE_SIZE);
+                              ConflictResolution::kTypeSize);
   } else {
     // Handle simple create/delete/update.
+    base::Optional<EntityChange::ChangeType> change_type;
+
     if (entity == nullptr) {
       entity = CreateEntity(data);
-      entity_changes->push_back(
-          EntityChange::CreateAdd(entity->storage_key(), update.entity));
+      change_type = EntityChange::ACTION_ADD;
     } else if (data.is_deleted()) {
-      // The entity was deleted; inform the bridge. Note that the local data
-      // can never be deleted at this point because it would have either been
-      // acked (the add case) or pending (the conflict case).
       DCHECK(!entity->metadata().is_deleted());
-      entity_changes->push_back(
-          EntityChange::CreateDelete(entity->storage_key()));
+      change_type = EntityChange::ACTION_DELETE;
     } else if (!entity->MatchesData(data)) {
-      // Specifics have changed, so update the bridge.
-      entity_changes->push_back(
-          EntityChange::CreateUpdate(entity->storage_key(), update.entity));
+      change_type = EntityChange::ACTION_UPDATE;
     }
-    entity->RecordAcceptedUpdate(update);
+    entity->RecordAcceptedUpdate(*update);
+    // Inform the bridge about the changes if needed.
+    if (change_type) {
+      switch (change_type.value()) {
+        case EntityChange::ACTION_ADD:
+          entity_changes->push_back(EntityChange::CreateAdd(
+              entity->storage_key(), std::move(update->entity)));
+          break;
+        case EntityChange::ACTION_DELETE:
+          // The entity was deleted; inform the bridge. Note that the local data
+          // can never be deleted at this point because it would have either
+          // been acked (the add case) or pending (the conflict case).
+          entity_changes->push_back(
+              EntityChange::CreateDelete(entity->storage_key()));
+          break;
+        case EntityChange::ACTION_UPDATE:
+          // Specifics have changed, so update the bridge.
+          entity_changes->push_back(EntityChange::CreateUpdate(
+              entity->storage_key(), std::move(update->entity)));
+          break;
+      }
+    }
   }
 
   // If the received entity has out of date encryption, we schedule another
   // commit to fix it.
-  if (model_type_state_.encryption_key_name() != update.encryption_key_name) {
+  if (model_type_state_.encryption_key_name() != update_encryption_key_name) {
     DVLOG(2) << ModelTypeToString(type_) << ": Requesting re-encrypt commit "
-             << update.encryption_key_name << " -> "
+             << update_encryption_key_name << " -> "
              << model_type_state_.encryption_key_name();
 
     entity->IncrementSequenceNumber(base::Time::Now());
-    if (entity->RequiresCommitData()) {
-      // If there is no pending commit data, then either this update wasn't
-      // in conflict or the remote data won; either way the remote data is
-      // the right data to re-queue for commit.
-      entity->CacheCommitData(update.entity);
-    }
   }
-
   return entity;
 }
 
-ConflictResolution::Type ClientTagBasedModelTypeProcessor::ResolveConflict(
-    const UpdateResponseData& update,
-    ProcessorEntityTracker* entity,
-    EntityChangeList* changes) {
-  const EntityData& remote_data = update.entity.value();
+ConflictResolution ClientTagBasedModelTypeProcessor::ResolveConflict(
+    std::unique_ptr<UpdateResponseData> update,
+    ProcessorEntity* entity,
+    EntityChangeList* changes,
+    std::string* storage_key_to_clear) {
+  const EntityData& remote_data = *update->entity;
 
-  ConflictResolution::Type resolution_type = ConflictResolution::TYPE_SIZE;
-  std::unique_ptr<EntityData> new_data;
+  ConflictResolution resolution_type = ConflictResolution::kTypeSize;
 
   // Determine the type of resolution.
   if (entity->MatchesData(remote_data)) {
     // The changes are identical so there isn't a real conflict.
-    resolution_type = ConflictResolution::CHANGES_MATCH;
-  } else if (entity->RequiresCommitData() ||
-             entity->MatchesBaseData(entity->commit_data().value())) {
-    // If commit data needs to be loaded at this point, it can only be due to a
-    // re-encryption request. If the commit data matches the base data, it also
-    // must be a re-encryption request. Either way there's no real local change
-    // and the remote data should win.
-    resolution_type = ConflictResolution::IGNORE_LOCAL_ENCRYPTION;
+    resolution_type = ConflictResolution::kChangesMatch;
+  } else if (entity->metadata().is_deleted()) {
+    // Local tombstone vs remote update (non-deletion). Should be undeleted.
+    resolution_type = ConflictResolution::kUseRemote;
+  } else if (entity->MatchesOwnBaseData()) {
+    // If there is no real local change, then the entity must be unsynced due to
+    // a pending local re-encryption request. In this case, the remote data
+    // should win.
+    resolution_type = ConflictResolution::kIgnoreLocalEncryption;
   } else if (entity->MatchesBaseData(remote_data)) {
     // The remote data isn't actually changing from the last remote data that
     // was seen, so it must have been a re-encryption and can be ignored.
-    resolution_type = ConflictResolution::IGNORE_REMOTE_ENCRYPTION;
+    resolution_type = ConflictResolution::kIgnoreRemoteEncryption;
   } else {
     // There's a real data conflict here; let the bridge resolve it.
-    ConflictResolution resolution =
-        bridge_->ResolveConflict(entity->commit_data().value(), remote_data);
-    resolution_type = resolution.type();
-    new_data = resolution.ExtractData();
+    resolution_type =
+        bridge_->ResolveConflict(entity->storage_key(), remote_data);
   }
 
   // Apply the resolution.
   switch (resolution_type) {
-    case ConflictResolution::CHANGES_MATCH:
+    case ConflictResolution::kChangesMatch:
       // Record the update and squash the pending commit.
-      entity->RecordForcedUpdate(update);
+      entity->RecordForcedUpdate(*update);
       break;
-    case ConflictResolution::USE_LOCAL:
-    case ConflictResolution::IGNORE_REMOTE_ENCRYPTION:
+    case ConflictResolution::kUseLocal:
+    case ConflictResolution::kIgnoreRemoteEncryption:
       // Record that we received the update from the server but leave the
       // pending commit intact.
-      entity->RecordIgnoredUpdate(update);
+      entity->RecordIgnoredUpdate(*update);
       break;
-    case ConflictResolution::USE_REMOTE:
-    case ConflictResolution::IGNORE_LOCAL_ENCRYPTION:
-      // Squash the pending commit.
-      entity->RecordForcedUpdate(update);
+    case ConflictResolution::kUseRemote:
+    case ConflictResolution::kIgnoreLocalEncryption:
       // Update client data to match server.
-      if (update.entity->is_deleted()) {
+      if (update->entity->is_deleted()) {
+        DCHECK(!entity->metadata().is_deleted());
+        // Squash the pending commit.
+        entity->RecordForcedUpdate(*update);
         changes->push_back(EntityChange::CreateDelete(entity->storage_key()));
+      } else if (!entity->metadata().is_deleted()) {
+        // Squash the pending commit.
+        entity->RecordForcedUpdate(*update);
+        changes->push_back(EntityChange::CreateUpdate(
+            entity->storage_key(), std::move(update->entity)));
       } else {
-        changes->push_back(
-            EntityChange::CreateUpdate(entity->storage_key(), update.entity));
+        // Remote undeletion. This could imply a new storage key for some
+        // bridges, so we may need to wait until UpdateStorageKey() is called.
+        if (!bridge_->SupportsGetStorageKey()) {
+          *storage_key_to_clear = entity->storage_key();
+          entity->ClearStorageKey();
+        }
+        // Squash the pending commit.
+        entity->RecordForcedUpdate(*update);
+        changes->push_back(EntityChange::CreateAdd(entity->storage_key(),
+                                                   std::move(update->entity)));
       }
       break;
-    case ConflictResolution::USE_NEW:
-      // Record that we received the update.
-      entity->RecordIgnoredUpdate(update);
-      // Make a new pending commit to update the server.
-      entity->MakeLocalChange(std::move(new_data));
-      // Update the client with the new entity.
-      changes->push_back(EntityChange::CreateUpdate(entity->storage_key(),
-                                                    entity->commit_data()));
-      break;
-    case ConflictResolution::TYPE_SIZE:
+    case ConflictResolution::kUseNewDEPRECATED:
+    case ConflictResolution::kTypeSize:
       NOTREACHED();
       break;
   }
-  DCHECK(!new_data);
 
   return resolution_type;
 }
@@ -893,7 +935,7 @@ void ClientTagBasedModelTypeProcessor::RecommitAllForEncryption(
   ModelTypeSyncBridge::StorageKeyList entities_needing_data;
 
   for (const auto& kv : entities_) {
-    ProcessorEntityTracker* entity = kv.second.get();
+    ProcessorEntity* entity = kv.second.get();
     if (entity->storage_key().empty() ||
         (already_updated.find(entity->storage_key()) !=
          already_updated.end())) {
@@ -948,7 +990,7 @@ bool ClientTagBasedModelTypeProcessor::ValidateUpdate(
 base::Optional<ModelError>
 ClientTagBasedModelTypeProcessor::OnFullUpdateReceived(
     const sync_pb::ModelTypeState& model_type_state,
-    const UpdateResponseDataList& updates) {
+    UpdateResponseDataList updates) {
   std::unique_ptr<MetadataChangeList> metadata_changes =
       bridge_->CreateMetadataChangeList();
   DCHECK(model_ready_to_sync_);
@@ -974,22 +1016,22 @@ ClientTagBasedModelTypeProcessor::OnFullUpdateReceived(
   model_type_state_ = model_type_state;
   metadata_changes->UpdateModelTypeState(model_type_state_);
 
-  for (const UpdateResponseData& update : updates) {
-    const std::string& client_tag_hash = update.entity->client_tag_hash;
-    if (client_tag_hash.empty()) {
+  for (const std::unique_ptr<syncer::UpdateResponseData>& update : updates) {
+    DCHECK(update);
+    const ClientTagHash& client_tag_hash = update->entity->client_tag_hash;
+    if (client_tag_hash.value().empty()) {
       // Ignore updates missing a client tag hash (e.g. permanent nodes).
       continue;
     }
-    if (update.entity->is_deleted()) {
+    if (update->entity->is_deleted()) {
       DLOG(WARNING) << "Ignoring tombstone found during initial update: "
                     << "client_tag_hash = " << client_tag_hash << " for "
                     << ModelTypeToString(type_);
       continue;
     }
     if (bridge_->SupportsGetClientTag() &&
-        client_tag_hash !=
-            GenerateSyncableHash(
-                type_, bridge_->GetClientTag(update.entity.value()))) {
+        client_tag_hash != ClientTagHash::FromUnhashed(
+                               type_, bridge_->GetClientTag(*update->entity))) {
       DLOG(WARNING) << "Received unexpected client tag hash: "
                     << client_tag_hash << " for " << ModelTypeToString(type_);
       continue;
@@ -1004,24 +1046,25 @@ ClientTagBasedModelTypeProcessor::OnFullUpdateReceived(
                   << " for " << ModelTypeToString(type_);
     }
 #endif  // DCHECK_IS_ON()
-    ProcessorEntityTracker* entity = CreateEntity(update.entity.value());
-    entity->RecordAcceptedUpdate(update);
+    ProcessorEntity* entity = CreateEntity(*update->entity);
+    entity->RecordAcceptedUpdate(*update);
     const std::string& storage_key = entity->storage_key();
-    entity_data.push_back(EntityChange::CreateAdd(storage_key, update.entity));
+    entity_data.push_back(
+        EntityChange::CreateAdd(storage_key, std::move(update->entity)));
     if (!storage_key.empty())
       metadata_changes->UpdateMetadata(storage_key, entity->metadata());
   }
 
   // Let the bridge handle associating and merging the data.
-  base::Optional<ModelError> error =
-      bridge_->MergeSyncData(std::move(metadata_changes), entity_data);
+  base::Optional<ModelError> error = bridge_->MergeSyncData(
+      std::move(metadata_changes), std::move(entity_data));
   return error;
 }
 
 base::Optional<ModelError>
 ClientTagBasedModelTypeProcessor::OnIncrementalUpdateReceived(
     const sync_pb::ModelTypeState& model_type_state,
-    const UpdateResponseDataList& updates) {
+    UpdateResponseDataList updates) {
   DCHECK(model_ready_to_sync_);
   DCHECK(model_type_state.initial_sync_done());
 
@@ -1040,8 +1083,11 @@ ClientTagBasedModelTypeProcessor::OnIncrementalUpdateReceived(
   // re-encryption phase at the end.
   std::unordered_set<std::string> already_updated;
 
-  for (const UpdateResponseData& update : updates) {
-    ProcessorEntityTracker* entity = ProcessUpdate(update, &entity_changes);
+  for (std::unique_ptr<syncer::UpdateResponseData>& update : updates) {
+    DCHECK(update);
+    std::string storage_key_to_clear;
+    ProcessorEntity* entity = ProcessUpdate(std::move(update), &entity_changes,
+                                            &storage_key_to_clear);
 
     if (!entity) {
       // The update is either of the following:
@@ -1060,12 +1106,24 @@ ClientTagBasedModelTypeProcessor::OnIncrementalUpdateReceived(
     if (entity->storage_key().empty()) {
       // Storage key of this entity is not known yet. Don't update metadata, it
       // will be done from UpdateStorageKey.
+
+      // If this is the result of a conflict resolution (where a remote
+      // undeletion was preferred), then need to clear a metadata entry from
+      // the database.
+      if (!storage_key_to_clear.empty()) {
+        metadata_changes->ClearMetadata(storage_key_to_clear);
+        storage_key_to_tag_hash_.erase(storage_key_to_clear);
+      }
       continue;
     }
+
+    DCHECK(storage_key_to_clear.empty());
+
     if (entity->CanClearMetadata()) {
       metadata_changes->ClearMetadata(entity->storage_key());
       storage_key_to_tag_hash_.erase(entity->storage_key());
-      entities_.erase(entity->metadata().client_tag_hash());
+      entities_.erase(
+          ClientTagHash::FromHashed(entity->metadata().client_tag_hash()));
     } else {
       metadata_changes->UpdateMetadata(entity->storage_key(),
                                        entity->metadata());
@@ -1112,19 +1170,19 @@ void ClientTagBasedModelTypeProcessor::ConsumeDataBatch(
     const std::string& storage_key = data.first;
 
     storage_keys_to_load.erase(storage_key);
-    ProcessorEntityTracker* entity = GetEntityForStorageKey(storage_key);
+    ProcessorEntity* entity = GetEntityForStorageKey(storage_key);
     // If the entity wasn't deleted or updated with new commit.
     if (entity != nullptr && entity->RequiresCommitData()) {
       // SetCommitData will update EntityData's fields with values from
       // metadata.
-      entity->SetCommitData(data.second.get());
+      entity->SetCommitData(std::move(data.second));
     }
   }
 
   // Detect failed loads that shouldn't have failed.
   std::vector<std::string> storage_keys_to_untrack;
   for (const std::string& storage_key : storage_keys_to_load) {
-    ProcessorEntityTracker* entity = GetEntityForStorageKey(storage_key);
+    ProcessorEntity* entity = GetEntityForStorageKey(storage_key);
     if (entity == nullptr || entity->metadata().is_deleted()) {
       // Skip entities that are not tracked any more or already marked for
       // deletion.
@@ -1137,8 +1195,7 @@ void ClientTagBasedModelTypeProcessor::ConsumeDataBatch(
     // had been called.
     storage_keys_to_untrack.push_back(storage_key);
     UMA_HISTOGRAM_ENUMERATION("Sync.ModelTypeOrphanMetadata",
-                              ModelTypeToHistogramInt(type_),
-                              static_cast<int>(MODEL_TYPE_COUNT));
+                              ModelTypeHistogramValue(type_));
   }
 
   if (storage_keys_to_untrack.empty()) {
@@ -1166,11 +1223,11 @@ void ClientTagBasedModelTypeProcessor::CommitLocalChanges(
   CommitRequestDataList commit_requests;
   // TODO(rlarocque): Do something smarter than iterate here.
   for (const auto& kv : entities_) {
-    ProcessorEntityTracker* entity = kv.second.get();
+    ProcessorEntity* entity = kv.second.get();
     if (entity->RequiresCommitRequest() && !entity->RequiresCommitData()) {
-      CommitRequestData request;
-      entity->InitializeCommitRequestData(&request);
-      commit_requests.push_back(request);
+      auto request = std::make_unique<CommitRequestData>();
+      entity->InitializeCommitRequestData(request.get());
+      commit_requests.push_back(std::move(request));
       if (commit_requests.size() >= max_entries) {
         break;
       }
@@ -1179,18 +1236,17 @@ void ClientTagBasedModelTypeProcessor::CommitLocalChanges(
   std::move(callback).Run(std::move(commit_requests));
 }
 
-std::string ClientTagBasedModelTypeProcessor::GetClientTagHash(
+ClientTagHash ClientTagBasedModelTypeProcessor::GetClientTagHash(
     const std::string& storage_key,
     const EntityData& data) const {
   auto iter = storage_key_to_tag_hash_.find(storage_key);
   DCHECK(bridge_->SupportsGetClientTag());
   return iter == storage_key_to_tag_hash_.end()
-             ? GenerateSyncableHash(type_, bridge_->GetClientTag(data))
+             ? ClientTagHash::FromUnhashed(type_, bridge_->GetClientTag(data))
              : iter->second;
 }
 
-ProcessorEntityTracker*
-ClientTagBasedModelTypeProcessor::GetEntityForStorageKey(
+ProcessorEntity* ClientTagBasedModelTypeProcessor::GetEntityForStorageKey(
     const std::string& storage_key) {
   auto iter = storage_key_to_tag_hash_.find(storage_key);
   return iter == storage_key_to_tag_hash_.end()
@@ -1198,8 +1254,7 @@ ClientTagBasedModelTypeProcessor::GetEntityForStorageKey(
              : GetEntityForTagHash(iter->second);
 }
 
-const ProcessorEntityTracker*
-ClientTagBasedModelTypeProcessor::GetEntityForStorageKey(
+const ProcessorEntity* ClientTagBasedModelTypeProcessor::GetEntityForStorageKey(
     const std::string& storage_key) const {
   auto iter = storage_key_to_tag_hash_.find(storage_key);
   return iter == storage_key_to_tag_hash_.end()
@@ -1207,42 +1262,40 @@ ClientTagBasedModelTypeProcessor::GetEntityForStorageKey(
              : GetEntityForTagHash(iter->second);
 }
 
-ProcessorEntityTracker* ClientTagBasedModelTypeProcessor::GetEntityForTagHash(
-    const std::string& tag_hash) {
+ProcessorEntity* ClientTagBasedModelTypeProcessor::GetEntityForTagHash(
+    const ClientTagHash& tag_hash) {
   auto it = entities_.find(tag_hash);
   return it != entities_.end() ? it->second.get() : nullptr;
 }
 
-const ProcessorEntityTracker*
-ClientTagBasedModelTypeProcessor::GetEntityForTagHash(
-    const std::string& tag_hash) const {
+const ProcessorEntity* ClientTagBasedModelTypeProcessor::GetEntityForTagHash(
+    const ClientTagHash& tag_hash) const {
   auto it = entities_.find(tag_hash);
   return it != entities_.end() ? it->second.get() : nullptr;
 }
 
-ProcessorEntityTracker* ClientTagBasedModelTypeProcessor::CreateEntity(
+ProcessorEntity* ClientTagBasedModelTypeProcessor::CreateEntity(
     const std::string& storage_key,
     const EntityData& data) {
-  DCHECK(!data.client_tag_hash.empty());
+  DCHECK(!data.client_tag_hash.value().empty());
   DCHECK(entities_.find(data.client_tag_hash) == entities_.end());
   DCHECK(!bridge_->SupportsGetStorageKey() || !storage_key.empty());
   DCHECK(storage_key.empty() || storage_key_to_tag_hash_.find(storage_key) ==
                                     storage_key_to_tag_hash_.end());
-  std::unique_ptr<ProcessorEntityTracker> entity =
-      ProcessorEntityTracker::CreateNew(storage_key, data.client_tag_hash,
-                                        data.id, data.creation_time);
-  ProcessorEntityTracker* entity_ptr = entity.get();
+  std::unique_ptr<ProcessorEntity> entity = ProcessorEntity::CreateNew(
+      storage_key, data.client_tag_hash, data.id, data.creation_time);
+  ProcessorEntity* entity_ptr = entity.get();
   entities_[data.client_tag_hash] = std::move(entity);
   if (!storage_key.empty())
     storage_key_to_tag_hash_[storage_key] = data.client_tag_hash;
   return entity_ptr;
 }
 
-ProcessorEntityTracker* ClientTagBasedModelTypeProcessor::CreateEntity(
+ProcessorEntity* ClientTagBasedModelTypeProcessor::CreateEntity(
     const EntityData& data) {
   if (bridge_->SupportsGetClientTag()) {
     DCHECK_EQ(data.client_tag_hash,
-              GenerateSyncableHash(type_, bridge_->GetClientTag(data)));
+              ClientTagHash::FromUnhashed(type_, bridge_->GetClientTag(data)));
   }
   std::string storage_key;
   if (bridge_->SupportsGetStorageKey())
@@ -1252,7 +1305,7 @@ ProcessorEntityTracker* ClientTagBasedModelTypeProcessor::CreateEntity(
 
 bool ClientTagBasedModelTypeProcessor::AllStorageKeysPopulated() const {
   for (const auto& kv : entities_) {
-    ProcessorEntityTracker* entity = kv.second.get();
+    ProcessorEntity* entity = kv.second.get();
     if (entity->storage_key().empty())
       return false;
   }
@@ -1284,133 +1337,41 @@ bool ClientTagBasedModelTypeProcessor::IsModelReadyToSyncForTest() const {
   return model_ready_to_sync_;
 }
 
-void ClientTagBasedModelTypeProcessor::ExpireEntriesIfNeeded(
-    const sync_pb::DataTypeProgressMarker& progress_marker) {
-  if (!progress_marker.has_gc_directive())
-    return;
-
-  const sync_pb::GarbageCollectionDirective& new_gc_directive =
-      progress_marker.gc_directive();
-  std::unique_ptr<MetadataChangeList> metadata_changes =
-      bridge_->CreateMetadataChangeList();
-  bool has_expired_changes = false;
-
-  if (new_gc_directive.has_age_watermark_in_days()) {
-    DCHECK(new_gc_directive.age_watermark_in_days());
-    // For saving resource purpose(ex. cpu, battery), We round up garbage
-    // collection age to day, so we only run GC once a day if server did not
-    // change the |age_watermark_in_days|.
-    base::Time to_be_expired =
-        base::Time::Now().LocalMidnight() -
-        base::TimeDelta::FromDays(new_gc_directive.age_watermark_in_days());
-    if (cached_gc_directive_aged_out_day_ != to_be_expired) {
-      ExpireEntriesByAge(new_gc_directive.age_watermark_in_days(),
-                         metadata_changes.get());
-      cached_gc_directive_aged_out_day_ = to_be_expired;
-      has_expired_changes = true;
-    }
-  }
-
-  if (new_gc_directive.has_max_number_of_items()) {
-    DCHECK(new_gc_directive.max_number_of_items());
-    ExpireEntriesByItemLimit(new_gc_directive.max_number_of_items(),
-                             metadata_changes.get());
-    has_expired_changes = true;
-  }
-
-  if (has_expired_changes)
-    bridge_->ApplySyncChanges(std::move(metadata_changes), EntityChangeList());
-}
-
-void ClientTagBasedModelTypeProcessor::ClearMetadataForEntries(
-    const std::vector<std::string>& storage_key_to_be_deleted,
-    MetadataChangeList* metadata_changes) {
-  for (const std::string& key : storage_key_to_be_deleted) {
-    metadata_changes->ClearMetadata(key);
-    auto iter = storage_key_to_tag_hash_.find(key);
-    DCHECK(iter != storage_key_to_tag_hash_.end());
-    entities_.erase(iter->second);
-    storage_key_to_tag_hash_.erase(key);
-  }
-}
-
 void ClientTagBasedModelTypeProcessor::ExpireAllEntries(
     MetadataChangeList* metadata_changes) {
   DCHECK(metadata_changes);
 
   std::vector<std::string> storage_key_to_be_deleted;
   for (const auto& kv : entities_) {
-    ProcessorEntityTracker* entity = kv.second.get();
+    ProcessorEntity* entity = kv.second.get();
     if (!entity->IsUnsynced()) {
       storage_key_to_be_deleted.push_back(entity->storage_key());
     }
   }
 
-  ClearMetadataForEntries(storage_key_to_be_deleted, metadata_changes);
-}
-
-void ClientTagBasedModelTypeProcessor::ExpireEntriesByAge(
-    int32_t age_watermark_in_days,
-    MetadataChangeList* metadata_changes) {
-  DCHECK(metadata_changes);
-
-  base::Time to_be_expired =
-      base::Time::Now() - base::TimeDelta::FromDays(age_watermark_in_days);
-  std::vector<std::string> storage_key_to_be_deleted;
-  for (const auto& kv : entities_) {
-    ProcessorEntityTracker* entity = kv.second.get();
-    if (!entity->IsUnsynced() &&
-        ProtoTimeToTime(entity->metadata().modification_time()) <=
-            to_be_expired) {
-      storage_key_to_be_deleted.push_back(entity->storage_key());
-    }
+  // Delete selected keys while not iterating over |entities_|.
+  for (const std::string& key : storage_key_to_be_deleted) {
+    metadata_changes->ClearMetadata(key);
+    auto iter = storage_key_to_tag_hash_.find(key);
+    DCHECK(iter != storage_key_to_tag_hash_.end());
+    entities_.erase(iter->second);
+    storage_key_to_tag_hash_.erase(iter);
   }
-
-  ClearMetadataForEntries(storage_key_to_be_deleted, metadata_changes);
-}
-
-void ClientTagBasedModelTypeProcessor::ExpireEntriesByItemLimit(
-    int32_t max_number_of_items,
-    MetadataChangeList* metadata_changes) {
-  DCHECK(metadata_changes);
-
-  size_t limited_number = max_number_of_items;
-  if (limited_number >= entities_.size())
-    return;
-
-  std::vector<int64_t> all_proto_times;
-  for (const auto& kv : entities_) {
-    ProcessorEntityTracker* entity = kv.second.get();
-    all_proto_times.push_back(entity->metadata().modification_time());
-  }
-  int64_t expired_proto_time = FindTheNthBigestProtoTimeStamp(
-      std::move(all_proto_times), limited_number);
-
-  std::vector<std::string> storage_key_to_be_deleted;
-  for (const auto& kv : entities_) {
-    ProcessorEntityTracker* entity = kv.second.get();
-    if (!entity->IsUnsynced() &&
-        entity->metadata().modification_time() < expired_proto_time) {
-      storage_key_to_be_deleted.push_back(entity->storage_key());
-    }
-  }
-
-  ClearMetadataForEntries(storage_key_to_be_deleted, metadata_changes);
 }
 
 void ClientTagBasedModelTypeProcessor::RemoveEntity(
-    ProcessorEntityTracker* entity,
+    ProcessorEntity* entity,
     MetadataChangeList* metadata_change_list) {
   metadata_change_list->ClearMetadata(entity->storage_key());
   storage_key_to_tag_hash_.erase(entity->storage_key());
-  entities_.erase(entity->metadata().client_tag_hash());
+  entities_.erase(
+      ClientTagHash::FromHashed(entity->metadata().client_tag_hash()));
 }
 
 void ClientTagBasedModelTypeProcessor::ResetState(
     SyncStopMetadataFate metadata_fate) {
   // This should reset all mutable fields (except for |bridge_|).
   worker_.reset();
-  cached_gc_directive_aged_out_day_ = base::Time::FromDoubleT(0);
 
   switch (metadata_fate) {
     case KEEP_METADATA:
@@ -1450,17 +1411,18 @@ void ClientTagBasedModelTypeProcessor::MergeDataWithMetadataForDebugging(
     std::unique_ptr<EntityData> data = std::move(key_and_data.second);
 
     // There is an overlap between EntityData fields from the bridge and
-    // EntityMetadata fields from the processor's entity tracker, metadata is
+    // EntityMetadata fields from the processor's entity, metadata is
     // the authoritative source of truth.
-    ProcessorEntityTracker* entity = GetEntityForStorageKey(key_and_data.first);
-    // Tracker could be null if there are some unapplied changes.
+    ProcessorEntity* entity = GetEntityForStorageKey(key_and_data.first);
+    // |entity| could be null if there are some unapplied changes.
     if (entity != nullptr) {
       const sync_pb::EntityMetadata& metadata = entity->metadata();
       // Set id value as directory, "s" means server.
       data->id = "s" + metadata.server_id();
       data->creation_time = ProtoTimeToTime(metadata.creation_time());
       data->modification_time = ProtoTimeToTime(metadata.modification_time());
-      data->client_tag_hash = metadata.client_tag_hash();
+      data->client_tag_hash =
+          ClientTagHash::FromHashed(metadata.client_tag_hash());
     }
 
     std::unique_ptr<base::DictionaryValue> node = data->ToDictionaryValue();

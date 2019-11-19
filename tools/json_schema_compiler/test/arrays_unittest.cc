@@ -14,7 +14,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "tools/json_schema_compiler/test/enums.h"
 
-using namespace test::api::arrays;
+namespace arrays = test::api::arrays;
 
 namespace {
 
@@ -54,8 +54,9 @@ TEST(JsonSchemaCompilerArrayTest, BasicArrayType) {
   {
     std::unique_ptr<base::DictionaryValue> value =
         CreateBasicArrayTypeDictionary();
-    std::unique_ptr<BasicArrayType> basic_array_type(new BasicArrayType());
-    ASSERT_TRUE(BasicArrayType::Populate(*value, basic_array_type.get()));
+    auto basic_array_type = std::make_unique<arrays::BasicArrayType>();
+    ASSERT_TRUE(
+        arrays::BasicArrayType::Populate(*value, basic_array_type.get()));
     EXPECT_TRUE(value->Equals(basic_array_type->ToValue().get()));
   }
 }
@@ -69,14 +70,16 @@ TEST(JsonSchemaCompilerArrayTest, EnumArrayReference) {
   base::DictionaryValue value;
   value.Set("types", std::move(types));
 
-  EnumArrayReference enum_array_reference;
+  arrays::EnumArrayReference enum_array_reference;
 
   // Test Populate.
-  ASSERT_TRUE(EnumArrayReference::Populate(value, &enum_array_reference));
+  ASSERT_TRUE(
+      arrays::EnumArrayReference::Populate(value, &enum_array_reference));
 
-  Enumeration expected_types[] = {ENUMERATION_ONE, ENUMERATION_TWO,
-                                  ENUMERATION_THREE};
-  EXPECT_EQ(std::vector<Enumeration>(
+  arrays::Enumeration expected_types[] = {arrays::ENUMERATION_ONE,
+                                          arrays::ENUMERATION_TWO,
+                                          arrays::ENUMERATION_THREE};
+  EXPECT_EQ(std::vector<arrays::Enumeration>(
                 expected_types, expected_types + base::size(expected_types)),
             enum_array_reference.types);
 
@@ -101,14 +104,15 @@ TEST(JsonSchemaCompilerArrayTest, EnumArrayMixed) {
   value.Set("infile_enums", std::move(infile_enums));
   value.Set("external_enums", std::move(external_enums));
 
-  EnumArrayMixed enum_array_mixed;
+  arrays::EnumArrayMixed enum_array_mixed;
 
   // Test Populate.
-  ASSERT_TRUE(EnumArrayMixed::Populate(value, &enum_array_mixed));
+  ASSERT_TRUE(arrays::EnumArrayMixed::Populate(value, &enum_array_mixed));
 
-  Enumeration expected_infile_types[] = {ENUMERATION_ONE, ENUMERATION_TWO,
-                                         ENUMERATION_THREE};
-  EXPECT_EQ(std::vector<Enumeration>(
+  arrays::Enumeration expected_infile_types[] = {arrays::ENUMERATION_ONE,
+                                                 arrays::ENUMERATION_TWO,
+                                                 arrays::ENUMERATION_THREE};
+  EXPECT_EQ(std::vector<arrays::Enumeration>(
                 expected_infile_types,
                 expected_infile_types + base::size(expected_infile_types)),
             enum_array_mixed.infile_enums);
@@ -128,10 +132,10 @@ TEST(JsonSchemaCompilerArrayTest, EnumArrayMixed) {
 
 TEST(JsonSchemaCompilerArrayTest, OptionalEnumArrayType) {
   {
-    std::vector<Enumeration> enums;
-    enums.push_back(ENUMERATION_ONE);
-    enums.push_back(ENUMERATION_TWO);
-    enums.push_back(ENUMERATION_THREE);
+    std::vector<arrays::Enumeration> enums;
+    enums.push_back(arrays::ENUMERATION_ONE);
+    enums.push_back(arrays::ENUMERATION_TWO);
+    enums.push_back(arrays::ENUMERATION_THREE);
 
     auto types = std::make_unique<base::ListValue>();
     for (size_t i = 0; i < enums.size(); ++i)
@@ -140,8 +144,9 @@ TEST(JsonSchemaCompilerArrayTest, OptionalEnumArrayType) {
     base::DictionaryValue value;
     value.Set("types", std::move(types));
 
-    OptionalEnumArrayType enum_array_type;
-    ASSERT_TRUE(OptionalEnumArrayType::Populate(value, &enum_array_type));
+    arrays::OptionalEnumArrayType enum_array_type;
+    ASSERT_TRUE(
+        arrays::OptionalEnumArrayType::Populate(value, &enum_array_type));
     EXPECT_EQ(enums, *enum_array_type.types);
   }
   {
@@ -150,8 +155,9 @@ TEST(JsonSchemaCompilerArrayTest, OptionalEnumArrayType) {
     enum_array->AppendString("invalid");
 
     value.Set("types", std::move(enum_array));
-    OptionalEnumArrayType enum_array_type;
-    ASSERT_FALSE(OptionalEnumArrayType::Populate(value, &enum_array_type));
+    arrays::OptionalEnumArrayType enum_array_type;
+    ASSERT_FALSE(
+        arrays::OptionalEnumArrayType::Populate(value, &enum_array_type));
     EXPECT_TRUE(enum_array_type.types->empty());
   }
 }
@@ -164,8 +170,8 @@ TEST(JsonSchemaCompilerArrayTest, RefArrayType) {
     ref_array->Append(CreateItemValue(2));
     ref_array->Append(CreateItemValue(3));
     value->Set("refs", std::move(ref_array));
-    auto ref_array_type = std::make_unique<RefArrayType>();
-    EXPECT_TRUE(RefArrayType::Populate(*value, ref_array_type.get()));
+    auto ref_array_type = std::make_unique<arrays::RefArrayType>();
+    EXPECT_TRUE(arrays::RefArrayType::Populate(*value, ref_array_type.get()));
     ASSERT_EQ(3u, ref_array_type->refs.size());
     EXPECT_EQ(1, ref_array_type->refs[0].val);
     EXPECT_EQ(2, ref_array_type->refs[1].val);
@@ -177,20 +183,20 @@ TEST(JsonSchemaCompilerArrayTest, RefArrayType) {
     not_ref_array->Append(CreateItemValue(1));
     not_ref_array->AppendInteger(3);
     value->Set("refs", std::move(not_ref_array));
-    auto ref_array_type = std::make_unique<RefArrayType>();
-    EXPECT_FALSE(RefArrayType::Populate(*value, ref_array_type.get()));
+    auto ref_array_type = std::make_unique<arrays::RefArrayType>();
+    EXPECT_FALSE(arrays::RefArrayType::Populate(*value, ref_array_type.get()));
   }
 }
 
 TEST(JsonSchemaCompilerArrayTest, IntegerArrayParamsCreate) {
-  std::unique_ptr<base::ListValue> params_value(new base::ListValue());
-  std::unique_ptr<base::ListValue> integer_array(new base::ListValue());
+  auto params_value = std::make_unique<base::ListValue>();
+  auto integer_array = std::make_unique<base::ListValue>();
   integer_array->AppendInteger(2);
   integer_array->AppendInteger(4);
   integer_array->AppendInteger(8);
   params_value->Append(std::move(integer_array));
-  std::unique_ptr<IntegerArray::Params> params(
-      IntegerArray::Params::Create(*params_value));
+  std::unique_ptr<arrays::IntegerArray::Params> params(
+      arrays::IntegerArray::Params::Create(*params_value));
   EXPECT_TRUE(params.get());
   ASSERT_EQ(3u, params->nums.size());
   EXPECT_EQ(2, params->nums[0]);
@@ -199,14 +205,14 @@ TEST(JsonSchemaCompilerArrayTest, IntegerArrayParamsCreate) {
 }
 
 TEST(JsonSchemaCompilerArrayTest, AnyArrayParamsCreate) {
-  std::unique_ptr<base::ListValue> params_value(new base::ListValue());
-  std::unique_ptr<base::ListValue> any_array(new base::ListValue());
+  auto params_value = std::make_unique<base::ListValue>();
+  auto any_array = std::make_unique<base::ListValue>();
   any_array->AppendInteger(1);
   any_array->AppendString("test");
   any_array->Append(CreateItemValue(2));
   params_value->Append(std::move(any_array));
-  std::unique_ptr<AnyArray::Params> params(
-      AnyArray::Params::Create(*params_value));
+  std::unique_ptr<arrays::AnyArray::Params> params(
+      arrays::AnyArray::Params::Create(*params_value));
   EXPECT_TRUE(params.get());
   ASSERT_EQ(3u, params->anys.size());
   int int_temp = 0;
@@ -215,13 +221,13 @@ TEST(JsonSchemaCompilerArrayTest, AnyArrayParamsCreate) {
 }
 
 TEST(JsonSchemaCompilerArrayTest, ObjectArrayParamsCreate) {
-  std::unique_ptr<base::ListValue> params_value(new base::ListValue());
-  std::unique_ptr<base::ListValue> item_array(new base::ListValue());
+  auto params_value = std::make_unique<base::ListValue>();
+  auto item_array = std::make_unique<base::ListValue>();
   item_array->Append(CreateItemValue(1));
   item_array->Append(CreateItemValue(2));
   params_value->Append(std::move(item_array));
-  std::unique_ptr<ObjectArray::Params> params(
-      ObjectArray::Params::Create(*params_value));
+  std::unique_ptr<arrays::ObjectArray::Params> params(
+      arrays::ObjectArray::Params::Create(*params_value));
   EXPECT_TRUE(params.get());
   ASSERT_EQ(2u, params->objects.size());
   EXPECT_EQ(1, params->objects[0].additional_properties["val"]);
@@ -229,13 +235,13 @@ TEST(JsonSchemaCompilerArrayTest, ObjectArrayParamsCreate) {
 }
 
 TEST(JsonSchemaCompilerArrayTest, RefArrayParamsCreate) {
-  std::unique_ptr<base::ListValue> params_value(new base::ListValue());
-  std::unique_ptr<base::ListValue> item_array(new base::ListValue());
+  auto params_value = std::make_unique<base::ListValue>();
+  auto item_array = std::make_unique<base::ListValue>();
   item_array->Append(CreateItemValue(1));
   item_array->Append(CreateItemValue(2));
   params_value->Append(std::move(item_array));
-  std::unique_ptr<RefArray::Params> params(
-      RefArray::Params::Create(*params_value));
+  std::unique_ptr<arrays::RefArray::Params> params(
+      arrays::RefArray::Params::Create(*params_value));
   EXPECT_TRUE(params.get());
   ASSERT_EQ(2u, params->refs.size());
   EXPECT_EQ(1, params->refs[0].val);
@@ -247,10 +253,10 @@ TEST(JsonSchemaCompilerArrayTest, ReturnIntegerArrayResultCreate) {
   integers.push_back(1);
   integers.push_back(2);
   std::unique_ptr<base::ListValue> results =
-      ReturnIntegerArray::Results::Create(integers);
+      arrays::ReturnIntegerArray::Results::Create(integers);
 
   base::ListValue expected;
-  std::unique_ptr<base::ListValue> expected_argument(new base::ListValue());
+  auto expected_argument = std::make_unique<base::ListValue>();
   expected_argument->AppendInteger(1);
   expected_argument->AppendInteger(2);
   expected.Append(std::move(expected_argument));
@@ -258,20 +264,20 @@ TEST(JsonSchemaCompilerArrayTest, ReturnIntegerArrayResultCreate) {
 }
 
 TEST(JsonSchemaCompilerArrayTest, ReturnRefArrayResultCreate) {
-  std::vector<Item> items;
-  items.push_back(Item());
-  items.push_back(Item());
+  std::vector<arrays::Item> items;
+  items.push_back(arrays::Item());
+  items.push_back(arrays::Item());
   items[0].val = 1;
   items[1].val = 2;
   std::unique_ptr<base::ListValue> results =
-      ReturnRefArray::Results::Create(items);
+      arrays::ReturnRefArray::Results::Create(items);
 
   base::ListValue expected;
-  std::unique_ptr<base::ListValue> expected_argument(new base::ListValue());
-  std::unique_ptr<base::DictionaryValue> first(new base::DictionaryValue());
+  auto expected_argument = std::make_unique<base::ListValue>();
+  auto first = std::make_unique<base::DictionaryValue>();
   first->SetInteger("val", 1);
   expected_argument->Append(std::move(first));
-  std::unique_ptr<base::DictionaryValue> second(new base::DictionaryValue());
+  auto second = std::make_unique<base::DictionaryValue>();
   second->SetInteger("val", 2);
   expected_argument->Append(std::move(second));
   expected.Append(std::move(expected_argument));

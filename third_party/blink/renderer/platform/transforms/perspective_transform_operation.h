@@ -62,11 +62,16 @@ class PLATFORM_EXPORT PerspectiveTransformOperation final
     transform.ApplyPerspective(p_);
   }
 
+  scoped_refptr<TransformOperation> Accumulate(
+      const TransformOperation& other) override;
   scoped_refptr<TransformOperation> Blend(
       const TransformOperation* from,
       double progress,
       bool blend_to_identity = false) override;
   scoped_refptr<TransformOperation> Zoom(double factor) final;
+
+  // Perspective does not, by itself, specify a 3D transform.
+  bool HasNonTrivial3DComponent() const override { return false; }
 
   PerspectiveTransformOperation(double p) : p_(p) {}
 

@@ -41,7 +41,7 @@ public class WebappDisclosureSnackbarControllerTest {
     public Resources mResources;
 
     @Before
-    public void setUp() throws InterruptedException {
+    public void setUp() {
         MockitoAnnotations.initMocks(this);
 
         doReturn("test text").when(mResources).getString(anyInt());

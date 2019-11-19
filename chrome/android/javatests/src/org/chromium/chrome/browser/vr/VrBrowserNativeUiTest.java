@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.vr.util.VrShellDelegateUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.RenderTestRule;
+import org.chromium.net.test.ServerCertificate;
 
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
@@ -44,9 +45,15 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * End-to-end tests for native UI presentation in VR Browser mode.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "enable-webvr"})
+@CommandLineFlags.
+Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "enable-features=LogJsConsoleMessages"})
 @Restriction(RESTRICTION_TYPE_VIEWER_DAYDREAM_OR_STANDALONE)
 public class VrBrowserNativeUiTest {
+    // We need to make sure the port is constant, otherwise the URL changes between test runs, which
+    // is really bad for image diff tests. There's nothing special about this port other than that
+    // it shouldn't be in use by anything.
+    private static final int SERVER_PORT = 39558;
+
     // We explicitly instantiate a rule here instead of using parameterization since this class
     // only ever runs in ChromeTabbedActivity.
     @Rule
@@ -62,7 +69,7 @@ public class VrBrowserNativeUiTest {
             VrBrowserTestFramework.getFileUrlForHtmlTestFile("test_navigation_2d_page");
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mVrBrowserTestFramework = new VrBrowserTestFramework(mVrTestRule);
         VrBrowserTransitionUtils.forceEnterVrBrowserOrFail(POLL_TIMEOUT_LONG_MS);
     }
@@ -72,8 +79,7 @@ public class VrBrowserNativeUiTest {
      */
     @Test
     @MediumTest
-    public void testUrlOnNativeUi()
-            throws IllegalArgumentException, InterruptedException, TimeoutException {
+    public void testUrlOnNativeUi() throws IllegalArgumentException {
         for (String url : NATIVE_URLS_OF_INTEREST) {
             mVrTestRule.loadUrl(url, PAGE_LOAD_TIMEOUT_S);
             Assert.assertFalse("URL is being shown for native page " + url,
@@ -86,8 +92,7 @@ public class VrBrowserNativeUiTest {
      */
     @Test
     @MediumTest
-    public void testUrlOnNonNativeUi()
-            throws IllegalArgumentException, InterruptedException, TimeoutException {
+    public void testUrlOnNonNativeUi() throws IllegalArgumentException {
         mVrTestRule.loadUrl(TEST_PAGE_2D_URL, PAGE_LOAD_TIMEOUT_S);
         Assert.assertTrue("URL is not being show for non-native page",
                 TestVrShellDelegate.isDisplayingUrlForTesting());
@@ -99,7 +104,7 @@ public class VrBrowserNativeUiTest {
      */
     @Test
     @MediumTest
-    public void testPaymentRequest() throws InterruptedException {
+    public void testPaymentRequest() {
         // We can't request payment on file:// URLs, so use a local server.
         mVrBrowserTestFramework.loadUrlAndAwaitInitialization(
                 mVrBrowserTestFramework.getEmbeddedServerUrlForHtmlTestFile("test_payment_request"),
@@ -300,8 +305,7 @@ public class VrBrowserNativeUiTest {
     @Test
     @LargeTest
     @Feature({"Browser", "RenderTest"})
-    public void testKeyboardAppearsOnUrlBarClick()
-            throws InterruptedException, TimeoutException, IOException {
+    public void testKeyboardAppearsOnUrlBarClick() throws InterruptedException, IOException {
         NativeUiUtils.clickElementAndWaitForUiQuiescence(UserFriendlyElementName.URL, new PointF());
         // For whatever reason, the laser has a lot of random noise (not visible to an actual user)
         // when the keyboard is present on certain OS/hardware configurations (currently known to
@@ -329,32 +333,13 @@ public class VrBrowserNativeUiTest {
     @Test
     @LargeTest
     @Feature({"Browser", "RenderTest"})
-    public void testOverflowMenuAppears()
-            throws InterruptedException, TimeoutException, IOException {
+    public void testOverflowMenuAppears() throws InterruptedException, IOException {
         // TODO(https://crbug.com/930840): Remove this when the weird gradient behavior is fixed.
         mRenderTestRule.setPixelDiffThreshold(2);
         NativeUiUtils.clickElementAndWaitForUiQuiescence(
                 UserFriendlyElementName.OVERFLOW_MENU, new PointF());
         RenderTestUtils.dumpAndCompare(NativeUiUtils.FRAME_BUFFER_SUFFIX_BROWSER_UI,
                 "overflow_menu_visible_browser_ui", mRenderTestRule);
-    }
-
-    /**
-     * Tests that the page info popup appears when the security token in the URL bar is clicked.
-     */
-    @Test
-    @LargeTest
-    @Feature({"Browser", "RenderTest"})
-    public void testPageInfoAppearsOnSecurityTokenClick()
-            throws InterruptedException, TimeoutException, IOException {
-        NativeUiUtils.clickElementAndWaitForUiQuiescence(
-                UserFriendlyElementName.PAGE_INFO_BUTTON, new PointF());
-        // Workaround for https://crbug.com/893291, where the text doesn't actually show up until a
-        // bit after the element is drawn.
-        SystemClock.sleep(1000);
-        NativeUiUtils.waitForUiQuiescence();
-        RenderTestUtils.dumpAndCompare(NativeUiUtils.FRAME_BUFFER_SUFFIX_BROWSER_UI,
-                "page_info_visible_browser_ui", mRenderTestRule);
     }
 
     /**
@@ -418,7 +403,7 @@ public class VrBrowserNativeUiTest {
     @Test
     @LargeTest
     @Feature({"Browser", "RenderTest"})
-    public void testUrlBarHovering() throws InterruptedException, TimeoutException, IOException {
+    public void testUrlBarHovering() throws InterruptedException, IOException {
         testUrlBarHoveringImpl(false);
     }
 
@@ -429,14 +414,13 @@ public class VrBrowserNativeUiTest {
     @Test
     @LargeTest
     @Feature({"Browser", "RenderTest"})
-    public void testUrlBarHoveringIncognito()
-            throws InterruptedException, TimeoutException, IOException {
+    public void testUrlBarHoveringIncognito() throws InterruptedException, IOException {
         mVrBrowserTestFramework.openIncognitoTab("about:blank");
         testUrlBarHoveringImpl(true);
     }
 
     private void testUrlBarHoveringImpl(boolean incognito)
-            throws InterruptedException, TimeoutException, IOException {
+            throws InterruptedException, IOException {
         // Back button hovering doesn't do anything unless the back button is actually active. so
         // navigate to do that.
         mVrTestRule.loadUrl("chrome://version/", PAGE_LOAD_TIMEOUT_S);
@@ -468,8 +452,7 @@ public class VrBrowserNativeUiTest {
     @Test
     @LargeTest
     @Feature({"Browser", "RenderTest"})
-    public void testOverflowMenuHovering()
-            throws InterruptedException, TimeoutException, IOException {
+    public void testOverflowMenuHovering() throws InterruptedException, IOException {
         testOverflowMenuHoveringImpl(false);
     }
 
@@ -480,14 +463,13 @@ public class VrBrowserNativeUiTest {
     @Test
     @LargeTest
     @Feature({"Browser", "RenderTest"})
-    public void testOverflowMenuHoveringIncognito()
-            throws InterruptedException, TimeoutException, IOException {
+    public void testOverflowMenuHoveringIncognito() throws InterruptedException, IOException {
         mVrBrowserTestFramework.openIncognitoTab("about:blank");
         testOverflowMenuHoveringImpl(true);
     }
 
     private void testOverflowMenuHoveringImpl(boolean incognito)
-            throws InterruptedException, TimeoutException, IOException {
+            throws InterruptedException, IOException {
         // TODO(https://crbug.com/930840): Remove this when the weird gradient behavior is fixed.
         mRenderTestRule.setPixelDiffThreshold(2);
         // The forward button only has a hover state if the button is actually active, so navigate
@@ -538,8 +520,7 @@ public class VrBrowserNativeUiTest {
     @Test
     @MediumTest
     @Feature({"Browser", "RenderTest"})
-    public void testSuggestionHovering()
-            throws InterruptedException, TimeoutException, IOException {
+    public void testSuggestionHovering() throws InterruptedException, IOException {
         // Input some text to get suggestions.
         NativeUiUtils.enableMockedKeyboard();
         NativeUiUtils.clickElementAndWaitForUiQuiescence(UserFriendlyElementName.URL, new PointF());
@@ -595,19 +576,7 @@ public class VrBrowserNativeUiTest {
                 "suggestion_clicking_bottom", cropBounds, mRenderTestRule);
     }
 
-    /**
-     * Tests that scrolling while holding the reposition bar causes the content window to be
-     * resized and that the resize doesn't affect the dimensions reported to the webpage.
-     */
-    @Test
-    @MediumTest
-    @Feature({"Browser", "RenderTest"})
-    public void testScrollResizing() throws InterruptedException, TimeoutException, IOException {
-        mVrBrowserTestFramework.loadUrlAndAwaitInitialization(
-                VrBrowserTestFramework.getFileUrlForHtmlTestFile(
-                        "test_content_resizing_does_not_affect_webpage"),
-                PAGE_LOAD_TIMEOUT_S);
-        mVrBrowserTestFramework.executeStepAndWait("stepGetInitialDimensions()");
+    private void resizeContentWindowToMinimum() throws InterruptedException {
         NativeUiUtils.selectRepositionBar();
         NativeUiUtils.scrollFling(NativeUiUtils.ScrollDirection.DOWN);
         // We need to ensure that the scroll has finished, but we can't use waitForUiQuiescence()
@@ -616,6 +585,22 @@ public class VrBrowserNativeUiTest {
         NativeUiUtils.waitNumFrames(2 * NativeUiUtils.NUM_STEPS_FLING_SCROLL);
         NativeUiUtils.deselectRepositionBar();
         NativeUiUtils.waitForUiQuiescence();
+    }
+
+    /**
+     * Tests that scrolling while holding the reposition bar causes the content window to be
+     * resized and that the resize doesn't affect the dimensions reported to the webpage.
+     */
+    @Test
+    @MediumTest
+    @Feature({"Browser", "RenderTest"})
+    public void testScrollResizing() throws InterruptedException, IOException {
+        mVrBrowserTestFramework.loadUrlAndAwaitInitialization(
+                VrBrowserTestFramework.getFileUrlForHtmlTestFile(
+                        "test_content_resizing_does_not_affect_webpage"),
+                PAGE_LOAD_TIMEOUT_S);
+        mVrBrowserTestFramework.executeStepAndWait("stepGetInitialDimensions()");
+        resizeContentWindowToMinimum();
         RenderTestUtils.dumpAndCompare(
                 NativeUiUtils.FRAME_BUFFER_SUFFIX_BROWSER_UI, "scroll_resizing", mRenderTestRule);
         mVrBrowserTestFramework.executeStepAndWait("stepCheckDimensionsAfterResize()");
@@ -660,8 +645,7 @@ public class VrBrowserNativeUiTest {
     @Test
     @MediumTest
     @CommandLineFlags.Add({"enable-features=WebXR"})
-    public void testRAFsFireWhileRepositioning()
-            throws InterruptedException, TimeoutException, IOException {
+    public void testRAFsFireWhileRepositioning() {
         mVrBrowserTestFramework.loadUrlAndAwaitInitialization(
                 VrBrowserTestFramework.getFileUrlForHtmlTestFile(
                         "test_rafs_fire_while_repositioning"),
@@ -678,7 +662,7 @@ public class VrBrowserNativeUiTest {
     @MediumTest
     @Feature({"Browser", "RenderTest"})
     public void testRepositionBarDoesNotAppearWithPermissionPromptVisible()
-            throws InterruptedException, TimeoutException, IOException {
+            throws InterruptedException, IOException {
         // We don't need to actually accept the prompt, so we don't need to use the local server.
         mVrBrowserTestFramework.loadUrlAndAwaitInitialization(
                 VrBrowserTestFramework.getFileUrlForHtmlTestFile("2d_permission_page"),
@@ -698,5 +682,160 @@ public class VrBrowserNativeUiTest {
         NativeUiUtils.waitForUiQuiescence();
         RenderTestUtils.dumpAndCompare(NativeUiUtils.FRAME_BUFFER_SUFFIX_BROWSER_UI,
                 "reposition_bar_permission_prompt_open", mRenderTestRule);
+    }
+
+    /**
+     * Tests that pressing the app button on the Daydream controller exists voice input mode. This
+     * would fit better in VrBrowserControllerInputTest, but having it here allows code reuse.
+     */
+    @Test
+    @MediumTest
+    public void testAppButtonExitsVoiceInput() throws InterruptedException {
+        Runnable exitAction = () -> {
+            NativeUiUtils.clickAppButton(UserFriendlyElementName.CURRENT_POSITION, new PointF());
+        };
+        testExitVoiceInputImpl(exitAction);
+    }
+
+    /**
+     * Tests that pressing the voice input exit button exits voice input mode.
+     */
+    @Test
+    @MediumTest
+    public void testVoiceInputExitButtonExitsVoiceInput() throws InterruptedException {
+        Runnable exitAction = () -> {
+            // We have to wait a bit for the button to actually become clickable, but we can't
+            // wait of UI quiescence since the microphone icon is constantly animating. So, wait
+            // a set number of frames.
+            NativeUiUtils.waitNumFrames(30);
+            NativeUiUtils.clickElement(
+                    UserFriendlyElementName.VOICE_INPUT_CLOSE_BUTTON, new PointF());
+        };
+        testExitVoiceInputImpl(exitAction);
+    }
+
+    private void testExitVoiceInputImpl(final Runnable exitAction) throws InterruptedException {
+        NativeUiUtils.enableMockedKeyboard();
+        NativeUiUtils.performActionAndWaitForVisibilityStatus(
+                UserFriendlyElementName.OMNIBOX_VOICE_INPUT_BUTTON, true /* visible */,
+                () -> { NativeUiUtils.clickElement(UserFriendlyElementName.URL, new PointF()); });
+
+        // Input a valid URL. Wait for suggestions to appear as an indicator that text entry has
+        // completed.
+        NativeUiUtils.performActionAndWaitForVisibilityStatus(
+                UserFriendlyElementName.SUGGESTION_BOX, true /* visible */,
+                () -> { NativeUiUtils.inputString("chrome://version/"); });
+
+        // Click the voice input button and wait until we're in voice input mode.
+        NativeUiUtils.performActionAndWaitForVisibilityStatus(
+                UserFriendlyElementName.VOICE_INPUT_CLOSE_BUTTON, true /* visible */, () -> {
+                    NativeUiUtils.clickElement(
+                            UserFriendlyElementName.OMNIBOX_VOICE_INPUT_BUTTON, new PointF());
+                });
+
+        // Do whatever exit action we're testing and wait for the omnibox to come back.
+        NativeUiUtils.performActionAndWaitForVisibilityStatus(
+                UserFriendlyElementName.OMNIBOX_TEXT_FIELD, true /* visible */,
+                () -> { exitAction.run(); });
+
+        // Ensure that the omnibox text was not cleared by going to voice input by navigating.
+        NativeUiUtils.inputEnter();
+        ChromeTabUtils.waitForTabPageLoaded(
+                mVrTestRule.getActivity().getActivityTab(), "chrome://version/");
+    }
+
+    /**
+     * Tests that the voice input button is not visible if the webpage has the microphone
+     * permission.
+     */
+    @Test
+    @MediumTest
+    public void testVoiceInputUnavailableIfSiteUsingMicrophone() throws InterruptedException {
+        NativeUiUtils.enableMockedInput();
+        mVrBrowserTestFramework.loadUrlAndAwaitInitialization(
+                mVrBrowserTestFramework.getEmbeddedServerUrlForHtmlTestFile("2d_permission_page"),
+                PAGE_LOAD_TIMEOUT_S);
+        // Wait for any residual animations from navigating.
+        NativeUiUtils.waitForUiQuiescence();
+        // Display and accept the permission.
+        NativeUiUtils.performActionAndWaitForUiQuiescence(() -> {
+            NativeUiUtils.performActionAndWaitForVisibilityStatus(
+                    UserFriendlyElementName.BROWSING_DIALOG, true /* visible */, () -> {
+                        mVrBrowserTestFramework.runJavaScriptOrFail(
+                                "navigator.getUserMedia({audio: true}, onGranted, onDenied)",
+                                POLL_TIMEOUT_LONG_MS);
+                    });
+        });
+        NativeUiUtils.clickFallbackUiPositiveButton();
+        mVrBrowserTestFramework.pollJavaScriptBooleanOrFail(
+                "lastPermissionGranted === true", POLL_TIMEOUT_LONG_MS);
+
+        // Click on the URL bar, wait a for the omnibox to appear, and assert that the voice input
+        // button is not next to it like it normally is.
+        NativeUiUtils.performActionAndWaitForVisibilityStatus(
+                UserFriendlyElementName.OMNIBOX_TEXT_FIELD, true /* visible */,
+                () -> { NativeUiUtils.clickElement(UserFriendlyElementName.URL, new PointF()); });
+        NativeUiUtils.performActionAndWaitForVisibilityStatus(
+                UserFriendlyElementName.OMNIBOX_VOICE_INPUT_BUTTON, false /* visible */, () -> {});
+    }
+
+    /**
+     * Tests that the security token and page info popup look correct on HTTP sites.
+     */
+    @Test
+    @MediumTest
+    @Feature({"Browser", "RenderTest"})
+    public void testSecurityTokenOnHttp() throws InterruptedException, IOException {
+        mVrTestRule.getEmbeddedTestServerRule().setServerPort(SERVER_PORT);
+        testSecurityTokenImpl("security_token_http");
+    }
+
+    /**
+     * Tests that the security token and page info popup look correct on HTTPS sites.
+     */
+    @Test
+    @MediumTest
+    @Feature({"Browser", "RenderTest"})
+    public void testSecurityTokenOnHttps() throws InterruptedException, IOException {
+        mVrTestRule.getEmbeddedTestServerRule().setServerPort(SERVER_PORT);
+        mVrTestRule.getEmbeddedTestServerRule().setServerUsesHttps(true);
+        testSecurityTokenImpl("security_token_https");
+    }
+
+    /**
+     * Tests that the security token and page info popup look correct on HTTPS sites when the
+     * server provides a bad certificate.
+     */
+    @Test
+    @MediumTest
+    @Feature({"Browser", "RenderTest"})
+    public void testSecurityTokenOnHttpsBadCertificate() throws InterruptedException, IOException {
+        mVrTestRule.getEmbeddedTestServerRule().setServerPort(SERVER_PORT);
+        mVrTestRule.getEmbeddedTestServerRule().setServerUsesHttps(true);
+        mVrTestRule.getEmbeddedTestServerRule().setCertificateType(ServerCertificate.CERT_EXPIRED);
+        testSecurityTokenImpl("security_token_https_bad_cert");
+    }
+
+    private void testSecurityTokenImpl(String identifier) throws InterruptedException, IOException {
+        NativeUiUtils.enableMockedInput();
+        mVrTestRule.loadUrl(
+                mVrBrowserTestFramework.getEmbeddedServerUrlForHtmlTestFile("2d_permission_page"),
+                PAGE_LOAD_TIMEOUT_S);
+        // Wait for any residual animations from loading to go away.
+        NativeUiUtils.waitForUiQuiescence();
+        RenderTestUtils.dumpAndCompare(NativeUiUtils.FRAME_BUFFER_SUFFIX_BROWSER_UI,
+                identifier + "_url_bar_token", mRenderTestRule);
+        // Make the content window as small as possible to hide as much of it behind the upcoming
+        // popup. See https://crbug.com/947117.
+        // TODO(https://crbug.com/947117): Remove the resizing once the interstitials are no longer
+        // offset slightly vertically at random.
+        resizeContentWindowToMinimum();
+        NativeUiUtils.clickElementAndWaitForUiQuiescence(
+                UserFriendlyElementName.PAGE_INFO_BUTTON, new PointF());
+        // Workaround for https://crbug.com/893291, where the text doesn't actually show up until a
+        // bit after the element is drawn.
+        SystemClock.sleep(2000);
+        RenderTestUtils.dumpAndCompare(NativeUiUtils.FRAME_BUFFER_SUFFIX_BROWSER_UI,
+                identifier + "_popup", mRenderTestRule);
     }
 }

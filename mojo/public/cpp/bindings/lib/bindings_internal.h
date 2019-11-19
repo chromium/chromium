@@ -183,20 +183,20 @@ struct IsUnionDataType {
 };
 
 enum class MojomTypeCategory : uint32_t {
-  ARRAY = 1 << 0,
-  ASSOCIATED_INTERFACE = 1 << 1,
-  ASSOCIATED_INTERFACE_REQUEST = 1 << 2,
-  BOOLEAN = 1 << 3,
-  ENUM = 1 << 4,
-  HANDLE = 1 << 5,
-  INTERFACE = 1 << 6,
-  INTERFACE_REQUEST = 1 << 7,
-  MAP = 1 << 8,
+  kArray = 1 << 0,
+  kAssociatedInterface = 1 << 1,
+  kAssociatedInterfaceRequest = 1 << 2,
+  kBoolean = 1 << 3,
+  kEnum = 1 << 4,
+  kHandle = 1 << 5,
+  kInterface = 1 << 6,
+  kInterfaceRequest = 1 << 7,
+  kMap = 1 << 8,
   // POD except boolean and enum.
-  POD = 1 << 9,
-  STRING = 1 << 10,
-  STRUCT = 1 << 11,
-  UNION = 1 << 12
+  kPOD = 1 << 9,
+  kString = 1 << 10,
+  kStruct = 1 << 11,
+  kUnion = 1 << 12
 };
 
 inline constexpr MojomTypeCategory operator&(MojomTypeCategory x,
@@ -216,7 +216,7 @@ struct MojomTypeTraits {
   using Data = T;
   using DataAsArrayElement = Data;
 
-  static const MojomTypeCategory category = MojomTypeCategory::POD;
+  static const MojomTypeCategory category = MojomTypeCategory::kPOD;
 };
 
 template <typename T>
@@ -224,7 +224,7 @@ struct MojomTypeTraits<ArrayDataView<T>, false> {
   using Data = Array_Data<typename MojomTypeTraits<T>::DataAsArrayElement>;
   using DataAsArrayElement = Pointer<Data>;
 
-  static const MojomTypeCategory category = MojomTypeCategory::ARRAY;
+  static const MojomTypeCategory category = MojomTypeCategory::kArray;
 };
 
 template <typename T>
@@ -233,7 +233,7 @@ struct MojomTypeTraits<AssociatedInterfacePtrInfoDataView<T>, false> {
   using DataAsArrayElement = Data;
 
   static const MojomTypeCategory category =
-      MojomTypeCategory::ASSOCIATED_INTERFACE;
+      MojomTypeCategory::kAssociatedInterface;
 };
 
 template <typename T>
@@ -242,7 +242,7 @@ struct MojomTypeTraits<AssociatedInterfaceRequestDataView<T>, false> {
   using DataAsArrayElement = Data;
 
   static const MojomTypeCategory category =
-      MojomTypeCategory::ASSOCIATED_INTERFACE_REQUEST;
+      MojomTypeCategory::kAssociatedInterfaceRequest;
 };
 
 template <>
@@ -250,7 +250,7 @@ struct MojomTypeTraits<bool, false> {
   using Data = bool;
   using DataAsArrayElement = Data;
 
-  static const MojomTypeCategory category = MojomTypeCategory::BOOLEAN;
+  static const MojomTypeCategory category = MojomTypeCategory::kBoolean;
 };
 
 template <typename T>
@@ -258,7 +258,7 @@ struct MojomTypeTraits<T, true> {
   using Data = int32_t;
   using DataAsArrayElement = Data;
 
-  static const MojomTypeCategory category = MojomTypeCategory::ENUM;
+  static const MojomTypeCategory category = MojomTypeCategory::kEnum;
 };
 
 template <typename T>
@@ -266,7 +266,7 @@ struct MojomTypeTraits<ScopedHandleBase<T>, false> {
   using Data = Handle_Data;
   using DataAsArrayElement = Data;
 
-  static const MojomTypeCategory category = MojomTypeCategory::HANDLE;
+  static const MojomTypeCategory category = MojomTypeCategory::kHandle;
 };
 
 template <typename T>
@@ -274,7 +274,7 @@ struct MojomTypeTraits<InterfacePtrDataView<T>, false> {
   using Data = Interface_Data;
   using DataAsArrayElement = Data;
 
-  static const MojomTypeCategory category = MojomTypeCategory::INTERFACE;
+  static const MojomTypeCategory category = MojomTypeCategory::kInterface;
 };
 
 template <typename T>
@@ -283,7 +283,7 @@ struct MojomTypeTraits<InterfaceRequestDataView<T>, false> {
   using DataAsArrayElement = Data;
 
   static const MojomTypeCategory category =
-      MojomTypeCategory::INTERFACE_REQUEST;
+      MojomTypeCategory::kInterfaceRequest;
 };
 
 template <typename K, typename V>
@@ -292,7 +292,7 @@ struct MojomTypeTraits<MapDataView<K, V>, false> {
                         typename MojomTypeTraits<V>::DataAsArrayElement>;
   using DataAsArrayElement = Pointer<Data>;
 
-  static const MojomTypeCategory category = MojomTypeCategory::MAP;
+  static const MojomTypeCategory category = MojomTypeCategory::kMap;
 };
 
 template <>
@@ -300,7 +300,7 @@ struct MojomTypeTraits<StringDataView, false> {
   using Data = String_Data;
   using DataAsArrayElement = Pointer<Data>;
 
-  static const MojomTypeCategory category = MojomTypeCategory::STRING;
+  static const MojomTypeCategory category = MojomTypeCategory::kString;
 };
 
 template <typename T, MojomTypeCategory categories>

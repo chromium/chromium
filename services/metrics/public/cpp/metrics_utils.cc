@@ -26,6 +26,18 @@ int64_t GetExponentialBucketMinForUserTiming(int64_t sample) {
   return GetExponentialBucketMin(sample, 2.0);
 }
 
+int64_t GetExponentialBucketMinForCounts1000(int64_t sample) {
+  return GetExponentialBucketMin(sample, 1.15);
+}
+
+int64_t GetExponentialBucketMinForBytes(int64_t sample) {
+  return GetExponentialBucketMin(sample, 1.3);
+}
+
+int64_t GetExponentialBucketMinForBytesUnder1KB(int64_t sample) {
+  return GetExponentialBucketMin(sample, 1.15);
+}
+
 int64_t GetLinearBucketMin(int64_t sample, int32_t bucket_size) {
   DCHECK(bucket_size > 0);
   // Round down to the nearest multiple of |bucket_size| (for negative samples,

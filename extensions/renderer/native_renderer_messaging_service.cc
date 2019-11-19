@@ -7,6 +7,8 @@
 #include <map>
 #include <string>
 
+#include "base/bind.h"
+#include "base/callback.h"
 #include "base/supports_user_data.h"
 #include "content/public/common/child_process_host.h"
 #include "content/public/renderer/render_frame.h"
@@ -19,14 +21,22 @@
 #include "extensions/renderer/api_activity_logger.h"
 #include "extensions/renderer/bindings/api_binding_util.h"
 #include "extensions/renderer/bindings/get_per_context_data.h"
+#include "extensions/renderer/get_script_context.h"
 #include "extensions/renderer/ipc_message_sender.h"
 #include "extensions/renderer/message_target.h"
+#include "extensions/renderer/messaging_util.h"
 #include "extensions/renderer/native_extension_bindings_system.h"
 #include "extensions/renderer/script_context.h"
 #include "extensions/renderer/script_context_set.h"
+#include "extensions/renderer/script_context_set_iterable.h"
 #include "gin/data_object_builder.h"
 #include "gin/handle.h"
 #include "gin/per_context_data.h"
+#include "third_party/blink/public/web/web_document.h"
+#include "third_party/blink/public/web/web_local_frame.h"
+#include "third_party/blink/public/web/web_scoped_user_gesture.h"
+#include "third_party/blink/public/web/web_scoped_window_focus_allowed_indicator.h"
+#include "third_party/blink/public/web/web_user_gesture_indicator.h"
 #include "v8/include/v8.h"
 
 namespace extensions {
@@ -60,10 +70,87 @@ bool ScriptContextIsValid(ScriptContext* script_context) {
 
 NativeRendererMessagingService::NativeRendererMessagingService(
     NativeExtensionBindingsSystem* bindings_system)
-    : RendererMessagingService(bindings_system),
-      bindings_system_(bindings_system),
+    : bindings_system_(bindings_system),
       one_time_message_handler_(bindings_system) {}
 NativeRendererMessagingService::~NativeRendererMessagingService() {}
+
+void NativeRendererMessagingService::ValidateMessagePort(
+    ScriptContextSetIterable* context_set,
+    const PortId& port_id,
+    content::RenderFrame* render_frame) {
+  // TODO(devlin): In practice, |render_frame| should never be null here (unlike
+  // in other methods, where it legitimately can), but it can be in testing. It
+  // would be better to fake it somehow, but unfortunately, there's no good way
+  // to have a RenderFrame in a unittest. :(
+  int routing_id =
+      render_frame ? render_frame->GetRoutingID() : MSG_ROUTING_NONE;
+
+  bool has_port = false;
+  // The base::Unretained() below is safe since ScriptContextSet::ForEach is
+  // synchronous.
+  context_set->ForEach(
+      render_frame,
+      base::Bind(&NativeRendererMessagingService::ValidateMessagePortInContext,
+                 base::Unretained(this), port_id, &has_port));
+
+  // A reply is only sent if the port is missing, because the port is assumed to
+  // exist unless stated otherwise.
+  if (!has_port) {
+    bindings_system_->GetIPCMessageSender()->SendCloseMessagePort(
+        routing_id, port_id, false);
+  }
+}
+
+void NativeRendererMessagingService::DispatchOnConnect(
+    ScriptContextSetIterable* context_set,
+    const PortId& target_port_id,
+    const std::string& channel_name,
+    const ExtensionMsg_TabConnectionInfo& source,
+    const ExtensionMsg_ExternalConnectionInfo& info,
+    content::RenderFrame* restrict_to_render_frame) {
+  DCHECK(!target_port_id.is_opener);
+  int routing_id = restrict_to_render_frame
+                       ? restrict_to_render_frame->GetRoutingID()
+                       : MSG_ROUTING_NONE;
+  bool port_created = false;
+  context_set->ForEach(
+      info.target_id, restrict_to_render_frame,
+      base::Bind(
+          &NativeRendererMessagingService::DispatchOnConnectToScriptContext,
+          base::Unretained(this), target_port_id, channel_name, &source, info,
+          &port_created));
+  // Note: |restrict_to_render_frame| may have been deleted at this point!
+
+  IPCMessageSender* ipc_sender = bindings_system_->GetIPCMessageSender();
+  if (port_created) {
+    ipc_sender->SendOpenMessagePort(routing_id, target_port_id);
+  } else {
+    ipc_sender->SendCloseMessagePort(routing_id, target_port_id, false);
+  }
+}
+
+void NativeRendererMessagingService::DeliverMessage(
+    ScriptContextSetIterable* context_set,
+    const PortId& target_port_id,
+    const Message& message,
+    content::RenderFrame* restrict_to_render_frame) {
+  context_set->ForEach(
+      restrict_to_render_frame,
+      base::Bind(&NativeRendererMessagingService::DeliverMessageToScriptContext,
+                 base::Unretained(this), message, target_port_id));
+}
+
+void NativeRendererMessagingService::DispatchOnDisconnect(
+    ScriptContextSetIterable* context_set,
+    const PortId& port_id,
+    const std::string& error_message,
+    content::RenderFrame* restrict_to_render_frame) {
+  context_set->ForEach(
+      restrict_to_render_frame,
+      base::Bind(
+          &NativeRendererMessagingService::DispatchOnDisconnectToScriptContext,
+          base::Unretained(this), port_id, error_message));
+}
 
 gin::Handle<GinPort> NativeRendererMessagingService::Connect(
     ScriptContext* script_context,
@@ -115,8 +202,7 @@ void NativeRendererMessagingService::PostMessageToPort(
     const PortId& port_id,
     int routing_id,
     std::unique_ptr<Message> message) {
-  ScriptContext* script_context =
-      ScriptContextSet::GetContextByV8Context(context);
+  ScriptContext* script_context = GetScriptContextFromV8Context(context);
   CHECK(script_context);
   if (!ScriptContextIsValid(script_context))
     return;
@@ -128,8 +214,7 @@ void NativeRendererMessagingService::PostMessageToPort(
 void NativeRendererMessagingService::ClosePort(v8::Local<v8::Context> context,
                                                const PortId& port_id,
                                                int routing_id) {
-  ScriptContext* script_context =
-      ScriptContextSet::GetContextByV8Context(context);
+  ScriptContext* script_context = GetScriptContextFromV8Context(context);
   CHECK(script_context);
 
   MessagingPerContextData* data = GetPerContextData<MessagingPerContextData>(
@@ -167,6 +252,98 @@ bool NativeRendererMessagingService::HasPortForTesting(
   return ContextHasMessagePort(script_context, port_id);
 }
 
+void NativeRendererMessagingService::ValidateMessagePortInContext(
+    const PortId& port_id,
+    bool* has_port,
+    ScriptContext* script_context) {
+  if (*has_port)
+    return;  // Stop checking if the port was found.
+
+  // No need for |=; we know this is false right now from above.
+  *has_port = ContextHasMessagePort(script_context, port_id);
+}
+
+void NativeRendererMessagingService::DispatchOnConnectToScriptContext(
+    const PortId& target_port_id,
+    const std::string& channel_name,
+    const ExtensionMsg_TabConnectionInfo* source,
+    const ExtensionMsg_ExternalConnectionInfo& info,
+    bool* port_created,
+    ScriptContext* script_context) {
+  // If the channel was opened by this same context, ignore it. This should only
+  // happen when messages are sent to an entire process (rather than a single
+  // frame) as an optimization; otherwise the browser process filters this out.
+  if (script_context->context_id() == target_port_id.context_id)
+    return;
+
+  // First, determine the event we'll use to connect.
+  std::string target_extension_id = script_context->GetExtensionID();
+  bool is_external =
+      (info.source_endpoint.type == MessagingEndpoint::Type::kExtension ||
+       info.source_endpoint.type == MessagingEndpoint::Type::kTab) &&
+      info.source_endpoint.extension_id != target_extension_id;
+  std::string event_name;
+  if (info.source_endpoint.type == MessagingEndpoint::Type::kNativeApp) {
+    event_name = messaging_util::kOnConnectNativeEvent;
+  } else if (channel_name == messaging_util::kSendRequestChannel) {
+    event_name = is_external ? messaging_util::kOnRequestExternalEvent
+                             : messaging_util::kOnRequestEvent;
+  } else if (channel_name == messaging_util::kSendMessageChannel) {
+    event_name = is_external ? messaging_util::kOnMessageExternalEvent
+                             : messaging_util::kOnMessageEvent;
+  } else {
+    event_name = is_external ? messaging_util::kOnConnectExternalEvent
+                             : messaging_util::kOnConnectEvent;
+  }
+
+  // If there are no listeners for the given event, then we know the port won't
+  // be used in this context.
+  if (!bindings_system_->HasEventListenerInContext(event_name,
+                                                   script_context)) {
+    return;
+  }
+  *port_created = true;
+
+  DispatchOnConnectToListeners(script_context, target_port_id,
+                               target_extension_id, channel_name, source, info,
+                               event_name);
+}
+
+void NativeRendererMessagingService::DeliverMessageToScriptContext(
+    const Message& message,
+    const PortId& target_port_id,
+    ScriptContext* script_context) {
+  if (!ContextHasMessagePort(script_context, target_port_id))
+    return;
+
+  std::unique_ptr<blink::WebScopedUserGesture> web_user_gesture;
+  std::unique_ptr<blink::WebScopedWindowFocusAllowedIndicator>
+      allow_window_focus;
+  if (message.user_gesture) {
+    web_user_gesture = std::make_unique<blink::WebScopedUserGesture>(
+        script_context->web_frame());
+
+    if (script_context->web_frame()) {
+      blink::WebDocument document = script_context->web_frame()->GetDocument();
+      allow_window_focus =
+          std::make_unique<blink::WebScopedWindowFocusAllowedIndicator>(
+              &document);
+    }
+  }
+
+  DispatchOnMessageToListeners(script_context, message, target_port_id);
+}
+
+void NativeRendererMessagingService::DispatchOnDisconnectToScriptContext(
+    const PortId& port_id,
+    const std::string& error_message,
+    ScriptContext* script_context) {
+  if (!ContextHasMessagePort(script_context, port_id))
+    return;
+
+  DispatchOnDisconnectToListeners(script_context, port_id, error_message);
+}
+
 bool NativeRendererMessagingService::ContextHasMessagePort(
     ScriptContext* script_context,
     const PortId& port_id) {
@@ -175,7 +352,7 @@ bool NativeRendererMessagingService::ContextHasMessagePort(
   v8::HandleScope handle_scope(script_context->isolate());
   MessagingPerContextData* data = GetPerContextData<MessagingPerContextData>(
       script_context->v8_context(), kDontCreateIfMissing);
-  return data && base::ContainsKey(data->ports, port_id);
+  return data && base::Contains(data->ports, port_id);
 }
 
 void NativeRendererMessagingService::DispatchOnConnectToListeners(
@@ -353,7 +530,7 @@ gin::Handle<GinPort> NativeRendererMessagingService::CreatePort(
   MessagingPerContextData* data =
       GetPerContextData<MessagingPerContextData>(context, kCreateIfMissing);
   DCHECK(data);
-  DCHECK(!base::ContainsKey(data->ports, port_id));
+  DCHECK(!base::Contains(data->ports, port_id));
 
   gin::Handle<GinPort> port_handle = gin::CreateHandle(
       isolate,
@@ -376,7 +553,7 @@ gin::Handle<GinPort> NativeRendererMessagingService::GetPort(
   MessagingPerContextData* data = GetPerContextData<MessagingPerContextData>(
       script_context->v8_context(), kDontCreateIfMissing);
   DCHECK(data);
-  DCHECK(base::ContainsKey(data->ports, port_id));
+  DCHECK(base::Contains(data->ports, port_id));
 
   GinPort* port = nullptr;
   gin::Converter<GinPort*>::FromV8(context->GetIsolate(),

@@ -24,8 +24,10 @@ class WebDocumentSubresourceFilterImpl
     : public blink::WebDocumentSubresourceFilter,
       public base::SupportsWeakPtr<WebDocumentSubresourceFilterImpl> {
  public:
-  // This builder class is created on the main thread and passed to a worker
-  // thread to create the subresource filter for the worker thread.
+  // This builder class is used for creating the subresource filter for workers
+  // and worklets. For workers and threaded worklets, this is created on the
+  // main thread and passed to a worker thread. For main thread worklets, this
+  // is created and used on the main thread.
   class BuilderImpl : public blink::WebDocumentSubresourceFilter::Builder {
    public:
     BuilderImpl(url::Origin document_origin,

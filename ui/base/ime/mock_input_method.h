@@ -8,13 +8,13 @@
 #include <string>
 
 #include "base/compiler_specific.h"
+#include "base/component_export.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/base/ime/input_method_keyboard_controller_stub.h"
 #include "ui/base/ime/input_method_observer.h"
-#include "ui/base/ime/ui_base_ime_export.h"
 
 namespace ui {
 
@@ -24,8 +24,8 @@ class TextInputClient;
 // A mock ui::InputMethod implementation for testing. You can get the instance
 // of this class as the global input method with calling
 // SetUpInputMethodFactoryForTesting() which is declared in
-// ui/base/ime/input_method_factory.h
-class UI_BASE_IME_EXPORT MockInputMethod : public InputMethod {
+// ui/base/ime/init/input_method_factory.h
+class COMPONENT_EXPORT(UI_BASE_IME) MockInputMethod : public InputMethod {
  public:
   explicit MockInputMethod(internal::InputMethodDelegate* delegate);
   ~MockInputMethod() override;

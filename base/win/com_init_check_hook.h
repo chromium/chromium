@@ -10,6 +10,10 @@
 #include "base/macros.h"
 #include "build/build_config.h"
 
+namespace device {
+class XrDeviceService;
+}  // namespace device
+
 namespace base {
 namespace win {
 
@@ -17,9 +21,8 @@ namespace win {
 // binaries contain a convenient 2 byte hotpatch noop. This doesn't exist in
 // 64-bit binaries.
 
-#if DCHECK_IS_ON() && defined(ARCH_CPU_X86_FAMILY) &&             \
-    defined(ARCH_CPU_32_BITS) && !defined(GOOGLE_CHROME_BUILD) && \
-    !defined(OFFICIAL_BUILD) &&                                   \
+#if DCHECK_IS_ON() && defined(ARCH_CPU_X86_FAMILY) &&        \
+    defined(ARCH_CPU_32_BITS) && !defined(OFFICIAL_BUILD) && \
     !defined(COM_INIT_CHECK_HOOK_DISABLED)  // See crbug/737090 for details.
 #define COM_INIT_CHECK_HOOK_ENABLED
 #endif
@@ -34,6 +37,14 @@ class BASE_EXPORT ComInitCheckHook {
   ~ComInitCheckHook();
 
  private:
+  // For components that cannot use COM_INIT_CHECK_HOOK_DISABLED, call
+  // DisableCOMChecksForProcess() below. This should only be for code that calls
+  // into Windows components that don't explicitly initialize the MTA in the
+  // Windows thread pool.
+  friend class device::XrDeviceService;
+
+  static void DisableCOMChecksForProcess();
+
   DISALLOW_COPY_AND_ASSIGN(ComInitCheckHook);
 };
 

@@ -25,7 +25,7 @@ class OfflinePageURLLoaderRequestInterceptor
 
   void MaybeCreateLoader(
       const network::ResourceRequest& tentative_resource_request,
-      content::ResourceContext* resource_context,
+      content::BrowserContext* browser_context,
       content::URLLoaderRequestInterceptor::LoaderCallback callback) override;
 
  private:

@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/bookmarks/bookmark_tab_helper_observer.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/sad_tab.h"
+#include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
 #include "chrome/browser/ui/webui/ntp/new_tab_ui.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
@@ -33,7 +34,10 @@ bool IsNTP(content::WebContents* web_contents) {
       web_contents->GetController().GetLastCommittedEntry();
   if (!entry)
     entry = web_contents->GetController().GetVisibleEntry();
-  return (entry && NewTabUI::IsNewTab(entry->GetURL())) ||
+  if (!entry)
+    return false;
+  const GURL& url = entry->GetURL();
+  return NewTabUI::IsNewTab(url) || NewTabPageUI::IsNewTabPageOrigin(url) ||
          search::NavEntryIsInstantNTP(web_contents, entry);
 }
 
@@ -67,7 +71,10 @@ bool BookmarkTabHelper::ShouldShowBookmarkBar() const {
       !prefs->GetBoolean(bookmarks::prefs::kShowBookmarkBar))
     return false;
 
-  return IsNTP(web_contents());
+  // The bookmark bar is only shown on the NTP if the user
+  // has added something to it.
+  return IsNTP(web_contents()) && bookmark_model_ &&
+         bookmark_model_->HasBookmarks();
 }
 
 void BookmarkTabHelper::AddObserver(BookmarkTabHelperObserver* observer) {
@@ -115,14 +122,14 @@ void BookmarkTabHelper::BookmarkModelLoaded(BookmarkModel* model,
 
 void BookmarkTabHelper::BookmarkNodeAdded(BookmarkModel* model,
                                           const BookmarkNode* parent,
-                                          int index) {
+                                          size_t index) {
   UpdateStarredStateForCurrentURL();
 }
 
 void BookmarkTabHelper::BookmarkNodeRemoved(
     BookmarkModel* model,
     const BookmarkNode* parent,
-    int old_index,
+    size_t old_index,
     const BookmarkNode* node,
     const std::set<GURL>& removed_urls) {
   UpdateStarredStateForCurrentURL();

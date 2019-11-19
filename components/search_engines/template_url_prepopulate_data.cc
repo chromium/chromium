@@ -398,7 +398,6 @@ const PrepopulatedEngine* const engines_IR[] = {
     &google,
     &bing,
     &yahoo,
-    &parsijoo,
 };
 
 // Iceland
@@ -890,97 +889,6 @@ const PrepopulatedEngine* const engines_ZW[] = {
 };
 // ----------------------------------------------------------------------------
 
-// A list of all the engines that we know about.
-const PrepopulatedEngine* const kAllEngines[] = {
-    // Prepopulated engines:
-    &ask,
-    &baidu,
-    &bing,
-    &coccoc,
-    &daum,
-    &duckduckgo,
-    &google,
-    &mail_ru,
-    &naver,
-    &parsijoo,
-    &qwant,
-    &seznam,
-    &sogou,
-    &yahoo,
-    &yahoo_ar,
-    &yahoo_at,
-    &yahoo_au,
-    &yahoo_br,
-    &yahoo_ca,
-    &yahoo_ch,
-    &yahoo_cl,
-    &yahoo_co,
-    &yahoo_de,
-    &yahoo_dk,
-    &yahoo_es,
-    &yahoo_fi,
-    &yahoo_fr,
-    &yahoo_hk,
-    &yahoo_id,
-    &yahoo_in,
-    &yahoo_jp,
-    &yahoo_mx,
-    &yahoo_my,
-    &yahoo_nl,
-    &yahoo_nz,
-    &yahoo_pe,
-    &yahoo_ph,
-    &yahoo_qc,
-    &yahoo_se,
-    &yahoo_sg,
-    &yahoo_th,
-    &yahoo_tr,
-    &yahoo_tw,
-    &yahoo_uk,
-    &yahoo_ve,
-    &yahoo_vn,
-    &yandex_by,
-    &yandex_com,
-    &yandex_kz,
-    &yandex_ru,
-    &yandex_tr,
-    &yandex_ua,
-
-    // UMA-only engines:
-    &atlas_cz,
-    &atlas_sk,
-    &avg,
-    &babylon,
-    &conduit,
-    &delfi_lt,
-    &delfi_lv,
-    &delta,
-    &funmoods,
-    &goo,
-    &imesh,
-    &iminent,
-    &in,
-    &incredibar,
-    &libero,
-    &neti,
-    &nigma,
-    &ok,
-    &rambler,
-    &sapo,
-    &search_results,
-    &searchnu,
-    &snapdo,
-    &softonic,
-    &sweetim,
-    &sweetpacks,
-    &terra_ar,
-    &terra_es,
-    &tut,
-    &walla,
-    &wp,
-    &zoznam,
-};
-
 std::vector<std::unique_ptr<TemplateURLData>> GetPrepopulationSetFromCountryID(
     int country_id) {
   const PrepopulatedEngine* const* engines;
@@ -1406,8 +1314,8 @@ std::vector<std::unique_ptr<TemplateURLData>> GetLocalPrepopulatedEngines(
 #endif
 
 std::vector<const PrepopulatedEngine*> GetAllPrepopulatedEngines() {
-  return std::vector<const PrepopulatedEngine*>(std::begin(kAllEngines),
-                                                std::end(kAllEngines));
+  return std::vector<const PrepopulatedEngine*>(
+      &kAllEngines[0], &kAllEngines[0] + kAllEnginesLength);
 }
 
 void ClearPrepopulatedEnginesInPrefs(PrefService* prefs) {
@@ -1444,7 +1352,7 @@ SearchEngineType GetEngineType(const GURL& url) {
     return google.type;
 
   // Now check the rest of the prepopulate data.
-  for (size_t i = 0; i < base::size(kAllEngines); ++i) {
+  for (size_t i = 0; i < kAllEnginesLength; ++i) {
     // First check the main search URL.
     if (SameDomain(url, GURL(kAllEngines[i]->search_url)))
       return kAllEngines[i]->type;

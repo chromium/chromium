@@ -5,6 +5,7 @@
 package org.chromium.android_webview;
 
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 
 /**
  * Controller for Remote Web Debugging (Developer Tools).
@@ -15,19 +16,26 @@ public class AwDevToolsServer {
     private long mNativeDevToolsServer;
 
     public AwDevToolsServer() {
-        mNativeDevToolsServer = nativeInitRemoteDebugging();
+        mNativeDevToolsServer =
+                AwDevToolsServerJni.get().initRemoteDebugging(AwDevToolsServer.this);
     }
 
     public void destroy() {
-        nativeDestroyRemoteDebugging(mNativeDevToolsServer);
+        AwDevToolsServerJni.get().destroyRemoteDebugging(
+                AwDevToolsServer.this, mNativeDevToolsServer);
         mNativeDevToolsServer = 0;
     }
 
     public void setRemoteDebuggingEnabled(boolean enabled) {
-        nativeSetRemoteDebuggingEnabled(mNativeDevToolsServer, enabled);
+        AwDevToolsServerJni.get().setRemoteDebuggingEnabled(
+                AwDevToolsServer.this, mNativeDevToolsServer, enabled);
     }
 
-    private native long nativeInitRemoteDebugging();
-    private native void nativeDestroyRemoteDebugging(long devToolsServer);
-    private native void nativeSetRemoteDebuggingEnabled(long devToolsServer, boolean enabled);
+    @NativeMethods
+    interface Natives {
+        long initRemoteDebugging(AwDevToolsServer caller);
+        void destroyRemoteDebugging(AwDevToolsServer caller, long devToolsServer);
+        void setRemoteDebuggingEnabled(
+                AwDevToolsServer caller, long devToolsServer, boolean enabled);
+    }
 }

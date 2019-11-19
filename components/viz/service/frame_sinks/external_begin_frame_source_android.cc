@@ -5,16 +5,18 @@
 #include "components/viz/service/frame_sinks/external_begin_frame_source_android.h"
 
 #include "base/android/jni_android.h"
-#include "jni/ExternalBeginFrameSourceAndroid_jni.h"
+#include "components/viz/service/service_jni_headers/ExternalBeginFrameSourceAndroid_jni.h"
 
 namespace viz {
 
 ExternalBeginFrameSourceAndroid::ExternalBeginFrameSourceAndroid(
-    uint32_t restart_id)
+    uint32_t restart_id,
+    float refresh_rate)
     : ExternalBeginFrameSource(this, restart_id),
       j_object_(Java_ExternalBeginFrameSourceAndroid_Constructor(
           base::android::AttachCurrentThread(),
-          reinterpret_cast<jlong>(this))) {}
+          reinterpret_cast<jlong>(this),
+          refresh_rate)) {}
 
 ExternalBeginFrameSourceAndroid::~ExternalBeginFrameSourceAndroid() {
   SetEnabled(false);
@@ -39,13 +41,36 @@ void ExternalBeginFrameSourceAndroid::OnVSync(
   base::TimeDelta vsync_period(
       base::TimeDelta::FromMicroseconds(period_micros));
 
+  uint64_t sequence_number = next_sequence_number_;
+  // We expect |sequence_number| to be the number for the frame at
+  // |expected_frame_time|. We adjust this sequence number according to the
+  // actual frame time in case it is later than expected.
+  if (next_expected_frame_time_ != base::TimeTicks()) {
+    // Add |error_margin| to round |frame_time| up to the next tick if it is
+    // close to the end of an interval. This happens when a timebase is a bit
+    // off because of an imperfect presentation timestamp that may be a bit
+    // later than the beginning of the next interval.
+    constexpr double kErrorMarginIntervalPct = 0.05;
+    base::TimeDelta error_margin = vsync_period * kErrorMarginIntervalPct;
+    int ticks_since_estimated_frame_time =
+        (frame_time + error_margin - next_expected_frame_time_) / vsync_period;
+    sequence_number += std::max(0, ticks_since_estimated_frame_time);
+  }
+
   // Calculate the next frame deadline:
   base::TimeTicks deadline = frame_time + vsync_period;
   auto begin_frame_args = BeginFrameArgs::Create(
-      BEGINFRAME_FROM_HERE, source_id(), next_sequence_number_++, frame_time,
-      deadline, vsync_period, BeginFrameArgs::NORMAL);
+      BEGINFRAME_FROM_HERE, source_id(), sequence_number, frame_time, deadline,
+      vsync_period, BeginFrameArgs::NORMAL);
+  next_sequence_number_ = sequence_number + 1;
+  next_expected_frame_time_ = deadline;
 
   OnBeginFrame(begin_frame_args);
+}
+
+void ExternalBeginFrameSourceAndroid::UpdateRefreshRate(float refresh_rate) {
+  Java_ExternalBeginFrameSourceAndroid_updateRefreshRate(
+      base::android::AttachCurrentThread(), j_object_, refresh_rate);
 }
 
 void ExternalBeginFrameSourceAndroid::OnNeedsBeginFrames(

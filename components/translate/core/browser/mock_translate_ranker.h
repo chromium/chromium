@@ -10,9 +10,9 @@
 #include <vector>
 
 #include "components/translate/core/browser/translate_ranker.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-class GURL;
 
 namespace metrics {
 class TranslateEventProto;
@@ -49,11 +49,11 @@ class MockTranslateRanker : public TranslateRanker {
       std::vector<metrics::TranslateEventProto>* events) override;
   MOCK_METHOD3(RecordTranslateEvent,
                void(int event_type,
-                    const GURL& url,
+                    ukm::SourceId ukm_source_id,
                     metrics::TranslateEventProto* translate_event));
   MOCK_METHOD3(ShouldOverrideDecision,
                bool(int event_type,
-                    const GURL& url,
+                    ukm::SourceId ukm_source_id,
                     metrics::TranslateEventProto* translate_event));
 
  private:

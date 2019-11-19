@@ -59,6 +59,9 @@ class TaskGraphRunnerTestBase {
    public:
     FakeTaskImpl(TaskGraphRunnerTestBase* test, int namespace_index, int id)
         : test_(test), namespace_index_(namespace_index), id_(id) {}
+    FakeTaskImpl(const FakeTaskImpl&) = delete;
+
+    FakeTaskImpl& operator=(const FakeTaskImpl&) = delete;
 
     // Overridden from Task:
     void RunOnWorkerThread() override;
@@ -72,8 +75,6 @@ class TaskGraphRunnerTestBase {
     TaskGraphRunnerTestBase* test_;
     int namespace_index_;
     int id_;
-
-    DISALLOW_COPY_AND_ASSIGN(FakeTaskImpl);
   };
 
   class FakeDependentTaskImpl : public FakeTaskImpl {
@@ -82,14 +83,15 @@ class TaskGraphRunnerTestBase {
                           int namespace_index,
                           int id)
         : FakeTaskImpl(test, namespace_index, id) {}
+    FakeDependentTaskImpl(const FakeDependentTaskImpl&) = delete;
+
+    FakeDependentTaskImpl& operator=(const FakeDependentTaskImpl&) = delete;
 
     // Overridden from FakeTaskImpl:
     void OnTaskCompleted() override {}
 
    private:
     ~FakeDependentTaskImpl() override {}
-
-    DISALLOW_COPY_AND_ASSIGN(FakeDependentTaskImpl);
   };
 
   TaskGraphRunner* task_graph_runner_;

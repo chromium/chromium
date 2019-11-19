@@ -11,55 +11,67 @@
 
 namespace gfx {
 
+// This macro allows defining the list of commands in this file, then pulling
+// them each in to the template files via using-declarations.  Files which want
+// to do this should do the following:
+//   #define DECLARE_VECTOR_COMMAND(x) using gfx::x;
+//   DECLARE_VECTOR_COMMANDS
+// The alternative would be to have the template files pull in the whole gfx
+// namespace via using-directives, which is banned by the style guide.
+#define DECLARE_VECTOR_COMMANDS                                                \
+  /* A new <path> element. For the first path, this is assumed. */             \
+  DECLARE_VECTOR_COMMAND(NEW_PATH)                                             \
+  /* Sets the alpha for the current path. */                                   \
+  DECLARE_VECTOR_COMMAND(PATH_COLOR_ALPHA)                                     \
+  /* Sets the color for the current path. */                                   \
+  DECLARE_VECTOR_COMMAND(PATH_COLOR_ARGB)                                      \
+  /* Sets the path to clear mode (Skia's kClear_Mode). */                      \
+  DECLARE_VECTOR_COMMAND(PATH_MODE_CLEAR)                                      \
+  /* By default, the path will be filled. This changes the paint action to */  \
+  /* stroke at the given width. */                                             \
+  DECLARE_VECTOR_COMMAND(STROKE)                                               \
+  /* By default, a stroke has a round cap. This sets it to square. */          \
+  DECLARE_VECTOR_COMMAND(CAP_SQUARE)                                           \
+  /* These correspond to pathing commands. */                                  \
+  DECLARE_VECTOR_COMMAND(MOVE_TO)                                              \
+  DECLARE_VECTOR_COMMAND(R_MOVE_TO)                                            \
+  DECLARE_VECTOR_COMMAND(ARC_TO)                                               \
+  DECLARE_VECTOR_COMMAND(R_ARC_TO)                                             \
+  DECLARE_VECTOR_COMMAND(LINE_TO)                                              \
+  DECLARE_VECTOR_COMMAND(R_LINE_TO)                                            \
+  DECLARE_VECTOR_COMMAND(H_LINE_TO)                                            \
+  DECLARE_VECTOR_COMMAND(R_H_LINE_TO)                                          \
+  DECLARE_VECTOR_COMMAND(V_LINE_TO)                                            \
+  DECLARE_VECTOR_COMMAND(R_V_LINE_TO)                                          \
+  DECLARE_VECTOR_COMMAND(CUBIC_TO)                                             \
+  DECLARE_VECTOR_COMMAND(R_CUBIC_TO)                                           \
+  DECLARE_VECTOR_COMMAND(CUBIC_TO_SHORTHAND)                                   \
+  DECLARE_VECTOR_COMMAND(CIRCLE)                                               \
+  DECLARE_VECTOR_COMMAND(ROUND_RECT)                                           \
+  DECLARE_VECTOR_COMMAND(CLOSE)                                                \
+  /* Sets the dimensions of the canvas in dip. */                              \
+  DECLARE_VECTOR_COMMAND(CANVAS_DIMENSIONS)                                    \
+  /* Sets a bounding rect for the path. This allows fine adjustment because */ \
+  /* it can tweak edge anti-aliasing. Args are x, y, w, h. */                  \
+  DECLARE_VECTOR_COMMAND(CLIP)                                                 \
+  /* Disables anti-aliasing for this path. */                                  \
+  DECLARE_VECTOR_COMMAND(DISABLE_AA)                                           \
+  /* Flips the x-axis in RTL locales. Default is false, this command sets */   \
+  /* it to true. */                                                            \
+  DECLARE_VECTOR_COMMAND(FLIPS_IN_RTL)                                         \
+  /* Defines a timed transition for other elements. */                         \
+  DECLARE_VECTOR_COMMAND(TRANSITION_FROM)                                      \
+  DECLARE_VECTOR_COMMAND(TRANSITION_TO)                                        \
+  /* Parameters are delay (ms), duration (ms), and tween type */               \
+  /* (gfx::Tween::Type). */                                                    \
+  DECLARE_VECTOR_COMMAND(TRANSITION_END)
+
+#define DECLARE_VECTOR_COMMAND(x) x,
+
 // A command to Skia.
-enum CommandType {
-  // A new <path> element. For the first path, this is assumed.
-  NEW_PATH,
-  // Sets the alpha for the current path.
-  PATH_COLOR_ALPHA,
-  // Sets the color for the current path.
-  PATH_COLOR_ARGB,
-  // Sets the path to clear mode (Skia's kClear_Mode).
-  PATH_MODE_CLEAR,
-  // By default, the path will be filled. This changes the paint action to
-  // stroke at the given width.
-  STROKE,
-  // By default, a stroke has a round cap. This sets it to square.
-  CAP_SQUARE,
-  // These correspond to pathing commands.
-  MOVE_TO,
-  R_MOVE_TO,
-  ARC_TO,
-  R_ARC_TO,
-  LINE_TO,
-  R_LINE_TO,
-  H_LINE_TO,
-  R_H_LINE_TO,
-  V_LINE_TO,
-  R_V_LINE_TO,
-  CUBIC_TO,
-  R_CUBIC_TO,
-  CUBIC_TO_SHORTHAND,
-  CIRCLE,
-  ROUND_RECT,
-  CLOSE,
-  // Sets the dimensions of the canvas in dip.
-  CANVAS_DIMENSIONS,
-  // Sets a bounding rect for the path. This allows fine adjustment because it
-  // can tweak edge anti-aliasing. Args are x, y, w, h.
-  CLIP,
-  // Disables anti-aliasing for this path.
-  DISABLE_AA,
-  // Flips the x-axis in RTL locales. Default is false, this command sets it to
-  // true.
-  FLIPS_IN_RTL,
-  // Defines a timed transition for other elements.
-  TRANSITION_FROM,
-  TRANSITION_TO,
-  // Parameters are delay (ms), duration (ms), and tween type
-  // (gfx::Tween::Type).
-  TRANSITION_END,
-};
+enum CommandType { DECLARE_VECTOR_COMMANDS };
+
+#undef DECLARE_VECTOR_COMMAND
 
 // A POD that describes either a path command or an argument for it.
 struct PathElement {

@@ -5,8 +5,9 @@
 #ifndef PRINTING_PRINTING_CONTEXT_SYSTEM_DIALOG_WIN_H_
 #define PRINTING_PRINTING_CONTEXT_SYSTEM_DIALOG_WIN_H_
 
-#include <ocidl.h>
-#include <commdlg.h>
+#include <ocidl.h>  // NOLINT(build/include_order)
+
+#include <commdlg.h>  // Must come after ocidl.h.
 
 #include <string>
 

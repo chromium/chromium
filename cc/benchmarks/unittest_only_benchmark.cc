@@ -14,9 +14,7 @@ namespace cc {
 
 UnittestOnlyBenchmark::UnittestOnlyBenchmark(std::unique_ptr<base::Value> value,
                                              DoneCallback callback)
-    : MicroBenchmark(std::move(callback)),
-      create_impl_benchmark_(false),
-      weak_ptr_factory_(this) {
+    : MicroBenchmark(std::move(callback)), create_impl_benchmark_(false) {
   if (!value)
     return;
 

@@ -41,7 +41,7 @@ IN_PROC_BROWSER_TEST_F(InteractionMediaQueriesDynamicTest,
   GURL test_url = GetTestUrl("", "interaction-mq-dynamic.html");
   const base::string16 kSuccessTitle(base::ASCIIToUTF16("SUCCESS"));
   TitleWatcher title_watcher(shell()->web_contents(), kSuccessTitle);
-  NavigateToURL(shell(), test_url);
+  EXPECT_TRUE(NavigateToURL(shell(), test_url));
 
   ui::SetAvailablePointerAndHoverTypesForTesting(ui::POINTER_TYPE_COARSE,
                                                  ui::HOVER_TYPE_HOVER);

@@ -17,10 +17,9 @@
 class PasswordAutoSignInView : public PasswordBubbleViewBase,
                                public views::ButtonListener {
  public:
-  explicit PasswordAutoSignInView(content::WebContents* web_contents,
-                                  views::View* anchor_view,
-                                  const gfx::Point& anchor_point,
-                                  DisplayReason reason);
+  PasswordAutoSignInView(content::WebContents* web_contents,
+                         views::View* anchor_view,
+                         DisplayReason reason);
 
 #if defined(UNIT_TEST)
   static void set_auto_signin_toast_timeout(int seconds) {
@@ -32,7 +31,6 @@ class PasswordAutoSignInView : public PasswordBubbleViewBase,
   ~PasswordAutoSignInView() override;
 
   // LocationBarBubbleDelegateView:
-  int GetDialogButtons() const override;
   gfx::Size CalculatePreferredSize() const override;
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
 

@@ -93,7 +93,6 @@ struct CONTENT_EXPORT WebPreferences {
   bool remote_fonts_enabled;
   bool javascript_can_access_clipboard;
   bool xslt_enabled;
-  bool xss_auditor_enabled;
   // We don't use dns_prefetching_enabled to disable DNS prefetching.  Instead,
   // we disable the feature at a lower layer so that we catch non-WebKit uses
   // of DNS prefetch as well.
@@ -109,7 +108,6 @@ struct CONTENT_EXPORT WebPreferences {
   bool databases_enabled;
   bool application_cache_enabled;
   bool tabs_to_links;
-  bool history_entry_requires_user_gesture;
   bool disable_ipc_flooding_protection;
   bool hyperlink_auditing_enabled;
   bool allow_universal_access_from_file_urls;
@@ -122,10 +120,8 @@ struct CONTENT_EXPORT WebPreferences {
   bool flash_stage3d_baseline_enabled;
   bool privileged_webgl_extensions_enabled;
   bool webgl_errors_to_console_enabled;
-  bool mock_scrollbars_enabled;
   bool hide_scrollbars;
   bool accelerated_2d_canvas_enabled;
-  int minimum_accelerated_2d_canvas_size;
   bool antialiased_2d_canvas_disabled;
   bool antialiased_clips_2d_canvas_enabled;
   int accelerated_2d_canvas_msaa_sample_count;
@@ -160,6 +156,7 @@ struct CONTENT_EXPORT WebPreferences {
   ui::PointerType primary_pointer_type;
   int available_hover_types;
   ui::HoverType primary_hover_type;
+  bool dont_send_key_events_to_javascript;
   bool barrel_button_for_drag_enabled = false;
   bool sync_xhr_in_documents_enabled;
   bool should_respect_image_orientation;
@@ -181,7 +178,7 @@ struct CONTENT_EXPORT WebPreferences {
   bool initialize_at_minimum_page_scale;
   bool smart_insert_delete_enabled;
   bool spatial_navigation_enabled;
-  bool use_solid_color_scrollbars;
+  bool caret_browsing_enabled;
   bool navigate_on_drag_drop;
   blink::mojom::V8CacheOptions v8_cache_options;
   bool record_whole_document;
@@ -206,6 +203,24 @@ struct CONTENT_EXPORT WebPreferences {
   std::string text_track_background_color;
   std::string text_track_text_color;
 
+  // These fields specify values for CSS properties used to style WebVTT text
+  // tracks.
+  // Specifies CSS font-size property in percentage.
+  std::string text_track_text_size;
+  std::string text_track_text_shadow;
+  std::string text_track_font_family;
+  // Specifies the value for CSS font-variant property.
+  std::string text_track_font_variant;
+
+  // These fields specify values for CSS properties used to style the window
+  // around WebVTT text tracks.
+  // Window color can be any legal CSS color descriptor.
+  std::string text_track_window_color;
+  // Window padding is in em.
+  std::string text_track_window_padding;
+  // Window radius is in pixels.
+  std::string text_track_window_radius;
+
   // Specifies the margin for WebVTT text tracks as a percentage of media
   // element height/width (for horizontal/vertical text respectively).
   // Cues will not be placed in this margin area.
@@ -214,6 +229,8 @@ struct CONTENT_EXPORT WebPreferences {
   bool immersive_mode_enabled;
 
   bool double_tap_to_zoom_enabled;
+
+  bool fullscreen_supported;
 
   bool text_autosizing_enabled;
 
@@ -224,14 +241,12 @@ struct CONTENT_EXPORT WebPreferences {
   float font_scale_factor;
   float device_scale_adjustment;
   bool force_enable_zoom;
-  bool fullscreen_supported;
   GURL default_video_poster_url;
   bool support_deprecated_target_density_dpi;
   bool use_legacy_background_size_shorthand_behavior;
   bool wide_viewport_quirk;
   bool use_wide_viewport;
   bool force_zero_layout_height;
-  bool viewport_meta_layout_size_quirk;
   bool viewport_meta_merge_content_quirk;
   bool viewport_meta_non_user_scalable_quirk;
   bool viewport_meta_zero_values_quirk;
@@ -259,11 +274,20 @@ struct CONTENT_EXPORT WebPreferences {
   // WebView sets this to false to retain old documentElement behaviour
   // (http://crbug.com/761016).
   bool scroll_top_left_interop_enabled;
-  // Enable forcibly modifying content rendering to result in a light on dark
-  // colour scheme.
-  bool force_dark_mode_enabled = false;
-#else  // defined(OS_ANDROID)
+  // Disable features such as offscreen canvas that depend on the viz
+  // architecture of surface embedding. Android WebView does not support this
+  // architecture yet.
+  bool disable_features_depending_on_viz;
+  // Don't accelerate small canvases to avoid crashes TODO(crbug.com/1004304)
+  bool disable_accelerated_small_canvases;
+  // Re-enable Web Components v0 on Webview, temporarily. This should get
+  // removed when crbug.com/1021631 gets fixed.
+  bool reenable_web_components_v0;
 #endif  // defined(OS_ANDROID)
+
+  // Enable forcibly modifying content rendering to result in a light on dark
+  // color scheme.
+  bool force_dark_mode_enabled = false;
 
   // Default (used if the page or UA doesn't override these) values for page
   // scale limits. These are set directly on the WebView so there's no analogue
@@ -319,6 +343,7 @@ struct CONTENT_EXPORT WebPreferences {
       lazy_frame_loading_distance_thresholds_px;
   std::map<net::EffectiveConnectionType, int>
       lazy_image_loading_distance_thresholds_px;
+  std::map<net::EffectiveConnectionType, int> lazy_image_first_k_fully_load;
 
   // We try to keep the default values the same as the default values in
   // chrome, except for the cases where it would require lots of extra work for

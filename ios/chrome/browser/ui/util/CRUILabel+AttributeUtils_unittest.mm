@@ -45,6 +45,15 @@ TEST_F(UILabelAttributeUtilsTest, TwoObservers) {
   UILabel* label = _scopedLabel;
   label.text = @"sample text";
 
+  NSMutableAttributedString* textWithLineHeight =
+      [[NSMutableAttributedString alloc]
+          initWithString:@"attributed sample text"];
+  NSMutableParagraphStyle* style = [[NSMutableParagraphStyle alloc] init];
+  style.maximumLineHeight = 15.0;
+  [textWithLineHeight addAttribute:NSParagraphStyleAttributeName
+                             value:style
+                             range:NSMakeRange(0, [textWithLineHeight length])];
+
   // Add a second observer.
   LabelObserver* secondObserver = [LabelObserver observerForLabel:label];
   [secondObserver startObserving];
@@ -62,8 +71,8 @@ TEST_F(UILabelAttributeUtilsTest, TwoObservers) {
   // Once both are stopped, the height isn't persisted when the text changes.
   [_observer stopObserving];
   label.cr_lineHeight = 25.0;
-  label.text = @"longer sample text";
-  CheckLabelLineHeight(0);
+  label.attributedText = textWithLineHeight;
+  CheckLabelLineHeight(15.0);
 }
 
 TEST_F(UILabelAttributeUtilsTest, SettingTests) {
@@ -80,18 +89,19 @@ TEST_F(UILabelAttributeUtilsTest, SettingTests) {
 
   NSMutableAttributedString* string = [[NSMutableAttributedString alloc]
       initWithString:@"attributed sample text"];
-  label.attributedText = string;
+  label.attributedText = [string copy];
   CheckLabelLineHeight(20.0);
   [string addAttribute:NSForegroundColorAttributeName
                  value:[UIColor brownColor]
                  range:NSMakeRange(0, [string length])];
-  label.attributedText = string;
+  label.attributedText = [string copy];
   CheckLabelLineHeight(20.0);
   NSMutableParagraphStyle* style = [[NSMutableParagraphStyle alloc] init];
   style.maximumLineHeight = 15.0;
   [string addAttribute:NSParagraphStyleAttributeName
                  value:style
                  range:NSMakeRange(0, [string length])];
+  label.attributedText = [string copy];
   CheckLabelLineHeight(20.0);
 }
 

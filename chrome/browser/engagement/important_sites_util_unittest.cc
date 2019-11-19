@@ -177,11 +177,11 @@ TEST_F(ImportantSitesUtilTest, SourceOrdering) {
                            important_sites);
 
   // Test that notifications get moved to the front.
-  AddContentSetting(CONTENT_SETTINGS_TYPE_NOTIFICATIONS, CONTENT_SETTING_ALLOW,
+  AddContentSetting(ContentSettingsType::NOTIFICATIONS, CONTENT_SETTING_ALLOW,
                     url6);
   // BLOCK'ed sites don't count. We want to make sure we only bump sites that
   // were granted the permsion.
-  AddContentSetting(CONTENT_SETTINGS_TYPE_NOTIFICATIONS, CONTENT_SETTING_BLOCK,
+  AddContentSetting(ContentSettingsType::NOTIFICATIONS, CONTENT_SETTING_BLOCK,
                     url1);
 
   // Same as above, but the site with notifications should be at the front.
@@ -264,7 +264,7 @@ TEST_F(ImportantSitesUtilTest, Blacklisting) {
   // Set a bunch of positive signals.
   service->ResetBaseScoreForURL(url1, 5);
   AddBookmark(url2);
-  AddContentSetting(CONTENT_SETTINGS_TYPE_NOTIFICATIONS, CONTENT_SETTING_ALLOW,
+  AddContentSetting(ContentSettingsType::NOTIFICATIONS, CONTENT_SETTING_ALLOW,
                     url1);
 
   // Important fetch 1.
@@ -319,7 +319,7 @@ TEST_F(ImportantSitesUtilTest, BlacklistingReset) {
   // Set a bunch of positive signals.
   service->ResetBaseScoreForURL(url1, 5);
   AddBookmark(url2);
-  AddContentSetting(CONTENT_SETTINGS_TYPE_NOTIFICATIONS, CONTENT_SETTING_ALLOW,
+  AddContentSetting(ContentSettingsType::NOTIFICATIONS, CONTENT_SETTING_ALLOW,
                     url1);
 
   // Important fetch 1.
@@ -387,7 +387,7 @@ TEST_F(ImportantSitesUtilTest, Metrics) {
 
   GURL url1("http://www.google.com/");
   service->ResetBaseScoreForURL(url1, 5);
-  AddContentSetting(CONTENT_SETTINGS_TYPE_NOTIFICATIONS, CONTENT_SETTING_ALLOW,
+  AddContentSetting(ContentSettingsType::NOTIFICATIONS, CONTENT_SETTING_ALLOW,
                     url1);
 
   GURL url2("http://www.youtube.com/");
@@ -433,7 +433,7 @@ TEST_F(ImportantSitesUtilTest, DialogBlacklisting) {
   // Set a bunch of positive signals.
   service->ResetBaseScoreForURL(url2, 5);
   AddBookmark(url1);
-  AddContentSetting(CONTENT_SETTINGS_TYPE_NOTIFICATIONS, CONTENT_SETTING_ALLOW,
+  AddContentSetting(ContentSettingsType::NOTIFICATIONS, CONTENT_SETTING_ALLOW,
                     url1);
 
   // Start off not disabled.

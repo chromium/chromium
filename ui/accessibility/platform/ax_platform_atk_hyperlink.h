@@ -46,10 +46,6 @@ struct _AXPlatformAtkHyperlinkClass {
 GType ax_platform_atk_hyperlink_get_type(void) G_GNUC_CONST;
 void ax_platform_atk_hyperlink_set_object(AXPlatformAtkHyperlink* hyperlink,
                                           AXPlatformNodeAuraLinux* obj);
-void ax_platform_atk_hyperlink_set_indices(
-    AXPlatformAtkHyperlink* atk_hyperlink,
-    int start_index,
-    int end_index);
 
 G_END_DECLS
 

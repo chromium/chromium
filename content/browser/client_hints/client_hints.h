@@ -12,6 +12,7 @@
 #include "net/http/http_request_headers.h"
 
 class BrowserContext;
+class FrameTreeNode;
 
 namespace content {
 
@@ -31,8 +32,10 @@ CONTENT_EXPORT double RoundKbpsToMbpsForTesting(
 CONTENT_EXPORT void AddNavigationRequestClientHintsHeaders(
     const GURL& url,
     net::HttpRequestHeaders* headers,
-    content::BrowserContext* context,
-    content::ClientHintsControllerDelegate* delegate);
+    BrowserContext* context,
+    bool javascript_enabled,
+    ClientHintsControllerDelegate* delegate,
+    FrameTreeNode*);
 
 }  // namespace content
 

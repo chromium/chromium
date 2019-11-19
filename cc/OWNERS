@@ -9,6 +9,7 @@
 enne@chromium.org
 danakj@chromium.org
 pdr@chromium.org
+wangxianzhu@chromium.org
 
 # mac-specific
 ccameron@chromium.org
@@ -30,6 +31,7 @@ flackr@chromium.org
 chrishtr@chromium.org
 weiliangc@chromium.org
 pdr@chromium.org
+wangxianzhu@chromium.org
 
 # animation
 flackr@chromium.org
@@ -48,11 +50,16 @@ samans@chromium.org
 # input, scrolling
 bokan@chromium.org
 
+# scroll snap
+majidvp@chromium.org
+
+# metrics
+sadrul@chromium.org
+
 # general
 enne@chromium.org
 danakj@chromium.org
 vmpstr@chromium.org
-piman@chromium.org
 
 # TEAM: graphics-dev@chromium.org
 # COMPONENT: Internals>Compositing

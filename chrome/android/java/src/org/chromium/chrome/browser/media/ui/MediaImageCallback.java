@@ -5,7 +5,8 @@
 package org.chromium.chrome.browser.media.ui;
 
 import android.graphics.Bitmap;
-import android.support.annotation.Nullable;
+
+import androidx.annotation.Nullable;
 
 /**
  * The callback when an image is downloaded. This class is different with

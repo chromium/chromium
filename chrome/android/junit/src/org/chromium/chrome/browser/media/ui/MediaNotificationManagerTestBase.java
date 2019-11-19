@@ -25,23 +25,21 @@ import android.view.KeyEvent;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.shadows.ShadowLog;
 import org.robolectric.shadows.ShadowLooper;
 
-import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.AppHooks;
-import org.chromium.chrome.browser.AppHooksImpl;
-import org.chromium.chrome.browser.ChromeFeatureList;
 import org.chromium.chrome.browser.media.ui.MediaNotificationManager.ListenerService;
+import org.chromium.chrome.browser.notifications.ForegroundServiceUtils;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.services.media_session.MediaMetadata;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -53,10 +51,18 @@ public class MediaNotificationManagerTestBase {
     Context mMockContext;
     MockListenerService mService;
     MediaNotificationListener mListener;
-    AppHooksImpl mMockAppHooks;
+    ForegroundServiceUtils mMockForegroundServiceUtils;
     NotificationUmaTracker mMockUmaTracker;
 
     MediaNotificationInfo.Builder mMediaNotificationInfoBuilder;
+
+    @Rule
+    public JniMocker mocker = new JniMocker();
+
+    protected MediaNotificationTestTabHolder createMediaNotificationTestTabHolder(
+            int tabId, String url, String title) {
+        return new MediaNotificationTestTabHolder(tabId, url, title, mocker);
+    }
 
     static class MockMediaNotificationManager extends MediaNotificationManager {
         public MockMediaNotificationManager(NotificationUmaTracker umaTracker, int notificationId) {
@@ -135,16 +141,8 @@ public class MediaNotificationManagerTestBase {
                 .when(mMockContext)
                 .startService(any(Intent.class));
 
-        mMockAppHooks = mock(AppHooksImpl.class);
-        AppHooks.setInstanceForTesting(mMockAppHooks);
-
-        // Init the command line to avoid assertion failure in |SysUtils#isLowEndDevice()|.
-        CommandLine.init(null);
-        // Init ChromeFeaturesList to avoid assertion failure in
-        // MediaNotificationManagerNotificationTest.
-        Map<String, Boolean> testFeatures = new HashMap<>();
-        testFeatures.put(ChromeFeatureList.HIDE_USER_DATA_FROM_INCOGNITO_NOTIFICATIONS, true);
-        ChromeFeatureList.setTestFeatures(testFeatures);
+        mMockForegroundServiceUtils = mock(ForegroundServiceUtils.class);
+        ForegroundServiceUtils.setInstanceForTesting(mMockForegroundServiceUtils);
     }
 
     @After

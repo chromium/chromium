@@ -28,7 +28,7 @@ struct CollectionHasReportId {
     if (report_id_ == HidConnection::kAnyReportId)
       return true;
 
-    return base::ContainsValue(info->report_ids, report_id_);
+    return base::Contains(info->report_ids, report_id_);
   }
 
  private:
@@ -74,6 +74,14 @@ HidConnection::~HidConnection() {
   DCHECK(closed_);
 }
 
+void HidConnection::SetClient(Client* client) {
+  if (client) {
+    DCHECK(pending_reads_.empty());
+    DCHECK(pending_reports_.empty());
+  }
+  client_ = client;
+}
+
 void HidConnection::Close() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!closed_);
@@ -84,9 +92,10 @@ void HidConnection::Close() {
 
 void HidConnection::Read(ReadCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!client_);
   if (device_info_->max_input_report_size() == 0) {
     HID_LOG(USER) << "This device does not support input reports.";
-    std::move(callback).Run(false, NULL, 0);
+    std::move(callback).Run(false, nullptr, 0);
     return;
   }
 
@@ -129,17 +138,17 @@ void HidConnection::GetFeatureReport(uint8_t report_id, ReadCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (device_info_->max_feature_report_size() == 0) {
     HID_LOG(USER) << "This device does not support feature reports.";
-    std::move(callback).Run(false, NULL, 0);
+    std::move(callback).Run(false, nullptr, 0);
     return;
   }
   if (device_info_->has_report_id() != (report_id != 0)) {
     HID_LOG(USER) << "Invalid feature report ID.";
-    std::move(callback).Run(false, NULL, 0);
+    std::move(callback).Run(false, nullptr, 0);
     return;
   }
   if (IsReportIdProtected(report_id)) {
     HID_LOG(USER) << "Attempt to get a protected feature report.";
-    std::move(callback).Run(false, NULL, 0);
+    std::move(callback).Run(false, nullptr, 0);
     return;
   }
 
@@ -191,12 +200,17 @@ void HidConnection::ProcessInputReport(
   if (IsReportIdProtected(report_id))
     return;
 
-  pending_reports_.emplace(buffer, size);
-  ProcessReadQueue();
+  if (client_) {
+    client_->OnInputReport(buffer, size);
+  } else {
+    pending_reports_.emplace(buffer, size);
+    ProcessReadQueue();
+  }
 }
 
 void HidConnection::ProcessReadQueue() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!client_);
 
   // Hold a reference to |this| to prevent a callback from freeing this object
   // during the loop.

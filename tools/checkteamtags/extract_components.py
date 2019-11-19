@@ -16,6 +16,8 @@ and dumps this information into a json file.
 Refer to crbug.com/667952
 """
 
+from __future__ import print_function
+
 import json
 import optparse
 import os
@@ -67,27 +69,27 @@ def display_stat(stats, root, options):
         optparse.
   """
   file_total = stats['OWNERS-count']
-  print ("%d OWNERS files in total." % file_total)
+  print("%d OWNERS files in total." % file_total)
   file_with_component = stats['OWNERS-with-component-only-count']
   file_pct_with_component = "N/A"
   if file_total > 0:
     file_pct_with_component = "{0:.2f}".format(
         100.0 * file_with_component / file_total)
-  print '%(file_with_component)d (%(file_pct_with_component)s%%) OWNERS '\
+  print('%(file_with_component)d (%(file_pct_with_component)s%%) OWNERS '\
         'files have COMPONENT' % {
             'file_with_component': file_with_component,
-            'file_pct_with_component': file_pct_with_component}
+            'file_pct_with_component': file_pct_with_component})
   file_with_team_component = stats['OWNERS-with-team-and-component-count']
   file_pct_with_team_component = "N/A"
   if file_total > 0:
     file_pct_with_team_component = "{0:.2f}".format(
         100.0 * file_with_team_component / file_total)
-  print '%(file_with_team_component)d (%(file_pct_with_team_component)s%%) '\
+  print('%(file_with_team_component)d (%(file_pct_with_team_component)s%%) '\
         'OWNERS files have TEAM and COMPONENT' % {
             'file_with_team_component': file_with_team_component,
-            'file_pct_with_team_component': file_pct_with_team_component}
+            'file_pct_with_team_component': file_pct_with_team_component})
 
-  print ("\nUnder directory %s " % root)
+  print("\nUnder directory %s " % root)
   # number of depth to display, default is max depth under root
   num_output_depth = len(stats['OWNERS-count-by-depth'])
   if (options.stat_coverage > 0
@@ -108,20 +110,22 @@ def display_stat(stats, root, options):
     if file_total_by_depth > 0:
       file_pct_with_team_component_by_depth = "{0:.2f}".format(
           100.0 * file_with_team_component_by_depth / file_total_by_depth)
-    print '%(file_total_by_depth)d OWNERS files at depth %(depth)d'% {
-        'file_total_by_depth': file_total_by_depth, 'depth': depth}
-    print 'have COMPONENT: %(file_with_component_by_depth)d, '\
+    print('%(file_total_by_depth)d OWNERS files at depth %(depth)d' % {
+        'file_total_by_depth': file_total_by_depth,
+        'depth': depth
+    })
+    print('have COMPONENT: %(file_with_component_by_depth)d, '\
           'percentage: %(file_pct_with_component_by_depth)s%%' % {
               'file_with_component_by_depth':
               file_with_component_by_depth,
               'file_pct_with_component_by_depth':
-              file_pct_with_component_by_depth}
-    print 'have COMPONENT and TEAM: %(file_with_team_component_by_depth)d,'\
+              file_pct_with_component_by_depth})
+    print('have COMPONENT and TEAM: %(file_with_team_component_by_depth)d,'\
           'percentage: %(file_pct_with_team_component_by_depth)s%%' % {
               'file_with_team_component_by_depth':
               file_with_team_component_by_depth,
               'file_pct_with_team_component_by_depth':
-              file_pct_with_team_component_by_depth}
+              file_pct_with_team_component_by_depth})
 
 
 def display_missing_info_OWNERS_files(stats, num_output_depth):
@@ -135,15 +139,15 @@ def display_missing_info_OWNERS_files(stats, num_output_depth):
       owners_file_tags module.
     num_output_depth (int): number of levels to be displayed.
   """
-  print "OWNERS files that have missing team and component by depth:"
+  print("OWNERS files that have missing team and component by depth:")
   max_output_depth = len(stats['OWNERS-count-by-depth'])
   if (num_output_depth < 0
       or num_output_depth > max_output_depth):
     num_output_depth = max_output_depth
 
   for depth in range(0, num_output_depth):
-    print 'at depth %(depth)d'%{'depth': depth}
-    print stats['OWNERS-missing-info-by-depth'][depth]
+    print('at depth %(depth)d' % {'depth': depth})
+    print(stats['OWNERS-missing-info-by-depth'][depth])
 
 
 def main(argv):
@@ -167,8 +171,6 @@ Examples:
                     help='If no errors occur, write the mappings to disk.')
   parser.add_option('-v', '--verbose', action='store_true',
                     help='Print warnings.')
-  parser.add_option('-f', '--force_print', action='store_true',
-                    help='Print the mappings despite errors.')
   parser.add_option('-o', '--output_file', help='Specify file to write the '
                     'mappings to instead of the default: <CWD>/'
                     'component_map.json (implies -w)')
@@ -189,14 +191,11 @@ Examples:
     root = _DEFAULT_SRC_LOCATION
 
   scrape_result = scrape_owners(root, include_subdirs=options.include_subdirs)
-  mappings, warnings, errors, stats = aggregate_components_from_owners(
-      scrape_result, root, include_subdirs=options.include_subdirs)
+  mappings, warnings, stats = aggregate_components_from_owners(scrape_result,
+                                                               root)
   if options.verbose:
     for w in warnings:
-      print w
-
-  for e in errors:
-    print e
+      print(w)
 
   if options.stat_coverage or options.complete_coverage:
     display_stat(stats, root, options)
@@ -208,16 +207,11 @@ Examples:
   mappings['AAA-README']= _README
   mapping_file_contents = json.dumps(mappings, sort_keys=True, indent=2)
   if options.write or options.output_file:
-    if errors:
-      print 'Not writing to file due to errors'
-      if options.force_print:
-        print mapping_file_contents
-    else:
-      write_results(options.output_file, mapping_file_contents)
+    write_results(options.output_file, mapping_file_contents)
   else:
-    print mapping_file_contents
+    print(mapping_file_contents)
 
-  return len(errors)
+  return 0
 
 
 if __name__ == '__main__':

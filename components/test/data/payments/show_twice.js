@@ -7,7 +7,7 @@
 /**
  * Launches the PaymentRequest UI twice.
  */
-function buy() {  // eslint-disable-line no-unused-vars
+function buy() { // eslint-disable-line no-unused-vars
   var payment1 = new PaymentRequest(
       [{supportedMethods: 'basic-card', data: {supportedNetworks: ['visa']}}],
       {total: {label: 'Total', amount: {currency: 'USD', value: '5.00'}}});

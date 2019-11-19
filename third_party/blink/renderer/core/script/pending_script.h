@@ -27,8 +27,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SCRIPT_PENDING_SCRIPT_H_
 
 #include "base/macros.h"
-#include "third_party/blink/public/mojom/script/script_type.mojom-blink.h"
-#include "third_party/blink/public/platform/web_scoped_virtual_time_pauser.h"
+#include "third_party/blink/public/mojom/script/script_type.mojom-blink-forward.h"
+#include "third_party/blink/public/platform/scheduler/web_scoped_virtual_time_pauser.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/script/script.h"
 #include "third_party/blink/renderer/core/script/script_element_base.h"
@@ -37,7 +37,6 @@
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_position.h"
-#include "third_party/blink/renderer/platform/wtf/time.h"
 
 namespace blink {
 
@@ -53,7 +52,7 @@ class CORE_EXPORT PendingScriptClient : public GarbageCollectedMixin {
   // streaming finishes.
   virtual void PendingScriptFinished(PendingScript*) = 0;
 
-  void Trace(blink::Visitor* visitor) override {}
+  void Trace(Visitor* visitor) override {}
 };
 
 // A container for an script after "prepare a script" until it is executed.
@@ -62,9 +61,8 @@ class CORE_EXPORT PendingScriptClient : public GarbageCollectedMixin {
 // When "script is ready"
 // https://html.spec.whatwg.org/C/#the-script-is-ready,
 // PendingScriptClient is notified.
-class CORE_EXPORT PendingScript
-    : public GarbageCollectedFinalized<PendingScript>,
-      public NameClient {
+class CORE_EXPORT PendingScript : public GarbageCollected<PendingScript>,
+                                  public NameClient {
  public:
   virtual ~PendingScript();
 
@@ -73,7 +71,7 @@ class CORE_EXPORT PendingScript
   // Returns the time the load of this script started blocking the parser, or
   // zero if this script hasn't yet blocked the parser, in
   // monotonicallyIncreasingTime.
-  TimeTicks ParserBlockingLoadStartTime() const {
+  base::TimeTicks ParserBlockingLoadStartTime() const {
     return parser_blocking_load_start_time_;
   }
 
@@ -85,7 +83,7 @@ class CORE_EXPORT PendingScript
 
   virtual mojom::ScriptType GetScriptType() const = 0;
 
-  virtual void Trace(blink::Visitor*);
+  virtual void Trace(Visitor*);
   const char* NameInHeapSnapshot() const override { return "PendingScript"; }
 
   // Returns nullptr when "script's script is null", i.e. an error occurred.
@@ -153,7 +151,7 @@ class CORE_EXPORT PendingScript
       bool was_canceled,
       bool is_external,
       bool created_during_document_write,
-      TimeTicks parser_blocking_load_start_time,
+      base::TimeTicks parser_blocking_load_start_time,
       bool is_controlled_by_script_runner);
 
   // |m_element| must points to the corresponding ScriptLoader's
@@ -162,16 +160,17 @@ class CORE_EXPORT PendingScript
   Member<ScriptElementBase> element_;
 
   TextPosition starting_position_;  // Only used for inline script tags.
-  TimeTicks parser_blocking_load_start_time_;
+  base::TimeTicks parser_blocking_load_start_time_;
 
   ScriptSchedulingType scheduling_type_ = ScriptSchedulingType::kNotSet;
 
   WebScopedVirtualTimePauser virtual_time_pauser_;
   Member<PendingScriptClient> client_;
 
-  // The context document at the time when PrepareScript() is executed.
-  // This is only used to check whether the script element is moved between
-  // documents and thus doesn't retain a strong reference.
+  // The context/element document at the time when PrepareScript() is executed.
+  // These are only used to check whether the script element is moved between
+  // documents and thus don't retain a strong references.
+  WeakMember<Document> original_element_document_;
   WeakMember<Document> original_context_document_;
 
   const bool created_during_document_write_;

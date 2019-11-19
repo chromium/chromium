@@ -35,8 +35,9 @@ bool DoCanFirewallUseLocalPorts() {
 }  // namespace
 
 void CanFirewallUseLocalPorts(base::OnceCallback<void(bool)> callback) {
-  auto task_runner = base::CreateCOMSTATaskRunnerWithTraits(
-      {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN});
+  auto task_runner = base::CreateCOMSTATaskRunner(
+      {base::ThreadPool(), base::MayBlock(),
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN});
   base::PostTaskAndReplyWithResult(task_runner.get(), FROM_HERE,
                                    base::BindOnce(&DoCanFirewallUseLocalPorts),
                                    std::move(callback));

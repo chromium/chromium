@@ -16,17 +16,17 @@
 #include "components/viz/service/display/output_surface_frame.h"
 #include "components/viz/service/display/software_output_device.h"
 #include "ui/gfx/presentation_feedback.h"
+#include "ui/gfx/swap_result.h"
 #include "ui/gfx/vsync_provider.h"
 #include "ui/latency/latency_info.h"
 
 namespace viz {
 
 SoftwareOutputSurface::SoftwareOutputSurface(
-    std::unique_ptr<SoftwareOutputDevice> software_device,
-    SyntheticBeginFrameSource* synthetic_begin_frame_source)
-    : OutputSurface(std::move(software_device)),
-      synthetic_begin_frame_source_(synthetic_begin_frame_source),
-      weak_factory_(this) {}
+    std::unique_ptr<SoftwareOutputDevice> software_device)
+    : OutputSurface(std::move(software_device)) {
+  capabilities_.max_frames_pending = software_device_->MaxFramesPending();
+}
 
 SoftwareOutputSurface::~SoftwareOutputSurface() = default;
 
@@ -64,35 +64,27 @@ void SoftwareOutputSurface::SwapBuffers(OutputSurfaceFrame frame) {
   base::TimeTicks swap_time = base::TimeTicks::Now();
   for (auto& latency : frame.latency_info) {
     latency.AddLatencyNumberWithTimestamp(
-        ui::INPUT_EVENT_GPU_SWAP_BUFFER_COMPONENT, swap_time, 1);
+        ui::INPUT_EVENT_GPU_SWAP_BUFFER_COMPONENT, swap_time);
     latency.AddLatencyNumberWithTimestamp(
-        ui::INPUT_EVENT_LATENCY_FRAME_SWAP_COMPONENT, swap_time, 1);
+        ui::INPUT_EVENT_LATENCY_FRAME_SWAP_COMPONENT, swap_time);
   }
 
-  DCHECK(stored_latency_info_.empty())
-      << "A second frame is not expected to "
-      << "arrive before the previous latency info is processed.";
-  stored_latency_info_ = std::move(frame.latency_info);
+  stored_latency_info_.emplace(std::move(frame.latency_info));
 
-  software_device()->OnSwapBuffers(base::BindOnce(
-      &SoftwareOutputSurface::SwapBuffersCallback, weak_factory_.GetWeakPtr()));
+  software_device()->OnSwapBuffers(
+      base::BindOnce(&SoftwareOutputSurface::SwapBuffersCallback,
+                     weak_factory_.GetWeakPtr(), swap_time));
 
   gfx::VSyncProvider* vsync_provider = software_device()->GetVSyncProvider();
-  if (vsync_provider && synthetic_begin_frame_source_) {
+  if (vsync_provider && update_vsync_parameters_callback_) {
     vsync_provider->GetVSyncParameters(
-        base::BindOnce(&SoftwareOutputSurface::UpdateVSyncParametersCallback,
+        base::BindOnce(&SoftwareOutputSurface::UpdateVSyncParameters,
                        weak_factory_.GetWeakPtr()));
   }
 }
 
 bool SoftwareOutputSurface::IsDisplayedAsOverlayPlane() const {
   return false;
-}
-
-OverlayCandidateValidator* SoftwareOutputSurface::GetOverlayCandidateValidator()
-    const {
-  // No overlay support in software compositing.
-  return nullptr;
 }
 
 unsigned SoftwareOutputSurface::GetOverlayTextureId() const {
@@ -115,31 +107,52 @@ uint32_t SoftwareOutputSurface::GetFramebufferCopyTextureFormat() {
   return 0;
 }
 
-void SoftwareOutputSurface::SwapBuffersCallback() {
-  latency_tracker_.OnGpuSwapBuffersCompleted(stored_latency_info_);
-  client_->DidFinishLatencyInfo(stored_latency_info_);
-  std::vector<ui::LatencyInfo>().swap(stored_latency_info_);
-  client_->DidReceiveSwapBuffersAck();
+void SoftwareOutputSurface::SwapBuffersCallback(base::TimeTicks swap_time,
+                                                const gfx::Size& pixel_size) {
+  auto& latency_info = stored_latency_info_.front();
+  latency_tracker_.OnGpuSwapBuffersCompleted(latency_info);
+  client_->DidFinishLatencyInfo(latency_info);
+  std::vector<ui::LatencyInfo>().swap(latency_info);
+  client_->DidReceiveSwapBuffersAck({swap_time, swap_time});
+  stored_latency_info_.pop();
 
   base::TimeTicks now = base::TimeTicks::Now();
   base::TimeDelta interval_to_next_refresh =
       now.SnappedToNextTick(refresh_timebase_, refresh_interval_) - now;
-
+#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
+  if (needs_swap_size_notifications_)
+    client_->DidSwapWithSize(pixel_size);
+#endif
   client_->DidReceivePresentationFeedback(
       gfx::PresentationFeedback(now, interval_to_next_refresh, 0u));
 }
 
-void SoftwareOutputSurface::UpdateVSyncParametersCallback(
-    base::TimeTicks timebase,
-    base::TimeDelta interval) {
-  DCHECK(synthetic_begin_frame_source_);
+void SoftwareOutputSurface::UpdateVSyncParameters(base::TimeTicks timebase,
+                                                  base::TimeDelta interval) {
+  DCHECK(update_vsync_parameters_callback_);
   refresh_timebase_ = timebase;
   refresh_interval_ = interval;
-  synthetic_begin_frame_source_->OnUpdateVSyncParameters(timebase, interval);
+  update_vsync_parameters_callback_.Run(timebase, interval);
 }
 
 unsigned SoftwareOutputSurface::UpdateGpuFence() {
   return 0;
 }
+
+void SoftwareOutputSurface::SetUpdateVSyncParametersCallback(
+    UpdateVSyncParametersCallback callback) {
+  update_vsync_parameters_callback_ = std::move(callback);
+}
+
+gfx::OverlayTransform SoftwareOutputSurface::GetDisplayTransform() {
+  return gfx::OVERLAY_TRANSFORM_NONE;
+}
+
+#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
+void SoftwareOutputSurface::SetNeedsSwapSizeNotifications(
+    bool needs_swap_size_notifications) {
+  needs_swap_size_notifications_ = needs_swap_size_notifications;
+}
+#endif
 
 }  // namespace viz

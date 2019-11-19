@@ -5,6 +5,8 @@
 #ifndef HEADLESS_LIB_BROWSER_PROTOCOL_PAGE_HANDLER_H_
 #define HEADLESS_LIB_BROWSER_PROTOCOL_PAGE_HANDLER_H_
 
+#include "base/memory/weak_ptr.h"
+#include "content/public/browser/devtools_agent_host.h"
 #include "headless/lib/browser/protocol/domain_handler.h"
 #include "headless/lib/browser/protocol/dp_page.h"
 #include "printing/buildflags/buildflags.h"
@@ -23,7 +25,8 @@ namespace protocol {
 
 class PageHandler : public DomainHandler, public Page::Backend {
  public:
-  PageHandler(base::WeakPtr<HeadlessBrowserImpl> browser,
+  PageHandler(scoped_refptr<content::DevToolsAgentHost> agent_host,
+              base::WeakPtr<HeadlessBrowserImpl> browser,
               content::WebContents* web_contents);
   ~PageHandler() override;
 
@@ -45,10 +48,19 @@ class PageHandler : public DomainHandler, public Page::Backend {
                   Maybe<String> header_template,
                   Maybe<String> footer_template,
                   Maybe<bool> prefer_css_page_size,
+                  Maybe<String> transfer_mode,
                   std::unique_ptr<PrintToPDFCallback> callback) override;
 
  private:
+#if BUILDFLAG(ENABLE_PRINTING)
+  void PDFCreated(bool returnAsStream,
+                  std::unique_ptr<PageHandler::PrintToPDFCallback> callback,
+                  HeadlessPrintManager::PrintResult print_result,
+                  scoped_refptr<base::RefCountedMemory> data);
+#endif
+  scoped_refptr<content::DevToolsAgentHost> agent_host_;
   content::WebContents* web_contents_;
+  base::WeakPtrFactory<PageHandler> weak_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(PageHandler);
 };
 

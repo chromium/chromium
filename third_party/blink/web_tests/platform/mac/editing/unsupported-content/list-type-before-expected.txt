@@ -18,7 +18,7 @@ layer at (0,0) size 800x600
           LayoutText {#text} at (0,28) size 656x22
             text run at (0,28) width 656: "Our ability to \"edit around\" content the HTML editing code does not yet handle very well. "
           LayoutBR {BR} at (655,45) size 1x0
-          LayoutInline {I} at (0,0) size 98x22
+          LayoutInline {I} at (0,50) size 98x22
             LayoutText {#text} at (0,50) size 98x22
               text run at (0,50) width 98: "For this test: "
           LayoutText {#text} at (97,50) size 224x22
@@ -33,7 +33,7 @@ layer at (0,0) size 800x600
             text run at (0,28) width 700: "The content in the red box must exactly match the content in the green box (except for the border"
             text run at (0,50) width 52: "color). "
           LayoutBR {BR} at (51,67) size 1x0
-          LayoutInline {I} at (0,0) size 98x22
+          LayoutInline {I} at (0,72) size 98x22
             LayoutText {#text} at (0,72) size 98x22
               text run at (0,72) width 98: "For this test: "
           LayoutText {#text} at (97,72) size 408x22

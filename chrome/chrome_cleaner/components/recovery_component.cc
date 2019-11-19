@@ -17,11 +17,13 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/message_loop/message_pump_type.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/process/kill.h"
 #include "base/process/launch.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "chrome/chrome_cleaner/buildflags.h"
 #include "chrome/chrome_cleaner/components/component_unpacker.h"
 #include "chrome/chrome_cleaner/constants/chrome_cleaner_switches.h"
 #include "chrome/chrome_cleaner/http/http_agent.h"
@@ -37,7 +39,7 @@ namespace {
 const char kComponentDownloadUrl[] =
     "https://clients2.google.com/service/update2/crx?response=redirect&os=win"
     "&arch=x86&installsource=swreporter&x=id%3Dnpdjjkjlcidkjlamlmmdelcjbcpdjocm"
-    "%26v%3D0.0.0.0%26uc";
+    "%26v%3D0.0.0.0%26uc&acceptformat=crx3";
 
 // CRX hash. The extension id is: npdjjkjlcidkjlamlmmdelcjbcpdjocm.
 const uint8_t kSha2Hash[] = {0xdf, 0x39, 0x9a, 0x9b, 0x28, 0x3a, 0x9b, 0x0c,
@@ -45,7 +47,8 @@ const uint8_t kSha2Hash[] = {0xdf, 0x39, 0x9a, 0x9b, 0x28, 0x3a, 0x9b, 0x0c,
                              0x19, 0x7a, 0x71, 0x4b, 0x0a, 0x7c, 0x80, 0x1c,
                              0xf6, 0x29, 0x7c, 0x0a, 0x5f, 0xea, 0x67, 0xb7};
 
-// Name of the executable file as well as the command line arg to use for Foil.
+// Name of the executable file as well as the command line arg to use when run
+// from the Chrome Cleanup tool.
 const wchar_t kChromeRecoveryExe[] = L"ChromeRecovery.exe";
 const char kChromeRecoveryArg[] = "/installsource swreporter";
 
@@ -132,7 +135,7 @@ bool RecoveryComponent::IsAvailable() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
 // Only add the recovery component in official builds, unless it's forced, and
 // not if it's explicitly disabled.
-#if defined(CHROME_CLEANER_OFFICIAL_BUILD)
+#if BUILDFLAG(IS_OFFICIAL_CHROME_CLEANER_BUILD)
   return !command_line->HasSwitch(kNoRecoveryComponentSwitch);
 #else
   return command_line->HasSwitch(kForceRecoveryComponentSwitch);
@@ -152,7 +155,7 @@ void RecoveryComponent::SetHttpAgentFactoryForTesting(
 
 void RecoveryComponent::PreScan() {
   bool success = recovery_io_thread_.StartWithOptions(
-      base::Thread::Options(base::MessageLoop::TYPE_IO, 0));
+      base::Thread::Options(base::MessagePumpType::IO, 0));
   DCHECK(success) << "Can't start File Thread!";
 
   recovery_io_thread_.task_runner()->PostTask(

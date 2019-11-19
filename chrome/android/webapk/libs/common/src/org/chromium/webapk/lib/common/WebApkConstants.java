@@ -27,6 +27,8 @@ public final class WebApkConstants {
     // Activity launch time for uma tracking of Chrome web apk startup
     public static final String EXTRA_WEBAPK_LAUNCH_TIME =
             "org.chromium.chrome.browser.webapk_launch_time";
+    public static final String EXTRA_NEW_STYLE_SPLASH_SHOWN_TIME =
+            "org.chromium.webapk.new_style_splash_shown_time";
     // Whether the WebAPK provides a splash screen activity which should be launched by the host
     // browser to hide the web contents while the page is loading.
     public static final String EXTRA_SPLASH_PROVIDED_BY_WEBAPK =
@@ -41,11 +43,4 @@ public final class WebApkConstants {
 
     /** Name of the shared preferences file. */
     public static final String PREF_PACKAGE = "org.chromium.webapk.shell_apk";
-
-    /**
-     * Action used by host browser to launch splash screen activity to hide web contents while the
-     * page is loading.
-     */
-    public static final String ACTION_SHOW_SPLASH =
-            "org.chromium.webapk.shell_apk.ACTION_SHOW_SPLASH";
 }

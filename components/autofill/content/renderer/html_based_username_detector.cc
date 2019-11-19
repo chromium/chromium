@@ -5,7 +5,9 @@
 #include "components/autofill/content/renderer/html_based_username_detector.h"
 
 #include <algorithm>
+#include <string>
 #include <tuple>
+#include <utility>
 
 #include "base/containers/flat_set.h"
 #include "base/i18n/case_conversion.h"
@@ -15,6 +17,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
 #include "components/autofill/content/renderer/html_based_username_detector_vocabulary.h"
+#include "components/autofill/core/common/form_data.h"
 #include "third_party/blink/public/web/web_form_element.h"
 
 using blink::WebFormControlElement;
@@ -223,23 +226,25 @@ void RemoveFieldsWithNegativeWords(
 void FindWordsFromCategoryInForm(
     const std::vector<UsernameFieldData>& possible_usernames_data,
     const CategoryOfWords& category,
-    std::vector<blink::WebInputElement>* username_predictions) {
+    std::vector<uint32_t>* username_predictions) {
   // Auxiliary element that contains the first field (in order of appearance in
   // the form) in which a substring is encountered.
-  WebInputElement chosen_field;
+  uint32_t chosen_field_renderer_id = FormData::kNotSetFormRendererId;
 
   size_t fields_found = 0;
   for (const UsernameFieldData& field_data : possible_usernames_data) {
     if (ContainsWordFromCategory(field_data, category)) {
-      if (fields_found == 0)
-        chosen_field = field_data.input_element;
+      if (fields_found == 0) {
+        chosen_field_renderer_id =
+            field_data.input_element.UniqueRendererFormControlId();
+      }
       fields_found++;
     }
   }
 
   if (fields_found > 0 && fields_found <= 2)
-    if (!base::ContainsValue(*username_predictions, chosen_field))
-      username_predictions->push_back(chosen_field);
+    if (!base::Contains(*username_predictions, chosen_field_renderer_id))
+      username_predictions->push_back(chosen_field_renderer_id);
 }
 
 // Find username elements if there is no cached result for the given form and
@@ -247,7 +252,7 @@ void FindWordsFromCategoryInForm(
 void FindUsernameFieldInternal(
     const std::vector<blink::WebFormControlElement>& all_control_elements,
     const FormData& form_data,
-    std::vector<blink::WebInputElement>* username_predictions) {
+    std::vector<uint32_t>* username_predictions) {
   DCHECK(username_predictions);
   DCHECK(username_predictions->empty());
 
@@ -279,9 +284,16 @@ void FindUsernameFieldInternal(
   }
 }
 
+// Returns the |unique_renderer_id| of a given |WebFormElement|. If
+// |WebFormElement::IsNull()| return |kNotSetFormRendererId|.
+uint32_t GetFormRendererId(WebFormElement form) {
+  return form.IsNull() ? FormData::kNotSetFormRendererId
+                       : form.UniqueRendererFormId();
+}
+
 }  // namespace
 
-const std::vector<WebInputElement>& GetPredictionsFieldBasedOnHtmlAttributes(
+const std::vector<uint32_t>& GetPredictionsFieldBasedOnHtmlAttributes(
     const std::vector<WebFormControlElement>& all_control_elements,
     const FormData& form_data,
     UsernameDetectorCache* username_detector_cache) {
@@ -293,18 +305,17 @@ const std::vector<WebInputElement>& GetPredictionsFieldBasedOnHtmlAttributes(
 
   // All elements in |all_control_elements| should have the same |Form()|.
   DCHECK(AllElementsBelongsToSameForm(all_control_elements));
-
-  const WebFormElement form = all_control_elements[0].Form();
+  const WebFormElement form = all_control_elements.at(0).Form();
 
   // True if the cache has no entry for |form|.
   bool cache_miss = true;
   // Iterator pointing to the entry for |form| if the entry for |form| is found.
   UsernameDetectorCache::iterator form_position;
   std::tie(form_position, cache_miss) = username_detector_cache->insert(
-      std::make_pair(form, std::vector<WebInputElement>()));
+      std::make_pair(GetFormRendererId(form), std::vector<uint32_t>()));
 
   if (cache_miss) {
-    std::vector<WebInputElement> username_predictions;
+    std::vector<uint32_t> username_predictions;
     FindUsernameFieldInternal(all_control_elements, form_data,
                               &username_predictions);
     if (!username_predictions.empty())

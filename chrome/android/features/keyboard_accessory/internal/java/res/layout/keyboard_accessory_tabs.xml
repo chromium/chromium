@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2018 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<org.chromium.chrome.browser.keyboard_accessory.tab_layout_component.KeyboardAccessoryTabLayoutView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:tabIndicatorHeight="0dp"
+    app:tabTextColor="@color/default_icon_color"
+    app:tabMaxWidth="@dimen/keyboard_accessory_tab_icon_width"
+    app:tabPaddingStart="@dimen/keyboard_accessory_bar_item_padding"
+    app:tabPaddingEnd="@dimen/keyboard_accessory_bar_item_padding"
+    app:tabSelectedTextColor="@color/tab_layout_selected_tab_color"
+    android:layout_gravity="end"
+    android:layout_width="wrap_content"
+    android:layout_height="@dimen/keyboard_accessory_tab_size"/>

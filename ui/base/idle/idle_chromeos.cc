@@ -5,8 +5,8 @@
 #include "ui/base/idle/idle.h"
 
 #include "base/time/time.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/session_manager_client.h"
+#include "chromeos/dbus/session_manager/session_manager_client.h"
+#include "ui/base/idle/idle_internal.h"
 #include "ui/base/user_activity/user_activity_detector.h"
 
 namespace ui {
@@ -18,8 +18,10 @@ int CalculateIdleTime() {
 }
 
 bool CheckIdleStateIsLocked() {
-  return chromeos::DBusThreadManager::Get()->GetSessionManagerClient()->
-      IsScreenLocked();
+  if (IdleStateForTesting().has_value())
+    return IdleStateForTesting().value() == IDLE_STATE_LOCKED;
+
+  return chromeos::SessionManagerClient::Get()->IsScreenLocked();
 }
 
 }  // namespace ui

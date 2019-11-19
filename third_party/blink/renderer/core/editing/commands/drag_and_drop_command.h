@@ -16,10 +16,6 @@ namespace blink {
 // command wrapper to achieve undo group.
 class DragAndDropCommand final : public CompositeEditCommand {
  public:
-  static DragAndDropCommand* Create(Document& document) {
-    return MakeGarbageCollected<DragAndDropCommand>(document);
-  }
-
   explicit DragAndDropCommand(Document&);
 
   bool IsCommandGroupWrapper() const override;

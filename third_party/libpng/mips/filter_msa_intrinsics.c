@@ -1,14 +1,15 @@
 
 /* filter_msa_intrinsics.c - MSA optimised filter functions
  *
+ * Copyright (c) 2018 Cosmin Truta
  * Copyright (c) 2016 Glenn Randers-Pehrson
  * Written by Mandar Sahastrabuddhe, August 2016.
- * Last changed in libpng 1.6.25 [September 1, 2016]
  *
  * This code is released under the libpng license.
  * For conditions of distribution and use, see the disclaimer
  * and license in png.h
  */
+
 #include <stdio.h>
 #include <stdint.h>
 #include "../pngpriv.h"

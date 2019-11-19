@@ -128,28 +128,6 @@ void RecordInvalidStructure(InvalidStructureType invalid_type) {
                             invalid_type, STRUCTURE_EVENT_MAX);
 }
 
-// TODO(shess): If this proves out, move it all into sql::Database to be
-// shared.
-void GenerateDiagnostics(sql::Database* db,
-                         int extended_error,
-                         sql::Statement* stmt) {
-  // Since some/most errors will not resolve themselves, only report
-  // once per Chrome run.
-  static bool reported = false;
-  if (reported)
-    return;
-  reported = true;
-
-  // Only pass 5% of new reports to prevent a thundering herd of dumps.
-  // TODO(shess): If this could be related to the time in the channel, then the
-  // rate could ramp up over time.  Perhaps could remember the timestamp the
-  // first time upload is considered, and ramp up 1% per day?
-  static const uint64_t kReportPercent = 5;
-  uint64_t rand = base::RandGenerator(100);
-  if (rand <= kReportPercent)
-    db->ReportDiagnosticInfo(extended_error, stmt);
-}
-
 // NOTE(shess): Schema modifications must consider initial creation in
 // |InitImpl()| and history pruning in |RetainDataForPageUrls()|.
 bool InitTables(sql::Database* db) {
@@ -229,10 +207,6 @@ void DatabaseErrorCallback(sql::Database* db,
   // TODO(shess): Assert that this is running on a safe thread.
   // AFAICT, should be the history thread, but at this level I can't
   // see how to reach that.
-
-  if (backend_client && backend_client->ShouldReportDatabaseError()) {
-    GenerateDiagnostics(db, extended_error, stmt);
-  }
 
   // Attempt to recover corrupt databases.
   if (sql::Recovery::ShouldRecover(extended_error)) {
@@ -681,7 +655,7 @@ bool ThumbnailDatabase::GetFaviconLastUpdatedTime(
     return false;
 
   // Return false also if there there is no bitmap with |icon_id|.
-  if (statement.ColumnType(0) == sql::COLUMN_TYPE_NULL)
+  if (statement.GetColumnType(0) == sql::ColumnType::kNull)
     return false;
 
   if (last_updated) {
@@ -1073,6 +1047,7 @@ sql::InitStatus ThumbnailDatabase::OpenDatabase(sql::Database* db,
 
   if (!db->Open(db_name))
     return sql::INIT_FAILURE;
+  db->Preload();
 
   return sql::INIT_OK;
 }

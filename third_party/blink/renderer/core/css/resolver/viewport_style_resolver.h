@@ -44,13 +44,9 @@ class DocumentStyleSheetCollection;
 class MutableCSSPropertyValueSet;
 class StyleRuleViewport;
 
-class CORE_EXPORT ViewportStyleResolver
-    : public GarbageCollectedFinalized<ViewportStyleResolver> {
+class CORE_EXPORT ViewportStyleResolver final
+    : public GarbageCollected<ViewportStyleResolver> {
  public:
-  static ViewportStyleResolver* Create(Document& document) {
-    return MakeGarbageCollected<ViewportStyleResolver>(document);
-  }
-
   explicit ViewportStyleResolver(Document&);
 
   void InitialStyleChanged();

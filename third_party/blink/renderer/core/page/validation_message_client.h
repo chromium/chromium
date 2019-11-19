@@ -58,11 +58,13 @@ class ValidationMessageClient : public GarbageCollectedMixin {
   virtual bool IsValidationMessageVisible(const Element& anchor) = 0;
 
   virtual void DocumentDetached(const Document&) = 0;
+  virtual void DidChangeFocusTo(const Element* new_element) = 0;
 
   virtual void WillBeDestroyed() = 0;
 
+  virtual void ServiceScriptedAnimations(base::TimeTicks) {}
   virtual void LayoutOverlay() {}
-  virtual void PaintOverlay() {}
+  virtual void UpdatePrePaint() {}
   // For CompositeAfterPaint.
   virtual void PaintOverlay(GraphicsContext&) {}
 

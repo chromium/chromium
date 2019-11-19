@@ -45,8 +45,7 @@ class ScrollAnchorTest : public testing::WithParamInterface<bool>,
   }
 
   ScrollAnchor& GetScrollAnchor(ScrollableArea* scroller) {
-    DCHECK(scroller->IsLocalFrameView() ||
-           scroller->IsPaintLayerScrollableArea());
+    DCHECK(scroller->IsPaintLayerScrollableArea());
     return *(scroller->GetScrollAnchor());
   }
 

@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/css/resolver/css_property_priority.h"
 #include "third_party/blink/renderer/core/css/resolver/matched_properties_cache.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder.h"
+#include "third_party/blink/renderer/core/css/resolver/style_cascade.h"
 #include "third_party/blink/renderer/core/css/selector_checker.h"
 #include "third_party/blink/renderer/core/css/selector_filter.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
@@ -42,9 +43,8 @@
 
 namespace blink {
 
-class AnimatableValue;
-class CSSRuleList;
 class CSSValue;
+class CompositorKeyframeValue;
 class Document;
 class Element;
 class Interpolation;
@@ -55,18 +55,13 @@ class StyleRuleUsageTracker;
 class PropertyHandle;
 
 enum RuleMatchingBehavior { kMatchAllRules, kMatchAllRulesExcludingSMIL };
+enum ApplyMask { kApplyMaskRegular = 1 << 0, kApplyMaskVisited = 1 << 1 };
 
 // This class selects a ComputedStyle for a given element in a document based on
 // the document's collection of stylesheets (user styles, author styles, UA
 // style). There is a 1-1 relationship of StyleResolver and Document.
-class CORE_EXPORT StyleResolver final
-    : public GarbageCollectedFinalized<StyleResolver> {
-
+class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
  public:
-  static StyleResolver* Create(Document& document) {
-    return MakeGarbageCollected<StyleResolver>(document);
-  }
-
   explicit StyleResolver(Document&);
   ~StyleResolver();
   void Dispose();
@@ -79,7 +74,7 @@ class CORE_EXPORT StyleResolver final
 
   static scoped_refptr<ComputedStyle> InitialStyleForElement(Document&);
 
-  static AnimatableValue* CreateAnimatableValueSnapshot(
+  static CompositorKeyframeValue* CreateCompositorKeyframeValueSnapshot(
       Element&,
       const ComputedStyle& base_style,
       const ComputedStyle* parent_style,
@@ -88,12 +83,12 @@ class CORE_EXPORT StyleResolver final
 
   scoped_refptr<ComputedStyle> PseudoStyleForElement(
       Element*,
-      const PseudoStyleRequest&,
+      const PseudoElementStyleRequest&,
       const ComputedStyle* parent_style,
       const ComputedStyle* layout_parent_style);
 
-  scoped_refptr<ComputedStyle> StyleForPage(int page_index);
-  scoped_refptr<ComputedStyle> StyleForText(Text*);
+  scoped_refptr<const ComputedStyle> StyleForPage(int page_index);
+  scoped_refptr<const ComputedStyle> StyleForText(Text*);
 
   static scoped_refptr<ComputedStyle> StyleForViewport(Document&);
 
@@ -115,16 +110,16 @@ class CORE_EXPORT StyleResolver final
         kUAAndUserCSSRules | kAuthorCSSRules | kCrossOriginCSSRules,
     kAllCSSRules = kAllButEmptyCSSRules | kEmptyCSSRules,
   };
-  CSSRuleList* CssRulesForElement(
+  RuleIndexList* CssRulesForElement(
       Element*,
       unsigned rules_to_include = kAllButEmptyCSSRules);
-  CSSRuleList* PseudoCSSRulesForElement(
+  RuleIndexList* PseudoCSSRulesForElement(
       Element*,
       PseudoId,
       unsigned rules_to_include = kAllButEmptyCSSRules);
   StyleRuleList* StyleRulesForElement(Element*, unsigned rules_to_include);
 
-  void ComputeFont(ComputedStyle*, const CSSPropertyValueSet&);
+  void ComputeFont(Element&, ComputedStyle*, const CSSPropertyValueSet&);
 
   // FIXME: Rename to reflect the purpose, like didChangeFontSize or something.
   void InvalidateMatchedPropertiesCache();
@@ -218,49 +213,83 @@ class CORE_EXPORT StyleResolver final
     bool flags_[kPropertyPriorityCount * 2] = {0};
   };
 
+  enum class ForcedColorFilter { kEnabled, kDisabled };
+
   enum ShouldUpdateNeedsApplyPass {
     kCheckNeedsApplyPass = false,
     kUpdateNeedsApplyPass = true,
   };
 
-  void ApplyMatchedPropertiesAndCustomPropertyAnimations(
-      StyleResolverState&,
-      const MatchResult&,
-      const Element* animating_element);
   CacheSuccess ApplyMatchedCache(StyleResolverState&, const MatchResult&);
-  enum ApplyAnimations { kExcludeAnimations, kIncludeAnimations };
   void ApplyCustomProperties(StyleResolverState&,
                              const MatchResult&,
-                             ApplyAnimations,
                              const CacheSuccess&,
                              NeedsApplyPass&);
   void ApplyMatchedAnimationProperties(StyleResolverState&,
                                        const MatchResult&,
                                        const CacheSuccess&,
                                        NeedsApplyPass&);
-  void ApplyMatchedStandardProperties(StyleResolverState&,
-                                      const MatchResult&,
-                                      const CacheSuccess&,
-                                      NeedsApplyPass&);
-  void CalculateAnimationUpdate(StyleResolverState&,
-                                const Element* animating_element);
-  bool ApplyAnimatedStandardProperties(StyleResolverState&, const Element*);
+  void ApplyMatchedHighPriorityProperties(StyleResolverState&,
+                                          const MatchResult&,
+                                          const CacheSuccess&,
+                                          bool& apply_inherited_only,
+                                          NeedsApplyPass&);
+  void ApplyMatchedLowPriorityProperties(StyleResolverState&,
+                                         const MatchResult&,
+                                         const CacheSuccess&,
+                                         bool& apply_inherited_only,
+                                         NeedsApplyPass&);
+  void ApplyMatchedProperties(StyleResolverState&, const MatchResult&);
+  template <CSSPropertyPriority priority>
+  void ApplyForcedColors(StyleResolverState& state,
+                         const MatchResult& match_result,
+                         bool apply_inherited_only,
+                         NeedsApplyPass& needs_apply_pass);
+  template <CSSPropertyPriority priority>
+  void ApplyUaForcedColors(StyleResolverState& state,
+                           const MatchResult& match_result,
+                           bool apply_inherited_only,
+                           NeedsApplyPass& needs_apply_pass);
+
+  void CascadeAndApplyMatchedProperties(StyleResolverState&,
+                                        const MatchResult&);
+  void CascadeMatchResult(StyleResolverState&,
+                          StyleCascade&,
+                          const MatchResult&);
+  void CascadeRange(StyleResolverState&,
+                    StyleCascade&,
+                    const MatchedPropertiesRange&,
+                    StyleCascade::Origin);
+  void CascadeTransitions(StyleResolverState&, StyleCascade&);
+  void CascadeAnimations(StyleResolverState&, StyleCascade&);
+  void CascadeInterpolations(StyleCascade&,
+                             const ActiveInterpolationsMap&,
+                             StyleCascade::Origin);
+
+  void CalculateAnimationUpdate(StyleResolverState&);
+
+  bool ApplyAnimatedStandardProperties(StyleResolverState&);
 
   void ApplyCallbackSelectors(StyleResolverState&);
 
   template <CSSPropertyPriority priority, ShouldUpdateNeedsApplyPass>
-  void ApplyMatchedProperties(StyleResolverState&,
-                              const MatchedPropertiesRange&,
-                              bool important,
-                              bool inherited_only,
-                              NeedsApplyPass&);
+  void ApplyMatchedProperties(
+      StyleResolverState&,
+      const MatchedPropertiesRange&,
+      bool important,
+      bool inherited_only,
+      NeedsApplyPass&,
+      ForcedColorFilter forced_colors = ForcedColorFilter::kDisabled);
   template <CSSPropertyPriority priority, ShouldUpdateNeedsApplyPass>
-  void ApplyProperties(StyleResolverState&,
-                       const CSSPropertyValueSet* properties,
-                       bool is_important,
-                       bool inherited_only,
-                       NeedsApplyPass&,
-                       PropertyWhitelistType = kPropertyWhitelistNone);
+  void ApplyProperties(
+      StyleResolverState&,
+      const CSSPropertyValueSet* properties,
+      bool is_important,
+      bool inherited_only,
+      NeedsApplyPass&,
+      ValidPropertyFilter,
+      unsigned apply_mask,
+      ForcedColorFilter forced_colors = ForcedColorFilter::kDisabled);
   template <CSSPropertyPriority priority>
   void ApplyAnimatedStandardProperties(StyleResolverState&,
                                        const ActiveInterpolationsMap&);
@@ -268,15 +297,20 @@ class CORE_EXPORT StyleResolver final
   void ApplyAllProperty(StyleResolverState&,
                         const CSSValue&,
                         bool inherited_only,
-                        PropertyWhitelistType);
+                        ValidPropertyFilter,
+                        unsigned apply_mask);
+
+  void ApplyCascadedColorValue(StyleResolverState&);
 
   bool PseudoStyleForElementInternal(Element&,
-                                     const PseudoStyleRequest&,
+                                     const PseudoElementStyleRequest&,
                                      StyleResolverState&);
 
   bool HasAuthorBorder(const StyleResolverState&);
   Document& GetDocument() const { return *document_; }
   bool WasViewportResized() const { return was_viewport_resized_; }
+
+  bool IsForcedColorsModeEnabled() const;
 
   MatchedPropertiesCache matched_properties_cache_;
   Member<Document> document_;
@@ -287,6 +321,8 @@ class CORE_EXPORT StyleResolver final
   bool print_media_type_ = false;
   bool was_viewport_resized_ = false;
   DISALLOW_COPY_AND_ASSIGN(StyleResolver);
+
+  FRIEND_TEST_ALL_PREFIXES(ComputedStyleTest, ApplyInternalLightDarkColor);
 };
 
 }  // namespace blink

@@ -1,0 +1,27 @@
+Verifies that making cross origin requests which set SameSite=Lax cookies send us Network.ResponseReceivedExtraInfo events with corresponding blocked set-cookies.
+
+Javascript initiated subresource blocked set-cookies: [
+  {
+    "blockedReasons": [
+      "SameSiteLax"
+    ],
+    "cookieLine": "name=value; SameSite=Lax",
+    "cookie": {
+      "name": "name",
+      "value": "value",
+      "domain": "cookie.test",
+      "path": "/inspector-protocol/network/resources",
+      "expires": -1,
+      "size": 9,
+      "httpOnly": false,
+      "secure": false,
+      "session": true,
+      "sameSite": "Lax"
+    }
+  }
+]
+
+Javascript initiated navigation blocked set-cookies: []
+
+Browser initiated navigation blocked set-cookies: []
+

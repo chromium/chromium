@@ -20,7 +20,7 @@ enum class AutomaticGainControlType {
   kExperimental,
   kHybridExperimental
 };
-enum class EchoCancellationType { kDisabled, kAec2, kAec3, kSystemAec };
+enum class EchoCancellationType { kDisabled, kAec3, kSystemAec };
 enum class NoiseSuppressionType { kDisabled, kDefault, kExperimental };
 
 struct MEDIA_EXPORT AudioProcessingSettings {
@@ -43,8 +43,7 @@ struct MEDIA_EXPORT AudioProcessingSettings {
 
   // Indicates whether WebRTC will be required to perform the audio processing.
   bool requires_apm() const {
-    return echo_cancellation == EchoCancellationType::kAec2 ||
-           echo_cancellation == EchoCancellationType::kAec3 ||
+    return echo_cancellation == EchoCancellationType::kAec3 ||
            noise_suppression != NoiseSuppressionType::kDisabled ||
            automatic_gain_control != AutomaticGainControlType::kDisabled ||
            high_pass_filter || typing_detection || stereo_mirroring;

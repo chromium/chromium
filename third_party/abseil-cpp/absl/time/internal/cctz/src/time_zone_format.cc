@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//   http://www.apache.org/licenses/LICENSE-2.0
+//   https://www.apache.org/licenses/LICENSE-2.0
 //
 //   Unless required by applicable law or agreed to in writing, software
 //   distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,17 @@
 # endif
 #endif
 
+#if defined(HAS_STRPTIME) && HAS_STRPTIME
+# if !defined(_XOPEN_SOURCE)
+#  define _XOPEN_SOURCE  // Definedness suffices for strptime.
+# endif
+#endif
+
 #include "absl/time/internal/cctz/include/cctz/time_zone.h"
+
+// Include time.h directly since, by C++ standards, ctime doesn't have to
+// declare strptime.
+#include <time.h>
 
 #include <cctype>
 #include <chrono>
@@ -72,7 +82,7 @@ std::tm ToTM(const time_zone::absolute_lookup& al) {
     tm.tm_year = static_cast<int>(al.cs.year() - 1900);
   }
 
-  switch (get_weekday(civil_day(al.cs))) {
+  switch (get_weekday(al.cs)) {
     case weekday::sunday:
       tm.tm_wday = 0;
       break;
@@ -95,7 +105,7 @@ std::tm ToTM(const time_zone::absolute_lookup& al) {
       tm.tm_wday = 6;
       break;
   }
-  tm.tm_yday = get_yearday(civil_day(al.cs)) - 1;
+  tm.tm_yday = get_yearday(al.cs) - 1;
   tm.tm_isdst = al.is_dst ? 1 : 0;
   return tm;
 }

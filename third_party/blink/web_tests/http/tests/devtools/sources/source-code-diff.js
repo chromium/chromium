@@ -14,7 +14,7 @@
   SourcesTestRunner.waitForScriptSource(
       'diff-after.css', uiSourceCode => uiSourceCode.requestContent().then(onAfterContent));
 
-  function onAfterContent(content) {
+  function onAfterContent({ content, error, isEncoded }) {
     textAfter = content;
     SourcesTestRunner.waitForScriptSource('diff-before.css', onBeforeUISourceCode);
   }

@@ -6,6 +6,7 @@
 #define UI_OZONE_DEMO_VULKAN_OVERLAY_RENDERER_H_
 
 #include <vulkan/vulkan.h>
+#include <memory>
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
@@ -29,11 +30,13 @@ class VulkanCommandPool;
 
 namespace ui {
 class OverlaySurface;
+class PlatformWindowSurface;
 class SurfaceFactoryOzone;
 
 class VulkanOverlayRenderer : public RendererBase {
  public:
-  VulkanOverlayRenderer(std::unique_ptr<OverlaySurface> overlay_surface,
+  VulkanOverlayRenderer(std::unique_ptr<PlatformWindowSurface> window_surface,
+                        std::unique_ptr<OverlaySurface> overlay_surface,
                         SurfaceFactoryOzone* surface_factory_ozone,
                         gpu::VulkanImplementation* vulkan_instance,
                         gfx::AcceleratedWidget widget,
@@ -106,6 +109,8 @@ class VulkanOverlayRenderer : public RendererBase {
   size_t in_use_buffers_ = 0;
   std::unique_ptr<Buffer> buffers_[2];
 
+  std::unique_ptr<PlatformWindowSurface> window_surface_;
+
   SurfaceFactoryOzone* const surface_factory_ozone_;
   gpu::VulkanImplementation* const vulkan_implementation_;
   std::unique_ptr<gpu::VulkanDeviceQueue> device_queue_;
@@ -114,7 +119,7 @@ class VulkanOverlayRenderer : public RendererBase {
 
   VkRenderPass render_pass_ = VK_NULL_HANDLE;
 
-  base::WeakPtrFactory<VulkanOverlayRenderer> weak_ptr_factory_;
+  base::WeakPtrFactory<VulkanOverlayRenderer> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(VulkanOverlayRenderer);
 };

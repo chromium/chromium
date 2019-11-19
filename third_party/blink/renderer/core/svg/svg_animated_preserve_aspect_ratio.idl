@@ -25,6 +25,7 @@
 
 // https://svgwg.org/svg2-draft/coords.html#InterfaceSVGAnimatedPreserveAspectRatio
 
+[Exposed=Window]
 interface SVGAnimatedPreserveAspectRatio {
     readonly attribute SVGPreserveAspectRatio baseVal;
     readonly attribute SVGPreserveAspectRatio animVal;

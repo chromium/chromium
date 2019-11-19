@@ -17,14 +17,14 @@ private:
     RefPtr<HeapObject> m_obj;
 };
 
-class HeapObject : public GarbageCollectedFinalized<HeapObject> {
-public:
-    void Trace(Visitor*);
-private:
-    PartObject m_part;
-    Vector<RefPtr<HeapObject> > m_objs;
-};
+class HeapObject : public GarbageCollected<HeapObject> {
+ public:
+  void Trace(Visitor*);
 
+ private:
+  PartObject m_part;
+  Vector<RefPtr<HeapObject>> m_objs;
+};
 }
 
 #endif

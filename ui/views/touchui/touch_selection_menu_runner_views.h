@@ -61,7 +61,7 @@ class VIEWS_EXPORT TouchSelectionMenuRunnerViews
 
   // A pointer to the currently running menu, or |nullptr| if no menu is
   // running. The menu manages its own lifetime and deletes itself when closed.
-  TouchSelectionMenuViews* menu_;
+  TouchSelectionMenuViews* menu_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(TouchSelectionMenuRunnerViews);
 };

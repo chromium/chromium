@@ -1,0 +1,42 @@
+<body></body>
+<script>
+// |kThirdPartyServiceWorker| from web_feature.mojom.
+const kFeature = 3007;
+
+async function setupServiceWorker() {
+  await navigator.serviceWorker.register('registration-worker.js');
+  await navigator.serviceWorker.ready;
+}
+
+async function verifyUseCounter() {
+  await window.internals.observeUseCounter(document, kFeature);
+}
+
+window.onmessage = (msg) => {
+  if (msg.data == 'unregister') {
+    navigator.serviceWorker.getRegistration()
+    .then(reg => {
+      if (reg)
+        return reg.unregister();
+    })
+    .then(successful => {
+      if (successful) {
+        msg.source.postMessage('unregister_done', '*');
+      } else {
+        msg.source.postMessage('unregister_failed', '*');
+      }
+    });
+  } else {
+    msg.source.postMessage('unexpected_message', '*');
+  }
+};
+
+window.onload = function() {
+  setupServiceWorker();
+  verifyUseCounter();
+  if (window.internals.isUseCounted(document, kFeature)) {
+    window.parent.postMessage('verified_has_use_counter', '*');
+  }
+};
+
+</script>

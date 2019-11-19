@@ -10,6 +10,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome/test/base/js_test_api.h"
 #include "third_party/blink/public/web/blink.h"
 
 namespace {
@@ -38,11 +39,40 @@ bool g_had_errors = false;
 // testDone results.
 bool g_test_result_ok = false;
 
+// Location of src root.
+base::FilePath g_src_root;
+
 // Location of test data (currently test/data/webui).
 base::FilePath g_test_data_directory;
 
 // Location of generated test data (<(PROGRAM_DIR)/test_data).
 base::FilePath g_gen_test_data_directory;
+
+// Finds the file that is indicated by |library_path|, updates |library_path|
+// to be an absolute path to that file, and returns true.
+// If no file is found, returns false.
+bool FindLibraryFile(base::FilePath* library_path) {
+  if (library_path->IsAbsolute()) {
+    // Absolute file. Only one place to look.
+    return base::PathExists(*library_path);
+  }
+
+  // Look for relative file.
+  base::FilePath possible_path = g_src_root.Append(*library_path);
+  if (!base::PathExists(possible_path)) {
+    possible_path = g_gen_test_data_directory.Append(*library_path);
+    if (!base::PathExists(possible_path)) {
+      possible_path = g_test_data_directory.Append(*library_path);
+      if (!base::PathExists(possible_path)) {
+        return false;  // Couldn't find relative file anywhere.
+      }
+    }
+  }
+
+  *library_path = base::MakeAbsoluteFilePath(possible_path);
+  return true;
+}
+
 
 }  // namespace
 
@@ -64,14 +94,14 @@ bool V8UnitTest::ExecuteJavascriptLibraries() {
        ++user_libraries_iterator) {
     std::string library_content;
     base::FilePath library_file(*user_libraries_iterator);
-    if (!user_libraries_iterator->IsAbsolute()) {
-      base::FilePath gen_file = g_gen_test_data_directory.Append(library_file);
-      library_file = base::PathExists(gen_file) ?
-          gen_file : g_test_data_directory.Append(*user_libraries_iterator);
+
+    if (!FindLibraryFile(&library_file)) {
+      ADD_FAILURE() << "Couldn't find " << library_file.value();
+      return false;
     }
-    library_file = base::MakeAbsoluteFilePath(library_file);
+
     if (!base::ReadFileToString(library_file, &library_content)) {
-      ADD_FAILURE() << library_file.value();
+      ADD_FAILURE() << "Error reading " << library_file.value();
       return false;
     }
     ExecuteScriptInContext(library_content, library_file.MaybeAsASCII());
@@ -148,31 +178,14 @@ bool V8UnitTest::RunJavascriptTestF(const std::string& test_fixture,
 }
 
 void V8UnitTest::InitPathsAndLibraries() {
-  base::FilePath test_data;
-  ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_data));
-
-  g_test_data_directory = test_data.AppendASCII("webui");
+  JsTestApiConfig config;
+  g_test_data_directory = config.search_path;
+  user_libraries_ = config.default_libraries;
 
   ASSERT_TRUE(base::PathService::Get(chrome::DIR_GEN_TEST_DATA,
                                      &g_gen_test_data_directory));
 
-  base::FilePath src_root;
-  ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &src_root));
-
-  AddLibrary(src_root.AppendASCII("chrome")
-                     .AppendASCII("third_party")
-                     .AppendASCII("mock4js")
-                     .AppendASCII("mock4js.js"));
-
-  AddLibrary(src_root.AppendASCII("third_party")
-                     .AppendASCII("chaijs")
-                     .AppendASCII("chai.js"));
-
-  AddLibrary(src_root.AppendASCII("third_party")
-                     .AppendASCII("accessibility-audit")
-                     .AppendASCII("axs_testing.js"));
-
-  AddLibrary(g_test_data_directory.AppendASCII("test_api.js"));
+  ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &g_src_root));
 }
 
 void V8UnitTest::SetUp() {

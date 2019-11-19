@@ -1,87 +1,28 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_SERVICES_HEAP_PROFILING_HEAP_PROFILING_SERVICE_H_
 #define COMPONENTS_SERVICES_HEAP_PROFILING_HEAP_PROFILING_SERVICE_H_
 
-#include "base/memory/weak_ptr.h"
-#include "components/services/heap_profiling/connection_manager.h"
 #include "components/services/heap_profiling/public/mojom/heap_profiling_service.mojom.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom.h"
-#include "services/service_manager/public/cpp/binder_registry.h"
-#include "services/service_manager/public/cpp/service.h"
-#include "services/service_manager/public/cpp/service_binding.h"
-#include "services/service_manager/public/mojom/service.mojom.h"
 
 namespace heap_profiling {
 
-// Service implementation for Profiling. This will be called in the profiling
-// process (which is a sandboxed utility process created on demand by the
-// ServiceManager) to set manage the global state as well as the bound
-// interface.
+// Returns a PendingRemote which can be bound to control a new ProfilingService
+// instance running on a dedicated thread. The service will run until this
+// remote is disconnected.
 //
-// This class lives in the I/O thread of the Utility process.
-class HeapProfilingService
-    : public service_manager::Service,
-      public mojom::ProfilingService,
-      public memory_instrumentation::mojom::HeapProfiler {
-  using DumpProcessesForTracingCallback = memory_instrumentation::mojom::
-      HeapProfiler::DumpProcessesForTracingCallback;
-
- public:
-  explicit HeapProfilingService(service_manager::mojom::ServiceRequest request);
-  ~HeapProfilingService() override;
-
-  static base::RepeatingCallback<void(service_manager::mojom::ServiceRequest)>
-  GetServiceFactory();
-
-  // Lifescycle events that occur after the service has started to spinup.
-  void OnStart() override;
-  void OnBindInterface(const service_manager::BindSourceInfo& source_info,
-                       const std::string& interface_name,
-                       mojo::ScopedMessagePipeHandle interface_pipe) override;
-
-  // ProfilingService implementation.
-  void AddProfilingClient(base::ProcessId pid,
-                          mojom::ProfilingClientPtr client,
-                          mojo::ScopedHandle pipe_receiver,
-                          mojom::ProcessType process_type,
-                          mojom::ProfilingParamsPtr params) override;
-  void SetKeepSmallAllocations(bool keep_small_allocations) override;
-  void GetProfiledPids(GetProfiledPidsCallback callback) override;
-
-  // HeapProfiler implementation.
-  void DumpProcessesForTracing(
-      bool strip_path_from_mapped_files,
-      DumpProcessesForTracingCallback callback) override;
-
- private:
-  void OnProfilingServiceRequest(mojom::ProfilingServiceRequest request);
-  void OnHeapProfilerRequest(
-      memory_instrumentation::mojom::HeapProfilerRequest request);
-
-  void OnGetVmRegionsCompleteForDumpProcessesForTracing(
-      bool strip_path_from_mapped_files,
-      DumpProcessesForTracingCallback callback,
-      VmRegions vm_regions);
-
-  service_manager::ServiceBinding service_binding_;
-  service_manager::BinderRegistry registry_;
-  mojo::Binding<mojom::ProfilingService> binding_{this};
-
-  mojo::Binding<memory_instrumentation::mojom::HeapProfiler>
-      heap_profiler_binding_{this};
-
-  memory_instrumentation::mojom::HeapProfilerHelperPtr helper_;
-  ConnectionManager connection_manager_;
-
-  bool keep_small_allocations_ = false;
-
-  // Must be last.
-  base::WeakPtrFactory<HeapProfilingService> weak_factory_{this};
-};
+// |profiler_receiver| must be valid and will receive heap profiling requests.
+// |helper| must be valid and will be used by the service to retrieve memory
+// maps.
+mojo::PendingRemote<mojom::ProfilingService> LaunchService(
+    mojo::PendingReceiver<memory_instrumentation::mojom::HeapProfiler>
+        profiler_receiver,
+    mojo::PendingRemote<memory_instrumentation::mojom::HeapProfilerHelper>
+        helper);
 
 }  // namespace heap_profiling
 

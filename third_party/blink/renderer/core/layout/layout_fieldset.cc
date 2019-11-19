@@ -146,7 +146,7 @@ LayoutBox* LayoutFieldset::FindInFlowLegend(const LayoutBlock& fieldset) {
     if (fieldset.IsLayoutNGFieldset()) {
       // If there is a rendered legend, it will be found inside the anonymous
       // fieldset wrapper.
-      parent = ToLayoutBlock(fieldset.FirstChild());
+      parent = To<LayoutBlock>(fieldset.FirstChild());
       if (!parent)
         return nullptr;
     }
@@ -164,17 +164,17 @@ LayoutBox* LayoutFieldset::FindInFlowLegend(const LayoutBlock& fieldset) {
 
 void LayoutFieldset::PaintBoxDecorationBackground(
     const PaintInfo& paint_info,
-    const LayoutPoint& paint_offset) const {
+    const PhysicalOffset& paint_offset) const {
   FieldsetPainter(*this).PaintBoxDecorationBackground(paint_info, paint_offset);
 }
 
 void LayoutFieldset::PaintMask(const PaintInfo& paint_info,
-                               const LayoutPoint& paint_offset) const {
+                               const PhysicalOffset& paint_offset) const {
   FieldsetPainter(*this).PaintMask(paint_info, paint_offset);
 }
 
 bool LayoutFieldset::BackgroundIsKnownToBeOpaqueInRect(
-    const LayoutRect& local_rect) const {
+    const PhysicalRect& local_rect) const {
   // If the field set has a legend, then it probably does not completely fill
   // its background.
   if (FindInFlowLegend())

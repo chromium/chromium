@@ -2,9 +2,26 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//base/allocator/allocator.gni")
 import("//build/config/allocator.gni")
+import("//build/config/compiler/compiler.gni")
+
+# Windows/x86 is disabled due to https://crbug.com/969146
+# Android component builds are disabled due to https://crbug.com/976399
+# Android requires frame pointers for unwinding, unwind tables aren't shipped in
+# official builds.
+supported_platform =
+    is_mac || (is_win && current_cpu == "x64") ||
+    (is_android && !is_component_build && enable_frame_pointers)
 
 declare_args() {
-  # Is the GWP-ASan client enabled for chrome/ on a given platform.
-  enable_gwp_asan = (is_win || is_mac) && use_allocator_shim
+  # Is GWP-ASan malloc/PartitionAlloc hooking enabled for chrome/ on a given
+  # platform.
+  enable_gwp_asan_malloc = supported_platform && use_allocator_shim
+  enable_gwp_asan_partitionalloc = supported_platform && use_partition_alloc
+}
+
+declare_args() {
+  # Convenience definition
+  enable_gwp_asan = enable_gwp_asan_malloc || enable_gwp_asan_partitionalloc
 }

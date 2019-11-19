@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 
 #if defined(OS_WIN)
 #include <windows.h>
@@ -19,6 +20,7 @@
 #include "build/build_config.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/views/buildflags.h"
 #include "ui/views/views_export.h"
 #include "ui/views/widget/widget.h"
 
@@ -39,8 +41,6 @@ class NonClientFrameView;
 class Widget;
 
 #if defined(USE_AURA)
-class DesktopNativeWidgetAura;
-class DesktopWindowTreeHost;
 class TouchSelectionMenuRunnerViews;
 #endif
 
@@ -57,16 +57,8 @@ class NativeWidgetDelegate;
 class VIEWS_EXPORT ViewsDelegate {
  public:
   using NativeWidgetFactory =
-      base::Callback<NativeWidget*(const Widget::InitParams&,
-                                   internal::NativeWidgetDelegate*)>;
-#if defined(USE_AURA)
-  using DesktopWindowTreeHostFactory =
-      base::Callback<std::unique_ptr<DesktopWindowTreeHost>(
-          const Widget::InitParams&,
-          internal::NativeWidgetDelegate*,
-          DesktopNativeWidgetAura*)>;
-#endif
-
+      base::RepeatingCallback<NativeWidget*(const Widget::InitParams&,
+                                            internal::NativeWidgetDelegate*)>;
 #if defined(OS_WIN)
   enum AppbarAutohideEdge {
     EDGE_TOP    = 1 << 0,
@@ -81,34 +73,27 @@ class VIEWS_EXPORT ViewsDelegate {
     // is needed and the menu should be kept open.
     LEAVE_MENU_OPEN,
 
-    // The accelerator was not handled. Menu should be closed and the
-    // accelerator will be reposted to be handled after the menu closes.
-    CLOSE_MENU
+    // The accelerator was not handled. The menu should be closed and event
+    // handling should stop for this event.
+    CLOSE_MENU,
   };
 
   virtual ~ViewsDelegate();
 
-  // Returns the ViewsDelegate instance if there is one, or nullptr otherwise.
+  // Returns the ViewsDelegate instance.  This should never return non-null
+  // unless the binary has not yet initialized the delegate, so callers should
+  // not generally null-check.
   static ViewsDelegate* GetInstance();
 
   // Call this method to set a factory callback that will be used to construct
   // NativeWidget implementations overriding the platform defaults.
-  void set_native_widget_factory(const NativeWidgetFactory& factory) {
-    native_widget_factory_ = factory;
+  void set_native_widget_factory(NativeWidgetFactory factory) {
+    native_widget_factory_ = std::move(factory);
   }
   const NativeWidgetFactory& native_widget_factory() const {
     return native_widget_factory_;
   }
 
-#if defined(USE_AURA)
-  void set_desktop_window_tree_host_factory(
-      const DesktopWindowTreeHostFactory& factory) {
-    desktop_window_tree_host_factory_ = factory;
-  }
-  const DesktopWindowTreeHostFactory& desktop_window_tree_host_factory() const {
-    return desktop_window_tree_host_factory_;
-  }
-#endif
   // Saves the position, size and "show" state for the window with the
   // specified name.
   virtual void SaveWindowPlacement(const Widget* widget,
@@ -146,7 +131,7 @@ class VIEWS_EXPORT ViewsDelegate {
   // Returns true if the window passed in is in the Windows 8 metro
   // environment.
   virtual bool IsWindowInMetro(gfx::NativeWindow window) const;
-#elif defined(OS_LINUX) && !defined(OS_CHROMEOS)
+#elif defined(OS_LINUX) && BUILDFLAG(ENABLE_DESKTOP_AURA)
   virtual gfx::ImageSkia* GetDefaultWindowIcon() const;
 #endif
 
@@ -159,6 +144,9 @@ class VIEWS_EXPORT ViewsDelegate {
   // ensure we don't attempt to exit while a menu is showing.
   virtual void AddRef();
   virtual void ReleaseRef();
+  // Returns true if the application is shutting down. AddRef/Release should not
+  // be called in this situation.
+  virtual bool IsShuttingDown() const;
 
   // Gives the platform a chance to modify the properties of a Widget.
   virtual void OnBeforeWidgetInit(Widget::InitParams* params,
@@ -187,7 +175,7 @@ class VIEWS_EXPORT ViewsDelegate {
   //
   // The return value is a bitmask of AppbarAutohideEdge.
   virtual int GetAppbarAutohideEdges(HMONITOR monitor,
-                                     const base::Closure& callback);
+                                     base::OnceClosure callback);
 #endif
 
  protected:
@@ -204,8 +192,6 @@ class VIEWS_EXPORT ViewsDelegate {
 
 #if defined(USE_AURA)
   std::unique_ptr<TouchSelectionMenuRunnerViews> touch_selection_menu_runner_;
-
-  DesktopWindowTreeHostFactory desktop_window_tree_host_factory_;
 #endif
 
   NativeWidgetFactory native_widget_factory_;

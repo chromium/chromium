@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//      http://www.apache.org/licenses/LICENSE-2.0
+//      https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -165,9 +165,6 @@ TEST(HashValueTest, PointerAlignment) {
   }
 }
 
-// TODO(EricWF): MSVC 15 has a bug that causes it to incorrectly evaluate the
-// SFINAE in internal/hash.h, causing this test to fail.
-#if !defined(_MSC_VER)
 TEST(HashValueTest, PairAndTuple) {
   EXPECT_TRUE((is_hashable<std::pair<int, int>>::value));
   EXPECT_TRUE((is_hashable<std::pair<const int&, const int&>>::value));
@@ -196,7 +193,6 @@ TEST(HashValueTest, PairAndTuple) {
       std::forward_as_tuple(42, 0, 0), std::forward_as_tuple(3, 9, 9),
       std::forward_as_tuple(0, 0, -42))));
 }
-#endif  // !defined(_MSC_VER)
 
 TEST(HashValueTest, CombineContiguousWorks) {
   std::vector<std::tuple<int>> v1 = {std::make_tuple(1), std::make_tuple(3)};
@@ -275,12 +271,12 @@ struct WrapInTuple {
 
 TEST(HashValueTest, Strings) {
   EXPECT_TRUE((is_hashable<std::string>::value));
-  EXPECT_TRUE((is_hashable<std::string>::value));
 
   const std::string small = "foo";
   const std::string dup = "foofoo";
   const std::string large = "large";
   const std::string huge = std::string(5000, 'a');
+
   EXPECT_TRUE(absl::VerifyTypeImplementsAbslHashCorrectly(std::make_tuple(
       std::string(), absl::string_view(),
       std::string(""), absl::string_view(""),
@@ -292,7 +288,6 @@ TEST(HashValueTest, Strings) {
   // Also check that nested types maintain the same hash.
   const WrapInTuple t{};
   EXPECT_TRUE(absl::VerifyTypeImplementsAbslHashCorrectly(std::make_tuple(
-      //
       t(std::string()), t(absl::string_view()),
       t(std::string("")), t(absl::string_view("")),
       t(std::string(small)), t(absl::string_view(small)),
@@ -305,16 +300,12 @@ TEST(HashValueTest, Strings) {
             SpyHash(absl::string_view("ABC")));
 }
 
-// TODO(EricWF): MSVC 15 has a bug that causes it to incorrectly evaluate the
-// SFINAE in internal/hash.h, causing this test to fail.
-#if !defined(_MSC_VER)
 TEST(HashValueTest, StdArray) {
   EXPECT_TRUE((is_hashable<std::array<int, 3>>::value));
 
   EXPECT_TRUE(absl::VerifyTypeImplementsAbslHashCorrectly(
       std::make_tuple(std::array<int, 3>{}, std::array<int, 3>{{0, 23, 42}})));
 }
-#endif  // !defined(_MSC_VER)
 
 TEST(HashValueTest, StdBitset) {
   EXPECT_TRUE((is_hashable<std::bitset<257>>::value));
@@ -415,9 +406,6 @@ TEST(HashValueTest, Variant) {
 #endif
 }
 
-// TODO(EricWF): MSVC 15 has a bug that causes it to incorrectly evaluate the
-// SFINAE in internal/hash.h, causing this test to fail.
-#if !defined(_MSC_VER)
 TEST(HashValueTest, Maps) {
   EXPECT_TRUE((is_hashable<std::map<int, std::string>>::value));
 
@@ -434,13 +422,12 @@ TEST(HashValueTest, Maps) {
       MM{{0, "foo"}, {42, "bar"}}, MM{{1, "foo"}, {42, "bar"}},
       MM{{1, "foo"}, {1, "foo"}, {43, "bar"}}, MM{{1, "foo"}, {43, "baz"}})));
 }
-#endif  // !defined(_MSC_VER)
 
 template <typename T, typename = void>
-struct IsHashCallble : std::false_type {};
+struct IsHashCallable : std::false_type {};
 
 template <typename T>
-struct IsHashCallble<T, absl::void_t<decltype(std::declval<absl::Hash<T>>()(
+struct IsHashCallable<T, absl::void_t<decltype(std::declval<absl::Hash<T>>()(
                             std::declval<const T&>()))>> : std::true_type {};
 
 template <typename T, typename = void>
@@ -457,7 +444,7 @@ TEST(IsHashableTest, ValidHash) {
   EXPECT_TRUE(std::is_move_constructible<absl::Hash<int>>::value);
   EXPECT_TRUE(absl::is_copy_assignable<absl::Hash<int>>::value);
   EXPECT_TRUE(absl::is_move_assignable<absl::Hash<int>>::value);
-  EXPECT_TRUE(IsHashCallble<int>::value);
+  EXPECT_TRUE(IsHashCallable<int>::value);
   EXPECT_TRUE(IsAggregateInitializable<absl::Hash<int>>::value);
 }
 
@@ -470,7 +457,7 @@ TEST(IsHashableTest, PoisonHash) {
   EXPECT_FALSE(std::is_move_constructible<absl::Hash<X>>::value);
   EXPECT_FALSE(absl::is_copy_assignable<absl::Hash<X>>::value);
   EXPECT_FALSE(absl::is_move_assignable<absl::Hash<X>>::value);
-  EXPECT_FALSE(IsHashCallble<X>::value);
+  EXPECT_FALSE(IsHashCallable<X>::value);
   EXPECT_FALSE(IsAggregateInitializable<absl::Hash<X>>::value);
 }
 #endif  // ABSL_META_INTERNAL_STD_HASH_SFINAE_FRIENDLY_
@@ -482,7 +469,7 @@ TEST(IsHashableTest, PoisonHash) {
 struct NoOp {
   template <typename HashCode>
   friend HashCode AbslHashValue(HashCode h, NoOp n) {
-    return std::move(h);
+    return h;
   }
 };
 
@@ -512,8 +499,16 @@ struct CombineVariadic {
                              Int(4));
   }
 };
+enum class InvokeTag {
+  kUniquelyRepresented,
+  kHashValue,
+#if ABSL_HASH_INTERNAL_SUPPORT_LEGACY_HASH_
+  kLegacyHash,
+#endif  // ABSL_HASH_INTERNAL_SUPPORT_LEGACY_HASH_
+  kStdHash,
+  kNone
+};
 
-using InvokeTag = absl::hash_internal::InvokeHashTag;
 template <InvokeTag T>
 using InvokeTagConstant = std::integral_constant<InvokeTag, T>;
 
@@ -528,6 +523,7 @@ struct MinTag<a> : InvokeTagConstant<a> {};
 
 template <InvokeTag... Tags>
 struct CustomHashType {
+  explicit CustomHashType(size_t val) : value(val) {}
   size_t value;
 };
 
@@ -594,7 +590,7 @@ void TestCustomHashType(InvokeTagConstant<InvokeTag::kNone>, T...) {
   EXPECT_TRUE(is_hashable<const type&>());
 
   const size_t offset = static_cast<int>(std::min({T::value...}));
-  EXPECT_EQ(SpyHash(type{7}), SpyHash(size_t{7 + offset}));
+  EXPECT_EQ(SpyHash(type(7)), SpyHash(size_t{7 + offset}));
 }
 
 void TestCustomHashType(InvokeTagConstant<InvokeTag::kNone>) {
@@ -705,7 +701,8 @@ TEST(HashTest, HashNonUniquelyRepresentedType) {
 }
 
 TEST(HashTest, StandardHashContainerUsage) {
-  std::unordered_map<int, std::string, Hash<int>> map = {{0, "foo"}, { 42, "bar" }};
+  std::unordered_map<int, std::string, Hash<int>> map = {{0, "foo"},
+                                                         {42, "bar"}};
 
   EXPECT_NE(map.find(0), map.end());
   EXPECT_EQ(map.find(1), map.end());
@@ -773,6 +770,26 @@ TEST(HashTest, TypeErased) {
 
   EXPECT_EQ(SpyHash(std::make_pair(TypeErased{7}, 17)),
             SpyHash(std::make_pair(size_t{7}, 17)));
+}
+
+struct ValueWithBoolConversion {
+  operator bool() const { return false; }
+  int i;
+};
+
+}  // namespace
+namespace std {
+template <>
+struct hash<ValueWithBoolConversion> {
+  size_t operator()(ValueWithBoolConversion v) { return v.i; }
+};
+}  // namespace std
+
+namespace {
+
+TEST(HashTest, DoesNotUseImplicitConversionsToBool) {
+  EXPECT_NE(absl::Hash<ValueWithBoolConversion>()(ValueWithBoolConversion{0}),
+            absl::Hash<ValueWithBoolConversion>()(ValueWithBoolConversion{1}));
 }
 
 }  // namespace

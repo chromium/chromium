@@ -1,10 +1,9 @@
 <!DOCTYPE HTML>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
   document.documentElement.style.display = 'none';
   accessibilityController.rootElement.name;
   document.documentElement.style.display = 'block';

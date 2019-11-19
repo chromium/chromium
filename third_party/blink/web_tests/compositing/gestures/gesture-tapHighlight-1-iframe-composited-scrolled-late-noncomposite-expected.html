@@ -5,7 +5,7 @@
 </head>
 <body onLoad="runTest();">
 <iframe id="targetFrame" src="resources/1-frame-composited-expected.html" style="position: relative; left: 10px; top: 10px; width: 400px; height: 150px;"></iframe>
-<div style="position: relative; left: 10px; top: 20px; transform: translateZ(0);">
+<div style="position: relative; left: 10px; top: 20px; will-change: transform;">
 This test is successful if "Target Link" is covered by a green box with square corners,
 and the frame is partially scrolled.
 </div>

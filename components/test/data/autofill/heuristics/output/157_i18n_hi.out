@@ -1,0 +1,7 @@
+NAME_FIRST | fn | नाम: |  | fn_1-default
+NAME_LAST | ln | उपनाम: |  | fn_1-default
+ADDRESS_HOME_CITY | ct | शहर: |  | fn_1-default
+ADDRESS_HOME_STATE | st | राज्य: |  | fn_1-default
+ADDRESS_HOME_ZIP | zc | पिन कोड: |  | fn_1-default
+EMAIL_ADDRESS | em | ईमेल: |  | fn_1-default
+PHONE_HOME_WHOLE_NUMBER | ph | मोबाइल: |  | fn_1-default

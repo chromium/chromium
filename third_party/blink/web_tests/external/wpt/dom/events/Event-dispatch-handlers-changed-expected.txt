@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL  Dispatch additional events inside an event listener  assert_array_equals: actual_targets lengths differ, expected 17 got 16
+Harness: the test ran to completion.
+

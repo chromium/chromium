@@ -7,15 +7,14 @@
 #include "chrome/chrome_cleaner/os/file_path_set.h"
 #include "chrome/chrome_cleaner/pup_data/pup_cleaner_util.h"
 #include "chrome/chrome_cleaner/pup_data/pup_data.h"
-#include "chrome/chrome_cleaner/settings/settings.h"
 
 namespace chrome_cleaner {
 
 void MainDialogAPI::ConfirmCleanupIfNeeded(
-    const std::vector<UwSId>& found_pups) {
+    const std::vector<UwSId>& found_pups,
+    scoped_refptr<DigestVerifier> digest_verifier) {
   FilePathSet collected_pup_files;
-  CollectRemovablePupFiles(Settings::GetInstance()->engine(), found_pups,
-                           &collected_pup_files);
+  CollectRemovablePupFiles(found_pups, digest_verifier, &collected_pup_files);
   if (collected_pup_files.empty()) {
     LOG(ERROR) << "No removable files detected during the scan";
     NoPUPsFound();

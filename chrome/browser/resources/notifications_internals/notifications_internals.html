@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Notifications Internals</title>
+    <meta name="viewport" content="width=device-width">
+    <link rel="stylesheet" href="chrome://resources/css/list.css">
+    <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
+    <link rel="stylesheet" href="notifications_internals.css">
+  </head>
+  <body>
+    <h1>Notifications Internals</h1>
+    <h4>Notification Scheduler</h4>
+    <table id="notification-scheduler-request">
+      <tr>
+        <td>Url:</td>
+        <td>
+          <input id="notification-scheduler-url" type="url"
+              placeholder="http://www.example.com">
+        </td>
+      </tr>
+      <tr>
+        <td>Title:</td><td><input id="notification-scheduler-title"
+            type="text" placeholder="Notification title">
+        </td>
+      </tr>
+      <tr>
+        <td>Message:</td><td><input id="notification-scheduler-message"
+            type="text" placeholder="Notification message">
+        </td>
+      </tr>
+    </table>
+    <div>
+      <button id="schedule-notification">Schedule</button>
+    </div>
+    <script src="chrome://resources/js/cr.js"></script>
+    <script src="chrome://resources/js/promise_resolver.js"></script>
+    <script src="chrome://resources/js/util.js"></script>
+    <script src="notifications_internals_browser_proxy.js"></script>
+    <script src="notifications_internals.js"></script>
+  </body>
+</html>

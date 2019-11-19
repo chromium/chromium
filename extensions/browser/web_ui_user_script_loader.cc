@@ -23,7 +23,7 @@ void SerializeOnBlockingTask(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     std::unique_ptr<extensions::UserScriptList> user_scripts,
     extensions::UserScriptLoader::LoadScriptsCallback callback) {
-  std::unique_ptr<base::SharedMemory> memory =
+  base::ReadOnlySharedMemoryRegion memory =
       extensions::UserScriptLoader::Serialize(*user_scripts);
 
   task_runner->PostTask(
@@ -154,9 +154,9 @@ void WebUIUserScriptLoader::OnSingleWebUIURLFetchComplete(
 }
 
 void WebUIUserScriptLoader::OnWebUIURLFetchComplete() {
-  base::PostTaskWithTraits(
-      FROM_HERE, {base::MayBlock()},
-      base::BindOnce(
-          &SerializeOnBlockingTask, base::SequencedTaskRunnerHandle::Get(),
-          std::move(user_scripts_cache_), std::move(scripts_loaded_callback_)));
+  base::PostTask(FROM_HERE, {base::ThreadPool(), base::MayBlock()},
+                 base::BindOnce(&SerializeOnBlockingTask,
+                                base::SequencedTaskRunnerHandle::Get(),
+                                std::move(user_scripts_cache_),
+                                std::move(scripts_loaded_callback_)));
 }

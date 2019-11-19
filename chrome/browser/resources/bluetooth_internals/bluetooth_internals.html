@@ -20,11 +20,13 @@
   <link rel="import" href="chrome://resources/html/cr/ui/list_item.html">
   <link rel="import" href="chrome://resources/html/cr/ui/list.html">
   <link rel="import" href="chrome://resources/html/cr/ui/overlay.html">
-  <link rel="import" href="chrome://resources/html/cr/ui/page_manager/page_manager.html">
-  <link rel="import" href="chrome://resources/html/cr/ui/page_manager/page.html">
-  <link rel="import" href="chrome://resources/html/util.html">
 
-  <script src="chrome://resources/js/mojo_bindings_lite.js"></script>
+  <link rel="import" href="page_manager.html">
+  <link rel="import" href="page.html">
+
+  <link rel="import" href="chrome://resources/html/util.html">
+  <link rel="import" href="chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.html">
+
   <script src="uuid.mojom-lite.js"></script>
   <script src="device.mojom-lite.js"></script>
   <script src="adapter.mojom-lite.js"></script>
@@ -39,6 +41,7 @@
   <script src="service_list.js"></script>
   <script src="descriptor_list.js"></script>
   <script src="adapter_page.js"></script>
+  <script src="debug_log_page.js"></script>
   <script src="device_collection.js"></script>
   <script src="device_details_page.js"></script>
   <script src="device_table.js"></script>
@@ -63,6 +66,9 @@
         <button id="scan-btn">Start Scan</button>
       </div>
     </section>
+    <section id="debug" hidden>
+      <div class="header-extras" id="debug-container"></div>
+    </section>
   </div>
   <div id="snackbar-container"></div>
   <aside id="sidebar">
@@ -78,6 +84,9 @@
           </li>
           <li data-page-name="devices">
             <button class="custom-appearance">Devices</button>
+          </li>
+          <li data-page-name="debug" data-page-name="debug">
+            <button class="custom-appearance">Debug Logs</button>
           </li>
         </ul>
       </nav>

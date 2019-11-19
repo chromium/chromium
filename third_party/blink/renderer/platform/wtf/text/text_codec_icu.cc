@@ -30,15 +30,13 @@
 
 #include <unicode/ucnv.h>
 #include <unicode/ucnv_cb.h>
-#include <memory>
+
 #include "base/memory/ptr_util.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
-#include "third_party/blink/renderer/platform/wtf/string_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
-#include "third_party/blink/renderer/platform/wtf/text/cstring.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
-#include "third_party/blink/renderer/platform/wtf/wtf_thread_data.h"
 
 namespace WTF {
 
@@ -50,7 +48,7 @@ ICUConverterWrapper::~ICUConverterWrapper() {
 }
 
 static UConverter*& CachedConverterICU() {
-  return WtfThreadData().CachedConverterICU().converter;
+  return WtfThreading().CachedConverterICU().converter;
 }
 
 std::unique_ptr<TextCodec> TextCodecICU::Create(const TextEncoding& encoding,
@@ -133,7 +131,7 @@ void TextCodecICU::RegisterEncodingNames(EncodingNameRegistrar registrar) {
                !strcmp(standard_name, "cp1363")) {
       standard_name = "EUC-KR";
     // And so on.
-    } else if (!strcasecmp(standard_name, "iso-8859-9")) {
+    } else if (EqualIgnoringASCIICase(standard_name, "iso-8859-9")) {
       // This name is returned in different case by ICU 3.2 and 3.6.
       standard_name = "windows-1254";
     } else if (!strcmp(standard_name, "TIS-620")) {
@@ -432,7 +430,7 @@ String TextCodecICU::Decode(const char* bytes,
   // Simplified Chinese pages use the code A3A0 to mean "full-width space", but
   // ICU decodes it as U+E5E5.
   if (!strcmp(encoding_.GetName(), "GBK")) {
-    if (!strcasecmp(encoding_.GetName(), "gb18030"))
+    if (EqualIgnoringASCIICase(encoding_.GetName(), "gb18030"))
       resultString.Replace(0xE5E5, ideographicSpaceCharacter);
     // Make GBK compliant to the encoding spec and align with GB18030
     resultString.Replace(0x01F9, 0xE7C8);
@@ -654,8 +652,8 @@ class TextCodecInput final {
   Vector<UChar> buffer_;
 };
 
-CString TextCodecICU::EncodeInternal(const TextCodecInput& input,
-                                     UnencodableHandling handling) {
+std::string TextCodecICU::EncodeInternal(const TextCodecInput& input,
+                                         UnencodableHandling handling) {
   const UChar* source = input.begin();
   const UChar* end = input.end();
 
@@ -706,7 +704,7 @@ CString TextCodecICU::EncodeInternal(const TextCodecInput& input,
 
   DCHECK(U_SUCCESS(err));
   if (U_FAILURE(err))
-    return CString();
+    return std::string();
 
   Vector<char> result;
   wtf_size_t size = 0;
@@ -723,34 +721,34 @@ CString TextCodecICU::EncodeInternal(const TextCodecInput& input,
     size += count;
   } while (err == U_BUFFER_OVERFLOW_ERROR);
 
-  return CString(result.data(), size);
+  return std::string(result.data(), size);
 }
 
 template <typename CharType>
-CString TextCodecICU::EncodeCommon(const CharType* characters,
-                                   wtf_size_t length,
-                                   UnencodableHandling handling) {
+std::string TextCodecICU::EncodeCommon(const CharType* characters,
+                                       wtf_size_t length,
+                                       UnencodableHandling handling) {
   if (!length)
     return "";
 
   if (!converter_icu_)
     CreateICUConverter();
   if (!converter_icu_)
-    return CString();
+    return std::string();
 
   TextCodecInput input(encoding_, characters, length);
   return EncodeInternal(input, handling);
 }
 
-CString TextCodecICU::Encode(const UChar* characters,
-                             wtf_size_t length,
-                             UnencodableHandling handling) {
+std::string TextCodecICU::Encode(const UChar* characters,
+                                 wtf_size_t length,
+                                 UnencodableHandling handling) {
   return EncodeCommon(characters, length, handling);
 }
 
-CString TextCodecICU::Encode(const LChar* characters,
-                             wtf_size_t length,
-                             UnencodableHandling handling) {
+std::string TextCodecICU::Encode(const LChar* characters,
+                                 wtf_size_t length,
+                                 UnencodableHandling handling) {
   return EncodeCommon(characters, length, handling);
 }
 

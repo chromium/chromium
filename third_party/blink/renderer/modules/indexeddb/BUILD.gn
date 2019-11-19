@@ -62,8 +62,6 @@ blink_modules_sources("indexeddb") {
     "indexed_db.h",
     "indexed_db_blink_mojom_traits.cc",
     "indexed_db_blink_mojom_traits.h",
-    "indexed_db_client.cc",
-    "indexed_db_client.h",
     "indexed_db_database_callbacks_impl.cc",
     "indexed_db_database_callbacks_impl.h",
     "indexed_db_dispatcher.cc",
@@ -85,6 +83,9 @@ blink_modules_sources("indexeddb") {
     "web_idb_factory.h",
     "web_idb_factory_impl.cc",
     "web_idb_factory_impl.h",
+    "web_idb_transaction.h",
+    "web_idb_transaction_impl.cc",
+    "web_idb_transaction_impl.h",
   ]
 
   public_deps = [

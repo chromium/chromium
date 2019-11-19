@@ -30,8 +30,6 @@ class HTMLTitleElement final : public HTMLElement {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  DECLARE_NODE_FACTORY(HTMLTitleElement);
-
   explicit HTMLTitleElement(Document&);
 
   String text() const;

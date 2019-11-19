@@ -7,15 +7,13 @@
 <body>
 <script>
   test(t => {
-    const p1 = TrustedTypes.createPolicy("policyHTMLAndScript", {
+    const p1 = trustedTypes.createPolicy("policyHTMLAndScript", {
       createHTML: s => s,
       createScript: s => s
     });
     assert_throws(new TypeError(), _ => { p1.createScriptURL("foo"); });
-    assert_throws(new TypeError(), _ => { p1.createURL("foo"); });
 
-    const p2 = TrustedTypes.createPolicy("policyURLAndScriptURL", {
-      createURL: s => s,
+    const p2 = trustedTypes.createPolicy("policyURLAndScriptURL", {
       createScriptURL: s => s
     });
     assert_throws(new TypeError(), _ => { p2.createHTML("foo"); });
@@ -26,26 +24,21 @@
     const noopPolicy = {
       createHTML: (s) => s,
       createScriptURL: (s) => s,
-      createURL: (s) => s,
       createScript: (s) => s,
     };
-    policy = TrustedTypes.createPolicy(Math.random(), noopPolicy, true);
+    policy = trustedTypes.createPolicy(Math.random(), noopPolicy, true);
     let el = document.createElement("div");
 
-    el.title = policy.createHTML(INPUTS.URL);
-    assert_equals(el.title, INPUTS.URL);
-
-    el.title = policy.createURL(INPUTS.HTML);
-    assert_equals(el.title, INPUTS.HTML);
+    el.title = policy.createHTML(INPUTS.SCRIPTURL);
+    assert_equals(el.title, INPUTS.SCRIPTURL);
   }, "Attributes without type constraints will work as before.");
 
   test(t => {
-    const policy = TrustedTypes.createPolicy("nullpolicy", null);
+    const policy = trustedTypes.createPolicy("nullpolicy", null);
     assert_throws(new TypeError(), _ => { policy.createScriptURL("foo"); });
-    assert_throws(new TypeError(), _ => { policy.createURL("foo"); });
     assert_throws(new TypeError(), _ => { policy.createHTML("foo"); });
     assert_throws(new TypeError(), _ => { policy.createScript("foo"); });
-  }, "TrustedTypes.createPolicy(.., null) creates empty policy.");
+  }, "trustedTypes.createPolicy(.., null) creates empty policy.");
 
 
   // testCases contains a list of policy functions and expected results (when
@@ -60,7 +53,7 @@
 
   const stringTestCases = [
     [ s => s, "whatever" ],
-    [ s => null, "null" ],
+    [ s => null, "" ],
     [ s => "well, " + s, "well, whatever" ],
     [ s => { throw new Error() }, new Error() ],
     [ s => { aGlobalVarForSideEffectTesting = s; return s }, "whatever" ],
@@ -71,7 +64,7 @@
 
   const urlTestCases = [
     [ s => s, INPUTS.SCRIPTURL ],
-    [ s => null, "null" ],
+    [ s => null, "" ],
     [ s => s + "#duck", INPUTS.SCRIPTURL + "#duck" ],
     [ s => { throw new Error() }, new Error() ],
     [ s => s + "#" + aGlobalVarForSideEffectTesting,
@@ -85,7 +78,7 @@
     return function(name, fn) {
       let options = {};
       options[trustedMethodName] = fn;
-      let policy = window.TrustedTypes.createPolicy(name, options);
+      let policy = window.trustedTypes.createPolicy(name, options);
       let result = policy[trustedMethodName](defaultArg);
       assert_true(result instanceof trustedType);
       return result;
@@ -95,7 +88,6 @@
   const testCases = [
     [TrustedHTML, "createHTML", "whatever", stringTestCases],
     [TrustedScript, "createScript", "whatever", stringTestCases],
-    [TrustedURL, "createURL", INPUTS.SCRIPTURL, urlTestCases],
     [TrustedScriptURL, "createScriptURL", INPUTS.SCRIPTURL, urlTestCases],
   ];
 

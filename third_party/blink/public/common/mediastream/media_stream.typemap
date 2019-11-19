@@ -11,13 +11,13 @@ public_headers = [
 ]
 
 traits_headers = [
+  "//media/base/ipc/media_param_traits.h",
+  "//media/capture/mojom/video_capture_types_mojom_traits.h",
   "//third_party/blink/public/common/mediastream/media_stream_mojom_traits.h",
 ]
 
 type_mappings = [
-  "blink.mojom.MediaStreamDevice=blink::MediaStreamDevice",
-  "blink.mojom.MediaStreamRequestResult=blink::MediaStreamRequestResult",
-  "blink.mojom.MediaStreamType=blink::MediaStreamType",
-  "blink.mojom.StreamControls=blink::StreamControls",
-  "blink.mojom.TrackControls=blink::TrackControls",
+  "blink.mojom.MediaStreamDevice=::blink::MediaStreamDevice",
+  "blink.mojom.StreamControls=::blink::StreamControls",
+  "blink.mojom.TrackControls=::blink::TrackControls",
 ]

@@ -10,5 +10,5 @@ import "third_party/blink/public/mojom/associated_interfaces/associated_interfac
 // ID to an AssociatedInterfaceProvider.
 interface RouteProvider {
   GetRoute(int32 routing_id,
-           associated blink.mojom.AssociatedInterfaceProvider& request);
+           pending_associated_receiver<blink.mojom.AssociatedInterfaceProvider> receiver);
 };

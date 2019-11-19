@@ -1,0 +1,52 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/config.gni")
+import("//build/config/android/rules.gni")
+
+static_library("internal") {
+  sources = [
+    "compositor_view_impl.cc",
+    "compositor_view_impl.h",
+    "thin_webview.cc",
+    "thin_webview.h",
+  ]
+
+  deps = [
+    ":jni_headers",
+    "//cc",
+    "//skia",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/android/thin_webview",
+    "//content/public/browser",
+    "//ui/android",
+  ]
+}
+
+android_library("internal_java") {
+  java_files = [
+    "java/src/org/chromium/chrome/browser/thinwebview/internal/CompositorViewImpl.java",
+    "java/src/org/chromium/chrome/browser/thinwebview/internal/ThinWebViewImpl.java",
+  ]
+
+  deps = [
+    "//base:base_java",
+    "//base:jni_java",
+    "//chrome/browser/android/thin_webview:java",
+    "//content/public/android:content_java",
+    "//ui/android:ui_java",
+  ]
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+}
+
+generate_jni("jni_headers") {
+  visibility = [ ":*" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/thinwebview/internal/CompositorViewImpl.java",
+    "java/src/org/chromium/chrome/browser/thinwebview/internal/ThinWebViewImpl.java",
+  ]
+}

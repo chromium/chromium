@@ -4,6 +4,8 @@
 
 // https://webaudio.github.io/web-midi-api/#MIDIInput
 
-interface MIDIInputMap {
+[
+    SecureContext
+] interface MIDIInputMap {
     readonly maplike<DOMString, MIDIInput>;
 };

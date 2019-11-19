@@ -1,0 +1,12 @@
+This is a testharness.js-based test.
+PASS Can construct a ByteLengthQueuingStrategy with a valid high water mark
+PASS Can construct a ByteLengthQueuingStrategy with any value as its high water mark
+FAIL ByteLengthQueuingStrategy constructor behaves as expected with strange arguments assert_throws: construction fails with null function "() => new ByteLengthQueuingStrategy(null)" did not throw
+FAIL ByteLengthQueuingStrategy size behaves as expected with strange arguments Illegal invocation
+FAIL ByteLengthQueuingStrategy.prototype.size should work generically on its this and its arguments Illegal invocation
+FAIL ByteLengthQueuingStrategy instances have the correct properties assert_object_equals: highWaterMark property should be a data property with the value passed the constructor value is undefined, expected object
+FAIL ByteLengthQueuingStrategy's highWaterMark property can be set to anything Cannot assign to read only property 'highWaterMark' of object '#<ByteLengthQueuingStrategy>'
+PASS ByteLengthQueuingStrategy.name is correct
+PASS subclassing ByteLengthQueuingStrategy should work correctly
+Harness: the test ran to completion.
+

@@ -4,14 +4,18 @@
 
 module blink.mojom;
 
+import "mojo/public/mojom/base/read_only_buffer.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/cookie_manager.mojom";
+import "services/network/public/mojom/url_loader_factory.mojom";
 import "third_party/blink/public/mojom/background_fetch/background_fetch.mojom";
+import "third_party/blink/public/mojom/devtools/console_message.mojom";
 import "third_party/blink/public/mojom/fetch/fetch_api_response.mojom";
 import "third_party/blink/public/mojom/messaging/transferable_message.mojom";
 import "third_party/blink/public/mojom/notifications/notification.mojom";
 import "third_party/blink/public/mojom/payments/payment_app.mojom";
+import "third_party/blink/public/mojom/push_messaging/push_messaging.mojom";
 import "third_party/blink/public/mojom/service_worker/dispatch_fetch_event_params.mojom";
 import "third_party/blink/public/mojom/service_worker/service_worker_client.mojom";
 import "third_party/blink/public/mojom/service_worker/service_worker_error_type.mojom";
@@ -29,7 +33,7 @@ import "url/mojom/url.mojom";
 interface ServiceWorkerHost {
   // Sets V8 code cache |data| for the given service worker script |url|, which
   // may be the main script or an imported script.
-  SetCachedMetadata(url.mojom.Url url, array<uint8> data);
+  SetCachedMetadata(url.mojom.Url url, mojo_base.mojom.ReadOnlyBuffer data);
 
   // Clears V8 code cache for |url| set by the above |SetCachedMetadata| before.
   ClearCachedMetadata(url.mojom.Url url);
@@ -114,6 +118,19 @@ struct ExtendableMessageEvent {
   ServiceWorkerObjectInfo? source_info_for_service_worker;
 };
 
+// Indicates whether a service worker has a fetch event handler.  The presence
+// of the fetch event handler is determined when the service worker finishes
+// installing.
+// TODO(crbug.com/945505): Convert enum constants to kUnknown style.
+enum FetchHandlerExistence {
+  // The service worker has not yet finished installing.
+  UNKNOWN,
+  // The service worker finished installing and added a fetch event handler.
+  EXISTS,
+  // The service worker finished installing without a fetch event handler.
+  DOES_NOT_EXIST,
+};
+
 // The number of seconds for which a 'push' event should be allowed to run.
 // This is not in the spec but for a Chrome-specific timeout. Each
 // event dispatched to service workers has a 5 minute timeout in the Chrome
@@ -150,11 +167,14 @@ interface ServiceWorker {
   // ServiceWorker is the first interface available on the
   // service worker thread. It establishes the |service_worker_host| connection
   // and passes information used to populate
-  // ServiceWorkerGlobalScope#registration object. JavaScript execution of the
+  // ServiceWorkerGlobalScope#registration object and
+  // ServiceWorkerGlobalScope#serviceWorker object. JavaScript execution of the
   // service worker does not start until this message is received.
   InitializeGlobalScope(
-      associated ServiceWorkerHost service_worker_host,
-      ServiceWorkerRegistrationObjectInfo registration_info);
+      pending_associated_remote<ServiceWorkerHost> service_worker_host,
+      ServiceWorkerRegistrationObjectInfo registration_info,
+      ServiceWorkerObjectInfo service_worker_info,
+      FetchHandlerExistence fetch_handler_existence);
 
   DispatchInstallEvent()
       => (ServiceWorkerEventStatus status, bool has_fetch_handler);
@@ -183,9 +203,7 @@ interface ServiceWorker {
   // https://github.com/WICG/cookie-store/
   // The callback is called once the event handler has run and the waitUntil()
   // promise has settled.
-  DispatchCookieChangeEvent(
-      network.mojom.CanonicalCookie cookie,
-      network.mojom.CookieChangeCause cause)
+  DispatchCookieChangeEvent(network.mojom.CookieChangeInfo change)
       => (ServiceWorkerEventStatus status);
 
   // The Dispatch*FetchEvent() callback is called once the event finishes,
@@ -193,9 +211,9 @@ interface ServiceWorker {
   // waitUntil() promises have settled. |response_callback| is called once the
   // promise to respondWith() settles, or when the event handler ran without
   // calling respondWith().
-  DispatchFetchEvent(
+  DispatchFetchEventForMainResource(
       DispatchFetchEventParams params,
-      ServiceWorkerFetchResponseCallback response_callback)
+      pending_remote<ServiceWorkerFetchResponseCallback> response_callback)
       => (ServiceWorkerEventStatus status);
 
   DispatchNotificationClickEvent(
@@ -212,42 +230,52 @@ interface ServiceWorker {
   // content, or null.
   DispatchPushEvent(string? payload)
       => (ServiceWorkerEventStatus status);
+  // Whenever a PushSubscription changes, a change event is generated with (optionally)
+  // the previous subscription and the new subscription.
+  DispatchPushSubscriptionChangeEvent(
+      PushSubscription old_subscription,
+      PushSubscription new_subscription)
+      => (ServiceWorkerEventStatus status);
   // Arguments are passed to the event handler as parameters of SyncEvent.
   // Ref: https://wicg.github.io/BackgroundSync/spec/#sync-event
-  // S13nServiceWorker: |timeout| is the amount of time to allow this event to
-  // finish.
-  // Non-S13nServiceWorker: |timeout| is just ignored.
-  DispatchSyncEvent(string id,
+  // |timeout| is the amount of time to allow this event to finish.
+  DispatchSyncEvent(string tag,
                     bool last_chance,
                     mojo_base.mojom.TimeDelta timeout)
       => (ServiceWorkerEventStatus status);
+  // |timeout| is the amount of time to allow this event to finish.
+  // TODO(crbug.com/925297): Link to spec.
+  DispatchPeriodicSyncEvent(string tag,
+                            mojo_base.mojom.TimeDelta timeout)
+      => (ServiceWorkerEventStatus status);
   DispatchAbortPaymentEvent(
-      payments.mojom.PaymentHandlerResponseCallback result_of_abort_payment)
-          => (ServiceWorkerEventStatus status);
+      pending_remote<payments.mojom.PaymentHandlerResponseCallback>
+          result_of_abort_payment)
+      => (ServiceWorkerEventStatus status);
   DispatchCanMakePaymentEvent(
       payments.mojom.CanMakePaymentEventData event_data,
-      payments.mojom.PaymentHandlerResponseCallback result_of_can_make_payment)
-          => (ServiceWorkerEventStatus status);
+      pending_remote<payments.mojom.PaymentHandlerResponseCallback>
+          result_of_can_make_payment)
+      => (ServiceWorkerEventStatus status);
   DispatchPaymentRequestEvent(
       payments.mojom.PaymentRequestEventData request_data,
-      payments.mojom.PaymentHandlerResponseCallback response_callback)
-          => (ServiceWorkerEventStatus status);
+      pending_remote<payments.mojom.PaymentHandlerResponseCallback>
+          response_callback)
+      => (ServiceWorkerEventStatus status);
   DispatchExtendableMessageEvent(ExtendableMessageEvent event)
       => (ServiceWorkerEventStatus status);
-
-  // TODO(crbug.com/869714): Remove this code for long living service workers
-  // when Android Messages no longer requires it.
-  DispatchExtendableMessageEventWithCustomTimeout(ExtendableMessageEvent event,
-                                 mojo_base.mojom.TimeDelta timeout)
-      => (ServiceWorkerEventStatus status);
+  // Ref: https://github.com/rknoll/content-index
+  DispatchContentDeleteEvent(string id) => (ServiceWorkerEventStatus status);
 
   // Pings the service worker to check if it is responsive. If the callback is
   // not called within a certain period of time, the browser will terminate the
   // worker.
   Ping() => ();
 
-  // S13nServiceWorker:
   // Lets the idle timer request termination immediately after all inflight
   // events are handled without delay.
   SetIdleTimerDelayToZero();
+
+  // Adds a message to DevTools console which is associated with this worker.
+  AddMessageToConsole(ConsoleMessageLevel level, string message);
 };

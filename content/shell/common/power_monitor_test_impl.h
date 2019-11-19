@@ -5,20 +5,18 @@
 #ifndef CONTENT_SHELL_COMMON_POWER_MONITOR_TEST_IMPL_H_
 #define CONTENT_SHELL_COMMON_POWER_MONITOR_TEST_IMPL_H_
 
-#include <memory>
-
 #include "base/macros.h"
 #include "base/power_monitor/power_monitor.h"
 #include "content/shell/common/power_monitor_test.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace content {
 
 class PowerMonitorTestImpl : public base::PowerObserver,
                              public mojom::PowerMonitorTest {
  public:
-  static void MakeStrongBinding(
-      std::unique_ptr<PowerMonitorTestImpl> instance,
-      mojom::PowerMonitorTestRequest request);
+  static void MakeSelfOwnedReceiver(
+      mojo::PendingReceiver<mojom::PowerMonitorTest> receiver);
 
   PowerMonitorTestImpl();
   ~PowerMonitorTestImpl() override;

@@ -16,7 +16,7 @@
         description("This tests that invalid syntax triggers 'worker.onerror'.");
 
         checkErrorEventInHandler({
-            message: "Uncaught SyntaxError: Unexpected token }",
+            message: "Uncaught SyntaxError: Unexpected token '}'",
             filename: "[blob: URL]",
             lineno: 2,
             colno: 9,

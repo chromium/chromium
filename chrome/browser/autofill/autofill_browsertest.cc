@@ -32,22 +32,23 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
-#include "components/autofill/core/browser/autofill_profile.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/credit_card.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 #include "components/autofill/core/browser/validation.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/accessibility_notification_waiter.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "net/url_request/test_url_fetcher_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
 using base::ASCIIToUTF16;
@@ -215,9 +216,6 @@ class AutofillTest : public InProcessBrowserTest {
   content::WebContents* web_contents() {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
-
- private:
-  net::TestURLFetcherFactory url_fetcher_factory_;
 };
 
 // Test that Autofill aggregates a minimum valid profile.
@@ -558,6 +556,172 @@ IN_PROC_BROWSER_TEST_F(AutofillTest,
 
   ASSERT_GT(num_of_profiles,
             static_cast<int>(personal_data_manager()->GetProfiles().size()));
+}
+
+// Accessibility Tests //
+class AutofillAccessibilityTest : public AutofillTest {
+ protected:
+  AutofillAccessibilityTest() {}
+
+  // Returns true if kAutofillAvailable state is present AND  kAutoComplete
+  // string attribute is missing; only one should be set at any given time.
+  // Returns false otherwise.
+  bool AutofillIsAvailable(const ui::AXNodeData& data) {
+    if (data.HasState(ax::mojom::State::kAutofillAvailable) &&
+        !data.HasStringAttribute(ax::mojom::StringAttribute::kAutoComplete)) {
+      return true;
+    }
+    return false;
+  }
+
+  // Returns true if kAutocomplete string attribute is present AND
+  // kAutofillAvailable state is missing; only one should be set at any given
+  // time. Returns false otherwise.
+  bool AutocompleteIsAvailable(const ui::AXNodeData& data) {
+    if (data.HasStringAttribute(ax::mojom::StringAttribute::kAutoComplete) &&
+        !data.HasState(ax::mojom::State::kAutofillAvailable)) {
+      return true;
+    }
+    return false;
+  }
+};
+
+// Test that autofill available state is correctly set on accessibility node.
+IN_PROC_BROWSER_TEST_F(AutofillAccessibilityTest, TestAutofillState) {
+  // Navigate to url.
+  GURL url =
+      embedded_test_server()->GetURL("/autofill/duplicate_profiles_test.html");
+  NavigateParams params(browser(), url, ui::PAGE_TRANSITION_LINK);
+  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  ui_test_utils::NavigateToURL(&params);
+
+  // Enable accessibility.
+  content::EnableAccessibilityForWebContents(web_contents());
+  content::AccessibilityNotificationWaiter layout_waiter_one(
+      web_contents(), ui::kAXModeComplete, ax::mojom::Event::kLayoutComplete);
+  layout_waiter_one.WaitForNotification();
+
+  // Focus target form field.
+  const std::string focus_name_first_js =
+      "document.getElementById('NAME_FIRST').focus();";
+  ASSERT_TRUE(content::ExecuteScript(web_contents(), focus_name_first_js));
+
+  // Assert that autofill is not yet available for target form field.
+  // Loop while criteria is not met.
+  ui::AXNodeData node_data;
+  std::string node_name;
+  const ax::mojom::Role target_role = ax::mojom::Role::kTextField;
+  const std::string target_name = "First Name:";
+  while (!(node_data.role == target_role && node_name == target_name &&
+           !AutofillIsAvailable(node_data))) {
+    content::WaitForAccessibilityTreeToChange(web_contents());
+    node_data = content::GetFocusedAccessibilityNodeInfo(web_contents());
+    node_name = node_data.GetStringAttribute(ax::mojom::StringAttribute::kName);
+  }
+  // Sanity check.
+  ASSERT_FALSE(AutofillIsAvailable(node_data));
+
+  // Fill form and submit.
+  FormMap data;
+  data["NAME_FIRST"] = "Bob";
+  data["NAME_LAST"] = "Smith";
+  data["ADDRESS_HOME_LINE1"] = "1234 H St.";
+  data["ADDRESS_HOME_CITY"] = "Mountain View";
+  data["EMAIL_ADDRESS"] = "bsmith@example.com";
+  data["ADDRESS_HOME_STATE"] = "CA";
+  data["ADDRESS_HOME_ZIP"] = "94043";
+  data["ADDRESS_HOME_COUNTRY"] = "United States";
+  data["PHONE_HOME_WHOLE_NUMBER"] = "408-871-4567";
+  FillFormAndSubmit("duplicate_profiles_test.html", data);
+  ASSERT_EQ(1u, personal_data_manager()->GetProfiles().size());
+
+  // Reload page.
+  ui_test_utils::NavigateToURL(&params);
+  content::AccessibilityNotificationWaiter layout_waiter_two(
+      web_contents(), ui::kAXModeComplete, ax::mojom::Event::kLayoutComplete);
+  layout_waiter_two.WaitForNotification();
+
+  // Focus target form field.
+  ASSERT_TRUE(content::ExecuteScript(web_contents(), focus_name_first_js));
+
+  // Assert that autofill is now available for target form field.
+  // Loop while criteria is not met.
+  while (!(node_data.role == target_role && node_name == target_name &&
+           AutofillIsAvailable(node_data))) {
+    content::WaitForAccessibilityTreeToChange(web_contents());
+    node_data = content::GetFocusedAccessibilityNodeInfo(web_contents());
+    node_name = node_data.GetStringAttribute(ax::mojom::StringAttribute::kName);
+  }
+  // Sanity check.
+  ASSERT_TRUE(AutofillIsAvailable(node_data));
+}
+
+// Test that autocomplete available string attribute is correctly set on
+// accessibility node. Test autocomplete in this file since it uses the same
+// infrastructure as autofill.
+IN_PROC_BROWSER_TEST_F(AutofillAccessibilityTest, TestAutocompleteState) {
+  // Navigate to url.
+  GURL url =
+      embedded_test_server()->GetURL("/autofill/duplicate_profiles_test.html");
+  NavigateParams params(browser(), url, ui::PAGE_TRANSITION_LINK);
+  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  ui_test_utils::NavigateToURL(&params);
+
+  // Enable accessibility.
+  content::EnableAccessibilityForWebContents(web_contents());
+  content::AccessibilityNotificationWaiter layout_waiter_one(
+      web_contents(), ui::kAXModeComplete, ax::mojom::Event::kLayoutComplete);
+  layout_waiter_one.WaitForNotification();
+
+  // Focus target form field.
+  const std::string focus_name_first_js =
+      "document.getElementById('NAME_FIRST').focus();";
+  ASSERT_TRUE(content::ExecuteScript(web_contents(), focus_name_first_js));
+
+  // Assert that autocomplete is not yet available for target form field.
+  // Loop while criteria is not met.
+  ui::AXNodeData node_data;
+  std::string node_name;
+  const ax::mojom::Role target_role = ax::mojom::Role::kTextField;
+  const std::string target_name = "First Name:";
+  while (!(node_data.role == target_role && node_name == target_name &&
+           !AutocompleteIsAvailable(node_data))) {
+    content::WaitForAccessibilityTreeToChange(web_contents());
+    node_data = content::GetFocusedAccessibilityNodeInfo(web_contents());
+    node_name = node_data.GetStringAttribute(ax::mojom::StringAttribute::kName);
+  }
+  // Sanity check.
+  ASSERT_FALSE(AutocompleteIsAvailable(node_data));
+
+  // Partially fill form. This should not set autofill state, but rather,
+  // autocomplete state.
+  FormMap data;
+  data["NAME_FIRST"] = "Bob";
+  data["NAME_LAST"] = "Smith";
+  FillFormAndSubmit("duplicate_profiles_test.html", data);
+  // Since we didn't fill the entire form, we should not have increased the
+  // number of autofill profiles.
+  ASSERT_EQ(0u, personal_data_manager()->GetProfiles().size());
+
+  // Reload page.
+  ui_test_utils::NavigateToURL(&params);
+  content::AccessibilityNotificationWaiter layout_waiter_two(
+      web_contents(), ui::kAXModeComplete, ax::mojom::Event::kLayoutComplete);
+  layout_waiter_two.WaitForNotification();
+
+  // Focus target form field.
+  ASSERT_TRUE(content::ExecuteScript(web_contents(), focus_name_first_js));
+
+  // Assert that autocomplete is now available for target form field.
+  // Loop while criteria is not met.
+  while (!(node_data.role == target_role && node_name == target_name &&
+           AutocompleteIsAvailable(node_data))) {
+    content::WaitForAccessibilityTreeToChange(web_contents());
+    node_data = content::GetFocusedAccessibilityNodeInfo(web_contents());
+    node_name = node_data.GetStringAttribute(ax::mojom::StringAttribute::kName);
+  }
+  // Sanity check.
+  ASSERT_TRUE(AutocompleteIsAvailable(node_data));
 }
 
 }  // namespace autofill

@@ -5,13 +5,16 @@
 
 """Unittest for android_xml.py."""
 
+from __future__ import print_function
+
 import os
-import StringIO
 import sys
 import unittest
 
 if __name__ == '__main__':
   sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
+
+from six import StringIO
 
 from grit import util
 from grit.format import android_xml
@@ -22,7 +25,7 @@ from grit.tool import build
 class AndroidXmlUnittest(unittest.TestCase):
 
   def testMessages(self):
-    root = util.ParseGrdForUnittest(ur"""
+    root = util.ParseGrdForUnittest(r"""
         <messages>
           <message name="IDS_SIMPLE" desc="A vanilla string">
             Martha
@@ -54,10 +57,10 @@ a sledge hammer.
         </messages>
         """)
 
-    buf = StringIO.StringIO()
+    buf = StringIO()
     build.RcBuilder.ProcessNode(root, DummyOutput('android', 'en'), buf)
     output = buf.getvalue()
-    expected = ur"""
+    expected = r"""
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 <string name="simple">"Martha"</string>
@@ -82,7 +85,7 @@ a sledge hammer."</string>
 
 
   def testConflictingPlurals(self):
-    root = util.ParseGrdForUnittest(ur"""
+    root = util.ParseGrdForUnittest(r"""
         <messages>
           <message name="IDS_PLURALS" desc="A string using the ICU plural format">
             {NUM_THINGS, plural,
@@ -93,10 +96,10 @@ a sledge hammer."</string>
         </messages>
         """)
 
-    buf = StringIO.StringIO()
+    buf = StringIO()
     build.RcBuilder.ProcessNode(root, DummyOutput('android', 'en'), buf)
     output = buf.getvalue()
-    expected = ur"""
+    expected = r"""
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 <plurals name="plurals">
@@ -109,7 +112,7 @@ a sledge hammer."</string>
 
 
   def testTaggedOnly(self):
-    root = util.ParseGrdForUnittest(ur"""
+    root = util.ParseGrdForUnittest(r"""
         <messages>
           <message name="IDS_HELLO" desc="" formatter_data="android_java">
             Hello

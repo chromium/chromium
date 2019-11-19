@@ -7,34 +7,33 @@
 
 #include "base/allocator/partition_allocator/oom_callback.h"
 #include "base/logging.h"
+#include "base/process/memory.h"
+#include "build/build_config.h"
 
 #if defined(OS_WIN)
 #include <windows.h>
 #endif
 
-// Do not want trivial entry points just calling OOM_CRASH() to be
-// commoned up by linker icf/comdat folding.
-#define OOM_CRASH_PREVENT_ICF()                  \
-  volatile int oom_crash_inhibit_icf = __LINE__; \
-  ALLOW_UNUSED_LOCAL(oom_crash_inhibit_icf)
+namespace {
+// The crash is generated in a NOINLINE function so that we can classify the
+// crash as an OOM solely by analyzing the stack trace.
+NOINLINE void OnNoMemory() {
+  base::internal::RunPartitionAllocOomCallback();
+#if defined(OS_WIN)
+  ::RaiseException(base::win::kOomExceptionCode, EXCEPTION_NONCONTINUABLE, 0,
+                   nullptr);
+#endif
+  IMMEDIATE_CRASH();
+}
+}  // namespace
 
 // OOM_CRASH() - Specialization of IMMEDIATE_CRASH which will raise a custom
 // exception on Windows to signal this is OOM and not a normal assert.
-#if defined(OS_WIN)
-#define OOM_CRASH()                                                     \
-  do {                                                                  \
-    OOM_CRASH_PREVENT_ICF();                                            \
-    base::internal::RunPartitionAllocOomCallback();                     \
-    ::RaiseException(0xE0000008, EXCEPTION_NONCONTINUABLE, 0, nullptr); \
-    IMMEDIATE_CRASH();                                                  \
+// OOM_CRASH() is called by users of PageAllocator (including PartitionAlloc) to
+// signify an allocation failure from the platform.
+#define OOM_CRASH() \
+  do {              \
+    OnNoMemory();   \
   } while (0)
-#else
-#define OOM_CRASH()                                 \
-  do {                                              \
-    base::internal::RunPartitionAllocOomCallback(); \
-    OOM_CRASH_PREVENT_ICF();                        \
-    IMMEDIATE_CRASH();                              \
-  } while (0)
-#endif
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_OOM_H_

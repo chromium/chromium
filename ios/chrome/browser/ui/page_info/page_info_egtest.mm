@@ -2,16 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import <EarlGrey/EarlGrey.h>
 #import <UIKit/UIKit.h>
 #import <XCTest/XCTest.h>
 
 #import "ios/chrome/browser/ui/page_info/page_info_constants.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
-#include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/testing/earl_grey/earl_grey_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -26,13 +25,13 @@
 - (void)testShowPageInfoAndDismissOnDeviceRotation {
   // TODO(crbug.com/652465): Enable the test for iPad when rotation bug is
   // fixed.
-  if (IsIPadIdiom()) {
+  if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_DISABLED(@"Disabled for iPad due to device rotation bug.");
   }
 
   if ([[UIDevice currentDevice] orientation] != UIDeviceOrientationPortrait) {
-    [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait
-                             errorOrNil:nil];
+    [ChromeEarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait
+                                        error:nil];
   }
 
   [ChromeEarlGrey loadURL:GURL("https://invalid")];
@@ -49,9 +48,8 @@
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kPageInfoViewAccessibilityIdentifier)]
       assertWithMatcher:grey_sufficientlyVisible()];
-
-  [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeRight
-                           errorOrNil:nil];
+  [ChromeEarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeRight
+                                      error:nil];
 
   // Expect that the page info view has disappeared.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(

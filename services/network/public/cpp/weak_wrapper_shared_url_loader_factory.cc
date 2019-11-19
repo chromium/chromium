@@ -4,7 +4,6 @@
 
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 
-#include "mojo/public/cpp/bindings/interface_request.h"
 #include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
 
 namespace network {
@@ -23,12 +22,12 @@ void WeakWrapperSharedURLLoaderFactory::Detach() {
 }
 
 void WeakWrapperSharedURLLoaderFactory::CreateLoaderAndStart(
-    mojom::URLLoaderRequest loader,
+    mojo::PendingReceiver<mojom::URLLoader> loader,
     int32_t routing_id,
     int32_t request_id,
     uint32_t options,
     const network::ResourceRequest& request,
-    mojom::URLLoaderClientPtr client,
+    mojo::PendingRemote<mojom::URLLoaderClient> client,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
   if (!factory())
     return;
@@ -38,19 +37,19 @@ void WeakWrapperSharedURLLoaderFactory::CreateLoaderAndStart(
 }
 
 void WeakWrapperSharedURLLoaderFactory::Clone(
-    mojom::URLLoaderFactoryRequest request) {
+    mojo::PendingReceiver<mojom::URLLoaderFactory> receiver) {
   if (!factory())
     return;
-  factory()->Clone(std::move(request));
+  factory()->Clone(std::move(receiver));
 }
 
 std::unique_ptr<network::SharedURLLoaderFactoryInfo>
 WeakWrapperSharedURLLoaderFactory::Clone() {
-  mojom::URLLoaderFactoryPtrInfo factory_ptr_info;
+  mojo::PendingRemote<mojom::URLLoaderFactory> factory_remote;
   if (factory())
-    factory()->Clone(mojo::MakeRequest(&factory_ptr_info));
+    factory()->Clone(factory_remote.InitWithNewPipeAndPassReceiver());
   return std::make_unique<WrapperSharedURLLoaderFactoryInfo>(
-      std::move(factory_ptr_info));
+      std::move(factory_remote));
 }
 
 WeakWrapperSharedURLLoaderFactory::~WeakWrapperSharedURLLoaderFactory() =

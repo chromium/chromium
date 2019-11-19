@@ -16,9 +16,9 @@
 #include "base/strings/stringprintf.h"
 #include "components/payments/content/utility/fingerprint_parser.h"
 #include "components/payments/core/error_logger.h"
-#include "content/public/common/service_manager_connection.h"
+#include "components/payments/core/url_util.h"
 #include "net/base/url_util.h"
-#include "services/data_decoder/public/cpp/safe_json_parser.h"
+#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "url/url_constants.h"
 
 namespace payments {
@@ -26,6 +26,8 @@ namespace {
 
 const size_t kMaximumNumberOfItems = 100U;
 const size_t kMaximumNumberOfSupportedOrigins = 100000;
+const size_t kMaximumNumberOfSupportedDelegations = 4U;
+const size_t kMaximumPrintedStringLength = 100U;
 
 const char* const kDefaultApplications = "default_applications";
 const char* const kFingerprints = "fingerprints";
@@ -33,6 +35,7 @@ const char* const kHttpPrefix = "http://";
 const char* const kHttpsPrefix = "https://";
 const char* const kId = "id";
 const char* const kMinVersion = "min_version";
+const char* const kPayment = "payment";
 const char* const kPlatform = "platform";
 const char* const kPlay = "play";
 const char* const kPreferRelatedApplications = "prefer_related_applications";
@@ -41,12 +44,28 @@ const char* const kServiceWorkerScope = "scope";
 const char* const kServiceWorker = "serviceworker";
 const char* const kServiceWorkerSrc = "src";
 const char* const kServiceWorkerUseCache = "use_cache";
+const char* const kSupportedDelegations = "supported_delegations";
 const char* const kSupportedOrigins = "supported_origins";
 const char* const kWebAppIcons = "icons";
 const char* const kWebAppIconSizes = "sizes";
 const char* const kWebAppIconSrc = "src";
 const char* const kWebAppIconType = "type";
 const char* const kWebAppName = "name";
+
+// Truncates a std::string to 100 chars. This returns an empty string when the
+// input should be ASCII but it's not.
+const std::string ValidateAndTruncateIfNeeded(const std::string& input,
+                                              bool* out_is_ASCII) {
+  if (out_is_ASCII) {
+    *out_is_ASCII = base::IsStringASCII(input);
+    if (!*out_is_ASCII)
+      return "";
+  }
+
+  return input.size() > kMaximumPrintedStringLength
+             ? (input.substr(0, kMaximumPrintedStringLength) + "...")
+             : input;
+}
 
 // Parses the "default_applications": ["https://some/url"] from |dict| into
 // |web_app_manifest_urls|. Returns 'false' for invalid data.
@@ -85,13 +104,14 @@ bool ParseDefaultApplications(base::DictionaryValue* dict,
     }
 
     GURL url(item);
-    if (!url.is_valid() ||
-        !(url.SchemeIs(url::kHttpsScheme) ||
-          (url.SchemeIs(url::kHttpScheme) && net::IsLocalhost(url)))) {
-      log.Error(base::StringPrintf(
-          "\"%s\" entry in \"%s\" is not a valid URL with HTTPS scheme and is "
-          "not a valid localhost URL with HTTP scheme.",
-          item.c_str(), kDefaultApplications));
+    if (!UrlUtil::IsValidManifestUrl(url)) {
+      const std::string item_to_print =
+          ValidateAndTruncateIfNeeded(item, nullptr);
+      log.Error(
+          base::StringPrintf("\"%s\" entry in \"%s\" is not a valid URL with "
+                             "HTTPS scheme and is "
+                             "not a valid localhost URL with HTTP scheme.",
+                             item_to_print.c_str(), kDefaultApplications));
       web_app_manifest_urls->clear();
       return false;
     }
@@ -162,16 +182,15 @@ bool ParseSupportedOrigins(base::DictionaryValue* dict,
     }
 
     GURL url(item);
-    if (!url.is_valid() ||
-        !(url.SchemeIs(url::kHttpsScheme) ||
-          (url.SchemeIs(url::kHttpScheme) && net::IsLocalhost(url))) ||
-        url.path() != "/" || url.has_query() || url.has_ref() ||
-        url.has_username() || url.has_password()) {
+    if (!UrlUtil::IsValidSupportedOrigin(url)) {
       supported_origins->clear();
+      const std::string item_to_print =
+          ValidateAndTruncateIfNeeded(item, nullptr);
       log.Error(base::StringPrintf(
-          "\"%s\" entry in \"%s\" is not a valid origin with HTTPS scheme and "
+          "\"%s\" entry in \"%s\" is not a valid origin with HTTPS scheme "
+          "and "
           "is not a valid localhost origin with HTTP scheme.",
-          item.c_str(), kSupportedOrigins));
+          item_to_print.c_str(), kSupportedOrigins));
       return false;
     }
 
@@ -320,42 +339,6 @@ void ParsePreferredRelatedApplicationIdentifiers(
   }
 }
 
-// An object that allows both SafeJsonParser's callbacks (error/success) to run
-// the same callback provided to ParsePaymentMethodManifest/ParseWebAppManifest.
-// (since Callbacks are movable type, that callback has to be shared)
-template <typename Callback>
-class JsonParserCallback
-    : public base::RefCounted<JsonParserCallback<Callback>> {
- public:
-  JsonParserCallback(
-      base::OnceCallback<void(Callback,
-                              std::unique_ptr<base::Value>,
-                              const std::string&)> parser_callback,
-      Callback client_callback)
-      : parser_callback_(std::move(parser_callback)),
-        client_callback_(std::move(client_callback)) {}
-
-  void OnSuccess(std::unique_ptr<base::Value> value) {
-    std::move(parser_callback_)
-        .Run(std::move(client_callback_), std::move(value),
-             /*error_message=*/std::string());
-  }
-
-  void OnError(const std::string& error_message) {
-    std::move(parser_callback_)
-        .Run(std::move(client_callback_), /*value=*/nullptr, error_message);
-  }
-
- private:
-  friend class base::RefCounted<JsonParserCallback>;
-  ~JsonParserCallback() = default;
-
-  base::OnceCallback<
-      void(Callback, std::unique_ptr<base::Value>, const std::string&)>
-      parser_callback_;
-  Callback client_callback_;
-};
-
 }  // namespace
 
 PaymentManifestParser::WebAppIcon::WebAppIcon() = default;
@@ -363,7 +346,7 @@ PaymentManifestParser::WebAppIcon::WebAppIcon() = default;
 PaymentManifestParser::WebAppIcon::~WebAppIcon() = default;
 
 PaymentManifestParser::PaymentManifestParser(std::unique_ptr<ErrorLogger> log)
-    : log_(std::move(log)), weak_factory_(this) {
+    : log_(std::move(log)) {
   DCHECK(log_);
 }
 
@@ -375,19 +358,9 @@ void PaymentManifestParser::ParsePaymentMethodManifest(
   parse_payment_callback_counter_++;
   DCHECK_GE(10U, parse_payment_callback_counter_);
 
-  scoped_refptr<JsonParserCallback<PaymentMethodCallback>> json_callback =
-      new JsonParserCallback<PaymentMethodCallback>(
-          base::Bind(&PaymentManifestParser::OnPaymentMethodParse,
-                     weak_factory_.GetWeakPtr()),
-          std::move(callback));
-
-  data_decoder::SafeJsonParser::Parse(
-      content::ServiceManagerConnection::GetForProcess()->GetConnector(),
-      content,
-      base::Bind(&JsonParserCallback<PaymentMethodCallback>::OnSuccess,
-                 json_callback),
-      base::Bind(&JsonParserCallback<PaymentMethodCallback>::OnError,
-                 json_callback));
+  data_decoder::DataDecoder::ParseJsonIsolated(
+      content, base::BindOnce(&PaymentManifestParser::OnPaymentMethodParse,
+                              weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void PaymentManifestParser::ParseWebAppManifest(const std::string& content,
@@ -395,38 +368,18 @@ void PaymentManifestParser::ParseWebAppManifest(const std::string& content,
   parse_webapp_callback_counter_++;
   DCHECK_GE(10U, parse_webapp_callback_counter_);
 
-  scoped_refptr<JsonParserCallback<WebAppCallback>> parser_callback =
-      new JsonParserCallback<WebAppCallback>(
-          base::Bind(&PaymentManifestParser::OnWebAppParse,
-                     weak_factory_.GetWeakPtr()),
-          std::move(callback));
-
-  data_decoder::SafeJsonParser::Parse(
-      content::ServiceManagerConnection::GetForProcess()->GetConnector(),
-      content,
-      base::Bind(&JsonParserCallback<WebAppCallback>::OnSuccess,
-                 parser_callback),
-      base::Bind(&JsonParserCallback<WebAppCallback>::OnError,
-                 parser_callback));
+  data_decoder::DataDecoder::ParseJsonIsolated(
+      content, base::BindOnce(&PaymentManifestParser::OnWebAppParse,
+                              weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void PaymentManifestParser::ParseWebAppInstallationInfo(
     const std::string& content,
     WebAppInstallationInfoCallback callback) {
-  scoped_refptr<JsonParserCallback<WebAppInstallationInfoCallback>>
-      sw_parser_callback =
-          new JsonParserCallback<WebAppInstallationInfoCallback>(
-              base::Bind(&PaymentManifestParser::OnWebAppParseInstallationInfo,
-                         weak_factory_.GetWeakPtr()),
-              std::move(callback));
-
-  data_decoder::SafeJsonParser::Parse(
-      content::ServiceManagerConnection::GetForProcess()->GetConnector(),
+  data_decoder::DataDecoder::ParseJsonIsolated(
       content,
-      base::Bind(&JsonParserCallback<WebAppInstallationInfoCallback>::OnSuccess,
-                 sw_parser_callback),
-      base::Bind(&JsonParserCallback<WebAppInstallationInfoCallback>::OnError,
-                 sw_parser_callback));
+      base::BindOnce(&PaymentManifestParser::OnWebAppParseInstallationInfo,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 // static
@@ -636,25 +589,71 @@ bool PaymentManifestParser::ParseWebAppInstallationInfoIntoStructs(
   ParsePreferredRelatedApplicationIdentifiers(
       *dict, log, &installation_info->preferred_app_ids);
 
+  base::DictionaryValue* payment_dict = nullptr;
+  if (dict->GetDictionary(kPayment, &payment_dict)) {
+    const base::ListValue* delegation_list = nullptr;
+    if (payment_dict->GetList(kSupportedDelegations, &delegation_list)) {
+      if (delegation_list->empty() ||
+          delegation_list->GetSize() > kMaximumNumberOfSupportedDelegations) {
+        log.Error(base::StringPrintf(
+            "\"%s.%s\" must be a non-empty list of at most %zu entries.",
+            kPayment, kSupportedDelegations,
+            kMaximumNumberOfSupportedDelegations));
+        return false;
+      }
+      for (const auto& delegation_item : *delegation_list) {
+        std::string delegation_name = delegation_item.GetString();
+        if (delegation_name == "shippingAddress") {
+          installation_info->supported_delegations.shipping_address = true;
+        } else if (delegation_name == "payerName") {
+          installation_info->supported_delegations.payer_name = true;
+        } else if (delegation_name == "payerEmail") {
+          installation_info->supported_delegations.payer_email = true;
+        } else if (delegation_name == "payerPhone") {
+          installation_info->supported_delegations.payer_phone = true;
+        } else {  // delegation_name is not valid
+          bool is_ASCII;
+          const std::string delegation_name_to_print =
+              ValidateAndTruncateIfNeeded(delegation_name, &is_ASCII);
+          if (!is_ASCII) {
+            log.Error("Entries in delegation list must be ASCII strings.");
+          } else {  // ASCII string.
+            log.Error(base::StringPrintf(
+                "\"%s\" is not a valid value in \"%s\" array.",
+                delegation_name_to_print.c_str(), kSupportedDelegations));
+          }
+          return false;
+        }
+      }
+    } else {  // !payment_dict->GetList(kSupportedDelegations, &delegation_list)
+      log.Error(base::StringPrintf("\"%s\" member must have \"%s\" list",
+                                   kPayment, kSupportedDelegations));
+      return false;
+    }
+  } else if (dict->HasKey(kPayment)) {
+    log.Error(
+        base::StringPrintf("\"%s\" member must be a dictionary", kPayment));
+    return false;
+  }
+
   return true;
 }
 
 void PaymentManifestParser::OnPaymentMethodParse(
     PaymentMethodCallback callback,
-    std::unique_ptr<base::Value> value,
-    const std::string& json_parser_error) {
+    data_decoder::DataDecoder::ValueOrError result) {
   parse_payment_callback_counter_--;
 
   std::vector<GURL> web_app_manifest_urls;
   std::vector<url::Origin> supported_origins;
   bool all_origins_supported = false;
 
-  if (json_parser_error.empty()) {
+  if (result.value) {
     ParsePaymentMethodManifestIntoVectors(
-        std::move(value), *log_, &web_app_manifest_urls, &supported_origins,
-        &all_origins_supported);
+        base::Value::ToUniquePtrValue(std::move(*result.value)), *log_,
+        &web_app_manifest_urls, &supported_origins, &all_origins_supported);
   } else {
-    log_->Error(json_parser_error);
+    log_->Error(*result.error);
   }
 
   // Can trigger synchronous deletion of this object, so can't access any of
@@ -665,15 +664,16 @@ void PaymentManifestParser::OnPaymentMethodParse(
 
 void PaymentManifestParser::OnWebAppParse(
     WebAppCallback callback,
-    std::unique_ptr<base::Value> value,
-    const std::string& json_parser_error) {
+    data_decoder::DataDecoder::ValueOrError result) {
   parse_webapp_callback_counter_--;
 
   std::vector<WebAppManifestSection> manifest;
-  if (json_parser_error.empty()) {
-    ParseWebAppManifestIntoVector(std::move(value), *log_, &manifest);
+  if (result.value) {
+    ParseWebAppManifestIntoVector(
+        base::Value::ToUniquePtrValue(std::move(*result.value)), *log_,
+        &manifest);
   } else {
-    log_->Error(json_parser_error);
+    log_->Error(*result.error);
   }
 
   // Can trigger synchronous deletion of this object, so can't access any of
@@ -683,21 +683,21 @@ void PaymentManifestParser::OnWebAppParse(
 
 void PaymentManifestParser::OnWebAppParseInstallationInfo(
     WebAppInstallationInfoCallback callback,
-    std::unique_ptr<base::Value> value,
-    const std::string& json_parser_error) {
+    data_decoder::DataDecoder::ValueOrError result) {
   std::unique_ptr<WebAppInstallationInfo> installation_info;
   std::unique_ptr<std::vector<WebAppIcon>> icons;
 
-  if (json_parser_error.empty()) {
+  if (result.value) {
     installation_info = std::make_unique<WebAppInstallationInfo>();
     icons = std::make_unique<std::vector<WebAppIcon>>();
     if (!ParseWebAppInstallationInfoIntoStructs(
-            std::move(value), *log_, installation_info.get(), icons.get())) {
+            base::Value::ToUniquePtrValue(std::move(*result.value)), *log_,
+            installation_info.get(), icons.get())) {
       installation_info.reset();
       icons.reset();
     }
   } else {
-    log_->Error(json_parser_error);
+    log_->Error(*result.error);
   }
 
   // Can trigger synchronous deletion of this object, so can't access any of

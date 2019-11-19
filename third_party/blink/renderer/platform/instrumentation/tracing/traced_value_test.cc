@@ -14,12 +14,11 @@ namespace blink {
 std::unique_ptr<base::Value> ParseTracedValue(
     std::unique_ptr<TracedValue> value) {
   base::JSONReader reader;
-  CString utf8 = value->ToString().Utf8();
-  return reader.ReadDeprecated(utf8.data());
+  return reader.ReadDeprecated(value->ToString().Utf8());
 }
 
 TEST(TracedValueTest, FlatDictionary) {
-  std::unique_ptr<TracedValue> value = TracedValue::Create();
+  auto value = std::make_unique<TracedValue>();
   value->SetIntegerWithCopiedName("int", 2014);
   value->SetDoubleWithCopiedName("double", 0.0);
   value->SetBooleanWithCopiedName("bool", true);
@@ -40,7 +39,7 @@ TEST(TracedValueTest, FlatDictionary) {
 }
 
 TEST(TracedValueTest, Hierarchy) {
-  std::unique_ptr<TracedValue> value = TracedValue::Create();
+  auto value = std::make_unique<TracedValue>();
   value->SetIntegerWithCopiedName("i0", 2014);
   value->BeginDictionaryWithCopiedName("dict1");
   value->SetIntegerWithCopiedName("i1", 2014);
@@ -100,7 +99,7 @@ TEST(TracedValueTest, Hierarchy) {
 }
 
 TEST(TracedValueTest, Escape) {
-  std::unique_ptr<TracedValue> value = TracedValue::Create();
+  auto value = std::make_unique<TracedValue>();
   value->SetStringWithCopiedName("s0", "value0\\");
   value->SetStringWithCopiedName("s1", "value\n1");
   value->SetStringWithCopiedName("s2", "\"value2\"");
@@ -128,7 +127,7 @@ TEST(TracedValueTest, Escape) {
 }
 
 TEST(TracedValueTest, NonCopiedNames) {
-  std::unique_ptr<TracedValue> value = TracedValue::Create();
+  auto value = std::make_unique<TracedValue>();
   const char* int_str = "int";
   const char* double_str = "double";
   const char* bool_str = "bool";

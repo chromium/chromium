@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/callback_helpers.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "jingle/glue/utils.h"
@@ -51,11 +50,9 @@ TransportRoute::RouteType CandidateTypeToTransportRouteType(
 IceTransportChannel::IceTransportChannel(
     scoped_refptr<TransportContext> transport_context)
     : transport_context_(transport_context),
-      ice_username_fragment_(
-          rtc::CreateRandomString(kIceUfragLength)),
+      ice_username_fragment_(rtc::CreateRandomString(kIceUfragLength)),
       connect_attempts_left_(
-          transport_context->network_settings().ice_reconnect_attempts),
-      weak_factory_(this) {
+          transport_context->network_settings().ice_reconnect_attempts) {
   DCHECK(!ice_username_fragment_.empty());
 }
 
@@ -142,7 +139,7 @@ void IceTransportChannel::NotifyConnected() {
       new TransportChannelSocketAdapter(channel_.get()));
   socket->SetOnDestroyedCallback(base::Bind(
       &IceTransportChannel::OnChannelDestroyed, base::Unretained(this)));
-  base::ResetAndReturn(&callback_).Run(std::move(socket));
+  std::move(callback_).Run(std::move(socket));
 }
 
 void IceTransportChannel::SetRemoteCredentials(const std::string& ufrag,

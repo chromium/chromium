@@ -168,7 +168,7 @@ dnl
 dnl Math detection
 dnl
 
-AC_CHECK_HEADERS(ieeefp.h nan.h math.h fp_class.h float.h ansidecl.h)
+AC_CHECK_HEADERS(ieeefp.h nan.h math.h fp_class.h float.h)
 AC_CHECK_HEADERS(sys/timeb.h time.h sys/stat.h sys/select.h stdarg.h)
 AC_CHECK_HEADERS(errno.h)
 AC_CHECK_FUNCS(stat _stat)

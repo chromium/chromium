@@ -28,10 +28,12 @@ VideoCaptureDeviceChromeOS::VideoCaptureDeviceChromeOS(
           ScreenObserverDelegate::Create(this, ui_task_runner)) {}
 
 VideoCaptureDeviceChromeOS::~VideoCaptureDeviceChromeOS() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   screen_observer_delegate_->RemoveObserver();
 }
 
 void VideoCaptureDeviceChromeOS::SetRotation(int rotation) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!camera_config_.rotates_with_device) {
     rotation = 0;
   } else if (camera_config_.lens_facing ==
@@ -77,6 +79,7 @@ void VideoCaptureDeviceChromeOS::SetRotation(int rotation) {
 
 void VideoCaptureDeviceChromeOS::SetDisplayRotation(
     const display::Display& display) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (display.IsInternal())
     SetRotation(display.rotation() * 90);
 }

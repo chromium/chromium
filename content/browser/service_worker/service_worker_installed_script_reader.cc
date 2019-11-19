@@ -25,8 +25,7 @@ class ServiceWorkerInstalledScriptReader::MetaDataSender {
         handle_(std::move(handle)),
         watcher_(FROM_HERE,
                  mojo::SimpleWatcher::ArmingPolicy::AUTOMATIC,
-                 base::SequencedTaskRunnerHandle::Get()),
-        weak_factory_(this) {}
+                 base::SequencedTaskRunnerHandle::Get()) {}
 
   void Start(base::OnceCallback<void(bool /* success */)> callback) {
     callback_ = std::move(callback);
@@ -39,6 +38,10 @@ class ServiceWorkerInstalledScriptReader::MetaDataSender {
     // It isn't necessary to handle MojoResult here since WriteDataRaw()
     // returns an equivalent error.
     uint32_t size = meta_data_->size() - bytes_sent_;
+    TRACE_EVENT2(
+        "ServiceWorker",
+        "ServiceWorkerInstalledScriptReader::MetaDataSender::OnWritable",
+        "meta_data size", meta_data_->size(), "bytes_sent_", bytes_sent_);
     MojoResult rv = handle_->WriteData(meta_data_->data() + bytes_sent_, &size,
                                        MOJO_WRITE_DATA_FLAG_NONE);
     switch (rv) {
@@ -60,11 +63,18 @@ class ServiceWorkerInstalledScriptReader::MetaDataSender {
         return;
     }
     bytes_sent_ += size;
+    TRACE_EVENT2(
+        "ServiceWorker",
+        "ServiceWorkerInstalledScriptReader::MetaDataSender::OnWritable",
+        "meta_data size", meta_data_->size(), "new bytes_sent_", bytes_sent_);
     if (meta_data_->size() == bytes_sent_)
       OnCompleted(true);
   }
 
   void OnCompleted(bool success) {
+    TRACE_EVENT0(
+        "ServiceWorker",
+        "ServiceWorkerInstalledScriptReader::MetaDataSender::OnComplete");
     watcher_.Cancel();
     handle_.reset();
     std::move(callback_).Run(success);
@@ -78,7 +88,7 @@ class ServiceWorkerInstalledScriptReader::MetaDataSender {
   mojo::ScopedDataPipeProducerHandle handle_;
   mojo::SimpleWatcher watcher_;
 
-  base::WeakPtrFactory<MetaDataSender> weak_factory_;
+  base::WeakPtrFactory<MetaDataSender> weak_factory_{this};
 };
 
 ServiceWorkerInstalledScriptReader::ServiceWorkerInstalledScriptReader(
@@ -88,12 +98,12 @@ ServiceWorkerInstalledScriptReader::ServiceWorkerInstalledScriptReader(
       client_(client),
       body_watcher_(FROM_HERE,
                     mojo::SimpleWatcher::ArmingPolicy::MANUAL,
-                    base::SequencedTaskRunnerHandle::Get()),
-      weak_factory_(this) {}
+                    base::SequencedTaskRunnerHandle::Get()) {}
 
 ServiceWorkerInstalledScriptReader::~ServiceWorkerInstalledScriptReader() {}
 
 void ServiceWorkerInstalledScriptReader::Start() {
+  TRACE_EVENT0("ServiceWorker", "ServiceWorkerInstalledScriptReader::Start");
   auto info_buf = base::MakeRefCounted<HttpResponseInfoIOBuffer>();
   reader_->ReadInfo(
       info_buf.get(),
@@ -106,6 +116,8 @@ void ServiceWorkerInstalledScriptReader::OnReadInfoComplete(
     int result) {
   DCHECK(client_);
   DCHECK(http_info);
+  TRACE_EVENT0("ServiceWorker",
+               "ServiceWorkerInstalledScriptReader::OnReadInfoComplete");
   if (!http_info->http_info) {
     DCHECK_LT(result, 0);
     ServiceWorkerMetrics::CountReadResponseResult(
@@ -117,14 +129,15 @@ void ServiceWorkerInstalledScriptReader::OnReadInfoComplete(
   DCHECK_GE(result, 0);
   mojo::ScopedDataPipeConsumerHandle meta_data_consumer;
   DCHECK_GE(http_info->response_data_size, 0);
-  uint64_t body_size = http_info->response_data_size;
+  body_size_ = http_info->response_data_size;
   uint64_t meta_data_size = 0;
 
   MojoCreateDataPipeOptions options;
   options.struct_size = sizeof(MojoCreateDataPipeOptions);
   options.flags = MOJO_CREATE_DATA_PIPE_FLAG_NONE;
   options.element_num_bytes = 1;
-  options.capacity_num_bytes = blink::BlobUtils::GetDataPipeCapacity(body_size);
+  options.capacity_num_bytes =
+      blink::BlobUtils::GetDataPipeCapacity(body_size_);
 
   mojo::ScopedDataPipeConsumerHandle body_consumer_handle;
   MojoResult rv =
@@ -174,7 +187,7 @@ void ServiceWorkerInstalledScriptReader::OnReadInfoComplete(
   size_t iter = 0;
   std::string key;
   std::string value;
-  // This logic is copied from blink::ResourceResponse::AddHTTPHeaderField.
+  // This logic is copied from blink::ResourceResponse::AddHttpHeaderField.
   while (headers->EnumerateHeaderLines(&iter, &key, &value)) {
     if (header_strings.find(key) == header_strings.end()) {
       header_strings[key] = value;
@@ -184,7 +197,7 @@ void ServiceWorkerInstalledScriptReader::OnReadInfoComplete(
   }
 
   client_->OnStarted(charset, std::move(header_strings),
-                     std::move(body_consumer_handle), body_size,
+                     std::move(body_consumer_handle), body_size_,
                      std::move(meta_data_consumer), meta_data_size);
   client_->OnHttpInfoRead(http_info);
 }
@@ -194,6 +207,8 @@ void ServiceWorkerInstalledScriptReader::OnWritableBody(MojoResult) {
   // an equivalent error.
   DCHECK(!body_pending_write_);
   DCHECK(body_handle_.is_valid());
+  TRACE_EVENT0("ServiceWorker",
+               "ServiceWorkerInstalledScriptReader::OnWritableBody");
   uint32_t num_bytes = 0;
   MojoResult rv = network::NetToMojoPendingBuffer::BeginWrite(
       &body_handle_, &body_pending_write_, &num_bytes);
@@ -228,6 +243,9 @@ void ServiceWorkerInstalledScriptReader::OnWritableBody(MojoResult) {
 }
 
 void ServiceWorkerInstalledScriptReader::OnResponseDataRead(int read_bytes) {
+  TRACE_EVENT1("ServiceWorker",
+               "ServiceWorkerInstalledScriptReader::OnResponseDataRead",
+               "read_bytes", read_bytes);
   if (read_bytes < 0) {
     ServiceWorkerMetrics::CountReadResponseResult(
         ServiceWorkerMetrics::READ_DATA_ERROR);
@@ -239,8 +257,9 @@ void ServiceWorkerInstalledScriptReader::OnResponseDataRead(int read_bytes) {
   body_handle_ = body_pending_write_->Complete(read_bytes);
   DCHECK(body_handle_.is_valid());
   body_pending_write_ = nullptr;
+  body_bytes_sent_ += read_bytes;
   ServiceWorkerMetrics::CountReadResponseResult(ServiceWorkerMetrics::READ_OK);
-  if (read_bytes == 0) {
+  if (read_bytes == 0 || body_bytes_sent_ == body_size_) {
     // All data has been read.
     body_watcher_.Cancel();
     body_handle_.reset();

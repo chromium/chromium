@@ -13,15 +13,19 @@ chrome.test.runTests([
   function setup() {
     var tabs = ['http://example.org/a.html', 'http://www.google.com/favicon.ico'];
     chrome.windows.create({url: tabs}, pass(function(window) {
-      assertEq(2, window.tabs.length);
-      testWindowId = window.id;
-      chrome.tabs.create({
-        windowId: testWindowId,
-        url: 'about:blank',
-        pinned: true
-      }, pass(function(tab) {
-        assertTrue(tab.pinned);
-        assertEq(testWindowId, tab.windowId);
+      waitForAllTabs(pass(function() {
+        assertEq(2, window.tabs.length);
+        testWindowId = window.id;
+        chrome.tabs.create({
+          windowId: testWindowId,
+          url: 'about:blank',
+          pinned: true
+        }, pass(function(tab) {
+          waitForAllTabs(pass(function() {
+            assertTrue(tab.pinned);
+            assertEq(testWindowId, tab.windowId);
+          }));
+        }));
       }));
     }));
   },

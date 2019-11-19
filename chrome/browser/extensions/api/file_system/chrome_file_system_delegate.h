@@ -32,7 +32,7 @@ class ChromeFileSystemDelegate : public FileSystemDelegate {
   // FileSystemDelegate:
   base::FilePath GetDefaultDirectory() override;
   bool ShowSelectFileDialog(
-      scoped_refptr<UIThreadExtensionFunction> extension_function,
+      scoped_refptr<ExtensionFunction> extension_function,
       ui::SelectFileDialog::Type type,
       const base::FilePath& default_path,
       const ui::SelectFileDialog::FileTypeInfo* file_types,
@@ -50,7 +50,7 @@ class ChromeFileSystemDelegate : public FileSystemDelegate {
       content::RenderFrameHost* render_frame_host,
       const Extension& extension) override;
   void RequestFileSystem(content::BrowserContext* browser_context,
-                         scoped_refptr<UIThreadExtensionFunction> requester,
+                         scoped_refptr<ExtensionFunction> requester,
                          const Extension& extension,
                          std::string volume_id,
                          bool writable,

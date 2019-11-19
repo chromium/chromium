@@ -122,6 +122,10 @@ class AnalyserNode final : public AudioBasicInspectorNode {
   void getFloatTimeDomainData(NotShared<DOMFloat32Array>);
   void getByteTimeDomainData(NotShared<DOMUint8Array>);
 
+  // InspectorHelperMixin
+  void ReportDidCreate() final;
+  void ReportWillBeDestroyed() final;
+
  private:
   AnalyserHandler& GetAnalyserHandler() const;
 

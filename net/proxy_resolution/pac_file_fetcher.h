@@ -38,7 +38,7 @@ class NET_EXPORT_PRIVATE PacFileFetcher {
   //
   //    ERR_TIMED_OUT         -- the fetch took too long to complete.
   //    ERR_FILE_TOO_BIG      -- the response's body was too large.
-  //    ERR_PAC_STATUS_NOT_OK -- non-200 HTTP status code.
+  //    ERR_HTTP_RESPONSE_CODE_FAILURE -- non-200 HTTP status code.
   //    ERR_NOT_IMPLEMENTED   -- the response required authentication.
   //
   // If the request is cancelled (either using the "Cancel()" method or by

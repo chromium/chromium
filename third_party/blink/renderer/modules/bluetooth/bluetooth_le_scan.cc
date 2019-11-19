@@ -4,18 +4,12 @@
 
 #include "third_party/blink/renderer/modules/bluetooth/bluetooth_le_scan.h"
 
+#include "mojo/public/cpp/bindings/receiver_set.h"
+
 namespace blink {
 
-BluetoothLEScan* BluetoothLEScan::Create(
-    mojo::BindingId id,
-    Bluetooth* bluetooth,
-    mojom::blink::WebBluetoothRequestLEScanOptionsPtr options) {
-  return MakeGarbageCollected<BluetoothLEScan>(id, bluetooth,
-                                               std::move(options));
-}
-
 BluetoothLEScan::BluetoothLEScan(
-    mojo::BindingId id,
+    mojo::ReceiverId id,
     Bluetooth* bluetooth,
     mojom::blink::WebBluetoothRequestLEScanOptionsPtr options)
     : id_(id),
@@ -62,12 +56,11 @@ bool BluetoothLEScan::acceptAllAdvertisements() const {
 }
 
 bool BluetoothLEScan::active() const {
-  return is_active_;
+  return bluetooth_->IsScanActive(id_);
 }
 
 bool BluetoothLEScan::stop() {
   bluetooth_->CancelScan(id_);
-  is_active_ = false;
   return true;
 }
 

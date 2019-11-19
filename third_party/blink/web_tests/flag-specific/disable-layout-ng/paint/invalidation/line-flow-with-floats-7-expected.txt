@@ -1,0 +1,63 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "InlineTextBox 'a very short time '",
+          "rect": [14, 420, 355, 39],
+          "reason": "appeared"
+        },
+        {
+          "object": "InlineTextBox 'a very short time '",
+          "rect": [14, 420, 355, 39],
+          "reason": "disappeared"
+        },
+        {
+          "object": "InlineTextBox 'for the hedgehogs; and in\n'",
+          "rect": [14, 420, 355, 39],
+          "reason": "appeared"
+        },
+        {
+          "object": "InlineTextBox 'for the hedgehogs; and in\n'",
+          "rect": [14, 420, 355, 39],
+          "reason": "disappeared"
+        },
+        {
+          "object": "InlineTextBox 'for turns,\n'",
+          "rect": [14, 420, 355, 39],
+          "reason": "appeared"
+        },
+        {
+          "object": "InlineTextBox 'for turns,\n'",
+          "rect": [14, 420, 355, 39],
+          "reason": "disappeared"
+        },
+        {
+          "object": "InlineTextBox 'quarrelling all the while, and fighting'",
+          "rect": [14, 420, 355, 39],
+          "reason": "appeared"
+        },
+        {
+          "object": "InlineTextBox 'quarrelling all the while, and fighting'",
+          "rect": [14, 420, 355, 39],
+          "reason": "disappeared"
+        },
+        {
+          "object": "InlineTextBox 'the Queen'",
+          "rect": [298, 440, 70, 19],
+          "reason": "appeared"
+        },
+        {
+          "object": "InlineTextBox 'the Queen'",
+          "rect": [302, 440, 66, 19],
+          "reason": "disappeared"
+        }
+      ]
+    }
+  ]
+}
+

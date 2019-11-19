@@ -1,8 +1,11 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
 
-<dom-module id="device-emulator-shared-styles">
   <template>
     <style>
+      cr-icon-button {
+        --cr-icon-button-color: rgb(82, 101, 162);
+        margin: 0;
+      }
+
       cr-input {
         display: inline-block;
         margin: 0 15px;
@@ -42,17 +45,9 @@
         width: 45%;
       }
 
-      .icon-cell paper-icon-button {
-        color: rgb(82, 101, 162);
-      }
-
       .devices-table {
         border-collapse: collapse;
         padding: 20px 0;
-      }
-
-      .devices-table paper-icon-button[disabled] {
-        color: rgb(150, 194, 244);
       }
 
       .devices-table.custom {
@@ -107,12 +102,11 @@
 
       .add-device-container {
         margin: 15px;
-        text-align: right;
+        text-align: end;
       }
 
-      .add-device-container paper-button {
+      .add-device-container cr-button {
         color: rgb(82, 101, 162);
       }
     </style>
   </template>
-</dom-module>

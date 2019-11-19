@@ -4,9 +4,9 @@
 
 #include "chrome/browser/metrics/page_load_metrics_provider.h"
 
-#include "chrome/browser/page_load_metrics/metrics_web_contents_observer.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
+#include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 
 PageLoadMetricsProvider::PageLoadMetricsProvider() {}
 

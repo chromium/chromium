@@ -1,0 +1,46 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ios/build/config.gni")
+
+source_set("feature_flags") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "features.h",
+    "features.mm",
+  ]
+  deps = [
+    "//base",
+  ]
+}
+
+source_set("breadcrumbs") {
+  deps = [
+    "//base",
+  ]
+
+  sources = [
+    "breadcrumb_manager.cc",
+    "breadcrumb_manager.h",
+    "breadcrumb_manager_observer.h",
+  ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+source_set("unit_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  deps = [
+    ":breadcrumbs",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
+
+  sources = [
+    "breadcrumb_manager_observer_unittest.mm",
+    "breadcrumb_manager_unittest.mm",
+  ]
+}

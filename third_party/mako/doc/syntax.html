@@ -1,0 +1,606 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        
+        <title>
+            
+    
+                Syntax
+             &mdash;
+    Mako 1.0.14 Documentation
+
+        </title>
+
+        
+            <!-- begin iterate through site-imported + sphinx environment css_files -->
+                <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+                <link rel="stylesheet" href="_static/changelog.css" type="text/css" />
+                <link rel="stylesheet" href="_static/sphinx_paramlinks.css" type="text/css" />
+                <link rel="stylesheet" href="_static/docs.css" type="text/css" />
+            <!-- end iterate through site-imported + sphinx environment css_files -->
+        
+
+        
+    
+
+    <!-- begin layout.mako headers -->
+
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="top" title="Mako 1.0.14 Documentation" href="index.html" />
+        <link rel="next" title="Defs and Blocks" href="defs.html" />
+        <link rel="prev" title="Usage" href="usage.html" />
+    <!-- end layout.mako headers -->
+
+
+    </head>
+    <body>
+        
+
+
+
+
+
+
+
+
+
+
+<div id="docs-container">
+
+
+
+<div id="docs-header">
+    <h1>Mako 1.0.14 Documentation</h1>
+
+    <div id="docs-search">
+    Search:
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" size="18" /> <input type="submit" value="Search" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+
+    <div id="docs-version-header">
+        Release: <span class="version-num">1.0.14</span>
+
+    </div>
+
+</div>
+
+<div id="docs-top-navigation">
+    <div id="docs-top-page-control" class="docs-navigation-links">
+        <ul>
+            <li>Prev:
+            <a href="usage.html" title="previous chapter">Usage</a>
+            </li>
+            <li>Next:
+            <a href="defs.html" title="next chapter">Defs and Blocks</a>
+            </li>
+
+        <li>
+            <a href="index.html">Table of Contents</a> |
+            <a href="genindex.html">Index</a>
+        </li>
+        </ul>
+    </div>
+
+    <div id="docs-navigation-banner">
+        <a href="index.html">Mako 1.0.14 Documentation</a>
+        » 
+                Syntax
+            
+
+        <h2>
+            
+                Syntax
+            
+        </h2>
+    </div>
+
+</div>
+
+<div id="docs-body-container">
+
+
+    <div id="docs-sidebar">
+    <div id="sidebar-banner">
+        
+    </div>
+
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Syntax</a><ul>
+<li><a class="reference internal" href="#expression-substitution">Expression Substitution</a></li>
+<li><a class="reference internal" href="#expression-escaping">Expression Escaping</a></li>
+<li><a class="reference internal" href="#control-structures">Control Structures</a><ul>
+<li><a class="reference internal" href="#the-loop-context">The Loop Context</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#comments">Comments</a></li>
+<li><a class="reference internal" href="#newline-filters">Newline Filters</a></li>
+<li><a class="reference internal" href="#python-blocks">Python Blocks</a></li>
+<li><a class="reference internal" href="#module-level-blocks">Module-level Blocks</a></li>
+<li><a class="reference internal" href="#tags">Tags</a><ul>
+<li><a class="reference internal" href="#page"><code class="docutils literal notranslate"><span class="pre">&lt;%page&gt;</span></code></a></li>
+<li><a class="reference internal" href="#include"><code class="docutils literal notranslate"><span class="pre">&lt;%include&gt;</span></code></a></li>
+<li><a class="reference internal" href="#def"><code class="docutils literal notranslate"><span class="pre">&lt;%def&gt;</span></code></a></li>
+<li><a class="reference internal" href="#block"><code class="docutils literal notranslate"><span class="pre">&lt;%block&gt;</span></code></a></li>
+<li><a class="reference internal" href="#namespace"><code class="docutils literal notranslate"><span class="pre">&lt;%namespace&gt;</span></code></a></li>
+<li><a class="reference internal" href="#inherit"><code class="docutils literal notranslate"><span class="pre">&lt;%inherit&gt;</span></code></a></li>
+<li><a class="reference internal" href="#nsname-defname"><code class="docutils literal notranslate"><span class="pre">&lt;%</span></code>nsname<code class="docutils literal notranslate"><span class="pre">:</span></code>defname<code class="docutils literal notranslate"><span class="pre">&gt;</span></code></a></li>
+<li><a class="reference internal" href="#call"><code class="docutils literal notranslate"><span class="pre">&lt;%call&gt;</span></code></a></li>
+<li><a class="reference internal" href="#doc"><code class="docutils literal notranslate"><span class="pre">&lt;%doc&gt;</span></code></a></li>
+<li><a class="reference internal" href="#text"><code class="docutils literal notranslate"><span class="pre">&lt;%text&gt;</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#exiting-early-from-a-template">Exiting Early from a Template</a></li>
+</ul>
+</li>
+</ul>
+
+
+    <h4>Previous Topic</h4>
+    <p>
+    <a href="usage.html" title="previous chapter">Usage</a>
+    </p>
+    <h4>Next Topic</h4>
+    <p>
+    <a href="defs.html" title="next chapter">Defs and Blocks</a>
+    </p>
+
+    <h4>Quick Search</h4>
+    <p>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" size="18" /> <input type="submit" value="Search" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </p>
+
+    </div>
+
+    <div id="docs-body" class="withsidebar" >
+        
+<div class="section" id="syntax">
+<span id="syntax-toplevel"></span><h1>Syntax<a class="headerlink" href="#syntax" title="Permalink to this headline">¶</a></h1>
+<p>A Mako template is parsed from a text stream containing any kind
+of content, XML, HTML, email text, etc. The template can further
+contain Mako-specific directives which represent variable and/or
+expression substitutions, control structures (i.e. conditionals
+and loops), server-side comments, full blocks of Python code, as
+well as various tags that offer additional functionality. All of
+these constructs compile into real Python code. This means that
+you can leverage the full power of Python in almost every aspect
+of a Mako template.</p>
+<div class="section" id="expression-substitution">
+<h2>Expression Substitution<a class="headerlink" href="#expression-substitution" title="Permalink to this headline">¶</a></h2>
+<p>The simplest expression is just a variable substitution. The
+syntax for this is the <code class="docutils literal notranslate"><span class="pre">${}</span></code> construct, which is inspired by
+Perl, Genshi, JSP EL, and others:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="x">this is x: </span><span class="cp">${</span><span class="n">x</span><span class="cp">}</span><span class="x"></span></pre></div>
+</div>
+<p>Above, the string representation of <code class="docutils literal notranslate"><span class="pre">x</span></code> is applied to the
+template’s output stream. If you’re wondering where <code class="docutils literal notranslate"><span class="pre">x</span></code> comes
+from, it’s usually from the <a class="reference internal" href="runtime.html#mako.runtime.Context" title="mako.runtime.Context"><code class="xref py py-class docutils literal notranslate"><span class="pre">Context</span></code></a> supplied to the
+template’s rendering function. If <code class="docutils literal notranslate"><span class="pre">x</span></code> was not supplied to the
+template and was not otherwise assigned locally, it evaluates to
+a special value <code class="docutils literal notranslate"><span class="pre">UNDEFINED</span></code>. More on that later.</p>
+<p>The contents within the <code class="docutils literal notranslate"><span class="pre">${}</span></code> tag are evaluated by Python
+directly, so full expressions are OK:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="x">pythagorean theorem:  </span><span class="cp">${</span><span class="nb">pow</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="nb">pow</span><span class="p">(</span><span class="n">y</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span><span class="cp">}</span><span class="x"></span></pre></div>
+</div>
+<p>The results of the expression are evaluated into a string result
+in all cases before being rendered to the output stream, such as
+the above example where the expression produces a numeric
+result.</p>
+</div>
+<div class="section" id="expression-escaping">
+<h2>Expression Escaping<a class="headerlink" href="#expression-escaping" title="Permalink to this headline">¶</a></h2>
+<p>Mako includes a number of built-in escaping mechanisms,
+including HTML, URI and XML escaping, as well as a “trim”
+function. These escapes can be added to an expression
+substitution using the <code class="docutils literal notranslate"><span class="pre">|</span></code> operator:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">${</span><span class="s2">&quot;this is some text&quot;</span> <span class="o">|</span> <span class="n">u</span><span class="cp">}</span><span class="x"></span></pre></div>
+</div>
+<p>The above expression applies URL escaping to the expression, and
+produces <code class="docutils literal notranslate"><span class="pre">this+is+some+text</span></code>. The <code class="docutils literal notranslate"><span class="pre">u</span></code> name indicates URL
+escaping, whereas <code class="docutils literal notranslate"><span class="pre">h</span></code> represents HTML escaping, <code class="docutils literal notranslate"><span class="pre">x</span></code>
+represents XML escaping, and <code class="docutils literal notranslate"><span class="pre">trim</span></code> applies a trim function.</p>
+<p>Read more about built-in filtering functions, including how to
+make your own filter functions, in <a class="reference internal" href="filtering.html"><span class="std std-ref">Filtering and Buffering</span></a>.</p>
+</div>
+<div class="section" id="control-structures">
+<h2>Control Structures<a class="headerlink" href="#control-structures" title="Permalink to this headline">¶</a></h2>
+<p>A control structure refers to all those things that control the
+flow of a program – conditionals (i.e. <code class="docutils literal notranslate"><span class="pre">if</span></code>/<code class="docutils literal notranslate"><span class="pre">else</span></code>), loops (like
+<code class="docutils literal notranslate"><span class="pre">while</span></code> and <code class="docutils literal notranslate"><span class="pre">for</span></code>), as well as things like <code class="docutils literal notranslate"><span class="pre">try</span></code>/<code class="docutils literal notranslate"><span class="pre">except</span></code>. In Mako,
+control structures are written using the <code class="docutils literal notranslate"><span class="pre">%</span></code> marker followed
+by a regular Python control expression, and are “closed” by
+using another <code class="docutils literal notranslate"><span class="pre">%</span></code> marker with the tag “<code class="docutils literal notranslate"><span class="pre">end&lt;name&gt;</span></code>”, where
+“<code class="docutils literal notranslate"><span class="pre">&lt;name&gt;</span></code>” is the keyword of the expression:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">%</span> <span class="k">if</span> <span class="n">x</span><span class="o">==</span><span class="mi">5</span><span class="p">:</span><span class="x"></span>
+<span class="x">    this is some output</span>
+<span class="cp">%</span><span class="k"> endif</span><span class="x"></span></pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">%</span></code> can appear anywhere on the line as long as no text
+precedes it; indentation is not significant. The full range of
+Python “colon” expressions are allowed here, including
+<code class="docutils literal notranslate"><span class="pre">if</span></code>/<code class="docutils literal notranslate"><span class="pre">elif</span></code>/<code class="docutils literal notranslate"><span class="pre">else</span></code>, <code class="docutils literal notranslate"><span class="pre">while</span></code>, <code class="docutils literal notranslate"><span class="pre">for</span></code>, <code class="docutils literal notranslate"><span class="pre">with</span></code>, and even <code class="docutils literal notranslate"><span class="pre">def</span></code>,
+although Mako has a built-in tag for defs which is more full-featured.</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">%</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;one&#39;</span><span class="p">,</span> <span class="s1">&#39;two&#39;</span><span class="p">,</span> <span class="s1">&#39;three&#39;</span><span class="p">,</span> <span class="s1">&#39;four&#39;</span><span class="p">,</span> <span class="s1">&#39;five&#39;</span><span class="p">]:</span><span class="x"></span>
+    <span class="cp">%</span> <span class="k">if</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;t&#39;</span><span class="p">:</span><span class="x"></span>
+<span class="x">    its two or three</span>
+    <span class="cp">%</span> <span class="k">elif</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;f&#39;</span><span class="p">:</span><span class="x"></span>
+<span class="x">    four/five</span>
+    <span class="cp">%</span> <span class="k">else</span><span class="p">:</span><span class="x"></span>
+<span class="x">    one</span>
+    <span class="cp">%</span><span class="k"> endif</span><span class="x"></span>
+<span class="cp">%</span><span class="k"> endfor</span><span class="x"></span></pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">%</span></code> sign can also be “escaped”, if you actually want to
+emit a percent sign as the first non whitespace character on a
+line, by escaping it as in <code class="docutils literal notranslate"><span class="pre">%%</span></code>:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">%</span><span class="o">%</span> <span class="n">some</span> <span class="n">text</span><span class="x"></span>
+
+    <span class="cp">%</span><span class="o">%</span> <span class="n">some</span> <span class="n">more</span> <span class="n">text</span><span class="x"></span></pre></div>
+</div>
+<div class="section" id="the-loop-context">
+<h3>The Loop Context<a class="headerlink" href="#the-loop-context" title="Permalink to this headline">¶</a></h3>
+<p>The <strong>loop context</strong> provides additional information about a loop
+while inside of a <code class="docutils literal notranslate"><span class="pre">%</span> <span class="pre">for</span></code> structure:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="x">&lt;ul&gt;</span>
+<span class="cp">%</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;one&quot;</span><span class="p">,</span> <span class="s2">&quot;two&quot;</span><span class="p">,</span> <span class="s2">&quot;three&quot;</span><span class="p">):</span><span class="x"></span>
+<span class="x">    &lt;li&gt;Item </span><span class="cp">${</span><span class="n">loop</span><span class="o">.</span><span class="n">index</span><span class="cp">}</span><span class="x">: </span><span class="cp">${</span><span class="n">a</span><span class="cp">}</span><span class="x">&lt;/li&gt;</span>
+<span class="cp">%</span><span class="k"> endfor</span><span class="x"></span>
+<span class="x">&lt;/ul&gt;</span></pre></div>
+</div>
+<p>See <a class="reference internal" href="runtime.html#loop-context"><span class="std std-ref">The Loop Context</span></a> for more information on this feature.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 0.7.</span></p>
+</div>
+</div>
+</div>
+<div class="section" id="comments">
+<h2>Comments<a class="headerlink" href="#comments" title="Permalink to this headline">¶</a></h2>
+<p>Comments come in two varieties. The single line comment uses
+<code class="docutils literal notranslate"><span class="pre">##</span></code> as the first non-space characters on a line:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">## this is a comment.</span><span class="x"></span>
+<span class="x">...text ...</span></pre></div>
+</div>
+<p>A multiline version exists using <code class="docutils literal notranslate"><span class="pre">&lt;%doc&gt;</span> <span class="pre">...text...</span> <span class="pre">&lt;/%doc&gt;</span></code>:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;%doc&gt;</span>
+<span class="cp">    these are comments</span>
+<span class="cp">    more comments</span>
+<span class="cp">&lt;/%doc&gt;</span><span class="x"></span></pre></div>
+</div>
+</div>
+<div class="section" id="newline-filters">
+<h2>Newline Filters<a class="headerlink" href="#newline-filters" title="Permalink to this headline">¶</a></h2>
+<p>The backslash (“<code class="docutils literal notranslate"><span class="pre">\</span></code>”) character, placed at the end of any
+line, will consume the newline character before continuing to
+the next line:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="x">here is a line that goes onto </span><span class="o">\</span>
+<span class="x">another line.</span></pre></div>
+</div>
+<p>The above text evaluates to:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>here is a line that goes onto another line.</pre></div>
+</div>
+</div>
+<div class="section" id="python-blocks">
+<h2>Python Blocks<a class="headerlink" href="#python-blocks" title="Permalink to this headline">¶</a></h2>
+<p>Any arbitrary block of python can be dropped in using the <code class="docutils literal notranslate"><span class="pre">&lt;%</span>
+<span class="pre">%&gt;</span></code> tags:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="x">this is a template</span>
+<span class="cp">&lt;%</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">get_resource</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="p">)</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="p">[</span><span class="n">z</span><span class="o">.</span><span class="n">element</span> <span class="k">for</span> <span class="n">z</span> <span class="ow">in</span> <span class="n">x</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">frobnizzle</span><span class="o">==</span><span class="mi">5</span><span class="p">]</span>
+<span class="cp">%&gt;</span>
+<span class="cp">%</span> <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">y</span><span class="p">:</span><span class="x"></span>
+<span class="x">    element: </span><span class="cp">${</span><span class="n">elem</span><span class="cp">}</span>
+<span class="cp">%</span><span class="k"> endfor</span><span class="x"></span></pre></div>
+</div>
+<p>Within <code class="docutils literal notranslate"><span class="pre">&lt;%</span> <span class="pre">%&gt;</span></code>, you’re writing a regular block of Python code.
+While the code can appear with an arbitrary level of preceding
+whitespace, it has to be consistently formatted with itself.
+Mako’s compiler will adjust the block of Python to be consistent
+with the surrounding generated Python code.</p>
+</div>
+<div class="section" id="module-level-blocks">
+<h2>Module-level Blocks<a class="headerlink" href="#module-level-blocks" title="Permalink to this headline">¶</a></h2>
+<p>A variant on <code class="docutils literal notranslate"><span class="pre">&lt;%</span> <span class="pre">%&gt;</span></code> is the module-level code block, denoted
+by <code class="docutils literal notranslate"><span class="pre">&lt;%!</span> <span class="pre">%&gt;</span></code>. Code within these tags is executed at the module
+level of the template, and not within the rendering function of
+the template. Therefore, this code does not have access to the
+template’s context and is only executed when the template is
+loaded into memory (which can be only once per application, or
+more, depending on the runtime environment). Use the <code class="docutils literal notranslate"><span class="pre">&lt;%!</span> <span class="pre">%&gt;</span></code>
+tags to declare your template’s imports, as well as any
+pure-Python functions you might want to declare:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;%!</span>
+    <span class="kn">import</span> <span class="nn">mylib</span>
+    <span class="kn">import</span> <span class="nn">re</span>
+
+    <span class="k">def</span> <span class="nf">filter</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^@&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+<span class="cp">%&gt;</span><span class="x"></span></pre></div>
+</div>
+<p>Any number of <code class="docutils literal notranslate"><span class="pre">&lt;%!</span> <span class="pre">%&gt;</span></code> blocks can be declared anywhere in a
+template; they will be rendered in the resulting module
+in a single contiguous block above all render callables,
+in the order in which they appear in the source template.</p>
+</div>
+<div class="section" id="tags">
+<h2>Tags<a class="headerlink" href="#tags" title="Permalink to this headline">¶</a></h2>
+<p>The rest of what Mako offers takes place in the form of tags.
+All tags use the same syntax, which is similar to an XML tag
+except that the first character of the tag name is a <code class="docutils literal notranslate"><span class="pre">%</span></code>
+character. The tag is closed either by a contained slash
+character, or an explicit closing tag:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;%</span><span class="nb">include</span> <span class="na">file=</span><span class="s">&quot;foo.txt&quot;</span><span class="cp">/&gt;</span><span class="x"></span>
+
+<span class="cp">&lt;%</span><span class="nb">def</span> <span class="na">name=</span><span class="s">&quot;foo&quot;</span> <span class="na">buffered=</span><span class="s">&quot;True&quot;</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">    this is a def</span>
+<span class="cp">&lt;/%</span><span class="nb">def</span><span class="cp">&gt;</span><span class="x"></span></pre></div>
+</div>
+<p>All tags have a set of attributes which are defined for each
+tag. Some of these attributes are required. Also, many
+attributes support <strong>evaluation</strong>, meaning you can embed an
+expression (using <code class="docutils literal notranslate"><span class="pre">${}</span></code>) inside the attribute text:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;%</span><span class="nb">include</span> <span class="na">file=</span><span class="s">&quot;/foo/bar/${myfile}.txt&quot;</span><span class="cp">/&gt;</span><span class="x"></span></pre></div>
+</div>
+<p>Whether or not an attribute accepts runtime evaluation depends
+on the type of tag and how that tag is compiled into the
+template. The best way to find out if you can stick an
+expression in is to try it! The lexer will tell you if it’s not
+valid.</p>
+<p>Heres a quick summary of all the tags:</p>
+<div class="section" id="page">
+<h3><code class="docutils literal notranslate"><span class="pre">&lt;%page&gt;</span></code><a class="headerlink" href="#page" title="Permalink to this headline">¶</a></h3>
+<p>This tag defines general characteristics of the template,
+including caching arguments, and optional lists of arguments
+which the template expects when invoked.</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;%</span><span class="nb">page</span> <span class="na">args=</span><span class="s">&quot;x, y, z=&#39;default&#39;&quot;</span><span class="cp">/&gt;</span><span class="x"></span></pre></div>
+</div>
+<p>Or a page tag that defines caching characteristics:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;%</span><span class="nb">page</span> <span class="na">cached=</span><span class="s">&quot;True&quot;</span> <span class="na">cache_type=</span><span class="s">&quot;memory&quot;</span><span class="cp">/&gt;</span><span class="x"></span></pre></div>
+</div>
+<p>Currently, only one <code class="docutils literal notranslate"><span class="pre">&lt;%page&gt;</span></code> tag gets used per template, the
+rest get ignored. While this will be improved in a future
+release, for now make sure you have only one <code class="docutils literal notranslate"><span class="pre">&lt;%page&gt;</span></code> tag
+defined in your template, else you may not get the results you
+want.  Further details on what <code class="docutils literal notranslate"><span class="pre">&lt;%page&gt;</span></code> is used for are described
+in the following sections:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="namespaces.html#namespaces-body"><span class="std std-ref">The body() Method</span></a> - <code class="docutils literal notranslate"><span class="pre">&lt;%page&gt;</span></code> is used to define template-level
+arguments and defaults</p></li>
+<li><p><a class="reference internal" href="filtering.html#expression-filtering"><span class="std std-ref">Expression Filtering</span></a> - expression filters can be applied to all
+expressions throughout a template using the <code class="docutils literal notranslate"><span class="pre">&lt;%page&gt;</span></code> tag</p></li>
+<li><p><a class="reference internal" href="caching.html"><span class="std std-ref">Caching</span></a> - options to control template-level caching
+may be applied in the <code class="docutils literal notranslate"><span class="pre">&lt;%page&gt;</span></code> tag.</p></li>
+</ul>
+</div>
+<div class="section" id="include">
+<h3><code class="docutils literal notranslate"><span class="pre">&lt;%include&gt;</span></code><a class="headerlink" href="#include" title="Permalink to this headline">¶</a></h3>
+<p>A tag that is familiar from other template languages, <code class="docutils literal notranslate"><span class="pre">%include</span></code>
+is a regular joe that just accepts a file argument and calls in
+the rendered result of that file:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;%</span><span class="nb">include</span> <span class="na">file=</span><span class="s">&quot;header.html&quot;</span><span class="cp">/&gt;</span><span class="x"></span>
+
+<span class="x">    hello world</span>
+
+<span class="cp">&lt;%</span><span class="nb">include</span> <span class="na">file=</span><span class="s">&quot;footer.html&quot;</span><span class="cp">/&gt;</span><span class="x"></span></pre></div>
+</div>
+<p>Include also accepts arguments which are available as <code class="docutils literal notranslate"><span class="pre">&lt;%page&gt;</span></code> arguments in the receiving template:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;%</span><span class="nb">include</span> <span class="na">file=</span><span class="s">&quot;toolbar.html&quot;</span> <span class="na">args=</span><span class="s">&quot;current_section=&#39;members&#39;, username=&#39;ed&#39;&quot;</span><span class="cp">/&gt;</span><span class="x"></span></pre></div>
+</div>
+</div>
+<div class="section" id="def">
+<h3><code class="docutils literal notranslate"><span class="pre">&lt;%def&gt;</span></code><a class="headerlink" href="#def" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">%def</span></code> tag defines a Python function which contains a set
+of content, that can be called at some other point in the
+template. The basic idea is simple:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;%</span><span class="nb">def</span> <span class="na">name=</span><span class="s">&quot;myfunc(x)&quot;</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">    this is myfunc, x is </span><span class="cp">${</span><span class="n">x</span><span class="cp">}</span><span class="x"></span>
+<span class="cp">&lt;/%</span><span class="nb">def</span><span class="cp">&gt;</span><span class="x"></span>
+
+<span class="cp">${</span><span class="n">myfunc</span><span class="p">(</span><span class="mi">7</span><span class="p">)</span><span class="cp">}</span><span class="x"></span></pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">%def</span></code> tag is a lot more powerful than a plain Python <code class="docutils literal notranslate"><span class="pre">def</span></code>, as
+the Mako compiler provides many extra services with <code class="docutils literal notranslate"><span class="pre">%def</span></code> that
+you wouldn’t normally have, such as the ability to export defs
+as template “methods”, automatic propagation of the current
+<a class="reference internal" href="runtime.html#mako.runtime.Context" title="mako.runtime.Context"><code class="xref py py-class docutils literal notranslate"><span class="pre">Context</span></code></a>, buffering/filtering/caching flags, and def calls
+with content, which enable packages of defs to be sent as
+arguments to other def calls (not as hard as it sounds). Get the
+full deal on what <code class="docutils literal notranslate"><span class="pre">%def</span></code> can do in <a class="reference internal" href="defs.html"><span class="std std-ref">Defs and Blocks</span></a>.</p>
+</div>
+<div class="section" id="block">
+<h3><code class="docutils literal notranslate"><span class="pre">&lt;%block&gt;</span></code><a class="headerlink" href="#block" title="Permalink to this headline">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">%block</span></code> is a tag that is close to a <code class="docutils literal notranslate"><span class="pre">%def</span></code>,
+except executes itself immediately in its base-most scope,
+and can also be anonymous (i.e. with no name):</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;%</span><span class="nb">block</span> <span class="na">filter=</span><span class="s">&quot;h&quot;</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">    some &lt;html&gt; stuff.</span>
+<span class="cp">&lt;/%</span><span class="nb">block</span><span class="cp">&gt;</span><span class="x"></span></pre></div>
+</div>
+<p>Inspired by Jinja2 blocks, named blocks offer a syntactically pleasing way
+to do inheritance:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="x">&lt;html&gt;</span>
+<span class="x">    &lt;body&gt;</span>
+<span class="x">    </span><span class="cp">&lt;%</span><span class="nb">block</span> <span class="na">name=</span><span class="s">&quot;header&quot;</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">        &lt;h2&gt;</span><span class="cp">&lt;%</span><span class="nb">block</span> <span class="na">name=</span><span class="s">&quot;title&quot;</span><span class="cp">/&gt;</span><span class="x">&lt;/h2&gt;</span>
+<span class="x">    </span><span class="cp">&lt;/%</span><span class="nb">block</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">    </span><span class="cp">${</span><span class="bp">self</span><span class="o">.</span><span class="n">body</span><span class="p">()</span><span class="cp">}</span><span class="x"></span>
+<span class="x">    &lt;/body&gt;</span>
+<span class="x">&lt;/html&gt;</span></pre></div>
+</div>
+<p>Blocks are introduced in <a class="reference internal" href="defs.html#blocks"><span class="std std-ref">Using Blocks</span></a> and further described in <a class="reference internal" href="inheritance.html"><span class="std std-ref">Inheritance</span></a>.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 0.4.1.</span></p>
+</div>
+</div>
+<div class="section" id="namespace">
+<h3><code class="docutils literal notranslate"><span class="pre">&lt;%namespace&gt;</span></code><a class="headerlink" href="#namespace" title="Permalink to this headline">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">%namespace</span></code> is Mako’s equivalent of Python’s <code class="docutils literal notranslate"><span class="pre">import</span></code>
+statement. It allows access to all the rendering functions and
+metadata of other template files, plain Python modules, as well
+as locally defined “packages” of functions.</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;%</span><span class="nb">namespace</span> <span class="na">file=</span><span class="s">&quot;functions.html&quot;</span> <span class="na">import=</span><span class="s">&quot;*&quot;</span><span class="cp">/&gt;</span><span class="x"></span></pre></div>
+</div>
+<p>The underlying object generated by <code class="docutils literal notranslate"><span class="pre">%namespace</span></code>, an instance of
+<a class="reference internal" href="namespaces.html#mako.runtime.Namespace" title="mako.runtime.Namespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">mako.runtime.Namespace</span></code></a>, is a central construct used in
+templates to reference template-specific information such as the
+current URI, inheritance structures, and other things that are
+not as hard as they sound right here. Namespaces are described
+in <a class="reference internal" href="namespaces.html"><span class="std std-ref">Namespaces</span></a>.</p>
+</div>
+<div class="section" id="inherit">
+<h3><code class="docutils literal notranslate"><span class="pre">&lt;%inherit&gt;</span></code><a class="headerlink" href="#inherit" title="Permalink to this headline">¶</a></h3>
+<p>Inherit allows templates to arrange themselves in <strong>inheritance
+chains</strong>. This is a concept familiar in many other template
+languages.</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;%</span><span class="nb">inherit</span> <span class="na">file=</span><span class="s">&quot;base.html&quot;</span><span class="cp">/&gt;</span><span class="x"></span></pre></div>
+</div>
+<p>When using the <code class="docutils literal notranslate"><span class="pre">%inherit</span></code> tag, control is passed to the topmost
+inherited template first, which then decides how to handle
+calling areas of content from its inheriting templates. Mako
+offers a lot of flexibility in this area, including dynamic
+inheritance, content wrapping, and polymorphic method calls.
+Check it out in <a class="reference internal" href="inheritance.html"><span class="std std-ref">Inheritance</span></a>.</p>
+</div>
+<div class="section" id="nsname-defname">
+<h3><code class="docutils literal notranslate"><span class="pre">&lt;%</span></code>nsname<code class="docutils literal notranslate"><span class="pre">:</span></code>defname<code class="docutils literal notranslate"><span class="pre">&gt;</span></code><a class="headerlink" href="#nsname-defname" title="Permalink to this headline">¶</a></h3>
+<p>Any user-defined “tag” can be created against
+a namespace by using a tag with a name of the form
+<code class="docutils literal notranslate"><span class="pre">&lt;%&lt;namespacename&gt;:&lt;defname&gt;&gt;</span></code>. The closed and open formats of such a
+tag are equivalent to an inline expression and the <code class="docutils literal notranslate"><span class="pre">&lt;%call&gt;</span></code>
+tag, respectively.</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;%</span><span class="nb">mynamespace:somedef</span> <span class="na">param=</span><span class="s">&quot;some value&quot;</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">    this is the body</span>
+<span class="cp">&lt;/%</span><span class="nb">mynamespace:somedef</span><span class="cp">&gt;</span><span class="x"></span></pre></div>
+</div>
+<p>To create custom tags which accept a body, see
+<a class="reference internal" href="defs.html#defs-with-content"><span class="std std-ref">Calling a Def with Embedded Content and/or Other Defs</span></a>.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 0.2.3.</span></p>
+</div>
+</div>
+<div class="section" id="call">
+<h3><code class="docutils literal notranslate"><span class="pre">&lt;%call&gt;</span></code><a class="headerlink" href="#call" title="Permalink to this headline">¶</a></h3>
+<p>The call tag is the “classic” form of a user-defined tag, and is
+roughly equivalent to the <code class="docutils literal notranslate"><span class="pre">&lt;%namespacename:defname&gt;</span></code> syntax
+described above. This tag is also described in <a class="reference internal" href="defs.html#defs-with-content"><span class="std std-ref">Calling a Def with Embedded Content and/or Other Defs</span></a>.</p>
+</div>
+<div class="section" id="doc">
+<h3><code class="docutils literal notranslate"><span class="pre">&lt;%doc&gt;</span></code><a class="headerlink" href="#doc" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">%doc</span></code> tag handles multiline comments:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;%doc&gt;</span>
+<span class="cp">    these are comments</span>
+<span class="cp">    more comments</span>
+<span class="cp">&lt;/%doc&gt;</span><span class="x"></span></pre></div>
+</div>
+<p>Also the <code class="docutils literal notranslate"><span class="pre">##</span></code> symbol as the first non-space characters on a line can be used for single line comments.</p>
+</div>
+<div class="section" id="text">
+<h3><code class="docutils literal notranslate"><span class="pre">&lt;%text&gt;</span></code><a class="headerlink" href="#text" title="Permalink to this headline">¶</a></h3>
+<p>This tag suspends the Mako lexer’s normal parsing of Mako
+template directives, and returns its entire body contents as
+plain text. It is used pretty much to write documentation about
+Mako:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;%</span><span class="nb">text</span> <span class="na">filter=</span><span class="s">&quot;h&quot;</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">    heres some fake mako </span><span class="cp">${</span><span class="n">syntax</span><span class="cp">}</span><span class="x"></span>
+<span class="x">    </span><span class="cp">&lt;%</span><span class="nb">def</span> <span class="na">name=</span><span class="s">&quot;x()&quot;</span><span class="cp">&gt;${</span><span class="n">x</span><span class="cp">}&lt;/%</span><span class="nb">def</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="cp">&lt;/%</span><span class="nb">text</span><span class="cp">&gt;</span><span class="x"></span></pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="exiting-early-from-a-template">
+<span id="syntax-exiting-early"></span><h2>Exiting Early from a Template<a class="headerlink" href="#exiting-early-from-a-template" title="Permalink to this headline">¶</a></h2>
+<p>Sometimes you want to stop processing a template or <code class="docutils literal notranslate"><span class="pre">&lt;%def&gt;</span></code>
+method in the middle and just use the text you’ve accumulated so
+far.  This is accomplished by using <code class="docutils literal notranslate"><span class="pre">return</span></code> statement inside
+a Python block.   It’s a good idea for the <code class="docutils literal notranslate"><span class="pre">return</span></code> statement
+to return an empty string, which prevents the Python default return
+value of <code class="docutils literal notranslate"><span class="pre">None</span></code> from being rendered by the template.  This
+return value is for semantic purposes provided in templates via
+the <code class="docutils literal notranslate"><span class="pre">STOP_RENDERING</span></code> symbol:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">%</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="n">records</span><span class="p">):</span><span class="x"></span>
+<span class="x">    No records found.</span>
+<span class="x">    </span><span class="cp">&lt;%</span> <span class="k">return</span> <span class="n">STOP_RENDERING</span> <span class="cp">%&gt;</span>
+<span class="cp">%</span><span class="k"> endif</span><span class="x"></span></pre></div>
+</div>
+<p>Or perhaps:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;%</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="n">records</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">STOP_RENDERING</span>
+<span class="cp">%&gt;</span><span class="x"></span></pre></div>
+</div>
+<p>In older versions of Mako, an empty string can be substituted for
+the <code class="docutils literal notranslate"><span class="pre">STOP_RENDERING</span></code> symbol:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;%</span> <span class="k">return</span> <span class="s1">&#39;&#39;</span> <span class="cp">%&gt;</span><span class="x"></span></pre></div>
+</div>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 1.0.2: </span>- added the <code class="docutils literal notranslate"><span class="pre">STOP_RENDERING</span></code> symbol which serves
+as a semantic identifier for the empty string <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code> used by a
+Python <code class="docutils literal notranslate"><span class="pre">return</span></code> statement.</p>
+</div>
+</div>
+</div>
+
+    </div>
+
+</div>
+
+<div id="docs-bottom-navigation" class="docs-navigation-links">
+        Previous:
+        <a href="usage.html" title="previous chapter">Usage</a>
+        Next:
+        <a href="defs.html" title="next chapter">Defs and Blocks</a>
+
+    <div id="docs-copyright">
+        &copy; Copyright the Mako authors and contributors.
+        Documentation generated using <a href="http://sphinx.pocoo.org/">Sphinx</a> 2.1.2
+        with Mako templates.
+    </div>
+</div>
+
+</div>
+
+
+
+        
+        
+
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+          URL_ROOT:    './',
+          VERSION:     '1.0.14',
+          COLLAPSE_MODINDEX: false,
+          FILE_SUFFIX: '.html'
+      };
+    </script>
+
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+
+    <!-- begin iterate through sphinx environment script_files -->
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    <!-- end iterate through sphinx environment script_files -->
+
+    <script type="text/javascript" src="_static/detectmobile.js"></script>
+    <script type="text/javascript" src="_static/init.js"></script>
+
+
+    </body>
+</html>
+
+

@@ -12,13 +12,20 @@
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
-#include "chromeos/dbus/power_manager_client.h"
+#include "chrome/browser/chromeos/multidevice_setup/multidevice_setup_client_factory.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/components/multidevice/remote_device_test_util.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/login/login_state/login_state.h"
+#include "chromeos/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
+#include "chromeos/services/multidevice_setup/public/cpp/multidevice_setup_client_impl.h"
 #include "chromeos/system/fake_statistics_provider.h"
 #include "chromeos/system/statistics_provider.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
 #include "device/bluetooth/dbus/fake_bluetooth_adapter_client.h"
@@ -47,6 +54,51 @@ using bluez::FakeBluetoothGattCharacteristicClient;
 using bluez::FakeBluetoothGattDescriptorClient;
 using bluez::FakeBluetoothGattServiceClient;
 using bluez::FakeBluetoothInputClient;
+
+namespace {
+
+class FakeMultiDeviceSetupClientImplFactory
+    : public chromeos::multidevice_setup::MultiDeviceSetupClientImpl::Factory {
+ public:
+  FakeMultiDeviceSetupClientImplFactory(
+      std::unique_ptr<chromeos::multidevice_setup::FakeMultiDeviceSetupClient>
+          fake_multidevice_setup_client)
+      : fake_multidevice_setup_client_(
+            std::move(fake_multidevice_setup_client)) {}
+
+  ~FakeMultiDeviceSetupClientImplFactory() override = default;
+
+  // chromeos::multidevice_setup::MultiDeviceSetupClientImpl::Factory:
+  // NOTE: At most, one client should be created per-test.
+  std::unique_ptr<chromeos::multidevice_setup::MultiDeviceSetupClient>
+  BuildInstance(service_manager::Connector* connector) override {
+    EXPECT_TRUE(fake_multidevice_setup_client_);
+    return std::move(fake_multidevice_setup_client_);
+  }
+
+ private:
+  std::unique_ptr<chromeos::multidevice_setup::FakeMultiDeviceSetupClient>
+      fake_multidevice_setup_client_;
+};
+
+// Wrapper around ChromeOSMetricsProvider that initializes
+// Bluetooth and hardware class in the constructor.
+class TestChromeOSMetricsProvider : public ChromeOSMetricsProvider {
+ public:
+  TestChromeOSMetricsProvider()
+      : ChromeOSMetricsProvider(metrics::MetricsLogUploader::UMA) {
+    AsyncInit(base::Bind(&TestChromeOSMetricsProvider::GetIdleCallback,
+                         base::Unretained(this)));
+    base::RunLoop().Run();
+  }
+
+  void GetIdleCallback() {
+    ASSERT_TRUE(base::RunLoop::IsRunningOnCurrentThread());
+    base::RunLoop::QuitCurrentWhenIdleDeprecated();
+  }
+};
+
+}  // namespace
 
 class ChromeOSMetricsProviderTest : public testing::Test {
  public:
@@ -78,13 +130,32 @@ class ChromeOSMetricsProviderTest : public testing::Test {
             new FakeBluetoothAgentManagerClient));
 
     // Set up a PowerManagerClient instance for PerfProvider.
-    chromeos::PowerManagerClient::Initialize();
+    chromeos::PowerManagerClient::InitializeFake();
 
     // Grab pointers to members of the thread manager for easier testing.
     fake_bluetooth_adapter_client_ = static_cast<FakeBluetoothAdapterClient*>(
         BluezDBusManager::Get()->GetBluetoothAdapterClient());
     fake_bluetooth_device_client_ = static_cast<FakeBluetoothDeviceClient*>(
         BluezDBusManager::Get()->GetBluetoothDeviceClient());
+
+    chromeos::multidevice_setup::MultiDeviceSetupClientFactory::GetInstance()
+        ->SetServiceIsNULLWhileTestingForTesting(false);
+    auto fake_multidevice_setup_client = std::make_unique<
+        chromeos::multidevice_setup::FakeMultiDeviceSetupClient>();
+    fake_multidevice_setup_client_ = fake_multidevice_setup_client.get();
+    fake_multidevice_setup_client_impl_factory_ =
+        std::make_unique<FakeMultiDeviceSetupClientImplFactory>(
+            std::move(fake_multidevice_setup_client));
+    chromeos::multidevice_setup::MultiDeviceSetupClientImpl::Factory::
+        SetInstanceForTesting(
+            fake_multidevice_setup_client_impl_factory_.get());
+
+    profile_manager_ = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal());
+    ASSERT_TRUE(profile_manager_->SetUp());
+    TestingProfile* profile =
+        profile_manager_->CreateTestingProfile("test_name");
+    profile_manager_->UpdateLastUser(profile);
 
     // Set statistic provider for hardware class tests.
     chromeos::system::StatisticsProvider::SetTestProvider(
@@ -99,35 +170,26 @@ class ChromeOSMetricsProviderTest : public testing::Test {
     // Destroy the login state tracker if it was initialized.
     chromeos::LoginState::Shutdown();
     chromeos::PowerManagerClient::Shutdown();
+    chromeos::multidevice_setup::MultiDeviceSetupClientImpl::Factory::
+        SetInstanceForTesting(nullptr);
+    profile_manager_.reset();
   }
 
  protected:
   FakeBluetoothAdapterClient* fake_bluetooth_adapter_client_;
   FakeBluetoothDeviceClient* fake_bluetooth_device_client_;
+  chromeos::multidevice_setup::FakeMultiDeviceSetupClient*
+      fake_multidevice_setup_client_;
   base::test::ScopedFeatureList scoped_feature_list_;
   chromeos::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
+  std::unique_ptr<TestingProfileManager> profile_manager_;
+  std::unique_ptr<FakeMultiDeviceSetupClientImplFactory>
+      fake_multidevice_setup_client_impl_factory_;
 
  private:
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
 
   DISALLOW_COPY_AND_ASSIGN(ChromeOSMetricsProviderTest);
-};
-
-// Wrapper around ChromeOSMetricsProvider that initializes
-// Bluetooth and hardware class in the constructor.
-class TestChromeOSMetricsProvider : public ChromeOSMetricsProvider {
- public:
-  TestChromeOSMetricsProvider()
-      : ChromeOSMetricsProvider(metrics::MetricsLogUploader::UMA) {
-    AsyncInit(base::Bind(&TestChromeOSMetricsProvider::GetIdleCallback,
-                         base::Unretained(this)));
-    base::RunLoop().Run();
-  }
-
-  void GetIdleCallback() {
-    ASSERT_TRUE(base::RunLoop::IsRunningOnCurrentThread());
-    base::RunLoop::QuitCurrentWhenIdleDeprecated();
-  }
 };
 
 TEST_F(ChromeOSMetricsProviderTest, MultiProfileUserCount) {
@@ -281,6 +343,47 @@ TEST_F(ChromeOSMetricsProviderTest, BluetoothPairedDevices) {
   EXPECT_EQ(PairedDevice::DEVICE_PHONE, device2.type());
   EXPECT_EQ(0x207D74U, device2.vendor_prefix());
   EXPECT_EQ(PairedDevice::VENDOR_ID_UNKNOWN, device2.vendor_id_source());
+}
+
+TEST_F(ChromeOSMetricsProviderTest, NoLinkedAndroidPhone) {
+  fake_multidevice_setup_client_->SetHostStatusWithDevice(std::make_pair(
+      chromeos::multidevice_setup::mojom::HostStatus::kNoEligibleHosts,
+      base::nullopt /* host_device */));
+
+  TestChromeOSMetricsProvider provider;
+  metrics::SystemProfileProto system_profile;
+  provider.ProvideSystemProfileMetrics(&system_profile);
+
+  EXPECT_FALSE(system_profile.has_linked_android_phone_data());
+}
+
+TEST_F(ChromeOSMetricsProviderTest, HasLinkedAndroidPhoneAndEnabledFeatures) {
+  fake_multidevice_setup_client_->SetHostStatusWithDevice(std::make_pair(
+      chromeos::multidevice_setup::mojom::HostStatus::kHostVerified,
+      chromeos::multidevice::CreateRemoteDeviceRefForTest()));
+  fake_multidevice_setup_client_->SetFeatureState(
+      chromeos::multidevice_setup::mojom::Feature::kInstantTethering,
+      chromeos::multidevice_setup::mojom::FeatureState::kEnabledByUser);
+  fake_multidevice_setup_client_->SetFeatureState(
+      chromeos::multidevice_setup::mojom::Feature::kSmartLock,
+      chromeos::multidevice_setup::mojom::FeatureState::kEnabledByUser);
+  fake_multidevice_setup_client_->SetFeatureState(
+      chromeos::multidevice_setup::mojom::Feature::kMessages,
+      chromeos::multidevice_setup::mojom::FeatureState::kFurtherSetupRequired);
+
+  TestChromeOSMetricsProvider provider;
+  metrics::SystemProfileProto system_profile;
+  provider.ProvideSystemProfileMetrics(&system_profile);
+
+  EXPECT_TRUE(system_profile.has_linked_android_phone_data());
+  EXPECT_TRUE(
+      system_profile.linked_android_phone_data().has_phone_model_name_hash());
+  EXPECT_TRUE(system_profile.linked_android_phone_data()
+                  .is_instant_tethering_enabled());
+  EXPECT_TRUE(
+      system_profile.linked_android_phone_data().is_smartlock_enabled());
+  EXPECT_FALSE(
+      system_profile.linked_android_phone_data().is_messages_enabled());
 }
 
 TEST_F(ChromeOSMetricsProviderTest, DisableUmaShortHwClass) {

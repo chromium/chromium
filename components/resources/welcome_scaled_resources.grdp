@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grit-part>
+  <if expr="not is_android and not is_ios and _google_chrome">
+    <structure type="chrome_scaled_image" name="IDS_WELCOME_GMAIL" file="google_chrome/welcome/gmail.png" />
+    <structure type="chrome_scaled_image" name="IDS_WELCOME_MAPS" file="google_chrome/welcome/maps.png" />
+    <structure type="chrome_scaled_image" name="IDS_WELCOME_NEWS" file="google_chrome/welcome/news.png" />
+    <structure type="chrome_scaled_image" name="IDS_WELCOME_SEARCH" file="google_chrome/welcome/search.png" />
+    <structure type="chrome_scaled_image" name="IDS_WELCOME_TRANSLATE" file="google_chrome/welcome/translate.png" />
+    <structure type="chrome_scaled_image" name="IDS_WELCOME_YOUTUBE" file="google_chrome/welcome/youtube.png" />
+  </if>
+</grit-part>

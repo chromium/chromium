@@ -17,10 +17,10 @@ import org.junit.runner.RunWith;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.test.util.CommonResources;
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationHistory;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.util.TestWebServer;
 
 /**
@@ -47,7 +47,7 @@ public class SaveRestoreStateTest {
         }
     }
 
-    private TestVars createNewView() throws Exception {
+    private TestVars createNewView() {
         TestAwContentsClient contentsClient = new TestAwContentsClient();
         AwTestContainerView testView =
                 mActivityTestRule.createAwTestContainerViewOnMainSync(contentsClient);
@@ -79,7 +79,7 @@ public class SaveRestoreStateTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         if (mWebServer != null) {
             mWebServer.shutdown();
         }
@@ -99,7 +99,7 @@ public class SaveRestoreStateTest {
 
     private NavigationHistory getNavigationHistoryOnUiThread(
             final TestVars vars) throws Throwable {
-        return ThreadUtils.runOnUiThreadBlocking(
+        return TestThreadUtils.runOnUiThreadBlocking(
                 () -> vars.navigationController.getNavigationHistory());
     }
 
@@ -118,7 +118,7 @@ public class SaveRestoreStateTest {
         }
     }
 
-    private TestVars saveAndRestoreStateOnUiThread(final TestVars vars) throws Throwable {
+    private TestVars saveAndRestoreStateOnUiThread(final TestVars vars) {
         final TestVars restoredVars = createNewView();
         InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
             Bundle bundle = new Bundle();
@@ -156,7 +156,7 @@ public class SaveRestoreStateTest {
         final Bundle invalidState = new Bundle();
         invalidState.putByteArray(AwContents.SAVE_RESTORE_STATE_KEY,
                                   "invalid state".getBytes());
-        boolean result = ThreadUtils.runOnUiThreadBlocking(
+        boolean result = TestThreadUtils.runOnUiThreadBlocking(
                 () -> mVars.awContents.restoreState(invalidState));
         Assert.assertFalse(result);
     }
@@ -167,7 +167,7 @@ public class SaveRestoreStateTest {
     public void testSaveStateForNoNavigationFails() throws Throwable {
         final Bundle state = new Bundle();
         boolean result =
-                ThreadUtils.runOnUiThreadBlocking(() -> mVars.awContents.restoreState(state));
+                TestThreadUtils.runOnUiThreadBlocking(() -> mVars.awContents.restoreState(state));
         Assert.assertFalse(result);
     }
 }

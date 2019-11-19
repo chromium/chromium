@@ -23,9 +23,9 @@ namespace sandbox {
 
 // Provides functionality to resolve a symbolic link within the object
 // directory passed in.
-NTSTATUS ResolveSymbolicLink(const base::string16& directory_name,
-                             const base::string16& name,
-                             base::string16* target) {
+NTSTATUS ResolveSymbolicLink(const std::wstring& directory_name,
+                             const std::wstring& name,
+                             std::wstring* target) {
   NtOpenDirectoryObjectFunction NtOpenDirectoryObject = nullptr;
   ResolveNTFunctionPtr("NtOpenDirectoryObject", &NtOpenDirectoryObject);
 
@@ -98,7 +98,7 @@ NTSTATUS GetBaseNamedObjectsDirectory(HANDLE* directory) {
   DWORD session_id = 0;
   ProcessIdToSessionId(::GetCurrentProcessId(), &session_id);
 
-  base::string16 base_named_objects_path;
+  std::wstring base_named_objects_path;
 
   NTSTATUS status = ResolveSymbolicLink(L"\\Sessions\\BNOLINKS",
                                         base::StringPrintf(L"%d", session_id),
@@ -122,7 +122,7 @@ NTSTATUS GetBaseNamedObjectsDirectory(HANDLE* directory) {
 bool SyncPolicy::GenerateRules(const wchar_t* name,
                                TargetPolicy::Semantics semantics,
                                LowLevelPolicy* policy) {
-  base::string16 mod_name(name);
+  std::wstring mod_name(name);
   if (mod_name.empty()) {
     return false;
   }
@@ -149,7 +149,7 @@ bool SyncPolicy::GenerateRules(const wchar_t* name,
     open.AddNumberMatch(IF_NOT, OpenEventParams::ACCESS, restricted_flags, AND);
   }
 
-  if (!policy->AddRule(IPC_OPENEVENT_TAG, &open))
+  if (!policy->AddRule(IpcTag::OPENEVENT, &open))
     return false;
 
   // If it's not a read only, add the create rule.
@@ -158,7 +158,7 @@ bool SyncPolicy::GenerateRules(const wchar_t* name,
     if (!create.AddStringMatch(IF, NameBased::NAME, name, CASE_INSENSITIVE))
       return false;
 
-    if (!policy->AddRule(IPC_CREATEEVENT_TAG, &create))
+    if (!policy->AddRule(IpcTag::CREATEEVENT, &create))
       return false;
   }
 
@@ -167,7 +167,7 @@ bool SyncPolicy::GenerateRules(const wchar_t* name,
 
 NTSTATUS SyncPolicy::CreateEventAction(EvalResult eval_result,
                                        const ClientInfo& client_info,
-                                       const base::string16& event_name,
+                                       const std::wstring& event_name,
                                        uint32_t event_type,
                                        uint32_t initial_state,
                                        HANDLE* handle) {
@@ -206,7 +206,7 @@ NTSTATUS SyncPolicy::CreateEventAction(EvalResult eval_result,
 
 NTSTATUS SyncPolicy::OpenEventAction(EvalResult eval_result,
                                      const ClientInfo& client_info,
-                                     const base::string16& event_name,
+                                     const std::wstring& event_name,
                                      uint32_t desired_access,
                                      HANDLE* handle) {
   NtOpenEventFunction NtOpenEvent = nullptr;

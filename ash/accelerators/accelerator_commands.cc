@@ -46,17 +46,19 @@ void ResetDisplayZoom() {
 }
 
 bool ToggleMinimized() {
-  aura::Window* window = wm::GetActiveWindow();
+  aura::Window* window = window_util::GetActiveWindow();
   // Attempt to restore the window that would be cycled through next from
   // the launcher when there is no active window.
   if (!window) {
+    // Do not unminimize a window on an inactive desk, since this will cause
+    // desks to switch and that will be unintentional for the user.
     MruWindowTracker::WindowList mru_windows(
-        Shell::Get()->mru_window_tracker()->BuildMruWindowList());
+        Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk));
     if (!mru_windows.empty())
-      wm::GetWindowState(mru_windows.front())->Activate();
+      WindowState::Get(mru_windows.front())->Activate();
     return true;
   }
-  wm::WindowState* window_state = wm::GetWindowState(window);
+  WindowState* window_state = WindowState::Get(window);
   if (!window_state->CanMinimize())
     return false;
   window_state->Minimize();
@@ -64,35 +66,35 @@ bool ToggleMinimized() {
 }
 
 void ToggleMaximized() {
-  aura::Window* active_window = wm::GetActiveWindow();
+  aura::Window* active_window = window_util::GetActiveWindow();
   if (!active_window)
     return;
   base::RecordAction(base::UserMetricsAction("Accel_Toggle_Maximized"));
-  wm::WMEvent event(wm::WM_EVENT_TOGGLE_MAXIMIZE);
-  wm::GetWindowState(active_window)->OnWMEvent(&event);
+  WMEvent event(WM_EVENT_TOGGLE_MAXIMIZE);
+  WindowState::Get(active_window)->OnWMEvent(&event);
 }
 
 void ToggleFullscreen() {
-  aura::Window* active_window = wm::GetActiveWindow();
+  aura::Window* active_window = window_util::GetActiveWindow();
   if (!active_window)
     return;
-  const wm::WMEvent event(wm::WM_EVENT_TOGGLE_FULLSCREEN);
-  wm::GetWindowState(active_window)->OnWMEvent(&event);
+  const WMEvent event(WM_EVENT_TOGGLE_FULLSCREEN);
+  WindowState::Get(active_window)->OnWMEvent(&event);
 }
 
 bool CanUnpinWindow() {
-  // WindowStateType::TRUSTED_PINNED does not allow the user to press a key to
+  // WindowStateType::kTrustedPinned does not allow the user to press a key to
   // exit pinned mode.
-  wm::WindowState* window_state = wm::GetActiveWindowState();
+  WindowState* window_state = WindowState::ForActiveWindow();
   return window_state &&
-         window_state->GetStateType() == mojom::WindowStateType::PINNED;
+         window_state->GetStateType() == WindowStateType::kPinned;
 }
 
 void UnpinWindow() {
   aura::Window* pinned_window =
       Shell::Get()->screen_pinning_controller()->pinned_window();
   if (pinned_window)
-    wm::GetWindowState(pinned_window)->Restore();
+    WindowState::Get(pinned_window)->Restore();
 }
 
 }  // namespace accelerators

@@ -5,10 +5,10 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <memory>
 #include <vector>
 
 #include "base/location.h"
-#include "base/memory/ptr_util.h"
 #include "base/numerics/safe_math.h"
 #include "components/webcrypto/algorithms/aes.h"
 #include "components/webcrypto/blink_key_handle.h"
@@ -104,7 +104,7 @@ class AesKwImplementation : public AesAlgorithm {
 }  // namespace
 
 std::unique_ptr<AlgorithmImplementation> CreateAesKwImplementation() {
-  return base::WrapUnique(new AesKwImplementation);
+  return std::make_unique<AesKwImplementation>();
 }
 
 }  // namespace webcrypto

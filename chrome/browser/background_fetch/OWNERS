@@ -1,1 +1,3 @@
 file://content/browser/background_fetch/OWNERS
+# COMPONENT: Blink>BackgroundFetch
+# TEAM: platform-capabilities@chromium.org 

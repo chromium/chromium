@@ -6,9 +6,9 @@
 <link rel="import" href="channel_switcher_dialog.html">
 <link rel="import" href="../i18n_setup.html">
 <link rel="import" href="../settings_shared_css.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
 <link rel="import" href="chrome://resources/cr_elements/policy/cr_policy_indicator.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-button/paper-button.html">
 
 <dom-module id="settings-detailed-build-info">
   <template>
@@ -24,25 +24,19 @@
         width: 100%;
       }
     </style>
-    <div class="settings-box two-line single-column">
-      <div>$i18n{aboutPlatformLabel}</div>
-      <div class="secondary" id="osVersion">[[versionInfo_.osVersion]]</div>
-    </div>
-    <div class="settings-box two-line single-column"
-        hidden$="[[!shouldShowVersion_(versionInfo_.osFirmware)]]">
-      <div>$i18n{aboutFirmwareLabel}</div>
-      <div class="secondary" id="osFirmware">[[versionInfo_.osFirmware]]</div>
-    </div>
     <div class="settings-box two-line">
       <div class="start">
-        <div>$i18n{aboutChannelLabel}</div>
-        <div class="secondary">[[currentlyOnChannelText_]]</div>
+        <div role="heading" aria-level="2">$i18n{aboutChannelLabel}</div>
+        <div id="currentlyOnChannelText" aria-hidden="true" class="secondary">
+          [[currentlyOnChannelText_]]
+        </div>
       </div>
       <div class="separator"></div>
-      <paper-button on-click="onChangeChannelTap_"
+      <cr-button on-click="onChangeChannelTap_"
+          aria-describedby="currentlyOnChannelText"
           disabled="[[!canChangeChannel_]]">
         $i18n{aboutChangeChannel}
-      </paper-button>
+      </cr-button>
       <template is="dom-if" if="[[!canChangeChannel_]]">
         <cr-policy-indicator
             indicator-source-name="[[getChangeChannelIndicatorSourceName_(
@@ -57,29 +51,24 @@
         </settings-channel-switcher-dialog>
       </template>
     </div>
-    <div class="settings-box two-line single-column"
-        hidden$="[[!shouldShowVersion_(versionInfo_.arcVersion)]]">
-      <div>$i18n{aboutArcVersionLabel}</div>
-      <div class="secondary" id="arcVersion">[[versionInfo_.arcVersion]]</div>
-    </div>
-    <div class="settings-box two-line single-column">
-      <div>V8</div>
-      <div class="secondary">$i18n{aboutJsEngineVersion}</div>
-    </div>
-    <div class="settings-box two-line single-column">
-      <div>$i18n{aboutUserAgentLabel}</div>
-      <div class="secondary">$i18n{aboutUserAgent}</div>
-    </div>
-    <div class="settings-box two-line single-column">
-      <div>$i18n{aboutCommandLineLabel}</div>
-      <div id="command-line" class="secondary">
-        [[i18n('aboutCommandLine')]]
+    <div id="endOfLifeSectionContainer"
+        class="settings-box two-line single-column"
+        hidden="[[!eolMessageWithMonthAndYear]]">
+      <div role="heading" aria-level="2">$i18n{aboutEndOfLifeTitle}</div>
+      <div class="secondary">
+        <span id="eolMessageWithMonthAndYear" aria-hidden="true">
+          [[eolMessageWithMonthAndYear]]
+        </span>
+        <a href="$i18nRaw{endOfLifeLearnMoreURL}"
+            aria-describedby="eolMessageWithMonthAndYear" target="_blank">
+          $i18n{learnMore}
+        </a>
       </div>
     </div>
-    <div class="settings-box two-line single-column">
-      <div>$i18n{aboutBuildDateLabel}</div>
-      <div class="secondary">$i18n{aboutBuildDate}</div>
-    </div>
+    <cr-link-row class="hr" label="$i18n{aboutBuildDetailsTitle}"
+        on-click="onBuildDetailsTap_" external>
+    </cr-link-row>
+    <div class="hr"></div>
   </template>
   <script src="detailed_build_info.js"></script>
 </dom-module>

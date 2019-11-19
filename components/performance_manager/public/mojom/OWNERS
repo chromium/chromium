@@ -1,0 +1,5 @@
+file://components/performance_manager/OWNERS
+
+# For IPC security review
+per-file *.mojom=set noparent
+per-file *.mojom=file://ipc/SECURITY_OWNERS

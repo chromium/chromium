@@ -6,8 +6,11 @@
 
 #include <utility>
 
+#include "base/strings/string_number_conversions.h"
+#include "components/cbor/diagnostic_writer.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/writer.h"
+#include "components/device_event_log/device_event_log.h"
 #include "device/fido/attested_credential_data.h"
 #include "device/fido/fido_parsing_utils.h"
 
@@ -43,8 +46,19 @@ base::Optional<AuthenticatorData> AuthenticatorData::DecodeAuthenticatorData(
 
   base::Optional<cbor::Value> extensions;
   if (flag_byte & static_cast<uint8_t>(Flag::kExtensionDataIncluded)) {
-    extensions = cbor::Reader::Read(auth_data);
-    if (!extensions || !extensions->is_map()) {
+    cbor::Reader::DecoderError error;
+    extensions = cbor::Reader::Read(auth_data, &error);
+    if (!extensions) {
+      FIDO_LOG(ERROR)
+          << "CBOR decoding of authenticator data extensions failed ("
+          << cbor::Reader::ErrorCodeToString(error) << ") from "
+          << base::HexEncode(auth_data.data(), auth_data.size());
+      return base::nullopt;
+    }
+    if (!extensions->is_map()) {
+      FIDO_LOG(ERROR)
+          << "Incorrect CBOR structure of authenticator data extensions: "
+          << cbor::DiagnosticWriter::Write(*extensions);
       return base::nullopt;
     }
   } else if (!auth_data.empty()) {

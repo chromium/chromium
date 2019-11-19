@@ -10,9 +10,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import org.chromium.base.VisibleForTesting;
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeFeatureList;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.PrefServiceBridge;
 import org.chromium.chrome.browser.widget.selection.SelectableListToolbar;
@@ -31,9 +32,7 @@ public class HistoryManagerToolbar extends SelectableListToolbar<HistoryItem> {
 
         getMenu()
                 .findItem(R.id.selection_mode_open_in_incognito)
-                .setTitle(ChromeFeatureList.isEnabled(ChromeFeatureList.INCOGNITO_STRINGS)
-                                ? R.string.contextmenu_open_in_private_tab
-                                : R.string.contextmenu_open_in_incognito_tab);
+                .setTitle(R.string.contextmenu_open_in_incognito_tab);
 
         updateMenuItemVisibility();
     }
@@ -106,7 +105,7 @@ public class HistoryManagerToolbar extends SelectableListToolbar<HistoryItem> {
         if (!PrefServiceBridge.getInstance().getBoolean(Pref.ALLOW_DELETING_BROWSER_HISTORY)) {
             getMenu().removeItem(R.id.selection_mode_delete_menu_id);
         }
-        if (!PrefServiceBridge.getInstance().isIncognitoModeEnabled()) {
+        if (!IncognitoUtils.isIncognitoModeEnabled()) {
             getMenu().removeItem(R.id.selection_mode_open_in_incognito);
         }
     }

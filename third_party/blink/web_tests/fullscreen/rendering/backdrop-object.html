@@ -8,10 +8,13 @@ object::backdrop {
 </style>
 <object width="200" type="image/svg+xml" data="../../svg/as-image/resources/circle.svg"></object>
 <script>
+var object = document.querySelector("object");
+Promise.all([
+    new Promise((resolve, reject) => document.addEventListener("fullscreenchange", resolve)),
+    new Promise((resolve, reject) => object.addEventListener("load", resolve))
+]).then(() => testRunner.notifyDone());
+
 testRunner.waitUntilDone();
 var t = { step_func: func => func() };
-trusted_request(t, document.querySelector("object"));
-document.addEventListener("fullscreenchange", function() {
-  testRunner.notifyDone();
-});
+trusted_request(t, object);
 </script>

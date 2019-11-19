@@ -12,7 +12,6 @@
 <translation id="2159915644201199628">Nem sikerült dekódolni a képet: „<ph name="IMAGE_NAME" />”</translation>
 <translation id="2350172092385603347">Fordítás használatban, de a default_locale (alapértelmezett nyelv- és országkód) nincs megadva a jegyzékfájlban.</translation>
 <translation id="2576842806987913196">Már van egy CRX-fájl ilyen névvel.</translation>
-<translation id="2753617847762399167">Szabálytalan útvonal (abszolút vagy relatív „..” taggal): „<ph name="IMAGE_PATH" />”</translation>
 <translation id="2785530881066938471">A(z) '<ph name="RELATIVE_PATH" />' fájlt nem lehet betölteni tartalomszkriptre, mert nem UTF-8 kódolású.</translation>
 <translation id="2903070246402204397">A(z) <ph name="EXTENSION_NAME" /> bővítményt (bővítményazonosító: <ph name="EXTENSION_ID" />) tiltja a rendszergazda. <ph name="ADMIN_INFO" />.</translation>
 <translation id="2988488679308982380">Nem sikerült a következő csomag telepítése: "<ph name="ERROR_CODE" />"</translation>
@@ -38,8 +37,6 @@
 <translation id="5436430103864390185">A formázott ablakok nem támogatottak.</translation>
 <translation id="5456409301717116725">Ez a bővítmény a(z) "<ph name="KEY_PATH" />" kulcsfájlt tartalmazza. Ezt Ön valószínűleg nem szeretné.</translation>
 <translation id="5486326529110362464">Kell lennie beviteli értéknek a privát kulcsnál.</translation>
-<translation id="5627523580512561598"><ph name="EXTENSION_NAME" /> bővítmény</translation>
-<translation id="5960890139610307736">ExtensionView: <ph name="EXTENSIONVIEW_TAG_NAME" /></translation>
 <translation id="5972529113578162692">A számítógép adminisztrátorának szüksége van arra, hogy a(z) <ph name="EXTENSION_NAME" /> telepítve legyen. Nem lehet eltávolítani.</translation>
 <translation id="6027032947578871493">Ismeretlen termék (<ph name="PRODUCT_ID" />) a következő szolgáltatótól: <ph name="VENDOR_NAME" /> (sorozatszám: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" />, forgalmazó: <ph name="VENDOR_ID" /></translation>
@@ -51,7 +48,6 @@
 <translation id="6542618148162044354">A(z) „<ph name="APP_NAME" />” alkalmazás hozzáférést kér egy vagy több eszközéhez.</translation>
 <translation id="657064425229075395">Nem sikerült betölteni a következő háttérszkriptet: "<ph name="BACKGROUND_SCRIPT" />".</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" /> a következőtől: <ph name="VENDOR_NAME" /> (sorozatszám: <ph name="SERIAL_NUMBER" />)</translation>
-<translation id="6731255991101203740">Nem sikerült könyvtárat létrehozni a kicsomagoláshoz: „<ph name="DIRECTORY_PATH" />”</translation>
 <translation id="677806580227005219">MIME-kezelő: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
 <translation id="6840444547062817500">Ez a bővítmény túl gyakran töltötte újra magát.</translation>
 <translation id="7003844668372540529">Ismeretlen termék (<ph name="PRODUCT_ID" />) a következő forgalmazótól: <ph name="VENDOR_NAME" /></translation>

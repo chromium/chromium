@@ -1,7 +1,0 @@
-{
-  "modules" : [
-    { "name": "screencast", "type": "autostart" }
-  ],
-  "extends": "devtools_app",
-  "has_html": true
-}

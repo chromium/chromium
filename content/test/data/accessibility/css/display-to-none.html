@@ -1,0 +1,17 @@
+<!--
+@WAIT-FOR:done
+-->
+<div>
+  <div>Cats</div>
+  <div id="none">
+      <input type="checkbox" aria-label="checkbox">
+  </div>
+  <div><code>pending</code></div>
+</div>
+
+<script>
+  setTimeout(()=> {
+    document.getElementById('none').style.display = 'none';
+    document.querySelector('code').innerText = 'done';
+  }, 100);
+</script>

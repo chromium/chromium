@@ -6,6 +6,7 @@
 <link rel="import" href="../../cr_elements/shared_vars_css.html">
 <link rel="import" href="../../html/i18n_behavior.html">
 <link rel="import" href="../../html/load_time_data.html">
+<link rel="import" href="../../html/web_ui_listener_behavior.html">
 
 <dom-module id="managed-footnote">
   <template>
@@ -41,7 +42,9 @@
 
     <template is="dom-if" if="[[isManaged_]]">
       <iron-icon icon="cr:domain"></iron-icon>
-      <div id="content" inner-h-t-m-l="[[i18nAdvanced('managedByOrg')]]"></div>
+      <div id="content"
+          inner-h-t-m-l="[[getManagementString_(showDeviceInfo)]]">
+      </div>
     </template>
   </template>
   <script src="managed_footnote.js"></script>

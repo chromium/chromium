@@ -1541,3 +1541,4 @@ bn_sub_part_words:
 	ret
 .size	bn_sub_part_words,.-.L_bn_sub_part_words_begin
 #endif
+.section	.note.GNU-stack,"",@progbits

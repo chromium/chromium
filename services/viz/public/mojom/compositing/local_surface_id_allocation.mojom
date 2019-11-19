@@ -1,0 +1,14 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module viz.mojom;
+
+import "mojo/public/mojom/base/time.mojom";
+import "services/viz/public/mojom/compositing/local_surface_id.mojom";
+
+struct LocalSurfaceIdAllocation {
+  LocalSurfaceId local_surface_id;
+  mojo_base.mojom.TimeTicks allocation_time;
+};
+

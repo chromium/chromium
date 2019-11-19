@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.download.home;
 
 import android.view.View;
 
+import org.chromium.chrome.browser.gesturenav.HistoryNavigationDelegate;
+
 /**
  * A coordinator that represents the main download manager UI page. This visually shows a list of
  * downloaded items and allows the user to interact with those items.
@@ -35,15 +37,15 @@ public interface DownloadManagerCoordinator {
     /** To be called to push the url containing internal state to the coordinator. */
     void updateForUrl(String url);
 
-    /**
-     * To be called to automatically show the prefetched content section of the download manager.
-     * TODO(dtrainor): This should be deprecated in place of {@link #updateForUrl(String)}.
-     */
-    void showPrefetchSection();
-
     /** Adds {@code observer} to be notified of url state changes. */
     void addObserver(Observer observer);
 
     /** Stops notifying {@code observer} of url state changes. */
     void removeObserver(Observer observer);
+
+    /**
+     * Sets the {@link HistoryNavigationDelegate} object that takes care of history navigation.
+     * @param delegate The delegate instance the history navigation logic needs.
+     */
+    void setHistoryNavigationDelegate(HistoryNavigationDelegate delegate);
 }

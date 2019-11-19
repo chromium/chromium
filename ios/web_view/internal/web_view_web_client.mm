@@ -12,10 +12,10 @@
 #include "base/task/post_task.h"
 #include "components/ssl_errors/error_info.h"
 #include "components/strings/grit/components_strings.h"
-#include "ios/web/public/ssl_status.h"
-#include "ios/web/public/user_agent.h"
-#include "ios/web/public/web_task_traits.h"
-#include "ios/web/public/web_thread.h"
+#include "ios/web/common/user_agent.h"
+#include "ios/web/public/security/ssl_status.h"
+#include "ios/web/public/thread/web_task_traits.h"
+#include "ios/web/public/thread/web_thread.h"
 #import "ios/web_view/internal/cwv_ssl_status_internal.h"
 #import "ios/web_view/internal/cwv_web_view_internal.h"
 #include "ios/web_view/internal/web_view_browser_state.h"
@@ -98,10 +98,11 @@ base::string16 WebViewWebClient::GetPluginNotSupportedText() const {
 
 void WebViewWebClient::AllowCertificateError(
     web::WebState* web_state,
-    int cert_error,
+    int net_error,
     const net::SSLInfo& ssl_info,
     const GURL& request_url,
     bool overridable,
+    int64_t navigation_id,
     const base::RepeatingCallback<void(bool)>& callback) {
   CWVWebView* web_view = [CWVWebView webViewForWebState:web_state];
   base::RepeatingCallback<void(bool)> callback_copy = callback;
@@ -109,10 +110,10 @@ void WebViewWebClient::AllowCertificateError(
   SEL selector = @selector
       (webView:didFailNavigationWithSSLError:overridable:decisionHandler:);
   if ([web_view.navigationDelegate respondsToSelector:selector]) {
-    CWVCertStatus cert_status = CWVCertStatusFromNetCertStatus(
-        net::MapNetErrorToCertStatus(cert_error));
+    CWVCertStatus cert_status =
+        CWVCertStatusFromNetCertStatus(ssl_info.cert_status);
     ssl_errors::ErrorInfo error_info = ssl_errors::ErrorInfo::CreateError(
-        ssl_errors::ErrorInfo::NetErrorToErrorType(cert_error),
+        ssl_errors::ErrorInfo::NetErrorToErrorType(net_error),
         ssl_info.cert.get(), request_url);
     NSString* error_description =
         base::SysUTF16ToNSString(error_info.short_description());

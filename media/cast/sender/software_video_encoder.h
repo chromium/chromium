@@ -30,7 +30,7 @@ class SoftwareVideoEncoder {
   virtual void Initialize() = 0;
 
   // Encode a raw image (as a part of a video stream).
-  virtual void Encode(const scoped_refptr<media::VideoFrame>& video_frame,
+  virtual void Encode(scoped_refptr<media::VideoFrame> video_frame,
                       const base::TimeTicks& reference_time,
                       SenderEncodedFrame* encoded_frame) = 0;
 

@@ -7,8 +7,9 @@
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_task_environment.h"
 #include "base/test/simple_test_clock.h"
+#include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "components/password_manager/core/browser/mock_password_store.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -24,14 +25,14 @@ namespace password_manager {
 
 namespace {
 
-constexpr size_t kMaxNumberOfCharactersToStore = 30;
+constexpr size_t kMaxNumberOfCharactersToStore = 45;
 
 class MockPasswordManagerClient : public StubPasswordManagerClient {
  public:
   MockPasswordManagerClient() = default;
   ~MockPasswordManagerClient() override = default;
 
-  MOCK_CONST_METHOD0(GetPasswordStore, PasswordStore*());
+  MOCK_CONST_METHOD0(GetProfilePasswordStore, PasswordStore*());
 
  private:
   DISALLOW_COPY_AND_ASSIGN(MockPasswordManagerClient);
@@ -52,7 +53,7 @@ class PasswordReuseDetectionManagerTest : public ::testing::Test {
  protected:
   // It's needed for an initialisation of thread runners that are used in
   // MockPasswordStore.
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   MockPasswordManagerClient client_;
   scoped_refptr<MockPasswordStore> store_;
 
@@ -69,7 +70,7 @@ TEST_F(PasswordReuseDetectionManagerTest, CheckReuseCalled) {
           "1234567890abcdefghijklmnopqrstuvxyzABCDEFGHIJKLMNOPQRSTUVXYZ"),
       base::ASCIIToUTF16("?<>:'{}ABCDEF")};
 
-  EXPECT_CALL(client_, GetPasswordStore())
+  EXPECT_CALL(client_, GetProfilePasswordStore())
       .WillRepeatedly(testing::Return(store_.get()));
   PasswordReuseDetectionManager manager(&client_);
 
@@ -83,7 +84,7 @@ TEST_F(PasswordReuseDetectionManagerTest, CheckReuseCalled) {
       EXPECT_CALL(
           *store_,
           CheckReuse(expected_input, gurls[test].GetOrigin().spec(), &manager));
-      manager.OnKeyPressed(input[test].substr(i, 1));
+      manager.OnKeyPressedCommitted(input[test].substr(i, 1));
       testing::Mock::VerifyAndClearExpectations(store_.get());
     }
   }
@@ -93,7 +94,7 @@ TEST_F(PasswordReuseDetectionManagerTest, CheckReuseCalled) {
 // inactivity.
 TEST_F(PasswordReuseDetectionManagerTest,
        CheckThatBufferClearedAfterInactivity) {
-  EXPECT_CALL(client_, GetPasswordStore())
+  EXPECT_CALL(client_, GetProfilePasswordStore())
       .WillRepeatedly(testing::Return(store_.get()));
   PasswordReuseDetectionManager manager(&client_);
 
@@ -103,37 +104,37 @@ TEST_F(PasswordReuseDetectionManagerTest,
   manager.SetClockForTesting(&clock);
 
   EXPECT_CALL(*store_, CheckReuse(base::ASCIIToUTF16("1"), _, _));
-  manager.OnKeyPressed(base::ASCIIToUTF16("1"));
+  manager.OnKeyPressedCommitted(base::ASCIIToUTF16("1"));
 
   // Simulate 10 seconds of inactivity.
   clock.SetNow(now + base::TimeDelta::FromSeconds(10));
   // Expect that a keystroke typed before inactivity is cleared.
   EXPECT_CALL(*store_, CheckReuse(base::ASCIIToUTF16("2"), _, _));
-  manager.OnKeyPressed(base::ASCIIToUTF16("2"));
+  manager.OnKeyPressedCommitted(base::ASCIIToUTF16("2"));
 }
 
 // Verify that the keystroke buffer is cleared after user presses enter.
 TEST_F(PasswordReuseDetectionManagerTest, CheckThatBufferClearedAfterEnter) {
-  EXPECT_CALL(client_, GetPasswordStore())
+  EXPECT_CALL(client_, GetProfilePasswordStore())
       .WillRepeatedly(testing::Return(store_.get()));
   PasswordReuseDetectionManager manager(&client_);
 
   EXPECT_CALL(*store_, CheckReuse(base::ASCIIToUTF16("1"), _, _));
-  manager.OnKeyPressed(base::ASCIIToUTF16("1"));
+  manager.OnKeyPressedCommitted(base::ASCIIToUTF16("1"));
 
   base::string16 enter_text(1, ui::VKEY_RETURN);
   EXPECT_CALL(*store_, CheckReuse(_, _, _)).Times(0);
-  manager.OnKeyPressed(enter_text);
+  manager.OnKeyPressedCommitted(enter_text);
 
   // Expect only a keystroke typed after enter.
   EXPECT_CALL(*store_, CheckReuse(base::ASCIIToUTF16("2"), _, _));
-  manager.OnKeyPressed(base::ASCIIToUTF16("2"));
+  manager.OnKeyPressedCommitted(base::ASCIIToUTF16("2"));
 }
 
 // Verify that after reuse found, no reuse checking happens till next main frame
 // navigation.
 TEST_F(PasswordReuseDetectionManagerTest, NoReuseCheckingAfterReuseFound) {
-  EXPECT_CALL(client_, GetPasswordStore())
+  EXPECT_CALL(client_, GetProfilePasswordStore())
       .WillRepeatedly(testing::Return(store_.get()));
   PasswordReuseDetectionManager manager(&client_);
 
@@ -142,34 +143,86 @@ TEST_F(PasswordReuseDetectionManagerTest, NoReuseCheckingAfterReuseFound) {
 
   // Expect no checking of reuse.
   EXPECT_CALL(*store_, CheckReuse(_, _, _)).Times(0);
-  manager.OnKeyPressed(base::ASCIIToUTF16("1"));
+  manager.OnKeyPressedCommitted(base::ASCIIToUTF16("1"));
 
   // Expect that after main frame navigation checking is restored.
   manager.DidNavigateMainFrame(GURL("https://www.example.com"));
   EXPECT_CALL(*store_, CheckReuse(base::ASCIIToUTF16("1"), _, _));
-  manager.OnKeyPressed(base::ASCIIToUTF16("1"));
+  manager.OnKeyPressedCommitted(base::ASCIIToUTF16("1"));
 }
 
 // Verify that keystroke buffer is cleared only on cross host navigation.
 TEST_F(PasswordReuseDetectionManagerTest, DidNavigateMainFrame) {
-  EXPECT_CALL(client_, GetPasswordStore())
+  EXPECT_CALL(client_, GetProfilePasswordStore())
       .WillRepeatedly(testing::Return(store_.get()));
   PasswordReuseDetectionManager manager(&client_);
 
   manager.DidNavigateMainFrame(GURL("https://www.example1.com/123"));
   EXPECT_CALL(*store_, CheckReuse(base::ASCIIToUTF16("1"), _, _));
-  manager.OnKeyPressed(base::ASCIIToUTF16("1"));
+  manager.OnKeyPressedCommitted(base::ASCIIToUTF16("1"));
 
   // Check that the buffer is not cleared on the same host navigation.
   manager.DidNavigateMainFrame(GURL("https://www.example1.com/456"));
   EXPECT_CALL(*store_, CheckReuse(base::ASCIIToUTF16("12"), _, _));
-  manager.OnKeyPressed(base::ASCIIToUTF16("2"));
+  manager.OnKeyPressedCommitted(base::ASCIIToUTF16("2"));
 
   // Check that the buffer is cleared on the cross host navigation.
   manager.DidNavigateMainFrame(GURL("https://www.example2.com/123"));
   EXPECT_CALL(*store_, CheckReuse(base::ASCIIToUTF16("3"), _, _));
-  manager.OnKeyPressed(base::ASCIIToUTF16("3"));
+  manager.OnKeyPressedCommitted(base::ASCIIToUTF16("3"));
 }
+
+// Verify that CheckReuse is called on a paste event.
+TEST_F(PasswordReuseDetectionManagerTest, CheckReuseCalledOnPaste) {
+  const GURL gurls[] = {GURL("https://www.example.com"),
+                        GURL("https://www.example.test")};
+  const base::string16 input[] = {
+      base::ASCIIToUTF16(
+          "1234567890abcdefghijklmnopqrstuvxyzABCDEFGHIJKLMNOPQRSTUVXYZ"),
+      base::ASCIIToUTF16("?<>:'{}ABCDEF")};
+
+  EXPECT_CALL(client_, GetProfilePasswordStore())
+      .WillRepeatedly(testing::Return(store_.get()));
+  PasswordReuseDetectionManager manager(&client_);
+
+  for (size_t test = 0; test < base::size(gurls); ++test) {
+    manager.DidNavigateMainFrame(gurls[test]);
+    base::string16 expected_input = input[test];
+    if (expected_input.size() > kMaxNumberOfCharactersToStore)
+      expected_input = expected_input.substr(expected_input.size() -
+                                             kMaxNumberOfCharactersToStore);
+    EXPECT_CALL(*store_, CheckReuse(expected_input,
+                                    gurls[test].GetOrigin().spec(), &manager));
+    manager.OnPaste(input[test]);
+    testing::Mock::VerifyAndClearExpectations(store_.get());
+  }
+}
+
+#if defined(OS_ANDROID)
+TEST_F(PasswordReuseDetectionManagerTest,
+       CheckReusedCalledWithUncommittedText) {
+  EXPECT_CALL(client_, GetProfilePasswordStore())
+      .WillRepeatedly(testing::Return(store_.get()));
+  PasswordReuseDetectionManager manager(&client_);
+  GURL test_url("https://www.example.com");
+  manager.DidNavigateMainFrame(test_url);
+
+  base::string16 init_text = base::ASCIIToUTF16("init_text");
+  base::string16 uncommitted_text = base::ASCIIToUTF16("uncommitted_text");
+  base::string16 committed_text = base::ASCIIToUTF16("committed_text");
+
+  EXPECT_CALL(*store_,
+              CheckReuse(init_text, test_url.GetOrigin().spec(), &manager));
+  manager.OnKeyPressedCommitted(init_text);
+  EXPECT_CALL(*store_, CheckReuse(init_text + uncommitted_text,
+                                  test_url.GetOrigin().spec(), &manager));
+  manager.OnKeyPressedUncommitted(uncommitted_text);
+  // Uncommitted text should not be stored.
+  EXPECT_CALL(*store_, CheckReuse(init_text + committed_text,
+                                  test_url.GetOrigin().spec(), &manager));
+  manager.OnKeyPressedCommitted(committed_text);
+}
+#endif
 
 }  // namespace
 

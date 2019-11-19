@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,54 +19,28 @@
 #include "ui/base/cursor/cursor.h"
 #endif
 
-#if defined(OS_WIN)
-typedef struct HINSTANCE__* HINSTANCE;
-typedef struct HICON__* HICON;
-typedef HICON HCURSOR;
-#elif defined(OS_MACOSX)
-#ifdef __OBJC__
-@class NSCursor;
-#else
-class NSCursor;
-#endif
-#endif
-
-namespace base {
-class Pickle;
-class PickleIterator;
-}
-
 namespace content {
 
 // This class encapsulates a cross-platform description of a cursor.  Platform
 // specific methods are provided to translate the cross-platform cursor into a
 // platform specific cursor.  It is also possible to serialize / de-serialize a
-// WebCursor.
+// WebCursor. This class is highly similar to ui::Cursor.
 class CONTENT_EXPORT WebCursor {
  public:
-  WebCursor();
+  WebCursor() = default;
+  explicit WebCursor(const CursorInfo& info);
+  explicit WebCursor(const WebCursor& other);
+  WebCursor& operator=(const WebCursor& other);
   ~WebCursor();
 
-  // Copy constructor/assignment operator combine.
-  WebCursor(const WebCursor& other);
-  const WebCursor& operator=(const WebCursor& other);
+  const CursorInfo& info() const { return info_; }
 
-  // Conversion from/to CursorInfo.
-  void InitFromCursorInfo(const CursorInfo& cursor_info);
-  void GetCursorInfo(CursorInfo* cursor_info) const;
+  // Sets the cursor |info|; returns whether the struct has reasonable values.
+  bool SetInfo(const CursorInfo& info);
 
-  // Serialization / De-serialization
-  bool Deserialize(base::PickleIterator* iter);
-  void Serialize(base::Pickle* pickle) const;
-
-  // Returns true if GetCustomCursor should be used to allocate a platform
-  // specific cursor object.  Otherwise GetCursor should be used.
-  bool IsCustom() const;
-
-  // Returns true if the current cursor object contains the same cursor as the
-  // cursor object passed in. If the current cursor is a custom cursor, we also
-  // compare the bitmaps to verify whether they are equal.
-  bool IsEqual(const WebCursor& other) const;
+  // Equality operator; performs bitmap content comparison as needed.
+  bool operator==(const WebCursor& other) const;
+  bool operator!=(const WebCursor& other) const;
 
   // Returns a native cursor representing the current WebCursor instance.
   gfx::NativeCursor GetNativeCursor();
@@ -79,31 +53,15 @@ class CONTENT_EXPORT WebCursor {
 
   void CreateScaledBitmapAndHotspotFromCustomData(SkBitmap* bitmap,
                                                   gfx::Point* hotspot,
-                                                  float* scale_factor);
-
-#elif defined(OS_WIN)
-  // Returns a HCURSOR representing the current WebCursor instance.
-  // The ownership of the HCURSOR remains with the WebCursor instance.
-  HCURSOR GetCursor(HINSTANCE module_handle);
-
-#elif defined(OS_MACOSX)
-  // Initialize this from the given Cocoa NSCursor.
-  void InitFromNSCursor(NSCursor* cursor);
+                                                  float* scale);
 #endif
 
  private:
-  // Copies the contents of the WebCursor instance passed in.
-  void Copy(const WebCursor& other);
+  // Returns true if this cursor's platform data matches that of |other|.
+  bool IsPlatformDataEqual(const WebCursor& other) const;
 
-  // Cleans up the WebCursor instance.
-  void Clear();
-
-  // Platform specific initialization goes here.
-  void InitPlatformData();
-
-  // Returns true if the platform data in the current cursor object
-  // matches that of the cursor passed in.
-  bool IsPlatformDataEqual(const WebCursor& other) const ;
+  // Copies all data from |other| to this object.
+  void CopyAllData(const WebCursor& other);
 
   // Copies platform specific data from the WebCursor instance passed in.
   void CopyPlatformData(const WebCursor& other);
@@ -111,48 +69,22 @@ class CONTENT_EXPORT WebCursor {
   // Platform specific cleanup.
   void CleanupPlatformData();
 
-  void SetCustomData(const SkBitmap& image);
-
-  // Fills the custom_data vector and custom_size object with the image data
-  // taken from the bitmap.
-  void CreateCustomData(const SkBitmap& bitmap,
-                        std::vector<char>* custom_data,
-                        gfx::Size* custom_size);
-
-  void ImageFromCustomData(SkBitmap* image) const;
-
-  // Clamp the hotspot to the custom image's bounds, if this is a custom cursor.
-  void ClampHotspot();
-
   float GetCursorScaleFactor(SkBitmap* bitmap);
 
-  // WebCore::PlatformCursor type.
-  int type_;
+  // The basic cursor info.
+  CursorInfo info_;
 
-  // Hotspot in cursor image in pixels.
-  gfx::Point hotspot_;
-
-  // Custom cursor data, as 32-bit RGBA.
-  // Platform-inspecific because it can be serialized.
-  gfx::Size custom_size_;  // In pixels.
-  float custom_scale_;
-  std::vector<char> custom_data_;
-
-#if defined(USE_AURA) && (defined(USE_X11) || defined(USE_OZONE))
+#if defined(USE_AURA) || defined(USE_OZONE)
   // Only used for custom cursors.
-  ui::PlatformCursor platform_cursor_;
-#elif defined(OS_WIN)
-  // A custom cursor created from custom bitmap data by Webkit.
-  HCURSOR custom_cursor_;
-#endif
-#if defined(USE_AURA)
-  float device_scale_factor_;
-#endif
-
+  ui::PlatformCursor platform_cursor_ = 0;
+  float device_scale_factor_ = 1.f;
   display::Display::Rotation rotation_ = display::Display::ROTATE_0;
+#endif
 
 #if defined(USE_OZONE)
-  gfx::Size maximum_cursor_size_;
+  // This matches ozone drm_util.cc's kDefaultCursorWidth/Height.
+  static constexpr int kDefaultMaxSize = 64;
+  gfx::Size maximum_cursor_size_ = {kDefaultMaxSize, kDefaultMaxSize};
 #endif
 };
 

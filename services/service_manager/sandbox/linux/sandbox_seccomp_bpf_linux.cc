@@ -225,7 +225,8 @@ void SandboxSeccompBPF::RunSandboxSanityChecks(
 
 bool SandboxSeccompBPF::StartSandboxWithExternalPolicy(
     std::unique_ptr<sandbox::bpf_dsl::Policy> policy,
-    base::ScopedFD proc_fd) {
+    base::ScopedFD proc_fd,
+    sandbox::SandboxBPF::SeccompLevel seccomp_level) {
 #if BUILDFLAG(USE_SECCOMP_BPF)
   if (IsSeccompBPFDesired() && SupportsSandbox()) {
     CHECK(policy);
@@ -236,7 +237,7 @@ bool SandboxSeccompBPF::StartSandboxWithExternalPolicy(
     // doing so does not stop the sandbox.
     SandboxBPF sandbox(std::move(policy));
     sandbox.SetProcFd(std::move(proc_fd));
-    CHECK(sandbox.StartSandbox(SandboxBPF::SeccompLevel::SINGLE_THREADED));
+    CHECK(sandbox.StartSandbox(seccomp_level));
     return true;
   }
 #endif  // BUILDFLAG(USE_SECCOMP_BPF)

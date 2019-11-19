@@ -3,20 +3,20 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
-import("//build/config/arm.gni")
 import("//build/config/android/config.gni")
+import("//build/config/arm.gni")
 import("//build/config/sanitizers/sanitizers.gni")
-import("//third_party/libaom/options.gni")
 import("//third_party/libaom/libaom_srcs.gni")
+import("//third_party/libaom/options.gni")
 import("//third_party/yasm/yasm_assemble.gni")
 
-buildflag_header("av1_buildflags") {
-  header = "av1_buildflags.h"
+buildflag_header("libaom_buildflags") {
+  header = "libaom_buildflags.h"
 
-  flags = [ "ENABLE_AV1_DECODER=$enable_av1_decoder" ]
+  flags = [ "ENABLE_LIBAOM_DECODER=$enable_libaom_decoder" ]
 }
 
-if (enable_av1_decoder) {
+if (enable_libaom_decoder) {
   # Sets the architecture name for building libaom.
   if (current_cpu == "x86") {
     cpu_arch_full = "ia32"
@@ -205,7 +205,7 @@ if (enable_av1_decoder) {
       deps += [ ":libaom_intrinsics_neon" ]
     }
     if (is_android) {
-      deps += [ "//third_party/android_tools:cpu_features" ]
+      deps += [ "//third_party/android_ndk:cpu_features" ]
     }
     public_configs = [ ":libaom_external_config" ]
   }

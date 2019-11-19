@@ -2,27 +2,16 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/compiler/compiler.gni")
 import("//testing/test.gni")
-
-if (is_android) {
-  import("//build/config/android/rules.gni")
-}
-
-config("wrap_find_exidx") {
-  ldflags = [ "-Wl,-wrap,dl_unwind_find_exidx" ]
-}
 
 component("tracing") {
   sources = [
-    "child/child_trace_message_filter.cc",
-    "child/child_trace_message_filter.h",
+    "child/background_tracing_agent_impl.cc",
+    "child/background_tracing_agent_impl.h",
+    "child/background_tracing_agent_provider_impl.cc",
+    "child/background_tracing_agent_provider_impl.h",
     "common/graphics_memory_dump_provider_android.cc",
     "common/graphics_memory_dump_provider_android.h",
-    "common/tracing_messages.cc",
-    "common/tracing_messages.h",
-    "common/tracing_sampler_profiler.cc",
-    "common/tracing_sampler_profiler.h",
     "tracing_export.h",
   ]
 
@@ -30,22 +19,9 @@ component("tracing") {
 
   deps = [
     "//base",
+    "//components/tracing/common:interfaces",
     "//ipc",
   ]
-
-  if (is_android && can_unwind_with_cfi_table && is_official_build) {
-    sources += [
-      "common/native_stack_sampler_android.cc",
-      "common/native_stack_sampler_android.h",
-      "common/stack_unwinder_android.cc",
-      "common/stack_unwinder_android.h",
-    ]
-    deps += [ "//buildtools/third_party/libunwind" ]
-    include_dirs = [ "//buildtools/third_party/libunwind/trunk/include" ]
-
-    # stack_unwinder_android.cc overrides the dl_unwind_find_exidx function.
-    all_dependent_configs = [ ":wrap_find_exidx" ]
-  }
 }
 
 component("startup_tracing") {
@@ -70,15 +46,15 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
-    "child/child_trace_message_filter_unittest.cc",
+    "child/background_tracing_agent_impl_unittest.cc",
     "common/graphics_memory_dump_provider_android_unittest.cc",
-    "common/tracing_sampler_profiler_unittest.cc",
   ]
 
   deps = [
     ":startup_tracing",
     ":tracing",
     "//base/test:test_support",
+    "//components/tracing/common:interfaces",
     "//ipc",
     "//testing/gmock:gmock",
     "//testing/gtest",
@@ -87,14 +63,6 @@ source_set("unit_tests") {
   if (!is_android) {
     sources += [ "common/trace_startup_config_unittest.cc" ]
     deps += [ ":startup_tracing" ]
-  }
-
-  if (is_android && can_unwind_with_cfi_table && is_official_build) {
-    sources += [ "common/stack_unwinder_android_unittest.cc" ]
-    deps += [
-      ":jni_headers",
-      ":tracing_test_helper_java",
-    ]
   }
 }
 
@@ -119,22 +87,5 @@ test("tracing_perftests") {
 
   if (is_android) {
     deps += [ "//testing/android/native_test:native_test_native_code" ]
-  }
-}
-
-if (is_android) {
-  generate_jni("jni_headers") {
-    sources = [
-      "android/test/src/org/chromium/tracing/UnwindTestHelper.java",
-    ]
-    jni_package = "tracing"
-  }
-
-  android_library("tracing_test_helper_java") {
-    deps = [
-      "//base:base_java",
-    ]
-    java_files =
-        [ "android/test/src/org/chromium/tracing/UnwindTestHelper.java" ]
   }
 }

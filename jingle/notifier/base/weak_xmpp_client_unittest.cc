@@ -7,8 +7,8 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
-#include "base/message_loop/message_loop.h"
 #include "base/stl_util.h"
+#include "base/test/task_environment.h"
 #include "jingle/glue/task_pump.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -61,7 +61,7 @@ class WeakXmppClientTest : public testing::Test {
   }
 
   // Needed by TaskPump.
-  base::MessageLoop message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
 
   std::unique_ptr<jingle_glue::TaskPump> task_pump_;
   MockXmppDelegate mock_xmpp_delegate_;

@@ -100,7 +100,7 @@ function testInvalidCustomAttributes() {
   parseAndAssertThrows('<a class="fancy">I\'m fancy!</a>');
 }
 
-function testOnErrorAsync(testDoneCalback) {
+function testOnErrorAsync(testDoneCallback) {
   window.called = false;
 
   parseAndAssertThrows('<img onerror="window.called = true" src="_.png">');
@@ -108,7 +108,7 @@ function testOnErrorAsync(testDoneCalback) {
 
   window.setTimeout(function() {
     assertFalse(window.called);
-    testDoneCalback();
+    testDoneCallback();
   });
 }
 

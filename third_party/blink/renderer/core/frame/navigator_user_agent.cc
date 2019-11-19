@@ -11,17 +11,17 @@
 namespace blink {
 
 ScriptPromise NavigatorUserAgent::getUserAgent(ScriptState* script_state) {
-  ScriptPromiseResolver* resolver = ScriptPromiseResolver::Create(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
   blink::UserAgentMetadata metadata = GetUserAgentMetadata();
   blink::UserAgent* idl_metadata = blink::UserAgent::Create();
 
-  idl_metadata->setBrand(String::FromUTF8(metadata.brand.data()));
-  idl_metadata->setVersion(String::FromUTF8(metadata.full_version.data()));
-  idl_metadata->setPlatform(String::FromUTF8(metadata.platform.data()));
-  idl_metadata->setArchitecture(String::FromUTF8(metadata.architecture.data()));
-  idl_metadata->setModel(String::FromUTF8(metadata.model.data()));
+  idl_metadata->setBrand(String::FromUTF8(metadata.brand));
+  idl_metadata->setVersion(String::FromUTF8(metadata.full_version));
+  idl_metadata->setPlatform(String::FromUTF8(metadata.platform));
+  idl_metadata->setArchitecture(String::FromUTF8(metadata.architecture));
+  idl_metadata->setModel(String::FromUTF8(metadata.model));
   resolver->Resolve(idl_metadata);
 
   return promise;

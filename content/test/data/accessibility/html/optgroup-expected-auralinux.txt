@@ -2,13 +2,13 @@
 ++[section] enabled
 ++++[list box] enabled setsize:8
 ++++++[panel] name='Enabled' enabled setsize:0 xml-roles:group
-++++++++[text] name='Enabled' enabled
+++++++++[static] name='Enabled' enabled
 ++++++[list item] name='One' enabled selectable posinset:1 setsize:8
 ++++++[list item] name='Two' enabled selectable posinset:2 setsize:8
 ++++++[list item] name='Three' enabled selectable posinset:3 setsize:8
 ++++++[list item] name='Four' enabled selectable posinset:4 setsize:8
 ++++++[panel] name='Disabled' enabled setsize:0 xml-roles:group
-++++++++[text] name='Disabled' enabled
+++++++++[static] name='Disabled' enabled
 ++++++[list item] name='One' posinset:5 setsize:8
 ++++++[list item] name='Two' posinset:6 setsize:8
 ++++++[list item] name='Three' posinset:7 setsize:8

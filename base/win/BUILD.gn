@@ -26,6 +26,8 @@ buildflag_header("base_win_buildflags") {
 
 static_library("pe_image") {
   sources = [
+    "../no_destructor.h",
+    "current_module.h",
     "pe_image.cc",
     "pe_image.h",
   ]

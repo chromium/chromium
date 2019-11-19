@@ -1,0 +1,61 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutBlockFlow DIV id='target'",
+      "position": [-10, -10],
+      "bounds": [220, 220],
+      "backgroundColor": "#0000FF",
+      "paintInvalidations": [
+        {
+          "object": "LayoutBlockFlow DIV id='target'",
+          "rect": [0, 0, 220, 220],
+          "reason": "style change"
+        }
+      ],
+      "transform": 1
+    },
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [185, 2000],
+      "contentsOpaque": true,
+      "backgroundColor": "#0000FF",
+      "transform": 1
+    },
+    {
+      "name": "ContentsLayer for Horizontal Scrollbar Layer",
+      "position": [0, 185],
+      "bounds": [185, 15],
+      "transform": 1
+    },
+    {
+      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "position": [185, 0],
+      "bounds": [15, 185],
+      "transform": 1
+    },
+    {
+      "name": "Scroll Corner Layer",
+      "position": [185, 185],
+      "bounds": [15, 15],
+      "transform": 1
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [8, 8, 0, 1]
+      ]
+    }
+  ]
+}
+

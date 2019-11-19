@@ -141,8 +141,9 @@ ArcFeatures& ArcFeatures::operator=(ArcFeatures&& other) = default;
 
 void ArcFeaturesParser::GetArcFeatures(
     base::OnceCallback<void(base::Optional<ArcFeatures>)> callback) {
-  base::PostTaskWithTraitsAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+  base::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&ReadOnFileThread, base::FilePath(kArcFeaturesJsonFile)),
       std::move(callback));
 }

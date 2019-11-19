@@ -11,7 +11,6 @@
 #include "base/location.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
 #include "base/sequence_checker.h"
 #include "base/single_thread_task_runner.h"
@@ -221,7 +220,7 @@ class SimpleHttpServer {
 
     SEQUENCE_CHECKER(sequence_checker_);
 
-    base::WeakPtrFactory<Connection> weak_factory_;
+    base::WeakPtrFactory<Connection> weak_factory_{this};
 
     DISALLOW_COPY_AND_ASSIGN(Connection);
   };
@@ -235,7 +234,7 @@ class SimpleHttpServer {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::WeakPtrFactory<SimpleHttpServer> weak_factory_;
+  base::WeakPtrFactory<SimpleHttpServer> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SimpleHttpServer);
 };
@@ -243,8 +242,7 @@ class SimpleHttpServer {
 SimpleHttpServer::SimpleHttpServer(const ParserFactory& factory,
                                    net::IPEndPoint endpoint)
     : factory_(factory),
-      socket_(new net::TCPServerSocket(nullptr, net::NetLogSource())),
-      weak_factory_(this) {
+      socket_(new net::TCPServerSocket(nullptr, net::NetLogSource())) {
   socket_->Listen(endpoint, 5);
   OnConnect();
 }
@@ -261,8 +259,7 @@ SimpleHttpServer::Connection::Connection(net::StreamSocket* socket,
       input_buffer_(base::MakeRefCounted<net::GrowableIOBuffer>()),
       output_buffer_(base::MakeRefCounted<net::GrowableIOBuffer>()),
       bytes_to_write_(0),
-      read_closed_(false),
-      weak_factory_(this) {
+      read_closed_(false) {
   input_buffer_->SetCapacity(kBufferSize);
   ReadData();
 }
@@ -627,7 +624,7 @@ void MockAndroidConnection::SendHTTPResponse(const std::string& body) {
 
 void StartMockAdbServer(FlushMode flush_mode) {
   base::RunLoop run_loop;
-  base::PostTaskWithTraitsAndReply(
+  base::PostTaskAndReply(
       FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&StartMockAdbServerOnIOThread, flush_mode),
       run_loop.QuitClosure());
@@ -636,8 +633,8 @@ void StartMockAdbServer(FlushMode flush_mode) {
 
 void StopMockAdbServer() {
   base::RunLoop run_loop;
-  base::PostTaskWithTraitsAndReply(FROM_HERE, {BrowserThread::IO},
-                                   base::BindOnce(&StopMockAdbServerOnIOThread),
-                                   run_loop.QuitClosure());
+  base::PostTaskAndReply(FROM_HERE, {BrowserThread::IO},
+                         base::BindOnce(&StopMockAdbServerOnIOThread),
+                         run_loop.QuitClosure());
   run_loop.Run();
 }

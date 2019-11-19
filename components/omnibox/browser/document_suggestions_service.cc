@@ -9,20 +9,19 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/i18n/rtl.h"
 #include "base/json/json_writer.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/strings/stringprintf.h"
 #include "base/values.h"
-#include "components/data_use_measurement/core/data_use_user_data.h"
 #include "components/omnibox/browser/document_provider.h"
-#include "components/omnibox/browser/omnibox_field_trial.h"
-#include "components/search_engines/template_url_service.h"
+#include "components/omnibox/common/omnibox_features.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
+#include "components/variations/net/variations_http_headers.h"
 #include "components/variations/variations_associated_data.h"
 #include "net/base/load_flags.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "services/identity/public/cpp/identity_manager.h"
-#include "services/identity/public/cpp/primary_account_access_token_fetcher.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/resource_response.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -30,28 +29,33 @@
 
 namespace {
 
-// Builds a document search request body. Inputs are:
-//   |query|: Current query text.
+// Builds a document search request body. Inputs that affect the request are:
+//   |query|: Current omnibox query text, passed as an argument.
+//   |locale|: Current browser locale as BCP-47, obtained inside the function.
 // The format of the request is:
 //     {
-//       query: "the search text",
+//       query: "|query|",
 //       start: 0,
 //       pageSize: 10,
-//       sourceOptions: [{source: {predefinedSource: "GOOGLE_DRIVE"}}]
+//       requestOptions: {
+//            searchApplicationId: "searchapplications/chrome",
+//            languageCode: "|locale|",
+//       }
 //     }
 std::string BuildDocumentSuggestionRequest(const base::string16& query) {
   base::Value root(base::Value::Type::DICTIONARY);
   root.SetKey("query", base::Value(query));
+  // The API supports pagination. We're always concerned with the first N
+  // results on the first page.
   root.SetKey("start", base::Value(0));
   root.SetKey("pageSize", base::Value(10));
 
-  base::Value::ListStorage storage_options_list;
-  base::Value source_definition(base::Value::Type::DICTIONARY);
-  source_definition.SetPath({"source", "predefinedSource"},
-                            base::Value("GOOGLE_DRIVE"));
-  storage_options_list.emplace_back(std::move(source_definition));
-  root.SetKey("dataSourceRestrictions",
-              base::Value(std::move(storage_options_list)));
+  base::Value request_options(base::Value::Type::DICTIONARY);
+  request_options.SetKey("searchApplicationId",
+                         base::Value("searchapplications/chrome"));
+  request_options.SetKey("languageCode",
+                         base::Value(base::i18n::GetConfiguredLocale()));
+  root.SetKey("requestOptions", std::move(request_options));
 
   std::string result;
   base::JSONWriter::Write(root, &result);
@@ -61,7 +65,7 @@ std::string BuildDocumentSuggestionRequest(const base::string16& query) {
 }  // namespace
 
 DocumentSuggestionsService::DocumentSuggestionsService(
-    identity::IdentityManager* identity_manager,
+    signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : url_loader_factory_(url_loader_factory),
       identity_manager_(identity_manager),
@@ -73,7 +77,7 @@ DocumentSuggestionsService::~DocumentSuggestionsService() {}
 
 void DocumentSuggestionsService::CreateDocumentSuggestionsRequest(
     const base::string16& query,
-    const TemplateURLService* template_url_service,
+    bool is_incognito,
     StartCallback start_callback,
     CompletionCallback completion_callback) {
   std::string endpoint = base::GetFieldTrialParamValueByFeature(
@@ -112,25 +116,30 @@ void DocumentSuggestionsService::CreateDocumentSuggestionsRequest(
   request->method = "POST";
   std::string request_body = BuildDocumentSuggestionRequest(query);
   request->load_flags = net::LOAD_DO_NOT_SAVE_COOKIES;
-  // TODO(https://crbug.com/808498) re-add data use measurement once
-  // SimpleURLLoader supports it.
-  // We should attach data_use_measurement::DataUseUserData::OMNIBOX.
+  // It is expected that the user is signed in here. But we only care about
+  // experiment IDs from the variations server, which do not require the
+  // signed-in version of this method.
+  variations::AppendVariationsHeaderUnknownSignedIn(
+      request->url,
+      is_incognito ? variations::InIncognito::kYes
+                   : variations::InIncognito::kNo,
+      request.get());
 
   // Create and fetch an OAuth2 token.
   std::string scope = "https://www.googleapis.com/auth/cloud_search.query";
   identity::ScopeSet scopes;
   scopes.insert(scope);
-  token_fetcher_ = std::make_unique<identity::PrimaryAccountAccessTokenFetcher>(
+  token_fetcher_ = std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
       "document_suggestions_service", identity_manager_, scopes,
       base::BindOnce(&DocumentSuggestionsService::AccessTokenAvailable,
                      base::Unretained(this), std::move(request),
                      std::move(request_body), traffic_annotation,
                      std::move(start_callback), std::move(completion_callback)),
-      identity::PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable);
+      signin::PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable);
 }
 
 void DocumentSuggestionsService::StopCreatingDocumentSuggestionsRequest() {
-  std::unique_ptr<identity::PrimaryAccountAccessTokenFetcher>
+  std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
       token_fetcher_deleter(std::move(token_fetcher_));
 }
 
@@ -141,7 +150,7 @@ void DocumentSuggestionsService::AccessTokenAvailable(
     StartCallback start_callback,
     CompletionCallback completion_callback,
     GoogleServiceAuthError error,
-    identity::AccessTokenInfo access_token_info) {
+    signin::AccessTokenInfo access_token_info) {
   DCHECK(token_fetcher_);
   token_fetcher_.reset();
 

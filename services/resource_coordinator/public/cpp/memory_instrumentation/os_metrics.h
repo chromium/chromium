@@ -65,6 +65,9 @@ class COMPONENT_EXPORT(
       const size_t end_address,
       std::vector<uint8_t>* accessed_pages_bitmap);
 
+  // TODO(chiniforooshan): move to /base/process/process_metrics_linux.cc after
+  // making sure that peak RSS is useful.
+  static size_t GetPeakResidentSetSize(base::ProcessId pid);
 #endif  // defined(OS_LINUX) || defined(OS_ANDROID)
 };
 

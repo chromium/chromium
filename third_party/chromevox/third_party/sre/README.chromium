@@ -1,0 +1,16 @@
+Name: Speech Rule Engine
+URL: https://github.com/zorkow/speech-rule-engine
+Version: 2.3.0-beta
+License: Apache 2.0
+
+Description:
+Speech rule engine (SRE) can translate XML expressions into speech strings
+according to rules that can be specified in a syntax using Xpath expressions.
+It was originally designed for translation of MathML and MathJax DOM elements
+for the ChromeVox screen reader.  Besides the rules originally designed for the
+use in ChromeVox, it also has an implemententation of the full set of Mathspeak
+rules. In addition it contains a library for semantic interpretation and
+enrichment of MathML expressions.
+
+Local Modifications:
+The lone js file is the packed browser version of SRE.

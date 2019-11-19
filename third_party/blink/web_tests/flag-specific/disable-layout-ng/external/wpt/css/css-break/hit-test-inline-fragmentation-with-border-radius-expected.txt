@@ -1,0 +1,52 @@
+This is a testharness.js-based test.
+PASS Horizontal line 1, hit test outside top-left rounded corner
+PASS Horizontal line 1, hit test inside top-left rounded corner
+PASS Horizontal line 1, hit test outside bottom-left rounded corner
+PASS Horizontal line 1, hit test inside bottom-left rounded corner
+PASS Horizontal line 1, hit test inside top-right right-angled corner
+PASS Horizontal line 1, hit test inside bottom-right right-angled corner
+PASS Horizontal line 2, hit test outside top-right rounded corner
+PASS Horizontal line 2, hit test inside top-right rounded corner
+PASS Horizontal line 2, hit test outside bottom-right rounded corner
+PASS Horizontal line 2, hit test inside bottom-right rounded corner
+PASS Horizontal line 2, hit test inside top-left right-angled corner
+PASS Horizontal line 2, hit test inside bottom-left right-angled corner
+PASS Vertical LR line 1, hit test outside top-left rounded corner
+PASS Vertical LR line 1, hit test inside top-left rounded corner
+PASS Vertical LR line 1, hit test outside top-right rounded corner
+PASS Vertical LR line 1, hit test inside top-right rounded corner
+FAIL Vertical LR line 1, hit test inside bottom-left right-angled corner assert_equals: expected Element node <span id="vertical-lr" class="round">FOO<br>BAR</span> but got Element node <div style="writing-mode:vertical-lr">
+<span id="vertical...
+FAIL Vertical LR line 1, hit test inside bottom-right right-angled corner assert_equals: expected Element node <span id="vertical-lr" class="round">FOO<br>BAR</span> but got Element node <div style="writing-mode:vertical-lr">
+<span id="vertical...
+PASS Vertical LR line 2, hit test outside bottom-left rounded corner
+FAIL Vertical LR line 2, hit test inside bottom-left rounded corner assert_equals: expected Element node <span id="vertical-lr" class="round">FOO<br>BAR</span> but got Element node <div style="writing-mode:vertical-lr">
+<span id="vertical...
+PASS Vertical LR line 2, hit test outside bottom-right rounded corner
+FAIL Vertical LR line 2, hit test inside bottom-right rounded corner assert_equals: expected Element node <span id="vertical-lr" class="round">FOO<br>BAR</span> but got Element node <div style="writing-mode:vertical-lr">
+<span id="vertical...
+FAIL Vertical LR line 2, hit test inside top-left right-angled corner assert_equals: expected Element node <span id="vertical-lr" class="round">FOO<br>BAR</span> but got Element node <div style="writing-mode:vertical-lr">
+<span id="vertical...
+FAIL Vertical LR line 2, hit test inside top-right right-angled corner assert_equals: expected Element node <span id="vertical-lr" class="round">FOO<br>BAR</span> but got Element node <div style="writing-mode:vertical-lr">
+<span id="vertical...
+PASS Vertical RL line 1, hit test outside top-left rounded corner
+PASS Vertical RL line 1, hit test inside top-left rounded corner
+PASS Vertical RL line 1, hit test outside top-right rounded corner
+FAIL Vertical RL line 1, hit test inside top-right rounded corner assert_equals: expected Element node <span id="vertical-rl" class="round">FOO<br>BAR</span> but got Element node <div style="writing-mode:vertical-rl">
+<span id="vertical...
+FAIL Vertical RL line 1, hit test inside bottom-left right-angled corner assert_equals: expected Element node <span id="vertical-rl" class="round">FOO<br>BAR</span> but got Element node <div style="writing-mode:vertical-rl">
+<span id="vertical...
+FAIL Vertical RL line 1, hit test inside bottom-right right-angled corner assert_equals: expected Element node <span id="vertical-rl" class="round">FOO<br>BAR</span> but got Element node <div style="writing-mode:vertical-rl">
+<span id="vertical...
+PASS Vertical RL line 2, hit test outside bottom-left rounded corner
+FAIL Vertical RL line 2, hit test inside bottom-left rounded corner assert_equals: expected Element node <span id="vertical-rl" class="round">FOO<br>BAR</span> but got Element node <div style="writing-mode:vertical-rl">
+<span id="vertical...
+PASS Vertical RL line 2, hit test outside bottom-right rounded corner
+FAIL Vertical RL line 2, hit test inside bottom-right rounded corner assert_equals: expected Element node <span id="vertical-rl" class="round">FOO<br>BAR</span> but got Element node <div style="writing-mode:vertical-rl">
+<span id="vertical...
+FAIL Vertical RL line 2, hit test inside top-left right-angled corner assert_equals: expected Element node <span id="vertical-rl" class="round">FOO<br>BAR</span> but got Element node <div style="writing-mode:vertical-rl">
+<span id="vertical...
+FAIL Vertical RL line 2, hit test inside top-right right-angled corner assert_equals: expected Element node <span id="vertical-rl" class="round">FOO<br>BAR</span> but got Element node <div style="writing-mode:vertical-rl">
+<span id="vertical...
+Harness: the test ran to completion.
+

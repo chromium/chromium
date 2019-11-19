@@ -1,0 +1,41 @@
+<!doctype HTML>
+<html class="reftest-wait">
+<meta charset="utf8">
+<title>Display Locking: fieldset with legend and size containment, sized by display lock</title>
+<link rel="author" title="Vladimir Levin" href="mailto:vmpstr@chromium.org">
+<link rel="help" href="https://github.com/WICG/display-locking">
+<link rel="match" href="contain-size-fieldset-ref.html">
+<script src="/common/reftest-wait.js"></script>
+<script src="../resources/utils.js"></script>
+
+<style>
+#border {
+  border: 1px solid black;
+  width: min-content;
+}
+#container {
+  intrinsic-size: 123px 234px;
+}
+*:not([rendersubtree~="invisible"]) {
+  intrinsic-size: legacy !important;
+}
+</style>
+
+<div id="border">
+  <fieldset id="container">
+    <legend>This is a legend</legend>
+    This is some content.
+  </fieldset>
+</div>
+
+<script>
+async function runTest() {
+  const container = document.getElementById("container");
+  await setInvisible(container);
+  takeScreenshot();
+}
+
+window.onload = requestAnimationFrame(() => requestAnimationFrame(runTest));
+</script>
+
+</html>

@@ -51,7 +51,7 @@
 
   async function uiSourceCodeScriptFormatted() {
     TestRunner.addResult('pretty printed location: ' + link.textContent);
-    var formattedContent = await Sources.sourceFormatter._formattedSourceCodes.get(uiSourceCode).formatData.formattedSourceCode.requestContent();
+    var formattedContent = (await Sources.sourceFormatter._formattedSourceCodes.get(uiSourceCode).formatData.formattedSourceCode.requestContent()).content;
     TestRunner.addResult('pretty printed content:');
     TestRunner.addResult(formattedContent);
     Sources.sourceFormatter.discardFormattedUISourceCode(UI.panels.sources.visibleView.uiSourceCode());

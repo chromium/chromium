@@ -44,12 +44,14 @@ METADATA_ELF_ARCHITECTURE = 'elf_arch'  # "Machine" field from readelf -h
 METADATA_ELF_FILENAME = 'elf_file_name'  # Path relative to output_directory.
 METADATA_ELF_MTIME = 'elf_mtime'  # int timestamp in utc.
 METADATA_ELF_BUILD_ID = 'elf_build_id'
+METADATA_ELF_RELOCATIONS_COUNT = 'elf_relocations_count'
 METADATA_GN_ARGS = 'gn_args'
 METADATA_LINKER_NAME = 'linker_name'
 METADATA_TOOL_PREFIX = 'tool_prefix'  # Path relative to SRC_ROOT.
 
 # New sections should also be added to the SuperSize UI.
 SECTION_BSS = '.bss'
+SECTION_BSS_REL_RO = '.bss.rel.ro'
 SECTION_DATA = '.data'
 SECTION_DATA_REL_RO = '.data.rel.ro'
 SECTION_DATA_REL_RO_LOCAL = '.data.rel.ro.local'
@@ -58,6 +60,7 @@ SECTION_DEX_METHOD = '.dex.method'
 SECTION_OTHER = '.other'
 SECTION_PAK_NONTRANSLATED = '.pak.nontranslated'
 SECTION_PAK_TRANSLATIONS = '.pak.translations'
+SECTION_PART_END = '.part.end'
 SECTION_RODATA = '.rodata'
 SECTION_TEXT = '.text'
 # Used by SymbolGroup when they contain a mix of sections.
@@ -71,11 +74,18 @@ DEX_SECTIONS = (
 )
 NATIVE_SECTIONS = (
     SECTION_BSS,
+    SECTION_BSS_REL_RO,
     SECTION_DATA,
     SECTION_DATA_REL_RO,
     SECTION_DATA_REL_RO_LOCAL,
+    SECTION_PART_END,
     SECTION_RODATA,
     SECTION_TEXT,
+)
+BSS_SECTIONS = (
+    SECTION_BSS,
+    SECTION_BSS_REL_RO,
+    SECTION_PART_END,
 )
 PAK_SECTIONS = (
     SECTION_PAK_NONTRANSLATED,
@@ -84,12 +94,14 @@ PAK_SECTIONS = (
 
 SECTION_NAME_TO_SECTION = {
     SECTION_BSS: 'b',
+    SECTION_BSS_REL_RO: 'b',
     SECTION_DATA: 'd',
     SECTION_DATA_REL_RO_LOCAL: 'R',
     SECTION_DATA_REL_RO: 'R',
     SECTION_DEX: 'x',
     SECTION_DEX_METHOD: 'm',
     SECTION_OTHER: 'o',
+    SECTION_PART_END: 'b',
     SECTION_PAK_NONTRANSLATED: 'P',
     SECTION_PAK_TRANSLATIONS: 'p',
     SECTION_RODATA: 'r',
@@ -156,7 +168,6 @@ DIFF_COUNT_DELTA = [0, 0, 1, -1]
 
 
 STRING_LITERAL_NAME = 'string literal'
-
 
 class BaseSizeInfo(object):
   """Base class for SizeInfo and DeltaSizeInfo.
@@ -320,7 +331,7 @@ class BaseSymbol(object):
     return '{%s}' % ','.join(parts)
 
   def IsBss(self):
-    return self.section_name == SECTION_BSS
+    return self.section_name in BSS_SECTIONS
 
   def IsDex(self):
     return self.section_name in DEX_SECTIONS
@@ -348,7 +359,18 @@ class BaseSymbol(object):
         self.name.endswith(']') and not self.name.endswith('[]'))
 
   def IsStringLiteral(self):
-    return self.full_name == STRING_LITERAL_NAME
+    # String literals have names like "string" or "very_long_str[...]", while
+    # non-ASCII strings are named STRING_LITERAL_NAME.
+    return self.full_name.startswith(
+        '"') or self.full_name == STRING_LITERAL_NAME
+
+  # Used for diffs to know whether or not it is accurate to consider two symbols
+  # with the same name as being the same.
+  def IsNameUnique(self):
+    return not (self.IsStringLiteral() or  # "string literal"
+                self.IsOverhead() or  # "Overhead: APK File"
+                self.full_name.startswith('*') or  # "** outlined symbol"
+                (self.IsNative() and '.' in self.full_name))  # ".L__unnamed_11"
 
   def IterLeafSymbols(self):
     yield self
@@ -399,6 +421,12 @@ class Symbol(BaseSymbol):
         self.section_name, self.address, self.size_without_padding,
         self.padding, self.full_name, self.object_path, self.source_path,
         self.FlagsString(), self.num_aliases, self.component)
+
+  def SetName(self, full_name, template_name=None, name=None):
+    # Note that _NormalizeNames() will clobber these values.
+    self.full_name = full_name
+    self.template_name = full_name if template_name is None else template_name
+    self.name = full_name if name is None else name
 
   @property
   def pss(self):
@@ -645,8 +673,10 @@ class SymbolGroup(BaseSymbol):
 
   @property
   def flags(self):
-    first = self._symbols[0].flags if self else 0
-    return first if all(s.flags == first for s in self._symbols) else 0
+    ret = 0
+    for s in self._symbols:
+      ret |= s.flags
+    return ret
 
   @property
   def object_path(self):
@@ -802,6 +832,9 @@ class SymbolGroup(BaseSymbol):
 
   def WhereIsTemplate(self):
     return self.Filter(lambda s: s.template_name is not s.name)
+
+  def WhereHasFlag(self, flag):
+    return self.Filter(lambda s: s.flags & flag)
 
   def WhereHasComponent(self):
     return self.Filter(lambda s: s.component)
@@ -1123,7 +1156,7 @@ class DeltaSymbolGroup(SymbolGroup):
     ret = [0, 0, 0, 0]
     for sym in self:
       ret[sym.diff_status] += 1
-    return ret
+    return tuple(ret)
 
   def CountUniqueSymbols(self):
     """Returns (num_unique_before_symbols, num_unique_after_symbols)."""

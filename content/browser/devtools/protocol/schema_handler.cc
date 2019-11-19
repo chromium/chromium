@@ -34,12 +34,10 @@ Response SchemaHandler::GetDomains(
       "Log",           "Runtime",    "Debugger",      "Profiler",
       "HeapProfiler",  "Schema",     "Target",        "Overlay",
       "Performance",   "Audits",     "HeadlessExperimental"};
-  *domains = protocol::Array<Schema::Domain>::create();
-  for (size_t i = 0; i < base::size(kDomains); ++i) {
-    (*domains)->addItem(Schema::Domain::Create()
-        .SetName(kDomains[i])
-        .SetVersion(kVersion)
-        .Build());
+  *domains = std::make_unique<protocol::Array<Schema::Domain>>();
+  for (const char* domain : kDomains) {
+    (*domains)->emplace_back(
+        Schema::Domain::Create().SetName(domain).SetVersion(kVersion).Build());
   }
   return Response::OK();
 }

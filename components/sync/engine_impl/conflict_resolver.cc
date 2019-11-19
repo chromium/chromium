@@ -7,11 +7,11 @@
 #include <string>
 
 #include "base/metrics/histogram_macros.h"
-#include "components/sync/base/cryptographer.h"
 #include "components/sync/engine/cycle/update_counters.h"
 #include "components/sync/engine_impl/conflict_util.h"
 #include "components/sync/engine_impl/cycle/status_controller.h"
 #include "components/sync/engine_impl/syncer_util.h"
+#include "components/sync/nigori/cryptographer.h"
 #include "components/sync/syncable/directory.h"
 #include "components/sync/syncable/mutable_entry.h"
 #include "components/sync/syncable/syncable_write_transaction.h"
@@ -20,10 +20,20 @@ using std::set;
 
 namespace syncer {
 
+namespace {
+
 using syncable::Directory;
 using syncable::Entry;
 using syncable::Id;
 using syncable::MutableEntry;
+
+bool CanDecryptUsingDefaultKey(const Cryptographer& cryptographer,
+                               const sync_pb::EncryptedData& encrypted) {
+  return !encrypted.key_name().empty() &&
+         encrypted.key_name() == cryptographer.GetDefaultEncryptionKeyName();
+}
+
+}  // namespace
 
 ConflictResolver::ConflictResolver() {}
 
@@ -112,7 +122,7 @@ void ConflictResolver::ProcessSimpleConflict(syncable::WriteTransaction* trans,
     bool specifics_match = false;
     bool server_encrypted_with_default_key = false;
     if (specifics.has_encrypted()) {
-      DCHECK(cryptographer->CanDecryptUsingDefaultKey(specifics.encrypted()));
+      DCHECK(CanDecryptUsingDefaultKey(*cryptographer, specifics.encrypted()));
       // TODO(crbug.com/908391): what if the decryption below fails?
       cryptographer->DecryptToString(specifics.encrypted(),
                                      &decrypted_specifics);
@@ -120,9 +130,8 @@ void ConflictResolver::ProcessSimpleConflict(syncable::WriteTransaction* trans,
       decrypted_specifics = specifics.SerializeAsString();
     }
     if (server_specifics.has_encrypted()) {
-      server_encrypted_with_default_key =
-          cryptographer->CanDecryptUsingDefaultKey(
-              server_specifics.encrypted());
+      server_encrypted_with_default_key = CanDecryptUsingDefaultKey(
+          *cryptographer, server_specifics.encrypted());
       // TODO(crbug.com/908391): what if the decryption below fails?
       cryptographer->DecryptToString(server_specifics.encrypted(),
                                      &decrypted_server_specifics);

@@ -15,7 +15,11 @@
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
 
+namespace base {
+class SequencedTaskRunner;
+}
 namespace gfx {
+class Animation;
 class Point;
 }
 namespace views {
@@ -54,6 +58,12 @@ class StatusBubbleViews : public StatusBubble {
   // Set bubble to new width.
   void SetBubbleWidth(int width);
 
+  // Gets the width that a bubble should be for a given string
+  int GetWidthForURL(const base::string16& url_string);
+
+  // Notifies the bubble's popup that browser's theme is changed.
+  void OnThemeChanged();
+
   // Overridden from StatusBubble:
   void SetStatus(const base::string16& status) override;
   void SetURL(const GURL& url) override;
@@ -69,14 +79,18 @@ class StatusBubbleViews : public StatusBubble {
   void MouseMovedAt(const gfx::Point& location, bool left_content);
 
  private:
-  friend class StatusBubbleViewsTest;
-
   class StatusView;
   class StatusViewAnimation;
   class StatusViewExpander;
 
+  friend class StatusBubbleViewsTest;
+  friend class StatusView;
+
   // Initializes the popup and view.
-  void Init();
+  void InitPopup();
+
+  // Destroys the popup and view.
+  void DestroyPopup();
 
   // Attempt to move the status bubble out of the way of the cursor, allowing
   // users to see links in the region normally occupied by the status bubble.
@@ -104,6 +118,9 @@ class StatusBubbleViews : public StatusBubble {
   // Set the bounds of the bubble relative to |base_view_|.
   void SetBounds(int x, int y, int w, int h);
 
+  gfx::Animation* GetShowHideAnimationForTest();
+  bool IsDestroyPopupTimerRunningForTest();
+
   // The status text we want to display when there are no URLs to display.
   base::string16 status_text_;
 
@@ -123,30 +140,35 @@ class StatusBubbleViews : public StatusBubble {
   gfx::Point last_mouse_moved_location_;
 
   // Whether the view contains the mouse.
-  bool contains_mouse_;
+  bool contains_mouse_ = false;
 
   // How vertically offset the bubble is from its root position_.
-  int offset_;
+  int offset_ = 0;
 
-  // We use a HWND for the popup so that it may float above any HWNDs in our
-  // UI (the location bar, for example).
+  // Use a Widget for the popup so that it floats above all content as well as
+  // going outside the bounds of the hosting widget.
   std::unique_ptr<views::Widget> popup_;
 
   views::View* base_view_;
-  StatusView* view_;
+  StatusView* view_ = nullptr;
 
   // Manages the expansion of a status bubble to fit a long URL.
   std::unique_ptr<StatusViewExpander> expand_view_;
 
   // If the download shelf is visible, do not obscure it.
-  bool download_shelf_is_visible_;
+  bool download_shelf_is_visible_ = false;
 
   // If the bubble has already been expanded, and encounters a new URL,
   // change size immediately, with no hover.
-  bool is_expanded_;
+  bool is_expanded_ = false;
+
+  // Used for posting tasks. This is typically
+  // base::ThreadTaskRunnerHandle::Get(), but may be set to something else for
+  // tests.
+  base::SequencedTaskRunner* task_runner_;
 
   // Times expansion of status bubble when URL is too long for standard width.
-  base::WeakPtrFactory<StatusBubbleViews> expand_timer_factory_;
+  base::WeakPtrFactory<StatusBubbleViews> expand_timer_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(StatusBubbleViews);
 };

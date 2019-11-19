@@ -86,6 +86,20 @@ TEST_F(PasswordManagerPasswordBubbleExperimentTest,
   }
 }
 
+TEST_F(PasswordManagerPasswordBubbleExperimentTest, ReviveSignInPasswordPromo) {
+  sync_service()->SetDisableReasons(syncer::SyncService::DISABLE_REASON_NONE);
+  sync_service()->SetFirstSetupComplete(false);
+  sync_service()->SetTransportState(
+      syncer::SyncService::TransportState::PENDING_DESIRED_CONFIGURATION);
+  prefs()->SetBoolean(password_manager::prefs::kWasSignInPasswordPromoClicked,
+                      true);
+  prefs()->SetInteger(password_manager::prefs::kNumberSignInPasswordPromoShown,
+                      10);
+
+  // The state is to be reset.
+  EXPECT_TRUE(ShouldShowChromeSignInPasswordPromo(prefs(), sync_service()));
+}
+
 TEST_F(PasswordManagerPasswordBubbleExperimentTest, IsSmartLockUser) {
   constexpr struct {
     syncer::ModelType type;

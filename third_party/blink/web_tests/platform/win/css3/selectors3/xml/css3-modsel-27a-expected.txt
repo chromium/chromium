@@ -1,7 +1,0 @@
-layer at (0,0) size 800x600
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 800x50
-  LayoutBlockFlow {test} at (0,0) size 800x50
-    LayoutBlockFlow {p} at (0,16) size 800x18 [color=#008000]
-      LayoutText {#text} at (0,0) size 404x17
-        text run at (0,0) width 404: "This line should be green (there should be no red on this page)."

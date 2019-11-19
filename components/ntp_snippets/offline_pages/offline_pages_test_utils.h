@@ -5,8 +5,12 @@
 #ifndef COMPONENTS_NTP_SNIPPETS_OFFLINE_PAGES_OFFLINE_PAGES_TEST_UTILS_H_
 #define COMPONENTS_NTP_SNIPPETS_OFFLINE_PAGES_OFFLINE_PAGES_TEST_UTILS_H_
 
+#include <string>
+#include <vector>
+
 #include "components/ntp_snippets/content_suggestion.h"
 #include "components/offline_pages/core/offline_page_item.h"
+#include "components/offline_pages/core/page_criteria.h"
 #include "components/offline_pages/core/stub_offline_page_model.h"
 
 namespace ntp_snippets {
@@ -17,14 +21,11 @@ class FakeOfflinePageModel : public offline_pages::StubOfflinePageModel {
   FakeOfflinePageModel();
   ~FakeOfflinePageModel() override;
 
-  void GetPagesByNamespace(
-      const std::string& name_space,
-      offline_pages::MultipleOfflinePageItemCallback callback) override;
-
-  void GetPagesSupportedByDownloads(
-      offline_pages::MultipleOfflinePageItemCallback callback) override;
-
   void GetAllPages(
+      offline_pages::MultipleOfflinePageItemCallback callback) override;
+
+  void GetPagesWithCriteria(
+      const offline_pages::PageCriteria& criteria,
       offline_pages::MultipleOfflinePageItemCallback callback) override;
 
   const std::vector<offline_pages::OfflinePageItem>& items();

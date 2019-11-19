@@ -17,22 +17,6 @@ cr.define('settings', function() {
     /** @return {boolean} Whether the current profile is supervised. */
     isSupervised() {}
 
-    /**
-     * @return {!Promise<boolean>} Whether the wallpaper setting row should be
-     *     visible.
-     */
-    isWallpaperSettingVisible() {}
-
-    /**
-     * @return {!Promise<boolean>} Whether the wallpaper is policy controlled.
-     */
-    isWallpaperPolicyControlled() {}
-
-    // <if expr="chromeos">
-    openWallpaperManager() {}
-
-    // </if>
-
     useDefaultTheme() {}
 
     // <if expr="is_linux and not chromeos">
@@ -69,24 +53,6 @@ cr.define('settings', function() {
     isSupervised() {
       return loadTimeData.getBoolean('isSupervised');
     }
-
-    // <if expr="chromeos">
-    /** @override */
-    isWallpaperSettingVisible() {
-      return cr.sendWithPromise('isWallpaperSettingVisible');
-    }
-
-    /** @override */
-    isWallpaperPolicyControlled() {
-      return cr.sendWithPromise('isWallpaperPolicyControlled');
-    }
-
-    /** @override */
-    openWallpaperManager() {
-      chrome.send('openWallpaperManager');
-    }
-
-    // </if>
 
     /** @override */
     useDefaultTheme() {

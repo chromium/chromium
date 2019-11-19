@@ -49,6 +49,7 @@ bundle_data("unit_tests_bundle_data") {
     "//components/test/data/crx_file/valid.crx2",
     "//components/test/data/crx_file/valid_no_publisher.crx3",
     "//components/test/data/crx_file/valid_publisher.crx3",
+    "//components/test/data/crx_file/valid_test_publisher.crx3",
   ]
   outputs = [
     "{{bundle_resources_dir}}/" +

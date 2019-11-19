@@ -38,8 +38,6 @@ class CORE_EXPORT HTMLTableRowElement final : public HTMLTablePartElement {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  DECLARE_NODE_FACTORY(HTMLTableRowElement);
-
   explicit HTMLTableRowElement(Document&);
 
   int rowIndex() const;

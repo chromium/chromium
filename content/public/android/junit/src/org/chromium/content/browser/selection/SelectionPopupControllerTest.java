@@ -6,9 +6,9 @@ package org.chromium.content.browser.selection;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -21,6 +21,7 @@ import static org.mockito.Mockito.when;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.provider.Settings;
 import android.view.ActionMode;
 import android.view.ViewGroup;
@@ -42,6 +43,7 @@ import org.chromium.content.browser.ContentClassFactory;
 import org.chromium.content.browser.GestureListenerManagerImpl;
 import org.chromium.content.browser.PopupController;
 import org.chromium.content.browser.RenderCoordinatesImpl;
+import org.chromium.content.browser.RenderWidgetHostViewImpl;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
 import org.chromium.content_public.browser.SelectionClient;
 import org.chromium.content_public.browser.SelectionMetricsLogger;
@@ -51,6 +53,8 @@ import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.touch_selection.SelectionEventType;
 
+import java.lang.ref.WeakReference;
+
 /**
  * Unit tests for {@link SelectionPopupController}.
  */
@@ -59,6 +63,7 @@ import org.chromium.ui.touch_selection.SelectionEventType;
 public class SelectionPopupControllerTest {
     private SelectionPopupControllerImpl mController;
     private Context mContext;
+    private WeakReference<Context> mWeakContext;
     private WindowAndroid mWindowAndroid;
     private WebContentsImpl mWebContents;
     private ViewGroup mView;
@@ -66,6 +71,7 @@ public class SelectionPopupControllerTest {
     private ActionMode mActionMode;
     private PackageManager mPackageManager;
     private SmartSelectionMetricsLogger mLogger;
+    private RenderWidgetHostViewImpl mRenderWidgetHostViewImpl;
     private RenderCoordinatesImpl mRenderCoordinates;
     private ContentResolver mContentResolver;
     private PopupController mPopupController;
@@ -126,17 +132,19 @@ public class SelectionPopupControllerTest {
     }
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         MockitoAnnotations.initMocks(this);
         ShadowLog.stream = System.out;
 
         mContext = Mockito.mock(Context.class);
+        mWeakContext = new WeakReference<Context>(mContext);
         mWindowAndroid = Mockito.mock(WindowAndroid.class);
         mWebContents = Mockito.mock(WebContentsImpl.class);
         mView = Mockito.mock(ViewGroup.class);
         mViewAndroidDelegate = ViewAndroidDelegate.createBasicDelegate(mView);
         mActionMode = Mockito.mock(ActionMode.class);
         mPackageManager = Mockito.mock(PackageManager.class);
+        mRenderWidgetHostViewImpl = Mockito.mock(RenderWidgetHostViewImpl.class);
         mRenderCoordinates = Mockito.mock(RenderCoordinatesImpl.class);
         mLogger = Mockito.mock(SmartSelectionMetricsLogger.class);
         mPopupController = Mockito.mock(PopupController.class);
@@ -155,19 +163,21 @@ public class SelectionPopupControllerTest {
 
         when(mContext.getPackageManager()).thenReturn(mPackageManager);
         when(mContext.getContentResolver()).thenReturn(mContentResolver);
+        when(mWebContents.getRenderWidgetHostView()).thenReturn(mRenderWidgetHostViewImpl);
         when(mWebContents.getRenderCoordinates()).thenReturn(mRenderCoordinates);
         when(mRenderCoordinates.getDeviceScaleFactor()).thenReturn(1.f);
         when(mWebContents.getViewAndroidDelegate()).thenReturn(mViewAndroidDelegate);
         when(mWebContents.getContext()).thenReturn(mContext);
         when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindowAndroid);
         when(mGestureStateListenerManager.isScrollInProgress()).thenReturn(false);
+        when(mWindowAndroid.getContext()).thenReturn(mWeakContext);
 
         mController = SelectionPopupControllerImpl.createForTesting(mWebContents, mPopupController);
         when(mController.getGestureListenerManager()).thenReturn(mGestureStateListenerManager);
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         ContentClassFactory.set(mOriginalContentClassFactory);
     }
 
@@ -443,43 +453,23 @@ public class SelectionPopupControllerTest {
     }
 
     @Test
+    @Config(sdk = Build.VERSION_CODES.O)
     @Feature({"TextInput", "SmartSelection"})
     public void testBlockSelectionClientWhenUnprovisioned() {
         // Device is not provisioned.
         Settings.Global.putInt(mContentResolver, Settings.Global.DEVICE_PROVISIONED, 0);
 
-        TestSelectionClient client = Mockito.mock(TestSelectionClient.class);
-        InOrder order = inOrder(mLogger, client);
-        mController.setSelectionClient(client);
-
-        // Long press triggered showSelectionMenu() call.
-        mController.showSelectionMenu(0, 0, 0, 0, 0, /* isEditable = */ true,
-                /* isPasswordType = */ false, AMPHITHEATRE, /* selectionOffset = */ 5,
-                /* canSelectAll = */ true,
-                /* canRichlyEdit = */ true, /* shouldSuggest = */ true,
-                MenuSourceType.MENU_SOURCE_LONG_PRESS);
-        order.verify(mLogger, never()).logSelectionStarted(anyString(), anyInt(), anyBoolean());
-        order.verify(client, never()).requestSelectionPopupUpdates(anyBoolean());
+        assertNull(SmartSelectionClient.create(mController.getResultCallback(), mWebContents));
     }
 
     @Test
+    @Config(sdk = Build.VERSION_CODES.O)
     @Feature({"TextInput", "SmartSelection"})
     public void testBlockSelectionClientWhenIncognito() {
         // Incognito.
         when(mWebContents.isIncognito()).thenReturn(true);
 
-        TestSelectionClient client = Mockito.mock(TestSelectionClient.class);
-        InOrder order = inOrder(mLogger, client);
-        mController.setSelectionClient(client);
-
-        // Long press triggered showSelectionMenu() call.
-        mController.showSelectionMenu(0, 0, 0, 0, 0, /* isEditable = */ true,
-                /* isPasswordType = */ false, AMPHITHEATRE, /* selectionOffset = */ 5,
-                /* canSelectAll = */ true,
-                /* canRichlyEdit = */ true, /* shouldSuggest = */ true,
-                MenuSourceType.MENU_SOURCE_LONG_PRESS);
-        order.verify(mLogger, never()).logSelectionStarted(anyString(), anyInt(), anyBoolean());
-        order.verify(client, never()).requestSelectionPopupUpdates(anyBoolean());
+        assertNull(SmartSelectionClient.create(mController.getResultCallback(), mWebContents));
     }
 
     @Test

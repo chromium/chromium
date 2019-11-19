@@ -121,9 +121,6 @@ class LoginDisplay {
   // signin but whitelist check fails.
   virtual void ShowWhitelistCheckFailedError() = 0;
 
-  // Show unrecoverable cryptohome error dialog.
-  virtual void ShowUnrecoverableCrypthomeErrorDialog() = 0;
-
   Delegate* delegate() { return delegate_; }
   void set_delegate(Delegate* delegate) { delegate_ = delegate; }
 

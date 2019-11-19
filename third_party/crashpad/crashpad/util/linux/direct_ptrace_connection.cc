@@ -14,16 +14,10 @@
 
 #include "util/linux/direct_ptrace_connection.h"
 
-#include <stdio.h>
-
 #include <utility>
 
-#include "base/logging.h"
-#include "base/stl_util.h"
-#include "base/strings/string_number_conversions.h"
-#include "util/file/directory_reader.h"
 #include "util/file/file_io.h"
-#include "util/misc/as_underlying_type.h"
+#include "util/linux/proc_task_reader.h"
 
 namespace crashpad {
 
@@ -90,33 +84,7 @@ ProcessMemory* DirectPtraceConnection::Memory() {
 
 bool DirectPtraceConnection::Threads(std::vector<pid_t>* threads) {
   INITIALIZATION_STATE_DCHECK_VALID(initialized_);
-  DCHECK(threads->empty());
-
-  char path[32];
-  snprintf(path, base::size(path), "/proc/%d/task", pid_);
-  DirectoryReader reader;
-  if (!reader.Open(base::FilePath(path))) {
-    return false;
-  }
-
-  std::vector<pid_t> local_threads;
-  base::FilePath tid_str;
-  DirectoryReader::Result result;
-  while ((result = reader.NextFile(&tid_str)) ==
-         DirectoryReader::Result::kSuccess) {
-    pid_t tid;
-    if (!base::StringToInt(tid_str.value(), &tid)) {
-      LOG(ERROR) << "format error";
-      continue;
-    }
-
-    local_threads.push_back(tid);
-  }
-  DCHECK_EQ(AsUnderlyingType(result),
-            AsUnderlyingType(DirectoryReader::Result::kNoMoreFiles));
-
-  threads->swap(local_threads);
-  return true;
+  return ReadThreadIDs(pid_, threads);
 }
 
 }  // namespace crashpad

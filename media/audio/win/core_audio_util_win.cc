@@ -24,6 +24,7 @@
 #include "base/win/scoped_variant.h"
 #include "base/win/windows_version.h"
 #include "media/audio/audio_device_description.h"
+#include "media/audio/audio_features.h"
 #include "media/base/media_switches.h"
 
 using Microsoft::WRL::ComPtr;
@@ -40,7 +41,7 @@ const GUID kCommunicationsSessionId = {
 
 namespace {
 
-enum { KSAUDIO_SPEAKER_UNSUPPORTED = 0 };
+constexpr uint32_t KSAUDIO_SPEAKER_UNSUPPORTED = 0xFFFFFFFF;
 
 // Used for mapping UMA histograms with corresponding source of logging.
 enum class UmaLogStep {
@@ -313,7 +314,8 @@ ChannelConfig GuessChannelConfig(WORD channels) {
 }
 
 bool IAudioClient3IsSupported() {
-  return CoreAudioUtil::GetIAudioClientVersion() >= 3;
+  return base::FeatureList::IsEnabled(features::kAllowIAudioClient3) &&
+         CoreAudioUtil::GetIAudioClientVersion() >= 3;
 }
 
 std::string GetDeviceID(IMMDevice* device) {
@@ -443,6 +445,27 @@ ComPtr<IMMDevice> CreateDeviceInternal(const std::string& device_id,
                                        ERole role,
                                        const UMALogCallback& uma_log_cb) {
   ComPtr<IMMDevice> endpoint_device;
+  // In loopback mode, a client of WASAPI can capture the audio stream that
+  // is being played by a rendering endpoint device.
+  // See https://crbug.com/956526 for why we use both a DCHECK and then deal
+  // with the error here and below.
+  DCHECK(!(AudioDeviceDescription::IsLoopbackDevice(device_id) &&
+           data_flow != eCapture));
+  if (AudioDeviceDescription::IsLoopbackDevice(device_id) &&
+      data_flow != eCapture) {
+    LOG(WARNING) << "Loopback device must be an input device";
+    return endpoint_device;
+  }
+
+  // Usage of AudioDeviceDescription::kCommunicationsDeviceId as |device_id|
+  // is not allowed. Instead, set |device_id| to kDefaultDeviceId and select
+  // between default device and default communication device by using different
+  // |role| values (eConsole or eCommunications).
+  DCHECK(!AudioDeviceDescription::IsCommunicationsDevice(device_id));
+  if (AudioDeviceDescription::IsCommunicationsDevice(device_id)) {
+    LOG(WARNING) << "Invalid device identifier";
+    return endpoint_device;
+  }
 
   // Create the IMMDeviceEnumerator interface.
   ComPtr<IMMDeviceEnumerator> device_enum(
@@ -452,11 +475,15 @@ ComPtr<IMMDevice> CreateDeviceInternal(const std::string& device_id,
 
   HRESULT hr;
   if (AudioDeviceDescription::IsDefaultDevice(device_id)) {
-    hr = device_enum->GetDefaultAudioEndpoint(data_flow, role,
-                                              endpoint_device.GetAddressOf());
+    hr =
+        device_enum->GetDefaultAudioEndpoint(data_flow, role, &endpoint_device);
+  } else if (AudioDeviceDescription::IsLoopbackDevice(device_id)) {
+    // To open a stream in loopback mode, the client must obtain an IMMDevice
+    // interface for the *rendering* endpoint device.
+    hr = device_enum->GetDefaultAudioEndpoint(eRender, role, &endpoint_device);
   } else {
     hr = device_enum->GetDevice(base::UTF8ToUTF16(device_id).c_str(),
-                                endpoint_device.GetAddressOf());
+                                &endpoint_device);
   }
   DVLOG_IF(1, FAILED(hr)) << "Create Device failed: " << std::hex << hr;
 
@@ -589,27 +616,38 @@ HRESULT GetPreferredAudioParametersInternal(IAudioClient* client,
     DVLOG(1) << "IAudioClient => frames_per_buffer: " << frames_per_buffer;
   }
 
+  // Retrieve the current channel configuration (e.g. CHANNEL_LAYOUT_STEREO).
   ChannelLayout channel_layout = GetChannelLayout(format);
+
   AudioParameters audio_params(
       AudioParameters::AUDIO_PCM_LOW_LATENCY, channel_layout, sample_rate,
       frames_per_buffer,
       AudioParameters::HardwareCapabilities(min_frames_per_buffer,
                                             max_frames_per_buffer));
-  // Set the number of channels explicitly to two for input devices if
-  // the channel layout is discrete to ensure that the parameters are valid
-  // and that clients does not have to support multi-channel input cases.
-  // Any required down-mixing from N (N > 2) to 2 must be performed by the
-  // input stream implementation instead.
-  // See https://crbug/868026 for examples where this approach is needed.
-  if (!is_output_device &&
-      audio_params.channel_layout() == CHANNEL_LAYOUT_DISCRETE) {
-    DLOG(WARNING)
-        << "Forcing number of channels to 2 for CHANNEL_LAYOUT_DISCRETE";
-    audio_params.set_channels_for_discrete(2);
+
+  if (audio_params.channel_layout() == CHANNEL_LAYOUT_DISCRETE) {
+    if (!is_output_device) {
+      // Set the number of channels explicitly to two for input devices if
+      // the channel layout is discrete to ensure that the parameters are valid
+      // and that clients does not have to support multi-channel input cases.
+      // Any required down-mixing from N (N > 2) to 2 must be performed by the
+      // input stream implementation instead.
+      // See crbug.com/868026 for examples where this approach is needed.
+      DVLOG(1) << "Forcing number of channels to 2 for CHANNEL_LAYOUT_DISCRETE";
+      audio_params.set_channels_for_discrete(2);
+    } else {
+      // Some output devices return CHANNEL_LAYOUT_DISCRETE. Keep this channel
+      // format but update the number of channels with the correct value. The
+      // number of channels will be zero otherwise.
+      // See crbug.com/957886 for more details.
+      DVLOG(1) << "Setting number of channels to " << format->nChannels
+               << " for CHANNEL_LAYOUT_DISCRETE";
+      audio_params.set_channels_for_discrete(format->nChannels);
+    }
   }
+  DVLOG(1) << audio_params.AsHumanReadableString();
   DCHECK(audio_params.IsValid());
   *params = audio_params;
-  DVLOG(1) << params->AsHumanReadableString();
 
   return hr;
 }
@@ -681,11 +719,11 @@ base::TimeDelta CoreAudioUtil::ReferenceTimeToTimeDelta(REFERENCE_TIME time) {
 }
 
 uint32_t CoreAudioUtil::GetIAudioClientVersion() {
-  if (base::win::GetVersion() >= base::win::VERSION_WIN10) {
+  if (base::win::GetVersion() >= base::win::Version::WIN10) {
     // Minimum supported client: Windows 10.
     // Minimum supported server: Windows Server 2016
     return 3;
-  } else if (base::win::GetVersion() >= base::win::VERSION_WIN8) {
+  } else if (base::win::GetVersion() >= base::win::Version::WIN8) {
     // Minimum supported client: Windows 8.
     // Minimum supported server: Windows Server 2012.
     return 2;
@@ -1063,6 +1101,15 @@ HRESULT CoreAudioUtil::GetPreferredAudioParameters(const std::string& device_id,
   UMALogCallback uma_log_cb(
       is_output_device ? base::BindRepeating(&LogUMAPreferredOutputParams)
                        : base::BindRepeating(&LogUMAEmptyCb));
+
+  // Loopback audio streams must be input streams.
+  DCHECK(!(AudioDeviceDescription::IsLoopbackDevice(device_id) &&
+           is_output_device));
+  if (AudioDeviceDescription::IsLoopbackDevice(device_id) && is_output_device) {
+    LOG(WARNING) << "Loopback device must be an input device";
+    return E_FAIL;
+  }
+
   ComPtr<IMMDevice> device(
       CreateDeviceByID(device_id, is_output_device, uma_log_cb));
   if (!device.Get())
@@ -1096,7 +1143,10 @@ HRESULT CoreAudioUtil::GetPreferredAudioParameters(const std::string& device_id,
 
 ChannelConfig CoreAudioUtil::GetChannelConfig(const std::string& device_id,
                                               EDataFlow data_flow) {
-  ComPtr<IAudioClient> client(CreateClient(device_id, data_flow, eConsole));
+  const ERole role = AudioDeviceDescription::IsCommunicationsDevice(device_id)
+                         ? eCommunications
+                         : eConsole;
+  ComPtr<IAudioClient> client(CreateClient(device_id, data_flow, role));
 
   WAVEFORMATEXTENSIBLE mix_format;
   if (!client.Get() ||

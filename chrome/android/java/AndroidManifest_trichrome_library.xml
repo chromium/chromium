@@ -12,14 +12,13 @@ Note: This is a jinja2 template, processed at build time into the final manifest
     package="{{ manifest_package }}"
     tools:ignore="MissingVersion,MissingLeanbackLauncher">
 
-    <uses-sdk android:minSdkVersion="{{min_sdk_version}}" android:targetSdkVersion="{{target_sdk_version}}" />
     <uses-feature android:glEsVersion="0x00020000" />
     <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
     <uses-feature android:name="android.software.leanback" android:required="false" />
 
     <!-- TODO(torne): we should specify an icon, roundIcon, and label from resources. -->
     <application
-        android:label="Trichrome Library"
+        android:label="{{ application_label|default('Trichrome Library') }}"
         android:icon="@drawable/icon_webview"
         android:multiArch="true"
         android:extractNativeLibs="false">

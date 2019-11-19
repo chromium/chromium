@@ -6,15 +6,9 @@
 
 #include "base/memory/singleton.h"
 #include "build/build_config.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "chrome/browser/profiles/profile_key.h"
+#include "components/keyed_service/core/simple_dependency_manager.h"
 #include "components/offline_items_collection/core/offline_content_aggregator.h"
-#include "content/public/browser/browser_context.h"
-
-#if defined(OS_ANDROID)
-static offline_items_collection::OfflineContentAggregator*
-    g_offline_content_aggregator = nullptr;
-#endif
 
 // static
 OfflineContentAggregatorFactory*
@@ -24,35 +18,27 @@ OfflineContentAggregatorFactory::GetInstance() {
 
 // static
 offline_items_collection::OfflineContentAggregator*
-OfflineContentAggregatorFactory::GetForBrowserContext(
-    content::BrowserContext* context) {
-#if defined(OS_ANDROID)
-  if (!g_offline_content_aggregator) {
-    g_offline_content_aggregator =
-        new offline_items_collection::OfflineContentAggregator();
-  }
-  return g_offline_content_aggregator;
-#else
+OfflineContentAggregatorFactory::GetForKey(SimpleFactoryKey* key) {
   return static_cast<offline_items_collection::OfflineContentAggregator*>(
-      GetInstance()->GetServiceForBrowserContext(context, true));
-#endif
+      GetInstance()->GetServiceForKey(key, true));
 }
 
 OfflineContentAggregatorFactory::OfflineContentAggregatorFactory()
-    : BrowserContextKeyedServiceFactory(
+    : SimpleKeyedServiceFactory(
           "offline_items_collection::OfflineContentAggregator",
-          BrowserContextDependencyManager::GetInstance()) {}
+          SimpleDependencyManager::GetInstance()) {}
 
 OfflineContentAggregatorFactory::~OfflineContentAggregatorFactory() = default;
 
-KeyedService* OfflineContentAggregatorFactory::BuildServiceInstanceFor(
-    content::BrowserContext* context) const {
-  DCHECK(!context->IsOffTheRecord());
-  return new offline_items_collection::OfflineContentAggregator();
+std::unique_ptr<KeyedService>
+OfflineContentAggregatorFactory::BuildServiceInstanceFor(
+    SimpleFactoryKey* key) const {
+  DCHECK(!key->IsOffTheRecord());
+  return std::make_unique<offline_items_collection::OfflineContentAggregator>();
 }
 
-content::BrowserContext*
-OfflineContentAggregatorFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextRedirectedInIncognito(context);
+SimpleFactoryKey* OfflineContentAggregatorFactory::GetKeyToUse(
+    SimpleFactoryKey* key) const {
+  ProfileKey* profile_key = ProfileKey::FromSimpleFactoryKey(key);
+  return profile_key->GetOriginalKey();
 }

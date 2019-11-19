@@ -165,8 +165,7 @@ Polymer({
         /** @type {!IronListElement} */ (this.$$('iron-list'));
     ironList.focusItem(index);
     const siteToSelect = this.sites[index].site.replace(/[.]/g, '\\.');
-    const button =
-        this.$$(`#siteItem_${siteToSelect}`).$$('.subpage-arrow button');
+    const button = this.$$(`#siteItem_${siteToSelect}`).$$('.subpage-arrow');
     cr.ui.focusWithoutInk(assert(button));
   },
 
@@ -177,8 +176,7 @@ Polymer({
   updateSiteList_: function() {
     this.isLoading_ = true;
     this.browserProxy_.getDisplayList(this.filter).then(listInfo => {
-      this.updateList(
-          'sites', item => `${item.site}_${item.localData}`, listInfo.items);
+      this.updateList('sites', item => item.site, listInfo.items);
       this.isLoading_ = false;
       this.fire('site-data-list-complete');
     });
@@ -203,8 +201,18 @@ Polymer({
   },
 
   /** @private */
+  onCloseThirdPartyDialog_: function() {
+    this.$.confirmDeleteThirdPartyDialog.close();
+  },
+
+  /** @private */
   onConfirmDeleteDialogClosed_: function() {
     cr.ui.focusWithoutInk(assert(this.$.removeShowingSites));
+  },
+
+  /** @private */
+  onConfirmDeleteThirdPartyDialogClosed_: function() {
+    cr.ui.focusWithoutInk(assert(this.$.removeAllThirdPartyCookies));
   },
 
   /**
@@ -215,6 +223,16 @@ Polymer({
   onRemoveShowingSitesTap_: function(e) {
     e.preventDefault();
     this.$.confirmDeleteDialog.showModal();
+  },
+
+  /**
+   * Shows a dialog to confirm the deletion of cookies available
+   * in third-party contexts and associated site data.
+   * @private
+   */
+  onRemoveThirdPartyCookiesTap_: function(e) {
+    e.preventDefault();
+    this.$.confirmDeleteThirdPartyDialog.showModal();
   },
 
   /**
@@ -235,6 +253,18 @@ Polymer({
   },
 
   /**
+   * Called when deletion of all third-party cookies and site data has been
+   * confirmed.
+   * @private
+   */
+  onConfirmThirdPartyDelete_: function() {
+    this.$.confirmDeleteThirdPartyDialog.close();
+    this.browserProxy_.removeAllThirdPartyCookies().then(() => {
+      this.updateSiteList_();
+    });
+  },
+
+  /**
    * @param {!{model: !{item: CookieDataSummaryItem, index: number}}} event
    * @private
    */
@@ -247,5 +277,14 @@ Polymer({
         settings.routes.SITE_SETTINGS_DATA_DETAILS,
         new URLSearchParams('site=' + event.model.item.site));
     this.lastSelected_ = event.model;
+  },
+
+  /**
+   * @private
+   * @return {boolean}
+   */
+  showRemoveThirdPartyCookies_: function() {
+    return loadTimeData.getBoolean('enableRemovingAllThirdPartyCookies') &&
+        this.sites.length > 0 && this.filter.length == 0;
   },
 });

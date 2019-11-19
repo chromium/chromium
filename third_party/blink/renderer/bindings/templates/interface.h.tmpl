@@ -220,9 +220,6 @@ class {{v8_class}} {
   {% if iterator_method %}
   {{exported}}static void {{iterator_method.camel_case_name}}MethodCallback(const v8::FunctionCallbackInfo<v8::Value>&);
   {% endif %}
-  {% if has_origin_safe_method_setter %}
-  {{exported}}static void {{cpp_class}}OriginSafeMethodSetterCallback(v8::Local<v8::Name>, v8::Local<v8::Value>, const v8::PropertyCallbackInfo<void>&);
-  {% endif %}
 
   {% if has_access_check_callbacks and not is_partial %}
   {{exported}}static bool SecurityCheck(v8::Local<v8::Context>, v8::Local<v8::Object>, v8::Local<v8::Value>);

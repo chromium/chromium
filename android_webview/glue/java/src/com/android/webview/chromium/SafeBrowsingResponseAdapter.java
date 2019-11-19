@@ -9,8 +9,8 @@ import android.annotation.TargetApi;
 import android.os.Build;
 import android.webkit.SafeBrowsingResponse;
 
-import org.chromium.android_webview.AwSafeBrowsingResponse;
 import org.chromium.android_webview.SafeBrowsingAction;
+import org.chromium.android_webview.safe_browsing.AwSafeBrowsingResponse;
 import org.chromium.base.Callback;
 
 /**

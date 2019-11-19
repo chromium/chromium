@@ -177,7 +177,7 @@ void SystemInfoEventRouter::DispatchEvent(
     const std::string& event_name,
     std::unique_ptr<base::ListValue> args) {
   ExtensionsBrowserClient::Get()->BroadcastEventToRenderers(
-      histogram_value, event_name, std::move(args));
+      histogram_value, event_name, std::move(args), false);
 }
 
 void SystemInfoEventRouter::AddEventListenerInternal(

@@ -14,13 +14,13 @@ namespace test {
 
 TEST(TermBreakIteratorTest, EmptyWord) {
   base::string16 empty;
-  TermBreakIterator iter(empty);
+  ash::TermBreakIterator iter(empty);
   EXPECT_FALSE(iter.Advance());
 }
 
 TEST(TermBreakIteratorTest, Simple) {
   base::string16 word(UTF8ToUTF16("simple"));
-  TermBreakIterator iter(word);
+  ash::TermBreakIterator iter(word);
   EXPECT_TRUE(iter.Advance());
   EXPECT_EQ(UTF8ToUTF16("simple"), iter.GetCurrentTerm());
   EXPECT_FALSE(iter.Advance());  // Test unexpected advance after end.
@@ -28,7 +28,7 @@ TEST(TermBreakIteratorTest, Simple) {
 
 TEST(TermBreakIteratorTest, CamelCase) {
   base::string16 word(UTF8ToUTF16("CamelCase"));
-  TermBreakIterator iter(word);
+  ash::TermBreakIterator iter(word);
   EXPECT_TRUE(iter.Advance());
   EXPECT_EQ(UTF8ToUTF16("Camel"), iter.GetCurrentTerm());
   EXPECT_TRUE(iter.Advance());
@@ -38,7 +38,7 @@ TEST(TermBreakIteratorTest, CamelCase) {
 
 TEST(TermBreakIteratorTest, LowerToUpper) {
   base::string16 word(UTF8ToUTF16("lowerToUpper"));
-  TermBreakIterator iter(word);
+  ash::TermBreakIterator iter(word);
   EXPECT_TRUE(iter.Advance());
   EXPECT_EQ(UTF8ToUTF16("lower"), iter.GetCurrentTerm());
   EXPECT_TRUE(iter.Advance());
@@ -50,7 +50,7 @@ TEST(TermBreakIteratorTest, LowerToUpper) {
 
 TEST(TermBreakIteratorTest, AlphaNumber) {
   base::string16 word(UTF8ToUTF16("Chromium26.0.0.0"));
-  TermBreakIterator iter(word);
+  ash::TermBreakIterator iter(word);
   EXPECT_TRUE(iter.Advance());
   EXPECT_EQ(UTF8ToUTF16("Chromium"), iter.GetCurrentTerm());
   EXPECT_TRUE(iter.Advance());
@@ -60,7 +60,7 @@ TEST(TermBreakIteratorTest, AlphaNumber) {
 
 TEST(TermBreakIteratorTest, StartsWithNumber) {
   base::string16 word(UTF8ToUTF16("123startWithNumber"));
-  TermBreakIterator iter(word);
+  ash::TermBreakIterator iter(word);
   EXPECT_TRUE(iter.Advance());
   EXPECT_EQ(UTF8ToUTF16("123"), iter.GetCurrentTerm());
   EXPECT_TRUE(iter.Advance());
@@ -75,7 +75,7 @@ TEST(TermBreakIteratorTest, StartsWithNumber) {
 TEST(TermBreakIteratorTest, CaseAndNoCase) {
   // "English" + two Chinese chars U+4E2D U+6587 + "Word"
   base::string16 word(UTF8ToUTF16("English\xe4\xb8\xad\xe6\x96\x87Word"));
-  TermBreakIterator iter(word);
+  ash::TermBreakIterator iter(word);
   EXPECT_TRUE(iter.Advance());
   EXPECT_EQ(UTF8ToUTF16("English"), iter.GetCurrentTerm());
   EXPECT_TRUE(iter.Advance());

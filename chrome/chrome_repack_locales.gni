@@ -28,9 +28,10 @@ template("chrome_repack_locales") {
       "${root_gen_dir}/chrome/platform_locale_settings_",
       "${root_gen_dir}/components/strings/components_locale_settings_",
       "${root_gen_dir}/components/strings/components_strings_",
-      "${root_gen_dir}/content/app/strings/content_strings_",
+      "${root_gen_dir}/third_party/blink/public/strings/blink_strings_",
       "${root_gen_dir}/device/bluetooth/strings/bluetooth_strings_",
       "${root_gen_dir}/device/fido/strings/fido_strings_",
+      "${root_gen_dir}/services/strings/services_strings_",
       "${root_gen_dir}/third_party/libaddressinput/address_input_strings_",
       "${root_gen_dir}/ui/strings/app_locale_settings_",
       "${root_gen_dir}/ui/strings/ui_strings_",
@@ -44,9 +45,10 @@ template("chrome_repack_locales") {
       "//chrome/app/resources:platform_locale_settings",
       "//components/strings:components_locale_settings",
       "//components/strings:components_strings",
-      "//content/app/strings",
       "//device/bluetooth/strings",
       "//device/fido/strings",
+      "//services/strings",
+      "//third_party/blink/public/strings",
       "//third_party/libaddressinput:strings",
       "//ui/strings:app_locale_settings",
       "//ui/strings:ui_strings",
@@ -55,6 +57,12 @@ template("chrome_repack_locales") {
       deps += invoker.deps
     }
 
+    # Omnibox resources are currently desktop-only, but this may change.
+    if (!is_android) {
+      source_patterns +=
+          [ "${root_gen_dir}/components/omnibox/resources/omnibox_resources_" ]
+      deps += [ "//components/omnibox/resources:omnibox_resources" ]
+    }
     if (is_chromeos) {
       source_patterns += [
         "${root_gen_dir}/ash/components/strings/ash_components_strings_",
@@ -70,6 +78,7 @@ template("chrome_repack_locales") {
         "//remoting/resources",
         "//ui/chromeos/strings",
       ]
+      compress = true
     }
     if (enable_extensions) {
       source_patterns +=

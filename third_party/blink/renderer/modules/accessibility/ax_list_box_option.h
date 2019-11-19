@@ -40,8 +40,6 @@ class HTMLSelectElement;
 
 class AXListBoxOption final : public AXLayoutObject {
  public:
-  static AXListBoxOption* Create(LayoutObject*, AXObjectCacheImpl&);
-
   AXListBoxOption(LayoutObject*, AXObjectCacheImpl&);
   ~AXListBoxOption() override;
 

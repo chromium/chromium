@@ -5,7 +5,7 @@
 #include "ash/login/ui/fake_login_detachable_base_model.h"
 
 #include "ash/login/ui/login_data_dispatcher.h"
-#include "ash/public/interfaces/user_info.mojom.h"
+#include "ash/public/cpp/session/user_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -46,7 +46,7 @@ DetachableBasePairingStatus FakeLoginDetachableBaseModel::GetPairingStatus() {
 }
 
 bool FakeLoginDetachableBaseModel::PairedBaseMatchesLastUsedByUser(
-    const mojom::UserInfo& user_info) {
+    const UserInfo& user_info) {
   EXPECT_FALSE(current_authenticated_base_.empty());
 
   std::string last_used = GetLastUsedBase(user_info.account_id);
@@ -54,7 +54,7 @@ bool FakeLoginDetachableBaseModel::PairedBaseMatchesLastUsedByUser(
 }
 
 bool FakeLoginDetachableBaseModel::SetPairedBaseAsLastUsedByUser(
-    const mojom::UserInfo& user_info) {
+    const UserInfo& user_info) {
   if (current_authenticated_base_.empty())
     return false;
 

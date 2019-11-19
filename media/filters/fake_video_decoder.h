@@ -23,11 +23,9 @@
 #include "media/base/video_frame.h"
 #include "ui/gfx/geometry/size.h"
 
-using base::ResetAndReturn;
-
 namespace media {
 
-typedef base::Callback<void(int)> BytesDecodedCB;
+using BytesDecodedCB = base::RepeatingCallback<void(int)>;
 
 class FakeVideoDecoder : public VideoDecoder {
  public:
@@ -48,12 +46,11 @@ class FakeVideoDecoder : public VideoDecoder {
   void Initialize(const VideoDecoderConfig& config,
                   bool low_delay,
                   CdmContext* cdm_context,
-                  const InitCB& init_cb,
+                  InitCB init_cb,
                   const OutputCB& output_cb,
                   const WaitingCB& waiting_cb) override;
-  void Decode(scoped_refptr<DecoderBuffer> buffer,
-              const DecodeCB& decode_cb) override;
-  void Reset(const base::Closure& closure) override;
+  void Decode(scoped_refptr<DecoderBuffer> buffer, DecodeCB decode_cb) override;
+  void Reset(base::OnceClosure closure) override;
   int GetMaxDecodeRequests() const override;
 
   base::WeakPtr<FakeVideoDecoder> GetWeakPtr();
@@ -87,16 +84,14 @@ class FakeVideoDecoder : public VideoDecoder {
   };
 
   // Callback for updating |total_bytes_decoded_|.
-  void OnFrameDecoded(int buffer_size,
-                      const DecodeCB& decode_cb,
-                      DecodeStatus status);
+  void OnFrameDecoded(int buffer_size, DecodeCB decode_cb, DecodeStatus status);
 
   // Runs |decode_cb| or puts it to |held_decode_callbacks_| depending on
   // current value of |hold_decode_|.
-  void RunOrHoldDecode(const DecodeCB& decode_cb);
+  void RunOrHoldDecode(DecodeCB decode_cb);
 
   // Runs |decode_cb| with a frame from |decoded_frames_|.
-  void RunDecodeCallback(const DecodeCB& decode_cb);
+  void RunDecodeCallback(DecodeCB decode_cb);
 
   void DoReset();
 
@@ -112,7 +107,7 @@ class FakeVideoDecoder : public VideoDecoder {
   State state_;
 
   CallbackHolder<InitCB> init_cb_;
-  CallbackHolder<base::Closure> reset_cb_;
+  CallbackHolder<base::OnceClosure> reset_cb_;
 
   OutputCB output_cb_;
 
@@ -128,7 +123,7 @@ class FakeVideoDecoder : public VideoDecoder {
   bool fail_to_initialize_;
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
-  base::WeakPtrFactory<FakeVideoDecoder> weak_factory_;
+  base::WeakPtrFactory<FakeVideoDecoder> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FakeVideoDecoder);
 };

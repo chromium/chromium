@@ -8,25 +8,35 @@
 
 #include "base/mac/foundation_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/browser/autofill_profile.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/credit_card.h"
-#include "components/payments/core/payment_instrument.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/payments/core/payment_app.h"
 #include "components/payments/core/payment_prefs.h"
 #include "components/payments/core/payment_shipping_option.h"
 #include "components/payments/core/strings_util.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync/driver/test_sync_service.h"
 #import "ios/chrome/browser/payments/payment_request_unittest_base.h"
 #include "ios/chrome/browser/payments/payment_request_util.h"
 #include "ios/chrome/browser/payments/test_payment_request.h"
+#include "ios/chrome/browser/signin/authentication_service.h"
+#import "ios/chrome/browser/signin/authentication_service.h"
+#include "ios/chrome/browser/signin/authentication_service_delegate_fake.h"
+#include "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/authentication_service_factory.h"
+#include "ios/chrome/browser/signin/identity_manager_factory.h"
+#include "ios/chrome/browser/sync/profile_sync_service_factory.h"
+#include "ios/chrome/browser/sync/sync_setup_service_factory.h"
+#include "ios/chrome/browser/sync/sync_setup_service_mock.h"
 #import "ios/chrome/browser/ui/collection_view/cells/collection_view_footer_item.h"
 #import "ios/chrome/browser/ui/payments/cells/autofill_profile_item.h"
 #import "ios/chrome/browser/ui/payments/cells/payment_method_item.h"
 #import "ios/chrome/browser/ui/payments/cells/payments_text_item.h"
 #import "ios/chrome/browser/ui/payments/cells/price_item.h"
-#include "services/identity/public/cpp/identity_manager.h"
-#include "services/identity/public/cpp/identity_test_environment.h"
+#include "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
 #include "testing/platform_test.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -40,6 +50,19 @@ using ::payment_request_util::GetEmailLabelFromAutofillProfile;
 using ::payment_request_util::GetNameLabelFromAutofillProfile;
 using ::payment_request_util::GetPhoneNumberLabelFromAutofillProfile;
 using ::payment_request_util::GetShippingAddressLabelFromAutofillProfile;
+
+std::unique_ptr<KeyedService> CreateTestSyncService(
+    web::BrowserState* context) {
+  return std::make_unique<syncer::TestSyncService>();
+}
+
+std::unique_ptr<KeyedService> BuildMockSyncSetupService(
+    web::BrowserState* context) {
+  ios::ChromeBrowserState* browser_state =
+      ios::ChromeBrowserState::FromBrowserState(context);
+  return std::make_unique<SyncSetupServiceMock>(
+      ProfileSyncServiceFactory::GetForBrowserState(browser_state));
+}
 }  // namespace
 
 class PaymentRequestMediatorTest : public PaymentRequestUnitTestBase,
@@ -47,7 +70,22 @@ class PaymentRequestMediatorTest : public PaymentRequestUnitTestBase,
  protected:
   // PlatformTest:
   void SetUp() override {
-    DoSetUp();
+    PlatformTest::SetUp();
+
+    TestChromeBrowserState::TestingFactories factories;
+    factories.emplace_back(ProfileSyncServiceFactory::GetInstance(),
+                           base::BindRepeating(&CreateTestSyncService));
+    factories.emplace_back(SyncSetupServiceFactory::GetInstance(),
+                           base::BindRepeating(&BuildMockSyncSetupService));
+    factories.emplace_back(AuthenticationServiceFactory::GetInstance(),
+                           AuthenticationServiceFactory::GetDefaultFactory());
+    DoSetUp(std::move(factories));
+
+    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
+        browser_state(), std::make_unique<AuthenticationServiceDelegateFake>());
+
+    ios::FakeChromeIdentityService::GetInstanceFromChromeProvider()
+        ->AddIdentities(@[ @"username" ]);
 
     autofill::AutofillProfile profile = autofill::test::GetFullProfile();
     autofill::CreditCard card = autofill::test::GetCreditCard();  // Visa.
@@ -62,9 +100,21 @@ class PaymentRequestMediatorTest : public PaymentRequestUnitTestBase,
   }
 
   // PlatformTest:
-  void TearDown() override { DoTearDown(); }
+  void TearDown() override {
+    DoTearDown();
+    PlatformTest::TearDown();
+  }
 
   PaymentRequestMediator* mediator() { return mediator_; }
+
+  signin::IdentityManager* identity_manager() {
+    return IdentityManagerFactory::GetForBrowserState(browser_state());
+  }
+
+  ChromeIdentity* fake_identity() {
+    return [ios::FakeChromeIdentityService::GetInstanceFromChromeProvider()
+                ->GetAllIdentities() firstObject];
+  }
 
  private:
   PaymentRequestMediator* mediator_;
@@ -79,7 +129,7 @@ TEST_F(PaymentRequestMediatorTest, TestCanPay) {
   EXPECT_TRUE([mediator() canPay]);
 
   // Payment cannot be completed if there is no selected payment method.
-  payments::PaymentInstrument* selected_payment_method =
+  payments::PaymentApp* selected_payment_method =
       payment_request()->selected_payment_method();
   payment_request()->set_selected_payment_method(nullptr);
   EXPECT_FALSE([mediator() canPay]);
@@ -415,10 +465,7 @@ TEST_F(PaymentRequestMediatorTest, TestFooterItem) {
                              false);
 
   // Make sure the user is signed out.
-  auto* identity_manager = identity_test_env()->identity_manager();
-  if (identity_manager->HasPrimaryAccount()) {
-    identity_test_env()->ClearPrimaryAccount();
-  }
+  ASSERT_FALSE(identity_manager()->HasPrimaryAccount());
 
   // Footer item should be of type CollectionViewFooterItem.
   id item = [mediator() footerItem];
@@ -430,14 +477,15 @@ TEST_F(PaymentRequestMediatorTest, TestFooterItem) {
                           IDS_PAYMENTS_CARD_AND_ADDRESS_SETTINGS_SIGNED_OUT)]);
 
   // Fake a signed in user.
-  identity_test_env()->SetPrimaryAccount("username@example.com");
+  AuthenticationServiceFactory::GetForBrowserState(browser_state())
+      ->SignIn(fake_identity());
 
   item = [mediator() footerItem];
   footer_item = base::mac::ObjCCastStrict<CollectionViewFooterItem>(item);
   EXPECT_TRUE([footer_item.text
       isEqualToString:l10n_util::GetNSStringF(
                           IDS_PAYMENTS_CARD_AND_ADDRESS_SETTINGS_SIGNED_IN,
-                          base::ASCIIToUTF16("username@example.com"))]);
+                          base::ASCIIToUTF16("username@gmail.com"))]);
 
   // Record that the first transaction completed.
   pref_service()->SetBoolean(payments::kPaymentsFirstTransactionCompleted,
@@ -450,7 +498,13 @@ TEST_F(PaymentRequestMediatorTest, TestFooterItem) {
                           IDS_PAYMENTS_CARD_AND_ADDRESS_SETTINGS)]);
 
   // Sign the user out.
-  identity_test_env()->ClearPrimaryAccount();
+  base::RunLoop run_loop;
+  base::Closure quit_closure = run_loop.QuitClosure();
+  AuthenticationServiceFactory::GetForBrowserState(browser_state())
+      ->SignOut(signin_metrics::ProfileSignout::SIGNOUT_TEST, ^{
+        quit_closure.Run();
+      });
+  run_loop.Run();
 
   // The signed in state has no effect on the footer text if the first
   // transaction has completed.

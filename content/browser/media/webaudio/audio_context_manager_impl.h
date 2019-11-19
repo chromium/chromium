@@ -7,7 +7,7 @@
 
 #include "content/common/content_export.h"
 #include "content/public/browser/frame_service_base.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/webaudio/audio_context_manager.mojom.h"
 
 namespace base {
@@ -30,11 +30,12 @@ class CONTENT_EXPORT AudioContextManagerImpl final
  public:
   explicit AudioContextManagerImpl(
       RenderFrameHost* render_frame_host,
-      blink::mojom::AudioContextManagerRequest request);
+      mojo::PendingReceiver<blink::mojom::AudioContextManager> receiver);
   ~AudioContextManagerImpl() override;
 
-  static void Create(RenderFrameHost* render_frame_host,
-                     blink::mojom::AudioContextManagerRequest request);
+  static void Create(
+      RenderFrameHost* render_frame_host,
+      mojo::PendingReceiver<blink::mojom::AudioContextManager> receiver);
 
   // Notify observers that audible audio started/stopped playing from an
   // AudioContext.

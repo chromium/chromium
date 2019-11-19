@@ -4,7 +4,13 @@
 
 #include "content/shell/browser/web_test/mojo_web_test_helper.h"
 
-#include "mojo/public/cpp/bindings/strong_binding.h"
+#include <memory>
+#include <string>
+#include <utility>
+
+#include "content/test/data/mojo_web_test_helper_test.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 namespace content {
 
@@ -13,9 +19,10 @@ MojoWebTestHelper::MojoWebTestHelper() {}
 MojoWebTestHelper::~MojoWebTestHelper() {}
 
 // static
-void MojoWebTestHelper::Create(mojom::MojoWebTestHelperRequest request) {
-  mojo::MakeStrongBinding(std::make_unique<MojoWebTestHelper>(),
-                          std::move(request));
+void MojoWebTestHelper::Create(
+    mojo::PendingReceiver<mojom::MojoWebTestHelper> receiver) {
+  mojo::MakeSelfOwnedReceiver(std::make_unique<MojoWebTestHelper>(),
+                              std::move(receiver));
 }
 
 void MojoWebTestHelper::Reverse(const std::string& message,

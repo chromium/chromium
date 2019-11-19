@@ -16,4 +16,12 @@ public interface GooglePasswordManagerUIProvider {
      * @return Whether showing the Google Password Manager UI was possible or not.
      **/
     boolean showGooglePasswordManager(Activity activity);
+
+    /**
+     * Launches the Password Checkup if possible.
+     *
+     * @param activity The activity from which to launch the Password Checkup.
+     * @return Whether launching the Password Checkup was possible or not.
+     **/
+    boolean launchPasswordCheckup(Activity activity);
 }

@@ -52,6 +52,8 @@ std::string PrerenderHistograms::GetHistogramPrefix(Origin origin) {
       return "gws";
     case ORIGIN_EXTERNAL_REQUEST_FORCED_PRERENDER:
       return "externalrequestforced";
+    case ORIGIN_NAVIGATION_PREDICTOR:
+      return "navigationpredictor";
     default:
       NOTREACHED();
       break;

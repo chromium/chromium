@@ -12,7 +12,7 @@
 namespace views {
 
 void RunShellDrag(gfx::NativeView view,
-                  const ui::OSExchangeData& data,
+                  std::unique_ptr<ui::OSExchangeData> data,
                   const gfx::Point& location,
                   int operation,
                   ui::DragDropTypes::DragEventSource source) {
@@ -20,8 +20,9 @@ void RunShellDrag(gfx::NativeView view,
   wm::ConvertPointToScreen(view, &screen_location);
   aura::Window* root_window = view->GetRootWindow();
   if (aura::client::GetDragDropClient(root_window)) {
-    aura::client::GetDragDropClient(root_window)->StartDragAndDrop(
-        data, root_window, view, screen_location, operation, source);
+    aura::client::GetDragDropClient(root_window)
+        ->StartDragAndDrop(std::move(data), root_window, view, screen_location,
+                           operation, source);
   }
 }
 

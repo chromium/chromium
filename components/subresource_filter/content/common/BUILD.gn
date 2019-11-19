@@ -4,8 +4,6 @@
 
 static_library("common") {
   sources = [
-    "ad_delay_throttle.cc",
-    "ad_delay_throttle.h",
     "ruleset_dealer.cc",
     "ruleset_dealer.h",
     "subresource_filter_message_generator.cc",
@@ -27,7 +25,6 @@ static_library("common") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "ad_delay_throttle_unittest.cc",
     "ruleset_dealer_unittest.cc",
   ]
   deps = [

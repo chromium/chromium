@@ -22,6 +22,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/test/test_utils.h"
 
@@ -84,9 +85,6 @@ IN_PROC_BROWSER_TEST_F(ProfileListDesktopBrowserTest, MAYBE_SignOut) {
 
   BrowserList* browser_list = BrowserList::GetInstance();
   EXPECT_EQ(1u, browser_list->size());
-  content::WindowedNotificationObserver window_close_observer(
-      chrome::NOTIFICATION_BROWSER_CLOSED,
-      content::Source<Browser>(browser()));
 
   content::WindowedNotificationObserver system_profile_created_observer(
       chrome::NOTIFICATION_PROFILE_CREATED,
@@ -94,7 +92,8 @@ IN_PROC_BROWSER_TEST_F(ProfileListDesktopBrowserTest, MAYBE_SignOut) {
 
   EXPECT_FALSE(entry->IsSigninRequired());
   profiles::LockProfile(current_profile);
-  window_close_observer.Wait();  // rely on test time-out for failure indication
+  // Rely on test time-out for failure indication.
+  ui_test_utils::WaitForBrowserToClose(browser());
 
   EXPECT_TRUE(entry->IsSigninRequired());
   EXPECT_EQ(0u, browser_list->size());

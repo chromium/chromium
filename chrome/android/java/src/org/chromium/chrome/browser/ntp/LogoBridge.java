@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ntp;
 import android.graphics.Bitmap;
 
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.profiles.Profile;
 
 /**
@@ -69,7 +70,7 @@ public class LogoBridge {
      * @param profile Profile of the tab that will show the logo.
      */
     public LogoBridge(Profile profile) {
-        mNativeLogoBridge = nativeInit(profile);
+        mNativeLogoBridge = LogoBridgeJni.get().init(LogoBridge.this, profile);
     }
 
     /**
@@ -78,7 +79,7 @@ public class LogoBridge {
      */
     void destroy() {
         assert mNativeLogoBridge != 0;
-        nativeDestroy(mNativeLogoBridge);
+        LogoBridgeJni.get().destroy(mNativeLogoBridge, LogoBridge.this);
         mNativeLogoBridge = 0;
     }
 
@@ -90,7 +91,7 @@ public class LogoBridge {
      *                     the cached logo is already available.
      */
     void getCurrentLogo(LogoObserver logoObserver) {
-        nativeGetCurrentLogo(mNativeLogoBridge, logoObserver);
+        LogoBridgeJni.get().getCurrentLogo(mNativeLogoBridge, LogoBridge.this, logoObserver);
     }
 
     @CalledByNative
@@ -98,7 +99,10 @@ public class LogoBridge {
         return new Logo(image, onClickUrl, altText, gifUrl);
     }
 
-    private native long nativeInit(Profile profile);
-    private native void nativeGetCurrentLogo(long nativeLogoBridge, LogoObserver logoObserver);
-    private native void nativeDestroy(long nativeLogoBridge);
+    @NativeMethods
+    interface Natives {
+        long init(LogoBridge caller, Profile profile);
+        void getCurrentLogo(long nativeLogoBridge, LogoBridge caller, LogoObserver logoObserver);
+        void destroy(long nativeLogoBridge, LogoBridge caller);
+    }
 }

@@ -87,7 +87,7 @@ bool DeleteDirectoriesWithoutMatchingExecutable(
   bool success = true;
   for (const base::FilePath& directory_name : directories) {
     // Delete the directory if it doesn't have a matching executable.
-    if (!base::ContainsKey(executables, directory_name)) {
+    if (!base::Contains(executables, directory_name)) {
       const base::FilePath directory_path = install_dir.Append(directory_name);
       LOG(WARNING) << "Attempting to delete stray directory "
                    << directory_path.value();
@@ -113,7 +113,7 @@ bool DeleteExecutablesWithoutMatchingDirectory(
     const auto& executables_for_version = version_and_executables.second;
 
     // Don't delete the executables if they have a matching directory.
-    if (base::ContainsKey(directories, version_dir_name))
+    if (base::Contains(directories, version_dir_name))
       continue;
 
     // Delete executables for version |version_dir_name|.

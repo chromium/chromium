@@ -50,15 +50,15 @@ class VIEWS_EXAMPLES_EXPORT LabelExample : public ExampleBase,
                          const char** strings,
                          int count);
 
-  Textfield* textfield_;
-  Combobox* alignment_;
-  Combobox* elide_behavior_;
-  Checkbox* multiline_;
-  Checkbox* shadows_;
-  Checkbox* selectable_;
-  Label* custom_label_;
+   Textfield* textfield_ = nullptr;
+   Combobox* alignment_ = nullptr;
+   Combobox* elide_behavior_ = nullptr;
+   Checkbox* multiline_ = nullptr;
+   Checkbox* shadows_ = nullptr;
+   Checkbox* selectable_ = nullptr;
+   Label* custom_label_ = nullptr;
 
-  DISALLOW_COPY_AND_ASSIGN(LabelExample);
+   DISALLOW_COPY_AND_ASSIGN(LabelExample);
 };
 
 }  // namespace examples

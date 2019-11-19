@@ -15,6 +15,9 @@ cr.define('settings', function() {
 
     /** Retrain the Assistant voice model. */
     retrainAssistantVoiceModel() {}
+
+    /** Sync the voice model status. */
+    syncVoiceModelStatus() {}
   }
 
   /** @implements {settings.GoogleAssistantBrowserProxy} */
@@ -27,6 +30,13 @@ cr.define('settings', function() {
     /** @override */
     retrainAssistantVoiceModel() {
       chrome.send('retrainAssistantVoiceModel');
+    }
+
+    /** @override */
+    syncVoiceModelStatus() {
+      if (loadTimeData.getBoolean('voiceMatchEnabled')) {
+        chrome.send('syncVoiceModelStatus');
+      }
     }
   }
 

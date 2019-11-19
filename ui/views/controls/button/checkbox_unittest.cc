@@ -15,8 +15,8 @@ namespace views {
 
 class CheckboxTest : public ViewsTestBase {
  public:
-  CheckboxTest() {}
-  ~CheckboxTest() override {}
+  CheckboxTest() = default;
+  ~CheckboxTest() override = default;
 
   void SetUp() override {
     ViewsTestBase::SetUp();
@@ -27,7 +27,7 @@ class CheckboxTest : public ViewsTestBase {
     Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_POPUP);
     params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
     params.bounds = gfx::Rect(0, 0, 650, 650);
-    widget_->Init(params);
+    widget_->Init(std::move(params));
     widget_->Show();
 
     checkbox_ = new Checkbox(base::string16());

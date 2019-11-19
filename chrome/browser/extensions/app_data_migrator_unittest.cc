@@ -17,16 +17,17 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/indexed_db_context.h"
 #include "content/public/browser/storage_partition.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/manifest.h"
-#include "storage/browser/fileapi/file_system_context.h"
-#include "storage/browser/fileapi/file_system_operation_runner.h"
-#include "storage/browser/fileapi/file_system_url.h"
-#include "storage/browser/test/mock_blob_url_request_context.h"
+#include "storage/browser/blob/blob_storage_context.h"
+#include "storage/browser/file_system/file_system_context.h"
+#include "storage/browser/file_system/file_system_operation_runner.h"
+#include "storage/browser/file_system/file_system_url.h"
+#include "storage/browser/test/mock_blob_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -41,7 +42,7 @@ namespace extensions {
 class AppDataMigratorTest : public testing::Test {
  public:
   AppDataMigratorTest()
-      : thread_bundle_(content::TestBrowserThreadBundle::IO_MAINLOOP) {}
+      : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP) {}
 
   void SetUp() override {
     profile_ = GetTestingProfile();
@@ -56,21 +57,20 @@ class AppDataMigratorTest : public testing::Test {
 
     default_fs_context_ = default_partition_->GetFileSystemContext();
 
-    url_request_context_ = std::unique_ptr<content::MockBlobURLRequestContext>(
-        new content::MockBlobURLRequestContext());
+    blob_storage_context_ = std::make_unique<storage::BlobStorageContext>();
   }
 
   void TearDown() override {}
 
  protected:
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<AppDataMigrator> migrator_;
   content::StoragePartition* default_partition_;
   ExtensionRegistry* registry_;
   storage::FileSystemContext* default_fs_context_;
   content::IndexedDBContext* idb_context_;
-  std::unique_ptr<content::MockBlobURLRequestContext> url_request_context_;
+  std::unique_ptr<storage::BlobStorageContext> blob_storage_context_;
 };
 
 scoped_refptr<const Extension> GetTestExtension(bool platform_app) {
@@ -141,12 +141,11 @@ void OpenFileSystems(storage::FileSystemContext* fs_context,
   content::RunAllTasksUntilIdle();
 }
 
-void GenerateTestFiles(content::MockBlobURLRequestContext* url_request_context,
+void GenerateTestFiles(storage::BlobStorageContext* blob_storage_context,
                        const Extension* ext,
                        storage::FileSystemContext* fs_context,
                        Profile* profile) {
-  profile->GetExtensionSpecialStoragePolicy()->GrantRightsForExtension(ext,
-                                                                       profile);
+  profile->GetExtensionSpecialStoragePolicy()->GrantRightsForExtension(ext);
 
   base::FilePath path(FILE_PATH_LITERAL("test.txt"));
   GURL extension_url =
@@ -161,7 +160,7 @@ void GenerateTestFiles(content::MockBlobURLRequestContext* url_request_context,
       fs_context->CreateCrackedFileSystemURL(
           extension_url, storage::kFileSystemTypePersistent, path);
 
-  content::ScopedTextBlob blob1(*url_request_context, "blob-id:success1",
+  storage::ScopedTextBlob blob1(blob_storage_context, "blob-id:success1",
                                 "Hello, world!\n");
 
   fs_context->operation_runner()->CreateFile(fs_temp_url, false,
@@ -260,7 +259,7 @@ TEST_F(AppDataMigratorTest, DISABLED_FileSystemMigration) {
   scoped_refptr<const Extension> old_ext = GetTestExtension(false);
   scoped_refptr<const Extension> new_ext = GetTestExtension(true);
 
-  GenerateTestFiles(url_request_context_.get(), old_ext.get(),
+  GenerateTestFiles(blob_storage_context_.get(), old_ext.get(),
                     default_fs_context_, profile_.get());
 
   migrator_->DoMigrationAndReply(old_ext.get(), new_ext.get(),

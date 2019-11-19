@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "device/udev_linux/udev.h"
+#include "device/udev_linux/udev_loader.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -16,6 +17,10 @@ TEST(UdevTest, DecodeString) {
   ASSERT_EQ(
       "HD Pro Webcam C920", UdevDecodeString("HD\\x20Pro\\x20Webcam\\x20C920"));
   ASSERT_EQ("E-MU Systems,Inc.", UdevDecodeString("E-MU\\x20Systems\\x2cInc."));
+}
+
+TEST(UdevTest, Loader) {
+  ASSERT_NE(nullptr, UdevLoader::Get());
 }
 
 }  // namespace device

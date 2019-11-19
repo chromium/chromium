@@ -1,0 +1,81 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+const double kSpeechSynthesisDefaultRate = 1.0;
+const double kSpeechSynthesisDefaultPitch = 1.0;
+const double kSpeechSynthesisDefaultVolume = 1.0;
+const double kSpeechSynthesisDoublePrefNotSet = -1.0;
+
+struct SpeechSynthesisUtterance {
+  string text;
+  string lang;
+  string voice;
+  double volume;
+  double rate;
+  double pitch;
+};
+
+struct SpeechSynthesisVoice {
+  string voice_uri;
+  string name;
+  string lang;
+  bool is_local_service;
+  bool is_default;
+};
+
+// This interface receives updates to the list of voices. See SpeechSythesis'
+// AddVoiceListObserver method.
+interface SpeechSynthesisVoiceListObserver {
+  // Receives the list of voices that may be used.
+  OnSetVoiceList(array<SpeechSynthesisVoice> voice_list);
+};
+
+// This interface receives events related to speaking a particular utterance.
+// See SpeechSynthesis' Speak method.
+interface SpeechSynthesisClient {
+  // The utterance started.
+  OnStartedSpeaking();
+
+  // The utterance finished, and no further events will be received.
+  OnFinishedSpeaking();
+
+  // The utterance was paused.
+  OnPausedSpeaking();
+
+  // The utterance was resumed.
+  OnResumedSpeaking();
+
+  // A word boundary was encountered while speaking the utterance.
+  OnEncounteredWordBoundary(uint32 char_index, uint32 char_length);
+
+  // A sentence boundary was encountered while speaking the utterance.
+  OnEncounteredSentenceBoundary(uint32 char_index, uint32 char_length);
+
+  // An error occurred while speaking the utterance, and no further events will
+  // be received.
+  OnEncounteredSpeakingError();
+};
+
+// This interface is used to forward speech synthesis requests to a text-to-
+// speech engine. Call the Speak method to request an utterance to be spoken.
+interface SpeechSynthesis {
+  // Observers are notified once upon being added, to receive the current voice
+  // list. They are notified again whenever the voice list changes.
+  AddVoiceListObserver(pending_remote<SpeechSynthesisVoiceListObserver> observer);
+
+  // Begin speaking the given utterance. Events will be delivered to the client.
+  Speak(SpeechSynthesisUtterance utterance,
+        pending_remote<SpeechSynthesisClient> client);
+
+  // Pause speaking all utterances.
+  Pause();
+
+  // Resume speaking all utterances.
+  Resume();
+
+  // Cancel speaking all utterances.
+  Cancel();
+};

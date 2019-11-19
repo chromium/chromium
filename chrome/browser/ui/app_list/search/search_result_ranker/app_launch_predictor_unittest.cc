@@ -233,7 +233,7 @@ TEST_F(HourAppLaunchPredictorTest, RankFromMultipleBin) {
 TEST_F(HourAppLaunchPredictorTest, CheckDefaultWeights) {
   base::test::ScopedFeatureList scoped_feature_list_;
   scoped_feature_list_.InitAndEnableFeature(
-      app_list_features::kEnableAppSearchResultRanker);
+      app_list_features::kEnableZeroStateAppsRanker);
 
   EXPECT_THAT(HourAppLaunchPredictor::BinWeightsFromFlagOrDefault(),
               ElementsAre(FloatEq(0.6), FloatEq(0.15), FloatEq(0.05),
@@ -244,7 +244,7 @@ TEST_F(HourAppLaunchPredictorTest, CheckDefaultWeights) {
 TEST_F(HourAppLaunchPredictorTest, SetWeightsFromFlag) {
   base::test::ScopedFeatureList scoped_feature_list_;
   scoped_feature_list_.InitAndEnableFeatureWithParameters(
-      app_list_features::kEnableAppSearchResultRanker,
+      app_list_features::kEnableZeroStateAppsRanker,
       {{"weight_1_hour_later_bin", "0.1"},
        {"weight_2_hour_later_bin", "0.2"},
        {"weight_2_hour_earlier_bin", "0.22"},

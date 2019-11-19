@@ -3,5 +3,5 @@
   "version": "0.1",
   "manifest_version": 2,
   "description": "Tests onStartup event from SW based extension",
-  "background": {"service_worker_script": "service_worker_background.js"}
+  "background": {"service_worker": "service_worker_background.js"}
 }

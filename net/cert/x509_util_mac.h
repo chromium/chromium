@@ -58,9 +58,6 @@ CreateX509CertificateFromSecCertificate(
     const std::vector<SecCertificateRef>& sec_chain,
     X509Certificate::UnsafeCreateOptions options);
 
-// Returns true if the certificate is self-signed.
-NET_EXPORT bool IsSelfSigned(SecCertificateRef cert_handle);
-
 // Calculates the SHA-256 fingerprint of the certificate.  Returns an empty
 // (all zero) fingerprint on failure.
 NET_EXPORT SHA256HashValue CalculateFingerprint256(SecCertificateRef cert);

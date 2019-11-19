@@ -22,7 +22,7 @@
 #include "components/sync/model/sync_change_processor_wrapper_for_test.h"
 #include "components/sync/model/sync_error_factory.h"
 #include "components/sync/model/sync_error_factory_mock.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/api/storage/backend_task_runner.h"
 #include "extensions/browser/api/storage/settings_test_util.h"
@@ -40,8 +40,6 @@ using base::DictionaryValue;
 using base::ListValue;
 using base::Value;
 namespace extensions {
-
-namespace util = settings_test_util;
 
 namespace {
 
@@ -186,6 +184,8 @@ class ExtensionSettingsSyncTest : public testing::Test {
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     profile_.reset(new TestingProfile(temp_dir_.GetPath()));
+    content::RunAllTasksUntilIdle();
+
     storage_factory_->Reset();
     frontend_ =
         StorageFrontend::CreateForTesting(storage_factory_, profile_.get());
@@ -213,8 +213,8 @@ class ExtensionSettingsSyncTest : public testing::Test {
   ValueStore* AddExtensionAndGetStorage(
       const std::string& id, Manifest::Type type) {
     scoped_refptr<const Extension> extension =
-        util::AddExtensionWithId(profile_.get(), id, type);
-    return util::GetStorage(extension, frontend_.get());
+        settings_test_util::AddExtensionWithId(profile_.get(), id, type);
+    return settings_test_util::GetStorage(extension, frontend_.get());
   }
 
   // Gets the syncer::SyncableService for the given sync type.
@@ -263,7 +263,7 @@ class ExtensionSettingsSyncTest : public testing::Test {
   }
 
   // Needed so that the DCHECKs for running on FILE or UI threads pass.
-  content::TestBrowserThreadBundle test_browser_thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
 
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<TestingProfile> profile_;
@@ -1322,11 +1322,7 @@ TEST_F(ExtensionSettingsSyncTest,
   Manifest::Type type = Manifest::TYPE_LEGACY_PACKAGED_APP;
 
   // This value should be larger than the limit in sync_storage_backend.cc.
-  std::string string_10k;
-  for (size_t i = 0; i < 10000; ++i) {
-    string_10k.append("a");
-  }
-  base::Value large_value(string_10k);
+  base::Value large_value(std::string(10000, 'a'));
 
   PostOnBackendSequenceAndWait(FROM_HERE, [&, this]() {
     GetSyncableService(model_type)
@@ -1425,7 +1421,7 @@ namespace {
 static void UnlimitedSyncStorageTestCallback(ValueStore* sync_storage) {
   // Sync storage should still run out after ~100K; the unlimitedStorage
   // permission can't apply to sync.
-  std::unique_ptr<base::Value> kilobyte = util::CreateKilobyte();
+  std::unique_ptr<base::Value> kilobyte = settings_test_util::CreateKilobyte();
   for (int i = 0; i < 100; ++i) {
     sync_storage->Set(ValueStore::DEFAULTS, base::NumberToString(i), *kilobyte);
   }
@@ -1437,7 +1433,7 @@ static void UnlimitedSyncStorageTestCallback(ValueStore* sync_storage) {
 
 static void UnlimitedLocalStorageTestCallback(ValueStore* local_storage) {
   // Local storage should never run out.
-  std::unique_ptr<base::Value> megabyte = util::CreateMegabyte();
+  std::unique_ptr<base::Value> megabyte = settings_test_util::CreateMegabyte();
   for (int i = 0; i < 7; ++i) {
     local_storage->Set(ValueStore::DEFAULTS, base::NumberToString(i),
                        *megabyte);
@@ -1463,7 +1459,7 @@ TEST_F(ExtensionSettingsSyncTest, MAYBE_UnlimitedStorageForLocalButNotSync) {
   std::set<std::string> permissions;
   permissions.insert("unlimitedStorage");
   scoped_refptr<const Extension> extension =
-      util::AddExtensionWithIdAndPermissions(
+      settings_test_util::AddExtensionWithIdAndPermissions(
           profile_.get(), id, Manifest::TYPE_EXTENSION, permissions);
 
   frontend_->RunWithStorage(extension,

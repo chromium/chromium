@@ -282,7 +282,7 @@ CAPTURECONTEXT_SYMBOL2:
   // Restore r1.
   ldr r1, [r0, #0x24]
 
-  // TODO(jperaza): save floating-point registers.
+  // TODO(https://crashpad.chromium.org/bug/300): save floating-point registers.
 
   mov PC, LR
 
@@ -326,7 +326,7 @@ CAPTURECONTEXT_SYMBOL2:
   // Restore x1 from the saved context.
   ldr x1, [x0, #0xc0]
 
-  // TODO(jperaza): save floating-point registers.
+  // TODO(https://crashpad.chromium.org/bug/300): save floating-point registers.
 
   ret
 #elif defined(__mips__)

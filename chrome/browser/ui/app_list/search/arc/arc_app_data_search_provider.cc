@@ -10,8 +10,8 @@
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/app_list/search/arc/arc_app_data_search_result.h"
-#include "components/arc/arc_bridge_service.h"
 #include "components/arc/arc_service_manager.h"
+#include "components/arc/session/arc_bridge_service.h"
 
 namespace app_list {
 
@@ -30,9 +30,7 @@ bool IsValidResult(const arc::mojom::AppDataResult& result) {
 ArcAppDataSearchProvider::ArcAppDataSearchProvider(
     int max_results,
     AppListControllerDelegate* list_controller)
-    : max_results_(max_results),
-      list_controller_(list_controller),
-      weak_ptr_factory_(this) {}
+    : max_results_(max_results), list_controller_(list_controller) {}
 
 ArcAppDataSearchProvider::~ArcAppDataSearchProvider() = default;
 

@@ -1,0 +1,23 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/protobuf/proto_library.gni")
+
+assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
+
+component("machine_learning") {
+  defines = [ "IS_MACHINE_LEARNING_IMPL" ]
+
+  deps = [
+    "//base",
+    "//dbus",
+  ]
+
+  sources = [
+    "fake_machine_learning_client.cc",
+    "fake_machine_learning_client.h",
+    "machine_learning_client.cc",
+    "machine_learning_client.h",
+  ]
+}

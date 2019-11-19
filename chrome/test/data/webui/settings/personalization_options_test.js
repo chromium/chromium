@@ -32,7 +32,6 @@ cr.define('settings_personalization_options', function() {
     test('DriveSearchSuggestControl', function() {
       assertFalse(!!testElement.$$('#driveSuggestControl'));
 
-      testElement.unifiedConsentEnabled = true;
       testElement.syncStatus = {
         signedIn: true,
         statusAction: settings.StatusAction.NO_ACTION
@@ -68,8 +67,7 @@ cr.define('settings_personalization_options', function() {
       testElement.remove();
     });
 
-    test('UnifiedConsent spellcheck toggle', function() {
-      testElement.unifiedConsentEnabled = true;
+    test('Spellcheck toggle', function() {
       testElement.prefs = {spellcheck: {dictionaries: {value: ['en-US']}}};
       Polymer.dom.flush();
       assertFalse(testElement.$.spellCheckControl.hidden);
@@ -77,17 +75,17 @@ cr.define('settings_personalization_options', function() {
       testElement.prefs = {spellcheck: {dictionaries: {value: []}}};
       Polymer.dom.flush();
       assertTrue(testElement.$.spellCheckControl.hidden);
-    });
 
-    test('NoUnifiedConsent spellcheck toggle', function() {
-      testElement.unifiedConsentEnabled = false;
-      testElement.prefs = {spellcheck: {dictionaries: {value: ['en-US']}}};
+      testElement.prefs = {
+        browser: {enable_spellchecking: {value: false}},
+        spellcheck: {
+          dictionaries: {value: ['en-US']},
+          use_spelling_service: {value: false}
+        }
+      };
       Polymer.dom.flush();
-      assertFalse(testElement.$.spellCheckControl.hidden);
-
-      testElement.prefs = {spellcheck: {dictionaries: {value: []}}};
-      Polymer.dom.flush();
-      assertFalse(testElement.$.spellCheckControl.hidden);
+      testElement.$.spellCheckControl.click();
+      assertTrue(testElement.prefs.spellcheck.use_spelling_service.value);
     });
   });
 });

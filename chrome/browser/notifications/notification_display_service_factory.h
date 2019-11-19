@@ -23,7 +23,7 @@ class NotificationDisplayServiceFactory
 
   NotificationDisplayServiceFactory();
 
-  // BrowserContextKeyedBaseFactory implementation.
+  // BrowserContextKeyedServiceFactory implementation.
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(

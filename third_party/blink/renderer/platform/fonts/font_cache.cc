@@ -51,7 +51,7 @@
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_cache.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
 #include "third_party/blink/renderer/platform/fonts/text_rendering_mode.h"
-#include "third_party/blink/renderer/platform/histogram.h"
+#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/web_memory_allocator_dump.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/web_process_memory_dump.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -63,7 +63,16 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "ui/gfx/font_list.h"
 
+#if defined(OS_WIN)
+#include "third_party/skia/include/ports/SkTypeface_win.h"
+#endif
+
 namespace blink {
+
+// Special locale for retrieving the color emoji font based on the proposed
+// changes in UTR #51 for introducing an Emoji script code:
+// https://unicode.org/reports/tr51/#Emoji_Script
+static const char kColorEmojiLocale[] = "und-Zsye";
 
 SkFontMgr* FontCache::static_font_manager_ = nullptr;
 
@@ -81,16 +90,32 @@ FontCache* FontCache::GetFontCache() {
   return &FontGlobalContext::GetFontCache();
 }
 
-#if !defined(OS_WIN)
 FontCache::FontCache()
-    : purge_prevent_count_(0), font_manager_(sk_ref_sp(static_font_manager_)) {}
-#endif  // !defined(OS_WIN) && !defined(OS_LINUX)
+    : purge_prevent_count_(0),
+      font_manager_(sk_ref_sp(static_font_manager_)),
+      font_size_limit_(std::nextafter(
+          (static_cast<float>(std::numeric_limits<unsigned>::max()) - 2.f) /
+              static_cast<float>(blink::FontCacheKey::PrecisionMultiplier()),
+          0.f)) {
+#if defined(OS_WIN)
+  if (!font_manager_) {
+    // This code path is only for unit tests. This SkFontMgr does not work in
+    // sandboxed environments, but injecting this initialization code to all
+    // unit tests isn't easy.
+    font_manager_ = SkFontMgr_New_DirectWrite();
+    // Set |is_test_font_mgr_| to capture if this is not happening in the
+    // production code. crbug.com/561873
+    is_test_font_mgr_ = true;
+  }
+  DCHECK(font_manager_.get());
+#endif
+}
 
 #if !defined(OS_MACOSX)
 FontPlatformData* FontCache::SystemFontPlatformData(
     const FontDescription& font_description) {
   const AtomicString& family = FontCache::SystemFontFamily();
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_FUCHSIA)
   if (family.IsEmpty() || family == font_family_names::kSystemUi)
     return nullptr;
 #else
@@ -105,6 +130,8 @@ FontPlatformData* FontCache::GetFontPlatformData(
     const FontDescription& font_description,
     const FontFaceCreationParams& creation_params,
     AlternateFontName alternate_font_name) {
+  TRACE_EVENT0("fonts", "FontCache::GetFontPlatformData");
+
   if (!platform_init_) {
     platform_init_ = true;
     PlatformInit();
@@ -118,18 +145,28 @@ FontPlatformData* FontCache::GetFontPlatformData(
 #endif
 
   float size = font_description.EffectiveFontSize();
+  size = std::min(size, font_size_limit_);
+
   unsigned rounded_size = size * FontCacheKey::PrecisionMultiplier();
+
+  // Assert that the computed hash map key rounded_size value does not hit
+  // the empty (max()) or deleted (max()-1) sentinel values of the hash map,
+  // compare UnsignedWithZeroKeyHashTraits() in hash_traits.h.
+  DCHECK_LT(rounded_size, std::numeric_limits<unsigned>::max() - 1);
+  // Assert that rounded_size was not reset to 0 due to an integer overflow,
+  // i.e. if size was non-zero, rounded_size can't be zero, but if size was 0,
+  // it may be 0.
+  DCHECK_EQ(!!size, !!rounded_size);
+
   bool is_unique_match =
       alternate_font_name == AlternateFontName::kLocalUniqueFace;
   FontCacheKey key =
       font_description.CacheKey(creation_params, is_unique_match);
+  DCHECK(!key.IsHashTableDeletedValue());
 
   // Remove the font size from the cache key, and handle the font size
   // separately in the inner HashMap. So that different size of FontPlatformData
   // can share underlying SkTypeface.
-  if (RuntimeEnabledFeatures::FontCacheScalingEnabled())
-    key.ClearFontSize();
-
   FontPlatformData* result;
   bool found_result;
 
@@ -191,7 +228,7 @@ std::unique_ptr<FontPlatformData> FontCache::ScaleFontPlatformData(
     const FontDescription& font_description,
     const FontFaceCreationParams& creation_params,
     float font_size) {
-  TRACE_EVENT0("ui", "FontCache::ScaleFontPlatformData");
+  TRACE_EVENT0("fonts,ui", "FontCache::ScaleFontPlatformData");
 
 #if defined(OS_MACOSX)
   return CreateFontPlatformData(font_description, creation_params, font_size);
@@ -277,7 +314,7 @@ String FontCache::FirstAvailableOrFirst(const String& families) {
   // only from grd/xtb and all ASCII, and b) at most only a few times per
   // setting change/script.
   return String::FromUTF8(
-      gfx::FontList::FirstAvailableOrFirst(families.Utf8().data()).c_str());
+      gfx::FontList::FirstAvailableOrFirst(families.Utf8().c_str()));
 }
 
 SimpleFontData* FontCache::GetNonRetainedLastResortFallbackFont(
@@ -293,6 +330,8 @@ scoped_refptr<SimpleFontData> FontCache::FallbackFontForCharacter(
     UChar32 lookup_char,
     const SimpleFontData* font_data_to_substitute,
     FontFallbackPriority fallback_priority) {
+  TRACE_EVENT0("fonts", "FontCache::FallbackFontForCharacter");
+
   // In addition to PUA, do not perform fallback for non-characters either. Some
   // of these are sentinel characters to detect encodings and do appear on
   // websites. More details on
@@ -311,7 +350,7 @@ void FontCache::ReleaseFontData(const SimpleFontData* font_data) {
 }
 
 void FontCache::PurgePlatformFontDataCache() {
-  TRACE_EVENT0("ui", "FontCache::PurgePlatformFontDataCache");
+  TRACE_EVENT0("fonts,ui", "FontCache::PurgePlatformFontDataCache");
   Vector<FontCacheKey> keys_to_remove;
   keys_to_remove.ReserveInitialCapacity(font_platform_data_cache_.size());
   for (auto& sized_fonts : font_platform_data_cache_) {
@@ -330,7 +369,7 @@ void FontCache::PurgePlatformFontDataCache() {
 }
 
 void FontCache::PurgeFallbackListShaperCache() {
-  TRACE_EVENT0("ui", "FontCache::PurgeFallbackListShaperCache");
+  TRACE_EVENT0("fonts,ui", "FontCache::PurgeFallbackListShaperCache");
   unsigned items = 0;
   FallbackListShaperCache::iterator iter;
   for (iter = fallback_list_shaper_cache_.begin();
@@ -377,7 +416,7 @@ uint16_t FontCache::Generation() {
 }
 
 void FontCache::Invalidate() {
-  TRACE_EVENT0("ui", "FontCache::Invalidate");
+  TRACE_EVENT0("fonts,ui", "FontCache::Invalidate");
   font_platform_data_cache_.clear();
   generation_++;
 
@@ -451,8 +490,7 @@ void FontCache::DumpShapeResultCache(
 }
 
 sk_sp<SkTypeface> FontCache::CreateTypefaceFromUniqueName(
-    const FontFaceCreationParams& creation_params,
-    CString& name) {
+    const FontFaceCreationParams& creation_params) {
   FontUniqueNameLookup* unique_name_lookup =
       FontGlobalContext::Get()->GetFontUniqueNameLookup();
   DCHECK(unique_name_lookup);
@@ -462,6 +500,28 @@ sk_sp<SkTypeface> FontCache::CreateTypefaceFromUniqueName(
     return uniquely_identified_font;
   }
   return nullptr;
+}
+
+// static
+FontCache::Bcp47Vector FontCache::GetBcp47LocaleForRequest(
+    const FontDescription& font_description,
+    FontFallbackPriority fallback_priority) {
+  Bcp47Vector result;
+
+  // Fill in the list of locales in the reverse priority order.
+  // Skia expects the highest array index to be the first priority.
+  const LayoutLocale* content_locale = font_description.Locale();
+  if (const LayoutLocale* han_locale =
+          LayoutLocale::LocaleForHan(content_locale)) {
+    result.push_back(han_locale->LocaleForHanForSkFontMgr());
+  }
+  result.push_back(LayoutLocale::GetDefault().LocaleForSkFontMgr());
+  if (content_locale)
+    result.push_back(content_locale->LocaleForSkFontMgr());
+
+  if (fallback_priority == FontFallbackPriority::kEmojiEmoji)
+    result.push_back(kColorEmojiLocale);
+  return result;
 }
 
 }  // namespace blink

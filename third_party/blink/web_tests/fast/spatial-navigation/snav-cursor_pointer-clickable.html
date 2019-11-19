@@ -1,0 +1,29 @@
+<!doctype html>
+<style>
+  #popup {width: 300px; height: 150px; background: LightBlue;}
+  .button {font-family: sans-serif; font-weight: bold; width: 80px; height: 40px; background: SeaGreen; color: white; cursor: pointer;}
+  .balancer {display: flex; justify-content: space-evenly; align-items: center;}
+</style>
+
+<div class="balancer" id="popup">
+  <div class="button balancer" id="ok"><div id="dontgohere1">OK</div></div>
+  <div class="button balancer" id="cancel"><div id="dontgohere2">Cancel</div></div>
+</div>
+
+<div id="log"><div>
+
+<p>A typical popup dialog that listens for clicks on its two custom buttons.</p>
+
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="resources/snav-testharness.js"></script>
+<script>
+  var resultMap = [
+    ["Down", "ok"],
+    ["Right", "cancel"],
+    ["Left", "ok"],
+  ];
+  snav.assertFocusMoves(resultMap);
+</script>
+
+<p><em>Manual test instruction: Ensure that all buttons can be focused.</em></p>

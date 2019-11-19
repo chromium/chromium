@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<style>
+control-element {
+  display: inline-block;
+  width: 10em;
+  height: 2em;
+}
+</style>
+<body>
+<script>
+class ControlElement extends HTMLElement {
+  static formAssociated = true;
+  constructor() {
+    super();
+    this.i = this.attachInternals();
+    this.i.setValidity({tooShort: true}, 'Too short');
+  }
+}
+customElements.define('control-element', ControlElement);
+
+async_test(t => {
+  assert_own_property(window, 'internals');
+  document.body.insertAdjacentHTML('afterbegin', '<control-element tabindex=0></control-element>');
+  let control = document.body.querySelector('control-element');
+  control.i.reportValidity();
+  assert_true(internals.isValidationMessageVisible(control),
+              'prereq: A validation bubble should be shown.');
+  assert_equals(document.activeElement, control,
+                'prereq: The control should be focused.');
+
+  control.blur();
+  requestAnimationFrame(t.step_func_done(() => {
+    assert_false(internals.isValidationMessageVisible(control));
+  }));
+}, 'Ensure that removing focus from an invalid form-associated custom ' +
+    'element with a validation bubble closes the validation bubble.');
+</script>
+</body>

@@ -1,22 +1,41 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="de">
-<translation id="1510238584712386396">Übersicht</translation>
+<translation id="1482734542997480527"><ph name="ENROLLMENT_DOMAIN" /> verwaltet dieses Gerät und kann Ihre Aktivitäten möglicherweise überwachen.</translation>
+<translation id="1510238584712386396">Launcher</translation>
 <translation id="1734367976349034509">Dieses Gerät wird vom Unternehmen verwaltet</translation>
+<translation id="1930797645656624981">Dienst für die Chrome OS-Eingabemethoden</translation>
+<translation id="1979103255016296513">Passwortänderung überfällig</translation>
 <translation id="2049639323467105390">Dieses Gerät wird durch <ph name="DOMAIN" /> verwaltet.</translation>
 <translation id="2083960536266308407">Nichts auf dem Display gefunden</translation>
 <translation id="2338501278241028356">Aktivieren Sie Bluetooth, damit Geräte in der Nähe gefunden werden</translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="2872961005593481000">Herunterfahren</translation>
-<translation id="3147142846278915599">Launcher (Apps werden synchronisiert...)</translation>
+<translation id="3008341117444806826">AKTUALISIEREN</translation>
+<translation id="3838338534323494292">Neues Passwort</translation>
+<translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> verwaltet dieses Gerät und hat Zugriff auf alle Nutzeraktivitäten, einschließlich besuchten Webseiten, Passwörtern und E-Mails.</translation>
+<translation id="4227825898293920515">Passwort läuft in <ph name="TIME" /> ab</translation>
+<translation id="4429881212383817840">Kerberos-Ticket läuft bald ab</translation>
+<translation id="445059817448385655">Altes Passwort</translation>
+<translation id="467510802200863975">Die Passwörter stimmen nicht überein</translation>
 <translation id="4731797938093519117">Elternfreigabe</translation>
+<translation id="4890353053343094602">Legen Sie so schnell wie möglich ein neues fest</translation>
 <translation id="5212543919916444558">Ich finde nichts auf deinem Display, wobei ich dir helfen könnte.
 Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="5222676887888702881">Abmelden</translation>
+<translation id="5317780077021120954">Speichern</translation>
+<translation id="5332948983412042822">Bitte legen Sie jetzt ein neues fest</translation>
 <translation id="5457599981699367932">Als Gast nutzen</translation>
 <translation id="54609108002486618">Verwaltet</translation>
 <translation id="5832805196449965646">Person hinzufügen</translation>
 <translation id="5895138241574237353">Neu starten</translation>
+<translation id="6058625436358447366">Geben Sie zum Schluss Ihr altes und Ihr neues Passwort ein</translation>
+<translation id="6106186594183574873">Geben Sie zum Schluss Ihr altes Passwort ein</translation>
+<translation id="6146993107019042706">Geben Sie zum Schluss Ihr neues Passwort ein</translation>
 <translation id="7658239707568436148">Abbrechen</translation>
+<translation id="7690294790491645610">Neues Passwort bestätigen</translation>
+<translation id="808894953321890993">Passwort ändern</translation>
+<translation id="8747900814994928677">Änderung bestätigen</translation>
+<translation id="910415269708673980">Aktualisieren Sie das Ticket für <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9111102763498581341">Entsperren</translation>
 </translationbundle>

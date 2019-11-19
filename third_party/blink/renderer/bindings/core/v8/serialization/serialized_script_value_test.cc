@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/fileapi/file.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 
 namespace blink {
@@ -122,10 +123,9 @@ TEST(SerializedScriptValueTest, WireFormatVersion0ImageData) {
 
 TEST(SerializedScriptValueTest, UserSelectedFile) {
   V8TestingScope scope;
-  String file_path = test::BlinkRootDir();
-  file_path.append(
-      "/renderer/bindings/core/v8/serialization/"
-      "serialized_script_value_test.cc");
+  String file_path = test::BlinkRootDir() +
+                     "/renderer/bindings/core/v8/serialization/"
+                     "serialized_script_value_test.cc";
   File* original_file = File::Create(file_path);
   ASSERT_TRUE(original_file->HasBackingFile());
   ASSERT_EQ(File::kIsUserVisible, original_file->GetUserVisibility());

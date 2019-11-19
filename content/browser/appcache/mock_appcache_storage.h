@@ -120,7 +120,7 @@ class MockAppCacheStorage : public AppCacheStorage {
 
   void AddStoredCache(AppCache* cache);
   void RemoveStoredCache(AppCache* cache);
-  void RemoveStoredCaches(const AppCacheGroup::Caches& caches);
+  void RemoveStoredCaches(const std::vector<AppCache*>& caches);
   bool IsCacheStored(const AppCache* cache) {
     return stored_caches_.find(cache->cache_id()) != stored_caches_.end();
   }
@@ -145,7 +145,7 @@ class MockAppCacheStorage : public AppCacheStorage {
   AppCacheDiskCache* disk_cache() {
     if (!disk_cache_) {
       const int kMaxCacheSize = 10 * 1024 * 1024;
-      disk_cache_.reset(new AppCacheDiskCache);
+      disk_cache_ = std::make_unique<AppCacheDiskCache>();
       disk_cache_->InitWithMemBackend(kMaxCacheSize,
                                       net::CompletionOnceCallback());
     }
@@ -196,12 +196,12 @@ class MockAppCacheStorage : public AppCacheStorage {
     simulated_found_network_namespace_ = network_namespace;
   }
 
-  void SimulateGetAllInfo(AppCacheInfoCollection* info) {
-    simulated_appcache_info_ = info;
+  void SimulateGetAllInfo(scoped_refptr<AppCacheInfoCollection> info) {
+    simulated_appcache_info_ = std::move(info);
   }
 
-  void SimulateResponseReader(AppCacheResponseReader* reader) {
-    simulated_reader_.reset(reader);
+  void SimulateResponseReader(std::unique_ptr<AppCacheResponseReader> reader) {
+    simulated_reader_ = std::move(reader);
   }
 
   StoredCacheMap stored_caches_;
@@ -226,7 +226,7 @@ class MockAppCacheStorage : public AppCacheStorage {
   scoped_refptr<AppCacheInfoCollection> simulated_appcache_info_;
   std::unique_ptr<AppCacheResponseReader> simulated_reader_;
 
-  base::WeakPtrFactory<MockAppCacheStorage> weak_factory_;
+  base::WeakPtrFactory<MockAppCacheStorage> weak_factory_{this};
 
   FRIEND_TEST_ALL_PREFIXES(MockAppCacheStorageTest,
                            BasicFindMainResponse);

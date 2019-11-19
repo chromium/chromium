@@ -25,7 +25,7 @@
 namespace {
 
 bool IsV1WindowedApp(Browser* browser) {
-  if (!browser->is_type_popup() || !browser->is_app())
+  if (!browser->deprecated_is_app())
     return false;
   // Crostini terminal windows do not have an app id and are handled by
   // CrostiniAppWindowShelfController. All other app windows should have a non
@@ -141,18 +141,18 @@ void BrowserStatusMonitor::OnTabStripModelChanged(
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {
   if (change.type() == TabStripModelChange::kInserted) {
-    for (const auto& delta : change.deltas())
-      OnTabInserted(delta.insert.contents);
+    for (const auto& contents : change.GetInsert()->contents)
+      OnTabInserted(contents.contents);
   } else if (change.type() == TabStripModelChange::kRemoved) {
-    for (const auto& delta : change.deltas()) {
-      if (delta.remove.will_be_deleted)
-        OnTabClosing(delta.remove.contents);
+    auto* remove = change.GetRemove();
+    if (remove->will_be_deleted) {
+      for (const auto& contents : remove->contents)
+        OnTabClosing(contents.contents);
     }
   } else if (change.type() == TabStripModelChange::kReplaced) {
-    for (const auto& delta : change.deltas()) {
-      OnTabReplaced(tab_strip_model, delta.replace.old_contents,
-                    delta.replace.new_contents);
-    }
+    auto* replace = change.GetReplace();
+    OnTabReplaced(tab_strip_model, replace->old_contents,
+                  replace->new_contents);
   }
 
   if (tab_strip_model->empty())

@@ -58,6 +58,10 @@ class CORE_EXPORT ImageResourceObserver {
   // TODO(hiroshige): Merge imageNotifyFinished() into imageChanged().
   virtual void ImageNotifyFinished(ImageResourceContent*) {}
 
+  // Called when the image has fully removed this observer from its set of
+  // observers.
+  virtual void NotifyImageFullyRemoved(ImageResourceContent*) {}
+
   // Called to find out if this client wants to actually display the image. Used
   // to tell when we can halt animation. Content nodes that hold image refs for
   // example would not render the image, but LayoutImages would (assuming they

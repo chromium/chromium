@@ -34,7 +34,6 @@
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_fast_path.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
-#include "third_party/blink/renderer/platform/wtf/text/cstring.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -80,9 +79,7 @@ const WebUChar* WebString::Data16() const {
 }
 
 std::string WebString::Utf8(UTF8ConversionMode mode) const {
-  StringUTF8Adaptor utf8(impl_.get(),
-                         static_cast<WTF::UTF8ConversionMode>(mode));
-  return std::string(utf8.Data(), utf8.length());
+  return String(impl_).Utf8(static_cast<WTF::UTF8ConversionMode>(mode));
 }
 
 WebString WebString::FromUTF8(const char* data, size_t length) {
@@ -106,17 +103,7 @@ WebString WebString::FromUTF16(const base::Optional<base::string16>& s) {
 }
 
 std::string WebString::Latin1() const {
-  String string(impl_);
-
-  if (string.IsEmpty())
-    return std::string();
-
-  if (string.Is8Bit())
-    return std::string(reinterpret_cast<const char*>(string.Characters8()),
-                       string.length());
-
-  CString latin1 = string.Latin1();
-  return std::string(latin1.data(), latin1.length());
+  return String(impl_).Latin1();
 }
 
 WebString WebString::FromLatin1(const WebLChar* data, size_t length) {

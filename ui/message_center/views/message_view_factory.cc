@@ -6,16 +6,9 @@
 
 #include <vector>
 
-#include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/lazy_instance.h"
-#include "ui/message_center/public/cpp/features.h"
 #include "ui/message_center/public/cpp/notification_types.h"
 #include "ui/message_center/views/notification_view_md.h"
-
-#if !defined(OS_CHROMEOS)
-#include "ui/message_center/views/notification_view.h"
-#endif
 
 namespace message_center {
 
@@ -63,17 +56,8 @@ MessageView* MessageViewFactory::Create(const Notification& notification) {
       break;
   }
 
-  if (!notification_view) {
-#if defined(OS_CHROMEOS)
+  if (!notification_view)
     notification_view = new NotificationViewMD(notification);
-#else
-    // All above roads lead to the generic NotificationView.
-    if (base::FeatureList::IsEnabled(message_center::kNewStyleNotifications))
-      notification_view = new NotificationViewMD(notification);
-    else
-      notification_view = new NotificationView(notification);
-#endif
-  }
 
   return notification_view;
 }

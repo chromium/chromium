@@ -17,23 +17,22 @@
         background-color: blue;
     }
   </style>
+  <script src="../../../resources/run-after-layout-and-paint.js"></script>
   <script type="text/javascript" charset="utf-8">
     function doTest() {
-        setTimeout(changeBackground1, 0);
+        runAfterLayoutAndPaint(changeBackground1);
     }
     function changeBackground1() {
         document.getElementById('tester').style.backgroundColor = 'red';
-        setTimeout(changeBackground2, 0);
+        runAfterLayoutAndPaint(changeBackground2);
     }
     function changeBackground2() {
         document.getElementById('tester').style.backgroundColor = 'green';
         if (window.testRunner)
           testRunner.notifyDone();
     }
-    if (window.testRunner) {
+    if (window.testRunner)
       testRunner.waitUntilDone();
-      testRunner.dumpAsTextWithPixelResults();
-    }
     window.addEventListener('load', doTest, false);
   </script>
 </head>

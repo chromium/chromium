@@ -15,6 +15,19 @@
 
 namespace ash {
 
+enum DesksMruType {
+  // The MRU window list will include windows from all active and inactive
+  // desks.
+  kAllDesks,
+
+  // The MRU window list will exclude windows from the inactive desks.
+  kActiveDesk,
+};
+
+// A predicate that determines whether |window| can be included in the MRU
+// window list.
+bool CanIncludeWindowInMruList(aura::Window* window);
+
 // Maintains a most recently used list of windows. This is used for window
 // cycling using Alt+Tab and overview mode.
 class ASH_EXPORT MruWindowTracker : public ::wm::ActivationChangeObserver,
@@ -33,17 +46,32 @@ class ASH_EXPORT MruWindowTracker : public ::wm::ActivationChangeObserver,
 
   // Returns the set of windows which can be cycled through using the tracked
   // list of most recently used windows.
-  WindowList BuildMruWindowList() const;
+  // |desks_mru_type| determines whether to include or exclude windows from the
+  // inactive desks.
+  WindowList BuildMruWindowList(DesksMruType desks_mru_type) const;
 
   // This does the same thing as the above, but ignores the system modal dialog
   // state and hence the returned list could contain more windows if a system
   // modal dialog window is present.
-  WindowList BuildWindowListIgnoreModal() const;
+  // |desks_mru_type| determines whether to include or exclude windows from the
+  // inactive desks.
+  WindowList BuildWindowListIgnoreModal(DesksMruType desks_mru_type) const;
 
   // This does the same thing as |BuildMruWindowList()| but with some
   // exclusions. This list is used for cycling through by the keyboard via
   // alt-tab.
-  WindowList BuildWindowForCycleList() const;
+  // |desks_mru_type| determines whether to include or exclude windows from the
+  // inactive desks.
+  WindowList BuildWindowForCycleList(DesksMruType desks_mru_type) const;
+
+  // This does the same thing as |BuildWindowForCycleList()| but includes
+  // ARC PIP windows if they exist. Entering PIP for Android can consume the
+  // window (in contrast to Chrome PIP, which creates a new window). To support
+  // the same interaction as Chrome PIP auto-pip, include the Android PIP window
+  // in alt-tab. This will let alt tabbing back to the 'original window' restore
+  // that window from PIP, which matches behaviour for Chrome PIP, where
+  // alt-tabbing back to the original Chrome tab or app ends auto-PIP.
+  WindowList BuildWindowForCycleWithPipList(DesksMruType desks_mru_type) const;
 
   // Starts or stops ignoring window activations. If no longer ignoring
   // activations the currently active window is moved to the front of the

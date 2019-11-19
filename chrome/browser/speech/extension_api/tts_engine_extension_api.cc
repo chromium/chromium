@@ -24,7 +24,6 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/tts_controller.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/console_message_level.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_registry.h"
@@ -33,6 +32,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_set.h"
 #include "net/base/network_change_notifier.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 
 using extensions::EventRouter;
@@ -68,7 +68,7 @@ void WarnIfMissingPauseOrResumeListener(Profile* profile,
       extensions::ProcessManager::Get(profile)->GetBackgroundHostForExtension(
           extension_id);
   host->host_contents()->GetMainFrame()->AddMessageToConsole(
-      content::CONSOLE_MESSAGE_LEVEL_WARNING,
+      blink::mojom::ConsoleMessageLevel::kWarning,
       constants::kErrorMissingPauseOrResume);
 }
 

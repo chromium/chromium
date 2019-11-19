@@ -4,7 +4,11 @@
 
 #include "net/base/network_change_notifier.h"
 
+#include "base/run_loop.h"
+#include "build/build_config.h"
+#include "net/base/mock_network_change_notifier.h"
 #include "net/base/network_interfaces.h"
+#include "net/test/test_with_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace net {
@@ -111,6 +115,9 @@ TEST(NetworkChangeNotifierTest, IgnoreAirdropOnMac) {
   interface_airdrop.type = NetworkChangeNotifier::CONNECTION_ETHERNET;
   interface_airdrop.name = "awdl0";
   interface_airdrop.friendly_name = "awdl0";
+  interface_airdrop.address =
+      // Link-local IPv6 address
+      IPAddress({0xfe, 0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4});
   list.push_back(interface_airdrop);
 
 #if defined(OS_MACOSX)
@@ -128,7 +135,30 @@ TEST(NetworkChangeNotifierTest, IgnoreTunnelsOnMac) {
   interface_tunnel.type = NetworkChangeNotifier::CONNECTION_ETHERNET;
   interface_tunnel.name = "utun0";
   interface_tunnel.friendly_name = "utun0";
+  interface_tunnel.address =
+      // Link-local IPv6 address
+      IPAddress({0xfe, 0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 3, 2, 1});
   list.push_back(interface_tunnel);
+
+#if defined(OS_MACOSX)
+  EXPECT_EQ(NetworkChangeNotifier::CONNECTION_NONE,
+            NetworkChangeNotifier::ConnectionTypeFromInterfaceList(list));
+#else
+  EXPECT_EQ(NetworkChangeNotifier::CONNECTION_ETHERNET,
+            NetworkChangeNotifier::ConnectionTypeFromInterfaceList(list));
+#endif
+}
+
+TEST(NetworkChangeNotifierTest, IgnoreDisconnectedEthernetOnMac) {
+  NetworkInterfaceList list;
+  NetworkInterface interface_ethernet;
+  interface_ethernet.type = NetworkChangeNotifier::CONNECTION_ETHERNET;
+  interface_ethernet.name = "en5";
+  interface_ethernet.friendly_name = "en5";
+  interface_ethernet.address =
+      // Link-local IPv6 address
+      IPAddress({0xfe, 0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 1, 2, 3});
+  list.push_back(interface_ethernet);
 
 #if defined(OS_MACOSX)
   EXPECT_EQ(NetworkChangeNotifier::CONNECTION_NONE,
@@ -160,6 +190,35 @@ TEST(NetworkChangeNotifierTest, IgnoreVMInterfaces) {
 TEST(NetworkChangeNotifierTest, GetConnectionSubtype) {
   // Call GetConnectionSubtype() and ensure that there is no crash.
   NetworkChangeNotifier::GetConnectionSubtype();
+}
+
+class NetworkChangeNotifierMockedTest : public TestWithTaskEnvironment {
+ private:
+  test::ScopedMockNetworkChangeNotifier mock_notifier_;
+};
+
+class TestDnsObserver : public NetworkChangeNotifier::DNSObserver {
+ public:
+  void OnDNSChanged() override { ++dns_changed_calls_; }
+
+  int dns_changed_calls() const { return dns_changed_calls_; }
+
+ private:
+  int dns_changed_calls_ = 0;
+};
+
+TEST_F(NetworkChangeNotifierMockedTest, TriggerNonSystemDnsChange) {
+  TestDnsObserver observer;
+  NetworkChangeNotifier::AddDNSObserver(&observer);
+
+  ASSERT_EQ(0, observer.dns_changed_calls());
+
+  NetworkChangeNotifier::TriggerNonSystemDnsChange();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(1, observer.dns_changed_calls());
+
+  NetworkChangeNotifier::RemoveDNSObserver(&observer);
 }
 
 }  // namespace net

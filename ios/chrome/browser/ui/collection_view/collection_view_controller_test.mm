@@ -114,6 +114,20 @@ void CollectionViewControllerTest::CheckSectionFooterWithId(
   return CheckSectionFooter(l10n_util::GetNSString(expected_text_id), section);
 }
 
+void CollectionViewControllerTest::CheckTextCellText(NSString* expected_text,
+                                                     int section,
+                                                     int item) {
+  id cell = GetCollectionViewItem(section, item);
+  ASSERT_TRUE([cell respondsToSelector:@selector(text)]);
+  EXPECT_NSEQ(expected_text, [cell text]);
+}
+
+void CollectionViewControllerTest::CheckTextCellTextWithId(int expected_text_id,
+                                                           int section,
+                                                           int item) {
+  CheckTextCellText(l10n_util::GetNSString(expected_text_id), section, item);
+}
+
 void CollectionViewControllerTest::CheckTextCellTitle(NSString* expected_title,
                                                       int section,
                                                       int item) {

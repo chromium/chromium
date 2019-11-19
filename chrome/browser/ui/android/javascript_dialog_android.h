@@ -50,6 +50,8 @@ class JavaScriptDialogAndroid : public JavaScriptDialog {
               jboolean button_clicked);
 
  private:
+  friend class JavaScriptDialog;
+
   JavaScriptDialogAndroid(content::WebContents* parent_web_contents,
                           content::WebContents* alerting_web_contents,
                           const base::string16& title,
@@ -68,7 +70,7 @@ class JavaScriptDialogAndroid : public JavaScriptDialog {
       callback_on_button_clicked_;
   base::OnceClosure callback_on_cancelled_;
 
-  base::WeakPtrFactory<JavaScriptDialogAndroid> weak_factory_;
+  base::WeakPtrFactory<JavaScriptDialogAndroid> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(JavaScriptDialogAndroid);
 };

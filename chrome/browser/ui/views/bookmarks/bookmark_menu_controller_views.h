@@ -50,7 +50,7 @@ class BookmarkMenuController : public bookmarks::BaseBookmarkModelObserver,
                          content::PageNavigator* page_navigator,
                          views::Widget* parent,
                          const bookmarks::BookmarkNode* node,
-                         int start_child_index,
+                         size_t start_child_index,
                          bool for_drop);
 
   void RunMenuAt(BookmarkBarView* bookmark_bar);

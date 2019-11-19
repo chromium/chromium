@@ -2,35 +2,39 @@ alexmos@chromium.org
 avi@chromium.org
 clamy@chromium.org
 creis@chromium.org
-darin@chromium.org
 dgozman@chromium.org
+falken@chromium.org
 jam@chromium.org
 jochen@chromium.org
 kinuko@chromium.org
 nasko@chromium.org
 pfeldman@chromium.org
-piman@chromium.org
 
 # per-file rules:
 # These are for the common case of adding or renaming files. If you're doing
 # structural changes, please get a review from a reviewer in this file.
 per-file BUILD.gn=*
 
-# For threading (BrowserThread, BrowserMainLoop, TaskScheduler, etc.)
+# For threading (BrowserThread, BrowserMainLoop, ThreadPool, etc.)
 per-file *browser_main_loop*=gab@chromium.org
+per-file *browser_task_environment*=gab@chromium.org
 per-file *browser_thread*=gab@chromium.org
-
-# Mac Sandbox profiles.
-per-file *.sb=set noparent
-per-file *.sb=rsesek@chromium.org
 
 # For Fuchsia-specific changes:
 per-file *_fuchsia*=file://build/fuchsia/OWNERS
 
 # For Mac-specific changes:
-per-file *_mac*=ellyjones@chromium.org
-per-file *_mac*=tapted@chromium.org
+per-file *_mac.*=ellyjones@chromium.org
+per-file *_mac.*=mark@chromium.org
+per-file *_mac.*=rsesek@chromium.org
+per-file *_mac.*=tapted@chromium.org
+per-file *_mac_*=ellyjones@chromium.org
+per-file *_mac_*=mark@chromium.org
+per-file *_mac_*=rsesek@chromium.org
+per-file *_mac_*=tapted@chromium.org
 per-file *.mm=ellyjones@chromium.org
+per-file *.mm=mark@chromium.org
+per-file *.mm=rsesek@chromium.org
 per-file *.mm=tapted@chromium.org
 
 # Translation artifacts:

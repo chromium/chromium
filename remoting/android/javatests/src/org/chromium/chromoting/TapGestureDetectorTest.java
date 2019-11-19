@@ -113,7 +113,7 @@ public class TapGestureDetectorTest {
     @Test
     @SmallTest
     @Feature({"Chromoting"})
-    public void testOneFingerDownUp() throws Exception {
+    public void testOneFingerDownUp() {
         injectDownEvent(0, 0, 0);
         injectUpEvent(0);
         mListener.assertTapDetected(1, 0, 0);
@@ -123,7 +123,7 @@ public class TapGestureDetectorTest {
     @Test
     @SmallTest
     @Feature({"Chromoting"})
-    public void testMultipleFingerDownUp() throws Exception {
+    public void testMultipleFingerDownUp() {
         injectDownEvent(0, 0, 0);
         injectDownEvent(1, 100, 100);
         injectDownEvent(2, 200, 200);
@@ -137,7 +137,7 @@ public class TapGestureDetectorTest {
     @Test
     @SmallTest
     @Feature({"Chromoting"})
-    public void testMultipleFingerDownUpReversed() throws Exception {
+    public void testMultipleFingerDownUpReversed() {
         injectDownEvent(0, 0, 0);
         injectDownEvent(1, 100, 100);
         injectDownEvent(2, 200, 200);
@@ -151,7 +151,7 @@ public class TapGestureDetectorTest {
     @Test
     @SmallTest
     @Feature({"Chromoting"})
-    public void testMultipleFingerSmallMovements() throws Exception {
+    public void testMultipleFingerSmallMovements() {
         injectDownEvent(0, 0, 0);
         injectDownEvent(1, 100, 100);
         injectDownEvent(2, 200, 200);
@@ -168,7 +168,7 @@ public class TapGestureDetectorTest {
     @Test
     @SmallTest
     @Feature({"Chromoting"})
-    public void testLargeMotion() throws Exception {
+    public void testLargeMotion() {
         injectDownEvent(0, 0, 0);
         injectDownEvent(1, 100, 100);
         injectDownEvent(2, 200, 200);

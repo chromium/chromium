@@ -41,9 +41,8 @@ class MEDIA_GPU_EXPORT AndroidVideoEncodeAccelerator
   // VideoEncodeAccelerator implementation.
   VideoEncodeAccelerator::SupportedProfiles GetSupportedProfiles() override;
   bool Initialize(const Config& config, Client* client) override;
-  void Encode(const scoped_refptr<VideoFrame>& frame,
-              bool force_keyframe) override;
-  void UseOutputBitstreamBuffer(const BitstreamBuffer& buffer) override;
+  void Encode(scoped_refptr<VideoFrame> frame, bool force_keyframe) override;
+  void UseOutputBitstreamBuffer(BitstreamBuffer buffer) override;
   void RequestEncodingParametersChange(uint32_t bitrate,
                                        uint32_t framerate) override;
   void Destroy() override;

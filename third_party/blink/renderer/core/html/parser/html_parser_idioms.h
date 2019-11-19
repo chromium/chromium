@@ -38,7 +38,7 @@ class TextEncoding;
 namespace blink {
 
 // Strip leading and trailing whitespace as defined by the HTML specification.
-String StripLeadingAndTrailingHTMLSpaces(const String&);
+CORE_EXPORT String StripLeadingAndTrailingHTMLSpaces(const String&);
 
 // An implementation of the HTML specification's algorithm to convert a number
 // to a string for number and range types.

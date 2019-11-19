@@ -9,42 +9,69 @@
 #include <memory>
 
 #include "base/fuchsia/service_directory.h"
-#include "fuchsia/fidl/chromium/web/cpp/fidl.h"
-#include "fuchsia/runners/cast/cast_channel_bindings.h"
+#include "base/fuchsia/startup_context.h"
+#include "base/optional.h"
+#include "fuchsia/base/agent_manager.h"
+#include "fuchsia/runners/cast/api_bindings_client.h"
+#include "fuchsia/runners/cast/application_controller_impl.h"
 #include "fuchsia/runners/cast/named_message_port_connector.h"
-#include "fuchsia/runners/cast/queryable_data_bindings.h"
 #include "fuchsia/runners/common/web_component.h"
 
 class CastRunner;
 
 // A specialization of WebComponent which adds Cast-specific services.
 class CastComponent : public WebComponent,
-                      public chromium::web::NavigationEventObserver {
+                      public fuchsia::web::NavigationEventListener {
  public:
-  CastComponent(CastRunner* runner,
-                std::unique_ptr<base::fuchsia::StartupContext> startup_context,
-                fidl::InterfaceRequest<fuchsia::sys::ComponentController>
-                    controller_request);
+  struct CastComponentParams {
+    CastComponentParams();
+    CastComponentParams(CastComponentParams&&);
+    ~CastComponentParams();
+
+    chromium::cast::ApplicationConfigManagerPtr app_config_manager;
+    std::unique_ptr<base::fuchsia::StartupContext> startup_context;
+    std::unique_ptr<cr_fuchsia::AgentManager> agent_manager;
+    std::unique_ptr<ApiBindingsClient> api_bindings_client;
+    fidl::InterfaceRequest<fuchsia::sys::ComponentController>
+        controller_request;
+    chromium::cast::ApplicationConfig app_config;
+    chromium::cast::UrlRequestRewriteRulesProviderPtr rewrite_rules_provider;
+    base::Optional<std::vector<fuchsia::web::UrlRequestRewriteRule>>
+        rewrite_rules;
+  };
+
+  CastComponent(CastRunner* runner, CastComponentParams params);
   ~CastComponent() override;
+
+  // WebComponent overrides.
+  void StartComponent() override;
 
  private:
   // WebComponent overrides.
   void DestroyComponent(int termination_exit_code,
                         fuchsia::sys::TerminationReason reason) override;
 
-  // chromium::web::NavigationEventObserver implementation.
+  void OnRewriteRulesReceived(
+      std::vector<fuchsia::web::UrlRequestRewriteRule> rewrite_rules);
+
+  // fuchsia::web::NavigationEventListener implementation.
   // Triggers the injection of API channels into the page content.
   void OnNavigationStateChanged(
-      chromium::web::NavigationEvent change,
+      fuchsia::web::NavigationState change,
       OnNavigationStateChangedCallback callback) override;
 
-  bool constructor_active_ = false;
-  NamedMessagePortConnector connector_;
-  std::unique_ptr<CastChannelBindings> cast_channel_;
-  QueryableDataBindings queryable_data_;
+  std::unique_ptr<cr_fuchsia::AgentManager> agent_manager_;
+  chromium::cast::ApplicationConfig application_config_;
+  chromium::cast::UrlRequestRewriteRulesProviderPtr rewrite_rules_provider_;
+  std::vector<fuchsia::web::UrlRequestRewriteRule> initial_rewrite_rules_;
 
-  fidl::Binding<chromium::web::NavigationEventObserver>
-      navigation_observer_binding_;
+  bool constructor_active_ = false;
+  std::unique_ptr<NamedMessagePortConnector> connector_;
+  std::unique_ptr<ApiBindingsClient> api_bindings_client_;
+  std::unique_ptr<ApplicationControllerImpl> application_controller_;
+
+  fidl::Binding<fuchsia::web::NavigationEventListener>
+      navigation_listener_binding_;
 
   DISALLOW_COPY_AND_ASSIGN(CastComponent);
 };

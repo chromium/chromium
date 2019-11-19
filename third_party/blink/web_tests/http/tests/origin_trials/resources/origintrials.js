@@ -1,5 +1,5 @@
 // The sample API integrates origin trial checks at various entry points.
-// References to "partial interface" mean that the [OriginTrialEnabled]
+// References to "partial interface" mean that the [RuntimeEnabled]
 // IDL attribute is applied to an entire partial interface, instead of
 // applied to individual IDL members.
 
@@ -148,6 +148,19 @@ expect_failure_implied = (skip_worker) => {
   }
 };
 
+// These tests verify that any gated parts of the API are not available
+// for a trial with invalid OS
+expect_failure_invalid_os = (skip_worker) => {
+
+  test(() => {
+    expect_member_fails('invalidOSAttribute');
+  }, 'Invalid OS attribute should not exist, even with the trial token present.');
+
+  if (!skip_worker) {
+    fetch_tests_from_worker(new Worker('resources/invalid-os-worker.js'));
+  }
+}
+
 // These tests verify that the API functions correctly with an enabled trial.
 expect_success = () => {
 
@@ -189,7 +202,7 @@ expect_success_implied = (opt_description_suffix, skip_worker) => {
 };
 
 // These tests should pass, regardless of the state of the trial. These are
-// control tests for IDL members without the [OriginTrialEnabled] extended
+// control tests for IDL members without the [RuntimeEnabled] extended
 // attribute. The control tests will vary for secure vs insecure context.
 expect_always_bindings = (insecure_context, opt_description_suffix) => {
   var description_suffix = opt_description_suffix || '';
@@ -285,7 +298,7 @@ expect_success_bindings = (insecure_context) => {
 
   if (insecure_context) {
     // Origin trials only work in secure contexts, so tests cannot distinguish
-    // between [OriginTrialEnabled] or [SecureContext] preventing exposure of
+    // between [RuntimeEnabled] or [SecureContext] preventing exposure of
     // IDL members. These tests at least ensure IDL members are not exposed in
     // insecure contexts, regardless of reason.
     test(() => {
@@ -348,7 +361,7 @@ expect_success_bindings = (insecure_context) => {
       expect_input_dictionary_member('normalBool');
     }, 'Method with input dictionary should access member value');
 
-  // Tests for [OriginTrialEnabled] on partial interfaces
+  // Tests for [RuntimeEnabled] on partial interfaces
   test(() => {
       expect_member('normalAttributePartial', (testObject) => {
           return testObject.normalAttributePartial;
@@ -379,7 +392,7 @@ expect_success_bindings = (insecure_context) => {
         });
     }, 'Constant should exist on partial interface and return value');
 
-  // Tests for combination of [OriginTrialEnabled] and [SecureContext]
+  // Tests for combination of [RuntimeEnabled] and [SecureContext]
   test(() => {
       expect_member('secureAttribute', (testObject) => {
           return testObject.secureAttribute;
@@ -457,16 +470,16 @@ expect_failure_bindings_impl = (insecure_context, description_suffix) => {
     }, 'Method with input dictionary should not access member value, with trial disabled');
 
 
-  // Tests for combination of [OriginTrialEnabled] and [SecureContext]
+  // Tests for combination of [RuntimeEnabled] and [SecureContext]
   if (insecure_context) {
     // Origin trials only work in secure contexts, so tests cannot distinguish
-    // between [OriginTrialEnabled] or [SecureContext] preventing exposure of
+    // between [RuntimeEnabled] or [SecureContext] preventing exposure of
     // IDL members. There are tests to ensure IDL members are not exposed in
     // insecure contexts in expect_success_bindings().
     return;
   }
 
-  // Tests for [OriginTrialEnabled] on partial interfaces
+  // Tests for [RuntimeEnabled] on partial interfaces
   test(() => {
       expect_member_fails('normalAttributePartial');
     }, 'Attribute should not exist on partial interface, with trial disabled');
@@ -483,7 +496,7 @@ expect_failure_bindings_impl = (insecure_context, description_suffix) => {
       expect_static_member_fails('CONSTANT_PARTIAL');
     }, 'Constant should not exist on partial interface, with trial disabled');
 
-  // Tests for combination of [OriginTrialEnabled] and [SecureContext]
+  // Tests for combination of [RuntimeEnabled] and [SecureContext]
   test(() => {
       expect_member_fails('secureAttribute');
     }, 'Secure attribute should not exist, with trial disabled');

@@ -1,7 +1,6 @@
 <!DOCTYPE HTML>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 
 <div id="container">
   <input type="text" id="input" readonly>
@@ -17,22 +16,22 @@ function axElementById(id) {
     return accessibilityController.accessibleElementById(id);
 }
 
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var ax = axElementById("input");
     assert_equals(ax.restriction, "readOnly");
 }, "A readonly input is readonly");
 
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var ax = axElementById("textarea");
     assert_equals(ax.restriction, "disabled");
 }, "A textarea can be disabled");
 
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var ax = axElementById("range-in-fieldset");
     assert_equals(ax.restriction, "disabled");
 }, "A range in a disabled fieldset is disabled");
 
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var ax = axElementById("para-in-fieldset");
     assert_equals(ax.restriction, "none");
 }, "A paragraph in a disabled fieldset is not disabled");

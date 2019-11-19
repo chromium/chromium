@@ -35,7 +35,7 @@ namespace api_test_utils {
 // A helper class to handle waiting for a function response.
 class SendResponseHelper {
  public:
-  explicit SendResponseHelper(UIThreadExtensionFunction* function);
+  explicit SendResponseHelper(ExtensionFunction* function);
   ~SendResponseHelper();
 
   bool has_response() { return response_.get() != nullptr; }
@@ -50,8 +50,7 @@ class SendResponseHelper {
   // Response handler.
   void OnResponse(ExtensionFunction::ResponseType response,
                   const base::ListValue& results,
-                  const std::string& error,
-                  functions::HistogramValue histogram_value);
+                  const std::string& error);
 
   base::RunLoop run_loop_;
   std::unique_ptr<bool> response_;
@@ -76,13 +75,13 @@ std::string GetString(const base::DictionaryValue* val, const std::string& key);
 // current test if |function| returns an error. Takes ownership of
 // |function|. The caller takes ownership of the result.
 std::unique_ptr<base::Value> RunFunctionWithDelegateAndReturnSingleResult(
-    scoped_refptr<UIThreadExtensionFunction> function,
+    scoped_refptr<ExtensionFunction> function,
     const std::string& args,
     content::BrowserContext* context,
     std::unique_ptr<ExtensionFunctionDispatcher> dispatcher,
     RunFunctionFlags flags);
 std::unique_ptr<base::Value> RunFunctionWithDelegateAndReturnSingleResult(
-    scoped_refptr<UIThreadExtensionFunction> function,
+    scoped_refptr<ExtensionFunction> function,
     std::unique_ptr<base::ListValue> args,
     content::BrowserContext* context,
     std::unique_ptr<ExtensionFunctionDispatcher> dispatcher,
@@ -91,11 +90,11 @@ std::unique_ptr<base::Value> RunFunctionWithDelegateAndReturnSingleResult(
 // RunFunctionWithDelegateAndReturnSingleResult, except with a NULL
 // implementation of the Delegate.
 std::unique_ptr<base::Value> RunFunctionAndReturnSingleResult(
-    UIThreadExtensionFunction* function,
+    ExtensionFunction* function,
     const std::string& args,
     content::BrowserContext* context);
 std::unique_ptr<base::Value> RunFunctionAndReturnSingleResult(
-    UIThreadExtensionFunction* function,
+    ExtensionFunction* function,
     const std::string& args,
     content::BrowserContext* context,
     RunFunctionFlags flags);
@@ -103,11 +102,11 @@ std::unique_ptr<base::Value> RunFunctionAndReturnSingleResult(
 // Run |function| with |args| and return the resulting error. Adds an error to
 // the current test if |function| returns a result. Takes ownership of
 // |function|.
-std::string RunFunctionAndReturnError(UIThreadExtensionFunction* function,
+std::string RunFunctionAndReturnError(ExtensionFunction* function,
                                       const std::string& args,
                                       content::BrowserContext* context,
                                       RunFunctionFlags flags);
-std::string RunFunctionAndReturnError(UIThreadExtensionFunction* function,
+std::string RunFunctionAndReturnError(ExtensionFunction* function,
                                       const std::string& args,
                                       content::BrowserContext* context);
 
@@ -121,15 +120,15 @@ std::string RunFunctionAndReturnError(UIThreadExtensionFunction* function,
 // TODO(aa): I'm concerned that this style won't scale to all the bits and bobs
 // we're going to need to frob for all the different extension functions. But
 // we can refactor when we see what is needed.
-bool RunFunction(UIThreadExtensionFunction* function,
+bool RunFunction(ExtensionFunction* function,
                  const std::string& args,
                  content::BrowserContext* context);
-bool RunFunction(UIThreadExtensionFunction* function,
+bool RunFunction(ExtensionFunction* function,
                  const std::string& args,
                  content::BrowserContext* context,
                  std::unique_ptr<ExtensionFunctionDispatcher> dispatcher,
                  RunFunctionFlags flags);
-bool RunFunction(UIThreadExtensionFunction* function,
+bool RunFunction(ExtensionFunction* function,
                  std::unique_ptr<base::ListValue> args,
                  content::BrowserContext* context,
                  std::unique_ptr<ExtensionFunctionDispatcher> dispatcher,

@@ -65,7 +65,6 @@ div {
    display: block
 }
 html {
-   display: block
    color: -internal-root-color
 }
 

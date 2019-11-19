@@ -19,13 +19,10 @@ namespace content {
 
 namespace {
 
-const int kMax503Retries = 3;
+const int kMaxRetryCount = 3;
 
 }  // namespace
 
-// Helper class to fetch resources. Depending on the fetch type,
-// can either fetch to an in-memory string or write the response
-// data out to the disk cache.
 AppCacheUpdateJob::URLFetcher::URLFetcher(const GURL& url,
                                           FetchType fetch_type,
                                           AppCacheUpdateJob* job,
@@ -33,25 +30,25 @@ AppCacheUpdateJob::URLFetcher::URLFetcher(const GURL& url,
     : url_(url),
       job_(job),
       fetch_type_(fetch_type),
-      retry_503_attempts_(0),
+      buffer_size_(buffer_size),
       request_(std::make_unique<UpdateURLLoaderRequest>(
-          job->service_->url_loader_factory_getter(),
+          job->service_->partition(),
           url,
           buffer_size,
-          this)),
-      result_(AppCacheUpdateJob::UPDATE_OK),
-      redirect_response_code_(-1),
-      buffer_size_(buffer_size) {}
+          this)) {
+  DCHECK(job != nullptr);
+}
 
-AppCacheUpdateJob::URLFetcher::~URLFetcher() {}
+AppCacheUpdateJob::URLFetcher::~URLFetcher() = default;
 
 void AppCacheUpdateJob::URLFetcher::Start() {
   request_->SetSiteForCookies(job_->manifest_url_);
   request_->SetInitiator(url::Origin::Create(job_->manifest_url_));
-  if (fetch_type_ == MANIFEST_FETCH && job_->doing_full_update_check_)
+  if (fetch_type_ == FetchType::kManifest && job_->doing_full_update_check_) {
     request_->SetLoadFlags(request_->GetLoadFlags() | net::LOAD_BYPASS_CACHE);
-  else if (existing_response_headers_.get())
+  } else if (existing_response_headers_.get()) {
     AddConditionalHeaders(existing_response_headers_.get());
+  }
   request_->Start();
 }
 
@@ -109,20 +106,23 @@ void AppCacheUpdateJob::URLFetcher::OnResponseStarted(int net_error) {
     }
   }
 
-  // Write response info to storage for URL fetches. Wait for async write
-  // completion before reading any response data.
-  if (fetch_type_ == URL_FETCH || fetch_type_ == MASTER_ENTRY_FETCH) {
-    response_writer_ = job_->CreateResponseWriter();
-    scoped_refptr<HttpResponseInfoIOBuffer> io_buffer =
-        base::MakeRefCounted<HttpResponseInfoIOBuffer>(
-            std::make_unique<net::HttpResponseInfo>(
-                request_->GetResponseInfo()));
-    response_writer_->WriteInfo(
-        io_buffer.get(),
-        base::BindOnce(&URLFetcher::OnWriteComplete, base::Unretained(this)));
-  } else {
+  if (fetch_type_ == FetchType::kManifest ||
+      fetch_type_ == FetchType::kManifestRefetch) {
     ReadResponseData();
+    return;
   }
+
+  // Write response info to storage for non-manifest fetches. Wait for async
+  // write completion before reading any response data.
+  DCHECK(fetch_type_ == FetchType::kResource ||
+         fetch_type_ == FetchType::kNewMasterEntry);
+  response_writer_ = job_->CreateResponseWriter();
+  scoped_refptr<HttpResponseInfoIOBuffer> io_buffer =
+      base::MakeRefCounted<HttpResponseInfoIOBuffer>(
+          std::make_unique<net::HttpResponseInfo>(request_->GetResponseInfo()));
+  response_writer_->WriteInfo(
+      io_buffer.get(),
+      base::BindOnce(&URLFetcher::OnWriteComplete, base::Unretained(this)));
 }
 
 void AppCacheUpdateJob::URLFetcher::OnReadCompleted(net::IOBuffer* buffer,
@@ -192,22 +192,21 @@ void AppCacheUpdateJob::URLFetcher::ReadResponseData() {
 bool AppCacheUpdateJob::URLFetcher::ConsumeResponseData(net::IOBuffer* buffer,
                                                         int bytes_read) {
   DCHECK_GT(bytes_read, 0);
-  switch (fetch_type_) {
-    case MANIFEST_FETCH:
-    case MANIFEST_REFETCH:
-      manifest_data_.append(buffer->data(), bytes_read);
-      break;
-    case URL_FETCH:
-    case MASTER_ENTRY_FETCH:
-      DCHECK(response_writer_.get());
-      response_writer_->WriteData(
-          buffer, bytes_read,
-          base::BindOnce(&URLFetcher::OnWriteComplete, base::Unretained(this)));
-      return false;  // wait for async write completion to continue reading
-    default:
-      NOTREACHED();
+
+  if (fetch_type_ == FetchType::kManifest ||
+      fetch_type_ == FetchType::kManifestRefetch) {
+    manifest_data_.append(buffer->data(), bytes_read);
+    return true;
   }
-  return true;
+
+  DCHECK(fetch_type_ == FetchType::kResource ||
+         fetch_type_ == FetchType::kNewMasterEntry);
+
+  DCHECK(response_writer_.get());
+  response_writer_->WriteData(
+      buffer, bytes_read,
+      base::BindOnce(&URLFetcher::OnWriteComplete, base::Unretained(this)));
+  return false;  // wait for async write completion to continue reading
 }
 
 void AppCacheUpdateJob::URLFetcher::OnResponseCompleted(int net_error) {
@@ -224,34 +223,33 @@ void AppCacheUpdateJob::URLFetcher::OnResponseCompleted(int net_error) {
   }
 
   switch (fetch_type_) {
-    case MANIFEST_FETCH:
+    case FetchType::kResource:
+      job_->HandleResourceFetchCompleted(this, net_error);
+      break;
+    case FetchType::kNewMasterEntry:
+      job_->HandleNewMasterEntryFetchCompleted(this, net_error);
+      break;
+    case FetchType::kManifest:
       job_->HandleManifestFetchCompleted(this, net_error);
       break;
-    case URL_FETCH:
-      job_->HandleUrlFetchCompleted(this, net_error);
-      break;
-    case MASTER_ENTRY_FETCH:
-      job_->HandleMasterEntryFetchCompleted(this, net_error);
-      break;
-    case MANIFEST_REFETCH:
+    case FetchType::kManifestRefetch:
       job_->HandleManifestRefetchCompleted(this, net_error);
       break;
     default:
       NOTREACHED();
   }
-
-  delete this;
 }
 
 bool AppCacheUpdateJob::URLFetcher::MaybeRetryRequest() {
-  if (retry_503_attempts_ >= kMax503Retries ||
+  if (retry_count_ >= kMaxRetryCount ||
       !request_->GetResponseHeaders()->HasHeaderValue("retry-after", "0")) {
     return false;
   }
-  ++retry_503_attempts_;
+  ++retry_count_;
+
   result_ = AppCacheUpdateJob::UPDATE_OK;
   request_ = std::make_unique<UpdateURLLoaderRequest>(
-      job_->service_->url_loader_factory_getter(), url_, buffer_size_, this);
+      job_->service_->partition(), url_, buffer_size_, this);
   Start();
   return true;
 }

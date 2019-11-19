@@ -110,9 +110,7 @@
             
     var test = document.getElementById('test');
     var sel = getSelection();
-    sel.collapse(test,0);
-    sel.modify("move", "right", "lineBoundary");
-    sel.modify("move", "left", "character");
+    sel.collapse(test.firstChild, 3);
     sel.modify("extend", "left", "character");
     assertEqual("test id=test: the right-most character of rendering result of <PDF>abc<PDF> in RTL block should be c", sel.toString(), 'c');
 </script> 

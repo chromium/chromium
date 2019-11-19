@@ -1,9 +1,9 @@
 <!DOCTYPE html>
+<title>Makes sure that preloaded resources trigger the onload event</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/preload/resources/preload_helper.js"></script>
 <script>
-    var t = async_test('Makes sure that preloaded resources trigger the onload event');
     var scriptLoaded = false;
     var styleLoaded = false;
     var imageLoaded = false;
@@ -28,9 +28,18 @@
 <link rel=preload href="resources/dummy.xml" onload="noTypeLoaded = true;">
 <body>
 <script>
-    window.onload = t.step_func(function() {
-        t.step_timeout(function() {
-            verifyPreloadAndRTSupport();
+    setup({single_test: true});
+
+    var iterations = 0;
+
+    function check_finished() {
+        if (styleLoaded && scriptLoaded && imageLoaded && fontLoaded && videoLoaded && audioLoaded &&
+            trackLoaded && !gibberishLoaded && !gibberishErrored && fetchLoaded && !noTypeLoaded) {
+            done();
+        }
+        iterations++;
+        if (iterations == 10) {
+            // At least one is expected to fail, but this should give details to the exact failure(s).
             assert_true(styleLoaded, "style triggered load event");
             assert_true(scriptLoaded, "script triggered load event");
             assert_true(imageLoaded, "image triggered load event");
@@ -42,8 +51,15 @@
             assert_false(gibberishErrored, "gibberish as value triggered error event");
             assert_true(fetchLoaded, "fetch as value triggered load event");
             assert_false(noTypeLoaded, "empty as triggered load event");
-            t.done();
-        }, 5000);
+            done();
+        } else {
+            step_timeout(check_finished, 500);
+        }
+    }
+
+    window.addEventListener("load", function() {
+        verifyPreloadAndRTSupport();
+        step_timeout(check_finished, 500);
     });
 </script>
 </body>

@@ -21,7 +21,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class IntentWithGesturesHandlerTest {
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         IntentWithGesturesHandler.getInstance().clear();
     }
 

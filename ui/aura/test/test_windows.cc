@@ -15,19 +15,6 @@
 
 namespace aura {
 namespace test {
-namespace {
-
-static Env* g_env = nullptr;
-
-}  // namespace
-
-void SetEnvForTestWindows(Env* env) {
-  g_env = env;
-}
-
-Env* GetEnvForTestWindows() {
-  return g_env ? g_env : Env::GetInstance();
-}
 
 Window* CreateTestWindowWithId(int id, Window* parent) {
   return CreateTestWindowWithDelegate(NULL, id, gfx::Rect(), parent);
@@ -59,12 +46,12 @@ Window* CreateTestWindowWithDelegateAndType(WindowDelegate* delegate,
                                             const gfx::Rect& bounds,
                                             Window* parent,
                                             bool show_on_creation) {
-  Window* window = new Window(delegate, type, GetEnvForTestWindows());
+  Window* window = new Window(delegate, type);
   window->set_id(id);
   window->Init(ui::LAYER_TEXTURED);
-  window->SetProperty(aura::client::kResizeBehaviorKey,
-                      ws::mojom::kResizeBehaviorCanResize |
-                          ws::mojom::kResizeBehaviorCanMaximize);
+  window->SetProperty(
+      client::kResizeBehaviorKey,
+      client::kResizeBehaviorCanResize | client::kResizeBehaviorCanMaximize);
   window->SetBounds(bounds);
   if (show_on_creation)
     window->Show();
@@ -99,7 +86,7 @@ std::string ChildWindowIDsAsString(aura::Window* parent) {
        ++i) {
     if (!result.empty())
       result += " ";
-    result += base::IntToString((*i)->id());
+    result += base::NumberToString((*i)->id());
   }
   return result;
 }

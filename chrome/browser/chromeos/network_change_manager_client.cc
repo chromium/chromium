@@ -12,6 +12,7 @@
 #include "chromeos/network/network_state_handler.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/common/network_service_util.h"
+#include "net/base/network_change_notifier.h"
 #include "net/base/network_change_notifier_posix.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 
@@ -19,8 +20,8 @@ namespace chromeos {
 
 NetworkChangeManagerClient::NetworkChangeManagerClient(
     net::NetworkChangeNotifierPosix* network_change_notifier)
-    : connection_type_(net::NetworkChangeNotifier::CONNECTION_NONE),
-      connection_subtype_(net::NetworkChangeNotifier::SUBTYPE_NONE),
+    : connection_type_(net::NetworkChangeNotifier::GetConnectionType()),
+      connection_subtype_(net::NetworkChangeNotifier::GetConnectionSubtype()),
       network_change_notifier_(network_change_notifier) {
   PowerManagerClient::Get()->AddObserver(this);
   NetworkHandler::Get()->network_state_handler()->AddObserver(this, FROM_HERE);
@@ -83,10 +84,12 @@ void NetworkChangeManagerClient::DefaultNetworkChanged(
 }
 
 void NetworkChangeManagerClient::ConnectToNetworkChangeManager() {
-  network::mojom::NetworkChangeManagerRequest request(
-      mojo::MakeRequest(&network_change_manager_));
-  content::GetNetworkService()->GetNetworkChangeManager(std::move(request));
-  network_change_manager_.set_connection_error_handler(base::BindOnce(
+  if (network_change_manager_.is_bound())
+    network_change_manager_.reset();
+
+  content::GetNetworkService()->GetNetworkChangeManager(
+      network_change_manager_.BindNewPipeAndPassReceiver());
+  network_change_manager_.set_disconnect_handler(base::BindOnce(
       &NetworkChangeManagerClient::ReconnectToNetworkChangeManager,
       base::Unretained(this)));
 }
@@ -206,8 +209,6 @@ NetworkChangeManagerClient::ConnectionTypeFromShill(
     return net::NetworkChangeNotifier::CONNECTION_ETHERNET;
   if (type == shill::kTypeWifi)
     return net::NetworkChangeNotifier::CONNECTION_WIFI;
-  if (type == shill::kTypeWimax)
-    return net::NetworkChangeNotifier::CONNECTION_4G;
   if (type == shill::kTypeBluetooth)
     return net::NetworkChangeNotifier::CONNECTION_BLUETOOTH;
 

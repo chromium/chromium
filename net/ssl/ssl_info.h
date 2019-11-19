@@ -43,10 +43,7 @@ class NET_EXPORT SSLInfo {
 
   void Reset();
 
-  bool is_valid() const { return cert.get() != NULL; }
-
-  // Adds the specified |error| to the cert status.
-  void SetCertError(int error);
+  bool is_valid() const { return cert.get() != nullptr; }
 
   // Adds the SignedCertificateTimestamps and policy compliance details
   // from ct_verify_result to |signed_certificate_timestamps| and
@@ -97,9 +94,6 @@ class NET_EXPORT SSLInfo {
   // True if a client certificate was sent to the server.  Note that sending
   // a Certificate message with no client certificate in it does not count.
   bool client_cert_sent = false;
-
-  // True if a channel ID was sent to the server.
-  bool channel_id_sent = false;
 
   // True if data was received over early data on the server. This field is only
   // set for server sockets.

@@ -96,7 +96,7 @@ base::Value ConvertDiscoveredSinksToValues(
   for (const auto& sinks_it : sinks) {
     base::ListValue list;
     for (const auto& inner_sink : sinks_it.second)
-      list.GetList().push_back(ToValue(inner_sink));
+      list.Append(ToValue(inner_sink));
     dict.SetKey(sinks_it.first, std::move(list));
   }
   return dict;
@@ -112,7 +112,7 @@ base::Value ConvertAvailableSinksToValues(
     base::Value list(base::Value::Type::LIST);
     for (const auto& inner_sink : sinks_it.second) {
       std::string sink_id = inner_sink.sink().id();
-      list.GetList().push_back(base::Value(TruncateSinkId(sink_id)));
+      list.Append(base::Value(TruncateSinkId(sink_id)));
     }
     dict.SetKey(sinks_it.first, std::move(list));
   }

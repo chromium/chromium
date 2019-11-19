@@ -13,9 +13,9 @@ source_set("static_content") {
   deps = [
     "//base",
     "//ios/chrome/browser/browser_state",
-    "//ios/chrome/browser/ui",
     "//ios/chrome/browser/url_loading",
-    "//ios/web",
+    "//ios/web/common:web_view_creation_util",
+    "//ios/web/public/deprecated",
     "//net",
     "//ui/base",
   ]
@@ -34,10 +34,9 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/browser_state:test_support",
-    "//ios/chrome/browser/ui",
     "//ios/chrome/browser/url_loading",
     "//ios/testing:ocmock_support",
-    "//ios/web",
+    "//ios/web/public/deprecated",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
     "//net",

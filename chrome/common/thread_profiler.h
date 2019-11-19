@@ -10,16 +10,15 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/profiler/stack_sampling_profiler.h"
+#include "base/profiler/unwinder.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "components/metrics/call_stack_profile_params.h"
+#include "components/metrics/public/mojom/call_stack_profile_collector.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/metrics_proto/sampled_profile.pb.h"
-
-namespace service_manager {
-class Connector;
-}
 
 // PeriodicSamplingScheduler repeatedly schedules periodic sampling of the
 // thread through calls to GetTimeToNextCollection(). This class is exposed
@@ -56,15 +55,30 @@ class ThreadProfiler {
   // Creates a profiler for a main thread and immediately starts it. This
   // function should only be used when profiling the main thread of a
   // process. The returned profiler must be destroyed prior to thread exit to
-  // stop the profiling. SetMainThreadTaskRunner() should be called after the
-  // message loop has been started on the thread.
+  // stop the profiling.
+  //
+  // SetMainThreadTaskRunner() should be called after the message loop has been
+  // started on the thread. It is the caller's responsibility to ensure that
+  // the instance returned by this function is still alive when the static API
+  // SetMainThreadTaskRunner() is used. The latter is static to support Chrome's
+  // set up where the ThreadProfiler is created in chrome/app which cannot be
+  // easily accessed from chrome_browser_main.cc which sets the task runner.
   static std::unique_ptr<ThreadProfiler> CreateAndStartOnMainThread();
 
   // Sets the task runner when profiling on the main thread. This occurs in a
   // separate call from CreateAndStartOnMainThread so that startup profiling can
-  // occur prior to message loop start.
-  void SetMainThreadTaskRunner(
+  // occur prior to message loop start. The task runner is associated with the
+  // instance returned by CreateAndStartOnMainThread(), which must be alive when
+  // this is called.
+  static void SetMainThreadTaskRunner(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+
+  // Sets a callback to create auxiliary unwinders, for handling additional,
+  // non-native-code unwind scenarios. Currently used to support
+  // unwinding V8 JavaScript frames.
+  void SetAuxUnwinderFactory(
+      const base::RepeatingCallback<std::unique_ptr<base::Unwinder>()>&
+          factory);
 
   // Creates a profiler for a child thread and immediately starts it. This
   // should be called from a task posted on the child thread immediately after
@@ -87,8 +101,8 @@ class ThreadProfiler {
   // exposed to the child process, and metrics::mojom::CallStackProfileCollector
   // declared in chrome_content_browser_manifest_overlay.json, for the binding
   // to succeed.
-  static void SetServiceManagerConnectorForChildProcess(
-      service_manager::Connector* connector);
+  static void SetCollectorForChildProcess(
+      mojo::PendingRemote<metrics::mojom::CallStackProfileCollector> collector);
 
  private:
   class WorkIdRecorder;
@@ -106,6 +120,12 @@ class ThreadProfiler {
       scoped_refptr<base::SingleThreadTaskRunner> owning_thread_task_runner,
       base::WeakPtr<ThreadProfiler> thread_profiler);
 
+  // Sets the task runner when profiling on the main thread. This occurs in a
+  // separate call from CreateAndStartOnMainThread so that startup profiling can
+  // occur prior to message loop start.
+  void SetMainThreadTaskRunnerImpl(
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+
   // Posts a delayed task to start the next periodic sampling collection.
   void ScheduleNextPeriodicCollection();
 
@@ -118,13 +138,16 @@ class ThreadProfiler {
 
   std::unique_ptr<WorkIdRecorder> work_id_recorder_;
 
+  base::RepeatingCallback<std::unique_ptr<base::Unwinder>()>
+      aux_unwinder_factory_;
+
   std::unique_ptr<base::StackSamplingProfiler> startup_profiler_;
 
   std::unique_ptr<base::StackSamplingProfiler> periodic_profiler_;
   std::unique_ptr<PeriodicSamplingScheduler> periodic_sampling_scheduler_;
 
   THREAD_CHECKER(thread_checker_);
-  base::WeakPtrFactory<ThreadProfiler> weak_factory_;
+  base::WeakPtrFactory<ThreadProfiler> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ThreadProfiler);
 };

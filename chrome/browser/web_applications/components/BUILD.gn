@@ -4,31 +4,65 @@
 
 source_set("components") {
   sources = [
+    "app_icon_manager.cc",
+    "app_icon_manager.h",
+    "app_registrar.cc",
     "app_registrar.h",
+    "app_registrar_observer.h",
+    "app_registry_controller.cc",
+    "app_registry_controller.h",
+    "app_shortcut_manager.cc",
+    "app_shortcut_manager.h",
+    "app_shortcut_observer.h",
+    "external_install_options.cc",
+    "external_install_options.h",
+    "externally_installed_web_app_prefs.cc",
+    "externally_installed_web_app_prefs.h",
+    "file_handler_manager.cc",
+    "file_handler_manager.h",
+    "install_bounce_metric.cc",
+    "install_bounce_metric.h",
+    "install_finalizer.cc",
     "install_finalizer.h",
+    "install_manager.cc",
     "install_manager.h",
+    "manifest_update_manager.cc",
+    "manifest_update_manager.h",
+    "manifest_update_task.cc",
+    "manifest_update_task.h",
     "pending_app_manager.cc",
     "pending_app_manager.h",
+    "policy/web_app_policy_constants.cc",
+    "policy/web_app_policy_constants.h",
+    "policy/web_app_policy_manager.cc",
+    "policy/web_app_policy_manager.h",
     "web_app_audio_focus_id_map.cc",
     "web_app_audio_focus_id_map.h",
+    "web_app_constants.cc",
     "web_app_constants.h",
     "web_app_data_retriever.cc",
     "web_app_data_retriever.h",
+    "web_app_file_handler_registration.cc",
+    "web_app_file_handler_registration.h",
     "web_app_helpers.cc",
     "web_app_helpers.h",
     "web_app_icon_generator.cc",
     "web_app_icon_generator.h",
     "web_app_install_utils.cc",
     "web_app_install_utils.h",
+    "web_app_provider_base.cc",
+    "web_app_provider_base.h",
+    "web_app_provider_base_factory.cc",
+    "web_app_provider_base_factory.h",
     "web_app_shortcut.cc",
     "web_app_shortcut.h",
-    "web_app_shortcut_chromeos.cc",
-    "web_app_shortcut_mac.h",
-    "web_app_shortcut_mac.mm",
-    "web_app_shortcut_win.cc",
-    "web_app_shortcut_win.h",
-    "web_app_tab_helper_base.cc",
-    "web_app_tab_helper_base.h",
+    "web_app_tab_helper.cc",
+    "web_app_tab_helper.h",
+    "web_app_ui_manager.h",
+    "web_app_url_loader.cc",
+    "web_app_url_loader.h",
+    "web_app_utils.cc",
+    "web_app_utils.h",
 
     # TODO(nigeltao): move these two files from
     # //chrome/browser/web_applications/components to a stand-alone
@@ -42,38 +76,50 @@ source_set("components") {
     "web_app_icon_downloader.h",
   ]
 
+  if (is_chromeos) {
+    sources += [ "web_app_shortcut_chromeos.cc" ]
+  }
+
   if (is_desktop_linux) {
     # Desktop linux, doesn't count ChromeOS.
     sources += [
+      "web_app_file_handler_registration_linux.cc",
       "web_app_shortcut_linux.cc",
       "web_app_shortcut_linux.h",
     ]
   }
 
+  if (is_mac) {
+    sources += [
+      "web_app_shortcut_mac.h",
+      "web_app_shortcut_mac.mm",
+    ]
+  }
+
+  if (is_win) {
+    sources += [
+      "web_app_file_handler_registration_win.cc",
+      "web_app_file_handler_registration_win.h",
+      "web_app_shortcut_win.cc",
+      "web_app_shortcut_win.h",
+    ]
+  }
+
   deps = [
+    "//base/util/values:values_util",
     "//chrome/app/resources:platform_locale_settings",
     "//chrome/app/theme:chrome_unscaled_resources",
     "//chrome/browser/web_applications:web_app_group",
     "//chrome/common",
+    "//components/content_settings/core/browser",
     "//components/crx_file",
     "//components/favicon/content",
+    "//components/keyed_service/content",
+    "//components/pref_registry",
+    "//components/user_manager:user_manager",
     "//content/public/browser",
+    "//extensions/common:common_constants",
     "//skia",
-  ]
-}
-
-source_set("test_support") {
-  testonly = true
-
-  sources = [
-    "test_pending_app_manager.cc",
-    "test_pending_app_manager.h",
-  ]
-
-  deps = [
-    ":components",
-    "//base",
-    "//url",
   ]
 }
 
@@ -81,15 +127,26 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "app_shortcut_manager_unittest.cc",
+    "file_handler_manager_unittest.cc",
     "pending_app_manager_unittest.cc",
+    "web_app_constants_unittest.cc",
     "web_app_data_retriever_unittest.cc",
     "web_app_helpers_unittest.cc",
     "web_app_icon_downloader_unittest.cc",
     "web_app_icon_generator_unittest.cc",
     "web_app_install_utils_unittest.cc",
-    "web_app_shortcut_mac_unittest.mm",
     "web_app_shortcut_unittest.cc",
+    "web_app_utils_unittest.cc",
   ]
+
+  if (is_win) {
+    sources += [ "web_app_file_handler_registration_win_unittest.cc" ]
+  }
+
+  if (is_mac) {
+    sources += [ "web_app_shortcut_mac_unittest.mm" ]
+  }
 
   if (is_desktop_linux) {
     # Desktop linux, doesn't count ChromeOS.
@@ -98,14 +155,38 @@ source_set("unit_tests") {
 
   deps = [
     ":components",
-    ":test_support",
     "//base/test:test_support",
     "//chrome/app/theme:theme_resources",
-    "//chrome/browser/web_applications:web_app_group",
+    "//chrome/browser/web_applications:web_app_test_group",
+    "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/test:test_support",
     "//content/public/browser",
     "//skia",
     "//testing/gmock",
     "//testing/gtest",
+  ]
+
+  if (is_chromeos) {
+    deps += [ "//chrome/browser/chromeos" ]
+  }
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  sources = [
+    "manifest_update_manager_browsertest.cc",
+    "web_app_url_loader_browsertest.cc",
+  ]
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  deps = [
+    ":components",
+    "//chrome/app:command_ids",
+    "//chrome/browser/web_applications:web_applications_test_support",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//net:test_support",
   ]
 }

@@ -4,12 +4,22 @@
 
 // See https://w3c.github.io/ServiceWorker/#cachestorage-interface
 [
+    ActiveScriptWrappable,
     SecureContext,
     Exposed=(Window,Worker)
 ] interface CacheStorage {
-  [CallWith=ScriptState, RaisesException] Promise<any> match(RequestInfo request, optional MultiCacheQueryOptions options);
-  [CallWith=ScriptState] Promise<boolean> has(DOMString cacheName);
+  [CallWith=ScriptState, MeasureAs=CacheStorageRead, RaisesException]
+  Promise<any> match(RequestInfo request,
+                     optional MultiCacheQueryOptions options);
+
+  [CallWith=ScriptState, MeasureAs=CacheStorageRead]
+  Promise<boolean> has(DOMString cacheName);
+
   [CallWith=ScriptState] Promise<Cache> open(DOMString cacheName);
-  [CallWith=ScriptState, ImplementedAs=Delete] Promise<boolean> delete(DOMString cacheName);
-  [CallWith=ScriptState] Promise<sequence<DOMString>> keys();
+
+  [CallWith=ScriptState, MeasureAs=CacheStorageWrite, ImplementedAs=Delete]
+  Promise<boolean> delete(DOMString cacheName);
+
+  [CallWith=ScriptState, MeasureAs=CacheStorageRead]
+  Promise<sequence<DOMString>> keys();
 };

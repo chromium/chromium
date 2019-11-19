@@ -1,0 +1,181 @@
+<!DOCTYPE HTML>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<body>
+
+<script>
+class TestElement extends HTMLElement {
+  constructor() {
+    super();
+    this._internals = this.attachInternals();
+  }
+
+  get internals() {
+    return this._internals;
+  }
+
+  set internals(val) {
+    throw "Can't set internals!";
+  }
+}
+customElements.define("test-element", TestElement);
+
+function createTestElement(id) {
+  const element = document.createElement("test-element");
+  element.id = id;
+  element.innerText = "foo";
+  document.body.appendChild(element);
+  return element;
+}
+
+function axElementById(id) {
+  return accessibilityController.accessibleElementById(id);
+}
+
+test(function() {
+  const element = createTestElement("ariaAtomic");
+  element.role = "status";
+  const axElement = axElementById(element.id);
+  element.internals.ariaAtomic = true;
+  assert_equals(axElement.isAtomic, true,
+    "ariaAtomic can be set through ElementInternals");
+
+  element.internals.ariaAtomic = "false";
+  assert_equals(axElement.isAtomic, false,
+    "ariaAtomic can change through ElementInternals");
+
+  element.ariaAtomic = "true";
+  assert_equals(axElement.isAtomic, true,
+    "ariaAtomic value set on Element overrides value from ElementInternals");
+  element.remove();
+}, "aria-atomic");
+
+test(function() {
+  const element = createTestElement("ariaBusy");
+  element.role = "status";
+  const axElement = axElementById(element.id);
+  element.internals.ariaBusy = true;
+  assert_equals(axElement.isBusy, true,
+    "ariaBusy can be set through ElementInternals");
+
+  element.internals.ariaBusy = "false";
+  assert_equals(axElement.isBusy, false,
+    "ariaBusy can change through ElementInternals");
+
+  element.ariaBusy = "true";
+  assert_equals(axElement.isBusy, true,
+    "ariaBusy value set on Element overrides value from ElementInternals");
+  element.remove();
+}, "aria-busy");
+
+test(function() {
+  const element = createTestElement("ariaChecked");
+  element.tabIndex = 0;
+  element.role = "checkbox";
+  element.innerText = "x";
+  element.internals.ariaChecked = "true";
+  const axElement = axElementById(element.id);
+  assert_equals(axElement.checked, "true",
+    "ariaChecked can be set through ElementInternals");
+
+  element.internals.ariaChecked = "false";
+  assert_equals(axElement.checked, "false",
+    "ariaChecked can change through ElementInternals");
+
+  element.toggleAttribute("checked", true);
+  assert_equals(axElement.checked, "false",
+    "checked attribute on element doesn't affect AX checked value");
+
+  element.internals.ariaChecked = "true";
+  assert_equals(axElement.checked, "true",
+    "ariaChecked value set on Element overrides value from ElementInternals");
+  element.remove();
+}, "aria-checked");
+
+test(function() {
+  const element = createTestElement("ariaCurrent");
+  element.tabIndex = 0;
+  element.role = "checkbox";
+  element.innerText = "x";
+  element.internals.ariaCurrent = "true";
+  const axElement = axElementById(element.id);
+  assert_equals(axElement.current, "true",
+    "ariaCurrent can be set through ElementInternals");
+
+  element.internals.ariaCurrent = "false";
+  assert_equals(axElement.current, "false",
+    "ariaCurrent can change through ElementInternals");
+
+  element.ariaCurrent = "date";
+  assert_equals(axElement.current, "date",
+    "ariaCurrent value set on Element overrides value from ElementInternals");
+  element.remove();
+}, "aria-current");
+
+test(function() {
+  const element = createTestElement("ariaHidden");
+  element.role = "status";
+  const axElement = axElementById(element.id);
+  element.internals.ariaHidden = true;
+  assert_equals(axElement.isIgnored, true,
+    "ariaHidden can be set through ElementInternals");
+
+  element.internals.ariaHidden = "false";
+  assert_equals(axElement.isIgnored, false,
+    "ariaHidden can change through ElementInternals");
+
+  element.ariaHidden = "true";
+  assert_equals(axElement.isIgnored, true,
+    "ariaHidden value set on Element overrides value from ElementInternals");
+  element.remove();
+}, "aria-hidden");
+
+test(function() {
+  const element = createTestElement("ariaValue");
+  element.role = "progressbar";
+  const axElement = axElementById(element.id);
+  element.internals.ariaValueMin = 1;
+  assert_equals(axElement.minValue, 1,
+    "ariaValueMin can be set through ElementInternals");
+
+  element.internals.ariaValueMax = 100;
+  assert_equals(axElement.maxValue, 100,
+    "ariaValueMax can be set through ElementInternals");
+
+  element.internals.ariaValueNow = 42;
+  assert_equals(axElement.intValue, 42,
+    "ariaValueNow can be set through ElementInternals");
+
+  element.internals.ariaValueText = "foo";
+  assert_equals(axElement.valueDescription, "AXValueDescription: foo",
+    "ariaValueText can be set through ElementInternals");
+  element.remove();
+}, "aria-value");
+
+test(function() {
+  const container = document.createElement("div");
+  container.role = "listbox";
+  document.body.appendChild(container);
+
+  const element = document.createElement("test-element");
+  element.role = "option";
+  container.appendChild(element);
+  element.setAttribute("aria-setsize", "2");
+  element.internals.ariaPosInSet = "1";
+  element.id = "posinset";
+  const axElement = axElementById(element.id);
+
+  assert_equals(axElement.setSize, 2,
+    "ariaSetSize can be set through ElementInternals");
+  assert_equals(axElement.posInSet, 1,
+    "ariaPosInSet can be set through ElementInternals");
+
+  element.ariaPosInSet = 2;
+  assert_equals(axElement.posInSet, 2,
+    "ariaPosInSet value set on Element overrides value from ElementInternals");
+  container.remove();
+}, "aria-posinset");
+
+
+</script>
+</body>

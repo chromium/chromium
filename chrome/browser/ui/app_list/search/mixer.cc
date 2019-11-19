@@ -14,11 +14,12 @@
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "base/macros.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/numerics/ranges.h"
 #include "chrome/browser/ui/app_list/app_list_model_updater.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/app_list/search/search_provider.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/ranking_item_util.h"
-#include "chrome/browser/ui/app_list/search/search_result_ranker/recurrence_ranker.h"
+#include "chrome/browser/ui/app_list/search/search_result_ranker/search_result_ranker.h"
 
 namespace app_list {
 
@@ -28,7 +29,14 @@ Mixer::SortData::SortData(ChromeSearchResult* result, double score)
     : result(result), score(score) {}
 
 bool Mixer::SortData::operator<(const SortData& other) const {
-  // This data precedes (less than) |other| if it has higher score.
+  // This data precedes (less than) |other| if it has specified display index or
+  // higher score.
+  ash::SearchResultDisplayIndex index1 = result->display_index();
+  ash::SearchResultDisplayIndex index2 = other.result->display_index();
+  // The |kUndefined| index is larger than other specified indexes.
+  if (index1 != index2)
+    return index1 < index2;
+
   return score > other.score;
 }
 
@@ -43,7 +51,7 @@ class Mixer::Group {
     providers_.emplace_back(provider);
   }
 
-  void FetchResults() {
+  void FetchResults(SearchResultRanker* ranker) {
     results_.clear();
 
     for (const SearchProvider* provider : providers_) {
@@ -53,12 +61,14 @@ class Mixer::Group {
         // We cannot rely on providers to give relevance scores in the range
         // [0.0, 1.0]. Clamp to that range.
         const double relevance =
-            std::min(std::max(result->relevance(), 0.0), 1.0);
+            base::ClampToRange(result->relevance(), 0.0, 1.0);
         double boost = boost_;
         results_.emplace_back(result.get(), relevance * multiplier_ + boost);
       }
     }
 
+    if (ranker)
+      ranker->Rank(&results_);
     std::sort(results_.begin(), results_.end());
   }
 
@@ -79,11 +89,7 @@ class Mixer::Group {
 };
 
 Mixer::Mixer(AppListModelUpdater* model_updater)
-    : model_updater_(model_updater),
-      boost_coefficient_(base::GetFieldTrialParamByFeatureAsDouble(
-          app_list_features::kEnableAdaptiveResultRanker,
-          "boost_coefficient",
-          0.1)) {}
+    : model_updater_(model_updater) {}
 Mixer::~Mixer() = default;
 
 size_t Mixer::AddGroup(size_t max_results, double multiplier, double boost) {
@@ -95,8 +101,8 @@ void Mixer::AddProviderToGroup(size_t group_id, SearchProvider* provider) {
   groups_[group_id]->AddProvider(provider);
 }
 
-void Mixer::MixAndPublish(size_t num_max_results) {
-  FetchResults();
+void Mixer::MixAndPublish(size_t num_max_results, const base::string16& query) {
+  FetchResults(query);
 
   SortedResults results;
   results.reserve(num_max_results);
@@ -115,23 +121,11 @@ void Mixer::MixAndPublish(size_t num_max_results) {
   // result with the same ID).
   RemoveDuplicates(&results);
 
-  // Tweak the rankings using the ranker if it exists.
-  if (app_list_features::IsAdaptiveResultRankerEnabled() && ranker_) {
-    base::flat_map<std::string, float> ranks = ranker_->Rank();
-
-    for (auto& result : results) {
-      RankingItemType type = RankingItemTypeFromSearchResult(*result.result);
-      const auto& rank_it = ranks.find(std::to_string(static_cast<int>(type)));
-      // The ranker only contains entries trained with types relating to files
-      // or the omnibox. This means scores for apps, app shortcuts, and answer
-      // cards will be unchanged.
-      if (rank_it != ranks.end())
-        // Ranker scores are guaranteed to be in [0,1]. But, enforce that the
-        // result of tweaking does not put the score above 3.0, as that may
-        // interfere with apps or answer cards.
-        result.score += std::min(rank_it->second * boost_coefficient_, 3.0f);
-    }
-  }
+  // Zero state search results: if any search provider won't have any results
+  // displayed, but has a high-scoring result that the user hasn't seen many
+  // times, replace a to-be-displayed result with it.
+  if (query.empty() && non_app_ranker_)
+    non_app_ranker_->OverrideZeroStateResults(&results);
 
   std::sort(results.begin(), results.end());
 
@@ -176,27 +170,25 @@ void Mixer::RemoveDuplicates(SortedResults* results) {
   results->swap(final);
 }
 
-void Mixer::FetchResults() {
+void Mixer::FetchResults(const base::string16& query) {
+  if (non_app_ranker_)
+    non_app_ranker_->FetchRankings(query);
   for (const auto& group : groups_)
-    group->FetchResults();
+    group->FetchResults(non_app_ranker_.get());
 }
 
-void Mixer::SetRecurrenceRanker(std::unique_ptr<RecurrenceRanker> ranker) {
-  ranker_ = std::move(ranker);
+void Mixer::SetNonAppSearchResultRanker(
+    std::unique_ptr<SearchResultRanker> ranker) {
+  non_app_ranker_ = std::move(ranker);
 }
 
-void Mixer::Train(const std::string& id, RankingItemType type) {
-  if (!ranker_)
-    return;
+SearchResultRanker* Mixer::GetNonAppSearchResultRanker() {
+  return non_app_ranker_.get();
+}
 
-  if (type == RankingItemType::kFile ||
-      type == RankingItemType::kOmniboxGeneric ||
-      type == RankingItemType::kOmniboxBookmark ||
-      type == RankingItemType::kOmniboxDocument ||
-      type == RankingItemType::kOmniboxHistory ||
-      type == RankingItemType::kOmniboxSearch) {
-    ranker_->Record(std::to_string(static_cast<int>(type)));
-  }
+void Mixer::Train(const AppLaunchData& app_launch_data) {
+  if (non_app_ranker_)
+    non_app_ranker_->Train(app_launch_data);
 }
 
 }  // namespace app_list

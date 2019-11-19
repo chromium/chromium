@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_REPORT_BODY_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_REPORT_BODY_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 
 namespace blink {
@@ -14,6 +15,11 @@ class CORE_EXPORT ReportBody : public ScriptWrappable {
 
  public:
   ~ReportBody() override = default;
+
+  ScriptValue toJSON(ScriptState* script_state) const;
+
+  // This function is public for use in Report::toJSON
+  virtual void BuildJSONValue(V8ObjectBuilder& builder) const = 0;
 };
 
 }  // namespace blink

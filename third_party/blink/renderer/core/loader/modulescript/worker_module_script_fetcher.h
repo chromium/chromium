@@ -17,7 +17,7 @@ class WorkerGlobalScope;
 // https://html.spec.whatwg.org/C/#fetching-scripts-perform-fetch
 // https://html.spec.whatwg.org/C/#worker-processing-model
 class CORE_EXPORT WorkerModuleScriptFetcher final
-    : public GarbageCollectedFinalized<WorkerModuleScriptFetcher>,
+    : public GarbageCollected<WorkerModuleScriptFetcher>,
       public ModuleScriptFetcher {
   USING_GARBAGE_COLLECTED_MIXIN(WorkerModuleScriptFetcher);
 
@@ -27,6 +27,7 @@ class CORE_EXPORT WorkerModuleScriptFetcher final
   // Implements ModuleScriptFetcher.
   void Fetch(FetchParameters&,
              ResourceFetcher*,
+             const Modulator* modulator_for_built_in_modules,
              ModuleGraphLevel,
              ModuleScriptFetcher::Client*) override;
 

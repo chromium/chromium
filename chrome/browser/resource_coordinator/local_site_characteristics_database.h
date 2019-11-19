@@ -10,10 +10,8 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/optional.h"
-#include "chrome/browser/resource_coordinator/site_characteristics.pb.h"
+#include "chrome/browser/performance_manager/persistence/site_data/site_data.pb.h"
 #include "url/origin.h"
-
-class SiteCharacteristicsProto;
 
 namespace resource_coordinator {
 
@@ -24,7 +22,7 @@ class LocalSiteCharacteristicsDatabase {
   // |site_characteristic_proto| should be equal to base::nullopt if the
   // initialization has failed.
   using ReadSiteCharacteristicsFromDBCallback = base::OnceCallback<void(
-      base::Optional<SiteCharacteristicsProto> site_characteristic_proto)>;
+      base::Optional<SiteDataProto> site_characteristic_proto)>;
   using GetDatabaseSizeCallback =
       base::OnceCallback<void(base::Optional<int64_t> num_rows,
                               base::Optional<int64_t> on_disk_size_kb)>;
@@ -43,7 +41,7 @@ class LocalSiteCharacteristicsDatabase {
   // if it does.
   virtual void WriteSiteCharacteristicsIntoDB(
       const url::Origin& origin,
-      const SiteCharacteristicsProto& site_characteristic_proto) = 0;
+      const SiteDataProto& site_characteristic_proto) = 0;
 
   // Removes some entries from the database.
   virtual void RemoveSiteCharacteristicsFromDB(

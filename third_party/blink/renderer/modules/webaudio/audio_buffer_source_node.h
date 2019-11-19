@@ -224,6 +224,10 @@ class AudioBufferSourceNode final : public AudioScheduledSourceNode {
              double grain_duration,
              ExceptionState&);
 
+  // InspectorHelperMixin
+  void ReportDidCreate() final;
+  void ReportWillBeDestroyed() final;
+
  private:
   Member<AudioParam> playback_rate_;
   Member<AudioParam> detune_;

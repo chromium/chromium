@@ -16,7 +16,7 @@
 #include "base/task/post_task.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_impl.h"
 #include "chrome/browser/chrome_content_browser_client.h"
@@ -34,11 +34,11 @@
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/network_service_util.h"
-#include "content/public/common/service_manager_connection.h"
-#include "content/public/common/service_names.mojom.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_base.h"
 #include "content/public/test/browser_test_utils.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/filename_util.h"
 #include "net/nqe/effective_connection_type.h"
 #include "net/nqe/network_quality_estimator.h"
@@ -47,7 +47,6 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/network_quality_tracker.h"
 #include "services/network/public/mojom/network_service_test.mojom.h"
-#include "services/service_manager/public/cpp/connector.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -143,15 +142,8 @@ class TestNetworkQualityObserver
 
 class NetworkQualityEstimatorPrefsBrowserTest : public InProcessBrowserTest {
  public:
-  NetworkQualityEstimatorPrefsBrowserTest()
-      : network_service_enabled_(
-            base::FeatureList::IsEnabled(network::features::kNetworkService)) {
-    EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
-  }
-
   // Simulates a network quality change.
   void SimulateNetworkQualityChange(net::EffectiveConnectionType type) {
-    DCHECK(network_service_enabled_);
     if (!content::IsOutOfProcessNetworkService()) {
       content::GetNetworkTaskRunner()->PostTask(
           FROM_HERE,
@@ -166,11 +158,9 @@ class NetworkQualityEstimatorPrefsBrowserTest : public InProcessBrowserTest {
     DCHECK(partition->GetNetworkContext());
     DCHECK(content::GetNetworkService());
 
-    network::mojom::NetworkServiceTestPtr network_service_test;
-    content::ServiceManagerConnection::GetForProcess()
-        ->GetConnector()
-        ->BindInterface(content::mojom::kNetworkServiceName,
-                        &network_service_test);
+    mojo::Remote<network::mojom::NetworkServiceTest> network_service_test;
+    content::GetNetworkService()->BindTestInterface(
+        network_service_test.BindNewPipeAndPassReceiver());
     base::RunLoop run_loop;
     network_service_test->SimulateNetworkQualityChange(
         type, base::BindOnce([](base::RunLoop* run_loop) { run_loop->Quit(); },
@@ -178,16 +168,7 @@ class NetworkQualityEstimatorPrefsBrowserTest : public InProcessBrowserTest {
     run_loop.Run();
   }
 
-  bool network_service_enabled() const { return network_service_enabled_; }
-
-  base::FilePath GetTempDirectory() { return temp_dir_.GetPath(); }
-
   base::HistogramTester histogram_tester;
-
- private:
-  const bool network_service_enabled_;
-
-  base::ScopedTempDir temp_dir_;
 };
 
 // Verify that prefs are read at startup, and the read prefs are notified to the
@@ -211,11 +192,12 @@ IN_PROC_BROWSER_TEST_F(NetworkQualityEstimatorPrefsBrowserTest,
   base::HistogramTester histogram_tester2;
 
   // Create network context with JSON pref store pointing to the temp file.
-  network::mojom::NetworkContextPtr network_context;
+  mojo::PendingRemote<network::mojom::NetworkContext> network_context;
   network::mojom::NetworkContextParamsPtr context_params =
       network::mojom::NetworkContextParams::New();
   context_params->http_server_properties_path =
-      GetTempDirectory().Append(FILE_PATH_LITERAL("Network Persistent State"));
+      browser()->profile()->GetPath().Append(
+          FILE_PATH_LITERAL("Temp Network Persistent State"));
 
   auto state = base::MakeRefCounted<JsonPrefStore>(
       context_params->http_server_properties_path.value());
@@ -234,7 +216,8 @@ IN_PROC_BROWSER_TEST_F(NetworkQualityEstimatorPrefsBrowserTest,
   loop.Run();
 
   content::GetNetworkService()->CreateNetworkContext(
-      mojo::MakeRequest(&network_context), std::move(context_params));
+      network_context.InitWithNewPipeAndPassReceiver(),
+      std::move(context_params));
 
   RetryForHistogramUntilCountReached(&histogram_tester2, "NQE.Prefs.ReadSize",
                                      1);
@@ -249,9 +232,6 @@ IN_PROC_BROWSER_TEST_F(NetworkQualityEstimatorPrefsBrowserTest, PrefsWritten) {
   // sample. This implies that NQE was notified of the read prefs.
   RetryForHistogramUntilCountReached(&histogram_tester, "NQE.Prefs.ReadSize",
                                      1);
-
-  if (!network_service_enabled())
-    return;
 
   // Change in network quality is guaranteed to trigger a pref write.
   SimulateNetworkQualityChange(net::EFFECTIVE_CONNECTION_TYPE_2G);

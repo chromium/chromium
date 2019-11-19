@@ -12,9 +12,9 @@ PASS (y, x++) is 6
 PASS ((x))++ is 7
 PASS ((window.x))++ is 8
 PASS ((window["x"]))++ is 9
-PASS (y, x)++ threw exception ReferenceError: Invalid left-hand side expression in postfix operation.
-PASS (true ? x : y)++ threw exception ReferenceError: Invalid left-hand side expression in postfix operation.
-PASS x++++ threw exception SyntaxError: Unexpected token ++.
+PASS (y, x)++ threw exception SyntaxError: Invalid left-hand side expression in postfix operation.
+PASS (true ? x : y)++ threw exception SyntaxError: Invalid left-hand side expression in postfix operation.
+PASS x++++ threw exception SyntaxError: Unexpected token '++'.
 PASS x is 0
 PASS y is 0
 PASS successfullyParsed is true

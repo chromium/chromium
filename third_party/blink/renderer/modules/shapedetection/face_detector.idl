@@ -8,6 +8,7 @@
     Constructor(optional FaceDetectorOptions faceDetectorOptions),
     ConstructorCallWith=ExecutionContext,
     Exposed=(Window,Worker),
+    SecureContext,
     MeasureAs=ShapeDetection_FaceDetectorConstructor,
     RuntimeEnabled=ShapeDetection
 ] interface FaceDetector {

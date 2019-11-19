@@ -24,10 +24,10 @@ class MediaStreamAudioSource;
 
 // Provides the part of the audio pipeline delivering audio from a
 // MediaStreamAudioSource to one or more WebMediaStreamAudioSinks. An instance
-// of this class is owned by blink::WebMediaStreamTrack, and clients should use
+// of this class is owned by WebMediaStreamTrack, and clients should use
 // From() to gain access to a MediaStreamAudioTrack.
 class BLINK_PLATFORM_EXPORT MediaStreamAudioTrack
-    : public blink::WebPlatformMediaStreamTrack {
+    : public WebPlatformMediaStreamTrack {
  public:
   explicit MediaStreamAudioTrack(bool is_local_track);
 
@@ -35,7 +35,7 @@ class BLINK_PLATFORM_EXPORT MediaStreamAudioTrack
 
   // Returns the MediaStreamAudioTrack instance owned by the given blink |track|
   // or null.
-  static MediaStreamAudioTrack* From(const blink::WebMediaStreamTrack& track);
+  static MediaStreamAudioTrack* From(const WebMediaStreamTrack& track);
 
   // Provides a weak reference to this MediaStreamAudioTrack which is
   // invalidated when Stop() is called. The weak pointer may only be
@@ -68,7 +68,7 @@ class BLINK_PLATFORM_EXPORT MediaStreamAudioTrack
   // MediaStreamTrack override.
   void SetEnabled(bool enabled) override;
   void SetContentHint(
-      blink::WebMediaStreamTrack::ContentHintType content_hint) override;
+      WebMediaStreamTrack::ContentHintType content_hint) override;
 
   // Returns a unique class identifier. Some subclasses override and use this
   // method to provide safe down-casting to their type.
@@ -81,7 +81,7 @@ class BLINK_PLATFORM_EXPORT MediaStreamAudioTrack
   // Called by MediaStreamAudioSource to notify this track that the flow of
   // audio data has started from the source. |stop_callback| is run by Stop()
   // when the source must halt the flow of audio data to this track.
-  void Start(const base::Closure& stop_callback);
+  void Start(base::OnceClosure stop_callback);
 
   // Called by the MediaStreamAudioDeliverer to notify this track of an audio
   // format change. In turn, all WebMediaStreamAudioSinks will be notified
@@ -100,7 +100,7 @@ class BLINK_PLATFORM_EXPORT MediaStreamAudioTrack
   THREAD_CHECKER(thread_checker_);
 
   // Callback provided to Start() which is run when the audio flow must halt.
-  base::Closure stop_callback_;
+  base::OnceClosure stop_callback_;
 
   // Manages sinks connected to this track and the audio format and data flow.
   MediaStreamAudioDeliverer<WebMediaStreamAudioSink> deliverer_;
@@ -112,7 +112,7 @@ class BLINK_PLATFORM_EXPORT MediaStreamAudioTrack
   std::unique_ptr<media::AudioBus> silent_bus_;
 
   // Provides weak pointers that are valid until Stop() is called.
-  base::WeakPtrFactory<MediaStreamAudioTrack> weak_factory_;
+  base::WeakPtrFactory<MediaStreamAudioTrack> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(MediaStreamAudioTrack);
 };

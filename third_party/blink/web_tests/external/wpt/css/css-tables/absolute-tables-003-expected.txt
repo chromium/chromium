@@ -1,0 +1,23 @@
+This is a testharness.js-based test.
+PASS .table 1
+PASS .table 2
+FAIL .table 3 assert_equals: 
+<table class="table vertical" data-expected-width="50" data-offset-x="150">
+    <tbody><tr>
+      <td class="cell" data-expected-width="46">
+        <div></div>
+      </td>
+    </tr>
+  </tbody></table>
+width expected 50 but got 108
+FAIL .table 4 assert_equals: 
+<table class="table vertical" data-expected-width="50" data-offset-x="150">
+    <tbody><tr>
+      <td class="cell" data-expected-width="46">
+        <div></div>
+      </td>
+    </tr>
+  </tbody></table>
+width expected 50 but got 108
+Harness: the test ran to completion.
+

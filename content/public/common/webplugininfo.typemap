@@ -10,4 +10,4 @@ public_deps = [
   "//skia",
 ]
 
-type_mappings = [ "content.mojom.WebPluginInfo=content::WebPluginInfo" ]
+type_mappings = [ "content.mojom.WebPluginInfo=::content::WebPluginInfo" ]

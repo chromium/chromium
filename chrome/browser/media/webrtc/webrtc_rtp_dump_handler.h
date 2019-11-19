@@ -131,7 +131,7 @@ class WebRtcRtpDumpHandler {
   // The object used to create and write the dump file.
   std::unique_ptr<WebRtcRtpDumpWriter> dump_writer_;
 
-  base::WeakPtrFactory<WebRtcRtpDumpHandler> weak_ptr_factory_;
+  base::WeakPtrFactory<WebRtcRtpDumpHandler> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(WebRtcRtpDumpHandler);
 };

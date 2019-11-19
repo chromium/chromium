@@ -48,7 +48,7 @@
             },
             {
                 "domain": "IndexedDB",
-                "async": ["requestDatabaseNames", "requestDatabase", "requestData", "getKeyGeneratorCurrentNumber", "deleteObjectStoreEntries", "clearObjectStore", "deleteDatabase"]
+                "async": ["requestDatabaseNames", "requestDatabase", "requestData", "getMetadata", "deleteObjectStoreEntries", "clearObjectStore", "deleteDatabase"]
             },
             {
                 "domain": "LayerTree"
@@ -74,7 +74,7 @@
             {
                 "domain": "Page",
                 "exclude": ["getNavigationHistory", "navigateToHistoryEntry", "resetNavigationHistory", "captureScreenshot", "screencastFrameAck", "handleJavaScriptDialog", "setColorPickerEnabled",
-                            "getAppManifest", "setControlNavigations", "processNavigation", "printToPDF", "bringToFront", "setDownloadBehavior", "navigate", "crash", "close", "setWebLifecycleState", "captureSnapshot"],
+                            "getAppManifest", "setControlNavigations", "processNavigation", "printToPDF", "bringToFront", "setDownloadBehavior", "navigate", "crash", "close", "setWebLifecycleState", "captureSnapshot", "getInstallabilityErrors", "setInterceptFileChooserDialog", "handleFileChooser"],
                 "async": ["getResourceContent", "searchInResource"],
                 "exclude_events": ["screencastFrame", "screencastVisibilityChanged", "colorPicked", "interstitialShown", "interstitialHidden", "javascriptDialogOpening", "javascriptDialogClosed", "navigationRequested"]
             },
@@ -84,7 +84,7 @@
             {
                 "domain": "Emulation",
                 "include": ["forceViewport", "resetViewport", "resetPageScaleFactor", "setPageScaleFactor", "setScriptExecutionDisabled", "setTouchEmulationEnabled",
-                            "setEmulatedMedia", "setCPUThrottlingRate", "setVirtualTimePolicy", "setNavigatorOverrides", "setDefaultBackgroundColorOverride", "setDeviceMetricsOverride", "clearDeviceMetricsOverride",
+                            "setEmulatedMedia", "setCPUThrottlingRate", "setVirtualTimePolicy", "setTimezoneOverride", "setNavigatorOverrides", "setDefaultBackgroundColorOverride", "setDeviceMetricsOverride", "clearDeviceMetricsOverride",
                             "setUserAgentOverride", "setScrollbarsHidden", "setDocumentCookieDisabled", "setFocusEmulationEnabled"],
                 "include_events": ["virtualTimeBudgetExpired", "virtualTimeAdvanced", "virtualTimePaused"]
             },
@@ -96,7 +96,10 @@
                 "async": ["getResponseBody", "getRequestPostData"]
             },
             {
-                "domain": "Testing"
+                "domain": "WebAudio"
+            },
+            {
+                "domain": "Media"
             }
         ]
     },
@@ -124,5 +127,9 @@
         "string_header": "third_party/blink/renderer/core/inspector/v8_inspector_string.h",
         "export_macro": "CORE_EXPORT",
         "export_header": "third_party/blink/renderer/core/core_export.h"
+    },
+
+    "crdtp": {
+        "namespace": "crdtp"
     }
 }

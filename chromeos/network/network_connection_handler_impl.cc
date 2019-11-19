@@ -12,9 +12,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/shill_manager_client.h"
-#include "chromeos/dbus/shill_service_client.h"
+#include "chromeos/dbus/shill/shill_manager_client.h"
+#include "chromeos/dbus/shill/shill_service_client.h"
 #include "chromeos/network/client_cert_resolver.h"
 #include "chromeos/network/client_cert_util.h"
 #include "chromeos/network/device_state.h"
@@ -227,7 +226,7 @@ void NetworkConnectionHandlerImpl::ConnectToNetwork(
     const network_handler::ErrorCallback& error_callback,
     bool check_error_state,
     ConnectCallbackMode mode) {
-  NET_LOG_USER("ConnectToNetwork", service_path);
+  NET_LOG_USER("ConnectToNetworkRequested", service_path);
   for (auto& observer : observers_)
     observer.ConnectToNetworkRequested(service_path);
 
@@ -266,7 +265,7 @@ void NetworkConnectionHandlerImpl::ConnectToNetwork(
     }
 
     if (check_error_state) {
-      const std::string& error = network->last_error();
+      const std::string& error = network->GetError();
       if (error == shill::kErrorBadPassphrase) {
         InvokeConnectErrorCallback(service_path, error_callback,
                                    kErrorBadPassphrase);
@@ -466,7 +465,7 @@ void NetworkConnectionHandlerImpl::VerifyConfiguredAndConnect(
   std::string profile;
   service_properties.GetStringWithoutPathExpansion(shill::kProfileProperty,
                                                    &profile);
-  ::onc::ONCSource onc_source = onc::ONC_SOURCE_NONE;
+  ::onc::ONCSource onc_source = ::onc::ONC_SOURCE_NONE;
   const base::DictionaryValue* policy =
       managed_configuration_handler_->FindPolicyByGuidAndProfile(guid, profile,
                                                                  &onc_source);
@@ -482,9 +481,8 @@ void NetworkConnectionHandlerImpl::VerifyConfiguredAndConnect(
       return;
     }
     if (network_state_handler_->OnlyManagedWifiNetworksAllowed() ||
-        base::ContainsValue(
-            managed_configuration_handler_->GetBlacklistedHexSSIDs(),
-            hex_ssid_value->GetString())) {
+        base::Contains(managed_configuration_handler_->GetBlacklistedHexSSIDs(),
+                       hex_ssid_value->GetString())) {
       ErrorCallbackForPendingRequest(service_path, kErrorBlockedByPolicy);
       return;
     }
@@ -511,7 +509,7 @@ void NetworkConnectionHandlerImpl::VerifyConfiguredAndConnect(
       // kL2tpIpsecClientCertIdProperty here (and also in VPNConfigView).
       if (!vpn_client_cert_id.empty() ||
           cert_config_from_policy.client_cert_type !=
-              onc::client_cert::kClientCertTypeNone) {
+              ::onc::client_cert::kClientCertTypeNone) {
         client_cert_type = client_cert::CONFIG_TYPE_IPSEC;
       }
     }
@@ -543,7 +541,7 @@ void NetworkConnectionHandlerImpl::VerifyConfiguredAndConnect(
 
     // Check certificate properties from policy.
     if (cert_config_from_policy.client_cert_type ==
-        onc::client_cert::kPattern) {
+        ::onc::client_cert::kPattern) {
       if (!ClientCertResolver::ResolveClientCertificateSync(
               client_cert_type, cert_config_from_policy, &config_properties)) {
         NET_LOG(ERROR) << "Non matching certificate for: " << service_path;
@@ -678,7 +676,7 @@ void NetworkConnectionHandlerImpl::CallShillConnect(
     const std::string& service_path) {
   NET_LOG_EVENT("Sending Connect Request to Shill", service_path);
   network_state_handler_->ClearLastErrorForNetwork(service_path);
-  DBusThreadManager::Get()->GetShillServiceClient()->Connect(
+  ShillServiceClient::Get()->Connect(
       dbus::ObjectPath(service_path),
       base::Bind(&NetworkConnectionHandlerImpl::HandleShillConnectSuccess,
                  AsWeakPtr(), service_path),
@@ -843,7 +841,7 @@ void NetworkConnectionHandlerImpl::CallShillDisconnect(
     const base::Closure& success_callback,
     const network_handler::ErrorCallback& error_callback) {
   NET_LOG_USER("Disconnect Request", service_path);
-  DBusThreadManager::Get()->GetShillServiceClient()->Disconnect(
+  ShillServiceClient::Get()->Disconnect(
       dbus::ObjectPath(service_path),
       base::Bind(&NetworkConnectionHandlerImpl::HandleShillDisconnectSuccess,
                  AsWeakPtr(), service_path, success_callback),

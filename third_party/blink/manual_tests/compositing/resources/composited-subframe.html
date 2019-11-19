@@ -4,15 +4,15 @@
 <head>
   <style type="text/css" media="screen">
     body { background-color:silver }
-    
+
     .box {
         height: 200px;
         width: 200px;
         margin: 10px;
         padding: 5px;
         background-color: blue;
-        transform: translateZ(0);
-        overflow:hidden;
+        will-change: transform;
+        overflow: hidden;
     }
     .box:hover {
         transform: none;

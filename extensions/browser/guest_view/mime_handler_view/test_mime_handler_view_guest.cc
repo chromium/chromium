@@ -17,8 +17,7 @@ namespace extensions {
 
 TestMimeHandlerViewGuest::TestMimeHandlerViewGuest(
     content::WebContents* owner_web_contents)
-    : MimeHandlerViewGuest(owner_web_contents),
-      weak_ptr_factory_(this) {}
+    : MimeHandlerViewGuest(owner_web_contents) {}
 
 TestMimeHandlerViewGuest::~TestMimeHandlerViewGuest() {}
 
@@ -46,7 +45,7 @@ void TestMimeHandlerViewGuest::CreateWebContents(
   // Delay the creation of the guest's WebContents if |delay_| is set.
   if (delay_) {
     auto delta = base::TimeDelta::FromMilliseconds(delay_);
-    base::PostDelayedTaskWithTraits(
+    base::PostDelayedTask(
         FROM_HERE, {content::BrowserThread::UI},
         base::BindOnce(&TestMimeHandlerViewGuest::CallBaseCreateWebContents,
                        weak_ptr_factory_.GetWeakPtr(),

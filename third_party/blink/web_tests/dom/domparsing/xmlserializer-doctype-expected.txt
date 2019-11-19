@@ -1,2 +1,0 @@
-This tests XMLSerializer.serializeToString() on a DocumentType node that has a document associated with it.
-PASS: the DocumentType node has been successfully serialize to "<!DOCTYPE aDocTypeName PUBLIC "aPublicID" "aSystemID">".

@@ -18,8 +18,10 @@
  */
 
 // https://html.spec.whatwg.org/C/#the-fieldset-element
-[HTMLConstructor]
-interface HTMLFieldSetElement : HTMLElement {
+[
+    Exposed=Window,
+    HTMLConstructor
+] interface HTMLFieldSetElement : HTMLElement {
     [CEReactions, Reflect] attribute boolean disabled;
     [ImplementedAs=formOwner] readonly attribute HTMLFormElement? form;
     [CEReactions, Reflect] attribute DOMString name;

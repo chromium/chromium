@@ -41,8 +41,7 @@ class OfflinePageEvaluationBridge : public OfflinePageModel::Observer,
   void OfflinePageModelLoaded(OfflinePageModel* model) override;
   void OfflinePageAdded(OfflinePageModel* model,
                         const OfflinePageItem& added_page) override;
-  void OfflinePageDeleted(
-      const OfflinePageModel::DeletedPageInfo& page_info) override;
+  void OfflinePageDeleted(const OfflinePageItem& item) override;
 
   // RequestCoordinator::Observer implementation.
   void OnAdded(const SavePageRequest& request) override;

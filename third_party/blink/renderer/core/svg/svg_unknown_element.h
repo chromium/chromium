@@ -45,11 +45,10 @@ namespace blink {
 // layout such elements.
 class SVGUnknownElement final : public SVGElement {
  public:
-  DECLARE_ELEMENT_FACTORY_WITH_TAGNAME(SVGUnknownElement);
 
- private:
   SVGUnknownElement(const QualifiedName&, Document&);
 
+ private:
   bool LayoutObjectIsNeeded(const ComputedStyle&) const override {
     return false;
   }

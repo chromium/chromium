@@ -102,6 +102,7 @@ def UpdateProductsProject(file_input, file_output, configurations, root_dir):
       build_config_template = project.objects[value['buildConfigurations'][0]]
       build_config_template['buildSettings']['CONFIGURATION_BUILD_DIR'] = \
           '$(PROJECT_DIR)/../$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)'
+      build_config_template['buildSettings']['CODE_SIGN_IDENTITY'] = ''
 
       value['buildConfigurations'] = []
       for configuration in configurations:

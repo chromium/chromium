@@ -52,7 +52,7 @@ class PepperFlashDRMHost : public ppapi::host::ResourceHost {
   scoped_refptr<DeviceIDFetcher> fetcher_;
   scoped_refptr<MonitorFinder> monitor_finder_;
 
-  base::WeakPtrFactory<PepperFlashDRMHost> weak_factory_;
+  base::WeakPtrFactory<PepperFlashDRMHost> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PepperFlashDRMHost);
 };

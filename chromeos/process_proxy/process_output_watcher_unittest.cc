@@ -16,11 +16,12 @@
 #include "base/callback.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
-#include "base/message_loop/message_loop.h"
+#include "base/message_loop/message_pump_type.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_util.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 
 namespace chromeos {
@@ -124,13 +125,14 @@ class ProcessOutputWatcherTest : public testing::Test {
     failed_ = !expectations_.CheckExpectations(output, type);
     if (failed_ || expectations_.IsDone()) {
       ASSERT_FALSE(test_case_done_callback_.is_null());
-      message_loop_.task_runner()->PostTask(FROM_HERE,
-                                            test_case_done_callback_);
+      task_environment_.GetMainThreadTaskRunner()->PostTask(
+          FROM_HERE, test_case_done_callback_);
       test_case_done_callback_.Reset();
     }
 
     ASSERT_FALSE(ack_callback.is_null());
-    message_loop_.task_runner()->PostTask(FROM_HERE, ack_callback);
+    task_environment_.GetMainThreadTaskRunner()->PostTask(FROM_HERE,
+                                                          ack_callback);
   }
 
  protected:
@@ -145,7 +147,7 @@ class ProcessOutputWatcherTest : public testing::Test {
     ASSERT_FALSE(output_watch_thread_started_);
     output_watch_thread_.reset(new base::Thread("ProcessOutpuWatchThread"));
     output_watch_thread_started_ = output_watch_thread_->StartWithOptions(
-        base::Thread::Options(base::MessageLoop::TYPE_IO, 0));
+        base::Thread::Options(base::MessagePumpType::IO, 0));
     ASSERT_TRUE(output_watch_thread_started_);
 
     int pt_pipe[2];
@@ -191,7 +193,7 @@ class ProcessOutputWatcherTest : public testing::Test {
 
  private:
   base::Closure test_case_done_callback_;
-  base::MessageLoop message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   std::unique_ptr<base::Thread> output_watch_thread_;
   bool output_watch_thread_started_;
   bool failed_;

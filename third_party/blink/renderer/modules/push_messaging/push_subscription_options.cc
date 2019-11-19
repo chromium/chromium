@@ -4,41 +4,55 @@
 
 #include "third_party/blink/renderer/modules/push_messaging/push_subscription_options.h"
 
-#include "third_party/blink/public/platform/modules/push_messaging/web_push_subscription_options.h"
-#include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/modules/push_messaging/push_subscription_options_init.h"
+#include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/wtf/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
-#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
+#include "third_party/blink/renderer/platform/wtf/text/base64.h"
 
 namespace blink {
 namespace {
 
 const int kMaxApplicationServerKeyLength = 255;
 
-String BufferSourceToString(
-    const ArrayBufferOrArrayBufferView& application_server_key,
+Vector<uint8_t> BufferSourceToVector(
+    const ArrayBufferOrArrayBufferViewOrString& application_server_key,
     ExceptionState& exception_state) {
-  unsigned char* input;
+  char* input;
   int length;
+  Vector<char> decoded_application_server_key;
+  Vector<uint8_t> result;
+
   // Convert the input array into a string of bytes.
   if (application_server_key.IsArrayBuffer()) {
-    input = static_cast<unsigned char*>(
-        application_server_key.GetAsArrayBuffer()->Data());
-    length = application_server_key.GetAsArrayBuffer()->ByteLength();
+    input =
+        static_cast<char*>(application_server_key.GetAsArrayBuffer()->Data());
+    length = application_server_key.GetAsArrayBuffer()
+                 ->DeprecatedByteLengthAsUnsigned();
   } else if (application_server_key.IsArrayBufferView()) {
-    input = static_cast<unsigned char*>(
+    input = static_cast<char*>(
         application_server_key.GetAsArrayBufferView().View()->buffer()->Data());
     length = application_server_key.GetAsArrayBufferView()
                  .View()
                  ->buffer()
-                 ->ByteLength();
+                 ->DeprecatedByteLengthAsUnsigned();
+  } else if (application_server_key.IsString()) {
+    if (!Base64UnpaddedURLDecode(application_server_key.GetAsString(),
+                                 decoded_application_server_key)) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kInvalidCharacterError,
+          "The provided applicationServerKey is not encoded as base64url "
+          "without padding.");
+      return result;
+    }
+    input = reinterpret_cast<char*>(decoded_application_server_key.data());
+    length = decoded_application_server_key.size();
   } else {
     NOTREACHED();
-    return String();
+    return result;
   }
 
   // Check the validity of the sender info. It must either be a 65-byte
@@ -47,39 +61,50 @@ String BufferSourceToString(
   const bool is_vapid = length == 65 && *input == 0x04;
   const bool is_sender_id =
       length > 0 && length < kMaxApplicationServerKeyLength &&
-      (std::find_if_not(input, input + length,
-                        &WTF::IsASCIIDigit<unsigned char>) == input + length);
+      (std::find_if_not(input, input + length, &WTF::IsASCIIDigit<char>) ==
+       input + length);
 
-  if (is_vapid || is_sender_id)
-    return WebString::FromLatin1(input, length);
+  if (is_vapid || is_sender_id) {
+    result.Append(input, length);
+  } else {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidAccessError,
+        "The provided applicationServerKey is not valid.");
+  }
 
-  exception_state.ThrowDOMException(
-      DOMExceptionCode::kInvalidAccessError,
-      "The provided applicationServerKey is not valid.");
-  return String();
+  return result;
 }
 
 }  // namespace
 
 // static
-WebPushSubscriptionOptions PushSubscriptionOptions::ToWeb(
-    const PushSubscriptionOptionsInit* options,
+PushSubscriptionOptions* PushSubscriptionOptions::FromOptionsInit(
+    const PushSubscriptionOptionsInit* options_init,
     ExceptionState& exception_state) {
-  WebPushSubscriptionOptions web_options;
-  web_options.user_visible_only = options->userVisibleOnly();
-  if (options->hasApplicationServerKey()) {
-    web_options.application_server_key =
-        BufferSourceToString(options->applicationServerKey(), exception_state);
+  Vector<uint8_t> application_server_key;
+  if (options_init->hasApplicationServerKey()) {
+    application_server_key.AppendVector(BufferSourceToVector(
+        options_init->applicationServerKey(), exception_state));
   }
-  return web_options;
+
+  return MakeGarbageCollected<PushSubscriptionOptions>(
+      options_init->userVisibleOnly(), application_server_key);
 }
 
 PushSubscriptionOptions::PushSubscriptionOptions(
-    const WebPushSubscriptionOptions& options)
-    : user_visible_only_(options.user_visible_only),
+    bool user_visible_only,
+    const Vector<uint8_t>& application_server_key)
+    : user_visible_only_(user_visible_only),
       application_server_key_(DOMArrayBuffer::Create(
-          options.application_server_key.Latin1().data(),
-          SafeCast<unsigned>(options.application_server_key.length()))) {}
+          application_server_key.data(),
+          SafeCast<unsigned>(application_server_key.size()))) {}
+
+bool PushSubscriptionOptions::IsApplicationServerKeyVapid() const {
+  if (!application_server_key_)
+    return false;
+  return application_server_key_->ByteLengthAsSizeT() == 65 &&
+         static_cast<uint8_t*>(application_server_key_->Data())[0] == 0x04;
+}
 
 void PushSubscriptionOptions::Trace(blink::Visitor* visitor) {
   visitor->Trace(application_server_key_);

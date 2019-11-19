@@ -57,17 +57,10 @@ void ContentAutofillDriverFactory::CreateForWebContentsAndDelegate(
   if (FromWebContents(contents))
     return;
 
-  auto new_factory = std::make_unique<ContentAutofillDriverFactory>(
-      contents, client, app_locale, enable_download_manager, provider);
-  const std::vector<content::RenderFrameHost*> frames =
-      contents->GetAllFrames();
-  for (content::RenderFrameHost* frame : frames) {
-    if (frame->IsRenderFrameLive())
-      new_factory->RenderFrameCreated(frame);
-  }
-
-  contents->SetUserData(kContentAutofillDriverFactoryWebContentsUserDataKey,
-                        std::move(new_factory));
+  contents->SetUserData(
+      kContentAutofillDriverFactoryWebContentsUserDataKey,
+      std::make_unique<ContentAutofillDriverFactory>(
+          contents, client, app_locale, enable_download_manager, provider));
 }
 
 // static
@@ -79,7 +72,7 @@ ContentAutofillDriverFactory* ContentAutofillDriverFactory::FromWebContents(
 
 // static
 void ContentAutofillDriverFactory::BindAutofillDriver(
-    mojom::AutofillDriverAssociatedRequest request,
+    mojo::PendingAssociatedReceiver<mojom::AutofillDriver> pending_receiver,
     content::RenderFrameHost* render_frame_host) {
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(render_frame_host);
@@ -98,7 +91,7 @@ void ContentAutofillDriverFactory::BindAutofillDriver(
 
   ContentAutofillDriver* driver = factory->DriverForFrame(render_frame_host);
   if (driver)
-    driver->BindRequest(std::move(request));
+    driver->BindPendingReceiver(std::move(pending_receiver));
 }
 
 ContentAutofillDriverFactory::ContentAutofillDriverFactory(
@@ -115,17 +108,20 @@ ContentAutofillDriverFactory::ContentAutofillDriverFactory(
 
 ContentAutofillDriver* ContentAutofillDriverFactory::DriverForFrame(
     content::RenderFrameHost* render_frame_host) {
+  AutofillDriver* driver = DriverForKey(render_frame_host);
+
+  // ContentAutofillDriver are created on demand here.
+  if (!driver) {
+    AddForKey(render_frame_host,
+              base::Bind(CreateDriver, render_frame_host, client(), app_locale_,
+                         enable_download_manager_, provider_));
+    driver = DriverForKey(render_frame_host);
+  }
+
   // This cast is safe because AutofillDriverFactory::AddForKey is protected
   // and always called with ContentAutofillDriver instances within
   // ContentAutofillDriverFactory.
-  return static_cast<ContentAutofillDriver*>(DriverForKey(render_frame_host));
-}
-
-void ContentAutofillDriverFactory::RenderFrameCreated(
-    content::RenderFrameHost* render_frame_host) {
-  AddForKey(render_frame_host,
-            base::Bind(CreateDriver, render_frame_host, client(), app_locale_,
-                       enable_download_manager_, provider_));
+  return static_cast<ContentAutofillDriver*>(driver);
 }
 
 void ContentAutofillDriverFactory::RenderFrameDeleted(

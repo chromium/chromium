@@ -20,7 +20,7 @@ class QuietModeFeaturePodControllerTest : public NoSessionAshTestBase {
   void SetUp() override {
     NoSessionAshTestBase::SetUp();
 
-    tray_model_ = std::make_unique<UnifiedSystemTrayModel>();
+    tray_model_ = std::make_unique<UnifiedSystemTrayModel>(nullptr);
     tray_controller_ =
         std::make_unique<UnifiedSystemTrayController>(tray_model_.get());
   }
@@ -58,14 +58,14 @@ class QuietModeFeaturePodControllerTest : public NoSessionAshTestBase {
 TEST_F(QuietModeFeaturePodControllerTest, ButtonVisibilityNotLoggedIn) {
   SetUpButton();
   // If not logged in, it should not be visible.
-  EXPECT_FALSE(button()->visible());
+  EXPECT_FALSE(button()->GetVisible());
 }
 
 TEST_F(QuietModeFeaturePodControllerTest, ButtonVisibilityLoggedIn) {
   CreateUserSessions(1);
   SetUpButton();
   // If logged in, it should be visible.
-  EXPECT_TRUE(button()->visible());
+  EXPECT_TRUE(button()->GetVisible());
 }
 
 TEST_F(QuietModeFeaturePodControllerTest, ButtonVisibilityLocked) {
@@ -73,7 +73,7 @@ TEST_F(QuietModeFeaturePodControllerTest, ButtonVisibilityLocked) {
   BlockUserSession(UserSessionBlockReason::BLOCKED_BY_LOCK_SCREEN);
   SetUpButton();
   // If locked, it should not be visible.
-  EXPECT_FALSE(button()->visible());
+  EXPECT_FALSE(button()->GetVisible());
 }
 
 }  // namespace ash

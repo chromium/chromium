@@ -15,6 +15,7 @@
 #include "base/scoped_observer.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/value_store/value_store_frontend.h"
 
@@ -24,7 +25,6 @@ class BrowserContext;
 
 namespace extensions {
 
-class ExtensionRegistry;
 class ValueStoreFactory;
 
 // A storage area for per-extension state that needs to be persisted to disk.
@@ -123,7 +123,7 @@ class StateStore : public base::SupportsWeakPtr<StateStore>,
   content::NotificationRegistrar registrar_;
 
   ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      extension_registry_observer_;
+      extension_registry_observer_{this};
 
   DISALLOW_COPY_AND_ASSIGN(StateStore);
 };

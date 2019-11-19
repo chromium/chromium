@@ -8,6 +8,7 @@
 #include "base/strings/string_util.h"
 #include "media/base/mime_util.h"
 #include "media/filters/stream_parser_factory.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/mime_util.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
 #include "third_party/blink/public/mojom/mime/mime_registry.mojom-blink.h"
@@ -25,11 +26,11 @@ struct MimeRegistryPtrHolder {
  public:
   MimeRegistryPtrHolder() {
     Platform::Current()->GetInterfaceProvider()->GetInterface(
-        mojo::MakeRequest(&mime_registry));
+        mime_registry.BindNewPipeAndPassReceiver());
   }
   ~MimeRegistryPtrHolder() = default;
 
-  mojom::blink::MimeRegistryPtr mime_registry;
+  mojo::Remote<mojom::blink::MimeRegistry> mime_registry;
 };
 
 std::string ToASCIIOrEmpty(const WebString& string) {
@@ -109,14 +110,6 @@ bool MIMETypeRegistry::IsSupportedImageMIMETypeForEncoding(
           EqualIgnoringASCIICase(mime_type, "image/webp"));
 }
 
-bool MIMETypeRegistry::IsModernImageMIMEType(const String& mime_type) {
-  return (EqualIgnoringASCIICase(mime_type, "image/gif") ||
-          EqualIgnoringASCIICase(mime_type, "image/jpeg") ||
-          EqualIgnoringASCIICase(mime_type, "image/png") ||
-          EqualIgnoringASCIICase(mime_type, "image/svg+xml") ||
-          EqualIgnoringASCIICase(mime_type, "image/webp"));
-}
-
 bool MIMETypeRegistry::IsSupportedJavaScriptMIMEType(const String& mime_type) {
   return blink::IsSupportedJavascriptMimeType(ToLowerASCIIOrEmpty(mime_type));
 }
@@ -166,16 +159,16 @@ MIMETypeRegistry::SupportsType MIMETypeRegistry::SupportsMediaMIMEType(
       media::IsSupportedMediaFormat(ascii_mime_type, codec_vector));
 }
 
-bool MIMETypeRegistry::IsSupportedMediaSourceMIMEType(const String& mime_type,
-                                                      const String& codecs) {
+MIMETypeRegistry::SupportsType MIMETypeRegistry::SupportsMediaSourceMIMEType(
+    const String& mime_type,
+    const String& codecs) {
   const std::string ascii_mime_type = ToLowerASCIIOrEmpty(mime_type);
   if (ascii_mime_type.empty())
-    return false;
+    return kIsNotSupported;
   std::vector<std::string> parsed_codec_ids;
   media::SplitCodecs(ToASCIIOrEmpty(codecs), &parsed_codec_ids);
-  return static_cast<MIMETypeRegistry::SupportsType>(
-      media::StreamParserFactory::IsTypeSupported(ascii_mime_type,
-                                                  parsed_codec_ids));
+  return static_cast<SupportsType>(media::StreamParserFactory::IsTypeSupported(
+      ascii_mime_type, parsed_codec_ids));
 }
 
 bool MIMETypeRegistry::IsJavaAppletMIMEType(const String& mime_type) {
@@ -203,6 +196,21 @@ bool MIMETypeRegistry::IsSupportedFontMIMEType(const String& mime_type) {
 
 bool MIMETypeRegistry::IsSupportedTextTrackMIMEType(const String& mime_type) {
   return EqualIgnoringASCIICase(mime_type, "text/vtt");
+}
+
+bool MIMETypeRegistry::IsLossyImageMIMEType(const String& mime_type) {
+  return EqualIgnoringASCIICase(mime_type, "image/jpeg") ||
+         EqualIgnoringASCIICase(mime_type, "image/jpg") ||
+         EqualIgnoringASCIICase(mime_type, "image/pjpeg");
+}
+
+bool MIMETypeRegistry::IsLosslessImageMIMEType(const String& mime_type) {
+  return EqualIgnoringASCIICase(mime_type, "image/bmp") ||
+         EqualIgnoringASCIICase(mime_type, "image/gif") ||
+         EqualIgnoringASCIICase(mime_type, "image/png") ||
+         EqualIgnoringASCIICase(mime_type, "image/webp") ||
+         EqualIgnoringASCIICase(mime_type, "image/x-xbitmap") ||
+         EqualIgnoringASCIICase(mime_type, "image/x-png");
 }
 
 }  // namespace blink

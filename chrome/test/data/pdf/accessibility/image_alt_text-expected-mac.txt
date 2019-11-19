@@ -1,0 +1,7 @@
+AXGroup AXDescription='Page 1'
+++AXGroup
+++++AXGroup AXDescription='Page 1'
+++++++AXGroup
+++++++++AXImage AXDescription='Image 1'
+++++++++AXImage AXDescription='Image 2'
+++++++++AXImage AXDescription='Image 3'

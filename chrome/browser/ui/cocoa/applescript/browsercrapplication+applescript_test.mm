@@ -45,7 +45,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCrApplicationAppleScriptTest, Creation) {
 
 // Insert a new window.
 IN_PROC_BROWSER_TEST_F(BrowserCrApplicationAppleScriptTest,
-                       FLAKY_InsertWindow) {
+                       DISABLED_InsertWindow) {
   // Emulate what applescript would do when creating a new window.
   // Emulate a script like |set var to make new window with properties
   // {visible:false}|.

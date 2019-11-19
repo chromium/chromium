@@ -77,3 +77,15 @@ constants.FILES_QUICK_VIEW_HTML = 'foreground/elements/files_quick_view.html';
  * @type {string}
  */
 constants.DRIVE_WELCOME_CSS = 'foreground/css/drive_welcome.css';
+
+/**
+ * Name of the default crostini VM.
+ * @const
+ */
+constants.DEFAULT_CROSTINI_VM = 'termina';
+
+/**
+ * Name of the Plugin VM.
+ * @const
+ */
+constants.PLUGIN_VM = 'PvmDefault';

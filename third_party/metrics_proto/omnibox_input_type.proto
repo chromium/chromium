@@ -18,8 +18,8 @@ package metrics;
 // probably intends to type more and have it eventually become a URL, so we
 // need to make sure we still run it through inline autocomplete.
 enum OmniboxInputType {
-  // Empty input (should not reach here)
-  INVALID = 0;
+  // Empty input
+  EMPTY = 0;
 
   // Valid input whose type cannot be determined
   UNKNOWN = 1;

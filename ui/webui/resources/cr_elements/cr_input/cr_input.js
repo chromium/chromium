@@ -2,6 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+(function() {
+
+/**
+ * Input types supported by cr-input.
+ * @type {!Set<string>}
+ */
+const SUPPORTED_INPUT_TYPES = new Set([
+  'number',
+  'password',
+  'search',
+  'text',
+  'url',
+]);
+
 /**
  * @fileoverview 'cr-input' is a component similar to native input.
  *
@@ -17,7 +31,7 @@
  *   readonly
  *   required
  *   tabindex
- *   type (only 'text', 'password', 'number', and 'search' supported)
+ *   type (see |SUPPORTED_INPUT_TYPES| above)
  *   value
  *
  * Additional attributes that you can use with cr-input:
@@ -31,14 +45,17 @@
  * center-aligned with the input field, regardless of position of the label and
  * error-message. Example:
  *   <cr-input>
- *     <paper-button slot="suffix"></paper-button>
+ *     <cr-button slot="suffix"></cr-button>
  *   </cr-input>
  */
 Polymer({
   is: 'cr-input',
 
   properties: {
-    ariaLabel: String,
+    ariaLabel: {
+      type: String,
+      value: '',
+    },
 
     autofocus: {
       type: Boolean,
@@ -109,6 +126,7 @@ Polymer({
 
     placeholder: {
       type: String,
+      value: null,
       observer: 'placeholderChanged_',
     },
 
@@ -131,7 +149,8 @@ Polymer({
 
     type: {
       type: String,
-      value: 'text',  // Only 'text', 'password', 'search' are supported.
+      value: 'text',
+      observer: 'onTypeChanged_',
     },
 
     value: {
@@ -156,11 +175,6 @@ Polymer({
 
   /** @override */
   attached: function() {
-    const ariaLabel = this.ariaLabel || this.label || this.placeholder;
-    if (ariaLabel) {
-      this.inputElement.setAttribute('aria-label', ariaLabel);
-    }
-
     // Run this for the first time in attached instead of in disabledChanged_
     // since this.tabindex might not be set yet then.
     if (this.disabled) {
@@ -168,9 +182,24 @@ Polymer({
     }
   },
 
+  /** @private */
+  onTypeChanged_: function() {
+    // Check that the 'type' is one of the supported types.
+    assert(SUPPORTED_INPUT_TYPES.has(this.type));
+  },
+
   /** @return {!HTMLInputElement} */
   get inputElement() {
-    return this.$.input;
+    return /** @type {!HTMLInputElement} */ (this.$.input);
+  },
+
+  /**
+   * Returns the aria label to be used with the input element.
+   * @return {string}
+   * @private
+   */
+  getAriaLabel_: function(ariaLabel, label, placeholder) {
+    return ariaLabel || label || placeholder;
   },
 
   /** @private */
@@ -217,7 +246,7 @@ Polymer({
 
   /** @private */
   onFocus_: function() {
-    if (!this.focusInput_()) {
+    if (!this.focusInput()) {
       return;
     }
     // Always select the <input> element on focus. TODO(stevenjb/scottchen):
@@ -227,10 +256,12 @@ Polymer({
   },
 
   /**
+   * Focuses the input element.
+   * TODO(crbug.com/882612): Replace this with focus() after resolving the text
+   * selection issue described in onFocus_().
    * @return {boolean} Whether the <input> element was focused.
-   * @private
    */
-  focusInput_: function() {
+  focusInput: function() {
     if (this.shadowRoot.activeElement == this.inputElement) {
       return false;
     }
@@ -285,7 +316,6 @@ Polymer({
    * 1) Host doesn't get focused when the browser moves the focus backward.
    * 2) focus now escaped the shadow-dom of this element, so that it'll
    *    correctly obey non-zero tabindex ordering of the containing document.
-   * TODO(scottchen): check if we still need this after switching to Polymer 2.
    * @private
    */
   onInputKeydown_: function(e) {
@@ -339,7 +369,7 @@ Polymer({
    * @param {number=} end
    */
   select: function(start, end) {
-    this.focusInput_();
+    this.focusInput();
     if (start !== undefined && end !== undefined) {
       this.inputElement.setSelectionRange(start, end);
     } else {
@@ -355,3 +385,4 @@ Polymer({
     return !this.invalid;
   },
 });
+})();

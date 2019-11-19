@@ -11,18 +11,21 @@
 #include "base/time/default_tick_clock.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
+#include "third_party/blink/renderer/platform/scheduler/common/ukm_task_sampler.h"
 
 namespace blink {
 namespace scheduler {
 
-using base::sequence_manager::TaskQueue;
 using base::sequence_manager::SequenceManager;
+using base::sequence_manager::TaskQueue;
 using base::sequence_manager::TaskTimeObserver;
 using base::sequence_manager::TimeDomain;
 
-SchedulerHelper::SchedulerHelper(
-    std::unique_ptr<SequenceManager> sequence_manager)
-    : sequence_manager_(std::move(sequence_manager)), observer_(nullptr) {
+SchedulerHelper::SchedulerHelper(SequenceManager* sequence_manager)
+    : sequence_manager_(sequence_manager),
+      observer_(nullptr),
+      ukm_task_sampler_(sequence_manager_->GetMetricRecordingSettings()
+                            .task_sampling_rate_for_recording_cpu_time) {
   sequence_manager_->SetWorkBatchSize(4);
 }
 
@@ -37,6 +40,8 @@ void SchedulerHelper::InitDefaultQueues(
 
   DCHECK(sequence_manager_);
   sequence_manager_->SetDefaultTaskRunner(default_task_runner_);
+
+  blink_task_executor_.emplace(default_task_runner_, sequence_manager_);
 }
 
 SchedulerHelper::~SchedulerHelper() {
@@ -47,8 +52,9 @@ void SchedulerHelper::Shutdown() {
   CheckOnValidThread();
   if (!sequence_manager_)
     return;
+  ShutdownAllQueues();
   sequence_manager_->SetObserver(nullptr);
-  sequence_manager_.reset();
+  sequence_manager_ = nullptr;
 }
 
 scoped_refptr<base::SingleThreadTaskRunner>
@@ -58,32 +64,30 @@ SchedulerHelper::DefaultTaskRunner() {
 
 void SchedulerHelper::SetWorkBatchSizeForTesting(int work_batch_size) {
   CheckOnValidThread();
-  DCHECK(sequence_manager_.get());
+  DCHECK(sequence_manager_);
   sequence_manager_->SetWorkBatchSize(work_batch_size);
 }
 
 bool SchedulerHelper::GetAndClearSystemIsQuiescentBit() {
   CheckOnValidThread();
-  DCHECK(sequence_manager_.get());
+  DCHECK(sequence_manager_);
   return sequence_manager_->GetAndClearSystemIsQuiescentBit();
 }
 
-void SchedulerHelper::AddTaskObserver(
-    base::MessageLoop::TaskObserver* task_observer) {
+void SchedulerHelper::AddTaskObserver(base::TaskObserver* task_observer) {
   CheckOnValidThread();
   if (sequence_manager_) {
     static_cast<base::sequence_manager::internal::SequenceManagerImpl*>(
-        sequence_manager_.get())
+        sequence_manager_)
         ->AddTaskObserver(task_observer);
   }
 }
 
-void SchedulerHelper::RemoveTaskObserver(
-    base::MessageLoop::TaskObserver* task_observer) {
+void SchedulerHelper::RemoveTaskObserver(base::TaskObserver* task_observer) {
   CheckOnValidThread();
   if (sequence_manager_) {
     static_cast<base::sequence_manager::internal::SequenceManagerImpl*>(
-        sequence_manager_.get())
+        sequence_manager_)
         ->RemoveTaskObserver(task_observer);
   }
 }
@@ -157,7 +161,7 @@ base::TimeTicks SchedulerHelper::NowTicks() const {
 void SchedulerHelper::SetTimerSlack(base::TimerSlack timer_slack) {
   if (sequence_manager_) {
     static_cast<base::sequence_manager::internal::SequenceManagerImpl*>(
-        sequence_manager_.get())
+        sequence_manager_)
         ->SetTimerSlack(timer_slack);
   }
 }
@@ -176,6 +180,19 @@ bool SchedulerHelper::HasCPUTimingForEachTask() const {
         .records_cpu_time_for_all_tasks();
   }
   return false;
+}
+
+SchedulerHelper::BlinkTaskExecutor::BlinkTaskExecutor(
+    scoped_refptr<base::SingleThreadTaskRunner> default_task_queue,
+    base::sequence_manager::SequenceManager* sequence_manager)
+    : base::SimpleTaskExecutor(sequence_manager, std::move(default_task_queue)),
+      sequence_manager_(sequence_manager) {}
+
+SchedulerHelper::BlinkTaskExecutor::~BlinkTaskExecutor() = default;
+
+const scoped_refptr<base::SequencedTaskRunner>&
+SchedulerHelper::BlinkTaskExecutor::GetContinuationTaskRunner() {
+  return sequence_manager_->GetTaskRunnerForCurrentTask();
 }
 
 }  // namespace scheduler

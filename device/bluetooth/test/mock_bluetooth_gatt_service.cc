@@ -35,6 +35,10 @@ MockBluetoothGattService::MockBluetoothGattService(
       .WillByDefault(Invoke([this](const std::string& id) {
         return BluetoothRemoteGattService::GetCharacteristic(id);
       }));
+  ON_CALL(*this, GetCharacteristicsByUUID(_))
+      .WillByDefault(Invoke([this](const BluetoothUUID& uuid) {
+        return BluetoothRemoteGattService::GetCharacteristicsByUUID(uuid);
+      }));
 }
 
 MockBluetoothGattService::~MockBluetoothGattService() = default;

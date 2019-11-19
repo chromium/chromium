@@ -18,6 +18,7 @@
 #include "chromeos/services/secure_channel/pending_connection_manager.h"
 #include "chromeos/services/secure_channel/public/cpp/shared/connection_priority.h"
 #include "chromeos/services/secure_channel/public/mojom/secure_channel.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace device {
 class BluetoothAdapter;
@@ -93,13 +94,13 @@ class SecureChannelImpl : public mojom::SecureChannel,
       const multidevice::RemoteDevice& local_device,
       const std::string& feature,
       ConnectionPriority connection_priority,
-      mojom::ConnectionDelegatePtr delegate) override;
+      mojo::PendingRemote<mojom::ConnectionDelegate> delegate) override;
   void InitiateConnectionToDevice(
       const multidevice::RemoteDevice& device_to_connect,
       const multidevice::RemoteDevice& local_device,
       const std::string& feature,
       ConnectionPriority connection_priority,
-      mojom::ConnectionDelegatePtr delegate) override;
+      mojo::PendingRemote<mojom::ConnectionDelegate> delegate) override;
 
   // ActiveConnectionManager::Delegate:
   void OnDisconnected(const ConnectionDetails& connection_details) override;

@@ -11,13 +11,17 @@
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/shared_memory.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "cc/paint/paint_canvas.h"
+#include "components/printing/common/print.mojom.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "content/public/renderer/render_frame_observer_tracker.h"
+#include "mojo/public/cpp/bindings/associated_receiver_set.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "printing/buildflags/buildflags.h"
 #include "printing/common/metafile_utils.h"
 #include "third_party/blink/public/web/web_node.h"
@@ -27,7 +31,6 @@
 struct PrintMsg_Print_Params;
 struct PrintMsg_PrintPages_Params;
 struct PrintMsg_PrintFrame_Params;
-struct PrintHostMsg_DidPrintContent_Params;
 struct PrintHostMsg_SetOptionsFromDocument_Params;
 
 // RenderViewTest-based tests crash on Android
@@ -86,7 +89,8 @@ class FrameReference {
 // copying the DOM of the document and creating a new WebView with the contents.
 class PrintRenderFrameHelper
     : public content::RenderFrameObserver,
-      public content::RenderFrameObserverTracker<PrintRenderFrameHelper> {
+      public content::RenderFrameObserverTracker<PrintRenderFrameHelper>,
+      public mojom::PrintRenderFrame {
  public:
   class Delegate {
    public:
@@ -136,7 +140,8 @@ class PrintRenderFrameHelper
   friend class PrintRenderFrameHelperTestBase;
   FRIEND_TEST_ALL_PREFIXES(MAYBE_PrintRenderFrameHelperPreviewTest,
                            BlockScriptInitiatedPrinting);
-  FRIEND_TEST_ALL_PREFIXES(MAYBE_PrintRenderFrameHelperTest, OnPrintPages);
+  FRIEND_TEST_ALL_PREFIXES(MAYBE_PrintRenderFrameHelperTest,
+                           PrintRequestedPages);
   FRIEND_TEST_ALL_PREFIXES(MAYBE_PrintRenderFrameHelperTest,
                            BlockScriptInitiatedPrinting);
   FRIEND_TEST_ALL_PREFIXES(MAYBE_PrintRenderFrameHelperTest,
@@ -145,6 +150,14 @@ class PrintRenderFrameHelper
   FRIEND_TEST_ALL_PREFIXES(MAYBE_PrintRenderFrameHelperTest, PrintLayoutTest);
   FRIEND_TEST_ALL_PREFIXES(MAYBE_PrintRenderFrameHelperTest, PrintWithIframe);
 #endif  // defined(OS_WIN) || defined(OS_MACOSX)
+
+  // CREATE_IN_PROGRESS signifies that the preview document is being rendered
+  // asynchronously by a PrintRenderer.
+  enum CreatePreviewDocumentResult {
+    CREATE_SUCCESS,
+    CREATE_IN_PROGRESS,
+    CREATE_FAIL,
+  };
 
   enum PrintingResult {
     OK,
@@ -157,7 +170,8 @@ class PrintRenderFrameHelper
   };
 
   // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
+  // numeric values should never be reused.  Updates need to be reflected in
+  // enum PrintPreviewFailureType in tools/metrics/histograms/enums.xml.
   enum PrintPreviewErrorBuckets {
     PREVIEW_ERROR_NONE = 0,  // Always first.
     PREVIEW_ERROR_BAD_SETTING = 1,
@@ -167,6 +181,7 @@ class PrintRenderFrameHelper
     PREVIEW_ERROR_MAC_DRAFT_METAFILE_INIT_FAILED_DEPRECATED = 5,
     PREVIEW_ERROR_PAGE_RENDERED_WITHOUT_METAFILE_DEPRECATED = 6,
     PREVIEW_ERROR_INVALID_PRINTER_SETTINGS = 7,
+    PREVIEW_ERROR_METAFILE_CAPTURE_FAILED = 8,
     PREVIEW_ERROR_LAST_ENUM  // Always last.
   };
 
@@ -182,26 +197,48 @@ class PrintRenderFrameHelper
     kScripted,
   };
 
+  // Helper to make it easy to correctly call IPCReceived() and IPCProcessed().
+  class ScopedIPC {
+   public:
+    explicit ScopedIPC(base::WeakPtr<PrintRenderFrameHelper> weak_this);
+    ScopedIPC(const ScopedIPC&) = delete;
+    ScopedIPC& operator=(const ScopedIPC&) = delete;
+    ~ScopedIPC();
+
+   private:
+    const base::WeakPtr<PrintRenderFrameHelper> weak_this_;
+  };
+
   // RenderFrameObserver implementation.
   void OnDestruct() override;
   void DidStartNavigation(
       const GURL& url,
       base::Optional<blink::WebNavigationType> navigation_type) override;
-  void DidFailProvisionalLoad(const blink::WebURLError& error) override;
+  void DidFailProvisionalLoad() override;
   void DidFinishLoad() override;
   void ScriptedPrint(bool user_initiated) override;
   bool OnMessageReceived(const IPC::Message& message) override;
 
-  // Message handlers ---------------------------------------------------------
-  void OnPrintPages();
-  void OnPrintForSystemDialog();
+  void BindPrintRenderFrameReceiver(
+      mojo::PendingAssociatedReceiver<mojom::PrintRenderFrame> receiver);
+
+  // printing::mojom::PrintRenderFrame:
+  void PrintRequestedPages() override;
+  void PrintForSystemDialog() override;
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
-  void OnInitiatePrintPreview(bool has_selection);
+  void InitiatePrintPreview(
+      mojom::PrintRendererAssociatedPtrInfo print_renderer,
+      bool has_selection) override;
+  void OnPrintPreviewDialogClosed() override;
+#endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
+  void PrintingDone(bool success) override;
+  void SetPrintingEnabled(bool enabled) override;
+
+  // Message handlers ---------------------------------------------------------
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
   void OnPrintPreview(const base::DictionaryValue& settings);
-  void OnClosePrintPreviewDialog();
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
   void OnPrintFrameContent(const PrintMsg_PrintFrame_Params& params);
-  void OnPrintingDone(bool success);
 
   // Get |page_size| and |content_area| information from
   // |page_layout_in_points|.
@@ -221,22 +258,31 @@ class PrintRenderFrameHelper
   void OnFramePreparedForPreviewDocument();
 
   // Initialize the print preview document.
-  bool CreatePreviewDocument();
+  CreatePreviewDocumentResult CreatePreviewDocument();
 
   // Renders a print preview page. |page_number| is 0-based.
   // Returns true if print preview should continue, false on failure.
-  bool RenderPreviewPage(int page_number,
-                         const PrintMsg_Print_Params& print_params);
+  bool RenderPreviewPage(int page_number);
 
   // Finalize the print ready preview document.
   bool FinalizePrintReadyDocument();
 
+  // Called after a preview document has been created by a PrintRenderer.
+  void OnPreviewDocumentCreated(
+      int document_cookie,
+      base::TimeTicks begin_time,
+      base::ReadOnlySharedMemoryRegion preview_document_region);
+
+  // Finish processing the preview document created by a PrintRenderer (record
+  // the render time, update the PrintPreviewContext, and finalize the print
+  // ready preview document).
+  bool ProcessPreviewDocument(
+      base::TimeTicks begin_time,
+      base::ReadOnlySharedMemoryRegion preview_document_region);
+
   // Helper method to calculate the scale factor for fit-to-page.
   int GetFitToPageScaleFactor(const gfx::Rect& printable_area_in_points);
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
-
-  // Enable/Disable printing.
-  void OnSetPrintingEnabled(bool enabled);
 
   // Main printing code -------------------------------------------------------
 
@@ -316,9 +362,11 @@ class PrintRenderFrameHelper
 
   // Helper methods -----------------------------------------------------------
 
-  bool CopyMetafileDataToReadOnlySharedMem(
-      const MetafileSkia& metafile,
-      PrintHostMsg_DidPrintContent_Params* params);
+  // Increments the IPC nesting level when an IPC message is received.
+  void IPCReceived();
+
+  // Decrements the IPC nesting level once an IPC message has been processed.
+  void IPCProcessed();
 
   // Helper method to get page layout in points and fit to page if needed.
   static void ComputePageLayoutInPointsForCss(
@@ -394,6 +442,15 @@ class PrintRenderFrameHelper
   // Used to check the prerendering status.
   const std::unique_ptr<Delegate> delegate_;
 
+  // Settings used by a PrintRenderer to create a preview document.
+  base::Value print_renderer_job_settings_;
+
+  // Used to render print documents from an external source (ARC, Crostini,
+  // etc.).
+  mojom::PrintRendererAssociatedPtr print_renderer_;
+
+  mojo::AssociatedReceiverSet<mojom::PrintRenderFrame> receivers_;
+
   // Keeps track of the state of print preview between messages.
   // TODO(vitalybuka): Create PrintPreviewContext when needed and delete after
   // use. Now it's interaction with various messages is confusing.
@@ -421,6 +478,10 @@ class PrintRenderFrameHelper
     // rendering took.
     void RenderedPreviewPage(const base::TimeDelta& page_time);
 
+    // Called after a preview document gets rendered by a PrintRenderer.
+    // |document_time| is how long the rendering took.
+    void RenderedPreviewDocument(const base::TimeDelta document_time);
+
     // Updates the print preview context when the required pages are rendered.
     void AllPagesRendered();
 
@@ -436,12 +497,15 @@ class PrintRenderFrameHelper
     // Helper functions
     int GetNextPageNumber();
     bool IsRendering() const;
+    bool IsForArc() const;
     bool IsModifiable() const;
+    bool IsPdf() const;
     bool HasSelection();
     bool IsLastPageOfPrintReadyMetafile() const;
     bool IsFinalPageRendered() const;
 
     // Setters
+    void SetIsForArc(bool is_for_arc);
     void set_error(enum PrintPreviewErrorBuckets error);
 
     // Getters
@@ -475,6 +539,8 @@ class PrintRenderFrameHelper
 
     void CalculateIsModifiable();
 
+    void CalculateIsPdf();
+
     // Specifies what to render for print preview.
     FrameReference source_frame_;
     blink::WebNode source_node_;
@@ -493,6 +559,13 @@ class PrintRenderFrameHelper
 
     // True, if the document source is modifiable. e.g. HTML and not PDF.
     bool is_modifiable_ = true;
+
+    // True, if the document source is a PDF. Used to distinguish from
+    // other plugins such as Flash.
+    bool is_pdf_ = false;
+
+    // True, if the document source is from ARC.
+    bool is_for_arc_ = false;
 
     // Specifies the total number of pages in the print ready metafile.
     int print_ready_metafile_page_count_ = 0;
@@ -537,9 +610,9 @@ class PrintRenderFrameHelper
   // hangs because RequestPrintPreview is called before DidStopLoading() is
   // called. This is a store for the RequestPrintPreview() call and its
   // parameters so that it can be invoked after DidStopLoading.
-  base::Closure on_stop_loading_closure_;
+  base::OnceClosure on_stop_loading_closure_;
 
-  base::WeakPtrFactory<PrintRenderFrameHelper> weak_ptr_factory_;
+  base::WeakPtrFactory<PrintRenderFrameHelper> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PrintRenderFrameHelper);
 };

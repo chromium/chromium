@@ -1,64 +1,42 @@
 {
   "layers": [
     {
-      "name": "LayoutView #document",
-      "bounds": [800, 600],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [800, 600],
-      "drawsContent": false
-    },
-    {
       "name": "Scrolling Contents Layer",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutBlockFlow DIV id='container'",
-      "position": [8, 8],
+      "name": "LayoutNGBlockFlow DIV id='container'",
       "bounds": [400, 400],
-      "backgroundColor": "#0000FF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "position": [8, 8],
-      "bounds": [400, 400],
-      "drawsContent": false
+      "backgroundColor": "#0000FF",
+      "transform": 1
     },
     {
       "name": "Scrolling Contents Layer",
-      "position": [8, 8],
       "bounds": [400, 2000],
       "contentsOpaque": true,
       "backgroundColor": "#0000FF",
       "paintInvalidations": [
         {
-          "object": "Scrolling background of LayoutBlockFlow DIV id='container'",
+          "object": "Scrolling background of LayoutNGBlockFlow DIV id='container'",
           "rect": [0, 500, 400, 1500],
           "reason": "incremental"
         }
       ],
-      "transform": 1
-    },
-    {
-      "name": "Overflow Controls Host Layer",
-      "position": [8, 8],
-      "bounds": [400, 400],
-      "drawsContent": false
+      "transform": 2
     },
     {
       "name": "Horizontal Scrollbar Layer",
-      "position": [8, 408],
-      "bounds": [400, 0]
+      "position": [0, 400],
+      "bounds": [400, 0],
+      "transform": 1
     },
     {
       "name": "Vertical Scrollbar Layer",
-      "position": [408, 8],
-      "bounds": [0, 400]
+      "position": [400, 0],
+      "bounds": [0, 400],
+      "transform": 1
     }
   ],
   "transforms": [
@@ -68,9 +46,18 @@
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
+        [8, 8, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "parent": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
         [0, -1600, 0, 1]
-      ],
-      "flattenInheritedTransform": false
+      ]
     }
   ]
 }

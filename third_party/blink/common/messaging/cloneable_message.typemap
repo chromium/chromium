@@ -5,7 +5,7 @@
 mojom = "//third_party/blink/public/mojom/messaging/cloneable_message.mojom"
 public_headers =
     [ "//third_party/blink/public/common/messaging/cloneable_message.h" ]
-traits_headers = [ "//third_party/blink/public/common/messaging/cloneable_message_struct_traits.h" ]
+traits_headers = [ "//third_party/blink/public/common/messaging/cloneable_message_mojom_traits.h" ]
 
 type_mappings =
     [ "blink.mojom.CloneableMessage=::blink::CloneableMessage[move_only]" ]

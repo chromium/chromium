@@ -15,8 +15,8 @@ namespace {
 // Creates a sequenced task runner to delete an instance of CustomThemeSupplier
 // on.
 scoped_refptr<base::SequencedTaskRunner> CreateTaskRunnerForDeletion() {
-  return base::CreateSequencedTaskRunnerWithTraits(
-      {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
+  return base::CreateSequencedTaskRunner(
+      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT});
 }
 
 }  // namespace

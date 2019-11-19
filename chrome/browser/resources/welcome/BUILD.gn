@@ -1,0 +1,118 @@
+# Copyright 2018 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/polymer.gni")
+
+group("closure_compile") {
+  deps = [
+    ":welcome_files",
+    "./google_apps:closure_compile",
+    "./ntp_background:closure_compile",
+    "./set_as_default:closure_compile",
+  ]
+}
+
+js_type_check("welcome_files") {
+  is_polymer3 = true
+  closure_flags = default_closure_args + [
+                    "js_module_root=../../chrome/browser/resources/welcome/",
+                    "js_module_root=./gen/chrome/browser/resources/welcome/",
+                  ]
+  deps = [
+    ":landing_view",
+    ":signin_view",
+    ":welcome_app",
+  ]
+}
+
+js_library("landing_view") {
+  deps = [
+    ":landing_view_proxy",
+    ":navigation_behavior",
+    ":welcome_browser_proxy",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:load_time_data.m",
+  ]
+}
+
+js_library("landing_view_proxy") {
+  deps = [
+    "//ui/webui/resources/js:cr.m",
+  ]
+  externs_list = [ "$externs_path/metrics_private.js" ]
+}
+
+js_library("signin_view") {
+  deps = [
+    ":navigation_behavior",
+    ":signin_view_proxy",
+    ":welcome_browser_proxy",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("signin_view_proxy") {
+  deps = [
+    "//ui/webui/resources/js:cr.m",
+  ]
+  externs_list = [ "$externs_path/metrics_private.js" ]
+}
+
+js_library("navigation_behavior") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:assert.m",
+  ]
+}
+
+js_library("welcome_app") {
+  deps = [
+    ":navigation_behavior",
+    ":welcome_browser_proxy",
+    "./set_as_default/:nux_set_as_default_proxy",
+    "./shared:bookmark_proxy",
+    "./shared:nux_types",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_view_manager:cr_view_manager.m",
+    "//ui/webui/resources/js:load_time_data.m",
+  ]
+}
+
+js_library("welcome_browser_proxy") {
+  deps = [
+    "//ui/webui/resources/js:cr.m",
+  ]
+  externs_list = [ "$externs_path/chrome_send.js" ]
+}
+
+polymer_modulizer("welcome_app") {
+  js_file = "welcome_app.js"
+  html_file = "welcome_app.html"
+  html_type = "v3-ready"
+}
+
+polymer_modulizer("landing_view") {
+  js_file = "landing_view.js"
+  html_file = "landing_view.html"
+  html_type = "v3-ready"
+}
+
+polymer_modulizer("signin_view") {
+  js_file = "signin_view.js"
+  html_file = "signin_view.html"
+  html_type = "v3-ready"
+}
+
+group("polymer3_elements") {
+  deps = [
+    ":landing_view_module",
+    ":signin_view_module",
+    ":welcome_app_module",
+    "./google_apps:nux_google_apps_module",
+    "./ntp_background:nux_ntp_background_module",
+    "./set_as_default:nux_set_as_default_module",
+    "./shared:polymer3_elements",
+  ]
+}

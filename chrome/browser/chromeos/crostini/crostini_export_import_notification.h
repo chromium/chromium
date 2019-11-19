@@ -8,9 +8,9 @@
 #include <memory>
 #include <string>
 
-#include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "chrome/browser/chromeos/crostini/crostini_util.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
 class Profile;
@@ -21,27 +21,58 @@ class Notification;
 
 namespace crostini {
 
-class CrostiniExportImport;
-
 enum class ExportImportType;
 
 // Notification for Crostini export and import.
 class CrostiniExportImportNotification
     : public message_center::NotificationObserver {
  public:
-  enum class Status { RUNNING, DONE, FAILED };
+  enum class Status {
+    RUNNING,
+    CANCELLING,
+    DONE,
+    CANCELLED,
+    FAILED_UNKNOWN_REASON,
+    FAILED_ARCHITECTURE_MISMATCH,
+    FAILED_INSUFFICIENT_SPACE,
+    FAILED_CONCURRENT_OPERATION,
+  };
 
-  CrostiniExportImportNotification(Profile* profile,
-                                   CrostiniExportImport* service,
-                                   ExportImportType type,
-                                   const std::string& notification_id,
-                                   const base::FilePath& path);
+  // Used to construct CrostiniExportImportNotification to ensure it controls
+  // its lifetime.
+  static CrostiniExportImportNotification* Create(
+      Profile* profile,
+      ExportImportType type,
+      const std::string& notification_id,
+      base::FilePath path,
+      ContainerId container_id) {
+    return new CrostiniExportImportNotification(profile, type, notification_id,
+                                                std::move(path),
+                                                std::move(container_id));
+  }
+
   virtual ~CrostiniExportImportNotification();
 
-  void UpdateStatus(Status status, int progress_percent);
+  // Can be used to draw attention to the notification without changing its
+  // status, even if it has been hidden.
+  void ForceRedisplay();
 
+  void SetStatusRunning(int progress_percent);
+  void SetStatusCancelling();
+  void SetStatusDone();
+  void SetStatusCancelled();
+  void SetStatusFailed();
+  void SetStatusFailedArchitectureMismatch(
+      const std::string& architecture_container,
+      const std::string& architecture_device);
+  void SetStatusFailedInsufficientSpace(uint64_t additional_required_space);
+  void SetStatusFailedConcurrentOperation(
+      ExportImportType in_progress_operation_type);
+
+  Status status() const { return status_; }
+  ExportImportType type() const { return type_; }
+  const base::FilePath& path() const { return path_; }
   // Getters for testing.
-  Status get_status() { return status_; }
   message_center::Notification* get_notification() {
     return notification_.get();
   }
@@ -52,22 +83,25 @@ class CrostiniExportImportNotification
              const base::Optional<base::string16>& reply) override;
 
  private:
+  CrostiniExportImportNotification(Profile* profile,
+                                   ExportImportType type,
+                                   const std::string& notification_id,
+                                   base::FilePath path,
+                                   ContainerId container_id);
+
+  void SetStatusFailed(Status status, const base::string16& message);
+
   Profile* profile_;
-  // These notifications are owned by the export service.
-  CrostiniExportImport* service_;
   ExportImportType type_;
   base::FilePath path_;
+  ContainerId container_id_;
   Status status_ = Status::RUNNING;
   // Time when the operation started.  Used for estimating time remaining.
-  base::Time started_ = base::Time::Now();
-  int title_running_;
-  int title_done_;
-  int message_done_;
-  int title_failed_;
-  int message_failed_;
+  base::TimeTicks started_ = base::TimeTicks::Now();
   std::unique_ptr<message_center::Notification> notification_;
-  bool closed_ = false;
-  base::WeakPtrFactory<CrostiniExportImportNotification> weak_ptr_factory_;
+  bool hidden_ = false;
+  base::WeakPtrFactory<CrostiniExportImportNotification> weak_ptr_factory_{
+      this};
   DISALLOW_COPY_AND_ASSIGN(CrostiniExportImportNotification);
 };
 

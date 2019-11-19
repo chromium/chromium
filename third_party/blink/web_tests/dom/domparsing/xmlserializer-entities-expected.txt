@@ -1,1 +1,0 @@
-<html xmlns="http://www.w3.org/1999/xhtml"><p>(0 &lt; 1 &amp;&amp; 1 &gt; 0)</p><script>if (0 &lt; 1 &amp;&amp; 1 &gt; 0) { };</script><style>/* &lt; &gt; &amp; */</style></html>

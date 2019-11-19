@@ -10,7 +10,7 @@
 namespace signin {
 
 MirrorAccountReconcilorDelegate::MirrorAccountReconcilorDelegate(
-    identity::IdentityManager* identity_manager)
+    IdentityManager* identity_manager)
     : identity_manager_(identity_manager) {
   DCHECK(identity_manager_);
   identity_manager_->AddObserver(this);
@@ -37,22 +37,22 @@ bool MirrorAccountReconcilorDelegate::ShouldAbortReconcileIfPrimaryHasError()
   return true;
 }
 
-std::string MirrorAccountReconcilorDelegate::GetFirstGaiaAccountForReconcile(
-    const std::vector<std::string>& chrome_accounts,
+CoreAccountId MirrorAccountReconcilorDelegate::GetFirstGaiaAccountForReconcile(
+    const std::vector<CoreAccountId>& chrome_accounts,
     const std::vector<gaia::ListedAccount>& gaia_accounts,
-    const std::string& primary_account,
+    const CoreAccountId& primary_account,
     bool first_execution,
     bool will_logout) const {
   // Mirror only uses the primary account, and it is never empty.
   DCHECK(!primary_account.empty());
-  DCHECK(base::ContainsValue(chrome_accounts, primary_account));
+  DCHECK(base::Contains(chrome_accounts, primary_account));
   return primary_account;
 }
 
-std::vector<std::string>
+std::vector<CoreAccountId>
 MirrorAccountReconcilorDelegate::GetChromeAccountsForReconcile(
-    const std::vector<std::string>& chrome_accounts,
-    const std::string& primary_account,
+    const std::vector<CoreAccountId>& chrome_accounts,
+    const CoreAccountId& primary_account,
     const std::vector<gaia::ListedAccount>& gaia_accounts,
     const gaia::MultiloginMode mode) const {
   DCHECK_EQ(mode,

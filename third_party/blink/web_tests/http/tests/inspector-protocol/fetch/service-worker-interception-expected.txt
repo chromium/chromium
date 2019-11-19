@@ -1,0 +1,11 @@
+Tests that service worker requests are intercepted.
+[browser] Request to http://127.0.0.1:8000/inspector-protocol/fetch/resources/service-worker.html, type: Document
+[renderer] Request to http://127.0.0.1:8000/inspector-protocol/fetch/resources/service-worker.js, type: Other
+[browser] Request to http://127.0.0.1:8000/inspector-protocol/fetch/resources/service-worker.js, type: Other
+[renderer] Request to http://127.0.0.1:8000/inspector-protocol/fetch/resources/service-worker.html, type: XHR
+[browser] Request to http://127.0.0.1:8000/inspector-protocol/fetch/resources/service-worker.html, type: XHR
+Response fulfilled by service worker: response from service worker
+[renderer] Request to http://127.0.0.1:8000/inspector-protocol/fetch/resources/fetch-data.txt, type: XHR
+[browser] Request to http://127.0.0.1:8000/inspector-protocol/fetch/resources/fetch-data.txt, type: XHR
+Response after Fetch.fulfillRequest: overriden response body
+

@@ -95,8 +95,10 @@ ValueStore::WriteResult TestingValueStore::Set(
     if (!storage_.GetWithoutPathExpansion(it.key(), &old_value) ||
         !old_value->Equals(&it.value())) {
       changes->push_back(ValueStoreChange(
-          it.key(), old_value ? old_value->CreateDeepCopy() : nullptr,
-          it.value().CreateDeepCopy()));
+          it.key(),
+          old_value ? base::Optional<base::Value>(old_value->Clone())
+                    : base::nullopt,
+          it.value().Clone()));
       storage_.SetWithoutPathExpansion(it.key(), it.value().CreateDeepCopy());
     }
   }
@@ -117,7 +119,8 @@ ValueStore::WriteResult TestingValueStore::Remove(
   for (auto it = keys.cbegin(); it != keys.cend(); ++it) {
     std::unique_ptr<base::Value> old_value;
     if (storage_.RemoveWithoutPathExpansion(*it, &old_value)) {
-      changes->push_back(ValueStoreChange(*it, std::move(old_value), nullptr));
+      changes->push_back(
+          ValueStoreChange(*it, std::move(*old_value), base::nullopt));
     }
   }
   return WriteResult(std::move(changes), CreateStatusCopy(status_));

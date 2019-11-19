@@ -13,6 +13,7 @@ import org.chromium.base.Log;
 import org.chromium.chrome.browser.ChromeActivity;
 import org.chromium.chrome.browser.payments.PaymentAppFactory.PaymentAppCreatedCallback;
 import org.chromium.chrome.browser.payments.PaymentManifestVerifier.ManifestVerifyCallback;
+import org.chromium.components.payments.MethodStrings;
 import org.chromium.components.payments.PaymentManifestDownloader;
 import org.chromium.components.payments.PaymentManifestParser;
 import org.chromium.content_public.browser.WebContents;
@@ -151,15 +152,11 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
         // For non-URI payment method names, only names published by W3C should be supported. Keep
         // this in sync with manifest_verifier.cc.
         Set<String> supportedNonUriPaymentMethods = new HashSet<>();
-        // https://w3c.github.io/payment-method-basic-card/
-        supportedNonUriPaymentMethods.add("basic-card");
-        // https://w3c.github.io/webpayments/proposals/interledger-payment-method.html
-        supportedNonUriPaymentMethods.add("interledger");
-        // https://w3c.github.io/webpayments-methods-credit-transfer-direct-debit/
-        supportedNonUriPaymentMethods.add("payee-credit-transfer");
-        supportedNonUriPaymentMethods.add("payer-credit-transfer");
-        // https://w3c.github.io/webpayments-methods-tokenization/
-        supportedNonUriPaymentMethods.add("tokenized-card");
+        supportedNonUriPaymentMethods.add(MethodStrings.BASIC_CARD);
+        supportedNonUriPaymentMethods.add(MethodStrings.INTERLEDGER);
+        supportedNonUriPaymentMethods.add(MethodStrings.PAYEE_CREDIT_TRANSFER);
+        supportedNonUriPaymentMethods.add(MethodStrings.PAYER_CREDIT_TRANSFER);
+        supportedNonUriPaymentMethods.add(MethodStrings.TOKENIZED_CARD);
 
         mNonUriPaymentMethods = new HashSet<>();
         mUriPaymentMethods = new HashSet<>();
@@ -179,8 +176,7 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
         mPackageManagerDelegate = packageManagerDelegate;
         mCallback = callback;
         ChromeActivity activity = ChromeActivity.fromWebContents(mWebContents);
-        mIsIncognito = activity != null && activity.getCurrentTabModel() != null
-                && activity.getCurrentTabModel().isIncognito();
+        mIsIncognito = activity != null && activity.getCurrentTabModel().isIncognito();
     }
 
     /**
@@ -389,6 +385,11 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
             mVerifiedPaymentMethods.put(methodName, verifiedPaymentManifest);
         }
         return verifiedPaymentManifest;
+    }
+
+    @Override
+    public void onVerificationError(String errorMessage) {
+        mCallback.onGetPaymentAppsError(errorMessage);
     }
 
     @Override

@@ -30,7 +30,7 @@ class ClearCatalogTask : public Task {
   ExploreSitesStore* store_;  // outlives this class.
   BooleanCallback callback_;
 
-  base::WeakPtrFactory<ClearCatalogTask> weak_factory_;
+  base::WeakPtrFactory<ClearCatalogTask> weak_factory_{this};
 };
 
 }  // namespace explore_sites

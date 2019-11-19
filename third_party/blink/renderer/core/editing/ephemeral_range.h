@@ -122,7 +122,7 @@ class EphemeralRangeTemplate final {
   static EphemeralRangeTemplate<Strategy> RangeOfContents(
       const Node& /* node */);
 
-#ifndef NDEBUG
+#if DCHECK_IS_ON()
   void ShowTreeForThis() const;
 #endif
 
@@ -152,6 +152,9 @@ CORE_EXPORT Range* CreateRange(const EphemeralRange& /* range */);
 CORE_EXPORT std::ostream& operator<<(std::ostream&, const EphemeralRange&);
 CORE_EXPORT std::ostream& operator<<(std::ostream&,
                                      const EphemeralRangeInFlatTree&);
+
+CORE_EXPORT EphemeralRangeInFlatTree
+ToEphemeralRangeInFlatTree(const EphemeralRange&);
 
 }  // namespace blink
 

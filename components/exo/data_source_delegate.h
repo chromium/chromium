@@ -21,7 +21,7 @@ class DataSourceDelegate {
   virtual void OnDataSourceDestroying(DataSource* source) = 0;
 
   // Called when a client accepts a |mime_type|.
-  virtual void OnTarget(const std::string& mime_type) = 0;
+  virtual void OnTarget(const base::Optional<std::string>& mime_type) = 0;
 
   // Called when the data is requested.
   virtual void OnSend(const std::string& mime_type, base::ScopedFD fd) = 0;

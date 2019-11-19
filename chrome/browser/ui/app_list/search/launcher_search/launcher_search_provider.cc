@@ -23,10 +23,12 @@ constexpr int kLauncherSearchProviderMaxResults = 6;
 }  // namespace
 
 LauncherSearchProvider::LauncherSearchProvider(Profile* profile)
-    : profile_(profile), weak_ptr_factory_(this) {
-}
+    : profile_(profile) {}
 
 LauncherSearchProvider::~LauncherSearchProvider() {
+  Service* service = Service::Get(profile_);
+  if (service->IsQueryRunning())
+    service->OnQueryEnded();
 }
 
 void LauncherSearchProvider::Start(const base::string16& query) {

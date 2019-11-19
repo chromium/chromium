@@ -16,5 +16,8 @@ const base::Feature kAutofillAssistant{"AutofillAssistant",
 const base::Feature kAutofillAssistantChromeEntry{
     "AutofillAssistantChromeEntry", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kAutofillAssistantDirectActions{
+    "AutofillAssistantDirectActions", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace autofill_assistant

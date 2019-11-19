@@ -1,0 +1,30 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module chrome_cleaner.mojom;
+
+import "chrome/chrome_cleaner/mojom/footprints.mojom";
+
+// Typemapped to chrome_cleaner::UwS::TraceLocation enumeration from
+// chrome_cleaner/logging/proto/shared_data.proto.
+// The struct is used here as a work-around to make Mojo check passed values
+// without having to duplicate the enum definition.
+struct TraceLocation {
+  int32 value;
+};
+
+// Typemapped to chrome_cleaner::PUPData::FileInfo.
+struct FileInfo {
+  array<TraceLocation> found_in;
+};
+
+// Partially typemapped to chrome_cleaner::PUPData::PUP.
+//
+// Only fields which are detected by the sandboxed engine are included. Other
+// fields of PUPData::PUP are populated directly in the broker process, so
+// there is no need to pass them over IPC.
+struct PUP {
+  array<FilePath> expanded_disk_footprints;
+  map<FilePath, FileInfo> disk_footprints_info;
+};

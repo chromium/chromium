@@ -17,11 +17,11 @@
 #include "base/values.h"
 #include "components/sync/base/immutable.h"
 #include "components/sync/base/model_type.h"
-#include "components/sync/base/proto_value_ptr.h"
 #include "components/sync/base/time.h"
 #include "components/sync/base/unique_position.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "components/sync/syncable/metahandle_set.h"
+#include "components/sync/syncable/proto_value_ptr.h"
 #include "components/sync/syncable/syncable_id.h"
 
 namespace syncer {
@@ -341,7 +341,7 @@ struct EntryKernel {
   // encrypted specifics. If it is null or the specifics are not decryptsble,
   // they will be serialized as empty proto's.
   std::unique_ptr<base::DictionaryValue> ToValue(
-      Cryptographer* cryptographer) const;
+      const Cryptographer* cryptographer) const;
 
   size_t EstimateMemoryUsage() const;
 

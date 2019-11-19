@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "services/service_manager/public/cpp/binder_registry.h"
-#include "storage/browser/fileapi/file_system_context.h"
+#include "storage/browser/file_system/file_system_context.h"
 
 namespace base {
 class CommandLine;
@@ -64,9 +64,6 @@ class ChromeContentBrowserClientParts {
       base::CommandLine* command_line,
       content::RenderProcessHost* process,
       Profile* profile) {}
-
-  // Called when the ResourceDispatcherHost is created.
-  virtual void ResourceDispatcherHostCreated() {}
 
   // Allows to register browser interfaces exposed through the
   // RenderProcessHost. Note that interface factory callbacks added to

@@ -4,81 +4,60 @@
 
 #import "ios/web/shell/test/earl_grey/shell_earl_grey.h"
 
-#import <EarlGrey/EarlGrey.h>
-
+#import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
-#import "ios/web/public/test/earl_grey/js_test_util.h"
-#include "ios/web/public/test/element_selector.h"
-#import "ios/web/public/test/web_view_content_test_util.h"
-#import "ios/web/public/test/web_view_interaction_test_util.h"
-#include "ios/web/shell/test/app/navigation_test_util.h"
-#import "ios/web/shell/test/app/web_shell_test_util.h"
+#import "ios/testing/earl_grey/earl_grey_test.h"
+#import "ios/web/shell/test/earl_grey/shell_earl_grey_app_interface.h"
+
+using base::test::ios::kWaitForPageLoadTimeout;
+using base::test::ios::kWaitForUIElementTimeout;
+using base::test::ios::WaitUntilConditionOrTimeout;
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-@implementation ShellEarlGrey
+#if defined(CHROME_EARL_GREY_2)
+GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ShellEarlGreyAppInterface)
+#endif
 
-+ (void)loadURL:(const GURL&)URL {
-  web::shell_test_util::LoadUrl(URL);
+@implementation ShellEarlGreyImpl
 
-  GREYCondition* condition =
-      [GREYCondition conditionWithName:@"Wait for page to complete loading."
-                                 block:^BOOL {
-                                   return !web::shell_test_util::IsLoading();
-                                 }];
-  GREYAssert(
-      [condition waitWithTimeout:base::test::ios::kWaitForPageLoadTimeout],
-      @"Page did not complete loading.");
+- (void)loadURL:(const GURL&)URL {
+  NSString* spec = base::SysUTF8ToNSString(URL.spec());
+  [ShellEarlGreyAppInterface startLoadingURL:spec];
 
-  web::WebState* webState = web::shell_test_util::GetCurrentWebState();
-  if (webState->ContentIsHTML())
-    web::WaitUntilWindowIdInjected(webState);
+  NSString* loadingErrorDescription = [NSString
+      stringWithFormat:@"Current WebState did not finish loading %@ URL", spec];
+  GREYCondition* condition = [GREYCondition
+      conditionWithName:loadingErrorDescription
+                  block:^{
+                    return !
+                        [ShellEarlGreyAppInterface isCurrentWebStateLoading];
+                  }];
+  BOOL pageLoaded = [condition waitWithTimeout:kWaitForPageLoadTimeout];
+  EG_TEST_HELPER_ASSERT_TRUE(pageLoaded, loadingErrorDescription);
+
+  EG_TEST_HELPER_ASSERT_NO_ERROR(
+      [ShellEarlGreyAppInterface waitForWindowIDInjectedInCurrentWebState]);
 
   // Ensure any UI elements handled by EarlGrey become idle for any subsequent
   // EarlGrey steps.
   [[GREYUIThreadExecutor sharedInstance] drainUntilIdle];
 }
 
-+ (void)waitForWebViewContainingText:(std::string)text {
-  GREYCondition* condition = [GREYCondition
-      conditionWithName:@"Wait for web view containing text"
-                  block:^BOOL {
-                    return web::test::IsWebViewContainingText(
-                        web::shell_test_util::GetCurrentWebState(), text);
-                  }];
-  GREYAssert(
-      [condition waitWithTimeout:base::test::ios::kWaitForUIElementTimeout],
-      @"Failed waiting for web view containing %s", text.c_str());
-}
+- (void)waitForWebStateContainingText:(NSString*)text {
+  NSString* description = [NSString
+      stringWithFormat:@"Current WebState does not contain: '%@'", text];
+  GREYCondition* condition =
+      [GREYCondition conditionWithName:description
+                                 block:^{
+                                   return [ShellEarlGreyAppInterface
+                                       currentWebStateContainsText:text];
+                                 }];
 
-+ (void)waitForWebViewContainingElement:
-    (const web::test::ElementSelector)selector {
-  GREYCondition* condition = [GREYCondition
-      conditionWithName:@"Wait for web view containing element"
-                  block:^BOOL {
-                    return web::test::IsWebViewContainingElement(
-                        web::shell_test_util::GetCurrentWebState(), selector);
-                  }];
-  GREYAssert(
-      [condition waitWithTimeout:base::test::ios::kWaitForUIElementTimeout],
-      @"Failed waiting for web view containing element %s",
-      selector.GetSelectorDescription().c_str());
-}
-
-+ (void)waitForWebViewNotContainingElement:
-    (const web::test::ElementSelector)selector {
-  GREYCondition* condition = [GREYCondition
-      conditionWithName:@"Wait for web view not containing element"
-                  block:^BOOL {
-                    return !web::test::IsWebViewContainingElement(
-                        web::shell_test_util::GetCurrentWebState(), selector);
-                  }];
-  GREYAssert(
-      [condition waitWithTimeout:base::test::ios::kWaitForUIElementTimeout],
-      @"Failed waiting for web view not containing element %s",
-      selector.GetSelectorDescription().c_str());
+  BOOL containsText = [condition waitWithTimeout:kWaitForPageLoadTimeout];
+  EG_TEST_HELPER_ASSERT_TRUE(containsText, description);
 }
 
 @end

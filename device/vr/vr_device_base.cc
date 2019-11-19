@@ -4,13 +4,14 @@
 
 #include "device/vr/vr_device_base.h"
 
+#include <utility>
+
+#include "base/metrics/histogram_functions.h"
 #include "device/vr/vr_device_provider.h"
-#include "device/vr/vr_display_impl.h"
 
 namespace device {
 
-VRDeviceBase::VRDeviceBase(mojom::XRDeviceId id)
-    : id_(id), runtime_binding_(this) {}
+VRDeviceBase::VRDeviceBase(mojom::XRDeviceId id) : id_(id) {}
 
 VRDeviceBase::~VRDeviceBase() = default;
 
@@ -26,13 +27,25 @@ mojom::VRDisplayInfoPtr VRDeviceBase::GetVRDisplayInfo() {
   return display_info_.Clone();
 }
 
+void VRDeviceBase::ShutdownSession(base::OnceClosure on_completed) {
+  DVLOG(2) << __func__;
+  // TODO(https://crbug.com/1015594): The default implementation of running the
+  // callback immediately is backwards compatible, but runtimes should be
+  // updated to override this, calling the callback at the appropriate time
+  // after any necessary cleanup has been completed. Once that's done, make this
+  // method abstract.
+  std::move(on_completed).Run();
+}
+
 void VRDeviceBase::OnExitPresent() {
+  DVLOG(2) << __func__ << ": !!listener_=" << !!listener_;
   if (listener_)
     listener_->OnExitPresent();
   presenting_ = false;
 }
 
 void VRDeviceBase::OnStartPresenting() {
+  DVLOG(2) << __func__;
   presenting_ = true;
 }
 
@@ -41,20 +54,10 @@ bool VRDeviceBase::HasExclusiveSession() {
 }
 
 void VRDeviceBase::ListenToDeviceChanges(
-    mojom::XRRuntimeEventListenerAssociatedPtrInfo listener_info,
+    mojo::PendingAssociatedRemote<mojom::XRRuntimeEventListener> listener_info,
     mojom::XRRuntime::ListenToDeviceChangesCallback callback) {
   listener_.Bind(std::move(listener_info));
   std::move(callback).Run(display_info_.Clone());
-}
-
-void VRDeviceBase::GetInlineFrameData(
-    mojom::XRFrameDataProvider::GetFrameDataCallback callback) {
-  if (!inline_poses_enabled_) {
-    std::move(callback).Run(nullptr);
-    return;
-  }
-
-  OnGetInlineFrameData(std::move(callback));
 }
 
 void VRDeviceBase::SetVRDisplayInfo(mojom::VRDisplayInfoPtr display_info) {
@@ -66,37 +69,15 @@ void VRDeviceBase::SetVRDisplayInfo(mojom::VRDisplayInfoPtr display_info) {
     listener_->OnDisplayInfoChanged(display_info_.Clone());
 }
 
-void VRDeviceBase::OnActivate(mojom::VRDisplayEventReason reason,
-                              base::Callback<void(bool)> on_handled) {
+void VRDeviceBase::OnVisibilityStateChanged(
+    mojom::XRVisibilityState visibility_state) {
   if (listener_)
-    listener_->OnDeviceActivated(reason, std::move(on_handled));
+    listener_->OnVisibilityStateChanged(visibility_state);
 }
 
-mojom::XRRuntimePtr VRDeviceBase::BindXRRuntimePtr() {
-  mojom::XRRuntimePtr runtime;
-  runtime_binding_.Bind(mojo::MakeRequest(&runtime));
-  return runtime;
-}
-
-bool VRDeviceBase::ShouldPauseTrackingWhenFrameDataRestricted() {
-  return false;
-}
-
-void VRDeviceBase::OnListeningForActivate(bool listening) {}
-
-void VRDeviceBase::OnGetInlineFrameData(
-    mojom::XRFrameDataProvider::GetFrameDataCallback callback) {
-  std::move(callback).Run(nullptr);
-}
-
-void VRDeviceBase::SetListeningForActivate(bool is_listening) {
-  OnListeningForActivate(is_listening);
-}
-
-void VRDeviceBase::EnsureInitialized(int render_process_id,
-                                     int render_frame_id,
-                                     EnsureInitializedCallback callback) {
-  std::move(callback).Run();
+mojo::PendingRemote<mojom::XRRuntime> VRDeviceBase::BindXRRuntime() {
+  DVLOG(2) << __func__;
+  return runtime_receiver_.BindNewPipeAndPassRemote();
 }
 
 void VRDeviceBase::SetInlinePosesEnabled(bool enable) {
@@ -110,28 +91,8 @@ void VRDeviceBase::RequestHitTest(
   std::move(callback).Run(base::nullopt);
 }
 
-void VRDeviceBase::ReturnNonImmersiveSession(
-    mojom::XRRuntime::RequestSessionCallback callback) {
-  mojom::XRFrameDataProviderPtr data_provider;
-  mojom::XREnvironmentIntegrationProviderPtr environment_provider;
-  mojom::XRSessionControllerPtr controller;
-  magic_window_sessions_.push_back(std::make_unique<VRDisplayImpl>(
-      this, mojo::MakeRequest(&data_provider), mojo::MakeRequest(&controller)));
-
-  auto session = mojom::XRSession::New();
-  session->data_provider = data_provider.PassInterface();
-  if (display_info_) {
-    session->display_info = display_info_.Clone();
-  }
-
-  std::move(callback).Run(std::move(session), std::move(controller));
-}
-
-void VRDeviceBase::EndMagicWindowSession(VRDisplayImpl* session) {
-  base::EraseIf(magic_window_sessions_,
-                [&](const std::unique_ptr<VRDisplayImpl>& item) {
-                  return item.get() == session;
-                });
+void LogViewerType(VrViewerType type) {
+  base::UmaHistogramSparse("VRViewerType", static_cast<int>(type));
 }
 
 }  // namespace device

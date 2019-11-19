@@ -18,22 +18,19 @@
 #include "components/exo/wayland/wayland_watcher.h"
 #include "components/exo/wm_helper.h"
 #include "components/exo/wm_helper_chromeos.h"
-#include "ui/aura/env.h"
 
 namespace ash {
 
 // static
 std::unique_ptr<WaylandServerController>
 WaylandServerController::CreateIfNecessary(
-    std::unique_ptr<exo::FileHelper> file_helper,
-    aura::Env* env) {
+    std::unique_ptr<exo::FileHelper> file_helper) {
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kAshEnableWaylandServer)) {
     return nullptr;
   }
 
-  return base::WrapUnique(
-      new WaylandServerController(std::move(file_helper), env));
+  return base::WrapUnique(new WaylandServerController(std::move(file_helper)));
 }
 
 WaylandServerController::~WaylandServerController() {
@@ -45,13 +42,12 @@ WaylandServerController::~WaylandServerController() {
 }
 
 WaylandServerController::WaylandServerController(
-    std::unique_ptr<exo::FileHelper> file_helper,
-    aura::Env* env) {
+    std::unique_ptr<exo::FileHelper> file_helper) {
   arc_notification_surface_manager_ =
       std::make_unique<ArcNotificationSurfaceManagerImpl>();
   arc_input_method_surface_manager_ =
       std::make_unique<ArcInputMethodSurfaceManager>();
-  wm_helper_ = std::make_unique<exo::WMHelperChromeOS>(env);
+  wm_helper_ = std::make_unique<exo::WMHelperChromeOS>();
   exo::WMHelper::SetInstance(wm_helper_.get());
   display_ = std::make_unique<exo::Display>(
       arc_notification_surface_manager_.get(),

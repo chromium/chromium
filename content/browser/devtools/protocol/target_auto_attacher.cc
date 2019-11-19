@@ -10,9 +10,9 @@
 #include "content/browser/devtools/service_worker_devtools_agent_host.h"
 #include "content/browser/frame_host/frame_tree.h"
 #include "content/browser/frame_host/frame_tree_node.h"
-#include "content/browser/frame_host/navigation_handle_impl.h"
 #include "content/browser/frame_host/navigation_request.h"
 #include "content/browser/frame_host/render_frame_host_impl.h"
+#include "content/browser/web_contents/web_contents_impl.h"
 
 namespace content {
 namespace protocol {
@@ -135,7 +135,35 @@ void TargetAutoAttacher::SetRenderFrameHost(
     RenderFrameHostImpl* render_frame_host) {
   render_frame_host_ = render_frame_host;
   UpdateFrames();
+  UpdatePortals();
   ReattachServiceWorkers(false);
+}
+
+void TargetAutoAttacher::UpdatePortals() {
+  if (!auto_attach_)
+    return;
+
+  Hosts new_hosts;
+  if (render_frame_host_ &&
+      render_frame_host_->frame_tree_node()->IsMainFrame()) {
+    WebContentsImpl* outer_web_contents = static_cast<WebContentsImpl*>(
+        WebContents::FromRenderFrameHost(render_frame_host_));
+    for (WebContents* web_contents :
+         outer_web_contents->GetInnerWebContents()) {
+      WebContentsImpl* web_contents_impl =
+          static_cast<WebContentsImpl*>(web_contents);
+      if (!web_contents_impl->IsPortal())
+        continue;
+
+      scoped_refptr<DevToolsAgentHost> new_host =
+          RenderFrameDevToolsAgentHost::GetOrCreateFor(
+              web_contents_impl->GetFrameTree()->root());
+      new_hosts.insert(new_host);
+    }
+  }
+
+  // TODO(dgozman): support wait_for_debugger_on_start_.
+  ReattachTargetsOfType(new_hosts, DevToolsAgentHost::kTypePage, false);
 }
 
 void TargetAutoAttacher::UpdateServiceWorkers() {
@@ -179,25 +207,50 @@ bool TargetAutoAttacher::ShouldThrottleFramesNavigation() {
 }
 
 DevToolsAgentHost* TargetAutoAttacher::AutoAttachToFrame(
-    NavigationHandleImpl* navigation_handle) {
+    NavigationRequest* navigation_request) {
   if (!ShouldThrottleFramesNavigation())
     return nullptr;
 
-  FrameTreeNode* frame_tree_node = navigation_handle->frame_tree_node();
-  RenderFrameHostImpl* new_host = navigation_handle->GetRenderFrameHost();
+  FrameTreeNode* frame_tree_node = navigation_request->frame_tree_node();
+  RenderFrameHostImpl* new_host = navigation_request->GetRenderFrameHost();
+
+  // |new_host| can be nullptr for navigation that doesn't commmit
+  // (e.g. download). Skip possibly detaching the old agent host so the DevTools
+  // message logged via the old RFH can be seen.
+  if (!new_host)
+    return nullptr;
+
   scoped_refptr<DevToolsAgentHost> agent_host =
       RenderFrameDevToolsAgentHost::FindForDangling(frame_tree_node);
 
+  // Process the window.open auto-attaches for new targets.
+  if (frame_tree_node->original_opener()) {
+    if (!agent_host) {
+      agent_host =
+          RenderFrameDevToolsAgentHost::CreateForCrossProcessNavigation(
+              navigation_request);
+    }
+    if (auto_attached_hosts_.find(agent_host) != auto_attached_hosts_.end())
+      return nullptr;
+    attach_callback_.Run(agent_host.get(), wait_for_debugger_on_start_);
+    auto_attached_hosts_.insert(agent_host);
+    return wait_for_debugger_on_start_ ? agent_host.get() : nullptr;
+  }
+
   bool old_cross_process = !!agent_host;
-  bool new_cross_process = new_host && new_host->IsCrossProcessSubframe();
+  bool is_portal_main_frame =
+      frame_tree_node->IsMainFrame() &&
+      static_cast<WebContentsImpl*>(WebContents::FromRenderFrameHost(new_host))
+          ->IsPortal();
+  bool new_cross_process =
+      new_host->IsCrossProcessSubframe() || is_portal_main_frame;
 
   if (old_cross_process == new_cross_process)
     return nullptr;
 
   if (new_cross_process) {
-    agent_host =
-        RenderFrameDevToolsAgentHost::GetOrCreateForDangling(frame_tree_node);
-    DCHECK(auto_attached_hosts_.find(agent_host) == auto_attached_hosts_.end());
+    agent_host = RenderFrameDevToolsAgentHost::CreateForCrossProcessNavigation(
+        navigation_request);
     attach_callback_.Run(agent_host.get(), wait_for_debugger_on_start_);
     auto_attached_hosts_.insert(agent_host);
     return wait_for_debugger_on_start_ ? agent_host.get() : nullptr;
@@ -262,10 +315,12 @@ void TargetAutoAttacher::SetAutoAttach(bool auto_attach,
       ReattachServiceWorkers(false);
     }
     UpdateFrames();
+    UpdatePortals();
   } else if (!auto_attach && auto_attach_) {
     auto_attach_ = false;
     Hosts empty;
     ReattachTargetsOfType(empty, DevToolsAgentHost::kTypeFrame, false);
+    ReattachTargetsOfType(empty, DevToolsAgentHost::kTypePage, false);
     if (auto_attaching_service_workers_) {
       ServiceWorkerDevToolsManager::GetInstance()->RemoveObserver(this);
       ReattachTargetsOfType(empty, DevToolsAgentHost::kTypeServiceWorker,

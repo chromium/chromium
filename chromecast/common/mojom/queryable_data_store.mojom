@@ -1,0 +1,15 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module chromecast.shell.mojom;
+
+import "mojo/public/mojom/base/values.mojom";
+
+// This interface provides a method for browser to set renderer-frame queryable
+// values at start up. It exposes read-only key/value pairs of config data to
+// Cast apps through javascript. This is implemented by a single renderer.
+interface QueryableDataStore {
+  Set(string key, mojo_base.mojom.Value value);
+};
+

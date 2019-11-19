@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "gpu/vulkan/vulkan_export.h"
+#include "gpu/vulkan/vulkan_fence_helper.h"
 
 namespace gpu {
 
@@ -20,10 +21,12 @@ class VULKAN_EXPORT VulkanCommandBuffer {
  public:
   VulkanCommandBuffer(VulkanDeviceQueue* device_queue,
                       VulkanCommandPool* command_pool,
-                      bool primary);
+                      bool primary,
+                      bool use_protected_memory);
   ~VulkanCommandBuffer();
 
   bool Initialize();
+  // Destroy() should be called when all related GPU tasks have been finished.
   void Destroy();
 
   // Submit primary command buffer to the queue.
@@ -43,6 +46,16 @@ class VULKAN_EXPORT VulkanCommandBuffer {
   // This simply tests asynchronously if the commands from the previous submit
   // is finished.
   bool SubmissionFinished();
+
+  void TransitionImageLayout(VkImage image,
+                             VkImageLayout old_layout,
+                             VkImageLayout new_layout);
+  void CopyBufferToImage(VkBuffer buffer,
+                         VkImage image,
+                         uint32_t buffer_width,
+                         uint32_t buffer_height,
+                         uint32_t width,
+                         uint32_t height);
 
  private:
   friend class CommandBufferRecorderBase;
@@ -69,12 +82,13 @@ class VULKAN_EXPORT VulkanCommandBuffer {
   void ResetIfDirty();
 
   const bool primary_;
+  const bool use_protected_memory_;
   bool recording_ = false;
   RecordType record_type_ = RECORD_TYPE_EMPTY;
   VulkanDeviceQueue* device_queue_;
   VulkanCommandPool* command_pool_;
   VkCommandBuffer command_buffer_ = VK_NULL_HANDLE;
-  VkFence submission_fence_ = VK_NULL_HANDLE;
+  VulkanFenceHelper::FenceHandle submission_fence_;
 
   DISALLOW_COPY_AND_ASSIGN(VulkanCommandBuffer);
 };

@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ipc/ipc_channel_factory.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "ipc/ipc_channel_factory.h"
 #include "ipc/ipc_channel_mojo.h"
+#include "mojo/public/cpp/bindings/lib/message_quota_checker.h"
 
 namespace IPC {
 
@@ -17,7 +18,10 @@ class PlatformChannelFactory : public ChannelFactory {
       ChannelHandle handle,
       Channel::Mode mode,
       const scoped_refptr<base::SingleThreadTaskRunner>& ipc_task_runner)
-      : handle_(handle), mode_(mode), ipc_task_runner_(ipc_task_runner) {}
+      : handle_(handle),
+        mode_(mode),
+        ipc_task_runner_(ipc_task_runner),
+        quota_checker_(mojo::internal::MessageQuotaChecker::MaybeCreate()) {}
 
   std::unique_ptr<Channel> BuildChannel(Listener* listener) override {
 #if defined(OS_NACL_SFI)
@@ -26,7 +30,7 @@ class PlatformChannelFactory : public ChannelFactory {
     DCHECK(handle_.is_mojo_channel_handle());
     return ChannelMojo::Create(
         mojo::ScopedMessagePipeHandle(handle_.mojo_handle), mode_, listener,
-        ipc_task_runner_, base::ThreadTaskRunnerHandle::Get());
+        ipc_task_runner_, base::ThreadTaskRunnerHandle::Get(), quota_checker_);
 #endif
   }
 
@@ -34,10 +38,16 @@ class PlatformChannelFactory : public ChannelFactory {
     return ipc_task_runner_;
   }
 
+  scoped_refptr<mojo::internal::MessageQuotaChecker> GetQuotaChecker()
+      override {
+    return quota_checker_;
+  }
+
  private:
   ChannelHandle handle_;
   Channel::Mode mode_;
   scoped_refptr<base::SingleThreadTaskRunner> ipc_task_runner_;
+  scoped_refptr<mojo::internal::MessageQuotaChecker> quota_checker_;
 
   DISALLOW_COPY_AND_ASSIGN(PlatformChannelFactory);
 };

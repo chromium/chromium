@@ -8,10 +8,10 @@ namespace device {
 
 OneWriterSeqLock::OneWriterSeqLock() : sequence_(0) {}
 
-base::subtle::Atomic32 OneWriterSeqLock::ReadBegin() const {
+base::subtle::Atomic32 OneWriterSeqLock::ReadBegin(uint32_t max_retries) const {
   base::subtle::Atomic32 version;
-  for (;;) {
-    version = base::subtle::NoBarrier_Load(&sequence_);
+  for (uint32_t i = 0; i <= max_retries; ++i) {
+    version = base::subtle::Acquire_Load(&sequence_);
 
     // If the counter is even, then the associated data might be in a
     // consistent state, so we can try to read.
@@ -19,7 +19,10 @@ base::subtle::Atomic32 OneWriterSeqLock::ReadBegin() const {
       break;
 
     // Otherwise, the writer is in the middle of an update. Retry the read.
-    base::PlatformThread::YieldCurrentThread();
+    // In a multiprocessor environment with short write time, thread yield is
+    // expensive and best be avoided during the first 10~100 iterations.
+    if (i > 10)
+      base::PlatformThread::YieldCurrentThread();
   }
   return version;
 }

@@ -17,9 +17,18 @@ namespace {
 gaia::ListedAccount BuildTestListedAccount(const std::string account_id,
                                            bool valid) {
   gaia::ListedAccount account;
-  account.id = account_id;
+  account.id = CoreAccountId(account_id);
   account.valid = valid;
   return account;
+}
+
+// Returns vector of account_id created from value
+std::vector<CoreAccountId> ToAccountIdList(
+    const std::vector<std::string>& account_ids_value) {
+  std::vector<CoreAccountId> account_ids;
+  for (const auto& account_id_value : account_ids_value)
+    account_ids.push_back(CoreAccountId(account_id_value));
+  return account_ids;
 }
 
 }  // namespace
@@ -65,11 +74,13 @@ TEST(MiceAccountReconcilorDelegate, CalculateParametersForMultilogin) {
   for (const auto& test : cases) {
     MultiloginParameters multilogin_parameters =
         mice_delegate.CalculateParametersForMultilogin(
-            test.chrome_accounts, test.primary_account, test.gaia_accounts,
-            false, false);
+            ToAccountIdList(test.chrome_accounts),
+            CoreAccountId(test.primary_account), test.gaia_accounts, false,
+            false);
     EXPECT_EQ(gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER,
               multilogin_parameters.mode);
-    EXPECT_EQ(test.expected_accounts, multilogin_parameters.accounts_to_send);
+    EXPECT_EQ(ToAccountIdList(test.expected_accounts),
+              multilogin_parameters.accounts_to_send);
   }
 }
 

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+testRunner.dumpAsText();
+testRunner.waitUntilDone();
+</script>
+<script src='../../../fast/forms/resources/picker-common.js'></script>
+</head>
+<body>
+<input type='color' id='color'>
+
+<p id='description' style='opacity: 0'></p>
+<div id='console' style='opacity: 0'></div>
+
+<script>
+let descriptionContainer = document.getElementById('description');
+openPicker(document.getElementById('color'), openPickerCallback, openPickerCallback);
+
+function openPickerCallback() {
+  if (internals.pagePopupWindow) {
+    descriptionContainer.append('Popup opened.', document.createElement('br'));
+    popupWindow.focus();
+    const popupDocument = popupWindow.document;
+    const formatToggler = popupDocument.querySelector('format-toggler');
+    tabNavigateAndLogFocusableElements(popupDocument);
+    changeActiveColorFormat(formatToggler);
+    tabNavigateAndLogFocusableElements(popupDocument);
+    changeActiveColorFormat(formatToggler);
+    tabNavigateAndLogFocusableElements(popupDocument);
+  } else {
+    descriptionContainer.append('Popup did not open.', document.createElement('br'));
+  }
+  descriptionContainer.append('TEST COMPLETE');
+  testRunner.notifyDone();
+}
+
+function changeActiveColorFormat(formatToggler) {
+  formatToggler.click();  // first click changes format to HSL, second click changes format to Hex
+  descriptionContainer.append(formatToggler.tagName + ' clicked. Active color format changed.', document.createElement('br'));
+}
+
+function tabNavigateAndLogFocusableElements(popupDocument) {
+  const focusableElements = popupDocument
+      .querySelectorAll('color-value-container:not(.hidden-color-value-container) > input, ' +
+                        '[tabindex]:not([tabindex=\'-1\'])');
+  for(let i = 0; i < focusableElements.length; i++) {
+    eventSender.keyDown('Tab');
+    if (popupDocument.activeElement.hasAttribute('id')) {
+      descriptionContainer.append(popupDocument.activeElement.getAttribute('id').toUpperCase());
+    } else {
+      descriptionContainer.append(popupDocument.activeElement.tagName);
+    }
+    descriptionContainer.append(document.createElement('br'));
+  }
+}
+</script>
+</body>
+</html>

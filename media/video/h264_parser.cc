@@ -1219,6 +1219,19 @@ H264Parser::Result H264Parser::ParsePPS(int* pps_id) {
   return kOk;
 }
 
+H264Parser::Result H264Parser::ParseSPSExt(int* sps_id) {
+  // See 7.4.2.1.
+  int local_sps_id = -1;
+
+  *sps_id = -1;
+
+  READ_UE_OR_RETURN(&local_sps_id);
+  TRUE_OR_RETURN(local_sps_id < 32);
+
+  *sps_id = local_sps_id;
+  return kOk;
+}
+
 H264Parser::Result H264Parser::ParseRefPicListModification(
     int num_ref_idx_active_minus1,
     H264ModificationOfPicNum* ref_list_mods) {

@@ -1,0 +1,25 @@
+layer at (0,0) size 800x600
+  LayoutView at (0,0) size 800x600
+layer at (0,0) size 800x600
+  LayoutBlockFlow {HTML} at (0,0) size 800x600
+    LayoutBlockFlow {BODY} at (8,8) size 784x576
+      LayoutBlockFlow {P} at (0,0) size 784x20
+        LayoutText {#text} at (0,0) size 392x19
+          text run at (0,0) width 392: "This tests Range.selectNodeContents() of a text node and a br."
+      LayoutBlockFlow {DIV} at (0,36) size 784x20
+        LayoutText {#text} at (0,0) size 23x19
+          text run at (0,0) width 23: "one"
+      LayoutBlockFlow {DIV} at (0,56) size 784x40
+        LayoutText {#text} at (0,0) size 24x19
+          text run at (0,0) width 24: "two"
+        LayoutBR {BR} at (24,15) size 0x0
+        LayoutText {#text} at (0,20) size 31x19
+          text run at (0,20) width 31: "three"
+      LayoutBlockFlow {DIV} at (0,96) size 784x20
+        LayoutText {#text} at (0,0) size 26x19
+          text run at (0,0) width 26: "four"
+      LayoutBlockFlow {UL} at (0,132) size 784x20
+        LayoutListItem {LI} at (40,0) size 744x20
+          LayoutListMarker (anonymous) at (-18,0) size 7x19: bullet
+          LayoutText {#text} at (0,0) size 54x19
+            text run at (0,0) width 54: "Success."

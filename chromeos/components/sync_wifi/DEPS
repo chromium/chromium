@@ -1,0 +1,11 @@
+include_rules = [
+  "+ash/public/cpp",
+  "+chromeos/network",
+  "+components/keyed_service/core",
+  "+components/prefs",
+  "+components/proxy_config",
+  "+components/user_manager",
+  "+components/version_info",
+  "+components/sync",
+  "+components/sync_preferences",
+]

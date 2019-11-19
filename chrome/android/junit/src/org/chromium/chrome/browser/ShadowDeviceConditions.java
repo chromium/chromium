@@ -59,4 +59,9 @@ public class ShadowDeviceConditions {
     public static boolean isCurrentActiveNetworkMetered(Context context) {
         return sDeviceConditions.isActiveNetworkMetered();
     }
+
+    @Implementation
+    public static boolean isCurrentlyScreenOnAndUnlocked(Context context) {
+        return sDeviceConditions.isScreenOnAndUnlocked();
+    }
 }

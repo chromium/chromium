@@ -286,7 +286,8 @@ void Headers::FillWith(const Vector<std::pair<String, String>>& object,
 }
 
 Headers::Headers()
-    : header_list_(FetchHeaderList::Create()), guard_(kNoneGuard) {}
+    : header_list_(MakeGarbageCollected<FetchHeaderList>()),
+      guard_(kNoneGuard) {}
 
 Headers::Headers(FetchHeaderList* header_list)
     : header_list_(header_list), guard_(kNoneGuard) {}

@@ -3,11 +3,15 @@
 // found in the LICENSE file.
 
 self.onmessage = async e => {
-  const response = await fetch(e.data.url);
-  if (!response.ok) {
-    self.postMessage('bad response');
-    return;
+  try {
+    const response = await fetch(e.data.url);
+    if (!response.ok) {
+      self.postMessage('bad response');
+      return;
+    }
+    const text = await response.text();
+    self.postMessage(text);
+  } catch (error) {
+    self.postMessage(`${error}`);
   }
-  const text = await response.text();
-  self.postMessage(text);
 };

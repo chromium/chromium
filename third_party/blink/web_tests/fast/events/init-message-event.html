@@ -12,7 +12,7 @@ var newEvent;
 function runTest() {
     newEvent = document.createEvent("MessageEvent");
     shouldThrow('newEvent.initMessageEvent("message", true, true, "ff", "*", 43, window, {x:1});', '"TypeError: Failed to execute \'initMessageEvent\' on \'MessageEvent\': Iterator getter is not callable."');
-    shouldNotThrow('newEvent.initMessageEvent("message", true, true, "ff", "*", 43, window, null)');
+    shouldNotThrow('newEvent.initMessageEvent("message", true, true, "ff", "*", 43, window, undefined)');
     shouldBeType(newEvent, MessageEvent);
 }
 

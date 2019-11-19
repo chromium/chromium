@@ -56,7 +56,7 @@ class GbmOverlaySurface : public OverlaySurface {
   bool have_unsubmitted_frame_ = false;
   bool page_flip_pending_ = false;
 
-  base::WeakPtrFactory<GbmOverlaySurface> weak_ptr_factory_;
+  base::WeakPtrFactory<GbmOverlaySurface> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(GbmOverlaySurface);
 };

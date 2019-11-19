@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+PASS Setting the start time of an animation without an active timeline
+PASS Setting an unresolved start time an animation without an active timeline does not clear the current time
+PASS Setting the start time clears the hold time
+PASS Setting an unresolved start time sets the hold time
+PASS Setting the start time resolves a pending ready promise
+PASS Setting the start time resolves a pending pause task
+PASS Setting an unresolved start time on a play-pending animation makes it paused
+FAIL Setting the start time updates the finished state assert_greater_than: Setting the start time updated the finished state with the 'did seek' flag set to true expected a number greater than 100000 but got 100000
+PASS Setting the start time of a play-pending animation applies a pending playback rate
+PASS Setting the start time of a playing animation applies a pending playback rate
+Harness: the test ran to completion.
+

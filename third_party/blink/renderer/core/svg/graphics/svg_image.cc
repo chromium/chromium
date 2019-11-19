@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/dom/events/event_dispatch_forbidden_scope.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -55,6 +56,7 @@
 #include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
+#include "third_party/blink/renderer/platform/graphics/dark_mode_image_classifier.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/image_observer.h"
 #include "third_party/blink/renderer/platform/graphics/paint/cull_rect.h"
@@ -62,6 +64,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record_builder.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 
 namespace blink {
@@ -96,7 +99,7 @@ class SVGImage::SVGImageLocalFrameClient : public EmptyLocalFrameClient {
 
 SVGImage::SVGImage(ImageObserver* observer, bool is_multipart)
     : Image(observer, is_multipart),
-      paint_controller_(PaintController::Create()),
+      paint_controller_(std::make_unique<PaintController>()),
       has_pending_timeline_rewind_(false) {}
 
 SVGImage::~SVGImage() {
@@ -372,9 +375,9 @@ void SVGImage::DrawPatternForContainer(GraphicsContext& context,
                                  phase.Y() + spaced_tile.Y());
 
   PaintFlags flags;
-  flags.setShader(PaintShader::MakePaintRecord(
-      record, spaced_tile, SkShader::kRepeat_TileMode,
-      SkShader::kRepeat_TileMode, &pattern_transform));
+  flags.setShader(
+      PaintShader::MakePaintRecord(record, spaced_tile, SkTileMode::kRepeat,
+                                   SkTileMode::kRepeat, &pattern_transform));
   // If the shader could not be instantiated (e.g. non-invertible matrix),
   // draw transparent.
   // Note: we can't simply bail, because of arbitrary blend mode.
@@ -429,6 +432,11 @@ static bool DrawNeedsLayer(const PaintFlags& flags) {
   if (SkColorGetA(flags.getColor()) < 255)
     return true;
 
+  // This is needed to preserve the dark mode filter that
+  // has been set in GraphicsContext.
+  if (flags.getColorFilter())
+    return true;
+
   return flags.getBlendMode() != SkBlendMode::kSrcOver;
 }
 
@@ -442,8 +450,8 @@ bool SVGImage::ApplyShaderInternal(PaintFlags& flags,
   IntRect bounds(IntPoint(), size);
 
   flags.setShader(PaintShader::MakePaintRecord(
-      PaintRecordForCurrentFrame(url), bounds, SkShader::kRepeat_TileMode,
-      SkShader::kRepeat_TileMode, &local_matrix));
+      PaintRecordForCurrentFrame(url), bounds, SkTileMode::kRepeat,
+      SkTileMode::kRepeat, &local_matrix));
 
   // Animation is normally refreshed in draw() impls, which we don't reach when
   // painting via shaders.
@@ -497,7 +505,7 @@ sk_sp<PaintRecord> SVGImage::PaintRecordForCurrentFrame(const KURL& url) {
 
   // Always call processUrlFragment, even if the url is empty, because
   // there may have been a previous url/fragment that needs to be reset.
-  view->ProcessUrlFragment(url);
+  view->ProcessUrlFragment(url, /*same_document_navigation=*/false);
 
   // If the image was reset, we need to rewind the timeline back to 0. This
   // needs to be done before painting, or else we wouldn't get the correct
@@ -647,19 +655,14 @@ void SVGImage::ServiceAnimations(
   LocalFrameView* frame_view = To<LocalFrame>(page_->MainFrame())->View();
   frame_view->UpdateAllLifecyclePhasesExceptPaint();
 
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled() ||
-      RuntimeEnabledFeatures::BlinkGenPropertyTreesEnabled()) {
-    // For CAP/BGPT we run UpdateAnimations after the paint phase, but per the
-    // above comment, we don't want to run lifecycle through to paint for SVG
-    // images. Since we know SVG images never have composited animations we can
-    // update animations directly without worrying about including
-    // PaintArtifactCompositor analysis of whether animations should be
-    // composited.
-    base::Optional<CompositorElementIdSet> composited_element_ids;
-    DocumentAnimations::UpdateAnimations(
-        frame_view->GetLayoutView()->GetDocument(),
-        DocumentLifecycle::kLayoutClean, composited_element_ids);
-  }
+  // We run UpdateAnimations after the paint phase, but per the above comment,
+  // we don't want to run lifecycle through to paint for SVG images. Since we
+  // know SVG images never have composited animations, we can update animations
+  // directly without worrying about including PaintArtifactCompositor's
+  // analysis of whether animations should be composited.
+  DocumentAnimations::UpdateAnimations(
+      frame_view->GetLayoutView()->GetDocument(),
+      DocumentLifecycle::kLayoutClean, nullptr);
 }
 
 void SVGImage::AdvanceAnimationForTesting() {
@@ -667,13 +670,20 @@ void SVGImage::AdvanceAnimationForTesting() {
     root_element->TimeContainer()->AdvanceFrameForTesting();
 
     // The following triggers animation updates which can issue a new draw
-    // but will not permanently change the animation timeline.
-    // TODO(pdr): Actually advance the document timeline so CSS animations
-    // can be properly tested.
+    // and temporarily change the animation timeline. It's necessary to call
+    // reset before changing to a time value as animation clock does not
+    // expect to go backwards.
+    base::TimeTicks current_animation_time =
+        page_->Animator().Clock().CurrentTime();
+    page_->Animator().Clock().ResetTimeForTesting();
+    if (root_element->TimeContainer()->IsStarted())
+      root_element->TimeContainer()->ResetDocumentTime();
     page_->Animator().ServiceScriptedAnimations(
-        base::TimeTicks() +
+        root_element->GetDocument().Timeline().ZeroTime() +
         base::TimeDelta::FromSecondsD(root_element->getCurrentTime()));
     GetImageObserver()->Changed(this);
+    page_->Animator().Clock().ResetTimeForTesting();
+    page_->Animator().Clock().UpdateTime(current_animation_time);
   }
 }
 
@@ -684,8 +694,7 @@ SVGImageChromeClient& SVGImage::ChromeClientForTesting() {
 void SVGImage::UpdateUseCounters(const Document& document) const {
   if (SVGSVGElement* root_element = SvgRootElement(page_.Get())) {
     if (root_element->TimeContainer()->HasAnimations()) {
-      UseCounter::Count(document,
-                        WebFeature::kSVGSMILAnimationInImageRegardlessOfCache);
+      document.CountUse(WebFeature::kSVGSMILAnimationInImageRegardlessOfCache);
     }
   }
 }
@@ -744,7 +753,7 @@ Image::SizeAvailability SVGImage::DataChanged(bool all_data_received) {
 
   Page::PageClients page_clients;
   FillWithEmptyClients(page_clients);
-  chrome_client_ = SVGImageChromeClient::Create(this);
+  chrome_client_ = MakeGarbageCollected<SVGImageChromeClient>(this);
   page_clients.chrome_client = chrome_client_.Get();
 
   // FIXME: If this SVG ends up loading itself, we might leak the world.
@@ -756,7 +765,7 @@ Image::SizeAvailability SVGImage::DataChanged(bool all_data_received) {
   Page* page;
   {
     TRACE_EVENT0("blink", "SVGImage::dataChanged::createPage");
-    page = Page::Create(page_clients);
+    page = Page::CreateNonOrdinary(page_clients);
     page->GetSettings().SetScriptEnabled(false);
     page->GetSettings().SetPluginsEnabled(false);
 
@@ -784,13 +793,14 @@ Image::SizeAvailability SVGImage::DataChanged(bool all_data_received) {
     TRACE_EVENT0("blink", "SVGImage::dataChanged::createFrame");
     DCHECK(!frame_client_);
     frame_client_ = MakeGarbageCollected<SVGImageLocalFrameClient>(this);
-    frame = LocalFrame::Create(frame_client_, *page, nullptr);
-    frame->SetView(LocalFrameView::Create(*frame));
+    frame = MakeGarbageCollected<LocalFrame>(frame_client_, *page, nullptr,
+                                             nullptr, nullptr);
+    frame->SetView(MakeGarbageCollected<LocalFrameView>(*frame));
     frame->Init();
   }
 
   FrameLoader& loader = frame->Loader();
-  loader.ForceSandboxFlags(kSandboxAll);
+  loader.ForceSandboxFlags(WebSandboxFlags::kAll);
 
   // SVG Images will always synthesize a viewBox, if it's not available, and
   // thus never see scrollbars.
@@ -803,6 +813,10 @@ Image::SizeAvailability SVGImage::DataChanged(bool all_data_received) {
   TRACE_EVENT0("blink", "SVGImage::dataChanged::load");
 
   frame->ForceSynchronousDocumentInstall("image/svg+xml", Data());
+
+  // Intrinsic sizing relies on computed style (e.g. font-size and
+  // writing-mode).
+  frame->GetDocument()->UpdateStyleAndLayoutTree();
 
   // Set the concrete object size before a container size is available.
   intrinsic_size_ = RoundedIntSize(ConcreteObjectSize(FloatSize(
@@ -829,8 +843,19 @@ Image::SizeAvailability SVGImage::DataChanged(bool all_data_received) {
   return kSizeAvailable;
 }
 
+bool SVGImage::IsSizeAvailable() {
+  return SvgRootElement(page_.Get());
+}
+
 String SVGImage::FilenameExtension() const {
   return "svg";
+}
+
+DarkModeClassification SVGImage::CheckTypeSpecificConditionsForDarkMode(
+    const FloatRect& dest_rect,
+    DarkModeImageClassifier* classifier) {
+  classifier->SetImageType(DarkModeImageClassifier::ImageType::kSvg);
+  return DarkModeClassification::kNotClassified;
 }
 
 }  // namespace blink

@@ -13,7 +13,7 @@
 
 #include "base/bind.h"
 #include "base/stl_util.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "chromeos/components/multidevice/remote_device_test_util.h"
 #include "chromeos/services/secure_channel/fake_authenticated_channel.h"
 #include "chromeos/services/secure_channel/fake_connection.h"
@@ -96,7 +96,7 @@ class SecureChannelAuthenticatedChannelImplTest : public testing::Test {
     // -1 is returned by SendMessageAndVerifyResults() when
     // |expected_to_succeed| is false.
     EXPECT_NE(-1, sequence_number);
-    return base::ContainsKey(sent_sequence_numbers_, sequence_number);
+    return base::Contains(sent_sequence_numbers_, sequence_number);
   }
 
   void CallGetConnectionMetadata() {
@@ -127,7 +127,7 @@ class SecureChannelAuthenticatedChannelImplTest : public testing::Test {
     sent_sequence_numbers_.insert(sequence_number);
   }
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   const multidevice::RemoteDeviceRef test_device_;
 
   int num_times_send_message_called_ = 0;

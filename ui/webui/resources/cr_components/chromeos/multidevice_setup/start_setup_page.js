@@ -18,22 +18,10 @@ Polymer({
       computed: 'getCancelButtonTextId_(delegate)',
     },
 
-    /** Overridden from UiPageContainerBehavior. */
-    headerId: {
-      type: String,
-      value: 'startSetupPageHeader',
-    },
-
-    /** Overridden from UiPageContainerBehavior. */
-    messageId: {
-      type: String,
-      value: 'startSetupPageMessage',
-    },
-
     /**
      * Array of objects representing all potential MultiDevice hosts.
      *
-     * @type {!Array<!chromeos.multidevice.mojom.RemoteDevice>}
+     * @type {!Array<!chromeos.multideviceSetup.mojom.HostDevice>}
      */
     devices: {
       type: Array,
@@ -63,7 +51,6 @@ Polymer({
 
   behaviors: [
     UiPageContainerBehavior,
-    I18nBehavior,
     WebUIListenerBehavior,
   ],
 
@@ -79,7 +66,7 @@ Polymer({
     // The "Learn More" links are inside a grdp string, so we cannot actually
     // add an onclick handler directly to the html. Instead, grab the two and
     // manaully add onclick handlers.
-    let helpArticleLinks = [
+    const helpArticleLinks = [
       this.$$('#multidevice-summary-message a'),
       this.$$('#awm-summary-message a')
     ];
@@ -99,7 +86,7 @@ Polymer({
   },
 
   /**
-   * @param {!Array<!chromeos.multidevice.mojom.RemoteDevice>} devices
+   * @param {!Array<!chromeos.multideviceSetup.mojom.HostDevice>} devices
    * @return {string} Label for devices selection content.
    * @private
    */
@@ -115,7 +102,7 @@ Polymer({
   },
 
   /**
-   * @param {!Array<!chromeos.multidevice.mojom.RemoteDevice>} devices
+   * @param {!Array<!chromeos.multideviceSetup.mojom.HostDevice>} devices
    * @return {boolean} True if there are more than one potential host devices.
    * @private
    */
@@ -124,7 +111,7 @@ Polymer({
   },
 
   /**
-   * @param {!Array<!chromeos.multidevice.mojom.RemoteDevice>} devices
+   * @param {!Array<!chromeos.multideviceSetup.mojom.HostDevice>} devices
    * @return {boolean} True if there is exactly one potential host device.
    * @private
    */
@@ -133,24 +120,63 @@ Polymer({
   },
 
   /**
-   * @param {!Array<!chromeos.multidevice.mojom.RemoteDevice>} devices
+   * @param {!Array<!chromeos.multideviceSetup.mojom.HostDevice>} devices
    * @return {string} Name of the first device in device list if there are any.
    *     Returns an empty string otherwise.
    * @private
    */
   getFirstDeviceNameInList_: function(devices) {
-    return devices[0] ? this.devices[0].deviceName : '';
+    return devices[0] ? this.devices[0].remoteDevice.deviceName : '';
+  },
+
+  /**
+   * @param {!chromeos.deviceSync.mojom.ConnectivityStatus} connectivityStatus
+   * @return {string} The classes to bind to the device name option.
+   * @private
+   */
+  getDeviceOptionClass_: function(connectivityStatus) {
+    return connectivityStatus ==
+            chromeos.deviceSync.mojom.ConnectivityStatus.kOffline ?
+        'offline-device-name' :
+        '';
+  },
+
+  /**
+   * @param {!chromeos.multideviceSetup.mojom.HostDevice} device
+   * @return {string} Name of the device, with connectivity status information.
+   * @private
+   */
+  getDeviceNameWithConnectivityStatus_: function(device) {
+    return device.connectivityStatus ==
+            chromeos.deviceSync.mojom.ConnectivityStatus.kOffline ?
+        this.i18n(
+            'startSetupPageOfflineDeviceOption',
+            device.remoteDevice.deviceName) :
+        device.remoteDevice.deviceName;
   },
 
   /** @private */
   devicesChanged_: function() {
     if (this.devices.length > 0) {
-      this.selectedDeviceId = this.devices[0].deviceId;
+      this.selectedDeviceId = this.devices[0].remoteDevice.deviceId;
     }
   },
 
   /** @private */
   onDeviceDropdownSelectionChanged_: function() {
     this.selectedDeviceId = this.$.deviceDropdown.value;
+  },
+
+  /**
+   * Wrapper for i18nAdvanced for binding to location updates in OOBE.
+   * @param {string} locale The language code (e.g. en, es) for the current
+   *     display language for CrOS. As with I18nBehavior.i18nDynamic(), the
+   *     parameter is not used directly but is provided to allow HTML binding
+   *     without passing an unexpected argument to I18nBehavior.i18nAdvanced().
+   * @param {string} textId The loadTimeData ID of the string to be translated.
+   * @private
+   */
+  i18nAdvancedDynamic_: function(locale, textId) {
+    return this.i18nAdvanced(textId);
   },
 });

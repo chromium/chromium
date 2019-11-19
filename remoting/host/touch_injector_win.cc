@@ -133,7 +133,7 @@ std::unique_ptr<TouchInjectorWinDelegate> TouchInjectorWinDelegate::Create() {
   }
 
   return std::unique_ptr<TouchInjectorWinDelegate>(new TouchInjectorWinDelegate(
-      library.Release(), init_func, inject_touch_func));
+      library.release(), init_func, inject_touch_func));
 }
 
 TouchInjectorWinDelegate::TouchInjectorWinDelegate(

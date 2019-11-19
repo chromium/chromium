@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_WAKE_LOCK_WAKE_LOCK_CONTEXT_HOST_H_
 
 #include "content/public/browser/web_contents.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/wake_lock_context.mojom.h"
 #include "services/device/public/mojom/wake_lock_provider.mojom.h"
 #include "ui/gfx/native_widget_types.h"
@@ -27,7 +28,7 @@ class WakeLockContextHost {
 
   // Returns the WakeLockContext* to which this instance is connected.
   device::mojom::WakeLockContext* GetWakeLockContext() {
-    return wake_lock_context_.get();
+    return wake_lock_context_ ? wake_lock_context_.get() : nullptr;
   }
 
  private:
@@ -38,7 +39,7 @@ class WakeLockContextHost {
   WebContents* web_contents_;
 
   // The WakeLockContext instance that is connected to this instance.
-  device::mojom::WakeLockContextPtr wake_lock_context_;
+  mojo::Remote<device::mojom::WakeLockContext> wake_lock_context_;
 
   DISALLOW_COPY_AND_ASSIGN(WakeLockContextHost);
 };

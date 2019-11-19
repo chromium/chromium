@@ -15,7 +15,7 @@
     <style>
         #composited-parent {
             background-color: red;
-            transform: translateZ(0);
+            will-change: transform;
             position: absolute;
             top: 100px;
             left: 100px;
@@ -24,7 +24,7 @@
         }
         #absolutely-positioned-composited-child {
             background-color: green;
-            transform: translateZ(0);
+            will-change: transform;
             position: absolute;
             top: 0;
             left: 0;

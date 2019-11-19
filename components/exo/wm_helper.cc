@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "components/exo/wm_helper.h"
-#include "ui/compositor/compositor_vsync_manager.h"
 
 namespace exo {
 

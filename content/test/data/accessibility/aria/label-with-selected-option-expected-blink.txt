@@ -1,9 +1,37 @@
 rootWebArea
-++checkBox name='Test 1: Flash the screen 2 times.' checkedState=false
-++checkBox name='Test 2: Flash the screen 2 times.' checkedState=false
-++textField
-++checkBox name='Test 3: Flash the screen two times.' checkedState=false
-++checkBox name='Test 4: Flash the screen two times.' checkedState=false
-++textField
-++checkBox name='Test 5: Flash the screen two times.' checkedState=false
-++comboBoxMenuButton name='two'
+++genericContainer ignored
+++++genericContainer ignored
+++++++checkBox name='Test 1: Flash the screen 2 times.' checkedState=false
+++++++listBox ignored
+++++++++listBoxOption ignored name='1' selected=false
+++++++++listBoxOption ignored name='2' selected=true
+++++++++listBoxOption ignored name='3' selected=false
+++++genericContainer ignored
+++++++checkBox name='Test 2: Flash the screen 2 times.' checkedState=false
+++++++comboBoxGrouping ignored
+++++++++textField
+++++++++listBox ignored
+++++++++++listBoxOption ignored name='1' selected=false
+++++++++++listBoxOption ignored name='2' selected=true
+++++++++++listBoxOption ignored name='3' selected=false
+++++genericContainer ignored
+++++++checkBox name='Test 3: Flash the screen two times.' checkedState=false
+++++++listBox ignored
+++++++++listBoxOption ignored name='1' selected=false
+++++++++listBoxOption ignored name='two' selected=true
+++++++++listBoxOption ignored name='3' selected=false
+++++genericContainer ignored
+++++++checkBox name='Test 4: Flash the screen two times.' checkedState=false
+++++++comboBoxGrouping ignored
+++++++++textField
+++++++++listBox ignored
+++++++++++listBoxOption ignored name='1' selected=false
+++++++++++listBoxOption ignored name='two' selected=true
+++++++++++listBoxOption ignored name='3' selected=false
+++++genericContainer ignored
+++++++checkBox name='Test 5: Flash the screen two times.' checkedState=false
+++++++comboBoxMenuButton name='two'
+++++++++listBox ignored
+++++++++++listBoxOption ignored name='1' selected=false
+++++++++++listBoxOption ignored name='two' selected=true
+++++++++++listBoxOption ignored name='3' selected=false

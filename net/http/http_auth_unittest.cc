@@ -49,8 +49,8 @@ std::unique_ptr<HttpAuthHandlerMock> CreateMockHandler(bool connection_based) {
 
 scoped_refptr<HttpResponseHeaders> HeadersFromResponseText(
     const std::string& response) {
-  return scoped_refptr<HttpResponseHeaders>(new HttpResponseHeaders(
-      HttpUtil::AssembleRawHeaders(response.c_str(), response.length())));
+  return base::MakeRefCounted<HttpResponseHeaders>(
+      HttpUtil::AssembleRawHeaders(response));
 }
 
 HttpAuth::AuthorizationResult HandleChallengeResponse(

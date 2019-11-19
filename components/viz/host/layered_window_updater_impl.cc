@@ -4,7 +4,7 @@
 
 #include "components/viz/host/layered_window_updater_impl.h"
 
-#include "base/memory/shared_memory.h"
+#include "base/trace_event/trace_event.h"
 #include "components/viz/common/resources/resource_format.h"
 #include "components/viz/common/resources/resource_sizes.h"
 #include "mojo/public/cpp/system/platform_handle.h"
@@ -16,15 +16,18 @@ namespace viz {
 
 LayeredWindowUpdaterImpl::LayeredWindowUpdaterImpl(
     HWND hwnd,
-    mojom::LayeredWindowUpdaterRequest request)
-    : hwnd_(hwnd), binding_(this, std::move(request)) {}
+    mojo::PendingReceiver<mojom::LayeredWindowUpdater> receiver)
+    : hwnd_(hwnd), receiver_(this, std::move(receiver)) {}
 
 LayeredWindowUpdaterImpl::~LayeredWindowUpdaterImpl() = default;
 
 void LayeredWindowUpdaterImpl::OnAllocatedSharedMemory(
     const gfx::Size& pixel_size,
-    mojo::ScopedSharedBufferHandle scoped_buffer_handle) {
+    base::UnsafeSharedMemoryRegion region) {
   canvas_.reset();
+
+  if (!region.IsValid())
+    return;
 
   // Make sure |pixel_size| is sane.
   size_t expected_bytes;
@@ -33,18 +36,12 @@ void LayeredWindowUpdaterImpl::OnAllocatedSharedMemory(
   if (!size_result)
     return;
 
-  base::SharedMemoryHandle shm_handle;
-  MojoResult unwrap_result = mojo::UnwrapSharedMemoryHandle(
-      std::move(scoped_buffer_handle), &shm_handle, nullptr, nullptr);
-  if (unwrap_result != MOJO_RESULT_OK)
-    return;
-
   // The SkCanvas maps shared memory on creation and unmaps on destruction.
   canvas_ = skia::CreatePlatformCanvasWithSharedSection(
-      pixel_size.width(), pixel_size.height(), true, shm_handle.GetHandle(),
+      pixel_size.width(), pixel_size.height(), true, region.GetPlatformHandle(),
       skia::RETURN_NULL_ON_FAILURE);
 
-  shm_handle.Close();
+  // |region|'s handle will close when it goes out of scope.
 }
 
 void LayeredWindowUpdaterImpl::Draw(DrawCallback draw_callback) {

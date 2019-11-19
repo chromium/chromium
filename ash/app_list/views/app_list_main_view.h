@@ -20,7 +20,7 @@ namespace search_box {
 class SearchBoxViewBase;
 }  // namespace search_box
 
-namespace app_list {
+namespace ash {
 
 class AppListItem;
 class AppListModel;
@@ -43,17 +43,11 @@ class APP_LIST_EXPORT AppListMainView
 
   void Init(int initial_apps_page, SearchBoxView* search_box_view);
 
-  void ShowAppListWhenReady();
-
-  void ResetForShow();
-
-  void Close();
-
   void ModelChanged();
 
   SearchBoxView* search_box_view() const { return search_box_view_; }
 
-  // If |drag_and_drop_host| is not NULL it will be called upon drag and drop
+  // If |drag_and_drop_host| is not nullptr it will be called upon drag and drop
   // operations outside the application list.
   void SetDragAndDropHostOfCurrentAppList(
       ApplicationDragAndDropHost* drag_and_drop_host);
@@ -87,7 +81,7 @@ class APP_LIST_EXPORT AppListMainView
   void AddContentsViews();
 
   // Gets the PaginationModel owned by the AppsGridView.
-  PaginationModel* GetAppsPaginationModel();
+  ash::PaginationModel* GetAppsPaginationModel();
 
   // Overridden from SearchBoxViewDelegate:
   void QueryChanged(search_box::SearchBoxViewBase* sender) override;
@@ -109,6 +103,6 @@ class APP_LIST_EXPORT AppListMainView
   DISALLOW_COPY_AND_ASSIGN(AppListMainView);
 };
 
-}  // namespace app_list
+}  // namespace ash
 
 #endif  // ASH_APP_LIST_VIEWS_APP_LIST_MAIN_VIEW_H_

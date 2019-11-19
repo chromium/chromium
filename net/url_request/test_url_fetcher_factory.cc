@@ -38,21 +38,19 @@ ScopedURLFetcherFactory::ScopedURLFetcherFactory(
 ScopedURLFetcherFactory::~ScopedURLFetcherFactory() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(URLFetcherImpl::factory());
-  URLFetcherImpl::set_factory(NULL);
+  URLFetcherImpl::set_factory(nullptr);
 }
 
 TestURLFetcher::TestURLFetcher(int id, const GURL& url, URLFetcherDelegate* d)
-    : owner_(NULL),
-      id_(id),
+    : id_(id),
       original_url_(url),
       delegate_(d),
-      delegate_for_tests_(NULL),
+      delegate_for_tests_(nullptr),
       did_receive_last_chunk_(false),
       fake_load_flags_(0),
       fake_response_code_(-1),
       fake_response_destination_(STRING),
       write_response_file_(false),
-      fake_was_fetched_via_proxy_(false),
       fake_was_cached_(false),
       fake_response_bytes_(0),
       fake_max_retries_(0) {
@@ -62,8 +60,6 @@ TestURLFetcher::TestURLFetcher(int id, const GURL& url, URLFetcherDelegate* d)
 TestURLFetcher::~TestURLFetcher() {
   if (delegate_for_tests_)
     delegate_for_tests_->OnRequestEnd(id_);
-  if (owner_)
-    owner_->RemoveFetcherFromMap(id_);
 }
 
 void TestURLFetcher::SetUploadData(const std::string& upload_content_type,
@@ -216,10 +212,6 @@ const ProxyServer& TestURLFetcher::ProxyServerUsed() const {
   return fake_proxy_server_;
 }
 
-bool TestURLFetcher::WasFetchedViaProxy() const {
-  return fake_was_fetched_via_proxy_;
-}
-
 bool TestURLFetcher::WasCached() const {
   return fake_was_cached_;
 }
@@ -294,10 +286,6 @@ void TestURLFetcher::set_status(const URLRequestStatus& status) {
   fake_status_ = status;
 }
 
-void TestURLFetcher::set_was_fetched_via_proxy(bool flag) {
-  fake_was_fetched_via_proxy_ = flag;
-}
-
 void TestURLFetcher::set_was_cached(bool flag) {
   fake_was_cached_ = flag;
 }
@@ -326,51 +314,12 @@ void TestURLFetcher::SetResponseFilePath(const base::FilePath& path) {
   fake_response_file_path_ = path;
 }
 
-TestURLFetcherFactory::TestURLFetcherFactory()
-    : ScopedURLFetcherFactory(this),
-      delegate_for_tests_(NULL),
-      remove_fetcher_on_delete_(false) {
-}
-
-TestURLFetcherFactory::~TestURLFetcherFactory() = default;
-
-std::unique_ptr<URLFetcher> TestURLFetcherFactory::CreateURLFetcher(
-    int id,
-    const GURL& url,
-    URLFetcher::RequestType request_type,
-    URLFetcherDelegate* d,
-    NetworkTrafficAnnotationTag traffic_annotation) {
-  TestURLFetcher* fetcher = new TestURLFetcher(id, url, d);
-  if (remove_fetcher_on_delete_)
-    fetcher->set_owner(this);
-  fetcher->SetDelegateForTests(delegate_for_tests_);
-  fetchers_[id] = fetcher;
-  return std::unique_ptr<URLFetcher>(fetcher);
-}
-
-TestURLFetcher* TestURLFetcherFactory::GetFetcherByID(int id) const {
-  auto i = fetchers_.find(id);
-  return i == fetchers_.end() ? NULL : i->second;
-}
-
-void TestURLFetcherFactory::RemoveFetcherFromMap(int id) {
-  auto i = fetchers_.find(id);
-  DCHECK(i != fetchers_.end());
-  fetchers_.erase(i);
-}
-
-void TestURLFetcherFactory::SetDelegateForTests(
-    TestURLFetcherDelegateForTests* delegate_for_tests) {
-  delegate_for_tests_ = delegate_for_tests;
-}
-
 FakeURLFetcher::FakeURLFetcher(const GURL& url,
                                URLFetcherDelegate* d,
                                const std::string& response_data,
                                HttpStatusCode response_code,
                                URLRequestStatus::Status status)
-    : TestURLFetcher(0, url, d),
-      weak_factory_(this) {
+    : TestURLFetcher(0, url, d) {
   Error error = OK;
   switch(status) {
     case URLRequestStatus::SUCCESS:
@@ -452,10 +401,10 @@ std::unique_ptr<URLFetcher> FakeURLFetcherFactory::CreateURLFetcher(
     NetworkTrafficAnnotationTag traffic_annotation) {
   FakeResponseMap::const_iterator it = fake_responses_.find(url);
   if (it == fake_responses_.end()) {
-    if (default_factory_ == NULL) {
+    if (default_factory_ == nullptr) {
       // If we don't have a baked response for that URL we return NULL.
       DLOG(ERROR) << "No baked response for URL: " << url.spec();
-      return NULL;
+      return nullptr;
     } else {
       return default_factory_->CreateURLFetcher(id, url, request_type, d,
                                                 traffic_annotation);
@@ -483,20 +432,6 @@ void FakeURLFetcherFactory::SetFakeResponse(
 
 void FakeURLFetcherFactory::ClearFakeResponses() {
   fake_responses_.clear();
-}
-
-URLFetcherImplFactory::URLFetcherImplFactory() = default;
-
-URLFetcherImplFactory::~URLFetcherImplFactory() = default;
-
-std::unique_ptr<URLFetcher> URLFetcherImplFactory::CreateURLFetcher(
-    int id,
-    const GURL& url,
-    URLFetcher::RequestType request_type,
-    URLFetcherDelegate* d,
-    NetworkTrafficAnnotationTag traffic_annotation) {
-  return std::unique_ptr<URLFetcher>(
-      new URLFetcherImpl(url, request_type, d, traffic_annotation));
 }
 
 }  // namespace net

@@ -10,7 +10,7 @@
 
 namespace extensions {
 
-class TopSitesGetFunction : public UIThreadExtensionFunction {
+class TopSitesGetFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("topSites.get", TOPSITES_GET)
 

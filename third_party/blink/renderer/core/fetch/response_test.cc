@@ -7,7 +7,6 @@
 #include <memory>
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
-#include "third_party/blink/public/platform/modules/service_worker/web_service_worker_response.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fetch/body_stream_buffer.h"
@@ -19,6 +18,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "third_party/blink/renderer/platform/loader/fetch/bytes_consumer.h"
+#include "third_party/blink/renderer/platform/loader/fetch/text_resource_decoder_options.h"
 #include "third_party/blink/renderer/platform/loader/testing/replaying_bytes_consumer.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -27,8 +27,7 @@ namespace blink {
 namespace {
 
 TEST(ServiceWorkerResponseTest, FromFetchResponseData) {
-  std::unique_ptr<DummyPageHolder> page =
-      DummyPageHolder::Create(IntSize(1, 1));
+  auto page = std::make_unique<DummyPageHolder>(IntSize(1, 1));
   const KURL url("http://www.response.com");
 
   FetchResponseData* fetch_response_data = FetchResponseData::Create();
@@ -83,9 +82,13 @@ void CheckResponseStream(ScriptState* script_state,
   EXPECT_CALL(*client2, DidFetchDataLoadedString(String("Hello, world")));
 
   response->InternalBodyBuffer()->StartLoading(
-      FetchDataLoader::CreateLoaderAsString(), client1, ASSERT_NO_EXCEPTION);
+      FetchDataLoader::CreateLoaderAsString(
+          TextResourceDecoderOptions::CreateUTF8Decode()),
+      client1, ASSERT_NO_EXCEPTION);
   cloned_response->InternalBodyBuffer()->StartLoading(
-      FetchDataLoader::CreateLoaderAsString(), client2, ASSERT_NO_EXCEPTION);
+      FetchDataLoader::CreateLoaderAsString(
+          TextResourceDecoderOptions::CreateUTF8Decode()),
+      client2, ASSERT_NO_EXCEPTION);
   blink::test::RunPendingTasks();
 }
 
@@ -184,9 +187,13 @@ TEST(ServiceWorkerResponseTest, BodyStreamBufferCloneError) {
   EXPECT_CALL(*client2, DidFetchDataLoadFailed());
 
   response->InternalBodyBuffer()->StartLoading(
-      FetchDataLoader::CreateLoaderAsString(), client1, ASSERT_NO_EXCEPTION);
+      FetchDataLoader::CreateLoaderAsString(
+          TextResourceDecoderOptions::CreateUTF8Decode()),
+      client1, ASSERT_NO_EXCEPTION);
   cloned_response->InternalBodyBuffer()->StartLoading(
-      FetchDataLoader::CreateLoaderAsString(), client2, ASSERT_NO_EXCEPTION);
+      FetchDataLoader::CreateLoaderAsString(
+          TextResourceDecoderOptions::CreateUTF8Decode()),
+      client2, ASSERT_NO_EXCEPTION);
   blink::test::RunPendingTasks();
 }
 

@@ -28,6 +28,8 @@ Either way, it is guaranteed to be in the past and always in UTC.
 # the symbol server, so rarely changing timestamps can cause conflicts there
 # as well. We only upload symbols for official builds to the symbol server.
 
+from __future__ import print_function
+
 import argparse
 import calendar
 import datetime
@@ -54,36 +56,43 @@ def GetFirstSundayOfMonth(year, month):
   return [date_day[0] for date_day in weeks[0] if date_day[1] == 6][0]
 
 
-def GetBuildDate(build_type, utc_now):
+def GetUnofficialBuildDate(build_date):
   """Gets the approximate build date given the specific build type.
 
-  >>> GetBuildDate('default', datetime.datetime(2016, 2, 6, 1, 2, 3))
-  datetime.datetime(2016, 1, 3, 1, 2, 3)
-  >>> GetBuildDate('default', datetime.datetime(2016, 2, 7, 5))
+  >>> GetUnofficialBuildDate(datetime.datetime(2016, 2, 6, 1, 2, 3))
+  datetime.datetime(2016, 1, 3, 5, 0)
+  >>> GetUnofficialBuildDate(datetime.datetime(2016, 2, 7, 5))
   datetime.datetime(2016, 2, 7, 5, 0)
-  >>> GetBuildDate('default', datetime.datetime(2016, 2, 8, 5))
+  >>> GetUnofficialBuildDate(datetime.datetime(2016, 2, 8, 5))
   datetime.datetime(2016, 2, 7, 5, 0)
-  >>> GetBuildDate('official', datetime.datetime(2016, 2, 8, 5))
-  datetime.datetime(2016, 2, 8, 5, 0)
   """
-  day = utc_now.day
-  month = utc_now.month
-  year = utc_now.year
-  if build_type != 'official':
-    first_sunday = GetFirstSundayOfMonth(year, month)
-    # If our build is after the first Sunday, we've already refreshed our build
-    # cache on a quiet day, so just use that day.
-    # Otherwise, take the first Sunday of the previous month.
-    if day >= first_sunday:
-      day = first_sunday
-    else:
-      month -= 1
-      if month == 0:
-        month = 12
-        year -= 1
-      day = GetFirstSundayOfMonth(year, month)
+
+  if build_date.hour < 5:
+    # The time is locked at 5:00 am in UTC to cause the build cache
+    # invalidation to not happen exactly at midnight. Use the same calculation
+    # as the day before.
+    # See //base/build_time.cc.
+    build_date = build_date - datetime.timedelta(days=1)
+  build_date = datetime.datetime(build_date.year, build_date.month,
+                                 build_date.day, 5, 0, 0)
+
+  day = build_date.day
+  month = build_date.month
+  year = build_date.year
+  first_sunday = GetFirstSundayOfMonth(year, month)
+  # If our build is after the first Sunday, we've already refreshed our build
+  # cache on a quiet day, so just use that day.
+  # Otherwise, take the first Sunday of the previous month.
+  if day >= first_sunday:
+    day = first_sunday
+  else:
+    month -= 1
+    if month == 0:
+      month = 12
+      year -= 1
+    day = GetFirstSundayOfMonth(year, month)
   return datetime.datetime(
-      year, month, day, utc_now.hour, utc_now.minute, utc_now.second)
+      year, month, day, build_date.hour, build_date.minute, build_date.second)
 
 
 def main():
@@ -102,17 +111,15 @@ def main():
   # use_dummy_lastchange is set.
   lastchange_file = os.path.join(THIS_DIR, 'util', 'LASTCHANGE.committime')
   last_commit_timestamp = int(open(lastchange_file).read())
-  now = datetime.datetime.utcfromtimestamp(last_commit_timestamp)
+  build_date = datetime.datetime.utcfromtimestamp(last_commit_timestamp)
 
-  if now.hour < 5:
-    # The time is locked at 5:00 am in UTC to cause the build cache
-    # invalidation to not happen exactly at midnight. Use the same calculation
-    # as the day before.
-    # See //base/build_time.cc.
-    now = now - datetime.timedelta(days=1)
-  now = datetime.datetime(now.year, now.month, now.day, 5, 0, 0)
-  build_date = GetBuildDate(args.build_type, now)
-  print int(calendar.timegm(build_date.utctimetuple()))
+  # For official builds we want full fidelity time stamps because official
+  # builds are typically added to symbol servers and Windows symbol servers
+  # use the link timestamp as the prime differentiator, but for unofficial
+  # builds we do lots of quantization to avoid churn.
+  if args.build_type != 'official':
+    build_date = GetUnofficialBuildDate(build_date)
+  print(int(calendar.timegm(build_date.utctimetuple())))
   return 0
 
 

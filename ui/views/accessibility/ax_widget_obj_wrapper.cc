@@ -4,24 +4,25 @@
 
 #include "ui/views/accessibility/ax_widget_obj_wrapper.h"
 
+#include <vector>
+
 #include "base/strings/utf_string_conversions.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/views/accessibility/ax_aura_obj_cache.h"
 #include "ui/views/accessibility/ax_aura_obj_wrapper.h"
-#include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 
 namespace views {
 
 AXWidgetObjWrapper::AXWidgetObjWrapper(AXAuraObjCache* aura_obj_cache,
                                        Widget* widget)
-    : aura_obj_cache_(aura_obj_cache), widget_(widget) {
-  widget->AddObserver(this);
+    : AXAuraObjWrapper(aura_obj_cache), widget_(widget) {
+  widget_observer_.Add(widget);
   widget->AddRemovalsObserver(this);
 }
 
 AXWidgetObjWrapper::~AXWidgetObjWrapper() {
-  widget_->RemoveObserver(this);
   widget_->RemoveRemovalsObserver(this);
 }
 
@@ -36,7 +37,7 @@ AXAuraObjWrapper* AXWidgetObjWrapper::GetParent() {
 void AXWidgetObjWrapper::GetChildren(
     std::vector<AXAuraObjWrapper*>* out_children) {
   if (!widget_->IsVisible() || !widget_->GetRootView() ||
-      !widget_->GetRootView()->visible()) {
+      !widget_->GetRootView()->GetVisible()) {
     return;
   }
 

@@ -45,9 +45,7 @@ const aura::WindowTreeHost* GetMirroringSourceHostForCurrentEvent() {
 }  // namespace
 
 UnifiedMouseWarpController::UnifiedMouseWarpController()
-    : current_cursor_display_id_(display::kInvalidDisplayId),
-      update_location_for_test_(false),
-      display_boundaries_computed_(false) {}
+    : update_location_for_test_(false), display_boundaries_computed_(false) {}
 
 UnifiedMouseWarpController::~UnifiedMouseWarpController() = default;
 
@@ -85,16 +83,6 @@ bool UnifiedMouseWarpController::WarpMouseCursor(ui::MouseEvent* event) {
   const display::Display display =
       display::Screen::GetScreen()->GetDisplayNearestWindow(
           const_cast<aura::Window*>(host->window()));
-  if (current_cursor_display_id_ != display::kInvalidDisplayId &&
-      current_cursor_display_id_ != display.id()) {
-    aura::client::CursorClient* cursor_client =
-        aura::client::GetCursorClient(target->GetRootWindow());
-    if (cursor_client) {
-      cursor_client->SetDisplay(display);
-      current_cursor_display_id_ = display::kInvalidDisplayId;
-    }
-  }
-
   return WarpMouseCursorInNativeCoords(display.id(), point_in_native,
                                        point_in_unified_host,
                                        update_location_for_test_);
@@ -149,10 +137,6 @@ bool UnifiedMouseWarpController::WarpMouseCursorInNativeCoords(
   const std::vector<DisplayEdge>& potential_edges = edges_iter->second;
   for (const auto& edge : potential_edges) {
     if (edge.edge_native_bounds_in_source_display.Contains(point_in_native)) {
-      // Wait updating the cursor until the cursor moves to the new display
-      // to avoid showing the wrong sized cursor at the source display.
-      current_cursor_display_id_ = edge.source_display_id;
-
       AshWindowTreeHost* target_ash_host =
           GetMirroringAshWindowTreeHostForDisplayId(edge.target_display_id);
       MoveCursorTo(target_ash_host, point_in_unified_host,

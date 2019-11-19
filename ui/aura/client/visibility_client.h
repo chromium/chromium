@@ -16,8 +16,8 @@ namespace client {
 class AURA_EXPORT VisibilityClient {
  public:
   // Called when |window|'s visibility is changing to |visible|. The implementor
-  // can decide whether or not to pass on the visibility to the underlying
-  // layer.
+  // can perform additional actions before reflecting the visibility change on
+  // the underlying layer.
   virtual void UpdateLayerVisibility(Window* window, bool visible) = 0;
 
  protected:

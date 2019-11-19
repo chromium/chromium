@@ -24,10 +24,6 @@ login.createScreen('AccountPickerScreen', 'account-picker', function() {
    return {
      EXTERNAL_API: [
        'loadUsers',
-       'runAppForTesting',
-       'setApps',
-       'setShouldShowApps',
-       'showAppError',
        'updateUserImage',
        'setCapsLockState',
        'removeUser',
@@ -106,7 +102,6 @@ login.createScreen('AccountPickerScreen', 'account-picker', function() {
        chrome.send('loginUIStateChanged', ['account-picker', true]);
        $('login-header-bar').signinUIState = SIGNIN_UI_STATE.ACCOUNT_PICKER;
        // Header bar should be always visible on Account Picker screen.
-       Oobe.getInstance().headerHidden = false;
        chrome.send('hideCaptivePortal');
        var podRow = $('pod-row');
        podRow.handleBeforeShow();
@@ -261,45 +256,6 @@ login.createScreen('AccountPickerScreen', 'account-picker', function() {
        // On Desktop, #login-header-bar has a shadow if there are 8+ profiles.
        if (Oobe.getInstance().displayType == DISPLAY_TYPE.DESKTOP_USER_MANAGER)
          $('login-header-bar').classList.toggle('shadow', users.length > 8);
-     },
-
-     /**
-      * Runs app with a given id from the list of loaded apps.
-      * @param {!string} app_id of an app to run.
-      * @param {boolean=} opt_diagnostic_mode Whether to run the app in
-      *     diagnostic mode.  Default is false.
-      */
-     runAppForTesting: function(app_id, opt_diagnostic_mode) {
-       $('pod-row').findAndRunAppForTesting(app_id, opt_diagnostic_mode);
-     },
-
-     /**
-      * Adds given apps to the pod row.
-      * @param {array} apps Array of apps.
-      */
-     setApps: function(apps) {
-       $('pod-row').setApps(apps);
-     },
-
-     /**
-      * Sets the flag of whether app pods should be visible.
-      * @param {boolean} shouldShowApps Whether to show app pods.
-      */
-     setShouldShowApps: function(shouldShowApps) {
-       $('pod-row').setShouldShowApps(shouldShowApps);
-     },
-
-     /**
-      * Shows the given kiosk app error message.
-      * @param {!string} message Error message to show.
-      */
-     showAppError: function(message) {
-       // TODO(nkostylev): Figure out a way to show kiosk app launch error
-       // pointing to the kiosk app pod.
-       /** @const */ var BUBBLE_PADDING = 12;
-       $('bubble').showTextForElement(
-           $('pod-row'), message, cr.ui.Bubble.Attachment.BOTTOM,
-           $('pod-row').offsetWidth / 2, BUBBLE_PADDING);
      },
 
      /**

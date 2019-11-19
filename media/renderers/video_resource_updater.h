@@ -17,6 +17,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_dump_provider.h"
+#include "base/unguessable_token.h"
 #include "components/viz/common/resources/release_callback.h"
 #include "components/viz/common/resources/resource_format.h"
 #include "components/viz/common/resources/resource_id.h"
@@ -27,6 +28,7 @@
 
 namespace gfx {
 class Rect;
+class RRectF;
 class Transform;
 }  // namespace gfx
 
@@ -51,6 +53,10 @@ enum class VideoFrameResourceType {
   RGBA_PREMULTIPLIED,
   RGBA,
   STREAM_TEXTURE,
+  // The VideoFrame is merely a hint to compositor that a hole must be made
+  // transparent so the video underlay will be visible.
+  // Used by Chromecast only.
+  VIDEO_HOLE,
 };
 
 class MEDIA_EXPORT VideoFrameExternalResources {
@@ -109,6 +115,7 @@ class MEDIA_EXPORT VideoResourceUpdater
                    gfx::Transform transform,
                    gfx::Rect quad_rect,
                    gfx::Rect visible_quad_rect,
+                   const gfx::RRectF& rounded_corner_bounds,
                    gfx::Rect clip_rect,
                    bool is_clipped,
                    bool context_opaque,
@@ -178,7 +185,7 @@ class MEDIA_EXPORT VideoResourceUpdater
   void RecycleResource(uint32_t plane_resource_id,
                        const gpu::SyncToken& sync_token,
                        bool lost_resource);
-  void ReturnTexture(const scoped_refptr<VideoFrame>& video_frame,
+  void ReturnTexture(scoped_refptr<VideoFrame> video_frame,
                      const gpu::SyncToken& sync_token,
                      bool lost_resource);
 
@@ -212,12 +219,16 @@ class MEDIA_EXPORT VideoResourceUpdater
   // Resources that will be placed into quads by the next call to
   // AppendDrawQuads().
   std::vector<FrameResource> frame_resources_;
+  // If the video resource is a hole punching VideoFrame sent by Chromecast,
+  // the VideoFrame carries an |overlay_plane_id_| to activate the video
+  // overlay, but there is no video content to display within VideoFrame.
+  base::UnguessableToken overlay_plane_id_;
 
   // Resources allocated by VideoResourceUpdater. Used to recycle resources so
   // we can reduce the number of allocations and data transfers.
   std::vector<std::unique_ptr<PlaneResource>> all_resources_;
 
-  base::WeakPtrFactory<VideoResourceUpdater> weak_ptr_factory_;
+  base::WeakPtrFactory<VideoResourceUpdater> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(VideoResourceUpdater);
 };

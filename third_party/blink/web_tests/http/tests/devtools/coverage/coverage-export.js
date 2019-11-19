@@ -7,14 +7,14 @@
   await TestRunner.loadModule('coverage_test_runner');
   await TestRunner.navigatePromise(TestRunner.url('resources/basic-coverage.html'));
 
-  CoverageTestRunner.startCoverage();
+  await CoverageTestRunner.startCoverage(true);
   await TestRunner.evaluateInPagePromise('performActions()');
   await CoverageTestRunner.stopCoverage();
   const report = JSON.parse(await CoverageTestRunner.exportReport());
   for (const entry of report) {
     TestRunner.addResult('\n\nFile: ' + entry.url);
     for (const range of entry.ranges) {
-      TestRunner.addResult('\nUsage:');
+      TestRunner.addResult(`\nUsage: [${range.start}, ${range.end}]`);
       TestRunner.addResult(entry.text.substring(range.start, range.end).trim());
     }
   }

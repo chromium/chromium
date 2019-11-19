@@ -16,7 +16,6 @@
 #include "url/origin.h"
 
 namespace content {
-
 namespace background_fetch {
 
 // Gets an active Background Fetch metadata entry from the database.
@@ -56,13 +55,12 @@ class GetMetadataTask : public DatabaseTask {
 
   std::unique_ptr<proto::BackgroundFetchMetadata> metadata_proto_;
 
-  base::WeakPtrFactory<GetMetadataTask> weak_factory_;  // Keep as last.
+  base::WeakPtrFactory<GetMetadataTask> weak_factory_{this};  // Keep as last.
 
   DISALLOW_COPY_AND_ASSIGN(GetMetadataTask);
 };
 
 }  // namespace background_fetch
-
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_BACKGROUND_FETCH_STORAGE_GET_METADATA_TASK_H_

@@ -22,7 +22,7 @@ cr.define('ntp', function() {
    * @implements {cr.ui.DragWrapperDelegate}
    */
   function NavDot(page, title, titleIsEditable, animate) {
-    const dot = cr.doc.createElement('li');
+    const dot = /** @type {!NavDot} */ (document.createElement('li'));
     dot.__proto__ = NavDot.prototype;
     dot.initialize(page, title, titleIsEditable, animate);
 

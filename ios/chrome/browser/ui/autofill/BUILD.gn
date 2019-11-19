@@ -9,10 +9,6 @@ source_set("autofill") {
     "autofill_ui_type_util.mm",
     "chrome_autofill_client_ios.h",
     "chrome_autofill_client_ios.mm",
-    "form_input_accessory_coordinator.h",
-    "form_input_accessory_coordinator.mm",
-    "form_input_accessory_mediator.h",
-    "form_input_accessory_mediator.mm",
   ]
   deps = [
     ":autofill_ui",
@@ -28,6 +24,7 @@ source_set("autofill") {
     "//components/leveldb_proto",
     "//components/password_manager/core/browser",
     "//components/prefs",
+    "//components/security_state/ios",
     "//components/strings",
     "//components/translate/core/browser:browser",
     "//google_apis",
@@ -45,19 +42,25 @@ source_set("autofill") {
     "//ios/chrome/browser/ssl",
     "//ios/chrome/browser/sync",
     "//ios/chrome/browser/translate:translate",
-    "//ios/chrome/browser/ui",
     "//ios/chrome/browser/ui/autofill/cells",
+    "//ios/chrome/browser/ui/autofill/form_input_accessory:form_input_accessory_ui",
     "//ios/chrome/browser/ui/autofill/manual_fill:manual_fill",
     "//ios/chrome/browser/ui/autofill/manual_fill:manual_fill_ui",
     "//ios/chrome/browser/ui/collection_view/cells",
     "//ios/chrome/browser/ui/colors",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/browser/ui/infobars:feature_flags",
+    "//ios/chrome/browser/ui/infobars/coordinators",
+    "//ios/chrome/browser/ui/util",
     "//ios/chrome/browser/web_state_list:web_state_list",
+    "//ios/chrome/browser/webdata_services",
     "//ios/chrome/common",
     "//ios/public/provider/chrome/browser",
     "//ios/third_party/material_components_ios",
     "//ios/third_party/material_roboto_font_loader_ios",
-    "//ios/web",
+    "//ios/web/common",
+    "//ios/web/public/deprecated",
+    "//ios/web/public/js_messaging",
     "//ui/base",
   ]
   public_deps = [
@@ -69,6 +72,10 @@ source_set("autofill") {
 source_set("bridges") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
+    "card_expiration_date_fix_flow_view_bridge.h",
+    "card_expiration_date_fix_flow_view_bridge.mm",
+    "card_name_fix_flow_view_bridge.h",
+    "card_name_fix_flow_view_bridge.mm",
     "card_unmask_prompt_view_bridge.h",
     "card_unmask_prompt_view_bridge.mm",
   ]
@@ -77,10 +84,13 @@ source_set("bridges") {
     "//base",
     "//components/autofill/core/browser",
     "//components/strings",
-    "//ios/chrome/browser/ui",
     "//ios/chrome/browser/ui/autofill/cells",
     "//ios/chrome/browser/ui/collection_view/cells",
     "//ios/chrome/browser/ui/colors",
+    "//ios/chrome/browser/ui/list_model",
+    "//ios/chrome/browser/ui/table_view/cells",
+    "//ios/chrome/browser/ui/util",
+    "//ios/chrome/common/colors",
     "//ios/third_party/material_components_ios",
     "//ios/third_party/material_roboto_font_loader_ios",
     "//ios/web",
@@ -95,9 +105,9 @@ source_set("bridges") {
 source_set("autofill_ui") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "autofill_edit_accessory_view.h",
-    "autofill_edit_accessory_view.mm",
     "autofill_ui_type.h",
+    "expiration_date_picker.h",
+    "expiration_date_picker.mm",
     "save_card_infobar_controller.h",
     "save_card_infobar_controller.mm",
     "save_card_infobar_view.h",
@@ -105,6 +115,7 @@ source_set("autofill_ui") {
     "save_card_infobar_view_delegate.h",
   ]
   deps = [
+    ":autofill_message",
     "//base",
     "//base:i18n",
     "//components/autofill/core/browser",
@@ -113,21 +124,34 @@ source_set("autofill_ui") {
     "//ios/chrome/browser",
     "//ios/chrome/browser/infobars",
     "//ios/chrome/browser/infobars:public",
-    "//ios/chrome/browser/ui",
     "//ios/chrome/browser/ui/colors",
     "//ios/chrome/browser/ui/image_util",
     "//ios/chrome/browser/ui/infobars:infobars_ui",
+    "//ios/chrome/browser/ui/toolbar/public",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/common",
+    "//ios/chrome/common/colors",
+    "//ios/chrome/common/ui_util",
     "//ios/third_party/material_components_ios",
     "//ios/third_party/material_roboto_font_loader_ios",
-    "//ui/base:base",
-    "//url:url",
+    "//ui/base",
   ]
   libs = [ "UIKit.framework" ]
 }
 
+source_set("autofill_message") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "save_card_message_with_links.h",
+    "save_card_message_with_links.mm",
+  ]
+  deps = [
+    "//url:url",
+  ]
+}
+
 source_set("eg_tests") {
+  defines = [ "CHROME_EARL_GREY_1" ]
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
@@ -136,19 +160,113 @@ source_set("eg_tests") {
   ]
   deps = [
     ":autofill_ui",
+    ":test_support",
     "//components/autofill/core/browser",
     "//components/autofill/ios/browser:autofill_test_bundle_data",
     "//components/autofill/ios/browser:test_support",
     "//components/leveldb_proto",
     "//components/strings:components_strings_grit",
     "//ios/chrome/browser/autofill",
+    "//ios/chrome/test:eg_test_support",
     "//ios/chrome/test/app:test_support",
     "//ios/chrome/test/earl_grey:test_support",
+    "//ios/testing/earl_grey:earl_grey_support",
+    "//ios/web/public/js_messaging",
     "//ios/web/public/test/http_server",
+    "//net:test_support",
     "//services/network:test_support",
+    "//testing/gtest:gtest",
   ]
   libs = [
     "UIKit.framework",
     "XCTest.framework",
+  ]
+}
+
+source_set("eg2_tests") {
+  defines = [ "CHROME_EARL_GREY_2" ]
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+  sources = [
+    "save_profile_egtest.mm",
+  ]
+  deps = [
+    ":eg_test_support+eg2",
+    "//base",
+    "//base/test:test_support",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/third_party/earl_grey2:test_lib",
+    "//ios/web/public/test/http_server",
+    "//testing/gtest",
+  ]
+  libs = [ "UIKit.framework" ]
+}
+
+source_set("test_support") {
+  defines = [ "CHROME_EARL_GREY_1" ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [
+    "autofill_app_interface.h",
+    "autofill_app_interface.mm",
+  ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//components/autofill/core/browser",
+    "//components/autofill/core/browser:test_support",
+    "//components/keyed_service/core",
+    "//components/password_manager/core/browser",
+    "//ios/chrome/browser",
+    "//ios/chrome/browser/autofill",
+    "//ios/chrome/browser/passwords",
+    "//ios/chrome/test/app:test_support",
+    "//ios/testing/earl_grey:earl_grey_support",
+  ]
+}
+
+source_set("eg_app_support+eg2") {
+  defines = [ "CHROME_EARL_GREY_2" ]
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+  sources = [
+    "autofill_app_interface.h",
+    "autofill_app_interface.mm",
+  ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//components/autofill/core/browser",
+    "//components/autofill/core/browser:test_support",
+    "//components/keyed_service/core",
+    "//components/password_manager/core/browser",
+    "//ios/chrome/browser",
+    "//ios/chrome/browser/autofill",
+    "//ios/chrome/browser/passwords",
+    "//ios/chrome/test/app:test_support",
+  ]
+}
+
+source_set("eg_test_support+eg2") {
+  defines = [ "CHROME_EARL_GREY_2" ]
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+  sources = [
+    "autofill_app_interface.h",
+    "autofill_app_interface_stub.mm",
+  ]
+  deps = [
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/third_party/earl_grey2:test_lib",
   ]
 }

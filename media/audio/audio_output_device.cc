@@ -61,6 +61,7 @@ void AudioOutputDevice::InitializeOnIOThread(const AudioParameters& params,
                                              RenderCallback* callback) {
   DCHECK(!callback_) << "Calling Initialize() twice?";
   DCHECK(params.IsValid());
+  DVLOG(1) << __func__ << ": " << params.AsHumanReadableString();
   audio_parameters_ = params;
   callback_ = callback;
 }
@@ -124,6 +125,12 @@ void AudioOutputDevice::Pause() {
   TRACE_EVENT0("audio", "AudioOutputDevice::Pause");
   io_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&AudioOutputDevice::PauseOnIOThread, this));
+}
+
+void AudioOutputDevice::Flush() {
+  TRACE_EVENT0("audio", "AudioOutputDevice::Flush");
+  io_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&AudioOutputDevice::FlushOnIOThread, this));
 }
 
 bool AudioOutputDevice::SetVolume(double volume) {
@@ -230,6 +237,13 @@ void AudioOutputDevice::PauseOnIOThread() {
 
   if (ipc_)
     ipc_->PauseStream();
+}
+
+void AudioOutputDevice::FlushOnIOThread() {
+  DCHECK(io_task_runner_->BelongsToCurrentThread());
+
+  if (ipc_)
+    ipc_->FlushStream();
 }
 
 void AudioOutputDevice::ShutDownOnIOThread() {

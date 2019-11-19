@@ -8,6 +8,7 @@ import android.content.Context;
 import android.os.Build;
 
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton;
@@ -36,14 +37,15 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
     @Override
     protected void initializeNative() {
         if (mNativePtr == 0) {
-            mNativePtr = nativeInit();
+            mNativePtr = TabStripSceneLayerJni.get().init(TabStripSceneLayer.this);
         }
         assert mNativePtr != 0;
     }
 
     @Override
     public void setContentTree(SceneLayer contentTree) {
-        nativeSetContentTree(mNativePtr, contentTree);
+        TabStripSceneLayerJni.get().setContentTree(
+                mNativePtr, TabStripSceneLayer.this, contentTree);
     }
 
     /**
@@ -65,14 +67,15 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
 
         final boolean visible = yOffset > -layoutHelper.getHeight();
         // This will hide the tab strips if necessary.
-        nativeBeginBuildingFrame(mNativePtr, visible);
+        TabStripSceneLayerJni.get().beginBuildingFrame(
+                mNativePtr, TabStripSceneLayer.this, visible);
         // When strip tabs are completely off screen, we don't need to update it.
         if (visible) {
             pushButtonsAndBackground(layoutHelper, resourceManager, yOffset);
             pushStripTabs(layoutHelper, layerTitleCache, resourceManager, stripLayoutTabsToRender,
                     selectedTabId);
         }
-        nativeFinishBuildingFrame(mNativePtr);
+        TabStripSceneLayerJni.get().finishBuildingFrame(mNativePtr, TabStripSceneLayer.this);
     }
 
     private boolean shouldReaddBackground(int orientation) {
@@ -93,35 +96,36 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
             ResourceManager resourceManager, float yOffset) {
         final float width = layoutHelper.getWidth() * mDpToPx;
         final float height = layoutHelper.getHeight() * mDpToPx;
-        nativeUpdateTabStripLayer(mNativePtr, width, height, yOffset * mDpToPx,
-                layoutHelper.getBackgroundTabBrightness(), layoutHelper.getBrightness(),
-                shouldReaddBackground(layoutHelper.getOrientation()));
+        TabStripSceneLayerJni.get().updateTabStripLayer(mNativePtr, TabStripSceneLayer.this, width,
+                height, yOffset * mDpToPx, layoutHelper.getBackgroundTabBrightness(),
+                layoutHelper.getBrightness(), shouldReaddBackground(layoutHelper.getOrientation()));
 
         CompositorButton newTabButton = layoutHelper.getNewTabButton();
         CompositorButton modelSelectorButton = layoutHelper.getModelSelectorButton();
         boolean newTabButtonVisible = newTabButton.isVisible();
         boolean modelSelectorButtonVisible = modelSelectorButton.isVisible();
 
-        nativeUpdateNewTabButton(mNativePtr, newTabButton.getResourceId(),
-                newTabButton.getX() * mDpToPx, newTabButton.getY() * mDpToPx,
-                newTabButton.getWidth() * mDpToPx, newTabButton.getHeight() * mDpToPx,
-                newTabButtonVisible, resourceManager);
+        TabStripSceneLayerJni.get().updateNewTabButton(mNativePtr, TabStripSceneLayer.this,
+                newTabButton.getResourceId(), newTabButton.getX() * mDpToPx,
+                newTabButton.getY() * mDpToPx, newTabButton.getWidth() * mDpToPx,
+                newTabButton.getHeight() * mDpToPx, newTabButtonVisible, resourceManager);
 
-        nativeUpdateModelSelectorButton(mNativePtr, modelSelectorButton.getResourceId(),
-                modelSelectorButton.getX() * mDpToPx, modelSelectorButton.getY() * mDpToPx,
-                modelSelectorButton.getWidth() * mDpToPx, modelSelectorButton.getHeight() * mDpToPx,
-                modelSelectorButton.isIncognito(), modelSelectorButtonVisible, resourceManager);
+        TabStripSceneLayerJni.get().updateModelSelectorButton(mNativePtr, TabStripSceneLayer.this,
+                modelSelectorButton.getResourceId(), modelSelectorButton.getX() * mDpToPx,
+                modelSelectorButton.getY() * mDpToPx, modelSelectorButton.getWidth() * mDpToPx,
+                modelSelectorButton.getHeight() * mDpToPx, modelSelectorButton.isIncognito(),
+                modelSelectorButtonVisible, resourceManager);
 
         int leftFadeDrawable = modelSelectorButtonVisible && LocalizationUtils.isLayoutRtl()
                 ? R.drawable.tab_strip_fade_for_model_selector : R.drawable.tab_strip_fade;
         int rightFadeDrawable = modelSelectorButtonVisible && !LocalizationUtils.isLayoutRtl()
                 ? R.drawable.tab_strip_fade_for_model_selector : R.drawable.tab_strip_fade;
 
-        nativeUpdateTabStripLeftFade(mNativePtr, leftFadeDrawable,
-                layoutHelper.getLeftFadeOpacity(), resourceManager);
+        TabStripSceneLayerJni.get().updateTabStripLeftFade(mNativePtr, TabStripSceneLayer.this,
+                leftFadeDrawable, layoutHelper.getLeftFadeOpacity(), resourceManager);
 
-        nativeUpdateTabStripRightFade(mNativePtr, rightFadeDrawable,
-                layoutHelper.getRightFadeOpacity(), resourceManager);
+        TabStripSceneLayerJni.get().updateTabStripRightFade(mNativePtr, TabStripSceneLayer.this,
+                rightFadeDrawable, layoutHelper.getRightFadeOpacity(), resourceManager);
     }
 
     private void pushStripTabs(StripLayoutHelperManager layoutHelper,
@@ -132,13 +136,15 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
         for (int i = 0; i < tabsCount; i++) {
             final StripLayoutTab st = stripTabs[i];
             boolean isSelected = st.getId() == selectedTabId;
-            nativePutStripTabLayer(mNativePtr, st.getId(), st.getCloseButton().getResourceId(),
-                    st.getResourceId(isSelected), isSelected, st.getClosePressed(),
-                    layoutHelper.getWidth() * mDpToPx, st.getDrawX() * mDpToPx,
-                    st.getDrawY() * mDpToPx, st.getWidth() * mDpToPx, st.getHeight() * mDpToPx,
-                    st.getContentOffsetX() * mDpToPx, st.getCloseButton().getOpacity(),
-                    st.isLoading(), st.getLoadingSpinnerRotation(), layerTitleCache,
-                    resourceManager);
+            TabStripSceneLayerJni.get().putStripTabLayer(mNativePtr, TabStripSceneLayer.this,
+                    st.getId(), st.getCloseButton().getResourceId(), st.getResourceId(),
+                    st.getOutlineResourceId(), st.getCloseButton().getTint(),
+                    st.getTint(isSelected), st.getOutlineTint(isSelected), isSelected,
+                    st.getClosePressed(), layoutHelper.getWidth() * mDpToPx,
+                    st.getDrawX() * mDpToPx, st.getDrawY() * mDpToPx, st.getWidth() * mDpToPx,
+                    st.getHeight() * mDpToPx, st.getContentOffsetX() * mDpToPx,
+                    st.getCloseButton().getOpacity(), st.isLoading(),
+                    st.getLoadingSpinnerRotation(), layerTitleCache, resourceManager);
         }
     }
 
@@ -148,26 +154,33 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
         mNativePtr = 0;
     }
 
-    private native long nativeInit();
-    private native void nativeBeginBuildingFrame(long nativeTabStripSceneLayer, boolean visible);
-    private native void nativeFinishBuildingFrame(long nativeTabStripSceneLayer);
-    private native void nativeUpdateTabStripLayer(long nativeTabStripSceneLayer, float width,
-            float height, float yOffset, float backgroundTabBrightness, float brightness,
-            boolean shouldReaddBackground);
-    private native void nativeUpdateNewTabButton(long nativeTabStripSceneLayer, int resourceId,
-            float x, float y, float width, float height, boolean visible,
-            ResourceManager resourceManager);
-    private native void nativeUpdateModelSelectorButton(long nativeTabStripSceneLayer,
-            int resourceId, float x, float y, float width, float height, boolean incognito,
-            boolean visible, ResourceManager resourceManager);
-    private native void nativeUpdateTabStripLeftFade(long nativeTabStripSceneLayer,
-            int resourceId, float opacity, ResourceManager resourceManager);
-    private native void nativeUpdateTabStripRightFade(long nativeTabStripSceneLayer,
-            int resourceId, float opacity, ResourceManager resourceManager);
-    private native void nativePutStripTabLayer(long nativeTabStripSceneLayer, int id,
-            int closeResourceId, int handleResourceId, boolean foreground, boolean closePressed,
-            float toolbarWidth, float x, float y, float width, float height, float contentOffsetX,
-            float closeButtonAlpha, boolean isLoading, float spinnerRotation,
-            LayerTitleCache layerTitleCache, ResourceManager resourceManager);
-    private native void nativeSetContentTree(long nativeTabStripSceneLayer, SceneLayer contentTree);
+    @NativeMethods
+    interface Natives {
+        long init(TabStripSceneLayer caller);
+        void beginBuildingFrame(
+                long nativeTabStripSceneLayer, TabStripSceneLayer caller, boolean visible);
+        void finishBuildingFrame(long nativeTabStripSceneLayer, TabStripSceneLayer caller);
+        void updateTabStripLayer(long nativeTabStripSceneLayer, TabStripSceneLayer caller,
+                float width, float height, float yOffset, float backgroundTabBrightness,
+                float brightness, boolean shouldReaddBackground);
+        void updateNewTabButton(long nativeTabStripSceneLayer, TabStripSceneLayer caller,
+                int resourceId, float x, float y, float width, float height, boolean visible,
+                ResourceManager resourceManager);
+        void updateModelSelectorButton(long nativeTabStripSceneLayer, TabStripSceneLayer caller,
+                int resourceId, float x, float y, float width, float height, boolean incognito,
+                boolean visible, ResourceManager resourceManager);
+        void updateTabStripLeftFade(long nativeTabStripSceneLayer, TabStripSceneLayer caller,
+                int resourceId, float opacity, ResourceManager resourceManager);
+        void updateTabStripRightFade(long nativeTabStripSceneLayer, TabStripSceneLayer caller,
+                int resourceId, float opacity, ResourceManager resourceManager);
+        void putStripTabLayer(long nativeTabStripSceneLayer, TabStripSceneLayer caller, int id,
+                int closeResourceId, int handleResourceId, int handleOutlineResourceId,
+                int closeTint, int handleTint, int handleOutlineTint, boolean foreground,
+                boolean closePressed, float toolbarWidth, float x, float y, float width,
+                float height, float contentOffsetX, float closeButtonAlpha, boolean isLoading,
+                float spinnerRotation, LayerTitleCache layerTitleCache,
+                ResourceManager resourceManager);
+        void setContentTree(
+                long nativeTabStripSceneLayer, TabStripSceneLayer caller, SceneLayer contentTree);
+    }
 }

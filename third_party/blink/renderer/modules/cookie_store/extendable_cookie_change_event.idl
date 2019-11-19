@@ -9,7 +9,7 @@
 
 [
   Exposed=ServiceWorker,
-  OriginTrialEnabled=CookieStore,
+  RuntimeEnabled=CookieStore,
   Constructor(DOMString type, optional ExtendableCookieChangeEventInit eventInitDict)
 ] interface ExtendableCookieChangeEvent : ExtendableEvent {
   [MeasureAs=CookieStoreAPI] readonly attribute CookieList changed;

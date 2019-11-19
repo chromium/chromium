@@ -5,8 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_ADAPTERS_P2P_QUIC_CRYPTO_CONFIG_FACTORY_IMPL_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_ADAPTERS_P2P_QUIC_CRYPTO_CONFIG_FACTORY_IMPL_H_
 
-#include "net/third_party/quic/core/crypto/proof_source.h"
-#include "net/third_party/quic/core/crypto/quic_random.h"
+#include "net/third_party/quiche/src/quic/core/crypto/proof_source.h"
+#include "net/third_party/quiche/src/quic/core/crypto/quic_random.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/peerconnection/adapters/p2p_quic_crypto_config_factory.h"
 #include "third_party/webrtc/rtc_base/rtc_certificate.h"

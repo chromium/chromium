@@ -9,16 +9,16 @@
 #include <string>
 
 #include "base/macros.h"
-#include "content/public/renderer/render_view_observer.h"
-#include "content/public/renderer/render_view_observer_tracker.h"
+#include "content/public/renderer/render_frame_observer.h"
+#include "content/public/renderer/render_frame_observer_tracker.h"
 
 namespace content {
 
 class WebUIExtensionData
-    : public RenderViewObserver,
-      public RenderViewObserverTracker<WebUIExtensionData> {
+    : public RenderFrameObserver,
+      public RenderFrameObserverTracker<WebUIExtensionData> {
  public:
-  explicit WebUIExtensionData(RenderView* render_view);
+  explicit WebUIExtensionData(RenderFrame* render_frame);
   ~WebUIExtensionData() override;
 
   // Returns value for a given |key|. Will return an empty string if no such key
@@ -26,7 +26,7 @@ class WebUIExtensionData
   std::string GetValue(const std::string& key) const;
 
  private:
-  // RenderViewObserver implementation.
+  // RenderFrameObserver implementation.
   bool OnMessageReceived(const IPC::Message& message) override;
   void OnDestruct() override;
 

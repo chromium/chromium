@@ -250,10 +250,7 @@ void DocumentLoaderImpl::ContinueDownload() {
 
   loader_.reset();
   chunk_.Clear();
-  if (!is_partial_loader_active_) {
-    client_->CancelBrowserDownload();
-    is_partial_loader_active_ = true;
-  }
+  is_partial_loader_active_ = true;
 
   const uint32_t start = next_request.start() * DataStream::kChunkSize;
   const uint32_t length =

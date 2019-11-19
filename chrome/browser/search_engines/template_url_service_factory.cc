@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/google/google_url_tracker_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
@@ -50,15 +49,13 @@ std::unique_ptr<KeyedService> TemplateURLServiceFactory::BuildInstanceFor(
 #endif
   Profile* profile = static_cast<Profile*>(context);
   return std::make_unique<TemplateURLService>(
-      profile->GetPrefs(),
-      std::unique_ptr<SearchTermsData>(new UIThreadSearchTermsData(profile)),
+      profile->GetPrefs(), std::make_unique<UIThreadSearchTermsData>(),
       WebDataServiceFactory::GetKeywordWebDataForProfile(
           profile, ServiceAccessType::EXPLICIT_ACCESS),
       std::unique_ptr<TemplateURLServiceClient>(
           new ChromeTemplateURLServiceClient(
               HistoryServiceFactory::GetForProfile(
                   profile, ServiceAccessType::EXPLICIT_ACCESS))),
-      GoogleURLTrackerFactory::GetForProfile(profile),
       g_browser_process->rappor_service(), dsp_change_callback);
 }
 
@@ -66,7 +63,6 @@ TemplateURLServiceFactory::TemplateURLServiceFactory()
     : BrowserContextKeyedServiceFactory(
         "TemplateURLServiceFactory",
         BrowserContextDependencyManager::GetInstance()) {
-  DependsOn(GoogleURLTrackerFactory::GetInstance());
   DependsOn(HistoryServiceFactory::GetInstance());
   DependsOn(WebDataServiceFactory::GetInstance());
 }

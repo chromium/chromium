@@ -14,7 +14,6 @@
 #import "ios/chrome/browser/ui/toolbar/public/features.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#include "ios/web/public/features.h"
 #include "ui/base/device_form_factor.h"
 #include "ui/gfx/ios/uikit_util.h"
 
@@ -60,48 +59,6 @@ bool IsIPhoneX() {
           (height == 2436 || height == 2688 || height == 1792));
 }
 
-// TODO(crbug.com/893314) : Remove this flag.
-bool IsClosingLastIncognitoTabEnabled() {
-  return base::FeatureList::IsEnabled(kClosingLastIncognitoTab);
-}
-
-bool IsRefreshLocationBarEnabled() {
-  return true;
-}
-
-bool IsUIRefreshPhase1Enabled() {
-  return true;
-}
-
-CGFloat StatusBarHeight() {
-  if (base::FeatureList::IsEnabled(
-          web::features::kBrowserContainerFullscreen) &&
-      base::FeatureList::IsEnabled(web::features::kOutOfWebFullscreen) &&
-      base::FeatureList::IsEnabled(kBrowserContainerContainsNTP)) {
-    DCHECK(!base::ios::IsRunningOnIOS11OrLater());
-  }
-
-  // This is a temporary solution until usage of StatusBarHeight has been
-  // replaced with topLayoutGuide.
-
-  if (IsIPhoneX()) {
-    return IsPortrait() ? 44 : 0;
-  }
-
-  // Checking [UIApplication sharedApplication].statusBarFrame will return the
-  // wrong offset when the application is started while in a phone call, so
-  // simply return 20 here.
-  if (!IsUIRefreshPhase1Enabled()) {
-    return 20;
-  }
-
-  // With the UI refresh, the location bar is hidden on landscape.
-  BOOL isCompactHeight = [UIApplication sharedApplication]
-                             .keyWindow.traitCollection.verticalSizeClass ==
-                         UIUserInterfaceSizeClassCompact;
-  return isCompactHeight ? 0 : 20;
-}
-
 CGFloat DeviceCornerRadius() {
   return IsIPhoneX() ? 40.0 : 0.0;
 }
@@ -133,6 +90,12 @@ CGRect CGRectCopyWithOrigin(CGRect rect, CGFloat x, CGFloat y) {
 CGRect CGRectMakeAlignedAndCenteredAt(CGFloat x, CGFloat y, CGFloat width) {
   return AlignRectOriginAndSizeToPixels(
       CGRectMake(x - width / 2.0, y - width / 2.0, width, width));
+}
+
+CGRect CGRectMakeCenteredRectInFrame(CGSize frameSize, CGSize rectSize) {
+  CGFloat rectX = AlignValueToPixel((frameSize.width - rectSize.width) / 2);
+  CGFloat rectY = AlignValueToPixel((frameSize.height - rectSize.height) / 2);
+  return CGRectMake(rectX, rectY, rectSize.width, rectSize.height);
 }
 
 bool AreCGFloatsEqual(CGFloat a, CGFloat b) {

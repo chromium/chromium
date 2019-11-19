@@ -21,13 +21,13 @@ class SessionStorageNamespace
  public:
   // Returns the ID for the |SessionStorageNamespace|. The ID is unique among
   // all SessionStorageNamespace objects and across browser runs.
-  virtual const std::string& id() const = 0;
+  virtual const std::string& id() = 0;
 
   // For marking that the sessionStorage will be needed or won't be needed by
   // session restore.
   virtual void SetShouldPersist(bool should_persist) = 0;
 
-  virtual bool should_persist() const = 0;
+  virtual bool should_persist() = 0;
 
  protected:
   friend class base::RefCountedThreadSafe<SessionStorageNamespace>;

@@ -672,7 +672,7 @@ TEST(PermissionsTest, IsPrivilegeIncrease) {
       {"hosts6", false},        // http://a.com -> http://a.com + http://a.co.uk
       {"permissions1", false},  // tabs -> tabs
       {"permissions2", true},   // tabs -> tabs,bookmarks
-      // TODO(treib): This is wrong, kAllHosts implies kTabs. crbug.com/512344
+      // TODO(crbug.com/512344): This is wrong, kAllHosts implies kTabs.
       {"permissions3", true},          // http://*/* -> http://*/*,tabs
       {"permissions5", true},          // bookmarks -> bookmarks,history
       {"equivalent_warnings", false},  // tabs --> tabs, webNavigation
@@ -766,13 +766,13 @@ TEST(PermissionsTest, PermissionMessages) {
   skip.insert(APIPermission::kDns);
   skip.insert(APIPermission::kDownloadsShelf);
   skip.insert(APIPermission::kEmbeddedExtensionOptions);
-  skip.insert(APIPermission::kExtensionView);
   skip.insert(APIPermission::kFontSettings);
   skip.insert(APIPermission::kFullscreen);
   skip.insert(APIPermission::kGcm);
   skip.insert(APIPermission::kIdle);
   skip.insert(APIPermission::kImeWindowEnabled);
   skip.insert(APIPermission::kIdltest);
+  skip.insert(APIPermission::kLoginState);
   skip.insert(APIPermission::kOverrideEscFullscreen);
   skip.insert(APIPermission::kPointerLock);
   skip.insert(APIPermission::kPower);
@@ -794,6 +794,9 @@ TEST(PermissionsTest, PermissionMessages) {
   // and don't require a prompt, i.e. they're restricted to location 'policy'.
   skip.insert(APIPermission::kEnterprisePlatformKeys);
   skip.insert(APIPermission::kEnterpriseDeviceAttributes);
+  // TODO (crbug/996785): Remove this when permission warning strings will be
+  // added.
+  skip.insert(APIPermission::kPrinting);
 
   // TODO(erikkay) add a string for this permission.
   skip.insert(APIPermission::kBackground);
@@ -858,7 +861,6 @@ TEST(PermissionsTest, PermissionMessages) {
   skip.insert(APIPermission::kMediaRouterPrivate);
   skip.insert(APIPermission::kMetricsPrivate);
   skip.insert(APIPermission::kNetworkingCastPrivate);
-  skip.insert(APIPermission::kPreferencesPrivate);
   skip.insert(APIPermission::kImageWriterPrivate);
   skip.insert(APIPermission::kResourcesPrivate);
   skip.insert(APIPermission::kRtcPrivate);

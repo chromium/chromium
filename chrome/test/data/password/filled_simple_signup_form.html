@@ -1,0 +1,27 @@
+<!--
+    A mock signup form. Essentially the same as filled_simple_password_form.html,
+    but includes an additional text field which will cause it to be treated differently.
+ -->
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+</head>
+<body>
+<!-- This form should trigger automatic generation -->
+<form method="POST" action="done.html">
+  <input type="text" id="other_info" name="other_info" value="info">
+  <input type="text" id="username_field" name="username_field" value="username" autocomplete="username">
+  <input type="password" id="password_field" name="password_field" autocomplete="new-password">
+  <input type="submit" id="input_submit_button" name="input_submit_button">
+</form>
+<!--
+  This form is used to test manual generation and ideally shouldn't trigger automatic generation.
+-->
+<form method="POST" action="done.html">
+  <input type="text" id="other_info_manual" name="other_info_manual" value="info">
+  <input type="text" id="username_field_manual" name="username_field_manual" value="username">
+  <input type="password" id="password_field_manual" name="password_field_manual">
+  <input type="submit" id="input_submit_button_manual" name="input_submit_button_manual">
+</form>
+</body>
+</html>

@@ -9,10 +9,6 @@
 
 #include "base/lazy_instance.h"
 
-namespace base {
-class MessageLoop;
-}
-
 namespace content {
 namespace android {
 
@@ -20,7 +16,7 @@ namespace android {
 // native code, but accessed through BrowserThread(Impl) instead.
 class LauncherThread {
  public:
-  static base::MessageLoop* GetMessageLoop();
+  static scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner();
 
  private:
   friend base::LazyInstanceTraitsBase<LauncherThread>;

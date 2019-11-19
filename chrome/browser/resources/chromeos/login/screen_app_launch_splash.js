@@ -53,7 +53,6 @@ login.createScreen('AppLaunchSplashScreen', 'app-launch-splash', function() {
 
       $('splash-shortcut-info').hidden = !data['shortcutEnabled'];
 
-      Oobe.getInstance().headerHidden = true;
       Oobe.getInstance().solidBackground = true;
     },
 

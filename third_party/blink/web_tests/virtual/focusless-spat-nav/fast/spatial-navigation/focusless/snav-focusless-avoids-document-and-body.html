@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<script src="../../../../../resources/testharness.js"></script>
+<script src="../../../../../resources/testharnessreport.js"></script>
+<script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
+<script src="file:///gen/third_party/blink/public/mojom/page/spatial_navigation.mojom.js"></script>
+<script src="../../../../../fast/spatial-navigation/resources/mock-snav-service.js"></script>
+<script src="../../../../../fast/spatial-navigation/resources/snav-testharness.js"></script>
+
+<style>
+  body {
+    margin: 0;
+  }
+  div {
+    margin-top: 605px;
+    width: 100px;
+    height: 100px;
+    border: 1px solid black;
+  }
+  iframe {
+    margin-top: 10px;
+    width: 100px;
+    height: 100px;
+  }
+</style>
+
+<div id="target" tabindex="0">target</div>
+<iframe id="iframe" srcdoc="<!DOCTYPE>
+    <style>
+      html {
+        width: 100%;
+        height: 10px;
+      }
+      body {
+        position: absolute;
+        top: 30px;
+        width: 100%;
+        height: 10px;
+        margin: 0;
+      }
+    </style>"></iframe>
+
+<script>
+  iframe.addEventListener('load', () => {
+    const target = document.getElementById("target");
+    const iframe = document.getElementById("iframe");
+
+    document.documentElement.addEventListener('click', () => {});
+    document.body.addEventListener('click', () => {});
+    iframe.contentDocument.documentElement.addEventListener('click', () => {});
+    iframe.contentDocument.body.addEventListener('click', () => {});
+
+    test(() => {
+      assert_true(!!window.internals);
+    }, "This test requires |window.internals|");
+
+    test(() => {
+
+      snav.triggerMove('Down');
+      assert_equals(window.internals.interestedElement,
+                    null,
+                    "Nothing interestable on initial screen, shouldn't move interest.");
+      assert_greater_than(window.scrollY, 0, "Expected to scroll");
+
+      snav.triggerMove('Down');
+      assert_equals(window.internals.interestedElement,
+                    target,
+                    "Expected to interest |target| element.");
+
+    }, "Navigation while document and body have click handlers.");
+
+    test(() => {
+      assert_equals(window.internals.interestedElement,
+                    target,
+                    "|target| element should initially be focused.");
+
+      // Scroll to the bottom to ensure iframe is visible.
+      window.scrollTo(0, 100000);
+
+      // First |Down| will interest the <iframe>. Second |Down| should interest
+      // the iframe's <html> element.
+      snav.triggerMove('Down');
+      snav.triggerMove('Down');
+      assert_equals(window.internals.interestedElement,
+                    iframe.contentDocument.documentElement,
+                    "Expected iframe's documentElement to be interested.");
+
+      snav.triggerMove('Down');
+      assert_equals(window.internals.interestedElement,
+                    iframe.contentDocument.body,
+                    "Expected iframe's documentElement to be interested.");
+
+    }, "Document and body inside iframe should be a valid candidates.");
+  });
+</script>

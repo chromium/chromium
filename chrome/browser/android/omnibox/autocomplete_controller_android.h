@@ -38,11 +38,11 @@ class AutocompleteControllerAndroid : public AutocompleteControllerDelegate,
              jint j_cursor_pos,
              const base::android::JavaRef<jstring>& j_desired_tld,
              const base::android::JavaRef<jstring>& j_current_url,
+             jint j_page_classification,
              bool prevent_inline_autocomplete,
              bool prefer_keyword,
              bool allow_exact_keyword_match,
-             bool want_asynchronous_matches,
-             bool focused_from_fakebox);
+             bool want_asynchronous_matches);
   base::android::ScopedJavaLocalRef<jobject> Classify(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,
@@ -53,8 +53,8 @@ class AutocompleteControllerAndroid : public AutocompleteControllerDelegate,
       const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jstring>& j_omnibox_text,
       const base::android::JavaParamRef<jstring>& j_current_url,
-      const base::android::JavaParamRef<jstring>& j_current_title,
-      jboolean focused_from_fakebox);
+      jint j_page_classification,
+      const base::android::JavaParamRef<jstring>& j_current_title);
   void Stop(JNIEnv* env,
             const base::android::JavaParamRef<jobject>& obj,
             bool clear_result);
@@ -66,7 +66,7 @@ class AutocompleteControllerAndroid : public AutocompleteControllerDelegate,
       jint selected_index,
       jint hash_code,
       const base::android::JavaParamRef<jstring>& j_current_url,
-      jboolean focused_from_fakebox,
+      jint j_page_classification,
       jlong elapsed_time_since_first_modified,
       jint completed_length,
       const base::android::JavaParamRef<jobject>& j_web_contents);
@@ -119,11 +119,6 @@ class AutocompleteControllerAndroid : public AutocompleteControllerDelegate,
   // based on the text the user typed in last.
   void NotifySuggestionsReceived(
       const AutocompleteResult& autocomplete_result);
-
-  // Classifies the type of page we are on.
-  metrics::OmniboxEventProto::PageClassification ClassifyPage(
-      const GURL& gurl,
-      bool focused_from_fakebox) const;
 
   base::android::ScopedJavaLocalRef<jobject> BuildOmniboxSuggestion(
       JNIEnv* env, const AutocompleteMatch& match);

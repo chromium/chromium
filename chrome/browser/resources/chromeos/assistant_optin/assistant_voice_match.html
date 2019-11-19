@@ -4,8 +4,10 @@
 
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 <link rel="import" href="chrome://resources/cr_elements/icons.html">
+<link rel="import" href="chrome://resources/cr_elements/chromeos/cr_lottie/cr_lottie.html">
 <dom-module id="assistant-voice-match">
   <template>
+    <link rel="stylesheet" href="../login/oobe_dialog_host.css">
     <link rel="stylesheet" href="../login/oobe_flex_layout.css">
     <link rel="stylesheet" href="assistant_shared_styles.css">
     <link rel="stylesheet" href="assistant_voice_match.css">
@@ -24,10 +26,12 @@
             <div class="content" id="no-dsp-message"
                 i18n-content="assistantVoiceMatchNoDspMessage">
             </div>
-            <div id="voice-match-video">
-              <video muted autoplay loop>
-                <source src="voice_laptop_1x.webm" type="video/webm">
-              </video>
+            <div id="voice-match-animation-container">
+              <div id="voice-match-animation">
+                <cr-lottie id="voice-match-lottie"
+                    animation-url="voice_match_animation.json">
+                </cr-lottie>
+              </div>
             </div>
           </div>
           <div id="recording-container">
@@ -65,7 +69,13 @@
                 i18n-content="assistantVoiceMatchAlreadySetupTitle"></div>
             <div class="content"
                 i18n-content="assistantVoiceMatchAlreadySetupMessage"></div>
-            <img id="already-setup-img" src="voice_already_setup.png">
+            <div id="already-setup-animation-container">
+              <div id="already-setup-animation">
+                <cr-lottie id="already-setup-lottie"
+                    animation-url="voice_match_already_setup_animation.json">
+                </cr-lottie>
+              </div>
+            </div>
           </div>
         </div>
       </div>

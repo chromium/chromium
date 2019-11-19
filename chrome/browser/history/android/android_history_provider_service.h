@@ -177,7 +177,7 @@ class AndroidHistoryProviderService {
   // the |callback| to return the result.
   base::CancelableTaskTracker::TaskId GetLargestRawFaviconForID(
       favicon_base::FaviconID favicon_id,
-      const favicon_base::FaviconRawBitmapCallback& callback,
+      favicon_base::FaviconRawBitmapCallback callback,
       base::CancelableTaskTracker* tracker);
 
  private:

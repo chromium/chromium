@@ -23,8 +23,7 @@ class QuicChromeAlarm : public quic::QuicAlarm {
       : quic::QuicAlarm(std::move(delegate)),
         clock_(clock),
         task_runner_(task_runner),
-        task_deadline_(quic::QuicTime::Zero()),
-        weak_factory_(this) {}
+        task_deadline_(quic::QuicTime::Zero()) {}
 
  protected:
   void SetImpl() override {
@@ -84,7 +83,7 @@ class QuicChromeAlarm : public quic::QuicAlarm {
   // post a new task when the new deadline now earlier than when
   // previously posted.
   quic::QuicTime task_deadline_;
-  base::WeakPtrFactory<QuicChromeAlarm> weak_factory_;
+  base::WeakPtrFactory<QuicChromeAlarm> weak_factory_{this};
 };
 
 }  // namespace
@@ -92,7 +91,7 @@ class QuicChromeAlarm : public quic::QuicAlarm {
 QuicChromiumAlarmFactory::QuicChromiumAlarmFactory(
     base::TaskRunner* task_runner,
     const quic::QuicClock* clock)
-    : task_runner_(task_runner), clock_(clock), weak_factory_(this) {}
+    : task_runner_(task_runner), clock_(clock) {}
 
 QuicChromiumAlarmFactory::~QuicChromiumAlarmFactory() {}
 

@@ -17,33 +17,29 @@ import org.chromium.chrome.browser.infobar.InfoBarControlLayout.InfoBarArrayAdap
  */
 public class UpdatePasswordInfoBar extends ConfirmInfoBar {
     private final String[] mUsernames;
-    private final int mTitleLinkRangeStart;
-    private final int mTitleLinkRangeEnd;
+    private final int mUsernameIndex;
     private final String mDetailsMessage;
     private Spinner mUsernamesSpinner;
 
     @CalledByNative
-    private static InfoBar show(int enumeratedIconId, String[] usernames, String message,
-            int titleLinkStart, int titleLinkEnd, String detailsMessage, String primaryButtonText) {
+    private static InfoBar show(int enumeratedIconId, String[] usernames, int selectedUsername,
+            String message, String detailsMessage, String primaryButtonText) {
         return new UpdatePasswordInfoBar(ResourceId.mapToDrawableId(enumeratedIconId), usernames,
-                message, titleLinkStart, titleLinkEnd, detailsMessage, primaryButtonText);
+                selectedUsername, message, detailsMessage, primaryButtonText);
     }
 
-    private UpdatePasswordInfoBar(int iconDrawbleId, String[] usernames, String message,
-            int titleLinkStart, int titleLinkEnd, String detailsMessage, String primaryButtonText) {
-        super(iconDrawbleId, null, message, null, primaryButtonText, null);
-        mTitleLinkRangeStart = titleLinkStart;
-        mTitleLinkRangeEnd = titleLinkEnd;
+    private UpdatePasswordInfoBar(int iconDrawableId, String[] usernames, int selectedUsername,
+            String message, String detailsMessage, String primaryButtonText) {
+        super(iconDrawableId, R.color.infobar_icon_drawable_color, null, message, null,
+                primaryButtonText, null);
         mDetailsMessage = detailsMessage;
         mUsernames = usernames;
+        mUsernameIndex = selectedUsername;
     }
 
     @Override
     public void createContent(InfoBarLayout layout) {
         super.createContent(layout);
-        if (mTitleLinkRangeStart != 0 && mTitleLinkRangeEnd != 0) {
-            layout.setInlineMessageLink(mTitleLinkRangeStart, mTitleLinkRangeEnd);
-        }
 
         InfoBarControlLayout usernamesLayout = layout.addControlLayout();
         if (mUsernames.length > 1) {
@@ -51,6 +47,7 @@ public class UpdatePasswordInfoBar extends ConfirmInfoBar {
                     new InfoBarArrayAdapter<String>(getContext(), mUsernames);
             mUsernamesSpinner = usernamesLayout.addSpinner(
                     R.id.password_infobar_accounts_spinner, usernamesAdapter);
+            mUsernamesSpinner.setSelection(mUsernameIndex);
         } else {
             usernamesLayout.addDescription(mUsernames[0]);
         }

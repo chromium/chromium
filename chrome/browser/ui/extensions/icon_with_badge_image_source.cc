@@ -23,6 +23,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia_operations.h"
+#include "ui/gfx/render_text.h"
 #include "ui/gfx/shadow_value.h"
 #include "ui/gfx/skia_paint_util.h"
 
@@ -53,7 +54,7 @@ IconWithBadgeImageSource::Badge::Badge(const std::string& text,
 IconWithBadgeImageSource::Badge::~Badge() {}
 
 IconWithBadgeImageSource::IconWithBadgeImageSource(const gfx::Size& size)
-    : gfx::CanvasImageSource(size, false) {}
+    : gfx::CanvasImageSource(size) {}
 
 IconWithBadgeImageSource::~IconWithBadgeImageSource() {}
 
@@ -63,6 +64,72 @@ void IconWithBadgeImageSource::SetIcon(const gfx::Image& icon) {
 
 void IconWithBadgeImageSource::SetBadge(std::unique_ptr<Badge> badge) {
   badge_ = std::move(badge);
+
+  if (!badge_ || badge_->text.empty())
+    return;
+
+  // Generate the badge's render text.
+  SkColor text_color = SkColorGetA(badge_->text_color) == SK_AlphaTRANSPARENT
+                           ? SK_ColorWHITE
+                           : badge_->text_color;
+
+  constexpr int kBadgeHeight = 12;
+  ui::ResourceBundle* rb = &ui::ResourceBundle::GetSharedInstance();
+  gfx::FontList base_font = rb->GetFontList(ui::ResourceBundle::BaseFont)
+                                .DeriveWithHeightUpperBound(kBadgeHeight);
+  base::string16 utf16_text = base::UTF8ToUTF16(badge_->text);
+
+  // See if we can squeeze a slightly larger font into the badge given the
+  // actual string that is to be displayed.
+  constexpr int kMaxIncrementAttempts = 5;
+  for (size_t i = 0; i < kMaxIncrementAttempts; ++i) {
+    int w = 0;
+    int h = 0;
+    gfx::FontList bigger_font = base_font.Derive(1, 0, gfx::Font::Weight::BOLD);
+    gfx::Canvas::SizeStringInt(utf16_text, bigger_font, &w, &h, 0,
+                               gfx::Canvas::NO_ELLIPSIS);
+    if (h > kBadgeHeight)
+      break;
+    base_font = bigger_font;
+  }
+
+  constexpr int kMaxTextWidth = 23;
+  const int text_width = std::min(
+      kMaxTextWidth, gfx::Canvas::GetStringWidth(utf16_text, base_font));
+  // Calculate badge size. It is clamped to a min width just because it looks
+  // silly if it is too skinny.
+  constexpr int kPadding = 2;
+  int badge_width = text_width + kPadding * 2;
+
+  const gfx::Rect icon_area = GetIconAreaRect();
+
+  // Force the pixel width of badge to be either odd (if the icon width is odd)
+  // or even otherwise. If there is a mismatch you get http://crbug.com/26400.
+  if (icon_area.width() != 0 && (badge_width % 2 != icon_area.width() % 2))
+    badge_width += 1;
+  badge_width = std::max(kBadgeHeight, badge_width);
+
+  // The minimum width for center-aligning the badge.
+  constexpr int kCenterAlignThreshold = 20;
+  // Calculate the badge background rect. It is usually right-aligned, but it
+  // can also be center-aligned if it is large.
+  const int badge_offset_x = badge_width >= kCenterAlignThreshold
+                                 ? (icon_area.width() - badge_width) / 2
+                                 : icon_area.width() - badge_width;
+  const int badge_offset_y = icon_area.height() - kBadgeHeight;
+  badge_background_rect_ =
+      gfx::Rect(icon_area.x() + badge_offset_x, icon_area.y() + badge_offset_y,
+                badge_width, kBadgeHeight);
+  gfx::Rect badge_rect = badge_background_rect_;
+  badge_rect.Inset(std::max(kPadding, (badge_rect.width() - text_width) / 2),
+                   kBadgeHeight - base_font.GetHeight(), kPadding, 0);
+  badge_text_ = gfx::RenderText::CreateHarfBuzzInstance();
+  badge_text_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  badge_text_->SetCursorEnabled(false);
+  badge_text_->SetFontList(base_font);
+  badge_text_->SetColor(text_color);
+  badge_text_->SetText(utf16_text);
+  badge_text_->SetDisplayRect(badge_rect);
 }
 
 void IconWithBadgeImageSource::Draw(gfx::Canvas* canvas) {
@@ -99,72 +166,21 @@ void IconWithBadgeImageSource::Draw(gfx::Canvas* canvas) {
 
 // Paints badge with specified parameters to |canvas|.
 void IconWithBadgeImageSource::PaintBadge(gfx::Canvas* canvas) {
-  if (!badge_ || badge_->text.empty())
+  if (!badge_text_)
     return;
-
-  SkColor text_color = SkColorGetA(badge_->text_color) == SK_AlphaTRANSPARENT
-                           ? SK_ColorWHITE
-                           : badge_->text_color;
 
   // Make sure the background color is opaque. See http://crbug.com/619499
   SkColor background_color =
       SkColorGetA(badge_->background_color) == SK_AlphaTRANSPARENT
           ? gfx::kGoogleBlue500
           : SkColorSetA(badge_->background_color, SK_AlphaOPAQUE);
-
-  constexpr int kBadgeHeight = 12;
-  ui::ResourceBundle* rb = &ui::ResourceBundle::GetSharedInstance();
-  gfx::FontList base_font = rb->GetFontList(ui::ResourceBundle::BaseFont)
-                                .DeriveWithHeightUpperBound(kBadgeHeight);
-  base::string16 utf16_text = base::UTF8ToUTF16(badge_->text);
-
-  // See if we can squeeze a slightly larger font into the badge given the
-  // actual string that is to be displayed.
-  constexpr int kMaxIncrementAttempts = 5;
-  for (size_t i = 0; i < kMaxIncrementAttempts; ++i) {
-    int w = 0;
-    int h = 0;
-    gfx::FontList bigger_font = base_font.Derive(1, 0, gfx::Font::Weight::BOLD);
-    gfx::Canvas::SizeStringInt(utf16_text, bigger_font, &w, &h, 0,
-                               gfx::Canvas::NO_ELLIPSIS);
-    if (h > kBadgeHeight)
-      break;
-    base_font = bigger_font;
-  }
-
-  constexpr int kMaxTextWidth = 23;
-  const int text_width =
-        std::min(kMaxTextWidth, canvas->GetStringWidth(utf16_text, base_font));
-  // Calculate badge size. It is clamped to a min width just because it looks
-  // silly if it is too skinny.
-  constexpr int kPadding = 2;
-  int badge_width = text_width + kPadding * 2;
-
-  const gfx::Rect icon_area = GetIconAreaRect();
-
-  // Force the pixel width of badge to be either odd (if the icon width is odd)
-  // or even otherwise. If there is a mismatch you get http://crbug.com/26400.
-  if (icon_area.width() != 0 && (badge_width % 2 != icon_area.width() % 2))
-    badge_width += 1;
-  badge_width = std::max(kBadgeHeight, badge_width);
-
-  // The minimum width for center-aligning the badge.
-  constexpr int kCenterAlignThreshold = 20;
-  // Calculate the badge background rect. It is usually right-aligned, but it
-  // can also be center-aligned if it is large.
-  const int badge_offset_x = badge_width >= kCenterAlignThreshold
-                                 ? (icon_area.width() - badge_width) / 2
-                                 : icon_area.width() - badge_width;
-  const int badge_offset_y = icon_area.height() - kBadgeHeight;
-  gfx::Rect rect(icon_area.x() + badge_offset_x, icon_area.y() + badge_offset_y,
-                 badge_width, kBadgeHeight);
   cc::PaintFlags rect_flags;
   rect_flags.setStyle(cc::PaintFlags::kFill_Style);
   rect_flags.setAntiAlias(true);
   rect_flags.setColor(background_color);
 
   // Clear part of the background icon.
-  gfx::Rect cutout_rect(rect);
+  gfx::Rect cutout_rect(badge_background_rect_);
   cutout_rect.Inset(-1, -1);
   cc::PaintFlags cutout_flags = rect_flags;
   cutout_flags.setBlendMode(SkBlendMode::kClear);
@@ -172,12 +188,11 @@ void IconWithBadgeImageSource::PaintBadge(gfx::Canvas* canvas) {
   canvas->DrawRoundRect(cutout_rect, kOuterCornerRadius, cutout_flags);
 
   // Paint the backdrop.
-  canvas->DrawRoundRect(rect, kOuterCornerRadius - 1, rect_flags);
+  canvas->DrawRoundRect(badge_background_rect_, kOuterCornerRadius - 1,
+                        rect_flags);
 
   // Paint the text.
-  rect.Inset(std::max(kPadding, (rect.width() - text_width) / 2),
-             kBadgeHeight - base_font.GetHeight(), kPadding, 0);
-  canvas->DrawStringRect(utf16_text, base_font, text_color, rect);
+  badge_text_->Draw(canvas);
 }
 
 void IconWithBadgeImageSource::PaintPageActionDecoration(gfx::Canvas* canvas) {

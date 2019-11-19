@@ -22,7 +22,6 @@
 #include "components/policy/core/common/cloud/resource_cache.h"
 #include "components/policy/core/common/external_data_fetcher.h"
 #include "components/policy/core/common/policy_map.h"
-#include "components/policy/core/common/policy_types.h"
 #include "components/policy/proto/chrome_extension_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "crypto/sha2.h"
@@ -87,14 +86,18 @@ ComponentCloudPolicyStore::Delegate::~Delegate() {}
 ComponentCloudPolicyStore::ComponentCloudPolicyStore(
     Delegate* delegate,
     ResourceCache* cache,
-    const std::string& policy_type)
+    const std::string& policy_type,
+    PolicySource policy_source)
     : delegate_(delegate),
       cache_(cache),
-      domain_constants_(GetDomainConstantsForType(policy_type)) {
+      domain_constants_(GetDomainConstantsForType(policy_type)),
+      policy_source_(policy_source) {
   // Allow the store to be created on a different thread than the thread that
   // will end up using it.
   DETACH_FROM_SEQUENCE(sequence_checker_);
   DCHECK(domain_constants_);
+  DCHECK(policy_source == POLICY_SOURCE_CLOUD ||
+         policy_source == POLICY_SOURCE_PRIORITY_CLOUD);
 }
 
 ComponentCloudPolicyStore::~ComponentCloudPolicyStore() {
@@ -127,16 +130,18 @@ const std::string& ComponentCloudPolicyStore::GetCachedHash(
   return it == cached_hashes_.end() ? base::EmptyString() : it->second;
 }
 
-void ComponentCloudPolicyStore::SetCredentials(const AccountId& account_id,
+void ComponentCloudPolicyStore::SetCredentials(const std::string& username,
+                                               const std::string& gaia_id,
                                                const std::string& dm_token,
                                                const std::string& device_id,
                                                const std::string& public_key,
                                                int public_key_version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!account_id_.is_valid() || account_id == account_id_);
+  DCHECK(username_.empty() || username == username_);
   DCHECK(dm_token_.empty() || dm_token == dm_token_);
   DCHECK(device_id_.empty() || device_id == device_id_);
-  account_id_ = account_id;
+  username_ = username;
+  gaia_id_ = gaia_id;
   dm_token_ = dm_token;
   device_id_ = device_id;
   public_key_ = public_key;
@@ -312,7 +317,7 @@ bool ComponentCloudPolicyStore::ValidatePolicy(
     return false;
   }
 
-  if (!account_id_.is_valid() || dm_token_.empty() || device_id_.empty() ||
+  if (username_.empty() || dm_token_.empty() || device_id_.empty() ||
       public_key_.empty() || public_key_version_ == -1) {
     LOG(WARNING) << "Credentials are not loaded yet.";
     return false;
@@ -329,7 +334,7 @@ bool ComponentCloudPolicyStore::ValidatePolicy(
       std::move(proto), scoped_refptr<base::SequencedTaskRunner>());
   validator->ValidateTimestamp(time_not_before,
                                CloudPolicyValidatorBase::TIMESTAMP_VALIDATED);
-  validator->ValidateUser(account_id_);
+  validator->ValidateUsernameAndGaiaId(username_, gaia_id_);
   validator->ValidateDMToken(dm_token_,
                              ComponentCloudPolicyValidator::DM_TOKEN_REQUIRED);
   validator->ValidateDeviceId(device_id_,
@@ -433,7 +438,7 @@ bool ComponentCloudPolicyStore::ParsePolicy(const std::string& data,
       level = POLICY_LEVEL_RECOMMENDED;
     }
 
-    policy->Set(it.key(), level, domain_constants_->scope, POLICY_SOURCE_CLOUD,
+    policy->Set(it.key(), level, domain_constants_->scope, policy_source_,
                 std::move(value), nullptr);
   }
 

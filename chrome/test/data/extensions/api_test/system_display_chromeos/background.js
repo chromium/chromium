@@ -5,8 +5,10 @@
 chrome.test.runTests([
   function waitForDisplayChangedEvent() {
     chrome.test.listenOnce(chrome.system.display.onDisplayChanged,
-                           function() {});
+                           function() {
+                             chrome.test.sendMessage("success");
+                           });
   }
 ]);
 
-chrome.test.sendMessage("ready");
+chrome.test.sendMessage('ready');

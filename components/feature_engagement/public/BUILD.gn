@@ -11,8 +11,12 @@ if (is_android) {
 
 jumbo_source_set("public") {
   sources = [
+    "configuration.cc",
+    "configuration.h",
     "event_constants.cc",
     "event_constants.h",
+    "feature_configurations.cc",
+    "feature_configurations.h",
     "feature_constants.cc",
     "feature_constants.h",
     "feature_list.cc",
@@ -29,6 +33,23 @@ jumbo_source_set("public") {
   ]
 }
 
+jumbo_source_set("unit_tests") {
+  testonly = true
+
+  visibility = [ "//components/feature_engagement:unit_tests" ]
+
+  # IMPORTANT NOTE: When adding new tests, also remember to update the list of
+  # tests in //components/feature_engagement/components_unittests.filter
+  sources = [
+    "configuration_unittest.cc",
+  ]
+
+  deps = [
+    ":public",
+    "//testing/gtest",
+  ]
+}
+
 if (is_android) {
   android_library("public_java") {
     java_files = [
@@ -39,7 +60,7 @@ if (is_android) {
 
     deps = [
       "//base:base_java",
-      "//third_party/android_deps:android_support_annotations_java",
+      "//third_party/android_deps:androidx_annotation_annotation_java",
     ]
 
     srcjar_deps = [ ":public_java_enums_srcjar" ]

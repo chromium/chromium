@@ -58,12 +58,11 @@ class SpeechRecognitionManager {
 
   // Retrieves the configuration of a session, as provided by the caller
   // upon CreateSession.
-  virtual const SpeechRecognitionSessionConfig& GetSessionConfig(int session_id)
-      const = 0;
+  virtual const SpeechRecognitionSessionConfig& GetSessionConfig(
+      int session_id) = 0;
 
   // Retrieves the context associated to a session.
-  virtual SpeechRecognitionSessionContext GetSessionContext(
-      int session_id) const = 0;
+  virtual SpeechRecognitionSessionContext GetSessionContext(int session_id) = 0;
 
  protected:
   virtual ~SpeechRecognitionManager() {}

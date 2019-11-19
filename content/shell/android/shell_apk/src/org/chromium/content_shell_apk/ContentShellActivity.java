@@ -16,7 +16,6 @@ import org.chromium.base.CommandLine;
 import org.chromium.base.MemoryPressureListener;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryProcessType;
-import org.chromium.base.library_loader.ProcessInitException;
 import org.chromium.content_public.browser.BrowserStartupController;
 import org.chromium.content_public.browser.DeviceUtils;
 import org.chromium.content_public.browser.WebContents;
@@ -57,18 +56,10 @@ public class ContentShellActivity extends Activity {
 
         DeviceUtils.addDeviceSpecificUserAgentSwitch();
 
-        try {
-            LibraryLoader.getInstance().ensureInitialized(LibraryProcessType.PROCESS_BROWSER);
-        } catch (ProcessInitException e) {
-            Log.e(TAG, "ContentView initialization failed.", e);
-            // Since the library failed to initialize nothing in the application
-            // can work, so kill the whole application not just the activity
-            System.exit(-1);
-            return;
-        }
+        LibraryLoader.getInstance().ensureInitialized(LibraryProcessType.PROCESS_BROWSER);
 
         setContentView(R.layout.content_shell_activity);
-        mShellManager = (ShellManager) findViewById(R.id.shell_container);
+        mShellManager = findViewById(R.id.shell_container);
         final boolean listenToActivityState = true;
         mWindowAndroid = new ActivityWindowAndroid(this, listenToActivityState);
         mWindowAndroid.restoreInstanceState(savedInstanceState);
@@ -84,32 +75,22 @@ public class ContentShellActivity extends Activity {
         }
 
         if (CommandLine.getInstance().hasSwitch(RUN_WEB_TESTS_SWITCH)) {
-            try {
-                BrowserStartupController.get(LibraryProcessType.PROCESS_BROWSER)
-                        .startBrowserProcessesSync(false);
-            } catch (ProcessInitException e) {
-                Log.e(TAG, "Failed to load native library.", e);
-                System.exit(-1);
-            }
+            BrowserStartupController.get(LibraryProcessType.PROCESS_BROWSER)
+                    .startBrowserProcessesSync(false);
         } else {
-            try {
-                BrowserStartupController.get(LibraryProcessType.PROCESS_BROWSER)
-                        .startBrowserProcessesAsync(
-                                true, false, new BrowserStartupController.StartupCallback() {
-                                    @Override
-                                    public void onSuccess() {
-                                        finishInitialization(savedInstanceState);
-                                    }
+            BrowserStartupController.get(LibraryProcessType.PROCESS_BROWSER)
+                    .startBrowserProcessesAsync(
+                            true, false, new BrowserStartupController.StartupCallback() {
+                                @Override
+                                public void onSuccess() {
+                                    finishInitialization(savedInstanceState);
+                                }
 
-                                    @Override
-                                    public void onFailure() {
-                                        initializationFailed();
-                                    }
-                                });
-            } catch (ProcessInitException e) {
-                Log.e(TAG, "Unable to load native library.", e);
-                System.exit(-1);
-            }
+                                @Override
+                                public void onFailure() {
+                                    initializationFailed();
+                                }
+                            });
         }
     }
 

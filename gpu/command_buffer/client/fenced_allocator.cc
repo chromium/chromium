@@ -220,10 +220,11 @@ FencedAllocator::BlockIndex FencedAllocator::WaitForTokenAndFreeBlock(
 
 // Frees any blocks pending a token for which the token has been read.
 void FencedAllocator::FreeUnused() {
+  helper_->RefreshCachedToken();
   for (uint32_t i = 0; i < blocks_.size();) {
     Block& block = blocks_[i];
     if (block.state == FREE_PENDING_TOKEN &&
-        helper_->HasTokenPassed(block.token)) {
+        helper_->HasCachedTokenPassed(block.token)) {
       block.state = FREE;
       i = CollapseFreeBlock(i);
     } else {

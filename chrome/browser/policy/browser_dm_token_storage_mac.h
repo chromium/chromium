@@ -33,7 +33,6 @@ class BrowserDMTokenStorageMac : public BrowserDMTokenStorage {
   std::string InitDMToken() override;
   bool InitEnrollmentErrorOption() override;
   void SaveDMToken(const std::string& token) override;
-  void DeletePolicyDirectory() override;
 
   // This should always be the last member of the class.
   base::WeakPtrFactory<BrowserDMTokenStorageMac> weak_factory_;
@@ -44,13 +43,6 @@ class BrowserDMTokenStorageMac : public BrowserDMTokenStorage {
   FRIEND_TEST_ALL_PREFIXES(BrowserDMTokenStorageMacTest,
                            InitDMTokenWithoutDirectory);
   FRIEND_TEST_ALL_PREFIXES(BrowserDMTokenStorageMacTest, SaveDMToken);
-  FRIEND_TEST_ALL_PREFIXES(BrowserDMTokenStorageMacCleanupTest, Success);
-  FRIEND_TEST_ALL_PREFIXES(BrowserDMTokenStorageMacCleanupTest,
-                           TokenDirNotEmpty);
-  FRIEND_TEST_ALL_PREFIXES(BrowserDMTokenStorageMacCleanupTest,
-                           TokenDirNotExist);
-  FRIEND_TEST_ALL_PREFIXES(BrowserDMTokenStorageMacCleanupTest,
-                           TokenDirIsNotDir);
   DISALLOW_COPY_AND_ASSIGN(BrowserDMTokenStorageMac);
 };
 

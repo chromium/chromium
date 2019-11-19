@@ -35,8 +35,6 @@ class HTMLFrameSetElement final : public HTMLElement {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  DECLARE_NODE_FACTORY(HTMLFrameSetElement);
-
   explicit HTMLFrameSetElement(Document&);
 
   bool HasFrameBorder() const { return frameborder_; }
@@ -75,7 +73,7 @@ class HTMLFrameSetElement final : public HTMLElement {
 
   void AttachLayoutTree(AttachContext&) override;
   bool LayoutObjectIsNeeded(const ComputedStyle&) const override;
-  LayoutObject* CreateLayoutObject(const ComputedStyle&) override;
+  LayoutObject* CreateLayoutObject(const ComputedStyle&, LegacyLayout) override;
 
   void DefaultEventHandler(Event&) override;
 

@@ -8,16 +8,19 @@
 #include <memory>
 #include <string>
 
+#include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/chromeos/net/client_cert_store_chromeos.h"
-#include "crypto/scoped_nss_types.h"
-#include "net/cert/nss_profile_filter_chromeos.h"
+#include "content/public/browser/browser_thread.h"
+
+typedef struct CERTCertificateStr CERTCertificate;
 
 namespace chromeos {
 
 // A client certificate filter that filters by applying a
 // NSSProfileFilterChromeOS.
-class ClientCertFilterChromeOS : public ClientCertStoreChromeOS::CertFilter {
+//
+// TODO(davidben): Fold this class back into ClientCertStoreChromeOS.
+class ClientCertFilterChromeOS {
  public:
   // The internal NSSProfileFilterChromeOS will be initialized with the public
   // and private slot of the user with |username_hash| and with the system slot
@@ -25,51 +28,29 @@ class ClientCertFilterChromeOS : public ClientCertStoreChromeOS::CertFilter {
   // If |username_hash| is empty, no public and no private slot will be used.
   ClientCertFilterChromeOS(bool use_system_slot,
                            const std::string& username_hash);
-  ~ClientCertFilterChromeOS() override;
+  ~ClientCertFilterChromeOS();
 
-  // ClientCertStoreChromeOS::CertFilter:
-  bool Init(const base::Closure& callback) override;
-  bool IsCertAllowed(CERTCertificate* cert) const override;
+  // Initializes this filter. Returns true if it finished initialization,
+  // otherwise returns false and calls |callback| once the initialization is
+  // completed.
+  // Must be called at most once.
+  bool Init(base::OnceClosure callback);
+
+  // Returns true if |cert| is allowed to be used as a client certificate (e.g.
+  // for a certain browser context or user). This is only called once
+  // initialization is finished, see Init().
+  bool IsCertAllowed(CERTCertificate* cert) const;
 
  private:
-  // Called back if the system slot was retrieved asynchronously. Continues the
-  // initialization.
-  void GotSystemSlot(crypto::ScopedPK11Slot system_slot);
+  class CertFilterIO;
 
-  // Called back if the private slot was retrieved asynchronously. Continues the
-  // initialization.
-  void GotPrivateSlot(crypto::ScopedPK11Slot private_slot);
+  void OnInitComplete(base::OnceClosure callback);
 
-  // If the required slots (|private_slot_| and conditionally |system_slot_|)
-  // are available, initializes |nss_profile_filter_| and returns true.
-  // Otherwise returns false.
-  bool InitIfSlotsAvailable();
-
-  // True once Init() was called.
-  bool init_called_;
-
-  // The callback provided to Init(), which may be null. Reset after the filter
-  // is initialized.
-  base::Closure init_callback_;
-
-  bool use_system_slot_;
-  std::string username_hash_;
-
-  // Used to store the system slot, if required, for initialization. Will be
-  // null after the filter is initialized.
-  crypto::ScopedPK11Slot system_slot_;
-
-  // Used to store the private slot for initialization. Will be null after the
-  // filter is initialized.
-  crypto::ScopedPK11Slot private_slot_;
-
-  // If a private slot is requested but the slot, maybe null, is not obtained
-  // yet, this is equal true. As long as this is true, the NSSProfileFilter will
-  // not be initialized.
-  bool waiting_for_private_slot_;
-
-  net::NSSProfileFilterChromeOS nss_profile_filter_;
-  base::WeakPtrFactory<ClientCertFilterChromeOS> weak_ptr_factory_;
+  // This class lives on the UI thread but the NSS ChromeOS user integration
+  // must be called from the IO thread.
+  std::unique_ptr<CertFilterIO, content::BrowserThread::DeleteOnIOThread>
+      cert_filter_io_;
+  base::WeakPtrFactory<ClientCertFilterChromeOS> weak_ptr_factory_{this};
 };
 
 }  // namespace chromeos

@@ -26,17 +26,14 @@ class SequencedTaskRunner;
 }
 
 namespace network {
+class SharedURLLoaderFactoryInfo;
 class SharedURLLoaderFactory;
 }
 
 namespace policy {
 
-class ExternalPolicyDataFetcherBackend;
-
 // This class handles network fetch jobs for the ExternalPolicyDataUpdater by
-// forwarding them to an ExternalPolicyDataFetcherBackend running on a different
-// thread. This is necessary because the ExternalPolicyDataUpdater runs on a
-// background thread where network I/O is not allowed.
+// forwarding them to a job running on a different thread.
 // The class can be instantiated on any thread but from then on, it must be
 // accessed and destroyed on the background thread that the
 // ExternalPolicyDataUpdater runs on only.
@@ -71,11 +68,9 @@ class POLICY_EXPORT ExternalPolicyDataFetcher {
       base::OnceCallback<void(Result, std::unique_ptr<std::string>)>;
 
   // |task_runner| represents the background thread that |this| runs on.
-  // |backend| is used to perform network I/O. It must be dereferenced and
-  // accessed via |task_runner| only.
   ExternalPolicyDataFetcher(
-      scoped_refptr<base::SequencedTaskRunner> task_runner,
-      const base::WeakPtr<ExternalPolicyDataFetcherBackend>& backend);
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      scoped_refptr<base::SequencedTaskRunner> task_runner);
   ~ExternalPolicyDataFetcher();
 
   // Fetch data from |url| and invoke |callback| with the result. See the
@@ -98,60 +93,24 @@ class POLICY_EXPORT ExternalPolicyDataFetcher {
 
   // Task runner representing the thread that |this| runs on.
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  // Task runner for running the fetch jobs. It's the task runner on which this
+  // instance was created.
+  const scoped_refptr<base::SequencedTaskRunner> job_task_runner_;
 
-  // Task runner representing the thread on which the |backend_| runs.
-  const scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;
-
-  // The |backend_| is used to perform network I/O. It may be dereferenced and
-  // accessed via |backend_task_runner_| only.
-  base::WeakPtr<ExternalPolicyDataFetcherBackend> backend_;
+  // The information for the lazy creation of |cloned_url_loader_factory_|.
+  std::unique_ptr<network::SharedURLLoaderFactoryInfo> url_loader_factory_info_;
+  // The cloned factory that can be used from |task_runner_|. It's created
+  // lazily, as our constructor runs on a difference sequence.
+  scoped_refptr<network::SharedURLLoaderFactory> cloned_url_loader_factory_;
 
   // Set that owns all currently running Jobs.
   typedef std::set<Job*> JobSet;
   JobSet jobs_;
 
-  base::WeakPtrFactory<ExternalPolicyDataFetcher> weak_factory_;
+  base::WeakPtrFactory<ExternalPolicyDataFetcher> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ExternalPolicyDataFetcher);
 };
-
-// This class handles network I/O for one or more ExternalPolicyDataFetchers. It
-// can be instantiated on any thread that is allowed to reference
-// SharedURLLoaderFactories (in Chrome, these are the UI and IO threads) and
-// CreateFrontend() may be called from the same thread after instantiation. From
-// then on, it must be accessed and destroyed on the thread that handles network
-// I/O only (in Chrome, this is the IO thread).
-class POLICY_EXPORT ExternalPolicyDataFetcherBackend {
- public:
-  explicit ExternalPolicyDataFetcherBackend(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
-  ~ExternalPolicyDataFetcherBackend();
-
-  // Create an ExternalPolicyDataFetcher that allows fetch jobs to be started
-  // from |frontend_task_runner|.
-  std::unique_ptr<ExternalPolicyDataFetcher> CreateFrontend(
-      scoped_refptr<base::SequencedTaskRunner> frontend_task_runner);
-
-  // Start a fetch job defined by |job|. The caller retains ownership of |job|
-  // and must ensure that it remains valid until the job ends, CancelJob() is
-  // called or |this| is destroyed.
-  void StartJob(const GURL& url,
-                int64_t max_size,
-                ExternalPolicyDataFetcher::Job* job);
-
-  // Cancel the fetch job defined by |job| and invoke |callback| to confirm.
-  void CancelJob(ExternalPolicyDataFetcher::Job* job,
-                 base::OnceClosure callback);
-
- private:
-  SEQUENCE_CHECKER(sequence_checker_);
-
-  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  base::WeakPtrFactory<ExternalPolicyDataFetcherBackend> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExternalPolicyDataFetcherBackend);
-};
-
 
 }  // namespace policy
 

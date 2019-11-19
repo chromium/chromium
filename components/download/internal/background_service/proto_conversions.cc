@@ -245,6 +245,7 @@ RequestParams ProtoConversions::RequestParamsFromProto(
   request_params.url = GURL(proto.url());
   request_params.method = proto.method();
   request_params.fetch_error_body = proto.fetch_error_body();
+  request_params.require_safety_checks = proto.require_safety_checks();
 
   for (int i = 0; i < proto.headers_size(); i++) {
     protodb::RequestHeader header = proto.headers(i);
@@ -259,6 +260,7 @@ void ProtoConversions::RequestParamsToProto(const RequestParams& request_params,
   proto->set_url(request_params.url.spec());
   proto->set_method(request_params.method);
   proto->set_fetch_error_body(request_params.fetch_error_body);
+  proto->set_require_safety_checks(request_params.require_safety_checks);
 
   int i = 0;
   net::HttpRequestHeaders::Iterator iter(request_params.request_headers);
@@ -291,7 +293,7 @@ Entry ProtoConversions::EntryFromProto(const protodb::Entry& proto) {
   entry.cleanup_attempt_count = proto.cleanup_attempt_count();
   entry.has_upload_data = proto.has_upload_data();
   entry.traffic_annotation =
-      net::MutableNetworkTrafficAnnotationTag({proto.traffic_annotation()});
+      net::CreateMutableNetworkTrafficAnnotationTag(proto.traffic_annotation());
   entry.bytes_downloaded = proto.bytes_downloaded();
   for (const auto& url : proto.url_chain())
     entry.url_chain.emplace_back(url);

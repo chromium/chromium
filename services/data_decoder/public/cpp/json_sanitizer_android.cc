@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,22 +7,15 @@
 #include "base/android/jni_string.h"
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/location.h"
-#include "base/macros.h"
-#include "base/memory/weak_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "jni/JsonSanitizer_jni.h"
+#include "services/data_decoder/public/cpp/android/safe_json_jni_headers/JsonSanitizer_jni.h"
 
 using base::android::JavaParamRef;
 
-namespace data_decoder {
-
-namespace {
-
-// An implementation of JsonSanitizer that calls into Java. It deals with
-// malformed input (in particular malformed Unicode encodings) in the following
-// steps:
+// This file contains an implementation of JsonSanitizer that calls into Java.
+// It deals with malformed input (in particular malformed Unicode encodings) in
+// the following steps:
 // 1. The input string is checked for whether it is well-formed UTF-8. Malformed
 //    UTF-8 is rejected.
 // 2. The UTF-8 string is converted in native code to a Java String, which is
@@ -36,83 +29,49 @@ namespace {
 // 5. The Java String is converted back to UTF-8 in native code.
 // This ensures that both invalid UTF-8 and invalid escaped UTF-16 will be
 // rejected.
-class JsonSanitizerAndroid : public JsonSanitizer {
- public:
-  JsonSanitizerAndroid(const StringCallback& success_callback,
-                       const StringCallback& error_callback);
-  ~JsonSanitizerAndroid() {}
 
-  void Sanitize(const std::string& unsafe_json);
+namespace data_decoder {
 
-  void OnSuccess(const std::string& json);
-  void OnError(const std::string& error);
-
- private:
-  StringCallback success_callback_;
-  StringCallback error_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(JsonSanitizerAndroid);
-};
-
-JsonSanitizerAndroid::JsonSanitizerAndroid(
-    const StringCallback& success_callback,
-    const StringCallback& error_callback)
-    : success_callback_(success_callback), error_callback_(error_callback) {}
-
-void JsonSanitizerAndroid::Sanitize(const std::string& unsafe_json) {
+// static
+void JsonSanitizer::Sanitize(const std::string& json, Callback callback) {
   // The JSON parser only accepts wellformed UTF-8.
-  if (!base::IsStringUTF8(unsafe_json)) {
-    OnError("Unsupported encoding");
+  if (!base::IsStringUTF8(json)) {
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback),
+                                  Result::Error("Unsupported encoding")));
     return;
   }
 
   JNIEnv* env = base::android::AttachCurrentThread();
-  base::android::ScopedJavaLocalRef<jstring> unsafe_json_java =
-      base::android::ConvertUTF8ToJavaString(env, unsafe_json);
+  base::android::ScopedJavaLocalRef<jstring> json_java =
+      base::android::ConvertUTF8ToJavaString(env, json);
 
-  // This will synchronously call either OnSuccess() or OnError().
-  Java_JsonSanitizer_sanitize(env, reinterpret_cast<jlong>(this),
-                              unsafe_json_java);
+  // NOTE: This will *synchronously* invoke either the
+  // |JNI_JsonSanitizer_OnSuccess| or |JNI_JsonSanitizer_OnError| function
+  // below, so passing the address of |callback| is safe.
+  Java_JsonSanitizer_sanitize(env, reinterpret_cast<jlong>(&callback),
+                              json_java);
 }
-
-void JsonSanitizerAndroid::OnSuccess(const std::string& json) {
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(success_callback_, json));
-}
-
-void JsonSanitizerAndroid::OnError(const std::string& error) {
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(error_callback_, error));
-}
-
-}  // namespace
 
 void JNI_JsonSanitizer_OnSuccess(JNIEnv* env,
-                                 jlong jsanitizer,
+                                 jlong jcallback,
                                  const JavaParamRef<jstring>& json) {
-  JsonSanitizerAndroid* sanitizer =
-      reinterpret_cast<JsonSanitizerAndroid*>(jsanitizer);
-  sanitizer->OnSuccess(base::android::ConvertJavaStringToUTF8(env, json));
+  auto* callback = reinterpret_cast<JsonSanitizer::Callback*>(jcallback);
+  JsonSanitizer::Result result;
+  result.value = base::android::ConvertJavaStringToUTF8(env, json);
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(*callback), std::move(result)));
 }
 
 void JNI_JsonSanitizer_OnError(JNIEnv* env,
-                               jlong jsanitizer,
+                               jlong jcallback,
                                const JavaParamRef<jstring>& error) {
-  JsonSanitizerAndroid* sanitizer =
-      reinterpret_cast<JsonSanitizerAndroid*>(jsanitizer);
-  sanitizer->OnError(base::android::ConvertJavaStringToUTF8(env, error));
-}
-
-// static
-void JsonSanitizer::Sanitize(service_manager::Connector* connector,
-                             const std::string& unsafe_json,
-                             const StringCallback& success_callback,
-                             const StringCallback& error_callback) {
-  // JsonSanitizerAndroid does all its work synchronously, but posts any
-  // callbacks to the current sequence. This means it can be destroyed at
-  // the end of this method.
-  JsonSanitizerAndroid sanitizer(success_callback, error_callback);
-  sanitizer.Sanitize(unsafe_json);
+  auto* callback = reinterpret_cast<JsonSanitizer::Callback*>(jcallback);
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(*callback),
+                     JsonSanitizer::Result::Error(
+                         base::android::ConvertJavaStringToUTF8(env, error))));
 }
 
 }  // namespace data_decoder

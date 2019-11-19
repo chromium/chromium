@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<resources>
+    <style name="TextAppearance.ListMenuItem">
+        <item name="android:textColor">@color/standard_mode_tint</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <!-- ListMenuButton -->
+    <style name="ListMenuItemStyle">
+        <item name="android:paddingStart">?android:attr/listPreferredItemPaddingStart</item>
+        <item name="android:paddingEnd">?android:attr/listPreferredItemPaddingEnd</item>
+    </style>
+    <style name="ListActionButton" parent="@style/TextButton">
+        <item name="android:minHeight">48dp</item>
+    </style>
+
+    <style name="OverflowMenuAnim">
+        <item name="android:windowEnterAnimation">@anim/menu_enter</item>
+        <item name="android:windowExitAnimation">@anim/menu_exit</item>
+    </style>
+    <style name="OverflowMenuAnimBottom">
+        <item name="android:windowEnterAnimation">@anim/menu_enter_from_bottom</item>
+        <item name="android:windowExitAnimation">@anim/menu_exit_from_bottom</item>
+    </style>
+
+    <!-- Promo dialogs -->
+    <style name="PromoDialog" >
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:backgroundDimEnabled">false</item>
+        <item name="android:clipChildren">false</item>
+        <item name="android:clipToPadding">false</item>
+        <item name="android:windowAnimationStyle">@null</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowCloseOnTouchOutside">false</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowFullscreen">false</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
+
+    <!-- Bubble styles -->
+    <style name="TextBubbleAnimation">
+        <item name="android:windowEnterAnimation">@anim/textbubble_in</item>
+        <item name="android:windowExitAnimation">@anim/textbubble_out</item>
+    </style>
+
+</resources>

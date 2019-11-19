@@ -17,7 +17,7 @@ class ChromeBrowserState;
 // TableView for clearing browsing data (including history,
 // cookies, caches, passwords, and autofill).
 @interface ClearBrowsingDataTableViewController
-    : SettingsRootTableViewController
+    : SettingsRootTableViewController <UIAdaptivePresentationControllerDelegate>
 
 // Initializers. |browserState| can't be nil.
 - (instancetype)initWithBrowserState:(ios::ChromeBrowserState*)browserState

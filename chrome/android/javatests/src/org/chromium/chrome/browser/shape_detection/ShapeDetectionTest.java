@@ -15,7 +15,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
@@ -26,6 +25,7 @@ import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeRestriction;
 import org.chromium.chrome.test.util.browser.TabTitleObserver;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 
 import java.util.concurrent.TimeoutException;
@@ -56,7 +56,7 @@ public class ShapeDetectionTest {
     @Feature({"ShapeDetection"})
     @LargeTest
     @Restriction(ChromeRestriction.RESTRICTION_TYPE_GOOGLE_PLAY_SERVICES)
-    public void testBarcodeDetection() throws InterruptedException, TimeoutException {
+    public void testBarcodeDetection() throws TimeoutException {
         EmbeddedTestServer testServer =
                 EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
         try {
@@ -81,7 +81,7 @@ public class ShapeDetectionTest {
     @Feature({"ShapeDetection"})
     @LargeTest
     @Restriction(ChromeRestriction.RESTRICTION_TYPE_GOOGLE_PLAY_SERVICES)
-    public void testTextDetection() throws InterruptedException, TimeoutException {
+    public void testTextDetection() throws TimeoutException {
         EmbeddedTestServer testServer =
                 EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
         try {
@@ -104,21 +104,12 @@ public class ShapeDetectionTest {
     @Before
     public void setUp() throws Exception {
         mActivityTestRule.startMainActivityOnBlankPage();
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                mOldPolicy = StrictMode.allowThreadDiskWrites();
-            }
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { mOldPolicy = StrictMode.allowThreadDiskWrites(); });
     }
 
     @After
-    public void tearDown() throws Exception {
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                StrictMode.setThreadPolicy(mOldPolicy);
-            }
-        });
+    public void tearDown() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> StrictMode.setThreadPolicy(mOldPolicy));
     }
 }

@@ -8,10 +8,11 @@
 #include "base/callback_forward.h"
 #include "base/containers/id_map.h"
 #include "base/macros.h"
-#include "content/common/manifest_observer.mojom.h"
 #include "content/public/browser/web_contents_binding_set.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/manifest/manifest_manager.mojom.h"
+#include "third_party/blink/public/mojom/manifest/manifest_observer.mojom.h"
 
 namespace blink {
 struct Manifest;
@@ -27,7 +28,7 @@ class WebContents;
 // IPC messaging with the child process.
 // TODO(mlamouri): keep a cached version and a dirty bit here.
 class ManifestManagerHost : public WebContentsObserver,
-                            public mojom::ManifestUrlChangeObserver {
+                            public blink::mojom::ManifestUrlChangeObserver {
  public:
   explicit ManifestManagerHost(WebContents* web_contents);
   ~ManifestManagerHost() override;
@@ -56,14 +57,14 @@ class ManifestManagerHost : public WebContentsObserver,
                                  const GURL& url,
                                  const blink::Manifest& manifest);
 
-  // mojom::ManifestUrlChangeObserver:
+  // blink::mojom::ManifestUrlChangeObserver:
   void ManifestUrlChanged(const base::Optional<GURL>& manifest_url) override;
 
   RenderFrameHost* manifest_manager_frame_ = nullptr;
-  blink::mojom::ManifestManagerPtr manifest_manager_;
+  mojo::Remote<blink::mojom::ManifestManager> manifest_manager_;
   CallbackMap callbacks_;
 
-  WebContentsFrameBindingSet<mojom::ManifestUrlChangeObserver>
+  WebContentsFrameBindingSet<blink::mojom::ManifestUrlChangeObserver>
       manifest_url_change_observer_bindings_;
 
   DISALLOW_COPY_AND_ASSIGN(ManifestManagerHost);

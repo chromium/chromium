@@ -13,25 +13,23 @@
 namespace ui {
 class ContextFactory;
 class ContextFactoryPrivate;
+class TestContextFactories;
 }
 
 namespace views {
 
-class ViewsTestHelper;
 class Widget;
 
 class PlatformTestHelper {
  public:
-  using Factory = base::Callback<std::unique_ptr<PlatformTestHelper>(void)>;
-  PlatformTestHelper() {}
+  using Factory =
+      base::RepeatingCallback<std::unique_ptr<PlatformTestHelper>(void)>;
+
+  PlatformTestHelper();
   virtual ~PlatformTestHelper();
 
-  static void set_factory(const Factory& factory);
+  static void set_factory(Factory factory);
   static std::unique_ptr<PlatformTestHelper> Create();
-
-  // Called once the ViewsTestHelper has been created, but before SetUp() is
-  // called.
-  virtual void OnTestHelperCreated(ViewsTestHelper* helper) {}
 
   // Simulate an OS-level destruction of the native window held by |widget|.
   virtual void SimulateNativeDestroy(Widget* widget);
@@ -41,6 +39,8 @@ class PlatformTestHelper {
       ui::ContextFactoryPrivate** factory_private);
 
  private:
+  std::unique_ptr<ui::TestContextFactories> context_factories_;
+
   DISALLOW_COPY_AND_ASSIGN(PlatformTestHelper);
 };
 

@@ -27,41 +27,35 @@ void ExtensionAppWindowLauncherItemController::AddAppWindow(
   AddWindow(app_window->GetBaseWindow());
 }
 
-ash::MenuItemList ExtensionAppWindowLauncherItemController::GetAppMenuItems(
-    int event_flags) {
-  ash::MenuItemList items;
+ash::ShelfItemDelegate::AppMenuItems
+ExtensionAppWindowLauncherItemController::GetAppMenuItems(int event_flags) {
+  AppMenuItems items;
   extensions::AppWindowRegistry* app_window_registry =
       extensions::AppWindowRegistry::Get(
           ChromeLauncherController::instance()->profile());
 
-  uint32_t window_index = 0;
   for (const ui::BaseWindow* window : windows()) {
     extensions::AppWindow* app_window =
         app_window_registry->GetAppWindowForNativeWindow(
             window->GetNativeWindow());
     DCHECK(app_window);
 
-    ash::mojom::MenuItemPtr item(ash::mojom::MenuItem::New());
-    item->command_id = window_index;
-    item->label = app_window->GetTitle();
-
     // Use the app's web contents favicon, or the app window's icon.
     favicon::FaviconDriver* favicon_driver =
         favicon::ContentFaviconDriver::FromWebContents(
             app_window->web_contents());
-    item->image = favicon_driver->GetFavicon().AsImageSkia();
-    if (item->image.isNull()) {
+    gfx::ImageSkia image = favicon_driver->GetFavicon().AsImageSkia();
+    if (image.isNull()) {
       const gfx::ImageSkia* app_icon = nullptr;
       if (app_window->GetNativeWindow()) {
         app_icon = app_window->GetNativeWindow()->GetProperty(
             aura::client::kAppIconKey);
       }
       if (app_icon && !app_icon->isNull())
-        item->image = *app_icon;
+        image = *app_icon;
     }
 
-    items.push_back(std::move(item));
-    ++window_index;
+    items.push_back({app_window->GetTitle(), image});
   }
   return items;
 }

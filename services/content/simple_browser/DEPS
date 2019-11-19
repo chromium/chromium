@@ -1,6 +1,0 @@
-include_rules = [
-  "+components/services/font/public",
-  "+third_party/skia/include",
-  "+ui/aura",
-  "+ui/views",
-]

@@ -34,6 +34,8 @@ extern __typeof (FcDirCacheDeleteUUID) FcDirCacheDeleteUUID __attribute((alias("
 extern __typeof (FcConfigHome) FcConfigHome __attribute((alias("IA__FcConfigHome"))) FC_ATTRIBUTE_VISIBILITY_EXPORT;
 # undef FcConfigEnableHome
 extern __typeof (FcConfigEnableHome) FcConfigEnableHome __attribute((alias("IA__FcConfigEnableHome"))) FC_ATTRIBUTE_VISIBILITY_EXPORT;
+# undef FcConfigGetFilename
+extern __typeof (FcConfigGetFilename) FcConfigGetFilename __attribute((alias("IA__FcConfigGetFilename"))) FC_ATTRIBUTE_VISIBILITY_EXPORT;
 # undef FcConfigFilename
 extern __typeof (FcConfigFilename) FcConfigFilename __attribute((alias("IA__FcConfigFilename"))) FC_ATTRIBUTE_VISIBILITY_EXPORT;
 # undef FcConfigCreate

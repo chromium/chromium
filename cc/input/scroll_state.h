@@ -99,6 +99,8 @@ class CC_EXPORT ScrollState {
 
   bool is_scroll_chain_cut() const { return data_.is_scroll_chain_cut; }
 
+  double delta_granularity() const { return data_.delta_granularity; }
+
   LayerTreeImpl* layer_tree_impl() { return layer_tree_impl_; }
   ScrollStateData* data() { return &data_; }
 

@@ -10,11 +10,13 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "google_apis/drive/dummy_auth_service.h"
 #include "google_apis/drive/request_sender.h"
 #include "google_apis/drive/task_util.h"
 #include "google_apis/drive/test_util.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -36,31 +38,30 @@ const char kTestUserAgent[] = "test-user-agent";
 class BaseRequestsServerTest : public testing::Test {
  protected:
   BaseRequestsServerTest() {
-    network::mojom::NetworkServicePtr network_service_ptr;
-    network::mojom::NetworkServiceRequest network_service_request =
-        mojo::MakeRequest(&network_service_ptr);
-    network_service_ =
-        network::NetworkService::Create(std::move(network_service_request),
-                                        /*netlog=*/nullptr);
+    mojo::Remote<network::mojom::NetworkService> network_service_remote;
+    network_service_ = network::NetworkService::Create(
+        network_service_remote.BindNewPipeAndPassReceiver());
     network::mojom::NetworkContextParamsPtr context_params =
         network::mojom::NetworkContextParams::New();
-    context_params->enable_data_url_support = true;
-    network_service_ptr->CreateNetworkContext(
-        mojo::MakeRequest(&network_context_), std::move(context_params));
+    network_service_remote->CreateNetworkContext(
+        network_context_.BindNewPipeAndPassReceiver(),
+        std::move(context_params));
 
-    network::mojom::NetworkServiceClientPtr network_service_client_ptr;
+    mojo::PendingRemote<network::mojom::NetworkServiceClient>
+        network_service_client_remote;
     network_service_client_ =
         std::make_unique<network::TestNetworkServiceClient>(
-            mojo::MakeRequest(&network_service_client_ptr));
-    network_service_ptr->SetClient(std::move(network_service_client_ptr),
-                                   network::mojom::NetworkServiceParams::New());
+            network_service_client_remote.InitWithNewPipeAndPassReceiver());
+    network_service_remote->SetClient(
+        std::move(network_service_client_remote),
+        network::mojom::NetworkServiceParams::New());
 
     network::mojom::URLLoaderFactoryParamsPtr params =
         network::mojom::URLLoaderFactoryParams::New();
     params->process_id = network::mojom::kBrowserProcessId;
     params->is_corb_enabled = false;
     network_context_->CreateURLLoaderFactory(
-        mojo::MakeRequest(&url_loader_factory_), std::move(params));
+        url_loader_factory_.BindNewPipeAndPassReceiver(), std::move(params));
     test_shared_loader_factory_ =
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             url_loader_factory_.get());
@@ -71,7 +72,7 @@ class BaseRequestsServerTest : public testing::Test {
 
     request_sender_ = std::make_unique<RequestSender>(
         std::make_unique<DummyAuthService>(), test_shared_loader_factory_,
-        scoped_task_environment_.GetMainThreadTaskRunner(), kTestUserAgent,
+        task_environment_.GetMainThreadTaskRunner(), kTestUserAgent,
         TRAFFIC_ANNOTATION_FOR_TESTS);
 
     ASSERT_TRUE(test_server_.InitializeAndListen());
@@ -87,14 +88,14 @@ class BaseRequestsServerTest : public testing::Test {
     return temp_dir_.GetPath().Append(file_name);
   }
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_{
-      base::test::ScopedTaskEnvironment::MainThreadType::IO};
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::MainThreadType::IO};
   net::EmbeddedTestServer test_server_;
   std::unique_ptr<RequestSender> request_sender_;
   std::unique_ptr<network::mojom::NetworkService> network_service_;
   std::unique_ptr<network::mojom::NetworkServiceClient> network_service_client_;
-  network::mojom::NetworkContextPtr network_context_;
-  network::mojom::URLLoaderFactoryPtr url_loader_factory_;
+  mojo::Remote<network::mojom::NetworkContext> network_context_;
+  mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory_;
   scoped_refptr<network::WeakWrapperSharedURLLoaderFactory>
       test_shared_loader_factory_;
   base::ScopedTempDir temp_dir_;

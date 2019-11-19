@@ -4,7 +4,7 @@
 
 #include "components/bookmarks/common/android/bookmark_id.h"
 
-#include "jni/BookmarkId_jni.h"
+#include "components/bookmarks/common/android/bookmarks_jni_headers/BookmarkId_jni.h"
 
 namespace bookmarks {
 namespace android {

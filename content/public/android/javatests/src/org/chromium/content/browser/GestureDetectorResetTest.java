@@ -4,8 +4,6 @@
 
 package org.chromium.content.browser;
 
-import static org.chromium.base.test.util.ScalableTimeout.scaleTimeout;
-
 import android.support.test.InstrumentationRegistry;
 import android.support.test.filters.LargeTest;
 
@@ -38,7 +36,7 @@ public class GestureDetectorResetTest {
     @Rule
     public ContentShellActivityTestRule mActivityTestRule = new ContentShellActivityTestRule();
 
-    private static final long WAIT_TIMEOUT_SECONDS = scaleTimeout(2);
+    private static final long WAIT_TIMEOUT_SECONDS = 2L;
     private static final String CLICK_TEST_URL = UrlUtils.encodeHtmlDataUri("<html><body>"
             + "<button id=\"button\" "
             + "  onclick=\"document.getElementById('test').textContent = 'clicked';\">"
@@ -77,7 +75,7 @@ public class GestureDetectorResetTest {
     }
 
     private void verifyClicksAreRegistered(String disambiguation, WebContents webContents)
-            throws InterruptedException, Exception, Throwable {
+            throws Exception, Throwable {
         // Initially the text on the page should say "not clicked".
         CriteriaHelper.pollInstrumentationThread(
                 new NodeContentsIsEqualToCriteria("The page contents is invalid " + disambiguation,

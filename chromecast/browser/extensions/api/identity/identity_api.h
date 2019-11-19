@@ -16,7 +16,7 @@ namespace cast {
 
 // Returns an OAuth2 access token for a user. See the IDL file for
 // documentation.
-class IdentityGetAuthTokenFunction : public UIThreadExtensionFunction {
+class IdentityGetAuthTokenFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("identity.getAuthToken", UNKNOWN)
 
@@ -33,7 +33,7 @@ class IdentityGetAuthTokenFunction : public UIThreadExtensionFunction {
 };
 
 // Stub. See the IDL file for documentation.
-class IdentityRemoveCachedAuthTokenFunction : public UIThreadExtensionFunction {
+class IdentityRemoveCachedAuthTokenFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("identity.removeCachedAuthToken", UNKNOWN)
 

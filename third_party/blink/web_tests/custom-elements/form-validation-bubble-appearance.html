@@ -16,10 +16,6 @@ customElements.define('my-control', MyControl);
 </script>
 <my-control title="Please specify four digits." tabindex=0>&#x1f196;</my-control>
 <script>
-if (window.testRunner) {
-  // Layout tree dump doesn't matter.
-  testRunner.dumpAsTextWithPixelResults();
-}
 const myControl = document.querySelector('my-control');
 myControl.i.setValidity({patternMismatch:true}, 'The value does not match to the requested format');
 myControl.i.reportValidity();

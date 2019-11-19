@@ -5,6 +5,7 @@
 #include "content/public/common/url_utils.h"
 
 #include "build/build_config.h"
+#include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -31,8 +32,8 @@ TEST(UrlUtilsTest, IsURLHandledByNetworkStack) {
 }
 
 TEST(UrlUtilsTest, IsSafeRedirectTarget) {
-  EXPECT_FALSE(
-      IsSafeRedirectTarget(GURL(), CreateValidURL("chrome://foo/bar.html")));
+  EXPECT_FALSE(IsSafeRedirectTarget(
+      GURL(), CreateValidURL(GetWebUIURLString("foo/bar.html"))));
   EXPECT_TRUE(
       IsSafeRedirectTarget(GURL(), CreateValidURL("http://foo/bar.html")));
   EXPECT_FALSE(
@@ -40,8 +41,13 @@ TEST(UrlUtilsTest, IsSafeRedirectTarget) {
   EXPECT_FALSE(IsSafeRedirectTarget(GURL(), CreateValidURL("about:blank")));
   EXPECT_FALSE(IsSafeRedirectTarget(
       GURL(), CreateValidURL("filesystem:http://foo.com/bar")));
+#if !defined(CHROMECAST_BUILD)
   EXPECT_FALSE(
       IsSafeRedirectTarget(GURL(), CreateValidURL("data:text/plain,foo")));
+#else
+  EXPECT_TRUE(
+      IsSafeRedirectTarget(GURL(), CreateValidURL("data:text/plain,foo")));
+#endif
   EXPECT_FALSE(
       IsSafeRedirectTarget(GURL(), CreateValidURL("blob:https://foo.com/bar")));
 #if defined(OS_ANDROID)

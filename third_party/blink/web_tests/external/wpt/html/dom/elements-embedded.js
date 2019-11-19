@@ -59,7 +59,6 @@ var embeddedElements = {
     // Conforming
     data: "url",
     type: "string",
-    typeMustMatch: "boolean",
     name: "string",
     useMap: "string",
     width: "string",
@@ -99,7 +98,8 @@ var embeddedElements = {
 
     width: "unsigned long",
     height: "unsigned long",
-    poster: "url"
+    poster: "url",
+    playsInline: "boolean",
   },
   audio: {
     // HTMLMediaElement

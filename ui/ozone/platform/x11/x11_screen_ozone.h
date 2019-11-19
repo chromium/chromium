@@ -5,25 +5,33 @@
 #ifndef UI_OZONE_PLATFORM_X11_X11_SCREEN_OZONE_H_
 #define UI_OZONE_PLATFORM_X11_X11_SCREEN_OZONE_H_
 
+#include <memory>
+#include <utility>
 #include <vector>
 
 #include "base/macros.h"
 #include "base/observer_list.h"
-#include "ui/display/display_list.h"
-#include "ui/ozone/platform/x11/x11_display_fetcher_ozone.h"
-#include "ui/ozone/public/ozone_platform.h"
+#include "ui/base/x/x11_display_manager.h"
+#include "ui/events/platform/x11/x11_event_source.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/ozone/public/platform_screen.h"
 
 namespace ui {
 
+class X11WindowManager;
+
 // A PlatformScreen implementation for X11.
 class X11ScreenOzone : public PlatformScreen,
-                       public X11DisplayFetcherOzone::Delegate {
+                       public XEventDispatcher,
+                       public XDisplayManager::Delegate {
  public:
   X11ScreenOzone();
   ~X11ScreenOzone() override;
 
-  // PlatformScreen implementation.
+  // Fetch display list through Xlib/XRandR
+  void Init();
+
+  // Overridden from ui::PlatformScreen:
   const std::vector<display::Display>& GetAllDisplays() const override;
   display::Display GetPrimaryDisplay() const override;
   display::Display GetDisplayForAcceleratedWidget(
@@ -38,16 +46,20 @@ class X11ScreenOzone : public PlatformScreen,
   void AddObserver(display::DisplayObserver* observer) override;
   void RemoveObserver(display::DisplayObserver* observer) override;
 
-  // X11DisplayFetcherOzone::Delegate overrides:
-  void AddDisplay(const display::Display& display, bool is_primary) override;
-  void RemoveDisplay(const display::Display& display) override;
+  // Overridden from ui::XEventDispatcher:
+  bool DispatchXEvent(XEvent* event) override;
 
  private:
-  display::DisplayList display_list_;
+  friend class X11ScreenOzoneTest;
 
-  base::ObserverList<display::DisplayObserver> observers_;
+  // Overridden from ui::XDisplayManager::Delegate:
+  void OnXDisplayListUpdated() override;
+  float GetXDisplayScaleFactor() override;
 
-  std::unique_ptr<X11DisplayFetcherOzone> display_fetcher_;
+  gfx::Point GetCursorLocation() const;
+
+  X11WindowManager* const window_manager_;
+  std::unique_ptr<ui::XDisplayManager> x11_display_manager_;
 
   DISALLOW_COPY_AND_ASSIGN(X11ScreenOzone);
 };

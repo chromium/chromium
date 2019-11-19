@@ -16,14 +16,19 @@ class MockPaletteToolDelegate : public PaletteTool::Delegate {
   MockPaletteToolDelegate();
   ~MockPaletteToolDelegate() override;
 
-  MOCK_METHOD1(EnableTool, void(PaletteToolId tool_id));
-  MOCK_METHOD1(DisableTool, void(PaletteToolId tool_id));
-  MOCK_METHOD0(HidePalette, void());
-  MOCK_METHOD0(HidePaletteImmediately, void());
-  MOCK_METHOD0(GetWindow, aura::Window*());
-  MOCK_METHOD2(RecordPaletteOptionsUsage,
-               void(PaletteTrayOptions option, PaletteInvocationMethod method));
-  MOCK_METHOD1(RecordPaletteModeCancellation, void(PaletteModeCancelType type));
+  MOCK_METHOD(void, EnableTool, (PaletteToolId tool_id), (override));
+  MOCK_METHOD(void, DisableTool, (PaletteToolId tool_id), (override));
+  MOCK_METHOD(void, HidePalette, (), (override));
+  MOCK_METHOD(void, HidePaletteImmediately, (), (override));
+  MOCK_METHOD(aura::Window*, GetWindow, (), (override));
+  MOCK_METHOD(void,
+              RecordPaletteOptionsUsage,
+              (PaletteTrayOptions option, PaletteInvocationMethod method),
+              (override));
+  MOCK_METHOD(void,
+              RecordPaletteModeCancellation,
+              (PaletteModeCancelType type),
+              (override));
 };
 
 }  // namespace ash

@@ -13,12 +13,18 @@
 #include "base/macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/no_destructor.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/system/sys_info.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "chrome/browser/apps/launch_service/launch_service.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/chromeos/extensions/default_web_app_ids.h"
 #include "chrome/browser/download/download_shelf.h"
 #include "chrome/browser/extensions/launch_util.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
@@ -27,26 +33,36 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/extensions/app_launch_params.h"
-#include "chrome/browser/ui/extensions/application_launch.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/bookmarks/bookmarks_ui.h"
 #include "chrome/browser/ui/webui/site_settings_helper.h"
+#include "chrome/browser/web_applications/components/web_app_helpers.h"
+#include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/url_constants.h"
+#include "chromeos/login/login_state/login_state.h"
+#include "chromeos/system/statistics_provider.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/common/constants.h"
+#include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/base/url_util.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/window_open_disposition.h"
+#include "url/url_util.h"
 
 #if defined(OS_CHROMEOS)
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
+#include "chrome/common/webui_url_constants.h"
+#include "chromeos/constants/chromeos_features.h"
+#include "components/version_info/version_info.h"
 #include "extensions/browser/extension_registry.h"
 #else
 #include "chrome/browser/ui/signin_view_controller.h"
@@ -54,8 +70,8 @@
 
 #if !defined(OS_ANDROID)
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "components/signin/core/browser/signin_pref_names.h"
-#include "services/identity/public/cpp/identity_manager.h"
+#include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #endif
 
 using base::UserMetricsAction;
@@ -64,6 +80,12 @@ namespace chrome {
 namespace {
 
 const char kHashMark[] = "#";
+
+void FocusWebContents(Browser* browser) {
+  auto* const contents = browser->tab_strip_model()->GetActiveWebContents();
+  if (contents)
+    contents->Focus();
+}
 
 void OpenBookmarkManagerForNode(Browser* browser, int64_t node_id) {
   GURL url = GURL(kChromeUIBookmarksURL)
@@ -74,13 +96,70 @@ void OpenBookmarkManagerForNode(Browser* browser, int64_t node_id) {
   ShowSingletonTabOverwritingNTP(browser, std::move(params));
 }
 
+#if defined(OS_CHROMEOS) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
+const std::string BuildQueryString(Profile* profile) {
+  const std::string board_name = base::SysInfo::GetLsbReleaseBoard();
+  std::string region;
+  chromeos::system::StatisticsProvider::GetInstance()->GetMachineStatistic(
+      "region", &region);
+  const std::string language = l10n_util::GetApplicationLocale(std::string());
+  const std::string version = version_info::GetVersionNumber();
+  const std::string milestone = version_info::GetMajorVersionNumber();
+  std::string channel_name =
+      chrome::GetChannelName();  // beta, dev, canary, unknown, or empty string
+                                 // for stable
+  if (channel_name.empty())
+    channel_name = "stable";
+  const std::string username = profile->GetProfileUserName();
+  std::string user_type;
+  if (gaia::IsGoogleInternalAccountEmail(username)) {
+    user_type = "googler";
+  } else if (profile->GetProfilePolicyConnector()->IsManaged()) {
+    user_type = "managed";
+  } else {
+    user_type = "general";
+  }
+
+  const std::string query_string = base::StrCat(
+      {kChromeReleaseNotesURL, "?version=", milestone, "&tags=", board_name,
+       ",", region, ",", language, ",", channel_name, ",", user_type});
+  return query_string;
+}
+
+void LaunchReleaseNotesInTab(Profile* profile) {
+  GURL url(BuildQueryString(profile));
+  auto displayer = std::make_unique<ScopedTabbedBrowserDisplayer>(profile);
+  ShowSingletonTab(displayer->browser(), url);
+}
+
+void LaunchReleaseNotesImpl(Profile* profile) {
+  base::RecordAction(UserMetricsAction("ReleaseNotes.ShowReleaseNotes"));
+  const extensions::Extension* extension =
+      extensions::ExtensionRegistry::Get(profile)->GetExtensionById(
+          chromeos::default_web_apps::kReleaseNotesAppId,
+          extensions::ExtensionRegistry::EVERYTHING);
+  if (extension) {
+    apps::AppLaunchParams params = CreateAppLaunchParamsWithEventFlags(
+        profile, extension, 0, apps::mojom::AppLaunchSource::kSourceUntracked,
+        -1);
+    params.override_url = GURL(BuildQueryString(profile));
+    apps::LaunchService::Get(profile)->OpenApplication(params);
+    return;
+  }
+  DVLOG(1) << "ReleaseNotes App Not Found";
+  LaunchReleaseNotesInTab(profile);
+}
+
+#endif
+
 // Shows either the help app or the appropriate help page for |source|. If
 // |browser| is NULL and the help page is used (vs the app), the help page is
 // shown in the last active browser. If there is no such browser, a new browser
 // is created.
 void ShowHelpImpl(Browser* browser, Profile* profile, HelpSource source) {
   base::RecordAction(UserMetricsAction("ShowHelpTab"));
-#if defined(OS_CHROMEOS) && defined(GOOGLE_CHROME_BUILD)
+#if defined(OS_CHROMEOS) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   const extensions::Extension* extension =
       extensions::ExtensionRegistry::Get(profile)->GetExtensionById(
           extension_misc::kGeniusAppId,
@@ -90,22 +169,24 @@ void ShowHelpImpl(Browser* browser, Profile* profile, HelpSource source) {
         switches::kDisableDefaultApps));
     return;
   }
-  extensions::AppLaunchSource app_launch_source(extensions::SOURCE_UNTRACKED);
+  extensions::AppLaunchSource app_launch_source(
+      extensions::AppLaunchSource::kSourceUntracked);
   switch (source) {
     case HELP_SOURCE_KEYBOARD:
-      app_launch_source = extensions::SOURCE_KEYBOARD;
+      app_launch_source = extensions::AppLaunchSource::kSourceKeyboard;
       break;
     case HELP_SOURCE_MENU:
-      app_launch_source = extensions::SOURCE_SYSTEM_TRAY;
+      app_launch_source = extensions::AppLaunchSource::kSourceSystemTray;
       break;
     case HELP_SOURCE_WEBUI:
-      app_launch_source = extensions::SOURCE_ABOUT_PAGE;
+    case HELP_SOURCE_WEBUI_CHROME_OS:
+      app_launch_source = extensions::AppLaunchSource::kSourceAboutPage;
       break;
     default:
       NOTREACHED() << "Unhandled help source" << source;
   }
-  OpenApplication(AppLaunchParams(
-      profile, extension,
+  apps::LaunchService::Get(profile)->OpenApplication(apps::AppLaunchParams(
+      extension_misc::kGeniusAppId,
       extensions::GetLaunchContainer(extensions::ExtensionPrefs::Get(profile),
                                      extension),
       WindowOpenDisposition::NEW_FOREGROUND_TAB, app_launch_source, true));
@@ -118,15 +199,27 @@ void ShowHelpImpl(Browser* browser, Profile* profile, HelpSource source) {
     case HELP_SOURCE_MENU:
       url = GURL(kChromeHelpViaMenuURL);
       break;
+#if defined(OS_CHROMEOS)
+    case HELP_SOURCE_WEBUI:
+      if (base::FeatureList::IsEnabled(chromeos::features::kSplitSettings))
+        url = GURL(kChromeHelpViaWebUIURL);
+      else
+        url = GURL(kChromeOsHelpViaWebUIURL);
+      break;
+    case HELP_SOURCE_WEBUI_CHROME_OS:
+      url = GURL(kChromeOsHelpViaWebUIURL);
+      break;
+#else
     case HELP_SOURCE_WEBUI:
       url = GURL(kChromeHelpViaWebUIURL);
       break;
+#endif
     default:
       NOTREACHED() << "Unhandled help source " << source;
   }
   std::unique_ptr<ScopedTabbedBrowserDisplayer> displayer;
   if (!browser) {
-    displayer.reset(new ScopedTabbedBrowserDisplayer(profile));
+    displayer = std::make_unique<ScopedTabbedBrowserDisplayer>(profile);
     browser = displayer->browser();
   }
   ShowSingletonTab(browser, url);
@@ -145,14 +238,14 @@ std::string GenerateContentSettingsExceptionsSubPage(ContentSettingsType type) {
   // will no longer be needed.
   static base::NoDestructor<std::map<ContentSettingsType, std::string>>
       kSettingsPathOverrides(
-          {{CONTENT_SETTINGS_TYPE_AUTOMATIC_DOWNLOADS, "automaticDownloads"},
-           {CONTENT_SETTINGS_TYPE_BACKGROUND_SYNC, "backgroundSync"},
-           {CONTENT_SETTINGS_TYPE_MEDIASTREAM_MIC, "microphone"},
-           {CONTENT_SETTINGS_TYPE_MEDIASTREAM_CAMERA, "camera"},
-           {CONTENT_SETTINGS_TYPE_MIDI_SYSEX, "midiDevices"},
-           {CONTENT_SETTINGS_TYPE_PLUGINS, "flash"},
-           {CONTENT_SETTINGS_TYPE_ADS, "ads"},
-           {CONTENT_SETTINGS_TYPE_PPAPI_BROKER, "unsandboxedPlugins"}});
+          {{ContentSettingsType::AUTOMATIC_DOWNLOADS, "automaticDownloads"},
+           {ContentSettingsType::BACKGROUND_SYNC, "backgroundSync"},
+           {ContentSettingsType::MEDIASTREAM_MIC, "microphone"},
+           {ContentSettingsType::MEDIASTREAM_CAMERA, "camera"},
+           {ContentSettingsType::MIDI_SYSEX, "midiDevices"},
+           {ContentSettingsType::PLUGINS, "flash"},
+           {ContentSettingsType::ADS, "ads"},
+           {ContentSettingsType::PPAPI_BROKER, "unsandboxedPlugins"}});
   const auto it = kSettingsPathOverrides->find(type);
   const std::string content_type_path =
       (it == kSettingsPathOverrides->end())
@@ -243,6 +336,12 @@ void ShowHelpForProfile(Profile* profile, HelpSource source) {
   ShowHelpImpl(NULL, profile, source);
 }
 
+void LaunchReleaseNotes(Profile* profile) {
+#if defined(OS_CHROMEOS) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  LaunchReleaseNotesImpl(profile);
+#endif
+}
+
 void ShowBetaForum(Browser* browser) {
   ShowSingletonTab(browser, GURL(kChromeBetaForumURL));
 }
@@ -263,7 +362,7 @@ GURL GetSettingsUrl(const std::string& sub_page) {
 
 bool IsTrustedPopupWindowWithScheme(const Browser* browser,
                                     const std::string& scheme) {
-  if (!browser->is_type_popup() || !browser->is_trusted_source())
+  if (browser->is_type_normal() || !browser->is_trusted_source())
     return false;
   if (scheme.empty())  // Any trusted popup window
     return true;
@@ -274,7 +373,6 @@ bool IsTrustedPopupWindowWithScheme(const Browser* browser,
   GURL url(web_contents->GetURL());
   return url.SchemeIs(scheme);
 }
-
 
 void ShowSettings(Browser* browser) {
   ShowSettingsSubPage(browser, std::string());
@@ -290,23 +388,35 @@ void ShowSettingsSubPage(Browser* browser, const std::string& sub_page) {
 
 void ShowSettingsSubPageForProfile(Profile* profile,
                                    const std::string& sub_page) {
-  std::string sub_page_path = sub_page;
-
 #if defined(OS_CHROMEOS)
-  base::RecordAction(base::UserMetricsAction("ShowOptions"));
-  SettingsWindowManager::GetInstance()->ShowChromePageForProfile(
-      profile, GetSettingsUrl(sub_page_path));
-#else
+  SettingsWindowManager* settings = SettingsWindowManager::GetInstance();
+  if (!base::FeatureList::IsEnabled(chromeos::features::kSplitSettings)) {
+    base::RecordAction(base::UserMetricsAction("ShowOptions"));
+    settings->ShowChromePageForProfile(profile, GetSettingsUrl(sub_page));
+    return;
+  }
+  // TODO(jamescook): When SplitSettings is close to shipping, change this to
+  // a DCHECK that the |sub_page| is not an OS-specific setting.
+  if (chrome::IsOSSettingsSubPage(sub_page)) {
+    settings->ShowOSSettings(profile, sub_page);
+    return;
+  }
+  // Fall through and open browser settings in a tab.
+#endif
   Browser* browser = chrome::FindTabbedBrowser(profile, false);
   if (!browser)
     browser = new Browser(Browser::CreateParams(profile, true));
-  ShowSettingsSubPageInTabbedBrowser(browser, sub_page_path);
-#endif
+  ShowSettingsSubPageInTabbedBrowser(browser, sub_page);
 }
 
 void ShowSettingsSubPageInTabbedBrowser(Browser* browser,
                                         const std::string& sub_page) {
   base::RecordAction(UserMetricsAction("ShowOptions"));
+
+  // Since the user may be triggering navigation from another UI element such as
+  // a menu, ensure the web contents (and therefore the settings page that is
+  // about to be shown) is focused. (See crbug/926492 for motivation.)
+  FocusWebContents(browser);
   GURL gurl = GetSettingsUrl(sub_page);
   NavigateParams params(GetSingletonTabNavigateParams(browser, gurl));
   params.path_behavior = NavigateParams::IGNORE_AND_NAVIGATE;
@@ -361,20 +471,48 @@ void ShowImportDialog(Browser* browser) {
 void ShowAboutChrome(Browser* browser) {
   base::RecordAction(UserMetricsAction("AboutChrome"));
 #if defined(OS_CHROMEOS)
-  SettingsWindowManager::GetInstance()->ShowChromePageForProfile(
-      browser->profile(), GURL(kChromeUIHelpURL));
-#else
+  if (!base::FeatureList::IsEnabled(chromeos::features::kSplitSettings)) {
+    SettingsWindowManager::GetInstance()->ShowChromePageForProfile(
+        browser->profile(), GURL(kChromeUIHelpURL));
+    return;
+  }
+#endif
   NavigateParams params(
       GetSingletonTabNavigateParams(browser, GURL(kChromeUIHelpURL)));
   params.path_behavior = NavigateParams::IGNORE_AND_NAVIGATE;
   ShowSingletonTabOverwritingNTP(browser, std::move(params));
-#endif
 }
 
 void ShowSearchEngineSettings(Browser* browser) {
   base::RecordAction(UserMetricsAction("EditSearchEngines"));
   ShowSettingsSubPage(browser, kSearchEnginesSubPage);
 }
+
+#if defined(OS_CHROMEOS)
+void ShowManagementPageForProfile(Profile* profile) {
+  const std::string page_path = "chrome://management";
+  base::RecordAction(base::UserMetricsAction("ShowOptions"));
+  SettingsWindowManager::GetInstance()->ShowChromePageForProfile(
+      profile, GURL(page_path));
+}
+
+void ShowAppManagementPage(Profile* profile, const std::string& app_id) {
+  DCHECK(base::FeatureList::IsEnabled(features::kAppManagement));
+  std::string sub_page =
+      base::StrCat({chrome::kAppManagementDetailSubPage, "?id=", app_id});
+  chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(profile,
+                                                               sub_page);
+}
+
+GURL GetOSSettingsUrl(const std::string& sub_page) {
+  DCHECK(sub_page.empty() || chrome::IsOSSettingsSubPage(sub_page)) << sub_page;
+  std::string url =
+      base::FeatureList::IsEnabled(chromeos::features::kSplitSettings)
+          ? kChromeUIOSSettingsURL
+          : kChromeUISettingsURL;
+  return GURL(url + sub_page);
+}
+#endif
 
 #if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
 void ShowBrowserSignin(Browser* browser,

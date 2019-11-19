@@ -51,7 +51,6 @@
 #include "third_party/blink/renderer/platform/network/parsed_content_type.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
-#include "third_party/blink/renderer/platform/wtf/compiler.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
@@ -63,7 +62,7 @@ class Beacon {
 
  public:
   virtual void Serialize(ResourceRequest&) const = 0;
-  virtual unsigned long long size() const = 0;
+  virtual uint64_t size() const = 0;
   virtual const AtomicString GetContentType() const = 0;
 };
 
@@ -71,14 +70,12 @@ class BeaconString final : public Beacon {
  public:
   explicit BeaconString(const String& data) : data_(data) {}
 
-  unsigned long long size() const override {
-    return data_.CharactersSizeInBytes();
-  }
+  uint64_t size() const override { return data_.CharactersSizeInBytes(); }
 
   void Serialize(ResourceRequest& request) const override {
     scoped_refptr<EncodedFormData> entity_body =
         EncodedFormData::Create(data_.Utf8());
-    request.SetHTTPBody(entity_body);
+    request.SetHttpBody(entity_body);
     request.SetHTTPContentType(GetContentType());
   }
 
@@ -98,7 +95,7 @@ class BeaconBlob final : public Beacon {
       content_type_ = AtomicString(blob_type);
   }
 
-  unsigned long long size() const override { return data_->size(); }
+  uint64_t size() const override { return data_->size(); }
 
   void Serialize(ResourceRequest& request) const override {
     DCHECK(data_);
@@ -109,7 +106,7 @@ class BeaconBlob final : public Beacon {
     else
       entity_body->AppendBlob(data_->Uuid(), data_->GetBlobDataHandle());
 
-    request.SetHTTPBody(std::move(entity_body));
+    request.SetHttpBody(std::move(entity_body));
 
     if (!content_type_.IsEmpty())
       request.SetHTTPContentType(content_type_);
@@ -126,14 +123,14 @@ class BeaconDOMArrayBufferView final : public Beacon {
  public:
   explicit BeaconDOMArrayBufferView(DOMArrayBufferView* data) : data_(data) {}
 
-  unsigned long long size() const override { return data_->byteLength(); }
+  uint64_t size() const override { return data_->byteLength(); }
 
   void Serialize(ResourceRequest& request) const override {
     DCHECK(data_);
 
     scoped_refptr<EncodedFormData> entity_body =
         EncodedFormData::Create(data_->BaseAddress(), data_->byteLength());
-    request.SetHTTPBody(std::move(entity_body));
+    request.SetHttpBody(std::move(entity_body));
 
     // FIXME: a reasonable choice, but not in the spec; should it give a
     // default?
@@ -154,12 +151,10 @@ class BeaconFormData final : public Beacon {
                     entity_body_->Boundary().data();
   }
 
-  unsigned long long size() const override {
-    return entity_body_->SizeInBytes();
-  }
+  uint64_t size() const override { return entity_body_->SizeInBytes(); }
 
   void Serialize(ResourceRequest& request) const override {
-    request.SetHTTPBody(entity_body_.get());
+    request.SetHttpBody(entity_body_.get());
     request.SetHTTPContentType(content_type_);
   }
 
@@ -177,15 +172,15 @@ bool SendBeaconCommon(LocalFrame* frame,
   if (!frame->GetDocument())
     return false;
 
-  if (!ContentSecurityPolicy::ShouldBypassMainWorld(frame->GetDocument()) &&
-      !frame->GetDocument()->GetContentSecurityPolicy()->AllowConnectToSource(
-          url)) {
+  if (!frame->GetDocument()
+           ->GetContentSecurityPolicyForWorld()
+           ->AllowConnectToSource(url)) {
     // We're simulating a network failure here, so we return 'true'.
     return true;
   }
 
   ResourceRequest request(url);
-  request.SetHTTPMethod(http_names::kPOST);
+  request.SetHttpMethod(http_names::kPOST);
   request.SetKeepalive(true);
   request.SetRequestContext(mojom::RequestContextType::BEACON);
   beacon.Serialize(request);
@@ -215,17 +210,17 @@ void PingLoader::SendLinkAuditPing(LocalFrame* frame,
     return;
 
   ResourceRequest request(ping_url);
-  request.SetHTTPMethod(http_names::kPOST);
+  request.SetHttpMethod(http_names::kPOST);
   request.SetHTTPContentType("text/ping");
-  request.SetHTTPBody(EncodedFormData::Create("PING"));
-  request.SetHTTPHeaderField(http_names::kCacheControl, "max-age=0");
-  request.SetHTTPHeaderField(http_names::kPingTo,
+  request.SetHttpBody(EncodedFormData::Create("PING"));
+  request.SetHttpHeaderField(http_names::kCacheControl, "max-age=0");
+  request.SetHttpHeaderField(http_names::kPingTo,
                              AtomicString(destination_url.GetString()));
   scoped_refptr<const SecurityOrigin> ping_origin =
       SecurityOrigin::Create(ping_url);
   if (ProtocolIs(frame->GetDocument()->Url().GetString(), "http") ||
       frame->GetDocument()->GetSecurityOrigin()->CanAccess(ping_origin.get())) {
-    request.SetHTTPHeaderField(
+    request.SetHttpHeaderField(
         http_names::kPingFrom,
         AtomicString(frame->GetDocument()->Url().GetString()));
   }
@@ -246,25 +241,16 @@ void PingLoader::SendLinkAuditPing(LocalFrame* frame,
 
 void PingLoader::SendViolationReport(LocalFrame* frame,
                                      const KURL& report_url,
-                                     scoped_refptr<EncodedFormData> report,
-                                     ViolationReportType type) {
+                                     scoped_refptr<EncodedFormData> report) {
   ResourceRequest request(report_url);
-  request.SetHTTPMethod(http_names::kPOST);
-  switch (type) {
-    case kContentSecurityPolicyViolationReport:
-      request.SetHTTPContentType("application/csp-report");
-      break;
-    case kXSSAuditorViolationReport:
-      request.SetHTTPContentType("application/xss-auditor-report");
-      break;
-  }
+  request.SetHttpMethod(http_names::kPOST);
+  request.SetHTTPContentType("application/csp-report");
   request.SetKeepalive(true);
-  request.SetHTTPBody(std::move(report));
-  request.SetFetchCredentialsMode(
-      network::mojom::FetchCredentialsMode::kSameOrigin);
+  request.SetHttpBody(std::move(report));
+  request.SetCredentialsMode(network::mojom::CredentialsMode::kSameOrigin);
   request.SetRequestContext(mojom::RequestContextType::CSP_REPORT);
   request.SetRequestorOrigin(frame->GetDocument()->GetSecurityOrigin());
-  request.SetFetchRedirectMode(network::mojom::FetchRedirectMode::kError);
+  request.SetRedirectMode(network::mojom::RedirectMode::kError);
   FetchParameters params(request);
   params.MutableOptions().initiator_info.name =
       fetch_initiator_type_names::kViolationreport;

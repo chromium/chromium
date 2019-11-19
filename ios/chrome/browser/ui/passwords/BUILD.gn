@@ -1,0 +1,30 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("passwords") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "password_breach_action_handler.h",
+    "password_breach_consumer.h",
+    "password_breach_coordinator.h",
+    "password_breach_coordinator.mm",
+    "password_breach_mediator.h",
+    "password_breach_mediator.mm",
+    "password_breach_view_controller.h",
+    "password_breach_view_controller.mm",
+  ]
+  deps = [
+    "resources",
+    "//base",
+    "//components/password_manager/core/browser",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/browser/ui/util",
+    "//ios/chrome/common/colors",
+    "//ios/chrome/common/ui_util",
+    "//ui/base",
+  ]
+  libs = [ "UIKit.framework" ]
+}

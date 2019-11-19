@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "content/renderer/media/audio/audio_device_factory.h"
@@ -33,7 +33,7 @@ int MockFrameIdFromCurrentContext() {
 
 media::AudioParameters MockGetOutputDeviceParameters(
     int frame_id,
-    int session_id,
+    const base::UnguessableToken& session_id,
     const std::string& device_id) {
   return media::AudioParameters(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
                                 media::CHANNEL_LAYOUT_STEREO,
@@ -47,7 +47,7 @@ class RendererWebAudioDeviceImplUnderTest : public RendererWebAudioDeviceImpl {
       int channels,
       const blink::WebAudioLatencyHint& latency_hint,
       blink::WebAudioDevice::RenderCallback* callback,
-      int session_id)
+      const base::UnguessableToken& session_id)
       : RendererWebAudioDeviceImpl(layout,
                                    channels,
                                    latency_hint,
@@ -69,7 +69,8 @@ class RendererWebAudioDeviceImplTest
 
   void SetupDevice(blink::WebAudioLatencyHint latencyHint) {
     webaudio_device_.reset(new RendererWebAudioDeviceImplUnderTest(
-        media::CHANNEL_LAYOUT_MONO, 1, latencyHint, this, 0));
+        media::CHANNEL_LAYOUT_MONO, 1, latencyHint, this,
+        base::UnguessableToken()));
     webaudio_device_->SetMediaTaskRunnerForTesting(
         blink::scheduler::GetSingleThreadTaskRunnerForTesting());
   }
@@ -79,7 +80,7 @@ class RendererWebAudioDeviceImplTest
         layout, channels,
         blink::WebAudioLatencyHint(
             blink::WebAudioLatencyHint::kCategoryInteractive),
-        this, 0));
+        this, base::UnguessableToken()));
     webaudio_device_->SetMediaTaskRunnerForTesting(
         blink::scheduler::GetSingleThreadTaskRunnerForTesting());
   }
@@ -95,12 +96,12 @@ class RendererWebAudioDeviceImplTest
                                               base::TimeDelta));
   MOCK_METHOD3(CreateSwitchableAudioRendererSink,
                scoped_refptr<media::SwitchableAudioRendererSink>(
-                   SourceType,
+                   blink::WebAudioDeviceSourceType,
                    int,
                    const media::AudioSinkParameters&));
 
   scoped_refptr<media::AudioRendererSink> CreateAudioRendererSink(
-      SourceType source_type,
+      blink::WebAudioDeviceSourceType source_type,
       int render_frame_id,
       const media::AudioSinkParameters& params) override {
     scoped_refptr<media::MockAudioRendererSink> mock_sink =
@@ -119,7 +120,7 @@ class RendererWebAudioDeviceImplTest
   void TearDown() override { webaudio_device_.reset(); }
 
   std::unique_ptr<RendererWebAudioDeviceImpl> webaudio_device_;
-  base::test::ScopedTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
 TEST_F(RendererWebAudioDeviceImplTest, ChannelLayout) {

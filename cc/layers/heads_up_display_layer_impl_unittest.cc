@@ -9,6 +9,7 @@
 #include "cc/test/fake_impl_task_runner_provider.h"
 #include "cc/test/fake_layer_tree_frame_sink.h"
 #include "cc/test/fake_layer_tree_host_impl.h"
+#include "cc/test/layer_tree_impl_test_base.h"
 #include "cc/test/test_task_graph_runner.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -39,71 +40,55 @@ void CheckDrawLayer(HeadsUpDisplayLayerImpl* layer,
   EXPECT_EQ(0u, data.num_incomplete_tiles);
 }
 
-TEST(HeadsUpDisplayLayerImplTest, ResourcelessSoftwareDrawAfterResourceLoss) {
-  FakeImplTaskRunnerProvider task_runner_provider;
-  TestTaskGraphRunner task_graph_runner;
-  std::unique_ptr<LayerTreeFrameSink> layer_tree_frame_sink =
-      FakeLayerTreeFrameSink::Create3d();
-  FakeLayerTreeHostImpl host_impl(&task_runner_provider, &task_graph_runner);
-  host_impl.CreatePendingTree();
-  host_impl.SetVisible(true);
-  host_impl.InitializeFrameSink(layer_tree_frame_sink.get());
-  std::unique_ptr<HeadsUpDisplayLayerImpl> layer_ptr =
-      HeadsUpDisplayLayerImpl::Create(host_impl.pending_tree(), 1);
-  layer_ptr->SetBounds(gfx::Size(100, 100));
-  layer_ptr->set_visible_layer_rect(gfx::Rect(100, 100));
+class HeadsUpDisplayLayerImplTest : public LayerTreeImplTestBase,
+                                    public ::testing::Test {};
 
-  HeadsUpDisplayLayerImpl* layer = layer_ptr.get();
+TEST_F(HeadsUpDisplayLayerImplTest, ResourcelessSoftwareDrawAfterResourceLoss) {
+  host_impl()->CreatePendingTree();
+  auto* root = EnsureRootLayerInPendingTree();
+  auto* layer = AddLayerInPendingTree<HeadsUpDisplayLayerImpl>();
+  layer->SetBounds(gfx::Size(100, 100));
+  layer->set_visible_layer_rect(gfx::Rect(100, 100));
+  CopyProperties(root, layer);
 
-  host_impl.pending_tree()->SetRootLayerForTesting(std::move(layer_ptr));
-  host_impl.pending_tree()->BuildLayerListAndPropertyTreesForTesting();
+  UpdatePendingTreeDrawProperties();
 
   // Check regular hardware draw is ok.
-  CheckDrawLayer(layer, host_impl.layer_tree_frame_sink(),
-                 host_impl.resource_provider(),
-                 layer_tree_frame_sink->context_provider(), DRAW_MODE_HARDWARE);
+  CheckDrawLayer(layer, layer_tree_frame_sink(), resource_provider(),
+                 layer_tree_frame_sink()->context_provider(),
+                 DRAW_MODE_HARDWARE);
 
   // Simulate a resource loss on transitioning to resourceless software mode.
   layer->ReleaseResources();
 
   // Should skip resourceless software draw and not crash in UpdateHudTexture.
-  CheckDrawLayer(layer, host_impl.layer_tree_frame_sink(),
-                 host_impl.resource_provider(),
-                 layer_tree_frame_sink->context_provider(),
+  CheckDrawLayer(layer, layer_tree_frame_sink(), resource_provider(),
+                 layer_tree_frame_sink()->context_provider(),
                  DRAW_MODE_RESOURCELESS_SOFTWARE);
 }
 
-TEST(HeadsUpDisplayLayerImplTest, CPUAndGPURasterCanvas) {
-  FakeImplTaskRunnerProvider task_runner_provider;
-  TestTaskGraphRunner task_graph_runner;
-  std::unique_ptr<LayerTreeFrameSink> layer_tree_frame_sink =
-      FakeLayerTreeFrameSink::Create3d();
-  FakeLayerTreeHostImpl host_impl(&task_runner_provider, &task_graph_runner);
-  host_impl.CreatePendingTree();
-  host_impl.SetVisible(true);
-  host_impl.InitializeFrameSink(layer_tree_frame_sink.get());
-  std::unique_ptr<HeadsUpDisplayLayerImpl> layer_ptr =
-      HeadsUpDisplayLayerImpl::Create(host_impl.pending_tree(), 1);
-  layer_ptr->SetBounds(gfx::Size(100, 100));
-  layer_ptr->set_visible_layer_rect(gfx::Rect(100, 100));
+TEST_F(HeadsUpDisplayLayerImplTest, CPUAndGPURasterCanvas) {
+  host_impl()->CreatePendingTree();
+  auto* root = EnsureRootLayerInPendingTree();
+  auto* layer = AddLayerInPendingTree<HeadsUpDisplayLayerImpl>();
+  layer->SetBounds(gfx::Size(100, 100));
+  CopyProperties(root, layer);
 
-  HeadsUpDisplayLayerImpl* layer = layer_ptr.get();
-
-  host_impl.pending_tree()->SetRootLayerForTesting(std::move(layer_ptr));
-  host_impl.pending_tree()->BuildLayerListAndPropertyTreesForTesting();
+  UpdatePendingTreeDrawProperties();
 
   // Check Ganesh canvas drawing is ok.
-  CheckDrawLayer(layer, host_impl.layer_tree_frame_sink(),
-                 host_impl.resource_provider(),
-                 layer_tree_frame_sink->context_provider(), DRAW_MODE_HARDWARE);
+  CheckDrawLayer(layer, layer_tree_frame_sink(), resource_provider(),
+                 layer_tree_frame_sink()->context_provider(),
+                 DRAW_MODE_HARDWARE);
 
-  host_impl.ReleaseLayerTreeFrameSink();
-  layer_tree_frame_sink = FakeLayerTreeFrameSink::CreateSoftware();
-  host_impl.InitializeFrameSink(layer_tree_frame_sink.get());
+  host_impl()->ReleaseLayerTreeFrameSink();
+  auto layer_tree_frame_sink = FakeLayerTreeFrameSink::CreateSoftware();
+  host_impl()->InitializeFrameSink(layer_tree_frame_sink.get());
 
   // Check SW canvas drawing is ok.
-  CheckDrawLayer(layer, host_impl.layer_tree_frame_sink(),
-                 host_impl.resource_provider(), nullptr, DRAW_MODE_SOFTWARE);
+  CheckDrawLayer(layer, layer_tree_frame_sink.get(), resource_provider(),
+                 nullptr, DRAW_MODE_SOFTWARE);
+  host_impl()->ReleaseLayerTreeFrameSink();
 }
 
 }  // namespace

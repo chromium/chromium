@@ -20,13 +20,13 @@ using HeightStorage = std::map<HCURSOR, int>;
 
 const uint32_t kBitsPeruint32 = sizeof(uint32_t) * 8;
 // All bits are 1 for transparent portion of monochromatic mask.
-const uint32_t kTransparentMask = 0xffffffff;
+constexpr uint32_t kTransparentMask = 0xffffffff;
 // This is height of default pointer arrow in Windows 7.
-const int kDefaultHeight = 20;
+constexpr int kDefaultHeight = 20;
 // Masks are monochromatic.
-const size_t kNumberOfColors = 2;
-const size_t KHeaderAndPalette =
-      sizeof(BITMAPINFOHEADER) + kNumberOfColors * sizeof(RGBQUAD);
+constexpr size_t kNumberOfColors = 2;
+const size_t kHeaderAndPalette =
+    sizeof(BITMAPINFOHEADER) + kNumberOfColors * sizeof(RGBQUAD);
 
 HeightStorage* cached_heights = nullptr;
 
@@ -40,10 +40,11 @@ PixelData GetBitmapData(HBITMAP handle, const BITMAPINFO& info, HDC hdc) {
 
   // When getting pixel data palette is appended to memory pointed by
   // BITMAPINFO passed so allocate additional memory to store additional data.
-  std::unique_ptr<char[]> header(new char[KHeaderAndPalette]);
+  auto header = std::make_unique<char[]>(kHeaderAndPalette);
   memcpy(header.get(), &(info.bmiHeader), sizeof(info.bmiHeader));
 
-  data.reset(new uint32_t[info.bmiHeader.biSizeImage / sizeof(uint32_t)]);
+  data = std::make_unique<uint32_t[]>(info.bmiHeader.biSizeImage /
+                                      sizeof(uint32_t));
 
   int result = GetDIBits(hdc,
                          handle,
@@ -79,15 +80,15 @@ bool IsRowTransparent(const PixelData& data,
 // Based on that get's what should be the vertical offset between cursor's
 // hot point and the tooltip.
 int CalculateCursorHeight(HCURSOR cursor_handle) {
-  base::win::ScopedGetDC hdc(NULL);
+  base::win::ScopedGetDC hdc(nullptr);
 
   ICONINFO icon = {0};
   GetIconInfo(cursor_handle, &icon);
 
   BITMAPINFO bitmap_info = {};
   bitmap_info.bmiHeader.biSize = sizeof(bitmap_info.bmiHeader);
-  if (GetDIBits(hdc, icon.hbmMask, 0, 0, NULL, &bitmap_info, DIB_RGB_COLORS) ==
-      0)
+  if (GetDIBits(hdc, icon.hbmMask, 0, 0, nullptr, &bitmap_info,
+                DIB_RGB_COLORS) == 0)
     return kDefaultHeight;
 
   // Rows are padded to full DWORDs. OR with this mask will set them to 1
@@ -103,7 +104,7 @@ int CalculateCursorHeight(HCURSOR cursor_handle) {
   const uint32_t row_size =
       (bitmap_info.bmiHeader.biWidth + kBitsPeruint32 - 1) / kBitsPeruint32;
   PixelData data(GetBitmapData(icon.hbmMask, bitmap_info, hdc));
-  if (data == NULL)
+  if (data == nullptr)
     return kDefaultHeight;
 
   // There are 2 types of cursors: Ones that cover the area underneath
@@ -160,7 +161,7 @@ int GetCurrentCursorVisibleHeight() {
   cursor.cbSize = sizeof(cursor);
   GetCursorInfo(&cursor);
 
-  if (cached_heights == NULL)
+  if (cached_heights == nullptr)
     cached_heights = new HeightStorage;
 
   HeightStorage::const_iterator cached_height =

@@ -12,11 +12,14 @@
 #import "ios/chrome/browser/snapshots/snapshot_cache_factory.h"
 #import "ios/chrome/browser/ui/image_util/image_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/web/tab_id_tab_helper.h"
 #import "ios/web/public/test/fakes/test_web_state.h"
-#include "ios/web/public/test/test_web_thread_bundle.h"
+#include "ios/web/public/test/web_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
 #include "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 #include "ui/base/test/ios/ui_image_test_utils.h"
 #include "ui/gfx/image/image.h"
 
@@ -131,7 +134,7 @@ class SnapshotTabHelperTest : public PlatformTest {
   }
 
  protected:
-  web::TestWebThreadBundle thread_bundle_;
+  web::WebTaskEnvironment task_environment_;
   std::unique_ptr<ios::ChromeBrowserState> browser_state_;
   TabHelperSnapshotGeneratorDelegate* delegate_ = nil;
   NSString* snapshot_session_id_ = nil;
@@ -336,4 +339,26 @@ TEST_F(SnapshotTabHelperTest, RemoveSnapshot) {
   SnapshotTabHelper::FromWebState(&web_state_)->RemoveSnapshot();
 
   ASSERT_FALSE(GetCachedSnapshot());
+}
+
+TEST_F(SnapshotTabHelperTest, ClosingWebStateDoesNotRemoveSnapshot) {
+  id partialMock = OCMPartialMock(
+      SnapshotCacheFactory::GetForBrowserState(browser_state_.get()));
+  std::unique_ptr<web::WebState> web_state =
+      std::make_unique<web::TestWebState>();
+  TabIdTabHelper::CreateForWebState(web_state.get());
+
+  NSString* tab_id = TabIdTabHelper::FromWebState(web_state.get())->tab_id();
+  SnapshotTabHelper::CreateForWebState(web_state.get(), tab_id);
+  [[partialMock reject] removeImageWithSessionID:tab_id];
+
+  // Use @try/@catch as -reject raises an exception.
+  @try {
+    web_state.reset();
+    EXPECT_OCMOCK_VERIFY(partialMock);
+  } @catch (NSException* exception) {
+    // The exception is raised when -removeImageWithSessionID: is invoked. As
+    // this should not happen, mark the test as failed.
+    GTEST_FAIL();
+  }
 }

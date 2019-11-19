@@ -8,9 +8,11 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "ash/public/cpp/presentation_time_recorder.h"
 #include "ash/wm/drag_details.h"
 #include "ash/wm/window_state.h"
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "ui/wm/public/window_move_client.h"
 
 namespace aura {
@@ -42,7 +44,7 @@ class ASH_EXPORT WindowResizer {
   static const int kBoundsChangeDirection_Horizontal;
   static const int kBoundsChangeDirection_Vertical;
 
-  explicit WindowResizer(wm::WindowState* window_state);
+  explicit WindowResizer(WindowState* window_state);
   virtual ~WindowResizer();
 
   // Returns a bitmask of the kBoundsChange_ values.
@@ -81,8 +83,12 @@ class ASH_EXPORT WindowResizer {
 
   static bool IsBottomEdge(int component);
 
+  // Call during an active resize to change the bounds of the window. This
+  // should not be called as the result of a revert.
+  void SetBoundsDuringResize(const gfx::Rect& bounds);
+
   // WindowState of the drag target.
-  wm::WindowState* window_state_;
+  WindowState* window_state_;
 
  private:
   // In case of touch resizing, adjusts deltas so that the border is positioned
@@ -105,6 +111,10 @@ class ASH_EXPORT WindowResizer {
   // Updates |new_bounds| to adhere to the aspect ratio.
   void CalculateBoundsWithAspectRatio(float aspect_ratio,
                                       gfx::Rect* new_bounds);
+
+  std::unique_ptr<PresentationTimeRecorder> recorder_;
+
+  base::WeakPtrFactory<WindowResizer> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(WindowResizer);
 };

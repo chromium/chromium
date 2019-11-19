@@ -161,6 +161,16 @@ PDFiumEngineExports::PDFiumEngineExports() {}
 
 PDFiumEngineExports::~PDFiumEngineExports() {}
 
+#if defined(OS_CHROMEOS)
+std::vector<uint8_t> PDFiumEngineExports::CreateFlattenedPdf(
+    base::span<const uint8_t> input_buffer) {
+  ScopedFPDFDocument doc = LoadPdfData(input_buffer);
+  if (!doc)
+    return std::vector<uint8_t>();
+  return PDFiumPrint::CreateFlattenedPdf(std::move(doc));
+}
+#endif  // defined(OS_CHROMEOS)
+
 #if defined(OS_WIN)
 bool PDFiumEngineExports::RenderPDFPageToDC(
     base::span<const uint8_t> pdf_buffer,

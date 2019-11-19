@@ -11,21 +11,13 @@ namespace views {
 // position will be used if base::i18n:IsRTL() is true. The BUBBLE flags are
 // used when the menu should get enclosed by a bubble. The Fixed flags are
 // used for the menus that have a fixed anchor position.
-enum MenuAnchorPosition {
-  MENU_ANCHOR_TOPLEFT,
-  MENU_ANCHOR_TOPRIGHT,
-  MENU_ANCHOR_BOTTOMCENTER,
-  MENU_ANCHOR_FIXED_BOTTOMCENTER,
-  MENU_ANCHOR_FIXED_SIDECENTER,
-  MENU_ANCHOR_BUBBLE_LEFT,
-  MENU_ANCHOR_BUBBLE_RIGHT,
-  MENU_ANCHOR_BUBBLE_ABOVE,
-  MENU_ANCHOR_BUBBLE_BELOW,
-  MENU_ANCHOR_BUBBLE_TOUCHABLE_ABOVE,
-  MENU_ANCHOR_BUBBLE_TOUCHABLE_LEFT,
-  MENU_ANCHOR_BUBBLE_TOUCHABLE_RIGHT,
-  // Keep this the last item.
-  MENU_ANCHOR_POSITION_LAST
+enum class MenuAnchorPosition {
+  kTopLeft,
+  kTopRight,
+  kBottomCenter,
+  kBubbleAbove,
+  kBubbleLeft,
+  kBubbleRight,
 };
 
 }  // namespace views

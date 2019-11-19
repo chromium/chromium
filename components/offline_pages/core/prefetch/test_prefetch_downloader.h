@@ -39,13 +39,19 @@ class TestPrefetchDownloader : public PrefetchDownloader {
                            const base::FilePath& file_path,
                            int64_t file_size) override;
   void OnDownloadFailed(const std::string& download_id) override;
+  int GetMaxConcurrentDownloads() override;
 
   void Reset();
 
   const RequestMap& requested_downloads() const { return requested_downloads_; }
 
+  void SetMaxConcurrentDownloads(int max_concurrent_downloads) {
+    max_concurrent_downloads_ = max_concurrent_downloads;
+  }
+
  private:
   RequestMap requested_downloads_;
+  int max_concurrent_downloads_ = 4;
 };
 
 }  // namespace offline_pages

@@ -2,18 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/os_crypt/key_storage_keyring.h"
+
 #include <cstdarg>  // Needed to mock ellipsis
 #include <string>
 
 #include "base/macros.h"
 #include "base/test/test_simple_task_runner.h"
-#include "components/os_crypt/key_storage_keyring.h"
+#include "build/branding_buildflags.h"
 #include "components/os_crypt/keyring_util_linux.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
 
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 const char kApplicationName[] = "chrome";
 #else
 const char kApplicationName[] = "chromium";

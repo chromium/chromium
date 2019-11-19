@@ -1,0 +1,26 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Background Sync API: Don't crash while stopping service worker.</title>
+<script src="../../resources/permissions-helper.js"></script>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../serviceworker/resources/test-helpers.js"></script>
+<script>
+promise_test(function(t) {
+  var url = 'resources/stop-worker-no-crash-worker.js';
+  var scope = 'resources/stop-worker-no-crash-iframe.html';
+  var registration;
+
+  return PermissionsHelper.setPermission('background-sync', 'granted')
+    .then(_ =>  service_worker_unregister_and_register(t, url, scope))
+    .then(reg => {
+        registration = reg;
+        return wait_for_state(t, registration.installing, 'activated');
+      })
+    .then(_ => registration.sync.register('iframe-oneshot'))
+    .then(_ => internals.terminateServiceWorker(registration.active))
+    .then(_ => with_iframe(scope)) // Check the sanity of the SW.
+    .then(_ => service_worker_unregister(t, scope));
+  }, 'Background Sync API with registered one-shot sync tasks should not '+
+     ' cause crashes while stopping service worker');
+</script>

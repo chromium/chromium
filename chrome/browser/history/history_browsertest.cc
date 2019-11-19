@@ -11,6 +11,7 @@
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind_test_util.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -39,17 +40,10 @@
 
 using content::BrowserThread;
 
-namespace {
-
-const base::FilePath::CharType kDocRoot[] =
-    FILE_PATH_LITERAL("chrome/test/data");
-
-}  // namespace
-
 class HistoryBrowserTest : public InProcessBrowserTest {
  protected:
   HistoryBrowserTest() : test_server_() {
-    test_server_.ServeFilesFromSourceDirectory(base::FilePath(kDocRoot));
+    test_server_.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
   }
 
   void SetUpOnMainThread() override {
@@ -95,34 +89,29 @@ class HistoryBrowserTest : public InProcessBrowserTest {
     LoadAndWaitForURL(url);
   }
 
-  bool HistoryContainsURL(const GURL& url) {
-    base::RunLoop run_loop;
-    bool success = false;
-    base::CancelableTaskTracker tracker;
-    HistoryServiceFactory::GetForProfile(browser()->profile(),
-                                         ServiceAccessType::EXPLICIT_ACCESS)
-        ->QueryURL(url, true,
-                   base::BindOnce(&HistoryBrowserTest::SaveResultAndQuit,
-                                  base::Unretained(this), &success, nullptr,
-                                  run_loop.QuitClosure()),
-                   &tracker);
-    run_loop.Run();
-    return success;
-  }
+  bool HistoryContainsURL(const GURL& url) { return QueryURL(url).success; }
 
   history::URLRow LookUpURLInHistory(const GURL& url) {
+    return QueryURL(url).row;
+  }
+
+  history::QueryURLResult QueryURL(const GURL& url) {
+    history::QueryURLResult query_url_result;
+
     base::RunLoop run_loop;
-    history::URLRow row;
     base::CancelableTaskTracker tracker;
     HistoryServiceFactory::GetForProfile(browser()->profile(),
                                          ServiceAccessType::EXPLICIT_ACCESS)
-        ->QueryURL(url, true,
-                   base::BindOnce(&HistoryBrowserTest::SaveResultAndQuit,
-                                  base::Unretained(this), nullptr, &row,
-                                  run_loop.QuitClosure()),
-                   &tracker);
+        ->QueryURL(
+            url, true,
+            base::BindLambdaForTesting([&](history::QueryURLResult result) {
+              query_url_result = std::move(result);
+              run_loop.Quit();
+            }),
+            &tracker);
     run_loop.Run();
-    return row;
+
+    return query_url_result;
   }
 
  private:
@@ -428,7 +417,7 @@ class RenderFrameHostGrabber : public content::WebContentsObserver {
       content::NavigationHandle* navigation_handle) override {
     if (navigation_handle->GetURL() == url_) {
       render_frame_host_ = navigation_handle->GetRenderFrameHost();
-      run_loop_.QuitClosure().Run();
+      run_loop_.Quit();
     }
   }
 
@@ -625,6 +614,67 @@ IN_PROC_BROWSER_TEST_F(HistoryBrowserTest, PushStateSetsTitle) {
   EXPECT_EQ(title, row0.title());
   history::URLRow row1 = LookUpURLInHistory(urls[1]);
   EXPECT_EQ(title, row1.title());
+}
+
+// Ensure that commits unrelated to the pending entry do not cause incorrect
+// updates to history.
+IN_PROC_BROWSER_TEST_F(HistoryBrowserTest, BeforeUnloadCommitDuringPending) {
+  // Use the default embedded_test_server() for this test because replaceState
+  // requires a real, non-file URL.
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url1(embedded_test_server()->GetURL("foo.com", "/title3.html"));
+  ui_test_utils::NavigateToURL(browser(), url1);
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  base::string16 title1 = web_contents->GetTitle();
+
+  // Create a beforeunload handler that does a replaceState during navigation,
+  // unrelated to the destination URL (similar to Twitter).
+  ASSERT_TRUE(content::ExecuteScript(web_contents,
+                                     "window.onbeforeunload = function() {"
+                                     "history.replaceState({},'','test.html');"
+                                     "};"));
+  GURL url2(embedded_test_server()->GetURL("foo.com", "/test.html"));
+
+  // Start a cross-site navigation to trigger the beforeunload, but don't let
+  // the new URL commit yet.
+  GURL url3(embedded_test_server()->GetURL("bar.com", "/title2.html"));
+  content::TestNavigationManager manager(web_contents, url3);
+  web_contents->GetController().LoadURL(
+      url3, content::Referrer(), ui::PAGE_TRANSITION_LINK, std::string());
+  EXPECT_TRUE(manager.WaitForRequestStart());
+
+  // The beforeunload commit should happen before request start, which should
+  // result in two history entries, with the newest in index 0. urls[0] was
+  // incorrectly url3 in https://crbug.com/956208.
+  {
+    std::vector<GURL> urls(GetHistoryContents());
+    ASSERT_EQ(2u, urls.size());
+    EXPECT_EQ(url2, urls[0]);
+    EXPECT_EQ(url1, urls[1]);
+  }
+
+  // After the pending navigation commits and the new title arrives, there
+  // should be another row with the new URL and title.
+  manager.WaitForNavigationFinished();
+  content::WaitForLoadStop(web_contents);
+  base::string16 title3 = web_contents->GetTitle();
+  EXPECT_NE(title1, title3);
+  {
+    std::vector<GURL> urls(GetHistoryContents());
+    ASSERT_EQ(3u, urls.size());
+    EXPECT_EQ(url3, urls[0]);
+    history::URLRow row0 = LookUpURLInHistory(urls[0]);
+    EXPECT_EQ(title3, row0.title());
+
+    EXPECT_EQ(url2, urls[1]);
+    history::URLRow row1 = LookUpURLInHistory(urls[1]);
+    EXPECT_EQ(title1, row1.title());
+
+    EXPECT_EQ(url1, urls[2]);
+    history::URLRow row2 = LookUpURLInHistory(urls[2]);
+    EXPECT_EQ(title1, row2.title());
+  }
 }
 
 // Verify that submitting form adds target page to history list.

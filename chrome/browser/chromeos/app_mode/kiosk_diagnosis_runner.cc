@@ -66,8 +66,7 @@ void KioskDiagnosisRunner::Run(Profile* profile,
 }
 
 KioskDiagnosisRunner::KioskDiagnosisRunner(Profile* profile)
-    : profile_(profile),
-      weak_factory_(this) {}
+    : profile_(profile) {}
 
 KioskDiagnosisRunner::~KioskDiagnosisRunner() {}
 
@@ -75,7 +74,7 @@ void KioskDiagnosisRunner::Start(const std::string& app_id) {
   app_id_ = app_id;
 
   // Schedules system logs to be collected after 1 minute.
-  base::PostDelayedTaskWithTraits(
+  base::PostDelayedTask(
       FROM_HERE, {content::BrowserThread::UI},
       base::BindOnce(&KioskDiagnosisRunner::StartSystemLogCollection,
                      weak_factory_.GetWeakPtr()),

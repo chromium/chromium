@@ -8,13 +8,13 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_executor.h"
 #include "base/test/test_support_android.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "jni/MojoTestRule_jni.h"
 #include "mojo/core/embedder/embedder.h"
+#include "mojo/public/java/system/jni_headers/MojoTestRule_jni.h"
 
 using base::android::JavaParamRef;
 
@@ -24,7 +24,7 @@ struct TestEnvironment {
   TestEnvironment() {}
 
   base::ShadowingAtExitManager at_exit;
-  base::MessageLoop message_loop;
+  base::SingleThreadTaskExecutor main_task_executor;
 };
 
 }  // namespace

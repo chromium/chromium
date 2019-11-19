@@ -109,7 +109,7 @@ public final class DownloadForegroundServiceManagerTest {
     }
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         Looper.prepare();
 
         mContext = new AdvancedMockContext(InstrumentationRegistry.getTargetContext());

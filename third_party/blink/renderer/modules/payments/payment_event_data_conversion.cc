@@ -4,8 +4,7 @@
 
 #include "third_party/blink/renderer/modules/payments/payment_event_data_conversion.h"
 
-#include "third_party/blink/public/platform/modules/payments/web_payment_method_data.h"
-#include "third_party/blink/public/platform/modules/payments/web_payment_request_event_data.h"
+#include "third_party/blink/public/mojom/payments/payment_app.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_for_core.h"
 #include "third_party/blink/renderer/modules/payments/can_make_payment_event_init.h"
 #include "third_party/blink/renderer/modules/payments/payment_currency_amount.h"
@@ -19,37 +18,41 @@ namespace blink {
 namespace {
 
 PaymentCurrencyAmount* ToPaymentCurrencyAmount(
-    const WebPaymentCurrencyAmount& web_amount) {
+    payments::mojom::blink::PaymentCurrencyAmountPtr data) {
   PaymentCurrencyAmount* amount = PaymentCurrencyAmount::Create();
-  amount->setCurrency(web_amount.currency);
-  amount->setValue(web_amount.value);
+  if (!data)
+    return amount;
+  amount->setCurrency(data->currency);
+  amount->setValue(data->value);
   return amount;
 }
 
-PaymentItem* ToPaymentItem(const WebPaymentItem& web_item) {
+PaymentItem* ToPaymentItem(payments::mojom::blink::PaymentItemPtr data) {
   PaymentItem* item = PaymentItem::Create();
-  item->setLabel(web_item.label);
-  item->setAmount(ToPaymentCurrencyAmount(web_item.amount));
-  item->setPending(web_item.pending);
+  if (!data)
+    return item;
+  item->setLabel(data->label);
+  item->setAmount(ToPaymentCurrencyAmount(std::move(data->amount)));
+  item->setPending(data->pending);
   return item;
 }
 
 PaymentDetailsModifier* ToPaymentDetailsModifier(
     ScriptState* script_state,
-    const WebPaymentDetailsModifier& web_modifier) {
+    payments::mojom::blink::PaymentDetailsModifierPtr data) {
+  DCHECK(data);
   PaymentDetailsModifier* modifier = PaymentDetailsModifier::Create();
-  modifier->setSupportedMethod(web_modifier.supported_method);
-  modifier->setTotal(ToPaymentItem(web_modifier.total));
+  modifier->setSupportedMethod(data->method_data->supported_method);
+  modifier->setTotal(ToPaymentItem(std::move(data->total)));
   HeapVector<Member<PaymentItem>> additional_display_items;
-  for (const auto& web_item : web_modifier.additional_display_items) {
-    additional_display_items.push_back(ToPaymentItem(web_item));
-  }
+  for (auto& item : data->additional_display_items)
+    additional_display_items.push_back(ToPaymentItem(std::move(item)));
   modifier->setAdditionalDisplayItems(additional_display_items);
   return modifier;
 }
 
 ScriptValue StringDataToScriptValue(ScriptState* script_state,
-                                    const WebString& stringified_data) {
+                                    const String& stringified_data) {
   if (!script_state->ContextIsValid())
     return ScriptValue();
 
@@ -60,74 +63,134 @@ ScriptValue StringDataToScriptValue(ScriptState* script_state,
            .ToLocal(&v8_value)) {
     return ScriptValue();
   }
-  return ScriptValue(script_state, v8_value);
+  return ScriptValue(script_state->GetIsolate(), v8_value);
 }
 
 PaymentMethodData* ToPaymentMethodData(
     ScriptState* script_state,
-    const WebPaymentMethodData& web_method_data) {
+    payments::mojom::blink::PaymentMethodDataPtr data) {
+  DCHECK(data);
   PaymentMethodData* method_data = PaymentMethodData::Create();
-  method_data->setSupportedMethod(web_method_data.supported_method);
+  method_data->setSupportedMethod(data->supported_method);
   method_data->setData(
-      StringDataToScriptValue(script_state, web_method_data.stringified_data));
+      StringDataToScriptValue(script_state, data->stringified_data));
   return method_data;
+}
+
+PaymentOptions* ToPaymentOptions(
+    payments::mojom::blink::PaymentOptionsPtr options) {
+  DCHECK(options);
+  PaymentOptions* payment_options = PaymentOptions::Create();
+  payment_options->setRequestPayerName(options->request_payer_name);
+  payment_options->setRequestPayerEmail(options->request_payer_email);
+  payment_options->setRequestPayerPhone(options->request_payer_phone);
+  payment_options->setRequestShipping(options->request_shipping);
+
+  String shipping_type = "";
+  switch (options->shipping_type) {
+    case payments::mojom::PaymentShippingType::SHIPPING:
+      shipping_type = "shipping";
+      break;
+    case payments::mojom::PaymentShippingType::DELIVERY:
+      shipping_type = "delivery";
+      break;
+    case payments::mojom::PaymentShippingType::PICKUP:
+      shipping_type = "pickup";
+      break;
+  }
+  payment_options->setShippingType(shipping_type);
+  return payment_options;
+}
+
+PaymentShippingOption* ToShippingOption(
+    payments::mojom::blink::PaymentShippingOptionPtr option) {
+  DCHECK(option);
+  PaymentShippingOption* shipping_option = PaymentShippingOption::Create();
+
+  shipping_option->setAmount(
+      ToPaymentCurrencyAmount(std::move(option->amount)));
+  shipping_option->setLabel(option->label);
+  shipping_option->setId(option->id);
+  shipping_option->setSelected(option->selected);
+  return shipping_option;
 }
 
 }  // namespace
 
 PaymentRequestEventInit* PaymentEventDataConversion::ToPaymentRequestEventInit(
     ScriptState* script_state,
-    const WebPaymentRequestEventData& web_event_data) {
+    payments::mojom::blink::PaymentRequestEventDataPtr event_data) {
   DCHECK(script_state);
+  DCHECK(event_data);
 
-  PaymentRequestEventInit* event_data = PaymentRequestEventInit::Create();
+  PaymentRequestEventInit* event_init = PaymentRequestEventInit::Create();
   if (!script_state->ContextIsValid())
-    return event_data;
+    return event_init;
 
   ScriptState::Scope scope(script_state);
 
-  event_data->setTopOrigin(web_event_data.top_origin);
-  event_data->setPaymentRequestOrigin(web_event_data.payment_request_origin);
-  event_data->setPaymentRequestId(web_event_data.payment_request_id);
+  event_init->setTopOrigin(event_data->top_origin.GetString());
+  event_init->setPaymentRequestOrigin(
+      event_data->payment_request_origin.GetString());
+  event_init->setPaymentRequestId(event_data->payment_request_id);
   HeapVector<Member<PaymentMethodData>> method_data;
-  for (const auto& md : web_event_data.method_data) {
-    method_data.push_back(ToPaymentMethodData(script_state, md));
+  for (auto& md : event_data->method_data) {
+    method_data.push_back(ToPaymentMethodData(script_state, std::move(md)));
   }
-  event_data->setMethodData(method_data);
-  event_data->setTotal(ToPaymentCurrencyAmount(web_event_data.total));
+  event_init->setMethodData(method_data);
+  event_init->setTotal(ToPaymentCurrencyAmount(std::move(event_data->total)));
   HeapVector<Member<PaymentDetailsModifier>> modifiers;
-  for (const auto& modifier : web_event_data.modifiers) {
-    modifiers.push_back(ToPaymentDetailsModifier(script_state, modifier));
+  for (auto& modifier : event_data->modifiers) {
+    modifiers.push_back(
+        ToPaymentDetailsModifier(script_state, std::move(modifier)));
   }
-  event_data->setModifiers(modifiers);
-  event_data->setInstrumentKey(web_event_data.instrument_key);
-  return event_data;
+  event_init->setModifiers(modifiers);
+  event_init->setInstrumentKey(event_data->instrument_key);
+
+  bool request_shipping = false;
+  if (event_data->payment_options) {
+    request_shipping = event_data->payment_options->request_shipping;
+    event_init->setPaymentOptions(
+        ToPaymentOptions(std::move(event_data->payment_options)));
+  }
+  if (event_data->shipping_options.has_value() && request_shipping) {
+    HeapVector<Member<PaymentShippingOption>> shipping_options;
+    for (auto& option : event_data->shipping_options.value()) {
+      shipping_options.push_back(ToShippingOption(std::move(option)));
+    }
+    event_init->setShippingOptions(shipping_options);
+  }
+
+  return event_init;
 }
 
 CanMakePaymentEventInit* PaymentEventDataConversion::ToCanMakePaymentEventInit(
     ScriptState* script_state,
-    const WebCanMakePaymentEventData& web_event_data) {
+    payments::mojom::blink::CanMakePaymentEventDataPtr event_data) {
   DCHECK(script_state);
+  DCHECK(event_data);
 
-  CanMakePaymentEventInit* event_data = CanMakePaymentEventInit::Create();
+  CanMakePaymentEventInit* event_init = CanMakePaymentEventInit::Create();
   if (!script_state->ContextIsValid())
-    return event_data;
+    return event_init;
 
   ScriptState::Scope scope(script_state);
 
-  event_data->setTopOrigin(web_event_data.top_origin);
-  event_data->setPaymentRequestOrigin(web_event_data.payment_request_origin);
+  event_init->setTopOrigin(event_data->top_origin.GetString());
+  event_init->setPaymentRequestOrigin(
+      event_data->payment_request_origin.GetString());
   HeapVector<Member<PaymentMethodData>> method_data;
-  for (const auto& md : web_event_data.method_data) {
-    method_data.push_back(ToPaymentMethodData(script_state, md));
+  for (auto& md : event_data->method_data) {
+    method_data.push_back(ToPaymentMethodData(script_state, std::move(md)));
   }
-  event_data->setMethodData(method_data);
+  event_init->setMethodData(method_data);
   HeapVector<Member<PaymentDetailsModifier>> modifiers;
-  for (const auto& modifier : web_event_data.modifiers) {
-    modifiers.push_back(ToPaymentDetailsModifier(script_state, modifier));
+  for (auto& modifier : event_data->modifiers) {
+    modifiers.push_back(
+        ToPaymentDetailsModifier(script_state, std::move(modifier)));
   }
-  event_data->setModifiers(modifiers);
-  return event_data;
+  event_init->setModifiers(modifiers);
+  return event_init;
 }
 
 }  // namespace blink

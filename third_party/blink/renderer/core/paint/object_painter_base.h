@@ -6,8 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_OBJECT_PAINTER_BASE_H_
 
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
-#include "third_party/blink/renderer/platform/geometry/layout_rect.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -16,6 +15,7 @@ class ComputedStyle;
 class Color;
 class GraphicsContext;
 struct PaintInfo;
+struct PhysicalRect;
 
 // Base class for object painting. Has no dependencies on the layout tree and
 // thus provides functionality and definitions that can be shared between both
@@ -39,7 +39,7 @@ class ObjectPainterBase {
  protected:
   ObjectPainterBase() = default;
   void PaintOutlineRects(const PaintInfo&,
-                         const Vector<LayoutRect>&,
+                         const Vector<PhysicalRect>&,
                          const ComputedStyle&);
 };
 

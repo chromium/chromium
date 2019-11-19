@@ -38,7 +38,8 @@ document.getElementById('target').onload = function(event) {
 }
 
 window.onload = function() {
-    document.getElementById('submitButton').click();
+    if (location.search == "")
+        document.getElementById('submitButton').click();
 }
 
 if (window.testRunner)

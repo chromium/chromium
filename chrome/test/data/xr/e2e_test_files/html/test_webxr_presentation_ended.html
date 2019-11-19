@@ -1,0 +1,24 @@
+<!doctype html>
+<!--
+Tests WebXR Using OpenXR End Session correctly when XR_SESSION_STATE_STOPPING
+event received.
+-->
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="../resources/webxr_e2e.css">
+  </head>
+  <body>
+    <canvas id="webgl-canvas"></canvas>
+    <script src="../../../../../../third_party/blink/web_tests/resources/testharness.js"></script>
+    <script src="../resources/webxr_e2e.js"></script>
+    <script src="../resources/webxr_boilerplate.js"></script>
+    <script>
+      onSessionEnded = function(event) {
+        sessionInfos[getSessionType(event.session)].clearSession();
+        if (hasPresentedFrame) {
+          done();
+        }
+      }
+    </script>
+  </body>
+</html>

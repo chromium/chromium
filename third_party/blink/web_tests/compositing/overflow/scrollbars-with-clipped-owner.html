@@ -40,14 +40,11 @@
         height: 300px;
         background-color: blue;
         margin: 0px;
-        transform:translateZ(0);
+        will-change:transform;
       }
     </style>
     <script>
       function doTest() {
-        if (window.testRunner)
-          testRunner.dumpAsTextWithPixelResults();
-
         // This test succeeds if the scrollbars on the inner-scrollable
         // are positioned properly.
         var scroller = document.getElementById("outer-scrollable");

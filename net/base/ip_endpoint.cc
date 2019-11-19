@@ -181,4 +181,8 @@ bool IPEndPoint::operator==(const IPEndPoint& other) const {
   return address_ == other.address_ && port_ == other.port_;
 }
 
+bool IPEndPoint::operator!=(const IPEndPoint& that) const {
+  return !(*this == that);
+}
+
 }  // namespace net

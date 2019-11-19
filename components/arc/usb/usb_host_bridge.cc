@@ -4,22 +4,22 @@
 
 #include "components/arc/usb/usb_host_bridge.h"
 
+#include <unordered_set>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/permission_broker_client.h"
-#include "components/arc/arc_bridge_service.h"
+#include "base/strings/stringprintf.h"
+#include "chromeos/dbus/permission_broker/permission_broker_client.h"
 #include "components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "components/arc/arc_features.h"
+#include "components/arc/session/arc_bridge_service.h"
 #include "components/arc/usb/usb_host_ui_delegate.h"
-#include "device/base/device_client.h"
-#include "device/usb/mojo/type_converters.h"
-#include "device/usb/usb_device_handle.h"
-#include "device/usb/usb_device_linux.h"
+#include "content/public/browser/system_connector.h"
 #include "mojo/public/cpp/system/platform_handle.h"
+#include "services/device/public/mojom/constants.mojom.h"
+#include "services/service_manager/public/cpp/connector.h"
 
 namespace arc {
 namespace {
@@ -68,14 +68,9 @@ void OnDeviceOpenError(mojom::UsbHostHost::OpenDeviceCallback callback,
   std::move(callback).Run(mojo::ScopedHandle());
 }
 
-using CheckedCallback =
-    base::RepeatingCallback<void(const std::string& guid, bool success)>;
-
-void OnGetDevicesComplete(
-    const CheckedCallback& callback,
-    const std::vector<scoped_refptr<device::UsbDevice>>& devices) {
-  for (const scoped_refptr<device::UsbDevice>& device : devices)
-    device->CheckUsbAccess(base::BindOnce(callback, device.get()->guid()));
+std::string GetDevicePath(const device::mojom::UsbDeviceInfo& device_info) {
+  return base::StringPrintf("/dev/bus/usb/%03d/%03d", device_info.bus_number,
+                            device_info.port_number);
 }
 
 }  // namespace
@@ -87,20 +82,12 @@ ArcUsbHostBridge* ArcUsbHostBridge::GetForBrowserContext(
 
 ArcUsbHostBridge::ArcUsbHostBridge(content::BrowserContext* context,
                                    ArcBridgeService* bridge_service)
-    : arc_bridge_service_(bridge_service),
-      usb_observer_(this),
-      weak_factory_(this) {
+    : arc_bridge_service_(bridge_service) {
   arc_bridge_service_->usb_host()->SetHost(this);
   arc_bridge_service_->usb_host()->AddObserver(this);
-
-  usb_service_ = device::DeviceClient::Get()->GetUsbService();
-  if (usb_service_)
-    usb_observer_.Add(usb_service_);
 }
 
 ArcUsbHostBridge::~ArcUsbHostBridge() {
-  if (usb_service_)
-    usb_service_->RemoveObserver(this);
   arc_bridge_service_->usb_host()->RemoveObserver(this);
   arc_bridge_service_->usb_host()->SetHost(nullptr);
 }
@@ -113,57 +100,75 @@ void ArcUsbHostBridge::RequestPermission(const std::string& guid,
                                          const std::string& package,
                                          bool interactive,
                                          RequestPermissionCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
+
   if (guid.empty()) {
     HandleScanDeviceListRequest(package, std::move(callback));
     return;
   }
 
   VLOG(2) << "USB RequestPermission " << guid << " package " << package;
+
+  // GUIDs are unguessable so device list should be initialized when this
+  // method is being called with a valid GUID.
+  auto iter = devices_.find(guid);
+  if (iter == devices_.end()) {
+    LOG(WARNING) << "Unknown USB device " << guid;
+    std::move(callback).Run(false);
+    return;
+  }
+
   // Permission already requested.
-  if (HasPermissionForDevice(guid, package)) {
+  if (HasPermissionForDevice(*iter->second, package)) {
     std::move(callback).Run(true);
     return;
   }
 
   // The other side was just checking, fail without asking the user.
   if (!interactive) {
-    std::move(callback).Run(HasPermissionForDevice(guid, package));
+    std::move(callback).Run(false);
     return;
   }
 
+  DCHECK(ui_delegate_);
   // Ask the authorization from the user.
-  DoRequestUserAuthorization(guid, package, std::move(callback));
+  ui_delegate_->RequestUsbAccessPermission(
+      package, guid, iter->second->serial_number.value_or(base::string16()),
+      iter->second->manufacturer_name.value_or(base::string16()),
+      iter->second->product_name.value_or(base::string16()),
+      iter->second->vendor_id, iter->second->product_id, std::move(callback));
 }
 
 void ArcUsbHostBridge::OpenDevice(const std::string& guid,
                                   const base::Optional<std::string>& package,
                                   OpenDeviceCallback callback) {
-  if (!usb_service_ || !package) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
+
+  if (!package) {
     std::move(callback).Run(mojo::ScopedHandle());
     return;
   }
 
-  device::UsbDeviceLinux* device =
-      static_cast<device::UsbDeviceLinux*>(usb_service_->GetDevice(guid).get());
-  if (!device) {
+  // GUIDs are unguessable so device list should be initialized when this
+  // method is being called with a valid GUID.
+  auto iter = devices_.find(guid);
+  if (iter == devices_.end()) {
     std::move(callback).Run(mojo::ScopedHandle());
     return;
   }
 
   // The RequestPermission was never done, abort.
-  if (!HasPermissionForDevice(guid, package.value())) {
+  if (!HasPermissionForDevice(*iter->second, package.value())) {
     std::move(callback).Run(mojo::ScopedHandle());
     return;
   }
 
-  chromeos::PermissionBrokerClient* client =
-      chromeos::DBusThreadManager::Get()->GetPermissionBrokerClient();
-  DCHECK(client) << "Could not get permission broker client.";
   auto repeating_callback =
       base::AdaptCallbackForRepeating(std::move(callback));
-  client->OpenPath(device->device_path(),
-                   base::Bind(&OnDeviceOpened, repeating_callback),
-                   base::Bind(&OnDeviceOpenError, repeating_callback));
+  chromeos::PermissionBrokerClient::Get()->OpenPath(
+      GetDevicePath(*iter->second),
+      base::BindOnce(&OnDeviceOpened, repeating_callback),
+      base::BindOnce(&OnDeviceOpenError, repeating_callback));
 }
 
 void ArcUsbHostBridge::OpenDeviceDeprecated(
@@ -176,20 +181,22 @@ void ArcUsbHostBridge::OpenDeviceDeprecated(
 
 void ArcUsbHostBridge::GetDeviceInfo(const std::string& guid,
                                      GetDeviceInfoCallback callback) {
-  if (!usb_service_) {
-    std::move(callback).Run(std::string(), nullptr);
-    return;
-  }
-  scoped_refptr<device::UsbDevice> device = usb_service_->GetDevice(guid);
-  if (!device.get()) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
+
+  // GUIDs are unguessable so device list should be initialized when this
+  // method is being called with a valid GUID.
+  auto iter = devices_.find(guid);
+  if (iter == devices_.end()) {
     LOG(WARNING) << "Unknown USB device " << guid;
     std::move(callback).Run(std::string(), nullptr);
     return;
   }
 
-  device::mojom::UsbDeviceInfoPtr info =
-      device::mojom::UsbDeviceInfo::From(*device);
+  device::mojom::UsbDeviceInfoPtr info = iter->second->Clone();
   // b/69295049 the other side doesn't like optional strings.
+  info->manufacturer_name = info->manufacturer_name.value_or(base::string16());
+  info->product_name = info->product_name.value_or(base::string16());
+  info->serial_number = info->serial_number.value_or(base::string16());
   for (const device::mojom::UsbConfigurationInfoPtr& cfg :
        info->configurations) {
     cfg->configuration_name =
@@ -202,56 +209,33 @@ void ArcUsbHostBridge::GetDeviceInfo(const std::string& guid,
     }
   }
 
-  std::string path =
-      static_cast<device::UsbDeviceLinux*>(device.get())->device_path();
-
+  std::string path = GetDevicePath(*info);
   std::move(callback).Run(path, std::move(info));
 }
 
-// device::UsbService::Observer callbacks.
-
-void ArcUsbHostBridge::OnDeviceAdded(scoped_refptr<device::UsbDevice> device) {
-  device->CheckUsbAccess(base::BindOnce(&ArcUsbHostBridge::OnDeviceChecked,
-                                        weak_factory_.GetWeakPtr(),
-                                        device.get()->guid()));
-}
-
-void ArcUsbHostBridge::OnDeviceRemoved(
-    scoped_refptr<device::UsbDevice> device) {
-  mojom::UsbHostInstance* usb_host_instance = ARC_GET_INSTANCE_FOR_METHOD(
-      arc_bridge_service_->usb_host(), OnDeviceRemoved);
-
-  if (!usb_host_instance) {
-    VLOG(2) << "UsbInstance not ready yet";
-    return;
-  }
-
-  usb_host_instance->OnDeviceRemoved(device.get()->guid(),
-                                     GetEventReceiverPackages(device));
-
-  if (ui_delegate_)
-    ui_delegate_->DeviceRemoved(device.get()->guid());
-}
-
-// Notifies the observer that the UsbService it depends on is shutting down.
-void ArcUsbHostBridge::WillDestroyUsbService() {
-  // Disconnect.
-  arc_bridge_service_->usb_host()->SetHost(nullptr);
-}
-
 void ArcUsbHostBridge::OnConnectionReady() {
-  if (!usb_service_)
-    return;
-  // Send the (filtered) list of already existing USB devices to the other side.
-  usb_service_->GetDevices(
-      base::Bind(&OnGetDevicesComplete,
-                 base::BindRepeating(&ArcUsbHostBridge::OnDeviceChecked,
-                                     weak_factory_.GetWeakPtr())));
+  if (delegate_)
+    delegate_->AttachDevicesToArcVm();
+
+  // Receive mojo::Remote<UsbDeviceManager> from DeviceService.
+  content::GetSystemConnector()->Connect(
+      device::mojom::kServiceName, usb_manager_.BindNewPipeAndPassReceiver());
+  usb_manager_.set_disconnect_handler(
+      base::BindOnce(&ArcUsbHostBridge::Disconnect, base::Unretained(this)));
+
+  // Listen for added/removed device events.
+  DCHECK(!client_receiver_.is_bound());
+  usb_manager_->EnumerateDevicesAndSetClient(
+      client_receiver_.BindNewEndpointAndPassRemote(),
+      base::BindOnce(&ArcUsbHostBridge::InitDeviceList,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void ArcUsbHostBridge::OnConnectionClosed() {
   if (ui_delegate_)
     ui_delegate_->ClearPermissionRequests();
+
+  Disconnect();
 }
 
 void ArcUsbHostBridge::Shutdown() {
@@ -262,19 +246,33 @@ void ArcUsbHostBridge::SetUiDelegate(ArcUsbHostUiDelegate* ui_delegate) {
   ui_delegate_ = ui_delegate;
 }
 
-std::vector<std::string> ArcUsbHostBridge::GetEventReceiverPackages(
-    scoped_refptr<device::UsbDevice> device) {
-  if (!device) {
-    LOG(WARNING) << "Unknown USB device.";
-    return std::vector<std::string>();
-  }
+void ArcUsbHostBridge::SetDelegate(std::unique_ptr<Delegate> delegate) {
+  delegate_ = std::move(delegate);
+}
 
-  if (!ui_delegate_)
-    return std::vector<std::string>();
+void ArcUsbHostBridge::InitDeviceList(
+    std::vector<device::mojom::UsbDeviceInfoPtr> devices) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
+  for (auto& device_info : devices) {
+    DCHECK(device_info);
+    std::string guid = device_info->guid;
+    devices_.insert(std::make_pair(guid, std::move(device_info)));
+
+    // Send the (filtered) list of already existing USB devices to the other
+    // side.
+    usb_manager_->CheckAccess(guid,
+                              base::BindOnce(&ArcUsbHostBridge::OnDeviceChecked,
+                                             weak_factory_.GetWeakPtr(), guid));
+  }
+}
+
+std::vector<std::string> ArcUsbHostBridge::GetEventReceiverPackages(
+    const device::mojom::UsbDeviceInfo& device_info) {
+  DCHECK(ui_delegate_);
 
   std::unordered_set<std::string> receivers = ui_delegate_->GetEventPackageList(
-      device->guid(), device->serial_number(), device->vendor_id(),
-      device->product_id());
+      device_info.guid, device_info.serial_number.value_or(base::string16()),
+      device_info.vendor_id, device_info.product_id);
 
   return std::vector<std::string>(receivers.begin(), receivers.end());
 }
@@ -288,74 +286,90 @@ void ArcUsbHostBridge::OnDeviceChecked(const std::string& guid, bool allowed) {
   if (!allowed)
     return;
 
+  // Device can be removed between being added and returning back from
+  // CheckAccess().
+  auto iter = devices_.find(guid);
+  if (iter == devices_.end())
+    return;
+
   mojom::UsbHostInstance* usb_host_instance = ARC_GET_INSTANCE_FOR_METHOD(
       arc_bridge_service_->usb_host(), OnDeviceAdded);
 
-  if (!usb_host_instance || !usb_service_)
+  if (!usb_host_instance)
     return;
 
-  usb_host_instance->OnDeviceAdded(
-      guid, GetEventReceiverPackages(usb_service_->GetDevice(guid)));
+  usb_host_instance->OnDeviceAdded(guid,
+                                   GetEventReceiverPackages(*iter->second));
 }
 
-void ArcUsbHostBridge::DoRequestUserAuthorization(
-    const std::string& guid,
-    const std::string& package,
-    RequestPermissionCallback callback) {
-  if (!ui_delegate_) {
-    std::move(callback).Run(false);
-    return;
-  }
-
-  if (!usb_service_) {
-    std::move(callback).Run(false);
-    return;
-  }
-
-  scoped_refptr<device::UsbDevice> device = usb_service_->GetDevice(guid);
-  if (!device.get()) {
-    LOG(WARNING) << "Unknown USB device " << guid;
-    std::move(callback).Run(false);
-    return;
-  }
-
-  ui_delegate_->RequestUsbAccessPermission(
-      package, guid, device->serial_number(), device->manufacturer_string(),
-      device->product_string(), device->vendor_id(), device->product_id(),
-      std::move(callback));
-}
-
-bool ArcUsbHostBridge::HasPermissionForDevice(const std::string& guid,
-                                              const std::string& package) {
-  if (!ui_delegate_)
-    return false;
-
-  if (!usb_service_)
-    return false;
-
-  scoped_refptr<device::UsbDevice> device = usb_service_->GetDevice(guid);
-  if (!device.get()) {
-    LOG(WARNING) << "Unknown USB device " << guid;
-    return false;
-  }
+bool ArcUsbHostBridge::HasPermissionForDevice(
+    const device::mojom::UsbDeviceInfo& device_info,
+    const std::string& package) {
+  DCHECK(ui_delegate_);
 
   return ui_delegate_->HasUsbAccessPermission(
-      package, guid, device->serial_number(), device->vendor_id(),
-      device->product_id());
+      package, device_info.guid,
+      device_info.serial_number.value_or(base::string16()),
+      device_info.vendor_id, device_info.product_id);
 }
 
 void ArcUsbHostBridge::HandleScanDeviceListRequest(
     const std::string& package,
     RequestPermissionCallback callback) {
-  if (!ui_delegate_) {
-    std::move(callback).Run(false);
-    return;
-  }
+  DCHECK(ui_delegate_);
 
   VLOG(2) << "USB Request USB scan devicelist permission "
           << "package: " << package;
   ui_delegate_->RequestUsbScanDeviceListPermission(package,
                                                    std::move(callback));
+}
+
+// Disconnect the connection with the DeviceService.
+void ArcUsbHostBridge::Disconnect() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
+
+  usb_manager_.reset();
+  client_receiver_.reset();
+  devices_.clear();
+}
+
+void ArcUsbHostBridge::OnDeviceAdded(
+    device::mojom::UsbDeviceInfoPtr device_info) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
+  DCHECK(device_info);
+
+  // Update the device list.
+  DCHECK(!base::Contains(devices_, device_info->guid));
+  std::string guid = device_info->guid;
+  devices_.insert(std::make_pair(guid, std::move(device_info)));
+
+  usb_manager_->CheckAccess(guid,
+                            base::BindOnce(&ArcUsbHostBridge::OnDeviceChecked,
+                                           weak_factory_.GetWeakPtr(), guid));
+}
+
+void ArcUsbHostBridge::OnDeviceRemoved(
+    device::mojom::UsbDeviceInfoPtr device_info) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
+  DCHECK(device_info);
+
+  // Update the device list.
+  auto num_removed = devices_.erase(device_info->guid);
+  DCHECK_EQ(num_removed, 1u);
+
+  mojom::UsbHostInstance* usb_host_instance = ARC_GET_INSTANCE_FOR_METHOD(
+      arc_bridge_service_->usb_host(), OnDeviceRemoved);
+
+  if (!usb_host_instance) {
+    VLOG(2) << "UsbInstance not ready yet";
+    return;
+  }
+
+  usb_host_instance->OnDeviceRemoved(device_info->guid,
+                                     GetEventReceiverPackages(*device_info));
+
+  DCHECK(ui_delegate_);
+  ui_delegate_->DeviceRemoved(device_info->guid);
 }
 
 }  // namespace arc

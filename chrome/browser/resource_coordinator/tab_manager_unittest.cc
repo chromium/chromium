@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <map>
 #include <memory>
+#include <utility>
 #include <vector>
 
 #include "base/bind.h"
@@ -25,7 +26,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/metrics/desktop_session_duration/desktop_session_duration_tracker.h"
-#include "chrome/browser/performance_manager/performance_manager_tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/resource_coordinator/background_tab_navigation_throttle.h"
 #include "chrome/browser/resource_coordinator/local_site_characteristics_data_unittest_utils.h"
@@ -47,6 +47,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/performance_manager/performance_manager_tab_helper.h"
 #include "components/variations/variations_associated_data.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -55,7 +56,6 @@
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "net/base/network_change_notifier.h"
-#include "services/resource_coordinator/public/cpp/resource_coordinator_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -96,14 +96,6 @@ class NonResumingBackgroundTabNavigationThrottle
 
  private:
   DISALLOW_COPY_AND_ASSIGN(NonResumingBackgroundTabNavigationThrottle);
-};
-
-class TabStripModelSimpleDelegate : public TestTabStripModelDelegate {
- public:
-  TabStripModelSimpleDelegate() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TabStripModelSimpleDelegate);
 };
 
 enum TestIndicies {
@@ -147,10 +139,6 @@ class TabManagerTest : public testing::ChromeTestHarnessWithLocalDB {
 
   std::unique_ptr<WebContents> CreateWebContents() {
     std::unique_ptr<WebContents> web_contents = CreateTestWebContents();
-    // TODO(siggi): This is an abomination, remove this once the
-    //     PageSignalGenerator is folded into the performance manager.
-    performance_manager::PerformanceManagerTabHelper::CreateForWebContents(
-        web_contents.get());
     ResourceCoordinatorTabHelper::CreateForWebContents(web_contents.get());
     // Commit an URL to allow discarding.
     content::WebContentsTester::For(web_contents.get())
@@ -271,12 +259,12 @@ class TabManagerTest : public testing::ChromeTestHarnessWithLocalDB {
 
   void SimulateFreezeCompletion(content::WebContents* content) {
     GetTabLifecycleUnit(content)->UpdateLifecycleState(
-        mojom::LifecycleState::kFrozen);
+        performance_manager::mojom::LifecycleState::kFrozen);
   }
 
   void SimulateUnfreezeCompletion(content::WebContents* content) {
     GetTabLifecycleUnit(content)->UpdateLifecycleState(
-        mojom::LifecycleState::kRunning);
+        performance_manager::mojom::LifecycleState::kRunning);
   }
 
   virtual void CheckThrottleResults(
@@ -421,96 +409,15 @@ TEST_F(TabManagerTest, IsInternalPage) {
       TabManager::IsInternalPage(GURL(chrome::kChromeUINetInternalsURL)));
 
   // Prefix matches are included.
-  EXPECT_TRUE(
-      TabManager::IsInternalPage(GURL("chrome://settings/fakeSetting")));
-}
-
-TEST_F(TabManagerTest, DefaultTimeToPurgeInCorrectRange) {
-  base::TimeDelta time_to_purge =
-      tab_manager_->GetTimeToPurge(TabManager::kDefaultMinTimeToPurge,
-                                   TabManager::kDefaultMinTimeToPurge * 4);
-  EXPECT_GE(time_to_purge, base::TimeDelta::FromMinutes(1));
-  EXPECT_LE(time_to_purge, base::TimeDelta::FromMinutes(4));
-}
-
-TEST_F(TabManagerTest, ShouldPurgeAtDefaultTime) {
-  auto window = std::make_unique<TestBrowserWindow>();
-  Browser::CreateParams params(profile(), true);
-  params.type = Browser::TYPE_TABBED;
-  params.window = window.get();
-  auto browser = std::make_unique<Browser>(params);
-  TabStripModel* tab_strip = browser->tab_strip_model();
-
-  std::unique_ptr<WebContents> test_contents = CreateWebContents();
-  WebContents* raw_test_contents = test_contents.get();
-  tab_strip->AppendWebContents(std::move(test_contents), /*foreground=*/true);
-
-  tab_manager_->GetWebContentsData(raw_test_contents)->set_is_purged(false);
-  tab_manager_->GetWebContentsData(raw_test_contents)
-      ->SetLastInactiveTime(NowTicks());
-  tab_manager_->GetWebContentsData(raw_test_contents)
-      ->set_time_to_purge(base::TimeDelta::FromMinutes(1));
-
-  // Wait 1 minute and verify that the tab is still not to be purged.
-  task_runner_->FastForwardBy(base::TimeDelta::FromMinutes(1));
-  EXPECT_FALSE(tab_manager_->ShouldPurgeNow(raw_test_contents));
-
-  // Wait another 1 second and verify that it should be purged now .
-  task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(1));
-  EXPECT_TRUE(tab_manager_->ShouldPurgeNow(raw_test_contents));
-
-  tab_manager_->GetWebContentsData(raw_test_contents)->set_is_purged(true);
-  tab_manager_->GetWebContentsData(raw_test_contents)
-      ->SetLastInactiveTime(NowTicks());
-
-  // Wait 1 day and verify that the tab is still be purged.
-  task_runner_->FastForwardBy(base::TimeDelta::FromHours(24));
-  EXPECT_FALSE(tab_manager_->ShouldPurgeNow(raw_test_contents));
-
-  // Tabs with a committed URL must be closed explicitly to avoid DCHECK errors.
-  tab_strip->CloseAllTabs();
-}
-
-TEST_F(TabManagerTest, ActivateTabResetPurgeState) {
-  auto window = std::make_unique<TestBrowserWindow>();
-  Browser::CreateParams params(profile(), true);
-  params.type = Browser::TYPE_TABBED;
-  params.window = window.get();
-  auto browser = std::make_unique<Browser>(params);
-  TabStripModel* tabstrip = browser->tab_strip_model();
-
-  std::unique_ptr<WebContents> tab1 = CreateWebContents();
-  std::unique_ptr<WebContents> tab2 = CreateWebContents();
-  WebContents* raw_tab2 = tab2.get();
-  tabstrip->AppendWebContents(std::move(tab1), true);
-  tabstrip->AppendWebContents(std::move(tab2), false);
-
-  tab_manager_->GetWebContentsData(raw_tab2)->SetLastInactiveTime(NowTicks());
-  static_cast<content::MockRenderProcessHost*>(
-      raw_tab2->GetMainFrame()->GetProcess())
-      ->set_is_process_backgrounded(true);
-  EXPECT_TRUE(raw_tab2->GetMainFrame()->GetProcess()->IsProcessBackgrounded());
-
-  // Initially PurgeAndSuspend state should be NOT_PURGED.
-  EXPECT_FALSE(tab_manager_->GetWebContentsData(raw_tab2)->is_purged());
-  tab_manager_->GetWebContentsData(raw_tab2)->set_time_to_purge(
-      base::TimeDelta::FromMinutes(1));
-  task_runner_->FastForwardBy(base::TimeDelta::FromMinutes(2));
-  tab_manager_->PurgeBackgroundedTabsIfNeeded();
-  // Since tab2 is kept inactive and background for more than time-to-purge,
-  // tab2 should be purged.
-  EXPECT_TRUE(tab_manager_->GetWebContentsData(raw_tab2)->is_purged());
-
-  // Activate tab2. Tab2's PurgeAndSuspend state should be NOT_PURGED.
-  tabstrip->ActivateTabAt(1, {TabStripModel::GestureType::kOther});
-  EXPECT_FALSE(tab_manager_->GetWebContentsData(raw_tab2)->is_purged());
-
-  // Tabs with a committed URL must be closed explicitly to avoid DCHECK errors.
-  tabstrip->CloseAllTabs();
+  GURL::Replacements replace_fake_path;
+  replace_fake_path.SetPathStr("fakeSetting");
+  EXPECT_TRUE(TabManager::IsInternalPage(
+      GURL(chrome::kChromeUISettingsURL).ReplaceComponents(replace_fake_path)));
 }
 
 // Data race on Linux. http://crbug.com/787842
-#if defined(OS_LINUX)
+// Flaky on Mac and Windows: https://crbug.com/995682
+#if defined(OS_LINUX) || defined(OS_MACOSX) || defined(OS_WIN)
 #define MAYBE_DiscardTabWithNonVisibleTabs DISABLED_DiscardTabWithNonVisibleTabs
 #else
 #define MAYBE_DiscardTabWithNonVisibleTabs DiscardTabWithNonVisibleTabs
@@ -526,7 +433,7 @@ TEST_F(TabManagerTest, MAYBE_DiscardTabWithNonVisibleTabs) {
   // its active tab.
   auto window1 = std::make_unique<TestBrowserWindow>();
   Browser::CreateParams params1(profile(), true);
-  params1.type = Browser::TYPE_TABBED;
+  params1.type = Browser::TYPE_NORMAL;
   params1.window = window1.get();
   auto browser1 = std::make_unique<Browser>(params1);
   TabStripModel* tab_strip1 = browser1->tab_strip_model();
@@ -537,7 +444,7 @@ TEST_F(TabManagerTest, MAYBE_DiscardTabWithNonVisibleTabs) {
 
   auto window2 = std::make_unique<TestBrowserWindow>();
   Browser::CreateParams params2(profile(), true);
-  params2.type = Browser::TYPE_TABBED;
+  params2.type = Browser::TYPE_NORMAL;
   params2.window = window2.get();
   auto browser2 = std::make_unique<Browser>(params1);
   TabStripModel* tab_strip2 = browser2->tab_strip_model();
@@ -609,6 +516,7 @@ TEST_F(TabManagerTest, OnTabIsLoaded) {
       ->DidStartNavigation(nav_handle1_.get());
 
   EXPECT_TRUE(tab_manager_->IsTabLoadingForTest(contents1_.get()));
+  EXPECT_FALSE(ResourceCoordinatorTabHelper::IsLoaded(contents1_.get()));
   EXPECT_FALSE(tab_manager_->IsTabLoadingForTest(contents2_.get()));
   EXPECT_TRUE(tab_manager_->IsNavigationDelayedForTest(nav_handle2_.get()));
 
@@ -619,6 +527,7 @@ TEST_F(TabManagerTest, OnTabIsLoaded) {
   // After tab 1 has finished loading, TabManager starts loading the next tab.
   EXPECT_FALSE(tab_manager_->IsTabLoadingForTest(contents1_.get()));
   EXPECT_TRUE(tab_manager_->IsTabLoadingForTest(contents2_.get()));
+  EXPECT_TRUE(ResourceCoordinatorTabHelper::IsLoaded(contents1_.get()));
   EXPECT_FALSE(tab_manager_->IsNavigationDelayedForTest(nav_handle2_.get()));
 }
 
@@ -779,14 +688,14 @@ TEST_F(TabManagerTest, BackgroundTabLoadingMode) {
 }
 
 TEST_F(TabManagerTest, BackgroundTabLoadingSlots) {
-  TabManager tab_manager1(GetPageSignalReceiver(), TabLoadTracker::Get());
+  TabManager tab_manager1(TabLoadTracker::Get());
   MaybeThrottleNavigations(&tab_manager1, 1);
   EXPECT_FALSE(tab_manager1.IsNavigationDelayedForTest(nav_handle1_.get()));
   EXPECT_TRUE(tab_manager1.IsNavigationDelayedForTest(nav_handle2_.get()));
   EXPECT_TRUE(tab_manager1.IsNavigationDelayedForTest(nav_handle3_.get()));
   ResetState();
 
-  TabManager tab_manager2(GetPageSignalReceiver(), TabLoadTracker::Get());
+  TabManager tab_manager2(TabLoadTracker::Get());
   tab_manager2.SetLoadingSlotsForTest(2);
   MaybeThrottleNavigations(&tab_manager2, 2);
   EXPECT_FALSE(tab_manager2.IsNavigationDelayedForTest(nav_handle1_.get()));
@@ -794,7 +703,7 @@ TEST_F(TabManagerTest, BackgroundTabLoadingSlots) {
   EXPECT_TRUE(tab_manager2.IsNavigationDelayedForTest(nav_handle3_.get()));
   ResetState();
 
-  TabManager tab_manager3(GetPageSignalReceiver(), TabLoadTracker::Get());
+  TabManager tab_manager3(TabLoadTracker::Get());
   tab_manager3.SetLoadingSlotsForTest(3);
   MaybeThrottleNavigations(&tab_manager3, 3);
   EXPECT_FALSE(tab_manager3.IsNavigationDelayedForTest(nav_handle1_.get()));
@@ -1099,7 +1008,7 @@ TEST_F(TabManagerTest, IsTabRestoredInForeground) {
 TEST_F(TabManagerTest, TrackingNumberOfLoadedLifecycleUnits) {
   auto window = std::make_unique<TestBrowserWindow>();
   Browser::CreateParams params(profile(), true);
-  params.type = Browser::TYPE_TABBED;
+  params.type = Browser::TYPE_NORMAL;
   params.window = window.get();
   auto browser = std::make_unique<Browser>(params);
   TabStripModel* tab_strip = browser->tab_strip_model();
@@ -1141,11 +1050,37 @@ TEST_F(TabManagerTest, TrackingNumberOfLoadedLifecycleUnits) {
   EXPECT_EQ(tab_manager_->num_loaded_lifecycle_units_, 0);
 }
 
+TEST_F(TabManagerTest, GetSortedLifecycleUnits) {
+  auto window = std::make_unique<TestBrowserWindow>();
+  Browser::CreateParams params(profile(), true);
+  params.type = Browser::TYPE_NORMAL;
+  params.window = window.get();
+  auto browser = std::make_unique<Browser>(params);
+  TabStripModel* tab_strip = browser->tab_strip_model();
+
+  const int num_of_tabs_to_test = 20;
+  for (int i = 0; i < num_of_tabs_to_test; ++i) {
+    task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(10));
+    tab_strip->AppendWebContents(CreateWebContents(), /*foreground=*/true);
+  }
+
+  LifecycleUnitVector lifecycle_units = tab_manager_->GetSortedLifecycleUnits();
+  EXPECT_EQ(lifecycle_units.size(), static_cast<size_t>(num_of_tabs_to_test));
+
+  // Check that the lifecycle_units are sorted with ascending importance.
+  for (int i = 0; i < num_of_tabs_to_test - 1; ++i) {
+    EXPECT_TRUE(lifecycle_units[i]->GetSortKey() <
+                lifecycle_units[i + 1]->GetSortKey());
+  }
+
+  tab_strip->CloseAllTabs();
+}
+
 TEST_F(TabManagerWithProactiveDiscardExperimentEnabledTest,
        GetTimeInBackgroundBeforeProactiveDiscardTest) {
   auto window = std::make_unique<TestBrowserWindow>();
   Browser::CreateParams params(profile(), true);
-  params.type = Browser::TYPE_TABBED;
+  params.type = Browser::TYPE_NORMAL;
   params.window = window.get();
   auto browser = std::make_unique<Browser>(params);
   TabStripModel* tab_strip = browser->tab_strip_model();
@@ -1192,7 +1127,7 @@ TEST_F(TabManagerWithProactiveDiscardExperimentEnabledTest,
        ProactiveDiscardTestLow) {
   auto window = std::make_unique<TestBrowserWindow>();
   Browser::CreateParams params(profile(), true);
-  params.type = Browser::TYPE_TABBED;
+  params.type = Browser::TYPE_NORMAL;
   params.window = window.get();
   auto browser = std::make_unique<Browser>(params);
   TabStripModel* tab_strip = browser->tab_strip_model();
@@ -1229,7 +1164,7 @@ TEST_F(TabManagerWithProactiveDiscardExperimentEnabledTest,
        ProactiveDiscardTestModerate) {
   auto window = std::make_unique<TestBrowserWindow>();
   Browser::CreateParams params(profile(), true);
-  params.type = Browser::TYPE_TABBED;
+  params.type = Browser::TYPE_NORMAL;
   params.window = window.get();
   auto browser = std::make_unique<Browser>(params);
   TabStripModel* tab_strip = browser->tab_strip_model();
@@ -1265,7 +1200,7 @@ TEST_F(TabManagerWithProactiveDiscardExperimentEnabledTest,
        ProactiveDiscardTestHigh) {
   auto window = std::make_unique<TestBrowserWindow>();
   Browser::CreateParams params(profile(), true);
-  params.type = Browser::TYPE_TABBED;
+  params.type = Browser::TYPE_NORMAL;
   params.window = window.get();
   auto browser = std::make_unique<Browser>(params);
   TabStripModel* tab_strip = browser->tab_strip_model();
@@ -1301,7 +1236,7 @@ TEST_F(TabManagerWithProactiveDiscardExperimentEnabledTest,
        ProactiveDiscardTestExcessive) {
   auto window = std::make_unique<TestBrowserWindow>();
   Browser::CreateParams params(profile(), true);
-  params.type = Browser::TYPE_TABBED;
+  params.type = Browser::TYPE_NORMAL;
   params.window = window.get();
   auto browser = std::make_unique<Browser>(params);
   TabStripModel* tab_strip = browser->tab_strip_model();
@@ -1328,7 +1263,7 @@ TEST_F(TabManagerWithProactiveDiscardExperimentEnabledTest,
        ProactiveDiscardTestChangingStates) {
   auto window = std::make_unique<TestBrowserWindow>();
   Browser::CreateParams params(profile(), true);
-  params.type = Browser::TYPE_TABBED;
+  params.type = Browser::TYPE_NORMAL;
   params.window = window.get();
   auto browser = std::make_unique<Browser>(params);
   TabStripModel* tab_strip = browser->tab_strip_model();
@@ -1429,7 +1364,7 @@ TEST_F(TabManagerWithProactiveDiscardExperimentEnabledTest,
        ProactiveDiscardTestTabClosedPriorToDiscard) {
   auto window = std::make_unique<TestBrowserWindow>();
   Browser::CreateParams params(profile(), true);
-  params.type = Browser::TYPE_TABBED;
+  params.type = Browser::TYPE_NORMAL;
   params.window = window.get();
   auto browser = std::make_unique<Browser>(params);
   TabStripModel* tab_strip = browser->tab_strip_model();
@@ -1454,7 +1389,7 @@ TEST_F(TabManagerWithProactiveDiscardExperimentEnabledTest,
        FreezeBackgroundTabs) {
   auto window = std::make_unique<TestBrowserWindow>();
   Browser::CreateParams params(profile(), true);
-  params.type = Browser::TYPE_TABBED;
+  params.type = Browser::TYPE_NORMAL;
   params.window = window.get();
   auto browser = std::make_unique<Browser>(params);
   TabStripModel* tab_strip = browser->tab_strip_model();
@@ -1497,12 +1432,24 @@ TEST_F(TabManagerWithProactiveDiscardExperimentEnabledTest,
   EXPECT_FALSE(IsTabFrozen(tab_strip->GetWebContentsAt(0)));
   EXPECT_FALSE(IsTabFrozen(tab_strip->GetWebContentsAt(1)));
   EXPECT_TRUE(IsTabFrozen(tab_strip->GetWebContentsAt(2)));
+  EXPECT_FALSE(
+      ResourceCoordinatorTabHelper::IsFrozen(tab_strip->GetWebContentsAt(0)));
+  EXPECT_FALSE(
+      ResourceCoordinatorTabHelper::IsFrozen(tab_strip->GetWebContentsAt(1)));
+  EXPECT_TRUE(
+      ResourceCoordinatorTabHelper::IsFrozen(tab_strip->GetWebContentsAt(2)));
 
   // After half the freeze timeout, the 1st tab should be frozen.
   task_runner_->FastForwardBy(kFreezeTimeout / 2);
   EXPECT_TRUE(IsTabFrozen(tab_strip->GetWebContentsAt(0)));
   EXPECT_FALSE(IsTabFrozen(tab_strip->GetWebContentsAt(1)));
   EXPECT_TRUE(IsTabFrozen(tab_strip->GetWebContentsAt(2)));
+  EXPECT_TRUE(
+      ResourceCoordinatorTabHelper::IsFrozen(tab_strip->GetWebContentsAt(0)));
+  EXPECT_FALSE(
+      ResourceCoordinatorTabHelper::IsFrozen(tab_strip->GetWebContentsAt(1)));
+  EXPECT_TRUE(
+      ResourceCoordinatorTabHelper::IsFrozen(tab_strip->GetWebContentsAt(2)));
 
   tab_strip->CloseAllTabs();
 }
@@ -1510,7 +1457,7 @@ TEST_F(TabManagerWithProactiveDiscardExperimentEnabledTest,
 TEST_F(TabManagerWithProactiveDiscardExperimentEnabledTest, FreezeOnceLoaded) {
   auto window = std::make_unique<TestBrowserWindow>();
   Browser::CreateParams params(profile(), true);
-  params.type = Browser::TYPE_TABBED;
+  params.type = Browser::TYPE_NORMAL;
   params.window = window.get();
   auto browser = std::make_unique<Browser>(params);
   TabStripModel* tab_strip = browser->tab_strip_model();
@@ -1542,7 +1489,7 @@ TEST_F(TabManagerWithProactiveDiscardExperimentEnabledTest,
 
   auto window = std::make_unique<TestBrowserWindow>();
   Browser::CreateParams params(profile(), true);
-  params.type = Browser::TYPE_TABBED;
+  params.type = Browser::TYPE_NORMAL;
   params.window = window.get();
   auto browser = std::make_unique<Browser>(params);
   TabStripModel* tab_strip = browser->tab_strip_model();
@@ -1649,7 +1596,7 @@ TEST_F(TabManagerWithProactiveDiscardExperimentEnabledTest,
 
   auto window = std::make_unique<TestBrowserWindow>();
   Browser::CreateParams params(profile(), true);
-  params.type = Browser::TYPE_TABBED;
+  params.type = Browser::TYPE_NORMAL;
   params.window = window.get();
   auto browser = std::make_unique<Browser>(params);
   TabStripModel* tab_strip = browser->tab_strip_model();
@@ -1692,7 +1639,7 @@ TEST_F(TabManagerWithProactiveDiscardExperimentEnabledTest,
 
   auto window = std::make_unique<TestBrowserWindow>();
   Browser::CreateParams params(profile(), true);
-  params.type = Browser::TYPE_TABBED;
+  params.type = Browser::TYPE_NORMAL;
   params.window = window.get();
   auto browser = std::make_unique<Browser>(params);
   TabStripModel* tab_strip = browser->tab_strip_model();
@@ -1716,7 +1663,7 @@ TEST_F(TabManagerWithProactiveDiscardExperimentEnabledTest,
 
   auto window = std::make_unique<TestBrowserWindow>();
   Browser::CreateParams params(profile(), true);
-  params.type = Browser::TYPE_TABBED;
+  params.type = Browser::TYPE_NORMAL;
   params.window = window.get();
   auto browser = std::make_unique<Browser>(params);
   TabStripModel* tab_strip = browser->tab_strip_model();
@@ -1739,13 +1686,13 @@ TEST_F(TabManagerWithProactiveDiscardExperimentEnabledTest,
        NoProactiveDiscardWhenOffline) {
   auto window = std::make_unique<TestBrowserWindow>();
   Browser::CreateParams params(profile(), true);
-  params.type = Browser::TYPE_TABBED;
+  params.type = Browser::TYPE_NORMAL;
   params.window = window.get();
   auto browser = std::make_unique<Browser>(params);
   TabStripModel* tab_strip = browser->tab_strip_model();
 
   // Simulate being offline.
-  net::NetworkChangeNotifier::DisableForTest disable_for_test;
+  net::NetworkChangeNotifier::DisableForTest net_change_notifier_disabler_;
   FakeOfflineNetworkChangeNotifier fake_offline_state;
 
   tab_strip->AppendWebContents(CreateWebContents(), /*foreground=*/true);
@@ -1765,7 +1712,7 @@ TEST_F(TabManagerWithProactiveDiscardExperimentEnabledTest,
        NoProactiveDiscardWhenChromeNotInUse) {
   auto window = std::make_unique<TestBrowserWindow>();
   Browser::CreateParams params(profile(), true);
-  params.type = Browser::TYPE_TABBED;
+  params.type = Browser::TYPE_NORMAL;
   params.window = window.get();
   auto browser = std::make_unique<Browser>(params);
   TabStripModel* tab_strip = browser->tab_strip_model();
@@ -1835,7 +1782,7 @@ TEST_F(TabManagerWithProactiveDiscardExperimentEnabledTest,
 TEST_F(TabManagerTest, NoProactiveDiscardWhenFeatureDisabled) {
   auto window = std::make_unique<TestBrowserWindow>();
   Browser::CreateParams params(profile(), true);
-  params.type = Browser::TYPE_TABBED;
+  params.type = Browser::TYPE_NORMAL;
   params.window = window.get();
   auto browser = std::make_unique<Browser>(params);
   TabStripModel* tab_strip = browser->tab_strip_model();
@@ -1855,7 +1802,7 @@ TEST_F(TabManagerTest, NoProactiveDiscardWhenFeatureDisabled) {
 TEST_F(TabManagerTest, NoFreezingWhenFeatureDisabled) {
   auto window = std::make_unique<TestBrowserWindow>();
   Browser::CreateParams params(profile(), true);
-  params.type = Browser::TYPE_TABBED;
+  params.type = Browser::TYPE_NORMAL;
   params.window = window.get();
   auto browser = std::make_unique<Browser>(params);
   TabStripModel* tab_strip = browser->tab_strip_model();

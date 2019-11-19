@@ -18,8 +18,10 @@
  */
 
 // https://html.spec.whatwg.org/C/#the-menu-element
-[HTMLConstructor]
-interface HTMLMenuElement : HTMLElement {
+[
+    Exposed=Window,
+    HTMLConstructor
+] interface HTMLMenuElement : HTMLElement {
     // obsolete members
     // https://html.spec.whatwg.org/C/#HTMLMenuElement-partial
     [CEReactions, Reflect] attribute boolean compact;

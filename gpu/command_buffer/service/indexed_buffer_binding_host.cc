@@ -10,11 +10,10 @@ namespace gpu {
 namespace gles2 {
 
 IndexedBufferBindingHost::IndexedBufferBinding::IndexedBufferBinding()
-    : type(kBindBufferNone),
+    : type(IndexedBufferBindingType::kBindBufferNone),
       offset(0),
       size(0),
-      effective_full_buffer_size(0) {
-}
+      effective_full_buffer_size(0) {}
 
 IndexedBufferBindingHost::IndexedBufferBinding::IndexedBufferBinding(
     const IndexedBufferBindingHost::IndexedBufferBinding& other)
@@ -30,7 +29,8 @@ IndexedBufferBindingHost::IndexedBufferBinding::~IndexedBufferBinding() =
 
 bool IndexedBufferBindingHost::IndexedBufferBinding::operator==(
     const IndexedBufferBindingHost::IndexedBufferBinding& other) const {
-  if (type == kBindBufferNone && other.type == kBindBufferNone) {
+  if (type == IndexedBufferBindingType::kBindBufferNone &&
+      other.type == IndexedBufferBindingType::kBindBufferNone) {
     // This should be the most common case so an early out.
     return true;
   }
@@ -47,7 +47,7 @@ void IndexedBufferBindingHost::IndexedBufferBinding::SetBindBufferBase(
     Reset();
     return;
   }
-  type = kBindBufferBase;
+  type = IndexedBufferBindingType::kBindBufferBase;
   buffer = _buffer;
   offset = 0;
   size = 0;
@@ -60,7 +60,7 @@ void IndexedBufferBindingHost::IndexedBufferBinding::SetBindBufferRange(
     Reset();
     return;
   }
-  type = kBindBufferRange;
+  type = IndexedBufferBindingType::kBindBufferRange;
   buffer = _buffer;
   offset = _offset;
   size = _size;
@@ -68,7 +68,7 @@ void IndexedBufferBindingHost::IndexedBufferBinding::SetBindBufferRange(
 }
 
 void IndexedBufferBindingHost::IndexedBufferBinding::Reset() {
-  type = kBindBufferNone;
+  type = IndexedBufferBindingType::kBindBufferNone;
   buffer = nullptr;
   offset = 0;
   size = 0;
@@ -191,7 +191,8 @@ void IndexedBufferBindingHost::OnBufferData(Buffer* buffer) {
     for (size_t ii = 0; ii < buffer_bindings_.size(); ++ii) {
       if (buffer_bindings_[ii].buffer.get() != buffer)
         continue;
-      if (buffer_bindings_[ii].type == kBindBufferRange &&
+      if (buffer_bindings_[ii].type ==
+              IndexedBufferBindingType::kBindBufferRange &&
           buffer_bindings_[ii].effective_full_buffer_size != buffer->size()) {
         DoAdjustedBindBufferRange(target_, ii, buffer->service_id(),
                                   buffer_bindings_[ii].offset,
@@ -230,7 +231,9 @@ void IndexedBufferBindingHost::SetIsBound(bool is_bound) {
     // is bound, we might need to reset the ranges.
     for (size_t ii = 0; ii < buffer_bindings_.size(); ++ii) {
       Buffer* buffer = buffer_bindings_[ii].buffer.get();
-      if (buffer && buffer_bindings_[ii].type == kBindBufferRange &&
+      if (buffer &&
+          buffer_bindings_[ii].type ==
+              IndexedBufferBindingType::kBindBufferRange &&
           buffer_bindings_[ii].effective_full_buffer_size != buffer->size()) {
         DoAdjustedBindBufferRange(target_, ii, buffer->service_id(),
                                   buffer_bindings_[ii].offset,
@@ -273,13 +276,13 @@ GLsizeiptr IndexedBufferBindingHost::GetEffectiveBufferSize(
     return 0;
   GLsizeiptr full_buffer_size = binding.buffer->size();
   switch (binding.type) {
-    case kBindBufferBase:
+    case IndexedBufferBindingType::kBindBufferBase:
       return full_buffer_size;
-    case kBindBufferRange:
+    case IndexedBufferBindingType::kBindBufferRange:
       if (binding.offset + binding.size > full_buffer_size)
         return full_buffer_size - binding.offset;
       return binding.size;
-    case kBindBufferNone:
+    case IndexedBufferBindingType::kBindBufferNone:
       return 0;
   }
   return buffer_bindings_[index].size;
@@ -303,11 +306,11 @@ void IndexedBufferBindingHost::RestoreBindings(
       continue;
     }
     switch (buffer_bindings_[ii].type) {
-      case kBindBufferBase:
-      case kBindBufferNone:
+      case IndexedBufferBindingType::kBindBufferBase:
+      case IndexedBufferBindingType::kBindBufferNone:
         DoBindBufferBase(ii, buffer_bindings_[ii].buffer.get());
         break;
-      case kBindBufferRange:
+      case IndexedBufferBindingType::kBindBufferRange:
         DoBindBufferRange(ii, buffer_bindings_[ii].buffer.get(),
                           buffer_bindings_[ii].offset,
                           buffer_bindings_[ii].size);

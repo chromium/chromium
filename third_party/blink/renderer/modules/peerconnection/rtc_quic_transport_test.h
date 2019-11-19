@@ -13,6 +13,8 @@
 
 namespace blink {
 
+class V8TestingScope;
+
 class RTCQuicTransportTest : public RTCIceTransportTest {
  public:
   // Construct a new RTCQuicTransport with the given RTCIceTransport,

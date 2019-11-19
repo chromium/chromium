@@ -13,8 +13,6 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/debug/alias.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/stl_util.h"
 #include "base/strings/string_piece.h"
@@ -36,7 +34,6 @@
 #include "chrome/common/url_constants.h"
 #include "components/dom_distiller/core/url_constants.h"
 #include "components/guest_view/browser/guest_view_message_filter.h"
-#include "components/rappor/public/rappor_utils.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/browser_url_handler.h"
@@ -44,7 +41,6 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
-#include "content/public/browser/resource_dispatcher_host.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/vpn_service_proxy.h"
@@ -62,11 +58,11 @@
 #include "extensions/browser/guest_view/extensions_guest_view_message_filter.h"
 #include "extensions/browser/guest_view/web_view/web_view_renderer_state.h"
 #include "extensions/browser/info_map.h"
-#include "extensions/browser/io_thread_extension_message_filter.h"
 #include "extensions/browser/url_loader_factory_manager.h"
 #include "extensions/browser/url_request_util.h"
 #include "extensions/browser/view_type_utils.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/extension_urls.h"
 #include "extensions/common/extensions_client.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/app_isolation_info.h"
@@ -102,40 +98,6 @@ enum RenderProcessHostPrivilege {
   PRIV_HOSTED,
   PRIV_ISOLATED,
   PRIV_EXTENSION,
-};
-
-// Specifies the scheme of the SiteInstance responsible for a failed
-// web-accessible resource check in ShouldAllowOpenURL.
-//
-// This enum backs an UMA histogram.  The order of existing values
-// should not be changed.  Add any new values before SCHEME_LAST, and also run
-// update_should_allow_open_url_histograms.py to update the corresponding enum
-// in histograms.xml.  This enum must also be synchronized to kSchemeNames in
-// RecordShouldAllowOpenURLFailure.
-enum ShouldAllowOpenURLFailureScheme {
-  SCHEME_UNKNOWN,
-  SCHEME_EMPTY,
-  SCHEME_HTTP,
-  SCHEME_HTTPS,
-  SCHEME_FILE,
-  SCHEME_FTP,
-  SCHEME_DATA,
-  SCHEME_JAVASCRIPT,
-  SCHEME_ABOUT,
-  SCHEME_CHROME,
-  SCHEME_DEVTOOLS,
-  SCHEME_GUEST,
-  SCHEME_VIEWSOURCE,
-  SCHEME_CHROME_SEARCH,
-  SCHEME_CHROME_NATIVE,
-  SCHEME_DOM_DISTILLER,
-  SCHEME_CHROME_EXTENSION,
-  SCHEME_CONTENT,
-  SCHEME_BLOB,
-  SCHEME_FILESYSTEM,
-  // Add new entries above and make sure to update histograms.xml by running
-  // update_should_allow_open_url_histograms.py.
-  SCHEME_LAST,
 };
 
 RenderProcessHostPrivilege GetPrivilegeRequiredByUrl(
@@ -183,85 +145,6 @@ RenderProcessHostPrivilege GetProcessPrivilege(
   return PRIV_EXTENSION;
 }
 
-// Determines whether the extension |origin| is legal to use in an Origin header
-// from the process identified by |child_id|.  Returns CONTINUE if so, FAIL if
-// the extension is not recognized (and may recently have been uninstalled), and
-// KILL if the origin is from a platform app but the request does not come from
-// that app.
-content::HeaderInterceptorResult CheckOriginHeader(
-    content::ResourceContext* resource_context,
-    int child_id,
-    const GURL& origin) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-
-  // Consider non-extension URLs safe; they will be checked elsewhere.
-  if (!origin.SchemeIs(kExtensionScheme))
-    return content::HeaderInterceptorResult::CONTINUE;
-
-  // If there is no extension installed for the origin, it may be from a
-  // recently uninstalled extension.  The tabs of such extensions are
-  // automatically closed, but subframes and content scripts may stick around.
-  // Fail such requests without killing the process.
-  // TODO(rdevlin.cronin, creis): Track which extensions have been uninstalled
-  // and use HeaderInterceptorResult::KILL for anything not on the list.
-  // See https://crbug.com/705128.
-  ProfileIOData* io_data = ProfileIOData::FromResourceContext(resource_context);
-  InfoMap* extension_info_map = io_data->GetExtensionInfoMap();
-  const Extension* extension =
-      extension_info_map->extensions().GetExtensionOrAppByURL(origin);
-  if (!extension)
-    return content::HeaderInterceptorResult::FAIL;
-
-  // Check for platform app origins.  These can only be committed by the app
-  // itself, or by one if its guests if it has the webview permission.
-  // Processes that incorrectly claim to be an app should be killed.
-  const ProcessMap& process_map = extension_info_map->process_map();
-  if (extension->is_platform_app() &&
-      !process_map.Contains(extension->id(), child_id)) {
-    // This is a platform app origin not in the app's own process.  If it cannot
-    // create webviews, this is illegal.
-    if (!extension->permissions_data()->HasAPIPermission(
-            extensions::APIPermission::kWebView)) {
-      return content::HeaderInterceptorResult::KILL;
-    }
-
-    // If there are accessible resources, the origin is only legal if the
-    // given process is a guest of the app.
-    std::string owner_extension_id;
-    int owner_process_id;
-    WebViewRendererState::GetInstance()->GetOwnerInfo(
-        child_id, &owner_process_id, &owner_extension_id);
-    const Extension* owner_extension =
-        extension_info_map->extensions().GetByID(owner_extension_id);
-    if (!owner_extension || owner_extension != extension)
-      return content::HeaderInterceptorResult::KILL;
-
-    // It's a valid guest of the app, so allow it to proceed.
-    return content::HeaderInterceptorResult::CONTINUE;
-  }
-
-  // With only the origin and not the full URL, we don't have enough
-  // information to validate hosted apps or web_accessible_resources in normal
-  // extensions. Assume they're legal.
-  return content::HeaderInterceptorResult::CONTINUE;
-}
-
-// This callback is registered on the ResourceDispatcherHost for the chrome
-// extension Origin scheme. We determine whether the extension origin is
-// valid. Please see the CheckOriginHeader() function.
-void OnHttpHeaderReceived(const std::string& header,
-                          const std::string& value,
-                          int child_id,
-                          content::ResourceContext* resource_context,
-                          content::OnHeaderProcessedCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-
-  GURL origin(value);
-  DCHECK(origin.SchemeIs(extensions::kExtensionScheme));
-
-  callback.Run(CheckOriginHeader(resource_context, child_id, origin));
-}
-
 const Extension* GetEnabledExtensionFromEffectiveURL(
     BrowserContext* context,
     const GURL& effective_url) {
@@ -279,6 +162,37 @@ bool HasEffectiveUrl(content::BrowserContext* browser_context,
                      const GURL& url) {
   return ChromeContentBrowserClientExtensionsPart::GetEffectiveURL(
              Profile::FromBrowserContext(browser_context), url) != url;
+}
+
+bool AllowServiceWorker(const GURL& scope,
+                        const GURL& script_url,
+                        const Extension* extension) {
+  // Don't allow a service worker for an extension url with no extension (this
+  // could happen in the case of, e.g., an unloaded extension).
+  if (!extension)
+    return false;
+
+  // If an extension doesn't have a service worker-based background script, it
+  // can register a service worker at any scope.
+  if (!extensions::BackgroundInfo::IsServiceWorkerBased(extension))
+    return true;
+
+  // If the script_url parameter is an empty string, allow it. The
+  // infrastructure will call this function at times when the script url is
+  // unknown, but it is always known at registration, so this is OK.
+  if (script_url.is_empty())
+    return true;
+
+  // An extension with a service worked-based background script can register a
+  // service worker at any scope other than the root scope.
+  if (scope != extension->url())
+    return true;
+
+  // If an extension is service-worker based, only the script specified in the
+  // manifest can be registered at the root scope.
+  const std::string& sw_script =
+      extensions::BackgroundInfo::GetBackgroundServiceWorkerScript(extension);
+  return script_url == extension->GetResourceURL(sw_script);
 }
 
 }  // namespace
@@ -390,20 +304,8 @@ bool ChromeContentBrowserClientExtensionsPart::DoesSiteRequireDedicatedProcess(
   const Extension* extension = ExtensionRegistry::Get(browser_context)
                                    ->enabled_extensions()
                                    .GetExtensionOrAppByURL(effective_site_url);
-  if (!extension)
-    return false;
-
-  // Always isolate Chrome Web Store.
-  if (extension->id() == kWebStoreAppId)
-    return true;
-
-  // Extensions should be isolated, except for hosted apps. Isolating hosted
-  // apps is a good idea, but ought to be a separate knob.
-  if (extension->is_hosted_app())
-    return false;
-
   // Isolate all extensions.
-  return true;
+  return extension != nullptr;
 }
 
 // static
@@ -611,9 +513,10 @@ bool ChromeContentBrowserClientExtensionsPart::
 
 // static
 bool ChromeContentBrowserClientExtensionsPart::
-    ShouldSwapBrowsingInstancesForNavigation(SiteInstance* site_instance,
-                                             const GURL& current_url,
-                                             const GURL& new_url) {
+    ShouldSwapBrowsingInstancesForNavigation(
+        SiteInstance* site_instance,
+        const GURL& current_effective_url,
+        const GURL& destination_effective_url) {
   // If we don't have an ExtensionRegistry, then rely on the SiteInstance logic
   // in RenderFrameHostManager to decide when to swap.
   ExtensionRegistry* registry =
@@ -635,33 +538,36 @@ bool ChromeContentBrowserClientExtensionsPart::
   // check is just doing the same for top-level frames.  See
   // https://crbug.com/590068.
   const Extension* current_extension =
-      registry->enabled_extensions().GetExtensionOrAppByURL(current_url);
+      registry->enabled_extensions().GetExtensionOrAppByURL(
+          current_effective_url);
   bool is_current_url_for_web_store =
       current_extension && current_extension->id() == kWebStoreAppId;
 
-  const Extension* new_extension =
-      registry->enabled_extensions().GetExtensionOrAppByURL(new_url);
-  bool is_new_url_for_web_store =
-      new_extension && new_extension->id() == kWebStoreAppId;
+  const Extension* dest_extension =
+      registry->enabled_extensions().GetExtensionOrAppByURL(
+          destination_effective_url);
+  bool is_dest_url_for_web_store =
+      dest_extension && dest_extension->id() == kWebStoreAppId;
 
   // First do a process check.  We should force a BrowsingInstance swap if we
   // are going to Chrome Web Store, but the current process doesn't know about
   // CWS, even if current_extension somehow corresponds to CWS.
   ProcessMap* process_map = ProcessMap::Get(site_instance->GetBrowserContext());
-  if (is_new_url_for_web_store && site_instance->HasProcess() &&
-      !process_map->Contains(new_extension->id(),
+  if (is_dest_url_for_web_store && site_instance->HasProcess() &&
+      !process_map->Contains(dest_extension->id(),
                              site_instance->GetProcess()->GetID()))
     return true;
 
   // Otherwise, swap BrowsingInstances when transitioning to/from Chrome Web
   // Store.
-  return is_current_url_for_web_store != is_new_url_for_web_store;
+  return is_current_url_for_web_store != is_dest_url_for_web_store;
 }
 
 // static
-bool ChromeContentBrowserClientExtensionsPart::AllowServiceWorker(
+bool ChromeContentBrowserClientExtensionsPart::AllowServiceWorkerOnIO(
     const GURL& scope,
     const GURL& first_party_url,
+    const GURL& script_url,
     content::ResourceContext* context) {
   // We only care about extension urls.
   if (!first_party_url.SchemeIs(kExtensionScheme))
@@ -671,130 +577,35 @@ bool ChromeContentBrowserClientExtensionsPart::AllowServiceWorker(
   InfoMap* extension_info_map = io_data->GetExtensionInfoMap();
   const Extension* extension =
       extension_info_map->extensions().GetExtensionOrAppByURL(first_party_url);
-  // Don't allow a service worker for an extension url with no extension (this
-  // could happen in the case of, e.g., an unloaded extension).
-  return extension != nullptr;
+  return AllowServiceWorker(scope, script_url, extension);
 }
 
 // static
-void ChromeContentBrowserClientExtensionsPart::OverrideNavigationParams(
-    content::SiteInstance* site_instance,
-    ui::PageTransition* transition,
-    bool* is_renderer_initiated,
-    content::Referrer* referrer) {
-  const Extension* extension =
-      ExtensionRegistry::Get(site_instance->GetBrowserContext())
-          ->enabled_extensions()
-          .GetExtensionOrAppByURL(site_instance->GetSiteURL());
-  if (!extension)
-    return;
+bool ChromeContentBrowserClientExtensionsPart::AllowServiceWorkerOnUI(
+    const GURL& scope,
+    const GURL& first_party_url,
+    const GURL& script_url,
+    content::BrowserContext* context) {
+  // We only care about extension urls.
+  if (!first_party_url.SchemeIs(kExtensionScheme))
+    return true;
 
-  // Hide the referrer for extension pages. We don't want sites to see a
-  // referrer of chrome-extension://<...>.
-  if (extension->is_extension())
-    *referrer = content::Referrer();
+  const Extension* extension = ExtensionRegistry::Get(context)
+                                   ->enabled_extensions()
+                                   .GetExtensionOrAppByURL(first_party_url);
+  return AllowServiceWorker(scope, script_url, extension);
 }
 
 // static
-bool ChromeContentBrowserClientExtensionsPart::ShouldAllowOpenURL(
-    content::SiteInstance* site_instance,
-    const GURL& to_url,
-    bool* result) {
-  DCHECK(result);
+std::vector<url::Origin> ChromeContentBrowserClientExtensionsPart::
+    GetOriginsRequiringDedicatedProcess() {
+  std::vector<url::Origin> list;
 
-  // Using url::Origin is important to properly handle blob: and filesystem:
-  // URLs.
-  url::Origin to_origin = url::Origin::Create(to_url);
-  if (to_origin.scheme() != kExtensionScheme) {
-    // We're not responsible for protecting this resource.  Note that hosted
-    // apps fall into this category.
-    return false;
-  }
+  // Require a dedicated process for the webstore origin.  See
+  // https://crbug.com/939108.
+  list.push_back(url::Origin::Create(extension_urls::GetWebstoreLaunchURL()));
 
-  // Do not allow pages from the web or other extensions navigate to
-  // non-web-accessible extension resources.
-
-  ExtensionRegistry* registry =
-      ExtensionRegistry::Get(site_instance->GetBrowserContext());
-  const Extension* to_extension =
-      registry->enabled_extensions().GetByID(to_origin.host());
-  if (!to_extension) {
-    // Treat non-existent extensions the same as an extension without accessible
-    // resources.
-    *result = false;
-    return true;
-  }
-
-  GURL site_url(site_instance->GetSiteURL());
-  const Extension* from_extension =
-      registry->enabled_extensions().GetExtensionOrAppByURL(site_url);
-  if (from_extension && from_extension == to_extension) {
-    *result = true;
-    return true;
-  }
-
-  // Blob and filesystem URLs are never considered web-accessible.  See
-  // https://crbug.com/656752.
-  if (to_url.SchemeIsFileSystem() || to_url.SchemeIsBlob()) {
-    if (to_url.SchemeIsFileSystem())
-      RecordShouldAllowOpenURLFailure(FAILURE_FILE_SYSTEM_URL, site_url);
-    else
-      RecordShouldAllowOpenURLFailure(FAILURE_BLOB_URL, site_url);
-
-    // TODO(alexmos): Temporary instrumentation to find any regressions for
-    // this blocking.  Remove after verifying that this is not breaking any
-    // legitimate use cases.
-    DEBUG_ALIAS_FOR_GURL(site_url_copy, site_url);
-    DEBUG_ALIAS_FOR_ORIGIN(to_origin_copy, to_origin);
-    base::debug::DumpWithoutCrashing();
-
-    *result = false;
-    return true;
-  }
-
-  // Navigations from chrome://, chrome-search:// and chrome-devtools:// pages
-  // need to be allowed, even if |to_url| is not web-accessible. See
-  // https://crbug.com/662602.
-  //
-  // Note that this is intentionally done after the check for blob: and
-  // filesystem: URLs above, for consistency with the renderer-side checks
-  // which already disallow navigations from chrome URLs to blob/filesystem
-  // URLs.
-  if (site_url.SchemeIs(content::kChromeUIScheme) ||
-      site_url.SchemeIs(content::kChromeDevToolsScheme) ||
-      site_url.SchemeIs(chrome::kChromeSearchScheme)) {
-    *result = true;
-    return true;
-  }
-
-  // <webview> guests should be allowed to load only webview-accessible
-  // resources, but that check is done later in
-  // AllowCrossRendererResourceLoadHelper, so allow <webview> guests to proceed
-  // here and rely on that check instead.  See https://crbug.com/691941.
-  if (site_url.SchemeIs(content::kGuestScheme)) {
-    *result = true;
-    return true;
-  }
-
-  if (WebAccessibleResourcesInfo::IsResourceWebAccessible(to_extension,
-                                                          to_url.path())) {
-    *result = true;
-    return true;
-  }
-
-  if (!site_url.SchemeIsHTTPOrHTTPS() && !site_url.SchemeIs(kExtensionScheme)) {
-    // This function used to incorrectly skip the web-accessible resource
-    // checks in this case. Measure how often this happens.  See also
-    // https://crbug.com/696034.
-    RecordShouldAllowOpenURLFailure(
-        FAILURE_SCHEME_NOT_HTTP_OR_HTTPS_OR_EXTENSION, site_url);
-  } else {
-    RecordShouldAllowOpenURLFailure(FAILURE_RESOURCE_NOT_WEB_ACCESSIBLE,
-                                    site_url);
-  }
-
-  *result = false;
-  return true;
+  return list;
 }
 
 // static
@@ -813,59 +624,19 @@ ChromeContentBrowserClientExtensionsPart::GetVpnServiceProxy(
 }
 
 // static
-void ChromeContentBrowserClientExtensionsPart::
-    LogInitiatorSchemeBypassingDocumentBlocking(
-        const url::Origin& initiator_origin,
-        int render_process_id,
-        content::ResourceType resource_type) {
-  // Return early if the RenderProcessHost can't be found.  This can happen if
-  // the process goes away for some reason during the IO -> UI thread hop
-  // required for calling LogInitiatorSchemeBypassingDocumentBlocking.
-  content::RenderProcessHost* process_host =
-      content::RenderProcessHost::FromID(render_process_id);
-  if (!process_host)
-    return;
-  content::BrowserContext* browser_context = process_host->GetBrowserContext();
-
-  // Until there is Site Isolation in GuestViews, CORB cannot offer protection
-  // against compromised renderers.  Therefore, let's ignore GuestViews when
-  // gathering the list of extensions that issue CORB-eligible requests.
-  if (process_host->IsForGuestsOnly())
-    return;
-
-  // Assert that |initiator_origin| corresponds to an extension and extract the
-  // |extension_id|.
-  DCHECK_EQ(kExtensionScheme, initiator_origin.scheme());
-  const std::string& extension_id = initiator_origin.host();
-  ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context);
-  DCHECK(registry);
-  DCHECK(registry->enabled_extensions().GetByID(extension_id));
-
-  // Don't log anything if the request was initiated by an extension process
-  // (we're only interested in requests initiated by content scripts).
-  ProcessMap* process_map = ProcessMap::Get(browser_context);
-  if (process_map->Contains(extension_id, render_process_id))
-    return;
-
-  // Log that CORB would have blocked in a meaningful way a request that was
-  // initiated by a content script.
-  UMA_HISTOGRAM_ENUMERATION("SiteIsolation.XSD.Browser.Allowed.ContentScript",
-                            resource_type, content::RESOURCE_TYPE_LAST_TYPE);
-  rappor::SampleString(rappor::GetDefaultService(),
-                       "Extensions.CrossOriginFetchFromContentScript2",
-                       rappor::UMA_RAPPOR_TYPE, extension_id);
-}
-
-// static
-network::mojom::URLLoaderFactoryPtrInfo
+mojo::PendingRemote<network::mojom::URLLoaderFactory>
 ChromeContentBrowserClientExtensionsPart::
     CreateURLLoaderFactoryForNetworkRequests(
         content::RenderProcessHost* process,
         network::mojom::NetworkContext* network_context,
-        network::mojom::TrustedURLLoaderHeaderClientPtrInfo* header_client,
-        const url::Origin& request_initiator) {
+        mojo::PendingRemote<network::mojom::TrustedURLLoaderHeaderClient>*
+            header_client,
+        const url::Origin& origin,
+        const url::Origin& main_world_origin,
+        const base::Optional<net::NetworkIsolationKey>& network_isolation_key) {
   return URLLoaderFactoryManager::CreateFactory(
-      process, network_context, header_client, request_initiator);
+      process, network_context, header_client, origin, main_world_origin,
+      network_isolation_key);
 }
 
 // static
@@ -882,53 +653,6 @@ bool ChromeContentBrowserClientExtensionsPart::IsBuiltinComponent(
       ->Exists(extension_id);
 }
 
-// static
-void ChromeContentBrowserClientExtensionsPart::RecordShouldAllowOpenURLFailure(
-    ShouldAllowOpenURLFailureReason reason,
-    const GURL& site_url) {
-  UMA_HISTOGRAM_ENUMERATION("Extensions.ShouldAllowOpenURL.Failure", reason,
-                            FAILURE_LAST);
-
-  // Must be kept in sync with the ShouldAllowOpenURLFailureScheme enum.
-  static const char* const kSchemeNames[] = {
-      "unknown",
-      "",
-      url::kHttpScheme,
-      url::kHttpsScheme,
-      url::kFileScheme,
-      url::kFtpScheme,
-      url::kDataScheme,
-      url::kJavaScriptScheme,
-      url::kAboutScheme,
-      content::kChromeUIScheme,
-      content::kChromeDevToolsScheme,
-      content::kGuestScheme,
-      content::kViewSourceScheme,
-      chrome::kChromeSearchScheme,
-      chrome::kChromeNativeScheme,
-      dom_distiller::kDomDistillerScheme,
-      extensions::kExtensionScheme,
-      url::kContentScheme,
-      url::kBlobScheme,
-      url::kFileSystemScheme,
-      "last",
-  };
-
-  static_assert(base::size(kSchemeNames) == SCHEME_LAST + 1,
-                "kSchemeNames should have SCHEME_LAST + 1 elements");
-
-  ShouldAllowOpenURLFailureScheme scheme = SCHEME_UNKNOWN;
-  for (int i = 1; i < SCHEME_LAST; i++) {
-    if (site_url.SchemeIs(kSchemeNames[i])) {
-      scheme = static_cast<ShouldAllowOpenURLFailureScheme>(i);
-      break;
-    }
-  }
-
-  UMA_HISTOGRAM_ENUMERATION("Extensions.ShouldAllowOpenURL.Failure.Scheme",
-                            scheme, SCHEME_LAST);
-}
-
 void ChromeContentBrowserClientExtensionsPart::RenderProcessWillLaunch(
     content::RenderProcessHost* host) {
   int id = host->GetID();
@@ -936,7 +660,6 @@ void ChromeContentBrowserClientExtensionsPart::RenderProcessWillLaunch(
 
   host->AddFilter(new ChromeExtensionMessageFilter(id, profile));
   host->AddFilter(new ExtensionMessageFilter(id, profile));
-  host->AddFilter(new IOThreadExtensionMessageFilter(id, profile));
   host->AddFilter(new ExtensionsGuestViewMessageFilter(id, profile));
   if (extensions::ExtensionsClient::Get()
           ->ExtensionAPIEnabledInExtensionServiceWorkers()) {
@@ -964,7 +687,7 @@ void ChromeContentBrowserClientExtensionsPart::SiteInstanceGotProcess(
                                    site_instance->GetProcess()->GetID(),
                                    site_instance->GetId());
 
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&InfoMap::RegisterExtensionProcess,
                      ExtensionSystem::Get(context)->info_map(), extension->id(),
@@ -989,7 +712,7 @@ void ChromeContentBrowserClientExtensionsPart::SiteInstanceDeleting(
                                    site_instance->GetProcess()->GetID(),
                                    site_instance->GetId());
 
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&InfoMap::UnregisterExtensionProcess,
                      ExtensionSystem::Get(context)->info_map(), extension->id(),
@@ -1066,11 +789,6 @@ void ChromeContentBrowserClientExtensionsPart::
   if (ProcessMap::Get(profile)->Contains(process->GetID())) {
     command_line->AppendSwitch(switches::kExtensionProcess);
   }
-}
-
-void ChromeContentBrowserClientExtensionsPart::ResourceDispatcherHostCreated() {
-  content::ResourceDispatcherHost::Get()->RegisterInterceptor(
-      "Origin", kExtensionScheme, base::Bind(&OnHttpHeaderReceived));
 }
 
 }  // namespace extensions

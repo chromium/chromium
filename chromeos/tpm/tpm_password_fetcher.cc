@@ -9,8 +9,7 @@
 #include "base/location.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chromeos/dbus/cryptohome_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/dbus/cryptohome/cryptohome_client.h"
 
 namespace chromeos {
 
@@ -22,7 +21,7 @@ const int kTpmCheckIntervalMs = 500;
 }  // namespace
 
 TpmPasswordFetcher::TpmPasswordFetcher(TpmPasswordFetcherDelegate* delegate)
-    : delegate_(delegate), weak_factory_(this) {
+    : delegate_(delegate) {
   DCHECK(delegate_);
 }
 
@@ -32,15 +31,14 @@ void TpmPasswordFetcher::Fetch() {
   // Since this method is also called directly.
   weak_factory_.InvalidateWeakPtrs();
 
-  DBusThreadManager::Get()->GetCryptohomeClient()->TpmIsReady(base::BindOnce(
+  CryptohomeClient::Get()->TpmIsReady(base::BindOnce(
       &TpmPasswordFetcher::OnTpmIsReady, weak_factory_.GetWeakPtr()));
 }
 
 void TpmPasswordFetcher::OnTpmIsReady(base::Optional<bool> tpm_is_ready) {
   if (tpm_is_ready.value_or(false)) {
-    DBusThreadManager::Get()->GetCryptohomeClient()->TpmGetPassword(
-        base::BindOnce(&TpmPasswordFetcher::OnTpmGetPassword,
-                       weak_factory_.GetWeakPtr()));
+    CryptohomeClient::Get()->TpmGetPassword(base::BindOnce(
+        &TpmPasswordFetcher::OnTpmGetPassword, weak_factory_.GetWeakPtr()));
   } else {
     // Password hasn't been acquired, reschedule fetch.
     RescheduleFetch();

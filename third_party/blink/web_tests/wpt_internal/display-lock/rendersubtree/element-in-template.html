@@ -1,0 +1,51 @@
+<!doctype HTML>
+<html>
+<meta charset="utf8">
+<title>Display Locking: element in template</title>
+<link rel="author" title="Rakina Zata Amni" href="mailto:rakina@chromium.org">
+<link rel="help" href="https://github.com/WICG/display-locking">
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/utils.js"></script>
+
+<template id=template><div id="child">foo</div></template>
+<div id="container"></div>
+
+<script>
+
+async_test((t) => {
+
+  async function templateTest() {
+    const templateChild = template.content.firstChild;
+
+    const acquirePromise = setInvisible(templateChild);
+    await acquirePromise;
+    t.step(() => assert_equals(templateChild.renderSubtree, INVISIBLE_NOT_ACTIVATABLE, "Can lock element in template"));
+
+    const adoptedNode = document.adoptNode(templateChild);
+    t.step(() => assert_equals(adoptedNode.renderSubtree, INVISIBLE_NOT_ACTIVATABLE, "Adopted element is still locked"));
+
+    container.appendChild(adoptedNode);
+    t.step(() => assert_equals(adoptedNode.renderSubtree, INVISIBLE_NOT_ACTIVATABLE, "Still locked after appended"));
+
+    await setVisible(adoptedNode);
+    t.step(() => assert_equals(adoptedNode.renderSubtree, "", "Can commit"));
+
+    await setInvisible(adoptedNode);
+
+    t.step(() => assert_equals(adoptedNode.renderSubtree, INVISIBLE_NOT_ACTIVATABLE, "Can re-lock element"));
+
+    await setVisible(adoptedNode);
+    t.step(() => assert_equals(adoptedNode.renderSubtree, "", "Can re-commit element"));
+
+    t.done();
+  }
+
+  window.onload = function() {
+    requestAnimationFrame(() => requestAnimationFrame(templateTest));
+  };
+}, "Testing locking element in templates");
+
+</script>
+</html>

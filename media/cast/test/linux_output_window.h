@@ -31,7 +31,7 @@ class LinuxOutputWindow {
                     const std::string& name);
   virtual ~LinuxOutputWindow();
 
-  void RenderFrame(const scoped_refptr<media::VideoFrame>& video_frame);
+  void RenderFrame(const media::VideoFrame& video_frame);
 
  private:
   void CreateWindow(int x_pos,

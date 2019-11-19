@@ -40,6 +40,8 @@ class PLATFORM_EXPORT CanvasResourceHost {
 
   virtual void DiscardResourceProvider();
 
+  virtual bool IsPrinting() const { return false; }
+
  private:
   std::unique_ptr<CanvasResourceProvider> resource_provider_;
 };

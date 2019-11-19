@@ -7,7 +7,7 @@
 
 #include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 #include <limits>
@@ -33,6 +33,7 @@ class PLATFORM_EXPORT CullRect {
 
   bool Intersects(const IntRect&) const;
   bool Intersects(const LayoutRect&) const;
+  bool Intersects(const LayoutRect&, const LayoutPoint& offset) const;
   bool IntersectsTransformed(const AffineTransform&, const FloatRect&) const;
   bool IntersectsHorizontalRange(LayoutUnit lo, LayoutUnit hi) const;
   bool IntersectsVerticalRange(LayoutUnit lo, LayoutUnit hi) const;
@@ -44,7 +45,8 @@ class PLATFORM_EXPORT CullRect {
   // the cull rect is in the space of the parent the transform node.
   // For CompositeAfterPaint, when the transform is a scroll translation, the
   // cull rect is converted in the following steps:
-  // 1. it's clipped by the container rect,
+  // 1. it's clipped by the container rect if |clip_to_scroll_container| is
+  //    true,
   // 2. transformed by inverse of the scroll translation,
   // 3. expanded by thousands of pixels for composited scrolling.
   void ApplyTransform(const TransformPaintPropertyNode& transform) {
@@ -60,7 +62,8 @@ class PLATFORM_EXPORT CullRect {
   // will be set to |old_cull_rect| to avoid repaint on each composited scroll.
   void ApplyTransforms(const TransformPaintPropertyNode& source,
                        const TransformPaintPropertyNode& destination,
-                       const base::Optional<CullRect>& old_cull_rect);
+                       const base::Optional<CullRect>& old_cull_rect,
+                       bool clip_to_scroll_container = true);
 
   const IntRect& Rect() const { return rect_; }
 
@@ -83,7 +86,8 @@ class PLATFORM_EXPORT CullRect {
     kExpandedForPartialScrollingContents,
   };
   ApplyTransformResult ApplyTransformInternal(
-      const TransformPaintPropertyNode&);
+      const TransformPaintPropertyNode&,
+      bool clip_to_scroll_container = true);
 
   bool ChangedEnough(const CullRect& old_cull_rect) const;
 

@@ -13,30 +13,44 @@ namespace {
 // We stash an enum value in the first character of the string16 that is
 // associated with this key.
 const char kPasswordStateKey[] = "sessions_password_state";
-}
+
+class PasswordStateData : public base::SupportsUserData::Data {
+ public:
+  explicit PasswordStateData(
+      SerializedNavigationEntry::PasswordState password_state)
+      : password_state_(password_state) {}
+  ~PasswordStateData() override = default;
+
+  SerializedNavigationEntry::PasswordState password_state() const {
+    return password_state_;
+  }
+
+  // base::SupportsUserData::Data:
+  std::unique_ptr<Data> Clone() override {
+    return std::make_unique<PasswordStateData>(password_state_);
+  }
+
+ private:
+  const SerializedNavigationEntry::PasswordState password_state_;
+
+  DISALLOW_COPY_AND_ASSIGN(PasswordStateData);
+};
+
+}  // namespace
 
 SerializedNavigationEntry::PasswordState GetPasswordStateFromNavigation(
     content::NavigationEntry* entry) {
-  base::string16 password_state_str;
-  if (!entry->GetExtraData(kPasswordStateKey, &password_state_str) ||
-      password_state_str.size() != 1) {
-    return SerializedNavigationEntry::PASSWORD_STATE_UNKNOWN;
-  }
-
-  SerializedNavigationEntry::PasswordState state =
-      static_cast<SerializedNavigationEntry::PasswordState>(
-          password_state_str[0]);
-
-  DCHECK_GE(state, SerializedNavigationEntry::PASSWORD_STATE_UNKNOWN);
-  DCHECK_LE(state, SerializedNavigationEntry::HAS_PASSWORD_FIELD);
-  return state;
+  PasswordStateData* data =
+      static_cast<PasswordStateData*>(entry->GetUserData(kPasswordStateKey));
+  return data ? data->password_state()
+              : SerializedNavigationEntry::PASSWORD_STATE_UNKNOWN;
 }
 
 void SetPasswordStateInNavigation(
     SerializedNavigationEntry::PasswordState state,
     content::NavigationEntry* entry) {
-  base::string16 password_state_str(1, static_cast<uint16_t>(state));
-  entry->SetExtraData(kPasswordStateKey, password_state_str);
+  entry->SetUserData(kPasswordStateKey,
+                     std::make_unique<PasswordStateData>(state));
 }
 
 }  // namespace sessions

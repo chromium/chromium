@@ -30,11 +30,15 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_frame_navigation_observer.h"
 #include "content/public/test/test_navigation_observer.h"
-#include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_javascript_dialog_manager.h"
 #include "net/base/filename_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+
+#if defined(OS_WIN)
+#include "ui/views/test/desktop_window_tree_host_win_test_api.h"  // nogncheck
+#include "ui/views/widget/desktop_aura/desktop_window_tree_host_win.h"
+#endif  // defined(OS_WIN)
 
 namespace content {
 
@@ -80,7 +84,13 @@ void ReloadBypassingCacheBlockUntilNavigationsComplete(
 }
 
 bool NavigateToURL(Shell* window, const GURL& url) {
-  return NavigateToURL(window->web_contents(), url);
+  return NavigateToURL(window, url, url);
+}
+
+bool NavigateToURL(Shell* window,
+                   const GURL& url,
+                   const GURL& expected_commit_url) {
+  return NavigateToURL(window->web_contents(), url, expected_commit_url);
 }
 
 bool NavigateToURLFromRenderer(const ToRenderFrameHost& adapter,
@@ -90,7 +100,8 @@ bool NavigateToURLFromRenderer(const ToRenderFrameHost& adapter,
   if (!ExecJs(rfh, JsReplace("location = $1", url)))
     return false;
   nav_observer.Wait();
-  return nav_observer.last_committed_url() == url;
+  return nav_observer.last_committed_url() == url &&
+         nav_observer.last_navigation_succeeded();
 }
 
 bool NavigateToURLFromRendererWithoutUserGesture(
@@ -120,9 +131,9 @@ void WaitForAppModalDialog(Shell* window) {
       static_cast<ShellJavaScriptDialogManager*>(
           window->GetJavaScriptDialogManager(window->web_contents()));
 
-  scoped_refptr<MessageLoopRunner> runner = new MessageLoopRunner();
-  dialog_manager->set_dialog_request_callback(runner->QuitClosure());
-  runner->Run();
+  base::RunLoop runner;
+  dialog_manager->set_dialog_request_callback(runner.QuitClosure());
+  runner.Run();
 }
 
 RenderFrameHost* ConvertToRenderFrameHost(Shell* shell) {
@@ -134,7 +145,7 @@ void LookupAndLogNameAndIdOfFirstCamera() {
   MediaStreamManager* media_stream_manager =
       BrowserMainLoop::GetInstance()->media_stream_manager();
   base::RunLoop run_loop;
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {content::BrowserThread::IO},
       base::BindOnce(
           [](MediaStreamManager* media_stream_manager,
@@ -159,18 +170,18 @@ void LookupAndLogNameAndIdOfFirstCamera() {
   run_loop.Run();
 }
 
-ShellAddedObserver::ShellAddedObserver() : shell_(nullptr) {
-  Shell::SetShellCreatedCallback(
-      base::Bind(&ShellAddedObserver::ShellCreated, base::Unretained(this)));
+ShellAddedObserver::ShellAddedObserver() {
+  Shell::SetShellCreatedCallback(base::BindOnce(
+      &ShellAddedObserver::ShellCreated, base::Unretained(this)));
 }
 
-ShellAddedObserver::~ShellAddedObserver() {}
+ShellAddedObserver::~ShellAddedObserver() = default;
 
 Shell* ShellAddedObserver::GetShell() {
   if (shell_)
     return shell_;
 
-  runner_ = new MessageLoopRunner();
+  runner_ = std::make_unique<base::RunLoop>();
   runner_->Run();
   return shell_;
 }
@@ -178,8 +189,8 @@ Shell* ShellAddedObserver::GetShell() {
 void ShellAddedObserver::ShellCreated(Shell* shell) {
   DCHECK(!shell_);
   shell_ = shell;
-  if (runner_.get())
-    runner_->QuitClosure().Run();
+  if (runner_)
+    runner_->Quit();
 }
 
 void IsolateOriginsForTesting(
@@ -193,7 +204,9 @@ void IsolateOriginsForTesting(
   }
 
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
-  policy->AddIsolatedOrigins(origins_to_isolate);
+  policy->AddIsolatedOrigins(
+      origins_to_isolate,
+      ChildProcessSecurityPolicy::IsolatedOriginSource::TEST);
 
   // Force a BrowsingInstance swap by navigating cross-site (the newly
   // isolated origin only affects *future* BrowsingInstances).
@@ -222,5 +235,17 @@ void IsolateOriginsForTesting(
         new_site_instance->GetIsolationContext(), origin));
   }
 }
+
+#if defined(OS_WIN)
+
+void SetMockCursorPositionForTesting(WebContents* web_contents,
+                                     const gfx::Point& position) {
+  views::test::DesktopWindowTreeHostWinTestApi host(
+      static_cast<views::DesktopWindowTreeHostWin*>(
+          web_contents->GetNativeView()->GetHost()));
+  host.SetMockCursorPositionForTesting(position);
+}
+
+#endif  // defined(OS_WIN)
 
 }  // namespace content

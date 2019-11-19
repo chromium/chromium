@@ -34,6 +34,19 @@ source_set("infobars") {
   ]
 }
 
+source_set("badge_public") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "infobar_badge_model.h",
+    "infobar_badge_model.mm",
+  ]
+  deps = [
+    ":public",
+    "//base",
+    "//ios/chrome/browser/ui/badges:public",
+  ]
+}
+
 source_set("badge") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
@@ -42,7 +55,10 @@ source_set("badge") {
     "infobar_badge_tab_helper_delegate.h",
   ]
   deps = [
+    ":badge_public",
     ":infobars",
+    ":public",
+    "//ios/chrome/browser/ui/badges:public",
     "//ios/chrome/browser/ui/infobars:feature_flags",
     "//ios/chrome/browser/ui/infobars:infobars_ui",
     "//ios/web",
@@ -52,6 +68,37 @@ source_set("badge") {
 source_set("public") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
+    "confirm_infobar_metrics_recorder.h",
+    "confirm_infobar_metrics_recorder.mm",
     "infobar_controller_delegate.h",
+    "infobar_metrics_recorder.h",
+    "infobar_metrics_recorder.mm",
+    "infobar_type.h",
+  ]
+  deps = [
+    "//base",
+  ]
+}
+
+source_set("unit_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [
+    "infobar_badge_tab_helper_unittest.mm",
+  ]
+  deps = [
+    ":badge",
+    ":infobars",
+    "//base/test:test_support",
+    "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/infobars:public",
+    "//ios/chrome/browser/ui/badges:public",
+    "//ios/chrome/browser/ui/infobars:feature_flags",
+    "//ios/chrome/browser/ui/infobars:infobars_ui",
+    "//ios/chrome/browser/ui/infobars:test_support",
+    "//ios/chrome/browser/ui/infobars/coordinators",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test/fakes",
+    "//testing/gtest",
   ]
 }

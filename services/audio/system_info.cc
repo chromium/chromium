@@ -20,10 +20,10 @@ SystemInfo::~SystemInfo() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(binding_sequence_checker_);
 }
 
-void SystemInfo::Bind(mojom::SystemInfoRequest request,
+void SystemInfo::Bind(mojo::PendingReceiver<mojom::SystemInfo> receiver,
                       TracedServiceRef context_ref) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(binding_sequence_checker_);
-  bindings_.AddBinding(this, std::move(request), std::move(context_ref));
+  receivers_.Add(this, std::move(receiver), std::move(context_ref));
 }
 
 void SystemInfo::GetInputStreamParameters(

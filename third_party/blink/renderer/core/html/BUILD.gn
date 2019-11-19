@@ -2,12 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/split_static_library.gni")
 import("//third_party/blink/renderer/core/core.gni")
 
 blink_core_sources("html") {
-  split_count = 4
-
   sources = [
     "anchor_element_metrics.cc",
     "anchor_element_metrics.h",
@@ -121,6 +118,8 @@ blink_core_sources("html") {
     "forms/checkbox_input_type.h",
     "forms/chooser_only_temporal_input_type_view.cc",
     "forms/chooser_only_temporal_input_type_view.h",
+    "forms/chooser_resource_loader.cc",
+    "forms/chooser_resource_loader.h",
     "forms/clear_button_element.cc",
     "forms/clear_button_element.h",
     "forms/color_chooser.cc",
@@ -503,8 +502,14 @@ blink_core_sources("html") {
     "portal/dom_window_portal_host.h",
     "portal/html_portal_element.cc",
     "portal/html_portal_element.h",
+    "portal/portal_activate_event.cc",
+    "portal/portal_activate_event.h",
+    "portal/portal_contents.cc",
+    "portal/portal_contents.h",
     "portal/portal_host.cc",
     "portal/portal_host.h",
+    "portal/portal_post_message_helper.cc",
+    "portal/portal_post_message_helper.h",
     "rel_list.cc",
     "rel_list.h",
     "shadow/details_marker_control.cc",
@@ -576,6 +581,26 @@ blink_core_sources("html") {
   deps = [
     "//services/metrics/public/cpp:metrics_cpp",
     "//skia:skcms",
+    "//third_party/blink/public/strings",
     "//third_party/blink/renderer/core/html/parser:parser",
+  ]
+}
+
+copy("form_controls_pickers_js") {
+  testonly = true
+
+  sources = [
+    "forms/resources/color_picker.js",
+  ]
+
+  outputs = [
+    "{{source_gen_dir}}/{{source_file_part}}",
+  ]
+}
+
+group("js_files_for_form_controls_web_tests") {
+  testonly = true
+  data_deps = [
+    ":form_controls_pickers_js",
   ]
 }

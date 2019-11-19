@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "components/arc/common/wallpaper.mojom.h"
+#include "components/arc/mojom/wallpaper.mojom.h"
 
 namespace arc {
 

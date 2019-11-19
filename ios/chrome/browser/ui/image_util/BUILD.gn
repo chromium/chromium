@@ -4,14 +4,24 @@
 
 source_set("image_util") {
   sources = [
-    "image_copier.h",
-    "image_copier.mm",
-    "image_saver.h",
-    "image_saver.mm",
     "image_util.h",
     "image_util.mm",
   ]
   deps = [
+    "//ui/base",
+  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+source_set("web") {
+  sources = [
+    "image_copier.h",
+    "image_copier.mm",
+    "image_saver.h",
+    "image_saver.mm",
+  ]
+  deps = [
+    ":image_util",
     "//base",
     "//components/image_fetcher/core",
     "//components/image_fetcher/ios",
@@ -20,8 +30,6 @@ source_set("image_util") {
     "//ios/chrome/browser/ui/alert_coordinator",
     "//ios/chrome/browser/web",
     "//ios/web",
-    "//net",
-    "//third_party/google_toolbox_for_mac",
     "//ui/base",
   ]
   configs += [ "//build/config/compiler:enable_arc" ]

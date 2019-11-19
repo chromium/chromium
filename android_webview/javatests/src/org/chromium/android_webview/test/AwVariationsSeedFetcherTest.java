@@ -21,22 +21,18 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.android_webview.VariationsUtils;
+import org.chromium.android_webview.common.variations.VariationsUtils;
 import org.chromium.android_webview.services.AwVariationsSeedFetcher;
-import org.chromium.android_webview.services.ServiceInit;
 import org.chromium.android_webview.test.util.VariationsTestUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.components.background_task_scheduler.TaskIds;
 import org.chromium.components.variations.firstrun.VariationsSeedFetcher;
-import org.chromium.components.variations.firstrun.VariationsSeedFetcher.SeedInfo;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.SocketTimeoutException;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -45,7 +41,8 @@ import java.util.concurrent.TimeoutException;
 @RunWith(AwJUnit4ClassRunner.class)
 @OnlyRunIn(SINGLE_PROCESS)
 public class AwVariationsSeedFetcherTest {
-    private static final int JOB_ID = TaskIds.WEBVIEW_VARIATIONS_SEED_FETCH_JOB_ID;
+    // Jan 1, 2019 12:00AM GMT
+    private static final long FAKE_NOW_MS = 1546300800000L;
 
     // A mock JobScheduler which only holds one job, and never does anything with it.
     private class MockJobScheduler extends JobScheduler {
@@ -55,12 +52,10 @@ public class AwVariationsSeedFetcherTest {
             mJob = null;
         }
 
-        public void assertScheduled() {
+        public void assertScheduledWithDelayEqualTo(long delay) {
             Assert.assertNotNull("No job scheduled", mJob);
-        }
-
-        public void assertNotScheduled() {
-            Assert.assertNull("Job should not have been scheduled", mJob);
+            Assert.assertEquals(
+                    "Job scheduled with wrong delay", delay, mJob.getMinLatencyMillis());
         }
 
         @Override
@@ -93,7 +88,8 @@ public class AwVariationsSeedFetcherTest {
 
         @Override
         public int schedule(JobInfo job) {
-            Assert.assertEquals("Job scheduled with wrong ID", JOB_ID, job.getId());
+            Assert.assertEquals(
+                    "Job scheduled with wrong ID", AwVariationsSeedFetcher.JOB_ID, job.getId());
             Assert.assertEquals("Job scheduled with wrong network type",
                     JobInfo.NETWORK_TYPE_ANY, job.getNetworkType());
             Assert.assertTrue("Job scheduled without charging requirement",
@@ -110,8 +106,7 @@ public class AwVariationsSeedFetcherTest {
 
         @Override
         public SeedInfo downloadContent(@VariationsSeedFetcher.VariationsPlatform int platform,
-                String restrictMode, String milestone, String channel)
-                throws SocketTimeoutException, UnknownHostException, IOException {
+                String restrictMode, String milestone, String channel) {
             Assert.assertEquals(VariationsSeedFetcher.VariationsPlatform.ANDROID_WEBVIEW, platform);
             Assert.assertTrue(Integer.parseInt(milestone) > 0);
             helper.notifyCalled();
@@ -124,8 +119,8 @@ public class AwVariationsSeedFetcherTest {
 
     @Before
     public void setUp() throws IOException {
-        ServiceInit.setPrivateDataDirectorySuffix();
         AwVariationsSeedFetcher.setMocks(mScheduler, mDownloader);
+        AwVariationsSeedFetcher.setMinJobPeriodMillisForTesting(TimeUnit.DAYS.toMillis(1));
         VariationsTestUtils.deleteSeeds();
     }
 
@@ -140,8 +135,8 @@ public class AwVariationsSeedFetcherTest {
     @SmallTest
     public void testScheduleWithNoStamp() {
         try {
-            AwVariationsSeedFetcher.scheduleIfNeeded();
-            mScheduler.assertScheduled();
+            AwVariationsSeedFetcher.scheduleIfNeeded(FAKE_NOW_MS);
+            mScheduler.assertScheduledWithDelayEqualTo(0);
         } finally {
             mScheduler.clear();
         }
@@ -157,25 +152,30 @@ public class AwVariationsSeedFetcherTest {
             Assert.assertFalse("Stamp file already exists", stamp.exists());
             Assert.assertTrue("Failed to create stamp file", stamp.createNewFile());
             Assert.assertTrue("Failed to set stamp time", stamp.setLastModified(0));
-            AwVariationsSeedFetcher.scheduleIfNeeded();
-            mScheduler.assertScheduled();
+            AwVariationsSeedFetcher.scheduleIfNeeded(FAKE_NOW_MS);
+            mScheduler.assertScheduledWithDelayEqualTo(0);
         } finally {
             mScheduler.clear();
             VariationsTestUtils.deleteSeeds(); // Remove the stamp file.
         }
     }
 
-    // Create a stamp file with time = now, indicating the download job ran recently. Then test
-    // scheduleIfNeeded(), which should not schedule a job.
+    // Create a stamp file with time = 7 hours ago, indicating the download job ran recently. Then
+    // test scheduleIfNeeded(), which should schedule the job 17 hours in the future.
     @Test
     @MediumTest
     public void testScheduleWithFreshStamp() throws IOException {
+        long seedAge = TimeUnit.HOURS.toMillis(7);
         File stamp = VariationsUtils.getStampFile();
         try {
+            long stampLastModified = FAKE_NOW_MS - seedAge;
             Assert.assertFalse("Stamp file already exists", stamp.exists());
             Assert.assertTrue("Failed to create stamp file", stamp.createNewFile());
-            AwVariationsSeedFetcher.scheduleIfNeeded();
-            mScheduler.assertNotScheduled();
+            Assert.assertTrue("Failed to set stamp time", stamp.setLastModified(stampLastModified));
+
+            AwVariationsSeedFetcher.scheduleIfNeeded(FAKE_NOW_MS);
+
+            mScheduler.assertScheduledWithDelayEqualTo(TimeUnit.HOURS.toMillis(17));
         } finally {
             mScheduler.clear();
             VariationsTestUtils.deleteSeeds(); // Remove the stamp file.
@@ -192,15 +192,15 @@ public class AwVariationsSeedFetcherTest {
             @SuppressLint("JobSchedulerService")
             ComponentName component = new ComponentName(
                     ContextUtils.getApplicationContext(), AwVariationsSeedFetcher.class);
-            JobInfo job = new JobInfo.Builder(JOB_ID, component)
-                    .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
-                    .setRequiresCharging(true)
-                    .build();
+            JobInfo job = new JobInfo.Builder(AwVariationsSeedFetcher.JOB_ID, component)
+                                  .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
+                                  .setRequiresCharging(true)
+                                  .build();
             mScheduler.schedule(job);
-            AwVariationsSeedFetcher.scheduleIfNeeded();
+            AwVariationsSeedFetcher.scheduleIfNeeded(FAKE_NOW_MS);
             // Check that our job object hasn't been replaced (meaning that scheduleIfNeeded didn't
             // schedule a job).
-            Assert.assertSame(job, mScheduler.getPendingJob(JOB_ID));
+            Assert.assertSame(job, mScheduler.getPendingJob(AwVariationsSeedFetcher.JOB_ID));
         } finally {
             mScheduler.clear();
         }
@@ -208,7 +208,7 @@ public class AwVariationsSeedFetcherTest {
 
     @Test
     @SmallTest
-    public void testFetch() throws IOException, InterruptedException, TimeoutException {
+    public void testFetch() throws IOException, TimeoutException {
         try {
             AwVariationsSeedFetcher fetcher = new AwVariationsSeedFetcher() {
                 // p is null in this test. Don't actually call JobService.jobFinished.

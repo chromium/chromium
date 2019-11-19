@@ -12,9 +12,9 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "chrome/browser/download/download_shelf.h"
-#include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/views/accessible_pane_view.h"
+#include "ui/views/animation/animation_delegate_views.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/link_listener.h"
 #include "ui/views/mouse_watcher.h"
@@ -38,7 +38,7 @@ class MdTextButton;
 // DownloadShelfView does not hold an infinite number of download views, rather
 // it'll automatically remove views once a certain point is reached.
 class DownloadShelfView : public views::AccessiblePaneView,
-                          public gfx::AnimationDelegate,
+                          public views::AnimationDelegateViews,
                           public DownloadShelf,
                           public views::ButtonListener,
                           public views::LinkListener,
@@ -60,7 +60,7 @@ class DownloadShelfView : public views::AccessiblePaneView,
   gfx::Size CalculatePreferredSize() const override;
   void Layout() override;
 
-  // gfx::AnimationDelegate.
+  // views::AnimationDelegateViews.
   void AnimationProgressed(const gfx::Animation* animation) override;
   void AnimationEnded(const gfx::Animation* animation) override;
 
@@ -117,19 +117,6 @@ class DownloadShelfView : public views::AccessiblePaneView,
   // Padding between the show all link and close button.
   static constexpr int kCloseAndLinkPadding = 6;
 
-  // New download item animation speed in milliseconds.
-  static constexpr int kNewItemAnimationDurationMs = 800;
-
-  // Shelf show/hide speed.
-  static constexpr int kShelfAnimationDurationMs = 120;
-
-  // Amount of time to delay if the mouse leaves the shelf by way of entering
-  // another window. This is much larger than the normal delay as opening a
-  // download is most likely going to trigger a new window to appear over the
-  // button. Delay the time so that the user has a chance to quickly close the
-  // other app and return to chrome with the download shelf still open.
-  static constexpr int kNotifyOnExitTimeMS = 5000;
-
   // Adds a View representing a download to this DownloadShelfView.
   // DownloadShelfView takes ownership of the View, and will delete it as
   // necessary.
@@ -168,7 +155,7 @@ class DownloadShelfView : public views::AccessiblePaneView,
   std::vector<DownloadItemView*> download_views_;
 
   // Button for showing all downloads (chrome://downloads).
-  views::MdTextButton* show_all_view_;
+  views::MdTextButton* show_all_view_ = nullptr;
 
   // Button for closing the downloads. This is contained as a child, and
   // deleted by View.

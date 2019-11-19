@@ -9,7 +9,7 @@
 #include <sys/socket.h>
 #endif  // defined(OS_POSIX)
 
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "content/test/mock_render_process.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -19,9 +19,8 @@ namespace content {
 class PepperBrokerTest : public ::testing::Test {
  protected:
   PepperBrokerTest()
-      : task_environment_(
-            base::test::ScopedTaskEnvironment::MainThreadType::IO) {}
-  base::test::ScopedTaskEnvironment task_environment_;
+      : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {}
+  base::test::TaskEnvironment task_environment_;
   // We need a render process for ppapi::proxy::ProxyChannel to work.
   MockRenderProcess mock_process_;
 };

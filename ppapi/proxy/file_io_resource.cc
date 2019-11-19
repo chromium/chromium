@@ -402,7 +402,7 @@ void FileIOResource::Close() {
   }
 
   if (file_holder_.get())
-    file_holder_ = NULL;
+    file_holder_.reset();
 
   Post(BROWSER, PpapiHostMsg_FileIO_Close(
       FileGrowth(max_written_offset_, append_mode_write_amount_)));
@@ -669,7 +669,7 @@ void FileIOResource::OnPluginMsgOpenFileComplete(
          FileIOStateManager::OPERATION_EXCLUSIVE);
 
   // Release the FileRef resource.
-  file_ref_ = NULL;
+  file_ref_.reset();
   int32_t result = params.result();
   if (result == PP_OK) {
     state_manager_.SetOpenSucceed();

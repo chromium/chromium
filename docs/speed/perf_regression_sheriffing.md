@@ -63,6 +63,8 @@ below it the dashboard shows graphs of all the alerts checked in that table.
     * If one of the alerts already has a bug id, click "existing bug" and use
       that bug id.
     * Otherwise click "new bug".
+    * Only add a description if you have additional context. Otherwise a default
+      description will be automatically added when left blank.
 5. **Look at the revision range** for the regression. You can see it in the
    tooltip on the graph. If you see any likely culprits, cc the authors on the
    bug.
@@ -73,6 +75,12 @@ below it the dashboard shows graphs of all the alerts checked in that table.
    and kick off a bisect for it. There should be capacity to kick off as many
    bisects as you feel are necessary to investigate; [give feedback](#feedback)
    below if you feel that is not the case.
+
+### Dashboard UI Tips
+
+* Grouping is done client side today. If you click "Show more" at the bottom
+until you can see all the alerts, the alerts will be grouped together more.
+* You can shift click on the check boxes to select multiple alerts quickly.
 
 ## Follow up on Performance Regressions
 

@@ -5,9 +5,11 @@
 #ifndef COMPONENTS_SYNC_MODEL_ENTITY_CHANGE_H_
 #define COMPONENTS_SYNC_MODEL_ENTITY_CHANGE_H_
 
+#include <memory>
 #include <string>
 #include <vector>
 
+#include "base/macros.h"
 #include "components/sync/model/entity_data.h"
 
 namespace syncer {
@@ -16,30 +18,34 @@ class EntityChange {
  public:
   enum ChangeType { ACTION_ADD, ACTION_UPDATE, ACTION_DELETE };
 
-  static EntityChange CreateAdd(const std::string& storage_key,
-                                EntityDataPtr data);
-  static EntityChange CreateUpdate(const std::string& storage_key,
-                                   EntityDataPtr data);
-  static EntityChange CreateDelete(const std::string& storage_key);
+  static std::unique_ptr<EntityChange> CreateAdd(
+      const std::string& storage_key,
+      std::unique_ptr<EntityData> data);
+  static std::unique_ptr<EntityChange> CreateUpdate(
+      const std::string& storage_key,
+      std::unique_ptr<EntityData> data);
+  static std::unique_ptr<EntityChange> CreateDelete(
+      const std::string& storage_key);
 
-  EntityChange(const EntityChange& other);
   virtual ~EntityChange();
 
   std::string storage_key() const { return storage_key_; }
   ChangeType type() const { return type_; }
-  const EntityData& data() const { return data_.value(); }
+  const EntityData& data() const { return *data_; }
 
  private:
   EntityChange(const std::string& storage_key,
                ChangeType type,
-               EntityDataPtr data);
+               std::unique_ptr<EntityData> data);
 
   std::string storage_key_;
   ChangeType type_;
-  EntityDataPtr data_;
+  std::unique_ptr<EntityData> data_;
+
+  DISALLOW_COPY_AND_ASSIGN(EntityChange);
 };
 
-using EntityChangeList = std::vector<EntityChange>;
+using EntityChangeList = std::vector<std::unique_ptr<EntityChange>>;
 
 }  // namespace syncer
 

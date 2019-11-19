@@ -3,7 +3,7 @@
 <title>Compositing - Huge &lt;div&gt;</title>
 </head>
 <body>
-<div id="big" style="-webkit-transform: translateZ(0);">
+<div id="big" style="will-change: transform;">
   <div style="left: 0px; top:  0px; width: 100px; height: 100px; position: absolute; background-color: green;"></div>
   <div style="left: 3000000px; top:  1000000px; width: 100px; height: 100px; position: absolute; background-color: red;" id="bottomRight"></div>
 </div>

@@ -17,7 +17,7 @@ StaticSizedView::StaticSizedView(const gfx::Size& preferred_size)
     : preferred_size_(preferred_size),
       minimum_size_(preferred_size) {}
 
-StaticSizedView::~StaticSizedView() {}
+StaticSizedView::~StaticSizedView() = default;
 
 gfx::Size StaticSizedView::CalculatePreferredSize() const {
   return preferred_size_;
@@ -34,7 +34,7 @@ gfx::Size StaticSizedView::GetMaximumSize() const {
 ProportionallySizedView::ProportionallySizedView(int factor)
     : factor_(factor), preferred_width_(-1) {}
 
-ProportionallySizedView::~ProportionallySizedView() {}
+ProportionallySizedView::~ProportionallySizedView() = default;
 
 void ProportionallySizedView::SetPreferredWidth(int width) {
   preferred_width_ = width;
@@ -69,10 +69,9 @@ void CloseWidgetView::OnEvent(ui::Event* event) {
   }
 }
 
-EventCountView::EventCountView()
-    : last_flags_(0), handle_mode_(PROPAGATE_EVENTS) {}
+EventCountView::EventCountView() = default;
 
-EventCountView::~EventCountView() {}
+EventCountView::~EventCountView() = default;
 
 int EventCountView::GetEventCount(ui::EventType type) {
   return event_count_[type];
@@ -112,7 +111,8 @@ void EventCountView::RecordEvent(ui::Event* event) {
 }
 
 ResizeAwareParentView::ResizeAwareParentView() {
-  SetLayoutManager(std::make_unique<BoxLayout>(BoxLayout::kHorizontal));
+  SetLayoutManager(
+      std::make_unique<BoxLayout>(BoxLayout::Orientation::kHorizontal));
 }
 
 void ResizeAwareParentView::ChildPreferredSizeChanged(View* child) {

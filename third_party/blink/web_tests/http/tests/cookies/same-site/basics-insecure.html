@@ -1,0 +1,25 @@
+<!doctype html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/cookies/resources/testharness-helpers.js"></script>
+<script>
+// This test cannot be done in basics.https.html because we disallow mixed content.
+promise_test(_ => {
+    clearKnownCookies();
+    assert_equals(document.cookie, "");
+
+    document.cookie = STRICT_DOM + "=2; SameSite=Strict; path=/";
+    document.cookie = LAX_DOM + "=2; SameSite=Lax; path=/";
+    document.cookie = UNSPECIFIED_DOM + "=2; path=/";
+    // Not testing SameSite=None here because those cookies must be Secure.
+    assert_equals(document.cookie, STRICT_DOM + "=2; " + LAX_DOM + "=2; " + UNSPECIFIED_DOM + "=2");
+    return fetch("https://" + window.location.hostname + ":8443/cookies/resources/echo-json.php", {"credentials": "include"})
+        .then(r => r.json())
+        .then(j => {
+            assert_equals(j[STRICT_DOM], "2", "strict");
+            assert_equals(j[LAX_DOM], "2", "lax");
+            assert_equals(j[UNSPECIFIED_DOM], "2", "unspecified");
+        });
+}, "HTTPS is same-site with HTTP.");
+</script>
+

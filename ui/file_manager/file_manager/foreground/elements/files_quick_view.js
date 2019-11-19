@@ -61,6 +61,11 @@ var FilesQuickView = Polymer({
     this.audioArtwork = '';
     this.autoplay = false;
     this.browsable = false;
+    const video = this.$.contentPanel.querySelector('#videoSafeMedia');
+    if (video) {
+      video.src = '';
+      video.fire('src-changed');
+    }
   },
 
   /** @return {boolean} */
@@ -182,7 +187,7 @@ var FilesQuickView = Polymer({
    * @private
    */
   audioUrl_: function(contentUrl, type) {
-    return this.isAudio_(type) ? contentUrl : "";
+    return this.isAudio_(type) ? contentUrl : '';
   },
 
   /**
@@ -201,10 +206,6 @@ var FilesQuickView = Polymer({
     assert(e.target === this.$.dialog);
 
     this.clear();
-
-    // TODO(dpapad): This is necessary to make the code work both for Polymer 1
-    // and Polymer 2. Remove once migration to Polymer 2 is completed.
-    e.stopPropagation();
 
     // Catch and re-fire the 'close' event such that it bubbles across Shadow
     // DOM v1.

@@ -10,6 +10,7 @@
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "ipc/ipc_message.h"
@@ -51,7 +52,7 @@ class MyResourceHost : public ResourceHost {
       : ResourceHost(host, instance, resource),
         msg_type_(msg_type),
         reply_msg_type_(reply_msg_type),
-        last_reply_task_runner_(NULL) {}
+        last_reply_task_runner_(nullptr) {}
 
   const IPC::Message& last_handled_msg() const { return last_handled_msg_; }
   const IPC::Message& last_reply_msg() const { return last_reply_msg_; }
@@ -117,7 +118,7 @@ class MyResourceFilter : public ResourceMessageFilter {
       const IPC::Message& msg) override {
     if (msg.type() == msg_type_)
       return task_runner_;
-    return NULL;
+    return nullptr;
   }
 
   int32_t OnResourceMessageReceived(
@@ -162,7 +163,8 @@ class ResourceMessageFilterTest : public testing::Test {
 
     PP_Instance instance = 12345;
     PP_Resource resource = 67890;
-    MyResourceHost host(NULL, instance, resource, MSG3_TYPE, REPLY_MSG3_TYPE);
+    MyResourceHost host(nullptr, instance, resource, MSG3_TYPE,
+                        REPLY_MSG3_TYPE);
     host.AddMessageFilter(filter1);
     host.AddMessageFilter(filter2);
 
@@ -211,11 +213,11 @@ TEST_F(ResourceMessageFilterTest, TestHandleMessage) {
   // ResourceMessageFilter instances need to be created on a thread with message
   // loop. Therefore, we create a message loop and run the testing logic as a
   // task on it.
-  base::MessageLoop main_message_loop;
+  base::test::SingleThreadTaskEnvironment task_environment;
 
   // It should be safe to use base::Unretained() because the object won't be
   // destroyed before the task is run.
-  main_message_loop.task_runner()->PostTask(
+  task_environment.GetMainThreadTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(&ResourceMessageFilterTest::TestHandleMessageImpl,
                      base::Unretained(this)));

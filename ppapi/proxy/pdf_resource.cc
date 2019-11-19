@@ -9,6 +9,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <limits>
+#include <utility>
+#include <vector>
+
 #include "base/command_line.h"
 #include "base/debug/crash_logging.h"
 #include "base/metrics/histogram.h"
@@ -18,6 +22,7 @@
 #include "ppapi/c/private/ppb_pdf.h"
 #include "ppapi/proxy/plugin_globals.h"
 #include "ppapi/proxy/ppapi_messages.h"
+#include "ppapi/shared_impl/pdf_accessibility_shared.h"
 #include "ppapi/shared_impl/var.h"
 #include "third_party/icu/source/i18n/unicode/usearch.h"
 
@@ -191,34 +196,54 @@ void PDFResource::SetLinkUnderCursor(const char* url) {
   Post(RENDERER, PpapiHostMsg_PDF_SetLinkUnderCursor(url));
 }
 
-void PDFResource::GetV8ExternalSnapshotData(const char** natives_data_out,
-                                            int* natives_size_out,
-                                            const char** snapshot_data_out,
+void PDFResource::GetV8ExternalSnapshotData(const char** snapshot_data_out,
                                             int* snapshot_size_out) {
-  gin::V8Initializer::GetV8ExternalSnapshotData(
-      natives_data_out, natives_size_out, snapshot_data_out, snapshot_size_out);
+  gin::V8Initializer::GetV8ExternalSnapshotData(snapshot_data_out,
+                                                snapshot_size_out);
 }
 
 void PDFResource::SetAccessibilityDocInfo(
-    PP_PrivateAccessibilityDocInfo* doc_info) {
+    const PP_PrivateAccessibilityDocInfo* doc_info) {
   Post(RENDERER, PpapiHostMsg_PDF_SetAccessibilityDocInfo(*doc_info));
 }
 
 void PDFResource::SetAccessibilityViewportInfo(
-    PP_PrivateAccessibilityViewportInfo* viewport_info) {
+    const PP_PrivateAccessibilityViewportInfo* viewport_info) {
   Post(RENDERER, PpapiHostMsg_PDF_SetAccessibilityViewportInfo(*viewport_info));
 }
 
 void PDFResource::SetAccessibilityPageInfo(
-    PP_PrivateAccessibilityPageInfo* page_info,
-    PP_PrivateAccessibilityTextRunInfo text_runs[],
-    PP_PrivateAccessibilityCharInfo chars[]) {
-  std::vector<PP_PrivateAccessibilityTextRunInfo> text_run_vector(
-      text_runs, text_runs + page_info->text_run_count);
+    const PP_PrivateAccessibilityPageInfo* page_info,
+    const PP_PrivateAccessibilityTextRunInfo text_runs[],
+    const PP_PrivateAccessibilityCharInfo chars[],
+    const PP_PrivateAccessibilityPageObjects* page_objects) {
   std::vector<PP_PrivateAccessibilityCharInfo> char_vector(
       chars, chars + page_info->char_count);
-  Post(RENDERER, PpapiHostMsg_PDF_SetAccessibilityPageInfo(
-                     *page_info, text_run_vector, char_vector));
+  // Pepper APIs require us to pass strings as char*, but IPC expects
+  // std::string. Convert information for text runs style, links and images to
+  // meet these requirements.
+  std::vector<ppapi::PdfAccessibilityTextRunInfo> text_run_vector;
+  text_run_vector.reserve(page_info->text_run_count);
+  for (size_t i = 0; i < page_info->text_run_count; i++)
+    text_run_vector.emplace_back(text_runs[i]);
+  std::vector<ppapi::PdfAccessibilityLinkInfo> link_vector;
+  link_vector.reserve(page_objects->link_count);
+  for (size_t i = 0; i < page_objects->link_count; i++) {
+    link_vector.emplace_back(page_objects->links[i]);
+  }
+  std::vector<ppapi::PdfAccessibilityImageInfo> image_vector;
+  image_vector.reserve(page_objects->image_count);
+  for (size_t i = 0; i < page_objects->image_count; i++) {
+    image_vector.emplace_back(page_objects->images[i]);
+  }
+
+  ppapi::PdfAccessibilityPageObjects ppapi_page_objects;
+  ppapi_page_objects.links = std::move(link_vector);
+  ppapi_page_objects.images = std::move(image_vector);
+
+  Post(RENDERER,
+       PpapiHostMsg_PDF_SetAccessibilityPageInfo(
+           *page_info, text_run_vector, char_vector, ppapi_page_objects));
 }
 
 void PDFResource::SetCrashData(const char* pdf_url, const char* top_level_url) {

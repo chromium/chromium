@@ -40,30 +40,27 @@
 #include "third_party/blink/renderer/core/dom/frame_request_callback_collection.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
-#include "third_party/blink/renderer/core/frame/use_counter.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/html/html_style_element.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
 
-inline HTMLMarqueeElement::HTMLMarqueeElement(Document& document)
+HTMLMarqueeElement::HTMLMarqueeElement(Document& document)
     : HTMLElement(html_names::kMarqueeTag, document) {
   UseCounter::Count(document, WebFeature::kHTMLMarqueeElement);
-}
-
-HTMLMarqueeElement* HTMLMarqueeElement::Create(Document& document) {
-  HTMLMarqueeElement* marquee_element =
-      MakeGarbageCollected<HTMLMarqueeElement>(document);
-  marquee_element->EnsureUserAgentShadowRoot();
-  return marquee_element;
+  EnsureUserAgentShadowRoot();
 }
 
 void HTMLMarqueeElement::DidAddUserAgentShadowRoot(ShadowRoot& shadow_root) {
-  auto* style = HTMLStyleElement::Create(GetDocument(), CreateElementFlags());
+  auto* style = MakeGarbageCollected<HTMLStyleElement>(GetDocument(),
+                                                       CreateElementFlags());
   style->setTextContent(
       ":host { display: inline-block; overflow: hidden;"
       "text-align: initial; white-space: nowrap; }"
@@ -72,7 +69,7 @@ void HTMLMarqueeElement::DidAddUserAgentShadowRoot(ShadowRoot& shadow_root) {
       ":host > div { will-change: transform; }");
   shadow_root.AppendChild(style);
 
-  Element* mover = HTMLDivElement::Create(GetDocument());
+  auto* mover = MakeGarbageCollected<HTMLDivElement>(GetDocument());
   shadow_root.AppendChild(mover);
 
   mover->AppendChild(
@@ -224,17 +221,17 @@ void HTMLMarqueeElement::CollectStyleForPresentationAttribute(
     const AtomicString& value,
     MutableCSSPropertyValueSet* style) {
   if (attr == html_names::kBgcolorAttr) {
-    AddHTMLColorToStyle(style, CSSPropertyBackgroundColor, value);
+    AddHTMLColorToStyle(style, CSSPropertyID::kBackgroundColor, value);
   } else if (attr == html_names::kHeightAttr) {
-    AddHTMLLengthToStyle(style, CSSPropertyHeight, value);
+    AddHTMLLengthToStyle(style, CSSPropertyID::kHeight, value);
   } else if (attr == html_names::kHspaceAttr) {
-    AddHTMLLengthToStyle(style, CSSPropertyMarginLeft, value);
-    AddHTMLLengthToStyle(style, CSSPropertyMarginRight, value);
+    AddHTMLLengthToStyle(style, CSSPropertyID::kMarginLeft, value);
+    AddHTMLLengthToStyle(style, CSSPropertyID::kMarginRight, value);
   } else if (attr == html_names::kVspaceAttr) {
-    AddHTMLLengthToStyle(style, CSSPropertyMarginTop, value);
-    AddHTMLLengthToStyle(style, CSSPropertyMarginBottom, value);
+    AddHTMLLengthToStyle(style, CSSPropertyID::kMarginTop, value);
+    AddHTMLLengthToStyle(style, CSSPropertyID::kMarginBottom, value);
   } else if (attr == html_names::kWidthAttr) {
-    AddHTMLLengthToStyle(style, CSSPropertyWidth, value);
+    AddHTMLLengthToStyle(style, CSSPropertyID::kWidth, value);
   } else {
     HTMLElement::CollectStyleForPresentationAttribute(attr, value, style);
   }
@@ -250,23 +247,23 @@ StringKeyframeEffectModel* HTMLMarqueeElement::CreateEffectModel(
       mover_->GetDocument().GetSecureContextMode();
 
   StringKeyframeVector keyframes;
-  StringKeyframe* keyframe1 = StringKeyframe::Create();
+  auto* keyframe1 = MakeGarbageCollected<StringKeyframe>();
   set_result = keyframe1->SetCSSPropertyValue(
-      CSSPropertyTransform, parameters.transform_begin, secure_context_mode,
-      style_sheet_contents);
+      CSSPropertyID::kTransform, parameters.transform_begin,
+      secure_context_mode, style_sheet_contents);
   DCHECK(set_result.did_parse);
   keyframes.push_back(keyframe1);
 
-  StringKeyframe* keyframe2 = StringKeyframe::Create();
+  auto* keyframe2 = MakeGarbageCollected<StringKeyframe>();
   set_result = keyframe2->SetCSSPropertyValue(
-      CSSPropertyTransform, parameters.transform_end, secure_context_mode,
+      CSSPropertyID::kTransform, parameters.transform_end, secure_context_mode,
       style_sheet_contents);
   DCHECK(set_result.did_parse);
   keyframes.push_back(keyframe2);
 
-  return StringKeyframeEffectModel::Create(keyframes,
-                                           EffectModel::kCompositeReplace,
-                                           LinearTimingFunction::Shared());
+  return MakeGarbageCollected<StringKeyframeEffectModel>(
+      keyframes, EffectModel::kCompositeReplace,
+      LinearTimingFunction::Shared());
 }
 
 void HTMLMarqueeElement::ContinueAnimation() {
@@ -299,8 +296,8 @@ void HTMLMarqueeElement::ContinueAnimation() {
       UnrestrictedDoubleOrString::FromUnrestrictedDouble(duration));
   TimingInput::Update(timing, effect_timing, nullptr, ASSERT_NO_EXCEPTION);
 
-  KeyframeEffect* keyframe_effect =
-      KeyframeEffect::Create(mover_, effect_model, timing);
+  auto* keyframe_effect =
+      MakeGarbageCollected<KeyframeEffect>(mover_, effect_model, timing);
   Animation* player = mover_->GetDocument().Timeline().Play(keyframe_effect);
   player->setId(g_empty_string);
   player->setOnfinish(MakeGarbageCollected<AnimationFinished>(this));

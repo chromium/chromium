@@ -33,10 +33,6 @@ bool ContentMainDelegate::ProcessRegistersWithSystemProcess(
   return false;
 }
 
-bool ContentMainDelegate::ShouldSendMachPort(const std::string& process_type) {
-  return true;
-}
-
 bool ContentMainDelegate::DelaySandboxInitialization(
     const std::string& process_type) {
   return false;
@@ -53,6 +49,10 @@ void ContentMainDelegate::ZygoteStarting(
 int ContentMainDelegate::TerminateForFatalInitializationError() {
   CHECK(false);
   return 0;
+}
+
+bool ContentMainDelegate::ShouldLockSchemeRegistry() {
+  return true;
 }
 
 service_manager::ProcessType ContentMainDelegate::OverrideProcessType() {

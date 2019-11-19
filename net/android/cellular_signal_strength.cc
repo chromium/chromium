@@ -4,7 +4,7 @@
 
 #include "net/android/cellular_signal_strength.h"
 
-#include "jni/AndroidCellularSignalStrength_jni.h"
+#include "net/net_jni_headers/AndroidCellularSignalStrength_jni.h"
 
 namespace net {
 

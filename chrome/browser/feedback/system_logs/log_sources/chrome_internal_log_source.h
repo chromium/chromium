@@ -10,7 +10,8 @@
 #include "components/feedback/system_logs/system_logs_source.h"
 
 #if defined(OS_CHROMEOS)
-#include "ash/public/interfaces/cros_display_config.mojom.h"
+#include "ash/public/mojom/cros_display_config.mojom.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #endif
 
 namespace system_logs {
@@ -38,10 +39,11 @@ class ChromeInternalLogSource : public SystemLogsSource {
   void PopulateUsbKeyboardDetected(SystemLogsResponse* response);
   void PopulateEnrolledToDomain(SystemLogsResponse* response);
   void PopulateInstallerBrandCode(SystemLogsResponse* response);
+  void PopulateLastUpdateState(SystemLogsResponse* response);
 #endif
 
 #if defined(OS_CHROMEOS)
-  ash::mojom::CrosDisplayConfigControllerPtr cros_display_config_ptr_;
+  mojo::Remote<ash::mojom::CrosDisplayConfigController> cros_display_config_;
 #endif
 
   DISALLOW_COPY_AND_ASSIGN(ChromeInternalLogSource);

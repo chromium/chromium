@@ -7,7 +7,7 @@
 #include <memory>
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/platform/modules/service_worker/web_service_worker_request.h"
+#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -60,13 +60,13 @@ TEST(ServiceWorkerRequestTest, FromAndToFetchAPIRequest) {
   const network::mojom::ReferrerPolicy kReferrerPolicy =
       network::mojom::ReferrerPolicy::kAlways;
   const mojom::RequestContextType kContext = mojom::RequestContextType::AUDIO;
-  const network::mojom::FetchRequestMode kMode =
-      network::mojom::FetchRequestMode::kNavigate;
-  const network::mojom::FetchCredentialsMode kCredentialsMode =
-      network::mojom::FetchCredentialsMode::kInclude;
+  const network::mojom::RequestMode kMode =
+      network::mojom::RequestMode::kNavigate;
+  const network::mojom::CredentialsMode kCredentialsMode =
+      network::mojom::CredentialsMode::kInclude;
   const auto kCacheMode = mojom::FetchCacheMode::kValidateCache;
-  const network::mojom::FetchRedirectMode kRedirectMode =
-      network::mojom::FetchRedirectMode::kError;
+  const network::mojom::RedirectMode kRedirectMode =
+      network::mojom::RedirectMode::kError;
 
   fetch_api_request->url = url;
   fetch_api_request->method = method;
@@ -83,7 +83,8 @@ TEST(ServiceWorkerRequestTest, FromAndToFetchAPIRequest) {
       mojom::blink::Referrer::New(KURL(NullURL(), referrer), kReferrerPolicy);
 
   Request* request =
-      Request::Create(scope.GetScriptState(), *fetch_api_request);
+      Request::Create(scope.GetScriptState(), *fetch_api_request,
+                      Request::ForServiceWorkerFetchEvent::kFalse);
   DCHECK(request);
   EXPECT_EQ(url, request->url());
   EXPECT_EQ(method, request->method());

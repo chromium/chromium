@@ -10,6 +10,7 @@ import("//services/network/public/cpp/features.gni")
 # which comes from the fact that proxy_resolver service uses these interfaces,
 # and the network service uses the proxy_resolver service.
 mojom("mojom_ip_address") {
+  generate_java = true
   sources = [
     "address_family.mojom",
     "address_list.mojom",
@@ -22,10 +23,33 @@ mojom("mojom_ip_address") {
   ]
 }
 
+# As with mojom_ip_address, this is a separate target to avoid a circular
+# dependency, which comes from the fact that proxy_resolver service uses
+# this interfaces, and the network service uses the proxy_resolver service.
+# Separate from |mojom_ip_address| because a bunch of other consumers are
+# depending on that and don't need this.
+mojom("mojom_network_isolation_key") {
+  generate_java = true
+  sources = [
+    "network_isolation_key.mojom",
+  ]
+
+  public_deps = [
+    "//url/mojom:url_mojom_origin",
+  ]
+
+  if (!is_ios) {
+    export_class_attribute_blink = "BLINK_PLATFORM_EXPORT"
+    export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
+    export_header_blink = "third_party/blink/public/platform/web_common.h"
+  }
+}
+
 # These interfaces are put in their own target to avoid a circular dependency,
 # which comes from the fact that the typemap for url_loader.mojom
 # (ResourceRequestBody) uses these interfaces.
 mojom("data_pipe_interfaces") {
+  generate_java = true
   sources = [
     "chunked_data_pipe_getter.mojom",
     "data_pipe_getter.mojom",
@@ -43,6 +67,7 @@ mojom("data_pipe_interfaces") {
 }
 
 mojom("mutable_network_traffic_annotation_interface") {
+  generate_java = true
   sources = [
     "mutable_network_traffic_annotation_tag.mojom",
     "mutable_partial_network_traffic_annotation_tag.mojom",
@@ -52,6 +77,7 @@ mojom("mutable_network_traffic_annotation_interface") {
 # This target is split from "mojom" target as the lazy serialization may
 # cause problems. See https://crbug.com/822732.
 mojom("websocket_mojom") {
+  generate_java = true
   sources = [
     "network_param.mojom",
     "websocket.mojom",
@@ -59,6 +85,7 @@ mojom("websocket_mojom") {
 
   public_deps = [
     ":mojom_ip_address",
+    "//mojo/public/mojom/base",
     "//url/mojom:url_mojom_gurl",
     "//url/mojom:url_mojom_origin",
   ]
@@ -71,14 +98,22 @@ mojom("websocket_mojom") {
 }
 
 mojom("mojom") {
+  generate_java = true
   sources = [
+    "content_security_policy.mojom",
     "cookie_manager.mojom",
     "cors.mojom",
     "cors_origin_pattern.mojom",
+    "default_credentials.mojom",
+    "dhcp_wpad_url_client.mojom",
     "digitally_signed.mojom",
     "fetch_api.mojom",
     "host_resolver.mojom",
+    "http_raw_headers.mojom",
+    "http_raw_request_response_info.mojom",
     "http_request_headers.mojom",
+    "ip_address_space.mojom",
+    "load_timing_info.mojom",
     "mdns_responder.mojom",
     "net_log.mojom",
     "network_change_manager.mojom",
@@ -88,14 +123,15 @@ mojom("mojom") {
     "network_service.mojom",
     "network_service_test.mojom",
     "network_types.mojom",
+    "origin_policy_manager.mojom",
     "p2p.mojom",
     "p2p_trusted.mojom",
     "proxy_config.mojom",
     "proxy_config_with_annotation.mojom",
     "proxy_lookup_client.mojom",
     "proxy_resolving_socket.mojom",
+    "quic_transport.mojom",
     "referrer_policy.mojom",
-    "request_context_frame_type.mojom",
     "restricted_cookie_manager.mojom",
     "ssl_config.mojom",
     "tcp_socket.mojom",
@@ -103,16 +139,17 @@ mojom("mojom") {
     "udp_socket.mojom",
     "url_loader.mojom",
     "url_loader_factory.mojom",
+    "url_response_head.mojom",
   ]
 
   public_deps = [
     ":data_pipe_interfaces",
     ":mojom_ip_address",
+    ":mojom_network_isolation_key",
     ":mutable_network_traffic_annotation_interface",
     ":websocket_mojom",
     "//components/content_settings/core/common:mojo_bindings",
     "//mojo/public/mojom/base",
-    "//mojo/public/mojom/base:read_only_buffer",
     "//services/proxy_resolver/public/mojom",
     "//url/mojom:url_mojom_gurl",
     "//url/mojom:url_mojom_origin",
@@ -126,10 +163,7 @@ mojom("mojom") {
 
   if (is_ct_supported) {
     enabled_features += [ "is_ct_supported" ]
-    sources += [
-      "ct_log_info.mojom",
-      "signed_tree_head.mojom",
-    ]
+    sources += [ "ct_log_info.mojom" ]
   }
 
   if (!is_ios) {
@@ -151,5 +185,9 @@ mojom("mojom") {
   if (trial_comparison_cert_verifier_supported) {
     enabled_features += [ "is_trial_comparison_cert_verifier_supported" ]
     sources += [ "trial_comparison_cert_verifier.mojom" ]
+  }
+
+  if (builtin_cert_verifier_feature_supported) {
+    enabled_features += [ "is_builtin_cert_verifier_feature_supported" ]
   }
 }

@@ -9,12 +9,12 @@
 #include "base/mac/foundation_util.h"
 #include "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
-#include "components/autofill/core/browser/autofill_profile.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/credit_card.h"
-#include "components/payments/core/autofill_payment_instrument.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/payments/core/autofill_payment_app.h"
 #include "components/payments/core/payment_address.h"
-#include "components/payments/core/payment_instrument.h"
+#include "components/payments/core/payment_app.h"
 #include "components/payments/core/payment_request_data_util.h"
 #include "components/payments/core/payment_shipping_option.h"
 #include "components/payments/core/payments_test_util.h"
@@ -80,6 +80,7 @@ class PaymentRequestCoordinatorTest : public PaymentRequestUnitTestBase,
  protected:
   // PlatformTest:
   void SetUp() override {
+    PlatformTest::SetUp();
     DoSetUp();
 
     autofill::AutofillProfile profile = autofill::test::GetFullProfile();
@@ -92,7 +93,10 @@ class PaymentRequestCoordinatorTest : public PaymentRequestUnitTestBase,
   }
 
   // PlatformTest:
-  void TearDown() override { DoTearDown(); }
+  void TearDown() override {
+    DoTearDown();
+    PlatformTest::TearDown();
+  }
 };
 
 // Tests that invoking start and stop on the coordinator presents and

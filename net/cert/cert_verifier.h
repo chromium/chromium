@@ -14,6 +14,7 @@
 #include "net/base/completion_once_callback.h"
 #include "net/base/hash_value.h"
 #include "net/base/net_export.h"
+#include "net/cert/cert_net_fetcher.h"
 #include "net/cert/x509_certificate.h"
 
 namespace net {
@@ -55,7 +56,7 @@ class NET_EXPORT CertVerifier {
 
     // Provides an optional CRLSet structure that can be used to avoid
     // revocation checks over the network. CRLSets can be used to add
-    // additional certificates to be blacklisted beyond the internal blacklist,
+    // additional certificates to be blocked beyond the internal block list,
     // whether leaves or intermediates.
     scoped_refptr<CRLSet> crl_set;
 
@@ -106,12 +107,17 @@ class NET_EXPORT CertVerifier {
   // |ocsp_response| is optional, but if non-empty, should contain an OCSP
   // response obtained via OCSP stapling. It may be ignored by the
   // CertVerifier.
+  //
+  // |sct_list| is optional, but if non-empty, should contain a
+  // SignedCertificateTimestampList from the TLS extension as described in
+  // RFC6962 section 3.3.1. It may be ignored by the CertVerifier.
   class NET_EXPORT RequestParams {
    public:
     RequestParams(scoped_refptr<X509Certificate> certificate,
                   const std::string& hostname,
                   int flags,
-                  const std::string& ocsp_response);
+                  const std::string& ocsp_response,
+                  const std::string& sct_list);
     RequestParams(const RequestParams& other);
     ~RequestParams();
 
@@ -121,6 +127,7 @@ class NET_EXPORT CertVerifier {
     const std::string& hostname() const { return hostname_; }
     int flags() const { return flags_; }
     const std::string& ocsp_response() const { return ocsp_response_; }
+    const std::string& sct_list() const { return sct_list_; }
 
     bool operator==(const RequestParams& other) const;
     bool operator<(const RequestParams& other) const;
@@ -130,6 +137,7 @@ class NET_EXPORT CertVerifier {
     std::string hostname_;
     int flags_;
     std::string ocsp_response_;
+    std::string sct_list_;
 
     // Used to optimize sorting/indexing comparisons.
     std::string key_;
@@ -143,18 +151,23 @@ class NET_EXPORT CertVerifier {
   // Returns OK if successful or an error code upon failure.
   //
   // The |*verify_result| structure, including the |verify_result->cert_status|
-  // bitmask, is always filled out regardless of the return value.  If the
+  // bitmask, is always filled out regardless of the return value. If the
   // certificate has multiple errors, the corresponding status flags are set in
   // |verify_result->cert_status|, and the error code for the most serious
   // error is returned.
   //
-  // |callback| must not be null.  ERR_IO_PENDING is returned if the operation
+  // |callback| must not be null. ERR_IO_PENDING is returned if the operation
   // could not be completed synchronously, in which case the result code will
   // be passed to the callback when available.
   //
-  // On asynchronous completion (when Verify returns ERR_IO_PENDING) |out_req|
-  // will be reset with a pointer to the request. Freeing this pointer before
-  // the request has completed will cancel it.
+  // |*out_req| is used to store a request handle in the event of asynchronous
+  // completion (when Verify returns ERR_IO_PENDING). Provided that neither
+  // the CertVerifier nor the Request have been deleted, |callback| will be
+  // invoked once the underlying verification finishes. If either the
+  // CertVerifier or the Request are deleted, then |callback| will be Reset()
+  // and will not be invoked. It is fine for |out_req| to outlive the
+  // CertVerifier, and it is fine to reset |out_req| or delete the
+  // CertVerifier during the processing of |callback|.
   //
   // If Verify() completes synchronously then |out_req| *may* be reset to
   // nullptr. However it is not guaranteed that all implementations will reset
@@ -178,9 +191,10 @@ class NET_EXPORT CertVerifier {
   virtual void SetConfig(const Config& config) = 0;
 
   // Creates a CertVerifier implementation that verifies certificates using
-  // the preferred underlying cryptographic libraries, using the specified
-  // configuration.
-  static std::unique_ptr<CertVerifier> CreateDefault();
+  // the preferred underlying cryptographic libraries.  |cert_net_fetcher| may
+  // not be used, depending on the platform.
+  static std::unique_ptr<CertVerifier> CreateDefault(
+      scoped_refptr<CertNetFetcher> cert_net_fetcher);
 };
 
 // Overloads for comparing two configurations. Note, comparison is shallow -

@@ -11,21 +11,34 @@
     properties: {
       track: {
         type: Object,
-        value: null
+        value: null,
       },
 
       expanded: {
         type: Boolean,
         value: false,
         notify: true,
-        reflectToAttribute: true
+        reflectToAttribute: true,
+        observer: 'onExpandedChanged_',
       },
 
       artworkAvailable: {
         type: Boolean,
         value: false,
-        reflectToAttribute: true
-      }
+        reflectToAttribute: true,
+      },
+
+      ariaExpandArtworkLabel: String,
+    },
+
+    /** @private */
+    onExpandClick_: function() {
+      this.expanded = !this.expanded;
+    },
+
+    /** @private */
+    onExpandedChanged_: function() {
+      this.$.expand.setAttribute('aria-expanded', Boolean(this.expanded));
     },
   });
 })();  // Anonymous closure

@@ -11,6 +11,7 @@
 #include "base/macros.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "ui/base/accelerators/accelerator.h"
 #include "ui/events/event_handler.h"
 
 namespace base {
@@ -46,31 +47,33 @@ class ASH_EXPORT PowerButtonScreenshotController : public ui::EventHandler {
   // indicate that power button and volume down key is consumed by screenshot.
   bool InterceptScreenshotChord();
 
-  // Called by |volume_down_timer_| to perform volume down accelerator.
-  void OnVolumeDownTimeout();
+  // Called by |volume_down_timer_| or |volume_up_timer_| to perform volume down
+  // or up accelerator.
+  void OnVolumeControlTimeout(const ui::Accelerator& accelerator, bool down);
 
-  // True if volume down key is pressed.
+  // True if volume down/up key is pressed.
   bool volume_down_key_pressed_ = false;
-
-  // True if volume up key is pressed.
   bool volume_up_key_pressed_ = false;
 
-  // True if volume down key is consumed by screenshot accelerator.
+  // True if volume down/up key is consumed by screenshot accelerator.
   bool consume_volume_down_ = false;
+  bool consume_volume_up_ = false;
 
   // True if power button is pressed.
   bool power_button_pressed_ = false;
 
-  // Saves the most recent volume down key pressed time.
+  // Saves the most recent volume down/up key pressed time.
   base::TimeTicks volume_down_key_pressed_time_;
+  base::TimeTicks volume_up_key_pressed_time_;
 
   // Saves the most recent power button pressed time.
   base::TimeTicks power_button_pressed_time_;
 
-  // Started when volume down key is pressed and power button is not pressed.
-  // Stopped when power button is pressed. Runs OnVolumeDownTimeout to perform a
-  // volume down accelerator.
+  // Started when volume down/up key is pressed and power button is not pressed.
+  // Stopped when power button is pressed. Runs OnVolumeControlTimeout to
+  // perform a volume down/up accelerator.
   base::OneShotTimer volume_down_timer_;
+  base::OneShotTimer volume_up_timer_;
 
   // Time source for performed action times.
   const base::TickClock* tick_clock_;  // Not owned.

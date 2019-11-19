@@ -16,6 +16,6 @@ executable("service_discovery_sniffer") {
     "//base/test:test_support",
     "//chrome/browser",
     "//net",
-    "//third_party/webrtc_overrides:init_webrtc",
+    "//third_party/webrtc_overrides:webrtc_component",
   ]
 }

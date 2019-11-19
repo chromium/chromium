@@ -44,7 +44,7 @@ class DisassemblerWin32X86 : public DisassemblerWin32 {
   bool SupportsRelTableType(int type) const override {
     return type == 3;  // IMAGE_REL_BASED_HIGHLOW
   }
-  uint16_t OffsetOfDataDirectories() const override {
+  uint16_t RelativeOffsetOfDataDirectories() const override {
     return kOffsetOfDataDirectoryFromImageOptionalHeader32;
   }
 

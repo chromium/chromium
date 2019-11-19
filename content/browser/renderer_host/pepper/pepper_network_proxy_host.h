@@ -103,7 +103,7 @@ class CONTENT_EXPORT PepperNetworkProxyHost : public ppapi::host::ResourceHost {
   std::set<std::unique_ptr<PepperProxyLookupHelper>, base::UniquePtrComparator>
       pending_requests_;
 
-  base::WeakPtrFactory<PepperNetworkProxyHost> weak_factory_;
+  base::WeakPtrFactory<PepperNetworkProxyHost> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PepperNetworkProxyHost);
 };

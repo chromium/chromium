@@ -4,7 +4,9 @@
 
 package org.chromium.base;
 
-import android.support.annotation.VisibleForTesting;
+import androidx.annotation.VisibleForTesting;
+
+import org.chromium.base.annotations.CheckDiscard;
 
 import java.lang.ref.PhantomReference;
 import java.lang.ref.ReferenceQueue;
@@ -14,9 +16,6 @@ import java.util.Set;
 
 /**
  * Used to assert that clean-up logic has been run before an object is GC'ed.
- *
- * Class is a no-op withen DCHECK_IS_ON=false, and is entirely removed by
- * proguard (enforced via -checkdiscard).
  *
  * Usage:
  * class MyClassWithCleanup {
@@ -29,6 +28,7 @@ import java.util.Set;
  *     }
  * }
  */
+@CheckDiscard("Lifetime assertions aren't used when DCHECK is off.")
 public class LifetimeAssert {
     interface TestHook {
         void onCleaned(WrappedReference ref, String msg);
@@ -57,6 +57,8 @@ public class LifetimeAssert {
 
     @VisibleForTesting
     final WrappedReference mWrapper;
+
+    private final Object mTarget;
 
     @VisibleForTesting
     static class WrappedReference extends PhantomReference<Object> {
@@ -114,28 +116,39 @@ public class LifetimeAssert {
         }
     }
 
-    private LifetimeAssert(WrappedReference wrapper) {
+    private LifetimeAssert(WrappedReference wrapper, Object target) {
         mWrapper = wrapper;
+        mTarget = target;
     }
 
     public static LifetimeAssert create(Object target) {
         if (!BuildConfig.DCHECK_IS_ON) {
             return null;
         }
-        return new LifetimeAssert(new WrappedReference(target, new CreationException(), false));
+        return new LifetimeAssert(
+                new WrappedReference(target, new CreationException(), false), target);
     }
 
     public static LifetimeAssert create(Object target, boolean safeToGc) {
         if (!BuildConfig.DCHECK_IS_ON) {
             return null;
         }
-        return new LifetimeAssert(new WrappedReference(target, new CreationException(), safeToGc));
+        return new LifetimeAssert(
+                new WrappedReference(target, new CreationException(), safeToGc), target);
     }
 
     public static void setSafeToGc(LifetimeAssert asserter, boolean value) {
         if (BuildConfig.DCHECK_IS_ON) {
-            // asserter is never null when DCHECK_IS_ON.
-            asserter.mWrapper.mSafeToGc = value;
+            // This guaratees that the target object is reachable until after mSafeToGc value
+            // is updated here. See comment on Reference.reachabilityFence and review comments
+            // on https://chromium-review.googlesource.com/c/chromium/src/+/1887151 for a
+            // problematic example. This synchronized is used instead of calling
+            // reachabilityFence because robolectric has problems mocking out that method,
+            // and this should work for all Android versions.
+            synchronized (asserter.mTarget) {
+                // asserter is never null when DCHECK_IS_ON.
+                asserter.mWrapper.mSafeToGc = value;
+            }
         }
     }
 

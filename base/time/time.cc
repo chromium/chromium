@@ -135,52 +135,6 @@ int64_t TimeDelta::InNanoseconds() const {
   return delta_ * Time::kNanosecondsPerMicrosecond;
 }
 
-namespace time_internal {
-
-int64_t SaturatedAdd(int64_t value, TimeDelta delta) {
-  // Treat Min/Max() as +/- infinity (additions involving two infinities are
-  // only valid if signs match).
-  if (delta.is_max()) {
-    CHECK_GT(value, std::numeric_limits<int64_t>::min());
-    return std::numeric_limits<int64_t>::max();
-  } else if (delta.is_min()) {
-    CHECK_LT(value, std::numeric_limits<int64_t>::max());
-    return std::numeric_limits<int64_t>::min();
-  }
-
-  CheckedNumeric<int64_t> rv(value);
-  rv += delta.delta_;
-  if (rv.IsValid())
-    return rv.ValueOrDie();
-  // Positive RHS overflows. Negative RHS underflows.
-  if (delta.delta_ < 0)
-    return std::numeric_limits<int64_t>::min();
-  return std::numeric_limits<int64_t>::max();
-}
-
-int64_t SaturatedSub(int64_t value, TimeDelta delta) {
-  // Treat Min/Max() as +/- infinity (subtractions involving two infinities are
-  // only valid if signs are opposite).
-  if (delta.is_max()) {
-    CHECK_LT(value, std::numeric_limits<int64_t>::max());
-    return std::numeric_limits<int64_t>::min();
-  } else if (delta.is_min()) {
-    CHECK_GT(value, std::numeric_limits<int64_t>::min());
-    return std::numeric_limits<int64_t>::max();
-  }
-
-  CheckedNumeric<int64_t> rv(value);
-  rv -= delta.delta_;
-  if (rv.IsValid())
-    return rv.ValueOrDie();
-  // Negative RHS overflows. Positive RHS underflows.
-  if (delta.delta_ < 0)
-    return std::numeric_limits<int64_t>::max();
-  return std::numeric_limits<int64_t>::min();
-}
-
-}  // namespace time_internal
-
 std::ostream& operator<<(std::ostream& os, TimeDelta time_delta) {
   return os << time_delta.InSecondsF() << " s";
 }
@@ -312,8 +266,17 @@ Time Time::Midnight(bool is_local) const {
   exploded.second = 0;
   exploded.millisecond = 0;
   Time out_time;
-  if (FromExploded(is_local, exploded, &out_time))
+  if (FromExploded(is_local, exploded, &out_time)) {
     return out_time;
+  } else if (is_local) {
+    // Hitting this branch means 00:00:00am of the current day
+    // does not exist (due to Daylight Saving Time in some countries
+    // where clocks are shifted at midnight). In this case, midnight
+    // should be defined as 01:00:00am.
+    exploded.hour = 1;
+    if (FromExploded(is_local, exploded, &out_time))
+      return out_time;
+  }
   // This function must not fail.
   NOTREACHED();
   return Time();

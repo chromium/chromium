@@ -34,7 +34,8 @@ struct EVENTS_DEVICES_EXPORT InputDevice {
               const std::string& phys,
               const base::FilePath& sys_path,
               uint16_t vendor,
-              uint16_t product);
+              uint16_t product,
+              uint16_t version);
   InputDevice(const InputDevice& other);
   virtual ~InputDevice();
 
@@ -62,6 +63,7 @@ struct EVENTS_DEVICES_EXPORT InputDevice {
   // USB-style device identifiers, where available, or 0 if unavailable.
   uint16_t vendor_id;
   uint16_t product_id;
+  uint16_t version;
 };
 
 }  // namespace ui

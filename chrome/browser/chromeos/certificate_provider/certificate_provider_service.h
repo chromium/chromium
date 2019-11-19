@@ -17,12 +17,15 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/threading/thread_checker.h"
+#include "base/observer_list.h"
+#include "base/optional.h"
+#include "base/sequence_checker.h"
 #include "chrome/browser/chromeos/certificate_provider/certificate_info.h"
 #include "chrome/browser/chromeos/certificate_provider/certificate_requests.h"
 #include "chrome/browser/chromeos/certificate_provider/pin_dialog_manager.h"
 #include "chrome/browser/chromeos/certificate_provider/sign_requests.h"
 #include "chrome/browser/chromeos/certificate_provider/thread_safe_certificate_map.h"
+#include "components/account_id/account_id.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "net/cert/x509_certificate.h"
 #include "net/ssl/client_cert_identity.h"
@@ -95,6 +98,13 @@ class CertificateProviderService : public KeyedService {
     DISALLOW_COPY_AND_ASSIGN(Delegate);
   };
 
+  class Observer : public base::CheckedObserver {
+   public:
+    // Called when a sign request gets successfully completed.
+    virtual void OnSignCompleted(
+        const scoped_refptr<net::X509Certificate>& certificate) {}
+  };
+
   // |SetDelegate| must be called exactly once directly after construction.
   CertificateProviderService();
   ~CertificateProviderService() override;
@@ -104,6 +114,9 @@ class CertificateProviderService : public KeyedService {
   // not before, which allows to unregister observers (e.g. for
   // OnExtensionUnloaded) in the delegate's destructor on behalf of the service.
   void SetDelegate(std::unique_ptr<Delegate> delegate);
+
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
 
   // Must be called with the reply of an extension to a previous certificate
   // request. For each request, it is expected that every registered extension
@@ -146,13 +159,39 @@ class CertificateProviderService : public KeyedService {
   // is sufficient to create the CertificateProvider once and then repeatedly
   // call its |GetCertificates()|. The returned provider is valid even after the
   // destruction of this service.
-  // The returned provider can be used on any thread.
   std::unique_ptr<CertificateProvider> CreateCertificateProvider();
 
   // Must be called if extension with id |extension_id| is unloaded and cannot
   // serve certificates anymore. This should be called everytime the
   // corresponding notification of the ExtensionRegistry is triggered.
   void OnExtensionUnloaded(const std::string& extension_id);
+
+  // Requests the extension which provided the certificate identified by
+  // |subject_public_key_info| to sign |digest| with the corresponding private
+  // key. |algorithm| is a TLS 1.3 SignatureScheme value. See net::SSLPrivateKey
+  // for details. |callback| will be run with the reply of the extension or an
+  // error.
+  void RequestSignatureBySpki(
+      const std::string& subject_public_key_info,
+      uint16_t algorithm,
+      base::span<const uint8_t> digest,
+      const base::Optional<AccountId>& authenticating_user_account_id,
+      net::SSLPrivateKey::SignCallback callback);
+
+  // Looks up the certificate identified by |subject_public_key_info|. If any
+  // extension is currently providing such a certificate, fills
+  // *|supported_algorithms| with the algorithms supported for that certificate
+  // and returns true. Values used for |supported_algorithms| are TLS 1.3
+  // SignatureSchemes. See net::SSLPrivateKey for details. If no extension is
+  // currently providing such a certificate, returns false.
+  bool GetSupportedAlgorithmsBySpki(
+      const std::string& subject_public_key_info,
+      std::vector<uint16_t>* supported_algorithms);
+
+  // Aborts all signature requests and related PIN dialogs that are associated
+  // with the authentication of the given user.
+  void AbortSignatureRequestsForAuthenticatingUser(
+      const AccountId& authenticating_user_account_id);
 
   PinDialogManager* pin_dialog_manager() { return &pin_dialog_manager_; }
 
@@ -166,7 +205,7 @@ class CertificateProviderService : public KeyedService {
   // |extension_to_certificates_| is updated and |callback| is run with the
   // retrieved list of certificates.
   void GetCertificatesFromExtensions(
-      const base::Callback<void(net::ClientCertIdentityList)>& callback);
+      base::OnceCallback<void(net::ClientCertIdentityList)> callback);
 
   // Copies the given certificates into the internal
   // |extension_to_certificates_|. Any previously stored certificates are
@@ -174,7 +213,7 @@ class CertificateProviderService : public KeyedService {
   void UpdateCertificatesAndRun(
       const std::map<std::string, CertificateInfoList>&
           extension_to_certificates,
-      const base::Callback<void(net::ClientCertIdentityList)>& callback);
+      base::OnceCallback<void(net::ClientCertIdentityList)> callback);
 
   // Terminates the certificate request with id |cert_request_id| by ignoring
   // pending replies from extensions. Certificates that were already reported
@@ -191,9 +230,12 @@ class CertificateProviderService : public KeyedService {
       const scoped_refptr<net::X509Certificate>& certificate,
       uint16_t algorithm,
       base::span<const uint8_t> digest,
+      const base::Optional<AccountId>& authenticating_user_account_id,
       net::SSLPrivateKey::SignCallback callback);
 
   std::unique_ptr<Delegate> delegate_;
+
+  base::ObserverList<Observer> observers_;
 
   // The object to manage the dialog displayed when requestPin is called by the
   // extension.
@@ -215,8 +257,8 @@ class CertificateProviderService : public KeyedService {
   // after an extension doesn't report it anymore.
   certificate_provider::ThreadSafeCertificateMap certificate_map_;
 
-  base::ThreadChecker thread_checker_;
-  base::WeakPtrFactory<CertificateProviderService> weak_factory_;
+  SEQUENCE_CHECKER(sequence_checker_);
+  base::WeakPtrFactory<CertificateProviderService> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(CertificateProviderService);
 };

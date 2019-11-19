@@ -8,24 +8,23 @@
 
 #include "base/callback.h"
 #include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/metrics/field_trial.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/child_accounts/permission_request_creator_apiary.h"
-#include "chrome/browser/supervised_user/experimental/safe_search_url_reporter.h"
 #include "chrome/browser/supervised_user/supervised_user_constants.h"
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_settings_service.h"
 #include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
 #include "chrome/browser/sync/profile_sync_service_factory.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_user_settings.h"
 #include "content/public/browser/browser_context.h"
@@ -72,8 +71,7 @@ ChildAccountService::ChildAccountService(Profile* profile)
     : profile_(profile),
       active_(false),
       family_fetch_backoff_(&kFamilyFetchBackoffPolicy),
-      identity_manager_(IdentityManagerFactory::GetForProfile(profile)),
-      weak_ptr_factory_(this) {}
+      identity_manager_(IdentityManagerFactory::GetForProfile(profile)) {}
 
 ChildAccountService::~ChildAccountService() {}
 
@@ -102,7 +100,7 @@ void ChildAccountService::Init() {
   // If we're already signed in, check the account immediately just to be sure.
   // (We might have missed an update before registering as an observer.)
   base::Optional<AccountInfo> primary_account_info =
-      identity_manager_->FindExtendedAccountInfoForAccount(
+      identity_manager_->FindExtendedAccountInfoForAccountWithRefreshToken(
           identity_manager_->GetPrimaryAccountInfo());
 
   if (primary_account_info.has_value())
@@ -129,7 +127,7 @@ void ChildAccountService::AddChildStatusReceivedCallback(
 }
 
 ChildAccountService::AuthState ChildAccountService::GetGoogleAuthState() {
-  identity::AccountsInCookieJarInfo accounts_in_cookie_jar_info =
+  signin::AccountsInCookieJarInfo accounts_in_cookie_jar_info =
       identity_manager_->GetAccountsInCookieJar();
   if (!accounts_in_cookie_jar_info.accounts_are_fresh)
     return AuthState::PENDING;
@@ -157,7 +155,8 @@ bool ChildAccountService::SetActive(bool active) {
 
   if (active_) {
     SupervisedUserSettingsService* settings_service =
-        SupervisedUserSettingsServiceFactory::GetForProfile(profile_);
+        SupervisedUserSettingsServiceFactory::GetForKey(
+            profile_->GetProfileKey());
 
     // In contrast to legacy SUs, child account SUs must sign in.
     settings_service->SetLocalSetting(supervised_users::kSigninAllowed,
@@ -186,21 +185,16 @@ bool ChildAccountService::SetActive(bool active) {
     signin_util::SetUserSignoutAllowedForProfile(profile_, false);
 #endif
 
-    // TODO(treib): Maybe store the last update time in a pref, so we don't
-    // have to re-fetch on every start.
     StartFetchingFamilyInfo();
 
     SupervisedUserService* service =
         SupervisedUserServiceFactory::GetForProfile(profile_);
     service->AddPermissionRequestCreator(
         PermissionRequestCreatorApiary::CreateWithProfile(profile_));
-    if (base::FeatureList::IsEnabled(features::kSafeSearchUrlReporting)) {
-      service->SetSafeSearchURLReporter(
-          SafeSearchURLReporter::CreateWithProfile(profile_));
-    }
   } else {
     SupervisedUserSettingsService* settings_service =
-        SupervisedUserSettingsServiceFactory::GetForProfile(profile_);
+        SupervisedUserSettingsServiceFactory::GetForKey(
+            profile_->GetProfileKey());
     settings_service->SetLocalSetting(supervised_users::kSigninAllowed,
                                       nullptr);
     settings_service->SetLocalSetting(supervised_users::kCookiesAlwaysAllowed,
@@ -220,7 +214,9 @@ bool ChildAccountService::SetActive(bool active) {
   }
 
   // Trigger a sync reconfig to enable/disable the right SU data types.
-  // The logic to do this lives in the SupervisedUserSyncDataTypeController.
+  // The logic to do this lives in the SupervisedUserSyncModelTypeController.
+  // TODO(crbug.com/946473): Get rid of this hack and instead call
+  // DataTypePreconditionChanged from the controller.
   syncer::SyncService* sync_service =
       ProfileSyncServiceFactory::GetForProfile(profile_);
   if (sync_service->GetUserSettings()->IsFirstSetupComplete()) {
@@ -310,7 +306,7 @@ void ChildAccountService::OnFailure(FamilyInfoFetcher::ErrorCode error) {
 }
 
 void ChildAccountService::OnAccountsInCookieUpdated(
-    const identity::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
+    const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
     const GoogleServiceAuthError& error) {
   google_auth_state_observers_.Notify();
 }
@@ -358,6 +354,9 @@ void ChildAccountService::SetFirstCustodianPrefs(
                                   custodian.display_name);
   profile_->GetPrefs()->SetString(prefs::kSupervisedUserCustodianEmail,
                                   custodian.email);
+  profile_->GetPrefs()->SetString(
+      prefs::kSupervisedUserCustodianObfuscatedGaiaId,
+      custodian.obfuscated_gaia_id);
   profile_->GetPrefs()->SetString(prefs::kSupervisedUserCustodianProfileURL,
                                   custodian.profile_url);
   profile_->GetPrefs()->SetString(
@@ -371,6 +370,9 @@ void ChildAccountService::SetSecondCustodianPrefs(
                                   custodian.display_name);
   profile_->GetPrefs()->SetString(prefs::kSupervisedUserSecondCustodianEmail,
                                   custodian.email);
+  profile_->GetPrefs()->SetString(
+      prefs::kSupervisedUserSecondCustodianObfuscatedGaiaId,
+      custodian.obfuscated_gaia_id);
   profile_->GetPrefs()->SetString(
       prefs::kSupervisedUserSecondCustodianProfileURL,
       custodian.profile_url);

@@ -9,35 +9,31 @@
 
 namespace {
 
-// The multiplier for the base system spacing at the top margin.
-static const CGFloat TopSystemSpacingMultiplier = 1.58;
+// Left and right margins of the cell content and buttons.
+static const CGFloat kButtonHorizontalMargin = 16;
 
-// The multiplier for the base system spacing between elements (vertical).
-static const CGFloat MiddleSystemSpacingMultiplier = 1.83;
+// Left and right margins for the chips.
+static const CGFloat kChipsHorizontalMargin = -1;
+
+// The multiplier for the base system spacing at the top margin.
+static const CGFloat TopSystemSpacingMultiplier = 2;
 
 // The multiplier for the base system spacing at the bottom margin.
 static const CGFloat BottomSystemSpacingMultiplier = 2.26;
 
-// Top and bottom margins for buttons.
-static const CGFloat ButtonVerticalMargin = 12;
-
-// Left and right margins of the cell content and buttons.
-static const CGFloat ButtonHorizontalMargin = 16;
-
 // Options for |AppendHorizontalConstraintsForViews|.
 typedef NS_OPTIONS(NSUInteger, AppendConstraints) {
   AppendConstraintsNone = 0,
-  // Add to options to give remaining space in the line to leftmost item.
-  AppendConstraintsHorizontalExtraSpaceLeft = 1 << 0,
-  // Add to options to give remaining space in the line to leftmost item.
-  AppendConstraintsHorizontalSyncBaselines = 1 << 1,
+  // Add an equal constraint to the baselines.
+  AppendConstraintsHorizontalSyncBaselines = 1 << 0,
+  // The views can be constraint smaller than the guide.
+  AppendConstraintsHorizontalEqualOrSmallerThanGuide = 1 << 1,
 };
 
 }  // namespace
 
-// Creates a blank button in fallback style, for the given |action| and
-// |target|.
-UIButton* CreateButtonWithSelectorAndTarget(SEL action, id target);
+// Creates a blank button in chip style, for the given |action| and |target|.
+UIButton* CreateChipWithSelectorAndTarget(SEL action, id target);
 
 // Adds vertical constraints to given list, laying |views| vertically (based on
 // firstBaselineAnchor for the buttons or labels) inside |container|, starting
@@ -55,7 +51,6 @@ void AppendVerticalConstraintsSpacingForViews(
     NSArray<UIView*>* views,
     UIView* container,
     CGFloat topSystemSpacingMultiplier,
-    CGFloat middleSystemSpacingMultiplier,
     CGFloat BottomSystemSpacingMultiplier);
 
 // Adds constraints to the given list, for the given |views|, so as to lay them

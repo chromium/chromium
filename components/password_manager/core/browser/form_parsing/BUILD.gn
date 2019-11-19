@@ -4,10 +4,6 @@
 
 import("//build/config/sanitizers/sanitizers.gni")
 
-# Determine whetner fuzzer_test targets are built.
-does_fuzzer_test_compile =
-    !disable_libfuzzer && (use_fuzzing_engine || use_drfuzz || is_linux)
-
 static_library("form_parsing") {
   sources = [
     "form_parser.cc",
@@ -15,18 +11,6 @@ static_library("form_parsing") {
     "password_field_prediction.cc",
     "password_field_prediction.h",
   ]
-
-  # TODO(crbug.com/845426): Provide a single parser for all platforms, then
-  # remove the ios_* variant. This will be possible once the form_parser.* is
-  # used by default and causing no known issues. Note that (the
-  # non-iOS-specific) 'form_parser.*' is used by NewPasswordFormManager on
-  # every platform, including iOS.
-  if (does_fuzzer_test_compile || is_ios) {
-    sources += [
-      "ios_form_parser.cc",
-      "ios_form_parser.h",
-    ]
-  }
 
   deps = [
     "//base",
@@ -44,10 +28,6 @@ source_set("unit_tests") {
     "password_field_prediction_unittest.cc",
   ]
 
-  if (does_fuzzer_test_compile || is_ios) {
-    sources += [ "ios_form_parser_unittest.cc" ]
-  }
-
   deps = [
     ":form_parsing",
     "//base",
@@ -55,6 +35,7 @@ source_set("unit_tests") {
     "//components/autofill/core/browser",
     "//components/autofill/core/browser/proto",
     "//components/autofill/core/common",
+    "//components/password_manager/core/common",
     "//testing/gmock",
     "//testing/gtest",
     "//url",

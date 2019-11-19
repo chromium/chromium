@@ -42,6 +42,7 @@
 #include "ui/gl/gl_switches.h"
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+#include "chrome/browser/supervised_user/logged_in_user_mixin.h"
 #include "chrome/browser/supervised_user/supervised_user_constants.h"
 
 #if defined(OS_CHROMEOS)
@@ -375,23 +376,89 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTest, EmptyCrx) {
 class ExtensionWebstorePrivateApiTestChild
     : public ExtensionWebstorePrivateApiTest {
  public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    ExtensionWebstorePrivateApiTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitchASCII(switches::kSupervisedUserId,
-                                    supervised_users::kChildAccountSUID);
-#if defined(OS_CHROMEOS)
-    command_line->AppendSwitchASCII(
-        chromeos::switches::kLoginUser,
-        "supervised_user@locally-managed.localhost");
-    command_line->AppendSwitchASCII(chromeos::switches::kLoginProfile, "hash");
-#endif
+  ExtensionWebstorePrivateApiTestChild()
+      : embedded_test_server_(std::make_unique<net::EmbeddedTestServer>()),
+        logged_in_user_mixin_(&mixin_host_,
+                              chromeos::LoggedInUserMixin::LogInType::kChild,
+                              embedded_test_server_.get()) {
+    // Suppress regular user login to enable child user login.
+    set_chromeos_user_ = false;
   }
+
+  void SetUp() override {
+    mixin_host_.SetUp();
+    ExtensionWebstorePrivateApiTest::SetUp();
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    mixin_host_.SetUpCommandLine(command_line);
+    ExtensionWebstorePrivateApiTest::SetUpCommandLine(command_line);
+    // Shortens the merge session timeout from 20 to 1 seconds to speed up the
+    // test by about 19 seconds.
+    // TODO (crbug.com/995575): figure out why this switch speeds up the test,
+    // and fix the test setup so this is not required.
+    command_line->AppendSwitch(switches::kShortMergeSessionTimeoutForTest);
+  }
+
+  void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
+    mixin_host_.SetUpDefaultCommandLine(command_line);
+    ExtensionWebstorePrivateApiTest::SetUpDefaultCommandLine(command_line);
+  }
+
+  bool SetUpUserDataDirectory() override {
+    return mixin_host_.SetUpUserDataDirectory() &&
+           ExtensionWebstorePrivateApiTest::SetUpUserDataDirectory();
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    mixin_host_.SetUpInProcessBrowserTestFixture();
+    ExtensionWebstorePrivateApiTest::SetUpInProcessBrowserTestFixture();
+  }
+
+  void CreatedBrowserMainParts(
+      content::BrowserMainParts* browser_main_parts) override {
+    mixin_host_.CreatedBrowserMainParts(browser_main_parts);
+    ExtensionWebstorePrivateApiTest::CreatedBrowserMainParts(
+        browser_main_parts);
+  }
+
+  void SetUpOnMainThread() override {
+    mixin_host_.SetUpOnMainThread();
+    ExtensionWebstorePrivateApiTest::SetUpOnMainThread();
+    logged_in_user_mixin_.SetUpOnMainThreadHelper(
+        host_resolver(), this, true /* issue_any_scope_token */);
+  }
+
+  void TearDownOnMainThread() override {
+    mixin_host_.TearDownOnMainThread();
+    ExtensionWebstorePrivateApiTest::TearDownOnMainThread();
+  }
+
+  void TearDownInProcessBrowserTestFixture() override {
+    mixin_host_.TearDownInProcessBrowserTestFixture();
+    ExtensionWebstorePrivateApiTest::TearDownInProcessBrowserTestFixture();
+  }
+
+  void TearDown() override {
+    mixin_host_.TearDown();
+    ExtensionWebstorePrivateApiTest::TearDown();
+  }
+
+ private:
+  // Replicate what MixinBasedInProcessBrowserTest does since inheriting from
+  // that class is inconvenient here.
+  InProcessBrowserTestMixinHost mixin_host_;
+  // Create another embedded test server to avoid starting the same one twice.
+  std::unique_ptr<net::EmbeddedTestServer> embedded_test_server_;
+
+  chromeos::LoggedInUserMixin logged_in_user_mixin_;
 };
 
 // Tests that extension installation is blocked for child accounts, and
 // attempting to do so produces a special error code.
 // Note: This will have to be updated when we enable child-initiated installs.
 IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTestChild, InstallBlocked) {
+  ASSERT_TRUE(browser());
   ASSERT_TRUE(RunInstallTest("begin_install_fail_child.html", "extension.crx"));
 }
 

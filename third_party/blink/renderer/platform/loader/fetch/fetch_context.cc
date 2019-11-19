@@ -30,44 +30,10 @@
 
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_context.h"
 
-#include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object.h"
+#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
-#include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher_properties.h"
-#include "third_party/blink/renderer/platform/platform_probe_sink.h"
-#include "third_party/blink/renderer/platform/probe/platform_trace_events_agent.h"
 
 namespace blink {
-
-namespace {
-
-class NullFetchContext final : public FetchContext {
- public:
-  NullFetchContext() = default;
-
-  void CountUsage(mojom::WebFeature) const override {}
-  void CountDeprecation(mojom::WebFeature) const override {}
-};
-
-}  // namespace
-
-FetchContext& FetchContext::NullInstance() {
-  return *MakeGarbageCollected<NullFetchContext>();
-}
-
-FetchContext::FetchContext()
-    : platform_probe_sink_(MakeGarbageCollected<PlatformProbeSink>()) {
-  platform_probe_sink_->addPlatformTraceEvents(
-      MakeGarbageCollected<PlatformTraceEventsAgent>());
-}
-
-void FetchContext::Trace(blink::Visitor* visitor) {
-  visitor->Trace(platform_probe_sink_);
-  visitor->Trace(resource_fetcher_properties_);
-}
-
-void FetchContext::DispatchDidChangeResourcePriority(unsigned long,
-                                                     ResourceLoadPriority,
-                                                     int) {}
 
 void FetchContext::AddAdditionalRequestHeaders(ResourceRequest&) {}
 
@@ -81,53 +47,7 @@ mojom::FetchCacheMode FetchContext::ResourceRequestCachePolicy(
 void FetchContext::PrepareRequest(ResourceRequest&,
                                   const FetchInitiatorInfo&,
                                   WebScopedVirtualTimePauser&,
-                                  RedirectType,
                                   ResourceType) {}
-
-void FetchContext::DispatchWillSendRequest(unsigned long,
-                                           const ResourceRequest&,
-                                           const ResourceResponse&,
-                                           ResourceType,
-                                           const FetchInitiatorInfo&) {}
-
-void FetchContext::DispatchDidReceiveResponse(unsigned long,
-                                              const ResourceRequest&,
-                                              const ResourceResponse&,
-                                              Resource*,
-                                              ResourceResponseType) {}
-
-void FetchContext::DispatchDidReceiveData(unsigned long,
-                                          const char*,
-                                          uint64_t) {}
-
-void FetchContext::DispatchDidReceiveEncodedData(unsigned long, size_t) {}
-
-void FetchContext::DispatchDidDownloadToBlob(unsigned long identifier,
-                                             BlobDataHandle*) {}
-
-void FetchContext::DispatchDidFinishLoading(unsigned long,
-                                            TimeTicks,
-                                            int64_t,
-                                            int64_t,
-                                            bool,
-                                            ResourceResponseType) {}
-
-void FetchContext::DispatchDidFail(const KURL&,
-                                   unsigned long,
-                                   const ResourceError&,
-                                   int64_t,
-                                   bool) {}
-
-bool FetchContext::ShouldLoadNewResource(ResourceType type) const {
-  return !GetResourceFetcherProperties().ShouldBlockLoadingSubResource();
-}
-
-void FetchContext::RecordLoadingActivity(
-    const ResourceRequest&,
-    ResourceType,
-    const AtomicString& fetch_initiator_name) {}
-
-void FetchContext::DidObserveLoadingBehavior(WebLoadingBehaviorFlag) {}
 
 void FetchContext::AddResourceTiming(const ResourceTimingInfo&) {}
 

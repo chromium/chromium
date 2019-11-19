@@ -12,11 +12,13 @@
 #include "base/time/time.h"
 #include "base/token.h"
 #include "build/build_config.h"
+#include "chrome/gpu/browser_exposed_gpu_interfaces.h"
 #include "content/public/child/child_thread.h"
 #include "content/public/common/content_switches.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
+#include "content/public/common/service_names.mojom.h"
+#include "media/media_buildflags.h"
 
-#if BUILDFLAG(ENABLE_LIBRARY_CDMS)
+#if BUILDFLAG(ENABLE_CDM_PROXY)
 #include "media/cdm/cdm_paths.h"
 #include "media/cdm/library_cdm/clear_key_cdm/clear_key_cdm_proxy.h"
 #include "third_party/widevine/cdm/buildflags.h"
@@ -24,16 +26,10 @@
 #include "chrome/gpu/widevine_cdm_proxy_factory.h"
 #include "third_party/widevine/cdm/widevine_cdm_common.h"
 #endif  // BUILDFLAG(ENABLE_WIDEVINE) && defined(OS_WIN)
-#endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
+#endif  // BUILDFLAG(ENABLE_CDM_PROXY)
 
 #if defined(OS_CHROMEOS)
-#include "components/arc/video_accelerator/gpu_arc_video_decode_accelerator.h"
-#include "components/arc/video_accelerator/gpu_arc_video_encode_accelerator.h"
-#include "components/arc/video_accelerator/gpu_arc_video_protected_buffer_allocator.h"
 #include "components/arc/video_accelerator/protected_buffer_manager.h"
-#include "components/arc/video_accelerator/protected_buffer_manager_proxy.h"
-#include "content/public/common/service_manager_connection.h"
-#include "services/service_manager/public/cpp/binder_registry.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/ozone/public/surface_factory_ozone.h"
 #endif
@@ -47,35 +43,8 @@ ChromeContentGpuClient::ChromeContentGpuClient()
 
 ChromeContentGpuClient::~ChromeContentGpuClient() {}
 
-void ChromeContentGpuClient::InitializeRegistry(
-    service_manager::BinderRegistry* registry) {
+void ChromeContentGpuClient::GpuServiceInitialized() {
 #if defined(OS_CHROMEOS)
-  registry->AddInterface(
-      base::BindRepeating(
-          &ChromeContentGpuClient::CreateArcVideoDecodeAccelerator,
-          base::Unretained(this)),
-      base::ThreadTaskRunnerHandle::Get());
-  registry->AddInterface(
-      base::BindRepeating(
-          &ChromeContentGpuClient::CreateArcVideoEncodeAccelerator,
-          base::Unretained(this)),
-      base::ThreadTaskRunnerHandle::Get());
-  registry->AddInterface(
-      base::BindRepeating(
-          &ChromeContentGpuClient::CreateArcVideoProtectedBufferAllocator,
-          base::Unretained(this)),
-      base::ThreadTaskRunnerHandle::Get());
-  registry->AddInterface(
-      base::BindRepeating(&ChromeContentGpuClient::CreateProtectedBufferManager,
-                          base::Unretained(this)),
-      base::ThreadTaskRunnerHandle::Get());
-#endif
-}
-
-void ChromeContentGpuClient::GpuServiceInitialized(
-    const gpu::GpuPreferences& gpu_preferences) {
-#if defined(OS_CHROMEOS)
-  gpu_preferences_ = gpu_preferences;
   ui::OzonePlatform::GetInstance()
       ->GetSurfaceFactoryOzone()
       ->SetGetProtectedNativePixmapDelegate(base::BindRepeating(
@@ -85,12 +54,26 @@ void ChromeContentGpuClient::GpuServiceInitialized(
 
   // This doesn't work in single-process mode.
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kSingleProcess)) {
-    main_thread_profiler_->SetMainThreadTaskRunner(
+          switches::kSingleProcess) &&
+      !base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kInProcessGPU)) {
+    ThreadProfiler::SetMainThreadTaskRunner(
         base::ThreadTaskRunnerHandle::Get());
-    ThreadProfiler::SetServiceManagerConnectorForChildProcess(
-        content::ChildThread::Get()->GetConnector());
+
+    mojo::PendingRemote<metrics::mojom::CallStackProfileCollector> collector;
+    content::ChildThread::Get()->BindHostReceiver(
+        collector.InitWithNewPipeAndPassReceiver());
+    ThreadProfiler::SetCollectorForChildProcess(std::move(collector));
   }
+}
+
+void ChromeContentGpuClient::ExposeInterfacesToBrowser(
+    const gpu::GpuPreferences& gpu_preferences,
+    mojo::BinderMap* binders) {
+  // NOTE: Do not add binders directly within this method. Instead, modify the
+  // definition of |ExposeChromeGpuInterfacesToBrowser()|, as this ensures
+  // security review coverage.
+  ExposeChromeGpuInterfacesToBrowser(this, gpu_preferences, binders);
 }
 
 void ChromeContentGpuClient::PostIOThreadCreated(
@@ -108,7 +91,7 @@ void ChromeContentGpuClient::PostCompositorThreadCreated(
                      metrics::CallStackProfileParams::COMPOSITOR_THREAD));
 }
 
-#if BUILDFLAG(ENABLE_LIBRARY_CDMS)
+#if BUILDFLAG(ENABLE_CDM_PROXY)
 std::unique_ptr<media::CdmProxy> ChromeContentGpuClient::CreateCdmProxy(
     const base::Token& cdm_guid) {
   if (cdm_guid == media::kClearKeyCdmGuid)
@@ -121,39 +104,11 @@ std::unique_ptr<media::CdmProxy> ChromeContentGpuClient::CreateCdmProxy(
 
   return nullptr;
 }
-#endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
+#endif  // BUILDFLAG(ENABLE_CDM_PROXY)
 
 #if defined(OS_CHROMEOS)
-void ChromeContentGpuClient::CreateArcVideoDecodeAccelerator(
-    ::arc::mojom::VideoDecodeAcceleratorRequest request) {
-  mojo::MakeStrongBinding(std::make_unique<arc::GpuArcVideoDecodeAccelerator>(
-                              gpu_preferences_, protected_buffer_manager_),
-                          std::move(request));
+scoped_refptr<arc::ProtectedBufferManager>
+ChromeContentGpuClient::GetProtectedBufferManager() {
+  return protected_buffer_manager_;
 }
-
-void ChromeContentGpuClient::CreateArcVideoEncodeAccelerator(
-    ::arc::mojom::VideoEncodeAcceleratorRequest request) {
-  mojo::MakeStrongBinding(
-      std::make_unique<arc::GpuArcVideoEncodeAccelerator>(gpu_preferences_),
-      std::move(request));
-}
-
-void ChromeContentGpuClient::CreateArcVideoProtectedBufferAllocator(
-    ::arc::mojom::VideoProtectedBufferAllocatorRequest request) {
-  auto gpu_arc_video_protected_buffer_allocator =
-      arc::GpuArcVideoProtectedBufferAllocator::Create(
-          protected_buffer_manager_);
-  if (!gpu_arc_video_protected_buffer_allocator)
-    return;
-  mojo::MakeStrongBinding(std::move(gpu_arc_video_protected_buffer_allocator),
-                          std::move(request));
-}
-
-void ChromeContentGpuClient::CreateProtectedBufferManager(
-    ::arc::mojom::ProtectedBufferManagerRequest request) {
-  mojo::MakeStrongBinding(
-      std::make_unique<arc::GpuArcProtectedBufferManagerProxy>(
-          protected_buffer_manager_),
-      std::move(request));
-}
-#endif
+#endif  // defined(OS_CHROMEOS)

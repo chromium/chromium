@@ -5,11 +5,10 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/time/time.h"
+#include "base/timer/lap_timer.h"
 #include "build/build_config.h"
-#include "cc/base/lap_timer.h"
 #include "cc/raster/bitmap_raster_buffer_provider.h"
 #include "cc/raster/gpu_raster_buffer_provider.h"
 #include "cc/raster/one_copy_raster_buffer_provider.h"
@@ -30,7 +29,7 @@
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "testing/perf/perf_test.h"
+#include "testing/perf/perf_result_reporter.h"
 #include "third_party/khronos/GLES2/gl2.h"
 #include "third_party/skia/include/gpu/GrContext.h"
 
@@ -67,6 +66,8 @@ class PerfGLES2Interface : public gpu::gles2::GLES2InterfaceStub {
     if (pname == GL_QUERY_RESULT_AVAILABLE_EXT)
       *params = 1;
   }
+
+  // Overridden from gpu::InterfaceBase
   void GenUnverifiedSyncTokenCHROMIUM(GLbyte* sync_token) override {
     // Copy the data over after setting the data to ensure alignment.
     gpu::SyncToken sync_token_data(gpu::CommandBufferNamespace::GPU_IO,
@@ -182,6 +183,9 @@ class PerfTileTask : public TileTask {
 class PerfImageDecodeTaskImpl : public PerfTileTask {
  public:
   PerfImageDecodeTaskImpl() = default;
+  PerfImageDecodeTaskImpl(const PerfImageDecodeTaskImpl&) = delete;
+
+  PerfImageDecodeTaskImpl& operator=(const PerfImageDecodeTaskImpl&) = delete;
 
   // Overridden from Task:
   void RunOnWorkerThread() override {}
@@ -191,9 +195,6 @@ class PerfImageDecodeTaskImpl : public PerfTileTask {
 
  protected:
   ~PerfImageDecodeTaskImpl() override = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PerfImageDecodeTaskImpl);
 };
 
 class PerfRasterBufferProviderHelper {
@@ -214,6 +215,8 @@ class PerfRasterTaskImpl : public PerfTileTask {
         pool_(pool),
         resource_(std::move(in_use_resource)),
         raster_buffer_(std::move(raster_buffer)) {}
+  PerfRasterTaskImpl(const PerfRasterTaskImpl&) = delete;
+  PerfRasterTaskImpl& operator=(const PerfRasterTaskImpl&) = delete;
 
   // Overridden from Task:
   void RunOnWorkerThread() override {}
@@ -236,8 +239,6 @@ class PerfRasterTaskImpl : public PerfTileTask {
   ResourcePool* const pool_;
   ResourcePool::InUsePoolResource resource_;
   std::unique_ptr<RasterBuffer> raster_buffer_;
-
-  DISALLOW_COPY_AND_ASSIGN(PerfRasterTaskImpl);
 };
 
 class RasterBufferProviderPerfTestBase {
@@ -340,7 +341,7 @@ class RasterBufferProviderPerfTestBase {
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
   std::unique_ptr<ResourcePool> resource_pool_;
   std::unique_ptr<SynchronousTaskGraphRunner> task_graph_runner_;
-  LapTimer timer_;
+  base::LapTimer timer_;
 };
 
 class RasterBufferProviderPerfTest
@@ -370,7 +371,7 @@ class RasterBufferProviderPerfTest
         Create3dResourceProvider();
         raster_buffer_provider_ = std::make_unique<GpuRasterBufferProvider>(
             compositor_context_provider_.get(), worker_context_provider_.get(),
-            false, 0, viz::RGBA_8888, gfx::Size(), true, false);
+            false, viz::RGBA_8888, gfx::Size(), true, false);
         break;
       case RASTER_BUFFER_PROVIDER_TYPE_BITMAP:
         CreateSoftwareResourceProvider();
@@ -434,8 +435,8 @@ class RasterBufferProviderPerfTest
     RunMessageLoopUntilAllTasksHaveCompleted();
     tile_task_manager_->CheckForCompletedTasks();
 
-    perf_test::PrintResult("schedule_tasks", TestModifierString(), test_name,
-                           timer_.LapsPerSecond(), "runs/s", true);
+    perf_test::PerfResultReporter reporter = SetUpReporter(test_name);
+    reporter.AddResult("_tasks" + TestModifierString(), timer_.LapsPerSecond());
   }
 
   void RunScheduleAlternateTasksTest(const std::string& test_name,
@@ -471,8 +472,9 @@ class RasterBufferProviderPerfTest
     RunMessageLoopUntilAllTasksHaveCompleted();
     tile_task_manager_->CheckForCompletedTasks();
 
-    perf_test::PrintResult("schedule_alternate_tasks", TestModifierString(),
-                           test_name, timer_.LapsPerSecond(), "runs/s", true);
+    perf_test::PerfResultReporter reporter = SetUpReporter(test_name);
+    reporter.AddResult("_alternate_tasks" + TestModifierString(),
+                       timer_.LapsPerSecond());
   }
 
   void RunScheduleAndExecuteTasksTest(const std::string& test_name,
@@ -500,8 +502,20 @@ class RasterBufferProviderPerfTest
     tile_task_manager_->ScheduleTasks(&empty);
     RunMessageLoopUntilAllTasksHaveCompleted();
 
-    perf_test::PrintResult("schedule_and_execute_tasks", TestModifierString(),
-                           test_name, timer_.LapsPerSecond(), "runs/s", true);
+    perf_test::PerfResultReporter reporter = SetUpReporter(test_name);
+    reporter.AddResult("_and_execute_tasks" + TestModifierString(),
+                       timer_.LapsPerSecond());
+  }
+
+ protected:
+  perf_test::PerfResultReporter SetUpReporter(const std::string& story_name) {
+    perf_test::PerfResultReporter reporter("schedule", story_name);
+    reporter.RegisterImportantMetric("_tasks" + TestModifierString(), "runs/s");
+    reporter.RegisterImportantMetric("_alternate_tasks" + TestModifierString(),
+                                     "runs/s");
+    reporter.RegisterImportantMetric(
+        "_and_execute_tasks" + TestModifierString(), "runs/s");
+    return reporter;
   }
 
  private:
@@ -605,8 +619,16 @@ class RasterBufferProviderCommonPerfTest
     for (auto& task : raster_tasks)
       task->OnTaskCompleted();
 
-    perf_test::PrintResult("build_raster_task_graph", "", test_name,
-                           timer_.LapsPerSecond(), "runs/s", true);
+    perf_test::PerfResultReporter reporter = SetUpReporter(test_name);
+    reporter.AddResult("", timer_.LapsPerSecond());
+  }
+
+ protected:
+  perf_test::PerfResultReporter SetUpReporter(const std::string& story_name) {
+    perf_test::PerfResultReporter reporter("build_raster_test_graph",
+                                           story_name);
+    reporter.RegisterImportantMetric("", "runs/s");
+    return reporter;
   }
 };
 

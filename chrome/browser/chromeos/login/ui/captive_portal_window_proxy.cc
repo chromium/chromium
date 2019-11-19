@@ -28,7 +28,7 @@ views::Widget* CreateWindowAsFramelessChild(views::WidgetDelegate* delegate,
   params.parent = parent;
   params.opacity = views::Widget::InitParams::TRANSLUCENT_WINDOW;
 
-  widget->Init(params);
+  widget->Init(std::move(params));
   return widget;
 }
 

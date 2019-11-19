@@ -5,7 +5,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#      http://www.apache.org/licenses/LICENSE-2.0
+#      https://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -385,8 +385,8 @@ absl_cc_library(
     ${ABSL_DEFAULT_COPTS}
   DEPS
     absl::strings
+    absl::config
     absl::core_headers
-    absl::inlined_vector
     absl::type_traits
     absl::int128
     absl::span
@@ -501,6 +501,8 @@ absl_cc_library(
     "internal/pow10_helper.h"
   SRCS
     "internal/pow10_helper.cc"
+  COPTS
+    ${ABSL_TEST_COPTS}
   TESTONLY
 )
 

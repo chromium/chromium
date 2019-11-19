@@ -5,6 +5,8 @@
 #ifndef MOJO_PUBLIC_CPP_BINDINGS_TESTS_RECT_BLINK_H_
 #define MOJO_PUBLIC_CPP_BINDINGS_TESTS_RECT_BLINK_H_
 
+#include <functional>
+
 #include "base/logging.h"
 
 namespace mojo {

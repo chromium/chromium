@@ -90,12 +90,7 @@ struct CodeViewRecordPDB70 {
   // UUID has a constructor, which makes it non-POD, which makes this structure
   // non-POD. In order for the default constructor to zero-initialize other
   // members, an explicit constructor must be provided.
-  CodeViewRecordPDB70()
-      : signature(),
-        uuid(),
-        age(),
-        pdb_name() {
-  }
+  CodeViewRecordPDB70() : signature(), uuid(), age(), pdb_name() {}
 
   //! \brief The magic number identifying this structure version, stored in
   //!     #signature.
@@ -125,6 +120,27 @@ struct CodeViewRecordPDB70 {
   //! code page of the system that linked the module. On other operating
   //! systems, UTF-8 may be used.
   uint8_t pdb_name[1];
+};
+
+//! \brief A CodeView record containing an ELF build-id.
+//!
+//! This identifier comes from the ELF section `NT_GNU_BUILD_ID`.
+struct CodeViewRecordBuildID {
+  //! \brief The magic number identifying this structure version, stored in
+  //!     #signature.
+  //!
+  //! In a hex dump, this will appear as “LEpB” when produced by a little-endian
+  //! machine.
+  static const uint32_t kSignature = 'BpEL';
+
+  //! \brief The magic number identifying this structure version, the value of
+  //!     #kSignature.
+  uint32_t signature;
+
+  //! \brief The build ID for this object.
+  //!
+  //! This usually comes from `NT_GNU_BUILD_ID` on ELF objects.
+  uint8_t build_id[1];
 };
 
 }  // namespace crashpad

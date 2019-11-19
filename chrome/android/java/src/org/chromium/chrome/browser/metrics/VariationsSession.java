@@ -4,9 +4,8 @@
 
 package org.chromium.chrome.browser.metrics;
 
-import android.content.Context;
-
 import org.chromium.base.Callback;
+import org.chromium.base.annotations.NativeMethods;
 
 /**
  * Sets up communication with the VariationsService. This is primarily used for
@@ -19,19 +18,20 @@ public class VariationsSession {
     /**
      * Triggers to the native VariationsService that the application has entered the foreground.
      */
-    public void start(Context context) {
+    public void start() {
         // If |mRestrictModeFetchStarted| is true and |mRestrictMode| is null, then async
-        // initializationn is in progress and nativeStartVariationsSession() will be called
-        // when it completes.
+        // initialization is in progress and VariationsSessionJni.get().startVariationsSession()
+        // will be called when it completes.
         if (mRestrictModeFetchStarted && mRestrictMode == null) {
             return;
         }
 
         mRestrictModeFetchStarted = true;
-        getRestrictModeValue(context, new Callback<String>() {
+        getRestrictModeValue(new Callback<String>() {
             @Override
             public void onResult(String restrictMode) {
-                nativeStartVariationsSession(mRestrictMode);
+                VariationsSessionJni.get().startVariationsSession(
+                        VariationsSession.this, mRestrictMode);
             }
         });
     }
@@ -43,14 +43,14 @@ public class VariationsSession {
      * value and also sets that value internally when retrieved.
      * @param callback Callback that will be called with the param value when available.
      */
-    public final void getRestrictModeValue(Context context, final Callback<String> callback) {
+    public final void getRestrictModeValue(final Callback<String> callback) {
         // If |mRestrictMode| is not null, the value has already been fetched and so it can
         // simply be provided to the callback.
         if (mRestrictMode != null) {
             callback.onResult(mRestrictMode);
             return;
         }
-        getRestrictMode(context, new Callback<String>() {
+        getRestrictMode(new Callback<String>() {
             @Override
             public void onResult(String restrictMode) {
                 assert restrictMode != null;
@@ -65,7 +65,7 @@ public class VariationsSession {
      * should use for variation seed requests. This can be overriden by subclass to provide actual
      * restrict values, which must not be null.
      */
-    protected void getRestrictMode(Context context, Callback<String> callback) {
+    protected void getRestrictMode(Callback<String> callback) {
         callback.onResult("");
     }
 
@@ -73,9 +73,12 @@ public class VariationsSession {
      * @return The latest country according to the current variations state. Null if not known.
      */
     public String getLatestCountry() {
-        return nativeGetLatestCountry();
+        return VariationsSessionJni.get().getLatestCountry(this);
     }
 
-    protected native void nativeStartVariationsSession(String restrictMode);
-    protected native String nativeGetLatestCountry();
+    @NativeMethods
+    interface Natives {
+        void startVariationsSession(VariationsSession caller, String restrictMode);
+        String getLatestCountry(VariationsSession caller);
+    }
 }

@@ -5,6 +5,8 @@
 #include "chrome/browser/chromeos/printing/cups_print_job_notification_manager.h"
 
 #include "chrome/browser/chromeos/printing/cups_print_job.h"
+#include "chrome/browser/chromeos/printing/cups_print_job_manager.h"
+#include "chrome/browser/chromeos/printing/cups_print_job_notification.h"
 #include "chrome/browser/profiles/profile.h"
 
 namespace chromeos {
@@ -26,7 +28,7 @@ void CupsPrintJobNotificationManager::OnPrintJobCreated(
     base::WeakPtr<CupsPrintJob> job) {
   if (!job)
     return;
-  if (base::ContainsKey(notification_map_, job.get()))
+  if (base::Contains(notification_map_, job.get()))
     return;
   notification_map_[job.get()] =
       std::make_unique<CupsPrintJobNotification>(this, job, profile_);
@@ -85,7 +87,7 @@ void CupsPrintJobNotificationManager::UpdateNotification(
     base::WeakPtr<CupsPrintJob> job) {
   if (!job)
     return;
-  DCHECK(base::ContainsKey(notification_map_, job.get()));
+  DCHECK(base::Contains(notification_map_, job.get()));
   notification_map_[job.get()]->OnPrintJobStatusUpdated();
 }
 

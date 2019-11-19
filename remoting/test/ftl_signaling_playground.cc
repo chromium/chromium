@@ -5,64 +5,82 @@
 #include "remoting/test/ftl_signaling_playground.h"
 
 #include <inttypes.h>
+
 #include <string>
 #include <utility>
 #include <vector>
 
-#include "base/base64.h"
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/guid.h"
 #include "base/logging.h"
+#include "base/memory/ptr_util.h"
 #include "base/path_service.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/stringprintf.h"
-#include "remoting/base/fake_oauth_token_getter.h"
+#include "base/run_loop.h"
+#include "base/task/post_task.h"
+#include "base/time/time.h"
+#include "jingle/glue/thread_wrapper.h"
+#include "remoting/base/chromium_url_request.h"
+#include "remoting/base/grpc_support/grpc_async_unary_request.h"
+#include "remoting/base/logging.h"
 #include "remoting/base/oauth_token_getter_impl.h"
-#include "remoting/signaling/ftl_client.h"
-#include "remoting/test/test_oauth_token_factory.h"
+#include "remoting/base/oauth_token_getter_proxy.h"
+#include "remoting/base/rsa_key_pair.h"
+#include "remoting/base/service_urls.h"
+#include "remoting/base/url_request_context_getter.h"
+#include "remoting/proto/ftl/v1/ftl_services.grpc.pb.h"
+#include "remoting/protocol/auth_util.h"
+#include "remoting/protocol/chromium_port_allocator_factory.h"
+#include "remoting/protocol/jingle_session_manager.h"
+#include "remoting/protocol/me2me_host_authenticator_factory.h"
+#include "remoting/protocol/negotiating_client_authenticator.h"
+#include "remoting/protocol/network_settings.h"
+#include "remoting/protocol/pairing_registry.h"
+#include "remoting/protocol/transport.h"
+#include "remoting/protocol/transport_context.h"
+#include "remoting/signaling/ftl_grpc_context.h"
+#include "remoting/signaling/ftl_signal_strategy.h"
+#include "remoting/test/cli_util.h"
+#include "remoting/test/test_device_id_provider.h"
+#include "remoting/test/test_oauth_token_getter.h"
 #include "remoting/test/test_token_storage.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/transitional_url_loader_factory_owner.h"
+
+namespace remoting {
 
 namespace {
 
 constexpr char kSwitchNameHelp[] = "help";
-constexpr char kSwitchNameAuthCode[] = "code";
 constexpr char kSwitchNameUsername[] = "username";
+constexpr char kSwitchNameHostOwner[] = "host-owner";
 constexpr char kSwitchNameStoragePath[] = "storage-path";
+constexpr char kSwitchNamePin[] = "pin";
+constexpr char kSwitchNameHostId[] = "host-id";
+constexpr char kSwitchNameUseChromotocol[] = "use-chromotocol";
 
-// Reads a newline-terminated string from stdin.
-std::string ReadString() {
-  const int kMaxLen = 1024;
-  std::string str(kMaxLen, 0);
-  char* result = fgets(&str[0], kMaxLen, stdin);
-  if (!result)
-    return std::string();
-  size_t newline_index = str.find('\n');
-  if (newline_index != std::string::npos)
-    str[newline_index] = '\0';
-  str.resize(strlen(&str[0]));
-  return str;
-}
+// Delay to allow sending session-terminate before tearing down.
+constexpr base::TimeDelta kTearDownDelay = base::TimeDelta::FromSeconds(2);
 
-// Read the value of |switch_name| from command line if it exists, otherwise
-// read from stdin.
-std::string ReadStringFromCommandLineOrStdin(const std::string& switch_name,
-                                             const std::string& read_prompt) {
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(switch_name)) {
-    return command_line->GetSwitchValueASCII(switch_name);
+const char* SignalStrategyErrorToString(SignalStrategy::Error error) {
+  switch (error) {
+    case SignalStrategy::OK:
+      return "OK";
+    case SignalStrategy::AUTHENTICATION_FAILED:
+      return "AUTHENTICATION_FAILED";
+    case SignalStrategy::NETWORK_ERROR:
+      return "NETWORK_ERROR";
+    case SignalStrategy::PROTOCOL_ERROR:
+      return "PROTOCOL_ERROR";
   }
-  printf("%s", read_prompt.c_str());
-  return ReadString();
+  return "";
 }
 
 }  // namespace
 
-namespace remoting {
-
-FtlSignalingPlayground::FtlSignalingPlayground() : weak_factory_(this) {}
+FtlSignalingPlayground::FtlSignalingPlayground() = default;
 
 FtlSignalingPlayground::~FtlSignalingPlayground() = default;
 
@@ -72,294 +90,273 @@ bool FtlSignalingPlayground::ShouldPrintHelp() {
 
 void FtlSignalingPlayground::PrintHelp() {
   printf(
-      "Usage: %s [--code=<auth-code>] [--storage-path=<storage-path>] "
-      "[--username=<example@gmail.com>]\n",
+      "Usage: %s [--auth-code=<auth-code>] [--host-id=<host-id>] [--pin=<pin>] "
+      "[--storage-path=<storage-path>] [--username=<example@gmail.com>] "
+      "[--host-owner=<example@gmail.com>] [--use-chromotocol]\n",
       base::CommandLine::ForCurrentProcess()
           ->GetProgram()
           .MaybeAsASCII()
           .c_str());
 }
 
-void FtlSignalingPlayground::StartAndAuthenticate() {
-  DCHECK(!storage_);
-  DCHECK(!token_getter_factory_);
-  DCHECK(!token_getter_);
-  DCHECK(!client_);
-
-  token_getter_factory_ = std::make_unique<TestOAuthTokenGetterFactory>();
+void FtlSignalingPlayground::StartLoop() {
+  jingle_glue::JingleThreadWrapper::EnsureForCurrentMessageLoop();
 
   base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
   std::string username = cmd_line->GetSwitchValueASCII(kSwitchNameUsername);
   base::FilePath storage_path =
       cmd_line->GetSwitchValuePath(kSwitchNameStoragePath);
+
   storage_ = test::TestTokenStorage::OnDisk(username, storage_path);
+  token_getter_ = std::make_unique<test::TestOAuthTokenGetter>(storage_.get());
 
-  std::string access_token = storage_->FetchAccessToken();
-  if (access_token.empty()) {
-    AuthenticateAndResetClient();
+  auto url_request_context_getter =
+      base::MakeRefCounted<URLRequestContextGetter>(
+          base::ThreadTaskRunnerHandle::Get());
+  url_loader_factory_owner_ =
+      std::make_unique<network::TransitionalURLLoaderFactoryOwner>(
+          url_request_context_getter);
+
+  base::RunLoop initialize_token_getter_loop;
+  token_getter_->Initialize(initialize_token_getter_loop.QuitClosure());
+  initialize_token_getter_loop.Run();
+
+  std::vector<test::CommandOption> options{
+      {"AcceptIncoming",
+       base::BindRepeating(&FtlSignalingPlayground::AcceptIncoming,
+                           base::Unretained(this))},
+      {"ConnectToHost",
+       base::BindRepeating(&FtlSignalingPlayground::ConnectToHost,
+                           base::Unretained(this))}};
+
+  test::RunCommandOptionsLoop(options);
+}
+
+void FtlSignalingPlayground::AcceptIncoming(base::OnceClosure on_done) {
+  current_callback_ = std::move(on_done);
+
+  SetUpSignaling();
+
+  std::string host_id;
+  auto* cmd = base::CommandLine::ForCurrentProcess();
+  if (cmd->HasSwitch(kSwitchNameHostId)) {
+    host_id = cmd->GetSwitchValueASCII(kSwitchNameHostId);
   } else {
-    VLOG(0) << "Reusing access token: " << access_token;
-    token_getter_ = std::make_unique<FakeOAuthTokenGetter>(
-        OAuthTokenGetter::Status::SUCCESS, "fake_email@gmail.com",
-        access_token);
-    client_ = std::make_unique<FtlClient>(token_getter_.get());
+    host_id = base::GenerateGUID();
   }
+  HOST_LOG << "Using host ID: " << host_id;
 
-  StartLoop();
+  std::string pin =
+      test::ReadStringFromCommandLineOrStdin(kSwitchNamePin, "Pin: ");
+
+  std::string pin_hash = protocol::GetSharedSecretHash(host_id, pin);
+
+  auto key_pair = RsaKeyPair::Generate();
+  std::string cert = key_pair->GenerateCertificate();
+
+  std::string user_email = storage_->FetchUserEmail();
+  std::string host_owner = cmd->HasSwitch(kSwitchNameHostOwner)
+                               ? cmd->GetSwitchValueASCII(kSwitchNameHostOwner)
+                               : user_email;
+  HOST_LOG << "Using host owner: " << host_owner;
+  auto factory = protocol::Me2MeHostAuthenticatorFactory::CreateWithPin(
+      host_owner, cert, key_pair,
+      /* domain_list */ {}, pin_hash, /* pairing_registry */ {});
+  session_manager_->set_authenticator_factory(std::move(factory));
+  HOST_LOG << "Waiting for incoming session...";
+  session_manager_->AcceptIncoming(base::BindRepeating(
+      &FtlSignalingPlayground::OnIncomingSession, base::Unretained(this)));
 }
 
-void FtlSignalingPlayground::StartLoop() {
-  while (true) {
-    printf(
-        "\nOptions:\n"
-        "  1. GetIceServer\n"
-        "  2. SignInGaia\n"
-        "  3. PullMessages\n"
-        "  4. Quit\n\n"
-        "Your choice [number]: ");
-    int choice = 0;
-    base::StringToInt(ReadString(), &choice);
-    base::RunLoop run_loop;
-    switch (choice) {
-      case 1:
-        GetIceServer(run_loop.QuitClosure());
-        break;
-      case 2:
-        SignInGaia(run_loop.QuitClosure());
-        break;
-      case 3:
-        PullMessages(run_loop.QuitClosure());
-        break;
-      case 4:
-        return;
-      default:
-        fprintf(stderr, "Unknown option\n");
-        continue;
+void FtlSignalingPlayground::OnIncomingSession(
+    protocol::Session* owned_session,
+    protocol::SessionManager::IncomingSessionResponse* response) {
+  HOST_LOG << "Received incoming session!\n";
+  RegisterSession(base::WrapUnique(owned_session),
+                  protocol::TransportRole::SERVER);
+  *response = protocol::SessionManager::ACCEPT;
+}
+
+void FtlSignalingPlayground::ConnectToHost(base::OnceClosure on_done) {
+  current_callback_ = std::move(on_done);
+  on_signaling_connected_callback_ =
+      base::BindOnce(&FtlSignalingPlayground::OnClientSignalingConnected,
+                     base::Unretained(this));
+  SetUpSignaling();
+}
+
+void FtlSignalingPlayground::OnClientSignalingConnected() {
+  std::string host_id =
+      test::ReadStringFromCommandLineOrStdin(kSwitchNameHostId, "Host ID: ");
+  printf("Host JID: ");
+  std::string host_jid = test::ReadString();
+
+  protocol::ClientAuthenticationConfig client_auth_config;
+  client_auth_config.host_id = host_id;
+  client_auth_config.fetch_secret_callback = base::BindRepeating(
+      &FtlSignalingPlayground::FetchSecret, base::Unretained(this));
+
+  auto session = session_manager_->Connect(
+      SignalingAddress(host_jid),
+      std::make_unique<protocol::NegotiatingClientAuthenticator>(
+          signal_strategy_->GetLocalAddress().id(), host_jid,
+          client_auth_config));
+  RegisterSession(std::move(session), protocol::TransportRole::CLIENT);
+}
+
+void FtlSignalingPlayground::FetchSecret(
+    bool pairing_supported,
+    const protocol::SecretFetchedCallback& secret_fetched_callback) {
+  std::string pin =
+      test::ReadStringFromCommandLineOrStdin(kSwitchNamePin, "Pin: ");
+  HOST_LOG << "Using PIN: " << pin;
+  secret_fetched_callback.Run(pin);
+}
+
+void FtlSignalingPlayground::SetUpSignaling() {
+  signal_strategy_ = std::make_unique<FtlSignalStrategy>(
+      std::make_unique<OAuthTokenGetterProxy>(token_getter_->GetWeakPtr()),
+      std::make_unique<test::TestDeviceIdProvider>(storage_.get()));
+  signal_strategy_->AddListener(this);
+
+  session_manager_ =
+      std::make_unique<protocol::JingleSessionManager>(signal_strategy_.get());
+  auto protocol_config = protocol::CandidateSessionConfig::CreateDefault();
+  bool use_chromotocol = base::CommandLine::ForCurrentProcess()->HasSwitch(
+      kSwitchNameUseChromotocol);
+  protocol_config->set_webrtc_supported(!use_chromotocol);
+  session_manager_->set_protocol_config(std::move(protocol_config));
+
+  signal_strategy_->Connect();
+}
+
+void FtlSignalingPlayground::TearDownSignaling() {
+  on_signaling_connected_callback_.Reset();
+  session_.reset();
+  webrtc_connection_.reset();
+  ice_connection_.reset();
+  signal_strategy_->RemoveListener(this);
+  session_manager_.reset();
+  signal_strategy_.reset();
+}
+
+void FtlSignalingPlayground::RegisterSession(
+    std::unique_ptr<protocol::Session> session,
+    protocol::TransportRole transport_role) {
+  session_ = std::move(session);
+  transport_role_ = transport_role;
+  std::unique_ptr<protocol::SessionManager> session_manager(
+      new protocol::JingleSessionManager(signal_strategy_.get()));
+  session_->SetEventHandler(this);
+}
+
+void FtlSignalingPlayground::InitializeTransport() {
+  protocol::NetworkSettings network_settings(
+      protocol::NetworkSettings::NAT_TRAVERSAL_FULL);
+  auto transport_context = base::MakeRefCounted<protocol::TransportContext>(
+      std::make_unique<protocol::ChromiumPortAllocatorFactory>(),
+      std::make_unique<ChromiumUrlRequestFactory>(
+          url_loader_factory_owner_->GetURLLoaderFactory()),
+      network_settings, transport_role_);
+  auto close_callback =
+      base::BindOnce(&FtlSignalingPlayground::AsyncTearDownAndRunCallback,
+                     base::Unretained(this));
+  if (session_->config().protocol() ==
+      protocol::SessionConfig::Protocol::WEBRTC) {
+    webrtc_connection_ = std::make_unique<test::FakeWebrtcConnection>(
+        transport_context, std::move(close_callback));
+    session_->SetTransport(webrtc_connection_->transport());
+  } else {
+    ice_connection_ = std::make_unique<test::FakeIceConnection>(
+        transport_context, std::move(close_callback));
+    session_->SetTransport(ice_connection_->transport());
+  }
+}
+
+void FtlSignalingPlayground::OnSignalStrategyStateChange(
+    SignalStrategy::State state) {
+  if (state == SignalStrategy::CONNECTING) {
+    HOST_LOG << "Connecting";
+    return;
+  }
+
+  if (state == SignalStrategy::CONNECTED) {
+    HOST_LOG << "Signaling connected. New JID: "
+             << signal_strategy_->GetLocalAddress().id();
+    if (on_signaling_connected_callback_) {
+      std::move(on_signaling_connected_callback_).Run();
     }
-    run_loop.Run();
+    return;
+  }
+
+  DCHECK(state == SignalStrategy::DISCONNECTED);
+
+  auto error = signal_strategy_->GetError();
+
+  TearDownSignaling();
+
+  HOST_LOG << "Signaling disconnected. error="
+           << SignalStrategyErrorToString(error);
+
+  if (error == SignalStrategy::AUTHENTICATION_FAILED) {
+    if (current_callback_) {
+      token_getter_->ResetWithAuthenticationFlow(std::move(current_callback_));
+    } else {
+      token_getter_->InvalidateCache();
+    }
+    return;
+  }
+
+  if (current_callback_) {
+    std::move(current_callback_).Run();
   }
 }
 
-void FtlSignalingPlayground::AuthenticateAndResetClient() {
-  static const std::string read_auth_code_prompt = base::StringPrintf(
-      "Please authenticate at:\n\n"
-      "  %s\n\n"
-      "Enter the auth code: ",
-      TestOAuthTokenGetterFactory::GetAuthorizationCodeUri().c_str());
-  std::string auth_code = ReadStringFromCommandLineOrStdin(
-      kSwitchNameAuthCode, read_auth_code_prompt);
-
-  // Make sure we don't try to reuse an auth code.
-  base::CommandLine::ForCurrentProcess()->RemoveSwitch(kSwitchNameAuthCode);
-
-  // We can't get back the refresh token since we have first-party scope, so
-  // we are not trying to store it.
-  token_getter_ = token_getter_factory_->CreateFromIntermediateCredentials(
-      auth_code,
-      base::DoNothing::Repeatedly<const std::string&, const std::string&>());
-
-  // Get the access token so that we can reuse it for next time.
-  base::OnceClosure on_access_token_done = base::DoNothing::Once();
-  base::RunLoop run_loop;
-  if (!base::RunLoop::IsRunningOnCurrentThread()) {
-    on_access_token_done = run_loop.QuitClosure();
-  }
-  token_getter_->CallWithToken(base::BindOnce(
-      &FtlSignalingPlayground::OnAccessToken, weak_factory_.GetWeakPtr(),
-      std::move(on_access_token_done)));
-  if (!base::RunLoop::IsRunningOnCurrentThread()) {
-    run_loop.Run();
-  }
-
-  client_ = std::make_unique<FtlClient>(token_getter_.get());
+bool FtlSignalingPlayground::OnSignalStrategyIncomingStanza(
+    const jingle_xmpp::XmlElement* stanza) {
+  return false;
 }
 
-void FtlSignalingPlayground::OnAccessToken(base::OnceClosure on_done,
-                                           OAuthTokenGetter::Status status,
-                                           const std::string& user_email,
-                                           const std::string& access_token) {
-  DCHECK(status == OAuthTokenGetter::Status::SUCCESS);
-  VLOG(0) << "Received access_token: " << access_token;
-  storage_->StoreAccessToken(access_token);
-  std::move(on_done).Run();
-}
-
-void FtlSignalingPlayground::HandleGrpcStatusError(const grpc::Status& status) {
-  DCHECK(!status.ok());
-  LOG(ERROR) << "RPC failed. Code=" << status.error_code() << ", "
-             << "Message=" << status.error_message();
-  switch (status.error_code()) {
-    case grpc::StatusCode::UNAVAILABLE:
-      VLOG(0)
-          << "Set the GRPC_DEFAULT_SSL_ROOTS_FILE_PATH environment variable "
-          << "to third_party/grpc/src/etc/roots.pem if gRPC cannot locate the "
-          << "root certificates.";
-      break;
-    case grpc::StatusCode::UNAUTHENTICATED:
-      VLOG(0) << "Grpc request failed to authenticate. "
-              << "Trying to reauthenticate...";
-      AuthenticateAndResetClient();
-      break;
-    default:
-      break;
-  }
-}
-
-void FtlSignalingPlayground::GetIceServer(base::OnceClosure on_done) {
-  DCHECK(client_);
-  client_->GetIceServer(
-      base::BindOnce(&FtlSignalingPlayground::OnGetIceServerResponse,
-                     weak_factory_.GetWeakPtr(), std::move(on_done)));
-  VLOG(0) << "Running GetIceServer...";
-}
-
-void FtlSignalingPlayground::OnGetIceServerResponse(
-    base::OnceClosure on_done,
-    grpc::Status status,
-    const ftl::GetICEServerResponse& response) {
-  if (status.ok()) {
-    printf("Ice transport policy: %s\n",
-           response.ice_config().ice_transport_policy().c_str());
-    for (const ftl::ICEServerList& server :
-         response.ice_config().ice_servers()) {
-      printf(
-          "ICE server:\n"
-          "  hostname=%s\n"
-          "  username=%s\n"
-          "  credential=%s\n"
-          "  max_rate_kbps=%" PRId64 "\n",
-          server.hostname().c_str(), server.username().c_str(),
-          server.credential().c_str(), server.max_rate_kbps());
-      for (const std::string& url : server.urls()) {
-        printf("  url=%s\n", url.c_str());
+void FtlSignalingPlayground::OnSessionStateChange(
+    protocol::Session::State state) {
+  HOST_LOG << "New session state: " << state;
+  switch (state) {
+    case protocol::Session::INITIALIZING:
+    case protocol::Session::CONNECTING:
+    case protocol::Session::ACCEPTING:
+    case protocol::Session::AUTHENTICATING:
+      // Don't care about these events.
+      return;
+    case protocol::Session::ACCEPTED:
+      InitializeTransport();
+      return;
+    case protocol::Session::AUTHENTICATED:
+      HOST_LOG << "Session is successfully authenticated!!!";
+      if (ice_connection_) {
+        ice_connection_->OnAuthenticated();
       }
-    }
-  } else {
-    HandleGrpcStatusError(status);
+      return;
+
+    case protocol::Session::CLOSED:
+    case protocol::Session::FAILED:
+      LOG(ERROR) << "Session failed/closed. Error: " << session_->error();
+      break;
   }
-  std::move(on_done).Run();
+
+  AsyncTearDownAndRunCallback();
 }
 
-void FtlSignalingPlayground::SignInGaia(base::OnceClosure on_done) {
-  DCHECK(client_);
-  VLOG(0) << "Running SignInGaia...";
-  // TODO(yuweih): Logic should be cleaned up and moved out of the playground.
-  std::string device_id = storage_->FetchDeviceId();
-  if (device_id.empty()) {
-    device_id = "crd-web-" + base::GenerateGUID();
-    VLOG(0) << "Generated new device_id: " << device_id;
-    storage_->StoreDeviceId(device_id);
-  } else {
-    VLOG(0) << "Read device_id: " << device_id;
-  }
-  VLOG(0) << "Using sign_in_gaia_mode: DEFAULT_CREATE_ACCOUNT";
-  client_->SignInGaia(
-      device_id, ftl::SignInGaiaMode_Value_DEFAULT_CREATE_ACCOUNT,
-      base::BindOnce(&FtlSignalingPlayground::OnSignInGaiaResponse,
-                     weak_factory_.GetWeakPtr(), std::move(on_done)));
+void FtlSignalingPlayground::AsyncTearDownAndRunCallback() {
+  HOST_LOG << "Tearing down in " << kTearDownDelay;
+  tear_down_timer_.Start(FROM_HERE, kTearDownDelay, this,
+                         &FtlSignalingPlayground::TearDownAndRunCallback);
 }
 
-void FtlSignalingPlayground::OnSignInGaiaResponse(
-    base::OnceClosure on_done,
-    grpc::Status status,
-    const ftl::SignInGaiaResponse& response) {
-  if (status.ok()) {
-    // TODO(yuweih): Allow loading auth token directly from command line.
-    std::string registration_id_base64;
-    std::string auth_token_base64;
-    base::Base64Encode(response.registration_id(), &registration_id_base64);
-    base::Base64Encode(response.auth_token().payload(), &auth_token_base64);
-    printf(
-        "registration_id(base64)=%s\n"
-        "auth_token.payload(base64)=%s\n"
-        "auth_token.expires_in=%" PRId64 "\n",
-        registration_id_base64.c_str(), auth_token_base64.c_str(),
-        response.auth_token().expires_in());
-    client_->SetAuthToken(response.auth_token().payload());
-    VLOG(0) << "Auth token set on FtlClient";
-  } else {
-    HandleGrpcStatusError(status);
+void FtlSignalingPlayground::TearDownAndRunCallback() {
+  TearDownSignaling();
+  if (current_callback_) {
+    std::move(current_callback_).Run();
   }
-  std::move(on_done).Run();
-}
-
-void FtlSignalingPlayground::PullMessages(base::OnceClosure on_done) {
-  DCHECK(client_);
-  VLOG(0) << "Running PullMessages...";
-  client_->PullMessages(
-      base::BindOnce(&FtlSignalingPlayground::OnPullMessagesResponse,
-                     weak_factory_.GetWeakPtr(), std::move(on_done)));
-}
-
-void FtlSignalingPlayground::OnPullMessagesResponse(
-    base::OnceClosure on_done,
-    grpc::Status status,
-    const ftl::PullMessagesResponse& response) {
-  if (!status.ok()) {
-    if (status.error_code() == grpc::StatusCode::UNAUTHENTICATED) {
-      fprintf(stderr, "Please run SignInGaia first\n");
-    } else {
-      HandleGrpcStatusError(status);
-    }
-    std::move(on_done).Run();
-    return;
-  }
-
-  std::vector<ftl::ReceiverMessage> receiver_messages;
-  printf("pull_all=%d\n", response.pulled_all());
-  for (const auto& message : response.messages()) {
-    printf(
-        "Message:\n"
-        "  message_type=%d\n"
-        "  message_id=%s\n"
-        "  sender_id.id=%s\n"
-        "  receiver_id.id=%s\n",
-        message.message_type(), message.message_id().c_str(),
-        message.sender_id().id().c_str(), message.receiver_id().id().c_str());
-
-    if (message.message_type() ==
-        ftl::InboxMessage_MessageType_CHROMOTING_MESSAGE) {
-      ftl::ChromotingMessage chromoting_message;
-      chromoting_message.ParseFromString(message.message());
-      printf("  message(ChromotingMessage deserialized)=%s\n",
-             chromoting_message.message().c_str());
-    } else {
-      std::string message_base64;
-      base::Base64Encode(message.message(), &message_base64);
-      printf("  message(base64)=%s\n", message_base64.c_str());
-    }
-
-    ftl::ReceiverMessage receiver_message;
-    receiver_message.set_message_id(message.message_id());
-    receiver_message.set_allocated_receiver_id(
-        new ftl::Id(message.receiver_id()));
-    receiver_messages.push_back(std::move(receiver_message));
-  }
-
-  if (receiver_messages.empty()) {
-    VLOG(0) << "No message has been received";
-    std::move(on_done).Run();
-    return;
-  }
-
-  // TODO(yuweih): Might need retry logic.
-  VLOG(0) << "Acking " << receiver_messages.size() << " messages";
-  client_->AckMessages(
-      receiver_messages,
-      base::BindOnce(&FtlSignalingPlayground::OnAckMessagesResponse,
-                     weak_factory_.GetWeakPtr(), std::move(on_done)));
-}
-
-void FtlSignalingPlayground::OnAckMessagesResponse(
-    base::OnceClosure on_done,
-    grpc::Status status,
-    const ftl::AckMessagesResponse& response) {
-  if (status.ok()) {
-    VLOG(0) << "Messages acked";
-  } else {
-    HandleGrpcStatusError(status);
-  }
-  std::move(on_done).Run();
 }
 
 }  // namespace remoting

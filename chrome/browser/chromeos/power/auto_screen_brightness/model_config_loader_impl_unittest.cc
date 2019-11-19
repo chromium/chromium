@@ -12,13 +12,13 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/task/task_scheduler/task_scheduler.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chromeos/constants/chromeos_features.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
@@ -55,14 +55,13 @@ class TestObserver : public ModelConfigLoader::Observer {
 class ModelConfigLoaderImplTest : public testing::Test {
  public:
   ModelConfigLoaderImplTest()
-      : thread_bundle_(
-            base::test::ScopedTaskEnvironment::MainThreadType::MOCK_TIME) {
+      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     CHECK(temp_dir_.CreateUniqueTempDir());
     temp_params_path_ = temp_dir_.GetPath().Append("model_params.json");
   }
 
   ~ModelConfigLoaderImplTest() override {
-    base::TaskScheduler::GetInstance()->FlushForTesting();
+    base::ThreadPoolInstance::Get()->FlushForTesting();
   }
 
   void Init(const std::string& model_params,
@@ -79,7 +78,7 @@ class ModelConfigLoaderImplTest : public testing::Test {
 
     test_observer_ = std::make_unique<TestObserver>();
     model_config_loader_->AddObserver(test_observer_.get());
-    thread_bundle_.RunUntilIdle();
+    task_environment_.RunUntilIdle();
   }
 
  protected:
@@ -96,7 +95,7 @@ class ModelConfigLoaderImplTest : public testing::Test {
         << " to " << temp_params_path_;
   }
 
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
 
   base::ScopedTempDir temp_dir_;
   base::FilePath temp_params_path_;
@@ -109,24 +108,26 @@ class ModelConfigLoaderImplTest : public testing::Test {
 };
 
 TEST_F(ModelConfigLoaderImplTest, ValidModelParamsLoaded) {
-  const std::string model_params =
-      "{\n"
-      "  \"auto_brightness_als_horizon_seconds\": 2, \n"
-      "  \"global_curve\": { \n"
-      "  \"log_lux\": [ \n"
-      "      1.0, \n"
-      "      2.0, \n"
-      "      3.0 \n"
-      "    ], \n"
-      "  \"brightness\": [ \n"
-      "      10.0, \n"
-      "      20.0, \n"
-      "      30.0 \n"
-      "    ] \n"
-      "   }, \n"
-      "  \"metrics_key\": \"abc\", \n"
-      "  \"model_als_horizon_seconds\": 5 \n"
-      "}\n";
+  const std::string model_params = R"(
+      {
+        "auto_brightness_als_horizon_seconds": 2,
+        "enabled": true,
+        "global_curve": {
+        "log_lux": [
+            1.0,
+            2.0,
+            3.0
+          ],
+        "brightness": [
+            10.0,
+            20.0,
+            30.0
+          ]
+         },
+        "metrics_key": "abc",
+        "model_als_horizon_seconds": 5
+      }
+      )";
 
   Init(model_params);
   EXPECT_TRUE(test_observer_->model_config_loader_initialized());
@@ -136,6 +137,45 @@ TEST_F(ModelConfigLoaderImplTest, ValidModelParamsLoaded) {
 
   ModelConfig expected_model_config;
   expected_model_config.auto_brightness_als_horizon_seconds = 2.0;
+  expected_model_config.enabled = true;
+  expected_model_config.log_lux = expected_log_lux;
+  expected_model_config.brightness = expected_brightness;
+  expected_model_config.metrics_key = "abc";
+  expected_model_config.model_als_horizon_seconds = 5;
+  EXPECT_TRUE(test_observer_->model_config());
+  EXPECT_EQ(*test_observer_->model_config(), expected_model_config);
+}
+
+TEST_F(ModelConfigLoaderImplTest, MissingEnabledMeansFalse) {
+  const std::string model_params = R"(
+      {
+        "auto_brightness_als_horizon_seconds": 2,
+        "global_curve": {
+        "log_lux": [
+            1.0,
+            2.0,
+            3.0
+          ],
+        "brightness": [
+            10.0,
+            20.0,
+            30.0
+          ]
+         },
+        "metrics_key": "abc",
+        "model_als_horizon_seconds": 5
+      }
+      )";
+
+  Init(model_params);
+  EXPECT_TRUE(test_observer_->model_config_loader_initialized());
+
+  std::vector<double> expected_log_lux = {1.0, 2.0, 3.0};
+  std::vector<double> expected_brightness = {10.0, 20.0, 30.0};
+
+  ModelConfig expected_model_config;
+  expected_model_config.auto_brightness_als_horizon_seconds = 2.0;
+  expected_model_config.enabled = false;
   expected_model_config.log_lux = expected_log_lux;
   expected_model_config.brightness = expected_brightness;
   expected_model_config.metrics_key = "abc";
@@ -145,29 +185,32 @@ TEST_F(ModelConfigLoaderImplTest, ValidModelParamsLoaded) {
 }
 
 TEST_F(ModelConfigLoaderImplTest, ValidModelParamsLoadedThenOverriden) {
-  const std::string model_params =
-      "{\n"
-      "  \"auto_brightness_als_horizon_seconds\": 2, \n"
-      "  \"global_curve\": { \n"
-      "  \"log_lux\": [ \n"
-      "      1.0, \n"
-      "      2.0, \n"
-      "      3.0 \n"
-      "    ], \n"
-      "  \"brightness\": [ \n"
-      "      10.0, \n"
-      "      20.0, \n"
-      "      30.0 \n"
-      "    ] \n"
-      "   }, \n"
-      "  \"metrics_key\": \"abc\", \n"
-      "  \"model_als_horizon_seconds\": 5 \n"
-      "}\n";
+  const std::string model_params = R"(
+      {
+        "auto_brightness_als_horizon_seconds": 2,
+        "enabled": true,
+        "global_curve": {
+        "log_lux": [
+            1.0,
+            2.0,
+            3.0
+          ],
+        "brightness": [
+            10.0,
+            20.0,
+            30.0
+          ]
+         },
+        "metrics_key": "abc",
+        "model_als_horizon_seconds": 5
+      }
+      )";
 
   const std::string global_curve_spec("2:20,4:40,6:60");
 
   const std::map<std::string, std::string> experiment_params = {
       {"auto_brightness_als_horizon_seconds", "10"},
+      {"enabled", "false"},
       {"model_als_horizon_seconds", "20"},
       {"global_curve", global_curve_spec},
   };
@@ -180,6 +223,7 @@ TEST_F(ModelConfigLoaderImplTest, ValidModelParamsLoadedThenOverriden) {
 
   ModelConfig expected_model_config;
   expected_model_config.auto_brightness_als_horizon_seconds = 10.0;
+  expected_model_config.enabled = false;
   expected_model_config.log_lux = expected_log_lux;
   expected_model_config.brightness = expected_brightness;
   expected_model_config.metrics_key = "abc";
@@ -190,23 +234,24 @@ TEST_F(ModelConfigLoaderImplTest, ValidModelParamsLoadedThenOverriden) {
 
 TEST_F(ModelConfigLoaderImplTest, InvalidModelParamsLoaded) {
   // "auto_brightness_als_horizon_seconds" is missing.
-  const std::string model_params =
-      "{\n"
-      "  \"global_curve\": { \n"
-      "  \"log_lux\": [ \n"
-      "      1.0, \n"
-      "      2.0, \n"
-      "      3.0 \n"
-      "    ], \n"
-      "  \"brightness\": [ \n"
-      "      10.0, \n"
-      "      20.0, \n"
-      "      30.0 \n"
-      "    ] \n"
-      "   }, \n"
-      "  \"metrics_key\": \"abc\", \n"
-      "  \"model_als_horizon_seconds\": 5 \n"
-      "}\n";
+  const std::string model_params = R"(
+      {
+        "global_curve": {
+        "log_lux": [
+            1.0,
+            2.0,
+            3.0
+          ],
+        "brightness": [
+            10.0,
+            20.0,
+            30.0
+          ]
+         },
+        "metrics_key": "abc",
+        "model_als_horizon_seconds": 5
+      }
+      )";
 
   Init(model_params);
   EXPECT_TRUE(test_observer_->model_config_loader_initialized());
@@ -216,23 +261,24 @@ TEST_F(ModelConfigLoaderImplTest, InvalidModelParamsLoaded) {
 TEST_F(ModelConfigLoaderImplTest, InvalidModelParamsLoadedThenOverriden) {
   // Same as InvalidModelParamsLoaded, but missing
   // "auto_brightness_als_horizon_seconds" is specified in the experiment flags.
-  const std::string model_params =
-      "{\n"
-      "  \"global_curve\": { \n"
-      "  \"log_lux\": [ \n"
-      "      1.0, \n"
-      "      2.0, \n"
-      "      3.0 \n"
-      "    ], \n"
-      "  \"brightness\": [ \n"
-      "      10.0, \n"
-      "      20.0, \n"
-      "      30.0 \n"
-      "    ] \n"
-      "   }, \n"
-      "  \"metrics_key\": \"abc\", \n"
-      "  \"model_als_horizon_seconds\": 5 \n"
-      "}\n";
+  const std::string model_params = R"(
+      {
+        "global_curve": {
+        "log_lux": [
+            1.0,
+            2.0,
+            3.0
+          ],
+        "brightness": [
+            10.0,
+            20.0,
+            30.0
+          ]
+         },
+        "metrics_key": "abc",
+        "model_als_horizon_seconds": 5
+      }
+      )";
 
   const std::map<std::string, std::string> experiment_params = {
       {"auto_brightness_als_horizon_seconds", "10"},
@@ -247,6 +293,7 @@ TEST_F(ModelConfigLoaderImplTest, InvalidModelParamsLoadedThenOverriden) {
 
   ModelConfig expected_model_config;
   expected_model_config.auto_brightness_als_horizon_seconds = 10.0;
+  expected_model_config.enabled = false;
   expected_model_config.log_lux = expected_log_lux;
   expected_model_config.brightness = expected_brightness;
   expected_model_config.metrics_key = "abc";
@@ -269,23 +316,24 @@ TEST_F(ModelConfigLoaderImplTest, MissingModelParams) {
 }
 
 TEST_F(ModelConfigLoaderImplTest, InvalidJsonFormat) {
-  const std::string model_params =
-      "{\n"
-      "  \"global_curve\": { \n"
-      "  \"log_lux\": [ \n"
-      "      1.0, \n"
-      "      2.0, \n"
-      "      3.0 \n"
-      "    ], \n"
-      "  \"brightness\": [ \n"
-      "      10.0, \n"
-      "      20.0, \n"
-      "      30.0 \n"
-      "    ] \n"
-      "   }, \n"
-      "  \"metrics_key\": 10, \n"
-      "  \"model_als_horizon_seconds\": 5 \n"
-      "}\n";
+  const std::string model_params = R"(
+      {
+        "global_curve": {
+        "log_lux": [
+            1.0,
+            2.0,
+            3.0
+          ],
+        "brightness": [
+            10.0,
+            20.0,
+            30.0
+          ]
+         },
+        "metrics_key": 10,
+        "model_als_horizon_seconds": 5
+      }
+      )";
 
   const std::map<std::string, std::string> experiment_params = {
       {"auto_brightness_als_horizon_seconds", "10"},

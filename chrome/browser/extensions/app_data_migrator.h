@@ -32,7 +32,7 @@ class AppDataMigrator {
  private:
   Profile* profile_;
   ExtensionRegistry* registry_;
-  base::WeakPtrFactory<AppDataMigrator> weak_factory_;
+  base::WeakPtrFactory<AppDataMigrator> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AppDataMigrator);
 };

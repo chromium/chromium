@@ -5,9 +5,15 @@
 // This file implements PEImage, a generic class to manipulate PE files.
 // This file was adapted from GreenBorder's Code.
 
-#include <stddef.h>
-
 #include "base/win/pe_image.h"
+
+#include <delayimp.h>
+#include <stddef.h>
+#include <set>
+#include <string>
+
+#include "base/no_destructor.h"
+#include "base/win/current_module.h"
 
 namespace base {
 namespace win {
@@ -44,6 +50,11 @@ struct PdbInfo {
   DWORD Age;
   char PdbFileName[1];
 };
+
+#define LDR_IS_DATAFILE(handle) (((ULONG_PTR)(handle)) & (ULONG_PTR)1)
+#define LDR_IS_IMAGEMAPPING(handle) (((ULONG_PTR)(handle)) & (ULONG_PTR)2)
+#define LDR_IS_RESOURCE(handle) \
+  (LDR_IS_IMAGEMAPPING(handle) || LDR_IS_DATAFILE(handle))
 
 }  // namespace
 
@@ -139,8 +150,8 @@ PIMAGE_SECTION_HEADER PEImage::GetImageSectionHeaderByName(
 
   for (int i = 0; i < num_sections; i++) {
     PIMAGE_SECTION_HEADER section = GetSectionHeader(i);
-    if (0 == _strnicmp(reinterpret_cast<LPCSTR>(section->Name), section_name,
-                       sizeof(section->Name))) {
+    if (_strnicmp(reinterpret_cast<LPCSTR>(section->Name), section_name,
+                  sizeof(section->Name)) == 0) {
       ret = section;
       break;
     }
@@ -382,7 +393,8 @@ bool PEImage::EnumRelocs(EnumRelocsFunction callback, PVOID cookie) const {
 }
 
 bool PEImage::EnumImportChunks(EnumImportChunksFunction callback,
-                               PVOID cookie) const {
+                               PVOID cookie,
+                               LPCSTR target_module_name) const {
   DWORD size = GetImageDirectoryEntrySize(IMAGE_DIRECTORY_ENTRY_IMPORT);
   PIMAGE_IMPORT_DESCRIPTOR import = GetFirstImportChunk();
 
@@ -396,8 +408,11 @@ bool PEImage::EnumImportChunks(EnumImportChunksFunction callback,
     PIMAGE_THUNK_DATA iat = reinterpret_cast<PIMAGE_THUNK_DATA>(
                                 RVAToAddr(import->FirstThunk));
 
-    if (!callback(*this, module_name, name_table, iat, cookie))
-      return false;
+    if (target_module_name == nullptr ||
+        (lstrcmpiA(module_name, target_module_name) == 0)) {
+      if (!callback(*this, module_name, name_table, iat, cookie))
+        return false;
+    }
   }
 
   return true;
@@ -432,13 +447,16 @@ bool PEImage::EnumOneImportChunk(EnumImportsFunction callback,
   return true;
 }
 
-bool PEImage::EnumAllImports(EnumImportsFunction callback, PVOID cookie) const {
+bool PEImage::EnumAllImports(EnumImportsFunction callback,
+                             PVOID cookie,
+                             LPCSTR target_module_name) const {
   EnumAllImportsStorage temp = { callback, cookie };
-  return EnumImportChunks(ProcessImportChunk, &temp);
+  return EnumImportChunks(ProcessImportChunk, &temp, target_module_name);
 }
 
 bool PEImage::EnumDelayImportChunks(EnumDelayImportChunksFunction callback,
-                                    PVOID cookie) const {
+                                    PVOID cookie,
+                                    LPCSTR target_module_name) const {
   PVOID directory = GetImageDirectoryEntryAddr(
                         IMAGE_DIRECTORY_ENTRY_DELAY_IMPORT);
   DWORD size = GetImageDirectoryEntrySize(IMAGE_DIRECTORY_ENTRY_DELAY_IMPORT);
@@ -474,9 +492,28 @@ bool PEImage::EnumDelayImportChunks(EnumDelayImportChunksFunction callback,
           static_cast<uintptr_t>(delay_descriptor->rvaIAT));
     }
 
-    if (!callback(*this, delay_descriptor, module_name, name_table, iat,
-                  cookie))
-      return false;
+    if (target_module_name == nullptr ||
+        (lstrcmpiA(module_name, target_module_name) == 0)) {
+      if (target_module_name) {
+        // Ensure all imports are properly loaded for the target module so that
+        // the callback is operating on a fully-realized set of imports.
+        // This call only loads the imports for the module where this code is
+        // executing, so it is only helpful or meaningful to do this if the
+        // current module is the module whose IAT we are enumerating.
+        // Use the module_name as retrieved from the IAT because this method
+        // is case sensitive.
+        if (module_ == CURRENT_MODULE() && !LDR_IS_RESOURCE(module_)) {
+          static base::NoDestructor<std::set<std::string>> loaded_dlls;
+          // pair.second is true if this is a new element
+          if (loaded_dlls.get()->emplace(module_name).second)
+            ::__HrLoadAllImportsForDll(module_name);
+        }
+      }
+
+      if (!callback(*this, delay_descriptor, module_name, name_table, iat,
+                    cookie))
+        return false;
+    }
   }
 
   return true;
@@ -519,9 +556,11 @@ bool PEImage::EnumOneDelayImportChunk(EnumImportsFunction callback,
 }
 
 bool PEImage::EnumAllDelayImports(EnumImportsFunction callback,
-                                  PVOID cookie) const {
+                                  PVOID cookie,
+                                  LPCSTR target_module_name) const {
   EnumAllImportsStorage temp = { callback, cookie };
-  return EnumDelayImportChunks(ProcessDelayImportChunk, &temp);
+  return EnumDelayImportChunks(ProcessDelayImportChunk, &temp,
+                               target_module_name);
 }
 
 bool PEImage::VerifyMagic() const {

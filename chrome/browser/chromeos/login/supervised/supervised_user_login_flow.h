@@ -32,7 +32,6 @@ class SupervisedUserLoginFlow
   bool SupportsEarlyRestartToApplyFlags() override;
   bool HandleLoginFailure(const AuthFailure& failure) override;
   void HandleLoginSuccess(const UserContext& context) override;
-  bool HandlePasswordChangeDetected() override;
   void LaunchExtraSteps(Profile* profile) override;
 
   // ExtendedAuthenticator::NewAuthStatusConsumer overrides.
@@ -55,7 +54,7 @@ class SupervisedUserLoginFlow
   bool data_loaded_ = false;
   UserContext context_;
   Profile* profile_ = nullptr;
-  base::WeakPtrFactory<SupervisedUserLoginFlow> weak_factory_;
+  base::WeakPtrFactory<SupervisedUserLoginFlow> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SupervisedUserLoginFlow);
 };

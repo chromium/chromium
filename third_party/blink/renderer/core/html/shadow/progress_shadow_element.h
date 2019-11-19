@@ -41,8 +41,6 @@ class HTMLProgressElement;
 
 class ProgressShadowElement : public HTMLDivElement {
  public:
-  DECLARE_NODE_FACTORY(ProgressShadowElement);
-
   explicit ProgressShadowElement(Document&);
 
  private:

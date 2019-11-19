@@ -101,7 +101,7 @@ TEST(FilePathSanitizationTests, SanitizePathConsistency) {
 
 TEST(FilePathSanitizationTests, SanitizeCommandLine) {
   base::CommandLine switches =
-      base::CommandLine::FromString(L"dummy.exe --flag --arg=value");
+      base::CommandLine::FromString(L"dummy.exe --arg=value --flag ");
 
   base::CommandLine already_sanitized(switches);
   already_sanitized.SetProgram(base::FilePath(L"c:\\dummy\\dummy.exe"));
@@ -118,8 +118,18 @@ TEST(FilePathSanitizationTests, SanitizeCommandLine) {
   to_sanitize.SetProgram(exe_in_programfiles);
   base::string16 sanitized_cmd = SanitizeCommandLine(to_sanitize);
   EXPECT_NE(to_sanitize.GetCommandLineString(), sanitized_cmd);
-  EXPECT_NE(sanitized_cmd.find(SanitizePath(exe_in_programfiles)),
-            base::string16::npos);
+  EXPECT_EQ(sanitized_cmd.find(exe_in_programfiles.value()),
+            base::string16::npos)
+      << sanitized_cmd;
+
+  switches.AppendSwitchPath("path", exe_in_programfiles);
+  switches.AppendArgPath(exe_in_programfiles);
+  to_sanitize = base::CommandLine(switches);
+  sanitized_cmd = SanitizeCommandLine(to_sanitize);
+  EXPECT_NE(to_sanitize.GetCommandLineString(), sanitized_cmd);
+  EXPECT_EQ(sanitized_cmd.find(exe_in_programfiles.value()),
+            base::string16::npos)
+      << sanitized_cmd;
 }
 
 TEST(FilePathSanitizationTests, ExpandSpecialFolderPath) {

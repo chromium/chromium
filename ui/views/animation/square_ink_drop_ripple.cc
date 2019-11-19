@@ -26,11 +26,11 @@ namespace {
 
 // The minimum scale factor to use when scaling rectangle layers. Smaller values
 // were causing visual anomalies.
-const float kMinimumRectScale = 0.0001f;
+constexpr float kMinimumRectScale = 0.0001f;
 
 // The minimum scale factor to use when scaling circle layers. Smaller values
 // were causing visual anomalies.
-const float kMinimumCircleScale = 0.001f;
+constexpr float kMinimumCircleScale = 0.001f;
 
 // All the sub animations that are used to animate each of the InkDropStates.
 // These are used to get time durations with
@@ -108,25 +108,7 @@ enum InkDropSubAnimations {
 };
 
 // The scale factor used to burst the ACTION_TRIGGERED bubble as it fades out.
-const float kQuickActionBurstScale = 1.3f;
-
-// Duration constants for InkDropStateSubAnimations. See the
-// InkDropStateSubAnimations enum documentation for more info.
-int kAnimationDurationInMs[] = {
-    150,  // HIDDEN_FADE_OUT
-    200,  // HIDDEN_TRANSFORM
-    0,    // ACTION_PENDING_FADE_IN
-    160,  // ACTION_PENDING_TRANSFORM
-    150,  // ACTION_TRIGGERED_FADE_OUT
-    160,  // ACTION_TRIGGERED_TRANSFORM
-    200,  // ALTERNATE_ACTION_PENDING
-    150,  // ALTERNATE_ACTION_TRIGGERED_FADE_OUT
-    200,  // ALTERNATE_ACTION_TRIGGERED_TRANSFORM
-    200,  // ACTIVATED_CIRCLE_TRANSFORM
-    160,  // ACTIVATED_RECT_TRANSFORM
-    150,  // DEACTIVATED_FADE_OUT
-    200,  // DEACTIVATED_TRANSFORM
-};
+constexpr float kQuickActionBurstScale = 1.3f;
 
 // Returns the InkDropState sub animation duration for the given |state|.
 base::TimeDelta GetAnimationDuration(InkDropSubAnimations state) {
@@ -135,11 +117,24 @@ base::TimeDelta GetAnimationDuration(InkDropSubAnimations state) {
     return base::TimeDelta();
   }
 
-  return base::TimeDelta::FromMilliseconds(
-      (InkDropRipple::UseFastAnimations()
-           ? 1
-           : InkDropRipple::kSlowAnimationDurationFactor) *
-      kAnimationDurationInMs[state]);
+  // Duration constants for InkDropStateSubAnimations. See the
+  // InkDropStateSubAnimations enum documentation for more info.
+  constexpr base::TimeDelta kAnimationDuration[] = {
+      base::TimeDelta::FromMilliseconds(150),  // HIDDEN_FADE_OUT
+      base::TimeDelta::FromMilliseconds(200),  // HIDDEN_TRANSFORM
+      base::TimeDelta(),                       // ACTION_PENDING_FADE_IN
+      base::TimeDelta::FromMilliseconds(160),  // ACTION_PENDING_TRANSFORM
+      base::TimeDelta::FromMilliseconds(150),  // ACTION_TRIGGERED_FADE_OUT
+      base::TimeDelta::FromMilliseconds(160),  // ACTION_TRIGGERED_TRANSFORM
+      base::TimeDelta::FromMilliseconds(200),  // ALTERNATE_ACTION_PENDING
+      base::TimeDelta::FromMilliseconds(150),  // ALTERNAT..._TRIGGERED_FADE_OUT
+      base::TimeDelta::FromMilliseconds(200),  // ALTERNA..._TRIGGERED_TRANSFORM
+      base::TimeDelta::FromMilliseconds(200),  // ACTIVATED_CIRCLE_TRANSFORM
+      base::TimeDelta::FromMilliseconds(160),  // ACTIVATED_RECT_TRANSFORM
+      base::TimeDelta::FromMilliseconds(150),  // DEACTIVATED_FADE_OUT
+      base::TimeDelta::FromMilliseconds(200),  // DEACTIVATED_TRANSFORM
+  };
+  return kAnimationDuration[state];
 }
 
 }  // namespace
@@ -151,7 +146,7 @@ SquareInkDropRipple::SquareInkDropRipple(const gfx::Size& large_size,
                                          const gfx::Point& center_point,
                                          SkColor color,
                                          float visible_opacity)
-    : activated_shape_(ROUNDED_RECT),
+    : activated_shape_(ActivatedShape::kRoundedRect),
       visible_opacity_(visible_opacity),
       large_size_(large_size),
       large_corner_radius_(large_corner_radius),
@@ -386,8 +381,8 @@ void SquareInkDropRipple::SetStateToHidden() {
 
 void SquareInkDropRipple::AbortAllAnimations() {
   root_layer_.GetAnimator()->AbortAllAnimations();
-  for (int i = 0; i < PAINTED_SHAPE_COUNT; ++i)
-    painted_layers_[i]->GetAnimator()->AbortAllAnimations();
+  for (auto& painted_layer : painted_layers_)
+    painted_layer->GetAnimator()->AbortAllAnimations();
 }
 
 void SquareInkDropRipple::AnimateToTransforms(
@@ -547,10 +542,10 @@ void SquareInkDropRipple::GetCurrentTransforms(
 void SquareInkDropRipple::GetActivatedTargetTransforms(
     InkDropTransforms* transforms_out) const {
   switch (activated_shape_) {
-    case CIRCLE:
+    case ActivatedShape::kCircle:
       CalculateCircleTransforms(small_size_, transforms_out);
       break;
-    case ROUNDED_RECT:
+    case ActivatedShape::kRoundedRect:
       CalculateRectTransforms(small_size_, small_corner_radius_,
                               transforms_out);
       break;
@@ -560,10 +555,10 @@ void SquareInkDropRipple::GetActivatedTargetTransforms(
 void SquareInkDropRipple::GetDeactivatedTargetTransforms(
     InkDropTransforms* transforms_out) const {
   switch (activated_shape_) {
-    case CIRCLE:
+    case ActivatedShape::kCircle:
       CalculateCircleTransforms(large_size_, transforms_out);
       break;
-    case ROUNDED_RECT:
+    case ActivatedShape::kRoundedRect:
       CalculateRectTransforms(large_size_, small_corner_radius_,
                               transforms_out);
       break;

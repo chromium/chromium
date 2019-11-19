@@ -3,7 +3,7 @@
   "StaticIPConfig": {
     "Address": "125.125.125.125",
     "Gateway": "1.1.1.7",
-    "NameServers": ["1.1.1.8", "125.1.1.3"],
+      "NameServers": ["1.1.1.8", "125.1.1.3", "0.0.0.0", "0.0.0.0"],
     "Prefixlen": 26
   }
 }

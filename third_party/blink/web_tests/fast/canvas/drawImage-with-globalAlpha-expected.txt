@@ -1,2 +1,0 @@
-There should be a green square, followed by 6 squares of shades of green from white to full green.
-

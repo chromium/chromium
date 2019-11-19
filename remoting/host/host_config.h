@@ -20,11 +20,13 @@ namespace remoting {
 
 // Status of the host, whether it is enabled or disabled.
 extern const char kHostEnabledConfigPath[];
-// Base JID of the host owner (may not equal the email for non-gmail users).
+// Base JID of the host owner.
+// TODO(yuweih): This is now always equal to the host owner email. Consider
+// unifying these two fields.
 extern const char kHostOwnerConfigPath[];
 // Email of the owner of this host.
 extern const char kHostOwnerEmailConfigPath[];
-// Login used to authenticate in XMPP network (could be a service account).
+// Login used to authenticate signaling.
 extern const char kXmppLoginConfigPath[];
 // OAuth refresh token used to fetch an access token for the XMPP network.
 extern const char kOAuthRefreshTokenConfigPath[];
@@ -47,6 +49,10 @@ extern const char kEnableH264ConfigPath[];
 extern const char kFrameRecorderBufferKbConfigPath[];
 // The GCD device ID of this host (if registered with GCD).
 extern const char kGcdDeviceIdConfigPath[];
+// Key which marks the config's token as up-to-date for FTL. If present, the
+// token-exchange will be skipped, which avoids querying over the network for
+// the current token's scopes.
+extern const char kIsFtlTokenConfigPath[];
 
 // Helpers for serializing/deserializing Host configuration dictonaries.
 std::unique_ptr<base::DictionaryValue> HostConfigFromJson(

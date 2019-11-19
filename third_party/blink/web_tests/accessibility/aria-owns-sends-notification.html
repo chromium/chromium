@@ -1,14 +1,13 @@
 <!DOCTYPE HTML>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 
 <div id="container1">
     <ul id="future_parent" aria-owns="future_child"></ul>
 </div>
 
 <script>
-async_test_after_layout_and_paint(function(t) {
+async_test(function(t) {
     var axFutureParent = accessibilityController.accessibleElementById("future_parent");
     assert_equals(axFutureParent.childrenCount, 0);
     var listener = function(notification) {
@@ -35,7 +34,7 @@ async_test_after_layout_and_paint(function(t) {
 </div>
 
 <script>
-async_test_after_layout_and_paint(function(t) {
+async_test(function(t) {
     window.setTimeout(t.step_func(() => {
         assert_unreached("Did not receive all expected notifications");
     }), 500);
@@ -64,7 +63,7 @@ async_test_after_layout_and_paint(function(t) {
 </div>
 
 <script>
-async_test_after_layout_and_paint((t) => {
+async_test((t) => {
     window.setTimeout(t.step_func(() => {
         assert_unreached("Did not receive all expected notifications");
     }), 500);

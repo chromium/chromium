@@ -45,7 +45,7 @@ class WebContentsVideoCaptureDevice::FrameTracker
     DCHECK(device_task_runner_);
     DCHECK(cursor_controller_);
 
-    base::PostTaskWithTraits(
+    base::PostTask(
         FROM_HERE, {BrowserThread::UI},
         base::BindOnce(
             [](base::WeakPtr<FrameTracker> self, int process_id, int frame_id) {
@@ -94,7 +94,7 @@ class WebContentsVideoCaptureDevice::FrameTracker
     VLOG(1) << "Computed preferred WebContents size as "
             << preferred_size.ToString() << " from a capture size of "
             << capture_size.ToString();
-    contents->IncrementCapturerCount(preferred_size);
+    contents->IncrementCapturerCount(preferred_size, /* stay_hidden */ false);
     is_capturing_ = true;
   }
 
@@ -103,7 +103,7 @@ class WebContentsVideoCaptureDevice::FrameTracker
 
     if (auto* contents = web_contents()) {
       DCHECK(is_capturing_);
-      contents->DecrementCapturerCount();
+      contents->DecrementCapturerCount(/* stay_hidden */ false);
       is_capturing_ = false;
     }
     DCHECK(!is_capturing_);
@@ -236,7 +236,7 @@ WebContentsVideoCaptureDevice::Create(const std::string& device_id) {
 }
 
 void WebContentsVideoCaptureDevice::WillStart() {
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&FrameTracker::WillStartCapturingWebContents,
                      tracker_->AsWeakPtr(),
@@ -244,10 +244,9 @@ void WebContentsVideoCaptureDevice::WillStart() {
 }
 
 void WebContentsVideoCaptureDevice::DidStop() {
-  base::PostTaskWithTraits(
-      FROM_HERE, {BrowserThread::UI},
-      base::BindOnce(&FrameTracker::DidStopCapturingWebContents,
-                     tracker_->AsWeakPtr()));
+  base::PostTask(FROM_HERE, {BrowserThread::UI},
+                 base::BindOnce(&FrameTracker::DidStopCapturingWebContents,
+                                tracker_->AsWeakPtr()));
 }
 
 }  // namespace content

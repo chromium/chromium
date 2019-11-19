@@ -11,6 +11,9 @@ enum CorsPreflightPolicy {
 };
 
 // Error conditions of the CORS check.
+// These values are used for UMA. Entries should not be renumbered. Please keep
+// in sync with "CorsAccessCheckResult" in
+// src/tools/metrics/histograms/enums.xml.
 enum CorsError {
   // Access control
   kDisallowedByMode,

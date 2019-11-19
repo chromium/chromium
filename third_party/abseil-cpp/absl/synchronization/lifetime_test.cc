@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//      http://www.apache.org/licenses/LICENSE-2.0
+//      https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -143,11 +143,11 @@ ABSL_CONST_INIT absl::Mutex early_const_init_mutex(absl::kConstInit);
 // constructors of globals "happen at link time"; memory is pre-initialized,
 // before the constructors of either grab_lock or check_still_locked are run.)
 extern absl::Mutex const_init_sanity_mutex;
-OnConstruction grab_lock([]() NO_THREAD_SAFETY_ANALYSIS {
+OnConstruction grab_lock([]() ABSL_NO_THREAD_SAFETY_ANALYSIS {
   const_init_sanity_mutex.Lock();
 });
 ABSL_CONST_INIT absl::Mutex const_init_sanity_mutex(absl::kConstInit);
-OnConstruction check_still_locked([]() NO_THREAD_SAFETY_ANALYSIS {
+OnConstruction check_still_locked([]() ABSL_NO_THREAD_SAFETY_ANALYSIS {
   const_init_sanity_mutex.AssertHeld();
   const_init_sanity_mutex.Unlock();
 });

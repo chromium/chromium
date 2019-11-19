@@ -5,9 +5,8 @@
 #ifndef UI_VIEWS_ACCESSIBILITY_AX_EVENT_MANAGER_H_
 #define UI_VIEWS_ACCESSIBILITY_AX_EVENT_MANAGER_H_
 
-#include "base/macros.h"
 #include "base/observer_list.h"
-#include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/views/views_export.h"
 
 namespace views {
@@ -19,6 +18,8 @@ class View;
 class VIEWS_EXPORT AXEventManager {
  public:
   AXEventManager();
+  AXEventManager(const AXEventManager&) = delete;
+  AXEventManager& operator=(const AXEventManager&) = delete;
   ~AXEventManager();
 
   // Returns the singleton instance.
@@ -32,8 +33,6 @@ class VIEWS_EXPORT AXEventManager {
 
  private:
   base::ObserverList<AXEventObserver> observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(AXEventManager);
 };
 
 }  // namespace views

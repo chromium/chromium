@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/callback_forward.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
@@ -18,7 +19,6 @@
 #include "components/download/public/common/download_export.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "components/download/public/common/download_item.h"
-#include "components/download/public/common/download_request_handle_interface.h"
 #include "components/download/public/common/download_save_info.h"
 #include "components/download/public/common/download_source.h"
 #include "components/download/public/common/download_url_parameters.h"
@@ -27,12 +27,22 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace net {
 class HttpResponseHeaders;
 }
 
 namespace download {
+// Server support for range request inferred from the response headers.
+// |kSupport| value means the server supports range requests. |kNoSupport|
+// means no range request is accepted by server. and |kUnknown| is used if
+// range request support cannot be inferred from response headers.
+enum class RangeRequestSupportType {
+  kSupport = 0,
+  kUnknown,
+  kNoSupport,
+};
 
 // Used for informing the download manager of a new download, since we don't
 // want to pass |DownloadItem|s between threads.
@@ -66,6 +76,9 @@ struct COMPONENTS_DOWNLOAD_EXPORT DownloadCreateInfo {
 
   // The referrer URL of the tab that started us.
   GURL tab_referrer_url;
+
+  // The origin of the requester that originally initiated the download.
+  base::Optional<url::Origin> request_initiator;
 
   // The time when the download started.
   base::Time start_time;
@@ -110,10 +123,6 @@ struct COMPONENTS_DOWNLOAD_EXPORT DownloadCreateInfo {
   // The render frame id that initiates this download.
   int render_frame_id;
 
-  // The handle to the URLRequest sourcing this download.
-  // TODO(qinmin): remove this when network service is fully enabled.
-  std::unique_ptr<DownloadRequestHandleInterface> request_handle;
-
   // ---------------------------------------------------------------------------
   // The remaining fields are Entity-body properties. These are only set if
   // |result| is DOWNLOAD_INTERRUPT_REASON_NONE.
@@ -138,10 +147,8 @@ struct COMPONENTS_DOWNLOAD_EXPORT DownloadCreateInfo {
   // For continuing a download, the ETag of the file.
   std::string etag;
 
-  // If the download response can be partial content.
-  // Either "Accept-Ranges" or "Content-Range" header presents in the
-  // response header.
-  bool accept_range;
+  // Whether the server supports range requests.
+  RangeRequestSupportType accept_range;
 
   // The HTTP connection type.
   net::HttpResponseInfo::ConnectionInfo connection_info;
@@ -165,6 +172,9 @@ struct COMPONENTS_DOWNLOAD_EXPORT DownloadCreateInfo {
 
   // Source of the download, used in metrics.
   DownloadSource download_source = DownloadSource::UNKNOWN;
+
+  // Whether download is initated by the content on the page.
+  bool is_content_initiated;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(DownloadCreateInfo);

@@ -15,7 +15,7 @@ namespace {
 
 // Returns the HKEY corresponding to name. If there is no HKEY corresponding
 // to the name it returns NULL.
-HKEY GetHKEYFromString(const base::string16 &name) {
+HKEY GetHKEYFromString(const std::wstring& name) {
   if (name == L"HKLM")
     return HKEY_LOCAL_MACHINE;
   if (name == L"HKCR")
@@ -31,17 +31,17 @@ HKEY GetHKEYFromString(const base::string16 &name) {
 }
 
 // Modifies string to remove the leading and trailing quotes.
-void trim_quote(base::string16* string) {
-  base::string16::size_type pos1 = string->find_first_not_of(L'"');
-  base::string16::size_type pos2 = string->find_last_not_of(L'"');
+void trim_quote(std::wstring* string) {
+  std::wstring::size_type pos1 = string->find_first_not_of(L'"');
+  std::wstring::size_type pos2 = string->find_last_not_of(L'"');
 
-  if (pos1 == base::string16::npos || pos2 == base::string16::npos)
+  if (pos1 == std::wstring::npos || pos2 == std::wstring::npos)
     string->clear();
   else
     (*string) = string->substr(pos1, pos2 + 1);
 }
 
-int TestOpenFile(base::string16 path, bool for_write) {
+int TestOpenFile(std::wstring path, bool for_write) {
   wchar_t path_expanded[MAX_PATH + 1] = {0};
   DWORD size = ::ExpandEnvironmentStrings(path.c_str(), path_expanded,
                                           MAX_PATH);
@@ -119,13 +119,13 @@ SBOX_TESTS_COMMAND int OpenFileCmd(int argc, wchar_t **argv) {
   if (1 != argc)
     return SBOX_TEST_FAILED_TO_EXECUTE_COMMAND;
 
-  base::string16 path = argv[0];
+  std::wstring path = argv[0];
   trim_quote(&path);
 
   return TestOpenReadFile(path);
 }
 
-int TestOpenReadFile(const base::string16& path) {
+int TestOpenReadFile(const std::wstring& path) {
   return TestOpenFile(path, false);
 }
 
@@ -133,12 +133,12 @@ int TestOpenWriteFile(int argc, wchar_t **argv) {
   if (argc != 1)
     return SBOX_TEST_FAILED_TO_EXECUTE_COMMAND;
 
-  base::string16 path = argv[0];
+  std::wstring path = argv[0];
   trim_quote(&path);
   return TestOpenWriteFile(path);
 }
 
-int TestOpenWriteFile(const base::string16& path) {
+int TestOpenWriteFile(const std::wstring& path) {
   return TestOpenFile(path, true);
 }
 
@@ -150,7 +150,7 @@ SBOX_TESTS_COMMAND int OpenKey(int argc, wchar_t **argv) {
   HKEY base_key = GetHKEYFromString(argv[0]);
 
   // Get the subkey.
-  base::string16 subkey;
+  std::wstring subkey;
   if (argc == 2) {
     subkey = argv[1];
     trim_quote(&subkey);
@@ -159,7 +159,7 @@ SBOX_TESTS_COMMAND int OpenKey(int argc, wchar_t **argv) {
   return TestOpenKey(base_key, subkey);
 }
 
-int TestOpenKey(HKEY base_key, base::string16 subkey) {
+int TestOpenKey(HKEY base_key, std::wstring subkey) {
   HKEY key;
   LONG err_code = ::RegOpenKeyEx(base_key,
                                  subkey.c_str(),

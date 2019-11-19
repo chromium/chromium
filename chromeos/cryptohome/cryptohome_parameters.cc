@@ -41,6 +41,29 @@ const std::string GetCryptohomeId(const AccountId& account_id) {
   return account_id.GetUserEmail();
 }
 
+AccountId LookupUserByCryptohomeId(const std::string& cryptohome_id) {
+  const std::vector<AccountId> known_account_ids =
+      user_manager::known_user::GetKnownAccountIds();
+
+  // A LOT of tests start with --login_user <user>, and not registering this
+  // user before. So we might have "known_user" entry without gaia_id.
+  for (const AccountId& known_id : known_account_ids) {
+    if (known_id.HasAccountIdKey() &&
+        known_id.GetAccountIdKey() == cryptohome_id) {
+      return known_id;
+    }
+  }
+
+  for (const AccountId& known_id : known_account_ids) {
+    if (known_id.GetUserEmail() == cryptohome_id) {
+      return known_id;
+    }
+  }
+
+  return user_manager::known_user::GetAccountId(
+      cryptohome_id, std::string() /* id */, AccountType::UNKNOWN);
+}
+
 }  //  anonymous namespace
 
 Identification::Identification() = default;
@@ -63,25 +86,7 @@ bool Identification::operator<(const Identification& right) const {
 }
 
 AccountId Identification::GetAccountId() const {
-  const std::vector<AccountId> known_account_ids =
-      user_manager::known_user::GetKnownAccountIds();
-
-  // A LOT of tests start with --login_user <user>, and not registing this user
-  // before. So we might have "known_user" entry without gaia_id.
-  for (const AccountId& known_id : known_account_ids) {
-    if (known_id.HasAccountIdKey() && known_id.GetAccountIdKey() == id_) {
-      return known_id;
-    }
-  }
-
-  for (const AccountId& known_id : known_account_ids) {
-    if (known_id.GetUserEmail() == id_) {
-      return known_id;
-    }
-  }
-
-  return user_manager::known_user::GetAccountId(id_, std::string() /* id */,
-                                                AccountType::UNKNOWN);
+  return LookupUserByCryptohomeId(id_);
 }
 
 AccountIdentifier CreateAccountIdentifierFromAccountId(const AccountId& id) {
@@ -95,6 +100,11 @@ AccountIdentifier CreateAccountIdentifierFromIdentification(
   AccountIdentifier out;
   out.set_account_id(id.id());
   return out;
+}
+
+AccountId GetAccountIdFromAccountIdentifier(
+    const AccountIdentifier& account_identifier) {
+  return LookupUserByCryptohomeId(account_identifier.account_id());
 }
 
 KeyDefinition::AuthorizationData::Secret::Secret() : encrypt(false),

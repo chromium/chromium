@@ -4,10 +4,10 @@
 
 #include "android_webview/browser/aw_variations_service_client.h"
 
-#include "android_webview/common/aw_channel.h"
 #include "base/bind.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "build/build_config.h"
+#include "components/version_info/android/channel_getter.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 using version_info::Channel;
@@ -45,21 +45,15 @@ AwVariationsServiceClient::GetNetworkTimeTracker() {
 }
 
 Channel AwVariationsServiceClient::GetChannel() {
-  // Pretend stand-alone WebView is always "stable" for the purpose of
-  // variations. This simplifies experiment design, since stand-alone WebView
-  // need not be considered separately when choosing channels.
-  return android_webview::GetChannelOrStable();
-}
-
-// True is the default, but keep this override so we can revert permanent
-// consistency support with a 1-line change.
-// TODO(crbug/866722): Remove this, along with the rest of commit bbac4d2c4c.
-bool AwVariationsServiceClient::GetSupportsPermanentConsistency() {
-  return true;
+  return version_info::android::GetChannel();
 }
 
 bool AwVariationsServiceClient::OverridesRestrictParameter(
     std::string* parameter) {
+  return false;
+}
+
+bool AwVariationsServiceClient::IsEnterprise() {
   return false;
 }
 

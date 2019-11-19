@@ -1,0 +1,34 @@
+Check that the WebAuthn addVirtualAuthenticator command validates parameters
+{
+    error : {
+        code : -32000
+        message : The Virtual Authenticator Environment has not been enabled for this session
+    }
+    id : <number>
+    sessionId : <string>
+}
+{
+    error : {
+        code : -32602
+        message : The protocol is not valid
+    }
+    id : <number>
+    sessionId : <string>
+}
+{
+    error : {
+        code : -32602
+        message : The transport is not valid
+    }
+    id : <number>
+    sessionId : <string>
+}
+{
+    error : {
+        code : -32602
+        message : U2F only supports the "usb", "ble" and "nfc" transports
+    }
+    id : <number>
+    sessionId : <string>
+}
+

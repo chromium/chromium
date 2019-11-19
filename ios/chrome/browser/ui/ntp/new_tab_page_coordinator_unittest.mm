@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/ntp/new_tab_page_coordinator.h"
 
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state_manager.h"
 #include "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"
@@ -13,12 +13,9 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/incognito_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_controller_delegate.h"
-#import "ios/chrome/browser/ui/url_loader.h"
-#import "ios/chrome/browser/web_state_list/fake_web_state_list_delegate.h"
-
-#include "ios/chrome/browser/web_state_list/web_state_list.h"
 #include "ios/chrome/test/ios_chrome_scoped_testing_chrome_browser_state_manager.h"
-#include "ios/web/public/test/test_web_thread_bundle.h"
+#import "ios/web/public/test/fakes/test_web_state.h"
+#include "ios/web/public/test/web_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
 #include "testing/platform_test.h"
@@ -56,7 +53,6 @@ class NewTabPageCoordinatorTest : public PlatformTest {
     toolbar_delegate_ =
         OCMProtocolMock(@protocol(NewTabPageControllerDelegate));
     dispatcher_ = OCMProtocolMock(@protocol(NewTabPageTabDispatcher));
-    web_state_list_ = std::make_unique<WebStateList>(&web_state_list_delegate_);
   }
 
   void CreateCoordinator(bool off_the_record) {
@@ -71,15 +67,14 @@ class NewTabPageCoordinatorTest : public PlatformTest {
     }
     coordinator_.toolbarDelegate = toolbar_delegate_;
     coordinator_.dispatcher = dispatcher_;
-    coordinator_.webStateList = web_state_list_.get();
+    coordinator_.webState = &web_state_;
   }
 
+  web::TestWebState web_state_;
   id dispatcher_;
   id toolbar_delegate_;
   id delegate_;
-  std::unique_ptr<WebStateList> web_state_list_;
-  FakeWebStateListDelegate web_state_list_delegate_;
-  web::TestWebThreadBundle thread_bundle_;
+  web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingChromeBrowserStateManager scoped_browser_state_manager_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   NewTabPageCoordinator* coordinator_;

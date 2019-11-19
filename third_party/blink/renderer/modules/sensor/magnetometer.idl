@@ -6,6 +6,7 @@
 // https://w3c.github.io/magnetometer/#magnetometer-interface
 
 [
+    Exposed=Window,
     RuntimeEnabled=SensorExtraClasses,
     Constructor(optional SpatialSensorOptions sensorOptions),
     ConstructorCallWith=ExecutionContext,

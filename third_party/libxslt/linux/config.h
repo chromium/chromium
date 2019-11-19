@@ -1,9 +1,6 @@
 /* config.h.  Generated from config.h.in by configure.  */
 /* config.h.in.  Generated from configure.ac by autoheader.  */
 
-/* Define to 1 if you have the <ansidecl.h> header file. */
-/* #undef HAVE_ANSIDECL_H */
-
 /* Define to 1 if you have the `clock_gettime' function. */
 
 

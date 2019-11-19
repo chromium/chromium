@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
+#include "third_party/blink/renderer/core/layout/api/line_layout_api_shim.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_item.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
@@ -180,21 +181,20 @@ void RootInlineBox::Paint(const PaintInfo& paint_info,
 }
 
 bool RootInlineBox::NodeAtPoint(HitTestResult& result,
-                                const HitTestLocation& location_in_container,
-                                const LayoutPoint& accumulated_offset,
+                                const HitTestLocation& hit_test_location,
+                                const PhysicalOffset& accumulated_offset,
                                 LayoutUnit line_top,
                                 LayoutUnit line_bottom) {
   if (HasEllipsisBox() && VisibleToHitTestRequest(result.GetHitTestRequest())) {
-    if (GetEllipsisBox()->NodeAtPoint(result, location_in_container,
+    if (GetEllipsisBox()->NodeAtPoint(result, hit_test_location,
                                       accumulated_offset, line_top,
                                       line_bottom)) {
       GetLineLayoutItem().UpdateHitTestResult(
-          result,
-          location_in_container.Point() - ToLayoutSize(accumulated_offset));
+          result, hit_test_location.Point() - accumulated_offset);
       return true;
     }
   }
-  return InlineFlowBox::NodeAtPoint(result, location_in_container,
+  return InlineFlowBox::NodeAtPoint(result, hit_test_location,
                                     accumulated_offset, line_top, line_bottom);
 }
 
@@ -416,13 +416,14 @@ static bool IsEditableLeaf(InlineBox* leaf) {
          HasEditableStyle(*leaf->GetLineLayoutItem().GetNode());
 }
 
-InlineBox* RootInlineBox::ClosestLeafChildForPoint(
+const LayoutObject* RootInlineBox::ClosestLeafChildForPoint(
     const LayoutPoint& point_in_contents,
     bool only_editable_leaves) const {
-  return ClosestLeafChildForLogicalLeftPosition(
+  InlineBox* closest_box = ClosestLeafChildForLogicalLeftPosition(
       Block().IsHorizontalWritingMode() ? point_in_contents.X()
                                         : point_in_contents.Y(),
       only_editable_leaves);
+  return LineLayoutAPIShim::LayoutObjectFrom(closest_box->GetLineLayoutItem());
 }
 
 InlineBox* RootInlineBox::ClosestLeafChildForLogicalLeftPosition(

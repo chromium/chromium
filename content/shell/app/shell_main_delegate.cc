@@ -27,7 +27,6 @@
 #include "content/public/test/web_test_support.h"
 #include "content/shell/app/blink_test_platform_support.h"
 #include "content/shell/app/shell_crash_reporter_client.h"
-#include "content/shell/browser/shell_browser_main.h"
 #include "content/shell/browser/shell_content_browser_client.h"
 #include "content/shell/browser/web_test/web_test_browser_main.h"
 #include "content/shell/browser/web_test/web_test_content_browser_client.h"
@@ -59,12 +58,12 @@
 #include "content/public/common/content_ipc_logging.h"
 #define IPC_LOG_TABLE_ADD_ENTRY(msg_id, logger) \
     content::RegisterIPCLogger(msg_id, logger)
-#include "content/shell/common/shell_messages.h"
 #endif
 
 #if defined(OS_ANDROID)
 #include "base/android/apk_assets.h"
 #include "base/posix/global_descriptors.h"
+#include "content/public/browser/android/compositor.h"
 #include "content/public/test/nested_message_pump_android.h"
 #include "content/shell/android/shell_descriptors.h"
 #endif
@@ -139,7 +138,7 @@ void InitLogging(const base::CommandLine& command_line) {
 
   logging::LoggingSettings settings;
   settings.logging_dest = logging::LOG_TO_ALL;
-  settings.log_file = log_filename.value().c_str();
+  settings.log_file_path = log_filename.value().c_str();
   settings.delete_old = logging::DELETE_OLD_LOG_FILE;
   logging::InitLogging(settings);
   logging::SetLogItems(true /* Process ID */, true /* Thread ID */,
@@ -162,6 +161,9 @@ bool ShellMainDelegate::BasicStartupComplete(int* exit_code) {
   if (!exit_code)
     exit_code = &dummy;
 
+#if defined(OS_ANDROID)
+  Compositor::Initialize();
+#endif
 #if defined(OS_WIN)
   // Enable trace control and transport through event tracing for Windows.
   logging::LogEventProvider::Initialize(kContentShellProviderName);
@@ -214,13 +216,6 @@ bool ShellMainDelegate::BasicStartupComplete(int* exit_code) {
     command_line.AppendSwitch(cc::switches::kEnableGpuBenchmarking);
     command_line.AppendSwitch(switches::kEnableLogging);
     command_line.AppendSwitch(switches::kAllowFileAccessFromFiles);
-#if !defined(OS_ANDROID)
-    // TODO(crbug/567947) Enable display compositor pixel dumps for Android
-    // once testing becomes possible on post-kitkat OSes, and once we've
-    // had a chance to debug the web test failures that occur when this
-    // flag is present.
-    command_line.AppendSwitch(switches::kEnableDisplayCompositorPixelDump);
-#endif
     // only default to a software GL if the flag isn't already specified.
     if (!command_line.HasSwitch(switches::kUseGpuInTests) &&
         !command_line.HasSwitch(switches::kUseGL)) {
@@ -250,16 +245,15 @@ bool ShellMainDelegate::BasicStartupComplete(int* exit_code) {
       command_line.AppendSwitch(cc::switches::kDisableThreadedAnimation);
     }
 
-    // If we're doing a display compositor pixel dump we ensure that
-    // we complete all stages of compositing before draw. We also can't have
-    // checker imaging, since it's imcompatible with single threaded compositor
-    // and display compositor pixel dumps.
-    if (command_line.HasSwitch(switches::kEnableDisplayCompositorPixelDump)) {
-      // TODO(crbug.com/894613) Add kRunAllCompositorStagesBeforeDraw back here
-      // once you figure out why it causes so much web test flakiness.
-      // command_line.AppendSwitch(switches::kRunAllCompositorStagesBeforeDraw);
-      command_line.AppendSwitch(cc::switches::kDisableCheckerImaging);
-    }
+    // With display compositor pixel dumps, we ensure that we complete all
+    // stages of compositing before draw. We also can't have checker imaging,
+    // since it's imcompatible with single threaded compositor and display
+    // compositor pixel dumps.
+    //
+    // TODO(crbug.com/894613) Add kRunAllCompositorStagesBeforeDraw back here
+    // once you figure out why it causes so much web test flakiness.
+    // command_line.AppendSwitch(switches::kRunAllCompositorStagesBeforeDraw);
+    command_line.AppendSwitch(cc::switches::kDisableCheckerImaging);
 
     command_line.AppendSwitch(switches::kMuteAudio);
 
@@ -267,9 +261,9 @@ bool ShellMainDelegate::BasicStartupComplete(int* exit_code) {
 
     command_line.AppendSwitchASCII(network::switches::kHostResolverRules,
                                    "MAP nonexistent.*.test ~NOTFOUND,"
+                                   "MAP *.test. 127.0.0.1,"
                                    "MAP *.test 127.0.0.1");
 
-    command_line.AppendSwitch(switches::kEnablePartialRaster);
     command_line.AppendSwitch(switches::kEnableWebAuthTestingAPI);
 
     if (!command_line.HasSwitch(switches::kForceGpuRasterization) &&
@@ -294,7 +288,7 @@ bool ShellMainDelegate::BasicStartupComplete(int* exit_code) {
     command_line.AppendSwitch(switches::kUseFakeDeviceForMediaStream);
 
     // Always disable the unsandbox GPU process for DX12 and Vulkan Info
-    // collection to avoid interference. This GPU process is launched 15
+    // collection to avoid interference. This GPU process is launched 120
     // seconds after chrome starts.
     command_line.AppendSwitch(
         switches::kDisableGpuProcessForDX12VulkanInfoCollection);
@@ -353,24 +347,46 @@ void ShellMainDelegate::PreSandboxStartup() {
 int ShellMainDelegate::RunProcess(
     const std::string& process_type,
     const MainFunctionParams& main_function_params) {
+  // For non-browser process, return and have the caller run the main loop.
   if (!process_type.empty())
     return -1;
-
-#if !defined(OS_ANDROID)
-  // Android stores the BrowserMainRunner instance as a scoped member pointer
-  // on the ShellMainDelegate class because of different object lifetime.
-  std::unique_ptr<BrowserMainRunner> browser_runner_;
-#endif
 
   base::trace_event::TraceLog::GetInstance()->set_process_name("Browser");
   base::trace_event::TraceLog::GetInstance()->SetProcessSortIndex(
       kTraceEventBrowserProcessSortIndex);
 
-  browser_runner_ = BrowserMainRunner::Create();
   base::CommandLine& command_line = *base::CommandLine::ForCurrentProcess();
-  return command_line.HasSwitch(switches::kRunWebTests)
-             ? WebTestBrowserMain(main_function_params, browser_runner_)
-             : ShellBrowserMain(main_function_params, browser_runner_);
+  if (command_line.HasSwitch(switches::kRunWebTests)) {
+    // Web tests implement their own BrowserMain() replacement.
+    WebTestBrowserMain(main_function_params);
+    // Returning 0 to indicate that we have replaced BrowserMain() and the
+    // caller should not call BrowserMain() itself. Web tests do not ever
+    // return an error.
+    return 0;
+  }
+
+#if !defined(OS_ANDROID)
+  // On non-Android, we can return -1 and have the caller run BrowserMain()
+  // normally.
+  return -1;
+#else
+  // On Android, we defer to the system message loop when the stack unwinds.
+  // So here we only create (and leak) a BrowserMainRunner. The shutdown
+  // of BrowserMainRunner doesn't happen in Chrome Android and doesn't work
+  // properly on Android at all.
+  std::unique_ptr<BrowserMainRunner> main_runner = BrowserMainRunner::Create();
+  // In browser tests, the |main_function_params| contains a |ui_task| which
+  // will execute the testing. The task will be executed synchronously inside
+  // Initialize() so we don't depend on the BrowserMainRunner being Run().
+  int initialize_exit_code = main_runner->Initialize(main_function_params);
+  DCHECK_LT(initialize_exit_code, 0)
+      << "BrowserMainRunner::Initialize failed in ShellMainDelegate";
+  ignore_result(main_runner.release());
+  // Return 0 as BrowserMain() should not be called after this, bounce up to
+  // the system message loop for ContentShell, and we're already done thanks
+  // to the |ui_task| for browser tests.
+  return 0;
+#endif
 }
 
 #if defined(OS_LINUX)
@@ -431,9 +447,7 @@ void ShellMainDelegate::PreCreateMainMessageLoop() {
 #if defined(OS_ANDROID)
   base::CommandLine& command_line = *base::CommandLine::ForCurrentProcess();
   if (command_line.HasSwitch(switches::kRunWebTests)) {
-    bool success =
-        base::MessageLoop::InitMessagePumpForUIFactory(&CreateMessagePumpForUI);
-    CHECK(success) << "Unable to initialize the message pump for Android";
+    base::MessagePump::OverrideMessagePumpForUIFactory(&CreateMessagePumpForUI);
   }
 #elif defined(OS_MACOSX)
   RegisterShellCrApp();

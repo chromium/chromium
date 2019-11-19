@@ -9,6 +9,8 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/optional.h"
+#include "chrome/browser/ui/tabs/tab_group_id.h"
 
 class Browser;
 class GURL;
@@ -40,18 +42,15 @@ class TabStripModelDelegate {
     TAB_TEAROFF_ACTION = 2
   };
 
-  enum RestoreTabType {
-    RESTORE_NONE,
-    RESTORE_TAB,
-    RESTORE_WINDOW
-  };
-
   virtual ~TabStripModelDelegate() {}
 
   // Adds a tab to the model and loads |url| in the tab. If |url| is an empty
   // URL, then the new tab-page is loaded instead. An |index| value of -1
   // means to append the contents to the end of the tab strip.
-  virtual void AddTabAt(const GURL& url, int index, bool foreground) = 0;
+  virtual void AddTabAt(const GURL& url,
+                        int index,
+                        bool foreground,
+                        base::Optional<TabGroupId> group = base::nullopt) = 0;
 
   // Asks for a new TabStripModel to be created and the given web contentses to
   // be added to it. Its size and position are reflected in |window_bounds|.
@@ -109,19 +108,6 @@ class TabStripModelDelegate {
   // to close |contents|.
   virtual bool ShouldRunUnloadListenerBeforeClosing(
       content::WebContents* contents) = 0;
-
-  // Returns the current tab restore type.
-  virtual RestoreTabType GetRestoreTabType() = 0;
-
-  // Restores the last closed tab unless tab restore type is none.
-  virtual void RestoreTab() = 0;
-
-  // Returns true if we should allow "bookmark all tabs" in this window; this is
-  // true when there is more than one bookmarkable tab open.
-  virtual bool CanBookmarkAllTabs() const = 0;
-
-  // Creates a bookmark folder containing a bookmark for all open tabs.
-  virtual void BookmarkAllTabs() = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_TAB_STRIP_MODEL_DELEGATE_H_

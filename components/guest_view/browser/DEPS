@@ -3,8 +3,14 @@ include_rules = [
   "+components/zoom",
   "+content/public/browser",
   "+content/public/common",
-  "+content/public/test",
   "+ipc",
-  '+third_party/blink/public/platform/web_gesture_event.h',
-  '+third_party/blink/public/platform/web_input_event.h',
+  "+third_party/blink/public/common/page/page_zoom.h",
+  "+third_party/blink/public/platform/web_gesture_event.h",
+  "+third_party/blink/public/platform/web_input_event.h",
 ]
+
+specific_include_rules = {
+  "^(test_|.*_(unit|pixel|perf)?test).*\.(cc|h)": [
+    "+content/public/test",
+  ],
+}

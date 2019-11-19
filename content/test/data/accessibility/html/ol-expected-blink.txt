@@ -1,27 +1,28 @@
 rootWebArea
-++list
-++++listItem
-++++++listMarker name='1. '
-++++++staticText name='Chrome'
-++++++++inlineTextBox name='Chrome'
-++++listItem
-++++++listMarker name='2. '
-++++++staticText name='Safari'
-++++++++inlineTextBox name='Safari'
-++++listItem
-++++++listMarker name='3. '
-++++++staticText name='IE'
-++++++++inlineTextBox name='IE'
-++list
-++++listItem
-++++++listMarker name='10. '
-++++++staticText name='Android'
-++++++++inlineTextBox name='Android'
-++++listItem
-++++++listMarker name='11. '
-++++++staticText name='Mac'
-++++++++inlineTextBox name='Mac'
-++++listItem
-++++++listMarker name='12. '
-++++++staticText name='Windows'
-++++++++inlineTextBox name='Windows'
+++genericContainer ignored
+++++list
+++++++listItem
+++++++++listMarker name='1. '
+++++++++staticText name='Chrome'
+++++++++++inlineTextBox name='Chrome'
+++++++listItem
+++++++++listMarker name='2. '
+++++++++staticText name='Safari'
+++++++++++inlineTextBox name='Safari'
+++++++listItem
+++++++++listMarker name='3. '
+++++++++staticText name='IE'
+++++++++++inlineTextBox name='IE'
+++++list
+++++++listItem
+++++++++listMarker name='10. '
+++++++++staticText name='Android'
+++++++++++inlineTextBox name='Android'
+++++++listItem
+++++++++listMarker name='11. '
+++++++++staticText name='Mac'
+++++++++++inlineTextBox name='Mac'
+++++++listItem
+++++++++listMarker name='12. '
+++++++++staticText name='Windows'
+++++++++++inlineTextBox name='Windows'

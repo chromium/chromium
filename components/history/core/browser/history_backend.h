@@ -33,7 +33,6 @@
 #include "components/history/core/browser/history_backend_notifier.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/keyword_id.h"
-#include "components/history/core/browser/sync/typed_url_sync_bridge.h"
 #include "components/history/core/browser/thumbnail_database.h"
 #include "components/history/core/browser/visit_tracker.h"
 #include "sql/init_status.h"
@@ -54,12 +53,14 @@ struct DownloadRow;
 class HistoryBackendClient;
 class HistoryBackendDBBaseTest;
 class HistoryBackendObserver;
+class HistoryBackend;
 class HistoryBackendTest;
 class HistoryDatabase;
 struct HistoryDatabaseParams;
 class HistoryDBTask;
 class InMemoryHistoryBackend;
 class HistoryBackendHelper;
+class TypedURLSyncBridge;
 class URLDatabase;
 
 // The maximum number of bitmaps for a single icon URL which can be stored in
@@ -210,6 +211,9 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
 
   void ClearCachedDataForContextID(ContextID context_id);
 
+  // Clears all on-demand favicons from thumbnail database.
+  void ClearAllOnDemandFavicons();
+
   // Gets the counts and last last time of URLs that belong to |origins| in the
   // history database. Origins that are not in the history database will be in
   // the map with a count and time of 0.
@@ -233,37 +237,31 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   // Run the |callback| on the History thread.
   // |callback| should handle the null database case.
   void ScheduleAutocomplete(
-      const base::Callback<void(HistoryBackend*, URLDatabase*)>& callback);
+      base::OnceCallback<void(HistoryBackend*, URLDatabase*)> callback);
 
-  void QueryURL(const GURL& url,
-                bool want_visits,
-                QueryURLResult* query_url_result);
-  void QueryHistory(const base::string16& text_query,
-                    const QueryOptions& options,
-                    QueryResults* query_results);
+  QueryURLResult QueryURL(const GURL& url, bool want_visits);
+  QueryResults QueryHistory(const base::string16& text_query,
+                            const QueryOptions& options);
 
   // Computes the most recent URL(s) that the given canonical URL has
   // redirected to. There may be more than one redirect in a row, so this
   // function will fill the given array with the entire chain. If there are
   // no redirects for the most recent visit of the URL, or the URL is not
   // in history, the array will be empty.
-  void QueryRedirectsFrom(const GURL& url, RedirectList* redirects);
+  RedirectList QueryRedirectsFrom(const GURL& url);
 
   // Similar to above function except computes a chain of redirects to the
   // given URL. Stores the most recent list of redirects ending at |url| in the
   // given RedirectList. For example, if we have the redirect list A -> B -> C,
   // then calling this function with url=C would fill redirects with {B, A}.
-  void QueryRedirectsTo(const GURL& url, RedirectList* redirects);
+  RedirectList QueryRedirectsTo(const GURL& url);
 
-  void GetVisibleVisitCountToHost(const GURL& url,
-                                  VisibleVisitCountToHostResult* result);
+  VisibleVisitCountToHostResult GetVisibleVisitCountToHost(const GURL& url);
 
   // Request the |result_count| most visited URLs and the chain of
   // redirects leading to each of these URLs. |days_back| is the
   // number of days of history to use. Used by TopSites.
-  void QueryMostVisitedURLs(int result_count,
-                            int days_back,
-                            MostVisitedURLList* result);
+  MostVisitedURLList QueryMostVisitedURLs(int result_count, int days_back);
 
   // Statistics ----------------------------------------------------------------
 
@@ -277,38 +275,41 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   // Returns the number of hosts visited in the last month.
   HistoryCountResult CountUniqueHostsVisitedLastMonth();
 
+  // Gets the last time any webpage on the given host was visited within the
+  // time range [|begin_time|, |end_time|). If the given host has not been
+  // visited in the given time range, the result will have a null base::Time,
+  // but still report success.
+  HistoryLastVisitToHostResult GetLastVisitToHost(const GURL& host,
+                                                  base::Time begin_time,
+                                                  base::Time end_time);
+
   // Favicon -------------------------------------------------------------------
 
-  void GetFavicon(
+  std::vector<favicon_base::FaviconRawBitmapResult> GetFavicon(
       const GURL& icon_url,
       favicon_base::IconType icon_type,
-      const std::vector<int>& desired_sizes,
-      std::vector<favicon_base::FaviconRawBitmapResult>* bitmap_results);
+      const std::vector<int>& desired_sizes);
 
-  void GetLargestFaviconForURL(
+  favicon_base::FaviconRawBitmapResult GetLargestFaviconForURL(
       const GURL& page_url,
       const std::vector<favicon_base::IconTypeSet>& icon_types_list,
-      int minimum_size_in_pixels,
-      favicon_base::FaviconRawBitmapResult* bitmap_result);
+      int minimum_size_in_pixels);
 
-  void GetFaviconsForURL(
+  std::vector<favicon_base::FaviconRawBitmapResult> GetFaviconsForURL(
       const GURL& page_url,
       const favicon_base::IconTypeSet& icon_types,
       const std::vector<int>& desired_sizes,
-      bool fallback_to_host,
-      std::vector<favicon_base::FaviconRawBitmapResult>* bitmap_results);
+      bool fallback_to_host);
 
-  void GetFaviconForID(
+  std::vector<favicon_base::FaviconRawBitmapResult> GetFaviconForID(
       favicon_base::FaviconID favicon_id,
-      int desired_size,
-      std::vector<favicon_base::FaviconRawBitmapResult>* bitmap_results);
+      int desired_size);
 
-  void UpdateFaviconMappingsAndFetch(
-      const base::flat_set<GURL>& page_urls,
-      const GURL& icon_url,
-      favicon_base::IconType icon_type,
-      const std::vector<int>& desired_sizes,
-      std::vector<favicon_base::FaviconRawBitmapResult>* bitmap_results);
+  std::vector<favicon_base::FaviconRawBitmapResult>
+  UpdateFaviconMappingsAndFetch(const base::flat_set<GURL>& page_urls,
+                                const GURL& icon_url,
+                                favicon_base::IconType icon_type,
+                                const std::vector<int>& desired_sizes);
 
   void DeleteFaviconMappings(const base::flat_set<GURL>& page_urls,
                              favicon_base::IconType icon_type);
@@ -348,7 +349,7 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   // Downloads -----------------------------------------------------------------
 
   uint32_t GetNextDownloadId();
-  void QueryDownloads(std::vector<DownloadRow>* rows);
+  std::vector<DownloadRow> QueryDownloads();
   void UpdateDownload(const DownloadRow& data, bool should_commit_immediately);
   bool CreateDownload(const DownloadRow& history_info);
   void RemoveDownloads(const std::set<uint32_t>& ids);
@@ -493,12 +494,9 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   HistoryDatabase* db() const { return db_.get(); }
 
   ExpireHistoryBackend* expire_backend() { return &expirer_; }
-
-  void SetTypedURLSyncBridgeForTest(
-      std::unique_ptr<TypedURLSyncBridge> bridge) {
-    typed_url_sync_bridge_ = std::move(bridge);
-  }
 #endif
+
+  void SetTypedURLSyncBridgeForTest(std::unique_ptr<TypedURLSyncBridge> bridge);
 
   // Returns true if the passed visit time is already expired (used by the sync
   // code to avoid syncing visits that would immediately be expired).

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -180,20 +180,6 @@ chrome.autofillPrivate.validatePhoneNumbers = function(params, callback) {};
 chrome.autofillPrivate.getCreditCardList = function(callback) {};
 
 /**
- * Gets the list of local credit cards.
- * @param {function(!Array<!chrome.autofillPrivate.CreditCardEntry>):void}
- *     callback Callback which will be called with the list of credit cards.
- */
-chrome.autofillPrivate.getLocalCreditCardList = function(callback) {};
-
-/**
- * Gets the list of server credit cards.
- * @param {function(!Array<!chrome.autofillPrivate.CreditCardEntry>):void}
- *     callback Callback which will be called with the list of credit cards.
- */
-chrome.autofillPrivate.getServerCreditCardList = function(callback) {};
-
-/**
  * Clears the data associated with a wallet card which was saved locally so that
  * the saved copy is masked (e.g., "Card ending in 1234").
  * @param {string} guid GUID of the credit card to mask.
@@ -211,29 +197,14 @@ chrome.autofillPrivate.migrateCreditCards = function() {};
 chrome.autofillPrivate.logServerCardLinkClicked = function() {};
 
 /**
- * Fired when the address list has changed, meaning that an entry has been
+ * Enables or disables FIDO Authentication for credit card unmasking.
+ * @param {boolean} enabled
+ */
+chrome.autofillPrivate.setCreditCardFIDOAuthEnabledState = function(enabled) {};
+
+/**
+ * Fired when the perosnal data has changed, meaning that an entry has been
  * added, removed, or changed. |entries| The updated list of entries.
  * @type {!ChromeEvent}
  */
-chrome.autofillPrivate.onAddressListChanged;
-
-/**
- * Fired when the credit card list has changed, meaning that an entry has been
- * added, removed, or changed. |entries| The updated list of entries.
- * @type {!ChromeEvent}
- */
-chrome.autofillPrivate.onCreditCardListChanged;
-
-/**
- * Fired when the local credit card list has changed, meaning that an entry had
- * been added, removed, or changed. |entries| The updated list of entries.
- * @type {!ChromeEvent}
- */
-chrome.autofillPrivate.onLocalCreditCardListChanged;
-
-/**
- * Fired when the server credit card list has changed, meaning that an entry has
- * been added, removed, or changed. |entries| The updated list of entries.
- * @type {!ChromeEvent}
- */
-chrome.autofillPrivate.onServerCreditCardListChanged;
+chrome.autofillPrivate.onPersonalDataChanged;

@@ -1,6 +1,0 @@
-This tests that the Image JavaScript object works as expected when used in a canvas. If the test is successful, the Apple logo should appear scaled, normal and finally tiled in a circle.
-
-Using drawImage.
-Using drawImage with source rectangle.
-Using ImagePattern.
-Using ImagePattern and rotation.

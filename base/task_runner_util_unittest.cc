@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -86,7 +86,7 @@ void SaveFooWithoutDefaultConstructor(int* output_value,
 TEST(TaskRunnerHelpersTest, PostTaskAndReplyWithResult) {
   int result = 0;
 
-  test::ScopedTaskEnvironment scoped_task_environment;
+  test::TaskEnvironment task_environment;
   PostTaskAndReplyWithResult(ThreadTaskRunnerHandle::Get().get(), FROM_HERE,
                              BindOnce(&ReturnFourtyTwo),
                              BindOnce(&StoreValue, &result));
@@ -99,7 +99,7 @@ TEST(TaskRunnerHelpersTest, PostTaskAndReplyWithResult) {
 TEST(TaskRunnerHelpersTest, PostTaskAndReplyWithResultImplicitConvert) {
   double result = 0;
 
-  test::ScopedTaskEnvironment scoped_task_environment;
+  test::TaskEnvironment task_environment;
   PostTaskAndReplyWithResult(ThreadTaskRunnerHandle::Get().get(), FROM_HERE,
                              BindOnce(&ReturnFourtyTwo),
                              BindOnce(&StoreDoubleValue, &result));
@@ -113,7 +113,7 @@ TEST(TaskRunnerHelpersTest, PostTaskAndReplyWithResultPassed) {
   g_foo_destruct_count = 0;
   g_foo_free_count = 0;
 
-  test::ScopedTaskEnvironment scoped_task_environment;
+  test::TaskEnvironment task_environment;
   PostTaskAndReplyWithResult(ThreadTaskRunnerHandle::Get().get(), FROM_HERE,
                              BindOnce(&CreateFoo), BindOnce(&ExpectFoo));
 
@@ -127,7 +127,7 @@ TEST(TaskRunnerHelpersTest, PostTaskAndReplyWithResultPassedFreeProc) {
   g_foo_destruct_count = 0;
   g_foo_free_count = 0;
 
-  test::ScopedTaskEnvironment scoped_task_environment;
+  test::TaskEnvironment task_environment;
   PostTaskAndReplyWithResult(ThreadTaskRunnerHandle::Get().get(), FROM_HERE,
                              BindOnce(&CreateScopedFoo),
                              BindOnce(&ExpectScopedFoo));
@@ -142,7 +142,7 @@ TEST(TaskRunnerHelpersTest,
      PostTaskAndReplyWithResultWithoutDefaultConstructor) {
   const int kSomeVal = 17;
 
-  test::ScopedTaskEnvironment scoped_task_environment;
+  test::TaskEnvironment task_environment;
   int actual = 0;
   PostTaskAndReplyWithResult(
       ThreadTaskRunnerHandle::Get().get(), FROM_HERE,

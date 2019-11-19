@@ -14,7 +14,6 @@
 #include "url/origin.h"
 
 namespace content {
-
 namespace background_fetch {
 
 // Deletes Background Fetch registration entries from the database.
@@ -39,6 +38,7 @@ class DeleteRegistrationTask : public background_fetch::DatabaseTask {
                              blink::ServiceWorkerStatusCode status);
 
   void DidDeleteCache(base::OnceClosure done_closure,
+                      int64_t trace_id,
                       blink::mojom::CacheStorageError error);
 
   void FinishWithError(blink::mojom::BackgroundFetchError error) override;
@@ -50,13 +50,13 @@ class DeleteRegistrationTask : public background_fetch::DatabaseTask {
   std::string unique_id_;
   HandleBackgroundFetchErrorCallback callback_;
 
-  base::WeakPtrFactory<DeleteRegistrationTask> weak_factory_;  // Keep as last.
+  base::WeakPtrFactory<DeleteRegistrationTask> weak_factory_{
+      this};  // Keep as last.
 
   DISALLOW_COPY_AND_ASSIGN(DeleteRegistrationTask);
 };
 
 }  // namespace background_fetch
-
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_BACKGROUND_FETCH_STORAGE_DELETE_REGISTRATION_TASK_H_

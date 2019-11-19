@@ -102,7 +102,7 @@ bool CanRecoverFromError(
     // the error stream.
     if (error_stream->length() > 0) {
       return error_stream->offset() + error_stream->length() <=
-             preceding_neighbor->offset() + preceding_neighbor->bytes_written();
+             preceding_neighbor->offset() + preceding_neighbor->bytes_read();
     }
 
     return false;

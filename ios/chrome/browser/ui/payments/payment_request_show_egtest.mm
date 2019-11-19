@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import <EarlGrey/EarlGrey.h>
+
 #import "base/test/ios/wait_util.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/strings/grit/components_strings.h"
@@ -9,6 +11,7 @@
 #import "ios/chrome/browser/ui/payments/payment_request_error_view_controller.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
+#import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
 #import "ios/web/public/test/http_server/http_server.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -61,7 +64,7 @@ id<GREYMatcher> PriceCellMatcher(NSString* accessibilityLabel) {
 - (void)testBuyWithNoPromise {
   [ChromeEarlGrey loadURL:web::test::HttpServer::MakeUrl(kShowPromisePage)];
 
-  [ChromeEarlGrey tapWebViewElementWithID:@"buyWithNoPromise"];
+  [ChromeEarlGrey tapWebStateElementWithID:@"buyWithNoPromise"];
 
   // Confirm that the Payment Request UI is showing.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::PaymentRequestView()]
@@ -83,51 +86,47 @@ id<GREYMatcher> PriceCellMatcher(NSString* accessibilityLabel) {
 // Buy button is enabled.
 - (void)testBuyWithResolvingPromise {
   [ChromeEarlGrey loadURL:web::test::HttpServer::MakeUrl(kShowPromisePage)];
+  {
+    // Disable EarlGrey's synchronization. Needed likely due to
+    // MDCActivityIndicator being present on the payment request view.
+    ScopedSynchronizationDisabler disabler;
 
-  // Disable EarlGrey's synchronization. Needed likely due to
-  // MDCActivityIndicator being present on the payment request view.
-  [[GREYConfiguration sharedInstance]
-          setValue:@NO
-      forConfigKey:kGREYConfigKeySynchronizationEnabled];
+    [ChromeEarlGrey tapWebStateElementWithID:@"buyWithResolvingPromise"];
 
-  [ChromeEarlGrey tapWebViewElementWithID:@"buyWithResolvingPromise"];
+    // Wait until the payment request view shows.
+    ConditionBlock condition = ^{
+      NSError* error = nil;
+      [[EarlGrey
+          selectElementWithMatcher:chrome_test_util::PaymentRequestView()]
+          assertWithMatcher:grey_notNil()
+                      error:&error];
+      return error == nil;
+    };
+    GREYAssert(WaitUntilConditionOrTimeout(kShowPromiseTimeout, condition),
+               @"Payment request view failed to show.");
 
-  // Wait until the payment request view shows.
-  ConditionBlock condition = ^{
-    NSError* error = nil;
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::PaymentRequestView()]
-        assertWithMatcher:grey_notNil()
-                    error:&error];
-    return error == nil;
-  };
-  GREYAssert(WaitUntilConditionOrTimeout(kShowPromiseTimeout, condition),
-             @"Payment request view failed to show.");
-
-  // Verify that the Buy button is not enabled.
-  [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabelId(
-                                          IDS_PAYMENTS_PAY_BUTTON)]
-      assertWithMatcher:grey_not(grey_enabled())];
-
-  // Wait until the Buy button becomes enabled.
-  condition = ^{
-    NSError* error = nil;
+    // Verify that the Buy button is not enabled.
     [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabelId(
                                             IDS_PAYMENTS_PAY_BUTTON)]
-        assertWithMatcher:grey_enabled()
-                    error:&error];
-    return error == nil;
-  };
-  GREYAssert(WaitUntilConditionOrTimeout(kShowPromiseTimeout, condition),
-             @"Show promise failed to resolve.");
+        assertWithMatcher:grey_not(grey_enabled())];
 
-  // Verify that the updated total amount is displayed.
-  [[EarlGrey selectElementWithMatcher:PriceCellMatcher(@"Donation, USD $0.99")]
-      assertWithMatcher:grey_notNil()];
+    // Wait until the Buy button becomes enabled.
+    condition = ^{
+      NSError* error = nil;
+      [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabelId(
+                                              IDS_PAYMENTS_PAY_BUTTON)]
+          assertWithMatcher:grey_enabled()
+                      error:&error];
+      return error == nil;
+    };
+    GREYAssert(WaitUntilConditionOrTimeout(kShowPromiseTimeout, condition),
+               @"Show promise failed to resolve.");
 
-  // Reenable EarlGrey's synchronization.
-  [[GREYConfiguration sharedInstance]
-          setValue:@YES
-      forConfigKey:kGREYConfigKeySynchronizationEnabled];
+    // Verify that the updated total amount is displayed.
+    [[EarlGrey
+        selectElementWithMatcher:PriceCellMatcher(@"Donation, USD $0.99")]
+        assertWithMatcher:grey_notNil()];
+  }
 }
 
 // Tests when PaymentRequest.show() is called with a promise, the payment sheet
@@ -138,44 +137,40 @@ id<GREYMatcher> PriceCellMatcher(NSString* accessibilityLabel) {
 
   // Disable EarlGrey's synchronization. Needed likely due to
   // MDCActivityIndicator being present on the payment request view.
-  [[GREYConfiguration sharedInstance]
-          setValue:@NO
-      forConfigKey:kGREYConfigKeySynchronizationEnabled];
+  {
+    ScopedSynchronizationDisabler disabler;
 
-  [ChromeEarlGrey tapWebViewElementWithID:@"buyWithRejectingPromise"];
+    [ChromeEarlGrey tapWebStateElementWithID:@"buyWithRejectingPromise"];
 
-  // Wait until the payment request view shows.
-  ConditionBlock condition = ^{
-    NSError* error = nil;
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::PaymentRequestView()]
-        assertWithMatcher:grey_notNil()
-                    error:&error];
-    return error == nil;
-  };
-  GREYAssert(WaitUntilConditionOrTimeout(kShowPromiseTimeout, condition),
-             @"Payment request view failed to show.");
+    // Wait until the payment request view shows.
+    ConditionBlock condition = ^{
+      NSError* error = nil;
+      [[EarlGrey
+          selectElementWithMatcher:chrome_test_util::PaymentRequestView()]
+          assertWithMatcher:grey_notNil()
+                      error:&error];
+      return error == nil;
+    };
+    GREYAssert(WaitUntilConditionOrTimeout(kShowPromiseTimeout, condition),
+               @"Payment request view failed to show.");
 
-  // Verify that the Buy button is not enabled.
-  [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabelId(
-                                          IDS_PAYMENTS_PAY_BUTTON)]
-      assertWithMatcher:grey_not(grey_enabled())];
+    // Verify that the Buy button is not enabled.
+    [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabelId(
+                                            IDS_PAYMENTS_PAY_BUTTON)]
+        assertWithMatcher:grey_not(grey_enabled())];
 
-  // Wait until the error screen becomes visible.
-  condition = ^{
-    NSError* error = nil;
-    [[EarlGrey
-        selectElementWithMatcher:chrome_test_util::PaymentRequestErrorView()]
-        assertWithMatcher:grey_notNil()
-                    error:&error];
-    return error == nil;
-  };
-  GREYAssert(WaitUntilConditionOrTimeout(kShowPromiseTimeout, condition),
-             @"Show promise failed to resolve.");
-
-  // Reenable EarlGrey's synchronization.
-  [[GREYConfiguration sharedInstance]
-          setValue:@YES
-      forConfigKey:kGREYConfigKeySynchronizationEnabled];
+    // Wait until the error screen becomes visible.
+    condition = ^{
+      NSError* error = nil;
+      [[EarlGrey
+          selectElementWithMatcher:chrome_test_util::PaymentRequestErrorView()]
+          assertWithMatcher:grey_notNil()
+                      error:&error];
+      return error == nil;
+    };
+    GREYAssert(WaitUntilConditionOrTimeout(kShowPromiseTimeout, condition),
+               @"Show promise failed to resolve.");
+  }
 
   // Confirm the error.
   [[EarlGrey

@@ -1,0 +1,21 @@
+// Copyright 2016 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module media.mojom;
+
+import "media/mojo/mojom/interface_factory.mojom";
+import "services/service_manager/public/mojom/interface_provider.mojom";
+
+// A service to provide media InterfaceFactory, typically to the media pipeline
+// running in the renderer process. The service itself runs in the process
+// specified by the |mojo_media_host| gn build flag. The service is always
+// connected from the browser process.
+interface MediaService {
+  // Requests an InterfaceFactory. |host_interfaces| can optionally be used to
+  // provide interfaces hosted by the caller to the remote InterfaceFactory
+  // implementation.
+  CreateInterfaceFactory(
+      pending_receiver<InterfaceFactory> factory,
+      pending_remote<service_manager.mojom.InterfaceProvider> host_interfaces);
+};

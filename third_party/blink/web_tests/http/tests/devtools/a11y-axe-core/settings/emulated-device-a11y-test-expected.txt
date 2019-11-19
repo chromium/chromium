@@ -1,0 +1,6 @@
+Test error message in the settings tool Emulated Device pane
+
+Running: testNewDeviceError
+Invalidating the device pixel ratio
+Error message: Device pixel ratio must be a number or blank.
+

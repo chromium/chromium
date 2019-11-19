@@ -55,8 +55,7 @@ HostScanSchedulerImpl::HostScanSchedulerImpl(
       host_scan_batch_timer_(std::make_unique<base::OneShotTimer>()),
       clock_(base::DefaultClock::GetInstance()),
       task_runner_(base::ThreadTaskRunnerHandle::Get()),
-      is_screen_locked_(session_manager_->IsScreenLocked()),
-      weak_ptr_factory_(this) {
+      is_screen_locked_(session_manager_->IsScreenLocked()) {
   network_state_handler_->AddObserver(this, FROM_HERE);
   host_scanner_->AddObserver(this);
   session_manager_->AddObserver(this);

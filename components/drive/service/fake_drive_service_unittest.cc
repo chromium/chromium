@@ -13,13 +13,13 @@
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/md5.h"
+#include "base/hash/md5.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "components/drive/file_system_core_util.h"
 #include "components/drive/service/test_util.h"
 #include "google_apis/drive/drive_api_parser.h"
@@ -227,7 +227,7 @@ class FakeDriveServiceTest : public testing::Test {
     return about_resource->largest_change_id();
   }
 
-  base::test::ScopedTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   FakeDriveService fake_service_;
 };
 

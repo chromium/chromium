@@ -6,93 +6,31 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/document.h"
-#include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
+#include "third_party/blink/renderer/modules/picture_in_picture/html_element_picture_in_picture.h"
 #include "third_party/blink/renderer/modules/picture_in_picture/picture_in_picture_controller_impl.h"
 #include "third_party/blink/renderer/modules/picture_in_picture/picture_in_picture_window.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
-using Status = PictureInPictureControllerImpl::Status;
-
-namespace {
-
-const char kDetachedError[] =
-    "The element is no longer associated with a document.";
-const char kMetadataNotLoadedError[] =
-    "Metadata for the video element are not loaded yet.";
-const char kVideoTrackNotAvailableError[] =
-    "The video element has no video track.";
-const char kFeaturePolicyBlocked[] =
-    "Access to the feature \"picture-in-picture\" is disallowed by feature "
-    "policy.";
-const char kNotAvailable[] = "Picture-in-Picture is not available.";
-const char kUserGestureRequired[] =
-    "Must be handling a user gesture if there isn't already an element in "
-    "Picture-in-Picture.";
-const char kDisablePictureInPicturePresent[] =
-    "\"disablePictureInPicture\" attribute is present.";
-}  // namespace
-
 // static
 ScriptPromise HTMLVideoElementPictureInPicture::requestPictureInPicture(
     ScriptState* script_state,
-    HTMLVideoElement& element) {
-  Document& document = element.GetDocument();
-  PictureInPictureControllerImpl& controller =
-      PictureInPictureControllerImpl::From(document);
+    HTMLVideoElement& element,
+    ExceptionState& exception_state) {
+  HTMLElementPictureInPicture::CheckIfPictureInPictureIsAllowed(
+      element, nullptr /* options */, exception_state);
+  if (exception_state.HadException())
+    return ScriptPromise();
 
-  switch (controller.IsElementAllowed(element)) {
-    case Status::kFrameDetached:
-      return ScriptPromise::RejectWithDOMException(
-          script_state,
-          DOMException::Create(DOMExceptionCode::kInvalidStateError,
-                               kDetachedError));
-    case Status::kMetadataNotLoaded:
-      return ScriptPromise::RejectWithDOMException(
-          script_state,
-          DOMException::Create(DOMExceptionCode::kInvalidStateError,
-                               kMetadataNotLoadedError));
-    case Status::kVideoTrackNotAvailable:
-      return ScriptPromise::RejectWithDOMException(
-          script_state,
-          DOMException::Create(DOMExceptionCode::kInvalidStateError,
-                               kVideoTrackNotAvailableError));
-    case Status::kDisabledByFeaturePolicy:
-      return ScriptPromise::RejectWithDOMException(
-          script_state, DOMException::Create(DOMExceptionCode::kSecurityError,
-                                             kFeaturePolicyBlocked));
-    case Status::kDisabledByAttribute:
-      return ScriptPromise::RejectWithDOMException(
-          script_state,
-          DOMException::Create(DOMExceptionCode::kInvalidStateError,
-                               kDisablePictureInPicturePresent));
-    case Status::kDisabledBySystem:
-      return ScriptPromise::RejectWithDOMException(
-          script_state,
-          DOMException::Create(DOMExceptionCode::kNotSupportedError,
-                               kNotAvailable));
-    case Status::kEnabled:
-      break;
-  }
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto promise = resolver->Promise();
 
-  // Frame is not null, otherwise `IsElementAllowed()` would have return
-  // `kFrameDetached`.
-  LocalFrame* frame = element.GetFrame();
-  DCHECK(frame);
-  if (!controller.PictureInPictureElement() &&
-      !LocalFrame::ConsumeTransientUserActivation(frame)) {
-    return ScriptPromise::RejectWithDOMException(
-        script_state, DOMException::Create(DOMExceptionCode::kNotAllowedError,
-                                           kUserGestureRequired));
-  }
+  PictureInPictureControllerImpl::From(element.GetDocument())
+      .EnterPictureInPicture(&element, nullptr /* options */, resolver);
 
-  ScriptPromiseResolver* resolver = ScriptPromiseResolver::Create(script_state);
-  ScriptPromise promise = resolver->Promise();
-
-  controller.EnterPictureInPicture(&element, resolver);
   return promise;
 }
 

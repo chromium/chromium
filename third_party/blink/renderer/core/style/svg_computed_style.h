@@ -30,7 +30,7 @@
 #include "third_party/blink/renderer/core/style/svg_computed_style_defs.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 
@@ -190,7 +190,7 @@ class SVGComputedStyle : public RefCounted<SVGComputedStyle> {
       fill.Access()->paint = paint;
   }
 
-  void SetVisitedLinkFillPaint(const SVGPaint& paint) {
+  void SetInternalVisitedFillPaint(const SVGPaint& paint) {
     if (!(fill->visited_link_paint == paint))
       fill.Access()->visited_link_paint = paint;
   }
@@ -205,13 +205,13 @@ class SVGComputedStyle : public RefCounted<SVGComputedStyle> {
       stroke.Access()->paint = paint;
   }
 
-  void SetVisitedLinkStrokePaint(const SVGPaint& paint) {
+  void SetInternalVisitedStrokePaint(const SVGPaint& paint) {
     if (!(stroke->visited_link_paint == paint))
       stroke.Access()->visited_link_paint = paint;
   }
 
   void SetStrokeDashArray(scoped_refptr<SVGDashArray> dash_array) {
-    if (*stroke->dash_array != *dash_array)
+    if (stroke->dash_array->data != dash_array->data)
       stroke.Access()->dash_array = std::move(dash_array);
   }
 
@@ -363,21 +363,21 @@ class SVGComputedStyle : public RefCounted<SVGComputedStyle> {
   }
   EPaintOrderType PaintOrderType(unsigned index) const;
 
-  const SVGPaint& VisitedLinkFillPaint() const {
+  const SVGPaint& InternalVisitedFillPaint() const {
     return fill->visited_link_paint;
   }
-  const SVGPaint& VisitedLinkStrokePaint() const {
+  const SVGPaint& InternalVisitedStrokePaint() const {
     return stroke->visited_link_paint;
   }
 
   bool IsFillColorCurrentColor() const {
     return FillPaint().HasCurrentColor() ||
-           VisitedLinkFillPaint().HasCurrentColor();
+           InternalVisitedFillPaint().HasCurrentColor();
   }
 
   bool IsStrokeColorCurrentColor() const {
     return StrokePaint().HasCurrentColor() ||
-           VisitedLinkStrokePaint().HasCurrentColor();
+           InternalVisitedStrokePaint().HasCurrentColor();
   }
 
   // convenience

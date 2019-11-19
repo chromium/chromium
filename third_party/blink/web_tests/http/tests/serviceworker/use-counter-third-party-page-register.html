@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<!-- Tests UseCounter for serviceWorker.register in third party context. This
+  cannot be upstreamed to WPT because it tests Chrome's UseCounter mechanism.
+-->
+<meta charset="utf-8">
+<title>Test UseCounter for serviceWorker.register in third party context.</title>
+<body></body>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/test-helpers.js"></script>
+<script src="/resources/get-host-info.js"></script>
+<script>
+function child_frame_has_verified_use_counter() {
+  return new Promise(function(resolve, reject) {
+      window.onmessage = (msg) => {
+        if (msg.data == 'verified_has_use_counter')
+          resolve();
+        else
+          reject(msg.data);
+      };
+    });
+}
+
+promise_test(async t => {
+  t.add_cleanup(() => {
+    const done = new Promise(function(resolve, reject) {
+      window.onmessage = (msg) => {
+        if (msg.data == "unregister_done")
+          resolve();
+        else
+          reject(msg.data);
+        };
+    });
+    frame1.contentWindow.postMessage("unregister", "*");
+    return done;
+  });
+
+  const remote_origin_url = get_host_info().HTTPS_REMOTE_ORIGIN +
+        '/serviceworker/resources/register-service-worker-verify-third-party-use-counter.html';
+  const frame1 = await with_iframe(remote_origin_url);
+  await child_frame_has_verified_use_counter();
+}, "Test UseCounter for serviceWorker.register in third party context.");
+</script>

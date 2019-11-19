@@ -63,7 +63,7 @@ MATCHER_P(EqualsPointerTouchInfoFlag, id_to_flag_map, "") {
   for (size_t i = 0; i < id_to_flag_map.size(); ++i) {
     const POINTER_TOUCH_INFO* touch_info = arg + i;
     const uint32_t id = touch_info->pointerInfo.pointerId;
-    if (!base::ContainsKey(id_to_flag_map, id))
+    if (!base::Contains(id_to_flag_map, id))
       return false;
 
     if (id_to_flag_map.find(id)->second != touch_info->pointerInfo.pointerFlags)

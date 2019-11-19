@@ -15,7 +15,7 @@ variant_key_header=variant-key-04
 
 set -e
 
-for cmd in gen-signedexchange gen-certurl; do
+for cmd in gen-signedexchange gen-certurl dump-signedexchange; do
     if ! command -v $cmd > /dev/null 2>&1; then
         echo "$cmd is not installed. Please run:"
         echo "  go get -u github.com/WICG/webpackage/go/signedexchange/cmd/..."
@@ -27,6 +27,15 @@ tmpdir=$(mktemp -d)
 
 echo -n OCSP >$tmpdir/ocsp
 gen-certurl -pem $certfile -ocsp $tmpdir/ocsp > $certfile.cbor
+
+option="-w 0"
+if [ "$(uname -s)" = "Darwin" ]; then
+    option=""
+fi
+
+cert_base64=$(base64 ${option} ${certfile}.cbor)
+data_cert_url="data:application/cert-chain+cbor;base64,$cert_base64"
+
 
 # A valid Signed Exchange.
 gen-signedexchange \
@@ -41,6 +50,37 @@ gen-signedexchange \
   -date 2018-04-01T00:00:00Z \
   -expire 168h \
   -o sxg/sxg-location.sxg \
+  -miRecordSize 100
+
+# A valid Signed Exchange for appcache test.
+gen-signedexchange \
+  -version $sxg_version \
+  -uri $inner_url_origin/signed-exchange/appcache/resources/inner-url.html \
+  -status 200 \
+  -content sxg-location.html \
+  -certificate $certfile \
+  -certUrl $cert_url_origin/signed-exchange/resources/$certfile.cbor \
+  -validityUrl $inner_url_origin/signed-exchange/resources/resource.validity.msg \
+  -privateKey $keyfile \
+  -date 2018-04-01T00:00:00Z \
+  -expire 168h \
+  -o ../appcache/resources/sxg/sxg-location.sxg \
+  -miRecordSize 100
+
+# A valid Signed Exchange for appcache test
+# - appcache and the sxg inner resp both provide the content for the url
+gen-signedexchange \
+  -version $sxg_version \
+  -uri $inner_url_origin/signed-exchange/appcache/resources/appcached-url.html \
+  -status 200 \
+  -content ../appcache/resources/appcached-url-in-sxg.html \
+  -certificate $certfile \
+  -certUrl $cert_url_origin/signed-exchange/resources/$certfile.cbor \
+  -validityUrl $inner_url_origin/signed-exchange/resources/resource.validity.msg \
+  -privateKey $keyfile \
+  -date 2018-04-01T00:00:00Z \
+  -expire 168h \
+  -o ../appcache/resources/sxg/sxg-appcached.sxg \
   -miRecordSize 100
 
 # A valid Signed Exchange. The origin of certUrl is the "alt" origin where NEL
@@ -453,5 +493,87 @@ gen-signedexchange \
   -expire 168h \
   -o sxg/sxg-navigation-timing.sxg \
   -miRecordSize 100
+
+# A valid Signed Exchange for testing service worker registration.
+gen-signedexchange \
+  -version $sxg_version \
+  -uri $wpt_test_origin/signed-exchange/resources/register-sw-from-sxg.html \
+  -status 200 \
+  -content register-sw.html \
+  -certificate $certfile \
+  -certUrl $cert_url_origin/signed-exchange/resources/$certfile.cbor \
+  -validityUrl $wpt_test_origin/resource.validity.msg \
+  -privateKey $keyfile \
+  -date 2018-04-01T00:00:00Z \
+  -expire 168h \
+  -o sxg/register-sw-from-sxg.sxg \
+  -miRecordSize 100
+
+# An invalid Signed Exchange for testing service worker registration after
+# fallback.
+gen-signedexchange \
+  -version $sxg_version \
+  -uri $wpt_test_origin/signed-exchange/resources/register-sw-after-fallback.html \
+  -status 200 \
+  -content sxg-location.html \
+  -certificate $certfile \
+  -certUrl $cert_url_origin/signed-exchange/resources/not_found_certfile.cbor \
+  -validityUrl $wpt_test_origin/resource.validity.msg \
+  -privateKey $keyfile \
+  -date 2018-04-01T00:00:00Z \
+  -expire 168h \
+  -o sxg/register-sw-after-fallback.sxg \
+  -miRecordSize 100
+
+# A valid Signed Exchange using data URL for cert-url.
+gen-signedexchange \
+  -version $sxg_version \
+  -uri $inner_url_origin/signed-exchange/resources/inner-url.html \
+  -status 200 \
+  -content sxg-location.html \
+  -certificate $certfile \
+  -certUrl $data_cert_url \
+  -validityUrl $inner_url_origin/signed-exchange/resources/resource.validity.msg \
+  -privateKey $keyfile \
+  -date 2018-04-01T00:00:00Z \
+  -expire 168h \
+  -o sxg/sxg-data-cert-url.sxg \
+  -miRecordSize 100
+
+# Generate the signed exchange file of sxg-subresource-script-inner.js.
+gen-signedexchange \
+  -version $sxg_version \
+  -uri $inner_url_origin/signed-exchange/resources/sxg-subresource-script.js \
+  -status 200 \
+  -content sxg-subresource-script-inner.js \
+  -certificate $certfile \
+  -certUrl $cert_url_origin/signed-exchange/resources/$certfile.cbor \
+  -validityUrl $inner_url_origin/signed-exchange/resources/resource.validity.msg \
+  -privateKey $keyfile \
+  -date 2030-04-01T00:00:00Z \
+  -expire 168h \
+  -o sxg/sxg-subresource-script.sxg \
+  -miRecordSize 100
+
+# Get the header integrity hash value of sxg-subresource-script.sxg.
+header_integrity=$(dump-signedexchange -i sxg/sxg-subresource-script.sxg | \
+                   grep -o "header integrity: sha256-.*" | \
+                   grep -o "sha256-.*$")
+
+# Generate the signed exchange file of signed exchange subresource test.
+gen-signedexchange \
+  -version $sxg_version \
+  -uri $inner_url_origin/signed-exchange/resources/sxg-subresource-sxg.html \
+  -status 200 \
+  -content sxg-subresource-sxg-inner.html \
+  -certificate $certfile \
+  -certUrl $cert_url_origin/signed-exchange/resources/$certfile.cbor \
+  -validityUrl $inner_url_origin/signed-exchange/resources/resource.validity.msg \
+  -privateKey $keyfile \
+  -date 2030-04-01T00:00:00Z \
+  -expire 168h \
+  -o sxg/sxg-subresource.sxg \
+  -miRecordSize 100 \
+  -responseHeader "link:<$inner_url_origin/signed-exchange/resources/sxg-subresource-script.js>;rel=allowed-alt-sxg;header-integrity=\"$header_integrity\",<$inner_url_origin/signed-exchange/resources/sxg-subresource-script.js>;rel=preload;as=script"
 
 rm -fr $tmpdir

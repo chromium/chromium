@@ -9,7 +9,7 @@
 #include <string>
 
 #include "net/base/net_export.h"
-#include "net/third_party/quic/core/quic_server_id.h"
+#include "net/third_party/quiche/src/quic/core/quic_server_id.h"
 
 namespace quic {
 class ProofVerifyContext;

@@ -12,6 +12,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
+#include "chromecast/media/base/media_resource_tracker.h"
 #include "chromecast/media/cma/backend/cma_backend.h"
 #include "chromecast/public/media/media_pipeline_device_params.h"
 
@@ -28,7 +29,8 @@ class DecoderCreatorCmaBackend;
 class MediaPipelineBackendWrapper : public CmaBackend {
  public:
   MediaPipelineBackendWrapper(const media::MediaPipelineDeviceParams& params,
-                              MediaPipelineBackendManager* backend_manager);
+                              MediaPipelineBackendManager* backend_manager,
+                              MediaResourceTracker* media_resource_tracker);
   ~MediaPipelineBackendWrapper() override;
 
   // After revocation, this class releases the media resource on the device,

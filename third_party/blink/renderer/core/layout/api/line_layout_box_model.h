@@ -115,7 +115,7 @@ class LineLayoutBoxModel : public LineLayoutItem {
     return ToBoxModel()->BorderAndPaddingLogicalHeight();
   }
 
-  LayoutSize OffsetForInFlowPosition() const {
+  PhysicalOffset OffsetForInFlowPosition() const {
     return ToBoxModel()->OffsetForInFlowPosition();
   }
 

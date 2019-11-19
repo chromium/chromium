@@ -10,6 +10,7 @@
 #include "base/macros.h"
 #include "chrome/browser/ui/webui/explore_sites_internals/explore_sites_internals.mojom.h"
 #include "chrome/browser/ui/webui/explore_sites_internals/explore_sites_internals_page_handler.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
 namespace explore_sites {
@@ -24,7 +25,8 @@ class ExploreSitesInternalsUI : public ui::MojoWebUIController {
 
  private:
   void BindExploreSitesInternalsPageHandler(
-      explore_sites_internals::mojom::PageHandlerRequest request);
+      mojo::PendingReceiver<explore_sites_internals::mojom::PageHandler>
+          receiver);
 
   std::unique_ptr<ExploreSitesInternalsPageHandler> page_handler_;
   ExploreSitesService* explore_sites_service_;

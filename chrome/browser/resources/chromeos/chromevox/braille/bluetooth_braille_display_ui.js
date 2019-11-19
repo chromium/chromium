@@ -101,14 +101,16 @@ BluetoothBrailleDisplayUI.prototype = {
 
   /** @override */
   onDisplayListChanged: function(displays) {
-    if (!this.displaySelect_)
+    if (!this.displaySelect_) {
       throw 'Expected attach to have been called.';
+    }
 
     // Remove any displays that were removed.
     for (var i = 0; i < this.displaySelect_.children.length; i++) {
       var domDisplay = this.displaySelect_.children[i];
-      if (!displays.find((display) => domDisplay.id == display.address))
+      if (!displays.find((display) => domDisplay.id == display.address)) {
         domDisplay.remove();
+      }
     }
 
     displays.forEach((display) => {
@@ -117,8 +119,9 @@ BluetoothBrailleDisplayUI.prototype = {
           this.displaySelect_.querySelector('#' + CSS.escape(display.address));
 
       // If the display already exists, no further processing is needed.
-      if (displayContainer)
+      if (displayContainer) {
         return;
+      }
 
       displayContainer = document.createElement('option');
       this.displaySelect_.appendChild(displayContainer);
@@ -151,11 +154,13 @@ BluetoothBrailleDisplayUI.prototype = {
 
     var timeoutId;
     form.addEventListener('submit', (evt) => {
-      if (timeoutId)
+      if (timeoutId) {
         clearTimeout(timeoutId);
+      }
 
-      if (pincodeField.value)
+      if (pincodeField.value) {
         this.manager_.finishPairing(display, pincodeField.value);
+      }
 
       this.controls_.hidden = false;
       form.remove();
@@ -199,8 +204,9 @@ BluetoothBrailleDisplayUI.prototype = {
         }
       } else {
         // The display is no longer connected.
-        if (this.selectedAndConnectedDisplayAddress_ == sel.id)
+        if (this.selectedAndConnectedDisplayAddress_ == sel.id) {
           this.selectedAndConnectedDisplayAddress_ = undefined;
+        }
       }
 
       var connectOrDisconnect =
@@ -214,10 +220,11 @@ BluetoothBrailleDisplayUI.prototype = {
                    'options_bluetooth_braille_display_disconnect' :
                    'options_bluetooth_braille_display_connect'));
       connectOrDisconnect.onclick = function(savedDisplay, evt) {
-        if (savedDisplay.connected)
+        if (savedDisplay.connected) {
           this.manager_.disconnect(savedDisplay);
-        else
+        } else {
           this.manager_.connect(savedDisplay);
+        }
       }.bind(this, display);
 
       var forget = this.controls_.querySelector('#forget');

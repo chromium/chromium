@@ -155,10 +155,9 @@ TEST_F(WindowAnimationsTest, HideAnimationDetachLayers) {
     // Make sure the Hide animation create another layer, and both are in
     // the parent layer.
     EXPECT_NE(animating_window->layer(), animating_layer);
+    EXPECT_TRUE(base::Contains(parent->layer()->children(), animating_layer));
     EXPECT_TRUE(
-        base::ContainsValue(parent->layer()->children(), animating_layer));
-    EXPECT_TRUE(base::ContainsValue(parent->layer()->children(),
-                                    animating_window->layer()));
+        base::Contains(parent->layer()->children(), animating_window->layer()));
     // Current layer must be already hidden.
     EXPECT_FALSE(animating_window->layer()->visible());
 
@@ -177,8 +176,7 @@ TEST_F(WindowAnimationsTest, HideAnimationDetachLayers) {
 
     // Animating layer must be gone
     animating_layer->GetAnimator()->StopAnimating();
-    EXPECT_FALSE(
-        base::ContainsValue(parent->layer()->children(), animating_layer));
+    EXPECT_FALSE(base::Contains(parent->layer()->children(), animating_layer));
   }
 }
 

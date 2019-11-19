@@ -84,9 +84,16 @@ class WebRtcVideoHighBitrateBrowserTest : public WebRtcTestBase {
 IN_PROC_BROWSER_TEST_F(WebRtcVideoHighBitrateBrowserTest,
                        MANUAL_HighBitrateEncodeDecode) {
   ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_GE(TestTimeouts::test_launcher_timeout().InSeconds(), 30)
+      << "This is a long-running test; you must specify "
+         "--test-launcher-timeout to have a value of at least 30000.";
   ASSERT_GE(TestTimeouts::action_max_timeout().InSeconds(), 30)
       << "This is a long-running test; you must specify "
          "--ui-test-action-max-timeout to have a value of at least 30000.";
+  ASSERT_LT(TestTimeouts::action_max_timeout(),
+            TestTimeouts::test_launcher_timeout())
+      << "action_max_timeout needs to be strictly-less-than "
+         "test_launcher_timeout";
 
   content::WebContents* left_tab =
       OpenPageAndGetUserMediaInNewTabWithConstraints(

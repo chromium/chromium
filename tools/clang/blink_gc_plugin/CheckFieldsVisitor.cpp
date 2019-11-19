@@ -7,6 +7,7 @@
 #include <cassert>
 
 #include "RecordInfo.h"
+#include "llvm/Support/ErrorHandling.h"
 
 CheckFieldsVisitor::CheckFieldsVisitor(const BlinkGCPluginOptions& options)
     : options_(options), current_(0), stack_allocated_host_(false) {}
@@ -129,5 +130,5 @@ CheckFieldsVisitor::Error CheckFieldsVisitor::InvalidSmartPtr(Edge* ptr) {
     return kRefPtrToGCManaged;
   if (ptr->IsUniquePtr())
     return kUniquePtrToGCManaged;
-  assert(false && "Unknown smart pointer kind");
+  llvm_unreachable("Unknown smart pointer kind");
 }

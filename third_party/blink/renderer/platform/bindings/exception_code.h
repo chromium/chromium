@@ -103,6 +103,12 @@ enum class DOMExceptionCode : ExceptionCode {
   // https://github.com/WICG/BackgroundSync/issues/124
   kPermissionDeniedError,
 
+  // Serial API - https://wicg.github.io/serial
+  kBreakError,
+  kBufferOverrunError,
+  kFramingError,
+  kParityError,
+
   kNumOfCodes,
 };
 

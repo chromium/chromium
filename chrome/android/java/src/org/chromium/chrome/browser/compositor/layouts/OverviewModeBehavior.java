@@ -12,7 +12,7 @@ public interface OverviewModeBehavior {
     /**
      * An observer that is notified when the overview mode state changes.
      */
-    public interface OverviewModeObserver {
+    interface OverviewModeObserver {
         /**
          * Called when overview mode starts showing.
          * @param showToolbar Whether or not to show the normal toolbar when animating into overview
@@ -24,6 +24,12 @@ public interface OverviewModeBehavior {
          * Called when overview mode finishes showing.
          */
         void onOverviewModeFinishedShowing();
+
+        /**
+         * Called when the internal state is changed.
+         * @param showTabSwitcherToolbar Whether or not request showing the Tab switcher toolbar.
+         */
+        void onOverviewModeStateChanged(boolean showTabSwitcherToolbar);
 
         /**
          * Called when overview mode starts hiding.

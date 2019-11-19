@@ -5,6 +5,7 @@
 #include "content/browser/browser_process_sub_thread.h"
 
 #include "base/bind.h"
+#include "base/clang_coverage_buildflags.h"
 #include "base/compiler_specific.h"
 #include "base/debug/alias.h"
 #include "base/metrics/histogram_macros.h"
@@ -16,7 +17,6 @@
 #include "content/browser/utility_process_host.h"
 #include "content/common/child_process_host_impl.h"
 #include "content/public/browser/browser_child_process_host_iterator.h"
-#include "content/public/browser/browser_thread_delegate.h"
 #include "content/public/common/process_type.h"
 #include "net/url_request/url_fetcher.h"
 #include "net/url_request/url_request.h"
@@ -30,20 +30,6 @@
 #endif
 
 namespace content {
-
-namespace {
-BrowserThreadDelegate* g_io_thread_delegate = nullptr;
-}  // namespace
-
-// static
-void BrowserThread::SetIOThreadDelegate(BrowserThreadDelegate* delegate) {
-  // |delegate| can only be set/unset while BrowserThread::IO isn't up.
-  DCHECK(!BrowserThread::IsThreadInitialized(BrowserThread::IO));
-  // and it cannot be set twice.
-  DCHECK(!g_io_thread_delegate || !delegate);
-
-  g_io_thread_delegate = delegate;
-}
 
 BrowserProcessSubThread::BrowserProcessSubThread(BrowserThread::ID identifier)
     : base::Thread(BrowserThreadImpl::GetThreadName(identifier)),
@@ -73,24 +59,6 @@ void BrowserProcessSubThread::RegisterAsBrowserThread() {
 void BrowserProcessSubThread::AllowBlockingForTesting() {
   DCHECK(!IsRunning());
   is_blocking_allowed_for_testing_ = true;
-}
-
-// static
-std::unique_ptr<BrowserProcessSubThread>
-BrowserProcessSubThread::CreateIOThread() {
-  TRACE_EVENT0("startup", "BrowserProcessSubThread::CreateIOThread");
-  base::Thread::Options options;
-  options.message_loop_type = base::MessageLoop::TYPE_IO;
-#if defined(OS_ANDROID) || defined(OS_CHROMEOS) || defined(USE_OZONE)
-  // Up the priority of the |io_thread_| as some of its IPCs relate to
-  // display tasks.
-  options.priority = base::ThreadPriority::DISPLAY;
-#endif
-  std::unique_ptr<BrowserProcessSubThread> io_thread(
-      new BrowserProcessSubThread(BrowserThread::IO));
-  if (!io_thread->StartWithOptions(options))
-    LOG(FATAL) << "Failed to start BrowserThread:IO";
-  return io_thread;
 }
 
 void BrowserProcessSubThread::Init() {
@@ -139,9 +107,6 @@ void BrowserProcessSubThread::CleanUp() {
   if (BrowserThread::CurrentlyOn(BrowserThread::IO))
     IOThreadCleanUp();
 
-  if (identifier_ == BrowserThread::IO && g_io_thread_delegate)
-    g_io_thread_delegate->CleanUp();
-
   notification_service_.reset();
 
 #if defined(OS_WIN)
@@ -153,12 +118,6 @@ void BrowserProcessSubThread::CompleteInitializationOnBrowserThread() {
   DCHECK_CALLED_ON_VALID_THREAD(browser_thread_checker_);
 
   notification_service_ = std::make_unique<NotificationServiceImpl>();
-
-  if (identifier_ == BrowserThread::IO && g_io_thread_delegate) {
-    // Allow blocking calls while initializing the IO thread.
-    base::ScopedAllowBlocking allow_blocking_for_init;
-    g_io_thread_delegate->Init();
-  }
 }
 
 // Mark following two functions as NOINLINE so the compiler doesn't merge
@@ -193,7 +152,17 @@ void BrowserProcessSubThread::IOThreadCleanUp() {
         service_manager::SANDBOX_TYPE_NETWORK) {
       // This ensures that cookies and cache are flushed to disk on shutdown.
       // https://crbug.com/841001
+#if BUILDFLAG(CLANG_COVERAGE)
+      // On coverage build, browser_tests runs 10x slower.
+      const int kMaxSecondsToWaitForNetworkProcess = 100;
+#elif defined(OS_CHROMEOS)
+      // ChromeOS will kill the browser process if it doesn't shut down within
+      // 3 seconds, so make sure we wait for less than that.
+      const int kMaxSecondsToWaitForNetworkProcess = 1;
+#else
       const int kMaxSecondsToWaitForNetworkProcess = 10;
+#endif
+
       ChildProcessHostImpl* child_process =
           static_cast<ChildProcessHostImpl*>(it.GetHost());
       auto& process = child_process->peer_process();
@@ -207,8 +176,8 @@ void BrowserProcessSubThread::IOThreadCleanUp() {
       // Record time spent for the method call.
       base::TimeDelta network_wait_time = base::TimeTicks::Now() - start_time;
       UMA_HISTOGRAM_TIMES("NetworkService.ShutdownTime", network_wait_time);
-      LOG(ERROR) << "Waited " << network_wait_time.InMilliseconds()
-                 << " ms for network service";
+      DVLOG(1) << "Waited " << network_wait_time.InMilliseconds()
+               << " ms for network service";
     }
   }
 

@@ -8,9 +8,13 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "build/build_config.h"
 #include "content/common/render_frame_metadata.mojom.h"
 #include "content/public/browser/render_frame_metadata_provider.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace content {
 class FrameTokenMessageQueue;
@@ -35,14 +39,21 @@ class CONTENT_EXPORT RenderFrameMetadataProviderImpl
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
 
-  void Bind(mojom::RenderFrameMetadataObserverClientRequest client_request,
-            mojom::RenderFrameMetadataObserverPtr observer);
+  void Bind(mojo::PendingReceiver<mojom::RenderFrameMetadataObserverClient>
+                client_receiver,
+            mojo::PendingRemote<mojom::RenderFrameMetadataObserver> observer);
+
+  const cc::RenderFrameMetadata& LastRenderFrameMetadata() override;
+
+#if defined(OS_ANDROID)
+  // Notifies the renderer to begin sending a notification on all root scroll
+  // changes, which is needed for accessibility on Android.
+  void ReportAllRootScrollsForAccessibility(bool enabled);
+#endif
 
   // Notifies the renderer to begin sending a notification on all frame
   // submissions.
-  void ReportAllFrameSubmissionsForTesting(bool enabled) override;
-
-  const cc::RenderFrameMetadata& LastRenderFrameMetadata() const override;
+  void ReportAllFrameSubmissionsForTesting(bool enabled);
 
  private:
   friend class FakeRenderWidgetHostViewAura;
@@ -77,13 +88,17 @@ class CONTENT_EXPORT RenderFrameMetadataProviderImpl
   // Not owned.
   FrameTokenMessageQueue* const frame_token_message_queue_;
 
-  mojo::Binding<mojom::RenderFrameMetadataObserverClient>
-      render_frame_metadata_observer_client_binding_;
-  mojom::RenderFrameMetadataObserverPtr render_frame_metadata_observer_ptr_;
+  mojo::Receiver<mojom::RenderFrameMetadataObserverClient>
+      render_frame_metadata_observer_client_receiver_{this};
+  mojo::Remote<mojom::RenderFrameMetadataObserver>
+      render_frame_metadata_observer_remote_;
 
-  base::Optional<bool> pending_report_all_frame_submission_;
+#if defined(OS_ANDROID)
+  base::Optional<bool> pending_report_all_root_scrolls_for_accessibility_;
+#endif
+  base::Optional<bool> pending_report_all_frame_submission_for_testing_;
 
-  base::WeakPtrFactory<RenderFrameMetadataProviderImpl> weak_factory_;
+  base::WeakPtrFactory<RenderFrameMetadataProviderImpl> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(RenderFrameMetadataProviderImpl);
 };

@@ -19,7 +19,7 @@
 // Annotation interface. Because not all platforms use Crashpad yet, a
 // source-compatible interface is provided on top of the older Breakpad
 // storage mechanism.
-#if BUILDFLAG(USE_CRASHPAD_ANNOTATION)
+#if BUILDFLAG(USE_CRASHPAD_ANNOTATION) || BUILDFLAG(USE_COMBINED_ANNOTATIONS)
 #include "third_party/crashpad/crashpad/client/annotation.h"  // nogncheck
 #endif
 
@@ -136,7 +136,7 @@ using InitializedArray =
 }  // namespace internal
 
 template <uint32_t MaxLength>
-class CrashKeyString : public internal::CrashKeyStringImpl {
+class CrashKeyStringBreakpad : public internal::CrashKeyStringImpl {
  public:
   constexpr static size_t chunk_count =
       (MaxLength / internal::kCrashKeyStorageValueSize) + 1;
@@ -144,10 +144,11 @@ class CrashKeyString : public internal::CrashKeyStringImpl {
   // A constructor tag that can be used to initialize a C array of crash keys.
   enum class Tag { kArray };
 
-  constexpr explicit CrashKeyString(const char name[])
+  constexpr explicit CrashKeyStringBreakpad(const char name[])
       : internal::CrashKeyStringImpl(name, indexes_.data, chunk_count) {}
 
-  constexpr CrashKeyString(const char name[], Tag tag) : CrashKeyString(name) {}
+  constexpr CrashKeyStringBreakpad(const char name[], Tag tag)
+      : CrashKeyStringBreakpad(name) {}
 
  private:
   // Indexes into the TransitionalCrashKeyStorage for when a value is set.
@@ -160,10 +161,68 @@ class CrashKeyString : public internal::CrashKeyStringImpl {
                              internal::kCrashKeyStorageNumEntries>
       indexes_;
 
-  DISALLOW_COPY_AND_ASSIGN(CrashKeyString);
+  DISALLOW_COPY_AND_ASSIGN(CrashKeyStringBreakpad);
 };
 
-#endif
+#if BUILDFLAG(USE_COMBINED_ANNOTATIONS)
+
+namespace internal {
+
+class CrashKeyStringCombinedImpl {
+ public:
+  constexpr CrashKeyStringCombinedImpl(CrashKeyStringImpl* breakpad_key,
+                                       crashpad::Annotation* crashpad_key)
+      : breakpad_key_(breakpad_key), crashpad_key_(crashpad_key) {}
+
+  void Clear() {
+    breakpad_key_->Clear();
+    crashpad_key_->Clear();
+  }
+
+  bool is_set() const { return breakpad_key_->is_set(); }
+
+ private:
+  CrashKeyStringImpl* breakpad_key_;
+  crashpad::Annotation* crashpad_key_;
+
+  DISALLOW_COPY_AND_ASSIGN(CrashKeyStringCombinedImpl);
+};
+
+}  // namespace internal
+
+template <uint32_t MaxLength>
+class CrashKeyStringCombined : public internal::CrashKeyStringCombinedImpl {
+ public:
+  enum class Tag { kArray };
+
+  constexpr explicit CrashKeyStringCombined(const char name[])
+      : internal::CrashKeyStringCombinedImpl(&breakpad_key_, &crashpad_key_),
+        breakpad_key_(name),
+        crashpad_key_(name) {}
+
+  constexpr CrashKeyStringCombined(const char name[], Tag tag)
+      : CrashKeyStringCombined(name) {}
+
+  void Set(base::StringPiece value) {
+    breakpad_key_.Set(value);
+    crashpad_key_.Set(value);
+  }
+
+ private:
+  CrashKeyStringBreakpad<MaxLength> breakpad_key_;
+  crashpad::StringAnnotation<MaxLength> crashpad_key_;
+
+  DISALLOW_COPY_AND_ASSIGN(CrashKeyStringCombined);
+};
+
+template <uint32_t MaxLength>
+using CrashKeyString = CrashKeyStringCombined<MaxLength>;
+#else
+template <uint32_t MaxLength>
+using CrashKeyString = CrashKeyStringBreakpad<MaxLength>;
+#endif  // BUILDFLAG(USE_COMBINED_ANNOTATIONS)
+
+#endif  // BUILDFLAG(USE_CRASHPAD_ANNOTATION)
 
 // This scoper clears the specified annotation's value when it goes out of
 // scope.
@@ -179,6 +238,8 @@ class ScopedCrashKeyString {
  public:
 #if BUILDFLAG(USE_CRASHPAD_ANNOTATION)
   using CrashKeyType = crashpad::Annotation;
+#elif BUILDFLAG(USE_COMBINED_ANNOTATIONS)
+  using CrashKeyType = internal::CrashKeyStringCombinedImpl;
 #else
   using CrashKeyType = internal::CrashKeyStringImpl;
 #endif
@@ -225,6 +286,10 @@ CRASH_KEY_EXPORT void InitializeCrashKeys();
 // Note: In a component build, this will only retrieve crash keys for the
 // current component.
 CRASH_KEY_EXPORT std::string GetCrashKeyValue(const std::string& key_name);
+
+// Initializes the crash key subsystem with testing configuration if it is
+// required.
+CRASH_KEY_EXPORT void InitializeCrashKeysForTesting();
 
 // Resets crash key state and, depending on the platform, de-initializes
 // the system.

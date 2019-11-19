@@ -1,0 +1,28 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom("common") {
+  sources = [
+    "dmabuf.mojom",
+    "jpeg_encode_accelerator.mojom",
+    "mjpeg_decode_accelerator.mojom",
+  ]
+
+  public_deps = [
+    "//media/mojo/mojom",
+    "//mojo/public/mojom/base",
+    "//ui/gfx/geometry/mojom",
+  ]
+}
+
+mojom("camera_app_helper") {
+  sources = [
+    "camera_app_helper.mojom",
+  ]
+  deps = [
+    "//components/arc/mojom:camera_intent",
+  ]
+}

@@ -56,7 +56,7 @@ class WebBluetoothTest : public InProcessBrowserTest {
   content::WebContents* web_contents_ = nullptr;
 };
 
-IN_PROC_BROWSER_TEST_F(WebBluetoothTest, WebBluetoothAfterCrash) {
+IN_PROC_BROWSER_TEST_F(WebBluetoothTest, DISABLED_WebBluetoothAfterCrash) {
   // Make sure we can use Web Bluetooth after the tab crashes.
   // Set up adapter with one device.
   scoped_refptr<NiceMockBluetoothAdapter> adapter(

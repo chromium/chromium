@@ -10,7 +10,8 @@
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
 #include "content/public/browser/frame_service_base.h"
-#include "media/mojo/interfaces/platform_verification.mojom.h"
+#include "media/mojo/mojom/platform_verification.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 
 #if defined(OS_CHROMEOS)
 #include "chrome/browser/chromeos/attestation/platform_verification_flow.h"
@@ -21,11 +22,13 @@
 class PlatformVerificationImpl final
     : public content::FrameServiceBase<media::mojom::PlatformVerification> {
  public:
-  static void Create(content::RenderFrameHost* render_frame_host,
-                     media::mojom::PlatformVerificationRequest request);
+  static void Create(
+      content::RenderFrameHost* render_frame_host,
+      mojo::PendingReceiver<media::mojom::PlatformVerification> receiver);
 
-  PlatformVerificationImpl(content::RenderFrameHost* render_frame_host,
-                           media::mojom::PlatformVerificationRequest request);
+  PlatformVerificationImpl(
+      content::RenderFrameHost* render_frame_host,
+      mojo::PendingReceiver<media::mojom::PlatformVerification> receiver);
 
   // mojo::InterfaceImpl<PlatformVerification> implementation.
   void ChallengePlatform(const std::string& service_id,
@@ -57,7 +60,7 @@ class PlatformVerificationImpl final
 #endif
 
   content::RenderFrameHost* const render_frame_host_;
-  base::WeakPtrFactory<PlatformVerificationImpl> weak_factory_;
+  base::WeakPtrFactory<PlatformVerificationImpl> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_MEDIA_PLATFORM_VERIFICATION_IMPL_H_

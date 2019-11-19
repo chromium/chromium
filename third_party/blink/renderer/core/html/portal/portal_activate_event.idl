@@ -1,0 +1,11 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://wicg.github.io/portals/#the-portalactivateevent-interface
+
+[Constructor(DOMString type, optional PortalActivateEventInit eventInitDict), Exposed=Window, RuntimeEnabled=Portals]
+interface PortalActivateEvent : Event {
+  [CallWith=ScriptState] readonly attribute any data;
+  [RaisesException] HTMLPortalElement adoptPredecessor();
+};

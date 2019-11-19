@@ -40,13 +40,13 @@ public class ProviderBookmarksUriTest {
     private Uri mBookmarksUri;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mBookmarksUri = ChromeBrowserProvider.getBookmarksApiUri(mProviderTestRule.getActivity());
         mProviderTestRule.getContentResolver().delete(mBookmarksUri, null, null);
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         mProviderTestRule.getContentResolver().delete(mBookmarksUri, null, null);
     }
 

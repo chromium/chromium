@@ -10,8 +10,8 @@
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/callback.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
+#include "base/test/task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -50,7 +50,7 @@ class BindToTaskRunnerTest : public ::testing::Test {
  public:
   ~BindToTaskRunnerTest() override { base::RunLoop().RunUntilIdle(); }
 
-  base::MessageLoop loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   MockCallbacks callbacks_;
 };
 

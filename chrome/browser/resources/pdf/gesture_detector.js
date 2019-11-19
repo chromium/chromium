@@ -2,13 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-'use strict';
-
 /**
  * A class that listens for touch events and produces events when these
  * touches form gestures (e.g. pinching).
  */
-class GestureDetector {
+export class GestureDetector {
   /**
    * @param {!Element} element The element to monitor for touch gestures.
    */
@@ -260,3 +258,7 @@ class GestureDetector {
     };
   }
 }
+
+// Export on |window| such that scripts injected from pdf_extension_test.cc can
+// access it.
+window.GestureDetector = GestureDetector;

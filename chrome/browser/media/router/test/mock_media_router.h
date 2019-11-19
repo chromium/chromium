@@ -15,11 +15,10 @@
 #include "chrome/common/media_router/media_route.h"
 #include "chrome/common/media_router/media_sink.h"
 #include "chrome/common/media_router/media_source.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/origin.h"
-#if !defined(OS_ANDROID)
-#include "chrome/browser/media/router/mojo/media_route_controller.h"
-#endif  // !defined(OS_ANDROID)
 
 namespace content {
 class BrowserContext;
@@ -135,9 +134,10 @@ class MockMediaRouter : public MediaRouterBase {
 
   MOCK_METHOD0(OnIncognitoProfileShutdown, void());
 #if !defined(OS_ANDROID)
-  MOCK_METHOD1(
-      GetRouteController,
-      scoped_refptr<MediaRouteController>(const MediaRoute::Id& route_id));
+  MOCK_METHOD3(GetMediaController,
+               void(const MediaRoute::Id& route_id,
+                    mojo::PendingReceiver<mojom::MediaController> controller,
+                    mojo::PendingRemote<mojom::MediaStatusObserver> observer));
 #endif  // !defined(OS_ANDROID)
   MOCK_METHOD1(OnAddPresentationConnectionStateChangedCallbackInvoked,
                void(const content::PresentationConnectionStateChangedCallback&
@@ -154,11 +154,6 @@ class MockMediaRouter : public MediaRouterBase {
   MOCK_METHOD1(UnregisterRouteMessageObserver,
                void(RouteMessageObserver* observer));
   MOCK_METHOD0(GetMediaSinkServiceStatus, std::string());
-#if !defined(OS_ANDROID)
-  MOCK_METHOD2(DetachRouteController,
-               void(const MediaRoute::Id& route_id,
-                    MediaRouteController* controller));
-#endif  // !defined(OS_ANDROID)
 
  private:
   base::CallbackList<void(

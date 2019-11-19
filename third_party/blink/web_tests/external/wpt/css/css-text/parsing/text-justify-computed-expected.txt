@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+PASS Property text-justify value 'auto' computes to 'auto'
+PASS Property text-justify value 'none' computes to 'none'
+PASS Property text-justify value 'inter-word' computes to 'inter-word'
+FAIL Property text-justify value 'inter-character' computes to 'inter-character' assert_true: 'inter-character' is a supported value for text-justify. expected true got false
+Harness: the test ran to completion.
+

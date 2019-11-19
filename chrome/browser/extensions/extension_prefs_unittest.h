@@ -9,7 +9,7 @@
 
 #include "base/macros.h"
 #include "chrome/browser/extensions/test_extension_prefs.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace user_prefs {
@@ -46,7 +46,7 @@ class ExtensionPrefsTest : public testing::Test {
   ExtensionPrefs* prefs() { return prefs_.prefs(); }
   ChromeAppSorting* app_sorting() { return prefs_.app_sorting(); }
 
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   TestExtensionPrefs prefs_;
 
  private:

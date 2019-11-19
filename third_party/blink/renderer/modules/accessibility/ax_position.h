@@ -14,7 +14,7 @@
 #include "third_party/blink/renderer/core/editing/text_affinity.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -114,7 +114,7 @@ class MODULES_EXPORT AXPosition final {
 
   // Verifies if the anchor is present and if it's set to a live object with a
   // connected node.
-  bool IsValid() const;
+  bool IsValid(String* failure_reason = nullptr) const;
 
   operator bool() const { return IsValid(); }
 

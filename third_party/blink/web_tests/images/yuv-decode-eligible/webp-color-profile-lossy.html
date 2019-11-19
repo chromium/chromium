@@ -1,0 +1,24 @@
+<!-- This test waits until all image data is received before decoding,
+which allows YUV decoding if the feature is enabled.
+See virtual/yuv-rasterization/README.md.
+
+The red sector of the image should be at the 12 o'clock position.-->
+<script>
+  const img = new Image();
+  img.src = "../resources/webp-color-profile-lossy.webp";
+  img.width = "400";
+  img.decode().then(() => {
+    document.body.appendChild(img);
+      if (window.testRunner) {
+          setTimeout(function() { testRunner.notifyDone() }, 0);
+      }
+  }).catch(() => {
+    var error = document.createElement('p');
+    error.innerText = 'Error loading image'
+    document.body.appendChild(error);
+  });
+
+if (window.testRunner)
+  testRunner.waitUntilDone();
+
+</script>

@@ -15,14 +15,11 @@
 #include "base/task/cancelable_task_tracker.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
 #include "components/history/core/browser/android/android_history_types.h"
+#include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
 
 class AndroidHistoryProviderService;
 class Profile;
-
-namespace favicon {
-class FaviconService;
-}
 
 namespace history {
 class TopSites;
@@ -138,50 +135,6 @@ class ChromeBrowserProvider : public bookmarks::BaseBookmarkModelObserver,
       const base::android::JavaParamRef<jstring>& selections,
       const base::android::JavaParamRef<jobjectArray>& selection_args);
 
-  // Custom provider API methods. ---------------------------------------------
-  jlong CreateBookmarksFolderOnce(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
-      const base::android::JavaParamRef<jstring>& title,
-      jlong parent_id);
-
-  void RemoveAllUserBookmarks(JNIEnv* env,
-                              const base::android::JavaParamRef<jobject>& obj);
-
-  base::android::ScopedJavaLocalRef<jobject> GetEditableBookmarkFolders(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
-
-  base::android::ScopedJavaLocalRef<jobject> GetBookmarkNode(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
-      jlong id,
-      jboolean get_parent,
-      jboolean get_children);
-
-  base::android::ScopedJavaLocalRef<jobject> GetMobileBookmarksFolder(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
-
-  jboolean IsBookmarkInMobileBookmarksBranch(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
-      jlong id);
-
-  jboolean BookmarkNodeExists(JNIEnv* env,
-                              const base::android::JavaParamRef<jobject>& obj,
-                              jlong id);
-
-  base::android::ScopedJavaLocalRef<jbyteArray> GetFaviconOrTouchIcon(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
-      const base::android::JavaParamRef<jstring>& url);
-
-  base::android::ScopedJavaLocalRef<jbyteArray> GetThumbnail(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
-      const base::android::JavaParamRef<jstring>& url);
-
  private:
   ~ChromeBrowserProvider() override;
 
@@ -222,14 +175,13 @@ class ChromeBrowserProvider : public bookmarks::BaseBookmarkModelObserver,
   Profile* profile_;
   bookmarks::BookmarkModel* bookmark_model_;
   scoped_refptr<history::TopSites> top_sites_;
-  favicon::FaviconService* favicon_service_;
 
   std::unique_ptr<AndroidHistoryProviderService> service_;
 
   base::CancelableTaskTracker cancelable_task_tracker_;
 
   ScopedObserver<history::HistoryService, history::HistoryServiceObserver>
-      history_service_observer_;
+      history_service_observer_{this};
 
   bool handling_extensive_changes_;
 

@@ -58,20 +58,19 @@ void SVGContainerPainter::Paint(const PaintInfo& paint_info) {
     base::Optional<ScopedPaintChunkProperties> scoped_paint_chunk_properties;
     if (layout_svg_container_.IsSVGViewportContainer() &&
         SVGLayoutSupport::IsOverflowHidden(layout_svg_container_)) {
-        const auto* fragment =
-            paint_info.FragmentToPaint(layout_svg_container_);
-        if (!fragment)
-          return;
-        const auto* properties = fragment->PaintProperties();
-        // TODO(crbug.com/814815): The condition should be a DCHECK, but for now
-        // we may paint the object for filters during PrePaint before the
-        // properties are ready.
-        if (properties && properties->OverflowClip()) {
-          scoped_paint_chunk_properties.emplace(
-              paint_info.context.GetPaintController(),
-              *properties->OverflowClip(), layout_svg_container_,
-              paint_info.DisplayItemTypeForClipping());
-        }
+      const auto* fragment = paint_info.FragmentToPaint(layout_svg_container_);
+      if (!fragment)
+        return;
+      const auto* properties = fragment->PaintProperties();
+      // TODO(crbug.com/814815): The condition should be a DCHECK, but for now
+      // we may paint the object for filters during PrePaint before the
+      // properties are ready.
+      if (properties && properties->OverflowClip()) {
+        scoped_paint_chunk_properties.emplace(
+            paint_info.context.GetPaintController(),
+            *properties->OverflowClip(), layout_svg_container_,
+            paint_info.DisplayItemTypeForClipping());
+      }
     }
 
     ScopedSVGPaintState paint_state(layout_svg_container_,
@@ -96,10 +95,10 @@ void SVGContainerPainter::Paint(const PaintInfo& paint_info) {
   SVGModelObjectPainter(layout_svg_container_)
       .PaintOutline(paint_info_before_filtering);
 
-  if (paint_info_before_filtering.IsPrinting() &&
+  if (paint_info_before_filtering.ShouldAddUrlMetadata() &&
       paint_info_before_filtering.phase == PaintPhase::kForeground) {
     ObjectPainter(layout_svg_container_)
-        .AddPDFURLRectIfNeeded(paint_info_before_filtering, LayoutPoint());
+        .AddURLRectIfNeeded(paint_info_before_filtering, PhysicalOffset());
   }
 }
 

@@ -27,7 +27,7 @@
 #include "net/base/test_completion_callback.h"
 #include "net/log/test_net_log.h"
 #include "net/test/gtest_util.h"
-#include "net/test/test_with_scoped_task_environment.h"
+#include "net/test/test_with_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
@@ -56,7 +56,7 @@ scoped_refptr<IOBufferWithSize> CreateTestDataBuffer() {
 
 }  // namespace
 
-class FileStreamTest : public PlatformTest, public WithScopedTaskEnvironment {
+class FileStreamTest : public PlatformTest, public WithTaskEnvironment {
  public:
   void SetUp() override {
     PlatformTest::SetUp();
@@ -537,7 +537,6 @@ class TestWriteReadCompletionCallback {
           base::MakeRefCounted<IOBufferWithSize>(4);
       rv = stream_->Read(buf.get(), buf->size(), callback.callback());
       if (rv == ERR_IO_PENDING) {
-        base::MessageLoopCurrent::ScopedNestableTaskAllower allow;
         rv = callback.WaitForResult();
       }
       EXPECT_LE(0, rv);
@@ -574,7 +573,6 @@ class TestWriteReadCompletionCallback {
       EXPECT_THAT(stream_->Seek(0, callback64.callback()),
                   IsError(ERR_IO_PENDING));
       {
-        base::MessageLoopCurrent::ScopedNestableTaskAllower allow;
         EXPECT_LE(0, callback64.WaitForResult());
       }
     }

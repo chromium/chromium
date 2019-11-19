@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-PASS Explicit Primary Key
-FAIL Auto-Increment Primary Key assert_equals: Expected 100. expected (number) 100 but got (object) null
-Harness: the test ran to completion.
-

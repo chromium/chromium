@@ -1,0 +1,8 @@
+specific_include_rules = {
+  "local_frame_back_forward_cache_test.cc": [
+    "+base/run_loop.h",
+  ],
+  "local_frame_view.cc": [
+    "+cc/tiles/frame_viewer_instrumentation.h",
+  ],
+}

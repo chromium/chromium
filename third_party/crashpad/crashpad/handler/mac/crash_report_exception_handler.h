@@ -30,7 +30,8 @@ namespace crashpad {
 
 //! \brief An exception handler that writes crash reports for exception messages
 //!     to a CrashReportDatabase.
-class CrashReportExceptionHandler : public UniversalMachExcServer::Interface {
+class CrashReportExceptionHandler final
+    : public UniversalMachExcServer::Interface {
  public:
   //! \brief Creates a new object that will store crash reports in \a database.
   //!

@@ -13,7 +13,7 @@ class CSSScaleInterpolationType : public CSSInterpolationType {
  public:
   CSSScaleInterpolationType(PropertyHandle property)
       : CSSInterpolationType(property) {
-    DCHECK_EQ(CssProperty().PropertyID(), CSSPropertyScale);
+    DCHECK_EQ(CssProperty().PropertyID(), CSSPropertyID::kScale);
   }
 
   InterpolationValue MaybeConvertStandardPropertyUnderlyingValue(
@@ -36,7 +36,11 @@ class CSSScaleInterpolationType : public CSSInterpolationType {
   InterpolationValue MaybeConvertValue(const CSSValue&,
                                        const StyleResolverState*,
                                        ConversionCheckers&) const final;
-  void AdditiveKeyframeHook(InterpolationValue&) const final;
+  InterpolationValue PreInterpolationCompositeIfNeeded(
+      InterpolationValue value,
+      const InterpolationValue& underlying,
+      EffectModel::CompositeOperation,
+      ConversionCheckers&) const final;
 
   PairwiseInterpolationValue MaybeMergeSingles(
       InterpolationValue&&,

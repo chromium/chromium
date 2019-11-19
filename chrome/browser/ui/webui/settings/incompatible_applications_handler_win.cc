@@ -15,9 +15,9 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "base/win/registry.h"
-#include "chrome/browser/conflicts/incompatible_applications_updater_win.h"
-#include "chrome/browser/conflicts/registry_key_watcher_win.h"
-#include "chrome/browser/conflicts/uninstall_application_win.h"
+#include "chrome/browser/win/conflicts/incompatible_applications_updater.h"
+#include "chrome/browser/win/conflicts/registry_key_watcher.h"
+#include "chrome/browser/win/conflicts/uninstall_application.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -76,7 +76,6 @@ void IncompatibleApplicationsHandler::HandleRequestIncompatibleApplicationsList(
           IncompatibleApplicationsUpdater::GetCachedApplications();
 
   base::Value application_list(base::Value::Type::LIST);
-  application_list.GetList().reserve(incompatible_applications.size());
 
   for (const auto& application : incompatible_applications) {
     // Set up a registry watcher for each problem application.
@@ -106,7 +105,7 @@ void IncompatibleApplicationsHandler::HandleRequestIncompatibleApplicationsList(
                 base::Value(application.blacklist_action->message_type()));
     dict.SetKey("url",
                 base::Value(application.blacklist_action->message_url()));
-    application_list.GetList().push_back(std::move(dict));
+    application_list.Append(std::move(dict));
   }
 
   UMA_HISTOGRAM_COUNTS_100("IncompatibleApplicationsPage.NumApplications",

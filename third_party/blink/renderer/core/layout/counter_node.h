@@ -22,7 +22,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_COUNTER_NODE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_COUNTER_NODE_H_
 
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 
@@ -110,8 +110,8 @@ class CounterNode : public RefCounted<CounterNode> {
 
 }  // namespace blink
 
-#ifndef NDEBUG
-// Outside the WebCore namespace for ease of invocation from gdb.
+#if DCHECK_IS_ON()
+// Outside the blink namespace for ease of invocation from gdb.
 void showCounterTree(const blink::CounterNode*);
 #endif
 

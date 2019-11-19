@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "chromeos/services/assistant/public/mojom/settings.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace chromeos {
 namespace assistant {
@@ -17,7 +18,8 @@ class AssistantSettingsManager : public mojom::AssistantSettingsManager {
  public:
   ~AssistantSettingsManager() override = default;
 
-  virtual void BindRequest(mojom::AssistantSettingsManagerRequest request) = 0;
+  virtual void BindReceiver(
+      mojo::PendingReceiver<mojom::AssistantSettingsManager> receiver) = 0;
 };
 
 }  // namespace assistant

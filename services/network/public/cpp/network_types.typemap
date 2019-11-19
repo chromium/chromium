@@ -6,10 +6,17 @@ mojom = "//services/network/public/mojom/network_types.mojom"
 public_deps = [
   "//net",
 ]
-public_headers = [ "//net/nqe/effective_connection_type.h" ]
+public_headers = [
+  "//net/cert/ct_policy_status.h",
+  "//net/http/http_response_info.h",
+  "//net/nqe/effective_connection_type.h",
+]
 traits_headers = [ "//services/network/public/cpp/network_ipc_param_traits.h" ]
 deps = [
   "//services/network/public/cpp:cpp_base",
 ]
-type_mappings =
-    [ "network.mojom.EffectiveConnectionType=net::EffectiveConnectionType" ]
+type_mappings = [
+  "network.mojom.ConnectionInfo=::net::HttpResponseInfo::ConnectionInfo",
+  "network.mojom.CTPolicyCompliance=::net::ct::CTPolicyCompliance",
+  "network.mojom.EffectiveConnectionType=::net::EffectiveConnectionType",
+]

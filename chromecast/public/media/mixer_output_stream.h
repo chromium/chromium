@@ -28,6 +28,9 @@ class MixerOutputStream {
   // doesn't support |requested_sample_rate|.
   virtual bool Start(int requested_sample_rate, int channels) = 0;
 
+  // Returns number of channels expected to be passed to Write().
+  virtual int GetNumChannels() = 0;
+
   // Returns current sample rate.
   virtual int GetSampleRate() = 0;
 

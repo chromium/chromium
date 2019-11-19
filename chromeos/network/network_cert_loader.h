@@ -198,9 +198,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkCertLoader
   void NotifyCertificatesLoaded();
 
   // PolicyCertificateProvider::Observer
-  void OnPolicyProvidedCertsChanged(
-      const net::CertificateList& all_server_and_authority_certs,
-      const net::CertificateList& trust_anchors) override;
+  void OnPolicyProvidedCertsChanged() override;
 
   // If this is true, |NetworkCertLoader| does not send out notifications to its
   // observers anymore.
@@ -232,7 +230,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkCertLoader
 
   THREAD_CHECKER(thread_checker_);
 
-  base::WeakPtrFactory<NetworkCertLoader> weak_factory_;
+  base::WeakPtrFactory<NetworkCertLoader> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(NetworkCertLoader);
 };

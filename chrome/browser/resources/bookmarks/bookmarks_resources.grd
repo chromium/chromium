@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grit latest_public_release="0" current_release="1" output_all_resource_defines="false">
+  <outputs>
+    <output filename="grit/bookmarks_resources.h" type="rc_header">
+      <emit emit_type='prepend'></emit>
+    </output>
+    <output filename="grit/bookmarks_resources_map.cc"
+            type="resource_file_map_source" />
+    <output filename="grit/bookmarks_resources_map.h"
+            type="resource_map_header" />
+    <output filename="bookmarks_resources.pak" type="data_package" />
+  </outputs>
+  <release seq="1">
+    <includes>
+      <include name="IDR_BOOKMARKS_APP_JS"
+               file="${root_gen_dir}/chrome/browser/resources/bookmarks/app.js"
+               use_base_dir="false" type ="BINDATA" preprocess="true" />
+      <include name="IDR_BOOKMARKS_COMMAND_MANAGER_JS"
+               file="${root_gen_dir}/chrome/browser/resources/bookmarks/command_manager.js"
+               use_base_dir="false" type ="BINDATA" />
+      <include name="IDR_BOOKMARKS_EDIT_DIALOG_JS"
+               file="${root_gen_dir}/chrome/browser/resources/bookmarks/edit_dialog.js"
+               use_base_dir="false" type ="BINDATA" />
+      <include name="IDR_BOOKMARKS_FOLDER_NODE_JS"
+               file="${root_gen_dir}/chrome/browser/resources/bookmarks/folder_node.js"
+               use_base_dir="false" type ="BINDATA" />
+      <include name="IDR_BOOKMARKS_ITEM_JS"
+               file="${root_gen_dir}/chrome/browser/resources/bookmarks/item.js"
+               use_base_dir="false" type ="BINDATA" />
+      <include name="IDR_BOOKMARKS_LIST_JS"
+               file="${root_gen_dir}/chrome/browser/resources/bookmarks/list.js"
+               use_base_dir="false" type ="BINDATA" />
+      <include name="IDR_BOOKMARKS_ROUTER_JS"
+               file="${root_gen_dir}/chrome/browser/resources/bookmarks/router.js"
+               use_base_dir="false" type ="BINDATA" />
+      <include name="IDR_BOOKMARKS_SHARED_STYLE_JS"
+               file="${root_gen_dir}/chrome/browser/resources/bookmarks/shared_style.js"
+               use_base_dir="false" type ="BINDATA" preprocess="true" />
+      <include name="IDR_BOOKMARKS_SHARED_VARS_JS"
+               file="${root_gen_dir}/chrome/browser/resources/bookmarks/shared_vars.js"
+               use_base_dir="false" type ="BINDATA" />
+      <include name="IDR_BOOKMARKS_TOOLBAR_JS"
+               file="${root_gen_dir}/chrome/browser/resources/bookmarks/toolbar.js"
+               use_base_dir="false" type ="BINDATA" />
+    </includes>
+    <structures>
+      <structure name="IDR_BOOKMARKS_ACTIONS_JS"
+                 file="actions.js"
+                 type="chrome_html" />
+      <structure name="IDR_BOOKMARKS_API_LISTENER_JS"
+                 file="api_listener.js"
+                 type="chrome_html" />
+      <structure name="IDR_BOOKMARKS_BOOKMARKS_HTML"
+                 file="bookmarks.html"
+                 type="chrome_html" />
+      <structure name="IDR_BOOKMARKS_BOOKMARKS_JS"
+                 file="bookmarks.js"
+                 type="chrome_html" />
+      <structure name="IDR_BOOKMARKS_BROWSER_PROXY_JS"
+                 file="browser_proxy.js"
+                 type="chrome_html" />
+      <structure name="IDR_BOOKMARKS_CONSTANTS_JS"
+                 file="constants.js"
+                 type="chrome_html" />
+      <structure name="IDR_BOOKMARKS_DEBOUNCER_JS"
+                 file="debouncer.js"
+                 type="chrome_html" />
+      <structure name="IDR_BOOKMARKS_DIALOG_FOCUS_MANAGER_JS"
+                 file="dialog_focus_manager.js"
+                 type="chrome_html" />
+      <structure name="IDR_BOOKMARKS_DND_MANAGER_JS"
+                 file="dnd_manager.js"
+                 type="chrome_html" />
+      <structure name="IDR_BOOKMARKS_MOUSE_FOCUS_BEHAVIOR_JS"
+                 file="mouse_focus_behavior.js"
+                 type="chrome_html" />
+      <structure name="IDR_BOOKMARKS_REDUCERS_JS"
+                 file="reducers.js"
+                 type="chrome_html" />
+      <structure name="IDR_BOOKMARKS_STORE_CLIENT_JS"
+                 file="store_client.js"
+                 type="chrome_html" />
+      <structure name="IDR_BOOKMARKS_STORE_JS"
+                 file="store.js"
+                 type="chrome_html" />
+      <structure name="IDR_BOOKMARKS_TYPES_JS"
+                 file="types.js"
+                 type="chrome_html" />
+      <structure name="IDR_BOOKMARKS_UTIL_JS"
+                 file="util.js"
+                 type="chrome_html" />
+    </structures>
+  </release>
+</grit>

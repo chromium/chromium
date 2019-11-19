@@ -1,0 +1,42 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package chrome_browser_safety_tips;
+
+message FlaggedPage {
+  enum FlagType {
+    UNKNOWN = 0;
+    BAD_REP = 1;
+    YOUNG_DOMAIN = 2;
+  }
+  // |pattern| is a full URL, without scheme/username/password/port, such as
+  // example.test/test-path-for-safety-tips/test.html.
+  optional string pattern = 1;
+  optional FlagType type = 2;
+}
+
+message UrlPattern {
+  // |pattern| is a full URL, without scheme/username/password/port, such as
+  // example.test/test-path-for-safety-tips/test.html.
+  optional string pattern = 1;
+}
+
+// Configuration for the safety tips component. A binary version of this proto
+// will be distributed to Chrome clients via component updater. The binary will
+// contain a single instance of this message.
+message SafetyTipsConfig {
+  optional uint32 version_id = 1;
+
+  // List of pages on which to show the Safety Tip UX. This must be sorted and
+  // may contain duplicate patterns (when flagged with multiple FlagTypes).
+  repeated FlaggedPage flagged_page = 2;
+
+  // List of patterns that are explicitly allowed. This must be sorted. Used to
+  // mitigate false positives.
+  repeated UrlPattern allowed_pattern = 3;
+}

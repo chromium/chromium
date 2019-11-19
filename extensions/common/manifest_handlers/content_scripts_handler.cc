@@ -56,7 +56,7 @@ bool LoadGlobsHelper(const base::Value& content_script,
     return false;
   }
 
-  const base::Value::ListStorage& list_storage = list->GetList();
+  base::span<const base::Value> list_storage = list->GetList();
   for (size_t i = 0; i < list_storage.size(); ++i) {
     if (!list_storage[i].is_string()) {
       *error = ErrorUtils::FormatErrorMessageUTF16(
@@ -135,7 +135,7 @@ std::unique_ptr<UserScript> LoadUserScriptFromDictionary(
     return nullptr;
   }
 
-  const base::Value::ListStorage& list_storage = matches->GetList();
+  base::span<const base::Value> list_storage = matches->GetList();
   if (list_storage.empty()) {
     *error = ErrorUtils::FormatErrorMessageUTF16(
         errors::kInvalidMatchCount, base::NumberToString(definition_index));
@@ -205,7 +205,7 @@ std::unique_ptr<UserScript> LoadUserScriptFromDictionary(
           base::NumberToString(definition_index));
       return nullptr;
     }
-    const base::Value::ListStorage& list_storage = exclude_matches->GetList();
+    base::span<const base::Value> list_storage = exclude_matches->GetList();
 
     for (size_t j = 0; j < list_storage.size(); ++j) {
       if (!list_storage[j].is_string()) {
@@ -266,7 +266,7 @@ std::unique_ptr<UserScript> LoadUserScriptFromDictionary(
   }
 
   if (js) {
-    const base::Value::ListStorage& js_list = js->GetList();
+    base::span<const base::Value> js_list = js->GetList();
     result->js_scripts().reserve(js_list.size());
     for (size_t script_index = 0; script_index < js_list.size();
          ++script_index) {
@@ -285,7 +285,7 @@ std::unique_ptr<UserScript> LoadUserScriptFromDictionary(
   }
 
   if (css) {
-    const base::Value::ListStorage& css_list = css->GetList();
+    base::span<const base::Value> css_list = css->GetList();
     result->css_scripts().reserve(css_list.size());
     for (size_t script_index = 0; script_index < css_list.size();
          ++script_index) {
@@ -390,7 +390,7 @@ bool ContentScriptsHandler::Parse(Extension* extension, base::string16* error) {
     return false;
   }
 
-  const base::Value::ListStorage& list_storage = scripts_list->GetList();
+  base::span<const base::Value> list_storage = scripts_list->GetList();
   for (size_t i = 0; i < list_storage.size(); ++i) {
     if (!list_storage[i].is_dict()) {
       *error = ErrorUtils::FormatErrorMessageUTF16(

@@ -1,22 +1,41 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hu">
+<translation id="1482734542997480527">A(z) <ph name="ENROLLMENT_DOMAIN" /> kezeli ezt az eszközt, és előfordulhat, hogy megfigyeli az Ön tevékenységeit.</translation>
 <translation id="1510238584712386396">Indító</translation>
 <translation id="1734367976349034509">Az eszközt a vállalat felügyeli</translation>
+<translation id="1930797645656624981">Chrome OS beviteli módszere szolgáltatás</translation>
+<translation id="1979103255016296513">Esedékes a jelszó frissítése</translation>
 <translation id="2049639323467105390">Ezt az eszközt a(z) <ph name="DOMAIN" /> domain kezeli.</translation>
 <translation id="2083960536266308407">Semmi nem található a képernyőn</translation>
 <translation id="2338501278241028356">Kapcsolja be a Bluetooth-t a közeli eszközök felfedezéséhez</translation>
 <translation id="2805756323405976993">Alkalmazások</translation>
 <translation id="2872961005593481000">Leállítás</translation>
-<translation id="3147142846278915599">Indító (alkalmazások szinkronizálása…)</translation>
+<translation id="3008341117444806826">FRISSÍTÉS</translation>
+<translation id="3838338534323494292">Új jelszó</translation>
+<translation id="4003259559679196451">A(z) <ph name="ENROLLMENT_DOMAIN" /> kezeli ezt az eszközt, ezért hozzáfér az összes felhasználói tevékenységhez, köztük a felkeresett webhelyekhez, a jelszavakhoz és az e-mailekhez.</translation>
+<translation id="4227825898293920515">A jelszó <ph name="TIME" /> múlva lejár</translation>
+<translation id="4429881212383817840">A Kerberos-jegy hamarosan lejár</translation>
+<translation id="445059817448385655">Régi jelszó</translation>
+<translation id="467510802200863975">A jelszavak nem egyeznek</translation>
 <translation id="4731797938093519117">Szülői hozzáférés</translation>
+<translation id="4890353053343094602">Azonnal válasszon új jelszót</translation>
 <translation id="5212543919916444558">Nem találok semmi olyat a képernyőn, amellyel kapcsolatban segíthetnék.
 Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="5222676887888702881">Kijelentkezés</translation>
+<translation id="5317780077021120954">Mentés</translation>
+<translation id="5332948983412042822">Válasszon most új jelszót</translation>
 <translation id="5457599981699367932">Böngészés vendégként</translation>
 <translation id="54609108002486618">Kezelt</translation>
 <translation id="5832805196449965646">Személy hozzáadása</translation>
 <translation id="5895138241574237353">Újraindítás</translation>
+<translation id="6058625436358447366">A befejezéshez adja meg régi és új jelszavát</translation>
+<translation id="6106186594183574873">A befejezéshez adja meg régi jelszavát</translation>
+<translation id="6146993107019042706">A befejezéshez adja meg új jelszavát</translation>
 <translation id="7658239707568436148">Mégse</translation>
+<translation id="7690294790491645610">Új jelszó megerősítése</translation>
+<translation id="808894953321890993">Jelszó módosítása</translation>
+<translation id="8747900814994928677">Módosítás megerősítése</translation>
+<translation id="910415269708673980">Frissítse a következőhöz tartozó jegyet: <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9111102763498581341">Feloldás</translation>
 </translationbundle>

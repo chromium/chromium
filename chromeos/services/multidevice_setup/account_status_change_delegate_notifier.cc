@@ -17,16 +17,16 @@ AccountStatusChangeDelegateNotifier::AccountStatusChangeDelegateNotifier() =
 AccountStatusChangeDelegateNotifier::~AccountStatusChangeDelegateNotifier() =
     default;
 
-void AccountStatusChangeDelegateNotifier::SetAccountStatusChangeDelegatePtr(
-    mojom::AccountStatusChangeDelegatePtr delegate_ptr) {
-  if (delegate_ptr_.is_bound()) {
+void AccountStatusChangeDelegateNotifier::SetAccountStatusChangeDelegateRemote(
+    mojo::PendingRemote<mojom::AccountStatusChangeDelegate> delegate_remote) {
+  if (delegate_remote_.is_bound()) {
     PA_LOG(ERROR) << "AccountStatusChangeDelegateNotifier::"
-                  << "SetAccountStatusChangeDelegatePtr(): Tried to set "
+                  << "SetAccountStatusChangeDelegateRemote(): Tried to set "
                   << "delegate, but one already existed.";
     NOTREACHED();
   }
 
-  delegate_ptr_ = std::move(delegate_ptr);
+  delegate_remote_.Bind(std::move(delegate_remote));
   OnDelegateSet();
 }
 
@@ -34,8 +34,8 @@ void AccountStatusChangeDelegateNotifier::SetAccountStatusChangeDelegatePtr(
 void AccountStatusChangeDelegateNotifier::OnDelegateSet() {}
 
 void AccountStatusChangeDelegateNotifier::FlushForTesting() {
-  if (delegate_ptr_)
-    delegate_ptr_.FlushForTesting();
+  if (delegate_remote_)
+    delegate_remote_.FlushForTesting();
 }
 
 }  // namespace multidevice_setup

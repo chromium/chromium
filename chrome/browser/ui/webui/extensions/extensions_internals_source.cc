@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
@@ -23,6 +24,9 @@
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/process_manager.h"
+#include "extensions/common/manifest_handlers/permissions_parser.h"
+#include "extensions/common/permissions/permission_set.h"
+#include "extensions/common/permissions/permissions_data.h"
 
 namespace {
 
@@ -44,6 +48,8 @@ const char* TypeToString(extensions::Manifest::Type type) {
       return "TYPE_PLATFORM_APP";
     case extensions::Manifest::TYPE_SHARED_MODULE:
       return "TYPE_SHARED_MODULE";
+    case extensions::Manifest::TYPE_LOGIN_SCREEN_EXTENSION:
+      return "TYPE_LOGIN_SCREEN_EXTENSION";
     case extensions::Manifest::NUM_LOAD_TYPES:
       break;
   }
@@ -85,35 +91,45 @@ const char* LocationToString(extensions::Manifest::Location loc) {
 base::Value CreationFlagsToList(int creation_flags) {
   base::Value flags_value(base::Value::Type::LIST);
   if (creation_flags & extensions::Extension::NO_FLAGS)
-    flags_value.GetList().emplace_back("NO_FLAGS");
+    flags_value.Append("NO_FLAGS");
   if (creation_flags & extensions::Extension::REQUIRE_KEY)
-    flags_value.GetList().emplace_back("REQUIRE_KEY");
+    flags_value.Append("REQUIRE_KEY");
   if (creation_flags & extensions::Extension::REQUIRE_MODERN_MANIFEST_VERSION)
-    flags_value.GetList().emplace_back("REQUIRE_MODERN_MANIFEST_VERSION");
+    flags_value.Append("REQUIRE_MODERN_MANIFEST_VERSION");
   if (creation_flags & extensions::Extension::ALLOW_FILE_ACCESS)
-    flags_value.GetList().emplace_back("ALLOW_FILE_ACCESS");
+    flags_value.Append("ALLOW_FILE_ACCESS");
   if (creation_flags & extensions::Extension::FROM_WEBSTORE)
-    flags_value.GetList().emplace_back("FROM_WEBSTORE");
+    flags_value.Append("FROM_WEBSTORE");
   if (creation_flags & extensions::Extension::FROM_BOOKMARK)
-    flags_value.GetList().emplace_back("FROM_BOOKMARK");
+    flags_value.Append("FROM_BOOKMARK");
   if (creation_flags & extensions::Extension::FOLLOW_SYMLINKS_ANYWHERE)
-    flags_value.GetList().emplace_back("FOLLOW_SYMLINKS_ANYWHERE");
+    flags_value.Append("FOLLOW_SYMLINKS_ANYWHERE");
   if (creation_flags & extensions::Extension::ERROR_ON_PRIVATE_KEY)
-    flags_value.GetList().emplace_back("ERROR_ON_PRIVATE_KEY");
+    flags_value.Append("ERROR_ON_PRIVATE_KEY");
   if (creation_flags & extensions::Extension::WAS_INSTALLED_BY_DEFAULT)
-    flags_value.GetList().emplace_back("WAS_INSTALLED_BY_DEFAULT");
+    flags_value.Append("WAS_INSTALLED_BY_DEFAULT");
   if (creation_flags & extensions::Extension::REQUIRE_PERMISSIONS_CONSENT)
-    flags_value.GetList().emplace_back("REQUIRE_PERMISSIONS_CONSENT");
+    flags_value.Append("REQUIRE_PERMISSIONS_CONSENT");
   if (creation_flags & extensions::Extension::IS_EPHEMERAL)
-    flags_value.GetList().emplace_back("IS_EPHEMERAL");
+    flags_value.Append("IS_EPHEMERAL");
   if (creation_flags & extensions::Extension::WAS_INSTALLED_BY_OEM)
-    flags_value.GetList().emplace_back("WAS_INSTALLED_BY_OEM");
+    flags_value.Append("WAS_INSTALLED_BY_OEM");
   if (creation_flags & extensions::Extension::MAY_BE_UNTRUSTED)
-    flags_value.GetList().emplace_back("MAY_BE_UNTRUSTED");
+    flags_value.Append("MAY_BE_UNTRUSTED");
+  if (creation_flags & extensions::Extension::WITHHOLD_PERMISSIONS)
+    flags_value.Append("WITHHOLD_PERMISSIONS");
   return flags_value;
 }
 
 // The JSON we generate looks like this:
+// Note:
+// - tab_specific permissions can have 0 or more DICT entries with each tab id
+// pointing to the api, explicit_host, manifest and scriptable_host permission
+// lists.
+// - In some cases manifest or api permissions rather than just being a STRING
+// can be a DICT with the name keying a more complex object with detailed
+// information. This is the case for subclasses of ManifestPermission and
+// APIPermission which override the ToValue function.
 //
 // [ {
 //    "creation_flags": [ "ALLOW_FILE_ACCESS", "FROM_WEBSTORE" ],
@@ -137,6 +153,33 @@ base::Value CreationFlagsToList(int creation_flags) {
 //    "manifest_version": 2,
 //    "name": "Earth View from Google Earth",
 //    "path": "/user/Extensions/bhloflhklmhfpedakmangadcdofhnnoh/2.18.5_0",
+//    "permissions": {
+//       "active": {
+//          "api": [ ],
+//          "explicit_hosts": [ ],
+//          "manifest": [ ],
+//          "scriptable_hosts": [ ]
+//       },
+//       "optional": {
+//          "api": [ ],
+//          "explicit_hosts": [ ],
+//          "manifest": [ ],
+//          "scriptable_hosts": [ ]
+//       },
+//       "tab_specific": {
+//          "4": {
+//             "api": [ ],
+//             "explicit_hosts": [ ],
+//             "manifest": [ ],
+//             "scriptable_hosts": [ ]
+//          }
+//       },
+//       "withheld": {
+//          "api": [ ],
+//          "explicit_hosts": [ ],
+//          "manifest": [ ],
+//          "scriptable_hosts": [ ]
+//       },
 //    "type": "TYPE_EXTENSION",
 //    "version": "2.18.5"
 // } ]
@@ -167,6 +210,37 @@ base::Value CreationFlagsToList(int creation_flags) {
 //    "manifest_version": INT
 //    "name": STRING
 //    "path": STRING
+//    "permissions": DICT
+//      "active": DICT
+//        "api": LIST
+//          STRING
+//          (see note above for edge cases on all "api" and "manfest" entries)
+//        "explicit_hosts": LIST
+//          STRING
+//        "manifest": LIST
+//          STRING
+//        "scriptable_hosts": LIST
+//          STRING
+//      "optional": DICT
+//        "api": LIST
+//          STRING
+//        "explicit_hosts": LIST
+//          STRING
+//        "manifest": LIST
+//          STRING
+//        "scriptable_hosts": LIST
+//          STRING
+//      "tab_specific": DICT
+//        (see note above for details)
+//      "withheld": DICT
+//        "api": LIST
+//          STRING
+//        "explicit_hosts": LIST
+//          STRING
+//        "manifest": LIST
+//          STRING
+//        "scriptable_hosts": LIST
+//          STRING
 //    "type": STRING
 //    "version": STRING
 
@@ -188,6 +262,15 @@ constexpr base::StringPiece kListenerUrlKey = "url";
 constexpr base::StringPiece kLocationKey = "location";
 constexpr base::StringPiece kManifestVersionKey = "manifest_version";
 constexpr base::StringPiece kPathKey = "path";
+constexpr base::StringPiece kPermissionsKey = "permissions";
+constexpr base::StringPiece kPermissionsActiveKey = "active";
+constexpr base::StringPiece kPermissionsOptionalKey = "optional";
+constexpr base::StringPiece kPermissionsTabSpecificKey = "tab_specific";
+constexpr base::StringPiece kPermissionsWithheldKey = "withheld";
+constexpr base::StringPiece kPermissionsApiKey = "api";
+constexpr base::StringPiece kPermissionsManifestKey = "manifest";
+constexpr base::StringPiece kPermissionsExplicitHostsKey = "explicit_hosts";
+constexpr base::StringPiece kPermissionsScriptableHostsKey = "scriptable_hosts";
 constexpr base::StringPiece kTypeKey = "type";
 
 base::Value FormatKeepaliveData(extensions::ProcessManager* process_manager,
@@ -199,16 +282,83 @@ base::Value FormatKeepaliveData(extensions::ProcessManager* process_manager,
   const extensions::ProcessManager::ActivitiesMultiset activities =
       process_manager->GetLazyKeepaliveActivities(extension);
   base::Value activities_data(base::Value::Type::LIST);
-  activities_data.GetList().reserve(activities.size());
   for (const auto& activity : activities) {
     base::Value activities_entry(base::Value::Type::DICTIONARY);
     activities_entry.SetKey(
         kTypeKey, base::Value(extensions::Activity::ToString(activity.first)));
     activities_entry.SetKey(kExtraDataKey, base::Value(activity.second));
-    activities_data.GetList().push_back(std::move(activities_entry));
+    activities_data.Append(std::move(activities_entry));
   }
   keepalive_data.SetKey(kActivitesKey, std::move(activities_data));
   return keepalive_data;
+}
+
+// Formats API and Manifest permissions, which can have details that we add as a
+// dictionary rather than just the string name
+template <typename T>
+base::Value FormatDetailedPermissionSet(const T& permissions) {
+  base::Value value_list(base::Value::Type::LIST);
+  for (const auto& permission : permissions) {
+    std::unique_ptr<base::Value> detail(permission->ToValue());
+    if (detail) {
+      base::Value tmp(base::Value::Type::DICTIONARY);
+      tmp.SetKey(permission->name(),
+                 base::Value::FromUniquePtrValue(std::move(detail)));
+      value_list.Append(std::move(tmp));
+    } else {
+      value_list.Append(base::Value(permission->name()));
+    }
+  }
+  return value_list;
+}
+
+base::Value FormatPermissionSet(
+    const extensions::PermissionSet& permission_set) {
+  base::Value value(base::Value::Type::DICTIONARY);
+
+  value.SetKey(kPermissionsExplicitHostsKey,
+               base::Value::FromUniquePtrValue(
+                   permission_set.explicit_hosts().ToValue()));
+  value.SetKey(kPermissionsScriptableHostsKey,
+               base::Value::FromUniquePtrValue(
+                   permission_set.scriptable_hosts().ToValue()));
+  value.SetKey(
+      kPermissionsManifestKey,
+      FormatDetailedPermissionSet(permission_set.manifest_permissions()));
+  value.SetKey(kPermissionsApiKey,
+               FormatDetailedPermissionSet(permission_set.apis()));
+
+  return value;
+}
+
+base::Value FormatPermissionsData(const extensions::Extension& extension) {
+  const extensions::PermissionsData& permissions =
+      *extension.permissions_data();
+  base::Value permissions_data(base::Value::Type::DICTIONARY);
+
+  const extensions::PermissionSet& active_permissions =
+      permissions.active_permissions();
+  permissions_data.SetKey(kPermissionsActiveKey,
+                          FormatPermissionSet(active_permissions));
+
+  const extensions::PermissionSet& withheld_permissions =
+      permissions.withheld_permissions();
+  permissions_data.SetKey(kPermissionsWithheldKey,
+                          FormatPermissionSet(withheld_permissions));
+
+  base::Value tab_specific(base::Value::Type::DICTIONARY);
+  for (const auto& tab : permissions.tab_specific_permissions()) {
+    tab_specific.SetKey(base::NumberToString(tab.first),
+                        FormatPermissionSet(*tab.second));
+  }
+  permissions_data.SetKey(kPermissionsTabSpecificKey, std::move(tab_specific));
+
+  const extensions::PermissionSet& optional_permissions =
+      extensions::PermissionsParser::GetOptionalPermissions(&extension);
+  permissions_data.SetKey(kPermissionsOptionalKey,
+                          FormatPermissionSet(optional_permissions));
+
+  return permissions_data;
 }
 
 void AddEventListenerData(extensions::EventRouter* event_router,
@@ -242,7 +392,7 @@ void AddEventListenerData(extensions::EventRouter* event_router,
       if (filter != nullptr) {
         listener_data.SetKey(kFilterKey, filter->Clone());
       }
-      listeners_list.GetList().push_back(std::move(listener_data));
+      listeners_list.Append(std::move(listener_data));
     }
   }
 
@@ -275,18 +425,17 @@ ExtensionsInternalsSource::ExtensionsInternalsSource(Profile* profile)
 
 ExtensionsInternalsSource::~ExtensionsInternalsSource() = default;
 
-std::string ExtensionsInternalsSource::GetSource() const {
+std::string ExtensionsInternalsSource::GetSource() {
   return chrome::kChromeUIExtensionsInternalsHost;
 }
 
-std::string ExtensionsInternalsSource::GetMimeType(
-    const std::string& path) const {
+std::string ExtensionsInternalsSource::GetMimeType(const std::string& path) {
   return "text/plain";
 }
 
 void ExtensionsInternalsSource::StartDataRequest(
-    const std::string& path,
-    const content::ResourceRequestInfo::WebContentsGetter& wc_getter,
+    const GURL& url,
+    const content::WebContents::Getter& wc_getter,
     const content::URLDataSource::GotDataCallback& callback) {
   std::string json = WriteToString();
   callback.Run(base::RefCountedString::TakeString(&json));
@@ -318,7 +467,8 @@ std::string ExtensionsInternalsSource::WriteToString() const {
                           base::Value(TypeToString(extension->GetType())));
     extension_data.SetKey(kInternalsVersionKey,
                           base::Value(extension->GetVersionForDisplay()));
-    data.GetList().push_back(std::move(extension_data));
+    extension_data.SetKey(kPermissionsKey, FormatPermissionsData(*extension));
+    data.Append(std::move(extension_data));
   }
 
   // Aggregate and add the data for the registered event listeners.

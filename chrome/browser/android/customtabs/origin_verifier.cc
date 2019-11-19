@@ -9,13 +9,14 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/bind.h"
+#include "chrome/android/chrome_jni_headers/OriginVerifier_jni.h"
 #include "chrome/browser/android/digital_asset_links/digital_asset_links_handler.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
-#include "jni/OriginVerifier_jni.h"
+#include "content/public/browser/web_contents.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 
 using base::android::ConvertJavaStringToUTF16;
@@ -30,12 +31,14 @@ int OriginVerifier::clear_browsing_data_call_count_for_tests_;
 
 OriginVerifier::OriginVerifier(JNIEnv* env,
                                const JavaRef<jobject>& obj,
+                               const JavaRef<jobject>& jweb_contents,
                                const JavaRef<jobject>& jprofile) {
   jobject_.Reset(obj);
   Profile* profile = ProfileAndroid::FromProfileAndroid(jprofile);
   DCHECK(profile);
   asset_link_handler_ =
       std::make_unique<digital_asset_links::DigitalAssetLinksHandler>(
+          content::WebContents::FromJavaWebContents(jweb_contents),
           content::BrowserContext::GetDefaultStoragePartition(profile)
               ->GetURLLoaderFactoryForBrowserProcess());
 }
@@ -98,11 +101,13 @@ int OriginVerifier::GetClearBrowsingDataCallCountForTesting() {
 static jlong JNI_OriginVerifier_Init(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj,
+    const base::android::JavaParamRef<jobject>& jweb_contents,
     const base::android::JavaParamRef<jobject>& jprofile) {
   if (!g_browser_process)
     return 0;
 
-  OriginVerifier* native_verifier = new OriginVerifier(env, obj, jprofile);
+  OriginVerifier* native_verifier =
+      new OriginVerifier(env, obj, jweb_contents, jprofile);
   return reinterpret_cast<intptr_t>(native_verifier);
 }
 

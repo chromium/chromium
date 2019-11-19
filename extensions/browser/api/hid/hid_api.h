@@ -17,13 +17,14 @@
 #include "extensions/browser/api/hid/hid_device_manager.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/common/api/hid.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/device/public/mojom/hid.mojom.h"
 
 namespace extensions {
 
 class DevicePermissionsPrompt;
 
-class HidGetDevicesFunction : public UIThreadExtensionFunction {
+class HidGetDevicesFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("hid.getDevices", HID_GETDEVICES)
 
@@ -40,7 +41,7 @@ class HidGetDevicesFunction : public UIThreadExtensionFunction {
   DISALLOW_COPY_AND_ASSIGN(HidGetDevicesFunction);
 };
 
-class HidGetUserSelectedDevicesFunction : public UIThreadExtensionFunction {
+class HidGetUserSelectedDevicesFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("hid.getUserSelectedDevices",
                              HID_GETUSERSELECTEDDEVICES)
@@ -60,7 +61,7 @@ class HidGetUserSelectedDevicesFunction : public UIThreadExtensionFunction {
   DISALLOW_COPY_AND_ASSIGN(HidGetUserSelectedDevicesFunction);
 };
 
-class HidConnectFunction : public UIThreadExtensionFunction {
+class HidConnectFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("hid.connect", HID_CONNECT)
 
@@ -72,14 +73,15 @@ class HidConnectFunction : public UIThreadExtensionFunction {
   // ExtensionFunction:
   ResponseAction Run() override;
 
-  void OnConnectComplete(device::mojom::HidConnectionPtr connection);
+  void OnConnectComplete(
+      mojo::PendingRemote<device::mojom::HidConnection> connection);
 
   ApiResourceManager<HidConnectionResource>* connection_manager_;
 
   DISALLOW_COPY_AND_ASSIGN(HidConnectFunction);
 };
 
-class HidDisconnectFunction : public UIThreadExtensionFunction {
+class HidDisconnectFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("hid.disconnect", HID_DISCONNECT)
 
@@ -96,7 +98,7 @@ class HidDisconnectFunction : public UIThreadExtensionFunction {
 
 // Base class for extension functions that start some asynchronous work after
 // looking up a HidConnection.
-class HidConnectionIoFunction : public UIThreadExtensionFunction {
+class HidConnectionIoFunction : public ExtensionFunction {
  public:
   HidConnectionIoFunction();
 

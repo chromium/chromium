@@ -29,21 +29,24 @@ class DesktopMediaListAsh : public DesktopMediaListBase {
 
  private:
   // Override from DesktopMediaListBase.
-  void Refresh() override;
+  void Refresh(bool update_thumnails) override;
   void EnumerateWindowsForRoot(
       std::vector<DesktopMediaListAsh::SourceDescription>* windows,
+      bool update_thumnails,
       aura::Window* root_window,
       int container_id);
   void EnumerateSources(
-      std::vector<DesktopMediaListAsh::SourceDescription>* windows);
+      std::vector<DesktopMediaListAsh::SourceDescription>* windows,
+      bool update_thumnails);
   void CaptureThumbnail(content::DesktopMediaID id, aura::Window* window);
   void OnThumbnailCaptured(content::DesktopMediaID id, gfx::Image image);
+  void OnRefreshMaybeComplete();
 
   int pending_window_capture_requests_ = 0;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::WeakPtrFactory<DesktopMediaListAsh> weak_factory_;
+  base::WeakPtrFactory<DesktopMediaListAsh> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DesktopMediaListAsh);
 };

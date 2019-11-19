@@ -17,10 +17,7 @@
 #include "chrome/common/media_galleries/metadata_types.h"
 #include "chrome/services/media_gallery_util/public/cpp/media_parser_provider.h"
 #include "chrome/services/media_gallery_util/public/mojom/media_parser.mojom.h"
-
-namespace service_manager {
-class Connector;
-}
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 
 // Parses the media metadata safely in a utility process. This class expects the
 // MIME type and the size of media data to be already known. It creates a
@@ -44,8 +41,9 @@ class SafeMediaMetadataParser : public MediaParserProvider {
         MediaDataCallback;
 
     virtual std::unique_ptr<chrome::mojom::MediaDataSource>
-    CreateMediaDataSource(chrome::mojom::MediaDataSourcePtr* request,
-                          MediaDataCallback media_data_callback) = 0;
+    CreateMediaDataSource(
+        mojo::PendingReceiver<chrome::mojom::MediaDataSource> receiver,
+        MediaDataCallback media_data_callback) = 0;
     virtual ~MediaDataSourceFactory() {}
   };
 
@@ -56,9 +54,9 @@ class SafeMediaMetadataParser : public MediaParserProvider {
       std::unique_ptr<MediaDataSourceFactory> media_source_factory);
   ~SafeMediaMetadataParser() override;
 
-  // Should be called on the thread |connector| is associated with. |callback|
-  // is invoked on that same thread.
-  void Start(service_manager::Connector* connector, DoneCallback callback);
+  // Initiates parsing. |callback| is invoked on the same sequence that calls
+  // this method.
+  void Start(DoneCallback callback);
 
  private:
   // MediaParserProvider implementation:
@@ -85,7 +83,7 @@ class SafeMediaMetadataParser : public MediaParserProvider {
   std::unique_ptr<chrome::mojom::MediaDataSource> media_data_source_;
   std::unique_ptr<MediaDataSourceFactory> media_source_factory_;
 
-  base::WeakPtrFactory<SafeMediaMetadataParser> weak_factory_;
+  base::WeakPtrFactory<SafeMediaMetadataParser> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SafeMediaMetadataParser);
 };

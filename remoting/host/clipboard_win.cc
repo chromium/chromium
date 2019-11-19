@@ -97,9 +97,6 @@ class ScopedClipboard {
   bool opened_;
 };
 
-typedef BOOL (WINAPI AddClipboardFormatListenerFn)(HWND);
-typedef BOOL (WINAPI RemoveClipboardFormatListenerFn)(HWND);
-
 }  // namespace
 
 namespace remoting {
@@ -124,50 +121,24 @@ class ClipboardWin : public Clipboard {
                      LRESULT* result);
 
   std::unique_ptr<protocol::ClipboardStub> client_clipboard_;
-  AddClipboardFormatListenerFn* add_clipboard_format_listener_;
-  RemoveClipboardFormatListenerFn* remove_clipboard_format_listener_;
-
   // Used to subscribe to WM_CLIPBOARDUPDATE messages.
   std::unique_ptr<base::win::MessageWindow> window_;
 
   DISALLOW_COPY_AND_ASSIGN(ClipboardWin);
 };
 
-ClipboardWin::ClipboardWin()
-    : add_clipboard_format_listener_(nullptr),
-      remove_clipboard_format_listener_(nullptr) {
-}
+ClipboardWin::ClipboardWin() {}
 
 ClipboardWin::~ClipboardWin() {
-  if (window_ && remove_clipboard_format_listener_)
-    (*remove_clipboard_format_listener_)(window_->hwnd());
+  if (window_)
+    ::RemoveClipboardFormatListener(window_->hwnd());
 }
 
 void ClipboardWin::Start(
     std::unique_ptr<protocol::ClipboardStub> client_clipboard) {
-  DCHECK(!add_clipboard_format_listener_);
-  DCHECK(!remove_clipboard_format_listener_);
   DCHECK(!window_);
 
   client_clipboard_.swap(client_clipboard);
-
-  // user32.dll is statically linked.
-  HMODULE user32 = GetModuleHandle(L"user32.dll");
-  CHECK(user32);
-
-  add_clipboard_format_listener_ =
-      reinterpret_cast<AddClipboardFormatListenerFn*>(
-          GetProcAddress(user32, "AddClipboardFormatListener"));
-  if (add_clipboard_format_listener_) {
-    remove_clipboard_format_listener_ =
-        reinterpret_cast<RemoveClipboardFormatListenerFn*>(
-            GetProcAddress(user32, "RemoveClipboardFormatListener"));
-    // If AddClipboardFormatListener() present, RemoveClipboardFormatListener()
-    // should be available too.
-    CHECK(remove_clipboard_format_listener_);
-  } else {
-    LOG(WARNING) << "AddClipboardFormatListener() is not available.";
-  }
 
   window_.reset(new base::win::MessageWindow());
   if (!window_->Create(base::Bind(&ClipboardWin::HandleMessage,
@@ -177,10 +148,8 @@ void ClipboardWin::Start(
     return;
   }
 
-  if (add_clipboard_format_listener_) {
-    if (!(*add_clipboard_format_listener_)(window_->hwnd())) {
-      LOG(WARNING) << "AddClipboardFormatListener() failed: " << GetLastError();
-    }
+  if (!::AddClipboardFormatListener(window_->hwnd())) {
+    LOG(WARNING) << "AddClipboardFormatListener() failed: " << GetLastError();
   }
 }
 

@@ -10,7 +10,6 @@
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
 #import "ios/web/public/web_client.h"
-#import "ios/web/public/web_state/web_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -19,11 +18,11 @@
 ChromeWebTest::~ChromeWebTest() {}
 
 ChromeWebTest::ChromeWebTest(std::unique_ptr<web::WebClient> web_client,
-                             web::TestWebThreadBundle::Options options)
+                             web::WebTaskEnvironment::Options options)
     : web::WebTestWithWebState(std::move(web_client), options),
       chrome_browser_state_(TestChromeBrowserState::Builder().Build()) {}
 
-ChromeWebTest::ChromeWebTest(web::TestWebThreadBundle::Options options)
+ChromeWebTest::ChromeWebTest(web::WebTaskEnvironment::Options options)
     : web::WebTestWithWebState(options),
       chrome_browser_state_(TestChromeBrowserState::Builder().Build()) {}
 

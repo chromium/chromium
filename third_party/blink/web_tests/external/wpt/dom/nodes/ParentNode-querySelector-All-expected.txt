@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 1943 tests; 1941 PASS, 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1975 tests; 1973 PASS, 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Selectors-API Test Suite: HTML
 PASS Document supports querySelector
 PASS Document supports querySelectorAll
@@ -609,8 +609,12 @@ PASS Document.querySelectorAll: :lang pseudo-class selector, not matching incorr
 PASS Document.querySelector: :lang pseudo-class selector, not matching incorrect language: #pseudo-lang-div4:lang(es-AR)
 PASS Document.querySelectorAll: :enabled pseudo-class selector, matching all enabled form controls: #pseudo-ui :enabled
 PASS Document.querySelector: :enabled pseudo-class selector, matching all enabled form controls: #pseudo-ui :enabled
-PASS Document.querySelectorAll: :enabled pseudo-class selector, matching all disabled form controls: #pseudo-ui :disabled
-PASS Document.querySelector: :enabled pseudo-class selector, matching all disabled form controls: #pseudo-ui :disabled
+PASS Document.querySelectorAll: :enabled pseudo-class selector, not matching link elements: #pseudo-link :enabled
+PASS Document.querySelector: :enabled pseudo-class selector, not matching link elements: #pseudo-link :enabled
+PASS Document.querySelectorAll: :disabled pseudo-class selector, matching all disabled form controls: #pseudo-ui :disabled
+PASS Document.querySelector: :disabled pseudo-class selector, matching all disabled form controls: #pseudo-ui :disabled
+PASS Document.querySelectorAll: :disabled pseudo-class selector, not matching link elements: #pseudo-link :disabled
+PASS Document.querySelector: :disabled pseudo-class selector, not matching link elements: #pseudo-link :disabled
 PASS Document.querySelectorAll: :checked pseudo-class selector, matching checked radio buttons and checkboxes: #pseudo-ui :checked
 PASS Document.querySelector: :checked pseudo-class selector, matching checked radio buttons and checkboxes: #pseudo-ui :checked
 PASS Document.querySelectorAll: :not pseudo-class selector, matching : #not>:not(div)
@@ -811,6 +815,10 @@ PASS Document.querySelector: Syntax, group of selectors separator, whitespace be
 ,#group strong
 PASS Document.querySelectorAll: Syntax, group of selectors separator, no whitespace: #group em,#group strong
 PASS Document.querySelector: Syntax, group of selectors separator, no whitespace: #group em,#group strong
+PASS Document.querySelectorAll: Slotted selector: ::slotted(foo)
+PASS Document.querySelector: Slotted selector: ::slotted(foo)
+PASS Document.querySelectorAll: Slotted selector (no matching closing paren): ::slotted(foo
+PASS Document.querySelector: Slotted selector (no matching closing paren): ::slotted(foo
 PASS Detached Element.querySelectorAll: Type selector, matching html element: html
 PASS Detached Element.querySelector: Type selector, matching html element: html
 PASS Detached Element.querySelectorAll: Type selector, matching body element: body
@@ -1033,8 +1041,12 @@ PASS Detached Element.querySelectorAll: :lang pseudo-class selector, not matchin
 PASS Detached Element.querySelector: :lang pseudo-class selector, not matching incorrect language: #pseudo-lang-div4:lang(es-AR)
 PASS Detached Element.querySelectorAll: :enabled pseudo-class selector, matching all enabled form controls: #pseudo-ui :enabled
 PASS Detached Element.querySelector: :enabled pseudo-class selector, matching all enabled form controls: #pseudo-ui :enabled
-PASS Detached Element.querySelectorAll: :enabled pseudo-class selector, matching all disabled form controls: #pseudo-ui :disabled
-PASS Detached Element.querySelector: :enabled pseudo-class selector, matching all disabled form controls: #pseudo-ui :disabled
+PASS Detached Element.querySelectorAll: :enabled pseudo-class selector, not matching link elements: #pseudo-link :enabled
+PASS Detached Element.querySelector: :enabled pseudo-class selector, not matching link elements: #pseudo-link :enabled
+PASS Detached Element.querySelectorAll: :disabled pseudo-class selector, matching all disabled form controls: #pseudo-ui :disabled
+PASS Detached Element.querySelector: :disabled pseudo-class selector, matching all disabled form controls: #pseudo-ui :disabled
+PASS Detached Element.querySelectorAll: :disabled pseudo-class selector, not matching link elements: #pseudo-link :disabled
+PASS Detached Element.querySelector: :disabled pseudo-class selector, not matching link elements: #pseudo-link :disabled
 PASS Detached Element.querySelectorAll: :checked pseudo-class selector, matching checked radio buttons and checkboxes: #pseudo-ui :checked
 PASS Detached Element.querySelector: :checked pseudo-class selector, matching checked radio buttons and checkboxes: #pseudo-ui :checked
 PASS Detached Element.querySelectorAll: :not pseudo-class selector, matching : #not>:not(div)
@@ -1233,6 +1245,10 @@ PASS Detached Element.querySelector: Syntax, group of selectors separator, white
 ,#group strong
 PASS Detached Element.querySelectorAll: Syntax, group of selectors separator, no whitespace: #group em,#group strong
 PASS Detached Element.querySelector: Syntax, group of selectors separator, no whitespace: #group em,#group strong
+PASS Detached Element.querySelectorAll: Slotted selector: ::slotted(foo)
+PASS Detached Element.querySelector: Slotted selector: ::slotted(foo)
+PASS Detached Element.querySelectorAll: Slotted selector (no matching closing paren): ::slotted(foo
+PASS Detached Element.querySelector: Slotted selector (no matching closing paren): ::slotted(foo
 PASS Fragment.querySelectorAll: Type selector, matching html element: html
 PASS Fragment.querySelector: Type selector, matching html element: html
 PASS Fragment.querySelectorAll: Type selector, matching body element: body
@@ -1455,8 +1471,12 @@ PASS Fragment.querySelectorAll: :lang pseudo-class selector, not matching incorr
 PASS Fragment.querySelector: :lang pseudo-class selector, not matching incorrect language: #pseudo-lang-div4:lang(es-AR)
 PASS Fragment.querySelectorAll: :enabled pseudo-class selector, matching all enabled form controls: #pseudo-ui :enabled
 PASS Fragment.querySelector: :enabled pseudo-class selector, matching all enabled form controls: #pseudo-ui :enabled
-PASS Fragment.querySelectorAll: :enabled pseudo-class selector, matching all disabled form controls: #pseudo-ui :disabled
-PASS Fragment.querySelector: :enabled pseudo-class selector, matching all disabled form controls: #pseudo-ui :disabled
+PASS Fragment.querySelectorAll: :enabled pseudo-class selector, not matching link elements: #pseudo-link :enabled
+PASS Fragment.querySelector: :enabled pseudo-class selector, not matching link elements: #pseudo-link :enabled
+PASS Fragment.querySelectorAll: :disabled pseudo-class selector, matching all disabled form controls: #pseudo-ui :disabled
+PASS Fragment.querySelector: :disabled pseudo-class selector, matching all disabled form controls: #pseudo-ui :disabled
+PASS Fragment.querySelectorAll: :disabled pseudo-class selector, not matching link elements: #pseudo-link :disabled
+PASS Fragment.querySelector: :disabled pseudo-class selector, not matching link elements: #pseudo-link :disabled
 PASS Fragment.querySelectorAll: :checked pseudo-class selector, matching checked radio buttons and checkboxes: #pseudo-ui :checked
 PASS Fragment.querySelector: :checked pseudo-class selector, matching checked radio buttons and checkboxes: #pseudo-ui :checked
 PASS Fragment.querySelectorAll: :not pseudo-class selector, matching : #not>:not(div)
@@ -1655,6 +1675,10 @@ PASS Fragment.querySelector: Syntax, group of selectors separator, whitespace be
 ,#group strong
 PASS Fragment.querySelectorAll: Syntax, group of selectors separator, no whitespace: #group em,#group strong
 PASS Fragment.querySelector: Syntax, group of selectors separator, no whitespace: #group em,#group strong
+PASS Fragment.querySelectorAll: Slotted selector: ::slotted(foo)
+PASS Fragment.querySelector: Slotted selector: ::slotted(foo)
+PASS Fragment.querySelectorAll: Slotted selector (no matching closing paren): ::slotted(foo
+PASS Fragment.querySelector: Slotted selector (no matching closing paren): ::slotted(foo
 PASS In-document Element.querySelectorAll: Type selector, matching html element: html
 PASS In-document Element.querySelector: Type selector, matching html element: html
 PASS In-document Element.querySelectorAll: Type selector, matching body element: body
@@ -1877,8 +1901,12 @@ PASS In-document Element.querySelectorAll: :lang pseudo-class selector, not matc
 PASS In-document Element.querySelector: :lang pseudo-class selector, not matching incorrect language: #pseudo-lang-div4:lang(es-AR)
 PASS In-document Element.querySelectorAll: :enabled pseudo-class selector, matching all enabled form controls: #pseudo-ui :enabled
 PASS In-document Element.querySelector: :enabled pseudo-class selector, matching all enabled form controls: #pseudo-ui :enabled
-PASS In-document Element.querySelectorAll: :enabled pseudo-class selector, matching all disabled form controls: #pseudo-ui :disabled
-PASS In-document Element.querySelector: :enabled pseudo-class selector, matching all disabled form controls: #pseudo-ui :disabled
+PASS In-document Element.querySelectorAll: :enabled pseudo-class selector, not matching link elements: #pseudo-link :enabled
+PASS In-document Element.querySelector: :enabled pseudo-class selector, not matching link elements: #pseudo-link :enabled
+PASS In-document Element.querySelectorAll: :disabled pseudo-class selector, matching all disabled form controls: #pseudo-ui :disabled
+PASS In-document Element.querySelector: :disabled pseudo-class selector, matching all disabled form controls: #pseudo-ui :disabled
+PASS In-document Element.querySelectorAll: :disabled pseudo-class selector, not matching link elements: #pseudo-link :disabled
+PASS In-document Element.querySelector: :disabled pseudo-class selector, not matching link elements: #pseudo-link :disabled
 PASS In-document Element.querySelectorAll: :checked pseudo-class selector, matching checked radio buttons and checkboxes: #pseudo-ui :checked
 PASS In-document Element.querySelector: :checked pseudo-class selector, matching checked radio buttons and checkboxes: #pseudo-ui :checked
 PASS In-document Element.querySelectorAll: :not pseudo-class selector, matching : #not>:not(div)
@@ -2079,5 +2107,9 @@ PASS In-document Element.querySelector: Syntax, group of selectors separator, wh
 ,#group strong
 PASS In-document Element.querySelectorAll: Syntax, group of selectors separator, no whitespace: #group em,#group strong
 PASS In-document Element.querySelector: Syntax, group of selectors separator, no whitespace: #group em,#group strong
+PASS In-document Element.querySelectorAll: Slotted selector: ::slotted(foo)
+PASS In-document Element.querySelector: Slotted selector: ::slotted(foo)
+PASS In-document Element.querySelectorAll: Slotted selector (no matching closing paren): ::slotted(foo
+PASS In-document Element.querySelector: Slotted selector (no matching closing paren): ::slotted(foo
 Harness: the test ran to completion.
 

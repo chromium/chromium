@@ -94,6 +94,20 @@ void LogErrno(const char* location, const char* fmt, ...) {
   errno = old_errno;
 }
 
+void AssertionFailure(const char* location, const char* fmt, ...) {
+  va_list args;
+  va_start(args, fmt);
+  {
+    LogBuffer log;
+    log.Append(location);
+    log.Append(": ");
+    log.AppendV(fmt, args);
+    log.Print();
+  }
+  va_end(args);
+  exit(1);
+}
+
 #endif  // CRAZY_DEBUG
 
 }  // namespace crazy

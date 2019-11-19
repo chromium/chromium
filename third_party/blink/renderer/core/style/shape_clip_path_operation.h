@@ -63,17 +63,18 @@ class ShapeClipPathOperation final : public ClipPathOperation {
   scoped_refptr<BasicShape> shape_;
 };
 
-DEFINE_TYPE_CASTS(ShapeClipPathOperation,
-                  ClipPathOperation,
-                  op,
-                  op->GetType() == ClipPathOperation::SHAPE,
-                  op.GetType() == ClipPathOperation::SHAPE);
+template <>
+struct DowncastTraits<ShapeClipPathOperation> {
+  static bool AllowFrom(const ClipPathOperation& op) {
+    return op.GetType() == ClipPathOperation::SHAPE;
+  }
+};
 
 inline bool ShapeClipPathOperation::operator==(
     const ClipPathOperation& o) const {
   if (!IsSameType(o))
     return false;
-  BasicShape* other_shape = ToShapeClipPathOperation(o).shape_.get();
+  BasicShape* other_shape = To<ShapeClipPathOperation>(o).shape_.get();
   if (!shape_.get() || !other_shape)
     return static_cast<bool>(shape_.get()) == static_cast<bool>(other_shape);
   return *shape_ == *other_shape;

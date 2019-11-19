@@ -32,6 +32,8 @@ class LoggedInSpokenFeedbackTest : public InProcessBrowserTest {
   void SendKeyPressWithSearchAndShift(ui::KeyboardCode key);
   void SendKeyPressWithSearch(ui::KeyboardCode key);
 
+  void SendMouseMoveTo(const gfx::Point& location);
+
   void RunJavaScriptInChromeVoxBackgroundPage(const std::string& script);
 
   void SimulateTouchScreenInChromeVox();

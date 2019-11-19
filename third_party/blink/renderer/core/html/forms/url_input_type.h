@@ -37,8 +37,6 @@ namespace blink {
 
 class URLInputType final : public BaseTextInputType {
  public:
-  static InputType* Create(HTMLInputElement&);
-
   URLInputType(HTMLInputElement& element) : BaseTextInputType(element) {}
 
  private:

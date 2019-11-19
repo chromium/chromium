@@ -48,7 +48,7 @@
 #include "third_party/blink/renderer/core/dom/processing_instruction.h"
 #include "third_party/blink/renderer/core/dom/transform_source.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
-#include "third_party/blink/renderer/core/frame/use_counter.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/html_html_element.h"
 #include "third_party/blink/renderer/core/html/html_template_element.h"
 #include "third_party/blink/renderer/core/html/parser/html_entity_parser.h"
@@ -64,7 +64,9 @@
 #include "third_party/blink/renderer/core/xml/parser/xml_document_parser_scope.h"
 #include "third_party/blink/renderer/core/xml/parser/xml_parser_input.h"
 #include "third_party/blink/renderer/core/xmlns_names.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
 #include "third_party/blink/renderer/platform/loader/fetch/raw_resource.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_error.h"
@@ -72,15 +74,13 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
-#include "third_party/blink/renderer/platform/shared_buffer.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
+#include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/utf8.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
-
-using namespace html_names;
 
 // FIXME: HTMLConstructionSite has a limit of 512, should these match?
 static const unsigned kMaxXMLTreeDepth = 5000;
@@ -453,13 +453,13 @@ bool XMLDocumentParser::ParseDocumentFragment(
   // http://www.whatwg.org/specs/web-apps/current-work/multipage/the-xhtml-syntax.html#xml-fragment-parsing-algorithm
   // For now we have a hack for script/style innerHTML support:
   if (context_element &&
-      (context_element->HasLocalName(kScriptTag.LocalName()) ||
-       context_element->HasLocalName(kStyleTag.LocalName()))) {
+      (context_element->HasLocalName(html_names::kScriptTag.LocalName()) ||
+       context_element->HasLocalName(html_names::kStyleTag.LocalName()))) {
     fragment->ParserAppendChild(fragment->GetDocument().createTextNode(chunk));
     return true;
   }
 
-  XMLDocumentParser* parser = XMLDocumentParser::Create(
+  auto* parser = MakeGarbageCollected<XMLDocumentParser>(
       fragment, context_element, parser_content_policy);
   bool well_formed = parser->AppendFragmentSource(chunk);
 
@@ -577,7 +577,7 @@ static bool ShouldAllowExternalLoad(const KURL& url) {
           XMLDocumentParserScope::current_document_->Url().ElidedString() +
           ". Domains, protocols and ports must match.\n";
       XMLDocumentParserScope::current_document_->AddConsoleMessage(
-          ConsoleMessage::Create(kSecurityMessageSource,
+          ConsoleMessage::Create(mojom::ConsoleMessageSource::kSecurity,
                                  mojom::ConsoleMessageLevel::kError, message));
     }
     return false;
@@ -605,8 +605,8 @@ static void* OpenFunc(const char* uri) {
     ResourceLoaderOptions options;
     options.initiator_info.name = fetch_initiator_type_names::kXml;
     FetchParameters params(ResourceRequest(url), options);
-    params.MutableResourceRequest().SetFetchRequestMode(
-        network::mojom::FetchRequestMode::kSameOrigin);
+    params.MutableResourceRequest().SetMode(
+        network::mojom::RequestMode::kSameOrigin);
     Resource* resource =
         RawResource::FetchSynchronously(params, document->Fetcher());
     if (!resource->ErrorOccurred()) {
@@ -683,12 +683,12 @@ scoped_refptr<XMLParserContext> XMLParserContext::CreateStringParser(
 scoped_refptr<XMLParserContext> XMLParserContext::CreateMemoryParser(
     xmlSAXHandlerPtr handlers,
     void* user_data,
-    const CString& chunk) {
+    const std::string& chunk) {
   InitializeLibXMLIfNecessary();
 
   // appendFragmentSource() checks that the length doesn't overflow an int.
   xmlParserCtxtPtr parser =
-      xmlCreateMemoryParserCtxt(chunk.data(), chunk.length());
+      xmlCreateMemoryParserCtxt(chunk.c_str(), chunk.length());
 
   if (!parser)
     return nullptr;
@@ -736,9 +736,10 @@ XMLDocumentParser::XMLDocumentParser(Document& document,
       requesting_script_(false),
       finish_called_(false),
       xml_errors_(&document),
-      script_runner_(frame_view ? XMLParserScriptRunner::Create(this)
-                                : nullptr),  // Don't execute scripts for
-                                             // documents without frames.
+      script_runner_(frame_view
+                         ? MakeGarbageCollected<XMLParserScriptRunner>(this)
+                         : nullptr),  // Don't execute scripts for
+                                      // documents without frames.
       script_start_position_(TextPosition::BelowRangePosition()),
       parsing_fragment_(false) {
   // This is XML being used as a document resource.
@@ -978,7 +979,7 @@ void XMLDocumentParser::StartElementNs(const AtomicString& local_name,
                           prefix_to_namespace_map_, exception_state);
   AtomicString is;
   for (const auto& attr : prefixed_attributes) {
-    if (attr.GetName() == kIsAttr) {
+    if (attr.GetName() == html_names::kIsAttr) {
       is = attr.Value();
       break;
     }
@@ -1017,15 +1018,16 @@ void XMLDocumentParser::StartElementNs(const AtomicString& local_name,
     return;
   }
 
-  if (auto* template_element = ToHTMLTemplateElementOrNull(*new_element))
+  if (auto* template_element = DynamicTo<HTMLTemplateElement>(*new_element))
     PushCurrentNode(template_element->content());
   else
     PushCurrentNode(new_element);
 
   // Note: |insertedByParser| will perform dispatching if this is an
   // HTMLHtmlElement.
-  if (IsHTMLHtmlElement(*new_element) && is_first_element) {
-    ToHTMLHtmlElement(*new_element).InsertedByParser();
+  auto* html_html_element = DynamicTo<HTMLHtmlElement>(new_element);
+  if (html_html_element && is_first_element) {
+    html_html_element->InsertedByParser();
   } else if (!parsing_fragment_ && is_first_element &&
              GetDocument()->GetFrame()) {
     GetDocument()->GetFrame()->Loader().DispatchDocumentElementAvailable();
@@ -1048,16 +1050,13 @@ void XMLDocumentParser::EndElementNs() {
     return;
 
   ContainerNode* n = current_node_;
-  if (current_node_->IsElementNode())
-    ToElement(n)->FinishParsingChildren();
-
-  if (!n->IsElementNode()) {
+  auto* element = DynamicTo<Element>(n);
+  if (!element) {
     PopCurrentNode();
     return;
   }
 
-  Element* element = ToElement(n);
-
+  element->FinishParsingChildren();
   if (element->IsScriptElement() &&
       !ScriptingContentIsAllowed(GetParserContentPolicy())) {
     PopCurrentNode();
@@ -1489,7 +1488,7 @@ static void IgnorableWhitespaceHandler(void*, const xmlChar*, int) {
   // http://bugs.webkit.org/show_bug.cgi?id=5792
 }
 
-void XMLDocumentParser::InitializeParserContext(const CString& chunk) {
+void XMLDocumentParser::InitializeParserContext(const std::string& chunk) {
   xmlSAXHandler sax;
   memset(&sax, 0, sizeof(sax));
 
@@ -1523,7 +1522,6 @@ void XMLDocumentParser::InitializeParserContext(const CString& chunk) {
   if (parsing_fragment_) {
     context_ = XMLParserContext::CreateMemoryParser(&sax, this, chunk);
   } else {
-    DCHECK(!chunk.data());
     context_ = XMLParserContext::CreateStringParser(&sax, this);
   }
 }
@@ -1565,7 +1563,7 @@ xmlDocPtr XmlDocPtrForString(Document* document,
   // document results in good error messages.
   XMLDocumentParserScope scope(document, ErrorFunc, nullptr);
   XMLParserInput input(source);
-  return xmlReadMemory(input.Data(), input.size(), url.Latin1().data(),
+  return xmlReadMemory(input.Data(), input.size(), url.Latin1().c_str(),
                        input.Encoding(), XSLT_PARSE_OPTIONS);
 }
 
@@ -1618,6 +1616,9 @@ void XMLDocumentParser::ResumeParsing() {
   // the passed string has more than one reference.
   Append(rest.ToString().Impl());
 
+  if (IsDetached())
+    return;
+
   // Finally, if finish() has been called and write() didn't result
   // in any further callbacks being queued, call end()
   if (finish_called_ && pending_callbacks_.IsEmpty())
@@ -1628,7 +1629,7 @@ bool XMLDocumentParser::AppendFragmentSource(const String& chunk) {
   DCHECK(!context_);
   DCHECK(parsing_fragment_);
 
-  CString chunk_as_utf8 = chunk.Utf8();
+  std::string chunk_as_utf8 = chunk.Utf8();
 
   // libxml2 takes an int for a length, and therefore can't handle XML chunks
   // larger than 2 GiB.
@@ -1645,9 +1646,9 @@ bool XMLDocumentParser::AppendFragmentSource(const String& chunk) {
   // XMLDocumentParserQt has a similar check (m_stream.error() ==
   // QXmlStreamReader::PrematureEndOfDocumentError) in doEnd(). Check if all
   // the chunk has been processed.
-  long bytes_processed = xmlByteConsumed(Context());
+  int64_t bytes_processed = xmlByteConsumed(Context());
   if (bytes_processed == -1 ||
-      static_cast<unsigned long>(bytes_processed) != chunk_as_utf8.length()) {
+      bytes_processed != static_cast<int64_t>(chunk_as_utf8.length())) {
     // FIXME: I don't believe we can hit this case without also having seen
     // an error or a null byte. If we hit this DCHECK, we've found a test
     // case which demonstrates the need for this code.

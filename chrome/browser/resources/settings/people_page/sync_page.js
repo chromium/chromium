@@ -129,18 +129,13 @@ Polymer({
       type: Boolean,
       value: false,
       computed: 'computeSyncSectionDisabled_(' +
-          'unifiedConsentEnabled, syncStatus.signedIn, syncStatus.disabled, ' +
+          'syncStatus.signedIn, syncStatus.disabled, ' +
           'syncStatus.hasError, syncStatus.statusAction)',
     },
 
     // <if expr="not chromeos">
     diceEnabled: Boolean,
     // </if>
-
-    unifiedConsentEnabled: {
-      type: Boolean,
-      observer: 'initializeDidAbort_',
-    },
 
     /** @private */
     showSetupCancelDialog_: {
@@ -159,12 +154,9 @@ Polymer({
   browserProxy_: null,
 
   /**
-   * If unified consent is enabled, the beforeunload callback is used to
-   * show the 'Leave site' dialog. This makes sure that the user has the chance
-   * to go back and confirm the sync opt-in before leaving.
-   *
-   * If unified consent is disabled, the beforeunload callback is used
-   * to confirm the sync setup before leaving the opt-in flow.
+   * The beforeunload callback is used to show the 'Leave site' dialog. This
+   * makes sure that the user has the chance to go back and confirm the sync
+   * opt-in before leaving.
    *
    * This property is non-null if the user is currently navigated on the sync
    * settings route.
@@ -174,9 +166,8 @@ Polymer({
   beforeunloadCallback_: null,
 
   /**
-   * If unified consent is enabled, the unload callback is used to cancel the
-   * sync setup when the user hits the browser back button after arriving on the
-   * page.
+   * The unload callback is used to cancel the sync setup when the user hits
+   * the browser back button after arriving on the page.
    * Note: Cases like closing the tab or reloading don't need to be handled,
    * because they are already caught in |PeopleHandler::~PeopleHandler|
    * from the C++ code.
@@ -193,11 +184,10 @@ Polymer({
   collapsibleSectionsInitialized_: false,
 
   /**
-   * Whether the user decided to abort sync. When unified consent is enabled,
-   * this is initialized to true.
+   * Whether the user decided to abort sync.
    * @private {boolean}
    */
-  didAbort_: false,
+  didAbort_: true,
 
   /**
    * Whether the user confirmed the cancellation of sync.
@@ -251,7 +241,7 @@ Polymer({
    * @private
    */
   computeSyncSectionDisabled_: function() {
-    return !!this.unifiedConsentEnabled && this.syncStatus !== undefined &&
+    return this.syncStatus !== undefined &&
         (!this.syncStatus.signedIn || !!this.syncStatus.disabled ||
          (!!this.syncStatus.hasError &&
           this.syncStatus.statusAction !==
@@ -291,30 +281,45 @@ Polymer({
   currentRouteChanged: function() {
     if (settings.getCurrentRoute() == settings.routes.SYNC) {
       this.onNavigateToPage_();
-    } else if (!settings.routes.SYNC.contains(settings.getCurrentRoute())) {
-      // When the user is about to cancel the sync setup, but hasn't confirmed
-      // the cancellation, navigate back and show the 'Cancel sync?' dialog.
-      if (this.unifiedConsentEnabled && this.syncStatus &&
-          this.syncStatus.setupInProgress && this.didAbort_ &&
-          !this.setupCancelConfirmed_) {
-        chrome.metricsPrivate.recordUserAction(
-            'Signin_Signin_BackOnAdvancedSyncSettings');
-        // Yield so that other |currentRouteChanged| observers are called,
-        // before triggering another navigation (and another round of observers
-        // firing). Triggering navigation from within an observer leads to some
-        // undefined behavior and runtime errors.
-        requestAnimationFrame(() => {
-          settings.navigateTo(settings.routes.SYNC);
-          this.showSetupCancelDialog_ = true;
-          // Flush to make sure that the setup cancel dialog is attached.
-          Polymer.dom.flush();
-          this.$$('#setupCancelDialog').showModal();
-        });
-      } else {
-        this.setupCancelConfirmed_ = false;
-        this.onNavigateAwayFromPage_();
-      }
+      return;
     }
+
+    if (settings.routes.SYNC.contains(settings.getCurrentRoute())) {
+      return;
+    }
+
+    const searchParams = settings.getQueryParameters().get('search');
+    if (searchParams) {
+      // User navigated away via searching. Cancel sync without showing
+      // confirmation dialog.
+      this.onNavigateAwayFromPage_();
+      return;
+    }
+
+    const userActionCancelsSetup = this.syncStatus &&
+        this.syncStatus.firstSetupInProgress && this.didAbort_;
+    if (userActionCancelsSetup && !this.setupCancelConfirmed_) {
+      chrome.metricsPrivate.recordUserAction(
+          'Signin_Signin_BackOnAdvancedSyncSettings');
+      // Show the 'Cancel sync?' dialog.
+      // Yield so that other |currentRouteChanged| observers are called,
+      // before triggering another navigation (and another round of observers
+      // firing). Triggering navigation from within an observer leads to some
+      // undefined behavior and runtime errors.
+      requestAnimationFrame(() => {
+        settings.navigateTo(settings.routes.SYNC);
+        this.showSetupCancelDialog_ = true;
+        // Flush to make sure that the setup cancel dialog is attached.
+        Polymer.dom.flush();
+        this.$$('#setupCancelDialog').showModal();
+      });
+      return;
+    }
+
+    // Reset variable.
+    this.setupCancelConfirmed_ = false;
+
+    this.onNavigateAwayFromPage_();
   },
 
   /**
@@ -341,27 +346,21 @@ Polymer({
 
     this.browserProxy_.didNavigateToSyncPage();
 
-    if (this.unifiedConsentEnabled) {
-      this.beforeunloadCallback_ = event => {
-        // When the user tries to leave the sync setup, show the 'Leave site'
-        // dialog.
-        if (this.unifiedConsentEnabled && this.syncStatus &&
-            this.syncStatus.setupInProgress) {
-          event.preventDefault();
-          event.returnValue = '';
+    this.beforeunloadCallback_ = event => {
+      // When the user tries to leave the sync setup, show the 'Leave site'
+      // dialog.
+      if (this.syncStatus && this.syncStatus.firstSetupInProgress) {
+        event.preventDefault();
+        event.returnValue = '';
 
-          chrome.metricsPrivate.recordUserAction(
-              'Signin_Signin_AbortAdvancedSyncSettings');
-        }
-      };
-      window.addEventListener('beforeunload', this.beforeunloadCallback_);
+        chrome.metricsPrivate.recordUserAction(
+            'Signin_Signin_AbortAdvancedSyncSettings');
+      }
+    };
+    window.addEventListener('beforeunload', this.beforeunloadCallback_);
 
-      this.unloadCallback_ = this.onNavigateAwayFromPage_.bind(this);
-      window.addEventListener('unload', this.unloadCallback_);
-    } else {
-      this.beforeunloadCallback_ = this.onNavigateAwayFromPage_.bind(this);
-      window.addEventListener('beforeunload', this.beforeunloadCallback_);
-    }
+    this.unloadCallback_ = this.onNavigateAwayFromPage_.bind(this);
+    window.addEventListener('unload', this.unloadCallback_);
   },
 
   /** @private */
@@ -375,7 +374,6 @@ Polymer({
     this.pageStatus_ = settings.PageStatus.CONFIGURE;
 
     this.browserProxy_.didNavigateAwayFromSyncPage(this.didAbort_);
-    this.initializeDidAbort_();
 
     window.removeEventListener('beforeunload', this.beforeunloadCallback_);
     this.beforeunloadCallback_ = null;
@@ -401,18 +399,6 @@ Polymer({
         !this.syncPrefs.encryptAllDataAllowed ||
         (this.syncStatus && this.syncStatus.supervisedUser)) {
       this.creatingNewPassphrase_ = false;
-    }
-
-    // Focus the password input box if password is needed to start sync.
-    if (this.syncPrefs.passphraseRequired) {
-      // Wait for the dom-if templates to render and subpage to become visible.
-      listenOnce(document, 'show-container', () => {
-        const input = /** @type {!CrInputElement} */ (
-            this.$$('#existingPassphraseInput'));
-        if (!input.matches(':focus-within')) {
-          input.focus();
-        }
-      });
     }
   },
 
@@ -440,7 +426,7 @@ Polymer({
     assert(this.creatingNewPassphrase_);
 
     // Ignore events on irrelevant elements or with irrelevant keys.
-    if (e.target.tagName != 'PAPER-BUTTON' && e.target.tagName != 'CR-INPUT') {
+    if (e.target.tagName != 'CR-BUTTON' && e.target.tagName != 'CR-INPUT') {
       return;
     }
     if (e.type == 'keypress' && e.key != 'Enter') {
@@ -502,7 +488,10 @@ Polymer({
       case settings.PageStatus.PASSPHRASE_FAILED:
         if (this.pageStatus_ == this.pages_.CONFIGURE && this.syncPrefs &&
             this.syncPrefs.passphraseRequired) {
-          this.$$('#existingPassphraseInput').invalid = true;
+          const passphraseInput = /** @type {!CrInputElement} */ (
+              this.$$('#existingPassphraseInput'));
+          passphraseInput.invalid = true;
+          passphraseInput.focusInput();
         }
         return;
     }
@@ -528,18 +517,6 @@ Polymer({
     return this.syncPrefs.encryptAllData || this.creatingNewPassphrase_ ?
         RadioButtonNames.ENCRYPT_WITH_PASSPHRASE :
         RadioButtonNames.ENCRYPT_WITH_GOOGLE;
-  },
-
-  /**
-   * Computed binding returning text of the prompt for entering the passphrase.
-   * @private
-   */
-  enterPassphrasePrompt_: function() {
-    if (this.syncPrefs && this.syncPrefs.passphraseTypeIsCustom) {
-      return this.syncPrefs.enterPassphraseBody;
-    }
-
-    return this.syncPrefs.enterGooglePassphraseBody;
   },
 
   /**
@@ -573,28 +550,6 @@ Polymer({
   },
 
   /**
-   * When unified-consent enabled, the non-toggle items on the bottom of sync
-   * section should be wrapped with 'list-frame' in order to be indented
-   * correctly.
-   * @return {string}
-   * @private
-   */
-  getListFrameClass_: function() {
-    return this.unifiedConsentEnabled ? 'list-frame' : '';
-  },
-
-  /**
-   * When unified-consent enabled, the non-toggle items on the bottom of sync
-   * section will be wrapped with 'list-frame', and should have the 'list-item'
-   * instead of 'settings-box' in order to be indented correctly.
-   * @return {string}
-   * @private
-   */
-  getListItemClass_: function() {
-    return this.unifiedConsentEnabled ? 'list-item' : 'settings-box';
-  },
-
-  /**
    * When there is a sync passphrase, some items have an additional line for the
    * passphrase reset hint, making them three lines rather than two.
    * @return {string}
@@ -610,7 +565,7 @@ Polymer({
    * @private
    */
   shouldShowSyncAccountControl_: function() {
-    return !!this.unifiedConsentEnabled && this.syncStatus !== undefined &&
+    return this.syncStatus !== undefined &&
         !!this.syncStatus.syncSystemEnabled && !!this.syncStatus.signinAllowed;
   },
   // </if>
@@ -620,17 +575,7 @@ Polymer({
    * @private
    */
   shouldShowExistingPassphraseBelowAccount_: function() {
-    return !!this.unifiedConsentEnabled && this.syncPrefs !== undefined &&
-        !!this.syncPrefs.passphraseRequired;
-  },
-
-  /**
-   * @return {boolean}
-   * @private
-   */
-  shouldShowExistingPassphraseInSyncSection_: function() {
-    return !this.unifiedConsentEnabled && this.syncPrefs !== undefined &&
-        !!this.syncPrefs.passphraseRequired;
+    return this.syncPrefs !== undefined && !!this.syncPrefs.passphraseRequired;
   },
 
   /**
@@ -658,29 +603,6 @@ Polymer({
   },
 
   /**
-   * @return {boolean}
-   * @private
-   */
-  shouldShowDriveSuggest_: function() {
-    return loadTimeData.getBoolean('driveSuggestAvailable') &&
-        !this.unifiedConsentEnabled;
-  },
-
-  /**
-   * Used when unified consent is disabled.
-   * @private
-   */
-  onSyncSetupCancel_: function() {
-    this.didAbort_ = true;
-    settings.navigateTo(settings.routes.BASIC);
-  },
-
-  /** @private */
-  initializeDidAbort_: function() {
-    this.didAbort_ = !!this.unifiedConsentEnabled;
-  },
-
-  /**
    * @param {!CustomEvent<boolean>} e The event passed from
    *     settings-sync-account-control.
    * @private
@@ -696,6 +618,19 @@ Polymer({
           'Signin_Signin_CancelAdvancedSyncSettings');
     }
     settings.navigateTo(settings.routes.BASIC);
+  },
+
+  /**
+   * Focuses the passphrase input element if it is available and the page is
+   * visible.
+   * @private
+   */
+  focusPassphraseInput_: function() {
+    const passphraseInput =
+        /** @type {!CrInputElement} */ (this.$$('#existingPassphraseInput'));
+    if (passphraseInput && settings.getCurrentRoute() == settings.routes.SYNC) {
+      passphraseInput.focus();
+    }
   },
 });
 

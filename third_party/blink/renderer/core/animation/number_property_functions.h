@@ -7,6 +7,7 @@
 
 #include "base/optional.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
@@ -14,6 +15,8 @@ class ComputedStyle;
 class CSSProperty;
 
 class NumberPropertyFunctions {
+  STATIC_ONLY(NumberPropertyFunctions);
+
  public:
   static base::Optional<double> GetInitialNumber(const CSSProperty&);
   static base::Optional<double> GetNumber(const CSSProperty&,

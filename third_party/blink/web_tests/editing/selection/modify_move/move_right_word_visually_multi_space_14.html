@@ -1,0 +1,206 @@
+<!doctype html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../assert_selection.js"></script>
+<script>
+if (window.internals)
+  internals.settings.setEditingBehavior('win');
+
+selection_test(
+  '<div contenteditable dir="rtl">|    abc    def    hij    opq    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">    |abc    def    hij    opq    </div>',
+  '14-0 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl"> |   abc    def    hij    opq    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">    |abc    def    hij    opq    </div>',
+  '14-1 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">  |  abc    def    hij    opq    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">    |abc    def    hij    opq    </div>',
+  '14-2 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">   | abc    def    hij    opq    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">    |abc    def    hij    opq    </div>',
+  '14-3 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">    |abc    def    hij    opq    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">    |abc    def    hij    opq    </div>',
+  '14-4 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">    a|bc    def    hij    opq    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">    |abc    def    hij    opq    </div>',
+  '14-5 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">    ab|c    def    hij    opq    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">    |abc    def    hij    opq    </div>',
+  '14-6 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">    abc|    def    hij    opq    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">    |abc    def    hij    opq    </div>',
+  '14-7 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">    abc |   def    hij    opq    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">    |abc    def    hij    opq    </div>',
+  '14-8 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">    abc  |  def    hij    opq    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">    |abc    def    hij    opq    </div>',
+  '14-9 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">    abc   | def    hij    opq    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">    |abc    def    hij    opq    </div>',
+  '14-10 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">    abc    |def    hij    opq    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">    |abc    def    hij    opq    </div>',
+  '14-11 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">    abc    d|ef    hij    opq    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">    abc |   def    hij    opq    </div>',
+  '14-12 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">    abc    de|f    hij    opq    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">    abc |   def    hij    opq    </div>',
+  '14-13 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">    abc    def|    hij    opq    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">    abc |   def    hij    opq    </div>',
+  '14-14 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">    abc    def |   hij    opq    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">    abc |   def    hij    opq    </div>',
+  '14-15 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">    abc    def  |  hij    opq    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">    abc |   def    hij    opq    </div>',
+  '14-16 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">    abc    def   | hij    opq    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">    abc |   def    hij    opq    </div>',
+  '14-17 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">    abc    def    |hij    opq    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">    abc |   def    hij    opq    </div>',
+  '14-18 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">    abc    def    h|ij    opq    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">    abc    def |   hij    opq    </div>',
+  '14-19 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">    abc    def    hi|j    opq    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">    abc    def |   hij    opq    </div>',
+  '14-20 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">    abc    def    hij|    opq    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">    abc    def |   hij    opq    </div>',
+  '14-21 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">    abc    def    hij |   opq    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">    abc    def |   hij    opq    </div>',
+  '14-22 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">    abc    def    hij  |  opq    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">    abc    def |   hij    opq    </div>',
+  '14-23 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">    abc    def    hij   | opq    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">    abc    def |   hij    opq    </div>',
+  '14-24 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">    abc    def    hij    |opq    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">    abc    def |   hij    opq    </div>',
+  '14-25 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">    abc    def    hij    o|pq    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">    abc    def    hij |   opq    </div>',
+  '14-26 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">    abc    def    hij    op|q    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">    abc    def    hij |   opq    </div>',
+  '14-27 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">    abc    def    hij    opq|    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">    abc    def    hij |   opq    </div>',
+  '14-28 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">    abc    def    hij    opq |   </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">    abc    def    hij |   opq    </div>',
+  '14-29 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">    abc    def    hij    opq  |  </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">    abc    def    hij |   opq    </div>',
+  '14-30 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">    abc    def    hij    opq   | </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">    abc    def    hij |   opq    </div>',
+  '14-31 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">    abc    def    hij    opq    |</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">    abc    def    hij |   opq    </div>',
+  '14-32 right word');
+</script>

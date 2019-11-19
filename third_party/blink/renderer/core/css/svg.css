@@ -84,3 +84,23 @@ tspan, textPath {
 *:not(svg), *:not(foreignObject) > svg {
     transform-origin: 0 0;
 }
+
+/* TODO(crbug.com/976224): Support zoom on foreignObject */
+foreignObject {
+    -internal-effective-zoom: initial !important;
+}
+
+/*
+   This is added as to not break SVG content in forced colors mode:
+   https://drafts.csswg.org/css-color-adjust-1/#forced-colors-properties
+*/
+@media forced-colors {
+  svg {
+      forced-color-adjust: none;
+  }
+
+  text, foreignObject {
+      fill: WindowText;
+      forced-color-adjust: auto;
+  }
+}

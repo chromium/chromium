@@ -1,0 +1,3 @@
+document LocalizedControlType='document'
+++group LocalizedControlType='group'
+++++textbox LocalizedControlType='telephone' Value.Value='123-456-7890'

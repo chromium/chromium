@@ -1,0 +1,41 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+
+js_type_check("closure_compile") {
+  deps = [
+    ":plugin_vm_browser_proxy",
+    ":plugin_vm_page",
+    ":plugin_vm_shared_paths",
+    ":plugin_vm_subpage",
+  ]
+}
+
+js_library("plugin_vm_browser_proxy") {
+  deps = [
+    "//ui/webui/resources/js:cr",
+  ]
+}
+
+js_library("plugin_vm_page") {
+  deps = [
+    "..:route",
+    "//ui/webui/resources/js:i18n_behavior",
+  ]
+  externs_list = [ "$externs_path/settings_private.js" ]
+}
+
+js_library("plugin_vm_shared_paths") {
+  deps = [
+    ":plugin_vm_browser_proxy",
+    "..:route",
+  ]
+}
+
+js_library("plugin_vm_subpage") {
+  deps = [
+    "..:route",
+  ]
+}

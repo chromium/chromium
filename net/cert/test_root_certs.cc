@@ -60,19 +60,23 @@ TestRootCerts::TestRootCerts() {
 ScopedTestRoot::ScopedTestRoot() = default;
 
 ScopedTestRoot::ScopedTestRoot(X509Certificate* cert) {
-  Reset(cert);
+  Reset({cert});
+}
+
+ScopedTestRoot::ScopedTestRoot(CertificateList certs) {
+  Reset(std::move(certs));
 }
 
 ScopedTestRoot::~ScopedTestRoot() {
-  Reset(NULL);
+  Reset({});
 }
 
-void ScopedTestRoot::Reset(X509Certificate* cert) {
-  if (cert_.get())
+void ScopedTestRoot::Reset(CertificateList certs) {
+  if (!certs_.empty())
     TestRootCerts::GetInstance()->Clear();
-  if (cert)
-    TestRootCerts::GetInstance()->Add(cert);
-  cert_ = cert;
+  for (const auto& cert : certs)
+    TestRootCerts::GetInstance()->Add(cert.get());
+  certs_ = certs;
 }
 
 }  // namespace net

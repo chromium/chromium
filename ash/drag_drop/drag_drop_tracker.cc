@@ -7,7 +7,7 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/window_factory.h"
-#include "ash/wm/root_window_finder.h"
+#include "ash/wm/window_util.h"
 #include "ui/aura/client/window_parenting_client.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
@@ -70,7 +70,8 @@ aura::Window* DragDropTracker::GetTarget(const ui::LocatedEvent& event) {
   DCHECK(capture_window_.get());
   gfx::Point location_in_screen = event.location();
   ::wm::ConvertPointToScreen(capture_window_.get(), &location_in_screen);
-  aura::Window* root_window_at_point = wm::GetRootWindowAt(location_in_screen);
+  aura::Window* root_window_at_point =
+      window_util::GetRootWindowAt(location_in_screen);
   gfx::Point location_in_root = location_in_screen;
   ::wm::ConvertPointFromScreen(root_window_at_point, &location_in_root);
   return root_window_at_point->GetEventHandlerForPoint(location_in_root);
@@ -85,9 +86,9 @@ ui::LocatedEvent* DragDropTracker::ConvertEvent(aura::Window* target,
   gfx::Point location_in_screen = event.location();
   ::wm::ConvertPointToScreen(capture_window_.get(), &location_in_screen);
   gfx::Point target_root_location = event.root_location();
-  aura::Window::ConvertPointToTarget(capture_window_->GetRootWindow(),
-                                     wm::GetRootWindowAt(location_in_screen),
-                                     &target_root_location);
+  aura::Window::ConvertPointToTarget(
+      capture_window_->GetRootWindow(),
+      window_util::GetRootWindowAt(location_in_screen), &target_root_location);
   int changed_button_flags = 0;
   if (event.IsMouseEvent())
     changed_button_flags = event.AsMouseEvent()->changed_button_flags();

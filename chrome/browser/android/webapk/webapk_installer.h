@@ -60,6 +60,7 @@ class WebApkInstaller {
   static void InstallAsync(content::BrowserContext* context,
                            const ShortcutInfo& shortcut_info,
                            const SkBitmap& primary_icon,
+                           bool is_primary_icon_maskable,
                            const SkBitmap& badge_icon,
                            FinishCallback finish_callback);
 
@@ -76,6 +77,7 @@ class WebApkInstaller {
   static void InstallAsyncForTesting(WebApkInstaller* installer,
                                      const ShortcutInfo& shortcut_info,
                                      const SkBitmap& primary_icon,
+                                     bool is_primary_icon_maskable,
                                      const SkBitmap& badge_icon,
                                      FinishCallback callback);
 
@@ -106,6 +108,8 @@ class WebApkInstaller {
   static void BuildProto(
       const ShortcutInfo& shortcut_info,
       const SkBitmap& primary_icon,
+      bool is_primary_icon_maskable,
+
       const SkBitmap& badge_icon,
       const std::string& package_name,
       const std::string& version,
@@ -120,6 +124,7 @@ class WebApkInstaller {
       const base::FilePath& update_request_path,
       const ShortcutInfo& shortcut_info,
       const SkBitmap& primary_icon,
+      bool is_primary_icon_maskable,
       const SkBitmap& badge_icon,
       const std::string& package_name,
       const std::string& version,
@@ -134,7 +139,6 @@ class WebApkInstaller {
   // Called when the package name of the WebAPK is available and the install
   // or update request should be issued.
   virtual void InstallOrUpdateWebApk(const std::string& package_name,
-                                     int version,
                                      const std::string& token);
 
   // Checks if there is enough space to install a WebAPK.
@@ -158,6 +162,7 @@ class WebApkInstaller {
   // install completed or failed.
   void InstallAsync(const ShortcutInfo& shortcut_info,
                     const SkBitmap& primary_icon,
+                    bool is_primary_icon_maskable,
                     const SkBitmap& badge_icon,
                     FinishCallback finish_callback);
 
@@ -214,6 +219,8 @@ class WebApkInstaller {
   SkBitmap install_primary_icon_;
   SkBitmap install_badge_icon_;
 
+  bool is_primary_icon_maskable_;
+
   base::string16 short_name_;
 
   // WebAPK server URL.
@@ -225,6 +232,9 @@ class WebApkInstaller {
   // WebAPK package name.
   std::string webapk_package_;
 
+  // WebAPK version code.
+  int webapk_version_;
+
   // Whether the server wants the WebAPK to request updates less frequently.
   bool relax_updates_;
 
@@ -235,7 +245,7 @@ class WebApkInstaller {
   base::android::ScopedJavaGlobalRef<jobject> java_ref_;
 
   // Used to get |weak_ptr_|.
-  base::WeakPtrFactory<WebApkInstaller> weak_ptr_factory_;
+  base::WeakPtrFactory<WebApkInstaller> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(WebApkInstaller);
 };

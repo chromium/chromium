@@ -164,7 +164,7 @@ class DatabaseTask : public DatabaseTaskHost {
   BackgroundFetchStorageError storage_error_ =
       BackgroundFetchStorageError::kNone;
 
-  base::WeakPtrFactory<DatabaseTask> weak_ptr_factory_;
+  base::WeakPtrFactory<DatabaseTask> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DatabaseTask);
 };

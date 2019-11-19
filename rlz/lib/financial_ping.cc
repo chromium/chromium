@@ -260,9 +260,9 @@ void ShutdownCheck(scoped_refptr<RefCountedWaitableEvent> event) {
   // How frequently the financial ping thread should check
   // the shutdown condition?
   const base::TimeDelta kInterval = base::TimeDelta::FromMilliseconds(500);
-  base::PostDelayedTaskWithTraits(FROM_HERE, {base::TaskPriority::BEST_EFFORT},
-                                  base::BindOnce(&ShutdownCheck, event),
-                                  kInterval);
+  base::PostDelayedTask(FROM_HERE,
+                        {base::ThreadPool(), base::TaskPriority::BEST_EFFORT},
+                        base::BindOnce(&ShutdownCheck, event), kInterval);
 }
 #endif
 
@@ -306,7 +306,7 @@ void PingRlzServer(std::string url,
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = GURL(url);
   resource_request->load_flags = net::LOAD_DISABLE_CACHE;
-  resource_request->allow_credentials = false;
+  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
 
   auto url_loader = network::SimpleURLLoader::Create(
       std::move(resource_request), traffic_annotation);
@@ -390,15 +390,16 @@ FinancialPing::PingResponse FinancialPing::PingServer(const char* request,
 
   base::subtle::Release_Store(&g_cancelShutdownCheck, 0);
 
-  base::PostTaskWithTraits(FROM_HERE, {base::TaskPriority::BEST_EFFORT},
-                           base::BindOnce(&ShutdownCheck, event));
+  base::PostTask(FROM_HERE,
+                 {base::ThreadPool(), base::TaskPriority::BEST_EFFORT},
+                 base::BindOnce(&ShutdownCheck, event));
 
   // PingRlzServer must be run in a separate sequence so that the TimedWait()
   // call below does not block the URL fetch response from being handled by
   // the URL delegate.
   scoped_refptr<base::SequencedTaskRunner> background_runner(
-      base::CreateSequencedTaskRunnerWithTraits(
-          {base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN,
+      base::CreateSequencedTaskRunner(
+          {base::ThreadPool(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN,
            base::TaskPriority::BEST_EFFORT}));
   background_runner->PostTask(FROM_HERE,
                               base::BindOnce(&PingRlzServer, url, event));

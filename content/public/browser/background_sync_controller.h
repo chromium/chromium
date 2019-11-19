@@ -7,11 +7,17 @@
 
 #include <stdint.h>
 
+#include <set>
+
+#include "base/time/time.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/background_sync_registration.h"
+#include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
+#include "third_party/blink/public/mojom/background_sync/background_sync.mojom-shared.h"
 
 namespace url {
 class Origin;
-}
+}  // namespace url
 
 namespace content {
 
@@ -21,28 +27,87 @@ struct BackgroundSyncParameters;
 // embedder. Must only be used on the UI thread.
 class CONTENT_EXPORT BackgroundSyncController {
  public:
+  class BackgroundSyncEventKeepAlive {
+   public:
+    virtual ~BackgroundSyncEventKeepAlive() = default;
+
+   protected:
+    BackgroundSyncEventKeepAlive() = default;
+  };
+
   virtual ~BackgroundSyncController() {}
 
   // This function allows the controller to alter the parameters used by
   // background sync. Note that disable can be overridden from false to true
   // but overrides from true to false will be ignored.
-  virtual void GetParameterOverrides(
-      BackgroundSyncParameters* parameters) const {}
+  virtual void GetParameterOverrides(BackgroundSyncParameters* parameters) {}
 
   // Notification that a service worker registration with origin |origin| just
-  // registered a background sync event.
-  virtual void NotifyBackgroundSyncRegistered(const url::Origin& origin) {}
+  // registered a one-shot background sync event. Also includes information
+  // about the registration.
+  virtual void NotifyOneShotBackgroundSyncRegistered(const url::Origin& origin,
+                                                     bool can_fire,
+                                                     bool is_reregistered) {}
 
-  // If |enabled|, ensures that the browser is running when the device next goes
-  // online after |min_ms| has passed. The behavior is platform dependent:
-  // * Android: Registers a GCM task which verifies that the browser is running
-  // the next time the device goes online after |min_ms| has passed. If it's
-  // not, it starts it.
-  //
-  // * Other Platforms: (UNIMPLEMENTED) Keeps the browser alive via
-  // BackgroundModeManager until called with |enabled| = false. |min_ms| is
-  // ignored.
-  virtual void RunInBackground(bool enabled, int64_t min_ms) {}
+  // Notification that a service worker registration with origin |origin| just
+  // registered a periodic background sync event. Also includes information
+  // about the registration.
+  virtual void NotifyPeriodicBackgroundSyncRegistered(const url::Origin& origin,
+                                                      int min_interval,
+                                                      bool is_reregistered) {}
+
+  // Notification that a service worker registration with origin |origin| just
+  // completed a one-shot background sync registration. Also include the
+  // |status_code| the registration finished with, the number of attempts, and
+  // the max allowed number of attempts.
+  virtual void NotifyOneShotBackgroundSyncCompleted(
+      const url::Origin& origin,
+      blink::ServiceWorkerStatusCode status_code,
+      int num_attempts,
+      int max_attempts) {}
+
+  // Notification that a service worker registration with origin |origin| just
+  // completed a periodic background sync registration. Also include the
+  // |status_code| the registration finished with, the number of attempts, and
+  // the max allowed number of attempts.
+  virtual void NotifyPeriodicBackgroundSyncCompleted(
+      const url::Origin& origin,
+      blink::ServiceWorkerStatusCode status_code,
+      int num_attempts,
+      int max_attempts) {}
+
+  // Schedules a background task with delay |delay| to wake up the browser to
+  // process Background Sync registrations of type |sync_type|.
+  virtual void ScheduleBrowserWakeUpWithDelay(
+      blink::mojom::BackgroundSyncType sync_type,
+      base::TimeDelta delay) {}
+
+  // Cancel the background task that wakes the browser up to process Background
+  // Sync registrations of type |sync_type|.
+  virtual void CancelBrowserWakeup(blink::mojom::BackgroundSyncType sync_type) {
+  }
+
+  // Calculates the delay after which the next sync event should be fired
+  // for a BackgroundSync registration. The delay is based on the sync_type of
+  // the |registration|, the |parameters| for the feature, the soonest time
+  // a (periodic)sync event is scheduled to fire for this origin, and other
+  // browser-specific considerations.
+  virtual base::TimeDelta GetNextEventDelay(
+      const BackgroundSyncRegistration& registration,
+      content::BackgroundSyncParameters* parameters,
+      base::TimeDelta time_till_soonest_scheduled_event_for_origin) = 0;
+
+  // Keeps the browser alive to allow a one-shot Background Sync registration
+  // to finish firing one sync event.
+  virtual std::unique_ptr<BackgroundSyncEventKeepAlive>
+  CreateBackgroundSyncEventKeepAlive() = 0;
+
+  // Updates its internal list of origins for which we have suspended periodic
+  // Background Sync registrations. This is compiled from each
+  // BackgroundSyncManager when they are initialized. This list used to ignore
+  // changes concerning origins we don't care about.
+  virtual void NoteSuspendedPeriodicSyncOrigins(
+      std::set<url::Origin> suspended_origins) = 0;
 };
 
 }  // namespace content

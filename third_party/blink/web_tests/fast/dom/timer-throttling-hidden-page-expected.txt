@@ -1,19 +1,16 @@
-Bug 98474: Throttle DOM timers on hidden pages and bug 400343 prerender pages.
+Bug 98474: Throttle DOM timers on hidden pages.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-
-PASS timerIntervalWhilePageVisible is within 20 of 100
-PASS firstTimerIntervalWhilePageNotVisible is >= 80
-PASS firstTimerIntervalWhilePageNotVisible <= 1120 is true
-PASS timerIntervalWhilePageNotVisible is within 20 of 1000
-PASS timerIntervalWhilePageVisible is within 20 of 100
-PASS timerIntervalWhilePageVisible is within 20 of 100
-PASS firstTimerIntervalWhilePageNotVisible is >= 80
-PASS firstTimerIntervalWhilePageNotVisible <= 1120 is true
-PASS timerIntervalWhilePageNotVisible is within 20 of 1000
-PASS timerIntervalWhilePageVisible is within 20 of 100
+PASS timerIntervalWhilePageVisible is within 200 of 100
+PASS firstTimerIntervalWhilePageNotVisible is >= 0
+PASS firstTimerIntervalWhilePageNotVisible <= 1300 is true
+PASS timerIntervalWhilePageNotVisible is within 200 of 1000
+PASS timerIntervalWhilePageVisible is within 200 of 100
+PASS timerIntervalWhilePageVisible is within 200 of 100
 PASS successfullyParsed is true
 
 TEST COMPLETE
-This test measures the time taken to fire a 100ms DOM Timer when the page visibility is set to "visible", "hidden", "visible", "prerender" and then back to "visible". Due to page timer throttling, the timer should fire close to 1s when page is hidden or prerender. And it should fire close to 100ms, when the page is visible.
+
+
+This test measures the time taken to fire a 100ms DOM Timer when the page visibility is set to "visible", "hidden", and then back to "visible". Due to page timer throttling, the timer should fire close to 1s when page is hidden. And it should fire close to 100ms, when the page is visible.

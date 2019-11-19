@@ -40,8 +40,10 @@ bool AudioPreSpawnTarget(sandbox::TargetPolicy* policy) {
   // (0x80070005) when trying to get a reference to ISimpleAudioVolume
   // interface. See
   // https://cs.chromium.org/chromium/src/media/audio/win/audio_low_latency_input_win.cc
+  // Use USER_RESTRICTED_NON_ADMIN over USER_NON_ADMIN to prevent failures when
+  // AppLocker and similar application whitelisting solutions are in place.
   policy->SetTokenLevel(sandbox::USER_RESTRICTED_SAME_ACCESS,
-                        sandbox::USER_NON_ADMIN);
+                        sandbox::USER_RESTRICTED_NON_ADMIN);
   policy->SetDelayedIntegrityLevel(sandbox::INTEGRITY_LEVEL_LOW);
 
   // Custom default policy allowing audio drivers to read device properties

@@ -32,6 +32,7 @@
 
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
 
@@ -94,21 +95,21 @@ inline uint16_t ToInterfaceConstant(CSSPrimitiveValue::UnitType type) {
   }
 }
 
-}  // namespace
-
-bool SVGLengthTearOff::HasExposedLengthUnit() {
-  if (Target()->IsCalculated())
+bool HasExposedLengthUnit(const SVGLength& length) {
+  if (length.IsCalculated())
     return false;
 
-  CSSPrimitiveValue::UnitType unit = Target()->TypeWithCalcResolved();
+  CSSPrimitiveValue::UnitType unit = length.NumericLiteralType();
   return IsValidLengthUnit(unit) ||
          unit == CSSPrimitiveValue::UnitType::kUnknown ||
          unit == CSSPrimitiveValue::UnitType::kUserUnits;
 }
 
+}  // namespace
+
 uint16_t SVGLengthTearOff::unitType() {
-  return HasExposedLengthUnit()
-             ? ToInterfaceConstant(Target()->TypeWithCalcResolved())
+  return HasExposedLengthUnit(*Target())
+             ? ToInterfaceConstant(Target()->NumericLiteralType())
              : kSvgLengthtypeUnknown;
 }
 
@@ -165,10 +166,7 @@ void SVGLengthTearOff::setValueInSpecifiedUnits(
 }
 
 String SVGLengthTearOff::valueAsString() {
-  // TODO(shanmuga.m@samsung.com): Not all <length> properties have 0 (with no
-  // unit) as the default (lacuna) value. We need to return default value
-  // instead of 0.
-  return HasExposedLengthUnit() ? Target()->ValueAsString() : String::Number(0);
+  return Target()->ValueAsString();
 }
 
 void SVGLengthTearOff::setValueAsString(const String& str,
@@ -177,12 +175,7 @@ void SVGLengthTearOff::setValueAsString(const String& str,
     ThrowReadOnly(exception_state);
     return;
   }
-  String old_value = Target()->ValueAsString();
   SVGParsingError status = Target()->SetValueAsString(str);
-  if (status == SVGParseStatus::kNoError && !HasExposedLengthUnit()) {
-    Target()->SetValueAsString(old_value);  // rollback to old value
-    status = SVGParseStatus::kParsingFailed;
-  }
   if (status != SVGParseStatus::kNoError) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,
@@ -243,7 +236,8 @@ SVGLengthTearOff::SVGLengthTearOff(SVGLength* target,
     : SVGPropertyTearOff<SVGLength>(target, binding, property_is_anim_val) {}
 
 SVGLengthTearOff* SVGLengthTearOff::CreateDetached() {
-  return Create(SVGLength::Create(), nullptr, kPropertyIsNotAnimVal);
+  return MakeGarbageCollected<SVGLengthTearOff>(
+      MakeGarbageCollected<SVGLength>(), nullptr, kPropertyIsNotAnimVal);
 }
 
 }  // namespace blink

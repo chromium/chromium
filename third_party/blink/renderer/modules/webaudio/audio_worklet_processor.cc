@@ -21,7 +21,7 @@ AudioWorkletProcessor* AudioWorkletProcessor::Create(
   ProcessorCreationParams* params = global_scope->GetProcessorCreationParams();
   DCHECK(params);
 
-  MessagePort* port = MessagePort::Create(*global_scope);
+  auto* port = MakeGarbageCollected<MessagePort>(*global_scope);
   port->Entangle(std::move(params->PortChannel()));
   return MakeGarbageCollected<AudioWorkletProcessor>(global_scope,
                                                      params->Name(), port);

@@ -11,7 +11,6 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
 #include "base/strings/pattern.h"
 #include "base/strings/stringprintf.h"
@@ -20,8 +19,8 @@
 #include "base/values.h"
 #include "services/tracing/public/mojom/perfetto_service.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/perfetto/include/perfetto/ext/tracing/core/trace_packet.h"
 #include "third_party/perfetto/include/perfetto/tracing/core/trace_config.h"
-#include "third_party/perfetto/include/perfetto/tracing/core/trace_packet.h"
 #include "third_party/perfetto/protos/perfetto/trace/chrome/chrome_trace_event.pb.h"
 #include "third_party/perfetto/protos/perfetto/trace/trace_packet.pb.h"
 
@@ -85,8 +84,10 @@ struct FakeTraceInfo {
 class TestJSONTraceExporter : public JSONTraceExporter {
  public:
   TestJSONTraceExporter(ArgumentFilterPredicate argument_filter_predicate,
+                        MetadataFilterPredicate metadata_filter_predicate,
                         OnTraceEventJSONCallback callback)
       : JSONTraceExporter(std::move(argument_filter_predicate),
+                          std::move(metadata_filter_predicate),
                           std::move(callback)) {}
   ~TestJSONTraceExporter() override = default;
 
@@ -102,8 +103,8 @@ class TestJSONTraceExporter : public JSONTraceExporter {
   std::vector<perfetto::protos::TraceStats> stats;
 
  protected:
-  void ProcessPackets(
-      const std::vector<perfetto::TracePacket>& packets) override {
+  void ProcessPackets(const std::vector<perfetto::TracePacket>& packets,
+                      bool has_more) override {
     ++process_packets_calls_;
     DCHECK(packets.size() == infos_.size())
         << " different sizes of packets versus expected behaviour test set up "
@@ -189,14 +190,16 @@ class JsonTraceExporterTest : public testing::Test {
   JsonTraceExporterTest()
       : json_trace_exporter_(new TestJSONTraceExporter(
             JSONTraceExporter::ArgumentFilterPredicate(),
+            JSONTraceExporter::MetadataFilterPredicate(),
             base::BindRepeating(&JsonTraceExporterTest::OnTraceEventJSON,
                                 base::Unretained(this)))) {}
 
-  void OnTraceEventJSON(const std::string& json,
+  void OnTraceEventJSON(std::string* json,
                         base::DictionaryValue* metadata,
                         bool has_more) {
-    unparsed_trace_data_ += json;
-    unparsed_trace_data_sequence_.push_back(json);
+    unparsed_trace_data_ += *json;
+    unparsed_trace_data_sequence_.push_back(std::string());
+    unparsed_trace_data_sequence_.back().swap(*json);
     if (has_more) {
       return;
     }
@@ -204,7 +207,7 @@ class JsonTraceExporterTest : public testing::Test {
         base::JSONReader::ReadDeprecated(unparsed_trace_data_));
     EXPECT_TRUE(parsed_trace_data_);
     if (!parsed_trace_data_) {
-      LOG(ERROR) << "Couldn't parse json: \n" << json;
+      LOG(ERROR) << "Couldn't parse json: \n" << unparsed_trace_data_;
     }
 
     // The TraceAnalyzer expects the raw trace output, without the
@@ -519,21 +522,6 @@ TEST_F(JsonTraceExporterTest, TestFtraceLegacyOutput) {
       unparsed_trace_data_);
 }
 
-TEST_F(JsonTraceExporterTest, TestLegacySystemTrace) {
-  json_trace_exporter_->json_traces.emplace_back();
-  auto& trace = json_trace_exporter_->json_traces.back();
-  trace.set_type(perfetto::protos::ChromeLegacyJsonTrace::SYSTEM_TRACE);
-  trace.set_data("\"bool\":true");
-  json_trace_exporter_->json_traces.push_back(trace);
-  json_trace_exporter_->json_traces.back().set_data("\"double\":8.0");
-  json_trace_exporter_->OnTraceData(std::vector<perfetto::TracePacket>(),
-                                    false);
-  EXPECT_EQ(
-      "{\"traceEvents\":[],"
-      "\"systemTraceEvents\":{\"bool\":true,\"double\":8.0}}",
-      unparsed_trace_data_);
-}
-
 TEST_F(JsonTraceExporterTest, TestLegacyJsonTrace) {
   json_trace_exporter_->json_traces.emplace_back();
   auto& trace = json_trace_exporter_->json_traces.back();
@@ -543,7 +531,7 @@ TEST_F(JsonTraceExporterTest, TestLegacyJsonTrace) {
       "\"cat\":\"cat\",\"name\":\"name_1\",\"args\":{}}");
   json_trace_exporter_->json_traces.push_back(trace);
   json_trace_exporter_->json_traces.back().set_data(
-      "{\"pid\":2,\"tid\":3,\"ts\":1,\"ph\":\"B\","
+      ",\n{\"pid\":2,\"tid\":3,\"ts\":1,\"ph\":\"B\","
       "\"cat\":\"cat\",\"name\":\"name_2\",\"args\":{}}");
   json_trace_exporter_->OnTraceData(std::vector<perfetto::TracePacket>(),
                                     false);
@@ -613,6 +601,33 @@ TEST_F(JsonTraceExporterTest, TestMetadata) {
             "{\"traceEvents\":[],"
             "\"metadata\":{\"metadata_1\":true,"
             "\"metadata_2\":{\"dict\":{\"bool\":true}}}}");
+}
+
+TEST_F(JsonTraceExporterTest, TestMetadataFiltering) {
+  json_trace_exporter_->SetMetdataFilterPredicateForTesting(
+      base::BindRepeating([](const std::string& name) -> bool {
+        return name.find("2") != std::string::npos;
+      }));
+
+  json_trace_exporter_->metadata.emplace_back();
+  auto& m1 = json_trace_exporter_->metadata.back();
+  m1.set_name("metadata_1");
+  m1.set_bool_value(true);
+  json_trace_exporter_->metadata.emplace_back();
+  auto& m2 = json_trace_exporter_->metadata.back();
+  m2.set_name("metadata_20");
+  m2.set_int_value(50);
+  json_trace_exporter_->metadata.emplace_back();
+  auto& m3 = json_trace_exporter_->metadata.back();
+  m3.set_name("metadata_21");
+  m3.set_json_value("{\"dict\":{\"bool\":true}}");
+  json_trace_exporter_->OnTraceData(std::vector<perfetto::TracePacket>(),
+                                    false);
+  EXPECT_EQ(unparsed_trace_data_,
+            "{\"traceEvents\":[],"
+            "\"metadata\":{\"metadata_1\":\"__stripped__\","
+            "\"metadata_20\":50,"
+            "\"metadata_21\":{\"dict\":{\"bool\":true}}}}");
 }
 
 TEST_F(JsonTraceExporterTest, ComplexMultipleCallback) {

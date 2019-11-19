@@ -168,8 +168,7 @@ AppManagerImpl::AppManagerImpl(const base::TickClock* tick_clock)
     : tick_clock_(tick_clock),
       extensions_observer_(this),
       lock_screen_profile_extensions_observer_(this),
-      note_taking_helper_observer_(this),
-      weak_ptr_factory_(this) {}
+      note_taking_helper_observer_(this) {}
 
 AppManagerImpl::~AppManagerImpl() = default;
 

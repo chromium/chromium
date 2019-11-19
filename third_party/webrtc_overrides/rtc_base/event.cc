@@ -28,13 +28,13 @@ void Event::Reset() {
   event_.Reset();
 }
 
-bool Event::Wait(int milliseconds) {
-  if (milliseconds == kForever) {
+bool Event::Wait(int give_up_after_ms) {
+  if (give_up_after_ms == kForever) {
     event_.Wait();
     return true;
   }
 
-  return event_.TimedWait(base::TimeDelta::FromMilliseconds(milliseconds));
+  return event_.TimedWait(base::TimeDelta::FromMilliseconds(give_up_after_ms));
 }
 
 }  // namespace rtc

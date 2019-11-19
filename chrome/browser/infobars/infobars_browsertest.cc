@@ -11,8 +11,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
-#include "chrome/browser/banners/app_banner_infobar_delegate_desktop.h"
-#include "chrome/browser/data_use_measurement/page_load_capping/page_load_capping_infobar_delegate.h"
 #include "chrome/browser/devtools/devtools_infobar_delegate.h"
 #include "chrome/browser/extensions/api/debugger/extension_dev_tools_infobar.h"
 #include "chrome/browser/extensions/api/messaging/incognito_connectability_infobar_delegate.h"
@@ -24,37 +22,38 @@
 #include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/installable/installable_metrics.h"
 #include "chrome/browser/pepper_broker_infobar_delegate.h"
+#include "chrome/browser/plugins/flash_deprecation_infobar_delegate.h"
 #include "chrome/browser/plugins/hung_plugin_infobar_delegate.h"
 #include "chrome/browser/plugins/plugin_infobar_delegates.h"
 #include "chrome/browser/plugins/plugin_metadata.h"
 #include "chrome/browser/plugins/plugin_observer.h"
 #include "chrome/browser/plugins/reload_plugin_infobar_delegate.h"
-#include "chrome/browser/previews/previews_infobar_delegate.h"
 #include "chrome/browser/previews/previews_lite_page_infobar_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
-#include "chrome/browser/ui/bloated_renderer/bloated_renderer_tab_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/browser/ui/collected_cookies_infobar_delegate.h"
 #include "chrome/browser/ui/extensions/installation_error_infobar_delegate.h"
-#include "chrome/browser/ui/omnibox/alternate_nav_infobar_delegate.h"
 #include "chrome/browser/ui/page_info/page_info_infobar_delegate.h"
 #include "chrome/browser/ui/startup/automation_infobar_delegate.h"
 #include "chrome/browser/ui/startup/bad_flags_prompt.h"
 #include "chrome/browser/ui/startup/google_api_keys_infobar_delegate.h"
 #include "chrome/browser/ui/startup/obsolete_system_infobar_delegate.h"
+#include "chrome/browser/ui/tab_sharing/tab_sharing_infobar_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/test/test_browser_ui.h"
+#include "chrome/browser/ui/test/test_infobar.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/crx_file/crx_verifier.h"
 #include "components/infobars/core/infobar.h"
 #include "components/nacl/common/buildflags.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/sandboxed_unpacker.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/service_manager/sandbox/switches.h"
@@ -105,6 +104,8 @@ class InfoBarsTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(InfoBarsTest, TestInfoBarsCloseOnNewTheme) {
+  extensions::SandboxedUnpacker::ScopedVerifierFormatOverrideForTest
+      verifier_format_override(crx_file::VerifierFormat::CRX3);
   extensions::ScopedTestDialogAutoConfirm auto_confirm(
       extensions::ScopedTestDialogAutoConfirm::ACCEPT);
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -154,46 +155,21 @@ IN_PROC_BROWSER_TEST_F(InfoBarsTest, TestInfoBarsCloseOnNewTheme) {
   }
 }
 
-class InfoBarUiTest : public UiBrowserTest {
+class InfoBarUiTest : public TestInfoBar {
  public:
   InfoBarUiTest() = default;
 
-  // UiBrowserTest:
-  void PreShow() override;
+  // TestInfoBar:
   void ShowUi(const std::string& name) override;
-  bool VerifyUi() override;
-  void WaitForUserDismissal() override;
 
  private:
   using IBD = infobars::InfoBarDelegate;
-  using InfoBars = infobars::InfoBarManager::InfoBars;
-
-  // Returns the active tab.
-  content::WebContents* GetWebContents();
-  const content::WebContents* GetWebContents() const;
-
-  // Returns the InfoBarService associated with the active tab.
-  InfoBarService* GetInfoBarService();
-  const InfoBarService* GetInfoBarService() const;
-
-  // Returns the current infobars that are not already in |starting_infobars_|.
-  // Fails (i.e. returns nullopt) if the current set of infobars does not begin
-  // with |starting_infobars_|.
-  base::Optional<InfoBars> GetNewInfoBars() const;
-
-  InfoBars starting_infobars_;
-  std::vector<IBD::InfoBarIdentifier> expected_identifiers_;
 
   DISALLOW_COPY_AND_ASSIGN(InfoBarUiTest);
 };
 
-void InfoBarUiTest::PreShow() {
-  starting_infobars_ = GetNewInfoBars().value();
-}
-
 void InfoBarUiTest::ShowUi(const std::string& name) {
   if (name == "multiple_infobars") {
-    ShowUi("app_banner");
     ShowUi("hung_plugin");
     ShowUi("dev_tools");
     ShowUi("extension_dev_tools");
@@ -203,7 +179,6 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
   }
 
   const base::flat_map<std::string, IBD::InfoBarIdentifier> kIdentifiers = {
-      {"app_banner", IBD::APP_BANNER_INFOBAR_DELEGATE},
       {"hung_plugin", IBD::HUNG_PLUGIN_INFOBAR_DELEGATE},
       {"dev_tools", IBD::DEV_TOOLS_INFOBAR_DELEGATE},
       {"extension_dev_tools", IBD::EXTENSION_DEV_TOOLS_INFOBAR_DELEGATE},
@@ -219,31 +194,25 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
       {"keystone_promotion", IBD::KEYSTONE_PROMOTION_INFOBAR_DELEGATE_MAC},
       {"collected_cookies", IBD::COLLECTED_COOKIES_INFOBAR_DELEGATE},
       {"installation_error", IBD::INSTALLATION_ERROR_INFOBAR_DELEGATE},
-      {"alternate_nav", IBD::ALTERNATE_NAV_INFOBAR_DELEGATE},
       {"bad_flags", IBD::BAD_FLAGS_INFOBAR_DELEGATE},
       {"default_browser", IBD::DEFAULT_BROWSER_INFOBAR_DELEGATE},
       {"google_api_keys", IBD::GOOGLE_API_KEYS_INFOBAR_DELEGATE},
       {"obsolete_system", IBD::OBSOLETE_SYSTEM_INFOBAR_DELEGATE},
       {"page_info", IBD::PAGE_INFO_INFOBAR_DELEGATE},
       {"translate", IBD::TRANSLATE_INFOBAR_DELEGATE_NON_AURA},
-      {"data_reduction_proxy_preview",
-       IBD::DATA_REDUCTION_PROXY_PREVIEW_INFOBAR_DELEGATE},
       {"automation", IBD::AUTOMATION_INFOBAR_DELEGATE},
-      {"page_load_capping", IBD::PAGE_LOAD_CAPPING_INFOBAR_DELEGATE},
-      {"bloated_renderer", IBD::BLOATED_RENDERER_INFOBAR_DELEGATE},
       {"previews_lite_page", IBD::LITE_PAGE_PREVIEWS_INFOBAR},
+      {"flash_deprecation", IBD::FLASH_DEPRECATION_INFOBAR_DELEGATE},
+      {"tab_sharing", IBD::TAB_SHARING_INFOBAR_DELEGATE},
   };
-  auto id = kIdentifiers.find(name);
-  expected_identifiers_.push_back((id == kIdentifiers.end()) ? IBD::INVALID
-                                                             : id->second);
-
-  switch (expected_identifiers_.back()) {
-    case IBD::APP_BANNER_INFOBAR_DELEGATE:
-      banners::AppBannerInfoBarDelegateDesktop::Create(
-          GetWebContents(), nullptr,
-          WebappInstallSource::AUTOMATIC_PROMPT_BROWSER_TAB, blink::Manifest());
-      break;
-
+  auto id_entry = kIdentifiers.find(name);
+  if (id_entry == kIdentifiers.end()) {
+    ADD_FAILURE() << "Unexpected infobar " << name;
+    return;
+  }
+  auto infobar_identifier = id_entry->second;
+  AddExpectedInfoBar(infobar_identifier);
+  switch (infobar_identifier) {
     case IBD::HUNG_PLUGIN_INFOBAR_DELEGATE:
       HungPluginInfoBarDelegate::Create(GetInfoBarService(), nullptr, 0,
                                         base::ASCIIToUTF16("Test Plugin"));
@@ -275,9 +244,11 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
 
     case IBD::THEME_INSTALLED_INFOBAR_DELEGATE:
       ThemeInstalledInfoBarDelegate::Create(
-          GetInfoBarService(), nullptr,
+          GetInfoBarService(),
           ThemeServiceFactory::GetForProfile(browser()->profile()), "New Theme",
-          "id", ThemeService::kDefaultThemeID, true);
+          "id",
+          std::make_unique<ThemeService::ThemeReinstaller>(
+              browser()->profile(), base::OnceClosure()));
       break;
 
     case IBD::NACL_INFOBAR_DELEGATE:
@@ -300,7 +271,7 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
           GetInfoBarService(), nullptr,
           std::make_unique<PluginMetadata>(
               "test-plugin", base::ASCIIToUTF16("Test Plugin"), true, GURL(),
-              GURL(), base::ASCIIToUTF16("Test"), std::string()));
+              GURL(), base::ASCIIToUTF16("Test"), std::string(), false));
       break;
 
     case IBD::RELOAD_PLUGIN_INFOBAR_DELEGATE:
@@ -340,15 +311,6 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
               extensions::CrxInstallErrorType::OTHER,
               extensions::CrxInstallErrorDetail::OFFSTORE_INSTALL_DISALLOWED,
               msg));
-      break;
-    }
-
-    case IBD::ALTERNATE_NAV_INFOBAR_DELEGATE: {
-      AutocompleteMatch match;
-      match.destination_url = GURL("http://intranetsite/");
-      AlternateNavInfoBarDelegate::CreateForOmniboxNavigation(
-          GetWebContents(), base::string16(), match,
-          GURL("http://example.com/"));
       break;
     }
 
@@ -401,86 +363,26 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
       break;
     }
 
-    case IBD::DATA_REDUCTION_PROXY_PREVIEW_INFOBAR_DELEGATE:
-      PreviewsInfoBarDelegate::Create(
-          GetWebContents(), previews::PreviewsType::LOFI, true, nullptr);
-      break;
-
     case IBD::AUTOMATION_INFOBAR_DELEGATE:
       AutomationInfoBarDelegate::Create();
-      break;
-
-    case IBD::PAGE_LOAD_CAPPING_INFOBAR_DELEGATE:
-      PageLoadCappingInfoBarDelegate::Create(
-          GetWebContents(), base::DoNothing(), base::DoNothing());
-      break;
-
-    case IBD::BLOATED_RENDERER_INFOBAR_DELEGATE:
-      BloatedRendererTabHelper::ShowInfoBar(GetInfoBarService());
       break;
 
     case IBD::LITE_PAGE_PREVIEWS_INFOBAR:
       PreviewsLitePageInfoBarDelegate::Create(GetWebContents());
       break;
 
+    case IBD::FLASH_DEPRECATION_INFOBAR_DELEGATE:
+      FlashDeprecationInfoBarDelegate::Create(GetInfoBarService(), nullptr);
+      break;
+    case IBD::TAB_SHARING_INFOBAR_DELEGATE:
+      TabSharingInfoBarDelegate::Create(
+          GetInfoBarService(), base::ASCIIToUTF16("example.com"),
+          base::ASCIIToUTF16("application.com"), true, nullptr);
+      break;
+
     default:
       break;
   }
-}
-
-bool InfoBarUiTest::VerifyUi() {
-  base::Optional<InfoBars> infobars = GetNewInfoBars();
-  if (!infobars)
-    return false;
-  return std::equal(infobars->begin(), infobars->end(),
-                    expected_identifiers_.begin(), expected_identifiers_.end(),
-                    [](infobars::InfoBar* infobar, IBD::InfoBarIdentifier id) {
-                      return infobar->delegate()->GetIdentifier() == id;
-                    });
-}
-
-void InfoBarUiTest::WaitForUserDismissal() {
-  while (!GetNewInfoBars().value_or(InfoBars()).empty()) {
-    InfoBarObserver observer(GetInfoBarService(),
-                             InfoBarObserver::Type::kInfoBarRemoved);
-    observer.Wait();
-  }
-}
-
-content::WebContents* InfoBarUiTest::GetWebContents() {
-  return browser()->tab_strip_model()->GetActiveWebContents();
-}
-
-const content::WebContents* InfoBarUiTest::GetWebContents() const {
-  return browser()->tab_strip_model()->GetActiveWebContents();
-}
-
-InfoBarService* InfoBarUiTest::GetInfoBarService() {
-  return const_cast<InfoBarService*>(
-      static_cast<const InfoBarUiTest*>(this)->GetInfoBarService());
-}
-
-const InfoBarService* InfoBarUiTest::GetInfoBarService() const {
-  // There may be no web contents if the browser window is closing.
-  const content::WebContents* web_contents = GetWebContents();
-  return web_contents ? InfoBarService::FromWebContents(web_contents) : nullptr;
-}
-
-base::Optional<InfoBarUiTest::InfoBars> InfoBarUiTest::GetNewInfoBars() const {
-  const InfoBarService* infobar_service = GetInfoBarService();
-  if (!infobar_service)
-    return base::nullopt;
-  const InfoBars& infobars = infobar_service->infobars_;
-  if ((infobars.size() < starting_infobars_.size()) ||
-      !std::equal(starting_infobars_.begin(), starting_infobars_.end(),
-                  infobars.begin()))
-    return base::nullopt;
-  return InfoBars(std::next(infobars.begin(), starting_infobars_.size()),
-                  infobars.end());
-}
-
-IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_app_banner) {
-  ShowAndVerifyUi();
 }
 
 IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_hung_plugin) {
@@ -543,10 +445,6 @@ IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_installation_error) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_alternate_nav) {
-  ShowAndVerifyUi();
-}
-
 IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_bad_flags) {
   ShowAndVerifyUi();
 }
@@ -575,23 +473,19 @@ IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_translate) {
 }
 #endif
 
-IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_data_reduction_proxy_preview) {
-  ShowAndVerifyUi();
-}
-
 IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_automation) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_page_load_capping) {
-  ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_bloated_renderer) {
-  ShowAndVerifyUi();
-}
-
 IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_previews_lite_page) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_flash_deprecation) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_tab_sharing) {
   ShowAndVerifyUi();
 }
 

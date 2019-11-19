@@ -1,0 +1,7 @@
+document
+++heading Name='Heading 1'
+++heading Name='Heading 2'
+++heading Name='Heading 3'
+++heading Name='Heading 4'
+++heading Name='Heading 5'
+++heading Name='Heading 6'

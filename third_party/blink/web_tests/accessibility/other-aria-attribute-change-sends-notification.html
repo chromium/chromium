@@ -3,7 +3,6 @@
 <head>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 </head>
 <body>
 
@@ -15,7 +14,7 @@
 </div>
 
 <script>
-async_test_after_layout_and_paint((t) => {
+async_test((t) => {
     function accessibleElementById(id) {
         return accessibilityController.accessibleElementById(id);
     }

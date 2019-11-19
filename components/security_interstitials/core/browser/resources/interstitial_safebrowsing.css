@@ -64,7 +64,7 @@ body.safe-browsing {
        (max-height: 560px) {
   body.safe-browsing .nav-wrapper {
     background: var(--google-red-600);
-    box-shadow: 0 -22px 40px var(--google-red-600);
+    box-shadow: 0 -12px 24px var(--google-red-600);
   }
 }
 

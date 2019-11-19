@@ -12,8 +12,10 @@
 #include "base/base64.h"
 #include "content/browser/devtools/devtools_agent_host_impl.h"
 #include "content/browser/frame_host/render_frame_host_impl.h"
+#include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/security_style_explanations.h"
 #include "content/public/browser/ssl_status.h"
 #include "content/public/browser/web_contents.h"
@@ -30,16 +32,18 @@ using Explanations = protocol::Array<Security::SecurityStateExplanation>;
 namespace {
 
 std::string SecurityStyleToProtocolSecurityState(
-    blink::WebSecurityStyle security_style) {
+    blink::SecurityStyle security_style) {
   switch (security_style) {
-    case blink::kWebSecurityStyleUnknown:
+    case blink::SecurityStyle::kUnknown:
       return Security::SecurityStateEnum::Unknown;
-    case blink::kWebSecurityStyleNeutral:
+    case blink::SecurityStyle::kNeutral:
       return Security::SecurityStateEnum::Neutral;
-    case blink::kWebSecurityStyleInsecure:
+    case blink::SecurityStyle::kInsecure:
       return Security::SecurityStateEnum::Insecure;
-    case blink::kWebSecurityStyleSecure:
+    case blink::SecurityStyle::kSecure:
       return Security::SecurityStateEnum::Secure;
+    case blink::SecurityStyle::kInsecureBroken:
+      return Security::SecurityStateEnum::InsecureBroken;
     default:
       NOTREACHED();
       return Security::SecurityStateEnum::Unknown;
@@ -70,29 +74,25 @@ void AddExplanations(
     const std::vector<SecurityStyleExplanation>& explanations_to_add,
     Explanations* explanations) {
   for (const auto& it : explanations_to_add) {
-    std::unique_ptr<protocol::Array<String>> certificate =
-        protocol::Array<String>::create();
+    auto certificate = std::make_unique<protocol::Array<String>>();
     if (it.certificate) {
-      std::string encoded;
+      certificate->emplace_back();
       base::Base64Encode(net::x509_util::CryptoBufferAsStringPiece(
                              it.certificate->cert_buffer()),
-                         &encoded);
-      certificate->addItem(encoded);
+                         &certificate->back());
 
       for (const auto& cert : it.certificate->intermediate_buffers()) {
+        certificate->emplace_back();
         base::Base64Encode(
-            net::x509_util::CryptoBufferAsStringPiece(cert.get()), &encoded);
-        certificate->addItem(encoded);
+            net::x509_util::CryptoBufferAsStringPiece(cert.get()),
+            &certificate->back());
       }
     }
 
-    std::unique_ptr<protocol::Array<String>> recommendations =
-        protocol::Array<String>::create();
-    for (const auto& recommendation : it.recommendations) {
-      recommendations->addItem(recommendation);
-    }
+    auto recommendations =
+        std::make_unique<protocol::Array<String>>(it.recommendations);
 
-    explanations->addItem(
+    explanations->emplace_back(
         Security::SecurityStateExplanation::Create()
             .SetSecurityState(security_style)
             .SetTitle(it.title)
@@ -151,14 +151,14 @@ void SecurityHandler::DidChangeVisibleSecurityState() {
     return;
 
   SecurityStyleExplanations security_style_explanations;
-  blink::WebSecurityStyle security_style =
+  blink::SecurityStyle security_style =
       web_contents()->GetDelegate()->GetSecurityStyle(
           web_contents(), &security_style_explanations);
 
   const std::string security_state =
       SecurityStyleToProtocolSecurityState(security_style);
 
-  std::unique_ptr<Explanations> explanations = Explanations::create();
+  auto explanations = std::make_unique<Explanations>();
   AddExplanations(Security::SecurityStateEnum::Insecure,
                   security_style_explanations.insecure_explanations,
                   explanations.get());
@@ -172,22 +172,19 @@ void SecurityHandler::DidChangeVisibleSecurityState() {
                   security_style_explanations.info_explanations,
                   explanations.get());
 
+  // We can set everything to default values because this field is ignored by
+  // the frontend, though it's still required by the protocol. Once the field is
+  // deleted in the protocol, we can delete it here.
   std::unique_ptr<Security::InsecureContentStatus> insecure_status =
       Security::InsecureContentStatus::Create()
-          .SetRanMixedContent(security_style_explanations.ran_mixed_content)
-          .SetDisplayedMixedContent(
-              security_style_explanations.displayed_mixed_content)
-          .SetContainedMixedForm(
-              security_style_explanations.contained_mixed_form)
-          .SetRanContentWithCertErrors(
-              security_style_explanations.ran_content_with_cert_errors)
-          .SetDisplayedContentWithCertErrors(
-              security_style_explanations.displayed_content_with_cert_errors)
-          .SetRanInsecureContentStyle(SecurityStyleToProtocolSecurityState(
-              security_style_explanations.ran_insecure_content_style))
+          .SetRanMixedContent(false)
+          .SetDisplayedMixedContent(false)
+          .SetContainedMixedForm(false)
+          .SetRanContentWithCertErrors(false)
+          .SetDisplayedContentWithCertErrors(false)
+          .SetRanInsecureContentStyle(Security::SecurityStateEnum::Unknown)
           .SetDisplayedInsecureContentStyle(
-              SecurityStyleToProtocolSecurityState(
-                  security_style_explanations.displayed_insecure_content_style))
+              Security::SecurityStateEnum::Unknown)
           .Build();
 
   frontend_->SecurityStateChanged(
@@ -199,8 +196,12 @@ void SecurityHandler::DidChangeVisibleSecurityState() {
 }
 
 void SecurityHandler::DidFinishNavigation(NavigationHandle* navigation_handle) {
-  if (cert_error_override_mode_ == CertErrorOverrideMode::kHandleEvents)
+  if (cert_error_override_mode_ == CertErrorOverrideMode::kHandleEvents) {
+    BackForwardCache::DisableForRenderFrameHost(
+        navigation_handle->GetPreviousRenderFrameHostId(),
+        "content::protocol::SecurityHandler");
     FlushPendingCertificateErrorNotifications();
+  }
 }
 
 void SecurityHandler::FlushPendingCertificateErrorNotifications() {

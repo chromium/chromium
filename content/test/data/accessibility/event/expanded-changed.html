@@ -1,0 +1,22 @@
+<!--
+  @UIA-WIN-DENY:*
+  @UIA-WIN-ALLOW:ExpandCollapse*
+  @UIA-WIN-ALLOW:AriaProperties*
+-->
+<!DOCTYPE html>
+<html>
+<body>
+<a role="link" aria-expanded="false" id="title" href="#">Toggle</a>
+<ul id="list" aria-label="list" style="visibility: hidden;">
+  <li aria-label="list item 1">ListItem 1</li>
+  <li aria-label="list item 2">ListItem 2</li>
+  <li aria-label="list item 3">ListItem 3</li>
+</ul>
+<script>
+  function go() {
+    document.getElementById('list').style.visibility = 'visible';
+    document.getElementById('title').setAttribute('aria-expanded', 'true');
+  }
+</script>
+</body>
+</html>

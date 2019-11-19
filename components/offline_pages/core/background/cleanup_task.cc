@@ -40,8 +40,7 @@ CleanupTask::CleanupTask(RequestQueueStore* store,
     : store_(store),
       policy_(policy),
       notifier_(notifier),
-      event_logger_(event_logger),
-      weak_ptr_factory_(this) {}
+      event_logger_(event_logger) {}
 
 CleanupTask::~CleanupTask() {}
 

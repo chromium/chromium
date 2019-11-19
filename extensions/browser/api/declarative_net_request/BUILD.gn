@@ -4,22 +4,36 @@
 
 source_set("declarative_net_request") {
   sources = [
+    "action_tracker.cc",
+    "action_tracker.h",
+    "composite_matcher.cc",
+    "composite_matcher.h",
     "constants.cc",
     "constants.h",
     "declarative_net_request_api.cc",
     "declarative_net_request_api.h",
+    "extension_url_pattern_index_matcher.cc",
+    "extension_url_pattern_index_matcher.h",
+    "file_sequence_helper.cc",
+    "file_sequence_helper.h",
     "flat_ruleset_indexer.cc",
     "flat_ruleset_indexer.h",
     "indexed_rule.cc",
     "indexed_rule.h",
     "parse_info.cc",
     "parse_info.h",
+    "request_action.cc",
+    "request_action.h",
+    "request_params.cc",
+    "request_params.h",
     "rules_monitor_service.cc",
     "rules_monitor_service.h",
     "ruleset_manager.cc",
     "ruleset_manager.h",
     "ruleset_matcher.cc",
     "ruleset_matcher.h",
+    "ruleset_matcher_interface.cc",
+    "ruleset_matcher_interface.h",
     "ruleset_source.cc",
     "ruleset_source.h",
     "utils.cc",
@@ -39,6 +53,8 @@ source_set("declarative_net_request") {
     "//extensions/common",
     "//extensions/common/api",
     "//net",
+    "//third_party/re2",
+    "//tools/json_schema_compiler:generated_api_util",
     "//url",
   ]
 }
@@ -55,5 +71,6 @@ source_set("test_support") {
     ":declarative_net_request",
     "//base",
     "//extensions/common",
+    "//testing/gtest",
   ]
 }

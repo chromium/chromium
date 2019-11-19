@@ -15,7 +15,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Restriction;
@@ -25,6 +24,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
 
 import java.util.concurrent.TimeoutException;
@@ -64,7 +64,7 @@ public class TabObserverTest {
     @Test
     @SmallTest
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    public void testTabInteractable_tabSwitcher() throws InterruptedException, TimeoutException {
+    public void testTabInteractable_tabSwitcher() throws TimeoutException {
         final LayoutManagerChrome layoutManager = mActivity.getLayoutManager();
         CallbackHelper interactabilityHelper = mTabObserver.mInteractabilityHelper;
 
@@ -73,14 +73,14 @@ public class TabObserverTest {
         int interactableCallCount = interactabilityHelper.getCallCount();
 
         // Enter tab switcher mode and make sure the event is triggered.
-        ThreadUtils.runOnUiThreadBlocking(() -> layoutManager.showOverview(false));
+        TestThreadUtils.runOnUiThreadBlocking(() -> layoutManager.showOverview(false));
 
         interactabilityHelper.waitForCallback(interactableCallCount);
         interactableCallCount = interactabilityHelper.getCallCount();
         assertFalse("Tab should not be interactable.", mTab.isUserInteractable());
 
         // Exit tab switcher and wait for event again.
-        ThreadUtils.runOnUiThreadBlocking(() -> layoutManager.hideOverview(false));
+        TestThreadUtils.runOnUiThreadBlocking(() -> layoutManager.hideOverview(false));
 
         interactabilityHelper.waitForCallback(interactableCallCount);
         assertTrue("Tab should be interactable.", mTab.isUserInteractable());
@@ -88,7 +88,7 @@ public class TabObserverTest {
 
     @Test
     @SmallTest
-    public void testTabInteractable_multipleTabs() throws InterruptedException, TimeoutException {
+    public void testTabInteractable_multipleTabs() throws TimeoutException {
         CallbackHelper interactabilityHelper = mTabObserver.mInteractabilityHelper;
 
         assertTrue("Tab should be interactable.", mTab.isUserInteractable());

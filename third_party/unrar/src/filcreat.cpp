@@ -1,7 +1,5 @@
 #include "rar.hpp"
 
-namespace third_party_unrar {
-
 // If NewFile==NULL, we delete created file after user confirmation.
 // It is useful we we need to overwrite an existing folder or file,
 // but need user confirmation for that.
@@ -163,5 +161,3 @@ bool UpdateExistingShortName(const wchar *Name)
   return true;
 }
 #endif
-
-}  // namespace third_party_unrar

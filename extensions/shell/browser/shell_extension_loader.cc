@@ -61,8 +61,7 @@ ShellExtensionLoader::ShellExtensionLoader(
     content::BrowserContext* browser_context)
     : browser_context_(browser_context),
       extension_registrar_(browser_context, this),
-      keep_alive_requester_(browser_context),
-      weak_factory_(this) {}
+      keep_alive_requester_(browser_context) {}
 
 ShellExtensionLoader::~ShellExtensionLoader() = default;
 
@@ -109,7 +108,8 @@ void ShellExtensionLoader::FinishExtensionReload(
     // open its first window.
     // Launch the app now.
     if (extension->is_platform_app())
-      apps::LaunchPlatformApp(browser_context_, extension.get(), SOURCE_RELOAD);
+      apps::LaunchPlatformApp(browser_context_, extension.get(),
+                              AppLaunchSource::kSourceReload);
   }
 
   // Whether or not the reload succeeded, we should stop waiting for it.

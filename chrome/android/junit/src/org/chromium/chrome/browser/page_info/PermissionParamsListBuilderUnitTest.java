@@ -8,6 +8,10 @@ import static junit.framework.Assert.assertNotNull;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
 
 import android.app.NotificationManager;
@@ -20,19 +24,20 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.Implementation;
-import org.robolectric.annotation.Implements;
 import org.robolectric.shadows.ShadowNotificationManager;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeFeatureList;
 import org.chromium.chrome.browser.ContentSettingsType;
-import org.chromium.chrome.browser.page_info.PermissionParamsListBuilderUnitTest.ShadowWebsitePreferenceBridge;
 import org.chromium.chrome.browser.preferences.website.ContentSettingValues;
 import org.chromium.chrome.browser.preferences.website.WebsitePreferenceBridge;
+import org.chromium.chrome.browser.preferences.website.WebsitePreferenceBridgeJni;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.LocationSettingsTestUtil;
 import org.chromium.ui.base.AndroidPermissionDelegate;
@@ -44,7 +49,7 @@ import java.util.List;
  * Unit tests for PermissionParamsListBuilder.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowWebsitePreferenceBridge.class})
+@Config(manifest = Config.NONE)
 public class PermissionParamsListBuilderUnitTest {
     private PermissionParamsListBuilder mPermissionParamsListBuilder;
     private FakeSystemSettingsActivityRequiredListener mSettingsActivityRequiredListener;
@@ -52,8 +57,19 @@ public class PermissionParamsListBuilderUnitTest {
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
 
+    @Rule
+    public JniMocker mocker = new JniMocker();
+
+    @Mock
+    WebsitePreferenceBridge.Natives mWebsitePreferenceBridgeMock;
+
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
+        MockitoAnnotations.initMocks(this);
+        mocker.mock(WebsitePreferenceBridgeJni.TEST_HOOKS, mWebsitePreferenceBridgeMock);
+        when(mWebsitePreferenceBridgeMock.isPermissionControlledByDSE(
+                     anyInt(), anyString(), anyBoolean()))
+                .thenReturn(false);
         AndroidPermissionDelegate permissionDelegate = new FakePermissionDelegate();
         mSettingsActivityRequiredListener = new FakeSystemSettingsActivityRequiredListener();
         mPermissionParamsListBuilder =
@@ -64,8 +80,8 @@ public class PermissionParamsListBuilderUnitTest {
     @Test
     public void addSingleEntryAndBuild() {
         Context context = RuntimeEnvironment.application;
-        mPermissionParamsListBuilder.addPermissionEntry("Foo",
-                ContentSettingsType.CONTENT_SETTINGS_TYPE_COOKIES, ContentSettingValues.ALLOW);
+        mPermissionParamsListBuilder.addPermissionEntry(
+                "Foo", ContentSettingsType.COOKIES, ContentSettingValues.ALLOW);
 
         List<PageInfoView.PermissionParams> params = mPermissionParamsListBuilder.build();
 
@@ -81,8 +97,8 @@ public class PermissionParamsListBuilderUnitTest {
     @Test
     public void addLocationEntryAndBuildWhenSystemLocationDisabled() {
         LocationSettingsTestUtil.setSystemLocationSettingEnabled(false);
-        mPermissionParamsListBuilder.addPermissionEntry("Test",
-                ContentSettingsType.CONTENT_SETTINGS_TYPE_GEOLOCATION, ContentSettingValues.ALLOW);
+        mPermissionParamsListBuilder.addPermissionEntry(
+                "Test", ContentSettingsType.GEOLOCATION, ContentSettingValues.ALLOW);
 
         List<PageInfoView.PermissionParams> params = mPermissionParamsListBuilder.build();
 
@@ -103,9 +119,8 @@ public class PermissionParamsListBuilderUnitTest {
     public void appNotificationStatusMessagingWhenNotificationsDisabled() {
         getMutableNotificationManager().setNotificationsEnabled(false);
 
-        mPermissionParamsListBuilder.addPermissionEntry("",
-                ContentSettingsType.CONTENT_SETTINGS_TYPE_NOTIFICATIONS,
-                ContentSettingValues.ALLOW);
+        mPermissionParamsListBuilder.addPermissionEntry(
+                "", ContentSettingsType.NOTIFICATIONS, ContentSettingValues.ALLOW);
 
         List<PageInfoView.PermissionParams> params = mPermissionParamsListBuilder.build();
 
@@ -119,9 +134,8 @@ public class PermissionParamsListBuilderUnitTest {
     public void appNotificationStatusMessagingWhenNotificationsEnabled() {
         getMutableNotificationManager().setNotificationsEnabled(true);
 
-        mPermissionParamsListBuilder.addPermissionEntry("",
-                ContentSettingsType.CONTENT_SETTINGS_TYPE_NOTIFICATIONS,
-                ContentSettingValues.ALLOW);
+        mPermissionParamsListBuilder.addPermissionEntry(
+                "", ContentSettingsType.NOTIFICATIONS, ContentSettingValues.ALLOW);
 
         List<PageInfoView.PermissionParams> params = mPermissionParamsListBuilder.build();
 
@@ -134,9 +148,8 @@ public class PermissionParamsListBuilderUnitTest {
     public void appNotificationStatusMessagingFlagDisabled() {
         getMutableNotificationManager().setNotificationsEnabled(false);
 
-        mPermissionParamsListBuilder.addPermissionEntry("",
-                ContentSettingsType.CONTENT_SETTINGS_TYPE_NOTIFICATIONS,
-                ContentSettingValues.ALLOW);
+        mPermissionParamsListBuilder.addPermissionEntry(
+                "", ContentSettingsType.NOTIFICATIONS, ContentSettingValues.ALLOW);
 
         List<PageInfoView.PermissionParams> params = mPermissionParamsListBuilder.build();
 
@@ -173,18 +186,6 @@ public class PermissionParamsListBuilderUnitTest {
         @Override
         public boolean handlePermissionResult(
                 int requestCode, String[] permissions, int[] grantResults) {
-            return false;
-        }
-    }
-
-    /**
-     * Allows us to stub out the static calls to native.
-     */
-    @Implements(WebsitePreferenceBridge.class)
-    public static class ShadowWebsitePreferenceBridge {
-        @Implementation
-        public static boolean isPermissionControlledByDSE(
-                @ContentSettingsType int contentSettingsType, String origin, boolean isIncognito) {
             return false;
         }
     }

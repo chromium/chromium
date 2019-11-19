@@ -204,14 +204,15 @@ int main(int argc, char* argv[]) {
       *base::CommandLine::ForCurrentProcess();
 
   logging::LoggingSettings settings;
-  settings.logging_dest = logging::LOG_TO_SYSTEM_DEBUG_LOG;
+  settings.logging_dest =
+      logging::LOG_TO_SYSTEM_DEBUG_LOG | logging::LOG_TO_STDERR;
   logging::InitLogging(settings);
 
 #if defined(OS_WIN)
   std::vector<std::string> args;
   base::CommandLine::StringVector wide_args = command_line.GetArgs();
   for (const auto& arg : wide_args) {
-    args.push_back(base::WideToUTF8(arg));
+    args.push_back(base::UTF16ToUTF8(arg));
   }
 #else
   base::CommandLine::StringVector args = command_line.GetArgs();

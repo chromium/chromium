@@ -17,6 +17,8 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/presentation_service_delegate.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/presentation/presentation.mojom.h"
 
 namespace media_router {
@@ -42,40 +44,40 @@ namespace media_router {
 //
 // Controlling frame establishes connection with the receiver side, resulting
 // in a connection with the two endpoints being the controller
-// PresentationConnectionPtr and receiver PresentationConnectionPtr.
+// PresentationConnectionRemote and receiver PresentationConnectionReceiver.
 // Note calling this will trigger receiver frame's
 // PresentationServiceImpl::OnReceiverConnectionAvailable.
 //
 //   manager->RegisterLocalPresentationController(
 //       presentation_info,
-//       std::move(controller_connection_ptr,
-//       std::move(receiver_connection_request));
+//       std::move(controller_connection_remote,
+//       std::move(receiver_connection_receiver));
 //
 // Invoked on receiver's PresentationServiceImpl when controller connection is
 // established.
 //
-//   |presentation_receiver_client_|: blink::mojom::PresentationServiceClienPtr
-//   for the presentation receiver.
-//   |controller_connection_ptr|: blink::mojom::PresentationConnectionPtr for
+//   |presentation_receiver_remote_|: mojo::Remote<T> for the implementation of
+//   the blink::mojom::PresentationService interface in the renderer process.
+//   |controller_connection_remote|: mojo::PendingRemote<T> for
 //   blink::PresentationConnection object in controlling frame's render process.
-//   |receiver_connection_request|: Mojo InterfaceRequest to be bind to
+//   |receiver_connection_receiver|: mojo::PendingReceiver<T> to be bind to
 //   blink::PresentationConnection object in receiver frame's render process.
 //   void PresentationServiceImpl::OnReceiverConnectionAvailable(
 //       const blink::mojom::PresentationInfo& presentation_info,
-//       PresentationConnectionPtr controller_connection_ptr,
-//       PresentationConnectionRequest receiver_connection_request) {
-//     presentation_receiver_client_->OnReceiverConnectionAvailable(
+//       PresentationConnectionRemote controller_connection_remote,
+//       PresentationConnectionReceiver receiver_connection_receiver) {
+//     presentation_receiver_remote_->OnReceiverConnectionAvailable(
 //         blink::mojom::PresentationInfo::From(presentation_info),
-//         std::move(controller_connection_ptr),
-//         std::move(receiver_connection_request));
+//         std::move(controller_connection_remote),
+//         std::move(receiver_connection_receiver));
 //   }
 //
 // Send message from controlling/receiver frame to receiver/controlling frame:
 //
-//   |target_connection_|: member variable of
-//                         blink::mojom::PresentationConnectionPtr type,
-//                         refering to remote PresentationConnectionProxy
-//                         object on receiver/controlling frame.
+//   |target_connection_|: member variable of mojo::PendingRemote<T> for
+//                         blink::PresentationConnection type, referring to
+//                         remote PresentationConnectionProxy object on
+//                         receiver/controlling frame.
 //   |message|: Text message to be sent.
 //   PresentationConnctionPtr::SendString(
 //       const blink::WebString& message) {
@@ -109,14 +111,16 @@ class LocalPresentationManager : public KeyedService {
   // |presentation_id| and |render_frame_id|.
   // Creates a new presentation if no presentation with |presentation_id|
   // exists.
-  // |controller_connection_ptr|, |receiver_connection_request|: Not owned by
-  // this class. Ownership is transferred to presentation receiver via
+  // |controller_connection_remote|, |receiver_connection_receiver|: Not owned
+  // by this class. Ownership is transferred to presentation receiver via
   // |receiver_callback| passed below.
   virtual void RegisterLocalPresentationController(
       const blink::mojom::PresentationInfo& presentation_info,
       const content::GlobalFrameRoutingId& render_frame_id,
-      content::PresentationConnectionPtr controller_connection_ptr,
-      content::PresentationConnectionRequest receiver_connection_request,
+      mojo::PendingRemote<blink::mojom::PresentationConnection>
+          controller_connection_remote,
+      mojo::PendingReceiver<blink::mojom::PresentationConnection>
+          receiver_connection_receiver,
       const MediaRoute& route);
 
   // Unregisters controller PresentationConnectionPtr to presentation with
@@ -159,15 +163,17 @@ class LocalPresentationManager : public KeyedService {
     ~LocalPresentation();
 
     // Register controller with |render_frame_id|. If |receiver_callback_| has
-    // been set, invoke |receiver_callback_| with |controller_connection_ptr|
-    // and |receiver_connection_request| as parameter, else creates a
-    // ControllerConnection object with |controller_connection_ptr| and
-    // |receiver_connection_request|, and store it in |pending_controllers_|
+    // been set, invoke |receiver_callback_| with |controller_connection_remote|
+    // and |receiver_connection_receiver| as parameter, else creates a
+    // ControllerConnection object with |controller_connection_remote| and
+    // |receiver_connection_receiver|, and store it in |pending_controllers_|
     // map.
     void RegisterController(
         const content::GlobalFrameRoutingId& render_frame_id,
-        content::PresentationConnectionPtr controller_connection_ptr,
-        content::PresentationConnectionRequest receiver_connection_request,
+        mojo::PendingRemote<blink::mojom::PresentationConnection>
+            controller_connection_remote,
+        mojo::PendingReceiver<blink::mojom::PresentationConnection>
+            receiver_connection_receiver,
         const MediaRoute& route);
 
     // Unregister controller with |render_frame_id|. Do nothing if there is no
@@ -197,19 +203,23 @@ class LocalPresentationManager : public KeyedService {
     content::ReceiverConnectionAvailableCallback receiver_callback_;
 
     // Stores controller information.
-    // |controller_connection_ptr|: Mojo::InterfacePtr to
+    // |controller_connection_remote|: mojo::PendingRemote<T> to
     // blink::PresentationConnection object in controlling frame;
-    // |receiver_connection_request|: Mojo::InterfaceRequest to be bind to
+    // |receiver_connection_receiver|: mojo::PendingReceiver<T> to be bind to
     // blink::PresentationConnection object in receiver frame.
     struct ControllerConnection {
      public:
       ControllerConnection(
-          content::PresentationConnectionPtr controller_connection_ptr,
-          content::PresentationConnectionRequest receiver_connection_request);
+          mojo::PendingRemote<blink::mojom::PresentationConnection>
+              controller_connection_remote,
+          mojo::PendingReceiver<blink::mojom::PresentationConnection>
+              receiver_connection_receiver);
       ~ControllerConnection();
 
-      content::PresentationConnectionPtr controller_connection_ptr;
-      content::PresentationConnectionRequest receiver_connection_request;
+      mojo::PendingRemote<blink::mojom::PresentationConnection>
+          controller_connection_remote;
+      mojo::PendingReceiver<blink::mojom::PresentationConnection>
+          receiver_connection_receiver;
     };
 
     // Contains ControllerConnection objects registered via

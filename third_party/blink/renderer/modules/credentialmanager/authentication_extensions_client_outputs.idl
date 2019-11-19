@@ -3,9 +3,13 @@
 // found in the LICENSE file.
 
 // https://w3c.github.io/webauthn/#dictdef-authenticationextensionsclientoutputs
+//typedef sequence<unsigned long> UvmEntry
+typedef sequence<sequence<unsigned long>> UvmEntries;
 
 dictionary AuthenticationExtensionsClientOutputs {
   boolean appid;
   // https://fidoalliance.org/specs/fido-v2.0-rd-20180702/fido-client-to-authenticator-protocol-v2.0-rd-20180702.html#sctn-hmac-secret-extension
   boolean hmacCreateSecret;
+  // https://w3c.github.io/webauthn/#sctn-uvm-extension
+  UvmEntries uvm;
 };

@@ -13,9 +13,9 @@
 #include "net/cert/x509_certificate.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
-#include "net/third_party/quic/core/crypto/proof_source.h"
-#include "net/third_party/quic/core/crypto/proof_verifier.h"
-#include "net/third_party/quic/test_tools/crypto_test_utils.h"
+#include "net/third_party/quiche/src/quic/core/crypto/proof_source.h"
+#include "net/third_party/quiche/src/quic/core/crypto/proof_verifier.h"
+#include "net/third_party/quiche/src/quic/test_tools/crypto_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
 
@@ -125,7 +125,8 @@ class ProofTest : public ::testing::TestWithParam<quic::QuicTransportVersion> {
 INSTANTIATE_TEST_SUITE_P(
     QuicTransportVersion,
     ProofTest,
-    ::testing::ValuesIn(quic::AllSupportedTransportVersions()));
+    ::testing::ValuesIn(quic::AllSupportedTransportVersions()),
+    ::testing::PrintToStringParamName());
 
 TEST_P(ProofTest, Verify) {
   std::unique_ptr<quic::ProofSource> source(
@@ -236,7 +237,7 @@ TEST_P(ProofTest, TlsSignature) {
   string sig;
   bool success;
   std::unique_ptr<TestingSignatureCallback> callback =
-      quic::QuicMakeUnique<TestingSignatureCallback>(&success, &sig);
+      std::make_unique<TestingSignatureCallback>(&success, &sig);
   source->ComputeTlsSignature(server_address, hostname, SSL_SIGN_RSA_PSS_SHA256,
                               to_be_signed, std::move(callback));
   EXPECT_TRUE(success);

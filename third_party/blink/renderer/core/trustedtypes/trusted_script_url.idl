@@ -8,7 +8,7 @@ typedef (DOMString or TrustedScriptURL) ScriptURLString;
 
 [
     Exposed=Window,
-    OriginTrialEnabled=TrustedDOMTypes
+    RuntimeEnabled=TrustedDOMTypes
 ] interface TrustedScriptURL {
     stringifier;
 };

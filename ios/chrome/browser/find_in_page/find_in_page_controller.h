@@ -14,6 +14,7 @@ class WebState;
 }
 
 @class FindInPageModel;
+@protocol FindInPageResponseDelegate;
 
 extern NSString* const kFindBarTextFieldWillBecomeFirstResponderNotification;
 extern NSString* const kFindBarTextFieldDidResignFirstResponderNotification;
@@ -22,6 +23,9 @@ extern NSString* const kFindBarTextFieldDidResignFirstResponderNotification;
 
 // Find In Page model.
 @property(nonatomic, readonly, strong) FindInPageModel* findInPageModel;
+// FindInPageResponseDelegate instance used to pass back responses to find
+// actions when kFindInPageiFrame is enabled.
+@property(nonatomic, weak) id<FindInPageResponseDelegate> responseDelegate;
 
 // Designated initializer.
 - (id)initWithWebState:(web::WebState*)webState;
@@ -46,7 +50,10 @@ extern NSString* const kFindBarTextFieldDidResignFirstResponderNotification;
     (ProceduralBlock)completionHandler;
 // Disable find in page script and model. Calls |completionHandler| once the
 // model has been disabled and cleanup is complete. |completionHandler| can be
-// nil.
+// nil. If kFindInPageiFrame is enabled, then |completionHandler| will not be
+// called and |responseDelegate| will be used to respond. In that situation,
+// cleanup is not guaranteed to be finished when |responseDelegate| receives a
+// response.
 - (void)disableFindInPageWithCompletionHandler:
     (ProceduralBlock)completionHandler;
 

@@ -12,7 +12,6 @@
 <translation id="2159915644201199628">Tidak dapat mendekode gambar: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">Lokalisasi digunakan, tetapi default_locale tidak ditentukan dalam manifes.</translation>
 <translation id="2576842806987913196">Sudah ada file CRX dengan nama ini.</translation>
-<translation id="2753617847762399167">jalur ilegal (mutlak atau relatif dengan '..'): '<ph name="IMAGE_PATH" />'</translation>
 <translation id="2785530881066938471">Tidak dapat memuat file '<ph name="RELATIVE_PATH" />' untuk skrip konten. File ini tidak bersandiaksara UTF-8.</translation>
 <translation id="2903070246402204397"><ph name="EXTENSION_NAME" /> (ID ekstensi "<ph name="EXTENSION_ID" />") diblokir oleh administrator. <ph name="ADMIN_INFO" /></translation>
 <translation id="2988488679308982380">Tidak dapat memasang paket: '<ph name="ERROR_CODE" />'</translation>
@@ -38,8 +37,6 @@
 <translation id="5436430103864390185">Jendela berbentuk tidak didukung.</translation>
 <translation id="5456409301717116725">Ekstensi ini termasuk file kunci '<ph name="KEY_PATH" />'. Anda mungkin tidak ingin melakukannya.</translation>
 <translation id="5486326529110362464">Nilai masukan untuk kunci pribadi harus ada.</translation>
-<translation id="5627523580512561598">ekstensi <ph name="EXTENSION_NAME" /></translation>
-<translation id="5960890139610307736">ExtensionView: <ph name="EXTENSIONVIEW_TAG_NAME" /></translation>
 <translation id="5972529113578162692">Administrator komputer ini mewajibkan agar <ph name="EXTENSION_NAME" /> dipasang. Ekstensi tersebut tidak dapat dicopot pemasangannya.</translation>
 <translation id="6027032947578871493">Produk <ph name="PRODUCT_ID" /> tak dikenal dari <ph name="VENDOR_NAME" /> (nomor seri <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> dari vendor <ph name="VENDOR_ID" /></translation>
@@ -51,7 +48,6 @@
 <translation id="6542618148162044354">"<ph name="APP_NAME" />" meminta akses ke satu atau beberapa perangkat Anda:</translation>
 <translation id="657064425229075395">Tidak dapat memuat skrip latar belakang '<ph name="BACKGROUND_SCRIPT" />'.</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" /> dari <ph name="VENDOR_NAME" /> (nomor seri <ph name="SERIAL_NUMBER" />)</translation>
-<translation id="6731255991101203740">Tidak dapat membuat direktori untuk pengekstrakan: '<ph name="DIRECTORY_PATH" />'</translation>
 <translation id="677806580227005219">Mimehandler: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
 <translation id="6840444547062817500">Ekstensi ini terlalu sering memuat ulang sendiri.</translation>
 <translation id="7003844668372540529">Produk <ph name="PRODUCT_ID" /> tak dikenal dari <ph name="VENDOR_NAME" /></translation>

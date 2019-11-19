@@ -5,7 +5,6 @@
 #ifndef UI_VIEWS_ACCESSIBILITY_VIEW_AX_PLATFORM_NODE_DELEGATE_MAC_H_
 #define UI_VIEWS_ACCESSIBILITY_VIEW_AX_PLATFORM_NODE_DELEGATE_MAC_H_
 
-#include "base/macros.h"
 #include "ui/views/accessibility/view_ax_platform_node_delegate.h"
 
 namespace views {
@@ -14,14 +13,14 @@ namespace views {
 class ViewAXPlatformNodeDelegateMac : public ViewAXPlatformNodeDelegate {
  public:
   explicit ViewAXPlatformNodeDelegateMac(View* view);
+  ViewAXPlatformNodeDelegateMac(const ViewAXPlatformNodeDelegateMac&) = delete;
+  ViewAXPlatformNodeDelegateMac& operator=(
+      const ViewAXPlatformNodeDelegateMac&) = delete;
   ~ViewAXPlatformNodeDelegateMac() override;
 
   // |ViewAXPlatformNodeDelegate| overrides:
   gfx::NativeViewAccessible GetNSWindow() override;
   gfx::NativeViewAccessible GetParent() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ViewAXPlatformNodeDelegateMac);
 };
 
 }  // namespace views

@@ -50,7 +50,6 @@ TEST(MimeSnifferTest, SniffableSchemes) {
     {url::kFileScheme, true},
     {url::kFileSystemScheme, true},
     {url::kFtpScheme, false},
-    {url::kGopherScheme, false},
     {url::kHttpScheme, true},
     {url::kHttpsScheme, true},
     {url::kJavaScriptScheme, false},

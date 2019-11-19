@@ -9,14 +9,14 @@
 #include "ash/app_list/app_list_metrics.h"
 #include "ash/app_list/app_list_view_delegate.h"
 #include "ash/app_list/model/app_list_model.h"
-#include "ash/app_list/model/app_list_view_state.h"
+#include "ash/app_list/model/search/search_model.h"
 #include "ash/app_list/model/search/search_result.h"
-#include "ash/app_list/pagination_model.h"
 #include "ash/app_list/views/app_list_item_view.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
+#include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
-#include "ash/public/interfaces/app_list.mojom.h"
+#include "ash/public/cpp/pagination/pagination_model.h"
 #include "base/bind.h"
 #include "base/i18n/number_formatting.h"
 #include "base/metrics/histogram_macros.h"
@@ -35,7 +35,7 @@
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/focus/focus_manager.h"
 
-namespace app_list {
+namespace ash {
 
 namespace {
 
@@ -82,8 +82,7 @@ SearchResultTileItemView::SearchResultTileItemView(
           app_list_features::IsPlayStoreAppSearchEnabled()),
       is_app_reinstall_recommendation_enabled_(
           app_list_features::IsAppReinstallZeroStateEnabled()),
-      show_in_apps_page_(show_in_apps_page),
-      weak_ptr_factory_(this) {
+      show_in_apps_page_(show_in_apps_page) {
   SetFocusBehavior(FocusBehavior::ALWAYS);
 
   // When |result_| is null, the tile is invisible. Calling SetSearchResult with
@@ -93,18 +92,14 @@ SearchResultTileItemView::SearchResultTileItemView(
   // Prevent the icon view from interfering with our mouse events.
   icon_ = new views::ImageView;
   icon_->set_can_process_events_within_subtree(false);
-  icon_->SetVerticalAlignment(views::ImageView::LEADING);
+  icon_->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
   AddChildView(icon_);
 
-  if (is_play_store_app_search_enabled_ ||
-      app_list_features::IsAppShortcutSearchEnabled() ||
-      is_app_reinstall_recommendation_enabled_) {
-    badge_ = new views::ImageView;
-    badge_->set_can_process_events_within_subtree(false);
-    badge_->SetVerticalAlignment(views::ImageView::LEADING);
-    badge_->SetVisible(false);
-    AddChildView(badge_);
-  }
+  badge_ = new views::ImageView;
+  badge_->set_can_process_events_within_subtree(false);
+  badge_->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
+  badge_->SetVisible(false);
+  AddChildView(badge_);
 
   title_ = new views::Label;
   title_->SetAutoColorReadabilityEnabled(false);
@@ -126,7 +121,7 @@ SearchResultTileItemView::SearchResultTileItemView(
 
     rating_star_ = new views::ImageView;
     rating_star_->set_can_process_events_within_subtree(false);
-    rating_star_->SetVerticalAlignment(views::ImageView::LEADING);
+    rating_star_->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
     rating_star_->SetImage(gfx::CreateVectorIcon(
         kBadgeRatingIcon, kSearchRatingStarSize, kSearchRatingStarColor));
     rating_star_->SetVisible(false);
@@ -207,41 +202,42 @@ void SearchResultTileItemView::OnResultChanged() {
 
   title_->SetMaxLines(2);
   title_->SetMultiLine(
-      (result()->display_type() == ash::SearchResultDisplayType::kTile ||
+      (result()->display_type() == SearchResultDisplayType::kTile ||
        (IsSuggestedAppTile() && !show_in_apps_page_)) &&
-      result()->result_type() == ash::SearchResultType::kInstalledApp);
+      (result()->result_type() == AppListSearchResultType::kInstalledApp ||
+       result()->result_type() == AppListSearchResultType::kArcAppShortcut));
 
   // If the new icon is null, it's being decoded asynchronously. Not updating it
   // now to prevent flickering from showing an empty icon while decoding.
   if (!result()->icon().isNull())
     OnMetadataChanged();
 
+  UpdateAccessibleName();
+}
+
+base::string16 SearchResultTileItemView::ComputeAccessibleName() const {
   base::string16 accessible_name;
   if (!result()->accessible_name().empty())
     accessible_name = result()->accessible_name();
   else
-    accessible_name = title_->text();
+    accessible_name = title_->GetText();
 
-  if (rating_ && rating_->visible()) {
+  if (rating_ && rating_->GetVisible()) {
     accessible_name +=
         base::UTF8ToUTF16(", ") +
         l10n_util::GetStringFUTF16(IDS_APP_ACCESSIBILITY_STAR_RATING_ARC,
-                                   rating_->text());
+                                   rating_->GetText());
   }
-  if (price_ && price_->visible())
-    accessible_name += base::UTF8ToUTF16(", ") + price_->text();
+  if (price_ && price_->GetVisible())
+    accessible_name += base::UTF8ToUTF16(", ") + price_->GetText();
 
   if (result()->result_type() ==
-      ash::SearchResultType::kPlayStoreReinstallApp) {
+      AppListSearchResultType::kPlayStoreReinstallApp) {
     accessible_name +=
         base::UTF8ToUTF16(", ") +
         l10n_util::GetStringUTF16(IDS_APP_ACCESSIBILITY_APP_RECOMMENDATION_ARC);
   }
-  SetAccessibleName(accessible_name);
-}
-
-void SearchResultTileItemView::SetIndexInItemListView(size_t index) {
-  index_in_item_list_view_ = index;
+  return accessible_name;
 }
 
 void SearchResultTileItemView::SetParentBackgroundColor(SkColor color) {
@@ -251,15 +247,7 @@ void SearchResultTileItemView::SetParentBackgroundColor(SkColor color) {
 
 void SearchResultTileItemView::ButtonPressed(views::Button* sender,
                                              const ui::Event& event) {
-  if (IsSuggestedAppTile())
-    LogAppLaunch();
-
-  RecordSearchResultOpenSource(result(), view_delegate_->GetModel(),
-                               view_delegate_->GetSearchModel());
-  view_delegate_->OpenSearchResult(result()->id(), event.flags());
-  view_delegate_->LogSearchClick(
-      result()->id(), index_in_item_list_view_,
-      ash::mojom::AppListLaunchedFrom::kLaunchedFromSearchBox);
+  ActivateResult(event.flags(), true /* by_button_press */);
 }
 
 void SearchResultTileItemView::GetAccessibleNodeData(
@@ -287,31 +275,26 @@ bool SearchResultTileItemView::OnKeyPressed(const ui::KeyEvent& event) {
     return true;
 
   if (event.key_code() == ui::VKEY_RETURN) {
-    if (IsSuggestedAppTile())
-      LogAppLaunch();
-    RecordSearchResultOpenSource(result(), view_delegate_->GetModel(),
-                                 view_delegate_->GetSearchModel());
-    view_delegate_->OpenSearchResult(result()->id(), event.flags());
+    ActivateResult(event.flags(), false /* by_button_press */);
     return true;
   }
-
   return false;
 }
 
 void SearchResultTileItemView::OnFocus() {
   if (pagination_model_ && IsSuggestedAppTile() &&
-      view_delegate_->GetModel()->state() == ash::AppListState::kStateApps) {
+      view_delegate_->GetModel()->state() == AppListState::kStateApps) {
     // Go back to first page when app in suggestions container is focused.
     pagination_model_->SelectPage(0, false);
   } else {
     ScrollRectToVisible(GetLocalBounds());
   }
-  SetBackgroundHighlighted(true);
+  SetSelected(true, base::nullopt);
   UpdateBackgroundColor();
 }
 
 void SearchResultTileItemView::OnBlur() {
-  SetBackgroundHighlighted(false);
+  SetSelected(false, base::nullopt);
   UpdateBackgroundColor();
 }
 
@@ -320,7 +303,7 @@ void SearchResultTileItemView::StateChanged(ButtonState old_state) {
 }
 
 void SearchResultTileItemView::PaintButtonContents(gfx::Canvas* canvas) {
-  if (!result() || !background_highlighted())
+  if (!result() || !selected())
     return;
 
   gfx::Rect rect(GetContentsBounds());
@@ -351,7 +334,7 @@ void SearchResultTileItemView::OnMetadataChanged() {
   Layout();
 }
 
-void SearchResultTileItemView::ShowContextMenuForView(
+void SearchResultTileItemView::ShowContextMenuForViewImpl(
     views::View* source,
     const gfx::Point& point,
     ui::MenuSourceType source_type) {
@@ -370,20 +353,26 @@ void SearchResultTileItemView::OnGetContextMenuModel(
     views::View* source,
     const gfx::Point& point,
     ui::MenuSourceType source_type,
-    std::vector<ash::mojom::MenuItemPtr> menu) {
-  if (menu.empty() || (context_menu_ && context_menu_->IsShowingMenu()))
+    std::unique_ptr<ui::SimpleMenuModel> menu_model) {
+  if (!menu_model || (context_menu_ && context_menu_->IsShowingMenu()))
     return;
 
   gfx::Rect anchor_rect = source->GetBoundsInScreen();
   // Anchor the menu to the same rect that is used for selection highlight.
   anchor_rect.ClampToCenteredSize(AppListConfig::instance().grid_focus_size());
 
+  AppLaunchedMetricParams metric_params = {
+      AppListLaunchedFrom::kLaunchedFromSearchBox,
+      AppListLaunchType::kAppSearchResult};
+  view_delegate_->GetAppLaunchedMetricParams(&metric_params);
+
   context_menu_ = std::make_unique<AppListMenuModelAdapter>(
-      result()->id(), this, source_type, this, GetAppType(),
+      result()->id(), std::move(menu_model), GetWidget(), source_type,
+      metric_params, GetAppType(),
       base::BindOnce(&SearchResultTileItemView::OnMenuClosed,
-                     weak_ptr_factory_.GetWeakPtr()));
-  context_menu_->Build(std::move(menu));
-  context_menu_->Run(anchor_rect, views::MENU_ANCHOR_BUBBLE_TOUCHABLE_RIGHT,
+                     weak_ptr_factory_.GetWeakPtr()),
+      view_delegate_->GetSearchModel()->tablet_mode());
+  context_menu_->Run(anchor_rect, views::MenuAnchorPosition::kBubbleRight,
                      views::MenuRunner::HAS_MNEMONICS |
                          views::MenuRunner::USE_TOUCHABLE_LAYOUT |
                          views::MenuRunner::CONTEXT_MENU |
@@ -392,14 +381,40 @@ void SearchResultTileItemView::OnGetContextMenuModel(
 }
 
 void SearchResultTileItemView::OnMenuClosed() {
+  // Release menu since its menu model delegate (AppContextMenu) could be
+  // released as a result of menu command execution.
+  context_menu_.reset();
   OnBlur();
 }
 
-void SearchResultTileItemView::ExecuteCommand(int command_id, int event_flags) {
-  if (result()) {
-    view_delegate_->SearchResultContextMenuItemSelected(
-        result()->id(), command_id, event_flags);
+void SearchResultTileItemView::ActivateResult(int event_flags,
+                                              bool by_button_press) {
+  const bool launch_as_default = is_default_result() && !by_button_press;
+  if (result()->result_type() == AppListSearchResultType::kPlayStoreApp) {
+    const base::TimeDelta activation_delay =
+        base::TimeTicks::Now() - result_display_start_time();
+    UMA_HISTOGRAM_MEDIUM_TIMES("Arc.PlayStoreSearch.ResultClickLatency",
+                               activation_delay);
+    UMA_HISTOGRAM_EXACT_LINEAR(
+        "Apps.AppListPlayStoreAppLaunchedIndex",
+        group_index_in_container_view(),
+        AppListConfig::instance().max_search_result_tiles());
+    if (launch_as_default) {
+      UMA_HISTOGRAM_MEDIUM_TIMES(
+          "Arc.PlayStoreSearch.DefaultResultClickLatency", activation_delay);
+    }
   }
+
+  LogAppLaunchForSuggestedApp();
+
+  RecordSearchResultOpenSource(result(), view_delegate_->GetModel(),
+                               view_delegate_->GetSearchModel());
+  view_delegate_->OpenSearchResult(result()->id(), event_flags,
+                                   AppListLaunchedFrom::kLaunchedFromSearchBox,
+                                   AppListLaunchType::kAppSearchResult,
+                                   index_in_container(), launch_as_default);
+  view_delegate_->LogResultLaunchHistogram(
+      SearchResultLaunchLocation::kTileList, index_in_container());
 }
 
 void SearchResultTileItemView::SetIcon(const gfx::ImageSkia& icon) {
@@ -411,9 +426,6 @@ void SearchResultTileItemView::SetIcon(const gfx::ImageSkia& icon) {
 }
 
 void SearchResultTileItemView::SetBadgeIcon(const gfx::ImageSkia& badge_icon) {
-  if (!badge_)
-    return;
-
   if (badge_icon.isNull()) {
     badge_->SetVisible(false);
     return;
@@ -471,17 +483,17 @@ AppListMenuModelAdapter::AppListViewAppType
 SearchResultTileItemView::GetAppType() const {
   if (IsSuggestedAppTile()) {
     if (view_delegate_->GetModel()->state_fullscreen() ==
-        AppListViewState::PEEKING) {
+        AppListViewState::kPeeking) {
       return AppListMenuModelAdapter::PEEKING_SUGGESTED;
     } else {
       return AppListMenuModelAdapter::FULLSCREEN_SUGGESTED;
     }
   } else {
     if (view_delegate_->GetModel()->state_fullscreen() ==
-        AppListViewState::HALF) {
+        AppListViewState::kHalf) {
       return AppListMenuModelAdapter::HALF_SEARCH_RESULT;
     } else if (view_delegate_->GetModel()->state_fullscreen() ==
-               AppListViewState::FULLSCREEN_SEARCH) {
+               AppListViewState::kFullscreenSearch) {
       return AppListMenuModelAdapter::FULLSCREEN_SEARCH_RESULT;
     }
   }
@@ -490,15 +502,15 @@ SearchResultTileItemView::GetAppType() const {
 }
 
 bool SearchResultTileItemView::IsSuggestedAppTile() const {
-  return result() && result()->display_type() ==
-                         ash::SearchResultDisplayType::kRecommendation;
+  return result() &&
+         result()->display_type() == SearchResultDisplayType::kRecommendation;
 }
 
 bool SearchResultTileItemView::IsSuggestedAppTileShownInAppPage() const {
   return IsSuggestedAppTile() && show_in_apps_page_;
 }
 
-void SearchResultTileItemView::LogAppLaunch() const {
+void SearchResultTileItemView::LogAppLaunchForSuggestedApp() const {
   // Only log the app launch if the class is being used as a suggested app.
   if (!IsSuggestedAppTile())
     return;
@@ -507,7 +519,7 @@ void SearchResultTileItemView::LogAppLaunch() const {
   // record the opening of a fast re-installed app, since the latter is already
   // recorded in ArcAppReinstallAppResult::Open.
   if (result()->result_type() !=
-      ash::SearchResultType::kPlayStoreReinstallApp) {
+      AppListSearchResultType::kPlayStoreReinstallApp) {
     base::RecordAction(
         base::UserMetricsAction("AppList_ZeroStateOpenInstalledApp"));
   }
@@ -528,26 +540,24 @@ void SearchResultTileItemView::Layout() {
 
   if (IsSuggestedAppTileShownInAppPage()) {
     icon_->SetBoundsRect(AppListItemView::GetIconBoundsForTargetViewBounds(
-        rect, icon_->GetImage().size()));
+        AppListConfig::instance(), rect, icon_->GetImage().size()));
     title_->SetBoundsRect(AppListItemView::GetTitleBoundsForTargetViewBounds(
-        rect, title_->GetPreferredSize()));
+        AppListConfig::instance(), rect, title_->GetPreferredSize()));
   } else {
     gfx::Rect icon_rect(rect);
     icon_rect.ClampToCenteredSize(icon_->GetImage().size());
     icon_rect.set_y(kSearchTileTopPadding);
     icon_->SetBoundsRect(icon_rect);
 
-    if (badge_) {
-      const int badge_icon_dimension =
-          AppListConfig::instance().search_tile_badge_icon_dimension();
-      const int badge_icon_offset =
-          AppListConfig::instance().search_tile_badge_icon_offset();
-      const gfx::Rect badge_rect(
-          icon_rect.right() - badge_icon_dimension + badge_icon_offset,
-          icon_rect.bottom() - badge_icon_dimension + badge_icon_offset,
-          badge_icon_dimension, badge_icon_dimension);
-      badge_->SetBoundsRect(badge_rect);
-    }
+    const int badge_icon_dimension =
+        AppListConfig::instance().search_tile_badge_icon_dimension();
+    const int badge_icon_offset =
+        AppListConfig::instance().search_tile_badge_icon_offset();
+    const gfx::Rect badge_rect(
+        icon_rect.right() - badge_icon_dimension + badge_icon_offset,
+        icon_rect.bottom() - badge_icon_dimension + badge_icon_offset,
+        badge_icon_dimension, badge_icon_dimension);
+    badge_->SetBoundsRect(badge_rect);
 
     rect.set_y(icon_rect.bottom() + kSearchTitleSpacing);
     rect.set_height(title_->GetPreferredSize().height());
@@ -555,7 +565,7 @@ void SearchResultTileItemView::Layout() {
 
     // If there is no price set, we center the rating.
     const bool center_rating =
-        rating_ && rating_star_ && price_ && price_->text().empty();
+        rating_ && rating_star_ && price_ && price_->GetText().empty();
     const int rating_horizontal_offset =
         center_rating ? kSearchRatingCenteringOffset : 0;
 
@@ -606,16 +616,16 @@ gfx::Size SearchResultTileItemView::CalculatePreferredSize() const {
                    AppListConfig::instance().search_tile_height());
 }
 
-bool SearchResultTileItemView::GetTooltipText(const gfx::Point& p,
-                                              base::string16* tooltip) const {
+base::string16 SearchResultTileItemView::GetTooltipText(
+    const gfx::Point& p) const {
   // Use the label to generate a tooltip, so that it will consider its text
   // truncation in making the tooltip. We do not want the label itself to have a
   // tooltip, so we only temporarily enable it to get the tooltip text from the
   // label, then disable it again.
   title_->SetHandlesTooltips(true);
-  bool handled = title_->GetTooltipText(p, tooltip);
+  base::string16 tooltip = title_->GetTooltipText(p);
   title_->SetHandlesTooltips(false);
-  return handled;
+  return tooltip;
 }
 
-}  // namespace app_list
+}  // namespace ash

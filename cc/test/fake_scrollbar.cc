@@ -25,11 +25,10 @@ FakeScrollbar::FakeScrollbar(bool paint,
       orientation_(orientation),
       is_left_side_vertical_scrollbar_(is_left_side_vertical_scrollbar),
       is_overlay_(is_overlay),
-      thumb_thickness_(10),
-      thumb_length_(5),
+      thumb_size_(5, 10),
       thumb_opacity_(1),
-      needs_paint_thumb_(true),
-      needs_paint_track_(true),
+      needs_repaint_thumb_(true),
+      needs_repaint_track_(true),
       has_tickmarks_(false),
       track_rect_(0, 0, 100, 10),
       fill_color_(SK_ColorGREEN) {}
@@ -44,18 +43,29 @@ bool FakeScrollbar::IsLeftSideVerticalScrollbar() const {
   return is_left_side_vertical_scrollbar_;
 }
 
-gfx::Point FakeScrollbar::Location() const { return location_; }
+bool FakeScrollbar::IsSolidColor() const {
+  return false;
+}
 
 bool FakeScrollbar::IsOverlay() const { return is_overlay_; }
 
 bool FakeScrollbar::HasThumb() const { return has_thumb_; }
 
-int FakeScrollbar::ThumbThickness() const {
-  return thumb_thickness_;
+gfx::Rect FakeScrollbar::ThumbRect() const {
+  // The location of ThumbRect doesn't matter in cc.
+  return gfx::Rect(thumb_size_);
 }
 
-int FakeScrollbar::ThumbLength() const {
-  return thumb_length_;
+gfx::Rect FakeScrollbar::BackButtonRect() const {
+  return back_button_rect_;
+}
+
+gfx::Rect FakeScrollbar::ForwardButtonRect() const {
+  return forward_button_rect_;
+}
+
+bool FakeScrollbar::SupportsDragSnapBack() const {
+  return false;
 }
 
 gfx::Rect FakeScrollbar::TrackRect() const {
@@ -66,10 +76,10 @@ float FakeScrollbar::ThumbOpacity() const {
   return thumb_opacity_;
 }
 
-bool FakeScrollbar::NeedsPaintPart(ScrollbarPart part) const {
+bool FakeScrollbar::NeedsRepaintPart(ScrollbarPart part) const {
   if (part == THUMB)
-    return needs_paint_thumb_;
-  return needs_paint_track_;
+    return needs_repaint_thumb_;
+  return needs_repaint_track_;
 }
 
 bool FakeScrollbar::HasTickmarks() const {
@@ -78,7 +88,7 @@ bool FakeScrollbar::HasTickmarks() const {
 
 void FakeScrollbar::PaintPart(PaintCanvas* canvas,
                               ScrollbarPart part,
-                              const gfx::Rect& content_rect) {
+                              const gfx::Rect& rect) {
   if (!paint_)
     return;
 
@@ -88,12 +98,7 @@ void FakeScrollbar::PaintPart(PaintCanvas* canvas,
   flags.setAntiAlias(false);
   flags.setColor(paint_fill_color());
   flags.setStyle(PaintFlags::kFill_Style);
-
-  // Emulate the how the real scrollbar works by using scrollbar's rect for
-  // TRACK and the given content_rect for the THUMB
-  SkRect rect = part == TRACK ? RectToSkRect(TrackRect())
-                              : RectToSkRect(content_rect);
-  canvas->drawRect(rect, flags);
+  canvas->drawRect(RectToSkRect(rect), flags);
 }
 
 bool FakeScrollbar::UsesNinePatchThumbResource() const {

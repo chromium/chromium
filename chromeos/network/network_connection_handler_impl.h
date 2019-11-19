@@ -46,7 +46,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnectionHandlerImpl
   // NetworkCertLoader::Observer
   void OnCertificatesLoaded() override;
 
- protected:
   void Init(NetworkStateHandler* network_state_handler,
             NetworkConfigurationHandler* network_configuration_handler,
             ManagedNetworkConfigurationHandler*

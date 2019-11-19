@@ -95,7 +95,8 @@ def PathToDexForPlatformVersion(device, package_name):
   if version_codes.LOLLIPOP <= sdk_level <= version_codes.LOLLIPOP_MR1:
     # Of the form "com.example.foo-\d", where \d is some digit (usually 1 or 2)
     package_with_suffix = os.path.basename(os.path.dirname(path_to_apk))
-    dalvik_prefix = '/data/dalvik-cache/arm'
+    arch = _GetFormattedArch(device)
+    dalvik_prefix = '/data/dalvik-cache/{arch}'.format(arch=arch)
     odex_file = '{prefix}/data@app@{package}@base.apk@classes.dex'.format(
         prefix=dalvik_prefix,
         package=package_with_suffix)
@@ -113,17 +114,18 @@ def PathToDexForPlatformVersion(device, package_name):
     raise DeviceOSError(
         'Unable to find odex file: you must run dex2oat on debuggable apps '
         'on >= P after installation.')
-  raise DeviceOSError('Unable to find odex file')
+  raise DeviceOSError('Unable to find odex file ' + odex_file)
 
 
 def _AdbOatDumpForPackage(device, package_name, out_file):
   """Runs oatdump on the device."""
   # Get the path to the odex file.
   odex_file = PathToDexForPlatformVersion(device, package_name)
-  device.RunShellCommand(['oatdump',
-                          '--oat-file=' + odex_file,
-                          '--output=' + out_file],
-                         shell=True, check_return=True)
+  device.RunShellCommand(
+      ['oatdump', '--oat-file=' + odex_file, '--output=' + out_file],
+      timeout=420,
+      shell=True,
+      check_return=True)
 
 
 class JavaClass(object):
@@ -210,7 +212,7 @@ def RealMain(mapping, device_arg, package, status, hide_summary, workdir):
       device.adb) as file_on_device:
     _AdbOatDumpForPackage(device, package, file_on_device.name)
     file_on_host = os.path.join(workdir, 'out.dump')
-    device.PullFile(file_on_device.name, file_on_host)
+    device.PullFile(file_on_device.name, file_on_host, timeout=220)
   proguard_mappings = (_ParseMappingFile(mapping) if mapping else None)
   with open(file_on_host, 'r') as f:
     java_classes = ListClassesAndVerificationStatus(f, proguard_mappings)
@@ -218,7 +220,6 @@ def RealMain(mapping, device_arg, package, status, hide_summary, workdir):
 
 
 def main():
-  devil_chromium.Initialize()
   parser = argparse.ArgumentParser(description="""
 List Java classes in an APK which fail ART class verification.
 """)
@@ -261,7 +262,7 @@ List Java classes in an APK which fail ART class verification.
   logging_common.AddLoggingArguments(parser)
 
   args = parser.parse_args()
-  script_common.InitializeEnvironment(args)
+  devil_chromium.Initialize(adb_path=args.adb_path)
   logging_common.InitializeLogging(args)
 
   if args.workdir:

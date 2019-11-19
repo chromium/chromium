@@ -100,6 +100,7 @@ public class HistoryItem extends TimedItem {
     public void open() {
         if (mManager != null) {
             mManager.recordUserActionWithOptionalSearch("OpenItem");
+            mManager.recordOpenedItemMetrics(this);
             mManager.openUrl(mUrl, null, false);
         }
     }

@@ -19,4 +19,4 @@ public_deps = [
   "//chromeos/services/secure_channel/public/cpp/shared",
 ]
 
-type_mappings = [ "chromeos.secure_channel.mojom.ConnectionPriority=chromeos::secure_channel::ConnectionPriority" ]
+type_mappings = [ "chromeos.secure_channel.mojom.ConnectionPriority=::chromeos::secure_channel::ConnectionPriority" ]

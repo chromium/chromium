@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_SOURCE_KEYED_CACHED_METADATA_HANDLER_H_
 
 #include <stdint.h>
-#include <array>
 #include "third_party/blink/renderer/platform/loader/fetch/cached_metadata.h"
 #include "third_party/blink/renderer/platform/loader/fetch/cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
@@ -46,12 +45,12 @@ class PLATFORM_EXPORT SourceKeyedCachedMetadataHandler final
     return 0;
   }
 
-  void SetSerializedCachedMetadata(const uint8_t*, size_t);
+  void SetSerializedCachedMetadata(mojo_base::BigBuffer data);
 
  private:
   // Keys are SHA-256, which are 256/8 = 32 bytes.
   static constexpr size_t kKeySize = 32;
-  typedef std::array<uint8_t, kKeySize> Key;
+  typedef Vector<uint8_t, kKeySize> Key;
 
   class SingleKeyHandler;
   class KeyHash;

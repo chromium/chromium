@@ -5,6 +5,7 @@
 #include "services/network/public/cpp/cors/preflight_cache.h"
 
 #include "base/test/simple_test_tick_clock.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "net/http/http_request_headers.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -21,20 +22,25 @@ class PreflightCacheTest : public testing::Test {
   PreflightCacheTest() = default;
 
  protected:
-  size_t CountOrigins() const { return cache_.CountOriginsForTesting(); }
   size_t CountEntries() const { return cache_.CountEntriesForTesting(); }
+  void MayPurge(size_t max_entries, size_t purge_unit) {
+    cache_.MayPurgeForTesting(max_entries, purge_unit);
+  }
   PreflightCache* cache() { return &cache_; }
 
+  std::unique_ptr<PreflightResult> CreateEntry() {
+    return PreflightResult::Create(mojom::CredentialsMode::kInclude,
+                                   std::string("POST"), base::nullopt,
+                                   std::string("5"), nullptr);
+  }
+
   void AppendEntry(const std::string& origin, const GURL& url) {
-    std::unique_ptr<PreflightResult> result = PreflightResult::Create(
-        mojom::FetchCredentialsMode::kInclude, std::string("POST"),
-        base::nullopt, std::string("5"), nullptr);
-    cache_.AppendEntry(origin, url, std::move(result));
+    cache_.AppendEntry(origin, url, CreateEntry());
   }
 
   bool CheckEntryAndRefreshCache(const std::string& origin, const GURL& url) {
     return cache_.CheckIfRequestCanSkipPreflight(
-        origin, url, network::mojom::FetchCredentialsMode::kInclude, "POST",
+        origin, url, network::mojom::CredentialsMode::kInclude, "POST",
         net::HttpRequestHeaders(), false);
   }
 
@@ -47,6 +53,7 @@ class PreflightCacheTest : public testing::Test {
   void SetUp() override { PreflightResult::SetTickClockForTesting(&clock_); }
   void TearDown() override { PreflightResult::SetTickClockForTesting(nullptr); }
 
+  base::test::TaskEnvironment env_;
   PreflightCache cache_;
   base::SimpleTestTickClock clock_;
 };
@@ -57,23 +64,35 @@ TEST_F(PreflightCacheTest, CacheSize) {
   const GURL url("http://www.test.com/A");
   const GURL other_url("http://www.test.com/B");
 
-  EXPECT_EQ(0u, CountOrigins());
   EXPECT_EQ(0u, CountEntries());
 
   AppendEntry(origin, url);
 
-  EXPECT_EQ(1u, CountOrigins());
   EXPECT_EQ(1u, CountEntries());
 
   AppendEntry(origin, other_url);
 
-  EXPECT_EQ(1u, CountOrigins());
   EXPECT_EQ(2u, CountEntries());
 
   AppendEntry(other_origin, url);
 
-  EXPECT_EQ(2u, CountOrigins());
   EXPECT_EQ(3u, CountEntries());
+
+  // Num of entries is 3, that is not greater than the limit 3u.
+  // It results in doing nothing.
+  MayPurge(3u, 2u);
+  EXPECT_EQ(3u, CountEntries());
+
+  // Num of entries is 3, that is greater than the limit 2u.
+  // It results in purging entries by the specified unit 2u, thus only one entry
+  // remains.
+  MayPurge(2u, 2u);
+  EXPECT_EQ(1u, CountEntries());
+
+  // This will make the cache empty. Note that the cache expects the num of
+  // remaining entries should be greater than the specified purge unit.
+  MayPurge(0u, 1u);
+  EXPECT_EQ(0u, CountEntries());
 }
 
 TEST_F(PreflightCacheTest, CacheTimeout) {
@@ -81,13 +100,11 @@ TEST_F(PreflightCacheTest, CacheTimeout) {
   const GURL url("http://www.test.com/A");
   const GURL other_url("http://www.test.com/B");
 
-  EXPECT_EQ(0u, CountOrigins());
   EXPECT_EQ(0u, CountEntries());
 
   AppendEntry(origin, url);
   AppendEntry(origin, other_url);
 
-  EXPECT_EQ(1u, CountOrigins());
   EXPECT_EQ(2u, CountEntries());
 
   // Cache entry should still be valid.
@@ -99,13 +116,11 @@ TEST_F(PreflightCacheTest, CacheTimeout) {
   // Cache entry should now be expired.
   EXPECT_FALSE(CheckEntryAndRefreshCache(origin, url));
 
-  EXPECT_EQ(1u, CountOrigins());
   EXPECT_EQ(1u, CountEntries());
 
   // Cache entry should be expired.
   EXPECT_FALSE(CheckEntryAndRefreshCache(origin, other_url));
 
-  EXPECT_EQ(0u, CountOrigins());
   EXPECT_EQ(0u, CountEntries());
 }
 

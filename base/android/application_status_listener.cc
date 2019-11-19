@@ -6,9 +6,9 @@
 
 #include <jni.h>
 
+#include "base/base_jni_headers/ApplicationStatus_jni.h"
 #include "base/lazy_instance.h"
 #include "base/observer_list_threadsafe.h"
-#include "jni/ApplicationStatus_jni.h"
 
 namespace base {
 namespace android {
@@ -95,6 +95,11 @@ static void JNI_ApplicationStatus_OnApplicationStateChange(
     jint new_state) {
   ApplicationState application_state = static_cast<ApplicationState>(new_state);
   ApplicationStatusListener::NotifyApplicationStateChange(application_state);
+}
+
+// static
+bool ApplicationStatusListener::HasVisibleActivities() {
+  return Java_ApplicationStatus_hasVisibleActivities(AttachCurrentThread());
 }
 
 }  // namespace android

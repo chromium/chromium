@@ -49,9 +49,6 @@ void IOSImageDataFetcherWrapper::FetchImageDataWebpDecoded(
       referrer_policy, NO_TRAFFIC_ANNOTATION_YET, send_cookies);
 }
 
-void IOSImageDataFetcherWrapper::SetDataUseServiceName(
-    DataUseServiceName data_use_service_name) {}
-
 ImageDataFetcherCallback
 IOSImageDataFetcherWrapper::CallbackForImageDataFetcher(
     ImageDataFetcherBlock callback) {
@@ -69,9 +66,10 @@ IOSImageDataFetcherWrapper::CallbackForImageDataFetcher(
     // The image is a webp image.
     RequestMetadata webp_metadata = metadata;
 
-    base::PostTaskWithTraitsAndReplyWithResult(
+    base::PostTaskAndReplyWithResult(
         FROM_HERE,
         {
+            base::ThreadPool(),
             base::TaskPriority::BEST_EFFORT,
             base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN,
         },

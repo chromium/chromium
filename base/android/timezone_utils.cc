@@ -6,8 +6,8 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
+#include "base/base_jni_headers/TimezoneUtils_jni.h"
 #include "base/strings/string16.h"
-#include "jni/TimezoneUtils_jni.h"
 
 namespace base {
 namespace android {

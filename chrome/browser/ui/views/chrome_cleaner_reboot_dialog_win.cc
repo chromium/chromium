@@ -6,7 +6,6 @@
 
 #include "base/strings/string16.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/chrome_cleaner_reboot_dialog_controller_win.h"
-#include "chrome/browser/safe_browsing/chrome_cleaner/srt_field_trial_win.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -22,7 +21,6 @@
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/widget/widget.h"
-#include "ui/views/window/dialog_client_view.h"
 
 namespace chrome {
 
@@ -50,6 +48,12 @@ ChromeCleanerRebootDialog::ChromeCleanerRebootDialog(
     : dialog_controller_(dialog_controller) {
   DCHECK(dialog_controller_);
 
+  DialogDelegate::set_draggable(true);
+  DialogDelegate::set_button_label(
+      ui::DIALOG_BUTTON_OK,
+      l10n_util::GetStringUTF16(
+          IDS_CHROME_CLEANUP_REBOOT_PROMPT_RESTART_BUTTON_LABEL));
+
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
       views::TEXT, views::TEXT));
 }
@@ -75,12 +79,7 @@ void ChromeCleanerRebootDialog::Show(Browser* browser) {
 // WidgetDelegate overrides.
 
 ui::ModalType ChromeCleanerRebootDialog::GetModalType() const {
-  safe_browsing::RebootPromptType prompt_type =
-      safe_browsing::GetRebootPromptType();
-  DCHECK_NE(safe_browsing::REBOOT_PROMPT_TYPE_OPEN_SETTINGS_PAGE, prompt_type);
-  return prompt_type == safe_browsing::REBOOT_PROMPT_TYPE_SHOW_MODAL_DIALOG
-             ? ui::MODAL_TYPE_WINDOW
-             : ui::MODAL_TYPE_NONE;
+  return ui::MODAL_TYPE_NONE;
 }
 
 base::string16 ChromeCleanerRebootDialog::GetWindowTitle() const {
@@ -91,22 +90,10 @@ base::string16 ChromeCleanerRebootDialog::GetWindowTitle() const {
 views::View* ChromeCleanerRebootDialog::GetInitiallyFocusedView() {
   // Set focus away from the Restart/OK button to prevent accidental prompt
   // acceptance if the user is typing as the dialog appears.
-  return GetDialogClientView()->cancel_button();
+  return GetCancelButton();
 }
 
 // DialogDelegate overrides.
-
-base::string16 ChromeCleanerRebootDialog::GetDialogButtonLabel(
-    ui::DialogButton button) const {
-  DCHECK(button == ui::DIALOG_BUTTON_OK || button == ui::DIALOG_BUTTON_CANCEL);
-  DCHECK(dialog_controller_);
-
-  return button == ui::DIALOG_BUTTON_OK
-             ? l10n_util::GetStringUTF16(
-                   IDS_CHROME_CLEANUP_REBOOT_PROMPT_RESTART_BUTTON_LABEL)
-             : DialogDelegate::GetDialogButtonLabel(button);
-}
-
 bool ChromeCleanerRebootDialog::Accept() {
   HandleDialogInteraction(DialogInteractionResult::kAccept);
   return true;

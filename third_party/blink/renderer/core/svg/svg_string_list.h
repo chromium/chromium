@@ -77,7 +77,7 @@ class SVGStringListBase : public SVGPropertyBase {
   virtual SVGParsingError SetValueAsString(const String&) = 0;
 
   void Add(SVGPropertyBase*, SVGElement*) override;
-  void CalculateAnimatedValue(SVGAnimationElement*,
+  void CalculateAnimatedValue(const SVGAnimateElement&,
                               float percentage,
                               unsigned repeat_count,
                               SVGPropertyBase* from_value,
@@ -112,10 +112,6 @@ class SVGStringListBase : public SVGPropertyBase {
 template <char list_delimiter>
 class SVGStringList final : public SVGStringListBase {
  public:
-  static SVGStringList<list_delimiter>* Create() {
-    return MakeGarbageCollected<SVGStringList<list_delimiter>>();
-  }
-
   SVGStringList() = default;
   ~SVGStringList() override = default;
 

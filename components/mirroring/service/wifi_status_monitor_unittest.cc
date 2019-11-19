@@ -9,10 +9,13 @@
 #include "base/json/json_reader.h"
 #include "base/macros.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/values.h"
 #include "components/mirroring/service/message_dispatcher.h"
 #include "components/mirroring/service/value_util.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -53,9 +56,8 @@ class WifiStatusMonitorTest : public mojom::CastMessageChannel,
                               public ::testing::Test {
  public:
   WifiStatusMonitorTest()
-      : binding_(this),
-        message_dispatcher_(CreateInterfacePtrAndBind(),
-                            mojo::MakeRequest(&inbound_channel_),
+      : message_dispatcher_(receiver_.BindNewPipeAndPassRemote(),
+                            inbound_channel_.BindNewPipeAndPassReceiver(),
                             error_callback_.Get()) {}
 
   ~WifiStatusMonitorTest() override {}
@@ -97,7 +99,7 @@ class WifiStatusMonitorTest : public mojom::CastMessageChannel,
     message.message_namespace = mojom::kWebRtcNamespace;
     message.json_format_data = response;
     inbound_channel_->Send(message.Clone());
-    scoped_task_environment_.RunUntilIdle();
+    task_environment_.RunUntilIdle();
   }
 
   // Creates a WifiStatusMonitor and start monitoring the status.
@@ -106,7 +108,7 @@ class WifiStatusMonitorTest : public mojom::CastMessageChannel,
     EXPECT_CALL(error_callback_, Run(_)).Times(0);
     auto status_monitor =
         std::make_unique<WifiStatusMonitor>(&message_dispatcher_);
-    scoped_task_environment_.RunUntilIdle();
+    task_environment_.RunUntilIdle();
     // Expect to receive request to send GET_STATUS message when create a
     // WifiStatusMonitor.
     EXPECT_EQ(mojom::kWebRtcNamespace,
@@ -119,18 +121,12 @@ class WifiStatusMonitorTest : public mojom::CastMessageChannel,
     return status_monitor;
   }
 
-  void RunUntilIdle() { scoped_task_environment_.RunUntilIdle(); }
+  void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
  private:
-  mojom::CastMessageChannelPtr CreateInterfacePtrAndBind() {
-    mojom::CastMessageChannelPtr outbound_channel_ptr;
-    binding_.Bind(mojo::MakeRequest(&outbound_channel_ptr));
-    return outbound_channel_ptr;
-  }
-
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
-  mojo::Binding<mojom::CastMessageChannel> binding_;
-  mojom::CastMessageChannelPtr inbound_channel_;
+  base::test::TaskEnvironment task_environment_;
+  mojo::Receiver<mojom::CastMessageChannel> receiver_{this};
+  mojo::Remote<mojom::CastMessageChannel> inbound_channel_;
   base::MockCallback<MessageDispatcher::ErrorCallback> error_callback_;
   MessageDispatcher message_dispatcher_;
   CastMessage last_outbound_message_;

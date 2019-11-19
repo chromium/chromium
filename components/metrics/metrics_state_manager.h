@@ -91,9 +91,9 @@ class MetricsStateManager final {
   CreateLowEntropyProvider();
 
   // Creates the MetricsStateManager, enforcing that only a single instance
-  // of the class exists at a time. Returns NULL if an instance exists already.
-  // On Windows, |backup_registry_key| is used to store a backup of the clean
-  // exit beacon. It is ignored on other platforms.
+  // of the class exists at a time. Returns nullptr if an instance exists
+  // already. On Windows, |backup_registry_key| is used to store a backup of the
+  // clean exit beacon. It is ignored on other platforms.
   static std::unique_ptr<MetricsStateManager> Create(
       PrefService* local_state,
       EnabledStateProvider* enabled_state_provider,

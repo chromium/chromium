@@ -39,8 +39,6 @@ class SVGScriptElement final : public SVGElement,
   USING_GARBAGE_COLLECTED_MIXIN(SVGScriptElement);
 
  public:
-  static SVGScriptElement* Create(Document&, const CreateElementFlags);
-
   SVGScriptElement(Document&, const CreateElementFlags);
 
   ScriptLoader* Loader() const final { return loader_.Get(); }
@@ -50,6 +48,8 @@ class SVGScriptElement final : public SVGElement,
 #endif
 
   bool IsScriptElement() const override { return true; }
+
+  const AttrNameToTrustedType& GetCheckedAttributeTypes() const override;
 
   void Trace(blink::Visitor*) override;
 
@@ -105,7 +105,7 @@ class SVGScriptElement final : public SVGElement,
 
   bool have_fired_load_ = false;
 
-  TraceWrapperMember<ScriptLoader> loader_;
+  Member<ScriptLoader> loader_;
 };
 
 }  // namespace blink

@@ -31,7 +31,7 @@
            Workspace.projectTypes.ContentScripts));
     uiSourceCode.requestContent().then(didRequestContent);
 
-    function didRequestContent(content, contentEncoded) {
+    function didRequestContent({ content, error, isEncoded }) {
       TestRunner.addResult('Highlighter type: ' + uiSourceCode.mimeType());
       TestRunner.addResult('UISourceCode content: ' + content);
       callback();

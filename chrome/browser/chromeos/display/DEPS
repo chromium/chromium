@@ -1,12 +1,6 @@
 specific_include_rules = {
   # Allow ash deps for browser test.
   "display_prefs_browsertest.cc": [
-    "+ash/display/display_prefs.h",
-    "+ash/shell.h",
-  ],
-  # mash-ok, output_protection_controller_ash is not used in mash,
-  # output_protection_controller_mus is used instead.
-  "output_protection_controller_ash\.cc": [
     "+ash/shell.h",
   ],
 }

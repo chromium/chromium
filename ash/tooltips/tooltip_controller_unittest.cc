@@ -7,6 +7,7 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/wm/desks/desks_util.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/aura/env.h"
@@ -39,10 +40,11 @@ views::Widget* CreateNewWidgetWithBoundsOn(int display,
   params.type = views::Widget::InitParams::TYPE_WINDOW_FRAMELESS;
   params.accept_events = true;
   params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
-  params.parent = Shell::Get()->GetContainer(
-      Shell::GetAllRootWindows().at(display), kShellWindowId_DefaultContainer);
+  params.parent =
+      Shell::Get()->GetContainer(Shell::GetAllRootWindows().at(display),
+                                 desks_util::GetActiveDeskContainerId());
   params.bounds = bounds;
-  widget->Init(params);
+  widget->Init(std::move(params));
   widget->Show();
   return widget;
 }

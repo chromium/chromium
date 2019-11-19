@@ -10,15 +10,15 @@
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/files/file_util.h"
+#include "base/hash/sha1.h"
 #include "base/mac/foundation_util.h"
 #include "base/macros.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/sha1.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_path_override.h"
 #include "chrome/common/chrome_paths.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -37,7 +37,7 @@ constexpr char kDMToken[] = "fake-dm-token";
 
 class BrowserDMTokenStorageMacTest : public testing::Test {
  private:
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
 };
 
 TEST_F(BrowserDMTokenStorageMacTest, InitClientId) {
@@ -120,74 +120,6 @@ TEST_F(BrowserDMTokenStorageMacTest, InitDMTokenWithoutDirectory) {
 
   EXPECT_EQ(std::string(), storage.InitDMToken());
   EXPECT_FALSE(base::PathExists(dm_token_dir_path));
-}
-
-class BrowserDMTokenStorageMacCleanupTest : public testing::Test {
- protected:
-  BrowserDMTokenStorageMacCleanupTest() = default;
-  ~BrowserDMTokenStorageMacCleanupTest() override = default;
-
-  void SetUp() override {
-    ASSERT_TRUE(fake_app_data_dir_.CreateUniqueTempDir());
-    path_override_.reset(new base::ScopedPathOverride(
-        base::DIR_APP_DATA, fake_app_data_dir_.GetPath()));
-
-    token_dir_path_ = fake_app_data_dir_.GetPath().Append(kDmTokenBaseDir);
-  }
-
-  base::ScopedTempDir fake_app_data_dir_;
-  base::FilePath token_dir_path_;
-  BrowserDMTokenStorageMac storage_;
-  std::unique_ptr<base::ScopedPathOverride> path_override_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BrowserDMTokenStorageMacCleanupTest);
-};
-
-TEST_F(BrowserDMTokenStorageMacCleanupTest, Success) {
-  ASSERT_TRUE(base::CreateDirectory(token_dir_path_));
-
-  ASSERT_TRUE(base::DirectoryExists(token_dir_path_));
-
-  storage_.DeletePolicyDirectory();
-
-  EXPECT_FALSE(base::PathExists(token_dir_path_));
-  EXPECT_TRUE(base::DirectoryExists(token_dir_path_.DirName()));
-}
-
-TEST_F(BrowserDMTokenStorageMacCleanupTest, TokenDirNotEmpty) {
-  ASSERT_TRUE(base::CreateDirectory(token_dir_path_));
-
-  ASSERT_TRUE(base::DirectoryExists(token_dir_path_));
-
-  base::FilePath tmp_file;
-  ASSERT_TRUE(base::CreateTemporaryFileInDir(token_dir_path_, &tmp_file));
-
-  storage_.DeletePolicyDirectory();
-
-  EXPECT_TRUE(base::DirectoryExists(token_dir_path_));
-}
-
-TEST_F(BrowserDMTokenStorageMacCleanupTest, TokenDirNotExist) {
-  ASSERT_FALSE(base::DirectoryExists(token_dir_path_));
-
-  storage_.DeletePolicyDirectory();
-
-  EXPECT_FALSE(base::PathExists(token_dir_path_));
-  EXPECT_FALSE(base::PathExists(token_dir_path_.DirName()));
-}
-
-TEST_F(BrowserDMTokenStorageMacCleanupTest, TokenDirIsNotDir) {
-  ASSERT_TRUE(base::CreateDirectory(token_dir_path_.DirName()));
-  ASSERT_TRUE(base::DirectoryExists(token_dir_path_.DirName()));
-
-  ASSERT_TRUE(base::CloseFile(base::OpenFile(token_dir_path_, "w")));
-
-  ASSERT_TRUE(base::PathExists(token_dir_path_));
-
-  storage_.DeletePolicyDirectory();
-
-  EXPECT_TRUE(base::PathExists(token_dir_path_));
 }
 
 }  // namespace policy

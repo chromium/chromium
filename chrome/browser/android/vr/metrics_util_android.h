@@ -32,8 +32,6 @@ class MetricsUtilAndroid {
                                            const VrCoreInfo& vr_core_info);
   static void LogVrViewerType(gvr::ViewerType viewer_type);
 
-  static void LogXrRenderPathUsed(XRRenderPath);
-
  private:
   static device::VrViewerType GetVrViewerType(gvr::ViewerType viewer_type);
 

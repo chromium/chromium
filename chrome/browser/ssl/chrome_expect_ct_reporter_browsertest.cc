@@ -8,6 +8,7 @@
 #include "base/callback.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/cert_verifier_browser_test.h"
 #include "chrome/browser/ui/browser.h"
@@ -27,7 +28,22 @@ namespace {
 // received by a server.
 class ExpectCTBrowserTest : public CertVerifierBrowserTest {
  public:
-  ExpectCTBrowserTest() : CertVerifierBrowserTest() {}
+  ExpectCTBrowserTest() : CertVerifierBrowserTest() {
+    feature_list_.InitWithFeatures(
+        {network::features::kExpectCTReporting,
+         net::TransportSecurityState::kDynamicExpectCTFeature},
+        {});
+
+    // Expect-CT reporting depends on actually enforcing Certificate
+    // Transparency.
+    SystemNetworkContextManager::SetEnableCertificateTransparencyForTesting(
+        true);
+  }
+
+  ~ExpectCTBrowserTest() override {
+    SystemNetworkContextManager::SetEnableCertificateTransparencyForTesting(
+        base::nullopt);
+  }
 
   void SetUpOnMainThread() override {
     run_loop_ = std::make_unique<base::RunLoop>();
@@ -70,7 +86,7 @@ class ExpectCTBrowserTest : public CertVerifierBrowserTest {
         EXPECT_EQ("application/expect-ct-report+json; charset=utf-8",
                   it->second);
       }
-      run_loop_->QuitClosure().Run();
+      run_loop_->Quit();
     }
 
     return http_response;
@@ -96,6 +112,8 @@ class ExpectCTBrowserTest : public CertVerifierBrowserTest {
   void set_report_uri(const GURL& report_uri) { report_uri_ = report_uri; }
 
  private:
+  base::test::ScopedFeatureList feature_list_;
+
   std::unique_ptr<base::RunLoop> run_loop_;
   // The report-uri value to use in the Expect-CT header for requests handled by
   // ExpectCTHeaderRequestHandler.
@@ -107,12 +125,6 @@ class ExpectCTBrowserTest : public CertVerifierBrowserTest {
 // Tests that an Expect-CT reporter is properly set up and used for violations
 // of Expect-CT HTTP headers.
 IN_PROC_BROWSER_TEST_F(ExpectCTBrowserTest, TestDynamicExpectCTReporting) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {network::features::kExpectCTReporting,
-       net::TransportSecurityState::kDynamicExpectCTFeature},
-      {});
-
   net::EmbeddedTestServer report_server;
   report_server.RegisterRequestHandler(base::Bind(
       &ExpectCTBrowserTest::ReportRequestHandler, base::Unretained(this)));
@@ -150,12 +162,6 @@ IN_PROC_BROWSER_TEST_F(ExpectCTBrowserTest, TestDynamicExpectCTReporting) {
 // Tests that Expect-CT HTTP headers are processed correctly.
 IN_PROC_BROWSER_TEST_F(ExpectCTBrowserTest,
                        TestDynamicExpectCTHeaderProcessing) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {network::features::kExpectCTReporting,
-       net::TransportSecurityState::kDynamicExpectCTFeature},
-      {});
-
   net::EmbeddedTestServer test_server(net::EmbeddedTestServer::TYPE_HTTPS);
   test_server.RegisterRequestHandler(
       base::Bind(&ExpectCTBrowserTest::ExpectCTHeaderRequestHandler,

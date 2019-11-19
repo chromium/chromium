@@ -12,6 +12,8 @@
 #include "components/viz/service/display/output_surface_frame.h"
 #include "gpu/command_buffer/client/context_support.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
+#include "gpu/command_buffer/client/shared_image_interface.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "third_party/khronos/GLES2/gl2.h"
 #include "third_party/khronos/GLES2/gl2ext.h"
 #include "ui/gl/gl_utils.h"
@@ -24,33 +26,37 @@ constexpr ResourceFormat kFboTextureFormat = RGBA_8888;
 }  // namespace
 
 GLOutputSurfaceOffscreen::GLOutputSurfaceOffscreen(
-    scoped_refptr<VizProcessContextProvider> context_provider,
-    SyntheticBeginFrameSource* synthetic_begin_frame_source)
-    : GLOutputSurface(context_provider, synthetic_begin_frame_source),
-      weak_ptr_factory_(this) {}
+    scoped_refptr<VizProcessContextProvider> context_provider)
+    : GLOutputSurface(context_provider, gpu::kNullSurfaceHandle) {}
 
-GLOutputSurfaceOffscreen::~GLOutputSurfaceOffscreen() {}
+GLOutputSurfaceOffscreen::~GLOutputSurfaceOffscreen() {
+  DiscardBackbuffer();
+}
 
 void GLOutputSurfaceOffscreen::EnsureBackbuffer() {
+  if (size_.IsEmpty())
+    return;
+
   if (!texture_id_) {
+    gpu::SharedImageInterface* sii = context_provider_->SharedImageInterface();
     gpu::gles2::GLES2Interface* gl = context_provider_->ContextGL();
 
     const int max_texture_size =
         context_provider_->ContextCapabilities().max_texture_size;
-    int texture_width = std::min(max_texture_size, size_.width());
-    int texture_height = std::min(max_texture_size, size_.height());
+    gfx::Size texture_size(std::min(size_.width(), max_texture_size),
+                           std::min(size_.height(), max_texture_size));
 
-    // TODO(sgilhuly): Draw to a texture backed by a mailbox.
-    gl->GenTextures(1, &texture_id_);
-    gl->BindTexture(GL_TEXTURE_2D, texture_id_);
-    gl->TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    gl->TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    gl->TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    gl->TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    gl->TexImage2D(GL_TEXTURE_2D, 0, GLInternalFormat(kFboTextureFormat),
-                   texture_width, texture_height, 0,
-                   GLDataFormat(kFboTextureFormat),
-                   GLDataType(kFboTextureFormat), nullptr);
+    const uint32_t flags = gpu::SHARED_IMAGE_USAGE_GLES2 |
+                           gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT |
+                           gpu::SHARED_IMAGE_USAGE_DISPLAY;
+    mailbox_ = sii->CreateSharedImage(kFboTextureFormat, texture_size,
+                                      color_space_, flags);
+
+    // Ensure mailbox is valid before using it.
+    gl->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
+
+    texture_id_ = gl->CreateAndTexStorage2DSharedImageCHROMIUM(mailbox_.name);
+
     gl->GenFramebuffers(1, &fbo_);
     gl->BindFramebuffer(GL_FRAMEBUFFER, fbo_);
     gl->FramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
@@ -59,17 +65,18 @@ void GLOutputSurfaceOffscreen::EnsureBackbuffer() {
 }
 
 void GLOutputSurfaceOffscreen::DiscardBackbuffer() {
-  gpu::gles2::GLES2Interface* gl = context_provider_->ContextGL();
-
-  if (texture_id_) {
-    gl->DeleteTextures(1, &texture_id_);
-    texture_id_ = 0;
-  }
-
   if (fbo_) {
+    gpu::gles2::GLES2Interface* gl = context_provider_->ContextGL();
     gl->BindFramebuffer(GL_FRAMEBUFFER, fbo_);
     gl->DeleteFramebuffers(1, &fbo_);
     fbo_ = 0;
+  }
+
+  if (texture_id_) {
+    gpu::SharedImageInterface* sii = context_provider_->SharedImageInterface();
+    sii->DestroySharedImage(gpu::SyncToken(), mailbox_);
+    mailbox_.SetZero();
+    texture_id_ = 0;
   }
 }
 
@@ -88,13 +95,13 @@ void GLOutputSurfaceOffscreen::Reshape(const gfx::Size& size,
                                        bool alpha,
                                        bool stencil) {
   size_ = size;
+  color_space_ = color_space;
   DiscardBackbuffer();
   EnsureBackbuffer();
 }
 
 void GLOutputSurfaceOffscreen::SwapBuffers(OutputSurfaceFrame frame) {
-  gfx::Size surface_size = frame.size;
-  DCHECK(surface_size == size_);
+  DCHECK(frame.size == size_);
 
   gpu::gles2::GLES2Interface* gl = context_provider_->ContextGL();
 
@@ -110,8 +117,15 @@ void GLOutputSurfaceOffscreen::SwapBuffers(OutputSurfaceFrame frame) {
 void GLOutputSurfaceOffscreen::OnSwapBuffersComplete(
     std::vector<ui::LatencyInfo> latency_info) {
   latency_tracker()->OnGpuSwapBuffersCompleted(latency_info);
-  client()->DidReceiveSwapBuffersAck();
-  client()->DidReceivePresentationFeedback(gfx::PresentationFeedback());
+  // Swap timings are not available since for offscreen there is no Swap, just a
+  // SignalSyncToken. We use base::TimeTicks::Now() as an overestimate.
+  auto now = base::TimeTicks::Now();
+  client()->DidReceiveSwapBuffersAck({.swap_start = now});
+  client()->DidReceivePresentationFeedback(gfx::PresentationFeedback(
+      now, base::TimeDelta::FromMilliseconds(16), /*flags=*/0));
+
+  if (needs_swap_size_notifications())
+    client()->DidSwapWithSize(size_);
 }
 
 }  // namespace viz

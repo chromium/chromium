@@ -21,18 +21,7 @@ SSLConfig::CertAndStatus::CertAndStatus(scoped_refptr<X509Certificate> cert_arg,
 SSLConfig::CertAndStatus::CertAndStatus(const CertAndStatus& other) = default;
 SSLConfig::CertAndStatus::~CertAndStatus() = default;
 
-SSLConfig::SSLConfig()
-    : version_min(kDefaultSSLVersionMin),
-      version_max(kDefaultSSLVersionMax),
-      early_data_enabled(false),
-      version_interference_probe(false),
-      channel_id_enabled(false),
-      false_start_enabled(true),
-      require_ecdhe(false),
-      ignore_certificate_errors(false),
-      disable_cert_verification_network_fetches(false),
-      send_client_cert(false),
-      renego_allowed_default(false) {}
+SSLConfig::SSLConfig() = default;
 
 SSLConfig::SSLConfig(const SSLConfig& other) = default;
 

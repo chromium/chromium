@@ -84,7 +84,7 @@ function forceNetworkRequest() {
 
 document.addEventListener('DOMContentLoaded', function() {
   // Setup backend mojo.
-  pageHandler = exploreSitesInternals.mojom.PageHandler.getProxy();
+  pageHandler = exploreSitesInternals.mojom.PageHandler.getRemote();
   updatePageWithProperties();
 
   // Set up event listeners.

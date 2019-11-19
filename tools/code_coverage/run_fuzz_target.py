@@ -182,7 +182,7 @@ def _RunWithTimeout(cmd, timeout):
       # SIGINT, suppress it here to prevent interrupting the script itself.
       pass
 
-    output, error = runner.communicate()
+    runner.communicate()
 
   logging.info('Finished running the fuzz target.')
 
@@ -215,13 +215,11 @@ def Main():
           },
           'num_regressions': 0,
           'tests': {
-            fuzzer_name: {
-                'expected': 'PASS',
-                'actual': 'PASS',
-                'times': [
-                    int(end_time - start_time),
-                ]
-            },
+              fuzzer_name: {
+                  'expected': 'PASS',
+                  'actual': 'PASS',
+                  'times': [int(end_time - start_time),]
+              },
           }
       }, f)
 

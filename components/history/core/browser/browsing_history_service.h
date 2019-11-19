@@ -23,24 +23,20 @@
 #include "base/time/clock.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
+#include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/history/core/browser/url_row.h"
 #include "components/history/core/browser/web_history_service.h"
 #include "components/history/core/browser/web_history_service_observer.h"
+#include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_service_observer.h"
 #include "url/gurl.h"
-
-namespace syncer {
-class SyncService;
-class SyncServiceObserver;
-}  // namespace syncer
 
 FORWARD_DECLARE_TEST(BrowsingHistoryHandlerTest, ObservingWebHistoryDeletions);
 
 namespace history {
 
 class BrowsingHistoryDriver;
-class HistoryService;
 class QueryResults;
 struct QueryOptions;
 
@@ -70,7 +66,8 @@ class BrowsingHistoryService : public HistoryServiceObserver,
                  const std::string& client_id,
                  bool is_search_result,
                  const base::string16& snippet,
-                 bool blocked_visit);
+                 bool blocked_visit,
+                 const GURL& remote_icon_url_for_uma);
     HistoryEntry();
     HistoryEntry(const HistoryEntry& other);
     virtual ~HistoryEntry();
@@ -105,6 +102,9 @@ class BrowsingHistoryService : public HistoryServiceObserver,
 
     // Whether this entry was blocked when it was attempted.
     bool blocked_visit;
+
+    // Optional parameter used to plumb footprints associated icon url.
+    GURL remote_icon_url_for_uma;
   };
 
   // Contains information about a completed history query.
@@ -172,7 +172,7 @@ class BrowsingHistoryService : public HistoryServiceObserver,
 
   // Callback from the history system when a history query has completed.
   void QueryComplete(scoped_refptr<QueryHistoryState> state,
-                     QueryResults* results);
+                     QueryResults results);
 
   // Combines the query results from the local history database and the history
   // server, and sends the combined results to the
@@ -228,15 +228,15 @@ class BrowsingHistoryService : public HistoryServiceObserver,
 
   // HistoryService (local history) observer.
   ScopedObserver<HistoryService, HistoryServiceObserver>
-      history_service_observer_;
+      history_service_observer_{this};
 
   // WebHistoryService (synced history) observer.
   ScopedObserver<WebHistoryService, WebHistoryServiceObserver>
-      web_history_service_observer_;
+      web_history_service_observer_{this};
 
   // SyncService observer listens to late initialization of history sync.
   ScopedObserver<syncer::SyncService, syncer::SyncServiceObserver>
-      sync_service_observer_;
+      sync_service_observer_{this};
 
   // Whether the last call to Web History returned synced results.
   bool has_synced_results_ = false;
@@ -253,7 +253,7 @@ class BrowsingHistoryService : public HistoryServiceObserver,
   // The clock used to vend times.
   std::unique_ptr<base::Clock> clock_;
 
-  base::WeakPtrFactory<BrowsingHistoryService> weak_factory_;
+  base::WeakPtrFactory<BrowsingHistoryService> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(BrowsingHistoryService);
 };

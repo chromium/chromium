@@ -33,7 +33,8 @@
 - (instancetype)initWithShareURL:(NSURL*)shareURL
               passwordManagerURL:(NSURL*)passwordManagerURL
                          subject:(NSString*)subject
-              thumbnailGenerator:(ThumbnailGeneratorBlock)thumbnailGenerator;
+              thumbnailGenerator:
+                  (ChromeActivityItemThumbnailGenerator*)thumbnailGenerator;
 
 @end
 

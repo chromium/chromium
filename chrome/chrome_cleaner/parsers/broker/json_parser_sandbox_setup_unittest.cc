@@ -8,11 +8,11 @@
 #include "base/test/multiprocess_test.h"
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
-#include "chrome/chrome_cleaner/interfaces/parser_interface.mojom.h"
 #include "chrome/chrome_cleaner/ipc/mojo_task_runner.h"
+#include "chrome/chrome_cleaner/mojom/parser_interface.mojom.h"
 #include "chrome/chrome_cleaner/parsers/broker/sandbox_setup_hooks.h"
 #include "chrome/chrome_cleaner/parsers/target/sandbox_setup.h"
-#include "mojo/public/cpp/bindings/interface_request.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "sandbox/win/src/sandbox_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
@@ -31,7 +31,7 @@ const char kInvalidText[] = "{ name: jason }";
 class JsonParserSandboxSetupTest : public base::MultiProcessTest {
  public:
   JsonParserSandboxSetupTest()
-      : parser_ptr_(nullptr, base::OnTaskRunnerDeleter(nullptr)) {}
+      : parser_(nullptr, base::OnTaskRunnerDeleter(nullptr)) {}
 
   void SetUp() override {
     mojo_task_runner_ = MojoTaskRunner::Create();
@@ -41,12 +41,12 @@ class JsonParserSandboxSetupTest : public base::MultiProcessTest {
     ASSERT_EQ(RESULT_CODE_SUCCESS,
               StartSandboxTarget(MakeCmdLine("JsonParserSandboxTargetMain"),
                                  &setup_hooks, SandboxType::kTest));
-    parser_ptr_ = setup_hooks.TakeParserPtr();
+    parser_ = setup_hooks.TakeParserRemote();
   }
 
  protected:
   scoped_refptr<MojoTaskRunner> mojo_task_runner_;
-  UniqueParserPtr parser_ptr_;
+  RemoteParserPtr parser_;
 };
 
 void ParseCallbackExpectedKeyValue(const std::string& expected_key,
@@ -93,15 +93,14 @@ TEST_F(JsonParserSandboxSetupTest, ParseValidJsonSandboxed) {
                      WaitableEvent::InitialState::NOT_SIGNALED);
 
   mojo_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(
-                     [](mojom::ParserPtr* parser_ptr, WaitableEvent* done) {
-                       (*parser_ptr)
-                           ->ParseJson(
-                               kTestText,
-                               base::BindOnce(&ParseCallbackExpectedKeyValue,
-                                              kTestKey, kTestValue, done));
-                     },
-                     parser_ptr_.get(), &done));
+      FROM_HERE,
+      base::BindOnce(
+          [](mojo::Remote<mojom::Parser>* parser, WaitableEvent* done) {
+            (*parser)->ParseJson(kTestText,
+                                 base::BindOnce(&ParseCallbackExpectedKeyValue,
+                                                kTestKey, kTestValue, done));
+          },
+          parser_.get(), &done));
   EXPECT_TRUE(done.TimedWait(TestTimeouts::action_timeout()));
 }
 
@@ -112,12 +111,12 @@ TEST_F(JsonParserSandboxSetupTest, ParseInvalidJsonSandboxed) {
   mojo_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
-          [](mojom::ParserPtr* parser_ptr, WaitableEvent* done) {
-            (*parser_ptr)
-                ->ParseJson(kInvalidText,
-                            base::BindOnce(&ParseCallbackExpectedError, done));
+          [](mojo::Remote<mojom::Parser>* parser, WaitableEvent* done) {
+            (*parser)->ParseJson(
+                kInvalidText,
+                base::BindOnce(&ParseCallbackExpectedError, done));
           },
-          parser_ptr_.get(), &done));
+          parser_.get(), &done));
   EXPECT_TRUE(done.TimedWait(TestTimeouts::action_timeout()));
 }
 

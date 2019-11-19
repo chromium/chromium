@@ -155,6 +155,79 @@
             "description": "The id of the process to which |onProcessOutput| was dispatched."
           }
         ]
+      },
+      {
+        "name": "getCroshSettings",
+        "type": "function",
+        "description": "Returns an object (DictionaryValue) containing UI settings such as font style and color used by the crosh extension.  This function is called by the terminal system app the first time it is run to migrate any previous settings.",
+        "parameters": [
+          {
+            "name": "callback",
+            "type": "function",
+            "description": "Callback that will be called with settings.",
+            "parameters": [
+              {
+                "name": "settings",
+                "type": "object",
+                "additionalProperties":
+                  {
+                    "type": "any" ,
+                    "preserveNull": true
+                  },
+                "preserveNull": true
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "getSettings",
+        "type": "function",
+        "description": "Returns an object (DictionaryValue) containing UI settings such as font style and colors used by terminal and stored as a syncable pref.  The UI currently has ~70 properties and we wish to allow flexibility for these to change in the UI without updating this API, so we allow any properties.",
+        "parameters": [
+          {
+            "name": "callback",
+            "type": "function",
+            "description": "Callback that will be called with settings.",
+            "parameters": [
+              {
+                "name": "settings",
+                "type": "object",
+                "additionalProperties":
+                  {
+                    "type": "any" ,
+                    "preserveNull": true
+                  },
+                "description": "Settings from prefs.",
+                "preserveNull": true
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "setSettings",
+        "type": "function",
+        "description": "Sets terminal UI settings which are stored as a syncable pref.",
+        "parameters": [
+          {
+            "name": "settings",
+            "type": "object",
+            "description": "Settings to update into prefs.",
+            "additionalProperties":
+              {
+                "type": "any" ,
+                "preserveNull": true
+              },
+            "preserveNull": true
+          },
+          {
+            "name": "callback",
+            "type": "function",
+            "description": "Callback that will be called when complete.",
+            "parameters": []
+          }
+        ]
       }
     ],
     "events": [
@@ -177,6 +250,24 @@
             "name": "text",
             "type": "string",
             "description": "Text that was written to the output stream."
+          }
+        ]
+      },
+      {
+        "name": "onSettingsChanged",
+        "type": "function",
+        "description": "Fired when terminal UI settings change.",
+        "parameters": [
+          {
+            "name": "settings",
+            "type": "object",
+            "description": "Terminal UI Settings with updated values.",
+            "additionalProperties":
+              {
+                "type": "any" ,
+                "preserveNull": true
+              },
+            "preserveNull": true
           }
         ]
       }

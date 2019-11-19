@@ -19,13 +19,11 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
-#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/user_script.h"
-#include "services/network/public/cpp/features.h"
 #include "url/gurl.h"
 
 namespace extensions {
@@ -97,13 +95,6 @@ bool ShouldGrantActiveTabOrPrompt(const Extension* extension,
 
 void UpdateTabSpecificCorsOriginAccessLists(const ExtensionId& extension_id,
                                             ProcessManager* process_manager) {
-  // TODO(crbug.com/736308): In OOR-CORS mode, activeTab permissions are
-  // supported only when NetworkService is enabled. Revisit here if the legacy
-  // path needs to support it. Even so, probably we won't have per-factory
-  // lists, but share the per-profile lists in the legacy path.
-  if (!base::FeatureList::IsEnabled(network::features::kNetworkService))
-    return;
-
   const std::set<content::RenderFrameHost*>& extension_hosts =
       process_manager->GetRenderFrameHostsForExtension(extension_id);
   for (auto* host : extension_hosts)
@@ -116,9 +107,7 @@ ActiveTabPermissionGranter::ActiveTabPermissionGranter(
     content::WebContents* web_contents,
     int tab_id,
     Profile* profile)
-    : content::WebContentsObserver(web_contents),
-      tab_id_(tab_id),
-      extension_registry_observer_(this) {
+    : content::WebContentsObserver(web_contents), tab_id_(tab_id) {
   extension_registry_observer_.Add(ExtensionRegistry::Get(profile));
 }
 

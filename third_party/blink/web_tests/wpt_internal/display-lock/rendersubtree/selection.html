@@ -1,0 +1,53 @@
+<!doctype HTML>
+<html class="reftest-wait">
+<meta charset="utf8">
+<title>Display Locking: activatable allows selections</title>
+<link rel="author" title="Rakina Zata Amni" href="mailto:rakina@chromium.org">
+<link rel="help" href="https://github.com/WICG/display-locking">
+<link rel="match" href="selection-ref.html">
+<script src="/common/reftest-wait.js"></script>
+<script src="resources/utils.js"></script>
+
+<style>
+  #userSelectNone {
+    user-select: none;
+  }
+  div:not([rendersubtree~="invisible"]) {
+    intrinsic-size: legacy !important;
+  }
+</style>
+<div id="container">
+  <div id="notLocked">
+    not locked!
+  </div>
+  <div id="nonActivatable">
+    non-activatable locked
+  </div>
+  <div id="userSelectNone">
+    activatable user-select is none
+  </div>
+  <div id="nested">
+    nested activatable locked
+  </div>
+</div>
+
+<script>
+async function runTest() {
+  container.style = "intrinsic-size: 100px 100px;"
+  nonActivatable.style = "intrinsic-size: 20px 20px;"
+  userSelectNone.style = "intrinsic-size: 30px 30px;"
+  nested.style = "intrinsic-size: 40px 40px;"
+  await setInvisibleActivatable(container);
+  await setInvisible(nonActivatable);
+  await setInvisibleActivatable(userSelectNone);
+  await setInvisibleActivatable(nested);
+
+  window.getSelection().removeAllRanges();
+  const selectionRange = document.createRange();
+  selectionRange.setStart(notLocked.firstChild, 4);
+  selectionRange.setEnd(nested.firstChild, 7);
+  window.getSelection().addRange(selectionRange);
+  requestAnimationFrame(takeScreenshot);
+}
+window.onload = () => { requestAnimationFrame(runTest); };
+</script>

@@ -20,7 +20,7 @@ function requestHistograms() {
  */
 function addHistograms(histograms) {
   let htmlOutput = '';
-  for (let histogram of histograms) {
+  for (const histogram of histograms) {
     htmlOutput += histogram;
   }
 

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <tuple>
 
 #include "base/bind.h"
 #include "base/memory/scoped_refptr.h"
@@ -12,33 +13,41 @@
 #include "base/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/null_task_runner.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
+#include "base/test/task_environment.h"
 #include "base/timer/mock_timer.h"
 #include "chromeos/components/multidevice/remote_device_test_util.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/services/device_sync/cryptauth_device_manager_impl.h"
+#include "chromeos/services/device_sync/cryptauth_device_registry_impl.h"
 #include "chromeos/services/device_sync/cryptauth_enrollment_manager_impl.h"
 #include "chromeos/services/device_sync/cryptauth_gcm_manager_impl.h"
+#include "chromeos/services/device_sync/cryptauth_key_registry_impl.h"
+#include "chromeos/services/device_sync/cryptauth_scheduler_impl.h"
+#include "chromeos/services/device_sync/cryptauth_v2_device_manager_impl.h"
+#include "chromeos/services/device_sync/cryptauth_v2_enrollment_manager_impl.h"
 #include "chromeos/services/device_sync/device_sync_impl.h"
-#include "chromeos/services/device_sync/device_sync_service.h"
 #include "chromeos/services/device_sync/fake_cryptauth_device_manager.h"
 #include "chromeos/services/device_sync/fake_cryptauth_enrollment_manager.h"
+#include "chromeos/services/device_sync/fake_cryptauth_feature_status_setter.h"
 #include "chromeos/services/device_sync/fake_cryptauth_gcm_manager.h"
+#include "chromeos/services/device_sync/fake_cryptauth_scheduler.h"
+#include "chromeos/services/device_sync/fake_cryptauth_v2_device_manager.h"
 #include "chromeos/services/device_sync/fake_device_sync_observer.h"
 #include "chromeos/services/device_sync/fake_remote_device_provider.h"
 #include "chromeos/services/device_sync/fake_software_feature_manager.h"
+#include "chromeos/services/device_sync/public/cpp/fake_client_app_metadata_provider.h"
 #include "chromeos/services/device_sync/public/cpp/fake_gcm_device_info_provider.h"
-#include "chromeos/services/device_sync/public/mojom/constants.mojom.h"
 #include "chromeos/services/device_sync/public/mojom/device_sync.mojom.h"
 #include "chromeos/services/device_sync/remote_device_provider_impl.h"
 #include "chromeos/services/device_sync/software_feature_manager_impl.h"
 #include "components/gcm_driver/fake_gcm_driver.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
-#include "services/identity/public/cpp/identity_test_environment.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
-#include "services/service_manager/public/cpp/test/test_connector_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
@@ -125,6 +134,24 @@ class FakeSoftwareFeatureManagerDelegate
   base::Closure on_delegate_call_closure_;
 };
 
+// Delegate which invokes the Closure provided to its constructor when a
+// delegate function is invoked.
+class FakeCryptAuthFeatureStatusSetterDelegate
+    : public FakeCryptAuthFeatureStatusSetter::Delegate {
+ public:
+  explicit FakeCryptAuthFeatureStatusSetterDelegate(
+      base::Closure on_delegate_call_closure)
+      : on_delegate_call_closure_(on_delegate_call_closure) {}
+
+  ~FakeCryptAuthFeatureStatusSetterDelegate() override = default;
+
+  // FakeCryptAuthFeatureStatusSetter::Delegate:
+  void OnSetFeatureStatusCalled() override { on_delegate_call_closure_.Run(); }
+
+ private:
+  base::Closure on_delegate_call_closure_;
+};
+
 class FakeCryptAuthGCMManagerFactory : public CryptAuthGCMManagerImpl::Factory {
  public:
   FakeCryptAuthGCMManagerFactory(gcm::FakeGCMDriver* fake_gcm_driver,
@@ -136,6 +163,7 @@ class FakeCryptAuthGCMManagerFactory : public CryptAuthGCMManagerImpl::Factory {
 
   FakeCryptAuthGCMManager* instance() { return instance_; }
 
+ private:
   // CryptAuthGCMManagerImpl::Factory:
   std::unique_ptr<CryptAuthGCMManager> BuildInstance(
       gcm::GCMDriver* gcm_driver,
@@ -153,7 +181,6 @@ class FakeCryptAuthGCMManagerFactory : public CryptAuthGCMManagerImpl::Factory {
     return std::move(instance);
   }
 
- private:
   gcm::FakeGCMDriver* fake_gcm_driver_;
   TestingPrefServiceSimple* test_pref_service_;
 
@@ -175,6 +202,7 @@ class FakeCryptAuthDeviceManagerFactory
 
   FakeCryptAuthDeviceManager* instance() { return instance_; }
 
+ private:
   // CryptAuthDeviceManagerImpl::Factory:
   std::unique_ptr<CryptAuthDeviceManager> BuildInstance(
       base::Clock* clock,
@@ -194,12 +222,176 @@ class FakeCryptAuthDeviceManagerFactory
     return std::move(instance);
   }
 
- private:
   base::SimpleTestClock* simple_test_clock_;
   FakeCryptAuthGCMManagerFactory* fake_cryptauth_gcm_manager_factory_;
   TestingPrefServiceSimple* test_pref_service_;
 
   FakeCryptAuthDeviceManager* instance_ = nullptr;
+};
+
+class FakeCryptAuthDeviceRegistry : public CryptAuthDeviceRegistry {
+ public:
+  FakeCryptAuthDeviceRegistry() = default;
+  ~FakeCryptAuthDeviceRegistry() override = default;
+
+ private:
+  // CryptAuthDeviceRegistry:
+  void OnDeviceRegistryUpdated() override {}
+};
+
+class FakeCryptAuthDeviceRegistryFactory
+    : public CryptAuthDeviceRegistryImpl::Factory {
+ public:
+  explicit FakeCryptAuthDeviceRegistryFactory(
+      TestingPrefServiceSimple* test_pref_service)
+      : test_pref_service_(test_pref_service) {}
+
+  ~FakeCryptAuthDeviceRegistryFactory() override = default;
+
+  FakeCryptAuthDeviceRegistry* instance() { return instance_; }
+
+ private:
+  // CryptAuthDeviceRegistryImpl::Factory:
+  std::unique_ptr<CryptAuthDeviceRegistry> BuildInstance(
+      PrefService* pref_service) override {
+    EXPECT_TRUE(features::ShouldUseV2DeviceSync());
+    EXPECT_EQ(test_pref_service_, pref_service);
+
+    // Only one instance is expected to be created per test.
+    EXPECT_FALSE(instance_);
+    auto instance = std::make_unique<FakeCryptAuthDeviceRegistry>();
+    instance_ = instance.get();
+    return std::move(instance);
+  }
+
+  TestingPrefServiceSimple* test_pref_service_;
+  FakeCryptAuthDeviceRegistry* instance_ = nullptr;
+};
+
+class FakeCryptAuthKeyRegistry : public CryptAuthKeyRegistry {
+ public:
+  FakeCryptAuthKeyRegistry() = default;
+  ~FakeCryptAuthKeyRegistry() override = default;
+
+ private:
+  // CryptAuthKeyRegistry:
+  void OnKeyRegistryUpdated() override {}
+};
+
+class FakeCryptAuthKeyRegistryFactory
+    : public CryptAuthKeyRegistryImpl::Factory {
+ public:
+  explicit FakeCryptAuthKeyRegistryFactory(
+      TestingPrefServiceSimple* test_pref_service)
+      : test_pref_service_(test_pref_service) {}
+
+  ~FakeCryptAuthKeyRegistryFactory() override = default;
+
+  FakeCryptAuthKeyRegistry* instance() { return instance_; }
+
+ private:
+  // CryptAuthKeyRegistryImpl::Factory:
+  std::unique_ptr<CryptAuthKeyRegistry> BuildInstance(
+      PrefService* pref_service) override {
+    EXPECT_TRUE(base::FeatureList::IsEnabled(features::kCryptAuthV2Enrollment));
+    EXPECT_EQ(test_pref_service_, pref_service);
+
+    // Only one instance is expected to be created per test.
+    EXPECT_FALSE(instance_);
+    auto instance = std::make_unique<FakeCryptAuthKeyRegistry>();
+    instance_ = instance.get();
+    return std::move(instance);
+  }
+
+  TestingPrefServiceSimple* test_pref_service_;
+  FakeCryptAuthKeyRegistry* instance_ = nullptr;
+};
+
+class FakeCryptAuthSchedulerFactory : public CryptAuthSchedulerImpl::Factory {
+ public:
+  explicit FakeCryptAuthSchedulerFactory(
+      TestingPrefServiceSimple* test_pref_service)
+      : test_pref_service_(test_pref_service) {}
+
+  ~FakeCryptAuthSchedulerFactory() override = default;
+
+  FakeCryptAuthScheduler* instance() { return instance_; }
+
+ private:
+  // CryptAuthSchedulerImpl::Factory:
+  std::unique_ptr<CryptAuthScheduler> BuildInstance(
+      PrefService* pref_service,
+      NetworkStateHandler* network_state_handler,
+      base::Clock* clock,
+      std::unique_ptr<base::OneShotTimer> enrollment_timer,
+      std::unique_ptr<base::OneShotTimer> device_sync_timer) override {
+    EXPECT_TRUE(base::FeatureList::IsEnabled(features::kCryptAuthV2Enrollment));
+    EXPECT_EQ(test_pref_service_, pref_service);
+
+    // Only one instance is expected to be created per test.
+    EXPECT_FALSE(instance_);
+
+    auto instance = std::make_unique<FakeCryptAuthScheduler>();
+    instance_ = instance.get();
+
+    return std::move(instance);
+  }
+
+  TestingPrefServiceSimple* test_pref_service_;
+  FakeCryptAuthScheduler* instance_ = nullptr;
+};
+
+class FakeCryptAuthV2DeviceManagerFactory
+    : public CryptAuthV2DeviceManagerImpl::Factory {
+ public:
+  FakeCryptAuthV2DeviceManagerFactory(
+      FakeClientAppMetadataProvider* fake_client_app_metadata_provider,
+      FakeCryptAuthDeviceRegistryFactory* fake_device_registry_factory,
+      FakeCryptAuthKeyRegistryFactory* fake_key_registry_factory,
+      FakeCryptAuthGCMManagerFactory* fake_gcm_manager_factory,
+      FakeCryptAuthSchedulerFactory* fake_scheduler_factory)
+      : fake_client_app_metadata_provider_(fake_client_app_metadata_provider),
+        fake_device_registry_factory_(fake_device_registry_factory),
+        fake_key_registry_factory_(fake_key_registry_factory),
+        fake_gcm_manager_factory_(fake_gcm_manager_factory),
+        fake_scheduler_factory_(fake_scheduler_factory) {}
+
+  ~FakeCryptAuthV2DeviceManagerFactory() override = default;
+
+  FakeCryptAuthV2DeviceManager* instance() { return instance_; }
+
+ private:
+  // CryptAuthV2DeviceManagerImpl::Factory:
+  std::unique_ptr<CryptAuthV2DeviceManager> BuildInstance(
+      ClientAppMetadataProvider* client_app_metadata_provider,
+      CryptAuthDeviceRegistry* device_registry,
+      CryptAuthKeyRegistry* key_registry,
+      CryptAuthClientFactory* client_factory,
+      CryptAuthGCMManager* gcm_manager,
+      CryptAuthScheduler* scheduler,
+      std::unique_ptr<base::OneShotTimer> timer) override {
+    EXPECT_TRUE(features::ShouldUseV2DeviceSync());
+    EXPECT_EQ(fake_client_app_metadata_provider_, client_app_metadata_provider);
+    EXPECT_EQ(fake_device_registry_factory_->instance(), device_registry);
+    EXPECT_EQ(fake_key_registry_factory_->instance(), key_registry);
+    EXPECT_EQ(fake_gcm_manager_factory_->instance(), gcm_manager);
+    EXPECT_EQ(fake_scheduler_factory_->instance(), scheduler);
+
+    // Only one instance is expected to be created per test.
+    EXPECT_FALSE(instance_);
+
+    auto instance = std::make_unique<FakeCryptAuthV2DeviceManager>();
+    instance_ = instance.get();
+
+    return std::move(instance);
+  }
+
+  FakeClientAppMetadataProvider* fake_client_app_metadata_provider_ = nullptr;
+  FakeCryptAuthDeviceRegistryFactory* fake_device_registry_factory_ = nullptr;
+  FakeCryptAuthKeyRegistryFactory* fake_key_registry_factory_ = nullptr;
+  FakeCryptAuthGCMManagerFactory* fake_gcm_manager_factory_ = nullptr;
+  FakeCryptAuthSchedulerFactory* fake_scheduler_factory_ = nullptr;
+  FakeCryptAuthV2DeviceManager* instance_ = nullptr;
 };
 
 class FakeCryptAuthEnrollmentManagerFactory
@@ -232,6 +424,8 @@ class FakeCryptAuthEnrollmentManagerFactory
       const cryptauth::GcmDeviceInfo& device_info,
       CryptAuthGCMManager* gcm_manager,
       PrefService* pref_service) override {
+    EXPECT_FALSE(
+        base::FeatureList::IsEnabled(features::kCryptAuthV2Enrollment));
     EXPECT_EQ(simple_test_clock_, clock);
     EXPECT_EQ(kTestGcmDeviceInfoLongDeviceId, device_info.long_device_id());
     EXPECT_EQ(fake_cryptauth_gcm_manager_factory_->instance(), gcm_manager);
@@ -252,7 +446,74 @@ class FakeCryptAuthEnrollmentManagerFactory
   base::SimpleTestClock* simple_test_clock_;
   FakeCryptAuthGCMManagerFactory* fake_cryptauth_gcm_manager_factory_;
   TestingPrefServiceSimple* test_pref_service_;
+  bool device_already_enrolled_in_cryptauth_ = false;
+  FakeCryptAuthEnrollmentManager* instance_ = nullptr;
+};
 
+class FakeCryptAuthV2EnrollmentManagerFactory
+    : public CryptAuthV2EnrollmentManagerImpl::Factory {
+ public:
+  FakeCryptAuthV2EnrollmentManagerFactory(
+      FakeClientAppMetadataProvider* fake_client_app_metadata_provider,
+      FakeCryptAuthKeyRegistryFactory* fake_cryptauth_key_registry_factory,
+      FakeCryptAuthGCMManagerFactory* fake_cryptauth_gcm_manager_factory,
+      FakeCryptAuthSchedulerFactory* fake_cryptauth_scheduler_factory,
+      TestingPrefServiceSimple* test_pref_service,
+      base::SimpleTestClock* simple_test_clock)
+      : fake_client_app_metadata_provider_(fake_client_app_metadata_provider),
+        fake_cryptauth_key_registry_factory_(
+            fake_cryptauth_key_registry_factory),
+        fake_cryptauth_gcm_manager_factory_(fake_cryptauth_gcm_manager_factory),
+        fake_cryptauth_scheduler_factory_(fake_cryptauth_scheduler_factory),
+        test_pref_service_(test_pref_service),
+        simple_test_clock_(simple_test_clock) {}
+
+  ~FakeCryptAuthV2EnrollmentManagerFactory() override = default;
+
+  void set_device_already_enrolled_in_cryptauth(
+      bool device_already_enrolled_in_cryptauth) {
+    device_already_enrolled_in_cryptauth_ =
+        device_already_enrolled_in_cryptauth;
+  }
+
+  FakeCryptAuthEnrollmentManager* instance() { return instance_; }
+
+  // CryptAuthV2EnrollmentManagerImpl::Factory:
+  std::unique_ptr<CryptAuthEnrollmentManager> BuildInstance(
+      ClientAppMetadataProvider* client_app_metadata_provider,
+      CryptAuthKeyRegistry* key_registry,
+      CryptAuthClientFactory* client_factory,
+      CryptAuthGCMManager* gcm_manager,
+      CryptAuthScheduler* scheduler,
+      PrefService* pref_service,
+      base::Clock* clock,
+      std::unique_ptr<base::OneShotTimer> timer) override {
+    EXPECT_TRUE(base::FeatureList::IsEnabled(features::kCryptAuthV2Enrollment));
+    EXPECT_EQ(fake_client_app_metadata_provider_, client_app_metadata_provider);
+    EXPECT_EQ(fake_cryptauth_key_registry_factory_->instance(), key_registry);
+    EXPECT_EQ(fake_cryptauth_gcm_manager_factory_->instance(), gcm_manager);
+    EXPECT_EQ(fake_cryptauth_scheduler_factory_->instance(), scheduler);
+    EXPECT_EQ(test_pref_service_, pref_service);
+    EXPECT_EQ(simple_test_clock_, clock);
+
+    // Only one instance is expected to be created per test.
+    EXPECT_FALSE(instance_);
+
+    auto instance = std::make_unique<FakeCryptAuthEnrollmentManager>();
+    instance->set_user_public_key(kLocalDevicePublicKey);
+    instance->set_is_enrollment_valid(device_already_enrolled_in_cryptauth_);
+    instance_ = instance.get();
+
+    return std::move(instance);
+  }
+
+ private:
+  FakeClientAppMetadataProvider* fake_client_app_metadata_provider_;
+  FakeCryptAuthKeyRegistryFactory* fake_cryptauth_key_registry_factory_;
+  FakeCryptAuthGCMManagerFactory* fake_cryptauth_gcm_manager_factory_;
+  FakeCryptAuthSchedulerFactory* fake_cryptauth_scheduler_factory_;
+  TestingPrefServiceSimple* test_pref_service_;
+  base::SimpleTestClock* simple_test_clock_;
   bool device_already_enrolled_in_cryptauth_ = false;
   FakeCryptAuthEnrollmentManager* instance_ = nullptr;
 };
@@ -262,16 +523,20 @@ class FakeRemoteDeviceProviderFactory
  public:
   FakeRemoteDeviceProviderFactory(
       const multidevice::RemoteDeviceList& initial_devices,
-      identity::IdentityManager* identity_manager,
+      signin::IdentityManager* identity_manager,
       FakeCryptAuthDeviceManagerFactory* fake_cryptauth_device_manager_factory,
       FakeCryptAuthEnrollmentManagerFactory*
-          fake_cryptauth_enrollment_manager_factory)
+          fake_cryptauth_enrollment_manager_factory,
+      FakeCryptAuthV2EnrollmentManagerFactory*
+          fake_cryptauth_v2_enrollment_manager_factory)
       : initial_devices_(initial_devices),
         identity_manager_(identity_manager),
         fake_cryptauth_device_manager_factory_(
             fake_cryptauth_device_manager_factory),
         fake_cryptauth_enrollment_manager_factory_(
-            fake_cryptauth_enrollment_manager_factory) {}
+            fake_cryptauth_enrollment_manager_factory),
+        fake_cryptauth_v2_enrollment_manager_factory_(
+            fake_cryptauth_v2_enrollment_manager_factory) {}
 
   ~FakeRemoteDeviceProviderFactory() override = default;
 
@@ -285,9 +550,15 @@ class FakeRemoteDeviceProviderFactory
     EXPECT_EQ(fake_cryptauth_device_manager_factory_->instance(),
               device_manager);
     EXPECT_EQ(identity_manager_->GetPrimaryAccountId(), user_id);
-    EXPECT_EQ(fake_cryptauth_enrollment_manager_factory_->instance()
-                  ->GetUserPrivateKey(),
-              user_private_key);
+    if (base::FeatureList::IsEnabled(features::kCryptAuthV2Enrollment)) {
+      EXPECT_EQ(fake_cryptauth_v2_enrollment_manager_factory_->instance()
+                    ->GetUserPrivateKey(),
+                user_private_key);
+    } else {
+      EXPECT_EQ(fake_cryptauth_enrollment_manager_factory_->instance()
+                    ->GetUserPrivateKey(),
+                user_private_key);
+    }
 
     // Only one instance is expected to be created per test.
     EXPECT_FALSE(instance_);
@@ -302,10 +573,12 @@ class FakeRemoteDeviceProviderFactory
  private:
   const multidevice::RemoteDeviceList& initial_devices_;
 
-  identity::IdentityManager* identity_manager_;
+  signin::IdentityManager* identity_manager_;
   FakeCryptAuthDeviceManagerFactory* fake_cryptauth_device_manager_factory_;
   FakeCryptAuthEnrollmentManagerFactory*
       fake_cryptauth_enrollment_manager_factory_;
+  FakeCryptAuthV2EnrollmentManagerFactory*
+      fake_cryptauth_v2_enrollment_manager_factory_;
 
   FakeRemoteDeviceProvider* instance_ = nullptr;
 };
@@ -336,84 +609,37 @@ class FakeSoftwareFeatureManagerFactory
 
 }  // namespace
 
-class DeviceSyncServiceTest : public testing::Test {
+// TODO(jamescook): Rename to DeviceSyncImplTest because it's actually testing
+// the DeviceSync implementation.
+class DeviceSyncServiceTest
+    : public ::testing::TestWithParam<std::tuple<bool, bool>> {
  public:
-  class FakePrefConnectionDelegate
-      : public DeviceSyncImpl::PrefConnectionDelegate {
-   public:
-    FakePrefConnectionDelegate(
-        std::unique_ptr<TestingPrefServiceSimple> test_pref_service)
-        : test_pref_service_(std::move(test_pref_service)),
-          test_pref_registry_(
-              base::WrapRefCounted(test_pref_service_->registry())) {}
-
-    ~FakePrefConnectionDelegate() override = default;
-
-    void InvokePendingCallback() {
-      EXPECT_FALSE(pending_callback_.is_null());
-      std::move(pending_callback_).Run(std::move(test_pref_service_));
-
-      // Note: |pending_callback_| was passed from within the service, so it is
-      // necessary to let the rest of the current RunLoop run to ensure that
-      // the callback is executed before returning from this function.
-      base::RunLoop().RunUntilIdle();
-    }
-
-    bool HasStartedPrefConnection() {
-      return HasFinishedPrefConnection() || !pending_callback_.is_null();
-    }
-
-    bool HasFinishedPrefConnection() { return !test_pref_service_.get(); }
-
-    // DeviceSyncImpl::PrefConnectionDelegate:
-    scoped_refptr<PrefRegistrySimple> CreatePrefRegistry() override {
-      return test_pref_registry_;
-    }
-
-    void ConnectToPrefService(service_manager::Connector* connector,
-                              scoped_refptr<PrefRegistrySimple> pref_registry,
-                              prefs::ConnectCallback callback) override {
-      EXPECT_EQ(test_pref_service_->registry(), pref_registry.get());
-      pending_callback_ = std::move(callback);
-    }
-
-   private:
-    std::unique_ptr<TestingPrefServiceSimple> test_pref_service_;
-    scoped_refptr<PrefRegistrySimple> test_pref_registry_;
-
-    prefs::ConnectCallback pending_callback_;
-  };
-
   class FakeDeviceSyncImplFactory : public DeviceSyncImpl::Factory {
    public:
     FakeDeviceSyncImplFactory(
-        std::unique_ptr<FakePrefConnectionDelegate>
-            fake_pref_connection_delegate,
         std::unique_ptr<base::MockOneShotTimer> mock_timer,
         base::SimpleTestClock* simple_test_clock)
-        : fake_pref_connection_delegate_(
-              std::move(fake_pref_connection_delegate)),
-          mock_timer_(std::move(mock_timer)),
+        : mock_timer_(std::move(mock_timer)),
           simple_test_clock_(simple_test_clock) {}
 
     ~FakeDeviceSyncImplFactory() override = default;
 
     // DeviceSyncImpl::Factory:
     std::unique_ptr<DeviceSyncBase> BuildInstance(
-        identity::IdentityManager* identity_manager,
+        signin::IdentityManager* identity_manager,
         gcm::GCMDriver* gcm_driver,
-        service_manager::Connector* connector,
+        PrefService* profile_prefs,
         const GcmDeviceInfoProvider* gcm_device_info_provider,
+        ClientAppMetadataProvider* client_app_metadata_provider,
         scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
         std::unique_ptr<base::OneShotTimer> timer) override {
       return base::WrapUnique(new DeviceSyncImpl(
-          identity_manager, gcm_driver, connector, gcm_device_info_provider,
-          std::move(url_loader_factory), simple_test_clock_,
-          std::move(fake_pref_connection_delegate_), std::move(mock_timer_)));
+          identity_manager, gcm_driver, profile_prefs, gcm_device_info_provider,
+          client_app_metadata_provider, std::move(url_loader_factory),
+          simple_test_clock_, std::move(mock_timer_)));
     }
 
    private:
-    std::unique_ptr<FakePrefConnectionDelegate> fake_pref_connection_delegate_;
     std::unique_ptr<base::MockOneShotTimer> mock_timer_;
     base::SimpleTestClock* simple_test_clock_;
   };
@@ -426,47 +652,115 @@ class DeviceSyncServiceTest : public testing::Test {
   ~DeviceSyncServiceTest() override = default;
 
   void SetUp() override {
+    std::vector<base::Feature> enabled_features;
+    std::vector<base::Feature> disabled_features;
+
+    // Choose between v1 and v2 Enrollment infrastructure based on the first
+    // parameter provided by ::testing::TestWithParam<std::tuple<bool, bool>>.
+    if (std::get<0>(GetParam())) {
+      enabled_features.push_back(chromeos::features::kCryptAuthV2Enrollment);
+    } else {
+      disabled_features.push_back(chromeos::features::kCryptAuthV2Enrollment);
+    }
+
+    // Choose whether or not to enabled v2 DeviceSync feature flag based on the
+    // second parameter provided by ::testing::TestWithParam<std::tuple<bool,
+    // bool>>. Even if the flag is enabled, v2 DeviceSync should only be used if
+    // v2 Enrollment is also enabled.
+    if (std::get<1>(GetParam())) {
+      enabled_features.push_back(chromeos::features::kCryptAuthV2DeviceSync);
+    } else {
+      disabled_features.push_back(chromeos::features::kCryptAuthV2DeviceSync);
+    }
+
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+
     DBusThreadManager::Initialize();
+    NetworkHandler::Initialize();
+    base::RunLoop().RunUntilIdle();
 
     fake_gcm_driver_ = std::make_unique<gcm::FakeGCMDriver>();
 
-    auto test_pref_service = std::make_unique<TestingPrefServiceSimple>();
-    test_pref_service_ = test_pref_service.get();
+    test_pref_service_ = std::make_unique<TestingPrefServiceSimple>();
+    DeviceSyncImpl::RegisterProfilePrefs(test_pref_service_->registry());
 
     simple_test_clock_ = std::make_unique<base::SimpleTestClock>();
 
-    // Note: The primary account is guaranteed to be available when the service
-    //       starts up since this is a CrOS-only service, and CrOS requires that
-    //       the user logs in.
     identity_test_environment_ =
-        std::make_unique<identity::IdentityTestEnvironment>();
-    identity_test_environment_->MakePrimaryAccountAvailable(kTestEmail);
+        std::make_unique<signin::IdentityTestEnvironment>();
 
     fake_cryptauth_gcm_manager_factory_ =
-        std::make_unique<FakeCryptAuthGCMManagerFactory>(fake_gcm_driver_.get(),
-                                                         test_pref_service_);
+        std::make_unique<FakeCryptAuthGCMManagerFactory>(
+            fake_gcm_driver_.get(), test_pref_service_.get());
     CryptAuthGCMManagerImpl::Factory::SetInstanceForTesting(
         fake_cryptauth_gcm_manager_factory_.get());
+
+    // ---------- Begin: Only used for v2 Enrollment ----------
+    fake_client_app_metadata_provider_ =
+        std::make_unique<FakeClientAppMetadataProvider>();
+
+    fake_cryptauth_key_registry_factory_ =
+        std::make_unique<FakeCryptAuthKeyRegistryFactory>(
+            test_pref_service_.get());
+    CryptAuthKeyRegistryImpl::Factory::SetFactoryForTesting(
+        fake_cryptauth_key_registry_factory_.get());
+
+    fake_cryptauth_scheduler_factory_ =
+        std::make_unique<FakeCryptAuthSchedulerFactory>(
+            test_pref_service_.get());
+    CryptAuthSchedulerImpl::Factory::SetFactoryForTesting(
+        fake_cryptauth_scheduler_factory_.get());
+
+    fake_cryptauth_v2_enrollment_manager_factory_ =
+        std::make_unique<FakeCryptAuthV2EnrollmentManagerFactory>(
+            fake_client_app_metadata_provider_.get(),
+            fake_cryptauth_key_registry_factory_.get(),
+            fake_cryptauth_gcm_manager_factory_.get(),
+            fake_cryptauth_scheduler_factory_.get(), test_pref_service_.get(),
+            simple_test_clock_.get());
+    CryptAuthV2EnrollmentManagerImpl::Factory::SetFactoryForTesting(
+        fake_cryptauth_v2_enrollment_manager_factory_.get());
+    // ---------- End: Only used for v2 Enrollment ----------
+
+    // ---------- Only used for v1 Enrollment ----------
+    fake_cryptauth_enrollment_manager_factory_ =
+        std::make_unique<FakeCryptAuthEnrollmentManagerFactory>(
+            simple_test_clock_.get(), fake_cryptauth_gcm_manager_factory_.get(),
+            test_pref_service_.get());
+    CryptAuthEnrollmentManagerImpl::Factory::SetInstanceForTesting(
+        fake_cryptauth_enrollment_manager_factory_.get());
 
     fake_cryptauth_device_manager_factory_ =
         std::make_unique<FakeCryptAuthDeviceManagerFactory>(
             simple_test_clock_.get(), fake_cryptauth_gcm_manager_factory_.get(),
-            test_pref_service_);
+            test_pref_service_.get());
     CryptAuthDeviceManagerImpl::Factory::SetInstanceForTesting(
         fake_cryptauth_device_manager_factory_.get());
 
-    fake_cryptauth_enrollment_manager_factory_ =
-        std::make_unique<FakeCryptAuthEnrollmentManagerFactory>(
-            simple_test_clock_.get(), fake_cryptauth_gcm_manager_factory_.get(),
-            test_pref_service_);
-    CryptAuthEnrollmentManagerImpl::Factory::SetInstanceForTesting(
-        fake_cryptauth_enrollment_manager_factory_.get());
+    // ---------- Begin: Only used for v2 DeviceSync ----------
+    fake_cryptauth_device_registry_factory_ =
+        std::make_unique<FakeCryptAuthDeviceRegistryFactory>(
+            test_pref_service_.get());
+    CryptAuthDeviceRegistryImpl::Factory::SetFactoryForTesting(
+        fake_cryptauth_device_registry_factory_.get());
+
+    fake_cryptauth_v2_device_manager_factory_ =
+        std::make_unique<FakeCryptAuthV2DeviceManagerFactory>(
+            fake_client_app_metadata_provider_.get(),
+            fake_cryptauth_device_registry_factory_.get(),
+            fake_cryptauth_key_registry_factory_.get(),
+            fake_cryptauth_gcm_manager_factory_.get(),
+            fake_cryptauth_scheduler_factory_.get());
+    CryptAuthV2DeviceManagerImpl::Factory::SetFactoryForTesting(
+        fake_cryptauth_v2_device_manager_factory_.get());
+    // ---------- End: Only used for v2 DeviceSync ----------
 
     fake_remote_device_provider_factory_ =
         std::make_unique<FakeRemoteDeviceProviderFactory>(
             test_devices_, identity_test_environment_->identity_manager(),
             fake_cryptauth_device_manager_factory_.get(),
-            fake_cryptauth_enrollment_manager_factory_.get());
+            fake_cryptauth_enrollment_manager_factory_.get(),
+            fake_cryptauth_v2_enrollment_manager_factory_.get());
     RemoteDeviceProviderImpl::Factory::SetInstanceForTesting(
         fake_remote_device_provider_factory_.get());
 
@@ -475,23 +769,54 @@ class DeviceSyncServiceTest : public testing::Test {
     SoftwareFeatureManagerImpl::Factory::SetInstanceForTesting(
         fake_software_feature_manager_factory_.get());
 
-    auto fake_pref_connection_delegate =
-        std::make_unique<FakePrefConnectionDelegate>(
-            std::move(test_pref_service));
-    fake_pref_connection_delegate_ = fake_pref_connection_delegate.get();
+    fake_feature_status_setter_factory_ =
+        std::make_unique<FakeCryptAuthFeatureStatusSetterFactory>();
+    CryptAuthFeatureStatusSetterImpl::Factory::SetFactoryForTesting(
+        fake_feature_status_setter_factory_.get());
 
     auto mock_timer = std::make_unique<base::MockOneShotTimer>();
     mock_timer_ = mock_timer.get();
 
     fake_device_sync_impl_factory_ =
-        std::make_unique<FakeDeviceSyncImplFactory>(
-            std::move(fake_pref_connection_delegate), std::move(mock_timer),
-            simple_test_clock_.get());
+        std::make_unique<FakeDeviceSyncImplFactory>(std::move(mock_timer),
+                                                    simple_test_clock_.get());
     DeviceSyncImpl::Factory::SetInstanceForTesting(
         fake_device_sync_impl_factory_.get());
 
     fake_gcm_device_info_provider_ =
         std::make_unique<FakeGcmDeviceInfoProvider>(GetTestGcmDeviceInfo());
+  }
+
+  void TearDown() override {
+    CryptAuthGCMManagerImpl::Factory::SetInstanceForTesting(nullptr);
+    CryptAuthDeviceManagerImpl::Factory::SetInstanceForTesting(nullptr);
+    CryptAuthKeyRegistryImpl::Factory::SetFactoryForTesting(nullptr);
+    CryptAuthV2EnrollmentManagerImpl::Factory::SetFactoryForTesting(nullptr);
+    CryptAuthEnrollmentManagerImpl::Factory::SetInstanceForTesting(nullptr);
+    RemoteDeviceProviderImpl::Factory::SetInstanceForTesting(nullptr);
+    SoftwareFeatureManagerImpl::Factory::SetInstanceForTesting(nullptr);
+    DeviceSyncImpl::Factory::SetInstanceForTesting(nullptr);
+
+    NetworkHandler::Shutdown();
+    DBusThreadManager::Shutdown();
+  }
+
+  // Creates and initializes |device_sync_|. Done here instead of in SetUp()
+  // so we can control whether or not the primary account is available at
+  // construction time.
+  void InitializeDeviceSync(bool device_already_enrolled_in_cryptauth) {
+    device_already_enrolled_in_cryptauth_ =
+        device_already_enrolled_in_cryptauth;
+
+    if (base::FeatureList::IsEnabled(features::kCryptAuthV2Enrollment)) {
+      fake_cryptauth_v2_enrollment_manager_factory_
+          ->set_device_already_enrolled_in_cryptauth(
+              device_already_enrolled_in_cryptauth);
+    } else {
+      fake_cryptauth_enrollment_manager_factory_
+          ->set_device_already_enrolled_in_cryptauth(
+              device_already_enrolled_in_cryptauth);
+    }
 
     auto shared_url_loader_factory =
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
@@ -500,44 +825,27 @@ class DeviceSyncServiceTest : public testing::Test {
               return nullptr;
             }));
 
-    fake_device_sync_observer_ = std::make_unique<FakeDeviceSyncObserver>();
-    service_ = std::make_unique<DeviceSyncService>(
+    device_sync_ = DeviceSyncImpl::Factory::Get()->BuildInstance(
         identity_test_environment_->identity_manager(), fake_gcm_driver_.get(),
-        fake_gcm_device_info_provider_.get(), shared_url_loader_factory,
-        connector_factory_.RegisterInstance(mojom::kServiceName));
-  }
+        test_pref_service_.get(), fake_gcm_device_info_provider_.get(),
+        fake_client_app_metadata_provider_.get(), shared_url_loader_factory,
+        std::make_unique<base::OneShotTimer>());
 
-  void TearDown() override { DBusThreadManager::Shutdown(); }
-
-  void ConnectToDeviceSyncService(bool device_already_enrolled_in_cryptauth) {
-    // Used in CompleteConnectionToPrefService().
-    device_already_enrolled_in_cryptauth_ =
-        device_already_enrolled_in_cryptauth;
-
-    fake_cryptauth_enrollment_manager_factory_
-        ->set_device_already_enrolled_in_cryptauth(
-            device_already_enrolled_in_cryptauth);
-
-    connector_factory_.GetDefaultConnector()->BindInterface(mojom::kServiceName,
-                                                            &device_sync_);
+    fake_device_sync_observer_ = std::make_unique<FakeDeviceSyncObserver>();
 
     // Set |fake_device_sync_observer_|.
     CallAddObserver();
   }
 
-  void CompleteConnectionToPrefService() {
-    EXPECT_TRUE(fake_pref_connection_delegate()->HasStartedPrefConnection());
-    EXPECT_FALSE(fake_pref_connection_delegate()->HasFinishedPrefConnection());
+  void MakePrimaryAccountAvailable() {
+    identity_test_environment_->MakePrimaryAccountAvailable(kTestEmail);
+  }
 
-    fake_pref_connection_delegate_->InvokePendingCallback();
-    EXPECT_TRUE(fake_pref_connection_delegate()->HasFinishedPrefConnection());
-
-    // When connection to preferences is complete, CryptAuth classes are
-    // expected to be created and initialized.
+  void FinishInitialization() {
+    // CryptAuth classes are expected to be created and initialized.
     EXPECT_TRUE(fake_cryptauth_gcm_manager_factory_->instance()
                     ->has_started_listening());
-    EXPECT_TRUE(
-        fake_cryptauth_enrollment_manager_factory_->instance()->has_started());
+    EXPECT_TRUE(fake_cryptauth_enrollment_manager()->has_started());
 
     // If the device was already enrolled in CryptAuth, initialization should
     // now be complete; otherwise, enrollment needs to finish before
@@ -555,18 +863,25 @@ class DeviceSyncServiceTest : public testing::Test {
   }
 
   void VerifyInitializationStatus(bool expected_to_be_initialized) {
-    // CryptAuthDeviceManager::Start() is called as the last step of the
+    // CryptAuthDeviceManager::Start() and possibly
+    // CryptAuthV2DeviceManager::Start() is called as the last step of the
     // initialization flow.
     EXPECT_EQ(
         expected_to_be_initialized,
         fake_cryptauth_device_manager_factory_->instance()->has_started());
+
+    if (features::ShouldUseV2DeviceSync()) {
+      EXPECT_EQ(
+          expected_to_be_initialized,
+          fake_cryptauth_v2_device_manager_factory_->instance()->has_started());
+    }
   }
 
   // Simulates an enrollment with success == |success|. If enrollment was not
   // yet in progress before this call, it is started before it is completed.
   void SimulateEnrollment(bool success) {
     FakeCryptAuthEnrollmentManager* enrollment_manager =
-        fake_cryptauth_enrollment_manager_factory_->instance();
+        fake_cryptauth_enrollment_manager();
 
     bool had_valid_enrollment_before_call =
         enrollment_manager->IsEnrollmentValid();
@@ -595,6 +910,8 @@ class DeviceSyncServiceTest : public testing::Test {
                         multidevice::RemoteDeviceList()) {
     FakeCryptAuthDeviceManager* device_manager =
         fake_cryptauth_device_manager_factory_->instance();
+    FakeCryptAuthV2DeviceManager* v2_device_manager =
+        fake_cryptauth_v2_device_manager_factory_->instance();
     FakeRemoteDeviceProvider* remote_device_provider =
         fake_remote_device_provider_factory_->instance();
 
@@ -606,6 +923,17 @@ class DeviceSyncServiceTest : public testing::Test {
             ? CryptAuthDeviceManager::DeviceChangeResult::UNCHANGED
             : CryptAuthDeviceManager::DeviceChangeResult::CHANGED);
 
+    if (features::ShouldUseV2DeviceSync()) {
+      EXPECT_TRUE(v2_device_manager->IsDeviceSyncInProgress());
+      v2_device_manager->FinishNextForcedDeviceSync(
+          CryptAuthDeviceSyncResult(
+              success ? CryptAuthDeviceSyncResult::ResultCode::kSuccess
+                      : CryptAuthDeviceSyncResult::ResultCode::
+                            kErrorSyncMetadataApiCallBadRequest,
+              !updated_devices.empty(), base::nullopt /* client_directive */),
+          base::Time::Now());
+    }
+
     if (!updated_devices.empty()) {
       remote_device_provider->set_synced_remote_devices(updated_devices);
       remote_device_provider->NotifyObserversDeviceListChanged();
@@ -613,8 +941,10 @@ class DeviceSyncServiceTest : public testing::Test {
   }
 
   void InitializeServiceSuccessfully() {
-    ConnectToDeviceSyncService(true /* device_already_enrolled_in_cryptauth */);
-    CompleteConnectionToPrefService();
+    // In most login scenarios the primary account is available immediately.
+    MakePrimaryAccountAvailable();
+    InitializeDeviceSync(true /* device_already_enrolled_in_cryptauth */);
+    FinishInitialization();
     VerifyInitializationStatus(true /* expected_to_be_initialized */);
 
     base::RunLoop().RunUntilIdle();
@@ -640,14 +970,12 @@ class DeviceSyncServiceTest : public testing::Test {
     return fake_device_sync_observer_.get();
   }
 
-  FakePrefConnectionDelegate* fake_pref_connection_delegate() {
-    return fake_pref_connection_delegate_;
-  }
-
   base::MockOneShotTimer* mock_timer() { return mock_timer_; }
 
   FakeCryptAuthEnrollmentManager* fake_cryptauth_enrollment_manager() {
-    return fake_cryptauth_enrollment_manager_factory_->instance();
+    return base::FeatureList::IsEnabled(features::kCryptAuthV2Enrollment)
+               ? fake_cryptauth_v2_enrollment_manager_factory_->instance()
+               : fake_cryptauth_enrollment_manager_factory_->instance();
   }
 
   FakeCryptAuthDeviceManager* fake_cryptauth_device_manager() {
@@ -656,6 +984,18 @@ class DeviceSyncServiceTest : public testing::Test {
 
   FakeSoftwareFeatureManager* fake_software_feature_manager() {
     return fake_software_feature_manager_factory_->instance();
+  }
+
+  FakeCryptAuthFeatureStatusSetter* fake_feature_status_setter() {
+    if (fake_feature_status_setter_factory_->instances().empty())
+      return nullptr;
+
+    EXPECT_EQ(1u, fake_feature_status_setter_factory_->instances().size());
+    return fake_feature_status_setter_factory_->instances()[0];
+  }
+
+  const std::vector<mojom::NetworkRequestResult>& set_feature_status_results() {
+    return set_feature_status_results_;
   }
 
   std::unique_ptr<mojom::NetworkRequestResult>
@@ -693,6 +1033,15 @@ class DeviceSyncServiceTest : public testing::Test {
     EXPECT_EQ(mojom::NetworkRequestResult::kServiceNotYetInitialized,
               *last_set_response);
 
+    // SetFeatureStatus() should return a struct with the special
+    // kErrorNotInitialized error code.
+    CallSetFeatureStatus(test_devices()[0].instance_id,
+                         multidevice::SoftwareFeature::kBetterTogetherHost,
+                         FeatureStatusChange::kEnableExclusively);
+    EXPECT_EQ(1u, set_feature_status_results_.size());
+    EXPECT_EQ(mojom::NetworkRequestResult::kServiceNotYetInitialized,
+              set_feature_status_results_[0]);
+
     // Likewise, FindEligibleDevices() should also return a struct with the same
     // error code.
     CallFindEligibleDevices(multidevice::SoftwareFeature::kBetterTogetherHost);
@@ -708,7 +1057,7 @@ class DeviceSyncServiceTest : public testing::Test {
   void CallAddObserver() {
     base::RunLoop run_loop;
     device_sync_->AddObserver(
-        fake_device_sync_observer_->GenerateInterfacePtr(),
+        fake_device_sync_observer_->GenerateRemote(),
         base::BindOnce(&DeviceSyncServiceTest::OnAddObserverCompleted,
                        base::Unretained(this), run_loop.QuitClosure()));
     run_loop.Run();
@@ -721,26 +1070,43 @@ class DeviceSyncServiceTest : public testing::Test {
                        base::Unretained(this), run_loop.QuitClosure()));
     run_loop.Run();
 
-    if (fake_cryptauth_enrollment_manager_factory_->instance()) {
+    if (fake_cryptauth_enrollment_manager()) {
       EXPECT_EQ(last_force_enrollment_now_result_,
-                fake_cryptauth_enrollment_manager_factory_->instance()
-                    ->IsEnrollmentInProgress());
+                fake_cryptauth_enrollment_manager()->IsEnrollmentInProgress());
     }
 
     return last_force_enrollment_now_result_;
   }
 
   bool CallForceSyncNow() {
+    FakeCryptAuthDeviceManager* device_manager =
+        fake_cryptauth_device_manager_factory_->instance();
+    FakeCryptAuthV2DeviceManager* v2_device_manager =
+        fake_cryptauth_v2_device_manager_factory_->instance();
+
+    size_t expected_num_v2_force_device_sync_now_calls = 0;
+    if (v2_device_manager) {
+      expected_num_v2_force_device_sync_now_calls =
+          v2_device_manager->force_device_sync_now_requests().size();
+    }
+
     base::RunLoop run_loop;
     device_sync_->ForceSyncNow(
         base::BindOnce(&DeviceSyncServiceTest::OnForceSyncNowCompleted,
                        base::Unretained(this), run_loop.QuitClosure()));
     run_loop.Run();
 
-    if (fake_cryptauth_device_manager_factory_->instance()) {
+    if (device_manager) {
       EXPECT_EQ(last_force_sync_now_result_,
-                fake_cryptauth_device_manager_factory_->instance()
-                    ->IsSyncInProgress());
+                device_manager->IsSyncInProgress());
+    }
+
+    if (v2_device_manager) {
+      if (last_force_sync_now_result_)
+        ++expected_num_v2_force_device_sync_now_calls;
+
+      EXPECT_EQ(expected_num_v2_force_device_sync_now_calls,
+                v2_device_manager->force_device_sync_now_requests().size());
     }
 
     return last_force_sync_now_result_;
@@ -797,6 +1163,34 @@ class DeviceSyncServiceTest : public testing::Test {
     run_loop.Run();
 
     fake_software_feature_manager_factory_->instance()->set_delegate(nullptr);
+  }
+
+  void CallSetFeatureStatus(const std::string& device_instance_id,
+                            multidevice::SoftwareFeature software_feature,
+                            FeatureStatusChange status_change) {
+    base::RunLoop run_loop;
+
+    // If the feature setter has not yet been created, the service has not been
+    // initialized. SetFeatureStatus() is expected to respond synchronously with
+    // an error.
+    if (!fake_feature_status_setter()) {
+      device_sync_->SetFeatureStatus(
+          device_instance_id, software_feature, status_change,
+          base::Bind(
+              &DeviceSyncServiceTest::OnSetFeatureStatusCompletedSynchronously,
+              base::Unretained(this), run_loop.QuitClosure()));
+      run_loop.Run();
+      return;
+    }
+
+    FakeCryptAuthFeatureStatusSetterDelegate delegate(run_loop.QuitClosure());
+    fake_feature_status_setter()->set_delegate(&delegate);
+    device_sync_->SetFeatureStatus(
+        device_instance_id, software_feature, status_change,
+        base::Bind(&DeviceSyncServiceTest::OnSetFeatureStatusCompleted,
+                   base::Unretained(this)));
+    run_loop.Run();
+    fake_feature_status_setter()->set_delegate(nullptr);
   }
 
   void CallFindEligibleDevices(multidevice::SoftwareFeature software_feature) {
@@ -886,6 +1280,17 @@ class DeviceSyncServiceTest : public testing::Test {
     std::move(quit_closure).Run();
   }
 
+  void OnSetFeatureStatusCompleted(mojom::NetworkRequestResult result_code) {
+    set_feature_status_results_.push_back(result_code);
+  }
+
+  void OnSetFeatureStatusCompletedSynchronously(
+      base::OnceClosure quit_closure,
+      mojom::NetworkRequestResult result_code) {
+    OnSetFeatureStatusCompleted(result_code);
+    std::move(quit_closure).Run();
+  }
+
   void OnFindEligibleDevicesCompleted(
       mojom::NetworkRequestResult result_code,
       mojom::FindEligibleDevicesResponsePtr response) {
@@ -914,33 +1319,43 @@ class DeviceSyncServiceTest : public testing::Test {
     std::move(quit_closure).Run();
   }
 
-  const base::test::ScopedTaskEnvironment scoped_task_environment_;
+  const base::test::TaskEnvironment task_environment_;
   const multidevice::RemoteDeviceList test_devices_;
   const std::vector<cryptauth::ExternalDeviceInfo> test_device_infos_;
   const std::vector<cryptauth::IneligibleDevice> test_ineligible_devices_;
 
-  TestingPrefServiceSimple* test_pref_service_;
-  FakePrefConnectionDelegate* fake_pref_connection_delegate_;
+  std::unique_ptr<TestingPrefServiceSimple> test_pref_service_;
   base::MockOneShotTimer* mock_timer_;
   std::unique_ptr<base::SimpleTestClock> simple_test_clock_;
   std::unique_ptr<FakeDeviceSyncImplFactory> fake_device_sync_impl_factory_;
   std::unique_ptr<FakeCryptAuthGCMManagerFactory>
       fake_cryptauth_gcm_manager_factory_;
-  std::unique_ptr<FakeCryptAuthDeviceManagerFactory>
-      fake_cryptauth_device_manager_factory_;
   std::unique_ptr<FakeCryptAuthEnrollmentManagerFactory>
       fake_cryptauth_enrollment_manager_factory_;
+  std::unique_ptr<FakeClientAppMetadataProvider>
+      fake_client_app_metadata_provider_;
+  std::unique_ptr<FakeCryptAuthKeyRegistryFactory>
+      fake_cryptauth_key_registry_factory_;
+  std::unique_ptr<FakeCryptAuthSchedulerFactory>
+      fake_cryptauth_scheduler_factory_;
+  std::unique_ptr<FakeCryptAuthV2EnrollmentManagerFactory>
+      fake_cryptauth_v2_enrollment_manager_factory_;
+  std::unique_ptr<FakeCryptAuthDeviceManagerFactory>
+      fake_cryptauth_device_manager_factory_;
+  std::unique_ptr<FakeCryptAuthDeviceRegistryFactory>
+      fake_cryptauth_device_registry_factory_;
+  std::unique_ptr<FakeCryptAuthV2DeviceManagerFactory>
+      fake_cryptauth_v2_device_manager_factory_;
   std::unique_ptr<FakeRemoteDeviceProviderFactory>
       fake_remote_device_provider_factory_;
   std::unique_ptr<FakeSoftwareFeatureManagerFactory>
       fake_software_feature_manager_factory_;
+  std::unique_ptr<FakeCryptAuthFeatureStatusSetterFactory>
+      fake_feature_status_setter_factory_;
 
-  std::unique_ptr<identity::IdentityTestEnvironment> identity_test_environment_;
+  std::unique_ptr<signin::IdentityTestEnvironment> identity_test_environment_;
   std::unique_ptr<gcm::FakeGCMDriver> fake_gcm_driver_;
   std::unique_ptr<FakeGcmDeviceInfoProvider> fake_gcm_device_info_provider_;
-
-  service_manager::TestConnectorFactory connector_factory_;
-  std::unique_ptr<DeviceSyncService> service_;
 
   bool device_already_enrolled_in_cryptauth_;
   bool last_force_enrollment_now_result_;
@@ -953,36 +1368,44 @@ class DeviceSyncServiceTest : public testing::Test {
                             mojom::FindEligibleDevicesResponsePtr>>
       last_find_eligible_devices_response_;
   base::Optional<mojom::DebugInfo> last_debug_info_result_;
+  std::vector<mojom::NetworkRequestResult> set_feature_status_results_;
 
   std::unique_ptr<FakeDeviceSyncObserver> fake_device_sync_observer_;
-  mojom::DeviceSyncPtr device_sync_;
+  std::unique_ptr<DeviceSyncBase> device_sync_;
 
   base::HistogramTester histogram_tester_;
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 
   DISALLOW_COPY_AND_ASSIGN(DeviceSyncServiceTest);
 };
 
-TEST_F(DeviceSyncServiceTest, PreferencesNeverConnect) {
-  ConnectToDeviceSyncService(false /* device_already_enrolled_in_cryptauth */);
+TEST_P(DeviceSyncServiceTest, PrimaryAccountAvailableLater) {
+  InitializeDeviceSync(true /* device_already_enrolled_in_cryptauth */);
 
-  // A connection to the Preferences service should have started.
-  EXPECT_TRUE(fake_pref_connection_delegate()->HasStartedPrefConnection());
-  EXPECT_FALSE(fake_pref_connection_delegate()->HasFinishedPrefConnection());
-
-  // Do not complete the connection; without this step, the other API functions
-  // should fail.
+  // API functions should fail if the primary account isn't ready yet.
   VerifyApiFunctionsFailBeforeInitialization();
 
   // No observer callbacks should have been invoked.
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(0u, fake_device_sync_observer()->num_enrollment_events());
   EXPECT_EQ(0u, fake_device_sync_observer()->num_sync_events());
+
+  MakePrimaryAccountAvailable();
+  FinishInitialization();
+  VerifyInitializationStatus(true /* expected_to_be_initialized */);
+
+  // API functions should be operational and synced devices should be available.
+  EXPECT_TRUE(CallForceEnrollmentNow());
+  EXPECT_TRUE(CallForceSyncNow());
+  EXPECT_EQ(test_devices(), CallGetSyncedDevices());
 }
 
-TEST_F(DeviceSyncServiceTest,
+TEST_P(DeviceSyncServiceTest,
        DeviceNotAlreadyEnrolledInCryptAuth_FailsEnrollment) {
-  ConnectToDeviceSyncService(false /* device_already_enrolled_in_cryptauth */);
-  CompleteConnectionToPrefService();
+  MakePrimaryAccountAvailable();
+  InitializeDeviceSync(false /* device_already_enrolled_in_cryptauth */);
+  FinishInitialization();
 
   // Simulate enrollment failing.
   SimulateEnrollment(false /* success */);
@@ -1001,10 +1424,11 @@ TEST_F(DeviceSyncServiceTest,
   EXPECT_EQ(0u, fake_device_sync_observer()->num_sync_events());
 }
 
-TEST_F(DeviceSyncServiceTest,
+TEST_P(DeviceSyncServiceTest,
        DeviceNotAlreadyEnrolledInCryptAuth_FailsEnrollment_ThenSucceeds) {
-  ConnectToDeviceSyncService(false /* device_already_enrolled_in_cryptauth */);
-  CompleteConnectionToPrefService();
+  MakePrimaryAccountAvailable();
+  InitializeDeviceSync(false /* device_already_enrolled_in_cryptauth */);
+  FinishInitialization();
 
   // Initialization has not yet completed, so no devices should be available.
   EXPECT_FALSE(CallGetSyncedDevices());
@@ -1031,7 +1455,7 @@ TEST_F(DeviceSyncServiceTest,
   EXPECT_EQ(test_devices(), CallGetSyncedDevices());
 }
 
-TEST_F(DeviceSyncServiceTest,
+TEST_P(DeviceSyncServiceTest,
        DeviceAlreadyEnrolledInCryptAuth_InitializationFlow) {
   InitializeServiceSuccessfully();
 
@@ -1042,7 +1466,7 @@ TEST_F(DeviceSyncServiceTest,
   EXPECT_EQ(test_devices(), CallGetSyncedDevices());
 }
 
-TEST_F(DeviceSyncServiceTest, EnrollAgainAfterInitialization) {
+TEST_P(DeviceSyncServiceTest, EnrollAgainAfterInitialization) {
   InitializeServiceSuccessfully();
 
   // Force an enrollment.
@@ -1062,7 +1486,7 @@ TEST_F(DeviceSyncServiceTest, EnrollAgainAfterInitialization) {
   EXPECT_EQ(1u, fake_device_sync_observer()->num_enrollment_events());
 }
 
-TEST_F(DeviceSyncServiceTest, GetLocalDeviceMetadata) {
+TEST_P(DeviceSyncServiceTest, GetLocalDeviceMetadata) {
   InitializeServiceSuccessfully();
 
   const auto& result = CallGetLocalDeviceMetadata();
@@ -1073,7 +1497,7 @@ TEST_F(DeviceSyncServiceTest, GetLocalDeviceMetadata) {
   EXPECT_EQ(test_devices()[0], *result);
 }
 
-TEST_F(DeviceSyncServiceTest, SyncedDeviceUpdates) {
+TEST_P(DeviceSyncServiceTest, SyncedDeviceUpdates) {
   InitializeServiceSuccessfully();
   EXPECT_EQ(1u, fake_device_sync_observer()->num_sync_events());
 
@@ -1111,7 +1535,7 @@ TEST_F(DeviceSyncServiceTest, SyncedDeviceUpdates) {
   EXPECT_EQ(updated_device_list, CallGetSyncedDevices());
 }
 
-TEST_F(DeviceSyncServiceTest, SetSoftwareFeatureState_Success) {
+TEST_P(DeviceSyncServiceTest, SetSoftwareFeatureState_Success) {
   InitializeServiceSuccessfully();
 
   const auto& set_software_calls =
@@ -1168,7 +1592,7 @@ TEST_F(DeviceSyncServiceTest, SetSoftwareFeatureState_Success) {
       0);
 }
 
-TEST_F(DeviceSyncServiceTest,
+TEST_P(DeviceSyncServiceTest,
        SetSoftwareFeatureState_RequestSucceedsButDoesNotTakeEffect) {
   InitializeServiceSuccessfully();
 
@@ -1217,7 +1641,7 @@ TEST_F(DeviceSyncServiceTest,
       "MultiDevice.DeviceSyncService.SetSoftwareFeatureState.Result", true, 0);
 }
 
-TEST_F(DeviceSyncServiceTest, SetSoftwareFeatureState_Error) {
+TEST_P(DeviceSyncServiceTest, SetSoftwareFeatureState_Error) {
   InitializeServiceSuccessfully();
 
   const auto& set_software_calls =
@@ -1262,7 +1686,173 @@ TEST_F(DeviceSyncServiceTest, SetSoftwareFeatureState_Error) {
       "MultiDevice.DeviceSyncService.SetSoftwareFeatureState.Result", true, 0);
 }
 
-TEST_F(DeviceSyncServiceTest, FindEligibleDevices) {
+TEST_P(DeviceSyncServiceTest, SetFeatureStatus_Success) {
+  InitializeServiceSuccessfully();
+
+  EXPECT_EQ(0u, fake_feature_status_setter()->requests().size());
+
+  multidevice::RemoteDevice device_for_test = test_devices()[0];
+
+  // Exclusively enable kBetterTogetherHost for the device.
+  CallSetFeatureStatus(device_for_test.instance_id,
+                       multidevice::SoftwareFeature::kBetterTogetherHost,
+                       FeatureStatusChange::kEnableExclusively);
+  EXPECT_EQ(1u, fake_feature_status_setter()->requests().size());
+  EXPECT_EQ(multidevice::SoftwareFeature::kBetterTogetherHost,
+            fake_feature_status_setter()->requests()[0].feature);
+  EXPECT_EQ(FeatureStatusChange::kEnableExclusively,
+            fake_feature_status_setter()->requests()[0].status_change);
+  EXPECT_TRUE(fake_feature_status_setter()->requests()[0].success_callback);
+  EXPECT_TRUE(fake_feature_status_setter()->requests()[0].error_callback);
+
+  // The DeviceSyncImpl::SetFeatureStatus() callback has not yet been invoked.
+  EXPECT_TRUE(set_feature_status_results().empty());
+
+  // Now, invoke the CryptAuthFeatureStatusSetter success callback.
+  std::move(fake_feature_status_setter()->requests()[0].success_callback).Run();
+
+  // The DeviceSyncImpl::SetFeatureStatus() callback still has not yet been
+  // invoked since a device sync has not confirmed the feature state change yet.
+  EXPECT_TRUE(set_feature_status_results().empty());
+
+  // Simulate a sync which includes the device with the correct "enabled" state.
+  device_for_test
+      .software_features[multidevice::SoftwareFeature::kBetterTogetherHost] =
+      multidevice::SoftwareFeatureState::kEnabled;
+  SimulateSync(true /* success */, {device_for_test});
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_EQ(1u, set_feature_status_results().size());
+  EXPECT_EQ(mojom::NetworkRequestResult::kSuccess,
+            set_feature_status_results()[0]);
+}
+
+TEST_P(DeviceSyncServiceTest,
+       SetFeatureStatus_RequestSucceedsButDoesNotTakeEffect) {
+  InitializeServiceSuccessfully();
+
+  // Expected device feature states after SetFeatureStatus() calls:
+  // * Device 0 has kSmartLockHost disabled.
+  // * Device 1 has kSmartLockHost disabled.
+  // * Device 2 has kBetterTogetherHost enabled exclusively.
+  // * Device 3 has kInstantTetheringHost enabled.
+  // * Device 4 has kMessagesForWebHost disabled.
+  multidevice::RemoteDeviceList expected_remote_devices =
+      multidevice::CreateRemoteDeviceListForTest(5u);
+  expected_remote_devices[0]
+      .software_features[multidevice::SoftwareFeature::kSmartLockHost] =
+      multidevice::SoftwareFeatureState::kSupported;
+  expected_remote_devices[1]
+      .software_features[multidevice::SoftwareFeature::kSmartLockHost] =
+      multidevice::SoftwareFeatureState::kSupported;
+  expected_remote_devices[2]
+      .software_features[multidevice::SoftwareFeature::kBetterTogetherHost] =
+      multidevice::SoftwareFeatureState::kEnabled;
+  expected_remote_devices[3]
+      .software_features[multidevice::SoftwareFeature::kInstantTetheringHost] =
+      multidevice::SoftwareFeatureState::kEnabled;
+  expected_remote_devices[4]
+      .software_features[multidevice::SoftwareFeature::kMessagesForWebHost] =
+      multidevice::SoftwareFeatureState::kSupported;
+
+  CallSetFeatureStatus(expected_remote_devices[0].instance_id,
+                       multidevice::SoftwareFeature::kSmartLockHost,
+                       FeatureStatusChange::kDisable);
+  CallSetFeatureStatus(expected_remote_devices[1].instance_id,
+                       multidevice::SoftwareFeature::kSmartLockHost,
+                       FeatureStatusChange::kDisable);
+  CallSetFeatureStatus(expected_remote_devices[2].instance_id,
+                       multidevice::SoftwareFeature::kBetterTogetherHost,
+                       FeatureStatusChange::kEnableExclusively);
+  CallSetFeatureStatus(expected_remote_devices[3].instance_id,
+                       multidevice::SoftwareFeature::kInstantTetheringHost,
+                       FeatureStatusChange::kEnableNonExclusively);
+  CallSetFeatureStatus(expected_remote_devices[4].instance_id,
+                       multidevice::SoftwareFeature::kMessagesForWebHost,
+                       FeatureStatusChange::kDisable);
+  EXPECT_EQ(5u, fake_feature_status_setter()->requests().size());
+
+  // The DeviceSyncImpl::SetFeatureStatus() callbacks have not yet been invoked.
+  EXPECT_TRUE(set_feature_status_results().empty());
+
+  // Now, invoke the CryptAuthFeatureStatusSetter success callbacks.
+  std::move(fake_feature_status_setter()->requests()[0].success_callback).Run();
+  std::move(fake_feature_status_setter()->requests()[1].success_callback).Run();
+  std::move(fake_feature_status_setter()->requests()[2].success_callback).Run();
+  std::move(fake_feature_status_setter()->requests()[3].success_callback).Run();
+  std::move(fake_feature_status_setter()->requests()[4].success_callback).Run();
+
+  // The DeviceSyncImpl::SetFeatureStatus() callbacks still have not been
+  // invoked since a DeviceSync has not confirmed any of the requested feature
+  // state changes yet.
+  EXPECT_TRUE(set_feature_status_results().empty());
+
+  // Simulate a DeviceSync which returns unexpected device feature states:
+  // * Device 0 not in list of devices.
+  // * Device 1 missing kSmartLockHost entry in the feature list.
+  // * Device 2 has kBetterTogetherHost enabled but not exclusively since device
+  //   1 also has it enabled.
+  // * Device 3 does not have kInstantTetheringHost enabled.
+  // * Device 4 does not have kMessagesForWebHost disabled.
+  multidevice::RemoteDeviceList remote_devices_from_first_sync =
+      multidevice::CreateRemoteDeviceListForTest(5u);
+  remote_devices_from_first_sync[1]
+      .software_features[multidevice::SoftwareFeature::kBetterTogetherHost] =
+      multidevice::SoftwareFeatureState::kEnabled;
+  remote_devices_from_first_sync[2]
+      .software_features[multidevice::SoftwareFeature::kBetterTogetherHost] =
+      multidevice::SoftwareFeatureState::kEnabled;
+  remote_devices_from_first_sync[3]
+      .software_features[multidevice::SoftwareFeature::kInstantTetheringHost] =
+      multidevice::SoftwareFeatureState::kSupported;
+  remote_devices_from_first_sync[4]
+      .software_features[multidevice::SoftwareFeature::kMessagesForWebHost] =
+      multidevice::SoftwareFeatureState::kEnabled;
+  remote_devices_from_first_sync.erase(remote_devices_from_first_sync.begin());
+
+  SimulateSync(true /* success */, remote_devices_from_first_sync);
+  base::RunLoop().RunUntilIdle();
+
+  // The DeviceSyncImpl::SetFeatureStatus() callbacks still have not yet been
+  // invoked since the latest DeviceSync did not reflect the requested feature
+  // state changes.
+  EXPECT_EQ(0u, set_feature_status_results().size());
+
+  // Simulate a DeviceSync which returns the expected device feature states:
+  EXPECT_TRUE(CallForceSyncNow());
+  SimulateSync(true /* success */, expected_remote_devices);
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_EQ(5u, set_feature_status_results().size());
+  for (mojom::NetworkRequestResult result : set_feature_status_results())
+    EXPECT_EQ(mojom::NetworkRequestResult::kSuccess, result);
+}
+
+TEST_P(DeviceSyncServiceTest, SetFeatureStatus_Error) {
+  InitializeServiceSuccessfully();
+
+  multidevice::RemoteDevice device_for_test = test_devices()[0];
+
+  // Attempt to exclusively enable kBetterTogetherHost for the device.
+  CallSetFeatureStatus(device_for_test.instance_id,
+                       multidevice::SoftwareFeature::kBetterTogetherHost,
+                       FeatureStatusChange::kEnableExclusively);
+
+  // The DeviceSyncImpl::SetFeatureStatus() callback has not yet been invoked.
+  EXPECT_TRUE(set_feature_status_results().empty());
+
+  // Now, invoke the CryptAuthFeatureStatusSetter error callback.
+  std::move(fake_feature_status_setter()->requests()[0].error_callback)
+      .Run(NetworkRequestError::kBadRequest);
+
+  // The DeviceSyncImpl::SetFeatureStatus() callback is invoked with the same
+  // error code.
+  ASSERT_EQ(1u, set_feature_status_results().size());
+  EXPECT_EQ(mojom::NetworkRequestResult::kBadRequest,
+            set_feature_status_results()[0]);
+}
+
+TEST_P(DeviceSyncServiceTest, FindEligibleDevices) {
   InitializeServiceSuccessfully();
 
   const auto& find_eligible_calls =
@@ -1329,7 +1919,7 @@ TEST_F(DeviceSyncServiceTest, FindEligibleDevices) {
       "MultiDevice.DeviceSyncService.FindEligibleDevices.Result", true, 1);
 }
 
-TEST_F(DeviceSyncServiceTest, GetDebugInfo) {
+TEST_P(DeviceSyncServiceTest, GetDebugInfo) {
   static const base::TimeDelta kTimeBetweenEpochAndLastEnrollment =
       base::TimeDelta::FromDays(365 * 50);  // 50 years
   static const base::TimeDelta kTimeUntilNextEnrollment =
@@ -1373,6 +1963,13 @@ TEST_F(DeviceSyncServiceTest, GetDebugInfo) {
   EXPECT_TRUE(result->is_recovering_from_sync_failure);
   EXPECT_FALSE(result->is_sync_in_progress);
 }
+
+// Runs tests four times with all possible combinations of v2 Enrollment and v2
+// DeviceSync flags.
+INSTANTIATE_TEST_SUITE_P(,
+                         DeviceSyncServiceTest,
+                         ::testing::Combine(::testing::Bool(),
+                                            ::testing::Bool()));
 
 }  // namespace device_sync
 

@@ -45,6 +45,9 @@ TouchFactory::TouchFactory()
       virtual_core_keyboard_device_(-1),
       id_generator_(0),
       touch_screens_enabled_(true) {
+  // Ensure device data manager is properly initialized.
+  DeviceDataManagerX11::CreateInstance();
+
   if (!DeviceDataManagerX11::GetInstance()->IsXInput2Available())
     return;
 
@@ -282,7 +285,7 @@ EventPointerType TouchFactory::GetTouchDevicePointerType(int deviceid) const {
 bool TouchFactory::QuerySlotForTrackingID(uint32_t tracking_id, int* slot) {
   if (!id_generator_.HasGeneratedIDFor(tracking_id))
     return false;
-  *slot = static_cast<int>(id_generator_.GetGeneratedID(tracking_id));
+  *slot = GetSlotForTrackingID(tracking_id);
   return true;
 }
 
@@ -290,8 +293,8 @@ int TouchFactory::GetSlotForTrackingID(uint32_t tracking_id) {
   return id_generator_.GetGeneratedID(tracking_id);
 }
 
-void TouchFactory::ReleaseSlotForTrackingID(uint32_t tracking_id) {
-  id_generator_.ReleaseNumber(tracking_id);
+void TouchFactory::ReleaseSlot(int slot) {
+  id_generator_.ReleaseID(slot);
 }
 
 bool TouchFactory::IsTouchDevicePresent() {
@@ -345,7 +348,7 @@ void TouchFactory::CacheTouchscreenIds(int device_id) {
                    });
   // Internal displays will have a vid and pid of 0. Ignore them.
   if (it != touchscreens.end() && it->vendor_id && it->product_id)
-    touchscreen_ids_.insert(std::make_pair(it->vendor_id, it->product_id));
+    touchscreen_ids_.emplace(it->vendor_id, it->product_id);
 }
 
 }  // namespace ui

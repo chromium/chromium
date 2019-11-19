@@ -8,7 +8,6 @@
 #include <memory>
 #include "third_party/blink/renderer/modules/webgl/webgl_extension.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.h"
-#include "third_party/blink/renderer/platform/bindings/trace_wrapper_member.h"
 
 namespace blink {
 
@@ -35,26 +34,26 @@ class WebGL2RenderingContextBase : public WebGLRenderingContextBase {
                   GLuint,
                   GLuint);
   void bufferSubData(GLenum,
-                     long long offset,
+                     int64_t offset,
                      MaybeShared<DOMArrayBufferView>,
                      GLuint,
                      GLuint);
   // Have to re-declare/re-define the following buffer{Sub}Data functions from
   // base class.  This is because the above buffer{Sub}Data() hides the name
   // from base class.
-  void bufferData(GLenum target, long long size, GLenum usage);
+  void bufferData(GLenum target, int64_t size, GLenum usage);
   void bufferData(GLenum target, DOMArrayBuffer* data, GLenum usage);
   void bufferData(GLenum target,
                   MaybeShared<DOMArrayBufferView> data,
                   GLenum usage);
-  void bufferSubData(GLenum target, long long offset, DOMArrayBuffer* data);
+  void bufferSubData(GLenum target, int64_t offset, DOMArrayBuffer* data);
   void bufferSubData(GLenum target,
-                     long long offset,
+                     int64_t offset,
                      const FlexibleArrayBufferView& data);
 
-  void copyBufferSubData(GLenum, GLenum, long long, long long, long long);
+  void copyBufferSubData(GLenum, GLenum, int64_t, int64_t, int64_t);
   void getBufferSubData(GLenum,
-                        long long,
+                        int64_t,
                         MaybeShared<DOMArrayBufferView>,
                         GLuint,
                         GLuint);
@@ -98,7 +97,7 @@ class WebGL2RenderingContextBase : public WebGLRenderingContextBase {
                   GLint,
                   GLenum,
                   GLenum,
-                  long long);
+                  int64_t);
   void texImage2D(GLenum,
                   GLint,
                   GLint,
@@ -170,7 +169,7 @@ class WebGL2RenderingContextBase : public WebGLRenderingContextBase {
                      GLsizei,
                      GLenum,
                      GLenum,
-                     long long);
+                     int64_t);
   void texSubImage2D(GLenum,
                      GLint,
                      GLint,
@@ -395,7 +394,7 @@ class WebGL2RenderingContextBase : public WebGLRenderingContextBase {
                   GLint,
                   GLenum,
                   GLenum,
-                  long long);
+                  int64_t);
   void texSubImage3D(GLenum,
                      GLint,
                      GLint,
@@ -418,7 +417,7 @@ class WebGL2RenderingContextBase : public WebGLRenderingContextBase {
                      GLsizei,
                      GLenum,
                      GLenum,
-                     long long);
+                     int64_t);
   void texSubImage3D(GLenum,
                      GLint,
                      GLint,
@@ -559,7 +558,7 @@ class WebGL2RenderingContextBase : public WebGLRenderingContextBase {
                             GLsizei height,
                             GLint border,
                             GLsizei image_size,
-                            long long offset);
+                            int64_t offset);
   void compressedTexSubImage2D(GLenum target,
                                GLint level,
                                GLint xoffset,
@@ -568,7 +567,7 @@ class WebGL2RenderingContextBase : public WebGLRenderingContextBase {
                                GLsizei height,
                                GLenum format,
                                GLsizei image_size,
-                               long long offset);
+                               int64_t offset);
   void compressedTexImage3D(GLenum target,
                             GLint level,
                             GLenum internalformat,
@@ -577,7 +576,7 @@ class WebGL2RenderingContextBase : public WebGLRenderingContextBase {
                             GLsizei depth,
                             GLint border,
                             GLsizei image_size,
-                            long long offset);
+                            int64_t offset);
   void compressedTexSubImage3D(GLenum target,
                                GLint level,
                                GLint xoffset,
@@ -588,7 +587,7 @@ class WebGL2RenderingContextBase : public WebGLRenderingContextBase {
                                GLsizei depth,
                                GLenum format,
                                GLsizei image_size,
-                               long long offset);
+                               int64_t offset);
 
   // Have to re-declare/re-define the following compressedTex{Sub}Image2D
   // functions from the base class. This is because the above
@@ -839,18 +838,18 @@ class WebGL2RenderingContextBase : public WebGLRenderingContextBase {
                             GLint size,
                             GLenum type,
                             GLsizei stride,
-                            long long offset);
+                            int64_t offset);
 
   /* Writing to the drawing buffer */
   void vertexAttribDivisor(GLuint, GLuint);
   void drawArraysInstanced(GLenum, GLint, GLsizei, GLsizei);
-  void drawElementsInstanced(GLenum, GLsizei, GLenum, long long, GLsizei);
+  void drawElementsInstanced(GLenum, GLsizei, GLenum, int64_t, GLsizei);
   void drawRangeElements(GLenum mode,
                          GLuint start,
                          GLuint end,
                          GLsizei count,
                          GLenum type,
-                         long long offset);
+                         int64_t offset);
 
   /* Multiple Render Targets */
   void drawBuffers(const Vector<GLenum>&);
@@ -907,8 +906,8 @@ class WebGL2RenderingContextBase : public WebGLRenderingContextBase {
 
   /* Uniform Buffer Objects and Transform Feedback Buffers */
   void bindBufferBase(GLenum, GLuint, WebGLBuffer*);
-  void bindBufferRange(GLenum, GLuint, WebGLBuffer*, long long, long long);
-  ScriptValue getIndexedParameter(ScriptState*, GLenum, GLuint);
+  void bindBufferRange(GLenum, GLuint, WebGLBuffer*, int64_t, int64_t);
+  virtual ScriptValue getIndexedParameter(ScriptState*, GLenum, GLuint);
   Vector<GLuint> getUniformIndices(WebGLProgram*, const Vector<String>&);
   ScriptValue getActiveUniforms(ScriptState*,
                                 WebGLProgram*,
@@ -936,14 +935,14 @@ class WebGL2RenderingContextBase : public WebGLRenderingContextBase {
                   GLenum format,
                   GLenum type,
                   MaybeShared<DOMArrayBufferView> pixels,
-                  long long offset);
+                  int64_t offset);
   void readPixels(GLint x,
                   GLint y,
                   GLsizei width,
                   GLsizei height,
                   GLenum format,
                   GLenum type,
-                  long long offset);
+                  int64_t offset);
 
   /* WebGLRenderingContextBase overrides */
   void InitializeNewContext() override;
@@ -1022,13 +1021,16 @@ class WebGL2RenderingContextBase : public WebGLRenderingContextBase {
 
   bool IsBufferBoundToTransformFeedback(WebGLBuffer*);
   bool IsBufferBoundToNonTransformFeedback(WebGLBuffer*);
-  bool ValidateBufferTargetCompatibility(const char*, GLenum, WebGLBuffer*);
+  virtual bool ValidateBufferTargetCompatibility(const char*,
+                                                 GLenum,
+                                                 WebGLBuffer*);
 
-  bool ValidateBufferBaseTarget(const char* function_name, GLenum target);
-  bool ValidateAndUpdateBufferBindBaseTarget(const char* function_name,
-                                             GLenum,
-                                             GLuint,
-                                             WebGLBuffer*);
+  virtual bool ValidateBufferBaseTarget(const char* function_name,
+                                        GLenum target);
+  virtual bool ValidateAndUpdateBufferBindBaseTarget(const char* function_name,
+                                                     GLenum,
+                                                     GLuint,
+                                                     WebGLBuffer*);
 
   WebGLImageConversion::PixelStoreParams GetPackPixelStoreParams() override;
   WebGLImageConversion::PixelStoreParams GetUnpackPixelStoreParams(
@@ -1088,17 +1090,17 @@ class WebGL2RenderingContextBase : public WebGLRenderingContextBase {
 
   const char* ValidateGetBufferSubData(const char* function_name,
                                        GLenum target,
-                                       long long source_byte_offset,
+                                       int64_t source_byte_offset,
                                        DOMArrayBufferView*,
                                        GLuint destination_offset,
                                        GLuint length,
                                        WebGLBuffer**,
                                        void** out_destination_data_ptr,
-                                       long long* out_destination_byte_length);
+                                       int64_t* out_destination_byte_length);
   const char* ValidateGetBufferSubDataBounds(const char* function_name,
                                              WebGLBuffer*,
                                              GLintptr source_byte_offset,
-                                             long long destination_byte_length);
+                                             int64_t destination_byte_length);
 
   void RemoveBoundBuffer(WebGLBuffer*) override;
 
@@ -1112,37 +1114,30 @@ class WebGL2RenderingContextBase : public WebGLRenderingContextBase {
                                  GLsizei height,
                                  const char* function_name);
 
-  TraceWrapperMember<WebGLFramebuffer> read_framebuffer_binding_;
-  TraceWrapperMember<WebGLTransformFeedback> transform_feedback_binding_;
+  Member<WebGLFramebuffer> read_framebuffer_binding_;
+  Member<WebGLTransformFeedback> transform_feedback_binding_;
   // This instance isn't exposed to JavaScript, which is why it's a
-  // Member rather than TraceWrapperMember.
+  // Member rather than Member.
   Member<WebGLTransformFeedback> default_transform_feedback_;
 
-  std::set<GLenum> supported_internal_formats_storage_;
-  std::set<GLenum> compressed_texture_formats_etc2eac_;
+  GLenumHashSet supported_internal_formats_storage_;
+  GLenumHashSet compressed_texture_formats_etc2eac_;
 
-  TraceWrapperMember<WebGLBuffer> bound_copy_read_buffer_;
-  TraceWrapperMember<WebGLBuffer> bound_copy_write_buffer_;
-  TraceWrapperMember<WebGLBuffer> bound_pixel_pack_buffer_;
-  TraceWrapperMember<WebGLBuffer> bound_pixel_unpack_buffer_;
-  TraceWrapperMember<WebGLBuffer> bound_transform_feedback_buffer_;
-  TraceWrapperMember<WebGLBuffer> bound_uniform_buffer_;
-  TraceWrapperMember<WebGLBuffer> bound_atomic_counter_buffer_;
-  TraceWrapperMember<WebGLBuffer> bound_shader_storage_buffer_;
+  Member<WebGLBuffer> bound_copy_read_buffer_;
+  Member<WebGLBuffer> bound_copy_write_buffer_;
+  Member<WebGLBuffer> bound_pixel_pack_buffer_;
+  Member<WebGLBuffer> bound_pixel_unpack_buffer_;
+  Member<WebGLBuffer> bound_transform_feedback_buffer_;
+  Member<WebGLBuffer> bound_uniform_buffer_;
 
-  HeapVector<TraceWrapperMember<WebGLBuffer>>
-      bound_indexed_atomic_counter_buffers_;
-  HeapVector<TraceWrapperMember<WebGLBuffer>>
-      bound_indexed_shader_storage_buffers_;
-  HeapVector<TraceWrapperMember<WebGLBuffer>> bound_indexed_uniform_buffers_;
+  HeapVector<Member<WebGLBuffer>> bound_indexed_uniform_buffers_;
   GLint max_transform_feedback_separate_attribs_;
   wtf_size_t max_bound_uniform_buffer_index_;
 
-  TraceWrapperMember<WebGLQuery> current_boolean_occlusion_query_;
-  TraceWrapperMember<WebGLQuery>
-      current_transform_feedback_primitives_written_query_;
-  TraceWrapperMember<WebGLQuery> current_elapsed_query_;
-  HeapVector<TraceWrapperMember<WebGLSampler>> sampler_units_;
+  Member<WebGLQuery> current_boolean_occlusion_query_;
+  Member<WebGLQuery> current_transform_feedback_primitives_written_query_;
+  Member<WebGLQuery> current_elapsed_query_;
+  HeapVector<Member<WebGLSampler>> sampler_units_;
 
   GLint pack_row_length_;
   GLint pack_skip_pixels_;

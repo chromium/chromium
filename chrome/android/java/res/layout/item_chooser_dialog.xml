@@ -9,53 +9,10 @@
     android:layout_height="fill_parent"
     android:orientation="vertical"
     android:paddingBottom="12dp"
-    android:paddingTop="20dp" >
+    android:paddingTop="20dp"
+    android:background="@color/sheet_bg_color">
 
-    <!-- The title at the top. -->
-    <org.chromium.ui.widget.TextViewWithClickableSpans
-        android:id="@+id/dialog_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingBottom="8dp"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        android:textAppearance="@style/TextAppearance.BlackHint1" />
-
-    <!-- The "no item found" message. -->
-    <org.chromium.ui.widget.TextViewWithClickableSpans
-        android:id="@+id/not_found_message"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:textAppearance="@style/TextAppearance.BlackHint1"
-        android:visibility="gone" />
-
-    <!-- A layout containing a spinning progress bar that gets replaced with a
-         list of items. -->
-    <FrameLayout
-        android:id="@+id/container"
-        android:layout_width="fill_parent"
-        android:layout_height="100dp" >
-
-        <ProgressBar
-            android:id="@+id/progress"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_gravity="center"
-            android:indeterminate="true" />
-
-        <ListView
-            android:id="@+id/items"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="top"
-            android:fadeScrollbars="false"
-            android:visibility="gone" />
-    </FrameLayout>
-
-    <View style="@style/ButtonBarTopDivider" />
+    <include layout="@layout/device_item_list" />
 
     <!-- Status message at the bottom. -->
     <org.chromium.ui.widget.TextViewWithClickableSpans
@@ -73,7 +30,7 @@
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         android:layout_gravity="end"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="6dp"
         android:layout_marginEnd="12dp"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"

@@ -133,12 +133,10 @@ struct MEDIA_EXPORT TrackEncryption : Box {
   bool is_encrypted;
   uint8_t default_iv_size;
   std::vector<uint8_t> default_kid;
-#if BUILDFLAG(ENABLE_CBCS_ENCRYPTION_SCHEME)
   uint8_t default_crypt_byte_block;
   uint8_t default_skip_byte_block;
   uint8_t default_constant_iv_size;
   uint8_t default_constant_iv[kInitializationVectorSize];
-#endif
 };
 
 struct MEDIA_EXPORT SchemeInfo : Box {
@@ -357,12 +355,10 @@ struct MEDIA_EXPORT CencSampleEncryptionInfoEntry {
   bool is_encrypted;
   uint8_t iv_size;
   std::vector<uint8_t> key_id;
-#if BUILDFLAG(ENABLE_CBCS_ENCRYPTION_SCHEME)
   uint8_t crypt_byte_block;
   uint8_t skip_byte_block;
   uint8_t constant_iv_size;
   uint8_t constant_iv[kInitializationVectorSize];
-#endif
 };
 
 struct MEDIA_EXPORT SampleGroupDescription : Box {  // 'sgpd'.

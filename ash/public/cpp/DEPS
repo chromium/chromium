@@ -1,8 +1,10 @@
 include_rules = [
   "+chromeos/constants",
+  "+chromeos/services",
+  "+components/arc/mojom",
   "+components/prefs",
   "+services/data_decoder/public",
   "+services/device/public",
-  "+skia/public/interfaces",
+  "+skia/public/mojom",
   "+ui/display",
 ]

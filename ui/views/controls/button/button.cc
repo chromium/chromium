@@ -5,6 +5,7 @@
 #include "ui/views/controls/button/button.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/class_property.h"
 #include "ui/events/event.h"
@@ -15,6 +16,9 @@
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/animation/ink_drop_highlight.h"
 #include "ui/views/animation/ink_drop_impl.h"
+#include "ui/views/controls/button/button_controller.h"
+#include "ui/views/controls/button/button_controller_delegate.h"
+#include "ui/views/controls/button/button_observer.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/label_button.h"
@@ -36,9 +40,6 @@ namespace views {
 namespace {
 
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kIsButtonProperty, false)
-
-// How long the hover animation takes if uninterrupted.
-const int kHoverFadeDurationMs = 150;
 
 }  // namespace
 
@@ -67,10 +68,56 @@ void Button::WidgetObserverButtonBridge::OnWidgetDestroying(Widget* widget) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// Button, static public:
+// ButtonControllerDelegate:
+Button::DefaultButtonControllerDelegate::DefaultButtonControllerDelegate(
+    Button* button)
+    : ButtonControllerDelegate(button) {}
 
-// static
-const char Button::kViewClassName[] = "Button";
+Button::DefaultButtonControllerDelegate::~DefaultButtonControllerDelegate() =
+    default;
+
+void Button::DefaultButtonControllerDelegate::RequestFocusFromEvent() {
+  button()->RequestFocusFromEvent();
+}
+
+void Button::DefaultButtonControllerDelegate::NotifyClick(
+    const ui::Event& event) {
+  button()->NotifyClick(event);
+}
+
+void Button::DefaultButtonControllerDelegate::OnClickCanceled(
+    const ui::Event& event) {
+  button()->OnClickCanceled(event);
+}
+
+bool Button::DefaultButtonControllerDelegate::IsTriggerableEvent(
+    const ui::Event& event) {
+  return button()->IsTriggerableEvent(event);
+}
+
+bool Button::DefaultButtonControllerDelegate::ShouldEnterPushedState(
+    const ui::Event& event) {
+  return button()->ShouldEnterPushedState(event);
+}
+
+bool Button::DefaultButtonControllerDelegate::ShouldEnterHoveredState() {
+  return button()->ShouldEnterHoveredState();
+}
+
+InkDrop* Button::DefaultButtonControllerDelegate::GetInkDrop() {
+  return button()->GetInkDrop();
+}
+
+int Button::DefaultButtonControllerDelegate::GetDragOperations(
+    const gfx::Point& press_pt) {
+  return button()->GetDragOperations(press_pt);
+}
+
+bool Button::DefaultButtonControllerDelegate::InDrag() {
+  return button()->InDrag();
+}
+
+////////////////////////////////////////////////////////////////////////////////
 
 // static
 const Button* Button::AsButton(const views::View* view) {
@@ -99,7 +146,7 @@ Button::ButtonState Button::GetButtonStateFrom(ui::NativeTheme::State state) {
 ////////////////////////////////////////////////////////////////////////////////
 // Button, public:
 
-Button::~Button() {}
+Button::~Button() = default;
 
 void Button::SetFocusForPlatform() {
 #if defined(OS_MACOSX)
@@ -111,6 +158,8 @@ void Button::SetFocusForPlatform() {
 }
 
 void Button::SetTooltipText(const base::string16& tooltip_text) {
+  if (tooltip_text == tooltip_text_)
+    return;
   tooltip_text_ = tooltip_text;
   OnSetTooltipText(tooltip_text);
   TooltipTextChanged();
@@ -176,7 +225,7 @@ void Button::StopThrobbing() {
   }
 }
 
-void Button::SetAnimationDuration(int duration) {
+void Button::SetAnimationDuration(base::TimeDelta duration) {
   hover_animation_.SetSlideDuration(duration);
 }
 
@@ -188,8 +237,14 @@ void Button::SetInstallFocusRingOnFocus(bool install) {
 }
 
 void Button::SetHotTracked(bool is_hot_tracked) {
-  if (state_ != STATE_DISABLED)
+  if (state_ != STATE_DISABLED) {
     SetState(is_hot_tracked ? STATE_HOVERED : STATE_NORMAL);
+    if (show_ink_drop_when_hot_tracked_) {
+      AnimateInkDrop(is_hot_tracked ? views::InkDropState::ACTIVATED
+                                    : views::InkDropState::HIDDEN,
+                     nullptr);
+    }
+  }
 
   if (is_hot_tracked)
     NotifyAccessibilityEvent(ax::mojom::Event::kHover, true);
@@ -207,51 +262,74 @@ void Button::SetHighlighted(bool bubble_visible) {
   AnimateInkDrop(bubble_visible ? views::InkDropState::ACTIVATED
                                 : views::InkDropState::DEACTIVATED,
                  nullptr);
+  for (ButtonObserver& observer : button_observers_)
+    observer.OnHighlightChanged(this, bubble_visible);
+}
+
+void Button::AddButtonObserver(ButtonObserver* observer) {
+  button_observers_.AddObserver(observer);
+}
+
+void Button::RemoveButtonObserver(ButtonObserver* observer) {
+  button_observers_.RemoveObserver(observer);
+}
+
+Button::KeyClickAction Button::GetKeyClickActionForEvent(
+    const ui::KeyEvent& event) {
+  if (event.key_code() == ui::VKEY_SPACE)
+    return PlatformStyle::kKeyClickActionOnSpace;
+  if (event.key_code() == ui::VKEY_RETURN &&
+      PlatformStyle::kReturnClicksFocusedControl)
+    return KeyClickAction::kOnKeyPress;
+  return KeyClickAction::kNone;
+}
+
+void Button::SetButtonController(
+    std::unique_ptr<ButtonController> button_controller) {
+  button_controller_ = std::move(button_controller);
+}
+
+gfx::Point Button::GetMenuPosition() const {
+  gfx::Rect lb = GetLocalBounds();
+
+  // Offset of the associated menu position.
+  constexpr gfx::Vector2d kMenuOffset{-2, -4};
+
+  // The position of the menu depends on whether or not the locale is
+  // right-to-left.
+  gfx::Point menu_position(lb.right(), lb.bottom());
+  if (base::i18n::IsRTL())
+    menu_position.set_x(lb.x());
+
+  View::ConvertPointToScreen(this, &menu_position);
+  if (base::i18n::IsRTL())
+    menu_position.Offset(-kMenuOffset.x(), kMenuOffset.y());
+  else
+    menu_position += kMenuOffset;
+
+  DCHECK(GetWidget());
+  const int max_x_coordinate =
+      GetWidget()->GetWorkAreaBoundsInScreen().right() - 1;
+  if (max_x_coordinate && max_x_coordinate <= menu_position.x())
+    menu_position.set_x(max_x_coordinate - 1);
+  return menu_position;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // Button, View overrides:
 
-void Button::OnEnabledChanged() {
-  if (enabled() ? (state_ != STATE_DISABLED) : (state_ == STATE_DISABLED))
-    return;
-
-  if (enabled()) {
-    bool should_enter_hover_state = ShouldEnterHoveredState();
-    SetState(should_enter_hover_state ? STATE_HOVERED : STATE_NORMAL);
-    GetInkDrop()->SetHovered(should_enter_hover_state);
-  } else {
-    SetState(STATE_DISABLED);
-    GetInkDrop()->SetHovered(false);
-  }
-}
-
-const char* Button::GetClassName() const {
-  return kViewClassName;
-}
-
 bool Button::OnMousePressed(const ui::MouseEvent& event) {
-  if (state_ == STATE_DISABLED)
-    return true;
-  if (state_ != STATE_PRESSED && ShouldEnterPushedState(event) &&
-      HitTestPoint(event.location())) {
-    SetState(STATE_PRESSED);
-    AnimateInkDrop(views::InkDropState::ACTION_PENDING, &event);
-  }
-  RequestFocusFromEvent();
-  if (IsTriggerableEvent(event) && notify_action_ == NOTIFY_ON_PRESS) {
-    NotifyClick(event);
-    // NOTE: We may be deleted at this point (by the listener's notification
-    // handler).
-  }
-  return true;
+  return button_controller_->OnMousePressed(event);
 }
 
 bool Button::OnMouseDragged(const ui::MouseEvent& event) {
   if (state_ != STATE_DISABLED) {
     const bool should_enter_pushed = ShouldEnterPushedState(event);
     const bool should_show_pending =
-        should_enter_pushed && notify_action_ == NOTIFY_ON_RELEASE && !InDrag();
+        should_enter_pushed &&
+        button_controller_->notify_action() ==
+            ButtonController::NotifyAction::kOnRelease &&
+        !InDrag();
     if (HitTestPoint(event.location())) {
       SetState(should_enter_pushed ? STATE_PRESSED : STATE_HOVERED);
       if (should_show_pending && GetInkDrop()->GetTargetInkDropState() ==
@@ -270,21 +348,7 @@ bool Button::OnMouseDragged(const ui::MouseEvent& event) {
 }
 
 void Button::OnMouseReleased(const ui::MouseEvent& event) {
-  if (state_ != STATE_DISABLED) {
-    if (!HitTestPoint(event.location())) {
-      SetState(STATE_NORMAL);
-    } else {
-      SetState(STATE_HOVERED);
-      if (IsTriggerableEvent(event) && notify_action_ == NOTIFY_ON_RELEASE) {
-        NotifyClick(event);
-        // NOTE: We may be deleted at this point (by the listener's notification
-        // handler).
-        return;
-      }
-    }
-  }
-  if (notify_action_ == NOTIFY_ON_RELEASE)
-    OnClickCanceled(event);
+  button_controller_->OnMouseReleased(event);
 }
 
 void Button::OnMouseCaptureLost() {
@@ -299,76 +363,27 @@ void Button::OnMouseCaptureLost() {
 }
 
 void Button::OnMouseEntered(const ui::MouseEvent& event) {
-  if (state_ != STATE_DISABLED)
-    SetState(STATE_HOVERED);
+  button_controller_->OnMouseEntered(event);
 }
 
 void Button::OnMouseExited(const ui::MouseEvent& event) {
-  // Starting a drag results in a MouseExited, we need to ignore it.
-  if (state_ != STATE_DISABLED && !InDrag())
-    SetState(STATE_NORMAL);
+  button_controller_->OnMouseExited(event);
 }
 
 void Button::OnMouseMoved(const ui::MouseEvent& event) {
-  if (state_ != STATE_DISABLED)
-    SetState(HitTestPoint(event.location()) ? STATE_HOVERED : STATE_NORMAL);
+  button_controller_->OnMouseMoved(event);
 }
 
 bool Button::OnKeyPressed(const ui::KeyEvent& event) {
-  if (state_ == STATE_DISABLED)
-    return false;
-
-  switch (GetKeyClickActionForEvent(event)) {
-    case KeyClickAction::CLICK_ON_KEY_RELEASE:
-      SetState(STATE_PRESSED);
-      if (GetInkDrop()->GetTargetInkDropState() !=
-          InkDropState::ACTION_PENDING) {
-        AnimateInkDrop(InkDropState::ACTION_PENDING, nullptr /* event */);
-      }
-      return true;
-    case KeyClickAction::CLICK_ON_KEY_PRESS:
-      SetState(STATE_NORMAL);
-      NotifyClick(event);
-      return true;
-    case KeyClickAction::CLICK_NONE:
-      return false;
-  }
-
-  NOTREACHED();
-  return false;
+  return button_controller_->OnKeyPressed(event);
 }
 
 bool Button::OnKeyReleased(const ui::KeyEvent& event) {
-  const bool click_button =
-      state_ == STATE_PRESSED &&
-      GetKeyClickActionForEvent(event) == KeyClickAction::CLICK_ON_KEY_RELEASE;
-  if (!click_button)
-    return false;
-
-  SetState(STATE_NORMAL);
-  NotifyClick(event);
-  return true;
+  return button_controller_->OnKeyReleased(event);
 }
 
 void Button::OnGestureEvent(ui::GestureEvent* event) {
-  if (event->type() == ui::ET_GESTURE_TAP && IsTriggerableEvent(*event)) {
-    // Set the button state to hot and start the animation fully faded in. The
-    // GESTURE_END event issued immediately after will set the state to
-    // STATE_NORMAL beginning the fade out animation. See
-    // http://crbug.com/131184.
-    SetState(STATE_HOVERED);
-    hover_animation_.Reset(1.0);
-    NotifyClick(*event);
-    event->SetHandled();
-  } else if (event->type() == ui::ET_GESTURE_TAP_DOWN &&
-             ShouldEnterPushedState(*event)) {
-    SetState(STATE_PRESSED);
-    RequestFocusFromEvent();
-    event->SetHandled();
-  } else if (event->type() == ui::ET_GESTURE_TAP_CANCEL ||
-             event->type() == ui::ET_GESTURE_END) {
-    SetState(STATE_NORMAL);
-  }
+  button_controller_->OnGestureEvent(event);
 }
 
 bool Button::AcceleratorPressed(const ui::Accelerator& accelerator) {
@@ -381,16 +396,11 @@ bool Button::SkipDefaultKeyEventProcessing(const ui::KeyEvent& event) {
   // If this button is focused and the user presses space or enter, don't let
   // that be treated as an accelerator if there is a key click action
   // corresponding to it.
-  return GetKeyClickActionForEvent(event) != KeyClickAction::CLICK_NONE;
+  return GetKeyClickActionForEvent(event) != KeyClickAction::kNone;
 }
 
-bool Button::GetTooltipText(const gfx::Point& p,
-                            base::string16* tooltip) const {
-  if (tooltip_text_.empty())
-    return false;
-
-  *tooltip = tooltip_text_;
-  return true;
+base::string16 Button::GetTooltipText(const gfx::Point& p) const {
+  return tooltip_text_;
 }
 
 void Button::ShowContextMenu(const gfx::Point& p,
@@ -426,7 +436,7 @@ void Button::OnPaint(gfx::Canvas* canvas) {
 void Button::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kButton;
   node_data->SetName(GetAccessibleName());
-  if (!enabled())
+  if (!GetEnabled())
     node_data->SetRestriction(ax::mojom::Restriction::kDisabled);
 
   switch (state_) {
@@ -444,8 +454,10 @@ void Button::GetAccessibleNodeData(ui::AXNodeData* node_data) {
       // No additional accessibility node_data set for this button node_data.
       break;
   }
-  if (enabled())
+  if (GetEnabled())
     node_data->SetDefaultActionVerb(ax::mojom::DefaultActionVerb::kPress);
+
+  button_controller_->UpdateAccessibleNodeData(node_data);
 }
 
 void Button::VisibilityChanged(View* starting_from, bool visible) {
@@ -512,21 +524,15 @@ void Button::AnimationProgressed(const gfx::Animation* animation) {
 // Button, protected:
 
 Button::Button(ButtonListener* listener)
-    : listener_(listener), ink_drop_base_color_(gfx::kPlaceholderColor) {
+    : AnimationDelegateViews(this),
+      listener_(listener),
+      ink_drop_base_color_(gfx::kPlaceholderColor) {
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
   SetProperty(kIsButtonProperty, true);
-  hover_animation_.SetSlideDuration(kHoverFadeDurationMs);
+  hover_animation_.SetSlideDuration(base::TimeDelta::FromMilliseconds(150));
   SetInstallFocusRingOnFocus(PlatformStyle::kPreferFocusRings);
-}
-
-Button::KeyClickAction Button::GetKeyClickActionForEvent(
-    const ui::KeyEvent& event) {
-  if (event.key_code() == ui::VKEY_SPACE)
-    return PlatformStyle::kKeyClickActionOnSpace;
-  if (event.key_code() == ui::VKEY_RETURN &&
-      PlatformStyle::kReturnClicksFocusedControl)
-    return CLICK_ON_KEY_PRESS;
-  return CLICK_NONE;
+  button_controller_ = std::make_unique<ButtonController>(
+      this, std::make_unique<DefaultButtonControllerDelegate>(this));
 }
 
 void Button::RequestFocusFromEvent() {
@@ -539,6 +545,7 @@ void Button::NotifyClick(const ui::Event& event) {
     AnimateInkDrop(InkDropState::ACTION_TRIGGERED,
                    ui::LocatedEvent::FromIfValid(&event));
   }
+
   // We can be called when there is no listener, in cases like double clicks on
   // menu buttons etc.
   if (listener_)
@@ -559,13 +566,14 @@ void Button::OnClickCanceled(const ui::Event& event) {
 
 void Button::OnSetTooltipText(const base::string16& tooltip_text) {}
 
-void Button::StateChanged(ButtonState old_state) {}
+void Button::StateChanged(ButtonState old_state) {
+  button_controller_->OnStateChanged(old_state);
+  for (ButtonObserver& observer : button_observers_)
+    observer.OnStateChanged(this, old_state);
+}
 
 bool Button::IsTriggerableEvent(const ui::Event& event) {
-  return event.type() == ui::ET_GESTURE_TAP_DOWN ||
-         event.type() == ui::ET_GESTURE_TAP ||
-         (event.IsMouseEvent() &&
-          (triggerable_event_flags_ & event.flags()) != 0);
+  return button_controller_->IsTriggerableEvent(event);
 }
 
 bool Button::ShouldUpdateInkDropOnClickCanceled() const {
@@ -579,7 +587,7 @@ bool Button::ShouldEnterPushedState(const ui::Event& event) {
 void Button::PaintButtonContents(gfx::Canvas* canvas) {}
 
 bool Button::ShouldEnterHoveredState() {
-  if (!visible())
+  if (!GetVisible())
     return false;
 
   bool check_mouse_position = true;
@@ -602,8 +610,26 @@ bool Button::ShouldEnterHoveredState() {
   return check_mouse_position && IsMouseHovered();
 }
 
+void Button::OnEnabledChanged() {
+  if (GetEnabled() ? (state_ != STATE_DISABLED) : (state_ == STATE_DISABLED))
+    return;
+
+  if (GetEnabled()) {
+    bool should_enter_hover_state = ShouldEnterHoveredState();
+    SetState(should_enter_hover_state ? STATE_HOVERED : STATE_NORMAL);
+    GetInkDrop()->SetHovered(should_enter_hover_state);
+  } else {
+    SetState(STATE_DISABLED);
+    GetInkDrop()->SetHovered(false);
+  }
+}
+
 void Button::WidgetActivationChanged(Widget* widget, bool active) {
   StateChanged(state());
 }
+
+BEGIN_METADATA(Button)
+METADATA_PARENT_CLASS(InkDropHostView)
+END_METADATA()
 
 }  // namespace views

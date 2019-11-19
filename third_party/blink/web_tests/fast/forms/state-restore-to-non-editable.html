@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<body>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<iframe src="resources/state-restore-to-non-editable-frame.html"></iframe>
+<script>
+
+let t = async_test('Should not restore state to disabled form controls');
+
+function doneTest() {
+  t.step(() => {
+    let d = document.querySelector('iframe').contentDocument;
+    assert_equals(d.querySelector('#enabled').value, 'edit1');
+    assert_equals(d.querySelector('#disabled').value, 'initial');
+    assert_equals(d.querySelector('#readonly').value, 'initial');
+    assert_equals(d.querySelector('#fieldset-disabled').value, 'initial');
+    assert_equals(d.querySelector('#enabled2').value, 'edit5');
+    t.done();
+  });
+}
+</script>
+</body>

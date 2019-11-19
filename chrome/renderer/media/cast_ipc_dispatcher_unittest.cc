@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/message_loop/message_loop.h"
+#include "chrome/renderer/media/cast_ipc_dispatcher.h"
+
 #include "base/test/simple_test_tick_clock.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/common/cast_messages.h"
-#include "chrome/renderer/media/cast_ipc_dispatcher.h"
 #include "ipc/ipc_message_macros.h"
 #include "media/cast/logging/logging_defines.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -25,7 +26,8 @@ class CastIPCDispatcherTest : public testing::Test {
   }
 
   scoped_refptr<CastIPCDispatcher> dispatcher_;
-  base::MessageLoopForIO message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
 };
 
 TEST_F(CastIPCDispatcherTest, RawEvents) {

@@ -145,8 +145,8 @@ class KioskAppUpdateServiceTest
   }
 
   void FireUpdatedNeedReboot() {
-    UpdateEngineClient::Status status;
-    status.status = UpdateEngineClient::UPDATE_STATUS_UPDATED_NEED_REBOOT;
+    update_engine::StatusResult status;
+    status.set_current_operation(update_engine::Operation::UPDATED_NEED_REBOOT);
     run_loop_.reset(new base::RunLoop);
     automatic_reboot_manager_->UpdateStatusChanged(status);
     run_loop_->Run();

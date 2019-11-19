@@ -10,9 +10,9 @@
 #include <memory>
 #include <utility>
 
+#include "base/hash/md5.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
-#include "base/md5.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/values.h"

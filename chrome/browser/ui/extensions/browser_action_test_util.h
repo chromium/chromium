@@ -21,13 +21,6 @@ class Image;
 class Size;
 }  // namespace gfx
 
-// A class that creates and owns the platform-specific views for the browser
-// actions container. Specific implementations are in the .cc/.mm files.
-class TestToolbarActionsBarHelper {
- public:
-  virtual ~TestToolbarActionsBarHelper() {}
-};
-
 class BrowserActionTestUtil {
  public:
   // Constructs a BrowserActionTestUtil which, if |is_real_window| is false,
@@ -96,7 +89,8 @@ class BrowserActionTestUtil {
 
   // Creates and returns a BrowserActionTestUtil with an "overflow" container,
   // with this object's container as the main bar.
-  virtual std::unique_ptr<BrowserActionTestUtil> CreateOverflowBar() = 0;
+  virtual std::unique_ptr<BrowserActionTestUtil> CreateOverflowBar(
+      Browser* browser) = 0;
 
   // Returns the minimum allowed size of an extension popup.
   virtual gfx::Size GetMinPopupSize() = 0;

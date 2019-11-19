@@ -30,16 +30,10 @@ class PpapiBlinkPlatformImpl : public BlinkPlatformImpl {
 
   // BlinkPlatformImpl methods:
   blink::WebSandboxSupport* GetSandboxSupport() override;
-  unsigned long long VisitedLinkHash(const char* canonical_url,
-                                     size_t length) override;
-  bool IsLinkVisited(unsigned long long link_hash) override;
+  uint64_t VisitedLinkHash(const char* canonical_url, size_t length) override;
+  bool IsLinkVisited(uint64_t link_hash) override;
   blink::WebString DefaultLocale() override;
   blink::WebThemeEngine* ThemeEngine() override;
-  blink::WebData GetDataResource(const char* name) override;
-  std::unique_ptr<blink::WebStorageNamespace> CreateLocalStorageNamespace()
-      override;
-  int DatabaseDeleteFile(const blink::WebString& vfs_file_name,
-                         bool sync_dir) override;
 
  private:
 #if defined(OS_LINUX) || defined(OS_MACOSX)

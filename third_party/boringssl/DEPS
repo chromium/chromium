@@ -3,4 +3,7 @@ specific_include_rules = {
     "+base",
     "+testing",
   ],
+  "test_data_chromium\.cc": [
+    "+base",
+  ],
 }

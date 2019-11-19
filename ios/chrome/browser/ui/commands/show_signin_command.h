@@ -7,17 +7,13 @@
 
 #import <Foundation/Foundation.h>
 
-#include "components/signin/core/browser/signin_metrics.h"
+#include "components/signin/public/base/signin_metrics.h"
 
 @class ChromeIdentity;
 
 typedef void (^ShowSigninCommandCompletionCallback)(BOOL succeeded);
 
 enum AuthenticationOperation {
-  // Operation to cancel the current authentication operation and dismiss any
-  // UI presented by this operation.
-  AUTHENTICATION_OPERATION_DISMISS,
-
   // Operation to start a re-authenticate operation. The user is presented with
   // the SSOAuth re-authenticate web page.
   AUTHENTICATION_OPERATION_REAUTHENTICATE,

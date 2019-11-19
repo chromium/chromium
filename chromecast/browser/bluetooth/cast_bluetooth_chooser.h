@@ -10,8 +10,8 @@
 
 #include "chromecast/browser/bluetooth/public/mojom/web_bluetooth.mojom.h"
 #include "content/public/browser/bluetooth_chooser.h"
-#include "mojo/public/cpp/bindings/binding.h"
-#include "mojo/public/cpp/bindings/interface_request.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 
 namespace chromecast {
 
@@ -27,7 +27,8 @@ class CastBluetoothChooser : public content::BluetoothChooser,
   // the |provider| destroys the connection to this client. |this| may destroy
   // |provider| immediately after requesting access.
   CastBluetoothChooser(content::BluetoothChooser::EventHandler event_handler,
-                       mojom::BluetoothDeviceAccessProviderPtr provider);
+                       mojo::PendingRemote<mojom::BluetoothDeviceAccessProvider>
+                           pending_provider);
   ~CastBluetoothChooser() override;
 
  private:
@@ -43,16 +44,16 @@ class CastBluetoothChooser : public content::BluetoothChooser,
                          bool is_paired,
                          int signal_strength_level) override;
 
-  // Runs the event_handler and resets the client binding. After this is called,
-  // this class should not be used.
-  void RunEventHandlerAndResetBinding(content::BluetoothChooser::Event event,
-                                      std::string address);
+  // Runs the event_handler and resets the client receiver. After this is
+  // called, this class should not be used.
+  void RunEventHandlerAndResetReceiver(content::BluetoothChooser::Event event,
+                                       std::string address);
 
-  // Called when the remote connection held by |binding_| is torn down.
+  // Called when the remote connection held by |receiver_| is torn down.
   void OnClientConnectionError();
 
   content::BluetoothChooser::EventHandler event_handler_;
-  mojo::Binding<mojom::BluetoothDeviceAccessProviderClient> binding_;
+  mojo::Receiver<mojom::BluetoothDeviceAccessProviderClient> receiver_{this};
   std::unordered_set<std::string> available_devices_;
   std::unordered_set<std::string> approved_devices_;
   bool all_devices_approved_ = false;

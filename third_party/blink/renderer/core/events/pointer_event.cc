@@ -12,8 +12,14 @@ namespace blink {
 
 PointerEvent::PointerEvent(const AtomicString& type,
                            const PointerEventInit* initializer,
-                           TimeTicks platform_time_stamp)
-    : MouseEvent(type, initializer, platform_time_stamp),
+                           base::TimeTicks platform_time_stamp,
+                           MouseEvent::SyntheticEventType synthetic_event_type,
+                           WebMenuSourceType menu_source_type)
+    : MouseEvent(type,
+                 initializer,
+                 platform_time_stamp,
+                 synthetic_event_type,
+                 menu_source_type),
       pointer_id_(0),
       width_(0),
       height_(0),
@@ -56,6 +62,13 @@ PointerEvent::PointerEvent(const AtomicString& type,
 }
 
 bool PointerEvent::IsMouseEvent() const {
+  if (RuntimeEnabledFeatures::ClickPointerEventEnabled() &&
+      (type() == event_type_names::kClick ||
+       type() == event_type_names::kAuxclick ||
+       type() == event_type_names::kContextmenu)) {
+    return true;
+  }
+
   return false;
 }
 
@@ -111,7 +124,7 @@ HeapVector<Member<PointerEvent>> PointerEvent::getPredictedEvents() {
   return predicted_events_;
 }
 
-TimeTicks PointerEvent::OldestPlatformTimeStamp() const {
+base::TimeTicks PointerEvent::OldestPlatformTimeStamp() const {
   if (coalesced_events_.size() > 0) {
     // Assume that time stamps of coalesced events are in ascending order.
     return coalesced_events_[0]->PlatformTimeStamp();
@@ -128,6 +141,13 @@ void PointerEvent::Trace(blink::Visitor* visitor) {
 DispatchEventResult PointerEvent::DispatchEvent(EventDispatcher& dispatcher) {
   if (type().IsEmpty())
     return DispatchEventResult::kNotCanceled;  // Shouldn't happen.
+
+  if (RuntimeEnabledFeatures::ClickPointerEventEnabled() &&
+      type() == event_type_names::kClick) {
+    // The MouseEvent::DispatchEvent will take care of sending dblclick event if
+    // needed.
+    return MouseEvent::DispatchEvent(dispatcher);
+  }
 
   DCHECK(!target() || target() != relatedTarget());
 

@@ -2,34 +2,41 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <utility>
+
 #include "chrome/browser/installable/installable_task_queue.h"
 
-InstallableTask::InstallableTask() {}
-InstallableTask::InstallableTask(const InstallableParams& params,
-                                 const InstallableCallback& callback)
-    : params(params), callback(callback) {}
-InstallableTask::~InstallableTask() {}
-InstallableTask::InstallableTask(const InstallableTask& other) = default;
-InstallableTask& InstallableTask::operator=(const InstallableTask& other) =
-    default;
+InstallableTask::InstallableTask() = default;
 
-InstallableTaskQueue::InstallableTaskQueue() {}
-InstallableTaskQueue::~InstallableTaskQueue() {}
+InstallableTask::InstallableTask(const InstallableParams& params,
+                                 InstallableCallback callback)
+    : params(params), callback(std::move(callback)) {}
+
+InstallableTask::~InstallableTask() = default;
+
+InstallableTask::InstallableTask(InstallableTask&& other) = default;
+
+InstallableTask& InstallableTask::operator=(InstallableTask&& other) = default;
+
+InstallableTaskQueue::InstallableTaskQueue() = default;
+
+InstallableTaskQueue::~InstallableTaskQueue() = default;
 
 void InstallableTaskQueue::Add(InstallableTask task) {
-  tasks_.push_back(task);
+  tasks_.push_back(std::move(task));
 }
 
 void InstallableTaskQueue::PauseCurrent() {
-  paused_tasks_.push_back(Current());
+  DCHECK(HasCurrent());
+  paused_tasks_.push_back(std::move(Current()));
   Next();
 }
 
 void InstallableTaskQueue::UnpauseAll() {
-  for (const auto& task : paused_tasks_)
-    Add(task);
-
-  paused_tasks_.clear();
+  while (!paused_tasks_.empty()) {
+    Add(std::move(paused_tasks_.front()));
+    paused_tasks_.pop_front();
+  }
 }
 
 bool InstallableTaskQueue::HasCurrent() const {
@@ -41,13 +48,13 @@ bool InstallableTaskQueue::HasPaused() const {
 }
 
 InstallableTask& InstallableTaskQueue::Current() {
-  DCHECK(!tasks_.empty());
-  return tasks_[0];
+  DCHECK(HasCurrent());
+  return tasks_.front();
 }
 
 void InstallableTaskQueue::Next() {
-  DCHECK(!tasks_.empty());
-  tasks_.erase(tasks_.begin());
+  DCHECK(HasCurrent());
+  tasks_.pop_front();
 }
 
 void InstallableTaskQueue::Reset() {

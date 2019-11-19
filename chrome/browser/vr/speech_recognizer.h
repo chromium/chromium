@@ -134,7 +134,7 @@ class VR_BASE_EXPORT SpeechRecognizer : public IOBrowserUIInterface {
 
   // Note that this object is destroyed on IO thread.
   std::unique_ptr<SpeechRecognizerOnIO> speech_recognizer_on_io_;
-  base::WeakPtrFactory<SpeechRecognizer> weak_factory_;
+  base::WeakPtrFactory<SpeechRecognizer> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SpeechRecognizer);
 };

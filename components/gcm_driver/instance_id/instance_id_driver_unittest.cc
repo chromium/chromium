@@ -12,7 +12,7 @@
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "components/gcm_driver/gcm_buildflags.h"
 #include "components/gcm_driver/instance_id/fake_gcm_driver_for_instance_id.h"
 #include "components/gcm_driver/instance_id/instance_id.h"
@@ -88,7 +88,7 @@ class InstanceIDDriverTest : public testing::Test {
   void GetTokenCompleted(const std::string& token, InstanceID::Result result);
   void DeleteTokenCompleted(InstanceID::Result result);
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   std::unique_ptr<FakeGCMDriverForInstanceID> gcm_driver_;
   std::unique_ptr<InstanceIDDriver> driver_;
 
@@ -109,8 +109,8 @@ class InstanceIDDriverTest : public testing::Test {
 };
 
 InstanceIDDriverTest::InstanceIDDriverTest()
-    : scoped_task_environment_(
-          base::test::ScopedTaskEnvironment::MainThreadType::UI),
+    : task_environment_(
+          base::test::SingleThreadTaskEnvironment::MainThreadType::UI),
       result_(InstanceID::UNKNOWN_ERROR),
       async_operation_completed_(false) {}
 
@@ -181,7 +181,7 @@ std::string InstanceIDDriverTest::GetToken(
   result_ = InstanceID::UNKNOWN_ERROR;
   instance_id->GetToken(
       authorized_entity, scope, options,
-      /*is_lazy=*/false,
+      /*flags=*/{},
       base::BindRepeating(&InstanceIDDriverTest::GetTokenCompleted,
                           base::Unretained(this)));
   WaitForAsyncOperation();

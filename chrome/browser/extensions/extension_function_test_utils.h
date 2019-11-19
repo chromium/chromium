@@ -12,7 +12,7 @@
 #include "extensions/common/manifest.h"
 
 class Browser;
-class UIThreadExtensionFunction;
+class ExtensionFunction;
 
 namespace base {
 class Value;
@@ -35,19 +35,19 @@ base::DictionaryValue* ToDictionary(base::Value* val);
 // If |val| is a list, return it as one, otherwise NULL.
 base::ListValue* ToList(base::Value* val);
 
-// Returns true if |val| contains privacy information, e.g. url,
-// title, and faviconUrl.
-bool HasPrivacySensitiveFields(base::DictionaryValue* val);
+// Returns true if |val| contains any privacy information, e.g. url,
+// pendingUrl, title or faviconUrl.
+bool HasAnyPrivacySensitiveFields(base::DictionaryValue* val);
 
 // Run |function| with |args| and return the resulting error. Adds an error to
 // the current test if |function| returns a result. Takes ownership of
 // |function|.
 std::string RunFunctionAndReturnError(
-    UIThreadExtensionFunction* function,
+    ExtensionFunction* function,
     const std::string& args,
     Browser* browser,
     extensions::api_test_utils::RunFunctionFlags flags);
-std::string RunFunctionAndReturnError(UIThreadExtensionFunction* function,
+std::string RunFunctionAndReturnError(ExtensionFunction* function,
                                       const std::string& args,
                                       Browser* browser);
 
@@ -55,14 +55,13 @@ std::string RunFunctionAndReturnError(UIThreadExtensionFunction* function,
 // current test if |function| returns an error. Takes ownership of
 // |function|. The caller takes ownership of the result.
 base::Value* RunFunctionAndReturnSingleResult(
-    UIThreadExtensionFunction* function,
+    ExtensionFunction* function,
     const std::string& args,
     Browser* browser,
     extensions::api_test_utils::RunFunctionFlags flags);
-base::Value* RunFunctionAndReturnSingleResult(
-    UIThreadExtensionFunction* function,
-    const std::string& args,
-    Browser* browser);
+base::Value* RunFunctionAndReturnSingleResult(ExtensionFunction* function,
+                                              const std::string& args,
+                                              Browser* browser);
 
 // Create and run |function| with |args|. Works with both synchronous and async
 // functions. Ownership of |function| remains with the caller.
@@ -74,11 +73,11 @@ base::Value* RunFunctionAndReturnSingleResult(
 // TODO(aa): I'm concerned that this style won't scale to all the bits and bobs
 // we're going to need to frob for all the different extension functions. But
 // we can refactor when we see what is needed.
-bool RunFunction(UIThreadExtensionFunction* function,
+bool RunFunction(ExtensionFunction* function,
                  const std::string& args,
                  Browser* browser,
                  extensions::api_test_utils::RunFunctionFlags flags);
-bool RunFunction(UIThreadExtensionFunction* function,
+bool RunFunction(ExtensionFunction* function,
                  std::unique_ptr<base::ListValue> args,
                  Browser* browser,
                  extensions::api_test_utils::RunFunctionFlags flags);

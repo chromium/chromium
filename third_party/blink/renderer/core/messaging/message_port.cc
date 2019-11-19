@@ -35,15 +35,15 @@
 #include "third_party/blink/renderer/core/events/message_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
-#include "third_party/blink/renderer/core/frame/use_counter.h"
 #include "third_party/blink/renderer/core/frame/user_activation.h"
 #include "third_party/blink/renderer/core/inspector/thread_debugger.h"
-#include "third_party/blink/renderer/core/messaging/blink_transferable_message_struct_traits.h"
+#include "third_party/blink/renderer/core/messaging/blink_transferable_message_mojom_traits.h"
 #include "third_party/blink/renderer/core/messaging/post_message_options.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
-#include "third_party/blink/renderer/platform/cross_thread_functional.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
@@ -55,10 +55,6 @@ constexpr int kMaximumMessagesPerTask = 200;
 constexpr base::TimeDelta kYieldThreshold =
     base::TimeDelta::FromMilliseconds(50);
 
-MessagePort* MessagePort::Create(ExecutionContext& execution_context) {
-  return MakeGarbageCollected<MessagePort>(execution_context);
-}
-
 MessagePort::MessagePort(ExecutionContext& execution_context)
     : ContextLifecycleObserver(&execution_context),
       task_runner_(execution_context.GetTaskRunner(TaskType::kPostedMessage)) {}
@@ -69,7 +65,7 @@ MessagePort::~MessagePort() {
 
 void MessagePort::postMessage(ScriptState* script_state,
                               const ScriptValue& message,
-                              Vector<ScriptValue>& transfer,
+                              HeapVector<ScriptValue>& transfer,
                               ExceptionState& exception_state) {
   PostMessageOptions* options = PostMessageOptions::Create();
   if (!transfer.IsEmpty())
@@ -111,6 +107,9 @@ void MessagePort::postMessage(ScriptState* script_state,
     return;
   msg.user_activation = PostMessageHelper::CreateUserActivationSnapshot(
       GetExecutionContext(), options);
+
+  msg.sender_origin =
+      GetExecutionContext()->GetSecurityOrigin()->IsolatedCopy();
 
   ThreadDebugger* debugger = ThreadDebugger::From(script_state->GetIsolate());
   if (debugger)
@@ -248,7 +247,7 @@ MessagePortArray* MessagePort::EntanglePorts(
   wtf_size_t count = SafeCast<wtf_size_t>(channels.size());
   MessagePortArray* port_array = MakeGarbageCollected<MessagePortArray>(count);
   for (wtf_size_t i = 0; i < count; ++i) {
-    MessagePort* port = MessagePort::Create(context);
+    auto* port = MakeGarbageCollected<MessagePort>(context);
     port->Entangle(std::move(channels[i]));
     (*port_array)[i] = port;
   }
@@ -295,23 +294,7 @@ bool MessagePort::Accept(mojo::Message* mojo_message) {
       return true;
   }
 
-  Event* evt;
-  if (!message.locked_agent_cluster_id ||
-      GetExecutionContext()->IsSameAgentCluster(
-          *message.locked_agent_cluster_id)) {
-    MessagePortArray* ports = MessagePort::EntanglePorts(
-        *GetExecutionContext(), std::move(message.ports));
-    UserActivation* user_activation = nullptr;
-    if (message.user_activation) {
-      user_activation = MakeGarbageCollected<UserActivation>(
-          message.user_activation->has_been_active,
-          message.user_activation->was_active);
-    }
-    evt = MessageEvent::Create(ports, std::move(message.message),
-                               user_activation);
-  } else {
-    evt = MessageEvent::CreateError();
-  }
+  Event* evt = CreateMessageEvent(message);
 
   v8::Isolate* isolate = GetExecutionContext()->GetIsolate();
   ThreadDebugger* debugger = ThreadDebugger::From(isolate);
@@ -321,6 +304,36 @@ bool MessagePort::Accept(mojo::Message* mojo_message) {
   if (debugger)
     debugger->ExternalAsyncTaskFinished(message.sender_stack_trace_id);
   return true;
+}
+
+Event* MessagePort::CreateMessageEvent(BlinkTransferableMessage& message) {
+  // Dispatch a messageerror event when the target is a remote origin that is
+  // not allowed to access the message's data.
+  if (message.message->IsOriginCheckRequired()) {
+    const SecurityOrigin* target_origin =
+        GetExecutionContext()->GetSecurityOrigin();
+    if (!message.sender_origin ||
+        !message.sender_origin->IsSameSchemeHostPort(target_origin)) {
+      return MessageEvent::CreateError();
+    }
+  }
+
+  if (message.locked_agent_cluster_id &&
+      !GetExecutionContext()->IsSameAgentCluster(
+          *message.locked_agent_cluster_id)) {
+    return MessageEvent::CreateError();
+  }
+
+  MessagePortArray* ports = MessagePort::EntanglePorts(
+      *GetExecutionContext(), std::move(message.ports));
+  UserActivation* user_activation = nullptr;
+  if (message.user_activation) {
+    user_activation = MakeGarbageCollected<UserActivation>(
+        message.user_activation->has_been_active,
+        message.user_activation->was_active);
+  }
+  return MessageEvent::Create(ports, std::move(message.message),
+                              user_activation);
 }
 
 void MessagePort::ResetMessageCount() {

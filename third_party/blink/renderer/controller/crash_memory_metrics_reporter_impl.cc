@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/controller/crash_memory_metrics_reporter_impl.h"
 
+#include <utility>
+
 #include "base/allocator/partition_allocator/oom_callback.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/process/memory.h"
@@ -18,10 +20,11 @@ namespace blink {
 
 // static
 void CrashMemoryMetricsReporterImpl::Bind(
-    mojom::blink::CrashMemoryMetricsReporterRequest request) {
+    mojo::PendingReceiver<mojom::blink::CrashMemoryMetricsReporter> receiver) {
   // This should be called only once per process on RenderProcessWillLaunch.
-  DCHECK(!CrashMemoryMetricsReporterImpl::Instance().binding_.is_bound());
-  CrashMemoryMetricsReporterImpl::Instance().binding_.Bind(std::move(request));
+  DCHECK(!CrashMemoryMetricsReporterImpl::Instance().receiver_.is_bound());
+  CrashMemoryMetricsReporterImpl::Instance().receiver_.Bind(
+      std::move(receiver));
 }
 
 CrashMemoryMetricsReporterImpl& CrashMemoryMetricsReporterImpl::Instance() {
@@ -30,8 +33,7 @@ CrashMemoryMetricsReporterImpl& CrashMemoryMetricsReporterImpl::Instance() {
   return crash_memory_metrics_reporter_impl;
 }
 
-CrashMemoryMetricsReporterImpl::CrashMemoryMetricsReporterImpl()
-    : binding_(this) {
+CrashMemoryMetricsReporterImpl::CrashMemoryMetricsReporterImpl() {
   base::SetPartitionAllocOomCallback(
       CrashMemoryMetricsReporterImpl::OnOOMCallback);
 }

@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/platform/fonts/text_run_paint_info.h"
 #include "third_party/blink/renderer/platform/testing/font_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/blink/renderer/platform/text/tab_size.h"
 #include "third_party/blink/renderer/platform/text/text_run.h"
 
 using blink::test::CreateTestFont;
@@ -84,6 +85,14 @@ TEST_F(FontTest, ExpandRange) {
   EXPECT_EQ(GetExpandedRange("tneiciffe", false, 4, 6), Vector<int>({4, 8}));
   EXPECT_EQ(GetExpandedRange("tneiciffe", false, 6, 7), Vector<int>({5, 8}));
   EXPECT_EQ(GetExpandedRange("tneiciffe", false, 0, 9), Vector<int>({0, 9}));
+}
+
+TEST_F(FontTest, TabWidthZero) {
+  Font font =
+      CreateTestFont("Ahem", test::PlatformTestDataPath("Ahem.woff"), 0);
+  TabSize tab_size(8);
+  EXPECT_EQ(font.TabWidth(tab_size, .0f), .0f);
+  EXPECT_EQ(font.TabWidth(tab_size, LayoutUnit()), LayoutUnit());
 }
 
 }  // namespace blink

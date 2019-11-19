@@ -5,7 +5,6 @@
 #include "ash/accessibility/focus_ring_controller.h"
 
 #include "ash/accessibility/focus_ring_layer.h"
-#include "ash/shell.h"
 #include "ash/system/tray/actionable_view.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/wm/window_util.h"
@@ -29,14 +28,12 @@ void FocusRingController::SetVisible(bool visible) {
   visible_ = visible;
 
   if (visible_) {
-    views::WidgetFocusManager::GetInstance(Shell::GetPrimaryRootWindow())
-        ->AddFocusChangeListener(this);
-    aura::Window* active_window = wm::GetActiveWindow();
+    views::WidgetFocusManager::GetInstance()->AddFocusChangeListener(this);
+    aura::Window* active_window = window_util::GetActiveWindow();
     if (active_window)
       SetWidget(views::Widget::GetWidgetForNativeWindow(active_window));
   } else {
-    views::WidgetFocusManager::GetInstance(Shell::GetPrimaryRootWindow())
-        ->RemoveFocusChangeListener(this);
+    views::WidgetFocusManager::GetInstance()->RemoveFocusChangeListener(this);
     SetWidget(nullptr);
   }
 }

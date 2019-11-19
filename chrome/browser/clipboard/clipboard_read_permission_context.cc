@@ -12,7 +12,7 @@
 
 ClipboardReadPermissionContext::ClipboardReadPermissionContext(Profile* profile)
     : PermissionContextBase(profile,
-                            CONTENT_SETTINGS_TYPE_CLIPBOARD_READ,
+                            ContentSettingsType::CLIPBOARD_READ,
                             blink::mojom::FeaturePolicyFeature::kNotFound) {}
 
 ClipboardReadPermissionContext::~ClipboardReadPermissionContext() {}
@@ -28,9 +28,9 @@ void ClipboardReadPermissionContext::UpdateTabContext(
     return;
 
   if (allowed) {
-    content_settings->OnContentAllowed(CONTENT_SETTINGS_TYPE_CLIPBOARD_READ);
+    content_settings->OnContentAllowed(ContentSettingsType::CLIPBOARD_READ);
   } else {
-    content_settings->OnContentBlocked(CONTENT_SETTINGS_TYPE_CLIPBOARD_READ);
+    content_settings->OnContentBlocked(ContentSettingsType::CLIPBOARD_READ);
   }
 }
 

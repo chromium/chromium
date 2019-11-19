@@ -12,24 +12,11 @@ from pylib.local.device import local_device_gtest_run
 from pylib.local.device import local_device_instrumentation_test_run
 from pylib.local.device import local_device_linker_test_run
 from pylib.local.device import local_device_monkey_test_run
-from pylib.local.device import local_device_perf_test_run
 from pylib.local.machine import local_machine_environment
 from pylib.local.machine import local_machine_junit_test_run
-from pylib.perf import perf_test_instance
 
 
-def _CreatePerfTestRun(args, env, test_instance):
-  if args.print_step:
-    return local_device_perf_test_run.PrintStep(
-        env, test_instance)
-  elif args.output_json_list:
-    return local_device_perf_test_run.OutputJsonList(
-        env, test_instance)
-  return local_device_perf_test_run.LocalDevicePerfTestRun(
-      env, test_instance)
-
-
-def CreateTestRun(args, env, test_instance, error_func):
+def CreateTestRun(env, test_instance, error_func):
   if isinstance(env, local_device_environment.LocalDeviceEnvironment):
     if isinstance(test_instance, gtest_test_instance.GtestTestInstance):
       return local_device_gtest_run.LocalDeviceGtestRun(env, test_instance)
@@ -43,9 +30,6 @@ def CreateTestRun(args, env, test_instance, error_func):
     if isinstance(test_instance, monkey_test_instance.MonkeyTestInstance):
       return (local_device_monkey_test_run
               .LocalDeviceMonkeyTestRun(env, test_instance))
-    if isinstance(test_instance,
-                  perf_test_instance.PerfTestInstance):
-      return _CreatePerfTestRun(args, env, test_instance)
 
   if isinstance(env, local_machine_environment.LocalMachineEnvironment):
     if isinstance(test_instance, junit_test_instance.JunitTestInstance):

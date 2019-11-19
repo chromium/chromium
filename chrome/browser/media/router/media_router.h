@@ -20,12 +20,18 @@
 #include "chrome/common/media_router/media_route.h"
 #include "chrome/common/media_router/media_sink.h"
 #include "chrome/common/media_router/media_source.h"
-#include "chrome/common/media_router/mojo/media_router.mojom.h"
+#include "chrome/common/media_router/mojom/media_router.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sessions/core/session_id.h"
 #include "content/public/browser/presentation_service_delegate.h"
 #include "media/base/flinging_controller.h"
 #include "third_party/blink/public/mojom/presentation/presentation.mojom.h"
+
+#if !defined(OS_ANDROID)
+#include "chrome/common/media_router/mojom/media_controller.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#endif  // !defined(OS_ANDROID)
 
 namespace content {
 class WebContents;
@@ -42,9 +48,6 @@ class MediaRoutesObserver;
 class MediaSinksObserver;
 class PresentationConnectionStateObserver;
 class RouteRequestResult;
-#if !defined(OS_ANDROID)
-class MediaRouteController;
-#endif  // !defined(OS_ANDROID)
 
 // Type of callback used in |CreateRoute()|, |JoinRoute()|, and
 // |ConnectRouteByRouteId()|. Callback is invoked when the route request either
@@ -196,10 +199,13 @@ class MediaRouter : public KeyedService {
       const MediaRoute::Id& route_id) = 0;
 
 #if !defined(OS_ANDROID)
-  // Returns a controller for sending media commands to a route. Returns a
-  // nullptr if no MediaRoute exists for the given |route_id|.
-  virtual scoped_refptr<MediaRouteController> GetRouteController(
-      const MediaRoute::Id& route_id) = 0;
+  // Binds |controller| for sending media commands to a route. The controller
+  // will notify |observer| whenever there is a change to the status of the
+  // media. It may invalidate bindings from previous calls to this method.
+  virtual void GetMediaController(
+      const MediaRoute::Id& route_id,
+      mojo::PendingReceiver<mojom::MediaController> controller,
+      mojo::PendingRemote<mojom::MediaStatusObserver> observer) = 0;
 #endif  // !defined(OS_ANDROID)
 
   // Registers/Unregisters a CastRemotingConnector with the |tab_id|. For a
@@ -220,9 +226,6 @@ class MediaRouter : public KeyedService {
   friend class MediaRoutesObserver;
   friend class PresentationConnectionStateObserver;
   friend class RouteMessageObserver;
-#if !defined(OS_ANDROID)
-  friend class MediaRouteController;
-#endif  // !defined(OS_ANDROID)
 
   // The following functions are called by friend Observer classes above.
 
@@ -267,14 +270,6 @@ class MediaRouter : public KeyedService {
   // stop receiving further updates.
   virtual void UnregisterRouteMessageObserver(
       RouteMessageObserver* observer) = 0;
-
-#if !defined(OS_ANDROID)
-  // Removes the MediaRouteController for |route_id| from the list of
-  // controllers held by |this|. Called by MediaRouteController when it is
-  // invalidated.
-  virtual void DetachRouteController(const MediaRoute::Id& route_id,
-                                     MediaRouteController* controller) = 0;
-#endif  // !defined(OS_ANDROID)
 };
 
 }  // namespace media_router

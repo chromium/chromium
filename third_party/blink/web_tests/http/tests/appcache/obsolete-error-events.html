@@ -1,8 +1,12 @@
+<!DOCTYPE HTML>
 <html manifest="resources/fail-on-update.php">
-<script src="/js-test-resources/js-test.js"></script>
+<head>
+<title>obsolete-error-events.html</title>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
 <script>
-var jsTestIsAsync = true;
-description("Test that master list entries receive errors when manifest becomes obsolete.");
+setup({ single_test: true });
+// Test that master list entries receive errors when manifest becomes obsolete.
 
 function setManifestState(state, callback)
 {
@@ -29,20 +33,20 @@ function checkEvents() {
     if (!eventDetailsFromFrame || !eventDetailsFromWindow)
         return;
 
-    shouldBeEqualToString("eventDetailsFromWindow.type", "obsolete");
+    assert_equals(eventDetailsFromWindow.type, "obsolete");
 
-    shouldBeEqualToString("eventDetailsFromFrame.type", "error");
-    shouldBeEqualToString("eventDetailsFromFrame.reason", "manifest");
-    shouldBeEqualToString("eventDetailsFromFrame.url", "");
-    shouldBe("eventDetailsFromFrame.status", "404");
+    assert_equals(eventDetailsFromFrame.type, "error");
+    assert_equals(eventDetailsFromFrame.reason, "manifest");
+    assert_equals(eventDetailsFromFrame.url, "");
+    assert_equals(eventDetailsFromFrame.status, 404);
 
-    finishJSTest();
+    done();
 }
 
 function test()
 {
-    applicationCache.onnoupdate = function() { testFailed("Unexpected noupdate event") }
-    applicationCache.oncached = function() { testFailed("Unexpected cached event") }
+    applicationCache.onnoupdate = function() { assert_true(false, "Unexpected noupdate event") }
+    applicationCache.oncached = function() { assert_true(false, "Unexpected cached event") }
 
     setManifestState('delete', () => {
         // The frame will be associated to a cache, but update will obsolete it.
@@ -75,7 +79,6 @@ applicationCache.onnoupdate = applicationCache.oncached = function() {
 // If the manifest script happened to be in a wrong state, reset it.
 var timeoutId = setTimeout(resetManifest, 100);
 
-setTimeout(finishJSTest, 2000);
+setTimeout(done, 2000);
 </script>
-</body>
 </html>

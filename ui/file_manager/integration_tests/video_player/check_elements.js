@@ -16,7 +16,8 @@ testcase.checkInitialElements = function() {
     return Promise.all([
       remoteCallVideoPlayer.waitForElement(appId, 'html[i18n-processed]'),
       remoteCallVideoPlayer.waitForElement(appId, 'div#video-player'),
-      remoteCallVideoPlayer.waitForElement(appId, '#video-container > video'),
+      remoteCallVideoPlayer.waitForElement(
+          appId, '#video-container > video[autopictureinpicture]'),
     ]);
   });
 };

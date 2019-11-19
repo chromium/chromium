@@ -21,7 +21,7 @@ class MODULES_EXPORT MediaControlToggleClosedCaptionsButtonElement final
   // MediaControlInputElement overrides.
   bool WillRespondToMouseClickEvents() override;
   void UpdateDisplayType() override;
-  WebLocalizedString::Name GetOverflowStringName() const override;
+  int GetOverflowStringId() const override;
   bool HasOverflowButton() const override;
   String GetOverflowMenuSubtitleString() const override;
 

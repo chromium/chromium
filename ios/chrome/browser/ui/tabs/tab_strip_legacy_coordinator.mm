@@ -88,6 +88,7 @@
 
 - (void)stop {
   self.started = NO;
+  [self.tabStripController disconnect];
   self.tabStripController = nil;
   self.dispatcher = nil;
   self.tabModel = nil;

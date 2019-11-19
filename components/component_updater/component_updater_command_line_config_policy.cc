@@ -78,16 +78,15 @@ ComponentUpdaterCommandLineConfigPolicy::
 
 #if defined(OS_WIN)
   background_downloads_enabled_ =
-      !base::ContainsValue(switch_values, kSwitchDisableBackgroundDownloads);
+      !base::Contains(switch_values, kSwitchDisableBackgroundDownloads);
 #else
   background_downloads_enabled_ = false;
 #endif
 
-  deltas_enabled_ =
-      !base::ContainsValue(switch_values, kSwitchDisableDeltaUpdates);
-  fast_update_ = base::ContainsValue(switch_values, kSwitchFastUpdate);
-  pings_enabled_ = !base::ContainsValue(switch_values, kSwitchDisablePings);
-  test_request_ = base::ContainsValue(switch_values, kSwitchTestRequestParam);
+  deltas_enabled_ = !base::Contains(switch_values, kSwitchDisableDeltaUpdates);
+  fast_update_ = base::Contains(switch_values, kSwitchFastUpdate);
+  pings_enabled_ = !base::Contains(switch_values, kSwitchDisablePings);
+  test_request_ = base::Contains(switch_values, kSwitchTestRequestParam);
 
   const std::string switch_url_source =
       GetSwitchArgument(switch_values, kSwitchUrlSource);

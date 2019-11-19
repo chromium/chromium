@@ -1,0 +1,70 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+//
+// Next MinVersion: 4
+
+module arc.mojom;
+
+import "components/arc/mojom/gfx.mojom";
+import "mojo/public/mojom/base/string16.mojom";
+
+// Represents view structure to be passed to ARC. The view
+// structure is synthesized from the AXStructure, which
+// is a simplified representation of the DOM tree. We
+// map each node of the AXStructure into a view element.
+// The naming convention of the fields kept consistent with
+// AccessibilitySnapshotNode.java used in Android Chromium.
+struct VoiceInteractionStructure {
+  // Geometry of the view in pixels
+  Rect rect;
+
+  // Text of the view.
+  mojo_base.mojom.String16 text;
+
+  // Text properties
+  float text_size;
+  int32 color;
+  int32 bgcolor;
+  bool bold;
+  bool italic;
+  bool underline;
+  bool line_through;
+
+  // Selected portion of the text.
+  Range? selection;
+
+  // Fake Android view class name of the element.  Each node is assigned
+  // a closest approximation of Android's views.
+  string class_name;
+
+  // Children of current node
+  array<VoiceInteractionStructure> children;
+
+  // Accessibility functionality of the node inferred from DOM or based on HTML
+  // role attribute.
+  [MinVersion=2] string? role;
+};
+
+// Handles voice interaction queries from Android.
+// Next method ID: 3
+interface VoiceInteractionArcHomeHost {
+  // Returns view hierarchy of current window represented as
+  // VoiceInteractionStructure. Returns empty if the request
+  // fails.
+  GetVoiceInteractionStructure@1() => (VoiceInteractionStructure? structure);
+
+  // Notifies VoiceInteractionArcHomeHost that voice interaction OOBE setup
+  // is done.
+  [MinVersion=1] OnVoiceInteractionOobeSetupComplete@2();
+};
+
+// Connects with ArcHome.
+// Next method ID: 2
+interface VoiceInteractionArcHomeInstance {
+  // DEPRECATED: Please use Init@1 instead.
+  InitDeprecated@0(VoiceInteractionArcHomeHost host_ptr);
+
+  // Establishes full-duplex communication with the host.
+  [MinVersion=3] Init@1(VoiceInteractionArcHomeHost host_ptr) => ();
+};

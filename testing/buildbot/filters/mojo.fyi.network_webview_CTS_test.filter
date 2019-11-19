@@ -3,24 +3,11 @@
 # Note: webview aims to support running network service in-process, so the
 # tests are also running with NS IP. Multiprocess webview currently does not
 # support running NS OOP, https://crbug.com/882650
-
-# Test that fail normally. See the link below for all tracking bugs:
-# https://chromium.googlesource.com/chromium/src/+/master/android_webview/tools/cts_config/expected_failure_on_bot.json
--android.webkit.cts.ServiceWorkerClientTest.testServiceWorkerClientInterceptCallback
--android.webkit.cts.WebChromeClientTest.testOnJsBeforeUnloadIsCalled
--android.webkit.cts.WebSettingsTest.testAllowMixedMode
--android.webkit.cts.WebSettingsTest.testLocalImageLoads
--android.webkit.cts.WebViewTest.testJavascriptInterfaceCustomPropertiesClearedOnReload
--android.webkit.cts.WebViewTest.testJavascriptInterfaceForClientPopup
--android.webkit.cts.WebViewTest.testLoadDataWithBaseUrl
--android.webkit.cts.WebViewTest.testPageScroll
--android.webkit.cts.WebViewTest.testRequestImageRef
+#
+# Note: the CTS test runner (run_cts.py) will implicitly skip "expected
+# failures" (tests which are flaky or failing for the non-Network Service path
+# too). These tests are listed in
+# android_webview/tools/cts_config/webview_cts_gcs_path.json &
+# android_webview/tools/cts_config/expected_failure_on_bot.json.
 
 # Tests that fail with NetworkService feature enabled. https://crbug.com/923938
--android.webkit.cts.CookieManagerTest.testAcceptCookie
--android.webkit.cts.CookieManagerTest.testThirdPartyCookie
--android.webkit.cts.WebChromeClientTest.testOnJsBeforeUnloadIsCalled
--android.webkit.cts.WebViewClientTest.testOnReceivedError
--android.webkit.cts.WebViewClientTest.testShouldOverrideUrlLoading
--com.android.cts.webkit.WebViewDeviceSideStartupTest.testCookieManagerBlockingUiThread
-

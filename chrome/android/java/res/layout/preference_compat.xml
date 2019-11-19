@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/Theme.Chromium.PreferenceLayoutCompat"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:clipToPadding="false"
+    android:focusable="true"
+    android:baselineAligned="false">
+
+    <!-- The following icon_frame attributes are copied from this previously used framework layout:
+         https://cs.chromium.org/chromium/src/third_party/android_tools/sdk/platforms/android-28/data/res/layout/preference_material.xml
+         TODO(https://crbug.com/971791): Once migration to the support library preferences is done,
+         we should consider removing these attributes in favor of the support library's default
+         material style. -->
+    <LinearLayout
+        android:id="@+id/icon_frame"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="-4dp"
+        android:minWidth="60dp"
+        android:gravity="start|center_vertical"
+        android:orientation="horizontal"
+        android:paddingEnd="12dp"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp">
+        <!-- Users of this layout are responsible for setting contentDescription. -->
+        <ImageView
+            android:id="@android:id/icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxWidth="48dp"
+            android:maxHeight="48dp"
+            tools:ignore="ContentDescription" />
+    </LinearLayout>
+
+    <RelativeLayout
+        style="@style/Theme.Chromium.PreferenceDescriptionCompat"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1">
+
+        <TextView android:id="@android:id/title"
+            style="@style/PreferenceTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView android:id="@android:id/summary"
+            style="@style/PreferenceSummary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@android:id/title"
+            android:layout_alignStart="@android:id/title" />
+
+    </RelativeLayout>
+
+    <LinearLayout android:id="@android:id/widget_frame"
+        style="@style/Theme.Chromium.PreferenceWidgetCompat"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical" />
+
+</LinearLayout>

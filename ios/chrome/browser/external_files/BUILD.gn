@@ -1,0 +1,27 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("external_files") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "external_file_remover.h",
+    "external_file_remover_factory.h",
+    "external_file_remover_factory.mm",
+    "external_file_remover_impl.h",
+    "external_file_remover_impl.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/bookmarks/browser",
+    "//components/keyed_service/core",
+    "//components/keyed_service/ios",
+    "//components/sessions",
+    "//ios/chrome/browser",
+    "//ios/chrome/browser/bookmarks",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/sessions",
+    "//ios/chrome/browser/tabs",
+    "//ios/chrome/browser/web_state_list",
+  ]
+}

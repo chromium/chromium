@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "third_party/blink/renderer/platform/network/parsed_content_header_field_parameters.h"
 #include "third_party/blink/renderer/platform/network/header_field_tokenizer.h"
 #include "third_party/blink/renderer/platform/network/parsed_content_disposition.h"
-#include "third_party/blink/renderer/platform/network/parsed_content_header_field_parameters.h"
 #include "third_party/blink/renderer/platform/network/parsed_content_type.h"
+#include "third_party/blink/renderer/platform/wtf/text/case_map.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -95,7 +96,7 @@ TEST(ParsedContentHeaderFieldParametersTest, ParameterName) {
   EXPECT_EQ("S", t->ParameterValueForName("T"));
 
   String kelvin = String::FromUTF8("\xe2\x84\xaa");
-  DCHECK_EQ(kelvin.LowerUnicode(AtomicString()), "k");
+  DCHECK_EQ(CaseMap(AtomicString()).ToLower(kelvin), "k");
   EXPECT_EQ(String(), t->ParameterValueForName(kelvin));
 }
 

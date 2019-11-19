@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_item.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_shaper.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/run_segmenter.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_buffer.h"
 
 namespace blink {
@@ -231,22 +232,19 @@ void NGInlineItemSegments::ComputeItemIndex(const Vector<NGInlineItem>& items) {
 }
 
 scoped_refptr<ShapeResult> NGInlineItemSegments::ShapeText(
-    HarfBuzzShaper* shaper,
+    const HarfBuzzShaper* shaper,
     const Font* font,
     TextDirection direction,
     unsigned start_offset,
     unsigned end_offset,
     unsigned item_index) const {
-  scoped_refptr<ShapeResult> shape_result;
+  Vector<RunSegmenter::RunSegmenterRange> ranges;
   for (const RunSegmenter::RunSegmenterRange& range :
        Ranges(start_offset, end_offset, item_index)) {
-    scoped_refptr<ShapeResult> segment_shape_result =
-        shaper->Shape(font, direction, range.start, range.end, &range);
-    if (!shape_result)
-      shape_result = std::move(segment_shape_result);
-    else
-      segment_shape_result->CopyRange(0, end_offset, shape_result.get());
+    ranges.push_back(range);
   }
+  scoped_refptr<ShapeResult> shape_result =
+      shaper->Shape(font, direction, start_offset, end_offset, ranges);
   DCHECK(shape_result);
   DCHECK_EQ(shape_result->StartIndex(), start_offset);
   DCHECK_EQ(shape_result->EndIndex(), end_offset);

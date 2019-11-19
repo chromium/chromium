@@ -1,7 +1,6 @@
 <!DOCTYPE HTML>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 
 <div class="container">
   <input
@@ -14,7 +13,7 @@
 </div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
   var axCheckbox = accessibilityController.accessibleElementById("chk1");
   assert_equals(axCheckbox.name, "nacho cheese");
 });

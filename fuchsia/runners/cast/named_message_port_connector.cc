@@ -6,120 +6,111 @@
 
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/macros.h"
 #include "base/path_service.h"
-#include "base/threading/thread_restrictions.h"
+#include "base/strings/string_piece.h"
+#include "base/strings/string_split.h"
 #include "fuchsia/base/mem_buffer_util.h"
-#include "fuchsia/fidl/chromium/web/cpp/fidl.h"
+#include "fuchsia/runners/cast/cast_platform_bindings_ids.h"
 
 namespace {
 
-const char kBindingsJsPath[] =
-    FILE_PATH_LITERAL("fuchsia/runners/cast/named_message_port_connector.js");
-const char kConnectedMessage[] = "connected";
+const char kBindingsJsPath[] = FILE_PATH_LITERAL(
+    "chromecast/bindings/resources/named_message_port_connector.js");
+const char kControlPortConnectMessage[] = "cast.master.connect";
 
 }  // namespace
 
-NamedMessagePortConnector::NamedMessagePortConnector() {
+NamedMessagePortConnector::NamedMessagePortConnector(fuchsia::web::Frame* frame)
+    : frame_(frame) {
+  DCHECK(frame_);
+
+  // Inject the script providing the connection API into the Frame.
   base::FilePath assets_path;
-  CHECK(base::PathService::Get(base::DIR_ASSETS, &assets_path));
-  bindings_script_ = cr_fuchsia::MemBufferFromFile(
+  bool path_service_result =
+      base::PathService::Get(base::DIR_ASSETS, &assets_path);
+  DCHECK(path_service_result);
+  fuchsia::mem::Buffer bindings_script_ = cr_fuchsia::MemBufferFromFile(
       base::File(assets_path.AppendASCII(kBindingsJsPath),
                  base::File::FLAG_OPEN | base::File::FLAG_READ));
-}
-
-NamedMessagePortConnector::~NamedMessagePortConnector() = default;
-
-void NamedMessagePortConnector::Register(const std::string& id,
-                                         PortConnectedCallback handler,
-                                         chromium::web::Frame* frame) {
-  DCHECK(handler);
-  DCHECK(!id.empty() && id.find(' ') == std::string::npos);
-
-  if (registrations_.find(frame) == registrations_.end())
-    InjectBindings(frame);
-
-  RegistrationEntry entry;
-  entry.id = id;
-  entry.handler = std::move(handler);
-  registrations_.insert(std::make_pair(std::move(frame), std::move(entry)));
-}
-
-void NamedMessagePortConnector::Unregister(chromium::web::Frame* frame,
-                                           const std::string& id) {
-  auto port_range = registrations_.equal_range(frame);
-  auto it = port_range.first;
-  while (it != port_range.second) {
-    if (it->second.id == id) {
-      it = registrations_.erase(it);
-      continue;
-    }
-    it++;
-  }
-}
-
-void NamedMessagePortConnector::NotifyPageLoad(chromium::web::Frame* frame) {
-  auto registration_range = registrations_.equal_range(frame);
-
-  // Push all bound MessagePorts to the page after every page load.
-  for (auto it = registration_range.first; it != registration_range.second;
-       ++it) {
-    const RegistrationEntry& registration = it->second;
-
-    chromium::web::WebMessage message;
-    message.data =
-        cr_fuchsia::MemBufferFromString("connect " + registration.id);
-
-    // Call the handler callback, with the MessagePort client object.
-    message.outgoing_transfer =
-        std::make_unique<chromium::web::OutgoingTransferable>();
-    chromium::web::MessagePortPtr message_port;
-    message.outgoing_transfer->set_message_port(message_port.NewRequest());
-
-    // Send the port to the handler once a "connected" message is received from
-    // the peer, so that the caller has a stronger guarantee that the content is
-    // healthy and capable of processing messages.
-    message_port->ReceiveMessage(
-        [message_port = std::move(message_port),
-         handler =
-             registration.handler](chromium::web::WebMessage message) mutable {
-          std::string message_str;
-          if (!cr_fuchsia::StringFromMemBuffer(message.data, &message_str)) {
-            LOG(ERROR) << "Couldn't read from message VMO.";
-            return;
-          }
-
-          if (message_str != kConnectedMessage) {
-            LOG(ERROR) << "Unexpected message from port: " << message_str;
-            return;
-          }
-
-          handler.Run(std::move(message_port));
-        });
-
-    // Pass the other half of the MessagePort connection to the document.
-    it->first->PostMessage(std::move(message), "*",
-                           [](bool result) { CHECK(result); });
-  }
-}
-
-void NamedMessagePortConnector::InjectBindings(chromium::web::Frame* frame) {
-  DCHECK(frame);
 
   std::vector<std::string> origins = {"*"};
-  frame->ExecuteJavaScript(
-      std::move(origins), cr_fuchsia::CloneBuffer(bindings_script_),
-      chromium::web::ExecuteMode::ON_PAGE_LOAD,
-      [](bool success) { CHECK(success) << "Couldn't inject bindings."; });
+  frame_->AddBeforeLoadJavaScript(
+      static_cast<uint64_t>(
+          CastPlatformBindingsId::NAMED_MESSAGE_PORT_CONNECTOR),
+      std::move(origins),
+      cr_fuchsia::CloneBuffer(bindings_script_, "cast-bindings-js"),
+      [](fuchsia::web::Frame_AddBeforeLoadJavaScript_Result result) {
+        CHECK(result.is_response()) << "Couldn't inject bindings.";
+      });
 }
 
-NamedMessagePortConnector::RegistrationEntry::RegistrationEntry() = default;
+NamedMessagePortConnector::~NamedMessagePortConnector() {
+  frame_->RemoveBeforeLoadJavaScript(static_cast<uint64_t>(
+      CastPlatformBindingsId::NAMED_MESSAGE_PORT_CONNECTOR));
+}
 
-NamedMessagePortConnector::RegistrationEntry::~RegistrationEntry() = default;
+void NamedMessagePortConnector::Register(DefaultPortConnectedCallback handler) {
+  default_handler_ = std::move(handler);
+}
 
-NamedMessagePortConnector::RegistrationEntry::RegistrationEntry(
-    const RegistrationEntry& other) = default;
+void NamedMessagePortConnector::OnPageLoad() {
+  control_port_.Unbind();
+
+  fuchsia::web::WebMessage message;
+  message.set_data(cr_fuchsia::MemBufferFromString(kControlPortConnectMessage,
+                                                   "cast-connect-message"));
+  std::vector<fuchsia::web::OutgoingTransferable> outgoing_vector(1);
+  outgoing_vector[0].set_message_port(control_port_.NewRequest());
+  message.set_outgoing_transfer(std::move(outgoing_vector));
+
+  frame_->PostMessage("*", std::move(message),
+                      [](fuchsia::web::Frame_PostMessage_Result result) {
+                        DCHECK(result.is_response());
+                      });
+
+  ReceiveNextConnectRequest();
+}
+
+void NamedMessagePortConnector::ReceiveNextConnectRequest() {
+  DCHECK(control_port_);
+
+  control_port_->ReceiveMessage(
+      fit::bind_member(this, &NamedMessagePortConnector::OnConnectRequest));
+}
+
+void NamedMessagePortConnector::OnConnectRequest(
+    fuchsia::web::WebMessage message) {
+  std::string port_name;
+  if (!message.has_data() ||
+      !cr_fuchsia::StringFromMemBuffer(message.data(), &port_name)) {
+    LOG(ERROR) << "Couldn't read from message VMO.";
+    control_port_.Unbind();
+    return;
+  }
+
+  if (message.incoming_transfer().size() != 1) {
+    LOG(ERROR) << "Expected one Transferable, got "
+               << message.incoming_transfer().size() << " instead.";
+    control_port_.Unbind();
+    return;
+  }
+
+  fuchsia::web::IncomingTransferable& transferable =
+      (*message.mutable_incoming_transfer())[0];
+  if (!transferable.is_message_port()) {
+    LOG(ERROR) << "Transferable is not a MessagePort.";
+    control_port_.Unbind();
+    return;
+  }
+
+  DCHECK(default_handler_);
+  default_handler_.Run(port_name, std::move(transferable.message_port()));
+
+  ReceiveNextConnectRequest();
+}

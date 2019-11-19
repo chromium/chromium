@@ -2,11 +2,11 @@ This is a testharness.js-based test.
 PASS Can set 'scroll-snap-type' to CSS-wide keywords
 PASS Can set 'scroll-snap-type' to var() references
 PASS Can set 'scroll-snap-type' to the 'none' keyword
-FAIL Can set 'scroll-snap-type' to the 'x' keyword assert_equals: expected "CSSKeywordValue" but got "CSSStyleValue"
-FAIL Can set 'scroll-snap-type' to the 'y' keyword assert_equals: expected "CSSKeywordValue" but got "CSSStyleValue"
-FAIL Can set 'scroll-snap-type' to the 'block' keyword assert_equals: expected "CSSKeywordValue" but got "CSSStyleValue"
-FAIL Can set 'scroll-snap-type' to the 'inline' keyword assert_equals: expected "CSSKeywordValue" but got "CSSStyleValue"
-FAIL Can set 'scroll-snap-type' to the 'both' keyword assert_equals: expected "CSSKeywordValue" but got "CSSStyleValue"
+PASS Can set 'scroll-snap-type' to the 'x' keyword
+PASS Can set 'scroll-snap-type' to the 'y' keyword
+PASS Can set 'scroll-snap-type' to the 'block' keyword
+PASS Can set 'scroll-snap-type' to the 'inline' keyword
+PASS Can set 'scroll-snap-type' to the 'both' keyword
 PASS Setting 'scroll-snap-type' to a length throws TypeError
 PASS Setting 'scroll-snap-type' to a percent throws TypeError
 PASS Setting 'scroll-snap-type' to a time throws TypeError
@@ -17,6 +17,6 @@ PASS Setting 'scroll-snap-type' to a position throws TypeError
 PASS Setting 'scroll-snap-type' to a URL throws TypeError
 PASS Setting 'scroll-snap-type' to a transform throws TypeError
 PASS 'scroll-snap-type' does not supported 'x mandatory'
-PASS 'scroll-snap-type' does not supported 'inline proximity'
+FAIL 'scroll-snap-type' does not supported 'inline proximity' assert_class_string: Unsupported value must be a CSSStyleValue and not one of its subclasses expected "[object CSSStyleValue]" but got "[object CSSKeywordValue]"
 Harness: the test ran to completion.
 

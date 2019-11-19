@@ -12,16 +12,16 @@
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/notification_service.h"
-#include "extensions/browser/extension_registry.h"
+#include "content/public/common/resource_type.h"
+#include "extensions/browser/extension_system.h"
+#include "extensions/browser/shared_user_script_master.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handlers/content_scripts_handler.h"
 #include "extensions/common/url_pattern.h"
 
-using content::BrowserThread;
 using content::NavigationThrottle;
 using content::ResourceType;
 
@@ -77,9 +77,7 @@ struct UserScriptListener::ProfileData {
   URLPatterns url_patterns;
 };
 
-UserScriptListener::UserScriptListener() : extension_registry_observer_(this) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
+UserScriptListener::UserScriptListener() {
   // Profile manager can be null in unit tests.
   if (g_browser_process->profile_manager()) {
     for (auto* profile :
@@ -89,12 +87,6 @@ UserScriptListener::UserScriptListener() : extension_registry_observer_(this) {
   }
 
   registrar_.Add(this, chrome::NOTIFICATION_PROFILE_ADDED,
-                 content::NotificationService::AllSources());
-
-  registrar_.Add(this, chrome::NOTIFICATION_PROFILE_DESTROYED,
-                 content::NotificationService::AllSources());
-  registrar_.Add(this,
-                 extensions::NOTIFICATION_USER_SCRIPTS_UPDATED,
                  content::NotificationService::AllSources());
 }
 
@@ -115,10 +107,14 @@ void UserScriptListener::SetUserScriptsNotReadyForTesting(
                                             URLPattern::kAllUrlsPattern)});
 }
 
+void UserScriptListener::TriggerUserScriptsReadyForTesting(
+    content::BrowserContext* context) {
+  UserScriptsReady(context);
+}
+
 UserScriptListener::~UserScriptListener() {}
 
 bool UserScriptListener::ShouldDelayRequest(const GURL& url) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // Note: we could delay only requests made by the profile who is causing the
   // delay, but it's a little more complicated to associate requests with the
   // right profile. Since this is a rare case, we'll just take the easy way
@@ -142,8 +138,6 @@ bool UserScriptListener::ShouldDelayRequest(const GURL& url) {
 }
 
 void UserScriptListener::StartDelayedRequests() {
-  UMA_HISTOGRAM_COUNTS_100("Extensions.ThrottledNetworkRequests",
-                           throttles_.size());
   WeakThrottleList::const_iterator it;
   for (it = throttles_.begin(); it != throttles_.end(); ++it) {
     if (it->get())
@@ -153,7 +147,6 @@ void UserScriptListener::StartDelayedRequests() {
 }
 
 void UserScriptListener::CheckIfAllUserScriptsReady() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   bool was_ready = user_scripts_ready_;
 
   user_scripts_ready_ = true;
@@ -168,23 +161,15 @@ void UserScriptListener::CheckIfAllUserScriptsReady() {
 }
 
 void UserScriptListener::UserScriptsReady(content::BrowserContext* context) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK(!context->IsOffTheRecord());
 
   profile_data_[context].user_scripts_ready = true;
   CheckIfAllUserScriptsReady();
 }
 
-void UserScriptListener::ProfileDestroyed(content::BrowserContext* context) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  profile_data_.erase(context);
-
-  // We may have deleted the only profile we were waiting on.
-  CheckIfAllUserScriptsReady();
-}
-
 void UserScriptListener::AppendNewURLPatterns(content::BrowserContext* context,
                                               const URLPatterns& new_patterns) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK(!context->IsOffTheRecord());
 
   user_scripts_ready_ = false;
 
@@ -197,16 +182,12 @@ void UserScriptListener::AppendNewURLPatterns(content::BrowserContext* context,
 
 void UserScriptListener::ReplaceURLPatterns(content::BrowserContext* context,
                                             const URLPatterns& patterns) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  ProfileData& data = profile_data_[context];
-  data.url_patterns = patterns;
+  DCHECK_EQ(1U, profile_data_.count(context));
+  profile_data_[context].url_patterns = patterns;
 }
 
 void UserScriptListener::CollectURLPatterns(const Extension* extension,
                                             URLPatterns* patterns) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
   for (const std::unique_ptr<UserScript>& script :
        ContentScriptsInfo::GetContentScripts(extension)) {
     patterns->insert(patterns->end(), script->url_patterns().begin(),
@@ -217,24 +198,21 @@ void UserScriptListener::CollectURLPatterns(const Extension* extension,
 void UserScriptListener::Observe(int type,
                                  const content::NotificationSource& source,
                                  const content::NotificationDetails& details) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
   switch (type) {
     case chrome::NOTIFICATION_PROFILE_ADDED: {
-      auto* registry =
-          ExtensionRegistry::Get(content::Source<Profile>(source).ptr());
+      Profile* profile = content::Source<Profile>(source).ptr();
+      auto* registry = ExtensionRegistry::Get(profile);
       DCHECK(!extension_registry_observer_.IsObserving(registry));
       extension_registry_observer_.Add(registry);
-      break;
-    }
-    case chrome::NOTIFICATION_PROFILE_DESTROYED: {
-      Profile* profile = content::Source<Profile>(source).ptr();
-      ProfileDestroyed(profile);
-      break;
-    }
-    case extensions::NOTIFICATION_USER_SCRIPTS_UPDATED: {
-      Profile* profile = content::Source<Profile>(source).ptr();
-      UserScriptsReady(profile);
+
+      SharedUserScriptMaster* user_script_master =
+          ExtensionSystem::Get(profile)->shared_user_script_master();
+      // Note: |user_script_master| can be null in some tests.
+      if (user_script_master) {
+        UserScriptLoader* loader = user_script_master->script_loader();
+        DCHECK(!user_script_loader_observer_.IsObserving(loader));
+        user_script_loader_observer_.Add(loader);
+      }
       break;
     }
     default:
@@ -276,6 +254,16 @@ void UserScriptListener::OnExtensionUnloaded(
 
 void UserScriptListener::OnShutdown(ExtensionRegistry* registry) {
   extension_registry_observer_.Remove(registry);
+}
+
+void UserScriptListener::OnScriptsLoaded(
+    UserScriptLoader* loader,
+    content::BrowserContext* browser_context) {
+  UserScriptsReady(browser_context);
+}
+
+void UserScriptListener::OnUserScriptLoaderDestroyed(UserScriptLoader* loader) {
+  user_script_loader_observer_.Remove(loader);
 }
 
 }  // namespace extensions

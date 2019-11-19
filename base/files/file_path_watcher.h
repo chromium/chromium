@@ -35,7 +35,8 @@ class BASE_EXPORT FilePathWatcher {
   // Callback type for Watch(). |path| points to the file that was updated,
   // and |error| is true if the platform specific code detected an error. In
   // that case, the callback won't be invoked again.
-  typedef base::Callback<void(const FilePath& path, bool error)> Callback;
+  using Callback =
+      base::RepeatingCallback<void(const FilePath& path, bool error)>;
 
   // Used internally to encapsulate different members on different platforms.
   class PlatformDelegate {

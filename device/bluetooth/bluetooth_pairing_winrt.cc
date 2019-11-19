@@ -62,8 +62,7 @@ BluetoothPairingWinrt::BluetoothPairingWinrt(
       pairing_delegate_(pairing_delegate),
       custom_pairing_(std::move(custom_pairing)),
       callback_(std::move(callback)),
-      error_callback_(std::move(error_callback)),
-      weak_ptr_factory_(this) {
+      error_callback_(std::move(error_callback)) {
   DCHECK(device_);
   DCHECK(pairing_delegate_);
   DCHECK(custom_pairing_);

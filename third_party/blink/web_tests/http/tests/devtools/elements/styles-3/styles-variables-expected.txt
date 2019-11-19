@@ -9,7 +9,7 @@ display: block;
 element.style { ()
 
 [expanded] 
-#id1 { (<style>…</style>)
+#id1 { (<style>)
     --b: 44px;
 
 [expanded] 
@@ -18,7 +18,7 @@ div { (user agent stylesheet)
 
 ======== Inherited from body ========
 [expanded] 
-body { (<style>…</style>)
+body { (<style>)
     --a: red;
 
 ======== Inherited from html ========
@@ -36,7 +36,7 @@ display: block;
 element.style { ()
 
 [expanded] 
-#id2 { (<style>…</style>)
+#id2 { (<style>)
     --a: green;
 
 [expanded] 
@@ -45,12 +45,12 @@ div { (user agent stylesheet)
 
 ======== Inherited from div#id1 ========
 [expanded] 
-#id1 { (<style>…</style>)
+#id1 { (<style>)
     --b: 44px;
 
 ======== Inherited from body ========
 [expanded] 
-body { (<style>…</style>)
+body { (<style>)
 /-- overloaded --/     --a: red;
 
 ======== Inherited from html ========
@@ -68,7 +68,7 @@ display: block;
 element.style { ()
 
 [expanded] 
-#id3 { (<style>…</style>)
+#id3 { (<style>)
     --a: inherit;
 
 [expanded] 
@@ -77,17 +77,17 @@ div { (user agent stylesheet)
 
 ======== Inherited from div#id2 ========
 [expanded] 
-#id2 { (<style>…</style>)
+#id2 { (<style>)
 /-- overloaded --/     --a: green;
 
 ======== Inherited from div#id1 ========
 [expanded] 
-#id1 { (<style>…</style>)
+#id1 { (<style>)
     --b: 44px;
 
 ======== Inherited from body ========
 [expanded] 
-body { (<style>…</style>)
+body { (<style>)
 /-- overloaded --/     --a: red;
 
 ======== Inherited from html ========
@@ -105,7 +105,7 @@ display: block;
 element.style { ()
 
 [expanded] 
-#id4 { (<style>…</style>)
+#id4 { (<style>)
     --a: var(--z);
 
 [expanded] 
@@ -114,7 +114,7 @@ div { (user agent stylesheet)
 
 ======== Inherited from body ========
 [expanded] 
-body { (<style>…</style>)
+body { (<style>)
 /-- overloaded --/     --a: red;
 
 ======== Inherited from html ========

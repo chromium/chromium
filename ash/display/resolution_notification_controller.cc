@@ -8,7 +8,7 @@
 
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/resources/vector_icons/vector_icons.h"
-#include "ash/session/session_controller.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/screen_layout_observer.h"
@@ -100,8 +100,7 @@ ResolutionNotificationController::ResolutionChangeInfo::ResolutionChangeInfo(
 ResolutionNotificationController::ResolutionChangeInfo::
     ~ResolutionChangeInfo() = default;
 
-ResolutionNotificationController::ResolutionNotificationController()
-    : weak_factory_(this) {
+ResolutionNotificationController::ResolutionNotificationController() {
   Shell::Get()->window_tree_host_manager()->AddObserver(this);
   display::Screen::GetScreen()->AddObserver(this);
 }
@@ -115,14 +114,16 @@ bool ResolutionNotificationController::PrepareNotificationAndSetDisplayMode(
     int64_t display_id,
     const display::ManagedDisplayMode& old_resolution,
     const display::ManagedDisplayMode& new_resolution,
+    ash::mojom::DisplayConfigSource source,
     base::OnceClosure accept_callback) {
   Shell::Get()->screen_layout_observer()->SetDisplayChangedFromSettingsUI(
       display_id);
   display::DisplayManager* const display_manager =
       Shell::Get()->display_manager();
-  if (display::Display::IsInternalDisplayId(display_id)) {
+  if (source == ash::mojom::DisplayConfigSource::kPolicy ||
+      display::Display::IsInternalDisplayId(display_id)) {
     // We don't show notifications to confirm/revert the resolution change in
-    // the case of an internal display.
+    // the case of an internal display or policy-forced changes.
     return display_manager->SetDisplayMode(display_id, new_resolution);
   }
 

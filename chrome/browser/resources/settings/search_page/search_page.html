@@ -1,11 +1,11 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
+<link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
 <link rel="import" href="chrome://resources/cr_elements/policy/cr_policy_pref_indicator.html">
+<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
 <link rel="import" href="chrome://resources/html/assert.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
-<link rel="import" href="chrome://resources/html/md_select_css.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-button/paper-button.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-icon-button/paper-icon-button-light.html">
+<link rel="import" href="chrome://resources/cr_elements/md_select_css.html">
 <link rel="import" href="../controls/extension_controlled_indicator.html">
 <link rel="import" href="../controls/settings_toggle_button.html">
 <link rel="import" href="../icons.html">
@@ -37,7 +37,7 @@
       }
 
       .indented {
-        margin-inline-start: var(--settings-indent-width);
+        margin-inline-start: var(--cr-section-indent-width);
       }
     </style>
     <settings-animated-pages id="pages" section="search"
@@ -46,7 +46,7 @@
         <!-- Omnibox search engine -->
         <div class="settings-box first block">
           <div id="search-wrapper">
-            <div id="searchExplanation" class="start">
+            <div id="searchExplanation" class="start settings-box-text">
               $i18nRaw{searchExplanation}
             </div>
             <template is="dom-if" if="[[isDefaultSearchControlledByPolicy_(
@@ -79,43 +79,29 @@
         </div>
 
         <!-- Manage search engines -->
-        <cr-link-row class="hr" id="engines-subpage-trigger"
+        <cr-link-row class="hr" id="enginesSubpageTrigger"
             label="$i18n{searchEnginesManage}"
-            on-click="onManageSearchEnginesTap_"></cr-link-row>
+            on-click="onManageSearchEnginesTap_"
+            role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
 
 <if expr="chromeos">
         <!-- Google Assistant -->
-        <template is="dom-if" if="[[voiceInteractionFeatureEnabled_]]">
-          <div id="assistant-subpage-trigger" class="settings-box two-line"
-            on-click="onGoogleAssistantTap_" actionable>
-            <div class="start">
-              $i18n{searchGoogleAssistant}
-              <div class="secondary">
-                [[getAssistantEnabledDisabledLabel_(
-                    prefs.settings.voice_interaction.enabled.value)]]
-              </div>
-            </div>
-            <template is="dom-if" if="[[assistantOn_]]">
-              <paper-icon-button-light class="subpage-arrow">
-                <button aria-label="$i18n{searchGoogleAssistant}"></button>
-              </paper-icon-button-light>
-            </template>
-            <template is="dom-if" if="[[!assistantOn_]]">
-              <div class="separator"></div>
-              <paper-button id="enable" class="secondary-button"
-                  on-click="onAssistantTurnOnTap_"
-                  aria-label="$i18n{searchPageTitle}"
-                  aria-describedby="secondaryText">
-                $i18n{assistantTurnOn}
-              </paper-button>
-            </template>
-          </div>
+        <template is="dom-if" if="[[isAssistantAllowed_]]">
+          <cr-link-row
+              class="hr"
+              id="assistantSubpageTrigger"
+              label="$i18n{searchGoogleAssistant}"
+              sub-label="[[getAssistantEnabledDisabledLabel_(
+                  prefs.settings.voice_interaction.enabled.value)]]"
+              on-click="onGoogleAssistantTap_"
+              role-description="$i18n{subpageArrowRoleDescription}">
+          </cr-link-row>
         </template>
 </if>
       </div>
       <template is="dom-if" route-path="/searchEngines">
         <settings-subpage
-            associated-control="[[$$('#engines-subpage-trigger')]]"
+            associated-control="[[$$('#enginesSubpageTrigger')]]"
             page-title="$i18n{searchEnginesManage}"
             search-label="$i18n{searchEnginesSearch}"
             search-term="{{searchEnginesFilter_}}">
@@ -123,10 +109,10 @@
         </settings-subpage>
       </template>
 <if expr="chromeos">
-      <template is="dom-if" if="[[voiceInteractionFeatureEnabled_]]">
+      <template is="dom-if" if="[[isAssistantAllowed_]]">
         <template is="dom-if" route-path="/googleAssistant">
           <settings-subpage
-              associated-control="[[$$('#assistant-subpage-trigger')]]"
+              associated-control="[[$$('#assistantSubpageTrigger')]]"
               page-title="$i18n{googleAssistantPageTitle}">
             <settings-google-assistant-page prefs="{{prefs}}">
             </settings-google-assistant-page>

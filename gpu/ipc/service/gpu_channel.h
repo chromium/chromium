@@ -41,12 +41,13 @@ class WaitableEvent;
 }
 
 namespace gpu {
-
 class GpuChannelManager;
 class GpuChannelMessageFilter;
+class ImageDecodeAcceleratorStub;
 class ImageDecodeAcceleratorWorker;
 class Scheduler;
 class SharedImageStub;
+class StreamTexture;
 class SyncPointManager;
 
 // Encapsulates an IPC channel between the GPU process and one renderer
@@ -54,18 +55,19 @@ class SyncPointManager;
 class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener,
                                           public IPC::Sender {
  public:
-  // Takes ownership of the renderer process handle.
-  GpuChannel(GpuChannelManager* gpu_channel_manager,
-             Scheduler* scheduler,
-             SyncPointManager* sync_point_manager,
-             scoped_refptr<gl::GLShareGroup> share_group,
-             scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-             scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
-             int32_t client_id,
-             uint64_t client_tracing_id,
-             bool is_gpu_host,
-             ImageDecodeAcceleratorWorker* image_decode_accelerator_worker);
   ~GpuChannel() override;
+
+  static std::unique_ptr<GpuChannel> Create(
+      GpuChannelManager* gpu_channel_manager,
+      Scheduler* scheduler,
+      SyncPointManager* sync_point_manager,
+      scoped_refptr<gl::GLShareGroup> share_group,
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+      scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
+      int32_t client_id,
+      uint64_t client_tracing_id,
+      bool is_gpu_host,
+      ImageDecodeAcceleratorWorker* image_decode_accelerator_worker);
 
   // Init() sets up the underlying IPC channel.  Use a separate method because
   // we don't want to do that in tests.
@@ -153,11 +155,33 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener,
 
   void HandleMessageForTesting(const IPC::Message& msg);
 
+  ImageDecodeAcceleratorStub* GetImageDecodeAcceleratorStub() const;
+
 #if defined(OS_ANDROID)
   const CommandBufferStub* GetOneStub() const;
+
+  // Called by StreamTexture to remove the GpuChannel's reference to the
+  // StreamTexture.
+  void DestroyStreamTexture(int32_t stream_id);
 #endif
 
+  SharedImageStub* shared_image_stub() const {
+    return shared_image_stub_.get();
+  }
+
  private:
+  // Takes ownership of the renderer process handle.
+  GpuChannel(GpuChannelManager* gpu_channel_manager,
+             Scheduler* scheduler,
+             SyncPointManager* sync_point_manager,
+             scoped_refptr<gl::GLShareGroup> share_group,
+             scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+             scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
+             int32_t client_id,
+             uint64_t client_tracing_id,
+             bool is_gpu_host,
+             ImageDecodeAcceleratorWorker* image_decode_accelerator_worker);
+
   bool OnControlMessageReceived(const IPC::Message& msg);
 
   void HandleMessageHelper(const IPC::Message& msg);
@@ -169,6 +193,8 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener,
                              gpu::ContextResult* result,
                              gpu::Capabilities* capabilities);
   void OnDestroyCommandBuffer(int32_t route_id);
+  void OnCreateStreamTexture(int32_t stream_id, bool* succeeded);
+  bool CreateSharedImageStub();
 
   std::unique_ptr<IPC::SyncChannel> sync_channel_;  // nullptr in tests.
   IPC::Sender* channel_;  // Same as sync_channel_.get() except in tests.
@@ -219,10 +245,15 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener,
 
   const bool is_gpu_host_;
 
+#if defined(OS_ANDROID)
+  // Set of active StreamTextures.
+  base::flat_map<int32_t, scoped_refptr<StreamTexture>> stream_textures_;
+#endif
+
   // Member variables should appear before the WeakPtrFactory, to ensure that
   // any WeakPtrs to Controller are invalidated before its members variable's
   // destructors are executed, rendering them invalid.
-  base::WeakPtrFactory<GpuChannel> weak_factory_;
+  base::WeakPtrFactory<GpuChannel> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(GpuChannel);
 };

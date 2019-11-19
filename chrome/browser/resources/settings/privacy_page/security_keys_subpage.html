@@ -1,0 +1,67 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/cr_elements/cr_link_row/cr_link_row.html">
+<link rel="import" href="chrome://resources/html/cr.html">
+<link rel="import" href="chrome://resources/html/cr/ui/focus_without_ink.html">
+<link rel="import" href="../settings_shared_css.html">
+
+<link rel="import" href="security_keys_credential_management_dialog.html">
+<link rel="import" href="security_keys_bio_enroll_dialog.html">
+<link rel="import" href="security_keys_set_pin_dialog.html">
+<link rel="import" href="security_keys_reset_dialog.html">
+
+<dom-module id="security-keys-subpage">
+  <template>
+    <style include="settings-shared"></style>
+
+    <cr-link-row
+      id="setPINButton"
+      label="$i18n{securityKeysSetPIN}"
+      sub-label="$i18n{securityKeysSetPINDesc}"
+      on-click="onSetPIN_"></cr-link-row>
+    <cr-link-row
+      id="credentialManagementButton"
+      class="hr"
+      label="$i18n{securityKeysCredentialManagementLabel}"
+      sub-label="$i18n{securityKeysCredentialManagementDesc}"
+      on-click="onCredentialManagement_"></cr-link-row>
+    <template is="dom-if" if="[[enableBioEnrollment_]]">
+      <cr-link-row
+        id="bioEnrollButton"
+        class="hr"
+        label="$i18n{securityKeysBioEnrollmentSubpageLabel}"
+        sub-label="$i18n{securityKeysBioEnrollmentSubpageDescription}"
+        on-click="onBioEnroll_"></cr-link-row>
+    </template>
+    <cr-link-row
+      id="resetButton"
+      class="hr"
+      label="$i18n{securityKeysReset}"
+      sub-label="$i18n{securityKeysResetDesc}"
+      on-click="onReset_"></cr-link-row>
+
+    <template is="dom-if" if="[[showSetPINDialog_]]" restamp>
+      <settings-security-keys-set-pin-dialog on-close="onSetPINDialogClosed_">
+      </settings-security-keys-set-pin-dialog>
+    </template>
+
+    <template is="dom-if" if="[[showCredentialManagementDialog_]]" restamp>
+      <settings-security-keys-credential-management-dialog
+        on-close="onCredentialManagementDialogClosed_">
+      </settings-security-keys-credential-management-dialog>
+    </template>
+
+    <template is="dom-if" if="[[showResetDialog_]]" restamp>
+      <settings-security-keys-reset-dialog on-close="onResetDialogClosed_">
+      </settings-security-keys-reset-dialog>
+    </template>
+
+    <template is="dom-if" if="[[showBioEnrollDialog_]]" restamp>
+      <settings-security-keys-bio-enroll-dialog
+          on-close="onBioEnrollDialogClosed_">
+      </settings-security-keys-bio-enroll-dialog>
+    </template>
+
+  </template>
+  <script src="security_keys_subpage.js"></script>
+</dom-module>

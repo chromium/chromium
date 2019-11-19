@@ -51,15 +51,27 @@ class Element;
 class FontResource;
 class ImageResourceContent;
 class LocalFrame;
-class SharedBuffer;
 class CSSPropertyValueSet;
 
 struct SerializedResource;
 
+class FrameSerializerResourceDelegate {
+ public:
+  virtual ~FrameSerializerResourceDelegate() = default;
+
+  // Adds the resource needed to serialize an element.
+  virtual void AddResourceForElement(Document&, const Element&) = 0;
+
+  // Serializes the stylesheet back to text and adds it to the resources if
+  // URL is not-empty.  It also adds any resources included in that stylesheet
+  // (including any imported stylesheets and their own resources).
+  virtual void SerializeCSSStyleSheet(CSSStyleSheet&, const KURL&) = 0;
+};
+
 // This class is used to serialize frame's contents back to text (typically
 // HTML).  It serializes frame's document and resources such as images and CSS
 // stylesheets.
-class CORE_EXPORT FrameSerializer final {
+class CORE_EXPORT FrameSerializer : public FrameSerializerResourceDelegate {
   STACK_ALLOCATED();
 
  public:
@@ -123,10 +135,8 @@ class CORE_EXPORT FrameSerializer final {
   static String MarkOfTheWebDeclaration(const KURL&);
 
  private:
-  // Serializes the stylesheet back to text and adds it to the resources if URL
-  // is not-empty.  It also adds any resources included in that stylesheet
-  // (including any imported stylesheets and their own resources).
-  void SerializeCSSStyleSheet(CSSStyleSheet&, const KURL&);
+  void AddResourceForElement(Document&, const Element&) override;
+  void SerializeCSSStyleSheet(CSSStyleSheet&, const KURL&) override;
 
   // Serializes the css rule (including any imported stylesheets), adding
   // referenced resources.

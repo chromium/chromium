@@ -18,7 +18,7 @@ _RESOURCE_CLASSES = [
 ]
 
 
-def _CreatePathTransform(exclude_globs, include_globs,
+def CreatePathTransform(exclude_globs, include_globs,
                         strip_resource_classes_for):
   exclude_globs = list(exclude_globs or [])
   if strip_resource_classes_for:
@@ -60,8 +60,8 @@ def main():
     args.strip_resource_classes_for = build_utils.ParseGnList(
         args.strip_resource_classes_for)
 
-  path_transform = _CreatePathTransform(
-      args.exclude_globs, args.include_globs, args.strip_resource_classes_for)
+  path_transform = CreatePathTransform(args.exclude_globs, args.include_globs,
+                                       args.strip_resource_classes_for)
   with build_utils.AtomicOutput(args.output) as f:
     build_utils.MergeZips(
         f.name, [args.input], path_transform=path_transform)

@@ -7,12 +7,16 @@
  * and/or have non-trivial logic.
  */
 
+import {TestStore} from 'chrome://test/bookmarks/test_store.js';
+import {selectFolder, selectItem, ROOT_NODE_ID} from 'chrome://bookmarks/bookmarks.js';
+import {createFolder, createItem, testTree} from 'chrome://test/bookmarks/test_util.js';
+
 suite('selectItem', function() {
   let store;
   let action;
 
   setup(function() {
-    store = new bookmarks.TestStore({
+    store = new TestStore({
       nodes: testTree(createFolder(
           '1',
           [
@@ -26,7 +30,7 @@ suite('selectItem', function() {
   });
 
   test('can select single item', function() {
-    action = bookmarks.actions.selectItem('2', store.data, {
+    action = selectItem('2', store.data, {
       clear: false,
       range: false,
       toggle: false,
@@ -43,7 +47,7 @@ suite('selectItem', function() {
 
   test('can shift-select in regular list', function() {
     store.data.selection.anchor = '2';
-    action = bookmarks.actions.selectItem('4', store.data, {
+    action = selectItem('4', store.data, {
       clear: true,
       range: true,
       toggle: false,
@@ -63,7 +67,7 @@ suite('selectItem', function() {
     };
     store.data.selection.anchor = '8';
 
-    action = bookmarks.actions.selectItem('4', store.data, {
+    action = selectItem('4', store.data, {
       clear: true,
       range: true,
       toggle: false,
@@ -76,7 +80,7 @@ suite('selectItem', function() {
     // Anchor hasn't been set yet.
     store.data.selection.anchor = null;
 
-    action = bookmarks.actions.selectItem('4', store.data, {
+    action = selectItem('4', store.data, {
       clear: false,
       range: true,
       toggle: false,
@@ -87,7 +91,7 @@ suite('selectItem', function() {
     // Anchor set to an item which doesn't exist.
     store.data.selection.anchor = '42';
 
-    action = bookmarks.actions.selectItem('8', store.data, {
+    action = selectItem('8', store.data, {
       clear: false,
       range: true,
       toggle: false,
@@ -102,16 +106,16 @@ test('selectFolder prevents selecting invalid nodes', function() {
     createItem('2'),
   ]));
 
-  let action = bookmarks.actions.selectFolder(ROOT_NODE_ID, nodes);
+  let action = selectFolder(ROOT_NODE_ID, nodes);
   assertEquals(null, action);
 
-  action = bookmarks.actions.selectFolder('2', nodes);
+  action = selectFolder('2', nodes);
   assertEquals(null, action);
 
-  action = bookmarks.actions.selectFolder('42', nodes);
+  action = selectFolder('42', nodes);
   assertEquals(null, action);
 
-  action = bookmarks.actions.selectFolder('1', nodes);
+  action = selectFolder('1', nodes);
   assertEquals('select-folder', action.name);
   assertEquals('1', action.id);
 });

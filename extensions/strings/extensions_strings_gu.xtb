@@ -12,7 +12,6 @@
 <translation id="2159915644201199628">છબીને ડિકોડ કરી શક્યાં નથી: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">લૉકલાઇઝેશન વપરાયુ, પરંતુ default_locale નો ઉલ્લેખ મેનિફેસ્ટમાં નહોતો.</translation>
 <translation id="2576842806987913196">આ નામવાળી એક CRX ફાઇલ પહેલાથી જ અસ્તિત્વમાં છે.</translation>
-<translation id="2753617847762399167">ગેરકાયદેસર પાથ (નિરપેક્ષ અથવા '..' સાથે સંબંધિત): '<ph name="IMAGE_PATH" />'</translation>
 <translation id="2785530881066938471">કન્ટેન્ટ સ્ક્રિપ્ટ માટે '<ph name="RELATIVE_PATH" />' ફાઇલ લોડ કરી શકાઈ નથી. તે UTF-8 એન્કોડેડ નથી.</translation>
 <translation id="2903070246402204397"><ph name="EXTENSION_NAME" /> (એક્સ્ટેન્શન ID "<ph name="EXTENSION_ID" />")ને વ્યવસ્થાપક દ્વારા અવરોધિત કરવામાં આવેલ છે. <ph name="ADMIN_INFO" /></translation>
 <translation id="2988488679308982380">પૅકેજ ઇન્સ્ટોલ કરી શકાયું નહીં: '<ph name="ERROR_CODE" />'</translation>
@@ -38,8 +37,6 @@
 <translation id="5436430103864390185">આકારિત વિંડોઝ સમર્થિત નથી.</translation>
 <translation id="5456409301717116725">આ એક્સટેન્શનમાં '<ph name="KEY_PATH" />' કી ફાઇલ શામેલ છે. તમે કદાચ એ કરવા માંગતા નથી.</translation>
 <translation id="5486326529110362464">ખાનગી કી માટે ઇનપુટ મૂલ્ય અસ્તિત્વમાં હોવું જોઈએ.</translation>
-<translation id="5627523580512561598">એક્સ્ટેંશન <ph name="EXTENSION_NAME" /></translation>
-<translation id="5960890139610307736">ExtensionView: <ph name="EXTENSIONVIEW_TAG_NAME" /></translation>
 <translation id="5972529113578162692">આ મશીનના વ્યવસ્થાપક માટે <ph name="EXTENSION_NAME" /> ઇન્સ્ટોલ કરેલું હોવું જરૂરી છે. તે અનઇન્સ્ટોલ કરી શકાતું નથી.</translation>
 <translation id="6027032947578871493"><ph name="VENDOR_NAME" /> વિક્રેતાનું અજાણ્યું ઉત્પાદન <ph name="PRODUCT_ID" /> (શૃંખલા ક્રમાંક <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="VENDOR_ID" /> વિક્રેતા તરફથી <ph name="PRODUCT_NAME" /></translation>
@@ -51,7 +48,6 @@
 <translation id="6542618148162044354">"<ph name="APP_NAME" />", તમારા એક અથવા વધુ ઉપકરણો પરની ઍક્સેસની વિનંતી કરી રહ્યું છે:</translation>
 <translation id="657064425229075395">પૃષ્ઠભૂમિ સ્ક્રિપ્ટ '<ph name="BACKGROUND_SCRIPT" />' લોડ કરી શકાઈ નથી.</translation>
 <translation id="6580950983454333167"><ph name="VENDOR_NAME" /> નું <ph name="PRODUCT_NAME" /> (સીરિયલ નંબર <ph name="SERIAL_NUMBER" />)</translation>
-<translation id="6731255991101203740">આને અનઝિપ કરવા માટે ડિરેક્ટરી બનાવી શક્યાં નથી: '<ph name="DIRECTORY_PATH" />'</translation>
 <translation id="677806580227005219">Mimehandler: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
 <translation id="6840444547062817500">આ એક્સ્ટેન્શન પોતાની મેળે ઘણી વાર ફરીથી લોડ થયેલું.</translation>
 <translation id="7003844668372540529"><ph name="VENDOR_NAME" /> નું અજાણ્યું ઉત્પાદન <ph name="PRODUCT_ID" /></translation>

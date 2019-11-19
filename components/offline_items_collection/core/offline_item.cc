@@ -43,8 +43,10 @@ OfflineItem::OfflineItem()
       is_transient(false),
       is_suggested(false),
       is_accelerated(false),
-      refresh_visuals(false),
       promote_origin(false),
+      can_rename(false),
+      ignore_visuals(false),
+      content_quality_score(0),
       total_size_bytes(0),
       externally_removed(false),
       is_openable(false),
@@ -73,8 +75,10 @@ bool OfflineItem::operator==(const OfflineItem& offline_item) const {
          is_transient == offline_item.is_transient &&
          is_suggested == offline_item.is_suggested &&
          is_accelerated == offline_item.is_accelerated &&
-         refresh_visuals == offline_item.refresh_visuals &&
          promote_origin == offline_item.promote_origin &&
+         can_rename == offline_item.can_rename &&
+         ignore_visuals == offline_item.ignore_visuals &&
+         content_quality_score == offline_item.content_quality_score &&
          total_size_bytes == offline_item.total_size_bytes &&
          externally_removed == offline_item.externally_removed &&
          creation_time == offline_item.creation_time &&
@@ -86,6 +90,7 @@ bool OfflineItem::operator==(const OfflineItem& offline_item) const {
          page_url == offline_item.page_url &&
          original_url == offline_item.original_url &&
          is_off_the_record == offline_item.is_off_the_record &&
+         attribution == offline_item.attribution &&
          state == offline_item.state && fail_state == offline_item.fail_state &&
          pending_state == offline_item.pending_state &&
          is_resumable == offline_item.is_resumable &&
@@ -97,6 +102,9 @@ bool OfflineItem::operator==(const OfflineItem& offline_item) const {
 }
 
 OfflineItemVisuals::OfflineItemVisuals() = default;
+OfflineItemVisuals::OfflineItemVisuals(const gfx::Image& icon,
+                                       const gfx::Image& custom_favicon)
+    : icon(icon), custom_favicon(custom_favicon) {}
 OfflineItemVisuals::OfflineItemVisuals(const OfflineItemVisuals& other) =
     default;
 OfflineItemVisuals::~OfflineItemVisuals() = default;

@@ -69,7 +69,7 @@
       readArguments.size = chunkSize;
     var firstReadArguments = JSON.parse(JSON.stringify(readArguments));
     if (typeof offset === "number")
-      firstReadArguments.offset = 0;
+      firstReadArguments.offset = offset;
     this._session.protocol.IO.read(firstReadArguments).then(message => onChunkRead.call(this, message.result));
     // Assure multiple in-flight reads are fine (also, save on latencies).
     this._session.protocol.IO.read(readArguments).then(message => onChunkRead.call(this, message.result));
@@ -82,6 +82,8 @@
       if (response.eof) {
         // Ignore stray callbacks from proactive read requests.
         had_eof = true;
+        if (response.base64Encoded)
+          result = atob(result);
         callback(result);
         return;
       }

@@ -3,6 +3,7 @@ include_rules = [
   "+components/bookmarks/test",
   "+components/browsing_data/core",
   "+components/component_updater",
+  "+components/component_updater/installer_policies",
   "+components/content_settings",
   "+components/crash/core/common",
   "+components/favicon/core",
@@ -19,7 +20,8 @@ include_rules = [
   "+components/search_engines",
   "+components/suggestions",
   "+components/sync/driver",
-  "+components/task_scheduler_util",
+  "+components/ukm/ios",
+  "+components/unified_consent",
   "+components/url_formatter",
   "+components/web_resource",
   "+ios/chrome/browser",
@@ -27,7 +29,7 @@ include_rules = [
   "+ios/net",
   "+ios/public/provider/chrome",
   "+mojo/core/embedder/embedder.h",
-  "+services/identity/public/cpp/identity_manager.h",
+  "+components/signin/public/identity_manager/identity_manager.h",
   "+third_party/breakpad/breakpad/src/client/ios",
 
   # Strings and resources.
@@ -35,13 +37,3 @@ include_rules = [
   "+components/strings",
   "+ios/chrome/grit",
 ]
-
-specific_include_rules = {
-  "main_controller.mm": [
-    # TODO(crbug.com/585700): Remove ios/web/net exceptions, once request
-    # tracker is removed.
-    "+ios/web/net/request_tracker_factory_impl.h",
-    "+ios/web/net/request_tracker_impl.h",
-    "+ios/web/net/web_http_protocol_handler_delegate.h",
-  ],
-}

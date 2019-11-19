@@ -4,12 +4,13 @@
 
 #include "net/socket/fuzzed_socket.h"
 
+#include <fuzzer/FuzzedDataProvider.h>
+
 #include <algorithm>
 
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/test/fuzzed_data_provider.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/base/io_buffer.h"
 #include "net/log/net_log_source_type.h"
@@ -36,12 +37,11 @@ const Error kReadWriteErrors[] = {ERR_CONNECTION_CLOSED, ERR_FAILED,
 
 }  // namespace
 
-FuzzedSocket::FuzzedSocket(base::FuzzedDataProvider* data_provider,
+FuzzedSocket::FuzzedSocket(FuzzedDataProvider* data_provider,
                            net::NetLog* net_log)
     : data_provider_(data_provider),
       net_log_(NetLogWithSource::Make(net_log, NetLogSourceType::SOCKET)),
-      remote_address_(IPEndPoint(IPAddress::IPv4Localhost(), 80)),
-      weak_factory_(this) {}
+      remote_address_(IPEndPoint(IPAddress::IPv4Localhost(), 80)) {}
 
 FuzzedSocket::~FuzzedSocket() = default;
 

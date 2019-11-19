@@ -1,0 +1,362 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [939, 235],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "Scrolling background of LayoutView #document",
+          "rect": [0, 0, 939, 235],
+          "reason": "background"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'AAAA'",
+          "rect": [10, 8, 920, 212],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'BBBB'",
+          "rect": [10, 8, 920, 212],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'CCCC'",
+          "rect": [10, 8, 920, 212],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'DDDD'",
+          "rect": [10, 8, 920, 212],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'EEEE'",
+          "rect": [10, 8, 920, 212],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'FFFF'",
+          "rect": [10, 8, 920, 212],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'GGGG'",
+          "rect": [10, 8, 920, 212],
+          "reason": "appeared"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'HHHH'",
+          "rect": [10, 8, 920, 212],
+          "reason": "appeared"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'IIII JJJJ'",
+          "rect": [10, 8, 920, 212],
+          "reason": "appeared"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'KKKK'",
+          "rect": [10, 8, 920, 212],
+          "reason": "appeared"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'LLLL'",
+          "rect": [10, 8, 920, 212],
+          "reason": "appeared"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'MMMM'",
+          "rect": [10, 8, 920, 212],
+          "reason": "appeared"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'NNNN'",
+          "rect": [10, 8, 920, 212],
+          "reason": "appeared"
+        },
+        {
+          "object": "Scrolling background of LayoutView #document",
+          "rect": [0, 0, 600, 235],
+          "reason": "background"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'AAAA'",
+          "rect": [168, 8, 423, 227],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'BBBB'",
+          "rect": [168, 8, 423, 227],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'CCCC'",
+          "rect": [168, 8, 423, 227],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'DDDD'",
+          "rect": [168, 8, 423, 227],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'EEEE'",
+          "rect": [168, 8, 423, 227],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'FFFF'",
+          "rect": [168, 8, 423, 227],
+          "reason": "geometry"
+        }
+      ],
+      "transform": 1
+    },
+    {
+      "name": "HorizontalScrollbar",
+      "position": [0, 235],
+      "bounds": [600, 15],
+      "paintInvalidations": [
+        {
+          "object": "HorizontalScrollbar",
+          "rect": [0, 0, 600, 15],
+          "reason": "full layer"
+        }
+      ]
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [-339, 0, 0, 1]
+      ]
+    }
+  ]
+}
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [939, 235],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "Scrolling background of LayoutView #document",
+          "rect": [0, 0, 939, 235],
+          "reason": "background"
+        }
+      ],
+      "transform": 1
+    },
+    {
+      "name": "HorizontalScrollbar",
+      "position": [0, 235],
+      "bounds": [400, 15],
+      "paintInvalidations": [
+        {
+          "object": "HorizontalScrollbar",
+          "rect": [0, 0, 400, 15],
+          "reason": "scroll control"
+        }
+      ]
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [-539, 0, 0, 1]
+      ]
+    }
+  ]
+}
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [400, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "Scrolling background of LayoutView #document",
+          "rect": [0, 0, 400, 600],
+          "reason": "background"
+        },
+        {
+          "object": "Scrolling background of LayoutView #document",
+          "rect": [0, 0, 400, 235],
+          "reason": "background"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'AAAA BBBB CCCC'",
+          "rect": [10, 8, 390, 212],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'DDDD EEEE FFFF'",
+          "rect": [10, 8, 390, 212],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'FFFF'",
+          "rect": [10, 8, 390, 212],
+          "reason": "disappeared"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'GGGG HHHH IIII JJJJ'",
+          "rect": [10, 8, 390, 212],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'GGGG'",
+          "rect": [10, 8, 390, 212],
+          "reason": "disappeared"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'HHHH'",
+          "rect": [10, 8, 390, 212],
+          "reason": "disappeared"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'IIII JJJJ'",
+          "rect": [10, 8, 390, 212],
+          "reason": "disappeared"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'KKKK LLLL MMMM'",
+          "rect": [10, 8, 390, 212],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'KKKK'",
+          "rect": [10, 8, 390, 212],
+          "reason": "disappeared"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'LLLL'",
+          "rect": [10, 8, 390, 212],
+          "reason": "disappeared"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'MMMM'",
+          "rect": [10, 8, 390, 212],
+          "reason": "disappeared"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'NNNN'",
+          "rect": [10, 8, 390, 212],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'NNNN'",
+          "rect": [10, 8, 390, 212],
+          "reason": "disappeared"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'AAAA BBBB CCCC'",
+          "rect": [39, 8, 352, 561],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'DDDD EEEE FFFF'",
+          "rect": [39, 8, 352, 561],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'GGGG HHHH IIII JJJJ'",
+          "rect": [39, 8, 352, 561],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'KKKK LLLL MMMM'",
+          "rect": [39, 8, 352, 561],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'NNNN'",
+          "rect": [39, 8, 352, 561],
+          "reason": "geometry"
+        }
+      ]
+    }
+  ]
+}
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "Scrolling background of LayoutView #document",
+          "rect": [400, 0, 400, 600],
+          "reason": "incremental"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'AAAA BBBB CCCC'",
+          "rect": [439, 8, 352, 561],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'DDDD EEEE FFFF'",
+          "rect": [439, 8, 352, 561],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'GGGG HHHH IIII JJJJ'",
+          "rect": [439, 8, 352, 561],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'KKKK LLLL MMMM'",
+          "rect": [439, 8, 352, 561],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'NNNN'",
+          "rect": [439, 8, 352, 561],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'AAAA BBBB CCCC'",
+          "rect": [39, 8, 352, 561],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'DDDD EEEE FFFF'",
+          "rect": [39, 8, 352, 561],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'GGGG HHHH IIII JJJJ'",
+          "rect": [39, 8, 352, 561],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'KKKK LLLL MMMM'",
+          "rect": [39, 8, 352, 561],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'NNNN'",
+          "rect": [39, 8, 352, 561],
+          "reason": "geometry"
+        }
+      ]
+    }
+  ]
+}
+

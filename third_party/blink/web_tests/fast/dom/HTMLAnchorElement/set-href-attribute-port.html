@@ -40,7 +40,7 @@ shouldBe("a.href", "'https://www.mydomain.com:0/path/testurl.html?key=value'");
 debug("Set port to empty string");
 a.href = "https://www.mydomain.com:8080/path/testurl.html?key=value";
 a.port = "";
-shouldBe("a.href", "'https://www.mydomain.com:0/path/testurl.html?key=value'");
+shouldBe("a.href", "'https://www.mydomain.com/path/testurl.html?key=value'");
 
 debug("Set port to undefined");
 a.href = "https://www.mydomain.com:8080/path/testurl.html?key=value";

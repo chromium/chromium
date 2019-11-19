@@ -15,11 +15,9 @@ class GCMAppHandler;
 
 namespace offline_pages {
 
-class PrefetchGCMHandler;
 class PrefetchService;
 
-// Main class and entry point for the Offline Pages Prefetching feature, that
-// controls the lifetime of all major subcomponents of the prefetching system.
+// Provides a GCM interface for PrefetchService.
 class PrefetchGCMHandler {
  public:
   PrefetchGCMHandler() = default;
@@ -34,11 +32,6 @@ class PrefetchGCMHandler {
 
   // The app ID to register with at the GCM layer.
   virtual std::string GetAppId() const = 0;
-
-  // Gets a token suitable for sending to Offline Page Service for notifications
-  // when work is completed.
-  virtual void GetGCMToken(
-      instance_id::InstanceID::GetTokenCallback callback) = 0;
 };
 
 }  // namespace offline_pages

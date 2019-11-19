@@ -130,14 +130,13 @@ AuditorResult AnnotationInstance::Deserialize(
     const std::vector<std::string>& serialized_lines,
     int start_line,
     int end_line) {
-  if (end_line - start_line < 7) {
+  if (end_line - start_line < 6) {
     return AuditorResult(AuditorResult::Type::ERROR_FATAL,
                          "Not enough lines to deserialize annotation.");
   }
 
   // Extract header lines.
   const std::string& file_path = serialized_lines[start_line++];
-  const std::string& function_context = serialized_lines[start_line++];
   int line_number;
   base::StringToInt(serialized_lines[start_line++], &line_number);
   std::string function_type = serialized_lines[start_line++];
@@ -153,6 +152,9 @@ AuditorResult AnnotationInstance::Deserialize(
     type = Type::ANNOTATION_COMPLETING;
   } else if (function_type == "BranchedCompleting") {
     type = Type::ANNOTATION_BRANCHED_COMPLETING;
+  } else if (function_type == "Mutable") {
+    return AuditorResult(AuditorResult::Type::ERROR_MUTABLE_TAG, "", file_path,
+                         line_number);
   } else {
     return AuditorResult(AuditorResult::Type::ERROR_FATAL,
                          base::StringPrintf("Unexpected function type: %s",
@@ -165,14 +167,6 @@ AuditorResult AnnotationInstance::Deserialize(
       unique_id_hash_code ==
           PARTIAL_TRAFFIC_ANNOTATION_FOR_TESTS.unique_id_hash_code) {
     return AuditorResult(AuditorResult::Type::ERROR_TEST_ANNOTATION, "",
-                         file_path, line_number);
-  }
-
-  // Process undefined tags.
-  if (unique_id_hash_code == NO_TRAFFIC_ANNOTATION_YET.unique_id_hash_code ||
-      unique_id_hash_code ==
-          NO_PARTIAL_TRAFFIC_ANNOTATION_YET.unique_id_hash_code) {
-    return AuditorResult(AuditorResult::Type::ERROR_NO_ANNOTATION, "",
                          file_path, line_number);
   }
 
@@ -201,7 +195,6 @@ AuditorResult AnnotationInstance::Deserialize(
   traffic_annotation::NetworkTrafficAnnotation_TrafficSource* src =
       proto.mutable_source();
   src->set_file(file_path);
-  src->set_function(function_context);
   src->set_line(line_number);
   proto.set_unique_id(unique_id);
   second_id_hash_code = TrafficAnnotationAuditor::ComputeHashValue(second_id);
@@ -278,19 +271,19 @@ AuditorResult AnnotationInstance::IsComplete() const {
   std::set<int> fields;
   GetSemanticsFieldNumbers(&fields);
   for (const auto& item : kSemanticsFields) {
-    if (!base::ContainsKey(fields, item.first))
+    if (!base::Contains(fields, item.first))
       unspecifieds.push_back(item.second);
   }
 
   GetPolicyFieldNumbers(&fields);
   for (const auto& item : kPolicyFields) {
-    if (!base::ContainsKey(fields, item.first)) {
+    if (!base::Contains(fields, item.first)) {
       // If 'cookies_allowed = NO' is provided, ignore not having
       // 'cookies_allowed = YES'.
       if (item.first ==
               traffic_annotation::NetworkTrafficAnnotation_TrafficPolicy::
                   kCookiesAllowedFieldNumber &&
-          base::ContainsKey(fields, -item.first))
+          base::Contains(fields, -item.first))
         continue;
 
       // If |cookies_store| is not provided, ignore if 'cookies_allowed = NO' is
@@ -298,7 +291,7 @@ AuditorResult AnnotationInstance::IsComplete() const {
       if (item.first ==
               traffic_annotation::NetworkTrafficAnnotation_TrafficPolicy::
                   kCookiesStoreFieldNumber &&
-          base::ContainsKey(
+          base::Contains(
               fields,
               -traffic_annotation::NetworkTrafficAnnotation_TrafficPolicy::
                   kCookiesAllowedFieldNumber))
@@ -306,9 +299,9 @@ AuditorResult AnnotationInstance::IsComplete() const {
 
       // If either of |chrome_policy| or |policy_exception_justification| are
       // avaliable, ignore not having the other one.
-      if (base::ContainsValue(kChromePolicyFields, item.first) &&
-          (base::ContainsKey(fields, kChromePolicyFields[0]) ||
-           base::ContainsKey(fields, kChromePolicyFields[1]))) {
+      if (base::Contains(kChromePolicyFields, item.first) &&
+          (base::Contains(fields, kChromePolicyFields[0]) ||
+           base::Contains(fields, kChromePolicyFields[1]))) {
         continue;
       }
       unspecifieds.push_back(item.second);
@@ -522,35 +515,35 @@ AnnotationInstance AnnotationInstance::LoadFromArchive(
 
   // The values of the semantics and policy are set so that the tests would know
   // which fields were available before archive.
-  if (base::ContainsKey(
+  if (base::Contains(
           semantics_fields,
           traffic_annotation::NetworkTrafficAnnotation_TrafficSemantics::
               kSenderFieldNumber)) {
     annotation.proto.mutable_semantics()->set_sender("[Archived]");
   }
 
-  if (base::ContainsKey(
+  if (base::Contains(
           semantics_fields,
           traffic_annotation::NetworkTrafficAnnotation_TrafficSemantics::
               kDescriptionFieldNumber)) {
     annotation.proto.mutable_semantics()->set_description("[Archived]");
   }
 
-  if (base::ContainsKey(
+  if (base::Contains(
           semantics_fields,
           traffic_annotation::NetworkTrafficAnnotation_TrafficSemantics::
               kTriggerFieldNumber)) {
     annotation.proto.mutable_semantics()->set_trigger("[Archived]");
   }
 
-  if (base::ContainsKey(
+  if (base::Contains(
           semantics_fields,
           traffic_annotation::NetworkTrafficAnnotation_TrafficSemantics::
               kDataFieldNumber)) {
     annotation.proto.mutable_semantics()->set_data("[Archived]");
   }
 
-  if (base::ContainsKey(
+  if (base::Contains(
           semantics_fields,
           traffic_annotation::NetworkTrafficAnnotation_TrafficSemantics::
               kDestinationFieldNumber)) {
@@ -559,7 +552,7 @@ AnnotationInstance AnnotationInstance::LoadFromArchive(
             NetworkTrafficAnnotation_TrafficSemantics_Destination_WEBSITE);
   }
 
-  if (base::ContainsKey(
+  if (base::Contains(
           policy_fields,
           traffic_annotation::NetworkTrafficAnnotation_TrafficPolicy::
               kCookiesAllowedFieldNumber)) {
@@ -568,7 +561,7 @@ AnnotationInstance AnnotationInstance::LoadFromArchive(
             NetworkTrafficAnnotation_TrafficPolicy_CookiesAllowed_YES);
   }
 
-  if (base::ContainsKey(
+  if (base::Contains(
           policy_fields,
           -traffic_annotation::NetworkTrafficAnnotation_TrafficPolicy::
               kCookiesAllowedFieldNumber)) {
@@ -577,28 +570,28 @@ AnnotationInstance AnnotationInstance::LoadFromArchive(
             NetworkTrafficAnnotation_TrafficPolicy_CookiesAllowed_NO);
   }
 
-  if (base::ContainsKey(
+  if (base::Contains(
           policy_fields,
           traffic_annotation::NetworkTrafficAnnotation_TrafficPolicy::
               kCookiesStoreFieldNumber)) {
     annotation.proto.mutable_policy()->set_cookies_store("[Archived]");
   }
 
-  if (base::ContainsKey(
+  if (base::Contains(
           policy_fields,
           traffic_annotation::NetworkTrafficAnnotation_TrafficPolicy::
               kSettingFieldNumber)) {
     annotation.proto.mutable_policy()->set_setting("[Archived]");
   }
 
-  if (base::ContainsKey(
+  if (base::Contains(
           policy_fields,
           traffic_annotation::NetworkTrafficAnnotation_TrafficPolicy::
               kChromePolicyFieldNumber)) {
     annotation.proto.mutable_policy()->add_chrome_policy();
   }
 
-  if (base::ContainsKey(
+  if (base::Contains(
           policy_fields,
           traffic_annotation::NetworkTrafficAnnotation_TrafficPolicy::
               kPolicyExceptionJustificationFieldNumber)) {
@@ -650,7 +643,6 @@ CallInstance::CallInstance() : line_number(0), is_annotated(false) {}
 CallInstance::CallInstance(const CallInstance& other)
     : file_path(other.file_path),
       line_number(other.line_number),
-      function_context(other.function_context),
       function_name(other.function_name),
       is_annotated(other.is_annotated) {}
 
@@ -658,13 +650,12 @@ AuditorResult CallInstance::Deserialize(
     const std::vector<std::string>& serialized_lines,
     int start_line,
     int end_line) {
-  if (end_line - start_line != 5) {
+  if (end_line - start_line != 4) {
     return AuditorResult(AuditorResult::Type::ERROR_FATAL,
                          "Not enough lines to deserialize call.");
   }
 
   file_path = serialized_lines[start_line++];
-  function_context = serialized_lines[start_line++];
   int line_number_int;
   base::StringToInt(serialized_lines[start_line++], &line_number_int);
   line_number = static_cast<uint32_t>(line_number_int);
@@ -678,20 +669,17 @@ AuditorResult CallInstance::Deserialize(
 AssignmentInstance::AssignmentInstance() : line_number(0) {}
 
 AssignmentInstance::AssignmentInstance(const AssignmentInstance& other)
-    : file_path(other.file_path),
-      line_number(other.line_number),
-      function_context(other.function_context) {}
+    : file_path(other.file_path), line_number(other.line_number) {}
 
 AuditorResult AssignmentInstance::Deserialize(
     const std::vector<std::string>& serialized_lines,
     int start_line,
     int end_line) {
-  if (end_line - start_line != 3) {
+  if (end_line - start_line != 2) {
     return AuditorResult(AuditorResult::Type::ERROR_FATAL,
                          "Not enough lines to deserialize assignment.");
   }
   file_path = serialized_lines[start_line++];
-  function_context = serialized_lines[start_line++];
   int line_number_int;
   base::StringToInt(serialized_lines[start_line++], &line_number_int);
   line_number = static_cast<uint32_t>(line_number_int);

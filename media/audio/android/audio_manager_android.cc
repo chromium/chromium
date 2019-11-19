@@ -11,16 +11,19 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/bind.h"
+#include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
-#include "jni/AudioManagerAndroid_jni.h"
-#include "media/audio/android/audio_record_input.h"
+#include "media/audio/android/aaudio_output.h"
+#include "media/audio/android/aaudio_stubs.h"
 #include "media/audio/android/audio_track_output_stream.h"
 #include "media/audio/android/opensles_input.h"
 #include "media/audio/android/opensles_output.h"
 #include "media/audio/audio_device_description.h"
+#include "media/audio/audio_features.h"
 #include "media/audio/audio_manager.h"
 #include "media/audio/fake_audio_input_stream.h"
+#include "media/base/android/media_jni_headers/AudioManagerAndroid_jni.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/channel_layout.h"
 
@@ -31,6 +34,13 @@ using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
+
+using media_audio_android::InitializeStubs;
+using media_audio_android::kModuleAaudio;
+using media_audio_android::StubPathMap;
+
+static const base::FilePath::CharType kAaudioLib[] =
+    FILE_PATH_LITERAL("libaaudio.so");
 
 namespace media {
 namespace {
@@ -47,6 +57,18 @@ const int kDefaultInputBufferSize = 1024;
 const int kDefaultOutputBufferSize = 2048;
 
 }  // namespace
+
+static bool InitAAudio() {
+  StubPathMap paths;
+
+  // Check if the AAudio library is available.
+  paths[kModuleAaudio].push_back(kAaudioLib);
+  if (!InitializeStubs(paths)) {
+    VLOG(1) << "Failed on loading the AAudio library and symbols";
+    return false;
+  }
+  return true;
+}
 
 std::unique_ptr<AudioManager> CreateAudioManager(
     std::unique_ptr<AudioThread> audio_thread,
@@ -113,11 +135,8 @@ void AudioManagerAndroid::GetAudioInputDeviceNames(
     // MODIFY_AUDIO_SETTINGS or RECORD_AUDIO permissions.
     return;
   }
-  jsize len = env->GetArrayLength(j_device_array.obj());
   AudioDeviceName device;
-  for (jsize i = 0; i < len; ++i) {
-    ScopedJavaLocalRef<jobject> j_device(
-        env, env->GetObjectArrayElement(j_device_array.obj(), i));
+  for (auto j_device : j_device_array.ReadElements<jobject>()) {
     ScopedJavaLocalRef<jstring> j_device_name =
         Java_AudioDeviceName_name(env, j_device);
     ConvertJavaStringToUTF8(env, j_device_name.obj(), &device.device_name);
@@ -229,6 +248,10 @@ AudioOutputStream* AudioManagerAndroid::MakeLinearOutputStream(
     const LogCallback& log_callback) {
   DCHECK_EQ(AudioParameters::AUDIO_PCM_LINEAR, params.format());
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
+
+  if (UseAAudio())
+    return new AAudioOutputStream(this, params, AAUDIO_USAGE_MEDIA);
+
   return new OpenSLESOutputStream(this, params, SL_ANDROID_STREAM_MEDIA);
 }
 
@@ -239,10 +262,18 @@ AudioOutputStream* AudioManagerAndroid::MakeLowLatencyOutputStream(
   DLOG_IF(ERROR, !device_id.empty()) << "Not implemented!";
   DCHECK_EQ(AudioParameters::AUDIO_PCM_LOW_LATENCY, params.format());
 
+  if (UseAAudio()) {
+    const aaudio_usage_t usage = communication_mode_is_on_
+                                     ? AAUDIO_USAGE_VOICE_COMMUNICATION
+                                     : AAUDIO_USAGE_MEDIA;
+    return new AAudioOutputStream(this, params, usage);
+  }
+
   // Set stream type which matches the current system-wide audio mode used by
   // the Android audio manager.
-  const SLint32 stream_type = communication_mode_is_on_ ?
-      SL_ANDROID_STREAM_VOICE : SL_ANDROID_STREAM_MEDIA;
+  const SLint32 stream_type = communication_mode_is_on_
+                                  ? SL_ANDROID_STREAM_VOICE
+                                  : SL_ANDROID_STREAM_MEDIA;
   return new OpenSLESOutputStream(this, params, stream_type);
 }
 
@@ -313,6 +344,13 @@ bool AudioManagerAndroid::HasOutputVolumeOverride(double* out_volume) const {
     *out_volume = output_volume_override_;
   }
   return output_volume_override_set_;
+}
+
+base::TimeDelta AudioManagerAndroid::GetOutputLatency() {
+  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
+  JNIEnv* env = AttachCurrentThread();
+  return base::TimeDelta::FromMilliseconds(
+      Java_AudioManagerAndroid_getOutputLatency(env, GetJavaAudioManager()));
 }
 
 AudioParameters AudioManagerAndroid::GetPreferredOutputStreamParameters(
@@ -440,10 +478,26 @@ void AudioManagerAndroid::DoSetVolumeOnAudioThread(double volume) {
   output_volume_override_ = volume;
 
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
-  for (OutputStreams::iterator it = streams_.begin();
-       it != streams_.end(); ++it) {
+  for (OutputStreams::iterator it = streams_.begin(); it != streams_.end();
+       ++it) {
     (*it)->SetVolume(volume);
   }
+}
+
+bool AudioManagerAndroid::UseAAudio() {
+  if (!base::FeatureList::IsEnabled(features::kUseAAudioDriver))
+    return false;
+
+  if (base::android::BuildInfo::GetInstance()->sdk_int() <
+      base::android::SDK_VERSION_P) {
+    // We need APIs that weren't added until API Level 28.
+    return false;
+  }
+
+  if (!is_aaudio_available_.has_value())
+    is_aaudio_available_ = InitAAudio();
+
+  return is_aaudio_available_.value();
 }
 
 }  // namespace media

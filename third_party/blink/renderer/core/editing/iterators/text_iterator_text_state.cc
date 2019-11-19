@@ -29,7 +29,6 @@
 
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
-#include "third_party/blink/renderer/core/editing/iterators/backwards_text_buffer.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -263,57 +262,6 @@ void TextIteratorTextState::SetTextNodePosition(const Text& text_node,
   position_node_ = &text_node;
   position_start_offset_ = position_start_offset;
   position_end_offset_ = position_end_offset;
-}
-
-void TextIteratorTextState::AppendTextTo(ForwardsTextBuffer* output,
-                                         unsigned position,
-                                         unsigned length_to_append) const {
-  SECURITY_DCHECK(position + length_to_append <= length());
-  // Make sure there's no integer overflow.
-  SECURITY_DCHECK(position + length_to_append >= position);
-  if (!length_to_append)
-    return;
-  DCHECK(output);
-  if (single_character_buffer_) {
-    DCHECK_EQ(position, 0u);
-    DCHECK_EQ(length(), 1u);
-    output->PushCharacters(single_character_buffer_, 1);
-    return;
-  }
-  unsigned offset = text_start_offset_ + position;
-  // Any failure is a security bug (buffer overflow) and must be captured.
-  CHECK_LE(offset, text_.length());
-  CHECK_LE(offset + length_to_append, text_.length());
-  if (text_.Is8Bit())
-    output->PushRange(text_.Characters8() + offset, length_to_append);
-  else
-    output->PushRange(text_.Characters16() + offset, length_to_append);
-}
-
-void TextIteratorTextState::PrependTextTo(BackwardsTextBuffer* output,
-                                          unsigned position,
-                                          unsigned length_to_prepend) const {
-  SECURITY_DCHECK(position + length_to_prepend <= length());
-  // Make sure there's no integer overflow.
-  SECURITY_DCHECK(position + length_to_prepend >= position);
-  if (!length_to_prepend)
-    return;
-  DCHECK(output);
-  if (single_character_buffer_) {
-    DCHECK_EQ(position, 0u);
-    DCHECK_EQ(length(), 1u);
-    output->PushCharacters(single_character_buffer_, 1);
-    return;
-  }
-  const unsigned offset =
-      text_start_offset_ + length() - position - length_to_prepend;
-  // Any failure is a security bug (buffer overflow) and must be captured.
-  CHECK_LE(offset, text_.length());
-  CHECK_LE(offset + length_to_prepend, text_.length());
-  if (text_.Is8Bit())
-    output->PushRange(text_.Characters8() + offset, length_to_prepend);
-  else
-    output->PushRange(text_.Characters16() + offset, length_to_prepend);
 }
 
 }  // namespace blink

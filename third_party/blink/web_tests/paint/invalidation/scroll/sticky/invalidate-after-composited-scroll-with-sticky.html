@@ -1,0 +1,58 @@
+<!DOCTYPE HTML>
+<div id="parent1">
+    <mat id="scroller">
+          <div id="sticky">This should stay sticky</div>
+          <mat id="spacer"></mat>
+    </mat>
+</div>
+
+<style>
+#parent1 {
+    height: 640px;
+    width: 360px;
+    perspective: 10px;
+}
+#scroller {
+    display: block;
+    height: 640px;
+    width: 360px;
+    overflow: hidden auto;
+}
+#sticky {
+    position: sticky;
+    top: 0px;
+}
+#spacer {
+    display: block;
+    height: 2000px;
+}
+</style>
+
+
+<script src="../../resources/text-based-repaint.js"></script>
+<script>
+function repaintTest() {
+  var scroller = document.getElementById("scroller");
+  // See crbug/983209: keyboard or mouse wheel (not just setting scroll
+  // offset) was required to see this bug.
+  scrollerMidX = scroller.offsetLeft + scroller.offsetWidth / 2;
+  scrollerMidY = scroller.offsetTop + scroller.offsetHeight / 2;
+  const pointerActions = [{
+      source: "touch",
+      actions: [
+        { name: "pointerDown", x: scrollerMidX, y: scrollerMidY },
+        { name: "pointerMove", x: scrollerMidX, y: scrollerMidY - 50 },
+        { name: 'pause', duration: 100},
+        { name: "pointerUp" },
+      ],
+    }];
+  if (window.chrome && chrome.gpuBenchmarking) {
+    chrome.gpuBenchmarking.pointerActionSequence(pointerActions, finishRepaintTest);
+  } else {
+    sticky.innerHTML = "This test requires gpuBenchmarking";
+    finishRepaintTest();
+  }
+}
+window.testIsAsync = true;
+onload = runRepaintTest;
+</script>

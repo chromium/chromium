@@ -77,7 +77,7 @@ source_set("win") {
   sources = [
     "audio_volume_filter_win.cc",
     "audio_volume_filter_win.h",
-    "com_imported_mstscax.tlh",
+    "com_imported_mstscax.h",
     "com_security.cc",
     "com_security.h",
     "default_audio_device_change_detector.cc",
@@ -118,7 +118,7 @@ source_set("win") {
 
   if (is_clang) {
     # TODO(thakis): Remove this once midl.exe no longer produces nonstandard
-    # C++ (see the enums in com_imported_mstscax.tlh).
+    # C++ (see the enums in com_imported_mstscax.h).
     cflags = [ "-Wno-microsoft-enum-forward-reference" ]
   }
 
@@ -136,7 +136,7 @@ source_set("win") {
     "//remoting/protocol",
     "//remoting/resources",
     "//services/device/wake_lock/power_save_blocker",
-    "//third_party/webrtc/modules/desktop_capture",
+    "//third_party/webrtc_overrides:webrtc_component",
     "//ui/base",
     "//ui/events:dom_keycode_converter",
     "//ui/events/platform",
@@ -199,6 +199,7 @@ midl("remoting_lib_idl") {
   deps = [
     ":generate_idl",
   ]
+  writes_tlb = true
 }
 
 config("MIDL_config") {
@@ -290,6 +291,7 @@ executable("remoting_console") {
   ]
 
   if (!is_asan) {
+    no_default_deps = true
     ldflags = [
       "/ENTRY:HostEntryPoint",
       # "/NODEFAULTLIB",
@@ -320,6 +322,7 @@ executable("remoting_me2me_host") {
   output_name = "remoting_host"
 
   if (!is_asan) {
+    no_default_deps = true
     ldflags = [
       "/ENTRY:HostEntryPoint",
       # "/NODEFAULTLIB",
@@ -417,7 +420,7 @@ shared_library("remoting_core") {
     "//remoting/protocol",
     "//sandbox/win:sandbox",  # Should always use Windows version
     "//services/network/public/mojom",
-    "//third_party/webrtc/modules/desktop_capture",
+    "//third_party/webrtc_overrides:webrtc_component",
   ]
 
   ldflags = [
@@ -466,6 +469,7 @@ executable("remoting_desktop") {
   ]
 
   if (!is_asan) {
+    no_default_deps = true
     ldflags = [
       "/ENTRY:HostEntryPoint",
       # "/NODEFAULTLIB",
@@ -515,4 +519,3 @@ remoting_localize("remoting_windows_resources") {
 
   locales = remoting_locales
 }
-# TODO(GYP) More Windows remoting targets from remoting_host_win.gypi

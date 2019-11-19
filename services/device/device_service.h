@@ -10,11 +10,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
-#include "device/usb/mojo/device_manager_impl.h"
-#include "device/usb/mojo/device_manager_test.h"
-#include "device/usb/public/mojom/device_manager.mojom.h"
-#include "device/usb/public/mojom/device_manager_test.mojom.h"
-#include "mojo/public/cpp/bindings/binding_set.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/device/geolocation/geolocation_provider.h"
 #include "services/device/geolocation/geolocation_provider_impl.h"
 #include "services/device/geolocation/public_ip_address_geolocation_provider.h"
@@ -30,8 +26,12 @@
 #include "services/device/public/mojom/sensor_provider.mojom.h"
 #include "services/device/public/mojom/serial.mojom.h"
 #include "services/device/public/mojom/time_zone_monitor.mojom.h"
+#include "services/device/public/mojom/usb_manager.mojom.h"
+#include "services/device/public/mojom/usb_manager_test.mojom.h"
 #include "services/device/public/mojom/vibration_manager.mojom.h"
 #include "services/device/public/mojom/wake_lock_provider.mojom.h"
+#include "services/device/usb/mojo/device_manager_impl.h"
+#include "services/device/usb/mojo/device_manager_test.h"
 #include "services/device/wake_lock/wake_lock_context.h"
 #include "services/device/wake_lock/wake_lock_provider.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
@@ -60,6 +60,7 @@ class SingleThreadTaskRunner;
 }
 
 namespace network {
+class NetworkConnectionTracker;
 class SharedURLLoaderFactory;
 }  // namespace network
 
@@ -71,8 +72,10 @@ class SerialPortManagerImpl;
 #endif
 
 class DeviceService;
+class PlatformSensorProvider;
 class PowerMonitorMessageBroadcaster;
 class PublicIpAddressLocationNotifier;
+class SensorProviderImpl;
 class TimeZoneMonitor;
 
 #if defined(OS_ANDROID)
@@ -83,6 +86,7 @@ std::unique_ptr<DeviceService> CreateDeviceService(
     scoped_refptr<base::SingleThreadTaskRunner> file_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    network::NetworkConnectionTracker* network_connection_tracker,
     const std::string& geolocation_api_key,
     bool use_gms_core_location_provider,
     const WakeLockContextCallback& wake_lock_context_callback,
@@ -94,6 +98,7 @@ std::unique_ptr<DeviceService> CreateDeviceService(
     scoped_refptr<base::SingleThreadTaskRunner> file_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    network::NetworkConnectionTracker* network_connection_tracker,
     const std::string& geolocation_api_key,
     const CustomLocationProviderCallback& custom_location_provider_callback,
     service_manager::mojom::ServiceRequest request);
@@ -106,6 +111,7 @@ class DeviceService : public service_manager::Service {
       scoped_refptr<base::SingleThreadTaskRunner> file_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      network::NetworkConnectionTracker* network_connection_tracker,
       const std::string& geolocation_api_key,
       const WakeLockContextCallback& wake_lock_context_callback,
       const base::android::JavaRef<jobject>& java_nfc_delegate,
@@ -115,10 +121,14 @@ class DeviceService : public service_manager::Service {
       scoped_refptr<base::SingleThreadTaskRunner> file_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      network::NetworkConnectionTracker* network_connection_tracker,
       const std::string& geolocation_api_key,
       service_manager::mojom::ServiceRequest request);
 #endif
   ~DeviceService() override;
+
+  void SetPlatformSensorProviderForTesting(
+      std::unique_ptr<PlatformSensorProvider> provider);
 
  private:
   // service_manager::Service:
@@ -127,58 +137,76 @@ class DeviceService : public service_manager::Service {
                        const std::string& interface_name,
                        mojo::ScopedMessagePipeHandle interface_pipe) override;
 
-  void BindFingerprintRequest(mojom::FingerprintRequest request);
-  void BindGeolocationConfigRequest(mojom::GeolocationConfigRequest request);
-  void BindGeolocationContextRequest(mojom::GeolocationContextRequest request);
-  void BindGeolocationControlRequest(mojom::GeolocationControlRequest request);
+  void BindFingerprintReceiver(
+      mojo::PendingReceiver<mojom::Fingerprint> receiver);
+  void BindGeolocationConfigReceiver(
+      mojo::PendingReceiver<mojom::GeolocationConfig> receiver);
+  void BindGeolocationContextReceiver(
+      mojo::PendingReceiver<mojom::GeolocationContext> receiver);
+  void BindGeolocationControlReceiver(
+      mojo::PendingReceiver<mojom::GeolocationControl> receiver);
 
 #if defined(OS_LINUX) && defined(USE_UDEV)
-  void BindInputDeviceManagerRequest(mojom::InputDeviceManagerRequest request);
+  void BindInputDeviceManagerReceiver(
+      mojo::PendingReceiver<mojom::InputDeviceManager> receiver);
 #endif
 
 #if !defined(OS_ANDROID)
-  void BindBatteryMonitorRequest(mojom::BatteryMonitorRequest request);
-  void BindHidManagerRequest(mojom::HidManagerRequest request);
-  void BindNFCProviderRequest(mojom::NFCProviderRequest request);
-  void BindVibrationManagerRequest(mojom::VibrationManagerRequest request);
+  void BindBatteryMonitorReceiver(
+      mojo::PendingReceiver<mojom::BatteryMonitor> receiver);
+  void BindHidManagerReceiver(
+      mojo::PendingReceiver<mojom::HidManager> receiver);
+  void BindNFCProviderReceiver(
+      mojo::PendingReceiver<mojom::NFCProvider> receiver);
+  void BindVibrationManagerReceiver(
+      mojo::PendingReceiver<mojom::VibrationManager> receiver);
 #endif
 
 #if defined(OS_CHROMEOS)
-  void BindBluetoothSystemFactoryRequest(
-      mojom::BluetoothSystemFactoryRequest request);
-  void BindMtpManagerRequest(mojom::MtpManagerRequest request);
+  void BindBluetoothSystemFactoryReceiver(
+      mojo::PendingReceiver<mojom::BluetoothSystemFactory> receiver);
+  void BindMtpManagerReceiver(
+      mojo::PendingReceiver<mojom::MtpManager> receiver);
 #endif
 
-  void BindPowerMonitorRequest(mojom::PowerMonitorRequest request);
+  void BindPowerMonitorReceiver(
+      mojo::PendingReceiver<mojom::PowerMonitor> receiver);
 
-  void BindPublicIpAddressGeolocationProviderRequest(
-      mojom::PublicIpAddressGeolocationProviderRequest request);
+  void BindPublicIpAddressGeolocationProviderReceiver(
+      mojo::PendingReceiver<mojom::PublicIpAddressGeolocationProvider>
+          receiver);
 
-  void BindScreenOrientationListenerRequest(
-      mojom::ScreenOrientationListenerRequest request);
+  void BindScreenOrientationListenerReceiver(
+      mojo::PendingReceiver<mojom::ScreenOrientationListener> receiver);
 
-  void BindSensorProviderRequest(mojom::SensorProviderRequest request);
+  void BindSensorProviderReceiver(
+      mojo::PendingReceiver<mojom::SensorProvider> receiver);
 
-  void BindTimeZoneMonitorRequest(mojom::TimeZoneMonitorRequest request);
+  void BindTimeZoneMonitorReceiver(
+      mojo::PendingReceiver<mojom::TimeZoneMonitor> receiver);
 
-  void BindWakeLockProviderRequest(mojom::WakeLockProviderRequest request);
+  void BindWakeLockProviderReceiver(
+      mojo::PendingReceiver<mojom::WakeLockProvider> receiver);
 
-  void BindUsbDeviceManagerRequest(mojom::UsbDeviceManagerRequest request);
+  void BindUsbDeviceManagerReceiver(
+      mojo::PendingReceiver<mojom::UsbDeviceManager> receiver);
 
-  void BindUsbDeviceManagerTestRequest(
-      mojom::UsbDeviceManagerTestRequest request);
+  void BindUsbDeviceManagerTestReceiver(
+      mojo::PendingReceiver<mojom::UsbDeviceManagerTest> receiver);
 
   service_manager::ServiceBinding service_binding_;
   std::unique_ptr<PowerMonitorMessageBroadcaster>
       power_monitor_message_broadcaster_;
   std::unique_ptr<PublicIpAddressGeolocationProvider>
       public_ip_address_geolocation_provider_;
+  std::unique_ptr<SensorProviderImpl> sensor_provider_;
   std::unique_ptr<TimeZoneMonitor> time_zone_monitor_;
   std::unique_ptr<usb::DeviceManagerImpl> usb_device_manager_;
   std::unique_ptr<usb::DeviceManagerTest> usb_device_manager_test_;
   scoped_refptr<base::SingleThreadTaskRunner> file_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+  network::NetworkConnectionTracker* network_connection_tracker_;
 
   const std::string geolocation_api_key_;
   WakeLockContextCallback wake_lock_context_callback_;

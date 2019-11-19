@@ -11,13 +11,10 @@
       background-color: green;
       width: 200px;
       height: 1333px;
-      transform: translateZ(0);
+      will-change: transform;
     }
   </style>
   <script>
-    if (window.testRunner)
-      testRunner.dumpAsTextWithPixelResults();
-
     function scalePage()
     {
       if (window.internals)

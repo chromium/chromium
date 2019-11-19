@@ -37,26 +37,50 @@
 #include "third_party/blink/renderer/core/style/data_equivalency.h"
 #include "third_party/blink/renderer/platform/animation/compositor_keyframe_model.h"
 #include "third_party/blink/renderer/platform/animation/timing_function.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
 namespace blink {
 
-struct Timing {
+class EffectTiming;
+class ComputedEffectTiming;
+
+static inline bool IsNull(double value) {
+  return std::isnan(value);
+}
+
+static inline double NullValue() {
+  return std::numeric_limits<double>::quiet_NaN();
+}
+
+static inline base::Optional<double> OptionalFromDoubleWithNull(double value) {
+  return IsNull(value) ? base::nullopt : base::Optional<double>(value);
+}
+
+struct CORE_EXPORT Timing {
   USING_FAST_MALLOC(Timing);
 
  public:
+  // Note that logic in CSSAnimations depends on the order of these values.
+  enum Phase {
+    kPhaseBefore,
+    kPhaseActive,
+    kPhaseAfter,
+    kPhaseNone,
+  };
+  // Represents the animation direction from the Web Animations spec, see
+  // https://drafts.csswg.org/web-animations-1/#animation-direction.
+  enum AnimationDirection {
+    kForwards,
+    kBackwards,
+  };
+
   using FillMode = CompositorKeyframeModel::FillMode;
   using PlaybackDirection = CompositorKeyframeModel::Direction;
 
   static String FillModeString(FillMode);
   static FillMode StringToFillMode(const String&);
   static String PlaybackDirectionString(PlaybackDirection);
-
-  static const Timing& Defaults() {
-    DEFINE_STATIC_LOCAL(Timing, timing, ());
-    return timing;
-  }
 
   Timing()
       : start_delay(0),
@@ -78,6 +102,16 @@ struct Timing {
            iteration_duration.value() >= AnimationTimeDelta());
     DCHECK(timing_function);
   }
+
+  // https://drafts.csswg.org/web-animations-1/#iteration-duration
+  AnimationTimeDelta IterationDuration() const;
+
+  // https://drafts.csswg.org/web-animations-1/#active-duration
+  double ActiveDuration() const;
+  double EndTimeInternal() const;
+
+  Timing::FillMode ResolvedFillMode(bool is_animation) const;
+  EffectTiming* ConvertToEffectTiming() const;
 
   bool operator==(const Timing& other) const {
     return start_delay == other.start_delay && end_delay == other.end_delay &&
@@ -101,6 +135,29 @@ struct Timing {
 
   PlaybackDirection direction;
   scoped_refptr<TimingFunction> timing_function;
+
+  struct CalculatedTiming {
+    DISALLOW_NEW();
+    Phase phase = Phase::kPhaseNone;
+    base::Optional<double> current_iteration = 0;
+    base::Optional<double> progress = 0;
+    bool is_current = false;
+    bool is_in_effect = false;
+    bool is_in_play = false;
+    double local_time = NullValue();
+    AnimationTimeDelta time_to_forwards_effect_change =
+        AnimationTimeDelta::Max();
+    AnimationTimeDelta time_to_reverse_effect_change =
+        AnimationTimeDelta::Max();
+    double time_to_next_iteration = std::numeric_limits<double>::infinity();
+  };
+
+  CalculatedTiming CalculateTimings(double local_time,
+                                    AnimationDirection animation_direction,
+                                    bool is_keyframe_effect,
+                                    base::Optional<double> playback_rate) const;
+  ComputedEffectTiming* getComputedTiming(const CalculatedTiming& calculated,
+                                          bool is_keyframe_effect) const;
 };
 
 }  // namespace blink

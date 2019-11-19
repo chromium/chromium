@@ -1,0 +1,14 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://w3c.github.io/push-api/#pushsubscriptionchangeevent-interface
+
+[
+    Constructor(DOMString type, optional PushSubscriptionChangeEventInit eventInitDict),
+    Exposed=ServiceWorker,
+    RuntimeEnabled=PushMessagingSubscriptionChange
+] interface PushSubscriptionChangeEvent : ExtendableEvent {
+  readonly attribute PushSubscription? newSubscription;
+  readonly attribute PushSubscription? oldSubscription;
+};

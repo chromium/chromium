@@ -10,6 +10,7 @@
 #include "content/browser/frame_host/debug_urls.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/web_ui_controller.h"
+#include "content/public/common/content_client.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/common/url_utils.h"
 #include "url/gurl.h"
@@ -41,12 +42,11 @@ WebUIControllerFactoryRegistry* WebUIControllerFactoryRegistry::GetInstance() {
 }
 
 std::unique_ptr<WebUIController>
-WebUIControllerFactoryRegistry::CreateWebUIControllerForURL(
-    WebUI* web_ui,
-    const GURL& url) const {
+WebUIControllerFactoryRegistry::CreateWebUIControllerForURL(WebUI* web_ui,
+                                                            const GURL& url) {
   std::vector<WebUIControllerFactory*>& factories =
       g_web_ui_controller_factories.Get();
-  for (const WebUIControllerFactory* factory : factories) {
+  for (WebUIControllerFactory* factory : factories) {
     auto controller = factory->CreateWebUIControllerForURL(web_ui, url);
     if (controller)
       return controller;
@@ -55,7 +55,8 @@ WebUIControllerFactoryRegistry::CreateWebUIControllerForURL(
 }
 
 WebUI::TypeID WebUIControllerFactoryRegistry::GetWebUIType(
-    BrowserContext* browser_context, const GURL& url) const {
+    BrowserContext* browser_context,
+    const GURL& url) {
   std::vector<WebUIControllerFactory*>* factories =
       g_web_ui_controller_factories.Pointer();
   for (size_t i = 0; i < factories->size(); ++i) {
@@ -67,7 +68,8 @@ WebUI::TypeID WebUIControllerFactoryRegistry::GetWebUIType(
 }
 
 bool WebUIControllerFactoryRegistry::UseWebUIForURL(
-    BrowserContext* browser_context, const GURL& url) const {
+    BrowserContext* browser_context,
+    const GURL& url) {
   std::vector<WebUIControllerFactory*>* factories =
       g_web_ui_controller_factories.Pointer();
   for (size_t i = 0; i < factories->size(); ++i) {
@@ -78,7 +80,8 @@ bool WebUIControllerFactoryRegistry::UseWebUIForURL(
 }
 
 bool WebUIControllerFactoryRegistry::UseWebUIBindingsForURL(
-    BrowserContext* browser_context, const GURL& url) const {
+    BrowserContext* browser_context,
+    const GURL& url) {
   std::vector<WebUIControllerFactory*>* factories =
       g_web_ui_controller_factories.Pointer();
   for (size_t i = 0; i < factories->size(); ++i) {
@@ -90,7 +93,7 @@ bool WebUIControllerFactoryRegistry::UseWebUIBindingsForURL(
 
 bool WebUIControllerFactoryRegistry::IsURLAcceptableForWebUI(
     BrowserContext* browser_context,
-    const GURL& url) const {
+    const GURL& url) {
   return UseWebUIForURL(browser_context, url) ||
          // It's possible to load about:blank in a Web UI renderer.
          // See http://crbug.com/42547

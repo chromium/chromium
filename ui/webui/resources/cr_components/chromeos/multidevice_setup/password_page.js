@@ -41,12 +41,6 @@ Polymer({
       value: 'back',
     },
 
-    /** Overridden from UiPageContainerBehavior. */
-    headerId: {
-      type: String,
-      value: 'passwordPageHeader',
-    },
-
     /**
      * Authentication token; retrieved using the quickUnlockPrivate API.
      * @type {string}
@@ -100,6 +94,10 @@ Polymer({
 
   clearPasswordTextInput: function() {
     this.$.passwordInput.value = '';
+  },
+
+  focusPasswordTextInput: function() {
+    this.$.passwordInput.focus();
   },
 
   /** @override */

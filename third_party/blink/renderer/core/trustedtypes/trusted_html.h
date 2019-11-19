@@ -15,11 +15,7 @@ class CORE_EXPORT TrustedHTML final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static TrustedHTML* Create(const String& html) {
-    return MakeGarbageCollected<TrustedHTML>(html);
-  }
-
-  TrustedHTML(const String& html);
+  explicit TrustedHTML(const String& html);
 
   // TrustedHTML.idl
   String toString() const;

@@ -6,13 +6,14 @@ package org.chromium.chrome.browser.download.home.list;
 
 import android.content.Intent;
 import android.os.Handler;
-import android.support.annotation.Nullable;
 import android.support.v4.util.Pair;
+
+import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CollectionUtil;
-import org.chromium.base.ContextUtils;
-import org.chromium.chrome.browser.ChromeApplication;
+import org.chromium.chrome.browser.ChromeFeatureList;
+import org.chromium.chrome.browser.GlobalDiscardableReferencePool;
 import org.chromium.chrome.browser.download.home.DownloadManagerUiConfig;
 import org.chromium.chrome.browser.download.home.JustNowProvider;
 import org.chromium.chrome.browser.download.home.OfflineItemSource;
@@ -29,9 +30,15 @@ import org.chromium.chrome.browser.download.home.glue.OfflineContentProviderGlue
 import org.chromium.chrome.browser.download.home.glue.ThumbnailRequestGlue;
 import org.chromium.chrome.browser.download.home.list.DateOrderedListCoordinator.DateOrderedListObserver;
 import org.chromium.chrome.browser.download.home.list.DateOrderedListCoordinator.DeleteController;
+import org.chromium.chrome.browser.download.home.list.mutator.DateComparator;
+import org.chromium.chrome.browser.download.home.list.mutator.DateLabelAdder;
+import org.chromium.chrome.browser.download.home.list.mutator.DateOrderedListMutator;
+import org.chromium.chrome.browser.download.home.list.mutator.DateOrderedListMutator.LabelAdder;
+import org.chromium.chrome.browser.download.home.list.mutator.NoopLabelAdder;
+import org.chromium.chrome.browser.download.home.list.mutator.Paginator;
+import org.chromium.chrome.browser.download.home.list.mutator.ScoreComparator;
 import org.chromium.chrome.browser.download.home.metrics.OfflineItemStartupLogger;
 import org.chromium.chrome.browser.download.home.metrics.UmaUtils;
-import org.chromium.chrome.browser.download.home.metrics.UmaUtils.ImagesMenuAction;
 import org.chromium.chrome.browser.download.home.metrics.UmaUtils.ViewAction;
 import org.chromium.chrome.browser.widget.ThumbnailProvider;
 import org.chromium.chrome.browser.widget.ThumbnailProvider.ThumbnailRequest;
@@ -46,6 +53,7 @@ import org.chromium.components.offline_items_collection.VisualsCallback;
 import java.io.Closeable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -109,6 +117,12 @@ class DateOrderedListMediator {
     private final TypeOfflineItemFilter mTypeFilter;
     private final SearchOfflineItemFilter mSearchFilter;
 
+    private final Comparator<OfflineItem> mDateComparator;
+    private final Comparator<OfflineItem> mScoreComparator;
+    private final LabelAdder mDateLabelAdder;
+    private final LabelAdder mNoopLabelAdder;
+    private final Paginator mPaginator;
+
     /**
      * A selection observer that correctly updates the selection state for each item in the list.
      */
@@ -162,6 +176,8 @@ class DateOrderedListMediator {
         //                         [TypeOfflineItemFilter] ->
         //                             [DateOrderedListMutator] ->
         //                                 [ListItemModel]
+        // TODO(shaktisahu): Look into replacing mutator chain by
+        // sorter -> label adder -> property setter -> paginator -> model
 
         mProvider = new OfflineContentProviderGlue(provider, config);
         mShareController = shareController;
@@ -177,16 +193,23 @@ class DateOrderedListMediator {
         mDeleteUndoFilter = new DeleteUndoOfflineItemFilter(mInvalidStateFilter);
         mSearchFilter = new SearchOfflineItemFilter(mDeleteUndoFilter);
         mTypeFilter = new TypeOfflineItemFilter(mSearchFilter);
+
+        JustNowProvider justNowProvider = new JustNowProvider(config);
+        mDateComparator = new DateComparator(justNowProvider);
+        mScoreComparator = new ScoreComparator();
+        mDateLabelAdder = new DateLabelAdder(config, justNowProvider);
+        mNoopLabelAdder = new NoopLabelAdder();
+        mPaginator = new Paginator();
         mListMutator = new DateOrderedListMutator(
-                mTypeFilter, mModel, config, new JustNowProvider(config));
+                mTypeFilter, mModel, justNowProvider, mDateComparator, mDateLabelAdder, mPaginator);
 
         new OfflineItemStartupLogger(config, mInvalidStateFilter);
 
         mSearchFilter.addObserver(new EmptyStateObserver(mSearchFilter, dateOrderedListObserver));
-        mThumbnailProvider = new ThumbnailProviderImpl(
-                ((ChromeApplication) ContextUtils.getApplicationContext()).getReferencePool(),
-                config.inMemoryThumbnailCacheSizeBytes,
-                ThumbnailProviderImpl.ClientType.DOWNLOAD_HOME);
+        mThumbnailProvider =
+                new ThumbnailProviderImpl(GlobalDiscardableReferencePool.getReferencePool(),
+                        config.inMemoryThumbnailCacheSizeBytes,
+                        ThumbnailProviderImpl.ClientType.DOWNLOAD_HOME);
         mSelectionObserver = new MediatorSelectionObserver(selectionDelegate);
 
         mModel.getProperties().set(ListProperties.ENABLE_ITEM_ANIMATIONS, true);
@@ -195,14 +218,13 @@ class DateOrderedListMediator {
         mModel.getProperties().set(ListProperties.CALLBACK_RESUME, this ::onResumeItem);
         mModel.getProperties().set(ListProperties.CALLBACK_CANCEL, this ::onCancelItem);
         mModel.getProperties().set(ListProperties.CALLBACK_SHARE, this ::onShareItem);
-        mModel.getProperties().set(ListProperties.CALLBACK_SHARE_ALL, this ::onShareItems);
         mModel.getProperties().set(ListProperties.CALLBACK_REMOVE, this ::onDeleteItem);
-        mModel.getProperties().set(ListProperties.CALLBACK_REMOVE_ALL, this ::onDeleteItems);
         mModel.getProperties().set(ListProperties.PROVIDER_VISUALS, this ::getVisuals);
         mModel.getProperties().set(ListProperties.CALLBACK_SELECTION, this ::onSelection);
-        mModel.getProperties().set(ListProperties.CALLBACK_RENAME, this::onRenameItem);
+        mModel.getProperties().set(ListProperties.CALLBACK_RENAME,
+                mUiConfig.isRenameEnabled ? this::onRenameItem : null);
         mModel.getProperties().set(
-                ListProperties.CALLBACK_START_SELECTION, this ::onStartSelection);
+                ListProperties.CALLBACK_PAGINATION_CLICK, mListMutator::loadMorePages);
     }
 
     /** Tears down this mediator. */
@@ -217,7 +239,16 @@ class DateOrderedListMediator {
      * @see TypeOfflineItemFilter#onFilterSelected(int)
      */
     public void onFilterTypeSelected(@FilterType int filter) {
-        mListMutator.onFilterTypeSelected(filter);
+        mPaginator.reset();
+        Comparator<OfflineItem> comparator = mDateComparator;
+        LabelAdder labelAdder = mDateLabelAdder;
+        if (filter == FilterType.PREFETCHED) {
+            if (ChromeFeatureList.isEnabled(ChromeFeatureList.OFFLINE_HOME)) {
+                comparator = mScoreComparator;
+            }
+            labelAdder = mNoopLabelAdder;
+        }
+        mListMutator.setMutators(comparator, labelAdder);
         try (AnimationDisableClosable closeable = new AnimationDisableClosable()) {
             mTypeFilter.onFilterSelected(filter);
         }
@@ -284,14 +315,6 @@ class DateOrderedListMediator {
         mSelectionDelegate.toggleSelectionForItem(item);
     }
 
-    private void onStartSelection() {
-        // We are hard coding that this is coming from the Photos section, as that is the only
-        // one that supports a section menu.  If that changes we need to support a wider array
-        // of metrics.
-        UmaUtils.recordImagesMenuAction(ImagesMenuAction.MENU_START_SELECTING);
-        mSelectionDelegate.setSelectionModeEnabledForZeroItems(true);
-    }
-
     private void onOpenItem(OfflineItem item) {
         UmaUtils.recordItemAction(ViewAction.OPEN);
         mProvider.openItem(item);
@@ -322,24 +345,8 @@ class DateOrderedListMediator {
         shareItemsInternal(CollectionUtil.newHashSet(item));
     }
 
-    private void onShareItems(List<OfflineItem> items) {
-        // We are hard coding that this is coming from the Photos section, as that is the only
-        // one that supports a section menu.  If that changes we need to support a wider array
-        // of metrics.
-        UmaUtils.recordImagesMenuAction(ImagesMenuAction.MENU_SHARE_ALL);
-        shareItemsInternal(items);
-    }
-
-    private void onDeleteItems(List<OfflineItem> items) {
-        // We are hard coding that this is coming from the Photos section, as that is the only
-        // one that supports a section menu.  If that changes we need to support a wider array
-        // of metrics.
-        UmaUtils.recordImagesMenuAction(ImagesMenuAction.MENU_DELETE_ALL);
-        deleteItemsInternal(items);
-    }
-
     private void onRenameItem(OfflineItem item) {
-        // TODO(hesen): Add sanity check canRename for item, and add uma stats.
+        UmaUtils.recordItemAction(ViewAction.MENU_RENAME);
         mRenameController.rename(item.title, (newName, renameCallback) -> {
             mProvider.renameItem(item, newName, renameCallback);
         });

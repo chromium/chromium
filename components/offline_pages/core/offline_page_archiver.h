@@ -15,25 +15,11 @@
 #include "components/offline_pages/core/offline_page_types.h"
 #include "url/gurl.h"
 
-namespace base {
-class SequencedTaskRunner;
-}  // namespace base
-
 namespace content {
 class WebContents;
 }  // namespace content
 
 namespace offline_pages {
-
-class SystemDownloadManager;
-
-// The results of attempting to move the offline page to a public directory, and
-// registering it with the system download manager.
-struct PublishArchiveResult {
-  SavePageResult move_result;
-  base::FilePath new_file_path;
-  int64_t download_id;
-};
 
 // Interface of a class responsible for creation of the archive for offline use.
 //
@@ -69,10 +55,6 @@ class OfflinePageArchiver {
     ERROR_CANCELED,                 // Caller canceled the request.
     ERROR_CONTENT_UNAVAILABLE,      // Content to archive is not available.
     ERROR_ARCHIVE_CREATION_FAILED,  // Creation of archive failed.
-    ERROR_SECURITY_CERTIFICATE,     // Page was loaded on secure connection, but
-                                    // there was a security error.
-    ERROR_ERROR_PAGE,               // We detected an error page.
-    ERROR_INTERSTITIAL_PAGE,        // We detected an interstitial page.
     ERROR_SKIPPED,                  // Page shouldn't be archived like NTP or
                                     // file urls.
     ERROR_DIGEST_CALCULATION_FAILED,  // Failed to compute digest.
@@ -90,6 +72,9 @@ class OfflinePageArchiver {
 
     // Run page problem detectors while generating MTHML if true.
     bool use_page_problem_detectors = false;
+
+    // Whether to enable on-the-fly hash computation.
+    bool use_on_the_fly_hash_computation = false;
   };
 
   // Callback for the final result of an attempt to generate of offline page
@@ -103,10 +88,6 @@ class OfflinePageArchiver {
                               int64_t /* file_size */,
                               const std::string& /* digest */)>;
 
-  using PublishArchiveDoneCallback =
-      base::OnceCallback<void(const OfflinePageItem& /* offline_page */,
-                              PublishArchiveResult /* archive_result */)>;
-
   virtual ~OfflinePageArchiver() {}
 
   // Starts creating the archive in the |archives_dir| per
@@ -117,17 +98,6 @@ class OfflinePageArchiver {
                              content::WebContents* web_contents,
                              CreateArchiveCallback callback) = 0;
 
-  // Publishes the page on a background thread, then returns to the
-  // OfflinePageModelTaskified's done callback.
-  //
-  // TODO(https://crbug.com/849424): move the publish logic out of the archiver
-  // as it doesn't depend on the embedder code as creation logic does.
-  virtual void PublishArchive(
-      const OfflinePageItem& offline_page,
-      const scoped_refptr<base::SequencedTaskRunner>& background_task_runner,
-      const base::FilePath& publish_directory,
-      SystemDownloadManager* download_manager,
-      PublishArchiveDoneCallback publish_done_callback);
 };
 
 }  // namespace offline_pages

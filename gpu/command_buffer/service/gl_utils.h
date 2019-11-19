@@ -13,7 +13,10 @@
 
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/constants.h"
+#include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/overlay_transform.h"
+#include "ui/gfx/rrect_f.h"
 #include "ui/gfx/transform.h"
 #include "ui/gl/gl_bindings.h"
 
@@ -56,6 +59,7 @@ struct CALayerSharedState {
   float opacity;
   bool is_clipped;
   gfx::Rect clip_rect;
+  gfx::RRectF rounded_corner_bounds;
   int sorting_context_id;
   gfx::Transform transform;
 };
@@ -116,7 +120,6 @@ bool ValidateCompressedTexSubDimensions(GLenum target,
                                         GLsizei depth,
                                         GLenum format,
                                         Texture* texture,
-                                        bool restrict_for_webgl,
                                         const char** error_message);
 
 bool ValidateCompressedTexDimensions(GLenum target,
@@ -125,7 +128,6 @@ bool ValidateCompressedTexDimensions(GLenum target,
                                      GLsizei height,
                                      GLsizei depth,
                                      GLenum format,
-                                     bool restrict_for_webgl,
                                      const char** error_message);
 
 bool ValidateCopyTexFormatHelper(const FeatureInfo* feature_info,
@@ -151,6 +153,14 @@ bool ValidateCopyTextureCHROMIUMInternalFormats(const FeatureInfo* feature_info,
                                                 GLenum source_internal_format,
                                                 GLenum dest_internal_format,
                                                 std::string* output_error_msg);
+
+GLenum GetTextureBindingQuery(GLenum texture_type);
+
+gfx::OverlayTransform GetGFXOverlayTransform(GLenum plane_transform);
+
+bool GetGFXBufferFormat(GLenum internal_format, gfx::BufferFormat* out_format);
+bool GetGFXBufferUsage(GLenum buffer_usage, gfx::BufferUsage* out_usage);
+
 }  // namespace gles2
 }  // namespace gpu
 

@@ -4,6 +4,8 @@
 
 '''Count number of occurrences of a given message ID.'''
 
+from __future__ import print_function
+
 import getopt
 import sys
 
@@ -32,8 +34,8 @@ class CountMessage(interface.Tool):
   def Run(self, opts, args):
     args = self.ParseOptions(args)
     if len(args) != 1:
-      print ('This tool takes a single tool-specific argument, the message '
-             'ID to count.')
+      print('This tool takes a single tool-specific argument, the message '
+            'ID to count.')
       return 2
     self.SetOptions(opts)
 
@@ -47,4 +49,4 @@ class CountMessage(interface.Tool):
       if c.GetId() == id:
         count += 1
 
-    print "There are %d occurrences of message %s." % (count, id)
+    print("There are %d occurrences of message %s." % (count, id))

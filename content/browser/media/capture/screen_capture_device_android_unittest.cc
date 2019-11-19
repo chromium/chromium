@@ -17,11 +17,13 @@ const int kFrameRate = 30;
 
 class MockDeviceClient : public media::VideoCaptureDevice::Client {
  public:
-  MOCK_METHOD7(OnIncomingCapturedData,
+  MOCK_METHOD9(OnIncomingCapturedData,
                void(const uint8_t* data,
                     int length,
                     const media::VideoCaptureFormat& frame_format,
+                    const gfx::ColorSpace& color_space,
                     int rotation,
+                    bool flip_y,
                     base::TimeTicks reference_time,
                     base::TimeDelta tiemstamp,
                     int frame_feedback_id));
@@ -63,6 +65,7 @@ class MockDeviceClient : public media::VideoCaptureDevice::Client {
   void OnIncomingCapturedBufferExt(
       Buffer buffer,
       const media::VideoCaptureFormat& format,
+      const gfx::ColorSpace& color_space,
       base::TimeTicks reference_time,
       base::TimeDelta timestamp,
       gfx::Rect visible_rect,

@@ -48,11 +48,15 @@ class UiUtils {
   void ReportUiOperationResult(const UiTestOperationType& action_type,
                                const UiTestOperationResult& result);
 
+  static void DisableFrameTimeoutForTesting();
+
  private:
   static void PollForBrowserRenderer(base::RunLoop* wait_loop);
   static VRBrowserRendererThreadWin* GetRendererThread();
   static BrowserRenderer* GetBrowserRenderer();
 
+  void WatchElementForVisibilityStatusForTesting(
+      VisibilityChangeExpectation visibility_expectation);
   std::string UiTestOperationResultToString(UiTestOperationResult& result);
 
   std::unique_ptr<BrowserTestBrowserRendererBrowserInterface> interface_;

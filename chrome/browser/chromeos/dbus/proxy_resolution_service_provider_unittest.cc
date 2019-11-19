@@ -9,6 +9,8 @@
 #include "chromeos/dbus/services/service_provider_test_helper.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/net_errors.h"
 #include "net/proxy_resolution/proxy_info.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -43,14 +45,17 @@ class MockNetworkContext : public network::TestNetworkContext {
   // network::mojom::NetworkContext implementation:
   void LookUpProxyForURL(
       const GURL& url,
-      ::network::mojom::ProxyLookupClientPtr proxy_lookup_client) override {
+      mojo::PendingRemote<::network::mojom::ProxyLookupClient>
+          proxy_lookup_client) override {
+    mojo::Remote<::network::mojom::ProxyLookupClient>
+        proxy_lookup_client_remote(std::move(proxy_lookup_client));
     if (lookup_proxy_result_.error == net::OK) {
       net::ProxyInfo proxy_info;
       proxy_info.UsePacString(lookup_proxy_result_.proxy_info_pac_string);
-      proxy_lookup_client->OnProxyLookupComplete(net::OK, proxy_info);
+      proxy_lookup_client_remote->OnProxyLookupComplete(net::OK, proxy_info);
     } else {
-      proxy_lookup_client->OnProxyLookupComplete(lookup_proxy_result_.error,
-                                                 base::nullopt);
+      proxy_lookup_client_remote->OnProxyLookupComplete(
+          lookup_proxy_result_.error, base::nullopt);
     }
   }
 

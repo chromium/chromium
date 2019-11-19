@@ -116,7 +116,11 @@ std::ostream& operator<<(
       stream << "[Error: KeyActions do not specify an active key]";
       break;
     case ResultCode::kErrorKeyCreationKeyTypeNotSupported:
-      stream << "[Error: KeyCreation instructions specify unsupported KeyType]";
+      stream << "[Error: Key-creation instructions specify unsupported "
+             << "KeyType]";
+      break;
+    case ResultCode::kErrorUserKeyPairCreationInstructionsInvalid:
+      stream << "[Error: Key-creation instructions for user key pair invalid]";
       break;
     case ResultCode::kErrorSymmetricKeyCreationMissingServerDiffieHellman:
       stream << "[Error: Cannot create symmetric key; missing server "
@@ -140,6 +144,12 @@ std::ostream& operator<<(
     case ResultCode::kErrorClientAppMetadataFetchFailed:
       stream << "[Error: Could not retrieve ClientAppMetadata from "
              << "ClientAppMetadataProvider]";
+      break;
+    case ResultCode::kErrorTimeoutWaitingForGcmRegistration:
+      stream << "[Error: Timeout waiting for GCM registration]";
+      break;
+    case ResultCode::kErrorTimeoutWaitingForClientAppMetadata:
+      stream << "[Error: Timeout waiting for ClientAppMetadata]";
       break;
   }
 

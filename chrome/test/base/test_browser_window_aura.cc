@@ -92,7 +92,7 @@ TestBrowserWindowViews::TestBrowserWindowViews(aura::Window* parent)
   params.bounds = gfx::Rect(5, 5, 20, 20);
   params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.parent = parent;
-  widget_->Init(params);
+  widget_->Init(std::move(params));
 }
 
 TestBrowserWindowViews::~TestBrowserWindowViews() {}

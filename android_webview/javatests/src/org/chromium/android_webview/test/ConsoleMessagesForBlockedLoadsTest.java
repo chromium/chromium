@@ -48,7 +48,7 @@ public class ConsoleMessagesForBlockedLoadsTest {
     private TestWebServer mWebServer;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mContentsClient = new TestAwContentsClient();
         mTestContainerView = mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
         mAwContents = mTestContainerView.getAwContents();
@@ -56,7 +56,7 @@ public class ConsoleMessagesForBlockedLoadsTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         if (mWebServer != null) mWebServer.shutdown();
     }
 

@@ -145,7 +145,7 @@ void MemoryDetails::CollectProcessData(
   process_data_.push_back(current_browser);
 
   // Finally return to the browser thread.
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&MemoryDetails::CollectChildInfoOnUIThread, this));
 }

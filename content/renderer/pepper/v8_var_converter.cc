@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <functional>
 #include <map>
 #include <memory>
 #include <string>
@@ -445,14 +446,14 @@ bool V8VarConverter::ToV8Value(const PP_Var& var,
 V8VarConverter::VarResult V8VarConverter::FromV8Value(
     v8::Local<v8::Value> val,
     v8::Local<v8::Context> context,
-    const base::Callback<void(const ScopedPPVar&, bool)>& callback) {
+    base::OnceCallback<void(const ScopedPPVar&, bool)> callback) {
   VarResult result;
   result.success = FromV8ValueInternal(val, context, &result.var);
   if (!result.success)
     resource_converter_->Reset();
   result.completed_synchronously = !resource_converter_->NeedsFlush();
   if (!result.completed_synchronously)
-    resource_converter_->Flush(base::Bind(callback, result.var));
+    resource_converter_->Flush(base::BindOnce(std::move(callback), result.var));
 
   return result;
 }

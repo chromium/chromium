@@ -35,16 +35,13 @@ def main():
   parser.add_argument('--isolated-script-test-output', type=str,
                       required=True)
   args, rest_args = parser.parse_known_args()
-  # Remove the chartjson extra arg until this script cares about chartjson
-  # results
-  index = 0
-  for arg in rest_args:
-    if ('--isolated-script-test-chartjson-output' in arg or
-        '--isolated-script-test-perf-output' in arg or
-        '--isolated-script-test-filter' in arg):
-      rest_args.pop(index)
-      break
-    index += 1
+  # Remove the isolated script extra args this script doesn't care about.
+  should_ignore_arg = lambda arg: any(to_ignore in arg for to_ignore in (
+    '--isolated-script-test-chartjson-output',
+    '--isolated-script-test-perf-output',
+    '--isolated-script-test-filter',
+    ))
+  rest_args = [arg for arg in rest_args if not should_ignore_arg(arg)]
 
   ret = common.run_command([sys.executable] + rest_args)
   with open(args.isolated_script_test_output, 'w') as fp:

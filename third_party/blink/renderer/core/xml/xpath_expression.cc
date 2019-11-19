@@ -36,16 +36,14 @@
 
 namespace blink {
 
-using namespace xpath;
-
 XPathExpression::XPathExpression() = default;
 
 XPathExpression* XPathExpression::CreateExpression(
     const String& expression,
     XPathNSResolver* resolver,
     ExceptionState& exception_state) {
-  XPathExpression* expr = XPathExpression::Create();
-  Parser parser;
+  auto* expr = MakeGarbageCollected<XPathExpression>();
+  xpath::Parser parser;
 
   expr->top_expression_ =
       parser.ParseStatement(expression, resolver, exception_state);
@@ -64,7 +62,7 @@ XPathResult* XPathExpression::evaluate(Node* context_node,
                                        uint16_t type,
                                        const ScriptValue&,
                                        ExceptionState& exception_state) {
-  if (!IsValidContextNode(context_node)) {
+  if (!xpath::IsValidContextNode(context_node)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
         "The node provided is '" + context_node->nodeName() +
@@ -72,8 +70,8 @@ XPathResult* XPathExpression::evaluate(Node* context_node,
     return nullptr;
   }
 
-  EvaluationContext evaluation_context(*context_node);
-  XPathResult* result = XPathResult::Create(
+  xpath::EvaluationContext evaluation_context(*context_node);
+  auto* result = MakeGarbageCollected<XPathResult>(
       evaluation_context, top_expression_->Evaluate(evaluation_context));
 
   if (evaluation_context.had_type_conversion_error) {

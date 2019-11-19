@@ -8,6 +8,7 @@
 #include <cstddef>
 #include <type_traits>
 
+#include "base/containers/buffer_iterator.h"
 #include "base/containers/span.h"
 #include "base/macros.h"
 #include "base/unguessable_token.h"
@@ -31,8 +32,8 @@ class BASE_EXPORT SharedMemoryMapping {
   SharedMemoryMapping();
 
   // Move operations are allowed.
-  SharedMemoryMapping(SharedMemoryMapping&& mapping);
-  SharedMemoryMapping& operator=(SharedMemoryMapping&& mapping);
+  SharedMemoryMapping(SharedMemoryMapping&& mapping) noexcept;
+  SharedMemoryMapping& operator=(SharedMemoryMapping&& mapping) noexcept;
 
   // Unmaps the region if the mapping is valid.
   virtual ~SharedMemoryMapping();
@@ -92,8 +93,9 @@ class BASE_EXPORT ReadOnlySharedMemoryMapping : public SharedMemoryMapping {
   ReadOnlySharedMemoryMapping();
 
   // Move operations are allowed.
-  ReadOnlySharedMemoryMapping(ReadOnlySharedMemoryMapping&&);
-  ReadOnlySharedMemoryMapping& operator=(ReadOnlySharedMemoryMapping&&);
+  ReadOnlySharedMemoryMapping(ReadOnlySharedMemoryMapping&&) noexcept;
+  ReadOnlySharedMemoryMapping& operator=(
+      ReadOnlySharedMemoryMapping&&) noexcept;
 
   // Returns the base address of the mapping. This is read-only memory. This is
   // page-aligned. This is nullptr for invalid instances.
@@ -145,6 +147,12 @@ class BASE_EXPORT ReadOnlySharedMemoryMapping : public SharedMemoryMapping {
     return span<const T>(static_cast<const T*>(raw_memory_ptr()), count);
   }
 
+  // Returns a BufferIterator of const T.
+  template <typename T>
+  BufferIterator<const T> GetMemoryAsBufferIterator() const {
+    return BufferIterator<const T>(GetMemoryAsSpan<T>());
+  }
+
  private:
   friend class ReadOnlySharedMemoryRegion;
   ReadOnlySharedMemoryMapping(void* address,
@@ -164,8 +172,9 @@ class BASE_EXPORT WritableSharedMemoryMapping : public SharedMemoryMapping {
   WritableSharedMemoryMapping();
 
   // Move operations are allowed.
-  WritableSharedMemoryMapping(WritableSharedMemoryMapping&&);
-  WritableSharedMemoryMapping& operator=(WritableSharedMemoryMapping&&);
+  WritableSharedMemoryMapping(WritableSharedMemoryMapping&&) noexcept;
+  WritableSharedMemoryMapping& operator=(
+      WritableSharedMemoryMapping&&) noexcept;
 
   // Returns the base address of the mapping. This is writable memory. This is
   // page-aligned. This is nullptr for invalid instances.
@@ -214,6 +223,12 @@ class BASE_EXPORT WritableSharedMemoryMapping : public SharedMemoryMapping {
     if (size() / sizeof(T) < count)
       return span<T>();
     return span<T>(static_cast<T*>(raw_memory_ptr()), count);
+  }
+
+  // Returns a BufferIterator of T.
+  template <typename T>
+  BufferIterator<T> GetMemoryAsBufferIterator() {
+    return BufferIterator<T>(GetMemoryAsSpan<T>());
   }
 
  private:

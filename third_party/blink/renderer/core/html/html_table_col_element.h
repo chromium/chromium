@@ -34,7 +34,7 @@ class CORE_EXPORT HTMLTableColElement final : public HTMLTablePartElement {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  DECLARE_ELEMENT_FACTORY_WITH_TAGNAME(HTMLTableColElement);
+  HTMLTableColElement(const QualifiedName& tag_name, Document&);
 
   unsigned span() const { return span_; }
   void setSpan(unsigned);
@@ -44,8 +44,6 @@ class CORE_EXPORT HTMLTableColElement final : public HTMLTablePartElement {
   bool HasNonInBodyInsertionMode() const override { return true; }
 
  private:
-  HTMLTableColElement(const QualifiedName& tag_name, Document&);
-
   void ParseAttribute(const AttributeModificationParams&) override;
   bool IsPresentationAttribute(const QualifiedName&) const override;
   void CollectStyleForPresentationAttribute(

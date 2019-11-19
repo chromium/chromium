@@ -31,7 +31,7 @@ class FakeAlsReader : public AlsReader {
  private:
   AlsInitStatus status_ = AlsInitStatus::kInProgress;
   base::ObserverList<Observer> observers_;
-  base::WeakPtrFactory<FakeAlsReader> weak_ptr_factory_;
+  base::WeakPtrFactory<FakeAlsReader> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FakeAlsReader);
 };

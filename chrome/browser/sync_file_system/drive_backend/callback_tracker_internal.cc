@@ -10,9 +10,7 @@ namespace sync_file_system {
 namespace drive_backend {
 namespace internal {
 
-AbortHelper::AbortHelper(CallbackTracker* tracker)
-    : tracker_(tracker), weak_ptr_factory_(this) {
-}
+AbortHelper::AbortHelper(CallbackTracker* tracker) : tracker_(tracker) {}
 
 AbortHelper::~AbortHelper() {}
 

@@ -39,7 +39,11 @@ struct ASH_EXPORT AccelerometerReading {
   ~AccelerometerReading();
 
   // If true, this accelerometer is being updated.
-  bool present;
+  bool present = false;
+
+  // If true, ChromeOS EC lid angle driver is present, and notifies
+  // some observers not to process accelerometer data.
+  bool lid_angle_driver_present = false;
 
   // The readings from this accelerometer measured in m/s^2.
   float x;
@@ -62,11 +66,20 @@ class ASH_EXPORT AccelerometerUpdate
     return data_[source];
   }
 
+  // Returns true if has ChromeOS EC lid angle driver.
+  bool HasLidAngleDriver(AccelerometerSource source) const {
+    DCHECK_GE(source, ACCELEROMETER_SOURCE_SCREEN);
+    DCHECK_LT(source, ACCELEROMETER_SOURCE_COUNT);
+    return data_[source].lid_angle_driver_present;
+  }
+
   // Returns the last known value for |source| as a vector.
   gfx::Vector3dF GetVector(AccelerometerSource source) const;
 
-  void Set(AccelerometerSource source, float x, float y, float z) {
+  void Set(AccelerometerSource source, bool driver_present,
+           float x, float y, float z) {
     data_[source].present = true;
+    data_[source].lid_angle_driver_present = driver_present;
     data_[source].x = x;
     data_[source].y = y;
     data_[source].z = z;

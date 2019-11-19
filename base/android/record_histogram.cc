@@ -9,6 +9,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
+#include "base/base_jni_headers/RecordHistogram_jni.h"
 #include "base/lazy_instance.h"
 #include "base/macros.h"
 #include "base/metrics/histogram.h"
@@ -17,7 +18,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
-#include "jni/RecordHistogram_jni.h"
 
 namespace base {
 namespace android {

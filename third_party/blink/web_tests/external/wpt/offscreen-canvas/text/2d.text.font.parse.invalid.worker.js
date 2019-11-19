@@ -4,7 +4,7 @@
 // Note:
 
 importScripts("/resources/testharness.js");
-importScripts("/common/canvas-tests.js");
+importScripts("/2dcontext/resources/canvas-tests.js");
 
 var t = async_test("");
 t.step(function() {
@@ -13,6 +13,10 @@ var offscreenCanvas = new OffscreenCanvas(100, 50);
 var ctx = offscreenCanvas.getContext('2d');
 
 ctx.font = '20px serif';
+_assertSame(ctx.font, '20px serif', "ctx.font", "'20px serif'");
+
+ctx.font = '20px serif';
+ctx.font = '';
 _assertSame(ctx.font, '20px serif', "ctx.font", "'20px serif'");
 
 ctx.font = '20px serif';

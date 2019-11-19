@@ -21,12 +21,14 @@ class WatchTimeInterceptor : public mojom::WatchTimeRecorder {
   MOCK_METHOD2(RecordWatchTime, void(WatchTimeKey, base::TimeDelta));
   MOCK_METHOD1(FinalizeWatchTime, void(const std::vector<WatchTimeKey>&));
   MOCK_METHOD1(OnError, void(PipelineStatus));
-  MOCK_METHOD1(UpdateUnderflowCount, void(int32_t count));
-  MOCK_METHOD1(
-      UpdateSecondaryProperties,
-      void(mojom::SecondaryPlaybackPropertiesPtr secondary_properties));
   MOCK_METHOD1(SetAutoplayInitiated, void(bool));
   MOCK_METHOD1(OnDurationChanged, void(base::TimeDelta));
+  MOCK_METHOD2(UpdateVideoDecodeStats, void(uint32_t, uint32_t));
+  MOCK_METHOD1(UpdateUnderflowCount, void(int32_t));
+  MOCK_METHOD2(UpdateUnderflowDuration, void(int32_t, base::TimeDelta));
+  MOCK_METHOD1(UpdateSecondaryProperties,
+               void(mojom::SecondaryPlaybackPropertiesPtr));
+  MOCK_METHOD1(OnCurrentTimestampChanged, void(base::TimeDelta));
 };
 
 class WatchTimeComponentTest : public testing::Test {

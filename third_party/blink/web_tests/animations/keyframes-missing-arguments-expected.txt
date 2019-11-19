@@ -1,8 +1,0 @@
-PASS keyframes is an instance of CSSKeyframesRule
-PASS keyframes.appendRule() threw exception TypeError: Failed to execute 'appendRule' on 'CSSKeyframesRule': 1 argument required, but only 0 present..
-PASS keyframes.deleteRule() threw exception TypeError: Failed to execute 'deleteRule' on 'CSSKeyframesRule': 1 argument required, but only 0 present..
-PASS keyframes.findRule() threw exception TypeError: Failed to execute 'findRule' on 'CSSKeyframesRule': 1 argument required, but only 0 present..
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

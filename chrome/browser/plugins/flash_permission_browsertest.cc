@@ -2,15 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/bind_helpers.h"
 #include "base/command_line.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/permissions/permissions_browsertest.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/permission_bubble/mock_permission_prompt_factory.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
@@ -58,6 +62,24 @@ class FlashPermissionBrowserTest : public PermissionsBrowserTest {
     // throttling make it harder to test if Flash was succcessfully enabled.
     command_line->AppendSwitchASCII(
         switches::kOverridePluginPowerSaverForTesting, "never");
+  }
+
+  void SetUpOnMainThread() override {
+    PermissionsBrowserTest::SetUpOnMainThread();
+
+    // This browser test verifies the Flash permission prompt behavior. The
+    // permission prompt only appears when Flash permission is set to DETECT.
+    HostContentSettingsMapFactory::GetForProfile(browser()->profile())
+        ->SetDefaultContentSetting(ContentSettingsType::PLUGINS,
+                                   CONTENT_SETTING_DETECT_IMPORTANT_CONTENT);
+  }
+
+  void TearDownOnMainThread() override {
+    HostContentSettingsMapFactory::GetForProfile(browser()->profile())
+        ->SetDefaultContentSetting(ContentSettingsType::PLUGINS,
+                                   CONTENT_SETTING_DEFAULT);
+
+    PermissionsBrowserTest::TearDownOnMainThread();
   }
 
   void TriggerPrompt() override {
@@ -185,7 +207,8 @@ IN_PROC_BROWSER_TEST_F(FlashPermissionBrowserTest,
 
   // Unlike the other tests, this JavaScript is called without a user gesture.
   GetWebContents()->GetMainFrame()->ExecuteJavaScriptForTests(
-      base::ASCIIToUTF16("triggerPromptWithMainFrameNavigation();"));
+      base::ASCIIToUTF16("triggerPromptWithMainFrameNavigation();"),
+      base::NullCallback());
 
   EXPECT_TRUE(reload_waiter.Wait());
 

@@ -3106,14 +3106,17 @@ exsltDateDuration (const xmlChar *number)
     else
         secs = xmlXPathCastStringToNumber(number);
 
-    if ((xmlXPathIsNaN(secs)) || (xmlXPathIsInf(secs)))
+    if (xmlXPathIsNaN(secs))
+        return NULL;
+
+    days = floor(secs / SECS_PER_DAY);
+    if ((days <= LONG_MIN) || (days >= LONG_MAX))
         return NULL;
 
     dur = exsltDateCreateDuration();
     if (dur == NULL)
         return NULL;
 
-    days = floor(secs / SECS_PER_DAY);
     dur->day = (long)days;
     dur->sec = secs - days * SECS_PER_DAY;
 

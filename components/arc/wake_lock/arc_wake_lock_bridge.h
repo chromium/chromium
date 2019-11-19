@@ -10,8 +10,8 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "components/arc/common/wake_lock.mojom.h"
-#include "components/arc/connection_observer.h"
+#include "components/arc/mojom/wake_lock.mojom.h"
+#include "components/arc/session/connection_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/common/service_manager_connection.h"
 #include "mojo/public/cpp/bindings/binding.h"
@@ -80,7 +80,7 @@ class ArcWakeLockBridge : public KeyedService,
 
   mojo::Binding<mojom::WakeLockHost> binding_;
 
-  base::WeakPtrFactory<ArcWakeLockBridge> weak_ptr_factory_;
+  base::WeakPtrFactory<ArcWakeLockBridge> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ArcWakeLockBridge);
 };

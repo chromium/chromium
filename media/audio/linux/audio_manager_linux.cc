@@ -49,7 +49,8 @@ std::unique_ptr<media::AudioManager> CreateAudioManager(
     return std::make_unique<AudioManagerPulse>(
         std::move(audio_thread), audio_log_factory, pa_mainloop, pa_context);
   }
-  DVLOG(1) << "PulseAudio is not available on the OS";
+  LOG(WARNING) << "Falling back to ALSA for audio output. PulseAudio is not "
+                  "available or could not be initialized.";
 #endif
 
 #if defined(USE_ALSA)

@@ -17,22 +17,22 @@ void BaseBookmarkModelObserver::BookmarkModelBeingDeleted(
 void BaseBookmarkModelObserver::BookmarkNodeMoved(
     BookmarkModel* model,
     const BookmarkNode* old_parent,
-    int old_index,
+    size_t old_index,
     const BookmarkNode* new_parent,
-    int new_index) {
+    size_t new_index) {
   BookmarkModelChanged();
 }
 
 void BaseBookmarkModelObserver::BookmarkNodeAdded(BookmarkModel* model,
                                                   const BookmarkNode* parent,
-                                                  int index) {
+                                                  size_t index) {
   BookmarkModelChanged();
 }
 
 void BaseBookmarkModelObserver::BookmarkNodeRemoved(
     BookmarkModel* model,
     const BookmarkNode* parent,
-    int old_index,
+    size_t old_index,
     const BookmarkNode* node,
     const std::set<GURL>& removed_urls) {
   BookmarkModelChanged();

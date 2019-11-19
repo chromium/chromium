@@ -19,8 +19,8 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.RetryOnFailure;
 import org.chromium.chrome.browser.ChromeSwitches;
-import org.chromium.chrome.browser.UrlConstants;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.util.UrlConstants;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -38,13 +38,13 @@ public class NewTabPageNavigationTest {
     private EmbeddedTestServer mTestServer;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mActivityTestRule.startMainActivityWithURL(null);
         mTestServer = EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         mTestServer.stopAndDestroyServer();
     }
 
@@ -70,7 +70,7 @@ public class NewTabPageNavigationTest {
     @Test
     @LargeTest
     @Feature({"NewTabPage"})
-    public void testNavigatingFromNTP() throws InterruptedException {
+    public void testNavigatingFromNTP() {
         String url = mTestServer.getURL("/chrome/test/data/android/google.html");
         mActivityTestRule.loadUrl(url);
         Assert.assertEquals(url, mActivityTestRule.getActivity().getActivityTab().getUrl());
@@ -82,7 +82,7 @@ public class NewTabPageNavigationTest {
     @Test
     @MediumTest
     @Feature({"NewTabPage"})
-    public void testNavigateBackToNTPViaUrl() throws InterruptedException {
+    public void testNavigateBackToNTPViaUrl() {
         String url = mTestServer.getURL("/chrome/test/data/android/google.html");
         mActivityTestRule.loadUrl(url);
         Assert.assertEquals(url, mActivityTestRule.getActivity().getActivityTab().getUrl());

@@ -193,8 +193,7 @@ AppCacheResponseReader::AppCacheResponseReader(
       range_offset_(0),
       range_length_(std::numeric_limits<int32_t>::max()),
       read_position_(0),
-      reading_metadata_size_(0),
-      weak_factory_(this) {}
+      reading_metadata_size_(0) {}
 
 AppCacheResponseReader::~AppCacheResponseReader() = default;
 
@@ -266,7 +265,7 @@ void AppCacheResponseReader::OnIOComplete(int result) {
     } else if (info_buffer_.get()) {
       // Deserialize the http info structure, ensuring we got headers.
       base::Pickle pickle(buffer_->data(), result);
-      std::unique_ptr<net::HttpResponseInfo> info(new net::HttpResponseInfo);
+      auto info = std::make_unique<net::HttpResponseInfo>();
       bool response_truncated = false;
       if (!info->InitFromPickle(pickle, &response_truncated) ||
           !info->headers.get()) {
@@ -325,8 +324,7 @@ AppCacheResponseWriter::AppCacheResponseWriter(
       info_size_(0),
       write_position_(0),
       write_amount_(0),
-      creation_phase_(INITIAL_ATTEMPT),
-      weak_factory_(this) {}
+      creation_phase_(INITIAL_ATTEMPT) {}
 
 AppCacheResponseWriter::~AppCacheResponseWriter() = default;
 
@@ -490,8 +488,7 @@ AppCacheResponseMetadataWriter::AppCacheResponseMetadataWriter(
     int64_t response_id,
     base::WeakPtr<AppCacheDiskCache> disk_cache)
     : AppCacheResponseIO(response_id, std::move(disk_cache)),
-      write_amount_(0),
-      weak_factory_(this) {}
+      write_amount_(0) {}
 
 AppCacheResponseMetadataWriter::~AppCacheResponseMetadataWriter() = default;
 

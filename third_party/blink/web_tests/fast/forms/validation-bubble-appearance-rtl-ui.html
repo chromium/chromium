@@ -1,14 +1,7 @@
 <!DOCTYPE html>
-<body>
 <p>Check if a validation bubble is shown at a correct position in RTL UI.</p>
 <input pattern="\d{4}" title="Please specify four digits." value="abc" style="margin-left: 30%;">
 <script>
-if (window.testRunner) {
-  // Layout tree dump doesn't matter.
-  testRunner.dumpAsTextWithPixelResults();
-}
-
 internals.setUserPreferredLanguages(['ar']);
 document.querySelector('input').reportValidity();
 </script>
-<body>

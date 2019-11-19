@@ -24,10 +24,14 @@ import org.robolectric.shadows.multidex.ShadowMultiDex;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
+import org.chromium.chrome.browser.ChromeFeatureList;
+import org.chromium.chrome.browser.flags.FeatureUtilities;
 import org.chromium.components.signin.ChildAccountStatus;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Tests FirstRunFlowSequencer which contains the core logic of what should be shown during the
@@ -130,14 +134,24 @@ public class FirstRunFlowSequencerTest {
     private TestFirstRunFlowSequencer mSequencer;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mActivityController = Robolectric.buildActivity(Activity.class);
         mSequencer = new TestFirstRunFlowSequencer(mActivityController.setup().get());
+        setupFeatureList();
     }
 
     @After
     public void tearDown() {
         mActivityController.pause().stop().destroy();
+    }
+
+    // We need to initialize ChromeFeatureList here, otherwise test will crash/assert during
+    // FirstRunFlowSequencer::onNativeInitialized.
+    // TODO(crbug.com/1021705): Remove this method after duet fully launched.
+    private void setupFeatureList() {
+        Map<String, Boolean> featureList = new HashMap<>();
+        featureList.put(ChromeFeatureList.CHROME_DUET, true);
+        ChromeFeatureList.setTestFeatures(featureList);
     }
 
     @Test
@@ -184,7 +198,7 @@ public class FirstRunFlowSequencerTest {
         assertFalse(bundle.getBoolean(FirstRunActivityBase.SHOW_DATA_REDUCTION_PAGE));
         assertFalse(bundle.getBoolean(FirstRunActivityBase.SHOW_SEARCH_ENGINE_PAGE));
         assertEquals(ChildAccountStatus.NOT_CHILD,
-                bundle.getInt(AccountFirstRunFragment.CHILD_ACCOUNT_STATUS));
+                bundle.getInt(SigninFirstRunFragment.CHILD_ACCOUNT_STATUS));
         assertEquals(5, bundle.size());
     }
 
@@ -213,9 +227,9 @@ public class FirstRunFlowSequencerTest {
         assertFalse(bundle.getBoolean(FirstRunActivityBase.SHOW_DATA_REDUCTION_PAGE));
         assertFalse(bundle.getBoolean(FirstRunActivityBase.SHOW_SEARCH_ENGINE_PAGE));
         assertEquals(ChildAccountStatus.REGULAR_CHILD,
-                bundle.getInt(AccountFirstRunFragment.CHILD_ACCOUNT_STATUS));
+                bundle.getInt(SigninFirstRunFragment.CHILD_ACCOUNT_STATUS));
         assertEquals(
-                DEFAULT_ACCOUNT, bundle.getString(AccountFirstRunFragment.FORCE_SIGNIN_ACCOUNT_TO));
+                DEFAULT_ACCOUNT, bundle.getString(SigninFirstRunFragment.FORCE_SIGNIN_ACCOUNT_TO));
         assertEquals(6, bundle.size());
     }
 
@@ -244,7 +258,7 @@ public class FirstRunFlowSequencerTest {
         assertTrue(bundle.getBoolean(FirstRunActivityBase.SHOW_DATA_REDUCTION_PAGE));
         assertFalse(bundle.getBoolean(FirstRunActivityBase.SHOW_SEARCH_ENGINE_PAGE));
         assertEquals(ChildAccountStatus.NOT_CHILD,
-                bundle.getInt(AccountFirstRunFragment.CHILD_ACCOUNT_STATUS));
+                bundle.getInt(SigninFirstRunFragment.CHILD_ACCOUNT_STATUS));
         assertEquals(5, bundle.size());
     }
 
@@ -273,7 +287,25 @@ public class FirstRunFlowSequencerTest {
         assertTrue(bundle.getBoolean(FirstRunActivityBase.SHOW_DATA_REDUCTION_PAGE));
         assertTrue(bundle.getBoolean(FirstRunActivityBase.SHOW_SEARCH_ENGINE_PAGE));
         assertEquals(ChildAccountStatus.NOT_CHILD,
-                bundle.getInt(AccountFirstRunFragment.CHILD_ACCOUNT_STATUS));
+                bundle.getInt(SigninFirstRunFragment.CHILD_ACCOUNT_STATUS));
         assertEquals(5, bundle.size());
+    }
+
+    @Test
+    @Feature({"FirstRun"})
+    public void testBottomToolbarEnabledAfterFirstRun() {
+        mSequencer.isFirstRunFlowComplete = false;
+        mSequencer.isSignedIn = false;
+        mSequencer.isSyncAllowed = true;
+        mSequencer.googleAccounts = Collections.emptyList();
+        mSequencer.hasAnyUserSeenToS = false;
+        mSequencer.shouldSkipFirstUseHints = false;
+        mSequencer.shouldShowDataReductionPage = false;
+        mSequencer.initializeSharedState(
+                false /* androidEduDevice */, ChildAccountStatus.NOT_CHILD);
+
+        mSequencer.processFreEnvironmentPreNative();
+
+        assertTrue(FeatureUtilities.isBottomToolbarEnabled());
     }
 }

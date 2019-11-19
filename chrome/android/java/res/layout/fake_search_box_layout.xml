@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2018 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<view
+    class="org.chromium.chrome.browser.ntp.NewTabPageLayout$SearchBoxContainerView"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/search_box"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/ntp_search_box_height"
+    android:layout_marginStart="10dp"
+    android:layout_marginEnd="10dp"
+    android:layout_marginTop="0dp"
+    android:layout_marginBottom="1dp"
+    android:gravity="center_vertical"
+    android:addStatesFromChildren="true"
+    android:background="@drawable/ntp_search_box"
+    android:orientation="horizontal"
+    android:paddingStart="@dimen/location_bar_lateral_padding" >
+
+    <!-- TODO(crbug.com/900912): Fix and remove lint ignore -->
+    <EditText
+        tools:ignore="Autofill,LabelFor"
+        style="@style/TextAppearance.NewTabPageSearchBoxText"
+        android:id="@+id/search_box_text"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_marginEnd="12dp"
+        android:layout_weight="1"
+        android:background="@null"
+        android:ellipsize="end"
+        android:focusableInTouchMode="false"
+        android:focusable="false"
+        android:gravity="center_vertical"
+        android:inputType="text"
+        android:singleLine="true"
+        android:hint="@string/search_or_type_web_address" />
+    <!-- Padding start is applied so that microphone icon appears in the same location as it
+        does in the main url bar. The microphone button in the url bar is 48dp wide with 4dp
+        start padding. -->
+    <org.chromium.ui.widget.ChromeImageView
+        android:id="@+id/voice_search_button"
+        android:layout_width="48dp"
+        android:layout_height="match_parent"
+        android:paddingStart="4dp"
+        android:contentDescription="@string/accessibility_toolbar_btn_mic"
+        android:src="@drawable/btn_mic"
+        android:scaleType="centerInside"
+        app:tint="@color/standard_mode_tint" />
+</view>

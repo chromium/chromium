@@ -23,7 +23,7 @@ class MediaControlDownloadButtonElement final
 
   // MediaControlInputElement overrides.
   // TODO(mlamouri): add WillRespondToMouseClickEvents
-  WebLocalizedString::Name GetOverflowStringName() const final;
+  int GetOverflowStringId() const final;
   bool HasOverflowButton() const final;
   bool IsControlPanelButton() const final;
 

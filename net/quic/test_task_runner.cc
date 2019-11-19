@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <utility>
 
-#include "net/third_party/quic/test_tools/mock_clock.h"
+#include "net/third_party/quiche/src/quic/test_tools/mock_clock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace net {

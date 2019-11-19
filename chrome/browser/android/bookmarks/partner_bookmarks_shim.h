@@ -10,10 +10,17 @@
 #include <memory>
 
 #include "base/android/jni_weak_ref.h"
+#include "base/i18n/case_conversion.h"
+#include "base/i18n/string_search.h"
 #include "base/macros.h"
 #include "base/strings/string16.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/supports_user_data.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/browser/bookmark_utils.h"
+#include "components/url_formatter/url_formatter.h"
+#include "net/base/escape.h"
+#include "ui/base/models/tree_node_iterator.h"
 #include "url/gurl.h"
 
 class PrefService;
@@ -115,6 +122,12 @@ class PartnerBookmarksShim : public base::SupportsUserData::Data {
     base::string16 provider_title_;
   };
   typedef std::map<NodeRenamingMapKey, base::string16> NodeRenamingMap;
+
+  // PartnerBookmarksShim version of BookmarkUtils methods
+  void GetPartnerBookmarksMatchingProperties(
+      const bookmarks::QueryFields& query,
+      size_t max_count,
+      std::vector<const bookmarks::BookmarkNode*>* nodes);
 
   // For testing: clears an instance of the shim in a given |browser_context|.
   static void ClearInBrowserContextForTesting(

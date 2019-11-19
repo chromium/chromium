@@ -37,8 +37,9 @@ class NfcHost extends WebContentsObserver implements WindowEventObserver {
     }
 
     @CalledByNative
-    private static NfcHost create(WebContents webContents, int contextId) {
-        return new NfcHost(webContents, contextId);
+    private static void create(WebContents webContents, int contextId) {
+        // The ctor will put the instance into sContextHostsMap.
+        new NfcHost(webContents, contextId);
     }
 
     NfcHost(WebContents webContents, int contextId) {
@@ -80,16 +81,7 @@ class NfcHost extends WebContentsObserver implements WindowEventObserver {
     public void stopTrackingActivityChanges() {
         mCallback = null;
         WindowEventObserverManager.from(mWebContents).removeObserver(this);
-    }
-
-    /**
-     * Tears down current and future Activity tracking.
-     */
-    @Override
-    public void destroy() {
-        stopTrackingActivityChanges();
         sContextHostsMap.remove(mContextId);
-        super.destroy();
     }
 
     /**

@@ -5,14 +5,19 @@
 #ifndef MOJO_PUBLIC_CPP_BINDINGS_INTERFACE_REQUEST_H_
 #define MOJO_PUBLIC_CPP_BINDINGS_INTERFACE_REQUEST_H_
 
+#include <cstddef>
 #include <string>
 #include <utility>
 
 #include "base/macros.h"
 #include "base/optional.h"
 #include "base/sequenced_task_runner.h"
+#include "mojo/public/cpp/bindings/connection_group.h"
 #include "mojo/public/cpp/bindings/disconnect_reason.h"
 #include "mojo/public/cpp/bindings/interface_ptr.h"
+#include "mojo/public/cpp/bindings/lib/bindings_internal.h"
+#include "mojo/public/cpp/bindings/lib/pending_receiver_state.h"
+#include "mojo/public/cpp/bindings/lib/serialization_context.h"
 #include "mojo/public/cpp/bindings/pipe_control_message_proxy.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 
@@ -30,34 +35,30 @@ class InterfaceRequest {
   // Constructs an empty InterfaceRequest, representing that the client is not
   // requesting an implementation of Interface.
   InterfaceRequest() {}
-  InterfaceRequest(decltype(nullptr)) {}
+  InterfaceRequest(std::nullptr_t) {}
 
   explicit InterfaceRequest(ScopedMessagePipeHandle handle)
-      : handle_(std::move(handle)) {}
+      : state_(std::move(handle)) {}
 
   // Takes the message pipe from another InterfaceRequest.
-  InterfaceRequest(InterfaceRequest&& other) {
-    handle_ = std::move(other.handle_);
-  }
-  InterfaceRequest& operator=(InterfaceRequest&& other) {
-    handle_ = std::move(other.handle_);
-    return *this;
-  }
+  InterfaceRequest(InterfaceRequest&& other) = default;
+
+  InterfaceRequest& operator=(InterfaceRequest&& other) = default;
 
   // Assigning to nullptr resets the InterfaceRequest to an empty state,
   // closing the message pipe currently bound to it (if any).
-  InterfaceRequest& operator=(decltype(nullptr)) {
-    handle_.reset();
+  InterfaceRequest& operator=(std::nullptr_t) {
+    state_.reset();
     return *this;
   }
 
   // Indicates whether the request currently contains a valid message pipe.
-  bool is_pending() const { return handle_.is_valid(); }
+  bool is_pending() const { return state_.pipe.is_valid(); }
 
-  explicit operator bool() const { return handle_.is_valid(); }
+  explicit operator bool() const { return is_pending(); }
 
   // Removes the message pipe from the request and returns it.
-  ScopedMessagePipeHandle PassMessagePipe() { return std::move(handle_); }
+  ScopedMessagePipeHandle PassMessagePipe() { return std::move(state_.pipe); }
 
   bool Equals(const InterfaceRequest& other) const {
     if (this == &other)
@@ -69,21 +70,41 @@ class InterfaceRequest {
   }
 
   void ResetWithReason(uint32_t custom_reason, const std::string& description) {
-    if (!handle_.is_valid())
+    if (!is_pending())
       return;
 
     Message message =
         PipeControlMessageProxy::ConstructPeerEndpointClosedMessage(
             kMasterInterfaceId, DisconnectReason(custom_reason, description));
-    MojoResult result = WriteMessageNew(
-        handle_.get(), message.TakeMojoMessage(), MOJO_WRITE_MESSAGE_FLAG_NONE);
+    MojoResult result =
+        WriteMessageNew(state_.pipe.get(), message.TakeMojoMessage(),
+                        MOJO_WRITE_MESSAGE_FLAG_NONE);
     DCHECK_EQ(MOJO_RESULT_OK, result);
 
-    handle_.reset();
+    state_.reset();
   }
 
+  // Assigns this InterfaceRequest to the ConnectionGroup referenced by |ref|.
+  // Any Receiver which binds this InterfaceRequest will inherit the Ref.
+  void set_connection_group(ConnectionGroup::Ref ref) {
+    state_.connection_group = std::move(ref);
+  }
+
+  const ConnectionGroup::Ref& connection_group() const {
+    return state_.connection_group;
+  }
+
+  // Passes ownership of this InterfaceRequest's ConnectionGroup Ref, removing
+  // it from its group.
+  ConnectionGroup::Ref PassConnectionGroupRef() {
+    return std::move(state_.connection_group);
+  }
+
+  // For internal Mojo use only.
+  internal::PendingReceiverState* internal_state() { return &state_; }
+
  private:
-  ScopedMessagePipeHandle handle_;
+  internal::PendingReceiverState state_;
 
   DISALLOW_COPY_AND_ASSIGN(InterfaceRequest);
 };

@@ -32,7 +32,7 @@ class ContentBrowserSanityChecker {
   void OnWebContentsCreated(WebContents* web_contents);
 
   // The callback needs to be cached so that it can be unregistered.
-  base::Callback<void(WebContents*)> creation_hook_;
+  base::RepeatingCallback<void(WebContents*)> creation_hook_;
 
   DISALLOW_COPY_AND_ASSIGN(ContentBrowserSanityChecker);
 };

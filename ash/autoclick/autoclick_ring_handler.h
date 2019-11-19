@@ -28,7 +28,7 @@ class AutoclickRingHandler : public gfx::LinearAnimation {
   void SetGestureCenter(const gfx::Point& center_point_in_screen,
                         views::Widget* widget);
 
-  void SetSize(int outer_radius, int inner_radius);
+  void SetSize(int radius);
 
  private:
   class AutoclickRingView;
@@ -53,8 +53,7 @@ class AutoclickRingHandler : public gfx::LinearAnimation {
   gfx::Point tap_down_location_;
   AnimationType current_animation_type_;
   base::TimeDelta animation_duration_;
-  int outer_radius_;
-  int inner_radius_;
+  int radius_;
 
   DISALLOW_COPY_AND_ASSIGN(AutoclickRingHandler);
 };

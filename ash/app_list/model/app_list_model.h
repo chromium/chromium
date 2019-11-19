@@ -14,12 +14,11 @@
 #include "ash/app_list/model/app_list_item_list.h"
 #include "ash/app_list/model/app_list_item_list_observer.h"
 #include "ash/app_list/model/app_list_model_export.h"
-#include "ash/app_list/model/app_list_view_state.h"
-#include "ash/public/interfaces/app_list.mojom.h"
+#include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
 
-namespace app_list {
+namespace ash {
 
 class AppListFolderItem;
 class AppListItem;
@@ -45,8 +44,8 @@ class APP_LIST_MODEL_EXPORT AppListModel : public AppListItemListObserver {
   ash::AppListState state() const { return state_; }
 
   // The current state of the AppListView. Controlled by AppListView.
-  void SetStateFullscreen(AppListViewState state);
-  AppListViewState state_fullscreen() const { return state_fullscreen_; }
+  void SetStateFullscreen(ash::AppListViewState state);
+  ash::AppListViewState state_fullscreen() const { return state_fullscreen_; }
 
   // Finds the item matching |id|.
   AppListItem* FindItem(const std::string& id);
@@ -163,12 +162,12 @@ class APP_LIST_MODEL_EXPORT AppListModel : public AppListItemListObserver {
   ash::AppListModelStatus status_ = ash::AppListModelStatus::kStatusNormal;
   ash::AppListState state_ = ash::AppListState::kInvalidState;
   // The AppListView state. Controlled by the AppListView.
-  AppListViewState state_fullscreen_ = AppListViewState::CLOSED;
+  ash::AppListViewState state_fullscreen_ = ash::AppListViewState::kClosed;
   base::ObserverList<AppListModelObserver, true>::Unchecked observers_;
 
   DISALLOW_COPY_AND_ASSIGN(AppListModel);
 };
 
-}  // namespace app_list
+}  // namespace ash
 
 #endif  // ASH_APP_LIST_MODEL_APP_LIST_MODEL_H_

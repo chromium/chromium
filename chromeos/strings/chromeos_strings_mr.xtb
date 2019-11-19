@@ -1,22 +1,41 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="mr">
+<translation id="1482734542997480527"><ph name="ENROLLMENT_DOMAIN" /> हे डिव्हाइस व्यवस्थापित करते आणि तुमची ॲक्टिव्हिटी पाहू शकेल.</translation>
 <translation id="1510238584712386396">लाँचर</translation>
 <translation id="1734367976349034509">या डिव्हाइसला संस्थेेने व्यवस्थापित केेले आहे</translation>
+<translation id="1930797645656624981">Chrome OS इनपुट पद्धत सेवा</translation>
+<translation id="1979103255016296513">पासवर्ड बदलण्याची मुदत संपली आहे</translation>
 <translation id="2049639323467105390"><ph name="DOMAIN" /> याद्वारे हे डिव्हाइस व्यवस्‍थापित केले जाते.</translation>
 <translation id="2083960536266308407">स्क्रीनवर काहीही आढळले नाही</translation>
 <translation id="2338501278241028356">जवळपासचे डिव्हाइस शोधण्यासाठी ब्लूटूथ सुरू करा</translation>
-<translation id="2805756323405976993">अॅप्लिकेशन</translation>
+<translation id="2805756323405976993">ॲप्लिकेशन</translation>
 <translation id="2872961005593481000">बंद करा</translation>
-<translation id="3147142846278915599">लाँचर (संकालन अॅप्स...)</translation>
+<translation id="3008341117444806826">रिफ्रेश करा</translation>
+<translation id="3838338534323494292">नवीन पासवर्ड</translation>
+<translation id="4003259559679196451">हे डिव्हाइस <ph name="ENROLLMENT_DOMAIN" />व्यवस्थापित करते आणि भेट दिलेली वेबपेज पासवर्ड आणि ईमेलसह सर्व वापरकर्ता ॲक्टिव्हिटीचा त्यांना ॲक्सेस आहे.</translation>
+<translation id="4227825898293920515"><ph name="TIME" /> मध्ये पासवर्ड एक्स्पायर होईल</translation>
+<translation id="4429881212383817840">Kerberos तिकीट लवकरच एक्स्पायर होईल</translation>
+<translation id="445059817448385655">जुना पासवर्ड</translation>
+<translation id="467510802200863975">पासवर्ड जुळत नाहीत</translation>
 <translation id="4731797938093519117">पालक अ‍ॅक्सेस</translation>
+<translation id="4890353053343094602">तत्काळ नवीन निवडा</translation>
 <translation id="5212543919916444558">मी मदत करू शकेन असे मला तुमच्या स्क्रीनवर काही आढळले नाही. 
 मला काहीही विचारण्यासाठी माइकवर टॅप करून पाहा.</translation>
 <translation id="5222676887888702881">साइन आउट करा</translation>
+<translation id="5317780077021120954">सेव्ह करा</translation>
+<translation id="5332948983412042822">आता नवीन निवडा</translation>
 <translation id="5457599981699367932">अतिथी म्हणून ब्राउझ करा</translation>
 <translation id="54609108002486618">व्यवस्‍थापित</translation>
 <translation id="5832805196449965646">व्यक्ती जोडा</translation>
 <translation id="5895138241574237353">रीस्टार्ट करा</translation>
+<translation id="6058625436358447366">पूर्ण करण्यासाठी, तुमचे जुने आणि नवीन पासवर्ड एंटर करा</translation>
+<translation id="6106186594183574873">पूर्ण करण्यासाठी, तुमचा जुना पासवर्ड एंटर करा</translation>
+<translation id="6146993107019042706">पूर्ण करण्यासाठी, तुमचा नवीन पासवर्ड एंटर करा</translation>
 <translation id="7658239707568436148">रद्द करा</translation>
+<translation id="7690294790491645610">नवीन पासवर्ड कन्फर्म करा</translation>
+<translation id="808894953321890993">पासवर्ड बदला</translation>
+<translation id="8747900814994928677">बदलाची खात्री करा</translation>
+<translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> चे तिकीट रिफ्रेश करा</translation>
 <translation id="9111102763498581341">अनलॉक करा</translation>
 </translationbundle>

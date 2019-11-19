@@ -5,7 +5,7 @@
 #include "base/trace_event/memory_allocator_dump_guid.h"
 
 #include "base/format_macros.h"
-#include "base/sha1.h"
+#include "base/hash/sha1.h"
 #include "base/strings/stringprintf.h"
 
 namespace base {

@@ -31,15 +31,9 @@ class RemoteDevice : public base::RefCountedThreadSafe<RemoteDevice> {
   // at a time.
   virtual void Connect(StatusCallback cb) = 0;
 
-  // TODO(bcf): Deprecated. Replace usage with async version.
-  virtual bool ConnectSync() = 0;
-
   // Disconnect from this device. Callback will return |true| if disconnected
   // successfully, otherwise false. Only one pending call is allowed at a time.
   virtual void Disconnect(StatusCallback cb) = 0;
-
-  // TODO(bcf): Deprecated. Replace usage with async version.
-  virtual bool DisconnectSync() = 0;
 
   // Create bond to this device. Callback will return |true| if
   // bonded successfully, otherwise false. Device must be connected.

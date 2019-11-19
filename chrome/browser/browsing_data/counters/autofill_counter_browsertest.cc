@@ -10,15 +10,16 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/platform_thread.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_data_service_factory.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "components/autofill/core/browser/autofill_profile.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/autofill_type.h"
-#include "components/autofill/core/browser/credit_card.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
@@ -38,6 +39,12 @@ class AutofillCounterTest : public InProcessBrowserTest {
 
     SetAutofillDeletionPref(true);
     SetDeletionPeriodPref(browsing_data::TimePeriod::ALL_TIME);
+  }
+
+  void TearDownOnMainThread() override {
+    // Release our ref to let browser tear down of services complete in the same
+    // order as usual.
+    web_data_service_ = nullptr;
   }
 
   // Autocomplete suggestions --------------------------------------------------
@@ -332,20 +339,20 @@ IN_PROC_BROWSER_TEST_F(AutofillCounterTest, TimeRanges) {
   AddAutocompleteSuggestion("email", "example@example.com");
   AddCreditCard("0000-0000-0000-0000", "1", "2015", "1");
   AddAddress("John", "Doe", "Main Street 12345");
-  base::TaskScheduler::GetInstance()->FlushForTesting();
+  base::ThreadPoolInstance::Get()->FlushForTesting();
 
   const base::Time kTime2 = kTime1 + base::TimeDelta::FromSeconds(10);
   test_clock.SetNow(kTime2);
   AddCreditCard("0123-4567-8910-1112", "10", "2015", "1");
   AddAddress("Jane", "Smith", "Main Street 12346");
   AddAddress("John", "Smith", "Side Street 47");
-  base::TaskScheduler::GetInstance()->FlushForTesting();
+  base::ThreadPoolInstance::Get()->FlushForTesting();
 
   const base::Time kTime3 = kTime2 + base::TimeDelta::FromSeconds(10);
   test_clock.SetNow(kTime3);
   AddAutocompleteSuggestion("tel", "+987654321");
   AddCreditCard("1211-1098-7654-3210", "10", "2030", "1");
-  base::TaskScheduler::GetInstance()->FlushForTesting();
+  base::ThreadPoolInstance::Get()->FlushForTesting();
 
   // Test the results for different starting points.
   struct TestCase {

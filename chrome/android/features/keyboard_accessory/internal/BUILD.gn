@@ -1,0 +1,144 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+import("//chrome/common/features.gni")
+
+android_library("internal_java") {
+  deps = [
+    ":java_resources",
+    "//base:base_java",
+    "//base:jni_java",
+
+    # TODO(crbug/951695): Cyclic dependency. Depend on public only when ready.
+    "//chrome/android:chrome_java",
+    "//chrome/android:chrome_public_java",
+    "//chrome/android/features/keyboard_accessory/public:public_java",
+    "//chrome/android/public/profiles:java",
+    "//chrome/browser/ui/android/widget:java",
+    "//chrome/browser/util:java",
+    "//components/autofill/android:autofill_java",
+    "//components/feature_engagement/public:public_java",
+    "//content/public/android:content_java",
+    "//third_party/android_deps:android_support_v7_appcompat_java",
+    "//third_party/android_deps:com_android_support_design_java",
+    "//third_party/android_deps:com_android_support_recyclerview_v7_java",
+    "//third_party/android_deps:com_android_support_viewpager_java",
+    "//ui/android:ui_java",
+    "//ui/android:ui_utils_java",
+  ]
+  java_files = [
+    "java/src/org/chromium/chrome/browser/keyboard_accessory/AutofillKeyboardAccessoryViewBridge.java",
+    "java/src/org/chromium/chrome/browser/keyboard_accessory/KeyboardExtensionViewResizer.java",
+    "java/src/org/chromium/chrome/browser/keyboard_accessory/ManualFillingComponentBridge.java",
+    "java/src/org/chromium/chrome/browser/keyboard_accessory/ManualFillingCoordinator.java",
+    "java/src/org/chromium/chrome/browser/keyboard_accessory/ManualFillingMediator.java",
+    "java/src/org/chromium/chrome/browser/keyboard_accessory/ManualFillingMetricsRecorder.java",
+    "java/src/org/chromium/chrome/browser/keyboard_accessory/ManualFillingProperties.java",
+    "java/src/org/chromium/chrome/browser/keyboard_accessory/ManualFillingState.java",
+    "java/src/org/chromium/chrome/browser/keyboard_accessory/ManualFillingStateCache.java",
+    "java/src/org/chromium/chrome/browser/keyboard_accessory/bar_component/KeyboardAccessoryCoordinator.java",
+    "java/src/org/chromium/chrome/browser/keyboard_accessory/bar_component/KeyboardAccessoryMediator.java",
+    "java/src/org/chromium/chrome/browser/keyboard_accessory/bar_component/KeyboardAccessoryModernView.java",
+    "java/src/org/chromium/chrome/browser/keyboard_accessory/bar_component/KeyboardAccessoryMetricsRecorder.java",
+    "java/src/org/chromium/chrome/browser/keyboard_accessory/bar_component/KeyboardAccessoryIPHUtils.java",
+    "java/src/org/chromium/chrome/browser/keyboard_accessory/bar_component/KeyboardAccessoryModernViewBinder.java",
+    "java/src/org/chromium/chrome/browser/keyboard_accessory/bar_component/KeyboardAccessoryProperties.java",
+    "java/src/org/chromium/chrome/browser/keyboard_accessory/bar_component/KeyboardAccessoryRecyclerViewMcp.java",
+    "java/src/org/chromium/chrome/browser/keyboard_accessory/bar_component/KeyboardAccessoryView.java",
+    "java/src/org/chromium/chrome/browser/keyboard_accessory/bar_component/KeyboardAccessoryViewBinder.java",
+    "java/src/org/chromium/chrome/browser/keyboard_accessory/data/CachedProviderAdapter.java",
+    "java/src/org/chromium/chrome/browser/keyboard_accessory/sheet_component/AccessoryPagerAdapter.java",
+    "java/src/org/chromium/chrome/browser/keyboard_accessory/sheet_component/AccessorySheetCoordinator.java",
+    "java/src/org/chromium/chrome/browser/keyboard_accessory/sheet_component/AccessorySheetMediator.java",
+    "java/src/org/chromium/chrome/browser/keyboard_accessory/sheet_component/AccessorySheetMetricsRecorder.java",
+    "java/src/org/chromium/chrome/browser/keyboard_accessory/sheet_component/AccessorySheetProperties.java",
+    "java/src/org/chromium/chrome/browser/keyboard_accessory/sheet_component/AccessorySheetView.java",
+    "java/src/org/chromium/chrome/browser/keyboard_accessory/sheet_component/AccessorySheetViewBinder.java",
+    "java/src/org/chromium/chrome/browser/keyboard_accessory/sheet_component/NoSwipeViewPager.java",
+    "java/src/org/chromium/chrome/browser/keyboard_accessory/sheet_tabs/AccessorySheetTabCoordinator.java",
+    "java/src/org/chromium/chrome/browser/keyboard_accessory/sheet_tabs/AccessorySheetTabMediator.java",
+    "java/src/org/chromium/chrome/browser/keyboard_accessory/sheet_tabs/AccessorySheetTabMetricsRecorder.java",
+    "java/src/org/chromium/chrome/browser/keyboard_accessory/sheet_tabs/AccessorySheetTabModel.java",
+    "java/src/org/chromium/chrome/browser/keyboard_accessory/sheet_tabs/AccessorySheetTabViewBinder.java",
+    "java/src/org/chromium/chrome/browser/keyboard_accessory/sheet_tabs/AddressAccessoryInfoView.java",
+    "java/src/org/chromium/chrome/browser/keyboard_accessory/sheet_tabs/AddressAccessorySheetCoordinator.java",
+    "java/src/org/chromium/chrome/browser/keyboard_accessory/sheet_tabs/AddressAccessorySheetViewBinder.java",
+    "java/src/org/chromium/chrome/browser/keyboard_accessory/sheet_tabs/CreditCardAccessoryInfoView.java",
+    "java/src/org/chromium/chrome/browser/keyboard_accessory/sheet_tabs/CreditCardAccessorySheetCoordinator.java",
+    "java/src/org/chromium/chrome/browser/keyboard_accessory/sheet_tabs/CreditCardAccessorySheetViewBinder.java",
+    "java/src/org/chromium/chrome/browser/keyboard_accessory/sheet_tabs/DynamicInfoViewBottomSpacer.java",
+    "java/src/org/chromium/chrome/browser/keyboard_accessory/sheet_tabs/PasswordAccessoryInfoView.java",
+    "java/src/org/chromium/chrome/browser/keyboard_accessory/sheet_tabs/PasswordAccessorySheetCoordinator.java",
+    "java/src/org/chromium/chrome/browser/keyboard_accessory/sheet_tabs/PasswordAccessorySheetModernViewBinder.java",
+    "java/src/org/chromium/chrome/browser/keyboard_accessory/sheet_tabs/PasswordAccessorySheetViewBinder.java",
+    "java/src/org/chromium/chrome/browser/keyboard_accessory/sheet_tabs/TouchToFillSheetCoordinator.java",
+    "java/src/org/chromium/chrome/browser/keyboard_accessory/tab_layout_component/KeyboardAccessoryTabLayoutCoordinator.java",
+    "java/src/org/chromium/chrome/browser/keyboard_accessory/tab_layout_component/KeyboardAccessoryTabLayoutMediator.java",
+    "java/src/org/chromium/chrome/browser/keyboard_accessory/tab_layout_component/KeyboardAccessoryTabLayoutProperties.java",
+    "java/src/org/chromium/chrome/browser/keyboard_accessory/tab_layout_component/KeyboardAccessoryTabLayoutView.java",
+    "java/src/org/chromium/chrome/browser/keyboard_accessory/tab_layout_component/KeyboardAccessoryTabLayoutViewBinder.java",
+  ]
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+}
+
+android_resources("java_resources") {
+  resource_dirs = [ "java/res" ]
+  deps = [
+    ":java_strings_grd",
+    "//chrome/android:chrome_app_java_resources",
+  ]
+  custom_package = "org.chromium.chrome.browser.keyboard_accessory"
+}
+
+java_strings_grd("java_strings_grd") {
+  defines = chrome_grit_defines
+  grd_file = "java/strings/android_keyboard_accessory_strings.grd"
+  outputs = [
+    "values-am/android_keyboard_accessory_strings.xml",
+    "values-ar/android_keyboard_accessory_strings.xml",
+    "values-bg/android_keyboard_accessory_strings.xml",
+    "values-ca/android_keyboard_accessory_strings.xml",
+    "values-cs/android_keyboard_accessory_strings.xml",
+    "values-da/android_keyboard_accessory_strings.xml",
+    "values-de/android_keyboard_accessory_strings.xml",
+    "values-el/android_keyboard_accessory_strings.xml",
+    "values/android_keyboard_accessory_strings.xml",
+    "values-en-rGB/android_keyboard_accessory_strings.xml",
+    "values-es/android_keyboard_accessory_strings.xml",
+    "values-es-rUS/android_keyboard_accessory_strings.xml",
+    "values-fa/android_keyboard_accessory_strings.xml",
+    "values-fi/android_keyboard_accessory_strings.xml",
+    "values-tl/android_keyboard_accessory_strings.xml",
+    "values-fr/android_keyboard_accessory_strings.xml",
+    "values-hi/android_keyboard_accessory_strings.xml",
+    "values-hr/android_keyboard_accessory_strings.xml",
+    "values-hu/android_keyboard_accessory_strings.xml",
+    "values-in/android_keyboard_accessory_strings.xml",
+    "values-it/android_keyboard_accessory_strings.xml",
+    "values-iw/android_keyboard_accessory_strings.xml",
+    "values-ja/android_keyboard_accessory_strings.xml",
+    "values-ko/android_keyboard_accessory_strings.xml",
+    "values-lt/android_keyboard_accessory_strings.xml",
+    "values-lv/android_keyboard_accessory_strings.xml",
+    "values-nl/android_keyboard_accessory_strings.xml",
+    "values-nb/android_keyboard_accessory_strings.xml",
+    "values-pl/android_keyboard_accessory_strings.xml",
+    "values-pt-rBR/android_keyboard_accessory_strings.xml",
+    "values-pt-rPT/android_keyboard_accessory_strings.xml",
+    "values-ro/android_keyboard_accessory_strings.xml",
+    "values-ru/android_keyboard_accessory_strings.xml",
+    "values-sk/android_keyboard_accessory_strings.xml",
+    "values-sl/android_keyboard_accessory_strings.xml",
+    "values-sr/android_keyboard_accessory_strings.xml",
+    "values-sv/android_keyboard_accessory_strings.xml",
+    "values-sw/android_keyboard_accessory_strings.xml",
+    "values-th/android_keyboard_accessory_strings.xml",
+    "values-tr/android_keyboard_accessory_strings.xml",
+    "values-uk/android_keyboard_accessory_strings.xml",
+    "values-vi/android_keyboard_accessory_strings.xml",
+    "values-zh-rCN/android_keyboard_accessory_strings.xml",
+    "values-zh-rTW/android_keyboard_accessory_strings.xml",
+  ]
+}

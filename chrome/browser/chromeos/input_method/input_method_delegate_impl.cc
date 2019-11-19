@@ -14,11 +14,9 @@
 namespace chromeos {
 namespace input_method {
 
-InputMethodDelegateImpl::InputMethodDelegateImpl() {
-}
+InputMethodDelegateImpl::InputMethodDelegateImpl() = default;
 
-InputMethodDelegateImpl::~InputMethodDelegateImpl() {
-}
+InputMethodDelegateImpl::~InputMethodDelegateImpl() = default;
 
 std::string InputMethodDelegateImpl::GetHardwareKeyboardLayouts() const {
   if (!g_browser_process)

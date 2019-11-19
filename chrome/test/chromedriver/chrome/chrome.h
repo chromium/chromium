@@ -16,6 +16,17 @@ class WebView;
 
 class Chrome {
  public:
+  enum class WindowType {
+    kWindow,
+    kTab,
+  };
+
+  enum class PermissionState {
+    kGranted,
+    kDenied,
+    kPrompt,
+  };
+
   virtual ~Chrome() {}
 
   virtual Status GetAsDesktop(ChromeDesktopImpl** desktop) = 0;
@@ -36,6 +47,11 @@ class Chrome {
 
   // Return the WebView for the given id.
   virtual Status GetWebViewById(const std::string& id, WebView** web_view) = 0;
+
+  // Makes new window or tab.
+  virtual Status NewWindow(const std::string& target_id,
+                           WindowType type,
+                           std::string* window_handle) = 0;
 
   // Gets the size of the specified WebView.
   virtual Status GetWindowSize(const std::string& id,
@@ -78,6 +94,13 @@ class Chrome {
 
   // Enables acceptInsecureCerts mode for the browser.
   virtual Status SetAcceptInsecureCerts() = 0;
+
+  // Requests altering permission setting for given permission.
+  virtual Status SetPermission(
+      std::unique_ptr<base::DictionaryValue> permission_descriptor,
+      PermissionState desired_state,
+      bool one_realm,
+      WebView* current_view) = 0;
 
   // Get the operation system where Chrome is running.
   virtual std::string GetOperatingSystemName() = 0;

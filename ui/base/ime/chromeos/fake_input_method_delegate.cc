@@ -11,8 +11,7 @@ FakeInputMethodDelegate::FakeInputMethodDelegate()
     : active_locale_("en") {
 }
 
-FakeInputMethodDelegate::~FakeInputMethodDelegate() {
-}
+FakeInputMethodDelegate::~FakeInputMethodDelegate() = default;
 
 std::string FakeInputMethodDelegate::GetHardwareKeyboardLayouts() const {
   return hardware_keyboard_layout_;

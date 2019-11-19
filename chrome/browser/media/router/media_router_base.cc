@@ -12,9 +12,6 @@
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_thread.h"
-#if !defined(OS_ANDROID)
-#include "chrome/browser/media/router/mojo/media_route_controller.h"
-#endif  // !defined(OS_ANDROID)
 
 using blink::mojom::PresentationConnectionState;
 
@@ -92,10 +89,10 @@ MediaRouterBase::GetFlingingController(const MediaRoute::Id& route_id) {
 }
 
 #if !defined(OS_ANDROID)
-scoped_refptr<MediaRouteController> MediaRouterBase::GetRouteController(
-    const MediaRoute::Id& route_id) {
-  return nullptr;
-}
+void MediaRouterBase::GetMediaController(
+    const MediaRoute::Id& route_id,
+    mojo::PendingReceiver<mojom::MediaController> controller,
+    mojo::PendingRemote<mojom::MediaStatusObserver> observer) {}
 #endif  // !defined(OS_ANDROID)
 
 MediaRouterBase::MediaRouterBase() : initialized_(false) {}
@@ -169,11 +166,6 @@ void MediaRouterBase::Shutdown() {
   // outside of the dtor
   internal_routes_observer_.reset();
 }
-
-#if !defined(OS_ANDROID)
-void MediaRouterBase::DetachRouteController(const MediaRoute::Id& route_id,
-                                            MediaRouteController* controller) {}
-#endif  // !defined(OS_ANDROID)
 
 void MediaRouterBase::RegisterRemotingSource(
     SessionID tab_id,

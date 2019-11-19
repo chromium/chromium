@@ -6,6 +6,8 @@
 #include <cmath>
 #include <string>
 
+#include "absl/base/config.h"
+
 namespace absl {
 namespace str_format_internal {
 
@@ -334,7 +336,7 @@ bool FloatToBuffer(Decomposed<Float> decomposed, int precision, Buffer *out,
           static_cast<std::uint64_t>(decomposed.exponent), precision, out, exp))
     return true;
 
-#if defined(__SIZEOF_INT128__)
+#if defined(ABSL_HAVE_INTRINSIC_INT128)
   // If that is not enough, try with __uint128_t.
   return CanFitMantissa<Float, __uint128_t>() &&
          FloatToBufferImpl<__uint128_t, Float, mode>(

@@ -11,10 +11,7 @@
 #include "base/memory/singleton.h"
 #include "content/common/content_export.h"
 #include "content/public/common/font_cache_win.mojom.h"
-
-namespace service_manager {
-struct BindSourceInfo;
-}
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace content {
 
@@ -26,8 +23,7 @@ class CONTENT_EXPORT FontCacheDispatcher : public mojom::FontCacheWin {
   FontCacheDispatcher();
   ~FontCacheDispatcher() override;
 
-  static void Create(mojom::FontCacheWinRequest request,
-                     const service_manager::BindSourceInfo& source_info);
+  static void Create(mojo::PendingReceiver<mojom::FontCacheWin> receiver);
 
  private:
   // mojom::FontCacheWin:

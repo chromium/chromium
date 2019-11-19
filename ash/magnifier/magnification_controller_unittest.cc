@@ -4,6 +4,8 @@
 
 #include "ash/magnifier/magnification_controller.h"
 
+#include "ash/keyboard/ui/keyboard_ui_controller.h"
+#include "ash/keyboard/ui/keyboard_util.h"
 #include "ash/magnifier/magnifier_test_utils.h"
 #include "ash/magnifier/magnifier_utils.h"
 #include "ash/public/cpp/ash_switches.h"
@@ -21,8 +23,6 @@
 #include "ui/events/event_handler.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/rect_conversions.h"
-#include "ui/keyboard/keyboard_controller.h"
-#include "ui/keyboard/keyboard_util.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/widget/widget.h"
@@ -279,7 +279,7 @@ TEST_F(MagnificationControllerTest, FollowFocusChanged) {
 }
 
 TEST_F(MagnificationControllerTest, PanWindow2xLeftToRight) {
-  const aura::Env* env = Shell::Get()->aura_env();
+  const aura::Env* env = aura::Env::GetInstance();
 
   ui::test::EventGenerator* event_generator = GetEventGenerator();
   event_generator->MoveMouseToInHost(gfx::Point(0, 0));
@@ -383,7 +383,7 @@ TEST_F(MagnificationControllerTest, PanWindow2xLeftToRight) {
 }
 
 TEST_F(MagnificationControllerTest, PanWindow2xRightToLeft) {
-  const aura::Env* env = Shell::Get()->aura_env();
+  const aura::Env* env = aura::Env::GetInstance();
 
   ui::test::EventGenerator* event_generator = GetEventGenerator();
   event_generator->MoveMouseToInHost(gfx::Point(799, 300));
@@ -436,7 +436,7 @@ TEST_F(MagnificationControllerTest, PanWindow2xRightToLeft) {
 }
 
 TEST_F(MagnificationControllerTest, PanWindowToRight) {
-  const aura::Env* env = Shell::Get()->aura_env();
+  const aura::Env* env = aura::Env::GetInstance();
 
   ui::test::EventGenerator* event_generator = GetEventGenerator();
   event_generator->MoveMouseToInHost(gfx::Point(400, 300));
@@ -482,7 +482,7 @@ TEST_F(MagnificationControllerTest, PanWindowToRight) {
 }
 
 TEST_F(MagnificationControllerTest, PanWindowToLeft) {
-  const aura::Env* env = Shell::Get()->aura_env();
+  const aura::Env* env = aura::Env::GetInstance();
 
   ui::test::EventGenerator* event_generator = GetEventGenerator();
   event_generator->MoveMouseToInHost(gfx::Point(400, 300));
@@ -949,7 +949,7 @@ TEST_F(MagnificationControllerTest, ZoomsIntoCenter) {
 TEST_F(MagnificationControllerTest, KeyboardOverscrollDisabled) {
   GetMagnificationController()->SetEnabled(false);
 
-  auto* keyboard_controller = keyboard::KeyboardController::Get();
+  auto* keyboard_controller = keyboard::KeyboardUIController::Get();
   bool old_keyboard_overscroll_value =
       keyboard_controller->IsKeyboardOverscrollEnabled();
 
@@ -980,8 +980,7 @@ TEST_F(MagnificationControllerTest, DISABLED_TextfieldFocusedWithKeyboard) {
 
   // Set up and show the keyboard.
   keyboard::SetAccessibilityKeyboardEnabled(true);
-  ash::Shell::Get()->EnableKeyboard();
-  auto* keyboard_controller = keyboard::KeyboardController::Get();
+  auto* keyboard_controller = keyboard::KeyboardUIController::Get();
   keyboard_controller->ShowKeyboard(true);
 
   // Focus on the text input field.
@@ -992,7 +991,7 @@ TEST_F(MagnificationControllerTest, DISABLED_TextfieldFocusedWithKeyboard) {
   gfx::Rect viewport_outside_keyboard_bounds = GetViewport();
   viewport_outside_keyboard_bounds.set_height(
       viewport_outside_keyboard_bounds.height() -
-      keyboard_controller->visual_bounds_in_screen().height() /
+      keyboard_controller->GetVisualBoundsInScreen().height() /
           GetMagnificationController()->GetScale());
 
   gfx::Rect caret_bounds = text_input_helper_.GetCaretBounds();

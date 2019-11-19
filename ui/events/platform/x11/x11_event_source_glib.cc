@@ -7,7 +7,6 @@
 #include <glib.h>
 #include "ui/gfx/x/x11.h"
 
-
 namespace ui {
 
 namespace {
@@ -76,7 +75,7 @@ void X11EventSourceGlib::InitXSource(int fd) {
   DCHECK(!x_source_);
   DCHECK(event_source_.display()) << "Unable to get connection to X server";
 
-  x_poll_.reset(new GPollFD());
+  x_poll_ = std::make_unique<GPollFD>();
   x_poll_->fd = fd;
   x_poll_->events = G_IO_IN;
   x_poll_->revents = 0;

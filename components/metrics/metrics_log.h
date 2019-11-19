@@ -110,6 +110,14 @@ class MetricsLog {
   static void RecordCoreSystemProfile(MetricsServiceClient* client,
                                       SystemProfileProto* system_profile);
 
+  // Record core profile settings into the SystemProfileProto without a client.
+  static void RecordCoreSystemProfile(
+      const std::string& version,
+      metrics::SystemProfileProto::Channel channel,
+      const std::string& application_locale,
+      const std::string& package_name,
+      SystemProfileProto* system_profile);
+
   // Records a user-initiated action.
   void RecordUserAction(const std::string& key);
 

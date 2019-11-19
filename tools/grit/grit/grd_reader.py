@@ -6,14 +6,17 @@
 '''Class for reading GRD files into memory, without processing them.
 '''
 
+from __future__ import print_function
+
 import os.path
-import types
+import sys
 import xml.sax
 import xml.sax.handler
 
+import six
+
 from grit import exception
 from grit import util
-from grit.node import base
 from grit.node import mapping
 from grit.node import misc
 
@@ -46,14 +49,14 @@ class GrdContentHandler(xml.sax.handler.ContentHandler):
   def startElement(self, name, attrs):
     if self.ignore_depth or name in self.tags_to_ignore:
       if self.debug and self.ignore_depth == 0:
-        print "Ignoring element %s and its children" % name
+        print("Ignoring element %s and its children" % name)
       self.ignore_depth += 1
       return
 
     if self.debug:
       attr_list = ' '.join('%s="%s"' % kv for kv in attrs.items())
-      print ("Starting parsing of element %s with attributes %r" %
-          (name, attr_list or '(none)'))
+      print("Starting parsing of element %s with attributes %r" %
+            (name, attr_list or '(none)'))
 
     typeattr = attrs.get('type')
     node = mapping.ElementToClass(name, typeattr)()
@@ -98,7 +101,7 @@ class GrdContentHandler(xml.sax.handler.ContentHandler):
         self.source = oldsource
 
     if self.debug:
-      print "End parsing of element %s" % name
+      print("End parsing of element %s" % name)
     self.stack.pop().EndParsing()
 
     if name == self.stop_after:
@@ -185,7 +188,7 @@ def Parse(filename_or_stream, dir=None, stop_after=None, first_ids_file=None,
     grit.exception.Parsing
   '''
 
-  if isinstance(filename_or_stream, types.StringType):
+  if isinstance(filename_or_stream, six.string_types):
     source = filename_or_stream
     if dir is None:
       dir = util.dirname(filename_or_stream)
@@ -202,7 +205,7 @@ def Parse(filename_or_stream, dir=None, stop_after=None, first_ids_file=None,
     pass
   except:
     if not debug:
-      print "parse exception: run GRIT with the -x flag to debug .grd problems"
+      print("parse exception: run GRIT with the -x flag to debug .grd problems")
     raise
 
   if handler.root.name != 'grit':
@@ -232,4 +235,4 @@ def Parse(filename_or_stream, dir=None, stop_after=None, first_ids_file=None,
 
 if __name__ == '__main__':
   util.ChangeStdoutEncoding()
-  print unicode(Parse(sys.argv[1]))
+  print(six.text_type(Parse(sys.argv[1])))

@@ -17,7 +17,7 @@
             var body = document.getElementById("body");
             body.focus();
             var focusedElement = accessibilityController.focusedElement;
-            var textElement = focusedElement.childAtIndex(1).childAtIndex(0);
+            var textElement = focusedElement.childAtIndex(0).childAtIndex(1).childAtIndex(0);
 
             if (textElement.isPressActionSupported()) {
                 result.innerText += "Test passed\n";

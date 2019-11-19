@@ -14,7 +14,9 @@
 
 namespace {
 
-SkColor kTrackIconColor = SK_ColorWHITE;
+const int kTrackImageSize = 24;
+
+constexpr SkColor kTrackIconColor = SK_ColorWHITE;
 
 }  // namespace
 
@@ -23,9 +25,11 @@ namespace views {
 TrackImageButton::TrackImageButton(ButtonListener* listener,
                                    const gfx::VectorIcon& icon,
                                    base::string16 label)
-    : ImageButton(listener), icon_(icon) {
-  SetImageAlignment(views::ImageButton::ALIGN_CENTER,
-                    views::ImageButton::ALIGN_MIDDLE);
+    : ImageButton(listener),
+      image_(gfx::CreateVectorIcon(icon, kTrackImageSize, kTrackIconColor)) {
+  SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
+  SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
+  SetImage(views::Button::STATE_NORMAL, image_);
 
   // Accessibility.
   SetFocusForPlatform();
@@ -34,21 +38,16 @@ TrackImageButton::TrackImageButton(ButtonListener* listener,
   SetInstallFocusRingOnFocus(true);
 }
 
-TrackImageButton::~TrackImageButton() = default;
-
 gfx::Size TrackImageButton::GetLastVisibleSize() const {
   return size().IsEmpty() ? last_visible_size_ : size();
 }
 
 void TrackImageButton::OnBoundsChanged(const gfx::Rect&) {
-  SetImage(views::Button::STATE_NORMAL,
-           gfx::CreateVectorIcon(icon_, size().width() / 2, kTrackIconColor));
+  if (!size().IsEmpty())
+    last_visible_size_ = size();
 }
 
 void TrackImageButton::ToggleVisibility(bool is_visible) {
-  if (is_visible && !size().IsEmpty())
-    last_visible_size_ = size();
-
   SetVisible(is_visible);
   SetEnabled(is_visible);
   SetSize(is_visible ? GetLastVisibleSize() : gfx::Size());

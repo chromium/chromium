@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<title>Media Controls: timeline element accessibility tests</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../media-controls.js"></script>
+<video controls preload=none></video>
+<audio controls preload=none></audio>
+<script>
+async_test(t => {
+  var video = document.querySelector('video');
+  video.src = '../content/test.ogv';
+
+  // Check to see that values are reasonable even if we haven't loaded.
+  var timeline_element = timelineElement(video);
+  assert_equals(timeline_element.getAttribute('aria-label'), 'video time scrubber 0:00 / 0:00');
+  assert_equals(timeline_element.getAttribute('aria-valuetext'), 'elapsed time: 0:00');
+
+  video.addEventListener('loadedmetadata', t.step_func(_ => {
+
+    // Check to see that we are showing the right values on load.
+    var timeline_element = timelineElement(video);
+    assert_equals(timeline_element.getAttribute('aria-label'),
+                  'video time scrubber 0:00 / 0:06');
+    assert_equals(timeline_element.getAttribute('aria-valuetext'), 'elapsed time: 0:00');
+
+    video.onseeked = t.step_func(_ => {
+     // Check to see that we update the elasped time properly upon seeking.
+     assert_equals(timeline_element.getAttribute('aria-label'),
+                  'video time scrubber 0:01 / 0:06');
+     assert_equals(timeline_element.getAttribute('aria-valuetext'), 'elapsed time: 0:01');
+
+      // To make sure all the tests run before t.step_func_done, we load audio after we test video.
+      audio.load();
+    });
+    video.currentTime = 1;
+  }));
+
+  video.load();
+
+  var audio = document.querySelector('audio');
+  audio.src = '../content/test.oga';
+
+  audio.oncanplaythrough = t.step_func(_ => {
+   var timeline_element = timelineElement(audio);
+     assert_equals(timeline_element.getAttribute('aria-label'),
+                  'audio time scrubber 0:00 / 0:07');
+    assert_equals(timeline_element.getAttribute('aria-valuetext'), 'elapsed time: 0:00');
+
+    audio.onseeked = t.step_func_done(_ => {
+     assert_equals(timeline_element.getAttribute('aria-label'),
+                  'audio time scrubber 0:01 / 0:07');
+      assert_equals(timeline_element.getAttribute('aria-valuetext'), 'elapsed time: 0:01');
+    });
+
+    audio.currentTime = 1;
+  });
+
+});
+</script>
+</html>

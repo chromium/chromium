@@ -12,9 +12,9 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/hash/sha1.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sha1.h"
 
 namespace base {
 class FilePath;
@@ -53,7 +53,7 @@ class SupervisedUserBlacklist {
 
   std::vector<Hash> host_hashes_;
 
-  base::WeakPtrFactory<SupervisedUserBlacklist> weak_ptr_factory_;
+  base::WeakPtrFactory<SupervisedUserBlacklist> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SupervisedUserBlacklist);
 };

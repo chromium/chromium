@@ -27,7 +27,7 @@ namespace base {
 class ListValue;
 class Location;
 class Value;
-}
+}  // namespace base
 
 namespace chromeos {
 
@@ -80,6 +80,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
     TECHNOLOGY_UNINITIALIZED,
     TECHNOLOGY_ENABLING,
     TECHNOLOGY_ENABLED,
+    TECHNOLOGY_DISABLING,
     TECHNOLOGY_PROHIBITED
   };
 
@@ -94,6 +95,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
                    const base::Location& from_here);
   void RemoveObserver(NetworkStateHandlerObserver* observer,
                       const base::Location& from_here);
+  bool HasObserver(NetworkStateHandlerObserver* observer);
 
   // Returns the state for technology |type|. Only
   // NetworkTypePattern::Primitive, ::Mobile, ::Ethernet, and ::Tether are
@@ -369,19 +371,22 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
     return check_portal_list_;
   }
 
-  // Returns the NetworkState of the EthernetEAP service, which contains the
-  // EAP parameters used by the ethernet with |service_path|. If |service_path|
-  // doesn't refer to an ethernet service or if the ethernet service is not
-  // connected using EAP, returns NULL.
-  const NetworkState* GetEAPForEthernet(const std::string& service_path);
+  // Returns the NetworkState for the EthernetEAP service, which contains the
+  // EAP parameters used by the Ethernet network matching |service_path|, if it
+  // exists. If |connected_only| is true, only returns the EthernetEAP state
+  // if the Ethernet network is connected using EAP. Otherwise returns null.
+  const NetworkState* GetEAPForEthernet(const std::string& service_path,
+                                        bool connected_only);
 
   const std::string& default_network_path() const {
     return default_network_path_;
   }
 
-  // Sets the |last_error_| property of the matching NetworkState for tests.
-  void SetLastErrorForTest(const std::string& service_path,
-                           const std::string& error);
+  // Sets the |error_| property of the matching NetworkState for tests.
+  void SetErrorForTest(const std::string& service_path,
+                       const std::string& error);
+
+  void SetDeviceStateUpdatedForTest(const std::string& device_path);
 
   // Sets |allow_only_policy_networks_to_connect_|,
   // |allow_only_policy_networks_to_connect_if_available_| and

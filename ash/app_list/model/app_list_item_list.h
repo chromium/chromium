@@ -17,7 +17,7 @@
 #include "base/observer_list.h"
 #include "components/sync/model/string_ordinal.h"
 
-namespace app_list {
+namespace ash {
 
 class AppListItem;
 
@@ -118,6 +118,6 @@ class APP_LIST_MODEL_EXPORT AppListItemList {
   DISALLOW_COPY_AND_ASSIGN(AppListItemList);
 };
 
-}  // namespace app_list
+}  // namespace ash
 
 #endif  // ASH_APP_LIST_MODEL_APP_LIST_ITEM_LIST_H_

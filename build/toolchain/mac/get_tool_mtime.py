@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import print_function
+
 import os
 import sys
 
@@ -14,4 +16,4 @@ import sys
 if __name__ == '__main__':
   for f in sys.argv[1:]:
     variable = os.path.splitext(os.path.basename(f))[0]
-    print '%s = %d' % (variable, os.path.getmtime(f))
+    print('%s = %d' % (variable, os.path.getmtime(f)))

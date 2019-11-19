@@ -187,7 +187,7 @@ class PPAPI_PROXY_EXPORT PluginGlobals : public PpapiGlobals {
   scoped_refptr<UDPSocketFilter> udp_socket_filter_;
 
   // Member variables should appear before the WeakPtrFactory, see weak_ptr.h.
-  base::WeakPtrFactory<PluginGlobals> weak_factory_;
+  base::WeakPtrFactory<PluginGlobals> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PluginGlobals);
 };

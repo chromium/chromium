@@ -13,7 +13,6 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
@@ -26,16 +25,12 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/navigation_entry.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/common/extension.h"
 
-#if defined(OS_MACOSX)
-#include "base/feature_list.h"
-#include "chrome/common/chrome_features.h"
-#else
+#if !defined(OS_MACOSX)
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #endif
@@ -52,16 +47,16 @@ const char kFullscreenBubbleReshowsHistogramName[] =
 }  // namespace
 
 FullscreenController::FullscreenController(ExclusiveAccessManager* manager)
-    : ExclusiveAccessControllerBase(manager),
-      state_prior_to_tab_fullscreen_(STATE_INVALID),
-      tab_fullscreen_(false),
-      toggled_into_fullscreen_(false),
-      deactivated_contents_(nullptr),
-      is_privileged_fullscreen_for_testing_(false),
-      is_tab_fullscreen_for_testing_(false),
-      ptr_factory_(this) {}
+    : ExclusiveAccessControllerBase(manager) {}
 
-FullscreenController::~FullscreenController() {
+FullscreenController::~FullscreenController() = default;
+
+void FullscreenController::AddObserver(FullscreenObserver* observer) {
+  observer_list_.AddObserver(observer);
+}
+
+void FullscreenController::RemoveObserver(FullscreenObserver* observer) {
+  observer_list_.RemoveObserver(observer);
 }
 
 bool FullscreenController::IsFullscreenForBrowser() const {
@@ -165,7 +160,7 @@ void FullscreenController::EnterFullscreenModeForTab(WebContents* web_contents,
 
   // This is only a change between Browser and Tab fullscreen. We generate
   // a fullscreen notification now because there is no window change.
-  PostFullscreenChangeNotification(true);
+  PostFullscreenChangeNotification();
 }
 
 void FullscreenController::ExitFullscreenModeForTab(WebContents* web_contents) {
@@ -211,7 +206,7 @@ void FullscreenController::ExitFullscreenModeForTab(WebContents* web_contents) {
 
   // This is only a change between Browser and Tab fullscreen. We generate
   // a fullscreen notification now because there is no window change.
-  PostFullscreenChangeNotification(true);
+  PostFullscreenChangeNotification();
 }
 
 void FullscreenController::OnTabDeactivated(
@@ -276,7 +271,7 @@ void FullscreenController::WindowFullscreenStateChanged() {
       exclusive_access_manager()->context();
   bool exiting_fullscreen = !exclusive_access_context->IsFullscreen();
 
-  PostFullscreenChangeNotification(!exiting_fullscreen);
+  PostFullscreenChangeNotification();
   if (exiting_fullscreen) {
     toggled_into_fullscreen_ = false;
     extension_caused_fullscreen_ = GURL();
@@ -320,18 +315,15 @@ void FullscreenController::ExitExclusiveAccessIfNecessary() {
     NotifyTabExclusiveAccessLost();
 }
 
-void FullscreenController::PostFullscreenChangeNotification(
-    bool is_fullscreen) {
+void FullscreenController::PostFullscreenChangeNotification() {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(&FullscreenController::NotifyFullscreenChange,
-                                ptr_factory_.GetWeakPtr(), is_fullscreen));
+                                ptr_factory_.GetWeakPtr()));
 }
 
-void FullscreenController::NotifyFullscreenChange(bool is_fullscreen) {
-  content::NotificationService::current()->Notify(
-      chrome::NOTIFICATION_FULLSCREEN_CHANGED,
-      content::Source<FullscreenController>(this),
-      content::Details<bool>(&is_fullscreen));
+void FullscreenController::NotifyFullscreenChange() {
+  for (auto& observer : observer_list_)
+    observer.OnFullscreenStateChanged();
 }
 
 void FullscreenController::NotifyTabExclusiveAccessLost() {
@@ -443,11 +435,7 @@ bool FullscreenController::MaybeToggleFullscreenWithinTab(
     WebContents* web_contents,
     bool enter_fullscreen) {
   if (enter_fullscreen) {
-    if (web_contents->IsBeingCaptured()
-#if defined(OS_MACOSX)
-        || base::FeatureList::IsEnabled(features::kContentFullscreen)
-#endif
-            ) {
+    if (web_contents->IsBeingCaptured()) {
       FullscreenWithinTabHelper::CreateForWebContents(web_contents);
       FullscreenWithinTabHelper::FromWebContents(web_contents)
           ->SetIsFullscreenWithinTab(true);

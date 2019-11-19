@@ -33,7 +33,34 @@ class NetworkQualityEstimatorParams;
 namespace nqe {
 
 namespace internal {
+constexpr int32_t kStatVal0p = 0;
+constexpr int32_t kStatVal5p = 5;
+constexpr int32_t kStatVal50p = 50;
+constexpr int32_t kStatVal95p = 95;
+constexpr int32_t kStatVal99p = 99;
+constexpr int32_t kCanonicalPercentiles[] = {
+    kStatVal0p, kStatVal5p, kStatVal50p, kStatVal95p, kStatVal99p};
 
+struct NET_EXPORT_PRIVATE CanonicalStats {
+  CanonicalStats();
+  CanonicalStats(std::map<int32_t, int32_t>& canonical_pcts,
+                 int32_t most_recent_val,
+                 size_t observation_count);
+  CanonicalStats(const CanonicalStats& other);
+  ~CanonicalStats();
+
+  CanonicalStats& operator=(const CanonicalStats& other);
+
+  // Canonical percentiles values for a distribution.
+  std::map<int32_t, int32_t> canonical_pcts;
+
+  // The most recent value.
+  int32_t most_recent_val = 0;
+
+  // Counts the number of observations that were available for
+  // computing these results.
+  size_t observation_count = 0;
+};
 struct WeightedObservation;
 
 // Stores observations sorted by time and provides utility functions for
@@ -78,6 +105,16 @@ class NET_EXPORT_PRIVATE ObservationBuffer {
                                         int32_t current_signal_strength,
                                         int percentile,
                                         size_t* observations_count) const;
+
+  // Computes canonical statistic values of the observations for all hosts if
+  // |target_hosts| is empty. Otherwise, computes canonical statistic values
+  // only for hosts that are in the |target_hosts| set. Only observations made
+  // on or after |begin_timestamp| are considered. Returns all canonical
+  // statistics keyed by hosts. These include canonical percentile values, the
+  // most recent value, and the number of observations to compute these values.
+  std::map<IPHash, CanonicalStats> GetCanonicalStatsKeyedByHosts(
+      const base::TimeTicks& begin_timestamp,
+      const std::set<IPHash>& target_hosts) const;
 
   void SetTickClockForTesting(const base::TickClock* tick_clock) {
     tick_clock_ = tick_clock;

@@ -124,18 +124,6 @@ void AddOsUpgradeWorkItems(const InstallerState& installer_state,
                            const base::Version& new_version,
                            WorkItemList* install_list);
 
-#if defined(GOOGLE_CHROME_BUILD)
-// Adds work items to add or remove the "store-dmtoken" command to Chrome's
-// version key. This method is a no-op if this is anything other than
-// system-level Chrome. The command is used when enrolling Chrome browser
-// instances into enterprise management. |new_version| is the version currently
-// being installed -- can be empty on uninstall.
-void AddEnterpriseEnrollmentWorkItems(const InstallerState& installer_state,
-                                      const base::FilePath& setup_path,
-                                      const base::Version& new_version,
-                                      WorkItemList* install_list);
-#endif
-
 }  // namespace installer
 
 #endif  // CHROME_INSTALLER_SETUP_INSTALL_WORKER_H_

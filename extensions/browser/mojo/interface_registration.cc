@@ -60,7 +60,7 @@ void RegisterInterfacesForExtension(service_manager::BinderRegistryWithArgs<
   if (ExtensionHasPermission(extension, render_frame_host->GetProcess(),
                              "displaySource")) {
     registry->AddInterface(
-        base::Bind(WiFiDisplaySessionServiceImpl::BindToRequest,
+        base::Bind(WiFiDisplaySessionServiceImpl::BindToReceiver,
                    render_frame_host->GetProcess()->GetBrowserContext()));
     registry->AddInterface(
         base::Bind(WiFiDisplayMediaServiceImpl::BindToRequest));

@@ -1,7 +1,8 @@
 rootWebArea
-++menuBar horizontal
-++++menuItem name='File' controlsIds=menu
-++++menuItem name='Edit'
-++menu name='File'
-++++menuItem name='New'
-++++menuItem name='Open'
+++genericContainer ignored
+++++menuBar horizontal
+++++++menuItem name='File' controlsIds=menu
+++++++menuItem name='Edit'
+++++menu name='File'
+++++++menuItem name='New'
+++++++menuItem name='Open'

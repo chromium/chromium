@@ -6,7 +6,6 @@
 // https://w3c.github.io/gyroscope/#gyroscope-interface
 
 [
-    RuntimeEnabled=Sensor,
     Constructor(optional SpatialSensorOptions sensorOptions),
     ConstructorCallWith=ExecutionContext,
     RaisesException=Constructor,

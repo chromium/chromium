@@ -12,7 +12,6 @@
 <translation id="2159915644201199628">Nepodařilo se dekódovat obrázek: <ph name="IMAGE_NAME" /></translation>
 <translation id="2350172092385603347">Byla použita lokalizace, ale v manifestu nebyl zadán parametr default_locale.</translation>
 <translation id="2576842806987913196">Soubor CRX s tímto názvem již existuje.</translation>
-<translation id="2753617847762399167">Neplatná cesta (absolutní nebo relativní s „..“): <ph name="IMAGE_PATH" /></translation>
 <translation id="2785530881066938471">Nelze načíst soubor <ph name="RELATIVE_PATH" /> s obsahovým skriptem. Soubor není kódován ve formátu UTF-8.</translation>
 <translation id="2903070246402204397">Rozšíření <ph name="EXTENSION_NAME" /> (ID rozšíření <ph name="EXTENSION_ID" />) je blokováno administrátorem. <ph name="ADMIN_INFO" /></translation>
 <translation id="2988488679308982380">Nepodařilo se nainstalovat balíček: <ph name="ERROR_CODE" /></translation>
@@ -38,8 +37,6 @@
 <translation id="5436430103864390185">Tvarovaná okna nejsou podporována.</translation>
 <translation id="5456409301717116725">Rozšíření obsahuje soubor klíče <ph name="KEY_PATH" />. Tuto akci pravděpodobně provést nechcete.</translation>
 <translation id="5486326529110362464">Musí existovat vstupní hodnota pro soukromý klíč</translation>
-<translation id="5627523580512561598">rozšíření <ph name="EXTENSION_NAME" /></translation>
-<translation id="5960890139610307736">ExtensionView: <ph name="EXTENSIONVIEW_TAG_NAME" /></translation>
 <translation id="5972529113578162692">Administrátor tohoto zařízení vyžaduje, aby bylo rozšíření <ph name="EXTENSION_NAME" /> nainstalováno. Toto rozšíření nelze odinstalovat.</translation>
 <translation id="6027032947578871493">Neznámý produkt <ph name="PRODUCT_ID" /> od dodavatele <ph name="VENDOR_NAME" /> (sériové číslo <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> od dodavatele <ph name="VENDOR_ID" /></translation>
@@ -51,7 +48,6 @@
 <translation id="6542618148162044354">Aplikace <ph name="APP_NAME" /> žádá o přístup k jednomu nebo více z vašich zařízení:</translation>
 <translation id="657064425229075395">Nelze načíst skript pozadí <ph name="BACKGROUND_SCRIPT" />.</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" /> od dodavatele <ph name="VENDOR_NAME" /> (sériové číslo <ph name="SERIAL_NUMBER" />)</translation>
-<translation id="6731255991101203740">Nepodařilo se vytvořit adresář pro rozbalení: <ph name="DIRECTORY_PATH" /></translation>
 <translation id="677806580227005219">Obslužná rutina typu MIME: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
 <translation id="6840444547062817500">Toto rozšíření se obnovovalo příliš často.</translation>
 <translation id="7003844668372540529">Neznámý produkt <ph name="PRODUCT_ID" /> od dodavatele <ph name="VENDOR_NAME" /></translation>

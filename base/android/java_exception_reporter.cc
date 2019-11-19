@@ -6,10 +6,15 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
+#include "base/android/scoped_java_ref.h"
+#include "base/base_jni_headers/JavaExceptionReporter_jni.h"
+#include "base/bind.h"
+#include "base/callback_forward.h"
 #include "base/debug/dump_without_crashing.h"
-#include "jni/JavaExceptionReporter_jni.h"
+#include "base/lazy_instance.h"
 
 using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 namespace base {
 namespace android {
@@ -18,18 +23,31 @@ namespace {
 
 void (*g_java_exception_callback)(const char*);
 
+using JavaExceptionFilter =
+    base::RepeatingCallback<bool(const JavaRef<jthrowable>&)>;
+
+LazyInstance<JavaExceptionFilter>::Leaky g_java_exception_filter;
+
 }  // namespace
 
 void InitJavaExceptionReporter() {
   JNIEnv* env = base::android::AttachCurrentThread();
   constexpr bool crash_after_report = false;
+  SetJavaExceptionFilter(
+      base::BindRepeating([](const JavaRef<jthrowable>&) { return true; }));
   Java_JavaExceptionReporter_installHandler(env, crash_after_report);
 }
 
 void InitJavaExceptionReporterForChildProcess() {
   JNIEnv* env = base::android::AttachCurrentThread();
   constexpr bool crash_after_report = true;
+  SetJavaExceptionFilter(
+      base::BindRepeating([](const JavaRef<jthrowable>&) { return true; }));
   Java_JavaExceptionReporter_installHandler(env, crash_after_report);
+}
+
+void SetJavaExceptionFilter(JavaExceptionFilter java_exception_filter) {
+  g_java_exception_filter.Get() = std::move(java_exception_filter);
 }
 
 void SetJavaExceptionCallback(void (*callback)(const char*)) {
@@ -47,19 +65,24 @@ void JNI_JavaExceptionReporter_ReportJavaException(
     jboolean crash_after_report,
     const JavaParamRef<jthrowable>& e) {
   std::string exception_info = base::android::GetJavaExceptionInfo(env, e);
-  SetJavaException(exception_info.c_str());
+  bool should_report_exception = g_java_exception_filter.Get().Run(e);
+  if (should_report_exception) {
+    SetJavaException(exception_info.c_str());
+  }
   if (crash_after_report) {
     LOG(ERROR) << exception_info;
     LOG(FATAL) << "Uncaught exception";
   }
-  base::debug::DumpWithoutCrashing();
-  SetJavaException(nullptr);
+  if (should_report_exception) {
+    base::debug::DumpWithoutCrashing();
+    SetJavaException(nullptr);
+  }
 }
 
 void JNI_JavaExceptionReporter_ReportJavaStackTrace(
     JNIEnv* env,
-    const JavaParamRef<jstring>& stackTrace) {
-  SetJavaException(ConvertJavaStringToUTF8(stackTrace).c_str());
+    const JavaParamRef<jstring>& stack_trace) {
+  SetJavaException(ConvertJavaStringToUTF8(stack_trace).c_str());
   base::debug::DumpWithoutCrashing();
   SetJavaException(nullptr);
 }

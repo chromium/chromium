@@ -20,7 +20,7 @@ TestWindowParentingClient::~TestWindowParentingClient() {
 
 Window* TestWindowParentingClient::GetDefaultParent(Window* window,
                                                     const gfx::Rect& bounds) {
-  return root_window_;
+  return default_parent_ ? default_parent_ : root_window_;
 }
 
 }  // namespace test

@@ -61,7 +61,7 @@ class AudioPump : public AudioStream {
 
   std::unique_ptr<Core> core_;
 
-  base::WeakPtrFactory<AudioPump> weak_factory_;
+  base::WeakPtrFactory<AudioPump> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AudioPump);
 };

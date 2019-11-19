@@ -21,6 +21,7 @@ extern const char kAllowed[];
 extern const char kBlocked[];
 extern const char kForceInstalled[];
 extern const char kNormalInstalled[];
+extern const char kRemoved[];
 
 extern const char kBlockedPermissions[];
 extern const char kAllowedPermissions[];

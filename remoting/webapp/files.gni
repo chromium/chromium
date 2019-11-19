@@ -97,7 +97,6 @@ remoting_webapp_unittests_js_files = [
   "base/js/xmpp_login_handler_unittest.js",
   "base/js/xmpp_stream_parser_unittest.js",
   "crd/js/apps_v2_migration_unittest.js",
-  "crd/js/butter_bar_unittest.js",
   "crd/js/combined_host_list_api_unittest.js",
   "crd/js/gcd_client_unittest.js",
   "crd/js/gcd_client_with_mock_xhr_unittest.js",
@@ -297,7 +296,6 @@ remoting_webapp_js_host_display_files = [
 # The CRD-specific JavaScript files required by main.html.
 remoting_webapp_crd_js_ui_files = [
   "crd/js/bump_scroller.js",
-  "crd/js/butter_bar.js",
   "crd/js/crd_auth_dialog.js",
   "crd/js/crd_event_handlers.js",
   "crd/js/crd_experimental.js",

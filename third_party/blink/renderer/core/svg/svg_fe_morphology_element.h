@@ -35,8 +35,6 @@ class SVGFEMorphologyElement final
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  DECLARE_NODE_FACTORY(SVGFEMorphologyElement);
-
   explicit SVGFEMorphologyElement(Document&);
 
   SVGAnimatedNumber* radiusX() { return radius_->FirstNumber(); }
@@ -52,6 +50,7 @@ class SVGFEMorphologyElement final
   bool SetFilterEffectAttribute(FilterEffect*, const QualifiedName&) override;
   void SvgAttributeChanged(const QualifiedName&) override;
   FilterEffect* Build(SVGFilterBuilder*, Filter*) override;
+  bool TaintsOrigin() const override { return false; }
 
   Member<SVGAnimatedNumberOptionalNumber> radius_;
   Member<SVGAnimatedString> in1_;

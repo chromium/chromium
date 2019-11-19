@@ -1,0 +1,74 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Mojo interface for performing screen capture in ChromeOS at the request of
+// Android. Android does not have access to the full desktop for capture (it has
+// access only to its Windows), so via this IPC mechanism it can request
+// permissions to capture the entire desktop and then also perform that capture.
+
+// The original version of this file lives in the Chromium repository at:
+// src/components/arc/mojom/screen_capture.mojom
+
+// Next MinVersion: 2
+
+module arc.mojom;
+
+// For gfx::Size.
+import "components/arc/mojom/video_common.mojom";
+
+// Implemented by Chrome in order to allow requesting of permissions to perform
+// desktop capture as well as creating a session for it.
+interface ScreenCaptureHost {
+  // This will also show the desktop picker in case of multiple displays and
+  // will then link that desktop window to the granted permission.
+  // display_name is the string that should be used in the UI
+  // package_name is what should be used as the permission token
+  // returns true if the user accepts, false otherwise
+  RequestPermission@0(string display_name, string package_name) => (bool granted);
+
+  // Requests that a corresponding active permission dialog from a prior call to
+  // RequestPermission be accepted. This will only be allowed under test
+  // conditions.
+  // package_name should match what was passed into RequestPermission
+  [MinVersion=1] TestModeAcceptPermission@2(string package_name);
+
+  // Starts a new capture session, binding the session interface to the passed
+  // in session request.
+  // notifier interface passed in will be used to send messages back to Android
+  //     for when updates are needed by the Chrome rendering engine
+  // package_name should correspond to what was passed into the
+  //     RequestPermission call
+  // size should have the width/height of the buffers used
+  // returns null interface in the case the permission was not granted, a valid
+  //     interface pointer otherwise
+  OpenSession@1(ScreenCaptureSessionNotifier notifier,
+                string package_name, Size size) =>
+                (ScreenCaptureSession? session);
+};
+
+// Implemented by Chrome for handling a screen capture session.
+interface ScreenCaptureSession {
+  // Called to set the graphics buffer that the screen capture should be
+  // rendered to. This call does not return until the rendering is complete to
+  // the passed in buffer.
+  // graphics_buffer should be a handle to the buffer which corresponds to the
+  //     surface being rendered to
+  // stride is the stride in pixels for each row of the buffer
+  SetOutputBuffer@0(handle graphics_buffer, uint32 stride) => ();
+};
+
+// Implemented by Android.
+interface ScreenCaptureInstance {
+  // Establishes full-duplex communication with the host.
+  Init@0(ScreenCaptureHost host_ptr) => ();
+};
+
+// Implemented by Android as a callback mechanism.
+interface ScreenCaptureSessionNotifier {
+  // This is called when Chrome detects a compositor update but Android is not
+  // actively rendering. This will occur if the Android windows are minimized or
+  // not animating but Chrome windows are since Android’s rendering stack does
+  // not update if nothing in Android itself is changing.
+  ForceUpdate@0();
+};

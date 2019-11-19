@@ -138,9 +138,6 @@ TEST(CastCrashdumpUploaderTest, UploadFailsWithInvalidAttachment) {
   // Create a temporary file.
   ScopedTempFile minidump;
 
-  EXPECT_CALL(*m, Init()).Times(1).WillOnce(Return(true));
-  EXPECT_CALL(*m, AddFile(minidump.path().value(), _)).WillOnce(Return(true));
-
   CastCrashdumpData data;
   data.product = "foobar";
   data.version = "1.0";
@@ -152,8 +149,7 @@ TEST(CastCrashdumpUploaderTest, UploadFailsWithInvalidAttachment) {
   CastCrashdumpUploader uploader(data, std::move(m));
 
   // Add a file that does not exist as an attachment.
-  uploader.AddAttachment("label", "/path/does/not/exist");
-  ASSERT_FALSE(uploader.Upload(nullptr));
+  ASSERT_FALSE(uploader.AddAttachment("label", "/path/does/not/exist"));
 }
 
 TEST(CastCrashdumpUploaderTest, UploadSucceedsWithValidAttachment) {

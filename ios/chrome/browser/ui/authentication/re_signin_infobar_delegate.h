@@ -22,7 +22,9 @@ namespace ios {
 class ChromeBrowserState;
 }  // namespace ios
 
-@class Tab;
+namespace web {
+class WebState;
+}  // namespace web
 
 // A confirmation infobar prompting user to bring up the sign-in screen.
 class ReSignInInfoBarDelegate : public ConfirmInfoBarDelegate {
@@ -31,10 +33,10 @@ class ReSignInInfoBarDelegate : public ConfirmInfoBarDelegate {
                           id<SigninPresenter> presenter);
   ~ReSignInInfoBarDelegate() override;
 
-  // Creates a re-sign-in error infobar and adds it to the |tab|. Returns
+  // Creates a re-sign-in error infobar and adds it to the |web_state|. Returns
   // whether the infobar was actually added.
   static bool Create(ios::ChromeBrowserState* browser_state,
-                     Tab* tab,
+                     web::WebState* web_state,
                      id<SigninPresenter> presenter);
 
   // Creates a re-sign-in error infobar, but does not add it to tab content.

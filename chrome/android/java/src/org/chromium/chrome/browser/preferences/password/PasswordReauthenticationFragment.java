@@ -5,16 +5,16 @@
 package org.chromium.chrome.browser.preferences.password;
 
 import android.annotation.TargetApi;
-import android.app.Fragment;
-import android.app.FragmentManager;
 import android.app.KeyguardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 
-import org.chromium.base.VisibleForTesting;
+import androidx.annotation.VisibleForTesting;
 
 /** Show the lock screen confirmation and lock the screen. */
 public class PasswordReauthenticationFragment extends Fragment {

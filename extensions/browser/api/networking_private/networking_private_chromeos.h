@@ -124,7 +124,7 @@ class NetworkingPrivateChromeOS : public NetworkingPrivateDelegate {
                                    base::DictionaryValue* dictionary);
 
   content::BrowserContext* browser_context_;
-  base::WeakPtrFactory<NetworkingPrivateChromeOS> weak_ptr_factory_;
+  base::WeakPtrFactory<NetworkingPrivateChromeOS> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(NetworkingPrivateChromeOS);
 };

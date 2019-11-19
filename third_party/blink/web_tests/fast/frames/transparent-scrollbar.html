@@ -21,16 +21,9 @@ body {
 <script>
 function test()
 {
-    if (window.testRunner) {
-        testRunner.waitUntilDone();
-        testRunner.dumpAsTextWithPixelResults();
-    }
     runAfterLayoutAndPaint(function() {
         document.scrollingElement.scrollTop = 2000;
-        if (window.testRunner) {
-            testRunner.notifyDone();
-        }
-    });
+    }, true);
 }
 </script>
 </head>

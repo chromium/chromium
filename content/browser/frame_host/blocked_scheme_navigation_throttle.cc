@@ -9,11 +9,11 @@
 #include "build/build_config.h"
 #include "content/browser/frame_host/frame_tree.h"
 #include "content/browser/frame_host/frame_tree_node.h"
-#include "content/browser/frame_host/navigation_handle_impl.h"
+#include "content/browser/frame_host/navigation_request.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
-#include "content/public/common/console_message_level.h"
 #include "content/public/common/content_features.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "url/url_constants.h"
 
 namespace content {
@@ -30,17 +30,16 @@ BlockedSchemeNavigationThrottle::~BlockedSchemeNavigationThrottle() {}
 
 NavigationThrottle::ThrottleCheckResult
 BlockedSchemeNavigationThrottle::WillProcessResponse() {
-  NavigationHandleImpl* handle =
-      static_cast<NavigationHandleImpl*>(navigation_handle());
-  if (handle->IsDownload())
+  NavigationRequest* request = NavigationRequest::From(navigation_handle());
+  if (request->IsDownload())
     return PROCEED;
 
   RenderFrameHost* top_frame =
-      handle->frame_tree_node()->frame_tree()->root()->current_frame_host();
+      request->frame_tree_node()->frame_tree()->root()->current_frame_host();
   top_frame->AddMessageToConsole(
-      CONSOLE_MESSAGE_LEVEL_ERROR,
-      base::StringPrintf(kConsoleError, handle->GetURL().scheme().c_str(),
-                         handle->GetURL().spec().c_str()));
+      blink::mojom::ConsoleMessageLevel::kError,
+      base::StringPrintf(kConsoleError, request->GetURL().scheme().c_str(),
+                         request->GetURL().spec().c_str()));
   return CANCEL;
 }
 

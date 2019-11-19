@@ -1,0 +1,152 @@
+<style include="signin-dialog-shared">
+  :host {
+    color: var(--cr-primary-text-color);
+    display: block;
+  }
+
+  cr-button {
+    padding-inline-end: 16px;
+    padding-inline-start: 16px;
+  }
+
+  .action-container {
+    bottom: 0;
+    box-sizing: border-box;
+    position: absolute;
+    width: 100%;
+  }
+
+  cr-button:not(.action-button) {
+    margin-inline-start: 8px;
+  }
+
+<if expr="is_macosx or is_linux">
+  /* This works together with the button-flip in signin-dialog-shared. */
+  cr-button:not(.action-button) {
+    margin-inline-end: 8px;
+    margin-inline-start: 0;
+  }
+</if>
+
+  #illustration-container {
+    height: 168px;
+    margin-bottom: 32px;
+    position: relative;
+    width: 100%;
+  }
+
+  #illustration {
+    background: url(./images/sync_confirmation_illustration.svg);
+    background-size: 100% 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    width: 100%;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    #illustration {
+      background-image:
+          url(./images/sync_confirmation_illustration_dark.svg);
+    }
+  }
+
+  #illustration-container > img {
+    border-radius: 50%;
+    height: 68px;
+    left: 0;
+    margin: auto;
+    position: absolute;
+    right: 0;
+    top: 96px;
+    width: 68px;
+  }
+
+  .heading {
+    font-weight: normal;
+    margin-bottom: 32px;
+    padding: 0 24px;
+    text-align: center;
+  }
+
+  #content-container {
+    /* Saves space for button row. */
+    padding-bottom: 96px;
+    position: relative;
+    width: 100%;
+  }
+
+  .message-container {
+    line-height: 20px;
+    margin-bottom: 16px;
+    padding: 0 24px;
+  }
+
+  .secondary {
+    color: var(--cr-secondary-text-color);
+  }
+
+  @media (prefers-color-scheme: light) {
+    #grey-banner {
+      background: var(--paper-grey-50);
+      height: 128px;
+      top: 0;
+      width: 100%;
+    }
+  }
+
+  #footer {
+    margin-bottom: 0;
+    padding-top: 12px;
+  }
+
+  #settingsButton {
+    left: 16px;
+    position: absolute;
+  }
+
+  :host-context([dir='rtl']) #settingsButton {
+    left: auto;
+    right: 16px;
+  }
+</style>
+
+<!--
+  Use the 'consent-description' attribute to annotate all the UI elements
+  that are part of the text the user reads before consenting to the Sync
+  data collection . Similarly, use 'consent-confirmation' on UI elements on
+  which user clicks to indicate consent.
+-->
+
+<div id="illustration-container">
+  <div id="grey-banner"></div>
+  <div id="illustration"></div>
+  <img src="[[accountImageSrc_]]">
+</div>
+<div id="content-container">
+  <h1 id="syncConfirmationHeading" class="heading" consent-description>
+    $i18n{syncConfirmationTitle}
+  </h1>
+  <div class="message-container">
+    <div consent-description>$i18n{syncConfirmationSyncInfoTitle}</div>
+    <div class="secondary" consent-description>
+      $i18n{syncConfirmationSyncInfoDesc}
+    </div>
+  </div>
+  <div id="footer" class="message-container secondary">
+    $i18n{syncConfirmationSettingsInfo}
+  </div>
+  <div class="action-container">
+    <cr-button class="action-button" id="confirmButton"
+        on-click="onConfirm_" consent-confirmation>
+      $i18n{syncConfirmationConfirmLabel}
+    </cr-button>
+    <cr-button on-click="onUndo_">
+      $i18n{syncConfirmationUndoLabel}
+    </cr-button>
+    <cr-button id="settingsButton" on-click="onGoToSettings_"
+        consent-confirmation>
+      $i18n{syncConfirmationSettingsLabel}
+    </cr-button>
+  </div>
+</div>

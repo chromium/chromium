@@ -12,6 +12,8 @@ android_resources("memconsumer_apk_resources") {
 android_apk("memconsumer_apk") {
   apk_name = "MemConsumer"
   android_manifest = "java/AndroidManifest.xml"
+  min_sdk_version = 16
+  target_sdk_version = 16
   java_files = [
     "java/src/org/chromium/memconsumer/MemConsumer.java",
     "java/src/org/chromium/memconsumer/ResidentService.java",

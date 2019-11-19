@@ -57,7 +57,7 @@ void CalculateMediaBoxAndCropBox(bool rotated,
 PdfRectangle CalculateClipBoxBoundary(const PdfRectangle& media_box,
                                       const PdfRectangle& crop_box);
 
-// Scale |box| by |scale_factor|.
+// Scale |rect| by |scale_factor|.
 void ScalePdfRectangle(double scale_factor, PdfRectangle* rect);
 
 // Calculate the clip box translation offset for a page that does need to be
@@ -77,8 +77,6 @@ void CalculateScaledClipBoxOffset(const gfx::Rect& content_rect,
 // Calculate the clip box offset for a page that does not need to be scaled.
 // All parameters are in points.
 //
-// |content_rect| specifies the printable area of the destination page, with
-// origin at left-bottom.
 // |rotation| specifies the source page rotation values which are N / 90
 // degrees.
 // |page_width| specifies the screen destination page width.
@@ -87,8 +85,7 @@ void CalculateScaledClipBoxOffset(const gfx::Rect& content_rect,
 // at left-bottom.
 // |offset_x| and |offset_y| will contain the final translation offsets for the
 // source clip box, relative to origin at left-bottom.
-void CalculateNonScaledClipBoxOffset(const gfx::Rect& content_rect,
-                                     int rotation,
+void CalculateNonScaledClipBoxOffset(int rotation,
                                      int page_width,
                                      int page_height,
                                      const PdfRectangle& source_clip_box,

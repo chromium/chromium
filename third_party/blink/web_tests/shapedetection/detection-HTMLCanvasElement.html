@@ -3,14 +3,8 @@
 <script src="../resources/testharnessreport.js"></script>
 <script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
 <script src="file:///gen/mojo/public/mojom/base/big_buffer.mojom.js"></script>
-<script src="file:///gen/services/shape_detection/public/mojom/barcodedetection.mojom.js"></script>
-<script src="file:///gen/services/shape_detection/public/mojom/barcodedetection_provider.mojom.js"></script>
-<script src="file:///gen/services/shape_detection/public/mojom/facedetection.mojom.js"></script>
-<script src="file:///gen/services/shape_detection/public/mojom/facedetection_provider.mojom.js"></script>
 <script src="file:///gen/services/shape_detection/public/mojom/textdetection.mojom.js"></script>
 <script src="resources/big-buffer-helpers.js"></script>
-<script src="resources/mock-barcodedetection.js"></script>
-<script src="resources/mock-facedetection.js"></script>
 <script src="resources/mock-textdetection.js"></script>
 <script>
 
@@ -53,20 +47,6 @@ var createTestForCanvasElement = function(createDetector,
   });
 };
 
-function FaceDetectorDetectionResultTest(detectionResult, mock) {
-  const imageReceivedByMock = mock.getFrameData();
-  assert_equals(imageReceivedByMock.byteLength, 180000,"Image length");
-  const GREEN_PIXEL = 0xFF00FF00;
-  assert_equals(imageReceivedByMock[0], GREEN_PIXEL, "Pixel color");
-  assert_equals(detectionResult.length, 3, "Number of faces");
-}
-
-function BarcodeDetectorDetectionResultTest(detectionResult, mock) {
-  assert_equals(detectionResult.length, 2, "Number of barcodes");
-  assert_equals(detectionResult[0].rawValue, "cats", "barcode 1");
-  assert_equals(detectionResult[1].rawValue, "dogs", "barcode 2");
-}
-
 function TextDetectorDetectionResultTest(detectionResult, mock) {
   assert_equals(detectionResult.length, 2, "Number of textBlocks");
   assert_equals(detectionResult[0].rawValue, "cats", "textBlock 1");
@@ -75,36 +55,8 @@ function TextDetectorDetectionResultTest(detectionResult, mock) {
 
 // These tests verify that a Detector's detect() works on an HTMLCanvasElement
 // and on an OffscreenCanvas. Use the mock mojo server implemented in
-// mock-{barcode,face}detection.js.
+// mock-textdetection.js.
 generate_tests(createTestForCanvasElement, [
-  [
-    "Face - detect(HTMLCanvasElement)",
-    () => { return new FaceDetector(); },
-    () => { return document.createElement("canvas"); },
-    mockFaceDetectionProvider,
-    FaceDetectorDetectionResultTest
-  ],
-  [
-    "Face - detect(OffscreenCanvas)",
-    () => { return new FaceDetector(); },
-    () => { return new OffscreenCanvas(300, 150); },
-    mockFaceDetectionProvider,
-    FaceDetectorDetectionResultTest
-  ],
-  [
-    "Barcode - detect(HTMLCanvasElement)",
-    () => { return new BarcodeDetector(); },
-    () => { return document.createElement("canvas"); },
-    mockBarcodeDetectionProvider,
-    BarcodeDetectorDetectionResultTest
-  ],
-  [
-    "Barcode - detect(OffscreenCanvas)",
-    () => { return new BarcodeDetector(); },
-    () => { return new OffscreenCanvas(300, 150); },
-    mockBarcodeDetectionProvider,
-    BarcodeDetectorDetectionResultTest
-  ],
   [
     "Text - detect(HTMLCanvasElement)",
     () => { return new TextDetector(); },

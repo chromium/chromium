@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<script>
+if (window.internals)
+  internals.useMockOverlayScrollbars();
+</script>
+<div style="width: 200px; height: 200px; overflow: scroll">
+  <!-- The intermediate div doesn't have layout overflow. -->
+  <div style="height: 210px; overflow: scroll">
+    <div style="background: green; width: 300px; height: 100px"></div>
+  </div>
+</div>

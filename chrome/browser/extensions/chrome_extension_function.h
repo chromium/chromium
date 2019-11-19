@@ -14,10 +14,10 @@ class Profile;
 // A chrome specific analog to AsyncExtensionFunction. This has access to a
 // chrome Profile.
 //
-// DEPRECATED: Inherit directly from UIThreadExtensionFunction.
+// DEPRECATED: Inherit directly from ExtensionFunction.
 // Then if you need access to Chrome details, you can construct a
 // ChromeExtensionFunctionDetails object within your function implementation.
-class ChromeAsyncExtensionFunction : public UIThreadExtensionFunction {
+class ChromeAsyncExtensionFunction : public ExtensionFunction {
  public:
   ChromeAsyncExtensionFunction();
 
@@ -56,7 +56,7 @@ class ChromeAsyncExtensionFunction : public UIThreadExtensionFunction {
 
  private:
   // If you're hitting a compile error here due to "final" - great! You're doing
-  // the right thing, you just need to extend UIThreadExtensionFunction instead
+  // the right thing, you just need to extend ExtensionFunction instead
   // of ChromeAsyncExtensionFunction.
   ResponseAction Run() final;
 

@@ -7,7 +7,7 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chrome_notification_types.h"
+#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/login/screens/network_error.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
 #include "chromeos/network/network_state.h"
@@ -89,10 +89,7 @@ NetworkStateInformer::State GetStateForDefaultNetwork() {
 
 }  // namespace
 
-NetworkStateInformer::NetworkStateInformer()
-    : state_(OFFLINE),
-      weak_ptr_factory_(this) {
-}
+NetworkStateInformer::NetworkStateInformer() : state_(OFFLINE) {}
 
 NetworkStateInformer::~NetworkStateInformer() {
   if (NetworkHandler::IsInitialized()) {
@@ -108,10 +105,6 @@ void NetworkStateInformer::Init() {
       this, FROM_HERE);
 
   network_portal_detector::GetInstance()->AddAndFireObserver(this);
-
-  registrar_.Add(this,
-                 chrome::NOTIFICATION_SESSION_STARTED,
-                 content::NotificationService::AllSources());
 }
 
 void NetworkStateInformer::AddObserver(NetworkStateInformerObserver* observer) {
@@ -132,16 +125,6 @@ void NetworkStateInformer::OnPortalDetectionCompleted(
     const NetworkState* network,
     const NetworkPortalDetector::CaptivePortalState& state) {
   UpdateStateAndNotify();
-}
-
-void NetworkStateInformer::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  if (type == chrome::NOTIFICATION_SESSION_STARTED)
-    registrar_.RemoveAll();
-  else
-    NOTREACHED() << "Unknown notification: " << type;
 }
 
 void NetworkStateInformer::OnPortalDetected() {

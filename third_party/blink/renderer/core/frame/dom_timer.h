@@ -31,8 +31,8 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/user_gesture_indicator.h"
 #include "third_party/blink/renderer/core/execution_context/context_lifecycle_observer.h"
+#include "third_party/blink/renderer/core/probe/async_task_id.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
-#include "third_party/blink/renderer/platform/bindings/trace_wrapper_member.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/timer.h"
 
@@ -41,24 +41,25 @@ namespace blink {
 class ExecutionContext;
 class ScheduledAction;
 
-class CORE_EXPORT DOMTimer final : public GarbageCollectedFinalized<DOMTimer>,
+class CORE_EXPORT DOMTimer final : public GarbageCollected<DOMTimer>,
                                    public ContextLifecycleObserver,
                                    public TimerBase,
                                    public NameClient {
   USING_GARBAGE_COLLECTED_MIXIN(DOMTimer);
+  USING_PRE_FINALIZER(DOMTimer, Dispose);
 
  public:
   // Creates a new timer owned by the ExecutionContext, starts it and returns
   // its ID.
   static int Install(ExecutionContext*,
                      ScheduledAction*,
-                     TimeDelta timeout,
+                     base::TimeDelta timeout,
                      bool single_shot);
   static void RemoveByID(ExecutionContext*, int timeout_id);
 
   DOMTimer(ExecutionContext*,
            ScheduledAction*,
-           TimeDelta interval,
+           base::TimeDelta interval,
            bool single_shot,
            int timeout_id);
   ~DOMTimer() override;
@@ -66,11 +67,12 @@ class CORE_EXPORT DOMTimer final : public GarbageCollectedFinalized<DOMTimer>,
   // ContextLifecycleObserver
   void ContextDestroyed(ExecutionContext*) override;
 
-  // Eager finalization is needed to promptly stop this Timer object.
+  // Pre finalizer is needed to promptly stop this Timer object.
   // Otherwise timer events might fire at an object that's slated for
   // destruction (when lazily swept), but some of its members (m_action) may
   // already have been finalized & must not be accessed.
-  EAGERLY_FINALIZE();
+  void Dispose();
+  
   void Trace(blink::Visitor*) override;
   const char* NameInHeapSnapshot() const override { return "DOMTimer"; }
 
@@ -79,23 +81,14 @@ class CORE_EXPORT DOMTimer final : public GarbageCollectedFinalized<DOMTimer>,
  private:
   friend class DOMTimerCoordinator;  // For Create().
 
-  static DOMTimer* Create(ExecutionContext* context,
-                          ScheduledAction* action,
-                          TimeDelta timeout,
-                          bool single_shot,
-                          int timeout_id) {
-    return MakeGarbageCollected<DOMTimer>(context, action, timeout, single_shot,
-                                          timeout_id);
-  }
-
   void Fired() override;
 
   scoped_refptr<base::SingleThreadTaskRunner> TimerTaskRunner() const override;
 
   int timeout_id_;
   int nesting_level_;
-  TraceWrapperMember<ScheduledAction> action_;
-  scoped_refptr<UserGestureToken> user_gesture_token_;
+  probe::AsyncTaskId async_task_id_;
+  Member<ScheduledAction> action_;
 };
 
 }  // namespace blink

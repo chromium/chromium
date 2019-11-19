@@ -22,7 +22,6 @@
 
 #include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
-#include "third_party/blink/renderer/platform/bindings/trace_wrapper_member.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 
@@ -52,7 +51,7 @@ class NavigatorGeolocation final
   }
 
  private:
-  TraceWrapperMember<Geolocation> geolocation_;
+  Member<Geolocation> geolocation_;
 };
 
 }  // namespace blink

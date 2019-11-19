@@ -175,6 +175,9 @@ TEST_F(CommonJsTest, RemoveQueryAndReferenceFromURL) {
 
 TEST_F(CommonJsTest, IsSameOrigin) {
   TestScriptAndExpectedValue test_data[] = {
+      {@"'', ''", @NO},
+      {@"'http://abc.com', ''", @NO},
+      {@"'', 'http://abc.com'", @NO},
       {@"'http://abc.com', 'http://abc.com'", @YES},
       {@"'http://abc.com',  'https://abc.com'", @NO},
       {@"'http://abc.com', 'http://abc.com:123'", @NO},

@@ -10,6 +10,7 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "ui/display/manager/display_layout_store.h"
 #include "ui/display/manager/display_manager.h"

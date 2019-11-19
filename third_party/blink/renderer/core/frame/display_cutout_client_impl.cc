@@ -25,15 +25,16 @@ String GetPx(int value) {
 
 DisplayCutoutClientImpl::DisplayCutoutClientImpl(
     LocalFrame* frame,
-    mojom::blink::DisplayCutoutClientAssociatedRequest request)
-    : frame_(frame), binding_(this, std::move(request)) {}
+    mojo::PendingAssociatedReceiver<mojom::blink::DisplayCutoutClient> receiver)
+    : frame_(frame), receiver_(this, std::move(receiver)) {}
 
-void DisplayCutoutClientImpl::BindMojoRequest(
+void DisplayCutoutClientImpl::BindMojoReceiver(
     LocalFrame* frame,
-    mojom::blink::DisplayCutoutClientAssociatedRequest request) {
+    mojo::PendingAssociatedReceiver<mojom::blink::DisplayCutoutClient>
+        receiver) {
   if (!frame)
     return;
-  MakeGarbageCollected<DisplayCutoutClientImpl>(frame, std::move(request));
+  MakeGarbageCollected<DisplayCutoutClientImpl>(frame, std::move(receiver));
 }
 
 void DisplayCutoutClientImpl::SetSafeArea(

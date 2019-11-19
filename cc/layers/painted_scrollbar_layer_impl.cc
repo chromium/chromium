@@ -43,10 +43,9 @@ PaintedScrollbarLayerImpl::PaintedScrollbarLayerImpl(
       thumb_ui_resource_id_(0),
       thumb_opacity_(1.f),
       internal_contents_scale_(1.f),
+      supports_drag_snap_back_(false),
       thumb_thickness_(0),
-      thumb_length_(0),
-      track_start_(0),
-      track_length_(0) {}
+      thumb_length_(0) {}
 
 PaintedScrollbarLayerImpl::~PaintedScrollbarLayerImpl() = default;
 
@@ -66,10 +65,12 @@ void PaintedScrollbarLayerImpl::PushPropertiesTo(LayerImpl* layer) {
   scrollbar_layer->set_internal_contents_scale_and_bounds(
       internal_contents_scale_, internal_content_bounds_);
 
+  scrollbar_layer->SetSupportsDragSnapBack(supports_drag_snap_back_);
   scrollbar_layer->SetThumbThickness(thumb_thickness_);
   scrollbar_layer->SetThumbLength(thumb_length_);
-  scrollbar_layer->SetTrackStart(track_start_);
-  scrollbar_layer->SetTrackLength(track_length_);
+  scrollbar_layer->SetBackButtonRect(back_button_rect_);
+  scrollbar_layer->SetForwardButtonRect(forward_button_rect_);
+  scrollbar_layer->SetTrackRect(track_rect_);
 
   scrollbar_layer->set_track_ui_resource_id(track_ui_resource_id_);
   scrollbar_layer->set_thumb_ui_resource_id(thumb_ui_resource_id_);
@@ -96,7 +97,7 @@ void PaintedScrollbarLayerImpl::AppendQuads(
   viz::SharedQuadState* shared_quad_state =
       render_pass->CreateAndAppendSharedQuadState();
   PopulateScaledSharedQuadState(shared_quad_state, internal_contents_scale_,
-                                internal_contents_scale_, contents_opaque());
+                                contents_opaque());
 
   AppendDebugBorderQuad(render_pass, gfx::Rect(internal_content_bounds_),
                         shared_quad_state, append_quads_data);
@@ -125,7 +126,7 @@ void PaintedScrollbarLayerImpl::AppendQuads(
                  thumb_resource_id, premultipled_alpha, uv_top_left,
                  uv_bottom_right, SK_ColorTRANSPARENT, opacity, flipped,
                  nearest_neighbor, /*secure_output_only=*/false,
-                 ui::ProtectedVideoType::kClear);
+                 gfx::ProtectedVideoType::kClear);
     ValidateQuadResources(quad);
   }
 
@@ -145,7 +146,7 @@ void PaintedScrollbarLayerImpl::AppendQuads(
                  track_resource_id, premultipled_alpha, uv_top_left,
                  uv_bottom_right, SK_ColorTRANSPARENT, opacity, flipped,
                  nearest_neighbor, /*secure_output_only=*/false,
-                 ui::ProtectedVideoType::kClear);
+                 gfx::ProtectedVideoType::kClear);
     ValidateQuadResources(quad);
   }
 }
@@ -155,6 +156,18 @@ gfx::Rect PaintedScrollbarLayerImpl::GetEnclosingRectInTargetSpace() const {
     return gfx::Rect();
   DCHECK_GT(internal_contents_scale_, 0.f);
   return GetScaledEnclosingRectInTargetSpace(internal_contents_scale_);
+}
+
+void PaintedScrollbarLayerImpl::SetSupportsDragSnapBack(
+    bool supports_drag_snap_back) {
+  if (supports_drag_snap_back_ == supports_drag_snap_back)
+    return;
+  supports_drag_snap_back_ = supports_drag_snap_back;
+  NoteLayerPropertyChanged();
+}
+
+bool PaintedScrollbarLayerImpl::SupportsDragSnapBack() const {
+  return supports_drag_snap_back_;
 }
 
 void PaintedScrollbarLayerImpl::SetThumbThickness(int thumb_thickness) {
@@ -179,26 +192,78 @@ int PaintedScrollbarLayerImpl::ThumbLength() const {
   return thumb_length_;
 }
 
-void PaintedScrollbarLayerImpl::SetTrackStart(int track_start) {
-  if (track_start_ == track_start)
+int PaintedScrollbarLayerImpl::TrackStart() const {
+  return orientation() == VERTICAL ? track_rect_.y() : track_rect_.x();
+}
+
+void PaintedScrollbarLayerImpl::SetBackButtonRect(gfx::Rect back_button_rect) {
+  if (back_button_rect_ == back_button_rect)
     return;
-  track_start_ = track_start;
+  back_button_rect_ = back_button_rect;
   NoteLayerPropertyChanged();
 }
 
-int PaintedScrollbarLayerImpl::TrackStart() const {
-  return track_start_;
+gfx::Rect PaintedScrollbarLayerImpl::BackButtonRect() const {
+  return back_button_rect_;
 }
 
-void PaintedScrollbarLayerImpl::SetTrackLength(int track_length) {
-  if (track_length_ == track_length)
+void PaintedScrollbarLayerImpl::SetForwardButtonRect(
+    gfx::Rect forward_button_rect) {
+  if (forward_button_rect_ == forward_button_rect)
     return;
-  track_length_ = track_length;
+  forward_button_rect_ = forward_button_rect;
+  NoteLayerPropertyChanged();
+}
+
+gfx::Rect PaintedScrollbarLayerImpl::ForwardButtonRect() const {
+  return forward_button_rect_;
+}
+
+gfx::Rect PaintedScrollbarLayerImpl::BackTrackRect() const {
+  const gfx::Rect thumb_rect = ComputeThumbQuadRect();
+  const int rect_x = track_rect_.x();
+  const int rect_y = track_rect_.y();
+  if (orientation() == HORIZONTAL) {
+    int width = thumb_rect.x() - rect_x;
+    int height = track_rect_.height();
+    return gfx::Rect(rect_x, rect_y, width, height);
+  } else {
+    int width = track_rect_.width();
+    int height = thumb_rect.y() - rect_y;
+    return gfx::Rect(rect_x, rect_y, width, height);
+  }
+}
+
+gfx::Rect PaintedScrollbarLayerImpl::ForwardTrackRect() const {
+  const gfx::Rect thumb_rect = ComputeThumbQuadRect();
+  const int track_end = TrackStart() + TrackLength();
+  if (orientation() == HORIZONTAL) {
+    int rect_x = thumb_rect.right();
+    int rect_y = track_rect_.y();
+    int width = track_end - rect_x;
+    int height = track_rect_.height();
+    return gfx::Rect(rect_x, rect_y, width, height);
+  } else {
+    int rect_x = track_rect_.x();
+    int rect_y = thumb_rect.bottom();
+    int width = track_rect_.width();
+    int height = track_end - rect_y;
+    return gfx::Rect(rect_x, rect_y, width, height);
+  }
+}
+
+void PaintedScrollbarLayerImpl::SetTrackRect(gfx::Rect track_rect) {
+  if (track_rect_ == track_rect)
+    return;
+  track_rect_ = track_rect;
   NoteLayerPropertyChanged();
 }
 
 float PaintedScrollbarLayerImpl::TrackLength() const {
-  return track_length_ + (orientation() == VERTICAL ? vertical_adjust() : 0);
+  if (orientation() == VERTICAL)
+    return track_rect_.height() + vertical_adjust();
+  else
+    return track_rect_.width();
 }
 
 bool PaintedScrollbarLayerImpl::IsThumbResizable() const {

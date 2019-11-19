@@ -33,26 +33,13 @@ FloatSize GetSpecifiedSize(const FloatSize& size, float zoom) {
 
 }  // namespace
 
-CSSPaintDefinition* CSSPaintDefinition::Create(
-    ScriptState* script_state,
-    V8NoArgumentConstructor* constructor,
-    V8PaintCallback* paint,
-    const Vector<CSSPropertyID>& native_invalidation_properties,
-    const Vector<AtomicString>& custom_invalidation_properties,
-    const Vector<CSSSyntaxDescriptor>& input_argument_types,
-    const PaintRenderingContext2DSettings* context_settings) {
-  return MakeGarbageCollected<CSSPaintDefinition>(
-      script_state, constructor, paint, native_invalidation_properties,
-      custom_invalidation_properties, input_argument_types, context_settings);
-}
-
 CSSPaintDefinition::CSSPaintDefinition(
     ScriptState* script_state,
     V8NoArgumentConstructor* constructor,
     V8PaintCallback* paint,
     const Vector<CSSPropertyID>& native_invalidation_properties,
     const Vector<AtomicString>& custom_invalidation_properties,
-    const Vector<CSSSyntaxDescriptor>& input_argument_types,
+    const Vector<CSSSyntaxDefinition>& input_argument_types,
     const PaintRenderingContext2DSettings* context_settings)
     : script_state_(script_state),
       constructor_(constructor),
@@ -66,16 +53,13 @@ CSSPaintDefinition::CSSPaintDefinition(
 
 CSSPaintDefinition::~CSSPaintDefinition() = default;
 
-scoped_refptr<Image> CSSPaintDefinition::Paint(
-    const ImageResourceObserver& client,
+sk_sp<PaintRecord> CSSPaintDefinition::Paint(
     const FloatSize& container_size,
-    const CSSStyleValueVector* paint_arguments) {
-  // TODO: Break dependency on LayoutObject. Passing the Node should work.
-  const LayoutObject& layout_object = static_cast<const LayoutObject&>(client);
-
-  float zoom = layout_object.StyleRef().EffectiveZoom();
+    float zoom,
+    StylePropertyMapReadOnly* style_map,
+    const CSSStyleValueVector* paint_arguments,
+    float device_scale_factor) {
   const FloatSize specified_size = GetSpecifiedSize(container_size, zoom);
-
   ScriptState::Scope scope(script_state_);
 
   MaybeCreatePaintInstance();
@@ -86,21 +70,11 @@ scoped_refptr<Image> CSSPaintDefinition::Paint(
 
   v8::Isolate* isolate = script_state_->GetIsolate();
 
-  DCHECK(layout_object.GetNode());
-  CanvasColorParams color_params;
-  if (!context_settings_->alpha()) {
-    color_params.SetOpacityMode(kOpaque);
-  }
-
   // Do subpixel snapping for the |container_size|.
-  PaintRenderingContext2D* rendering_context = PaintRenderingContext2D::Create(
-      RoundedIntSize(container_size), color_params, context_settings_, zoom);
-  PaintSize* paint_size = PaintSize::Create(specified_size);
-  StylePropertyMapReadOnly* style_map =
-      MakeGarbageCollected<PrepopulatedComputedStylePropertyMap>(
-          layout_object.GetDocument(), layout_object.StyleRef(),
-          layout_object.GetNode(), native_invalidation_properties_,
-          custom_invalidation_properties_);
+  auto* rendering_context = MakeGarbageCollected<PaintRenderingContext2D>(
+      RoundedIntSize(container_size), context_settings_, zoom,
+      device_scale_factor);
+  PaintSize* paint_size = MakeGarbageCollected<PaintSize>(specified_size);
 
   CSSStyleValueVector empty_paint_arguments;
   if (!paint_arguments)
@@ -118,8 +92,7 @@ scoped_refptr<Image> CSSPaintDefinition::Paint(
     return nullptr;
   }
 
-  return PaintGeneratedImage::Create(rendering_context->GetRecord(),
-                                     container_size);
+  return rendering_context->GetRecord();
 }
 
 void CSSPaintDefinition::MaybeCreatePaintInstance() {

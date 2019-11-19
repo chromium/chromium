@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_SERVICES_PDF_COMPOSITOR_PUBLIC_CPP_PDF_SERVICE_MOJO_TYPES_H_
 #define COMPONENTS_SERVICES_PDF_COMPOSITOR_PUBLIC_CPP_PDF_SERVICE_MOJO_TYPES_H_
 
+#include <stdint.h>
+
 #include "base/containers/flat_map.h"
 
 namespace printing {

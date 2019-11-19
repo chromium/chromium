@@ -10,7 +10,7 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/shared_memory.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "build/build_config.h"
 #include "ipc/ipc_platform_file.h"
 #include "ppapi/c/pp_bool.h"
@@ -55,8 +55,8 @@ class PPAPI_PROXY_EXPORT ImageData : public ppapi::Resource,
 
   // PPB_ImageData API.
   PP_Bool Describe(PP_ImageDataDesc* desc) override;
-  int32_t GetSharedMemory(base::SharedMemory** shm,
-                          uint32_t* byte_count) override;
+  int32_t GetSharedMemoryRegion(
+      base::UnsafeSharedMemoryRegion** region) override;
   void SetIsCandidateForReuse() override;
 
   PPB_ImageData_Shared::ImageDataType type() const { return type_; }
@@ -81,22 +81,20 @@ class PPAPI_PROXY_EXPORT ImageData : public ppapi::Resource,
 };
 
 // PlatformImageData is a full featured image data resource which can access
-// the underlying platform-specific canvas and ImageHandle. This can't be used
-// by NaCl apps.
+// the underlying platform-specific canvas and |image_region|. This can't be
+// used by NaCl apps.
 #if !defined(OS_NACL)
 class PPAPI_PROXY_EXPORT PlatformImageData : public ImageData {
  public:
   PlatformImageData(const ppapi::HostResource& resource,
                     const PP_ImageDataDesc& desc,
-                    ImageHandle handle);
+                    base::UnsafeSharedMemoryRegion image_region);
   ~PlatformImageData() override;
 
   // PPB_ImageData API.
   void* Map() override;
   void Unmap() override;
   SkCanvas* GetCanvas() override;
-
-  static ImageHandle NullHandle();
 
  private:
   std::unique_ptr<TransportDIB> transport_dib_;
@@ -115,7 +113,7 @@ class PPAPI_PROXY_EXPORT SimpleImageData : public ImageData {
  public:
   SimpleImageData(const ppapi::HostResource& resource,
                   const PP_ImageDataDesc& desc,
-                  const base::SharedMemoryHandle& handle);
+                  base::UnsafeSharedMemoryRegion region);
   ~SimpleImageData() override;
 
   // PPB_ImageData API.
@@ -124,7 +122,8 @@ class PPAPI_PROXY_EXPORT SimpleImageData : public ImageData {
   SkCanvas* GetCanvas() override;
 
  private:
-  base::SharedMemory shm_;
+  base::UnsafeSharedMemoryRegion shm_region_;
+  base::WritableSharedMemoryMapping shm_mapping_;
   uint32_t size_;
   int map_count_;
 
@@ -151,7 +150,8 @@ class PPB_ImageData_Proxy : public InterfaceProxy {
   // On failure, will return invalid resource (0). On success it will return a
   // valid resource and the out params will be written.
   // |desc| contains the result of Describe.
-  // |image_handle| and |byte_count| contain the result of GetSharedMemory.
+  // |image_region| and |byte_count| contain the result of
+  // GetSharedMemoryRegion.
   // NOTE: if |init_to_zero| is false, you should write over the entire image
   // to avoid leaking sensitive data to a less privileged process.
   PPAPI_PROXY_EXPORT static PP_Resource CreateImageData(
@@ -161,8 +161,7 @@ class PPB_ImageData_Proxy : public InterfaceProxy {
       const PP_Size& size,
       bool init_to_zero,
       PP_ImageDataDesc* desc,
-      base::SharedMemoryHandle* image_handle,
-      uint32_t* byte_count);
+      base::UnsafeSharedMemoryRegion* image_region);
 
   static const ApiID kApiID = API_ID_PPB_IMAGE_DATA;
 
@@ -175,7 +174,7 @@ class PPB_ImageData_Proxy : public InterfaceProxy {
       PP_Bool init_to_zero,
       HostResource* result,
       PP_ImageDataDesc* desc,
-      ImageHandle* result_image_handle);
+      ppapi::proxy::SerializedHandle* result_image_handle);
   void OnHostMsgCreateSimple(
       PP_Instance instance,
       int32_t format,

@@ -15,7 +15,7 @@ namespace {
 // Takes the list of entries and an offset, and returns an index into the array.
 // If |offset| is positive, just returns |offset|.  If it's negative, it
 // indicates a position relative to the end of the array.
-size_t GetIndex(const TestNetLogEntry::List& entries, int offset) {
+size_t GetIndex(const std::vector<NetLogEntry>& entries, int offset) {
   if (offset >= 0)
     return static_cast<size_t>(offset);
 
@@ -30,14 +30,14 @@ size_t GetIndex(const TestNetLogEntry::List& entries, int offset) {
 }  // namespace
 
 ::testing::AssertionResult LogContainsEvent(
-    const TestNetLogEntry::List& entries,
+    const std::vector<NetLogEntry>& entries,
     int offset,
     NetLogEventType expected_event,
     NetLogEventPhase expected_phase) {
   size_t index = GetIndex(entries, offset);
   if (index >= entries.size())
     return ::testing::AssertionFailure() << index << " is out of bounds.";
-  const TestNetLogEntry& entry = entries[index];
+  const NetLogEntry& entry = entries[index];
   if (expected_event != entry.type) {
     return ::testing::AssertionFailure()
            << "Actual event: " << NetLog::EventTypeToString(entry.type)
@@ -53,7 +53,7 @@ size_t GetIndex(const TestNetLogEntry::List& entries, int offset) {
 }
 
 ::testing::AssertionResult LogContainsBeginEvent(
-    const TestNetLogEntry::List& entries,
+    const std::vector<NetLogEntry>& entries,
     int offset,
     NetLogEventType expected_event) {
   return LogContainsEvent(entries, offset, expected_event,
@@ -61,7 +61,7 @@ size_t GetIndex(const TestNetLogEntry::List& entries, int offset) {
 }
 
 ::testing::AssertionResult LogContainsEndEvent(
-    const TestNetLogEntry::List& entries,
+    const std::vector<NetLogEntry>& entries,
     int offset,
     NetLogEventType expected_event) {
   return LogContainsEvent(entries, offset, expected_event,
@@ -69,38 +69,38 @@ size_t GetIndex(const TestNetLogEntry::List& entries, int offset) {
 }
 
 ::testing::AssertionResult LogContainsEntryWithType(
-    const TestNetLogEntry::List& entries,
+    const std::vector<NetLogEntry>& entries,
     int offset,
     NetLogEventType type) {
   size_t index = GetIndex(entries, offset);
   if (index >= entries.size())
     return ::testing::AssertionFailure() << index << " is out of bounds.";
-  const TestNetLogEntry& entry = entries[index];
+  const NetLogEntry& entry = entries[index];
   if (entry.type != type)
     return ::testing::AssertionFailure() << "Type does not match.";
   return ::testing::AssertionSuccess();
 }
 
 ::testing::AssertionResult LogContainsEntryWithTypeAfter(
-    const TestNetLogEntry::List& entries,
+    const std::vector<NetLogEntry>& entries,
     int start_offset,
     NetLogEventType type) {
   for (size_t i = GetIndex(entries, start_offset); i < entries.size(); ++i) {
-    const TestNetLogEntry& entry = entries[i];
+    const NetLogEntry& entry = entries[i];
     if (entry.type == type)
       return ::testing::AssertionSuccess();
   }
   return ::testing::AssertionFailure();
 }
 
-size_t ExpectLogContainsSomewhere(const TestNetLogEntry::List& entries,
+size_t ExpectLogContainsSomewhere(const std::vector<NetLogEntry>& entries,
                                   size_t min_offset,
                                   NetLogEventType expected_event,
                                   NetLogEventPhase expected_phase) {
   size_t min_index = GetIndex(entries, min_offset);
   size_t i = 0;
   for (; i < entries.size(); ++i) {
-    const TestNetLogEntry& entry = entries[i];
+    const NetLogEntry& entry = entries[i];
     if (entry.type == expected_event && entry.phase == expected_phase)
       break;
   }
@@ -109,18 +109,102 @@ size_t ExpectLogContainsSomewhere(const TestNetLogEntry::List& entries,
   return i;
 }
 
-size_t ExpectLogContainsSomewhereAfter(const TestNetLogEntry::List& entries,
+size_t ExpectLogContainsSomewhereAfter(const std::vector<NetLogEntry>& entries,
                                        size_t start_offset,
                                        NetLogEventType expected_event,
                                        NetLogEventPhase expected_phase) {
   size_t i = GetIndex(entries, start_offset);
   for (; i < entries.size(); ++i) {
-    const TestNetLogEntry& entry = entries[i];
+    const NetLogEntry& entry = entries[i];
     if (entry.type == expected_event && entry.phase == expected_phase)
       break;
   }
   EXPECT_LT(i, entries.size());
   return i;
+}
+
+base::Optional<std::string> GetOptionalStringValueFromParams(
+    const NetLogEntry& entry,
+    base::StringPiece name) {
+  if (!entry.params.is_dict())
+    return base::nullopt;
+
+  const std::string* result = entry.params.FindStringKey(name);
+  if (!result)
+    return base::nullopt;
+
+  return *result;
+}
+
+base::Optional<bool> GetOptionalBooleanValueFromParams(const NetLogEntry& entry,
+                                                       base::StringPiece name) {
+  if (!entry.params.is_dict())
+    return base::nullopt;
+  return entry.params.FindBoolKey(name);
+}
+
+base::Optional<int> GetOptionalIntegerValueFromParams(const NetLogEntry& entry,
+                                                      base::StringPiece name) {
+  if (!entry.params.is_dict())
+    return base::nullopt;
+  return entry.params.FindIntKey(name);
+}
+
+base::Optional<int> GetOptionalNetErrorCodeFromParams(
+    const NetLogEntry& entry) {
+  return GetOptionalIntegerValueFromParams(entry, "net_error");
+}
+
+std::string GetStringValueFromParams(const NetLogEntry& entry,
+                                     base::StringPiece name) {
+  auto result = GetOptionalStringValueFromParams(entry, name);
+  if (!result) {
+    ADD_FAILURE() << "No string parameter " << name;
+    return "";
+  }
+  return *result;
+}
+
+int GetIntegerValueFromParams(const NetLogEntry& entry,
+                              base::StringPiece name) {
+  auto result = GetOptionalIntegerValueFromParams(entry, name);
+  if (!result) {
+    ADD_FAILURE() << "No int parameter " << name;
+    return -1;
+  }
+  return *result;
+}
+
+bool GetBooleanValueFromParams(const NetLogEntry& entry,
+                               base::StringPiece name) {
+  auto result = GetOptionalBooleanValueFromParams(entry, name);
+  if (!result) {
+    ADD_FAILURE() << "No bool parameter " << name;
+    return -1;
+  }
+  return *result;
+}
+
+int GetNetErrorCodeFromParams(const NetLogEntry& entry) {
+  auto result = GetOptionalNetErrorCodeFromParams(entry);
+  if (!result) {
+    ADD_FAILURE() << "No net_error parameter";
+    return -1;
+  }
+  return *result;
+}
+
+bool GetListValueFromParams(const NetLogEntry& entry,
+                            base::StringPiece name,
+                            const base::ListValue** value) {
+  if (!entry.params.is_dict())
+    return false;
+
+  const base::Value* list = entry.params.FindListKey(name);
+  if (!list)
+    return false;
+
+  return list->GetAsList(value);
 }
 
 }  // namespace net

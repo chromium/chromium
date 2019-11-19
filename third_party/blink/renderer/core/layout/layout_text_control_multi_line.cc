@@ -38,31 +38,22 @@ LayoutTextControlMultiLine::~LayoutTextControlMultiLine() = default;
 
 bool LayoutTextControlMultiLine::NodeAtPoint(
     HitTestResult& result,
-    const HitTestLocation& location_in_container,
-    const LayoutPoint& accumulated_offset,
+    const HitTestLocation& hit_test_location,
+    const PhysicalOffset& accumulated_offset,
     HitTestAction hit_test_action) {
-  if (!LayoutTextControl::NodeAtPoint(result, location_in_container,
+  if (!LayoutTextControl::NodeAtPoint(result, hit_test_location,
                                       accumulated_offset, hit_test_action))
     return false;
 
+  const LayoutObject* stop_node = result.GetHitTestRequest().GetStopNode();
+  if (stop_node && stop_node->NodeForHitTest() == result.InnerNode())
+    return true;
+
   if (result.InnerNode() == GetNode() ||
       result.InnerNode() == InnerEditorElement())
-    HitInnerEditorElement(result, location_in_container.Point(),
-                          accumulated_offset);
+    HitInnerEditorElement(result, hit_test_location, accumulated_offset);
 
   return true;
-}
-
-float LayoutTextControlMultiLine::GetAvgCharWidth(
-    const AtomicString& family) const {
-  // Match the default system font to the width of MS Shell Dlg, the default
-  // font for textareas in Firefox, Safari Win and IE for some encodings (in
-  // IE, the default font is encoding specific). 1229 is the avgCharWidth
-  // value in the OS/2 table for Courier New.
-  if (LayoutTheme::GetTheme().NeedsHackForTextControlWithFontFamily(family))
-    return ScaleEmToUnits(1229);
-
-  return LayoutTextControl::GetAvgCharWidth(family);
 }
 
 LayoutUnit LayoutTextControlMultiLine::PreferredContentLogicalWidth(

@@ -8,7 +8,8 @@ debugging. It consists of 4 components:
 1.  The function `views::PrintViewGraph()` (in the file
     `ui/views/debug_utils.h`),
 1.  a custom debugger command
-  - For GDB, use `tools/gdb/viewg.gdb`
+  - For GDB, see
+    [gdbinit](https://chromium.googlesource.com/chromium/src/+/master/docs/gdbinit.md),
   - For LLDB, use `tools/lldb/lldb_viewg.py`
   - For other debuggers, it should be relatively easy to adapt the
     above scripts.
@@ -22,8 +23,8 @@ To use the tool,
 
 1.  Make sure you have 'dot' installed (part of graphViz),
 1.  run gdb/lldb on your build and
-    1. For GDB `source tools/gdb/viewg.gdb` (this can be done automatically
-    in `.gdbinit`),
+    1. For GDB see
+    [gdbinit](https://chromium.googlesource.com/chromium/src/+/master/docs/gdbinit.md),
     1. For LLDB `command script import tools/lldb/lldb_viewg.py` (this can
     be done automatically in `.lldbinit`),
 1.  stop at any breakpoint inside class `View` (or any derived class), and

@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-FAIL #container 1 assert_equals: 
-<div id="container" data-expected-height="20">12345678<span>90</span></div>
-height expected 20 but got 10
-Harness: the test ran to completion.
-

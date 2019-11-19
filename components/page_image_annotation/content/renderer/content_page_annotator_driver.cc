@@ -10,7 +10,7 @@
 #include "content/public/renderer/render_frame.h"
 #include "crypto/sha2.h"
 #include "services/image_annotation/public/mojom/image_annotation.mojom.h"
-#include "services/service_manager/public/cpp/interface_provider.h"
+#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -40,11 +40,12 @@ base::Optional<PageAnnotator::ImageMetadata> ProduceMetadata(
   return PageAnnotator::ImageMetadata{node_id, source_id};
 }
 
-ia_mojom::AnnotatorPtr RequestAnnotator(
+mojo::PendingRemote<ia_mojom::Annotator> RequestAnnotator(
     content::RenderFrame* const render_frame) {
-  ia_mojom::AnnotatorPtr ptr;
-  render_frame->GetRemoteInterfaces()->GetInterface(mojo::MakeRequest(&ptr));
-  return ptr;
+  mojo::PendingRemote<ia_mojom::Annotator> annotator;
+  render_frame->GetBrowserInterfaceBroker()->GetInterface(
+      annotator.InitWithNewPipeAndPassReceiver());
+  return annotator;
 }
 
 }  // namespace
@@ -54,8 +55,7 @@ ContentPageAnnotatorDriver::ContentPageAnnotatorDriver(
     : RenderFrameObserver(render_frame),
       RenderFrameObserverTracker<ContentPageAnnotatorDriver>(render_frame),
       next_node_id_(1),
-      page_annotator_(RequestAnnotator(render_frame)),
-      weak_ptr_factory_(this) {}
+      page_annotator_(RequestAnnotator(render_frame)) {}
 
 ContentPageAnnotatorDriver::~ContentPageAnnotatorDriver() {}
 

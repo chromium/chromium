@@ -2,113 +2,102 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-cr.define('copies_settings_test', function() {
-  suite('CopiesSettingsTest', function() {
-    /** @type {?PrintPreviewCopiesSettingsElement} */
-    let copiesSection = null;
+import 'chrome://print/print_preview.js';
 
-    /** @override */
-    setup(function() {
-      PolymerTest.clearBody();
-      copiesSection = document.createElement('print-preview-copies-settings');
-      copiesSection.settings = {
-        copies: {
-          value: '1',
-          unavailableValue: '1',
-          valid: true,
-          available: true,
-          setByPolicy: false,
-          key: '',
-        },
-        collate: {
-          value: true,
-          unavailableValue: false,
-          valid: true,
-          available: true,
-          setByPolicy: false,
-          key: '',
-        },
-      };
-      copiesSection.disabled = false;
-      document.body.appendChild(copiesSection);
-    });
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {triggerInputEvent} from 'chrome://test/print_preview/print_preview_test_utils.js';
+import {fakeDataBind} from 'chrome://test/test_util.m.js';
 
-    test('collate visibility', async () => {
-      const collateSection = copiesSection.$$('.checkbox');
-      assertTrue(collateSection.hidden);
+suite('CopiesSettingsTest', function() {
+  /** @type {?PrintPreviewCopiesSettingsElement} */
+  let copiesSection = null;
 
-      copiesSection.setSetting('copies', 2);
-      assertFalse(collateSection.hidden);
+  /** @override */
+  setup(function() {
+    PolymerTest.clearBody();
+    const model = document.createElement('print-preview-model');
+    document.body.appendChild(model);
 
-      // Set copies empty.
-      const copiesInput =
-          copiesSection.$$('print-preview-number-settings-section').getInput();
-      await print_preview_test_utils.triggerInputEvent(
-          copiesInput, '', copiesSection);
-      assertTrue(collateSection.hidden);
+    copiesSection = document.createElement('print-preview-copies-settings');
+    copiesSection.settings = model.settings;
+    copiesSection.disabled = false;
+    fakeDataBind(model, copiesSection, 'settings');
+    document.body.appendChild(copiesSection);
+  });
 
-      // Set copies valid again.
-      await print_preview_test_utils.triggerInputEvent(
-          copiesInput, '3', copiesSection);
-      assertFalse(collateSection.hidden);
+  test('collate visibility', async () => {
+    const collateSection = copiesSection.$$('.checkbox');
+    assertTrue(collateSection.hidden);
 
-      // Set copies invalid.
-      await print_preview_test_utils.triggerInputEvent(
-          copiesInput, '0', copiesSection);
-      assertTrue(collateSection.hidden);
-    });
+    copiesSection.setSetting('copies', 2);
+    assertFalse(collateSection.hidden);
 
-    // Verifies that setting the copies value using the number input works
-    // correctly.
-    test('set copies', async () => {
-      const copiesInput =
-          copiesSection.$$('print-preview-number-settings-section').getInput();
-      assertEquals('1', copiesInput.value);
+    // Set copies empty.
+    const copiesInput =
+        copiesSection.$$('print-preview-number-settings-section').getInput();
+    await triggerInputEvent(copiesInput, '', copiesSection);
+    assertTrue(collateSection.hidden);
 
-      await print_preview_test_utils.triggerInputEvent(
-          copiesInput, '2', copiesSection);
-      assertEquals(2, copiesSection.getSettingValue('copies'));
-      assertTrue(copiesSection.getSetting('copies').valid);
+    // Set copies valid again.
+    await triggerInputEvent(copiesInput, '3', copiesSection);
+    assertFalse(collateSection.hidden);
 
-      // Empty entry.
-      await print_preview_test_utils.triggerInputEvent(
-          copiesInput, '', copiesSection);
-      assertEquals(2, copiesSection.getSettingValue('copies'));
-      assertTrue(copiesSection.getSetting('copies').valid);
+    // Set copies invalid.
+    await triggerInputEvent(copiesInput, '0', copiesSection);
+    assertTrue(collateSection.hidden);
+  });
 
-      // Invalid entry.
-      await print_preview_test_utils.triggerInputEvent(
-          copiesInput, '0', copiesSection);
-      assertEquals(1, copiesSection.getSettingValue('copies'));
-      assertFalse(copiesSection.getSetting('copies').valid);
-    });
+  // Verifies that setting the copies value using the number input works
+  // correctly.
+  test('set copies', async () => {
+    const copiesInput =
+        copiesSection.$$('print-preview-number-settings-section').getInput();
+    assertEquals('1', copiesInput.value);
+    assertFalse(copiesSection.getSetting('copies').setFromUi);
 
-    // Verifies that setting the collate value using the checkbox works
-    // correctly.
-    test('set collate', function() {
-      const collateCheckbox = copiesSection.$.collate;
-      copiesSection.setSetting('copies', 2);
-      assertTrue(collateCheckbox.checked);
+    await triggerInputEvent(copiesInput, '2', copiesSection);
+    assertEquals(2, copiesSection.getSettingValue('copies'));
+    assertTrue(copiesSection.getSetting('copies').valid);
+    assertTrue(copiesSection.getSetting('copies').setFromUi);
 
-      MockInteractions.tap(collateCheckbox);
-      assertFalse(collateCheckbox.checked);
-      collateCheckbox.dispatchEvent(new CustomEvent('change'));
-      assertFalse(copiesSection.getSettingValue('collate'));
-    });
+    // Empty entry.
+    await triggerInputEvent(copiesInput, '', copiesSection);
+    assertEquals(2, copiesSection.getSettingValue('copies'));
+    assertTrue(copiesSection.getSetting('copies').valid);
 
-    // Verifies that the inputs update when the value is updated.
-    test('update from settings', function() {
-      const copiesInput =
-          copiesSection.$$('print-preview-number-settings-section').getInput();
-      const collateCheckbox = copiesSection.$.collate;
+    // Invalid entry.
+    await triggerInputEvent(copiesInput, '0', copiesSection);
+    assertEquals(1, copiesSection.getSettingValue('copies'));
+    assertFalse(copiesSection.getSetting('copies').valid);
+  });
 
-      assertEquals('1', copiesInput.value);
-      copiesSection.setSetting('copies', 3);
-      assertEquals('3', copiesInput.value);
+  // Verifies that setting the collate value using the checkbox works
+  // correctly.
+  test('set collate', function() {
+    const collateCheckbox = copiesSection.$.collate;
+    copiesSection.setSetting('copies', 2);
+    assertTrue(collateCheckbox.checked);
+    assertFalse(copiesSection.getSetting('collate').setFromUi);
 
-      assertTrue(collateCheckbox.checked);
-      copiesSection.setSetting('collate', false);
-      assertFalse(collateCheckbox.checked);
-    });
+    collateCheckbox.click();
+    assertFalse(collateCheckbox.checked);
+    collateCheckbox.dispatchEvent(new CustomEvent('change'));
+    assertFalse(copiesSection.getSettingValue('collate'));
+    assertTrue(copiesSection.getSetting('collate').setFromUi);
+  });
+
+  // Verifies that the inputs update when the value is updated.
+  test('update from settings', function() {
+    const copiesInput =
+        copiesSection.$$('print-preview-number-settings-section').getInput();
+    const collateCheckbox = copiesSection.$.collate;
+
+    assertEquals('1', copiesInput.value);
+    copiesSection.setSetting('copies', 3);
+    assertEquals('3', copiesInput.value);
+
+    assertTrue(collateCheckbox.checked);
+    copiesSection.setSetting('collate', false);
+    assertFalse(collateCheckbox.checked);
   });
 });

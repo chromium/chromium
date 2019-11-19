@@ -5,6 +5,7 @@
 module blink.mojom;
 
 import "third_party/blink/public/mojom/web_feature/web_feature.mojom";
+import "third_party/blink/public/mojom/devtools/devtools_agent.mojom";
 
 // Each shared worker has a corresponding host. The host controls the lifetime
 // of the shared worker. This interface is used by the shared worker to talk to
@@ -18,11 +19,11 @@ interface SharedWorkerHost {
   // to terminate the shared worker.
   OnContextClosed();
 
-  // Indicates that the shared worker is ready for inspection.
-  OnReadyForInspection();
-
-  // Indicates that the script successfully loaded.
-  OnScriptLoaded();
+  // Indicates that the shared worker is ready for inspection,
+  // passes a DevToolsAgent interface for this worker and requests
+  // a corresponding host. See DevToolsAgent for details.
+  OnReadyForInspection(pending_remote<blink.mojom.DevToolsAgent> agent,
+                       pending_receiver<blink.mojom.DevToolsAgentHost> agent_host);
 
   // Indicates that the script failed to load.
   OnScriptLoadFailed();

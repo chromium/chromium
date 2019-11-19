@@ -4,11 +4,11 @@
 
 #include "ash/tray_action/test_tray_action_client.h"
 
-#include "mojo/public/cpp/bindings/interface_request.h"
+#include "ash/public/mojom/tray_action.mojom.h"
 
 namespace ash {
 
-TestTrayActionClient::TestTrayActionClient() : binding_(this) {}
+TestTrayActionClient::TestTrayActionClient() = default;
 
 TestTrayActionClient::~TestTrayActionClient() = default;
 
@@ -27,10 +27,11 @@ void TestTrayActionClient::CloseLockScreenNote(
   close_note_reasons_.push_back(reason);
 }
 
-mojom::TrayActionClientPtr TestTrayActionClient::CreateInterfacePtrAndBind() {
-  mojom::TrayActionClientPtr ptr;
-  binding_.Bind(mojo::MakeRequest(&ptr));
-  return ptr;
+mojo::PendingRemote<mojom::TrayActionClient>
+TestTrayActionClient::CreateRemoteAndBind() {
+  mojo::PendingRemote<mojom::TrayActionClient> remote;
+  receiver_.Bind(remote.InitWithNewPipeAndPassReceiver());
+  return remote;
 }
 
 }  // namespace ash

@@ -6,6 +6,8 @@
 #
 # Usage: message_compiler.py <environment_file> [<args to mc.exe>*]
 
+from __future__ import print_function
+
 import difflib
 import distutils.dir_util
 import filecmp
@@ -65,7 +67,7 @@ def main():
     # we use the 2017 Fall Creator's Update by default.
     mc_help = subprocess.check_output(['mc.exe', '/?'], env=env_dict,
                                       stderr=subprocess.STDOUT, shell=True)
-    version = re.search(r'Message Compiler\s+Version (\S+)', mc_help).group(1)
+    version = re.search(br'Message Compiler\s+Version (\S+)', mc_help).group(1)
     if version != '10.0.15063':
       return
 
@@ -122,20 +124,21 @@ def main():
     # in tmp_dir to the checked-in outputs.
     diff = filecmp.dircmp(tmp_dir, source)
     if diff.diff_files or set(diff.left_list) != set(diff.right_list):
-      print 'mc.exe output different from files in %s, see %s' % (source,
-                                                                  tmp_dir)
+      print('mc.exe output different from files in %s, see %s' % (source,
+                                                                  tmp_dir))
       diff.report()
       for f in diff.diff_files:
         if f.endswith('.bin'): continue
         fromfile = os.path.join(source, f)
         tofile = os.path.join(tmp_dir, f)
-        print ''.join(difflib.unified_diff(open(fromfile, 'U').readlines(),
-                                           open(tofile, 'U').readlines(),
-                                           fromfile, tofile))
+        print(''.join(
+            difflib.unified_diff(
+                open(fromfile, 'U').readlines(),
+                open(tofile, 'U').readlines(), fromfile, tofile)))
       delete_tmp_dir = False
       sys.exit(1)
   except subprocess.CalledProcessError as e:
-    print e.output
+    print(e.output)
     sys.exit(e.returncode)
   finally:
     if os.path.exists(tmp_dir) and delete_tmp_dir:

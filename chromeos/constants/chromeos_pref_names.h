@@ -21,6 +21,14 @@ COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const char kQuirksClientLastServerCheck[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const char kDeviceWiFiFastTransitionEnabled[];
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+extern const char kSecondaryGoogleAccountSigninAllowed[];
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+extern const char kSamlPasswordModifiedTime[];
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+extern const char kSamlPasswordExpirationTime[];
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+extern const char kSamlPasswordChangeUrl[];
 
 }  // namespace prefs
 }  // namespace chromeos

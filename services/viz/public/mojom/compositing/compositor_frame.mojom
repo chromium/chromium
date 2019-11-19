@@ -1,0 +1,16 @@
+// Copyright 2016 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module viz.mojom;
+
+import "services/viz/public/mojom/compositing/compositor_frame_metadata.mojom";
+import "services/viz/public/mojom/compositing/render_pass.mojom";
+import "services/viz/public/mojom/compositing/transferable_resource.mojom";
+
+// See src/components/viz/common/quads/compositor_frame.h.
+struct CompositorFrame {
+  CompositorFrameMetadata metadata;
+  array<TransferableResource> resources;
+  array<RenderPass> passes;
+};

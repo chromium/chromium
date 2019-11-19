@@ -39,8 +39,7 @@ const CSSValue* ComputedStyleCSSValueMapping::Get(
     const PropertyRegistry* registry) {
   CustomProperty custom_property(custom_property_name, registry);
   return custom_property.CSSValueFromComputedStyle(
-      style, nullptr /* layout_object */, nullptr /* styled_node */,
-      false /* allow_visited_style */);
+      style, nullptr /* layout_object */, false /* allow_visited_style */);
 }
 
 HeapHashMap<AtomicString, Member<const CSSValue>>

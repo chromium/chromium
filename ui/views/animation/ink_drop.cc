@@ -8,7 +8,7 @@
 
 namespace views {
 
-InkDrop::~InkDrop() {}
+InkDrop::~InkDrop() = default;
 
 void InkDrop::AddObserver(InkDropObserver* observer) {
   CHECK(observer);
@@ -20,7 +20,7 @@ void InkDrop::RemoveObserver(InkDropObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
-InkDrop::InkDrop() {}
+InkDrop::InkDrop() = default;
 
 void InkDrop::NotifyInkDropAnimationStarted() {
   for (InkDropObserver& observer : observers_)
@@ -32,7 +32,7 @@ void InkDrop::NotifyInkDropRippleAnimationEnded(InkDropState ink_drop_state) {
     observer.InkDropRippleAnimationEnded(ink_drop_state);
 }
 
-InkDropContainerView::InkDropContainerView() {}
+InkDropContainerView::InkDropContainerView() = default;
 
 void InkDropContainerView::AddInkDropLayer(ui::Layer* ink_drop_layer) {
   SetPaintToLayer();

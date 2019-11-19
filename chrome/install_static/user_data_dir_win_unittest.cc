@@ -5,9 +5,10 @@
 #include <algorithm>
 
 #include "base/test/test_reg_util_win.h"
+#include "build/branding_buildflags.h"
+#include "chrome/chrome_elf/nt_registry/nt_registry.h"
 #include "chrome/install_static/install_details.h"
 #include "chrome/install_static/user_data_dir.h"
-#include "chrome_elf/nt_registry/nt_registry.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace install_static {
@@ -19,7 +20,7 @@ inline bool EndsWith(const std::wstring& value, const std::wstring& ending) {
   return std::equal(ending.rbegin(), ending.rend(), value.rbegin());
 }
 
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 const wchar_t kPolicyRegistryKey[] = L"SOFTWARE\\Policies\\Google\\Chrome";
 const wchar_t kUserDataDirNameSuffix[] = L"\\Google\\Chrome\\User Data";
 #else

@@ -9,7 +9,7 @@
  */
 
 
-goog.provide('cvox.NavBraille');
+goog.provide('NavBraille');
 
 goog.require('Spannable');
 
@@ -25,7 +25,7 @@ goog.require('Spannable');
  *  endIndex The end of a selection within text.
  * @constructor
  */
-cvox.NavBraille = function(kwargs) {
+NavBraille = function(kwargs) {
   /**
    * Text, annotated with DOM nodes.
    * @type {!Spannable}
@@ -50,10 +50,10 @@ cvox.NavBraille = function(kwargs) {
 /**
  * Convenience for creating simple braille output.
  * @param {string|!Spannable} text Text to represent in braille.
- * @return {!cvox.NavBraille} Braille output without a cursor.
+ * @return {!NavBraille} Braille output without a cursor.
  */
-cvox.NavBraille.fromText = function(text) {
-  return new cvox.NavBraille({'text': text});
+NavBraille.fromText = function(text) {
+  return new NavBraille({'text': text});
 };
 
 
@@ -61,14 +61,14 @@ cvox.NavBraille.fromText = function(text) {
  * Creates a NavBraille from its serialized json form as created
  * by toJson().
  * @param {!Object} json the serialized json object.
- * @return {!cvox.NavBraille}
+ * @return {!NavBraille}
  */
-cvox.NavBraille.fromJson = function(json) {
+NavBraille.fromJson = function(json) {
   if (typeof json.startIndex !== 'number' ||
       typeof json.endIndex !== 'number') {
     throw 'Invalid start or end index in serialized NavBraille: ' + json;
   }
-  return new cvox.NavBraille({
+  return new NavBraille({
     text: Spannable.fromJson(json.spannable),
     startIndex: json.startIndex,
     endIndex: json.endIndex
@@ -79,7 +79,7 @@ cvox.NavBraille.fromJson = function(json) {
 /**
  * @return {boolean} true if this braille description is empty.
  */
-cvox.NavBraille.prototype.isEmpty = function() {
+NavBraille.prototype.isEmpty = function() {
   return this.text.length == 0;
 };
 
@@ -87,7 +87,7 @@ cvox.NavBraille.prototype.isEmpty = function() {
 /**
  * @return {string} A string representation of this object.
  */
-cvox.NavBraille.prototype.toString = function() {
+NavBraille.prototype.toString = function() {
   return 'NavBraille(text="' + this.text.toString() + '" ' +
       ' startIndex="' + this.startIndex + '" ' +
       ' endIndex="' + this.endIndex + '")';
@@ -102,7 +102,7 @@ cvox.NavBraille.prototype.toString = function() {
  *           startIndex: number,
  *           endIndex: number}} JSON equivalent.
  */
-cvox.NavBraille.prototype.toJson = function() {
+NavBraille.prototype.toJson = function() {
   return {
     spannable: this.text.toJson(),
     startIndex: this.startIndex,

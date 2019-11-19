@@ -43,8 +43,12 @@ using SysLogsFetcherCallback =
 // };
 class SystemLogsFetcher {
  public:
-  // If scrub_data is true, logs will be anonymized.
-  explicit SystemLogsFetcher(bool scrub_data);
+  // If |scrub_data| is true, logs will be anonymized.
+  // |first_party_extension_ids| is a null terminated array of all the 1st
+  // party extension IDs whose URLs won't be redacted. It is OK to pass null for
+  // that value if it's OK to redact those URLs or they won't be present.
+  explicit SystemLogsFetcher(bool scrub_data,
+                             const char* const first_party_extension_ids[]);
   ~SystemLogsFetcher();
 
   // Adds a source to use when fetching.
@@ -66,16 +70,19 @@ class SystemLogsFetcher {
   void AddResponse(const std::string& source_name,
                    std::unique_ptr<SystemLogsResponse> response);
 
+  // Runs the callback provided to Fetch and posts a task to delete |this|.
+  void RunCallbackAndDeleteSoon();
+
   std::vector<std::unique_ptr<SystemLogsSource>> data_sources_;
   SysLogsFetcherCallback callback_;
 
   std::unique_ptr<SystemLogsResponse> response_;  // The actual response data.
   size_t num_pending_requests_;  // The number of callbacks it should get.
 
-  std::unique_ptr<feedback::AnonymizerTool> anonymizer_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_for_anonymizer_;
+  std::unique_ptr<feedback::AnonymizerTool> anonymizer_;
 
-  base::WeakPtrFactory<SystemLogsFetcher> weak_ptr_factory_;
+  base::WeakPtrFactory<SystemLogsFetcher> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SystemLogsFetcher);
 };

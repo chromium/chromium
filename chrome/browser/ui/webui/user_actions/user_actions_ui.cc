@@ -22,7 +22,6 @@ UserActionsUI::UserActionsUI(content::WebUI* web_ui)
   html_source->SetDefaultResource(IDR_USER_ACTIONS_HTML);
   html_source->AddResourcePath("user_actions.css", IDR_USER_ACTIONS_CSS);
   html_source->AddResourcePath("user_actions.js", IDR_USER_ACTIONS_JS);
-  html_source->UseGzip();
 
   Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource::Add(profile, html_source);

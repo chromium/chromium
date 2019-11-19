@@ -16,7 +16,9 @@
 #include "base/trace_event/memory_dump_provider.h"
 #include "components/discardable_memory/common/discardable_memory_export.h"
 #include "components/discardable_memory/common/discardable_shared_memory_heap.h"
-#include "components/discardable_memory/public/interfaces/discardable_shared_memory_manager.mojom.h"
+#include "components/discardable_memory/public/mojom/discardable_shared_memory_manager.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -31,7 +33,7 @@ class DISCARDABLE_MEMORY_EXPORT ClientDiscardableSharedMemoryManager
       public base::trace_event::MemoryDumpProvider {
  public:
   ClientDiscardableSharedMemoryManager(
-      mojom::DiscardableSharedMemoryManagerPtr manager,
+      mojo::PendingRemote<mojom::DiscardableSharedMemoryManager> manager,
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner);
   ~ClientDiscardableSharedMemoryManager() override;
 
@@ -44,7 +46,7 @@ class DISCARDABLE_MEMORY_EXPORT ClientDiscardableSharedMemoryManager
                     base::trace_event::ProcessMemoryDump* pmd) override;
 
   // Release memory and associated resources that have been purged.
-  void ReleaseFreeMemory();
+  void ReleaseFreeMemory() override;
 
   bool LockSpan(DiscardableSharedMemoryHeap::Span* span);
   void UnlockSpan(DiscardableSharedMemoryHeap::Span* span);
@@ -60,7 +62,7 @@ class DISCARDABLE_MEMORY_EXPORT ClientDiscardableSharedMemoryManager
     size_t freelist_size;
   };
 
-  Statistics GetStatistics() const;
+  size_t GetBytesAllocated() const override;
 
  private:
   std::unique_ptr<base::DiscardableSharedMemory>
@@ -78,9 +80,10 @@ class DISCARDABLE_MEMORY_EXPORT ClientDiscardableSharedMemoryManager
                           size_t new_bytes_free) const;
 
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
-  // TODO(penghuang): Switch to ThreadSafeInterfacePtr when it starts supporting
+  // TODO(penghuang): Switch to SharedRemote when it starts supporting
   // sync method call.
-  std::unique_ptr<mojom::DiscardableSharedMemoryManagerPtr> manager_mojo_;
+  std::unique_ptr<mojo::Remote<mojom::DiscardableSharedMemoryManager>>
+      manager_mojo_;
 
   mutable base::Lock lock_;
   std::unique_ptr<DiscardableSharedMemoryHeap> heap_;

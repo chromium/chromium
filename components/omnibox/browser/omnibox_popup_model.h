@@ -64,6 +64,7 @@ class OmniboxPopupModel {
   bool IsOpen() const;
 
   OmniboxPopupView* view() const { return view_; }
+  OmniboxEditModel* edit_model() const { return edit_model_; }
 
   // Returns the AutocompleteController used by this popup.
   AutocompleteController* autocomplete_controller() const {
@@ -82,24 +83,23 @@ class OmniboxPopupModel {
   // the necessary parts of the window, as well as updating the edit with the
   // new temporary text.  |line| will be clamped to the range of valid lines.
   // |reset_to_default| is true when the selection is being reset back to the
-  // default match, and thus there is no temporary text (and not
+  // initial state, and thus there is no temporary text (and not
   // |has_selected_match_|). If |force| is true then the selected line will
   // be updated forcibly even if the |line| is same as the current selected
   // line.
-  // NOTE: This assumes the popup is open, and thus both old and new values for
-  // the selected line should not be kNoMatch.
+  // NOTE: This assumes the popup is open, although both the old and new values
+  // for the selected line can be kNoMatch.
   void SetSelectedLine(size_t line, bool reset_to_default, bool force);
 
   // Called when the user hits escape after arrowing around the popup.  This
-  // will change the selected line back to the default match and redraw.
-  void ResetToDefaultMatch();
+  // will reset the popup to the initial state.
+  void ResetToInitialState();
 
   // Immediately updates and opens the popup if necessary, then moves the
-  // current selection down (|count| > 0) or up (|count| < 0), clamping to the
-  // first or last result if necessary.  If |count| == 0, the selection will be
-  // unchanged, but the popup will still redraw and modify the text in the
-  // OmniboxEditModel.
-  void Move(int count);
+  // current selection to the respective line. If the line is unchanged, the
+  // selection will be unchanged, but the popup will still redraw and modify
+  // the text in the OmniboxEditModel.
+  void MoveTo(size_t new_line);
 
   // If the selected line has both a normal match and a keyword match, this can
   // be used to choose which to select.  This allows the user to toggle between
@@ -112,9 +112,10 @@ class OmniboxPopupModel {
   // matches (or there is no selection).
   void SetSelectedLineState(LineState state);
 
-  // Called when the user hits shift-delete.  This should determine if the item
-  // can be removed from history, and if so, remove it and update the popup.
-  void TryDeletingCurrentItem();
+  // Tries to erase the suggestion at |line|.  This should determine if the item
+  // at |line| can be removed from history, and if so, remove it and update the
+  // popup.
+  void TryDeletingLine(size_t line);
 
   // Returns true if the destination URL of the match is bookmarked.
   bool IsStarredMatch(const AutocompleteMatch& match) const;
@@ -145,13 +146,15 @@ class OmniboxPopupModel {
   // tab switch button.
   bool SelectedLineHasTabMatch();
 
-  // Helper function to see if current selection has button and can accept
-  // the tab key.
-  bool SelectedLineHasButton();
+  // Helper function to see if current selection is a tab switch suggestion
+  // dedicated row.
+  bool SelectedLineIsTabSwitchSuggestion();
 
   // If |closes| is set true, the popup will close when the omnibox is blurred.
   bool popup_closes_on_blur() const { return popup_closes_on_blur_; }
   void set_popup_closes_on_blur(bool closes) { popup_closes_on_blur_ = closes; }
+
+  OmniboxEditModel* edit_model() { return edit_model_; }
 
   // The token value for selected_line_ and functions dealing with a "line
   // number" that indicates "no line".
@@ -183,6 +186,8 @@ class OmniboxPopupModel {
   GURL old_focused_url_;
 
   // The user has manually selected a match.
+  // TODO(tommycli): We can _probably_ eliminate this variable. It seems to be
+  // mostly rendundant with selected_line() and result()->default_match().
   bool has_selected_match_;
 
   // True if the popup should close on omnibox blur. This defaults to true, and
@@ -192,7 +197,7 @@ class OmniboxPopupModel {
   // Observers.
   base::ObserverList<OmniboxPopupModelObserver>::Unchecked observers_;
 
-  base::WeakPtrFactory<OmniboxPopupModel> weak_factory_;
+  base::WeakPtrFactory<OmniboxPopupModel> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(OmniboxPopupModel);
 };

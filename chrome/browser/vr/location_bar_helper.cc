@@ -31,7 +31,7 @@ LocationBarHelper::~LocationBarHelper() {}
 
 void LocationBarHelper::Update() {
   LocationBarState state(location_bar_model_->GetURL(),
-                         location_bar_model_->GetSecurityLevel(true),
+                         location_bar_model_->GetSecurityLevel(),
                          &location_bar_model_->GetVectorIcon(),
                          location_bar_model_->ShouldDisplayURL(),
                          location_bar_model_->IsOfflinePage());

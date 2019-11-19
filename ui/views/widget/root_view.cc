@@ -25,30 +25,25 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 
-typedef ui::EventDispatchDetails DispatchDetails;
+using DispatchDetails = ui::EventDispatchDetails;
 
 namespace views {
 namespace internal {
 
 namespace {
 
-enum EventType {
-  EVENT_ENTER,
-  EVENT_EXIT
-};
-
 class MouseEnterExitEvent : public ui::MouseEvent {
  public:
   MouseEnterExitEvent(const ui::MouseEvent& event, ui::EventType type)
       : ui::MouseEvent(event,
-                       static_cast<View*>(NULL),
-                       static_cast<View*>(NULL)) {
+                       static_cast<View*>(nullptr),
+                       static_cast<View*>(nullptr)) {
     DCHECK(type == ui::ET_MOUSE_ENTERED ||
            type == ui::ET_MOUSE_EXITED);
     SetType(type);
   }
 
-  ~MouseEnterExitEvent() override {}
+  ~MouseEnterExitEvent() override = default;
 };
 
 }  // namespace
@@ -71,14 +66,15 @@ class PreEventDispatchHandler : public ui::EventHandler {
     if (event->handled())
       return;
 
-    View* v = NULL;
+    View* v = nullptr;
     if (owner_->GetFocusManager())  // Can be NULL in unittests.
       v = owner_->GetFocusManager()->GetFocusedView();
 // macOS doesn't have keyboard-triggered context menus.
 #if !defined(OS_MACOSX)
     // Special case to handle keyboard-triggered context menus.
-    if (v && v->enabled() && ((event->key_code() == ui::VKEY_APPS) ||
-       (event->key_code() == ui::VKEY_F10 && event->IsShiftDown()))) {
+    if (v && v->GetEnabled() &&
+        ((event->key_code() == ui::VKEY_APPS) ||
+         (event->key_code() == ui::VKEY_F10 && event->IsShiftDown()))) {
       // Clamp the menu location within the visible bounds of each ancestor view
       // to avoid showing the menu over a completely different view or window.
       gfx::Point location = v->GetKeyboardContextMenuLocation();
@@ -106,7 +102,7 @@ class PostEventDispatchHandler : public ui::EventHandler {
   PostEventDispatchHandler()
       : touch_dnd_enabled_(::switches::IsTouchDragDropEnabled()) {
   }
-  ~PostEventDispatchHandler() override {}
+  ~PostEventDispatchHandler() override = default;
 
  private:
   // Overridden from ui::EventHandler:
@@ -145,9 +141,6 @@ class PostEventDispatchHandler : public ui::EventHandler {
   DISALLOW_COPY_AND_ASSIGN(PostEventDispatchHandler);
 };
 
-// static
-const char RootView::kViewClassName[] = "RootView";
-
 ////////////////////////////////////////////////////////////////////////////////
 // RootView, public:
 
@@ -155,22 +148,22 @@ const char RootView::kViewClassName[] = "RootView";
 
 RootView::RootView(Widget* widget)
     : widget_(widget),
-      mouse_pressed_handler_(NULL),
-      mouse_move_handler_(NULL),
-      last_click_handler_(NULL),
+      mouse_pressed_handler_(nullptr),
+      mouse_move_handler_(nullptr),
+      last_click_handler_(nullptr),
       explicit_mouse_handler_(false),
       last_mouse_event_flags_(0),
       last_mouse_event_x_(-1),
       last_mouse_event_y_(-1),
-      gesture_handler_(NULL),
+      gesture_handler_(nullptr),
       gesture_handler_set_before_processing_(false),
       pre_dispatch_handler_(new internal::PreEventDispatchHandler(this)),
       post_dispatch_handler_(new internal::PostEventDispatchHandler),
       focus_search_(this, false, false),
-      focus_traversable_parent_(NULL),
-      focus_traversable_parent_view_(NULL),
-      event_dispatch_target_(NULL),
-      old_dispatch_target_(NULL) {
+      focus_traversable_parent_(nullptr),
+      focus_traversable_parent_view_(nullptr),
+      event_dispatch_target_(nullptr),
+      old_dispatch_target_(nullptr) {
   AddPostTargetHandler(post_dispatch_handler_.get());
   SetEventTargeter(
       std::unique_ptr<ViewTargeter>(new RootViewTargeter(this, this)));
@@ -179,8 +172,7 @@ RootView::RootView(Widget* widget)
 RootView::~RootView() {
   // If we have children remove them explicitly so to make sure a remove
   // notification is sent for each one of them.
-  if (has_children())
-    RemoveAllChildViews(true);
+  RemoveAllChildViews(true);
 }
 
 // Tree operations -------------------------------------------------------------
@@ -191,13 +183,13 @@ void RootView::SetContentsView(View* contents_view) {
   // The ContentsView must be set up _after_ the window is created so that its
   // Widget pointer is valid.
   SetLayoutManager(std::make_unique<FillLayout>());
-  if (has_children())
+  if (!children().empty())
     RemoveAllChildViews(true);
   AddChildView(contents_view);
 }
 
 View* RootView::GetContentsView() {
-  return child_count() > 0 ? child_at(0) : NULL;
+  return children().empty() ? nullptr : children().front();
 }
 
 void RootView::NotifyNativeViewHierarchyChanged() {
@@ -254,11 +246,6 @@ View* RootView::GetFocusTraversableParentView() {
 ////////////////////////////////////////////////////////////////////////////////
 // RootView, ui::EventProcessor overrides:
 
-ui::EventTarget* RootView::GetInitialEventTarget(ui::Event* event) {
-  // Views has no special initial target.
-  return nullptr;
-}
-
 ui::EventTarget* RootView::GetRootForEvent(ui::Event* event) {
   return this;
 }
@@ -309,7 +296,7 @@ void RootView::OnEventProcessingFinished(ui::Event* event) {
   if (event->IsGestureEvent() &&
       !event->handled() &&
       !gesture_handler_set_before_processing_) {
-    gesture_handler_ = NULL;
+    gesture_handler_ = nullptr;
   }
 }
 
@@ -325,22 +312,7 @@ Widget* RootView::GetWidget() {
 }
 
 bool RootView::IsDrawn() const {
-  return visible();
-}
-
-const char* RootView::GetClassName() const {
-  return kViewClassName;
-}
-
-void RootView::SchedulePaintInRect(const gfx::Rect& rect) {
-  if (layer()) {
-    layer()->SchedulePaint(rect);
-  } else {
-    gfx::Rect xrect = ConvertRectToParent(rect);
-    gfx::Rect invalid_rect = gfx::IntersectRects(GetLocalBounds(), xrect);
-    if (!invalid_rect.IsEmpty())
-      widget_->SchedulePaintInRect(invalid_rect);
-  }
+  return GetVisible();
 }
 
 bool RootView::OnMousePressed(const ui::MouseEvent& event) {
@@ -369,7 +341,7 @@ bool RootView::OnMousePressed(const ui::MouseEvent& event) {
        mouse_pressed_handler_ = mouse_pressed_handler_->parent()) {
     DVLOG(1) << "OnMousePressed testing "
         << mouse_pressed_handler_->GetClassName();
-    if (!mouse_pressed_handler_->enabled()) {
+    if (!mouse_pressed_handler_->GetEnabled()) {
       // Disabled views should eat events instead of propagating them upwards.
       hit_disabled_view = true;
       break;
@@ -412,7 +384,7 @@ bool RootView::OnMousePressed(const ui::MouseEvent& event) {
   }
 
   // Reset mouse_pressed_handler_ to indicate that no processing is occurring.
-  mouse_pressed_handler_ = NULL;
+  mouse_pressed_handler_ = nullptr;
 
   // In the event that a double-click is not handled after traversing the
   // entire hierarchy (even as a single-click when sent to a different view),
@@ -421,7 +393,7 @@ bool RootView::OnMousePressed(const ui::MouseEvent& event) {
   if (last_click_handler_ && (event.flags() & ui::EF_IS_DOUBLE_CLICK))
     hit_disabled_view = true;
 
-  last_click_handler_ = NULL;
+  last_click_handler_ = nullptr;
   return hit_disabled_view;
 }
 
@@ -448,7 +420,7 @@ void RootView::OnMouseReleased(const ui::MouseEvent& event) {
     // We allow the view to delete us from the event dispatch callback. As such,
     // configure state such that we're done first, then call View.
     View* mouse_pressed_handler = mouse_pressed_handler_;
-    SetMouseHandler(NULL);
+    SetMouseHandler(nullptr);
     ui::EventDispatchDetails dispatch_details =
         DispatchEvent(mouse_pressed_handler, &mouse_released);
     if (dispatch_details.dispatcher_destroyed)
@@ -472,7 +444,7 @@ void RootView::OnMouseCaptureLost() {
     // configure state such that we're done first, then call View.
     View* mouse_pressed_handler = mouse_pressed_handler_;
     View* gesture_handler = gesture_handler_;
-    SetMouseHandler(NULL);
+    SetMouseHandler(nullptr);
     if (mouse_pressed_handler)
       mouse_pressed_handler->OnMouseCaptureLost();
     else
@@ -487,11 +459,11 @@ void RootView::OnMouseMoved(const ui::MouseEvent& event) {
   // first.  The check for the existing handler is because if a view becomes
   // disabled while handling moves, it's wrong to suddenly send ET_MOUSE_EXITED
   // and ET_MOUSE_ENTERED events, because the mouse hasn't actually exited yet.
-  while (v && !v->enabled() && (v != mouse_move_handler_))
+  while (v && !v->GetEnabled() && (v != mouse_move_handler_))
     v = v->parent();
   if (v && v != this) {
     if (v != mouse_move_handler_) {
-      if (mouse_move_handler_ != NULL &&
+      if (mouse_move_handler_ != nullptr &&
           (!mouse_move_handler_->notify_enter_exit_on_child() ||
            !mouse_move_handler_->Contains(v))) {
         MouseEnterExitEvent exit(event, ui::ET_MOUSE_EXITED);
@@ -504,7 +476,11 @@ void RootView::OnMouseMoved(const ui::MouseEvent& event) {
         // The mouse_move_handler_ could have been destroyed in the context of
         // the mouse exit event.
         if (!dispatch_details.target_destroyed) {
-          CHECK(mouse_move_handler_);
+          // View was removed by ET_MOUSE_EXITED, or |mouse_move_handler_| was
+          // cleared, perhaps by a nested event handler, so return and wait for
+          // the next mouse move event.
+          if (!mouse_move_handler_)
+            return;
           dispatch_details = NotifyEnterExitOfDescendant(
               event, ui::ET_MOUSE_EXITED, mouse_move_handler_, v);
           if (dispatch_details.dispatcher_destroyed)
@@ -524,7 +500,11 @@ void RootView::OnMouseMoved(const ui::MouseEvent& event) {
             dispatch_details.target_destroyed) {
           return;
         }
-        CHECK(mouse_move_handler_);
+        // View was removed by ET_MOUSE_ENTERED, or |mouse_move_handler_| was
+        // cleared, perhaps by a nested event handler, so return and wait for
+        // the next mouse move event.
+        if (!mouse_move_handler_)
+          return;
         dispatch_details = NotifyEnterExitOfDescendant(
             event, ui::ET_MOUSE_ENTERED, mouse_move_handler_, old_handler);
         if (dispatch_details.dispatcher_destroyed ||
@@ -541,7 +521,7 @@ void RootView::OnMouseMoved(const ui::MouseEvent& event) {
     //                   mousemove. See crbug.com/351469.
     if (!(moved_event.flags() & ui::EF_IS_NON_CLIENT))
       widget_->SetCursor(mouse_move_handler_->GetCursor(moved_event));
-  } else if (mouse_move_handler_ != NULL) {
+  } else if (mouse_move_handler_ != nullptr) {
     MouseEnterExitEvent exited(event, ui::ET_MOUSE_EXITED);
     ui::EventDispatchDetails dispatch_details =
         DispatchEvent(mouse_move_handler_, &exited);
@@ -550,7 +530,11 @@ void RootView::OnMouseMoved(const ui::MouseEvent& event) {
     // The mouse_move_handler_ could have been destroyed in the context of the
     // mouse exit event.
     if (!dispatch_details.target_destroyed) {
-      CHECK(mouse_move_handler_);
+      // View was removed by ET_MOUSE_EXITED, or |mouse_move_handler_| was
+      // cleared, perhaps by a nested event handler, so return and wait for
+      // the next mouse move event.
+      if (!mouse_move_handler_)
+        return;
       dispatch_details = NotifyEnterExitOfDescendant(event, ui::ET_MOUSE_EXITED,
                                                      mouse_move_handler_, v);
       if (dispatch_details.dispatcher_destroyed)
@@ -561,12 +545,12 @@ void RootView::OnMouseMoved(const ui::MouseEvent& event) {
     // as we do above.
     if (!(event.flags() & ui::EF_IS_NON_CLIENT))
       widget_->SetCursor(gfx::kNullCursor);
-    mouse_move_handler_ = NULL;
+    mouse_move_handler_ = nullptr;
   }
 }
 
 void RootView::OnMouseExited(const ui::MouseEvent& event) {
-  if (mouse_move_handler_ != NULL) {
+  if (mouse_move_handler_ != nullptr) {
     MouseEnterExitEvent exited(event, ui::ET_MOUSE_EXITED);
     ui::EventDispatchDetails dispatch_details =
         DispatchEvent(mouse_move_handler_, &exited);
@@ -576,12 +560,12 @@ void RootView::OnMouseExited(const ui::MouseEvent& event) {
     // mouse exit event.
     if (!dispatch_details.target_destroyed) {
       CHECK(mouse_move_handler_);
-      dispatch_details = NotifyEnterExitOfDescendant(event, ui::ET_MOUSE_EXITED,
-                                                     mouse_move_handler_, NULL);
+      dispatch_details = NotifyEnterExitOfDescendant(
+          event, ui::ET_MOUSE_EXITED, mouse_move_handler_, nullptr);
       if (dispatch_details.dispatcher_destroyed)
         return;
     }
-    mouse_move_handler_ = NULL;
+    mouse_move_handler_ = nullptr;
   }
 }
 
@@ -600,7 +584,7 @@ bool RootView::OnMouseWheel(const ui::MouseWheelEvent& event) {
 
 void RootView::SetMouseHandler(View* new_mh) {
   // If we're clearing the mouse handler, clear explicit_mouse_handler_ as well.
-  explicit_mouse_handler_ = (new_mh != NULL);
+  explicit_mouse_handler_ = (new_mh != nullptr);
   mouse_pressed_handler_ = new_mh;
   gesture_handler_ = new_mh;
   drag_info_.Reset();
@@ -613,7 +597,7 @@ void RootView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 
 void RootView::UpdateParentLayer() {
   if (layer())
-    ReparentLayer(gfx::Vector2d(GetMirroredX(), y()), widget_->GetLayer());
+    ReparentLayer(widget_->GetLayer());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -625,15 +609,15 @@ void RootView::ViewHierarchyChanged(
 
   if (!details.is_add) {
     if (!explicit_mouse_handler_ && mouse_pressed_handler_ == details.child)
-      mouse_pressed_handler_ = NULL;
+      mouse_pressed_handler_ = nullptr;
     if (mouse_move_handler_ == details.child)
-      mouse_move_handler_ = NULL;
+      mouse_move_handler_ = nullptr;
     if (gesture_handler_ == details.child)
-      gesture_handler_ = NULL;
+      gesture_handler_ = nullptr;
     if (event_dispatch_target_ == details.child)
-      event_dispatch_target_ = NULL;
+      event_dispatch_target_ = nullptr;
     if (old_dispatch_target_ == details.child)
-      old_dispatch_target_ = NULL;
+      old_dispatch_target_ = nullptr;
   }
 }
 
@@ -643,6 +627,15 @@ void RootView::VisibilityChanged(View* /*starting_from*/, bool is_visible) {
     // handlers are reset, so that after it is reshown, events are not captured
     // by old handlers.
     ResetEventHandlers();
+  }
+}
+
+void RootView::OnDidSchedulePaint(const gfx::Rect& rect) {
+  if (!layer()) {
+    gfx::Rect xrect = ConvertRectToParent(rect);
+    gfx::Rect invalid_rect = gfx::IntersectRects(GetLocalBounds(), xrect);
+    if (!invalid_rect.IsEmpty())
+      widget_->SchedulePaintInRect(invalid_rect);
   }
 }
 
@@ -727,7 +720,7 @@ ui::EventDispatchDetails RootView::PreDispatchEvent(ui::EventTarget* target,
     // Disabled views are permitted to be targets of gesture events, but
     // gesture events should never actually be dispatched to them. Prevent
     // dispatch by marking the event as handled.
-    if (!view->enabled())
+    if (!view->GetEnabled())
       event->SetHandled();
   }
 
@@ -745,9 +738,9 @@ ui::EventDispatchDetails RootView::PostDispatchEvent(ui::EventTarget* target,
     // In case a drag was in progress, reset all the handlers. Otherwise, just
     // reset the gesture handler.
     if (gesture_handler_ && gesture_handler_ == mouse_pressed_handler_)
-      SetMouseHandler(NULL);
+      SetMouseHandler(nullptr);
     else
-      gesture_handler_ = NULL;
+      gesture_handler_ = nullptr;
   }
 
   DispatchDetails details;
@@ -755,7 +748,7 @@ ui::EventDispatchDetails RootView::PostDispatchEvent(ui::EventTarget* target,
     details.target_destroyed = true;
 
   event_dispatch_target_ = old_dispatch_target_;
-  old_dispatch_target_ = NULL;
+  old_dispatch_target_ = nullptr;
 
 #ifndef NDEBUG
   DCHECK(!event_dispatch_target_ || Contains(event_dispatch_target_));
@@ -764,5 +757,8 @@ ui::EventDispatchDetails RootView::PostDispatchEvent(ui::EventTarget* target,
   return details;
 }
 
+BEGIN_METADATA(RootView)
+METADATA_PARENT_CLASS(View)
+END_METADATA()
 }  // namespace internal
 }  // namespace views

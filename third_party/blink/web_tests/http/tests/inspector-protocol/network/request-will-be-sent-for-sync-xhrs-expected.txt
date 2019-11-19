@@ -1,0 +1,6 @@
+Tests that Network.requestWillBeSent is dispatched for redirects inside sync XHRs
+Network.requestWillBeSent: http://127.0.0.1:8000/inspector-protocol/network/initial
+Network.requestWillBeSent: http://127.0.0.1:8000/inspector-protocol/network/redirect1
+Network.requestWillBeSent: http://127.0.0.1:8000/inspector-protocol/network/redirect2
+sync XHR body: thisisxhrbody
+

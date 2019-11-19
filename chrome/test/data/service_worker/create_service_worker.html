@@ -1,5 +1,6 @@
 <html>
 <title>create service worker</title>
+<body>this page is for registering a service worker</body>
 <script>
 // Copy of //content/test/data/service_worker/create_service_worker.html.
 
@@ -26,6 +27,19 @@ async function register(worker_url, scope) {
     const registration =
         await navigator.serviceWorker.register(worker_url, init);
     await whenReady(registration);
+    return 'DONE';
+  } catch (error) {
+    return `${error}`;
+  }
+}
+
+async function update(scope) {
+  try {
+    const registration =
+        scope ?
+            await navigator.serviceWorker.getRegistration(scope) :
+            await navigator.serviceWorker.ready;
+    await registration.update();
     return 'DONE';
   } catch (error) {
     return `${error}`;

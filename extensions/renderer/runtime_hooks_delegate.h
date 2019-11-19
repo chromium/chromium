@@ -22,6 +22,14 @@ class RuntimeHooksDelegate : public APIBindingHooksDelegate {
       NativeRendererMessagingService* messaging_service);
   ~RuntimeHooksDelegate() override;
 
+  // Returns an absolute url for a path inside of an extension, as requested
+  // through the getURL API call.
+  // NOTE: Static as the logic is used by both the runtime and extension
+  // hooks.
+  static APIBindingHooks::RequestResult GetURL(
+      ScriptContext* script_context,
+      const std::vector<v8::Local<v8::Value>>& arguments);
+
   // APIBindingHooksDelegate:
   APIBindingHooks::RequestResult HandleRequest(
       const std::string& method_name,

@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL window.open() with "noreferrer" tests assert_equals: expected "" but got "http://web-platform.test:8001/html/browsers/the-window-object/window-open-noreferrer.html"
-Harness: the test ran to completion.
-

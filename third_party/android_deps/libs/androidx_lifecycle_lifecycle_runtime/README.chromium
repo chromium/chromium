@@ -1,0 +1,13 @@
+Name: Android Lifecycle Runtime
+Short Name: lifecycle-runtime
+URL: https://developer.android.com/topic/libraries/architecture/index.html
+Version: 2.0.0
+License: Apache Version 2.0
+License File: LICENSE
+Security Critical: yes
+
+Description:
+Android Lifecycle Runtime
+
+Local Modifications:
+No modifications.

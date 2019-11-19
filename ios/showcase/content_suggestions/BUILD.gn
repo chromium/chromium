@@ -30,7 +30,31 @@ source_set("content_suggestions") {
   configs += [ "//build/config/compiler:enable_arc" ]
 }
 
+source_set("eg2_tests") {
+  defines = [ "CHROME_EARL_GREY_2" ]
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+  sources = [
+    "sc_content_suggestions_egtest.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/strings",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ui/content_suggestions:constants",
+    "//ios/showcase/test:eg2_test",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/third_party/earl_grey2:test_lib",
+    "//ui/base",
+  ]
+  libs = [ "UIKit.framework" ]
+}
+
 source_set("eg_tests") {
+  defines = [ "CHROME_EARL_GREY_1" ]
   testonly = true
   sources = [
     "sc_content_suggestions_egtest.mm",
@@ -39,11 +63,13 @@ source_set("eg_tests") {
     ":content_suggestions",
     "//components/strings",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ui/content_suggestions:constants",
     "//ios/chrome/browser/ui/content_suggestions:content_suggestions_ui",
     "//ios/chrome/browser/ui/content_suggestions/cells:cells_ui",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/test/earl_grey:test_support",
     "//ios/showcase/test",
+    "//ios/testing/earl_grey:earl_grey_support",
     "//ios/third_party/earl_grey:earl_grey+link",
     "//ui/base",
   ]

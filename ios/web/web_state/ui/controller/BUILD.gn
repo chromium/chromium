@@ -1,0 +1,24 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("controller") {
+  sources = [
+    "crw_legacy_native_content_controller.h",
+    "crw_legacy_native_content_controller.mm",
+    "crw_legacy_native_content_controller_delegate.h",
+  ]
+
+  deps = [
+    "//ios/third_party/webkit",
+    "//ios/web/navigation:core",
+    "//ios/web/net",
+    "//ios/web/public",
+    "//ios/web/public/deprecated",
+    "//ios/web/web_state:web_state_impl_header",
+    "//ui/base",
+    "//url",
+  ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+}

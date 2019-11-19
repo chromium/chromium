@@ -115,7 +115,7 @@ class ComponentExtensionIMEManagerTest : public testing::Test {
 
     mock_delegate_ = new MockComponentExtIMEManagerDelegate();
     mock_delegate_->set_ime_list(ime_list_);
-    component_ext_mgr_.reset(new ComponentExtensionIMEManager());
+    component_ext_mgr_ = std::make_unique<ComponentExtensionIMEManager>();
     component_ext_mgr_->Initialize(base::WrapUnique(mock_delegate_));
   }
 

@@ -19,7 +19,7 @@ class URLUtilTest : public testing::Test {
   URLUtilTest() = default;
   ~URLUtilTest() override {
     // Reset any added schemes.
-    Shutdown();
+    ResetForTests();
   }
 
  private:
@@ -94,8 +94,20 @@ TEST_F(URLUtilTest, IsReferrerScheme) {
 TEST_F(URLUtilTest, AddReferrerScheme) {
   const char kFooScheme[] = "foo";
   EXPECT_FALSE(IsReferrerScheme(kFooScheme, Component(0, strlen(kFooScheme))));
+
   AddReferrerScheme(kFooScheme, url::SCHEME_WITH_HOST);
   EXPECT_TRUE(IsReferrerScheme(kFooScheme, Component(0, strlen(kFooScheme))));
+}
+
+TEST_F(URLUtilTest, ShutdownCleansUpSchemes) {
+  const char kFooScheme[] = "foo";
+  EXPECT_FALSE(IsReferrerScheme(kFooScheme, Component(0, strlen(kFooScheme))));
+
+  AddReferrerScheme(kFooScheme, url::SCHEME_WITH_HOST);
+  EXPECT_TRUE(IsReferrerScheme(kFooScheme, Component(0, strlen(kFooScheme))));
+
+  ResetForTests();
+  EXPECT_FALSE(IsReferrerScheme(kFooScheme, Component(0, strlen(kFooScheme))));
 }
 
 TEST_F(URLUtilTest, GetStandardSchemeType) {

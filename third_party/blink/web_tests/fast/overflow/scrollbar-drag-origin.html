@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<title>Scrollbar interaction gutter</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<style>
+#container {
+    position: absolute;
+    left: 200px;
+    top: 195px;
+    width: 300px;
+    height: 200px;
+    overflow: scroll;
+}
+
+#content {
+    width: 1000px;
+    height: 1000px;
+}
+</style>
+<div id="container">
+    <div id="content">
+    </div>
+</div>
+This test verifies scroll position restores/snaps correctly when a thumb drag
+has been cancelled.<br/>
+The general behavior is that the cancelling behavior is only for the
+scrollbar's non-scrolling direction.<br/>
+This test is expected to behave differently on Mac and Linux because those
+platforms don't cancel scrolling when mouse cursor is out of a certain
+range.<br/>
+<script>
+  const leftButton = 0;
+
+  function dragWithoutUp(from, to) {
+    assert_own_property(window, 'chrome');
+    assert_own_property(window.chrome, 'gpuBenchmarking');
+    return new Promise((resolve) => {
+      chrome.gpuBenchmarking.pointerActionSequence(
+        [{
+          source: 'mouse',
+          actions: [
+            {name: 'pointerMove', x: from.x, y: from.y},
+            {name: 'pointerDown', x: from.x, y: from.y, button: leftButton},
+            {name: 'pointerMove', x: to.x, y: to.y}
+          ]
+        }],
+        resolve);
+    });
+  }
+
+  function sendUp(at) {
+    assert_own_property(window, 'chrome');
+    assert_own_property(window.chrome, 'gpuBenchmarking');
+    return new Promise((resolve) => {
+      chrome.gpuBenchmarking.pointerActionSequence(
+        [{
+          source: 'mouse',
+          actions: [
+            // Need to send a down with the up or pointerActionSequence will
+            // refuse to send the up because the sequence believes the button
+            // is not currently down.
+            {name: 'pointerDown', x: at.x, y: at.y, button: leftButton},
+            {name: 'pointerUp', button: leftButton}
+          ]
+        }],
+        resolve);
+    });
+  }
+
+  function resetScroller() {
+    var container = document.getElementById("container");
+    container.scrollLeft = 350;
+    container.scrollTop = 350;
+  }
+
+  var onMacPlatform = navigator.userAgent.search(/\bMac OS X\b/) != -1;
+  var onLinuxPlatform = navigator.userAgent.search(/\bLinux\b/) != -1;
+
+  promise_test(async t => {
+    let from = { x: 490, y: 285 };
+    let to = { x: 490, y: 50 };
+    t.add_cleanup(async c => { await sendUp(to); });
+
+    resetScroller();
+    await dragWithoutUp(from, to);
+    assert_equals(container.scrollTop, 0);
+  }, document.title + ', drag vertical scrollbar out top');
+
+  promise_test(async t => {
+    let from = { x: 490, y: 285 };
+    let to = { x: 490, y: 560 };
+    t.add_cleanup(async c => { await sendUp(to); });
+
+    resetScroller();
+    await dragWithoutUp(from, to);
+    assert_equals(container.scrollTop, 815);
+  }, document.title + ', drag vertical scrollbar out bottom');
+
+  promise_test(async t => {
+    let from = { x: 490, y: 285 };
+    let to = { x: 230, y: 560 };
+    t.add_cleanup(async c => { await sendUp(to); });
+
+    resetScroller();
+    await dragWithoutUp(from, to);
+    if (onMacPlatform || onLinuxPlatform) {
+      // Mac and Linux/Android should not snap
+      assert_equals(container.scrollTop, 815);
+    }
+    else {
+      // Dragging out left should cause snapping even though we're not
+      // snapping due to the vertical position.
+      assert_equals(container.scrollTop, 350);
+    }
+  }, document.title + ', drag vertical scrollbar out left');
+
+  promise_test(async t => {
+    let from = { x: 490, y: 285 };
+    let to = { x: 650, y: 560 };
+    t.add_cleanup(async c => { await sendUp(to); });
+
+    resetScroller();
+    await dragWithoutUp(from, to);
+    if (onMacPlatform || onLinuxPlatform) {
+      // Mac and Linux/Android should not snap
+      assert_equals(container.scrollTop, 815);
+    }
+    else {
+      // Dragging out right should cause snapping even though we're not
+      // snapping due to the vertical position.
+      assert_equals(container.scrollTop, 350);
+    }
+  }, document.title + ', drag vertical scrollbar out right');
+
+  promise_test(async t => {
+    let from = { x: 340, y: 390 };
+    let to = { x: 25, y: 390 };
+    t.add_cleanup(async c => { await sendUp(to); });
+
+    resetScroller();
+    await dragWithoutUp(from, to);
+    assert_equals(container.scrollLeft, 0);
+  }, document.title + ', drag horizontal scrollbar out left');
+
+  promise_test(async t => {
+    let from = { x: 340, y: 390 };
+    let to = { x: 560, y: 390 };
+    t.add_cleanup(async c => { await sendUp(to); });
+
+    resetScroller();
+    await dragWithoutUp(from, to);
+    assert_equals(container.scrollLeft, 715);
+  }, document.title + ', drag horizontal scrollbar out right');
+
+  promise_test(async t => {
+    let from = { x: 340, y: 390 };
+    let to = { x: 560, y: 190 };
+    t.add_cleanup(async c => { await sendUp(to); });
+
+    resetScroller();
+    await dragWithoutUp(from, to);
+    if (onMacPlatform || onLinuxPlatform) {
+      // Mac and Linux/Android should not snap
+      assert_equals(container.scrollLeft, 715);
+    }
+    else {
+      // Dragging out the top should cause snapping even though we're not
+      // snapping due to the right position.
+      assert_equals(container.scrollLeft, 350);
+    }
+  }, document.title + ', drag horizontal scrollbar out top');
+
+  promise_test(async t => {
+    let from = { x: 340, y: 390 };
+    let to = { x: 560, y: 590 };
+    t.add_cleanup(async c => { await sendUp(to); });
+
+    resetScroller();
+    await dragWithoutUp(from, to);
+    if (onMacPlatform || onLinuxPlatform) {
+      // Mac and Linux/Android should not snap
+      assert_equals(container.scrollLeft, 715);
+    }
+    else {
+      // Dragging out the bottom should cause snapping even though we're not
+      // snapping due to the right position.
+      assert_equals(container.scrollLeft, 350);
+    }
+  }, document.title + ', drag horizontal scrollbar out bottom');
+</script>

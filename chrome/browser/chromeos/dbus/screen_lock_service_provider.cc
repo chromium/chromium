@@ -12,8 +12,7 @@
 
 namespace chromeos {
 
-ScreenLockServiceProvider::ScreenLockServiceProvider()
-    : weak_ptr_factory_(this) {}
+ScreenLockServiceProvider::ScreenLockServiceProvider() {}
 
 ScreenLockServiceProvider::~ScreenLockServiceProvider() = default;
 

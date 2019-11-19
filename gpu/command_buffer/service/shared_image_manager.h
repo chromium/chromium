@@ -6,6 +6,7 @@
 #define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_MANAGER_H_
 
 #include "base/containers/flat_set.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
@@ -42,6 +43,14 @@ class GPU_GLES2_EXPORT SharedImageManager {
   std::unique_ptr<SharedImageRepresentationGLTexturePassthrough>
   ProduceGLTexturePassthrough(const Mailbox& mailbox, MemoryTypeTracker* ref);
   std::unique_ptr<SharedImageRepresentationSkia> ProduceSkia(
+      const Mailbox& mailbox,
+      MemoryTypeTracker* ref,
+      scoped_refptr<SharedContextState> context_state);
+  std::unique_ptr<SharedImageRepresentationDawn> ProduceDawn(
+      const Mailbox& mailbox,
+      MemoryTypeTracker* ref,
+      WGPUDevice device);
+  std::unique_ptr<SharedImageRepresentationOverlay> ProduceOverlay(
       const Mailbox& mailbox,
       MemoryTypeTracker* ref);
 

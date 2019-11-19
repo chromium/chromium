@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+<inset
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:drawable="@drawable/autofill_assistant_shadow_bg_image"
+    android:insetTop="-60dp"
+    android:insetBottom="-68dp"
+    android:insetLeft="-40dp"
+    android:insetRight="-40dp"/>

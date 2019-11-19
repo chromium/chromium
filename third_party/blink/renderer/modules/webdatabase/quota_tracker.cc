@@ -32,6 +32,7 @@
 
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
+#include "third_party/blink/renderer/modules/webdatabase/web_database_host.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
@@ -59,8 +60,8 @@ void QuotaTracker::GetDatabaseSizeAndSpaceAvailableToOrigin(
   }
 
   // The embedder hasn't pushed this value to us, so we pull it as needed.
-  *space_available = Platform::Current()->DatabaseGetSpaceAvailableForOrigin(
-      WebSecurityOrigin(origin));
+  *space_available =
+      WebDatabaseHost::GetInstance().GetSpaceAvailableForOrigin(*origin);
 }
 
 void QuotaTracker::UpdateDatabaseSize(const SecurityOrigin* origin,

@@ -5,6 +5,8 @@
 #include "third_party/blink/renderer/core/fetch/body.h"
 
 #include <memory>
+#include <utility>
+
 #include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -13,6 +15,7 @@
 #include "third_party/blink/renderer/core/fetch/body_stream_buffer.h"
 #include "third_party/blink/renderer/core/fetch/fetch_data_loader.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/form_data.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
@@ -20,6 +23,9 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
+#include "third_party/blink/renderer/platform/heap/disallow_new_wrapper.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/loader/fetch/text_resource_decoder_options.h"
 #include "third_party/blink/renderer/platform/network/parsed_content_type.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
@@ -27,7 +33,7 @@ namespace blink {
 
 namespace {
 
-class BodyConsumerBase : public GarbageCollectedFinalized<BodyConsumerBase>,
+class BodyConsumerBase : public GarbageCollected<BodyConsumerBase>,
                          public FetchDataLoader::Client {
   USING_GARBAGE_COLLECTED_MIXIN(BodyConsumerBase);
 
@@ -44,7 +50,8 @@ class BodyConsumerBase : public GarbageCollectedFinalized<BodyConsumerBase>,
   }
 
   void Abort() override {
-    resolver_->Reject(DOMException::Create(DOMExceptionCode::kAbortError));
+    resolver_->Reject(
+        MakeGarbageCollected<DOMException>(DOMExceptionCode::kAbortError));
   }
 
   // Resource Timing event is not yet added, so delay the resolution timing
@@ -106,7 +113,7 @@ class BodyFormDataConsumer final : public BodyConsumerBase {
   }
 
   void DidFetchDataLoadedString(const String& string) override {
-    FormData* formData = FormData::Create();
+    auto* formData = MakeGarbageCollected<FormData>();
     for (const auto& pair : URLSearchParams::Create(string)->Params())
       formData->append(pair.first, pair.second);
     DidFetchDataLoadedFormData(formData);
@@ -141,9 +148,10 @@ class BodyJsonConsumer final : public BodyConsumerBase {
     v8::Local<v8::Value> parsed;
     if (v8::JSON::Parse(Resolver()->GetScriptState()->GetContext(),
                         input_string)
-            .ToLocal(&parsed))
-      ResolveLater(ScriptValue(Resolver()->GetScriptState(), parsed));
-    else
+            .ToLocal(&parsed)) {
+      ResolveLater(WrapPersistent(WrapDisallowNew(
+          ScriptValue(Resolver()->GetScriptState()->GetIsolate(), parsed))));
+    } else
       Resolver()->Reject(trycatch.Exception());
   }
   DISALLOW_COPY_AND_ASSIGN(BodyJsonConsumer);
@@ -166,7 +174,7 @@ ScriptPromise Body::arrayBuffer(ScriptState* script_state,
   if (!ExecutionContext::From(script_state))
     return ScriptPromise();
 
-  ScriptPromiseResolver* resolver = ScriptPromiseResolver::Create(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
   if (BodyBuffer()) {
     BodyBuffer()->StartLoading(
@@ -179,7 +187,7 @@ ScriptPromise Body::arrayBuffer(ScriptState* script_state,
       return ScriptPromise();
     }
   } else {
-    resolver->Resolve(DOMArrayBuffer::Create(0u, 1));
+    resolver->Resolve(DOMArrayBuffer::Create(size_t{0}, size_t{0}));
   }
   return promise;
 }
@@ -194,7 +202,7 @@ ScriptPromise Body::blob(ScriptState* script_state,
   if (!ExecutionContext::From(script_state))
     return ScriptPromise();
 
-  ScriptPromiseResolver* resolver = ScriptPromiseResolver::Create(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
   if (BodyBuffer()) {
     BodyBuffer()->StartLoading(
@@ -206,7 +214,7 @@ ScriptPromise Body::blob(ScriptState* script_state,
       return ScriptPromise();
     }
   } else {
-    std::unique_ptr<BlobData> blob_data = BlobData::Create();
+    auto blob_data = std::make_unique<BlobData>();
     blob_data->SetContentType(MimeType());
     resolver->Resolve(
         Blob::Create(BlobDataHandle::Create(std::move(blob_data), 0)));
@@ -224,7 +232,7 @@ ScriptPromise Body::formData(ScriptState* script_state,
   if (!ExecutionContext::From(script_state))
     return ScriptPromise();
 
-  ScriptPromiseResolver* resolver = ScriptPromiseResolver::Create(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   const ParsedContentType parsedTypeWithParameters(ContentType());
   const String parsedType = parsedTypeWithParameters.MimeType().LowerASCII();
   ScriptPromise promise = resolver->Promise();
@@ -246,8 +254,13 @@ ScriptPromise Body::formData(ScriptState* script_state,
     }
   } else if (parsedType == "application/x-www-form-urlencoded") {
     if (BodyBuffer()) {
+      // According to https://fetch.spec.whatwg.org/#concept-body-package-data
+      // application/x-www-form-urlencoded FormData bytes are parsed using
+      // https://url.spec.whatwg.org/#concept-urlencoded-parser
+      // which does not decode BOM.
       BodyBuffer()->StartLoading(
-          FetchDataLoader::CreateLoaderAsString(),
+          FetchDataLoader::CreateLoaderAsString(
+              TextResourceDecoderOptions::CreateUTF8DecodeWithoutBOM()),
           MakeGarbageCollected<BodyFormDataConsumer>(resolver),
           exception_state);
       if (exception_state.HadException()) {
@@ -256,7 +269,7 @@ ScriptPromise Body::formData(ScriptState* script_state,
         return ScriptPromise();
       }
     } else {
-      resolver->Resolve(FormData::Create());
+      resolver->Resolve(MakeGarbageCollected<FormData>());
     }
     return promise;
   } else {
@@ -289,12 +302,13 @@ ScriptPromise Body::json(ScriptState* script_state,
   if (!ExecutionContext::From(script_state))
     return ScriptPromise();
 
-  ScriptPromiseResolver* resolver = ScriptPromiseResolver::Create(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
   if (BodyBuffer()) {
-    BodyBuffer()->StartLoading(FetchDataLoader::CreateLoaderAsString(),
-                               MakeGarbageCollected<BodyJsonConsumer>(resolver),
-                               exception_state);
+    BodyBuffer()->StartLoading(
+        FetchDataLoader::CreateLoaderAsString(
+            TextResourceDecoderOptions::CreateUTF8Decode()),
+        MakeGarbageCollected<BodyJsonConsumer>(resolver), exception_state);
     if (exception_state.HadException()) {
       // Need to resolve the ScriptPromiseResolver to avoid a DCHECK().
       resolver->Resolve();
@@ -317,12 +331,13 @@ ScriptPromise Body::text(ScriptState* script_state,
   if (!ExecutionContext::From(script_state))
     return ScriptPromise();
 
-  ScriptPromiseResolver* resolver = ScriptPromiseResolver::Create(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
   if (BodyBuffer()) {
-    BodyBuffer()->StartLoading(FetchDataLoader::CreateLoaderAsString(),
-                               MakeGarbageCollected<BodyTextConsumer>(resolver),
-                               exception_state);
+    BodyBuffer()->StartLoading(
+        FetchDataLoader::CreateLoaderAsString(
+            TextResourceDecoderOptions::CreateUTF8Decode()),
+        MakeGarbageCollected<BodyTextConsumer>(resolver), exception_state);
     if (exception_state.HadException()) {
       // Need to resolve the ScriptPromiseResolver to avoid a DCHECK().
       resolver->Resolve();
@@ -335,6 +350,14 @@ ScriptPromise Body::text(ScriptState* script_state,
 }
 
 ReadableStream* Body::body() {
+  auto* execution_context = GetExecutionContext();
+  if (execution_context->IsServiceWorkerGlobalScope()) {
+    execution_context->CountUse(WebFeature::kFetchBodyStreamInServiceWorker);
+  } else {
+    execution_context->CountUse(
+        WebFeature::kFetchBodyStreamOutsideServiceWorker);
+  }
+
   if (!BodyBuffer())
     return nullptr;
   return BodyBuffer()->Stream();

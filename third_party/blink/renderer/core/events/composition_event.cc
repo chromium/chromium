@@ -40,7 +40,7 @@ CompositionEvent::CompositionEvent(const AtomicString& type,
               Bubbles::kYes,
               Cancelable::kYes,
               ComposedMode::kComposed,
-              CurrentTimeTicks(),
+              base::TimeTicks::Now(),
               view,
               0,
               view ? view->GetInputDeviceCapabilities()->FiresTouchEvents(false)

@@ -8,6 +8,7 @@ per-file *.java=file://chromecast/android/OWNERS
 
 # For major changes, please use one of the reviewers above!
 alexst@chromium.org
+dnicoara@chromium.org
 spang@chromium.org
 
 # COMPONENT: Chromecast

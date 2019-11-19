@@ -1,0 +1,291 @@
+\bbarletta\s+andria\s+trani\b	bt
+\bfriuli\s+venezia\s+giulia\b	36
+\bverbano\s+cusio\s+ossola\b	vb
+\btrentino\s+alto\s+adige\b	32
+\bstrada\s+provinciale\b	sp
+\bcarbonia\s+iglesias\b	ci
+\btrentino\s+sudtirol\b	32
+\bstrada\s+regionale\b	sr
+\bventiquattresimo\b	24
+\bdiciassettesimo\b	17
+\bmedio\s+campidano\b	vs
+\bmonza\s+e\s+brianza\b	mb
+\bpesaro\s+e\s+urbino\b	pu
+\bquattordicesimo\b	14
+\breggio\s+calabria\b	rc
+\bstrada\s+comunale\b	sc
+\bventicinquesimo\b	25
+\bdiciannovesimo\b	19
+\bemilia\s+romagna\b	45
+\bstrada\s+statali\b	ss
+\bvallee\s+d\s+aoste\b	23
+\bventisettesimo\b	27
+\bascoli\s+piceno\b	ap
+\bcaltanissetta\b	cl
+\bmassa\s+carrara\b	ms
+\breggio\s+emilia\b	re
+\bvalle\s+d\s+aosta\b	23
+\bventinovesimo\b	29
+\bventitreesimo\b	23
+\bvibo\s+valentia\b	vv
+\bdiciottesimo\b	18
+\bforli\s+cesena\b	fc
+\bolbia\s+tempio\b	ot
+\bquindicesimo\b	15
+\bventiduesimo\b	22
+\bventiquattro\b	24
+\bventottesimo\b	28
+\balessandria\b	
+\bdiciassette\b	17
+\bquattordici\b	14
+\btredicesimo\b	13
+\bvalle\s+aosta\b	23
+\bventicinque\b	25
+\bventisesimo\b	26
+\bventunesimo\b	21
+\bbasilicata\b	77
+\bcampobasso\b	cb
+\bdiciannove\b	19
+\bdodicesimo\b	12
+\breggimento\b	rgt
+\bsedicesimo\b	16
+\btrentesimo\b	30
+\bundicesimo\b	11
+\bventisette\b	27
+\bagrigento\b	ag
+\bbenevento\b	bn
+\bcatanzaro\b	cz
+\bfrosinone\b	fr
+\bla\s+spezia\b	sp
+\blombardia\b	25
+\bogliastra\b	og
+\bpordenone\b	pn
+\bventesimo\b	20
+\bventinove\b	29
+\bavellino\b	av
+\bbrindisi\b	br
+\bcagliari\b	ca
+\bcalabria\b	78
+\bcampania\b	72
+\bdiciotto\b	18
+\bgrosseto\b	gr
+\bl\s+aquila\b	aq
+\bmacerata\b	mc
+\boristano\b	or
+\bpiacenza\b	pc
+\bpiemonte\b	21
+\bquindici\b	15
+\bsardegna\b	88
+\bsiracusa\b	sr
+\btraversa\b	trav
+\bventidue\b	22
+\bventisei\b	26
+\bventitre\b	23
+\bventotto\b	28
+\bvercelli\b	vc
+\babruzzo\b	65
+\bbelluno\b	bl
+\bbergamo\b	bg
+\bbologna\b	bo
+\bbolzano\b	bz
+\bbrescia\b	bs
+\bcaserta\b	ce
+\bcatania\b	ct
+\bcosenza\b	cs
+\bcremona\b	cr
+\bcrotone\b	kr
+\bferrara\b	fe
+\bfirenze\b	fi
+\bgorizia\b	go
+\bimperia\b	im
+\bisernia\b	is
+\bliguria\b	42
+\blivorno\b	li
+\bmantova\b	mn
+\bmessina\b	me
+\bpalermo\b	pa
+\bperugia\b	pg
+\bpescara\b	pe
+\bpistoia\b	pt
+\bpotenza\b	pz
+\bquattro\b	4
+\bravenna\b	ra
+\bsalerno\b	sa
+\bsassari\b	ss
+\bsecondo\b	2
+\bsettimo\b	7
+\bsicilia\b	82
+\bsondrio\b	so
+\btaranto\b	ta
+\btoscana\b	52
+\btrapani\b	tp
+\btredici\b	13
+\btreviso\b	tv
+\btrieste\b	ts
+\bvenezia\b	ve
+\bventuno\b	21
+\bvicenza\b	6
+\bviterbo\b	vt
+\bancona\b	an
+\barezzo\b	ar
+\bbiella\b	bi
+\bchieti\b	ch
+\bcinque\b	5
+\bdecimo\b	x
+\bdodici\b	12
+\bfoggia\b	fg
+\bgenova\b	ge
+\bitalia\b	it
+\blatina\b	lt
+\bmarche\b	57
+\bmatera\b	mt
+\bmilano\b	mi
+\bmodena\b	mo
+\bmolise\b	67
+\bnapoli\b	na
+\bnovara\b	no
+\bottavo\b	8
+\bpadova\b	pd
+\bpuglia\b	75
+\bquarto\b	4
+\bquinto\b	5
+\bragusa\b	rg
+\brimini\b	rn
+\brovigo\b	ro
+\bsavona\b	sv
+\bsedici\b	16
+\bteramo\b	te
+\btorino\b	to
+\btrenta\b	30
+\btrento\b	tn
+\bumbria\b	55
+\bundici\b	11
+\bvarese\b	va
+\bveneto\b	34
+\bverona\b	vr
+\bxxviii\b	28
+\baosta\b	ao
+\baoste\b	ao
+\bbozen\b	bz
+\bcuneo\b	cn
+\bdagli\b	
+\bdalla\b	
+\bdalle\b	
+\bdallo\b	
+\bdegli\b	
+\bdella\b	
+\bdelle\b	
+\bdello\b	
+\bdieci\b	x
+\bfermo\b	fm
+\bitaly\b	it
+\blazio\b	62
+\blecce\b	
+\blecco\b	lc
+\blucca\b	lu
+\bnegli\b	
+\bnella\b	
+\bnelle\b	
+\bnello\b	
+\bnorth\b	n
+\bnuoro\b	nu
+\bovest\b	o
+\bparma\b	pr
+\bpavia\b	pv
+\bprato\b	po
+\bprimo\b	
+\brieti\b	ri
+\bsesto\b	6
+\bsette\b	7
+\bsiena\b	si
+\bsouth\b	s
+\bsugli\b	
+\bsulla\b	
+\bsulle\b	
+\bsullo\b	
+\bterni\b	tr
+\bterzo\b	3
+\budine\b	ud
+\bventi\b	20
+\bxviii\b	18
+\bxxiii\b	23
+\bxxvii\b	27
+\bagli\b	
+\balla\b	
+\balle\b	
+\ballo\b	
+\basti\b	at
+\bbari\b	ba
+\bcomo\b	co
+\bdall\b	
+\bdell\b	
+\beast\b	e
+\benna\b	
+\blodi\b	
+\bnell\b	
+\bnono\b	9
+\bnord\b	n
+\bnove\b	9
+\botto\b	8
+\bpisa\b	pi
+\broma\b	rm
+\bsull\b	
+\bviii\b	8
+\bwest\b	o
+\bxiii\b	13
+\bxvii\b	17
+\bxxii\b	22
+\bxxiv\b	24
+\bxxix\b	29
+\bxxvi\b	26
+\ball\b	
+\bdai\b	
+\bdal\b	
+\bdei\b	
+\bdel\b	
+\bdue\b	2
+\best\b	e
+\bgli\b	
+\biii\b	3
+\bles\b	
+\bnei\b	
+\bnel\b	
+\bsei\b	6
+\bsud\b	s
+\bsui\b	
+\bsul\b	
+\btre\b	3
+\buno\b	
+\bvii\b	7
+\bxii\b	12
+\bxiv\b	14
+\bxix\b	19
+\bxvi\b	16
+\bxxi\b	21
+\bxxv\b	25
+\bxxx\b	30
+\b10\b	x
+\bai\b	
+\bal\b	
+\bda\b	
+\bdi\b	
+\ben\b	
+\bii\b	2
+\bil\b	
+\bin\b	
+\biv\b	4
+\bix\b	9
+\bla\b	
+\ble\b	
+\blo\b	
+\bsu\b	
+\bvi\b	6
+\bxi\b	11
+\bxv\b	15
+\bxx\b	20
+\ba\b	
+\bd\b	
+\bi\b	
+\bl\b	
+\bv\b	5
+\bw\b	o

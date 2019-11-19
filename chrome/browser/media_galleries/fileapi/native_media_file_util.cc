@@ -16,15 +16,15 @@
 #include "base/task/post_task.h"
 #include "base/task_runner_util.h"
 #include "chrome/browser/media_galleries/fileapi/media_path_filter.h"
-#include "components/services/filesystem/public/interfaces/types.mojom.h"
+#include "components/services/filesystem/public/mojom/types.mojom.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/base/io_buffer.h"
 #include "net/base/mime_sniffer.h"
 #include "storage/browser/blob/shareable_file_reference.h"
-#include "storage/browser/fileapi/file_system_context.h"
-#include "storage/browser/fileapi/file_system_operation_context.h"
-#include "storage/browser/fileapi/native_file_util.h"
+#include "storage/browser/file_system/file_system_context.h"
+#include "storage/browser/file_system/file_system_operation_context.h"
+#include "storage/browser/file_system/native_file_util.h"
 #include "url/gurl.h"
 
 namespace {
@@ -535,9 +535,8 @@ void NativeMediaFileUtil::Core::GetFileInfoOnTaskRunnerThread(
   base::File::Info file_info;
   base::File::Error error =
       GetFileInfoSync(context.get(), url, &file_info, NULL);
-  base::PostTaskWithTraits(
-      FROM_HERE, {content::BrowserThread::IO},
-      base::BindOnce(std::move(callback), error, file_info));
+  base::PostTask(FROM_HERE, {content::BrowserThread::IO},
+                 base::BindOnce(std::move(callback), error, file_info));
 }
 
 void NativeMediaFileUtil::Core::ReadDirectoryOnTaskRunnerThread(
@@ -548,9 +547,9 @@ void NativeMediaFileUtil::Core::ReadDirectoryOnTaskRunnerThread(
   DCHECK(IsOnTaskRunnerThread(context.get()));
   EntryList entry_list;
   base::File::Error error = ReadDirectorySync(context.get(), url, &entry_list);
-  base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::IO},
-                           base::BindOnce(std::move(callback), error,
-                                          entry_list, false /* has_more */));
+  base::PostTask(FROM_HERE, {content::BrowserThread::IO},
+                 base::BindOnce(std::move(callback), error, entry_list,
+                                false /* has_more */));
 }
 
 void NativeMediaFileUtil::Core::CreateSnapshotFileOnTaskRunnerThread(
@@ -564,9 +563,9 @@ void NativeMediaFileUtil::Core::CreateSnapshotFileOnTaskRunnerThread(
   scoped_refptr<storage::ShareableFileReference> file_ref;
   base::File::Error error = CreateSnapshotFileSync(
       context.get(), url, &file_info, &platform_path, &file_ref);
-  base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::IO},
-                           base::BindOnce(std::move(callback), error, file_info,
-                                          platform_path, file_ref));
+  base::PostTask(FROM_HERE, {content::BrowserThread::IO},
+                 base::BindOnce(std::move(callback), error, file_info,
+                                platform_path, file_ref));
 }
 
 base::File::Error NativeMediaFileUtil::Core::GetFileInfoSync(

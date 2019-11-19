@@ -12,7 +12,6 @@
 #include "base/json/json_reader.h"
 #include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
 #include "content/public/browser/browser_context.h"
@@ -92,7 +91,7 @@ class DefaultObserver : public SettingsObserver {
     // Event for StorageArea.
     {
       auto args = std::make_unique<base::ListValue>();
-      args->GetList().push_back(changes->Clone());
+      args->Append(changes->Clone());
       auto event = std::make_unique<Event>(
           NamespaceToEventHistogram(settings_namespace),
           base::StringPrintf("storage.%s.onChanged", namespace_string.c_str()),
@@ -132,7 +131,6 @@ StorageFrontend::StorageFrontend(scoped_refptr<ValueStoreFactory> factory,
 
 void StorageFrontend::Init(scoped_refptr<ValueStoreFactory> factory) {
   TRACE_EVENT0("browser,startup", "StorageFrontend::Init")
-  SCOPED_UMA_HISTOGRAM_TIMER("Extensions.StorageFrontendInitTime");
 
   observers_ = new SettingsObserverList();
   browser_context_observer_.reset(new DefaultObserver(browser_context_));
@@ -161,6 +159,9 @@ StorageFrontend::~StorageFrontend() {
 
 ValueStoreCache* StorageFrontend::GetValueStoreCache(
     settings_namespace::Namespace settings_namespace) const {
+  // TODO(crbug.com/933874): We should DCHECK for BrowserThread::UI here, but
+  // currently that breaks ExtensionSettingsSyncTest which calls this on the
+  // backend sequence.
   auto it = caches_.find(settings_namespace);
   if (it != caches_.end())
     return it->second;

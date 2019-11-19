@@ -179,6 +179,11 @@ void MagnifierTextInputTestHelper::FocusOnTextInputView() {
   text_input_view_->FocusOnTextInput();
 }
 
+void MagnifierTextInputTestHelper::MaximizeWidget() {
+  DCHECK(text_input_view_);
+  text_input_view_->GetWidget()->Maximize();
+}
+
 ui::InputMethod* MagnifierTextInputTestHelper::GetInputMethod() {
   DCHECK(text_input_view_);
   return text_input_view_->GetWidget()->GetInputMethod();

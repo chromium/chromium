@@ -14,10 +14,6 @@ namespace gfx {
 struct VectorIcon;
 }  // namespace gfx
 
-namespace ui {
-class NativeTheme;
-}  // namespace ui
-
 namespace views {
 class Button;
 class ButtonListener;
@@ -48,7 +44,7 @@ class ASH_EXPORT DetailedViewDelegate {
   virtual void CloseBubble();
 
   // Get the background color of the detailed view.
-  virtual SkColor GetBackgroundColor(ui::NativeTheme* native_theme);
+  virtual SkColor GetBackgroundColor();
 
   // Return true if overflow indicator of ScrollView is enabled.
   virtual bool IsOverflowIndicatorEnabled() const;

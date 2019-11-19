@@ -218,7 +218,7 @@ but organizations that manage their devices or users can override this through
 trusted for users in their Enterprise.
 
 Finally, organizations may manage their own PKI in-house, using CA
-software such as [CFSSL](https://github.com/cloudflare/cfssl), [Boulder](https://github.com/letsencrypt/boulder), 
+software such as [CFSSL](https://github.com/cloudflare/cfssl), [Boulder](https://github.com/letsencrypt/boulder),
 [EJBCA](https://www.ejbca.org/) or
 [Active Directory Certificate Services](https://msdn.microsoft.com/en-us/library/ff630887.aspx).
 Managing certificates in-house may be more complex and security risky, but
@@ -256,12 +256,12 @@ more widely.
 Several Chrome-specific policies exist that allow Enterprises to configure
 their machines or users to disable Certificate Transparency for certain cases.
 These policies are documented in the
-[master policy list](https://www.chromium.org/administrators/policy-list-3),
+[master policy list](https://cloud.google.com/docs/chrome-enterprise/policies),
 but detailed further below.
 
 #### CertificateTransparencyEnforcementDisabledForUrls
 
-This [policy](https://www.chromium.org/administrators/policy-list-3#CertificateTransparencyEnforcementDisabledForUrls)
+This [policy](https://cloud.google.com/docs/chrome-enterprise/policies/?policy=CertificateTransparencyEnforcementDisabledForUrls)
 has been available since Chrome 53, and allows for disabling Certificate
 Transparency enforcement for a certain set of domains or subdomains, without
 disabling Certificate Transparency altogether.
@@ -277,7 +277,7 @@ while leaving it enabled for subdomains.
 
 #### CertificateTransparencyEnforcementDisabledForCas
 
-This [policy](https://www.chromium.org/administrators/policy-list-3#CertificateTransparencyEnforcementDisabledForCas),
+This [policy](https://cloud.google.com/docs/chrome-enterprise/policies/?policy=CertificateTransparencyEnforcementDisabledForCas),
 available since Chrome 57, allows for disabling Certificate Transparency
 enforcement if certain conditions are met in the trusted certificate chain.
 This allows disabling CT without having to list all of the domain names, but
@@ -307,7 +307,7 @@ must match one of the following conditions:
 
 #### CertificateTransparencyEnforcementDisabledForLegacyCas
 
-This [policy](https://www.chromium.org/administrators/policy-list-3#CertificateTransparencyEnforcementDisabledForLegacyCas),
+This [policy](https://cloud.google.com/docs/chrome-enterprise/policies/?policy=CertificateTransparencyEnforcementDisabledForLegacyCas),
 available since Chrome 67, allows for disabling Certificate Transparency
 enforcement for certain legacy CAs that have not adopted modern security and
 audit requirements required of publicly-trusted CAs. This is particularly

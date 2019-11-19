@@ -7,9 +7,16 @@
  * @implements {SwitchAccessInterface}
  */
 class SwitchAccess {
-  constructor() {
-    console.log('Switch access is enabled');
+  static initialize() {
+    window.switchAccess = new SwitchAccess();
+  }
 
+  static get() {
+    return window.switchAccess;
+  }
+
+  /** @private */
+  constructor() {
     /**
      * User commands.
      * @private {Commands}
@@ -18,21 +25,15 @@ class SwitchAccess {
 
     /**
      * User preferences.
-     * @private {SwitchAccessPrefs}
+     * @private {SwitchAccessPreferences}
      */
-    this.switchAccessPrefs_ = null;
+    this.switchAccessPreferences_ = null;
 
     /**
      * Handles changes to auto-scan.
      * @private {AutoScanManager}
      */
     this.autoScanManager_ = null;
-
-    /**
-     * Handles keyboard input.
-     * @private {KeyboardHandler}
-     */
-    this.keyboardHandler_ = null;
 
     /**
      * Handles interactions with the accessibility tree, including moving to and
@@ -54,6 +55,24 @@ class SwitchAccess {
      */
     this.navReadyCallback_ = null;
 
+    /**
+     * Feature flag controlling improvement of text input capabilities.
+     * @private {boolean}
+     */
+    this.enableImprovedTextInput_ = false;
+
+    /**
+     * The automation node for the back button.
+     * @private {chrome.automation.AutomationNode}
+     */
+    this.backButtonAutomationNode_;
+
+    /**
+     * The desktop node.
+     * @private {chrome.automation.AutomationNode}
+     */
+    this.desktop_;
+
     this.init_();
   }
 
@@ -62,20 +81,25 @@ class SwitchAccess {
    * @private
    */
   init_() {
+    chrome.commandLinePrivate.hasSwitch(
+        'enable-experimental-accessibility-switch-access-text', (result) => {
+          this.enableImprovedTextInput_ = result;
+        });
+
     this.commands_ = new Commands(this);
-    this.switchAccessPrefs_ = new SwitchAccessPrefs(this);
     this.autoScanManager_ = new AutoScanManager(this);
-    this.keyboardHandler_ = new KeyboardHandler(this);
+    this.switchAccessPreferences_ =
+        new SwitchAccessPreferences(this, this.onPrefsReady_.bind(this));
 
     chrome.automation.getDesktop(function(desktop) {
       this.navigationManager_ = new NavigationManager(desktop);
+      this.desktop_ = desktop;
+      this.findBackButtonNode_();
 
-      if (this.navReadyCallback_)
+      if (this.navReadyCallback_) {
         this.navReadyCallback_();
+      }
     }.bind(this));
-
-    document.addEventListener(
-        'prefsUpdate', this.handlePrefsUpdate_.bind(this));
   }
 
   /**
@@ -83,8 +107,9 @@ class SwitchAccess {
    * @override
    */
   enterMenu() {
-    if (this.navigationManager_)
+    if (this.navigationManager_) {
       this.navigationManager_.enterMenu();
+    }
   }
 
   /**
@@ -92,9 +117,12 @@ class SwitchAccess {
    * @override
    */
   moveForward() {
-    if (this.navigationManager_)
+    if (this.navigationManager_) {
       this.navigationManager_.moveForward();
-    this.onMoveForwardForTesting_ && this.onMoveForwardForTesting_();
+    }
+    if (this.onMoveForwardForTesting_) {
+      this.onMoveForwardForTesting_();
+    }
   }
 
   /**
@@ -102,8 +130,9 @@ class SwitchAccess {
    * @override
    */
   moveBackward() {
-    if (this.navigationManager_)
+    if (this.navigationManager_) {
       this.navigationManager_.moveBackward();
+    }
   }
 
   /**
@@ -111,151 +140,126 @@ class SwitchAccess {
    * @override
    */
   selectCurrentNode() {
-    if (this.navigationManager_)
+    if (this.navigationManager_) {
       this.navigationManager_.selectCurrentNode();
+    }
   }
 
   /**
-   * Open the options page in a new tab.
+   * Returns whether or not the feature flag
+   * for improved text input is enabled.
+   * @return {boolean}
    * @override
    */
-  showOptionsPage() {
-    const optionsPage = {url: 'options.html'};
-    chrome.tabs.create(optionsPage);
+  improvedTextInputEnabled() {
+    return this.enableImprovedTextInput_;
   }
 
   /**
-   * Return a list of the names of all user commands.
-   * @override
-   * @return {!Array<string>}
-   */
-  getCommands() {
-    return this.commands_.getCommands();
-  }
-
-  /**
-   * Return the default key code for a command.
-   * @override
-   * @param {string} command
-   * @return {number}
-   */
-  getDefaultKeyCodeFor(command) {
-    return this.commands_.getDefaultKeyCodeFor(command);
-  }
-
-  /**
-   * Forwards the keycodes received from keyPressed events to |callback|.
-   * @param {function(number)} callback
-   */
-  listenForKeycodes(callback) {
-    this.keyboardHandler_.listenForKeycodes(callback);
-  }
-
-  /**
-   * Stops forwarding keycodes.
-   */
-  stopListeningForKeycodes() {
-    this.keyboardHandler_.stopListeningForKeycodes();
-  }
-
-  /**
-   * Run the function binding for the specified command.
-   * @override
-   * @param {string} command
-   */
-  runCommand(command) {
-    this.commands_.runCommand(command);
-  }
-
-  /**
-   * Perform actions as the result of actions by the user. Currently, restarts
-   * auto-scan if it is enabled.
+   * Restarts auto-scan if it is enabled.
    * @override
    */
-  performedUserAction() {
+  restartAutoScan() {
     this.autoScanManager_.restartIfRunning();
   }
 
   /**
-   * Handle a change in user preferences.
-   * @param {!Event} event
-   * @private
+   * Sets whether the current node is in the virtual keyboard.
+   * @param {boolean} inKeyboard
+   * @override
    */
-  handlePrefsUpdate_(event) {
-    const updatedPrefs = event.detail;
-    for (const key of Object.keys(updatedPrefs)) {
+  setInKeyboard(inKeyboard) {
+    this.autoScanManager_.setInKeyboard(inKeyboard);
+  }
+
+  /**
+   * Handle a change in user preferences.
+   * @override
+   * @param {!Object} changes
+   */
+  onPreferencesChanged(changes) {
+    for (const key of Object.keys(changes)) {
       switch (key) {
-        case 'enableAutoScan':
-          this.autoScanManager_.setEnabled(updatedPrefs[key]);
+        case SAConstants.Preference.AUTO_SCAN_ENABLED:
+          this.autoScanManager_.setEnabled(changes[key]);
           break;
-        case 'autoScanTime':
-          this.autoScanManager_.setScanTime(updatedPrefs[key]);
+        case SAConstants.Preference.AUTO_SCAN_TIME:
+          this.autoScanManager_.setDefaultScanTime(changes[key]);
           break;
-        default:
-          if (this.commands_.getCommands().includes(key))
-            this.keyboardHandler_.updateSwitchAccessKeys();
+        case SAConstants.Preference.AUTO_SCAN_KEYBOARD_TIME:
+          this.autoScanManager_.setKeyboardScanTime(changes[key]);
+          break;
       }
     }
   }
 
   /**
-   * Set the value of the preference |key| to |value| in chrome.storage.sync.
-   * this.prefs_ is not set until handleStorageChange_.
-   *
+   * Returns whether prefs have initially loaded or not.
+   * @return {boolean}
    * @override
-   * @param {string} key
-   * @param {boolean|string|number} value
    */
-  setPref(key, value) {
-    this.switchAccessPrefs_.setPref(key, value);
+  prefsAreReady() {
+    return this.switchAccessPreferences_.isReady();
   }
 
   /**
-   * Get the value of type 'boolean' of the preference |key|. Will throw a type
-   * error if the value of |key| is not 'boolean'.
+   * Set the value of the preference |name| to |value| in chrome.storage.sync.
+   * Once the storage is set, the Switch Access preferences/behavior are
+   * updated.
    *
    * @override
-   * @param  {string} key
+   * @param {SAConstants.Preference} name
+   * @param {boolean|number} value
+   */
+  setPreference(name, value) {
+    this.switchAccessPreferences_.setPreference(name, value);
+  }
+
+  /**
+   * Get the boolean value for the given name. Will throw an error if the
+   * value associated with |name| is not a boolean, or undefined.
+   *
+   * @override
+   * @param  {SAConstants.Preference} name
    * @return {boolean}
    */
-  getBooleanPref(key) {
-    return this.switchAccessPrefs_.getBooleanPref(key);
+  getBooleanPreference(name) {
+    return this.switchAccessPreferences_.getBooleanPreference(name);
   }
 
   /**
-   * Get the value of type 'number' of the preference |key|. Will throw a type
-   * error if the value of |key| is not 'number'.
+   * Get the string value for the given name. Will throw an error if the
+   * value associated with |name| is not a string, or is undefined.
    *
    * @override
-   * @param  {string} key
-   * @return {number}
-   */
-  getNumberPref(key) {
-    return this.switchAccessPrefs_.getNumberPref(key);
-  }
-
-  /**
-   * Get the value of type 'string' of the preference |key|. Will throw a type
-   * error if the value of |key| is not 'string'.
-   *
-   * @override
-   * @param  {string} key
+   * @param {SAConstants.Preference} name
    * @return {string}
    */
-  getStringPref(key) {
-    return this.switchAccessPrefs_.getStringPref(key);
+  getStringPreference(name) {
+    return this.switchAccessPreferences_.getStringPreference(name);
   }
 
   /**
-   * Returns true if |keyCode| is already used to run a command from the
-   * keyboard.
+   * Get the number value for the given name. Will throw an error if the
+   * value associated with |name| is not a number, or undefined.
    *
    * @override
-   * @param {number} keyCode
-   * @return {boolean}
+   * @param  {SAConstants.Preference} name
+   * @return {number}
    */
-  keyCodeIsUsed(keyCode) {
-    return this.switchAccessPrefs_.keyCodeIsUsed(keyCode);
+  getNumberPreference(name) {
+    return this.switchAccessPreferences_.getNumberPreference(name);
+  }
+
+  /**
+   * Get the number value for the given name, or |null| if none exists.
+   *
+   * @override
+   * @param  {SAConstants.Preference} name
+   * @return {number|null}
+   */
+  getNumberPreferenceIfDefined(name) {
+    return this.switchAccessPreferences_.getNumberPreferenceIfDefined(name);
   }
 
   /**
@@ -266,11 +270,74 @@ class SwitchAccess {
   connectMenuPanel(menuPanel) {
     // Because this may be called before init_(), check if navigationManager_
     // is initialized.
-    if (this.navigationManager_)
+    if (this.navigationManager_) {
       return this.navigationManager_.connectMenuPanel(menuPanel);
+    }
 
     // If not, set navReadyCallback_ to have the menuPanel try again.
     this.navReadyCallback_ = menuPanel.connectToBackground.bind(menuPanel);
     return null;
+  }
+
+  /**
+   * Notifies managers that the preferences have initially loaded.
+   */
+  onPrefsReady_() {
+    this.autoScanManager_.onPrefsReady();
+    if (this.navigationManager_) {
+      this.navigationManager_.onPrefsReady();
+    }
+  }
+
+  /** @return {chrome.automation.AutomationNode} */
+  getBackButtonAutomationNode() {
+    if (!this.backButtonAutomationNode_) {
+      this.findBackButtonNode_();
+      if (!this.backButtonAutomationNode_) {
+        console.log('Error: unable to find back button');
+      }
+    }
+    return this.backButtonAutomationNode_;
+  }
+
+  /**
+   * Looks for the back button node.
+   */
+  findBackButtonNode_() {
+    if (!this.desktop_) {
+      return;
+    }
+    this.backButtonAutomationNode_ =
+        new AutomationTreeWalker(
+            this.desktop_, constants.Dir.FORWARD,
+            {visit: (node) => node.htmlAttributes.id === SAConstants.BACK_ID})
+            .next()
+            .node;
+  }
+
+  /*
+   * Creates and records the specified error.
+   * @param {SAConstants.ErrorType} errorType
+   * @param {string} errorString
+   * @return {!Error}
+   */
+  static error(errorType, errorString) {
+    let errorTypeCountForUMA = Object.keys(SAConstants.ErrorType).length;
+    chrome.metricsPrivate.recordEnumerationValue(
+        'Accessibility.CrosSwitchAccess.Error', errorType,
+        errorTypeCountForUMA);
+    return new Error(errorString);
+  }
+
+  /**
+   * Prints out the current Switch Access tree for debugging.
+   * @param {boolean=} wholeTree whether to print the whole tree, or the current
+   * focus.
+   * @return {SARootNode|undefined}
+   */
+  getTreeForDebugging(wholeTree = false) {
+    if (this.navigationManager_) {
+      return this.navigationManager_.getTreeForDebugging(wholeTree);
+    }
   }
 }

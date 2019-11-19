@@ -54,7 +54,7 @@ bool ParseReceiverSetupInfo(const std::string& response,
   bool is_connected = false;
   bool is_on_ethernet = false;
   bool has_update = false;
-  int32_t uptime_seconds = 0;
+  double uptime_seconds = 0;
 
   const bool result =
       value && value->is_dict() &&
@@ -62,7 +62,7 @@ bool ParseReceiverSetupInfo(const std::string& response,
       GetBool(*value, "connected", &is_connected) &&
       GetBool(*value, "ethernet_connected", &is_on_ethernet) &&
       GetBool(*value, "has_update", &has_update) &&
-      GetInt(*value, "uptime", &uptime_seconds) &&
+      GetDouble(*value, "uptime", &uptime_seconds) &&
       GetString(*value, "name", receiver_name);
   if (result) {
     tags->SetKey("receiverVersion", base::Value(build_version));
@@ -112,13 +112,12 @@ SessionMonitor::SessionMonitor(
     int max_retention_bytes,
     const net::IPAddress& receiver_address,
     base::Value session_tags,
-    network::mojom::URLLoaderFactoryPtr loader_factory)
+    mojo::PendingRemote<network::mojom::URLLoaderFactory> loader_factory)
     : max_retention_bytes_(max_retention_bytes),
       receiver_address_(receiver_address),
       session_tags_(std::move(session_tags)),
       url_loader_factory_(std::move(loader_factory)),
-      stored_snapshots_bytes_(0),
-      weak_factory_(this) {
+      stored_snapshots_bytes_(0) {
   QueryReceiverSetupInfo();
 }
 
@@ -349,8 +348,8 @@ std::string SessionMonitor::GetEventLogsAndReset(
 
   result.resize(media::cast::kMaxSerializedBytes);
   int output_bytes;
-  // TODO(xjz): media::cast::SerializeEvents() shouldn't require the caller to
-  // pre-allocate the memory. It should return a string result.
+  // TODO(crbug.com/1015471): media::cast::SerializeEvents() shouldn't require
+  // the caller to pre-allocate the memory. It should return a string result.
   if (media::cast::SerializeEvents(metadata, frame_events, packet_events,
                                    true /* compress */,
                                    media::cast::kMaxSerializedBytes,

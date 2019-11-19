@@ -34,7 +34,7 @@ class ClearActivitiesTask : public Task {
   base::Time begin_;
   base::Time end_;
   BooleanCallback callback_;
-  base::WeakPtrFactory<ClearActivitiesTask> weak_factory_;
+  base::WeakPtrFactory<ClearActivitiesTask> weak_factory_{this};
 };
 
 }  // namespace explore_sites

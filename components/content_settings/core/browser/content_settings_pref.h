@@ -39,20 +39,20 @@ class ContentSettingsPref {
                       PrefService* prefs,
                       PrefChangeRegistrar* registrar,
                       const std::string& pref_name,
-                      bool incognito,
+                      bool off_the_record,
                       NotifyObserversCallback notify_callback);
   ~ContentSettingsPref();
 
   // Returns nullptr to indicate the RuleIterator is empty.
   std::unique_ptr<RuleIterator> GetRuleIterator(
       const ResourceIdentifier& resource_identifier,
-      bool incognito) const;
+      bool off_the_record) const;
 
   bool SetWebsiteSetting(const ContentSettingsPattern& primary_pattern,
                          const ContentSettingsPattern& secondary_pattern,
                          const ResourceIdentifier& resource_identifier,
                          base::Time modified_time,
-                         base::Value* value);
+                         std::unique_ptr<base::Value>&& value);
 
   // Returns the |last_modified| date of a setting.
   base::Time GetWebsiteSettingLastModified(
@@ -68,6 +68,12 @@ class ContentSettingsPref {
 
   // Tries to lock |lock_|. If successful, returns true and releases the lock.
   bool TryLockForTesting() const;
+  void set_allow_resource_identifiers_for_testing() {
+    allow_resource_identifiers_ = true;
+  }
+  void reset_allow_resource_identifiers_for_testing() {
+    allow_resource_identifiers_ = false;
+  }
 
  private:
   // Reads all content settings exceptions from the preference and loads them
@@ -104,7 +110,7 @@ class ContentSettingsPref {
   // Name of the dictionary preference managed by this class.
   const std::string& pref_name_;
 
-  bool is_incognito_;
+  bool off_the_record_;
 
   // Whether we are currently updating preferences, this is used to ignore
   // notifications from the preferences service that we triggered ourself.
@@ -112,7 +118,7 @@ class ContentSettingsPref {
 
   OriginIdentifierValueMap value_map_;
 
-  OriginIdentifierValueMap incognito_value_map_;
+  OriginIdentifierValueMap off_the_record_value_map_;
 
   NotifyObserversCallback notify_callback_;
 
@@ -120,6 +126,10 @@ class ContentSettingsPref {
   mutable base::Lock lock_;
 
   base::ThreadChecker thread_checker_;
+
+  // Used for setting preferences with resource identifiers to simmulate legacy
+  // prefs that did have resource identifiers set.
+  bool allow_resource_identifiers_;
 
   DISALLOW_COPY_AND_ASSIGN(ContentSettingsPref);
 };

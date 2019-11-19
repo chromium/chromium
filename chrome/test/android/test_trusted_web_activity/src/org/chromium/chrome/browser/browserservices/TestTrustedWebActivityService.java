@@ -5,7 +5,8 @@
 package org.chromium.chrome.browser.browserservices;
 
 import android.app.Notification;
-import android.support.customtabs.trusted.TrustedWebActivityService;
+
+import androidx.browser.trusted.TrustedWebActivityService;
 
 /**
  * A TrustedWebActivityService to be used in TrustedWebActivityClientTest.
@@ -18,11 +19,13 @@ public class TestTrustedWebActivityService extends TrustedWebActivityService {
     @Override
     public void onCreate() {
         super.onCreate();
-        TrustedWebActivityService.setVerifiedProviderForTesting(this, "org.chromium.chrome.tests");
+
+        TrustedWebActivityService.setVerifiedProviderSynchronouslyForTesting(this,
+                "org.chromium.chrome.tests");
     }
 
     @Override
-    protected boolean notifyNotificationWithChannel(String platformTag, int platformId,
+    public boolean notifyNotificationWithChannel(String platformTag, int platformId,
             Notification notification, String channelName) {
         MessengerService.sMessageHandler
                 .recordNotifyNotification(platformTag, platformId, channelName);
@@ -30,12 +33,12 @@ public class TestTrustedWebActivityService extends TrustedWebActivityService {
     }
 
     @Override
-    protected void cancelNotification(String platformTag, int platformId) {
+    public void cancelNotification(String platformTag, int platformId) {
         MessengerService.sMessageHandler.recordCancelNotification(platformTag, platformId);
     }
 
     @Override
-    protected int getSmallIconId() {
+    public int getSmallIconId() {
         MessengerService.sMessageHandler.recordGetSmallIconId();
         return SMALL_ICON_ID;
     }

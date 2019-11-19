@@ -1,0 +1,191 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [1008, 1016],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "HorizontalScrollbar",
+      "bounds": [600, 250],
+      "paintInvalidations": [
+        {
+          "object": "LayoutView #document",
+          "rect": [0, 0, 600, 250],
+          "reason": "geometry"
+        },
+        {
+          "object": "HorizontalScrollbar",
+          "rect": [0, 235, 585, 15],
+          "reason": "scroll control"
+        },
+        {
+          "object": "VerticalScrollbar",
+          "rect": [585, 0, 15, 250],
+          "reason": "scroll control"
+        }
+      ]
+    },
+    {
+      "name": "LayoutNGBlockFlow HTML",
+      "position": [8, 8],
+      "bounds": [1000, 1000],
+      "contentsOpaque": true,
+      "backgroundColor": "#000000",
+      "paintInvalidations": [
+        {
+          "object": "LayoutNGBlockFlow DIV id='target'",
+          "rect": [0, 0, 1000, 1000],
+          "reason": "background"
+        }
+      ]
+    }
+  ]
+}
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [1008, 1016],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "HorizontalScrollbar",
+      "bounds": [400, 250],
+      "paintInvalidations": [
+        {
+          "object": "LayoutView #document",
+          "rect": [0, 0, 400, 250],
+          "reason": "geometry"
+        },
+        {
+          "object": "HorizontalScrollbar",
+          "rect": [0, 235, 400, 15],
+          "reason": "scroll control"
+        },
+        {
+          "object": "VerticalScrollbar",
+          "rect": [385, 0, 15, 235],
+          "reason": "scroll control"
+        }
+      ]
+    },
+    {
+      "name": "LayoutNGBlockFlow HTML",
+      "position": [8, 8],
+      "bounds": [1000, 1000],
+      "contentsOpaque": true,
+      "backgroundColor": "#000000",
+      "paintInvalidations": [
+        {
+          "object": "LayoutNGBlockFlow DIV id='target'",
+          "rect": [0, 0, 1000, 1000],
+          "reason": "background"
+        }
+      ]
+    }
+  ]
+}
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [1008, 1016],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "HorizontalScrollbar",
+      "bounds": [400, 600],
+      "paintInvalidations": [
+        {
+          "object": "LayoutView #document",
+          "rect": [0, 0, 400, 600],
+          "reason": "geometry"
+        },
+        {
+          "object": "HorizontalScrollbar",
+          "rect": [0, 585, 385, 15],
+          "reason": "scroll control"
+        },
+        {
+          "object": "HorizontalScrollbar",
+          "rect": [0, 235, 385, 15],
+          "reason": "scroll control"
+        },
+        {
+          "object": "VerticalScrollbar",
+          "rect": [385, 0, 15, 585],
+          "reason": "scroll control"
+        }
+      ]
+    },
+    {
+      "name": "LayoutNGBlockFlow HTML",
+      "position": [8, 8],
+      "bounds": [1000, 1000],
+      "contentsOpaque": true,
+      "backgroundColor": "#000000",
+      "paintInvalidations": [
+        {
+          "object": "LayoutNGBlockFlow DIV id='target'",
+          "rect": [0, 0, 1000, 1000],
+          "reason": "background"
+        }
+      ]
+    }
+  ]
+}
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [1008, 1016],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "HorizontalScrollbar",
+      "bounds": [800, 600],
+      "paintInvalidations": [
+        {
+          "object": "LayoutView #document",
+          "rect": [0, 0, 800, 600],
+          "reason": "geometry"
+        },
+        {
+          "object": "HorizontalScrollbar",
+          "rect": [0, 585, 785, 15],
+          "reason": "scroll control"
+        },
+        {
+          "object": "VerticalScrollbar",
+          "rect": [785, 0, 15, 585],
+          "reason": "scroll control"
+        },
+        {
+          "object": "VerticalScrollbar",
+          "rect": [385, 0, 15, 585],
+          "reason": "scroll control"
+        }
+      ]
+    },
+    {
+      "name": "LayoutNGBlockFlow HTML",
+      "position": [8, 8],
+      "bounds": [1000, 1000],
+      "contentsOpaque": true,
+      "backgroundColor": "#000000",
+      "paintInvalidations": [
+        {
+          "object": "LayoutNGBlockFlow DIV id='target'",
+          "rect": [0, 0, 1000, 1000],
+          "reason": "background"
+        }
+      ]
+    }
+  ]
+}
+

@@ -24,7 +24,6 @@ class DEVICE_VR_EXPORT GvrDelegateProvider {
       mojom::XRRuntimeSessionOptionsPtr options,
       base::OnceCallback<void(device::mojom::XRSessionPtr)> callback) = 0;
   virtual void ExitWebVRPresent() = 0;
-  virtual void OnListeningForActivateChanged(bool listening) = 0;
 
  protected:
   virtual ~GvrDelegateProvider() = default;

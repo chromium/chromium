@@ -10,9 +10,9 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
+#include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/core/test/mojo_test_base.h"
@@ -41,6 +41,9 @@ const size_t kMaxPoll = 100;
 const size_t kMultiprocessCapacity = 37;
 const char kMultiprocessTestData[] = "hello i'm a string that is 36 bytes";
 const int kMultiprocessMaxIter = 5;
+
+// Capacity that will cause data pipe creation to fail.
+constexpr size_t kOversizedCapacity = std::numeric_limits<uint32_t>::max();
 
 // TODO(rockot): There are many uses of ASSERT where EXPECT would be more
 // appropriate. Fix this.
@@ -1727,6 +1730,17 @@ bool ReadAllData(MojoHandle consumer,
   return num_bytes == 0;
 }
 
+TEST_F(DataPipeTest, CreateOversized) {
+  const MojoCreateDataPipeOptions options = {
+      kSizeOfOptions,                   // |struct_size|.
+      MOJO_CREATE_DATA_PIPE_FLAG_NONE,  // |flags|.
+      1,                                // |element_num_bytes|.
+      kOversizedCapacity,               // |capacity_num_bytes|.
+  };
+
+  ASSERT_EQ(MOJO_RESULT_RESOURCE_EXHAUSTED, Create(&options));
+}
+
 #if !defined(OS_IOS)
 
 TEST_F(DataPipeTest, Multiprocess) {
@@ -1744,8 +1758,8 @@ TEST_F(DataPipeTest, Multiprocess) {
     // Send some data before serialising and sending the data pipe over.
     // This is the first write so we don't need to use WriteAllData.
     uint32_t num_bytes = kTestDataSize;
-    ASSERT_EQ(MOJO_RESULT_OK, WriteData(kMultiprocessTestData, &num_bytes,
-                                        MOJO_WRITE_DATA_FLAG_ALL_OR_NONE));
+    ASSERT_EQ(MOJO_RESULT_OK,
+              WriteData(kMultiprocessTestData, &num_bytes, true));
     ASSERT_EQ(kTestDataSize, num_bytes);
 
     // Send child process the data pipe.
@@ -1972,13 +1986,13 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(DataPipeStatusChangeInTransitClient,
   EXPECT_EQ(MOJO_RESULT_OK,
             WaitForSignals(consumers[0], MOJO_HANDLE_SIGNAL_PEER_CLOSED));
 
-  base::MessageLoop message_loop;
+  base::test::SingleThreadTaskEnvironment task_environment;
 
   // Wait on producer 1 and consumer 1 using SimpleWatchers.
   {
     base::RunLoop run_loop;
     int count = 0;
-    auto callback = base::Bind(
+    auto callback = base::BindRepeating(
         [](base::RunLoop* loop, int* count, MojoResult result) {
           EXPECT_EQ(MOJO_RESULT_OK, result);
           if (++*count == 2)
@@ -2037,6 +2051,33 @@ TEST_F(DataPipeTest, StatusChangeInTransit) {
       CloseHandle(consumers[i]);
     for (size_t i = 3; i < 6; ++i)
       CloseHandle(producers[i]);
+  });
+}
+
+DEFINE_TEST_CLIENT_TEST_WITH_PIPE(CreateOversizedChild, DataPipeTest, h) {
+  const MojoCreateDataPipeOptions options = {
+      kSizeOfOptions,                   // |struct_size|.
+      MOJO_CREATE_DATA_PIPE_FLAG_NONE,  // |flags|.
+      1,                                // |element_num_bytes|.
+      kOversizedCapacity                // |capacity_num_bytes|.
+  };
+
+  MojoHandle p, c;
+  ASSERT_EQ(MOJO_RESULT_RESOURCE_EXHAUSTED,
+            MojoCreateDataPipe(&options, &p, &c));
+  WriteMessage(h, "success");
+
+  // Wait for a quit message.
+  EXPECT_EQ("quit", ReadMessage(h));
+}
+
+TEST_F(DataPipeTest, CreateOversizedInChild) {
+  RunTestClient("CreateOversizedChild", [&](MojoHandle child) {
+    // Wait for the child to finish the test.
+    std::string expected_message = ReadMessage(child);
+    EXPECT_EQ("success", expected_message);
+
+    WriteMessage(child, "quit");
   });
 }
 

@@ -44,8 +44,8 @@ TEST(WebSocketFrameHeaderTest, FrameLengths) {
         kTests[i].frame_header + kTests[i].frame_header_length);
     std::vector<char> output(expected_output.size());
     EXPECT_EQ(static_cast<int>(expected_output.size()),
-              WriteWebSocketFrameHeader(
-                  header, NULL, &output.front(), output.size()));
+              WriteWebSocketFrameHeader(header, nullptr, output.data(),
+                                        output.size()));
     EXPECT_EQ(expected_output, output);
   }
 }
@@ -89,8 +89,8 @@ TEST(WebSocketFrameHeaderTest, FrameLengthsWithMasking) {
         kTests[i].frame_header + kTests[i].frame_header_length);
     std::vector<char> output(expected_output.size());
     EXPECT_EQ(static_cast<int>(expected_output.size()),
-              WriteWebSocketFrameHeader(
-                  header, &masking_key, &output.front(), output.size()));
+              WriteWebSocketFrameHeader(header, &masking_key, output.data(),
+                                        output.size()));
     EXPECT_EQ(expected_output, output);
   }
 }
@@ -132,8 +132,8 @@ TEST(WebSocketFrameHeaderTest, FrameOpCodes) {
         kTests[i].frame_header + kTests[i].frame_header_length);
     std::vector<char> output(expected_output.size());
     EXPECT_EQ(static_cast<int>(expected_output.size()),
-              WriteWebSocketFrameHeader(
-                  header, NULL, &output.front(), output.size()));
+              WriteWebSocketFrameHeader(header, nullptr, output.data(),
+                                        output.size()));
     EXPECT_EQ(expected_output, output);
   }
 }
@@ -171,8 +171,8 @@ TEST(WebSocketFrameHeaderTest, FinalBitAndReservedBits) {
         kTests[i].frame_header + kTests[i].frame_header_length);
     std::vector<char> output(expected_output.size());
     EXPECT_EQ(static_cast<int>(expected_output.size()),
-              WriteWebSocketFrameHeader(
-                  header, NULL, &output.front(), output.size()));
+              WriteWebSocketFrameHeader(header, nullptr, output.data(),
+                                        output.size()));
     EXPECT_EQ(expected_output, output);
   }
 }
@@ -208,10 +208,9 @@ TEST(WebSocketFrameHeaderTest, InsufficientBufferSize) {
 
     char dummy_buffer[14];
     // Set an insufficient size to |buffer_size|.
-    EXPECT_EQ(
-        ERR_INVALID_ARGUMENT,
-        WriteWebSocketFrameHeader(
-            header, NULL, dummy_buffer, kTests[i].expected_header_size - 1));
+    EXPECT_EQ(ERR_INVALID_ARGUMENT,
+              WriteWebSocketFrameHeader(header, nullptr, dummy_buffer,
+                                        kTests[i].expected_header_size - 1));
   }
 }
 
@@ -247,9 +246,8 @@ TEST(WebSocketFrameTest, MaskPayload) {
                                  kTests[i].input + kTests[i].data_length);
     std::vector<char> expected_output(kTests[i].output,
                                       kTests[i].output + kTests[i].data_length);
-    MaskWebSocketFramePayload(masking_key,
-                              kTests[i].frame_offset,
-                              frame_data.empty() ? NULL : &frame_data.front(),
+    MaskWebSocketFramePayload(masking_key, kTests[i].frame_offset,
+                              frame_data.empty() ? nullptr : frame_data.data(),
                               frame_data.size());
     EXPECT_EQ(expected_output, frame_data);
   }

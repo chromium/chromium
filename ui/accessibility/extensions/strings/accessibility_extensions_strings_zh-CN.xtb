@@ -31,6 +31,7 @@
 <translation id="4769065380738716500">图片已被其 alt 文字取代。</translation>
 <translation id="4896660567607030658">无反馈，仅显示光标。</translation>
 <translation id="4937901943818762779">允许显示动画图片（但只能显示一次）。</translation>
+<translation id="4949131196216960195">按&lt;span class='key'&gt;搜索键&lt;/span&gt; + &lt;img src='increase_brightness.png'&gt;（“提高亮度”键或 F7 键）可启用光标浏览模式。再按一次可关闭此模式。</translation>
 <translation id="4954450790315188152">当光标浏览模式处于启用状态时：</translation>
 <translation id="5041932793799765940">颜色调整</translation>
 <translation id="5094574508723441140">增加对比度</translation>
@@ -59,7 +60,6 @@
 <translation id="7658239707568436148">取消</translation>
 <translation id="786423340267544509">为具有“aria-describedat”或“longdesc”属性的元素添加边框。</translation>
 <translation id="7942349550061667556">红色</translation>
-<translation id="8254860724243898966">按 &lt;span class='key'&gt;Alt&lt;/span&gt; + &lt;img src='increase_brightness.png'&gt;（提高亮度键或 F7 键）可启用光标浏览模式。再按一次可将其停用。</translation>
 <translation id="8260673944985561857">光标浏览模式相关选项</translation>
 <translation id="8321034316479930120">动画政策</translation>
 <translation id="8480209185614411573">高对比度模式</translation>

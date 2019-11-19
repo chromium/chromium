@@ -10,8 +10,8 @@
 #include "base/run_loop.h"
 #include "chrome/browser/download/download_status_updater.h"
 #include "components/download/public/common/mock_download_item.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_download_manager.h"
-#include "content/public/test/test_browser_thread_bundle.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -184,7 +184,7 @@ class DownloadStatusUpdaterTest : public testing::Test {
   // object) can be deleted.
   // TODO(rdsmith): This can be removed when the DownloadManager
   // is no longer required to be deleted on the UI thread.
-  content::TestBrowserThreadBundle test_browser_thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
 };
 
 // Test null updater.

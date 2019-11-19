@@ -4,6 +4,7 @@ main frame - didCommitLoadForFrame
 main frame - didReceiveTitle: 
 main frame - didFinishDocumentLoadForFrame
 frame "f1" - didReceiveTitle: 
+frame "f1" - BeginNavigation request to 'this-is-definitely-a-bad-uri-scheme:', http method GET
 frame "f1" - DidStartNavigation
 main frame - didHandleOnloadEventsForFrame
 frame "f1" - didFailProvisionalLoadWithError

@@ -13,9 +13,9 @@
 #include "chrome/browser/media/webrtc/webrtc_browsertest_base.h"
 #include "chrome/browser/media/webrtc/webrtc_browsertest_common.h"
 #include "content/public/common/content_switches.h"
-#include "content/public/common/feature_h264_with_openh264_ffmpeg.h"
 #include "media/base/media_switches.h"
 #include "testing/perf/perf_test.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace content {
 
@@ -95,9 +95,18 @@ class WebRtcStatsPerfBrowserTest : public WebRtcTestBase {
     ASSERT_TRUE(test::HasReferenceFilesInCheckout());
     ASSERT_TRUE(embedded_test_server()->Start());
 
+    ASSERT_GE(TestTimeouts::test_launcher_timeout().InSeconds(), 100)
+        << "This is a long-running test; you must specify "
+           "--test-launcher-timeout to have a value of at least 100000.";
+
     ASSERT_GE(TestTimeouts::action_max_timeout().InSeconds(), 100)
         << "This is a long-running test; you must specify "
            "--ui-test-action-max-timeout to have a value of at least 100000.";
+
+    ASSERT_LT(TestTimeouts::action_max_timeout(),
+              TestTimeouts::test_launcher_timeout())
+        << "action_max_timeout needs to be strictly-less-than "
+           "test_launcher_timeout";
 
     left_tab_ = OpenTestPageAndGetUserMediaInNewTab(kMainWebrtcTestHtmlPage);
     right_tab_ = OpenTestPageAndGetUserMediaInNewTab(kMainWebrtcTestHtmlPage);
@@ -325,7 +334,8 @@ IN_PROC_BROWSER_TEST_F(
     MANUAL_RunsAudioAndVideoCallCollectingMetrics_VideoCodec_H264) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   // Only run test if run-time feature corresponding to |rtc_use_h264| is on.
-  if (!base::FeatureList::IsEnabled(content::kWebRtcH264WithOpenH264FFmpeg)) {
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kWebRtcH264WithOpenH264FFmpeg)) {
     LOG(WARNING) << "Run-time feature WebRTC-H264WithOpenH264FFmpeg disabled. "
                     "Skipping WebRtcPerfBrowserTest."
                     "MANUAL_RunsAudioAndVideoCallCollectingMetrics_VideoCodec_"

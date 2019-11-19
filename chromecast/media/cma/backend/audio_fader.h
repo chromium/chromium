@@ -5,9 +5,12 @@
 #ifndef CHROMECAST_MEDIA_CMA_BACKEND_AUDIO_FADER_H_
 #define CHROMECAST_MEDIA_CMA_BACKEND_AUDIO_FADER_H_
 
+#include <cstdint>
 #include <memory>
 
 #include "base/macros.h"
+#include "base/time/time.h"
+#include "chromecast/public/media/media_pipeline_backend.h"
 
 namespace media {
 class AudioBus;
@@ -24,57 +27,67 @@ namespace media {
 // constructor/destructor must be called on the same thread.
 class AudioFader {
  public:
+  using RenderingDelay = MediaPipelineBackend::AudioDecoder::RenderingDelay;
+
   // The source of real audio data for the fader.
   class Source {
    public:
-    // Fills at most |num_frames| frames of audio into |buffer|, starting at
-    // |frame_offset|. Returns the actual number of frames of audio that were
-    // filled (may be less than |num_frames| if the source does not have
-    // enough data). This method is only called synchronously from within
-    // a call to FillFrames().
-    virtual int FillFaderFrames(::media::AudioBus* buffer,
-                                int frame_offset,
-                                int num_frames) = 0;
+    // Called to get more audio data for playback. The source must fill in
+    // the |channels| with up to |num_frames| of audio. Note that only planar
+    // float format is supported. The |rendering_delay| indicates when the
+    // first frame of the filled data will be played out.
+    // Note that this method is called on a high priority audio output thread
+    // and must not block.
+    // Returns the number of frames filled.
+    virtual int FillFaderFrames(int num_frames,
+                                RenderingDelay rendering_delay,
+                                float* const* channels) = 0;
 
    protected:
     virtual ~Source() = default;
   };
 
-  // |fade_frames| is the number of frames over which a complete fade in/out
-  // will take place.
-  AudioFader(Source* source, int num_channels, int fade_frames);
+  AudioFader(Source* source,
+             base::TimeDelta fade_time,
+             int num_channels,
+             int sample_rate,
+             double playback_rate);
+  AudioFader(Source* source,
+             int fade_frames,
+             int num_channels,
+             int sample_rate,
+             double playback_rate);
   ~AudioFader();
 
   int buffered_frames() const { return buffered_frames_; }
 
-  // Fills |buffer| with up to |num_frames| frames of data, starting at
-  // |write_offset| within |buffer|, and fading as appropriate to avoid
-  // pops/clicks. This will call through to the source to get more data. Returns
-  // the number of frames filled.
-  int FillFrames(int num_frames, ::media::AudioBus* buffer, int write_offset);
+  // Fills in |channel_data| with |num_frames| frames of properly faded audio.
+  // The |rendering_delay| should reflect when the first sample of the filled
+  // audio is expected to play out.
+  int FillFrames(int num_frames,
+                 RenderingDelay rendering_delay,
+                 float* const* channel_data);
 
   // Returns the total number of frames that will be requested from the source
   // (potentially over multiple calls to source_->FillFaderFrames()) if
   // FillFrames() is called to fill |num_fill_frames| frames.
   int FramesNeededFromSource(int num_fill_frames) const;
 
-  // Helper methods to fade in/out an AudioBus. |buffer| contains the data to
-  // fade; |filled_frames| is the amount of data actually in |buffer| (if the
-  // buffer was partially filled, this will not be equal to buffer->frames()).
-  // |write_offset| is the offset within |buffer| to starting writing frames
-  // to. |fade_frames| is the number of frames over which a complete fade should
+  // Helper methods to fade in/out a buffer. |channel_data| contains the data to
+  // fade; |filled_frames| is the amount of data actually in |channel_data|.
+  // |fade_frames| is the number of frames over which a complete fade should
   // happen (ie, how many frames it takes to go from a 1.0 to 0.0 multiplier).
   // |fade_frames_remaining| is the number of frames left in the current fade
   // (which will be less than |fade_frames| if part of the fade has already
   // been completed on a previous buffer).
-  static void FadeInHelper(::media::AudioBus* buffer,
+  static void FadeInHelper(float* const* channel_data,
+                           int num_channels,
                            int filled_frames,
-                           int write_offset,
                            int fade_frames,
                            int fade_frames_remaining);
-  static void FadeOutHelper(::media::AudioBus* buffer,
+  static void FadeOutHelper(float* const* channel_data,
+                            int num_channels,
                             int filled_frames,
-                            int write_offset,
                             int fade_frames,
                             int fade_frames_remaining);
 
@@ -86,22 +99,23 @@ class AudioFader {
     kFadingOut,
   };
 
-  void CompleteFill(::media::AudioBus* buffer,
-                    int filled_frames,
-                    int write_offset);
-  void IncompleteFill(::media::AudioBus* buffer,
-                      int filled_frames,
-                      int write_offset);
-  void FadeIn(::media::AudioBus* buffer, int filled_frames, int write_offset);
-  void FadeOut(::media::AudioBus* buffer, int filled_frames, int write_offset);
+  int64_t FramesToMicroseconds(int64_t frames);
+
+  void CompleteFill(float* const* channel_data, int filled_frames);
+  void IncompleteFill(float* const* channel_data, int filled_frames);
+  void FadeIn(float* const* channel_data, int filled_frames);
+  void FadeOut(float* const* channel_data, int filled_frames);
 
   Source* const source_;
   const int fade_frames_;
+  const int num_channels_;
+  const int sample_rate_;
+  const double playback_rate_;
 
-  State state_;
+  State state_ = State::kSilent;
   std::unique_ptr<::media::AudioBus> fade_buffer_;
-  int buffered_frames_;
-  int fade_frames_remaining_;
+  int buffered_frames_ = 0;
+  int fade_frames_remaining_ = 0;
 
   DISALLOW_COPY_AND_ASSIGN(AudioFader);
 };

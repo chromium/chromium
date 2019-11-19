@@ -4,14 +4,19 @@
 
 /**
  * @fileoverview Polymer element for displaying information about WiFi,
- * WiMAX, or virtual networks.
+ * Cellular, or virtual networks.
  */
+
+(function() {
+
+const mojom = chromeos.networkConfig.mojom;
 
 Polymer({
   is: 'settings-internet-subpage',
 
   behaviors: [
-    CrPolicyNetworkBehavior,
+    NetworkListenerBehavior,
+    CrPolicyNetworkBehaviorMojo,
     settings.RouteObserverBehavior,
     I18nBehavior,
   ],
@@ -20,7 +25,7 @@ Polymer({
     /**
      * Highest priority connected network or null. Provided by
      * settings-internet-page (but set in network-summary).
-     * @type {?CrOnc.NetworkStateProperties|undefined}
+     * @type {?OncMojo.NetworkStateProperties|undefined}
      */
     defaultNetwork: Object,
 
@@ -28,38 +33,25 @@ Polymer({
      * Device state for the network type. Note: when both Cellular and Tether
      * are available this will always be set to the Cellular device state and
      * |tetherDeviceState| will be set to the Tether device state.
-     * @type {!CrOnc.DeviceStateProperties|undefined}
+     * @type {!OncMojo.DeviceStateProperties|undefined}
      */
     deviceState: Object,
 
     /**
      * If both Cellular and Tether technologies exist, we combine the subpages
      * and set this to the device state for Tether.
-     * @type {!CrOnc.DeviceStateProperties|undefined}
+     * @type {!OncMojo.DeviceStateProperties|undefined}
      */
     tetherDeviceState: Object,
 
-    /** @type {!chrome.networkingPrivate.GlobalPolicy|undefined} */
+    /** @type {!chromeos.networkConfig.mojom.GlobalPolicy|undefined} */
     globalPolicy: Object,
 
     /**
-     * List of third party VPN providers.
-     * @type
-     *     {!Array<!chrome.networkingPrivate.ThirdPartyVPNProperties>|undefined}
+     * List of third party (Extension + Arc) VPN providers.
+     * @type {!Array<!chromeos.networkConfig.mojom.VpnProvider>}
      */
-    thirdPartyVpnProviders: Array,
-
-    /**
-     * List of Arc VPN providers.
-     * @type {!Array<!settings.ArcVpnProvider>|undefined}
-     */
-    arcVpnProviders: Array,
-
-    /**
-     * Interface for networkingPrivate calls, passed from internet_page.
-     * @type {!NetworkingPrivate}
-     */
-    networkingPrivate: Object,
+    vpnProviders: Array,
 
     showSpinner: {
       type: Boolean,
@@ -69,7 +61,7 @@ Polymer({
 
     /**
      * List of all network state data for the network type.
-     * @private {!Array<!CrOnc.NetworkStateProperties>}
+     * @private {!Array<!OncMojo.NetworkStateProperties>}
      */
     networkStateList_: {
       type: Array,
@@ -80,24 +72,13 @@ Polymer({
 
     /**
      * Dictionary of lists of network states for third party VPNs.
-     * @private {!Object<!Array<!CrOnc.NetworkStateProperties>>}
+     * @private {!Object<!Array<!OncMojo.NetworkStateProperties>>}
      */
     thirdPartyVpns_: {
       type: Object,
       value: function() {
         return {};
       },
-    },
-
-    /**
-     * Dictionary of lists of network states for Arc VPNs.
-     * @private {!Object<!Array<!CrOnc.NetworkStateProperties>>}
-     */
-    arcVpns_: {
-      type: Object,
-      value: function() {
-        return {};
-      }
     },
 
     /**
@@ -123,14 +104,15 @@ Polymer({
             loadTimeData.getBoolean('showTechnologyBadge');
       }
     },
+
+    /** @private */
+    hasCompletedScanSinceLastEnabled_: {
+      type: Boolean,
+      value: false,
+    },
   },
 
-  listeners: {
-    'network-list-changed': 'getNetworkStateList_',
-    'networks-changed': 'getNetworkStateList_',
-  },
-
-  observers: ['deviceStateChanged_(networkingPrivate, deviceState)'],
+  observers: ['deviceStateChanged_(deviceState)'],
 
   /** @private {number|null} */
   scanIntervalId_: null,
@@ -138,9 +120,14 @@ Polymer({
   /** @private  {settings.InternetPageBrowserProxy} */
   browserProxy_: null,
 
+  /** @private {?chromeos.networkConfig.mojom.CrosNetworkConfigRemote} */
+  networkConfig_: null,
+
   /** @override */
   created: function() {
     this.browserProxy_ = settings.InternetPageBrowserProxyImpl.getInstance();
+    this.networkConfig_ = network_config.MojoInterfaceProviderImpl.getInstance()
+                              .getMojoServiceRemote();
   },
 
   /** @override */
@@ -165,19 +152,52 @@ Polymer({
       this.stopScanning_();
       return;
     }
+    this.init();
+  },
+
+  init: function() {
     // Clear any stale data.
     this.networkStateList_ = [];
     this.thirdPartyVpns_ = {};
-    this.arcVpns_ = {};
+    this.hasCompletedScanSinceLastEnabled_ = false;
+    this.showSpinner = false;
+
     // Request the list of networks and start scanning if necessary.
     this.getNetworkStateList_();
     this.updateScanning_();
   },
 
+  /**
+   * NetworkListenerBehavior override
+   * @param {!Array<OncMojo.NetworkStateProperties>} networks
+   */
+  onActiveNetworksChanged: function(networks) {
+    this.getNetworkStateList_();
+  },
+
+  /** NetworkListenerBehavior override */
+  onNetworkStateListChanged: function() {
+    this.getNetworkStateList_();
+  },
+
+  /** NetworkListenerBehavior override */
+  onVpnProvidersChanged: function() {
+    if (this.deviceState.type != mojom.NetworkType.kVPN) {
+      return;
+    }
+    this.getNetworkStateList_();
+  },
+
   /** @private */
   deviceStateChanged_: function() {
-    this.showSpinner =
-        this.deviceState !== undefined && !!this.deviceState.Scanning;
+    if (this.deviceState !== undefined) {
+      // A scan has completed if the spinner was active (i.e., scanning was
+      // active) and the device is no longer scanning.
+      this.hasCompletedScanSinceLastEnabled_ = this.showSpinner &&
+          !this.deviceState.scanning &&
+          this.deviceState.deviceState == mojom.DeviceStateType.kEnabled;
+      this.showSpinner = !!this.deviceState.scanning;
+    }
 
     // Scans should only be triggered by the "networks" subpage.
     if (settings.getCurrentRoute() != settings.routes.INTERNET_NETWORKS) {
@@ -185,6 +205,7 @@ Polymer({
       return;
     }
 
+    this.getNetworkStateList_();
     this.updateScanning_();
   },
 
@@ -198,9 +219,6 @@ Polymer({
       this.startScanning_();
       return;
     }
-
-    // deviceState probably changed, re-request networks.
-    this.getNetworkStateList_();
   },
 
   /**
@@ -209,14 +227,14 @@ Polymer({
    */
   shouldStartScan_: function() {
     // Scans should be kicked off from the Wi-Fi networks subpage.
-    if (this.deviceState.Type == CrOnc.Type.WI_FI) {
+    if (this.deviceState.type == mojom.NetworkType.kWiFi) {
       return true;
     }
 
     // Scans should be kicked off from the Mobile data subpage, as long as it
     // includes Tether networks.
-    if (this.deviceState.Type == CrOnc.Type.TETHER ||
-        (this.deviceState.Type == CrOnc.Type.CELLULAR &&
+    if (this.deviceState.type == mojom.NetworkType.kTether ||
+        (this.deviceState.type == mojom.NetworkType.kCellular &&
          this.tetherDeviceState)) {
       return true;
     }
@@ -230,9 +248,13 @@ Polymer({
       return;
     }
     const INTERVAL_MS = 10 * 1000;
-    this.networkingPrivate.requestNetworkScan(this.deviceState.Type);
+    let type = this.deviceState.type;
+    if (type == mojom.NetworkType.kCellular && this.tetherDeviceState) {
+      type = mojom.NetworkType.kMobile;
+    }
+    this.networkConfig_.requestNetworkScan(type);
     this.scanIntervalId_ = window.setInterval(() => {
-      this.networkingPrivate.requestNetworkScan(this.deviceState.Type);
+      this.networkConfig_.requestNetworkScan(type);
     }, INTERVAL_MS);
   },
 
@@ -251,64 +273,108 @@ Polymer({
       return;
     }
     const filter = {
-      networkType: this.deviceState.Type,
-      visible: true,
-      configured: false
+      filter: chromeos.networkConfig.mojom.FilterType.kVisible,
+      limit: chromeos.networkConfig.mojom.NO_LIMIT,
+      networkType: this.deviceState.type,
     };
-    this.networkingPrivate.getNetworks(filter, this.onGetNetworks_.bind(this));
+    this.networkConfig_.getNetworkStateList(filter).then(response => {
+      this.onGetNetworks_(response.result);
+    });
   },
 
   /**
-   * @param {!Array<!CrOnc.NetworkStateProperties>} networkStates
+   * @param {!Array<!OncMojo.NetworkStateProperties>} networkStates
    * @private
    */
   onGetNetworks_: function(networkStates) {
     if (!this.deviceState) {
+      // Edge case when device states change before this callback.
       return;
-    }  // Edge case when device states change before this callback.
+    }
 
-    // For the Cellular/Mobile subpage, request Tether networks if available.
-    if (this.deviceState.Type == CrOnc.Type.CELLULAR &&
+    // For the Cellular/Mobile subpage, also request Tether networks.
+    if (this.deviceState.type == mojom.NetworkType.kCellular &&
         this.tetherDeviceState) {
       const filter = {
-        networkType: CrOnc.Type.TETHER,
-        visible: true,
-        configured: false
+        filter: chromeos.networkConfig.mojom.FilterType.kVisible,
+        limit: chromeos.networkConfig.mojom.NO_LIMIT,
+        networkType: mojom.NetworkType.kTether,
       };
-      this.networkingPrivate.getNetworks(filter, tetherNetworkStates => {
+      this.networkConfig_.getNetworkStateList(filter).then(response => {
+        const tetherNetworkStates = response.result;
         this.networkStateList_ = networkStates.concat(tetherNetworkStates);
       });
       return;
     }
 
-    // For VPNs, separate out third party VPNs and Arc VPNs.
-    if (this.deviceState.Type == CrOnc.Type.VPN) {
+    // For VPNs, separate out third party (Extension + Arc) VPNs.
+    if (this.deviceState.type == mojom.NetworkType.kVPN) {
       const builtinNetworkStates = [];
       const thirdPartyVpns = {};
-      const arcVpns = {};
-      for (let i = 0; i < networkStates.length; ++i) {
-        const state = networkStates[i];
-        const providerType = this.get('VPN.ThirdPartyVPN.ProviderName', state);
-        if (providerType) {
-          thirdPartyVpns[providerType] = thirdPartyVpns[providerType] || [];
-          thirdPartyVpns[providerType].push(state);
-        } else if (this.get('VPN.Type', state) == 'ARCVPN') {
-          const arcProviderName = this.get('VPN.Host', state);
-          if (state.ConnectionState != CrOnc.ConnectionState.CONNECTED) {
-            continue;
-          }
-          arcVpns[arcProviderName] = arcVpns[arcProviderName] || [];
-          arcVpns[arcProviderName].push(state);
-        } else {
-          builtinNetworkStates.push(state);
+      networkStates.forEach(state => {
+        assert(state.type == mojom.NetworkType.kVPN);
+        switch (state.typeState.vpn.type) {
+          case mojom.VpnType.kL2TPIPsec:
+          case mojom.VpnType.kOpenVPN:
+            builtinNetworkStates.push(state);
+            break;
+          case mojom.VpnType.kArc:
+            // Only show connected Arc VPNs.
+            if (!OncMojo.connectionStateIsConnected(state.connectionState)) {
+              break;
+            }
+            // Otherwise Arc VPNs are treated the same as Extension VPNs.
+          case mojom.VpnType.kExtension:
+            const providerId = state.typeState.vpn.providerId;
+            thirdPartyVpns[providerId] = thirdPartyVpns[providerId] || [];
+            thirdPartyVpns[providerId].push(state);
+            break;
         }
-      }
+      });
       networkStates = builtinNetworkStates;
       this.thirdPartyVpns_ = thirdPartyVpns;
-      this.arcVpns_ = arcVpns;
     }
 
     this.networkStateList_ = networkStates;
+  },
+
+  /**
+   * Returns an ordered list of VPN providers for all third party VPNs and any
+   * other known providers.
+   * @param {!Array<!chromeos.networkConfig.mojom.VpnProvider>} vpnProviders
+   * @param {!Object<!Array<!OncMojo.NetworkStateProperties>>} thirdPartyVpns
+   * @return {!Array<!chromeos.networkConfig.mojom.VpnProvider>}
+   * @private
+   */
+  getVpnProviders_(vpnProviders, thirdPartyVpns) {
+    // First add providers for configured thirdPartyVpns. This list will
+    // generally be empty or small.
+    const configuredProviders = [];
+    for (const vpnList of Object.values(thirdPartyVpns)) {
+      assert(vpnList.length > 0);
+      // All vpns in the list will have the same type and provider id.
+      const vpn = vpnList[0].typeState.vpn;
+      const provider = {
+        type: vpn.type,
+        providerId: vpn.providerId,
+        providerName: vpn.providerName || vpn.providerId,
+        appId: '',
+        lastLaunchTime: {internalValue: 0}
+      };
+      configuredProviders.push(provider);
+    }
+    // Next update or append known third party providers.
+    const unconfiguredProviders = [];
+    for (const provider of vpnProviders) {
+      const idx = configuredProviders.findIndex(
+          p => p.providerId == provider.providerId);
+      if (idx >= 0) {
+        configuredProviders[idx] = provider;
+      } else {
+        unconfiguredProviders.push(provider);
+      }
+    }
+    return configuredProviders.concat(unconfiguredProviders);
   },
 
   /**
@@ -321,16 +387,18 @@ Polymer({
   },
 
   /**
-   * @param {!CrOnc.DeviceStateProperties|undefined} deviceState
+   * @param {!OncMojo.DeviceStateProperties|undefined} deviceState
    * @return {boolean} Whether or not the device state is enabled.
    * @private
    */
   deviceIsEnabled_: function(deviceState) {
-    return !!deviceState && deviceState.State == CrOnc.DeviceState.ENABLED;
+    return !!deviceState &&
+        deviceState.deviceState ==
+        chromeos.networkConfig.mojom.DeviceStateType.kEnabled;
   },
 
   /**
-   * @param {!CrOnc.DeviceStateProperties|undefined} deviceState
+   * @param {!OncMojo.DeviceStateProperties|undefined} deviceState
    * @param {string} onstr
    * @param {string} offstr
    * @return {string}
@@ -341,26 +409,28 @@ Polymer({
   },
 
   /**
-   * @param {!CrOnc.DeviceStateProperties|undefined} deviceState
+   * @param {!OncMojo.DeviceStateProperties|undefined} deviceState
    * @return {boolean}
    * @private
    */
   enableToggleIsVisible_: function(deviceState) {
-    return !!deviceState && deviceState.Type != CrOnc.Type.ETHERNET &&
-        deviceState.Type != CrOnc.Type.VPN;
+    return !!deviceState && deviceState.type != mojom.NetworkType.kEthernet &&
+        deviceState.type != mojom.NetworkType.kVPN;
   },
 
   /**
-   * @param {!CrOnc.DeviceStateProperties|undefined} deviceState
+   * @param {!OncMojo.DeviceStateProperties|undefined} deviceState
    * @return {boolean}
    * @private
    */
   enableToggleIsEnabled_: function(deviceState) {
-    return !!deviceState && deviceState.State != CrOnc.DeviceState.PROHIBITED;
+    return !!deviceState &&
+        deviceState.deviceState !=
+        chromeos.networkConfig.mojom.DeviceStateType.kProhibited;
   },
 
   /**
-   * @param {!CrOnc.DeviceStateProperties|undefined} deviceState
+   * @param {!OncMojo.DeviceStateProperties|undefined} deviceState
    * @return {string}
    * @private
    */
@@ -368,55 +438,43 @@ Polymer({
     if (!this.enableToggleIsVisible_(deviceState)) {
       return '';
     }
-    switch (deviceState.Type) {
-      case CrOnc.Type.TETHER:
-      case CrOnc.Type.CELLULAR:
+    switch (deviceState.type) {
+      case mojom.NetworkType.kTether:
+      case mojom.NetworkType.kCellular:
         return this.i18n('internetToggleMobileA11yLabel');
-      case CrOnc.Type.WI_FI:
+      case mojom.NetworkType.kWiFi:
         return this.i18n('internetToggleWiFiA11yLabel');
-      case CrOnc.Type.WI_MAX:
-        return this.i18n('internetToggleWiMAXA11yLabel');
     }
     assertNotReached();
     return '';
   },
 
   /**
-   * @param {!chrome.networkingPrivate.ThirdPartyVPNProperties} vpnState
+   * @param {!mojom.VpnProvider} provider
    * @return {string}
    * @private
    */
-  getAddThirdPartyVpnA11yString_: function(vpnState) {
-    return this.i18n(
-        'internetAddThirdPartyVPN', vpnState.ProviderName || '');
+  getAddThirdPartyVpnA11yString_: function(provider) {
+    return this.i18n('internetAddThirdPartyVPN', provider.providerName || '');
   },
 
   /**
-   * @param {!settings.ArcVpnProvider} arcVpn
-   * @return {string}
-   * @private
-   */
-  getAddArcVpnAllyString_: function(arcVpn) {
-    return this.i18n('internetAddArcVPNProvider', arcVpn.ProviderName);
-  },
-
-  /**
-   * @param {!chrome.networkingPrivate.GlobalPolicy} globalPolicy
+   * @param {!mojom.GlobalPolicy} globalPolicy
    * @return {boolean}
    * @private
    */
   allowAddConnection_: function(globalPolicy) {
-    return globalPolicy && !globalPolicy.AllowOnlyPolicyNetworksToConnect;
+    return globalPolicy && !globalPolicy.allowOnlyPolicyNetworksToConnect;
   },
 
   /**
-   * @param {!CrOnc.DeviceStateProperties|undefined} deviceState
-   * @param {!chrome.networkingPrivate.GlobalPolicy} globalPolicy
+   * @param {!OncMojo.DeviceStateProperties|undefined} deviceState
+   * @param {!mojom.GlobalPolicy} globalPolicy
    * @return {boolean}
    * @private
    */
   showAddButton_: function(deviceState, globalPolicy) {
-    if (!deviceState || deviceState.Type != CrOnc.Type.WI_FI) {
+    if (!deviceState || deviceState.type != mojom.NetworkType.kWiFi) {
       return false;
     }
     if (!this.deviceIsEnabled_(deviceState)) {
@@ -428,38 +486,27 @@ Polymer({
   /** @private */
   onAddButtonTap_: function() {
     assert(this.deviceState);
-    const type = this.deviceState.Type;
-    assert(type != CrOnc.Type.CELLULAR);
-    this.fire('show-config', {GUID: '', Type: type});
+    const type = this.deviceState.type;
+    assert(type != mojom.NetworkType.kCellular);
+    this.fire('show-config', {type: OncMojo.getNetworkTypeString(type)});
   },
 
   /**
-   * @param {!{model:
-   *              !{item: !chrome.networkingPrivate.ThirdPartyVPNProperties},
-   *        }} event
+   * @param {!{model: !{item: !mojom.VpnProvider}}} event
    * @private
    */
   onAddThirdPartyVpnTap_: function(event) {
     const provider = event.model.item;
-    this.browserProxy_.addThirdPartyVpn(provider.ExtensionID);
+    this.browserProxy_.addThirdPartyVpn(provider.appId);
   },
 
   /**
-   * @param {!{model: !{item: !settings.ArcVpnProvider}}} event
-   * @private
-   */
-  onAddArcVpnTap_: function(event) {
-    const provider = event.model.item;
-    this.browserProxy_.addThirdPartyVpn(provider.AppID);
-  },
-
-  /**
-   * @param {!CrOnc.DeviceStateProperties|undefined} deviceState
+   * @param {!OncMojo.DeviceStateProperties|undefined} deviceState
    * @return {boolean}
    * @private
    */
   knownNetworksIsVisible_: function(deviceState) {
-    return !!deviceState && deviceState.Type == CrOnc.Type.WI_FI;
+    return !!deviceState && deviceState.type == mojom.NetworkType.kWiFi;
   },
 
   /**
@@ -467,8 +514,8 @@ Polymer({
    * @private
    */
   onKnownNetworksTap_: function() {
-    assert(this.deviceState.Type == CrOnc.Type.WI_FI);
-    this.fire('show-known-networks', {type: this.deviceState.Type});
+    assert(this.deviceState.type == mojom.NetworkType.kWiFi);
+    this.fire('show-known-networks', this.deviceState.type);
   },
 
   /**
@@ -480,155 +527,143 @@ Polymer({
     assert(this.deviceState);
     this.fire('device-enabled-toggled', {
       enabled: !this.deviceIsEnabled_(this.deviceState),
-      type: this.deviceState.Type
+      type: this.deviceState.type
     });
   },
 
   /**
-   * @param {!Object<!Array<!CrOnc.NetworkStateProperties>>} thirdPartyVpns
-   * @param {!chrome.networkingPrivate.ThirdPartyVPNProperties} vpnState
-   * @return {!Array<!CrOnc.NetworkStateProperties>}
+   * @param {!Object<!Array<!OncMojo.NetworkStateProperties>>} thirdPartyVpns
+   * @param {!mojom.VpnProvider} provider
+   * @return {!Array<!OncMojo.NetworkStateProperties>}
    * @private
    */
-  getThirdPartyVpnNetworks_: function(thirdPartyVpns, vpnState) {
-    return thirdPartyVpns[vpnState.ProviderName] || [];
+  getThirdPartyVpnNetworks_: function(thirdPartyVpns, provider) {
+    return thirdPartyVpns[provider.providerId] || [];
   },
 
   /**
-   * @param {!Object<!Array<!CrOnc.NetworkStateProperties>>} thirdPartyVpns
-   * @param {!chrome.networkingPrivate.ThirdPartyVPNProperties} vpnState
+   * @param {!Object<!Array<!OncMojo.NetworkStateProperties>>} thirdPartyVpns
+   * @param {!mojom.VpnProvider} provider
    * @return {boolean}
    * @private
    */
-  haveThirdPartyVpnNetwork_: function(thirdPartyVpns, vpnState) {
-    const list = this.getThirdPartyVpnNetworks_(thirdPartyVpns, vpnState);
-    return !!list.length;
-  },
-
-  /**
-   * @param {!Object<!Array<!CrOnc.NetworkStateProperties>>} arcVpns
-   * @param {!settings.ArcVpnProvider} arcVpnProvider
-   * @return {!Array<!CrOnc.NetworkStateProperties>}
-   * @private
-   */
-  getArcVpnNetworks_: function(arcVpns, arcVpnProvider) {
-    return arcVpns[arcVpnProvider.PackageName] || [];
-  },
-
-  /**
-   * @param {!Object<!Array<!CrOnc.NetworkStateProperties>>} arcVpns
-   * @param {!settings.ArcVpnProvider} arcVpnProvider
-   * @return {boolean}
-   * @private
-   */
-  haveArcVpnNetwork_: function(arcVpns, arcVpnProvider) {
-    const list = this.getArcVpnNetworks_(arcVpns, arcVpnProvider);
+  haveThirdPartyVpnNetwork_: function(thirdPartyVpns, provider) {
+    const list = this.getThirdPartyVpnNetworks_(thirdPartyVpns, provider);
     return !!list.length;
   },
 
   /**
    * Event triggered when a network list item is selected.
-   * @param {!{target: HTMLElement, detail: !CrOnc.NetworkStateProperties}} e
+   * @param {!{target: HTMLElement, detail: !OncMojo.NetworkStateProperties}} e
    * @private
    */
   onNetworkSelected_: function(e) {
     assert(this.globalPolicy);
     assert(this.defaultNetwork !== undefined);
-    const state = e.detail;
+    const networkState = e.detail;
     e.target.blur();
-    if (this.canConnect_(state)) {
-      this.fire('network-connect', {networkProperties: state});
+    if (this.canAttemptConnection_(networkState)) {
+      this.fire('network-connect', {networkState: networkState});
       return;
     }
-    this.fire('show-detail', state);
+    this.fire('show-detail', networkState);
   },
 
   /**
-   * @param {!CrOnc.NetworkStateProperties} state The network state.
+   * @param {!OncMojo.NetworkStateProperties} state The network state.
    * @return {boolean}
    * @private
    */
   isBlockedByPolicy_: function(state) {
-    if (state.Type != CrOnc.Type.WI_FI || this.isPolicySource(state.Source) ||
-        !this.globalPolicy) {
+    if (state.type != mojom.NetworkType.kWiFi ||
+        this.isPolicySource(state.source) || !this.globalPolicy) {
       return false;
     }
-    return !!this.globalPolicy.AllowOnlyPolicyNetworksToConnect ||
-        (!!this.globalPolicy.AllowOnlyPolicyNetworksToConnectIfAvailable &&
-         !!this.deviceState && !!this.deviceState.ManagedNetworkAvailable) ||
-        (!!state.WiFi && !!state.WiFi.HexSSID &&
-         !!this.globalPolicy.BlacklistedHexSSIDs &&
-         this.globalPolicy.BlacklistedHexSSIDs.includes(state.WiFi.HexSSID));
+    return !!this.globalPolicy.allowOnlyPolicyNetworksToConnect ||
+        (!!this.globalPolicy.allowOnlyPolicyNetworksToConnectIfAvailable &&
+         !!this.deviceState && !!this.deviceState.managedNetworkAvailable) ||
+        (!!this.globalPolicy.blockedHexSsids &&
+         this.globalPolicy.blockedHexSsids.includes(
+             state.typeState.wifi.hexSsid));
   },
 
   /**
-   * Determines whether or not a network state can be connected to.
-   * @param {!CrOnc.NetworkStateProperties} state The network state.
+   * Determines whether or not it is possible to attempt a connection to the
+   * provided network (e.g., whether it's possible to connect or configure the
+   * network for connection).
+   * @param {!OncMojo.NetworkStateProperties} state The network state.
    * @private
    */
-  canConnect_: function(state) {
-    if (state.ConnectionState != CrOnc.ConnectionState.NOT_CONNECTED) {
+  canAttemptConnection_: function(state) {
+    if (state.connectionState != mojom.ConnectionStateType.kNotConnected) {
       return false;
     }
     if (this.isBlockedByPolicy_(state)) {
       return false;
     }
-    if (state.Type == CrOnc.Type.VPN &&
+    if (state.type == mojom.NetworkType.kVPN &&
         (!this.defaultNetwork ||
-         this.defaultNetwork.ConnectionState !=
-             CrOnc.ConnectionState.CONNECTED)) {
+         !OncMojo.connectionStateIsConnected(
+             this.defaultNetwork.connectionState))) {
+      return false;
+    }
+    // Cellular networks do not have a configuration flow, so it's not possible
+    // to attempt a connection if the network is not conncetable.
+    if (state.type == mojom.NetworkType.kCellular && !state.connectable) {
       return false;
     }
     return true;
   },
 
   /**
-   * @param {!CrOnc.DeviceStateProperties|undefined} deviceState
-   * @param {!CrOnc.DeviceStateProperties|undefined} tetherDeviceState
+   * @param {!OncMojo.DeviceStateProperties|undefined} deviceState
+   * @param {!OncMojo.DeviceStateProperties|undefined} tetherDeviceState
    * @return {boolean}
    * @private
    */
   tetherToggleIsVisible_: function(deviceState, tetherDeviceState) {
-    return !!deviceState && deviceState.Type == CrOnc.Type.CELLULAR &&
+    return !!deviceState && deviceState.type == mojom.NetworkType.kCellular &&
         !!tetherDeviceState;
   },
 
   /**
-   * @param {!CrOnc.DeviceStateProperties|undefined} deviceState
-   * @param {!CrOnc.DeviceStateProperties|undefined} tetherDeviceState
+   * @param {!OncMojo.DeviceStateProperties|undefined} deviceState
+   * @param {!OncMojo.DeviceStateProperties|undefined} tetherDeviceState
    * @return {boolean}
    * @private
    */
   tetherToggleIsEnabled_: function(deviceState, tetherDeviceState) {
     return this.tetherToggleIsVisible_(deviceState, tetherDeviceState) &&
         this.enableToggleIsEnabled_(tetherDeviceState) &&
-        tetherDeviceState.State != CrOnc.DeviceState.UNINITIALIZED;
+        tetherDeviceState.deviceState !=
+        chromeos.networkConfig.mojom.DeviceStateType.kUninitialized;
   },
 
   /**
    * @param {!Event} event
    * @private
    */
-  onTetherEnabledTap_: function(event) {
+  onTetherEnabledChange_: function(event) {
     this.fire('device-enabled-toggled', {
       enabled: !this.deviceIsEnabled_(this.tetherDeviceState),
-      type: CrOnc.Type.TETHER,
+      type: mojom.NetworkType.kTether,
     });
     event.stopPropagation();
   },
 
   /**
-   * @param {*} lhs
-   * @param {*} rhs
+   * @param {string} typeString
+   * @param {OncMojo.DeviceStateProperties} device
    * @return {boolean}
    * @private
    */
-  isEqual_: function(lhs, rhs) {
-    return lhs === rhs;
+  matchesType_: function(typeString, device) {
+    return device &&
+        device.type == OncMojo.getNetworkTypeFromString(typeString);
   },
 
   /**
-   * @param {!Array<!CrOnc.NetworkStateProperties>} networkStateList
+   * @param {!Array<!OncMojo.NetworkStateProperties>} networkStateList
    * @return {boolean}
    * @private
    */
@@ -637,19 +672,32 @@ Polymer({
   },
 
   /**
-   * @param {!CrOnc.DeviceStateProperties|undefined} deviceState
-   * @param {!CrOnc.DeviceStateProperties|undefined} tetherDeviceState
+   * @param {!OncMojo.DeviceStateProperties|undefined} deviceState
+   * @param {!OncMojo.DeviceStateProperties|undefined} tetherDeviceState
    * @return {string}
    * @private
    */
-  getNoNetworksString_: function(deviceState, tetherDeviceState) {
-    const type = deviceState.Type;
-    if (type == CrOnc.Type.TETHER ||
-        (type == CrOnc.Type.CELLULAR && this.tetherDeviceState)) {
+  getNoNetworksInnerHtml_: function(deviceState, tetherDeviceState) {
+    const type = deviceState.type;
+    if (type == mojom.NetworkType.kTether ||
+        (type == mojom.NetworkType.kCellular && this.tetherDeviceState)) {
       return this.i18nAdvanced('internetNoNetworksMobileData');
     }
 
-    return this.i18n('internetNoNetworks');
+    if (type == mojom.NetworkType.kVPN) {
+      return this.i18n('internetNoNetworks');
+    }
+
+    // If a scan has not yet completed since the device was last enabled, it may
+    // be the case that scan results are still in the process of arriving, so
+    // display a message stating that scanning is in progress. If a scan has
+    // already completed and there are still no networks present, this implies
+    // that there has been sufficient time to find a network, so display a
+    // messages stating that there are no networks. See https://crbug.com/974169
+    // for more details.
+    return this.hasCompletedScanSinceLastEnabled_ ?
+        this.i18n('internetNoNetworks') :
+        this.i18n('networkScanningLabel');
   },
 
   /**
@@ -684,3 +732,4 @@ Polymer({
     return this.i18n('gmscoreNotificationsManyDevicesSubtitle');
   },
 });
+})();

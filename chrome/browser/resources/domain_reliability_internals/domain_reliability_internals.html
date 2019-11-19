@@ -1,0 +1,48 @@
+<!doctype html>
+<html dir="ltr" lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
+  <link rel="stylesheet" href="domain_reliability_internals.css">
+  <script src="chrome://resources/js/cr.js"></script>
+  <script src="chrome://resources/js/util.js"></script>
+  <script src="chrome://resources/js/jstemplate_compiled.js"></script>
+  <script src="domain_reliability_internals.js"></script>
+</head>
+<body>
+  <div id="template">
+    <div jsdisplay="error">
+      Error loading Domain Reliability data:
+      <span jscontent="error"></span>
+    </div>
+    <div jsselect="contexts">
+      <h2 jscontent="origin"></h2>
+      <p>
+        <span jscontent="beacon_count"></span> beacons queued.</span>
+        <span jsdisplay="scheduler.upload_pending">Upload pending.</span>
+        <span jsdisplay="scheduler.upload_scheduled">
+          Upload scheduled for between
+          <span jscontent="scheduler.scheduled_min"></span> and
+          <span jscontent="scheduler.scheduled_max"></span> seconds from now.
+        </span>
+        <span jsdisplay="scheduler.upload_running">
+          Upload of <span jscontent="uploading_beacon_count"></span> beacons
+          to collector <span jscontent="collector_index"></span> running.
+        </span>
+      </p>
+      <p jsselect="scheduler.last_upload" jsdisplay="$this">
+        Last upload to collector <span jscontent="collector_index"></span>
+        started <span jscontent="start_time"></span> seconds ago and
+        finished <span jsdisplay="success">successfully</span>
+        <span jsdisplay="!success">unsuccessfully</span>
+        <span jscontent="end_time"></span> seconds ago.
+      </p>
+      <p jsselect="scheduler.collectors">
+        Collector <span jscontent="$index"></span>:
+        <span jscontent="failures"></span> consecutive failures,
+        next upload in <span jscontent="next_upload"></span> seconds.
+      </p>
+    </div>
+  </div>
+</body>
+</html>

@@ -14,7 +14,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/profile_sync_service_factory.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -24,7 +23,9 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/autofill/core/common/password_form.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
+#include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
+#include "components/password_manager/core/browser/password_manager_constants.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/strings/grit/components_strings.h"
@@ -42,6 +43,10 @@
 #include "ui/gfx/image/image_skia_operations.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+#if !defined(OS_ANDROID)
+#include "chrome/browser/ui/browser.h"
+#endif
 
 namespace {
 
@@ -163,6 +168,13 @@ base::string16 GetDisplayUsername(const autofill::PasswordForm& form) {
              : form.username_value;
 }
 
+base::string16 GetDisplayUsername(
+    const password_manager::CredentialPair& credential_pair) {
+  return credential_pair.username.empty()
+             ? l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_EMPTY_LOGIN)
+             : credential_pair.username;
+}
+
 base::string16 GetDisplayFederation(const autofill::PasswordForm& form) {
   return url_formatter::FormatOriginForSecurityDisplay(
       form.federation_origin, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
@@ -200,6 +212,7 @@ GURL GetGooglePasswordManagerURL(ManagePasswordsReferrer referrer) {
       case ManagePasswordsReferrer::kProfileChooser:
         return "profile_chooser";
       case ManagePasswordsReferrer::kPasswordsAccessorySheet:
+      case ManagePasswordsReferrer::kTouchToFill:
         NOTREACHED();
     }
 
@@ -242,5 +255,12 @@ void NavigateToManagePasswordsPage(Browser* browser,
   }
 
   chrome::ShowPasswordManager(browser);
+}
+
+void NavigateToPasswordCheckupPage(Profile* profile) {
+  NavigateParams params(profile, password_manager::GetPasswordCheckupURL(),
+                        ui::PAGE_TRANSITION_LINK);
+  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  Navigate(&params);
 }
 #endif  // !defined(OS_ANDROID)

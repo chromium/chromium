@@ -24,7 +24,7 @@ void WebDragBookmarkHandlerMac::DragInitialize(WebContents* contents) {
   if (!bookmark_tab_helper_)
     bookmark_tab_helper_ = BookmarkTabHelper::FromWebContents(contents);
 
-  bookmark_drag_data_.ReadFromClipboard(ui::CLIPBOARD_TYPE_DRAG);
+  bookmark_drag_data_.ReadFromClipboard(ui::ClipboardBuffer::kDrag);
 }
 
 void WebDragBookmarkHandlerMac::OnDragOver() {

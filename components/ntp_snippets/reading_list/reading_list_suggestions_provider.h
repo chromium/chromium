@@ -15,9 +15,8 @@
 #include "components/ntp_snippets/category_status.h"
 #include "components/ntp_snippets/content_suggestion.h"
 #include "components/ntp_snippets/content_suggestions_provider.h"
+#include "components/reading_list/core/reading_list_model.h"
 #include "components/reading_list/core/reading_list_model_observer.h"
-
-class ReadingListModel;
 
 namespace ntp_snippets {
 
@@ -75,7 +74,8 @@ class ReadingListSuggestionsProvider : public ContentSuggestionsProvider,
   const Category provided_category_;
 
   ReadingListModel* reading_list_model_;
-  ScopedObserver<ReadingListModel, ReadingListModelObserver> scoped_observer_;
+  ScopedObserver<ReadingListModel, ReadingListModelObserver> scoped_observer_{
+      this};
 
   DISALLOW_COPY_AND_ASSIGN(ReadingListSuggestionsProvider);
 };

@@ -29,7 +29,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
-#include "third_party/blink/renderer/platform/wtf/time.h"
 
 namespace blink {
 
@@ -42,43 +41,43 @@ class PLATFORM_EXPORT ResourceLoadTiming
   bool operator==(const ResourceLoadTiming&) const;
   bool operator!=(const ResourceLoadTiming&) const;
 
-  void SetDnsStart(TimeTicks);
-  void SetRequestTime(TimeTicks);
-  void SetProxyStart(TimeTicks);
-  void SetProxyEnd(TimeTicks);
-  void SetDnsEnd(TimeTicks);
-  void SetConnectStart(TimeTicks);
-  void SetConnectEnd(TimeTicks);
-  void SetWorkerStart(TimeTicks);
-  void SetWorkerReady(TimeTicks);
-  void SetSendStart(TimeTicks);
-  void SetSendEnd(TimeTicks);
-  void SetReceiveHeadersStart(TimeTicks);
-  void SetReceiveHeadersEnd(TimeTicks);
-  void SetSslStart(TimeTicks);
-  void SetSslEnd(TimeTicks);
-  void SetPushStart(TimeTicks);
-  void SetPushEnd(TimeTicks);
+  void SetDnsStart(base::TimeTicks);
+  void SetRequestTime(base::TimeTicks);
+  void SetProxyStart(base::TimeTicks);
+  void SetProxyEnd(base::TimeTicks);
+  void SetDnsEnd(base::TimeTicks);
+  void SetConnectStart(base::TimeTicks);
+  void SetConnectEnd(base::TimeTicks);
+  void SetWorkerStart(base::TimeTicks);
+  void SetWorkerReady(base::TimeTicks);
+  void SetSendStart(base::TimeTicks);
+  void SetSendEnd(base::TimeTicks);
+  void SetReceiveHeadersStart(base::TimeTicks);
+  void SetReceiveHeadersEnd(base::TimeTicks);
+  void SetSslStart(base::TimeTicks);
+  void SetSslEnd(base::TimeTicks);
+  void SetPushStart(base::TimeTicks);
+  void SetPushEnd(base::TimeTicks);
 
-  TimeTicks DnsStart() const { return dns_start_; }
-  TimeTicks RequestTime() const { return request_time_; }
-  TimeTicks ProxyStart() const { return proxy_start_; }
-  TimeTicks ProxyEnd() const { return proxy_end_; }
-  TimeTicks DnsEnd() const { return dns_end_; }
-  TimeTicks ConnectStart() const { return connect_start_; }
-  TimeTicks ConnectEnd() const { return connect_end_; }
-  TimeTicks WorkerStart() const { return worker_start_; }
-  TimeTicks WorkerReady() const { return worker_ready_; }
-  TimeTicks SendStart() const { return send_start_; }
-  TimeTicks SendEnd() const { return send_end_; }
-  TimeTicks ReceiveHeadersStart() const { return receive_headers_start_; }
-  TimeTicks ReceiveHeadersEnd() const { return receive_headers_end_; }
-  TimeTicks SslStart() const { return ssl_start_; }
-  TimeTicks SslEnd() const { return ssl_end_; }
-  TimeTicks PushStart() const { return push_start_; }
-  TimeTicks PushEnd() const { return push_end_; }
+  base::TimeTicks DnsStart() const { return dns_start_; }
+  base::TimeTicks RequestTime() const { return request_time_; }
+  base::TimeTicks ProxyStart() const { return proxy_start_; }
+  base::TimeTicks ProxyEnd() const { return proxy_end_; }
+  base::TimeTicks DnsEnd() const { return dns_end_; }
+  base::TimeTicks ConnectStart() const { return connect_start_; }
+  base::TimeTicks ConnectEnd() const { return connect_end_; }
+  base::TimeTicks WorkerStart() const { return worker_start_; }
+  base::TimeTicks WorkerReady() const { return worker_ready_; }
+  base::TimeTicks SendStart() const { return send_start_; }
+  base::TimeTicks SendEnd() const { return send_end_; }
+  base::TimeTicks ReceiveHeadersStart() const { return receive_headers_start_; }
+  base::TimeTicks ReceiveHeadersEnd() const { return receive_headers_end_; }
+  base::TimeTicks SslStart() const { return ssl_start_; }
+  base::TimeTicks SslEnd() const { return ssl_end_; }
+  base::TimeTicks PushStart() const { return push_start_; }
+  base::TimeTicks PushEnd() const { return push_end_; }
 
-  double CalculateMillisecondDelta(TimeTicks) const;
+  double CalculateMillisecondDelta(base::TimeTicks) const;
 
  private:
   ResourceLoadTiming();
@@ -93,24 +92,24 @@ class PLATFORM_EXPORT ResourceLoadTiming
   //   pseudo time = document wall reference +
   //                     (m_requestTime - document monotonic reference).
 
-  // All values from monotonicallyIncreasingTime(), in WTF::TimeTicks.
-  TimeTicks request_time_;
-  TimeTicks proxy_start_;
-  TimeTicks proxy_end_;
-  TimeTicks dns_start_;
-  TimeTicks dns_end_;
-  TimeTicks connect_start_;
-  TimeTicks connect_end_;
-  TimeTicks worker_start_;
-  TimeTicks worker_ready_;
-  TimeTicks send_start_;
-  TimeTicks send_end_;
-  TimeTicks receive_headers_start_;
-  TimeTicks receive_headers_end_;
-  TimeTicks ssl_start_;
-  TimeTicks ssl_end_;
-  TimeTicks push_start_;
-  TimeTicks push_end_;
+  // All values from monotonicallyIncreasingTime(), in base::TimeTicks.
+  base::TimeTicks request_time_;
+  base::TimeTicks proxy_start_;
+  base::TimeTicks proxy_end_;
+  base::TimeTicks dns_start_;
+  base::TimeTicks dns_end_;
+  base::TimeTicks connect_start_;
+  base::TimeTicks connect_end_;
+  base::TimeTicks worker_start_;
+  base::TimeTicks worker_ready_;
+  base::TimeTicks send_start_;
+  base::TimeTicks send_end_;
+  base::TimeTicks receive_headers_start_;
+  base::TimeTicks receive_headers_end_;
+  base::TimeTicks ssl_start_;
+  base::TimeTicks ssl_end_;
+  base::TimeTicks push_start_;
+  base::TimeTicks push_end_;
 };
 
 }  // namespace blink

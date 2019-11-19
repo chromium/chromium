@@ -14,8 +14,6 @@ class CORE_EXPORT VideoTrackList final : public TrackListBase<VideoTrack> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static VideoTrackList* Create(HTMLMediaElement&);
-
   explicit VideoTrackList(HTMLMediaElement&);
   ~VideoTrackList() override;
 

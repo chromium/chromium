@@ -25,11 +25,11 @@ ResultCode ProxyCreateEvent(LPCWSTR name,
   CountedParameterSet<NameBased> params;
   params[NameBased::NAME] = ParamPickerMake(name);
 
-  if (!QueryBroker(IPC_CREATEEVENT_TAG, params.GetBase()))
+  if (!QueryBroker(IpcTag::CREATEEVENT, params.GetBase()))
     return SBOX_ERROR_GENERIC;
 
   SharedMemIPCClient ipc(ipc_memory);
-  ResultCode code = CrossCall(ipc, IPC_CREATEEVENT_TAG, name, event_type,
+  ResultCode code = CrossCall(ipc, IpcTag::CREATEEVENT, name, event_type,
                               initial_state, answer);
   return code;
 }
@@ -42,12 +42,12 @@ ResultCode ProxyOpenEvent(LPCWSTR name,
   params[OpenEventParams::NAME] = ParamPickerMake(name);
   params[OpenEventParams::ACCESS] = ParamPickerMake(desired_access);
 
-  if (!QueryBroker(IPC_OPENEVENT_TAG, params.GetBase()))
+  if (!QueryBroker(IpcTag::OPENEVENT, params.GetBase()))
     return SBOX_ERROR_GENERIC;
 
   SharedMemIPCClient ipc(ipc_memory);
   ResultCode code =
-      CrossCall(ipc, IPC_OPENEVENT_TAG, name, desired_access, answer);
+      CrossCall(ipc, IpcTag::OPENEVENT, name, desired_access, answer);
 
   return code;
 }

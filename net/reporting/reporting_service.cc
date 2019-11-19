@@ -28,14 +28,27 @@ namespace {
 constexpr int kMaxJsonSize = 16 * 1024;
 constexpr int kMaxJsonDepth = 5;
 
+// If constructed with a PersistentReportingStore, the first call to any of
+// QueueReport(), ProcessHeader(), RemoveBrowsingData(), or
+// RemoveAllBrowsingData() on a valid input will trigger a load from the store.
+// Tasks are queued pending completion of loading from the store.
 class ReportingServiceImpl : public ReportingService {
  public:
   ReportingServiceImpl(std::unique_ptr<ReportingContext> context)
-      : context_(std::move(context)), shut_down_(false) {}
+      : context_(std::move(context)),
+        shut_down_(false),
+        started_loading_from_store_(false),
+        initialized_(false) {
+    if (!context_->IsClientDataPersisted())
+      initialized_ = true;
+  }
 
   // ReportingService implementation:
 
-  ~ReportingServiceImpl() override = default;
+  ~ReportingServiceImpl() override {
+    if (initialized_)
+      context_->cache()->Flush();
+  }
 
   void QueueReport(const GURL& url,
                    const std::string& user_agent,
@@ -43,9 +56,6 @@ class ReportingServiceImpl : public ReportingService {
                    const std::string& type,
                    std::unique_ptr<const base::Value> body,
                    int depth) override {
-    if (shut_down_)
-      return;
-
     DCHECK(context_);
     DCHECK(context_->delegate());
 
@@ -57,16 +67,18 @@ class ReportingServiceImpl : public ReportingService {
     if (!sanitized_url.is_valid())
       return;
 
-    context_->cache()->AddReport(sanitized_url, user_agent, group, type,
-                                 std::move(body), depth,
-                                 context_->tick_clock()->NowTicks(), 0);
+    base::TimeTicks queued_ticks = context_->tick_clock().NowTicks();
+
+    // base::Unretained is safe because the callback is stored in
+    // |task_backlog_| which will not outlive |this|.
+    DoOrBacklogTask(base::BindOnce(&ReportingServiceImpl::DoQueueReport,
+                                   base::Unretained(this),
+                                   std::move(sanitized_url), user_agent, group,
+                                   type, std::move(body), depth, queued_ticks));
   }
 
   void ProcessHeader(const GURL& url,
                      const std::string& header_string) override {
-    if (shut_down_)
-      return;
-
     if (header_string.size() > kMaxJsonSize) {
       ReportingHeaderParser::RecordHeaderDiscardedForJsonTooBig();
       return;
@@ -81,20 +93,23 @@ class ReportingServiceImpl : public ReportingService {
     }
 
     DVLOG(1) << "Received Reporting policy for " << url.GetOrigin();
-    ReportingHeaderParser::ParseHeader(context_.get(), url,
-                                       std::move(header_value));
+    DoOrBacklogTask(base::BindOnce(&ReportingServiceImpl::DoProcessHeader,
+                                   base::Unretained(this), url,
+                                   std::move(header_value)));
   }
 
   void RemoveBrowsingData(int data_type_mask,
                           const base::RepeatingCallback<bool(const GURL&)>&
                               origin_filter) override {
-    ReportingBrowsingDataRemover::RemoveBrowsingData(
-        context_->cache(), data_type_mask, origin_filter);
+    DoOrBacklogTask(base::BindOnce(&ReportingServiceImpl::DoRemoveBrowsingData,
+                                   base::Unretained(this), data_type_mask,
+                                   origin_filter));
   }
 
   void RemoveAllBrowsingData(int data_type_mask) override {
-    ReportingBrowsingDataRemover::RemoveAllBrowsingData(context_->cache(),
-                                                        data_type_mask);
+    DoOrBacklogTask(
+        base::BindOnce(&ReportingServiceImpl::DoRemoveAllBrowsingData,
+                       base::Unretained(this), data_type_mask));
   }
 
   void OnShutdown() override {
@@ -119,8 +134,98 @@ class ReportingServiceImpl : public ReportingService {
   }
 
  private:
+  void DoOrBacklogTask(base::OnceClosure task) {
+    if (shut_down_)
+      return;
+
+    FetchAllClientsFromStoreIfNecessary();
+
+    if (!initialized_) {
+      task_backlog_.push_back(std::move(task));
+      return;
+    }
+
+    std::move(task).Run();
+  }
+
+  void DoQueueReport(GURL sanitized_url,
+                     const std::string& user_agent,
+                     const std::string& group,
+                     const std::string& type,
+                     std::unique_ptr<const base::Value> body,
+                     int depth,
+                     base::TimeTicks queued_ticks) {
+    DCHECK(initialized_);
+    context_->cache()->AddReport(sanitized_url, user_agent, group, type,
+                                 std::move(body), depth, queued_ticks,
+                                 0 /* attempts */);
+  }
+
+  void DoProcessHeader(const GURL& url,
+                       std::unique_ptr<base::Value> header_value) {
+    DCHECK(initialized_);
+    ReportingHeaderParser::ParseHeader(context_.get(), url,
+                                       std::move(header_value));
+  }
+
+  void DoRemoveBrowsingData(
+      int data_type_mask,
+      const base::RepeatingCallback<bool(const GURL&)>& origin_filter) {
+    DCHECK(initialized_);
+    ReportingBrowsingDataRemover::RemoveBrowsingData(
+        context_->cache(), data_type_mask, origin_filter);
+  }
+
+  void DoRemoveAllBrowsingData(int data_type_mask) {
+    DCHECK(initialized_);
+    ReportingBrowsingDataRemover::RemoveAllBrowsingData(context_->cache(),
+                                                        data_type_mask);
+  }
+
+  void ExecuteBacklog() {
+    DCHECK(initialized_);
+    DCHECK(context_);
+
+    if (shut_down_)
+      return;
+
+    for (base::OnceClosure& task : task_backlog_) {
+      std::move(task).Run();
+    }
+    task_backlog_.clear();
+  }
+
+  void FetchAllClientsFromStoreIfNecessary() {
+    if (!context_->IsClientDataPersisted() || started_loading_from_store_)
+      return;
+
+    started_loading_from_store_ = true;
+    FetchAllClientsFromStore();
+  }
+
+  void FetchAllClientsFromStore() {
+    DCHECK(context_->IsClientDataPersisted());
+    DCHECK(!initialized_);
+
+    context_->store()->LoadReportingClients(base::BindOnce(
+        &ReportingServiceImpl::OnClientsLoaded, weak_factory_.GetWeakPtr()));
+  }
+
+  void OnClientsLoaded(
+      std::vector<ReportingEndpoint> loaded_endpoints,
+      std::vector<CachedReportingEndpointGroup> loaded_endpoint_groups) {
+    initialized_ = true;
+    context_->cache()->AddClientsLoadedFromStore(
+        std::move(loaded_endpoints), std::move(loaded_endpoint_groups));
+    ExecuteBacklog();
+  }
+
   std::unique_ptr<ReportingContext> context_;
   bool shut_down_;
+  bool started_loading_from_store_;
+  bool initialized_;
+  std::vector<base::OnceClosure> task_backlog_;
+  base::WeakPtrFactory<ReportingServiceImpl> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ReportingServiceImpl);
 };
@@ -132,9 +237,10 @@ ReportingService::~ReportingService() = default;
 // static
 std::unique_ptr<ReportingService> ReportingService::Create(
     const ReportingPolicy& policy,
-    URLRequestContext* request_context) {
+    URLRequestContext* request_context,
+    ReportingCache::PersistentReportingStore* store) {
   return std::make_unique<ReportingServiceImpl>(
-      ReportingContext::Create(policy, request_context));
+      ReportingContext::Create(policy, request_context, store));
 }
 
 // static

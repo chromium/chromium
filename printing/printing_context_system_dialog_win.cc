@@ -132,11 +132,11 @@ bool PrintingContextSystemDialogWin::InitializeSettingsWithRanges(
     }
   }
 
-  settings_.set_ranges(ranges_vector);
-  settings_.set_device_name(new_device_name);
-  settings_.set_selection_only(selection_only);
-  PrintSettingsInitializerWin::InitPrintSettings(
-      context(), dev_mode, &settings_);
+  settings_->set_ranges(ranges_vector);
+  settings_->set_device_name(new_device_name);
+  settings_->set_selection_only(selection_only);
+  PrintSettingsInitializerWin::InitPrintSettings(context(), dev_mode,
+                                                 settings_.get());
 
   return true;
 }
@@ -146,11 +146,11 @@ PrintingContext::Result PrintingContextSystemDialogWin::ParseDialogResultEx(
   // If the user clicked OK or Apply then Cancel, but not only Cancel.
   if (dialog_options.dwResultAction != PD_RESULT_CANCEL) {
     // Start fresh, but preserve is_modifiable and GDI print setting.
-    bool is_modifiable = settings_.is_modifiable();
-    bool print_text_with_gdi = settings_.print_text_with_gdi();
+    bool is_modifiable = settings_->is_modifiable();
+    bool print_text_with_gdi = settings_->print_text_with_gdi();
     ResetSettings();
-    settings_.set_is_modifiable(is_modifiable);
-    settings_.set_print_text_with_gdi(print_text_with_gdi);
+    settings_->set_is_modifiable(is_modifiable);
+    settings_->set_print_text_with_gdi(print_text_with_gdi);
 
     DEVMODE* dev_mode = NULL;
     if (dialog_options.hDevMode) {

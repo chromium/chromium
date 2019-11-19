@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script>
+CSS.registerProperty({
+  name: '--percentage-xor-length',
+  syntax: '<length> | <percentage>',
+  initialValue: '400px',
+  inherits: false,
+});
+</script>
+<style>
+  @keyframes test {
+    from { --percentage-xor-length: 100px; }
+    to { --percentage-xor-length: 100%; }
+  }
+  #target {
+    animation-name: test;
+    animation-duration: 100s;
+    animation-delay: -50s;
+    animation-play-state: paused;
+  }
+</style>
+<div id="target">target</div>
+<script>
+test(() => {
+  let cs = getComputedStyle(target);
+  assert_equals(cs.getPropertyValue('--percentage-xor-length'), '100%');
+}, 'No smooth interpolation between <length> and <percentage>');
+</script>

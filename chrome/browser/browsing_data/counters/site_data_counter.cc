@@ -22,8 +22,7 @@ bool CheckSyncState(Profile* profile, const syncer::SyncService* sync_service) {
 
 SiteDataCounter::SiteDataCounter(Profile* profile)
     : profile_(profile),
-      sync_tracker_(this, ProfileSyncServiceFactory::GetForProfile(profile)),
-      weak_ptr_factory_(this) {}
+      sync_tracker_(this, ProfileSyncServiceFactory::GetForProfile(profile)) {}
 
 SiteDataCounter::~SiteDataCounter() {}
 

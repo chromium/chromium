@@ -50,10 +50,12 @@ class TransportChannelSocketAdapter : public P2PDatagramSocket,
   void Close(int error_code);
 
   // P2PDatagramSocket interface.
-  int Recv(const scoped_refptr<net::IOBuffer>& buf, int buf_len,
-           const net::CompletionCallback& callback) override;
-  int Send(const scoped_refptr<net::IOBuffer>& buf, int buf_len,
-           const net::CompletionCallback& callback) override;
+  int Recv(const scoped_refptr<net::IOBuffer>& buf,
+           int buf_len,
+           const net::CompletionRepeatingCallback& callback) override;
+  int Send(const scoped_refptr<net::IOBuffer>& buf,
+           int buf_len,
+           const net::CompletionRepeatingCallback& callback) override;
 
  private:
   void OnNewPacket(rtc::PacketTransportInterface* transport,
@@ -70,11 +72,11 @@ class TransportChannelSocketAdapter : public P2PDatagramSocket,
 
   base::Closure destruction_callback_;
 
-  net::CompletionCallback read_callback_;
+  net::CompletionRepeatingCallback read_callback_;
   scoped_refptr<net::IOBuffer> read_buffer_;
   int read_buffer_size_;
 
-  net::CompletionCallback write_callback_;
+  net::CompletionRepeatingCallback write_callback_;
   scoped_refptr<net::IOBuffer> write_buffer_;
   int write_buffer_size_;
 

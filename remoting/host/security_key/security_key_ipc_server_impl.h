@@ -98,7 +98,7 @@ class SecurityKeyIpcServerImpl : public SecurityKeyIpcServer,
   // Ensures SecurityKeyIpcServerImpl methods are called on the same thread.
   base::ThreadChecker thread_checker_;
 
-  base::WeakPtrFactory<SecurityKeyIpcServerImpl> weak_factory_;
+  base::WeakPtrFactory<SecurityKeyIpcServerImpl> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SecurityKeyIpcServerImpl);
 };

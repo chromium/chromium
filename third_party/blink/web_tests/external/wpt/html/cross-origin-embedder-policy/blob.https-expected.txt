@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+FAIL Cross-Origin-Embedder-Policy and blob: URL from https://web-platform.test:8444 in subframe via subframe assert_true: Cross-origin without CORP did not fail expected true got false
+FAIL Cross-Origin-Embedder-Policy and blob: URL from https://web-platform.test:8444 in subframe via navigate assert_true: Cross-origin without CORP did not fail expected true got false
+FAIL Cross-Origin-Embedder-Policy and blob: URL from https://www1.web-platform.test:8444 in subframe via subframe assert_true: Cross-origin without CORP did not fail expected true got false
+FAIL Cross-Origin-Embedder-Policy and blob: URL from https://www1.web-platform.test:8444 in subframe via navigate assert_true: Cross-origin without CORP did not fail expected true got false
+FAIL Cross-Origin-Embedder-Policy and blob: URL from https://not-web-platform.test:8444 in subframe via subframe assert_true: Cross-origin without CORP did not fail expected true got false
+FAIL Cross-Origin-Embedder-Policy and blob: URL from https://not-web-platform.test:8444 in subframe via navigate assert_true: Cross-origin without CORP did not fail expected true got false
+Harness: the test ran to completion.
+

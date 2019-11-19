@@ -1,14 +1,8 @@
 These files are related to the symbol and source server.
 
-This requires some Microsoft utilities.  From a 32-bit WinDbg installation with
-source server support, copy the following files to this directory:
-  dbghelp.dll
-  pdbstr.exe
-  srctool.exe
-
 The follow files were copied from the BSD licensed pefile-1.2.9.1:
   COPYING-pefile
   pefile.py
 
 pefile is available from:
-  http://code.google.com/p/pefile/
+  https://github.com/erocarrera/pefile

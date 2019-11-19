@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<canvas id="c_smooth" width="300" height="300"></canvas>
+<canvas id="c_smooth_getImage" width="300" height="300"></canvas>
+<script>
+var canvas = document.getElementById('c_smooth');
+var ctx = canvas.getContext('2d');
+ctx.imageSmoothingEnabled = true;
+
+// Create an image element
+var img = document.createElement('IMG');
+
+// When the image is loaded, draw it
+img.onload = function () {
+    ctx.drawImage(img, 0, 0, 300, 300);
+}
+
+// This src image correspond to a gradient white line
+img.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJCAYAAADgkQYQAAAAGklEQVQYlWNgYGD4j4z/////H12MYVQRUYoAkYZrlWt0UekAAAAASUVORK5CYII=";
+
+</script>

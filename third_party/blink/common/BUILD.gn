@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/jumbo.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 
 jumbo_source_set("common") {
@@ -10,6 +11,7 @@ jumbo_source_set("common") {
   # source set rather than the actual component that can be linked to.
   # Dependencies instead should be to //third_party/blink/public/common:common.
   visibility = [
+    ":*",
     "//third_party/blink/public/common",
     "//third_party/blink/public:all_blink",
   ]
@@ -22,51 +24,72 @@ jumbo_source_set("common") {
     "associated_interfaces/associated_interface_provider.cc",
     "associated_interfaces/associated_interface_registry.cc",
     "blob/blob_utils.cc",
+    "bluetooth/web_bluetooth_device_id.cc",
+    "bluetooth/web_bluetooth_device_id.h",
+    "bluetooth/web_bluetooth_device_id_mojom_traits.h",
+    "browser_interface_broker_proxy.cc",
     "cache_storage/cache_storage_utils.cc",
     "client_hints/client_hints.cc",
     "device_memory/approximated_device_memory.cc",
     "dom_storage/session_storage_namespace_id.cc",
-    "download/download_stats.cc",
     "experiments/memory_ablation_experiment.cc",
+    "feature_policy/document_policy.cc",
     "feature_policy/feature_policy.cc",
     "feature_policy/policy_value.cc",
     "features.cc",
+    "fetch/fetch_api_request_body_mojom_traits.cc",
     "frame/frame_policy.cc",
     "frame/from_ad_state.cc",
     "frame/user_activation_state.cc",
+    "http/structured_header.cc",
     "indexeddb/indexed_db_default_mojom_traits.cc",
     "indexeddb/indexeddb_key.cc",
     "indexeddb/indexeddb_key_path.cc",
     "indexeddb/indexeddb_key_range.cc",
     "indexeddb/indexeddb_metadata.cc",
+    "loader/mime_sniffing_throttle.cc",
+    "loader/mime_sniffing_url_loader.cc",
+    "loader/request_destination.cc",
+    "loader/throttling_url_loader.cc",
+    "loader/throttling_url_loader.h",
     "loader/url_loader_factory_bundle.cc",
     "loader/url_loader_factory_bundle_mojom_traits.cc",
+    "loader/url_loader_throttle.cc",
+    "logging/logging_utils.cc",
     "manifest/manifest.cc",
     "manifest/manifest_icon_selector.cc",
+    "manifest/manifest_util.cc",
     "mediastream/media_devices.cc",
     "mediastream/media_devices_mojom_traits.cc",
     "mediastream/media_stream_controls.cc",
     "mediastream/media_stream_mojom_traits.cc",
     "mediastream/media_stream_request.cc",
     "messaging/cloneable_message.cc",
-    "messaging/cloneable_message_struct_traits.cc",
+    "messaging/cloneable_message_mojom_traits.cc",
     "messaging/message_port_channel.cc",
+    "messaging/message_port_descriptor.cc",
+    "messaging/message_port_descriptor_mojom_traits.cc",
     "messaging/string_message_codec.cc",
     "messaging/transferable_message.cc",
-    "messaging/transferable_message_struct_traits.cc",
+    "messaging/transferable_message_mojom_traits.cc",
     "mime_util/mime_util.cc",
+    "notifications/notification_mojom_traits.cc",
     "notifications/notification_resources.cc",
-    "notifications/notification_struct_traits.cc",
     "notifications/platform_notification_data.cc",
     "origin_policy/origin_policy.cc",
     "origin_policy/origin_policy_parser.cc",
     "origin_policy/origin_policy_parser.h",
     "origin_trials/trial_token.cc",
     "origin_trials/trial_token_validator.cc",
-    "privacy_preferences.cc",
+    "page/page_zoom.cc",
+    "peerconnection/webrtc_ip_handling_policy.cc",
+    "scheduler/web_scheduler_tracked_feature.cc",
     "service_worker/service_worker_status_code.cc",
     "service_worker/service_worker_type_converters.cc",
     "service_worker/service_worker_utils.cc",
+    "thread_safe_browser_interface_broker_proxy.cc",
+    "web_package/signed_exchange_consts.cc",
+    "web_package/signed_exchange_request_matcher.cc",
   ]
 
   public_deps = [
@@ -89,6 +112,7 @@ jumbo_source_set("common") {
   if (is_android || is_win) {
     sources += [
       "font_unique_name_lookup/font_table_matcher.cc",
+      "font_unique_name_lookup/font_table_persistence.cc",
       "font_unique_name_lookup/icu_fold_case_util.cc",
     ]
 
@@ -99,6 +123,17 @@ jumbo_source_set("common") {
     sources += [ "dwrite_rasterizer_support/dwrite_rasterizer_support.cc" ]
     deps += [ "//ui/gfx/" ]
   }
+}
+
+fuzzer_test("http_structured_header_fuzzer") {
+  sources = [
+    "http/structured_header_fuzzer.cc",
+  ]
+  deps = [
+    ":common",
+    "//third_party/blink/renderer/platform:blink_fuzzer_test_support",
+  ]
+  seed_corpus = "http/structured_header_corpus"
 }
 
 test("blink_common_unittests") {
@@ -119,19 +154,26 @@ jumbo_source_set("common_unittests_sources") {
   testonly = true
 
   sources = [
+    "bluetooth/web_bluetooth_device_id_unittest.cc",
     "client_hints/client_hints_unittest.cc",
     "device_memory/approximated_device_memory_unittest.cc",
     "feature_policy/feature_policy_unittest.cc",
     "frame/user_activation_state_unittest.cc",
+    "http/structured_header_unittest.cc",
     "indexeddb/indexeddb_key_unittest.cc",
+    "loader/mime_sniffing_throttle_unittest.cc",
+    "loader/throttling_url_loader_unittest.cc",
     "manifest/manifest_icon_selector_unittest.cc",
+    "manifest/manifest_util_unittest.cc",
     "mediastream/media_devices_unittest.cc",
+    "messaging/message_port_descriptor_unittest.cc",
     "mime_util/mime_util_unittest.cc",
-    "notifications/notification_struct_traits_unittest.cc",
+    "notifications/notification_mojom_traits_unittest.cc",
     "origin_policy/origin_policy_unittest.cc",
     "origin_trials/trial_token_unittest.cc",
     "origin_trials/trial_token_validator_unittest.cc",
     "test/run_all_unittests.cc",
+    "web_package/signed_exchange_request_matcher_unittest.cc",
   ]
 
   deps = [
@@ -139,7 +181,9 @@ jumbo_source_set("common_unittests_sources") {
     "//base/test:test_support",
     "//mojo/core/embedder",
     "//net",
-    "//skia/public/interfaces",
+    "//services/network:test_support",
+    "//skia/public/mojom",
+    "//testing/gmock",
     "//testing/gtest",
     "//third_party/blink/public/common:headers",
     "//third_party/boringssl",

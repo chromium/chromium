@@ -40,12 +40,6 @@ public class AsyncTabCreationParams implements AsyncTabParams {
         this(loadUrlParams, null, null, null, null);
     }
 
-    /** Called by {@link ChromeLauncherActivity} when clobbering DocumentTabs. */
-    public AsyncTabCreationParams(LoadUrlParams loadUrlParams, Intent originalIntent) {
-        this(loadUrlParams, originalIntent, null, null, null);
-        assert originalIntent != null;
-    }
-
     /** Called by {@link TabDelegate} for creating new a Tab with a pre-existing WebContents. */
     public AsyncTabCreationParams(LoadUrlParams loadUrlParams, WebContents webContents) {
         this(loadUrlParams, null, webContents, null, null);

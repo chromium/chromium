@@ -38,6 +38,10 @@ class AuthenticationServiceFactory : public BrowserStateKeyedServiceFactory {
       ios::ChromeBrowserState* browser_state,
       std::unique_ptr<AuthenticationServiceDelegate> delegate);
 
+  // Returns the default factory used to build AuthenticationServices. Can be
+  // registered with SetTestingFactory to use real instances during testing.
+  static TestingFactory GetDefaultFactory();
+
  private:
   friend class base::NoDestructor<AuthenticationServiceFactory>;
 

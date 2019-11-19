@@ -19,7 +19,7 @@ import "perf_stat.proto";
 // Protocol buffer for collected sample-based profiling data.
 // Contains the parameters and data from a single profile collection event.
 
-// Next tag: 15
+// Next tag: 16
 message SampledProfile {
   // Indicates the event that triggered this collection.
   enum TriggerEvent {
@@ -107,4 +107,11 @@ message SampledProfile {
 
   // Perf counter data collected using "perf stat".
   optional PerfStatProto perf_stat = 10;
+
+  // The maximum frequency in MHz reported for each logical CPU on the device.
+  // This is a repeated field, where entry 0 corresponds to core 0, entry 1 to
+  // core 1, and so on. The field is optional and populated only for metrics
+  // that can use the max frequency to compute a CPU utilization metric, e.g.
+  // when measuring CPU cycles.
+  repeated uint32 cpu_max_frequency_mhz = 15;
 }

@@ -52,7 +52,7 @@ function test2(mode) {
     prepareDOMTree(sandbox, mode, null, true);
     hostDiv = document.getElementById('host-div');
     shouldBe('internals.shadowRoot(hostDiv).delegatesFocus', 'true');
-    shouldBe('hostDiv.tabIndex', '0');
+    shouldBe('hostDiv.tabIndex', '-1');
 
     var expectedOrder = [
       'input-before',

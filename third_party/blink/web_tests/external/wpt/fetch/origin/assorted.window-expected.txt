@@ -1,0 +1,36 @@
+This is a testharness.js-based test.
+PASS Origin header and 308 redirect
+PASS Origin header and GET navigation
+PASS Origin header and POST navigation
+PASS Origin header and POST same-origin navigation with Referrer-Policy no-referrer
+FAIL Origin header and POST same-origin fetch no-cors mode with Referrer-Policy no-referrer assert_equals: expected "null" but got "http://web-platform.test:8001"
+PASS Origin header and POST same-origin fetch cors mode with Referrer-Policy no-referrer
+PASS Origin header and POST cross-origin navigation with Referrer-Policy no-referrer
+FAIL Origin header and POST cross-origin fetch no-cors mode with Referrer-Policy no-referrer assert_equals: expected "null" but got "http://web-platform.test:8001"
+PASS Origin header and POST cross-origin fetch cors mode with Referrer-Policy no-referrer
+PASS Origin header and POST same-origin navigation with Referrer-Policy same-origin
+PASS Origin header and POST same-origin fetch no-cors mode with Referrer-Policy same-origin
+PASS Origin header and POST same-origin fetch cors mode with Referrer-Policy same-origin
+PASS Origin header and POST cross-origin navigation with Referrer-Policy same-origin
+FAIL Origin header and POST cross-origin fetch no-cors mode with Referrer-Policy same-origin assert_equals: expected "null" but got "http://web-platform.test:8001"
+PASS Origin header and POST cross-origin fetch cors mode with Referrer-Policy same-origin
+PASS Origin header and POST same-origin navigation with Referrer-Policy origin-when-cross-origin
+PASS Origin header and POST same-origin fetch no-cors mode with Referrer-Policy origin-when-cross-origin
+PASS Origin header and POST same-origin fetch cors mode with Referrer-Policy origin-when-cross-origin
+PASS Origin header and POST cross-origin navigation with Referrer-Policy origin-when-cross-origin
+PASS Origin header and POST cross-origin fetch no-cors mode with Referrer-Policy origin-when-cross-origin
+PASS Origin header and POST cross-origin fetch cors mode with Referrer-Policy origin-when-cross-origin
+PASS Origin header and POST same-origin navigation with Referrer-Policy no-referrer-when-downgrade
+PASS Origin header and POST same-origin fetch no-cors mode with Referrer-Policy no-referrer-when-downgrade
+PASS Origin header and POST same-origin fetch cors mode with Referrer-Policy no-referrer-when-downgrade
+PASS Origin header and POST cross-origin navigation with Referrer-Policy no-referrer-when-downgrade
+PASS Origin header and POST cross-origin fetch no-cors mode with Referrer-Policy no-referrer-when-downgrade
+PASS Origin header and POST cross-origin fetch cors mode with Referrer-Policy no-referrer-when-downgrade
+PASS Origin header and POST same-origin navigation with Referrer-Policy unsafe-url
+PASS Origin header and POST same-origin fetch no-cors mode with Referrer-Policy unsafe-url
+PASS Origin header and POST same-origin fetch cors mode with Referrer-Policy unsafe-url
+PASS Origin header and POST cross-origin navigation with Referrer-Policy unsafe-url
+PASS Origin header and POST cross-origin fetch no-cors mode with Referrer-Policy unsafe-url
+PASS Origin header and POST cross-origin fetch cors mode with Referrer-Policy unsafe-url
+Harness: the test ran to completion.
+

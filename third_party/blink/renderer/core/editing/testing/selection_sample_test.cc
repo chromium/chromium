@@ -181,7 +181,7 @@ TEST_F(SelectionSampleTest, SerializeEmpty) {
 
 TEST_F(SelectionSampleTest, SerializeNamespace) {
   SetBodyContent("<div xmlns:foo='http://xyz'><foo:bar></foo:bar>");
-  ContainerNode& sample = *ToContainerNode(GetDocument().body()->firstChild());
+  auto& sample = *To<ContainerNode>(GetDocument().body()->firstChild());
   EXPECT_EQ("<foo:bar></foo:bar>",
             SelectionSample::GetSelectionText(sample, SelectionInDOMTree()))
       << "GetSelectionText() does not insert namespace declaration.";
@@ -263,7 +263,7 @@ TEST_F(SelectionSampleTest, ConvertTemplatesToShadowRoots) {
   Element* body = GetDocument().body();
   Element* host = body->getElementById("host");
   SelectionSample::ConvertTemplatesToShadowRootsForTesring(
-      *(ToHTMLElement(host)));
+      *(To<HTMLElement>(host)));
   ShadowRoot* shadow_root = host->ShadowRootIfV1();
   ASSERT_TRUE(shadow_root->IsShadowRoot());
   EXPECT_EQ("<div>shadow_first</div><div>shadow_second</div>",
@@ -279,7 +279,7 @@ TEST_F(SelectionSampleTest, ConvertTemplatesToShadowRootsNoTemplates) {
   Element* body = GetDocument().body();
   Element* host = body->getElementById("host");
   SelectionSample::ConvertTemplatesToShadowRootsForTesring(
-      *(ToHTMLElement(host)));
+      *(To<HTMLElement>(host)));
   EXPECT_FALSE(host->ShadowRootIfV1());
   EXPECT_EQ("<div>first</div><div>second</div>", host->InnerHTMLAsString());
 }
@@ -302,7 +302,7 @@ TEST_F(SelectionSampleTest, ConvertTemplatesToShadowRootsMultipleTemplates) {
   Element* host1 = body->getElementById("host1");
   Element* host2 = body->getElementById("host2");
   SelectionSample::ConvertTemplatesToShadowRootsForTesring(
-      *(ToHTMLElement(body)));
+      *(To<HTMLElement>(body)));
   ShadowRoot* shadow_root_1 = host1->ShadowRootIfV1();
   ShadowRoot* shadow_root_2 = host2->ShadowRootIfV1();
 

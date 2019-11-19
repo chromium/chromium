@@ -14,12 +14,17 @@
 </div>
 
 <script>
+// Wait until layout has settled to avoid notification spam.
 async_test_after_layout_and_paint((t) => {
     var element = document.getElementById('contentEditable');
-    var axElement = accessibilityController.accessibleElementById('contentEditable');
     element.focus();
 
+    var axElement = accessibilityController.accessibleElementById('contentEditable');
     axElement.addNotificationListener(t.step_func((notification) => {
+        // Focus notification will come asynchronously after layout
+        if (notification == 'Focus')
+            return;
+
         if (notification == 'SelectedTextChanged') {
             axElement.removeNotificationListener();
             t.done();

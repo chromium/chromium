@@ -1,8 +1,8 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-button/paper-button.html">
 <link rel="import" href="about_page_browser_proxy.html">
 <link rel="import" href="../settings_shared_css.html">
 
@@ -15,12 +15,12 @@
         <div id="update-warning-message"></div>
       </div>
       <div slot="button-container">
-        <paper-button id="cancel" class="cancel-button"
-            on-click="onCancelTap_">$i18n{cancel}</paper-button>
-        <paper-button id="continue" class="action-button"
+        <cr-button id="cancel" class="cancel-button"
+            on-click="onCancelTap_">$i18n{cancel}</cr-button>
+        <cr-button id="continue" class="action-button"
             on-click="onContinueTap_">
-          $i18n{aboutUpdateWarningContinue}
-        </paper-button>
+          $i18n{continue}
+        </cr-button>
       </div>
     </cr-dialog>
   </template>

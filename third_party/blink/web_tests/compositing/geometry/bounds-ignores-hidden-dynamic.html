@@ -1,6 +1,6 @@
 <style>
   .composited {
-    transform: translateZ(0);
+    will-change: transform;
   }
   
   .box {
@@ -29,21 +29,18 @@
       visibility: hidden;
   }
 </style>
+<script src="../../resources/run-after-layout-and-paint.js"></script>
 <script>
-    if (window.testRunner) {
+    if (window.testRunner)
         testRunner.dumpAsTextWithPixelResults();
-        testRunner.waitUntilDone();
-    }
 
     function doTest()
     {
-        window.setTimeout(function() {
+        runAfterLayoutAndPaint(function() {
             document.body.classList.add('changed');
-            if (window.testRunner && window.internals) {
+            if (window.testRunner && window.internals)
                 testRunner.setCustomTextOutput(internals.layerTreeAsText(document));
-                testRunner.notifyDone();
-            }
-        }, 0);
+        }, true);
     }
     window.addEventListener('load', doTest, false);
 </script>

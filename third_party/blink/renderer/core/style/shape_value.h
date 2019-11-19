@@ -38,7 +38,7 @@
 
 namespace blink {
 
-class ShapeValue final : public GarbageCollectedFinalized<ShapeValue> {
+class ShapeValue final : public GarbageCollected<ShapeValue> {
  public:
   enum ShapeValueType {
     // The Auto value is defined by a null ShapeValue*

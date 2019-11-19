@@ -12,7 +12,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "chromeos/services/secure_channel/fake_client_connection_parameters.h"
 #include "chromeos/services/secure_channel/fake_message_receiver.h"
 #include "chromeos/services/secure_channel/fake_single_client_message_proxy.h"
@@ -71,7 +71,8 @@ class SecureChannelSingleClientMessageProxyImplTest : public testing::Test {
 
     int message_counter = next_message_counter_++;
 
-    mojom::ChannelPtr& channel = *fake_client_connection_parameters_->channel();
+    mojo::Remote<mojom::Channel>& channel =
+        fake_client_connection_parameters_->channel();
     channel->SendMessage(
         message,
         base::BindOnce(
@@ -124,7 +125,7 @@ class SecureChannelSingleClientMessageProxyImplTest : public testing::Test {
   }
 
   bool WasMessageSent(int message_counter) {
-    return base::ContainsKey(sent_message_counters_, message_counter);
+    return base::Contains(sent_message_counters_, message_counter);
   }
 
   void DisconnectFromClientSide() {
@@ -158,7 +159,8 @@ class SecureChannelSingleClientMessageProxyImplTest : public testing::Test {
   mojom::ConnectionMetadataPtr GetConnectionMetadataFromChannel() {
     EXPECT_FALSE(last_metadata_from_channel_);
 
-    mojom::ChannelPtr& channel = *fake_client_connection_parameters_->channel();
+    mojo::Remote<mojom::Channel>& channel =
+        fake_client_connection_parameters_->channel();
     channel->GetConnectionMetadata(base::BindOnce(
         &SecureChannelSingleClientMessageProxyImplTest::OnConnectionMetadata,
         base::Unretained(this)));
@@ -177,7 +179,7 @@ class SecureChannelSingleClientMessageProxyImplTest : public testing::Test {
     last_metadata_from_channel_ = std::move(connection_metadata_ptr);
   }
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
 
   std::unique_ptr<FakeSingleClientMessageProxyDelegate> fake_proxy_delegate_;
   FakeClientConnectionParameters* fake_client_connection_parameters_;

@@ -27,7 +27,7 @@ public class StorageInfo implements Serializable {
     }
 
     public void clear(StorageInfoClearedCallback callback) {
-        WebsitePreferenceBridge.nativeClearStorageData(mHost, mType, callback);
+        WebsitePreferenceBridgeJni.get().clearStorageData(mHost, mType, callback);
     }
 
     public long getSize() {

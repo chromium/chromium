@@ -14,6 +14,8 @@
 # additional argument. You should change the -d argument to point to your
 # depot_tools directory.
 
+from __future__ import print_function
+
 import imp
 import optparse
 import os
@@ -41,7 +43,8 @@ def main():
   for flag in results['flags']:
     # The sublimeclang plugin expects to parse its input with shlex.
     # Defines and include path names may have spaces or quotes.
-    print pipes.quote(flag)
+    print(pipes.quote(flag))
+
 
 if __name__ == "__main__":
   main()

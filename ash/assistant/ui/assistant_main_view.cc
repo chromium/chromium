@@ -48,7 +48,8 @@ constexpr base::TimeDelta kDialogPlateAnimationFadeInDuration =
 
 }  // namespace
 
-AssistantMainView::AssistantMainView(AssistantViewDelegate* delegate)
+AssistantMainViewDeprecated::AssistantMainViewDeprecated(
+    AssistantViewDelegate* delegate)
     : delegate_(delegate), min_height_dip_(kMinHeightDip) {
   InitLayout();
 
@@ -59,19 +60,19 @@ AssistantMainView::AssistantMainView(AssistantViewDelegate* delegate)
   delegate_->AddUiModelObserver(this);
 }
 
-AssistantMainView::~AssistantMainView() {
+AssistantMainViewDeprecated::~AssistantMainViewDeprecated() {
   delegate_->RemoveUiModelObserver(this);
 }
 
-const char* AssistantMainView::GetClassName() const {
+const char* AssistantMainViewDeprecated::GetClassName() const {
   return "AssistantMainView";
 }
 
-gfx::Size AssistantMainView::CalculatePreferredSize() const {
+gfx::Size AssistantMainViewDeprecated::CalculatePreferredSize() const {
   return gfx::Size(kPreferredWidthDip, GetHeightForWidth(kPreferredWidthDip));
 }
 
-int AssistantMainView::GetHeightForWidth(int width) const {
+int AssistantMainViewDeprecated::GetHeightForWidth(int width) const {
   // |min_height_dip_| <= |height| <= |kMaxHeightDip|.
   int height = views::View::GetHeightForWidth(width);
   height = std::min(height, kMaxHeightDip);
@@ -86,20 +87,22 @@ int AssistantMainView::GetHeightForWidth(int width) const {
   return height;
 }
 
-void AssistantMainView::OnBoundsChanged(const gfx::Rect& prev_bounds) {
+void AssistantMainViewDeprecated::OnBoundsChanged(
+    const gfx::Rect& prev_bounds) {
   // Until Assistant UI is hidden, the view may grow in height but not shrink.
   min_height_dip_ = std::max(min_height_dip_, height());
 }
 
-void AssistantMainView::VisibilityChanged(views::View* starting_from,
-                                          bool visible) {
+void AssistantMainViewDeprecated::VisibilityChanged(views::View* starting_from,
+                                                    bool visible) {
   // Overlays behave like children of AssistantMainView so they should only be
   // visible while AssistantMainView is visible.
   for (std::unique_ptr<AssistantOverlay>& overlay : overlays_)
     overlay->SetVisible(visible);
 }
 
-void AssistantMainView::ChildPreferredSizeChanged(views::View* child) {
+void AssistantMainViewDeprecated::ChildPreferredSizeChanged(
+    views::View* child) {
   PreferredSizeChanged();
 
   // Even though the preferred size for |main_stage_| may change, its bounds
@@ -112,24 +115,24 @@ void AssistantMainView::ChildPreferredSizeChanged(views::View* child) {
   }
 }
 
-void AssistantMainView::ChildVisibilityChanged(views::View* child) {
+void AssistantMainViewDeprecated::ChildVisibilityChanged(views::View* child) {
   PreferredSizeChanged();
 }
 
-views::View* AssistantMainView::FindFirstFocusableView() {
+views::View* AssistantMainViewDeprecated::FindFirstFocusableView() {
   // In those instances in which we want to override views::FocusSearch
   // behavior, DialogPlate will identify the first focusable view.
   return dialog_plate_->FindFirstFocusableView();
 }
 
-std::vector<AssistantOverlay*> AssistantMainView::GetOverlays() {
+std::vector<AssistantOverlay*> AssistantMainViewDeprecated::GetOverlays() {
   std::vector<AssistantOverlay*> overlays;
   for (std::unique_ptr<AssistantOverlay>& overlay : overlays_)
     overlays.push_back(overlay.get());
   return overlays;
 }
 
-void AssistantMainView::InitLayout() {
+void AssistantMainViewDeprecated::InitLayout() {
   views::BoxLayout* layout_manager =
       SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kVertical));
@@ -168,7 +171,7 @@ void AssistantMainView::InitLayout() {
   }
 }
 
-void AssistantMainView::OnUiVisibilityChanged(
+void AssistantMainViewDeprecated::OnUiVisibilityChanged(
     AssistantVisibility new_visibility,
     AssistantVisibility old_visibility,
     base::Optional<AssistantEntryPoint> entry_point,
@@ -207,7 +210,7 @@ void AssistantMainView::OnUiVisibilityChanged(
   }
 }
 
-void AssistantMainView::RequestFocus() {
+void AssistantMainViewDeprecated::RequestFocus() {
   dialog_plate_->RequestFocus();
 }
 

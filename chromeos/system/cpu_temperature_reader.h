@@ -9,15 +9,15 @@
 #include <utility>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
-#include "chromeos/chromeos_export.h"
 
 namespace chromeos {
 namespace system {
 
 // Used to read CPU temperature info from sysfs hwmon.
-class CHROMEOS_EXPORT CPUTemperatureReader {
+class COMPONENT_EXPORT(CHROMEOS_SYSTEM) CPUTemperatureReader {
  public:
   // Contains info from a CPU temperature sensor.
   struct CPUTemperatureInfo {

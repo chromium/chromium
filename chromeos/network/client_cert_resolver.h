@@ -151,7 +151,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ClientCertResolver
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::WeakPtrFactory<ClientCertResolver> weak_ptr_factory_;
+  base::WeakPtrFactory<ClientCertResolver> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ClientCertResolver);
 };

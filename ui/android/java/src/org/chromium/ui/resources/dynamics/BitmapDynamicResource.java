@@ -13,9 +13,7 @@ import org.chromium.ui.resources.statics.NinePatchData;
 /**
  * A basic implementation of {@link DynamicResource} to handle updatable bitmaps.
  */
-public class BitmapDynamicResource implements DynamicResource {
-    private static final Rect EMPTY_RECT = new Rect();
-
+public class BitmapDynamicResource extends DynamicResource {
     private final int mResId;
     private Bitmap mBitmap;
     private final Rect mSize = new Rect();
@@ -40,15 +38,18 @@ public class BitmapDynamicResource implements DynamicResource {
         // is no bitmap to start with. See http://crbug.com/471234 for more.
         if (bitmap == null) return;
         mIsDirty = true;
-        if (mBitmap != null) mBitmap.recycle();
         mBitmap = bitmap;
         mSize.set(0, 0, mBitmap.getWidth(), mBitmap.getHeight());
     }
 
     @Override
     public Bitmap getBitmap() {
+        super.getBitmap();
+        assert mBitmap != null: "setBitmap() should be called before calling getBitmap() again";
         mIsDirty = false;
-        return mBitmap;
+        Bitmap bitmap = mBitmap;
+        mBitmap = null;
+        return bitmap;
     }
 
     @Override

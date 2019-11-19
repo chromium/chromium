@@ -6,7 +6,7 @@
 import local_git_util
 import posixpath
 
-from environment import IsTest
+from environment import IsTest, IsAppEngine
 from file_system import FileNotFoundError, FileSystem, StatInfo
 from future import Future
 from local_file_system import LocalFileSystem
@@ -32,12 +32,17 @@ class LocalGitFileSystem(FileSystem):
         commit = 'branch-heads/%s' % branch
       else:
         commit = 'origin/master'
-    try:
-      self._commit = local_git_util.ParseRevision(commit)
-    except ImportError:
-      # We ignore ImportErrors here. It means we're running in AppEngine, so
-      # this doesn't need to work anyway.
-      pass
+    # Don't bother trying to load git stuff from AppEngine; it won't work.
+    if not IsAppEngine():
+      try:
+        self._commit = local_git_util.ParseRevision(commit)
+      except ImportError:
+        # TODO(devlin|karandeepb): The comment below is old, and we can probably
+        # remove this try-except block. But let's tackle that when there are no
+        # fires.
+        # We ignore ImportErrors here. It means we're running in AppEngine, so
+        # this doesn't need to work anyway.
+        pass
 
   def Read(self, paths, skip_not_found=False):
 

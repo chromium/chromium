@@ -208,15 +208,10 @@ IN_PROC_BROWSER_TEST_F(EventsApiTest,
   }
 }
 
-// Disabled on non-Mac due to flaky timeouts. https://crbug.com/833854
-#if !defined(OS_MACOSX)
-#define MAYBE_NewlyIntroducedListener DISABLED_NewlyIntroducedListener
-#else
-#define MAYBE_NewlyIntroducedListener NewlyIntroducedListener
-#endif
+// Disabled due to flaky timeouts. https://crbug.com/833854
 // Tests that if an extension's updated version has a new lazy listener, it
 // fires properly after the update.
-IN_PROC_BROWSER_TEST_F(EventsApiTest, MAYBE_NewlyIntroducedListener) {
+IN_PROC_BROWSER_TEST_F(EventsApiTest, DISABLED_NewlyIntroducedListener) {
   std::vector<ExtensionCRXData> data;
   data.emplace_back("v1");
   data.emplace_back("v2");

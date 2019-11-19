@@ -10,10 +10,12 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/task/post_task.h"
+#include "base/test/bind_test_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
+#include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/client_certificate_delegate.h"
@@ -23,10 +25,13 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/test_utils.h"
+#include "content/public/test/url_loader_interceptor.h"
 #include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_content_browser_client.h"
+#include "content/test/content_browser_test_utils_internal.h"
 #include "net/base/escape.h"
 #include "net/base/filename_util.h"
+#include "net/dns/mock_host_resolver.h"
 #include "net/ssl/ssl_server_config.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/spawned_test_server/spawned_test_server.h"
@@ -56,15 +61,11 @@ class WorkerTest : public ContentBrowserTest {
   WorkerTest() : select_certificate_count_(0) {}
 
   void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
     ShellContentBrowserClient::Get()->set_select_client_certificate_callback(
-        base::Bind(&WorkerTest::OnSelectClientCertificate,
-                   base::Unretained(this)));
+        base::BindOnce(&WorkerTest::OnSelectClientCertificate,
+                       base::Unretained(this)));
     ASSERT_TRUE(embedded_test_server()->Start());
-  }
-
-  void TearDownOnMainThread() override {
-    ShellContentBrowserClient::Get()->set_select_client_certificate_callback(
-        base::Closure());
   }
 
   int select_certificate_count() const { return select_certificate_count_; }
@@ -87,7 +88,7 @@ class WorkerTest : public ContentBrowserTest {
     const base::string16 fail_title = base::ASCIIToUTF16("FAIL");
     TitleWatcher title_watcher(window->web_contents(), ok_title);
     title_watcher.AlsoWaitForTitle(fail_title);
-    NavigateToURL(window, url);
+    EXPECT_TRUE(NavigateToURL(window, url));
     base::string16 final_title = title_watcher.WaitAndGetTitle();
     EXPECT_EQ(expect_failure ? fail_title : ok_title, final_title);
   }
@@ -96,9 +97,9 @@ class WorkerTest : public ContentBrowserTest {
     RunTest(shell(), url, expect_failure);
   }
 
-  static void QuitUIMessageLoop(base::OnceClosure callback) {
-    base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
-                             std::move(callback));
+  static void QuitUIMessageLoop(base::OnceClosure callback,
+                                bool is_main_frame /* unused */) {
+    base::PostTask(FROM_HERE, {BrowserThread::UI}, std::move(callback));
   }
 
   void NavigateAndWaitForAuth(const GURL& url) {
@@ -106,7 +107,7 @@ class WorkerTest : public ContentBrowserTest {
         ShellContentBrowserClient::Get();
     scoped_refptr<MessageLoopRunner> runner = new MessageLoopRunner();
     browser_client->set_login_request_callback(
-        base::Bind(&QuitUIMessageLoop, runner->QuitClosure()));
+        base::BindOnce(&QuitUIMessageLoop, runner->QuitClosure()));
     shell()->LoadURL(url);
     runner->Run();
   }
@@ -178,7 +179,7 @@ IN_PROC_BROWSER_TEST_F(WorkerTest, WorkerHttpAuth) {
 IN_PROC_BROWSER_TEST_F(WorkerTest, WorkerTlsClientAuthImportScripts) {
   // Launch HTTPS server.
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
-  https_server.ServeFilesFromSourceDirectory("content/test/data");
+  https_server.ServeFilesFromSourceDirectory(GetTestDataFilePath());
   net::SSLServerConfig ssl_config;
   ssl_config.client_cert_type =
       net::SSLServerConfig::ClientCertType::REQUIRE_CLIENT_CERT;
@@ -196,7 +197,7 @@ IN_PROC_BROWSER_TEST_F(WorkerTest, WorkerTlsClientAuthImportScripts) {
 IN_PROC_BROWSER_TEST_F(WorkerTest, WorkerTlsClientAuthFetch) {
   // Launch HTTPS server.
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
-  https_server.ServeFilesFromSourceDirectory("content/test/data");
+  https_server.ServeFilesFromSourceDirectory(GetTestDataFilePath());
   net::SSLServerConfig ssl_config;
   ssl_config.client_cert_type =
       net::SSLServerConfig::ClientCertType::REQUIRE_CLIENT_CERT;
@@ -218,7 +219,7 @@ IN_PROC_BROWSER_TEST_F(WorkerTest, SharedWorkerTlsClientAuthImportScripts) {
 
   // Launch HTTPS server.
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
-  https_server.ServeFilesFromSourceDirectory("content/test/data");
+  https_server.ServeFilesFromSourceDirectory(GetTestDataFilePath());
   net::SSLServerConfig ssl_config;
   ssl_config.client_cert_type =
       net::SSLServerConfig::ClientCertType::REQUIRE_CLIENT_CERT;
@@ -251,7 +252,7 @@ IN_PROC_BROWSER_TEST_F(WorkerTest, WebSocketSharedWorker) {
   Shell* window = shell();
   const base::string16 expected_title = base::ASCIIToUTF16("OK");
   TitleWatcher title_watcher(window->web_contents(), expected_title);
-  NavigateToURL(window, url);
+  EXPECT_TRUE(NavigateToURL(window, url));
   base::string16 final_title = title_watcher.WaitAndGetTitle();
   EXPECT_EQ(expected_title, final_title);
 }
@@ -270,6 +271,58 @@ IN_PROC_BROWSER_TEST_F(WorkerTest,
 
   RunTest(GetTestURL(
       "pass_messageport_to_sharedworker_dont_wait_for_connect.html", ""));
+}
+
+// Tests the value of |request_initiator| for shared worker resources.
+IN_PROC_BROWSER_TEST_F(WorkerTest, VerifyInitiatorSharedWorker) {
+  if (!SupportsSharedWorker())
+    return;
+
+  const GURL start_url(embedded_test_server()->GetURL("/frame_tree/top.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), start_url));
+
+  // To make things tricky about |top_frame_origin|, this test navigates to
+  // a page on |embedded_test_server()| which has a cross-origin iframe that
+  // registers the worker.
+  std::string cross_site_domain("cross-site.com");
+  const GURL test_url(embedded_test_server()->GetURL(
+      cross_site_domain, "/workers/simple_shared_worker.html"));
+
+  // There are three requests to test:
+  // 1) The request for the worker itself ("worker.js")
+  // 2) importScripts("empty.js") from the worker
+  // 3) fetch("empty.html") from the worker
+  const GURL worker_url(
+      embedded_test_server()->GetURL(cross_site_domain, "/workers/worker.js"));
+  const GURL script_url(
+      embedded_test_server()->GetURL(cross_site_domain, "/workers/empty.js"));
+  const GURL resource_url(
+      embedded_test_server()->GetURL(cross_site_domain, "/workers/empty.html"));
+
+  std::set<GURL> expected_request_urls = {worker_url, script_url, resource_url};
+  const url::Origin expected_origin =
+      url::Origin::Create(worker_url.GetOrigin());
+
+  base::RunLoop waiter;
+  URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
+      [&](URLLoaderInterceptor::RequestParams* params) {
+        auto it = expected_request_urls.find(params->url_request.url);
+        if (it != expected_request_urls.end()) {
+          EXPECT_TRUE(params->url_request.request_initiator.has_value());
+          EXPECT_EQ(expected_origin,
+                    params->url_request.request_initiator.value());
+          expected_request_urls.erase(it);
+        }
+        if (expected_request_urls.empty())
+          waiter.Quit();
+        return false;
+      }));
+
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetFrameTree()
+                            ->root();
+  NavigateFrameToURL(root->child_at(0), test_url);
+  waiter.Run();
 }
 
 }  // namespace content

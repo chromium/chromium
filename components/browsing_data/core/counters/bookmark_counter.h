@@ -33,7 +33,7 @@ class BookmarkCounter : public browsing_data::BrowsingDataCounter {
   void CountBookmarks(const bookmarks::BookmarkModel* bookmark_model);
 
   bookmarks::BookmarkModel* bookmark_model_;
-  base::WeakPtrFactory<BookmarkCounter> weak_ptr_factory_;
+  base::WeakPtrFactory<BookmarkCounter> weak_ptr_factory_{this};
 };
 
 }  // namespace browsing_data

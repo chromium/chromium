@@ -20,7 +20,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "mojo/core/ports/event.h"
 #include "mojo/core/ports/node.h"
@@ -139,6 +139,15 @@ class TestNode : public NodeDelegate {
     return node_.SendUserMessage(port, NewUserMessageEvent(s, 0));
   }
 
+  int SendMultipleMessages(const PortRef& port, size_t num_messages) {
+    for (size_t i = 0; i < num_messages; ++i) {
+      int result = SendStringMessage(port, "");
+      if (result != OK)
+        return result;
+    }
+    return OK;
+  }
+
   int SendStringMessageWithPort(const PortRef& port,
                                 const std::string& s,
                                 const PortName& sent_port_name) {
@@ -165,6 +174,15 @@ class TestNode : public NodeDelegate {
 
   bool ReadMessage(const PortRef& port, ScopedMessage* message) {
     return node_.GetMessage(port, message, nullptr) == OK && *message;
+  }
+
+  bool ReadMultipleMessages(const PortRef& port, size_t num_messages) {
+    for (size_t i = 0; i < num_messages; ++i) {
+      ScopedMessage message;
+      if (!ReadMessage(port, &message))
+        return false;
+    }
+    return true;
   }
 
   bool GetSavedMessage(ScopedMessage* message) {
@@ -238,6 +256,14 @@ class TestNode : public NodeDelegate {
       ASSERT_EQ(OK, node_.GetPort(message_event->ports()[i], &port));
       EXPECT_EQ(OK, node_.ClosePort(port));
     }
+  }
+
+  uint64_t GetUnacknowledgedMessageCount(const PortRef& port_ref) {
+    PortStatus status;
+    if (node_.GetStatus(port_ref, &status) != OK)
+      return 0;
+
+    return status.unacknowledged_message_count;
   }
 
  private:
@@ -397,7 +423,7 @@ class PortsTest : public testing::Test, public MessageRouter {
     }
   }
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
 
   // Acquired before any operation which makes a Node busy, and before testing
   // if all nodes are idle.
@@ -1636,6 +1662,72 @@ TEST_F(PortsTest, RetransmitUserMessageEvents) {
 
   EXPECT_EQ(OK, node0.node().ClosePort(a));
   EXPECT_EQ(OK, node0.node().ClosePort(b));
+}
+
+TEST_F(PortsTest, SetAcknowledgeRequestInterval) {
+  TestNode node0(0);
+  AddNode(&node0);
+
+  PortRef a0, a1;
+  EXPECT_EQ(OK, node0.node().CreatePortPair(&a0, &a1));
+  EXPECT_EQ(0u, node0.GetUnacknowledgedMessageCount(a0));
+
+  // Send a batch of messages.
+  EXPECT_EQ(OK, node0.SendMultipleMessages(a0, 15));
+  EXPECT_EQ(15u, node0.GetUnacknowledgedMessageCount(a0));
+  EXPECT_TRUE(node0.ReadMultipleMessages(a1, 5));
+  WaitForIdle();
+  EXPECT_EQ(15u, node0.GetUnacknowledgedMessageCount(a0));
+
+  // Set to acknowledge every read message, and validate that already-read
+  // messages are acknowledged.
+  EXPECT_EQ(OK, node0.node().SetAcknowledgeRequestInterval(a0, 1));
+  WaitForIdle();
+  EXPECT_EQ(10u, node0.GetUnacknowledgedMessageCount(a0));
+
+  // Read a third of the messages from the other end.
+  EXPECT_TRUE(node0.ReadMultipleMessages(a1, 5));
+  WaitForIdle();
+
+  EXPECT_EQ(5u, node0.GetUnacknowledgedMessageCount(a0));
+
+  TestNode node1(1);
+  AddNode(&node1);
+
+  // Transfer a1 across to node1.
+  PortRef x0, x1;
+  CreatePortPair(&node0, &x0, &node1, &x1);
+  EXPECT_EQ(OK, node0.SendStringMessageWithPort(x0, "foo", a1));
+  WaitForIdle();
+
+  ScopedMessage message;
+  ASSERT_TRUE(node1.ReadMessage(x1, &message));
+  ASSERT_EQ(1u, message->num_ports());
+  ASSERT_EQ(OK, node1.node().GetPort(message->ports()[0], &a1));
+
+  // Read the last third of the messages from the transferred node, and
+  // validate that the unacknowledge message count updates correctly.
+  EXPECT_TRUE(node1.ReadMultipleMessages(a1, 5));
+  WaitForIdle();
+  EXPECT_EQ(0u, node0.GetUnacknowledgedMessageCount(a0));
+
+  // Turn the acknowledges down and validate that they don't go on indefinitely.
+  EXPECT_EQ(OK, node0.node().SetAcknowledgeRequestInterval(a0, 0));
+  EXPECT_EQ(OK, node0.SendMultipleMessages(a0, 10));
+  WaitForIdle();
+  EXPECT_TRUE(node1.ReadMultipleMessages(a1, 10));
+  WaitForIdle();
+  EXPECT_NE(0u, node0.GetUnacknowledgedMessageCount(a0));
+
+  // Close the far port and validate that the closure updates the unacknowledged
+  // count.
+  EXPECT_EQ(OK, node1.node().ClosePort(a1));
+  WaitForIdle();
+  EXPECT_EQ(0u, node0.GetUnacknowledgedMessageCount(a0));
+
+  EXPECT_EQ(OK, node0.node().ClosePort(a0));
+  EXPECT_EQ(OK, node0.node().ClosePort(x0));
+  EXPECT_EQ(OK, node1.node().ClosePort(x1));
 }
 
 }  // namespace test

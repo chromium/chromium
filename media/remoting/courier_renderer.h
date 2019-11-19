@@ -19,7 +19,7 @@
 #include "base/timer/timer.h"
 #include "media/base/pipeline_status.h"
 #include "media/base/renderer.h"
-#include "media/mojo/interfaces/remoting.mojom.h"
+#include "media/mojo/mojom/remoting.mojom.h"
 #include "media/remoting/metrics.h"
 #include "media/remoting/rpc_broker.h"
 #include "mojo/public/cpp/system/data_pipe.h"
@@ -72,10 +72,9 @@ class CourierRenderer : public Renderer {
   // media::Renderer implementation.
   void Initialize(MediaResource* media_resource,
                   RendererClient* client,
-                  const PipelineStatusCB& init_cb) final;
-  void SetCdm(CdmContext* cdm_context,
-              const CdmAttachedCB& cdm_attached_cb) final;
-  void Flush(const base::Closure& flush_cb) final;
+                  PipelineStatusCallback init_cb) final;
+  void SetCdm(CdmContext* cdm_context, CdmAttachedCB cdm_attached_cb) final;
+  void Flush(base::OnceClosure flush_cb) final;
   void StartPlayingFrom(base::TimeDelta time) final;
   void SetPlaybackRate(double playback_rate) final;
   void SetVolume(float volume) final;
@@ -120,7 +119,6 @@ class CourierRenderer : public Renderer {
   void OnVideoNaturalSizeChange(std::unique_ptr<pb::RpcMessage> message);
   void OnVideoOpacityChange(std::unique_ptr<pb::RpcMessage> message);
   void OnStatisticsUpdate(std::unique_ptr<pb::RpcMessage> message);
-  void OnDurationChange(std::unique_ptr<pb::RpcMessage> message);
 
   // Called when |current_media_time_| is updated.
   void OnMediaTimeUpdated();
@@ -173,9 +171,9 @@ class CourierRenderer : public Renderer {
   int remote_renderer_handle_;
 
   // Callbacks.
-  PipelineStatusCB init_workflow_done_callback_;
+  PipelineStatusCallback init_workflow_done_callback_;
   CdmAttachedCB cdm_attached_cb_;
-  base::Closure flush_cb_;
+  base::OnceClosure flush_cb_;
 
   VideoRendererSink* const video_renderer_sink_;  // Outlives this class.
 
@@ -220,7 +218,7 @@ class CourierRenderer : public Renderer {
   // reported buffer underflow.
   bool receiver_is_blocked_on_local_demuxers_ = true;
 
-  base::WeakPtrFactory<CourierRenderer> weak_factory_;
+  base::WeakPtrFactory<CourierRenderer> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(CourierRenderer);
 };

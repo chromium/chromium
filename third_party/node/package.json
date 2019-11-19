@@ -3,10 +3,13 @@
   "version": "1.0.0",
   "author": "dpapad@chromium.org",
   "dependencies": {
+    "babel-eslint": "10.0.2",
     "crisper": "2.1.1",
-    "eslint": "3.19.0",
-    "polymer-bundler": "3.1.1",
-    "polymer-css-build": "0.3.3",
-    "uglify-es": "3.3.9"
+    "eslint": "5.16.0",
+    "polymer-bundler": "4.0.10",
+    "polymer-css-build": "0.7.0",
+    "uglify-es": "3.3.9",
+    "svgo": "1.2.0",
+    "typescript": "3.5.3"
   }
 }

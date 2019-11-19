@@ -108,6 +108,11 @@ base::string16 ElideEmail(const base::string16& email,
 }
 #endif
 
+bool GetDefaultWhitespaceElision(bool elide_in_middle,
+                                 bool elide_at_beginning) {
+  return elide_at_beginning || !elide_in_middle;
+}
+
 }  // namespace
 
 // U+2026 in utf8
@@ -118,11 +123,16 @@ const base::char16 kForwardSlash = '/';
 StringSlicer::StringSlicer(const base::string16& text,
                            const base::string16& ellipsis,
                            bool elide_in_middle,
-                           bool elide_at_beginning)
+                           bool elide_at_beginning,
+                           base::Optional<bool> elide_whitespace)
     : text_(text),
       ellipsis_(ellipsis),
       elide_in_middle_(elide_in_middle),
-      elide_at_beginning_(elide_at_beginning) {
+      elide_at_beginning_(elide_at_beginning),
+      elide_whitespace_(elide_whitespace
+                            ? *elide_whitespace
+                            : GetDefaultWhitespaceElision(elide_in_middle,
+                                                          elide_at_beginning)) {
 }
 
 base::string16 StringSlicer::CutString(size_t length,
@@ -137,12 +147,12 @@ base::string16 StringSlicer::CutString(size_t length,
   if (elide_at_beginning_) {
     return ellipsis_text +
            text_.substr(FindValidBoundaryAfter(text_, text_.length() - length,
-                                               /* trim_whitespace */ true));
+                                               elide_whitespace_));
   }
 
   if (!elide_in_middle_) {
-    return text_.substr(0, FindValidBoundaryBefore(
-                               text_, length, /* trim_whitespace */ true)) +
+    return text_.substr(
+               0, FindValidBoundaryBefore(text_, length, elide_whitespace_)) +
            ellipsis_text;
   }
 
@@ -153,10 +163,10 @@ base::string16 StringSlicer::CutString(size_t length,
   // desired appearance is to be fully justified and the elipses should more or
   // less line up; eliminating space would make the text look more ragged.
   const size_t half_length = length / 2;
-  const size_t prefix_length = FindValidBoundaryBefore(
-      text_, length - half_length, /* trim_whitespace */ false);
+  const size_t prefix_length =
+      FindValidBoundaryBefore(text_, length - half_length, elide_whitespace_);
   const size_t suffix_start = FindValidBoundaryAfter(
-      text_, text_.length() - half_length, /* trim_whitespace */ false);
+      text_, text_.length() - half_length, elide_whitespace_);
   return text_.substr(0, prefix_length) + ellipsis_text +
          text_.substr(suffix_start);
 }
@@ -787,19 +797,6 @@ int ElideRectangleText(const base::string16& input,
                               available_pixel_height, wrap_behavior,
                               Typesetter::HARFBUZZ, lines);
 }
-
-#if defined(OS_MACOSX)
-int ElideRectangleTextForNativeUi(const base::string16& input,
-                                  const FontList& font_list,
-                                  float available_pixel_width,
-                                  int available_pixel_height,
-                                  WordWrapBehavior wrap_behavior,
-                                  std::vector<base::string16>* lines) {
-  return RectangleText::Elide(input, font_list, available_pixel_width,
-                              available_pixel_height, wrap_behavior,
-                              Typesetter::NATIVE, lines);
-}
-#endif
 
 base::string16 TruncateString(const base::string16& string,
                               size_t length,

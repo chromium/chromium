@@ -1,0 +1,80 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/jumbo.gni")
+import("//testing/test.gni")
+
+jumbo_component("color") {
+  sources = [
+    "color_id.h",
+    "color_mixer.cc",
+    "color_mixer.h",
+    "color_provider.cc",
+    "color_provider.h",
+    "color_recipe.cc",
+    "color_recipe.h",
+    "color_set.cc",
+    "color_set.h",
+    "color_transform.cc",
+    "color_transform.h",
+    "color_variant.h",
+  ]
+
+  defines = [ "IS_COLOR_IMPL" ]
+
+  public_deps = [
+    "//base",
+    "//skia",
+    "//ui/gfx:color_utils",
+  ]
+}
+
+test("color_unittests") {
+  testonly = true
+
+  sources = [
+    "color_mixer_unittest.cc",
+    "color_provider_unittest.cc",
+    "color_recipe_unittest.cc",
+    "color_test_ids.h",
+    "color_transform_unittest.cc",
+    "run_all_unittests.cc",
+  ]
+
+  deps = [
+    ":color",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
+}
+
+jumbo_component("mixers") {
+  sources = [
+    "color_mixers.h",
+    "core_default_color_mixer.cc",
+    "ui_color_mixer.cc",
+  ]
+
+  defines = [ "IS_COLOR_IMPL" ]
+
+  deps = [
+    ":color",
+    "//skia",
+    "//ui/gfx:color_utils",
+  ]
+
+  public_deps = [
+    "//base",
+  ]
+
+  if (is_chromeos) {
+    sources += [ "cros/native_color_mixer.cc" ]
+  } else if (is_linux) {
+    sources += [ "linux/native_color_mixer.cc" ]
+  } else if (is_mac) {
+    sources += [ "mac/native_color_mixer.cc" ]
+  } else if (is_win) {
+    sources += [ "win/native_color_mixer.cc" ]
+  }
+}

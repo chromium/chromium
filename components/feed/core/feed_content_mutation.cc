@@ -47,7 +47,7 @@ base::TimeTicks ContentMutation::GetStartTime() const {
   return start_time_;
 }
 
-ContentOperation ContentMutation::TakeFristOperation() {
+ContentOperation ContentMutation::TakeFirstOperation() {
   ContentOperation operation = std::move(operations_list_.front());
   operations_list_.pop_front();
   return operation;

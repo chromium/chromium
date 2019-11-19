@@ -15,7 +15,9 @@
 #include "base/scoped_observer.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
+#include "extensions/browser/user_script_loader.h"
 
 class GURL;
 class URLPattern;
@@ -36,7 +38,8 @@ class Extension;
 //
 // This class lives on the UI thread.
 class UserScriptListener : public content::NotificationObserver,
-                           public ExtensionRegistryObserver {
+                           public ExtensionRegistryObserver,
+                           public UserScriptLoader::Observer {
  public:
   UserScriptListener();
   ~UserScriptListener() override;
@@ -47,6 +50,7 @@ class UserScriptListener : public content::NotificationObserver,
       content::NavigationHandle* navigation_handle);
 
   void SetUserScriptsNotReadyForTesting(content::BrowserContext* context);
+  void TriggerUserScriptsReadyForTesting(content::BrowserContext* context);
 
  private:
   using URLPatterns = std::list<URLPattern>;
@@ -108,9 +112,17 @@ class UserScriptListener : public content::NotificationObserver,
                            UnloadedExtensionReason reason) override;
   void OnShutdown(ExtensionRegistry* registry) override;
 
+  // UserScriptLoader::Observer:
+  void OnScriptsLoaded(UserScriptLoader* loader,
+                       content::BrowserContext* browser_context) override;
+  void OnUserScriptLoaderDestroyed(UserScriptLoader* loader) override;
+
   ScopedObserver<extensions::ExtensionRegistry,
                  extensions::ExtensionRegistryObserver>
-      extension_registry_observer_;
+      extension_registry_observer_{this};
+  ScopedObserver<extensions::UserScriptLoader,
+                 extensions::UserScriptLoader::Observer>
+      user_script_loader_observer_{this};
 
   content::NotificationRegistrar registrar_;
 

@@ -54,6 +54,12 @@ class NET_EXPORT_PRIVATE SourceStream {
   // logging.
   virtual std::string Description() const = 0;
 
+  // Returns true if there may be more bytes to read in this source stream.
+  // This is not a guarantee that there are more bytes (in the case that
+  // the stream doesn't know).  However, if this returns false, then the stream
+  // is guaranteed to be complete.
+  virtual bool MayHaveMoreBytes() const = 0;
+
   SourceType type() const { return type_; }
 
  private:

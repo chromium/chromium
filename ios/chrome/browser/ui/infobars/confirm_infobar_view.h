@@ -21,7 +21,7 @@
                        target:(id)target
                        action:(SEL)action;
 
-// Adds icon subview.
+// Adds icon subview. This image will be rendered as a template image.
 - (void)addLeftIcon:(UIImage*)image;
 
 // Creates a new string from |string| that is interpreted as a link by

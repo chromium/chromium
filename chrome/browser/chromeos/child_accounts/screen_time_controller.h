@@ -11,6 +11,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "base/optional.h"
 #include "base/time/time.h"
 #include "chrome/browser/chromeos/child_accounts/parent_access_code/parent_access_service.h"
 #include "chrome/browser/chromeos/child_accounts/time_limit_notifier.h"
@@ -43,7 +44,7 @@ namespace chromeos {
 // Schedule notifications and lock/unlock screen based on the processor output.
 class ScreenTimeController
     : public KeyedService,
-      public parent_access::ParentAccessService::Delegate,
+      public parent_access::ParentAccessService::Observer,
       public session_manager::SessionManagerObserver,
       public UsageTimeStateNotifier::Observer,
       public system::TimezoneSettings::Observer,
@@ -66,9 +67,6 @@ class ScreenTimeController
   // used the device today (since the last reset).
   virtual base::TimeDelta GetScreenTimeDuration();
 
-  // parent_access::ParentAccessService::Delegate:
-  void OnAccessCodeValidation(bool result) override;
-
   // Method intended for testing purposes only.
   void SetClocksForTesting(
       const base::Clock* clock,
@@ -88,16 +86,19 @@ class ScreenTimeController
 
   // Request to lock the screen and show the time limits message when the screen
   // is locked.
-  void ForceScreenLockByPolicy(base::Time next_unlock_time);
+  void ForceScreenLockByPolicy();
 
-  // Updates the state of lock screen.
-  // |blocked|: If true, user authentication is disabled and a message is shown
-  //            to indicate when user will be able to unlock the screen.
-  //            If false, authentication is re-enabled, message is dismissed and
-  //            user is able to unlock immediately.
+  // Enables the time limits message in the lock screen and performs tasks that
+  // need to run after the screen is locked.
+  // |active_policy|: Which policy is locking the device, only valid when
+  //                  |visible| is true.
   // |next_unlock_time|: When user will be able to unlock the screen, only valid
   //                     when |visible| is true.
-  void UpdateLockScreenState(bool blocked, base::Time next_unlock_time);
+  void OnScreenLockByPolicy(usage_time_limit::PolicyType active_policy,
+                            base::Time next_unlock_time);
+
+  // Disables the time limits message in the lock screen.
+  void OnScreenLockByPolicyEnd();
 
   // Called when the policy of time limits changes.
   void OnPolicyChanged();
@@ -121,6 +122,15 @@ class ScreenTimeController
   // finish. It should call the method UsageTimeLimitWarning for each observer.
   void UsageTimeLimitWarning();
 
+  // Converts a usage_time_limit::PolicyType to its TimeLimitNotifier::LimitType
+  // equivalent.
+  base::Optional<TimeLimitNotifier::LimitType> ConvertPolicyType(
+      usage_time_limit::PolicyType policy_type);
+
+  // parent_access::ParentAccessService::Observer:
+  void OnAccessCodeValidation(bool result,
+                              base::Optional<AccountId> account_id) override;
+
   // session_manager::SessionManagerObserver:
   void OnSessionStateChanged() override;
 
@@ -142,10 +152,6 @@ class ScreenTimeController
   // Points to the base::DefaultClock by default.
   const base::Clock* clock_;
 
-  // Validates parent access codes. Informs registered delegate about validation
-  // results.
-  std::unique_ptr<parent_access::ParentAccessService> parent_access_service_;
-
   // Timer scheduled for when the next lock screen state change event is
   // expected to happen, e.g. when bedtime is over or the usage limit ends.
   std::unique_ptr<base::OneShotTimer> next_state_timer_;
@@ -156,13 +162,14 @@ class ScreenTimeController
   // usage limit.
   std::unique_ptr<base::OneShotTimer> usage_time_limit_warning_timer_;
 
+  // Contains the last time limit policy processed by this class. Used to
+  // generate notifications when the policy changes.
+  std::unique_ptr<base::DictionaryValue> last_policy_;
+
   // Used to set up timers when a time limit is approaching.
   TimeLimitNotifier time_limit_notifier_;
 
   PrefChangeRegistrar pref_change_registrar_;
-
-  // Used to update the time limits message, if any, when screen is locked.
-  base::Optional<base::Time> next_unlock_time_;
 
   DISALLOW_COPY_AND_ASSIGN(ScreenTimeController);
 };

@@ -10,7 +10,7 @@
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "base/test/gtest_util.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/unguessable_token.h"
 #include "chromeos/services/secure_channel/connection_details.h"
 #include "chromeos/services/secure_channel/fake_active_connection_manager.h"
@@ -28,7 +28,8 @@ namespace {
 
 class FakeMultiplexedChannelFactory : public MultiplexedChannelImpl::Factory {
  public:
-  FakeMultiplexedChannelFactory(MultiplexedChannel::Delegate* expected_delegate)
+  explicit FakeMultiplexedChannelFactory(
+      MultiplexedChannel::Delegate* expected_delegate)
       : expected_delegate_(expected_delegate) {}
   ~FakeMultiplexedChannelFactory() override = default;
 
@@ -185,9 +186,9 @@ class SecureChannelActiveConnectionManagerImplTest : public testing::Test {
       const std::string& device_id) {
     ConnectionDetails connection_details(device_id,
                                          ConnectionMedium::kBluetoothLowEnergy);
-    if (!base::ContainsKey(fake_multiplexed_channel_factory_
-                               ->connection_details_to_active_channel_map(),
-                           connection_details)) {
+    if (!base::Contains(fake_multiplexed_channel_factory_
+                            ->connection_details_to_active_channel_map(),
+                        connection_details)) {
       return nullptr;
     }
 
@@ -217,7 +218,7 @@ class SecureChannelActiveConnectionManagerImplTest : public testing::Test {
   }
 
  private:
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
 
   std::unique_ptr<FakeMultiplexedChannelFactory>
       fake_multiplexed_channel_factory_;

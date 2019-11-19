@@ -23,13 +23,14 @@
 #include "ui/views/examples/example_combobox_model.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/view.h"
+#include "ui/views/view_class_properties.h"
 
 namespace views {
 namespace examples {
 
 FlexLayoutExample::FlexLayoutExample() : LayoutExampleBase("Flex Layout") {}
 
-FlexLayoutExample::~FlexLayoutExample() {}
+FlexLayoutExample::~FlexLayoutExample() = default;
 
 void FlexLayoutExample::CreateAdditionalControls(int vertical_pos) {
   static const char* const orientation_values[2] = {"Horizontal", "Vertical"};
@@ -44,14 +45,20 @@ void FlexLayoutExample::CreateAdditionalControls(int vertical_pos) {
   cross_axis_alignment_ = CreateCombobox(base::ASCIIToUTF16("Cross axis"),
                                          cross_axis_values, 4, &vertical_pos);
 
+  between_child_spacing_ =
+      CreateTextfield(base::ASCIIToUTF16("Child spacing"), &vertical_pos);
+
   CreateMarginsTextFields(base::ASCIIToUTF16("Interior margin"),
-                          interior_margin_, &vertical_pos);
+                          &interior_margin_, &vertical_pos);
 
   CreateMarginsTextFields(base::ASCIIToUTF16("Default margins"),
-                          default_child_margins_, &vertical_pos);
+                          &default_child_margins_, &vertical_pos);
 
   collapse_margins_ =
       CreateCheckbox(base::ASCIIToUTF16("Collapse margins"), &vertical_pos);
+
+  ignore_default_main_axis_margins_ = CreateCheckbox(
+      base::ASCIIToUTF16("Ignore main axis margins"), &vertical_pos);
 
   layout_ = layout_panel()->SetLayoutManager(std::make_unique<FlexLayout>());
 }
@@ -66,13 +73,13 @@ void FlexLayoutExample::OnPerformAction(Combobox* combobox) {
       LayoutAlignment::kCenter, LayoutAlignment::kEnd};
 
   if (combobox == orientation_) {
-    layout_->SetOrientation(orientations[combobox->selected_index()]);
+    layout_->SetOrientation(orientations[combobox->GetSelectedIndex()]);
   } else if (combobox == main_axis_alignment_) {
     layout_->SetMainAxisAlignment(
-        main_axis_alignments[combobox->selected_index()]);
+        main_axis_alignments[combobox->GetSelectedIndex()]);
   } else if (combobox == cross_axis_alignment_) {
     layout_->SetCrossAxisAlignment(
-        cross_axis_alignments[combobox->selected_index()]);
+        cross_axis_alignments[combobox->GetSelectedIndex()]);
   }
   RefreshLayoutPanel(false);
 }
@@ -81,25 +88,34 @@ void FlexLayoutExample::ContentsChanged(Textfield* sender,
                                         const base::string16& new_contents) {
   layout_->SetInteriorMargin(
       LayoutExampleBase::TextfieldsToInsets(interior_margin_));
-  layout_->SetDefaultChildMargins(
-      LayoutExampleBase::TextfieldsToInsets(default_child_margins_));
+  layout_->SetDefault(views::kMarginsKey, LayoutExampleBase::TextfieldsToInsets(
+                                              default_child_margins_));
+  if (sender == between_child_spacing_) {
+    int spacing;
+    if (base::StringToInt(between_child_spacing_->GetText(), &spacing))
+      layout_->SetBetweenChildSpacing(spacing);
+  }
   RefreshLayoutPanel(false);
 }
 
 void FlexLayoutExample::ButtonPressedImpl(Button* sender) {
-  if (sender == collapse_margins_)
-    layout_->SetCollapseMargins(collapse_margins_->checked());
+  if (sender == collapse_margins_) {
+    layout_->SetCollapseMargins(collapse_margins_->GetChecked());
+  } else if (sender == ignore_default_main_axis_margins_) {
+    layout_->SetIgnoreDefaultMainAxisMargins(
+        ignore_default_main_axis_margins_->GetChecked());
+  }
   RefreshLayoutPanel(false);
 }
 
 void FlexLayoutExample::UpdateLayoutManager() {
-  for (int i = 0; i < layout_panel()->child_count(); ++i) {
-    ChildPanel* panel = static_cast<ChildPanel*>(layout_panel()->child_at(i));
+  for (View* child : layout_panel()->children()) {
+    ChildPanel* panel = static_cast<ChildPanel*>(child);
     int flex = panel->GetFlex();
     if (flex < 0)
-      layout_->ClearFlexForView(panel);
+      panel->ClearProperty(views::kFlexBehaviorKey);
     else
-      layout_->SetFlexForView(panel, GetFlexSpecification(flex));
+      panel->SetProperty(views::kFlexBehaviorKey, GetFlexSpecification(flex));
   }
 }
 

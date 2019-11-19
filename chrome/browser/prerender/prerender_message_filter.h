@@ -13,6 +13,7 @@
 #include "content/public/browser/browser_message_filter.h"
 #include "content/public/browser/browser_thread.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 class Profile;
 struct PrerenderAttributes;
@@ -57,6 +58,7 @@ class PrerenderMessageFilter : public content::BrowserMessageFilter {
   void OnAddPrerender(int prerender_id,
                       const PrerenderAttributes& attributes,
                       const content::Referrer& referrer,
+                      const url::Origin& initiator_origin,
                       const gfx::Size& size,
                       int render_view_route_id);
   void OnCancelPrerender(int prerender_id);

@@ -11,14 +11,14 @@
 #include "chrome/browser/vr/elements/ui_element.h"
 #include "chrome/browser/vr/elements/vector_icon.h"
 #include "chrome/browser/vr/ui_scene_constants.h"
-#include "chrome/browser/vr/ui_support.h"
+#include "components/vector_icons/vector_icons.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/point_f.h"
 
 namespace vr {
 
 TEST(DiscButton, HoverTest) {
-  DiscButton button(base::RepeatingCallback<void()>(), GetVrIcon(kVrMicIcon),
+  DiscButton button(base::RepeatingCallback<void()>(), vector_icons::kMicIcon,
                     nullptr);
   button.SetSize(1.0f, 1.0f);
   button.set_hover_offset(0.5f);
@@ -44,7 +44,7 @@ TEST(DiscButton, HoverTest) {
 }
 
 TEST(DiscButton, SizePropagatesToSubElements) {
-  DiscButton button(base::RepeatingCallback<void()>(), GetVrIcon(kVrMicIcon),
+  DiscButton button(base::RepeatingCallback<void()>(), vector_icons::kMicIcon,
                     nullptr);
   gfx::SizeF size(1000.0f, 1000.0f);
   gfx::SizeF icon_size = size;
@@ -69,7 +69,7 @@ TEST(DiscButton, SizePropagatesToSubElements) {
 }
 
 TEST(DiscButton, DrawPhasePropagatesToSubElements) {
-  DiscButton button(base::RepeatingCallback<void()>(), GetVrIcon(kVrMicIcon),
+  DiscButton button(base::RepeatingCallback<void()>(), vector_icons::kMicIcon,
                     nullptr);
   button.SetDrawPhase(kPhaseOverlayForeground);
 
@@ -79,7 +79,7 @@ TEST(DiscButton, DrawPhasePropagatesToSubElements) {
 }
 
 TEST(DiscButton, NamePropagatesToSubElements) {
-  DiscButton button(base::RepeatingCallback<void()>(), GetVrIcon(kVrMicIcon),
+  DiscButton button(base::RepeatingCallback<void()>(), vector_icons::kMicIcon,
                     nullptr);
   button.SetName(kCloseButton);
 

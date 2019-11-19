@@ -19,6 +19,8 @@ In order to find the message header files efficiently, it requires that
 Chromium is checked out using git.
 """
 
+from __future__ import print_function
+
 import optparse
 import os
 import re
@@ -99,11 +101,11 @@ def _ReadHeaderFile(f, msg_start_table, msg_map):
     match = re.match(msg_start_re, line)
     if match:
       msg_start = match.group(1)
-      # print "msg_start = " + msg_start
+      # print("msg_start = " + msg_start)
     match = re.match(msg_def_re, line)
     if match:
       msg_name = match.group(1)
-      # print "msg_name = " + msg_name
+      # print("msg_name = " + msg_name)
     if msg_start and msg_name:
       msg_id = _GetMsgId(msg_start, line_number, msg_start_table)
       msg_map[msg_id] = msg_name
@@ -128,7 +130,7 @@ def _ProcessLog(f, msg_map):
       line = re.sub(unknown_msg_re,
                     _ResolveMsg(int(match.group(1)), msg_map),
                     line)
-    print line
+    print(line)
 
 
 def _GetMsgMap():

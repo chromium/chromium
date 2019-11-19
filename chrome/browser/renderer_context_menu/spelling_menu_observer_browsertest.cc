@@ -87,7 +87,7 @@ IN_PROC_BROWSER_TEST_F(SpellingMenuObserverTest, InitMenuWithCorrectWord) {
 }
 
 // Tests that right-clicking a misspelled word adds two items:
-// "Add to dictionary", "Ask Google for suggestions".
+// "Add to dictionary", "Use enhanced spell check".
 IN_PROC_BROWSER_TEST_F(SpellingMenuObserverTest, InitMenuWithMisspelledWord) {
   InitMenu("wiimode", nullptr);
   EXPECT_EQ(2U, menu()->GetMenuSize());
@@ -110,7 +110,7 @@ IN_PROC_BROWSER_TEST_F(SpellingMenuObserverTest, InitMenuWithMisspelledWord) {
 }
 
 // Tests that right-clicking a correct word when we enable spelling-service
-// integration to verify an item "Ask Google for suggestions" is checked. Even
+// integration to verify an item "Use enhanced spell check" is checked. Even
 // though this meanu itself does not add this item, its sub-menu adds the item
 // and calls SpellingMenuObserver::IsChecked() to check it.
 IN_PROC_BROWSER_TEST_F(SpellingMenuObserverTest,
@@ -124,7 +124,7 @@ IN_PROC_BROWSER_TEST_F(SpellingMenuObserverTest,
 }
 
 // Tests that right-clicking a misspelled word when we enable spelling-service
-// integration to verify an item "Ask Google for suggestions" is checked. (This
+// integration to verify an item "Use enhanced spell check" is checked. (This
 // test does not actually send JSON-RPC requests to the service because it makes
 // this test flaky.)
 IN_PROC_BROWSER_TEST_F(SpellingMenuObserverTest, EnableSpellingService) {
@@ -137,7 +137,7 @@ IN_PROC_BROWSER_TEST_F(SpellingMenuObserverTest, EnableSpellingService) {
   InitMenu("wiimode", nullptr);
   EXPECT_EQ(2U, menu()->GetMenuSize());
 
-  // To avoid duplicates, this test reads only the "Ask Google for suggestions"
+  // To avoid duplicates, this test reads only the "Use enhanced spell check"
   // item and verifies it is enabled and checked.
   MockRenderViewContextMenu::MockMenuItem item;
   menu()->GetMenuItem(1, &item);
@@ -145,6 +145,26 @@ IN_PROC_BROWSER_TEST_F(SpellingMenuObserverTest, EnableSpellingService) {
   EXPECT_TRUE(item.enabled);
   EXPECT_TRUE(item.checked);
   EXPECT_FALSE(item.hidden);
+}
+
+// Tests that right-clicking a misspelled word when spelling-service
+// integration is enabled but the browser's spell check preference is disabled
+// shows the "Use enhanced spell check" as unchecked. Clicking on this item
+// enables spell check on the browser.
+IN_PROC_BROWSER_TEST_F(SpellingMenuObserverTest,
+                       EnableSpellingServiceWhenSpellcheckDisabled) {
+  menu()->GetPrefs()->SetBoolean(spellcheck::prefs::kSpellCheckEnable, false);
+  menu()->GetPrefs()->SetBoolean(
+      spellcheck::prefs::kSpellCheckUseSpellingService, true);
+
+  MockRenderViewContextMenu::MockMenuItem item;
+  menu()->GetMenuItem(1, &item);
+  EXPECT_FALSE(item.checked);
+
+  menu()->ExecuteCommand(IDC_CONTENT_CONTEXT_SPELLING_TOGGLE, 1);
+  EXPECT_TRUE(
+      menu()->GetPrefs()->GetBoolean(spellcheck::prefs::kSpellCheckEnable));
+  EXPECT_TRUE(menu()->IsCommandIdChecked(IDC_CONTENT_CONTEXT_SPELLING_TOGGLE));
 }
 
 // Test that we don't show "No more suggestions from Google" if the spelling
@@ -165,7 +185,7 @@ IN_PROC_BROWSER_TEST_F(SpellingMenuObserverTest,
   InitMenu("asdfkj", "asdf");
 
   // The test should see a suggestion, separator, "Add to dictionary",
-  // "Ask Google for suggestions".
+  // "Use enhanced spell check".
   // Possibly more items (not relevant here).
   EXPECT_LT(3U, menu()->GetMenuSize());
 
@@ -206,7 +226,7 @@ IN_PROC_BROWSER_TEST_F(SpellingMenuObserverTest,
   NoSpellingServiceWhenOffTheRecord
 #endif
 
-// Test that "Ask Google For Suggestions" is grayed out when using an
+// Test that "Use enhanced spell check" is grayed out when using an
 // off the record profile.
 // TODO(rlp): Include graying out of autocorrect in this test when autocorrect
 // is functional.
@@ -236,7 +256,7 @@ IN_PROC_BROWSER_TEST_F(SpellingMenuObserverTest,
 
   // There should not be a "No more Google suggestions" (from SpellingService)
   // or a separator. The next 2 items should be "Add to Dictionary" followed
-  // by "Ask Google for suggestions" which should be disabled.
+  // by "Use enhanced spell check" which should be disabled.
   // TODO(rlp): add autocorrect here when it is functional.
   EXPECT_LT(1U, menu()->GetMenuSize());
 

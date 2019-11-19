@@ -1,0 +1,225 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/exo/wayland/fuzzer/harness.h"
+
+{% for protocol in protocol_names %}
+  {% if protocol == 'wayland' %}
+    #include <wayland-client-core.h>
+    #include <wayland-client-protocol.h>
+  {% else %}
+    #include <{{protocol | replace('_','-')}}-client-protocol.h>
+  {% endif %}
+{% endfor %}
+
+#include <cstring>
+#include <functional>
+
+#include "base/logging.h"
+#include "components/exo/wayland/fuzzer/actions.pb.h"
+
+namespace exo {
+namespace wayland_fuzzer {
+
+{% for interface in interfaces if interface.has_listener and interface.name != 'wl_display' %}
+  namespace {{interface.name}} {
+  {% for event in interface.events %}
+    void {{event.name}}(
+      void* data,
+      {{interface.cpp_type}} receiver
+      {% for arg in event.args %}
+        , {{arg.cpp_type}} {{arg.name}}
+      {% endfor %}
+    );
+  {% endfor %}
+  static const struct {{interface.name}}_listener kListener = {
+    {% for event in interface.events %}
+      {{event.name}},
+    {% endfor %}
+  };
+  }  // namespace {{interface.name}}
+{% endfor %}
+
+
+{% for interface in interfaces if interface.name != 'wl_registry' %}
+  namespace {{interface.name}} {
+  {% for event in interface.events %}
+    void {{event.name}}(
+      void* data,
+      {{interface.cpp_type}} receiver
+      {% for arg in event.args %}
+        , {{arg.cpp_type}} {{arg.name}}
+      {% endfor %}
+    ){
+      {% if event.is_constructor %}
+        Harness* harness = static_cast<Harness*>(data);
+        {% for arg in event.args if arg.type == 'new_id' %}
+          {{arg.cpp_type}} new_object = {{arg.name}};
+        {% endfor %}
+        {% if event.constructed_has_listener %}
+          {{event.constructed}}_add_listener(new_object, &{{event.constructed}}::kListener, harness);
+        {% endif %}
+        harness->add_{{event.constructed}}(new_object);
+      {% endif %}
+      {% for arg in event.args if arg.type == 'fd' %}
+        FILE* _f = fdopen({{arg.name}}, "w");
+	CHECK(_f);
+	fwrite(".", 1, 1, _f);
+        fclose(_f);
+      {% endfor %}
+    }
+  {% endfor %}
+  {% for request in interface.requests %}
+    void {{request.name}}(Harness* harness,
+        const actions::{{interface.name}}_{{request.name}}& action) {
+      {{interface.cpp_type}} receiver = harness->get_{{interface.name}}(action.receiver());
+      if (!receiver)
+        return;
+      {% for arg in request.args %}
+        {% if arg.type == 'object' %}
+          {{arg.cpp_type}} {{arg.name}} = harness->get_{{arg.interface}}(action.{{arg.name}}());
+          {% if not arg.nullable %}
+            if (!{{arg.name}})
+              return;
+          {% endif %}
+        {% elif arg.type == 'fd' %}
+          int {{arg.name}} = harness->GetFileDescriptor(action.{{arg.name}}());
+        {% elif arg.type == 'array' %}
+          wl_array {{arg.name}}{
+            /*size=*/action.{{arg.name}}().size(),
+            /*alloc=*/action.{{arg.name}}().capacity(),
+            /*data=*/const_cast<char*>(action.{{arg.name}}().data())
+          };
+        {% endif %}
+      {% endfor %}
+
+      {% if request.is_constructor %}
+        struct {{request.constructed}}* new_object =
+      {% endif %}
+      // Invoke the wayland method.  We need ::method_name in order to
+      // disambiguate methods which might collide with
+      // interface/namespace names.
+      ::{{interface.name}}_{{request.name}}(receiver
+        {% for arg in request.args %}
+          {% if arg.type == 'object' or arg.type == 'fd' %}
+            , {{arg.name}}
+          {% elif arg.type == 'array' %}
+            , &{{arg.name}}
+          {% elif arg.type != 'new_id' %}
+            , action.{{arg.name}}(){% if arg.type == 'string' %}.c_str(){% endif %}
+          {% endif %}
+        {% endfor %}
+      );
+      {% if request.is_constructor %}
+        {% if request.constructed_has_listener %}
+          {{request.constructed}}_add_listener(new_object, &{{request.constructed}}::kListener, harness);
+        {% endif %}
+        harness->add_{{request.constructed}}(new_object);
+      {% elif request.is_destructor %}
+        harness->remove_{{interface.name}}(action.receiver());
+      {% endif %}
+    }
+  {% endfor %}
+  }  // namespace {{interface.name}}
+{% endfor %}
+
+namespace wl_registry {
+
+void bind(Harness* harness, const actions::wl_registry_bind& action) {
+  struct wl_registry* receiver = harness->get_wl_registry(action.receiver());
+  if (!receiver)
+    return;
+  switch (action.global()) {
+    {% for interface in interfaces if interface.is_global %}
+      case actions::global::{{interface.name}}: {
+        if (harness->{{interface.name}}_globals_.empty())
+          return;
+        void* new_object = wl_registry_bind(
+            receiver, harness->{{interface.name}}_globals_[0].first,
+            &{{interface.name}}_interface, harness->{{interface.name}}_globals_[0].second);
+        {% if interface.has_listener and interface.name != 'wl_display' %}
+          {{interface.name}}_add_listener(static_cast<::{{interface.name}}*>(new_object), &{{interface.name}}::kListener, harness);
+        {% endif %}
+        harness->add_{{interface.name}}(
+            static_cast<::{{interface.name}}*>(new_object));
+        break;
+      }
+    {% endfor %}
+    case actions::global::global_INT_MIN_SENTINEL_DO_NOT_USE_:
+    case actions::global::global_INT_MAX_SENTINEL_DO_NOT_USE_:
+    case actions::global::GLOBAL_UNSPECIFIED:
+      break;
+  }
+}
+
+void global(void* data,
+            struct wl_registry* registry,
+            uint32_t name,
+            const char* interface,
+            uint32_t version) {
+  Harness* harness = static_cast<Harness*>(data);
+  {% for interface in interfaces if interface.is_global %}
+    if (strcmp(interface, "{{interface.name}}") == 0) {
+      harness->{{interface.name}}_globals_.emplace_back(name, version);
+      return;
+    }
+  {% endfor %}
+}
+
+}  // namespace wl_registry
+
+void wl_registry::global_remove(void* data, struct wl_registry* registry, uint32_t name) {}
+
+Harness::Harness() {
+  wl_display_list_.emplace_back(wl_display_connect(nullptr));
+  DCHECK(wl_display_list_.front());
+}
+
+Harness::~Harness() {
+  {% for interface in interfaces %}
+    for (auto ifc : {{interface.name}}_list_) {
+      if (ifc)
+        {% if interface.name == "wl_display" %}
+          wl_display_disconnect(ifc);
+        {% else %}
+          free(ifc);
+        {% endif %}
+    }
+  {% endfor %}
+}
+
+void Harness::Run(const actions::actions& all_steps) {
+  for (const actions::action& current : all_steps.acts())
+    Run(current);
+}
+
+void Harness::Run(const actions::action& current_step) {
+  switch (current_step.act_case()) {
+    case actions::action::ActCase::ACT_NOT_SET:
+      wl_display_roundtrip(wl_display_list_.front());
+      break;
+    {% for interface in interfaces %}
+      {% for request in interface.requests %}
+        case actions::action::ActCase::kAct{{(interface.name + "_" + request.name) | replace('_', ' ') | title | replace(' ', '')}}:
+          {{interface.name}}::{{request.name}}(this, current_step.act_{{interface.name}}_{{request.name}}());
+          break;
+      {% endfor %}
+    {% endfor %}
+  }
+}
+
+int Harness::GetFileDescriptor(int id) {
+  if (shared_memory_map_.count(id) == 0) {
+    base::UnsafeSharedMemoryRegion region = 
+        base::UnsafeSharedMemoryRegion::Create(1);
+    shared_memory_map_.emplace(id, std::move(region));
+  }
+  base::subtle::ScopedFDPair fd_pair = 
+      base::UnsafeSharedMemoryRegion::TakeHandleForSerialization(
+          shared_memory_map_[id].Duplicate()).PassPlatformHandle();
+  return fd_pair.fd.release();
+}
+
+}  // namespace wayland_fuzzer
+}  // namespace exo

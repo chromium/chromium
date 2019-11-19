@@ -15,10 +15,6 @@
 
 class Profile;
 
-namespace contextual_search {
-class UnhandledTapWebContentsObserver;
-}
-
 class ContextualSearchTabHelper {
  public:
   ContextualSearchTabHelper(JNIEnv* env, jobject obj, Profile* profile);
@@ -50,12 +46,7 @@ class ContextualSearchTabHelper {
   JavaObjectWeakGlobalRef weak_java_ref_;
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 
-  // The unhandled tap WebContentsObserver for the current tab.
-  // Installs a mojo handler for ShowUnhandledTapUIIfNeeded.
-  std::unique_ptr<contextual_search::UnhandledTapWebContentsObserver>
-      unhandled_tap_web_contents_observer_;
-
-  base::WeakPtrFactory<ContextualSearchTabHelper> weak_factory_;
+  base::WeakPtrFactory<ContextualSearchTabHelper> weak_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(ContextualSearchTabHelper);
 };
 

@@ -163,14 +163,19 @@ int Statement::ColumnCount() const {
 }
 
 // Verify that our enum matches sqlite's values.
-static_assert(COLUMN_TYPE_INTEGER == SQLITE_INTEGER, "integer no match");
-static_assert(COLUMN_TYPE_FLOAT == SQLITE_FLOAT, "float no match");
-static_assert(COLUMN_TYPE_TEXT == SQLITE_TEXT, "integer no match");
-static_assert(COLUMN_TYPE_BLOB == SQLITE_BLOB, "blob no match");
-static_assert(COLUMN_TYPE_NULL == SQLITE_NULL, "null no match");
+static_assert(static_cast<int>(ColumnType::kInteger) == SQLITE_INTEGER,
+              "INTEGER mismatch");
+static_assert(static_cast<int>(ColumnType::kFloat) == SQLITE_FLOAT,
+              "FLOAT mismatch");
+static_assert(static_cast<int>(ColumnType::kText) == SQLITE_TEXT,
+              "TEXT mismatch");
+static_assert(static_cast<int>(ColumnType::kBlob) == SQLITE_BLOB,
+              "BLOB mismatch");
+static_assert(static_cast<int>(ColumnType::kNull) == SQLITE_NULL,
+              "NULL mismatch");
 
-ColType Statement::ColumnType(int col) const {
-  return static_cast<ColType>(sqlite3_column_type(ref_->stmt(), col));
+ColumnType Statement::GetColumnType(int col) const {
+  return static_cast<enum ColumnType>(sqlite3_column_type(ref_->stmt(), col));
 }
 
 bool Statement::ColumnBool(int col) const {

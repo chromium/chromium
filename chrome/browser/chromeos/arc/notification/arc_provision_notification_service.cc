@@ -97,7 +97,7 @@ void ArcProvisionNotificationService::ShowNotification() {
       notifier_id, optional_fields, new message_center::NotificationDelegate());
 
   NotificationDisplayService::GetForProfile(profile)->Display(
-      NotificationHandler::Type::TRANSIENT, notification);
+      NotificationHandler::Type::TRANSIENT, notification, /*metadata=*/nullptr);
 }
 
 void ArcProvisionNotificationService::HideNotification() {
@@ -128,8 +128,7 @@ void ArcProvisionNotificationService::OnArcOptInManagementCheckStarted() {
   // showing the notification if the opt-in flow happens silently (due to the
   // managed prefs), or ensure that no notification is shown otherwise.
   Profile* profile = Profile::FromBrowserContext(context_);
-  if (IsArcPlayStoreEnabledPreferenceManagedForProfile(profile) &&
-      AreArcAllOptInPreferencesIgnorableForProfile(profile)) {
+  if (ShouldStartArcSilentlyForManagedProfile(profile)) {
     ShowNotification();
   } else {
     HideNotification();

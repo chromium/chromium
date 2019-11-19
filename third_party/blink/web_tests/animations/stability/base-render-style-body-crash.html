@@ -4,24 +4,20 @@ body { transition: background-color 1s }
 .green { background-color: green }
 </style>
 <style id="sheet"></style>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
 <script>
-if (window.testRunner) {
-    testRunner.waitUntilDone();
-    testRunner.dumpAsText();
-}
+var test = async_test("Test passes if it does not crash");
 
-onload = function(){
+onload = test.step_func(() => {
     document.body.className = "green";
     // Needs these frames to establish a baseComputedStyle.
-    requestAnimationFrame(function(){
-        requestAnimationFrame(function(){
-            requestAnimationFrame(function(){
+    requestAnimationFrame(test.step_func(() => {
+        requestAnimationFrame(test.step_func(() => {
+            requestAnimationFrame(test.step_func_done(() => {
                 sheet.innerText = "@font-face { font-family: notfound; src: url(notfound.ttf) }";
-                if (window.testRunner)
-                    testRunner.notifyDone();
-            });
-        });
-    });
-};
+            }));
+        }));
+    }));
+});
 </script>
-<p>Pass if no crash or assert</p>

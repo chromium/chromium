@@ -16,7 +16,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/test/mock_storage_client.h"
@@ -34,15 +34,19 @@ class ImportantSitesUsageCounterTest : public testing::Test {
     run_loop_.reset(new base::RunLoop());
   }
 
-  void TearDown() override { content::RunAllTasksUntilIdle(); }
+  void TearDown() override {
+    // Release the quota manager and wait for the database to be closed.
+    quota_manager_.reset();
+    content::RunAllTasksUntilIdle();
+  }
 
   TestingProfile* profile() { return &profile_; }
 
   QuotaManager* CreateQuotaManager() {
     quota_manager_ = new QuotaManager(
         false, temp_dir_.GetPath(),
-        base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::IO}).get(),
-        nullptr, storage::GetQuotaSettingsFunc());
+        base::CreateSingleThreadTaskRunner({BrowserThread::IO}).get(), nullptr,
+        storage::GetQuotaSettingsFunc());
     return quota_manager_.get();
   }
 
@@ -84,7 +88,7 @@ class ImportantSitesUsageCounterTest : public testing::Test {
   const std::vector<ImportantDomainInfo>& domain_info() { return domain_info_; }
 
  private:
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
   base::ScopedTempDir temp_dir_;
   scoped_refptr<QuotaManager> quota_manager_;

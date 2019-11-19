@@ -8,25 +8,19 @@
 #include <list>
 #include <map>
 #include <set>
-#include <unordered_map>
+#include <string>
 
 #include "base/memory/ref_counted.h"
+#include "base/optional.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_dump_request_args.h"
-#include "mojo/public/cpp/bindings/binding.h"
-#include "mojo/public/cpp/bindings/binding_set.h"
-#include "services/resource_coordinator/memory_instrumentation/process_map.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/resource_coordinator/memory_instrumentation/queued_request.h"
-#include "services/resource_coordinator/public/cpp/memory_instrumentation/coordinator.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/tracing_observer.h"
 #include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom.h"
-#include "services/service_manager/public/cpp/identity.h"
-
-namespace service_manager {
-struct BindSourceInfo;
-class Connector;
-}
 
 namespace memory_instrumentation {
 
@@ -36,31 +30,36 @@ namespace memory_instrumentation {
 // - Provides global (i.e. for all processes) memory snapshots on demand.
 //   Global snapshots are obtained by requesting in-process snapshots from each
 //   registered client and aggregating them.
-class CoordinatorImpl : public Coordinator,
+class CoordinatorImpl : public mojom::CoordinatorController,
                         public mojom::Coordinator,
                         public mojom::HeapProfilerHelper {
  public:
+  CoordinatorImpl();
+  ~CoordinatorImpl() override;
+
   // The getter of the unique instance.
   static CoordinatorImpl* GetInstance();
 
-  CoordinatorImpl(service_manager::Connector* connector);
+  void BindController(
+      mojo::PendingReceiver<mojom::CoordinatorController> receiver);
 
-  // Binds a client library to this coordinator instance.
-  void BindCoordinatorRequest(
-      mojom::CoordinatorRequest,
-      const service_manager::BindSourceInfo& source_info) override;
+  void RegisterHeapProfiler(
+      mojo::PendingRemote<mojom::HeapProfiler> profiler,
+      mojo::PendingReceiver<mojom::HeapProfilerHelper> helper_receiver);
 
-  void BindHeapProfilerHelperRequest(
-      mojom::HeapProfilerHelperRequest request,
-      const service_manager::BindSourceInfo& source_info);
+  // mojom::CoordinatorController implementation.
+  void RegisterClientProcess(
+      mojo::PendingReceiver<mojom::Coordinator> receiver,
+      mojo::PendingRemote<mojom::ClientProcess> client_process,
+      mojom::ProcessType process_type,
+      base::ProcessId process_id,
+      const base::Optional<std::string>& service_name) override;
 
   // mojom::Coordinator implementation.
-  void RegisterClientProcess(mojom::ClientProcessPtr,
-                             mojom::ProcessType) override;
-  void UnregisterClientProcess(mojom::ClientProcess*);
   void RequestGlobalMemoryDump(
       base::trace_event::MemoryDumpType,
       base::trace_event::MemoryDumpLevelOfDetail,
+      base::trace_event::MemoryDumpDeterminism,
       const std::vector<std::string>& allocator_dump_names,
       RequestGlobalMemoryDumpCallback) override;
   void RequestGlobalMemoryDumpForPid(
@@ -73,40 +72,34 @@ class CoordinatorImpl : public Coordinator,
   void RequestGlobalMemoryDumpAndAppendToTrace(
       base::trace_event::MemoryDumpType,
       base::trace_event::MemoryDumpLevelOfDetail,
+      base::trace_event::MemoryDumpDeterminism,
       RequestGlobalMemoryDumpAndAppendToTraceCallback) override;
-  void RegisterHeapProfiler(mojom::HeapProfilerPtr heap_profiler) override;
 
   // mojom::HeapProfilerHelper implementation.
   void GetVmRegionsForHeapProfiler(
       const std::vector<base::ProcessId>& pids,
       GetVmRegionsForHeapProfilerCallback) override;
 
- protected:
-  // virtual for testing.
-  virtual service_manager::Identity GetClientIdentityForCurrentRequest() const;
-  // virtual for testing.
-  virtual base::ProcessId GetProcessIdForClientIdentity(
-      service_manager::Identity identity) const;
-  ~CoordinatorImpl() override;
 
  private:
   using OSMemDumpMap = base::flat_map<base::ProcessId, mojom::RawOSMemDumpPtr>;
   using RequestGlobalMemoryDumpInternalCallback =
       base::OnceCallback<void(bool, uint64_t, mojom::GlobalMemoryDumpPtr)>;
-  friend std::default_delete<CoordinatorImpl>;  // For testing
   friend class CoordinatorImplTest;             // For testing
 
-  // Holds the identity and remote reference of registered clients.
+  // Holds metadata and a client pipe connected to every client process.
   struct ClientInfo {
-    ClientInfo(const service_manager::Identity&,
-               mojom::ClientProcessPtr,
-               mojom::ProcessType);
+    ClientInfo(mojo::Remote<mojom::ClientProcess> client,
+               mojom::ProcessType,
+               base::Optional<std::string> service_name);
     ~ClientInfo();
 
-    const service_manager::Identity identity;
-    const mojom::ClientProcessPtr client;
+    const mojo::Remote<mojom::ClientProcess> client;
     const mojom::ProcessType process_type;
+    const base::Optional<std::string> service_name;
   };
+
+  void UnregisterClientProcess(base::ProcessId);
 
   void RequestGlobalMemoryDumpInternal(
       const QueuedRequest::Args& args,
@@ -114,20 +107,20 @@ class CoordinatorImpl : public Coordinator,
 
   // Callback of RequestChromeMemoryDump.
   void OnChromeMemoryDumpResponse(
-      mojom::ClientProcess*,
+      base::ProcessId process_id,
       bool success,
       uint64_t dump_guid,
       std::unique_ptr<base::trace_event::ProcessMemoryDump> chrome_memory_dump);
 
   // Callback of RequestOSMemoryDump.
   void OnOSMemoryDumpResponse(uint64_t dump_guid,
-                              mojom::ClientProcess*,
+                              base::ProcessId process_id,
                               bool success,
                               OSMemDumpMap);
 
   // Callback of RequestOSMemoryDumpForVmRegions.
   void OnOSMemoryDumpForVMRegions(uint64_t dump_guid,
-                                  mojom::ClientProcess* client,
+                                  base::ProcessId process_id,
                                   bool success,
                                   OSMemDumpMap);
 
@@ -136,9 +129,9 @@ class CoordinatorImpl : public Coordinator,
   // Callback of DumpProcessesForTracing.
   void OnDumpProcessesForTracing(
       uint64_t dump_guid,
-      std::vector<mojom::SharedBufferWithSizePtr> buffers);
+      std::vector<mojom::HeapProfileResultPtr> heap_profile_results);
 
-  void RemovePendingResponse(mojom::ClientProcess*,
+  void RemovePendingResponse(base::ProcessId process_id,
                              QueuedRequest::PendingResponse::Type);
 
   void OnQueuedRequestTimedOut(uint64_t dump_guid);
@@ -153,7 +146,7 @@ class CoordinatorImpl : public Coordinator,
   }
 
   // Map of registered client processes.
-  std::map<mojom::ClientProcess*, std::unique_ptr<ClientInfo>> clients_;
+  std::map<base::ProcessId, std::unique_ptr<ClientInfo>> clients_;
 
   // Outstanding dump requests, enqueued via RequestGlobalMemoryDump().
   std::list<QueuedRequest> queued_memory_dump_requests_;
@@ -178,17 +171,12 @@ class CoordinatorImpl : public Coordinator,
   std::map<uint64_t, std::unique_ptr<QueuedVmRegionRequest>>
       in_progress_vm_region_requests_;
 
-  // There may be extant callbacks in |queued_memory_dump_requests_|. The
-  // bindings_ must be closed before destroying the un-run callbacks.
-  mojo::BindingSet<mojom::Coordinator, service_manager::Identity> bindings_;
+  // Receives control messages from the single privileged client of this object.
+  mojo::Receiver<mojom::CoordinatorController> controller_receiver_{this};
 
-  // There may be extant callbacks in |queued_memory_dump_requests_|. The
-  // bindings_ must be closed before destroying the un-run callbacks.
-  mojo::BindingSet<mojom::HeapProfilerHelper, service_manager::Identity>
-      bindings_heap_profiler_helper_;
-
-  // Maintains a map of service_manager::Identity -> pid for registered clients.
-  std::unique_ptr<ProcessMap> process_map_;
+  // There may be extant callbacks in |queued_memory_dump_requests_|. These
+  // receivers must be closed before destroying the un-run callbacks.
+  mojo::ReceiverSet<mojom::Coordinator, base::ProcessId> coordinator_receivers_;
 
   // Dump IDs are unique across both heap dump and memory dump requests.
   uint64_t next_dump_id_;
@@ -198,10 +186,13 @@ class CoordinatorImpl : public Coordinator,
   base::TimeDelta client_process_timeout_;
 
   // When not null, can be queried for heap dumps.
-  mojom::HeapProfilerPtr heap_profiler_;
+  mojo::Remote<mojom::HeapProfiler> heap_profiler_;
+  mojo::Receiver<mojom::HeapProfilerHelper> heap_profiler_helper_receiver_{
+      this};
 
   THREAD_CHECKER(thread_checker_);
-  base::WeakPtrFactory<CoordinatorImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<CoordinatorImpl> weak_ptr_factory_{this};
+
   DISALLOW_COPY_AND_ASSIGN(CoordinatorImpl);
 };
 

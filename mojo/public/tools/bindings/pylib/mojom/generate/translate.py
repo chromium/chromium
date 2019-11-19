@@ -10,10 +10,11 @@ representation of a mojom file. When called it's assumed that all imports have
 already been parsed and converted to ASTs before.
 """
 
+import itertools
 import os
 import re
 
-import module as mojom
+import mojom.generate.module as mojom
 from mojom.parse import ast
 
 def _DuplicateName(values):
@@ -69,7 +70,8 @@ def _MapKind(kind):
     base_kind = _MapKind(kind[0:-1])
     # NOTE: This doesn't rule out enum types. Those will be detected later, when
     # cross-reference is established.
-    reference_kinds = ('m', 's', 'h', 'a', 'r', 'x', 'asso', 'rmt', 'rcv')
+    reference_kinds = ('m', 's', 'h', 'a', 'r', 'x', 'asso', 'rmt', 'rcv',
+                       'rma', 'rca')
     if re.split('[^a-z]', base_kind, 1)[0] not in reference_kinds:
       raise Exception(
           'A type (spec "%s") cannot be made nullable' % base_kind)
@@ -93,6 +95,12 @@ def _MapKind(kind):
   if kind.startswith('rcv<'):
     assert kind.endswith('>')
     return 'rcv:' + _MapKind(kind[4:-1])
+  if kind.startswith('rma<'):
+    assert kind.endswith('>')
+    return 'rma:' + _MapKind(kind[4:-1])
+  if kind.startswith('rca<'):
+    assert kind.endswith('>')
+    return 'rca:' + _MapKind(kind[4:-1])
   if kind in map_to_kind:
     return map_to_kind[kind]
   return 'x:' + kind
@@ -128,7 +136,7 @@ def _LookupKind(kinds, spec, scope):
   to the location where the type is referenced."""
   if spec.startswith('x:'):
     mojom_name = spec[2:]
-    for i in xrange(len(scope), -1, -1):
+    for i in range(len(scope), -1, -1):
       test_spec = 'x:'
       if i > 0:
         test_spec += '.'.join(scope[:i]) + '.'
@@ -147,7 +155,7 @@ def _LookupValue(values, mojom_name, scope, kind):
   # enum name.
   if isinstance(kind, mojom.Enum) and '.' not in mojom_name:
     mojom_name = '%s.%s' % (kind.spec.split(':', 1)[1], mojom_name)
-  for i in reversed(xrange(len(scope) + 1)):
+  for i in reversed(range(len(scope) + 1)):
     test_spec = '.'.join(scope[:i])
     if test_spec:
       test_spec += '.'
@@ -212,6 +220,10 @@ def _Kind(kinds, spec, scope):
     kind = mojom.PendingRemote(_Kind(kinds, spec[4:], scope))
   elif spec.startswith('rcv:'):
     kind = mojom.PendingReceiver(_Kind(kinds, spec[4:], scope))
+  elif spec.startswith('rma:'):
+    kind = mojom.PendingAssociatedRemote(_Kind(kinds, spec[4:], scope))
+  elif spec.startswith('rca:'):
+    kind = mojom.PendingAssociatedReceiver(_Kind(kinds, spec[4:], scope))
   elif spec.startswith('m['):
     # Isolate the two types from their brackets.
 
@@ -235,12 +247,12 @@ def _Kind(kinds, spec, scope):
 def _Import(module, import_module):
   # Copy the struct kinds from our imports into the current module.
   importable_kinds = (mojom.Struct, mojom.Union, mojom.Enum, mojom.Interface)
-  for kind in import_module.kinds.itervalues():
+  for kind in import_module.kinds.values():
     if (isinstance(kind, importable_kinds) and
         kind.module.path == import_module.path):
       module.kinds[kind.spec] = kind
   # Ditto for values.
-  for value in import_module.values.itervalues():
+  for value in import_module.values.values():
     if value.module.path == import_module.path:
       module.values[value.GetSpec()] = value
 
@@ -554,6 +566,61 @@ def _Constant(module, parsed_const, parent_kind):
   module.values[value.GetSpec()] = value
   return constant
 
+
+def _CollectReferencedKinds(module, all_defined_kinds):
+  """
+  Takes a {mojom.Module} object and a list of all defined kinds within that
+  module, and enumerates the complete dict of user-defined mojom types
+  (as {mojom.Kind} objects) referenced by the module's own defined kinds (i.e.
+  as types of struct or union or interface parameters. The returned dict is
+  keyed by kind spec.
+  """
+
+  def extract_referenced_user_kinds(kind):
+    if mojom.IsArrayKind(kind):
+      return extract_referenced_user_kinds(kind.kind)
+    if mojom.IsMapKind(kind):
+      return (extract_referenced_user_kinds(kind.key_kind) +
+          extract_referenced_user_kinds(kind.value_kind))
+    if mojom.IsInterfaceRequestKind(kind) or mojom.IsAssociatedKind(kind):
+      return [kind.kind]
+    if mojom.IsStructKind(kind):
+      return [kind]
+    if (mojom.IsInterfaceKind(kind) or mojom.IsEnumKind(kind) or
+        mojom.IsUnionKind(kind)):
+      return [kind]
+    return []
+
+  def sanitize_kind(kind):
+    """Removes nullability from a kind"""
+    if kind.spec.startswith('?'):
+      return _Kind(module.kinds, kind.spec[1:],
+                   (module.mojom_namespace, ''))
+    return kind
+
+  referenced_user_kinds = {}
+  for defined_kind in all_defined_kinds:
+    if mojom.IsStructKind(defined_kind) or mojom.IsUnionKind(defined_kind):
+      for field in defined_kind.fields:
+        for referenced_kind in extract_referenced_user_kinds(field.kind):
+          sanitized_kind = sanitize_kind(referenced_kind)
+          referenced_user_kinds[sanitized_kind.spec] = sanitized_kind
+
+  # Also scan for references in parameter lists
+  for interface in module.interfaces:
+    for method in interface.methods:
+      for param in itertools.chain(method.parameters or [],
+                                   method.response_parameters or []):
+        if (mojom.IsStructKind(param.kind) or mojom.IsUnionKind(param.kind) or
+            mojom.IsEnumKind(param.kind) or
+            mojom.IsAnyInterfaceKind(param.kind)):
+          for referenced_kind in extract_referenced_user_kinds(param.kind):
+            sanitized_kind = sanitize_kind(referenced_kind)
+            referenced_user_kinds[sanitized_kind.spec] = sanitized_kind
+
+  return referenced_user_kinds
+
+
 def _Module(tree, path, imports):
   """
   Args:
@@ -604,18 +671,35 @@ def _Module(tree, path, imports):
 
   # Second pass expands fields and methods. This allows fields and parameters
   # to refer to kinds defined anywhere in the mojom.
+  all_defined_kinds = {}
   for struct in module.structs:
     struct.fields = map(lambda field:
         _StructField(module, field, struct), struct.fields_data)
     del struct.fields_data
+    all_defined_kinds[struct.spec] = struct
+    for enum in struct.enums:
+      all_defined_kinds[enum.spec] = enum
   for union in module.unions:
     union.fields = map(lambda field:
         _UnionField(module, field, union), union.fields_data)
     del union.fields_data
+    all_defined_kinds[union.spec] = union
   for interface in module.interfaces:
     interface.methods = map(lambda method:
         _Method(module, method, interface), interface.methods_data)
     del interface.methods_data
+    all_defined_kinds[interface.spec] = interface
+    for enum in interface.enums:
+      all_defined_kinds[enum.spec] = enum
+  for enum in module.enums:
+    all_defined_kinds[enum.spec] = enum
+
+  all_referenced_kinds = _CollectReferencedKinds(module,
+                                                 all_defined_kinds.values())
+  imported_kind_specs = set(all_referenced_kinds.keys()).difference(
+      set(all_defined_kinds.keys()))
+  module.imported_kinds = dict((spec, all_referenced_kinds[spec])
+                               for spec in imported_kind_specs)
 
   return module
 

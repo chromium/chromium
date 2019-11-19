@@ -11,11 +11,8 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 
-HoverTabSelector::HoverTabSelector(
-    TabStripModel* tab_strip_model)
-    : tab_strip_model_(tab_strip_model),
-      tab_transition_tab_index_(-1),
-      weak_factory_(this) {
+HoverTabSelector::HoverTabSelector(TabStripModel* tab_strip_model)
+    : tab_strip_model_(tab_strip_model), tab_transition_tab_index_(-1) {
   DCHECK(tab_strip_model_);
 }
 

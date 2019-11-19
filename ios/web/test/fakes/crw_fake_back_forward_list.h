@@ -22,6 +22,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nullable, nonatomic, copy)
     NSArray<WKBackForwardListItem*>* forwardList;
 @property(nullable, nonatomic, strong) WKBackForwardListItem* currentItem;
+@property(nullable, nonatomic, readonly, strong)
+    WKBackForwardListItem* backItem;
+@property(nullable, nonatomic, readonly, strong)
+    WKBackForwardListItem* forwardItem;
 - (nullable WKBackForwardListItem*)itemAtIndex:(NSInteger)index;
 
 // Resets this instance to simulate a session with no back/forward history, and

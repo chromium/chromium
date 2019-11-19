@@ -7,11 +7,16 @@
 #include "base/logging.h"
 #include "components/strings/grit/components_strings.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/ui/dialogs/completion_block_util.h"
+#import "ios/web/public/web_state.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+using completion_block_util::DecidePolicyCallback;
+using completion_block_util::GetSafeDecidePolicyCompletion;
 
 @interface RepostFormCoordinator () {
   // WebState which requested this dialog.
@@ -47,15 +52,17 @@
   if (self) {
     _webState = webState;
     CGRect sourceRect = CGRectMake(dialogLocation.x, dialogLocation.y, 1, 1);
+    DecidePolicyCallback safeCallback =
+        GetSafeDecidePolicyCompletion(completionHandler);
     _dialogController =
         [[self class] newDialogControllerForSourceView:viewController.view
                                             sourceRect:sourceRect
-                                     completionHandler:completionHandler];
+                                     completionHandler:safeCallback];
     // The dialog may be dimissed when a new navigation starts while the dialog
     // is still presenting. This should be treated as a NO from user.
     // See https://crbug.com/854750 for a case why this matters.
     _dismissCompletionHandler = ^{
-      completionHandler(NO);
+      safeCallback(NO);
     };
   }
   return self;

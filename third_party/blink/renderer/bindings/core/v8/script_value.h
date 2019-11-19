@@ -33,10 +33,11 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits.h"
+#include "third_party/blink/renderer/bindings/core/v8/world_safe_v8_reference.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
-#include "third_party/blink/renderer/platform/bindings/shared_persistent.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "v8/include/v8.h"
 
@@ -69,49 +70,34 @@ class CORE_EXPORT ScriptValue final {
 
   ScriptValue() = default;
 
-  ScriptValue(ScriptState* script_state, v8::Local<v8::Value> value)
-      : script_state_(script_state),
-        value_(value.IsEmpty() ? nullptr
-                               : SharedPersistent<v8::Value>::Create(
-                                     value,
-                                     script_state->GetIsolate())) {
-    DCHECK(IsEmpty() || script_state_);
+  ScriptValue(v8::Isolate* isolate, v8::Local<v8::Value> value)
+      : isolate_(isolate),
+        value_(
+            MakeGarbageCollected<WorldSafeV8ReferenceWrapper>(isolate, value)) {
+    DCHECK(isolate_);
   }
 
   template <typename T>
-  ScriptValue(ScriptState* script_state, v8::MaybeLocal<T> value)
-      : script_state_(script_state),
-        value_(value.IsEmpty() ? nullptr
-                               : SharedPersistent<v8::Value>::Create(
-                                     value.ToLocalChecked(),
-                                     script_state->GetIsolate())) {
-    DCHECK(IsEmpty() || script_state_);
+  ScriptValue(v8::Isolate* isolate, v8::MaybeLocal<T> value)
+      : isolate_(isolate),
+        value_(value.IsEmpty()
+                   ? MakeGarbageCollected<WorldSafeV8ReferenceWrapper>()
+                   : MakeGarbageCollected<WorldSafeV8ReferenceWrapper>(
+                         isolate,
+                         value.ToLocalChecked())) {
+    DCHECK(isolate_);
   }
 
-  ScriptValue(const ScriptValue& value)
-      : script_state_(value.script_state_), value_(value.value_) {
-    DCHECK(IsEmpty() || script_state_);
-  }
+  ScriptValue(const ScriptValue& value) = default;
 
-  ScriptState* GetScriptState() const { return script_state_; }
-
+  // TODO(riakf): Use this GetIsolate() only when doing DCHECK inside
+  // ScriptValue.
   v8::Isolate* GetIsolate() const {
-    return script_state_ ? script_state_->GetIsolate()
-                         : v8::Isolate::GetCurrent();
+    DCHECK(isolate_);
+    return isolate_;
   }
 
-  v8::Local<v8::Context> GetContext() const {
-    DCHECK(script_state_);
-    return script_state_->GetContext();
-  }
-
-  ScriptValue& operator=(const ScriptValue& value) {
-    if (this != &value) {
-      script_state_ = value.script_state_;
-      value_ = value.value_;
-    }
-    return *this;
-  }
+  ScriptValue& operator=(const ScriptValue& value) = default;
 
   bool operator==(const ScriptValue& value) const {
     if (IsEmpty())
@@ -155,9 +141,12 @@ class CORE_EXPORT ScriptValue final {
     return !value.IsEmpty() && value->IsObject();
   }
 
-  bool IsEmpty() const { return !value_.get() || value_->IsEmpty(); }
+  bool IsEmpty() const { return !value_ || value_->IsEmpty(); }
 
-  void Clear() { value_ = nullptr; }
+  void Clear() {
+    isolate_ = nullptr;
+    value_.Clear();
+  }
 
   v8::Local<v8::Value> V8Value() const;
   // Returns v8Value() if a given ScriptState is the same as the
@@ -167,13 +156,46 @@ class CORE_EXPORT ScriptValue final {
 
   bool ToString(String&) const;
 
-  static ScriptValue CreateNull(ScriptState*);
+  static ScriptValue CreateNull(v8::Isolate*);
+
+  void Trace(Visitor* visitor) { visitor->Trace(value_); }
 
  private:
-  // TODO(peria): Move ScriptValue to Oilpan heap.
-  GC_PLUGIN_IGNORE("813731")
-  Persistent<ScriptState> script_state_;
-  scoped_refptr<SharedPersistent<v8::Value>> value_;
+  // WorldSafeV8ReferenceWrapper wraps a WorldSafeV8Reference so that it can be
+  // used on both the stack and heaps. WorldSafeV8Reference cannot be used on
+  // the stack because the conservative scanning does not know how to trace
+  // TraceWrapperV8Reference.
+  class CORE_EXPORT WorldSafeV8ReferenceWrapper
+      : public GarbageCollected<WorldSafeV8ReferenceWrapper> {
+   public:
+    WorldSafeV8ReferenceWrapper() = default;
+    WorldSafeV8ReferenceWrapper(v8::Isolate* isolate,
+                                v8::Local<v8::Value> value)
+        : value_(isolate, value) {}
+
+    virtual ~WorldSafeV8ReferenceWrapper() = default;
+    void Trace(blink::Visitor* visitor) { visitor->Trace(value_); }
+
+    v8::Local<v8::Value> Get(ScriptState* script_state) const {
+      return value_.Get(script_state);
+    }
+
+    v8::Local<v8::Value> GetAcrossWorld(ScriptState* script_state) const {
+      return value_.GetAcrossWorld(script_state);
+    }
+
+    bool IsEmpty() const { return value_.IsEmpty(); }
+
+    bool operator==(const WorldSafeV8ReferenceWrapper& other) const {
+      return value_ == other.value_;
+    }
+
+   private:
+    WorldSafeV8Reference<v8::Value> value_;
+  };
+
+  v8::Isolate* isolate_ = nullptr;
+  Member<WorldSafeV8ReferenceWrapper> value_;
 };
 
 template <>
@@ -182,10 +204,20 @@ struct NativeValueTraits<ScriptValue>
   static inline ScriptValue NativeValue(v8::Isolate* isolate,
                                         v8::Local<v8::Value> value,
                                         ExceptionState& exception_state) {
-    return ScriptValue(ScriptState::Current(isolate), value);
+    return ScriptValue(isolate, value);
   }
 };
 
 }  // namespace blink
+
+namespace WTF {
+
+template <>
+struct VectorTraits<blink::ScriptValue> : VectorTraitsBase<blink::ScriptValue> {
+  STATIC_ONLY(VectorTraits);
+  static constexpr bool kCanClearUnusedSlotsWithMemset = true;
+};
+
+}  // namespace WTF
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_SCRIPT_VALUE_H_

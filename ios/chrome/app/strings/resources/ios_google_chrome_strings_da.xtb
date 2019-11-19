@@ -1,39 +1,36 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="da">
-<translation id="1326317727527857210">Log ind på Chrome for at få adgang til dine faner på dine andre enheder.</translation>
+<translation id="1282031177488366470">Hjælp med at forbedre Chromes funktioner og effektivitet</translation>
+<translation id="1682483655351012182">Synkroniser dine Chrome-data</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1816764564654397850">Erklæring om privatliv for Google Chrome</translation>
 <translation id="1863312987075920112">Når du bruger denne app, accepterer du Chromes <ph name="BEGIN_LINK_TOS" />servicevilkår<ph name="END_LINK_TOS" /> og <ph name="BEGIN_LINK_PRIVACY" />erklæring om privatliv<ph name="END_LINK_PRIVACY" />.</translation>
-<translation id="1984705450038014246">Synkroniser dine Chrome-data</translation>
 <translation id="2147651015520127414">Chrome bekræftede, at <ph name="ISSUER" /> har udstedt certifikatet for dette website.</translation>
 <translation id="2199719347983604670">Data fra Chrome-synkronisering</translation>
-<translation id="2334084861041072223">Copyright <ph name="YEAR" /> Google Inc. Alle rettigheder forbeholdes.</translation>
-<translation id="2342981853652716282">Log ind på Chrome for at få dine bogmærker, adgangskoder og meget mere på alle dine enheder.</translation>
 <translation id="2347208864470321755">Når denne funktion er aktiveret, vil Chrome tilbyde at oversætte sider, der er skrevet på andre sprog, ved hjælp af Google Oversæt. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="2441696206556358796">Tryk på Indstillinger, og giv Chrome tilladelse til at anvende dine billeder for at gemme billeder</translation>
 <translation id="2576431527583832481">Chrome er lige blevet bedre! Der er en ny tilgængelig version.</translation>
 <translation id="257708665678654955">Skal Google Chrome tilbyde at oversætte sider på <ph name="LANGUAGE_NAME" /> fra dette website næste gang?</translation>
 <translation id="3030414234702425231">Da du er ved at logge ud af en konto, der administreres af <ph name="SIGNOUT_MANAGED_DOMAIN" />, slettes dine Chrome-data på denne enhed. Dine data forbliver på din Google-konto.</translation>
-<translation id="3148434565183091099">Log ind på Chrome for at se dine bogmærker på alle dine enheder.</translation>
 <translation id="3148688391461398285">Angiv din placering og få en bedre oplevelse, når du bruger Chrome.</translation>
 <translation id="3167189358072330585">Din konto fungerer ikke sammen med Google Chrome. Kontakt din domæneadministrator, eller brug en almindelig Google-konto til at logge ind.</translation>
 <translation id="3196546062792660320">Med Chrome sparer du tid ved at gøre alle dine konti tilgængelige online. Du kan tilføje eller fjerne konti under Indstillinger.</translation>
 <translation id="3282568296779691940">Log ind i Chrome</translation>
 <translation id="3345341804167540816">Brug Chrome overalt</translation>
 <translation id="384394811301901750">Google Chrome kan ikke bruge dit kamera lige nu</translation>
-<translation id="3870154837782082782">Google Inc.</translation>
 <translation id="3980220367029651214">Du er ved at skifte synkroniseringskonto fra <ph name="USER_EMAIL1" /> til <ph name="USER_EMAIL2" />. Dine eksisterende Chrome-data administreres af <ph name="DOMAIN" />. Denne handling sletter dine data fra denne enhed, men dine data forbliver på <ph name="USER_EMAIL1" />.</translation>
 <translation id="3988789688219830639">Google Chrome har ikke adgang til dine billeder eller videoer. Gå til iOS Indstillinger &gt; Privatliv &gt; Billeder for at få adgang.</translation>
-<translation id="4099578267706723511">Hjælp med at gøre Chrome bedre ved at sende brugsstatistik og nedbrudsrapporter til Google.</translation>
+<translation id="4099578267706723511">Vær med til at gøre Chrome bedre ved at sende brugsstatistik og nedbrudsrapporter til Google.</translation>
 <translation id="415767770115540173">Få en bedre Google-oplevelse i Chrome baseret på din placering.</translation>
 <translation id="424864128008805179">Vil du logge ud af Chrome?</translation>
-<translation id="447252321002412580">Vær med til at forbedre Chromes funktioner og ydeevne</translation>
+<translation id="4249068189593983585">Chrome-tip. Hvis du vil se flere faneindstillinger, skal du trykke på knappen Vis faner på værktøjslinjen og holde fingeren nede. Du finder knappen nederst eller øverst på skærmen.</translation>
 <translation id="4523886039239821078">Nogle tilføjelser får Chrome til at gå ned. Prøv at afinstallere:</translation>
-<translation id="4615174829807303908">Du er ved at logge ud af en konto, der administreres af <ph name="SIGNOUT_MANAGED_DOMAIN" />. Denne handling sletter dine Chrome-data fra denne enhed, men dine data forbliver på din Google-konto.</translation>
 <translation id="5389212809648216794">Google Chrome kan ikke bruge dit kamera, da det bruges af en anden app</translation>
+<translation id="5621912349729388018"><ph name="BEGIN_LINK" />Se de opdaterede servicevilkår for Chrome.<ph name="END_LINK" /></translation>
 <translation id="5639704535586432836">Åbn Indstillinger &gt; Privatliv &gt; Kamera &gt; Google Chrome, og slå kameraet til.</translation>
 <translation id="5642200033778930880">Google Chrome kan ikke bruge dit kamera i tilstanden Opdelt visning</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5854621639439811139">Chrome-tip. Nogle knapper som f.eks. Tilbage, Frem og Søg findes nu nederst på skærmen.</translation>
 <translation id="6036420186814142909">Google Chrome har funktioner, der hjælper dig med at administrere internetdata og hastigheden, som websider indlæses med.
 <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
@@ -46,14 +43,12 @@
 <translation id="7172660552945675509">Tip! <ph name="BEGIN_LINK" />Flyt Chrome til din dock<ph name="END_LINK" /></translation>
 <translation id="7173660919484573146">Chrome bruger Face ID til at sikre autoriseret adgang til dine adgangskoder.</translation>
 <translation id="7265369419224458312">Få adgang til de faner, der er åbne på din computer, lige her. Du åbner blot Chrome på din computer, går til menuen og vælger "Log ind i Chrome…"</translation>
-<translation id="728488472449859922">Aktivér QR-scanneren fra Google Chrome</translation>
 <translation id="7400722733683201933">Om Google Chrome</translation>
-<translation id="7437998757836447326">Log ud af Chrome</translation>
 <translation id="756809126120519699">Chrome-dataene blev ryddet</translation>
 <translation id="7626032353295482388">Velkommen til Chrome</translation>
+<translation id="7698568245838009292">Chrome anmoder om adgang til kameraet</translation>
+<translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Alle rettigheder forbeholdes.</translation>
 <translation id="840168496893712993">Nogle tilføjelser får Chrome til at gå ned. Prøv at afinstallere dem.</translation>
 <translation id="8459495907675268833">De valgte data er fjernet fra Chrome og synkroniserede enheder. Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og aktivitet fra andre Google-tjenester, på history.google.com.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
-<translation id="8606668294522778825">Google Chrome bruger muligvis webtjenester for at forbedre din browseroplevelse. Du kan vælge at deaktivere disse tjenester. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
-<translation id="96145293669295453">Chrome-tip. Hvis du vil se flere indstillinger for faner, skal du trykke på knappen Vis faner på værktøjslinjen nederst eller øverst på skærmen.</translation>
 </translationbundle>

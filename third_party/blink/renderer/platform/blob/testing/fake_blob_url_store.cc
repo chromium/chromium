@@ -8,10 +8,10 @@
 
 namespace blink {
 
-void FakeBlobURLStore::Register(mojom::blink::BlobPtr blob,
+void FakeBlobURLStore::Register(mojo::PendingRemote<mojom::blink::Blob> blob,
                                 const KURL& url,
                                 RegisterCallback callback) {
-  registrations.insert(url, std::move(blob));
+  registrations.insert(url, mojo::Remote<mojom::blink::Blob>(std::move(blob)));
   std::move(callback).Run();
 }
 
@@ -23,22 +23,23 @@ void FakeBlobURLStore::Revoke(const KURL& url) {
 void FakeBlobURLStore::Resolve(const KURL& url, ResolveCallback callback) {
   auto it = registrations.find(url);
   if (it == registrations.end()) {
-    std::move(callback).Run(nullptr);
+    std::move(callback).Run(mojo::NullRemote());
     return;
   }
-  mojom::blink::BlobPtr blob;
-  it->value->Clone(MakeRequest(&blob));
+  mojo::PendingRemote<mojom::blink::Blob> blob;
+  it->value->Clone(blob.InitWithNewPipeAndPassReceiver());
   std::move(callback).Run(std::move(blob));
 }
 
 void FakeBlobURLStore::ResolveAsURLLoaderFactory(
     const KURL&,
-    network::mojom::blink::URLLoaderFactoryRequest) {
+    mojo::PendingReceiver<network::mojom::blink::URLLoaderFactory>) {
   NOTREACHED();
 }
 
-void FakeBlobURLStore::ResolveForNavigation(const KURL&,
-                                            mojom::blink::BlobURLTokenRequest) {
+void FakeBlobURLStore::ResolveForNavigation(
+    const KURL&,
+    mojo::PendingReceiver<mojom::blink::BlobURLToken>) {
   NOTREACHED();
 }
 

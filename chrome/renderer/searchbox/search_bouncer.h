@@ -8,7 +8,8 @@
 #include "base/macros.h"
 #include "chrome/common/search.mojom.h"
 #include "content/public/renderer/render_thread_observer.h"
-#include "mojo/public/cpp/bindings/associated_binding.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "url/gurl.h"
 
@@ -26,10 +27,6 @@ class SearchBouncer : public content::RenderThreadObserver,
   void RegisterMojoInterfaces(
       blink::AssociatedInterfaceRegistry* associated_interfaces) override;
 
-  // Returns whether a navigation to |url| should bounce back to the browser as
-  // a potential Instant url. See search::ShouldAssignURLToInstantRenderer().
-  bool ShouldFork(const GURL& url) const;
-
   // Returns whether |url| is a valid Instant new tab page URL.
   bool IsNewTabPage(const GURL& url) const;
 
@@ -37,12 +34,13 @@ class SearchBouncer : public content::RenderThreadObserver,
   void SetNewTabPageURL(const GURL& new_tab_page_url) override;
 
  private:
-  void OnSearchBouncerRequest(
-      chrome::mojom::SearchBouncerAssociatedRequest request);
+  void BindSearchBouncerReceiver(
+      mojo::PendingAssociatedReceiver<chrome::mojom::SearchBouncer> receiver);
 
   GURL new_tab_page_url_;
 
-  mojo::AssociatedBinding<chrome::mojom::SearchBouncer> search_bouncer_binding_;
+  mojo::AssociatedReceiver<chrome::mojom::SearchBouncer>
+      search_bouncer_receiver_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SearchBouncer);
 };

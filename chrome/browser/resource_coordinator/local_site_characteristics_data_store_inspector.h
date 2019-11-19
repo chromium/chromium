@@ -12,7 +12,7 @@
 #include "base/callback.h"
 #include "base/optional.h"
 #include "base/supports_user_data.h"
-#include "chrome/browser/resource_coordinator/site_characteristics.pb.h"
+#include "chrome/browser/performance_manager/persistence/site_data/site_data.pb.h"
 #include "url/origin.h"
 
 class Profile;
@@ -53,10 +53,9 @@ class LocalSiteCharacteristicsDataStoreInspector {
   // On return |data| contains the available data for |origin| if available,
   // and |is_dirty| is true if the entry needs flushing to disk.
   // Returns true if an entry exists for |origin|.
-  virtual bool GetDataForOrigin(
-      const url::Origin& origin,
-      bool* is_dirty,
-      std::unique_ptr<SiteCharacteristicsProto>* data) = 0;
+  virtual bool GetDataForOrigin(const url::Origin& origin,
+                                bool* is_dirty,
+                                std::unique_ptr<SiteDataProto>* data) = 0;
 
   // Retrieves the data store this inspector is associated with.
   virtual SiteCharacteristicsDataStore* GetDataStore() = 0;

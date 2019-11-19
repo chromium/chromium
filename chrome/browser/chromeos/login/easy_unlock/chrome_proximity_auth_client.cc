@@ -16,13 +16,11 @@
 #include "chrome/browser/chromeos/login/easy_unlock/easy_unlock_service_signin_chromeos.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_window.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/device_sync/public/cpp/device_sync_client.h"
 #include "components/prefs/pref_service.h"
 #include "components/version_info/version_info.h"
-#include "services/identity/public/cpp/identity_manager.h"
 
 using proximity_auth::ScreenlockState;
 
@@ -32,15 +30,6 @@ ChromeProximityAuthClient::ChromeProximityAuthClient(Profile* profile)
     : profile_(profile) {}
 
 ChromeProximityAuthClient::~ChromeProximityAuthClient() {}
-
-std::string ChromeProximityAuthClient::GetAuthenticatedUsername() const {
-  const identity::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfileIfExists(profile_);
-  // |profile_| has to be a signed-in profile with IdentityManager already
-  // created. Otherwise, just crash to collect stack.
-  DCHECK(identity_manager);
-  return identity_manager->GetPrimaryAccountInfo().email;
-}
 
 void ChromeProximityAuthClient::UpdateScreenlockState(ScreenlockState state) {
   EasyUnlockService* service = EasyUnlockService::Get(profile_);

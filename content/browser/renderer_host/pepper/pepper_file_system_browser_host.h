@@ -21,7 +21,7 @@
 #include "ppapi/host/host_message_context.h"
 #include "ppapi/host/resource_host.h"
 #include "ppapi/shared_impl/file_growth.h"
-#include "storage/browser/fileapi/file_system_context.h"
+#include "storage/browser/file_system/file_system_context.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -167,7 +167,7 @@ class CONTENT_EXPORT PepperFileSystemBrowserHost
 
   std::string fsid_;  // used only for isolated filesystems.
 
-  base::WeakPtrFactory<PepperFileSystemBrowserHost> weak_factory_;
+  base::WeakPtrFactory<PepperFileSystemBrowserHost> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PepperFileSystemBrowserHost);
 };

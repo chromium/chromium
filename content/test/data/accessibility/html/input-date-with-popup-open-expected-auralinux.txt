@@ -1,0 +1,45 @@
+[document web]
+++[section]
+++++[dateeditor] controller-for
+++++++[section]
+++++++++[section]
+++++++++++[spin button] name='Month' current=9.000000 minimum=1.000000 maximum=12.000000
+++++++++++++[static] name='09'
+++++++++++[static] name='/'
+++++++++++[spin button] name='Day' current=1.000000 minimum=1.000000 maximum=31.000000
+++++++++++++[static] name='01'
+++++++++++[static] name='/'
+++++++++++[spin button] name='Year' current=2008.000000 minimum=1.000000 maximum=275760.000000
+++++++++++++[static] name='2008'
+++++++[push button] name='Show date picker'
+++++++[document web] controlled-by
+++++++++[section]
+++++++++++[section]
+++++++++++++[section]
+++++++++++++++[push button] name='Show month selection panel'
+++++++++++++++++[static] name='September 2008'
+++++++++++++++++[document frame]
+++++++++++++[push button] name='Show previous month'
+++++++++++++++[document frame]
+++++++++++++[push button] name='Today'
+++++++++++++++[section]
+++++++++++++[push button] name='Show next month'
+++++++++++++++[document frame]
+++++++++++++[table] cols=0 headers=(NONE); rows=0 headers=(NONE); caption=false; spans=(all: 1x1)
+++++++++++++++[section]
+++++++++++++++++[section]
+++++++++++++++++++[static] name='Sun'
+++++++++++++++++[section]
+++++++++++++++++++[static] name='Mon'
+++++++++++++++++[section]
+++++++++++++++++++[static] name='Tue'
+++++++++++++++++[section]
+++++++++++++++++++[static] name='Wed'
+++++++++++++++++[section]
+++++++++++++++++++[static] name='Thu'
+++++++++++++++++[section]
+++++++++++++++++++[static] name='Fri'
+++++++++++++++++[section]
+++++++++++++++++++[static] name='Sat'
+++++++++++++++[section]
+++++++++++++++++[section]

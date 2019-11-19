@@ -3,5 +3,6 @@ include_rules = [
   # allowances of //content dependencies as appropriate.
   "-components",
   "-components/data_reduction_proxy/",
+  "+components/data_reduction_proxy/core/browser/",
   "-components/previews/content",
 ]

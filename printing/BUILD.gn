@@ -22,6 +22,14 @@ if ((enable_basic_printing && is_win) || enable_print_preview) {
              "set enable_pdf=true.")
 }
 
+# Several targets want to include this header file. We separate it out
+# here so multiple targets can depend on it.
+source_set("printing_export") {
+  sources = [
+    "printing_export.h",
+  ]
+}
+
 component("printing") {
   sources = [
     "backend/print_backend.cc",
@@ -67,7 +75,6 @@ component("printing") {
     "printed_document_win.cc",
     "printing_context.cc",
     "printing_context.h",
-    "printing_export.h",
     "printing_utils.cc",
     "printing_utils.h",
     "pwg_raster_settings.h",
@@ -75,6 +82,7 @@ component("printing") {
     "units.h",
   ]
 
+  configs += [ "//build/config/compiler:noshadowing" ]
   cflags = []
   defines = [ "PRINTING_IMPLEMENTATION" ]
 
@@ -82,6 +90,7 @@ component("printing") {
     "//printing/buildflags",
   ]
   deps = [
+    ":printing_export",
     "//base",
     "//base:i18n",
     "//base/third_party/dynamic_annotations",
@@ -142,29 +151,14 @@ component("printing") {
     configs += [ ":cups" ]
 
     if (is_linux) {
-      # rebase_path does not accept an empty string
-      if (use_sysroot) {
-        cups_sysroot = rebase_path(sysroot)
-      } else {
-        cups_sysroot = ""
-      }
-      cups_version = exec_script("cups_config_helper.py",
-                                 [
-                                   "--api-version",
-                                   cups_sysroot,
-                                 ],
-                                 "trim string")
-
-      if (cups_version == "1.6" || cups_version == "1.7") {
-        cflags += [
-          # CUPS 1.6 deprecated the PPD APIs, but we will stay with this
-          # API for now as supported Linux and Mac OS'es are still using
-          # older versions of CUPS. More info: crbug.com/226176
-          "-Wno-deprecated-declarations",
-          # CUPS 1.7 deprecates httpConnectEncrypt(), see the mac section
-          # below.
-        ]
-      }
+      cflags += [
+        # CUPS 1.6 deprecated the PPD APIs, but we will stay with this
+        # API for now as supported Linux and Mac OS'es are still using
+        # older versions of CUPS. More info: crbug.com/226176
+        "-Wno-deprecated-declarations",
+        # CUPS 1.7 deprecates httpConnectEncrypt(), see the mac section
+        # below.
+      ]
     }
 
     if (is_mac) {
@@ -190,6 +184,10 @@ component("printing") {
         "backend/cups_connection.h",
         "backend/cups_deleters.cc",
         "backend/cups_deleters.h",
+        "backend/cups_ipp_advanced_caps.cc",
+        "backend/cups_ipp_advanced_caps.h",
+        "backend/cups_ipp_constants.cc",
+        "backend/cups_ipp_constants.h",
         "backend/cups_ipp_util.cc",
         "backend/cups_ipp_util.h",
         "backend/cups_jobs.cc",
@@ -212,6 +210,8 @@ component("printing") {
       # We still build the utils for fuzzing.
       if (use_fuzzing_engine) {
         sources += [
+          "backend/cups_ipp_constants.cc",
+          "backend/cups_ipp_constants.h",
           "backend/cups_ipp_util.cc",
           "backend/cups_ipp_util.h",
         ]
@@ -227,8 +227,11 @@ component("printing") {
       "backend/printing_restrictions.cc",
       "backend/printing_restrictions.h",
       "printed_document_chromeos.cc",
+      "printer_query_result_chromeos.h",
       "printing_context_no_system_dialog.cc",
       "printing_context_no_system_dialog.h",
+      "printing_features_chromeos.cc",
+      "printing_features_chromeos.h",
     ]
   } else if (is_android) {
     sources += [
@@ -263,6 +266,7 @@ static_library("test_support") {
     sources += [ "image_fuchsia.cc" ]
   }
 
+  configs += [ "//build/config/compiler:noshadowing" ]
   public_deps = [
     "//printing",
     "//ui/gfx/geometry",
@@ -290,6 +294,7 @@ test("printing_unittests") {
     "units_unittest.cc",
   ]
 
+  configs += [ "//build/config/compiler:noshadowing" ]
   deps = [
     ":printing",
     "//base/test:run_all_unittests",
@@ -318,6 +323,12 @@ test("printing_unittests") {
       sources += [ "backend/cups_ipp_util_unittest.cc" ]
     } else {
       sources += [ "backend/cups_helper_unittest.cc" ]
+      if (is_linux) {
+        sources += [ "backend/print_backend_cups_linux_unittest.cc" ]
+      }
+      if (is_mac) {
+        sources += [ "backend/print_backend_cups_mac_unittest.cc" ]
+      }
     }
   }
 }
@@ -351,12 +362,12 @@ if (is_android) {
     sources = [
       "android/java/src/org/chromium/printing/PrintingContext.java",
     ]
-    jni_package = "printing"
   }
 
   android_library("printing_java") {
     deps = [
       "//base:base_java",
+      "//base:jni_java",
       "//ui/android:ui_java",
     ]
     java_files = [
@@ -368,5 +379,6 @@ if (is_android) {
       "android/java/src/org/chromium/printing/PrintingController.java",
       "android/java/src/org/chromium/printing/PrintingControllerImpl.java",
     ]
+    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   }
 }

@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+PASS Initial iceGatheringState should be new
+PASS iceGatheringState should eventually become complete after setLocalDescription
+FAIL connection with one data channel should eventually have connected connection state Cannot read property 'transport' of null
+Harness: the test ran to completion.
+

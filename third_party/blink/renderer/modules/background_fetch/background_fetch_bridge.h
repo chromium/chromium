@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/background_fetch/background_fetch.mojom-blink.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker_registration.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
@@ -24,15 +25,13 @@ class BackgroundFetchRegistration;
 // connection to the BackgroundFetchService. It's keyed on an active Service
 // Worker Registration.
 class BackgroundFetchBridge final
-    : public GarbageCollectedFinalized<BackgroundFetchBridge>,
+    : public GarbageCollected<BackgroundFetchBridge>,
       public Supplement<ServiceWorkerRegistration> {
   USING_GARBAGE_COLLECTED_MIXIN(BackgroundFetchBridge);
 
  public:
   static const char kSupplementName[];
 
-  using AbortCallback =
-      base::OnceCallback<void(mojom::blink::BackgroundFetchError)>;
   using GetDeveloperIdsCallback =
       base::OnceCallback<void(mojom::blink::BackgroundFetchError,
                               const Vector<String>&)>;
@@ -40,8 +39,6 @@ class BackgroundFetchBridge final
       base::OnceCallback<void(mojom::blink::BackgroundFetchError,
                               BackgroundFetchRegistration*)>;
   using GetIconDisplaySizeCallback = base::OnceCallback<void(const WebSize&)>;
-  using UpdateUICallback =
-      base::OnceCallback<void(mojom::blink::BackgroundFetchError)>;
 
   static BackgroundFetchBridge* From(ServiceWorkerRegistration* registration);
 
@@ -61,36 +58,6 @@ class BackgroundFetchBridge final
   // Gets the size of the icon to be displayed in Background Fetch UI.
   void GetIconDisplaySize(GetIconDisplaySizeCallback callback);
 
-  // Matches completed requests for the fetch associated with the |developer_id|
-  // and |unique_id| and returns the {request, response} pairs based on the rest
-  // of the arguments. If |filter_by_request| is true, only response(s) for
-  // |request_to_match| are returned. |cache_query_options|s are options for the
-  // query to the cache storage. |match_all|, when true, returns all responses
-  // from the result set, and when false, returns only the first one.
-  void MatchRequests(
-      const String& developer_id,
-      const String& unique_id,
-      mojom::blink::FetchAPIRequestPtr request_to_match,
-      mojom::blink::CacheQueryOptionsPtr cache_query_options,
-      bool match_all,
-      mojom::blink::BackgroundFetchService::MatchRequestsCallback callback);
-
-  // Updates the user interface for the Background Fetch identified by
-  // |unique_id| with the updated |title| or |icon|. Will invoke the |callback|
-  // when the interface has been requested to update.
-  void UpdateUI(const String& developer_id,
-                const String& unique_id,
-                const String& title,
-                const SkBitmap& icon,
-                UpdateUICallback callback);
-
-  // Aborts the active Background Fetch for |unique_id|. Will invoke the
-  // |callback| when the Background Fetch identified by |unique_id| has been
-  // aborted, or could not be aborted for operational reasons.
-  void Abort(const String& developer_id,
-             const String& unique_id,
-             AbortCallback callback);
-
   // Gets the Background Fetch registration for the given |developer_id|. Will
   // invoke the |callback| with the Background Fetch registration, which may be
   // a nullptr if the |developer_id| does not exist, when the Mojo call has
@@ -103,12 +70,6 @@ class BackgroundFetchBridge final
   // completed.
   void GetDeveloperIds(GetDeveloperIdsCallback callback);
 
-  // Registers the |observer| to receive progress events for the background
-  // fetch registration identified by the |unique_id|.
-  void AddRegistrationObserver(
-      const String& unique_id,
-      mojom::blink::BackgroundFetchRegistrationObserverPtr observer);
-
  private:
   // Returns an initialized BackgroundFetchService*. A connection will be
   // established after the first call to this method.
@@ -119,7 +80,7 @@ class BackgroundFetchBridge final
       mojom::blink::BackgroundFetchError error,
       mojom::blink::BackgroundFetchRegistrationPtr registration_ptr);
 
-  mojom::blink::BackgroundFetchServicePtr background_fetch_service_;
+  mojo::Remote<mojom::blink::BackgroundFetchService> background_fetch_service_;
 
   DISALLOW_COPY_AND_ASSIGN(BackgroundFetchBridge);
 };

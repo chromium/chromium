@@ -3,8 +3,8 @@
 <title>Canvas test: 2d.text.measure.width.empty</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="/common/canvas-tests.js"></script>
-<link rel="stylesheet" href="/common/canvas-tests.css">
+<script src="/2dcontext/resources/canvas-tests.js"></script>
+<link rel="stylesheet" href="/2dcontext/resources/canvas-tests.css">
 <style>
 @font-face {
   font-family: CanvasTest;
@@ -27,10 +27,14 @@ var t = async_test("The empty string has zero width");
 _addTest(function(canvas, ctx) {
 
 deferTest();
-step_timeout(t.step_func_done(function () {
-    ctx.font = '50px CanvasTest';
-    _assertSame(ctx.measureText("").width, 0, "ctx.measureText(\"\").width", "0");
-}), 500);
+var f = new FontFace("CanvasTest", "/fonts/CanvasTest.ttf");
+document.fonts.add(f);
+document.fonts.ready.then(() => {
+    step_timeout(t.step_func_done(function () {
+        ctx.font = '50px CanvasTest';
+        _assertSame(ctx.measureText("").width, 0, "ctx.measureText(\"\").width", "0");
+    }), 500);
+});
 
 
 });

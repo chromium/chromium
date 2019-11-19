@@ -10,13 +10,20 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
+#include "base/time/time.h"
 #include "base/unguessable_token.h"
 
 namespace chromeos {
+
 class UserContext;
+class QuickUnlockStorageUnitTest;
 
 namespace quick_unlock {
 
+// Security token with an identifyier string and a predetermined life time,
+// after which it is irrevocably "reset" and can be considered invalid. In
+// particular this makes the identifier string inaccessible from outside the
+// class.
 class AuthToken {
  public:
   // How long the token lives.
@@ -26,23 +33,29 @@ class AuthToken {
   ~AuthToken();
 
   // An unguessable identifier that can be passed to webui to verify the token
-  // instance has not changed. Returns nullopt if the token is expired.
-  base::Optional<std::string> Identifier();
+  // instance has not changed. Returns nullopt if Reset() was called.
+  base::Optional<std::string> Identifier() const;
 
-  // The UserContext returned here can be null if its time-to-live has expired.
-  chromeos::UserContext* user_context() { return user_context_.get(); }
+  // Time since token was created or |base::nullopt| if Reset() was called.
+  base::Optional<base::TimeDelta> GetAge() const;
 
-  // Time the token out - should be used only by tests.
-  void ResetForTest();
+  // The UserContext returned here can be null if Reset() was called.
+  const chromeos::UserContext* user_context() const {
+    return user_context_.get();
+  }
 
  private:
-  // Times the token out.
+  friend class chromeos::QuickUnlockStorageUnitTest;
+
+  // Expires the token. In particular this makes the identifier string
+  // inaccessible from outside the class.
   void Reset();
 
   base::UnguessableToken identifier_;
+  base::TimeTicks creation_time_;
   std::unique_ptr<chromeos::UserContext> user_context_;
 
-  base::WeakPtrFactory<AuthToken> weak_factory_;
+  base::WeakPtrFactory<AuthToken> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AuthToken);
 };

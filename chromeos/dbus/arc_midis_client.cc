@@ -24,7 +24,7 @@ namespace {
 // during browser startup / shutdown respectively.
 class ArcMidisClientImpl : public ArcMidisClient {
  public:
-  ArcMidisClientImpl() : weak_ptr_factory_(this) {}
+  ArcMidisClientImpl() {}
 
   ~ArcMidisClientImpl() override = default;
 
@@ -57,7 +57,7 @@ class ArcMidisClientImpl : public ArcMidisClient {
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
-  base::WeakPtrFactory<ArcMidisClientImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<ArcMidisClientImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ArcMidisClientImpl);
 };

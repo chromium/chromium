@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "ash/public/cpp/notification_utils.h"
-#include "ash/public/cpp/vector_icons/vector_icons.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
@@ -20,6 +19,7 @@
 #include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/chromeos/mobile/mobile_activator.h"
 #include "chrome/browser/chromeos/net/network_portal_web_dialog.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
@@ -171,14 +171,9 @@ void NetworkPortalNotificationControllerDelegate::Click(
 
   Profile* profile = ProfileManager::GetActiveUserProfile();
 
-  const bool disable_bypass_proxy_switch_present =
-      base::CommandLine::ForCurrentProcess()->HasSwitch(
-          chromeos::switches::kDisableCaptivePortalBypassProxy);
   const bool use_incognito_profile =
-      disable_bypass_proxy_switch_present
-          ? false
-          : (profile && profile->GetPrefs()->GetBoolean(
-                            prefs::kCaptivePortalAuthenticationIgnoresProxy));
+      profile && profile->GetPrefs()->GetBoolean(
+                     prefs::kCaptivePortalAuthenticationIgnoresProxy);
 
   if (use_incognito_profile) {
     if (controller_)
@@ -215,7 +210,7 @@ const char NetworkPortalNotificationController::kUserActionMetric[] =
 
 NetworkPortalNotificationController::NetworkPortalNotificationController(
     NetworkPortalDetector* network_portal_detector)
-    : network_portal_detector_(network_portal_detector), weak_factory_(this) {
+    : network_portal_detector_(network_portal_detector) {
   if (NetworkHandler::IsInitialized()) {  // May be false in tests.
     NetworkHandler::Get()->network_state_handler()->AddObserver(this,
                                                                 FROM_HERE);
@@ -342,7 +337,7 @@ NetworkPortalNotificationController::CreateDefaultCaptivePortalNotification(
                       : IDS_PORTAL_DETECTION_NOTIFICATION_MESSAGE_WIRED,
               base::UTF8ToUTF16(network->name())),
           base::string16(), GURL(), notifier_id, data, std::move(delegate),
-          ash::kNotificationCaptivePortalIcon,
+          kNotificationCaptivePortalIcon,
           message_center::SystemNotificationWarningLevel::NORMAL);
   notification->SetSystemPriority();
   return notification;
@@ -396,7 +391,7 @@ NetworkPortalNotificationController::
               IDS_PORTAL_DETECTION_NOTIFICATION_TITLE_WIFI),
           notification_text, base::string16() /* display_source */, GURL(),
           notifier_id, data, std::move(delegate),
-          ash::kNotificationCaptivePortalIcon,
+          kNotificationCaptivePortalIcon,
           message_center::SystemNotificationWarningLevel::NORMAL);
   notification->SetSystemPriority();
   return notification;

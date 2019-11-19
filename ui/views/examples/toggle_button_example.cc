@@ -13,15 +13,14 @@
 namespace views {
 namespace examples {
 
-ToggleButtonExample::ToggleButtonExample()
-    : ExampleBase("Toggle button"), button_(nullptr), count_(0) {}
+ToggleButtonExample::ToggleButtonExample() : ExampleBase("Toggle button") {}
 
-ToggleButtonExample::~ToggleButtonExample() {}
+ToggleButtonExample::~ToggleButtonExample() = default;
 
 void ToggleButtonExample::CreateExampleView(View* container) {
   button_ = new ToggleButton(this);
-  auto layout = std::make_unique<BoxLayout>(BoxLayout::kVertical);
-  layout->set_cross_axis_alignment(BoxLayout::CROSS_AXIS_ALIGNMENT_CENTER);
+  auto layout = std::make_unique<BoxLayout>(BoxLayout::Orientation::kVertical);
+  layout->set_cross_axis_alignment(BoxLayout::CrossAxisAlignment::kCenter);
   container->SetLayoutManager(std::move(layout));
   container->AddChildView(button_);
 }

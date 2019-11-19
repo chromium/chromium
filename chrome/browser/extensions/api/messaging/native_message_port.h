@@ -42,7 +42,7 @@ class NativeMessagePort : public MessagePort {
   const PortId port_id_;
   std::unique_ptr<Core> core_;
 
-  base::WeakPtrFactory<NativeMessagePort> weak_factory_;
+  base::WeakPtrFactory<NativeMessagePort> weak_factory_{this};
 };
 
 }  // namespace extensions

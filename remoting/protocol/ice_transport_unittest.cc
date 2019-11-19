@@ -10,9 +10,9 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/macros.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "jingle/glue/thread_wrapper.h"
 #include "net/url_request/url_request_context_getter.h"
@@ -115,8 +115,7 @@ class IceTransportTest : public testing::Test {
     jingle_glue::JingleThreadWrapper::EnsureForCurrentMessageLoop();
 
     host_transport_.reset(new IceTransport(
-        new TransportContext(nullptr,
-                             std::make_unique<ChromiumPortAllocatorFactory>(),
+        new TransportContext(std::make_unique<ChromiumPortAllocatorFactory>(),
                              nullptr, network_settings_, TransportRole::SERVER),
         &host_event_handler_));
     if (!host_authenticator_) {
@@ -125,8 +124,7 @@ class IceTransportTest : public testing::Test {
     }
 
     client_transport_.reset(new IceTransport(
-        new TransportContext(nullptr,
-                             std::make_unique<ChromiumPortAllocatorFactory>(),
+        new TransportContext(std::make_unique<ChromiumPortAllocatorFactory>(),
                              nullptr, network_settings_, TransportRole::CLIENT),
         &client_event_handler_));
     if (!client_authenticator_) {
@@ -182,7 +180,8 @@ class IceTransportTest : public testing::Test {
   }
 
  protected:
-  base::MessageLoopForIO message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
   std::unique_ptr<base::RunLoop> run_loop_;
 
   NetworkSettings network_settings_;

@@ -13,10 +13,12 @@
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
+#include "content/browser/child_process_security_policy_impl.h"
 #include "content/common/frame_messages.h"
 #include "content/common/frame_owner_properties.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/common/content_client.h"
 #include "content/public/common/content_constants.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/mock_render_process_host.h"
@@ -107,26 +109,23 @@ TEST_F(RenderProcessHostUnitTest, ReuseCommittedSite) {
   // At first, trying to get a RenderProcessHost with the
   // REUSE_PENDING_OR_COMMITTED_SITE policy should return a new process.
   scoped_refptr<SiteInstanceImpl> site_instance =
-      SiteInstanceImpl::CreateForURL(browser_context(), kUrl1);
-  site_instance->set_process_reuse_policy(
-      SiteInstanceImpl::ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE);
+      SiteInstanceImpl::CreateReusableInstanceForTesting(browser_context(),
+                                                         kUrl1);
   EXPECT_NE(main_test_rfh()->GetProcess(), site_instance->GetProcess());
 
   // Have the main frame navigate to the first url. Getting a RenderProcessHost
   // with the REUSE_PENDING_OR_COMMITTED_SITE policy should now return the
   // process of the main RFH.
   NavigateAndCommit(kUrl1);
-  site_instance = SiteInstanceImpl::CreateForURL(browser_context(), kUrl1);
-  site_instance->set_process_reuse_policy(
-      SiteInstanceImpl::ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE);
+  site_instance = SiteInstanceImpl::CreateReusableInstanceForTesting(
+      browser_context(), kUrl1);
   EXPECT_EQ(main_test_rfh()->GetProcess(), site_instance->GetProcess());
 
   // Navigate away. Getting a RenderProcessHost with the
   // REUSE_PENDING_OR_COMMITTED_SITE policy should again return a new process.
   NavigateAndCommit(kUrl2);
-  site_instance = SiteInstanceImpl::CreateForURL(browser_context(), kUrl1);
-  site_instance->set_process_reuse_policy(
-      SiteInstanceImpl::ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE);
+  site_instance = SiteInstanceImpl::CreateReusableInstanceForTesting(
+      browser_context(), kUrl1);
   EXPECT_NE(main_test_rfh()->GetProcess(), site_instance->GetProcess());
   // Now add a subframe that navigates to kUrl1. Getting a RenderProcessHost
   // with the REUSE_PENDING_OR_COMMITTED_SITE policy for kUrl1 should now
@@ -135,8 +134,7 @@ TEST_F(RenderProcessHostUnitTest, ReuseCommittedSite) {
   main_test_rfh()->OnCreateChildFrame(
       process()->GetNextRoutingID(),
       TestRenderFrameHost::CreateStubInterfaceProviderRequest(),
-      TestRenderFrameHost::CreateStubDocumentInterfaceBrokerRequest(),
-      TestRenderFrameHost::CreateStubDocumentInterfaceBrokerRequest(),
+      TestRenderFrameHost::CreateStubBrowserInterfaceBrokerReceiver(),
       blink::WebTreeScopeType::kDocument, std::string(), unique_name, false,
       base::UnguessableToken::Create(), blink::FramePolicy(),
       FrameOwnerProperties(), blink::FrameOwnerElementType::kIframe);
@@ -144,9 +142,8 @@ TEST_F(RenderProcessHostUnitTest, ReuseCommittedSite) {
       contents()->GetFrameTree()->root()->child_at(0)->current_frame_host());
   subframe = static_cast<TestRenderFrameHost*>(
       NavigationSimulator::NavigateAndCommitFromDocument(kUrl1, subframe));
-  site_instance = SiteInstanceImpl::CreateForURL(browser_context(), kUrl1);
-  site_instance->set_process_reuse_policy(
-      SiteInstanceImpl::ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE);
+  site_instance = SiteInstanceImpl::CreateReusableInstanceForTesting(
+      browser_context(), kUrl1);
   EXPECT_EQ(subframe->GetProcess(), site_instance->GetProcess());
 }
 
@@ -185,16 +182,14 @@ TEST_F(RenderProcessHostUnitTest, ReuseUnmatchedServiceWorkerProcess) {
 
   // Gets a RenderProcessHost for an unmatched service worker.
   scoped_refptr<SiteInstanceImpl> sw_site_instance1 =
-      SiteInstanceImpl::CreateForURL(browser_context(), kUrl);
-  sw_site_instance1->set_is_for_service_worker();
+      SiteInstanceImpl::CreateForServiceWorker(browser_context(), kUrl);
   RenderProcessHost* sw_host1 = sw_site_instance1->GetProcess();
 
   // Getting a RenderProcessHost for a service worker with DEFAULT reuse policy
   // should not reuse the existing service worker's process. We create this
   // second service worker to test the "find the newest process" logic later.
   scoped_refptr<SiteInstanceImpl> sw_site_instance2 =
-      SiteInstanceImpl::CreateForURL(browser_context(), kUrl);
-  sw_site_instance2->set_is_for_service_worker();
+      SiteInstanceImpl::CreateForServiceWorker(browser_context(), kUrl);
   RenderProcessHost* sw_host2 = sw_site_instance2->GetProcess();
   EXPECT_NE(sw_host1, sw_host2);
 
@@ -240,8 +235,7 @@ TEST_F(RenderProcessHostUnitTest,
 
   // Gets a RenderProcessHost for an unmatched service worker.
   scoped_refptr<SiteInstanceImpl> sw_site_instance =
-      SiteInstanceImpl::CreateForURL(browser_context(), kUrl);
-  sw_site_instance->set_is_for_service_worker();
+      SiteInstanceImpl::CreateForServiceWorker(browser_context(), kUrl);
   RenderProcessHost* sw_host = sw_site_instance->GetProcess();
 
   // Simulate a situation where |sw_host| won't be considered suitable for
@@ -272,10 +266,8 @@ TEST_F(RenderProcessHostUnitTest, ReuseServiceWorkerProcessForServiceWorker) {
 
   // Gets a RenderProcessHost for a service worker.
   scoped_refptr<SiteInstanceImpl> sw_site_instance1 =
-      SiteInstanceImpl::CreateForURL(browser_context(), kUrl);
-  sw_site_instance1->set_is_for_service_worker();
-  sw_site_instance1->set_process_reuse_policy(
-      SiteInstanceImpl::ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE);
+      SiteInstanceImpl::CreateForServiceWorker(browser_context(), kUrl,
+                                               /* can_reuse_process */ true);
   RenderProcessHost* sw_host1 = sw_site_instance1->GetProcess();
 
   // Getting a RenderProcessHost for a service worker with DEFAULT reuse policy
@@ -284,8 +276,7 @@ TEST_F(RenderProcessHostUnitTest, ReuseServiceWorkerProcessForServiceWorker) {
   // start the service worker and want to use a new process. We create this
   // second service worker to test the "find the newest process" logic later.
   scoped_refptr<SiteInstanceImpl> sw_site_instance2 =
-      SiteInstanceImpl::CreateForURL(browser_context(), kUrl);
-  sw_site_instance2->set_is_for_service_worker();
+      SiteInstanceImpl::CreateForServiceWorker(browser_context(), kUrl);
   RenderProcessHost* sw_host2 = sw_site_instance2->GetProcess();
   EXPECT_NE(sw_host1, sw_host2);
 
@@ -293,10 +284,8 @@ TEST_F(RenderProcessHostUnitTest, ReuseServiceWorkerProcessForServiceWorker) {
   // REUSE_PENDING_OR_COMMITTED_SITE reuse policy should reuse the newest
   // unmatched service worker's process (i.e., sw_host2).
   scoped_refptr<SiteInstanceImpl> sw_site_instance3 =
-      SiteInstanceImpl::CreateForURL(browser_context(), kUrl);
-  sw_site_instance3->set_is_for_service_worker();
-  sw_site_instance3->set_process_reuse_policy(
-      SiteInstanceImpl::ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE);
+      SiteInstanceImpl::CreateForServiceWorker(browser_context(), kUrl,
+                                               /* can_reuse_process */ true);
   RenderProcessHost* sw_host3 = sw_site_instance3->GetProcess();
   EXPECT_EQ(sw_host2, sw_host3);
 
@@ -306,10 +295,8 @@ TEST_F(RenderProcessHostUnitTest, ReuseServiceWorkerProcessForServiceWorker) {
   // sw_host2 to be considered matched, so we can keep putting more service
   // workers in that process.
   scoped_refptr<SiteInstanceImpl> sw_site_instance4 =
-      SiteInstanceImpl::CreateForURL(browser_context(), kUrl);
-  sw_site_instance4->set_is_for_service_worker();
-  sw_site_instance4->set_process_reuse_policy(
-      SiteInstanceImpl::ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE);
+      SiteInstanceImpl::CreateForServiceWorker(browser_context(), kUrl,
+                                               /* can_reuse_process */ true);
   RenderProcessHost* sw_host4 = sw_site_instance4->GetProcess();
   EXPECT_EQ(sw_host2, sw_host4);
 
@@ -336,15 +323,13 @@ TEST_F(RenderProcessHostUnitTest,
 
   // Gets a RenderProcessHost for a service worker with process-per-site flag.
   scoped_refptr<SiteInstanceImpl> sw_site_instance1 =
-      SiteInstanceImpl::CreateForURL(browser_context(), kUrl);
-  sw_site_instance1->set_is_for_service_worker();
+      SiteInstanceImpl::CreateForServiceWorker(browser_context(), kUrl);
   RenderProcessHost* sw_host1 = sw_site_instance1->GetProcess();
 
   // Getting a RenderProcessHost for a service worker of the same site with
   // process-per-site flag should reuse the unmatched service worker's process.
   scoped_refptr<SiteInstanceImpl> sw_site_instance2 =
-      SiteInstanceImpl::CreateForURL(browser_context(), kUrl);
-  sw_site_instance2->set_is_for_service_worker();
+      SiteInstanceImpl::CreateForServiceWorker(browser_context(), kUrl);
   RenderProcessHost* sw_host2 = sw_site_instance2->GetProcess();
   EXPECT_EQ(sw_host1, sw_host2);
 
@@ -369,8 +354,7 @@ TEST_F(RenderProcessHostUnitTest, DoNotReuseOtherSiteServiceWorkerProcess) {
 
   // Gets a RenderProcessHost for a service worker.
   scoped_refptr<SiteInstanceImpl> sw_site_instance1 =
-      SiteInstanceImpl::CreateForURL(browser_context(), kUrl1);
-  sw_site_instance1->set_is_for_service_worker();
+      SiteInstanceImpl::CreateForServiceWorker(browser_context(), kUrl1);
   RenderProcessHost* sw_host1 = sw_site_instance1->GetProcess();
 
   // Getting a RenderProcessHost for a service worker of a different site should
@@ -383,53 +367,47 @@ TEST_F(RenderProcessHostUnitTest, DoNotReuseOtherSiteServiceWorkerProcess) {
 // Tests that RenderProcessHost will not consider reusing a process that has
 // committed an error page.
 TEST_F(RenderProcessHostUnitTest, DoNotReuseError) {
+  // This test depends on a network error occurring on back navigation.
+  // This cannot happen if the page is restored from the back-forward
+  // cache, because no network requests would be made.
+  contents()->GetController().GetBackForwardCache().DisableForTesting(
+      BackForwardCache::TEST_ASSUMES_NO_CACHING);
   const GURL kUrl1("http://foo.com");
   const GURL kUrl2("http://bar.com");
+
+  // Isolate |kUrl1| so we can't get a default SiteInstance for it.
+  ChildProcessSecurityPolicyImpl::GetInstance()->AddIsolatedOrigins(
+      {url::Origin::Create(kUrl1)},
+      ChildProcessSecurityPolicy::IsolatedOriginSource::TEST,
+      browser_context());
 
   // At first, trying to get a RenderProcessHost with the
   // REUSE_PENDING_OR_COMMITTED_SITE policy should return a new process.
   scoped_refptr<SiteInstanceImpl> site_instance =
-      SiteInstanceImpl::CreateForURL(browser_context(), kUrl1);
-  site_instance->set_process_reuse_policy(
-      SiteInstanceImpl::ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE);
+      SiteInstanceImpl::CreateReusableInstanceForTesting(browser_context(),
+                                                         kUrl1);
   EXPECT_NE(main_test_rfh()->GetProcess(), site_instance->GetProcess());
 
   // Have the main frame navigate to the first url. Getting a RenderProcessHost
   // with the REUSE_PENDING_OR_COMMITTED_SITE policy should now return the
   // process of the main RFH.
   NavigateAndCommit(kUrl1);
-  site_instance = SiteInstanceImpl::CreateForURL(browser_context(), kUrl1);
-  site_instance->set_process_reuse_policy(
-      SiteInstanceImpl::ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE);
+  site_instance = SiteInstanceImpl::CreateReusableInstanceForTesting(
+      browser_context(), kUrl1);
   EXPECT_EQ(main_test_rfh()->GetProcess(), site_instance->GetProcess());
 
   // Navigate away. Getting a RenderProcessHost with the
   // REUSE_PENDING_OR_COMMITTED_SITE policy should again return a new process.
   NavigateAndCommit(kUrl2);
-  site_instance = SiteInstanceImpl::CreateForURL(browser_context(), kUrl1);
-  site_instance->set_process_reuse_policy(
-      SiteInstanceImpl::ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE);
+  site_instance = SiteInstanceImpl::CreateReusableInstanceForTesting(
+      browser_context(), kUrl1);
   EXPECT_NE(main_test_rfh()->GetProcess(), site_instance->GetProcess());
 
   // Navigate back and simulate an error. Getting a RenderProcessHost with the
   // REUSE_PENDING_OR_COMMITTED_SITE policy should return a new process.
   NavigationSimulator::GoBackAndFail(contents(), net::ERR_TIMED_OUT);
-  site_instance = SiteInstanceImpl::CreateForURL(browser_context(), kUrl1);
-  site_instance->set_process_reuse_policy(
-      SiteInstanceImpl::ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE);
-  EXPECT_NE(main_test_rfh()->GetProcess(), site_instance->GetProcess());
-}
-
-// Tests that RenderProcessHost will not consider reusing a process that is
-// marked as never suitable for reuse, according to MayReuseHost().
-TEST_F(RenderProcessHostUnitTest, DoNotReuseHostThatIsNeverSuitableForReuse) {
-  const GURL kUrl("http://foo.com");
-  NavigateAndCommit(kUrl);
-  main_test_rfh()->GetProcess()->SetIsNeverSuitableForReuse();
-  scoped_refptr<SiteInstanceImpl> site_instance =
-      SiteInstanceImpl::CreateForURL(browser_context(), kUrl);
-  site_instance->set_process_reuse_policy(
-      SiteInstanceImpl::ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE);
+  site_instance = SiteInstanceImpl::CreateReusableInstanceForTesting(
+      browser_context(), kUrl1);
   EXPECT_NE(main_test_rfh()->GetProcess(), site_instance->GetProcess());
 }
 
@@ -442,9 +420,8 @@ TEST_F(RenderProcessHostUnitTest, DISABLED_ReuseNavigationProcess) {
   // At first, trying to get a RenderProcessHost with the
   // REUSE_PENDING_OR_COMMITTED_SITE policy should return a new process.
   scoped_refptr<SiteInstanceImpl> site_instance =
-      SiteInstanceImpl::CreateForURL(browser_context(), kUrl1);
-  site_instance->set_process_reuse_policy(
-      SiteInstanceImpl::ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE);
+      SiteInstanceImpl::CreateReusableInstanceForTesting(browser_context(),
+                                                         kUrl1);
   EXPECT_NE(main_test_rfh()->GetProcess(), site_instance->GetProcess());
 
   // Start a navigation. Now Getting RenderProcessHost with the
@@ -452,9 +429,8 @@ TEST_F(RenderProcessHostUnitTest, DISABLED_ReuseNavigationProcess) {
   auto navigation =
       NavigationSimulator::CreateRendererInitiated(kUrl1, main_test_rfh());
   navigation->Start();
-  site_instance = SiteInstanceImpl::CreateForURL(browser_context(), kUrl1);
-  site_instance->set_process_reuse_policy(
-      SiteInstanceImpl::ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE);
+  site_instance = SiteInstanceImpl::CreateReusableInstanceForTesting(
+      browser_context(), kUrl1);
   EXPECT_EQ(main_test_rfh()->GetProcess(), site_instance->GetProcess());
 
   // Finish the navigation and start a new cross-site one. Getting
@@ -463,9 +439,8 @@ TEST_F(RenderProcessHostUnitTest, DISABLED_ReuseNavigationProcess) {
   navigation->Commit();
   navigation = NavigationSimulator::CreateBrowserInitiated(kUrl2, contents());
   navigation->Start();
-  site_instance = SiteInstanceImpl::CreateForURL(browser_context(), kUrl2);
-  site_instance->set_process_reuse_policy(
-      SiteInstanceImpl::ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE);
+  site_instance = SiteInstanceImpl::CreateReusableInstanceForTesting(
+      browser_context(), kUrl2);
   EXPECT_EQ(contents()->GetPendingMainFrame()->GetProcess(),
             site_instance->GetProcess());
 
@@ -475,9 +450,8 @@ TEST_F(RenderProcessHostUnitTest, DISABLED_ReuseNavigationProcess) {
   int speculative_process_host_id =
       contents()->GetPendingMainFrame()->GetProcess()->GetID();
   navigation->Fail(net::ERR_ABORTED);
-  site_instance = SiteInstanceImpl::CreateForURL(browser_context(), kUrl2);
-  site_instance->set_process_reuse_policy(
-      SiteInstanceImpl::ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE);
+  site_instance = SiteInstanceImpl::CreateReusableInstanceForTesting(
+      browser_context(), kUrl2);
   EXPECT_NE(speculative_process_host_id, site_instance->GetProcess()->GetID());
 }
 
@@ -494,9 +468,8 @@ TEST_F(RenderProcessHostUnitTest,
   // At first, trying to get a RenderProcessHost with the
   // REUSE_PENDING_OR_COMMITTED_SITE policy should return a new process.
   scoped_refptr<SiteInstanceImpl> site_instance =
-      SiteInstanceImpl::CreateForURL(browser_context(), kUrl);
-  site_instance->set_process_reuse_policy(
-      SiteInstanceImpl::ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE);
+      SiteInstanceImpl::CreateReusableInstanceForTesting(browser_context(),
+                                                         kUrl);
   EXPECT_NE(main_test_rfh()->GetProcess(), site_instance->GetProcess());
 
   // Start a navigation. Now getting RenderProcessHost with the
@@ -505,9 +478,8 @@ TEST_F(RenderProcessHostUnitTest,
       NavigationSimulator::CreateRendererInitiated(kUrl, main_test_rfh());
   simulator->Start();
 
-  site_instance = SiteInstanceImpl::CreateForURL(browser_context(), kUrl);
-  site_instance->set_process_reuse_policy(
-      SiteInstanceImpl::ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE);
+  site_instance = SiteInstanceImpl::CreateReusableInstanceForTesting(
+      browser_context(), kUrl);
   // Note that with --site-per-process, the GetProcess() call on
   // |site_instance| will also lock the current process to http://foo.com.
   EXPECT_EQ(main_test_rfh()->GetProcess(), site_instance->GetProcess());
@@ -515,9 +487,8 @@ TEST_F(RenderProcessHostUnitTest,
   // Simulate a same-site redirect. Getting RenderProcessHost with the
   // REUSE_PENDING_OR_COMMITTED_SITE policy should return the current process.
   simulator->Redirect(kRedirectUrl1);
-  site_instance = SiteInstanceImpl::CreateForURL(browser_context(), kUrl);
-  site_instance->set_process_reuse_policy(
-      SiteInstanceImpl::ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE);
+  site_instance = SiteInstanceImpl::CreateReusableInstanceForTesting(
+      browser_context(), kUrl);
   EXPECT_EQ(main_test_rfh()->GetProcess(), site_instance->GetProcess());
 
   // Simulate a cross-site redirect.  Getting a RenderProcessHost with the
@@ -526,14 +497,11 @@ TEST_F(RenderProcessHostUnitTest,
   // the REUSE_PENDING_OR_COMMITTED_SITE policy for the new bar.com site should
   // return the the original process, unless we're in --site-per-process mode.
   simulator->Redirect(kRedirectUrl2);
-  site_instance = SiteInstanceImpl::CreateForURL(browser_context(), kUrl);
-  site_instance->set_process_reuse_policy(
-      SiteInstanceImpl::ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE);
+  site_instance = SiteInstanceImpl::CreateReusableInstanceForTesting(
+      browser_context(), kUrl);
   EXPECT_NE(main_test_rfh()->GetProcess(), site_instance->GetProcess());
-  site_instance =
-      SiteInstanceImpl::CreateForURL(browser_context(), kRedirectUrl2);
-  site_instance->set_process_reuse_policy(
-      SiteInstanceImpl::ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE);
+  site_instance = SiteInstanceImpl::CreateReusableInstanceForTesting(
+      browser_context(), kRedirectUrl2);
   if (AreAllSitesIsolatedForTesting()) {
     // In --site-per-process, we should've recognized that we will need to swap
     // to a new process; however, the new process won't be created until
@@ -555,15 +523,12 @@ TEST_F(RenderProcessHostUnitTest,
   simulator->ReadyToCommit();
   RenderProcessHost* post_redirect_process =
       simulator->GetFinalRenderFrameHost()->GetProcess();
-  site_instance = SiteInstanceImpl::CreateForURL(browser_context(), kUrl);
-  site_instance->set_process_reuse_policy(
-      SiteInstanceImpl::ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE);
+  site_instance = SiteInstanceImpl::CreateReusableInstanceForTesting(
+      browser_context(), kUrl);
   EXPECT_NE(main_test_rfh()->GetProcess(), site_instance->GetProcess());
   EXPECT_NE(post_redirect_process, site_instance->GetProcess());
-  site_instance =
-      SiteInstanceImpl::CreateForURL(browser_context(), kRedirectUrl2);
-  site_instance->set_process_reuse_policy(
-      SiteInstanceImpl::ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE);
+  site_instance = SiteInstanceImpl::CreateReusableInstanceForTesting(
+      browser_context(), kRedirectUrl2);
   EXPECT_EQ(post_redirect_process, site_instance->GetProcess());
 }
 
@@ -581,9 +546,8 @@ TEST_F(RenderProcessHostUnitTest,
   // At first, trying to get a RenderProcessHost with the
   // REUSE_PENDING_OR_COMMITTED_SITE policy should return a new process.
   scoped_refptr<SiteInstanceImpl> site_instance =
-      SiteInstanceImpl::CreateForURL(browser_context(), kUrl);
-  site_instance->set_process_reuse_policy(
-      SiteInstanceImpl::ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE);
+      SiteInstanceImpl::CreateReusableInstanceForTesting(browser_context(),
+                                                         kUrl);
   EXPECT_NE(main_test_rfh()->GetProcess(), site_instance->GetProcess());
 
   // Start a navigation. Now getting RenderProcessHost with the
@@ -594,18 +558,20 @@ TEST_F(RenderProcessHostUnitTest,
   main_test_rfh()->SendBeforeUnloadACK(true);
   int speculative_process_host_id =
       contents()->GetPendingMainFrame()->GetProcess()->GetID();
-  site_instance = SiteInstanceImpl::CreateForURL(browser_context(), kUrl);
-  site_instance->set_process_reuse_policy(
-      SiteInstanceImpl::ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE);
+  bool speculative_is_default_site_instance = contents()
+                                                  ->GetPendingMainFrame()
+                                                  ->GetSiteInstance()
+                                                  ->IsDefaultSiteInstance();
+  site_instance = SiteInstanceImpl::CreateReusableInstanceForTesting(
+      browser_context(), kUrl);
   EXPECT_EQ(speculative_process_host_id, site_instance->GetProcess()->GetID());
 
   // Simulate a same-site redirect. Getting RenderProcessHost with the
   // REUSE_PENDING_OR_COMMITTED_SITE policy should return the speculative
   // process.
   main_test_rfh()->SimulateRedirect(kRedirectUrl1);
-  site_instance = SiteInstanceImpl::CreateForURL(browser_context(), kUrl);
-  site_instance->set_process_reuse_policy(
-      SiteInstanceImpl::ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE);
+  site_instance = SiteInstanceImpl::CreateReusableInstanceForTesting(
+      browser_context(), kUrl);
   EXPECT_EQ(speculative_process_host_id, site_instance->GetProcess()->GetID());
 
   // Simulate a cross-site redirect. Getting a RenderProcessHost with the
@@ -613,17 +579,23 @@ TEST_F(RenderProcessHostUnitTest,
   // speculative process: neither for the new site nor for the initial site we
   // were trying to navigate to. It shouldn't return the current process either.
   main_test_rfh()->SimulateRedirect(kRedirectUrl2);
-  site_instance = SiteInstanceImpl::CreateForURL(browser_context(), kUrl);
-  site_instance->set_process_reuse_policy(
-      SiteInstanceImpl::ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE);
+  site_instance = SiteInstanceImpl::CreateReusableInstanceForTesting(
+      browser_context(), kUrl);
   EXPECT_NE(main_test_rfh()->GetProcess(), site_instance->GetProcess());
   EXPECT_NE(speculative_process_host_id, site_instance->GetProcess()->GetID());
-  site_instance =
-      SiteInstanceImpl::CreateForURL(browser_context(), kRedirectUrl2);
-  site_instance->set_process_reuse_policy(
-      SiteInstanceImpl::ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE);
+  site_instance = SiteInstanceImpl::CreateReusableInstanceForTesting(
+      browser_context(), kRedirectUrl2);
   EXPECT_NE(main_test_rfh()->GetProcess(), site_instance->GetProcess());
-  EXPECT_NE(speculative_process_host_id, site_instance->GetProcess()->GetID());
+  if (AreDefaultSiteInstancesEnabled()) {
+    EXPECT_TRUE(speculative_is_default_site_instance);
+    // The process ID should be the same as the default SiteInstance because
+    // kRedirectUrl1 and kRedirectUrl2 do not require a dedicated process.
+    EXPECT_EQ(speculative_process_host_id,
+              site_instance->GetProcess()->GetID());
+  } else {
+    EXPECT_NE(speculative_process_host_id,
+              site_instance->GetProcess()->GetID());
+  }
 
   // Once the navigation is ready to commit, Getting RenderProcessHost with the
   // REUSE_PENDING_OR_COMMITTED_SITE policy should return the new speculative
@@ -632,15 +604,12 @@ TEST_F(RenderProcessHostUnitTest,
   main_test_rfh()->PrepareForCommit();
   speculative_process_host_id =
       contents()->GetPendingMainFrame()->GetProcess()->GetID();
-  site_instance = SiteInstanceImpl::CreateForURL(browser_context(), kUrl);
-  site_instance->set_process_reuse_policy(
-      SiteInstanceImpl::ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE);
+  site_instance = SiteInstanceImpl::CreateReusableInstanceForTesting(
+      browser_context(), kUrl);
   EXPECT_NE(main_test_rfh()->GetProcess(), site_instance->GetProcess());
   EXPECT_NE(speculative_process_host_id, site_instance->GetProcess()->GetID());
-  site_instance =
-      SiteInstanceImpl::CreateForURL(browser_context(), kRedirectUrl2);
-  site_instance->set_process_reuse_policy(
-      SiteInstanceImpl::ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE);
+  site_instance = SiteInstanceImpl::CreateReusableInstanceForTesting(
+      browser_context(), kRedirectUrl2);
   EXPECT_EQ(speculative_process_host_id, site_instance->GetProcess()->GetID());
 }
 
@@ -653,30 +622,29 @@ TEST_F(RenderProcessHostUnitTest, ReuseSiteURLChanges) {
   // At first, trying to get a RenderProcessHost with the
   // REUSE_PENDING_OR_COMMITTED_SITE policy should return a new process.
   scoped_refptr<SiteInstanceImpl> site_instance =
-      SiteInstanceImpl::CreateForURL(browser_context(), kUrl);
-  site_instance->set_process_reuse_policy(
-      SiteInstanceImpl::ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE);
+      SiteInstanceImpl::CreateReusableInstanceForTesting(browser_context(),
+                                                         kUrl);
   EXPECT_NE(main_test_rfh()->GetProcess(), site_instance->GetProcess());
 
   // Have the main frame navigate to the first url. Getting a RenderProcessHost
   // with the REUSE_PENDING_OR_COMMITTED_SITE policy should now return the
   // process of the main RFH.
   NavigateAndCommit(kUrl);
-  site_instance = SiteInstanceImpl::CreateForURL(browser_context(), kUrl);
-  site_instance->set_process_reuse_policy(
-      SiteInstanceImpl::ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE);
+  site_instance = SiteInstanceImpl::CreateReusableInstanceForTesting(
+      browser_context(), kUrl);
   EXPECT_EQ(main_test_rfh()->GetProcess(), site_instance->GetProcess());
 
   // Install the custom ContentBrowserClient. Site URLs are now modified.
   // Getting a RenderProcessHost with the REUSE_PENDING_OR_COMMITTED_SITE policy
   // should no longer return the process of the main RFH, as the RFH is
   // registered with the normal site URL.
-  EffectiveURLContentBrowserClient modified_client(kUrl, kModifiedSiteUrl);
+  EffectiveURLContentBrowserClient modified_client(
+      kUrl, kModifiedSiteUrl,
+      /* requires_dedicated_process */ false);
   ContentBrowserClient* regular_client =
       SetBrowserClientForTesting(&modified_client);
-  site_instance = SiteInstanceImpl::CreateForURL(browser_context(), kUrl);
-  site_instance->set_process_reuse_policy(
-      SiteInstanceImpl::ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE);
+  site_instance = SiteInstanceImpl::CreateReusableInstanceForTesting(
+      browser_context(), kUrl);
   EXPECT_NE(main_test_rfh()->GetProcess(), site_instance->GetProcess());
 
   // Reload. Getting a RenderProcessHost with the
@@ -690,9 +658,8 @@ TEST_F(RenderProcessHostUnitTest, ReuseSiteURLChanges) {
     rfh = contents()->GetPendingMainFrame();
   rfh->PrepareForCommit();
   rfh->SendNavigate(0, true, kUrl);
-  site_instance = SiteInstanceImpl::CreateForURL(browser_context(), kUrl);
-  site_instance->set_process_reuse_policy(
-      SiteInstanceImpl::ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE);
+  site_instance = SiteInstanceImpl::CreateReusableInstanceForTesting(
+      browser_context(), kUrl);
   EXPECT_EQ(rfh->GetProcess(), site_instance->GetProcess());
 
   // Remove the custom ContentBrowserClient. Site URLs are back to normal.
@@ -700,9 +667,8 @@ TEST_F(RenderProcessHostUnitTest, ReuseSiteURLChanges) {
   // should no longer return the process of the main RFH, as it is registered
   // with the modified site URL.
   SetBrowserClientForTesting(regular_client);
-  site_instance = SiteInstanceImpl::CreateForURL(browser_context(), kUrl);
-  site_instance->set_process_reuse_policy(
-      SiteInstanceImpl::ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE);
+  site_instance = SiteInstanceImpl::CreateReusableInstanceForTesting(
+      browser_context(), kUrl);
   EXPECT_NE(rfh->GetProcess(), site_instance->GetProcess());
 
   // Reload. Getting a RenderProcessHost with the
@@ -713,9 +679,8 @@ TEST_F(RenderProcessHostUnitTest, ReuseSiteURLChanges) {
                                           : main_test_rfh();
   rfh->PrepareForCommit();
   rfh->SendNavigate(0, true, kUrl);
-  site_instance = SiteInstanceImpl::CreateForURL(browser_context(), kUrl);
-  site_instance->set_process_reuse_policy(
-      SiteInstanceImpl::ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE);
+  site_instance = SiteInstanceImpl::CreateReusableInstanceForTesting(
+      browser_context(), kUrl);
   EXPECT_EQ(rfh->GetProcess(), site_instance->GetProcess());
 }
 
@@ -731,9 +696,8 @@ TEST_F(RenderProcessHostUnitTest, ReuseExpectedSiteURLChanges) {
   // At first, trying to get a RenderProcessHost with the
   // REUSE_PENDING_OR_COMMITTED_SITE policy should return a new process.
   scoped_refptr<SiteInstanceImpl> site_instance =
-      SiteInstanceImpl::CreateForURL(browser_context(), kUrl);
-  site_instance->set_process_reuse_policy(
-      SiteInstanceImpl::ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE);
+      SiteInstanceImpl::CreateReusableInstanceForTesting(browser_context(),
+                                                         kUrl);
   EXPECT_NE(main_test_rfh()->GetProcess(), site_instance->GetProcess());
 
   // Start a navigation. Getting a RenderProcessHost with the
@@ -742,39 +706,36 @@ TEST_F(RenderProcessHostUnitTest, ReuseExpectedSiteURLChanges) {
   auto navigation =
       NavigationSimulator::CreateRendererInitiated(kUrl, main_test_rfh());
   navigation->Start();
-  site_instance = SiteInstanceImpl::CreateForURL(browser_context(), kUrl);
-  site_instance->set_process_reuse_policy(
-      SiteInstanceImpl::ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE);
+  site_instance = SiteInstanceImpl::CreateReusableInstanceForTesting(
+      browser_context(), kUrl);
   EXPECT_EQ(main_test_rfh()->GetProcess(), site_instance->GetProcess());
 
   // Install the custom ContentBrowserClient. Site URLs are now modified.
   // Getting a RenderProcessHost with the REUSE_PENDING_OR_COMMITTED_SITE policy
   // should no longer return the process of the main RFH, as the RFH is
   // registered with the normal site URL.
-  EffectiveURLContentBrowserClient modified_client(kUrl, kModifiedSiteUrl);
+  EffectiveURLContentBrowserClient modified_client(
+      kUrl, kModifiedSiteUrl, /* requires_dedicated_process */ false);
   ContentBrowserClient* regular_client =
       SetBrowserClientForTesting(&modified_client);
-  site_instance = SiteInstanceImpl::CreateForURL(browser_context(), kUrl);
-  site_instance->set_process_reuse_policy(
-      SiteInstanceImpl::ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE);
+  site_instance = SiteInstanceImpl::CreateReusableInstanceForTesting(
+      browser_context(), kUrl);
   EXPECT_NE(main_test_rfh()->GetProcess(), site_instance->GetProcess());
 
   // Have the navigation commit. Getting a RenderProcessHost with the
   // REUSE_PENDING_OR_COMMITTED_SITE policy should now return the process of the
   // main RFH, as it was registered with the modified site URL at commit time.
   navigation->Commit();
-  site_instance = SiteInstanceImpl::CreateForURL(browser_context(), kUrl);
-  site_instance->set_process_reuse_policy(
-      SiteInstanceImpl::ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE);
+  site_instance = SiteInstanceImpl::CreateReusableInstanceForTesting(
+      browser_context(), kUrl);
   EXPECT_EQ(main_test_rfh()->GetProcess(), site_instance->GetProcess());
 
   // Start a reload. Getting a RenderProcessHost with the
   // REUSE_PENDING_OR_COMMITTED_SITE policy should return the process of the
   // main RFH.
   contents()->GetController().Reload(ReloadType::NORMAL, false);
-  site_instance = SiteInstanceImpl::CreateForURL(browser_context(), kUrl);
-  site_instance->set_process_reuse_policy(
-      SiteInstanceImpl::ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE);
+  site_instance = SiteInstanceImpl::CreateReusableInstanceForTesting(
+      browser_context(), kUrl);
   EXPECT_EQ(main_test_rfh()->GetProcess(), site_instance->GetProcess());
 
   // Remove the custom ContentBrowserClient. Site URLs are back to normal.
@@ -782,9 +743,8 @@ TEST_F(RenderProcessHostUnitTest, ReuseExpectedSiteURLChanges) {
   // should no longer return the process of the main RFH, as it is registered
   // with the modified site URL.
   SetBrowserClientForTesting(regular_client);
-  site_instance = SiteInstanceImpl::CreateForURL(browser_context(), kUrl);
-  site_instance->set_process_reuse_policy(
-      SiteInstanceImpl::ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE);
+  site_instance = SiteInstanceImpl::CreateReusableInstanceForTesting(
+      browser_context(), kUrl);
   EXPECT_NE(main_test_rfh()->GetProcess(), site_instance->GetProcess());
 
   // Finish the reload. Getting a RenderProcessHost with the
@@ -792,9 +752,8 @@ TEST_F(RenderProcessHostUnitTest, ReuseExpectedSiteURLChanges) {
   // main RFH, as it was registered with the regular site URL when it committed.
   main_test_rfh()->PrepareForCommit();
   main_test_rfh()->SendNavigate(0, true, kUrl);
-  site_instance = SiteInstanceImpl::CreateForURL(browser_context(), kUrl);
-  site_instance->set_process_reuse_policy(
-      SiteInstanceImpl::ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE);
+  site_instance = SiteInstanceImpl::CreateReusableInstanceForTesting(
+      browser_context(), kUrl);
   EXPECT_EQ(main_test_rfh()->GetProcess(), site_instance->GetProcess());
 }
 
@@ -849,9 +808,8 @@ TEST_F(RenderProcessHostUnitTest,
   // reuse the foo process from the first navigation, since it's now in a
   // different StoragePartition.
   scoped_refptr<SiteInstanceImpl> site_instance =
-      SiteInstanceImpl::CreateForURL(browser_context(), kUrl);
-  site_instance->set_process_reuse_policy(
-      SiteInstanceImpl::ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE);
+      SiteInstanceImpl::CreateReusableInstanceForTesting(browser_context(),
+                                                         kUrl);
   RenderProcessHost* process = site_instance->GetProcess();
   EXPECT_NE(main_test_rfh()->GetProcess(), process);
 
@@ -866,8 +824,7 @@ TEST_F(RenderProcessHostUnitTest,
 
   // Create a RenderProcessHost for a service worker.
   scoped_refptr<SiteInstanceImpl> sw_site_instance =
-      SiteInstanceImpl::CreateForURL(browser_context(), kUrl);
-  sw_site_instance->set_is_for_service_worker();
+      SiteInstanceImpl::CreateForServiceWorker(browser_context(), kUrl);
   RenderProcessHost* sw_process = sw_site_instance->GetProcess();
 
   // Change foo.com SiteInstances to use a different StoragePartition.
@@ -880,9 +837,8 @@ TEST_F(RenderProcessHostUnitTest,
   // the ServiceWorker foo.com process, since it's now in a different
   // StoragePartition.
   scoped_refptr<SiteInstanceImpl> site_instance =
-      SiteInstanceImpl::CreateForURL(browser_context(), kUrl);
-  site_instance->set_process_reuse_policy(
-      SiteInstanceImpl::ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE);
+      SiteInstanceImpl::CreateReusableInstanceForTesting(browser_context(),
+                                                         kUrl);
   RenderProcessHost* process = site_instance->GetProcess();
   EXPECT_NE(sw_process, process);
 

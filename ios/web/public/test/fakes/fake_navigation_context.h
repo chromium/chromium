@@ -9,11 +9,12 @@
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#import "ios/web/public/web_state/navigation_context.h"
-#import "ios/web/public/web_state/web_state.h"
+#import "ios/web/public/navigation/navigation_context.h"
 #include "url/gurl.h"
 
 namespace web {
+
+class WebState;
 
 // Tracks information related to a single navigation.
 class FakeNavigationContext : public NavigationContext {

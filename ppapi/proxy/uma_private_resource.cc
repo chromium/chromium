@@ -102,7 +102,7 @@ void UMAPrivateResource::OnPluginMsgIsCrashReportingEnabled(
     const ResourceMessageReplyParams& params) {
   if (TrackedCallback::IsPending(pending_callback_))
     pending_callback_->Run(params.result());
-  pending_callback_ = NULL;
+  pending_callback_.reset();
 }
 
 }  // namespace proxy

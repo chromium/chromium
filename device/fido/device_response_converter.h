@@ -27,27 +27,31 @@ namespace device {
 COMPONENT_EXPORT(DEVICE_FIDO)
 CtapDeviceResponseCode GetResponseCode(base::span<const uint8_t> buffer);
 
-// De-serializes CBOR encoded response, checks for valid CBOR map formatting,
-// and converts response to AuthenticatorMakeCredentialResponse object with
-// CBOR map keys that conform to format of attestation object defined by the
-// WebAuthN spec : https://w3c.github.io/webauthn/#fig-attStructs
+// Converts |cbor| to an |AuthenticatorMakeCredentialResponse| using map keys
+// that conform to format of attestation object defined by the Webauthn spec:
+// https://w3c.github.io/webauthn/#fig-attStructs
 COMPONENT_EXPORT(DEVICE_FIDO)
 base::Optional<AuthenticatorMakeCredentialResponse>
 ReadCTAPMakeCredentialResponse(FidoTransportProtocol transport_used,
-                               base::span<const uint8_t> buffer);
+                               const base::Optional<cbor::Value>& cbor);
 
-// De-serializes CBOR encoded response to AuthenticatorGetAssertion /
-// AuthenticatorGetNextAssertion request to AuthenticatorGetAssertionResponse
-// object.
+// Converts |cbor|, the response to an |AuthenticatorGetAssertion| /
+// |AuthenticatorGetNextAssertion| request, to an
+// |AuthenticatorGetAssertionResponse|.
 COMPONENT_EXPORT(DEVICE_FIDO)
 base::Optional<AuthenticatorGetAssertionResponse> ReadCTAPGetAssertionResponse(
-    base::span<const uint8_t> buffer);
+    const base::Optional<cbor::Value>& cbor);
 
 // De-serializes CBOR encoded response to AuthenticatorGetInfo request to
 // AuthenticatorGetInfoResponse object.
 COMPONENT_EXPORT(DEVICE_FIDO)
 base::Optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
     base::span<const uint8_t> buffer);
+
+COMPONENT_EXPORT(DEVICE_FIDO)
+base::Optional<cbor::Value> FixInvalidUTF8(
+    cbor::Value in,
+    bool (*predicate)(const std::vector<const cbor::Value*>&));
 
 }  // namespace device
 

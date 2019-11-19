@@ -1,0 +1,13 @@
+<body>
+  <script>
+    if (window.testRunner)
+      testRunner.dumpAsText();
+    var doc = new Document();
+    var canvas = doc.createElementNS('http://www.w3.org/1999/xhtml', 'canvas')
+    var ctx = canvas.getContext('2d')
+    ctx.filter = 'blur(1ch)'
+    document.body.appendChild(canvas)
+    ctx.strokeRect(75, 140, 150, 110)
+  </script>
+  This test passes if it doesn't crash.
+</body>

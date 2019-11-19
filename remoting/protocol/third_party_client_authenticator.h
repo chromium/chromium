@@ -50,7 +50,7 @@ class ThirdPartyClientAuthenticator : public ThirdPartyAuthenticatorBase {
   FetchThirdPartyTokenCallback fetch_token_callback_;
   std::string token_;
 
-  base::WeakPtrFactory<ThirdPartyClientAuthenticator> weak_factory_;
+  base::WeakPtrFactory<ThirdPartyClientAuthenticator> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ThirdPartyClientAuthenticator);
 };

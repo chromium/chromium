@@ -30,8 +30,6 @@
 
 #include "third_party/blink/renderer/core/events/error_event.h"
 
-#include <memory>
-
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/event_interface_names.h"
 #include "v8/include/v8.h"
@@ -44,13 +42,15 @@ ErrorEvent* ErrorEvent::CreateSanitizedError(ScriptState* script_state) {
   // https://html.spec.whatwg.org/C/#runtime-script-errors:muted-errors
   DCHECK(script_state);
   return MakeGarbageCollected<ErrorEvent>(
-      "Script error.", SourceLocation::Create(String(), 0, 0, nullptr),
-      ScriptValue::CreateNull(script_state), &script_state->World());
+      "Script error.",
+      std::make_unique<SourceLocation>(String(), 0, 0, nullptr),
+      ScriptValue::CreateNull(script_state->GetIsolate()),
+      &script_state->World());
 }
 
 ErrorEvent::ErrorEvent()
     : sanitized_message_(),
-      location_(SourceLocation::Create(String(), 0, 0, nullptr)),
+      location_(std::make_unique<SourceLocation>(String(), 0, 0, nullptr)),
       world_(&DOMWrapperWorld::Current(v8::Isolate::GetCurrent())) {}
 
 ErrorEvent::ErrorEvent(ScriptState* script_state,
@@ -61,13 +61,12 @@ ErrorEvent::ErrorEvent(ScriptState* script_state,
       world_(&script_state->World()) {
   if (initializer->hasMessage())
     sanitized_message_ = initializer->message();
-  location_ = SourceLocation::Create(
+  location_ = std::make_unique<SourceLocation>(
       initializer->hasFilename() ? initializer->filename() : String(),
       initializer->hasLineno() ? initializer->lineno() : 0,
       initializer->hasColno() ? initializer->colno() : 0, nullptr);
   if (initializer->hasError()) {
-    error_.Set(initializer->error().GetIsolate(),
-               initializer->error().V8Value());
+    error_.Set(script_state->GetIsolate(), initializer->error().V8Value());
   }
 }
 
@@ -110,8 +109,8 @@ ScriptValue ErrorEvent::error(ScriptState* script_state) const {
   //    thus passing it around would cause leakage.
   // 2) Errors cannot be cloned (or serialized):
   if (World() != &script_state->World() || error_.IsEmpty())
-    return ScriptValue();
-  return ScriptValue(script_state, error_.NewLocal(script_state->GetIsolate()));
+    return ScriptValue::CreateNull(script_state->GetIsolate());
+  return ScriptValue(script_state->GetIsolate(), error_.Get(script_state));
 }
 
 void ErrorEvent::Trace(blink::Visitor* visitor) {

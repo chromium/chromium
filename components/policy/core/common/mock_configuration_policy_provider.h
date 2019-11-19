@@ -31,7 +31,16 @@ class MockConfigurationPolicyProvider : public ConfigurationPolicyProvider {
 
   // Utility method that invokes UpdatePolicy() with a PolicyBundle that maps
   // the Chrome namespace to a copy of |policy|.
+  // Note: Replaces the PolicyBundle, so any policy that has been set previously
+  // will be lost when calling this utility method.
   void UpdateChromePolicy(const PolicyMap& policy);
+
+  // Utility method that invokes UpdatePolicy() with a PolicyBundle that maps
+  // the extension's |extension_id| namespace to a copy of |policy|.
+  // Note: Replaces the PolicyBundle, so any policy that has been set previously
+  // will be lost when calling this utility method.
+  void UpdateExtensionPolicy(const PolicyMap& policy,
+                             const std::string& extension_id);
 
   // Convenience method so that tests don't need to create a registry to create
   // this mock.

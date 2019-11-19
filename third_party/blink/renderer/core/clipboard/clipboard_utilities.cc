@@ -65,9 +65,15 @@ String ConvertURIListToURL(const String& uri_list) {
 }
 
 static String EscapeForHTML(const String& str) {
-  std::string output =
-      net::EscapeForHTML(StringUTF8Adaptor(str).AsStringPiece());
-  return String(output.c_str());
+  // net::EscapeForHTML can work on 8-bit Latin-1 strings as well as 16-bit
+  // strings.
+  if (str.Is8Bit()) {
+    auto result = net::EscapeForHTML(
+        {reinterpret_cast<const char*>(str.Characters8()), str.length()});
+    return String(result.data(), result.size());
+  }
+  auto result = net::EscapeForHTML({str.Characters16(), str.length()});
+  return String(result.data(), result.size());
 }
 
 String URLToImageMarkup(const KURL& url, const String& title) {

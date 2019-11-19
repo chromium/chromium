@@ -13,9 +13,9 @@
 #include "base/command_line.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
+#include "base/hash/sha1.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/no_destructor.h"
-#include "base/sha1.h"
 #include "base/stl_util.h"
 #include "base/strings/string_split.h"
 #include "content/public/browser/browser_context.h"
@@ -32,7 +32,7 @@
 #include "extensions/common/manifest_handlers/content_scripts_handler.h"
 #include "extensions/common/switches.h"
 #include "extensions/common/user_script.h"
-#include "services/network/public/cpp/features.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "url/gurl.h"
@@ -60,59 +60,177 @@ enum class FactoryUser {
 // Migration plan for extension developers is described at
 // https://chromium.org/Home/chromium-security/extension-content-script-fetches
 const char* kHardcodedPartOfCorbAllowlist[] = {
-    "0149C10F1124F1ED6ACAD85C45E87A76A9DDC667",
     "039F93DD1DF836F1D4E2084C1BEFDB46A854A9D1",
+    "03E5D80A49C309F7B55ED6BD2B0EDEB38021ED4E",
     "072D729E856B1F2C9894AEEC3A5DF65E519D6BEE",
     "07333481B7B8D7F57A9BA64FB98CF86EA87455FC",
+    "086E69ED9071DCB20C93A081A68360963AB09385",
+    "0872D01871BC7F7428E075D656874AD43580B575",
+    "09386608C84745F0A05AC8C97165D8D76AC83771",
+    "0A8E468BCEAA5626207AB77C431C31C1F2A8F76A",
+    "0C011D916B15E5451E1B84BD14397B8EC98F455B",
+    "0CB16BAEE070B7617E9188B387C44964FB705D79",
+    "0D6C5E12B5D03639257D4C83AE1C27ECF1419C98",
     "0EAEA2FDEE025D95B3ABB37014EFF5A98AC4BEAE",
+    "0FCD1282065485458E630683F098F591B24C406D",
     "109A37B889E7C8AEA7B0103559C3EB6AF73B7832",
+    "11AF49711EE340C366CC820C98E3CA2AD7D7DE07",
     "16A81AEA09A67B03F7AEA5B957D24A4095E764BE",
-    "177508B365CBF1610CC2B53707749D79272F2F0B",
     "1AB9CC404876117F49135E67BAD813F935AAE9BA",
+    "1B9251EF3EDD5A2B2872B168406F36FB18C72F37",
+    "1CDDF7436E5F891E1D5E37164F7EB992AECA0E2D",
     "1DB115A4344B58C0B7CC1595662E86C9E92C0848",
+    "1DF1ED7172DC5B9FF337909ED5C32DED74084825",
+    "1E37F1A19C1C528E616637B105CFC4838ECF52B4",
+    "24B24CBA3D4B395503F9B0D6286E55E0FDDE4D69",
     "260871EABEDE6F2D07D0D9450096093EDAFCBF34",
+    "28A9EDFD65BC27B5048E516AA7165339F5ACBB30",
+    "2A661509BCE9F8384B00CFC96807597D71DFE94C",
     "2AA94E2D3F4DA33F0D3BCF5DD48F69B8BDB26F52",
-    "3334952C8387B357A41DD8349D39AD9E7C423943",
+    "2E2D8A405430172AB15ADCC09740F3EEE990D605",
+    "30E95BD31B11118CE488EB4FC5FF7135E0C59425",
+    "31E6100DC7B4EAB4ABF6CA2A4E191D3945D3C731",
+    "3230014EA01150A27C1887B700E019B27A6DBA08",
+    "34FB670464B5F16EF5ABD6CD53E26030E97C26B3",
     "360D8A88545D0C21CBDE2B55EA9E4E4285282B4C",
+    "3787567233ED6BACC4FC05387BE30E03434CE4CC",
+    "37AC33A3A46D271CCE57DD6CB3FACE6B01F5A347",
+    "38B4D1CC339580F506BC86D4027A49721AFB4BB9",
+    "395D84F94DA287C0E4DBAF9ACE478B9710C0029F",
+    "3A2E664CA697C622EA4CFA40373B3E641C01713B",
+    "3BC834B48C2C13765147FBAD710F792F026378D8",
+    "3CD98763C80D86E00CB1C4CAA56CEA8F3B0BA4F1",
+    "3EB17C39F8B6B28FAF34E2406E57A76013A2E066",
     "3FDD3DB17F3B686F5A05204700ABA13DF20AE957",
+    "41536C3554CD9458EB2F05F1B58CF84BB7BF83BC",
+    "42C96DF87C997828C185DAD247F469940DAFC2CD",
+    "43865F8D555C201FE452A5A40702EA96240E749C",
+    "44943FADD66932EF56EE3D856A9FAAD4A8AF0FD9",
+    "4633828B42F673E0E62475059526DC2C24091690",
+    "47ADBB376050C083FFC54CC28CD3D1F54BF0BFED",
+    "4884C48FB64665BD86509BA1F2D22D75D61ACBF9",
     "4913450195D177430217CAB64B356DC6F6B0F483",
+    "49FFDF2212E50090963E33159DBF853B5C475340",
+    "4A15AD9F12FB35BEEA6FF1807AC782A1DF979387",
+    "4A4E0B370B65C9EC65C8A615B1B9FB55A1B3E1FD",
+    "4A8EEEB4754A3E87C3A177CB31474A30967CB3C8",
+    "4E4167EDA0CFF22F261C0655E979B9474BF67C04",
+    "5053323D1F7B6EEC97A77A350DB6D0D8E51CD0AC",
     "505F2C1E723731B2C8C9182FEAA73D00525B2048",
+    "505F3697087BFD3F290F42D029CE67F1C793B2DA",
+    "50DDD8734521B61564FCE273F8E60547F88BBCBE",
+    "52865B2087D0ABCD195A83DFD4BD041A3B4EBC34",
+    "52C94AC7680C3A03CCB6EA31445DD42BD0D5CA8E",
+    "537D26CC4EC6819A6CAAE8B8B5957F5ECFA7A44B",
+    "5741A650C3AAA935154C57681310805B5FC121C3",
+    "58BCF05A42C8ECED4E6D76F51E2E1A64AC4F7E7C",
+    "5B6DC4EEFEDF06CB2BF439E4607A5BAF6E45CCA1",
+    "5E052881B4847F68CFC8ED1A00C341FC14009C1E",
+    "5F0C47BC039BEDC1B29B68918F75370C292076A6",
     "61E581B10D83C0AEF8366BB64C18C6615884B3D2",
+    "628FDD7CB49D46CF545AB9D46B3188802104F973",
+    "6357533CAFFB94A9EA5268ED110079E15561E469",
+    "65C20C06ED10E6F39EED527AC736D87B0390DE70",
+    "67528F9B47BE454EC46809C33D24F2C199BE408D",
+    "68F43E671577CF03AE901A5780DC07879331A3A9",
+    "6A113D4E2F96997D9BA4B391B90ED51058B37EFF",
     "6AE81EF3B13B15080A2DDB23A205A24C65CCC10B",
-    "6BA5F75FFF75B69507BC4B09B7094926EF93DBD2",
+    "6D3A671DABC1F87910A1AA67EE85C02095D35624",
+    "6E49449D56D031B87835CC767734AF5A064E1A13",
+    "6FD56FE5B3831B17ED5301EE2EF949CEE5BFA871",
+    "71351EAA5C16350EC5A86C23D7A288317309E53D",
+    "71CB78C3334D5122E7F23C8525AD24100CDE7D4A",
     "71EE66C0F71CD89BEE340F8568A44101D4C3A9A7",
+    "7527942941BFF13D66B46E7A2A56FDBA873FB9E6",
+    "77D83E0A4157A0E77B51AD60BAB69A346CD4FEA3",
+    "7879DB88205D880B64D55E51B9726E1D12F7261F",
+    "7B179178FD3246EF29212093F1025A11C0F127ED",
     "7BFE588B209A15260DE12777B4BBB738DE98FE6C",
+    "7C9DEE7EABBF6C722DC7C1B86460F0507E5AA561",
     "808FA9BB3CD501D7801D1CD6D5A3DBA088FDD46F",
+    "81FD24AF95679B900370DB857CE2EACADBE50A9B",
     "82FDBBF79F3517C3946BD89EAAF90C46DFDA4681",
+    "83431421F759AE7A3BDAC00A4959D13095C65805",
+    "834BD6E8E9F59D388DBB264453EB08A5DE45ED03",
+    "83B6C75264D5D2F81FDEFD681EDD2076DD8F0B9B",
     "88C372CE52E21560C17BFD52556E60D694E12CAC",
     "88F5F459139892C0F5DF3022676726BB3F01FB5C",
+    "896C60AC2F7F03B4F582027DD2107F3BB67DF69D",
+    "89C9B32115F19A18E9BE4906DC59F24A934CB9F0",
+    "89F40D84C0C72C6B02B320716E877FB1671218E9",
+    "8A0634388BCBB6D073E1C97B14C024396ED32D12",
     "8CDD303D6C341D9CAB16713C3CD7587B90A7A84A",
+    "8CE6227B4E53DF42FF93B24F49D15EDE31E97E79",
+    "905C225238FB337834F193DF48550D721445B438",
+    "9233B7F0B98FCC181ED43AFAF58056C4EDCED162",
+    "92F2B155490417F0797849C81292E3986EBE6811",
     "934B8F5753A3E5A276FC7D0EE5E575B335A0CC76",
+    "93934B0B87347437699EB62A8921F59F40C36D7A",
+    "93BBF911E8871F6FCC8170448FD2DF5B9EF233E5",
+    "95E78675D2DB61DC688586CD7A24202A260907A4",
     "973E35633030AD27DABEC99609424A61386C7309",
+    "9784343657207FE88A629E8EAA7A4A19C7C8CBE0",
+    "97E04C5632954E778306CAC40B3F95C470B463B6",
+    "999BD8D1929F9ABB817E9368480D93BAB2A0983D",
     "99E06C364BBB2D1F82A9D20BC1645BF21E478259",
-    "A30E526CF62131BFBFD7CD9B56253A8F3F171777",
+    "9C6A186F8D3C5FD0CC8DCF49682FA726BD8A7705",
+    "A04F08A772F1C83B7A14ED29788ACA4F000BBE05",
+    "A059797AECB77D24DEB248C3413D99B0D3BF9A8C",
+    "A07DA0EDB967D027E3B220208AD085FDC44C3231",
     "A3660FA31A0DBF07C9F80D5342FF215DBC962719",
+    "A42FE007E0651EAC159EE1B393586AFFFE065DC2",
+    "A6057397EDC4E6CF25BC3A142F866ACC653B1CF1",
+    "A733063124AC9E1E6E1E331FFBAAE32D81AC2581",
     "A8FB3967ADE404B77AC3FB5815A399C0660C3C63",
     "A9A4B26C2387BA2A5861C790B0FF39F230427AC8",
-    "A9F78610B717B3992F92F490E82FC63FFF46C5FA",
+    "AA3DE48E23B2465B21F5D33E993FD959F611DD10",
+    "ADD14F4517B9A87D4E841369417E5BDB5FDFF263",
+    "AE063CF9FF5D718AD6F1CF242FABAC39B57ADEBA",
     "AEEDAC793F184240CFB800DA73EE6321E5145102",
+    "AF0965B74237AFF383C981C05178732C9A05A140",
+    "B3CF6C01796E8D03378FAA77AF507E27BB847E9D",
     "B4782AE831D849EFCC2AF4BE2012816EDDF8D908",
+    "B6903E9A5A8CC5D74A688DA0A67AFA2B0944F605",
     "BF5224FB246A6B67EA986EFF77A43F6C1BCA9672",
-    "C5BCB9E2E47C3F6FD3F7F83ED982872F77852BA7",
+    "C0A30989F3717CE5B1B2FE462797951EA6D3922A",
+    "C4A81852B9ACE6CE02DAB58BB77BDA0AD75716EC",
+    "C5539F4EBECABA792CC40D03A56144AAD3BF9D19",
+    "C86D546CA47034163C12DC2C912910C3A12C3B07",
+    "C940F83135D9612865F4A44391DDDFE3B7BE1393",
     "CA89BD35059845F2DB4B4398FD339B9F210E9337",
-    "CC74B2408753932B5D49C81EC073E3E4CA766EE6",
+    "CC32A0FD1D88B403308EACBE4DE3CA5AC54B93EB",
     "CD8AF9C47DDE6327F8D9A3EFA81F34C6B6C26EBB",
-    "D0537B1BADCE856227CE76E31B3772F6B68F653C",
+    "CF40F6289951CBFA3B83B792EFA774E2EA06E4C0",
+    "D347F78F32567E90BC32D9C16B085254EA269590",
+    "D572BE31227F6D0BE95B9430BE2D5F21D7D9CF9A",
+    "D7C3879A8898618E3A23B0E6BFB6A38D01606246",
+    "DC39837AC518B832FCB2D2DC1CE8BA148F54758E",
+    "DC88B4C9E547F3E321B3E64CCDBD4B698116D2F4",
+    "DDA21167F058A65D878DF84C3CF3FCC60B053E80",
+    "E134BC4A0FF6C59CE42CC76BA6B2D6F5DC648EC4",
+    "E14510DB95CB9E60B4C8CB10B0AC9DE837B5D7D7",
+    "E178D4F4D6617C0B880C36F192DA3B18422C5064",
+    "E61DC62BF2F1D7CAEEF93E84A5EE5F6D2CFDBC79",
     "E6B12430B6166B31BE20E13941C22569EA75B0F2",
     "E7036E906DBFB77C46EDDEB003A72C0B5CC9BE7F",
+    "E8309B92AACFEB64D39F5466EF3BDB6B63A7248B",
     "E873675B8E754F1B1F1222CB921EA14B4335179D",
     "EAD0BFA4ED66D9A2112A4C9A0AA25329FF980AC6",
     "EC24668224116D19FF1A5FFAA61238B88773982C",
     "EC4A841BD03C8E5202043165188A9E060BF703A3",
     "EE4BE5F23D2E59E4713958465941EFB4A18166B7",
+    "EE711E704D4A365C4644EE4637076C81DF454EA6",
+    "F1ACA279F460440E47078D91FE372212DD9B8709",
+    "F273C23C616F5C56E8EDBAE24B21F5D408936A0D",
     "F566B33D62CE21415AF5B3F3FD8762B7454B8874",
     "F59AB261280AB3AE9826D9359507838B90B07431",
+    "F608282162AD48CE45D5BC2F6F467B56E88EBFA4",
     "F73F9EF0207603992CA3C00A7A0CB223D5571B3F",
+    "F9287A33E15038F2591F23E6E9C486717C7202DD",
+    "FCC2DC6574A3CA28ED77195926C67F612292C5C3",
+    "FEE3DC8C722657A4A5B0F72CA48CF950DC956148",
+    "FF0DA4BD87A88469B10709B99E79D4B0E11C0CA6",
+    "FF8257C73304BA655E10F324C962504BA6691DF2",
 };
 
 constexpr size_t kHashedExtensionIdLength = base::kSHA1Length * 2;
@@ -131,43 +249,20 @@ std::vector<std::string> CreateExtensionAllowlist() {
     return allowlist;
   }
 
-  // Make sure kHardcodedPartOfAllowlist will fit, but also leave some room
-  // for field trial params.
-  allowlist.reserve(base::size(kHardcodedPartOfCorbAllowlist) + 10);
-
   // Append extensions from the hardcoded allowlist.
+  allowlist.reserve(base::size(kHardcodedPartOfCorbAllowlist));
   for (const char* hash : kHardcodedPartOfCorbAllowlist) {
     DCHECK(IsValidHashedExtensionId(hash));  // It also validates the length.
     allowlist.push_back(std::string(hash, kHashedExtensionIdLength));
   }
-
-  // Append extensions from the field trial param.
-  std::string field_trial_arg = base::GetFieldTrialParamValueByFeature(
-      extensions_features::kBypassCorbOnlyForExtensionsAllowlist,
-      extensions_features::kBypassCorbAllowlistParamName);
-  field_trial_arg = base::ToUpperASCII(field_trial_arg);
-  std::vector<std::string> field_trial_allowlist = base::SplitString(
-      field_trial_arg, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  base::EraseIf(field_trial_allowlist, [](const std::string& hash) {
-    // Filter out invalid data from |field_trial_allowlist|.
-    if (IsValidHashedExtensionId(hash))
-      return false;  // Don't remove.
-
-    LOG(ERROR) << "Invalid extension hash: " << hash;
-    return true;  // Remove.
-  });
-  std::move(field_trial_allowlist.begin(), field_trial_allowlist.end(),
-            std::back_inserter(allowlist));
 
   return allowlist;
 }
 
 // Returns a set of HashedExtensionId of extensions that depend on relaxed CORB
 // behavior in their content scripts.
-const base::flat_set<std::string>& GetExtensionsAllowlist() {
-  DCHECK(base::FeatureList::IsEnabled(
-      extensions_features::kBypassCorbOnlyForExtensionsAllowlist));
-  static const base::NoDestructor<base::flat_set<std::string>> s_allowlist([] {
+base::flat_set<std::string>& GetExtensionsAllowlist() {
+  static base::NoDestructor<base::flat_set<std::string>> s_allowlist([] {
     base::flat_set<std::string> result(CreateExtensionAllowlist());
     result.shrink_to_fit();
     return result;
@@ -184,13 +279,9 @@ bool DoContentScriptsDependOnRelaxedCorb(const Extension& extension) {
   // Content scripts in the current version of extensions might depend on
   // relaxed CORB.
   if (extension.manifest_version() <= 2) {
-    if (!base::FeatureList::IsEnabled(
-            extensions_features::kBypassCorbOnlyForExtensionsAllowlist))
-      return true;
-
     const std::string& hash = extension.hashed_id().value();
     DCHECK(IsValidHashedExtensionId(hash));
-    return base::ContainsKey(GetExtensionsAllowlist(), hash);
+    return base::Contains(GetExtensionsAllowlist(), hash);
   }
 
   // Safe fallback for future extension manifest versions.
@@ -199,7 +290,7 @@ bool DoContentScriptsDependOnRelaxedCorb(const Extension& extension) {
 
 bool DoExtensionPermissionsCoverCorsOrCorbRelatedOrigins(
     const Extension& extension) {
-  // TODO(lukasza): https://crbug.com/846346: Return false if the |extension|
+  // TODO(lukasza): https://crbug.com/1016904: Return false if the |extension|
   // doesn't need a special URLLoaderFactory based on |extension| permissions.
   // For now we conservatively assume that all extensions need relaxed CORS/CORB
   // treatment.
@@ -217,51 +308,53 @@ bool IsSpecialURLLoaderFactoryRequired(const Extension& extension,
   }
 }
 
-network::mojom::URLLoaderFactoryPtrInfo CreateURLLoaderFactory(
+mojo::PendingRemote<network::mojom::URLLoaderFactory> CreateURLLoaderFactory(
     content::RenderProcessHost* process,
     network::mojom::NetworkContext* network_context,
-    network::mojom::TrustedURLLoaderHeaderClientPtrInfo* header_client,
-    const Extension& extension) {
+    mojo::PendingRemote<network::mojom::TrustedURLLoaderHeaderClient>*
+        header_client,
+    const Extension& extension,
+    const url::Origin& main_world_origin,
+    const base::Optional<net::NetworkIsolationKey>& network_isolation_key) {
   // Compute relaxed CORB config to be used by |extension|.
   network::mojom::URLLoaderFactoryParamsPtr params =
       network::mojom::URLLoaderFactoryParams::New();
 
+  params->network_isolation_key = network_isolation_key;
+
   // Setup factory bound allow list that overwrites per-profile common list
   // to allow tab specific permissions only for this newly created factory.
-  params->factory_bound_allow_patterns = CreateCorsOriginAccessAllowList(
-      extension,
-      PermissionsData::EffectiveHostPermissionsMode::kIncludeTabSpecific);
+  params->factory_bound_access_patterns =
+      network::mojom::CorsOriginAccessPatterns::New();
+  params->factory_bound_access_patterns->source_origin =
+      url::Origin::Create(extension.url());
+  params->factory_bound_access_patterns->allow_patterns =
+      CreateCorsOriginAccessAllowList(
+          extension,
+          PermissionsData::EffectiveHostPermissionsMode::kIncludeTabSpecific);
 
   if (header_client)
     params->header_client = std::move(*header_client);
   params->process_id = process->GetID();
-  // TODO(lukasza): https://crbug.com/846346: Use more granular CORB enforcement
-  // based on the specific |extension|'s permissions.
+  // TODO(lukasza): https://crbug.com/1016904: Use more granular CORB
+  // enforcement based on the specific |extension|'s permissions.
   params->is_corb_enabled = false;
-  params->request_initiator_site_lock = url::Origin::Create(extension.url());
+  params->request_initiator_site_lock = main_world_origin;
 
   // Create the URLLoaderFactory.
-  network::mojom::URLLoaderFactoryPtrInfo factory_info;
-  network_context->CreateURLLoaderFactory(mojo::MakeRequest(&factory_info),
-                                          std::move(params));
-  return factory_info;
+  mojo::PendingRemote<network::mojom::URLLoaderFactory> factory_remote;
+  network_context->CreateURLLoaderFactory(
+      factory_remote.InitWithNewPipeAndPassReceiver(), std::move(params));
+  return factory_remote;
 }
 
-void MarkInitiatorsAsRequiringSeparateURLLoaderFactory(
+void MarkIsolatedWorldsAsRequiringSeparateURLLoaderFactory(
     content::RenderFrameHost* frame,
     std::vector<url::Origin> request_initiators,
     bool push_to_renderer_now) {
   DCHECK(!request_initiators.empty());
-  if (base::FeatureList::IsEnabled(network::features::kNetworkService)) {
-    frame->MarkInitiatorsAsRequiringSeparateURLLoaderFactory(
-        std::move(request_initiators), push_to_renderer_now);
-  } else {
-    // TODO(lukasza): In non-NetworkService implementation of CORB, make an
-    // exception only for specific extensions (e.g. based on process id,
-    // similarly to how r585124 does it for plugins).  Doing so will likely
-    // interfere with Extensions.CrossOriginFetchFromContentScript2 Rappor
-    // metric, so this needs to wait until this metric is not needed anymore.
-  }
+  frame->MarkIsolatedWorldsAsRequiringSeparateURLLoaderFactory(
+      std::move(request_initiators), push_to_renderer_now);
 }
 
 // If |match_about_blank| is true, then traverses parent/opener chain until the
@@ -308,7 +401,7 @@ GURL GetEffectiveDocumentURL(content::RenderFrameHost* frame,
           content::WebContents::FromRenderFrameHost(found_frame)->GetOpener();
     }
     if (!next_candidate ||
-        base::ContainsKey(already_visited_frames, next_candidate)) {
+        base::Contains(already_visited_frames, next_candidate)) {
       break;
     }
 
@@ -394,7 +487,7 @@ void URLLoaderFactoryManager::ReadyToCommitNavigation(
     // factories are pushed slightly later - during the commit.
     constexpr bool kPushToRendererNow = false;
 
-    MarkInitiatorsAsRequiringSeparateURLLoaderFactory(
+    MarkIsolatedWorldsAsRequiringSeparateURLLoaderFactory(
         frame, std::move(initiators_requiring_separate_factory),
         kPushToRendererNow);
   }
@@ -425,16 +518,20 @@ void URLLoaderFactoryManager::WillExecuteCode(content::RenderFrameHost* frame,
   // legacy IPC pipe (raciness will be introduced if that ever changes).
   constexpr bool kPushToRendererNow = true;
 
-  MarkInitiatorsAsRequiringSeparateURLLoaderFactory(
+  MarkIsolatedWorldsAsRequiringSeparateURLLoaderFactory(
       frame, {url::Origin::Create(extension->url())}, kPushToRendererNow);
 }
 
 // static
-network::mojom::URLLoaderFactoryPtrInfo URLLoaderFactoryManager::CreateFactory(
+mojo::PendingRemote<network::mojom::URLLoaderFactory>
+URLLoaderFactoryManager::CreateFactory(
     content::RenderProcessHost* process,
     network::mojom::NetworkContext* network_context,
-    network::mojom::TrustedURLLoaderHeaderClientPtrInfo* header_client,
-    const url::Origin& initiator_origin) {
+    mojo::PendingRemote<network::mojom::TrustedURLLoaderHeaderClient>*
+        header_client,
+    const url::Origin& origin,
+    const url::Origin& main_world_origin,
+    const base::Optional<net::NetworkIsolationKey>& network_isolation_key) {
   content::BrowserContext* browser_context = process->GetBrowserContext();
   const ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context);
   DCHECK(registry);  // CreateFactory shouldn't happen during shutdown.
@@ -443,21 +540,21 @@ network::mojom::URLLoaderFactoryPtrInfo URLLoaderFactoryManager::CreateFactory(
   // precursor origins, but here opaque origins (e.g. think data: URIs) created
   // by an extension should inherit CORS/CORB treatment of the extension.
   url::SchemeHostPort precursor_origin =
-      initiator_origin.GetTupleOrPrecursorTupleIfOpaque();
+      origin.GetTupleOrPrecursorTupleIfOpaque();
 
   // Don't create a factory for something that is not an extension.
   if (precursor_origin.scheme() != kExtensionScheme)
-    return network::mojom::URLLoaderFactoryPtrInfo();
+    return mojo::NullRemote();
 
   // Find the |extension| associated with |initiator_origin|.
   const Extension* extension =
       registry->enabled_extensions().GetByID(precursor_origin.host());
   if (!extension) {
     // This may happen if an extension gets disabled between the time
-    // RenderFrameHost::MarkInitiatorAsRequiringSeparateURLLoaderFactory is
+    // RenderFrameHost::MarkIsolatedWorldAsRequiringSeparateURLLoaderFactory is
     // called and the time
     // ContentBrowserClient::CreateURLLoaderFactory is called.
-    return network::mojom::URLLoaderFactoryPtrInfo();
+    return mojo::NullRemote();
   }
 
   // Figure out if the factory is needed for content scripts VS extension
@@ -469,9 +566,22 @@ network::mojom::URLLoaderFactoryPtrInfo URLLoaderFactoryManager::CreateFactory(
 
   // Create the factory (but only if really needed).
   if (!IsSpecialURLLoaderFactoryRequired(*extension, factory_user))
-    return network::mojom::URLLoaderFactoryPtrInfo();
+    return mojo::NullRemote();
   return CreateURLLoaderFactory(process, network_context, header_client,
-                                *extension);
+                                *extension, main_world_origin,
+                                network_isolation_key);
+}
+
+// static
+void URLLoaderFactoryManager::AddExtensionToAllowlistForTesting(
+    const Extension& extension) {
+  GetExtensionsAllowlist().insert(extension.hashed_id().value());
+}
+
+// static
+void URLLoaderFactoryManager::RemoveExtensionFromAllowlistForTesting(
+    const Extension& extension) {
+  GetExtensionsAllowlist().erase(extension.hashed_id().value());
 }
 
 }  // namespace extensions

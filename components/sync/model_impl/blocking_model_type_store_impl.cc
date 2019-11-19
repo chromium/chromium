@@ -217,11 +217,11 @@ base::Optional<ModelError> BlockingModelTypeStoreImpl::ReadAllMetadata(
   }
 
   for (const Record& r : metadata_records) {
-    sync_pb::EntityMetadata entity_metadata;
-    if (!entity_metadata.ParseFromString(r.value)) {
+    auto entity_metadata = std::make_unique<sync_pb::EntityMetadata>();
+    if (!entity_metadata->ParseFromString(r.value)) {
       return ModelError(FROM_HERE, "Failed to deserialize entity metadata.");
     }
-    metadata_batch->AddMetadata(r.id, entity_metadata);
+    metadata_batch->AddMetadata(r.id, std::move(entity_metadata));
   }
 
   return base::nullopt;
@@ -241,8 +241,7 @@ base::Optional<ModelError> BlockingModelTypeStoreImpl::CommitWriteBatch(
       static_cast<LevelDbWriteBatch*>(write_batch.release()));
   DCHECK_EQ(write_batch_impl->GetModelType(), type_);
   UMA_HISTOGRAM_ENUMERATION("Sync.ModelTypeStoreCommitCount",
-                            ModelTypeToHistogramInt(type_),
-                            static_cast<int>(MODEL_TYPE_COUNT));
+                            ModelTypeHistogramValue(type_));
   return backend_->WriteModifications(
       LevelDbWriteBatch::ToLevelDbWriteBatch(std::move(write_batch_impl)));
 }

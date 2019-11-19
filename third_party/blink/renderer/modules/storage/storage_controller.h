@@ -8,13 +8,15 @@
 #include <memory>
 
 #include "base/sequence_checker.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/dom_storage/session_storage_namespace_id.h"
 #include "third_party/blink/public/mojom/dom_storage/storage_partition_service.mojom-blink.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/storage/storage_area.h"
 #include "third_party/blink/renderer/platform/heap/heap_allocator.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -27,7 +29,6 @@ class InspectorDOMStorageAgent;
 class LocalFrame;
 class SecurityOrigin;
 class StorageNamespace;
-class WebStorageArea;
 
 // Singleton that manages the creation & accounting for DOMStorage objects. It
 // does this by holding weak references to all session storage namespaces, and
@@ -55,10 +56,10 @@ class MODULES_EXPORT StorageController {
                                    StorageArea::StorageType type);
 
   // Visible for testing.
-  StorageController(
-      scoped_refptr<base::SingleThreadTaskRunner> ipc_runner,
-      mojom::blink::StoragePartitionServicePtr storage_partition_service,
-      size_t total_cache_limit);
+  StorageController(scoped_refptr<base::SingleThreadTaskRunner> ipc_runner,
+                    mojo::PendingRemote<mojom::blink::StoragePartitionService>
+                        storage_partition_service,
+                    size_t total_cache_limit);
 
   // Creates a MakeGarbageCollected<StorageNamespace> for Session storage, and
   // holds a weak reference for accounting & clearing. If there is already a
@@ -76,11 +77,8 @@ class MODULES_EXPORT StorageController {
   // LocalStorage:
 
   scoped_refptr<CachedStorageArea> GetLocalStorageArea(const SecurityOrigin*);
-  // TODO(dmurph): Remove this once DOMStorage is Onion Soupified.
-  std::unique_ptr<WebStorageArea> GetWebLocalStorageArea(const SecurityOrigin*);
   void AddLocalStorageInspectorStorageAgent(InspectorDOMStorageAgent* agent);
   void RemoveLocalStorageInspectorStorageAgent(InspectorDOMStorageAgent* agent);
-  // TODO(dmurph): Remove this once DOMStorage is Onion Soupified.
   void DidDispatchLocalStorageEvent(const SecurityOrigin* origin,
                                     const String& key,
                                     const String& old_value,
@@ -102,8 +100,8 @@ class MODULES_EXPORT StorageController {
   Persistent<StorageNamespace> local_storage_namespace_;
   size_t total_cache_limit_;
 
-  // Onion-soup state.
-  mojom::blink::StoragePartitionServicePtr storage_partition_service_;
+  mojo::Remote<mojom::blink::StoragePartitionService>
+      storage_partition_service_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

@@ -67,14 +67,11 @@ NetworkingConfigService::NetworkingConfigService(
     std::unique_ptr<EventDelegate> event_delegate,
     ExtensionRegistry* extension_registry)
     : browser_context_(browser_context),
-      registry_observer_(this),
-      event_delegate_(std::move(event_delegate)),
-      weak_factory_(this) {
+      event_delegate_(std::move(event_delegate)) {
   registry_observer_.Add(extension_registry);
 }
 
-NetworkingConfigService::~NetworkingConfigService() {
-}
+NetworkingConfigService::~NetworkingConfigService() = default;
 
 void NetworkingConfigService::OnExtensionUnloaded(
     content::BrowserContext* browser_context,

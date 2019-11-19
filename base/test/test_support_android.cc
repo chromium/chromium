@@ -10,7 +10,7 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/singleton.h"
-#include "base/message_loop/message_loop.h"
+#include "base/message_loop/message_pump.h"
 #include "base/message_loop/message_pump_android.h"
 #include "base/path_service.h"
 #include "base/synchronization/waitable_event.h"
@@ -113,13 +113,8 @@ class MessagePumpForUIStub : public base::MessagePumpForUI {
           break;
       }
 
-      more_work_is_plausible = g_state->delegate->DoWork();
-      if (g_state->should_quit)
-        break;
-
-      base::TimeTicks delayed_work_time;
-      more_work_is_plausible |=
-          g_state->delegate->DoDelayedWork(&delayed_work_time);
+      Delegate::NextWorkInfo next_work_info = g_state->delegate->DoSomeWork();
+      more_work_is_plausible = next_work_info.is_immediate();
       if (g_state->should_quit)
         break;
 
@@ -130,7 +125,7 @@ class MessagePumpForUIStub : public base::MessagePumpForUI {
       if (g_state->should_quit)
         break;
 
-      more_work_is_plausible |= !delayed_work_time.is_null();
+      more_work_is_plausible |= !next_work_info.delayed_run_time.is_max();
     }
   }
 
@@ -197,7 +192,8 @@ namespace base {
 
 void InitAndroidTestLogging() {
   logging::LoggingSettings settings;
-  settings.logging_dest = logging::LOG_TO_SYSTEM_DEBUG_LOG;
+  settings.logging_dest =
+      logging::LOG_TO_SYSTEM_DEBUG_LOG | logging::LOG_TO_STDERR;
   logging::InitLogging(settings);
   // To view log output with IDs and timestamps use "adb logcat -v threadtime".
   logging::SetLogItems(false,    // Process ID
@@ -218,8 +214,10 @@ void InitAndroidTestPaths(const FilePath& test_data_dir) {
 }
 
 void InitAndroidTestMessageLoop() {
-  if (!MessageLoop::InitMessagePumpForUIFactory(&CreateMessagePumpForUIStub))
-    LOG(INFO) << "MessagePumpForUIFactory already set, unable to override.";
+  // NOTE something else such as a JNI call may have already overridden the UI
+  // factory.
+  if (!MessagePump::IsMessagePumpForUIFactoryOveridden())
+    MessagePump::OverrideMessagePumpForUIFactory(&CreateMessagePumpForUIStub);
 }
 
 }  // namespace base

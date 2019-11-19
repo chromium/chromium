@@ -4,13 +4,20 @@ include_rules = [
   "+components/password_manager/core/browser/password_manager_metrics_util.h",
   "+components/password_manager/core/browser/password_reuse_detector.h",
   "+components/sessions",
-  "+components/sync_preferences/testing_pref_service_syncable.h",
+  "+components/signin/public/identity_manager/account_info.h",
   "+components/zoom",
-  "+content/public/test",
   "+net",
+  "+services/identity/public",
   "+services/network/public",
-  "+services/network/test",
+  "+third_party/blink/public/common/page/page_zoom.h",
   "+ui/gfx/geometry",
   "+third_party/skia/include",
 ]
 
+specific_include_rules = {
+  ".*_(unit|pixel|perf)?test.*\.(cc|h)": [
+    "+components/sync_preferences/testing_pref_service_syncable.h",
+    "+content/public/test",
+    "+services/network/test",
+  ],
+}

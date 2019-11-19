@@ -39,13 +39,15 @@ extern const char kAllowedTypes[];
 // A boolean that tracks whether apps are allowed to enter fullscreen mode.
 extern const char kAppFullscreenAllowed[];
 
-// Integer which specifies the launch type that bookmark apps are created with
-// by default.
-extern const char kBookmarkAppCreationLaunchType[];
+// A boolean indicating if external extensions are blocked from installing.
+extern const char kBlockExternalExtensions[];
 
 // Dictionary pref that keeps track of per-extension settings. The keys are
 // extension ids.
 extern const char kExtensions[];
+
+// A boolean indicating if the extensions checkup has been shown on startup.
+extern const char kExtensionCheckupOnStartup[];
 
 // Dictionary pref that manages extensions, controlled by policy.
 // Values are expected to conform to the schema of the ExtensionManagement
@@ -71,12 +73,12 @@ extern const char kInstallDenyList[];
 // accessed through extensions::ExternalPolicyProvider.
 extern const char kInstallForceList[];
 
-// A list containing apps that Chrome will silently install on the login screen
-// on Chrome OS at startup time. It is a list of strings, each string contains
-// an app ID and an update URL, delimited by a semicolon.
-// This preference is set by an admin policy, and meant to be only
-// accessed through extensions::ExternalPolicyProvider.
-extern const char kInstallLoginScreenAppList[];
+// A list containing apps or extensions that Chrome will silently install on the
+// login screen on Chrome OS at startup time. It is a list of strings, each
+// string contains an app ID and an update URL, delimited by a semicolon. This
+// preference is set by an admin policy, and meant to be only accessed through
+// extensions::ExternalPolicyProvider.
+extern const char kLoginScreenExtensions[];
 
 // String pref for what version chrome was last time the extension prefs were
 // loaded.
@@ -91,6 +93,10 @@ extern const char kNativeMessagingUserLevelHosts[];
 
 // Time of the next scheduled extensions auto-update checks.
 extern const char kNextUpdateCheck[];
+
+// A preference that tracks extensions pinned to the toolbar. This is a list
+// object stored in the Preferences file. The extensions are stored by ID.
+extern const char kPinnedExtensions[];
 
 // Indicates on-disk data might have skeletal data that needs to be cleaned
 // on the next start of the browser.

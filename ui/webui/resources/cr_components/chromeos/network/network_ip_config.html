@@ -1,11 +1,10 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
-<link rel="import" href="chrome://resources/cr_elements/chromeos/network/cr_onc_types.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_toggle/cr_toggle.html">
 <link rel="import" href="chrome://resources/cr_elements/policy/cr_policy_indicator.html">
-<link rel="import" href="chrome://resources/cr_elements/policy/cr_policy_network_behavior.html">
+<link rel="import" href="chrome://resources/cr_elements/policy/cr_policy_network_behavior_mojo.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
-<link rel="import" href="network_property_list.html">
+<link rel="import" href="network_property_list_mojo.html">
 <link rel="import" href="network_shared_css.html">
 
 <dom-module id="network-ip-config">
@@ -19,22 +18,23 @@
       <div id="autoIPConfigLabel" class="start">
         [[i18n('networkIPConfigAuto')]]
       </div>
-      <cr-policy-indicator indicator-type="[[getPolicyIndicatorType_(
-          networkProperties, 'IPAddressConfigType')]]">
+      <cr-policy-indicator indicator-type="[[getPolicyIndicatorType(
+          managedProperties.ipAddressConfigType)]]">
       </cr-policy-indicator>
       <cr-toggle checked="{{automatic_}}"
-          disabled="[[!canChangeIPConfigType_(editable, networkProperties)]]"
+          disabled="[[!canChangeIPConfigType_(managedProperties)]]"
           on-change="onAutomaticChange_"
           aria-labelledby="autoIPConfigLabel">
       </cr-toggle>
     </div>
     <template is="dom-if" if="[[hasIpConfigFields_(ipConfig_)]]">
       <div class="property-box single-column indented stretch">
-        <network-property-list editable
-            fields="[[ipConfigFields_]]" property-dict="[[ipConfig_]]"
-            edit-field-types="[[getIPEditFields_(editable, automatic_)]]"
+        <network-property-list-mojo fields="[[ipConfigFields_]]"
+            property-dict="[[ipConfig_]]"
+            edit-field-types="[[getIPEditFields_(automatic_,
+                managedProperties)]]"
             on-property-change="onIPChange_">
-        </network-property-list>
+        </network-property-list-mojo>
       </div>
     </template>
   </template>

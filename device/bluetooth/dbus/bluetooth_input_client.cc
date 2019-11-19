@@ -32,7 +32,7 @@ BluetoothInputClient::Properties::~Properties() = default;
 class BluetoothInputClientImpl : public BluetoothInputClient,
                                  public dbus::ObjectManager::Interface {
  public:
-  BluetoothInputClientImpl() : object_manager_(NULL), weak_ptr_factory_(this) {}
+  BluetoothInputClientImpl() : object_manager_(nullptr) {}
 
   ~BluetoothInputClientImpl() override {
     object_manager_->UnregisterInterface(
@@ -115,7 +115,7 @@ class BluetoothInputClientImpl : public BluetoothInputClient,
   // than we do.
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
-  base::WeakPtrFactory<BluetoothInputClientImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<BluetoothInputClientImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(BluetoothInputClientImpl);
 };

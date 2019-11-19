@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+PASS e.style['font-family'] = "Serif" should set the property value
+PASS e.style['font-family'] = "Sans-Serif" should set the property value
+PASS e.style['font-family'] = "Cursive" should set the property value
+PASS e.style['font-family'] = "Fantasy" should set the property value
+PASS e.style['font-family'] = "Monospace" should set the property value
+PASS e.style['font-family'] = "serif, sans-serif, cursive, fantasy, monospace" should set the property value
+PASS e.style['font-family'] = "Helvetica, Verdana, sans-serif" should set the property value
+PASS e.style['font-family'] = "\"New Century Schoolbook\", serif" should set the property value
+PASS e.style['font-family'] = "'21st Century', fantasy" should set the property value
+FAIL e.style['font-family'] = "\"inherit\", \"serif\"" should set the property value assert_equals: serialization should be canonical expected "\"inherit\", \"serif\"" but got "inherit, serif"
+Harness: the test ran to completion.
+

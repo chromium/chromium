@@ -19,6 +19,7 @@ a {
 #installationSettings,
 #logging {
   font-size: 13px;
+  min-height: unset;
 }
 
 #crosEulaFrame {
@@ -40,12 +41,16 @@ a {
 
 cr-toggle {
   align-self: center;
-  width: 36px;
 }
 
 #usageStatsLabelContainer {
+  color: var(--google-grey-refresh-700); /* #5F6368 */
   line-height: 20px;
   margin-inline-start: 16px;
+}
+
+#usageStatsLabel {
+  cursor: pointer;
 }
 
 #settings-close-button {
@@ -58,7 +63,7 @@ cr-toggle {
 
 .password-row div {
   color: rgb(66, 133, 244);
-  font: 24px Roboto;
+  font-size: 24px;
   margin-top: 82px;
 }
 

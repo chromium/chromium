@@ -6,19 +6,21 @@
 #define IOS_CHROME_BROWSER_PASSWORDS_PASSWORD_TAB_HELPER_H_
 
 #include "base/macros.h"
-#import "ios/web/public/web_state/web_state_observer.h"
-#import "ios/web/public/web_state/web_state_user_data.h"
+#include "ios/web/public/web_state_observer.h"
+#import "ios/web/public/web_state_user_data.h"
 
 @protocol ApplicationCommands;
 @protocol FormSuggestionProvider;
 @class PasswordController;
+@protocol PasswordBreachCommands;
 @protocol PasswordControllerDelegate;
 @protocol PasswordFormFiller;
 @protocol PasswordsUiDelegate;
 @class UIViewController;
 
 namespace password_manager {
-class PasswordGenerationManager;
+class PasswordGenerationFrameHelper;
+class PasswordManager;
 }
 
 // Class binding a PasswordController to a WebState.
@@ -34,16 +36,11 @@ class PasswordTabHelper : public web::WebStateObserver,
   void SetBaseViewController(UIViewController* baseViewController);
 
   // Sets the PasswordController dispatcher.
-  void SetDispatcher(id<ApplicationCommands> dispatcher);
+  void SetDispatcher(
+      id<ApplicationCommands, PasswordBreachCommands> dispatcher);
 
   // Sets the PasswordController delegate.
   void SetPasswordControllerDelegate(id<PasswordControllerDelegate> delegate);
-
-  // Generate and offer to user a password for the given |formName| on given
-  // (optional) fields |newPasswordIdentifier| and |confirmPasswordIdentifier|.
-  void GenerateAndOfferPassword(NSString* formName,
-                                NSString* newPasswordIdentifier,
-                                NSString* confirmPasswordIdentifier);
 
   // Returns an object that can provide suggestions from the PasswordController.
   // May return nil.
@@ -52,8 +49,11 @@ class PasswordTabHelper : public web::WebStateObserver,
   // Returns the PasswordFormFiller from the PasswordController.
   id<PasswordFormFiller> GetPasswordFormFiller();
 
-  // Returns the PasswordGenerationManager owned by the PasswordController.
-  password_manager::PasswordGenerationManager* GetPasswordGenerationManager();
+  // Returns the PasswordGenerationFrameHelper owned by the PasswordController.
+  password_manager::PasswordGenerationFrameHelper* GetGenerationHelper();
+
+  // Returns the PasswordManager owned by the PasswordController.
+  password_manager::PasswordManager* GetPasswordManager();
 
  private:
   friend class web::WebStateUserData<PasswordTabHelper>;

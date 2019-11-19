@@ -5,20 +5,21 @@
 #include "components/content_capture/common/content_capture_features.h"
 
 #include "base/metrics/field_trial_params.h"
+#include "build/build_config.h"
 
 namespace content_capture {
 namespace features {
 
+#if defined(OS_ANDROID)
+const base::Feature kContentCapture{"ContentCapture",
+                                    base::FEATURE_ENABLED_BY_DEFAULT};
+#else
 const base::Feature kContentCapture{"ContentCapture",
                                     base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
 
 bool IsContentCaptureEnabled() {
   return base::FeatureList::IsEnabled(kContentCapture);
-}
-
-bool ShouldUseNodeID() {
-  return base::GetFieldTrialParamByFeatureAsBool(kContentCapture, "use_node_id",
-                                                 false);
 }
 
 int TaskLongDelayInMilliseconds() {

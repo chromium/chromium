@@ -5,6 +5,7 @@
 // See https://webaudio.github.io/web-audio-api/#audioworkletnode
 
 [
+    Exposed=Window,
     ActiveScriptWrappable,
     Constructor(BaseAudioContext context, DOMString name, optional AudioWorkletNodeOptions options),
     ConstructorCallWith=ScriptState,

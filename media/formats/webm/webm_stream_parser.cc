@@ -202,7 +202,8 @@ int WebMStreamParser::ParseInfoAndTracks(const uint8_t* data, int size) {
 
   bytes_parsed += result;
 
-  double timecode_scale_in_us = info_parser.timecode_scale() / 1000.0;
+  int64_t timecode_scale_in_ns = info_parser.timecode_scale_ns();
+  double timecode_scale_in_us = timecode_scale_in_ns / 1000.0;
   InitParameters params(kInfiniteDuration);
 
   if (info_parser.duration() > 0) {
@@ -237,10 +238,10 @@ int WebMStreamParser::ParseInfoAndTracks(const uint8_t* data, int size) {
   }
 
   cluster_parser_.reset(new WebMClusterParser(
-      info_parser.timecode_scale(), tracks_parser.audio_track_num(),
-      tracks_parser.GetAudioDefaultDuration(timecode_scale_in_us),
+      timecode_scale_in_ns, tracks_parser.audio_track_num(),
+      tracks_parser.GetAudioDefaultDuration(timecode_scale_in_ns),
       tracks_parser.video_track_num(),
-      tracks_parser.GetVideoDefaultDuration(timecode_scale_in_us),
+      tracks_parser.GetVideoDefaultDuration(timecode_scale_in_ns),
       tracks_parser.text_tracks(), tracks_parser.ignored_tracks(),
       tracks_parser.audio_encryption_key_id(),
       tracks_parser.video_encryption_key_id(), audio_config.codec(),

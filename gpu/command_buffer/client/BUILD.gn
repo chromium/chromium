@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/jumbo.gni")
+import("//ui/gl/features.gni")
 
 declare_args() {
   # Enable GPU client logging without DCHECK being on.
@@ -169,15 +170,27 @@ gles2_implementation_source_files = [
   "vertex_array_object_manager.h",
 ]
 
+source_set("interface_base") {
+  sources = [
+    "interface_base.h",
+  ]
+  public_configs = [ "//third_party/khronos:khronos_headers" ]
+  deps = [
+    "//base",
+  ]
+}
+
 # Provides GLES2 interface, but does not cause any implementation to be linked
 # in. Useful when a target uses the interface, but permits its users to choose
 # an implementation.
 source_set("gles2_interface") {
   sources = [
+    "gles2_interface.cc",
     "gles2_interface.h",
   ]
   public_configs = [ "//third_party/khronos:khronos_headers" ]
   deps = [
+    ":interface_base",
     "//base",
   ]
 }
@@ -189,6 +202,7 @@ source_set("raster_interface") {
   ]
   public_configs = [ "//third_party/khronos:khronos_headers" ]
   deps = [
+    ":interface_base",
     "//base",
     "//components/viz/common:resource_format",
     "//gpu/command_buffer/common",
@@ -201,8 +215,11 @@ source_set("webgpu_interface") {
     "webgpu_interface.h",
     "webgpu_interface_autogen.h",
   ]
+  public_configs = [ "//third_party/khronos:khronos_headers" ]
   deps = [
+    ":interface_base",
     "//base",
+    "//gpu/command_buffer/common:webgpu",
   ]
 }
 
@@ -284,6 +301,9 @@ source_set("webgpu_sources") {
     ":webgpu_interface",
     "//gpu/command_buffer/common:webgpu",
   ]
+  public_deps = [
+    "//third_party/dawn/src/dawn:dawn_headers",
+  ]
   sources = [
     "webgpu_cmd_helper.cc",
     "webgpu_cmd_helper.h",
@@ -294,6 +314,12 @@ source_set("webgpu_sources") {
     "webgpu_implementation_autogen.h",
     "webgpu_implementation_impl_autogen.h",
   ]
+  if (use_dawn) {
+    sources += [
+      "dawn_client_memory_transfer_service.cc",
+      "dawn_client_memory_transfer_service.h",
+    ]
+  }
 }
 
 # Library emulates GLES2 using command_buffers.

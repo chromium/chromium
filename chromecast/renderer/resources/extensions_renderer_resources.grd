@@ -9,10 +9,6 @@
   <release seq="1">
     <includes>
       <!-- Custom bindings for extension APIs. -->
-      <include name="IDR_AUTOMATION_CUSTOM_BINDINGS_JS" file="extensions\automation_custom_bindings.js" type="BINDATA" />
-      <include name="IDR_AUTOMATION_EVENT_JS" file="extensions\automation\automation_event.js" type="BINDATA" />
-      <include name="IDR_AUTOMATION_NODE_JS" file="extensions\automation\automation_node.js" type="BINDATA" />
-      <include name="IDR_TABS_CUSTOM_BINDINGS_JS" file="extensions\tabs_custom_bindings.js" type="BINDATA" />
       <include name="IDR_TTS_CUSTOM_BINDINGS_JS" file="extensions\tts_custom_bindings.js" type="BINDATA" />
     </includes>
   </release>

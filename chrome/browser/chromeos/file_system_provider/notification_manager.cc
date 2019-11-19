@@ -9,9 +9,9 @@
 #include "chrome/browser/extensions/chrome_app_icon_loader.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
-#include "chrome/grit/generated_resources.h"
 #include "components/account_id/account_id.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_types.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
@@ -31,8 +31,7 @@ NotificationManager::NotificationManager(
     : profile_(profile),
       file_system_info_(file_system_info),
       icon_loader_(
-          new extensions::ChromeAppIconLoader(profile, kIconSize, this)),
-      weak_factory_(this) {
+          new extensions::ChromeAppIconLoader(profile, kIconSize, this)) {
   DCHECK_EQ(ProviderId::EXTENSION, file_system_info.provider_id().GetType());
 }
 
@@ -75,7 +74,7 @@ void NotificationManager::Close(bool by_user) {
 
 void NotificationManager::OnAppImageUpdated(const std::string& id,
                                             const gfx::ImageSkia& image) {
-  extension_icon_.reset(new gfx::Image(image));
+  extension_icon_ = gfx::Image(image);
   ShowNotification();
 }
 
@@ -84,7 +83,7 @@ std::string NotificationManager::GetNotificationId() {
 }
 
 void NotificationManager::ShowNotification() {
-  if (!extension_icon_.get())
+  if (extension_icon_.IsEmpty())
     icon_loader_->FetchImage(file_system_info_.provider_id().GetExtensionId());
 
   message_center::RichNotificationData rich_notification_data;
@@ -105,7 +104,7 @@ void NotificationManager::ShowNotification() {
           callbacks_.size() == 1
               ? IDS_FILE_SYSTEM_PROVIDER_UNRESPONSIVE_WARNING
               : IDS_FILE_SYSTEM_PROVIDER_MANY_UNRESPONSIVE_WARNING),
-      extension_icon_.get() ? *extension_icon_.get() : gfx::Image(),
+      extension_icon_,
       base::string16(),  // display_source
       GURL(), notifier_id, rich_notification_data,
       base::MakeRefCounted<message_center::ThunkNotificationDelegate>(
@@ -113,7 +112,7 @@ void NotificationManager::ShowNotification() {
   notification.SetSystemPriority();
 
   NotificationDisplayService::GetForProfile(profile_)->Display(
-      NotificationHandler::Type::TRANSIENT, notification);
+      NotificationHandler::Type::TRANSIENT, notification, /*metadata=*/nullptr);
 }
 
 void NotificationManager::OnNotificationResult(NotificationResult result) {

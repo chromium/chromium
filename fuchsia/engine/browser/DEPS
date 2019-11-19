@@ -1,18 +1,32 @@
 include_rules = [
-  "+components/version_info",
+  "+components/keyed_service/core",
   "+content/public/common",
   "+content/public/browser",
-  "+content/public/test",
+  "+media/base",
+  "+media/fuchsia/cdm/service",
+  "+media/fuchsia/mojom",
   "+mojo/public/cpp/bindings",
   "+mojo/public/cpp/system",
+  "+services/network/public/mojom",
   "+third_party/blink/public/common/associated_interfaces",
+  "+third_party/blink/public/common/logging",
   "+third_party/blink/public/common/messaging",
   "+third_party/blink/public/mojom/messaging",
+  "+third_party/widevine/cdm",
+  "+ui/accessibility",
   "+ui/aura",
   "+ui/base/ime",
   "+ui/display",
   "+ui/events",
+  "+ui/gfx",
   "+ui/ozone/public",
   "+ui/platform_window",
   "+ui/wm/core",
 ]
+
+specific_include_rules = {
+  ".*_(unit|browser|api)test\.cc": [
+    "+content/public/test",
+    "+services/network",
+  ],
+}

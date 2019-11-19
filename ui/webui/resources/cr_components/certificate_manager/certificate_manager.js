@@ -50,13 +50,23 @@ Polymer({
     },
 
     /**
-     * Indicates if certificate import is allowed by Chrome OS specific policy
-     * CertificateManagementAllowed.
+     * Indicates if client certificate import is allowed
+     * by Chrome OS specific policy ClientCertificateManagementAllowed.
      * Value exists only for Chrome OS.
      */
-    importAllowed: {
+    clientImportAllowed: {
       type: Boolean,
-      value: true,
+      value: false,
+    },
+
+    /**
+     * Indicates if CA certificate import is allowed
+     * by Chrome OS specific policy CACertificateManagementAllowed.
+     * Value exists only for Chrome OS.
+     */
+    caImportAllowed: {
+      type: Boolean,
+      value: false,
     },
 
     /** @private */
@@ -115,20 +125,34 @@ Polymer({
             loadTimeData.getBoolean('isKiosk');
       },
     },
+
+    /** @private {!Array<string>} */
+    tabNames_: {
+      type: Array,
+      computed: 'computeTabNames_(isKiosk_)',
+    },
   },
 
   /** @override */
   attached: function() {
     this.addWebUIListener('certificates-changed', this.set.bind(this));
     this.addWebUIListener(
-        'certificates-model-ready', this.setImportAllowed.bind(this));
+        'client-import-allowed-changed',
+        this.setClientImportAllowed.bind(this));
+    this.addWebUIListener(
+        'ca-import-allowed-changed', this.setCAImportAllowed.bind(this));
     certificate_manager.CertificatesBrowserProxyImpl.getInstance()
         .refreshCertificates();
   },
 
   /** @private */
-  setImportAllowed: function(allowed) {
-    this.importAllowed = allowed;
+  setClientImportAllowed: function(allowed) {
+    this.clientImportAllowed = allowed;
+  },
+
+  /** @private */
+  setCAImportAllowed: function(allowed) {
+    this.caImportAllowed = allowed;
   },
 
   /**
@@ -213,5 +237,22 @@ Polymer({
         cr.ui.focusWithoutInk(assert(this.activeDialogAnchor_));
       });
     });
+  },
+
+  /**
+   * @return {!Array<string>}
+   * @private
+   */
+  computeTabNames_: function() {
+    return [
+      loadTimeData.getString('certificateManagerYourCertificates'),
+      ...(this.isKiosk_ ?
+              [] :
+              [
+                loadTimeData.getString('certificateManagerServers'),
+                loadTimeData.getString('certificateManagerAuthorities'),
+              ]),
+      loadTimeData.getString('certificateManagerOthers'),
+    ];
   },
 });

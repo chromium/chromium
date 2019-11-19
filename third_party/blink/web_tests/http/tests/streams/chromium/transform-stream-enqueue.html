@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+'use strict';
+
+test(() => {
+  try {
+    new TransformStream({
+      start(controller) {
+        controller.terminate();
+        controller.enqueue('a');
+      }
+    });
+    assert_unreached('start() should throw');
+  } catch (e) {
+    assert_equals(e.name, 'TypeError', 'error should be TypeError');
+    assert_true(e.message.includes(
+      'Cannot enqueue a chunk into a readable stream that is closed or has ' +
+        'been requested to be closed'),
+                'message should contain expected string');
+  }
+}, 'exception message for enqueue while closing should be correct');
+
+test(() => {
+  try {
+    new TransformStream({
+      start(controller) {
+        controller.error();
+        controller.enqueue('a');
+      }
+    });
+    assert_unreached('start() should throw');
+  } catch (e) {
+    assert_equals(e.name, 'TypeError', 'error should be TypeError');
+    assert_true(e.message.includes(
+      'Cannot enqueue a chunk into an errored readable stream'),
+                'message should contain expected string');
+  }
+}, 'exception message for enqueue when errored should be correct');
+</script>

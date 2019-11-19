@@ -3,9 +3,11 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
+import("//chrome/android/modules/buildflags.gni")
 import("//chrome/browser/vr/features.gni")
 import("//chrome/common/features.gni")
 import("//device/vr/buildflags/buildflags.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 import("//tools/grit/repack.gni")
 
@@ -124,11 +126,6 @@ component("vr_ui") {
     "elements/vector_icon_button.h",
     "elements/viewport_aware_root.cc",
     "elements/viewport_aware_root.h",
-    "font_fallback.cc",
-    "font_fallback.h",
-    "font_fallback_android.cc",
-    "font_fallback_linux.cc",
-    "font_fallback_win.cc",
     "frame_lifecycle.cc",
     "frame_lifecycle.h",
     "model/color_scheme.cc",
@@ -186,12 +183,27 @@ component("vr_ui") {
     "//base",
     "//cc/animation",
     "//chrome/app:generated_resources",
+    "//chrome/app/vector_icons",
+    "//chrome/browser/vr/vector_icons",
     "//chrome/common:constants",
+    "//components/omnibox/browser:vector_icons",
     "//components/url_formatter",
+    "//components/vector_icons",
+    "//device/vr/buildflags:buildflags",
     "//media",
     "//net",
     "//skia",
   ]
+
+  if (use_native_partitions) {
+    # Mark symbols in this library as belonging to the VR partition. Only
+    # exported symbols (module entrypoints) are affected.
+    cflags = [ "-fsymbol-partition=vr_partition" ]
+  }
+
+  if (is_android) {
+    sources += [ "jni_onload.cc" ]
+  }
 
   defines = [ "VR_UI_IMPLEMENTATION" ]
 
@@ -234,13 +246,17 @@ component("vr_common") {
     "scheduler_delegate.h",
     "service/browser_xr_runtime.cc",
     "service/browser_xr_runtime.h",
+    "service/gvr_consent_helper.cc",
+    "service/gvr_consent_helper.h",
     "service/vr_service_impl.cc",
     "service/vr_service_impl.h",
-    "service/xr_device_impl.cc",
-    "service/xr_device_impl.h",
+    "service/xr_device_service.cc",
+    "service/xr_device_service.h",
     "service/xr_runtime_manager.cc",
     "service/xr_runtime_manager.h",
     "service/xr_runtime_manager_observer.h",
+    "service/xr_session_request_consent_manager.cc",
+    "service/xr_session_request_consent_manager.h",
     "sounds_manager_audio_delegate.cc",
     "sounds_manager_audio_delegate.h",
     "vr_export.h",
@@ -255,8 +271,16 @@ component("vr_common") {
     "platform_controller_for_testing.h",
   ]
 
+  if (enable_arcore) {
+    sources += [
+      "service/arcore_consent_prompt_interface.cc",
+      "service/arcore_consent_prompt_interface.h",
+    ]
+  }
+
   public_deps = [
     ":vr_base",
+    "//device/vr/public/mojom",
   ]
 
   deps = [
@@ -274,6 +298,7 @@ component("vr_common") {
     "//device/vr/public/mojom",
     "//media",
     "//net",
+    "//services/audio/public/cpp",
     "//services/metrics/public/cpp:ukm_builders",
     "//skia",
     "//ui/base",
@@ -282,10 +307,6 @@ component("vr_common") {
 
   if (is_win) {
     sources += [
-      "service/isolated_device_provider.cc",
-      "service/isolated_device_provider.h",
-      "service/vr_ui_host.cc",
-      "service/vr_ui_host.h",
       "win/graphics_delegate_win.cc",
       "win/graphics_delegate_win.h",
       "win/input_delegate_win.cc",
@@ -296,10 +317,19 @@ component("vr_common") {
       "win/vr_browser_renderer_thread_win.h",
     ]
 
-    deps += [ "//services/ws/public/cpp/gpu" ]
+    deps += [ "//services/viz/public/cpp/gpu" ]
 
     # Windows doesn't have app bundles, so include the UI directly.
     deps += [ ":vr_ui" ]
+  }
+
+  if (!is_android) {
+    sources += [
+      "service/isolated_device_provider.cc",
+      "service/isolated_device_provider.h",
+      "service/vr_ui_host.cc",
+      "service/vr_ui_host.h",
+    ]
   }
 
   defines = [ "VR_IMPLEMENTATION" ]
@@ -334,6 +364,8 @@ component("vr_base") {
     "keyboard_delegate.h",
     "keyboard_ui_interface.h",
     "macros.h",
+    "metrics/consent_flow_metrics_helper.cc",
+    "metrics/consent_flow_metrics_helper.h",
     "metrics/metrics_helper.cc",
     "metrics/metrics_helper.h",
     "metrics/session_metrics_helper.cc",
@@ -363,6 +395,7 @@ component("vr_base") {
     "pose_util.h",
     "render_info.h",
     "scheduler_ui_interface.h",
+    "service/xr_consent_prompt_level.h",
     "speech_recognizer.cc",
     "speech_recognizer.h",
     "text_edit_action.cc",
@@ -403,20 +436,21 @@ component("vr_base") {
   deps = [
     "//base",
     "//chrome/app:generated_resources",
-    "//chrome/app/vector_icons",
-    "//chrome/browser/vr/vector_icons",
-    "//components/omnibox/browser:vector_icons",
     "//components/rappor:rappor",
     "//components/security_state/core",
     "//components/ukm/content",
     "//components/url_formatter",
-    "//components/vector_icons",
-    "//content/public/browser:browser",
+    "//content/public/browser",
+    "//device/vr/public/mojom:mojom",
     "//media",
     "//net",
     "//services/metrics/public/cpp:ukm_builders",
     "//skia",
   ]
+
+  if (is_android) {
+    deps += [ "//chrome/android/features/vr:jni_headers" ]
+  }
 }
 
 source_set("vr_gl_bindings") {
@@ -461,7 +495,6 @@ test("vr_common_unittests") {
     "elements/throbber_unittest.cc",
     "elements/transient_element_unittest.cc",
     "elements/ui_element_unittest.cc",
-    "elements/url_text_unittest.cc",
     "elements/vector_icon_button_unittest.cc",
     "elements/vector_icon_unittest.cc",
     "elements/viewport_aware_root_unittest.cc",
@@ -569,7 +602,7 @@ source_set("vr_test_support") {
     ":vr_ui",
     "//base/test:test_support",
     "//cc:test_support",
-    "//components/omnibox/browser:browser",
+    "//components/omnibox/browser",
     "//components/omnibox/browser:vector_icons",
     "//components/security_state/core",
     "//content/test:test_support",
@@ -641,58 +674,36 @@ repack("vr_test_pak") {
   ]
 }
 
-# This is split out here instead of being part of //chrome/test:browser_tests
-# because the tests have hardware requirements and this is cleaner than trying
-# to conditionally skip tests based on hardware (browser tests don't have
-# the equivalent to Android's @Restriction annotation that allows you to
-# easily skip tests at runtime).
 if (!is_android) {
-  test("xr_browser_tests") {
+  # This should only contain that files that are useful if enable_vr = true. For
+  # tests/infrastructure that can be used with enable_vr = false, see
+  # //chrome/test:xr_browser_tests_common.
+  source_set("xr_browser_tests_vr_required") {
+    testonly = true
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-    # Common infrastructure.
+    # Infrastructure
     sources = [
+      "test/fake_xr_session_request_consent_manager.cc",
+      "test/fake_xr_session_request_consent_manager.h",
       "test/mock_xr_device_hook_base.cc",
       "test/mock_xr_device_hook_base.h",
-      "test/webvr_browser_test.cc",
-      "test/webvr_browser_test.h",
-      "test/webxr_browser_test.cc",
-      "test/webxr_browser_test.h",
-      "test/webxr_vr_browser_test.cc",
-      "test/webxr_vr_browser_test.h",
-      "test/xr_browser_test.cc",
-      "test/xr_browser_test.h",
+      "test/mock_xr_session_request_consent_manager.cc",
+      "test/mock_xr_session_request_consent_manager.h",
+      "test/multi_class_browser_test.h",
     ]
 
-    # Common/partially common tests.
-    sources += [
-      "webxr_vr_spatial_tracking_test.cc",
-      "webxr_vr_transition_browser_test.cc",
-    ]
-
-    # Common dependencies.
     deps = [
       ":vr_common",
-      "//base",
-      "//chrome:packed_resources",
-      "//chrome/test:browser_tests_runner",
-      "//chrome/test:test_support",
-      "//chrome/test:test_support_ui",
+      "//chrome/common:constants",
+      "//chrome/test:xr_browser_tests_common",
       "//device/vr:vr",
-      "//device/vr/public/mojom:mojom",
+      "//device/vr/buildflags:buildflags",
+      "//device/vr/public/mojom",
       "//device/vr/public/mojom:test_mojom",
     ]
-    data_deps = []
 
-    # Common data
-    data = [
-      "//chrome/test/data/xr/e2e_test_files/",
-      "//third_party/blink/web_tests/resources/testharness.js",
-      "$root_out_dir/locales/",
-      "$root_out_dir/chrome_100_percent.pak",
-      "$root_out_dir/chrome_200_percent.pak",
-      "$root_out_dir/resources.pak",
-    ]
+    data_deps = []
 
     # Windows-only tests and dependencies.
     if (is_win) {
@@ -706,16 +717,41 @@ if (!is_android) {
 
       # Tests.
       sources += [
+        "webxr_vr_consent_dialog_browser_test.cc",
+        "webxr_vr_frame_loop_browser_test.cc",
         "webxr_vr_frame_pose_browser_test.cc",
+        "webxr_vr_indicators_browser_test.cc",
         "webxr_vr_input_browser_test.cc",
+        "webxr_vr_isolated_device_service_test.cc",
         "webxr_vr_permission_request_browser_test.cc",
         "webxr_vr_pixel_browser_test.cc",
         "webxr_vr_tab_browser_test.cc",
       ]
 
-      deps += [ "//third_party/openvr:openvr" ]
+      deps += [
+        ":vr_common",
+        "//components/content_settings/core/browser",
+        "//device/vr:directx_helpers",
+        "//third_party/openvr",
+      ]
 
       data_deps += [ "//device/vr:openvr_mock" ]
+
+      if (enable_openxr) {
+        deps += [ "//third_party/openxr" ]
+        data_deps += [ "//device/vr:openxr_mock" ]
+      }
     }
   }
+}
+
+fuzzer_test("vr_omnibox_formatting_fuzzer") {
+  sources = [
+    "elements/omnibox_formatting_fuzzer.cc",
+  ]
+  deps = [
+    ":vr_common",
+    ":vr_ui",
+    "//ui/gfx:test_support",
+  ]
 }

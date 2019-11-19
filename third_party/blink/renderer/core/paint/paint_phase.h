@@ -29,23 +29,28 @@
 
 namespace blink {
 
-// The painting of a layer occurs in 4 phases, Each involves a recursive
+// The painting of a layer occurs in 5 phases, Each involves a recursive
 // descent into the layer's layout objects in painting order:
 //  1. Background phase: backgrounds and borders of all blocks are painted.
 //     Inlines are not painted at all. Touch-action hit test rects are also
 //     painted during this phase (see: paint/README.md#hit-test-painting).
-//  2. Float phase: floating objects are painted above block backgrounds but
+//  2. ForcedColorsModeBackplate phase: a readability backplate is painted
+//     behind all inline text, split by paragraph. This phase should only paint
+//     content when in forced colors mode to ensure readability for text above
+//     images.
+//  3. Float phase: floating objects are painted above block backgrounds but
 //     entirely below inline content that can overlap them.
-//  3. Foreground phase: all inlines are fully painted. Atomic inline elements
-//     will get all 4 phases invoked on them during this phase, as if they were
-//     stacking contexts (see ObjectPainter::paintAllPhasesAtomically()).
-//  4. Outline phase: outlines are painted over the foreground.
+//  4. Foreground phase: all inlines are fully painted. Atomic inline elements
+//     will get all 4 non-backplate phases invoked on them during this phase,
+//     as if they were stacking contexts (see
+//     ObjectPainter::paintAllPhasesAtomically()).
+//  5. Outline phase: outlines are painted over the foreground.
 
 enum class PaintPhase {
   // Background phase
   //
   // Paint background of the current object and non-self-painting descendants.
-  kBlockBackground = 0,
+  kBlockBackground,
   //
   // The following two values are added besides the normal
   // kBlockBackground to distinguish backgrounds for the object itself
@@ -53,39 +58,44 @@ enum class PaintPhase {
   // different scroll offsets and clips.
   //
   // Paint background of the current object only.
-  kSelfBlockBackgroundOnly = 1,
+  kSelfBlockBackgroundOnly,
   // Paint backgrounds of non-self-painting descendants only. The painter should
   // call each non-self-painting child's paint method by passing
   // paintInfo.forDescendants() which converts kDescendantBlockBackgroundsOnly
   // to kBlockBackground.
-  kDescendantBlockBackgroundsOnly = 2,
+  kDescendantBlockBackgroundsOnly,
+
+  // ForcedColorsModeBackplate phase - used to ensure readability in forced
+  // colors mode.
+  kForcedColorsModeBackplate,
 
   // Float phase
-  kFloat = 3,
+  kFloat,
 
   // Foreground phase
-  kForeground = 4,
+  kForeground,
 
   // Outline phase
   //
   // Paint outline for the current object and non-self-painting descendants.
-  kOutline = 5,
+  kOutline,
   //
   // Similar to the background phase, the following two values are added for
   // painting outlines of the object itself and for descendants.
   //
   // Paint outline for the current object only.
-  kSelfOutlineOnly = 6,
+  kSelfOutlineOnly,
   // Paint outlines of non-self-painting descendants only. The painter should
   // call each non-self-painting child's paint method by passing
   // paintInfo.forDescendants() which converts kDescendantOutlinesOnly to
   // kOutline.
-  kDescendantOutlinesOnly = 7,
+  kDescendantOutlinesOnly,
 
   // The below are auxiliary phases which are used to paint special effects.
-  kSelection = 8,
-  kTextClip = 9,
-  kMask = 10,
+  kOverlayOverflowControls,
+  kSelection,
+  kTextClip,
+  kMask,
 
   kMax = kMask,
   // These values must be kept in sync with DisplayItem::Type and
@@ -124,9 +134,11 @@ enum GlobalPaintFlag {
   // into the topmost layer.
   kGlobalPaintFlattenCompositingLayers = 1 << 1,
   // Used when printing in order to adapt the output to the medium, for
-  // instance by not painting shadows and selections on text, and add
-  // URL metadata for links.
-  kGlobalPaintPrinting = 1 << 2
+  // instance by not painting shadows and selections on text.
+  kGlobalPaintPrinting = 1 << 2,
+  // Used when printing or painting a preview to in order to add URL
+  // metadata for links.
+  kGlobalPaintAddUrlMetadata = 1 << 3
 };
 
 typedef unsigned GlobalPaintFlags;

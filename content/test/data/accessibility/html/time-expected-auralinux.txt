@@ -1,7 +1,7 @@
 [document web]
 ++[section]
 ++++[static]
-++++++[text] name='10:00'
-++++[text] name=' '
+++++++[static] name='10:00'
+++++[static] name=' '
 ++++[static]
-++++++[text] name='Valentines day'
+++++++[static] name='Valentines day'

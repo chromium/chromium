@@ -8,14 +8,15 @@
 #include "base/bind_helpers.h"
 #include "base/containers/circular_deque.h"
 #include "base/macros.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
+#include "base/test/task_environment.h"
 #include "base/values.h"
 #include "components/prefs/in_memory_pref_store.h"
 #include "components/prefs/pref_notifier_impl.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "mojo/public/cpp/bindings/binding_set.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/preferences/persistent_pref_store_impl.h"
 #include "services/preferences/public/cpp/dictionary_value_update.h"
 #include "services/preferences/public/cpp/persistent_pref_store_client.h"
@@ -51,17 +52,18 @@ struct UpdateOrRequest {
 class PrefServiceConnection : public mojom::PrefStoreObserver,
                               public mojom::PersistentPrefStore {
  public:
-  explicit PrefServiceConnection(PersistentPrefStoreImpl* pref_store)
-      : observer_binding_(this), pref_store_binding_(this) {
+  explicit PrefServiceConnection(PersistentPrefStoreImpl* pref_store) {
     auto connection = pref_store->CreateConnection({
         kKey, kOtherDictionaryKey, kDictionaryKey,
     });
-    observer_binding_.Bind(
+    observer_receiver_.Bind(
         std::move(connection->pref_store_connection->observer));
-    connection->pref_store_connection->observer = mojo::MakeRequest(&observer_);
+    connection->pref_store_connection->observer =
+        observer_.BindNewPipeAndPassReceiver();
 
     pref_store_.Bind(std::move(connection->pref_store));
-    pref_store_binding_.Bind(mojo::MakeRequest(&connection->pref_store));
+    pref_store_receiver_.Bind(
+        connection->pref_store.InitWithNewPipeAndPassReceiver());
 
     pref_store_client_ =
         base::MakeRefCounted<PersistentPrefStoreClient>(std::move(connection));
@@ -79,8 +81,8 @@ class PrefServiceConnection : public mojom::PrefStoreObserver,
   }
 
   ~PrefServiceConnection() override {
-    observer_binding_.FlushForTesting();
-    pref_store_binding_.FlushForTesting();
+    observer_receiver_.FlushForTesting();
+    pref_store_receiver_.FlushForTesting();
     EXPECT_TRUE(writes_.empty());
     EXPECT_TRUE(updates_.empty());
   }
@@ -171,10 +173,10 @@ class PrefServiceConnection : public mojom::PrefStoreObserver,
  private:
   scoped_refptr<PersistentPrefStoreClient> pref_store_client_;
   std::unique_ptr<PrefService> pref_service_;
-  mojom::PrefStoreObserverPtr observer_;
-  mojom::PersistentPrefStorePtr pref_store_;
-  mojo::Binding<mojom::PrefStoreObserver> observer_binding_;
-  mojo::Binding<mojom::PersistentPrefStore> pref_store_binding_;
+  mojo::Remote<mojom::PrefStoreObserver> observer_;
+  mojo::Remote<mojom::PersistentPrefStore> pref_store_;
+  mojo::Receiver<mojom::PrefStoreObserver> observer_receiver_{this};
+  mojo::Receiver<mojom::PersistentPrefStore> pref_store_receiver_{this};
 
   base::OnceClosure stop_;
   size_t expected_writes_ = 0;
@@ -202,7 +204,7 @@ class PersistentPrefStoreConsistencyTest : public testing::Test {
  private:
   scoped_refptr<PersistentPrefStore> pref_store_;
   std::unique_ptr<PersistentPrefStoreImpl> pref_store_impl_;
-  base::MessageLoop message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
 TEST_F(PersistentPrefStoreConsistencyTest, TwoPrefs) {

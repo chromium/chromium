@@ -1,0 +1,3 @@
+git+https://github.com/sqlalchemyorg/changelog.git#egg=changelog
+git+https://github.com/sqlalchemyorg/sphinx-paramlinks.git#egg=sphinx-paramlinks
+git+https://github.com/sqlalchemyorg/zzzeeksphinx.git#egg=zzzeeksphinx

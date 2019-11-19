@@ -103,7 +103,7 @@ void ReadCustomDataIntoMap(
       result->clear();
       return;
     }
-    auto insert_result = result->insert(std::make_pair(type, base::string16()));
+    auto insert_result = result->insert({type, base::string16()});
     if (!iter.ReadString16(&insert_result.first->second)) {
       // Data is corrupt, return an empty map.
       result->clear();

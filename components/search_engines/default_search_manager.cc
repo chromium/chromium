@@ -74,6 +74,8 @@ const char DefaultSearchManager::kUsageCount[] = "usage_count";
 const char DefaultSearchManager::kAlternateURLs[] = "alternate_urls";
 const char DefaultSearchManager::kCreatedByPolicy[] = "created_by_policy";
 const char DefaultSearchManager::kDisabledByPolicy[] = "disabled_by_policy";
+const char DefaultSearchManager::kCreatedFromPlayAPI[] =
+    "created_from_play_api";
 
 DefaultSearchManager::DefaultSearchManager(
     PrefService* pref_service,

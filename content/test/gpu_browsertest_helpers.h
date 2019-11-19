@@ -11,7 +11,7 @@ namespace gpu {
 class GpuChannelHost;
 }
 
-namespace ws {
+namespace viz {
 class ContextProviderCommandBuffer;
 }
 
@@ -24,7 +24,7 @@ GpuBrowsertestEstablishGpuChannelSyncRunLoop();
 
 // Creates a new ContextProviderCommandBuffer using the provided
 // GpuChannelHost.
-scoped_refptr<ws::ContextProviderCommandBuffer> GpuBrowsertestCreateContext(
+scoped_refptr<viz::ContextProviderCommandBuffer> GpuBrowsertestCreateContext(
     scoped_refptr<gpu::GpuChannelHost> gpu_channel_host);
 
 }  // namespace content

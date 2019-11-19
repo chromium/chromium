@@ -32,7 +32,6 @@ The primary power benchmarks are:
 - **`power.desktop`**: A desktop-only benchmark made up of two types of pages:
   - Pages focusing on a single, extremely simple behavior (e.g. a blinking cursor, a CSS blur animation)
   - Pages on which Chrome has exhibited pathological idle behavior in the past
-- **`power.typical_10_mobile`**: A mobile-only benchmark which visits ten popular sites and uses Android-specific APIs to measure approximately how much power is consumed. This benchmark is necessary to provide data to the Android System Health Council to assess whether Chrome Android is fit for release
 - **`media.desktop`**: A desktop-only benchmark in which each page tests a particular media-related scenario (e.g. playing a 1080p, H264 video with sound)
 - **`media.mobile`**: A mobile-only benchmark that parallels `media.desktop`
 

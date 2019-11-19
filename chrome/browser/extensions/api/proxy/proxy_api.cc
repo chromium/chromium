@@ -49,11 +49,12 @@ void ProxyEventRouter::OnProxyError(
     event_router->DispatchEventToRenderers(
         events::PROXY_ON_PROXY_ERROR,
         proxy_api_constants::kProxyEventOnProxyError, std::move(args), profile,
-        true, GURL());
+        true, GURL(), false);
   } else {
     event_router->BroadcastEventToRenderers(
         events::PROXY_ON_PROXY_ERROR,
-        proxy_api_constants::kProxyEventOnProxyError, std::move(args), GURL());
+        proxy_api_constants::kProxyEventOnProxyError, std::move(args), GURL(),
+        false);
   }
 }
 
@@ -82,11 +83,12 @@ void ProxyEventRouter::OnPACScriptError(
     event_router->DispatchEventToRenderers(
         events::PROXY_ON_PROXY_ERROR,
         proxy_api_constants::kProxyEventOnProxyError, std::move(args), profile,
-        true, GURL());
+        true, GURL(), false);
   } else {
     event_router->BroadcastEventToRenderers(
         events::PROXY_ON_PROXY_ERROR,
-        proxy_api_constants::kProxyEventOnProxyError, std::move(args), GURL());
+        proxy_api_constants::kProxyEventOnProxyError, std::move(args), GURL(),
+        false);
   }
 }
 

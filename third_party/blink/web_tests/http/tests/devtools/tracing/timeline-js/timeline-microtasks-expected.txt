@@ -1,4 +1,4 @@
-Checks the RunMicrotasks event is emitted.
+Checks the RunMicrotasks event is emitted and nested into RunTask.
 
 RunMicrotasks Properties:
 {
@@ -9,4 +9,5 @@ RunMicrotasks Properties:
     startTime : <number>
     type : "RunMicrotasks"
 }
+Microtask event is nested into Task event: true
 

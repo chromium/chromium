@@ -10,7 +10,7 @@
  * Launches the PaymentRequest UI that offers free shipping in California and
  * $5.00 shipping in US. Does not allow shipping outside of US.
  */
-function buy() {  // eslint-disable-line no-unused-vars
+function buy() { // eslint-disable-line no-unused-vars
   try {
     var details = {
       total: {label: 'Total', amount: {currency: 'USD', value: '5.00'}},

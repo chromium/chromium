@@ -31,6 +31,7 @@ OverlayCheck_Params::OverlayCheck_Params(
       format(candidate.format),
       display_rect(gfx::ToNearestRect(candidate.display_rect)),
       crop_rect(candidate.crop_rect),
+      is_opaque(candidate.is_opaque),
       plane_z_order(candidate.plane_z_order),
       is_overlay_candidate(candidate.overlay_handled) {}
 

@@ -15,10 +15,8 @@ jumbo_component("manager") {
     "display_manager_export.h",
     "display_manager_utilities.cc",
     "display_manager_utilities.h",
-    "fake_display_delegate.cc",
-    "fake_display_delegate.h",
-    "fake_display_snapshot.cc",
-    "fake_display_snapshot.h",
+    "display_util.cc",
+    "display_util.h",
     "json_converter.cc",
     "json_converter.h",
     "managed_display_info.cc",
@@ -31,6 +29,8 @@ jumbo_component("manager") {
       "apply_content_protection_task.h",
       "configure_displays_task.cc",
       "configure_displays_task.h",
+      "content_protection_manager.cc",
+      "content_protection_manager.h",
       "default_touch_transform_setter.cc",
       "default_touch_transform_setter.h",
       "display_change_observer.cc",
@@ -38,8 +38,6 @@ jumbo_component("manager") {
       "display_configurator.cc",
       "display_configurator.h",
       "display_layout_manager.h",
-      "display_util.cc",
-      "display_util.h",
       "query_content_protection_task.cc",
       "query_content_protection_task.h",
       "touch_device_manager.cc",
@@ -60,9 +58,8 @@ jumbo_component("manager") {
 
   deps = [
     "//base",
-    "//third_party/re2",
     "//ui/base",
-    "//ui/display/mojo:interfaces",
+    "//ui/display/mojom:mojom",
     "//ui/display/util",
     "//ui/events:platform_event",
     "//ui/events/devices",
@@ -72,6 +69,6 @@ jumbo_component("manager") {
   defines = [ "DISPLAY_MANAGER_IMPLEMENTATION" ]
 
   if (is_chromeos) {
-    deps += [ "//chromeos" ]
+    deps += [ "//chromeos/system" ]
   }
 }

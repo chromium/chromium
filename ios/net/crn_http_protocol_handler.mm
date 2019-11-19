@@ -162,10 +162,11 @@ class HttpProtocolHandlerCore
                           const RedirectInfo& new_url,
                           bool* defer_redirect) override;
   void OnAuthRequired(URLRequest* request,
-                      AuthChallengeInfo* auth_info) override;
+                      const AuthChallengeInfo& auth_info) override;
   void OnCertificateRequested(URLRequest* request,
                               SSLCertRequestInfo* cert_request_info) override;
   void OnSSLCertificateError(URLRequest* request,
+                             int net_error,
                              const SSLInfo& ssl_info,
                              bool fatal) override;
   void OnResponseStarted(URLRequest* request, int net_error) override;
@@ -207,38 +208,32 @@ class HttpProtocolHandlerCore
   base::ThreadChecker thread_checker_;
 
   // The NSURLProtocol client.
-  id<CRNNetworkClientProtocol> client_;
+  id<CRNNetworkClientProtocol> client_ = nil;
   std::unique_ptr<char, base::FreeDeleter> read_buffer_;
-  int read_buffer_size_;
+  int read_buffer_size_ = kIOBufferMinSize;
   scoped_refptr<WrappedIOBuffer> read_buffer_wrapper_;
-  NSMutableURLRequest* request_;
-  NSURLSessionTask* task_;
+  NSMutableURLRequest* request_ = nil;
+  NSURLSessionTask* task_ = nil;
+  // The stream has data to upload.
+  NSInputStream* http_body_stream_ = nil;
   // Stream delegate to read the HTTPBodyStream.
-  CRWHTTPStreamDelegate* stream_delegate_;
+  CRWHTTPStreamDelegate* http_body_stream_delegate_ = nullptr;
   // Vector of readers used to accumulate a POST data stream.
   std::vector<std::unique_ptr<UploadElementReader>> post_data_readers_;
 
   // This cannot be a scoped pointer because it must be deleted on the IO
   // thread.
-  URLRequest* net_request_;
+  URLRequest* net_request_ = nullptr;
 
   // It is a weak pointer because the owner of the uploader is the URLRequest.
   base::WeakPtr<ChunkedDataStreamUploader> chunked_uploader_;
-
-  // The stream has data to upload.
-  NSInputStream* pending_stream_;
 
   base::WeakPtr<RequestTracker> tracker_;
 
   DISALLOW_COPY_AND_ASSIGN(HttpProtocolHandlerCore);
 };
 
-HttpProtocolHandlerCore::HttpProtocolHandlerCore(NSURLRequest* request)
-    : client_(nil),
-      read_buffer_size_(kIOBufferMinSize),
-      read_buffer_wrapper_(nullptr),
-      net_request_(nullptr),
-      pending_stream_(nil) {
+HttpProtocolHandlerCore::HttpProtocolHandlerCore(NSURLRequest* request) {
   // The request will be accessed from another thread. It is safer to make a
   // copy to avoid conflicts.
   // The copy is mutable, because that request will be given to the client in
@@ -260,8 +255,10 @@ HttpProtocolHandlerCore::HttpProtocolHandlerCore(NSURLSessionTask* task)
 
 void HttpProtocolHandlerCore::HandleStreamEvent(NSStream* stream,
                                                 NSStreamEvent event) {
+  DVLOG(2) << "HandleStreamEvent " << stream << " event " << event;
   DCHECK(thread_checker_.CalledOnValidThread());
-  DCHECK(stream_delegate_);
+  DCHECK(http_body_stream_ == stream);
+  DCHECK(http_body_stream_delegate_);
   switch (event) {
     case NSStreamEventErrorOccurred:
       DLOG(ERROR)
@@ -290,8 +287,6 @@ void HttpProtocolHandlerCore::HandleStreamEvent(NSStream* stream,
       break;
     case NSStreamEventHasBytesAvailable: {
       if (chunked_uploader_) {
-        DCHECK(pending_stream_ == nil || pending_stream_ == stream);
-        pending_stream_ = base::mac::ObjCCastStrict<NSInputStream>(stream);
         chunked_uploader_->UploadWhenReady(false);
         break;
       }
@@ -349,8 +344,8 @@ void HttpProtocolHandlerCore::OnReceivedRedirect(
   // Stash the original URL in case we need to report it in an error.
   [request_ setURL:new_nsurl];
 
-  if (stream_delegate_)
-    StopListeningStream([request_ HTTPBodyStream]);
+  if (http_body_stream_)
+    StopListeningStream(http_body_stream_);
 
   // TODO(droger): See if we can share some code with URLRequest::Redirect() in
   // net/net_url_request/url_request.cc.
@@ -401,8 +396,9 @@ void HttpProtocolHandlerCore::OnReceivedRedirect(
   StopNetRequest();
 }
 
-void HttpProtocolHandlerCore::OnAuthRequired(URLRequest* request,
-                                             AuthChallengeInfo* auth_info) {
+void HttpProtocolHandlerCore::OnAuthRequired(
+    URLRequest* request,
+    const AuthChallengeInfo& auth_info) {
   DCHECK(thread_checker_.CalledOnValidThread());
   // A request with no tab ID should not hit HTTP authentication.
   if (tracker_) {
@@ -471,6 +467,7 @@ void HttpProtocolHandlerCore::HostStateCallback(bool carryOn) {
 }
 
 void HttpProtocolHandlerCore::OnSSLCertificateError(URLRequest* request,
+                                                    int net_error,
                                                     const SSLInfo& ssl_info,
                                                     bool fatal) {
   DCHECK(thread_checker_.CalledOnValidThread());
@@ -483,12 +480,9 @@ void HttpProtocolHandlerCore::OnSSLCertificateError(URLRequest* request,
     CancelAfterSSLError();  // High security host do not tolerate any issue.
   } else if (!tracker_) {
     // No tracker, this is a request outside the context of a tab. There is no
-    // way to present anything to the user so only allow trivial errors.
+    // way to present anything to the user so cancel on error.
     // See ssl_cert_error_handler upstream.
-    if (IsCertStatusMinorError(ssl_info.cert_status))
-      ContinueAfterSSLError();
-    else
-      CancelAfterSSLError();
+    CancelAfterSSLError();
   } else {
     // The tracker will decide, eventually asking the user, and will invoke the
     // callback.
@@ -625,7 +619,7 @@ HttpProtocolHandlerCore::~HttpProtocolHandlerCore() {
   DCHECK(thread_checker_.CalledOnValidThread());
   [client_ cancelAuthRequest];
   DCHECK(!net_request_);
-  DCHECK(!stream_delegate_);
+  DCHECK(!http_body_stream_delegate_);
 }
 
 // static
@@ -722,14 +716,20 @@ void HttpProtocolHandlerCore::Start(id<CRNNetworkClientProtocol> base_client) {
   [client_ didCreateNativeRequest:net_request_];
   SetLoadFlags();
 
-  if ([request_ HTTPBodyStream]) {
-    NSInputStream* input_stream = [request_ HTTPBodyStream];
-    stream_delegate_ =
+  // https://crbug.com/979324 If the application app sets HTTPBody, then system
+  // creates new NSInputStream every time HTTPBodyStream is called. Get the
+  // stream here and hold on to it.
+  http_body_stream_ = [request_ HTTPBodyStream];
+  if (http_body_stream_) {
+    DCHECK(![request_ HTTPBody]);
+    http_body_stream_delegate_ =
         [[CRWHTTPStreamDelegate alloc] initWithHttpProtocolHandlerCore:this];
-    [input_stream setDelegate:stream_delegate_];
-    [input_stream scheduleInRunLoop:[NSRunLoop currentRunLoop]
-                            forMode:NSDefaultRunLoopMode];
-    [input_stream open];
+    [http_body_stream_ setDelegate:http_body_stream_delegate_];
+    DVLOG(1) << "input_stream " << http_body_stream_ << " delegate "
+             << [http_body_stream_ delegate];
+    [http_body_stream_ scheduleInRunLoop:[NSRunLoop currentRunLoop]
+                                 forMode:NSDefaultRunLoopMode];
+    [http_body_stream_ open];
 
     if (net_request_->extra_request_headers().HasHeader(
             HttpRequestHeaders::kContentLength)) {
@@ -742,6 +742,7 @@ void HttpProtocolHandlerCore::Start(id<CRNNetworkClientProtocol> base_client) {
     chunked_uploader_ = uploader->GetWeakPtr();
     net_request_->set_upload(std::move(uploader));
   } else if ([request_ HTTPBody]) {
+    DVLOG(1) << "HTTPBody " << [request_ HTTPBody];
     NSData* body = [request_ HTTPBody];
     const NSUInteger body_length = [body length];
     if (body_length > 0) {
@@ -787,20 +788,24 @@ void HttpProtocolHandlerCore::StopNetRequest() {
 
   delete net_request_;
   net_request_ = nullptr;
-  if (stream_delegate_)
-    StopListeningStream([request_ HTTPBodyStream]);
+  if (http_body_stream_)
+    StopListeningStream(http_body_stream_);
 }
 
 void HttpProtocolHandlerCore::StopListeningStream(NSStream* stream) {
+  DVLOG(1) << "StopListeningStream " << stream << " delegate "
+           << [stream delegate];
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(stream);
-  DCHECK(stream_delegate_);
-  DCHECK([stream delegate] == stream_delegate_);
+  DCHECK(http_body_stream_delegate_);
+  DCHECK([stream delegate] == http_body_stream_delegate_);
+  if (stream != http_body_stream_)
+    return;
   [stream setDelegate:nil];
   [stream removeFromRunLoop:[NSRunLoop currentRunLoop]
                     forMode:NSDefaultRunLoopMode];
-  stream_delegate_ = nil;
-  pending_stream_ = nil;
+  http_body_stream_delegate_ = nil;
+  http_body_stream_ = nil;
   // Close the stream if needed.
   switch ([stream streamStatus]) {
     case NSStreamStatusOpening:
@@ -878,14 +883,15 @@ void HttpProtocolHandlerCore::StripPostSpecificHeaders(
 
 int HttpProtocolHandlerCore::OnRead(char* buffer, int buffer_length) {
   int bytes_read = 0;
-  if (pending_stream_) {
+  if (http_body_stream_) {
     // NSInputStream read() blocks the thread until there is at least one byte
     // available, so check the status before call read().
-    if (![pending_stream_ hasBytesAvailable])
+    if (![http_body_stream_ hasBytesAvailable])
       return ERR_IO_PENDING;
 
-    bytes_read = [pending_stream_ read:reinterpret_cast<unsigned char*>(buffer)
-                             maxLength:buffer_length];
+    bytes_read =
+        [http_body_stream_ read:reinterpret_cast<unsigned char*>(buffer)
+                      maxLength:buffer_length];
     // NSInputStream can read 0 byte when hasBytesAvailable is true, so do not
     // treat it as a failure.
     if (bytes_read < 0) {
@@ -893,8 +899,8 @@ int HttpProtocolHandlerCore::OnRead(char* buffer, int buffer_length) {
       // immediately.
       DLOG(ERROR) << "Failed to read POST data: "
                   << base::SysNSStringToUTF8(
-                         [[pending_stream_ streamError] description]);
-      StopListeningStream(pending_stream_);
+                         [[http_body_stream_ streamError] description]);
+      StopListeningStream(http_body_stream_);
       StopRequestWithError(NSURLErrorUnknown, ERR_UNEXPECTED);
       return ERR_UNEXPECTED;
     }

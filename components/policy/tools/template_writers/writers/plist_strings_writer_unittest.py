@@ -22,10 +22,11 @@ class PListStringsWriterUnittest(writer_unittest_common.WriterUnittestCommon):
     policy_json = '''
       {
         'policy_definitions': [],
+        'policy_atomic_group_definitions': [],
         'placeholders': [],
         'messages': {
           'mac_chrome_preferences': {
-            'text': '$1 preferen"ces',
+            'text': 'Chromium preferen"ces',
             'desc': 'blah'
           }
         }
@@ -43,10 +44,11 @@ class PListStringsWriterUnittest(writer_unittest_common.WriterUnittestCommon):
     policy_json = '''
       {
         'policy_definitions': [],
+        'policy_atomic_group_definitions': [],
         'placeholders': [],
         'messages': {
           'mac_chrome_preferences': {
-            'text': '$1 preferen"ces',
+            'text': 'Chromium preferen"ces',
             'desc': 'blah'
           }
         }
@@ -82,10 +84,11 @@ class PListStringsWriterUnittest(writer_unittest_common.WriterUnittestCommon):
             'desc': 'Description of main policy.',
           },
         ],
+        'policy_atomic_group_definitions': [],
         'placeholders': [],
         'messages': {
           'mac_chrome_preferences': {
-            'text': 'Preferences of $1',
+            'text': 'Preferences of Google Chrome',
             'desc': 'blah'
           }
         }
@@ -124,10 +127,11 @@ With a newline.""",
             'supported_on': ['chrome.mac:8-'],
           },
         ],
+        'policy_atomic_group_definitions': [],
         'placeholders': [],
         'messages': {
           'mac_chrome_preferences': {
-            'text': 'Preferences of $1',
+            'text': 'Preferences of Chromium',
             'desc': 'blah'
           }
         }
@@ -168,10 +172,11 @@ With a newline.""",
             'supported_on': ['chrome.mac:8-'],
           },
         ],
+        'policy_atomic_group_definitions': [],
         'placeholders': [],
         'messages': {
           'mac_chrome_preferences': {
-            'text': 'Preferences of $1',
+            'text': 'Preferences of Chromium',
             'desc': 'blah'
           }
         }
@@ -224,10 +229,11 @@ With a newline.""",
             'supported_on': ['chrome.mac:8-'],
           },
         ],
+        'policy_atomic_group_definitions': [],
         'placeholders': [],
         'messages': {
           'mac_chrome_preferences': {
-            'text': 'Preferences of $1',
+            'text': 'Preferences of Chromium',
             'desc': 'blah'
           }
         }
@@ -276,10 +282,11 @@ With a newline.""",
             'supported_on': ['chrome.mac:8-'],
           },
         ],
+        'policy_atomic_group_definitions': [],
         'placeholders': [],
         'messages': {
           'mac_chrome_preferences': {
-            'text': '$1 preferences',
+            'text': 'Google Chrome preferences',
             'desc': 'blah'
           }
         }
@@ -329,10 +336,11 @@ With a newline.""",
             'supported_on': ['chrome.mac:8-'],
           },
         ],
+        'policy_atomic_group_definitions': [],
         'placeholders': [],
         'messages': {
           'mac_chrome_preferences': {
-            'text': '$1 preferences',
+            'text': 'Google Chrome preferences',
             'desc': 'blah'
           }
         }
@@ -371,10 +379,11 @@ With a newline.""",
             'supported_on': ['chrome_os:8-'],
           },
         ],
+        'policy_atomic_group_definitions': [],
         'placeholders': [],
         'messages': {
           'mac_chrome_preferences': {
-            'text': '$1 preferences',
+            'text': 'Google Chrome preferences',
             'desc': 'blah'
           }
         }

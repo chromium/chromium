@@ -37,7 +37,7 @@ class BatchUploadRequest;
 }  // namespace drive
 }  // namespace google_apis
 
-namespace identity {
+namespace signin {
 class IdentityManager;
 }
 
@@ -109,7 +109,7 @@ class DriveAPIService : public DriveServiceInterface,
   // |traffic_annotation| will be used to annotate the network request that will
   // be created to perform this service.
   DriveAPIService(
-      identity::IdentityManager* identity_manager,
+      signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       base::SequencedTaskRunner* blocking_task_runner,
       const GURL& base_url,
@@ -119,7 +119,7 @@ class DriveAPIService : public DriveServiceInterface,
   ~DriveAPIService() override;
 
   // DriveServiceInterface Overrides
-  void Initialize(const std::string& account_id) override;
+  void Initialize(const CoreAccountId& account_id) override;
   void AddObserver(DriveServiceObserver* observer) override;
   void RemoveObserver(DriveServiceObserver* observer) override;
   bool CanSendRequest() const override;
@@ -267,7 +267,7 @@ class DriveAPIService : public DriveServiceInterface,
   // The class is expected to run on UI thread.
   base::ThreadChecker thread_checker_;
 
-  identity::IdentityManager* identity_manager_;
+  signin::IdentityManager* identity_manager_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_;
   std::unique_ptr<google_apis::RequestSender> sender_;

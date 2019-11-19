@@ -22,26 +22,30 @@
 }
 
 .ripple-effect {
-  background-color: rgba(var(--GB600-rgb), 0.1);
+  background-color: rgba(var(--GB600-rgb), .1);
   border-radius: 50%;
   height: 1px;
   pointer-events: none;
   transition: width, height, margin, background-color 400ms 250ms;
   transition-duration: 400ms;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-timing-function: cubic-bezier(.4, 0, .2, 1);
   width: 1px;
 }
 
-html[darkmode=true] .ripple-effect {
-  background-color: rgba(var(--GB300-rgb), 0.32);
+@media (prefers-color-scheme: dark) {
+  .ripple-effect {
+    background-color: rgba(var(--GB300-rgb), .32);
+  }
 }
 
 button.primary .ripple-effect {
-  background-color: rgba(255, 255, 255, 0.32);
+  background-color: rgba(255, 255, 255, .32);
 }
 
-html[darkmode=true] button.primary .ripple-effect {
-  background-color: rgba(0, 0, 0, 0.08);
+@media (prefers-color-scheme: dark) {
+  button.primary .ripple-effect {
+    background-color: rgba(0, 0, 0, .08);
+  }
 }
 
 button.paper {
@@ -49,12 +53,17 @@ button.paper {
   border-radius: 4px;
   font-size: 12px;
   font-weight: 500;
-  height: 32px;
+  line-height: 1.6;
+  min-height: 32px;
   padding: 0 16px;
   position: relative;
   transition-duration: 200ms;
   transition-property: background-color, color, box-shadow, border;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-timing-function: cubic-bezier(.4, 0, .2, 1);
+}
+
+button.paper:not(:disabled) {
+  cursor: pointer;
 }
 
 button.paper:disabled {
@@ -66,9 +75,11 @@ button.paper.primary {
   color: white;
 }
 
-html[darkmode=true] button.paper.primary {
-  background-color: rgb(var(--GB300-rgb));
-  color: rgb(var(--GG900-rgb));
+@media (prefers-color-scheme: dark) {
+  button.paper.primary {
+    background-color: rgb(var(--GB300-rgb));
+    color: rgb(var(--GG900-rgb));
+  }
 }
 
 button.paper.primary:disabled {
@@ -76,30 +87,36 @@ button.paper.primary:disabled {
   color: rgb(var(--GG600-rgb));
 }
 
-html[darkmode=true] button.paper.primary:disabled {
-  background-color: rgb(var(--GG800-rgb));
-  color: rgb(var(--GG600-rgb));
+@media (prefers-color-scheme: dark) {
+  button.paper.primary:disabled {
+    background-color: rgb(var(--GG800-rgb));
+    color: rgb(var(--GG600-rgb));
+  }
 }
 
 button.paper.primary:hover:not(:disabled) {
   background-color: rgb(41, 123, 231);
-  box-shadow: 0 1px 2px 0 rgba(var(--GB500-rgb), 0.3),
-      0 1px 3px 1px rgba(var(--GB500-rgb), 0.15);
+  box-shadow: 0 1px 2px 0 rgba(var(--GB500-rgb), .3),
+      0 1px 3px 1px rgba(var(--GB500-rgb), .15);
 }
 
-html[darkmode=true] button.paper.primary:hover:not(:disabled) {
-  background-color: rgb(133, 173, 238);
+@media (prefers-color-scheme: dark) {
+  button.paper.primary:hover:not(:disabled) {
+    background-color: rgb(133, 173, 238);
+  }
 }
 
 button.paper.primary:active:not(:disabled) {
-  box-shadow: 0 1px 2px 0 rgba(var(--GB500-rgb), 0.3),
-      0 3px 6px 2px rgba(var(--GB500-rgb), 0.15);
+  box-shadow: 0 1px 2px 0 rgba(var(--GB500-rgb), .3),
+      0 3px 6px 2px rgba(var(--GB500-rgb), .15);
 }
 
-html[darkmode=true] button.paper.primary:active:not(:disabled) {
-  background-color: rgb(115, 160, 223);
-  box-shadow: 0 1px 2px 0 rgba(var(--GB500-rgb), 0.3),
-      0 3px 6px 2px rgba(var(--GB500-rgb), 0.15);
+@media (prefers-color-scheme: dark) {
+  button.paper.primary:active:not(:disabled) {
+    background-color: rgb(115, 160, 223);
+    box-shadow: 0 1px 2px 0 rgba(var(--GB500-rgb), .3),
+        0 3px 6px 2px rgba(var(--GB500-rgb), .15);
+  }
 }
 
 button.paper.secondary {
@@ -108,10 +125,12 @@ button.paper.secondary {
   color: rgb(var(--GB600-rgb));
 }
 
-html[darkmode=true] button.paper.secondary {
-  background-color: transparent;
-  border-color: rgb(var(--GG700-rgb));
-  color: rgb(var(--GB300-rgb));
+@media (prefers-color-scheme: dark) {
+  button.paper.secondary {
+    background-color: transparent;
+    border-color: rgb(var(--GG700-rgb));
+    color: rgb(var(--GB300-rgb));
+  }
 }
 
 button.paper.secondary:disabled {
@@ -119,33 +138,39 @@ button.paper.secondary:disabled {
   color: rgb(var(--GG600-rgb));
 }
 
-html[darkmode=true] button.paper.secondary:disabled {
-  border-color: rgb(var(--GG800-rgb));
-  color: rgb(var(--GG600-rgb));
+@media (prefers-color-scheme: dark) {
+  button.paper.secondary:disabled {
+    border-color: rgb(var(--GG800-rgb));
+    color: rgb(var(--GG600-rgb));
+  }
 }
 
 button.paper.secondary:hover:not(:disabled) {
-  background-color: rgba(var(--GB500-rgb), 0.04);
+  background-color: rgba(var(--GB500-rgb), .04);
   border-color: rgb(var(--GB100-rgb));
 }
 
-html[darkmode=true] button.paper.secondary:hover:not(:disabled) {
-  background-color: rgba(var(--GB300-rgb), 0.04);
-  border-color: rgba(var(--GB300-rgb), 0.5);
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.3),
-      0 1px 3px 1px rgba(0, 0, 0, 0.15);
+@media (prefers-color-scheme: dark) {
+  button.paper.secondary:hover:not(:disabled) {
+    background-color: rgba(var(--GB300-rgb), .04);
+    border-color: rgba(var(--GB300-rgb), .5);
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, .3),
+        0 1px 3px 1px rgba(0, 0, 0, .15);
+  }
 }
 
 button.paper.secondary:active:not(:disabled) {
   background-color: white;
   border-color: white;
-  box-shadow: 0 1px 2px 0 rgba(var(--GG800-rgb), 0.3),
-      0 3px 6px 2px rgba(var(--GG800-rgb), 0.15);
+  box-shadow: 0 1px 2px 0 rgba(var(--GG800-rgb), .3),
+      0 3px 6px 2px rgba(var(--GG800-rgb), .15);
 }
 
-html[darkmode=true] button.paper.secondary:active:not(:disabled) {
-  background-color: rgba(var(--GB300-rgb), 0.08);
-  border-color: rgba(var(--GB300-rgb), 0.5);
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.3),
-      0 3px 6px 2px rgba(0, 0, 0, 0.15);
+@media (prefers-color-scheme: dark) {
+  button.paper.secondary:active:not(:disabled) {
+    background-color: rgba(var(--GB300-rgb), .08);
+    border-color: rgba(var(--GB300-rgb), .5);
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, .3),
+        0 3px 6px 2px rgba(0, 0, 0, .15);
+    }
 }

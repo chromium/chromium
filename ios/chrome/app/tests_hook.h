@@ -16,10 +16,6 @@ bool DisableAppGroupAccess();
 // run unimpeded.
 bool DisableContentSuggestions();
 
-// Returns true if contextual search should be disabled to allow other tests
-// to run unimpeded.
-bool DisableContextualSearch();
-
 // Returns true if the first_run path should be disabled to allow other tests to
 // run unimpeded.
 bool DisableFirstRun();

@@ -1,0 +1,10 @@
+This is a testharness.js-based test.
+PASS getAnimations returns one Animation per transitioning property
+PASS getAnimations returns CSSTransition objects for CSS Transitions
+PASS getAnimations does not return finished CSS Transitions
+PASS getAnimations does not return a transition for a non-animatable property
+PASS getAnimations does not return a transition for an unsupposed property
+FAIL getAnimations sorts simultaneous transitions by name assert_equals: expected "border-right-width" but got "opacity"
+PASS getAnimations sorts transitions by when they were generated
+Harness: the test ran to completion.
+

@@ -9,7 +9,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_custom_element_definition_data.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_definition_builder.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -49,8 +49,8 @@ class CORE_EXPORT ScriptCustomElementDefinitionBuilder
   v8::Local<v8::Value> v8_attribute_changed_callback_;
   v8::Local<v8::Value> v8_form_associated_callback_;
   v8::Local<v8::Value> v8_form_reset_callback_;
-  v8::Local<v8::Value> v8_disabled_state_changed_callback_;
-  v8::Local<v8::Value> v8_restore_value_callback_;
+  v8::Local<v8::Value> v8_form_disabled_callback_;
+  v8::Local<v8::Value> v8_form_state_restore_callback_;
 
   DISALLOW_COPY_AND_ASSIGN(ScriptCustomElementDefinitionBuilder);
 };

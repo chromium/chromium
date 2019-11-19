@@ -15,12 +15,17 @@
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/threading/platform_thread.h"
 #include "components/browser_watcher/stability_report_user_stream_data_source.h"
-#include "components/gwp_asan/crash_handler/crash_handler.h"
+#include "components/gwp_asan/buildflags/buildflags.h"
 #include "third_party/crashpad/crashpad/client/crashpad_info.h"
 #include "third_party/crashpad/crashpad/client/simple_string_dictionary.h"
 #include "third_party/crashpad/crashpad/handler/handler_main.h"
 #include "third_party/crashpad/crashpad/handler/user_stream_data_source.h"
+
+#if BUILDFLAG(ENABLE_GWP_ASAN)
+#include "components/gwp_asan/crash_handler/crash_handler.h"  // nogncheck
+#endif
 
 namespace crash_reporter {
 
@@ -31,6 +36,8 @@ int RunAsCrashpadHandler(const base::CommandLine& command_line,
   // Make sure this process terminates on OOM in the same mode as other Chrome
   // processes.
   base::EnableTerminationOnOutOfMemory();
+
+  base::PlatformThread::SetName("CrashpadMainThread");
 
   // If the handler is started with --monitor-self, it'll need a ptype
   // annotation set. It'll normally set one itself by being invoked with
@@ -84,8 +91,10 @@ int RunAsCrashpadHandler(const base::CommandLine& command_line,
             user_data_dir));
   }
 
+#if BUILDFLAG(ENABLE_GWP_ASAN)
   user_stream_data_sources.push_back(
       std::make_unique<gwp_asan::UserStreamDataSource>());
+#endif
 
   return crashpad::HandlerMain(static_cast<int>(storage.size()),
                                argv_as_utf8.get(), &user_stream_data_sources);

@@ -10,11 +10,52 @@
 
 module network.mojom;
 
+import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/network_param.mojom";
 
 // Receives cert verifier trial configuration updates.
 interface TrialComparisonCertVerifierConfigClient {
   OnTrialConfigUpdated(bool allowed);
+};
+
+[EnableIf=is_mac]
+struct MacCertEvidenceInfo {
+  // A bitfield indicating various status of the cert, defined in cssmapple.h
+  uint32 status_bits;
+
+  // CSSM_RETURN status codes for the cert, defined in cssmtype.h, values in
+  // cssmerr.h and cssmErrorStrings.h.
+  array<int32> status_codes;
+};
+
+[EnableIf=is_mac]
+struct MacPlatformVerifierDebugInfo {
+  // The SecTrustResultType result from SecTrustEvaluate.
+  uint32 trust_result;
+
+  // The OSStatus resultCode from SecTrustGetCssmResultCode.
+  int32 result_code;
+
+  // The CSSM_TP_APPLE_EVIDENCE_INFO statusChain from SecTrustGetResult. Each
+  // entry corresponds to one of the certs in the verified chain (leaf first).
+  array<MacCertEvidenceInfo> status_chain;
+};
+
+// Contains additional debugging data about the verification. This information
+// does not change the meaning of the results.
+struct CertVerifierDebugInfo {
+  // A bitfield of net::TrustStoreMac::TrustDebugInfo flags, containing the
+  // union of flags from all the GetTrust calls done during verification.
+  [EnableIf=is_mac]
+  int32 mac_combined_trust_debug_info;
+
+  [EnableIf=is_mac]
+  MacPlatformVerifierDebugInfo? mac_platform_debug_info;
+
+  // The time as seen by CertVerifyProcBuiltin, in raw timestamp and in
+  // exploded & encoded GeneralizedTime string.
+  mojo_base.mojom.Time trial_verification_time;
+  string trial_der_verification_time;
 };
 
 // Sends reports of differences found in the cert verifier trial.
@@ -23,16 +64,17 @@ interface TrialComparisonCertVerifierReportClient {
       string hostname, X509Certificate cert, bool enable_rev_checking,
       bool require_rev_checking_local_anchors, bool enable_sha1_local_anchors,
       bool disable_symantec_enforcement, CertVerifyResult primary_result,
-      CertVerifyResult trial_result);
+      CertVerifyResult trial_result, CertVerifierDebugInfo debug_info);
 };
 
 // Parameters for initializing the cert verification trial.
 // |initial_allowed| is the initial setting for whether the trial is allowed.
-// |config_client_request| is the Mojo pipe over which trial configuration
+// |config_client_receiver| is the Mojo pipe over which trial configuration
 // updates are received.
 // |report_client| is the Mojo pipe used to send trial reports.
 struct TrialComparisonCertVerifierParams {
   bool initial_allowed = false;
-  TrialComparisonCertVerifierConfigClient&? config_client_request;
-  TrialComparisonCertVerifierReportClient? report_client;
+  pending_receiver<TrialComparisonCertVerifierConfigClient>?
+      config_client_receiver;
+  pending_remote<TrialComparisonCertVerifierReportClient>? report_client;
 };

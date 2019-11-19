@@ -9,11 +9,9 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/google/google_brand.h"
-#include "chrome/browser/google/google_url_tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_switches.h"
-#include "components/google/core/browser/google_url_tracker.h"
 #include "components/google/core/common/google_util.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_thread.h"
@@ -27,31 +25,19 @@
 
 using content::BrowserThread;
 
-// static
-std::string* UIThreadSearchTermsData::google_base_url_ = NULL;
-
-UIThreadSearchTermsData::UIThreadSearchTermsData(Profile* profile)
-    : profile_(profile) {
+UIThreadSearchTermsData::UIThreadSearchTermsData() {
   DCHECK(!BrowserThread::IsThreadInitialized(BrowserThread::UI) ||
-      BrowserThread::CurrentlyOn(BrowserThread::UI));
+         BrowserThread::CurrentlyOn(BrowserThread::UI));
 }
 
 std::string UIThreadSearchTermsData::GoogleBaseURLValue() const {
   DCHECK(!BrowserThread::IsThreadInitialized(BrowserThread::UI) ||
       BrowserThread::CurrentlyOn(BrowserThread::UI));
-  if (google_base_url_)
-    return *google_base_url_;
   GURL base_url(google_util::CommandLineGoogleBaseURL());
   if (base_url.is_valid())
     return base_url.spec();
 
-  if (!profile_)
-    return SearchTermsData::GoogleBaseURLValue();
-
-  const GoogleURLTracker* tracker =
-      GoogleURLTrackerFactory::GetForProfile(profile_);
-  return tracker ?
-      tracker->google_url().spec() : GoogleURLTracker::kDefaultGoogleHomepage;
+  return SearchTermsData::GoogleBaseURLValue();
 }
 
 std::string UIThreadSearchTermsData::GetApplicationLocale() const {
@@ -71,8 +57,7 @@ base::string16 UIThreadSearchTermsData::GetRlzParameterValue(
   // For organic brandcodes do not use rlz at all. Empty brandcode usually
   // means a chromium install. This is ok.
   std::string brand;
-  if (google_brand::GetBrand(&brand) && !brand.empty() &&
-      !google_brand::IsOrganic(brand)) {
+  if (google_brand::GetBrand(&brand) && !google_brand::IsOrganic(brand)) {
     // This call will return false the first time(s) it is called until the
     // value has been cached. This normally would mean that at most one omnibox
     // search might not send the RLZ data but this is not really a problem.
@@ -129,12 +114,6 @@ std::string UIThreadSearchTermsData::GoogleImageSearchSource() const {
   if (!modifier.empty())
     version += " " + modifier;
   return version;
-}
-
-// static
-void UIThreadSearchTermsData::SetGoogleBaseURL(const std::string& base_url) {
-  delete google_base_url_;
-  google_base_url_ = base_url.empty() ? NULL : new std::string(base_url);
 }
 
 size_t UIThreadSearchTermsData::EstimateMemoryUsage() const {

@@ -34,12 +34,12 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/permissions/permission_message_provider.h"
 #include "extensions/common/permissions/permissions_data.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
-#include "ui/views/window/dialog_client_view.h"
 
 using extensions::PermissionIDSet;
 using extensions::PermissionMessage;
@@ -115,7 +115,7 @@ bool ScrollbarTest::IsScrollbarVisible(
   content::RunAllTasksUntilIdle();
 
   // Check if the vertical scrollbar is visible.
-  return dialog->scroll_view()->vertical_scroll_bar()->visible();
+  return dialog->scroll_view()->vertical_scroll_bar()->GetVisible();
 }
 
 // Tests that a scrollbar _is_ shown for an excessively long extension
@@ -136,7 +136,7 @@ IN_PROC_BROWSER_TEST_F(ScrollbarTest, LongPromptScrollbar) {
 
 // Tests that a scrollbar isn't shown for this regression case.
 // See crbug.com/385570 for details.
-IN_PROC_BROWSER_TEST_F(ScrollbarTest, ScrollbarRegression) {
+IN_PROC_BROWSER_TEST_F(ScrollbarTest, DISABLED_ScrollbarRegression) {
   base::string16 permission_string(base::ASCIIToUTF16(
       "Read and modify your data on *.facebook.com"));
   PermissionMessages permissions;
@@ -188,14 +188,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewTest, NotifyDelegate) {
     // User presses install.
     ExtensionInstallPromptTestHelper helper;
     views::DialogDelegateView* delegate_view = CreateAndShowPrompt(&helper);
-    delegate_view->GetDialogClientView()->AcceptWindow();
+    delegate_view->AcceptDialog();
     EXPECT_EQ(ExtensionInstallPrompt::Result::ACCEPTED, helper.result());
   }
   {
     // User presses cancel.
     ExtensionInstallPromptTestHelper helper;
     views::DialogDelegateView* delegate_view = CreateAndShowPrompt(&helper);
-    delegate_view->GetDialogClientView()->CancelWindow();
+    delegate_view->CancelDialog();
     EXPECT_EQ(ExtensionInstallPrompt::Result::USER_CANCELED, helper.result());
   }
   {
@@ -217,7 +217,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewTest, InstallButtonDelay) {
   views::DialogDelegateView* delegate_view = CreateAndShowPrompt(&helper);
 
   // Check that dialog is visible.
-  EXPECT_TRUE(delegate_view->visible());
+  EXPECT_TRUE(delegate_view->GetVisible());
 
   // Check initial button states.
   EXPECT_FALSE(delegate_view->IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
@@ -445,8 +445,7 @@ void ExtensionInstallDialogRatingsSectionTest::TestRatingsSectionA11y(
               node_data.GetStringAttribute(ax::mojom::StringAttribute::kName));
   }
 
-  for (int i = 0; i < rating_view->child_count(); ++i) {
-    views::View* child = rating_view->child_at(i);
+  for (views::View* child : rating_view->children()) {
     ui::AXNodeData node_data;
     child->GetAccessibleNodeData(&node_data);
     EXPECT_EQ(ax::mojom::Role::kIgnored, node_data.role);

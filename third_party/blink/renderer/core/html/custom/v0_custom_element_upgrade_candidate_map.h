@@ -43,8 +43,6 @@ namespace blink {
 class V0CustomElementUpgradeCandidateMap final
     : public V0CustomElementObserver {
  public:
-  static V0CustomElementUpgradeCandidateMap* Create();
-
   V0CustomElementUpgradeCandidateMap() = default;
   ~V0CustomElementUpgradeCandidateMap() override;
 

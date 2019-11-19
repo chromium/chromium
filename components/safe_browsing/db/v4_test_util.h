@@ -108,10 +108,6 @@ class TestV4GetHashProtocolManagerFactory
   TestV4GetHashProtocolManager* pm_ = nullptr;
 };
 
-// Returns a FullHash for the basic host+path pattern for a given URL after
-// canonicalization.
-FullHash GetFullHash(const GURL& url);
-
 // Returns FullHashInfo object for the basic host+path pattern for a given URL
 // after canonicalization.
 FullHashInfo GetFullHashInfo(const GURL& url, const ListIdentifier& list_id);

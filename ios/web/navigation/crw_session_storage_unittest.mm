@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web/public/crw_session_storage.h"
+#import "ios/web/public/session/crw_session_storage.h"
 
 #include "base/strings/sys_string_conversions.h"
 #import "ios/web/navigation/navigation_item_impl.h"
 #import "ios/web/navigation/navigation_item_storage_test_util.h"
 #import "ios/web/navigation/serializable_user_data_manager_impl.h"
-#import "ios/web/public/crw_navigation_item_storage.h"
-#include "ios/web/public/referrer.h"
+#include "ios/web/public/navigation/referrer.h"
+#import "ios/web/public/session/crw_navigation_item_storage.h"
 #import "net/base/mac/url_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -95,7 +95,14 @@ class CRWNSessionStorageTest : public PlatformTest {
 // Tests that unarchiving CRWSessionStorage data results in an equivalent
 // storage.
 TEST_F(CRWNSessionStorageTest, EncodeDecode) {
-  NSData* data = [NSKeyedArchiver archivedDataWithRootObject:session_storage_];
-  id decoded = [NSKeyedUnarchiver unarchiveObjectWithData:data];
+  NSKeyedArchiver* archiver =
+      [[NSKeyedArchiver alloc] initRequiringSecureCoding:NO];
+  [archiver encodeObject:session_storage_ forKey:NSKeyedArchiveRootObjectKey];
+  [archiver finishEncoding];
+  NSData* data = [archiver encodedData];
+  NSKeyedUnarchiver* unarchiver =
+      [[NSKeyedUnarchiver alloc] initForReadingFromData:data error:nil];
+  unarchiver.requiresSecureCoding = NO;
+  id decoded = [unarchiver decodeObjectForKey:NSKeyedArchiveRootObjectKey];
   EXPECT_TRUE(SessionStoragesAreEqual(session_storage_, decoded));
 }

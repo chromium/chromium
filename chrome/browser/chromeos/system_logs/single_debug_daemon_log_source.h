@@ -48,7 +48,7 @@ class SingleDebugDaemonLogSource : public SystemLogsSource {
                        SysLogsSourceCallback callback,
                        base::Optional<std::string> result) const;
 
-  base::WeakPtrFactory<SingleDebugDaemonLogSource> weak_ptr_factory_;
+  base::WeakPtrFactory<SingleDebugDaemonLogSource> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SingleDebugDaemonLogSource);
 };

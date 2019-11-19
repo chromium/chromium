@@ -136,7 +136,7 @@ TEST_F(AtomicFlagSetTest, GroupBecomesFull) {
               BindLambdaForTesting([](size_t index) {}));
   AtomicFlagSetForTest::Group* group1 =
       atomic_flag_set_.GetAllocListForTesting();
-  EXPECT_THAT(group1->next_.get(), IsNull());
+  EXPECT_THAT(group1->next.get(), IsNull());
   EXPECT_EQ(group1, atomic_flag_set_.GetPartiallyFreeListForTesting());
   EXPECT_FALSE(group1->IsFull());
   EXPECT_FALSE(group1->IsEmpty());
@@ -159,15 +159,15 @@ TEST_F(AtomicFlagSetTest, GroupBecomesEmptyOnlyEntryInPartiallyFreeList) {
   EXPECT_FALSE(group1->IsFull());
   EXPECT_FALSE(group1->IsEmpty());
   EXPECT_EQ(group1, atomic_flag_set_.GetPartiallyFreeListForTesting());
-  AtomicFlagSetForTest::Group* group2 = group1->next_.get();
+  AtomicFlagSetForTest::Group* group2 = group1->next.get();
   ASSERT_THAT(group2, NotNull());
-  EXPECT_THAT(group2->next_.get(), IsNull());
+  EXPECT_THAT(group2->next.get(), IsNull());
   EXPECT_TRUE(group2->IsFull());
 
   // This will release |group1|.
   atomic_flags_[AtomicFlagSetForTest::Group::kNumFlags].ReleaseAtomicFlag();
 
-  EXPECT_THAT(group2->next_.get(), IsNull());
+  EXPECT_THAT(group2->next.get(), IsNull());
   EXPECT_THAT(atomic_flag_set_.GetPartiallyFreeListForTesting(), IsNull());
 }
 
@@ -180,12 +180,12 @@ TEST_F(AtomicFlagSetTest, GroupBecomesEmptyHeadOfPartiallyFreeList) {
   ASSERT_THAT(group1, NotNull());
   EXPECT_FALSE(group1->IsFull());
   EXPECT_FALSE(group1->IsEmpty());
-  AtomicFlagSetForTest::Group* group2 = group1->next_.get();
+  AtomicFlagSetForTest::Group* group2 = group1->next.get();
   ASSERT_THAT(group2, NotNull());
   EXPECT_TRUE(group2->IsFull());
-  AtomicFlagSetForTest::Group* group3 = group2->next_.get();
+  AtomicFlagSetForTest::Group* group3 = group2->next.get();
   ASSERT_THAT(group3, NotNull());
-  EXPECT_THAT(group3->next_.get(), IsNull());
+  EXPECT_THAT(group3->next.get(), IsNull());
   EXPECT_TRUE(group3->IsFull());
 
   // |group1| is on the head of the partially free list, now add groups 2 and 3.
@@ -195,30 +195,30 @@ TEST_F(AtomicFlagSetTest, GroupBecomesEmptyHeadOfPartiallyFreeList) {
   EXPECT_FALSE(group3->IsFull());
 
   EXPECT_EQ(group3, atomic_flag_set_.GetPartiallyFreeListForTesting());
-  EXPECT_EQ(group3->partially_free_list_prev_, nullptr);
-  EXPECT_EQ(group3->partially_free_list_next_, group2);
-  EXPECT_EQ(group2->partially_free_list_prev_, group3);
-  EXPECT_EQ(group2->partially_free_list_next_, group1);
-  EXPECT_EQ(group1->partially_free_list_prev_, group2);
-  EXPECT_EQ(group1->partially_free_list_next_, nullptr);
-  EXPECT_EQ(group1->prev_, nullptr);
-  EXPECT_EQ(group2->prev_, group1);
-  EXPECT_EQ(group3->prev_, group2);
+  EXPECT_EQ(group3->partially_free_list_prev, nullptr);
+  EXPECT_EQ(group3->partially_free_list_next, group2);
+  EXPECT_EQ(group2->partially_free_list_prev, group3);
+  EXPECT_EQ(group2->partially_free_list_next, group1);
+  EXPECT_EQ(group1->partially_free_list_prev, group2);
+  EXPECT_EQ(group1->partially_free_list_next, nullptr);
+  EXPECT_EQ(group1->prev, nullptr);
+  EXPECT_EQ(group2->prev, group1);
+  EXPECT_EQ(group3->prev, group2);
 
   // This will release |group3|.
   for (size_t i = 0; i < AtomicFlagSetForTest::Group::kNumFlags; i++) {
     atomic_flags_[i].ReleaseAtomicFlag();
   }
   EXPECT_EQ(group2, atomic_flag_set_.GetPartiallyFreeListForTesting());
-  EXPECT_EQ(group2->partially_free_list_prev_, nullptr);
-  EXPECT_EQ(group2->partially_free_list_next_, group1);
-  EXPECT_EQ(group1->partially_free_list_prev_, group2);
-  EXPECT_EQ(group1->partially_free_list_next_, nullptr);
+  EXPECT_EQ(group2->partially_free_list_prev, nullptr);
+  EXPECT_EQ(group2->partially_free_list_next, group1);
+  EXPECT_EQ(group1->partially_free_list_prev, group2);
+  EXPECT_EQ(group1->partially_free_list_next, nullptr);
   EXPECT_EQ(group1, atomic_flag_set_.GetAllocListForTesting());
-  EXPECT_EQ(group1->next_.get(), group2);
-  EXPECT_EQ(group1->prev_, nullptr);
-  EXPECT_EQ(group2->prev_, group1);
-  EXPECT_EQ(group2->next_.get(), nullptr);
+  EXPECT_EQ(group1->next.get(), group2);
+  EXPECT_EQ(group1->prev, nullptr);
+  EXPECT_EQ(group2->prev, group1);
+  EXPECT_EQ(group2->next.get(), nullptr);
 }
 
 TEST_F(AtomicFlagSetTest, GroupBecomesEmptyMiddleOfPartiallyFreeList) {
@@ -230,12 +230,12 @@ TEST_F(AtomicFlagSetTest, GroupBecomesEmptyMiddleOfPartiallyFreeList) {
   ASSERT_THAT(group1, NotNull());
   EXPECT_FALSE(group1->IsFull());
   EXPECT_FALSE(group1->IsEmpty());
-  AtomicFlagSetForTest::Group* group2 = group1->next_.get();
+  AtomicFlagSetForTest::Group* group2 = group1->next.get();
   ASSERT_THAT(group2, NotNull());
   EXPECT_TRUE(group2->IsFull());
-  AtomicFlagSetForTest::Group* group3 = group2->next_.get();
+  AtomicFlagSetForTest::Group* group3 = group2->next.get();
   ASSERT_THAT(group3, NotNull());
-  EXPECT_THAT(group3->next_.get(), IsNull());
+  EXPECT_THAT(group3->next.get(), IsNull());
   EXPECT_TRUE(group3->IsFull());
 
   // |group1| is on the head of the partially free list, now add groups 2 and 3.
@@ -245,15 +245,15 @@ TEST_F(AtomicFlagSetTest, GroupBecomesEmptyMiddleOfPartiallyFreeList) {
   EXPECT_FALSE(group3->IsFull());
 
   EXPECT_EQ(group3, atomic_flag_set_.GetPartiallyFreeListForTesting());
-  EXPECT_EQ(group3->partially_free_list_prev_, nullptr);
-  EXPECT_EQ(group3->partially_free_list_next_, group2);
-  EXPECT_EQ(group2->partially_free_list_prev_, group3);
-  EXPECT_EQ(group2->partially_free_list_next_, group1);
-  EXPECT_EQ(group1->partially_free_list_prev_, group2);
-  EXPECT_EQ(group1->partially_free_list_next_, nullptr);
-  EXPECT_EQ(group1->prev_, nullptr);
-  EXPECT_EQ(group2->prev_, group1);
-  EXPECT_EQ(group3->prev_, group2);
+  EXPECT_EQ(group3->partially_free_list_prev, nullptr);
+  EXPECT_EQ(group3->partially_free_list_next, group2);
+  EXPECT_EQ(group2->partially_free_list_prev, group3);
+  EXPECT_EQ(group2->partially_free_list_next, group1);
+  EXPECT_EQ(group1->partially_free_list_prev, group2);
+  EXPECT_EQ(group1->partially_free_list_next, nullptr);
+  EXPECT_EQ(group1->prev, nullptr);
+  EXPECT_EQ(group2->prev, group1);
+  EXPECT_EQ(group3->prev, group2);
 
   // This will release |group2|.
   for (size_t i = AtomicFlagSetForTest::Group::kNumFlags;
@@ -261,15 +261,15 @@ TEST_F(AtomicFlagSetTest, GroupBecomesEmptyMiddleOfPartiallyFreeList) {
     atomic_flags_[i].ReleaseAtomicFlag();
   }
   EXPECT_EQ(group3, atomic_flag_set_.GetPartiallyFreeListForTesting());
-  EXPECT_EQ(group3->partially_free_list_prev_, nullptr);
-  EXPECT_EQ(group3->partially_free_list_next_, group1);
-  EXPECT_EQ(group1->partially_free_list_prev_, group3);
-  EXPECT_EQ(group1->partially_free_list_next_, nullptr);
+  EXPECT_EQ(group3->partially_free_list_prev, nullptr);
+  EXPECT_EQ(group3->partially_free_list_next, group1);
+  EXPECT_EQ(group1->partially_free_list_prev, group3);
+  EXPECT_EQ(group1->partially_free_list_next, nullptr);
   EXPECT_EQ(group1, atomic_flag_set_.GetAllocListForTesting());
-  EXPECT_EQ(group1->prev_, nullptr);
-  EXPECT_EQ(group1->next_.get(), group3);
-  EXPECT_EQ(group3->prev_, group1);
-  EXPECT_EQ(group3->next_.get(), nullptr);
+  EXPECT_EQ(group1->prev, nullptr);
+  EXPECT_EQ(group1->next.get(), group3);
+  EXPECT_EQ(group3->prev, group1);
+  EXPECT_EQ(group3->next.get(), nullptr);
 }
 
 TEST_F(AtomicFlagSetTest, GroupBecomesEmptyTailOfPartiallyFreeList) {
@@ -281,12 +281,12 @@ TEST_F(AtomicFlagSetTest, GroupBecomesEmptyTailOfPartiallyFreeList) {
   ASSERT_THAT(group1, NotNull());
   EXPECT_FALSE(group1->IsFull());
   EXPECT_FALSE(group1->IsEmpty());
-  AtomicFlagSetForTest::Group* group2 = group1->next_.get();
+  AtomicFlagSetForTest::Group* group2 = group1->next.get();
   ASSERT_THAT(group2, NotNull());
   EXPECT_TRUE(group2->IsFull());
-  AtomicFlagSetForTest::Group* group3 = group2->next_.get();
+  AtomicFlagSetForTest::Group* group3 = group2->next.get();
   ASSERT_THAT(group3, NotNull());
-  EXPECT_THAT(group3->next_.get(), IsNull());
+  EXPECT_THAT(group3->next.get(), IsNull());
   EXPECT_TRUE(group3->IsFull());
 
   // |group1| is on the head of the partially free list, now add groups 2 and 3.
@@ -296,28 +296,28 @@ TEST_F(AtomicFlagSetTest, GroupBecomesEmptyTailOfPartiallyFreeList) {
   EXPECT_FALSE(group3->IsFull());
 
   EXPECT_EQ(group3, atomic_flag_set_.GetPartiallyFreeListForTesting());
-  EXPECT_EQ(group3->partially_free_list_prev_, nullptr);
-  EXPECT_EQ(group3->partially_free_list_next_, group2);
-  EXPECT_EQ(group2->partially_free_list_prev_, group3);
-  EXPECT_EQ(group2->partially_free_list_next_, group1);
-  EXPECT_EQ(group1->partially_free_list_prev_, group2);
-  EXPECT_EQ(group1->partially_free_list_next_, nullptr);
-  EXPECT_EQ(group1->prev_, nullptr);
-  EXPECT_EQ(group2->prev_, group1);
-  EXPECT_EQ(group3->prev_, group2);
+  EXPECT_EQ(group3->partially_free_list_prev, nullptr);
+  EXPECT_EQ(group3->partially_free_list_next, group2);
+  EXPECT_EQ(group2->partially_free_list_prev, group3);
+  EXPECT_EQ(group2->partially_free_list_next, group1);
+  EXPECT_EQ(group1->partially_free_list_prev, group2);
+  EXPECT_EQ(group1->partially_free_list_next, nullptr);
+  EXPECT_EQ(group1->prev, nullptr);
+  EXPECT_EQ(group2->prev, group1);
+  EXPECT_EQ(group3->prev, group2);
 
   // This will release |group1|.
   atomic_flags_[AtomicFlagSetForTest::Group::kNumFlags * 2].ReleaseAtomicFlag();
   EXPECT_EQ(group3, atomic_flag_set_.GetPartiallyFreeListForTesting());
-  EXPECT_EQ(group3->partially_free_list_prev_, nullptr);
-  EXPECT_EQ(group3->partially_free_list_next_, group2);
-  EXPECT_EQ(group2->partially_free_list_prev_, group3);
-  EXPECT_EQ(group2->partially_free_list_next_, nullptr);
+  EXPECT_EQ(group3->partially_free_list_prev, nullptr);
+  EXPECT_EQ(group3->partially_free_list_next, group2);
+  EXPECT_EQ(group2->partially_free_list_prev, group3);
+  EXPECT_EQ(group2->partially_free_list_next, nullptr);
   EXPECT_EQ(group2, atomic_flag_set_.GetAllocListForTesting());
-  EXPECT_EQ(group2->prev_, nullptr);
-  EXPECT_EQ(group2->next_.get(), group3);
-  EXPECT_EQ(group3->prev_, group2);
-  EXPECT_EQ(group3->next_.get(), nullptr);
+  EXPECT_EQ(group2->prev, nullptr);
+  EXPECT_EQ(group2->next.get(), group3);
+  EXPECT_EQ(group3->prev, group2);
+  EXPECT_EQ(group3->next.get(), nullptr);
 }
 
 }  // namespace internal

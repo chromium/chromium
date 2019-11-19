@@ -20,6 +20,7 @@
 #include "gpu/config/gpu_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gl/gl_version_info.h"
 #include "ui/gl/init/gl_factory.h"
 
 #if defined(OS_LINUX)
@@ -77,14 +78,14 @@ bool GLTestHelper::HasExtension(const char* extension) {
 }
 
 bool GLTestHelper::CheckGLError(const char* msg, int line) {
-   bool success = true;
-   GLenum error = GL_NO_ERROR;
-   while ((error = glGetError()) != GL_NO_ERROR) {
-     success = false;
-     EXPECT_EQ(static_cast<GLenum>(GL_NO_ERROR), error)
-         << "GL ERROR in " << msg << " at line " << line << " : " << error;
-   }
-   return success;
+  bool success = true;
+  GLenum error = GL_NO_ERROR;
+  while ((error = glGetError()) != GL_NO_ERROR) {
+    success = false;
+    EXPECT_EQ(static_cast<GLenum>(GL_NO_ERROR), error)
+        << "GL ERROR in " << msg << " at line " << line << " : " << error;
+  }
+  return success;
 }
 
 GLuint GLTestHelper::CompileShader(GLenum type, const char* shaderSrc) {
@@ -212,22 +213,36 @@ bool GLTestHelper::CheckPixels(GLint x,
                                GLint tolerance,
                                const uint8_t* color,
                                const uint8_t* mask) {
+  std::vector<uint8_t> colors(width * height * 4);
+  for (int i = 0; i < width * height * 4; i += 4)
+    memcpy(&colors[i], color, 4);
+  return CheckPixels(x, y, width, height, tolerance, colors, mask);
+}
+
+bool GLTestHelper::CheckPixels(GLint x,
+                               GLint y,
+                               GLsizei width,
+                               GLsizei height,
+                               GLint tolerance,
+                               const std::vector<uint8_t>& expected,
+                               const uint8_t* mask) {
   GLsizei size = width * height * 4;
-  std::unique_ptr<uint8_t[]> pixels(new uint8_t[size]);
-  memset(pixels.get(), kCheckClearValue, size);
-  glReadPixels(x, y, width, height, GL_RGBA, GL_UNSIGNED_BYTE, pixels.get());
+  std::vector<uint8_t> pixels(size, kCheckClearValue);
+  glReadPixels(x, y, width, height, GL_RGBA, GL_UNSIGNED_BYTE, pixels.data());
+
   int bad_count = 0;
   for (GLint yy = 0; yy < height; ++yy) {
     for (GLint xx = 0; xx < width; ++xx) {
       int offset = yy * width * 4 + xx * 4;
       for (int jj = 0; jj < 4; ++jj) {
         uint8_t actual = pixels[offset + jj];
-        uint8_t expected = color[jj];
-        int diff = actual - expected;
+        uint8_t expected_component = expected[offset + jj];
+        int diff = actual - expected_component;
         diff = diff < 0 ? -diff: diff;
         if ((!mask || mask[jj]) && diff > tolerance) {
-          EXPECT_EQ(expected, actual) << " at " << (xx + x) << ", " << (yy + y)
-                                      << " channel " << jj;
+          EXPECT_EQ(static_cast<int>(expected_component),
+                    static_cast<int>(actual))
+              << " at " << (xx + x) << ", " << (yy + y) << " channel " << jj;
           ++bad_count;
           // Exit early just so we don't spam the log but we print enough
           // to hopefully make it easy to diagnose the issue.
@@ -276,7 +291,7 @@ struct BitmapInfoHeader{
   uint8_t clr_important[4];
 };
 
-}
+}  // namespace
 
 bool GLTestHelper::SaveBackbufferAsBMP(
     const char* filename, int width, int height) {
@@ -366,14 +381,14 @@ bool GpuCommandBufferTestEGL::InitializeEGLGLES2(int width, int height) {
   if (gl::GetGLImplementation() !=
       gl::GLImplementation::kGLImplementationEGLGLES2) {
     const auto impls = gl::init::GetAllowedGLImplementations();
-    if (!base::ContainsValue(impls,
-          gl::GLImplementation::kGLImplementationEGLGLES2)) {
+    if (!base::Contains(impls,
+                        gl::GLImplementation::kGLImplementationEGLGLES2)) {
       LOG(INFO) << "Skip test, implementation EGLGLES2 is not available";
       return false;
     }
 
     gpu::GPUInfo gpu_info;
-    gpu::CollectContextGraphicsInfo(&gpu_info, gpu::GpuPreferences());
+    gpu::CollectContextGraphicsInfo(&gpu_info);
     // See crbug.com/822716, the ATI proprietary driver has eglGetProcAddress
     // but eglInitialize crashes with x11.
     if (gpu_info.gl_vendor.find("ATI Technologies Inc.") != std::string::npos) {
@@ -399,14 +414,17 @@ bool GpuCommandBufferTestEGL::InitializeEGLGLES2(int width, int height) {
   gl_.Initialize(options);
   gl_.MakeCurrent();
 
-  bool result =
-      gl::init::GetGLWindowSystemBindingInfo(&window_system_binding_info_);
+  gl_extensions_ =
+      gfx::MakeExtensionSet(gl::GetGLExtensionsFromCurrentContext());
+  gl::GLVersionInfo gl_version_info(
+      reinterpret_cast<const char*>(glGetString(GL_VERSION)),
+      reinterpret_cast<const char*>(glGetString(GL_RENDERER)), gl_extensions_);
+  bool result = gl::init::GetGLWindowSystemBindingInfo(
+      gl_version_info, &window_system_binding_info_);
   DCHECK(result);
 
   egl_extensions_ =
       gfx::MakeExtensionSet(window_system_binding_info_.extensions);
-  gl_extensions_ =
-      gfx::MakeExtensionSet(gl::GetGLExtensionsFromCurrentContext());
 
   return true;
 }

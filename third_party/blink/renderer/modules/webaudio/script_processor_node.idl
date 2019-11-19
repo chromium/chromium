@@ -26,6 +26,7 @@
 // See https://webaudio.github.io/web-audio-api/#scriptprocessornode
 // For real-time audio stream synthesis/processing in JavaScript
 [
+    Exposed=Window,
     ActiveScriptWrappable
 ] interface ScriptProcessorNode : AudioNode {
     // Rendering callback

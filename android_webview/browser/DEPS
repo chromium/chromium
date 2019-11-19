@@ -1,9 +1,10 @@
 include_rules = [
   "-android_webview",
   "+android_webview/browser",
+  "+android_webview/browser_jni_headers",
   "+android_webview/common",
   "+android_webview/grit",
-  "+android_webview/jni",
+  "+android_webview/test/android_webview_unittests_jni",
   "+cc",
   "+components/autofill/android",
   "+components/autofill/content/browser",
@@ -16,8 +17,10 @@ include_rules = [
   "+components/crash/core",
   "+components/download/public/common",
   "+components/heap_profiling",
+  "+components/keyed_service/core",
   "+components/minidump_uploader",
   "+components/navigation_interception",
+  "+components/page_load_metrics/browser",
   "+components/policy/core/browser",
   "+components/policy/core/common",
   "+components/policy/content",
@@ -26,6 +29,7 @@ include_rules = [
   "+components/printing/common",
   "+components/safe_browsing",
   "+components/security_interstitials",
+  "+components/services/heap_profiling",
   "+components/spellcheck/browser",
   "+components/spellcheck/common",
   "+components/url_formatter",
@@ -47,6 +51,7 @@ include_rules = [
   "-ipc/ipc_sync_message_filter.h",
 
   "+media/base/android",
+  "+media/mojo/buildflags.h",
 
   "+components/policy/policy_constants.h",
   "+components/embedder_support/android",
@@ -54,6 +59,9 @@ include_rules = [
   "+printing",
 
   "+services/network/public",
+  # This is needed for the CookieManager to configure the CookieStore directly.
+  "+services/network/cookie_access_delegate_impl.h",
+  "+services/resource_coordinator/public/cpp",
   "+services/service_manager/public/cpp",
 
   # network service related unit tests
@@ -67,18 +75,25 @@ include_rules = [
   "+third_party/crashpad/crashpad/client",
   "+third_party/crashpad/crashpad/util",
 
+  "+ui/display",
   "+ui/gfx",
   "+ui/gl",
+  "+ui/native_theme",
   "+ui/touch_selection/touch_handle.h",
 
   # Temporary until we bundle our own favicon. See
   # AwContentBrowserClient::GetDefaultFavicon
   "!ui/resources/grit/ui_resources.h",
 
+  # For using the same legacy IPC channel for mojo.
+  "+third_party/blink/public/common/associated_interfaces/associated_interface_provider.h",
+  # Required for AwURLLoaderThrottle.
+  "+third_party/blink/public/common/loader/url_loader_throttle.h",
   # Required for MediaStreams.
   "+third_party/blink/public/common/mediastream",
   # QuotaStatusCode required by AwQuotaManagerBridge.
   "+third_party/blink/public/mojom/quota",
+  "+third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h",
   # Interface required for in-process input event handling.
   "+third_party/blink/public/web/WebCompositorInputHandler.h",
   # For find-in-page

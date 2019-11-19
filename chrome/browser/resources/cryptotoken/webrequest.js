@@ -258,58 +258,20 @@ function sha256HashOfString(string) {
 var UNUSED_CID_PUBKEY_VALUE = 'unused';
 
 /**
- * Normalizes the TLS channel ID value:
- * 1. Converts semantically empty values (undefined, null, 0) to the empty
- *     string.
- * 2. Converts valid JSON strings to a JS object.
- * 3. Otherwise, returns the input value unmodified.
- * @param {Object|string|undefined} opt_tlsChannelId TLS Channel id
- * @return {Object|string} The normalized TLS channel ID value.
- */
-function tlsChannelIdValue(opt_tlsChannelId) {
-  if (!opt_tlsChannelId) {
-    // Case 1: Always set some value for TLS channel ID, even if it's the empty
-    // string: this browser definitely supports them.
-    return UNUSED_CID_PUBKEY_VALUE;
-  }
-  if (typeof opt_tlsChannelId === 'string') {
-    try {
-      var obj = JSON.parse(opt_tlsChannelId);
-      if (!obj) {
-        // Case 1: The string value 'null' parses as the Javascript object null,
-        // so return an empty string: the browser definitely supports TLS
-        // channel id.
-        return UNUSED_CID_PUBKEY_VALUE;
-      }
-      // Case 2: return the value as a JS object.
-      return /** @type {Object} */ (obj);
-    } catch (e) {
-      console.warn('Unparseable TLS channel ID value ' + opt_tlsChannelId);
-      // Case 3: return the value unmodified.
-    }
-  }
-  return opt_tlsChannelId;
-}
-
-/**
  * Creates a browser data object with the given values.
  * @param {!string} type A string representing the "type" of this browser data
  *     object.
  * @param {!string} serverChallenge The server's challenge, as a base64-
  *     encoded string.
  * @param {!string} origin The server's origin, as seen by the browser.
- * @param {Object|string|undefined} opt_tlsChannelId TLS Channel Id
  * @return {string} A string representation of the browser data object.
  */
-function makeBrowserData(type, serverChallenge, origin, opt_tlsChannelId) {
+function makeBrowserData(type, serverChallenge, origin) {
   var browserData = {
     'typ': type,
     'challenge': serverChallenge,
     'origin': origin
   };
-  if (BROWSER_SUPPORTS_TLS_CHANNEL_ID) {
-    browserData['cid_pubkey'] = tlsChannelIdValue(opt_tlsChannelId);
-  }
   return JSON.stringify(browserData);
 }
 
@@ -318,13 +280,11 @@ function makeBrowserData(type, serverChallenge, origin, opt_tlsChannelId) {
  * @param {!string} serverChallenge The server's challenge, as a base64-
  *     encoded string.
  * @param {!string} origin The server's origin, as seen by the browser.
- * @param {Object|string|undefined} opt_tlsChannelId TLS Channel Id
  * @return {string} A string representation of the browser data object.
  */
-function makeEnrollBrowserData(serverChallenge, origin, opt_tlsChannelId) {
+function makeEnrollBrowserData(serverChallenge, origin) {
   return makeBrowserData(
-      'navigator.id.finishEnrollment', serverChallenge, origin,
-      opt_tlsChannelId);
+      'navigator.id.finishEnrollment', serverChallenge, origin);
 }
 
 /**
@@ -332,12 +292,10 @@ function makeEnrollBrowserData(serverChallenge, origin, opt_tlsChannelId) {
  * @param {!string} serverChallenge The server's challenge, as a base64-
  *     encoded string.
  * @param {!string} origin The server's origin, as seen by the browser.
- * @param {Object|string|undefined} opt_tlsChannelId TLS Channel Id
  * @return {string} A string representation of the browser data object.
  */
-function makeSignBrowserData(serverChallenge, origin, opt_tlsChannelId) {
-  return makeBrowserData(
-      'navigator.id.getAssertion', serverChallenge, origin, opt_tlsChannelId);
+function makeSignBrowserData(serverChallenge, origin) {
+  return makeBrowserData('navigator.id.getAssertion', serverChallenge, origin);
 }
 
 /**

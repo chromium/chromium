@@ -1,0 +1,38 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Next MinVersion: 1
+
+module arc.mojom;
+
+import "components/arc/mojom/video_common.mojom";
+
+// Next method ID: 3
+interface VideoProtectedBufferAllocator {
+  // Allocates protected shared memory associated with |handle_fd|.
+  // |size| is the size of allocated protected shared memory.
+  // Returns true on success, false on allocation failure or if |handle_fd| is
+  // already associated with an existing protected buffer.
+  AllocateProtectedSharedMemory@0(handle handle_fd,
+                                  uint64 size) => (bool result);
+
+  // Allocates protected native pixmap associated with |handle_fd|.
+  // |pixel_format| and |picture_size| are parameters to allocate native pixmap.
+  // Returns true on success, false on allocation failure or if |handle_fd| is
+  // already associated with an existing protected buffer.
+  AllocateProtectedNativePixmap@1(handle handle_fd, HalPixelFormat pixel_format,
+                                  Size picture_size) => (bool result);
+
+  // Releases protected buffer associated with |handle_fd|, regardless of
+  // the type of protected memory.
+  // If the buffer is not used any more, ReleaseProtectedBuffer with
+  // the corresponding file descriptor should be called.
+  // |handle_fd| remains valid, but its association with protected buffer is
+  // removed and the reference to it is released.
+  // Protected buffers allocated using this interface for given instance will
+  // not be released until this method is called. Closing Mojo IPC message pipe
+  // to this instance will automatically release all buffers allocated for this
+  // instance.
+  ReleaseProtectedBuffer@2(handle handle_fd);
+};

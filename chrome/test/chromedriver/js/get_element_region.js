@@ -12,11 +12,41 @@ function getElementRegion(element) {
   // SVG is one case that doesn't have a first client rect.
   var clientRects = element.getClientRects();
 
+  // Determines if region is partially in viewport, returning visible region
+  // if so. If not, returns null. If fully visible, returns original region.
+  function getVisibleSubregion(region) {
+    // Given two regions, determines if any intersection occurs.
+    // Overlapping edges are not considered intersections.
+    function getIntersectingSubregion(region1, region2) {
+      if (!(region2.right  <= region1.left   ||
+            region2.left   >= region1.right  ||
+            region2.top    >= region1.bottom ||
+            region2.bottom <= region1.top)) {
+        // Determines region of intersection.
+        // If region2 contains region1, returns region1.
+        // If region1 contains region2, returns region2.
+        return {
+          'left': Math.max(region1.left, region2.left),
+          'right': Math.min(region1.right, region2.right),
+          'bottom': Math.min(region1.bottom, region2.bottom),
+          'top': Math.max(region1.top, region2.top)
+        };
+      }
+      return null;
+    }
+    var viewport = new DOMRect(0, 0, window.innerWidth, window.innerHeight);
+    return getIntersectingSubregion(viewport, region);
+  }
+
+  var boundingRect = null;
+  var clientRect = null;
   // Element area of a map has same first ClientRect and BoundingClientRect
   // after blink roll at chromium commit position 290738 which includes blink
   // revision 180610. Thus handle area as a special case.
   if (clientRects.length == 0 || element.tagName.toLowerCase() == 'area') {
-    var box = element.getBoundingClientRect();
+    // Area clicking is technically not supported by W3C standard but is a
+    // desired feature. Returns region containing the area instead of subregion
+    // so that whole area is visible and always clicked correctly.
     if (element.tagName.toLowerCase() == 'area') {
       var coords = element.coords.split(',');
       if (element.shape.toLowerCase() == 'rect') {
@@ -68,27 +98,26 @@ function getElementRegion(element) {
       } else {
         throw new Error('shape=' + element.shape + ' is not supported');
       }
+    } else {
+      boundingRect = element.getBoundingClientRect();
+      clientRect = Object.assign({}, boundingRect);
     }
-    return {
-        'left': 0,
-        'top': 0,
-        'width': box.width,
-        'height': box.height
-    };
   } else {
-    var box = element.getBoundingClientRect();
-    var clientRect = clientRects[0];
+    boundingRect = element.getBoundingClientRect();
+    clientRect = clientRects[0];
     for (var i = 0; i < clientRects.length; i++) {
       if (clientRects[i].height != 0 && clientRects[i].width != 0) {
         clientRect = clientRects[i];
         break;
       }
     }
-    return {
-        'left': clientRect.left - box.left,
-        'top': clientRect.top - box.top,
-        'width': clientRect.right - clientRect.left,
-        'height': clientRect.bottom - clientRect.top
-    };
   }
+  var visiblePortion = getVisibleSubregion(clientRect) || clientRect;
+  // Returned region is relative to boundingRect's left,top.
+  return {
+    'left': visiblePortion.left - boundingRect.left,
+    'top': visiblePortion.top - boundingRect.top,
+    'height': visiblePortion.bottom - visiblePortion.top,
+    'width': visiblePortion.right - visiblePortion.left
+  };
 }

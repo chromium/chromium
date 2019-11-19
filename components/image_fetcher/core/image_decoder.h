@@ -17,7 +17,7 @@ class Size;
 
 namespace image_fetcher {
 
-using ImageDecodedCallback = base::Callback<void(const gfx::Image&)>;
+using ImageDecodedCallback = base::OnceCallback<void(const gfx::Image&)>;
 
 // ImageDecoder defines the common interface for decoding images. This is
 // expected to process untrusted input from the web so implementations must be
@@ -37,7 +37,7 @@ class ImageDecoder {
   // smallest available size.
   virtual void DecodeImage(const std::string& image_data,
                            const gfx::Size& desired_image_frame_size,
-                           const ImageDecodedCallback& callback) = 0;
+                           ImageDecodedCallback callback) = 0;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(ImageDecoder);

@@ -7,15 +7,12 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
-#include "ui/accessibility/ax_enums.mojom.h"
+#include "base/scoped_observer.h"
+#include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/platform/ax_unique_id.h"
+#include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/views/accessibility/ax_aura_obj_wrapper.h"
-
-namespace aura {
-class Window;
-}  // namespace aura
 
 namespace views {
 class AXAuraObjCache;
@@ -26,6 +23,8 @@ class AXWindowObjWrapper : public AXAuraObjWrapper,
  public:
   // |aura_obj_cache| and |window| must outlive this object.
   AXWindowObjWrapper(AXAuraObjCache* aura_obj_cache, aura::Window* window);
+  AXWindowObjWrapper(const AXWindowObjWrapper&) = delete;
+  AXWindowObjWrapper& operator=(const AXWindowObjWrapper&) = delete;
   ~AXWindowObjWrapper() override;
 
   // AXAuraObjWrapper overrides.
@@ -52,11 +51,8 @@ class AXWindowObjWrapper : public AXAuraObjWrapper,
   void OnWindowTitleChanged(aura::Window* window) override;
 
  private:
-  // Fires an event on a window, taking into account its associated widget and
-  // that widget's root view.
-  void FireEvent(aura::Window* window, ax::mojom::Event event_type);
-
-  AXAuraObjCache* const aura_obj_cache_;
+  // Fires an accessibility event.
+  void FireEvent(ax::mojom::Event event_type);
 
   aura::Window* window_;
 
@@ -64,7 +60,7 @@ class AXWindowObjWrapper : public AXAuraObjWrapper,
 
   const ui::AXUniqueId unique_id_;
 
-  DISALLOW_COPY_AND_ASSIGN(AXWindowObjWrapper);
+  ScopedObserver<aura::Window, aura::WindowObserver> observer_{this};
 };
 
 }  // namespace views

@@ -16,8 +16,9 @@ message SequenceManagerTestDescription {
     LOW = 2;
     NORMAL = 3;
     HIGH = 4;
-    HIGHEST = 5;
-    CONTROL = 6;
+    VERY_HIGH = 5;
+    HIGHEST = 6;
+    CONTROL = 7;
   }
 
   message Action {

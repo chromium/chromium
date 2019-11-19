@@ -46,7 +46,7 @@ class TestChildModalParent : public views::WidgetDelegateView,
   // Overridden from views::View:
   void Layout() override;
   void ViewHierarchyChanged(
-      const ViewHierarchyChangedDetails& details) override;
+      const views::ViewHierarchyChangedDetails& details) override;
 
   // Overridden from ButtonListener:
   void ButtonPressed(views::Button* sender, const ui::Event& event) override;

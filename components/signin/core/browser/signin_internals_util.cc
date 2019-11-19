@@ -46,27 +46,4 @@ std::string SigninStatusFieldToString(TimedSigninStatusField field) {
   return std::string();
 }
 
-std::string TokenPrefPath(const std::string& token_name) {
-  return std::string(kTokenPrefPrefix) + token_name;
-}
-
-// Gets the first few hex characters of the SHA256 hash of the passed in string.
-// These are enough to perform equality checks across a single users tokens,
-// while preventing outsiders from reverse-engineering the actual token from
-// the displayed value.
-// Note that for readability (in about:signin-internals), an empty string
-// is not hashed, but simply returned as an empty string.
-std::string GetTruncatedHash(const std::string& str) {
-  if (str.empty())
-    return str;
-
-  // Since each character in the hash string generates two hex charaters
-  // we only need half as many charaters in |hash_val| as hex characters
-  // returned.
-  const int kTruncateSize = kTruncateTokenStringLength / 2;
-  char hash_val[kTruncateSize];
-  crypto::SHA256HashString(str, &hash_val[0], kTruncateSize);
-  return base::ToLowerASCII(base::HexEncode(&hash_val[0], kTruncateSize));
-}
-
 } //  namespace signin_internals_util

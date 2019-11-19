@@ -10,8 +10,6 @@ details on the presubmit API built into depot_tools.
 
 
 def CommonChecks(input_api, output_api):
-  output = []
-
   build_android_dir = input_api.PresubmitLocalPath()
 
   def J(*dirs):
@@ -19,30 +17,38 @@ def CommonChecks(input_api, output_api):
     return input_api.os_path.join(build_android_dir, *dirs)
 
   build_pys = [
+      r'gn/.*\.py$',
       r'gyp/.*\.py$',
-      r'gn/.*\.py',
   ]
-  output.extend(input_api.canned_checks.RunPylint(
-      input_api,
-      output_api,
-      pylintrc='pylintrc',
-      black_list=build_pys,
-      extra_paths_list=[
-          J(),
-          J('gyp'),
-          J('buildbot'),
-          J('..', 'util', 'lib', 'common'),
-          J('..', '..', 'third_party', 'catapult', 'common', 'py_trace_event'),
-          J('..', '..', 'third_party', 'catapult', 'common', 'py_utils'),
-          J('..', '..', 'third_party', 'catapult', 'devil'),
-          J('..', '..', 'third_party', 'catapult', 'tracing'),
-          J('..', '..', 'third_party', 'depot_tools'),
-      ]))
-  output.extend(input_api.canned_checks.RunPylint(
-      input_api,
-      output_api,
-      white_list=build_pys,
-      extra_paths_list=[J('gyp'), J('gn')]))
+  tests = []
+  tests.extend(
+      input_api.canned_checks.GetPylint(
+          input_api,
+          output_api,
+          pylintrc='pylintrc',
+          black_list=[
+              r'.*_pb2\.py',
+          ] + build_pys,
+          extra_paths_list=[
+              J(),
+              J('gyp'),
+              J('buildbot'),
+              J('..', 'util', 'lib', 'common'),
+              J('..', '..', 'third_party', 'catapult', 'common',
+                'py_trace_event'),
+              J('..', '..', 'third_party', 'catapult', 'common', 'py_utils'),
+              J('..', '..', 'third_party', 'catapult', 'devil'),
+              J('..', '..', 'third_party', 'catapult', 'tracing'),
+              J('..', '..', 'third_party', 'depot_tools'),
+              J('..', '..', 'third_party', 'colorama', 'src'),
+              J('..', '..', 'third_party', 'pymock'),
+          ]))
+  tests.extend(
+      input_api.canned_checks.GetPylint(
+          input_api,
+          output_api,
+          white_list=build_pys,
+          extra_paths_list=[J('gyp'), J('gn')]))
 
   # Disabled due to http://crbug.com/410936
   #output.extend(input_api.canned_checks.RunUnitTestsInDirectory(
@@ -53,8 +59,8 @@ def CommonChecks(input_api, output_api):
       'PYTHONPATH': build_android_dir,
       'PYTHONDONTWRITEBYTECODE': '1',
   })
-  output.extend(
-      input_api.canned_checks.RunUnitTests(
+  tests.extend(
+      input_api.canned_checks.GetUnitTests(
           input_api,
           output_api,
           unit_tests=[
@@ -86,7 +92,7 @@ def CommonChecks(input_api, output_api):
           ],
           env=pylib_test_env))
 
-  return output
+  return input_api.RunTests(tests)
 
 
 def CheckChangeOnUpload(input_api, output_api):

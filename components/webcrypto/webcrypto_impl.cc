@@ -85,7 +85,7 @@ class CryptoThreadPool {
   // TODO(gab): the pool is currently using a single non-joinable thread to
   // mimic the old behavior of using a CONTINUE_ON_SHUTDOWN SequencedTaskRunner
   // on a single-threaded SequencedWorkerPool, but we'd like to consider using
-  // the TaskScheduler here and allowing multiple threads (SEQUENCED or even
+  // the ThreadPool here and allowing multiple threads (SEQUENCED or even
   // PARALLEL ExecutionMode: http://crbug.com/623700).
   base::Thread worker_thread_;
 
@@ -820,11 +820,6 @@ void WebCryptoImpl::DeriveKey(
           FROM_HERE, base::BindOnce(DoDeriveKey, std::move(state)))) {
     CompleteWithThreadPoolError(&result);
   }
-}
-
-std::unique_ptr<blink::WebCryptoDigestor> WebCryptoImpl::CreateDigestor(
-    blink::WebCryptoAlgorithmId algorithm_id) {
-  return webcrypto::CreateDigestor(algorithm_id);
 }
 
 bool WebCryptoImpl::DeserializeKeyForClone(

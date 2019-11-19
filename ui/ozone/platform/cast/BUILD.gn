@@ -43,6 +43,7 @@ source_set("cast") {
     "//chromecast:chromecast_buildflags",
     "//chromecast/base:base",
     "//chromecast/graphics:libcast_graphics_1.0",
+    "//ui/base/ime",
     "//ui/events/ozone:events_ozone",
     "//ui/events/ozone:events_ozone_evdev",
     "//ui/events/ozone:events_ozone_layout",

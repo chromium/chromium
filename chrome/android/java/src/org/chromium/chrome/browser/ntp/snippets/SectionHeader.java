@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.ntp.snippets;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import org.chromium.chrome.browser.ntp.cards.ItemViewType;
 import org.chromium.chrome.browser.ntp.cards.NewTabPageViewHolder;

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<script src="../../../../../resources/testharness.js"></script>
+<script src="../../../../../resources/testharnessreport.js"></script>
+<script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
+<script src="file:///gen/third_party/blink/public/mojom/page/spatial_navigation.mojom.js"></script>
+<script src="../../../../../fast/spatial-navigation/resources/mock-snav-service.js"></script>
+<script src="../../../../../fast/spatial-navigation/resources/snav-testharness.js"></script>
+
+<style>
+  div {
+    width: 100px;
+    height: 100px;
+    margin: 5px;
+    border: 1px solid black;
+  }
+</style>
+
+<div id="first" tabindex="0">First</div>
+<div id="second" tabindex="0">Second</div>
+<div id="third" tabindex="0">Third</div>
+
+<script>
+  // This test checks that uncancelled arrow keys from a focused element cause
+  // interest to move.
+  let first = document.getElementById("first");
+  let second = document.getElementById("second");
+  let third = document.getElementById("third");
+
+  test(() => {
+    assert_true(!!window.internals);
+
+    // Move interest to 'second'
+    snav.triggerMove('Down');
+    snav.triggerMove('Down');
+
+    // Enter focus into 'second'
+    eventSender.keyDown('Enter');
+    assert_equals(document.activeElement,
+                  second,
+                  "Enter key moves focus into 'second'");
+
+    // Press down arrow. This should unfocus 'second' and move interest to
+    // 'third'.
+    snav.triggerMove('Down');
+    assert_not_equals(document.activeElement,
+                      second,
+                      "Navigation blurs old interested element");
+    assert_equals(window.internals.interestedElement,
+                  third,
+                  "Uncancelled arrow key from focused element navigates");
+    assert_equals(document.activeElement,
+                  third,
+                  "Navigation should move focus to 'third'.");
+  }, "Navigation from focused element.");
+</script>

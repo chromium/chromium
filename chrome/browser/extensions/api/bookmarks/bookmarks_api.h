@@ -56,15 +56,15 @@ class BookmarkEventRouter : public bookmarks::BookmarkModelObserver {
   void BookmarkModelBeingDeleted(bookmarks::BookmarkModel* model) override;
   void BookmarkNodeMoved(bookmarks::BookmarkModel* model,
                          const bookmarks::BookmarkNode* old_parent,
-                         int old_index,
+                         size_t old_index,
                          const bookmarks::BookmarkNode* new_parent,
-                         int new_index) override;
+                         size_t new_index) override;
   void BookmarkNodeAdded(bookmarks::BookmarkModel* model,
                          const bookmarks::BookmarkNode* parent,
-                         int index) override;
+                         size_t index) override;
   void BookmarkNodeRemoved(bookmarks::BookmarkModel* model,
                            const bookmarks::BookmarkNode* parent,
-                           int old_index,
+                           size_t old_index,
                            const bookmarks::BookmarkNode* node,
                            const std::set<GURL>& removed_urls) override;
   void BookmarkAllUserNodesRemoved(bookmarks::BookmarkModel* model,

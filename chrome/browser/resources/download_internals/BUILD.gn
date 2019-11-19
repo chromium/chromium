@@ -15,9 +15,9 @@ js_type_check("closure_compile") {
 js_library("download_internals") {
   deps = [
     ":download_internals_browser_proxy",
+    "//third_party/jstemplate:jstemplate",
     "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:load_time_data",
     "//ui/webui/resources/js:util",
   ]
 }

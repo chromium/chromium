@@ -6,7 +6,7 @@
 #define COMPONENTS_ARC_TEST_FAKE_PIP_INSTANCE_H_
 
 #include "base/macros.h"
-#include "components/arc/common/pip.mojom.h"
+#include "components/arc/mojom/pip.mojom.h"
 
 namespace arc {
 

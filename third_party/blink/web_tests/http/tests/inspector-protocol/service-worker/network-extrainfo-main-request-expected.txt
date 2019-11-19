@@ -1,0 +1,4 @@
+Verifies that requests made for service worker main scripts get Network.*ExtraInfo events for them.
+requestWillBeSent url: http://127.0.0.1:8000/inspector-protocol/service-worker/resources/repeat-fetch-service-worker.js
+requestIds match: true
+

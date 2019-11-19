@@ -25,7 +25,7 @@ class TestWPTServe(LoggingTestCase):
 
     # pylint: disable=protected-access
 
-    def test_init_start_cmd(self):
+    def test_init_start_cmd_without_ws_handlers(self):
         server = WPTServe(self.port, '/foo')
         self.assertEqual(
             server._start_cmd,  # pylint: disable=protected-access
@@ -37,7 +37,26 @@ class TestWPTServe(LoggingTestCase):
                 '--config',
                 server._config_file,
                 '--doc_root',
-                '/test.checkout/wtests/external/wpt'
+                '/test.checkout/wtests/external/wpt',
+            ])
+
+    def test_init_start_cmd_with_ws_handlers(self):
+        self.host.filesystem.maybe_make_directory(
+            '/test.checkout/wtests/external/wpt/websockets/handlers')
+        server = WPTServe(self.port, '/foo')
+        self.assertEqual(
+            server._start_cmd,  # pylint: disable=protected-access
+            [
+                'python',
+                '-u',
+                '/mock-checkout/third_party/blink/tools/blinkpy/third_party/wpt/wpt/wpt',
+                'serve',
+                '--config',
+                server._config_file,
+                '--doc_root',
+                '/test.checkout/wtests/external/wpt',
+                '--ws_doc_root',
+                '/test.checkout/wtests/external/wpt/websockets/handlers',
             ])
 
     def test_init_gen_config(self):

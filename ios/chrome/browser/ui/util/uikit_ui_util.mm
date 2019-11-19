@@ -21,7 +21,7 @@
 #include "ios/chrome/browser/ui/util/dynamic_type_util.h"
 #include "ios/chrome/browser/ui/util/rtl_geometry.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
-#include "ios/web/public/web_thread.h"
+#include "ios/web/public/thread/web_thread.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -67,9 +67,10 @@ void GetRGBA(UIColor* color, CGFloat* r, CGFloat* g, CGFloat* b, CGFloat* a) {
 
 }  // namespace
 
-void SetA11yLabelAndUiAutomationName(UIView* element,
-                                     int idsAccessibilityLabel,
-                                     NSString* englishUiAutomationName) {
+void SetA11yLabelAndUiAutomationName(
+    NSObject<UIAccessibilityIdentification>* element,
+    int idsAccessibilityLabel,
+    NSString* englishUiAutomationName) {
   [element setAccessibilityLabel:l10n_util::GetNSString(idsAccessibilityLabel)];
   [element setAccessibilityIdentifier:englishUiAutomationName];
 }
@@ -614,8 +615,6 @@ bool IsSplitToolbarMode(id<UITraitEnvironment> environment) {
   return IsCompactWidth(environment) && !IsCompactHeight(environment);
 }
 
-// Returns the first responder in the subviews of |view|, or nil if no view in
-// the subtree is the first responder.
 UIView* GetFirstResponderSubview(UIView* view) {
   if ([view isFirstResponder])
     return view;
@@ -689,21 +688,4 @@ NSString* TextForTabCount(long count) {
   if (count > 99)
     return @":)";
   return [NSString stringWithFormat:@"%ld", count];
-}
-
-UIFont* PreferredFontForTextStyleWithMaxCategory(
-    UIFontTextStyle style,
-    UIContentSizeCategory currentCategory,
-    UIContentSizeCategory maxCategory) {
-  CGFloat maxMultiplier = SystemSuggestedFontSizeMultiplier(maxCategory);
-  CGFloat currentMultiplier =
-      SystemSuggestedFontSizeMultiplier(currentCategory);
-  if (currentMultiplier > maxMultiplier) {
-    return [UIFont
-            preferredFontForTextStyle:style
-        compatibleWithTraitCollection:
-            [UITraitCollection
-                traitCollectionWithPreferredContentSizeCategory:maxCategory]];
-  }
-  return [UIFont preferredFontForTextStyle:style];
 }

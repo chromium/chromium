@@ -8,6 +8,7 @@ import("//build/config/arm.gni")
 import("//build/config/features.gni")
 import("//build/config/linux/pkg_config.gni")
 import("//build/config/ui.gni")
+import("//media/cdm/library_cdm/cdm_paths.gni")
 import("//media/media_options.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
@@ -17,23 +18,25 @@ buildflag_header("media_buildflags") {
   header = "media_buildflags.h"
 
   flags = [
-    "ALTERNATE_CDM_STORAGE_ID_KEY=$alternate_cdm_storage_id_key",
-    "ENABLE_AC3_EAC3_AUDIO_DEMUXING=$enable_ac3_eac3_audio_demuxing",
-    "ENABLE_CBCS_ENCRYPTION_SCHEME=$enable_cbcs_encryption_scheme",
+    "ALTERNATE_CDM_STORAGE_ID_KEY=\"$alternate_cdm_storage_id_key\"",
+    "CDM_PLATFORM_SPECIFIC_PATH=\"$cdm_platform_specific_path\"",
+    "ENABLE_PLATFORM_AC3_EAC3_AUDIO=$enable_platform_ac3_eac3_audio",
     "ENABLE_CDM_HOST_VERIFICATION=$enable_cdm_host_verification",
+    "ENABLE_CDM_PROXY=$enable_cdm_proxy",
     "ENABLE_CDM_STORAGE_ID=$enable_cdm_storage_id",
     "ENABLE_DAV1D_DECODER=$enable_dav1d_decoder",
-    "ENABLE_DOLBY_VISION_DEMUXING=$enable_dolby_vision_demuxing",
+    "ENABLE_AV1_DECODER=$enable_av1_decoder",
+    "ENABLE_PLATFORM_DOLBY_VISION=$enable_platform_dolby_vision",
     "ENABLE_FFMPEG=$media_use_ffmpeg",
     "ENABLE_FFMPEG_VIDEO_DECODERS=$enable_ffmpeg_video_decoders",
-    "ENABLE_HEVC_DEMUXING=$enable_hevc_demuxing",
+    "ENABLE_PLATFORM_HEVC=$enable_platform_hevc",
     "ENABLE_HLS_SAMPLE_AES=$enable_hls_sample_aes",
     "ENABLE_LIBRARY_CDMS=$enable_library_cdms",
     "ENABLE_LIBVPX=$media_use_libvpx",
     "ENABLE_LOGGING_OVERRIDE=$enable_logging_override",
     "ENABLE_MEDIA_REMOTING=$enable_media_remoting",
     "ENABLE_MEDIA_REMOTING_RPC=$enable_media_remoting_rpc",
-    "ENABLE_MPEG_H_AUDIO_DEMUXING=$enable_mpeg_h_audio_demuxing",
+    "ENABLE_PLATFORM_MPEG_H_AUDIO=$enable_platform_mpeg_h_audio",
     "ENABLE_MSE_MPEG2TS_STREAM_PARSER=$enable_mse_mpeg2ts_stream_parser",
     "USE_PROPRIETARY_CODECS=$proprietary_codecs",
   ]
@@ -128,7 +131,6 @@ source_set("test_support") {
     "//media/base/android:test_support",
     "//media/filters:test_support",
     "//media/formats:test_support",
-    "//media/gpu:test_support",
     "//media/video:test_support",
   ]
 }
@@ -148,6 +150,7 @@ test("media_unittests") {
     "//media/learning:unit_tests",
     "//media/mojo:unit_tests",
     "//media/muxers:unit_tests",
+    "//media/parsers:unit_tests",
     "//media/renderers:unit_tests",
     "//media/test:pipeline_integration_tests",
     "//media/test:run_all_unittests",
@@ -169,6 +172,7 @@ test("media_unittests") {
     deps += [
       # The test needs the java dependencies to add the java classes for their
       # native counterparts to the test apk.
+      "//gpu/command_buffer/service:android_texture_owner_unittests",
       "//media/base/android:media_java",
       "//media/base/android:unit_tests",
       "//media/gpu:android_video_decode_accelerator_unittests",
@@ -313,18 +317,6 @@ if (proprietary_codecs) {
   }
 }
 
-fuzzer_test("media_vp8_parser_fuzzer") {
-  sources = [
-    "filters/vp8_parser_fuzzertest.cc",
-  ]
-  deps = [
-    ":test_support",
-    "//base",
-  ]
-  libfuzzer_options = [ "max_len = 400000" ]
-  dict = "test/vp8.dict"
-}
-
 fuzzer_test("media_vp9_parser_fuzzer") {
   sources = [
     "filters/vp9_parser_fuzzertest.cc",
@@ -390,6 +382,16 @@ fuzzer_test("cenc_decryptor_fuzzer") {
     ":media",
     "//base",
     "//crypto",
+  ]
+}
+
+fuzzer_test("json_web_key_fuzzer") {
+  sources = [
+    "cdm/json_web_key_fuzzer.cc",
+  ]
+  deps = [
+    ":media",
+    "//base",
   ]
 }
 

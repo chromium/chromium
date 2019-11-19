@@ -1,0 +1,29 @@
+<!doctype HTML>
+<html>
+<meta charset="utf8">
+<title>Display Locking: slot moved after lock acquired</title>
+<link rel="author" title="Vladimir Levin" href="mailto:vmpstr@chromium.org">
+<link rel="help" href="https://github.com/WICG/display-locking">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/utils.js"></script>
+
+<div id=host>
+<input id=slotted>
+<script>
+async_test((t) => {
+  let container = document.createElement("div");
+  container.innerHTML = "<slot></slot>";
+  let shadowRoot = host.attachShadow({ mode: "open" });
+  shadowRoot.appendChild(container);
+
+  t.step(() => {
+    setInvisible(container);
+
+    assert_equals(slotted.offsetTop, 0);
+    container.innerHTML = "<div style='height: 20px;'></div><slot></slot>";
+
+    t.done();
+  });
+});
+</script>

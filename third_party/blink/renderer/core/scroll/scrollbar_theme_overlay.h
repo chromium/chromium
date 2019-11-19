@@ -27,7 +27,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SCROLL_SCROLLBAR_THEME_OVERLAY_H_
 
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
-#include "third_party/blink/renderer/platform/graphics/color.h"
 
 namespace blink {
 
@@ -35,20 +34,13 @@ namespace blink {
 // than Mac. Mac's overlay scrollbars are in ScrollbarThemeMac*.
 class CORE_EXPORT ScrollbarThemeOverlay : public ScrollbarTheme {
  public:
-  enum HitTestBehavior { kAllowHitTest, kDisallowHitTest };
+  static ScrollbarThemeOverlay& GetInstance();
 
-  ScrollbarThemeOverlay(int thumb_thickness,
-                        int scrollbar_margin,
-                        HitTestBehavior);
-  ScrollbarThemeOverlay(int thumb_thickness,
-                        int scrollbar_margin,
-                        HitTestBehavior,
-                        Color);
   ~ScrollbarThemeOverlay() override = default;
 
   bool ShouldRepaintAllPartsOnInvalidation() const override;
 
-  ScrollbarPart InvalidateOnThumbPositionChange(
+  ScrollbarPart PartsToInvalidateOnThumbPositionChange(
       const Scrollbar&,
       float old_position,
       float new_position) const override;
@@ -56,25 +48,23 @@ class CORE_EXPORT ScrollbarThemeOverlay : public ScrollbarTheme {
   int ScrollbarThickness(ScrollbarControlSize) override;
   int ScrollbarMargin() const override;
   bool UsesOverlayScrollbars() const override;
-  TimeDelta OverlayScrollbarFadeOutDelay() const override;
-  TimeDelta OverlayScrollbarFadeOutDuration() const override;
+  base::TimeDelta OverlayScrollbarFadeOutDelay() const override;
+  base::TimeDelta OverlayScrollbarFadeOutDuration() const override;
 
   int ThumbLength(const Scrollbar&) override;
 
   bool HasButtons(const Scrollbar&) override { return false; }
   bool HasThumb(const Scrollbar&) override;
 
-  IntRect BackButtonRect(const Scrollbar&,
-                         ScrollbarPart,
-                         bool painting = false) override;
-  IntRect ForwardButtonRect(const Scrollbar&,
-                            ScrollbarPart,
-                            bool painting = false) override;
-  IntRect TrackRect(const Scrollbar&, bool painting = false) override;
+  IntRect BackButtonRect(const Scrollbar&, ScrollbarPart) override;
+  IntRect ForwardButtonRect(const Scrollbar&, ScrollbarPart) override;
+  IntRect TrackRect(const Scrollbar&) override;
+  IntRect ThumbRect(const Scrollbar&) override;
   int ThumbThickness(const Scrollbar&) override;
   int ThumbThickness() { return thumb_thickness_; }
 
   void PaintThumb(GraphicsContext&, const Scrollbar&, const IntRect&) override;
+  bool AllowsHitTest() const override;
   ScrollbarPart HitTest(const Scrollbar&, const IntPoint&) override;
 
   bool UsesNinePatchThumbResource() const override;
@@ -83,17 +73,14 @@ class CORE_EXPORT ScrollbarThemeOverlay : public ScrollbarTheme {
 
   int MinimumThumbLength(const Scrollbar&) override;
 
-  bool IsMobileTheme() const;
+ protected:
+  FRIEND_TEST_ALL_PREFIXES(ScrollbarThemeOverlayTest, PaintInvalidation);
 
-  static ScrollbarThemeOverlay& MobileTheme();
+  ScrollbarThemeOverlay(int thumb_thickness, int scrollbar_margin);
 
  private:
   int thumb_thickness_;
   int scrollbar_margin_;
-  HitTestBehavior allow_hit_test_;
-  Color color_;
-  bool is_mobile_theme_;
-  const bool use_solid_color_;
 };
 
 }  // namespace blink

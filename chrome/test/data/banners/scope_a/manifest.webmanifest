@@ -1,0 +1,13 @@
+{
+  "name": "Manifest test app in scope_a",
+  "icons": [
+    {
+      "src": "/banners/image-512px.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "scope": "/banners/scope_a",
+  "start_url": "page_1.html",
+  "display": "standalone"
+}

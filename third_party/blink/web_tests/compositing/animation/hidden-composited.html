@@ -29,7 +29,7 @@ function hiddenLayerIsComposited(layers) {
   layers["layers"].forEach(function(layer) {
     if (layer.bounds[0] == 100 && layer.bounds[1] == 100) {
       for (var j = 0; j < layer.compositingReasons.length; j++) {
-        if (layer.compositingReasons[j] === 'activeTransformAnimation')
+        if (layer.compositingReasons[j].includes('active accelerated transform animation'))
           found = true;
       }
     }

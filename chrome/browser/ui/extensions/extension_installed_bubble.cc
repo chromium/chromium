@@ -45,27 +45,30 @@ class ExtensionInstalledBubbleObserver
       public extensions::ExtensionRegistryObserver {
  public:
   explicit ExtensionInstalledBubbleObserver(
-      std::unique_ptr<ExtensionInstalledBubble> bubble)
-      : bubble_(std::move(bubble)),
-        extension_registry_observer_(this),
-        browser_list_observer_(this),
-        animation_wait_retries_(0),
-        weak_factory_(this) {
+      scoped_refptr<const extensions::Extension> extension,
+      Browser* browser,
+      const SkBitmap& icon)
+      : extension_(extension),
+        browser_(browser),
+        icon_(icon),
+        animation_wait_retries_(0) {
     // |extension| has been initialized but not loaded at this point. We need to
     // wait on showing the Bubble until the EXTENSION_LOADED gets fired.
     extension_registry_observer_.Add(
-        extensions::ExtensionRegistry::Get(bubble_->browser()->profile()));
-    browser_list_observer_.Add(BrowserList::GetInstance());
+        extensions::ExtensionRegistry::Get(browser->profile()));
+    BrowserList::AddObserver(this);
   }
 
-  void Run() { OnExtensionLoaded(nullptr, bubble_->extension()); }
+  void Run() { OnExtensionLoaded(nullptr, extension_.get()); }
 
  private:
-  ~ExtensionInstalledBubbleObserver() override {}
+  ~ExtensionInstalledBubbleObserver() override {
+    BrowserList::RemoveObserver(this);
+  }
 
   // BrowserListObserver:
   void OnBrowserClosing(Browser* browser) override {
-    if (bubble_->browser() == browser) {
+    if (browser_ == browser) {
       // Browser is closing before the bubble was shown.
       // TODO(hcarmona): Look into logging this with the BubbleManager.
       delete this;
@@ -75,7 +78,7 @@ class ExtensionInstalledBubbleObserver
   // extensions::ExtensionRegistryObserver:
   void OnExtensionLoaded(content::BrowserContext* browser_context,
                          const extensions::Extension* extension) override {
-    if (extension == bubble_->extension()) {
+    if (extension == extension_.get()) {
       // PostTask to ourself to allow all EXTENSION_LOADED Observers to run.
       // Only then can we be sure that a BrowserAction or PageAction has had
       // views created which we can inspect for the purpose of previewing of
@@ -91,15 +94,15 @@ class ExtensionInstalledBubbleObserver
       content::BrowserContext* browser_context,
       const extensions::Extension* extension,
       extensions::UnloadedExtensionReason reason) override {
-    if (extension == bubble_->extension()) {
+    if (extension == extension_.get()) {
       // Extension is going away.
       delete this;
     }
   }
 
   void Initialize() {
-    DCHECK(bubble_);
-    bubble_->Initialize();
+    bubble_ =
+        std::make_unique<ExtensionInstalledBubble>(extension_, browser_, icon_);
     Show();
   }
 
@@ -111,7 +114,7 @@ class ExtensionInstalledBubbleObserver
     // to delay showing the bubble.
     if (bubble_->ShouldShow()) {
       // Must be 2 lines because the manager will take ownership of bubble.
-      BubbleManager* manager = bubble_->browser()->GetBubbleManager();
+      BubbleManager* manager = browser_->GetBubbleManager();
       manager->ShowBubble(std::move(bubble_));
       delete this;
       return;
@@ -129,20 +132,22 @@ class ExtensionInstalledBubbleObserver
     }
   }
 
+  scoped_refptr<const extensions::Extension> extension_;
+  Browser* const browser_;
+  SkBitmap icon_;
+
   // The bubble that will be shown when the extension has finished installing.
   std::unique_ptr<ExtensionInstalledBubble> bubble_;
 
   ScopedObserver<extensions::ExtensionRegistry,
                  extensions::ExtensionRegistryObserver>
-      extension_registry_observer_;
+      extension_registry_observer_{this};
 
-  ScopedObserver<BrowserList, BrowserListObserver> browser_list_observer_;
-
-  // The number of times to retry showing the bubble if the bubble_->browser()
-  // action toolbar is animating.
+  // The number of times to retry showing the bubble if |browser_'s| toolbar
+  // is animating.
   int animation_wait_retries_;
 
-  base::WeakPtrFactory<ExtensionInstalledBubbleObserver> weak_factory_;
+  base::WeakPtrFactory<ExtensionInstalledBubbleObserver> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ExtensionInstalledBubbleObserver);
 };
@@ -165,8 +170,80 @@ std::unique_ptr<extensions::Command> GetCommand(
         extension_id, extensions::CommandService::ACTIVE, &command, nullptr);
   }
   if (has_command)
-    result.reset(new extensions::Command(command));
+    result = std::make_unique<extensions::Command>(command);
   return result;
+}
+
+const extensions::ActionInfo* GetActionInfoForExtension(
+    const extensions::Extension* extension) {
+  const extensions::ActionInfo* action_info =
+      extensions::ActionInfo::GetBrowserActionInfo(extension);
+
+  if (!action_info)
+    action_info = extensions::ActionInfo::GetPageActionInfo(extension);
+
+  return action_info;
+}
+
+ExtensionInstalledBubble::BubbleType GetBubbleTypeForExtension(
+    const extensions::Extension* extension,
+    const extensions::ActionInfo* action_info) {
+  if (action_info && action_info->type == extensions::ActionInfo::TYPE_BROWSER)
+    return ExtensionInstalledBubble::BubbleType::BROWSER_ACTION;
+  if (action_info && action_info->type == extensions::ActionInfo::TYPE_PAGE)
+    return ExtensionInstalledBubble::BubbleType::PAGE_ACTION;
+  if (!extensions::OmniboxInfo::GetKeyword(extension).empty())
+    return ExtensionInstalledBubble::BubbleType::OMNIBOX_KEYWORD;
+  return ExtensionInstalledBubble::BubbleType::GENERIC;
+}
+
+int GetOptionsForExtension(const extensions::Extension& extension,
+                           const Browser& browser,
+                           const extensions::ActionInfo* action_info,
+                           ExtensionInstalledBubble::BubbleType type,
+                           bool has_action_command) {
+  int options = 0;
+  if (extensions::sync_helper::IsSyncable(&extension) &&
+      SyncPromoUI::ShouldShowSyncPromo(browser.profile()))
+    options |= ExtensionInstalledBubble::SIGN_IN_PROMO;
+
+  // Determine the bubble options we want, based on the extension type.
+  switch (type) {
+    case ExtensionInstalledBubble::BROWSER_ACTION:
+    case ExtensionInstalledBubble::PAGE_ACTION:
+      DCHECK(action_info);
+      if (!action_info->synthesized)
+        options |= ExtensionInstalledBubble::HOW_TO_USE;
+
+      if (has_action_command) {
+        options |= ExtensionInstalledBubble::SHOW_KEYBINDING;
+      } else {
+        // The How-To-Use text makes the bubble seem a little crowded when the
+        // extension has a keybinding, so the How-To-Manage text is not shown
+        // in those cases.
+        options |= ExtensionInstalledBubble::HOW_TO_MANAGE;
+      }
+      break;
+    case ExtensionInstalledBubble::OMNIBOX_KEYWORD:
+      options |= ExtensionInstalledBubble::HOW_TO_USE |
+                 ExtensionInstalledBubble::HOW_TO_MANAGE;
+      break;
+    case ExtensionInstalledBubble::GENERIC:
+      break;
+  }
+
+  return options;
+}
+
+ExtensionInstalledBubble::AnchorPosition GetAnchorPositionForType(
+    ExtensionInstalledBubble::BubbleType type) {
+  if (type == ExtensionInstalledBubble::BROWSER_ACTION ||
+      type == ExtensionInstalledBubble::PAGE_ACTION) {
+    return ExtensionInstalledBubble::ANCHOR_ACTION;
+  }
+  if (type == ExtensionInstalledBubble::OMNIBOX_KEYWORD)
+    return ExtensionInstalledBubble::ANCHOR_OMNIBOX;
+  return ExtensionInstalledBubble::ANCHOR_APP_MENU;
 }
 
 }  // namespace
@@ -178,8 +255,8 @@ void ExtensionInstalledBubble::ShowBubble(
     const SkBitmap& icon) {
   // The ExtensionInstalledBubbleObserver will delete itself when the
   // ExtensionInstalledBubble is shown or when it can't be shown anymore.
-  auto* observer = new ExtensionInstalledBubbleObserver(
-      base::WrapUnique(new ExtensionInstalledBubble(extension, browser, icon)));
+  auto* observer =
+      new ExtensionInstalledBubbleObserver(extension, browser, icon);
   extensions::ExtensionRegistry* reg =
       extensions::ExtensionRegistry::Get(browser->profile());
   if (reg->enabled_extensions().GetByID(extension->id())) {
@@ -191,12 +268,27 @@ ExtensionInstalledBubble::ExtensionInstalledBubble(
     scoped_refptr<const Extension> extension,
     Browser* browser,
     const SkBitmap& icon)
+    : ExtensionInstalledBubble(extension,
+                               browser,
+                               icon,
+                               GetActionInfoForExtension(extension.get())) {}
+
+ExtensionInstalledBubble::ExtensionInstalledBubble(
+    scoped_refptr<const Extension> extension,
+    Browser* browser,
+    const SkBitmap& icon,
+    const extensions::ActionInfo* action_info)
     : extension_(extension),
       browser_(browser),
       icon_(icon),
-      type_(GENERIC),
-      options_(NONE),
-      anchor_position_(ANCHOR_APP_MENU) {}
+      type_(GetBubbleTypeForExtension(extension_.get(), action_info)),
+      action_command_(GetCommand(extension_->id(), browser_->profile(), type_)),
+      options_(GetOptionsForExtension(*extension.get(),
+                                      *browser,
+                                      action_info,
+                                      type_,
+                                      has_command_keybinding())),
+      anchor_position_(GetAnchorPositionForType(type_)) {}
 
 ExtensionInstalledBubble::~ExtensionInstalledBubble() {}
 
@@ -241,52 +333,4 @@ base::string16 ExtensionInstalledBubble::GetHowToUseDescription() const {
     return base::string16();
   return extra.empty() ? l10n_util::GetStringUTF16(message_id) :
       l10n_util::GetStringFUTF16(message_id, extra);
-}
-
-void ExtensionInstalledBubble::Initialize() {
-  const extensions::ActionInfo* action_info = nullptr;
-  if ((action_info = extensions::ActionInfo::GetBrowserActionInfo(
-           extension())) != nullptr) {
-    type_ = BROWSER_ACTION;
-  } else if ((action_info = extensions::ActionInfo::GetPageActionInfo(
-                  extension())) != nullptr) {
-    type_ = PAGE_ACTION;
-  } else if (!extensions::OmniboxInfo::GetKeyword(extension()).empty()) {
-    type_ = OMNIBOX_KEYWORD;
-  } else {
-    type_ = GENERIC;
-  }
-
-  action_command_ = GetCommand(extension_->id(), browser_->profile(), type_);
-  if (extensions::sync_helper::IsSyncable(extension()) &&
-      SyncPromoUI::ShouldShowSyncPromo(browser_->profile()))
-    options_ |= SIGN_IN_PROMO;
-
-  // Determine the bubble options we want, based on the extension type.
-  switch (type_) {
-    case BROWSER_ACTION:
-    case PAGE_ACTION:
-      DCHECK(action_info);
-      if (!action_info->synthesized)
-        options_ |= HOW_TO_USE;
-
-      if (has_command_keybinding()) {
-        options_ |= SHOW_KEYBINDING;
-      } else {
-        // The How-To-Use text makes the bubble seem a little crowded when the
-        // extension has a keybinding, so the How-To-Manage text is not shown
-        // in those cases.
-        options_ |= HOW_TO_MANAGE;
-      }
-
-      anchor_position_ = ANCHOR_ACTION;
-      break;
-    case OMNIBOX_KEYWORD:
-      options_ |= HOW_TO_USE | HOW_TO_MANAGE;
-      anchor_position_ = ANCHOR_OMNIBOX;
-      break;
-    case GENERIC:
-      anchor_position_ = ANCHOR_APP_MENU;
-      break;
-  }
 }

@@ -1,13 +1,16 @@
 include_rules = [
   "+components/bookmarks/browser",
   "+components/favicon/core",
+  "+components/favicon_base",
   "+components/history/core/browser",
   "+components/keyed_service/core",
   "+components/prefs",
-  "+components/sessions",
+  "+components/sessions/core",
   "+components/sync",
-  "+components/variations",
+  "+components/sync_device_info",
+  "+components/sync_user_events",
   "+components/version_info",
+  "+google_apis",
   "+ui/base/page_transition_types.h",
   "+ui/gfx",
 ]

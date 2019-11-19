@@ -10,14 +10,14 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.annotation.IntDef;
+
+import androidx.annotation.IntDef;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.VisibleForTesting;
-import org.chromium.chrome.browser.invalidation.DelayedInvalidationsController;
 import org.chromium.chrome.browser.omaha.OmahaBase;
 
 import java.lang.annotation.Retention;
@@ -44,7 +44,7 @@ public class PowerBroadcastReceiver extends BroadcastReceiver {
     static class PowerManagerHelper {
         /** @return whether the screen is on or not. */
         public boolean isScreenOn(Context context) {
-            return ApiCompatibilityUtils.isInteractive(context);
+            return ApiCompatibilityUtils.isInteractive();
         }
     }
 
@@ -106,7 +106,6 @@ public class PowerBroadcastReceiver extends BroadcastReceiver {
         public void runActions() {
             Context context = ContextUtils.getApplicationContext();
             OmahaBase.onForegroundSessionStart(context);
-            DelayedInvalidationsController.getInstance().notifyPendingInvalidations();
         }
 
         public long getDelayToRun() {

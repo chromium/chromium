@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<title>MediaSession Mojo Test</title>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
+<script src="file:///gen/gen/mojo/public/mojom/base/time.mojom.js"></script>
+<script src="file:///gen/services/media_session/public/mojom/media_session.mojom.js"></script>
+<script src="file:///gen/third_party/blink/public/mojom/mediasession/media_session.mojom.js"></script>
+<script src="resources/mediasessionservice-mock.js"></script>
+<script src="resources/utils.js"></script>
+<script>
+async_test((t) => {
+  mediaSessionServiceMock.setClientCallback(t.step_func(() => {
+    mediaSessionServiceMock.getClient().didReceiveAction(
+        mediaSession.mojom.MediaSessionAction.kSeekTo,
+            new blink.mojom.MediaSessionActionDetails({
+                seekTo: new blink.mojom.MediaSessionSeekToDetails({
+                    seekTime: new mojoBase.mojom.TimeDelta({microseconds: 10000000}),
+                    fastSeek: true
+                })
+            }));
+  }));
+
+  window.navigator.mediaSession.setActionHandler("seekto", t.step_func_done((e) => {
+    assert_equals(e.action, "seekto");
+    assert_equals(e.seekTime, 10);
+    assert_true(e.fastSeek);
+  }));
+}, "test that the seek to action reaches client");
+</script>

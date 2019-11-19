@@ -99,13 +99,13 @@ class TabLoaderDelegateImpl
   base::TimeDelta first_timeout_;
   base::TimeDelta timeout_;
 
-  base::WeakPtrFactory<TabLoaderDelegateImpl> weak_factory_;
+  base::WeakPtrFactory<TabLoaderDelegateImpl> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(TabLoaderDelegateImpl);
 };
 
 TabLoaderDelegateImpl::TabLoaderDelegateImpl(TabLoaderCallback* callback)
-    : policy_(&default_policy_), callback_(callback), weak_factory_(this) {
+    : policy_(&default_policy_), callback_(callback) {
   content::GetNetworkConnectionTracker()->AddNetworkConnectionObserver(this);
   auto type = network::mojom::ConnectionType::CONNECTION_UNKNOWN;
   content::GetNetworkConnectionTracker()->GetConnectionType(

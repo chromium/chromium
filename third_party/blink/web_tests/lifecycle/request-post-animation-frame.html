@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<div></div>
+
+<script>
+async_test(t => {
+  let last = "";
+  let raf_count = 0;
+
+  let raf = (() => {
+    if (raf_count++ > 10) {
+      t.done();
+      return;
+    }
+
+    requestAnimationFrame(t.step_func(raf));
+
+    setTimeout(t.step_func(() => {
+      assert_true(last != "raf", "timeout not after raf");
+      last = "timeout";
+    }));
+
+    postMessage("", "*");
+
+    requestIdleCallback(t.step_func(deadline => {
+      assert_true(last != "raf", "ric not after raf");
+      last = "ric";
+    }), { timeout: 23 });
+
+    requestPostAnimationFrame(t.step_func(() => {
+      assert_true(last == "raf" || last == "paf", "paf after raf or paf");
+      last = "paf";
+    }));
+
+    let id = requestPostAnimationFrame(t.step_func(() => {
+      assert_unreached("Cancelled callback should not run.");
+      last = "paf";
+    }));
+    cancelPostAnimationFrame(id);
+
+    last = "raf";
+  });
+
+  addEventListener("message", event => {
+    t.step(() => {
+      assert_true(last != "raf", "message not after raf");
+      last = "message";
+    });
+  });
+
+  setInterval(t.step_func(() => {
+    assert_true(last != "raf", "interval not after raf");
+    requestAnimationFrame(t.step_func(raf));
+    requestPostAnimationFrame(t.step_func(() => {
+      assert_true(last == "raf" || last == "paf", "paf after raf or paf");
+      last = "paf";
+    }));
+    let id = requestPostAnimationFrame(t.step_func(() => {
+      assert_unreached("Cancelled callback should not run.");
+      last = "paf";
+    }));
+    cancelPostAnimationFrame(id);
+    last = "interval";
+  }, 37));
+
+  requestAnimationFrame(t.step_func(raf));
+
+}, "Basic requestPostAnimationFrame functionality");
+</script>

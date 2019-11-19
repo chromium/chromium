@@ -24,43 +24,48 @@ suite('SettingsSlider', function() {
     };
     document.body.appendChild(slider);
     crSlider = slider.$$('cr-slider');
-    return PolymerTest.flushTasks();
+    return test_util.flushTasks();
   });
 
+  function press(key) {
+    MockInteractions.keyDownOn(crSlider, null, [], key);
+    MockInteractions.keyUpOn(crSlider, null, [], key);
+  }
+
   function pressArrowRight() {
-    MockInteractions.pressAndReleaseKeyOn(crSlider, 39, [], 'ArrowRight');
+    press('ArrowRight');
   }
 
   function pressArrowLeft() {
-    MockInteractions.pressAndReleaseKeyOn(crSlider, 37, [], 'ArrowLeft');
+    press('ArrowLeft');
   }
 
   function pressPageUp() {
-    MockInteractions.pressAndReleaseKeyOn(crSlider, 33, [], 'PageUp');
+    press('PageUp');
   }
 
   function pressPageDown() {
-    MockInteractions.pressAndReleaseKeyOn(crSlider, 34, [], 'PageDown');
+    press('PageDown');
   }
 
   function pressArrowUp() {
-    MockInteractions.pressAndReleaseKeyOn(crSlider, 38, [], 'ArrowUp');
+    press('ArrowUp');
   }
 
   function pressArrowDown() {
-    MockInteractions.pressAndReleaseKeyOn(crSlider, 40, [], 'ArrowDown');
+    press('ArrowDown');
   }
 
   function pressHome() {
-    MockInteractions.pressAndReleaseKeyOn(crSlider, 36, [], 'Home');
+    press('Home');
   }
 
   function pressEnd() {
-    MockInteractions.pressAndReleaseKeyOn(crSlider, 35, [], 'End');
+    press('End');
   }
 
   function pointerEvent(eventType, ratio) {
-    const rect = crSlider.$.barContainer.getBoundingClientRect();
+    const rect = crSlider.$.container.getBoundingClientRect();
     crSlider.dispatchEvent(new PointerEvent(eventType, {
       buttons: 1,
       pointerId: 1,
@@ -87,6 +92,15 @@ suite('SettingsSlider', function() {
         `expected ${expected} to be close to ${actual}`);
   }
 
+  async function checkSliderValueFromPref(prefValue, sliderValue) {
+    assertNotEquals(sliderValue, crSlider.value);
+    if (crSlider.updatingFromKey) {
+      await test_util.eventToPromise('updating-from-key-changed', crSlider);
+    }
+    slider.set('pref.value', prefValue);
+    assertEquals(sliderValue, crSlider.value);
+  }
+
   test('enforce value', function() {
     // Test that the indicator is not present until after the pref is
     // enforced.
@@ -103,124 +117,110 @@ suite('SettingsSlider', function() {
     assertTrue(!!indicator);
   });
 
-  test('set value', function() {
+  test('set value', async () => {
     slider.ticks = ticks;
-    slider.set('pref.value', 16);
-    Polymer.dom.flush();
-    expectEquals(6, crSlider.max);
-    expectEquals(3, crSlider.value);
+    await checkSliderValueFromPref(8, 2);
+    assertEquals(6, crSlider.max);
 
     // settings-slider only supports snapping to a range of tick values.
     // Setting to an in-between value should snap to an indexed value.
-    slider.set('pref.value', 70);
-    return PolymerTest.flushTasks()
-        .then(() => {
-          expectEquals(5, crSlider.value);
-          expectEquals(64, slider.pref.value);
+    await checkSliderValueFromPref(70, 5);
+    assertEquals(64, slider.pref.value);
 
-          // Setting the value out-of-range should clamp the slider.
-          slider.set('pref.value', -100);
-          return PolymerTest.flushTasks();
-        })
-        .then(() => {
-          expectEquals(0, crSlider.value);
-          expectEquals(2, slider.pref.value);
-        });
+    // Setting the value out-of-range should clamp the slider.
+    await checkSliderValueFromPref(-100, 0);
+    assertEquals(2, slider.pref.value);
   });
 
-  test('move slider', function() {
+  test('move slider', async () => {
     slider.ticks = ticks;
-    slider.set('pref.value', 30);
-    expectEquals(4, crSlider.value);
+    await checkSliderValueFromPref(30, 4);
 
     pressArrowRight();
-    expectEquals(5, crSlider.value);
-    expectEquals(64, slider.pref.value);
+    assertEquals(5, crSlider.value);
+    assertEquals(64, slider.pref.value);
 
     pressArrowRight();
-    expectEquals(6, crSlider.value);
-    expectEquals(128, slider.pref.value);
+    assertEquals(6, crSlider.value);
+    assertEquals(128, slider.pref.value);
 
     pressArrowRight();
-    expectEquals(6, crSlider.value);
-    expectEquals(128, slider.pref.value);
+    assertEquals(6, crSlider.value);
+    assertEquals(128, slider.pref.value);
 
     pressArrowLeft();
-    expectEquals(5, crSlider.value);
-    expectEquals(64, slider.pref.value);
+    assertEquals(5, crSlider.value);
+    assertEquals(64, slider.pref.value);
 
     pressPageUp();
-    expectEquals(6, crSlider.value);
-    expectEquals(128, slider.pref.value);
+    assertEquals(6, crSlider.value);
+    assertEquals(128, slider.pref.value);
 
     pressPageDown();
-    expectEquals(5, crSlider.value);
-    expectEquals(64, slider.pref.value);
+    assertEquals(5, crSlider.value);
+    assertEquals(64, slider.pref.value);
 
     pressHome();
-    expectEquals(0, crSlider.value);
-    expectEquals(2, slider.pref.value);
+    assertEquals(0, crSlider.value);
+    assertEquals(2, slider.pref.value);
 
     pressArrowDown();
-    expectEquals(0, crSlider.value);
-    expectEquals(2, slider.pref.value);
+    assertEquals(0, crSlider.value);
+    assertEquals(2, slider.pref.value);
 
     pressArrowUp();
-    expectEquals(1, crSlider.value);
-    expectEquals(4, slider.pref.value);
+    assertEquals(1, crSlider.value);
+    assertEquals(4, slider.pref.value);
 
     pressEnd();
-    expectEquals(6, crSlider.value);
-    expectEquals(128, slider.pref.value);
+    assertEquals(6, crSlider.value);
+    assertEquals(128, slider.pref.value);
   });
 
-  test('scaled slider', function() {
-    slider.set('pref.value', 2);
-    expectEquals(2, crSlider.value);
+  test('scaled slider', async () => {
+    await checkSliderValueFromPref(2, 2);
 
     slider.scale = 10;
     slider.max = 4;
     pressArrowRight();
-    expectEquals(3, crSlider.value);
-    expectEquals(.3, slider.pref.value);
+    assertEquals(3, crSlider.value);
+    assertEquals(.3, slider.pref.value);
 
     pressArrowRight();
-    expectEquals(4, crSlider.value);
-    expectEquals(.4, slider.pref.value);
+    assertEquals(4, crSlider.value);
+    assertEquals(.4, slider.pref.value);
 
     pressArrowRight();
-    expectEquals(4, crSlider.value);
-    expectEquals(.4, slider.pref.value);
+    assertEquals(4, crSlider.value);
+    assertEquals(.4, slider.pref.value);
 
     pressHome();
-    expectEquals(0, crSlider.value);
-    expectEquals(0, slider.pref.value);
+    assertEquals(0, crSlider.value);
+    assertEquals(0, slider.pref.value);
 
     pressEnd();
-    expectEquals(4, crSlider.value);
-    expectEquals(.4, slider.pref.value);
+    assertEquals(4, crSlider.value);
+    assertEquals(.4, slider.pref.value);
 
-    slider.set('pref.value', .25);
-    expectEquals(2.5, crSlider.value);
-    expectEquals(.25, slider.pref.value);
-
-    pressPageUp();
-    expectEquals(3.5, crSlider.value);
-    expectEquals(.35, slider.pref.value);
+    await checkSliderValueFromPref(.25, 2.5);
+    assertEquals(.25, slider.pref.value);
 
     pressPageUp();
-    expectEquals(4, crSlider.value);
-    expectEquals(.4, slider.pref.value);
+    assertEquals(3.5, crSlider.value);
+    assertEquals(.35, slider.pref.value);
+
+    pressPageUp();
+    assertEquals(4, crSlider.value);
+    assertEquals(.4, slider.pref.value);
   });
 
-  test('update value instantly both off and on with ticks', () => {
+  test('update value instantly both off and on with ticks', async () => {
     slider.ticks = ticks;
-    slider.set('pref.value', 2);
+    await checkSliderValueFromPref(4, 1);
     slider.updateValueInstantly = false;
-    assertEquals(0, crSlider.value);
     pointerDown(3 / crSlider.max);
     assertEquals(3, crSlider.value);
-    assertEquals(2, slider.pref.value);
+    assertEquals(4, slider.pref.value);
     pointerUp();
     assertEquals(3, crSlider.value);
     assertEquals(16, slider.pref.value);
@@ -244,11 +244,10 @@ suite('SettingsSlider', function() {
     assertEquals(8, slider.pref.value);
   });
 
-  test('update value instantly both off and on', () => {
+  test('update value instantly both off and on', async () => {
     slider.scale = 10;
-    slider.set('pref.value', 2);
+    await checkSliderValueFromPref(2, 20);
     slider.updateValueInstantly = false;
-    assertCloseTo(20, crSlider.value);
     pointerDown(.3);
     assertCloseTo(30, crSlider.value);
     assertEquals(2, slider.pref.value);

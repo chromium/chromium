@@ -4,20 +4,20 @@
 
 #include "third_party/blink/renderer/core/loader/interactive_detector.h"
 
+#include "base/time/default_tick_clock.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
-#include "third_party/blink/renderer/platform/histogram.h"
+#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
-#include "third_party/blink/renderer/platform/wtf/time.h"
 
 namespace blink {
 
 // Required length of main thread and network quiet window for determining
 // Time to Interactive.
-constexpr auto kTimeToInteractiveWindow = TimeDelta::FromSeconds(5);
+constexpr auto kTimeToInteractiveWindow = base::TimeDelta::FromSeconds(5);
 // Network is considered "quiet" if there are no more than 2 active network
 // requests for this duration of time.
 constexpr int kNetworkQuietMaximumConnections = 2;
@@ -49,6 +49,7 @@ InteractiveDetector::InteractiveDetector(
     NetworkActivityChecker* network_activity_checker)
     : Supplement<Document>(document),
       ContextLifecycleObserver(&document),
+      clock_(base::DefaultTickClock::GetInstance()),
       network_activity_checker_(network_activity_checker),
       time_to_interactive_timer_(
           document.GetTaskRunner(TaskType::kInternalDefault),
@@ -57,7 +58,7 @@ InteractiveDetector::InteractiveDetector(
       initially_hidden_(document.hidden()) {}
 
 void InteractiveDetector::SetNavigationStartTime(
-    TimeTicks navigation_start_time) {
+    base::TimeTicks navigation_start_time) {
   // Should not set nav start twice.
   DCHECK(page_event_times_.nav_start.is_null());
 
@@ -68,7 +69,7 @@ void InteractiveDetector::SetNavigationStartTime(
 
   LongTaskDetector::Instance().RegisterObserver(this);
   page_event_times_.nav_start = navigation_start_time;
-  TimeTicks initial_timer_fire_time =
+  base::TimeTicks initial_timer_fire_time =
       navigation_start_time + kTimeToInteractiveWindow;
 
   active_main_thread_quiet_window_start_ = navigation_start_time;
@@ -86,24 +87,25 @@ int InteractiveDetector::ActiveConnections() {
   return network_activity_checker_->GetActiveConnections();
 }
 
-void InteractiveDetector::StartOrPostponeCITimer(TimeTicks timer_fire_time) {
+void InteractiveDetector::StartOrPostponeCITimer(
+    base::TimeTicks timer_fire_time) {
   // This function should never be called after Time To Interactive is
   // reached.
   DCHECK(interactive_time_.is_null());
 
   // We give 1ms extra padding to the timer fire time to prevent floating point
   // arithmetic pitfalls when comparing window sizes.
-  timer_fire_time += TimeDelta::FromMilliseconds(1);
+  timer_fire_time += base::TimeDelta::FromMilliseconds(1);
 
   // Return if there is an active timer scheduled to fire later than
   // |timer_fire_time|.
   if (timer_fire_time < time_to_interactive_timer_fire_time_)
     return;
 
-  TimeDelta delay = timer_fire_time - CurrentTimeTicks();
+  base::TimeDelta delay = timer_fire_time - clock_->NowTicks();
   time_to_interactive_timer_fire_time_ = timer_fire_time;
 
-  if (delay <= TimeDelta()) {
+  if (delay <= base::TimeDelta()) {
     // This argument of this function is never used and only there to fulfill
     // the API contract. nullptr should work fine.
     TimeToInteractiveTimerFired(nullptr);
@@ -112,50 +114,51 @@ void InteractiveDetector::StartOrPostponeCITimer(TimeTicks timer_fire_time) {
   }
 }
 
-TimeTicks InteractiveDetector::GetInteractiveTime() const {
+base::TimeTicks InteractiveDetector::GetInteractiveTime() const {
   // TODO(crbug.com/808685) Simplify FMP and TTI input invalidation.
   return page_event_times_.first_meaningful_paint_invalidated
-             ? TimeTicks()
+             ? base::TimeTicks()
              : interactive_time_;
 }
 
-TimeTicks InteractiveDetector::GetInteractiveDetectionTime() const {
+base::TimeTicks InteractiveDetector::GetInteractiveDetectionTime() const {
   // TODO(crbug.com/808685) Simplify FMP and TTI input invalidation.
   return page_event_times_.first_meaningful_paint_invalidated
-             ? TimeTicks()
+             ? base::TimeTicks()
              : interactive_detection_time_;
 }
 
-TimeTicks InteractiveDetector::GetFirstInvalidatingInputTime() const {
+base::TimeTicks InteractiveDetector::GetFirstInvalidatingInputTime() const {
   return page_event_times_.first_invalidating_input;
 }
 
-TimeDelta InteractiveDetector::GetFirstInputDelay() const {
+base::TimeDelta InteractiveDetector::GetFirstInputDelay() const {
   return page_event_times_.first_input_delay;
 }
 
-TimeTicks InteractiveDetector::GetFirstInputTimestamp() const {
+base::TimeTicks InteractiveDetector::GetFirstInputTimestamp() const {
   return page_event_times_.first_input_timestamp;
 }
 
-TimeDelta InteractiveDetector::GetLongestInputDelay() const {
+base::TimeDelta InteractiveDetector::GetLongestInputDelay() const {
   return page_event_times_.longest_input_delay;
 }
 
-TimeTicks InteractiveDetector::GetLongestInputTimestamp() const {
+base::TimeTicks InteractiveDetector::GetLongestInputTimestamp() const {
   return page_event_times_.longest_input_timestamp;
 }
 
-bool InteractiveDetector::PageWasBackgroundedSinceEvent(TimeTicks event_time) {
+bool InteractiveDetector::PageWasBackgroundedSinceEvent(
+    base::TimeTicks event_time) {
   DCHECK(GetSupplementable());
   if (GetSupplementable()->hidden()) {
     return true;
   }
 
   bool curr_hidden = initially_hidden_;
-  TimeTicks visibility_start = page_event_times_.nav_start;
+  base::TimeTicks visibility_start = page_event_times_.nav_start;
   for (auto change_event : visibility_change_events_) {
-    TimeTicks visibility_end = change_event.timestamp;
+    base::TimeTicks visibility_end = change_event.timestamp;
     if (curr_hidden && event_time < visibility_end) {
       // [event_time, now] intersects a backgrounded range.
       return true;
@@ -169,8 +172,8 @@ bool InteractiveDetector::PageWasBackgroundedSinceEvent(TimeTicks event_time) {
 
 void InteractiveDetector::HandleForInputDelay(
     const Event& event,
-    TimeTicks event_platform_timestamp,
-    TimeTicks processing_start) {
+    base::TimeTicks event_platform_timestamp,
+    base::TimeTicks processing_start) {
   DCHECK(event.isTrusted());
 
   // This only happens sometimes on tests unrelated to InteractiveDetector. It
@@ -197,8 +200,8 @@ void InteractiveDetector::HandleForInputDelay(
     return;
 
   // These variables track the values which will be reported to histograms.
-  TimeDelta delay;
-  TimeTicks event_timestamp;
+  base::TimeDelta delay;
+  base::TimeTicks event_timestamp;
   if (event.type() == event_type_names::kPointerup) {
     // PointerUp by itself is not considered a significant input.
     if (pending_pointerdown_timestamp_.is_null())
@@ -246,7 +249,8 @@ void InteractiveDetector::HandleForInputDelay(
     GetSupplementable()->Loader()->DidChangePerformanceTiming();
 }
 
-void InteractiveDetector::BeginNetworkQuietPeriod(TimeTicks current_time) {
+void InteractiveDetector::BeginNetworkQuietPeriod(
+    base::TimeTicks current_time) {
   // Value of 0.0 indicates there is no currently actively network quiet window.
   DCHECK(active_network_quiet_window_start_.is_null());
   active_network_quiet_window_start_ = current_time;
@@ -254,7 +258,7 @@ void InteractiveDetector::BeginNetworkQuietPeriod(TimeTicks current_time) {
   StartOrPostponeCITimer(current_time + kTimeToInteractiveWindow);
 }
 
-void InteractiveDetector::EndNetworkQuietPeriod(TimeTicks current_time) {
+void InteractiveDetector::EndNetworkQuietPeriod(base::TimeTicks current_time) {
   DCHECK(!active_network_quiet_window_start_.is_null());
 
   if (current_time - active_network_quiet_window_start_ >=
@@ -262,32 +266,31 @@ void InteractiveDetector::EndNetworkQuietPeriod(TimeTicks current_time) {
     network_quiet_windows_.emplace_back(active_network_quiet_window_start_,
                                         current_time);
   }
-  active_network_quiet_window_start_ = TimeTicks();
+  active_network_quiet_window_start_ = base::TimeTicks();
 }
 
 // The optional opt_current_time, if provided, saves us a call to
-// CurrentTimeTicksInSeconds.
+// clock_->NowTicks().
 void InteractiveDetector::UpdateNetworkQuietState(
     double request_count,
-    base::Optional<TimeTicks> opt_current_time) {
+    base::Optional<base::TimeTicks> opt_current_time) {
   if (request_count <= kNetworkQuietMaximumConnections &&
       active_network_quiet_window_start_.is_null()) {
-    // Not using `value_or(CurrentTimeTicksInSeconds())` here because
-    // arguments to functions are eagerly evaluated, which always call
-    // CurrentTimeTicksInSeconds.
-    TimeTicks current_time =
-        opt_current_time ? opt_current_time.value() : CurrentTimeTicks();
+    // Not using `value_or(clock_->NowTicks())` here because arguments to
+    // functions are eagerly evaluated, which always call clock_->NowTicks.
+    base::TimeTicks current_time =
+        opt_current_time ? opt_current_time.value() : clock_->NowTicks();
     BeginNetworkQuietPeriod(current_time);
   } else if (request_count > kNetworkQuietMaximumConnections &&
              !active_network_quiet_window_start_.is_null()) {
-    TimeTicks current_time =
-        opt_current_time ? opt_current_time.value() : CurrentTimeTicks();
+    base::TimeTicks current_time =
+        opt_current_time ? opt_current_time.value() : clock_->NowTicks();
     EndNetworkQuietPeriod(current_time);
   }
 }
 
 void InteractiveDetector::OnResourceLoadBegin(
-    base::Optional<TimeTicks> load_begin_time) {
+    base::Optional<base::TimeTicks> load_begin_time) {
   if (!GetSupplementable())
     return;
   if (!interactive_time_.is_null())
@@ -298,9 +301,9 @@ void InteractiveDetector::OnResourceLoadBegin(
 }
 
 // The optional load_finish_time, if provided, saves us a call to
-// CurrentTimeTicksInSeconds.
+// clock_->NowTicks.
 void InteractiveDetector::OnResourceLoadEnd(
-    base::Optional<TimeTicks> load_finish_time) {
+    base::Optional<base::TimeTicks> load_finish_time) {
   if (!GetSupplementable())
     return;
   if (!interactive_time_.is_null())
@@ -308,12 +311,12 @@ void InteractiveDetector::OnResourceLoadEnd(
   UpdateNetworkQuietState(ActiveConnections(), load_finish_time);
 }
 
-void InteractiveDetector::OnLongTaskDetected(TimeTicks start_time,
-                                             TimeTicks end_time) {
+void InteractiveDetector::OnLongTaskDetected(base::TimeTicks start_time,
+                                             base::TimeTicks end_time) {
   // We should not be receiving long task notifications after Time to
   // Interactive has already been reached.
   DCHECK(interactive_time_.is_null());
-  TimeDelta quiet_window_length =
+  base::TimeDelta quiet_window_length =
       start_time - active_main_thread_quiet_window_start_;
   if (quiet_window_length >= kTimeToInteractiveWindow) {
     main_thread_quiet_windows_.emplace_back(
@@ -324,14 +327,14 @@ void InteractiveDetector::OnLongTaskDetected(TimeTicks start_time,
 }
 
 void InteractiveDetector::OnFirstMeaningfulPaintDetected(
-    TimeTicks fmp_time,
+    base::TimeTicks fmp_time,
     FirstMeaningfulPaintDetector::HadUserInput user_input_before_fmp) {
   DCHECK(page_event_times_.first_meaningful_paint
              .is_null());  // Should not set FMP twice.
   page_event_times_.first_meaningful_paint = fmp_time;
   page_event_times_.first_meaningful_paint_invalidated =
       user_input_before_fmp == FirstMeaningfulPaintDetector::kHadUserInput;
-  if (CurrentTimeTicks() - fmp_time >= kTimeToInteractiveWindow) {
+  if (clock_->NowTicks() - fmp_time >= kTimeToInteractiveWindow) {
     // We may have reached TTCI already. Check right away.
     CheckTimeToInteractiveReached();
   } else {
@@ -340,7 +343,7 @@ void InteractiveDetector::OnFirstMeaningfulPaintDetected(
   }
 }
 
-void InteractiveDetector::OnDomContentLoadedEnd(TimeTicks dcl_end_time) {
+void InteractiveDetector::OnDomContentLoadedEnd(base::TimeTicks dcl_end_time) {
   // InteractiveDetector should only receive the first DCL event.
   DCHECK(page_event_times_.dom_content_loaded_end.is_null());
   page_event_times_.dom_content_loaded_end = dcl_end_time;
@@ -348,7 +351,7 @@ void InteractiveDetector::OnDomContentLoadedEnd(TimeTicks dcl_end_time) {
 }
 
 void InteractiveDetector::OnInvalidatingInputEvent(
-    TimeTicks invalidation_time) {
+    base::TimeTicks invalidation_time) {
   if (!page_event_times_.first_invalidating_input.is_null())
     return;
 
@@ -364,7 +367,8 @@ void InteractiveDetector::OnInvalidatingInputEvent(
 }
 
 void InteractiveDetector::OnPageHiddenChanged(bool is_hidden) {
-  visibility_change_events_.push_back({CurrentTimeTicks(), is_hidden});
+  visibility_change_events_.push_back(
+      VisibilityChangeEvent{clock_->NowTicks(), is_hidden});
 }
 
 void InteractiveDetector::TimeToInteractiveTimerFired(TimerBase*) {
@@ -372,12 +376,12 @@ void InteractiveDetector::TimeToInteractiveTimerFired(TimerBase*) {
     return;
 
   // Value of 0.0 indicates there is currently no active timer.
-  time_to_interactive_timer_fire_time_ = TimeTicks();
+  time_to_interactive_timer_fire_time_ = base::TimeTicks();
   CheckTimeToInteractiveReached();
 }
 
 void InteractiveDetector::AddCurrentlyActiveQuietIntervals(
-    TimeTicks current_time) {
+    base::TimeTicks current_time) {
   // Network is currently quiet.
   if (!active_network_quiet_window_start_.is_null()) {
     if (current_time - active_network_quiet_window_start_ >=
@@ -398,24 +402,25 @@ void InteractiveDetector::AddCurrentlyActiveQuietIntervals(
 }
 
 void InteractiveDetector::RemoveCurrentlyActiveQuietIntervals() {
-  if (!network_quiet_windows_.empty() &&
+  if (!network_quiet_windows_.IsEmpty() &&
       network_quiet_windows_.back().Low() ==
           active_network_quiet_window_start_) {
     network_quiet_windows_.pop_back();
   }
 
-  if (!main_thread_quiet_windows_.empty() &&
+  if (!main_thread_quiet_windows_.IsEmpty() &&
       main_thread_quiet_windows_.back().Low() ==
           active_main_thread_quiet_window_start_) {
     main_thread_quiet_windows_.pop_back();
   }
 }
 
-TimeTicks InteractiveDetector::FindInteractiveCandidate(TimeTicks lower_bound) {
+base::TimeTicks InteractiveDetector::FindInteractiveCandidate(
+    base::TimeTicks lower_bound) {
   // Main thread iterator.
-  auto it_mt = main_thread_quiet_windows_.begin();
+  auto* it_mt = main_thread_quiet_windows_.begin();
   // Network iterator.
-  auto it_net = network_quiet_windows_.begin();
+  auto* it_net = network_quiet_windows_.begin();
 
   while (it_mt < main_thread_quiet_windows_.end() &&
          it_net < network_quiet_windows_.end()) {
@@ -443,10 +448,10 @@ TimeTicks InteractiveDetector::FindInteractiveCandidate(TimeTicks lower_bound) {
     }
 
     // At this point we know we have a non-empty overlap after lower_bound.
-    TimeTicks overlap_start =
+    base::TimeTicks overlap_start =
         std::max({it_mt->Low(), it_net->Low(), lower_bound});
-    TimeTicks overlap_end = std::min(it_mt->High(), it_net->High());
-    TimeDelta overlap_duration = overlap_end - overlap_start;
+    base::TimeTicks overlap_end = std::min(it_mt->High(), it_net->High());
+    base::TimeDelta overlap_duration = overlap_end - overlap_start;
     if (overlap_duration >= kTimeToInteractiveWindow) {
       return std::max(lower_bound, it_mt->Low());
     }
@@ -461,7 +466,7 @@ TimeTicks InteractiveDetector::FindInteractiveCandidate(TimeTicks lower_bound) {
   }
 
   // Time To Interactive candidate not found.
-  return TimeTicks();
+  return base::TimeTicks();
 }
 
 void InteractiveDetector::CheckTimeToInteractiveReached() {
@@ -474,7 +479,7 @@ void InteractiveDetector::CheckTimeToInteractiveReached() {
       page_event_times_.dom_content_loaded_end.is_null())
     return;
 
-  const TimeTicks current_time = CurrentTimeTicks();
+  const base::TimeTicks current_time = clock_->NowTicks();
   if (current_time - page_event_times_.first_meaningful_paint <
       kTimeToInteractiveWindow) {
     // Too close to FMP to determine Time to Interactive.
@@ -482,7 +487,7 @@ void InteractiveDetector::CheckTimeToInteractiveReached() {
   }
 
   AddCurrentlyActiveQuietIntervals(current_time);
-  const TimeTicks interactive_candidate =
+  const base::TimeTicks interactive_candidate =
       FindInteractiveCandidate(page_event_times_.first_meaningful_paint);
   RemoveCurrentlyActiveQuietIntervals();
 
@@ -492,7 +497,7 @@ void InteractiveDetector::CheckTimeToInteractiveReached() {
 
   interactive_time_ = std::max(
       {interactive_candidate, page_event_times_.dom_content_loaded_end});
-  interactive_detection_time_ = CurrentTimeTicks();
+  interactive_detection_time_ = clock_->NowTicks();
   OnTimeToInteractiveDetected();
 }
 
@@ -528,6 +533,15 @@ void InteractiveDetector::ContextDestroyed(ExecutionContext*) {
 void InteractiveDetector::Trace(Visitor* visitor) {
   Supplement<Document>::Trace(visitor);
   ContextLifecycleObserver::Trace(visitor);
+}
+
+void InteractiveDetector::SetTickClockForTesting(const base::TickClock* clock) {
+  clock_ = clock;
+}
+
+void InteractiveDetector::SetTaskRunnerForTesting(
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner_for_testing) {
+  time_to_interactive_timer_.MoveToNewTaskRunner(task_runner_for_testing);
 }
 
 }  // namespace blink

@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #include "base/nix/xdg_util.h"
+#include "build/branding_buildflags.h"
 #include "dbus/message.h"
 #include "dbus/mock_bus.h"
 #include "dbus/mock_object_proxy.h"
@@ -30,7 +31,7 @@ constexpr KWalletDBus::Error CANNOT_CONTACT =
 
 // These names are not allowed to change in prod, unless we intentionally
 // migrate.
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 const char kExpectedFolderName[] = "Chrome Keys";
 const char kExpectedEntryName[] = "Chrome Safe Storage";
 #else

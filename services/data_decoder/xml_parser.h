@@ -10,19 +10,15 @@
 
 #include "base/macros.h"
 #include "services/data_decoder/public/mojom/xml_parser.mojom.h"
-#include "services/service_manager/public/cpp/service_context_ref.h"
 
 namespace data_decoder {
 
 class XmlParser : public mojom::XmlParser {
  public:
-  explicit XmlParser(
-      std::unique_ptr<service_manager::ServiceContextRef> service_ref);
+  XmlParser();
   ~XmlParser() override;
 
  private:
-  const std::unique_ptr<service_manager::ServiceContextRef> service_ref_;
-
   // mojom::XmlParser implementation.
   void Parse(const std::string& xml, ParseCallback callback) override;
 

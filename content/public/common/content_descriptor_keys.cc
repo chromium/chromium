@@ -6,8 +6,6 @@
 
 namespace content {
 
-const char kV8NativesDataDescriptor[] = "v8_natives_data";
-
 const char kV8SnapshotDataDescriptor[] = "v8_snapshot_data";
 
 const char kV8Snapshot32DataDescriptor[] = "v8_snapshot_32_data";

@@ -11,10 +11,7 @@
 
 namespace gfx {
 
-ImagePNGRep::ImagePNGRep()
-    : raw_data(NULL),
-      scale(1.0) {
-}
+ImagePNGRep::ImagePNGRep() = default;
 
 ImagePNGRep::ImagePNGRep(const scoped_refptr<base::RefCountedMemory>& data,
                          float data_scale)

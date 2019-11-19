@@ -7,7 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string16.h"
-#include "components/autofill/core/browser/ui/card_unmask_prompt_view.h"
+#include "components/autofill/core/browser/ui/payments/card_unmask_prompt_view.h"
 #import "ios/chrome/browser/ui/collection_view/collection_view_controller.h"
 
 extern NSString* const kCardUnmaskPromptCollectionViewAccessibilityID;

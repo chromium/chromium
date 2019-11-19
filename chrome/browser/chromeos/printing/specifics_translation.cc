@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <memory>
+#include "chrome/browser/chromeos/printing/specifics_translation.h"
+
 #include <string>
 #include <vector>
 
@@ -10,9 +11,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
-#include "chrome/browser/chromeos/printing/specifics_translation.h"
 #include "chromeos/printing/printer_configuration.h"
-#include "components/sync/protocol/printer_specifics.pb.h"
 
 namespace chromeos {
 
@@ -47,14 +46,6 @@ void MergeReferenceToSpecifics(sync_pb::PrinterPPDReference* specifics,
     specifics->Clear();
     specifics->set_effective_make_and_model(ref.effective_make_and_model);
   }
-}
-
-// Combines |make| and |model| with a space to generate a make and model string.
-// If |model| already represents the make and model, the string is just |model|.
-// This is to prevent strings of the form '<make> <make> <model>'.
-std::string MakeAndModel(base::StringPiece make, base::StringPiece model) {
-  return model.starts_with(make) ? model.as_string()
-                                 : base::JoinString({make, model}, " ");
 }
 
 }  // namespace
@@ -120,6 +111,11 @@ void MergePrinterToSpecifics(const Printer& printer,
 
   MergeReferenceToSpecifics(specifics->mutable_ppd_reference(),
                             printer.ppd_reference());
+}
+
+std::string MakeAndModel(base::StringPiece make, base::StringPiece model) {
+  return model.starts_with(make) ? model.as_string()
+                                 : base::JoinString({make, model}, " ");
 }
 
 }  // namespace chromeos

@@ -3,6 +3,6 @@ PASS Property break-inside value 'auto' computes to 'auto'
 PASS Property break-inside value 'avoid' computes to 'avoid'
 PASS Property break-inside value 'avoid-page' computes to 'avoid-page'
 PASS Property break-inside value 'avoid-column' computes to 'avoid-column'
-FAIL Property break-inside value 'avoid-region' computes to 'avoid-region' assert_equals: expected "avoid-region" but got "auto"
+FAIL Property break-inside value 'avoid-region' computes to 'avoid-region' assert_true: 'avoid-region' is a supported value for break-inside. expected true got false
 Harness: the test ran to completion.
 

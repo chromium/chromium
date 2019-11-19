@@ -1,5 +1,6 @@
 This is a testharness.js-based test.
 PASS idl_test setup
+PASS idl_test validation
 PASS Accelerometer interface: existence and properties of interface object
 PASS Accelerometer interface object length
 PASS Accelerometer interface object name

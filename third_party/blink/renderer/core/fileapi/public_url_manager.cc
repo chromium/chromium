@@ -27,81 +27,29 @@
 #include "third_party/blink/renderer/core/fileapi/public_url_manager.h"
 
 #include "base/metrics/histogram_macros.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
 #include "third_party/blink/public/mojom/blob/blob_registry.mojom-blink.h"
 #include "third_party/blink/renderer/core/fileapi/url_registry.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "third_party/blink/renderer/platform/blob/blob_url.h"
+#include "third_party/blink/renderer/platform/blob/blob_url_null_origin_map.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
-#include "third_party/blink/renderer/platform/weborigin/url_security_origin_map.h"
-#include "third_party/blink/renderer/platform/wtf/hash_map.h"
-#include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
-#include "third_party/blink/renderer/platform/wtf/thread_specific.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
 namespace {
 
-// When a blob URL is created in a unique origin the origin is serialized into
-// the URL as "null". Since that makes it impossible to parse the origin back
-// out and compare it against a context's origin (to check if a context is
-// allowed to dereference the URL) we store a map of blob URL to SecurityOrigin
-// instance for blob URLs with unique origins.
-
-class BlobOriginMap : public URLSecurityOriginMap {
- public:
-  BlobOriginMap();
-  SecurityOrigin* GetOrigin(const KURL&) override;
-};
-
-typedef HashMap<String, scoped_refptr<SecurityOrigin>> BlobURLOriginMap;
-static ThreadSpecific<BlobURLOriginMap>& OriginMap() {
-  // We want to create the BlobOriginMap exactly once because it is shared by
-  // all the threads.
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(BlobOriginMap, cache, ());
-  (void)cache;  // BlobOriginMap's constructor does the interesting work.
-
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(ThreadSpecific<BlobURLOriginMap>, map, ());
-  return map;
-}
-
-static void SaveToOriginMap(SecurityOrigin* origin, const KURL& url) {
-  // If the blob URL contains null origin, as in the context with unique
-  // security origin or file URL, save the mapping between url and origin so
-  // that the origin can be retrieved when doing security origin check.
-  //
-  // See the definition of the origin of a Blob URL in the File API spec.
-  DCHECK(!url.HasFragmentIdentifier());
-  if (origin && BlobURL::GetOrigin(url) == "null")
-    OriginMap()->insert(url.GetString(), origin);
-}
-
-static void RemoveFromOriginMap(const KURL& url) {
-  if (BlobURL::GetOrigin(url) == "null")
-    OriginMap()->erase(url.GetString());
-}
-
-BlobOriginMap::BlobOriginMap() {
-  SecurityOrigin::SetMap(this);
-}
-
-SecurityOrigin* BlobOriginMap::GetOrigin(const KURL& url) {
-  if (url.ProtocolIs("blob")) {
-    KURL url_without_fragment = url;
-    url_without_fragment.RemoveFragmentIdentifier();
-    return OriginMap()->at(url_without_fragment.GetString());
-  }
-  return nullptr;
+static void RemoveFromNullOriginMapIfNecessary(const KURL& blob_url) {
+  DCHECK(blob_url.ProtocolIs("blob"));
+  if (BlobURL::GetOrigin(blob_url) == "null")
+    BlobURLNullOriginMap::GetInstance()->Remove(blob_url);
 }
 
 }  // namespace
-
-PublicURLManager* PublicURLManager::Create(ExecutionContext* context) {
-  return MakeGarbageCollected<PublicURLManager>(context);
-}
 
 PublicURLManager::PublicURLManager(ExecutionContext* context)
     : ContextLifecycleObserver(context), is_stopped_(false) {}
@@ -115,24 +63,27 @@ String PublicURLManager::RegisterURL(URLRegistrable* registrable) {
   DCHECK(!url.IsEmpty());
   const String& url_string = url.GetString();
 
-  mojom::blink::BlobPtr blob;
-  if (BlobUtils::MojoBlobURLsEnabled())
-    blob = registrable->AsMojoBlob();
-  if (blob) {
+  if (registrable->IsMojoBlob()) {
     // Measure how much jank the following synchronous IPC introduces.
     SCOPED_UMA_HISTOGRAM_TIMER("Storage.Blob.RegisterPublicURLTime");
     if (!url_store_) {
       BlobDataHandle::GetBlobRegistry()->URLStoreForOrigin(
-          origin, MakeRequest(&url_store_));
+          origin, url_store_.BindNewEndpointAndPassReceiver());
     }
-    url_store_->Register(std::move(blob), url);
+    mojo::PendingRemote<mojom::blink::Blob> blob_remote;
+    mojo::PendingReceiver<mojom::blink::Blob> blob_receiver =
+        blob_remote.InitWithNewPipeAndPassReceiver();
+    url_store_->Register(std::move(blob_remote), url);
     mojo_urls_.insert(url_string);
+    registrable->CloneMojoBlob(std::move(blob_receiver));
   } else {
     URLRegistry* registry = &registrable->Registry();
     registry->RegisterURL(origin, url, registrable);
     url_to_registry_.insert(url_string, registry);
   }
-  SaveToOriginMap(origin, url);
+
+  if (origin->SerializesAsNull())
+    BlobURLNullOriginMap::GetInstance()->Add(url, origin);
 
   return url_string;
 }
@@ -148,15 +99,15 @@ void PublicURLManager::Revoke(const KURL& url) {
           GetExecutionContext()->GetSecurityOrigin()))
     return;
 
-  if (BlobUtils::MojoBlobURLsEnabled()) {
-    if (!url_store_) {
-      BlobDataHandle::GetBlobRegistry()->URLStoreForOrigin(
-          GetExecutionContext()->GetSecurityOrigin(), MakeRequest(&url_store_));
-    }
-    url_store_->Revoke(url);
-    mojo_urls_.erase(url.GetString());
+  if (!url_store_) {
+    BlobDataHandle::GetBlobRegistry()->URLStoreForOrigin(
+        GetExecutionContext()->GetSecurityOrigin(),
+        url_store_.BindNewEndpointAndPassReceiver());
   }
-  RemoveFromOriginMap(url);
+  url_store_->Revoke(url);
+  mojo_urls_.erase(url.GetString());
+
+  RemoveFromNullOriginMapIfNecessary(url);
   auto it = url_to_registry_.find(url.GetString());
   if (it == url_to_registry_.end())
     return;
@@ -166,32 +117,33 @@ void PublicURLManager::Revoke(const KURL& url) {
 
 void PublicURLManager::Resolve(
     const KURL& url,
-    network::mojom::blink::URLLoaderFactoryRequest factory_request) {
+    mojo::PendingReceiver<network::mojom::blink::URLLoaderFactory>
+        factory_receiver) {
   if (is_stopped_)
     return;
 
-  DCHECK(BlobUtils::MojoBlobURLsEnabled());
   DCHECK(url.ProtocolIs("blob"));
   if (!url_store_) {
     BlobDataHandle::GetBlobRegistry()->URLStoreForOrigin(
-        GetExecutionContext()->GetSecurityOrigin(), MakeRequest(&url_store_));
+        GetExecutionContext()->GetSecurityOrigin(),
+        url_store_.BindNewEndpointAndPassReceiver());
   }
-  url_store_->ResolveAsURLLoaderFactory(url, std::move(factory_request));
+  url_store_->ResolveAsURLLoaderFactory(url, std::move(factory_receiver));
 }
 
 void PublicURLManager::Resolve(
     const KURL& url,
-    mojom::blink::BlobURLTokenRequest token_request) {
+    mojo::PendingReceiver<mojom::blink::BlobURLToken> token_receiver) {
   if (is_stopped_)
     return;
 
-  DCHECK(BlobUtils::MojoBlobURLsEnabled());
   DCHECK(url.ProtocolIs("blob"));
   if (!url_store_) {
     BlobDataHandle::GetBlobRegistry()->URLStoreForOrigin(
-        GetExecutionContext()->GetSecurityOrigin(), MakeRequest(&url_store_));
+        GetExecutionContext()->GetSecurityOrigin(),
+        url_store_.BindNewEndpointAndPassReceiver());
   }
-  url_store_->ResolveForNavigation(url, std::move(token_request));
+  url_store_->ResolveForNavigation(url, std::move(token_receiver));
 }
 
 void PublicURLManager::ContextDestroyed(ExecutionContext*) {
@@ -201,10 +153,10 @@ void PublicURLManager::ContextDestroyed(ExecutionContext*) {
   is_stopped_ = true;
   for (auto& url_registry : url_to_registry_) {
     url_registry.value->UnregisterURL(KURL(url_registry.key));
-    RemoveFromOriginMap(KURL(url_registry.key));
+    RemoveFromNullOriginMapIfNecessary(KURL(url_registry.key));
   }
   for (const auto& url : mojo_urls_)
-    RemoveFromOriginMap(KURL(url));
+    RemoveFromNullOriginMapIfNecessary(KURL(url));
 
   url_to_registry_.clear();
   mojo_urls_.clear();

@@ -12,35 +12,26 @@
 #endif
 
 @implementation OCMockComplexTypeHelper {
-  // Same as the superclass -representedObject, but retained.
+  // The represented object.
   OCMockObject* _object;
-  // All the blocks registered by selector.
-  NSMutableDictionary* _blocks;
+
+  // Dictionary holding blocks registered by selector.
+  NSMutableDictionary<NSString*, id>* _blocks;
 }
 
-#pragma mark - public methods.
+#pragma mark - Public methods.
 
-- (instancetype)initWithRepresentedObject:(id)object {
-  if ((self = [super initWithRepresentedObject:object]))
-    _object = object;
+- (instancetype)initWithRepresentedObject:(OCMockObject*)object {
+  DCHECK(object);
+  _object = object;
+  _blocks = [[NSMutableDictionary alloc] init];
   return self;
 }
 
 - (void)onSelector:(SEL)selector callBlockExpectation:(id)block {
-  if (!_blocks)
-    _blocks = [[NSMutableDictionary alloc] init];
-
   NSString* key = NSStringFromSelector(selector);
   DCHECK(![_blocks objectForKey:key]) << "Only one expectation per signature";
-  id value = [block copy];
-  [_blocks setObject:value forKey:key];
-}
-
-- (void)removeBlockExpectationOnSelector:(SEL)selector {
-  NSString* key = NSStringFromSelector(selector);
-  DCHECK([_blocks objectForKey:key])
-      << "No expectation for selector " << base::SysNSStringToUTF8(key);
-  [_blocks removeObjectForKey:key];
+  [_blocks setObject:block forKey:key];
 }
 
 - (id)blockForSelector:(SEL)selector {
@@ -54,29 +45,50 @@
 #pragma mark - OCMockObject forwarding.
 
 // OCMockObject -respondsToSelector responds NO for the OCMock object specific
-// methods. This confuses the GTMLightweightProxy class. In order to forward
+// methods. This confuses the NSProxy architecture. In order to forward
 // those properly the simplest approach is to forward them explicitely.
 - (id)stub {
   return [_object stub];
 }
+
 - (id)expect {
   return [_object expect];
 }
+
 - (id)reject {
   return [_object reject];
 }
+
 - (void)verify {
   [_object verify];
 }
+
 - (void)setExpectationOrderMatters:(BOOL)flag {
   [_object setExpectationOrderMatters:flag];
 }
 
-#pragma mark - Internal methods.
+#pragma mark - NSProxy implementation.
+
+- (void)forwardInvocation:(NSInvocation*)invocation {
+  SEL selector = [invocation selector];
+  if ([_object respondsToSelector:selector])
+    [invocation invokeWithTarget:_object];
+}
+
+- (NSMethodSignature*)methodSignatureForSelector:(SEL)selector {
+  return [_object methodSignatureForSelector:selector];
+}
+
+- (void)doesNotRecognizeSelector:(SEL)selector {
+  [(id)_object doesNotRecognizeSelector:selector];
+}
 
 - (BOOL)respondsToSelector:(SEL)selector {
   DCHECK(![_blocks objectForKey:NSStringFromSelector(selector)]);
-  return [super respondsToSelector:selector];
+  if (selector == @selector(initWithRepresentedObject:))
+    return YES;
+
+  return [_object respondsToSelector:selector];
 }
 
 @end

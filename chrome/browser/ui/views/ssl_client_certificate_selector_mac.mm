@@ -16,6 +16,7 @@
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ssl/ssl_client_auth_observer.h"
@@ -330,7 +331,8 @@ class SSLClientCertificateSelectorDelegate
       : certificate_selector_([[SSLClientCertificateSelectorMac alloc]
             initWithBrowserContext:contents->GetBrowserContext()
                    certRequestInfo:cert_request_info
-                          delegate:std::move(delegate)]) {
+                          delegate:std::move(delegate)]),
+        weak_factory_(this) {
     views::Widget* overlay_window =
         constrained_window::ShowWebModalDialogWithOverlayViews(this, contents);
     [certificate_selector_ setOverlayWindow:overlay_window];
@@ -362,8 +364,19 @@ class SSLClientCertificateSelectorDelegate
     [caller release];
   }
 
+  base::OnceClosure GetCancellationCallback() {
+    return base::BindOnce(&SSLClientCertificateSelectorDelegate::CloseSelector,
+                          weak_factory_.GetWeakPtr());
+  }
+
  private:
+  void CloseSelector() {
+    [certificate_selector_ closeSelectorSheetWithCode:NSModalResponseStop];
+  }
+
   base::scoped_nsobject<SSLClientCertificateSelectorMac> certificate_selector_;
+
+  base::WeakPtrFactory<SSLClientCertificateSelectorDelegate> weak_factory_;
 
   DISALLOW_COPY_AND_ASSIGN(SSLClientCertificateSelectorDelegate);
 };
@@ -372,7 +385,7 @@ class SSLClientCertificateSelectorDelegate
 
 namespace chrome {
 
-void ShowSSLClientCertificateSelector(
+base::OnceClosure ShowSSLClientCertificateSelector(
     content::WebContents* contents,
     net::SSLCertRequestInfo* cert_request_info,
     net::ClientCertIdentityList client_certs,
@@ -384,11 +397,13 @@ void ShowSSLClientCertificateSelector(
   // TODO(davidben): Move this hook to the WebContentsDelegate and only try to
   // show a dialog in Browser's implementation. https://crbug.com/456255
   if (!CertificateSelector::CanShow(contents))
-    return;
+    return base::OnceClosure();
 
-  new SSLClientCertificateSelectorDelegate(contents, cert_request_info,
-                                           std::move(client_certs),
-                                           std::move(delegate));
+  auto* selector_delegate = new SSLClientCertificateSelectorDelegate(
+      contents, cert_request_info, std::move(client_certs),
+      std::move(delegate));
+
+  return selector_delegate->GetCancellationCallback();
 }
 
 OkAndCancelableForTesting* ShowSSLClientCertificateSelectorMacForTesting(

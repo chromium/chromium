@@ -47,17 +47,15 @@ TEST(JsonConverterTest, JsonFromToDisplayLayout) {
       "    \"offset\": 30\n"
       "  }]\n"
       "}";
-  int error_code = 0, error_line, error_column;
-  std::string error_msg;
-  std::unique_ptr<base::Value> read_value(
-      base::JSONReader::ReadAndReturnErrorDeprecated(
-          data, 0, &error_code, &error_msg, &error_line, &error_column));
-  ASSERT_EQ(0, error_code) << error_msg << " at " << error_line << ":"
-                           << error_column;
-  EXPECT_TRUE(value.Equals(read_value.get()));
+  base::JSONReader::ValueWithError result =
+      base::JSONReader::ReadAndReturnValueWithError(data, 0);
+  ASSERT_EQ(base::JSONReader::JSON_NO_ERROR, result.error_code)
+      << result.error_message << " at " << result.error_line << ":"
+      << result.error_column;
+  EXPECT_EQ(value, result.value.value());
 
   DisplayLayout read_layout;
-  EXPECT_TRUE(JsonToDisplayLayout(*read_value, &read_layout));
+  EXPECT_TRUE(JsonToDisplayLayout(result.value.value(), &read_layout));
   EXPECT_EQ(read_layout.primary_id, layout.primary_id);
   EXPECT_EQ(read_layout.default_unified, layout.default_unified);
   EXPECT_TRUE(read_layout.HasSamePlacementList(layout));
@@ -71,16 +69,14 @@ TEST(JsonConverterTest, OldJsonToDisplayLayout) {
       "  \"position\": \"bottom\",\n"
       "  \"offset\": 20\n"
       "}";
-  int error_code = 0, error_line, error_column;
-  std::string error_msg;
-  std::unique_ptr<base::Value> read_value(
-      base::JSONReader::ReadAndReturnErrorDeprecated(
-          data, 0, &error_code, &error_msg, &error_line, &error_column));
-  ASSERT_EQ(0, error_code) << error_msg << " at " << error_line << ":"
-                           << error_column;
+  base::JSONReader::ValueWithError result =
+      base::JSONReader::ReadAndReturnValueWithError(data, 0);
+  ASSERT_EQ(base::JSONReader::JSON_NO_ERROR, result.error_code)
+      << result.error_message << " at " << result.error_line << ":"
+      << result.error_column;
 
   DisplayLayout read_layout;
-  EXPECT_TRUE(JsonToDisplayLayout(*read_value, &read_layout));
+  EXPECT_TRUE(JsonToDisplayLayout(result.value.value(), &read_layout));
   EXPECT_EQ(1, read_layout.primary_id);
   EXPECT_FALSE(read_layout.default_unified);
   ASSERT_EQ(1u, read_layout.placement_list.size());

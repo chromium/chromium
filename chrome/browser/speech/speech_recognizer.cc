@@ -43,7 +43,9 @@ static const int kInvalidSessionId = -1;
 // SpeechRecognizerDelegate via a weak pointer that is only ever referenced from
 // the UI thread.
 class SpeechRecognizer::EventListener
-    : public base::RefCountedThreadSafe<SpeechRecognizer::EventListener>,
+    : public base::RefCountedThreadSafe<
+          SpeechRecognizer::EventListener,
+          content::BrowserThread::DeleteOnIOThread>,
       public content::SpeechRecognitionEventListener {
  public:
   EventListener(const base::WeakPtr<SpeechRecognizerDelegate>& delegate,
@@ -59,7 +61,9 @@ class SpeechRecognizer::EventListener
   void StopOnIOThread();
 
  private:
-  friend class base::RefCountedThreadSafe<SpeechRecognizer::EventListener>;
+  friend struct content::BrowserThread::DeleteOnThread<
+      content::BrowserThread::IO>;
+  friend class base::DeleteHelper<SpeechRecognizer::EventListener>;
   ~EventListener() override;
 
   void NotifyRecognitionStateChanged(SpeechRecognizerStatus new_state);
@@ -104,7 +108,7 @@ class SpeechRecognizer::EventListener
   int session_;
   base::string16 last_result_str_;
 
-  base::WeakPtrFactory<EventListener> weak_factory_;
+  base::WeakPtrFactory<EventListener> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(EventListener);
 };
@@ -120,8 +124,7 @@ SpeechRecognizer::EventListener::EventListener(
           std::move(shared_url_loader_factory_info)),
       accept_language_(accept_language),
       locale_(locale),
-      session_(kInvalidSessionId),
-      weak_factory_(this) {
+      session_(kInvalidSessionId) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 
@@ -180,7 +183,7 @@ void SpeechRecognizer::EventListener::StopOnIOThread() {
 
 void SpeechRecognizer::EventListener::NotifyRecognitionStateChanged(
     SpeechRecognizerStatus new_state) {
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {content::BrowserThread::UI},
       base::BindOnce(&SpeechRecognizerDelegate::OnSpeechRecognitionStateChanged,
                      delegate_, new_state));
@@ -225,7 +228,7 @@ void SpeechRecognizer::EventListener::OnRecognitionResults(
       final_count++;
     result_str += result->hypotheses[0]->utterance;
   }
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {content::BrowserThread::UI},
       base::BindOnce(&SpeechRecognizerDelegate::OnSpeechResult, delegate_,
                      result_str, final_count == results.size()));
@@ -272,7 +275,7 @@ void SpeechRecognizer::EventListener::OnAudioLevelsChange(int session_id,
   // Both |volume| and |noise_volume| are defined to be in the range [0.0, 1.0].
   // See: content/public/browser/speech_recognition_event_listener.h
   int16_t sound_level = static_cast<int16_t>(INT16_MAX * volume);
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {content::BrowserThread::UI},
       base::BindOnce(&SpeechRecognizerDelegate::OnSpeechSoundLevelChanged,
                      delegate_, sound_level));
@@ -312,7 +315,7 @@ void SpeechRecognizer::Start(
   std::string auth_token;
   delegate_->GetSpeechAuthParameters(&auth_scope, &auth_token);
 
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {content::BrowserThread::IO},
       base::BindOnce(&SpeechRecognizer::EventListener::StartOnIOThread,
                      speech_event_listener_, auth_scope, auth_token, preamble));
@@ -320,7 +323,7 @@ void SpeechRecognizer::Start(
 
 void SpeechRecognizer::Stop() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {content::BrowserThread::IO},
       base::BindOnce(&SpeechRecognizer::EventListener::StopOnIOThread,
                      speech_event_listener_));

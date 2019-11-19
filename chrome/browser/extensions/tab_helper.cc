@@ -9,11 +9,9 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "chrome/browser/banners/app_banner_manager_desktop.h"
 #include "chrome/browser/extensions/activity_log/activity_log.h"
 #include "chrome/browser/extensions/api/bookmark_manager_private/bookmark_manager_private_api.h"
 #include "chrome/browser/extensions/api/declarative_content/chrome_content_rules_registry.h"
-#include "chrome/browser/extensions/bookmark_app_helper.h"
 #include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
@@ -29,7 +27,6 @@
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
-#include "chrome/browser/web_applications/extensions/bookmark_app_util.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "chrome/common/render_messages.h"
@@ -48,7 +45,6 @@
 #include "extensions/browser/api/declarative/rules_registry_service.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_prefs.h"
-#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_web_contents_observer.h"
 #include "extensions/browser/image_loader.h"
@@ -61,7 +57,6 @@
 #include "extensions/common/manifest_handlers/icons_handler.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
-#include "third_party/blink/public/common/manifest/web_display_mode.h"
 #include "url/url_constants.h"
 
 using content::NavigationController;
@@ -76,13 +71,8 @@ TabHelper::TabHelper(content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
       profile_(Profile::FromBrowserContext(web_contents->GetBrowserContext())),
       extension_app_(NULL),
-      pending_web_app_action_(NONE),
-      last_committed_nav_entry_unique_id_(0),
       script_executor_(new ScriptExecutor(web_contents)),
-      extension_action_runner_(new ExtensionActionRunner(web_contents)),
-      registry_observer_(this),
-      image_loader_ptr_factory_(this),
-      weak_ptr_factory_(this) {
+      extension_action_runner_(new ExtensionActionRunner(web_contents)) {
   // The ActiveTabPermissionManager requires a session ID; ensure this
   // WebContents has one.
   SessionTabHelper::CreateForWebContents(web_contents);
@@ -105,25 +95,6 @@ TabHelper::TabHelper(content::WebContents* web_contents)
       set_delegate(this);
 
   BookmarkManagerPrivateDragEventRouter::CreateForWebContents(web_contents);
-}
-
-void TabHelper::CreateHostedAppFromWebContents(bool shortcut_app_requested,
-                                               OnceInstallCallback callback) {
-  DCHECK(CanCreateBookmarkApp());
-  if (pending_web_app_action_ != NONE)
-    return;
-
-  install_callback_ = std::move(callback);
-
-  // Start fetching web app info for CreateApplicationShortcut dialog and show
-  // the dialog when the data is available in OnDidGetWebApplicationInfo.
-  GetApplicationInfo(CREATE_HOSTED_APP, shortcut_app_requested);
-}
-
-bool TabHelper::CanCreateBookmarkApp() const {
-  return !profile_->IsGuestSession() && !profile_->IsOffTheRecord() &&
-         !profile_->IsSystemProfile() &&
-         IsValidBookmarkAppUrl(web_contents()->GetURL());
 }
 
 void TabHelper::SetExtensionApp(const Extension* extension) {
@@ -189,24 +160,6 @@ void TabHelper::InvokeForContentRulesRegistries(const Func& func) {
   }
 }
 
-void TabHelper::FinishCreateBookmarkApp(
-    const Extension* extension,
-    const WebApplicationInfo& web_app_info) {
-  // Send the 'appinstalled' event and ensure any beforeinstallpromptevent
-  // cannot trigger installation again.
-  if (banners::AppBannerManagerDesktop::IsEnabled() &&
-      web_app_info.open_as_window) {
-    banners::AppBannerManagerDesktop::FromWebContents(web_contents())
-        ->OnInstall(false /* is_native app */,
-                    blink::kWebDisplayModeStandalone);
-  }
-  pending_web_app_action_ = NONE;
-
-  const bool success = !!extension;
-  const ExtensionId app_id = extension ? extension->id() : ExtensionId();
-  std::move(install_callback_).Run(app_id, success);
-}
-
 void TabHelper::RenderFrameCreated(content::RenderFrameHost* host) {
   SetTabId(host);
 }
@@ -225,18 +178,13 @@ void TabHelper::DidFinishNavigation(
   ExtensionRegistry* registry = ExtensionRegistry::Get(context);
   const ExtensionSet& enabled_extensions = registry->enabled_extensions();
 
-  if (util::IsNewBookmarkAppsEnabled()) {
-    Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
-    if (browser && browser->is_app()) {
-      const Extension* extension = registry->GetExtensionById(
-          web_app::GetAppIdFromApplicationName(browser->app_name()),
-          ExtensionRegistry::EVERYTHING);
-      if (extension && AppLaunchInfo::GetFullLaunchURL(extension).is_valid())
-        SetExtensionApp(extension);
-    } else {
-      UpdateExtensionAppIcon(
-          enabled_extensions.GetExtensionOrAppByURL(
-              navigation_handle->GetURL()));
+  Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
+  if (browser && browser->deprecated_is_app()) {
+    const Extension* extension = registry->GetExtensionById(
+        web_app::GetAppIdFromApplicationName(browser->app_name()),
+        ExtensionRegistry::EVERYTHING);
+    if (extension && AppLaunchInfo::GetFullLaunchURL(extension).is_valid()) {
+      SetExtensionApp(extension);
     }
   } else {
     UpdateExtensionAppIcon(
@@ -266,49 +214,6 @@ void TabHelper::DidCloneToNewWebContents(WebContents* old_web_contents,
 
   new_helper->SetExtensionApp(extension_app_);
   new_helper->extension_app_icon_ = extension_app_icon_;
-}
-
-void TabHelper::OnDidGetWebApplicationInfo(
-    chrome::mojom::ChromeRenderFrameAssociatedPtr chrome_render_frame,
-    bool shortcut_app_requested,
-    const WebApplicationInfo& info) {
-  web_app_info_ = info;
-
-  content::WebContents* contents = web_contents();
-  NavigationEntry* entry = contents->GetController().GetLastCommittedEntry();
-  if (!entry || last_committed_nav_entry_unique_id_ != entry->GetUniqueID())
-    return;
-  last_committed_nav_entry_unique_id_ = 0;
-
-  switch (pending_web_app_action_) {
-    case CREATE_HOSTED_APP: {
-      if (web_app_info_.app_url.is_empty())
-        web_app_info_.app_url = contents->GetLastCommittedURL();
-
-      if (web_app_info_.title.empty())
-        web_app_info_.title = contents->GetTitle();
-      if (web_app_info_.title.empty())
-        web_app_info_.title = base::UTF8ToUTF16(web_app_info_.app_url.spec());
-
-      bookmark_app_helper_.reset(
-          new BookmarkAppHelper(profile_, web_app_info_, contents,
-                                InstallableMetrics::GetInstallSource(
-                                    contents, InstallTrigger::MENU)));
-      if (shortcut_app_requested)
-        bookmark_app_helper_->set_shortcut_app_requested();
-      bookmark_app_helper_->Create(base::Bind(
-          &TabHelper::FinishCreateBookmarkApp, weak_ptr_factory_.GetWeakPtr()));
-      break;
-    }
-    default:
-      NOTREACHED();
-      break;
-  }
-
-  // The hosted app action will be cleared once the installation completes or
-  // fails.
-  if (pending_web_app_action_ != CREATE_HOSTED_APP)
-    pending_web_app_action_ = NONE;
 }
 
 void TabHelper::OnGetAppInstallState(content::RenderFrameHost* host,
@@ -393,30 +298,6 @@ void TabHelper::OnExtensionUnloaded(content::BrowserContext* browser_context,
   DCHECK(extension_app_);
   if (extension == extension_app_)
     SetExtensionApp(nullptr);
-}
-
-void TabHelper::GetApplicationInfo(WebAppAction action,
-                                   bool shortcut_app_requested) {
-  NavigationEntry* entry =
-      web_contents()->GetController().GetLastCommittedEntry();
-  if (!entry)
-    return;
-
-  // This DCHECK added to ensure this function is called only once.
-  DCHECK_EQ(pending_web_app_action_, NONE);
-
-  pending_web_app_action_ = action;
-  last_committed_nav_entry_unique_id_ = entry->GetUniqueID();
-
-  chrome::mojom::ChromeRenderFrameAssociatedPtr chrome_render_frame;
-  web_contents()->GetMainFrame()->GetRemoteAssociatedInterfaces()->GetInterface(
-      &chrome_render_frame);
-  // Bind the InterfacePtr into the callback so that it's kept alive
-  // until there's either a connection error or a response.
-  auto* web_app_info_proxy = chrome_render_frame.get();
-  web_app_info_proxy->GetWebApplicationInfo(
-      base::Bind(&TabHelper::OnDidGetWebApplicationInfo, base::Unretained(this),
-                 base::Passed(&chrome_render_frame), shortcut_app_requested));
 }
 
 void TabHelper::SetTabId(content::RenderFrameHost* render_frame_host) {

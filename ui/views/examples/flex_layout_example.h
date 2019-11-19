@@ -45,9 +45,11 @@ class VIEWS_EXAMPLES_EXPORT FlexLayoutExample : public LayoutExampleBase {
   Combobox* orientation_ = nullptr;
   Combobox* main_axis_alignment_ = nullptr;
   Combobox* cross_axis_alignment_ = nullptr;
+  Textfield* between_child_spacing_ = nullptr;
   Checkbox* collapse_margins_ = nullptr;
-  Textfield* interior_margin_[4] = {nullptr, nullptr, nullptr, nullptr};
-  Textfield* default_child_margins_[4] = {nullptr, nullptr, nullptr, nullptr};
+  InsetTextfields interior_margin_;
+  InsetTextfields default_child_margins_;
+  Checkbox* ignore_default_main_axis_margins_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(FlexLayoutExample);
 };

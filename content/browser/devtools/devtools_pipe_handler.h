@@ -50,7 +50,7 @@ class DevToolsPipeHandler : public DevToolsAgentHostClient {
   int read_fd_;
   int write_fd_;
   bool shutting_down_ = false;
-  base::WeakPtrFactory<DevToolsPipeHandler> weak_factory_;
+  base::WeakPtrFactory<DevToolsPipeHandler> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DevToolsPipeHandler);
 };

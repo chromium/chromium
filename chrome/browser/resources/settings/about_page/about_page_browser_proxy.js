@@ -27,20 +27,19 @@ let ChannelInfo;
 
 /**
  * @typedef {{
- *   arcVersion: string,
- *   osFirmware: string,
- *   osVersion: string,
- * }}
- */
-let VersionInfo;
-
-/**
- * @typedef {{
  *   version: (string|undefined),
  *   size: (string|undefined),
  * }}
  */
 let AboutPageUpdateInfo;
+
+/**
+ * @typedef {{
+ *   hasEndOfLife: (boolean|undefined),
+ *   eolMessageWithMonthAndYear: (string|undefined),
+ * }}
+ */
+let EndOfLifeInfo;
 
 /**
  * Enumeration of all possible browser channels.
@@ -153,6 +152,12 @@ cr.define('settings', function() {
      */
     refreshUpdateStatus() {}
 
+    // <if expr="chromeos">
+    /** Opens the release notes app. */
+    launchReleaseNotes() {}
+    // </if>
+
+
     /** Opens the help page. */
     openHelpPage() {}
 
@@ -165,6 +170,9 @@ cr.define('settings', function() {
     // </if>
 
     // <if expr="chromeos">
+    /** Opens the OS help page. */
+    openOsHelpPage() {}
+
     /**
      * Checks for available update and applies if it exists.
      */
@@ -191,18 +199,15 @@ cr.define('settings', function() {
     /** @return {!Promise<!ChannelInfo>} */
     getChannelInfo() {}
 
-    /** @return {!Promise<!VersionInfo>} */
-    getVersionInfo() {}
-
     /** @return {!Promise<?RegulatoryInfo>} */
     getRegulatoryInfo() {}
 
     /**
      * Checks if the device has reached end-of-life status and will no longer
      * receive updates.
-     * @return {!Promise<boolean>}
+     * @return {!Promise<!EndOfLifeInfo>}
      */
-    getHasEndOfLife() {}
+    getEndOfLifeInfo() {}
 
     /**
      * Request TPM firmware update status from the browser. It results in one or
@@ -216,6 +221,20 @@ cr.define('settings', function() {
      * Triggers setting up auto-updates for all users.
      */
     promoteUpdater() {}
+    // </if>
+
+    // <if expr="chromeos">
+    /**
+     * Checks if the device has release notes enabled.
+     * @return {!Promise<boolean>}
+     */
+    getEnabledReleaseNotes() {}
+
+    /**
+     * Checks if the device is connected to the internet.
+     * @return {!Promise<boolean>}
+     */
+    checkInternetConnection() {}
     // </if>
   }
 
@@ -242,6 +261,11 @@ cr.define('settings', function() {
     // </if>
 
     /** @override */
+    launchReleaseNotes() {
+      chrome.send('launchReleaseNotes');
+    }
+
+    /** @override */
     openHelpPage() {
       chrome.send('openHelpPage');
     }
@@ -255,6 +279,11 @@ cr.define('settings', function() {
     // </if>
 
     // <if expr="chromeos">
+    /** @override */
+    openOsHelpPage() {
+      chrome.send('openOsHelpPage');
+    }
+
     /** @override */
     requestUpdate() {
       chrome.send('requestUpdate');
@@ -276,18 +305,23 @@ cr.define('settings', function() {
     }
 
     /** @override */
-    getVersionInfo() {
-      return cr.sendWithPromise('getVersionInfo');
-    }
-
-    /** @override */
     getRegulatoryInfo() {
       return cr.sendWithPromise('getRegulatoryInfo');
     }
 
     /** @override */
-    getHasEndOfLife() {
-      return cr.sendWithPromise('getHasEndOfLife');
+    getEndOfLifeInfo() {
+      return cr.sendWithPromise('getEndOfLifeInfo');
+    }
+
+    /** @override */
+    getEnabledReleaseNotes() {
+      return cr.sendWithPromise('getEnabledReleaseNotes');
+    }
+
+    /** @override */
+    checkInternetConnection() {
+      return cr.sendWithPromise('checkInternetConnection');
     }
 
     /** @override */

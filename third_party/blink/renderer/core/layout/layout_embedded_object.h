@@ -32,7 +32,7 @@ namespace blink {
 // plugins. For example, <embed src="foo.html"> does not invoke a plugin.
 class LayoutEmbeddedObject final : public LayoutEmbeddedContent {
  public:
-  LayoutEmbeddedObject(Element*);
+  LayoutEmbeddedObject(HTMLFrameOwnerElement*);
   ~LayoutEmbeddedObject() override;
 
   enum PluginAvailability {
@@ -51,7 +51,7 @@ class LayoutEmbeddedObject final : public LayoutEmbeddedContent {
 
  private:
   void PaintReplaced(const PaintInfo&,
-                     const LayoutPoint& paint_offset) const final;
+                     const PhysicalOffset& paint_offset) const final;
 
   void UpdateLayout() final;
 

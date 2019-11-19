@@ -4,6 +4,7 @@
 
 #include "chrome/common/chrome_constants.h"
 
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/common/chrome_version.h"
 
@@ -11,9 +12,9 @@
 
 #if defined(OS_MACOSX)
 #define CHROMIUM_PRODUCT_STRING "Chromium"
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #define PRODUCT_STRING "Google Chrome"
-#elif defined(CHROMIUM_BUILD)
+#elif BUILDFLAG(CHROMIUM_BRANDING)
 #define PRODUCT_STRING "Chromium"
 #else
 #error Unknown branding
@@ -122,18 +123,20 @@ const base::FilePath::CharType kFrameworkExecutableName[] =
 
 #if defined(OS_WIN)
 const base::FilePath::CharType kBrowserResourcesDll[] = FPL("chrome.dll");
+// Only relevant if building with is_multi_dll_chrome=true.
+const base::FilePath::CharType kChildDll[] = FPL("chrome_child.dll");
+const base::FilePath::CharType kElfDll[] = FPL("chrome_elf.dll");
 const base::FilePath::CharType kStatusTrayWindowClass[] =
     FPL("Chrome_StatusTrayWindow");
 #endif  // defined(OS_WIN)
 
-const char    kInitialProfile[] = "Default";
-const char    kMultiProfileDirPrefix[] = "Profile ";
+const char kInitialProfile[] = "Default";
+const char kMultiProfileDirPrefix[] = "Profile ";
 const base::FilePath::CharType kGuestProfileDir[] = FPL("Guest Profile");
 const base::FilePath::CharType kSystemProfileDir[] = FPL("System Profile");
 
 // filenames
 const base::FilePath::CharType kCacheDirname[] = FPL("Cache");
-const base::FilePath::CharType kChannelIDFilename[] = FPL("Origin Bound Certs");
 const base::FilePath::CharType kCookieFilename[] = FPL("Cookies");
 const base::FilePath::CharType kCRLSetFilename[] =
     FPL("Certificate Revocation Lists");
@@ -149,10 +152,14 @@ const base::FilePath::CharType kFeatureEngagementTrackerStorageDirname[] =
     FPL("Feature Engagement Tracker");
 const base::FilePath::CharType kFirstRunSentinel[] = FPL("First Run");
 const base::FilePath::CharType kGCMStoreDirname[] = FPL("GCM Store");
+const base::FilePath::CharType kHeavyAdInterventionOptOutDBFilename[] =
+    FPL("heavy_ad_intervention_opt_out.db");
 const base::FilePath::CharType kLocalStateFilename[] = FPL("Local State");
 const base::FilePath::CharType kMediaCacheDirname[] = FPL("Media Cache");
 const base::FilePath::CharType kNetworkPersistentStateFilename[] =
     FPL("Network Persistent State");
+const base::FilePath::CharType kNotificationSchedulerStorageDirname[] =
+    FPL("Notification Scheduler");
 const base::FilePath::CharType kOfflinePageArchivesDirname[] =
     FPL("Offline Pages/archives");
 const base::FilePath::CharType kOfflinePageMetadataDirname[] =
@@ -161,8 +168,6 @@ const base::FilePath::CharType kOfflinePagePrefetchStoreDirname[] =
     FPL("Offline Pages/prefech_store");
 const base::FilePath::CharType kOfflinePageRequestQueueDirname[] =
     FPL("Offline Pages/request_queue");
-const base::FilePath::CharType kPageLoadCappingOptOutDBFilename[] =
-    FPL("page_load_capping_opt_out.db");
 const base::FilePath::CharType kPreferencesFilename[] = FPL("Preferences");
 const base::FilePath::CharType kPreviewsOptOutDBFilename[] =
     FPL("previews_opt_out.db");
@@ -179,6 +184,9 @@ const base::FilePath::CharType kSupervisedUserSettingsFilename[] =
     FPL("Managed Mode Settings");
 const base::FilePath::CharType kThemePackFilename[] = FPL("Cached Theme.pak");
 const base::FilePath::CharType kWebAppDirname[] = FPL("Web Applications");
+// Only use if the ENABLE_REPORTING build flag is true
+const base::FilePath::CharType kReportingAndNelStoreFilename[] =
+    FPL("Reporting and NEL");
 
 #if defined(OS_WIN)
 const base::FilePath::CharType kJumpListIconDirname[] = FPL("JumpListIcons");
@@ -210,6 +218,7 @@ const int kHighestRendererOomScore = 1000;
 const char kProfileDirPrefix[] = "u-";
 const char kLegacyProfileDir[] = "user";
 const char kTestUserProfileDir[] = "test-user";
+const char kLockScreenAppProfile[] = "LockScreenAppsProfile";
 #endif
 
 // This GUID is associated with any 'don't ask me again' settings that the

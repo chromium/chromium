@@ -211,9 +211,9 @@ int GetWifiOptions() {
   if (result != ERROR_SUCCESS)
     return -1;
 
-  WLAN_INTERFACE_INFO_LIST* interface_list_ptr = NULL;
+  WLAN_INTERFACE_INFO_LIST* interface_list_ptr = nullptr;
   result =
-      wlanapi.enum_interfaces_func(client.Get(), NULL, &interface_list_ptr);
+      wlanapi.enum_interfaces_func(client.Get(), nullptr, &interface_list_ptr);
   if (result != ERROR_SUCCESS)
     return -1;
   std::unique_ptr<WLAN_INTERFACE_INFO_LIST, internal::WlanApiDeleter>
@@ -227,7 +227,7 @@ int GetWifiOptions() {
     result =
         wlanapi.query_interface_func(client.Get(), &info->InterfaceGuid,
                                      wlan_intf_opcode_background_scan_enabled,
-                                     NULL, &data_size, &data, NULL);
+                                     nullptr, &data_size, &data, nullptr);
     if (result != ERROR_SUCCESS)
       continue;
     if (!read_int_or_bool(data_size, data)) {
@@ -237,7 +237,7 @@ int GetWifiOptions() {
 
     result = wlanapi.query_interface_func(client.Get(), &info->InterfaceGuid,
                                           wlan_intf_opcode_media_streaming_mode,
-                                          NULL, &data_size, &data, NULL);
+                                          nullptr, &data_size, &data, nullptr);
     if (result != ERROR_SUCCESS)
       continue;
     if (read_int_or_bool(data_size, data)) {

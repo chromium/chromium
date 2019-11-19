@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/logging.h"
+#include "base/numerics/ranges.h"
 #include "components/nacl/renderer/plugin/plugin.h"
 #include "components/nacl/renderer/plugin/plugin_error.h"
 #include "components/nacl/renderer/plugin/pnacl_translate_thread.h"
@@ -65,7 +66,7 @@ PnaclCoordinator* PnaclCoordinator::BitcodeToNative(
 
   nacl::PPBNaClPrivate::SetPNaClStartTime(plugin->pp_instance());
   int cpus = nacl::PPBNaClPrivate::GetNumberOfProcessors();
-  coordinator->num_threads_ = std::min(4, std::max(1, cpus));
+  coordinator->num_threads_ = base::ClampToRange(cpus, 1, 4);
   if (pnacl_options.use_subzero) {
     coordinator->split_module_count_ = 1;
   } else {

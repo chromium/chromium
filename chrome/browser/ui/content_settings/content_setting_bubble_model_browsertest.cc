@@ -8,6 +8,7 @@
 #include "base/files/file_path.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/content_settings/chrome_content_settings_utils.h"
 #include "chrome/browser/content_settings/tab_specific_content_settings.h"
 #include "chrome/browser/ui/browser.h"
@@ -16,11 +17,11 @@
 #include "chrome/browser/ui/content_settings/content_setting_bubble_model.h"
 #include "chrome/browser/ui/content_settings/fake_owner.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/network_session_configurator/common/network_switches.h"
-#include "components/rappor/test_rappor_service.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -28,17 +29,23 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "ui/events/event_constants.h"
 
-const base::FilePath::CharType kDocRoot[] =
-    FILE_PATH_LITERAL("chrome/test/data");
-
 class ContentSettingBubbleModelMixedScriptTest : public InProcessBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    feature_list.InitWithFeatures(
+        /* enabled_features */ {},
+        /* disabled_features */ {blink::features::kMixedContentAutoupgrade,
+                                 features::kMixedContentSiteSetting});
+  }
+
  protected:
   void SetUpInProcessBrowserTestFixture() override {
     https_server_.reset(
         new net::EmbeddedTestServer(net::EmbeddedTestServer::TYPE_HTTPS));
-    https_server_->ServeFilesFromSourceDirectory(base::FilePath(kDocRoot));
+    https_server_->ServeFilesFromSourceDirectory(GetChromeTestDataDir());
     ASSERT_TRUE(https_server_->Start());
   }
 
@@ -48,6 +55,7 @@ class ContentSettingBubbleModelMixedScriptTest : public InProcessBrowserTest {
   }
 
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
+  base::test::ScopedFeatureList feature_list;
 };
 
 // Tests that a MIXEDSCRIPT type ContentSettingBubbleModel sends appropriate
@@ -61,14 +69,14 @@ IN_PROC_BROWSER_TEST_F(ContentSettingBubbleModelMixedScriptTest, MainFrame) {
   ui_test_utils::NavigateToURL(browser(), url);
 
   EXPECT_TRUE(GetActiveTabSpecificContentSettings()->IsContentBlocked(
-      CONTENT_SETTINGS_TYPE_MIXEDSCRIPT));
+      ContentSettingsType::MIXEDSCRIPT));
 
   // Emulate link clicking on the mixed script bubble.
   std::unique_ptr<ContentSettingBubbleModel> model(
       ContentSettingBubbleModel::CreateContentSettingBubbleModel(
           browser()->content_setting_bubble_model_delegate(),
           browser()->tab_strip_model()->GetActiveWebContents(),
-          CONTENT_SETTINGS_TYPE_MIXEDSCRIPT));
+          ContentSettingsType::MIXEDSCRIPT));
   model->OnCustomLinkClicked();
 
   // Wait for reload
@@ -77,42 +85,24 @@ IN_PROC_BROWSER_TEST_F(ContentSettingBubbleModelMixedScriptTest, MainFrame) {
   observer.Wait();
 
   EXPECT_FALSE(GetActiveTabSpecificContentSettings()->IsContentBlocked(
-      CONTENT_SETTINGS_TYPE_MIXEDSCRIPT));
+      ContentSettingsType::MIXEDSCRIPT));
 }
 
 class ContentSettingsMixedScriptIgnoreCertErrorsTest
     : public ContentSettingBubbleModelMixedScriptTest {
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
+    ContentSettingBubbleModelMixedScriptTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
-  }
-
-  void SetUpOnMainThread() override {
-    ContentSettingBubbleModelMixedScriptTest::SetUpOnMainThread();
-    // Rappor treats local hostnames a little bit special (e.g. records
-    // "127.0.0.1" as "localhost"), so use a non-local hostname for
-    // convenience.
-    host_resolver()->AddRule("*", "127.0.0.1");
   }
 };
 
 // Tests that a MIXEDSCRIPT type ContentSettingBubbleModel records UMA
-// and Rappor metrics when the content is allowed to run.
-//
-// This test fixture sets up the browser to ignore certificate errors,
-// so that a non-matching, non-local hostname can be used for the
-// test. This is because Rappor treats local hostnames as slightly
-// special, so it's a little nicer to test with a non-local hostname.
+// metrics when the content is allowed to run.
 IN_PROC_BROWSER_TEST_F(ContentSettingsMixedScriptIgnoreCertErrorsTest,
                        MainFrameMetrics) {
   GURL url(https_server_->GetURL("/content_setting_bubble/mixed_script.html"));
 
-  GURL::Replacements replace_host;
-  replace_host.SetHostStr("example.test");
-  url = url.ReplaceComponents(replace_host);
-
-  rappor::TestRapporServiceImpl rappor_service;
-  EXPECT_EQ(0, rappor_service.GetReportsCount());
   base::HistogramTester histograms;
   histograms.ExpectTotalCount("ContentSettings.MixedScript", 0);
 
@@ -121,15 +111,14 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsMixedScriptIgnoreCertErrorsTest,
   ui_test_utils::NavigateToURL(browser(), url);
 
   EXPECT_TRUE(GetActiveTabSpecificContentSettings()->IsContentBlocked(
-      CONTENT_SETTINGS_TYPE_MIXEDSCRIPT));
+      ContentSettingsType::MIXEDSCRIPT));
 
   // Emulate link clicking on the mixed script bubble.
   std::unique_ptr<ContentSettingBubbleModel> model(
       ContentSettingBubbleModel::CreateContentSettingBubbleModel(
           browser()->content_setting_bubble_model_delegate(),
           browser()->tab_strip_model()->GetActiveWebContents(),
-          CONTENT_SETTINGS_TYPE_MIXEDSCRIPT));
-  model->SetRapporServiceImplForTesting(&rappor_service);
+          ContentSettingsType::MIXEDSCRIPT));
   model->OnCustomLinkClicked();
 
   // Wait for reload
@@ -138,19 +127,12 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsMixedScriptIgnoreCertErrorsTest,
   observer.Wait();
 
   EXPECT_FALSE(GetActiveTabSpecificContentSettings()->IsContentBlocked(
-      CONTENT_SETTINGS_TYPE_MIXEDSCRIPT));
+      ContentSettingsType::MIXEDSCRIPT));
 
-  // Check that the UMA and Rappor counts are as expected.
+  // Check that the UMA counts are as expected.
   histograms.ExpectBucketCount(
       "ContentSettings.MixedScript",
       content_settings::MIXED_SCRIPT_ACTION_CLICKED_ALLOW, 1);
-  EXPECT_EQ(1, rappor_service.GetReportsCount());
-  std::string sample;
-  rappor::RapporType type;
-  EXPECT_TRUE(rappor_service.GetRecordedSampleForMetric(
-      "ContentSettings.MixedScript.UserClickedAllow", &sample, &type));
-  EXPECT_EQ(url.host(), sample);
-  EXPECT_EQ(rappor::ETLD_PLUS_ONE_RAPPOR_TYPE, type);
 }
 
 // Tests that a MIXEDSCRIPT type ContentSettingBubbleModel does not work
@@ -166,7 +148,7 @@ IN_PROC_BROWSER_TEST_F(ContentSettingBubbleModelMixedScriptTest, Iframe) {
   // of active subresources in an iframe, so the content type should not
   // be marked as blocked.
   EXPECT_FALSE(GetActiveTabSpecificContentSettings()->IsContentBlocked(
-      CONTENT_SETTINGS_TYPE_MIXEDSCRIPT));
+      ContentSettingsType::MIXEDSCRIPT));
 }
 
 class ContentSettingBubbleModelMediaStreamTest : public InProcessBrowserTest {
@@ -239,7 +221,7 @@ class ContentSettingBubbleModelPopupTest : public InProcessBrowserTest {
   void SetUpInProcessBrowserTestFixture() override {
     https_server_.reset(
         new net::EmbeddedTestServer(net::EmbeddedTestServer::TYPE_HTTPS));
-    https_server_->ServeFilesFromSourceDirectory(base::FilePath(kDocRoot));
+    https_server_->ServeFilesFromSourceDirectory(GetChromeTestDataDir());
     ASSERT_TRUE(https_server_->Start());
   }
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
@@ -263,7 +245,7 @@ IN_PROC_BROWSER_TEST_F(ContentSettingBubbleModelPopupTest,
       ContentSettingBubbleModel::CreateContentSettingBubbleModel(
           browser()->content_setting_bubble_model_delegate(),
           browser()->tab_strip_model()->GetActiveWebContents(),
-          CONTENT_SETTINGS_TYPE_POPUPS));
+          ContentSettingsType::POPUPS));
   std::unique_ptr<FakeOwner> owner =
       FakeOwner::Create(*model, kDisallowButtonIndex);
 
@@ -293,6 +275,7 @@ class ContentSettingBubbleModelMixedScriptOopifTest
     : public ContentSettingBubbleModelMixedScriptTest {
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
+    ContentSettingBubbleModelMixedScriptTest::SetUpCommandLine(command_line);
     content::IsolateAllSitesForTesting(command_line);
   }
 
@@ -325,7 +308,7 @@ IN_PROC_BROWSER_TEST_F(ContentSettingBubbleModelMixedScriptOopifTest,
   // executed.
   ui_test_utils::NavigateToURL(browser(), main_url);
   EXPECT_TRUE(GetActiveTabSpecificContentSettings()->IsContentBlocked(
-      CONTENT_SETTINGS_TYPE_MIXEDSCRIPT));
+      ContentSettingsType::MIXEDSCRIPT));
 
   std::string title;
   content::WebContents* web_contents =
@@ -340,13 +323,13 @@ IN_PROC_BROWSER_TEST_F(ContentSettingBubbleModelMixedScriptOopifTest,
   std::unique_ptr<ContentSettingBubbleModel> model(
       ContentSettingBubbleModel::CreateContentSettingBubbleModel(
           browser()->content_setting_bubble_model_delegate(), web_contents,
-          CONTENT_SETTINGS_TYPE_MIXEDSCRIPT));
+          ContentSettingsType::MIXEDSCRIPT));
   model->OnCustomLinkClicked();
 
   // Wait for reload and verify that mixed content is allowed.
   observer.Wait();
   EXPECT_FALSE(GetActiveTabSpecificContentSettings()->IsContentBlocked(
-      CONTENT_SETTINGS_TYPE_MIXEDSCRIPT));
+      ContentSettingsType::MIXEDSCRIPT));
 
   // Ensure that the script actually executed by checking the title of the
   // document in the subframe.

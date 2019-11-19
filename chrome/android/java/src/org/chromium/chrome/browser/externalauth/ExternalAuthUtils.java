@@ -10,10 +10,10 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Binder;
-import android.os.StrictMode;
-import android.os.SystemClock;
-import android.support.annotation.WorkerThread;
 import android.text.TextUtils;
+
+import androidx.annotation.VisibleForTesting;
+import androidx.annotation.WorkerThread;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -21,12 +21,11 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
-import org.chromium.base.ThreadUtils;
-import org.chromium.base.VisibleForTesting;
-import org.chromium.base.metrics.CachedMetrics.SparseHistogramSample;
-import org.chromium.base.metrics.CachedMetrics.TimesHistogramSample;
+import org.chromium.base.StrictModeContext;
+import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.ChromeSwitches;
+import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 /**
  * Utility class for external authentication tools.
@@ -39,11 +38,6 @@ public class ExternalAuthUtils {
     private static final String TAG = "ExternalAuthUtils";
 
     private static final ExternalAuthUtils sInstance = AppHooks.get().createExternalAuthUtils();
-
-    private final SparseHistogramSample mConnectionResultHistogramSample =
-            new SparseHistogramSample("GooglePlayServices.ConnectionResult");
-    private final TimesHistogramSample mRegistrationTimeHistogramSample =
-            new TimesHistogramSample("Android.StrictMode.CheckGooglePlayServicesTime");
 
     /**
      * Returns the singleton instance of ExternalAuthUtils, creating it if needed.
@@ -188,7 +182,6 @@ public class ExternalAuthUtils {
 
         Context context = ContextUtils.getApplicationContext();
         final int resultCode = checkGooglePlayServicesAvailable(context);
-        recordConnectionResult(resultCode);
         if (resultCode == ConnectionResult.SUCCESS) return true;
         // resultCode is some kind of error.
         Log.v(TAG, "Unable to use Google Play Services: %s", describeError(resultCode));
@@ -199,7 +192,7 @@ public class ExternalAuthUtils {
                     errorHandler.handleError(context, resultCode);
                 }
             };
-            ThreadUtils.runOnUiThread(errorHandlerTask);
+            PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, errorHandlerTask);
         }
         return false;
     }
@@ -250,15 +243,6 @@ public class ExternalAuthUtils {
     }
 
     /**
-     * Record the result of a connection attempt. The default implementation records via a UMA
-     * histogram.
-     * @param resultCode the result from {@link #checkGooglePlayServicesAvailable(Context)}
-     */
-    protected void recordConnectionResult(final int resultCode) {
-        mConnectionResultHistogramSample.record(resultCode);
-    }
-
-    /**
      * Invokes whatever external code is necessary to check if Google Play Services is available
      * and returns the code produced by the attempt. Subclasses can override to force the behavior
      * one way or another, or to change the way that the check is performed.
@@ -266,16 +250,9 @@ public class ExternalAuthUtils {
      * @return The code produced by calling the external code
      */
     protected int checkGooglePlayServicesAvailable(final Context context) {
-        // Temporarily allowing disk access. TODO: Fix. See http://crbug.com/577190
-        StrictMode.ThreadPolicy oldPolicy = StrictMode.allowThreadDiskWrites();
-        try {
-            long time = SystemClock.elapsedRealtime();
-            int isAvailable =
-                    GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(context);
-            mRegistrationTimeHistogramSample.record(SystemClock.elapsedRealtime() - time);
-            return isAvailable;
-        } finally {
-            StrictMode.setThreadPolicy(oldPolicy);
+        // TODO(crbug.com/577190): Temporarily allowing disk access until more permanent fix is in.
+        try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
+            return GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(context);
         }
     }
 

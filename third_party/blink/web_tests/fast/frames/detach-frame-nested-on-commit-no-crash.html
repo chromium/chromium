@@ -9,11 +9,13 @@ window.jsTestIsAsync = true;
 
 function maybeStart()
 {
-    window.secondFrame.contentWindow.onunload = function() {
-        document.documentElement.removeChild(window.bodyEl);
-        setTimeout(finishJSTest, 10);
-  };
-  window.firstFrame.src = 'about:blank';
+    setTimeout(function() {
+        window.secondFrame.contentWindow.onunload = function() {
+            document.documentElement.removeChild(window.bodyEl);
+            setTimeout(finishJSTest, 10);
+        };
+        window.firstFrame.src = 'about:blank';
+    }, 0);
 }
 function runTest()
 {

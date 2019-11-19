@@ -8,9 +8,16 @@
 #import <UIKit/UIKit.h>
 
 @interface UILabel (CRUILabelAttributeUtils)
-// The height of the label.
+// The line height for the text in the receiver.
 // Make sure to create a LabelObserver for this label and start observing before
-// setting this property.
+// setting this property. When the last LabelObserver is removed for a label
+// where this property is set, there is no expected behavior for the line
+// height on further text changes -- it may be retained or overwritten.
+//
+// TODO(crbug.com/980510) : When iOS12 support is removed, determine if this
+//   property is still needed, or if (under iOS13+) setting the line height
+//   in a paragraph style persits across label frame changes.
+//
 @property(nonatomic, assign, setter=cr_setLineHeight:) CGFloat cr_lineHeight;
 
 @end

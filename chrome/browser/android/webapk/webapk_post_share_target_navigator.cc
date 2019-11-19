@@ -12,11 +12,10 @@
 #include "base/android/jni_string.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversion_utils.h"
+#include "chrome/android/chrome_jni_headers/WebApkPostShareTargetNavigator_jni.h"
 #include "content/public/browser/web_contents.h"
-#include "jni/WebApkPostShareTargetNavigator_jni.h"
 #include "net/base/escape.h"
 #include "net/base/mime_util.h"
-#include "services/network/public/cpp/resource_request_body.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
@@ -40,26 +39,89 @@ std::string PercentEscapeString(const std::string& unescaped_string) {
   return escaped_oss.str();
 }
 
-std::string ComputeMultipartBody(const std::vector<std::string>& names,
-                                 const std::vector<std::string>& values,
-                                 const std::vector<std::string>& filenames,
-                                 const std::vector<std::string>& types,
-                                 const std::string& boundary) {
+void AddFile(const std::string& value_name,
+             const std::string& file_uri,
+             const std::string& file_name,
+             const std::string& content_type,
+             const std::string& boundary,
+             scoped_refptr<network::ResourceRequestBody> result) {
+  const char delimiter[] = "\r\n";
+  const size_t delimiter_length = 2;
+  std::string mime_header;
+  // First line is the boundary.
+  mime_header.append("--" + boundary + delimiter);
+  // Next line is the Content-disposition.
+  mime_header.append("Content-Disposition: form-data; name=\"" + value_name +
+                     "\"");
+  if (!file_name.empty()) {
+    mime_header.append("; filename=\"" + file_name + "\"");
+  }
+  mime_header.append(delimiter);
+
+  if (!content_type.empty()) {
+    // If Content-type is specified, the next line is that.
+    mime_header.append("Content-Type: " + content_type + delimiter);
+  }
+  // Leave an empty line before appending the file_uri.
+  mime_header.append(delimiter);
+
+  result->AppendBytes(mime_header.c_str(), mime_header.length());
+
+  result->AppendFileRange(base::FilePath(file_uri), 0, -1, base::Time());
+
+  result->AppendBytes(delimiter, delimiter_length);
+}
+
+void AddPlainText(const std::string& value_name,
+                  const std::string& value,
+                  const std::string& file_name,
+                  const std::string& content_type,
+                  const std::string& boundary,
+                  scoped_refptr<network::ResourceRequestBody> result) {
+  std::string item;
+  if (file_name.empty()) {
+    net::AddMultipartValueForUpload(value_name, value, boundary, content_type,
+                                    &item);
+  } else {
+    net::AddMultipartValueForUploadWithFileName(value_name, file_name, value,
+                                                boundary, content_type, &item);
+  }
+  result->AppendBytes(item.c_str(), item.length());
+}
+
+scoped_refptr<network::ResourceRequestBody> ComputeMultipartBody(
+    const std::vector<std::string>& names,
+    const std::vector<std::string>& values,
+    const std::vector<bool>& is_value_file_uris,
+    const std::vector<std::string>& filenames,
+    const std::vector<std::string>& types,
+    const std::string& boundary) {
   size_t num_files = names.size();
-  if (num_files != values.size() || num_files != filenames.size() ||
-      num_files != types.size()) {
-    // The length of |names|, |values|, |filenames|, and |types| should always
-    // be the same for multipart POST. This should never happen.
-    return "";
+  if (num_files != values.size() || num_files != is_value_file_uris.size() ||
+      num_files != filenames.size() || num_files != types.size()) {
+    // The length of all arrays should always be the same for multipart POST.
+    // This should never happen.
+    return nullptr;
+  }
+  scoped_refptr<network::ResourceRequestBody> result =
+      new network::ResourceRequestBody();
+
+  for (size_t i = 0; i < num_files; i++) {
+    if (is_value_file_uris[i]) {
+      AddFile(PercentEscapeString(names[i]), values[i],
+              PercentEscapeString(filenames[i]), types[i], boundary, result);
+    } else {
+      AddPlainText(PercentEscapeString(names[i]), values[i],
+                   PercentEscapeString(filenames[i]), types[i], boundary,
+                   result);
+    }
   }
 
-  std::string body;
-  for (size_t i = 0; i < num_files; i++)
-    net::AddMultipartValueForUploadWithFileName(
-        PercentEscapeString(names[i]), PercentEscapeString(filenames[i]),
-        values[i], boundary, types[i], &body);
-  net::AddMultipartFinalDelimiterForUpload(boundary, &body);
-  return body;
+  std::string final_delimiter;
+  net::AddMultipartFinalDelimiterForUpload(boundary, &final_delimiter);
+  result->AppendBytes(final_delimiter.c_str(), final_delimiter.length());
+
+  return result;
 }
 
 std::string ComputeUrlEncodedBody(const std::vector<std::string>& names,
@@ -76,29 +138,28 @@ std::string ComputeUrlEncodedBody(const std::vector<std::string>& names,
   return application_body_oss.str();
 }
 
-void NavigateShareTargetPost(const std::string& body,
-                             const std::string& header_list,
-                             const GURL& share_target_gurl,
-                             content::WebContents* web_contents) {
+void NavigateShareTargetPost(
+    const scoped_refptr<network::ResourceRequestBody>& post_data,
+    const std::string& header_list,
+    const GURL& share_target_gurl,
+    content::WebContents* web_contents) {
   content::OpenURLParams open_url_params(
       share_target_gurl, content::Referrer(),
       WindowOpenDisposition::CURRENT_TAB,
       ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL,
       false /* is_renderer_initiated */);
-  open_url_params.post_data = network::ResourceRequestBody::CreateFromBytes(
-      body.c_str(), body.length());
-  open_url_params.uses_post = true;
+  open_url_params.post_data = post_data;
   open_url_params.extra_headers = header_list;
   web_contents->OpenURL(open_url_params);
 }
-
 }  // namespace webapk
 
-void JNI_WebApkPostShareTargetNavigator_LoadViewForShareTargetPost(
+static void JNI_WebApkPostShareTargetNavigator_NativeLoadViewForShareTargetPost(
     JNIEnv* env,
     const jboolean java_is_multipart_encoding,
     const JavaParamRef<jobjectArray>& java_names,
     const JavaParamRef<jobjectArray>& java_values,
+    const JavaParamRef<jbooleanArray>& java_is_value_file_uris,
     const JavaParamRef<jobjectArray>& java_filenames,
     const JavaParamRef<jobjectArray>& java_types,
     const JavaParamRef<jstring>& java_url,
@@ -107,32 +168,36 @@ void JNI_WebApkPostShareTargetNavigator_LoadViewForShareTargetPost(
   std::vector<std::string> values;
   std::vector<std::string> filenames;
   std::vector<std::string> types;
+  std::vector<bool> is_value_file_uris;
 
   bool is_multipart_encoding = static_cast<bool>(java_is_multipart_encoding);
   base::android::AppendJavaStringArrayToStringVector(env, java_names, &names);
-  base::android::JavaArrayOfByteArrayToStringVector(env, java_values, &values);
+  base::android::AppendJavaStringArrayToStringVector(env, java_values, &values);
+  base::android::JavaBooleanArrayToBoolVector(env, java_is_value_file_uris,
+                                              &is_value_file_uris);
   base::android::AppendJavaStringArrayToStringVector(env, java_filenames,
                                                      &filenames);
   base::android::AppendJavaStringArrayToStringVector(env, java_types, &types);
 
   GURL share_target_gurl(base::android::ConvertJavaStringToUTF8(java_url));
 
-  std::string body;
+  scoped_refptr<network::ResourceRequestBody> post_data;
   std::string header_list;
-
   if (is_multipart_encoding) {
     std::string boundary = net::GenerateMimeMultipartBoundary();
-    body =
-        webapk::ComputeMultipartBody(names, values, filenames, types, boundary);
     header_list = base::StringPrintf(
         "Content-Type: multipart/form-data; boundary=%s\r\n", boundary.c_str());
+    post_data = webapk::ComputeMultipartBody(names, values, is_value_file_uris,
+                                             filenames, types, boundary);
   } else {
-    body = webapk::ComputeUrlEncodedBody(names, values);
+    std::string body = webapk::ComputeUrlEncodedBody(names, values);
     header_list = "Content-Type: application/x-www-form-urlencoded\r\n";
+    post_data = network::ResourceRequestBody::CreateFromBytes(body.c_str(),
+                                                              body.length());
   }
 
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(java_web_contents);
-  webapk::NavigateShareTargetPost(body, header_list, share_target_gurl,
+  webapk::NavigateShareTargetPost(post_data, header_list, share_target_gurl,
                                   web_contents);
 }

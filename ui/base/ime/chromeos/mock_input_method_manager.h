@@ -5,6 +5,7 @@
 #ifndef UI_BASE_IME_CHROMEOS_MOCK_INPUT_METHOD_MANAGER_H_
 #define UI_BASE_IME_CHROMEOS_MOCK_INPUT_METHOD_MANAGER_H_
 
+#include "base/component_export.h"
 #include "base/macros.h"
 #include "ui/base/ime/chromeos/input_method_manager.h"
 #include "ui/base/ime/input_method_keyboard_controller.h"
@@ -15,7 +16,7 @@ class InputMethodUtil;
 class ImeKeyboard;
 
 // The mock InputMethodManager for testing.
-class UI_BASE_IME_EXPORT MockInputMethodManager
+class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) MockInputMethodManager
     : public InputMethodManager,
       public ui::InputMethodKeyboardController {
  public:
@@ -97,6 +98,9 @@ class UI_BASE_IME_EXPORT MockInputMethodManager
   std::unique_ptr<InputMethodDescriptors> GetSupportedInputMethods()
       const override;
   void ActivateInputMethodMenuItem(const std::string& key) override;
+  void ConnectInputEngineManager(
+      mojo::PendingReceiver<chromeos::ime::mojom::InputEngineManager> receiver)
+      override;
   bool IsISOLevel5ShiftUsedByCurrentInputMethod() const override;
   bool IsAltGrUsedByCurrentInputMethod() const override;
   ImeKeyboard* GetImeKeyboard() override;

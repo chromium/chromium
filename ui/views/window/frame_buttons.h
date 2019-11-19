@@ -8,11 +8,7 @@
 namespace views {
 
 // Identifies what a button in a window frame is.
-enum FrameButton {
-  FRAME_BUTTON_MINIMIZE,
-  FRAME_BUTTON_MAXIMIZE,
-  FRAME_BUTTON_CLOSE
-};
+enum class FrameButton { kMinimize, kMaximize, kClose };
 
 }  // namespace views
 

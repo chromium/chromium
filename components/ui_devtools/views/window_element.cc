@@ -6,6 +6,7 @@
 
 #include "components/ui_devtools/Protocol.h"
 #include "components/ui_devtools/ui_element_delegate.h"
+#include "components/ui_devtools/views/element_utility.h"
 #include "ui/aura/window.h"
 #include "ui/wm/core/window_util.h"
 
@@ -65,9 +66,41 @@ void WindowElement::OnWindowBoundsChanged(aura::Window* window,
   delegate()->OnUIElementBoundsChanged(this);
 }
 
-std::vector<std::pair<std::string, std::string>>
-WindowElement::GetCustomProperties() const {
-  return {};
+std::vector<UIElement::ClassProperties>
+WindowElement::GetCustomPropertiesForMatchedStyle() const {
+  std::vector<UIElement::ClassProperties> ret;
+  std::vector<UIElement::UIProperty> cur_properties;
+
+  ui::Layer* layer = window_->layer();
+  if (layer) {
+    AppendLayerPropertiesMatchedStyle(layer, &cur_properties);
+    ret.emplace_back("Layer", cur_properties);
+    cur_properties.clear();
+  }
+
+  gfx::Rect bounds;
+  GetBounds(&bounds);
+  cur_properties.emplace_back("x", base::NumberToString(bounds.x()));
+  cur_properties.emplace_back("y", base::NumberToString(bounds.y()));
+  cur_properties.emplace_back("width", base::NumberToString(bounds.width()));
+  cur_properties.emplace_back("height", base::NumberToString(bounds.height()));
+
+  std::string state_str =
+      aura::Window::OcclusionStateToString(window_->occlusion_state());
+  // change OcclusionState::UNKNOWN to UNKNOWN
+  state_str = state_str.substr(state_str.find("::") + 2);
+  cur_properties.emplace_back("occlusion-state", state_str);
+  cur_properties.emplace_back("surface",
+                              window_->GetSurfaceId().is_valid()
+                                  ? window_->GetSurfaceId().ToString()
+                                  : "none");
+  cur_properties.emplace_back("capture",
+                              window_->HasCapture() ? "true" : "false");
+  cur_properties.emplace_back(
+      "is-activatable", wm::CanActivateWindow(window_) ? "true" : "false");
+
+  ret.emplace_back("Window", cur_properties);
+  return ret;
 }
 
 void WindowElement::GetBounds(gfx::Rect* bounds) const {
@@ -89,14 +122,9 @@ void WindowElement::SetVisible(bool visible) {
     window_->Hide();
 }
 
-std::unique_ptr<protocol::Array<std::string>> WindowElement::GetAttributes()
-    const {
-  auto attributes = protocol::Array<std::string>::create();
-  attributes->addItem("name");
-  attributes->addItem(window_->GetName());
-  attributes->addItem("active");
-  attributes->addItem(::wm::IsActiveWindow(window_) ? "true" : "false");
-  return attributes;
+std::vector<std::string> WindowElement::GetAttributes() const {
+  return {"name", window_->GetName(), "active",
+          ::wm::IsActiveWindow(window_) ? "true" : "false"};
 }
 
 std::pair<gfx::NativeWindow, gfx::Rect>
@@ -125,6 +153,13 @@ int UIElement::FindUIElementIdForBackendElement<aura::Window>(
       return ui_element_id;
   }
   return 0;
+}
+
+void WindowElement::InitSources() {
+  if (window_->layer()) {
+    AddSource("ui/compositor/layer.h", 0);
+  }
+  AddSource("ui/aura/window.h", 0);
 }
 
 }  // namespace ui_devtools

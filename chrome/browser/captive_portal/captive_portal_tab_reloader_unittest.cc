@@ -538,7 +538,7 @@ TEST_F(CaptivePortalTabReloaderTest, SSLCertErrorLogin) {
   // is created after the TabReloader is notified.
   EXPECT_CALL(tab_reloader(), CheckForCaptivePortal());
   net::SSLInfo ssl_info;
-  ssl_info.SetCertError(net::CERT_STATUS_COMMON_NAME_INVALID);
+  ssl_info.cert_status |= net::CERT_STATUS_COMMON_NAME_INVALID;
   tab_reloader().OnSSLCertError(ssl_info);
   EXPECT_EQ(CaptivePortalTabReloader::STATE_MAYBE_BROKEN_BY_PORTAL,
             tab_reloader().state());

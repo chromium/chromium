@@ -23,9 +23,10 @@ namespace secure_channel {
 // Encapsulates metadata for a pending request for a connection to a remote
 // device. Every PendingConnectionRequestBase starts out active (i.e., there
 // exists an ongoing attempt to create a connection). The client of this class
-// can cancel an active attempt by disconnecting the ConnectionDelegatePtr
-// passed PendingConnectionRequestBase's constructor; likewise, a
-// PendingConnectionRequestBase can become inactive due to connection failures.
+// can cancel an active attempt by disconnecting the
+// mojo::Remote<ConnectionDelegate> passed PendingConnectionRequestBase's
+// constructor; likewise, a PendingConnectionRequestBase can become inactive due
+// to connection failures.
 //
 // Each connection type should implement its own pending request class deriving
 // from PendingConnectionRequestBase.
@@ -53,8 +54,7 @@ class PendingConnectionRequestBase
       : PendingConnectionRequest<FailureDetailType>(delegate,
                                                     connection_priority),
         client_connection_parameters_(std::move(client_connection_parameters)),
-        readable_request_type_for_logging_(readable_request_type_for_logging),
-        weak_ptr_factory_(this) {
+        readable_request_type_for_logging_(readable_request_type_for_logging) {
     client_connection_parameters_->AddObserver(this);
   }
 
@@ -113,7 +113,7 @@ class PendingConnectionRequestBase
 
   bool has_finished_without_connection_ = false;
 
-  base::WeakPtrFactory<PendingConnectionRequestBase> weak_ptr_factory_;
+  base::WeakPtrFactory<PendingConnectionRequestBase> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PendingConnectionRequestBase);
 };

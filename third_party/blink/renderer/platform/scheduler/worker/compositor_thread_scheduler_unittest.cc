@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/platform/scheduler/worker/compositor_thread_scheduler.h"
+#include <algorithm>
 #include <memory>
 #include "base/bind.h"
 #include "base/macros.h"
@@ -15,8 +16,8 @@
 #include "third_party/blink/renderer/platform/scheduler/common/features.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
-using testing::ElementsAreArray;
 using testing::ElementsAre;
+using testing::ElementsAreArray;
 
 namespace blink {
 namespace scheduler {
@@ -39,10 +40,10 @@ class CompositorThreadSchedulerTest : public testing::Test {
     mock_task_runner_ = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
     mock_task_runner_->AdvanceMockTickClock(
         base::TimeDelta::FromMicroseconds(5000));
-
-    scheduler_ = std::make_unique<CompositorThreadScheduler>(
-        base::sequence_manager::SequenceManagerForTest::Create(
-            nullptr, mock_task_runner_, mock_task_runner_->GetMockTickClock()));
+    sequence_manager_ = base::sequence_manager::SequenceManagerForTest::Create(
+        nullptr, mock_task_runner_, mock_task_runner_->GetMockTickClock());
+    scheduler_ =
+        std::make_unique<CompositorThreadScheduler>(sequence_manager_.get());
     scheduler_->Init();
   }
 
@@ -52,6 +53,8 @@ class CompositorThreadSchedulerTest : public testing::Test {
   base::test::ScopedFeatureList feature_list_;
 
   scoped_refptr<base::TestMockTimeTaskRunner> mock_task_runner_;
+  std::unique_ptr<base::sequence_manager::SequenceManagerForTest>
+      sequence_manager_;
   std::unique_ptr<CompositorThreadScheduler> scheduler_;
 
   DISALLOW_COPY_AND_ASSIGN(CompositorThreadSchedulerTest);
@@ -68,14 +71,14 @@ class CompositorThreadInputPriorityTest : public CompositorThreadSchedulerTest {
 
 namespace {
 
-void RunTestTask(std::string name, std::vector<std::string>* log) {
+void RunTestTask(String name, Vector<String>* log) {
   log->push_back(name);
 }
 
 }  // namespace
 
 TEST_F(CompositorThreadInputPriorityTest, HighestPriorityInput) {
-  std::vector<std::string> run_order;
+  Vector<String> run_order;
 
   scheduler_->DefaultTaskQueue()->task_runner()->PostTask(
       FROM_HERE,
@@ -86,8 +89,7 @@ TEST_F(CompositorThreadInputPriorityTest, HighestPriorityInput) {
 
   mock_task_runner_->RunUntilIdle();
 
-  EXPECT_THAT(run_order, testing::ElementsAre(std::string("input"),
-                                              std::string("default")));
+  EXPECT_THAT(run_order, testing::ElementsAre("input", "default"));
 }
 
 class CompositorThreadNoInputPriorityTest
@@ -101,7 +103,7 @@ class CompositorThreadNoInputPriorityTest
 };
 
 TEST_F(CompositorThreadNoInputPriorityTest, InputNotPrioritized) {
-  std::vector<std::string> run_order;
+  Vector<String> run_order;
 
   scheduler_->DefaultTaskQueue()->task_runner()->PostTask(
       FROM_HERE,
@@ -112,8 +114,7 @@ TEST_F(CompositorThreadNoInputPriorityTest, InputNotPrioritized) {
 
   mock_task_runner_->RunUntilIdle();
 
-  EXPECT_THAT(run_order, testing::ElementsAre(std::string("default"),
-                                              std::string("input")));
+  EXPECT_THAT(run_order, testing::ElementsAre("default", "input"));
 }
 }  // namespace compositor_thread_scheduler_unittest
 }  // namespace scheduler

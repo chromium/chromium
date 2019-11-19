@@ -5,9 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TYPED_ARRAYS_DOM_ARRAY_PIECE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TYPED_ARRAYS_DOM_ARRAY_PIECE_H_
 
+#include "third_party/blink/renderer/core/typed_arrays/array_buffer/array_piece.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
-#include "third_party/blink/renderer/platform/wtf/typed_arrays/array_piece.h"
 
 namespace blink {
 
@@ -22,7 +22,7 @@ class ArrayBufferOrArrayBufferView;
 //
 // IMPORTANT: The data contained by ArrayPiece is NOT OWNED, so caution must be
 //            taken to ensure it is kept alive.
-class CORE_EXPORT DOMArrayPiece : public WTF::ArrayPiece {
+class CORE_EXPORT DOMArrayPiece : public ArrayPiece {
   DISALLOW_NEW();
 
  public:
@@ -42,7 +42,7 @@ class CORE_EXPORT DOMArrayPiece : public WTF::ArrayPiece {
                 InitWithUnionOption = kTreatNullAsNull);
 
   bool operator==(const DOMArrayBuffer& other) const {
-    return ByteLength() == other.ByteLength() &&
+    return ByteLength() == other.DeprecatedByteLengthAsUnsigned() &&
            memcmp(Data(), other.Data(), ByteLength()) == 0;
   }
 

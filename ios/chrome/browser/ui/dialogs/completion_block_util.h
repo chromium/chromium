@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_DIALOGS_COMPLETION_BLOCK_UTIL_H_
 #define IOS_CHROME_BROWSER_UI_DIALOGS_COMPLETION_BLOCK_UTIL_H_
 
-#import "ios/web/public/java_script_dialog_callback.h"
+#import <Foundation/Foundation.h>
 
 namespace completion_block_util {
 
@@ -14,6 +14,7 @@ typedef void (^AlertCallback)(void);
 typedef void (^ConfirmCallback)(BOOL isConfirmed);
 typedef void (^PromptCallback)(NSString* input);
 typedef void (^HTTPAuthCallack)(NSString* user, NSString* password);
+typedef void (^DecidePolicyCallback)(BOOL shouldContinue);
 
 // Completion callbacks provided by web// for dialogs have a built-in
 // mechanism that throws an exception if they are deallocated before being
@@ -25,6 +26,8 @@ ConfirmCallback GetSafeJavaScriptConfirmationCompletion(
     ConfirmCallback callback);
 PromptCallback GetSafeJavaScriptPromptCompletion(PromptCallback callback);
 HTTPAuthCallack GetSafeHTTPAuthCompletion(HTTPAuthCallack callback);
+DecidePolicyCallback GetSafeDecidePolicyCompletion(
+    DecidePolicyCallback callback);
 
 }  // completion_block_util
 

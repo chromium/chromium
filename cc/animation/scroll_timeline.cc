@@ -47,25 +47,33 @@ std::unique_ptr<ScrollTimeline> ScrollTimeline::CreateImplInstance() const {
       time_range_, fill_);
 }
 
+bool ScrollTimeline::IsActive(const ScrollTree& scroll_tree,
+                              bool is_active_tree) const {
+  // If pending tree with our scroller hasn't been activated, or the scroller
+  // has been removed (e.g. if it is no longer composited).
+  if ((is_active_tree && !active_id_) || (!is_active_tree && !pending_id_))
+    return false;
+
+  ElementId scroller_id =
+      is_active_tree ? active_id_.value() : pending_id_.value();
+  // The scroller is not in the ScrollTree if it is not currently scrollable
+  // (e.g. has overflow: visible). In this case the timeline is not active.
+  return scroll_tree.FindNodeFromElementId(scroller_id);
+}
+
 base::Optional<base::TimeTicks> ScrollTimeline::CurrentTime(
     const ScrollTree& scroll_tree,
     bool is_active_tree) const {
-  // We may be asked for the CurrentTime before the pending tree with our
-  // scroller has been activated, or after the scroller has been removed (e.g.
-  // if it is no longer composited). In these cases the best we can do is to
-  // return an unresolved time value.
-  if ((is_active_tree && !active_id_) || (!is_active_tree && !pending_id_))
+  // If the timeline is not active return unresolved value by the spec.
+  // https://github.com/WICG/scroll-animations/issues/31
+  // https://wicg.github.io/scroll-animations/#current-time-algorithm
+  if (!IsActive(scroll_tree, is_active_tree))
     return base::nullopt;
 
   ElementId scroller_id =
       is_active_tree ? active_id_.value() : pending_id_.value();
-
-  // The scroller may not be in the ScrollTree if it is not currently scrollable
-  // (e.g. has overflow: visible). By the spec, return an unresolved time value.
   const ScrollNode* scroll_node =
       scroll_tree.FindNodeFromElementId(scroller_id);
-  if (!scroll_node)
-    return base::nullopt;
 
   gfx::ScrollOffset offset =
       scroll_tree.GetPixelSnappedScrollOffset(scroll_node->id);

@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//testing/libfuzzer/fuzzer_test.gni")
+
 static_library("link_header_util") {
   sources = [
     "link_header_util.cc",
@@ -26,4 +28,15 @@ source_set("unit_tests") {
     "//net",
     "//testing/gtest",
   ]
+}
+
+fuzzer_test("link_header_util_fuzzer") {
+  sources = [
+    "link_header_util_fuzzer.cc",
+  ]
+  deps = [
+    ":link_header_util",
+    "//base",
+  ]
+  libfuzzer_options = [ "max_len=65535" ]
 }

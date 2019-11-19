@@ -6,10 +6,25 @@
  * sign in and lock screens.
  */
 
+:root {
+  --google-grey-700: rgb(95, 99, 104);
+  --shelf-area-height-base: 57px;
+}
+
 html,
 body {
   height: 100%;
   width: 100%;
+}
+
+html {
+  --shelf-area-height: var(--shelf-area-height-base);
+}
+
+html[virtual-keyboard=true],
+html[screen=gaia-signin] {
+  /* has to be with px suffix to be used in calc */
+  --shelf-area-height: 0px;
 }
 
 body {
@@ -25,6 +40,35 @@ body {
 
 html[full-screen-dialog] body {
   background-color: white;
+}
+
+/* Padding defaults */
+html {
+  --oobe-dialog-footer-height: 96px;
+  --oobe-dialog-footer-padding: 32px;
+  --oobe-dialog-content-padding: 64px;
+  --oobe-dialog-min-height: 464px;
+  --oobe-dialog-side-margin: 48px;
+}
+
+html[screen=gaia-signin] {
+  /* has to be with px suffix to be used in calc */
+  --oobe-dialog-side-margin: 0px;
+}
+
+
+@media screen and (max-width: 864px), (max-height: 736px) {
+  html[screen=oobe] {
+    --oobe-dialog-footer-height: 80px;
+    --oobe-dialog-footer-padding: 24px;
+    --oobe-dialog-content-padding: 32px;
+  }
+}
+
+html[screen=gaia-signin][dialog-padding=narrow] {
+  --oobe-dialog-footer-height: 80px;
+  --oobe-dialog-footer-padding: 24px;
+  --oobe-dialog-content-padding: 32px;
 }
 
 body.solid {
@@ -147,17 +191,17 @@ span.bold {
 }
 
 #version-labels {
-  color: #fff;
-  font-size: 11px;
+  color: var(--google-grey-700);
+  font-size: 13px;
   margin: 10px;
   position: relative;
   text-align: end;
-  text-shadow:
-      0 0 4px rgba(0,0,0,.6),
-      0 1px 2px rgba(0,0,0,.8),
-      0 -1px 2px rgba(0,0,0,1);
   transition: all 500ms linear;
   z-index: 1;
+}
+
+html[screen=user-adding] #version-labels {
+  color: white;
 }
 
 #bluetooth-name {

@@ -1,0 +1,7 @@
+ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
+++ROLE_SYSTEM_OUTLINE setsize:2
+++++ROLE_SYSTEM_OUTLINEITEM name='card content' FOCUSABLE setsize:2 posinset:1
+++++++ROLE_SYSTEM_STATICTEXT name='card content'
+++++IA2_ROLE_SECTION
+++++ROLE_SYSTEM_OUTLINEITEM name='card content' FOCUSABLE setsize:2 posinset:2
+++++++ROLE_SYSTEM_STATICTEXT name='card content'

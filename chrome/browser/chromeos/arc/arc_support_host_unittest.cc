@@ -15,9 +15,10 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/consent_auditor/fake_consent_auditor.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/user_manager/scoped_user_manager.h"
-#include "content/public/test/test_browser_thread_bundle.h"
-#include "services/identity/public/cpp/identity_manager.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -74,9 +75,9 @@ class ArcSupportHostTest : public BrowserWithTestWindowTest {
     BrowserWithTestWindowTest::SetUp();
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
         std::make_unique<chromeos::FakeChromeUserManager>());
-    IdentityManagerFactory::GetForProfile(profile())
-        ->SetPrimaryAccountSynchronously("gaia_id", "testing@account.com",
-                                         /*refresh_token=*/std::string());
+    signin::MakePrimaryAccountAvailable(
+        IdentityManagerFactory::GetForProfile(profile()),
+        "testing@account.com");
 
     support_host_ = std::make_unique<ArcSupportHost>(profile());
     fake_arc_support_ = std::make_unique<FakeArcSupport>(support_host_.get());

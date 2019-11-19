@@ -16,10 +16,11 @@
 namespace chrome_cleaner {
 
 // static
-std::shared_ptr<DigestVerifier> DigestVerifier::CreateFromResource(
+scoped_refptr<DigestVerifier> DigestVerifier::CreateFromResource(
     int resource_id) {
-  std::shared_ptr<DigestVerifier> instance(new DigestVerifier());
-  if (!instance->Initialize(resource_id)) {
+  // MakeRefCounted does not work with private constructor
+  auto instance = base::WrapRefCounted(new DigestVerifier());
+  if (!instance->InitializeFromResource(resource_id)) {
     LOG(ERROR) << "Failed to initialize DigestVerifier from resource "
                << resource_id;
     return nullptr;
@@ -27,7 +28,14 @@ std::shared_ptr<DigestVerifier> DigestVerifier::CreateFromResource(
   return instance;
 }
 
-DigestVerifier::~DigestVerifier() = default;
+scoped_refptr<DigestVerifier> DigestVerifier::CreateFromFile(
+    const base::FilePath& file) {
+  // MakeRefCounted does not work with private constructor
+  auto instance = base::WrapRefCounted(new DigestVerifier());
+  if (!instance->InitializeFromFile(file))
+    return nullptr;
+  return instance;
+}
 
 bool DigestVerifier::IsKnownFile(const base::FilePath& file) const {
   const auto digest_entry =
@@ -44,9 +52,21 @@ bool DigestVerifier::IsKnownFile(const base::FilePath& file) const {
   return (base::ToLowerASCII(actual_digest) == digest_entry->second);
 }
 
+std::vector<base::FilePath::StringType> DigestVerifier::GetKnownFileNames()
+    const {
+  std::vector<base::FilePath::StringType> result;
+  result.reserve(digests_.size());
+  for (auto iter = digests_.begin(); iter != digests_.end(); ++iter) {
+    result.push_back(iter->first);
+  }
+  return result;
+}
+
 DigestVerifier::DigestVerifier() = default;
 
-bool DigestVerifier::Initialize(int resource_id) {
+DigestVerifier::~DigestVerifier() = default;
+
+bool DigestVerifier::InitializeFromResource(int resource_id) {
   base::StringPiece serialized_digest_pb;
   if (!chrome_cleaner::LoadResourceOfKind(resource_id, L"TEXT",
                                           &serialized_digest_pb)) {
@@ -69,14 +89,15 @@ bool DigestVerifier::Initialize(int resource_id) {
   return true;
 }
 
-std::vector<base::FilePath::StringType> DigestVerifier::GetKnownFileNames()
-    const {
-  std::vector<base::FilePath::StringType> result;
-  result.reserve(digests_.size());
-  for (auto iter = digests_.begin(); iter != digests_.end(); ++iter) {
-    result.push_back(iter->first);
+bool DigestVerifier::InitializeFromFile(const base::FilePath& file) {
+  std::string digest;
+  if (!chrome_cleaner::ComputeSHA256DigestOfPath(file, &digest)) {
+    LOG(ERROR) << "Failed to compute digest for " << SanitizePath(file);
+    return false;
   }
-  return result;
+  digests_[base::ToLowerASCII(file.BaseName().value())] =
+      base::ToLowerASCII(digest);
+  return true;
 }
 
 }  // namespace chrome_cleaner

@@ -13,7 +13,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
-#include "device/usb/public/mojom/device_enumeration_options.mojom.h"
+#include "services/device/public/mojom/usb_enumeration_options.mojom.h"
 
 WebUsbChooser::WebUsbChooser(content::RenderFrameHost* render_frame_host)
     : render_frame_host_(render_frame_host) {
@@ -28,10 +28,9 @@ void WebUsbChooser::GetPermission(
     blink::mojom::WebUsbService::GetPermissionCallback callback) {
   auto* web_contents =
       content::WebContents::FromRenderFrameHost(render_frame_host_);
-  GURL requesting_origin =
-      render_frame_host_->GetLastCommittedURL().GetOrigin();
-  GURL embedding_origin =
-      web_contents->GetMainFrame()->GetLastCommittedURL().GetOrigin();
+  url::Origin requesting_origin = render_frame_host_->GetLastCommittedOrigin();
+  url::Origin embedding_origin =
+      web_contents->GetMainFrame()->GetLastCommittedOrigin();
   auto* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   auto* context = UsbChooserContextFactory::GetForProfile(profile);

@@ -7,7 +7,7 @@
 
 #include "ui/views/view.h"
 
-namespace app_list {
+namespace ash {
 
 class AppListFolderView;
 
@@ -22,8 +22,11 @@ class FolderBackgroundView : public views::View {
     folder_view_ = folder_view;
   }
 
+  // views::View:
+  const char* GetClassName() const override;
+
  private:
-  // views::View overrides:
+  // views::View:
   bool OnMousePressed(const ui::MouseEvent& event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
 
@@ -35,6 +38,6 @@ class FolderBackgroundView : public views::View {
   DISALLOW_COPY_AND_ASSIGN(FolderBackgroundView);
 };
 
-}  // namespace app_list
+}  // namespace ash
 
 #endif  // ASH_APP_LIST_VIEWS_FOLDER_BACKGROUND_VIEW_H_

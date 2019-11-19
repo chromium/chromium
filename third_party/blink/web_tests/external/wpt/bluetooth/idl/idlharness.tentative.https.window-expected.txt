@@ -1,14 +1,33 @@
 This is a testharness.js-based test.
-Found 183 tests; 126 PASS, 57 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 204 tests; 147 PASS, 57 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
+PASS idl_test validation
 PASS Partial interface Navigator: original interface defined
+PASS Partial interface Navigator: member names are unique
+PASS Partial interface mixin NavigatorID: member names are unique
+PASS Bluetooth includes BluetoothDeviceEventHandlers: member names are unique
+PASS Bluetooth includes CharacteristicEventHandlers: member names are unique
+PASS Bluetooth includes ServiceEventHandlers: member names are unique
+PASS BluetoothDevice includes BluetoothDeviceEventHandlers: member names are unique
+PASS BluetoothDevice includes CharacteristicEventHandlers: member names are unique
+PASS BluetoothDevice includes ServiceEventHandlers: member names are unique
+PASS BluetoothRemoteGATTService includes CharacteristicEventHandlers: member names are unique
+PASS BluetoothRemoteGATTService includes ServiceEventHandlers: member names are unique
+PASS BluetoothRemoteGATTCharacteristic includes CharacteristicEventHandlers: member names are unique
+PASS Navigator includes NavigatorID: member names are unique
+PASS Navigator includes NavigatorLanguage: member names are unique
+PASS Navigator includes NavigatorOnLine: member names are unique
+PASS Navigator includes NavigatorContentUtils: member names are unique
+PASS Navigator includes NavigatorCookies: member names are unique
+PASS Navigator includes NavigatorPlugins: member names are unique
+PASS Navigator includes NavigatorConcurrentHardware: member names are unique
 PASS Bluetooth interface: existence and properties of interface object
 PASS Bluetooth interface object length
 PASS Bluetooth interface object name
 PASS Bluetooth interface: existence and properties of interface prototype object
 PASS Bluetooth interface: existence and properties of interface prototype object's "constructor" property
 PASS Bluetooth interface: existence and properties of interface prototype object's @@unscopables property
-FAIL Bluetooth interface: operation getAvailability() assert_own_property: interface prototype object missing non-static operation expected property "getAvailability" missing
+PASS Bluetooth interface: operation getAvailability()
 FAIL Bluetooth interface: attribute onavailabilitychanged assert_true: The prototype object must have a property "onavailabilitychanged" expected true got false
 FAIL Bluetooth interface: attribute referringDevice assert_true: The prototype object must have a property "referringDevice" expected true got false
 PASS Bluetooth interface: operation requestDevice(RequestDeviceOptions)
@@ -20,7 +39,7 @@ FAIL Bluetooth interface: attribute onservicechanged assert_true: The prototype 
 FAIL Bluetooth interface: attribute onserviceremoved assert_true: The prototype object must have a property "onserviceremoved" expected true got false
 PASS Bluetooth must be primary interface of navigator.bluetooth
 PASS Stringification of navigator.bluetooth
-FAIL Bluetooth interface: navigator.bluetooth must inherit property "getAvailability()" with the proper type assert_inherits: property "getAvailability" not found in prototype chain
+PASS Bluetooth interface: navigator.bluetooth must inherit property "getAvailability()" with the proper type
 FAIL Bluetooth interface: navigator.bluetooth must inherit property "onavailabilitychanged" with the proper type assert_inherits: property "onavailabilitychanged" not found in prototype chain
 FAIL Bluetooth interface: navigator.bluetooth must inherit property "referringDevice" with the proper type assert_inherits: property "referringDevice" not found in prototype chain
 PASS Bluetooth interface: navigator.bluetooth must inherit property "requestDevice(RequestDeviceOptions)" with the proper type
@@ -142,6 +161,8 @@ PASS BluetoothRemoteGATTCharacteristic interface: operation getDescriptor(Blueto
 PASS BluetoothRemoteGATTCharacteristic interface: operation getDescriptors(BluetoothDescriptorUUID)
 PASS BluetoothRemoteGATTCharacteristic interface: operation readValue()
 PASS BluetoothRemoteGATTCharacteristic interface: operation writeValue(BufferSource)
+FAIL BluetoothRemoteGATTCharacteristic interface: operation writeValueWithResponse(BufferSource) assert_own_property: interface prototype object missing non-static operation expected property "writeValueWithResponse" missing
+FAIL BluetoothRemoteGATTCharacteristic interface: operation writeValueWithoutResponse(BufferSource) assert_own_property: interface prototype object missing non-static operation expected property "writeValueWithoutResponse" missing
 PASS BluetoothRemoteGATTCharacteristic interface: operation startNotifications()
 PASS BluetoothRemoteGATTCharacteristic interface: operation stopNotifications()
 PASS BluetoothRemoteGATTCharacteristic interface: attribute oncharacteristicvaluechanged

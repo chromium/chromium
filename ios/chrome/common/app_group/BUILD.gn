@@ -39,6 +39,22 @@ source_set("client") {
   ]
 }
 
+# This target will be included into application extensions and the list
+# of its dependencies must be kept as short as possible.
+source_set("command") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "app_group_command.h",
+    "app_group_command.mm",
+  ]
+
+  deps = [
+    ":app_group",
+    ":client",
+    "//base",
+  ]
+}
+
 source_set("main_app") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [

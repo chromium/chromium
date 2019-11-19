@@ -5,14 +5,12 @@
 #ifndef EXTENSIONS_COMMON_API_PRINTER_PROVIDER_USB_PRINTER_MANIFEST_DATA_H_
 #define EXTENSIONS_COMMON_API_PRINTER_PROVIDER_USB_PRINTER_MANIFEST_DATA_H_
 
+#include <memory>
 #include <vector>
 
-#include "device/usb/public/mojom/device_manager.mojom.h"
 #include "extensions/common/extension.h"
-
-namespace device {
-class UsbDevice;
-}
+#include "services/device/public/mojom/usb_device.mojom.h"
+#include "services/device/public/mojom/usb_enumeration_options.mojom.h"
 
 namespace extensions {
 
@@ -32,7 +30,7 @@ class UsbPrinterManifestData : public Extension::ManifestData {
       const base::Value& value,
       base::string16* error);
 
-  bool SupportsDevice(const device::UsbDevice& device) const;
+  bool SupportsDevice(const device::mojom::UsbDeviceInfo& device) const;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(UsbPrinterManifestTest, Filters);

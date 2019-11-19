@@ -1,2 +1,0 @@
-CONSOLE ERROR: line 4: Refused to display 'http://localhost:8000/security/xssAuditor/resources/echo-head.pl?q=%3Cmeta+http-equiv%3D%22x-frame-options%22+content%3D%22deny%22%3E' in a frame because it set 'X-Frame-Options' to 'deny'.
-

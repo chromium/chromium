@@ -3,6 +3,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import print_function
+
 import os
 import sys
 import traceback
@@ -31,27 +33,28 @@ def Main(args):
       current_dir = os.path.abspath(os.getcwd())
       script_dir = os.path.abspath(os.path.dirname(__file__))
       if current_dir != script_dir:
-        print '\nIncorrect CWD, default run skipped.'
-        print 'When running with no arguments set CWD to the scripts directory:'
-        print '\t' + script_dir + '\n'
-        print 'This ensures correct default paths and behavior.\n'
+        print('\nIncorrect CWD, default run skipped.')
+        print(
+            'When running with no arguments set CWD to the scripts directory:')
+        print('\t' + script_dir + '\n')
+        print('This ensures correct default paths and behavior.\n')
         return 1
 
     filenames = ParseOptions(args)
     ast = ParseFiles(filenames)
     if ast.errors:
-      print 'Found %d errors.  Aborting build.\n' % ast.errors
+      print('Found %d errors.  Aborting build.\n' % ast.errors)
       return 1
     return Generator.Run(ast)
-  except SystemExit, ec:
-    print 'Exiting with %d' % ec.code
+  except SystemExit as ec:
+    print('Exiting with %d' % ec.code)
     sys.exit(ec.code)
 
   except:
     typeinfo, value, tb = sys.exc_info()
     traceback.print_exception(typeinfo, value, tb)
-    print 'Called with: ' + ' '.join(sys.argv)
+    print('Called with: ' + ' '.join(sys.argv))
 
 
 if __name__ == '__main__':
-    sys.exit(Main(sys.argv[1:]))
+  sys.exit(Main(sys.argv[1:]))

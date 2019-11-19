@@ -4,7 +4,6 @@
 
 import("//build/config/chrome_build.gni")
 import("//build/config/jumbo.gni")
-import("//build/split_static_library.gni")
 import("//third_party/blink/renderer/config.gni")
 
 blink_core_output_dir = "$root_gen_dir/third_party/blink/renderer/core"
@@ -33,22 +32,9 @@ if (is_win && is_official_build) {
 core_config_remove += [ "//build/config/compiler:default_symbols" ]
 core_config_add += blink_symbols_config
 
-# Use this target type to link core targets.
-if (is_component_build) {
-  # To get exported symbols correct in component builds, the files must be in
-  # source sets.
-  core_link_large_target_type = "source_set"
-  core_link_small_target_type = "source_set"
-} else {
-  # In static builds some of the libraries can get >2GB on Windows so we need
-  # to split the targets for the larger ones.
-  core_link_large_target_type = "split_static_library"
-  core_link_small_target_type = "static_library"
-}
-
 # Use this to generate a static library or source set that gets linked into
-# "core". This will either be a source_set (component build), a static library
-# (split_count undefined) or a split static library (split_count defined).
+# "core". This will either be a source_set (component build), or a static
+# library.
 #
 # Special values (all unlisted values are forwarded to the underlying library):
 #
@@ -59,12 +45,6 @@ if (is_component_build) {
 #      into account: just modify the configs as normal for target-specific
 #      overrides (or don't touch it).
 #
-#   split_count
-#      If defined, non-component builds will generate this number of static
-#      libraries by splitting the sources. This is for use on Windows where the
-#      maximum static library size is 2GB, and 64-bit builds with full symbols
-#      can exceed this if there are many sources.
-#
 #   deps
 #      Normal meaning but "core:prerequisites" target is always added. Callers
 #      shouldn't list prerequisites as a dependency.
@@ -74,22 +54,13 @@ if (is_component_build) {
 template("blink_core_sources") {
   if (is_component_build) {
     target_type = "jumbo_source_set"
-
-    # This assert avoids an unused variable warning.
-    assert(!defined(invoker.split_count) || invoker.split_count != 0)
-  } else if (!defined(invoker.split_count)) {
-    target_type = "jumbo_static_library"
   } else {
-    target_type = "jumbo_split_static_library"
+    target_type = "jumbo_static_library"
   }
   target(target_type, target_name) {
     # The visibility will get overridden by forward_variables_from below if the
     # invoker defined it.
     visibility = [ "//third_party/blink/renderer/core/*" ]
-
-    if (target_type == "jumbo_split_static_library") {
-      split_count = invoker.split_count
-    }
 
     deps = [
       "//third_party/blink/renderer/core:prerequisites",
@@ -111,7 +82,6 @@ template("blink_core_sources") {
                            [
                              "deps",
                              "public_deps",
-                             "split_count",
                            ])
   }
 }
@@ -150,10 +120,4 @@ set_defaults("blink_core_tests") {
     "//third_party/blink/renderer/core:blink_core_pch",
     "//third_party/blink/renderer:inside_blink",
   ]
-}
-
-declare_args() {
-  # Use base::TimeDelta to represent time in renderer/core/animations. See
-  # http://crbug.com/737867
-  blink_animation_use_time_delta = false
 }

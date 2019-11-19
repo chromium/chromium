@@ -32,6 +32,7 @@ class CC_DEBUG_EXPORT LayerTreeDebugState {
   bool show_fps_counter;
   DebugBorderTypes show_debug_borders;
 
+  bool show_layout_shift_regions;
   bool show_paint_rects;
   bool show_property_changed_rects;
   bool show_surface_damage_rects;
@@ -40,6 +41,7 @@ class CC_DEBUG_EXPORT LayerTreeDebugState {
   bool show_wheel_event_handler_rects;
   bool show_scroll_event_handler_rects;
   bool show_non_fast_scrollable_rects;
+  bool show_main_thread_scrolling_reason_rects;
   bool show_layer_animation_bounds_rects;
 
   int slow_down_raster_scale_factor;

@@ -5,8 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_SHAPEDETECTION_DETECTED_BARCODE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SHAPEDETECTION_DETECTED_BARCODE_H_
 
-#include "third_party/blink/renderer/bindings/core/v8/script_value.h"
-#include "third_party/blink/renderer/modules/imagecapture/point_2d.h"
+#include "services/shape_detection/public/mojom/barcodedetection_provider.mojom-blink.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -14,28 +13,33 @@
 namespace blink {
 
 class DOMRectReadOnly;
+class Point2D;
 
 class MODULES_EXPORT DetectedBarcode final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static DetectedBarcode* Create();
-  static DetectedBarcode* Create(String,
-                                 DOMRectReadOnly*,
-                                 HeapVector<Member<Point2D>>);
+  static String BarcodeFormatToString(
+      const shape_detection::mojom::BarcodeFormat format);
 
-  DetectedBarcode(String, DOMRectReadOnly*, HeapVector<Member<Point2D>>);
+  DetectedBarcode(String,
+                  DOMRectReadOnly*,
+                  shape_detection::mojom::BarcodeFormat,
+                  HeapVector<Member<Point2D>>);
 
-  const String& rawValue() const;
-  DOMRectReadOnly* boundingBox() const;
-  const HeapVector<Member<Point2D>>& cornerPoints() const;
+  const String& rawValue() const { return raw_value_; }
+  DOMRectReadOnly* boundingBox() const { return bounding_box_; }
+  String format() const { return BarcodeFormatToString(format_); }
+  const HeapVector<Member<Point2D>>& cornerPoints() const {
+    return corner_points_;
+  }
 
-  ScriptValue toJSONForBinding(ScriptState*) const;
   void Trace(blink::Visitor*) override;
 
  private:
   const String raw_value_;
   const Member<DOMRectReadOnly> bounding_box_;
+  const shape_detection::mojom::BarcodeFormat format_;
   const HeapVector<Member<Point2D>> corner_points_;
 };
 

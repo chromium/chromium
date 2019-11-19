@@ -136,9 +136,6 @@ class PermissionsData {
       const URLPatternSet& default_policy_blocked_hosts,
       const URLPatternSet& default_policy_allowed_hosts);
 
-  // Sets the active permissions, leaving withheld the same.
-  void SetActivePermissions(std::unique_ptr<const PermissionSet> active) const;
-
   // Updates the tab-specific permissions of |tab_id| to include those from
   // |permissions|.
   void UpdateTabSpecificPermissions(int tab_id,
@@ -255,27 +252,27 @@ class PermissionsData {
   // This should only be used for 1. Serialization when initializing renderers
   // or 2. Called from utility methods above. For all other uses, call utility
   // methods instead (e.g. CanAccessPage()).
-  static const URLPatternSet& default_policy_blocked_hosts();
+  static URLPatternSet default_policy_blocked_hosts();
 
   // Returns list of hosts this extension may interact with regardless of
   // what is defined by policy_blocked_hosts().
   // This should only be used for 1. Serialization when initializing renderers
   // or 2. Called from utility methods above. For all other uses, call utility
   // methods instead (e.g. CanAccessPage()).
-  static const URLPatternSet& default_policy_allowed_hosts();
+  static URLPatternSet default_policy_allowed_hosts();
 
   // Returns list of hosts this extension may not interact with by policy.
   // This should only be used for 1. Serialization when initializing renderers
   // or 2. Called from utility methods above. For all other uses, call utility
   // methods instead (e.g. CanAccessPage()).
-  const URLPatternSet policy_blocked_hosts() const;
+  URLPatternSet policy_blocked_hosts() const;
 
   // Returns list of hosts this extension may interact with regardless of
   // what is defined by policy_blocked_hosts().
   // This should only be used for 1. Serialization when initializing renderers
   // or 2. Called from utility methods above. For all other uses, call utility
   // methods instead (e.g. CanAccessPage()).
-  const URLPatternSet policy_allowed_hosts() const;
+  URLPatternSet policy_allowed_hosts() const;
 
   // Check if a specific URL is blocked by policy from extension use at runtime.
   bool IsPolicyBlockedHost(const GURL& url) const {
@@ -310,14 +307,6 @@ class PermissionsData {
   // Check if a specific URL is blocked by policy from extension use at runtime.
   // You must acquire the runtime_lock_ before calling.
   bool IsPolicyBlockedHostUnsafe(const GURL& url) const;
-
-  // Same as policy_blocked_hosts but instead returns a reference.
-  // You must acquire runtime_lock_ before calling this.
-  const URLPatternSet& PolicyBlockedHostsUnsafe() const;
-
-  // Same as policy_allowed_hosts but instead returns a reference.
-  // You must acquire runtime_lock_ before calling this.
-  const URLPatternSet& PolicyAllowedHostsUnsafe() const;
 
   // The associated extension's id.
   std::string extension_id_;
@@ -356,7 +345,7 @@ class PermissionsData {
 
   // If the ExtensionSettings policy is not being used, or no per-extension
   // exception to the default policy was declared for this extension.
-  mutable bool uses_default_policy_host_restrictions = true;
+  mutable bool uses_default_policy_host_restrictions_ = true;
 
   mutable TabPermissionsMap tab_specific_permissions_;
 

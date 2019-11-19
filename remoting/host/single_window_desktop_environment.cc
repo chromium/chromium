@@ -33,7 +33,6 @@ class SingleWindowDesktopEnvironment : public BasicDesktopEnvironment {
       scoped_refptr<base::SingleThreadTaskRunner> video_capture_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> input_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
-      ui::SystemInputInjectorFactory* system_input_injector_factory,
       webrtc::DesktopCapturer::SourceId window_id,
       base::WeakPtr<ClientSessionControl> client_session_control,
       const DesktopEnvironmentOptions& options);
@@ -65,8 +64,8 @@ std::unique_ptr<InputInjector>
 SingleWindowDesktopEnvironment::CreateInputInjector() {
   DCHECK(caller_task_runner()->BelongsToCurrentThread());
 
-  std::unique_ptr<InputInjector> input_injector(InputInjector::Create(
-      input_task_runner(), ui_task_runner(), system_input_injector_factory()));
+  std::unique_ptr<InputInjector> input_injector(
+      InputInjector::Create(input_task_runner(), ui_task_runner()));
   return SingleWindowInputInjector::CreateForWindow(
              window_id_, std::move(input_injector));
 }
@@ -76,7 +75,6 @@ SingleWindowDesktopEnvironment::SingleWindowDesktopEnvironment(
     scoped_refptr<base::SingleThreadTaskRunner> video_capture_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> input_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
-    ui::SystemInputInjectorFactory* system_input_injector_factory,
     webrtc::WindowId window_id,
     base::WeakPtr<ClientSessionControl> client_session_control,
     const DesktopEnvironmentOptions& options)
@@ -84,7 +82,6 @@ SingleWindowDesktopEnvironment::SingleWindowDesktopEnvironment(
                               video_capture_task_runner,
                               input_task_runner,
                               ui_task_runner,
-                              system_input_injector_factory,
                               client_session_control,
                               options),
       window_id_(window_id) {}
@@ -94,13 +91,11 @@ SingleWindowDesktopEnvironmentFactory::SingleWindowDesktopEnvironmentFactory(
     scoped_refptr<base::SingleThreadTaskRunner> video_capture_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> input_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
-    ui::SystemInputInjectorFactory* system_input_injector_factory,
     webrtc::WindowId window_id)
     : BasicDesktopEnvironmentFactory(caller_task_runner,
                                      video_capture_task_runner,
                                      input_task_runner,
-                                     ui_task_runner,
-                                     system_input_injector_factory),
+                                     ui_task_runner),
       window_id_(window_id) {}
 
 SingleWindowDesktopEnvironmentFactory::
@@ -114,8 +109,7 @@ SingleWindowDesktopEnvironmentFactory::Create(
 
   return base::WrapUnique(new SingleWindowDesktopEnvironment(
       caller_task_runner(), video_capture_task_runner(), input_task_runner(),
-      ui_task_runner(), system_input_injector_factory(), window_id_,
-      client_session_control, options));
+      ui_task_runner(), window_id_, client_session_control, options));
 }
 
 }  // namespace remoting

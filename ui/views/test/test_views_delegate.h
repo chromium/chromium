@@ -57,10 +57,10 @@ class TestViewsDelegate : public ViewsDelegate {
   ui::ContextFactoryPrivate* GetContextFactoryPrivate() override;
 
  private:
-  ui::ContextFactory* context_factory_;
-  ui::ContextFactoryPrivate* context_factory_private_;
-  bool use_desktop_native_widgets_;
-  bool use_transparent_windows_;
+  ui::ContextFactory* context_factory_ = nullptr;
+  ui::ContextFactoryPrivate* context_factory_private_ = nullptr;
+  bool use_desktop_native_widgets_ = false;
+  bool use_transparent_windows_ = false;
   std::unique_ptr<LayoutProvider> layout_provider_ =
       std::make_unique<LayoutProvider>();
 

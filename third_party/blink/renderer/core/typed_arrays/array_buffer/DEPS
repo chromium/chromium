@@ -1,0 +1,4 @@
+include_rules = [
+    "+base/allocator/partition_allocator/oom.h",
+    "+base/allocator/partition_allocator/page_allocator.h",
+]

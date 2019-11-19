@@ -13,7 +13,6 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/supports_user_data.h"
 #include "content/browser/frame_host/navigation_controller_android.h"
 #include "content/browser/renderer_host/render_widget_host_view_android.h"
 #include "content/common/content_export.h"
@@ -27,17 +26,18 @@ class WebContentsImpl;
 // Android wrapper around WebContents that provides safer passage from java and
 // back to native and provides java with a means of communicating with its
 // native counterpart.
-class CONTENT_EXPORT WebContentsAndroid
-    : public base::SupportsUserData::Data {
+class CONTENT_EXPORT WebContentsAndroid {
  public:
   explicit WebContentsAndroid(WebContentsImpl* web_contents);
-  ~WebContentsAndroid() override;
+  ~WebContentsAndroid();
 
   WebContentsImpl* web_contents() const { return web_contents_; }
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
   // Methods called from Java
+  void ClearNativeReference(JNIEnv* env,
+                            const base::android::JavaParamRef<jobject>& obj);
   base::android::ScopedJavaLocalRef<jobject> GetTopLevelNativeWindow(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj);
@@ -50,6 +50,9 @@ class CONTENT_EXPORT WebContentsAndroid
       const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jobject>& jview_delegate);
   base::android::ScopedJavaLocalRef<jobject> GetMainFrame(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& obj) const;
+  base::android::ScopedJavaLocalRef<jobject> GetFocusedFrame(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj) const;
   base::android::ScopedJavaLocalRef<jstring> GetTitle(
@@ -106,9 +109,6 @@ class CONTENT_EXPORT WebContentsAndroid
   jboolean FocusLocationBarByDefault(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj);
-  jboolean IsRenderWidgetHostViewReady(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
   void ExitFullscreen(JNIEnv* env,
                       const base::android::JavaParamRef<jobject>& obj);
   void ScrollFocusedEditableNodeIntoView(
@@ -138,10 +138,9 @@ class CONTENT_EXPORT WebContentsAndroid
       jint level,
       const base::android::JavaParamRef<jstring>& message);
 
-  void PostMessageToFrame(
+  void PostMessageToMainFrame(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,
-      const base::android::JavaParamRef<jstring>& jframe_name,
       const base::android::JavaParamRef<jstring>& jmessage,
       const base::android::JavaParamRef<jstring>& jsource_origin,
       const base::android::JavaParamRef<jstring>& jtarget_origin,
@@ -151,8 +150,12 @@ class CONTENT_EXPORT WebContentsAndroid
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& jobj);
 
+  // No theme color is represented by SK_ColorTRANSPARENT.
   jint GetThemeColor(JNIEnv* env,
                      const base::android::JavaParamRef<jobject>& obj);
+
+  jfloat GetLoadProgress(JNIEnv* env,
+                         const base::android::JavaParamRef<jobject>& obj);
 
   void RequestSmartClipExtract(
       JNIEnv* env,
@@ -177,17 +180,10 @@ class CONTENT_EXPORT WebContentsAndroid
       const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jobject>& overscroll_refresh_handler);
 
-  // Relay the access from Java layer to RWHV::CopyFromSurface() through JNI.
-  void WriteContentBitmapToDisk(
+  void SetSpatialNavigationDisabled(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,
-      jint width,
-      jint height,
-      const base::android::JavaParamRef<jstring>& jpath,
-      const base::android::JavaParamRef<jobject>& jcallback);
-
-  void ReloadLoFiImages(JNIEnv* env,
-                        const base::android::JavaParamRef<jobject>& obj);
+      bool disabled);
 
   int DownloadImage(JNIEnv* env,
                     const base::android::JavaParamRef<jobject>& obj,
@@ -196,13 +192,6 @@ class CONTENT_EXPORT WebContentsAndroid
                     jint max_bitmap_size,
                     jboolean bypass_cache,
                     const base::android::JavaParamRef<jobject>& jcallback);
-  void DismissTextHandles(JNIEnv* env,
-                          const base::android::JavaParamRef<jobject>& obj);
-  void ShowContextMenuAtTouchHandle(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
-      int x,
-      int y);
   void SetHasPersistentVideo(JNIEnv* env,
                              const base::android::JavaParamRef<jobject>& obj,
                              jboolean value);
@@ -249,15 +238,27 @@ class CONTENT_EXPORT WebContentsAndroid
                                 int left,
                                 int bottom,
                                 int right);
+  void NotifyRendererPreferenceUpdate(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& obj);
+
+  base::android::ScopedJavaLocalRef<jobject> GetRenderWidgetHostView(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& obj);
 
   RenderWidgetHostViewAndroid* GetRenderWidgetHostViewAndroid();
 
- private:
-  void OnFinishGetContentBitmap(const base::android::JavaRef<jobject>& obj,
-                                const base::android::JavaRef<jobject>& callback,
-                                const std::string& path,
-                                const SkBitmap& bitmap);
+  class DestructionObserver : public base::CheckedObserver {
+   public:
+    // Invoked when the Java reference to the WebContents is being destroyed.
+    virtual void WebContentsAndroidDestroyed(
+        WebContentsAndroid* web_contents_android) = 0;
+  };
 
+  void AddDestructionObserver(DestructionObserver* observer);
+  void RemoveDestructionObserver(DestructionObserver* observer);
+
+ private:
   void OnFinishDownloadImage(const base::android::JavaRef<jobject>& obj,
                              const base::android::JavaRef<jobject>& callback,
                              int id,
@@ -274,7 +275,9 @@ class CONTENT_EXPORT WebContentsAndroid
   NavigationControllerAndroid navigation_controller_;
   base::android::ScopedJavaGlobalRef<jobject> obj_;
 
-  base::WeakPtrFactory<WebContentsAndroid> weak_factory_;
+  base::ObserverList<DestructionObserver> destruction_observers_;
+
+  base::WeakPtrFactory<WebContentsAndroid> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(WebContentsAndroid);
 };

@@ -35,9 +35,7 @@ class Image {
 
   ~Image();
 
-  const gfx::Size& size() const {
-    return size_;
-  }
+  const gfx::Size& size() const { return size_; }
 
   // Return a checksum of the image (MD5 over the internal data structure).
   std::string checksum() const;

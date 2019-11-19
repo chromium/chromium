@@ -6,8 +6,11 @@
 
 #include <string>
 
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/syslog_logging.h"
+#include "chrome/browser/policy/cloud/policy_invalidation_util.h"
+#include "chrome/common/chrome_features.h"
 #include "components/invalidation/public/invalidation.h"
 #include "components/invalidation/public/invalidation_service.h"
 #include "components/invalidation/public/invalidation_util.h"
@@ -17,8 +20,7 @@
 
 namespace policy {
 
-RemoteCommandsInvalidator::RemoteCommandsInvalidator() {
-}
+RemoteCommandsInvalidator::RemoteCommandsInvalidator() {}
 
 RemoteCommandsInvalidator::~RemoteCommandsInvalidator() {
   DCHECK_EQ(SHUT_DOWN, state_);
@@ -116,6 +118,11 @@ std::string RemoteCommandsInvalidator::GetOwnerName() const {
   return "RemoteCommands";
 }
 
+bool RemoteCommandsInvalidator::IsPublicTopic(
+    const syncer::Topic& topic) const {
+  return IsPublicInvalidationTopic(topic);
+}
+
 void RemoteCommandsInvalidator::ReloadPolicyData(
     const enterprise_management::PolicyData* policy) {
   DCHECK(thread_checker_.CalledOnValidThread());
@@ -127,13 +134,11 @@ void RemoteCommandsInvalidator::ReloadPolicyData(
 
   // Create the ObjectId based on the policy data.
   // If the policy does not specify an the ObjectId, then unregister.
-  if (!policy || !policy->has_command_invalidation_source() ||
-      !policy->has_command_invalidation_name()) {
+  invalidation::ObjectId object_id;
+  if (!policy || !GetRemoteCommandObjectIdFromPolicy(*policy, &object_id)) {
     Unregister();
     return;
   }
-  const invalidation::ObjectId object_id(policy->command_invalidation_source(),
-                                         policy->command_invalidation_name());
 
   // If the policy object id in the policy data is different from the currently
   // registered object id, update the object registration.

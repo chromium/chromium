@@ -21,13 +21,12 @@
 #include "build/build_config.h"
 #include "components/heap_profiling/supervisor.h"
 #include "components/services/heap_profiling/public/cpp/controller.h"
-#include "components/services/heap_profiling/public/cpp/sampling_profiler_wrapper.h"
+#include "components/services/heap_profiling/public/cpp/profiling_client.h"
 #include "components/services/heap_profiling/public/cpp/settings.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/tracing_controller.h"
-#include "content/public/common/service_manager_connection.h"
 
 namespace heap_profiling {
 
@@ -80,7 +79,7 @@ bool RenderersAreBeingProfiled(
         base::kNullProcessHandle)
       continue;
     base::ProcessId pid = iter.GetCurrentValue()->GetProcess().Pid();
-    if (base::ContainsValue(profiled_pids, pid)) {
+    if (base::Contains(profiled_pids, pid)) {
       return true;
     }
   }
@@ -254,7 +253,7 @@ bool ValidateDump(base::Value* heaps_v2,
     return false;
   }
 
-  const base::Value::ListStorage& sizes_list = sizes->GetList();
+  base::span<const base::Value> sizes_list = sizes->GetList();
   if (sizes_list.empty()) {
     LOG(ERROR) << "'allocators." << allocator_name
                << ".sizes' is an empty list";
@@ -269,7 +268,7 @@ bool ValidateDump(base::Value* heaps_v2,
     return false;
   }
 
-  const base::Value::ListStorage& counts_list = counts->GetList();
+  base::span<const base::Value> counts_list = counts->GetList();
   if (sizes_list.size() != counts_list.size()) {
     LOG(ERROR)
         << "'allocators." << allocator_name
@@ -285,7 +284,7 @@ bool ValidateDump(base::Value* heaps_v2,
     return false;
   }
 
-  const base::Value::ListStorage& types_list = types->GetList();
+  base::span<const base::Value> types_list = types->GetList();
   if (types_list.empty()) {
     LOG(ERROR) << "'allocators." << allocator_name
                << ".types' is an empty list";
@@ -307,7 +306,7 @@ bool ValidateDump(base::Value* heaps_v2,
     return false;
   }
 
-  const base::Value::ListStorage& nodes_list = nodes->GetList();
+  base::span<const base::Value> nodes_list = nodes->GetList();
   if (sizes_list.size() != nodes_list.size()) {
     LOG(ERROR)
         << "'allocators." << allocator_name
@@ -420,7 +419,7 @@ bool GetAllocatorSubarray(base::Value* heaps_v2,
                           const char* allocator_name,
                           const char* subarray_name,
                           size_t expected_size,
-                          const base::Value::ListStorage** output) {
+                          base::span<const base::Value>* output) {
   base::Value* subarray =
       heaps_v2->FindPath({"allocators", allocator_name, subarray_name});
   if (!subarray) {
@@ -429,13 +428,13 @@ bool GetAllocatorSubarray(base::Value* heaps_v2,
     return false;
   }
 
-  const base::Value::ListStorage& subarray_list = subarray->GetList();
+  base::span<const base::Value> subarray_list = subarray->GetList();
   if (expected_size && subarray_list.size() != expected_size) {
     LOG(ERROR) << subarray_name << " has wrong size";
     return false;
   }
 
-  *output = &subarray_list;
+  *output = subarray_list;
   return true;
 }
 
@@ -464,7 +463,7 @@ bool ValidateSamplingAllocations(base::Value* heaps_v2,
   }
 
   // Find the type with the appropriate id.
-  const base::Value::ListStorage* types_list;
+  base::span<const base::Value> types_list;
   if (!GetAllocatorSubarray(heaps_v2, allocator_name, "types", 0,
                             &types_list)) {
     return false;
@@ -472,8 +471,8 @@ bool ValidateSamplingAllocations(base::Value* heaps_v2,
 
   found = false;
   size_t index = 0;
-  for (size_t i = 0; i < types_list->size(); ++i) {
-    if ((*types_list)[i].GetInt() == id_of_type) {
+  for (size_t i = 0; i < types_list.size(); ++i) {
+    if (types_list[i].GetInt() == id_of_type) {
       index = i;
       found = true;
       break;
@@ -486,30 +485,30 @@ bool ValidateSamplingAllocations(base::Value* heaps_v2,
   }
 
   // Look up the size.
-  const base::Value::ListStorage* sizes;
+  base::span<const base::Value> sizes;
   if (!GetAllocatorSubarray(heaps_v2, allocator_name, "sizes",
-                            types_list->size(), &sizes)) {
+                            types_list.size(), &sizes)) {
     return false;
   }
 
-  if ((*sizes)[index].GetInt() < approximate_size / 2 ||
-      (*sizes)[index].GetInt() > approximate_size * 2) {
-    LOG(ERROR) << "sampling size " << (*sizes)[index].GetInt()
+  if (sizes[index].GetInt() < approximate_size / 2 ||
+      sizes[index].GetInt() > approximate_size * 2) {
+    LOG(ERROR) << "sampling size " << sizes[index].GetInt()
                << " was not within a factor of 2 of expected size "
                << approximate_size;
     return false;
   }
 
   // Look up the count.
-  const base::Value::ListStorage* counts;
+  base::span<const base::Value> counts;
   if (!GetAllocatorSubarray(heaps_v2, allocator_name, "counts",
-                            types_list->size(), &counts)) {
+                            types_list.size(), &counts)) {
     return false;
   }
 
-  if ((*counts)[index].GetInt() < approximate_count / 2 ||
-      (*counts)[index].GetInt() > approximate_count * 2) {
-    LOG(ERROR) << "sampling size " << (*counts)[index].GetInt()
+  if (counts[index].GetInt() < approximate_count / 2 ||
+      counts[index].GetInt() > approximate_count * 2) {
+    LOG(ERROR) << "sampling size " << counts[index].GetInt()
                << " was not within a factor of 2 of expected count "
                << approximate_count;
     return false;
@@ -575,10 +574,9 @@ bool TestDriver::RunTest(const Options& options) {
     if (running_on_ui_thread_) {
       has_started_ = Supervisor::GetInstance()->HasStarted();
     } else {
-      base::PostTaskWithTraits(
-          FROM_HERE, {content::BrowserThread::UI},
-          base::BindOnce(&TestDriver::GetHasStartedOnUIThread,
-                         base::Unretained(this)));
+      base::PostTask(FROM_HERE, {content::BrowserThread::UI},
+                     base::BindOnce(&TestDriver::GetHasStartedOnUIThread,
+                                    base::Unretained(this)));
       wait_for_ui_thread_.Wait();
     }
     if (has_started_) {
@@ -591,27 +589,21 @@ bool TestDriver::RunTest(const Options& options) {
   if (running_on_ui_thread_) {
     if (!CheckOrStartProfilingOnUIThreadWithNestedRunLoops())
       return false;
-    Supervisor::GetInstance()->SetKeepSmallAllocations(true);
     if (ShouldProfileRenderer())
       WaitForProfilingToStartForAllRenderersUIThread();
     if (ShouldProfileBrowser())
       MakeTestAllocations();
     CollectResults(true);
   } else {
-    base::PostTaskWithTraits(
+    base::PostTask(
         FROM_HERE, {content::BrowserThread::UI},
         base::BindOnce(&TestDriver::CheckOrStartProfilingOnUIThreadAndSignal,
                        base::Unretained(this)));
     wait_for_ui_thread_.Wait();
     if (!initialization_success_)
       return false;
-    base::PostTaskWithTraits(
-        FROM_HERE, {content::BrowserThread::UI},
-        base::BindOnce(&TestDriver::SetKeepSmallAllocationsOnUIThreadAndSignal,
-                       base::Unretained(this)));
-    wait_for_ui_thread_.Wait();
     if (ShouldProfileRenderer()) {
-      base::PostTaskWithTraits(
+      base::PostTask(
           FROM_HERE, {content::BrowserThread::UI},
           base::BindOnce(
               &TestDriver::
@@ -620,13 +612,13 @@ bool TestDriver::RunTest(const Options& options) {
       wait_for_ui_thread_.Wait();
     }
     if (ShouldProfileBrowser()) {
-      base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::UI},
-                               base::BindOnce(&TestDriver::MakeTestAllocations,
-                                              base::Unretained(this)));
+      base::PostTask(FROM_HERE, {content::BrowserThread::UI},
+                     base::BindOnce(&TestDriver::MakeTestAllocations,
+                                    base::Unretained(this)));
     }
-    base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::UI},
-                             base::BindOnce(&TestDriver::CollectResults,
-                                            base::Unretained(this), false));
+    base::PostTask(FROM_HERE, {content::BrowserThread::UI},
+                   base::BindOnce(&TestDriver::CollectResults,
+                                  base::Unretained(this), false));
     wait_for_ui_thread_.Wait();
   }
 
@@ -667,12 +659,6 @@ void TestDriver::CheckOrStartProfilingOnUIThreadAndSignal() {
     wait_for_ui_thread_.Signal();
 }
 
-void TestDriver::SetKeepSmallAllocationsOnUIThreadAndSignal() {
-  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
-  Supervisor::GetInstance()->SetKeepSmallAllocations(true);
-  wait_for_ui_thread_.Signal();
-}
-
 bool TestDriver::CheckOrStartProfilingOnUIThreadWithAsyncSignalling() {
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
 
@@ -696,14 +682,6 @@ bool TestDriver::CheckOrStartProfilingOnUIThreadWithAsyncSignalling() {
     return true;
   }
 
-  content::ServiceManagerConnection* connection =
-      content::ServiceManagerConnection::GetForProcess();
-  if (!connection) {
-    LOG(ERROR) << "A ServiceManagerConnection was not available for the "
-                  "current process.";
-    return false;
-  }
-
   wait_for_profiling_to_start_ = true;
   base::OnceClosure start_callback;
 
@@ -722,8 +700,7 @@ bool TestDriver::CheckOrStartProfilingOnUIThreadWithAsyncSignalling() {
   uint32_t sampling_rate = options_.should_sample
                                ? (options_.sample_everything ? 2 : kSampleRate)
                                : 1;
-  Supervisor::GetInstance()->Start(connection, options_.mode,
-                                   options_.stack_mode, options_.stream_samples,
+  Supervisor::GetInstance()->Start(options_.mode, options_.stack_mode,
                                    sampling_rate, std::move(start_callback));
 
   return true;
@@ -750,14 +727,6 @@ bool TestDriver::CheckOrStartProfilingOnUIThreadWithNestedRunLoops() {
     return true;
   }
 
-  content::ServiceManagerConnection* connection =
-      content::ServiceManagerConnection::GetForProcess();
-  if (!connection) {
-    LOG(ERROR) << "A ServiceManagerConnection was not available for the "
-                  "current process.";
-    return false;
-  }
-
   // When this is not-null, initialization should wait for the QuitClosure to be
   // called.
   std::unique_ptr<base::RunLoop> run_loop(new base::RunLoop);
@@ -775,8 +744,7 @@ bool TestDriver::CheckOrStartProfilingOnUIThreadWithNestedRunLoops() {
   uint32_t sampling_rate = options_.should_sample
                                ? (options_.sample_everything ? 2 : kSampleRate)
                                : 1;
-  Supervisor::GetInstance()->Start(connection, options_.mode,
-                                   options_.stack_mode, options_.stream_samples,
+  Supervisor::GetInstance()->Start(options_.mode, options_.stack_mode,
                                    sampling_rate, std::move(start_callback));
 
   run_loop->Run();

@@ -13,20 +13,6 @@ namespace blink {
 
 namespace cssvalue {
 
-CSSPathValue* CSSPathValue::Create(
-    scoped_refptr<StylePath> style_path,
-    PathSerializationFormat serialization_format) {
-  return MakeGarbageCollected<CSSPathValue>(std::move(style_path),
-                                            serialization_format);
-}
-
-CSSPathValue* CSSPathValue::Create(
-    std::unique_ptr<SVGPathByteStream> path_byte_stream,
-    PathSerializationFormat serialization_format) {
-  return CSSPathValue::Create(StylePath::Create(std::move(path_byte_stream)),
-                              serialization_format);
-}
-
 CSSPathValue::CSSPathValue(scoped_refptr<StylePath> style_path,
                            PathSerializationFormat serialization_format)
     : CSSValue(kPathClass),
@@ -35,15 +21,20 @@ CSSPathValue::CSSPathValue(scoped_refptr<StylePath> style_path,
   DCHECK(style_path_);
 }
 
+CSSPathValue::CSSPathValue(std::unique_ptr<SVGPathByteStream> path_byte_stream,
+                           PathSerializationFormat serialization_format)
+    : CSSPathValue(StylePath::Create(std::move(path_byte_stream)),
+                   serialization_format) {}
+
 namespace {
 
 CSSPathValue* CreatePathValue() {
   std::unique_ptr<SVGPathByteStream> path_byte_stream =
-      SVGPathByteStream::Create();
+      std::make_unique<SVGPathByteStream>();
   // Need to be registered as LSan ignored, as it will be reachable and
   // separately referred to by emptyPathValue() callers.
   LEAK_SANITIZER_IGNORE_OBJECT(path_byte_stream.get());
-  return CSSPathValue::Create(std::move(path_byte_stream));
+  return MakeGarbageCollected<CSSPathValue>(std::move(path_byte_stream));
 }
 
 }  // namespace

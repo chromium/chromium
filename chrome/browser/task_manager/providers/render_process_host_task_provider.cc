@@ -25,8 +25,7 @@ using content::ChildProcessData;
 
 namespace task_manager {
 
-RenderProcessHostTaskProvider::RenderProcessHostTaskProvider()
-    : weak_ptr_factory_(this) {
+RenderProcessHostTaskProvider::RenderProcessHostTaskProvider() {
   registrar_.Add(this, content::NOTIFICATION_RENDERER_PROCESS_CREATED,
                  content::NotificationService::AllBrowserContextsAndSources());
   registrar_.Add(this, content::NOTIFICATION_RENDERER_PROCESS_CLOSED,

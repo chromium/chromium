@@ -19,8 +19,8 @@
 #include "chrome/browser/supervised_user/child_accounts/family_info_fetcher.h"
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "net/base/backoff_entry.h"
-#include "services/identity/public/cpp/identity_manager.h"
 
 namespace user_prefs {
 class PrefRegistrySyncable;
@@ -33,7 +33,7 @@ class Profile;
 // supervised user experience, fetch information about the parent(s)).
 class ChildAccountService : public KeyedService,
                             public FamilyInfoFetcher::Consumer,
-                            public identity::IdentityManager::Observer,
+                            public signin::IdentityManager::Observer,
                             public SupervisedUserService::Delegate {
  public:
   enum class AuthState { AUTHENTICATED, NOT_AUTHENTICATED, PENDING };
@@ -78,7 +78,7 @@ class ChildAccountService : public KeyedService,
   // Sets whether the signed-in account is a child account.
   void SetIsChildAccount(bool is_child_account);
 
-  // identity::IdentityManager::Observer implementation.
+  // signin::IdentityManager::Observer implementation.
   void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
   void OnExtendedAccountInfoRemoved(const AccountInfo& info) override;
 
@@ -89,7 +89,7 @@ class ChildAccountService : public KeyedService,
 
   // IdentityManager::Observer implementation.
   void OnAccountsInCookieUpdated(
-      const identity::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
+      const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
       const GoogleServiceAuthError& error) override;
 
   void StartFetchingFamilyInfo();
@@ -114,14 +114,14 @@ class ChildAccountService : public KeyedService,
   base::OneShotTimer family_fetch_timer_;
   net::BackoffEntry family_fetch_backoff_;
 
-  identity::IdentityManager* identity_manager_;
+  signin::IdentityManager* identity_manager_;
 
   base::CallbackList<void()> google_auth_state_observers_;
 
   // Callbacks to run when the user status becomes known.
   std::vector<base::OnceClosure> status_received_callback_list_;
 
-  base::WeakPtrFactory<ChildAccountService> weak_ptr_factory_;
+  base::WeakPtrFactory<ChildAccountService> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ChildAccountService);
 };

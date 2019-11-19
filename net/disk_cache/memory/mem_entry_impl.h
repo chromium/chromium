@@ -80,7 +80,7 @@ class NET_EXPORT_PRIVATE MemEntryImpl final
 
   // Constructor for child entries.
   MemEntryImpl(base::WeakPtr<MemBackendImpl> backend,
-               int child_id,
+               int64_t child_id,
                MemEntryImpl* parent,
                net::NetLog* net_log);
 
@@ -90,7 +90,7 @@ class NET_EXPORT_PRIVATE MemEntryImpl final
   EntryType type() const { return parent_ ? CHILD_ENTRY : PARENT_ENTRY; }
   const std::string& key() const { return key_; }
   const MemEntryImpl* parent() const { return parent_; }
-  int child_id() const { return child_id_; }
+  int64_t child_id() const { return child_id_; }
   base::Time last_used() const { return last_used_; }
 
   // The in-memory size of this entry to use for the purposes of eviction.
@@ -139,11 +139,11 @@ class NET_EXPORT_PRIVATE MemEntryImpl final
  private:
   MemEntryImpl(base::WeakPtr<MemBackendImpl> backend,
                const std::string& key,
-               int child_id,
+               int64_t child_id,
                MemEntryImpl* parent,
                net::NetLog* net_log);
 
-  using EntryMap = std::map<int, MemEntryImpl*>;
+  using EntryMap = std::map<int64_t, MemEntryImpl*>;
 
   static const int kNumStreams = 3;
 
@@ -179,11 +179,12 @@ class NET_EXPORT_PRIVATE MemEntryImpl final
 
   std::string key_;
   std::vector<char> data_[kNumStreams];  // User data.
-  int ref_count_;
+  uint32_t ref_count_;
 
-  int child_id_;              // The ID of a child entry.
-  int child_first_pos_;       // The position of the first byte in a child
-                              // entry.
+  int64_t child_id_;     // The ID of a child entry.
+  int child_first_pos_;  // The position of the first byte in a child
+                         // entry. 0 here is beginning of child, not of
+                         // the entire file.
   // Pointer to the parent entry, or nullptr if this entry is a parent entry.
   MemEntryImpl* parent_;
   std::unique_ptr<EntryMap> children_;

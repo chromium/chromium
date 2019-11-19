@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+PASS Two way ICE exchange works
+FAIL Adding only caller -> callee candidates gives a connection promise_test: Unhandled rejection with value: object "TypeError: Cannot read property 'transport' of null"
+FAIL Adding only callee -> caller candidates gives a connection promise_test: Unhandled rejection with value: object "TypeError: Cannot read property 'transport' of null"
+FAIL Adding callee -> caller candidates from end-of-candidates gives a connection promise_test: Unhandled rejection with value: object "TypeError: Cannot read property 'transport' of null"
+FAIL Explicit offer/answer exchange gives a connection promise_test: Unhandled rejection with value: object "TypeError: Cannot read property 'transport' of null"
+Harness: the test ran to completion.
+

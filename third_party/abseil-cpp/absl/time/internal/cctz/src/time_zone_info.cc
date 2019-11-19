@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//   http://www.apache.org/licenses/LICENSE-2.0
+//   https://www.apache.org/licenses/LICENSE-2.0
 //
 //   Unless required by applicable law or agreed to in writing, software
 //   distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,7 +25,7 @@
 // a grain of salt.
 //
 // For more information see tzfile(5), http://www.iana.org/time-zones, or
-// http://en.wikipedia.org/wiki/Zoneinfo.
+// https://en.wikipedia.org/wiki/Zoneinfo.
 //
 // Note that we assume the proleptic Gregorian calendar and 60-second
 // minutes throughout.
@@ -239,8 +239,8 @@ bool TimeZoneInfo::Header::Build(const tzhead& tzh) {
   leapcnt = static_cast<std::size_t>(v);
   if ((v = Decode32(tzh.tzh_ttisstdcnt)) < 0) return false;
   ttisstdcnt = static_cast<std::size_t>(v);
-  if ((v = Decode32(tzh.tzh_ttisgmtcnt)) < 0) return false;
-  ttisgmtcnt = static_cast<std::size_t>(v);
+  if ((v = Decode32(tzh.tzh_ttisutcnt)) < 0) return false;
+  ttisutcnt = static_cast<std::size_t>(v);
   return true;
 }
 
@@ -253,7 +253,7 @@ std::size_t TimeZoneInfo::Header::DataLength(std::size_t time_len) const {
   len += 1 * charcnt;               // abbreviations
   len += (time_len + 4) * leapcnt;  // leap-time + TAI-UTC
   len += 1 * ttisstdcnt;            // UTC/local indicators
-  len += 1 * ttisgmtcnt;            // standard/wall indicators
+  len += 1 * ttisutcnt;             // standard/wall indicators
   return len;
 }
 
@@ -427,7 +427,7 @@ bool TimeZoneInfo::Load(const std::string& name, ZoneInfoSource* zip) {
   }
   if (hdr.ttisstdcnt != 0 && hdr.ttisstdcnt != hdr.typecnt)
     return false;
-  if (hdr.ttisgmtcnt != 0 && hdr.ttisgmtcnt != hdr.typecnt)
+  if (hdr.ttisutcnt != 0 && hdr.ttisutcnt != hdr.typecnt)
     return false;
 
   // Read the data into a local buffer.
@@ -498,16 +498,16 @@ bool TimeZoneInfo::Load(const std::string& name, ZoneInfoSource* zip) {
   // that isn't the case here (see "zic -p").
   bp += (8 + 4) * hdr.leapcnt;  // leap-time + TAI-UTC
   bp += 1 * hdr.ttisstdcnt;     // UTC/local indicators
-  bp += 1 * hdr.ttisgmtcnt;     // standard/wall indicators
+  bp += 1 * hdr.ttisutcnt;      // standard/wall indicators
   assert(bp == tbuf.data() + tbuf.size());
 
   future_spec_.clear();
   if (tzh.tzh_version[0] != '\0') {
     // Snarf up the NL-enclosed future POSIX spec. Note
     // that version '3' files utilize an extended format.
-    auto get_char = [](ZoneInfoSource* zip) -> int {
+    auto get_char = [](ZoneInfoSource* azip) -> int {
       unsigned char ch;  // all non-EOF results are positive
-      return (zip->Read(&ch, 1) == 1) ? ch : EOF;
+      return (azip->Read(&ch, 1) == 1) ? ch : EOF;
     };
     if (get_char(zip) != '\n')
       return false;
@@ -682,7 +682,6 @@ std::unique_ptr<ZoneInfoSource> AndroidZoneInfoSource::Open(
   // Use of the "file:" prefix is intended for testing purposes only.
   if (name.compare(0, 5, "file:") == 0) return Open(name.substr(5));
 
-#if defined(__ANDROID__)
   // See Android's libc/tzcode/bionic.cpp for additional information.
   for (const char* tzdata : {"/data/misc/zoneinfo/current/tzdata",
                              "/system/usr/share/zoneinfo/tzdata"}) {
@@ -717,7 +716,7 @@ std::unique_ptr<ZoneInfoSource> AndroidZoneInfoSource::Open(
       }
     }
   }
-#endif  // __ANDROID__
+
   return nullptr;
 }
 

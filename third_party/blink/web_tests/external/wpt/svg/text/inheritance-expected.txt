@@ -1,0 +1,17 @@
+This is a testharness.js-based test.
+PASS Property inline-size has initial value auto
+PASS Property inline-size does not inherit
+FAIL Property shape-inside has initial value auto assert_true: shape-inside doesn't seem to be supported in the computed style expected true got false
+FAIL Property shape-inside does not inherit assert_true: expected true got false
+FAIL Property shape-subtract has initial value auto assert_true: shape-subtract doesn't seem to be supported in the computed style expected true got false
+FAIL Property shape-subtract does not inherit assert_true: expected true got false
+PASS Property shape-margin has initial value 0px
+PASS Property shape-margin does not inherit
+PASS Property text-anchor has initial value start
+PASS Property text-anchor inherits
+FAIL Property text-decoration-fill has initial value none assert_true: text-decoration-fill doesn't seem to be supported in the computed style expected true got false
+FAIL Property text-decoration-fill does not inherit assert_true: expected true got false
+FAIL Property text-decoration-stroke has initial value none assert_true: text-decoration-stroke doesn't seem to be supported in the computed style expected true got false
+FAIL Property text-decoration-stroke does not inherit assert_true: expected true got false
+Harness: the test ran to completion.
+

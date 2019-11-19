@@ -9,7 +9,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "content/public/browser/interstitial_page.h"
 #include "content/public/browser/web_contents.h"
-#include "jni/InterstitialPageDelegateAndroid_jni.h"
+#include "content/public/test/android/content_test_jni/InterstitialPageDelegateAndroid_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::JavaParamRef;

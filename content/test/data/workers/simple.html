@@ -12,4 +12,14 @@ function try_fetch(url) {
     }
   );
 }
+function try_fetch_status(url) {
+  return fetch(url).then(
+    response => {
+      return response.status;
+    },
+    err => {
+      return err.name;
+    }
+  );
+}
 </script>

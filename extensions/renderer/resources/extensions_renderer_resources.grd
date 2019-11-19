@@ -10,23 +10,16 @@
     <includes>
       <!-- Extension libraries. -->
       <include name="IDR_APP_VIEW_JS" file="guest_view/app_view/app_view.js" type="BINDATA" />
+      <include name="IDR_APP_VIEW_DENY_JS" file="guest_view/app_view/app_view_deny.js" type="BINDATA" />
       <include name="IDR_APP_VIEW_ELEMENT_JS" file="guest_view/app_view/app_view_element.js" type="BINDATA" />
       <include name="IDR_BROWSER_TEST_ENVIRONMENT_SPECIFIC_BINDINGS_JS" file="browser_test_environment_specific_bindings.js" type="BINDATA" />
       <include name="IDR_ENTRY_ID_MANAGER" file="entry_id_manager.js" type="BINDATA" />
-      <include name="IDR_EVENT_BINDINGS_JS" file="event.js" type="BINDATA" />
       <include name="IDR_EXTENSIONS_WEB_VIEW_ELEMENT_JS" file="guest_view/web_view/extensions_web_view_element.js" type="BINDATA" />
       <include name="IDR_EXTENSION_OPTIONS_JS" file="guest_view/extension_options/extension_options.js" type="BINDATA"/>
       <include name="IDR_EXTENSION_OPTIONS_ELEMENT_JS" file="guest_view/extension_options/extension_options_element.js" type="BINDATA"/>
       <include name="IDR_EXTENSION_OPTIONS_ATTRIBUTES_JS" file="guest_view/extension_options/extension_options_attributes.js" type="BINDATA"/>
       <include name="IDR_EXTENSION_OPTIONS_CONSTANTS_JS" file="guest_view/extension_options/extension_options_constants.js" type="BINDATA"/>
       <include name="IDR_EXTENSION_OPTIONS_EVENTS_JS" file="guest_view/extension_options/extension_options_events.js" type="BINDATA"/>
-      <include name="IDR_EXTENSION_VIEW_JS" file="guest_view/extension_view/extension_view.js" type="BINDATA" />
-      <include name="IDR_EXTENSION_VIEW_ELEMENT_JS" file="guest_view/extension_view/extension_view_element.js" type="BINDATA" />
-      <include name="IDR_EXTENSION_VIEW_API_METHODS_JS" file="guest_view/extension_view/extension_view_api_methods.js" type="BINDATA" />
-      <include name="IDR_EXTENSION_VIEW_ATTRIBUTES_JS" file="guest_view/extension_view/extension_view_attributes.js" type="BINDATA" />
-      <include name="IDR_EXTENSION_VIEW_CONSTANTS_JS" file="guest_view/extension_view/extension_view_constants.js" type="BINDATA" />
-      <include name="IDR_EXTENSION_VIEW_EVENTS_JS" file="guest_view/extension_view/extension_view_events.js" type="BINDATA" />
-      <include name="IDR_EXTENSION_VIEW_INTERNAL_CUSTOM_BINDINGS_JS" file="guest_view/extension_view/extension_view_internal.js" type="BINDATA" />
       <include name="IDR_FEEDBACK_PRIVATE_CUSTOM_BINDINGS_JS" file="feedback_private_custom_bindings.js" type="BINDATA" />
       <include name="IDR_GUEST_VIEW_ATTRIBUTES_JS" file="guest_view/guest_view_attributes.js" type="BINDATA" />
       <include name="IDR_GUEST_VIEW_CONTAINER_JS" file="guest_view/guest_view_container.js" type="BINDATA" />
@@ -37,17 +30,11 @@
       <include name="IDR_GUEST_VIEW_IFRAME_JS" file="guest_view/guest_view_iframe.js" type="BINDATA" />
       <include name="IDR_GUEST_VIEW_JS" file="guest_view/guest_view.js" type="BINDATA" />
       <include name="IDR_IMAGE_UTIL_JS" file="image_util.js" type="BINDATA" />
-      <include name="IDR_JSON_SCHEMA_JS" file="json_schema.js" type="BINDATA" />
       <include name="IDR_KEEP_ALIVE_JS" file="keep_alive.js" type="BINDATA" />
-      <include name="IDR_KEEP_ALIVE_MOJOM_JS" file="${mojom_root}\extensions\common\mojo\keep_alive.mojom.js" use_base_dir="false" type="BINDATA" />
-      <include name="IDR_LAST_ERROR_JS" file="last_error.js" type="BINDATA" />
-      <include name="IDR_MESSAGING_JS" file="messaging.js" type="BINDATA" />
-      <include name="IDR_MESSAGING_UTILS_JS" file="messaging_utils.js" type="BINDATA" />
+      <include name="IDR_KEEP_ALIVE_MOJOM_JS" file="${mojom_root}\extensions\common\mojom\keep_alive.mojom.js" use_base_dir="false" type="BINDATA" />
       <include name="IDR_MIME_HANDLER_PRIVATE_CUSTOM_BINDINGS_JS" file="mime_handler_private_custom_bindings.js" type="BINDATA" />
       <include name="IDR_MIME_HANDLER_MOJOM_JS" file="${mojom_root}\extensions\common\api\mime_handler.mojom.js" use_base_dir="false" type="BINDATA" />
       <include name="IDR_SAFE_METHODS_JS" file="guest_view/safe_methods.js" type="BINDATA" />
-      <include name="IDR_SCHEMA_UTILS_JS" file="schema_utils.js" type="BINDATA" />
-      <include name="IDR_SEND_REQUEST_JS" file="send_request.js" type="BINDATA" />
       <include name="IDR_SET_ICON_JS" file="set_icon.js" type="BINDATA" />
       <include name="IDR_TEST_CUSTOM_BINDINGS_JS" file="test_custom_bindings.js" type="BINDATA" />
       <include name="IDR_UNCAUGHT_EXCEPTION_HANDLER_JS" file="uncaught_exception_handler.js" type="BINDATA" />
@@ -59,32 +46,29 @@
       <include name="IDR_WEB_VIEW_EVENTS_JS" file="guest_view/web_view/web_view_events.js" type="BINDATA" />
       <include name="IDR_WEB_VIEW_INTERNAL_CUSTOM_BINDINGS_JS" file="guest_view/web_view/web_view_internal.js" type="BINDATA" />
       <include name="IDR_WEB_VIEW_JS" file="guest_view/web_view/web_view.js" type="BINDATA" />
+      <include name="IDR_WEB_VIEW_DENY_JS" file="guest_view/web_view/web_view_deny.js" type="BINDATA" />
       <include name="IDR_WEB_VIEW_ELEMENT_JS" file="guest_view/web_view/web_view_element.js" type="BINDATA" />
 
       <!-- Custom bindings for APIs. -->
+      <include name="IDR_AUTOMATION_CUSTOM_BINDINGS_JS" file="automation\automation_custom_bindings.js" type="BINDATA" />
+      <include name="IDR_AUTOMATION_EVENT_JS" file="automation\automation_event.js" type="BINDATA" />
+      <include name="IDR_AUTOMATION_NODE_JS" file="automation\automation_node.js" type="BINDATA" />
       <include name="IDR_APP_RUNTIME_CUSTOM_BINDINGS_JS" file="app_runtime_custom_bindings.js" type="BINDATA" />
       <include name="IDR_APP_WINDOW_CUSTOM_BINDINGS_JS" file="app_window_custom_bindings.js" type="BINDATA" />
-      <include name="IDR_BINDING_JS" file="binding.js" type="BINDATA" />
       <include name="IDR_CONTEXT_MENUS_CUSTOM_BINDINGS_JS" file="context_menus_custom_bindings.js" type="BINDATA" />
       <include name="IDR_CONTEXT_MENUS_HANDLERS_JS" file="context_menus_handlers.js" type="BINDATA" />
       <include name="IDR_DECLARATIVE_WEBREQUEST_CUSTOM_BINDINGS_JS" file="declarative_webrequest_custom_bindings.js" type="BINDATA" />
       <include name="IDR_DISPLAY_SOURCE_CUSTOM_BINDINGS_JS" file="display_source_custom_bindings.js" type="BINDATA" />
-      <include name="IDR_EXTENSION_CUSTOM_BINDINGS_JS" file="extension_custom_bindings.js" type="BINDATA" />
       <include name="IDR_FILE_ENTRY_BINDING_UTIL_JS" file="file_entry_binding_util.js" type="BINDATA" />
       <include name="IDR_FILE_SYSTEM_CUSTOM_BINDINGS_JS" file="file_system_custom_bindings.js" type="BINDATA" />
       <include name="IDR_GREASEMONKEY_API_JS" file="greasemonkey_api.js" type="BINDATA" />
-      <include name="IDR_I18N_CUSTOM_BINDINGS_JS" file="i18n_custom_bindings.js" type="BINDATA" />
       <include name="IDR_MOJO_PRIVATE_CUSTOM_BINDINGS_JS" file="mojo_private_custom_bindings.js" type="BINDATA" />
       <include name="IDR_PERMISSIONS_CUSTOM_BINDINGS_JS" file="permissions_custom_bindings.js" type="BINDATA" />
       <include name="IDR_PRINTER_PROVIDER_CUSTOM_BINDINGS_JS" file="printer_provider_custom_bindings.js" type="BINDATA" />
-      <include name="IDR_RUNTIME_CUSTOM_BINDINGS_JS" file="runtime_custom_bindings.js" type="BINDATA" />
       <include name="IDR_SERVICE_WORKER_BINDINGS_JS" file="service_worker_bindings.js" type="BINDATA" />
       <include name="IDR_WEB_REQUEST_CUSTOM_BINDINGS_JS" file="web_request_custom_bindings.js" type="BINDATA" />
       <include name="IDR_WEB_REQUEST_EVENT_JS" file="web_request_event.js" type="BINDATA" />
       <include name="IDR_WEB_VIEW_REQUEST_CUSTOM_BINDINGS_JS" file="guest_view/web_view/web_view_request_custom_bindings.js" type="BINDATA" />
-
-      <!-- Custom types for APIs. -->
-      <include name="IDR_STORAGE_AREA_JS" file="storage_area.js" type="BINDATA" />
 
       <!-- Platform app support. -->
       <include name="IDR_PLATFORM_APP_JS" file="platform_app.js" type="BINDATA" />

@@ -3,6 +3,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import print_function
+
 import argparse
 import logging
 
@@ -31,7 +33,7 @@ def _ParseArguments():
 if __name__ == '__main__':
   options = _ParseArguments()
   logging.getLogger().setLevel(logging.WARNING)
-  print 'Serving on port %d' % options.port
+  print('Serving on port %d' % options.port)
   if not options.no_browser:
     import webbrowser
     webbrowser.open('http://127.0.0.1:%d' % options.port)

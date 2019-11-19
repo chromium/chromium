@@ -5,7 +5,7 @@ Before showing all properties:
 element.style { ()
 
 [expanded] 
-#inspected { (<style>…</style>)
+#inspected { (<style>)
     --var-0: 0px;
     --var-1: 1px;
     --var-2: 2px;
@@ -72,7 +72,7 @@ After showing all properties:
 element.style { ()
 
 [expanded] 
-#inspected { (<style>…</style>)
+#inspected { (<style>)
     --var-0: 0px;
     --var-1: 1px;
     --var-2: 2px;

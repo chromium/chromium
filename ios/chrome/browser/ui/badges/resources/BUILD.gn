@@ -1,0 +1,29 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ios/asset_catalog.gni")
+
+imageset("incognito_badge") {
+  sources = [
+    "incognito_badge.imageset/Contents.json",
+    "incognito_badge.imageset/incognito_badge@2x.png",
+    "incognito_badge.imageset/incognito_badge@3x.png",
+  ]
+}
+
+imageset("incognito_small_badge") {
+  sources = [
+    "incognito_small_badge.imageset/Contents.json",
+    "incognito_small_badge.imageset/incognito_small_badge@2x.png",
+    "incognito_small_badge.imageset/incognito_small_badge@3x.png",
+  ]
+}
+
+imageset("wrench_badge") {
+  sources = [
+    "wrench_badge.imageset/Contents.json",
+    "wrench_badge.imageset/wrench_badge@2x.png",
+    "wrench_badge.imageset/wrench_badge@3x.png",
+  ]
+}

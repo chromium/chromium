@@ -9,7 +9,7 @@
 
 #include "base/bind.h"
 #include "base/bind_helpers.h"
-#include "base/sha1.h"
+#include "base/hash/sha1.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task_runner_util.h"
@@ -17,9 +17,9 @@
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "components/base32/base32.h"
-#include "components/image_fetcher/core/cache/cached_image_fetcher_metrics_reporter.h"
 #include "components/image_fetcher/core/cache/image_data_store.h"
 #include "components/image_fetcher/core/cache/image_metadata_store.h"
+#include "components/image_fetcher/core/image_fetcher_metrics_reporter.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
@@ -66,12 +66,13 @@ ImageCache::ImageCache(std::unique_ptr<ImageDataStore> data_store,
       metadata_store_(std::move(metadata_store)),
       pref_service_(pref_service),
       clock_(clock),
-      task_runner_(task_runner),
-      weak_ptr_factory_(this) {}
+      task_runner_(task_runner) {}
 
 ImageCache::~ImageCache() = default;
 
-void ImageCache::SaveImage(std::string url, std::string image_data) {
+void ImageCache::SaveImage(std::string url,
+                           std::string image_data,
+                           bool needs_transcoding) {
   // If the image data is larger than the cache's max size, bail out.
   if (image_data.length() > kCacheMaxSize) {
     return;
@@ -79,7 +80,7 @@ void ImageCache::SaveImage(std::string url, std::string image_data) {
 
   base::OnceClosure request =
       base::BindOnce(&ImageCache::SaveImageImpl, weak_ptr_factory_.GetWeakPtr(),
-                     url, std::move(image_data));
+                     url, std::move(image_data), needs_transcoding);
   QueueOrStartRequest(std::move(request));
 }
 
@@ -137,36 +138,57 @@ void ImageCache::OnDependencyInitialized() {
 
   // TODO(wylieb): Consider delaying eviction as new requests come in via
   // separate weak pointers.
-  CachedImageFetcherMetricsReporter::ReportEvent(
-      CachedImageFetcherMetricsReporter::
-          kCachedImageFetcherInternalUmaClientName,
-      CachedImageFetcherEvent::kCacheStartupEvictionStarted);
+  ImageFetcherMetricsReporter::ReportEvent(
+      ImageFetcherMetricsReporter::kCachedImageFetcherInternalUmaClientName,
+      ImageFetcherEvent::kCacheStartupEvictionStarted);
 
   // Once all the queued requests are taken care of, run eviction.
-  base::PostTaskWithTraitsAndReply(
-      FROM_HERE, {base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(OnStartupEvictionQueued),
-      base::BindOnce(&ImageCache::RunEvictionOnStartup,
-                     weak_ptr_factory_.GetWeakPtr()));
+  base::PostTaskAndReply(FROM_HERE,
+                         {base::ThreadPool(), base::TaskPriority::BEST_EFFORT},
+                         base::BindOnce(OnStartupEvictionQueued),
+                         base::BindOnce(&ImageCache::RunEvictionOnStartup,
+                                        weak_ptr_factory_.GetWeakPtr()));
 }
 
-void ImageCache::SaveImageImpl(const std::string& url, std::string image_data) {
+void ImageCache::SaveImageImpl(const std::string& url,
+                               std::string image_data,
+                               bool needs_transcoding) {
   std::string key = ImageCache::HashUrlToKey(url);
 
   // If the cache is full, evict some stuff.
   RunEvictionWhenFull();
 
   size_t length = image_data.length();
-  data_store_->SaveImage(key, std::move(image_data));
-  metadata_store_->SaveImageMetadata(key, length);
+  data_store_->SaveImage(key, std::move(image_data), needs_transcoding);
+  metadata_store_->SaveImageMetadata(key, length, needs_transcoding);
 }
 
 void ImageCache::LoadImageImpl(bool read_only,
                                const std::string& url,
                                ImageDataCallback callback) {
   std::string key = ImageCache::HashUrlToKey(url);
+  metadata_store_->LoadImageMetadata(
+      key, base::BindOnce(&ImageCache::OnImageMetadataLoadedForLoadImage,
+                          weak_ptr_factory_.GetWeakPtr(), read_only, key,
+                          std::move(callback), base::TimeTicks::Now()));
+}
 
-  data_store_->LoadImage(key, std::move(callback));
+void ImageCache::OnImageMetadataLoadedForLoadImage(
+    bool read_only,
+    const std::string& key,
+    ImageDataCallback callback,
+    base::TimeTicks start_time,
+    base::Optional<CachedImageMetadataProto> metadata) {
+  // Record time spent to load metadata.
+  ImageFetcherMetricsReporter::ReportLoadImageMetadata(start_time);
+
+  if (!metadata.has_value()) {
+    std::move(callback).Run(/* needs_transcoding */ false, "");
+    return;
+  }
+
+  data_store_->LoadImage(key, metadata->needs_transcoding(),
+                         std::move(callback));
   if (!read_only) {
     metadata_store_->UpdateImageMetadata(key);
   }
@@ -207,7 +229,7 @@ void ImageCache::RunEvictionWhenFull() {
   base::Time last_eviction_time = pref_service_->GetTime(kPrefLastLRUEviction);
   // Only report for non-null times.
   if (last_eviction_time != base::Time()) {
-    CachedImageFetcherMetricsReporter::ReportTimeSinceLastCacheLRUEviction(
+    ImageFetcherMetricsReporter::ReportTimeSinceLastCacheLRUEviction(
         last_eviction_time);
   }
 
@@ -269,10 +291,9 @@ void ImageCache::ReconcileDataKeys(std::vector<std::string> metadata_keys,
     data_store_->DeleteImage(key);
   }
 
-  CachedImageFetcherMetricsReporter::ReportEvent(
-      CachedImageFetcherMetricsReporter::
-          kCachedImageFetcherInternalUmaClientName,
-      CachedImageFetcherEvent::kCacheStartupEvictionFinished);
+  ImageFetcherMetricsReporter::ReportEvent(
+      ImageFetcherMetricsReporter::kCachedImageFetcherInternalUmaClientName,
+      ImageFetcherEvent::kCacheStartupEvictionFinished);
 }
 
 }  // namespace image_fetcher

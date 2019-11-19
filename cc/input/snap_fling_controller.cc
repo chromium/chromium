@@ -50,8 +50,8 @@ bool SnapFlingController::HandleGestureScrollUpdate(
       SnapFlingCurve::EstimateDisplacement(info.delta);
 
   gfx::Vector2dF target_offset, start_offset;
-  if (!client_->GetSnapFlingInfo(ending_displacement, &start_offset,
-                                 &target_offset)) {
+  if (!client_->GetSnapFlingInfoAndSetSnapTarget(
+          ending_displacement, &start_offset, &target_offset)) {
     state_ = State::kIgnored;
     return false;
   }

@@ -34,15 +34,14 @@
 #include "third_party/blink/renderer/platform/network/encoded_form_data.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
-#include "third_party/blink/renderer/platform/wtf/text/cstring.h"
-#include "third_party/blink/renderer/platform/wtf/time.h"
 
 namespace blink {
 
-static long long GenerateSequenceNumber() {
+static int64_t GenerateSequenceNumber() {
   // Initialize to the current time to reduce the likelihood of generating
   // identifiers that overlap with those from past/future browser sessions.
-  static long long next = static_cast<long long>(CurrentTime() * 1000000.0);
+  static int64_t next =
+      static_cast<int64_t>(base::Time::Now().ToDoubleT() * 1000000.0);
   return ++next;
 }
 
@@ -76,8 +75,11 @@ void HistoryItem::SetURL(const KURL& url) {
 
 void HistoryItem::SetReferrer(const Referrer& referrer) {
   // This should be a CHECK.
-  referrer_ = SecurityPolicy::GenerateReferrer(referrer.referrer_policy, Url(),
-                                               referrer.referrer);
+  // TODO(domfarolino): Should this function take an |origin| parameter?
+  referrer_ = SecurityPolicy::GenerateReferrer(
+      referrer.referrer_policy,
+      SecurityOrigin::CreateFromString(referrer.referrer), Url(),
+      referrer.referrer);
 }
 
 void HistoryItem::SetVisualViewportScrollOffset(const ScrollOffset& offset) {
@@ -152,13 +154,12 @@ EncodedFormData* HistoryItem::FormData() {
 ResourceRequest HistoryItem::GenerateResourceRequest(
     mojom::FetchCacheMode cache_mode) {
   ResourceRequest request(url_string_);
-  // TODO(domfarolino): Stop storing ResourceRequest's generated referrer as a
-  // header and instead use a separate member. See https://crbug.com/850813.
-  request.SetHTTPReferrer(referrer_);
+  request.SetReferrerString(referrer_.referrer);
+  request.SetReferrerPolicy(referrer_.referrer_policy);
   request.SetCacheMode(cache_mode);
   if (form_data_) {
-    request.SetHTTPMethod(http_names::kPOST);
-    request.SetHTTPBody(form_data_);
+    request.SetHttpMethod(http_names::kPOST);
+    request.SetHttpBody(form_data_);
     request.SetHTTPContentType(form_content_type_);
     request.SetHTTPOriginToMatchReferrerIfNeeded();
   }

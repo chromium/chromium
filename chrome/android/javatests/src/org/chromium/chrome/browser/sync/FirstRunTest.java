@@ -20,7 +20,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
@@ -32,13 +31,14 @@ import org.chromium.chrome.browser.firstrun.FirstRunActivity.FirstRunActivityObs
 import org.chromium.chrome.browser.firstrun.FirstRunFlowSequencer;
 import org.chromium.chrome.browser.firstrun.FirstRunSignInProcessor;
 import org.chromium.chrome.browser.preferences.Preferences;
-import org.chromium.chrome.browser.signin.AccountManagementFragment;
+import org.chromium.chrome.browser.preferences.sync.AccountManagementFragment;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ActivityUtils;
 import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.concurrent.TimeoutException;
 
@@ -51,7 +51,7 @@ public class FirstRunTest {
     @Rule
     public SyncTestRule mSyncTestRule = new SyncTestRule() {
         @Override
-        public void startMainActivityForSyncTest() throws Exception {
+        public void startMainActivityForSyncTest() {
             FirstRunActivity.setObserverForTest(mTestObserver);
 
             // Starts up and waits for the FirstRunActivity to be ready.
@@ -71,12 +71,9 @@ public class FirstRunTest {
             final ActivityMonitor freMonitor =
                     new ActivityMonitor(FirstRunActivity.class.getName(), null, false);
             instrumentation.addMonitor(freMonitor);
-            ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-                @Override
-                public void run() {
-                    FirstRunFlowSequencer.launch(context, intent, false /* requiresBroadcast */,
-                            false /* preferLightweightFre */);
-                }
+            TestThreadUtils.runOnUiThreadBlocking(() -> {
+                FirstRunFlowSequencer.launch(context, intent, false /* requiresBroadcast */,
+                        false /* preferLightweightFre */);
             });
 
             // Wait for the FRE to be ready to use.
@@ -97,11 +94,6 @@ public class FirstRunTest {
     };
 
     private static final String TEST_ACTION = "com.artificial.package.TEST_ACTION";
-
-    private static enum ShowSettings {
-        YES,
-        NO;
-    }
 
     private static final class TestObserver implements FirstRunActivityObserver {
         public final CallbackHelper flowIsKnownCallback = new CallbackHelper();
@@ -128,7 +120,7 @@ public class FirstRunTest {
     private FirstRunActivity mActivity;
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         if (mActivity != null) mActivity.finish();
     }
 
@@ -139,12 +131,12 @@ public class FirstRunTest {
      */
     @Test
     @FlakyTest(message = "https://crbug.com/616456")
-    public void testSignIn() throws Exception {
+    public void testSignIn() {
         Account testAccount = SigninTestUtil.addTestAccount();
         Assert.assertNull(SigninTestUtil.getCurrentAccount());
         Assert.assertFalse(SyncTestUtil.isSyncRequested());
 
-        processFirstRun(testAccount.name, ShowSettings.NO);
+        processFirstRun(testAccount.name, false /* ShowSettings */);
         Assert.assertEquals(testAccount, SigninTestUtil.getCurrentAccount());
         SyncTestUtil.waitForSyncActive();
     }
@@ -157,9 +149,9 @@ public class FirstRunTest {
      */
     @Test
     @FlakyTest(message = "https://crbug.com/616456")
-    public void testSignInWithOpenSettings() throws Exception {
+    public void testSignInWithOpenSettings() {
         final Account testAccount = SigninTestUtil.addTestAccount();
-        final Preferences prefActivity = processFirstRun(testAccount.name, ShowSettings.YES);
+        final Preferences prefActivity = processFirstRun(testAccount.name, true /* ShowSettings */);
 
         // User should be signed in and the sync backend should initialize, but sync should not
         // become fully active until the settings page is closed.
@@ -169,9 +161,9 @@ public class FirstRunTest {
 
         // Close the settings fragment.
         AccountManagementFragment fragment =
-                (AccountManagementFragment) prefActivity.getFragmentForTest();
+                (AccountManagementFragment) prefActivity.getMainFragment();
         Assert.assertNotNull(fragment);
-        prefActivity.getFragmentManager().beginTransaction().remove(fragment).commit();
+        prefActivity.getSupportFragmentManager().beginTransaction().remove(fragment).commit();
 
         // Sync should immediately become active.
         Assert.assertTrue(SyncTestUtil.isSyncActive());
@@ -182,10 +174,10 @@ public class FirstRunTest {
     @SmallTest
     @Feature({"Sync"})
     @DisabledTest // https://crbug.com/901488
-    public void testNoSignIn() throws Exception {
+    public void testNoSignIn() {
         SigninTestUtil.addTestAccount();
         Assert.assertFalse(SyncTestUtil.isSyncRequested());
-        processFirstRun(null, ShowSettings.NO);
+        processFirstRun(null, false /* ShowSettings */);
         Assert.assertNull(SigninTestUtil.getCurrentAccount());
         Assert.assertFalse(SyncTestUtil.isSyncRequested());
     }
@@ -197,13 +189,12 @@ public class FirstRunTest {
      * @param showSettings Whether to show the settings page.
      * @return The Preferences activity if showSettings was YES; null otherwise.
      */
-    private Preferences processFirstRun(String account, ShowSettings showSettings) {
+    private Preferences processFirstRun(String account, boolean showSettings) {
         FirstRunSignInProcessor.setFirstRunFlowSignInComplete(false);
-        FirstRunSignInProcessor.finalizeFirstRunFlowState(
-                account, showSettings == ShowSettings.YES);
+        FirstRunSignInProcessor.finalizeFirstRunFlowState(account, showSettings);
 
         Preferences prefActivity = null;
-        if (showSettings == ShowSettings.YES) {
+        if (showSettings) {
             prefActivity =
                     ActivityUtils.waitForActivity(InstrumentationRegistry.getInstrumentation(),
                             Preferences.class, new Runnable() {
@@ -227,11 +218,6 @@ public class FirstRunTest {
     }
 
     private void processFirstRunOnUiThread() {
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                FirstRunSignInProcessor.start(mActivity);
-            }
-        });
+        TestThreadUtils.runOnUiThreadBlocking(() -> { FirstRunSignInProcessor.start(mActivity); });
     }
 }

@@ -6,9 +6,9 @@ package org.chromium.chrome.test.util;
 
 import org.junit.rules.ExternalResource;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
  * Initialize a SadTab instance stubbed for facilitating tests.
@@ -52,9 +52,9 @@ public class SadTabRule extends ExternalResource {
                     return mShowing;
                 }
             };
-            ThreadUtils.runOnUiThreadBlocking(() -> SadTab.initForTesting(mTab, mSadTab));
+            TestThreadUtils.runOnUiThreadBlocking(() -> SadTab.initForTesting(mTab, mSadTab));
         }
-        ThreadUtils.runOnUiThreadBlocking(() -> {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
             if (show) {
                 mSadTab.show();
             } else {

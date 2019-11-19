@@ -15,11 +15,10 @@
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
+#include "net/base/io_buffer.h"
+#include "storage/browser/blob/mojom/blob_storage_context.mojom.h"
+#include "storage/browser/blob/shareable_file_reference.h"
 #include "url/gurl.h"
-
-namespace disk_cache {
-class Entry;
-}
 
 namespace storage {
 class BlobDataBuilder;
@@ -39,10 +38,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobDataItem
     kBytesDescription,
     kFile,
     kFileFilesystem,
-    kDiskCacheEntry
+    kReadableDataHandle,
   };
 
-  // The DataHandle class is used to persist resources that are needed for
+  // The DataHandle class is used to persist an interface and resources for
   // reading this BlobDataItem. This object will stay around while any reads are
   // pending. If all blobs with this item are deleted or the item is swapped for
   // a different backend version (mem-to-disk or the reverse), then the item
@@ -50,7 +49,31 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobDataItem
   class COMPONENT_EXPORT(STORAGE_BROWSER) DataHandle
       : public base::RefCounted<DataHandle> {
    public:
-    virtual bool IsValid();
+    // Returns the size of the main blob data.
+    virtual uint64_t GetSize() const = 0;
+
+    // Reads the given data range into the given |producer|.
+    // Returns the net::Error from the read operation to the callback.
+    virtual void Read(mojo::ScopedDataPipeProducerHandle producer,
+                      uint64_t src_offset,
+                      uint64_t bytes_to_read,
+                      base::OnceCallback<void(int)> callback) = 0;
+
+    // Returns the side data size.  If there is no side data, then 0 should
+    // be returned.
+    virtual uint64_t GetSideDataSize() const = 0;
+
+    // Returns the entire side data as a BigBuffer and the net::Error from
+    // reading.  The number of bytes read is the size of the BigBuffer.
+    virtual void ReadSideData(
+        base::OnceCallback<void(int, mojo_base::BigBuffer)> callback) = 0;
+
+    // Print a description of the readable DataHandle for debugging.
+    virtual void PrintTo(::std::ostream* os) const = 0;
+
+    // Return the histogram label to use when calling RecordBytesRead().  If
+    // nullptr is returned then nothing will be recorded.
+    virtual const char* BytesReadHistogramLabel() const = 0;
 
    protected:
     virtual ~DataHandle();
@@ -59,7 +82,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobDataItem
     friend class base::RefCounted<DataHandle>;
   };
 
-  static scoped_refptr<BlobDataItem> CreateBytes(base::span<const char> bytes);
+  static scoped_refptr<BlobDataItem> CreateBytes(
+      base::span<const uint8_t> bytes);
   static scoped_refptr<BlobDataItem> CreateBytesDescription(size_t length);
   static scoped_refptr<BlobDataItem> CreateFile(base::FilePath path);
   static scoped_refptr<BlobDataItem> CreateFile(
@@ -67,7 +91,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobDataItem
       uint64_t offset,
       uint64_t length,
       base::Time expected_modification_time = base::Time(),
-      scoped_refptr<DataHandle> data_handle = nullptr);
+      scoped_refptr<ShareableFileReference> file_ref = nullptr);
   static scoped_refptr<BlobDataItem> CreateFutureFile(uint64_t offset,
                                                       uint64_t length,
                                                       uint64_t file_id);
@@ -77,19 +101,18 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobDataItem
       uint64_t length,
       base::Time expected_modification_time,
       scoped_refptr<FileSystemContext> file_system_context);
-  static scoped_refptr<BlobDataItem> CreateDiskCacheEntry(
-      uint64_t offset,
-      uint64_t length,
+  static scoped_refptr<BlobDataItem> CreateReadableDataHandle(
       scoped_refptr<DataHandle> data_handle,
-      disk_cache::Entry* entry,
-      int disk_cache_stream_index,
-      int disk_cache_side_stream_index);
+      uint64_t offset,
+      uint64_t length);
+  static scoped_refptr<BlobDataItem> CreateMojoDataItem(
+      mojom::BlobDataItemPtr item);
 
   Type type() const { return type_; }
   uint64_t offset() const { return offset_; }
   uint64_t length() const { return length_; }
 
-  base::span<const char> bytes() const {
+  base::span<const uint8_t> bytes() const {
     DCHECK_EQ(type_, Type::kBytes);
     return base::make_span(bytes_);
   }
@@ -115,28 +138,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobDataItem
     return expected_modification_time_;
   }
 
-  // This can return null if the underlying disk cache entry was invalidated
-  // (because the user cleared site data), so users should make sure to always
-  // check for that.
-  disk_cache::Entry* disk_cache_entry() const {
-    DCHECK_EQ(type_, Type::kDiskCacheEntry);
-    DCHECK(data_handle_);
-    return data_handle_->IsValid() ? disk_cache_entry_ : nullptr;
-  }
-
-  int disk_cache_stream_index() const {
-    DCHECK_EQ(type_, Type::kDiskCacheEntry);
-    return disk_cache_stream_index_;
-  }
-
-  int disk_cache_side_stream_index() const {
-    DCHECK_EQ(type_, Type::kDiskCacheEntry);
-    return disk_cache_side_stream_index_;
-  }
-
   DataHandle* data_handle() const {
-    DCHECK(type_ == Type::kFile || type_ == Type::kDiskCacheEntry)
-        << static_cast<int>(type_);
+    DCHECK_EQ(type_, Type::kReadableDataHandle) << static_cast<int>(type_);
     return data_handle_.get();
   }
 
@@ -156,18 +159,18 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobDataItem
   BlobDataItem(Type type, uint64_t offset, uint64_t length);
   virtual ~BlobDataItem();
 
-  base::span<char> mutable_bytes() {
+  base::span<uint8_t> mutable_bytes() {
     DCHECK_EQ(type_, Type::kBytes);
     return base::make_span(bytes_);
   }
 
   void AllocateBytes();
-  void PopulateBytes(base::span<const char> data);
+  void PopulateBytes(base::span<const uint8_t> data);
   void ShrinkBytes(size_t new_length);
 
   void PopulateFile(base::FilePath path,
                     base::Time expected_modification_time,
-                    scoped_refptr<DataHandle> data_handle);
+                    scoped_refptr<ShareableFileReference> file_ref);
   void ShrinkFile(uint64_t new_length);
   void GrowFile(uint64_t new_length);
   void SetFileModificationTime(base::Time time) {
@@ -179,23 +182,14 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobDataItem
   uint64_t offset_;
   uint64_t length_;
 
-  std::vector<char> bytes_;  // For Type::kBytes.
-  base::FilePath path_;      // For Type::kFile.
-  GURL filesystem_url_;      // For Type::kFileFilesystem.
+  std::vector<uint8_t> bytes_;  // For Type::kBytes.
+  base::FilePath path_;         // For Type::kFile.
+  GURL filesystem_url_;         // For Type::kFileFilesystem.
   base::Time
       expected_modification_time_;  // For Type::kFile and kFileFilesystem.
 
-  scoped_refptr<DataHandle>
-      data_handle_;  // For Type::kFile and kDiskCacheEntry.
-
-  // This naked pointer is safe because the scope is protected by the DataHandle
-  // instance for disk cache entries during the lifetime of this BlobDataItem.
-  // Only valid if the DataHandle's IsValid method returns true.
-  // TODO(mek): Make this part of the DataHandle and abstract away cache
-  // specific logic to be part of an API exposed by DataHandle.
-  disk_cache::Entry* disk_cache_entry_;  // For Type::kDiskCacheEntry.
-  int disk_cache_stream_index_;          // For Type::kDiskCacheEntry.
-  int disk_cache_side_stream_index_;     // For Type::kDiskCacheEntry.
+  scoped_refptr<DataHandle> data_handle_;           // For kReadableDataHandle.
+  scoped_refptr<ShareableFileReference> file_ref_;  // For Type::kFile
 
   scoped_refptr<FileSystemContext>
       file_system_context_;  // For Type::kFileFilesystem.

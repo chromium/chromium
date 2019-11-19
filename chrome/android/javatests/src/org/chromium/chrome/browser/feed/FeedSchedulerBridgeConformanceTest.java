@@ -7,8 +7,7 @@ package org.chromium.chrome.browser.feed;
 import android.support.test.filters.SmallTest;
 import android.support.test.rule.UiThreadTestRule;
 
-import com.google.android.libraries.feed.api.requestmanager.RequestManager;
-import com.google.android.libraries.feed.api.sessionmanager.SessionManager;
+import com.google.android.libraries.feed.api.client.requestmanager.RequestManager;
 import com.google.android.libraries.feed.testing.conformance.scheduler.SchedulerConformanceTest;
 
 import org.junit.After;
@@ -24,7 +23,7 @@ import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.test.ChromeBrowserTestRule;
+import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 
 import java.util.Arrays;
@@ -58,8 +57,6 @@ public final class FeedSchedulerBridgeConformanceTest extends SchedulerConforman
 
     @Mock
     private RequestManager mRequestManager;
-    @Mock
-    private SessionManager mSessionManager;
     private boolean mUseRequestManager;
 
     public FeedSchedulerBridgeConformanceTest(boolean useRequestManager) {
@@ -67,12 +64,11 @@ public final class FeedSchedulerBridgeConformanceTest extends SchedulerConforman
     }
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         // The scheduler is declared and tested in SchedulerConformanceTest.
         scheduler = new FeedSchedulerBridge(Profile.getLastUsedProfile());
         if (mUseRequestManager) {
-            ((FeedSchedulerBridge) scheduler)
-                    .initializeFeedDependencies(mRequestManager, mSessionManager);
+            ((FeedSchedulerBridge) scheduler).initializeFeedDependencies(mRequestManager);
         }
     }
 

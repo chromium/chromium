@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/platform/loader/testing/bytes_consumer_test_reader.h"
 #include "third_party/blink/renderer/platform/loader/testing/replaying_bytes_consumer.h"
 #include "third_party/blink/renderer/platform/scheduler/test/fake_task_runner.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
 
@@ -23,7 +24,7 @@ class ResponseBodyLoaderTest : public testing::Test {
   using Command = ReplayingBytesConsumer::Command;
   using PublicState = BytesConsumer::PublicState;
   using Result = BytesConsumer::Result;
-  class TestClient final : public GarbageCollectedFinalized<TestClient>,
+  class TestClient final : public GarbageCollected<TestClient>,
                            public ResponseBodyLoaderClient {
     USING_GARBAGE_COLLECTED_MIXIN(TestClient);
 
@@ -36,9 +37,9 @@ class ResponseBodyLoaderTest : public testing::Test {
 
     TestClient() : TestClient(Option::kNone) {}
     TestClient(Option option) : option_(option) {}
-    virtual ~TestClient() {}
+    ~TestClient() override {}
 
-    String GetData() const { return data_; }
+    String GetData() { return data_.ToString(); }
     bool LoadingIsFinished() const { return finished_; }
     bool LoadingIsFailed() const { return failed_; }
     bool LoadingIsCancelled() const { return cancelled_; }
@@ -46,7 +47,7 @@ class ResponseBodyLoaderTest : public testing::Test {
     void DidReceiveData(base::span<const char> data) override {
       DCHECK(!finished_);
       DCHECK(!failed_);
-      data_.append(String(data.data(), data.size()));
+      data_.Append(data.data(), data.size());
       switch (option_) {
         case Option::kNone:
           break;
@@ -80,13 +81,13 @@ class ResponseBodyLoaderTest : public testing::Test {
    private:
     const Option option_;
     Member<ResponseBodyLoader> loader_;
-    String data_;
+    StringBuilder data_;
     bool finished_ = false;
     bool failed_ = false;
     bool cancelled_ = false;
   };
 
-  class ReadingClient final : public GarbageCollectedFinalized<ReadingClient>,
+  class ReadingClient final : public GarbageCollected<ReadingClient>,
                               public BytesConsumer::Client {
     USING_GARBAGE_COLLECTED_MIXIN(ReadingClient);
 
@@ -156,7 +157,7 @@ TEST_F(ResponseBodyLoaderTest, Load) {
 
   EXPECT_FALSE(client->LoadingIsFinished());
   EXPECT_FALSE(client->LoadingIsFailed());
-  EXPECT_EQ(String(), client->GetData());
+  EXPECT_TRUE(client->GetData().IsEmpty());
 
   body_loader->Start();
 
@@ -185,7 +186,7 @@ TEST_F(ResponseBodyLoaderTest, LoadFailure) {
 
   EXPECT_FALSE(client->LoadingIsFinished());
   EXPECT_FALSE(client->LoadingIsFailed());
-  EXPECT_EQ(String(), client->GetData());
+  EXPECT_TRUE(client->GetData().IsEmpty());
 
   body_loader->Start();
 
@@ -213,7 +214,7 @@ TEST_F(ResponseBodyLoaderTest, LoadWithDataAndDone) {
 
   EXPECT_FALSE(client->LoadingIsFinished());
   EXPECT_FALSE(client->LoadingIsFailed());
-  EXPECT_EQ(String(), client->GetData());
+  EXPECT_TRUE(client->GetData().IsEmpty());
 
   body_loader->Start();
 
@@ -244,7 +245,7 @@ TEST_F(ResponseBodyLoaderTest, Abort) {
 
   EXPECT_FALSE(client->LoadingIsFinished());
   EXPECT_FALSE(client->LoadingIsFailed());
-  EXPECT_EQ(String(), client->GetData());
+  EXPECT_TRUE(client->GetData().IsEmpty());
   EXPECT_FALSE(body_loader->IsAborted());
 
   body_loader->Start();
@@ -276,7 +277,7 @@ TEST_F(ResponseBodyLoaderTest, Suspend) {
 
   EXPECT_FALSE(client->LoadingIsFinished());
   EXPECT_FALSE(client->LoadingIsFailed());
-  EXPECT_EQ(String(), client->GetData());
+  EXPECT_TRUE(client->GetData().IsEmpty());
   EXPECT_FALSE(body_loader->IsSuspended());
 
   body_loader->Start();
@@ -340,7 +341,7 @@ TEST_F(ResponseBodyLoaderTest, ReadTooBigBuffer) {
 
   EXPECT_FALSE(client->LoadingIsFinished());
   EXPECT_FALSE(client->LoadingIsFailed());
-  EXPECT_EQ(String(), client->GetData());
+  EXPECT_TRUE(client->GetData().IsEmpty());
 
   body_loader->Start();
 
@@ -381,7 +382,7 @@ TEST_F(ResponseBodyLoaderTest, NotDrainable) {
 
   EXPECT_FALSE(client->LoadingIsFinished());
   EXPECT_FALSE(client->LoadingIsFailed());
-  EXPECT_EQ(String(), client->GetData());
+  EXPECT_TRUE(client->GetData().IsEmpty());
 
   body_loader->Start();
 
@@ -799,11 +800,14 @@ TEST_F(ResponseBodyLoaderDrainedBytesConsumerNotificationOutOfOnStateChangeTest,
 
   EXPECT_TRUE(consumer.DrainAsDataPipe());
 
+  task_runner->RunUntilIdle();
+
   EXPECT_FALSE(client->LoadingIsCancelled());
   EXPECT_FALSE(client->LoadingIsFinished());
   EXPECT_FALSE(client->LoadingIsFailed());
 
-  task_runner->RunUntilIdle();
+  completion_notifier->SignalComplete();
+
   EXPECT_FALSE(client->LoadingIsCancelled());
   EXPECT_TRUE(client->LoadingIsFinished());
   EXPECT_FALSE(client->LoadingIsFailed());

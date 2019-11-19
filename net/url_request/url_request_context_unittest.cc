@@ -8,7 +8,7 @@
 #include "base/trace_event/memory_dump_request_args.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "net/proxy_resolution/proxy_config_service_fixed.h"
-#include "net/test/test_with_scoped_task_environment.h"
+#include "net/test/test_with_task_environment.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_request_context_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -17,7 +17,7 @@ namespace net {
 
 class URLRequestContextMemoryDumpTest
     : public testing::TestWithParam<base::trace_event::MemoryDumpLevelOfDetail>,
-      public WithScopedTaskEnvironment {};
+      public WithTaskEnvironment {};
 
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
@@ -48,7 +48,7 @@ TEST_P(URLRequestContextMemoryDumpTest, MemoryDumpProvider) {
     const std::string& dump_name = it.first;
     if (dump_name.find("net/http_network_session") != std::string::npos)
       did_dump_http_network_session = true;
-    // Match against a relaxed form of the memory dump whitelist pattern.
+    // Match against a relaxed form of the memory dump permitted pattern.
     if (base::MatchPattern(
             dump_name, "net/http_network_session_0x*/ssl_client_session_cache"))
       did_dump_ssl_client_session_cache = true;

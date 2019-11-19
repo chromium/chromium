@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.compositor.resources;
 import android.graphics.Rect;
 
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 
 /**
  * Utility class for creating native resources.
@@ -15,13 +16,16 @@ import org.chromium.base.annotations.JNINamespace;
 public class ResourceFactory {
     public static long createToolbarContainerResource(
             Rect toolbarPosition, Rect locationBarPosition, int shadowHeight) {
-        return nativeCreateToolbarContainerResource(toolbarPosition.left, toolbarPosition.top,
-                toolbarPosition.right, toolbarPosition.bottom, locationBarPosition.left,
-                locationBarPosition.top, locationBarPosition.right, locationBarPosition.bottom,
-                shadowHeight);
+        return ResourceFactoryJni.get().createToolbarContainerResource(toolbarPosition.left,
+                toolbarPosition.top, toolbarPosition.right, toolbarPosition.bottom,
+                locationBarPosition.left, locationBarPosition.top, locationBarPosition.right,
+                locationBarPosition.bottom, shadowHeight);
     }
 
-    private static native long nativeCreateToolbarContainerResource(int toolbarLeft, int toolbarTop,
-            int toolbarRight, int toolbarBottom, int locationBarLeft, int locationBarTop,
-            int locationBarRight, int locationBarBottom, int shadowHeight);
+    @NativeMethods
+    interface Natives {
+        long createToolbarContainerResource(int toolbarLeft, int toolbarTop, int toolbarRight,
+                int toolbarBottom, int locationBarLeft, int locationBarTop, int locationBarRight,
+                int locationBarBottom, int shadowHeight);
+    }
 }

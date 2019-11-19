@@ -4,24 +4,41 @@
 
 #include "ash/ime/ime_controller.h"
 
+#include <utility>
+
 #include "ash/ime/ime_mode_indicator_view.h"
+#include "ash/ime/ime_switch_type.h"
 #include "ash/ime/mode_indicator_observer.h"
 #include "ash/shell.h"
 #include "ash/system/tray/system_tray_notifier.h"
 #include "base/bind_helpers.h"
+#include "base/metrics/histogram_macros.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/ime/chromeos/extension_ime_util.h"
 #include "ui/display/manager/display_manager.h"
 
 namespace ash {
 
+namespace {
+
+// The result of pressing VKEY_MODECHANGE (for metrics).
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class ModeChangeKeyAction {
+  kShowIndicator = 0,
+  kSwitchIme = 1,
+  kMaxValue = kSwitchIme
+};
+
+}  // namespace
+
 ImeController::ImeController()
     : mode_indicator_observer_(std::make_unique<ModeIndicatorObserver>()) {}
 
 ImeController::~ImeController() {
-  Shell* shell = Shell::Get();
-  shell->cast_config()->RemoveObserver(this);
-  shell->display_manager()->RemoveObserver(this);
+  if (CastConfigController::Get())
+    CastConfigController::Get()->RemoveObserver(this);
+  Shell::Get()->display_manager()->RemoveObserver(this);
 }
 
 void ImeController::AddObserver(Observer* observer) {
@@ -32,17 +49,19 @@ void ImeController::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void ImeController::BindRequest(mojom::ImeControllerRequest request) {
-  bindings_.AddBinding(this, std::move(request));
+void ImeController::BindReceiver(
+    mojo::PendingReceiver<mojom::ImeController> receiver) {
+  receivers_.Add(this, std::move(receiver));
 }
 
-void ImeController::SetClient(mojom::ImeControllerClientPtr client) {
-  client_ = std::move(client);
+void ImeController::SetClient(
+    mojo::PendingRemote<mojom::ImeControllerClient> client) {
+  client_.Bind(std::move(client));
 
   // Initializes some observers for client.
-  Shell* shell = Shell::Get();
-  shell->cast_config()->AddObserver(this);
-  shell->display_manager()->AddObserver(this);
+  if (CastConfigController::Get())
+    CastConfigController::Get()->AddObserver(this);
+  Shell::Get()->display_manager()->AddObserver(this);
 }
 
 bool ImeController::CanSwitchIme() const {
@@ -181,18 +200,18 @@ void ImeController::ShowModeIndicator(const gfx::Rect& anchor_bounds,
 
 void ImeController::OnDisplayMetricsChanged(const display::Display& display,
                                             uint32_t changed_metrics) {
-  bool is_mirroring =
-      (changed_metrics & display::DisplayObserver::DISPLAY_METRIC_MIRROR_STATE);
-  client_->UpdateMirroringState(is_mirroring);
+  if (changed_metrics & display::DisplayObserver::DISPLAY_METRIC_MIRROR_STATE) {
+    Shell* shell = Shell::Get();
+    client_->UpdateMirroringState(shell->display_manager()->IsInMirrorMode());
+  }
 }
 
-void ImeController::OnDevicesUpdated(
-    std::vector<mojom::SinkAndRoutePtr> devices) {
+void ImeController::OnDevicesUpdated(const std::vector<SinkAndRoute>& devices) {
   DCHECK(client_);
 
   bool casting_desktop = false;
-  for (auto& receiver : devices) {
-    if (receiver->route->content_source == mojom::ContentSource::DESKTOP) {
+  for (const auto& receiver : devices) {
+    if (receiver.route.content_source == ContentSource::kDesktop) {
       casting_desktop = true;
       break;
     }
@@ -259,7 +278,7 @@ std::vector<std::string> ImeController::GetCandidateImesForAccelerator(
 
   // Obtain the intersection of input_method_ids_to_switch and available_imes_.
   for (const mojom::ImeInfo& ime : available_imes_) {
-    if (base::ContainsValue(input_method_ids_to_switch, ime.id))
+    if (base::Contains(input_method_ids_to_switch, ime.id))
       candidate_ids.push_back(ime.id);
   }
   return candidate_ids;

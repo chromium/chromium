@@ -125,7 +125,7 @@ TEST_F(OmniboxTest, HandleInput) {
   {
     // Type at the beginning, ensuring that in-line match is disabled.
     SCOPED_TRACE(__LINE__);
-    ExpectKeyboardUpdate(".wi", 1, 1);
+    ExpectKeyboardUpdate(".wi", 1);
     ExpectAutocompleteRequest(".wi", 1, kPreventInline);
     SetInput(".wi", 1, 1, "wi", 0, 0);
     VerifyMocks();
@@ -168,14 +168,14 @@ TEST_F(OmniboxTest, HandleMatches) {
   {
     // Supply a match, and ensure no new autocomplete request is sent.
     SCOPED_TRACE(__LINE__);
-    ExpectKeyboardUpdate("wiki", 1, 4);
+    ExpectKeyboardUpdate("wiki", 4, 1);
     SetAutocompletion("w", "iki");
     VerifyMocks();
   }
   {
     // Supply a new match that replaces the previous.
     SCOPED_TRACE(__LINE__);
-    ExpectKeyboardUpdate("wikipedia", 1, 9);
+    ExpectKeyboardUpdate("wikipedia", 9, 1);
     SetAutocompletion("w", "ikipedia");
     VerifyMocks();
   }
@@ -198,7 +198,7 @@ TEST_F(OmniboxTest, HandleMatches) {
   {
     // Restore a match.
     SCOPED_TRACE(__LINE__);
-    ExpectKeyboardUpdate("wikipedia", 1, 9);
+    ExpectKeyboardUpdate("wikipedia", 9, 1);
     SetAutocompletion("w", "ikipedia");
     VerifyMocks();
   }
@@ -206,7 +206,7 @@ TEST_F(OmniboxTest, HandleMatches) {
     // Move the cursor into the match, ensuring that the match is incorporated
     // into the next autocomplete request, but that in-line is disabled.
     SCOPED_TRACE(__LINE__);
-    ExpectKeyboardUpdate("wikipedia", 4, 4);
+    ExpectKeyboardUpdate("wikipedia", 4);
     ExpectAutocompleteRequest("wikipedia", 4, kPreventInline);
     SetInput("wikipedia", 4, 4, "wikipedia", 1, 9);
     VerifyMocks();
@@ -215,7 +215,7 @@ TEST_F(OmniboxTest, HandleMatches) {
     // Type into the middle of what used to be the match, ensuring that in-line
     // stays disabled.
     SCOPED_TRACE(__LINE__);
-    ExpectKeyboardUpdate("wikippedia", 5, 5);
+    ExpectKeyboardUpdate("wikippedia", 5);
     ExpectAutocompleteRequest("wikippedia", 5, kPreventInline);
     SetInput("wikippedia", 5, 5, "wikipedia", 4, 4);
     VerifyMocks();

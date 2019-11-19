@@ -43,11 +43,10 @@ class MEDIA_EXPORT DecryptingRenderer : public Renderer {
   // Renderer implementation:
   void Initialize(MediaResource* media_resource,
                   RendererClient* client,
-                  const PipelineStatusCB& init_cb) override;
-  void SetCdm(CdmContext* cdm_context,
-              const CdmAttachedCB& cdm_attached_cb) override;
+                  PipelineStatusCallback init_cb) override;
+  void SetCdm(CdmContext* cdm_context, CdmAttachedCB cdm_attached_cb) override;
 
-  void Flush(const base::Closure& flush_cb) override;
+  void Flush(base::OnceClosure flush_cb) override;
   void StartPlayingFrom(base::TimeDelta time) override;
   void SetPlaybackRate(double playback_rate) override;
   void SetVolume(float volume) override;
@@ -81,11 +80,11 @@ class MEDIA_EXPORT DecryptingRenderer : public Renderer {
   CdmContext* cdm_context_ = nullptr;
   RendererClient* client_;
   MediaResource* media_resource_;
-  PipelineStatusCB init_cb_;
+  PipelineStatusCallback init_cb_;
 
   std::unique_ptr<DecryptingMediaResource> decrypting_media_resource_;
 
-  base::WeakPtrFactory<DecryptingRenderer> weak_factory_;
+  base::WeakPtrFactory<DecryptingRenderer> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DecryptingRenderer);
 };

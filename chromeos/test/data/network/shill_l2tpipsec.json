@@ -9,6 +9,7 @@
   "L2TPIPsec.XauthPassword": "some xauth password",
   "L2TPIPsec.XauthUser": "some xauth username",
   "L2TPIPsec.Password": "some password",
-  "L2TPIPsec.LCPEchoDisabled": true,
+  // kLcpEchoDisabled is a string in Shill. TODO(1005405): fix this.
+  // "L2TPIPsec.LCPEchoDisabled": true,
   "SaveCredentials": true
 }

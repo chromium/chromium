@@ -28,12 +28,11 @@
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/aura/window.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/background.h"
 #include "ui/views/layout/fill_layout.h"
 
-namespace app_list {
+namespace ash {
 
 namespace {
 
@@ -113,7 +112,7 @@ class SearchResultAnswerCardView::AnswerCardResultView
     SetLayoutManager(std::make_unique<views::FillLayout>());
 
     view_delegate_->GetNavigableContentsFactory(
-        mojo::MakeRequest(&contents_factory_));
+        contents_factory_.BindNewPipeAndPassReceiver());
 
     auto params = content::mojom::NavigableContentsParams::New();
     params->enable_view_auto_resize = true;
@@ -122,8 +121,6 @@ class SearchResultAnswerCardView::AnswerCardResultView
     params->background_color = SK_ColorTRANSPARENT;
     contents_ = std::make_unique<content::NavigableContents>(
         contents_factory_.get(), std::move(params));
-    if (features::IsUsingWindowService())
-      contents_->ForceUseWindowService();
     contents_->AddObserver(this);
   }
 
@@ -189,11 +186,11 @@ class SearchResultAnswerCardView::AnswerCardResultView
   // views::Button overrides:
   const char* GetClassName() const override { return "AnswerCardResultView"; }
 
-  void OnBlur() override { SetBackgroundHighlighted(false); }
+  void OnBlur() override { SetSelected(false, base::nullopt); }
 
   void OnFocus() override {
     ScrollRectToVisible(GetLocalBounds());
-    SetBackgroundHighlighted(true);
+    SetSelected(true, base::nullopt);
   }
 
   bool OnKeyPressed(const ui::KeyEvent& event) override {
@@ -201,8 +198,8 @@ class SearchResultAnswerCardView::AnswerCardResultView
       // Shouldn't eat Space; we want Space to go to the search box.
       return false;
     }
-
-    return Button::OnKeyPressed(event);
+    ActivateResult(event.flags(), false /* by_button_press */);
+    return true;
   }
 
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
@@ -213,21 +210,29 @@ class SearchResultAnswerCardView::AnswerCardResultView
   }
 
   void PaintButtonContents(gfx::Canvas* canvas) override {
-    if (background_highlighted())
+    if (selected())
       canvas->FillRect(GetContentsBounds(), kAnswerCardSelectedColor);
   }
 
   // views::ButtonListener overrides:
   void ButtonPressed(views::Button* sender, const ui::Event& event) override {
     DCHECK(sender == this);
-    if (result()) {
-      RecordSearchResultOpenSource(result(), view_delegate_->GetModel(),
-                                   view_delegate_->GetSearchModel());
-      view_delegate_->OpenSearchResult(result()->id(), event.flags());
-    }
+    ActivateResult(event.flags(), true /* by_button_press */);
   }
 
  private:
+  void ActivateResult(int event_flags, bool by_button_press) {
+    if (result()) {
+      RecordSearchResultOpenSource(result(), view_delegate_->GetModel(),
+                                   view_delegate_->GetSearchModel());
+      view_delegate_->OpenSearchResult(
+          result()->id(), event_flags,
+          ash::AppListLaunchedFrom::kLaunchedFromSearchBox,
+          ash::AppListLaunchType::kSearchResult, -1 /* suggestion_index */,
+          !by_button_press && is_default_result() /* launch_as_default */);
+    }
+  }
+
   // content::NavigableContentsObserver overrides:
   void DidFinishNavigation(
       const GURL& url,
@@ -261,7 +266,7 @@ class SearchResultAnswerCardView::AnswerCardResultView
 
     OnVisibilityChanged(true /* is_visible */);
     views::View* content_view = contents_->GetView()->view();
-    if (!has_children()) {
+    if (children().empty()) {
       AddChildView(content_view);
       ExcludeCardFromEventHandling(contents_->GetView()->native_view());
 
@@ -298,9 +303,12 @@ class SearchResultAnswerCardView::AnswerCardResultView
     base::RecordAction(base::UserMetricsAction("SearchAnswer_OpenedUrl"));
   }
 
+  void FocusedNodeChanged(bool is_editable_node,
+                          const gfx::Rect& node_bounds_in_screen) override {}
+
   SearchResultContainerView* const container_;  // Not owned.
   AppListViewDelegate* const view_delegate_;    // Not owned.
-  content::mojom::NavigableContentsFactoryPtr contents_factory_;
+  mojo::Remote<content::mojom::NavigableContentsFactory> contents_factory_;
   std::unique_ptr<content::NavigableContents> contents_;
 
   bool is_current_navigation_valid_answer_card_ = false;
@@ -366,6 +374,12 @@ SearchResultBaseView* SearchResultAnswerCardView::GetFirstResultView() {
   return num_results() <= 0 ? nullptr : search_answer_container_view_;
 }
 
+SearchResultBaseView* SearchResultAnswerCardView::GetResultViewAt(
+    size_t index) {
+  DCHECK_EQ(index, 0u);
+  return search_answer_container_view_;
+}
+
 views::View* SearchResultAnswerCardView::GetAnswerCardResultViewForTest()
     const {
   return search_answer_container_view_;
@@ -385,4 +399,4 @@ SearchResultAnswerCardView::CreateAnswerCardResponseHeadersForTest(
   return headers;
 }
 
-}  // namespace app_list
+}  // namespace ash

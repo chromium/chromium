@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<title>Test if it doesn't crash when keyframes has 'background-color:inherit'</title>
 <style>
 @keyframes test {
     to { background-color: inherit; }
@@ -7,8 +8,8 @@ body {
     animation: test 1s;
 }
 </style>
-<pre>This test passes if it does not crash.</pre>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
 <script>
-if (window.testRunner)
-    testRunner.dumpAsText();
+done();
 </script>

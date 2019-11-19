@@ -52,8 +52,14 @@ enum InstallableStatusCode {
   NO_GESTURE = 32,
   WAITING_FOR_NATIVE_DATA = 33,
   SHOWING_APP_INSTALLATION_DIALOG = 34,
+  NO_URL_FOR_SERVICE_WORKER = 35,
+  PREFER_RELATED_APPLICATIONS = 36,
   MAX_ERROR_CODE,
 };
+
+// Returns a user-readable description for |code|, or an empty string if |code|
+// should not be exposed.
+std::string GetErrorMessage(InstallableStatusCode code);
 
 // Logs a message associated with |code| to the devtools console attached to
 // |web_contents|. Does nothing if |web_contents| is nullptr.

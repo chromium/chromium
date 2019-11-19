@@ -10,7 +10,7 @@
 #include "base/macros.h"
 #include "ui/views/view.h"
 
-namespace app_list {
+namespace ash {
 
 // HorizontalPage is laid out horizontally in HorizontalPageContainer and its
 // visibility is controlled by horizontal gesture scrolling.
@@ -30,6 +30,9 @@ class APP_LIST_EXPORT HorizontalPage : public views::View {
   // Returns true if the search box should be shown in this page.
   virtual bool ShouldShowSearchBox() const;
 
+  // views::View:
+  const char* GetClassName() const override;
+
  protected:
   HorizontalPage();
   ~HorizontalPage() override;
@@ -38,6 +41,6 @@ class APP_LIST_EXPORT HorizontalPage : public views::View {
   DISALLOW_COPY_AND_ASSIGN(HorizontalPage);
 };
 
-}  // namespace app_list
+}  // namespace ash
 
 #endif  // ASH_APP_LIST_VIEWS_HORIZONTAL_PAGE_H_

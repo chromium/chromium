@@ -41,8 +41,7 @@ class SigninConfirmationHelper {
   ~SigninConfirmationHelper();
 
   // Callback helper function for CheckHasHistory.
-  void OnHistoryQueryResults(size_t max_entries,
-                             history::QueryResults* results);
+  void OnHistoryQueryResults(size_t max_entries, history::QueryResults results);
 
   // Posts the given result to the origin sequence.
   void PostResult(bool result);

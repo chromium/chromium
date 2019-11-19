@@ -1,0 +1,22 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/android/modules/buildflags.gni")
+
+test_dummy_module_desc = {
+  name = "test_dummy"
+  android_manifest =
+      "//chrome/android/modules/test_dummy/internal/java/AndroidManifest.xml"
+  java_deps = [
+    "//chrome/android/features/test_dummy/internal:java",
+    "//chrome/android/modules/test_dummy/internal:java",
+  ]
+  native_deps = [
+    "//chrome/android/features/test_dummy/internal:native",
+    "//chrome/android/modules/test_dummy/internal:native",
+  ]
+  paks = [ "$root_gen_dir/chrome/test_dummy_resources.pak" ]
+  pak_deps =
+      [ "//chrome/android/features/test_dummy/internal:resources_native" ]
+}

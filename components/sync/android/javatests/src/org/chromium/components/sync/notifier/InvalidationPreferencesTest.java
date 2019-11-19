@@ -10,13 +10,11 @@ import android.support.test.filters.SmallTest;
 import com.google.ipc.invalidation.external.client.types.ObjectId;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.CollectionUtil;
-import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.RetryOnFailure;
@@ -32,11 +30,6 @@ import java.util.Set;
 @RunWith(BaseJUnit4ClassRunner.class)
 @RetryOnFailure
 public class InvalidationPreferencesTest {
-    @Before
-    public void setUp() {
-        // Make sure the SharedPreferences start out empty.
-        ContextUtils.getAppSharedPreferences().edit().clear().apply();
-    }
 
     @Test
     @SmallTest

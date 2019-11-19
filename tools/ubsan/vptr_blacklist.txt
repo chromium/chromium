@@ -15,7 +15,6 @@ fun:*LifecycleNotifier*addObserver*
 fun:*LifecycleNotifier*removeObserver*
 fun:*toWebInputElement*
 type:*base*MessageLoopForIO*
-type:*base*MessageLoopForUI*
 type:*BlockRefType*
 type:*SkAutoTUnref*
 type:*WDResult*

@@ -42,6 +42,7 @@
 #include "ipc/ipc_sync_channel.h"
 #include "ipc/ipc_sync_message_filter.h"
 #include "media/media_buildflags.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "ppapi/c/dev/ppp_network_state_dev.h"
 #include "ppapi/c/pp_errors.h"
 #include "ppapi/c/ppp.h"
@@ -50,8 +51,6 @@
 #include "ppapi/proxy/plugin_message_filter.h"
 #include "ppapi/proxy/ppapi_messages.h"
 #include "ppapi/proxy/resource_reply_thread_registrar.h"
-#include "services/service_manager/public/cpp/connector.h"
-#include "services/ws/public/mojom/constants.mojom.h"
 #include "third_party/blink/public/web/blink.h"
 #include "ui/base/buildflags.h"
 #include "ui/base/ui_base_features.h"
@@ -121,21 +120,14 @@ PpapiThread::PpapiThread(base::RepeatingClosure quit_closure,
   // In single process, browser main loop set up the discardable memory
   // allocator.
   if (!command_line.HasSwitch(switches::kSingleProcess)) {
-    discardable_memory::mojom::DiscardableSharedMemoryManagerPtr manager_ptr;
-    if (features::IsMultiProcessMash()) {
-#if defined(USE_AURA)
-      GetServiceManagerConnection()->GetConnector()->BindInterface(
-          ws::mojom::kServiceName, &manager_ptr);
-#else
-      NOTREACHED();
-#endif
-    } else {
-      ChildThread::Get()->GetConnector()->BindInterface(
-          mojom::kBrowserServiceName, mojo::MakeRequest(&manager_ptr));
-    }
+    mojo::PendingRemote<
+        discardable_memory::mojom::DiscardableSharedMemoryManager>
+        manager_remote;
+    ChildThread::Get()->BindHostReceiver(
+        manager_remote.InitWithNewPipeAndPassReceiver());
     discardable_shared_memory_manager_ = std::make_unique<
         discardable_memory::ClientDiscardableSharedMemoryManager>(
-        std::move(manager_ptr), GetIOTaskRunner());
+        std::move(manager_remote), GetIOTaskRunner());
     base::DiscardableMemoryAllocator::SetInstance(
         discardable_shared_memory_manager_.get());
   }
@@ -198,13 +190,6 @@ IPC::PlatformFileForTransit PpapiThread::ShareHandleWithRemote(
     base::ProcessId peer_pid,
     bool should_close_source) {
   return IPC::GetPlatformFileForTransit(handle, should_close_source);
-}
-
-base::SharedMemoryHandle PpapiThread::ShareSharedMemoryHandleWithRemote(
-    const base::SharedMemoryHandle& handle,
-    base::ProcessId remote_pid) {
-  DCHECK(remote_pid != base::kNullProcessId);
-  return base::SharedMemory::DuplicateHandle(handle);
 }
 
 base::UnsafeSharedMemoryRegion
@@ -311,27 +296,26 @@ void PpapiThread::OnLoadPlugin(const base::FilePath& path,
   base::ScopedNativeLibrary library;
   if (!plugin_entry_points_.initialize_module) {
     // Load the plugin from the specified library.
-    base::NativeLibraryLoadError error;
     base::TimeDelta load_time;
     {
       TRACE_EVENT1("ppapi", "PpapiThread::LoadPlugin", "path",
                    path.MaybeAsASCII());
 
       base::TimeTicks start = base::TimeTicks::Now();
-      library.Reset(base::LoadNativeLibrary(path, &error));
+      library = base::ScopedNativeLibrary(path);
       load_time = base::TimeTicks::Now() - start;
     }
 
     if (!library.is_valid()) {
       LOG(ERROR) << "Failed to load Pepper module from " << path.value()
-                 << " (error: " << error.ToString() << ")";
+                 << " (error: " << library.GetError()->ToString() << ")";
       if (!base::PathExists(path)) {
         ReportLoadResult(path, FILE_MISSING);
         return;
       }
       ReportLoadResult(path, LOAD_FAILED);
       // Report detailed reason for load failure.
-      ReportLoadErrorCode(path, error);
+      ReportLoadErrorCode(path, library.GetError());
       return;
     }
 
@@ -431,17 +415,6 @@ void PpapiThread::OnLoadPlugin(const base::FilePath& path,
       return;
     }
   } else {
-#if defined(OS_MACOSX)
-    // TODO(kerrnel): Delete this once the V2 sandbox is default.
-    const base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
-    if (!cmdline->HasSwitch(sandbox::switches::kSeatbeltClientName)) {
-      // We need to do this after getting |PPP_GetInterface()| (or presumably
-      // doing something nontrivial with the library), else the sandbox
-      // intercedes.
-      CHECK(InitializeSandbox());
-    }
-#endif
-
     int32_t init_error = plugin_entry_points_.initialize_module(
         local_pp_module_, &ppapi::proxy::PluginDispatcher::GetBrowserInterface);
     if (init_error != PP_OK) {
@@ -452,7 +425,7 @@ void PpapiThread::OnLoadPlugin(const base::FilePath& path,
   }
 
   // Initialization succeeded, so keep the plugin DLL loaded.
-  library_.Reset(library.Release());
+  library_ = std::move(library);
 
   ReportLoadResult(path, LOAD_SUCCESS);
 }
@@ -571,12 +544,12 @@ void PpapiThread::ReportLoadResult(const base::FilePath& path,
 
 void PpapiThread::ReportLoadErrorCode(
     const base::FilePath& path,
-    const base::NativeLibraryLoadError& error) {
+    const base::NativeLibraryLoadError* error) {
 // Only report load error code on Windows because that's the only platform that
 // has a numerical error value.
 #if defined(OS_WIN)
   base::UmaHistogramSparse(GetHistogramName(is_broker_, "LoadErrorCode", path),
-                           error.code);
+                           error->code);
 #endif
 }
 

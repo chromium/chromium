@@ -26,7 +26,7 @@ class DomainReliabilityInternalsUI : public content::WebUIController {
   void UpdateData(const base::ListValue* args);
   void OnDataUpdated(base::Value data) const;
 
-  base::WeakPtrFactory<DomainReliabilityInternalsUI> weak_factory_;
+  base::WeakPtrFactory<DomainReliabilityInternalsUI> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DomainReliabilityInternalsUI);
 };

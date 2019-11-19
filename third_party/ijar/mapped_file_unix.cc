@@ -87,10 +87,11 @@ int MappedInputFile::Close() {
 
 struct MappedOutputFileImpl {
   int fd_;
-  u8 initial_length_;
+  int mmap_length_;
 };
 
-MappedOutputFile::MappedOutputFile(const char* name, u8 estimated_size) {
+MappedOutputFile::MappedOutputFile(const char* name, size_t estimated_size)
+    : estimated_size_(estimated_size) {
   impl_ = NULL;
   opened_ = false;
   int fd = open(name, O_CREAT|O_RDWR|O_TRUNC, 0644);
@@ -99,14 +100,6 @@ MappedOutputFile::MappedOutputFile(const char* name, u8 estimated_size) {
     errmsg_ = errmsg;
     return;
   }
-
-  const size_t page_size = sysconf(_SC_PAGESIZE);
-
-  // Ensure estimated_size is always at least one page to avoid issues
-  // when a tiny empty input file is larger than its output.
-  // http://crbug.com/925257
-  if (estimated_size < page_size)
-    estimated_size = page_size;
 
   // Create mmap-able sparse file
   if (ftruncate(fd, estimated_size) < 0) {
@@ -117,8 +110,9 @@ MappedOutputFile::MappedOutputFile(const char* name, u8 estimated_size) {
 
   // Ensure that any buffer overflow in JarStripper will result in
   // SIGSEGV or SIGBUS by over-allocating beyond the end of the file.
-  size_t mmap_length = std::min(estimated_size + page_size,
-                                (u8)std::numeric_limits<size_t>::max());
+  size_t mmap_length =
+      std::min(static_cast<size_t>(estimated_size + sysconf(_SC_PAGESIZE)),
+               std::numeric_limits<size_t>::max());
   void* mapped = mmap(NULL, mmap_length, PROT_WRITE, MAP_SHARED, fd, 0);
   if (mapped == MAP_FAILED) {
     snprintf(errmsg, MAX_ERROR, "mmap(): %s", strerror(errno));
@@ -128,7 +122,7 @@ MappedOutputFile::MappedOutputFile(const char* name, u8 estimated_size) {
 
   impl_ = new MappedOutputFileImpl();
   impl_->fd_ = fd;
-  impl_->initial_length_ = estimated_size;
+  impl_->mmap_length_ = mmap_length;
   buffer_ = reinterpret_cast<u1*>(mapped);
   opened_ = true;
 }
@@ -138,15 +132,14 @@ MappedOutputFile::~MappedOutputFile() {
   delete impl_;
 }
 
-int MappedOutputFile::Close(int size) {
-  if (static_cast<u8>(size) > impl_->initial_length_) {
-    snprintf(errmsg, MAX_ERROR,
-             "Output file is larger than its input (%d > %lld)\n", size,
-             static_cast<long long>(impl_->initial_length_));
+int MappedOutputFile::Close(size_t size) {
+  if (size > estimated_size_) {
+    snprintf(errmsg, MAX_ERROR, "size %zu > estimated size %zu", size,
+             estimated_size_);
     errmsg_ = errmsg;
     return -1;
   }
-
+  munmap(buffer_, impl_->mmap_length_);
   if (ftruncate(impl_->fd_, size) < 0) {
     snprintf(errmsg, MAX_ERROR, "ftruncate(): %s", strerror(errno));
     errmsg_ = errmsg;

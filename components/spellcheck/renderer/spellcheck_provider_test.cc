@@ -14,36 +14,35 @@
 #include "components/spellcheck/renderer/spellcheck.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
 
-FakeTextCheckingCompletion::FakeTextCheckingCompletion()
-    : completion_count_(0), cancellation_count_(0) {}
+FakeTextCheckingCompletion::FakeTextCheckingCompletion(
+    FakeTextCheckingResult* result)
+    : result_(result) {}
 
 FakeTextCheckingCompletion::~FakeTextCheckingCompletion() {}
 
 void FakeTextCheckingCompletion::DidFinishCheckingText(
     const blink::WebVector<blink::WebTextCheckingResult>& results) {
-  ++completion_count_;
+  ++result_->completion_count_;
 }
 
 void FakeTextCheckingCompletion::DidCancelCheckingText() {
-  ++completion_count_;
-  ++cancellation_count_;
+  ++result_->completion_count_;
+  ++result_->cancellation_count_;
 }
 
 TestingSpellCheckProvider::TestingSpellCheckProvider(
     service_manager::LocalInterfaceProvider* embedder_provider)
     : SpellCheckProvider(nullptr,
-                         new SpellCheck(nullptr, embedder_provider),
-                         embedder_provider),
-      binding_(this) {}
+                         new SpellCheck(embedder_provider),
+                         embedder_provider) {}
 
 TestingSpellCheckProvider::TestingSpellCheckProvider(
     SpellCheck* spellcheck,
     service_manager::LocalInterfaceProvider* embedder_provider)
-    : SpellCheckProvider(nullptr, spellcheck, embedder_provider),
-      binding_(this) {}
+    : SpellCheckProvider(nullptr, spellcheck, embedder_provider) {}
 
 TestingSpellCheckProvider::~TestingSpellCheckProvider() {
-  binding_.Close();
+  receiver_.reset();
   // dictionary_update_observer_ must be released before deleting spellcheck_.
   ResetDictionaryUpdateObserverForTesting();
   delete spellcheck_;
@@ -51,15 +50,12 @@ TestingSpellCheckProvider::~TestingSpellCheckProvider() {
 
 void TestingSpellCheckProvider::RequestTextChecking(
     const base::string16& text,
-    blink::WebTextCheckingCompletion* completion) {
+    std::unique_ptr<blink::WebTextCheckingCompletion> completion) {
   if (!loop_ && !base::MessageLoopCurrent::Get())
     loop_ = std::make_unique<base::MessageLoop>();
-  if (!binding_.is_bound()) {
-    spellcheck::mojom::SpellCheckHostPtr host_proxy;
-    binding_.Bind(mojo::MakeRequest(&host_proxy));
-    SetSpellCheckHostForTesting(std::move(host_proxy));
-  }
-  SpellCheckProvider::RequestTextChecking(text, completion);
+  if (!receiver_.is_bound())
+    SetSpellCheckHostForTesting(receiver_.BindNewPipeAndPassRemote());
+  SpellCheckProvider::RequestTextChecking(text, std::move(completion));
   base::RunLoop().RunUntilIdle();
 }
 
@@ -68,7 +64,7 @@ void TestingSpellCheckProvider::RequestDictionary() {}
 void TestingSpellCheckProvider::NotifyChecked(const base::string16& word,
                                               bool misspelled) {}
 
-#if !BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+#if BUILDFLAG(USE_RENDERER_SPELLCHECKER)
 void TestingSpellCheckProvider::CallSpellingService(
     const base::string16& text,
     CallSpellingServiceCallback callback) {
@@ -79,13 +75,13 @@ void TestingSpellCheckProvider::CallSpellingService(
 void TestingSpellCheckProvider::OnCallSpellingService(
     const base::string16& text) {
   ++spelling_service_call_count_;
-  blink::WebTextCheckingCompletion* completion =
-      text_check_completions_.Lookup(last_identifier_);
-  if (!completion) {
+  if (!text_check_completions_.Lookup(last_identifier_)) {
     ResetResult();
     return;
   }
   text_.assign(text);
+  std::unique_ptr<blink::WebTextCheckingCompletion> completion(
+      text_check_completions_.Replace(last_identifier_, nullptr));
   text_check_completions_.Remove(last_identifier_);
   std::vector<blink::WebTextCheckingResult> results;
   results.push_back(
@@ -99,7 +95,7 @@ void TestingSpellCheckProvider::OnCallSpellingService(
 void TestingSpellCheckProvider::ResetResult() {
   text_.clear();
 }
-#endif  // !BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+#endif  // BUILDFLAG(USE_RENDERER_SPELLCHECKER)
 
 #if BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 void TestingSpellCheckProvider::RequestTextCheck(

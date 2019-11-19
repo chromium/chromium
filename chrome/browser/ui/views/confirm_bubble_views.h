@@ -15,8 +15,8 @@
 class ConfirmBubbleModel;
 
 namespace views {
-class ImageButton;
-}
+class Label;
+}  // namespace views
 
 // A dialog (with the standard Title/[OK]/[Cancel] UI elements), as well as
 // a message Label and help (?) button. The dialog ultimately appears like this:
@@ -36,9 +36,7 @@ class ConfirmBubbleViews : public views::DialogDelegateView,
   ~ConfirmBubbleViews() override;
 
   // views::DialogDelegate implementation.
-  base::string16 GetDialogButtonLabel(ui::DialogButton button) const override;
   bool IsDialogButtonEnabled(ui::DialogButton button) const override;
-  views::View* CreateExtraView() override;
   bool Cancel() override;
   bool Accept() override;
 
@@ -50,11 +48,16 @@ class ConfirmBubbleViews : public views::DialogDelegateView,
   // views::ButtonListener implementation.
   void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
+  // views::View implementation.
+  void ViewHierarchyChanged(
+      const views::ViewHierarchyChangedDetails& details) override;
+
  private:
   // The model to customize this bubble view.
   std::unique_ptr<ConfirmBubbleModel> model_;
 
-  views::ImageButton* help_button_;
+  views::Label* label_;
+  views::View* help_button_;
 
   DISALLOW_COPY_AND_ASSIGN(ConfirmBubbleViews);
 };

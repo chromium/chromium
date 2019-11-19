@@ -36,11 +36,6 @@ class AXObjectCacheImpl;
 
 class AXMenuListOption final : public AXMockObject {
  public:
-  static AXMenuListOption* Create(HTMLOptionElement* element,
-                                  AXObjectCacheImpl& ax_object_cache) {
-    return MakeGarbageCollected<AXMenuListOption>(element, ax_object_cache);
-  }
-
   AXMenuListOption(HTMLOptionElement*, AXObjectCacheImpl&);
   ~AXMenuListOption() override;
 

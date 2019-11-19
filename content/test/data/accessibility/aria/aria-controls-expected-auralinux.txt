@@ -1,0 +1,7 @@
+[document web]
+++[menu bar] horizontal
+++++[menu item] name='File' controller-for
+++++[menu item] name='Edit'
+++[menu] name='File' controlled-by
+++++[menu item] name='New'
+++++[menu item] name='Open'

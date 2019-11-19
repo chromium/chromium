@@ -30,6 +30,9 @@
 
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_face.h"
 
+#include <hb-ot.h>
+#include <hb.h>
+
 #include <memory>
 
 #include "build/build_config.h"
@@ -37,25 +40,22 @@
 #include "third_party/blink/renderer/platform/fonts/font_global_context.h"
 #include "third_party/blink/renderer/platform/fonts/font_platform_data.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_font_cache.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_font_data.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_shaper.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
 #include "third_party/blink/renderer/platform/fonts/skia/skia_text_metrics.h"
 #include "third_party/blink/renderer/platform/fonts/unicode_range_set.h"
-#include "third_party/blink/renderer/platform/histogram.h"
+#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/resolution_units.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
-
-#include <hb-ot.h>
-#include <hb.h>
-
-#include <SkPaint.h>
-#include <SkPath.h>
-#include <SkPoint.h>
-#include <SkRect.h>
-#include <SkStream.h>
-#include <SkTypeface.h>
+#include "third_party/skia/include/core/SkPaint.h"
+#include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPoint.h"
+#include "third_party/skia/include/core/SkRect.h"
+#include "third_party/skia/include/core/SkStream.h"
+#include "third_party/skia/include/core/SkTypeface.h"
 
 namespace blink {
 
@@ -415,7 +415,13 @@ hb_font_t* HarfBuzzFace::GetScaledFont(
 
   int scale = SkiaScalarToHarfBuzzPosition(platform_data_->size());
   hb_font_set_scale(unscaled_font_, scale, scale);
-  hb_font_set_ptem(unscaled_font_, platform_data_->size() / kCssPixelsPerPoint);
+  // See contended discussion in https://github.com/harfbuzz/harfbuzz/pull/1484
+  // Setting ptem here is critical for HarfBuzz to know where to lookup spacing
+  // offset in the AAT trak table, the unit pt in ptem here means "CoreText"
+  // points. After discussion on the pull request and with Apple developers, the
+  // meaning of HarfBuzz' hb_font_set_ptem API was changed to expect the
+  // equivalent of CSS pixels here.
+  hb_font_set_ptem(unscaled_font_, platform_data_->size());
 
   SkTypeface* typeface = harfbuzz_font_data_->font_.getTypeface();
   int axis_count = typeface->getVariationDesignPosition(nullptr, 0);

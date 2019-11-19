@@ -16,7 +16,7 @@
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/values.h"
 #include "media/base/cdm_callback_promise.h"
 #include "media/base/cdm_config.h"
@@ -493,7 +493,7 @@ class AesDecryptorTest : public testing::TestWithParam<TestType> {
   }
 
   // Must be the first member to be initialized first and destroyed last.
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
 
   StrictMock<MockCdmClient> cdm_client_;
   scoped_refptr<ContentDecryptionModule> cdm_;

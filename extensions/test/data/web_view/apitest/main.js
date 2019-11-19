@@ -1744,6 +1744,67 @@ function testWebRequestAPIWithHeaders() {
   document.body.appendChild(webview);
 }
 
+// Tests web request api support for "extraHeaders" with webviews. Regression
+// test for crbug.com/938095.
+function testWebRequestAPIWithExtraHeaders() {
+  var echoCookieUrl = embedder.baseGuestURL + '/echoheader?Cookie';
+  var setCookieUrl = embedder.baseGuestURL + '/set-cookie?foo=bar';
+
+  var webview = new WebView();
+
+  var requestFilter = {urls: [echoCookieUrl]};
+  webview.request.onBeforeSendHeaders.addListener(function(details) {
+    var cookieHeader = details.requestHeaders.find(function(header) {
+      return header.name.toLowerCase() == 'cookie';
+    });
+    embedder.test.assertTrue(cookieHeader);
+    embedder.test.assertEq('foo=bar', cookieHeader.value);
+    // Modify the Cookie header.
+    cookieHeader.value = 'foo=new_value';
+    return {requestHeaders: details.requestHeaders};
+  }, requestFilter, ['requestHeaders', 'blocking', 'extraHeaders']);
+
+  var onSendHeadersSeen = false;
+  webview.request.onSendHeaders.addListener(function(details) {
+    var cookieHeader = details.requestHeaders.find(function(header) {
+      return header.name.toLowerCase() == 'cookie';
+    });
+    embedder.test.assertTrue(cookieHeader);
+    onSendHeadersSeen = true;
+    // Verify the Cookie header was modified.
+    chrome.test.assertEq('foo=new_value', cookieHeader.value);
+  }, requestFilter, ['requestHeaders', 'extraHeaders']);
+
+  var listener = function() {
+    webview.removeEventListener('loadstop', listener);
+
+    webview.addEventListener('loadstart', function(e) {
+      embedder.test.assertTrue(e.isTopLevel);
+      embedder.test.assertEq(echoCookieUrl, e.url);
+    });
+
+    webview.addEventListener('loadstop', function() {
+      embedder.test.assertTrue(onSendHeadersSeen);
+
+      // Ensure the header was modified.
+      webview.executeScript(
+          {code: 'document.body.innerText'}, function(results) {
+            embedder.test.assertEq('foo=new_value', results[0]);
+            embedder.test.succeed();
+          });
+    });
+
+    // Now load a url to echo the cookie header.
+    webview.src = echoCookieUrl;
+  };
+  webview.addEventListener('loadstop', listener);
+
+  // Load a URL to set a cookie so that the Cookie header is set for future
+  // requests.
+  webview.src = setCookieUrl;
+  document.body.appendChild(webview);
+}
+
 function testWebRequestAPIExistence() {
   var regularEventsToCheck = [
     // Declarative WebRequest API.
@@ -1926,6 +1987,7 @@ embedder.test.testList = {
   'testTerminateAfterExit': testTerminateAfterExit,
   'testWebRequestAPI': testWebRequestAPI,
   'testWebRequestAPIWithHeaders': testWebRequestAPIWithHeaders,
+  'testWebRequestAPIWithExtraHeaders': testWebRequestAPIWithExtraHeaders,
   'testWebRequestAPIExistence': testWebRequestAPIExistence,
   'testWebRequestAPIGoogleProperty': testWebRequestAPIGoogleProperty,
   'testCaptureVisibleRegion': testCaptureVisibleRegion,

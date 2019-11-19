@@ -1,3 +1,6 @@
 <script src="../common.js"></script>
+<script>
+  observeAndReportResourceLoadPriority(new URL('../../../resources/dummy.html', location));
+</script>
 
-<link rel="preload" as="fetch" href=../../../resources/dummy.html onload="reportPriority(this.href)" onerror="reportFailure()"></script>
+<link rel="preload" as="fetch" href=../../../resources/dummy.html onload="reportLoaded()" onerror="reportFailure()"></script>

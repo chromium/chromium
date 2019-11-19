@@ -7,7 +7,7 @@
 
 #include "third_party/blink/renderer/core/layout/multi_column_fragmentainer_group.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
@@ -59,6 +59,8 @@ class FragmentainerIterator {
 
   LayoutUnit logical_top_in_flow_thread_;
   LayoutUnit logical_bottom_in_flow_thread_;
+
+  bool bounding_box_is_empty_;
 
   const MultiColumnFragmentainerGroup& CurrentGroup() const;
   void MoveToNextFragmentainerGroup();

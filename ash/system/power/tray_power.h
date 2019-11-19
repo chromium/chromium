@@ -28,8 +28,8 @@ class PowerTrayView : public TrayItemView,
   gfx::Size CalculatePreferredSize() const override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   views::View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
-  bool GetTooltipText(const gfx::Point& p,
-                      base::string16* tooltip) const override;
+  base::string16 GetTooltipText(const gfx::Point& p) const override;
+  const char* GetClassName() const override;
 
   // PowerStatus::Observer:
   void OnPowerStatusChanged() override;

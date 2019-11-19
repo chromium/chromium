@@ -50,8 +50,8 @@ bool CompareStates(const std::unique_ptr<ManagedState>& first_state,
     return first->name() < second->name();
 
   // Priority 7: Alphabetize by cellular carrier name.
-  if (first->carrier() != second->carrier())
-    return first->carrier() < second->carrier();
+  if (first->tether_carrier() != second->tether_carrier())
+    return first->tether_carrier() < second->tether_carrier();
 
   // Priority 8: Alphabetize by GUID. GUID is not shown in the UI,
   // so this is just a tie-breaker. All networks have unique GUIDs.

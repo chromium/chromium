@@ -42,8 +42,6 @@ class CORE_EXPORT HTMLScriptElement final : public HTMLElement,
   USING_GARBAGE_COLLECTED_MIXIN(HTMLScriptElement);
 
  public:
-  static HTMLScriptElement* Create(Document&, const CreateElementFlags);
-
   HTMLScriptElement(Document&, const CreateElementFlags);
 
   // Returns attributes that should be checked against Trusted Types
@@ -53,8 +51,6 @@ class CORE_EXPORT HTMLScriptElement final : public HTMLElement,
   void setText(const StringOrTrustedScript&, ExceptionState&);
   void setInnerText(const StringOrTrustedScript&, ExceptionState&) override;
   void setTextContent(const StringOrTrustedScript&, ExceptionState&) override;
-
-  KURL Src() const;
 
   void setAsync(bool);
   bool async() const;
@@ -109,7 +105,7 @@ class CORE_EXPORT HTMLScriptElement final : public HTMLElement,
 
   Element& CloneWithoutAttributesAndChildren(Document&) const override;
 
-  TraceWrapperMember<ScriptLoader> loader_;
+  Member<ScriptLoader> loader_;
 };
 
 }  // namespace blink

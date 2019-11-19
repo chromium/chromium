@@ -71,7 +71,7 @@ class ChromeUserSelectionScreen
   typedef std::map<AccountId, std::string> DisplayNamesMap;
   DisplayNamesMap public_session_display_names_;
 
-  base::WeakPtrFactory<ChromeUserSelectionScreen> weak_factory_;
+  base::WeakPtrFactory<ChromeUserSelectionScreen> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ChromeUserSelectionScreen);
 };

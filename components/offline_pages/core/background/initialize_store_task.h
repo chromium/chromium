@@ -49,7 +49,7 @@ class InitializeStoreTask : public Task {
   // Callback to complete the task.
   RequestQueueStore::InitializeCallback callback_;
 
-  base::WeakPtrFactory<InitializeStoreTask> weak_ptr_factory_;
+  base::WeakPtrFactory<InitializeStoreTask> weak_ptr_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(InitializeStoreTask);
 };
 

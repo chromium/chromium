@@ -193,8 +193,7 @@ PluginObject::PluginObject(PepperPluginInstanceImpl* instance,
       instance_(instance),
       ppp_class_(ppp_class),
       ppp_class_data_(ppp_class_data),
-      template_cache_(instance->GetIsolate()),
-      weak_factory_(this) {
+      template_cache_(instance->GetIsolate()) {
   instance_->AddPluginObject(this);
 }
 
@@ -299,10 +298,9 @@ v8::Local<v8::FunctionTemplate> PluginObject::GetFunctionTemplate(
   v8::Local<v8::FunctionTemplate> function_template = template_cache_.Get(name);
   if (!function_template.IsEmpty())
     return function_template;
-  function_template =
-      gin::CreateFunctionTemplate(
-          isolate, base::Bind(&PluginObject::Call, weak_factory_.GetWeakPtr(),
-                              name));
+  function_template = gin::CreateFunctionTemplate(
+      isolate, base::BindRepeating(&PluginObject::Call,
+                                   weak_factory_.GetWeakPtr(), name));
   template_cache_.Set(name, function_template);
   return function_template;
 }

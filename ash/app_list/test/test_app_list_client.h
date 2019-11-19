@@ -5,63 +5,69 @@
 #ifndef ASH_APP_LIST_TEST_TEST_APP_LIST_CLIENT_H_
 #define ASH_APP_LIST_TEST_TEST_APP_LIST_CLIENT_H_
 
+#include <memory>
 #include <string>
+#include <utility>
+#include <vector>
 
-#include "ash/public/interfaces/app_list.mojom.h"
+#include "ash/public/cpp/app_list/app_list_client.h"
 #include "base/macros.h"
-#include "mojo/public/cpp/bindings/binding.h"
 
 namespace ash {
 
 // A test implementation of AppListClient that records function call counts.
 // Registers itself as the presenter for the app list on construction.
-class TestAppListClient : public mojom::AppListClient {
+class TestAppListClient : public AppListClient {
  public:
   TestAppListClient();
   ~TestAppListClient() override;
 
-  mojom::AppListClientPtr CreateInterfacePtrAndBind();
-
-  // ash::mojom::AppListClient:
+  // AppListClient:
+  void OnAppListControllerDestroyed() override {}
   void StartSearch(const base::string16& trimmed_query) override {}
   void OpenSearchResult(const std::string& result_id,
-                        int event_flags) override {}
-  void LogSearchClick(const std::string& result_id,
-                      int suggestion_index,
-                      ash::mojom::AppListLaunchedFrom launched_from) override {}
+                        int event_flags,
+                        ash::AppListLaunchedFrom launched_from,
+                        ash::AppListLaunchType launch_type,
+                        int suggestion_index,
+                        bool launch_as_default) override {}
   void InvokeSearchResultAction(const std::string& result_id,
                                 int action_index,
                                 int event_flags) override {}
   void GetSearchResultContextMenuModel(
       const std::string& result_id,
       GetContextMenuModelCallback callback) override;
-  void SearchResultContextMenuItemSelected(const std::string& result_id,
-                                           int command_id,
-                                           int event_flags) override {}
   void ViewClosing() override {}
   void ViewShown(int64_t display_id) override {}
-  void ActivateItem(const std::string& id, int event_flags) override {}
-  void GetContextMenuModel(const std::string& id,
+  void ActivateItem(int profile_id,
+                    const std::string& id,
+                    int event_flags) override {}
+  void GetContextMenuModel(int profile_id,
+                           const std::string& id,
                            GetContextMenuModelCallback callback) override;
-  void ContextMenuItemSelected(const std::string& id,
-                               int command_id,
-                               int event_flags) override {}
-  void OnAppListTargetVisibilityChanged(bool visible) override {}
+  void OnAppListVisibilityWillChange(bool visible) override {}
   void OnAppListVisibilityChanged(bool visible) override {}
-  void OnFolderCreated(mojom::AppListItemMetadataPtr item) override {}
-  void OnFolderDeleted(mojom::AppListItemMetadataPtr item) override {}
-  void OnItemUpdated(mojom::AppListItemMetadataPtr item) override {}
-  void OnPageBreakItemAdded(const std::string& id,
+  void OnFolderCreated(int profile_id,
+                       std::unique_ptr<AppListItemMetadata> item) override {}
+  void OnFolderDeleted(int profile_id,
+                       std::unique_ptr<AppListItemMetadata> item) override {}
+  void OnItemUpdated(int profile_id,
+                     std::unique_ptr<AppListItemMetadata> item) override {}
+  void OnPageBreakItemAdded(int profile_id,
+                            const std::string& id,
                             const syncer::StringOrdinal& position) override {}
-  void OnPageBreakItemDeleted(const std::string& id) override {}
+  void OnPageBreakItemDeleted(int profile_id, const std::string& id) override {}
   void GetNavigableContentsFactory(
-      content::mojom::NavigableContentsFactoryRequest request) override {}
+      mojo::PendingReceiver<content::mojom::NavigableContentsFactory> receiver)
+      override {}
   void OnSearchResultVisibilityChanged(const std::string& id,
                                        bool visibility) override {}
+  void NotifySearchResultsForLogging(
+      const base::string16& trimmed_query,
+      const ash::SearchResultIdWithPositionIndices& results,
+      int position_index) override {}
 
  private:
-  mojo::Binding<mojom::AppListClient> binding_;
-
   DISALLOW_COPY_AND_ASSIGN(TestAppListClient);
 };
 

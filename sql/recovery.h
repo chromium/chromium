@@ -12,6 +12,7 @@
 #include "base/component_export.h"
 #include "base/macros.h"
 #include "sql/database.h"
+#include "sql/internal_api_token.h"
 
 namespace base {
 class FilePath;
@@ -174,6 +175,11 @@ class COMPONENT_EXPORT(SQL) Recovery {
   // This does not guarantee that RecoverDatabase() will successfully recover
   // the database.
   static bool ShouldRecover(int extended_error);
+
+  // Enables the "recover" SQLite extension for a database connection.
+  //
+  // Returns a SQLite error code.
+  static int EnableRecoveryExtension(Database* db, InternalApiToken);
 
  private:
   explicit Recovery(Database* database);

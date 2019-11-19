@@ -2,177 +2,165 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * @param {!cr.ui.MultiMenuButton} gearButton
- * @param {!FilesToggleRipple} toggleRipple
- * @param {!GearMenu} gearMenu
- * @param {!ProvidersMenu} providersMenu
- * @param {!DirectoryModel} directoryModel
- * @param {!CommandHandler} commandHandler
- * @param {!ProvidersModel} providersModel
- * @constructor
- * @struct
- */
-function GearMenuController(
-    gearButton, toggleRipple, gearMenu, providersMenu, directoryModel,
-    commandHandler, providersModel) {
+class GearMenuController {
   /**
-   * @type {!FilesToggleRipple}
-   * @const
-   * @private
+   * @param {!cr.ui.MultiMenuButton} gearButton
+   * @param {!FilesToggleRipple} toggleRipple
+   * @param {!GearMenu} gearMenu
+   * @param {!ProvidersMenu} providersMenu
+   * @param {!DirectoryModel} directoryModel
+   * @param {!CommandHandler} commandHandler
+   * @param {!ProvidersModel} providersModel
    */
-  this.toggleRipple_ = toggleRipple;
+  constructor(
+      gearButton, toggleRipple, gearMenu, providersMenu, directoryModel,
+      commandHandler, providersModel) {
+    /** @private @const {!cr.ui.MultiMenuButton} */
+    this.gearButton_ = gearButton;
 
-  /**
-   * @type {!GearMenu}
-   * @const
-   * @private
-   */
-  this.gearMenu_ = gearMenu;
+    /** @private @const {!FilesToggleRipple} */
+    this.toggleRipple_ = toggleRipple;
 
-  /**
-   * @type {!ProvidersMenu}
-   * @const
-   * @private
-   */
-  this.providersMenu_ = providersMenu;
+    /** @private @const {!GearMenu} */
+    this.gearMenu_ = gearMenu;
 
-  /**
-   * @type {!DirectoryModel}
-   * @const
-   * @private
-   */
-  this.directoryModel_ = directoryModel;
+    /** @private @const {!ProvidersMenu} */
+    this.providersMenu_ = providersMenu;
 
-  /**
-   * @type {!CommandHandler}
-   * @const
-   * @private
-   */
-  this.commandHandler_ = commandHandler;
+    /** @private @const {!DirectoryModel} */
+    this.directoryModel_ = directoryModel;
+
+    /** @private @const {!CommandHandler} */
+    this.commandHandler_ = commandHandler;
+
+    /** @private @const {!ProvidersModel} */
+    this.providersModel_ = providersModel;
+
+    gearButton.addEventListener('menushow', this.onShowGearMenu_.bind(this));
+    gearButton.addEventListener('menuhide', this.onHideGearMenu_.bind(this));
+    directoryModel.addEventListener(
+        'directory-changed', this.onDirectoryChanged_.bind(this));
+    chrome.fileManagerPrivate.onPreferencesChanged.addListener(
+        this.onPreferencesChanged_.bind(this));
+    this.onPreferencesChanged_();
+  }
 
   /**
-   * @type {!ProvidersModel}
-   * @const
    * @private
    */
-  this.providersModel_ = providersModel;
+  onShowGearMenu_() {
+    this.toggleRipple_.activated = true;
+    this.refreshRemainingSpace_(false); /* Without loading caption. */
+    this.updateNewServiceItem();
+  }
 
-  gearButton.addEventListener('menushow', this.onShowGearMenu_.bind(this));
-  gearButton.addEventListener('menuhide', this.onHideGearMenu_.bind(this));
-  directoryModel.addEventListener(
-      'directory-changed', this.onDirectoryChanged_.bind(this));
-  chrome.fileManagerPrivate.onPreferencesChanged.addListener(
-      this.onPreferencesChanged_.bind(this));
-  this.onPreferencesChanged_();
-}
+  /**
+   * Update "New service" menu item to either directly show the Webstore dialog
+   * when there isn't any service/FSP extension installed, or display the
+   * providers menu with the currently installed extensions and also install new
+   * service.
+   *
+   * @private
+   */
+  updateNewServiceItem() {
+    this.providersModel_.getMountableProviders().then(providers => {
+      // Go straight to webstore to install the first provider.
+      let desiredMenu = '#install-new-extension';
+      let label = str('INSTALL_NEW_EXTENSION_LABEL');
 
-/**
- * @private
- */
-GearMenuController.prototype.onShowGearMenu_ = function() {
-  this.toggleRipple_.activated = true;
-  this.refreshRemainingSpace_(false);  /* Without loading caption. */
+      const shouldDisplayProvidersMenu = providers.length > 0;
+      if (shouldDisplayProvidersMenu) {
+        // Open the providers menu with an installed provider and an install new
+        // provider option.
+        desiredMenu = '#new-service';
+        label = str('ADD_NEW_SERVICES_BUTTON_LABEL');
+        // Trigger an update of the providers submenu.
+        this.providersMenu_.updateSubMenu();
+      }
 
-  // Update view of drive-related settings.
-  this.commandHandler_.updateAvailability();
+      this.gearMenu_.setNewServiceCommand(desiredMenu, label);
+    });
+  }
 
-  this.updateNewServiceItem();
-};
+  /**
+   * @private
+   */
+  onHideGearMenu_() {
+    this.toggleRipple_.activated = false;
+  }
 
-/**
- * Update "New service" menu item to either directly show the Webstore dialog
- * when there isn't any service/FSP extension installed, or display the
- * providers menu with the currently installed extensions and also install new
- * service.
- *
- * @private
- */
-GearMenuController.prototype.updateNewServiceItem = function() {
-  this.providersModel_.getMountableProviders().then(providers => {
-    // Go straight to webstore to install the first provider.
-    let desiredMenu = '#install-new-extension';
-    let label = str('INSTALL_NEW_EXTENSION_LABEL');
+  /**
+   * @param {Event} event
+   * @private
+   */
+  onDirectoryChanged_(event) {
+    event = /** @type {DirectoryChangeEvent} */ (event);
+    if (event.volumeChanged) {
+      this.refreshRemainingSpace_(true);
+    }  // Show loading caption.
 
-    const shouldDisplayProvidersMenu = providers.length > 0;
-    if (shouldDisplayProvidersMenu) {
-      // Open the providers menu with an installed provider and an install new
-      // provider option.
-      desiredMenu = '#new-service';
-      label = str('ADD_NEW_SERVICES_BUTTON_LABEL');
-      // Trigger an update of the providers submenu.
-      this.providersMenu_.updateSubMenu();
+    if (this.gearButton_.isMenuShown()) {
+      this.gearButton_.menu.updateCommands(this.gearButton_);
     }
-
-    this.gearMenu_.setNewServiceCommand(desiredMenu, label);
-  });
-};
-
-/**
- * @private
- */
-GearMenuController.prototype.onHideGearMenu_ = function() {
-  this.toggleRipple_.activated = false;
-};
-
-/**
- * @param {Event} event
- * @private
- */
-GearMenuController.prototype.onDirectoryChanged_ = function(event) {
-  event = /** @type {DirectoryChangeEvent} */ (event);
-  if (event.volumeChanged) {
-    this.refreshRemainingSpace_(true);
-  }  // Show loading caption.
-};
-
-/**
- * Refreshes space info of the current volume.
- * @param {boolean} showLoadingCaption Whether show loading caption or not.
- * @private
- */
-GearMenuController.prototype.refreshRemainingSpace_ = function(
-    showLoadingCaption) {
-  const currentDirectory = this.directoryModel_.getCurrentDirEntry();
-  if (!currentDirectory || util.isRecentRoot(currentDirectory)) {
-    this.gearMenu_.setSpaceInfo(null, false);
-    return;
   }
 
-  const currentVolumeInfo = this.directoryModel_.getCurrentVolumeInfo();
-  if (!currentVolumeInfo) {
-    return;
-  }
-
-  // TODO(mtomasz): Add support for remaining space indication for provided
-  // file systems.
-  if (currentVolumeInfo.volumeType == VolumeManagerCommon.VolumeType.PROVIDED ||
-      currentVolumeInfo.volumeType ==
-          VolumeManagerCommon.VolumeType.MEDIA_VIEW ||
-      currentVolumeInfo.volumeType == VolumeManagerCommon.VolumeType.ARCHIVE) {
-    this.gearMenu_.setSpaceInfo(null, false);
-    return;
-  }
-
-  this.gearMenu_.setSpaceInfo(new Promise(fulfill => {
-    chrome.fileManagerPrivate.getSizeStats(currentVolumeInfo.volumeId, fulfill);
-  }), true);
-};
-
-/**
- * Handles preferences change and updates menu.
- * @private
- */
-GearMenuController.prototype.onPreferencesChanged_ = function() {
-  chrome.fileManagerPrivate.getPreferences(prefs => {
-    if (chrome.runtime.lastError) {
+  /**
+   * Refreshes space info of the current volume.
+   * @param {boolean} showLoadingCaption Whether show loading caption or not.
+   * @private
+   */
+  refreshRemainingSpace_(showLoadingCaption) {
+    const currentDirectory = this.directoryModel_.getCurrentDirEntry();
+    if (!currentDirectory || util.isRecentRoot(currentDirectory)) {
+      this.gearMenu_.setSpaceInfo(null, false);
       return;
     }
 
-    if (prefs.cellularDisabled) {
-      this.gearMenu_.syncButton.setAttribute('checked', '');
-    } else {
-      this.gearMenu_.syncButton.removeAttribute('checked');
+    const currentVolumeInfo = this.directoryModel_.getCurrentVolumeInfo();
+    if (!currentVolumeInfo) {
+      return;
     }
-  });
-};
+
+    // TODO(mtomasz): Add support for remaining space indication for provided
+    // file systems.
+    // TODO(fukino): Add support for remaining space indication for documents
+    // provider roots. crbug.com/953657.
+    if (currentVolumeInfo.volumeType ==
+            VolumeManagerCommon.VolumeType.PROVIDED ||
+        currentVolumeInfo.volumeType ==
+            VolumeManagerCommon.VolumeType.MEDIA_VIEW ||
+        currentVolumeInfo.volumeType ==
+            VolumeManagerCommon.VolumeType.DOCUMENTS_PROVIDER ||
+        currentVolumeInfo.volumeType ==
+            VolumeManagerCommon.VolumeType.ARCHIVE ||
+        currentVolumeInfo.volumeType == VolumeManagerCommon.VolumeType.SMB) {
+      this.gearMenu_.setSpaceInfo(null, false);
+      return;
+    }
+
+    this.gearMenu_.setSpaceInfo(
+        new Promise(fulfill => {
+          chrome.fileManagerPrivate.getSizeStats(
+              currentVolumeInfo.volumeId, fulfill);
+        }),
+        true);
+  }
+
+  /**
+   * Handles preferences change and updates menu.
+   * @private
+   */
+  onPreferencesChanged_() {
+    chrome.fileManagerPrivate.getPreferences(prefs => {
+      if (chrome.runtime.lastError) {
+        return;
+      }
+
+      if (prefs.cellularDisabled) {
+        this.gearMenu_.syncButton.setAttribute('checked', '');
+      } else {
+        this.gearMenu_.syncButton.removeAttribute('checked');
+      }
+    });
+  }
+}

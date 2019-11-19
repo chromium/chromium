@@ -61,6 +61,11 @@ void AudioOutputStreamSink::Pause() {
       FROM_HERE, base::BindOnce(&AudioOutputStreamSink::DoPause, this));
 }
 
+void AudioOutputStreamSink::Flush() {
+  audio_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&AudioOutputStreamSink::DoFlush, this));
+}
+
 void AudioOutputStreamSink::Play() {
   {
     base::AutoLock al(callback_lock_);
@@ -150,6 +155,13 @@ void AudioOutputStreamSink::DoStop() {
 void AudioOutputStreamSink::DoPause() {
   DCHECK(audio_task_runner_->BelongsToCurrentThread());
   stream_->Stop();
+}
+
+void AudioOutputStreamSink::DoFlush() {
+  DCHECK(audio_task_runner_->BelongsToCurrentThread());
+  if (stream_) {
+    stream_->Flush();
+  }
 }
 
 void AudioOutputStreamSink::DoPlay() {

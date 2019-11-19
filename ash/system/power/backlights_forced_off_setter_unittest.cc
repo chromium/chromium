@@ -15,12 +15,12 @@
 #include "ash/touch/touch_devices_controller.h"
 #include "base/macros.h"
 #include "base/scoped_observer.h"
-#include "chromeos/dbus/fake_power_manager_client.h"
-#include "services/ws/public/cpp/input_devices/input_device_client_test_api.h"
+#include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/test/touch_transform_controller_test_api.h"
 #include "ui/display/manager/touch_transform_setter.h"
 #include "ui/display/test/display_manager_test_api.h"
+#include "ui/events/devices/device_data_manager_test_api.h"
 #include "ui/events/devices/touch_device_transform.h"
 #include "ui/events/devices/touchscreen_device.h"
 
@@ -218,7 +218,7 @@ TEST_F(BacklightsForcedOffSetterTest,
   ui::TouchscreenDevice internal_touchdevice(
       234, ui::InputDeviceType::INPUT_DEVICE_INTERNAL,
       std::string("test internal touch device"), gfx::Size(1000, 1000), 1);
-  ws::InputDeviceClientTestApi().SetTouchscreenDevices(
+  ui::DeviceDataManagerTestApi().SetTouchscreenDevices(
       {external_touchdevice, internal_touchdevice});
 
   std::vector<ui::TouchDeviceTransform> transforms;
@@ -234,7 +234,7 @@ TEST_F(BacklightsForcedOffSetterTest,
   touch_device_transform.device_id = internal_touchdevice.id;
   transforms.push_back(touch_device_transform);
 
-  // Initialize the transforms and the InputDeviceManager.
+  // Initialize the transforms and the DeviceDataManager.
   display::test::TouchTransformControllerTestApi(
       ash::Shell::Get()->touch_transformer_controller())
       .touch_transform_setter()
@@ -264,7 +264,7 @@ TEST_F(BacklightsForcedOffSetterTest, TouchscreensDisableOnBrightnessChange) {
   ui::TouchscreenDevice internal_touchdevice(
       234, ui::InputDeviceType::INPUT_DEVICE_INTERNAL,
       std::string("test internal touch device"), gfx::Size(1000, 1000), 1);
-  ws::InputDeviceClientTestApi().SetTouchscreenDevices({internal_touchdevice});
+  ui::DeviceDataManagerTestApi().SetTouchscreenDevices({internal_touchdevice});
 
   // Add internal touch device to the list.
   std::vector<ui::TouchDeviceTransform> transforms;
@@ -273,7 +273,7 @@ TEST_F(BacklightsForcedOffSetterTest, TouchscreensDisableOnBrightnessChange) {
   touch_device_transform.device_id = internal_touchdevice.id;
   transforms.push_back(touch_device_transform);
 
-  // Initialize the transforms and the InputDeviceManager.
+  // Initialize the transforms and the DeviceDataManager.
   display::test::TouchTransformControllerTestApi(
       ash::Shell::Get()->touch_transformer_controller())
       .touch_transform_setter()

@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "components/cbor/writer.h"
 #include "device/fido/attestation_object.h"
 #include "device/fido/attestation_statement_formats.h"
 #include "device/fido/attested_credential_data.h"
@@ -75,7 +76,8 @@ AuthenticatorMakeCredentialResponse::~AuthenticatorMakeCredentialResponse() =
 
 std::vector<uint8_t>
 AuthenticatorMakeCredentialResponse::GetCBOREncodedAttestationObject() const {
-  return attestation_object_.SerializeToCBOREncodedBytes();
+  return cbor::Writer::Write(AsCBOR(attestation_object_))
+      .value_or(std::vector<uint8_t>());
 }
 
 void AuthenticatorMakeCredentialResponse::EraseAttestationStatement(
@@ -98,9 +100,16 @@ AuthenticatorMakeCredentialResponse::GetRpIdHash() const {
   return attestation_object_.rp_id_hash();
 }
 
-std::vector<uint8_t> GetSerializedCtapDeviceResponse(
+std::vector<uint8_t> AsCTAPStyleCBORBytes(
     const AuthenticatorMakeCredentialResponse& response) {
-  return SerializeToCtapStyleCborEncodedBytes(response.attestation_object());
+  const AttestationObject& object = response.attestation_object();
+  cbor::Value::MapValue map;
+  map.emplace(1, object.attestation_statement().format_name());
+  map.emplace(2, object.authenticator_data().SerializeToByteArray());
+  map.emplace(3, AsCBOR(object.attestation_statement()));
+  auto encoded_bytes = cbor::Writer::Write(cbor::Value(std::move(map)));
+  DCHECK(encoded_bytes);
+  return std::move(*encoded_bytes);
 }
 
 }  // namespace device

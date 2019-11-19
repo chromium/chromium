@@ -43,12 +43,12 @@ void ExternalAudioPipelineShlib::SetExternalMediaMuted(bool muted) {
 }
 
 void ExternalAudioPipelineShlib::AddExternalLoopbackAudioObserver(
-    CastMediaShlib::LoopbackAudioObserver* observer) {
+    LoopbackAudioObserver* observer) {
   NOTREACHED();
 }
 
 void ExternalAudioPipelineShlib::RemoveExternalLoopbackAudioObserver(
-    CastMediaShlib::LoopbackAudioObserver* observer) {
+    LoopbackAudioObserver* observer) {
   NOTREACHED();
 }
 

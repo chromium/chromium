@@ -140,6 +140,7 @@ template <typename T, WebPrivatePtrDestruction, WebPrivatePtrStrength>
 struct WebPrivatePtrPersistentStorageType {
  public:
   using Type = Persistent<T>;
+  static Type* Create() { return new Type(PERSISTENT_FROM_HERE); }
 };
 
 template <typename T>
@@ -148,6 +149,7 @@ struct WebPrivatePtrPersistentStorageType<T,
                                           WebPrivatePtrStrength::kWeak> {
  public:
   using Type = WeakPersistent<T>;
+  static Type* Create() { return new Type(); }
 };
 
 template <typename T>
@@ -156,6 +158,7 @@ struct WebPrivatePtrPersistentStorageType<T,
                                           WebPrivatePtrStrength::kNormal> {
  public:
   using Type = CrossThreadPersistent<T>;
+  static Type* Create() { return new Type(PERSISTENT_FROM_HERE); }
 };
 
 template <typename T>
@@ -164,6 +167,7 @@ struct WebPrivatePtrPersistentStorageType<T,
                                           WebPrivatePtrStrength::kWeak> {
  public:
   using Type = CrossThreadWeakPersistent<T>;
+  static Type* Create() { return new Type(); }
 };
 
 template <typename T,
@@ -174,10 +178,11 @@ class PtrStorageImpl<T,
                      strongOrWeak,
                      kGarbageCollectedLifetime> {
  public:
-  using BlinkPtrType =
-      typename WebPrivatePtrPersistentStorageType<T,
-                                                  crossThreadDestruction,
-                                                  strongOrWeak>::Type;
+  using PersistentStorage =
+      WebPrivatePtrPersistentStorageType<T,
+                                         crossThreadDestruction,
+                                         strongOrWeak>;
+  using BlinkPtrType = typename PersistentStorage::Type;
 
   void Assign(T* val) {
     if (!val) {
@@ -186,7 +191,7 @@ class PtrStorageImpl<T,
     }
 
     if (!handle_)
-      handle_ = new BlinkPtrType;
+      handle_ = PersistentStorage::Create();
 
     (*handle_) = val;
   }

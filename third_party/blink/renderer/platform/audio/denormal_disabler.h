@@ -28,7 +28,7 @@
 
 #include <float.h>
 #include "build/build_config.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
 namespace blink {
@@ -133,6 +133,8 @@ class DenormalDisabler {
 #else
 // FIXME: add implementations for other architectures and compilers
 class DenormalDisabler {
+  STACK_ALLOCATED();
+
  public:
   DenormalDisabler() {}
 

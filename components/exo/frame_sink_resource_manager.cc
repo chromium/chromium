@@ -36,7 +36,6 @@ bool FrameSinkResourceManager::HasNoCallbacks() const {
 void FrameSinkResourceManager::ReclaimResource(
     const viz::ReturnedResource& resource) {
   auto it = release_callbacks_.find(resource.id);
-  DCHECK(it != release_callbacks_.end());
   if (it != release_callbacks_.end()) {
     std::move(it->second).Run(resource.sync_token, resource.lost);
     release_callbacks_.erase(it);

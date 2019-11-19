@@ -16,12 +16,6 @@
 
 namespace chromeos {
 
-namespace {
-
-constexpr char kIconCacheDir[] = "arc-kiosk/icon";
-
-}  // namespace
-
 ArcKioskAppData::ArcKioskAppData(const std::string& app_id,
                                  const std::string& package_name,
                                  const std::string& activity,
@@ -60,12 +54,8 @@ void ArcKioskAppData::SetCache(const std::string& name,
   name_ = name;
   icon_ = icon;
 
-  base::FilePath user_data_dir;
-  if (!base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir)) {
-    LOG(ERROR) << "Failed to get user directory.";
-    return;
-  }
-  base::FilePath cache_dir = user_data_dir.AppendASCII(kIconCacheDir);
+  base::FilePath cache_dir;
+  ArcKioskAppManager::Get()->GetKioskAppIconCacheDir(&cache_dir);
 
   SaveIcon(*icon_.bitmap(), cache_dir);
 

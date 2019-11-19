@@ -12,7 +12,7 @@
 #include "ash/display/null_mouse_warp_controller.h"
 #include "ash/display/unified_mouse_warp_controller.h"
 #include "ash/host/ash_window_tree_host.h"
-#include "ash/new_window_controller.h"
+#include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
@@ -135,7 +135,7 @@ void MoveCursorTo(AshWindowTreeHost* ash_host,
       Shell::GetPrimaryRootWindow()->GetHost()->ConvertScreenInPixelsToDIP(
           &new_point_in_screen);
     }
-    Shell::Get()->aura_env()->SetLastMouseLocation(new_point_in_screen);
+    aura::Env::GetInstance()->SetLastMouseLocation(new_point_in_screen);
   }
 }
 
@@ -167,7 +167,7 @@ void ShowDisplayErrorNotification(const base::string16& message,
           base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
               base::BindRepeating([](base::Optional<int> button_index) {
                 if (button_index)
-                  Shell::Get()->new_window_controller()->OpenFeedbackPage();
+                  NewWindowDelegate::GetInstance()->OpenFeedbackPage();
               })),
           kNotificationMonitorWarningIcon,
           message_center::SystemNotificationWarningLevel::WARNING);

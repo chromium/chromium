@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ANDROID_EXPLORE_SITES_EXPLORE_SITES_SCHEMA_H_
 
 #include <string>
+#include <tuple>
 
 namespace sql {
 class Database;
@@ -21,6 +22,9 @@ class ExploreSitesSchema {
   static constexpr int kCurrentVersion = 2;
   static constexpr int kCompatibleVersion = 1;
 
+  static const char kCurrentCatalogKey[];
+  static const char kDownloadingCatalogKey[];
+
   // Initializes the given meta table using the appropriate versions.
   static bool InitMetaTable(sql::Database* db, sql::MetaTable* meta_table);
 
@@ -28,6 +32,10 @@ class ExploreSitesSchema {
   // a metadata table. Returns |true| if the database is ready to be used,
   // |false| if creation or upgrades failed.
   static bool CreateOrUpgradeIfNeeded(sql::Database* db);
+
+  // Returns a pair representing the current and downloading version tokens.
+  static std::pair<std::string, std::string> GetVersionTokens(
+      sql::Database* db);
 };
 
 }  // namespace explore_sites

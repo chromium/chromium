@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <div id="mybutton" role="button" aria-haspopup="true" onmousedown="toggle()">
+    Click Me
+  </div>
+  <div style="display:none;" id="menuitems">
+    <a href="#1">One</a>
+    <a href="#2">Two</a>
+  </div>
+<script>
+  function go() {
+    var popUpButton = document.getElementById("mybutton");
+    var clickEvent = document.createEvent('MouseEvents');
+    clickEvent.initMouseEvent('mousedown', true, true, window);
+    popUpButton.dispatchEvent(clickEvent);
+  }
+  
+  function toggle() {
+    var popUpButton = document.getElementById("mybutton");
+    var menuItems = document.getElementById("menuitems");
+  
+    if (popUpButton.getAttribute("aria-expanded")) {
+      menuItems.style.display = "none";
+      popUpButton.removeAttribute("aria-expanded");
+    } else {
+      menuItems.style.display = null;
+      popUpButton.setAttribute("aria-expanded", true);
+    }
+  }
+</script>
+</body>
+</html>

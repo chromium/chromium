@@ -2,6 +2,8 @@
 per-file *.mojom=set noparent
 per-file *.mojom=file://ipc/SECURITY_OWNERS
 
-# Extending enum WebFeature is allowed without SECURITY_OWNERS review.
-per-file web_feature.mojom=set noparent
-per-file web_feature.mojom=file://third_party/blink/renderer/core/OWNERS
+# OWNERS review for adding / removing UseCounters comes from the code being
+# changed (which is often, but not always in blink/renderer/core).
+# No additional review is required for just adding/remove entries from this
+# enum (consistent with metrics/histograms/enums.xml).
+per-file web_feature.mojom=*

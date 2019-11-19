@@ -11,6 +11,14 @@
 
 namespace ntp_snippets {
 
+namespace {
+// All categories must be present.
+constexpr KnownCategories kKnownCategoriesDefaultOrder[] = {
+    KnownCategories::READING_LIST,
+    KnownCategories::ARTICLES,
+};
+}  // namespace
+
 ConstantCategoryRanker::ConstantCategoryRanker() {
   std::vector<KnownCategories> ordered_known_categories =
       GetKnownCategoriesDefaultOrder();
@@ -22,11 +30,11 @@ ConstantCategoryRanker::ConstantCategoryRanker() {
 ConstantCategoryRanker::~ConstantCategoryRanker() = default;
 
 bool ConstantCategoryRanker::Compare(Category left, Category right) const {
-  if (!base::ContainsValue(ordered_categories_, left)) {
+  if (!base::Contains(ordered_categories_, left)) {
     LOG(DFATAL) << "The category with ID " << left.id()
                 << " has not been added using AppendCategoryIfNecessary.";
   }
-  if (!base::ContainsValue(ordered_categories_, right)) {
+  if (!base::Contains(ordered_categories_, right)) {
     LOG(DFATAL) << "The category with ID " << right.id()
                 << " has not been added using AppendCategoryIfNecessary.";
   }
@@ -54,7 +62,7 @@ void ConstantCategoryRanker::ClearHistory(base::Time begin, base::Time end) {
 }
 
 void ConstantCategoryRanker::AppendCategoryIfNecessary(Category category) {
-  if (!base::ContainsValue(ordered_categories_, category)) {
+  if (!base::Contains(ordered_categories_, category)) {
     ordered_categories_.push_back(category);
   }
 }
@@ -83,17 +91,6 @@ ConstantCategoryRanker::GetDebugData() {
   result.push_back(
       CategoryRanker::DebugDataItem("Type", "ConstantCategoryRanker"));
 
-  std::string initial_order_type;
-  CategoryOrderChoice choice = GetSelectedCategoryOrder();
-  if (choice == CategoryOrderChoice::GENERAL) {
-    initial_order_type = "GENERAL";
-  }
-  if (choice == CategoryOrderChoice::EMERGING_MARKETS_ORIENTED) {
-    initial_order_type = "EMERGING_MARKETS_ORIENTED;";
-  }
-  result.push_back(
-      CategoryRanker::DebugDataItem("Initial order type", initial_order_type));
-
   std::vector<std::string> category_strings;
   for (Category category : ordered_categories_) {
     category_strings.push_back(base::NumberToString(category.id()));
@@ -115,41 +112,22 @@ void ConstantCategoryRanker::OnCategoryDismissed(Category category) {
 // static
 std::vector<KnownCategories>
 ConstantCategoryRanker::GetKnownCategoriesDefaultOrder() {
-  std::vector<KnownCategories> categories;
-  CategoryOrderChoice choice = GetSelectedCategoryOrder();
-  switch (choice) {
-    // All categories must be present. An exception is
-    // KnownCategories::CONTEXTUAL because it is not handled by
-    // ContentSuggestionsService.
-    case CategoryOrderChoice::GENERAL:
-      categories.push_back(KnownCategories::READING_LIST);
-      categories.push_back(KnownCategories::DOWNLOADS);
-      categories.push_back(KnownCategories::BOOKMARKS);
-      categories.push_back(KnownCategories::ARTICLES);
-      break;
-    case CategoryOrderChoice::EMERGING_MARKETS_ORIENTED:
-      categories.push_back(KnownCategories::ARTICLES);
-      categories.push_back(KnownCategories::READING_LIST);
-      categories.push_back(KnownCategories::DOWNLOADS);
-      categories.push_back(KnownCategories::BOOKMARKS);
-      break;
-  }
-
   static_assert(
-      static_cast<size_t>(KnownCategories::LOCAL_CATEGORIES_COUNT) == 7,
+      static_cast<size_t>(KnownCategories::LOCAL_CATEGORIES_COUNT) == 6,
       "Number of local categories has changed, please update "
-      "ConstantCategoryRanker::GetKnownCategoriesDefaultOrder to list all "
+      "ConstantCategoryRanker::kKnownCategoriesDefaultOrder to list all "
       "local KnownCategories for all orders.");
 
   // Other remote categories will be ordered after these depending on when
   // providers notify us about them using AppendCategoryIfNecessary.
-  return categories;
+  return std::vector<KnownCategories>(kKnownCategoriesDefaultOrder,
+                                      std::end(kKnownCategoriesDefaultOrder));
 }
 
 void ConstantCategoryRanker::AppendKnownCategory(
     KnownCategories known_category) {
   Category category = Category::FromKnownCategory(known_category);
-  DCHECK(!base::ContainsValue(ordered_categories_, category));
+  DCHECK(!base::Contains(ordered_categories_, category));
   ordered_categories_.push_back(category);
 }
 

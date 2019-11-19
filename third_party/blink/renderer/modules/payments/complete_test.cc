@@ -13,9 +13,8 @@ namespace blink {
 namespace {
 
 TEST(CompleteTest, CannotCallCompleteTwice) {
-  V8TestingScope scope;
+  PaymentRequestV8TestingScope scope;
   PaymentRequestMockFunctionScope funcs(scope.GetScriptState());
-  MakePaymentRequestOriginSecure(scope.GetDocument());
   PaymentRequest* request = PaymentRequest::Create(
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
       BuildPaymentDetailsInitForTest(), scope.GetExceptionState());
@@ -33,9 +32,8 @@ TEST(CompleteTest, CannotCallCompleteTwice) {
 }
 
 TEST(CompleteTest, ResolveCompletePromiseOnUnknownError) {
-  V8TestingScope scope;
+  PaymentRequestV8TestingScope scope;
   PaymentRequestMockFunctionScope funcs(scope.GetScriptState());
-  MakePaymentRequestOriginSecure(scope.GetDocument());
   PaymentRequest* request = PaymentRequest::Create(
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
       BuildPaymentDetailsInitForTest(), scope.GetExceptionState());
@@ -50,13 +48,12 @@ TEST(CompleteTest, ResolveCompletePromiseOnUnknownError) {
       .Then(funcs.ExpectCall(), funcs.ExpectNoCall());
 
   static_cast<payments::mojom::blink::PaymentRequestClient*>(request)->OnError(
-      payments::mojom::blink::PaymentErrorReason::UNKNOWN);
+      payments::mojom::blink::PaymentErrorReason::UNKNOWN, "Unknown error.");
 }
 
 TEST(CompleteTest, ResolveCompletePromiseOnUserClosingUI) {
-  V8TestingScope scope;
+  PaymentRequestV8TestingScope scope;
   PaymentRequestMockFunctionScope funcs(scope.GetScriptState());
-  MakePaymentRequestOriginSecure(scope.GetDocument());
   PaymentRequest* request = PaymentRequest::Create(
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
       BuildPaymentDetailsInitForTest(), scope.GetExceptionState());
@@ -71,15 +68,15 @@ TEST(CompleteTest, ResolveCompletePromiseOnUserClosingUI) {
       .Then(funcs.ExpectCall(), funcs.ExpectNoCall());
 
   static_cast<payments::mojom::blink::PaymentRequestClient*>(request)->OnError(
-      payments::mojom::blink::PaymentErrorReason::USER_CANCEL);
+      payments::mojom::blink::PaymentErrorReason::USER_CANCEL,
+      "User closed the UI.");
 }
 
 // If user cancels the transaction during processing, the complete() promise
 // should be rejected.
 TEST(CompleteTest, RejectCompletePromiseAfterError) {
-  V8TestingScope scope;
+  PaymentRequestV8TestingScope scope;
   PaymentRequestMockFunctionScope funcs(scope.GetScriptState());
-  MakePaymentRequestOriginSecure(scope.GetDocument());
   PaymentRequest* request = PaymentRequest::Create(
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
       BuildPaymentDetailsInitForTest(), scope.GetExceptionState());
@@ -88,7 +85,8 @@ TEST(CompleteTest, RejectCompletePromiseAfterError) {
   static_cast<payments::mojom::blink::PaymentRequestClient*>(request)
       ->OnPaymentResponse(BuildPaymentResponseForTest());
   static_cast<payments::mojom::blink::PaymentRequestClient*>(request)->OnError(
-      payments::mojom::blink::PaymentErrorReason::USER_CANCEL);
+      payments::mojom::blink::PaymentErrorReason::USER_CANCEL,
+      "User closed the UI.");
 
   request
       ->Complete(scope.GetScriptState(),
@@ -97,9 +95,8 @@ TEST(CompleteTest, RejectCompletePromiseAfterError) {
 }
 
 TEST(CompleteTest, ResolvePromiseOnComplete) {
-  V8TestingScope scope;
+  PaymentRequestV8TestingScope scope;
   PaymentRequestMockFunctionScope funcs(scope.GetScriptState());
-  MakePaymentRequestOriginSecure(scope.GetDocument());
   PaymentRequest* request = PaymentRequest::Create(
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
       BuildPaymentDetailsInitForTest(), scope.GetExceptionState());
@@ -118,9 +115,8 @@ TEST(CompleteTest, ResolvePromiseOnComplete) {
 }
 
 TEST(CompleteTest, RejectCompletePromiseOnUpdateDetailsFailure) {
-  V8TestingScope scope;
+  PaymentRequestV8TestingScope scope;
   PaymentRequestMockFunctionScope funcs(scope.GetScriptState());
-  MakePaymentRequestOriginSecure(scope.GetDocument());
   PaymentRequest* request = PaymentRequest::Create(
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
       BuildPaymentDetailsInitForTest(), scope.GetExceptionState());
@@ -143,9 +139,8 @@ TEST(CompleteTest, RejectCompletePromiseOnUpdateDetailsFailure) {
 }
 
 TEST(CompleteTest, RejectCompletePromiseAfterTimeout) {
-  V8TestingScope scope;
+  PaymentRequestV8TestingScope scope;
   PaymentRequestMockFunctionScope funcs(scope.GetScriptState());
-  MakePaymentRequestOriginSecure(scope.GetDocument());
   PaymentRequest* request = PaymentRequest::Create(
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
       BuildPaymentDetailsInitForTest(), scope.GetExceptionState());

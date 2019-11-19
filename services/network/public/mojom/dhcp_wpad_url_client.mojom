@@ -1,0 +1,15 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module network.mojom;
+
+import "mojo/public/mojom/base/big_string.mojom";
+
+// Interface to delegate fetching the PAC script URL configured via DHCP to the
+// browser process. If an error occurs or no PAC URL is provided, it should
+// return an empty string.
+[EnableIf=is_chromeos]
+interface DhcpWpadUrlClient {
+  GetPacUrl() => (mojo_base.mojom.BigString url);
+};

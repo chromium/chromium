@@ -3,8 +3,9 @@
 # found in the LICENSE file.
 
 from page_sets.login_helpers import login_utils
-from telemetry.core import util
 from telemetry.page import action_runner as action_runner_module
+
+import py_utils
 
 
 def GetGaiaContext(tab):
@@ -39,7 +40,7 @@ def LoginChromeAccount(action_runner, credential,
 
   # Get the Gaia webview context within the sign in extension to create a Gaia
   # action_runner. The action runner will then execute JS in the Gaia context.
-  gaia_context = util.WaitFor(lambda: GetGaiaContext(action_runner.tab), 5)
+  gaia_context = py_utils.WaitFor(lambda: GetGaiaContext(action_runner.tab), 5)
   if not gaia_context:
     raise RuntimeError('Can not find GAIA webview context for sign in.')
   gaia_action_runner = action_runner_module.ActionRunner(gaia_context)

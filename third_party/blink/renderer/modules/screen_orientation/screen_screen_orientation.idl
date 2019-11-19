@@ -5,5 +5,5 @@
 [
     ImplementedAs=ScreenScreenOrientation
 ] partial interface Screen {
-    [CallWith=ScriptState] readonly attribute ScreenOrientation orientation;
+    readonly attribute ScreenOrientation orientation;
 };

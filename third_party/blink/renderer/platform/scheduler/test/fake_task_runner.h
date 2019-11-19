@@ -5,13 +5,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_TEST_FAKE_TASK_RUNNER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_TEST_FAKE_TASK_RUNNER_H_
 
-#include <deque>
-
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "third_party/blink/renderer/platform/wtf/deque.h"
 
 namespace blink {
 namespace scheduler {
@@ -36,7 +35,7 @@ class FakeTaskRunner : public base::SingleThreadTaskRunner {
   }
 
   using PendingTask = std::pair<base::OnceClosure, base::TimeTicks>;
-  std::deque<PendingTask> TakePendingTasksForTesting();
+  Deque<PendingTask> TakePendingTasksForTesting();
 
  protected:
   bool PostDelayedTask(const base::Location& location,

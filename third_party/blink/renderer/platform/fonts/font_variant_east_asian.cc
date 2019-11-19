@@ -44,8 +44,8 @@ String FontVariantEastAsian::ToString(EastAsianWidth width) {
 
 String FontVariantEastAsian::ToString() const {
   return String::Format(
-      "form=%s, width=%s, ruby=%s", ToString(Form()).Ascii().data(),
-      ToString(Width()).Ascii().data(), Ruby() ? "true" : "false");
+      "form=%s, width=%s, ruby=%s", ToString(Form()).Ascii().c_str(),
+      ToString(Width()).Ascii().c_str(), Ruby() ? "true" : "false");
 }
 
 }  // namespace blink

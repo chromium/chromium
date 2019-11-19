@@ -2,21 +2,47 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from .utilities import assert_no_extra_args
+from .code_generator_info import CodeGeneratorInfo
+from .composition_parts import WithCodeGeneratorInfo
+from .composition_parts import WithComponent
+from .composition_parts import WithDebugInfo
+from .composition_parts import WithIdentifier
+from .ir_map import IRMap
+from .make_copy import make_copy
 
 
-# https://heycam.github.io/webidl/#idl-typedefs
-class Typedef(object):
+class Typedef(WithIdentifier, WithCodeGeneratorInfo, WithComponent,
+              WithDebugInfo):
+    """https://heycam.github.io/webidl/#idl-typedefs"""
 
-    def __init__(self, **kwargs):
-        self._identifier = kwargs.pop('identifier')
-        self._type = kwargs.pop('type')
-        assert_no_extra_args(kwargs)
+    class IR(IRMap.IR, WithCodeGeneratorInfo, WithComponent, WithDebugInfo):
+        def __init__(self,
+                     identifier,
+                     idl_type,
+                     code_generator_info=None,
+                     component=None,
+                     debug_info=None):
+            IRMap.IR.__init__(
+                self, identifier=identifier, kind=IRMap.IR.Kind.TYPEDEF)
+            WithCodeGeneratorInfo.__init__(self, code_generator_info)
+            WithComponent.__init__(self, component)
+            WithDebugInfo.__init__(self, debug_info)
+
+            self.idl_type = idl_type
+
+    def __init__(self, ir):
+        assert isinstance(ir, Typedef.IR)
+
+        ir = make_copy(ir)
+        WithIdentifier.__init__(self, ir.identifier)
+        WithCodeGeneratorInfo.__init__(
+            self, CodeGeneratorInfo(ir.code_generator_info))
+        WithComponent.__init__(self, components=ir.components)
+        WithDebugInfo.__init__(self, ir.debug_info)
+
+        self._idl_type = ir.idl_type
 
     @property
-    def identifier(self):
-        return self._identifier
-
-    @property
-    def type(self):
-        return self._type
+    def idl_type(self):
+        """Returns the typedef'ed type."""
+        return self._idl_type

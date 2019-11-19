@@ -5,9 +5,9 @@
 #include "content/browser/web_package/signed_exchange_prefetch_metric_recorder.h"
 
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_task_environment.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/simple_test_tick_clock.h"
+#include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {
@@ -15,8 +15,7 @@ namespace content {
 class SignedExchangePrefetchMetricRecorderTest : public ::testing::Test {
  public:
   SignedExchangePrefetchMetricRecorderTest()
-      : scoped_task_environment_(
-            base::test::ScopedTaskEnvironment::MainThreadType::MOCK_TIME) {}
+      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   void SetUp() override {
     metric_recorder_ =
@@ -27,11 +26,11 @@ class SignedExchangePrefetchMetricRecorderTest : public ::testing::Test {
   void FastForwardBy(const base::TimeDelta fast_forward_delta) {
     test_clock_.Advance(fast_forward_delta);
     test_tick_clock_.Advance(fast_forward_delta);
-    scoped_task_environment_.FastForwardBy(fast_forward_delta);
+    task_environment_.FastForwardBy(fast_forward_delta);
   }
 
  protected:
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   const base::HistogramTester histogram_tester_;
   base::SimpleTestClock test_clock_;
   base::SimpleTestTickClock test_tick_clock_;

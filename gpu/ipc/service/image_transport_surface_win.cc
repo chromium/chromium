@@ -7,10 +7,11 @@
 #include <memory>
 
 #include "base/win/windows_version.h"
+#include "gpu/command_buffer/service/feature_info.h"
 #include "gpu/config/gpu_preferences.h"
-#include "gpu/ipc/service/direct_composition_surface_win.h"
 #include "gpu/ipc/service/pass_through_image_transport_surface.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/gl/direct_composition_surface_win.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_surface_egl.h"
@@ -30,15 +31,27 @@ scoped_refptr<gl::GLSurface> ImageTransportSurface::CreateNativeSurface(
   scoped_refptr<gl::GLSurface> surface;
   bool override_vsync_for_multi_window_swap = false;
 
-  if (gl::GetGLImplementation() == gl::kGLImplementationEGLGLES2) {
+  if (gl::GetGLImplementation() == gl::kGLImplementationEGLANGLE) {
     auto vsync_provider =
         std::make_unique<gl::VSyncProviderWin>(surface_handle);
 
-    if (DirectCompositionSurfaceWin::IsDirectCompositionSupported()) {
-      surface = base::MakeRefCounted<DirectCompositionSurfaceWin>(
-          std::move(vsync_provider), delegate, surface_handle);
-      if (!surface->Initialize(gl::GLSurfaceFormat()))
+    if (gl::DirectCompositionSurfaceWin::IsDirectCompositionSupported()) {
+      const auto& workarounds = delegate->GetFeatureInfo()->workarounds();
+      gl::DirectCompositionSurfaceWin::Settings settings;
+      settings.disable_nv12_dynamic_textures =
+          workarounds.disable_nv12_dynamic_textures;
+      settings.disable_larger_than_screen_overlays =
+          workarounds.disable_larger_than_screen_overlays;
+      settings.disable_vp_scaling = workarounds.disable_vp_scaling;
+      auto vsync_callback = delegate->GetGpuVSyncCallback();
+      auto dc_surface = base::MakeRefCounted<gl::DirectCompositionSurfaceWin>(
+          std::move(vsync_provider), std::move(vsync_callback), surface_handle,
+          settings);
+      if (!dc_surface->Initialize(gl::GLSurfaceFormat()))
         return nullptr;
+      delegate->DidCreateAcceleratedSurfaceChildWindow(surface_handle,
+                                                       dc_surface->window());
+      surface = std::move(dc_surface);
     } else {
       surface = gl::InitializeGLSurface(
           base::MakeRefCounted<gl::NativeViewGLSurfaceEGL>(

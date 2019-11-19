@@ -133,14 +133,14 @@ void KioskExternalUpdateNotification::CreateAndShowNotificationView(
   params.opacity = views::Widget::InitParams::TRANSLUCENT_WINDOW;
   params.ownership = views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET;
   params.accept_events = false;
-  params.keep_on_top = true;
+  params.z_order = ui::ZOrderLevel::kFloatingUIElement;
   params.delegate = view_;
   params.bounds = bounds;
   // The notification is shown on the primary display.
   ash_util::SetupWidgetInitParamsForContainer(
       &params, ash::kShellWindowId_SettingBubbleContainer);
   views::Widget* widget = new views::Widget;
-  widget->Init(params);
+  widget->Init(std::move(params));
   gfx::NativeView native_view = widget->GetNativeView();
   native_view->SetName("KioskExternalUpdateNotification");
   widget->Show();

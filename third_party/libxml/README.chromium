@@ -10,8 +10,7 @@ Description:
 libxml2 from libxml.org.
 
 Modifications:
-- Add helper classes in chromium/libxml_utils.cc and
-  chromium/include/libxml/libxml_utils.h.
+- Add helper classes in the chromium/ subdirectory.
 - Applied these patches in chromium/*.patch:
   chromium-issue-599427.patch: workaround for VS 2015 Update 2 code-gen bug
   chromium-issue-628581.patch: See https://crbug.com/628581#c18

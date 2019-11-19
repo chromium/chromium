@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Tab Switcher colors. -->
+    <color name="tab_grid_card_view_tint_color">@color/popup_bg_color</color>
+    <color name="tab_grid_card_view_tint_color_incognito">@color/default_bg_color_dark_elev_4</color>
+
+    <color name="tab_grid_card_title_text_color">@color/default_text_color</color>
+    <color name="tab_grid_card_title_text_color_incognito">@color/default_text_color_light</color>
+
+    <color name="tab_grid_card_action_button_tint_color">@color/default_icon_color</color>
+    <color name="tab_grid_card_action_button_tint_color_incognito">@color/default_icon_color_white</color>
+
+    <color name="tab_grid_card_divider_tint_color">@color/divider_bg_color</color>
+    <color name="tab_grid_card_divider_tint_color_incognito">@color/divider_bg_color_light</color>
+
+    <color name="tab_grid_card_thumbnail_placeholder_color">@color/modern_secondary_color</color>
+    <color name="tab_grid_card_thumbnail_placeholder_color_incognito">@color/default_bg_color_dark_elev_3</color>
+
+    <!-- TODO(995876): Use semantic name for the selected color -->
+    <color name="tab_grid_card_selected_color">@color/light_active_color</color>
+    <color name="tab_grid_card_selected_color_incognito">@color/modern_blue_300</color>
+
+    <!-- Tab Group related colors. -->
+    <color name="tab_list_mini_card_default_background_color">@color/modern_secondary_color</color>
+    <color name="tab_list_mini_card_default_background_color_incognito">@color/modern_grey_800</color>
+
+    <color name="tab_grid_dialog_background_color">@color/default_bg_color_elev_1</color>
+    <color name="tab_grid_dialog_background_color_incognito">@color/default_bg_color_dark_elev_1</color>
+
+    <color name="ungroup_bar_shadow_color">@android:color/black</color>
+
+    <color name="favicon_background_color">@color/modern_secondary_color</color>
+    <color name="favicon_background_color_incognito">@color/black_alpha_38</color>
+
+    <color name="hovered_tab_grid_card_background_color">@color/modern_secondary_color</color>
+    <color name="hovered_tab_grid_card_background_color_incognito">@color/modern_grey_800</color>
+</resources>

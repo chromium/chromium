@@ -160,7 +160,7 @@ class WebViewFindHelper {
     friend void WebViewFindHelper::EndFindSession(int session_request_id,
                                                   bool canceled);
 
-    base::WeakPtrFactory<FindInfo> weak_ptr_factory_;
+    base::WeakPtrFactory<FindInfo> weak_ptr_factory_{this};
 
     DISALLOW_COPY_AND_ASSIGN(FindInfo);
   };

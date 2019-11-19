@@ -10,7 +10,7 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/message_loop/message_loop.h"
+#include "base/message_loop/message_pump_type.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread.h"
@@ -265,7 +265,7 @@ NetworkConfigWatcherMac::NetworkConfigWatcherMac(Delegate* delegate)
   // We create this notifier thread because the notification implementation
   // needs a thread with a CFRunLoop, and there's no guarantee that
   // MessageLoopCurrent::Get() meets that criterion.
-  base::Thread::Options thread_options(base::MessageLoop::TYPE_UI, 0);
+  base::Thread::Options thread_options(base::MessagePumpType::UI, 0);
   notifier_thread_->StartWithOptions(thread_options);
 }
 

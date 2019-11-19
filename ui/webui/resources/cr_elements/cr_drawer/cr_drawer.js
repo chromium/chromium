@@ -20,6 +20,18 @@ Polymer({
       value: 'ltr',
       reflectToAttribute: true,
     },
+
+    /**
+     * An iron-icon resource name, e.g. "cr20:menu". If null, no icon will
+     * be shown.
+     */
+    iconName: {
+      type: String,
+      value: null,
+    },
+
+    /** Title attribute for the icon, if shown. */
+    iconTitle: String,
   },
 
   /** @type {boolean} */
@@ -80,6 +92,15 @@ Polymer({
   /** @return {boolean} */
   wasCanceled: function() {
     return !this.open && this.$.dialog.returnValue == 'canceled';
+  },
+
+  /**
+   * Handles a tap on the (optional) icon.
+   * @param {!Event} event
+   * @private
+   */
+  onIconTap_: function(event) {
+    this.cancel();
   },
 
   /**

@@ -60,11 +60,9 @@ std::string InputMethodDescriptor::GetIndicator() const {
   return indicator_;
 }
 
-InputMethodDescriptor::InputMethodDescriptor() {
-}
+InputMethodDescriptor::InputMethodDescriptor() = default;
 
-InputMethodDescriptor::~InputMethodDescriptor() {
-}
+InputMethodDescriptor::~InputMethodDescriptor() = default;
 
 }  // namespace input_method
 }  // namespace chromeos

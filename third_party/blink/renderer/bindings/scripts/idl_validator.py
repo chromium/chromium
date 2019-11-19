@@ -60,6 +60,15 @@ class IDLExtendedAttributeValidator(object):
                 self.validate_extended_attributes_node(operation)
                 for argument in operation.arguments:
                     self.validate_extended_attributes_node(argument)
+        for dictionary in definitions.dictionaries.itervalues():
+            self.validate_extended_attributes_node(dictionary)
+            for member in dictionary.members:
+                self.validate_extended_attributes_node(member)
+        for callback_function in definitions.callback_functions.itervalues():
+            self.validate_extended_attributes_node(callback_function)
+            for argument in callback_function.arguments:
+                self.validate_extended_attributes_node(argument)
+
 
     def validate_extended_attributes_node(self, node):
         for name, values_string in node.extended_attributes.iteritems():

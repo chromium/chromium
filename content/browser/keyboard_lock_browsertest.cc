@@ -24,7 +24,7 @@
 #include "content/test/content_browser_test_utils_internal.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "third_party/blink/public/web/web_fullscreen_options.h"
+#include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
@@ -127,12 +127,10 @@ bool g_window_has_focus = false;
 class TestRenderWidgetHostView : public RenderWidgetHostViewAura {
  public:
   TestRenderWidgetHostView(RenderWidgetHost* host, bool is_guest_view_hack)
-      : RenderWidgetHostViewAura(host,
-                                 is_guest_view_hack,
-                                 false /* is_mus_browser_plugin_guest */) {}
+      : RenderWidgetHostViewAura(host, is_guest_view_hack) {}
   ~TestRenderWidgetHostView() override {}
 
-  bool HasFocus() const override { return g_window_has_focus; }
+  bool HasFocus() override { return g_window_has_focus; }
 
   void OnWindowFocused(aura::Window* gained_focus,
                        aura::Window* lost_focus) override {
@@ -151,10 +149,9 @@ class FakeKeyboardLockWebContentsDelegate : public WebContentsDelegate {
   void EnterFullscreenModeForTab(
       WebContents* web_contents,
       const GURL& origin,
-      const blink::WebFullscreenOptions& options) override;
+      const blink::mojom::FullscreenOptions& options) override;
   void ExitFullscreenModeForTab(WebContents* web_contents) override;
-  bool IsFullscreenForTabOrPending(
-      const WebContents* web_contents) const override;
+  bool IsFullscreenForTabOrPending(const WebContents* web_contents) override;
   void RequestKeyboardLock(WebContents* web_contents,
                            bool esc_key_locked) override;
   void CancelKeyboardLockRequest(WebContents* web_contents) override;
@@ -169,7 +166,7 @@ class FakeKeyboardLockWebContentsDelegate : public WebContentsDelegate {
 void FakeKeyboardLockWebContentsDelegate::EnterFullscreenModeForTab(
     WebContents* web_contents,
     const GURL& origin,
-    const blink::WebFullscreenOptions& options) {
+    const blink::mojom::FullscreenOptions& options) {
   is_fullscreen_ = true;
   if (keyboard_lock_requested_)
     web_contents->GotResponseToKeyboardLockRequest(/*allowed=*/true);
@@ -183,7 +180,7 @@ void FakeKeyboardLockWebContentsDelegate::ExitFullscreenModeForTab(
 }
 
 bool FakeKeyboardLockWebContentsDelegate::IsFullscreenForTabOrPending(
-    const WebContents* web_contents) const {
+    const WebContents* web_contents) {
   return is_fullscreen_;
 }
 
@@ -294,8 +291,7 @@ void KeyboardLockBrowserTest::SetUpOnMainThread() {
   web_contents()->SetDelegate(&web_contents_delegate_);
 
   // KeyboardLock requires a secure context (HTTPS).
-  https_test_server()->AddDefaultHandlers(
-      base::FilePath(FILE_PATH_LITERAL("content/test/data")));
+  https_test_server()->AddDefaultHandlers(GetTestDataFilePath());
   host_resolver()->AddRule("*", "127.0.0.1");
   SetupCrossSiteRedirector(https_test_server());
   ASSERT_TRUE(https_test_server()->Start());
@@ -352,7 +348,7 @@ void KeyboardLockBrowserTest::CancelKeyboardLock(
 
 void KeyboardLockBrowserTest::EnterFullscreen(const base::Location& from_here,
                                               const GURL& gurl) {
-  web_contents()->EnterFullscreenMode(gurl, blink::WebFullscreenOptions());
+  web_contents()->EnterFullscreenMode(gurl, blink::mojom::FullscreenOptions());
 
   ASSERT_TRUE(web_contents()->IsFullscreenForCurrentTab())
       << "Location: " << from_here.ToString();
@@ -817,15 +813,15 @@ IN_PROC_BROWSER_TEST_F(KeyboardLockBrowserTest,
   ASSERT_TRUE(web_contents()->GetKeyboardLockWidget());
   ASSERT_FALSE(web_contents()->GetRenderWidgetHostView()->IsKeyboardLocked());
 
-  RenderFrameHost* main_frame = web_contents()->GetMainFrame();
-  RenderFrameHost* child = ChildFrameAt(main_frame, 2);
-  ASSERT_TRUE(child);
-
   // The third child is cross-domain and has the allowfullscreen attribute set.
   ASSERT_TRUE(
       NavigateIframeToURL(web_contents(), kChildIframeName_2,
                           https_test_server()->GetURL(kCrossSiteChildDomain2,
                                                       kFullscreenFramePath)));
+  RenderFrameHost* main_frame = web_contents()->GetMainFrame();
+  RenderFrameHost* child = ChildFrameAt(main_frame, 2);
+  ASSERT_TRUE(child);
+
   ASSERT_TRUE(ExecuteScript(child, "activateFullscreen()"));
 
   ASSERT_EQ(main_frame->GetView()->GetRenderWidgetHost(),
@@ -840,15 +836,15 @@ IN_PROC_BROWSER_TEST_F(KeyboardLockBrowserTest,
   // frame activates fullscreen.
   NavigateToTestURL(https_cross_site_frame());
 
-  RenderFrameHost* main_frame = web_contents()->GetMainFrame();
-  RenderFrameHost* child = ChildFrameAt(main_frame, 2);
-  ASSERT_TRUE(child);
-
   // The third child is cross-domain and has the allowfullscreen attribute set.
   ASSERT_TRUE(
       NavigateIframeToURL(web_contents(), kChildIframeName_2,
                           https_test_server()->GetURL(kCrossSiteChildDomain2,
                                                       kFullscreenFramePath)));
+  RenderFrameHost* main_frame = web_contents()->GetMainFrame();
+  RenderFrameHost* child = ChildFrameAt(main_frame, 2);
+  ASSERT_TRUE(child);
+
   ASSERT_TRUE(ExecuteScript(child, "activateFullscreen()"));
 
   RequestKeyboardLock(FROM_HERE);

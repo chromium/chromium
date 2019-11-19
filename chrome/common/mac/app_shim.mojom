@@ -4,9 +4,11 @@
 
 module chrome.mojom;
 
-import "content/public/common/ns_view_bridge_factory.mojom";
+import "components/remote_cocoa/common/application.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
-import "ui/views_bridge_mac/mojo/bridge_factory.mojom";
+import "mojo/public/mojom/base/string16.mojom";
+import "ui/gfx/image/mojom/image.mojom";
+import "url/mojom/url.mojom";
 
 [Native]
 enum AppShimLaunchType;
@@ -20,36 +22,44 @@ enum AppShimFocusType;
 [Native]
 enum AppShimAttentionType;
 
+// An entry in the profiles NSMenu.
+struct ProfileMenuItem {
+  // The name to display.
+  mojo_base.mojom.String16 name;
+
+  // The icon to display next to the name.
+  gfx.mojom.ImageSkia? icon;
+
+  // The index used to look up this item when selected.
+  uint32 menu_index;
+
+  // Whether or not this menu item is listed as selected.
+  bool active;
+
+  // The profile path to associate with this item.
+  mojo_base.mojom.FilePath profile_path;
+};
+
 // Interface through which the browser communicates to a shim process.
 interface AppShim {
-  // Create the interface through which BridgedNativeWidget instances may be
-  // created (for views::Widgets whose NSWindows exist in the app shim process).
-  CreateViewsBridgeFactory(
-      associated views_bridge_mac.mojom.BridgeFactory& views_bridge_factory);
-
-  // Create the interface through which a content structure
-  // (RenderWidgetHostView or WebContentsView) may create an NSView that exists
-  // in the app shim process.
-  CreateContentNSViewBridgeFactory(
-      associated content.mojom.NSViewBridgeFactory&
-          content_ns_views_bridge_factory);
+  // Create the interface to the NSApplication (through which NSViews and
+  // NSWindows may be created).
+  CreateRemoteCocoaApplication(
+      pending_associated_receiver<remote_cocoa.mojom.Application> application);
 
   // Initialize the command handler for the specified BridgedNativeWidget. This
-  // method exists at this scope (as opposed to in views_bridge_mac) because it
-  // creates chrome-scoped objects that implement views_bridge_mac interfaces.
+  // method exists at this scope (as opposed to in remote_cocoa) because it
+  // creates chrome-scoped objects that implement remote_cocoa interfaces.
   CreateCommandDispatcherForWidget(uint64 widget_id);
-
-  // Instructs the shim to hide the app.
-  Hide();
-
-  // Instructs the shim to show the app.
-  UnhideWithoutActivation();
 
   // Instructs the shim to request or cancel user attention.
   SetUserAttention(AppShimAttentionType attention_type);
 
   // Instructs the shim to set its badge label.
   SetBadgeLabel(string badge_label);
+
+  // Called to update the state of the profiles NSMenu.
+  UpdateProfileMenu(array<ProfileMenuItem> profile_menu_items);
 };
 
 // Interface through which the a process communicates to the browser process.
@@ -61,11 +71,28 @@ interface AppShimHost {
   FocusApp(AppShimFocusType focus_type,
            array<mojo_base.mojom.FilePath> files);
 
-  // Sent when the app shim is hidden or unhidden.
-  SetAppHidden(bool hidden);
+  // Called when a profile is selected from the profiles menu.
+  ProfileSelectedFromMenu(mojo_base.mojom.FilePath profile_path);
+};
 
-  // Called when the app shim process notifies that the app should quit.
-  QuitApp();
+// Properties of an app shim that are specified when it connects to the browser
+// process for the first time.
+struct AppShimInfo {
+  // The path of the profile to use with this app.
+  mojo_base.mojom.FilePath profile_path;
+
+  // The shim's app id.
+  string app_id;
+
+  // The shortcut URL for this app (if this is a shortcut app or a PWA).
+  url.mojom.Url app_url;
+
+  // How or if the browser should launch the associated app in response to this
+  // shim process connecting.
+  AppShimLaunchType launch_type;
+
+  // The files that were dragged on to this app when launching it.
+  array<mojo_base.mojom.FilePath> files;
 };
 
 // The initial interface provided by the browser process. Used to bootstrap to
@@ -75,11 +102,9 @@ interface AppShimHostBootstrap {
   // process is requesting to be associated with the given profile and app_id.
   // Once the profile and app_id are stored, and all future messages from the
   // app shim relate to this app.
-  LaunchApp(AppShimHost& host_request,
-            mojo_base.mojom.FilePath profile_dir,
-            string app_mode_id,
-            AppShimLaunchType launch_type,
-            array<mojo_base.mojom.FilePath> files) =>
-                (AppShimLaunchResult launch_result, AppShim& app_shim_request);
+  OnShimConnected(pending_receiver<AppShimHost> host_receiver,
+                  AppShimInfo app_shim_info) =>
+                      (AppShimLaunchResult launch_result,
+                       pending_receiver<AppShim> app_shim_receiver);
 };
 

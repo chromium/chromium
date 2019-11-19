@@ -11,13 +11,13 @@
 #include "components/scheduling_metrics/task_duration_metric_reporter.h"
 #include "components/scheduling_metrics/total_duration_metric_reporter.h"
 #include "third_party/blink/public/platform/task_type.h"
-#include "third_party/blink/public/platform/web_thread_type.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/scheduler/common/metrics_helper.h"
 #include "third_party/blink/renderer/platform/scheduler/common/thread_load_tracker.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_task_queue.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/use_case.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_status.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread_type.h"
 
 namespace blink {
 namespace scheduler {
@@ -49,10 +49,14 @@ class PLATFORM_EXPORT MainThreadMetricsHelper : public MetricsHelper {
       MainThreadTaskQueue* queue,
       const base::sequence_manager::Task& task,
       const base::sequence_manager::TaskQueue::TaskTiming& task_timing);
+  void RecordTaskSliceMetrics(base::TimeTicks now);
 
   void OnRendererForegrounded(base::TimeTicks now);
   void OnRendererBackgrounded(base::TimeTicks now);
   void OnRendererShutdown(base::TimeTicks now);
+
+  void OnSafepointEntered(base::TimeTicks now);
+  void OnSafepointExited(base::TimeTicks now);
 
   void RecordMainThreadTaskLoad(base::TimeTicks time, double load);
   void RecordForegroundMainThreadTaskLoad(base::TimeTicks time, double load);
@@ -67,14 +71,16 @@ class PLATFORM_EXPORT MainThreadMetricsHelper : public MetricsHelper {
 
   void ReportLowThreadLoadForPageAlmostIdleSignal(int load_percentage);
 
+  // Record metrics of only top-level tasks with safepoints.
+  void RecordMetricsForTasksWithSafepoints(
+      const base::sequence_manager::TaskQueue::TaskTiming& task_timing);
+
   MainThreadSchedulerImpl* main_thread_scheduler_;  // NOT OWNED
 
   // Set to true when OnRendererShutdown is called. Used to ensure that metrics
   // that need to cross IPC boundaries aren't sent, as they cause additional
   // useless tasks to be posted.
   bool renderer_shutting_down_;
-
-  const bool is_page_almost_idle_signal_enabled_;
 
   base::Optional<base::TimeTicks> last_reported_task_;
 
@@ -144,6 +150,13 @@ class PLATFORM_EXPORT MainThreadMetricsHelper : public MetricsHelper {
   scheduling_metrics::TotalDurationMetricReporter total_task_time_reporter_;
 
   MainThreadTaskLoadState main_thread_task_load_state_;
+
+  base::TimeTicks current_task_slice_start_time_;
+
+  // Number of safepoints during inside the current top-level tasks in which
+  // cooperative scheduling had a chance to run a task (as we don't necessarily
+  // run a task in each safepoint).
+  int safepoints_in_current_toplevel_task_count_;
 
   DISALLOW_COPY_AND_ASSIGN(MainThreadMetricsHelper);
 };

@@ -4,7 +4,6 @@
 
 #include "services/audio/public/cpp/manifest.h"
 
-#include "base/no_destructor.h"
 #include "services/audio/public/mojom/constants.mojom.h"
 #include "services/audio/public/mojom/debug_recording.mojom.h"
 #include "services/audio/public/mojom/device_notifications.mojom.h"
@@ -16,12 +15,14 @@
 
 namespace audio {
 
-const service_manager::Manifest& GetManifest() {
-  static base::NoDestructor<service_manager::Manifest> manifest{
+service_manager::Manifest GetManifest(
+    service_manager::Manifest::ExecutionMode execution_mode) {
+  return service_manager::Manifest{
       service_manager::ManifestBuilder()
           .WithServiceName(mojom::kServiceName)
-          .WithDisplayName("Audio")
+          .WithDisplayName("Audio Service")
           .WithOptions(service_manager::ManifestOptionsBuilder()
+                           .WithExecutionMode(execution_mode)
                            .WithSandboxType("audio")
                            .WithInstanceSharingPolicy(
                                service_manager::Manifest::
@@ -46,7 +47,6 @@ const service_manager::Manifest& GetManifest() {
               "testing_api",
               service_manager::Manifest::InterfaceList<mojom::TestingApi>())
           .Build()};
-  return *manifest;
 }
 
 }  // namespace audio

@@ -12,7 +12,7 @@
 
 class IdentityManagerFactoryObserver;
 
-namespace identity {
+namespace signin {
 class IdentityManager;
 }
 
@@ -24,17 +24,13 @@ class ChromeBrowserState;
 // BrowserStates.
 class IdentityManagerFactory : public BrowserStateKeyedServiceFactory {
  public:
-  static identity::IdentityManager* GetForBrowserState(
+  static signin::IdentityManager* GetForBrowserState(
       ios::ChromeBrowserState* browser_state);
-  static identity::IdentityManager* GetForBrowserStateIfExists(
+  static signin::IdentityManager* GetForBrowserStateIfExists(
       ios::ChromeBrowserState* browser_state);
 
   // Returns an instance of the IdentityManagerFactory singleton.
   static IdentityManagerFactory* GetInstance();
-
-  // Ensures that IdentityManagerFactory and the factories on which it depends
-  // are built.
-  static void EnsureFactoryAndDependeeFactoriesBuilt();
 
   // Methods to register or remove observers of IdentityManager
   // creation/shutdown.
@@ -55,8 +51,10 @@ class IdentityManagerFactory : public BrowserStateKeyedServiceFactory {
 
   // BrowserStateKeyedServiceFactory:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* browser_state) const override;
+      web::BrowserState* context) const override;
   void BrowserStateShutdown(web::BrowserState* context) override;
+  void RegisterBrowserStatePrefs(
+      user_prefs::PrefRegistrySyncable* registry) override;
 
   DISALLOW_COPY_AND_ASSIGN(IdentityManagerFactory);
 };

@@ -1,8 +1,6 @@
 #ifndef _RAR_SECURE_PASSWORD_
 #define _RAR_SECURE_PASSWORD_
 
-namespace third_party_unrar {
-
 // Store a password securely (if data encryption is provided by OS)
 // or obfuscated to make search for password in memory dump less trivial.
 class SecPassword
@@ -33,7 +31,5 @@ class SecPassword
 
 void cleandata(void *data,size_t size);
 void SecHideData(void *Data,size_t DataSize,bool Encode,bool CrossProcess);
-
-}  // namespace third_party_unrar
 
 #endif

@@ -11,13 +11,13 @@
 #include "base/metrics/histogram.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
-#include "components/sync/base/cryptographer.h"
 #include "components/sync/base/hash_util.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/time.h"
 #include "components/sync/base/unique_position.h"
 #include "components/sync/engine_impl/conflict_resolver.h"
 #include "components/sync/engine_impl/syncer_proto_util.h"
+#include "components/sync/nigori/cryptographer.h"
 #include "components/sync/protocol/bookmark_specifics.pb.h"
 #include "components/sync/protocol/password_specifics.pb.h"
 #include "components/sync/protocol/sync.pb.h"
@@ -173,7 +173,7 @@ syncable::Id FindLocalIdToUpdate(syncable::BaseTransaction* trans,
 UpdateAttemptResponse AttemptToUpdateEntry(
     syncable::WriteTransaction* const trans,
     syncable::MutableEntry* const entry,
-    Cryptographer* cryptographer) {
+    const Cryptographer* cryptographer) {
   DCHECK(entry->good());
   if (!entry->GetIsUnappliedUpdate())
     return SUCCESS;  // No work to do.

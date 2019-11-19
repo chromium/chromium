@@ -4,25 +4,11 @@
 
 #include "chromeos/components/tether/device_status_util.h"
 
+#include "base/numerics/ranges.h"
+
 namespace chromeos {
 
 namespace tether {
-
-namespace {
-
-const char kDefaultCellCarrierName[] = "unknown-carrier";
-
-// Android signal strength is measured between 0 and 4 (inclusive), but Chrome
-// OS signal strength is measured between 0 and 100 (inclusive). In order to
-// convert between Android signal strength to Chrome OS signal strength, the
-// value must be multiplied by the below value.
-const int32_t kAndroidTetherHostToChromeOSSignalStrengthMultiplier = 25;
-
-int32_t ForceBetweenZeroAndOneHundred(int32_t value) {
-  return std::min(std::max(value, 0), 100);
-}
-
-}  // namespace
 
 void NormalizeDeviceStatus(const DeviceStatus& status,
                            std::string* carrier_out,
@@ -31,6 +17,7 @@ void NormalizeDeviceStatus(const DeviceStatus& status,
   // Use a sentinel value if carrier information is not available. This value is
   // special-cased and replaced with a localized string in the settings UI.
   if (carrier_out) {
+    constexpr char kDefaultCellCarrierName[] = "unknown-carrier";
     *carrier_out =
         (!status.has_cell_provider() || status.cell_provider().empty())
             ? kDefaultCellCarrierName
@@ -44,15 +31,19 @@ void NormalizeDeviceStatus(const DeviceStatus& status,
   if (battery_percentage_out) {
     *battery_percentage_out =
         status.has_battery_percentage()
-            ? ForceBetweenZeroAndOneHundred(status.battery_percentage())
+            ? base::ClampToRange(status.battery_percentage(), 0, 100)
             : 100;
   }
   if (signal_strength_out) {
+    // Android signal strength is measured between 0 and 4 (inclusive), but
+    // Chrome OS signal strength is measured between 0 and 100 (inclusive). In
+    // order to convert between Android signal strength to Chrome OS signal
+    // strength, the value must be multiplied by the below value.
+    constexpr int32_t kConversionFactor = 100 / 4;
     *signal_strength_out =
         status.has_connection_strength()
-            ? ForceBetweenZeroAndOneHundred(
-                  kAndroidTetherHostToChromeOSSignalStrengthMultiplier *
-                  status.connection_strength())
+            ? base::ClampToRange(
+                  kConversionFactor * status.connection_strength(), 0, 100)
             : 100;
   }
 }

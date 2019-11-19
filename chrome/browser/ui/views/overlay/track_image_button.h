@@ -20,7 +20,7 @@ class TrackImageButton : public views::ImageButton {
   explicit TrackImageButton(ButtonListener*,
                             const gfx::VectorIcon& icon,
                             base::string16 label);
-  ~TrackImageButton() override;
+  ~TrackImageButton() override = default;
 
   // Get button size when visible.
   gfx::Size GetLastVisibleSize() const;
@@ -33,7 +33,7 @@ class TrackImageButton : public views::ImageButton {
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 
  private:
-  const gfx::VectorIcon& icon_;
+  const gfx::ImageSkia image_;
 
   // Last visible size of the image button.
   gfx::Size last_visible_size_;

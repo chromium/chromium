@@ -39,6 +39,9 @@ class GetUpdatesDelegate {
   virtual std::unique_ptr<ProtocolEvent> GetNetworkRequestEvent(
       base::Time timestamp,
       const sync_pb::ClientToServerMessage& request) const = 0;
+
+ private:
+  DISALLOW_COPY_AND_ASSIGN(GetUpdatesDelegate);
 };
 
 // Functionality specific to the normal GetUpdate request.

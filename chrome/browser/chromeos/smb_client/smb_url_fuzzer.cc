@@ -7,7 +7,6 @@
 
 #include "base/at_exit.h"
 #include "base/i18n/icu_util.h"
-#include "base/test/fuzzed_data_provider.h"
 #include "chrome/browser/chromeos/smb_client/smb_url.h"
 
 // This is a workaround for https://crbug.com/778929.
@@ -24,8 +23,8 @@ IcuEnvironment* env = new IcuEnvironment();
 
 // Entry point for LibFuzzer.
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  base::FuzzedDataProvider fuzzed_data(data, size);
+  std::string input(reinterpret_cast<const char*>(data), size);
 
-  chromeos::smb_client::SmbUrl url(fuzzed_data.ConsumeRemainingBytesAsString());
+  chromeos::smb_client::SmbUrl url(input);
   return 0;
 }

@@ -21,10 +21,10 @@
 #include "content/browser/renderer_host/render_widget_host_view_android.h"
 #include "content/common/frame_messages.h"
 #include "content/common/view_messages.h"
+#include "content/public/android/content_jni_headers/ImeAdapterImpl_jni.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/native_web_keyboard_event.h"
 #include "content/public/browser/web_contents.h"
-#include "jni/ImeAdapterImpl_jni.h"
 #include "third_party/blink/public/platform/web_input_event.h"
 #include "third_party/blink/public/platform/web_text_input_type.h"
 #include "ui/base/ime/ime_text_span.h"
@@ -184,17 +184,10 @@ void ImeAdapterAndroid::UpdateState(const TextInputState& state) {
       ConvertUTF16ToJavaString(env, state.value);
   Java_ImeAdapterImpl_updateState(
       env, obj, static_cast<int>(state.type), state.flags, state.mode,
-      state.show_ime_if_needed, jstring_text, state.selection_start,
+      static_cast<int>(state.action), state.show_ime_if_needed,
+      state.always_hide_ime, jstring_text, state.selection_start,
       state.selection_end, state.composition_start, state.composition_end,
       state.reply_to_request);
-}
-
-void ImeAdapterAndroid::UpdateAfterViewSizeChanged() {
-  JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> obj = java_ime_adapter_.get(env);
-  if (obj.is_null())
-    return;
-  Java_ImeAdapterImpl_updateAfterViewSizeChanged(env, obj);
 }
 
 void ImeAdapterAndroid::UpdateOnTouchDown() {
@@ -220,16 +213,34 @@ void ImeAdapterAndroid::UpdateFrameInfo(
       selection_start.type() == gfx::SelectionBound::CENTER;
   const jboolean is_insertion_marker_visible = selection_start.visible();
   const jfloat insertion_marker_horizontal =
-      has_insertion_marker ? selection_start.edge_top().x() : 0.0f;
+      has_insertion_marker ? selection_start.edge_start().x() : 0.0f;
   const jfloat insertion_marker_top =
-      has_insertion_marker ? selection_start.edge_top().y() : 0.0f;
+      has_insertion_marker ? selection_start.edge_start().y() : 0.0f;
   const jfloat insertion_marker_bottom =
-      has_insertion_marker ? selection_start.edge_bottom().y() : 0.0f;
+      has_insertion_marker ? selection_start.edge_end().y() : 0.0f;
 
   Java_ImeAdapterImpl_updateFrameInfo(
       env, obj, dip_scale, content_offset_ypix, has_insertion_marker,
       is_insertion_marker_visible, insertion_marker_horizontal,
       insertion_marker_top, insertion_marker_bottom);
+}
+
+void ImeAdapterAndroid::OnRenderFrameMetadataChangedAfterActivation(
+    const gfx::SizeF& new_viewport_size) {
+  if (old_viewport_size_ == new_viewport_size)
+    return;
+
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> obj = java_ime_adapter_.get(env);
+  if (obj.is_null())
+    return;
+
+  const jboolean surface_height_reduced =
+      new_viewport_size.width() == old_viewport_size_.width() &&
+      new_viewport_size.height() < old_viewport_size_.height();
+  old_viewport_size_ = new_viewport_size;
+  Java_ImeAdapterImpl_onResizeScrollableViewport(env, obj,
+                                                 surface_height_reduced);
 }
 
 bool ImeAdapterAndroid::SendKeyEvent(
@@ -351,12 +362,11 @@ void ImeAdapterAndroid::SetEditableSelectionOffsets(
     const JavaParamRef<jobject>&,
     int start,
     int end) {
-  RenderFrameHostImpl* rfh =
-      static_cast<RenderFrameHostImpl*>(GetFocusedFrame());
-  if (!rfh)
+  auto* input_handler = GetFocusedFrameInputHandler();
+  if (!input_handler)
     return;
 
-  rfh->GetFrameInputHandler()->SetEditableSelectionOffsets(start, end);
+  input_handler->SetEditableSelectionOffsets(start, end);
 }
 
 void ImeAdapterAndroid::SetCharacterBounds(
@@ -386,9 +396,8 @@ void ImeAdapterAndroid::SetComposingRegion(JNIEnv*,
                                            const JavaParamRef<jobject>&,
                                            int start,
                                            int end) {
-  RenderFrameHostImpl* rfh =
-      static_cast<RenderFrameHostImpl*>(GetFocusedFrame());
-  if (!rfh)
+  auto* input_handler = GetFocusedFrameInputHandler();
+  if (!input_handler)
     return;
 
   std::vector<ui::ImeTextSpan> ime_text_spans;
@@ -397,18 +406,17 @@ void ImeAdapterAndroid::SetComposingRegion(JNIEnv*,
                       ui::ImeTextSpan::Thickness::kThin, SK_ColorTRANSPARENT,
                       SK_ColorTRANSPARENT, std::vector<std::string>()));
 
-  rfh->GetFrameInputHandler()->SetCompositionFromExistingText(start, end,
-                                                              ime_text_spans);
+  input_handler->SetCompositionFromExistingText(start, end, ime_text_spans);
 }
 
 void ImeAdapterAndroid::DeleteSurroundingText(JNIEnv*,
                                               const JavaParamRef<jobject>&,
                                               int before,
                                               int after) {
-  RenderFrameHostImpl* rfh =
-      static_cast<RenderFrameHostImpl*>(GetFocusedFrame());
-  if (rfh)
-    rfh->GetFrameInputHandler()->DeleteSurroundingText(before, after);
+  auto* input_handler = GetFocusedFrameInputHandler();
+  if (!input_handler)
+    return;
+  input_handler->DeleteSurroundingText(before, after);
 }
 
 void ImeAdapterAndroid::DeleteSurroundingTextInCodePoints(
@@ -416,12 +424,10 @@ void ImeAdapterAndroid::DeleteSurroundingTextInCodePoints(
     const JavaParamRef<jobject>&,
     int before,
     int after) {
-  RenderFrameHostImpl* rfh =
-      static_cast<RenderFrameHostImpl*>(GetFocusedFrame());
-  if (rfh) {
-    rfh->GetFrameInputHandler()->DeleteSurroundingTextInCodePoints(before,
-                                                                   after);
-  }
+  auto* input_handler = GetFocusedFrameInputHandler();
+  if (!input_handler)
+    return;
+  input_handler->DeleteSurroundingTextInCodePoints(before, after);
 }
 
 bool ImeAdapterAndroid::RequestTextInputStateUpdate(
@@ -467,6 +473,13 @@ RenderFrameHost* ImeAdapterAndroid::GetFocusedFrame() {
     return contents->GetFocusedFrame();
 
   return nullptr;
+}
+
+mojom::FrameInputHandler* ImeAdapterAndroid::GetFocusedFrameInputHandler() {
+  auto* focused_frame = static_cast<RenderFrameHostImpl*>(GetFocusedFrame());
+  if (!focused_frame)
+    return nullptr;
+  return focused_frame->GetFrameInputHandler();
 }
 
 std::vector<ui::ImeTextSpan> ImeAdapterAndroid::GetImeTextSpansFromJava(

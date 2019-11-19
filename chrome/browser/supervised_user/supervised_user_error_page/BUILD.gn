@@ -1,0 +1,48 @@
+# Copyright 2014 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+if (is_android) {
+  import("//build/config/android/rules.gni")
+}
+
+static_library("supervised_user_error_page") {
+  sources = [
+    "supervised_user_error_page.cc",
+    "supervised_user_error_page.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/app:generated_resources",
+    "//chrome/browser:resources_grit",
+    "//components/signin/public/base",
+    "//ui/base",
+    "//url",
+  ]
+}
+
+if (is_android) {
+  java_cpp_enum("enums_srcjar") {
+    sources = [
+      "supervised_user_error_page.h",
+    ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "supervised_user_error_page_unittest.cc",
+  ]
+  deps = [
+    ":supervised_user_error_page",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/app:generated_resources",
+    "//chrome/browser:resources_grit",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base",
+  ]
+}

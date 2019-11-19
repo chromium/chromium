@@ -39,7 +39,7 @@ PerThreadData& GetPerThreadData() {
 }  // namespace
 
 static hb_language_t ToHarfbuzLanguage(const AtomicString& locale) {
-  CString locale_as_latin1 = locale.Latin1();
+  std::string locale_as_latin1 = locale.Latin1();
   return hb_language_from_string(locale_as_latin1.data(),
                                  locale_as_latin1.length());
 }
@@ -62,12 +62,14 @@ static const char* ToSkFontMgrLocale(UScriptCode script) {
 }
 
 const char* LayoutLocale::LocaleForSkFontMgr() const {
-  if (string_for_sk_font_mgr_.IsNull()) {
-    string_for_sk_font_mgr_ = ToSkFontMgrLocale(script_);
-    if (string_for_sk_font_mgr_.IsNull())
+  if (string_for_sk_font_mgr_.empty()) {
+    const char* sk_font_mgr_locale = ToSkFontMgrLocale(script_);
+    string_for_sk_font_mgr_ =
+        sk_font_mgr_locale ? sk_font_mgr_locale : std::string();
+    if (string_for_sk_font_mgr_.empty())
       string_for_sk_font_mgr_ = string_.Ascii();
   }
-  return string_for_sk_font_mgr_.data();
+  return string_for_sk_font_mgr_.c_str();
 }
 
 void LayoutLocale::ComputeScriptForHan() const {
@@ -137,13 +139,20 @@ const char* LayoutLocale::LocaleForHanForSkFontMgr() const {
   return locale;
 }
 
+void LayoutLocale::ComputeCaseMapLocale() const {
+  DCHECK(!case_map_computed_);
+  case_map_computed_ = true;
+  locale_for_case_map_ = CaseMap::Locale(LocaleString());
+}
+
 LayoutLocale::LayoutLocale(const AtomicString& locale)
     : string_(locale),
       harfbuzz_language_(ToHarfbuzLanguage(locale)),
       script_(LocaleToScriptCodeForFontSelection(locale)),
       script_for_han_(USCRIPT_COMMON),
       has_script_for_han_(false),
-      hyphenation_computed_(false) {}
+      hyphenation_computed_(false),
+      case_map_computed_(false) {}
 
 // static
 const LayoutLocale* LayoutLocale::Get(const AtomicString& locale) {
@@ -212,9 +221,9 @@ AtomicString LayoutLocale::LocaleWithBreakKeyword(
   if (string_.Contains('@'))
     return string_;
 
-  CString utf8_locale = string_.Utf8();
+  std::string utf8_locale = string_.Utf8();
   Vector<char> buffer(utf8_locale.length() + 11, 0);
-  memcpy(buffer.data(), utf8_locale.data(), utf8_locale.length());
+  memcpy(buffer.data(), utf8_locale.c_str(), utf8_locale.length());
 
   const char* keyword_value = nullptr;
   switch (mode) {

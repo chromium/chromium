@@ -9,13 +9,11 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_macros_local.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/data_reduction_proxy/data_reduction_proxy_chrome_settings.h"
 #include "chrome/browser/data_reduction_proxy/data_reduction_proxy_chrome_settings_factory.h"
-#include "chrome/browser/loader/chrome_navigation_data.h"
-#include "chrome/browser/page_load_metrics/metrics_web_contents_observer.h"
 #include "chrome/browser/previews/previews_content_util.h"
-#include "chrome/browser/previews/previews_infobar_delegate.h"
 #include "chrome/browser/previews/previews_service.h"
 #include "chrome/browser/previews/previews_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -26,6 +24,7 @@
 #include "components/network_time/network_time_tracker.h"
 #include "components/offline_pages/buildflags/buildflags.h"
 #include "components/offline_pages/core/offline_page_item.h"
+#include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "components/previews/content/previews_decider_impl.h"
 #include "components/previews/content/previews_ui_service.h"
 #include "components/previews/core/previews_experiments.h"
@@ -85,35 +84,6 @@ void InformPLMOfOptOut(content::WebContents* web_contents) {
       PreviewsUITabHelper::OptOutEventKey());
 }
 
-bool ShouldShowUIForPreviewsType(previews::PreviewsType type) {
-  if (type == previews::PreviewsType::NONE)
-    return false;
-
-  // Show the UI for LoFi at commit if the UI is the Android Omnibox or when
-  // network-service is enabled.
-  if (type == previews::PreviewsType::LOFI) {
-    return previews::params::IsPreviewsOmniboxUiEnabled() ||
-           base::FeatureList::IsEnabled(network::features::kNetworkService);
-  }
-  return true;
-}
-
-void LoadOriginalForLitePageRedirect(content::WebContents* web_contents) {
-  std::string original_url;
-  bool extracted = previews::ExtractOriginalURLFromLitePageRedirectURL(
-      web_contents->GetController().GetLastCommittedEntry()->GetURL(),
-      &original_url);
-  ALLOW_UNUSED_LOCAL(extracted);
-  DCHECK(extracted);
-  content::OpenURLParams url_params(GURL(original_url), content::Referrer(),
-                                    WindowOpenDisposition::CURRENT_TAB,
-                                    ui::PAGE_TRANSITION_RELOAD,
-                                    false /* is_render_initiated */);
-  url_params.user_gesture = true;
-  url_params.started_from_context_menu = false;
-  web_contents->OpenURL(url_params);
-}
-
 }  // namespace
 
 PreviewsUITabHelper::~PreviewsUITabHelper() {
@@ -125,32 +95,25 @@ PreviewsUITabHelper::~PreviewsUITabHelper() {
 }
 
 PreviewsUITabHelper::PreviewsUITabHelper(content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents), weak_factory_(this) {
+    : content::WebContentsObserver(web_contents) {
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
 }
 
 void PreviewsUITabHelper::ShowUIElement(
     previews::PreviewsType previews_type,
-    bool is_data_saver_user,
     OnDismissPreviewsUICallback on_dismiss_callback) {
-  // Retrieve PreviewsUIService* from |web_contents| if available.
-  PreviewsService* previews_service = PreviewsServiceFactory::GetForProfile(
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
-  previews::PreviewsUIService* previews_ui_service =
-      previews_service ? previews_service->previews_ui_service() : nullptr;
-
   on_dismiss_callback_ = std::move(on_dismiss_callback);
-
+  displayed_preview_ui_ = true;
 #if defined(OS_ANDROID)
-  if (previews::params::IsPreviewsOmniboxUiEnabled()) {
-    displayed_preview_ui_ = true;
-    should_display_android_omnibox_badge_ = true;
-    return;
-  }
+  should_display_android_omnibox_badge_ = true;
 #endif
 
-  PreviewsInfoBarDelegate::Create(web_contents(), previews_type,
-                                  is_data_saver_user, previews_ui_service);
+  // Record a local histogram for testing.
+  base::BooleanHistogram::FactoryGet(
+      base::StringPrintf("Previews.PreviewShown.%s",
+                         GetStringNameForType(previews_type).c_str()),
+      base::HistogramBase::kNoFlags)
+      ->Add(true);
 }
 
 base::string16 PreviewsUITabHelper::GetStalePreviewTimestampText() {
@@ -224,7 +187,7 @@ base::string16 PreviewsUITabHelper::GetStalePreviewTimestampText() {
 
 void PreviewsUITabHelper::ReloadWithoutPreviews() {
   DCHECK(previews_user_data_);
-  ReloadWithoutPreviews(previews_user_data_->committed_previews_type());
+  ReloadWithoutPreviews(previews_user_data_->CommittedPreviewsType());
 }
 
 void PreviewsUITabHelper::ReloadWithoutPreviews(
@@ -240,21 +203,18 @@ void PreviewsUITabHelper::ReloadWithoutPreviews(
     case previews::PreviewsType::OFFLINE:
     case previews::PreviewsType::NOSCRIPT:
     case previews::PreviewsType::RESOURCE_LOADING_HINTS:
+    case previews::PreviewsType::LITE_PAGE_REDIRECT:
+    case previews::PreviewsType::DEFER_ALL_SCRIPT:
       // Previews may cause a redirect, so we should use the original URL. The
       // black list prevents showing the preview again.
       web_contents()->GetController().Reload(
           content::ReloadType::ORIGINAL_REQUEST_URL, true);
       break;
-    case previews::PreviewsType::LOFI:
-      web_contents()->ReloadLoFiImages();
-      break;
-    case previews::PreviewsType::LITE_PAGE_REDIRECT:
-      LoadOriginalForLitePageRedirect(web_contents());
-      break;
     case previews::PreviewsType::NONE:
     case previews::PreviewsType::UNSPECIFIED:
     case previews::PreviewsType::LAST:
     case previews::PreviewsType::DEPRECATED_AMP_REDIRECTION:
+    case previews::PreviewsType::DEPRECATED_LOFI:
       NOTREACHED();
       break;
   }
@@ -267,20 +227,18 @@ void PreviewsUITabHelper::SetStalePreviewsStateForTesting(
   is_stale_reload_ = is_reload;
 }
 
-void PreviewsUITabHelper::DidStartNavigation(
+void PreviewsUITabHelper::MaybeRecordPreviewReload(
     content::NavigationHandle* navigation_handle) {
-  // If reloads are treated as soft opt outs, and this is a main frame reload
-  // from a preview. Report the Preview reload to the decider.
-  if (!base::FeatureList::IsEnabled(
-          previews::features::kPreviewsReloadsAreSoftOptOuts)) {
-    return;
-  }
   if (navigation_handle->GetReloadType() == content::ReloadType::NONE)
-    return;
-  if (!navigation_handle->IsInMainFrame())
     return;
   if (!previews_user_data_)
     return;
+  if (!previews_user_data_->HasCommittedPreviewsType())
+    return;
+  if (previews_user_data_->coin_flip_holdback_result() ==
+      previews::CoinFlipHoldbackResult::kHoldback) {
+    return;
+  }
 
   PreviewsService* previews_service = PreviewsServiceFactory::GetForProfile(
       Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
@@ -289,6 +247,43 @@ void PreviewsUITabHelper::DidStartNavigation(
         ->previews_decider_impl()
         ->AddPreviewReload();
   }
+}
+
+void PreviewsUITabHelper::MaybeShowInfoBar(
+    content::NavigationHandle* navigation_handle) {
+  if (!navigation_handle->GetURL().SchemeIsHTTPOrHTTPS())
+    return;
+
+  PreviewsService* previews_service = PreviewsServiceFactory::GetForProfile(
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
+
+  if (!previews_service)
+    return;
+
+  PreviewsHTTPSNotificationInfoBarDecider* decider =
+      previews_service->previews_https_notification_infobar_decider();
+
+  DataReductionProxyChromeSettings* drp_settings =
+      DataReductionProxyChromeSettingsFactory::GetForBrowserContext(
+          web_contents()->GetBrowserContext());
+
+  if (!drp_settings)
+    return;
+
+  if (drp_settings->IsDataReductionProxyEnabled() &&
+      decider->NeedsToNotifyUser()) {
+    decider->NotifyUser(web_contents());
+  }
+}
+
+void PreviewsUITabHelper::DidStartNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (!navigation_handle->IsInMainFrame())
+    return;
+
+  MaybeRecordPreviewReload(navigation_handle);
+
+  MaybeShowInfoBar(navigation_handle);
 }
 
 void PreviewsUITabHelper::DidFinishNavigation(
@@ -346,9 +341,10 @@ void PreviewsUITabHelper::DidFinishNavigation(
 
   if (tab_helper && tab_helper->GetOfflinePreviewItem()) {
     DCHECK_EQ(previews::PreviewsType::OFFLINE,
-              previews_user_data_->committed_previews_type());
+              previews_user_data_->CommittedPreviewsType());
+    UMA_HISTOGRAM_BOOLEAN("Previews.Offline.CommittedErrorPage",
+                          navigation_handle->IsErrorPage());
     if (navigation_handle->IsErrorPage()) {
-      // TODO(ryansturm): Add UMA for errors.
       return;
     }
     data_reduction_proxy::DataReductionProxySettings*
@@ -377,7 +373,6 @@ void PreviewsUITabHelper::DidFinishNavigation(
                                data_use_measurement::DataUseUserData::OTHER, 0);
 
     ShowUIElement(previews::PreviewsType::OFFLINE,
-                  data_reduction_proxy_settings && data_saver_enabled,
                   base::BindOnce(&AddPreviewNavigationCallback,
                                  web_contents()->GetBrowserContext(),
                                  navigation_handle->GetRedirectChain()[0],
@@ -391,8 +386,8 @@ void PreviewsUITabHelper::DidFinishNavigation(
   // Check for committed main frame preview.
   if (previews_user_data_ && previews_user_data_->HasCommittedPreviewsType()) {
     previews::PreviewsType main_frame_preview =
-        previews_user_data_->committed_previews_type();
-    if (ShouldShowUIForPreviewsType(main_frame_preview)) {
+        previews_user_data_->CommittedPreviewsType();
+    if (main_frame_preview != previews::PreviewsType::NONE) {
       if (main_frame_preview == previews::PreviewsType::LITE_PAGE) {
         const net::HttpResponseHeaders* headers =
             navigation_handle->GetResponseHeaders();
@@ -400,7 +395,7 @@ void PreviewsUITabHelper::DidFinishNavigation(
           headers->GetDateValue(&previews_freshness_);
       }
 
-      ShowUIElement(main_frame_preview, true /* is_data_saver_user */,
+      ShowUIElement(main_frame_preview,
                     base::BindOnce(&AddPreviewNavigationCallback,
                                    web_contents()->GetBrowserContext(),
                                    navigation_handle->GetRedirectChain()[0],

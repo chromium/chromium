@@ -35,8 +35,8 @@ void CrostiniAppIconLoader::FetchImage(const std::string& app_id) {
   if (icon_map_.find(app_id) != icon_map_.end())
     return;
 
-  std::unique_ptr<CrostiniAppIcon> icon =
-      std::make_unique<CrostiniAppIcon>(profile(), app_id, icon_size(), this);
+  std::unique_ptr<CrostiniAppIcon> icon = std::make_unique<CrostiniAppIcon>(
+      profile(), app_id, icon_size_in_dip(), this);
   icon->image_skia().EnsureRepsForSupportedScales();
   icon_map_[app_id] = std::move(icon);
   UpdateImage(app_id);

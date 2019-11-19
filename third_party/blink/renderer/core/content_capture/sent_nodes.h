@@ -15,7 +15,7 @@ class Node;
 
 // The class manages a list of nodes that have been sent, is only used when
 // kNodeID is used, see WebContentCaptureClient::GetNodeType().
-class SentNodes : public GarbageCollectedFinalized<SentNodes> {
+class SentNodes final : public GarbageCollected<SentNodes> {
  public:
   bool HasSent(const Node& node);
   void OnSent(const Node& node);

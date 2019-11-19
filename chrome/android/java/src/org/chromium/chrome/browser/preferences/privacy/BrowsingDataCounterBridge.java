@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.preferences.privacy;
 
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.NativeMethods;
 
 /**
  * Communicates between BrowsingDataCounter (C++ backend) and ClearBrowsingDataFragment (Java UI).
@@ -35,7 +36,8 @@ public class BrowsingDataCounterBridge {
     public BrowsingDataCounterBridge(
             BrowsingDataCounterCallback callback, int dataType, int prefType) {
         mCallback = callback;
-        mNativeBrowsingDataCounterBridge = nativeInit(dataType, prefType);
+        mNativeBrowsingDataCounterBridge = BrowsingDataCounterBridgeJni.get().init(
+                BrowsingDataCounterBridge.this, dataType, prefType);
     }
 
     /**
@@ -43,7 +45,8 @@ public class BrowsingDataCounterBridge {
      */
     public void destroy() {
         if (mNativeBrowsingDataCounterBridge != 0) {
-            nativeDestroy(mNativeBrowsingDataCounterBridge);
+            BrowsingDataCounterBridgeJni.get().destroy(
+                    mNativeBrowsingDataCounterBridge, BrowsingDataCounterBridge.this);
             mNativeBrowsingDataCounterBridge = 0;
         }
     }
@@ -53,6 +56,9 @@ public class BrowsingDataCounterBridge {
         mCallback.onCounterFinished(result);
     }
 
-    private native long nativeInit(int dataType, int prefType);
-    private native void nativeDestroy(long nativeBrowsingDataCounterBridge);
+    @NativeMethods
+    interface Natives {
+        long init(BrowsingDataCounterBridge caller, int dataType, int prefType);
+        void destroy(long nativeBrowsingDataCounterBridge, BrowsingDataCounterBridge caller);
+    }
 }

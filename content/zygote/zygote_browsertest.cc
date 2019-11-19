@@ -35,7 +35,7 @@ IN_PROC_BROWSER_TEST_F(LinuxZygoteBrowserTest, GetLocalTimeHasTimeZone) {
   const char kTestCommand[] =
       "window.domAutomationController.send(new Date().toString());";
 
-  NavigateToURL(shell(), GURL("data:text/html,start page"));
+  EXPECT_TRUE(NavigateToURL(shell(), GURL("data:text/html,start page")));
   std::string result;
   ASSERT_TRUE(ExecuteScriptAndExtractString(shell(), kTestCommand, &result));
   std::vector<std::string> parts = base::SplitString(
@@ -67,14 +67,14 @@ class LinuxZygoteDisabledBrowserTest : public ContentBrowserTest {
 // Test that the renderer doesn't crash during launch if zygote is disabled.
 IN_PROC_BROWSER_TEST_F(LinuxZygoteDisabledBrowserTest,
                        NoCrashWhenZygoteDisabled) {
-  NavigateToURL(shell(), GURL("data:text/html,start page"));
+  EXPECT_TRUE(NavigateToURL(shell(), GURL("data:text/html,start page")));
 }
 #endif
 
 #if BUILDFLAG(USE_ZYGOTE_HANDLE)
 IN_PROC_BROWSER_TEST_F(LinuxZygoteDisabledBrowserTest,
                        NoZygoteWhenZygoteDisabled) {
-  NavigateToURL(shell(), GURL("data:text/html,start page"));
+  EXPECT_TRUE(NavigateToURL(shell(), GURL("data:text/html,start page")));
 
   EXPECT_FALSE(service_manager::ZygoteHostImpl::GetInstance()->HasZygote());
 }

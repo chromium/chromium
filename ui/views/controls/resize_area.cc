@@ -5,6 +5,7 @@
 #include "ui/views/controls/resize_area.h"
 
 #include "base/logging.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/views/controls/resize_area_delegate.h"
@@ -12,23 +13,15 @@
 
 namespace views {
 
-const char ResizeArea::kViewClassName[] = "ResizeArea";
-
 ResizeArea::ResizeArea(ResizeAreaDelegate* delegate)
     : delegate_(delegate),
       initial_position_(0) {
 }
 
-ResizeArea::~ResizeArea() {
-}
-
-const char* ResizeArea::GetClassName() const {
-  return kViewClassName;
-}
+ResizeArea::~ResizeArea() = default;
 
 gfx::NativeCursor ResizeArea::GetCursor(const ui::MouseEvent& event) {
-  return enabled() ? GetNativeEastWestResizeCursor()
-                   : gfx::kNullCursor;
+  return GetEnabled() ? GetNativeEastWestResizeCursor() : gfx::kNullCursor;
 }
 
 void ResizeArea::OnGestureEvent(ui::GestureEvent* event) {
@@ -86,5 +79,9 @@ void ResizeArea::SetInitialPosition(int event_x) {
   View::ConvertPointToScreen(this, &point);
   initial_position_ = point.x();
 }
+
+BEGIN_METADATA(ResizeArea)
+METADATA_PARENT_CLASS(View)
+END_METADATA()
 
 }  // namespace views

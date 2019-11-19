@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>
+      Test if starting source node does not resume an explicitly suspended
+      context
+    </title>
+    <script src="../../resources/testharness.js"></script>
+    <script src="../../resources/testharnessreport.js"></script>
+    <script src="../resources/audit.js"></script>
+  </head>
+  <body>
+    <script id="layout-test-code">
+      const audit = Audit.createTaskRunner();
+      const autoplayFlag = internals.settings.autoplayIgnoresWebAudioEnabled;
+
+      internals.settings.setAutoplayPolicy('document-user-activation-required');
+      internals.settings.autoplayIgnoresWebAudioEnabled = false;
+
+      // Suspend a context explicitly and then start a source node after
+      // user gesture. The context state should stay the same.
+      audit.define({label: 'suspend-and-start'}, async (task, should) => {
+        const context = new AudioContext();
+        const source = new OscillatorNode(context);
+        source.connect(context.destination);
+
+        await context.suspend();
+        should(context.state, 'The context state after explicit suspension')
+            .beEqualTo('suspended');
+
+        // Starting a source node should not unlock an explicitly suspended
+        // context, even if the event is originated from user gesture.
+        await emulateUserGesture();
+        source.start();
+        should(context.state,
+            'The context state after user gesture followed by source start')
+            .beEqualTo('suspended');
+
+        task.done();
+      });
+
+      audit.define({label: 'clean-up'}, (task, should) => {
+        internals.runtimeFlags.autoplayIgnoresWebAudioEnabled = autoplayFlag;
+        internals.settings.setAutoplayPolicy('no-user-gesture-required');
+        task.done();
+      });
+
+      audit.run();
+
+      function emulateUserGesture() {
+        return new Promise((resolve, reject) => {
+          chrome.gpuBenchmarking.pointerActionSequence([{
+            source: 'mouse',
+            actions: [
+              { name: 'pointerDown', x: 1, y: 1 },
+              { name: 'pointerUp' },
+            ]
+          }], resolve);
+        });
+      }
+    </script>
+  </body>
+</html>

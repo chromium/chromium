@@ -11,8 +11,8 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
+#include "base/test/task_environment.h"
 #include "gpu/command_buffer/client/cmd_buffer_helper.h"
 #include "gpu/command_buffer/client/command_buffer_direct_locked.h"
 #include "gpu/command_buffer/service/mocks.h"
@@ -55,7 +55,7 @@ class MappedMemoryTestBase : public testing::Test {
   std::unique_ptr<CommandBufferDirectLocked> command_buffer_;
   std::unique_ptr<AsyncAPIMock> api_mock_;
   std::unique_ptr<CommandBufferHelper> helper_;
-  base::MessageLoop message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
 #ifndef _MSC_VER

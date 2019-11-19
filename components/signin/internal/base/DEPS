@@ -1,0 +1,8 @@
+include_rules = [
+]
+
+specific_include_rules = {
+  "account_manager_facade_android.cc": [
+    "+components/signin/core/browser/android/jni_headers/AccountManagerFacade_jni.h",
+  ],
+}

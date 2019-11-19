@@ -32,9 +32,12 @@
 #include "media/audio/fake_audio_manager.h"
 #include "media/audio/test_audio_thread.h"
 #include "media/base/audio_parameters.h"
-#include "media/mojo/interfaces/audio_data_pipe.mojom.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "media/mojo/mojom/audio_data_pipe.mojom.h"
 #include "mojo/public/cpp/bindings/interface_request.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/audio/public/cpp/fake_stream_factory.h"
 #include "services/audio/public/mojom/constants.mojom.h"
 #include "services/audio/public/mojom/stream_factory.mojom.h"
@@ -65,8 +68,7 @@ class MAYBE_RenderFrameAudioInputStreamFactoryTest
         audio_system_(media::AudioSystemImpl::CreateInstance()),
         media_stream_manager_(std::make_unique<MediaStreamManager>(
             audio_system_.get(),
-            base::CreateSingleThreadTaskRunnerWithTraits(
-                {BrowserThread::UI}))) {}
+            base::CreateSingleThreadTaskRunner({BrowserThread::UI}))) {}
 
   ~MAYBE_RenderFrameAudioInputStreamFactoryTest() override {}
 
@@ -95,21 +97,22 @@ class MAYBE_RenderFrameAudioInputStreamFactoryTest
     RenderViewHostTestHarness::TearDown();
   }
 
-  void BindFactory(mojo::ScopedMessagePipeHandle factory_request) {
-    audio_service_stream_factory_.binding_.Bind(
-        audio::mojom::StreamFactoryRequest(std::move(factory_request)));
+  void BindFactory(mojo::ScopedMessagePipeHandle factory_receiver) {
+    audio_service_stream_factory_.receiver_.Bind(
+        mojo::PendingReceiver<audio::mojom::StreamFactory>(
+            std::move(factory_receiver)));
   }
 
   class MockStreamFactory : public audio::FakeStreamFactory {
    public:
-    MockStreamFactory() : binding_(this) {}
-    ~MockStreamFactory() override {}
+    MockStreamFactory() = default;
+    ~MockStreamFactory() override = default;
 
     void CreateInputStream(
-        media::mojom::AudioInputStreamRequest stream_request,
-        media::mojom::AudioInputStreamClientPtr client,
-        media::mojom::AudioInputStreamObserverPtr observer,
-        media::mojom::AudioLogPtr log,
+        mojo::PendingReceiver<media::mojom::AudioInputStream> stream_receiver,
+        mojo::PendingRemote<media::mojom::AudioInputStreamClient> client,
+        mojo::PendingRemote<media::mojom::AudioInputStreamObserver> observer,
+        mojo::PendingRemote<media::mojom::AudioLog> log,
         const std::string& device_id,
         const media::AudioParameters& params,
         uint32_t shared_memory_count,
@@ -121,9 +124,9 @@ class MAYBE_RenderFrameAudioInputStreamFactoryTest
     }
 
     void CreateLoopbackStream(
-        media::mojom::AudioInputStreamRequest stream_request,
-        media::mojom::AudioInputStreamClientPtr client,
-        media::mojom::AudioInputStreamObserverPtr observer,
+        mojo::PendingReceiver<media::mojom::AudioInputStream> receiver,
+        mojo::PendingRemote<media::mojom::AudioInputStreamClient> client,
+        mojo::PendingRemote<media::mojom::AudioInputStreamObserver> observer,
         const media::AudioParameters& params,
         uint32_t shared_memory_count,
         const base::UnguessableToken& group_id,
@@ -134,15 +137,16 @@ class MAYBE_RenderFrameAudioInputStreamFactoryTest
     CreateInputStreamCallback last_created_callback;
     CreateLoopbackStreamCallback last_created_loopback_callback;
 
-    mojo::Binding<audio::mojom::StreamFactory> binding_;
+    mojo::Receiver<audio::mojom::StreamFactory> receiver_{this};
   };
 
   class FakeRendererAudioInputStreamFactoryClient
       : public mojom::RendererAudioInputStreamFactoryClient {
    public:
     void StreamCreated(
-        media::mojom::AudioInputStreamPtr stream,
-        media::mojom::AudioInputStreamClientRequest client_request,
+        mojo::PendingRemote<media::mojom::AudioInputStream> stream,
+        mojo::PendingReceiver<media::mojom::AudioInputStreamClient>
+            client_receiver,
         media::mojom::ReadOnlyAudioDataPipePtr data_pipe,
         bool initially_muted,
         const base::Optional<base::UnguessableToken>& stream_id) override {}
@@ -162,23 +166,25 @@ class MAYBE_RenderFrameAudioInputStreamFactoryTest
 
     ~StreamOpenedWaiter() override { aidm_->UnregisterListener(this); }
 
-    void Opened(blink::MediaStreamType stream_type,
-                int capture_session_id) override {
+    void Opened(blink::mojom::MediaStreamType stream_type,
+                const base::UnguessableToken& capture_session_id) override {
       std::move(cb_).Run();
     }
-    void Closed(blink::MediaStreamType stream_type,
-                int capture_session_id) override {}
-    void Aborted(blink::MediaStreamType stream_type,
-                 int capture_session_id) override {}
+    void Closed(blink::mojom::MediaStreamType stream_type,
+                const base::UnguessableToken& capture_session_id) override {}
+    void Aborted(blink::mojom::MediaStreamType stream_type,
+                 const base::UnguessableToken& capture_session_id) override {}
 
    private:
     scoped_refptr<AudioInputDeviceManager> aidm_;
     base::OnceClosure cb_;
   };
 
-  void CallOpenWithTestDeviceAndStoreSessionIdOnIO(int* session_id) {
+  void CallOpenWithTestDeviceAndStoreSessionIdOnIO(
+      base::UnguessableToken* session_id) {
     *session_id = audio_input_device_manager()->Open(blink::MediaStreamDevice(
-        blink::MEDIA_DEVICE_AUDIO_CAPTURE, kDeviceId, kDeviceName));
+        blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE, kDeviceId,
+        kDeviceName));
   }
 
   const media::AudioParameters kParams =
@@ -196,25 +202,29 @@ class MAYBE_RenderFrameAudioInputStreamFactoryTest
 };
 
 TEST_F(MAYBE_RenderFrameAudioInputStreamFactoryTest, ConstructDestruct) {
-  mojom::RendererAudioInputStreamFactoryPtr factory_ptr;
+  mojo::Remote<mojom::RendererAudioInputStreamFactory> factory_remote;
   RenderFrameAudioInputStreamFactory factory(
-      mojo::MakeRequest(&factory_ptr), media_stream_manager_.get(), main_rfh());
+      factory_remote.BindNewPipeAndPassReceiver(), media_stream_manager_.get(),
+      main_rfh());
 }
 
 TEST_F(MAYBE_RenderFrameAudioInputStreamFactoryTest,
        CreateOpenedStream_ForwardsCall) {
-  mojom::RendererAudioInputStreamFactoryPtr factory_ptr;
+  mojo::Remote<mojom::RendererAudioInputStreamFactory> factory_remote;
   RenderFrameAudioInputStreamFactory factory(
-      mojo::MakeRequest(&factory_ptr), media_stream_manager_.get(), main_rfh());
+      factory_remote.BindNewPipeAndPassReceiver(), media_stream_manager_.get(),
+      main_rfh());
 
-  int session_id = audio_input_device_manager()->Open(blink::MediaStreamDevice(
-      blink::MEDIA_DEVICE_AUDIO_CAPTURE, kDeviceId, kDeviceName));
+  base::UnguessableToken session_id =
+      audio_input_device_manager()->Open(blink::MediaStreamDevice(
+          blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE, kDeviceId,
+          kDeviceName));
   base::RunLoop().RunUntilIdle();
 
-  mojom::RendererAudioInputStreamFactoryClientPtr client;
-  mojo::MakeRequest(&client);
-  factory_ptr->CreateStream(std::move(client), session_id, kParams, kAGC,
-                            kSharedMemoryCount, nullptr);
+  mojo::PendingRemote<mojom::RendererAudioInputStreamFactoryClient> client;
+  ignore_result(client.InitWithNewPipeAndPassReceiver());
+  factory_remote->CreateStream(std::move(client), session_id, kParams, kAGC,
+                               kSharedMemoryCount, nullptr);
 
   base::RunLoop().RunUntilIdle();
 
@@ -224,21 +234,24 @@ TEST_F(MAYBE_RenderFrameAudioInputStreamFactoryTest,
 TEST_F(MAYBE_RenderFrameAudioInputStreamFactoryTest,
        CreateWebContentsCapture_ForwardsCall) {
   std::unique_ptr<WebContents> source_contents = CreateTestWebContents();
-  mojom::RendererAudioInputStreamFactoryPtr factory_ptr;
+  mojo::Remote<mojom::RendererAudioInputStreamFactory> factory_remote;
   RenderFrameAudioInputStreamFactory factory(
-      mojo::MakeRequest(&factory_ptr), media_stream_manager_.get(), main_rfh());
+      factory_remote.BindNewPipeAndPassReceiver(), media_stream_manager_.get(),
+      main_rfh());
 
   RenderFrameHost* main_frame = source_contents->GetMainFrame();
   WebContentsMediaCaptureId capture_id(main_frame->GetProcess()->GetID(),
                                        main_frame->GetRoutingID());
-  int session_id = audio_input_device_manager()->Open(blink::MediaStreamDevice(
-      blink::MEDIA_GUM_TAB_AUDIO_CAPTURE, capture_id.ToString(), kDeviceName));
+  base::UnguessableToken session_id =
+      audio_input_device_manager()->Open(blink::MediaStreamDevice(
+          blink::mojom::MediaStreamType::GUM_TAB_AUDIO_CAPTURE,
+          capture_id.ToString(), kDeviceName));
   base::RunLoop().RunUntilIdle();
 
-  mojom::RendererAudioInputStreamFactoryClientPtr client;
-  mojo::MakeRequest(&client);
-  factory_ptr->CreateStream(std::move(client), session_id, kParams, kAGC,
-                            kSharedMemoryCount, nullptr);
+  mojo::PendingRemote<mojom::RendererAudioInputStreamFactoryClient> client;
+  ignore_result(client.InitWithNewPipeAndPassReceiver());
+  factory_remote->CreateStream(std::move(client), session_id, kParams, kAGC,
+                               kSharedMemoryCount, nullptr);
 
   base::RunLoop().RunUntilIdle();
 
@@ -248,22 +261,25 @@ TEST_F(MAYBE_RenderFrameAudioInputStreamFactoryTest,
 TEST_F(MAYBE_RenderFrameAudioInputStreamFactoryTest,
        CreateWebContentsCaptureAfterCaptureSourceDestructed_Fails) {
   std::unique_ptr<WebContents> source_contents = CreateTestWebContents();
-  mojom::RendererAudioInputStreamFactoryPtr factory_ptr;
+  mojo::Remote<mojom::RendererAudioInputStreamFactory> factory_remote;
   RenderFrameAudioInputStreamFactory factory(
-      mojo::MakeRequest(&factory_ptr), media_stream_manager_.get(), main_rfh());
+      factory_remote.BindNewPipeAndPassReceiver(), media_stream_manager_.get(),
+      main_rfh());
 
   RenderFrameHost* main_frame = source_contents->GetMainFrame();
   WebContentsMediaCaptureId capture_id(main_frame->GetProcess()->GetID(),
                                        main_frame->GetRoutingID());
-  int session_id = audio_input_device_manager()->Open(blink::MediaStreamDevice(
-      blink::MEDIA_GUM_TAB_AUDIO_CAPTURE, capture_id.ToString(), kDeviceName));
+  base::UnguessableToken session_id =
+      audio_input_device_manager()->Open(blink::MediaStreamDevice(
+          blink::mojom::MediaStreamType::GUM_TAB_AUDIO_CAPTURE,
+          capture_id.ToString(), kDeviceName));
   base::RunLoop().RunUntilIdle();
 
   source_contents.reset();
-  mojom::RendererAudioInputStreamFactoryClientPtr client;
-  mojo::MakeRequest(&client);
-  factory_ptr->CreateStream(std::move(client), session_id, kParams, kAGC,
-                            kSharedMemoryCount, nullptr);
+  mojo::PendingRemote<mojom::RendererAudioInputStreamFactoryClient> client;
+  ignore_result(client.InitWithNewPipeAndPassReceiver());
+  factory_remote->CreateStream(std::move(client), session_id, kParams, kAGC,
+                               kSharedMemoryCount, nullptr);
 
   base::RunLoop().RunUntilIdle();
 
@@ -272,16 +288,16 @@ TEST_F(MAYBE_RenderFrameAudioInputStreamFactoryTest,
 
 TEST_F(MAYBE_RenderFrameAudioInputStreamFactoryTest,
        CreateStreamWithoutValidSessionId_Fails) {
-  mojom::RendererAudioInputStreamFactoryPtr factory_ptr;
+  mojo::Remote<mojom::RendererAudioInputStreamFactory> factory_remote;
   RenderFrameAudioInputStreamFactory factory(
-      mojo::MakeRequest(&factory_ptr), media_stream_manager_.get(), main_rfh());
+      factory_remote.BindNewPipeAndPassReceiver(), media_stream_manager_.get(),
+      main_rfh());
 
-  int session_id = 123;
-  mojom::RendererAudioInputStreamFactoryClientPtr client;
-  mojo::MakeRequest(&client);
-
-  factory_ptr->CreateStream(std::move(client), session_id, kParams, kAGC,
-                            kSharedMemoryCount, nullptr);
+  base::UnguessableToken session_id = base::UnguessableToken::Create();
+  mojo::PendingRemote<mojom::RendererAudioInputStreamFactoryClient> client;
+  ignore_result(client.InitWithNewPipeAndPassReceiver());
+  factory_remote->CreateStream(std::move(client), session_id, kParams, kAGC,
+                               kSharedMemoryCount, nullptr);
 
   base::RunLoop().RunUntilIdle();
 

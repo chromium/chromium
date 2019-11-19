@@ -25,6 +25,7 @@
 
 // https://svgwg.org/svg2-draft/pservers.html#InterfaceSVGPatternElement
 
+[Exposed=Window]
 interface SVGPatternElement : SVGElement {
     [MeasureAs=SVG1DOMPaintServer] readonly attribute SVGAnimatedEnumeration patternUnits;
     [MeasureAs=SVG1DOMPaintServer] readonly attribute SVGAnimatedEnumeration patternContentUnits;
@@ -35,10 +36,10 @@ interface SVGPatternElement : SVGElement {
     [MeasureAs=SVG1DOMPaintServer] readonly attribute SVGAnimatedLength height;
 };
 
-SVGPatternElement implements SVGFitToViewBox;
-SVGPatternElement implements SVGURIReference;
-// SVGPatternElement implements SVGUnitTypes;
+SVGPatternElement includes SVGFitToViewBox;
+SVGPatternElement includes SVGURIReference;
+// SVGPatternElement includes SVGUnitTypes;
 
 // TODO(foolip): The following was part of SVG 1.1. https://crbug.com/701893
 // http://www.w3.org/TR/SVG11/pservers.html#InterfaceSVGPatternElement
-SVGPatternElement implements SVGTests;
+SVGPatternElement includes SVGTests;

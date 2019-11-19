@@ -7,9 +7,10 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
-#include "third_party/blink/renderer/platform/geometry/layout_rect.h"
+#include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -31,17 +32,38 @@ class CORE_EXPORT IntersectionGeometry {
     kShouldReportRootBounds = 1 << 0,
     kShouldComputeVisibility = 1 << 1,
     kShouldTrackFractionOfRoot = 1 << 2,
+    kShouldUseReplacedContentRect = 1 << 3,
+    kShouldConvertToCSSPixels = 1 << 4,
 
     // These flags will be computed
-    kRootIsImplicit = 1 << 3,
-    kIsVisible = 1 << 4
+    kRootIsImplicit = 1 << 5,
+    kIsVisible = 1 << 6
   };
 
-  IntersectionGeometry(Element* root,
-                       Element& target,
+  struct RootGeometry {
+    STACK_ALLOCATED();
+
+   public:
+    RootGeometry(const LayoutObject* root, const Vector<Length>& margin);
+
+    float zoom;
+    // The root object's content rect in the root object's own coordinate system
+    PhysicalRect local_root_rect;
+    TransformationMatrix root_to_document_transform;
+  };
+
+  IntersectionGeometry(const Element* root,
+                       const Element& target,
                        const Vector<Length>& root_margin,
                        const Vector<float>& thresholds,
                        unsigned flags);
+
+  IntersectionGeometry(const RootGeometry& root_geometry,
+                       const Element& explicit_root,
+                       const Element& target,
+                       const Vector<float>& thresholds,
+                       unsigned flags);
+
   IntersectionGeometry(const IntersectionGeometry&) = default;
   ~IntersectionGeometry();
 
@@ -55,10 +77,9 @@ class CORE_EXPORT IntersectionGeometry {
     return flags_ & kShouldTrackFractionOfRoot;
   }
 
-  // These are all in CSS pixels
-  LayoutRect TargetRect() const { return target_rect_; }
-  LayoutRect IntersectionRect() const { return intersection_rect_; }
-  LayoutRect RootRect() const { return root_rect_; }
+  PhysicalRect TargetRect() const { return target_rect_; }
+  PhysicalRect IntersectionRect() const { return intersection_rect_; }
+  PhysicalRect RootRect() const { return root_rect_; }
 
   IntRect IntersectionIntRect() const {
     return PixelSnappedIntRect(intersection_rect_);
@@ -74,24 +95,22 @@ class CORE_EXPORT IntersectionGeometry {
   bool IsVisible() const { return flags_ & kIsVisible; }
 
  private:
-  void ComputeGeometry(Element* root_element,
-                       Element& target_element,
-                       const Vector<Length>& root_margin,
+  void ComputeGeometry(const RootGeometry& root_geometry,
+                       const LayoutObject* root,
+                       const LayoutObject* target,
                        const Vector<float>& thresholds);
-  LayoutRect InitializeTargetRect(LayoutObject* target);
-  LayoutRect InitializeRootRect(LayoutObject* root,
-                                const Vector<Length>& margin);
-  void ApplyRootMargin(LayoutRect& rect, const Vector<Length>& margin);
-  bool ClipToRoot(LayoutObject* root,
-                  LayoutObject* target,
-                  const LayoutRect& root_rect,
-                  LayoutRect& intersection_rect);
+  // Map intersection_rect from the coordinate system of the target to the
+  // coordinate system of the root, applying intervening clips.
+  bool ClipToRoot(const LayoutObject* root,
+                  const LayoutObject* target,
+                  const PhysicalRect& root_rect,
+                  PhysicalRect& intersection_rect);
   unsigned FirstThresholdGreaterThan(float ratio,
                                      const Vector<float>& thresholds) const;
 
-  LayoutRect target_rect_;
-  LayoutRect intersection_rect_;
-  LayoutRect root_rect_;
+  PhysicalRect target_rect_;
+  PhysicalRect intersection_rect_;
+  PhysicalRect root_rect_;
   unsigned flags_;
   double intersection_ratio_;
   unsigned threshold_index_;

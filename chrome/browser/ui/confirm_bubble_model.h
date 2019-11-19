@@ -16,8 +16,8 @@
 class ConfirmBubbleModel {
  public:
   enum BubbleButton {
-    BUTTON_NONE   = 0,
-    BUTTON_OK     = 1 << 0,
+    BUTTON_NONE = 0,
+    BUTTON_OK = 1 << 0,
     BUTTON_CANCEL = 1 << 1,
   };
 

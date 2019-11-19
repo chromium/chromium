@@ -1,0 +1,21 @@
+Name: Google Trust Services Recommended Roots
+Short Name: n/a
+URL: https://pki.goog/roots.pem
+Version: 0
+Date: 2019-04-22
+License: BSD
+License File: src/LICENSE
+Security Critical: yes
+
+Description:
+The list of root certificates recommended by Google Trust Services as suitable
+for connecting to Google services, either now or in the future. Described at
+https://pki.goog/faq.html for purposes of embedded devices/software.
+
+Thils file is also available at
+https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/master/chromeos-base/chromeos-ca-certificates/files/
+for ChromeOS. This has been split out into Chromium to avoid the need to pull
+the entire chromiumsos-overlay.
+
+Local Modifications:
+- Removed comments for size

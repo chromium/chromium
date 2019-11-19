@@ -145,6 +145,22 @@ void ExpectAnnotations(ProcessSnapshot* snapshot, bool sanitized) {
   }
 }
 
+void ExpectProcessMemory(ProcessSnapshot* snapshot,
+                         VMAddress whitelisted_byte,
+                         bool sanitized) {
+  auto memory = snapshot->Memory();
+
+  char out;
+  EXPECT_TRUE(memory->Read(whitelisted_byte, 1, &out));
+
+  bool unwhitelisted_read = memory->Read(whitelisted_byte + 1, 1, &out);
+  if (sanitized) {
+    EXPECT_FALSE(unwhitelisted_read);
+  } else {
+    EXPECT_TRUE(unwhitelisted_read);
+  }
+}
+
 class StackSanitizationChecker : public MemorySnapshot::Delegate {
  public:
   StackSanitizationChecker() = default;
@@ -251,20 +267,34 @@ class SanitizeTest : public MultiprocessExec {
 
     ExpectAnnotations(&snapshot, /* sanitized= */ false);
     ExpectStackData(&snapshot, addrs, /* sanitized= */ false);
+    ExpectProcessMemory(&snapshot,
+                        addrs.string_address,
+                        /* sanitized= */ false);
 
-    std::vector<std::string> whitelist;
-    whitelist.push_back(kWhitelistedAnnotationName);
+    auto annotations_whitelist = std::make_unique<std::vector<std::string>>();
+    annotations_whitelist->push_back(kWhitelistedAnnotationName);
+
+    auto memory_ranges_whitelist =
+        std::make_unique<std::vector<std::pair<VMAddress, VMAddress>>>();
+    memory_ranges_whitelist->push_back(
+        std::make_pair(addrs.string_address, addrs.string_address + 1));
 
     ProcessSnapshotSanitized sanitized;
-    ASSERT_TRUE(sanitized.Initialize(
-        &snapshot, &whitelist, addrs.module_address, true));
+    ASSERT_TRUE(sanitized.Initialize(&snapshot,
+                                     std::move(annotations_whitelist),
+                                     std::move(memory_ranges_whitelist),
+                                     addrs.module_address,
+                                     true));
 
     ExpectAnnotations(&sanitized, /* sanitized= */ true);
     ExpectStackData(&sanitized, addrs, /* sanitized= */ true);
+    ExpectProcessMemory(&sanitized,
+                        addrs.string_address,
+                        /* sanitized= */ true);
 
     ProcessSnapshotSanitized screened_snapshot;
     EXPECT_FALSE(screened_snapshot.Initialize(
-        &snapshot, nullptr, addrs.non_module_address, false));
+        &snapshot, nullptr, nullptr, addrs.non_module_address, false));
   }
 
   DISALLOW_COPY_AND_ASSIGN(SanitizeTest);

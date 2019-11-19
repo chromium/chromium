@@ -39,16 +39,17 @@ void ViewsContentClientMainPartsDesktopAura::PreMainMessageLoopRun() {
 
   display::Screen::SetScreenInstance(views::CreateDesktopScreen());
 
-  views_content_client()->task().Run(browser_context(), NULL);
+  views_content_client()->OnPreMainMessageLoopRun(browser_context(), nullptr);
 }
 
 }  // namespace
 
 // static
-ViewsContentClientMainParts* ViewsContentClientMainParts::Create(
+std::unique_ptr<ViewsContentClientMainParts>
+ViewsContentClientMainParts::Create(
     const content::MainFunctionParams& content_params,
     ViewsContentClient* views_content_client) {
-  return new ViewsContentClientMainPartsDesktopAura(
+  return std::make_unique<ViewsContentClientMainPartsDesktopAura>(
       content_params, views_content_client);
 }
 

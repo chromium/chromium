@@ -127,9 +127,9 @@ TEST_F(DiscardableTextureTest, Limits) {
 }
 
 TEST_F(DiscardableTextureTest, CompressedTexImage2D) {
-  if (!GLTestHelper::HasExtension("GL_EXT_texture_compression_dxt1")) {
+  if (!GLTestHelper::HasExtension("GL_ANGLE_texture_compression_dxt1")) {
     LOG(INFO)
-        << "GL_EXT_texture_compression_dxt1 not supported. Skipping test...";
+        << "GL_ANGLE_texture_compression_dxt1 not supported. Skipping test...";
     return;
   }
 

@@ -25,14 +25,13 @@ using pulse::AutoPulseLock;
 using pulse::WaitForOperationCompletion;
 
 // Maximum number of output streams that can be open simultaneously.
-static const int kMaxOutputStreams = 50;
+constexpr int kMaxOutputStreams = 50;
 
-// Define bounds for the output buffer size.
-static const int kMinimumOutputBufferSize = 512;
-static const int kMaximumOutputBufferSize = 8192;
-
-// Default input buffer size.
-static const int kDefaultInputBufferSize = 1024;
+constexpr int kMinimumOutputBufferSize = 512;
+constexpr int kMaximumOutputBufferSize = 8192;
+constexpr int kDefaultInputBufferSize = 1024;
+constexpr int kDefaultSampleRate = 48000;
+constexpr int kDefaultChannelCount = 2;
 
 AudioManagerPulse::AudioManagerPulse(std::unique_ptr<AudioThread> audio_thread,
                                      AudioLogFactory* audio_log_factory,
@@ -41,9 +40,9 @@ AudioManagerPulse::AudioManagerPulse(std::unique_ptr<AudioThread> audio_thread,
     : AudioManagerBase(std::move(audio_thread), audio_log_factory),
       input_mainloop_(pa_mainloop),
       input_context_(pa_context),
-      devices_(NULL),
-      native_input_sample_rate_(0),
-      native_channel_count_(0),
+      devices_(nullptr),
+      native_input_sample_rate_(kDefaultSampleRate),
+      native_channel_count_(kDefaultChannelCount),
       default_source_is_monitor_(false) {
   DCHECK(input_mainloop_);
   DCHECK(input_context_);
@@ -86,7 +85,7 @@ void AudioManagerPulse::GetAudioDeviceNames(
     operation = pa_context_get_sink_info_list(
         input_context_, OutputDevicesInfoCallback, this);
   }
-  WaitForOperationCompletion(input_mainloop_, operation);
+  WaitForOperationCompletion(input_mainloop_, operation, input_context_);
 
   // Prepend the default device if the list is not empty.
   if (!device_names->empty())
@@ -106,11 +105,15 @@ void AudioManagerPulse::GetAudioOutputDeviceNames(
 AudioParameters AudioManagerPulse::GetInputStreamParameters(
     const std::string& device_id) {
   int user_buffer_size = GetUserBufferSize();
-  int buffer_size = user_buffer_size ?
-      user_buffer_size : kDefaultInputBufferSize;
+  int buffer_size =
+      user_buffer_size ? user_buffer_size : kDefaultInputBufferSize;
 
-  // TODO(xians): add support for querying native channel layout for pulse.
   UpdateNativeAudioHardwareInfo();
+  auto* operation = pa_context_get_source_info_by_name(
+      input_context_, default_source_name_.c_str(), DefaultSourceInfoCallback,
+      this);
+  WaitForOperationCompletion(input_mainloop_, operation, input_context_);
+
   // We don't want to accidentally open a monitor device, so return invalid
   // parameters for those.
   if (device_id == AudioDeviceDescription::kDefaultDeviceId &&
@@ -118,7 +121,9 @@ AudioParameters AudioManagerPulse::GetInputStreamParameters(
     return AudioParameters();
   }
   return AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                         CHANNEL_LAYOUT_STEREO, native_input_sample_rate_,
+                         CHANNEL_LAYOUT_STEREO,
+                         native_input_sample_rate_ ? native_input_sample_rate_
+                                                   : kDefaultSampleRate,
                          buffer_size);
 }
 
@@ -206,8 +211,10 @@ AudioParameters AudioManagerPulse::GetPreferredOutputStreamParameters(
   // Query native parameters where applicable; Pulse does not require these to
   // be respected though, so prefer the input parameters for channel count.
   UpdateNativeAudioHardwareInfo();
-  int sample_rate = native_input_sample_rate_;
-  ChannelLayout channel_layout = GuessChannelLayout(native_channel_count_);
+  int sample_rate = native_input_sample_rate_ ? native_input_sample_rate_
+                                              : kDefaultSampleRate;
+  ChannelLayout channel_layout =
+      GuessChannelLayout(native_channel_count_ ? native_channel_count_ : 2);
 
   if (input_params.IsValid()) {
     // Use the system's output channel count for the DISCRETE layout. This is to
@@ -248,19 +255,20 @@ void AudioManagerPulse::UpdateNativeAudioHardwareInfo() {
   AutoPulseLock auto_lock(input_mainloop_);
   pa_operation* operation = pa_context_get_server_info(
       input_context_, AudioHardwareInfoCallback, this);
-  WaitForOperationCompletion(input_mainloop_, operation);
-  operation = pa_context_get_source_info_by_name(
-      input_context_, default_source_name_.c_str(), DefaultSourceInfoCallback,
-      this);
-  WaitForOperationCompletion(input_mainloop_, operation);
+  WaitForOperationCompletion(input_mainloop_, operation, input_context_);
+
+  // Be careful about adding OS calls to this method.
+  // GetPreferredOutputStreamParameters() calls this method on a critical path.
+  // If the OS calls hang they will hang all device authorizations.
 }
 
 void AudioManagerPulse::InputDevicesInfoCallback(pa_context* context,
                                                  const pa_source_info* info,
-                                                 int error, void *user_data) {
+                                                 int eol,
+                                                 void* user_data) {
   AudioManagerPulse* manager = reinterpret_cast<AudioManagerPulse*>(user_data);
 
-  if (error) {
+  if (eol) {
     // Signal the pulse object that it is done.
     pa_threaded_mainloop_signal(manager->input_mainloop_, 0);
     return;
@@ -286,17 +294,17 @@ void AudioManagerPulse::InputDevicesInfoCallback(pa_context* context,
 
 void AudioManagerPulse::OutputDevicesInfoCallback(pa_context* context,
                                                   const pa_sink_info* info,
-                                                  int error, void *user_data) {
+                                                  int eol,
+                                                  void* user_data) {
   AudioManagerPulse* manager = reinterpret_cast<AudioManagerPulse*>(user_data);
 
-  if (error) {
+  if (eol) {
     // Signal the pulse object that it is done.
     pa_threaded_mainloop_signal(manager->input_mainloop_, 0);
     return;
   }
 
-  manager->devices_->push_back(AudioDeviceName(info->description,
-                                               info->name));
+  manager->devices_->push_back(AudioDeviceName(info->description, info->name));
 }
 
 void AudioManagerPulse::AudioHardwareInfoCallback(pa_context* context,
@@ -306,7 +314,8 @@ void AudioManagerPulse::AudioHardwareInfoCallback(pa_context* context,
 
   manager->native_input_sample_rate_ = info->sample_spec.rate;
   manager->native_channel_count_ = info->sample_spec.channels;
-  manager->default_source_name_ = info->default_source_name;
+  if (info->default_source_name)
+    manager->default_source_name_ = info->default_source_name;
   pa_threaded_mainloop_signal(manager->input_mainloop_, 0);
 }
 

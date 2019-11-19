@@ -8,6 +8,7 @@
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_response.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
@@ -17,6 +18,8 @@ namespace test {
 // unregister it on destruction. This prevent mocked URL from leaking to other
 // tests.
 class ScopedMockedURL {
+  STACK_ALLOCATED();
+
  public:
   explicit ScopedMockedURL(const WebURL&);
   virtual ~ScopedMockedURL();

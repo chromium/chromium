@@ -107,8 +107,9 @@ void SupportedImageTypeValidator::StartPreWriteValidation(
   DCHECK(callback_.is_null());
   callback_ = result_callback;
 
-  base::PostTaskWithTraitsAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+  base::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::USER_VISIBLE},
       base::Bind(&ReadOnFileThread, path_),
       base::Bind(&SupportedImageTypeValidator::OnFileOpen,
                  weak_factory_.GetWeakPtr()));
@@ -116,9 +117,7 @@ void SupportedImageTypeValidator::StartPreWriteValidation(
 
 SupportedImageTypeValidator::SupportedImageTypeValidator(
     const base::FilePath& path)
-    : path_(path),
-      weak_factory_(this) {
-}
+    : path_(path) {}
 
 void SupportedImageTypeValidator::OnFileOpen(
     std::unique_ptr<std::string> data) {

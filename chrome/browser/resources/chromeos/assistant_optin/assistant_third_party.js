@@ -73,10 +73,11 @@ Polymer({
    * @param {MouseEvent} e click event.
    */
   urlClickHandler: function(e) {
-    if (!e.target.localName == 'a') {
+    if (e.target.localName !== 'a') {
       return;
     }
     e.preventDefault();
+    this.lastFocusedElement = e.target;
     this.showThirdPartyOverlay(e.target.href);
   },
 
@@ -87,16 +88,19 @@ Polymer({
   showThirdPartyOverlay: function(url) {
     this.$['webview-container'].classList.add('overlay-loading');
     this.$['overlay-webview'].src = url;
-
-    var overlay = this.$['third-party-overlay'];
-    overlay.hidden = false;
+    this.$['third-party-overlay'].showModal();
+    this.$['overlay-close-button'].focus();
   },
 
   /**
    * Hides overlay dialog.
    */
   hideOverlay: function() {
-    this.$['third-party-overlay'].hidden = true;
+    this.$['third-party-overlay'].close();
+    if (this.lastFocusedElement) {
+      this.lastFocusedElement.focus();
+      this.lastFocusedElement = null;
+    }
   },
 
   /**
@@ -130,13 +134,21 @@ Polymer({
    * Add a setting zippy with the provided data.
    */
   addSettingZippy: function(zippy_data) {
+    if (this.settingZippyLoaded_) {
+      if (this.consentStringLoaded_) {
+        this.onPageLoaded();
+      }
+      return;
+    }
+
     for (var i in zippy_data) {
       var data = zippy_data[i];
       var zippy = document.createElement('setting-zippy');
       zippy.setAttribute(
           'icon-src',
           'data:text/html;charset=utf-8,' +
-              encodeURIComponent(zippy.getWrappedIcon(data['iconUri'])));
+              encodeURIComponent(
+                  zippy.getWrappedIcon(data['iconUri'], data['title'])));
       zippy.setAttribute('expand-style', true);
 
       var title = document.createElement('div');

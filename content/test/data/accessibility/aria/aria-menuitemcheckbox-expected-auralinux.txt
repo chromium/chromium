@@ -1,0 +1,5 @@
+[document web]
+++[menu]
+++++[check menu item] name='Menu item 1' checkable:true
+++++[check menu item] name='Menu item 2' checked checkable:true
+++++[check menu item] name='Menu item 3' indeterminate checkable:true

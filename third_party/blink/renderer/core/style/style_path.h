@@ -8,6 +8,7 @@
 #include <memory>
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/style/basic_shapes.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
@@ -20,7 +21,7 @@ class StylePath final : public BasicShape {
   static scoped_refptr<StylePath> Create(std::unique_ptr<SVGPathByteStream>);
   ~StylePath() override;
 
-  static StylePath* EmptyPath();
+  static const StylePath* EmptyPath();
 
   const Path& GetPath() const;
   float length() const;
@@ -43,7 +44,12 @@ class StylePath final : public BasicShape {
   mutable float path_length_;
 };
 
-DEFINE_BASICSHAPE_TYPE_CASTS(StylePath);
+template <>
+struct DowncastTraits<StylePath> {
+  static bool AllowFrom(const BasicShape& value) {
+    return value.GetType() == BasicShape::kStylePathType;
+  }
+};
 
 }  // namespace blink
 

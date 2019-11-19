@@ -29,7 +29,7 @@ class NET_EXPORT NetworkChangeNotifierFactoryAndroid :
   ~NetworkChangeNotifierFactoryAndroid() override;
 
   // NetworkChangeNotifierFactory:
-  NetworkChangeNotifier* CreateInstance() override;
+  std::unique_ptr<NetworkChangeNotifier> CreateInstance() override;
 
  private:
   // Delegate passed to the instances created by this class.

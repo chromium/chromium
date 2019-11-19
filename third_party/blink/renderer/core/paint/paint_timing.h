@@ -8,14 +8,17 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "third_party/blink/public/platform/web_layer_tree_view.h"
+#include "third_party/blink/public/web/web_widget_client.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/paint/first_meaningful_paint_detector.h"
 #include "third_party/blink/renderer/core/paint/paint_event.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
-#include "third_party/blink/renderer/platform/wtf/time.h"
+
+namespace base {
+class TickClock;
+}
 
 namespace blink {
 
@@ -23,14 +26,13 @@ class LocalFrame;
 
 // PaintTiming is responsible for tracking paint-related timings for a given
 // document.
-class CORE_EXPORT PaintTiming final
-    : public GarbageCollectedFinalized<PaintTiming>,
-      public Supplement<Document> {
+class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
+                                      public Supplement<Document> {
   USING_GARBAGE_COLLECTED_MIXIN(PaintTiming);
   friend class FirstMeaningfulPaintDetector;
   using ReportTimeCallback =
-      WTF::CrossThreadFunction<void(WebLayerTreeView::SwapResult,
-                                    base::TimeTicks)>;
+      WTF::CrossThreadOnceFunction<void(WebWidgetClient::SwapResult,
+                                        base::TimeTicks)>;
 
  public:
   static const char kSupplementName[];
@@ -54,9 +56,9 @@ class CORE_EXPORT PaintTiming final
   // contentful paint hasn't been recorded yet.
   void MarkFirstImagePaint();
 
-  void SetFirstMeaningfulPaintCandidate(TimeTicks timestamp);
+  void SetFirstMeaningfulPaintCandidate(base::TimeTicks timestamp);
   void SetFirstMeaningfulPaint(
-      TimeTicks swap_stamp,
+      base::TimeTicks swap_stamp,
       FirstMeaningfulPaintDetector::HadUserInput had_input);
   void NotifyPaint(bool is_first_paint, bool text_painted, bool image_painted);
 
@@ -66,21 +68,21 @@ class CORE_EXPORT PaintTiming final
 
   // FirstPaint returns the first time that anything was painted for the
   // current document.
-  TimeTicks FirstPaint() const { return first_paint_swap_; }
+  base::TimeTicks FirstPaint() const { return first_paint_swap_; }
 
   // FirstContentfulPaint returns the first time that 'contentful' content was
   // painted. For instance, the first time that text or image content was
   // painted.
-  TimeTicks FirstContentfulPaint() const {
+  base::TimeTicks FirstContentfulPaint() const {
     return first_contentful_paint_swap_;
   }
 
   // FirstImagePaint returns the first time that image content was painted.
-  TimeTicks FirstImagePaint() const { return first_image_paint_swap_; }
+  base::TimeTicks FirstImagePaint() const { return first_image_paint_swap_; }
 
   // FirstMeaningfulPaint returns the first time that page's primary content
   // was painted.
-  TimeTicks FirstMeaningfulPaint() const {
+  base::TimeTicks FirstMeaningfulPaint() const {
     return first_meaningful_paint_swap_;
   }
 
@@ -88,7 +90,7 @@ class CORE_EXPORT PaintTiming final
   // paint to qualify as the potentially first meaningful paint. Unlike
   // firstMeaningfulPaint, this signal is available in real time, but it may be
   // an optimistic (i.e., too early) estimate.
-  TimeTicks FirstMeaningfulPaintCandidate() const {
+  base::TimeTicks FirstMeaningfulPaintCandidate() const {
     return first_meaningful_paint_candidate_;
   }
 
@@ -98,10 +100,13 @@ class CORE_EXPORT PaintTiming final
 
   void RegisterNotifySwapTime(PaintEvent, ReportTimeCallback);
   void ReportSwapTime(PaintEvent,
-                      WebLayerTreeView::SwapResult,
+                      WebWidgetClient::SwapResult,
                       base::TimeTicks timestamp);
 
-  void ReportSwapResultHistogram(const WebLayerTreeView::SwapResult);
+  void ReportSwapResultHistogram(WebWidgetClient::SwapResult);
+
+  // The caller owns the |clock| which must outlive the PaintTiming.
+  void SetTickClockForTesting(const base::TickClock* clock);
 
   void Trace(blink::Visitor*) override;
 
@@ -115,44 +120,44 @@ class CORE_EXPORT PaintTiming final
   // or Set*() methods to make sure that first paint is marked as part of
   // marking first contentful paint, or that first contentful paint is marked as
   // part of marking first text/image paint, for example.
-  void SetFirstPaint(TimeTicks stamp);
+  void SetFirstPaint(base::TimeTicks stamp);
 
   // setFirstContentfulPaint will also set first paint time if first paint
   // time has not yet been recorded.
-  void SetFirstContentfulPaint(TimeTicks stamp);
+  void SetFirstContentfulPaint(base::TimeTicks stamp);
 
   // Set*Swap() are called when the SwapPromise is fulfilled and the swap
   // timestamp is available. These methods will record trace events, update Web
   // Perf API (FP and FCP only), and notify that paint timing has changed, which
   // triggers UMAs and UKMS.
   // |stamp| is the swap timestamp used for tracing, UMA, UKM, and Web Perf API.
-  void SetFirstPaintSwap(TimeTicks stamp);
-  void SetFirstContentfulPaintSwap(TimeTicks stamp);
-  void SetFirstImagePaintSwap(TimeTicks stamp);
+  void SetFirstPaintSwap(base::TimeTicks stamp);
+  void SetFirstContentfulPaintSwap(base::TimeTicks stamp);
+  void SetFirstImagePaintSwap(base::TimeTicks stamp);
 
   void RegisterNotifySwapTime(PaintEvent);
-  void ReportUserInputHistogram(
-      FirstMeaningfulPaintDetector::HadUserInput had_input);
 
-  TimeTicks FirstPaintRendered() const { return first_paint_; }
+  base::TimeTicks FirstPaintRendered() const { return first_paint_; }
 
-  TimeTicks FirstContentfulPaintRendered() const {
+  base::TimeTicks FirstContentfulPaintRendered() const {
     return first_contentful_paint_;
   }
 
   // TODO(crbug/738235): Non first_*_swap_ variables are only being tracked to
   // compute deltas for reporting histograms and should be removed once we
   // confirm the deltas and discrepancies look reasonable.
-  TimeTicks first_paint_;
-  TimeTicks first_paint_swap_;
-  TimeTicks first_image_paint_;
-  TimeTicks first_image_paint_swap_;
-  TimeTicks first_contentful_paint_;
-  TimeTicks first_contentful_paint_swap_;
-  TimeTicks first_meaningful_paint_swap_;
-  TimeTicks first_meaningful_paint_candidate_;
+  base::TimeTicks first_paint_;
+  base::TimeTicks first_paint_swap_;
+  base::TimeTicks first_image_paint_;
+  base::TimeTicks first_image_paint_swap_;
+  base::TimeTicks first_contentful_paint_;
+  base::TimeTicks first_contentful_paint_swap_;
+  base::TimeTicks first_meaningful_paint_swap_;
+  base::TimeTicks first_meaningful_paint_candidate_;
 
   Member<FirstMeaningfulPaintDetector> fmp_detector_;
+
+  const base::TickClock* clock_;
 
   FRIEND_TEST_ALL_PREFIXES(FirstMeaningfulPaintDetectorTest, NoFirstPaint);
   FRIEND_TEST_ALL_PREFIXES(FirstMeaningfulPaintDetectorTest, OneLayout);

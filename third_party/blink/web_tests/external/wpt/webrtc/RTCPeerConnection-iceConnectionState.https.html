@@ -1,5 +1,6 @@
 <!doctype html>
 <meta charset=utf-8>
+<meta name="timeout" content="long">
 <title>RTCPeerConnection.prototype.iceConnectionState</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -11,7 +12,7 @@
   // https://w3c.github.io/webrtc-pc/archives/20170605/webrtc.html
 
   // The following helper functions are called from RTCPeerConnection-helper.js:
-  // exchangeIceCandidates
+  // coupleIceCandidates
   // doSignalingHandshake
 
   /*
@@ -132,7 +133,7 @@
 
     pc1.addEventListener('iceconnectionstatechange', onIceConnectionStateChange);
 
-    exchangeIceCandidates(pc1, pc2);
+    coupleIceCandidates(pc1, pc2);
     doSignalingHandshake(pc1, pc2);
   }, 'connection with one data channel should eventually have connected or ' +
      'completed connection state');
@@ -148,25 +149,26 @@ async_test(t => {
       const { iceConnectionState } = pc1;
 
       if(iceConnectionState === 'checking') {
-        const iceTransport = pc1.sctp.transport.transport;
+        const iceTransport = pc1.sctp.transport.iceTransport;
 
         assert_equals(iceTransport.state, 'checking',
           'Expect ICE transport to be in checking state when' +
           ' iceConnectionState is checking');
 
       } else if(iceConnectionState === 'connected') {
-        const iceTransport = pc1.sctp.transport.transport;
+        const iceTransport = pc1.sctp.transport.iceTransport;
 
         assert_equals(iceTransport.state, 'connected',
           'Expect ICE transport to be in connected state when' +
           ' iceConnectionState is connected');
-
+        t.done();
       } else if(iceConnectionState === 'completed') {
-        const iceTransport = pc1.sctp.transport.transport;
+        const iceTransport = pc1.sctp.transport.iceTransport;
 
         assert_equals(iceTransport.state, 'completed',
           'Expect ICE transport to be in connected state when' +
           ' iceConnectionState is completed');
+        t.done();
       }
     });
 
@@ -177,9 +179,41 @@ async_test(t => {
 
     pc1.addEventListener('iceconnectionstatechange', onIceConnectionStateChange);
 
-    exchangeIceCandidates(pc1, pc2);
+    coupleIceCandidates(pc1, pc2);
     doSignalingHandshake(pc1, pc2);
   }, 'connection with one data channel should eventually ' +
+     'have connected connection state');
+
+  promise_test(async t => {
+    const pc1 = new RTCPeerConnection();
+    t.add_cleanup(() => pc1.close());
+    const pc2 = new RTCPeerConnection();
+    t.add_cleanup(() => pc2.close());
+
+    const stream = await getNoiseStream({audio: true});
+    t.add_cleanup(() => stream.getTracks().forEach(track => track.stop()));
+    stream.getTracks().forEach(track => pc1.addTrack(track, stream));
+
+    coupleIceCandidates(pc1, pc2);
+    doSignalingHandshake(pc1, pc2);
+    await listenToIceConnected(pc1);
+  }, 'connection with audio track should eventually ' +
+     'have connected connection state');
+
+  promise_test(async t => {
+    const pc1 = new RTCPeerConnection();
+    t.add_cleanup(() => pc1.close());
+    const pc2 = new RTCPeerConnection();
+    t.add_cleanup(() => pc2.close());
+
+    const stream = await getNoiseStream({audio: true, video:true});
+    t.add_cleanup(() => stream.getTracks().forEach(track => track.stop()));
+    stream.getTracks().forEach(track => pc1.addTrack(track, stream));
+
+    coupleIceCandidates(pc1, pc2);
+    doSignalingHandshake(pc1, pc2);
+    await listenToIceConnected(pc1);
+  }, 'connection with audio and video tracks should eventually ' +
      'have connected connection state');
 
   promise_test(async t => {
@@ -190,9 +224,10 @@ async_test(t => {
 
     caller.addTransceiver('audio', {direction:'recvonly'});
     const stream = await navigator.mediaDevices.getUserMedia({audio:true});
+    t.add_cleanup(() => stream.getTracks().forEach(track => track.stop()));
     const [track] = stream.getTracks();
     callee.addTrack(track, stream);
-    exchangeIceCandidates(caller, callee);
+    coupleIceCandidates(caller, callee);
     await doSignalingHandshake(caller, callee);
 
     assert_equals(caller.getTransceivers().length, 1);
@@ -242,5 +277,124 @@ async_test(t => {
 
       closed
         The RTCIceTransport has shut down and is no longer responding to STUN requests.
-   */
+  */
+
+for (let bundle_policy of ['balanced', 'max-bundle', 'max-compat']) {
+
+
+    promise_test(async t => {
+      const caller = new RTCPeerConnection({bundlePolicy: bundle_policy});
+      t.add_cleanup(() => caller.close());
+      const stream = await navigator.mediaDevices.getUserMedia(
+          {audio: true, video:true});
+      t.add_cleanup(() => stream.getTracks().forEach(track => track.stop()));
+      const [track1, track2] = stream.getTracks();
+      const sender1 = caller.addTrack(track1);
+      const sender2 = caller.addTrack(track2);
+      caller.createDataChannel('datachannel');
+      const callee = new RTCPeerConnection();
+      t.add_cleanup(() => callee.close());
+      coupleIceCandidates(caller, callee);
+      const offer = await caller.createOffer();
+      await caller.setLocalDescription(offer);
+      const [caller_transceiver1, caller_transceiver2] = caller.getTransceivers();
+      assert_equals(sender1.transport, caller_transceiver1.sender.transport);
+      await callee.setRemoteDescription(offer);
+      const [callee_transceiver1, callee_transceiver2] = callee.getTransceivers();
+      const answer = await callee.createAnswer();
+      await callee.setLocalDescription(answer);
+      await caller.setRemoteDescription(answer);
+      // At this point, we should have a single ICE transport, and it
+      // should eventually get to the "connected" state.
+      await waitForState(caller_transceiver1.receiver.transport.iceTransport,
+                         'connected');
+      // The PeerConnection's iceConnectionState should therefore be 'connected'
+      assert_equals(caller.iceConnectionState, 'connected',
+                    'PC.iceConnectionState:');
+    }, 'iceConnectionState changes at the right time, with bundle policy ' +
+                 bundle_policy);
+}
+
+promise_test(async t => {
+  const pc1 = new RTCPeerConnection();
+  t.add_cleanup(() => pc1.close());
+  const pc2 = new RTCPeerConnection();
+  t.add_cleanup(() => pc2.close());
+  pc1.onicecandidate = async e => {
+    if (e.candidate) {
+      await pc2.addIceCandidate(e.candidate);
+    }
+  };
+  pc1.candidateBuffer = [];
+  pc2.onicecandidate = e => {
+    // Don't add candidate if candidate buffer is already used
+    if (e.candidate && pc1.candidateBuffer) {
+      pc1.candidateBuffer.push(e.candidate)
+    }
+  };
+  pc1.iceStates = [pc1.iceConnectionState];
+  pc2.iceStates = [pc2.iceConnectionState];
+  pc1.oniceconnectionstatechange = () => {
+    pc1.iceStates.push(pc1.iceConnectionState);
+  };
+  pc2.oniceconnectionstatechange = () => {
+    pc2.iceStates.push(pc2.iceConnectionState);
+  };
+
+  const localStream = await navigator.mediaDevices.getUserMedia({audio: true, video: true});
+  const localStream2 = await navigator.mediaDevices.getUserMedia({audio: true, video: true});
+  const remoteStream = await navigator.mediaDevices.getUserMedia({audio: true, video: true});
+  for (const stream of [localStream, localStream2, remoteStream]) {
+    t.add_cleanup(() => stream.getTracks().forEach(track => track.stop()));
+  }
+  localStream.getTracks().forEach(t => pc1.addTrack(t, localStream));
+  localStream2.getTracks().forEach(t => pc1.addTrack(t, localStream2));
+  remoteStream.getTracks().forEach(t => pc2.addTrack(t, remoteStream));
+  const offer = await pc1.createOffer();
+  await pc2.setRemoteDescription(offer);
+  await pc1.setLocalDescription(offer);
+  const answer = await pc2.createAnswer();
+  await pc2.setLocalDescription(answer);
+  await pc1.setRemoteDescription(answer);
+  pc1.candidateBuffer.forEach(c => pc1.addIceCandidate(c));
+  delete pc1.candidateBuffer;
+  await listenToIceConnected(pc1);
+  await listenToIceConnected(pc2);
+  // While we're waiting for pc2, pc1 may or may not have transitioned
+  // to "completed" state, so allow for both cases.
+  if (pc1.iceStates.length == 3) {
+    assert_array_equals(pc1.iceStates, ['new', 'checking', 'connected']);
+  } else {
+    assert_array_equals(pc1.iceStates, ['new', 'checking', 'connected',
+                                        'completed']);
+  }
+  assert_array_equals(pc2.iceStates, ['new', 'checking', 'connected']);
+}, 'Responder ICE connection state behaves as expected');
+
+/*
+  Test case for step 11 of PeerConnection.close().
+  ...
+  11. Set connection's ICE connection state to "closed". This does not invoke
+      the "update the ICE connection state" procedure, and does not fire any
+      event.
+  ...
+*/
+promise_test(async t => {
+  const pc1 = new RTCPeerConnection();
+  t.add_cleanup(() => pc1.close());
+  const pc2 = new RTCPeerConnection();
+  const stream = await getNoiseStream({ audio: true });
+  t.add_cleanup(() => stream.getTracks().forEach(track => track.stop()));
+
+  stream.getTracks().forEach(track => pc1.addTrack(track, stream));
+  exchangeIceCandidates(pc1, pc2);
+  doSignalingHandshake(pc1, pc2);
+  await listenToIceConnected(pc2);
+
+  pc2.oniceconnectionstatechange = t.unreached_func();
+  pc2.close();
+  assert_true(pc2.iceConnectionState === 'closed');
+  await new Promise(r => t.step_timeout(r, 100));
+}, 'Closing a PeerConnection should not fire iceconnectionstatechange event');
+
 </script>

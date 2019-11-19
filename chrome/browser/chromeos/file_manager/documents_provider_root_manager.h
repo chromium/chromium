@@ -13,7 +13,7 @@
 #include "base/observer_list.h"
 #include "base/optional.h"
 #include "chrome/browser/chromeos/arc/fileapi/arc_file_system_bridge.h"
-#include "components/arc/common/file_system.mojom.h"
+#include "components/arc/mojom/file_system.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "url/gurl.h"
 
@@ -50,12 +50,15 @@ class DocumentsProviderRootManager : public arc::ArcFileSystemBridge::Observer {
     // Called when a new available root is found. When an existing root is
     // modified, both RootRemoved() and RootAdded() will be called in this
     // order.
-    virtual void OnDocumentsProviderRootAdded(const std::string& authority,
-                                              const std::string& root_id,
-                                              const std::string& document_id,
-                                              const std::string& title,
-                                              const std::string& summary,
-                                              const GURL& icon_url) = 0;
+    virtual void OnDocumentsProviderRootAdded(
+        const std::string& authority,
+        const std::string& root_id,
+        const std::string& document_id,
+        const std::string& title,
+        const std::string& summary,
+        const GURL& icon_url,
+        bool read_only,
+        const std::vector<std::string>& mime_types) = 0;
 
     // Called when an existing root is not available anymore. When an existing
     // root is modified, both RootRemoved() and RootAdded() will be called in
@@ -87,6 +90,8 @@ class DocumentsProviderRootManager : public arc::ArcFileSystemBridge::Observer {
     std::string title;
     std::string summary;
     SkBitmap icon;
+    bool supports_create;
+    std::vector<std::string> mime_types;
 
     RootInfo();
     RootInfo(const RootInfo& that);
@@ -122,7 +127,7 @@ class DocumentsProviderRootManager : public arc::ArcFileSystemBridge::Observer {
   base::ObserverList<Observer>::Unchecked observer_list_;
   std::vector<RootInfo> current_roots_;
 
-  base::WeakPtrFactory<DocumentsProviderRootManager> weak_ptr_factory_;
+  base::WeakPtrFactory<DocumentsProviderRootManager> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DocumentsProviderRootManager);
 };

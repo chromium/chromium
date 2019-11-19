@@ -7,15 +7,17 @@ package org.chromium.chrome.browser.metrics;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Handler;
-import android.support.annotation.IntDef;
 import android.text.format.DateUtils;
+
+import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.VisibleForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.ChromeActivity;
@@ -53,6 +55,7 @@ public class MainIntentBehaviorMetrics implements ApplicationStatus.ActivityStat
     private static final int DURATION_HISTOGRAM_BUCKET_COUNT = 50;
 
     private static long sTimeoutDurationMs = TIMEOUT_DURATION_MS;
+    private static boolean sShouldTrackBehaviorSource;
     private static boolean sLoggedLaunchBehavior;
     static {
         ApplicationStatus.registerApplicationStateListener(newState -> {
@@ -84,6 +87,7 @@ public class MainIntentBehaviorMetrics implements ApplicationStatus.ActivityStat
 
     @MainIntentActionType
     private Integer mLastMainIntentBehavior;
+    private StackTraceElement[] mMainIntentBehaviorSource;
 
     /**
      * Constructs a metrics handler for ACTION_MAIN intents received for the specified activity.
@@ -132,8 +136,9 @@ public class MainIntentBehaviorMetrics implements ApplicationStatus.ActivityStat
             @Override
             public void didAddTab(Tab tab, @TabLaunchType int type) {
                 if (type == TabLaunchType.FROM_RESTORE) return;
-                if (NewTabPage.isNTPUrl(tab.getUrl()))
+                if (NewTabPage.isNTPUrl(tab.getUrl())) {
                     recordUserBehavior(MainIntentActionType.NTP_CREATED);
+                }
             }
 
             @Override
@@ -178,10 +183,27 @@ public class MainIntentBehaviorMetrics implements ApplicationStatus.ActivityStat
     }
 
     /**
+     * @return The stack trace that triggered the last logged main intent.
+     */
+    @Nullable
+    public StackTraceElement[] getMainIntentBehaviorSourceForTesting() {
+        assert sShouldTrackBehaviorSource;
+        return mMainIntentBehaviorSource;
+    }
+
+    /**
      * Allows test to override the timeout duration.
      */
     public static void setTimeoutDurationMsForTesting(long duration) {
         sTimeoutDurationMs = duration;
+    }
+
+    /**
+     * Specifies whether to track the source stack frame for main intent behavior.
+     * @param shouldTrack Whether to track the trigger source of the main intent behavior.
+     */
+    public static void setShouldTrackBehaviorSourceForTesting(boolean shouldTrack) {
+        sShouldTrackBehaviorSource = shouldTrack;
     }
 
     /**
@@ -221,6 +243,9 @@ public class MainIntentBehaviorMetrics implements ApplicationStatus.ActivityStat
         if (!mPendingActionRecordForMainIntent || mIgnoreEvents) return;
         mPendingActionRecordForMainIntent = false;
 
+        if (sShouldTrackBehaviorSource) {
+            mMainIntentBehaviorSource = Thread.currentThread().getStackTrace();
+        }
         mLastMainIntentBehavior = behavior;
         String histogramName = getHistogramNameForBehavior(behavior);
         if (histogramName != null) {

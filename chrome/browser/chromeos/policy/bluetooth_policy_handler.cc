@@ -14,7 +14,7 @@ namespace policy {
 
 BluetoothPolicyHandler::BluetoothPolicyHandler(
     chromeos::CrosSettings* cros_settings)
-    : cros_settings_(cros_settings), weak_factory_(this) {
+    : cros_settings_(cros_settings) {
   bluetooth_policy_subscription_ = cros_settings_->AddSettingsObserver(
       chromeos::kAllowBluetooth,
       base::Bind(&BluetoothPolicyHandler::OnBluetoothPolicyChanged,

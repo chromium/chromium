@@ -99,7 +99,7 @@ ContentSettingsType StringToContentSettingsType(
   if (info)
     return info->type();
 
-  return CONTENT_SETTINGS_TYPE_DEFAULT;
+  return ContentSettingsType::DEFAULT;
 }
 
 std::string ContentSettingsTypeToString(ContentSettingsType type) {

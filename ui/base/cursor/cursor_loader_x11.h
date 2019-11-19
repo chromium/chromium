@@ -9,15 +9,19 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/scoped_observer.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/cursor_loader.h"
+#include "ui/base/cursor/cursor_theme_manager_linux.h"
+#include "ui/base/cursor/cursor_theme_manager_linux_observer.h"
 #include "ui/base/ui_base_export.h"
 #include "ui/base/x/x11_util.h"
 #include "ui/gfx/x/x11.h"
 
 namespace ui {
 
-class UI_BASE_EXPORT CursorLoaderX11 : public CursorLoader {
+class UI_BASE_EXPORT CursorLoaderX11 : public CursorLoader,
+                                       public CursorThemeManagerLinuxObserver {
  public:
   CursorLoaderX11();
   ~CursorLoaderX11() override;
@@ -34,6 +38,11 @@ class UI_BASE_EXPORT CursorLoaderX11 : public CursorLoader {
   void SetPlatformCursor(gfx::NativeCursor* cursor) override;
 
   const XcursorImage* GetXcursorImageForTest(CursorType id);
+
+ protected:
+  // CursorThemeManagerLinux:
+  void OnCursorThemeNameChanged(const std::string& cursor_theme_name) override;
+  void OnCursorThemeSizeChanged(int cursor_theme_size) override;
 
  private:
   struct ImageCursor {
@@ -53,6 +62,8 @@ class UI_BASE_EXPORT CursorLoaderX11 : public CursorLoader {
   // Loads a new cursor corresponding to |id|.
   ::Cursor CursorFromId(CursorType id);
 
+  void ClearThemeCursors();
+
   XDisplay* display_;
 
   // A map from a cursor native type to X cursor.
@@ -68,6 +79,9 @@ class UI_BASE_EXPORT CursorLoaderX11 : public CursorLoader {
   std::map<CursorType, std::pair<::Cursor, XcursorImages*>> animated_cursors_;
 
   const XScopedCursor invisible_cursor_;
+
+  ScopedObserver<CursorThemeManagerLinux, CursorThemeManagerLinuxObserver>
+      cursor_theme_observer_{this};
 
   DISALLOW_COPY_AND_ASSIGN(CursorLoaderX11);
 };

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script>
+test(function() {
+    assert_true(CSS.supports("background-image", "-webkit-gradient(radial, 1% 2%, 3, 4% 5%, 6)"));
+}, '-webkit-gradient accepts positive radii.');
+
+test(function() {
+    assert_true(CSS.supports("background-image", "-webkit-gradient(radial, 1% 2%, 3, 4% 5%, 0)"));
+}, '-webkit-gradient accepts zero radii.');
+
+test(function() {
+    assert_false(CSS.supports("background-image", "-webkit-gradient(radial, 1% 2%, -3, 4% 5%, 6)"));
+    assert_false(CSS.supports("background-image", "-webkit-gradient(radial, 1% 2%, 3, 4% 5%, -6)"));
+    assert_false(CSS.supports("background-image", "-webkit-gradient(radial, 1% 2%, -3, 4% 5%, -6)"));
+}, '-webkit-gradient rejects negative radii.');
+</script>

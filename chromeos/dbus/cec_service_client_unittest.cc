@@ -11,9 +11,9 @@
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/memory/ref_counted.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/dbus/dbus_client_implementation_type.h"
 #include "dbus/bus.h"
@@ -96,7 +96,7 @@ class CecServiceClientTest : public testing::Test {
         .WillByDefault(Return(mock_proxy_.get()));
 
     // Create a client with the mock bus.
-    client_ = CecServiceClient::Create(REAL_DBUS_CLIENT_IMPLEMENTATION);
+    client_ = CecServiceClient::Create();
     client_->Init(mock_bus_.get());
 
     // Run the message loop to run the signal connection result callback.
@@ -104,7 +104,7 @@ class CecServiceClientTest : public testing::Test {
   }
 
  protected:
-  base::MessageLoop message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   std::unique_ptr<CecServiceClient> client_;
   scoped_refptr<dbus::MockBus> mock_bus_;
   scoped_refptr<dbus::MockObjectProxy> mock_proxy_;

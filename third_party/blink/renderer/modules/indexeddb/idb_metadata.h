@@ -31,7 +31,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_key_path.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
@@ -104,7 +104,8 @@ struct MODULES_EXPORT IDBDatabaseMetadata {
   IDBDatabaseMetadata(const String& name,
                       int64_t id,
                       int64_t version,
-                      int64_t max_object_store_id);
+                      int64_t max_object_store_id,
+                      bool was_cold_open);
 
   // Overwrites the database metadata, but does not change the object store and
   // index metadata.
@@ -115,6 +116,7 @@ struct MODULES_EXPORT IDBDatabaseMetadata {
   int64_t version;
   int64_t max_object_store_id;
   HashMap<int64_t, scoped_refptr<IDBObjectStoreMetadata>> object_stores;
+  bool was_cold_open;
 };
 
 }  // namespace blink

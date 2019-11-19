@@ -20,7 +20,7 @@
 
   function step1() {
     TestRunner.addResult(
-        watchExpressionsPane.contentElement.textContent.indexOf('<not available>') !== -1 ? 'SUCCESS' : 'FAILED');
+        watchExpressionsPane.contentElement.deepTextContent().indexOf('<not available>') !== -1 ? 'SUCCESS' : 'FAILED');
 
     // Clear watch expressions after execution.
     watchExpressionsPane._deleteAllButtonClicked();

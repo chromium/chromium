@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/ui/elements/top_aligned_image_view.h"
 #import "ios/chrome/browser/ui/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/colors/semantic_color_names.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -120,6 +121,7 @@ void PositionView(UIView* view, CGPoint point) {
 #pragma mark - UIView
 
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
+  [super traitCollectionDidChange:previousTraitCollection];
   BOOL isPreviousAccessibilityCategory =
       UIContentSizeCategoryIsAccessibilityCategory(
           previousTraitCollection.preferredContentSizeCategory);
@@ -171,31 +173,55 @@ void PositionView(UIView* view, CGPoint point) {
 - (void)setTheme:(GridTheme)theme {
   if (_theme == theme)
     return;
+
   self.iconView.backgroundColor = UIColor.clearColor;
-  self.snapshotView.backgroundColor =
-      UIColorFromRGB(kGridCellSnapshotBackgroundColor);
   switch (theme) {
+    // This is necessary for iOS 13 because on iOS 13, this will return
+    // the dynamic color (which will then be colored with the user
+    // interface style).
+    // On iOS 12, this will always return the dynamic color in the light
+    // variant.
     case GridThemeLight:
-      self.contentView.backgroundColor =
-          UIColorFromRGB(kGridLightThemeCellHeaderColor);
-      self.topBar.backgroundColor =
-          UIColorFromRGB(kGridLightThemeCellHeaderColor);
-      self.titleLabel.textColor = UIColorFromRGB(kGridLightThemeCellTitleColor);
-      self.closeIconView.tintColor =
-          UIColorFromRGB(kGridLightThemeCellCloseButtonTintColor);
-      self.border.layer.borderColor =
-          UIColorFromRGB(kGridLightThemeCellSelectionColor).CGColor;
+      self.contentView.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+      self.snapshotView.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+      self.topBar.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+      self.titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
+      self.closeIconView.tintColor = [UIColor colorNamed:kCloseButtonColor];
       break;
+    // These dark-theme specific colorsets should only be used for iOS 12
+    // dark theme, as they will be removed along with iOS 12.
+    // TODO (crbug.com/981889): The following lines will be removed
+    // along with iOS 12
     case GridThemeDark:
       self.contentView.backgroundColor =
-          UIColorFromRGB(kGridDarkThemeCellHeaderColor);
-      self.topBar.backgroundColor =
-          UIColorFromRGB(kGridDarkThemeCellHeaderColor);
-      self.titleLabel.textColor = UIColorFromRGB(kGridDarkThemeCellTitleColor);
-      self.closeIconView.tintColor =
-          UIColorFromRGB(kGridDarkThemeCellCloseButtonTintColor);
+          [UIColor colorNamed:kBackgroundDarkColor];
+      self.snapshotView.backgroundColor =
+          [UIColor colorNamed:kBackgroundDarkColor];
+      self.topBar.backgroundColor = [UIColor colorNamed:kBackgroundDarkColor];
+      self.titleLabel.textColor = [UIColor colorNamed:kTextPrimaryDarkColor];
+      self.closeIconView.tintColor = [UIColor colorNamed:kCloseButtonDarkColor];
+      break;
+  }
+
+  if (@available(iOS 13, *)) {
+    // When iOS 12 is dropped, only the next line is needed for styling.
+    // Every other check for |GridThemeDark| can be removed, as well as
+    // the dark theme specific assets.
+    self.overrideUserInterfaceStyle = (theme == GridThemeDark)
+                                          ? UIUserInterfaceStyleDark
+                                          : UIUserInterfaceStyleUnspecified;
+  }
+
+  // When iOS 12 is dropped, only the next switch statement is needed for
+  // styling.
+  switch (theme) {
+    case GridThemeLight:
       self.border.layer.borderColor =
-          UIColorFromRGB(kGridDarkThemeCellSelectionColor).CGColor;
+          [UIColor colorNamed:@"grid_theme_selection_tint_color"].CGColor;
+      break;
+    case GridThemeDark:
+      self.border.layer.borderColor =
+          [UIColor colorNamed:@"grid_theme_dark_selection_tint_color"].CGColor;
       break;
   }
   _theme = theme;
@@ -325,10 +351,10 @@ void PositionView(UIView* view, CGPoint point) {
 - (void)setupSelectedBackgroundView {
   self.selectedBackgroundView = [[UIView alloc] init];
   self.selectedBackgroundView.backgroundColor =
-      UIColorFromRGB(kGridBackgroundColor);
+      [UIColor colorNamed:kGridBackgroundColor];
   UIView* border = [[UIView alloc] init];
   border.translatesAutoresizingMaskIntoConstraints = NO;
-  border.backgroundColor = UIColorFromRGB(kGridBackgroundColor);
+  border.backgroundColor = [UIColor colorNamed:kGridBackgroundColor];
   border.layer.cornerRadius = kGridCellCornerRadius +
                               kGridCellSelectionRingGapWidth +
                               kGridCellSelectionRingTintWidth;

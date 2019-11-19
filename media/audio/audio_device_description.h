@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/unguessable_token.h"
 #include "media/base/media_export.h"
 
 namespace media {
@@ -50,8 +51,9 @@ struct MEDIA_EXPORT AudioDeviceDescription {
   // If |device_id| is empty and |session_id| is nonzero, output device
   // associated with the opened input device designated by |session_id| should
   // be used.
-  static bool UseSessionIdToSelectDevice(int session_id,
-                                         const std::string& device_id);
+  static bool UseSessionIdToSelectDevice(
+      const base::UnguessableToken& session_id,
+      const std::string& device_id);
 
   // The functions dealing with localization are not reliable in the audio
   // service, and should be avoided there.

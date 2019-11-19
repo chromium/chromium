@@ -31,7 +31,7 @@ class SettingsPrivateDelegateFactory
   SettingsPrivateDelegateFactory();
   ~SettingsPrivateDelegateFactory() override;
 
-  // BrowserContextKeyedBaseFactory implementation.
+  // BrowserContextKeyedServiceFactory implementation.
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* profile) const override;
   content::BrowserContext* GetBrowserContextToUse(

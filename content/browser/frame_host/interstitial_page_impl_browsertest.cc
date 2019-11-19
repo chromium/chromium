@@ -115,8 +115,9 @@ class InterstitialPageImplTest : public ContentBrowserTest {
     WaitForInterstitialAttach(web_contents);
 
     // Focus the interstitial frame
-    FrameTree* frame_tree = static_cast<RenderViewHostDelegate*>(
-                                interstitial_.get())->GetFrameTree();
+    FrameTree* frame_tree =
+        static_cast<RenderViewHostDelegate*>(interstitial_.get())
+            ->GetFrameTree();
     static_cast<RenderFrameHostDelegate*>(interstitial_.get())
         ->SetFocusedFrame(frame_tree->root(),
                           frame_tree->GetMainFrame()->GetSiteInstance());

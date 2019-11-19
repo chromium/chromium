@@ -21,19 +21,45 @@ import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
  * Details in this issue: crbug.com/651389.
  */
 public abstract class OverlayPanelTextViewInflater
-        extends OverlayPanelInflater implements OnLayoutChangeListener {
+        extends OverlayPanelRepaddingTextView implements OnLayoutChangeListener {
     private static final float SHORTNESS_FACTOR = 0.5f;
 
     private boolean mDidAdjustViewDirection;
 
     /**
-     * Constructs an instance similar to an {@link OverlayPanelInflater} that can adjust the RTL/LTR
-     * ordering of text fragments whose initial values are considered short relative to the width
-     * of the view.
+     * Constructs an instance similar to an {@link OverlayPanelRepaddingTextView} that can adjust
+     * the RTL/LTR ordering of text fragments whose initial values are considered short relative to
+     * the width of the view.
+     * @param panel             The panel.
+     * @param layoutId          The resource ID of the layout.
+     * @param viewId            The resource ID of the text view.
+     * @param context           The Android Context used to inflate the View.
+     * @param container         The container View used to inflate the View.
+     * @param resourceLoader    The resource loader that will handle the snapshot capturing.
+     * @param peekedDimension   The dimension resource for the padding when the Overlay is Peeked.
+     * @param expandedDimension The dimension resource for the padding when the Overlay is Expanded.
+     */
+    public OverlayPanelTextViewInflater(OverlayPanel panel, int layoutId, int viewId,
+            Context context, ViewGroup container, DynamicResourceLoader resourceLoader,
+            int peekedDimension, int expandedDimension) {
+        super(panel, layoutId, viewId, context, container, resourceLoader, peekedDimension,
+                expandedDimension);
+    }
+
+    /**
+     * Constructs an instance similar to an {@link OverlayPanelRepaddingTextView} that can adjust
+     * the RTL/LTR ordering of text fragments whose initial values are considered short relative to
+     * the width of the view.
+     * @param panel             The panel.
+     * @param layoutId          The resource ID of the layout.
+     * @param viewId            The resource ID of the text view.
+     * @param context           The Android Context used to inflate the View.
+     * @param container         The container View used to inflate the View.
+     * @param resourceLoader    The resource loader that will handle the snapshot capturing.
      */
     public OverlayPanelTextViewInflater(OverlayPanel panel, int layoutId, int viewId,
             Context context, ViewGroup container, DynamicResourceLoader resourceLoader) {
-        super(panel, layoutId, viewId, context, container, resourceLoader);
+        super(panel, layoutId, viewId, context, container, resourceLoader, 0, 0);
     }
 
     /**

@@ -7,8 +7,10 @@
 
 #include <memory>
 #include <vector>
+
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
+#include "base/optional.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "ui/display/display.h"
 #include "ui/gfx/transform.h"
@@ -43,9 +45,36 @@ class ArCore {
   // when the camera image was updated successfully.
   virtual mojom::VRPosePtr Update(bool* camera_updated) = 0;
 
+  // Return latest estimate for the floor height.
+  virtual float GetEstimatedFloorHeight() = 0;
+
+  // Returns information about all planes detected in the current frame.
+  virtual mojom::XRPlaneDetectionDataPtr GetDetectedPlanesData() = 0;
+
+  // Returns information about all anchors tracked in the current frame.
+  virtual mojom::XRAnchorsDataPtr GetAnchorsData() = 0;
+
   virtual bool RequestHitTest(
       const mojom::XRRayPtr& ray,
       std::vector<mojom::XRHitResultPtr>* hit_results) = 0;
+
+  virtual base::Optional<uint64_t> SubscribeToHitTest(
+      mojom::XRNativeOriginInformationPtr native_origin_information,
+      mojom::XRRayPtr ray) = 0;
+
+  virtual mojom::XRHitTestSubscriptionResultsDataPtr
+  GetHitTestSubscriptionResults(
+      const gfx::Transform& mojo_from_viewer,
+      const base::Optional<std::vector<mojom::XRInputSourceStatePtr>>&
+          maybe_input_state) = 0;
+
+  virtual void UnsubscribeFromHitTest(uint64_t subscription_id) = 0;
+
+  virtual base::Optional<uint64_t> CreateAnchor(const mojom::PosePtr& pose) = 0;
+  virtual base::Optional<uint64_t> CreateAnchor(const mojom::PosePtr& pose,
+                                                uint64_t plane_id) = 0;
+
+  virtual void DetachAnchor(uint64_t anchor_id) = 0;
 
   virtual void Pause() = 0;
   virtual void Resume() = 0;

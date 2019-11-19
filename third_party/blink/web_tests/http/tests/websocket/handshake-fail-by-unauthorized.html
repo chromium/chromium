@@ -1,0 +1,49 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<script src="/js-test-resources/js-test.js"></script>
+</head>
+<body>
+<script>
+description('Devtools should show error message when WebSocket handshake fails by HTTP 401 Unauthorized.')
+
+window.jsTestIsAsync = true;
+
+var url = "ws://localhost:8880/handshake-fail-by-unauthorized";
+var ws = new WebSocket(url);
+
+var isOpened = false;
+var isClosed = false;
+var isError = false;
+var isTimedOut = false;
+
+function endTest() {
+    shouldBeFalse('isOpened');
+    shouldBeTrue('isClosed');
+    shouldBeTrue('isError');
+    shouldBeFalse('isTimedOut');
+    clearTimeout(timeoutID);
+    finishJSTest();
+}
+
+ws.onopen = function() {
+  isOpened = true;
+}
+
+ws.onclose = function() {
+  isClosed = true;
+  endTest();
+}
+
+ws.onerror = function(errorEvent) {
+  isError = true;
+}
+
+var timeoutID = setTimeout(()=> {
+  isTimedOut = true;
+    endTest();
+}, 3000);
+
+</script>
+</body>
+</html>

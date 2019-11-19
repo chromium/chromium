@@ -43,20 +43,9 @@ class OnScreenKeyboardDisplayManagerInputPane::VirtualKeyboardInputPane
     AddCallbacksOnInputPaneShownOrHiddenInBackgroundThread();
   }
 
-  void TryShowInBackgroundThread(HWND hwnd) {
+  void RegisterForInputPaneVisibilityChangeInBackgroundThread(HWND hwnd) {
     DCHECK(!main_task_runner_->BelongsToCurrentThread());
-    if (!EnsureInputPanePointersInBackgroundThread(hwnd))
-      return;
-    boolean res;
-    input_pane2_->TryShow(&res);
-  }
-
-  void TryHideInBackgroundThread() {
-    DCHECK(!main_task_runner_->BelongsToCurrentThread());
-    if (!input_pane2_)
-      return;
-    boolean res;
-    input_pane2_->TryHide(&res);
+    EnsureInputPanePointersInBackgroundThread(hwnd);
   }
 
  private:
@@ -66,13 +55,13 @@ class OnScreenKeyboardDisplayManagerInputPane::VirtualKeyboardInputPane
     DCHECK(!main_task_runner_->BelongsToCurrentThread());
   }
 
-  bool EnsureInputPanePointersInBackgroundThread(HWND hwnd) {
+  void EnsureInputPanePointersInBackgroundThread(HWND hwnd) {
     DCHECK(!main_task_runner_->BelongsToCurrentThread());
     if (input_pane2_)
-      return true;
+      return;
     if (!base::win::ResolveCoreWinRTDelayload() ||
         !base::win::ScopedHString::ResolveCoreWinRTStringDelayload()) {
-      return false;
+      return;
     }
 
     base::win::AssertComApartmentType(base::win::ComApartmentType::STA);
@@ -83,17 +72,16 @@ class OnScreenKeyboardDisplayManagerInputPane::VirtualKeyboardInputPane
     HRESULT hr = base::win::RoGetActivationFactory(
         input_pane_guid.get(), IID_PPV_ARGS(&input_pane_interop));
     if (FAILED(hr))
-      return false;
+      return;
 
     hr = input_pane_interop->GetForWindow(hwnd, IID_PPV_ARGS(&input_pane_));
     if (FAILED(hr))
-      return false;
+      return;
 
     if (FAILED(input_pane_.As(&input_pane2_)))
-      return false;
+      return;
 
     AddCallbacksOnInputPaneShownOrHiddenInBackgroundThread();
-    return true;
   }
 
   // Add callbacks to notify virtual keyboard observers when the virtual
@@ -175,14 +163,13 @@ OnScreenKeyboardDisplayManagerInputPane::
     : hwnd_(hwnd),
       main_task_runner_(base::ThreadTaskRunnerHandle::Get()),
       background_task_runner_(
-          base::CreateCOMSTATaskRunnerWithTraits({base::MayBlock()})),
+          base::CreateCOMSTATaskRunner({base::ThreadPool(), base::MayBlock()})),
       virtual_keyboard_input_pane_(
           base::MakeRefCounted<OnScreenKeyboardDisplayManagerInputPane::
                                    VirtualKeyboardInputPane>(
               main_task_runner_)),
-      is_keyboard_visible_(false),
-      weak_factory_(this) {
-  DCHECK_GE(base::win::GetVersion(), base::win::VERSION_WIN10_RS1);
+      is_keyboard_visible_(false) {
+  DCHECK_GE(base::win::GetVersion(), base::win::Version::WIN10_RS1);
   DCHECK(main_task_runner_->BelongsToCurrentThread());
 
   // We post the initiation of |virtual_keyboard_input_pane_| to the background
@@ -201,20 +188,14 @@ bool OnScreenKeyboardDisplayManagerInputPane::DisplayVirtualKeyboard() {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   background_task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&OnScreenKeyboardDisplayManagerInputPane::
-                         VirtualKeyboardInputPane::TryShowInBackgroundThread,
-                     base::RetainedRef(virtual_keyboard_input_pane_), hwnd_));
+      base::BindOnce(
+          &OnScreenKeyboardDisplayManagerInputPane::VirtualKeyboardInputPane::
+              RegisterForInputPaneVisibilityChangeInBackgroundThread,
+          base::RetainedRef(virtual_keyboard_input_pane_), hwnd_));
   return true;
 }
 
-void OnScreenKeyboardDisplayManagerInputPane::DismissVirtualKeyboard() {
-  DCHECK(main_task_runner_->BelongsToCurrentThread());
-  background_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&OnScreenKeyboardDisplayManagerInputPane::
-                         VirtualKeyboardInputPane::TryHideInBackgroundThread,
-                     base::RetainedRef(virtual_keyboard_input_pane_)));
-}
+void OnScreenKeyboardDisplayManagerInputPane::DismissVirtualKeyboard() {}
 
 void OnScreenKeyboardDisplayManagerInputPane::AddObserver(
     InputMethodKeyboardControllerObserver* observer) {
@@ -236,7 +217,7 @@ bool OnScreenKeyboardDisplayManagerInputPane::IsKeyboardVisible() {
 void OnScreenKeyboardDisplayManagerInputPane::SetInputPaneForTesting(
     Microsoft::WRL::ComPtr<ABI::Windows::UI::ViewManagement::IInputPane> pane) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
-  base::CreateCOMSTATaskRunnerWithTraits({base::MayBlock()})
+  base::CreateCOMSTATaskRunner({base::ThreadPool(), base::MayBlock()})
       ->PostTask(FROM_HERE,
                  base::BindOnce(
                      &OnScreenKeyboardDisplayManagerInputPane::

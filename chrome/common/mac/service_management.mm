@@ -91,27 +91,6 @@ bool IntFromLaunchDataDictEntry(launch_data_t dict,
   return true;
 }
 
-// Extracts the first integer value from |dict[key]|, which is itself an array,
-// and returns it in |*value|. This means that the type of dict is:
-//    map<string, array<int>>
-bool FirstIntFromLaunchDataDictEntry(launch_data_t dict,
-                                     const char* key,
-                                     int* value) {
-  launch_data_t array = launch_data_dict_lookup(dict, key);
-  if (!array || launch_data_get_type(array) != LAUNCH_DATA_ARRAY ||
-      launch_data_array_get_count(array) == 0) {
-    return false;
-  }
-  launch_data_t entry = launch_data_array_get_index(array, 0);
-  if (launch_data_get_type(entry) == LAUNCH_DATA_INTEGER)
-    *value = launch_data_get_integer(entry);
-  else if (launch_data_get_type(entry) == LAUNCH_DATA_FD)
-    *value = launch_data_get_fd(entry);
-  else
-    return false;
-  return true;
-}
-
 ScopedLaunchData DoServiceOp(const char* verb,
                              const std::string& label,
                              int* error) {
@@ -150,15 +129,10 @@ base::scoped_nsobject<NSDictionary> DictionaryForJobOptions(
              forKey:@LAUNCH_JOBKEY_PROGRAMARGUMENTS];
   }
 
-  DCHECK_EQ(options.socket_name.empty(), options.socket_key.empty());
-  if (!options.socket_name.empty() && !options.socket_key.empty()) {
-    NSDictionary* inner_dict = [NSDictionary
-        dictionaryWithObject:base::SysUTF8ToNSString(options.socket_name)
-                      forKey:@LAUNCH_JOBSOCKETKEY_PATHNAME];
-    NSDictionary* outer_dict = [NSDictionary
-        dictionaryWithObject:inner_dict
-                      forKey:base::SysUTF8ToNSString(options.socket_key)];
-    [opts setObject:outer_dict forKey:@LAUNCH_JOBKEY_SOCKETS];
+  if (!options.mach_service_name.empty()) {
+    NSDictionary* service_entry =
+        @{base::SysUTF8ToNSString(options.mach_service_name) : @YES};
+    [opts setObject:service_entry forKey:@LAUNCH_JOBKEY_MACHSERVICES];
   }
 
   if (options.run_at_load || options.auto_launch) {
@@ -210,32 +184,6 @@ bool GetJobInfo(const std::string& label, JobInfo* info) {
   if (IntFromLaunchDataDictEntry(resp.get(), LAUNCH_JOBKEY_PID, &pid))
     info->pid = pid;
 
-  return true;
-}
-
-bool CheckIn(const std::string& socket_key, JobCheckinInfo* info) {
-  ScopedLaunchData resp =
-      SendLaunchMessage(LaunchDataFromString(LAUNCH_KEY_CHECKIN));
-
-  if (launch_data_get_type(resp.get()) != LAUNCH_DATA_DICTIONARY)
-    return false;
-
-  std::string program;
-  if (!StringFromLaunchDataDictEntry(resp.get(), LAUNCH_JOBKEY_PROGRAM,
-                                     &program))
-    return false;
-
-  launch_data_t sockets = launch_data_dict_lookup(resp, LAUNCH_JOBKEY_SOCKETS);
-
-  if (launch_data_get_type(sockets) != LAUNCH_DATA_DICTIONARY)
-    return false;
-
-  int socket_fd;
-  if (!FirstIntFromLaunchDataDictEntry(sockets, socket_key.c_str(), &socket_fd))
-    return false;
-
-  info->program = program;
-  info->socket = socket_fd;
   return true;
 }
 

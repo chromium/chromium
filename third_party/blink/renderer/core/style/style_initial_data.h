@@ -7,6 +7,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
+#include "third_party/blink/renderer/core/style/style_variables.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
@@ -32,20 +33,23 @@ class CORE_EXPORT StyleInitialData : public RefCounted<StyleInitialData> {
     return !(*this == other);
   }
 
-  bool HasInitialVariables() const { return variables_->size(); }
+  bool HasInitialVariables() const { return !variables_.IsEmpty(); }
 
-  const CSSValue* GetInitialVariable(const AtomicString& name) const {
-    return variables_->at(name);
+  CSSVariableData* GetVariableData(const AtomicString& name) const {
+    return variables_.GetData(name).value_or(nullptr);
+  }
+
+  const CSSValue* GetVariableValue(const AtomicString& name) const {
+    return variables_.GetValue(name).value_or(nullptr);
   }
 
  private:
   StyleInitialData(const PropertyRegistry&);
-  StyleInitialData(StyleInitialData&);
 
   // Initial values for all registered properties. This is set on
   // the initial style, and then shared with all other styles that directly or
   // indirectly inherit from that.
-  Persistent<HeapHashMap<AtomicString, Member<const CSSValue>>> variables_;
+  StyleVariables variables_;
 };
 
 }  // namespace blink

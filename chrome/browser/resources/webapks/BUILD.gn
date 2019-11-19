@@ -12,7 +12,8 @@ js_type_check("closure_compile") {
 
 js_library("about_webapks") {
   deps = [
-    "../../../../ui/webui/resources/js:util",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:util.m",
   ]
   externs_list = [ "$externs_path/chrome_send.js" ]
 }

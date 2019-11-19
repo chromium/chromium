@@ -6,17 +6,14 @@ package org.chromium.chrome.browser.sync.ui;
 
 import android.accounts.Account;
 import android.app.Dialog;
-import android.app.DialogFragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
-import android.util.Log;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AppCompatActivity;
 
-import org.chromium.base.library_loader.ProcessInitException;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeApplication;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.sync.ProfileSyncService;
 import org.chromium.chrome.browser.sync.SyncController;
@@ -26,10 +23,8 @@ import org.chromium.components.signin.ChromeSigninController;
  * This activity is used for requesting a sync passphrase from the user. Typically,
  * this will be the target of an Android notification.
  */
-public class PassphraseActivity extends FragmentActivity implements
-        PassphraseDialogFragment.Listener,
-        FragmentManager.OnBackStackChangedListener {
-
+public class PassphraseActivity extends AppCompatActivity
+        implements PassphraseDialogFragment.Listener, FragmentManager.OnBackStackChangedListener {
     public static final String FRAGMENT_PASSPHRASE = "passphrase_fragment";
     public static final String FRAGMENT_SPINNER = "spinner_fragment";
     private static final String TAG = "PassphraseActivity";
@@ -43,15 +38,9 @@ public class PassphraseActivity extends FragmentActivity implements
         // may be started explicitly from Android notifications.
         // During a normal user flow the ChromeTabbedActivity would start the Chrome browser
         // process and this wouldn't be necessary.
-        try {
-            ChromeBrowserInitializer.getInstance(this).handleSynchronousStartup();
-        } catch (ProcessInitException e) {
-            Log.e(TAG, "Failed to start browser process.", e);
-            ChromeApplication.reportStartupErrorAndExit(e);
-            return;
-        }
+        ChromeBrowserInitializer.getInstance(this).handleSynchronousStartup();
         assert ProfileSyncService.get() != null;
-        getFragmentManager().addOnBackStackChangedListener(this);
+        getSupportFragmentManager().addOnBackStackChangedListener(this);
     }
 
     @Override
@@ -110,13 +99,13 @@ public class PassphraseActivity extends FragmentActivity implements
 
     private void displayPassphraseDialog() {
         assert ProfileSyncService.get().isEngineInitialized();
-        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.addToBackStack(null);
         PassphraseDialogFragment.newInstance(null).show(ft, FRAGMENT_PASSPHRASE);
     }
 
     private void displaySpinnerDialog() {
-        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.addToBackStack(null);
         SpinnerDialogFragment dialog = new SpinnerDialogFragment();
         dialog.show(ft, FRAGMENT_SPINNER);
@@ -144,7 +133,7 @@ public class PassphraseActivity extends FragmentActivity implements
 
     @Override
     public void onBackStackChanged() {
-        if (getFragmentManager().getBackStackEntryCount() == 0) {
+        if (getSupportFragmentManager().getBackStackEntryCount() == 0) {
             finish();
         }
     }

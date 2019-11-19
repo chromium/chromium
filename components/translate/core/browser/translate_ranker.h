@@ -11,8 +11,7 @@
 
 #include "base/macros.h"
 #include "components/keyed_service/core/keyed_service.h"
-
-class GURL;
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace metrics {
 class TranslateEventProto;
@@ -46,7 +45,7 @@ class TranslateRanker : public KeyedService {
   // metrics::TranslateEventProto::EventType.
   virtual void RecordTranslateEvent(
       int event_type,
-      const GURL& url,
+      ukm::SourceId ukm_source_id,
       metrics::TranslateEventProto* translate_event) = 0;
 
   // If override for the given |event_type| is enabled, will return true and add
@@ -57,7 +56,7 @@ class TranslateRanker : public KeyedService {
   // metrics::TranslateEventProto::EventType.
   virtual bool ShouldOverrideDecision(
       int event_type,
-      const GURL& url,
+      ukm::SourceId ukm_source_id,
       metrics::TranslateEventProto* translate_event) = 0;
 
   // Override the default enabled/disabled state of translate event logging.

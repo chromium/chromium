@@ -532,4 +532,36 @@ TEST(WebInputEventTest, MousePointerEvent) {
   }
 }
 
+#if defined(OS_WIN)
+TEST(WebInputEventTest, MouseLeaveScreenCoordinate) {
+  MSG msg_event = {nullptr, WM_MOUSELEAVE, 0, MAKELPARAM(300, 200)};
+  ::SetCursorPos(250, 350);
+  ui::MouseEvent ui_event(msg_event);
+
+  blink::WebMouseEvent web_event = MakeWebMouseEvent(ui_event);
+  ASSERT_EQ(blink::WebInputEvent::kMouseLeave, web_event.GetType());
+
+  // WM_MOUSELEAVE events take coordinates from cursor position instead of
+  // LPARAM.
+  ASSERT_EQ(250, web_event.PositionInWidget().x);
+  ASSERT_EQ(350, web_event.PositionInWidget().y);
+  ASSERT_EQ(250, web_event.PositionInScreen().x);
+  ASSERT_EQ(350, web_event.PositionInScreen().y);
+}
+#endif
+
+TEST(WebInputEventTest, MouseMoveUnadjustedMovement) {
+  gfx::PointF cursor_pos(123, 456);
+  gfx::Vector2dF movement(-12, 34);
+  ui::MouseEvent event(ET_MOUSE_MOVED, cursor_pos, cursor_pos,
+                       base::TimeTicks(), 0, 0);
+  MouseEvent::DispatcherApi(&event).set_movement(movement);
+
+  blink::WebMouseEvent web_event = MakeWebMouseEvent(event);
+
+  ASSERT_TRUE(web_event.is_raw_movement_event);
+  ASSERT_EQ(web_event.movement_x, movement.x());
+  ASSERT_EQ(web_event.movement_y, movement.y());
+}
+
 }  // namespace ui

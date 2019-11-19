@@ -35,11 +35,15 @@ class MockResourcePrefetchPredictor : public ResourcePrefetchPredictor {
   MOCK_METHOD1(RecordPageRequestSummaryProxy, void(PageRequestSummary*));
 };
 
+// |include_scheme| and |include_port| can be set to false to simulate legacy
+// data, which doesn't have new fields.
 void InitializeRedirectStat(RedirectStat* redirect,
-                            const std::string& url,
+                            const GURL& url,
                             int number_of_hits,
                             int number_of_misses,
-                            int consecutive_misses);
+                            int consecutive_misses,
+                            bool include_scheme = true,
+                            bool include_port = true);
 
 void InitializeOriginStat(OriginStat* origin_stat,
                           const std::string& origin,
@@ -66,12 +70,16 @@ PageRequestSummary CreatePageRequestSummary(
 
 content::mojom::ResourceLoadInfoPtr CreateResourceLoadInfo(
     const std::string& url,
-    content::ResourceType resource_type = content::RESOURCE_TYPE_MAIN_FRAME,
+    content::ResourceType resource_type = content::ResourceType::kMainFrame,
     bool always_access_network = false);
+
+content::mojom::ResourceLoadInfoPtr CreateLowPriorityResourceLoadInfo(
+    const std::string& url,
+    content::ResourceType resource_type = content::ResourceType::kMainFrame);
 
 content::mojom::ResourceLoadInfoPtr CreateResourceLoadInfoWithRedirects(
     const std::vector<std::string>& redirect_chain,
-    content::ResourceType resource_type = content::RESOURCE_TYPE_MAIN_FRAME);
+    content::ResourceType resource_type = content::ResourceType::kMainFrame);
 
 PreconnectPrediction CreatePreconnectPrediction(
     std::string host,

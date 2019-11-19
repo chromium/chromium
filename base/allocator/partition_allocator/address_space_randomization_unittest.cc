@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/allocator/partition_allocator/page_allocator.h"
+#include "base/allocator/partition_allocator/random.h"
 #include "base/logging.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -100,8 +101,8 @@ TEST(AddressSpaceRandomizationTest, Predictable) {
   if (!mask)
     return;
 
-  const uintptr_t kInitialSeed = 0xfeed5eedULL;
-  base::SetRandomPageBaseSeed(kInitialSeed);
+  const uint64_t kInitialSeed = 0xfeed5eedULL;
+  base::SetMmapSeedForTesting(kInitialSeed);
 
   std::vector<uintptr_t> sequence;
   for (size_t i = 0; i < kSamples; ++i) {
@@ -109,7 +110,7 @@ TEST(AddressSpaceRandomizationTest, Predictable) {
     sequence.push_back(address);
   }
 
-  base::SetRandomPageBaseSeed(kInitialSeed);
+  base::SetMmapSeedForTesting(kInitialSeed);
 
   for (size_t i = 0; i < kSamples; ++i) {
     uintptr_t address = reinterpret_cast<uintptr_t>(base::GetRandomPageBase());
@@ -180,9 +181,10 @@ void RandomBitCorrelation(int random_bit) {
       // Chi squared analysis for k = 2 (2, states: same/not-same) and one
       // degree of freedom (k - 1).
       double chi_squared = ChiSquared(m, kRepeats);
-      // For 1 degree of freedom this corresponds to 1 in a million.  We are
-      // running ~8000 tests, so that would be surprising.
-      CHECK_GE(24, chi_squared);
+      // For k=2 probability of Chi^2 < 35 is p=3.338e-9. This condition is
+      // tested ~19000 times, so probability of it failing randomly per one
+      // base_unittests run is (1 - (1 - p) ^ 19000) ~= 6e-5.
+      CHECK_LE(chi_squared, 35.0);
       // If the predictor bit is a fixed 0 or 1 then it makes no sense to
       // repeat the test with a different age.
       if (predictor_bit < 0)
@@ -190,9 +192,6 @@ void RandomBitCorrelation(int random_bit) {
     }
   }
 }
-
-// TODO(crbug.com/811881): These are flaky on Fuchsia
-#if !defined(OS_FUCHSIA)
 
 // Tests are fairly slow, so give each random bit its own test.
 #define TEST_RANDOM_BIT(BIT)                                        \
@@ -241,8 +240,6 @@ TEST_RANDOM_BIT(47)
 TEST_RANDOM_BIT(48)
 // No platforms have more than 48 address bits.
 #endif  // defined(ARCH_CPU_64_BITS)
-
-#endif  // defined(OS_FUCHSIA)
 
 #undef TEST_RANDOM_BIT
 

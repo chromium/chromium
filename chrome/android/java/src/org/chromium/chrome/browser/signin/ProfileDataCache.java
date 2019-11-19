@@ -18,14 +18,16 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.MainThread;
-import android.support.annotation.Nullable;
 import android.support.v7.content.res.AppCompatResources;
+
+import androidx.annotation.MainThread;
+import androidx.annotation.Nullable;
+import androidx.annotation.Px;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.profiles.ProfileDownloader;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.ProfileDataSource;
 
@@ -97,19 +99,22 @@ public class ProfileDataCache implements ProfileDownloader.Observer, ProfileData
     private final Map<String, DisplayableProfileData> mCachedProfileData = new HashMap<>();
     private @Nullable final ProfileDataSource mProfileDataSource;
 
-    public ProfileDataCache(Context context, int imageSize) {
+    public ProfileDataCache(Context context, @Px int imageSize) {
         this(context, imageSize, null);
     }
 
-    public ProfileDataCache(Context context, int imageSize, @Nullable BadgeConfig badgeConfig) {
+    public ProfileDataCache(Context context, @Px int imageSize, @Nullable BadgeConfig badgeConfig) {
+        this(context, imageSize, badgeConfig, AccountManagerFacade.get().getProfileDataSource());
+    }
+
+    @VisibleForTesting
+    public ProfileDataCache(Context context, @Px int imageSize, @Nullable BadgeConfig badgeConfig,
+            @Nullable ProfileDataSource profileDataSource) {
         mContext = context;
         mImageSize = imageSize;
         mBadgeConfig = badgeConfig;
-
-        mPlaceholderImage =
-                AppCompatResources.getDrawable(context, R.drawable.logo_avatar_anonymous);
-
-        mProfileDataSource = AccountManagerFacade.get().getProfileDataSource();
+        mPlaceholderImage = getScaledPlaceholderImage(context, imageSize);
+        mProfileDataSource = profileDataSource;
     }
 
     /**
@@ -218,33 +223,31 @@ public class ProfileDataCache implements ProfileDownloader.Observer, ProfileData
     }
 
     /**
-     * Crops avatar image into a circle.
+     * Rescales avatar image and crops it into a circle.
      */
-    public static Drawable makeRoundAvatar(Resources resources, Bitmap bitmap) {
+    public static Drawable makeRoundAvatar(Resources resources, Bitmap bitmap, int imageSize) {
         if (bitmap == null) return null;
 
-        Bitmap output = Bitmap.createBitmap(
-                bitmap.getWidth(), bitmap.getHeight(), Config.ARGB_8888);
+        Bitmap output = Bitmap.createBitmap(imageSize, imageSize, Config.ARGB_8888);
         Canvas canvas = new Canvas(output);
-
-        final Paint paint = new Paint();
-        final Rect rect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
-
+        // Fill the canvas with transparent color.
+        canvas.drawColor(Color.TRANSPARENT);
+        // Draw a white circle.
+        float radius = (float) imageSize / 2;
+        Paint paint = new Paint();
         paint.setAntiAlias(true);
-        canvas.drawARGB(0, 0, 0, 0);
         paint.setColor(Color.WHITE);
-
-        canvas.drawCircle(
-                bitmap.getWidth() / 2f, bitmap.getHeight() / 2f, bitmap.getWidth() / 2f, paint);
+        canvas.drawCircle(radius, radius, radius, paint);
+        // Use SRC_IN so white circle acts as a mask while drawing the avatar.
         paint.setXfermode(new PorterDuffXfermode(Mode.SRC_IN));
-        canvas.drawBitmap(bitmap, rect, rect, paint);
-
+        canvas.drawBitmap(bitmap, null, new Rect(0, 0, imageSize, imageSize), paint);
         return new BitmapDrawable(resources, output);
     }
 
     private Drawable prepareAvatar(Bitmap bitmap) {
-        Drawable croppedAvatar = bitmap != null ? makeRoundAvatar(mContext.getResources(), bitmap)
-                                                : mPlaceholderImage;
+        Drawable croppedAvatar = bitmap != null
+                ? makeRoundAvatar(mContext.getResources(), bitmap, mImageSize)
+                : mPlaceholderImage;
         if (mBadgeConfig == null) {
             return croppedAvatar;
         }
@@ -276,5 +279,19 @@ public class ProfileDataCache implements ProfileDownloader.Observer, ProfileData
         canvas.drawBitmap(mBadgeConfig.getBadge(), mBadgeConfig.getPosition().x,
                 mBadgeConfig.getPosition().y, null);
         return new BitmapDrawable(mContext.getResources(), badgedPicture);
+    }
+
+    private static Drawable getScaledPlaceholderImage(Context context, int imageSize) {
+        Drawable drawable =
+                AppCompatResources.getDrawable(context, R.drawable.logo_avatar_anonymous);
+        assert drawable != null;
+        Bitmap output = Bitmap.createBitmap(imageSize, imageSize, Config.ARGB_8888);
+        Canvas canvas = new Canvas(output);
+        // Fill the canvas with transparent color.
+        canvas.drawColor(Color.TRANSPARENT);
+        // Draw the placeholder on the canvas.
+        drawable.setBounds(0, 0, imageSize, imageSize);
+        drawable.draw(canvas);
+        return new BitmapDrawable(context.getResources(), output);
     }
 }

@@ -14,6 +14,7 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/one_shot_event.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/post_task.h"
@@ -26,9 +27,9 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/service_worker_context.h"
+#include "content/public/browser/service_worker_external_request_result.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
@@ -49,7 +50,6 @@
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
-#include "extensions/common/one_shot_event.h"
 
 using content::BrowserContext;
 
@@ -129,17 +129,17 @@ void PropagateExtensionWakeResult(
 void StartServiceWorkerExternalRequest(content::ServiceWorkerContext* context,
                                        int64_t service_worker_version_id,
                                        const std::string& request_uuid) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(content::ServiceWorkerContext::GetCoreThreadId());
   context->StartingExternalRequest(service_worker_version_id, request_uuid);
 }
 
 void FinishServiceWorkerExternalRequest(content::ServiceWorkerContext* context,
                                         int64_t service_worker_version_id,
                                         const std::string& request_uuid) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  bool status =
+  DCHECK_CURRENTLY_ON(content::ServiceWorkerContext::GetCoreThreadId());
+  content::ServiceWorkerExternalRequestResult result =
       context->FinishedExternalRequest(service_worker_version_id, request_uuid);
-  DCHECK(status);
+  DCHECK_EQ(result, content::ServiceWorkerExternalRequestResult::kOk);
 }
 
 }  // namespace
@@ -255,12 +255,10 @@ ProcessManager::ProcessManager(BrowserContext* context,
     : extension_registry_(extension_registry),
       site_instance_(content::SiteInstance::Create(context)),
       browser_context_(context),
-      worker_task_runner_(base::CreateSingleThreadTaskRunnerWithTraits(
-          {content::BrowserThread::IO})),
+      worker_task_runner_(
+          base::CreateSingleThreadTaskRunner({content::BrowserThread::IO})),
       startup_background_hosts_created_(false),
-      last_background_close_sequence_id_(0),
-      process_observer_(this),
-      weak_ptr_factory_(this) {
+      last_background_close_sequence_id_(0) {
   // ExtensionRegistry is shared between incognito and regular contexts.
   DCHECK_EQ(original_context, extension_registry_->browser_context());
   extension_registry_->AddObserver(this);
@@ -291,6 +289,9 @@ void ProcessManager::Shutdown() {
   DCHECK(background_hosts_.empty());
   content::DevToolsAgentHost::RemoveObserver(this);
   site_instance_ = nullptr;
+
+  for (auto& observer : observer_list_)
+    observer.OnProcessManagerShutdown(this);
 }
 
 void ProcessManager::RegisterRenderFrameHost(
@@ -789,10 +790,16 @@ std::string ProcessManager::IncrementServiceWorkerKeepaliveCount(
                                                           extension->url())
           ->GetServiceWorkerContext();
 
-  content::ServiceWorkerContext::RunTask(
-      worker_task_runner_, FROM_HERE, service_worker_context,
-      base::BindOnce(&StartServiceWorkerExternalRequest, service_worker_context,
-                     service_worker_version_id, request_uuid));
+  if (content::ServiceWorkerContext::IsServiceWorkerOnUIEnabled()) {
+    StartServiceWorkerExternalRequest(service_worker_context,
+                                      service_worker_version_id, request_uuid);
+  } else {
+    content::ServiceWorkerContext::RunTask(
+        worker_task_runner_, FROM_HERE, service_worker_context,
+        base::BindOnce(&StartServiceWorkerExternalRequest,
+                       service_worker_context, service_worker_version_id,
+                       request_uuid));
+  }
   return request_uuid;
 }
 
@@ -849,11 +856,16 @@ void ProcessManager::DecrementServiceWorkerKeepaliveCount(
                                                           extension->url())
           ->GetServiceWorkerContext();
 
-  content::ServiceWorkerContext::RunTask(
-      worker_task_runner_, FROM_HERE, service_worker_context,
-      base::BindOnce(&FinishServiceWorkerExternalRequest,
-                     service_worker_context, service_worker_version_id,
-                     request_uuid));
+  if (content::ServiceWorkerContext::IsServiceWorkerOnUIEnabled()) {
+    FinishServiceWorkerExternalRequest(service_worker_context,
+                                       service_worker_version_id, request_uuid);
+  } else {
+    content::ServiceWorkerContext::RunTask(
+        worker_task_runner_, FROM_HERE, service_worker_context,
+        base::BindOnce(&FinishServiceWorkerExternalRequest,
+                       service_worker_context, service_worker_version_id,
+                       request_uuid));
+  }
 }
 
 void ProcessManager::OnLazyBackgroundPageIdle(const std::string& extension_id,

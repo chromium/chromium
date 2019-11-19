@@ -1,0 +1,16 @@
+[document web]
+++[heading] name='ARIA Heading 1' level:1 xml-roles:heading
+++++[static] name='ARIA Heading 1'
+++[heading] name='ARIA Heading 2' level:2 xml-roles:heading
+++++[static] name='ARIA Heading 2'
+++[heading] name='ARIA Heading 3' level:3 xml-roles:heading
+++++[static] name='ARIA Heading 3'
+++[heading] name='ARIA Heading 4' level:4 xml-roles:heading
+++++[static] name='ARIA Heading 4'
+++[heading] name='ARIA Heading 5' level:5 xml-roles:heading
+++++[static] name='ARIA Heading 5'
+++[heading] name='ARIA Heading 6' level:6 xml-roles:heading
+++++[static] name='ARIA Heading 6'
+++[section]
+++++[heading] name='Heading' level:2 xml-roles:heading
+++++++[static] name='Heading'

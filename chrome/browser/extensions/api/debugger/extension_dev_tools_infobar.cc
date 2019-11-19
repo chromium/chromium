@@ -5,9 +5,9 @@
 #include "chrome/browser/extensions/api/debugger/extension_dev_tools_infobar.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/lazy_instance.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/devtools/global_confirm_info_bar.h"
@@ -64,8 +64,7 @@ bool ExtensionDevToolsInfoBarDelegate::ShouldExpire(
 
 void ExtensionDevToolsInfoBarDelegate::InfoBarDismissed() {
   DCHECK(!dismissed_callback_.is_null());
-  // Use ResetAndReturn() since running the callback may delete |this|.
-  base::ResetAndReturn(&dismissed_callback_).Run();
+  std::move(dismissed_callback_).Run();
 }
 
 base::string16 ExtensionDevToolsInfoBarDelegate::GetMessageText() const {

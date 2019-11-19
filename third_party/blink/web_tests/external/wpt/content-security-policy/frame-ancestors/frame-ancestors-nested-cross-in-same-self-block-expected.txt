@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL A 'frame-ancestors' CSP directive with a value 'same' should block render in same-origin nested frames. assert_unreached: Inner IFrame msg: undefined Reached unreachable code
-Harness: the test ran to completion.
-

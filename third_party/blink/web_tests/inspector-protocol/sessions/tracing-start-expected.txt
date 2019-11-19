@@ -10,7 +10,7 @@ Starting tracing in session2
 {
     error : {
         code : -32000
-        message : Tracing is already started
+        message : Tracing has already been started (possibly in another tab).
     }
     id : <number>
     sessionId : <string>

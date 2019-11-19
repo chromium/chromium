@@ -1,0 +1,5 @@
+android.webkit.WebView focusable focused scrollable
+++android.view.View name='before selection'
+++android.view.View name='this text is not ignored'
+++android.view.View name='after selection'
+++android.view.View name='Done'

@@ -10,9 +10,9 @@
 
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
-#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace gfx {
 
@@ -194,7 +194,6 @@ bool CheckViewportPointMapsWithinOnePixel(const Point& point,
 bool CheckTransformsMapsIntViewportWithinOnePixel(const Rect& viewport,
                                                   const Transform& original,
                                                   const Transform& snapped) {
-
   Transform original_inv(Transform::kSkipInitialization);
   bool invertible = true;
   invertible &= original.GetInverse(&original_inv);
@@ -322,8 +321,7 @@ bool Decompose2DTransform(DecomposedTransform* decomp,
 
 Transform GetScaleTransform(const Point& anchor, float scale) {
   Transform transform;
-  transform.Translate(anchor.x() * (1 - scale),
-                      anchor.y() * (1 - scale));
+  transform.Translate(anchor.x() * (1 - scale), anchor.y() * (1 - scale));
   transform.Scale(scale, scale);
   return transform;
 }
@@ -385,12 +383,8 @@ bool DecomposeTransform(DecomposedTransform* decomp,
   if (matrix.get(3, 0) != 0.0 || matrix.get(3, 1) != 0.0 ||
       matrix.get(3, 2) != 0.0) {
     // rhs is the right hand side of the equation.
-    SkMScalar rhs[4] = {
-      matrix.get(3, 0),
-      matrix.get(3, 1),
-      matrix.get(3, 2),
-      matrix.get(3, 3)
-    };
+    SkMScalar rhs[4] = {matrix.get(3, 0), matrix.get(3, 1), matrix.get(3, 2),
+                        matrix.get(3, 3)};
 
     // Solve the equation by inverting perspectiveMatrix and multiplying
     // rhs by the inverse.
@@ -398,8 +392,7 @@ bool DecomposeTransform(DecomposedTransform* decomp,
     if (!perspectiveMatrix.invert(&inversePerspectiveMatrix))
       return false;
 
-    SkMatrix44 transposedInversePerspectiveMatrix =
-        inversePerspectiveMatrix;
+    SkMatrix44 transposedInversePerspectiveMatrix = inversePerspectiveMatrix;
 
     transposedInversePerspectiveMatrix.transpose();
     transposedInversePerspectiveMatrix.mapMScalars(rhs);
@@ -567,20 +560,27 @@ bool SnapTransform(Transform* out,
       ComposeTransform(perspective, translation, rotation_matrix, skew, scale);
 
   // Verify that viewport is not moved unnaturally.
-  bool snappable =
-    CheckTransformsMapsIntViewportWithinOnePixel(viewport, transform, snapped);
+  bool snappable = CheckTransformsMapsIntViewportWithinOnePixel(
+      viewport, transform, snapped);
   if (snappable) {
     *out = snapped;
   }
   return snappable;
 }
 
-Transform TransformAboutPivot(const gfx::Point& pivot,
-                              const gfx::Transform& transform) {
-  gfx::Transform result;
+Transform TransformAboutPivot(const Point& pivot, const Transform& transform) {
+  Transform result;
   result.Translate(pivot.x(), pivot.y());
   result.PreconcatTransform(transform);
   result.Translate(-pivot.x(), -pivot.y());
+  return result;
+}
+
+Transform TransformBetweenRects(const RectF& src, const RectF& dst) {
+  DCHECK(!src.IsEmpty() && !dst.IsEmpty());
+  Transform result;
+  result.Translate(dst.origin() - src.origin());
+  result.Scale(dst.width() / src.width(), dst.height() / src.height());
   return result;
 }
 

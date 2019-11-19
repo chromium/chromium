@@ -4,6 +4,9 @@
 
 #include "components/offline_pages/core/model/persistent_page_consistency_check_task.h"
 
+#include <memory>
+#include <utility>
+
 #include "base/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
@@ -12,10 +15,12 @@
 #include "components/offline_pages/core/client_namespace_constants.h"
 #include "components/offline_pages/core/model/model_task_test_base.h"
 #include "components/offline_pages/core/model/offline_page_test_utils.h"
+#include "components/offline_pages/core/offline_page_archive_publisher.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::A;
 using testing::Eq;
+using testing::IsEmpty;
 using testing::UnorderedElementsAre;
 
 namespace offline_pages {
@@ -25,34 +30,23 @@ using PersistentPageConsistencyCheckCallback =
 
 class PersistentPageConsistencyCheckTaskTest : public ModelTaskTestBase {
  public:
-  PersistentPageConsistencyCheckTaskTest();
-  ~PersistentPageConsistencyCheckTaskTest() override;
+  PersistentPageConsistencyCheckTaskTest() {}
+  ~PersistentPageConsistencyCheckTaskTest() override {}
 
-  void SetUp() override;
-  bool IsPageMissingFile(const OfflinePageItem& page);
+  void SetUp() override {
+    ModelTaskTestBase::SetUp();
+    histogram_tester_ = std::make_unique<base::HistogramTester>();
+  }
+  bool IsPageMissingFile(const OfflinePageItem& page) {
+    auto actual_page = store_test_util()->GetPageByOfflineId(page.offline_id);
+    return (actual_page && actual_page->file_missing_time != base::Time());
+  }
 
   base::HistogramTester* histogram_tester() { return histogram_tester_.get(); }
 
  private:
   std::unique_ptr<base::HistogramTester> histogram_tester_;
 };
-
-PersistentPageConsistencyCheckTaskTest::
-    PersistentPageConsistencyCheckTaskTest() {}
-
-PersistentPageConsistencyCheckTaskTest::
-    ~PersistentPageConsistencyCheckTaskTest() {}
-
-void PersistentPageConsistencyCheckTaskTest::SetUp() {
-  ModelTaskTestBase::SetUp();
-  histogram_tester_ = std::make_unique<base::HistogramTester>();
-}
-
-bool PersistentPageConsistencyCheckTaskTest::IsPageMissingFile(
-    const OfflinePageItem& page) {
-  auto actual_page = store_test_util()->GetPageByOfflineId(page.offline_id);
-  return (actual_page && actual_page->file_missing_time != base::Time());
-}
 
 // This test is affected by https://crbug.com/725685, which only affects windows
 // platform.
@@ -90,14 +84,15 @@ TEST_F(PersistentPageConsistencyCheckTaskTest,
   EXPECT_EQ(1UL, test_utils::GetFileCountInDirectory(PublicDir()));
 
   base::MockCallback<PersistentPageConsistencyCheckCallback> callback;
-  EXPECT_CALL(callback,
-              Run(Eq(true), UnorderedElementsAre(page2.system_download_id,
-                                                 page5.system_download_id)));
+  EXPECT_CALL(
+      callback,
+      Run(Eq(true),
+          UnorderedElementsAre(
+              PublishedArchiveId{page2.system_download_id, page2.file_path},
+              PublishedArchiveId{page5.system_download_id, page5.file_path})));
 
-  auto task = std::make_unique<PersistentPageConsistencyCheckTask>(
-      store(), archive_manager(), policy_controller(), base::Time::Now(),
-      callback.Get());
-  RunTask(std::move(task));
+  RunTask(std::make_unique<PersistentPageConsistencyCheckTask>(
+      store(), archive_manager(), base::Time::Now(), callback.Get()));
 
   EXPECT_EQ(4LL, store_test_util()->GetPageCount());
   EXPECT_EQ(1UL, test_utils::GetFileCountInDirectory(PrivateDir()));
@@ -119,6 +114,42 @@ TEST_F(PersistentPageConsistencyCheckTaskTest,
       "OfflinePages.ConsistencyCheck.Persistent.MissingFileCount", 2, 1);
   histogram_tester()->ExpectUniqueSample(
       "OfflinePages.ConsistencyCheck.Persistent.ReappearedFileCount", 2, 1);
+  histogram_tester()->ExpectUniqueSample(
+      "OfflinePages.ConsistencyCheck.Persistent.Result",
+      static_cast<int>(SyncOperationResult::SUCCESS), 1);
+}
+
+#if defined(OS_WIN)
+#define MAYBE_ClearExpiredPersistentPagesByFilePath \
+  DISABLED_ClearExpiredPersistentPagesByFilePath
+#else
+#define MAYBE_ClearExpiredPersistentPagesByFilePath \
+  ClearExpiredPersistentPagesByFilePath
+#endif
+TEST_F(PersistentPageConsistencyCheckTaskTest,
+       MAYBE_ClearExpiredPersistentPagesByFilePath) {
+  base::Time expire_time = base::Time::Now() - base::TimeDelta::FromDays(400);
+  // |page| will be deleted from DB, since it's been expired for longer than
+  // threshold.
+  generator()->SetSystemDownloadId(kArchivePublishedWithoutDownloadId);
+  generator()->SetNamespace(kDownloadNamespace);
+  generator()->SetArchiveDirectory(PublicDir());
+  generator()->SetFileMissingTime(expire_time);
+  OfflinePageItem page = AddPageWithoutFile();
+
+  EXPECT_EQ(1LL, store_test_util()->GetPageCount());
+
+  base::MockCallback<PersistentPageConsistencyCheckCallback> callback;
+  EXPECT_CALL(callback,
+              Run(Eq(true), UnorderedElementsAre(PublishedArchiveId{
+                                page.system_download_id, page.file_path})));
+
+  RunTask(std::make_unique<PersistentPageConsistencyCheckTask>(
+      store(), archive_manager(), base::Time::Now(), callback.Get()));
+
+  EXPECT_FALSE(store_test_util()->GetPageByOfflineId(page.offline_id));
+  histogram_tester()->ExpectUniqueSample(
+      "OfflinePages.ConsistencyCheck.Persistent.ExpiredEntryCount", 1, 1);
   histogram_tester()->ExpectUniqueSample(
       "OfflinePages.ConsistencyCheck.Persistent.Result",
       static_cast<int>(SyncOperationResult::SUCCESS), 1);

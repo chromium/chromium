@@ -35,14 +35,16 @@ class GlassBrowserFrameView : public BrowserNonClientFrameView,
 
   // BrowserNonClientFrameView:
   bool CaptionButtonsOnLeadingEdge() const override;
-  gfx::Rect GetBoundsForTabStrip(const views::View* tabstrip) const override;
+  gfx::Rect GetBoundsForTabStripRegion(
+      const views::View* tabstrip) const override;
   int GetTopInset(bool restored) const override;
   int GetThemeBackgroundXInset() const override;
-  bool HasVisibleBackgroundTabShapes(ActiveState active_state) const override;
+  bool HasVisibleBackgroundTabShapes(
+      BrowserFrameActiveState active_state) const override;
   bool CanDrawStrokes() const override;
+  SkColor GetCaptionColor(BrowserFrameActiveState active_state) const override;
   void UpdateThrobber(bool running) override;
   gfx::Size GetMinimumSize() const override;
-  SkColor GetCaptionColor(ActiveState active_state) const override;
 
   // views::NonClientFrameView:
   gfx::Rect GetBoundsForClientView() const override;
@@ -166,6 +168,9 @@ class GlassBrowserFrameView : public BrowserNonClientFrameView,
 
   // The index of the current frame of the throbber animation.
   int throbber_frame_;
+
+  // How much extra space to reserve in non-maximized windows for a drag handle.
+  int drag_handle_padding_;
 
   static const int kThrobberIconCount = 24;
   static HICON throbber_icons_[kThrobberIconCount];

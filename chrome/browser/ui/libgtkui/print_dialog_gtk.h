@@ -7,6 +7,7 @@
 
 #include <gtk/gtk.h>
 #include <gtk/gtkunixprint.h>
+#include <memory>
 
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
@@ -39,7 +40,8 @@ class PrintDialogGtk : public printing::PrintDialogGtkInterface,
 
   // printing::PrintDialogGtkInterface implementation.
   void UseDefaultSettings() override;
-  void UpdateSettings(printing::PrintSettings* settings) override;
+  void UpdateSettings(
+      std::unique_ptr<printing::PrintSettings> settings) override;
   void ShowDialog(
       gfx::NativeView parent_view,
       bool has_selection,
@@ -68,7 +70,7 @@ class PrintDialogGtk : public printing::PrintDialogGtkInterface,
 
   // Helper function for initializing |context_|'s PrintSettings with a given
   // |settings|.
-  void InitPrintSettings(printing::PrintSettings* settings);
+  void InitPrintSettings(std::unique_ptr<printing::PrintSettings> settings);
 
   // aura::WindowObserver implementation.
   void OnWindowDestroying(aura::Window* window) override;

@@ -9,13 +9,13 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/webrtc/webrtc_content_browsertest_base.h"
 #include "content/public/common/content_switches.h"
-#include "content/public/common/webrtc_ip_handling_policy.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "media/audio/audio_manager.h"
 #include "media/base/media_switches.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/blink/public/common/peerconnection/webrtc_ip_handling_policy.h"
 
 namespace content {
 
@@ -56,7 +56,7 @@ class MAYBE_WebRtcIPPermissionGrantedTest
     WebRtcContentBrowserTestBase::SetUpCommandLine(command_line);
     AppendUseFakeUIForMediaStreamFlag();
     command_line->AppendSwitchASCII(switches::kForceWebRtcIPHandlingPolicy,
-                                    kWebRTCIPHandlingDefault);
+                                    blink::kWebRTCIPHandlingDefault);
   }
 };
 
@@ -77,7 +77,7 @@ class MAYBE_WebRtcIPPermissionDeniedTest : public WebRtcContentBrowserTestBase {
   void SetUpCommandLine(base::CommandLine* command_line) override {
     WebRtcContentBrowserTestBase::SetUpCommandLine(command_line);
     command_line->AppendSwitchASCII(switches::kForceWebRtcIPHandlingPolicy,
-                                    kWebRTCIPHandlingDefault);
+                                    blink::kWebRTCIPHandlingDefault);
   }
 };
 
@@ -101,7 +101,7 @@ class MAYBE_WebRtcIPPolicyPublicAndPrivateInterfacesTest
     AppendUseFakeUIForMediaStreamFlag();
     command_line->AppendSwitchASCII(
         switches::kForceWebRtcIPHandlingPolicy,
-        kWebRTCIPHandlingDefaultPublicAndPrivateInterfaces);
+        blink::kWebRTCIPHandlingDefaultPublicAndPrivateInterfaces);
   }
 };
 
@@ -124,7 +124,7 @@ class MAYBE_WebRtcIPPolicyPublicInterfaceOnlyTest
     AppendUseFakeUIForMediaStreamFlag();
     command_line->AppendSwitchASCII(
         switches::kForceWebRtcIPHandlingPolicy,
-        kWebRTCIPHandlingDefaultPublicInterfaceOnly);
+        blink::kWebRTCIPHandlingDefaultPublicInterfaceOnly);
   }
 };
 
@@ -144,8 +144,9 @@ class MAYBE_WebRtcIPPolicyDisableUdpTest : public WebRtcContentBrowserTestBase {
   void SetUpCommandLine(base::CommandLine* command_line) override {
     WebRtcContentBrowserTestBase::SetUpCommandLine(command_line);
     AppendUseFakeUIForMediaStreamFlag();
-    command_line->AppendSwitchASCII(switches::kForceWebRtcIPHandlingPolicy,
-                                    kWebRTCIPHandlingDisableNonProxiedUdp);
+    command_line->AppendSwitchASCII(
+        switches::kForceWebRtcIPHandlingPolicy,
+        blink::kWebRTCIPHandlingDisableNonProxiedUdp);
   }
 };
 

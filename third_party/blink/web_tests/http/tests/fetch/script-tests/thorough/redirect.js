@@ -122,7 +122,7 @@ var TEST_TARGETS = [
 
   [REDIRECT_URL + encodeURIComponent(OTHER_BASE_URL + '&ACAOrigin=*') +
    '&mode=cors&credentials=same-origin&method=GET',
-   [fetchResolved, noContentLength, noServerHeader, hasBody, typeCors,
+   [fetchResolved, hasContentLength, noServerHeader, hasBody, typeCors,
     responseRedirected,
     checkURLList.bind(self, [OTHER_BASE_URL + '&ACAOrigin=*'])],
    [methodIsGET, authCheckNone]],
@@ -132,7 +132,7 @@ var TEST_TARGETS = [
   [REDIRECT_URL +
    encodeURIComponent(OTHER_BASE_URL + '&ACAOrigin=*&ACAMethods=PUT') +
    '&mode=cors&credentials=same-origin&method=PUT',
-   [fetchResolved, noContentLength, noServerHeader, hasBody, typeCors,
+   [fetchResolved, hasContentLength, noServerHeader, hasBody, typeCors,
     responseRedirected,
     checkURLList.bind(self, [OTHER_BASE_URL + '&ACAOrigin=*&ACAMethods=PUT'])],
    [methodIsPUT, noCustomHeader, authCheckNone]],
@@ -141,28 +141,28 @@ var TEST_TARGETS = [
   // The 301 redirect response MAY change the request method from POST to GET.
   [REDIRECT_URL + encodeURIComponent(OTHER_BASE_URL + '&ACAOrigin=*') +
    '&mode=cors&credentials=same-origin&method=POST&Status=301',
-   [fetchResolved, noContentLength, noServerHeader, hasBody, typeCors,
+   [fetchResolved, hasContentLength, noServerHeader, hasBody, typeCors,
     responseRedirected,
     checkURLList.bind(self, [OTHER_BASE_URL + '&ACAOrigin=*'])],
    [methodIsGET]],
   // The 302 redirect response MAY change the request method from POST to GET.
   [REDIRECT_URL + encodeURIComponent(OTHER_BASE_URL + '&ACAOrigin=*') +
    '&mode=cors&credentials=same-origin&method=POST&Status=302',
-   [fetchResolved, noContentLength, noServerHeader, hasBody, typeCors,
+   [fetchResolved, hasContentLength, noServerHeader, hasBody, typeCors,
     responseRedirected,
     checkURLList.bind(self, [OTHER_BASE_URL + '&ACAOrigin=*'])],
    [methodIsGET]],
   // GET method must be used for 303 redirect.
   [REDIRECT_URL + encodeURIComponent(OTHER_BASE_URL + '&ACAOrigin=*') +
    '&mode=cors&credentials=same-origin&method=POST&Status=303',
-   [fetchResolved, noContentLength, noServerHeader, hasBody, typeCors,
+   [fetchResolved, hasContentLength, noServerHeader, hasBody, typeCors,
     responseRedirected,
     checkURLList.bind(self, [OTHER_BASE_URL + '&ACAOrigin=*'])],
    [methodIsGET]],
   // The 307 redirect response MUST NOT change the method.
   [REDIRECT_URL + encodeURIComponent(OTHER_BASE_URL + '&ACAOrigin=*') +
    '&mode=cors&credentials=same-origin&method=POST&Status=307',
-   [fetchResolved, noContentLength, noServerHeader, hasBody, typeCors,
+   [fetchResolved, hasContentLength, noServerHeader, hasBody, typeCors,
     responseRedirected,
     checkURLList.bind(self, [OTHER_BASE_URL + '&ACAOrigin=*'])],
    [methodIsPOST]],
@@ -170,7 +170,7 @@ var TEST_TARGETS = [
   // FIXME: disabled due to https://crbug.com/451938
   // [REDIRECT_URL + encodeURIComponent(OTHER_BASE_URL + '&ACAOrigin=*') +
   //  '&mode=cors&credentials=same-origin&method=POST&Status=308',
-  //  [fetchResolved, noContentLength, noServerHeader, hasBody, typeCors],
+  //  [fetchResolved, hasContentLength, noServerHeader, hasBody, typeCors],
   //  [methodIsPOST]],
 
   // Custom header
@@ -179,7 +179,7 @@ var TEST_TARGETS = [
      OTHER_BASE_URL +
      'ACAOrigin=*&ACAHeaders=x-serviceworker-test') +
    '&mode=cors&credentials=same-origin&method=GET&headers=CUSTOM',
-   [fetchResolved, noContentLength, noServerHeader, hasBody, typeCors,
+   [fetchResolved, hasContentLength, noServerHeader, hasBody, typeCors,
     responseRedirected,
     checkURLList.bind(
         self,
@@ -225,7 +225,7 @@ var TEST_TARGETS = [
    [fetchRejected]],
   [OTHER_REDIRECT_URL + encodeURIComponent(BASE_URL + 'ACAOrigin=*') +
    '&mode=cors&credentials=same-origin&method=GET&ACAOrigin=*',
-   [fetchResolved, noContentLength, noServerHeader, hasBody, typeCors,
+   [fetchResolved, hasContentLength, noServerHeader, hasBody, typeCors,
     responseRedirected,
     checkURLList.bind(self, [BASE_URL + 'ACAOrigin=*'])],
    [methodIsGET, authCheckNone]],
@@ -234,39 +234,39 @@ var TEST_TARGETS = [
   // The 301 redirect response MAY change the request method from POST to GET.
   [OTHER_REDIRECT_URL + encodeURIComponent(BASE_URL + 'ACAOrigin=*') +
    '&mode=cors&credentials=same-origin&method=post&ACAOrigin=*&Status=301',
-   [fetchResolved, noContentLength, noServerHeader, hasBody, typeCors,
+   [fetchResolved, hasContentLength, noServerHeader, hasBody, typeCors,
     responseRedirected, checkURLList.bind(self, [BASE_URL + 'ACAOrigin=*'])],
    [methodIsGET]],
   // The 302 redirect response MAY change the request method from POST to GET.
   [OTHER_REDIRECT_URL + encodeURIComponent(BASE_URL + 'ACAOrigin=*') +
    '&mode=cors&credentials=same-origin&method=post&ACAOrigin=*&Status=302',
-   [fetchResolved, noContentLength, noServerHeader, hasBody, typeCors,
+   [fetchResolved, hasContentLength, noServerHeader, hasBody, typeCors,
     responseRedirected, checkURLList.bind(self, [BASE_URL + 'ACAOrigin=*'])],
    [methodIsGET]],
   // GET method must be used for 303 redirect.
   [OTHER_REDIRECT_URL + encodeURIComponent(BASE_URL + 'ACAOrigin=*') +
    '&mode=cors&credentials=same-origin&method=post&ACAOrigin=*&Status=303',
-   [fetchResolved, noContentLength, noServerHeader, hasBody, typeCors,
+   [fetchResolved, hasContentLength, noServerHeader, hasBody, typeCors,
     responseRedirected, checkURLList.bind(self, [BASE_URL + 'ACAOrigin=*'])],
    [methodIsGET]],
   // The 307 redirect response MUST NOT change the method.
   [OTHER_REDIRECT_URL + encodeURIComponent(BASE_URL + 'ACAOrigin=*') +
    '&mode=cors&credentials=same-origin&method=post&ACAOrigin=*&Status=307',
-   [fetchResolved, noContentLength, noServerHeader, hasBody, typeCors,
+   [fetchResolved, hasContentLength, noServerHeader, hasBody, typeCors,
     responseRedirected, checkURLList.bind(self, [BASE_URL + 'ACAOrigin=*'])],
    [methodIsPOST]],
   // The 308 redirect response MUST NOT change the method.
   // FIXME: disabled due to https://crbug.com/451938
   // [OTHER_REDIRECT_URL + encodeURIComponent(BASE_URL + 'ACAOrigin=*') +
   //  '&mode=cors&credentials=same-origin&method=post&ACAOrigin=*&Status=308',
-  //  [fetchResolved, noContentLength, noServerHeader, hasBody, typeCors],
+  //  [fetchResolved, hasContentLength, noServerHeader, hasBody, typeCors],
   //  [methodIsPOST]],
 
   // Custom method
   [OTHER_REDIRECT_URL +
    encodeURIComponent(BASE_URL + 'ACAOrigin=*&ACAMethods=PUT') +
    '&mode=cors&credentials=same-origin&method=PUT&ACAOrigin=*&ACAMethods=PUT',
-   [fetchResolved, noContentLength, noServerHeader, hasBody, typeCors],
+   [fetchResolved, hasContentLength, noServerHeader, hasBody, typeCors],
    [methodIsPUT, authCheckNone]],
   // Custom header
   [OTHER_REDIRECT_URL +
@@ -275,7 +275,7 @@ var TEST_TARGETS = [
        'ACAOrigin=*&ACAHeaders=x-serviceworker-test') +
    '&mode=cors&credentials=same-origin&method=GET&headers=CUSTOM' +
    '&ACAOrigin=*&ACAHeaders=x-serviceworker-test',
-   [fetchResolved, noContentLength, noServerHeader, hasBody, typeCors],
+   [fetchResolved, hasContentLength, noServerHeader, hasBody, typeCors],
    [methodIsGET, hasCustomHeader, authCheckNone]],
 
   // Redirect: other origin -> other origin
@@ -290,21 +290,21 @@ var TEST_TARGETS = [
    [fetchRejected]],
   [OTHER_REDIRECT_URL + encodeURIComponent(OTHER_BASE_URL + 'ACAOrigin=*') +
    '&mode=cors&credentials=same-origin&method=GET&ACAOrigin=*',
-   [fetchResolved, noContentLength, noServerHeader, hasBody, typeCors,
+   [fetchResolved, hasContentLength, noServerHeader, hasBody, typeCors,
     responseRedirected,
     checkURLList.bind(self, [OTHER_BASE_URL + 'ACAOrigin=*'])],
    [methodIsGET, authCheckNone]],
   [OTHER_REDIRECT_URL +
    encodeURIComponent(OTHER_BASE_URL + 'ACAOrigin=' + BASE_ORIGIN + '') +
    '&mode=cors&credentials=same-origin&method=GET&ACAOrigin=*',
-   [fetchResolved, noContentLength, noServerHeader, hasBody, typeCors,
+   [fetchResolved, hasContentLength, noServerHeader, hasBody, typeCors,
     responseRedirected,
     checkURLList.bind(self, [OTHER_BASE_URL + 'ACAOrigin=' + BASE_ORIGIN])],
    [methodIsGET, authCheckNone]],
   [OTHER_REDIRECT_URL + encodeURIComponent(OTHER_BASE_URL + 'ACAOrigin=*') +
    '&mode=cors&credentials=same-origin&method=GET' +
    '&ACAOrigin=' + BASE_ORIGIN + '',
-   [fetchResolved, noContentLength, noServerHeader, hasBody, typeCors,
+   [fetchResolved, hasContentLength, noServerHeader, hasBody, typeCors,
     responseRedirected,
     checkURLList.bind(self, [OTHER_BASE_URL + 'ACAOrigin=*'])],
    [methodIsGET, authCheckNone]],
@@ -312,7 +312,7 @@ var TEST_TARGETS = [
    encodeURIComponent(OTHER_BASE_URL + 'ACAOrigin=' + BASE_ORIGIN + '') +
    '&mode=cors&credentials=same-origin&method=GET' +
    '&ACAOrigin=' + BASE_ORIGIN + '',
-   [fetchResolved, noContentLength, noServerHeader, hasBody, typeCors,
+   [fetchResolved, hasContentLength, noServerHeader, hasBody, typeCors,
     responseRedirected,
     checkURLList.bind(self, [OTHER_BASE_URL + 'ACAOrigin=' + BASE_ORIGIN])],
    [methodIsGET, authCheckNone]],
@@ -321,28 +321,28 @@ var TEST_TARGETS = [
   // The 301 redirect response MAY change the request method from POST to GET.
   [OTHER_REDIRECT_URL + encodeURIComponent(OTHER_BASE_URL + 'ACAOrigin=*') +
    '&mode=cors&credentials=same-origin&method=POST&ACAOrigin=*&Status=301',
-   [fetchResolved, noContentLength, noServerHeader, hasBody, typeCors,
+   [fetchResolved, hasContentLength, noServerHeader, hasBody, typeCors,
     responseRedirected,
     checkURLList.bind(self, [OTHER_BASE_URL + 'ACAOrigin=*'])],
    [methodIsGET]],
   // The 302 redirect response MAY change the request method from POST to GET.
   [OTHER_REDIRECT_URL + encodeURIComponent(OTHER_BASE_URL + 'ACAOrigin=*') +
    '&mode=cors&credentials=same-origin&method=POST&ACAOrigin=*&Status=302',
-   [fetchResolved, noContentLength, noServerHeader, hasBody, typeCors,
+   [fetchResolved, hasContentLength, noServerHeader, hasBody, typeCors,
     responseRedirected,
     checkURLList.bind(self, [OTHER_BASE_URL + 'ACAOrigin=*'])],
    [methodIsGET]],
   // GET method must be used for 303 redirect.
   [OTHER_REDIRECT_URL + encodeURIComponent(OTHER_BASE_URL + 'ACAOrigin=*') +
    '&mode=cors&credentials=same-origin&method=POST&ACAOrigin=*&Status=303',
-   [fetchResolved, noContentLength, noServerHeader, hasBody, typeCors,
+   [fetchResolved, hasContentLength, noServerHeader, hasBody, typeCors,
     responseRedirected,
     checkURLList.bind(self, [OTHER_BASE_URL + 'ACAOrigin=*'])],
    [methodIsGET]],
   // The 307 redirect response MUST NOT change the method.
   [OTHER_REDIRECT_URL + encodeURIComponent(OTHER_BASE_URL + 'ACAOrigin=*') +
    '&mode=cors&credentials=same-origin&method=POST&ACAOrigin=*&Status=307',
-   [fetchResolved, noContentLength, noServerHeader, hasBody, typeCors,
+   [fetchResolved, hasContentLength, noServerHeader, hasBody, typeCors,
     responseRedirected,
     checkURLList.bind(self, [OTHER_BASE_URL + 'ACAOrigin=*'])],
    [methodIsPOST]],
@@ -350,7 +350,7 @@ var TEST_TARGETS = [
   // FIXME: disabled due to https://crbug.com/451938
   // [OTHER_REDIRECT_URL + encodeURIComponent(OTHER_BASE_URL + 'ACAOrigin=*') +
   //  '&mode=cors&credentials=same-origin&method=POST&ACAOrigin=*&Status=308',
-  //  [fetchResolved, noContentLength, noServerHeader, hasBody, typeCors],
+  //  [fetchResolved, hasContentLength, noServerHeader, hasBody, typeCors],
   //  [methodIsPOST]],
 
   // Server header
@@ -358,7 +358,7 @@ var TEST_TARGETS = [
    encodeURIComponent(OTHER_BASE_URL +
                       'ACAOrigin=*&ACEHeaders=X-ServiceWorker-ServerHeader') +
    '&mode=cors&credentials=same-origin&method=GET&ACAOrigin=*',
-   [fetchResolved, noContentLength, hasServerHeader, hasBody, typeCors,
+   [fetchResolved, hasContentLength, hasServerHeader, hasBody, typeCors,
     responseRedirected,
     checkURLList.bind(
         self,
@@ -370,7 +370,7 @@ var TEST_TARGETS = [
   [OTHER_REDIRECT_URL +
    encodeURIComponent(OTHER_BASE_URL + 'ACAOrigin=*&ACAMethods=PUT') +
    '&mode=cors&credentials=same-origin&method=PUT&ACAOrigin=*&ACAMethods=PUT',
-   [fetchResolved, noContentLength, noServerHeader, hasBody, typeCors],
+   [fetchResolved, hasContentLength, noServerHeader, hasBody, typeCors],
    [methodIsPUT, authCheckNone]],
   // Custom header
   [OTHER_REDIRECT_URL +
@@ -379,7 +379,7 @@ var TEST_TARGETS = [
      'ACAOrigin=' + BASE_ORIGIN + '&ACAHeaders=x-serviceworker-test') +
    '&mode=cors&credentials=same-origin&method=GET&headers=CUSTOM' +
    '&ACAOrigin=' + BASE_ORIGIN + '&ACAHeaders=x-serviceworker-test',
-   [fetchResolved, noContentLength, noServerHeader, hasBody, typeCors],
+   [fetchResolved, hasContentLength, noServerHeader, hasBody, typeCors],
    [methodIsGET, hasCustomHeader, authCheckNone]],
 ];
 

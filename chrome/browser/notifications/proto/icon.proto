@@ -10,12 +10,8 @@ package notifications.proto;
 
 // Stores the icon used in a notification. The icon is in PNG format. Each time
 // we should only load one icon asynchronously into memory.
-// Next tag: 3
+// Next tag: 2
 message Icon {
-  // Unique identifier of the icon. Serves as the key to load the icon proto
-  // from database.
-  optional string uuid = 1;
-
   // Raw data of the icon to show in the notification in PNG format.
-  optional bytes icon = 2;
+  optional bytes icon = 1;
 }

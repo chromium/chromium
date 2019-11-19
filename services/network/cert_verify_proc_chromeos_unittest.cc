@@ -107,7 +107,9 @@ class CertVerifyProcChromeOSTest : public testing::Test {
       std::string* root_subject_name) {
     int flags = 0;
     net::CertVerifyResult verify_result;
-    int error = verify_proc->Verify(cert, "127.0.0.1", std::string(), flags,
+    int error = verify_proc->Verify(cert, "127.0.0.1",
+                                    /*ocsp_response=*/std::string(),
+                                    /*sct_list=*/std::string(), flags,
                                     net::CRLSet::BuiltinCRLSet().get(),
                                     additional_trust_anchors, &verify_result);
     if (!verify_result.verified_cert->intermediate_buffers().empty()) {

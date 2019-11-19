@@ -1,0 +1,87 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
+
+component("shill") {
+  defines = [ "IS_SHILL_CLIENT_IMPL" ]
+
+  deps = [
+    "//base",
+    "//chromeos/dbus:common",
+    "//chromeos/dbus/constants",
+    "//components/device_event_log",
+    "//dbus",
+    "//net",
+  ]
+
+  sources = [
+    "fake_modem_messaging_client.cc",
+    "fake_modem_messaging_client.h",
+    "fake_shill_device_client.cc",
+    "fake_shill_device_client.h",
+    "fake_shill_ipconfig_client.cc",
+    "fake_shill_ipconfig_client.h",
+    "fake_shill_manager_client.cc",
+    "fake_shill_manager_client.h",
+    "fake_shill_profile_client.cc",
+    "fake_shill_profile_client.h",
+    "fake_shill_service_client.cc",
+    "fake_shill_service_client.h",
+    "fake_shill_simulated_result.h",
+    "fake_shill_third_party_vpn_driver_client.cc",
+    "fake_shill_third_party_vpn_driver_client.h",
+    "fake_sms_client.cc",
+    "fake_sms_client.h",
+    "modem_messaging_client.cc",
+    "modem_messaging_client.h",
+    "shill_client_helper.cc",
+    "shill_client_helper.h",
+    "shill_clients.cc",
+    "shill_clients.h",
+    "shill_device_client.cc",
+    "shill_device_client.h",
+    "shill_ipconfig_client.cc",
+    "shill_ipconfig_client.h",
+    "shill_manager_client.cc",
+    "shill_manager_client.h",
+    "shill_profile_client.cc",
+    "shill_profile_client.h",
+    "shill_property_changed_observer.h",
+    "shill_service_client.cc",
+    "shill_service_client.h",
+    "shill_third_party_vpn_driver_client.cc",
+    "shill_third_party_vpn_driver_client.h",
+    "shill_third_party_vpn_observer.h",
+    "sms_client.cc",
+    "sms_client.h",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  public_deps = [
+    ":shill",
+  ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//chromeos/dbus:common",
+    "//dbus:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+
+  sources = [
+    "modem_messaging_client_unittest.cc",
+    "shill_client_unittest_base.cc",
+    "shill_client_unittest_base.h",
+    "shill_device_client_unittest.cc",
+    "shill_ipconfig_client_unittest.cc",
+    "shill_manager_client_unittest.cc",
+    "shill_profile_client_unittest.cc",
+    "shill_service_client_unittest.cc",
+    "shill_third_party_vpn_driver_client_unittest.cc",
+  ]
+}

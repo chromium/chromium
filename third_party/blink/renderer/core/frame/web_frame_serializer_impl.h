@@ -76,7 +76,8 @@ class WebFrameSerializerImpl {
   // individual chunks of data to be saved.
   WebFrameSerializerImpl(WebLocalFrame*,
                          WebFrameSerializerClient*,
-                         WebFrameSerializer::LinkRewritingDelegate*);
+                         WebFrameSerializer::LinkRewritingDelegate*,
+                         bool);
 
  private:
   // Specified frame which need to be serialized;
@@ -87,6 +88,8 @@ class WebFrameSerializerImpl {
   WebFrameSerializer::LinkRewritingDelegate* delegate_;
   // Data buffer for saving result of serialized DOM data.
   StringBuilder data_buffer_;
+  // Whether frame url should be shown in MOTW in the serialized html.
+  bool save_with_empty_url_;
 
   // Web entities conversion maps.
   WebEntities html_entities_;

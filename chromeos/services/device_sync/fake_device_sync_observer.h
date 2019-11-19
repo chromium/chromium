@@ -7,7 +7,8 @@
 
 #include "base/macros.h"
 #include "chromeos/services/device_sync/public/mojom/device_sync.mojom.h"
-#include "mojo/public/cpp/bindings/binding_set.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 
 namespace chromeos {
 
@@ -19,7 +20,7 @@ class FakeDeviceSyncObserver : public mojom::DeviceSyncObserver {
   FakeDeviceSyncObserver();
   ~FakeDeviceSyncObserver() override;
 
-  mojom::DeviceSyncObserverPtr GenerateInterfacePtr();
+  mojo::PendingRemote<mojom::DeviceSyncObserver> GenerateRemote();
 
   size_t num_enrollment_events() { return num_enrollment_events_; }
   size_t num_sync_events() { return num_sync_events_; }
@@ -32,7 +33,7 @@ class FakeDeviceSyncObserver : public mojom::DeviceSyncObserver {
   size_t num_enrollment_events_ = 0u;
   size_t num_sync_events_ = 0u;
 
-  mojo::BindingSet<mojom::DeviceSyncObserver> bindings_;
+  mojo::ReceiverSet<mojom::DeviceSyncObserver> receivers_;
 
   DISALLOW_COPY_AND_ASSIGN(FakeDeviceSyncObserver);
 };

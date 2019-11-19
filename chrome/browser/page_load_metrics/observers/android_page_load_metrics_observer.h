@@ -8,11 +8,8 @@
 #include <jni.h>
 
 #include "base/macros.h"
-#include "chrome/browser/page_load_metrics/page_load_metrics_observer.h"
-
-namespace content {
-class WebContents;
-}  // namespace content
+#include "components/page_load_metrics/browser/observers/largest_contentful_paint_handler.h"
+#include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 
 namespace network {
 class NetworkQualityTracker;
@@ -24,32 +21,46 @@ class GURL;
 class AndroidPageLoadMetricsObserver
     : public page_load_metrics::PageLoadMetricsObserver {
  public:
-  explicit AndroidPageLoadMetricsObserver(content::WebContents* web_contents);
+  AndroidPageLoadMetricsObserver();
 
   // page_load_metrics::PageLoadMetricsObserver:
+  // PageLoadMetricsObserver lifecycle callbacks
   ObservePolicy OnStart(content::NavigationHandle* navigation_handle,
                         const GURL& currently_committed_url,
                         bool started_in_foreground) override;
+  ObservePolicy FlushMetricsOnAppEnterBackground(
+      const page_load_metrics::mojom::PageLoadTiming& timing) override;
+  ObservePolicy OnHidden(
+      const page_load_metrics::mojom::PageLoadTiming& timing) override;
+  void OnDidFinishSubFrameNavigation(
+      content::NavigationHandle* navigation_handle) override;
+  void OnComplete(
+      const page_load_metrics::mojom::PageLoadTiming& timing) override;
+
+  // PageLoadMetricsObserver event callbacks
   void OnFirstContentfulPaintInPage(
-      const page_load_metrics::mojom::PageLoadTiming& timing,
-      const page_load_metrics::PageLoadExtraInfo& extra_info) override;
+      const page_load_metrics::mojom::PageLoadTiming& timing) override;
+  void OnFirstInputInPage(
+      const page_load_metrics::mojom::PageLoadTiming& timing) override;
   void OnFirstMeaningfulPaintInMainFrameDocument(
-      const page_load_metrics::mojom::PageLoadTiming& timing,
-      const page_load_metrics::PageLoadExtraInfo& extra_info) override;
+      const page_load_metrics::mojom::PageLoadTiming& timing) override;
   void OnLoadEventStart(
-      const page_load_metrics::mojom::PageLoadTiming& timing,
-      const page_load_metrics::PageLoadExtraInfo& info) override;
+      const page_load_metrics::mojom::PageLoadTiming& timing) override;
   void OnLoadedResource(const page_load_metrics::ExtraRequestCompleteInfo&
                             extra_request_complete_info) override;
+  void OnTimingUpdate(
+      content::RenderFrameHost* subframe_rfh,
+      const page_load_metrics::mojom::PageLoadTiming& timing) override;
 
  protected:
   AndroidPageLoadMetricsObserver(
-      content::WebContents* web_contents,
       network::NetworkQualityTracker* network_quality_tracker)
-      : web_contents_(web_contents),
-        network_quality_tracker_(network_quality_tracker) {}
+      : network_quality_tracker_(network_quality_tracker) {}
 
   virtual void ReportNewNavigation();
+
+  virtual void ReportBufferedMetrics(
+      const page_load_metrics::mojom::PageLoadTiming& timing);
 
   virtual void ReportNetworkQualityEstimate(
       net::EffectiveConnectionType connection_type,
@@ -73,13 +84,17 @@ class AndroidPageLoadMetricsObserver
                                         int64_t send_start_ms,
                                         int64_t send_end_ms);
 
- private:
-  content::WebContents* web_contents_;
+  virtual void ReportFirstInputDelay(int64_t first_input_delay_ms);
 
+ private:
   bool did_dispatch_on_main_resource_ = false;
+  bool reported_buffered_metrics_ = false;
   int64_t navigation_id_ = -1;
 
   network::NetworkQualityTracker* network_quality_tracker_ = nullptr;
+
+  page_load_metrics::LargestContentfulPaintHandler
+      largest_contentful_paint_handler_;
 
   DISALLOW_COPY_AND_ASSIGN(AndroidPageLoadMetricsObserver);
 };

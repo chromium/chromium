@@ -9,7 +9,7 @@
 
 namespace blink {
 
-static String HitTestRectsAsString(HitTestRects rects) {
+static String HitTestRectsAsString(const Vector<HitTestRect>& rects) {
   StringBuilder sb;
   sb.Append("[");
   bool first = true;
@@ -36,19 +36,13 @@ String HitTestData::ToString() const {
     printed_top_level_field = true;
   }
 
-  if (!wheel_event_handler_region.IsEmpty()) {
+  if (scroll_hit_test) {
     if (printed_top_level_field)
       sb.Append(", ");
-    sb.Append("wheel_event_handler_region: ");
-    sb.Append(HitTestRectsAsString(wheel_event_handler_region));
-    printed_top_level_field = true;
-  }
-
-  if (!non_fast_scrollable_region.IsEmpty()) {
-    if (printed_top_level_field)
-      sb.Append(", ");
-    sb.Append("non_fast_scrollable_region: ");
-    sb.Append(HitTestRectsAsString(non_fast_scrollable_region));
+    sb.AppendFormat(
+        "scroll_hit_test: \"%s\" with offset %p",
+        scroll_hit_test->scroll_container_bounds.ToString().Utf8().data(),
+        scroll_hit_test->scroll_offset);
     printed_top_level_field = true;
   }
 
@@ -58,7 +52,7 @@ String HitTestData::ToString() const {
 }
 
 std::ostream& operator<<(std::ostream& os, const HitTestData& data) {
-  return os << data.ToString().Utf8().data();
+  return os << data.ToString().Utf8();
 }
 
 }  // namespace blink

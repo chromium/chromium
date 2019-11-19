@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/tabs/tab_strip_model_stats_recorder.h"
 
+#include <memory>
+#include <utility>
+
 #include "base/macros.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -21,21 +24,8 @@ using content::WebContents;
 class TabStripModelStatsRecorderTest : public ChromeRenderViewHostTestHarness {
 };
 
-class NoUnloadListenerTabStripModelDelegate : public TestTabStripModelDelegate {
- public:
-  NoUnloadListenerTabStripModelDelegate() {}
-  ~NoUnloadListenerTabStripModelDelegate() override {}
-
-  bool RunUnloadListenerBeforeClosing(WebContents* contents) override {
-    return false;
-  }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NoUnloadListenerTabStripModelDelegate);
-};
-
 TEST_F(TabStripModelStatsRecorderTest, BasicTabLifecycle) {
-  NoUnloadListenerTabStripModelDelegate delegate;
+  TestTabStripModelDelegate delegate;
   TabStripModel tabstrip(&delegate, profile());
 
   TabStripModelStatsRecorder recorder;
@@ -98,7 +88,7 @@ TEST_F(TabStripModelStatsRecorderTest, BasicTabLifecycle) {
 }
 
 TEST_F(TabStripModelStatsRecorderTest, ObserveMultipleTabStrips) {
-  NoUnloadListenerTabStripModelDelegate delegate;
+  TestTabStripModelDelegate delegate;
   TabStripModel tabstrip1(&delegate, profile());
   TabStripModel tabstrip2(&delegate, profile());
 
@@ -167,7 +157,7 @@ TEST_F(TabStripModelStatsRecorderTest, ObserveMultipleTabStrips) {
 
 TEST_F(TabStripModelStatsRecorderTest,
        NumberOfOtherTabsActivatedBeforeMadeActive) {
-  NoUnloadListenerTabStripModelDelegate delegate;
+  TestTabStripModelDelegate delegate;
   TabStripModel tabstrip(&delegate, profile());
 
   TabStripModelStatsRecorder recorder;
@@ -200,7 +190,7 @@ TEST_F(TabStripModelStatsRecorderTest,
 
 TEST_F(TabStripModelStatsRecorderTest,
        NumberOfOtherTabsActivatedBeforeMadeActive_CycleTabs) {
-  NoUnloadListenerTabStripModelDelegate delegate;
+  TestTabStripModelDelegate delegate;
   TabStripModel tabstrip(&delegate, profile());
 
   TabStripModelStatsRecorder recorder;

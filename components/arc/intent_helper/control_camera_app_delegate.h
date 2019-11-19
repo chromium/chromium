@@ -1,0 +1,29 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef COMPONENTS_ARC_INTENT_HELPER_CONTROL_CAMERA_APP_DELEGATE_H_
+#define COMPONENTS_ARC_INTENT_HELPER_CONTROL_CAMERA_APP_DELEGATE_H_
+
+#include <string>
+
+namespace arc {
+
+class ControlCameraAppDelegate {
+ public:
+  virtual ~ControlCameraAppDelegate() = default;
+
+  // Launches the camera app from Android camera intent with the intent
+  // information as url |queries|.
+  virtual void LaunchCameraApp(const std::string& queries) = 0;
+
+  // Closes the camera app.
+  virtual void CloseCameraApp() = 0;
+
+  // Checks if Chrome Camera App is enabled.
+  virtual bool IsCameraAppEnabled() = 0;
+};
+
+}  // namespace arc
+
+#endif  // COMPONENTS_ARC_INTENT_HELPER_CONTROL_CAMERA_APP_DELEGATE_H_

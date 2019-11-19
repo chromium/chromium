@@ -1,7 +1,7 @@
 # Please consult components/viz/README.md about allowable dependencies.
 
 include_rules = [
-  "+services/viz/public/interfaces",
+  "+services/viz/public/mojom",
 ]
 
 specific_include_rules = {

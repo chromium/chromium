@@ -1,0 +1,10 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://drafts.csswg.org/css-animations-2/#the-CSSAnimation-interface
+
+[Exposed=Window, RuntimeEnabled=WebAnimationsAPI]
+interface CSSAnimation : Animation {
+  readonly attribute CSSOMString animationName;
+};

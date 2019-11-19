@@ -7,33 +7,3 @@
 # Note: webview aims to support running network service in-process, so the
 # tests are also running with NS IP. Multiprocess webview currently does not
 # support running NS OOP, https://crbug.com/882650
-
-# https://crbug.com/893566
--org.chromium.android_webview.test.AwContentsClientShouldInterceptRequestTest.testBaseUrlOfLoadDataSentInRefererHeader
--org.chromium.android_webview.test.AwContentsClientShouldInterceptRequestTest.testCalledForUnsupportedSchemes
--org.chromium.android_webview.test.AwContentsClientShouldInterceptRequestTest.testContentIdIframe
--org.chromium.android_webview.test.AwContentsClientShouldInterceptRequestTest.testLoadDataShouldTriggerShouldInterceptRequest
--org.chromium.android_webview.test.AwContentsClientShouldInterceptRequestTest.testLoadDataUrlShouldTriggerShouldInterceptRequest
--org.chromium.android_webview.test.AwContentsClientShouldInterceptRequestTest.testLoadDataWithBaseUrlTriggersShouldInterceptRequest
-
-# https://crbug.com/893575
--org.chromium.android_webview.test.CookieManagerStartupTest.testStartup
-
-# https://crbug.com/893576
--org.chromium.android_webview.test.CookieManagerTest.testAcceptCookie_falseWontSetCookies
--org.chromium.android_webview.test.CookieManagerTest.testAcceptFileSchemeCookies
--org.chromium.android_webview.test.CookieManagerTest.testThirdPartyCookie
-
-# https://crbug.com/931641
--org.chromium.android_webview.test.CookieManagerTest.testThirdPartyCookieForWebSocketDisabledCase
-
-# https://crbug.com/893580
--org.chromium.android_webview.test.LoadDataWithBaseUrlTest.testLoadDataWithBaseUrlAccessingFile
-
-# https://crbug.com/902658
--org.chromium.android_webview.test.AwProxyControllerTest.testProxyOverride
--org.chromium.android_webview.test.AwProxyControllerTest.testProxyOverrideLocalhost
--org.chromium.android_webview.test.AwProxyControllerTest.testCallbacks
--org.chromium.android_webview.test.AwProxyControllerTest.testValidInput
--org.chromium.android_webview.test.AwProxyControllerTest.testInvalidProxyUrls
--org.chromium.android_webview.test.AwProxyControllerTest.testInvalidBypassRules

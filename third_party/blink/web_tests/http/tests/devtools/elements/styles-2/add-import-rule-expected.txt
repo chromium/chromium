@@ -7,7 +7,7 @@ Tests that adding an @import with data URI does not lead to stylesheet collectio
 element.style { ()
 
 [expanded] 
-span { (<style>…</style>)
+span { (<style>)
     color: red;
 
 ======== Inherited from html ========
@@ -22,7 +22,7 @@ html { (user agent stylesheet)
 element.style { ()
 
 [expanded] 
-span { (data:text/css,s…color:green}:1 -> data:text/css,span{color:green}:1:6)
+span { (data:text/c…or:green}:1 -> data:text/css,span{color:green}:1:6)
     color: green;
 
 ======== Inherited from html ========

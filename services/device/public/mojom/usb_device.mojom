@@ -1,0 +1,323 @@
+// Copyright 2015 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module device.mojom;
+
+import "mojo/public/mojom/base/string16.mojom";
+import "url/mojom/url.mojom";
+
+enum UsbOpenDeviceError {
+  // Opening the device succeeded.
+  OK,
+
+  // The operating system denied access to the device.
+  ACCESS_DENIED,
+
+  // The device is already open.
+  ALREADY_OPEN,
+};
+
+// Corresponds to the USBDirection WebIDL type.
+enum UsbTransferDirection {
+  INBOUND = 0,
+  OUTBOUND,
+};
+
+enum UsbControlTransferType {
+  STANDARD,
+  CLASS,
+  VENDOR,
+  RESERVED
+};
+
+// Corresponds to the USBRecipient WebIDL type.
+enum UsbControlTransferRecipient {
+  DEVICE,
+  INTERFACE,
+  ENDPOINT,
+  OTHER
+};
+
+enum UsbTransferType {
+  CONTROL = 0,
+  ISOCHRONOUS,
+  BULK,
+  INTERRUPT,
+};
+
+enum UsbSynchronizationType {
+  NONE = 0,
+  ASYNCHRONOUS,
+  ADAPTIVE,
+  SYNCHRONOUS,
+};
+
+enum UsbUsageType {
+  // Isochronous endpoint usages.
+  DATA = 0,
+  FEEDBACK,
+  EXPLICIT_FEEDBACK,
+  // Interrupt endpoint usages.
+  PERIODIC,
+  NOTIFICATION,
+  // Not currently defined by any spec.
+  RESERVED,
+};
+
+struct UsbEndpointInfo {
+  uint8 endpoint_number;
+  UsbTransferDirection direction;
+  UsbTransferType type;
+  uint32 packet_size;
+  UsbSynchronizationType synchronization_type;
+  UsbUsageType usage_type;
+  uint8 polling_interval;
+  array<uint8> extra_data;
+};
+
+struct UsbAlternateInterfaceInfo {
+  uint8 alternate_setting;
+  uint8 class_code;
+  uint8 subclass_code;
+  uint8 protocol_code;
+  mojo_base.mojom.String16? interface_name;
+  array<UsbEndpointInfo> endpoints;
+  array<uint8> extra_data;
+};
+
+struct UsbInterfaceInfo {
+  uint8 interface_number;
+  // First interface of the function to which this interface belongs.
+  uint8 first_interface;
+  array<UsbAlternateInterfaceInfo> alternates;
+};
+
+struct UsbConfigurationInfo {
+  uint8 configuration_value;
+  mojo_base.mojom.String16? configuration_name;
+  bool self_powered;
+  bool remote_wakeup;
+  uint8 maximum_power;
+  array<UsbInterfaceInfo> interfaces;
+  array<uint8> extra_data;
+};
+
+struct UsbDeviceInfo {
+  string guid;
+  uint8 usb_version_major;
+  uint8 usb_version_minor;
+  uint8 usb_version_subminor;
+  uint8 class_code;
+  uint8 subclass_code;
+  uint8 protocol_code;
+  uint32 bus_number;
+  uint32 port_number;
+  uint16 vendor_id;
+  uint16 product_id;
+  uint8 device_version_major;
+  uint8 device_version_minor;
+  uint8 device_version_subminor;
+  mojo_base.mojom.String16? manufacturer_name;
+  mojo_base.mojom.String16? product_name;
+  mojo_base.mojom.String16? serial_number;
+  url.mojom.Url? webusb_landing_page;
+  uint8 active_configuration;
+  array<UsbConfigurationInfo> configurations;
+};
+
+struct UsbControlTransferParams {
+  UsbControlTransferType type;
+  UsbControlTransferRecipient recipient;
+  uint8 request;
+  uint16 value;
+  uint16 index;
+};
+
+// This enum is exposed through the chrome.usb extension API so existing values
+// should not be changed or reordered.
+enum UsbTransferStatus {
+  // The transfer completed successfully.
+  COMPLETED = 0,
+
+  // The transfer failed due to a non-specific error.
+  TRANSFER_ERROR,
+
+  // The transfer timed out.
+  TIMEOUT,
+
+  // The transfer was cancelled.
+  CANCELLED,
+
+  // The transfer stalled.
+  STALLED,
+
+  // The transfer failed because the device was disconnected from the host.
+  DISCONNECT,
+
+  // The transfer succeeded, but the device sent more data than was requested.
+  // This applies only to inbound transfers.
+  BABBLE,
+
+  // The transfer succeeded, but the device sent less data than was requested.
+  // This applies only to inbound transfers.
+  SHORT_PACKET,
+
+  // The transfer was not allowed.
+  PERMISSION_DENIED,
+};
+
+struct UsbIsochronousPacket {
+  uint32 length;
+  uint32 transferred_length;
+  UsbTransferStatus status;
+};
+
+interface UsbDevice {
+  // Opens the device. Methods below require the device be opened first.
+  Open() => (UsbOpenDeviceError error);
+
+  // Closes the device.
+  Close() => ();
+
+  // Initiates a device control transfer to set the device's configuration to
+  // one with the configuration value |value|.
+  SetConfiguration(uint8 value) => (bool success);
+
+  // Claims a single interface in the current device configuration.
+  ClaimInterface(uint8 interface_number) => (bool success);
+
+  // Releases a claimed interface in the current device configuration.
+  ReleaseInterface(uint8 interface_number) => (bool success);
+
+  // Selects an alternate setting for a given claimed interface.
+  SetInterfaceAlternateSetting(uint8 interface_number, uint8 alternate_setting)
+      => (bool success);
+
+  // Resets the device.
+  Reset() => (bool success);
+
+  // Clear the halt/stall condition for an endpoint.
+  ClearHalt(uint8 endpoint) => (bool success);
+
+  // Initiates an inbound control transfer request. |params| determine the
+  // details of the request. Transfers to recipients other than DEVICE require a
+  // corresponding interface to be claimed.
+  //
+  // |length| specifies the expected number of bytes to receive for this
+  // transfer. The size of |data| will never exceed |length|, and |data| will be
+  // null if |status| is neither COMPLETED, BABBLE, or SHORT_PACKET.
+  //
+  // |timeout| specifies the request timeout in milliseconds. A timeout of 0
+  // indicates no timeout: the request will remain pending indefinitely until
+  // completed or otherwise terminated.
+  ControlTransferIn(UsbControlTransferParams params,
+                    uint32 length,
+                    uint32 timeout)
+      => (UsbTransferStatus status, array<uint8> data);
+
+  // Initiates an inbound control transfer request. |params| determine the
+  // details of the request. Transfers to recipients other than DEVICE require a
+  // corresponding interface to be claimed.
+  //
+  // |data| specifies the bytes to send the device in the body of the request.
+  //
+  // |timeout| specifies the request timeout in milliseconds. A timeout of 0
+  // indicates no timeout: the request will remain pending indefinitely until
+  // completed or otherwise terminated.
+  ControlTransferOut(UsbControlTransferParams params,
+                     array<uint8> data,
+                     uint32 timeout)
+      => (UsbTransferStatus status);
+
+  // Initiates an inbound generic transfer request on a specific endpoint. The
+  // interface to which |endpoint_number| belongs must be claimed, and the
+  // appropriate alternate setting must be set on that interface before
+  // transfers can be initiated on the endpoint. The endpoint must be of type
+  // BULK or INTERRUPT.
+  //
+  // |length| specifies the expected number of bytes to receive for this
+  // transfer. The size of |data| will never exceed |length|, and |data| will be
+  // null if |status| is neither COMPLETED, BABBLE, or SHORT_PACKET.
+  //
+  // |timeout| specifies the request timeout in milliseconds. A timeout of 0
+  // indicates no timeout: the request will remain pending indefinitely until
+  // completed or otherwise terminated.
+  GenericTransferIn(uint8 endpoint_number, uint32 length, uint32 timeout)
+      => (UsbTransferStatus status, array<uint8> data);
+
+  // Initiates an outbound generic transfer request on a specific endpoint. The
+  // interface to which |endpoint_number| belongs must be claimed, and the
+  // appropriate alternate setting must be set on that interface before
+  // transfers can be initiated on the endpoint. The endpoint must be of type
+  // BULK or INTERRUPT.
+  //
+  // |data| specifies the bytes to send the device in the body of the request.
+  //
+  // |timeout| specifies the request timeout in milliseconds. A timeout of 0
+  // indicates no timeout: the request will remain pending indefinitely until
+  // completed or otherwise terminated.
+  GenericTransferOut(uint8 endpoint_number, array<uint8> data, uint32 timeout)
+      => (UsbTransferStatus status);
+
+  // Initiates an inbound isochronous transfer request on a specific endpoint.
+  // The interface to which |endpoint_number| belongs must be claimed, and the
+  // appropriate alternate setting must be set on that interface before
+  // transfers can be initiated on the endpoint. The endpoint must be of type
+  // ISOCHRONOUS.
+  //
+  // |packet_lengths| specifies the maximum expected number of bytes to receive
+  // for each packet in this transfer.
+  //
+  // |timeout| specifies the request timeout in milliseconds. A timeout of 0
+  // indicates no timeout: the request will remain pending indefinitely until
+  // completed or otherwise terminated.
+  //
+  // |data| contains the data received from the device, if any. |packets|
+  // contains the status of each packet received from the device, in order. The
+  // length of the packet indicates its position in |data| while it's
+  // transferred length gives the amount of data actually received from the
+  // device.
+  IsochronousTransferIn(uint8 endpoint_number,
+                        array<uint32> packet_lengths,
+                        uint32 timeout)
+      => (array<uint8> data, array<UsbIsochronousPacket> packets);
+
+  // Initiates an outbound isochronous transfer request on a specific endpoint.
+  // The interface to which |endpoint_number| belongs must be claimed, and the
+  // appropriate alternate setting must be set on that interface before
+  // transfers can be initiated on the endpoint. The endpoint must be of type
+  // ISOCHRONOUS.
+  //
+  // |data| specifies the bytes to send to the device.
+  //
+  // |packet_lengths| specifies how |data| should be separated into packets when
+  // it is sent to the device.
+  //
+  // |timeout| specifies the request timeout in milliseconds. A timeout of 0
+  // indicates no timeout: the request will remain pending indefinitely until
+  // completed or otherwise terminated.
+
+  // |packets| contains the status of each packet sent to the device, in order.
+  IsochronousTransferOut(uint8 endpoint_number,
+                         array<uint8> data,
+                         array<uint32> packet_lengths,
+                         uint32 timeout)
+      => (array<UsbIsochronousPacket> packets);
+};
+
+// This client is introduced for keeping connection count for a tab through
+// WebUSBPermissionProvider. It will be implemented by WebUsbServiceImpl and
+// passed to the UsbDevice via UsbDeviceManager::GetDevice method.
+interface UsbDeviceClient {
+  // Called when a device is opened successfully.
+  // This event may be triggered once more than OnDeviceClosed while the device
+  // is in use.
+  OnDeviceOpened();
+
+  // Called when a device is closed successfully.
+  // This event may not be triggered when the device is in use. But eventually,
+  // after the whole lifecycle, it is expected to have the same number of this
+  // call as that of OnDeviceOpened.
+  OnDeviceClosed();
+};

@@ -46,7 +46,6 @@
 namespace google {
 namespace protobuf {
 namespace io {
-namespace {
 
 // Each test repeats over several block sizes in order to test both cases
 // where particular writes cross a buffer boundary and cases where they do
@@ -78,10 +77,11 @@ TEST(Printer, BasicPrinting) {
 
     buffer[output.ByteCount()] = '\0';
 
-    EXPECT_STREQ("Hello World!  This is the same line.\n"
-                 "But this is a new one.\n"
-                 "And this is another one.",
-                 buffer);
+    EXPECT_STREQ(
+        "Hello World!  This is the same line.\n"
+        "But this is a new one.\n"
+        "And this is another one.",
+        buffer);
   }
 }
 
@@ -92,7 +92,7 @@ TEST(Printer, WriteRaw) {
     ArrayOutputStream output(buffer, sizeof(buffer), block_size);
 
     {
-      string string_obj = "From an object\n";
+      std::string string_obj = "From an object\n";
       Printer printer(&output, '$');
       printer.WriteRaw("Hello World!", 12);
       printer.PrintRaw("  This is the same line.\n");
@@ -104,12 +104,13 @@ TEST(Printer, WriteRaw) {
 
     buffer[output.ByteCount()] = '\0';
 
-    EXPECT_STREQ("Hello World!  This is the same line.\n"
-                 "But this is a new one.\n"
-                 "And this is another one."
-                 "\n"
-                 "From an object\n",
-                 buffer);
+    EXPECT_STREQ(
+        "Hello World!  This is the same line.\n"
+        "But this is a new one.\n"
+        "And this is another one."
+        "\n"
+        "From an object\n",
+        buffer);
   }
 }
 
@@ -121,7 +122,7 @@ TEST(Printer, VariableSubstitution) {
 
     {
       Printer printer(&output, '$');
-      std::map<string, string> vars;
+      std::map<std::string, std::string> vars;
 
       vars["foo"] = "World";
       vars["bar"] = "$foo$";
@@ -139,13 +140,14 @@ TEST(Printer, VariableSubstitution) {
 
     buffer[output.ByteCount()] = '\0';
 
-    EXPECT_STREQ("Hello World!\n"
-                 "bar = $foo$\n"
-                 "RawBit\n"
-                 "1234\n"
-                 "A literal dollar sign:  $\n"
-                 "Now foo = blah.",
-                 buffer);
+    EXPECT_STREQ(
+        "Hello World!\n"
+        "bar = $foo$\n"
+        "RawBit\n"
+        "1234\n"
+        "A literal dollar sign:  $\n"
+        "Now foo = blah.",
+        buffer);
   }
 }
 
@@ -164,30 +166,31 @@ TEST(Printer, InlineVariableSubstitution) {
 
   buffer[output.ByteCount()] = '\0';
 
-  EXPECT_STREQ("Hello World!\n"
-               "RawBit\n"
-               "one two\n",
-               buffer);
+  EXPECT_STREQ(
+      "Hello World!\n"
+      "RawBit\n"
+      "one two\n",
+      buffer);
 }
 
 // MockDescriptorFile defines only those members that Printer uses to write out
 // annotations.
 class MockDescriptorFile {
  public:
-  explicit MockDescriptorFile(const string& file) : file_(file) {}
+  explicit MockDescriptorFile(const std::string& file) : file_(file) {}
 
   // The mock filename for this file.
-  const string& name() const { return file_; }
+  const std::string& name() const { return file_; }
 
  private:
-  string file_;
+  std::string file_;
 };
 
 // MockDescriptor defines only those members that Printer uses to write out
 // annotations.
 class MockDescriptor {
  public:
-  MockDescriptor(const string& file, const std::vector<int>& path)
+  MockDescriptor(const std::string& file, const std::vector<int>& path)
       : file_(file), path_(path) {}
 
   // The mock file in which this descriptor was defined.
@@ -195,7 +198,7 @@ class MockDescriptor {
 
  private:
   // Allows access to GetLocationPath.
-  friend class ::google::protobuf::io::Printer;
+  friend class Printer;
 
   // Copies the pre-stored path to output.
   void GetLocationPath(std::vector<int>* output) const { *output = path_; }
@@ -211,7 +214,7 @@ TEST(Printer, AnnotateMap) {
   AnnotationProtoCollector<GeneratedCodeInfo> info_collector(&info);
   {
     Printer printer(&output, '$', &info_collector);
-    std::map<string, string> vars;
+    std::map<std::string, std::string> vars;
     vars["foo"] = "3";
     vars["bar"] = "5";
     printer.Print(vars, "012$foo$4$bar$\n");
@@ -436,7 +439,6 @@ TEST(Printer, AnnotateIndentNewline) {
   EXPECT_EQ(4, ab->end());
 }
 
-
 TEST(Printer, Indenting) {
   char buffer[8192];
 
@@ -445,7 +447,7 @@ TEST(Printer, Indenting) {
 
     {
       Printer printer(&output, '$');
-      std::map<string, string> vars;
+      std::map<std::string, std::string> vars;
 
       vars["newline"] = "\n";
 
@@ -455,11 +457,13 @@ TEST(Printer, Indenting) {
       printer.Outdent();
       printer.Print("But this is not.");
       printer.Indent();
-      printer.Print("  And this is still the same line.\n"
-                    "But this is indented.\n");
+      printer.Print(
+          "  And this is still the same line.\n"
+          "But this is indented.\n");
       printer.PrintRaw("RawBit has indent at start\n");
       printer.PrintRaw("but not after a raw newline\n");
-      printer.Print(vars, "Note that a newline in a variable will break "
+      printer.Print(vars,
+                    "Note that a newline in a variable will break "
                     "indenting, as we see$newline$here.\n");
       printer.Indent();
       printer.Print("And this");
@@ -473,18 +477,18 @@ TEST(Printer, Indenting) {
     buffer[output.ByteCount()] = '\0';
 
     EXPECT_STREQ(
-      "This is not indented.\n"
-      "  This is indented\n"
-      "  And so is this\n"
-      "But this is not.  And this is still the same line.\n"
-      "  But this is indented.\n"
-      "  RawBit has indent at start\n"
-      "but not after a raw newline\n"
-      "Note that a newline in a variable will break indenting, as we see\n"
-      "here.\n"
-      "    And this is double-indented\n"
-      "Back to normal.",
-      buffer);
+        "This is not indented.\n"
+        "  This is indented\n"
+        "  And so is this\n"
+        "But this is not.  And this is still the same line.\n"
+        "  But this is indented.\n"
+        "  RawBit has indent at start\n"
+        "but not after a raw newline\n"
+        "Note that a newline in a variable will break indenting, as we see\n"
+        "here.\n"
+        "    And this is double-indented\n"
+        "Back to normal.",
+        buffer);
   }
 }
 
@@ -594,7 +598,138 @@ TEST(Printer, WriteFailureExact) {
   EXPECT_EQ("0123456789abcdef", string(buffer, sizeof(buffer)));
 }
 
-}  // namespace
+TEST(Printer, FormatInternal) {
+  std::vector<std::string> args{"arg1", "arg2"};
+  std::map<std::string, std::string> vars{
+      {"foo", "bar"}, {"baz", "bla"}, {"empty", ""}};
+  // Substitution tests
+  {
+    // Direct arg substitution
+    std::string s;
+    {
+      StringOutputStream output(&s);
+      Printer printer(&output, '$');
+      printer.FormatInternal(args, vars, "$1$ $2$");
+    }
+    EXPECT_EQ("arg1 arg2", s);
+  }
+  {
+    // Variable substitution including spaces left
+    std::string s;
+    {
+      StringOutputStream output(&s);
+      Printer printer(&output, '$');
+      printer.FormatInternal({}, vars, "$foo$$ baz$$ empty$");
+    }
+    EXPECT_EQ("bar bla", s);
+  }
+  {
+    // Variable substitution including spaces right
+    std::string s;
+    {
+      StringOutputStream output(&s);
+      Printer printer(&output, '$');
+      printer.FormatInternal({}, vars, "$empty $$foo $$baz$");
+    }
+    EXPECT_EQ("bar bla", s);
+  }
+  {
+    // Mixed variable substitution
+    std::string s;
+    {
+      StringOutputStream output(&s);
+      Printer printer(&output, '$');
+      printer.FormatInternal(args, vars, "$empty $$1$ $foo $$2$ $baz$");
+    }
+    EXPECT_EQ("arg1 bar arg2 bla", s);
+  }
+
+  // Indentation tests
+  {
+    // Empty lines shouldn't indent.
+    std::string s;
+    {
+      StringOutputStream output(&s);
+      Printer printer(&output, '$');
+      printer.Indent();
+      printer.FormatInternal(args, vars, "$empty $\n\n$1$ $foo $$2$\n$baz$");
+      printer.Outdent();
+    }
+    EXPECT_EQ("\n\n  arg1 bar arg2\n  bla", s);
+  }
+  {
+    // Annotations should respect indentation.
+    std::string s;
+    GeneratedCodeInfo info;
+    {
+      StringOutputStream output(&s);
+      AnnotationProtoCollector<GeneratedCodeInfo> info_collector(&info);
+      Printer printer(&output, '$', &info_collector);
+      printer.Indent();
+      GeneratedCodeInfo::Annotation annotation;
+      annotation.set_source_file("file.proto");
+      annotation.add_path(33);
+      std::vector<std::string> args{annotation.SerializeAsString(), "arg1",
+                                    "arg2"};
+      printer.FormatInternal(args, vars, "$empty $\n\n${1$$2$$}$ $3$\n$baz$");
+      printer.Outdent();
+    }
+    EXPECT_EQ("\n\n  arg1 arg2\n  bla", s);
+    ASSERT_EQ(1, info.annotation_size());
+    const GeneratedCodeInfo::Annotation* arg1 = &info.annotation(0);
+    ASSERT_EQ(1, arg1->path_size());
+    EXPECT_EQ(33, arg1->path(0));
+    EXPECT_EQ("file.proto", arg1->source_file());
+    EXPECT_EQ(4, arg1->begin());
+    EXPECT_EQ(8, arg1->end());
+  }
+#ifdef PROTOBUF_HAS_DEATH_TEST
+  // Death tests in case of illegal format strings.
+  {
+    // Unused arguments
+    std::string s;
+    StringOutputStream output(&s);
+    Printer printer(&output, '$');
+    EXPECT_DEATH(printer.FormatInternal(args, vars, "$empty $$1$"), "Unused");
+  }
+  {
+    // Wrong order arguments
+    std::string s;
+    StringOutputStream output(&s);
+    Printer printer(&output, '$');
+    EXPECT_DEATH(printer.FormatInternal(args, vars, "$2$ $1$"), "order");
+  }
+  {
+    // Zero is illegal argument
+    std::string s;
+    StringOutputStream output(&s);
+    Printer printer(&output, '$');
+    EXPECT_DEATH(printer.FormatInternal(args, vars, "$0$"), "failed");
+  }
+  {
+    // Argument out of bounds
+    std::string s;
+    StringOutputStream output(&s);
+    Printer printer(&output, '$');
+    EXPECT_DEATH(printer.FormatInternal(args, vars, "$1$ $2$ $3$"), "bounds");
+  }
+  {
+    // Unknown variable
+    std::string s;
+    StringOutputStream output(&s);
+    Printer printer(&output, '$');
+    EXPECT_DEATH(printer.FormatInternal(args, vars, "$huh$ $1$$2$"), "Unknown");
+  }
+  {
+    // Illegal variable
+    std::string s;
+    StringOutputStream output(&s);
+    Printer printer(&output, '$');
+    EXPECT_DEATH(printer.FormatInternal({}, vars, "$ $"), "Empty");
+  }
+#endif  // PROTOBUF_HAS_DEATH_TEST
+}
+
 }  // namespace io
 }  // namespace protobuf
 }  // namespace google

@@ -1,0 +1,78 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "LayoutSVGContainer g",
+          "rect": [388, 37, 318, 83],
+          "reason": "chunk appeared"
+        },
+        {
+          "object": "LayoutSVGContainer g",
+          "rect": [261, 277, 305, 305],
+          "reason": "chunk appeared"
+        },
+        {
+          "object": "LayoutSVGContainer g",
+          "rect": [5, 255, 240, 162],
+          "reason": "chunk appeared"
+        },
+        {
+          "object": "LayoutSVGPath path",
+          "rect": [5, 255, 240, 162],
+          "reason": "chunk appeared"
+        },
+        {
+          "object": "LayoutSVGPath path",
+          "rect": [5, 255, 240, 162],
+          "reason": "chunk appeared"
+        },
+        {
+          "object": "LayoutSVGPath path",
+          "rect": [5, 255, 240, 162],
+          "reason": "chunk appeared"
+        },
+        {
+          "object": "LayoutSVGContainer g",
+          "rect": [505, 232, 240, 161],
+          "reason": "chunk appeared"
+        },
+        {
+          "object": "InlineTextBox 'This is a tabgroup with triangular tab corners'",
+          "rect": [15, 291, 211, 37],
+          "reason": "chunk appeared"
+        },
+        {
+          "object": "LayoutSVGContainer g id='tabgroupRect'",
+          "rect": [37, 5, 161, 240],
+          "reason": "chunk appeared"
+        },
+        {
+          "object": "LayoutSVGText text",
+          "rect": [66, 257, 57, 29],
+          "reason": "chunk appeared"
+        },
+        {
+          "object": "LayoutSVGText text",
+          "rect": [11, 257, 49, 29],
+          "reason": "chunk appeared"
+        },
+        {
+          "object": "LayoutSVGText text",
+          "rect": [130, 257, 47, 29],
+          "reason": "chunk appeared"
+        },
+        {
+          "object": "LayoutSVGText text",
+          "rect": [183, 257, 32, 29],
+          "reason": "chunk appeared"
+        }
+      ]
+    }
+  ]
+}
+

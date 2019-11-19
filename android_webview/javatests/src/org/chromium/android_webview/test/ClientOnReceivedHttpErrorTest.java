@@ -49,7 +49,7 @@ public class ClientOnReceivedHttpErrorTest {
         mWebServer = TestWebServer.start();
     }
 
-    private void useDefaultTestAwContentsClient() throws Exception {
+    private void useDefaultTestAwContentsClient() {
         mContentsClient.enableBypass();
     }
 
@@ -88,7 +88,7 @@ public class ClientOnReceivedHttpErrorTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         if (mWebServer != null) mWebServer.shutdown();
     }
 

@@ -13,7 +13,7 @@
       column-fill: auto;
       border: 1px solid black;
     }
-    
+
     .block {
       display: inline-block;
       width: 200px;
@@ -22,12 +22,13 @@
       background-color: silver;
       outline: 5px solid transparent; /* increases compositing layer bounds to test bounds math */
     }
-    
+
     .composited {
+      will-change: transform;
       transform: translateZ(0);
       background-color: blue;
     }
-    
+
     .box {
       height: 50px;
       width: 50px;

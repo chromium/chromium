@@ -33,8 +33,8 @@
 ] interface WorkerNavigator {
 };
 
-WorkerNavigator implements NavigatorConcurrentHardware;
-WorkerNavigator implements NavigatorDeviceMemory;
-WorkerNavigator implements NavigatorID;
-WorkerNavigator implements NavigatorLanguage;
-WorkerNavigator implements NavigatorOnLine;
+WorkerNavigator includes NavigatorConcurrentHardware;
+WorkerNavigator includes NavigatorDeviceMemory;
+WorkerNavigator includes NavigatorID;
+WorkerNavigator includes NavigatorLanguage;
+WorkerNavigator includes NavigatorOnLine;

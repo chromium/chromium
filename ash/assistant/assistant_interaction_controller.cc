@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "ash/accessibility/accessibility_controller.h"
+#include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/assistant/assistant_controller.h"
 #include "ash/assistant/assistant_screen_context_controller.h"
 #include "ash/assistant/assistant_ui_controller.h"
@@ -16,20 +16,26 @@
 #include "ash/assistant/model/assistant_ui_element.h"
 #include "ash/assistant/model/assistant_ui_model.h"
 #include "ash/assistant/ui/assistant_ui_constants.h"
+#include "ash/assistant/util/assistant_util.h"
 #include "ash/assistant/util/deep_link_util.h"
 #include "ash/assistant/util/histogram_util.h"
+#include "ash/public/cpp/android_intent_helper.h"
+#include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/ash_pref_names.h"
-#include "ash/public/interfaces/voice_interaction_controller.mojom.h"
-#include "ash/session/session_controller.h"
+#include "ash/public/cpp/assistant/assistant_setup.h"
+#include "ash/public/cpp/assistant/proactive_suggestions.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/voice_interaction/voice_interaction_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/bind.h"
 #include "base/optional.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/services/assistant/public/features.h"
 #include "components/prefs/pref_service.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "net/base/url_util.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
@@ -37,14 +43,32 @@ namespace ash {
 namespace {
 
 constexpr int kWarmerWelcomesMaxTimesTriggered = 3;
+constexpr char kAndroidIntentScheme[] = "intent://";
+constexpr char kAndroidIntentPrefix[] = "#Intent";
 
 // Helpers ---------------------------------------------------------------------
 
+// Creates a suggestion to initiate a Google search for the specified |query|.
+chromeos::assistant::mojom::AssistantSuggestionPtr CreateSearchSuggestion(
+    const std::string& query) {
+  constexpr char kIconUrl[] =
+      "https://www.gstatic.com/images/branding/product/2x/googleg_48dp.png";
+  constexpr char kSearchUrl[] = "https://www.google.com/search";
+  constexpr char kQueryParamKey[] = "q";
+
+  chromeos::assistant::mojom::AssistantSuggestionPtr suggestion =
+      chromeos::assistant::mojom::AssistantSuggestion::New();
+  suggestion->text = l10n_util::GetStringUTF8(IDS_ASH_ASSISTANT_CHIP_SEARCH);
+  suggestion->icon_url = GURL(kIconUrl),
+  suggestion->action_url = net::AppendOrReplaceQueryParameter(
+      GURL(kSearchUrl), kQueryParamKey, query);
+
+  return suggestion;
+}
+
 // Returns true if device is in tablet mode, false otherwise.
 bool IsTabletMode() {
-  return Shell::Get()
-      ->tablet_mode_controller()
-      ->IsTabletModeWindowManagerEnabled();
+  return Shell::Get()->tablet_mode_controller()->InTabletMode();
 }
 
 }  // namespace
@@ -53,9 +77,7 @@ bool IsTabletMode() {
 
 AssistantInteractionController::AssistantInteractionController(
     AssistantController* assistant_controller)
-    : assistant_controller_(assistant_controller),
-      assistant_interaction_subscriber_binding_(this),
-      weak_factory_(this) {
+    : assistant_controller_(assistant_controller) {
   AddModelObserver(this);
   assistant_controller_->AddObserver(this);
   Shell::Get()->highlighter_controller()->AddObserver(this);
@@ -72,9 +94,8 @@ void AssistantInteractionController::SetAssistant(
   assistant_ = assistant;
 
   // Subscribe to Assistant interaction events.
-  chromeos::assistant::mojom::AssistantInteractionSubscriberPtr ptr;
-  assistant_interaction_subscriber_binding_.Bind(mojo::MakeRequest(&ptr));
-  assistant_->AddAssistantInteractionSubscriber(std::move(ptr));
+  assistant_->AddAssistantInteractionSubscriber(
+      assistant_interaction_subscriber_receiver_.BindNewPipeAndPassRemote());
 }
 
 void AssistantInteractionController::AddModelObserver(
@@ -115,6 +136,39 @@ void AssistantInteractionController::OnDeepLinkReceived(
     return;
   }
 
+  if (type == DeepLinkType::kReminders) {
+    using ReminderAction = assistant::util::ReminderAction;
+    const base::Optional<ReminderAction>& action =
+        GetDeepLinkParamAsRemindersAction(params, DeepLinkParam::kAction);
+
+    // We treat reminders deeplinks without an action as web deep links.
+    if (!action)
+      return;
+
+    switch (action.value()) {
+      case ReminderAction::kCreate:
+        StartTextInteraction(
+            l10n_util::GetStringUTF8(IDS_ASSISTANT_CREATE_REMINDER_QUERY),
+            /*allow_tts=*/model_.response() && model_.response()->has_tts(),
+            /*query_source=*/AssistantQuerySource::kDeepLink);
+        break;
+
+      case ReminderAction::kEdit:
+        const base::Optional<std::string>& client_id =
+            GetDeepLinkParam(params, DeepLinkParam::kClientId);
+        if (client_id && !client_id.value().empty()) {
+          StopActiveInteraction(false);
+          model_.SetPendingQuery(std::make_unique<AssistantTextQuery>(
+              l10n_util::GetStringUTF8(IDS_ASSISTANT_EDIT_REMINDER_QUERY),
+              /*query_source=*/AssistantQuerySource::kDeepLink));
+          assistant_->StartEditReminderInteraction(client_id.value());
+        }
+        break;
+    }
+
+    return;
+  }
+
   if (type != DeepLinkType::kQuery)
     return;
 
@@ -149,7 +203,8 @@ void AssistantInteractionController::OnDeepLinkReceived(
                        /*query_source=*/AssistantQuerySource::kDeepLink);
 }
 
-void AssistantInteractionController::OnUiModeChanged(AssistantUiMode ui_mode) {
+void AssistantInteractionController::OnUiModeChanged(AssistantUiMode ui_mode,
+                                                     bool due_to_interaction) {
   if (ui_mode == AssistantUiMode::kMiniUi)
     return;
 
@@ -157,10 +212,16 @@ void AssistantInteractionController::OnUiModeChanged(AssistantUiMode ui_mode) {
     case InputModality::kStylus:
       // When the Assistant is not in mini state there should not be an active
       // metalayer session. If we were in mini state when the UI mode was
-      // changed, we need to clean up the metalayer session and reset default
-      // input modality.
+      // changed, we need to clean up the metalayer session.
       Shell::Get()->highlighter_controller()->AbortSession();
-      model_.SetInputModality(InputModality::kKeyboard);
+
+      // If the UI mode change was not due to interaction, we should reset the
+      // default input modality. We don't do this if the change occurred due to
+      // an Assistant interaction because we might inadvertently stop the active
+      // interaction by changing input modality. When this is the case, the
+      // modality will be correctly set in |OnInteractionStarted| if needed.
+      if (!due_to_interaction)
+        model_.SetInputModality(InputModality::kKeyboard);
       break;
     case InputModality::kVoice:
       // When transitioning to web UI we abort any in progress voice query. We
@@ -209,10 +270,13 @@ void AssistantInteractionController::OnHighlighterEnabledChanged(
     HighlighterEnabledState state) {
   switch (state) {
     case HighlighterEnabledState::kEnabled:
-      model_.SetInputModality(InputModality::kStylus);
+      // Skip setting input modality to stylus when the embedded Assistant
+      // feature is enabled to prevent highlighter aborting sessions in
+      // OnUiModeChanged.
+      if (!app_list_features::IsAssistantLauncherUIEnabled())
+        model_.SetInputModality(InputModality::kStylus);
       break;
     case HighlighterEnabledState::kDisabledByUser:
-      FALLTHROUGH;
     case HighlighterEnabledState::kDisabledBySessionComplete:
       model_.SetInputModality(InputModality::kKeyboard);
       break;
@@ -227,6 +291,7 @@ void AssistantInteractionController::OnHighlighterEnabledChanged(
 
 void AssistantInteractionController::OnHighlighterSelectionRecognized(
     const gfx::Rect& rect) {
+  assistant_controller_->ui_controller()->ShowUi(AssistantEntryPoint::kStylus);
   StartMetalayerInteraction(/*region=*/rect);
 }
 
@@ -301,8 +366,21 @@ void AssistantInteractionController::OnCommittedQueryChanged(
   assistant::util::RecordAssistantQuerySource(assistant_query.source());
 }
 
+// TODO(b/140565663): Set pending query from |metadata| and remove calls to set
+// pending query that occur outside of this method.
 void AssistantInteractionController::OnInteractionStarted(
-    bool is_voice_interaction) {
+    AssistantInteractionMetadataPtr metadata) {
+  // Stop the interaction if the opt-in window is active.
+  auto* assistant_setup = AssistantSetup::GetInstance();
+  if (assistant_setup && assistant_setup->BounceOptInWindowIfActive()) {
+    StopActiveInteraction(true);
+    return;
+  }
+
+  const bool is_voice_interaction =
+      chromeos::assistant::mojom::AssistantInteractionType::kVoice ==
+      metadata->type;
+
   if (is_voice_interaction) {
     // If the Assistant UI is not visible yet, and |is_voice_interaction| is
     // true, then it will be sure that Assistant is fired via OKG. ShowUi will
@@ -325,22 +403,19 @@ void AssistantInteractionController::OnInteractionStarted(
       model_.SetPendingQuery(std::make_unique<AssistantVoiceQuery>());
     }
   } else {
-    // TODO(b/112000321): It should not be possible to reach this code without
-    // having previously pended a query. It does currently happen, however, in
-    // the case of notifications and device action queries which bypass the
-    // AssistantInteractionController when beginning an interaction. To address
-    // this, we temporarily pend an empty text query to commit until we can do
-    // development to expose something more meaningful.
+    // Once b/140565663 has been addressed to remove all calls which currently
+    // set the pending query from outside of the interaction lifecycle, the
+    // pending query type will always be |kNull| here.
     if (model_.pending_query().type() == AssistantQueryType::kNull) {
-      model_.SetPendingQuery(std::make_unique<AssistantTextQuery>());
+      model_.SetPendingQuery(std::make_unique<AssistantTextQuery>(
+          metadata->query, metadata->source));
     }
-
     model_.CommitPendingQuery();
     model_.SetMicState(MicState::kClosed);
   }
 
   // Start caching a new Assistant response for the interaction.
-  model_.SetPendingResponse(std::make_unique<AssistantResponse>());
+  model_.SetPendingResponse(base::MakeRefCounted<AssistantResponse>());
 }
 
 void AssistantInteractionController::OnInteractionFinished(
@@ -432,7 +507,17 @@ void AssistantInteractionController::OnSuggestionChipPressed(
   // If the suggestion contains a non-empty action url, we will handle the
   // suggestion chip pressed event by launching the action url in the browser.
   if (!suggestion->action_url.is_empty()) {
-    assistant_controller_->OpenUrl(suggestion->action_url);
+    // Note that we post a new task when opening the |action_url| associated
+    // with |sugggestion| as this will potentially cause Assistant UI to close
+    // and destroy |suggestion| in the process. Failure to post in this case
+    // would cause any subsequent observers of this suggestion chip event to
+    // receive a deleted pointer.
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&AssistantController::OpenUrl,
+                       assistant_controller_->GetWeakPtr(),
+                       suggestion->action_url, /*in_background=*/false,
+                       /*from_server=*/false));
     return;
   }
 
@@ -444,7 +529,7 @@ void AssistantInteractionController::OnSuggestionChipPressed(
   // user's preceding voice interaction.
   StartTextInteraction(suggestion->text, /*allow_tts=*/model_.response() &&
                                              model_.response()->has_tts(),
-                       /*query_source*/ AssistantQuerySource::kSuggestionChip);
+                       /*query_source=*/AssistantQuerySource::kSuggestionChip);
 }
 
 void AssistantInteractionController::OnSuggestionsResponse(
@@ -526,6 +611,11 @@ void AssistantInteractionController::OnTtsStarted(bool due_to_error) {
     // earliest indication that the mic has closed.
     model_.SetMicState(MicState::kClosed);
 
+    // It is possible that an error Tts could be sent in addition to server Tts.
+    // In that case, the pending_response may have already been finalized.
+    if (!model_.pending_response())
+      model_.SetPendingResponse(base::MakeRefCounted<AssistantResponse>());
+
     // Add an error message to the response.
     model_.pending_response()->AddUiElement(
         std::make_unique<AssistantTextElement>(
@@ -533,20 +623,76 @@ void AssistantInteractionController::OnTtsStarted(bool due_to_error) {
   }
 
   model_.pending_response()->set_has_tts(true);
+
   // We have an agreement with the server that TTS will always be the last part
   // of an interaction to be processed. To be timely in updating UI, we use
   // this as an opportunity to begin processing the Assistant response.
+  // TODO(xiaohuic): sometimes we actually do receive additional TTS responses,
+  // need to properly handle those cases.
   OnProcessPendingResponse();
 }
 
-void AssistantInteractionController::OnOpenUrlResponse(const GURL& url) {
-  if (model_.interaction_state() != InteractionState::kActive) {
+void AssistantInteractionController::OnWaitStarted() {
+  if (model_.interaction_state() != InteractionState::kActive)
     return;
-  }
+
+  // Commit the pending query in whatever state it's in. Note that the server
+  // guarantees that if a wait occurs, it is as part of a routine's execution
+  // and it will be the last event prior to the current interaction being
+  // finished and the response will not contain any TTS. Upon finishing
+  // execution of the current interaction, a new interaction will automatically
+  // be started for the next leg of the routine's execution.
+  if (model_.pending_query().type() != AssistantQueryType::kNull)
+    model_.CommitPendingQuery();
+
+  // Finalize the pending response so that the UI is flushed to the screen while
+  // the wait occurs, giving the user time to digest the current response before
+  // the routine begins its next leg in the next interaction.
+  OnProcessPendingResponse();
+}
+
+void AssistantInteractionController::OnOpenUrlResponse(const GURL& url,
+                                                       bool in_background) {
+  if (model_.interaction_state() != InteractionState::kActive)
+    return;
   // We need to indicate that the navigation attempt is occurring as a result of
   // a server response so that we can differentiate from navigation attempts
   // initiated by direct user interaction.
-  assistant_controller_->OpenUrl(url, /*from_server=*/true);
+  assistant_controller_->OpenUrl(url, in_background, /*from_server=*/true);
+}
+
+void AssistantInteractionController::OnOpenAppResponse(
+    chromeos::assistant::mojom::AndroidAppInfoPtr app_info,
+    OnOpenAppResponseCallback callback) {
+  if (model_.interaction_state() != InteractionState::kActive)
+    return;
+
+  auto* android_helper = AndroidIntentHelper::GetInstance();
+  if (!android_helper) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  auto intent = android_helper->GetAndroidAppLaunchIntent(std::move(app_info));
+  if (!intent.has_value()) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  // Common Android intent might starts with intent scheme "intent://" or
+  // Android app scheme "android-app://". But it might also only contains
+  // reference starts with "#Intent".
+  // However, GURL requires the URL spec to be non-empty, which invalidate the
+  // intent starts with "#Intent". For this case, we adding the Android intent
+  // scheme to the intent to validate it for GURL constructor.
+  auto intent_str = intent.value();
+  if (base::StartsWith(intent_str, kAndroidIntentPrefix,
+                       base::CompareCase::SENSITIVE)) {
+    intent_str = kAndroidIntentScheme + intent_str;
+  }
+  assistant_controller_->OpenUrl(GURL(intent_str), /*in_background=*/false,
+                                 /*from_server=*/true);
+  std::move(callback).Run(true);
 }
 
 void AssistantInteractionController::OnDialogPlateButtonPressed(
@@ -594,13 +740,13 @@ void AssistantInteractionController::OnProcessPendingResponse() {
 
   // Bind an interface to a navigable contents factory that is needed for
   // processing card elements.
-  content::mojom::NavigableContentsFactoryPtr contents_factory;
+  mojo::Remote<content::mojom::NavigableContentsFactory> factory;
   assistant_controller_->GetNavigableContentsFactory(
-      mojo::MakeRequest(&contents_factory));
+      factory.BindNewPipeAndPassReceiver());
 
   // Start processing.
   model_.pending_response()->Process(
-      std::move(contents_factory),
+      std::move(factory),
       base::BindOnce(
           &AssistantInteractionController::OnPendingResponseProcessed,
           weak_factory_.GetWeakPtr()));
@@ -620,37 +766,52 @@ void AssistantInteractionController::OnUiVisible(
   DCHECK_EQ(AssistantVisibility::kVisible,
             assistant_controller_->ui_controller()->model()->visibility());
 
-  bool launch_with_mic_open =
-      Shell::Get()->voice_interaction_controller()->launch_with_mic_open();
+  const bool launch_with_mic_open =
+      AssistantState::Get()->launch_with_mic_open().value_or(false);
+  const bool prefer_voice = launch_with_mic_open || IsTabletMode();
 
-  switch (entry_point) {
-    case AssistantEntryPoint::kLauncherSearchBoxMic:
-      launch_with_mic_open = true;
-      FALLTHROUGH;
-    case AssistantEntryPoint::kHotkey:
-    case AssistantEntryPoint::kLauncherSearchBox:
-    case AssistantEntryPoint::kLongPressLauncher: {
-      // When the user prefers it or when we are in tablet mode, launching
-      // Assistant UI will immediately start a voice interaction.
-      if (launch_with_mic_open || IsTabletMode()) {
-        StartVoiceInteraction();
-        should_attempt_warmer_welcome_ = false;
-      }
-      break;
-    }
-    case AssistantEntryPoint::kStylus:
-      model_.SetInputModality(InputModality::kStylus);
-      FALLTHROUGH;
-    case AssistantEntryPoint::kDeepLink:
-    case AssistantEntryPoint::kHotword:
-    case AssistantEntryPoint::kLauncherSearchResult:
-      should_attempt_warmer_welcome_ = false;
-      break;
-    case AssistantEntryPoint::kUnspecified:
-    case AssistantEntryPoint::kSetup:
-      // No action necessary.
-      break;
+  // We don't explicitly start a new voice interaction if the entry point
+  // is hotword since in such cases a voice interaction will already be in
+  // progress.
+  if (assistant::util::IsVoiceEntryPoint(entry_point, prefer_voice) &&
+      entry_point != AssistantEntryPoint::kHotword) {
+    should_attempt_warmer_welcome_ = false;
+    StartVoiceInteraction();
+    return;
   }
+
+  if (entry_point == AssistantEntryPoint::kProactiveSuggestions) {
+    should_attempt_warmer_welcome_ = false;
+    // When entering Assistant with a proactive suggestions interaction, there
+    // will be no server latency as the response for the interaction has already
+    // been cached on the client. To avoid jank, we need to post a task to start
+    // our interaction to give the Assistant UI a chance to initialize itself.
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&AssistantInteractionController::
+                           StartProactiveSuggestionsInteraction,
+                       weak_factory_.GetWeakPtr(),
+                       assistant_controller_->suggestions_controller()
+                           ->model()
+                           ->GetProactiveSuggestions()));
+    return;
+  }
+
+  if (entry_point == AssistantEntryPoint::kStylus) {
+    should_attempt_warmer_welcome_ = false;
+    // When the embedded Assistant feature is enabled, we call ShowUi(kStylus)
+    // OnHighlighterSelectionRecognized. But we are not actually using stylus.
+    if (!app_list_features::IsAssistantLauncherUIEnabled())
+      model_.SetInputModality(InputModality::kStylus);
+    return;
+  }
+
+  if (!chromeos::assistant::features::IsWarmerWelcomeEnabled())
+    return;
+
+  should_attempt_warmer_welcome_ =
+      should_attempt_warmer_welcome_ &&
+      assistant::util::ShouldAttemptWarmerWelcome(entry_point);
 
   // Explicitly check the interaction state to ensure warmer welcome will
   // not interrupt any ongoing active interactions. This happens, for example,
@@ -660,31 +821,30 @@ void AssistantInteractionController::OnUiVisible(
   if (model_.interaction_state() == InteractionState::kActive)
     should_attempt_warmer_welcome_ = false;
 
+  if (!should_attempt_warmer_welcome_)
+    return;
+
   // TODO(yileili): Currently WW is only triggered when the first Assistant
   // launch of the user session does not automatically start an interaction that
   // would otherwise cause us to interrupt the user. Need further UX design to
   // attempt WW after the first interaction.
-  if (should_attempt_warmer_welcome_) {
-    if (chromeos::assistant::features::IsWarmerWelcomeEnabled()) {
-      auto* pref_service =
-          Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+  auto* pref_service =
+      Shell::Get()->session_controller()->GetLastActiveUserPrefService();
 
-      DCHECK(pref_service);
+  DCHECK(pref_service);
 
-      auto num_warmer_welcome_triggered =
-          pref_service->GetInteger(prefs::kAssistantNumWarmerWelcomeTriggered);
-      if (num_warmer_welcome_triggered < kWarmerWelcomesMaxTimesTriggered) {
-        // If the user has opted to launch Assistant with the mic open, we can
-        // reasonably assume there is an expectation of TTS.
-        assistant_->StartWarmerWelcomeInteraction(
-            num_warmer_welcome_triggered,
-            /*allow_tts=*/launch_with_mic_open);
-        pref_service->SetInteger(prefs::kAssistantNumWarmerWelcomeTriggered,
-                                 ++num_warmer_welcome_triggered);
-      }
-    }
-    should_attempt_warmer_welcome_ = false;
+  auto num_warmer_welcome_triggered =
+      pref_service->GetInteger(prefs::kAssistantNumWarmerWelcomeTriggered);
+  if (num_warmer_welcome_triggered < kWarmerWelcomesMaxTimesTriggered) {
+    // If the user has opted to launch Assistant with the mic open, we can
+    // reasonably assume there is an expectation of TTS.
+    assistant_->StartWarmerWelcomeInteraction(
+        num_warmer_welcome_triggered,
+        /*allow_tts=*/launch_with_mic_open);
+    pref_service->SetInteger(prefs::kAssistantNumWarmerWelcomeTriggered,
+                             ++num_warmer_welcome_triggered);
   }
+  should_attempt_warmer_welcome_ = false;
 }
 
 void AssistantInteractionController::StartMetalayerInteraction(
@@ -696,6 +856,41 @@ void AssistantInteractionController::StartMetalayerInteraction(
       AssistantQuerySource::kStylus));
 
   assistant_->StartMetalayerInteraction(region);
+}
+
+void AssistantInteractionController::StartProactiveSuggestionsInteraction(
+    scoped_refptr<const ProactiveSuggestions> proactive_suggestions) {
+  // For a proactive suggestions interaction, we've already cached the response
+  // but we still need to spoof lifecycle events. This is only safe to do if we
+  // aren't already in the midst of an interaction.
+  DCHECK_EQ(InteractionState::kInactive, model_.interaction_state());
+
+  // To be extra protective of interaction lifecycle when DCHECK is disabled,
+  // we'll ignore any attempts to start a proactive suggestions interaction if
+  // an interaction is already in progress.
+  if (model_.interaction_state() != InteractionState::kInactive)
+    return;
+
+  const std::string& description = proactive_suggestions->description();
+  const std::string& search_query = proactive_suggestions->search_query();
+
+  model_.SetPendingQuery(std::make_unique<AssistantTextQuery>(
+      description, AssistantQuerySource::kProactiveSuggestions));
+
+  OnInteractionStarted(AssistantInteractionMetadata::New(
+      AssistantInteractionType::kText,
+      AssistantQuerySource::kProactiveSuggestions, /*query=*/description));
+
+  OnHtmlResponse(proactive_suggestions->html(), /*fallback=*/std::string());
+
+  // TODO(dmblack): Support suggestion chips from the server when available.
+  if (!search_query.empty()) {
+    std::vector<AssistantSuggestionPtr> suggestions;
+    suggestions.push_back(CreateSearchSuggestion(search_query));
+    OnSuggestionsResponse(std::move(suggestions));
+  }
+
+  OnInteractionFinished(AssistantInteractionResolution::kNormal);
 }
 
 void AssistantInteractionController::StartScreenContextInteraction(
@@ -719,7 +914,7 @@ void AssistantInteractionController::StartTextInteraction(
   model_.SetPendingQuery(
       std::make_unique<AssistantTextQuery>(text, query_source));
 
-  assistant_->StartTextInteraction(text, allow_tts);
+  assistant_->StartTextInteraction(text, query_source, allow_tts);
 }
 
 void AssistantInteractionController::StartVoiceInteraction() {

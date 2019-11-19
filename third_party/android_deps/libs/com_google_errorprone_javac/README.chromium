@@ -1,0 +1,13 @@
+Name: Error Prone javac
+Short Name: javac
+URL: https://github.com/google/error-prone-javac
+Version: 9+181-r4173-1
+License: GPL v2 with the classpath exception
+License File: NOT_SHIPPED
+Security Critical: no
+
+Description:
+A repackaged copy of javac
+
+Local Modifications:
+No modifications.

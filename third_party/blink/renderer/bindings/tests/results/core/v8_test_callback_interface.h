@@ -70,42 +70,6 @@ class CORE_EXPORT V8TestCallbackInterface final : public CallbackInterfaceBase {
   v8::Maybe<void> customVoidMethodTestInterfaceEmptyArg(bindings::V8ValueOrScriptWrappableAdapter callback_this_value, TestInterfaceEmpty* testInterfaceEmptyArg) WARN_UNUSED_RESULT;
 };
 
-template <>
-class V8PersistentCallbackInterface<V8TestCallbackInterface> final : public V8PersistentCallbackInterfaceBase {
-  using V8CallbackInterface = V8TestCallbackInterface;
-
- public:
-  explicit V8PersistentCallbackInterface(V8CallbackInterface* callback_interface)
-      : V8PersistentCallbackInterfaceBase(callback_interface) {}
-  ~V8PersistentCallbackInterface() override = default;
-
-  CORE_EXPORT v8::Maybe<void> voidMethod(bindings::V8ValueOrScriptWrappableAdapter callback_this_value) WARN_UNUSED_RESULT;
-  CORE_EXPORT v8::Maybe<bool> booleanMethod(bindings::V8ValueOrScriptWrappableAdapter callback_this_value) WARN_UNUSED_RESULT;
-  CORE_EXPORT v8::Maybe<void> voidMethodBooleanArg(bindings::V8ValueOrScriptWrappableAdapter callback_this_value, bool boolArg) WARN_UNUSED_RESULT;
-  CORE_EXPORT v8::Maybe<void> voidMethodSequenceArg(bindings::V8ValueOrScriptWrappableAdapter callback_this_value, const HeapVector<Member<TestInterfaceEmpty>>& sequenceArg) WARN_UNUSED_RESULT;
-  CORE_EXPORT v8::Maybe<void> voidMethodFloatArg(bindings::V8ValueOrScriptWrappableAdapter callback_this_value, float floatArg) WARN_UNUSED_RESULT;
-  CORE_EXPORT v8::Maybe<void> voidMethodTestInterfaceEmptyArg(bindings::V8ValueOrScriptWrappableAdapter callback_this_value, TestInterfaceEmpty* testInterfaceEmptyArg) WARN_UNUSED_RESULT;
-  CORE_EXPORT v8::Maybe<void> voidMethodTestInterfaceEmptyStringArg(bindings::V8ValueOrScriptWrappableAdapter callback_this_value, TestInterfaceEmpty* testInterfaceEmptyArg, const String& stringArg) WARN_UNUSED_RESULT;
-  CORE_EXPORT v8::Maybe<void> callbackWithThisValueVoidMethodStringArg(bindings::V8ValueOrScriptWrappableAdapter callback_this_value, const String& stringArg) WARN_UNUSED_RESULT;
-  CORE_EXPORT v8::Maybe<void> customVoidMethodTestInterfaceEmptyArg(bindings::V8ValueOrScriptWrappableAdapter callback_this_value, TestInterfaceEmpty* testInterfaceEmptyArg) WARN_UNUSED_RESULT;
-
- private:
-  V8CallbackInterface* Proxy() {
-    return As<V8CallbackInterface>();
-  }
-
-  template <typename V8CallbackInterface>
-  friend V8PersistentCallbackInterface<V8CallbackInterface>*
-  ToV8PersistentCallbackInterface(V8CallbackInterface*);
-};
-
-// V8TestCallbackInterface is designed to be used with wrapper-tracing.
-// As blink::Persistent does not perform wrapper-tracing, use of
-// |WrapPersistent| for callback interfaces is likely (if not always) misuse.
-// Thus, this code prohibits such a use case. The call sites should explicitly
-// use WrapPersistent(V8PersistentCallbackInterface<T>*).
-Persistent<V8TestCallbackInterface> WrapPersistent(V8TestCallbackInterface*) = delete;
-
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_BINDINGS_TESTS_RESULTS_CORE_V8_TEST_CALLBACK_INTERFACE_H_

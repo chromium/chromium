@@ -30,7 +30,7 @@
 namespace {
 // Maximum number of distilled pages in an article.
 const size_t kMaxPagesInArticle = 32;
-}
+}  // namespace
 
 namespace dom_distiller {
 
@@ -60,9 +60,7 @@ DistillerImpl::DistillerImpl(
     : distiller_url_fetcher_factory_(distiller_url_fetcher_factory),
       dom_distiller_options_(dom_distiller_options),
       max_pages_in_article_(kMaxPagesInArticle),
-      destruction_allowed_(true),
-      weak_factory_(this) {
-}
+      destruction_allowed_(true) {}
 
 DistillerImpl::~DistillerImpl() {
   DCHECK(destruction_allowed_);
@@ -104,8 +102,8 @@ bool DistillerImpl::IsPageNumberInUse(int page_num) const {
          finished_pages_index_.find(page_num) != finished_pages_index_.end();
 }
 
-DistillerImpl::DistilledPageData* DistillerImpl::GetPageAtIndex(size_t index)
-    const {
+DistillerImpl::DistilledPageData* DistillerImpl::GetPageAtIndex(
+    size_t index) const {
   DCHECK_LT(index, pages_.size());
   DistilledPageData* page_data = pages_[index].get();
   DCHECK(page_data);
@@ -138,13 +136,13 @@ void DistillerImpl::DistillNextPage() {
     seen_urls_.insert(url.spec());
     pages_.push_back(std::make_unique<DistilledPageData>());
     started_pages_index_[page_num] = pages_.size() - 1;
+
+    // TODO(gilmanmh): Investigate whether this needs to be
+    // base::BindRepeating() or if base::BindOnce() can be used instead.
     distiller_page_->DistillPage(
-        url,
-        dom_distiller_options_,
-        base::Bind(&DistillerImpl::OnPageDistillationFinished,
-                   weak_factory_.GetWeakPtr(),
-                   page_num,
-                   url));
+        url, dom_distiller_options_,
+        base::BindRepeating(&DistillerImpl::OnPageDistillationFinished,
+                            weak_factory_.GetWeakPtr(), page_num, url));
   }
 }
 
@@ -164,20 +162,24 @@ void DistillerImpl::OnPageDistillationFinished(
     if (distiller_result->statistics_info().has_word_count()) {
       UMA_HISTOGRAM_CUSTOM_COUNTS(
           "DomDistiller.Statistics.FirstPageWordCount",
-          distiller_result->statistics_info().word_count(),
-          1, 4000, 50);
+          distiller_result->statistics_info().word_count(), 1, 4000, 50);
     }
   }
 
   DCHECK(distiller_result);
-  DistilledPageData* page_data =
-      GetPageAtIndex(started_pages_index_[page_num]);
+  CHECK_LT(started_pages_index_[page_num], pages_.size())
+      << "started_pages_index_[" << page_num
+      << "] (=" << started_pages_index_[page_num] << ") is out of range.";
+  DistilledPageData* page_data = GetPageAtIndex(started_pages_index_[page_num]);
+  CHECK(page_data) << "GetPageAtIndex(started_pages_index_[" << page_num
+                   << "] (=" << started_pages_index_[page_num]
+                   << ")) returns nullptr. pages_.size() = " << pages_.size()
+                   << ".";
   page_data->distilled_page_proto =
       new base::RefCountedData<DistilledPageProto>();
   page_data->page_num = page_num;
   if (distiller_result->has_title()) {
-    page_data->distilled_page_proto->data.set_title(
-        distiller_result->title());
+    page_data->distilled_page_proto->data.set_title(distiller_result->title());
   }
   page_data->distilled_page_proto->data.set_url(page_url.spec());
   bool content_empty = true;
@@ -202,29 +204,25 @@ void DistillerImpl::OnPageDistillationFinished(
 
     if (distiller_timing_info.has_document_construction_time()) {
       timing_info.set_name("document_construction");
-      timing_info.set_time(
-          distiller_timing_info.document_construction_time());
+      timing_info.set_time(distiller_timing_info.document_construction_time());
       *page_data->distilled_page_proto->data.add_timing_info() = timing_info;
     }
 
     if (distiller_timing_info.has_article_processing_time()) {
       timing_info.set_name("article_processing");
-      timing_info.set_time(
-          distiller_timing_info.article_processing_time());
+      timing_info.set_time(distiller_timing_info.article_processing_time());
       *page_data->distilled_page_proto->data.add_timing_info() = timing_info;
     }
 
     if (distiller_timing_info.has_formatting_time()) {
       timing_info.set_name("formatting");
-      timing_info.set_time(
-          distiller_timing_info.formatting_time());
+      timing_info.set_time(distiller_timing_info.formatting_time());
       *page_data->distilled_page_proto->data.add_timing_info() = timing_info;
     }
 
     if (distiller_timing_info.has_total_time()) {
       timing_info.set_name("total");
-      timing_info.set_time(
-          distiller_timing_info.total_time());
+      timing_info.set_time(distiller_timing_info.total_time());
       *page_data->distilled_page_proto->data.add_timing_info() = timing_info;
     }
 
@@ -252,15 +250,14 @@ void DistillerImpl::OnPageDistillationFinished(
     const proto::PaginationInfo& pagination_info =
         distiller_result->pagination_info();
     // Skip the next page if the first page is empty.
-    if (pagination_info.has_next_page() &&
-        (page_num != 0 || !content_empty)) {
+    if (pagination_info.has_next_page() && (page_num != 0 || !content_empty)) {
       GURL next_page_url(pagination_info.next_page());
       if (next_page_url.is_valid()) {
         // The pages should be in same origin.
         DCHECK_EQ(next_page_url.GetOrigin(), page_url.GetOrigin());
         AddToDistillationQueue(page_num + 1, next_page_url);
-        page_data->distilled_page_proto->data.mutable_pagination_info()->
-            set_next_page(next_page_url.spec());
+        page_data->distilled_page_proto->data.mutable_pagination_info()
+            ->set_next_page(next_page_url.spec());
       }
     }
 
@@ -269,16 +266,16 @@ void DistillerImpl::OnPageDistillationFinished(
       if (prev_page_url.is_valid()) {
         DCHECK_EQ(prev_page_url.GetOrigin(), page_url.GetOrigin());
         AddToDistillationQueue(page_num - 1, prev_page_url);
-        page_data->distilled_page_proto->data.mutable_pagination_info()->
-            set_prev_page(prev_page_url.spec());
+        page_data->distilled_page_proto->data.mutable_pagination_info()
+            ->set_prev_page(prev_page_url.spec());
       }
     }
 
     if (pagination_info.has_canonical_page()) {
       GURL canonical_page_url(pagination_info.canonical_page());
       if (canonical_page_url.is_valid()) {
-        page_data->distilled_page_proto->data.mutable_pagination_info()->
-            set_canonical_page(canonical_page_url.spec());
+        page_data->distilled_page_proto->data.mutable_pagination_info()
+            ->set_canonical_page(canonical_page_url.spec());
       }
     }
   }
@@ -298,7 +295,8 @@ void DistillerImpl::OnPageDistillationFinished(
 void DistillerImpl::MaybeFetchImage(int page_num,
                                     const std::string& image_id,
                                     const std::string& image_url) {
-  if (!GURL(image_url).is_valid()) return;
+  if (!GURL(image_url).is_valid())
+    return;
   DCHECK(started_pages_index_.find(page_num) != started_pages_index_.end());
   DistilledPageData* page_data = GetPageAtIndex(started_pages_index_[page_num]);
 
@@ -314,13 +312,13 @@ void DistillerImpl::MaybeFetchImage(int page_num,
       distiller_url_fetcher_factory_.CreateDistillerURLFetcher();
   page_data->image_fetchers_.push_back(base::WrapUnique(fetcher));
 
-  fetcher->FetchURL(image_url,
-                    base::Bind(&DistillerImpl::OnFetchImageDone,
-                               weak_factory_.GetWeakPtr(),
-                               page_num,
-                               base::Unretained(fetcher),
-                               image_id,
-                               image_url));
+  // TODO(gilmanmh): Investigate whether this needs to be base::BindRepeating()
+  // or if base::BindOnce() can be used instead.
+  fetcher->FetchURL(
+      image_url,
+      base::BindRepeating(&DistillerImpl::OnFetchImageDone,
+                          weak_factory_.GetWeakPtr(), page_num,
+                          base::Unretained(fetcher), image_id, image_url));
 }
 
 void DistillerImpl::OnFetchImageDone(int page_num,
@@ -380,7 +378,7 @@ const ArticleDistillationUpdate DistillerImpl::CreateDistillationUpdate()
     has_next_page = IsPageNumberInUse(next_page_num);
   }
 
-  std::vector<scoped_refptr<ArticleDistillationUpdate::RefCountedPageProto> >
+  std::vector<scoped_refptr<ArticleDistillationUpdate::RefCountedPageProto>>
       update_pages;
   for (auto it = finished_pages_index_.begin();
        it != finished_pages_index_.end(); ++it) {

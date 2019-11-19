@@ -9,7 +9,15 @@
 #include <stdint.h>
 #include <uiautomation.h>
 #include <wrl/client.h>
+#include <map>
+#include <string>
+#include <vector>
 
+#include "base/atomicops.h"
+#include "base/run_loop.h"
+#include "base/synchronization/lock.h"
+#include "base/synchronization/waitable_event.h"
+#include "base/threading/platform_thread.h"
 #include "base/win/atl.h"
 #include "content/browser/accessibility/accessibility_event_recorder.h"
 
@@ -18,52 +26,116 @@ namespace content {
 class AccessibilityEventRecorderUia : public AccessibilityEventRecorder {
  public:
   AccessibilityEventRecorderUia(
-      BrowserAccessibilityManager* manager = nullptr,
-      base::ProcessId pid = 0,
-      const base::StringPiece& application_name_match_pattern =
-          base::StringPiece());
+      BrowserAccessibilityManager* manager,
+      base::ProcessId pid,
+      const base::StringPiece& application_name_match_pattern);
   ~AccessibilityEventRecorderUia() override;
 
   static std::unique_ptr<AccessibilityEventRecorder> CreateUia(
-      BrowserAccessibilityManager* manager = nullptr,
-      base::ProcessId pid = 0,
-      const base::StringPiece& application_name_match_pattern =
-          base::StringPiece());
+      BrowserAccessibilityManager* manager,
+      base::ProcessId pid,
+      const base::StringPiece& application_name_match_pattern);
+
+  // Called to ensure the event recorder has finished recording async events.
+  void FlushAsyncEvents() override;
 
  private:
-  Microsoft::WRL::ComPtr<IUIAutomation> uia_;
-  Microsoft::WRL::ComPtr<IUIAutomationCacheRequest> cache_request_;
-  static AccessibilityEventRecorderUia* instance_;
+  // Used to prevent creation of multiple instances simultaneously
+  static volatile base::subtle::Atomic32 instantiated_;
 
-  // An implementation of various UIA interface that forward event
-  // notifications to the owning event recorder.
-  class EventHandler : public CComObjectRootEx<CComMultiThreadModel>,
-                       public IUIAutomationFocusChangedEventHandler {
+  // All UIA calls need to be made on a secondary MTA thread to avoid sporadic
+  // test hangs / timeouts.
+  class Thread : public base::PlatformThread::Delegate {
    public:
-    explicit EventHandler();
-    virtual ~EventHandler();
+    Thread();
+    ~Thread() override;
 
     void Init(AccessibilityEventRecorderUia* owner,
-              Microsoft::WRL::ComPtr<IUIAutomationElement> root);
+              HWND hwnd,
+              base::RunLoop& initialization_loop,
+              base::RunLoop& shutdown_loop);
 
-    BEGIN_COM_MAP(EventHandler)
-    COM_INTERFACE_ENTRY(IUIAutomationFocusChangedEventHandler)
-    END_COM_MAP()
+    void SendShutdownSignal();
 
-    // IUIAutomationFocusChangedEventHandler interface.
-    STDMETHOD(HandleFocusChangedEvent)(IUIAutomationElement* sender) override;
-
-    // Points to the event recorder to receive notifications.
-    AccessibilityEventRecorderUia* owner_;
+    void ThreadMain() override;
 
    private:
-    std::string GetSenderInfo(IUIAutomationElement* sender);
+    AccessibilityEventRecorderUia* owner_ = nullptr;
+    HWND hwnd_ = NULL;
+    EVENTID shutdown_sentinel_ = 0;
 
+    Microsoft::WRL::ComPtr<IUIAutomation> uia_;
     Microsoft::WRL::ComPtr<IUIAutomationElement> root_;
+    Microsoft::WRL::ComPtr<IUIAutomationCacheRequest> cache_request_;
 
-    DISALLOW_COPY_AND_ASSIGN(EventHandler);
+    // Thread synchronization members
+    base::OnceClosure initialization_complete_;
+    base::OnceClosure shutdown_complete_;
+    base::WaitableEvent shutdown_signal_;
+    bool shutdown_sentinel_received_ = false;
+
+    // Thread-specific wrapper for OnEvent to handle necessary locking
+    void OnEvent(const std::string& event);
+    base::Lock on_event_lock_;
+    std::map<base::PlatformThreadId, std::vector<std::string>> event_logs_;
+
+    // An implementation of various UIA interfaces that forward event
+    // notifications to the owning event recorder.
+    class EventHandler : public CComObjectRootEx<CComMultiThreadModel>,
+                         public IUIAutomationFocusChangedEventHandler,
+                         public IUIAutomationPropertyChangedEventHandler,
+                         public IUIAutomationStructureChangedEventHandler,
+                         public IUIAutomationEventHandler {
+     public:
+      EventHandler();
+      virtual ~EventHandler();
+
+      void Init(AccessibilityEventRecorderUia::Thread* owner,
+                Microsoft::WRL::ComPtr<IUIAutomationElement> root);
+      void CleanUp();
+
+      BEGIN_COM_MAP(EventHandler)
+      COM_INTERFACE_ENTRY(IUIAutomationFocusChangedEventHandler)
+      COM_INTERFACE_ENTRY(IUIAutomationPropertyChangedEventHandler)
+      COM_INTERFACE_ENTRY(IUIAutomationStructureChangedEventHandler)
+      COM_INTERFACE_ENTRY(IUIAutomationEventHandler)
+      END_COM_MAP()
+
+      // IUIAutomationFocusChangedEventHandler interface.
+      STDMETHOD(HandleFocusChangedEvent)(IUIAutomationElement* sender) override;
+
+      // IUIAutomationPropertyChangedEventHandler interface.
+      STDMETHOD(HandlePropertyChangedEvent)
+      (IUIAutomationElement* sender,
+       PROPERTYID property_id,
+       VARIANT new_value) override;
+
+      // IUIAutomationStructureChangedEventHandler interface.
+      STDMETHOD(HandleStructureChangedEvent)
+      (IUIAutomationElement* sender,
+       StructureChangeType change_type,
+       SAFEARRAY* runtime_id) override;
+
+      // IUIAutomationEventHandler interface.
+      STDMETHOD(HandleAutomationEvent)
+      (IUIAutomationElement* sender, EVENTID event_id) override;
+
+      // Points to the event recorder to receive notifications.
+      AccessibilityEventRecorderUia::Thread* owner_ = nullptr;
+
+     private:
+      std::string GetSenderInfo(IUIAutomationElement* sender);
+
+      Microsoft::WRL::ComPtr<IUIAutomationElement> root_;
+
+      DISALLOW_COPY_AND_ASSIGN(EventHandler);
+    };
+    Microsoft::WRL::ComPtr<CComObject<EventHandler>> uia_event_handler_;
   };
-  Microsoft::WRL::ComPtr<CComObject<EventHandler>> uia_event_handler_;
+
+  Thread thread_;
+  base::RunLoop shutdown_loop_;
+  base::PlatformThreadHandle thread_handle_;
 
   DISALLOW_COPY_AND_ASSIGN(AccessibilityEventRecorderUia);
 };

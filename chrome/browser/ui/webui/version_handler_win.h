@@ -27,7 +27,7 @@ class VersionHandlerWindows : public VersionHandler {
   static std::string GetFullWindowsVersionForTesting();
 
  private:
-  base::WeakPtrFactory<VersionHandlerWindows> weak_factory_;
+  base::WeakPtrFactory<VersionHandlerWindows> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(VersionHandlerWindows);
 };

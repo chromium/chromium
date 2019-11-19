@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/animation/animation_test_api.h"
@@ -30,14 +30,14 @@ class SlideAnimationTest : public testing::Test {
 
  protected:
   SlideAnimationTest()
-      : scoped_task_environment_(
-            base::test::ScopedTaskEnvironment::MainThreadType::UI) {
-    slide_animation_.reset(new SlideAnimation(nullptr));
-    animation_api_.reset(new AnimationTestApi(slide_animation_.get()));
+      : task_environment_(
+            base::test::SingleThreadTaskEnvironment::MainThreadType::UI) {
+    slide_animation_ = std::make_unique<SlideAnimation>(nullptr);
+    animation_api_ = std::make_unique<AnimationTestApi>(slide_animation_.get());
   }
 
  private:
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
 // Tests animation construction.
@@ -46,7 +46,7 @@ TEST_F(SlideAnimationTest, InitialState) {
   // 1/60th of a second.
   EXPECT_EQ(1000 / 60, slide_animation_->timer_interval().InMilliseconds());
   // Duration defaults to 120 ms.
-  EXPECT_EQ(120, slide_animation_->GetSlideDuration());
+  EXPECT_EQ(120, slide_animation_->GetSlideDuration().InMilliseconds());
   // Slide is neither showing nor closing.
   EXPECT_FALSE(slide_animation_->IsShowing());
   EXPECT_FALSE(slide_animation_->IsClosing());
@@ -59,8 +59,8 @@ TEST_F(SlideAnimationTest, Basics) {
   slide_animation_->SetTweenType(Tween::LINEAR);
 
   // Duration can be set after construction.
-  slide_animation_->SetSlideDuration(100);
-  EXPECT_EQ(100, slide_animation_->GetSlideDuration());
+  slide_animation_->SetSlideDuration(base::TimeDelta::FromMilliseconds(100));
+  EXPECT_EQ(100, slide_animation_->GetSlideDuration().InMilliseconds());
 
   // Show toggles the appropriate state.
   slide_animation_->Show();
@@ -105,8 +105,7 @@ TEST_F(SlideAnimationTest, DontNotifyOnDelete) {
 TEST_F(SlideAnimationTest,
        AnimationWithPartialProgressAndDefaultDampeningFactor) {
   slide_animation_->SetTweenType(Tween::LINEAR);
-  const double duration = 100;
-  slide_animation_->SetSlideDuration(duration);
+  slide_animation_->SetSlideDuration(base::TimeDelta::FromMilliseconds(100));
   slide_animation_->Show();
   EXPECT_EQ(slide_animation_->GetCurrentValue(), 0.0);
 
@@ -130,18 +129,17 @@ TEST_F(SlideAnimationTest,
 TEST_F(SlideAnimationTest,
        AnimationWithPartialProgressAndNonDefaultDampeningFactor) {
   slide_animation_->SetTweenType(Tween::LINEAR);
-  const double duration = 100;
   slide_animation_->SetDampeningValue(2.0);
-  slide_animation_->SetSlideDuration(duration);
+  slide_animation_->SetSlideDuration(base::TimeDelta::FromMilliseconds(100));
   slide_animation_->Show();
   // Advance the animation to halfway done.
-  RunAnimationFor(base::TimeDelta::FromMilliseconds(duration / 2));
+  RunAnimationFor(base::TimeDelta::FromMilliseconds(50));
   EXPECT_EQ(0.5, slide_animation_->GetCurrentValue());
 
   // Reverse the animation and run it for the same duration, it should be
   // sub-linear with dampening.
   slide_animation_->Hide();
-  RunAnimationFor(base::TimeDelta::FromMilliseconds(duration / 2));
+  RunAnimationFor(base::TimeDelta::FromMilliseconds(50));
   EXPECT_GT(slide_animation_->GetCurrentValue(), 0);
 }
 
@@ -149,27 +147,26 @@ TEST_F(SlideAnimationTest,
 // amount of time to complete.
 TEST_F(SlideAnimationTest, DampenedAnimationMostlyComplete) {
   slide_animation_->SetTweenType(Tween::LINEAR);
-  const double duration = 100;
   slide_animation_->SetDampeningValue(2.0);
-  slide_animation_->SetSlideDuration(duration);
+  slide_animation_->SetSlideDuration(base::TimeDelta::FromMilliseconds(100));
   slide_animation_->Show();
   // Advance the animation to 1/10th of the way done.
-  RunAnimationFor(base::TimeDelta::FromMilliseconds(duration * 0.1));
+  RunAnimationFor(base::TimeDelta::FromMilliseconds(10));
   EXPECT_EQ(0.1, slide_animation_->GetCurrentValue());
 
   // Reverse the animation and run it for 1/10th of the duration, it should not
   // be complete.
   slide_animation_->Hide();
-  RunAnimationFor(base::TimeDelta::FromMilliseconds(duration * 0.1));
+  RunAnimationFor(base::TimeDelta::FromMilliseconds(10));
   EXPECT_GT(slide_animation_->GetCurrentValue(), 0);
 
   // Finish the animation and set up the test for a mostly complete show
   // animation.
-  RunAnimationFor(base::TimeDelta::FromMilliseconds(duration));
+  RunAnimationFor(base::TimeDelta::FromMilliseconds(100));
   EXPECT_EQ(0, slide_animation_->GetCurrentValue());
   slide_animation_->Show();
   // Advance the animation to 9/10th of the way done.
-  RunAnimationFor(base::TimeDelta::FromMilliseconds(duration * 0.9));
+  RunAnimationFor(base::TimeDelta::FromMilliseconds(90));
   EXPECT_EQ(0.9, slide_animation_->GetCurrentValue());
 
   // Hide and then Show the animation to force the duration to be recalculated,
@@ -177,10 +174,10 @@ TEST_F(SlideAnimationTest, DampenedAnimationMostlyComplete) {
   // complete.
   slide_animation_->Hide();
   slide_animation_->Show();
-  RunAnimationFor(base::TimeDelta::FromMilliseconds(duration * 0.1));
+  RunAnimationFor(base::TimeDelta::FromMilliseconds(10));
   EXPECT_LT(slide_animation_->GetCurrentValue(), 1);
 
-  RunAnimationFor(base::TimeDelta::FromMilliseconds(duration * 0.4));
+  RunAnimationFor(base::TimeDelta::FromMilliseconds(40));
   EXPECT_EQ(1, slide_animation_->GetCurrentValue());
 }
 
@@ -188,12 +185,11 @@ TEST_F(SlideAnimationTest, DampenedAnimationMostlyComplete) {
 // of time to complete.
 TEST_F(SlideAnimationTest, DampenedAnimationMostlyIncomplete) {
   slide_animation_->SetTweenType(Tween::LINEAR);
-  const double duration = 100;
   slide_animation_->SetDampeningValue(2.0);
-  slide_animation_->SetSlideDuration(duration);
+  slide_animation_->SetSlideDuration(base::TimeDelta::FromMilliseconds(100));
   slide_animation_->Show();
   // Advance the animation to 1/10th of the way done.
-  RunAnimationFor(base::TimeDelta::FromMilliseconds(duration * 0.1));
+  RunAnimationFor(base::TimeDelta::FromMilliseconds(10));
   EXPECT_EQ(0.1, slide_animation_->GetCurrentValue());
 
   // Hide and then Show the animation to force the duration to be recalculated,
@@ -201,15 +197,15 @@ TEST_F(SlideAnimationTest, DampenedAnimationMostlyIncomplete) {
   // complete.
   slide_animation_->Hide();
   slide_animation_->Show();
-  RunAnimationFor(base::TimeDelta::FromMilliseconds(duration * 0.9));
+  RunAnimationFor(base::TimeDelta::FromMilliseconds(90));
   EXPECT_LT(slide_animation_->GetCurrentValue(), 1);
 
   // Finish the animation and set up the test for a mostly incomplete hide
   // animation.
-  RunAnimationFor(base::TimeDelta::FromMilliseconds(duration));
+  RunAnimationFor(base::TimeDelta::FromMilliseconds(100));
   EXPECT_EQ(1, slide_animation_->GetCurrentValue());
   slide_animation_->Hide();
-  RunAnimationFor(base::TimeDelta::FromMilliseconds(duration * 0.1));
+  RunAnimationFor(base::TimeDelta::FromMilliseconds(10));
   EXPECT_EQ(0.9, slide_animation_->GetCurrentValue());
 
   // Show and then hide the animation to recompute the duration, then run the
@@ -217,10 +213,10 @@ TEST_F(SlideAnimationTest, DampenedAnimationMostlyIncomplete) {
   // complete.
   slide_animation_->Show();
   slide_animation_->Hide();
-  RunAnimationFor(base::TimeDelta::FromMilliseconds(duration * 0.9));
+  RunAnimationFor(base::TimeDelta::FromMilliseconds(90));
   EXPECT_GT(slide_animation_->GetCurrentValue(), 0);
 
-  RunAnimationFor(base::TimeDelta::FromMilliseconds(duration));
+  RunAnimationFor(base::TimeDelta::FromMilliseconds(100));
   EXPECT_EQ(0, slide_animation_->GetCurrentValue());
 }
 

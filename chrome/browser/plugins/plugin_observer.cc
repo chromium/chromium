@@ -38,6 +38,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/webplugininfo.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -51,36 +52,37 @@ class PluginObserver::PluginPlaceholderHost : public PluginInstallerObserver {
       PluginObserver* observer,
       base::string16 plugin_name,
       PluginInstaller* installer,
-      chrome::mojom::PluginRendererPtr plugin_renderer_interface)
+      mojo::PendingRemote<chrome::mojom::PluginRenderer> plugin_renderer_remote)
       : PluginInstallerObserver(installer),
         observer_(observer),
-        plugin_renderer_interface_(std::move(plugin_renderer_interface)) {
-    plugin_renderer_interface_.set_connection_error_handler(
+        plugin_renderer_remote_(std::move(plugin_renderer_remote)) {
+    plugin_renderer_remote_.set_disconnect_handler(
         base::Bind(&PluginObserver::RemovePluginPlaceholderHost,
                    base::Unretained(observer_), this));
     DCHECK(installer);
   }
 
   void DownloadFinished() override {
-    plugin_renderer_interface_->FinishedDownloading();
+    plugin_renderer_remote_->FinishedDownloading();
   }
 
  private:
   PluginObserver* observer_;
-  chrome::mojom::PluginRendererPtr plugin_renderer_interface_;
+  mojo::Remote<chrome::mojom::PluginRenderer> plugin_renderer_remote_;
 };
 
 class PluginObserver::ComponentObserver
     : public update_client::UpdateClient::Observer {
  public:
   using Events = update_client::UpdateClient::Observer::Events;
-  ComponentObserver(PluginObserver* observer,
-                    const std::string& component_id,
-                    chrome::mojom::PluginRendererPtr plugin_renderer_interface)
+  ComponentObserver(
+      PluginObserver* observer,
+      const std::string& component_id,
+      mojo::PendingRemote<chrome::mojom::PluginRenderer> plugin_renderer_remote)
       : observer_(observer),
         component_id_(component_id),
-        plugin_renderer_interface_(std::move(plugin_renderer_interface)) {
-    plugin_renderer_interface_.set_connection_error_handler(
+        plugin_renderer_remote_(std::move(plugin_renderer_remote)) {
+    plugin_renderer_remote_.set_disconnect_handler(
         base::Bind(&PluginObserver::RemoveComponentObserver,
                    base::Unretained(observer_), this));
     g_browser_process->component_updater()->AddObserver(this);
@@ -99,15 +101,15 @@ class PluginObserver::ComponentObserver
       return;
     switch (event) {
       case Events::COMPONENT_UPDATED:
-        plugin_renderer_interface_->UpdateSuccess();
+        plugin_renderer_remote_->UpdateSuccess();
         observer_->RemoveComponentObserver(this);
         break;
       case Events::COMPONENT_UPDATE_FOUND:
-        plugin_renderer_interface_->UpdateDownloading();
+        plugin_renderer_remote_->UpdateDownloading();
         break;
       case Events::COMPONENT_NOT_UPDATED:
       case Events::COMPONENT_UPDATE_ERROR:
-        plugin_renderer_interface_->UpdateFailure();
+        plugin_renderer_remote_->UpdateFailure();
         observer_->RemoveComponentObserver(this);
         break;
       default:
@@ -119,14 +121,13 @@ class PluginObserver::ComponentObserver
  private:
   PluginObserver* observer_;
   std::string component_id_;
-  chrome::mojom::PluginRendererPtr plugin_renderer_interface_;
+  mojo::Remote<chrome::mojom::PluginRenderer> plugin_renderer_remote_;
   DISALLOW_COPY_AND_ASSIGN(ComponentObserver);
 };
 
 PluginObserver::PluginObserver(content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
-      plugin_host_bindings_(web_contents, this),
-      weak_ptr_factory_(this) {}
+      plugin_host_bindings_(web_contents, this) {}
 
 PluginObserver::~PluginObserver() {
 }
@@ -190,12 +191,11 @@ void PluginObserver::CreatePluginObserverInfoBar(
       infobars::InfoBarDelegate::PLUGIN_OBSERVER_INFOBAR_DELEGATE,
       &kExtensionCrashedIcon,
       l10n_util::GetStringFUTF16(IDS_PLUGIN_INITIALIZATION_ERROR_PROMPT,
-                                 plugin_name),
-      true);
+                                 plugin_name));
 }
 
 void PluginObserver::BlockedOutdatedPlugin(
-    chrome::mojom::PluginRendererPtr plugin_renderer,
+    mojo::PendingRemote<chrome::mojom::PluginRenderer> plugin_renderer,
     const std::string& identifier) {
   PluginFinder* finder = PluginFinder::GetInstance();
   // Find plugin to update.
@@ -216,7 +216,7 @@ void PluginObserver::BlockedOutdatedPlugin(
 }
 
 void PluginObserver::BlockedComponentUpdatedPlugin(
-    chrome::mojom::PluginRendererPtr plugin_renderer,
+    mojo::PendingRemote<chrome::mojom::PluginRenderer> plugin_renderer,
     const std::string& identifier) {
   auto component_observer = std::make_unique<ComponentObserver>(
       this, identifier, std::move(plugin_renderer));

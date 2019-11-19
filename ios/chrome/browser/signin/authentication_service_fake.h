@@ -10,7 +10,7 @@
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity.h"
 
-namespace identity {
+namespace signin {
 class IdentityManager;
 }
 
@@ -26,30 +26,27 @@ class AuthenticationServiceFake : public AuthenticationService {
 
   ~AuthenticationServiceFake() override;
 
-  void SignIn(ChromeIdentity* identity,
-              const std::string& hosted_domain) override;
+  void SignIn(ChromeIdentity* identity) override;
 
   void SignOut(signin_metrics::ProfileSignout signout_source,
                ProceduralBlock completion) override;
 
-  void SetHaveAccountsChanged(bool changed);
+  void SetHaveAccountsChangedWhileInBackground(bool changed);
 
-  bool HaveAccountsChanged() override;
+  bool HaveAccountsChangedWhileInBackground() const override;
 
-  bool IsAuthenticated() override;
+  bool IsAuthenticated() const override;
 
-  ChromeIdentity* GetAuthenticatedIdentity() override;
-
-  NSString* GetAuthenticatedUserEmail() override;
+  ChromeIdentity* GetAuthenticatedIdentity() const override;
 
  private:
   AuthenticationServiceFake(PrefService* pref_service,
                             SyncSetupService* sync_setup_service,
-                            identity::IdentityManager* identity_manager,
+                            signin::IdentityManager* identity_manager,
                             syncer::SyncService* sync_service);
 
   __strong ChromeIdentity* authenticated_identity_;
-  bool have_accounts_changed_;
+  bool have_accounts_changed_while_in_background_;
 };
 
 #endif  // IOS_CHROME_BROWSER_SIGNIN_AUTHENTICATION_SERVICE_FAKE_H_

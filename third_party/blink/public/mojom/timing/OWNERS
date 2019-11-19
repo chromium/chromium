@@ -1,0 +1,7 @@
+npm@chromium.org
+
+per-file *.mojom=set noparent
+per-file *.mojom=file://ipc/SECURITY_OWNERS
+
+# TEAM: speed-metrics-dev@chromium.org
+# COMPONENT: Blink>PerformanceAPIs

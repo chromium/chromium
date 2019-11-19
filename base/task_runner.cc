@@ -6,8 +6,11 @@
 
 #include <utility>
 
+#include "base/bind.h"
 #include "base/compiler_specific.h"
 #include "base/logging.h"
+#include "base/task/promise/abstract_promise.h"
+#include "base/task/promise/helpers.h"
 #include "base/threading/post_task_and_reply_impl.h"
 
 namespace base {
@@ -15,7 +18,7 @@ namespace base {
 namespace {
 
 // TODO(akalin): There's only one other implementation of
-// PostTaskAndReplyImpl in WorkerPool.  Investigate whether it'll be
+// PostTaskAndReplyImpl in post_task.cc.  Investigate whether it'll be
 // possible to merge the two.
 class PostTaskAndReplyTaskRunner : public internal::PostTaskAndReplyImpl {
  public:
@@ -49,6 +52,16 @@ bool TaskRunner::PostTaskAndReply(const Location& from_here,
                                   OnceClosure reply) {
   return PostTaskAndReplyTaskRunner(this).PostTaskAndReply(
       from_here, std::move(task), std::move(reply));
+}
+
+bool TaskRunner::PostPromiseInternal(WrappedPromise promise,
+                                     base::TimeDelta delay) {
+  Location from_here = promise.from_here();
+  return PostDelayedTask(
+      from_here,
+      BindOnce([](WrappedPromise promise) { promise.Execute(); },
+               std::move(promise)),
+      delay);
 }
 
 TaskRunner::TaskRunner() = default;

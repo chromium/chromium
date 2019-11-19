@@ -6,7 +6,7 @@
 
 #include "base/macros.h"
 #include "chrome/common/webui_url_constants.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/api/web_request/web_request_info.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -19,7 +19,7 @@ class ChromeExtensionsAPIClientTest : public testing::Test {
   ChromeExtensionsAPIClientTest() = default;
 
  private:
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   DISALLOW_COPY_AND_ASSIGN(ChromeExtensionsAPIClientTest);
 };
 
@@ -38,23 +38,33 @@ TEST_F(ChromeExtensionsAPIClientTest, ShouldHideResponseHeader) {
 TEST_F(ChromeExtensionsAPIClientTest, ShouldHideBrowserNetworkRequest) {
   ChromeExtensionsAPIClient client;
 
+  auto create_params = [](content::ResourceType type) {
+    WebRequestInfoInitParams request_params;
+    request_params.url = GURL("https://example.com/script.js");
+    request_params.initiator =
+        url::Origin::Create(GURL(chrome::kChromeUINewTabURL));
+    request_params.render_process_id = -1;
+    request_params.type = type;
+    return request_params;
+  };
+
   // Requests made by the browser with chrome://newtab as its initiator should
   // not be visible to extensions.
-  WebRequestInfo request;
-  request.url = GURL("https://example.com/script.js");
-  request.initiator = url::Origin::Create(GURL(chrome::kChromeUINewTabURL));
-  request.render_process_id = -1;
-  request.type = content::ResourceType::RESOURCE_TYPE_SCRIPT;
-  EXPECT_TRUE(client.ShouldHideBrowserNetworkRequest(request));
+  EXPECT_TRUE(client.ShouldHideBrowserNetworkRequest(
+      nullptr /* context */,
+      WebRequestInfo(create_params(content::ResourceType::kScript))));
 
   // Main frame requests should always be visible to extensions.
-  request.type = content::ResourceType::RESOURCE_TYPE_MAIN_FRAME;
-  EXPECT_FALSE(client.ShouldHideBrowserNetworkRequest(request));
+  EXPECT_FALSE(client.ShouldHideBrowserNetworkRequest(
+      nullptr /* context */,
+      WebRequestInfo(create_params(content::ResourceType::kMainFrame))));
 
   // Similar requests made by the renderer should be visible to extensions.
-  request.type = content::ResourceType::RESOURCE_TYPE_SCRIPT;
-  request.render_process_id = 2;
-  EXPECT_FALSE(client.ShouldHideBrowserNetworkRequest(request));
+  WebRequestInfoInitParams params =
+      create_params(content::ResourceType::kScript);
+  params.render_process_id = 2;
+  EXPECT_FALSE(client.ShouldHideBrowserNetworkRequest(
+      nullptr /* context */, WebRequestInfo(std::move(params))));
 }
 
 }  // namespace extensions

@@ -11,8 +11,12 @@
 
 #include "base/macros.h"
 #include "base/process/process_handle.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/win/windows_version.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
+#include "chrome/browser/profiles/profile_avatar_icon_util.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/views/frame/browser_frame.h"
@@ -20,12 +24,15 @@
 #include "chrome/browser/ui/views/frame/browser_window_property_manager_win.h"
 #include "chrome/browser/ui/views/frame/system_menu_insertion_delegate_win.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
+#include "chrome/browser/win/app_icon.h"
 #include "chrome/browser/win/titlebar_config.h"
 #include "chrome/common/chrome_constants.h"
 #include "ui/base/theme_provider.h"
 #include "ui/base/win/hwnd_metrics.h"
 #include "ui/display/win/screen_win.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/icon_util.h"
+#include "ui/gfx/image/image_family.h"
 #include "ui/views/controls/menu/native_menu_win.h"
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -39,10 +46,12 @@ BrowserDesktopWindowTreeHostWin::BrowserDesktopWindowTreeHostWin(
     : DesktopWindowTreeHostWin(native_widget_delegate,
                                desktop_native_widget_aura),
       browser_view_(browser_view),
-      browser_frame_(browser_frame) {}
-
-BrowserDesktopWindowTreeHostWin::~BrowserDesktopWindowTreeHostWin() {
+      browser_frame_(browser_frame) {
+  profile_observer_.Add(
+      &g_browser_process->profile_manager()->GetProfileAttributesStorage());
 }
+
+BrowserDesktopWindowTreeHostWin::~BrowserDesktopWindowTreeHostWin() {}
 
 views::NativeMenuWin* BrowserDesktopWindowTreeHostWin::GetSystemMenu() {
   if (!system_menu_.get()) {
@@ -73,6 +82,51 @@ bool BrowserDesktopWindowTreeHostWin::UsesNativeSystemMenu() const {
 
 ////////////////////////////////////////////////////////////////////////////////
 // BrowserDesktopWindowTreeHostWin, views::DesktopWindowTreeHostWin overrides:
+
+void BrowserDesktopWindowTreeHostWin::Init(
+    const views::Widget::InitParams& params) {
+  DesktopWindowTreeHostWin::Init(std::move(params));
+  if (base::win::GetVersion() < base::win::Version::WIN10)
+    return;  // VirtualDesktopManager isn't support pre Win-10.
+
+  // Virtual Desktops on Windows are best-effort and may not always be
+  // available.
+  if (FAILED(::CoCreateInstance(__uuidof(VirtualDesktopManager), nullptr,
+                                CLSCTX_ALL,
+                                IID_PPV_ARGS(&virtual_desktop_manager_)))) {
+    return;
+  }
+
+  if (!params.workspace.empty()) {
+    GUID guid = GUID_NULL;
+    HRESULT hr =
+        CLSIDFromString(base::UTF8ToUTF16(params.workspace).c_str(), &guid);
+    if (SUCCEEDED(hr)) {
+      // There are valid reasons MoveWindowToDesktop can fail, e.g.,
+      // the desktop was deleted. If it fails, the window will open on the
+      // current desktop.
+      virtual_desktop_manager_->MoveWindowToDesktop(GetHWND(), guid);
+    }
+  }
+}
+
+std::string BrowserDesktopWindowTreeHostWin::GetWorkspace() const {
+  std::string workspace_id;
+  if (virtual_desktop_manager_) {
+    GUID workspace_guid;
+    HRESULT hr = virtual_desktop_manager_->GetWindowDesktopId(GetHWND(),
+                                                              &workspace_guid);
+    if (FAILED(hr) || workspace_guid == GUID_NULL)
+      return workspace_.value_or("");
+
+    LPOLESTR workspace_widestr;
+    StringFromCLSID(workspace_guid, &workspace_widestr);
+    workspace_id = base::WideToUTF8(workspace_widestr);
+    workspace_ = workspace_id;
+    CoTaskMemFree(workspace_widestr);
+  }
+  return workspace_id;
+}
 
 int BrowserDesktopWindowTreeHostWin::GetInitialShowState() const {
   STARTUPINFO si = {0};
@@ -129,19 +183,19 @@ bool BrowserDesktopWindowTreeHostWin::GetDwmFrameInsetsInPixels(
   } else {
     // The glass should extend to the bottom of the tabstrip.
     HWND hwnd = GetHWND();
-    gfx::Rect tabstrip_bounds(
-        browser_frame_->GetBoundsForTabStrip(browser_view_->tabstrip()));
-    tabstrip_bounds =
-        display::win::ScreenWin::DIPToClientRect(hwnd, tabstrip_bounds);
+    gfx::Rect tabstrip_region_bounds(
+        browser_frame_->GetBoundsForTabStripRegion(browser_view_->tabstrip()));
+    tabstrip_region_bounds =
+        display::win::ScreenWin::DIPToClientRect(hwnd, tabstrip_region_bounds);
 
     // The 2 px (not DIP) at the inner edges of Win 7 glass are a light and dark
     // line, so we must inset further to account for those.
     constexpr int kWin7GlassInset = 2;
-    const int inset = (base::win::GetVersion() < base::win::VERSION_WIN8)
+    const int inset = (base::win::GetVersion() < base::win::Version::WIN8)
                           ? kWin7GlassInset
                           : 0;
-    *insets =
-        gfx::Insets(tabstrip_bounds.bottom() + inset, inset, inset, inset);
+    *insets = gfx::Insets(tabstrip_region_bounds.bottom() + inset, inset, inset,
+                          inset);
   }
   return true;
 }
@@ -151,9 +205,23 @@ void BrowserDesktopWindowTreeHostWin::HandleCreate() {
   browser_window_property_manager_ =
       BrowserWindowPropertyManager::CreateBrowserWindowPropertyManager(
           browser_view_, GetHWND());
+
+  // Use the profile icon as the browser window icon, if there is more
+  // than one profile. This makes alt-tab preview tabs show the profile-specific
+  // icon in the multi-profile case.
+  if (g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetNumberOfProfiles() > 1) {
+    SetWindowIcon(/*badged=*/true);
+  }
 }
 
 void BrowserDesktopWindowTreeHostWin::HandleDestroying() {
+  // TODO(crbug/976176): Move all access to |virtual_desktop_manager_| off of
+  // the ui thread to prevent reentrancy bugs due to COM objects pumping
+  // messages. For now, Reset() so COM object destructor is called before
+  // |this| is in the process of being deleted.
+  virtual_desktop_manager_.Reset();
   browser_window_property_manager_.reset();
   DesktopWindowTreeHostWin::HandleDestroying();
 }
@@ -195,6 +263,13 @@ void BrowserDesktopWindowTreeHostWin::PostHandleMSG(UINT message,
                                                     WPARAM w_param,
                                                     LPARAM l_param) {
   switch (message) {
+    case WM_SETFOCUS: {
+      // GetWorkspace sets |workspace_|, so stash prev value.
+      std::string prev_workspace = workspace_.value_or("");
+      if (prev_workspace != GetWorkspace())
+        OnHostWorkspaceChanged();
+      break;
+    }
     case WM_CREATE:
       minimize_button_metrics_.Init(GetHWND());
       break;
@@ -280,12 +355,90 @@ bool BrowserDesktopWindowTreeHostWin::ShouldWindowContentsBeTransparent()
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+// ProfileAttributesStorage::Observer overrides:
+
+void BrowserDesktopWindowTreeHostWin::OnProfileAvatarChanged(
+    const base::FilePath& profile_path) {
+  // If we're currently badging the window icon (>1 available profile),
+  // and this window's profile's avatar changed, update the window icon.
+  if (browser_view_->browser()->profile()->GetPath() == profile_path &&
+      g_browser_process->profile_manager()
+              ->GetProfileAttributesStorage()
+              .GetNumberOfProfiles() > 1) {
+    // If we went from 1 to 2 profiles, window icons should be badged.
+    SetWindowIcon(/*badged=*/true);
+  }
+}
+
+void BrowserDesktopWindowTreeHostWin::OnProfileAdded(
+    const base::FilePath& profile_path) {
+  if (g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetNumberOfProfiles() == 2) {
+    SetWindowIcon(/*badged=*/true);
+  }
+}
+
+void BrowserDesktopWindowTreeHostWin::OnProfileWasRemoved(
+    const base::FilePath& profile_path,
+    const base::string16& profile_name) {
+  if (g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetNumberOfProfiles() == 1) {
+    // If we went from 2 profiles to 1, window icons should not be badged.
+    SetWindowIcon(/*badged=*/false);
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
 // BrowserDesktopWindowTreeHostWin, private:
 bool BrowserDesktopWindowTreeHostWin::IsOpaqueHostedAppFrame() const {
-  // TODO(https://crbug.com/868239): Support Windows 7 Aero glass for hosted app
+  // TODO(https://crbug.com/868239): Support Windows 7 Aero glass for web-app
   // window titlebar controls.
-  return browser_view_->IsBrowserTypeHostedApp() &&
-         base::win::GetVersion() < base::win::VERSION_WIN10;
+  return browser_view_->IsBrowserTypeWebApp() &&
+         base::win::GetVersion() < base::win::Version::WIN10;
+}
+
+SkBitmap GetBadgedIconBitmapForProfile(Profile* profile) {
+  std::unique_ptr<gfx::ImageFamily> family = GetAppIconImageFamily();
+  if (!family)
+    return SkBitmap();
+
+  SkBitmap app_icon_bitmap = family
+                                 ->CreateExact(profiles::kShortcutIconSizeWin,
+                                               profiles::kShortcutIconSizeWin)
+                                 .AsBitmap();
+  if (app_icon_bitmap.isNull())
+    return SkBitmap();
+
+  SkBitmap avatar_bitmap_1x;
+  SkBitmap avatar_bitmap_2x;
+
+  ProfileAttributesEntry* entry = nullptr;
+  if (!g_browser_process->profile_manager()
+           ->GetProfileAttributesStorage()
+           .GetProfileAttributesWithPath(profile->GetPath(), &entry))
+    return SkBitmap();
+
+  profiles::GetWinAvatarImages(entry, &avatar_bitmap_1x, &avatar_bitmap_2x);
+  return profiles::GetBadgedWinIconBitmapForAvatar(app_icon_bitmap,
+                                                   avatar_bitmap_1x, 1);
+}
+
+void BrowserDesktopWindowTreeHostWin::SetWindowIcon(bool badged) {
+  // Hold onto the previous icon so that the currently displayed
+  // icon is valid until replaced with the new icon.
+  base::win::ScopedHICON previous_icon = std::move(icon_handle_);
+  if (badged) {
+    icon_handle_ = IconUtil::CreateHICONFromSkBitmap(
+        GetBadgedIconBitmapForProfile(browser_view_->browser()->profile()));
+  } else {
+    icon_handle_.reset(GetAppIcon());
+  }
+  SendMessage(GetHWND(), WM_SETICON, ICON_SMALL,
+              reinterpret_cast<LPARAM>(icon_handle_.get()));
+  SendMessage(GetHWND(), WM_SETICON, ICON_BIG,
+              reinterpret_cast<LPARAM>(icon_handle_.get()));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -300,6 +453,5 @@ BrowserDesktopWindowTreeHost*
         BrowserFrame* browser_frame) {
   return new BrowserDesktopWindowTreeHostWin(native_widget_delegate,
                                              desktop_native_widget_aura,
-                                             browser_view,
-                                             browser_frame);
+                                             browser_view, browser_frame);
 }

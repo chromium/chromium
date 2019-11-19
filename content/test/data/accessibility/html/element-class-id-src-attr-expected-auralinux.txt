@@ -1,4 +1,4 @@
 [document web] tag:#document
 ++[heading] name='Image' class:headerClass id:headerID tag:h1
-++++[text] name='Image'
+++++[static] name='Image'
 ++[image] name='ImageAlt' class:imageClass id:imageID src:greenbox.png tag:img

@@ -5,9 +5,6 @@
 #include "chrome/browser/push_messaging/push_messaging_constants.h"
 
 const char kPushMessagingGcmEndpoint[] =
-    "https://android.googleapis.com/gcm/send/";
-
-const char kPushMessagingPushProtocolEndpoint[] =
     "https://fcm.googleapis.com/fcm/send/";
 
 const char kPushMessagingForcedNotificationTag[] =

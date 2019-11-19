@@ -12,6 +12,7 @@ import static org.chromium.net.CronetTestRule.getContext;
 
 import android.os.ConditionVariable;
 import android.support.test.filters.SmallTest;
+import android.support.test.runner.AndroidJUnit4;
 
 import org.junit.After;
 import org.junit.Before;
@@ -20,7 +21,6 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.net.CronetTestRule.CronetTestFramework;
 import org.chromium.net.CronetTestRule.OnlyRunNativeCronet;
@@ -38,7 +38,7 @@ import java.util.concurrent.Executors;
  * Tests that {@link org.chromium.net.impl.CronetUrlRequest#getStatus(StatusListener)} works as
  * expected.
  */
-@RunWith(BaseJUnit4ClassRunner.class)
+@RunWith(AndroidJUnit4.class)
 public class GetStatusTest {
     @Rule
     public final CronetTestRule mTestRule = new CronetTestRule();

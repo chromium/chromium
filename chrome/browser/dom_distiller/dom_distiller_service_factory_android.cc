@@ -5,11 +5,11 @@
 #include "chrome/browser/dom_distiller/dom_distiller_service_factory_android.h"
 
 #include "base/android/jni_android.h"
+#include "chrome/android/chrome_jni_headers/DomDistillerServiceFactory_jni.h"
 #include "chrome/browser/dom_distiller/dom_distiller_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_android.h"
 #include "components/dom_distiller/core/dom_distiller_service_android.h"
-#include "jni/DomDistillerServiceFactory_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::JavaRef;

@@ -309,9 +309,13 @@ void SafeBrowsingLoudErrorUI::PopulateExtendedReportingOption(
 
 void SafeBrowsingLoudErrorUI::PopulateBillingLoadTimeData(
     base::DictionaryValue* load_time_data) {
+  common_string_util::PopulateDarkModeDisplaySetting(load_time_data);
+
   load_time_data->SetBoolean("phishing", false);
   load_time_data->SetBoolean("overridable", true);
 
+  load_time_data->SetString("tabTitle",
+                            l10n_util::GetStringUTF16(IDS_BILLING_TITLE));
   load_time_data->SetString("heading",
                             l10n_util::GetStringUTF16(IDS_BILLING_HEADING));
   load_time_data->SetString(

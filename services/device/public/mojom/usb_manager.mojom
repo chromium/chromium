@@ -1,0 +1,47 @@
+// Copyright 2015 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module device.mojom;
+
+import "services/device/public/mojom/usb_device.mojom";
+import "services/device/public/mojom/usb_enumeration_options.mojom";
+import "services/device/public/mojom/usb_manager_client.mojom";
+import "mojo/public/mojom/base/file.mojom";
+
+interface UsbDeviceManager {
+  // Retrieves information about all devices available to the DeviceManager
+  // implementation and set client for device added/*removed events.
+  EnumerateDevicesAndSetClient(
+      pending_associated_remote<UsbDeviceManagerClient> client)
+          => (array<UsbDeviceInfo> results);
+
+  // Retrieves devices information filtered by |options| to the DeviceManager
+  // implementation.
+  GetDevices(UsbEnumerationOptions? options) => (array<UsbDeviceInfo> results);
+
+  // Requests a device by guid.
+  GetDevice(string guid, pending_receiver<UsbDevice> device_receiver,
+            pending_remote<UsbDeviceClient>? device_client);
+
+  // Check Android permissions to access the device identified by |guid|. If
+  // necessary the user is prompted to grant this access. If access is granted
+  // the device information is refreshed to include data not previously
+  // accessible.
+  [EnableIf=is_android]
+  RefreshDeviceInfo(string guid) => (UsbDeviceInfo? device_info);
+
+  // Check whether permission_broker will allow a future Open call for
+  // a given USB device to succeed.
+  [EnableIf=is_chromeos]
+  CheckAccess(string guid) => (bool success);
+
+  // Attempt to open a USB device using permission_broker and return
+  // a file descriptor.
+  [EnableIf=is_chromeos]
+  OpenFileDescriptor(string guid) => (mojo_base.mojom.File? fd);
+
+  // Sets the client for this DeviceManager service. The service will notify its
+  // client of device events such as connection and disconnection.
+  SetClient(pending_associated_remote<UsbDeviceManagerClient> client);
+};

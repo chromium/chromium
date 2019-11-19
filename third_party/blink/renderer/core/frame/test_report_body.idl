@@ -8,4 +8,5 @@
     NoInterfaceObject
 ] interface TestReportBody : ReportBody {
   readonly attribute DOMString message;
+  [CallWith=ScriptState] object toJSON();
 };

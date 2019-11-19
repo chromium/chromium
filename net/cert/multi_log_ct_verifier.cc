@@ -6,8 +6,6 @@
 
 #include <vector>
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/values.h"
 #include "net/base/net_errors.h"
@@ -19,7 +17,6 @@
 #include "net/cert/signed_certificate_timestamp_and_status.h"
 #include "net/cert/x509_certificate.h"
 #include "net/log/net_log_event_type.h"
-#include "net/log/net_log_parameters_callback.h"
 #include "net/log/net_log_with_source.h"
 
 namespace net {
@@ -54,8 +51,7 @@ void AddSCTAndLogStatus(scoped_refptr<ct::SignedCertificateTimestamp> sct,
 
 }  // namespace
 
-MultiLogCTVerifier::MultiLogCTVerifier() : observer_(nullptr) {
-}
+MultiLogCTVerifier::MultiLogCTVerifier() {}
 
 MultiLogCTVerifier::~MultiLogCTVerifier() = default;
 
@@ -65,14 +61,6 @@ void MultiLogCTVerifier::AddLogs(
     VLOG(1) << "Adding CT log: " << log_verifier->description();
     logs_[log_verifier->key_id()] = log_verifier;
   }
-}
-
-void MultiLogCTVerifier::SetObserver(Observer* observer) {
-  observer_ = observer;
-}
-
-CTVerifier::Observer* MultiLogCTVerifier::GetObserver() const {
-  return observer_;
 }
 
 void MultiLogCTVerifier::Verify(
@@ -112,12 +100,11 @@ void MultiLogCTVerifier::Verify(
 
   // Log to Net Log, after extracting SCTs but before possibly failing on
   // X.509 entry creation.
-  NetLogParametersCallback net_log_callback =
-      base::Bind(&NetLogRawSignedCertificateTimestampCallback, embedded_scts,
-                 sct_list_from_ocsp, sct_list_from_tls_extension);
-
-  net_log.AddEvent(NetLogEventType::SIGNED_CERTIFICATE_TIMESTAMPS_RECEIVED,
-                   net_log_callback);
+  net_log.AddEvent(
+      NetLogEventType::SIGNED_CERTIFICATE_TIMESTAMPS_RECEIVED, [&] {
+        return NetLogRawSignedCertificateTimestampParams(
+            embedded_scts, sct_list_from_ocsp, sct_list_from_tls_extension);
+      });
 
   ct::SignedEntryData x509_entry;
   if (ct::GetX509SignedEntry(cert->cert_buffer(), &x509_entry)) {
@@ -139,11 +126,9 @@ void MultiLogCTVerifier::Verify(
         base::TimeDelta::FromMilliseconds(100), 50);
   }
 
-  NetLogParametersCallback net_log_checked_callback =
-      base::Bind(&NetLogSignedCertificateTimestampCallback, output_scts);
-
-  net_log.AddEvent(NetLogEventType::SIGNED_CERTIFICATE_TIMESTAMPS_CHECKED,
-                   net_log_checked_callback);
+  net_log.AddEvent(NetLogEventType::SIGNED_CERTIFICATE_TIMESTAMPS_CHECKED, [&] {
+    return NetLogSignedCertificateTimestampParams(output_scts);
+  });
 }
 
 void MultiLogCTVerifier::VerifySCTs(
@@ -213,8 +198,6 @@ bool MultiLogCTVerifier::VerifySingleSCT(
   }
 
   AddSCTAndLogStatus(sct, ct::SCT_STATUS_OK, output_scts);
-  if (observer_)
-    observer_->OnSCTVerified(hostname, cert, sct.get());
   return true;
 }
 

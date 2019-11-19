@@ -5,14 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_INTENT_PICKER_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_INTENT_PICKER_VIEW_H_
 
-#include <memory>
-
-#include "base/macros.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
-
-namespace arc {
-class IntentPickerController;
-}  // namespace arc
 
 class Browser;
 
@@ -23,7 +16,7 @@ class IntentPickerView : public PageActionIconView {
   ~IntentPickerView() override;
 
   // PageActionIconView:
-  void SetVisible(bool visible) override;
+  bool Update() override;
 
  protected:
   // PageActionIconView:
@@ -33,9 +26,8 @@ class IntentPickerView : public PageActionIconView {
   base::string16 GetTextForTooltipAndAccessibleName() const override;
 
  private:
-  bool IsIncognitoMode();
-
-  std::unique_ptr<arc::IntentPickerController> intent_picker_controller_;
+  bool IsIncognitoMode() const;
+  bool ShouldShowIcon() const;
 
   Browser* const browser_;
 

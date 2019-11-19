@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Detached use of navigator.xr()</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<iframe sandbox="allow-same-origin" id="subframe"></iframe>
+<script>
+//This test ensures that if a navigator.xr gets called on a detached navigator the renderer does not crash.
+// This behavior is not in the webxr spec, so this is an internal-only test.
+test(function() {
+  var nav = window.frames[0].navigator;
+  document.getElementById("subframe").remove();
+  // If all goes well, nav.xr should just be null, otherwise the renderer will crash.
+  assert_equals(nav.xr, null);
+}, "navigator.xr does not crash");
+</script>
+</body>
+</html>

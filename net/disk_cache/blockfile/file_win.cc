@@ -115,9 +115,9 @@ bool File::Init(const base::FilePath& name) {
 
   DWORD sharing = FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE;
   DWORD access = GENERIC_READ | GENERIC_WRITE | DELETE;
-  base_file_ =
-      base::File(CreateFile(base::as_wcstr(name.value()), access, sharing, NULL,
-                            OPEN_EXISTING, FILE_FLAG_OVERLAPPED, NULL));
+  base_file_ = base::File(CreateFile(base::as_wcstr(name.value()), access,
+                                     sharing, nullptr, OPEN_EXISTING,
+                                     FILE_FLAG_OVERLAPPED, nullptr));
 
   if (!base_file_.IsValid())
     return false;
@@ -127,8 +127,8 @@ bool File::Init(const base::FilePath& name) {
 
   init_ = true;
   sync_base_file_ =
-      base::File(CreateFile(base::as_wcstr(name.value()), access, sharing, NULL,
-                            OPEN_EXISTING, 0, NULL));
+      base::File(CreateFile(base::as_wcstr(name.value()), access, sharing,
+                            nullptr, OPEN_EXISTING, 0, nullptr));
 
   if (!sync_base_file_.IsValid())
     return false;
@@ -193,8 +193,8 @@ bool File::Read(void* buffer, size_t buffer_len, size_t offset,
   // The operation completed already. We'll be called back anyway.
   *completed = (actual == size);
   DCHECK_EQ(size, actual);
-  data->callback_ = NULL;
-  data->file_ = NULL;  // There is no reason to hold on to this anymore.
+  data->callback_ = nullptr;
+  data->file_ = nullptr;  // There is no reason to hold on to this anymore.
   return *completed;
 }
 
@@ -243,8 +243,8 @@ bool File::AsyncWrite(const void* buffer, size_t buffer_len, size_t offset,
   // The operation completed already. We'll be called back anyway.
   *completed = (actual == size);
   DCHECK_EQ(size, actual);
-  data->callback_ = NULL;
-  data->file_ = NULL;  // There is no reason to hold on to this anymore.
+  data->callback_ = nullptr;
+  data->file_ = nullptr;  // There is no reason to hold on to this anymore.
   return *completed;
 }
 
@@ -255,7 +255,8 @@ bool File::SetLength(size_t length) {
 
   DWORD size = static_cast<DWORD>(length);
   HANDLE file = platform_file();
-  if (INVALID_SET_FILE_POINTER == SetFilePointer(file, size, NULL, FILE_BEGIN))
+  if (INVALID_SET_FILE_POINTER ==
+      SetFilePointer(file, size, nullptr, FILE_BEGIN))
     return false;
 
   return TRUE == SetEndOfFile(file);

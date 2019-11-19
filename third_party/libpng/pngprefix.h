@@ -74,8 +74,8 @@
 #define png_do_expand cr_png_do_expand
 #define png_do_expand_16 cr_png_do_expand_16
 #define png_do_expand_palette cr_png_do_expand_palette
-#define png_do_expand_palette_neon_rgb cr_png_do_expand_palette_neon_rgb
-#define png_do_expand_palette_neon_rgba cr_png_do_expand_palette_neon_rgba
+#define png_do_expand_palette_rgb8_neon cr_png_do_expand_palette_rgb8_neon
+#define png_do_expand_palette_rgba8_neon cr_png_do_expand_palette_rgba8_neon
 #define png_do_gamma cr_png_do_gamma
 #define png_do_gray_to_rgb cr_png_do_gray_to_rgb
 #define png_do_invert cr_png_do_invert
@@ -306,7 +306,7 @@
 #define png_reciprocal2 cr_png_reciprocal2
 #define png_reset_crc cr_png_reset_crc
 #define png_reset_zstream cr_png_reset_zstream
-#define png_riffle_palette_rgba cr_png_riffle_palette_rgba
+#define png_riffle_palette_neon cr_png_riffle_palette_neon
 #define png_sRGB_base cr_png_sRGB_base
 #define png_sRGB_delta cr_png_sRGB_delta
 #define png_sRGB_table cr_png_sRGB_table

@@ -1,0 +1,81 @@
+# WebGPU tests are only run on GPU bots, so they are skipped by default and run
+# separately from other Web Tests, with this expectations file.
+#
+# Expectations in this file must apply to wpt_internal/webgpu/cts.html, NOT
+# external/wpt/webgpu/cts.html, as the latter is not run.
+#
+# Expectations in this file must not (currently) use wildcards.
+#
+
+#
+# Platform-independent failures
+#
+
+crbug.com/1014734 wpt_internal/webgpu/cts.html?worker=0&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"readonly-storage-buffer","resourceType":"error"} [ Failure ]
+crbug.com/1014734 wpt_internal/webgpu/cts.html?worker=1&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"readonly-storage-buffer","resourceType":"error"} [ Failure ]
+crbug.com/1014734 wpt_internal/webgpu/cts.html?worker=0&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"readonly-storage-buffer","resourceType":"uniform-buffer"} [ Failure ]
+crbug.com/1014734 wpt_internal/webgpu/cts.html?worker=1&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"readonly-storage-buffer","resourceType":"uniform-buffer"} [ Failure ]
+crbug.com/1014734 wpt_internal/webgpu/cts.html?worker=0&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"readonly-storage-buffer","resourceType":"storage-buffer"} [ Failure ]
+crbug.com/1014734 wpt_internal/webgpu/cts.html?worker=1&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"readonly-storage-buffer","resourceType":"storage-buffer"} [ Failure ]
+crbug.com/1014734 wpt_internal/webgpu/cts.html?worker=0&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"readonly-storage-buffer","resourceType":"sampler"} [ Failure ]
+crbug.com/1014734 wpt_internal/webgpu/cts.html?worker=1&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"readonly-storage-buffer","resourceType":"sampler"} [ Failure ]
+crbug.com/1014734 wpt_internal/webgpu/cts.html?worker=0&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"readonly-storage-buffer","resourceType":"sampled-texture"} [ Failure ]
+crbug.com/1014734 wpt_internal/webgpu/cts.html?worker=1&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"readonly-storage-buffer","resourceType":"sampled-texture"} [ Failure ]
+crbug.com/1014734 wpt_internal/webgpu/cts.html?worker=0&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"readonly-storage-buffer","resourceType":"storage-texture"} [ Failure ]
+crbug.com/1014734 wpt_internal/webgpu/cts.html?worker=1&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"readonly-storage-buffer","resourceType":"storage-texture"} [ Failure ]
+crbug.com/1014734 wpt_internal/webgpu/cts.html?worker=0&q=cts:validation/createBindGroupLayout:dynamic_set_to_true_is_allowed_only_for_buffers={"type":"readonly-storage-buffer"} [ Failure ]
+crbug.com/1014734 wpt_internal/webgpu/cts.html?worker=1&q=cts:validation/createBindGroupLayout:dynamic_set_to_true_is_allowed_only_for_buffers={"type":"readonly-storage-buffer"} [ Failure ]
+
+crbug.com/1014735 wpt_internal/webgpu/cts.html?worker=0&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"storage-texture","resourceType":"error"} [ Failure ]
+crbug.com/1014735 wpt_internal/webgpu/cts.html?worker=1&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"storage-texture","resourceType":"error"} [ Failure ]
+crbug.com/1014735 wpt_internal/webgpu/cts.html?worker=0&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"storage-texture","resourceType":"uniform-buffer"} [ Failure ]
+crbug.com/1014735 wpt_internal/webgpu/cts.html?worker=1&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"storage-texture","resourceType":"uniform-buffer"} [ Failure ]
+crbug.com/1014735 wpt_internal/webgpu/cts.html?worker=0&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"storage-texture","resourceType":"storage-buffer"} [ Failure ]
+crbug.com/1014735 wpt_internal/webgpu/cts.html?worker=1&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"storage-texture","resourceType":"storage-buffer"} [ Failure ]
+crbug.com/1014735 wpt_internal/webgpu/cts.html?worker=0&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"storage-texture","resourceType":"sampler"} [ Failure ]
+crbug.com/1014735 wpt_internal/webgpu/cts.html?worker=1&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"storage-texture","resourceType":"sampler"} [ Failure ]
+crbug.com/1014735 wpt_internal/webgpu/cts.html?worker=0&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"storage-texture","resourceType":"sampled-texture"} [ Failure ]
+crbug.com/1014735 wpt_internal/webgpu/cts.html?worker=1&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"storage-texture","resourceType":"sampled-texture"} [ Failure ]
+crbug.com/1014735 wpt_internal/webgpu/cts.html?worker=0&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"storage-texture","resourceType":"storage-texture"} [ Failure ]
+crbug.com/1014735 wpt_internal/webgpu/cts.html?worker=1&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"storage-texture","resourceType":"storage-texture"} [ Failure ]
+crbug.com/1014735 wpt_internal/webgpu/cts.html?worker=0&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"uniform-buffer","resourceType":"storage-texture"} [ Failure ]
+crbug.com/1014735 wpt_internal/webgpu/cts.html?worker=1&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"uniform-buffer","resourceType":"storage-texture"} [ Failure ]
+crbug.com/1014735 wpt_internal/webgpu/cts.html?worker=0&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"storage-buffer","resourceType":"storage-texture"} [ Failure ]
+crbug.com/1014735 wpt_internal/webgpu/cts.html?worker=1&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"storage-buffer","resourceType":"storage-texture"} [ Failure ]
+crbug.com/1014735 wpt_internal/webgpu/cts.html?worker=0&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"sampler","resourceType":"storage-texture"} [ Failure ]
+crbug.com/1014735 wpt_internal/webgpu/cts.html?worker=1&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"sampler","resourceType":"storage-texture"} [ Failure ]
+crbug.com/1014735 wpt_internal/webgpu/cts.html?worker=0&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"sampled-texture","resourceType":"storage-texture"} [ Failure ]
+crbug.com/1014735 wpt_internal/webgpu/cts.html?worker=1&q=cts:validation/createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type={"bindingType":"sampled-texture","resourceType":"storage-texture"} [ Failure ]
+crbug.com/1014735 wpt_internal/webgpu/cts.html?worker=0&q=cts:validation/createBindGroup:texture_binding_must_have_correct_usage={"type":"storage-texture"} [ Failure ]
+crbug.com/1014735 wpt_internal/webgpu/cts.html?worker=1&q=cts:validation/createBindGroup:texture_binding_must_have_correct_usage={"type":"storage-texture"} [ Failure ]
+
+crbug.com/dawn/243 wpt_internal/webgpu/cts.html?worker=0&q=cts:validation/createTexture:validation_of_sampleCount={"sampleCount":4,"arrayLayerCount":2} [ Failure ]
+crbug.com/dawn/243 wpt_internal/webgpu/cts.html?worker=1&q=cts:validation/createTexture:validation_of_sampleCount={"sampleCount":4,"arrayLayerCount":2} [ Failure ]
+
+crbug.com/1014750 wpt_internal/webgpu/cts.html?worker=0&q=cts:validation/createView:it_is_invalid_to_use_a_texture_view_created_from_a_destroyed_texture= [ Failure ]
+crbug.com/1014750 wpt_internal/webgpu/cts.html?worker=1&q=cts:validation/createView:it_is_invalid_to_use_a_texture_view_created_from_a_destroyed_texture= [ Failure ]
+
+#
+# Mac (Metal) specific
+#
+
+crbug.com/1014744 [ Mac ] wpt_internal/webgpu/cts.html?worker=0&q=cts:command_buffer/render/storeop:storeOp_controls_whether_1x1_drawn_quad_is_stored={"storeOp":"clear"} [ Failure ]
+crbug.com/1014744 [ Mac ] wpt_internal/webgpu/cts.html?worker=1&q=cts:command_buffer/render/storeop:storeOp_controls_whether_1x1_drawn_quad_is_stored={"storeOp":"clear"} [ Failure ]
+
+#
+# Linux (Vulkan) specific
+#
+
+crbug.com/1014740 [ Linux ] wpt_internal/webgpu/cts.html?worker=0&q=cts:buffers/map_oom:mapWriteAsync= [ Failure ]
+crbug.com/1014740 [ Linux ] wpt_internal/webgpu/cts.html?worker=1&q=cts:buffers/map_oom:mapWriteAsync= [ Failure ]
+crbug.com/1014740 [ Linux ] wpt_internal/webgpu/cts.html?worker=0&q=cts:buffers/map_oom:mapReadAsync= [ Failure ]
+crbug.com/1014740 [ Linux ] wpt_internal/webgpu/cts.html?worker=1&q=cts:buffers/map_oom:mapReadAsync= [ Failure ]
+
+#
+# Windows (D3D12) specific
+#
+
+crbug.com/1014738 [ Win ] wpt_internal/webgpu/cts.html?worker=0&q=cts:buffers/map_oom:mapWriteAsync= [ Failure ]
+crbug.com/1014738 [ Win ] wpt_internal/webgpu/cts.html?worker=1&q=cts:buffers/map_oom:mapWriteAsync= [ Failure ]
+crbug.com/1014738 [ Win ] wpt_internal/webgpu/cts.html?worker=0&q=cts:buffers/map_oom:mapReadAsync= [ Failure ]
+crbug.com/1014738 [ Win ] wpt_internal/webgpu/cts.html?worker=1&q=cts:buffers/map_oom:mapReadAsync= [ Failure ]

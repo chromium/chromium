@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/files/file_descriptor_watcher_posix.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "services/device/hid/input_service_linux.h"
 #include "services/device/public/mojom/input_service.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -27,8 +27,8 @@ void OnGetDevices(base::OnceClosure quit_closure,
 }  // namespace
 
 TEST(InputServiceLinux, Simple) {
-  base::test::ScopedTaskEnvironment task_environment(
-      base::test::ScopedTaskEnvironment::MainThreadType::IO);
+  base::test::TaskEnvironment task_environment(
+      base::test::TaskEnvironment::MainThreadType::IO);
 
   InputServiceLinux* service = InputServiceLinux::GetInstance();
   ASSERT_TRUE(service);

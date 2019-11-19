@@ -3,7 +3,6 @@
   <head>
     <script src="../resources/testharness.js"></script>
     <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
     <!-- The second language in the meta tag should be ignored. -->
     <meta http-equiv="content-language" content="en, es">
   </head>
@@ -20,7 +19,7 @@
       window.axSpan = accessibilityController.accessibleElementById('span');
     });
 
-    async_test_after_layout_and_paint((t) => {
+    async_test((t) => {
       assert_equals(window.axBody.language, 'AXLanguage: en',
           'The meta tag has not been changed yet.');
 

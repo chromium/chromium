@@ -40,21 +40,21 @@ class PosixFileDescriptorInfo {
   virtual void Transfer(int id, base::ScopedFD fd) = 0;
 
   // A vector backed map of registered ID-FD pairs.
-  virtual const base::FileHandleMappingVector& GetMapping() const = 0;
+  virtual const base::FileHandleMappingVector& GetMapping() = 0;
 
   // A GetMapping() variant that adjusts the ID value by |delta|.
   // Some environments need this trick.
   virtual base::FileHandleMappingVector GetMappingWithIDAdjustment(
-      int delta) const = 0;
+      int delta) = 0;
 
   // API for iterating over the registered ID-FD pairs.
-  virtual base::PlatformFile GetFDAt(size_t i) const = 0;
-  virtual int GetIDAt(size_t i) const = 0;
-  virtual const base::MemoryMappedFile::Region& GetRegionAt(size_t i) const = 0;
-  virtual size_t GetMappingSize() const = 0;
+  virtual base::PlatformFile GetFDAt(size_t i) = 0;
+  virtual int GetIDAt(size_t i) = 0;
+  virtual const base::MemoryMappedFile::Region& GetRegionAt(size_t i) = 0;
+  virtual size_t GetMappingSize() = 0;
 
   // Returns true if |this| has ownership of |file|.
-  virtual bool OwnsFD(base::PlatformFile file) const = 0;
+  virtual bool OwnsFD(base::PlatformFile file) = 0;
   // Assuming |OwnsFD(file)|, releases the ownership.
   virtual base::ScopedFD ReleaseFD(base::PlatformFile file) = 0;
 };

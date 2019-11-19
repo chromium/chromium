@@ -1,0 +1,19 @@
+Name: Private Join and Compute subset
+Short Name: private-join-and-compute
+URL: https://github.com/google/private-join-and-compute
+Version: 0
+Date: Jun 27 2019
+Revision: 375be83109e10b32441483dbd0f1ac493488d197
+License: Apache 2.0
+License File: src/LICENSE
+Security Critical: yes
+
+Description:
+The package contains a communicative cipher. It's used to communicate with the leak detection Google server.
+
+Local Modifications:
+Stripped all the dependencies except for BoringSSL. chromium_patch.h is the only new file. Other modifications are removing the includes, fixing the macroses to those used in Chrome and removing unused functions and classes. The diff files are in order of modifications:
+files.diff - the files deleted from the original library.
+dependencies.diff - removes all the dependencies on Abseil and other libraries replacing them with Chrome's analogues.
+compilation.diff - fixes compilation/static analyzers in Chrome.
+fix_nulls.diff - makes the presubmit happy by replacing NULL with nullptr.

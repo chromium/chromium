@@ -25,7 +25,7 @@ class SiteDataCounter : public browsing_data::BrowsingDataCounter {
 
   Profile* profile_;
   browsing_data::SyncTracker sync_tracker_;
-  base::WeakPtrFactory<SiteDataCounter> weak_ptr_factory_;
+  base::WeakPtrFactory<SiteDataCounter> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_BROWSING_DATA_COUNTERS_SITE_DATA_COUNTER_H_

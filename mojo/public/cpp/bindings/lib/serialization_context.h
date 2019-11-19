@@ -13,7 +13,9 @@
 #include "base/component_export.h"
 #include "base/containers/stack_container.h"
 #include "base/macros.h"
+#include "mojo/public/cpp/bindings/connection_group.h"
 #include "mojo/public/cpp/bindings/lib/bindings_internal.h"
+#include "mojo/public/cpp/bindings/lib/pending_receiver_state.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 #include "mojo/public/cpp/system/handle.h"
 
@@ -51,6 +53,10 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) SerializationContext {
                                   uint32_t version,
                                   AssociatedInterface_Data* out_data);
 
+  const ConnectionGroup::Ref* receiver_connection_group() const {
+    return receiver_connection_group_;
+  }
+
   const std::vector<mojo::ScopedHandle>* handles() { return &handles_; }
   std::vector<mojo::ScopedHandle>* mutable_handles() { return &handles_; }
 
@@ -77,10 +83,19 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) SerializationContext {
     return ScopedHandleBase<T>::From(TakeHandle(encoded_handle));
   }
 
+  // Takes a handle from the list of serialized handle data and stuffs it into
+  // the internal data of an InterfaceRequest or PendingReceiver.
+  void TakeHandleAsReceiver(const Handle_Data& encoded_handle,
+                            PendingReceiverState* receiver_state);
+
   mojo::ScopedInterfaceEndpointHandle TakeAssociatedEndpointHandle(
       const AssociatedEndpointHandle_Data& encoded_handle);
 
  private:
+  // The ConnectionGroup to which deserialized PendingReceivers should be added,
+  // if any.
+  const ConnectionGroup::Ref* receiver_connection_group_ = nullptr;
+
   // Handles owned by this object. Used during serialization to hold onto
   // handles accumulated during pre-serialization, and used during
   // deserialization to hold onto handles extracted from a message.

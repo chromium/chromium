@@ -8,7 +8,7 @@
 
 #include <memory>
 
-#include "base/sha1.h"
+#include "base/hash/sha1.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/pwg_encoder/bitmap_image.h"
 #include "testing/gtest/include/gtest/gtest.h"

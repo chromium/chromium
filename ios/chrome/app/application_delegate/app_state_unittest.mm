@@ -4,15 +4,12 @@
 
 #import "ios/chrome/app/application_delegate/app_state.h"
 
-#import <QuartzCore/QuartzCore.h>
-
 #include <memory>
 
 #include "base/bind.h"
 #include "base/ios/block_types.h"
 #include "base/mac/scoped_block.h"
-#include "base/synchronization/lock.h"
-#include "base/task/post_task.h"
+#import "ios/chrome/app/app_startup_parameters.h"
 #import "ios/chrome/app/application_delegate/app_navigation.h"
 #import "ios/chrome/app/application_delegate/app_state_testing.h"
 #import "ios/chrome/app/application_delegate/browser_launcher.h"
@@ -25,7 +22,6 @@
 #import "ios/chrome/app/application_delegate/user_activity_handler.h"
 #import "ios/chrome/app/main_application_delegate.h"
 #import "ios/chrome/app/startup/content_suggestions_scheduler_notifications.h"
-#import "ios/chrome/browser/app_startup_parameters.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/device_sharing/device_sharing_manager.h"
@@ -37,7 +33,7 @@
 #import "ios/chrome/browser/signin/authentication_service_fake.h"
 #include "ios/chrome/browser/system_flags.h"
 #import "ios/chrome/browser/tabs/tab_model.h"
-#import "ios/chrome/browser/ui/browser_view_controller.h"
+#import "ios/chrome/browser/ui/browser_view/browser_view_controller.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
@@ -46,16 +42,15 @@
 #import "ios/chrome/browser/ui/main/test/stub_browser_interface_provider.h"
 #import "ios/chrome/browser/ui/safe_mode/safe_mode_coordinator.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
-#import "ios/chrome/test/base/scoped_block_swizzler.h"
 #include "ios/chrome/test/block_cleanup_test.h"
 #include "ios/chrome/test/ios_chrome_scoped_testing_chrome_browser_provider.h"
 #include "ios/public/provider/chrome/browser/distribution/app_distribution_provider.h"
 #include "ios/public/provider/chrome/browser/test_chrome_browser_provider.h"
 #include "ios/public/provider/chrome/browser/user_feedback/test_user_feedback_provider.h"
 #import "ios/testing/ocmock_complex_type_helper.h"
-#include "ios/web/net/request_tracker_impl.h"
-#include "ios/web/public/test/test_web_thread_bundle.h"
-#include "ios/web/public/web_task_traits.h"
+#import "ios/testing/scoped_block_swizzler.h"
+#include "ios/web/public/test/web_task_environment.h"
+#include "ios/web/public/thread/web_task_traits.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #include "third_party/ocmock/gtest_support.h"
 
@@ -158,14 +153,9 @@ class FakeProfileSessionDurationsService
 
 @interface CallTrackingStubBrowserInterfaceProvider
     : StubBrowserInterfaceProvider
-@property(nonatomic) BOOL tabsHalted;
 @property(nonatomic) BOOL deviceManagerCleaned;
 @end
 @implementation CallTrackingStubBrowserInterfaceProvider
-
-- (void)haltAllTabs {
-  self.tabsHalted = YES;
-}
 
 - (void)cleanDeviceSharingManager {
   self.deviceManagerCleaned = YES;
@@ -341,7 +331,7 @@ class AppStateTest : public BlockCleanupTest {
   }
 
  private:
-  web::TestWebThreadBundle thread_bundle_;
+  web::WebTaskEnvironment task_environment_;
   AppState* app_state_;
   id browser_launcher_mock_;
   id startup_information_mock_;
@@ -358,48 +348,14 @@ class AppStateTest : public BlockCleanupTest {
   std::unique_ptr<TestChromeBrowserState> browser_state_;
 };
 
-// TODO(crbug.com/585700): remove this.
-// Creates a requestTracker, needed for teardown.
-void createTracker(BOOL* created, base::Lock* lock) {
-  web::RequestTrackerImpl::GetTrackerForRequestGroupID(@"test");
-  base::AutoLock scoped_lock(*lock);
-  *created = YES;
-}
-
 // Used to have a thread handling the closing of the IO threads.
 class AppStateWithThreadTest : public PlatformTest {
  protected:
   AppStateWithThreadTest()
-      : thread_bundle_(web::TestWebThreadBundle::REAL_IO_THREAD) {
-    BOOL created = NO;
-    base::Lock* lock = new base::Lock;
-
-    base::PostTaskWithTraits(FROM_HERE, {web::WebThread::IO},
-                             base::BindOnce(&createTracker, &created, lock));
-
-    CFTimeInterval start = CACurrentMediaTime();
-
-    // Poll for at most 1s, waiting for the Tracker creation.
-    while (1) {
-      base::AutoLock scoped_lock(*lock);
-      if (created)
-        return;
-      if (CACurrentMediaTime() - start > 1.0) {
-        trackerCreationFailed();
-        return;
-      }
-      // Ensure that other threads have a chance to run even on a single-core
-      // devices.
-      pthread_yield_np();
-    }
-  }
-
-  void trackerCreationFailed() {
-    FAIL() << "Tracker creation took too much time.";
-  }
+      : task_environment_(web::WebTaskEnvironment::REAL_IO_THREAD) {}
 
  private:
-  web::TestWebThreadBundle thread_bundle_;
+  web::WebTaskEnvironment task_environment_;
 };
 
 #pragma mark - Tests.
@@ -612,7 +568,6 @@ TEST_F(AppStateWithThreadTest, willTerminate) {
   EXPECT_OCMOCK_VERIFY(application);
   EXPECT_FALSE(interfaceProvider.mainInterface.userInteractionEnabled);
   EXPECT_TRUE(interfaceProvider.deviceManagerCleaned);
-  EXPECT_TRUE(interfaceProvider.tabsHalted);
   FakeAppDistributionProvider* provider =
       static_cast<FakeAppDistributionProvider*>(
           ios::GetChromeBrowserProvider()->GetAppDistributionProvider());
@@ -646,7 +601,6 @@ TEST_F(AppStateTest, resumeSessionWithStartupParameters) {
 
   // BrowserViewInformation.
   id mainTabModel = [OCMockObject mockForClass:[TabModel class]];
-  [[mainTabModel expect] resetSessionMetrics];
   id mainBVC = [OCMockObject mockForClass:[BrowserViewController class]];
   interfaceProvider.mainInterface.tabModel = mainTabModel;
   interfaceProvider.mainInterface.bvc = mainBVC;
@@ -689,7 +643,6 @@ TEST_F(AppStateTest, resumeSessionShouldOpenNTPTabSwitcher) {
 
   // BrowserViewInformation.
   id mainTabModel = [OCMockObject mockForClass:[TabModel class]];
-  [[mainTabModel expect] resetSessionMetrics];
   id mainBVC = [OCMockObject mockForClass:[BrowserViewController class]];
   interfaceProvider.mainInterface.tabModel = mainTabModel;
   interfaceProvider.mainInterface.bvc = mainBVC;
@@ -736,8 +689,6 @@ TEST_F(AppStateTest, resumeSessionShouldOpenNTPNoTabSwitcher) {
 
   // BrowserViewInformation.
   id mainTabModel = [OCMockObject mockForClass:[TabModel class]];
-  [[mainTabModel expect] resetSessionMetrics];
-
   id dispatcher = [OCMockObject mockForProtocol:@protocol(ApplicationCommands)];
   [((id<ApplicationCommands>)[dispatcher expect]) openURLInNewTab:[OCMArg any]];
 
@@ -974,6 +925,7 @@ TEST_F(AppStateTest, applicationDidEnterBackgroundStageBackground) {
   BrowserInitializationStageType stage = INITIALIZATION_STAGE_BACKGROUND;
 
   [[[browserLauncher stub] andReturnValue:@(stage)] browserInitializationStage];
+  [[[browserLauncher stub] andReturn:nil] interfaceProvider];
 
   ASSERT_EQ(NSUInteger(0), [window subviews].count);
 

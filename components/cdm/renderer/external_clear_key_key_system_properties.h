@@ -23,7 +23,7 @@ class ExternalClearKeyProperties : public media::KeySystemProperties {
   bool IsSupportedInitDataType(
       media::EmeInitDataType init_data_type) const override;
   media::EmeConfigRule GetEncryptionSchemeConfigRule(
-      media::EncryptionMode encryption_scheme) const override;
+      media::EncryptionScheme encryption_scheme) const override;
   media::SupportedCodecs GetSupportedCodecs() const override;
   media::EmeConfigRule GetRobustnessConfigRule(
       media::EmeMediaType media_type,

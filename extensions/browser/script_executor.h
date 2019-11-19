@@ -65,12 +65,6 @@ class ScriptExecutor {
     MATCH_ABOUT_BLANK,
   };
 
-  // The type of world to inject into (main world, or its own isolated world).
-  enum WorldType {
-    MAIN_WORLD,
-    ISOLATED_WORLD,
-  };
-
   // The type of process the target is.
   enum ProcessType {
     DEFAULT_PROCESS,
@@ -106,7 +100,6 @@ class ScriptExecutor {
                      int frame_id,
                      MatchAboutBlank match_about_blank,
                      UserScript::RunLocation run_at,
-                     WorldType world_type,
                      ProcessType process_type,
                      const GURL& webview_src,
                      const GURL& file_url,

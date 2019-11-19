@@ -9,7 +9,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/external_protocol_dialog_delegate.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/external_protocol_dialog.h"
@@ -29,7 +29,7 @@ class ExternalProtocolDialogTestApi {
       : dialog_(dialog) {}
 
   void SetCheckBoxSelected(bool checked) {
-    dialog_->remember_decision_checkbox_->SetChecked(checked);
+    dialog_->SetRememberSelectionCheckboxCheckedForTesting(checked);
   }
 
  private:
@@ -40,42 +40,12 @@ class ExternalProtocolDialogTestApi {
 
 }  // namespace test
 
-// Wrapper dialog delegate that sets |called|, |accept|, |cancel|, and
-// |remember| bools based on what is called by the ExternalProtocolDialog.
-class TestExternalProtocolDialogDelegate
-    : public ExternalProtocolDialogDelegate {
- public:
-  TestExternalProtocolDialogDelegate(const GURL& url,
-                                     int render_process_host_id,
-                                     int routing_id,
-                                     bool* called,
-                                     bool* accept,
-                                     bool* remember)
-      : ExternalProtocolDialogDelegate(url, render_process_host_id, routing_id),
-        called_(called),
-        accept_(accept),
-        remember_(remember) {}
-
-  // ExternalProtocolDialogDelegate:
-  void DoAccept(const GURL& url, bool remember) const override {
-    *called_ = true;
-    *accept_ = true;
-    *remember_ = remember;
-    ExternalProtocolDialogDelegate::DoAccept(url, remember);
-  }
-
- private:
-  bool* called_;
-  bool* accept_;
-  bool* remember_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestExternalProtocolDialogDelegate);
-};
-
 class ExternalProtocolDialogBrowserTest
     : public DialogBrowserTest,
       public ExternalProtocolHandler::Delegate {
  public:
+  using BlockState = ExternalProtocolHandler::BlockState;
+
   ExternalProtocolDialogBrowserTest() {
     ExternalProtocolHandler::SetDelegateForTesting(this);
   }
@@ -88,15 +58,9 @@ class ExternalProtocolDialogBrowserTest
   void ShowUi(const std::string& name) override {
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
-    int render_view_process_id =
-        web_contents->GetRenderViewHost()->GetProcess()->GetID();
-    int render_view_routing_id =
-        web_contents->GetRenderViewHost()->GetRoutingID();
-    dialog_ = new ExternalProtocolDialog(
-        std::make_unique<TestExternalProtocolDialogDelegate>(
-            GURL("telnet://12345"), render_view_process_id,
-            render_view_routing_id, &called_, &accept_, &remember_),
-        render_view_process_id, render_view_routing_id);
+    dialog_ = new ExternalProtocolDialog(web_contents, GURL("telnet://12345"),
+                                         base::UTF8ToUTF16("/usr/bin/telnet"),
+                                         base::nullopt);
   }
 
   void SetChecked(bool checked) {
@@ -115,25 +79,29 @@ class ExternalProtocolDialogBrowserTest
     return ExternalProtocolHandler::DONT_BLOCK;
   }
   void BlockRequest() override {}
-  void RunExternalProtocolDialog(const GURL& url,
-                                 int render_process_host_id,
-                                 int routing_id,
-                                 ui::PageTransition page_transition,
-                                 bool has_user_gesture) override {}
+  void RunExternalProtocolDialog(
+      const GURL& url,
+      content::WebContents* web_contents,
+      ui::PageTransition page_transition,
+      bool has_user_gesture,
+      const base::Optional<url::Origin>& initiating_origin) override {}
   void LaunchUrlWithoutSecurityCheck(
       const GURL& url,
       content::WebContents* web_contents) override {
     url_did_launch_ = true;
   }
   void FinishedProcessingCheck() override {}
+  void OnSetBlockState(const std::string& scheme, BlockState state) override {
+    blocked_scheme_ = scheme;
+    blocked_state_ = state;
+  }
 
   base::HistogramTester histogram_tester_;
 
  protected:
   ExternalProtocolDialog* dialog_ = nullptr;
-  bool called_ = false;
-  bool accept_ = false;
-  bool remember_ = false;
+  std::string blocked_scheme_;
+  BlockState blocked_state_ = BlockState::UNKNOWN;
   bool url_did_launch_ = false;
 
  private:
@@ -143,9 +111,7 @@ class ExternalProtocolDialogBrowserTest
 IN_PROC_BROWSER_TEST_F(ExternalProtocolDialogBrowserTest, TestAccept) {
   ShowUi(std::string());
   EXPECT_TRUE(dialog_->Accept());
-  EXPECT_TRUE(called_);
-  EXPECT_TRUE(accept_);
-  EXPECT_FALSE(remember_);
+  EXPECT_EQ(blocked_state_, BlockState::UNKNOWN);
   EXPECT_TRUE(url_did_launch_);
   histogram_tester_.ExpectBucketCount(
       ExternalProtocolHandler::kHandleStateMetric,
@@ -157,9 +123,8 @@ IN_PROC_BROWSER_TEST_F(ExternalProtocolDialogBrowserTest,
   ShowUi(std::string());
   SetChecked(true);
   EXPECT_TRUE(dialog_->Accept());
-  EXPECT_TRUE(called_);
-  EXPECT_TRUE(accept_);
-  EXPECT_TRUE(remember_);
+  EXPECT_EQ(blocked_scheme_, "telnet");
+  EXPECT_EQ(blocked_state_, BlockState::DONT_BLOCK);
   EXPECT_TRUE(url_did_launch_);
   histogram_tester_.ExpectBucketCount(
       ExternalProtocolHandler::kHandleStateMetric,
@@ -174,9 +139,6 @@ IN_PROC_BROWSER_TEST_F(ExternalProtocolDialogBrowserTest,
   SetChecked(true);  // |remember_| must be true for the segfault to occur.
   browser()->tab_strip_model()->CloseAllTabs();
   EXPECT_TRUE(dialog_->Accept());
-  EXPECT_TRUE(called_);
-  EXPECT_TRUE(accept_);
-  EXPECT_TRUE(remember_);
   EXPECT_FALSE(url_did_launch_);
   histogram_tester_.ExpectBucketCount(
       ExternalProtocolHandler::kHandleStateMetric,
@@ -186,9 +148,7 @@ IN_PROC_BROWSER_TEST_F(ExternalProtocolDialogBrowserTest,
 IN_PROC_BROWSER_TEST_F(ExternalProtocolDialogBrowserTest, TestCancel) {
   ShowUi(std::string());
   EXPECT_TRUE(dialog_->Cancel());
-  EXPECT_FALSE(called_);
-  EXPECT_FALSE(accept_);
-  EXPECT_FALSE(remember_);
+  EXPECT_EQ(blocked_state_, BlockState::UNKNOWN);
   EXPECT_FALSE(url_did_launch_);
   histogram_tester_.ExpectBucketCount(
       ExternalProtocolHandler::kHandleStateMetric,
@@ -200,9 +160,8 @@ IN_PROC_BROWSER_TEST_F(ExternalProtocolDialogBrowserTest,
   ShowUi(std::string());
   SetChecked(true);
   EXPECT_TRUE(dialog_->Cancel());
-  EXPECT_FALSE(called_);
-  EXPECT_FALSE(accept_);
-  EXPECT_FALSE(remember_);
+  // Cancel() should not enforce the remember checkbox.
+  EXPECT_EQ(blocked_state_, BlockState::UNKNOWN);
   EXPECT_FALSE(url_did_launch_);
   histogram_tester_.ExpectBucketCount(
       ExternalProtocolHandler::kHandleStateMetric,
@@ -213,9 +172,7 @@ IN_PROC_BROWSER_TEST_F(ExternalProtocolDialogBrowserTest, TestClose) {
   // Closing the dialog should be the same as canceling, except for histograms.
   ShowUi(std::string());
   EXPECT_TRUE(dialog_->Close());
-  EXPECT_FALSE(called_);
-  EXPECT_FALSE(accept_);
-  EXPECT_FALSE(remember_);
+  EXPECT_EQ(blocked_state_, BlockState::UNKNOWN);
   EXPECT_FALSE(url_did_launch_);
   histogram_tester_.ExpectBucketCount(
       ExternalProtocolHandler::kHandleStateMetric,
@@ -228,9 +185,7 @@ IN_PROC_BROWSER_TEST_F(ExternalProtocolDialogBrowserTest,
   ShowUi(std::string());
   SetChecked(true);
   EXPECT_TRUE(dialog_->Close());
-  EXPECT_FALSE(called_);
-  EXPECT_FALSE(accept_);
-  EXPECT_FALSE(remember_);
+  EXPECT_EQ(blocked_state_, BlockState::UNKNOWN);
   EXPECT_FALSE(url_did_launch_);
   histogram_tester_.ExpectBucketCount(
       ExternalProtocolHandler::kHandleStateMetric,
@@ -241,4 +196,15 @@ IN_PROC_BROWSER_TEST_F(ExternalProtocolDialogBrowserTest,
 // run.
 IN_PROC_BROWSER_TEST_F(ExternalProtocolDialogBrowserTest, InvokeUi_default) {
   ShowAndVerifyUi();
+}
+
+// Tests that keyboard focus works when the dialog is shown. Regression test for
+// https://crbug.com/1025343.
+IN_PROC_BROWSER_TEST_F(ExternalProtocolDialogBrowserTest, TestFocus) {
+  ShowUi(std::string());
+  gfx::NativeWindow window = browser()->window()->GetNativeWindow();
+  views::Widget* widget = views::Widget::GetWidgetForNativeWindow(window);
+  const views::FocusManager* focus_manager = widget->GetFocusManager();
+  const views::View* focused_view = focus_manager->GetFocusedView();
+  EXPECT_TRUE(focused_view);
 }

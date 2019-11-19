@@ -36,13 +36,6 @@ HandleResourceRequestWithPlaintextMimeType(
 }  // namespace
 
 class DataUseMetricsObserverBrowserTest : public InProcessBrowserTest {
- protected:
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        network::features::kNetworkService);
-    InProcessBrowserTest::SetUp();
-  }
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(DataUseMetricsObserverBrowserTest,

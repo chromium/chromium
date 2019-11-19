@@ -9,6 +9,7 @@ import android.content.Context;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 
 /**
  * Initializes the Chromium remoting library, and provides JNI calls into it.
@@ -33,9 +34,12 @@ public class JniInterface {
             Log.w(TAG, "Couldn't load " + LIBRARY_NAME + ", trying " + LIBRARY_NAME + ".cr");
             System.loadLibrary(LIBRARY_NAME + ".cr");
         }
-        nativeLoadNative();
+        JniInterfaceJni.get().loadNative();
     }
 
-    /** Performs the native portion of the initialization. */
-    private static native void nativeLoadNative();
+    @NativeMethods
+    interface Natives {
+        /** Performs the native portion of the initialization. */
+        void loadNative();
+    }
 }

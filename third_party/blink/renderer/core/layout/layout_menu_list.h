@@ -62,7 +62,7 @@ class CORE_EXPORT LayoutMenuList final : public LayoutFlexibleBox {
 
   void UpdateFromElement() override;
 
-  LayoutRect ControlClipRect(const LayoutPoint&) const override;
+  PhysicalRect ControlClipRect(const PhysicalOffset&) const override;
   bool HasControlClip() const override { return true; }
 
   void ComputeIntrinsicLogicalWidths(

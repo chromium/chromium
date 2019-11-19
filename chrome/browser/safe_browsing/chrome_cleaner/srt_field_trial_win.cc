@@ -4,22 +4,18 @@
 
 #include "chrome/browser/safe_browsing/chrome_cleaner/srt_field_trial_win.h"
 
-#include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/win/windows_version.h"
-#include "components/variations/variations_associated_data.h"
 #include "url/origin.h"
 
 namespace {
 
-// Field trial strings.
-constexpr char kSRTPromptOffGroup[] = "Off";
 constexpr char kSRTPromptSeedParam[] = "Seed";
 
-constexpr char kSRTElevationTrial[] = "SRTElevation";
-constexpr char kSRTElevationAsNeededGroup[] = "AsNeeded";
+constexpr base::FeatureParam<std::string> kSRTPromptGroupNameParam{
+    &safe_browsing::kChromeCleanupInBrowserPromptFeature, "Group", "Off"};
 
 // The download links of the Software Removal Tool.
 constexpr char kDownloadRootPath[] =
@@ -37,10 +33,8 @@ constexpr char kSRTX64StableDownloadURL[] =
 
 namespace safe_browsing {
 
-constexpr char kSRTPromptTrial[] = "SRTPromptFieldTrial";
-
-const base::Feature kRebootPromptDialogFeature{
-    "RebootPromptDialog", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kChromeCleanupInBrowserPromptFeature{
+    "InBrowserCleanerUI", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kChromeCleanupDistributionFeature{
     "ChromeCleanupDistribution", base::FEATURE_DISABLED_BY_DEFAULT};
@@ -48,19 +42,12 @@ const base::Feature kChromeCleanupDistributionFeature{
 const base::Feature kChromeCleanupExtensionsFeature{
     "ChromeCleanupExtensions", base::FEATURE_DISABLED_BY_DEFAULT};
 
-bool IsInSRTPromptFieldTrialGroups() {
-  return !base::StartsWith(base::FieldTrialList::FindFullName(kSRTPromptTrial),
-                           kSRTPromptOffGroup, base::CompareCase::SENSITIVE);
-}
-
-bool SRTPromptNeedsElevationIcon() {
-  return !base::StartsWith(
-      base::FieldTrialList::FindFullName(kSRTElevationTrial),
-      kSRTElevationAsNeededGroup, base::CompareCase::SENSITIVE);
+bool IsSRTPromptFeatureEnabled() {
+  return base::FeatureList::IsEnabled(kChromeCleanupInBrowserPromptFeature);
 }
 
 GURL GetStableDownloadURL() {
-  const std::string url = base::win::OSInfo::GetInstance()->architecture() ==
+  const std::string url = base::win::OSInfo::GetArchitecture() ==
                                   base::win::OSInfo::X86_ARCHITECTURE
                               ? kSRTX86StableDownloadURL
                               : kSRTX64StableDownloadURL;
@@ -74,7 +61,7 @@ GURL GetSRTDownloadURL() {
   if (download_group.empty())
     return GetStableDownloadURL();
 
-  std::string architecture = base::win::OSInfo::GetInstance()->architecture() ==
+  std::string architecture = base::win::OSInfo::GetArchitecture() ==
                                      base::win::OSInfo::X86_ARCHITECTURE
                                  ? "x86"
                                  : "x64";
@@ -97,25 +84,12 @@ GURL GetSRTDownloadURL() {
 }
 
 std::string GetIncomingSRTSeed() {
-  return variations::GetVariationParamValue(kSRTPromptTrial,
-                                            kSRTPromptSeedParam);
+  return base::GetFieldTrialParamValueByFeature(
+      kChromeCleanupInBrowserPromptFeature, kSRTPromptSeedParam);
 }
 
-std::string GetSRTFieldTrialGroupName() {
-  return base::FieldTrialList::FindFullName(kSRTPromptTrial);
-}
-
-RebootPromptType GetRebootPromptType() {
-  constexpr char kIsModalParam[] = "modal_reboot_prompt";
-  if (!base::FeatureList::IsEnabled(kRebootPromptDialogFeature))
-    return REBOOT_PROMPT_TYPE_OPEN_SETTINGS_PAGE;
-  if (base::GetFieldTrialParamByFeatureAsBool(kRebootPromptDialogFeature,
-                                              kIsModalParam,
-                                              /*default_value=*/false)) {
-    return REBOOT_PROMPT_TYPE_SHOW_MODAL_DIALOG;
-  } else {
-    return REBOOT_PROMPT_TYPE_SHOW_NON_MODAL_DIALOG;
-  }
+std::string GetSRTPromptGroupName() {
+  return kSRTPromptGroupNameParam.Get();
 }
 
 void RecordPromptShownWithTypeHistogram(PromptTypeHistogramValue value) {

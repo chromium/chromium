@@ -53,6 +53,10 @@ class CredentialProviderSigninDialogTestDataStorage {
   std::string GetSuccessMdmIdToken() const {
     return expected_success_fetch_result_.FindKey("mdm_id_token")->GetString();
   }
+  std::string GetSuccessMdmAccessToken() const {
+    return expected_success_fetch_result_.FindKey("mdm_access_token")
+        ->GetString();
+  }
   std::string GetSuccessFullName() const {
     return expected_success_fetch_result_.FindKey("full_name")->GetString();
   }

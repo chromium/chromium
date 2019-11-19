@@ -21,20 +21,19 @@ class HeadlessPermissionManager : public content::PermissionControllerDelegate {
   ~HeadlessPermissionManager() override;
 
   // PermissionManager implementation.
-  int RequestPermission(
-      content::PermissionType permission,
-      content::RenderFrameHost* render_frame_host,
-      const GURL& requesting_origin,
-      bool user_gesture,
-      const base::Callback<void(blink::mojom::PermissionStatus)>& callback)
-      override;
+  int RequestPermission(content::PermissionType permission,
+                        content::RenderFrameHost* render_frame_host,
+                        const GURL& requesting_origin,
+                        bool user_gesture,
+                        base::OnceCallback<void(blink::mojom::PermissionStatus)>
+                            callback) override;
   int RequestPermissions(
       const std::vector<content::PermissionType>& permission,
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
       bool user_gesture,
-      const base::Callback<
-          void(const std::vector<blink::mojom::PermissionStatus>&)>& callback)
+      base::OnceCallback<
+          void(const std::vector<blink::mojom::PermissionStatus>&)> callback)
       override;
   void ResetPermission(content::PermissionType permission,
                        const GURL& requesting_origin,
@@ -51,7 +50,7 @@ class HeadlessPermissionManager : public content::PermissionControllerDelegate {
       content::PermissionType permission,
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
-      const base::Callback<void(blink::mojom::PermissionStatus)>& callback)
+      base::RepeatingCallback<void(blink::mojom::PermissionStatus)> callback)
       override;
   void UnsubscribePermissionStatusChange(int subscription_id) override;
 

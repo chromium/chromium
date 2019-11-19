@@ -27,6 +27,18 @@
                 "contents": {"type": "enum", "ctype": "Study::Platform"}
               },
               {
+                "field": "form_factors",
+                "type": "array",
+                "contents": {"type": "enum", "ctype": "Study::FormFactor"}
+              },
+              {
+                "field": "is_low_end_device",
+                "type": "enum",
+                "ctype": "Study::OptionalBool",
+                "default": "Study::OPTIONAL_BOOL_MISSING",
+                "optional": "True"
+              },
+              {
                 "field": "params",
                 "type": "array",
                 "contents": {
@@ -51,6 +63,18 @@
               {
                 "field": "forcing_flag",
                 "type": "string"
+              },
+              {
+                "field": "override_ui_string",
+                "type": "array",
+                "contents": {
+                  "type_name": "OverrideUIString",
+                  "type": "struct",
+                  "fields": [
+                    {"field": "name_hash", "type": "int"},
+                    {"field": "value", "type": "string"}
+                  ]
+                }
               }
             ]
           }

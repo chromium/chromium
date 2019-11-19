@@ -8,7 +8,7 @@
 #include "base/location.h"
 #include "base/run_loop.h"
 #include "base/sequenced_task_runner.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "components/sync/engine/passive_model_worker.h"
 #include "components/sync/engine/sequenced_model_worker.h"
@@ -30,12 +30,10 @@ class SyncBackendRegistrarTest : public testing::Test {
  public:
   SyncBackendRegistrarTest()
       : db_thread_("DBThreadForTest"),
-        file_thread_("FileThreadForTest"),
         sync_thread_("SyncThreadForTest") {}
 
   void SetUp() override {
     db_thread_.StartAndWaitForTesting();
-    file_thread_.StartAndWaitForTesting();
     sync_thread_.StartAndWaitForTesting();
     test_user_share_.SetUp();
     registrar_ = std::make_unique<SyncBackendRegistrar>(
@@ -62,7 +60,7 @@ class SyncBackendRegistrarTest : public testing::Test {
   }
 
   void ExpectHasProcessorsForTypes(ModelTypeSet types) {
-    for (int i = FIRST_REAL_MODEL_TYPE; i < MODEL_TYPE_COUNT; ++i) {
+    for (int i = FIRST_REAL_MODEL_TYPE; i < ModelType::NUM_ENTRIES; ++i) {
       ModelType model_type = ModelTypeFromInt(i);
       EXPECT_EQ(types.Has(model_type),
                 registrar_->IsTypeActivatedForTest(model_type));
@@ -73,16 +71,6 @@ class SyncBackendRegistrarTest : public testing::Test {
     std::vector<scoped_refptr<ModelSafeWorker>> workers;
     registrar_->GetWorkers(&workers);
     return workers.size();
-  }
-
-  // Part of the ActivateDeactivateNonUIDataType test below.
-  void TestNonUIDataTypeActivationAsync(ChangeProcessor* processor,
-                                        base::WaitableEvent* done) {
-    registrar_->ActivateDataType(AUTOFILL, GROUP_DB, processor, user_share());
-    ExpectRoutingInfo({{AUTOFILL, GROUP_DB}});
-    ExpectHasProcessorsForTypes(ModelTypeSet(AUTOFILL));
-    TriggerChanges(AUTOFILL);
-    done->Signal();
   }
 
   SyncBackendRegistrar* registrar() { return registrar_.get(); }
@@ -98,10 +86,6 @@ class SyncBackendRegistrarTest : public testing::Test {
       case GROUP_UI:
         return new SequencedModelWorker(
             task_environment_.GetMainThreadTaskRunner(), group);
-      case GROUP_DB:
-        return new SequencedModelWorker(db_thread_.task_runner(), group);
-      case GROUP_FILE:
-        return new SequencedModelWorker(file_thread_.task_runner(), group);
       case GROUP_PASSIVE:
         return new PassiveModelWorker();
       default:
@@ -109,9 +93,8 @@ class SyncBackendRegistrarTest : public testing::Test {
     }
   }
 
-  base::test::ScopedTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   base::Thread db_thread_;
-  base::Thread file_thread_;
   base::Thread sync_thread_;
 
   TestUserShare test_user_share_;
@@ -121,7 +104,7 @@ class SyncBackendRegistrarTest : public testing::Test {
 TEST_F(SyncBackendRegistrarTest, ConstructorEmpty) {
   registrar()->SetInitialTypes(ModelTypeSet());
   EXPECT_FALSE(registrar()->IsNigoriEnabled());
-  EXPECT_EQ(4u, GetWorkersSize());
+  EXPECT_EQ(2u, GetWorkersSize());
   ExpectRoutingInfo(ModelSafeRoutingInfo());
   ExpectHasProcessorsForTypes(ModelTypeSet());
 }
@@ -130,7 +113,7 @@ TEST_F(SyncBackendRegistrarTest, ConstructorNonEmpty) {
   registrar()->RegisterNonBlockingType(BOOKMARKS);
   registrar()->SetInitialTypes(ModelTypeSet(BOOKMARKS, NIGORI, PASSWORDS));
   EXPECT_TRUE(registrar()->IsNigoriEnabled());
-  EXPECT_EQ(4u, GetWorkersSize());
+  EXPECT_EQ(2u, GetWorkersSize());
   EXPECT_EQ(ModelTypeSet(NIGORI), registrar()->GetLastConfiguredTypes());
   // Bookmarks dropped because it is nonblocking.
   // Passwords dropped because of no password store.
@@ -143,7 +126,7 @@ TEST_F(SyncBackendRegistrarTest, ConstructorNonEmptyReversedInitialization) {
   registrar()->SetInitialTypes(ModelTypeSet(BOOKMARKS, NIGORI, PASSWORDS));
   registrar()->RegisterNonBlockingType(BOOKMARKS);
   EXPECT_TRUE(registrar()->IsNigoriEnabled());
-  EXPECT_EQ(4u, GetWorkersSize());
+  EXPECT_EQ(2u, GetWorkersSize());
   EXPECT_EQ(ModelTypeSet(NIGORI), registrar()->GetLastConfiguredTypes());
   // Bookmarks dropped because it is nonblocking.
   // Passwords dropped because of no password store.
@@ -209,41 +192,6 @@ TEST_F(SyncBackendRegistrarTest, ActivateDeactivateUIDataType) {
 
   // Should do nothing.
   TriggerChanges(BOOKMARKS);
-}
-
-TEST_F(SyncBackendRegistrarTest, ActivateDeactivateNonUIDataType) {
-  InSequence in_sequence;
-  registrar()->SetInitialTypes(ModelTypeSet());
-
-  // Should do nothing.
-  TriggerChanges(AUTOFILL);
-
-  StrictMock<ChangeProcessorMock> change_processor_mock;
-  EXPECT_CALL(change_processor_mock, StartImpl());
-  EXPECT_CALL(change_processor_mock, IsRunning()).WillRepeatedly(Return(true));
-  EXPECT_CALL(change_processor_mock, ApplyChangesFromSyncModel(nullptr, _, _));
-  EXPECT_CALL(change_processor_mock, IsRunning()).WillRepeatedly(Return(true));
-  EXPECT_CALL(change_processor_mock, CommitChangesFromSyncModel());
-  EXPECT_CALL(change_processor_mock, IsRunning()).WillRepeatedly(Return(false));
-
-  const ModelTypeSet types(AUTOFILL);
-  EXPECT_EQ(types, registrar()->ConfigureDataTypes(types, ModelTypeSet()));
-
-  base::WaitableEvent done(base::WaitableEvent::ResetPolicy::AUTOMATIC,
-                           base::WaitableEvent::InitialState::NOT_SIGNALED);
-  db_task_runner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &SyncBackendRegistrarTest::TestNonUIDataTypeActivationAsync,
-          base::Unretained(this), &change_processor_mock, &done));
-  done.Wait();
-
-  registrar()->DeactivateDataType(AUTOFILL);
-  ExpectRoutingInfo(ModelSafeRoutingInfo());
-  ExpectHasProcessorsForTypes(ModelTypeSet());
-
-  // Should do nothing.
-  TriggerChanges(AUTOFILL);
 }
 
 // Tests that registration and configuration of non-blocking data types is

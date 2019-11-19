@@ -15,39 +15,26 @@
 // Encapsulates information about authenticators that have been found but to
 // which the CTAP request is not dispatched until after receiving confirmation
 // from the user via the UI.
-class AuthenticatorReference {
- public:
+struct AuthenticatorReference {
   AuthenticatorReference(base::StringPiece device_id,
                          base::StringPiece16 authenticator_display_name,
                          device::FidoTransportProtocol transport,
                          bool is_in_pairing_mode,
-                         bool is_paired);
+                         bool is_paired,
+                         bool requires_ble_pairing_pin);
   AuthenticatorReference(AuthenticatorReference&& data);
   AuthenticatorReference& operator=(AuthenticatorReference&& other);
   ~AuthenticatorReference();
 
-  void SetAuthenticatorId(std::string authenticator_id);
-  void SetIsInPairingMode(bool is_in_pairing_mode);
-  void SetIsPaired(bool is_paired);
-  void SetDispatched(bool dispatched);
-
-  const std::string& authenticator_id() const { return authenticator_id_; }
-  const base::string16& authenticator_display_name() const {
-    return authenticator_display_name_;
-  }
-  device::FidoTransportProtocol transport() const { return transport_; }
-  bool is_in_pairing_mode() const { return is_in_pairing_mode_; }
-  bool is_paired() const { return is_paired_; }
-  bool dispatched() const { return dispatched_; }
+  std::string authenticator_id;
+  base::string16 authenticator_display_name;
+  device::FidoTransportProtocol transport;
+  bool is_in_pairing_mode = false;
+  bool is_paired = false;
+  bool requires_ble_pairing_pin = true;
+  bool dispatched = false;
 
  private:
-  std::string authenticator_id_;
-  base::string16 authenticator_display_name_;
-  device::FidoTransportProtocol transport_;
-  bool is_in_pairing_mode_ = false;
-  bool is_paired_ = false;
-  bool dispatched_ = false;
-
   DISALLOW_COPY_AND_ASSIGN(AuthenticatorReference);
 };
 

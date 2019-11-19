@@ -19,6 +19,7 @@ using OfflineContentProvider = offline_items_collection::OfflineContentProvider;
 using OfflineContentAggregator =
     offline_items_collection::OfflineContentAggregator;
 using OfflineItem = offline_items_collection::OfflineItem;
+using UpdateDelta = offline_items_collection::UpdateDelta;
 
 // Class for notifying UI when an OfflineItem should be displayed.
 class DownloadShelfController : public OfflineContentProvider::Observer {
@@ -31,7 +32,8 @@ class DownloadShelfController : public OfflineContentProvider::Observer {
   void OnItemsAdded(
       const OfflineContentProvider::OfflineItemList& items) override;
   void OnItemRemoved(const ContentId& id) override;
-  void OnItemUpdated(const OfflineItem& item) override;
+  void OnItemUpdated(const OfflineItem& item,
+                     const base::Optional<UpdateDelta>& update_delta) override;
 
   // Called when a new OfflineItem is to be displayed on UI.
   void OnNewOfflineItemReady(DownloadUIModel::DownloadUIModelPtr model);

@@ -88,16 +88,10 @@ TYPED_TEST(FileVersionInfoTest, HardCodedProperties) {
       STRING16_LITERAL("This is the product short name"),  // product_short_name
       STRING16_LITERAL("The Internal Name"),               // internal_name
       STRING16_LITERAL("4.3.2.1"),                         // product_version
-      STRING16_LITERAL("Private build property"),          // private_build
       STRING16_LITERAL("Special build property"),          // special_build
-      STRING16_LITERAL(
-          "This is a particularly interesting comment"),  // comments
       STRING16_LITERAL("This is the original filename"),  // original_filename
       STRING16_LITERAL("This is my file description"),    // file_description
       STRING16_LITERAL("1.2.3.4"),                        // file_version
-      STRING16_LITERAL("This is the legal copyright"),    // legal_copyright
-      STRING16_LITERAL("This is the legal trademarks"),   // legal_trademarks
-      STRING16_LITERAL("This is the last change"),        // last_change
   };
 
   FilePath dll_path = GetTestDataPath();
@@ -114,35 +108,10 @@ TYPED_TEST(FileVersionInfoTest, HardCodedProperties) {
   EXPECT_EQ(kExpectedValues[j++], version_info->product_short_name());
   EXPECT_EQ(kExpectedValues[j++], version_info->internal_name());
   EXPECT_EQ(kExpectedValues[j++], version_info->product_version());
-  EXPECT_EQ(kExpectedValues[j++], version_info->private_build());
   EXPECT_EQ(kExpectedValues[j++], version_info->special_build());
-  EXPECT_EQ(kExpectedValues[j++], version_info->comments());
   EXPECT_EQ(kExpectedValues[j++], version_info->original_filename());
   EXPECT_EQ(kExpectedValues[j++], version_info->file_description());
   EXPECT_EQ(kExpectedValues[j++], version_info->file_version());
-  EXPECT_EQ(kExpectedValues[j++], version_info->legal_copyright());
-  EXPECT_EQ(kExpectedValues[j++], version_info->legal_trademarks());
-  EXPECT_EQ(kExpectedValues[j++], version_info->last_change());
-}
-
-TYPED_TEST(FileVersionInfoTest, IsOfficialBuild) {
-  constexpr struct {
-    const base::char16* const dll_name;
-    const bool is_official_build;
-  } kTestItems[]{
-      {STRING16_LITERAL("FileVersionInfoTest1.dll"), true},
-      {STRING16_LITERAL("FileVersionInfoTest2.dll"), false},
-  };
-
-  for (const auto& test_item : kTestItems) {
-    const FilePath dll_path = GetTestDataPath().Append(test_item.dll_name);
-
-    TypeParam factory(dll_path);
-    std::unique_ptr<FileVersionInfo> version_info(factory.Create());
-    ASSERT_TRUE(version_info);
-
-    EXPECT_EQ(test_item.is_official_build, version_info->is_official_build());
-  }
 }
 
 TYPED_TEST(FileVersionInfoTest, CustomProperties) {
@@ -183,4 +152,15 @@ TYPED_TEST(FileVersionInfoTest, CustomProperties) {
       version_info_win->GetValue(STRING16_LITERAL("Unknown property"), &str));
   EXPECT_EQ(base::string16(), version_info_win->GetStringValue(
                                   STRING16_LITERAL("Unknown property")));
+
+  EXPECT_EQ(base::Version(std::vector<uint32_t>{1, 0, 0, 1}),
+            version_info_win->GetFileVersion());
+}
+
+TYPED_TEST(FileVersionInfoTest, NoVersionInfo) {
+  FilePath dll_path = GetTestDataPath();
+  dll_path = dll_path.AppendASCII("no_version_info.dll");
+
+  TypeParam factory(dll_path);
+  ASSERT_FALSE(factory.Create());
 }

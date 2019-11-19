@@ -20,39 +20,49 @@
 -keep @interface org.chromium.base.annotations.UsedByReflection
 
 # Keeps for class level annotations.
--keep @org.chromium.base.annotations.UsedByReflection class * {}
+-keep @org.chromium.base.annotations.UsedByReflection class ** {}
 
 # Keeps for method level annotations.
--keepclasseswithmembers class * {
+-keepclasseswithmembers class ** {
   @org.chromium.base.annotations.AccessedByNative <fields>;
 }
--keepclasseswithmembers,includedescriptorclasses class * {
+-keepclasseswithmembers,includedescriptorclasses class ** {
   @org.chromium.base.annotations.CalledByNative <methods>;
 }
--keepclasseswithmembers,includedescriptorclasses class * {
+-keepclasseswithmembers,includedescriptorclasses class ** {
   @org.chromium.base.annotations.CalledByNativeUnchecked <methods>;
 }
--keepclasseswithmembers class * {
+-keepclasseswithmembers class ** {
   @org.chromium.base.annotations.UsedByReflection <methods>;
 }
--keepclasseswithmembers class * {
+-keepclasseswithmembers class ** {
   @org.chromium.base.annotations.UsedByReflection <fields>;
 }
--keepclasseswithmembers,includedescriptorclasses class * {
+# Even unused methods kept due to explicit jni registration:
+# https://crbug.com/688465.
+-keepclasseswithmembers,includedescriptorclasses class !org.chromium.base.library_loader.**,** {
+  native <methods>;
+}
+-keepclasseswithmembernames,includedescriptorclasses class org.chromium.base.library_loader.** {
   native <methods>;
 }
 
-# Remove methods annotated with this if their return value is unused.
 -assumenosideeffects class ** {
+  # Remove @RemovableInRelease methods so long as return values are unused.
   @org.chromium.base.annotations.RemovableInRelease <methods>;
+  # Remove object @RemovableInRelease methods even when return value is used.
+  # Note: * in return type does not match primitives.
+  @org.chromium.base.annotations.RemovableInRelease * *(...) return null;
+  # Remove boolean @RemovableInRelease methods even when return value is used.
+  @org.chromium.base.annotations.RemovableInRelease boolean *(...) return false;
 }
 
 # Never inline classes or methods with this annotation, but allow shrinking and
 # obfuscation.
--keepnames,allowobfuscation @org.chromium.base.annotations.DoNotInline class * {
-  *;
+-keep,allowobfuscation,allowoptimization @org.chromium.base.annotations.DoNotInline class ** {
+  <methods>;
 }
--keepclassmembernames,allowobfuscation class * {
+-keepclassmembers,allowobfuscation,allowoptimization class ** {
   @org.chromium.base.annotations.DoNotInline <methods>;
 }
 
@@ -65,7 +75,7 @@
 # If we annotated all Parcelables that get put into Bundles other than
 # for saveInstanceState (e.g. PendingIntents), then we could actually keep the
 # names of just those ones. For now, we'll just keep them all.
--keepnames class org.chromium.** implements android.os.Parcelable
+-keepnames class org.chromium.** implements android.os.Parcelable {}
 
 # Keep all enum values and valueOf methods. See
 # http://proguard.sourceforge.net/index.html#manual/examples.html

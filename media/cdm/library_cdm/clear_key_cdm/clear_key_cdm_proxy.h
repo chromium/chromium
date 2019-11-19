@@ -49,7 +49,7 @@ class ClearKeyCdmProxy : public CdmProxy, public CdmContext {
 
   scoped_refptr<AesDecryptor> aes_decryptor_;
 
-  base::WeakPtrFactory<ClearKeyCdmProxy> weak_factory_;
+  base::WeakPtrFactory<ClearKeyCdmProxy> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ClearKeyCdmProxy);
 };

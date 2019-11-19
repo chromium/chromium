@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<script src='../../resources/gesture-util.js'></script>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<style>
+#blue {
+    background-color: rgb(0, 0, 255);
+    position: absolute;
+    left: 75px;
+    top: 75px;
+    height: 100px;
+    width: 100px;
+}
+#blue:hover {
+    background-color: rgb(255, 255, 0);
+}
+</style>
+
+<script>
+internals.runtimeFlags.updateHoverAtBeginFrameEnabled = true;
+
+var eventList = [];
+var x = 100;
+var y = 100;
+
+function addBlue() {
+  var blue = document.createElement('div');
+  blue.id = "blue";
+  var events = ['mouseover', 'mousemove', 'mouseout', 'mouseenter', 'mouseleave'];
+  events.forEach(function (event) {
+      blue.addEventListener(event, addMouseEvents);
+  });
+  document.body.appendChild(blue);
+}
+
+function addMouseEvents(event) {
+  eventList.push(event.type);
+}
+
+promise_test (async () => {
+  document.addEventListener('click', addBlue);
+  await mouseClickOn(x, y);
+  var result = eventList.join();
+  assert_true(result == 'mouseover,mouseenter');
+  assert_true(document.getElementById("blue").matches(':hover'));
+  assert_true(internals.runtimeFlags.updateHoverAtBeginFrameEnabled);
+}, 'Tests that the mouseover event is fired and the element has hover effect when the element underneath the mouse cursor is changed.');
+</script>

@@ -44,6 +44,10 @@ cr-menu > [sub-menu]::after {
   font-size: 0.7em;
 }
 
+cr-menu > [sub-menu][disabled]::after {
+  color: rgba(51, 51, 51, 0.20);
+}
+
 html[dir='rtl'] cr-menu > [shortcutText]::after {
   float: left;
 }

@@ -48,6 +48,8 @@ class GattClient {
                                          int latency,
                                          int timeout) = 0;
   virtual bool GetServices(const Addr& addr) = 0;
+  virtual bool ClearPendingConnect(const Addr& addr) = 0;
+  virtual bool ClearPendingDisconnect(const Addr& addr) = 0;
 };
 
 }  // namespace bluetooth_v2_shlib

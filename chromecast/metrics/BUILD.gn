@@ -1,0 +1,27 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chromecast/chromecast.gni")
+
+cast_source_set("metrics") {
+  sources = [
+    "cast_metrics_service_client.cc",
+    "cast_metrics_service_client.h",
+  ]
+
+  deps = [
+    "//base",
+    "//base:i18n",
+    "//chromecast/base",
+    "//chromecast/base:cast_sys_info_util",
+    "//chromecast/base:cast_version",
+    "//components/metrics",
+    "//components/metrics:gpu",
+    "//components/metrics:net",
+    "//components/metrics:ui",
+    "//components/prefs",
+    "//services/network/public/cpp",
+    "//third_party/metrics_proto",
+  ]
+}

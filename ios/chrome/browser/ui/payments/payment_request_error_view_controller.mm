@@ -9,11 +9,10 @@
 #import "ios/chrome/browser/ui/collection_view/cells/MDCCollectionViewCell+Chrome.h"
 #import "ios/chrome/browser/ui/collection_view/cells/collection_view_item.h"
 #import "ios/chrome/browser/ui/collection_view/collection_view_model.h"
-#import "ios/chrome/browser/ui/colors/MDCPalette+CrAdditions.h"
 #import "ios/chrome/browser/ui/payments/cells/payments_text_item.h"
 #import "ios/chrome/browser/ui/payments/payment_request_error_view_controller_actions.h"
+#import "ios/chrome/common/colors/semantic_color_names.h"
 #include "ios/chrome/grit/ios_strings.h"
-#import "ios/third_party/material_components_ios/src/components/Buttons/src/MaterialButtons.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -62,7 +61,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
                                         target:self
                                         action:@selector(onOk)];
     [_okButton setTitleTextAttributes:@{
-      NSForegroundColorAttributeName : [UIColor lightGrayColor]
+      NSForegroundColorAttributeName : [UIColor colorNamed:kDisabledTintColor]
     }
                              forState:UIControlStateDisabled];
     [_okButton setAccessibilityLabel:l10n_util::GetNSString(IDS_ACCNAME_OK)];
@@ -99,6 +98,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   self.styler.cellStyle = MDCCollectionViewCellStyleCard;
   self.styler.separatorInset =
       UIEdgeInsetsMake(0, kSeparatorEdgeInset, 0, kSeparatorEdgeInset);
+  self.styler.separatorColor = [UIColor colorNamed:kSeparatorColor];
 }
 
 #pragma mark UICollectionViewDataSource
@@ -114,7 +114,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
     case ItemTypeMessage: {
       PaymentsTextCell* messageCell =
           base::mac::ObjCCastStrict<PaymentsTextCell>(cell);
-      messageCell.textLabel.textColor = [[MDCPalette greyPalette] tint600];
+      messageCell.textLabel.textColor =
+          [UIColor colorNamed:kTextSecondaryColor];
       break;
     }
     default:

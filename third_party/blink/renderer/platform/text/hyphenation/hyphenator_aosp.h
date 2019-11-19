@@ -24,7 +24,7 @@
  */
 
 #include <memory>
-#include <unordered_map>
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace android {
 
@@ -42,9 +42,7 @@ class Hyphenator {
   // 1 means insert hyphen and break, but this will be expanded to other edits
   // for nonstandard hyphenation.  Example: word is "hyphen", result is [0 0 1 0
   // 0 0], corresponding to "hy-phen".
-  void hyphenate(std::vector<uint8_t>* result,
-                 const uint16_t* word,
-                 size_t len);
+  void hyphenate(Vector<uint8_t>* result, const uint16_t* word, size_t len);
 
   // pattern data is in binary format, as described in doc/hyb_file_format.md.
   // Note: the caller is responsible for ensuring that the lifetime of the

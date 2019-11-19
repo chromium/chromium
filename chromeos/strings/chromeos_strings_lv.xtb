@@ -1,22 +1,41 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="lv">
+<translation id="1482734542997480527"><ph name="ENROLLMENT_DOMAIN" /> pārvalda šo ierīci un, iespējams, var pārraudzīt jūsu darbību.</translation>
 <translation id="1510238584712386396">Lietojumprogrammu palaidējs</translation>
 <translation id="1734367976349034509">Šo ierīci pārvalda uzņēmums</translation>
+<translation id="1930797645656624981">Chrome OS ievades metodes pakalpojums</translation>
+<translation id="1979103255016296513">Paroles maiņa ir nokavēta</translation>
 <translation id="2049639323467105390">Šo ierīci pārvalda vietne <ph name="DOMAIN" />.</translation>
 <translation id="2083960536266308407">Ekrānā nekas netika atrasts</translation>
 <translation id="2338501278241028356">Ieslēdziet Bluetooth, lai atklātu tuvumā esošas ierīces</translation>
 <translation id="2805756323405976993">Lietotnes</translation>
 <translation id="2872961005593481000">Beidzēt</translation>
-<translation id="3147142846278915599">Palaišanas programma (notiek lietotņu sinhronizēšana...)</translation>
+<translation id="3008341117444806826">ATSVAIDZINĀT</translation>
+<translation id="3838338534323494292">Jaunā parole</translation>
+<translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> pārvalda šo ierīci un tam ir piekļuve visām lietotāja darbībām, tostarp tīmekļa lapām, kuras apmeklējāt, parolēm un e-pastam.</translation>
+<translation id="4227825898293920515">Paroles derīguma termiņš: <ph name="TIME" /></translation>
+<translation id="4429881212383817840">Kerberos biļetes termiņš drīz beigsies</translation>
+<translation id="445059817448385655">Iepriekšējā parole</translation>
+<translation id="467510802200863975">Paroles nav vienādas</translation>
 <translation id="4731797938093519117">Vecāku piekļuve</translation>
+<translation id="4890353053343094602">Nekavējoties izvēlieties jaunu</translation>
 <translation id="5212543919916444558">Ekrānā neredzu neko, ar ko varētu palīdzēt.
 Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="5222676887888702881">Izrakstīties</translation>
+<translation id="5317780077021120954">Saglabāt</translation>
+<translation id="5332948983412042822">Izvēlieties jaunu jau tūlīt</translation>
 <translation id="5457599981699367932">Pārlūkot kā viesim</translation>
 <translation id="54609108002486618">Pārvaldītais</translation>
 <translation id="5832805196449965646">Pievienot personu</translation>
 <translation id="5895138241574237353">Restartēt</translation>
+<translation id="6058625436358447366">Lai pabeigtu, ievadiet savu iepriekšējo un jauno paroli</translation>
+<translation id="6106186594183574873">Lai pabeigtu, ievadiet savu iepriekšējo paroli</translation>
+<translation id="6146993107019042706">Lai pabeigtu, ievadiet savu jauno paroli</translation>
 <translation id="7658239707568436148">Atcelt</translation>
+<translation id="7690294790491645610">Apstipriniet jauno paroli</translation>
+<translation id="808894953321890993">Mainīt paroli</translation>
+<translation id="8747900814994928677">Apstiprināt izmaiņas</translation>
+<translation id="910415269708673980">Atsvaidziniet <ph name="PRINCIPAL_NAME" /> biļeti</translation>
 <translation id="9111102763498581341">Atbloķēt</translation>
 </translationbundle>

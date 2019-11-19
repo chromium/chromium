@@ -1,0 +1,118 @@
+      <style include="cr-page-host-style cr-shared-style md-select">
+        :host {
+          user-select: none;
+        }
+
+        cr-dialog::part(dialog) {
+          border-radius: 0;
+          height: 100%;
+          width: 100%;
+        }
+
+        cr-dialog [slot=title] {
+          /* The native dialog caption area has enough visual whitespace. */
+          padding-top: 0;
+        }
+
+        cr-dialog [slot=button-container] {
+          /* Align right edge of "Done" button with right edge of time input. */
+          padding-inline-end: 20px;
+        }
+
+        .row {
+          display: flex;
+          margin-top: 16px;
+        }
+
+        div.row:first-of-type {
+          margin-top: 0;
+        }
+
+        .column {
+          flex: 1;
+        }
+
+        /* Style to match md-select. */
+        input[type='date'],
+        input[type='time'] {
+          background-color: var(--google-grey-refresh-100);
+          border: none;
+          border-radius: 4px;
+          box-sizing: border-box;
+          color: var(--google-grey-900);
+          font-family: inherit;
+          font-size: inherit;
+          /* Ensure space for focus border. */
+          margin-bottom: 2px;
+          padding: 6px 8px;
+          width: 100%;
+        }
+
+        input[type='date']::-webkit-clear-button,
+        input[type='time']::-webkit-clear-button {
+          display: none;
+        }
+
+        #timeColumn {
+          margin-inline-start: 20px;
+        }
+
+        #timezone {
+          display: block;
+          /* No bottom margin to minimize height of dialog body. */
+          margin-bottom: 0;
+        }
+
+        #timezoneSelect {
+          cursor: default;
+          font-family: inherit;
+          font-size: inherit;
+          /* Ensure space for focus border. */
+          margin-bottom: 2px;
+          width: 100%;
+        }
+      </style>
+
+      <cr-dialog id="dialog">
+        <div slot="title">$i18n{setTimeTitle}</div>
+        <div slot="body" id="dialogBody">
+          <div class="row">$i18n{prompt}</div>
+
+          <div class="row">
+            <div class="column">
+              <div id="label">$i18n{dateLabel}</div>
+              <input id="dateInput" type="date" aria-label="$i18n{dateLabel}"
+                  min="[[minDate_]]" max="[[maxDate_]]" on-blur="onTimeBlur_">
+            </div>
+            <div class="column" id="timeColumn">
+              <div id="label">$i18n{timeLabel}</div>
+              <input id="timeInput" type="time" aria-label="$i18n{timeLabel}"
+                  on-blur="onTimeBlur_">
+            </div>
+          </div>
+
+          <template is="dom-if" if="[[isTimezoneVisible_]]">
+            <div id="timezone" class="row">
+              <div id="label">$i18n{timezoneLabel}</div>
+              <select id="timezoneSelect"
+                  class="md-select"
+                  aria-label="$i18n{timezoneLabel}"
+                  on-change="onTimezoneChange_">
+                <template is="dom-repeat" items="[[timezoneItems_]]" as="tz">
+                  <option value="[[tz.id]]" selected="[[tz.selected]]">
+                    [[tz.name]]
+                  </option>
+                </template>
+              </select>
+            </div>
+          </template>
+        </div>
+
+        <div slot="button-container">
+          <cr-button id="doneButton" class="action-button"
+              on-click="onDoneClick_">
+            $i18n{doneButton}
+          </cr-button>
+        </div>
+      </cr-dialog>
+    </template>

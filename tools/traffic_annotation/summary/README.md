@@ -17,8 +17,8 @@ The following items are stored for each annotation :
 * `os_list`: List of all platforms on which this annotation exists.
     Currently only including `linux` and `windows`.
 * `file_path`: The file path of the annotation.
-* `reserved`: Reserverd annotations (like annotation for test files) have this
-    attribute. If annotation is a reserverd one, it does not have
+* `reserved`: Reserved annotations (like annotation for test files) have this
+    attribute. If annotation is a reserved one, it does not have
   `content_hash_code` and `file_path` attributes.
 * `deprecated`: Once an annotation is removed from the repository, this
     attribute is added to its item with value equal to the deprecation date, and

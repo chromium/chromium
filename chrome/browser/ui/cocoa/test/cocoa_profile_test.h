@@ -13,7 +13,7 @@
 #include "ui/views/test/scoped_views_test_helper.h"
 
 namespace content {
-class TestBrowserThreadBundle;
+class BrowserTaskEnvironment;
 }
 
 class Browser;
@@ -59,7 +59,7 @@ class CocoaProfileTest : public CocoaTest {
   virtual Browser* CreateBrowser();
 
  private:
-  std::unique_ptr<content::TestBrowserThreadBundle> thread_bundle_;
+  std::unique_ptr<content::BrowserTaskEnvironment> task_environment_;
 
   views::ScopedViewsTestHelper views_helper_;
 

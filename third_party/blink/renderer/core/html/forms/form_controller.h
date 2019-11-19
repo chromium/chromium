@@ -26,7 +26,7 @@
 #include <memory>
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -39,6 +39,7 @@ class HTMLFormElement;
 class ListedElement;
 class SavedFormState;
 
+// FormControlState represents state of a single form control.
 class FormControlState {
   DISALLOW_NEW();
 
@@ -47,8 +48,9 @@ class FormControlState {
   explicit FormControlState(const String& value) : type_(kTypeRestore) {
     values_.push_back(value);
   }
-  static FormControlState Deserialize(const Vector<String>& state_vector,
-                                      wtf_size_t& index);
+  CORE_EXPORT static FormControlState Deserialize(
+      const Vector<String>& state_vector,
+      wtf_size_t& index);
   FormControlState(const FormControlState& another) = default;
   FormControlState& operator=(const FormControlState&);
 
@@ -77,55 +79,64 @@ inline void FormControlState::Append(const String& value) {
 using SavedFormStateMap =
     HashMap<AtomicString, std::unique_ptr<SavedFormState>>;
 
-class CORE_EXPORT DocumentState final
-    : public GarbageCollectedFinalized<DocumentState> {
+class CORE_EXPORT DocumentState final : public GarbageCollected<DocumentState> {
  public:
   DocumentState(Document& document);
   void Trace(Visitor*);
 
+  using ControlList = HeapVector<Member<ListedElement>, 64>;
   void InvalidateControlList();
+  const ControlList& GetControlList();
   Vector<String> ToStateVector();
 
  private:
   Member<Document> document_;
-  using FormElementList = HeapVector<Member<ListedElement>, 64>;
-  FormElementList form_controls_;
-  bool form_controls_dirty_ = true;
+  ControlList control_list_;
+  bool is_control_list_dirty_ = true;
 };
 
 class CORE_EXPORT FormController final
-    : public GarbageCollectedFinalized<FormController> {
+    : public GarbageCollected<FormController> {
  public:
   FormController(Document& document);
   ~FormController();
   void Trace(Visitor*);
 
   void InvalidateStatefulFormControlList();
-  // This should be callled only by Document::formElementsState().
-  DocumentState* FormElementsState() const;
-  // This should be callled only by Document::setStateForNewFormElements().
-  void SetStateForNewFormElements(const Vector<String>&);
+  // This should be called only by Document::FormElementsState().
+  DocumentState* ControlStates() const;
+  // This should be called only by Document::SetStateForNewFormElements().
+  void SetStateForNewControls(const Vector<String>&);
   // Returns true if saved state is set to this object and there are entries
   // which are not consumed yet.
-  bool HasFormStates() const;
+  bool HasControlStates() const;
   void WillDeleteForm(HTMLFormElement*);
   void RestoreControlStateFor(ListedElement&);
   void RestoreControlStateIn(HTMLFormElement&);
   // For a upgraded form-associated custom element.
   void RestoreControlStateOnUpgrade(ListedElement&);
 
+  void ScheduleRestore();
+
   static Vector<String> GetReferencedFilePaths(
       const Vector<String>& state_vector);
 
  private:
-  FormControlState TakeStateForFormElement(const ListedElement&);
-  static void FormStatesFromStateVector(const Vector<String>&,
-                                        SavedFormStateMap&);
+  FormControlState TakeStateForControl(const ListedElement&);
+  static void ControlStatesFromStateVector(const Vector<String>&,
+                                           SavedFormStateMap&);
+  // A helper for RestoreControlStateFor() and RestoreControlStateIn().
+  void RestoreControlStateInternal(ListedElement& control);
+  void RestoreAllControlsInDocumentOrder();
 
+  Member<Document> document_;
   Member<DocumentState> document_state_;
   SavedFormStateMap saved_form_state_map_;
   Member<FormKeyGenerator> form_key_generator_;
 };
+
+// Exposed for testing.
+CORE_EXPORT String FormSignature(const HTMLFormElement& form);
 
 }  // namespace blink
 #endif

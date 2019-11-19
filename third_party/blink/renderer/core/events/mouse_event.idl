@@ -24,8 +24,8 @@
     ConstructorCallWith=ScriptState,
     Exposed=Window
 ] interface MouseEvent : UIEvent {
-    readonly attribute double           screenX;
-    readonly attribute double           screenY;
+    [HighEntropy, MeasureAs=MouseEventScreenX] readonly attribute double screenX;
+    [HighEntropy, MeasureAs=MouseEventScreenY] readonly attribute double screenY;
     readonly attribute double           clientX;
     readonly attribute double           clientY;
     readonly attribute boolean          ctrlKey;

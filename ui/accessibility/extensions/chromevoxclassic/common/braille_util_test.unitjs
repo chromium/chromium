@@ -1,0 +1,420 @@
+// Copyright 2014 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Include test fixture.
+GEN_INCLUDE(['//ui/accessibility/extensions/chromevoxclassic/testing/chromevox_unittest_base.js']);
+
+/**
+ * Test fixture.
+ * @constructor
+ * @extends {ChromeVoxUnitTestBase}
+ */
+function ChromeVoxBrailleUtilUnitTest() {}
+
+ChromeVoxBrailleUtilUnitTest.prototype = {
+  __proto__: ChromeVoxUnitTestBase.prototype,
+
+  /** @override */
+  closureModuleDeps: [
+    'cvox.BrailleUtil',
+    'cvox.CursorSelection',
+    'cvox.NavigationShifter',
+    'TestMsgs',
+  ],
+
+  /** @override */
+  setUp: function() {
+    Msgs = TestMsgs;
+  },
+
+  /**
+   * @param {!Node} expectedParent Expected parent node.
+   * @param {!Node} node Node to examine.
+   * @private
+   */
+  assertTextNodeChildOf_: function(expectedParent, node) {
+    assertEquals(Node.TEXT_NODE, node.nodeType);
+    assertEquals(expectedParent, node.parentNode);
+  },
+
+  /**
+   * Helper to retrieve braille for testing.
+   * @param {!cvox.CursorSelection} prevSel Previous selection.
+   * @param {!cvox.CursorSelection} sel Current selection.
+   * @return {!cvox.NavBraille} Resulting braille.
+   * @private
+   */
+  getBraille_: function(prevSel, sel) {
+    return (new cvox.NavigationShifter).getBraille(prevSel, sel);
+  },
+
+  /**
+   * Asserts that two NavBraille objects are equal, ignoring spans.
+   * @param {Object} expected Expected result, should have no spans.
+   * @param {cvox.NavBraille} actual Actual result.
+   */
+  assertBrailleEquals: function(expected, actual) {
+    actual = new cvox.NavBraille({
+      text: actual.text.toString(),
+      startIndex: actual.startIndex,
+      endIndex: actual.endIndex
+    });
+    assertThat(actual, eqJSON(new cvox.NavBraille(expected)));
+  }
+};
+
+TEST_F('ChromeVoxBrailleUtilUnitTest', 'BrailleName', function() {
+  this.loadHtml(
+      '<div id="navbar">' +
+      '<a id="1" href="one.com">one</a>' +
+      '<a id="2" href="two.com">two</a>' +
+      '<a id="3" href="three.com">three</a>' +
+      '</div>');
+  var navbar = cvox.CursorSelection.fromNode($('navbar'));
+  var braille = this.getBraille_(navbar, navbar);
+  this.assertBrailleEquals(
+      {text: 'one lnk two lnk three lnk',
+       startIndex: 0,
+       endIndex: 1
+      }, braille);
+
+  var one =
+      cvox.CursorSelection.fromNode($('1').firstChild);
+  braille = this.getBraille_(one, one);
+  this.assertBrailleEquals(
+      {text: 'one lnk two lnk three lnk',
+       startIndex: 0,
+       endIndex: 1
+      }, braille);
+
+  var two =
+      cvox.CursorSelection.fromNode($('2').firstChild);
+  braille = this.getBraille_(one, two);
+  this.assertBrailleEquals(
+      {text: 'one lnk two lnk three lnk',
+       startIndex: 8,
+       endIndex: 9
+      }, braille);
+
+  var three =
+      cvox.CursorSelection.fromNode($('3').firstChild);
+  braille = this.getBraille_(two, three);
+  this.assertBrailleEquals(
+      {text: 'one lnk two lnk three lnk',
+       startIndex: 16,
+       endIndex: 17
+      }, braille);
+});
+
+
+/**
+ * @export
+ */
+TEST_F('ChromeVoxBrailleUtilUnitTest', 'NameTemplate', function() {
+  this.loadHtml(
+      '<button id="1">Submit</button>' +
+      '<input id="2" type="text" aria-label="Search">'
+      );
+
+  var button = cvox.CursorSelection.fromNode($('1'));
+
+  this.assertBrailleEquals(
+      {text: 'Submit btn',
+       startIndex: 0,
+       endIndex: 1
+      }, this.getBraille_(button, button));
+
+  var inputElement = $('2');
+  var input = cvox.CursorSelection.fromNode(inputElement);
+
+  // Note: the cursor appears where text would be typed.
+  this.assertBrailleEquals(
+      {text: 'Search: ed',
+       startIndex: 0,
+       endIndex: 1
+      }, this.getBraille_(input, input));
+  inputElement.focus();
+  this.assertBrailleEquals(
+      {text: 'Search:  ed',
+       startIndex: 8,
+       endIndex: 8
+      }, this.getBraille_(input, input));
+});
+
+
+/**
+ * @export
+ */
+TEST_F('ChromeVoxBrailleUtilUnitTest', 'TextField', function() {
+  this.loadHtml(
+      '<input id="1" type="text" aria-label="Search" value="larry">'
+      );
+
+  var inputElement = $('1');
+  var input = cvox.CursorSelection.fromNode(inputElement);
+
+  // Note: the cursor appears where text would be typed.
+  // The cursor is at the beginning by default.
+  this.assertBrailleEquals(
+      {text: 'Search: larry ed',
+       startIndex: 0,
+       endIndex: 1
+      }, this.getBraille_(input, input));
+  inputElement.focus();
+  inputElement.selectionStart = 0;
+  inputElement.selectionEnd = 5;
+  this.assertBrailleEquals(
+      {text: 'Search: larry ed',
+       startIndex: 8,
+       endIndex: 13
+      }, this.getBraille_(input, input));
+});
+
+
+/**
+ * @export
+ */
+TEST_F('ChromeVoxBrailleUtilUnitTest', 'TextFieldEmpty', function() {
+  this.loadHtml(
+      '<input id="1" type="text">'
+      );
+
+  var inputElement = $('1');
+  var input = cvox.CursorSelection.fromNode($('1'));
+
+  this.assertBrailleEquals(
+      {text: ': ed',
+       startIndex: 0,
+       endIndex: 1
+      }, this.getBraille_(input, input));
+  inputElement.focus();
+  this.assertBrailleEquals(
+      {text: ':  ed',
+       startIndex: 2,
+       endIndex: 2
+      }, this.getBraille_(input, input));
+});
+
+
+/**
+ * @export
+ */
+TEST_F('ChromeVoxBrailleUtilUnitTest', 'TextFieldSelection', function() {
+  this.loadHtml(
+      '<input id="1" type="text" value="strawberry">'
+      );
+
+  var inputElem = $('1');
+  inputElem.focus();
+  var input = cvox.CursorSelection.fromNode(inputElem);
+
+  // Selection.
+  inputElem.selectionStart = 2;
+  inputElem.selectionEnd = 5;
+  this.assertBrailleEquals(
+      {text: ': strawberry ed',
+       startIndex: 4,
+       endIndex: 7
+      }, this.getBraille_(input, input));
+
+  // Cursor at end.
+  inputElem.selectionStart = 10;
+  inputElem.selectionEnd = 10;
+  this.assertBrailleEquals(
+      {text: ': strawberry ed',
+       startIndex: 12,
+       endIndex: 12
+      }, this.getBraille_(input, input));
+});
+
+
+/**
+ * @export
+ */
+TEST_F('ChromeVoxBrailleUtilUnitTest', 'StateTemplate', function() {
+  this.loadHtml(
+      '<input id="1" type="checkbox" aria-label="Save">');
+
+  var checkbox = cvox.CursorSelection.fromNode($('1'));
+
+  this.assertBrailleEquals(
+      {text: 'Save chk ( )',
+       startIndex: 0,
+       endIndex: 1
+      }, this.getBraille_(checkbox, checkbox));
+
+  $('1').checked = true;
+
+  this.assertBrailleEquals(
+      {text: 'Save chk (x)',
+       startIndex: 0,
+       endIndex: 1
+      }, this.getBraille_(checkbox, checkbox));
+});
+
+
+/**
+ * @export
+ */
+TEST_F('ChromeVoxBrailleUtilUnitTest', 'AccessKey', function() {
+  this.loadHtml(
+      '<a href="http://www.google.com" id="1" accesskey="g">Google</a>');
+
+  var link = cvox.CursorSelection.fromNode($('1'));
+
+  this.assertBrailleEquals(
+      {text: 'Google lnk access key:g',
+       startIndex: 0,
+       endIndex: 1
+      }, this.getBraille_(link, link));
+});
+
+
+/**
+ * @export
+ */
+TEST_F('ChromeVoxBrailleUtilUnitTest', 'ContainerTemplate', function() {
+  this.loadHtml(
+      '<h1>' +
+      '<a id="1" href="#menu">Skip To Menu</a>' +
+      '</h1>'
+      );
+
+  var link = cvox.CursorSelection.fromNode($('1'));
+
+  var navBraille = this.getBraille_(
+      cvox.CursorSelection.fromBody(), link);
+  this.assertBrailleEquals(
+      {text: 'h1 Skip To Menu intlnk',
+       startIndex: 0,
+       endIndex: 1
+      }, navBraille);
+});
+
+
+/**
+ * @export
+ */
+TEST_F('ChromeVoxBrailleUtilUnitTest', 'LinkSpans', function() {
+  this.loadHtml('<p><a id="1" href="#1">Hello</a> from' +
+      ' <a id="2" href="//www.google.com/">ChromeVox</a>');
+  var link1 = $('1');
+  var link2 = $('2');
+  var navBraille = this.getBraille_(
+      cvox.CursorSelection.fromBody(), cvox.CursorSelection.fromNode(link1));
+  assertEquals('Hello intlnk from ChromeVox lnk',
+      navBraille.text.toString());
+  assertEquals(link1, navBraille.text.getSpan(0));
+  assertEquals(link1, navBraille.text.getSpan(11));
+  assertEquals('undefined', typeof navBraille.text.getSpan(12));
+  assertEquals('undefined', typeof navBraille.text.getSpan(17));
+  assertEquals(link2, navBraille.text.getSpan(18));
+  assertEquals(link2, navBraille.text.getSpan(30));
+});
+
+
+TEST_F('ChromeVoxBrailleUtilUnitTest', 'VisitedLink', function() {
+  this.loadHtml('<p><a id="1" href="http://visited.link">Hello</a> there.');
+  var link = $('1');
+  var navBraille = this.getBraille_(
+      cvox.CursorSelection.fromBody(), cvox.CursorSelection.fromNode(link));
+  this.assertBrailleEquals({text: 'Hello lnk there.',
+                            startIndex: 0,
+                            endIndex: 1},
+                           navBraille);
+  cvox.ChromeVox.visitedUrls[link.href] = true;
+  navBraille = this.getBraille_(
+      cvox.CursorSelection.fromBody(), cvox.CursorSelection.fromNode(link));
+  this.assertBrailleEquals({text: 'Hello vlnk there.',
+                            startIndex: 0,
+                            endIndex: 1},
+                           navBraille);
+});
+
+
+/**
+ * @export
+ */
+TEST_F('ChromeVoxBrailleUtilUnitTest', 'NestedElements', function() {
+  this.loadHtml('<h1 id="test-h1">Larry, ' +
+      '<a href="#batman" id="batman-link">Sergey</a> and Eric</h1>');
+  var h1 = $('test-h1');
+  var link = $('batman-link');
+  var navBraille = this.getBraille_(
+      cvox.CursorSelection.fromBody(), cvox.CursorSelection.fromNode(h1));
+  assertEquals('h1 Larry, Sergey intlnk and Eric',
+      navBraille.text.toString());
+  this.assertTextNodeChildOf_(h1, navBraille.text.getSpan(0));
+  this.assertTextNodeChildOf_(h1, navBraille.text.getSpan(5));
+  assertEquals(link, navBraille.text.getSpan(15));
+  this.assertTextNodeChildOf_(h1, navBraille.text.getSpan(30));
+});
+
+
+/**
+ * @export
+ */
+TEST_F('ChromeVoxBrailleUtilUnitTest', 'GetTemplatedOverride', function() {
+  assertEquals('Menu mnu',
+               cvox.BrailleUtil.getTemplated(null, null,
+                                             { 'name': 'Menu',
+                                              'roleMsg': 'role_menu' }).
+                                                  toString());
+  assertEquals('alrt: Watch out!',
+              cvox.BrailleUtil.getTemplated(null, null,
+                                            { 'name': 'Watch out!',
+                                              'roleMsg': 'role_alert' }).
+                                                  toString());
+  // Test all properties.  role, if present, overrides roleMsg.
+  assertEquals('Name Value Role State',
+              cvox.BrailleUtil.getTemplated(null, null,
+                                            { 'name': 'Name',
+                                              'role': 'Role',
+                                              'roleMsg': 'excluded',
+                                              'value': 'Value',
+                                              'state': 'State'
+                                            }).toString());
+});
+
+
+/**
+ * @export
+ */
+TEST_F('ChromeVoxBrailleUtilUnitTest', 'CreateValue', function() {
+  var s;
+  var valueSpan;
+  var selectiponSpan;
+
+  // Value without a selection.
+  s = cvox.BrailleUtil.createValue('value');
+  assertEquals('value', s.toString());
+  assertUndefined(s.getSpanInstanceOf(cvox.ValueSelectionSpan));
+  valueSpan = s.getSpanInstanceOf(cvox.ValueSpan);
+  assertEquals(0, s.getSpanStart(valueSpan));
+  assertEquals(s.length, s.getSpanEnd(valueSpan));
+
+  // Value with a carret at the start of the text.
+  s = cvox.BrailleUtil.createValue('value', 0);
+  selectionSpan = s.getSpanInstanceOf(cvox.ValueSelectionSpan);
+  assertEquals(0, s.getSpanStart(selectionSpan));
+  assertEquals(0, s.getSpanEnd(selectionSpan));
+
+  // Value with a carret inside the text.
+  s = cvox.BrailleUtil.createValue('value', 1);
+  selectionSpan = s.getSpanInstanceOf(cvox.ValueSelectionSpan);
+  assertEquals(1, s.getSpanStart(selectionSpan));
+  assertEquals(1, s.getSpanEnd(selectionSpan));
+
+  // Value with a carret at the end of the text.
+  s = cvox.BrailleUtil.createValue('value', 5);
+  selectionSpan = s.getSpanInstanceOf(cvox.ValueSelectionSpan);
+  assertEquals(5, s.getSpanStart(selectionSpan));
+  assertEquals(5, s.getSpanEnd(selectionSpan));
+
+  // All of the value selected selected with reversed start and end.
+  s = cvox.BrailleUtil.createValue('value', 5, 0);
+  selectionSpan = s.getSpanInstanceOf(cvox.ValueSelectionSpan);
+  assertEquals(0, s.getSpanStart(selectionSpan));
+  assertEquals(5, s.getSpanEnd(selectionSpan));
+});

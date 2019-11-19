@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src='../../../resources/testharness.js'></script>
+<script src='../../../resources/testharnessreport.js'></script>
+<script src='../../../fast/forms/resources/picker-common.js'></script>
+</head>
+<body>
+<input type='color' id='color' value='#80d9ff'>
+<script>
+'use strict';
+
+let t = async_test('Color picker: Pressing escape to discard color selection.');
+t.step(() => {
+  let colorControl = document.getElementById('color');
+  openPicker(colorControl, t.step_func(() => {
+    popupWindow.focus();
+    const popupDocument = popupWindow.document;
+    const colorWell = popupDocument.querySelector('color-well');
+    const colorWellRect = colorWell.getBoundingClientRect();
+    eventSender.mouseMoveTo(colorWellRect.left, colorWellRect.top);
+    eventSender.mouseDown();
+    eventSender.mouseMoveTo(colorWellRect.left + (colorWellRect.width * 4 / 10), colorWellRect.top + (colorWellRect.height * 6 / 10));
+    eventSender.mouseUp();
+    eventSender.keyDown('Escape');
+    waitUntilClosing(t.step_func_done(() => {
+      assert_equals(colorControl.value, '#80d9ff', 'Color control value should remain the same after pressing escape.');
+    }), popupWindow.eval('ColorPicker').COMMIT_DELAY_MS);
+  }), t.step_func_done(() => {
+    assert_true(true, 'Popup did not open.');
+  }));
+});
+</script>
+</body>
+</html>

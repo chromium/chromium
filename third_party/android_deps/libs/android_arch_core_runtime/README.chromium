@@ -1,0 +1,13 @@
+Name: Android Arch-Runtime
+Short Name: runtime
+URL: https://developer.android.com/topic/libraries/architecture/index.html
+Version: 1.1.1
+License: Apache Version 2.0
+License File: LICENSE
+Security Critical: yes
+
+Description:
+Android Arch-Runtime
+
+Local Modifications:
+No modifications.

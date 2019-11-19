@@ -95,7 +95,7 @@ void DeviceManagerUdev::CreateMonitor() {
     int fd = device::udev_monitor_get_fd(monitor_.get());
     CHECK_GT(fd, 0);
     base::MessageLoopCurrentForUI::Get()->WatchFileDescriptor(
-        fd, true, base::MessagePumpLibevent::WATCH_READ, &controller_, this);
+        fd, true, base::MessagePumpForUI::WATCH_READ, &controller_, this);
   }
 }
 

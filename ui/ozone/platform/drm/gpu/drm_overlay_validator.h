@@ -7,12 +7,11 @@
 
 #include "base/containers/mru_cache.h"
 #include "ui/ozone/platform/drm/gpu/drm_overlay_plane.h"
+#include "ui/ozone/public/overlay_surface_candidate.h"
 
 namespace ui {
 
 class DrmWindow;
-struct OverlayCheck_Params;
-struct OverlayCheckReturn_Params;
 
 class DrmOverlayValidator {
  public:
@@ -22,9 +21,8 @@ class DrmOverlayValidator {
   // Tests if configurations |params| are compatible with |window_| and finds
   // which of these configurations can be promoted to Overlay composition
   // without failing the page flip. It expects |params| to be sorted by z_order.
-  std::vector<OverlayCheckReturn_Params> TestPageFlip(
-      const std::vector<OverlayCheck_Params>& params,
-      const DrmOverlayPlaneList& last_used_planes);
+  OverlayStatusList TestPageFlip(const OverlaySurfaceCandidateList& params,
+                                 const DrmOverlayPlaneList& last_used_planes);
 
  private:
   DrmWindow* const window_;  // Not owned.

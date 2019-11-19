@@ -143,6 +143,9 @@ TEST_F(LocalSessionEventHandlerImplTest, GetTabSpecificsFromDelegate) {
   TestSyncedTabDelegate* tab = AddTabWithTime(kWindowId1, kFoo1, kTime1);
   tab->Navigate(kBar1, kTime2);
   tab->Navigate(kBaz1, kTime3);
+  tab->SetPageLanguageAtIndex(0, "en");
+  tab->SetPageLanguageAtIndex(1, "fr");
+  tab->SetPageLanguageAtIndex(2, "in");
   InitHandler();
 
   const sync_pb::SessionTab session_tab =
@@ -171,6 +174,9 @@ TEST_F(LocalSessionEventHandlerImplTest, GetTabSpecificsFromDelegate) {
   EXPECT_FALSE(session_tab.navigation(0).has_blocked_state());
   EXPECT_FALSE(session_tab.navigation(1).has_blocked_state());
   EXPECT_FALSE(session_tab.navigation(2).has_blocked_state());
+  EXPECT_EQ("en", session_tab.navigation(0).page_language());
+  EXPECT_EQ("fr", session_tab.navigation(1).page_language());
+  EXPECT_EQ("in", session_tab.navigation(2).page_language());
 }
 
 // Ensure the current_navigation_index gets set properly when the navigation
@@ -590,7 +596,14 @@ TEST_F(LocalSessionEventHandlerImplTest, PropagateNewTab) {
   AddTab(kWindowId1, kBar1, kTabId2);
 }
 
-TEST_F(LocalSessionEventHandlerImplTest, PropagateClosedTab) {
+TEST_F(LocalSessionEventHandlerImplTest,
+       PropagateClosedTabWithoutDeferredRecyclingNorImmediateDeletion) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{kDeferRecyclingOfSyncTabNodesIfUnsynced,
+                             kTabNodePoolImmediateDeletion});
+
   AddWindow(kWindowId1);
   AddTab(kWindowId1, kFoo1, kTabId1);
   TestSyncedTabDelegate* tab2 = AddTab(kWindowId1, kBar1, kTabId2);
@@ -619,8 +632,7 @@ TEST_F(LocalSessionEventHandlerImplTest, PropagateClosedTab) {
   handler_->OnLocalTabModified(tab2);
 }
 
-TEST_F(LocalSessionEventHandlerImplTest,
-       PropagateClosedTabWithDeferredRecyclingAndImmediateDeletion) {
+TEST_F(LocalSessionEventHandlerImplTest, PropagateClosedTab) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{kDeferRecyclingOfSyncTabNodesIfUnsynced,

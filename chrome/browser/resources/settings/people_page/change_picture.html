@@ -88,7 +88,8 @@
             capture-video-label="$i18n{captureVideo}"
             switch-mode-to-camera-label="$i18n{switchModeToCamera}"
             switch-mode-to-video-label="$i18n{switchModeToVideo}"
-            camera-video-mode-enabled="[[cameraVideoModeEnabled_]]">
+            camera-video-mode-enabled="[[cameraVideoModeEnabled_]]"
+            on-keys-pressed="onCameraPaneKeysPressed_">
         </cr-picture-pane>
         <div id="authorCredit"
             hidden="[[!isAuthorCreditShown_(selectedItem_)]]">
@@ -100,6 +101,7 @@
         </div>
       </div>
       <cr-picture-list id="pictureList"
+          hidden="[[!defaultImages_]]"
           camera-present="[[cameraPresent_]]"
           default-images="[[getDefaultImages_(defaultImages_,
               firstDefaultImageIndex_)]]"

@@ -97,7 +97,7 @@ class MockStorageClient : public QuotaClient {
 
   int mock_time_counter_;
 
-  base::WeakPtrFactory<MockStorageClient> weak_factory_;
+  base::WeakPtrFactory<MockStorageClient> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(MockStorageClient);
 };

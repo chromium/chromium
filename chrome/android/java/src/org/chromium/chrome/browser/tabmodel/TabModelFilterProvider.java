@@ -4,6 +4,10 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import org.chromium.chrome.browser.flags.FeatureUtilities;
+import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegate;
+import org.chromium.chrome.browser.tasks.tab_management.TabManagementModuleProvider;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -55,8 +59,9 @@ public class TabModelFilterProvider {
      */
     public TabModelFilter getTabModelFilter(boolean isIncognito) {
         for (int i = 0; i < mTabModelFilterList.size(); i++) {
-            if (mTabModelFilterList.get(i).isIncognito() == isIncognito)
+            if (mTabModelFilterList.get(i).isIncognito() == isIncognito) {
                 return mTabModelFilterList.get(i);
+            }
         }
         return null;
     }
@@ -68,8 +73,9 @@ public class TabModelFilterProvider {
      */
     public TabModelFilter getCurrentTabModelFilter() {
         for (int i = 0; i < mTabModelFilterList.size(); i++) {
-            if (mTabModelFilterList.get(i).isCurrentlySelectedFilter())
+            if (mTabModelFilterList.get(i).isCurrentlySelectedFilter()) {
                 return mTabModelFilterList.get(i);
+            }
         }
         return null;
     }
@@ -89,7 +95,12 @@ public class TabModelFilterProvider {
      * @return a {@link TabModelFilter}.
      */
     private TabModelFilter createTabModelFilter(TabModel model) {
-        // TODO(meiliang): build based on chrome feature.
+        if (FeatureUtilities.isTabGroupsAndroidEnabled()) {
+            TabManagementDelegate tabManagementDelegate = TabManagementModuleProvider.getDelegate();
+            if (tabManagementDelegate != null) {
+                return tabManagementDelegate.createTabGroupModelFilter(model);
+            }
+        }
         return new EmptyTabModelFilter(model);
     }
 }

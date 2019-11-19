@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
@@ -19,12 +18,14 @@
 #include "base/macros.h"
 #include "base/strings/string16.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/gesture_event_details.h"
 #include "ui/events/gestures/gesture_types.h"
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/platform_event.h"
+#include "ui/events/pointer_details.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/latency/latency_info.h"
@@ -45,8 +46,6 @@ class ScrollEvent;
 class TouchEvent;
 
 enum class DomCode;
-
-using PointerId = int32_t;
 
 class EVENTS_EXPORT Event {
  public:
@@ -433,85 +432,8 @@ class EVENTS_EXPORT LocatedEvent : public Event {
   gfx::PointF root_location_;
 };
 
-// Structure for handling common fields between touch and mouse to support
-// PointerEvents API.
-struct EVENTS_EXPORT PointerDetails {
- public:
-  PointerDetails();
-  explicit PointerDetails(EventPointerType pointer_type,
-                          PointerId pointer_id = kUnknownPointerId);
-  PointerDetails(EventPointerType pointer_type,
-                 PointerId pointer_id,
-                 float radius_x,
-                 float radius_y,
-                 float force,
-                 float twist = 0.0f,
-                 float tilt_x = 0.0f,
-                 float tilt_y = 0.0f,
-                 float tangential_pressure = 0.0f);
-  PointerDetails(EventPointerType pointer_type,
-                 const gfx::Vector2d& pointer_offset,
-                 PointerId pointer_id = kUnknownPointerId);
-  PointerDetails(const PointerDetails& other);
-
-  bool operator==(const PointerDetails& other) const {
-    return pointer_type == other.pointer_type && radius_x == other.radius_x &&
-           radius_y == other.radius_y &&
-           (force == other.force ||
-            (std::isnan(force) && std::isnan(other.force))) &&
-           tilt_x == other.tilt_x && tilt_y == other.tilt_y &&
-           tangential_pressure == other.tangential_pressure &&
-           twist == other.twist && id == other.id && offset == other.offset;
-  }
-
-  // A value for pointer id which means it needs to be initialized for all
-  // pointer types.
-  static const PointerId kUnknownPointerId;
-
-  // The type of pointer device.
-  EventPointerType pointer_type = EventPointerType::POINTER_TYPE_UNKNOWN;
-
-  // Radius of the X (major) axis of the touch ellipse. 0.0 if unknown.
-  float radius_x = 0.0;
-
-  // Radius of the Y (minor) axis of the touch ellipse. 0.0 if unknown.
-  float radius_y = 0.0;
-
-  // Force (pressure) of the touch. Normalized to be [0, 1] except NaN means
-  // pressure is not supported by the input device.
-  float force = 0.0;
-
-  // Tilt of a pen/stylus from surface normal as plane angle in degrees, values
-  // lie in [-90,90]. A positive tilt_x is to the right and a positive tilt_y
-  // is towards the user. 0.0 if unknown.
-  float tilt_x = 0.0;
-  float tilt_y = 0.0;
-
-  // The normalized tangential pressure (or barrel pressure), typically set by
-  // an additional control of the stylus, which has a range of [-1,1], where 0
-  // is the neutral position of the control. Always 0 if the device does not
-  // support it.
-  float tangential_pressure = 0.0;
-
-  // The clockwise rotation of a pen stylus around its own major axis, in
-  // degrees in the range [0,359]. Always 0 if the device does not support it.
-  float twist = 0;
-
-  // An identifier that uniquely identifies a pointer during its lifetime.
-  PointerId id = 0;
-
-  // Only used by mouse wheel events. The amount to scroll. This is in multiples
-  // of kWheelDelta.
-  // Note: offset_.x() > 0/offset_.y() > 0 means scroll left/up.
-  gfx::Vector2d offset;
-
-  // If you add fields please update ui/events/mojo/event.mojom.
-};
-
 class EVENTS_EXPORT MouseEvent : public LocatedEvent {
  public:
-  static const PointerId kMousePointerId;
-
   // NOTE: On some platforms this will allow an event to be constructed from a
   // void*, see PlatformEvent.
   explicit MouseEvent(const PlatformEvent& native_event);
@@ -548,7 +470,7 @@ class EVENTS_EXPORT MouseEvent : public LocatedEvent {
              int changed_button_flags,
              const PointerDetails& pointer_details =
                  PointerDetails(EventPointerType::POINTER_TYPE_MOUSE,
-                                kMousePointerId));
+                                kPointerIdMouse));
 
   // DEPRECATED: Prefer constructor that takes gfx::PointF.
   MouseEvent(EventType type,
@@ -559,10 +481,26 @@ class EVENTS_EXPORT MouseEvent : public LocatedEvent {
              int changed_button_flags,
              const PointerDetails& pointer_details =
                  PointerDetails(EventPointerType::POINTER_TYPE_MOUSE,
-                                kMousePointerId));
+                                kPointerIdMouse));
 
   MouseEvent(const MouseEvent& copy);
   ~MouseEvent() override;
+
+  class DispatcherApi {
+   public:
+    explicit DispatcherApi(MouseEvent* event) : event_(event) {}
+
+    // TODO(eirage): convert this to builder pattern.
+    void set_movement(const gfx::Vector2dF& movement) {
+      event_->movement_ = movement;
+      event_->set_flags(event_->flags() | EF_UNADJUSTED_MOUSE);
+    }
+
+   private:
+    MouseEvent* event_;
+
+    DISALLOW_COPY_AND_ASSIGN(DispatcherApi);
+  };
 
   // Conveniences to quickly test what button is down
   bool IsOnlyLeftMouseButton() const {
@@ -622,6 +560,8 @@ class EVENTS_EXPORT MouseEvent : public LocatedEvent {
   // Updates the button that changed.
   void set_changed_button_flags(int flags) { changed_button_flags_ = flags; }
 
+  const gfx::Vector2dF& movement() const { return movement_; }
+
   const PointerDetails& pointer_details() const { return pointer_details_; }
 
  private:
@@ -637,6 +577,12 @@ class EVENTS_EXPORT MouseEvent : public LocatedEvent {
 
   // See description above getter for details.
   int changed_button_flags_;
+
+  // Raw mouse movement value reported from mouse hardware. The value of this is
+  // platform dependent and may change depending upon the hardware connected to
+  // the device. This field is only set if the flag EF_UNADJUSTED_MOUSE is
+  // present.
+  gfx::Vector2dF movement_;
 
   // The most recent user-generated MouseEvent, used to detect double clicks.
   static MouseEvent* last_click_event_;
@@ -707,7 +653,6 @@ class EVENTS_EXPORT TouchEvent : public LocatedEvent {
       : LocatedEvent(model, source, target),
         unique_event_id_(model.unique_event_id_),
         may_cause_scrolling_(model.may_cause_scrolling_),
-        should_remove_native_touch_id_mapping_(false),
         hovering_(false),
         pointer_details_(model.pointer_details_) {}
 
@@ -738,15 +683,6 @@ class EVENTS_EXPORT TouchEvent : public LocatedEvent {
   void set_hovering(bool hovering) { hovering_ = hovering; }
   bool hovering() const { return hovering_; }
 
-  void set_should_remove_native_touch_id_mapping(
-      bool should_remove_native_touch_id_mapping) {
-    should_remove_native_touch_id_mapping_ =
-        should_remove_native_touch_id_mapping;
-  }
-  bool should_remove_native_touch_id_mapping() const {
-    return should_remove_native_touch_id_mapping_;
-  }
-
   // Overridden from LocatedEvent.
   void UpdateForRootTransform(
       const gfx::Transform& inverted_root_transform,
@@ -774,13 +710,6 @@ class EVENTS_EXPORT TouchEvent : public LocatedEvent {
   // touchmove that exceeds the platform slop region, or a touchend that
   // causes a fling). Defaults to false.
   bool may_cause_scrolling_;
-
-  // True if this event should remove the mapping between the native
-  // event id and the touch_id_. This should only be the case for
-  // release and cancel events where the associated touch press event
-  // created a mapping between the native id and the touch_id_.
-  // NOTE: this is not serialized, as it's generally unique to the source.
-  bool should_remove_native_touch_id_mapping_;
 
   // True for devices like some pens when they support hovering over
   // digitizer and they send events while hovering.
@@ -830,20 +759,6 @@ class EVENTS_EXPORT TouchEvent : public LocatedEvent {
 //
 class EVENTS_EXPORT KeyEvent : public Event {
  public:
-  class KeyDispatcherApi {
-   public:
-    explicit KeyDispatcherApi(KeyEvent* event) : event_(event) {}
-
-    void set_async_callback(base::OnceCallback<void(bool, bool)> callback) {
-      event_->async_callback_ = std::move(callback);
-    }
-
-   private:
-    KeyEvent* event_;
-
-    DISALLOW_COPY_AND_ASSIGN(KeyDispatcherApi);
-  };
-
   // Create a KeyEvent from a NativeEvent. For Windows this native event can
   // be either a keystroke message (WM_KEYUP/WM_KEYDOWN) or a character message
   // (WM_CHAR). Other systems have only keystroke events.
@@ -952,12 +867,6 @@ class EVENTS_EXPORT KeyEvent : public Event {
   // (Native X11 event flags describe the state before the event.)
   void NormalizeFlags();
 
-  // Called if the event is handled asynchronously. If the returned callback is
-  // non-null, it *must* be run once async handling is complete. The argument
-  // to the callback indicates if the event was handled or not.
-  base::OnceCallback<void(bool, bool)> WillHandleAsync();
-  bool HasAsyncCallback() const { return !async_callback_.is_null(); }
-
  protected:
   friend class KeyEventTestApi;
 
@@ -968,7 +877,9 @@ class EVENTS_EXPORT KeyEvent : public Event {
   // Determine key_ on a keystroke event from code_ and flags().
   void ApplyLayout() const;
 
-  static bool IsRepeated(const KeyEvent& event);
+  // Tells if this is a repeated KeyEvent based on |last_key_event|, which is
+  // then updated with the new last KeyEvent address.
+  bool IsRepeated(KeyEvent** last_key_event);
 
   KeyboardCode key_code_;
 
@@ -995,8 +906,6 @@ class EVENTS_EXPORT KeyEvent : public Event {
   // This is not necessarily initialized when the event is constructed;
   // it may be set only if and when GetCharacter() or GetDomKey() is called.
   mutable DomKey key_ = DomKey::NONE;
-
-  base::OnceCallback<void(bool, bool)> async_callback_;
 
   static KeyEvent* last_key_event_;
 #if defined(USE_X11)

@@ -50,7 +50,7 @@ const char kLaunchIdSettings[] =
 // built in Notification Center. Although native notifications in Chrome are
 // only available in Win 10+ we keep the minimum test coverage at Win 8 in case
 // we decide to backport.
-constexpr int kMinimumWindowsVersion = base::win::VERSION_WIN8;
+constexpr base::win::Version kMinimumWindowsVersion = base::win::Version::WIN8;
 
 Profile* CreateTestingProfile(const base::FilePath& path) {
   base::ScopedAllowBlockingForTesting allow_blocking;
@@ -60,12 +60,13 @@ Profile* CreateTestingProfile(const base::FilePath& path) {
   if (!base::PathExists(path) && !base::CreateDirectory(path))
     NOTREACHED() << "Could not create directory at " << path.MaybeAsASCII();
 
-  Profile* profile =
+  std::unique_ptr<Profile> profile =
       Profile::CreateProfile(path, nullptr, Profile::CREATE_MODE_SYNCHRONOUS);
-  profile_manager->RegisterTestingProfile(profile, true, false);
+  Profile* profile_ptr = profile.get();
+  profile_manager->RegisterTestingProfile(std::move(profile), true, false);
   EXPECT_EQ(starting_number_of_profiles + 1,
             profile_manager->GetNumberOfProfiles());
-  return profile;
+  return profile_ptr;
 }
 
 Profile* CreateTestingProfile(const std::string& profile_name) {
@@ -322,6 +323,33 @@ IN_PROC_BROWSER_TEST_F(NotificationPlatformBridgeWinUITest, HandleSettings) {
   EXPECT_EQ(base::nullopt, last_action_index_);
   EXPECT_EQ(base::nullopt, last_reply_);
   EXPECT_EQ(base::nullopt, last_by_user_);
+}
+
+IN_PROC_BROWSER_TEST_F(NotificationPlatformBridgeWinUITest, HandleClose) {
+  if (base::win::GetVersion() < kMinimumWindowsVersion)
+    return;
+
+  base::RunLoop run_loop;
+  display_service_tester_->SetProcessNotificationOperationDelegate(
+      base::BindRepeating(&NotificationPlatformBridgeWinUITest::HandleOperation,
+                          base::Unretained(this), run_loop.QuitClosure()));
+
+  // Simulate notification close.
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  command_line.AppendSwitchNative(
+      switches::kNotificationLaunchId,
+      L"3|0|Default|0|https://example.com/|notification_id");
+  NotificationPlatformBridgeWin::HandleActivation(command_line);
+  run_loop.Run();
+
+  // Validate the values.
+  EXPECT_EQ(NotificationCommon::OPERATION_CLOSE, last_operation_);
+  EXPECT_EQ(NotificationHandler::Type::WEB_PERSISTENT, last_notification_type_);
+  EXPECT_EQ(GURL("https://example.com/"), last_origin_);
+  EXPECT_EQ("notification_id", last_notification_id_);
+  EXPECT_EQ(base::nullopt, last_action_index_);
+  EXPECT_EQ(base::nullopt, last_reply_);
+  EXPECT_EQ(true, last_by_user_);
 }
 
 IN_PROC_BROWSER_TEST_F(NotificationPlatformBridgeWinUITest, GetDisplayed) {

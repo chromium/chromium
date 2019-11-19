@@ -1,5 +1,5 @@
 [document web]
 ++[section]
 ++[dialog] modal
-++++[text] name='This is the now active dialog. Of course it should be in the tree. '
+++++[static] name='This is the now active dialog. Of course it should be in the tree. '
 ++++[push button] name='This is in the active dialog and should be in the tree.'

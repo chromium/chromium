@@ -100,8 +100,8 @@ class SkiaVectorAnimationTest : public testing::Test {
   ~SkiaVectorAnimationTest() override {}
 
   void SetUp() override {
-    canvas_.reset(new gfx::Canvas(gfx::Size(kAnimationWidth, kAnimationHeight),
-                                  1.f, false));
+    canvas_ = std::make_unique<gfx::Canvas>(
+        gfx::Size(kAnimationWidth, kAnimationHeight), 1.f, false);
     skottie_ = base::MakeRefCounted<cc::SkottieWrapper>(
         std::make_unique<SkMemoryStream>(kData, std::strlen(kData)));
     animation_ = std::make_unique<SkiaVectorAnimation>(skottie_);

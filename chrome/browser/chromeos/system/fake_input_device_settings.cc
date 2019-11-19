@@ -82,6 +82,18 @@ void FakeInputDeviceSettings::SetMouseReverseScroll(bool enabled) {
   UpdateMouseSettings(settings);
 }
 
+void FakeInputDeviceSettings::SetMouseAcceleration(bool enabled) {
+  MouseSettings settings;
+  settings.SetAcceleration(enabled);
+  UpdateMouseSettings(settings);
+}
+
+void FakeInputDeviceSettings::SetTouchpadAcceleration(bool enabled) {
+  TouchpadSettings settings;
+  settings.SetAcceleration(enabled);
+  UpdateTouchpadSettings(settings);
+}
+
 void FakeInputDeviceSettings::ReapplyTouchpadSettings() {
 }
 

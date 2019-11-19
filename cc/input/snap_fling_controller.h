@@ -23,9 +23,10 @@ class SnapFlingCurve;
 // are in the same coordinate space.
 class SnapFlingClient {
  public:
-  virtual bool GetSnapFlingInfo(const gfx::Vector2dF& natural_displacement,
-                                gfx::Vector2dF* out_initial_position,
-                                gfx::Vector2dF* out_target_position) const = 0;
+  virtual bool GetSnapFlingInfoAndSetSnapTarget(
+      const gfx::Vector2dF& natural_displacement,
+      gfx::Vector2dF* out_initial_position,
+      gfx::Vector2dF* out_target_position) const = 0;
   virtual gfx::Vector2dF ScrollByForSnapFling(const gfx::Vector2dF& delta) = 0;
   virtual void ScrollEndForSnapFling() = 0;
   virtual void RequestAnimationForSnapFling() = 0;
@@ -53,7 +54,10 @@ class CC_EXPORT SnapFlingController {
       SnapFlingClient* client,
       std::unique_ptr<SnapFlingCurve> curve);
 
+  SnapFlingController(const SnapFlingController&) = delete;
   ~SnapFlingController();
+
+  SnapFlingController& operator=(const SnapFlingController&) = delete;
 
   // Returns true if the event should be consumed for snapping and should not be
   // processed further.
@@ -97,8 +101,6 @@ class CC_EXPORT SnapFlingController {
   SnapFlingClient* client_;
   State state_ = State::kIdle;
   std::unique_ptr<SnapFlingCurve> curve_;
-
-  DISALLOW_COPY_AND_ASSIGN(SnapFlingController);
 };
 
 }  // namespace cc

@@ -34,6 +34,10 @@
 
 namespace blink {
 
+// class_names argument is an AtomicString because it is common for Elements
+// to share the same class names.  It is also used to construct a
+// SpaceSplitString (class_names_) and its constructor requires an
+// AtomicString.
 ClassCollection::ClassCollection(ContainerNode& root_node,
                                  const AtomicString& class_names)
     : HTMLCollection(root_node,
@@ -41,6 +45,13 @@ ClassCollection::ClassCollection(ContainerNode& root_node,
                      kDoesNotOverrideItemAfter),
       class_names_(GetDocument().InQuirksMode() ? class_names.LowerASCII()
                                                 : class_names) {}
+
+ClassCollection::ClassCollection(ContainerNode& root_node,
+                                 CollectionType type,
+                                 const AtomicString& class_names)
+    : ClassCollection(root_node, class_names) {
+  DCHECK_EQ(type, kClassCollectionType);
+}
 
 ClassCollection::~ClassCollection() = default;
 

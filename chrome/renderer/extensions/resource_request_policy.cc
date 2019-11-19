@@ -61,6 +61,17 @@ bool ResourceRequestPolicy::CanRequestResource(
   CHECK(resource_url.SchemeIs(kExtensionScheme));
 
   GURL frame_url = frame->GetDocument().Url();
+  url::Origin frame_origin = frame->GetDocument().GetSecurityOrigin();
+
+  // Navigations from chrome://, devtools:// or chrome-search:// pages need to
+  // be allowed, even if the target |url| is not web-accessible.  See also:
+  // - https://crbug.com/662602
+  // - similar scheme checks in ExtensionNavigationThrottle
+  if (frame_origin.scheme() == content::kChromeUIScheme ||
+      frame_origin.scheme() == content::kChromeDevToolsScheme ||
+      frame_origin.scheme() == chrome::kChromeSearchScheme) {
+    return true;
+  }
 
   // The page_origin may be GURL("null") for unique origins like data URLs,
   // but this is ok for the checks below.  We only care if it matches the

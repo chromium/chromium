@@ -21,15 +21,19 @@ declare_args() {
 
 if (concurrent_links == -1) {
   if (use_thin_lto) {
-    _args = [
-      "--mem_per_link_gb=10",
-      "--reserve_mem_gb=10",
-    ]
+    _args = [ "--reserve_mem_gb=10" ]
+    if (is_win) {
+      # Based on measurements of linking chrome.dll and chrome_child.dll, plus
+      # a little padding to account for future growth.
+      _args += [ "--mem_per_link_gb=45" ]
+    } else {
+      _args += [ "--mem_per_link_gb=10" ]
+    }
   } else if (use_sanitizer_coverage || use_fuzzing_engine) {
     # Sanitizer coverage instrumentation increases linker memory consumption
     # significantly.
     _args = [ "--mem_per_link_gb=16" ]
-  } else if (is_win && symbol_level == 1 && !is_debug) {
+  } else if (is_win && symbol_level == 1 && !is_debug && is_component_build) {
     _args = [ "--mem_per_link_gb=3" ]
   } else if (is_win) {
     _args = [ "--mem_per_link_gb=5" ]

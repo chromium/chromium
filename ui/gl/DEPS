@@ -1,4 +1,5 @@
 include_rules = [
+  "+cc/base",
   "+third_party/khronos",
   "+third_party/libsync",
   "+third_party/skia",
@@ -11,6 +12,10 @@ specific_include_rules = {
 # Allow us to include ANGLE's base platform implementation.
   "angle_platform_impl.cc": [
     "+third_party/angle/include/platform/Platform.h",
+  ],
+  "direct_composition_surface_win_unittest.cc": [
+    "+ui/base/win/hidden_window.h",
+    "+ui/platform_window",
   ],
   "gl_angle_util_win.cc": [
     "+third_party/angle/include/EGL/egl.h",

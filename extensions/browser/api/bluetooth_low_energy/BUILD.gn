@@ -30,6 +30,7 @@ source_set("bluetooth_low_energy") {
 
   deps = [
     "//device/bluetooth",
+    "//device/bluetooth/public/cpp",
     "//extensions/common/api",
   ]
 

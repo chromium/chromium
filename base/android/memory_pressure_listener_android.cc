@@ -4,8 +4,8 @@
 
 #include "base/android/memory_pressure_listener_android.h"
 
+#include "base/base_jni_headers/MemoryPressureListener_jni.h"
 #include "base/memory/memory_pressure_listener.h"
-#include "jni/MemoryPressureListener_jni.h"
 
 using base::android::JavaParamRef;
 

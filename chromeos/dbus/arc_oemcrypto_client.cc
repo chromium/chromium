@@ -20,7 +20,7 @@ namespace {
 
 class ArcOemCryptoClientImpl : public ArcOemCryptoClient {
  public:
-  ArcOemCryptoClientImpl() : weak_ptr_factory_(this) {}
+  ArcOemCryptoClientImpl() {}
   ~ArcOemCryptoClientImpl() override = default;
 
   // ArcOemCryptoClient override:
@@ -66,7 +66,7 @@ class ArcOemCryptoClientImpl : public ArcOemCryptoClient {
   dbus::ObjectProxy* proxy_ = nullptr;
   bool service_available_ = false;
 
-  base::WeakPtrFactory<ArcOemCryptoClientImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<ArcOemCryptoClientImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ArcOemCryptoClientImpl);
 };
@@ -78,8 +78,8 @@ ArcOemCryptoClient::ArcOemCryptoClient() = default;
 ArcOemCryptoClient::~ArcOemCryptoClient() = default;
 
 // static
-ArcOemCryptoClient* ArcOemCryptoClient::Create() {
-  return new ArcOemCryptoClientImpl();
+std::unique_ptr<ArcOemCryptoClient> ArcOemCryptoClient::Create() {
+  return std::make_unique<ArcOemCryptoClientImpl>();
 }
 
 }  // namespace chromeos

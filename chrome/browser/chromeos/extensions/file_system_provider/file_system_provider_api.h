@@ -10,7 +10,7 @@
 
 namespace extensions {
 
-class FileSystemProviderMountFunction : public UIThreadExtensionFunction {
+class FileSystemProviderMountFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("fileSystemProvider.mount",
                              FILESYSTEMPROVIDER_MOUNT)
@@ -20,7 +20,7 @@ class FileSystemProviderMountFunction : public UIThreadExtensionFunction {
   ResponseAction Run() override;
 };
 
-class FileSystemProviderUnmountFunction : public UIThreadExtensionFunction {
+class FileSystemProviderUnmountFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("fileSystemProvider.unmount",
                              FILESYSTEMPROVIDER_UNMOUNT)
@@ -30,7 +30,7 @@ class FileSystemProviderUnmountFunction : public UIThreadExtensionFunction {
   ResponseAction Run() override;
 };
 
-class FileSystemProviderGetAllFunction : public UIThreadExtensionFunction {
+class FileSystemProviderGetAllFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("fileSystemProvider.getAll",
                              FILESYSTEMPROVIDER_GETALL)
@@ -40,7 +40,7 @@ class FileSystemProviderGetAllFunction : public UIThreadExtensionFunction {
   ResponseAction Run() override;
 };
 
-class FileSystemProviderGetFunction : public UIThreadExtensionFunction {
+class FileSystemProviderGetFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("fileSystemProvider.get", FILESYSTEMPROVIDER_GET)
 

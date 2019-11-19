@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/html/forms/form_associated.h"
 #include "third_party/blink/renderer/core/html/forms/listed_element.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
@@ -48,8 +49,8 @@ class CORE_EXPORT HTMLFormControlElement : public HTMLElement,
   ~HTMLFormControlElement() override;
   void Trace(Visitor*) override;
 
-  void formAction(USVStringOrTrustedURL&) const;
-  void setFormAction(const USVStringOrTrustedURL&, ExceptionState&);
+  String formAction() const;
+  void setFormAction(const AtomicString&);
   String formEnctype() const;
   void setFormEnctype(const AtomicString&);
   String formMethod() const;
@@ -95,8 +96,6 @@ class CORE_EXPORT HTMLFormControlElement : public HTMLElement,
   bool IsReadOnly() const;
   bool IsDisabledOrReadOnly() const;
 
-  bool IsAutofocusable() const;
-
   bool MayTriggerVirtualKeyboard() const override;
 
   WebAutofillState GetAutofillState() const { return autofill_state_; }
@@ -129,6 +128,8 @@ class CORE_EXPORT HTMLFormControlElement : public HTMLElement,
     return unique_renderer_form_control_id_;
   }
 
+  int32_t GetAxId() const;
+
  protected:
   HTMLFormControlElement(const QualifiedName& tag_name, Document&);
 
@@ -146,20 +147,14 @@ class CORE_EXPORT HTMLFormControlElement : public HTMLElement,
   bool SupportsFocus() const override;
   bool IsKeyboardFocusable() const override;
   bool ShouldHaveFocusAppearance() const final;
-  void DispatchBlurEvent(Element* new_focused_element,
-                         WebFocusType,
-                         InputDeviceCapabilities* source_capabilities) override;
 
   void DidRecalcStyle(const StyleRecalcChange) override;
 
   virtual void ResetImpl() {}
-  virtual bool SupportsAutofocus() const;
 
  private:
   bool IsFormControlElement() const final { return true; }
   bool AlwaysCreateUserAgentShadowRoot() const override { return true; }
-
-  int tabIndex() const override;
 
   bool IsValidElement() override;
   bool MatchesValidityPseudoClasses() const override;
@@ -177,12 +172,17 @@ inline bool IsHTMLFormControlElement(const Element& element) {
 }
 
 DEFINE_HTMLELEMENT_TYPE_CASTS_WITH_FUNCTION(HTMLFormControlElement);
-DEFINE_TYPE_CASTS(HTMLFormControlElement,
-                  ListedElement,
-                  control,
-                  control->IsFormControlElement(),
-                  control.IsFormControlElement());
 
+template <>
+struct DowncastTraits<HTMLFormControlElement> {
+  static bool AllowFrom(const Node& node) {
+    auto* element = DynamicTo<Element>(node);
+    return element && element->IsFormControlElement();
+  }
+  static bool AllowFrom(const ListedElement& control) {
+    return control.IsFormControlElement();
+  }
+};
 }  // namespace blink
 
 #endif

@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://wicg.github.io/IntersectionObserver/#intersection-observer-callback
+// https://www.w3.org/TR/intersection-observer/#intersection-observer-interface
 
 callback IntersectionObserverCallback = void (sequence<IntersectionObserverEntry> entries, IntersectionObserver observer);
 
-// https://wicg.github.io/IntersectionObserver/#intersection-observer-interface
-
 [
+    Exposed=Window,
     ActiveScriptWrappable,
     Constructor(IntersectionObserverCallback callback, optional IntersectionObserverInit options),
     ConstructorCallWith=ScriptState,

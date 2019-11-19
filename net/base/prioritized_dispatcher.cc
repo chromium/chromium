@@ -56,7 +56,7 @@ void PrioritizedDispatcher::Cancel(const Handle& handle) {
 PrioritizedDispatcher::Job* PrioritizedDispatcher::EvictOldestLowest() {
   Handle handle = queue_.FirstMin();
   if (handle.is_null())
-    return NULL;
+    return nullptr;
   Job* job = handle.value();
   Cancel(handle);
   return job;

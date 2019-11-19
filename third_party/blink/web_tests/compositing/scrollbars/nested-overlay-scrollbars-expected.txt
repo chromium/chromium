@@ -1,116 +1,69 @@
 {
   "layers": [
     {
-      "name": "LayoutView #document",
-      "bounds": [800, 600],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [800, 600],
-      "drawsContent": false
-    },
-    {
       "name": "Scrolling Contents Layer",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutBlockFlow (positioned) DIV id='outer'",
-      "position": [8, 8],
-      "bounds": [404, 404]
-    },
-    {
-      "name": "Scrolling Layer",
-      "position": [10, 10],
-      "bounds": [400, 400],
-      "drawsContent": false
+      "name": "LayoutNGBlockFlow (positioned) DIV id='outer'",
+      "bounds": [404, 404],
+      "transform": 1
     },
     {
       "name": "Scrolling Contents Layer",
-      "position": [10, 10],
+      "position": [2, 2],
       "bounds": [400, 704],
-      "transform": 1
+      "transform": 2
     },
     {
-      "name": "LayoutBlockFlow (positioned) DIV id='inner'",
-      "position": [10, 510],
+      "name": "LayoutNGBlockFlow (positioned) DIV id='inner'",
       "bounds": [204, 204],
-      "transform": 1
-    },
-    {
-      "name": "Scrolling Layer",
-      "position": [12, 512],
-      "bounds": [200, 200],
-      "drawsContent": false,
-      "transform": 1
+      "transform": 3
     },
     {
       "name": "Scrolling Contents Layer",
-      "position": [12, 512],
+      "position": [2, 2],
       "bounds": [5000, 9000],
-      "transform": 1
+      "transform": 3
     },
     {
-      "name": "Squashing Containment Layer",
-      "position": [10, 10],
-      "drawsContent": false,
-      "transform": 1
-    },
-    {
-      "name": "LayoutBlockFlow (positioned) DIV id='grey'",
-      "position": [12, 512],
+      "name": "LayoutNGBlockFlow (positioned) DIV id='grey'",
       "bounds": [100, 800],
       "contentsOpaque": true,
       "backgroundColor": "#808080",
-      "transform": 1
+      "transform": 4
     },
     {
-      "name": "Squashing Layer (first squashed layer: LayoutBlockFlow (positioned) DIV id='spacer')",
-      "position": [12, 2512],
+      "name": "Squashing Layer (first squashed layer: LayoutNGBlockFlow (positioned) DIV id='spacer')",
+      "position": [0, 2000],
       "bounds": [5000, 1000],
-      "transform": 1
+      "transform": 4
     },
     {
-      "name": "Overflow Controls Host Layer",
-      "position": [12, 512],
-      "bounds": [204, 204],
-      "drawsContent": false,
-      "transform": 1
-    },
-    {
-      "name": "Horizontal Scrollbar Layer",
-      "position": [14, 707],
+      "name": "ContentsLayer for Horizontal Scrollbar Layer",
+      "position": [2, 195],
       "bounds": [193, 7],
-      "drawsContent": false,
-      "transform": 1
+      "transform": 3
     },
     {
-      "name": "Vertical Scrollbar Layer",
-      "position": [207, 514],
+      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "position": [195, 2],
       "bounds": [7, 193],
-      "drawsContent": false,
-      "transform": 1
+      "transform": 3
     },
     {
       "name": "Scroll Corner Layer",
-      "position": [207, 707],
+      "position": [195, 195],
       "bounds": [7, 7],
-      "transform": 1
+      "transform": 3
     },
     {
-      "name": "Overflow Controls Host Layer",
-      "position": [8, 8],
-      "bounds": [404, 404],
-      "drawsContent": false
-    },
-    {
-      "name": "Vertical Scrollbar Layer",
-      "position": [403, 10],
+      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "position": [395, 2],
       "bounds": [7, 400],
-      "drawsContent": false
+      "transform": 1
     }
   ],
   "transforms": [
@@ -120,9 +73,38 @@
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
+        [8, 8, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "parent": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
         [0, -304, 0, 1]
-      ],
-      "flattenInheritedTransform": false
+      ]
+    },
+    {
+      "id": 3,
+      "parent": 2,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [2, 502, 0, 1]
+      ]
+    },
+    {
+      "id": 4,
+      "parent": 3,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [2, 2, 0, 1]
+      ]
     }
   ]
 }

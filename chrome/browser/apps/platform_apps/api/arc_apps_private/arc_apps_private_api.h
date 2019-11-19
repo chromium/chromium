@@ -47,13 +47,13 @@ class ArcAppsPrivateAPI : public extensions::BrowserContextKeyedAPI,
 
   content::BrowserContext* const context_;
 
-  ScopedObserver<ArcAppListPrefs, ArcAppsPrivateAPI> scoped_prefs_observer_;
+  ScopedObserver<ArcAppListPrefs, ArcAppListPrefs::Observer>
+      scoped_prefs_observer_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ArcAppsPrivateAPI);
 };
 
-class ArcAppsPrivateGetLaunchableAppsFunction
-    : public UIThreadExtensionFunction {
+class ArcAppsPrivateGetLaunchableAppsFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("arcAppsPrivate.getLaunchableApps",
                              ARCAPPSPRIVATE_GETLAUNCHABLEAPPS)
@@ -70,7 +70,7 @@ class ArcAppsPrivateGetLaunchableAppsFunction
   DISALLOW_COPY_AND_ASSIGN(ArcAppsPrivateGetLaunchableAppsFunction);
 };
 
-class ArcAppsPrivateLaunchAppFunction : public UIThreadExtensionFunction {
+class ArcAppsPrivateLaunchAppFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("arcAppsPrivate.launchApp",
                              ARCAPPSPRIVATE_LAUNCHAPP)

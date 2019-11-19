@@ -1,39 +1,47 @@
 Tests how console messages from worker get into page's console once worker is destroyed.
+
+=== console.log event won't get lost despite worker.terminate. ===
 Starting worker
-Logging in worker: message0
-Got log message from page: message0
-Stopping worker
+-> Posting to worker: message0 (posted after starting worker)
+Terminating worker
+<- Log from page: message0 (posted after starting worker)
+
+=== Scenario with autoattach enabled and stopped. ===
 Starting worker
-Logging in worker: message1
-Got log message from page: message1
+-> Posting to worker: message1
 Starting autoattach
-Worker.created
+child session for worker created
 Sending Runtime.enable to worker
-Got console API call from worker: message1
-Logging in worker: message2
-Got console API call from worker: message2
-Got log message from page: message2
-Logging in worker: throw1
-Got log message from page: Uncaught (in promise) throw1
+-> Posting to worker: message2 (posted after runtime enabled)
+-> Posting to worker: throw1 (posted after runtime enabled; yields exception in worker)
 Stopping autoattach
-Logging in worker: message3
-Got log message from page: message3
-Stopping worker
+-> Posting to worker: message3 (posted after auto-attach)
+Terminating worker
+<- Log from page: message1
+<- Log from page: message2 (posted after runtime enabled)
+<- Log from page: Uncaught (in promise) throw1 (posted after runtime enabled; yields exception in worker)
+<- Log from page: message3 (posted after auto-attach)
+<-- Console API from worker: message1
+<-- Console API from worker: message2 (posted after runtime enabled)
+
+=== Scenario with autoattach from the get-go. ===
 Starting autoattach
 Starting worker
-Worker.created
-Logging in worker: message4
+child session for worker created
+-> Posting to worker: message4 (posted before worker's runtime agent enabled)
 Sending Runtime.enable to worker
-Got console API call from worker: message4
-Got log message from page: message4
-Logging in worker: message5
-Got console API call from worker: message5
-Got log message from page: message5
-Stopping worker
+-> Posting to worker: message5 (posted after worker's runtime agent enabled)
+Terminating worker
+<- Log from page: message4 (posted before worker's runtime agent enabled)
+<- Log from page: message5 (posted after worker's runtime agent enabled)
+<-- Console API from worker: message4 (posted before worker's runtime agent enabled)
+<-- Console API from worker: message5 (posted after worker's runtime agent enabled)
+
+=== New worker, with auto-attach still enabled. ===
 Starting worker
-Worker.created
-Logging in worker: message6
-Got log message from page: message6
-Stopping worker
+child session for worker created
+-> Posting to worker: message6 (posted just before worker termination)
+Terminating worker
 Stopping autoattach
+<- Log from page: message6 (posted just before worker termination)
 

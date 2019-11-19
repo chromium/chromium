@@ -36,8 +36,6 @@
 
 namespace blink {
 
-using namespace html_names;
-
 template <typename CharType>
 static String StripLeadingAndTrailingHTMLSpaces(String string,
                                                 const CharType* characters,
@@ -380,14 +378,15 @@ WTF::TextEncoding EncodingFromMetaAttributes(
     const String& attribute_name = html_attribute.first;
     const AtomicString& attribute_value = AtomicString(html_attribute.second);
 
-    if (ThreadSafeMatch(attribute_name, kHttpEquivAttr)) {
+    if (ThreadSafeMatch(attribute_name, html_names::kHttpEquivAttr)) {
       if (DeprecatedEqualIgnoringCase(attribute_value, "content-type"))
         got_pragma = true;
-    } else if (ThreadSafeMatch(attribute_name, kCharsetAttr)) {
+    } else if (ThreadSafeMatch(attribute_name, html_names::kCharsetAttr)) {
       has_charset = true;
       charset = attribute_value;
       mode = MetaAttribute::kCharset;
-    } else if (!has_charset && ThreadSafeMatch(attribute_name, kContentAttr)) {
+    } else if (!has_charset &&
+               ThreadSafeMatch(attribute_name, html_names::kContentAttr)) {
       charset = ExtractCharset(attribute_value);
       if (charset.length())
         mode = MetaAttribute::kPragma;

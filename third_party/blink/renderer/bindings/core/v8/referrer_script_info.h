@@ -6,10 +6,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_REFERRER_SCRIPT_INFO_H_
 
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
-#include "services/network/public/mojom/referrer_policy.mojom-shared.h"
+#include "services/network/public/mojom/referrer_policy.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/loader/fetch/script_fetch_options.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_position.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "v8/include/v8.h"
@@ -25,7 +25,7 @@ class CORE_EXPORT ReferrerScriptInfo {
  public:
   ReferrerScriptInfo() {}
   ReferrerScriptInfo(const KURL& base_url,
-                     network::mojom::FetchCredentialsMode credentials_mode,
+                     network::mojom::CredentialsMode credentials_mode,
                      const String& nonce,
                      ParserDisposition parser_state,
                      network::mojom::ReferrerPolicy referrer_policy)
@@ -47,7 +47,7 @@ class CORE_EXPORT ReferrerScriptInfo {
   v8::Local<v8::PrimitiveArray> ToV8HostDefinedOptions(v8::Isolate*) const;
 
   const KURL& BaseURL() const { return base_url_; }
-  network::mojom::FetchCredentialsMode CredentialsMode() const {
+  network::mojom::CredentialsMode CredentialsMode() const {
     return credentials_mode_;
   }
   const String& Nonce() const { return nonce_; }
@@ -58,8 +58,7 @@ class CORE_EXPORT ReferrerScriptInfo {
 
   bool IsDefaultValue() const {
     return base_url_.IsNull() &&
-           credentials_mode_ ==
-               network::mojom::FetchCredentialsMode::kSameOrigin &&
+           credentials_mode_ == network::mojom::CredentialsMode::kSameOrigin &&
            nonce_.IsEmpty() && parser_state_ == kNotParserInserted;
   }
 
@@ -75,8 +74,8 @@ class CORE_EXPORT ReferrerScriptInfo {
   // Spec: "referencing script's credentials mode"
   // The default value is "same-origin" per:
   // https://html.spec.whatwg.org/C/#default-classic-script-fetch-options
-  const network::mojom::FetchCredentialsMode credentials_mode_ =
-      network::mojom::FetchCredentialsMode::kSameOrigin;
+  const network::mojom::CredentialsMode credentials_mode_ =
+      network::mojom::CredentialsMode::kSameOrigin;
 
   // Spec: "referencing script's cryptographic nonce"
   const String nonce_;

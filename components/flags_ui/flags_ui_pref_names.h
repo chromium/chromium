@@ -8,7 +8,9 @@
 namespace flags_ui {
 namespace prefs {
 
-extern const char kEnabledLabsExperiments[];
+extern const char kAboutFlagsEntries[];
+
+extern const char kAboutFlagsOriginLists[];
 
 }  // namespace prefs
 }  // namespace flags_ui

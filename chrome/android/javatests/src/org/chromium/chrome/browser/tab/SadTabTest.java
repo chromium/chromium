@@ -13,7 +13,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.RetryOnFailure;
@@ -24,6 +23,7 @@ import org.chromium.chrome.browser.tab.Tab.TabHidingType;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeTabUtils;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.util.TestWebServer;
 
 import java.util.concurrent.ExecutionException;
@@ -46,7 +46,7 @@ public class SadTabTest {
 
     private static boolean isShowingSadTab(Tab tab) {
         try {
-            return ThreadUtils.runOnUiThreadBlocking(() -> SadTab.isShowing(tab));
+            return TestThreadUtils.runOnUiThreadBlocking(() -> SadTab.isShowing(tab));
         } catch (ExecutionException e) {
             return false;
         }
@@ -129,13 +129,12 @@ public class SadTabTest {
      * Confirm that after a successive refresh of a failed tab that failed to load, change the
      * button from "Reload" to "Send Feedback". If reloaded a third time and it is successful it
      * reverts from "Send Feedback" to "Reload".
-     * @throws InterruptedException
      * @throws IllegalArgumentException
      */
     @Test
     @SmallTest
     @Feature({"SadTab"})
-    public void testSadTabPageButtonText() throws IllegalArgumentException, InterruptedException {
+    public void testSadTabPageButtonText() throws IllegalArgumentException {
         final Tab tab = mActivityTestRule.getActivity().getActivityTab();
 
         Assert.assertFalse(isShowingSadTab(tab));
@@ -171,12 +170,9 @@ public class SadTabTest {
      * Helper method that kills the renderer on a UI thread.
      */
     private static void simulateRendererKilled(final Tab tab, final boolean visible) {
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                if (!visible) tab.hide(TabHidingType.CHANGED_TABS);
-                ChromeTabUtils.simulateRendererKilledForTesting(tab, false);
-            }
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            if (!visible) tab.hide(TabHidingType.CHANGED_TABS);
+            ChromeTabUtils.simulateRendererKilledForTesting(tab, false);
         });
     }
 
@@ -184,13 +180,10 @@ public class SadTabTest {
      * Helper method that reloads a tab with a SadTabView currently displayed.
      */
     private static void reloadSadTab(final Tab tab) {
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                SadTab sadTab = SadTab.from(tab);
-                sadTab.removeIfPresent();
-                sadTab.show();
-            }
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            SadTab sadTab = SadTab.from(tab);
+            sadTab.removeIfPresent();
+            sadTab.show();
         });
     }
 

@@ -55,8 +55,6 @@ MODULES_EXPORT ExceptionCode WebCryptoErrorToExceptionCode(WebCryptoErrorType);
 //    m_resolver will be leaked until the ExecutionContext is destroyed.
 class MODULES_EXPORT CryptoResultImpl final : public CryptoResult {
  public:
-  static CryptoResultImpl* Create(ScriptState*);
-
   explicit CryptoResultImpl(ScriptState*);
   ~CryptoResultImpl() override;
 

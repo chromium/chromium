@@ -27,8 +27,8 @@ enum class AudioContentType;
 class CastDecoderBuffer;
 class CmaBackend;
 class MediaPipelineBackendWrapper;
-class ActiveAudioDecoderWrapper;
 class ActiveMediaPipelineBackendWrapper;
+class MediaResourceTracker;
 
 // This class tracks all created media backends, tracking whether or not volume
 // feedback sounds should be enabled based on the currently active backends.
@@ -83,8 +83,9 @@ class MediaPipelineBackendManager {
     NUM_DECODER_TYPES
   };
 
-  explicit MediaPipelineBackendManager(
-      scoped_refptr<base::SingleThreadTaskRunner> media_task_runner);
+  MediaPipelineBackendManager(
+      scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
+      MediaResourceTracker* media_resource_tracker);
   ~MediaPipelineBackendManager();
 
   // Creates a CMA backend. Must be called on the same thread as
@@ -95,6 +96,12 @@ class MediaPipelineBackendManager {
   // Inform that a backend previously created is destroyed.
   // Must be called on the same thread as |media_task_runner_|.
   void BackendDestroyed(MediaPipelineBackendWrapper* backend_wrapper);
+  // |backend_wrapper| will use a VideoDecoder.
+  // MediaPipelineBackendManager needs to record the backend that uses the
+  // VideoDecoder; and if there is an active backend using VideoDecoder, that
+  // backend needs to be revoked.
+  // Must be called on the same thread as |media_task_runner_|.
+  void BackendUseVideoDecoder(MediaPipelineBackendWrapper* backend_wrapper);
 
   base::SingleThreadTaskRunner* task_runner() const {
     return media_task_runner_.get();
@@ -106,17 +113,10 @@ class MediaPipelineBackendManager {
   void RemoveAllowVolumeFeedbackObserver(AllowVolumeFeedbackObserver* observer);
 
   // Add/remove a playing audio stream that is not accounted for by a
-  // CmaBackend instance (for example, direct audio output using
-  // CastMediaShlib::AddDirectAudioSource()). |sfx| indicates whether or not
-  // the stream is a sound effects stream (has no effect on volume feedback).
+  // CmaBackend instance. |sfx| indicates whether or not the stream is a sound
+  // effects stream (has no effect on volume feedback).
   void AddExtraPlayingStream(bool sfx, const AudioContentType type);
   void RemoveExtraPlayingStream(bool sfx, const AudioContentType type);
-
-  // Sets a global multiplier for output volume for streams of the given |type|.
-  // The multiplier may be any value >= 0; if the resulting volume for an
-  // individual stream would be > 1.0, that stream's volume is clamped to 1.0.
-  // The default multiplier is 1.0. May be called on any thread.
-  void SetGlobalVolumeMultiplier(AudioContentType type, float multiplier);
 
   // |buffer_delegate| will get notified for all buffers on the media stream.
   // |buffer_delegate| must outlive |this|.
@@ -125,18 +125,19 @@ class MediaPipelineBackendManager {
 
   BufferDelegate* buffer_delegate() const { return buffer_delegate_; }
 
-  bool IsPlaying(bool include_sfx, AudioContentType type);
-
   // If |power_save_enabled| is |false|, power save will be turned off and
   // automatic power save will be disabled until this is called with |true|.
   void SetPowerSaveEnabled(bool power_save_enabled);
 
  private:
   friend class ActiveMediaPipelineBackendWrapper;
-  friend class ActiveAudioDecoderWrapper;
 
-  void AddAudioDecoder(ActiveAudioDecoderWrapper* decoder);
-  void RemoveAudioDecoder(ActiveAudioDecoderWrapper* decoder);
+  class MixerConnection {
+   public:
+    virtual ~MixerConnection() = default;
+  };
+
+  void CreateMixerConnection();
 
   // Backend wrapper instances must use these APIs when allocating and releasing
   // decoder objects, so we can enforce global limit on #concurrent decoders.
@@ -147,12 +148,16 @@ class MediaPipelineBackendManager {
   void UpdatePlayingAudioCount(bool sfx,
                                const AudioContentType type,
                                int change);
+  void OnMixerStreamCountChange(int primary_streams, int sfx_streams);
+  void HandlePlayingAudioStreamsChange(bool had_playing_audio_streams,
+                                       bool prev_allow_feedback);
   int TotalPlayingAudioStreamsCount();
   int TotalPlayingNoneffectsAudioStreamsCount();
 
   void EnterPowerSaveMode();
 
   const scoped_refptr<base::SingleThreadTaskRunner> media_task_runner_;
+  MediaResourceTracker* const media_resource_tracker_;
 
   // Total count of decoders created
   int decoder_count_[NUM_DECODER_TYPES];
@@ -166,18 +171,18 @@ class MediaPipelineBackendManager {
   scoped_refptr<base::ObserverListThreadSafe<AllowVolumeFeedbackObserver>>
       allow_volume_feedback_observers_;
 
-  base::flat_set<ActiveAudioDecoderWrapper*> audio_decoders_;
-  base::flat_map<AudioContentType, float> global_volume_multipliers_;
-
-  // Previously issued MediaPipelineBackendWraper that is still alive
-  // and not revoked.
-  MediaPipelineBackendWrapper* active_backend_wrapper_;
+  // Previously issued MediaPipelineBackendWrapper that uses a video decoder.
+  MediaPipelineBackendWrapper* backend_wrapper_using_video_decoder_;
 
   BufferDelegate* buffer_delegate_;
 
   bool power_save_enabled_ = true;
 
   base::OneShotTimer power_save_timer_;
+
+  std::unique_ptr<MixerConnection> mixer_connection_;
+  int mixer_primary_stream_count_ = 0;
+  int mixer_sfx_stream_count_ = 0;
 
   base::WeakPtrFactory<MediaPipelineBackendManager> weak_factory_;
 

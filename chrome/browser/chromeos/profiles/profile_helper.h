@@ -83,6 +83,14 @@ class ProfileHelper
   // signin Profile.
   static bool IsSigninProfile(const Profile* profile);
 
+  // Returns true if the signin profile has been initialized.
+  static bool IsSigninProfileInitialized();
+
+  // Returns true if the signin profile has force-installed extensions set by
+  // policy. This DCHECKs that the profile is created, its PrefService is
+  // initialized and the associated pref exists.
+  static bool SigninProfileHasLoginScreenExtensions();
+
   // Returns the path used for the lock screen apps profile - profile used
   // for launching platform apps that can display windows on top of the lock
   // screen.
@@ -105,6 +113,11 @@ class ProfileHelper
 
   // Returns true when |profile| is for an ephemeral user.
   static bool IsEphemeralUserProfile(const Profile* profile);
+
+  // Return true if |profile| or |profile_path| corrrespond to a regular
+  // (non-sign-in and non-lockscreen) profile.
+  static bool IsRegularProfile(const Profile* profile);
+  static bool IsRegularProfilePath(const base::FilePath& profile_path);
 
   // Initialize a bunch of services that are tied to a browser profile.
   // TODO(dzhioev): Investigate whether or not this method is needed.
@@ -222,7 +235,7 @@ class ProfileHelper
 
   std::unique_ptr<FileFlusher> profile_flusher_;
 
-  base::WeakPtrFactory<ProfileHelper> weak_factory_;
+  base::WeakPtrFactory<ProfileHelper> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ProfileHelper);
 };

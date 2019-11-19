@@ -4,18 +4,19 @@
 
 #include "ash/system/unified/unified_system_tray.h"
 
-#include "ash/accessibility/accessibility_controller.h"
+#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/focus_cycler.h"
 #include "ash/public/cpp/ash_features.h"
-#include "ash/session/session_controller.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/system/message_center/ash_popup_alignment_delegate.h"
+#include "ash/system/message_center/ash_message_popup_collection.h"
 #include "ash/system/message_center/message_center_ui_controller.h"
 #include "ash/system/message_center/message_center_ui_delegate.h"
+#include "ash/system/message_center/unified_message_center_bubble.h"
 #include "ash/system/model/clock_model.h"
 #include "ash/system/model/system_tray_model.h"
-#include "ash/system/network/network_icon_purger.h"
 #include "ash/system/network/network_tray_view.h"
 #include "ash/system/power/tray_power.h"
 #include "ash/system/status_area_widget.h"
@@ -25,7 +26,7 @@
 #include "ash/system/tray/tray_container.h"
 #include "ash/system/unified/current_locale_view.h"
 #include "ash/system/unified/ime_mode_view.h"
-#include "ash/system/unified/managed_device_view.h"
+#include "ash/system/unified/managed_device_tray_item_view.h"
 #include "ash/system/unified/notification_counter_view.h"
 #include "ash/system/unified/unified_slider_bubble_controller.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
@@ -37,7 +38,6 @@
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/message_center/message_center.h"
-#include "ui/message_center/views/message_popup_collection.h"
 
 namespace ash {
 
@@ -56,14 +56,17 @@ class UnifiedSystemTray::UiDelegate : public MessageCenterUiDelegate {
   MessageCenterUiController* ui_controller() { return ui_controller_.get(); }
 
   void SetTrayBubbleHeight(int height) {
-    popup_alignment_delegate_->SetTrayBubbleHeight(height);
+    message_popup_collection_->SetTrayBubbleHeight(height);
+  }
+  message_center::MessagePopupView* GetPopupViewForNotificationID(
+      const std::string& notification_id) {
+    return message_popup_collection_->GetPopupViewForNotificationID(
+        notification_id);
   }
 
  private:
   std::unique_ptr<MessageCenterUiController> ui_controller_;
-  std::unique_ptr<AshPopupAlignmentDelegate> popup_alignment_delegate_;
-  std::unique_ptr<message_center::MessagePopupCollection>
-      message_popup_collection_;
+  std::unique_ptr<AshMessagePopupCollection> message_popup_collection_;
 
   UnifiedSystemTray* const owner_;
 
@@ -77,14 +80,10 @@ UnifiedSystemTray::UiDelegate::UiDelegate(UnifiedSystemTray* owner)
     : owner_(owner) {
   ui_controller_ = std::make_unique<MessageCenterUiController>(this);
   ui_controller_->set_hide_on_last_notification(false);
-  popup_alignment_delegate_ =
-      std::make_unique<AshPopupAlignmentDelegate>(owner->shelf());
   message_popup_collection_ =
-      std::make_unique<message_center::MessagePopupCollection>(
-          popup_alignment_delegate_.get());
-  message_popup_collection_->set_inverse();
+      std::make_unique<AshMessagePopupCollection>(owner->shelf());
   display::Screen* screen = display::Screen::GetScreen();
-  popup_alignment_delegate_->StartObserving(
+  message_popup_collection_->StartObserving(
       screen, screen->GetDisplayNearestWindow(
                   owner->shelf()->GetStatusAreaWidget()->GetNativeWindow()));
 }
@@ -102,7 +101,7 @@ bool UnifiedSystemTray::UiDelegate::ShowPopups() {
 }
 
 void UnifiedSystemTray::UiDelegate::HidePopups() {
-  popup_alignment_delegate_->SetTrayBubbleHeight(0);
+  message_popup_collection_->SetTrayBubbleHeight(0);
 }
 
 bool UnifiedSystemTray::UiDelegate::ShowMessageCenter(bool show_by_click) {
@@ -114,50 +113,55 @@ bool UnifiedSystemTray::UiDelegate::ShowMessageCenter(bool show_by_click) {
 }
 
 void UnifiedSystemTray::UiDelegate::HideMessageCenter() {
-  owner_->HideBubbleInternal();
+  if (!features::IsUnifiedMessageCenterRefactorEnabled())
+    owner_->HideBubbleInternal();
 }
 
 UnifiedSystemTray::UnifiedSystemTray(Shelf* shelf)
     : TrayBackgroundView(shelf),
       ui_delegate_(std::make_unique<UiDelegate>(this)),
-      model_(std::make_unique<UnifiedSystemTrayModel>()),
+      model_(std::make_unique<UnifiedSystemTrayModel>(
+          shelf->GetStatusAreaWidget()->GetRootView())),
       slider_bubble_controller_(
           std::make_unique<UnifiedSliderBubbleController>(this)),
-      network_icon_purger_(std::make_unique<NetworkIconPurger>()),
       current_locale_view_(new CurrentLocaleView(shelf)),
       ime_mode_view_(new ImeModeView(shelf)),
-      managed_device_view_(new ManagedDeviceView(shelf)),
+      managed_device_view_(new ManagedDeviceTrayItemView(shelf)),
       notification_counter_item_(new NotificationCounterView(shelf)),
       quiet_mode_view_(new QuietModeView(shelf)),
       time_view_(new tray::TimeTrayItemView(shelf)) {
-  tray_container()->SetMargin(kUnifiedTrayContentPadding, 0);
+  tray_container()->SetMargin(
+      kUnifiedTrayContentPadding -
+          ShelfConfig::Get()->status_area_hit_region_padding(),
+      0);
   tray_container()->AddChildView(current_locale_view_);
   tray_container()->AddChildView(ime_mode_view_);
   tray_container()->AddChildView(managed_device_view_);
   tray_container()->AddChildView(notification_counter_item_);
   tray_container()->AddChildView(quiet_mode_view_);
 
-  // It is possible in unit tests that it's missing.
-  if (chromeos::NetworkHandler::IsInitialized()) {
-    if (features::IsSeparateNetworkIconsEnabled()) {
-      tray_container()->AddChildView(
-          tray::NetworkTrayView::CreateForDefault(shelf));
-      tray_container()->AddChildView(
-          tray::NetworkTrayView::CreateForMobile(shelf));
-    } else {
-      tray_container()->AddChildView(
-          tray::NetworkTrayView::CreateForSingleIcon(shelf));
-    }
+  if (features::IsSeparateNetworkIconsEnabled()) {
+    tray_container()->AddChildView(
+        new tray::NetworkTrayView(shelf, ActiveNetworkIcon::Type::kPrimary));
+    tray_container()->AddChildView(
+        new tray::NetworkTrayView(shelf, ActiveNetworkIcon::Type::kCellular));
+  } else {
+    tray_container()->AddChildView(
+        new tray::NetworkTrayView(shelf, ActiveNetworkIcon::Type::kSingle));
   }
 
   tray_container()->AddChildView(new tray::PowerTrayView(shelf));
   tray_container()->AddChildView(time_view_);
 
-  SetInkDropMode(InkDropMode::ON);
   set_separator_visibility(false);
+
+  ShelfConfig::Get()->AddObserver(this);
 }
 
 UnifiedSystemTray::~UnifiedSystemTray() {
+  ShelfConfig::Get()->RemoveObserver(this);
+
+  message_center_bubble_.reset();
   // Close bubble immediately when the bubble is closed on dtor.
   if (bubble_)
     bubble_->CloseNow();
@@ -172,6 +176,13 @@ bool UnifiedSystemTray::IsSliderBubbleShown() const {
   return slider_bubble_controller_->IsBubbleShown();
 }
 
+bool UnifiedSystemTray::IsMessageCenterBubbleShown() const {
+  if (message_center_bubble_)
+    return message_center_bubble_->IsMessageCenterVisible();
+
+  return false;
+}
+
 bool UnifiedSystemTray::IsBubbleActive() const {
   return bubble_ && bubble_->IsBubbleActive();
 }
@@ -179,6 +190,21 @@ bool UnifiedSystemTray::IsBubbleActive() const {
 void UnifiedSystemTray::ActivateBubble() {
   if (bubble_)
     bubble_->ActivateBubble();
+}
+
+void UnifiedSystemTray::CollapseMessageCenter() {
+  if (message_center_bubble_)
+    message_center_bubble_->CollapseMessageCenter();
+}
+
+void UnifiedSystemTray::ExpandMessageCenter() {
+  if (message_center_bubble_)
+    message_center_bubble_->ExpandMessageCenter();
+}
+
+void UnifiedSystemTray::EnsureQuickSettingsCollapsed() {
+  if (bubble_)
+    bubble_->EnsureCollapsed();
 }
 
 void UnifiedSystemTray::EnsureBubbleExpanded() {
@@ -192,12 +218,51 @@ void UnifiedSystemTray::ShowVolumeSliderBubble() {
 }
 
 void UnifiedSystemTray::ShowAudioDetailedViewBubble() {
-  ShowBubble(false /* show_by_click */);
+  // The settings menu bubble gains focus when |show_by_click| is true.
+  ShowBubble(true /* show_by_click */);
   bubble_->ShowAudioDetailedView();
+}
+
+void UnifiedSystemTray::ShowNetworkDetailedViewBubble(bool show_by_click) {
+  ShowBubble(show_by_click);
+  bubble_->ShowNetworkDetailedView(true /* force */);
 }
 
 void UnifiedSystemTray::SetTrayBubbleHeight(int height) {
   ui_delegate_->SetTrayBubbleHeight(height);
+}
+
+void UnifiedSystemTray::FocusFirstNotification() {
+  if (!features::IsUnifiedMessageCenterRefactorEnabled())
+    return;
+
+  FocusMessageCenter(false /*reverse*/);
+  message_center_bubble()->FocusFirstNotification();
+}
+
+bool UnifiedSystemTray::FocusMessageCenter(bool reverse) {
+  if (!IsMessageCenterBubbleShown())
+    return false;
+
+  views::Widget* message_center_widget =
+      message_center_bubble_->GetBubbleWidget();
+  message_center_widget->widget_delegate()->SetCanActivate(true);
+
+  Shell::Get()->focus_cycler()->FocusWidget(message_center_widget);
+  message_center_bubble_->FocusEntered(reverse);
+
+  return true;
+}
+
+bool UnifiedSystemTray::FocusQuickSettings(bool reverse) {
+  if (!IsBubbleShown())
+    return false;
+
+  views::Widget* quick_settings_widget = bubble_->GetBubbleWidget();
+  Shell::Get()->focus_cycler()->FocusWidget(quick_settings_widget);
+  bubble_->FocusEntered(reverse);
+
+  return true;
 }
 
 gfx::Rect UnifiedSystemTray::GetBubbleBoundsInScreen() const {
@@ -205,7 +270,7 @@ gfx::Rect UnifiedSystemTray::GetBubbleBoundsInScreen() const {
 }
 
 void UnifiedSystemTray::UpdateAfterLoginStatusChange() {
-  SetVisible(true);
+  SetVisiblePreferred(true);
   PreferredSizeChanged();
 }
 
@@ -233,6 +298,19 @@ void UnifiedSystemTray::OnBoundsChanged(const gfx::Rect& previous_bounds) {
     ResetInkDropMask();
     InstallInkDropMask(ink_drop_layer_);
   }
+}
+
+const char* UnifiedSystemTray::GetClassName() const {
+  return "UnifiedSystemTray";
+}
+
+void UnifiedSystemTray::OnShelfConfigUpdated() {
+  // Ensure the margin is updated correctly depending on whether dense shelf
+  // is currently shown or not.
+  tray_container()->SetMargin(
+      kUnifiedTrayContentPadding -
+          ShelfConfig::Get()->status_area_hit_region_padding(),
+      0);
 }
 
 void UnifiedSystemTray::SetTrayEnabled(bool enabled) {
@@ -267,8 +345,11 @@ void UnifiedSystemTray::ShowBubble(bool show_by_click) {
 }
 
 void UnifiedSystemTray::CloseBubble() {
-  // HideBubbleInternal will be called from UiDelegate.
+  // HideMessageCenterBubbleInternal will be called from UiDelegate.
   ui_delegate_->ui_controller()->HideMessageCenterBubble();
+
+  if (features::IsUnifiedMessageCenterRefactorEnabled())
+    HideBubbleInternal();
 }
 
 base::string16 UnifiedSystemTray::GetAccessibleNameForBubble() {
@@ -309,10 +390,18 @@ void UnifiedSystemTray::ShowBubbleInternal(bool show_by_click) {
   slider_bubble_controller_->CloseBubble();
 
   bubble_ = std::make_unique<UnifiedSystemTrayBubble>(this, show_by_click);
+
+  if (features::IsUnifiedMessageCenterRefactorEnabled()) {
+    message_center_bubble_ = std::make_unique<UnifiedMessageCenterBubble>(this);
+    message_center_bubble_->ShowBubble();
+    FocusQuickSettings(false /*reverse*/);
+  }
+
   SetIsActive(true);
 }
 
 void UnifiedSystemTray::HideBubbleInternal() {
+  message_center_bubble_.reset();
   bubble_.reset();
   SetIsActive(false);
 }
@@ -330,6 +419,12 @@ void UnifiedSystemTray::UpdateNotificationInternal() {
 void UnifiedSystemTray::UpdateNotificationAfterDelay() {
   notification_counter_item_->Update();
   quiet_mode_view_->Update();
+}
+
+message_center::MessagePopupView*
+UnifiedSystemTray::GetPopupViewForNotificationID(
+    const std::string& notification_id) {
+  return ui_delegate_->GetPopupViewForNotificationID(notification_id);
 }
 
 }  // namespace ash

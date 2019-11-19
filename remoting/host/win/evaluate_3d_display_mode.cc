@@ -37,7 +37,7 @@ typedef HRESULT(WINAPI* CreateDXGIFactory2Function)(UINT Flags,
 int Evaluate3dDisplayMode() {
   // CreateDXGIFactory2 does not exist prior to Win 8.1 but neither does 3D
   // display mode.
-  if (base::win::GetVersion() < base::win::VERSION_WIN8_1)
+  if (base::win::GetVersion() < base::win::Version::WIN8_1)
     return kSuccessExitCode;
 
   // We can't directly reference CreateDXGIFactory2 is it does not exist on

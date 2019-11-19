@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL XMLHttpRequest: The send() method: Fire a progress event named loadstart on upload object (synchronous flag is unset) assert_equals: upload.onloadstart: event.total expected 7 but got 0
-Harness: the test ran to completion.
-

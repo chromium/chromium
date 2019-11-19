@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file.
+ -->
+
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="org.chromium.weblayer.tests">
+  <uses-permission android:name="android.permission.RUN_INSTRUMENTATION" />
+  <!-- We add an application tag here just so that we can indicate that this
+       package needs to link against the android.test library, which is
+       needed when building test cases. -->
+  <application>
+      <uses-library android:name="android.test.runner" />
+      <activity android:name="org.chromium.test.broker.OnDeviceInstrumentationBroker"
+          android:exported="true"/>
+      <activity android:name="org.chromium.weblayer.shell.InstrumentationActivity">
+        <!-- Add these intent filters so tests can resolve these intents. -->
+        <intent-filter>
+            <action android:name="android.provider.MediaStore.RECORD_SOUND" />
+            <category android:name="android.intent.category.DEFAULT" />
+        </intent-filter>
+        <intent-filter>
+            <action android:name="android.media.action.IMAGE_CAPTURE" />
+            <category android:name="android.intent.category.DEFAULT" />
+        </intent-filter>
+      </activity>
+  </application>
+
+  <instrumentation android:name="org.chromium.base.test.BaseChromiumAndroidJUnitRunner"
+      android:targetPackage="org.chromium.weblayer.shell"
+      android:label="JUnit4-based tests for org.chromium.weblayer.shell" />
+</manifest>

@@ -15,7 +15,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "content/browser/service_worker/service_worker_database.pb.h"
-#include "content/common/service_worker/service_worker_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom.h"
@@ -401,9 +400,9 @@ TEST(ServiceWorkerDatabaseTest, GetOriginsWithRegistrations) {
   EXPECT_EQ(ServiceWorkerDatabase::STATUS_OK,
             database->GetOriginsWithRegistrations(&origins));
   EXPECT_EQ(3U, origins.size());
-  EXPECT_TRUE(base::ContainsKey(origins, origin1));
-  EXPECT_TRUE(base::ContainsKey(origins, origin2));
-  EXPECT_TRUE(base::ContainsKey(origins, origin3));
+  EXPECT_TRUE(base::Contains(origins, origin1));
+  EXPECT_TRUE(base::Contains(origins, origin2));
+  EXPECT_TRUE(base::Contains(origins, origin3));
 
   // |origin3| has another registration, so should not remove it from the
   // unique origin list.
@@ -418,9 +417,9 @@ TEST(ServiceWorkerDatabaseTest, GetOriginsWithRegistrations) {
   EXPECT_EQ(ServiceWorkerDatabase::STATUS_OK,
             database->GetOriginsWithRegistrations(&origins));
   EXPECT_EQ(3U, origins.size());
-  EXPECT_TRUE(base::ContainsKey(origins, origin1));
-  EXPECT_TRUE(base::ContainsKey(origins, origin2));
-  EXPECT_TRUE(base::ContainsKey(origins, origin3));
+  EXPECT_TRUE(base::Contains(origins, origin1));
+  EXPECT_TRUE(base::Contains(origins, origin2));
+  EXPECT_TRUE(base::Contains(origins, origin3));
 
   // |origin3| should be removed from the unique origin list.
   ASSERT_EQ(ServiceWorkerDatabase::STATUS_OK,
@@ -434,8 +433,8 @@ TEST(ServiceWorkerDatabaseTest, GetOriginsWithRegistrations) {
   EXPECT_EQ(ServiceWorkerDatabase::STATUS_OK,
             database->GetOriginsWithRegistrations(&origins));
   EXPECT_EQ(2U, origins.size());
-  EXPECT_TRUE(base::ContainsKey(origins, origin1));
-  EXPECT_TRUE(base::ContainsKey(origins, origin2));
+  EXPECT_TRUE(base::Contains(origins, origin1));
+  EXPECT_TRUE(base::Contains(origins, origin2));
 }
 
 TEST(ServiceWorkerDatabaseTest, GetRegistrationsForOrigin) {
@@ -636,7 +635,9 @@ TEST(ServiceWorkerDatabaseTest, Registration_Basic) {
   data.script = URL(origin, "/resource1");
   data.version_id = 200;
   data.resources_total_size_bytes = 10939 + 200;
-  data.used_features = {124, 901, 1019};
+  data.used_features = {blink::mojom::WebFeature::kNavigatorVendor,
+                        blink::mojom::WebFeature::kLinkRelPreload,
+                        blink::mojom::WebFeature::kCSSFilterInvert};
 
   std::vector<Resource> resources;
   resources.push_back(CreateResource(1, URL(origin, "/resource1"), 10939));
@@ -710,8 +711,8 @@ TEST(ServiceWorkerDatabaseTest, Registration_Basic) {
   EXPECT_EQ(ServiceWorkerDatabase::STATUS_OK,
             database->GetPurgeableResourceIds(&purgeable_ids_out));
   EXPECT_EQ(2u, purgeable_ids_out.size());
-  EXPECT_TRUE(base::ContainsKey(purgeable_ids_out, resources[0].resource_id));
-  EXPECT_TRUE(base::ContainsKey(purgeable_ids_out, resources[1].resource_id));
+  EXPECT_TRUE(base::Contains(purgeable_ids_out, resources[0].resource_id));
+  EXPECT_TRUE(base::Contains(purgeable_ids_out, resources[1].resource_id));
 }
 
 TEST(ServiceWorkerDatabaseTest, DeleteNonExistentRegistration) {
@@ -776,7 +777,9 @@ TEST(ServiceWorkerDatabaseTest, Registration_Overwrite) {
   data.script = URL(origin, "/resource1");
   data.version_id = 200;
   data.resources_total_size_bytes = 10 + 11;
-  data.used_features = {124, 901, 1019};
+  data.used_features = {blink::mojom::WebFeature::kNavigatorVendor,
+                        blink::mojom::WebFeature::kLinkRelPreload,
+                        blink::mojom::WebFeature::kCSSFilterInvert};
 
   std::vector<Resource> resources1;
   resources1.push_back(CreateResource(1, URL(origin, "/resource1"), 10));
@@ -807,7 +810,10 @@ TEST(ServiceWorkerDatabaseTest, Registration_Overwrite) {
   updated_data.script = URL(origin, "/resource3");
   updated_data.version_id = data.version_id + 1;
   updated_data.resources_total_size_bytes = 12 + 13;
-  updated_data.used_features = {109, 421, 9101};
+  updated_data.used_features = {
+      blink::mojom::WebFeature::kFormElement,
+      blink::mojom::WebFeature::kDocumentExitPointerLock,
+      blink::mojom::WebFeature::kAdClick};
   updated_data.script_type = blink::mojom::ScriptType::kModule;
   updated_data.update_via_cache =
       blink::mojom::ServiceWorkerUpdateViaCache::kAll;
@@ -837,8 +843,8 @@ TEST(ServiceWorkerDatabaseTest, Registration_Overwrite) {
   EXPECT_EQ(ServiceWorkerDatabase::STATUS_OK,
             database->GetPurgeableResourceIds(&purgeable_ids_out));
   EXPECT_EQ(2u, purgeable_ids_out.size());
-  EXPECT_TRUE(base::ContainsKey(purgeable_ids_out, resources1[0].resource_id));
-  EXPECT_TRUE(base::ContainsKey(purgeable_ids_out, resources1[1].resource_id));
+  EXPECT_TRUE(base::Contains(purgeable_ids_out, resources1[0].resource_id));
+  EXPECT_TRUE(base::Contains(purgeable_ids_out, resources1[1].resource_id));
 }
 
 TEST(ServiceWorkerDatabaseTest, Registration_Multiple) {
@@ -931,8 +937,8 @@ TEST(ServiceWorkerDatabaseTest, Registration_Multiple) {
   EXPECT_EQ(ServiceWorkerDatabase::STATUS_OK,
             database->GetPurgeableResourceIds(&purgeable_ids_out));
   EXPECT_EQ(2u, purgeable_ids_out.size());
-  EXPECT_TRUE(base::ContainsKey(purgeable_ids_out, resources1[0].resource_id));
-  EXPECT_TRUE(base::ContainsKey(purgeable_ids_out, resources1[1].resource_id));
+  EXPECT_TRUE(base::Contains(purgeable_ids_out, resources1[0].resource_id));
+  EXPECT_TRUE(base::Contains(purgeable_ids_out, resources1[1].resource_id));
 
   // Make sure that registration2 is still alive.
   resources_out.clear();
@@ -2023,7 +2029,7 @@ TEST(ServiceWorkerDatabaseTest, DeleteAllDataForOrigin) {
   EXPECT_EQ(ServiceWorkerDatabase::STATUS_OK,
             database->GetOriginsWithRegistrations(&unique_origins));
   EXPECT_EQ(1u, unique_origins.size());
-  EXPECT_TRUE(base::ContainsKey(unique_origins, origin2));
+  EXPECT_TRUE(base::Contains(unique_origins, origin2));
 
   // The registrations for |origin1| should be removed.
   std::vector<RegistrationData> registrations;
@@ -2053,10 +2059,10 @@ TEST(ServiceWorkerDatabaseTest, DeleteAllDataForOrigin) {
   EXPECT_EQ(ServiceWorkerDatabase::STATUS_OK,
             database->GetPurgeableResourceIds(&purgeable_ids_out));
   EXPECT_EQ(4u, purgeable_ids_out.size());
-  EXPECT_TRUE(base::ContainsKey(purgeable_ids_out, 1));
-  EXPECT_TRUE(base::ContainsKey(purgeable_ids_out, 2));
-  EXPECT_TRUE(base::ContainsKey(purgeable_ids_out, 3));
-  EXPECT_TRUE(base::ContainsKey(purgeable_ids_out, 4));
+  EXPECT_TRUE(base::Contains(purgeable_ids_out, 1));
+  EXPECT_TRUE(base::Contains(purgeable_ids_out, 2));
+  EXPECT_TRUE(base::Contains(purgeable_ids_out, 3));
+  EXPECT_TRUE(base::Contains(purgeable_ids_out, 4));
 
   // The user data associated with |origin1| should be removed.
   std::vector<std::string> user_data_out;
@@ -2189,6 +2195,51 @@ TEST(ServiceWorkerDatabaseTest, Corruption_GetRegistrationsForOrigin) {
   histogram_tester.ExpectBucketCount(
       "ServiceWorker.Database.ReadResult",
       ServiceWorkerDatabase::STATUS_ERROR_CORRUPTED, 1);
+}
+
+// Test that invalid WebFeatures on disk are ignored when reading a
+// registration. See https://crbug.com/965944.
+TEST(ServiceWorkerDatabaseTest, InvalidWebFeature) {
+  std::unique_ptr<ServiceWorkerDatabase> database(CreateDatabaseInMemory());
+
+  // Prepare a registration proto that has invalid features.
+  ServiceWorkerRegistrationData data;
+  data.set_registration_id(1);
+  data.set_scope_url("https://example.com");
+  data.set_script_url("https://example.com/sw");
+  data.set_version_id(1);
+  data.set_is_active(true);
+  data.set_has_fetch_handler(true);
+  data.set_last_update_check_time(base::Time::Now().ToInternalValue());
+
+  data.add_used_features(
+      static_cast<uint32_t>(blink::mojom::WebFeature::kFetch));
+  // Add a removed feature.
+  data.add_used_features(2067);
+  data.add_used_features(
+      static_cast<uint32_t>(blink::mojom::WebFeature::kBackgroundSync));
+  // Add an out of range feature.
+  data.add_used_features(
+      static_cast<uint32_t>(blink::mojom::WebFeature::kNumberOfFeatures) + 11);
+  data.add_used_features(
+      static_cast<uint32_t>(blink::mojom::WebFeature::kNetInfoType));
+
+  database->next_avail_registration_id_ = 2;
+  database->next_avail_version_id_ = 2;
+
+  // Write the serialization.
+  std::string value;
+  ASSERT_TRUE(data.SerializeToString(&value));
+
+  // Parse the serialized data. The invalid features should be ignored.
+  RegistrationData registration;
+  ASSERT_EQ(ServiceWorkerDatabase::STATUS_OK,
+            database->ParseRegistrationData(value, &registration));
+  std::set<blink::mojom::WebFeature> expect = {
+      blink::mojom::WebFeature::kFetch,
+      blink::mojom::WebFeature::kBackgroundSync,
+      blink::mojom::WebFeature::kNetInfoType};
+  EXPECT_EQ(expect, registration.used_features);
 }
 
 }  // namespace content

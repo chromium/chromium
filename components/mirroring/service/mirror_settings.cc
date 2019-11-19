@@ -8,10 +8,10 @@
 
 #include "media/base/audio_parameters.h"
 
-using media::cast::FrameSenderConfig;
-using media::cast::Codec;
-using media::cast::RtpPayloadType;
 using media::ResolutionChangePolicy;
+using media::cast::Codec;
+using media::cast::FrameSenderConfig;
+using media::cast::RtpPayloadType;
 
 namespace mirroring {
 
@@ -21,17 +21,16 @@ namespace {
 constexpr base::TimeDelta kAnimatedPlayoutDelay =
     base::TimeDelta::FromMilliseconds(400);
 
-// Minimum end-to-end latency. This allows cast streaming to adaptively lower
-// latency in interactive streaming scenarios.
-// TODO(miu): This was 120 before stable launch, but we got user feedback that
-// this was causing audio drop-outs. So, we need to fix the Cast Streaming
-// implementation before lowering this setting.
+// Minimum end-to-end latency.
 constexpr base::TimeDelta kMinPlayoutDelay =
     base::TimeDelta::FromMilliseconds(400);
 
-// Maximum end-to-end latency.
+// Maximum end-to-end latency.  Currently, this is kMinPlayoutDelay, effectively
+// disabling adaptive latency control, because of audio playout regressions
+// (b/32876644).
+// TODO(openscreen/44): Re-enable in port to Open Screen.
 constexpr base::TimeDelta kMaxPlayoutDelay =
-    base::TimeDelta::FromMilliseconds(800);
+    base::TimeDelta::FromMilliseconds(400);
 
 constexpr int kAudioTimebase = 48000;
 constexpr int kVidoTimebase = 90000;
@@ -109,8 +108,7 @@ media::VideoCaptureParams MirrorSettings::GetVideoCaptureParams() {
                                 kMaxFrameRate, media::PIXEL_FORMAT_I420);
   if (max_height_ == min_height_ && max_width_ == min_width_) {
     params.resolution_change_policy = ResolutionChangePolicy::FIXED_RESOLUTION;
-  } else if ((100 * min_width_ / min_height_) ==
-             (100 * max_width_ / max_height_)) {
+  } else if (enable_sender_side_letterboxing_) {
     params.resolution_change_policy =
         ResolutionChangePolicy::FIXED_ASPECT_RATIO;
   } else {
@@ -134,7 +132,8 @@ base::Value MirrorSettings::ToDictionaryValue() {
   settings.SetKey("maxHeight", base::Value(max_height_));
   settings.SetKey("minWidth", base::Value(min_width_));
   settings.SetKey("minHeight", base::Value(min_height_));
-  settings.SetKey("senderSideLetterboxing", base::Value(true));
+  settings.SetKey("senderSideLetterboxing",
+                  base::Value(enable_sender_side_letterboxing_));
   settings.SetKey("minFrameRate", base::Value(0));
   settings.SetKey("maxFrameRate", base::Value(kMaxFrameRate));
   settings.SetKey("minVideoBitrate", base::Value(kMinVideoBitrate));

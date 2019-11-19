@@ -49,9 +49,8 @@ void AudioDiscardHelper::Reset(size_t initial_discard) {
   delayed_discard_padding_ = DecoderBuffer::DiscardPadding();
 }
 
-bool AudioDiscardHelper::ProcessBuffers(
-    const DecoderBuffer& encoded_buffer,
-    const scoped_refptr<AudioBuffer>& decoded_buffer) {
+bool AudioDiscardHelper::ProcessBuffers(const DecoderBuffer& encoded_buffer,
+                                        AudioBuffer* decoded_buffer) {
   DCHECK(!encoded_buffer.end_of_stream());
   DCHECK(encoded_buffer.timestamp() != kNoTimestamp);
 
@@ -69,7 +68,7 @@ bool AudioDiscardHelper::ProcessBuffers(
   }
   DCHECK(initialized());
 
-  if (!decoded_buffer.get()) {
+  if (!decoded_buffer) {
     // If there's a one buffer delay for decoding, we need to save it so it can
     // be processed with the next decoder buffer.
     if (delayed_discard_)
@@ -157,7 +156,13 @@ bool AudioDiscardHelper::ProcessBuffers(
     // For simplicity require the start of the discard to be within the current
     // buffer.  Doing so allows us avoid complexity around tracking discards
     // across buffers.
-    CHECK_LT(discard_start, decoded_frames);
+    if (discard_start >= decoded_frames) {
+      DLOG(ERROR)
+          << "Unsupported discard padding and decoder delay mix. Due to "
+             "decoder delay, discard padding indicates data beyond the current "
+             "buffer should be discarded. This is not supported.";
+      return false;
+    }
 
     const size_t frames_to_discard =
         std::min(start_frames_to_discard, decoded_frames - discard_start);
@@ -173,8 +178,10 @@ bool AudioDiscardHelper::ProcessBuffers(
     // If everything would be discarded, indicate a new buffer is required.
     if (frames_to_discard == decoded_frames) {
       // The buffer should not have been marked with end discard if the front
-      // discard removes everything.
-      DCHECK(current_discard_padding.second.is_zero());
+      // discard removes everything, though incorrect or imprecise duration
+      // metadata, combined with various trimming operations, might still have
+      // end discard marked here. For simplicity, we do not carry over any such
+      // end discard for handling later.
       return false;
     }
 

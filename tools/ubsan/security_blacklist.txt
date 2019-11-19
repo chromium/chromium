@@ -39,7 +39,6 @@ src:*/usr/*
 
 #############################################################################
 # Undefined arithmetic that can be safely ignored.
-src:*/base/numerics/saturated_arithmetic.h
 src:*/ppapi/shared_impl/id_assignment.h
 
 #############################################################################

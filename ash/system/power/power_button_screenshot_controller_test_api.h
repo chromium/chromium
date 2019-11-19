@@ -24,6 +24,10 @@ class PowerButtonScreenshotControllerTestApi {
   // and returns true. Otherwise returns false.
   bool TriggerVolumeDownTimer() WARN_UNUSED_RESULT;
 
+  // If |controller_->volume_up_timer_| is running, stops it, runs its task,
+  // and returns true. Otherwise returns false.
+  bool TriggerVolumeUpTimer() WARN_UNUSED_RESULT;
+
  private:
   PowerButtonScreenshotController* controller_;
 

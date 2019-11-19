@@ -110,7 +110,8 @@ void SVGComputedStyle::CopyNonInheritedFromCached(
 }
 
 scoped_refptr<SVGDashArray> SVGComputedStyle::InitialStrokeDashArray() {
-  DEFINE_STATIC_REF(SVGDashArray, initial_dash_array, SVGDashArray::Create());
+  DEFINE_STATIC_REF(SVGDashArray, initial_dash_array,
+                    base::MakeRefCounted<SVGDashArray>());
   return initial_dash_array;
 }
 
@@ -177,7 +178,8 @@ bool SVGComputedStyle::DiffNeedsLayoutAndPaintInvalidation(
     // If the dash array is toggled from/to 'none' we need to relayout, because
     // some shapes will decide on which codepath to use based on the presence
     // of a dash array.
-    if (stroke->dash_array->IsEmpty() != other.stroke->dash_array->IsEmpty())
+    if (stroke->dash_array->data.IsEmpty() !=
+        other.stroke->dash_array->data.IsEmpty())
       return true;
   }
 
@@ -199,7 +201,7 @@ bool SVGComputedStyle::DiffNeedsPaintInvalidation(
     // include it when computing (approximating) the stroke boundaries during
     // layout.
     if (stroke->dash_offset != other.stroke->dash_offset ||
-        *stroke->dash_array != *other.stroke->dash_array)
+        stroke->dash_array->data != other.stroke->dash_array->data)
       return true;
   }
 

@@ -27,7 +27,7 @@
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/common/context_menu_params.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/extension_registry.h"
@@ -95,7 +95,7 @@ class MenuManagerTest : public testing::Test {
   }
 
  protected:
-  content::TestBrowserThreadBundle test_browser_thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
 
   MenuManager manager_;
@@ -191,8 +191,8 @@ TEST_F(MenuManagerTest, ChildFunctions) {
   // Add item2_child as a child of item2.
   MenuItem::Id id2_child = item2_child->id();
   ASSERT_TRUE(manager_.AddChildItem(id2, std::move(item2_child)));
-  ASSERT_EQ(1, item2_ptr->child_count());
-  ASSERT_EQ(0, item1_ptr->child_count());
+  ASSERT_EQ(1u, item2_ptr->children().size());
+  ASSERT_EQ(0u, item1_ptr->children().size());
   ASSERT_EQ(item2_child_ptr, manager_.GetItemById(id2_child));
 
   ASSERT_EQ(1u, manager_.MenuItems(item1_ptr->id().extension_key)->size());
@@ -202,8 +202,8 @@ TEST_F(MenuManagerTest, ChildFunctions) {
   // Add item2_grandchild as a child of item2_child, then remove it.
   MenuItem::Id id2_grandchild = item2_grandchild->id();
   ASSERT_TRUE(manager_.AddChildItem(id2_child, std::move(item2_grandchild)));
-  ASSERT_EQ(1, item2_ptr->child_count());
-  ASSERT_EQ(1, item2_child_ptr->child_count());
+  ASSERT_EQ(1u, item2_ptr->children().size());
+  ASSERT_EQ(1u, item2_child_ptr->children().size());
   ASSERT_TRUE(manager_.RemoveContextMenuItem(id2_grandchild));
 
   // We should only get 1 thing back when asking for item2's extension id, since
@@ -217,7 +217,7 @@ TEST_F(MenuManagerTest, ChildFunctions) {
   ASSERT_EQ(1u, manager_.MenuItems(item2_ptr->id().extension_key)->size());
   ASSERT_EQ(item2_ptr,
             manager_.MenuItems(item2_ptr->id().extension_key)->at(0).get());
-  ASSERT_EQ(0, item2_ptr->child_count());
+  ASSERT_EQ(0u, item2_ptr->children().size());
 }
 
 TEST_F(MenuManagerTest, PopulateFromValue) {
@@ -377,19 +377,19 @@ TEST_F(MenuManagerTest, ChangeParent) {
   MenuItem* item3_ptr = item3.get();
 
   ASSERT_TRUE(manager_.AddChildItem(item1_ptr->id(), std::move(item3)));
-  ASSERT_EQ(1, item1_ptr->child_count());
+  ASSERT_EQ(1u, item1_ptr->children().size());
   ASSERT_EQ(item3_ptr, item1_ptr->children()[0].get());
 
   ASSERT_TRUE(manager_.ChangeParent(item3_ptr->id(), &item2_ptr->id()));
-  ASSERT_EQ(0, item1_ptr->child_count());
-  ASSERT_EQ(1, item2_ptr->child_count());
+  ASSERT_EQ(0u, item1_ptr->children().size());
+  ASSERT_EQ(1u, item2_ptr->children().size());
   ASSERT_EQ(item3_ptr, item2_ptr->children()[0].get());
 
   // Move item2 to be a child of item1.
   ASSERT_TRUE(manager_.ChangeParent(item2_ptr->id(), &item1_ptr->id()));
-  ASSERT_EQ(1, item1_ptr->child_count());
+  ASSERT_EQ(1u, item1_ptr->children().size());
   ASSERT_EQ(item2_ptr, item1_ptr->children()[0].get());
-  ASSERT_EQ(1, item2_ptr->child_count());
+  ASSERT_EQ(1u, item2_ptr->children().size());
   ASSERT_EQ(item3_ptr, item2_ptr->children()[0].get());
 
   // Since item2 was a top-level item but is no longer, we should only have 1
@@ -400,14 +400,14 @@ TEST_F(MenuManagerTest, ChangeParent) {
 
   // Move item3 back to being a child of item1, so it's now a sibling of item2.
   ASSERT_TRUE(manager_.ChangeParent(item3_ptr->id(), &item1_ptr->id()));
-  ASSERT_EQ(2, item1_ptr->child_count());
+  ASSERT_EQ(2u, item1_ptr->children().size());
   ASSERT_EQ(item2_ptr, item1_ptr->children()[0].get());
   ASSERT_EQ(item3_ptr, item1_ptr->children()[1].get());
 
   // Try switching item3 to be the parent of item1 - this should fail.
   ASSERT_FALSE(manager_.ChangeParent(item1_ptr->id(), &item3_ptr->id()));
-  ASSERT_EQ(0, item3_ptr->child_count());
-  ASSERT_EQ(2, item1_ptr->child_count());
+  ASSERT_EQ(0u, item3_ptr->children().size());
+  ASSERT_EQ(2u, item1_ptr->children().size());
   ASSERT_EQ(item2_ptr, item1_ptr->children()[0].get());
   ASSERT_EQ(item3_ptr, item1_ptr->children()[1].get());
   items = manager_.MenuItems(item1_ptr->id().extension_key);
@@ -420,7 +420,7 @@ TEST_F(MenuManagerTest, ChangeParent) {
   ASSERT_EQ(2u, items->size());
   ASSERT_EQ(item1_ptr, items->at(0).get());
   ASSERT_EQ(item2_ptr, items->at(1).get());
-  ASSERT_EQ(1, item1_ptr->child_count());
+  ASSERT_EQ(1u, item1_ptr->children().size());
   ASSERT_EQ(item3_ptr, item1_ptr->children()[0].get());
 
   // Make sure you can't move a node to be a child of another extension's item.
@@ -575,7 +575,7 @@ TEST_F(MenuManagerTest, ExecuteCommand) {
           &profile, base::BindRepeating(&MockEventRouterFactoryFunction)));
 
   content::ContextMenuParams params;
-  params.media_type = blink::WebContextMenuData::kMediaTypeImage;
+  params.media_type = blink::ContextMenuDataMediaType::kImage;
   params.src_url = GURL("http://foo.bar/image.png");
   params.page_url = GURL("http://foo.bar");
   params.selection_text = base::ASCIIToUTF16("Hello World");

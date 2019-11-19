@@ -11,7 +11,7 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/memory/shared_memory.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "ppapi/c/pp_stdint.h"
 #include "ppapi/c/pp_var.h"
 #include "ppapi/proxy/ppapi_proxy_export.h"
@@ -68,12 +68,12 @@ class PPAPI_PROXY_EXPORT PluginVarTracker : public VarTracker {
                                       int pending_browser_id) override;
   ResourceVar* MakeResourceVar(PP_Resource pp_resource) override;
   void DidDeleteInstance(PP_Instance instance) override;
-  int TrackSharedMemoryHandle(PP_Instance instance,
-                              base::SharedMemoryHandle file,
+  int TrackSharedMemoryRegion(PP_Instance instance,
+                              base::UnsafeSharedMemoryRegion region,
                               uint32_t size_in_bytes) override;
-  bool StopTrackingSharedMemoryHandle(int id,
+  bool StopTrackingSharedMemoryRegion(int id,
                                       PP_Instance instance,
-                                      base::SharedMemoryHandle* handle,
+                                      base::UnsafeSharedMemoryRegion* region,
                                       uint32_t* size_in_bytes) override;
 
   // Notification that a plugin-implemented object (PPP_Class) was created by
@@ -106,7 +106,7 @@ class PPAPI_PROXY_EXPORT PluginVarTracker : public VarTracker {
   ArrayBufferVar* CreateArrayBuffer(uint32_t size_in_bytes) override;
   ArrayBufferVar* CreateShmArrayBuffer(
       uint32_t size_in_bytes,
-      base::SharedMemoryHandle handle) override;
+      base::UnsafeSharedMemoryRegion region) override;
 
  private:
   friend struct base::DefaultSingletonTraits<PluginVarTracker>;

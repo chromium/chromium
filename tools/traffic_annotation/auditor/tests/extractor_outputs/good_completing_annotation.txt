@@ -1,5 +1,4 @@
 chrome/service/cloud_print/cloud_print_url_fetcher.cc
-cloud_print::CloudPrintURLFetcher::StartRequestHelper
 265
 Completing
 cloud_print

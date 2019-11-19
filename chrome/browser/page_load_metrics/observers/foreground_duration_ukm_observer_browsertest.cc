@@ -37,7 +37,7 @@ class ForegroundDurationUKMObserverBrowserTest : public InProcessBrowserTest {
     https_test_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
     https_test_server_->SetSSLConfig(cert);
-    https_test_server_->ServeFilesFromSourceDirectory("chrome/test/data");
+    https_test_server_->ServeFilesFromSourceDirectory(GetChromeTestDataDir());
     ASSERT_TRUE(https_test_server_->Start());
   }
   void ExpectMetricCountForUrl(const GURL& url,

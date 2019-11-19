@@ -16,13 +16,13 @@ class Document;
 class Event;
 
 class CORE_EXPORT DeviceSingleWindowEventController
-    : public GarbageCollectedFinalized<DeviceSingleWindowEventController>,
+    : public GarbageCollected<DeviceSingleWindowEventController>,
       public PlatformEventController,
       public LocalDOMWindow::EventListenerObserver {
  public:
   ~DeviceSingleWindowEventController() override;
 
-  // Inherited from DeviceEventControllerBase.
+  // Inherited from PlatformEventController.
   void DidUpdateData() override;
   void Trace(blink::Visitor*) override;
 

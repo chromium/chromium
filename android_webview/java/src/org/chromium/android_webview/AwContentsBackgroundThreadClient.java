@@ -4,6 +4,8 @@
 
 package org.chromium.android_webview;
 
+import org.chromium.base.Log;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 
@@ -13,6 +15,7 @@ import org.chromium.base.annotations.JNINamespace;
  */
 @JNINamespace("android_webview")
 public abstract class AwContentsBackgroundThreadClient {
+    private static final String TAG = "AwBgThreadClient";
 
     public abstract AwWebResourceResponse shouldInterceptRequest(
             AwContentsClient.AwWebResourceRequest request);
@@ -20,10 +23,28 @@ public abstract class AwContentsBackgroundThreadClient {
     // Protected methods ---------------------------------------------------------------------------
 
     @CalledByNative
-    private AwWebResourceResponse shouldInterceptRequestFromNative(String url, boolean isMainFrame,
-            boolean hasUserGesture, String method, String[] requestHeaderNames,
+    private AwWebResourceInterceptResponse shouldInterceptRequestFromNative(String url,
+            boolean isMainFrame, boolean hasUserGesture, String method, String[] requestHeaderNames,
             String[] requestHeaderValues) {
-        return shouldInterceptRequest(new AwContentsClient.AwWebResourceRequest(
-                url, isMainFrame, hasUserGesture, method, requestHeaderNames, requestHeaderValues));
+        try {
+            return new AwWebResourceInterceptResponse(
+                    shouldInterceptRequest(new AwContentsClient.AwWebResourceRequest(url,
+                            isMainFrame, hasUserGesture, method, requestHeaderNames,
+                            requestHeaderValues)),
+                    /*raisedException=*/false);
+        } catch (Exception e) {
+            Log.e(TAG,
+                    "Client raised exception in shouldInterceptRequest. Re-throwing on UI thread.");
+
+            ThreadUtils.getUiThreadHandler().post(new Runnable() {
+                @Override
+                public void run() {
+                    Log.e(TAG, "The following exception was raised by shouldInterceptRequest:");
+                    throw e;
+                }
+            });
+
+            return new AwWebResourceInterceptResponse(null, /*raisedException=*/true);
+        }
     }
 }

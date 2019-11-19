@@ -29,8 +29,6 @@ namespace blink {
 
 class PLATFORM_EXPORT FEOffset final : public FilterEffect {
  public:
-  static FEOffset* Create(Filter*, float dx, float dy);
-
   FEOffset(Filter*, float dx, float dy);
 
   float Dx() const;

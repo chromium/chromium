@@ -10,10 +10,10 @@
 #include "base/macros.h"
 #include "base/scoped_observer.h"
 #import "ios/chrome/browser/tabs/tab_model_list_observer.h"
+#include "ios/chrome/browser/web_state_list/web_state_list.h"
+#include "ios/chrome/browser/web_state_list/web_state_list_observer.h"
 
 @class TabModel;
-class WebStateList;
-class WebStateListObserver;
 
 namespace ios {
 class ChromeBrowserState;

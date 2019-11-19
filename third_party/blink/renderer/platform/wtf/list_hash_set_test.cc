@@ -487,6 +487,7 @@ struct Simple {
 };
 
 struct Complicated {
+  Complicated() : Complicated(0) {}
   Complicated(int value) : simple_(value) { objects_constructed_++; }
 
   Complicated(const Complicated& other) : simple_(other.simple_) {
@@ -495,9 +496,6 @@ struct Complicated {
 
   Simple simple_;
   static int objects_constructed_;
-
- private:
-  Complicated() = delete;
 };
 
 int Complicated::objects_constructed_ = 0;
@@ -730,5 +728,46 @@ TYPED_TEST(ListOrLinkedHashSetMoveOnlyTest, MoveOnlyValue) {
 }
 
 }  // anonymous namespace
+
+// A unit type which objects to its state being initialized wrong.
+struct InvalidZeroValue {
+  InvalidZeroValue() = default;
+  InvalidZeroValue(WTF::HashTableDeletedValueType) : deleted_(true) {}
+  ~InvalidZeroValue() { CHECK(ok_); }
+  bool IsHashTableDeletedValue() const { return deleted_; }
+
+  bool ok_ = true;
+  bool deleted_ = false;
+};
+
+template <>
+struct HashTraits<InvalidZeroValue> : SimpleClassHashTraits<InvalidZeroValue> {
+  static const bool kEmptyValueIsZero = false;
+};
+
+template <>
+struct DefaultHash<InvalidZeroValue> {
+  struct Hash {
+    static unsigned GetHash(const InvalidZeroValue&) { return 0; }
+    static bool Equal(const InvalidZeroValue&, const InvalidZeroValue&) {
+      return true;
+    }
+  };
+};
+
+template <typename Set>
+class ListOrLinkedHashSetInvalidZeroTest : public testing::Test {};
+
+using InvalidZeroValueSetTypes =
+    testing::Types<ListHashSet<InvalidZeroValue>,
+                   ListHashSet<InvalidZeroValue, 1>,
+                   LinkedHashSet<InvalidZeroValue>>;
+TYPED_TEST_SUITE(ListOrLinkedHashSetInvalidZeroTest, InvalidZeroValueSetTypes);
+
+TYPED_TEST(ListOrLinkedHashSetInvalidZeroTest, InvalidZeroValue) {
+  using Set = TypeParam;
+  Set set;
+  set.insert(InvalidZeroValue());
+}
 
 }  // namespace WTF

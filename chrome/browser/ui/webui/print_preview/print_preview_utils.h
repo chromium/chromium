@@ -30,7 +30,7 @@ extern const char kVendorCapabilityKey[];
 // Converts |printer_list| to a base::ListValue form, runs |callback| with the
 // converted list as the argument if it is not empty, and runs |done_callback|.
 void ConvertPrinterListForCallback(
-    const PrinterHandler::AddedPrintersCallback& callback,
+    PrinterHandler::AddedPrintersCallback callback,
     PrinterHandler::GetPrintersDoneCallback done_callback,
     const PrinterList& printer_list);
 

@@ -70,6 +70,9 @@ CORE_EXPORT bool NeedsLayoutTreeUpdate(const PositionInFlatTree&);
 // Returns true if |node| has "user-select:contain".
 bool IsUserSelectContain(const Node& /* node */);
 
+// Returns true if element is input element or has editable style.
+CORE_EXPORT bool IsEditableElement(const Node&);
+
 CORE_EXPORT bool HasEditableStyle(const Node&);
 CORE_EXPORT bool HasRichlyEditableStyle(const Node&);
 CORE_EXPORT bool IsRootEditableElement(const Node&);
@@ -82,10 +85,7 @@ ContainerNode* RootEditableElementOrTreeScopeRootNodeOf(const Position&);
 // <body>. Otherwise, this searches ancestors for the highest editable node in
 // defiance of editing boundaries. This returns a Document if designMode="on"
 // and the specified Position is not in the <body>.
-CORE_EXPORT ContainerNode* HighestEditableRoot(
-    const Position&,
-    Element* (*)(const Position&) = RootEditableElementOf,
-    bool (*)(const Node&) = HasEditableStyle);
+CORE_EXPORT ContainerNode* HighestEditableRoot(const Position&);
 ContainerNode* HighestEditableRoot(const PositionInFlatTree&);
 
 Node* HighestEnclosingNodeOfType(
@@ -167,7 +167,6 @@ bool IsPresentationalHTMLElement(const Node*);
 bool IsRenderedAsNonInlineTableImageOrHR(const Node*);
 bool IsNonTableCellHTMLBlockElement(const Node*);
 bool IsBlockFlowElement(const Node&);
-EUserSelect UsedValueOfUserSelect(const Node&);
 bool IsInPasswordField(const Position&);
 CORE_EXPORT TextDirection DirectionOfEnclosingBlockOf(const Position&);
 CORE_EXPORT TextDirection
@@ -257,7 +256,7 @@ bool IsRichlyEditablePosition(const Position&);
 
 PositionWithAffinity PositionRespectingEditingBoundary(
     const Position&,
-    const LayoutPoint& local_point,
+    const PhysicalOffset& local_point,
     Node* target_node);
 Position ComputePositionForNodeRemoval(const Position&, const Node&);
 

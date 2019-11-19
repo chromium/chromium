@@ -4,9 +4,12 @@
 
 #include <android/input.h>
 #include <stddef.h>
+
 #include <cmath>
+#include <limits>
 
 #include "base/android/jni_android.h"
+#include "base/numerics/math_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/android/motion_event_android.h"
 #include "ui/events/event_constants.h"
@@ -14,37 +17,40 @@
 #include "ui/events/test/scoped_event_test_tick_clock.h"
 
 namespace ui {
+
 class MotionEvent;
 
 namespace {
-const float kPixToDip = 0.5f;
 
-int kAndroidActionButton = 0;
-int kAndroidActionDown = AMOTION_EVENT_ACTION_DOWN;
-int kAndroidActionPointerDown = AMOTION_EVENT_ACTION_POINTER_DOWN;
-int kAndroidAltKeyDown = AMETA_ALT_ON;
+constexpr float kPixToDip = 0.5f;
+
+constexpr int kAndroidActionButton = 0;
+constexpr int kAndroidActionDown = AMOTION_EVENT_ACTION_DOWN;
+constexpr int kAndroidActionPointerDown = AMOTION_EVENT_ACTION_POINTER_DOWN;
+constexpr int kAndroidAltKeyDown = AMETA_ALT_ON;
 
 // Corresponds to TOOL_TYPE_FINGER, see
 // developer.android.com/reference/android/view/MotionEvent.html
 //     #TOOL_TYPE_FINGER.
-int kAndroidToolTypeFinger = 1;
+constexpr int kAndroidToolTypeFinger = 1;
 
 // Corresponds to BUTTON_PRIMARY, see
 // developer.android.com/reference/android/view/MotionEvent.html#BUTTON_PRIMARY.
-int kAndroidButtonPrimary = 1;
+constexpr int kAndroidButtonPrimary = 1;
 
 // This function convert tilt_x and tilt_y back to tilt_rad.
 float ConvertToTiltRad(float tilt_x, float tilt_y) {
-  float tilt_x_r = sin(tilt_x * M_PI / 180.f);
-  float tilt_x_z = cos(tilt_x * M_PI / 180.f);
-  float tilt_y_r = sin(tilt_y * M_PI / 180.f);
-  float tilt_y_z = cos(tilt_y * M_PI / 180.f);
+  float tilt_x_r = sinf(tilt_x * base::kPiFloat / 180.f);
+  float tilt_x_z = cosf(tilt_x * base::kPiFloat / 180.f);
+  float tilt_y_r = sinf(tilt_y * base::kPiFloat / 180.f);
+  float tilt_y_z = cosf(tilt_y * base::kPiFloat / 180.f);
   float r_x = tilt_x_r * tilt_y_z;
   float r_y = tilt_y_r * tilt_x_z;
-  float r = sqrt(r_x * r_x + r_y * r_y);
+  float r = sqrtf(r_x * r_x + r_y * r_y);
   float z = tilt_x_z * tilt_y_z;
-  return atan2(r, z);
+  return atan2f(r, z);
 }
+
 }  // namespace
 
 constexpr float float_error = 0.0001f;
@@ -52,9 +58,9 @@ constexpr float float_error = 0.0001f;
 // we're primarily testing caching behavior, and the code necessary to
 // construct a Java-backed MotionEvent itself adds unnecessary complexity.
 TEST(MotionEventAndroidTest, Constructor) {
-  int event_time_ms = 5;
+  constexpr int kEventTimeMS = 5;
   base::TimeTicks event_time =
-      base::TimeTicks() + base::TimeDelta::FromMilliseconds(event_time_ms);
+      base::TimeTicks() + base::TimeDelta::FromMilliseconds(kEventTimeMS);
   ui::test::ScopedEventTestTickClock clock;
   clock.SetNowTicks(event_time);
 
@@ -68,7 +74,7 @@ TEST(MotionEventAndroidTest, Constructor) {
   int action_index = -1;
   MotionEventAndroid event(
       base::android::AttachCurrentThread(), nullptr, kPixToDip, 0.f, 0.f, 0.f,
-      event_time_ms, kAndroidActionDown, pointer_count, history_size,
+      kEventTimeMS, kAndroidActionDown, pointer_count, history_size,
       action_index, kAndroidActionButton, kAndroidButtonPrimary,
       kAndroidAltKeyDown, raw_offset, -raw_offset, false, &p0, &p1);
 
@@ -121,9 +127,9 @@ TEST(MotionEventAndroidTest, Clone) {
 }
 
 TEST(MotionEventAndroidTest, Cancel) {
-  const int event_time_ms = 5;
+  constexpr const int kEventTimeMS = 5;
   base::TimeTicks event_time =
-      base::TimeTicks() + base::TimeDelta::FromMilliseconds(event_time_ms);
+      base::TimeTicks() + base::TimeDelta::FromMilliseconds(kEventTimeMS);
   ui::test::ScopedEventTestTickClock clock;
   clock.SetNowTicks(event_time);
 
@@ -131,9 +137,9 @@ TEST(MotionEventAndroidTest, Cancel) {
   MotionEventAndroid::Pointer p0(
       1, 13.7f, -7.13f, 5.3f, 1.2f, 0.1f, 0.2f, kAndroidToolTypeFinger);
   MotionEventAndroid event(base::android::AttachCurrentThread(), nullptr,
-                           kPixToDip, 0, 0, 0, event_time_ms,
-                           kAndroidActionDown, pointer_count, 0, 0, 0, 0, 0, 0,
-                           0, false, &p0, nullptr);
+                           kPixToDip, 0, 0, 0, kEventTimeMS, kAndroidActionDown,
+                           pointer_count, 0, 0, 0, 0, 0, 0, 0, false, &p0,
+                           nullptr);
 
   std::unique_ptr<MotionEvent> cancel_event = event.Cancel();
   EXPECT_EQ(MotionEvent::Action::CANCEL, cancel_event->GetAction());
@@ -197,4 +203,4 @@ TEST(MotionEventAndroidTest, ActionIndexForPointerDown) {
   EXPECT_EQ(action_index, event.GetActionIndex());
 }
 
-}  // namespace content
+}  // namespace ui

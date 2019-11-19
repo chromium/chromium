@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>WebLayer Internals</title>
+    <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
+
+    <script src="chrome://resources/js/cr.js"></script>
+    <script src="chrome://resources/js/promise_resolver.js"></script>
+    <script src="chrome://resources/js/util.js"></script>
+    <script src="chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js"></script>
+    <script src="weblayer_internals.mojom-lite.js"></script>
+    <script src="weblayer_internals.js"></script>
+  </head>
+  <body>
+    <h1>WebLayer Internals</h1>
+    <div>
+      <label id="remote-debug-label" hidden>
+        <input type="checkbox" id="remote-debug">
+        Enable remote debugging
+      </label>
+    </div>
+  </body>
+</html>

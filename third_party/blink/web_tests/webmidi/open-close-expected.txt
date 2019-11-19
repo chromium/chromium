@@ -1,4 +1,4 @@
-CONSOLE WARNING: line 59: Web MIDI will ask a permission to use even if the sysex is not specified in the MIDIOptions since M75, around June 2019. See https://www.chromestatus.com/feature/5138066234671104 for more details.
+CONSOLE WARNING: line 59: Web MIDI will ask a permission to use even if the sysex is not specified in the MIDIOptions since M77, around September 2019. See https://www.chromestatus.com/feature/5138066234671104 for more details.
 Tests MIDIPort.open and MIDIPort.close.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".

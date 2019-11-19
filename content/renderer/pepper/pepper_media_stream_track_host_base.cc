@@ -11,6 +11,7 @@
 #include "content/common/pepper_file_util.h"
 #include "content/public/renderer/render_thread.h"
 #include "content/public/renderer/renderer_ppapi_host.h"
+#include "mojo/public/cpp/base/shared_memory_utils.h"
 #include "ppapi/c/pp_errors.h"
 #include "ppapi/host/dispatch_host_message.h"
 #include "ppapi/host/host_message_context.h"
@@ -51,21 +52,19 @@ bool PepperMediaStreamTrackHostBase::InitBuffers(int32_t number_of_buffers,
   if (!size.IsValid())
     return false;
 
-  content::RenderThread* render_thread = content::RenderThread::Get();
-  std::unique_ptr<base::SharedMemory> shm(
-      render_thread->HostAllocateSharedMemoryBuffer(size.ValueOrDie()));
-  if (!shm)
+  base::UnsafeSharedMemoryRegion region =
+      mojo::CreateUnsafeSharedMemoryRegion(size.ValueOrDie());
+  if (!region.IsValid())
     return false;
 
-  base::SharedMemoryHandle shm_handle = shm->handle();
+  SerializedHandle handle(
+      host_->ShareUnsafeSharedMemoryRegionWithRemote(region));
   if (!buffer_manager_.SetBuffers(number_of_buffers,
                                   buffer_size_aligned.ValueOrDie(),
-                                  std::move(shm), true)) {
+                                  std::move(region), true)) {
     return false;
   }
 
-  SerializedHandle handle(host_->ShareSharedMemoryHandleWithRemote(shm_handle),
-                          size.ValueOrDie());
   bool readonly = (track_type == kRead);
   std::vector<SerializedHandle> handles;
   handles.push_back(std::move(handle));

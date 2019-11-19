@@ -113,6 +113,10 @@ UserContext::AuthFlow UserContext::GetAuthFlow() const {
   return auth_flow_;
 }
 
+bool UserContext::IsUsingSamlPrincipalsApi() const {
+  return is_using_saml_principals_api_;
+}
+
 user_manager::UserType UserContext::GetUserType() const {
   return user_type_;
 }
@@ -136,6 +140,11 @@ const std::string& UserContext::GetGAPSCookie() const {
 const base::Optional<password_manager::PasswordHashData>&
 UserContext::GetSyncPasswordData() const {
   return sync_password_data_;
+}
+
+const base::Optional<SamlPasswordAttributes>&
+UserContext::GetSamlPasswordAttributes() const {
+  return saml_password_attributes_;
 }
 
 bool UserContext::HasCredentials() const {
@@ -191,6 +200,11 @@ void UserContext::SetAuthFlow(AuthFlow auth_flow) {
   auth_flow_ = auth_flow;
 }
 
+void UserContext::SetIsUsingSamlPrincipalsApi(
+    bool is_using_saml_principals_api) {
+  is_using_saml_principals_api_ = is_using_saml_principals_api;
+}
+
 void UserContext::SetPublicSessionLocale(const std::string& locale) {
   public_session_locale_ = locale;
 }
@@ -210,6 +224,11 @@ void UserContext::SetGAPSCookie(const std::string& gaps_cookie) {
 void UserContext::SetSyncPasswordData(
     const password_manager::PasswordHashData& sync_password_data) {
   sync_password_data_ = {sync_password_data};
+}
+
+void UserContext::SetSamlPasswordAttributes(
+    const SamlPasswordAttributes& saml_password_attributes) {
+  saml_password_attributes_ = saml_password_attributes;
 }
 
 void UserContext::SetIsUnderAdvancedProtection(

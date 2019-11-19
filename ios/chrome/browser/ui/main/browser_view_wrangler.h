@@ -12,7 +12,9 @@
 @protocol ApplicationCommands;
 @class BrowserCoordinator;
 @class DeviceSharingManager;
-@protocol TabModelObserver;
+@protocol WebStateListObserving;
+
+class AppUrlLoadingService;
 
 namespace ios {
 class ChromeBrowserState;
@@ -30,17 +32,18 @@ class ChromeBrowserState;
 @interface BrowserViewWrangler : NSObject <BrowserInterfaceProvider>
 
 // Initialize a new instance of this class using |browserState| as the primary
-// browser state for the tab models and BVCs, and setting |tabModelObserver|, if
-// not nil, as the tab model delegate for any tab models that are created.
-// |applicationCommandEndpoint| is the object that methods in the
-// ApplicationCommands protocol should be dispatched to by any BVCs that are
-// created. |storageSwitcher| is used to manage changing any storage associated
-// with the interfaces when the current interface changes; this is handled in
-// the implementation of -setCurrentInterface:.
+// browser state for the tab models and BVCs, and setting
+// |WebStateListObserving|, if not nil, as the webStateListObsever for any
+// WebStateLists that are created. |applicationCommandEndpoint| is the object
+// that methods in the ApplicationCommands protocol should be dispatched to by
+// any BVCs that are created. |storageSwitcher| is used to manage changing any
+// storage associated with the interfaces when the current interface changes;
+// this is handled in the implementation of -setCurrentInterface:.
 - (instancetype)initWithBrowserState:(ios::ChromeBrowserState*)browserState
-                    tabModelObserver:(id<TabModelObserver>)tabModelObserver
+                webStateListObserver:(id<WebStateListObserving>)observer
           applicationCommandEndpoint:
               (id<ApplicationCommands>)applicationCommandEndpoint
+                appURLLoadingService:(AppUrlLoadingService*)appURLLoadingService
                      storageSwitcher:
                          (id<BrowserStateStorageSwitching>)storageSwitcher
     NS_DESIGNATED_INITIALIZER;

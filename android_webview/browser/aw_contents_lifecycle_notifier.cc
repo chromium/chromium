@@ -4,7 +4,7 @@
 
 #include "android_webview/browser/aw_contents_lifecycle_notifier.h"
 
-#include "jni/AwContentsLifecycleNotifier_jni.h"
+#include "android_webview/browser_jni_headers/AwContentsLifecycleNotifier_jni.h"
 
 using base::android::AttachCurrentThread;
 

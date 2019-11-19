@@ -19,12 +19,12 @@
 #include "chrome/browser/chromeos/policy/device_local_account.h"
 #include "chrome/browser/chromeos/policy/device_policy_builder.h"
 #include "chrome/browser/chromeos/settings/device_settings_test_helper.h"
-#include "chrome/browser/chromeos/settings/stub_install_attributes.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/settings/cros_settings_names.h"
+#include "chromeos/tpm/stub_install_attributes.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/user_manager/fake_user_manager.h"
@@ -36,22 +36,14 @@ namespace em = enterprise_management;
 
 namespace chromeos {
 
-using ::testing::AtLeast;
-using ::testing::AnyNumber;
-using ::testing::Mock;
 using ::testing::_;
+using ::testing::AnyNumber;
+using ::testing::AtLeast;
+using ::testing::Mock;
 
 namespace {
 
 const char kDisabledMessage[] = "This device has been disabled.";
-
-constexpr em::AutoUpdateSettingsProto_ConnectionType kConnectionTypes[] = {
-    em::AutoUpdateSettingsProto::CONNECTION_TYPE_ETHERNET,
-    em::AutoUpdateSettingsProto::CONNECTION_TYPE_WIFI,
-    em::AutoUpdateSettingsProto::CONNECTION_TYPE_WIMAX,
-    em::AutoUpdateSettingsProto::CONNECTION_TYPE_BLUETOOTH,
-    em::AutoUpdateSettingsProto::CONNECTION_TYPE_CELLULAR,
-};
 
 }  // namespace
 
@@ -194,7 +186,7 @@ class DeviceSettingsProviderTest : public DeviceSettingsTestBase {
   }
 
   void VerifyPolicyValue(const char* policy_key,
-                         const base::Value* const ptr_to_expected_value) {
+                         const base::Value* ptr_to_expected_value) {
     // The pointer might be null, so check before dereferencing.
     if (ptr_to_expected_value)
       EXPECT_EQ(*ptr_to_expected_value, *provider_->Get(policy_key));
@@ -211,19 +203,19 @@ class DeviceSettingsProviderTest : public DeviceSettingsTestBase {
   }
 
   // Helper routine to check value of the LoginScreenDomainAutoComplete policy.
-  void VerifyDomainAutoComplete(
-      const base::Value* const ptr_to_expected_value) {
+  void VerifyDomainAutoComplete(const base::Value* ptr_to_expected_value) {
     VerifyPolicyValue(kAccountsPrefLoginScreenDomainAutoComplete,
                       ptr_to_expected_value);
   }
 
   // Helper routine to set AutoUpdates connection types policy.
-  void SetAutoUpdateConnectionTypes(const std::vector<int>& values) {
+  void SetAutoUpdateConnectionTypes(
+      const std::vector<em::AutoUpdateSettingsProto::ConnectionType>& values) {
     em::AutoUpdateSettingsProto* proto =
         device_policy_->payload().mutable_auto_update_settings();
     proto->set_update_disabled(false);
     for (auto const& value : values) {
-      proto->add_allowed_connection_types(kConnectionTypes[value]);
+      proto->add_allowed_connection_types(value);
     }
     BuildAndInstallDevicePolicy();
   }
@@ -250,6 +242,14 @@ class DeviceSettingsProviderTest : public DeviceSettingsTestBase {
     em::AutoUpdateSettingsProto* proto =
         device_policy_->payload().mutable_auto_update_settings();
     proto->set_disallowed_time_intervals(json_string);
+    BuildAndInstallDevicePolicy();
+  }
+
+  // Helper routine that sets the device DeviceScheduledUpdateCheck policy
+  void SetDeviceScheduledUpdateCheck(const std::string& json_string) {
+    em::DeviceScheduledUpdateCheckProto* proto =
+        device_policy_->payload().mutable_device_scheduled_update_check();
+    proto->set_device_scheduled_update_check_settings(json_string);
     BuildAndInstallDevicePolicy();
   }
 
@@ -281,9 +281,50 @@ class DeviceSettingsProviderTest : public DeviceSettingsTestBase {
 
   // Helper routine that sets the device DeviceWilcoDtcAllowed policy.
   void SetDeviceWilcoDtcAllowedSetting(bool device_wilco_dtc_allowed) {
-    em::DeviceWilcoDtcAllowedProto* const proto =
+    em::DeviceWilcoDtcAllowedProto* proto =
         device_policy_->payload().mutable_device_wilco_dtc_allowed();
     proto->set_device_wilco_dtc_allowed(device_wilco_dtc_allowed);
+    BuildAndInstallDevicePolicy();
+  }
+
+  void SetDeviceDockMacAddressSourceSetting(
+      em::DeviceDockMacAddressSourceProto::Source
+          device_dock_mac_address_source) {
+    em::DeviceDockMacAddressSourceProto* proto =
+        device_policy_->payload().mutable_device_dock_mac_address_source();
+    proto->set_source(device_dock_mac_address_source);
+    BuildAndInstallDevicePolicy();
+  }
+
+  void SetDeviceSecondFactorAuthenticationModeSetting(
+      em::DeviceSecondFactorAuthenticationProto::U2fMode mode) {
+    em::DeviceSecondFactorAuthenticationProto* proto =
+        device_policy_->payload().mutable_device_second_factor_authentication();
+    proto->set_mode(mode);
+    BuildAndInstallDevicePolicy();
+  }
+
+  void SetDevicePowerwashAllowed(bool device_powerwash_allowed) {
+    em::DevicePowerwashAllowedProto* proto =
+        device_policy_->payload().mutable_device_powerwash_allowed();
+    proto->set_device_powerwash_allowed(device_powerwash_allowed);
+    BuildAndInstallDevicePolicy();
+  }
+
+  // Helper routine to set DeviceLoginScreenSystemInfoEnforced policy.
+  void SetSystemInfoEnforced(bool enabled) {
+    em::BooleanPolicyProto* proto =
+        device_policy_->payload()
+            .mutable_device_login_screen_system_info_enforced();
+    proto->set_value(enabled);
+    BuildAndInstallDevicePolicy();
+  }
+
+  void SetShowNumericKeyboardForPassword(bool show_numeric_keyboard) {
+    em::BooleanPolicyProto* proto =
+        device_policy_->payload()
+            .mutable_device_show_numeric_keyboard_for_password();
+    proto->set_value(show_numeric_keyboard);
     BuildAndInstallDevicePolicy();
   }
 
@@ -344,7 +385,7 @@ TEST_F(DeviceSettingsProviderTest, InitializationTestUnowned) {
   EXPECT_CALL(*this, SettingChanged(_)).Times(AnyNumber());
   EXPECT_CALL(*this, SettingChanged(kReleaseChannel)).Times(1);
   base::Value new_value("stable-channel");
-  provider_->Set(kReleaseChannel, new_value);
+  provider_->DoSet(kReleaseChannel, new_value);
   Mock::VerifyAndClearExpectations(this);
 
   // This shouldn't trigger a write.
@@ -387,7 +428,7 @@ TEST_F(DeviceSettingsProviderTest, SetPrefFailed) {
   // If we are not the owner no sets should work.
   base::Value value(true);
   EXPECT_CALL(*this, SettingChanged(kStatsReportingPref)).Times(1);
-  provider_->Set(kStatsReportingPref, value);
+  provider_->DoSet(kStatsReportingPref, value);
   Mock::VerifyAndClearExpectations(this);
 
   // This shouldn't trigger a write.
@@ -412,7 +453,7 @@ TEST_F(DeviceSettingsProviderTest, SetPrefSucceed) {
   base::Value value(true);
   EXPECT_CALL(*this, SettingChanged(_)).Times(AnyNumber());
   EXPECT_CALL(*this, SettingChanged(kStatsReportingPref)).Times(1);
-  provider_->Set(kStatsReportingPref, value);
+  provider_->DoSet(kStatsReportingPref, value);
   Mock::VerifyAndClearExpectations(this);
 
   // Process the store.
@@ -442,9 +483,9 @@ TEST_F(DeviceSettingsProviderTest, SetPrefTwice) {
   EXPECT_CALL(*this, SettingChanged(_)).Times(AnyNumber());
 
   base::Value value1("beta");
-  provider_->Set(kReleaseChannel, value1);
+  provider_->DoSet(kReleaseChannel, value1);
   base::Value value2("dev");
-  provider_->Set(kReleaseChannel, value2);
+  provider_->DoSet(kReleaseChannel, value2);
 
   // Let the changes propagate through the system.
   session_manager_client_.set_device_policy(std::string());
@@ -600,11 +641,12 @@ TEST_F(DeviceSettingsProviderTest, EmptyAllowedConnectionTypesForUpdate) {
   VerifyPolicyValue(kAllowedConnectionTypesForUpdate, nullptr);
 
   // In case of empty list policy should not be set.
-  const std::vector<int> no_values = {};
+  const std::vector<em::AutoUpdateSettingsProto::ConnectionType> no_values = {};
   SetAutoUpdateConnectionTypes(no_values);
   VerifyPolicyValue(kAllowedConnectionTypesForUpdate, nullptr);
 
-  const std::vector<int> single_value = {0};
+  const std::vector<em::AutoUpdateSettingsProto::ConnectionType> single_value =
+      {em::AutoUpdateSettingsProto::CONNECTION_TYPE_ETHERNET};
   // Check some meaningful value. Policy should be set.
   SetAutoUpdateConnectionTypes(single_value);
   base::ListValue allowed_connections;
@@ -690,9 +732,25 @@ TEST_F(DeviceSettingsProviderTest, DeviceAutoUpdateTimeRestrictionsExtra) {
   interval.SetPath({"end", "day_of_week"}, base::Value("Wednesday"));
   interval.SetPath({"end", "hours"}, base::Value(1));
   interval.SetPath({"end", "minutes"}, base::Value(20));
-  test_list.GetList().push_back(std::move(interval));
+  test_list.Append(std::move(interval));
   SetDeviceAutoUpdateTimeRestrictions(extra_field);
   VerifyPolicyValue(kDeviceAutoUpdateTimeRestrictions, &test_list);
+}
+
+// Check valid JSON for DeviceScheduledUpdateCheck.
+TEST_F(DeviceSettingsProviderTest, DeviceScheduledUpdateCheckTests) {
+  const std::string json_string =
+      "{\"update_check_time\": {\"hour\": 23, \"minute\": 35}, "
+      "\"frequency\": \"DAILY\", \"day_of_week\": \"MONDAY\",  "
+      "\"day_of_month\": 15}";
+  base::DictionaryValue expected_val;
+  expected_val.SetPath({"update_check_time", "hour"}, base::Value(23));
+  expected_val.SetPath({"update_check_time", "minute"}, base::Value(35));
+  expected_val.Set("frequency", std::make_unique<base::Value>("DAILY"));
+  expected_val.Set("day_of_week", std::make_unique<base::Value>("MONDAY"));
+  expected_val.Set("day_of_month", std::make_unique<base::Value>(15));
+  SetDeviceScheduledUpdateCheck(json_string);
+  VerifyPolicyValue(kDeviceScheduledUpdateCheck, &expected_val);
 }
 
 TEST_F(DeviceSettingsProviderTest, DecodePluginVmAllowedSetting) {
@@ -730,6 +788,12 @@ TEST_F(DeviceSettingsProviderTest, DeviceRebootAfterUserSignout) {
     base::Value expected_value(PolicyProto::ALWAYS);
     VerifyPolicyValue(kDeviceRebootOnUserSignout, &expected_value);
   }
+
+  {
+    SetDeviceRebootOnUserSignout(PolicyProto::VM_STARTED_OR_ARC_SESSION);
+    base::Value expected_value(PolicyProto::VM_STARTED_OR_ARC_SESSION);
+    VerifyPolicyValue(kDeviceRebootOnUserSignout, &expected_value);
+  }
 }
 
 TEST_F(DeviceSettingsProviderTest, DeviceWilcoDtcAllowedSetting) {
@@ -741,6 +805,85 @@ TEST_F(DeviceSettingsProviderTest, DeviceWilcoDtcAllowedSetting) {
 
   SetDeviceWilcoDtcAllowedSetting(false);
   EXPECT_EQ(base::Value(false), *provider_->Get(kDeviceWilcoDtcAllowed));
+}
+
+TEST_F(DeviceSettingsProviderTest, DeviceDockMacAddressSourceSetting) {
+  // Policy should not be set by default
+  VerifyPolicyValue(kDeviceDockMacAddressSource, nullptr);
+
+  SetDeviceDockMacAddressSourceSetting(
+      em::DeviceDockMacAddressSourceProto::DEVICE_DOCK_MAC_ADDRESS);
+  EXPECT_EQ(base::Value(1), *provider_->Get(kDeviceDockMacAddressSource));
+
+  SetDeviceDockMacAddressSourceSetting(
+      em::DeviceDockMacAddressSourceProto::DEVICE_NIC_MAC_ADDRESS);
+  EXPECT_EQ(base::Value(2), *provider_->Get(kDeviceDockMacAddressSource));
+
+  SetDeviceDockMacAddressSourceSetting(
+      em::DeviceDockMacAddressSourceProto::DOCK_NIC_MAC_ADDRESS);
+  EXPECT_EQ(base::Value(3), *provider_->Get(kDeviceDockMacAddressSource));
+}
+
+TEST_F(DeviceSettingsProviderTest,
+       DeviceSecondFactorAuthenticationModeSetting) {
+  VerifyPolicyValue(kDeviceSecondFactorAuthenticationMode, nullptr);
+
+  SetDeviceSecondFactorAuthenticationModeSetting(
+      em::DeviceSecondFactorAuthenticationProto::UNSET);
+  EXPECT_EQ(base::Value(0),
+            *provider_->Get(kDeviceSecondFactorAuthenticationMode));
+
+  SetDeviceSecondFactorAuthenticationModeSetting(
+      em::DeviceSecondFactorAuthenticationProto::DISABLED);
+  EXPECT_EQ(base::Value(1),
+            *provider_->Get(kDeviceSecondFactorAuthenticationMode));
+
+  SetDeviceSecondFactorAuthenticationModeSetting(
+      em::DeviceSecondFactorAuthenticationProto::U2F);
+  EXPECT_EQ(base::Value(2),
+            *provider_->Get(kDeviceSecondFactorAuthenticationMode));
+
+  SetDeviceSecondFactorAuthenticationModeSetting(
+      em::DeviceSecondFactorAuthenticationProto::U2F_EXTENDED);
+  EXPECT_EQ(base::Value(3),
+            *provider_->Get(kDeviceSecondFactorAuthenticationMode));
+}
+
+TEST_F(DeviceSettingsProviderTest, DevicePowerwashAllowed) {
+  // Policy should not be set by default
+  VerifyPolicyValue(kDevicePowerwashAllowed, nullptr);
+
+  SetDevicePowerwashAllowed(true);
+  EXPECT_EQ(base::Value(true), *provider_->Get(kDevicePowerwashAllowed));
+
+  SetDevicePowerwashAllowed(false);
+  EXPECT_EQ(base::Value(false), *provider_->Get(kDevicePowerwashAllowed));
+}
+
+TEST_F(DeviceSettingsProviderTest, DeviceLoginScreenSystemInfoEnforced) {
+  // Policy should not be set by default
+  VerifyPolicyValue(kDeviceLoginScreenSystemInfoEnforced, nullptr);
+
+  SetSystemInfoEnforced(true);
+  EXPECT_EQ(base::Value(true),
+            *provider_->Get(kDeviceLoginScreenSystemInfoEnforced));
+
+  SetSystemInfoEnforced(false);
+  EXPECT_EQ(base::Value(false),
+            *provider_->Get(kDeviceLoginScreenSystemInfoEnforced));
+}
+
+TEST_F(DeviceSettingsProviderTest, DeviceShowNumericKeyboardForPassword) {
+  // Policy should not be set by default
+  VerifyPolicyValue(kDeviceShowNumericKeyboardForPassword, nullptr);
+
+  SetShowNumericKeyboardForPassword(true);
+  EXPECT_EQ(base::Value(true),
+            *provider_->Get(kDeviceShowNumericKeyboardForPassword));
+
+  SetShowNumericKeyboardForPassword(false);
+  EXPECT_EQ(base::Value(false),
+            *provider_->Get(kDeviceShowNumericKeyboardForPassword));
 }
 
 }  // namespace chromeos

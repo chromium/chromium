@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.customtabs;
 
-import static org.chromium.base.test.util.ScalableTimeout.scaleTimeout;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.support.test.InstrumentationRegistry;
@@ -19,6 +17,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.DeferredStartupHandler;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabTestUtils;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
@@ -30,8 +29,8 @@ import java.util.concurrent.TimeoutException;
  * Custom ActivityTestRule for all instrumentation tests that require a {@link CustomTabActivity}.
  */
 public class CustomTabActivityTestRule extends ChromeActivityTestRule<CustomTabActivity> {
-    protected static final long STARTUP_TIMEOUT_MS = scaleTimeout(5) * 1000;
-    protected static final long LONG_TIMEOUT_MS = scaleTimeout(10) * 1000;
+    protected static final long STARTUP_TIMEOUT_MS = 5L * 1000;
+    protected static final long LONG_TIMEOUT_MS = 10L * 1000;
 
     public CustomTabActivityTestRule() {
         super(CustomTabActivity.class);
@@ -56,7 +55,7 @@ public class CustomTabActivityTestRule extends ChromeActivityTestRule<CustomTabA
      * Start a {@link CustomTabActivity} with given {@link Intent}, and wait till a tab is
      * initialized.
      */
-    public void startCustomTabActivityWithIntent(Intent intent) throws InterruptedException {
+    public void startCustomTabActivityWithIntent(Intent intent) {
         startActivityCompletely(intent);
         waitForActivityNativeInitializationComplete();
         CriteriaHelper.pollUiThread(new Criteria("Tab never selected/initialized.") {
@@ -87,7 +86,7 @@ public class CustomTabActivityTestRule extends ChromeActivityTestRule<CustomTabA
                 CriteriaHelper.DEFAULT_POLLING_INTERVAL);
         Assert.assertNotNull(tab);
         Assert.assertNotNull(tab.getView());
-        Assert.assertTrue(tab.isCurrentlyACustomTab());
+        Assert.assertTrue(TabTestUtils.isCustomTab(tab));
     }
 
     @Override

@@ -10,7 +10,7 @@
 namespace chrome_apps {
 namespace api {
 
-class BrowserOpenTabFunction : public UIThreadExtensionFunction {
+class BrowserOpenTabFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("browser.openTab", BROWSER_OPENTAB)
 

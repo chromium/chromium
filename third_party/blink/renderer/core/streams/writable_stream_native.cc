@@ -5,9 +5,14 @@
 #include "third_party/blink/renderer/core/streams/writable_stream_native.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/core/streams/count_queuing_strategy.h"
 #include "third_party/blink/renderer/core/streams/miscellaneous_operations.h"
+#include "third_party/blink/renderer/core/streams/promise_handler.h"
+#include "third_party/blink/renderer/core/streams/queuing_strategy_init.h"
+#include "third_party/blink/renderer/core/streams/readable_stream_native.h"
 #include "third_party/blink/renderer/core/streams/stream_promise_resolver.h"
-#include "third_party/blink/renderer/core/streams/stream_script_function.h"
+#include "third_party/blink/renderer/core/streams/transferable_streams.h"
+#include "third_party/blink/renderer/core/streams/underlying_sink_base.h"
 #include "third_party/blink/renderer/core/streams/writable_stream_default_controller.h"
 #include "third_party/blink/renderer/core/streams/writable_stream_default_writer.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -29,7 +34,7 @@ namespace blink {
 // The PendingAbortRequest type corresponds to the Record {[[promise]],
 // [[reason]], [[wasAlreadyErroring]]} from the standard.
 class WritableStreamNative::PendingAbortRequest final
-    : public GarbageCollectedFinalized<PendingAbortRequest> {
+    : public GarbageCollected<PendingAbortRequest> {
  public:
   PendingAbortRequest(v8::Isolate* isolate,
                       StreamPromiseResolver* promise,
@@ -52,112 +57,28 @@ class WritableStreamNative::PendingAbortRequest final
   }
 
  private:
-  TraceWrapperMember<StreamPromiseResolver> promise_;
+  Member<StreamPromiseResolver> promise_;
   TraceWrapperV8Reference<v8::Value> reason_;
   const bool was_already_erroring_;
 
   DISALLOW_COPY_AND_ASSIGN(PendingAbortRequest);
 };
 
-WritableStreamNative::WritableStreamNative() = default;
-
-WritableStreamNative::WritableStreamNative(ScriptState* script_state,
-                                           ScriptValue raw_underlying_sink,
-                                           ScriptValue raw_strategy,
-                                           ExceptionState& exception_state) {
-  // The first parts of this constructor correspond to the object conversions
-  // that are implicit in the definition in the standard:
-  // https://streams.spec.whatwg.org/#ws-constructor
-  DCHECK(!raw_underlying_sink.IsEmpty());
-  DCHECK(!raw_strategy.IsEmpty());
-
-  auto context = script_state->GetContext();
-  auto* isolate = script_state->GetIsolate();
-
-  auto underlying_sink_value = raw_underlying_sink.V8Value();
-  if (underlying_sink_value->IsUndefined()) {
-    underlying_sink_value = v8::Object::New(isolate);
-  }
-  v8::TryCatch try_catch(isolate);
-  v8::Local<v8::Object> underlying_sink;
-  if (!underlying_sink_value->ToObject(context).ToLocal(&underlying_sink)) {
-    exception_state.RethrowV8Exception(try_catch.Exception());
-    return;
-  }
-
-  auto strategy_value = raw_strategy.V8Value();
-  if (strategy_value->IsUndefined()) {
-    strategy_value = v8::Object::New(isolate);
-  }
-  v8::Local<v8::Object> strategy;
-  v8::MaybeLocal<v8::Object> strategy_maybe = strategy_value->ToObject(context);
-  if (!strategy_maybe.ToLocal(&strategy)) {
-    exception_state.RethrowV8Exception(try_catch.Exception());
-    return;
-  }
-
-  // 2. Let size be ? GetV(strategy, "size").
-  v8::Local<v8::Value> size;
-  if (!strategy->Get(context, V8AtomicString(isolate, "size")).ToLocal(&size)) {
-    exception_state.RethrowV8Exception(try_catch.Exception());
-    return;
-  }
-
-  // 3. Let highWaterMark be ? GetV(strategy, "highWaterMark").
-  v8::Local<v8::Value> high_water_mark_value;
-  if (!strategy->Get(context, V8AtomicString(isolate, "highWaterMark"))
-           .ToLocal(&high_water_mark_value)) {
-    exception_state.RethrowV8Exception(try_catch.Exception());
-    return;
-  }
-
-  // 4. Let type be ? GetV(underlyingSink, "type").
-  v8::Local<v8::Value> type;
-  if (!underlying_sink->Get(context, V8AtomicString(isolate, "type"))
-           .ToLocal(&type)) {
-    exception_state.RethrowV8Exception(try_catch.Exception());
-    return;
-  }
-
-  // 5. If type is not undefined, throw a RangeError exception.
-  if (!type->IsUndefined()) {
-    exception_state.ThrowRangeError("Invalid type is specified");
-  }
-
-  // 6. Let sizeAlgorithm be ? MakeSizeAlgorithmFromSizeFunction(size).
-  auto* size_algorithm =
-      MakeSizeAlgorithmFromSizeFunction(script_state, size, exception_state);
+WritableStreamNative* WritableStreamNative::Create(
+    ScriptState* script_state,
+    ScriptValue raw_underlying_sink,
+    ScriptValue raw_strategy,
+    ExceptionState& exception_state) {
+  auto* stream = MakeGarbageCollected<WritableStreamNative>();
+  stream->InitInternal(script_state, raw_underlying_sink, raw_strategy,
+                       exception_state);
   if (exception_state.HadException()) {
-    return;
+    return nullptr;
   }
-  DCHECK(size_algorithm);
-
-  // 7. If highWaterMark is undefined, let highWaterMark be 1.
-  double high_water_mark = 1;
-  if (!high_water_mark_value->IsUndefined()) {
-    v8::Local<v8::Number> high_water_mark_as_number;
-    if (!high_water_mark_value->ToNumber(context).ToLocal(
-            &high_water_mark_as_number)) {
-      exception_state.RethrowV8Exception(try_catch.Exception());
-      return;
-    }
-    high_water_mark = high_water_mark_as_number->Value();
-  }
-
-  // 8. Set highWaterMark to ? ValidateAndNormalizeHighWaterMark(highWaterMark).
-  high_water_mark =
-      ValidateAndNormalizeHighWaterMark(high_water_mark, exception_state);
-  if (exception_state.HadException()) {
-    return;
-  }
-
-  // 9. Perform ? SetUpWritableStreamDefaultControllerFromUnderlyingSink(this,
-  //    underlyingSink, highWaterMark, sizeAlgorithm).
-  WritableStreamDefaultController::SetUpFromUnderlyingSink(
-      script_state, this, underlying_sink, high_water_mark, size_algorithm,
-      exception_state);
+  return stream;
 }
 
+WritableStreamNative::WritableStreamNative() = default;
 WritableStreamNative::~WritableStreamNative() = default;
 
 bool WritableStreamNative::locked(ScriptState* script_state,
@@ -169,10 +90,10 @@ bool WritableStreamNative::locked(ScriptState* script_state,
 
 ScriptPromise WritableStreamNative::abort(ScriptState* script_state,
                                           ExceptionState& exception_state) {
-  return abort(
-      script_state,
-      ScriptValue(script_state, v8::Undefined(script_state->GetIsolate())),
-      exception_state);
+  return abort(script_state,
+               ScriptValue(script_state->GetIsolate(),
+                           v8::Undefined(script_state->GetIsolate())),
+               exception_state);
 }
 
 ScriptPromise WritableStreamNative::abort(ScriptState* script_state,
@@ -205,7 +126,7 @@ ScriptValue WritableStreamNative::getWriter(ScriptState* script_state,
   // This call to ToV8() is only reached directly from JavaScript, and so
   // shouldn't be called while the execution context is being shutdown and so
   // shouldn't fail.
-  return ScriptValue(script_state, ToV8(writer, script_state));
+  return ScriptValue(script_state->GetIsolate(), ToV8(writer, script_state));
 }
 
 // General Writable Stream Abstract Operations
@@ -244,6 +165,85 @@ WritableStreamNative* WritableStreamNative::Create(
 
   //  8. Return stream.
   return stream;
+}
+
+// static
+WritableStreamNative* WritableStreamNative::CreateWithCountQueueingStrategy(
+    ScriptState* script_state,
+    UnderlyingSinkBase* underlying_sink,
+    size_t high_water_mark) {
+  // TODO(crbug.com/902633): This method of constructing a WritableStream
+  // introduces unnecessary trips through V8. Implement algorithms based on an
+  // UnderlyingSinkBase.
+  auto* init = QueuingStrategyInit::Create();
+  init->setHighWaterMark(
+      ScriptValue::From(script_state, static_cast<double>(high_water_mark)));
+  auto* strategy = CountQueuingStrategy::Create(script_state, init);
+  ScriptValue strategy_value = ScriptValue::From(script_state, strategy);
+  if (strategy_value.IsEmpty())
+    return nullptr;
+
+  auto underlying_sink_value = ScriptValue::From(script_state, underlying_sink);
+
+  ExceptionState exception_state(script_state->GetIsolate(),
+                                 ExceptionState::kConstructionContext,
+                                 "WritableStream");
+  auto* stream = MakeGarbageCollected<WritableStreamNative>();
+  stream->InitInternal(script_state, underlying_sink_value, strategy_value,
+                       exception_state);
+  if (exception_state.HadException())
+    return nullptr;
+  return stream;
+}
+
+void WritableStreamNative::Serialize(ScriptState* script_state,
+                                     MessagePort* port,
+                                     ExceptionState& exception_state) {
+  if (IsLocked(this)) {
+    exception_state.ThrowTypeError("Cannot transfer a locked stream");
+    return;
+  }
+
+  auto* readable =
+      CreateCrossRealmTransformReadable(script_state, port, exception_state);
+  if (exception_state.HadException()) {
+    return;
+  }
+
+  auto promise = ReadableStreamNative::PipeTo(
+      script_state, readable, this,
+      MakeGarbageCollected<ReadableStreamNative::PipeOptions>());
+  promise.MarkAsHandled();
+}
+
+WritableStreamNative* WritableStreamNative::Deserialize(
+    ScriptState* script_state,
+    MessagePort* port,
+    ExceptionState& exception_state) {
+  // We need to execute JavaScript to call "Then" on v8::Promises. We will not
+  // run author code.
+  v8::Isolate::AllowJavascriptExecutionScope allow_js(
+      script_state->GetIsolate());
+  auto* writable =
+      CreateCrossRealmTransformWritable(script_state, port, exception_state);
+  if (exception_state.HadException()) {
+    return nullptr;
+  }
+  return writable;
+}
+
+WritableStreamDefaultWriter* WritableStreamNative::AcquireDefaultWriter(
+    ScriptState* script_state,
+    WritableStreamNative* stream,
+    ExceptionState& exception_state) {
+  // https://streams.spec.whatwg.org/#acquire-writable-stream-default-writer
+  //  1. Return ? Construct(WritableStreamDefaultWriter, « stream »).
+  auto* writer = MakeGarbageCollected<WritableStreamDefaultWriter>(
+      script_state, stream, exception_state);
+  if (exception_state.HadException()) {
+    return nullptr;
+  }
+  return writer;
 }
 
 v8::Local<v8::Promise> WritableStreamNative::Abort(
@@ -453,14 +453,12 @@ void WritableStreamNative::FinishErroring(ScriptState* script_state,
   auto promise = stream->writable_stream_controller_->AbortSteps(
       script_state, abort_request->Reason(isolate));
 
-  class ResolvePromiseFunction final : public StreamScriptFunction {
+  class ResolvePromiseFunction final : public PromiseHandler {
    public:
     ResolvePromiseFunction(ScriptState* script_state,
                            WritableStreamNative* stream,
                            StreamPromiseResolver* promise)
-        : StreamScriptFunction(script_state),
-          stream_(stream),
-          promise_(promise) {}
+        : PromiseHandler(script_state), stream_(stream), promise_(promise) {}
 
     void CallWithLocal(v8::Local<v8::Value>) override {
       // 13. Upon fulfillment of promise,
@@ -475,22 +473,20 @@ void WritableStreamNative::FinishErroring(ScriptState* script_state,
     void Trace(Visitor* visitor) override {
       visitor->Trace(stream_);
       visitor->Trace(promise_);
-      StreamScriptFunction::Trace(visitor);
+      PromiseHandler::Trace(visitor);
     }
 
    private:
-    TraceWrapperMember<WritableStreamNative> stream_;
-    TraceWrapperMember<StreamPromiseResolver> promise_;
+    Member<WritableStreamNative> stream_;
+    Member<StreamPromiseResolver> promise_;
   };
 
-  class RejectPromiseFunction final : public StreamScriptFunction {
+  class RejectPromiseFunction final : public PromiseHandler {
    public:
     RejectPromiseFunction(ScriptState* script_state,
                           WritableStreamNative* stream,
                           StreamPromiseResolver* promise)
-        : StreamScriptFunction(script_state),
-          stream_(stream),
-          promise_(promise) {}
+        : PromiseHandler(script_state), stream_(stream), promise_(promise) {}
 
     void CallWithLocal(v8::Local<v8::Value> reason) override {
       // 14. Upon rejection of promise with reason reason,
@@ -505,12 +501,12 @@ void WritableStreamNative::FinishErroring(ScriptState* script_state,
     void Trace(Visitor* visitor) override {
       visitor->Trace(stream_);
       visitor->Trace(promise_);
-      StreamScriptFunction::Trace(visitor);
+      PromiseHandler::Trace(visitor);
     }
 
    private:
-    TraceWrapperMember<WritableStreamNative> stream_;
-    TraceWrapperMember<StreamPromiseResolver> promise_;
+    Member<WritableStreamNative> stream_;
+    Member<StreamPromiseResolver> promise_;
   };
 
   StreamThenPromise(script_state->GetContext(), promise,
@@ -742,18 +738,72 @@ void WritableStreamNative::Trace(Visitor* visitor) {
   WritableStream::Trace(visitor);
 }
 
-WritableStreamDefaultWriter* WritableStreamNative::AcquireDefaultWriter(
-    ScriptState* script_state,
-    WritableStreamNative* stream,
-    ExceptionState& exception_state) {
-  // https://streams.spec.whatwg.org/#acquire-writable-stream-default-writer
-  //  1. Return ? Construct(WritableStreamDefaultWriter, « stream »).
-  auto* writer = MakeGarbageCollected<WritableStreamDefaultWriter>(
-      script_state, stream, exception_state);
+// This is not implemented inside the constructor in C++, because calling into
+// JavaScript from the constructor can cause GC problems.
+void WritableStreamNative::InitInternal(ScriptState* script_state,
+                                        ScriptValue raw_underlying_sink,
+                                        ScriptValue raw_strategy,
+                                        ExceptionState& exception_state) {
+  // The first parts of this constructor implementation correspond to the object
+  // conversions that are implicit in the definition in the standard:
+  // https://streams.spec.whatwg.org/#ws-constructor
+  DCHECK(!raw_underlying_sink.IsEmpty());
+  DCHECK(!raw_strategy.IsEmpty());
+
+  auto context = script_state->GetContext();
+  auto* isolate = script_state->GetIsolate();
+
+  v8::Local<v8::Object> underlying_sink;
+  ScriptValueToObject(script_state, raw_underlying_sink, &underlying_sink,
+                      exception_state);
   if (exception_state.HadException()) {
-    return nullptr;
+    return;
   }
-  return writer;
+
+  // 2. Let size be ? GetV(strategy, "size").
+  // 3. Let highWaterMark be ? GetV(strategy, "highWaterMark").
+  StrategyUnpacker strategy_unpacker(script_state, raw_strategy,
+                                     exception_state);
+  if (exception_state.HadException()) {
+    return;
+  }
+
+  // 4. Let type be ? GetV(underlyingSink, "type").
+  v8::TryCatch try_catch(isolate);
+  v8::Local<v8::Value> type;
+  if (!underlying_sink->Get(context, V8AtomicString(isolate, "type"))
+           .ToLocal(&type)) {
+    exception_state.RethrowV8Exception(try_catch.Exception());
+    return;
+  }
+
+  // 5. If type is not undefined, throw a RangeError exception.
+  if (!type->IsUndefined()) {
+    exception_state.ThrowRangeError("Invalid type is specified");
+    return;
+  }
+
+  // 6. Let sizeAlgorithm be ? MakeSizeAlgorithmFromSizeFunction(size).
+  auto* size_algorithm =
+      strategy_unpacker.MakeSizeAlgorithm(script_state, exception_state);
+  if (exception_state.HadException()) {
+    return;
+  }
+  DCHECK(size_algorithm);
+
+  // 7. If highWaterMark is undefined, let highWaterMark be 1.
+  // 8. Set highWaterMark to ? ValidateAndNormalizeHighWaterMark(highWaterMark).
+  double high_water_mark =
+      strategy_unpacker.GetHighWaterMark(script_state, 1, exception_state);
+  if (exception_state.HadException()) {
+    return;
+  }
+
+  // 9. Perform ? SetUpWritableStreamDefaultControllerFromUnderlyingSink(this,
+  //    underlyingSink, highWaterMark, sizeAlgorithm).
+  WritableStreamDefaultController::SetUpFromUnderlyingSink(
+      script_state, this, underlying_sink, high_water_mark, size_algorithm,
+      exception_state);
 }
 
 bool WritableStreamNative::HasOperationMarkedInFlight(
@@ -800,7 +850,6 @@ void WritableStreamNative::RejectCloseAndClosedPromiseIfNeeded(
     writer->ClosedPromise()->MarkAsHandled(isolate);
   }
 }
-
 
 // TODO(ricea): Functions for transferable streams.
 

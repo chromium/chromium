@@ -10,6 +10,10 @@
 
 #include "base/files/file_path.h"
 
+namespace base {
+class SupportsUserData;
+}
+
 // Stores DER certificate bytes and details about where they were read from.
 // This allows decoupling the input file reading from the certificate parsing
 // while retaining useful error messages.
@@ -48,5 +52,8 @@ bool WriteToFile(const base::FilePath& file_path, const std::string& data);
 // Prints an error about the input |cert|. This will include the file the cert
 // was read from, as well as which block in the file if it was a PEM file.
 void PrintCertError(const std::string& error, const CertInput& cert);
+
+// Prints any known debug information from |debug_data|.
+void PrintDebugData(const base::SupportsUserData* debug_data);
 
 #endif  // NET_TOOLS_CERT_VERIFY_TOOL_CERT_VERIFY_TOOL_UTIL_H_

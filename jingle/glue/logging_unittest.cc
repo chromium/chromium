@@ -63,7 +63,7 @@ static bool Initialize(int verbosity_level) {
   // The command line flags are parsed here and the log file name is set.
   logging::LoggingSettings settings;
   settings.logging_dest = logging::LOG_TO_FILE;
-  settings.log_file = log_file_name;
+  settings.log_file_path = log_file_name;
   settings.lock_log = logging::DONT_LOCK_LOG_FILE;
   settings.delete_old = logging::DELETE_OLD_LOG_FILE;
   if (!logging::InitLogging(settings)) {

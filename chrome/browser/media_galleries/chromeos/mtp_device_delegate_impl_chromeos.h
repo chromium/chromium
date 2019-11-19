@@ -24,7 +24,7 @@
 #include "chrome/browser/media_galleries/chromeos/mtp_device_task_helper.h"
 #include "chrome/browser/media_galleries/fileapi/mtp_device_async_delegate.h"
 #include "content/public/browser/browser_thread.h"
-#include "storage/browser/fileapi/async_file_util.h"
+#include "storage/browser/file_system/async_file_util.h"
 
 struct SnapshotRequestInfo;
 
@@ -519,7 +519,7 @@ class MTPDeviceDelegateImplLinux : public MTPDeviceAsyncDelegate {
   FileInfoCache file_info_cache_;
 
   // For callbacks that may run after destruction.
-  base::WeakPtrFactory<MTPDeviceDelegateImplLinux> weak_ptr_factory_;
+  base::WeakPtrFactory<MTPDeviceDelegateImplLinux> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(MTPDeviceDelegateImplLinux);
 };

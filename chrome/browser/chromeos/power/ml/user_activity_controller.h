@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/callback.h"
 #include "chrome/browser/chromeos/power/ml/idle_event_notifier.h"
 #include "chrome/browser/chromeos/power/ml/smart_dim/model_impl.h"
 #include "chrome/browser/chromeos/power/ml/user_activity_manager.h"
@@ -23,6 +24,10 @@ class UserActivityController {
  public:
   UserActivityController();
   ~UserActivityController();
+
+  // Prepares features, makes smart dim decision and returns the result via
+  // |callback|.
+  void ShouldDeferScreenDim(base::OnceCallback<void(bool)> callback);
 
  private:
   std::unique_ptr<IdleEventNotifier> idle_event_notifier_;

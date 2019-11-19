@@ -8,7 +8,7 @@
 #include <stdint.h>
 
 #include "base/macros.h"
-#include "base/memory/shared_memory.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "ppapi/c/pp_instance.h"
 #include "ppapi/shared_impl/host_resource.h"
 #include "ppapi/shared_impl/var.h"
@@ -22,15 +22,16 @@ class HostArrayBufferVar : public ppapi::ArrayBufferVar {
   explicit HostArrayBufferVar(uint32_t size_in_bytes);
   explicit HostArrayBufferVar(const blink::WebArrayBuffer& buffer);
   explicit HostArrayBufferVar(uint32_t size_in_bytes,
-                              base::SharedMemoryHandle handle);
+                              const base::UnsafeSharedMemoryRegion& Region);
 
   // ArrayBufferVar implementation.
   void* Map() override;
   void Unmap() override;
   uint32_t ByteLength() override;
-  bool CopyToNewShmem(PP_Instance instance,
-                      int* host_shm_handle_id,
-                      base::SharedMemoryHandle* plugin_shm_handle) override;
+  bool CopyToNewShmem(
+      PP_Instance instance,
+      int* host_shm_handle_id,
+      base::UnsafeSharedMemoryRegion* plugin_shm_region) override;
 
   blink::WebArrayBuffer& webkit_buffer() { return buffer_; }
 

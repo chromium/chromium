@@ -5,14 +5,16 @@
 
 '''Unit tests for base.Node functionality (as used in various subclasses)'''
 
+from __future__ import print_function
 
 import os
 import sys
 if __name__ == '__main__':
   sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
 
-import StringIO
 import unittest
+
+from six import StringIO
 
 from grit import grd_reader
 from grit import util
@@ -184,7 +186,7 @@ class NodeUnittest(unittest.TestCase):
           </messages>
         </release>
       </grit>'''
-    grd = grd_reader.Parse(StringIO.StringIO(xml),
+    grd = grd_reader.Parse(StringIO(xml),
                            util.PathFromRoot('grit/test/data'))
     from grit.node import node_io
     output_nodes = grd.GetChildrenOfType(node_io.OutputNode)

@@ -20,7 +20,7 @@
 #include "net/socket/socket_posix.h"
 #include "net/socket/unix_domain_server_socket_posix.h"
 #include "net/test/gtest_util.h"
-#include "net/test/test_with_scoped_task_environment.h"
+#include "net/test/test_with_task_environment.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -123,7 +123,7 @@ int WriteSynchronously(StreamSocket* socket,
   return write_buf->BytesConsumed();
 }
 
-class UnixDomainClientSocketTest : public TestWithScopedTaskEnvironment {
+class UnixDomainClientSocketTest : public TestWithTaskEnvironment {
  protected:
   UnixDomainClientSocketTest() {
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());

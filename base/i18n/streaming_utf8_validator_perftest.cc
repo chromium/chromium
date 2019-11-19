@@ -151,7 +151,7 @@ const TestFunctionDescription kTestFunctions[] = {
 // is around 16MB.
 void RunSomeTests(
     const char format[],
-    base::Callback<std::string(size_t length)> construct_test_string,
+    base::RepeatingCallback<std::string(size_t length)> construct_test_string,
     const TestFunctionDescription* test_functions,
     size_t test_count) {
   for (auto length : kTestLengths) {
@@ -171,68 +171,61 @@ void RunSomeTests(
 }
 
 TEST(StreamingUtf8ValidatorPerfTest, OneByteRepeated) {
-  RunSomeTests("%s: bytes=1 repeated length=%d repeat=%d",
-               base::Bind(ConstructRepeatedTestString, kOneByteSeqRangeStart),
-               kTestFunctions,
-               3);
+  RunSomeTests(
+      "%s: bytes=1 repeated length=%d repeat=%d",
+      base::BindRepeating(ConstructRepeatedTestString, kOneByteSeqRangeStart),
+      kTestFunctions, 3);
 }
 
 TEST(StreamingUtf8ValidatorPerfTest, OneByteRange) {
   RunSomeTests("%s: bytes=1 ranged length=%d repeat=%d",
-               base::Bind(ConstructRangedTestString,
-                          kOneByteSeqRangeStart,
-                          kOneByteSeqRangeEnd),
-               kTestFunctions,
-               3);
+               base::BindRepeating(ConstructRangedTestString,
+                                   kOneByteSeqRangeStart, kOneByteSeqRangeEnd),
+               kTestFunctions, 3);
 }
 
 TEST(StreamingUtf8ValidatorPerfTest, TwoByteRepeated) {
-  RunSomeTests("%s: bytes=2 repeated length=%d repeat=%d",
-               base::Bind(ConstructRepeatedTestString, kTwoByteSeqRangeStart),
-               kTestFunctions,
-               2);
+  RunSomeTests(
+      "%s: bytes=2 repeated length=%d repeat=%d",
+      base::BindRepeating(ConstructRepeatedTestString, kTwoByteSeqRangeStart),
+      kTestFunctions, 2);
 }
 
 TEST(StreamingUtf8ValidatorPerfTest, TwoByteRange) {
   RunSomeTests("%s: bytes=2 ranged length=%d repeat=%d",
-               base::Bind(ConstructRangedTestString,
-                          kTwoByteSeqRangeStart,
-                          kTwoByteSeqRangeEnd),
-               kTestFunctions,
-               2);
+               base::BindRepeating(ConstructRangedTestString,
+                                   kTwoByteSeqRangeStart, kTwoByteSeqRangeEnd),
+               kTestFunctions, 2);
 }
 
 TEST(StreamingUtf8ValidatorPerfTest, ThreeByteRepeated) {
   RunSomeTests(
       "%s: bytes=3 repeated length=%d repeat=%d",
-      base::Bind(ConstructRepeatedTestString, kThreeByteSeqRangeStart),
-      kTestFunctions,
-      2);
+      base::BindRepeating(ConstructRepeatedTestString, kThreeByteSeqRangeStart),
+      kTestFunctions, 2);
 }
 
 TEST(StreamingUtf8ValidatorPerfTest, ThreeByteRange) {
-  RunSomeTests("%s: bytes=3 ranged length=%d repeat=%d",
-               base::Bind(ConstructRangedTestString,
-                          kThreeByteSeqRangeStart,
+  RunSomeTests(
+      "%s: bytes=3 ranged length=%d repeat=%d",
+      base::BindRepeating(ConstructRangedTestString, kThreeByteSeqRangeStart,
                           kThreeByteSeqRangeEnd),
-               kTestFunctions,
-               2);
+      kTestFunctions, 2);
 }
 
 TEST(StreamingUtf8ValidatorPerfTest, FourByteRepeated) {
-  RunSomeTests("%s: bytes=4 repeated length=%d repeat=%d",
-               base::Bind(ConstructRepeatedTestString, kFourByteSeqRangeStart),
-               kTestFunctions,
-               2);
+  RunSomeTests(
+      "%s: bytes=4 repeated length=%d repeat=%d",
+      base::BindRepeating(ConstructRepeatedTestString, kFourByteSeqRangeStart),
+      kTestFunctions, 2);
 }
 
 TEST(StreamingUtf8ValidatorPerfTest, FourByteRange) {
-  RunSomeTests("%s: bytes=4 ranged length=%d repeat=%d",
-               base::Bind(ConstructRangedTestString,
-                          kFourByteSeqRangeStart,
+  RunSomeTests(
+      "%s: bytes=4 ranged length=%d repeat=%d",
+      base::BindRepeating(ConstructRangedTestString, kFourByteSeqRangeStart,
                           kFourByteSeqRangeEnd),
-               kTestFunctions,
-               2);
+      kTestFunctions, 2);
 }
 
 }  // namespace

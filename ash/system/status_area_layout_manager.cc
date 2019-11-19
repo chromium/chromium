@@ -40,7 +40,7 @@ void StatusAreaLayoutManager::SetChildBounds(
   // area and the shelf isn't in the process of doing a layout.
   if (child != shelf_widget_->status_area_widget()->GetNativeWindow() ||
       in_layout_) {
-    wm::WmSnapToPixelLayoutManager::SetChildBounds(child, requested_bounds);
+    WmDefaultLayoutManager::SetChildBounds(child, requested_bounds);
     return;
   }
 
@@ -49,7 +49,7 @@ void StatusAreaLayoutManager::SetChildBounds(
   if (requested_bounds == child->GetTargetBounds())
     return;
 
-  wm::WmSnapToPixelLayoutManager::SetChildBounds(child, requested_bounds);
+  WmDefaultLayoutManager::SetChildBounds(child, requested_bounds);
   LayoutStatusArea();
 }
 

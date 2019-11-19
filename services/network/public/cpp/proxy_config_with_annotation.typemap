@@ -11,5 +11,6 @@ deps = [
   "//net:net",
   "//services/network/public/mojom:mojom_shared",
 ]
-type_mappings =
-    [ "network.mojom.ProxyConfigWithAnnotation=net::ProxyConfigWithAnnotation" ]
+type_mappings = [
+  "network.mojom.ProxyConfigWithAnnotation=::net::ProxyConfigWithAnnotation",
+]

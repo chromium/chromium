@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.sessions;
 
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.content_public.browser.WebContents;
 
 /**
@@ -19,8 +20,11 @@ public class SessionTabHelper {
      * @param tab The WebContents to get the tab id for.
      */
     public static int sessionIdForTab(WebContents webContents) {
-        return nativeIdForTab(webContents);
+        return SessionTabHelperJni.get().idForTab(webContents);
     }
 
-    private static native int nativeIdForTab(WebContents webContents);
+    @NativeMethods
+    interface Natives {
+        int idForTab(WebContents webContents);
+    }
 }

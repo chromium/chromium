@@ -5,11 +5,11 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "chrome/android/chrome_jni_headers/CertificateChainHelper_jni.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/ssl_status.h"
 #include "content/public/browser/web_contents.h"
-#include "jni/CertificateChainHelper_jni.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
 

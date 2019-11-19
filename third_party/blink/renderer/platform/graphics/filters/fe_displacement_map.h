@@ -37,11 +37,6 @@ enum ChannelSelectorType {
 
 class PLATFORM_EXPORT FEDisplacementMap final : public FilterEffect {
  public:
-  static FEDisplacementMap* Create(Filter*,
-                                   ChannelSelectorType x_channel_selector,
-                                   ChannelSelectorType y_channel_selector,
-                                   float);
-
   FEDisplacementMap(Filter*,
                     ChannelSelectorType x_channel_selector,
                     ChannelSelectorType y_channel_selector,

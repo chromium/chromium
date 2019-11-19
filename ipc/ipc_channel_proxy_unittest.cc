@@ -8,7 +8,7 @@
 #include <stdint.h>
 #include <memory>
 
-#include "base/message_loop/message_loop.h"
+#include "base/message_loop/message_pump_type.h"
 #include "base/pickle.h"
 #include "base/run_loop.h"
 #include "base/threading/thread.h"
@@ -245,7 +245,7 @@ class IPCChannelProxyTest : public IPCChannelMojoTestBase {
 
     thread_.reset(new base::Thread("ChannelProxyTestServerThread"));
     base::Thread::Options options;
-    options.message_loop_type = base::MessageLoop::TYPE_IO;
+    options.message_pump_type = base::MessagePumpType::IO;
     thread_->StartWithOptions(options);
 
     listener_.reset(new QuitListener());

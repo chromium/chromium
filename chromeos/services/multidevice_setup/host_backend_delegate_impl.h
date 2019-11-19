@@ -90,7 +90,7 @@ class HostBackendDelegateImpl : public HostBackendDelegate,
   // The most-recent snapshot of the host on the back-end.
   base::Optional<multidevice::RemoteDeviceRef> host_from_last_sync_;
 
-  base::WeakPtrFactory<HostBackendDelegateImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<HostBackendDelegateImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(HostBackendDelegateImpl);
 };

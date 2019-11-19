@@ -5,20 +5,20 @@
 package org.chromium.chrome.browser.preferences.password;
 
 import android.app.Activity;
-import android.app.FragmentManager;
 import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.IntDef;
-import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
+
+import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContentUriUtils;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.VisibleForTesting;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.ui.widget.Toast;
 
@@ -113,12 +113,6 @@ public class ExportFlow {
     private Uri mExportFileUri;
 
     /**
-     * Just before the exporting flow requests the passwords to be serialized by the native code,
-     * this timestamp is assigned the result of System.currentTimeMillis().
-     */
-    private long mExportPreparationStart;
-
-    /**
      * The number of password entries contained in the most recent serialized data for password
      * export. The null value indicates that serialization has not completed since the last request
      * (or there was no request at all).
@@ -158,12 +152,7 @@ public class ExportFlow {
 
     // Takes care of displaying and hiding the progress bar for exporting, while avoiding
     // flickering.
-    private final DialogManager mProgressBarManager =
-            new DialogManager((@DialogManager.HideActions int action) -> {
-                RecordHistogram.recordEnumeratedHistogram(
-                        "PasswordManager.Android.ExportPasswordsProgressBarUsage",
-                        actionToHistogramValue(action), PROGRESS_COUNT);
-            });
+    private final DialogManager mProgressBarManager = new DialogManager(null);
 
     /**
      * If an error dialog should be shown, this contains the arguments for it, such as the error
@@ -268,12 +257,6 @@ public class ExportFlow {
                     R.string.try_again, HistogramExportResult.WRITE_FAILED);
             return;
         }
-        // Record the time it took to read and serialize the passwords. This
-        // excludes the time to write them into a file, to be consistent with
-        // desktop (where writing is blocked on the user choosing a file
-        // destination).
-        RecordHistogram.recordMediumTimesHistogram("PasswordManager.TimeReadingExportedPasswords",
-                System.currentTimeMillis() - mExportPreparationStart);
 
         tryExporting();
     }
@@ -302,8 +285,6 @@ public class ExportFlow {
         // reauthenticating and reading the warning message. If the user cancels the export or
         // fails the reauthentication, the serialized passwords will simply get ignored when
         // they arrive.
-        mExportPreparationStart = System.currentTimeMillis();
-
         mEntriesCount = null;
         PasswordManagerHandlerProvider.getInstance().getPasswordManagerHandler().serializePasswords(
                 getTargetDirectory(),
@@ -357,11 +338,6 @@ public class ExportFlow {
                             } else {
                                 tryExporting();
                             }
-                        } else if (which == AlertDialog.BUTTON_NEGATIVE) {
-                            RecordHistogram.recordEnumeratedHistogram(
-                                    "PasswordManager.ExportPasswordsToCSVResult",
-                                    HistogramExportResult.USER_ABORTED,
-                                    HistogramExportResult.NUM_ENTRIES);
                         }
                     }
 
@@ -407,10 +383,6 @@ public class ExportFlow {
                         public void onClick(DialogInterface dialog, int which) {
                             if (which == AlertDialog.BUTTON_NEGATIVE) {
                                 mExportState = ExportState.INACTIVE;
-                                RecordHistogram.recordEnumeratedHistogram(
-                                        "PasswordManager.ExportPasswordsToCSVResult",
-                                        HistogramExportResult.USER_ABORTED,
-                                        HistogramExportResult.NUM_ENTRIES);
                             }
                         }
                     });
@@ -443,9 +415,6 @@ public class ExportFlow {
     public void showExportErrorAndAbortImmediately(int descriptionId,
             @Nullable String detailedDescription, int positiveButtonLabelId,
             @HistogramExportResult int histogramExportResult) {
-        RecordHistogram.recordEnumeratedHistogram("PasswordManager.ExportPasswordsToCSVResult",
-                histogramExportResult, HistogramExportResult.NUM_ENTRIES);
-
         mErrorDialogParams = new ExportErrorDialogFragment.ErrorDialogParams();
         mErrorDialogParams.positiveButtonLabelId = positiveButtonLabelId;
         mErrorDialogParams.description =
@@ -518,10 +487,6 @@ public class ExportFlow {
             Intent chooser = Intent.createChooser(send, null);
             chooser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             ContextUtils.getApplicationContext().startActivity(chooser);
-            RecordHistogram.recordEnumeratedHistogram("PasswordManager.ExportPasswordsToCSVResult",
-                    HistogramExportResult.SUCCESS, HistogramExportResult.NUM_ENTRIES);
-            RecordHistogram.recordCountHistogram(
-                    "PasswordManager.ExportedPasswordsPerUserInCSV", mEntriesCount);
         } catch (ActivityNotFoundException e) {
             showExportErrorAndAbort(R.string.save_password_preferences_export_no_app, null,
                     R.string.save_password_preferences_export_learn_google_drive,
@@ -545,9 +510,6 @@ public class ExportFlow {
                 if (mExportWarningDialogFragment == null) exportAfterReauth();
             } else {
                 if (mExportWarningDialogFragment != null) mExportWarningDialogFragment.dismiss();
-                RecordHistogram.recordEnumeratedHistogram(
-                        "PasswordManager.ExportPasswordsToCSVResult",
-                        HistogramExportResult.USER_ABORTED, HistogramExportResult.NUM_ENTRIES);
                 mExportState = ExportState.INACTIVE;
             }
         }

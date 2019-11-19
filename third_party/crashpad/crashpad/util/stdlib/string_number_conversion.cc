@@ -97,15 +97,34 @@ struct StringToUnsignedIntTraits
   }
 };
 
-struct StringToInt64Traits
-    : public StringToSignedIntegerTraits<int64_t, int64_t> {
+struct StringToLongTraits
+    : public StringToSignedIntegerTraits<long, long long> {
   static LongType Convert(const char* str, char** end, int base) {
     return strtoll(str, end, base);
   }
 };
 
-struct StringToUnsignedInt64Traits
-    : public StringToUnsignedIntegerTraits<uint64_t, uint64_t> {
+struct StringToUnsignedLongTraits
+    : public StringToUnsignedIntegerTraits<unsigned long, unsigned long long> {
+  static LongType Convert(const char* str, char** end, int base) {
+    if (str[0] == '-') {
+      *end = const_cast<char*>(str);
+      return 0;
+    }
+    return strtoull(str, end, base);
+  }
+};
+
+struct StringToLongLongTraits
+    : public StringToSignedIntegerTraits<long long, long long> {
+  static LongType Convert(const char* str, char** end, int base) {
+    return strtoll(str, end, base);
+  }
+};
+
+struct StringToUnsignedLongLongTraits
+    : public StringToUnsignedIntegerTraits<unsigned long long,
+                                           unsigned long long> {
   static LongType Convert(const char* str, char** end, int base) {
     if (str[0] == '-') {
       *end = const_cast<char*>(str);
@@ -136,7 +155,7 @@ bool StringToIntegerInternal(const std::string& string,
       end != string.data() + string.length()) {
     return false;
   }
-  *number = result;
+  *number = static_cast<IntType>(result);
   return true;
 }
 
@@ -152,12 +171,21 @@ bool StringToNumber(const std::string& string, unsigned int* number) {
   return StringToIntegerInternal<StringToUnsignedIntTraits>(string, number);
 }
 
-bool StringToNumber(const std::string& string, int64_t* number) {
-  return StringToIntegerInternal<StringToInt64Traits>(string, number);
+bool StringToNumber(const std::string& string, long* number) {
+  return StringToIntegerInternal<StringToLongTraits>(string, number);
 }
 
-bool StringToNumber(const std::string& string, uint64_t* number) {
-  return StringToIntegerInternal<StringToUnsignedInt64Traits>(string, number);
+bool StringToNumber(const std::string& string, unsigned long* number) {
+  return StringToIntegerInternal<StringToUnsignedLongTraits>(string, number);
+}
+
+bool StringToNumber(const std::string& string, long long* number) {
+  return StringToIntegerInternal<StringToLongLongTraits>(string, number);
+}
+
+bool StringToNumber(const std::string& string, unsigned long long* number) {
+  return StringToIntegerInternal<StringToUnsignedLongLongTraits>(string,
+                                                                 number);
 }
 
 }  // namespace crashpad

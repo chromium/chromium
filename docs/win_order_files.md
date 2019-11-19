@@ -83,7 +83,7 @@ To update the order files:
 
     ```shell
     cd chrome\build\
-    upload_to_google_storage.py -b chromium-browser-clang/orderfiles chrome.x64.orderfile chrome.x86.orderfile chrome_child.x64.orderfile chrome_child.x86.orderfile
+    upload_to_google_storage.py -b chromium-browser-clang/orderfiles -z orderfile chrome.x64.orderfile chrome.x86.orderfile chrome_child.x64.orderfile chrome_child.x86.orderfile
     gsutil.py setacl public-read gs://chromium-browser-clang/orderfiles/*
     ```
 

@@ -10,17 +10,16 @@ namespace chromeos {
 namespace input_method {
 
 namespace {
-InputMethodManager* g_input_method_manager = NULL;
+InputMethodManager* g_input_method_manager = nullptr;
 }
 
-InputMethodManager::State::~State() {
-}
+InputMethodManager::State::~State() = default;
 
-InputMethodManager::MenuItem::MenuItem() {}
+InputMethodManager::MenuItem::MenuItem() = default;
 
 InputMethodManager::MenuItem::MenuItem(const MenuItem& other) = default;
 
-InputMethodManager::MenuItem::~MenuItem() {}
+InputMethodManager::MenuItem::~MenuItem() = default;
 
 // static
 InputMethodManager* InputMethodManager::Get() {
@@ -38,7 +37,7 @@ void InputMethodManager::Shutdown() {
   DCHECK(g_input_method_manager)
       << "InputMethodManager() is not initialized.";
   delete g_input_method_manager;
-  g_input_method_manager = NULL;
+  g_input_method_manager = nullptr;
 }
 
 }  // namespace input_method

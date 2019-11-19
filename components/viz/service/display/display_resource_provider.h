@@ -6,8 +6,11 @@
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_DISPLAY_RESOURCE_PROVIDER_H_
 
 #include <stddef.h>
+
 #include <map>
+#include <memory>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -20,14 +23,14 @@
 #include "components/viz/common/resources/return_callback.h"
 #include "components/viz/common/resources/shared_bitmap.h"
 #include "components/viz/common/resources/transferable_resource.h"
-#include "components/viz/service/display/overlay_candidate.h"
+#include "components/viz/service/display/external_use_client.h"
 #include "components/viz/service/display/resource_fence.h"
-#include "components/viz/service/display/resource_metadata.h"
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "third_party/khronos/GLES2/gl2.h"
 #include "third_party/khronos/GLES2/gl2ext.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace gfx {
@@ -41,9 +44,9 @@ class GLES2Interface;
 }  // namespace gpu
 
 namespace viz {
+
 class ContextProvider;
 class SharedBitmapManager;
-class SkiaOutputSurface;
 
 // This class provides abstractions for receiving and using resources from other
 // modules/threads/processes. It abstracts away GL textures vs GpuMemoryBuffers
@@ -80,7 +83,6 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
                     base::trace_event::ProcessMemoryDump* pmd) override;
 
-#if defined(OS_ANDROID)
   // Send an overlay promotion hint to all resources that requested it via
   // |requestor_set|.  |promotable_hints| contains all the resources that should
   // be told that they're promotable.  Others will be told that they're not.
@@ -91,15 +93,19 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
   // to the requestor; the resource might be overlayable except that nobody
   // tried to do it.
   void SendPromotionHints(
-      const OverlayCandidateList::PromotionHintInfoMap& promotion_hints,
+      const std::map<ResourceId, gfx::RectF>& promotion_hints,
       const ResourceIdSet& requestor_set);
 
+#if defined(OS_ANDROID)
   // Indicates if this resource is backed by an Android SurfaceTexture, and thus
   // can't really be promoted to an overlay.
   bool IsBackedBySurfaceTexture(ResourceId id);
 
   // Return the number of resources that request promotion hints.
   size_t CountPromotionHintRequestsForTesting();
+
+  // This should be called after WaitSyncToken in GLRenderer.
+  void InitializePromotionHintRequest(ResourceId id);
 #endif
 
   // Indicates if this resource wants to receive promotion hints.
@@ -112,6 +118,7 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
   GLenum GetResourceTextureTarget(ResourceId id);
   // Return the format of the underlying buffer that can be used for scanout.
   gfx::BufferFormat GetBufferFormat(ResourceId id);
+  ResourceFormat GetResourceFormat(ResourceId id);
   const gfx::ColorSpace& GetColorSpace(ResourceId id);
   // Indicates if this resource may be used for a hardware overlay plane.
   bool IsOverlayCandidate(ResourceId id);
@@ -176,10 +183,12 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
    public:
     ScopedReadLockSkImage(DisplayResourceProvider* resource_provider,
                           ResourceId resource_id,
-                          SkAlphaType alpha_type = kPremul_SkAlphaType);
+                          SkAlphaType alpha_type = kPremul_SkAlphaType,
+                          GrSurfaceOrigin origin = kTopLeft_GrSurfaceOrigin);
     ~ScopedReadLockSkImage();
 
     const SkImage* sk_image() const { return sk_image_.get(); }
+    sk_sp<SkImage> TakeSkImage() { return std::move(sk_image_); }
 
     bool valid() const { return !!sk_image_; }
 
@@ -191,6 +200,28 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
     DISALLOW_COPY_AND_ASSIGN(ScopedReadLockSkImage);
   };
 
+ private:
+  // Forward declared for LockSetForExternalUse below.
+  struct ChildResource;
+
+ public:
+  // Lock the resource to make sure the shared image is alive when accessing
+  // SharedImage Mailbox.
+  class VIZ_SERVICE_EXPORT ScopedReadLockSharedImage {
+   public:
+    ScopedReadLockSharedImage(DisplayResourceProvider* resource_provider,
+                              ResourceId resource_id);
+    ~ScopedReadLockSharedImage();
+
+    gpu::Mailbox mailbox() const;
+    gpu::SyncToken sync_token() const;
+
+   private:
+    DisplayResourceProvider* const resource_provider_;
+    const ResourceId resource_id_;
+    ChildResource* const resource_;
+  };
+
   // Maintains set of resources locked for external use by SkiaRenderer.
   class VIZ_SERVICE_EXPORT LockSetForExternalUse {
    public:
@@ -198,25 +229,23 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
     // |resource_provider|. Both |resource_provider| and |client| outlive this
     // class.
     LockSetForExternalUse(DisplayResourceProvider* resource_provider,
-                          SkiaOutputSurface* client);
+                          ExternalUseClient* client);
     ~LockSetForExternalUse();
 
-    // Lock a resource for external use.
-    ResourceMetadata LockResource(ResourceId resource_id);
+    // Lock a resource for external use. The return value was created by
+    // |client| at some point in the past.
+    ExternalUseClient::ImageContext* LockResource(ResourceId resource_id,
+                                                  bool is_video_plane = false);
 
-    // Lock a resource and create a SkImage from it by using
-    // Client::CreateImage.
-    sk_sp<SkImage> LockResourceAndCreateSkImage(ResourceId resource_id,
-                                                SkAlphaType alpha_type);
-
-    // Unlock all locked resources with a |sync_token|.
-    // See UnlockForExternalUse for the detail. All resources must be unlocked
-    // before destroying this class.
+    // Unlock all locked resources with a |sync_token|.  The |sync_token| should
+    // be waited on before reusing the resource's backing to ensure that any
+    // external use of it is completed. This |sync_token| should have been
+    // verified.  All resources must be unlocked before destroying this class.
     void UnlockResources(const gpu::SyncToken& sync_token);
 
    private:
     DisplayResourceProvider* const resource_provider_;
-    std::vector<ResourceId> resources_;
+    std::vector<std::pair<ResourceId, ChildResource*>> resources_;
 
     DISALLOW_COPY_AND_ASSIGN(LockSetForExternalUse);
   };
@@ -242,7 +271,6 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
     // ResourceFence implementation.
     void Set() override;
     bool HasPassed() override;
-    void Wait() override;
 
     // Returns true if fence has been set but not yet synchornized.
     bool has_synchronized() const { return has_synchronized_; }
@@ -391,6 +419,8 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
     // When true, the resource is currently being used externally. This is a
     // parallel counter to |lock_for_read_count| which can only go to 1.
     bool locked_for_external_use = false;
+    // The number of active users using this resource as overlay content.
+    int lock_for_overlay_count = 0;
 
     // When the resource should be deleted until it is actually reaped.
     bool marked_for_deletion = false;
@@ -416,6 +446,10 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
     // to the service, and in the GL drawing code before reading from the
     // texture.
     scoped_refptr<ResourceFence> read_lock_fence;
+
+    // SkiaRenderer specific details about this resource. Added to ChildResource
+    // to avoid map lookups further down the pipeline.
+    std::unique_ptr<ExternalUseClient::ImageContext> image_context;
 
    private:
     // Tracks if a sync token needs to be waited on before using the resource.
@@ -450,16 +484,7 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
   const ChildResource* LockForRead(ResourceId id);
   void UnlockForRead(ResourceId id);
 
-  // Lock a resource for external use.
-  ResourceMetadata LockForExternalUse(ResourceId id);
-
-  // Unlock a resource which locked by LockForExternalUse.
-  // The |sync_token| should be waited on before reusing the resouce's backing
-  // to ensure that any external use of it is completed. This |sync_token|
-  // should have been verified.
-  void UnlockForExternalUse(ResourceId id, const gpu::SyncToken& sync_token);
-
-  void TryReleaseResource(ResourceMap::iterator it);
+  void TryReleaseResource(ResourceId id, ChildResource* resource);
   // Binds the given GL resource to a texture target for sampling using the
   // specified filter for both minification and magnification. Returns the
   // texture target used. The resource must be locked for reading.
@@ -485,8 +510,8 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
   ResourceMap resources_;
   ChildMap children_;
   base::flat_map<ResourceId, sk_sp<SkImage>> resource_sk_images_;
-  // If set, all |resource_sk_images_| were created with this client.
-  SkiaOutputSurface* external_use_client_ = nullptr;
+  // Used to release resources held by an external consumer.
+  ExternalUseClient* external_use_client_ = nullptr;
 
   base::flat_map<int, std::vector<ResourceId>> batched_returning_resources_;
   scoped_refptr<ResourceFence> current_read_lock_fence_;

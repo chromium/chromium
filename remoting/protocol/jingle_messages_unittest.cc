@@ -405,28 +405,6 @@ TEST(JingleMessageTest, SessionInfo) {
               jingle_xmpp::QName("urn:xmpp:jingle:1", "test-info"));
 }
 
-TEST(JingleMessageTest, IgnoreInvalidAddress) {
-  const char* kInvalidFromField =
-      "<cli:iq from='evil@gmail.com' "
-              "to='victim@gmail.com/chromiumsy5C6A652D' type='set' "
-              "xmlns:cli='jabber:client'>"
-        "<jingle action='session-info' "
-                "sid='2227053353' xmlns='urn:xmpp:jingle:1' "
-                "from-channel='lcs' "
-                "from-endpoint-id='victim@gmail.com/evilAddress'>"
-          "<test-info>TestMessage</test-info>"
-        "</jingle>"
-      "</cli:iq>";
-
-  std::unique_ptr<XmlElement> xml(XmlElement::ForStr(kInvalidFromField));
-  ASSERT_TRUE(xml.get());
-  EXPECT_TRUE(JingleMessage::IsJingleMessage(xml.get()));
-  JingleMessage message;
-  std::string error;
-  EXPECT_FALSE(message.ParseXml(xml.get(), &error));
-  EXPECT_TRUE(message.from.empty());
-}
-
 TEST(JingleMessageReplyTest, ToXml) {
   const char* kTestIncomingMessage1 =
       "<cli:iq from='user@gmail.com/chromoting016DBB07' id='4' "
@@ -436,9 +414,8 @@ TEST(JingleMessageReplyTest, ToXml) {
       "</reason></jingle></cli:iq>";
   const char* kTestIncomingMessage2 =
       "<cli:iq from='remoting@bot.talk.google.com' id='4' "
-      "to='user@gmail.com/chromiumsy5C6A652D' type='set' "
+      "to='user@gmail.com/chromoting_ftl_5C6A652D' type='set' "
       "xmlns:cli='jabber:client'><jingle action='session-terminate' "
-      "from-channel='lcs' from-endpoint-id='from@gmail.com/AbCdEf1234=' "
       "sid='2227053353' xmlns='urn:xmpp:jingle:1'><reason><success/>"
       "</reason></jingle></cli:iq>";
 
@@ -494,15 +471,13 @@ TEST(JingleMessageReplyTest, ToXml) {
        "<iq xmlns='jabber:client' "
        "to='remoting@bot.talk.google.com' id='4' "
        "type='error'><jingle "
-       "action='session-terminate' sid='2227053353' xmlns='urn:xmpp:jingle:1' "
-       "from-channel='lcs' from-endpoint-id='from@gmail.com/AbCdEf1234='>"
+       "action='session-terminate' sid='2227053353' xmlns='urn:xmpp:jingle:1'>"
        "<reason><success/></reason></jingle><error type='modify'>"
        "<item-not-found/><text xml:lang='en'>ErrorText</text></error></iq>",
        kTestIncomingMessage2},
       {JingleMessageReply::NONE, "",
        "<iq xmlns='jabber:client' to='remoting@bot.talk.google.com' id='4' "
-       "type='result'><jingle xmlns='urn:xmpp:jingle:1' to-channel='lcs' "
-       "to-endpoint-id='from@gmail.com/AbCdEf1234='/></iq>",
+       "type='result'><jingle xmlns='urn:xmpp:jingle:1'/></iq>",
        kTestIncomingMessage2},
   };
 

@@ -15,7 +15,7 @@
 #include "third_party/blink/renderer/platform/animation/compositor_animation_delegate.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
@@ -31,7 +31,7 @@ class CompositorKeyframeModel;
 // See ScrollAnimator.h for more information about scroll animations.
 
 class CORE_EXPORT ScrollAnimatorCompositorCoordinator
-    : public GarbageCollectedFinalized<ScrollAnimatorCompositorCoordinator>,
+    : public GarbageCollected<ScrollAnimatorCompositorCoordinator>,
       private CompositorAnimationClient,
       CompositorAnimationDelegate {
   DISALLOW_COPY_AND_ASSIGN(ScrollAnimatorCompositorCoordinator);
@@ -123,7 +123,6 @@ class CORE_EXPORT ScrollAnimatorCompositorCoordinator
     return impl_only_animation_adjustment_;
   }
 
-  void ResetAnimationIds();
   bool AddAnimation(std::unique_ptr<CompositorKeyframeModel>);
   void RemoveAnimation();
   virtual void AbortAnimation();
@@ -159,6 +158,7 @@ class CORE_EXPORT ScrollAnimatorCompositorCoordinator
   CompositorAnimation* GetCompositorAnimation() const override;
 
   friend class Internals;
+  friend class TestScrollAnimator;
   // TODO(ymalik): Tests are added as friends to access m_RunState. Use the
   // runStateForTesting accessor instead.
   FRIEND_TEST_ALL_PREFIXES(ScrollAnimatorTest, MainThreadStates);
@@ -166,14 +166,17 @@ class CORE_EXPORT ScrollAnimatorCompositorCoordinator
   FRIEND_TEST_ALL_PREFIXES(ScrollAnimatorTest, CancellingAnimationResetsState);
   FRIEND_TEST_ALL_PREFIXES(ScrollAnimatorTest, CancellingCompositorAnimation);
   FRIEND_TEST_ALL_PREFIXES(ScrollAnimatorTest, ImplOnlyAnimationUpdatesCleared);
+  FRIEND_TEST_ALL_PREFIXES(ScrollAnimatorTest,
+                           UserScrollCallBackAtAnimationFinishOnMainThread);
+  FRIEND_TEST_ALL_PREFIXES(ScrollAnimatorTest,
+                           UserScrollCallBackAtAnimationFinishOnCompositor);
 
   std::unique_ptr<CompositorAnimation> compositor_animation_;
   // The element id to which the compositor animation is attached when
   // the animation is present.
   CompositorElementId element_id_;
   RunState run_state_;
-  int compositor_animation_id_;
-  int compositor_animation_group_id_;
+  int compositor_animation_id() const { return compositor_animation_id_; }
 
   // An adjustment to the scroll offset on the main thread that may affect
   // impl-only scroll offset animations.
@@ -191,6 +194,9 @@ class CORE_EXPORT ScrollAnimatorCompositorCoordinator
   // Accesses compositing state and should only be called when in or after
   // DocumentLifecycle::LifecycleState::CompositingClean.
   void TakeOverImplOnlyScrollOffsetAnimation();
+
+  int compositor_animation_id_;
+  int compositor_animation_group_id_;
 };
 
 }  // namespace blink

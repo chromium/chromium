@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/dialog_parent_view">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/dialog_container_view"
+        android:background="@drawable/tab_grid_dialog_background">
+        <!-- Ignore useless parents here for two reasons:
+        1. Content recyclerView and toolbar view will be added programmatically later.
+        2. We need to keep the LinearLayout so that we can animate the ungroup textView and shadow
+        imageView together. -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/dialog_ungroup_bar"
+            android:orientation="vertical"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:visibility="invisible"
+            tools:ignore="UselessParent">
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/toolbar_shadow_height"
+                android:src="@drawable/modern_toolbar_shadow"
+                android:scaleType="fitXY"
+                android:scaleY="-1"
+                android:tint="@color/ungroup_bar_shadow_color"
+                tools:ignore="ContentDescription" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/bottom_sheet_peek_height"
+                android:id="@+id/dialog_ungroup_bar_text"
+                android:text="@string/tab_grid_dialog_remove_from_group"
+                android:background="@drawable/ungroup_bar_background"
+                android:gravity="center" />
+        </LinearLayout>
+    </RelativeLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/dialog_frame"
+        android:background="@drawable/tab_grid_dialog_background">
+    </View>
+    <FrameLayout
+        android:id="@+id/dialog_animation_card_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <include layout="@layout/tab_grid_card_item"/>
+    </FrameLayout>
+</FrameLayout>

@@ -1,22 +1,24 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <html>
 <head>
-<script src="../../resources/js-test.js"></script>
+<title>ownerDocument of Attr should be set on setAttributeNode</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
 </head>
 <body>
 <iframe></iframe>
 <div id="toBeMoved"></div>
 <script>
-description("ownerDocument of Attr should be set on setAttributeNode");
 elementToBeMoved = document.getElementById("toBeMoved");
 iframeElement = document.getElementsByTagName("iframe")[0];
 iframeDocument = iframeElement.contentWindow.document;
 attr = iframeDocument.createAttribute("foo");
-shouldBe("attr.ownerDocument", "iframeDocument")
+assert_equals(attr.ownerDocument, iframeDocument);
 elementToBeMoved.setAttributeNode(attr);
-shouldBe("attr.ownerDocument", "document")
+assert_equals(attr.ownerDocument, document);
 iframeDocument.documentElement.appendChild(elementToBeMoved);
-shouldBe("attr.ownerDocument", "iframeDocument")
+assert_equals(attr.ownerDocument, iframeDocument);
+done();
 </script>
 </body>
 </html>

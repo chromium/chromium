@@ -78,6 +78,9 @@ class MagnifierTextInputTestHelper {
 
   void FocusOnTextInputView();
 
+  // Maximizes the widget of |text_input_view_|.
+  void MaximizeWidget();
+
  private:
   ui::InputMethod* GetInputMethod();
 

@@ -14,6 +14,7 @@ namespace blink {
 
 void SVGTextPainter::Paint(const PaintInfo& paint_info) {
   if (paint_info.phase != PaintPhase::kForeground &&
+      paint_info.phase != PaintPhase::kForcedColorsModeBackplate &&
       paint_info.phase != PaintPhase::kSelection)
     return;
 
@@ -46,7 +47,7 @@ void SVGTextPainter::RecordHitTestData(const PaintInfo& paint_info) {
   if (paint_info.phase != PaintPhase::kForeground)
     return;
 
-  auto touch_action = layout_svg_text_.EffectiveWhitelistedTouchAction();
+  auto touch_action = layout_svg_text_.EffectiveAllowedTouchAction();
   if (touch_action == TouchAction::kTouchActionAuto)
     return;
 

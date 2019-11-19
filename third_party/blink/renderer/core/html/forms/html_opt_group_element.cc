@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/core/html/forms/html_opt_group_element.h"
 
+#include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
@@ -32,15 +33,16 @@
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 
 namespace blink {
 
-using namespace html_names;
-
-inline HTMLOptGroupElement::HTMLOptGroupElement(Document& document)
-    : HTMLElement(kOptgroupTag, document) {}
+HTMLOptGroupElement::HTMLOptGroupElement(Document& document)
+    : HTMLElement(html_names::kOptgroupTag, document) {
+  EnsureUserAgentShadowRoot();
+}
 
 // An explicit empty destructor should be in html_opt_group_element.cc, because
 // if an implicit destructor is used or an empty destructor is defined in
@@ -49,30 +51,24 @@ inline HTMLOptGroupElement::HTMLOptGroupElement(Document& document)
 // a compile error because of lack of ComputedStyle definition.
 HTMLOptGroupElement::~HTMLOptGroupElement() = default;
 
-HTMLOptGroupElement* HTMLOptGroupElement::Create(Document& document) {
-  HTMLOptGroupElement* opt_group_element =
-      MakeGarbageCollected<HTMLOptGroupElement>(document);
-  opt_group_element->EnsureUserAgentShadowRoot();
-  return opt_group_element;
-}
-
 // static
 bool HTMLOptGroupElement::CanAssignToOptGroupSlot(const Node& node) {
-  return node.HasTagName(kOptionTag) || node.HasTagName(kHrTag);
+  return node.HasTagName(html_names::kOptionTag) ||
+         node.HasTagName(html_names::kHrTag);
 }
 
 bool HTMLOptGroupElement::IsDisabledFormControl() const {
-  return FastHasAttribute(kDisabledAttr);
+  return FastHasAttribute(html_names::kDisabledAttr);
 }
 
 void HTMLOptGroupElement::ParseAttribute(
     const AttributeModificationParams& params) {
   HTMLElement::ParseAttribute(params);
 
-  if (params.name == kDisabledAttr) {
+  if (params.name == html_names::kDisabledAttr) {
     PseudoStateChanged(CSSSelector::kPseudoDisabled);
     PseudoStateChanged(CSSSelector::kPseudoEnabled);
-  } else if (params.name == kLabelAttr) {
+  } else if (params.name == html_names::kLabelAttr) {
     UpdateGroupLabel();
   }
 }
@@ -99,7 +95,7 @@ Node::InsertionNotificationRequest HTMLOptGroupElement::InsertedInto(
 }
 
 void HTMLOptGroupElement::RemovedFrom(ContainerNode& insertion_point) {
-  if (auto* select = ToHTMLSelectElementOrNull(insertion_point)) {
+  if (auto* select = DynamicTo<HTMLSelectElement>(insertion_point)) {
     if (!parentNode())
       select->OptGroupInsertedOrRemoved(*this);
   }
@@ -107,7 +103,7 @@ void HTMLOptGroupElement::RemovedFrom(ContainerNode& insertion_point) {
 }
 
 String HTMLOptGroupElement::GroupLabelText() const {
-  String item_text = getAttribute(kLabelAttr);
+  String item_text = FastGetAttribute(html_names::kLabelAttr);
 
   // In WinIE, leading and trailing whitespace is ignored in options and
   // optgroups. We match this behavior.
@@ -139,11 +135,11 @@ void HTMLOptGroupElement::AccessKeyAction(bool) {
 void HTMLOptGroupElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
   DEFINE_STATIC_LOCAL(AtomicString, label_padding, ("0 2px 1px 2px"));
   DEFINE_STATIC_LOCAL(AtomicString, label_min_height, ("1.2em"));
-  HTMLDivElement* label = HTMLDivElement::Create(GetDocument());
-  label->setAttribute(kRoleAttr, AtomicString("group"));
-  label->setAttribute(kAriaLabelAttr, AtomicString());
-  label->SetInlineStyleProperty(CSSPropertyPadding, label_padding);
-  label->SetInlineStyleProperty(CSSPropertyMinHeight, label_min_height);
+  auto* label = MakeGarbageCollected<HTMLDivElement>(GetDocument());
+  label->setAttribute(html_names::kRoleAttr, AtomicString("group"));
+  label->setAttribute(html_names::kAriaLabelAttr, AtomicString());
+  label->SetInlineStyleProperty(CSSPropertyID::kPadding, label_padding);
+  label->SetInlineStyleProperty(CSSPropertyID::kMinHeight, label_min_height);
   label->SetIdAttribute(shadow_element_names::OptGroupLabel());
   root.AppendChild(label);
 
@@ -155,12 +151,14 @@ void HTMLOptGroupElement::UpdateGroupLabel() {
   const String& label_text = GroupLabelText();
   HTMLDivElement& label = OptGroupLabelElement();
   label.setTextContent(label_text);
-  label.setAttribute(kAriaLabelAttr, AtomicString(label_text));
+  label.setAttribute(html_names::kAriaLabelAttr, AtomicString(label_text));
 }
 
 HTMLDivElement& HTMLOptGroupElement::OptGroupLabelElement() const {
-  return *ToHTMLDivElementOrDie(UserAgentShadowRoot()->getElementById(
-      shadow_element_names::OptGroupLabel()));
+  auto* element = UserAgentShadowRoot()->getElementById(
+      shadow_element_names::OptGroupLabel());
+  CHECK(!element || IsA<HTMLDivElement>(element));
+  return *To<HTMLDivElement>(element);
 }
 
 }  // namespace blink

@@ -35,6 +35,7 @@
 #include "snapshot/process_snapshot.h"
 #include "snapshot/unloaded_module_snapshot.h"
 #include "util/misc/initialization_state_dcheck.h"
+#include "util/process/process_id.h"
 #include "util/process/process_memory_range.h"
 
 namespace crashpad {
@@ -105,8 +106,8 @@ class ProcessSnapshotFuchsia : public ProcessSnapshot {
   }
 
   // ProcessSnapshot:
-  pid_t ProcessID() const override;
-  pid_t ParentProcessID() const override;
+  crashpad::ProcessID ProcessID() const override;
+  crashpad::ProcessID ParentProcessID() const override;
   void SnapshotTime(timeval* snapshot_time) const override;
   void ProcessStartTime(timeval* start_time) const override;
   void ProcessCPUTimes(timeval* user_time, timeval* system_time) const override;

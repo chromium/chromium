@@ -17,7 +17,6 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/mock_entropy_provider.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -35,6 +34,9 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/ukm/content/source_url_recorder.h"
+#include "components/ukm/test_ukm_recorder.h"
+#include "components/user_manager/scoped_user_manager.h"
 #include "components/variations/variations_associated_data.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_entry.h"
@@ -42,6 +44,11 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if defined(OS_CHROMEOS)
+#include "chrome/browser/chromeos/app_mode/web_app/web_kiosk_app_manager.h"
+#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
+#endif
 
 const char* const kPermissionsKillSwitchFieldStudy =
     PermissionContextBase::kPermissionsKillSwitchFieldStudy;
@@ -87,11 +94,12 @@ class TestPermissionContext : public PermissionContextBase {
                          const PermissionRequestID& id,
                          const GURL& requesting_frame,
                          bool user_gesture,
-                         const BrowserPermissionCallback& callback) override {
+                         BrowserPermissionCallback callback) override {
     base::RunLoop run_loop;
     quit_closure_ = run_loop.QuitClosure();
     PermissionContextBase::RequestPermission(web_contents, id, requesting_frame,
-                                             true /* user_gesture */, callback);
+                                             true /* user_gesture */,
+                                             std::move(callback));
     run_loop.Run();
   }
 
@@ -100,10 +108,10 @@ class TestPermissionContext : public PermissionContextBase {
                         const GURL& requesting_origin,
                         const GURL& embedding_origin,
                         bool user_gesture,
-                        const BrowserPermissionCallback& callback) override {
+                        BrowserPermissionCallback callback) override {
     PermissionContextBase::DecidePermission(web_contents, id, requesting_origin,
                                             embedding_origin, user_gesture,
-                                            callback);
+                                            std::move(callback));
     if (respond_permission_) {
       respond_permission_.Run();
       respond_permission_.Reset();
@@ -146,23 +154,35 @@ class TestKillSwitchPermissionContext : public TestPermissionContext {
   TestKillSwitchPermissionContext(
       Profile* profile,
       const ContentSettingsType content_settings_type)
-      : TestPermissionContext(profile, content_settings_type),
-        field_trial_list_(std::make_unique<base::FieldTrialList>(
-            std::make_unique<base::MockEntropyProvider>())) {}
+      : TestPermissionContext(profile, content_settings_type) {
+    ResetFieldTrialList();
+  }
 
   void ResetFieldTrialList() {
-    // Destroy the existing FieldTrialList before creating a new one to avoid
-    // a DCHECK.
-    field_trial_list_.reset();
-    field_trial_list_ = std::make_unique<base::FieldTrialList>(
-        std::make_unique<base::MockEntropyProvider>());
+    scoped_feature_list_.Reset();
+    scoped_feature_list_.Init();
     variations::testing::ClearAllVariationParams();
   }
 
  private:
-  std::unique_ptr<base::FieldTrialList> field_trial_list_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 
   DISALLOW_COPY_AND_ASSIGN(TestKillSwitchPermissionContext);
+};
+
+class TestSecureOriginRestrictedPermissionContext
+    : public TestPermissionContext {
+ public:
+  TestSecureOriginRestrictedPermissionContext(
+      Profile* profile,
+      const ContentSettingsType content_settings_type)
+      : TestPermissionContext(profile, content_settings_type) {}
+
+ protected:
+  bool IsRestrictedToSecureOrigins() const override { return true; }
+
+ private:
+  DISALLOW_COPY_AND_ASSIGN(TestSecureOriginRestrictedPermissionContext);
 };
 
 class PermissionContextBaseTests : public ChromeRenderViewHostTestHarness {
@@ -189,6 +209,8 @@ class PermissionContextBaseTests : public ChromeRenderViewHostTestHarness {
 
   void TestAskAndDecide_TestContent(ContentSettingsType content_settings_type,
                                     ContentSetting decision) {
+    ukm::InitializeSourceUrlRecorderForWebContents(web_contents());
+    ukm::TestAutoSetUkmRecorder ukm_recorder;
     TestPermissionContext permission_context(profile(), content_settings_type);
     GURL url("https://www.google.com");
     SetUpUrl(url);
@@ -209,12 +231,17 @@ class PermissionContextBaseTests : public ChromeRenderViewHostTestHarness {
     EXPECT_TRUE(permission_context.tab_context_updated());
 
     std::string decision_string;
-    if (decision == CONTENT_SETTING_ALLOW)
+    base::Optional<PermissionAction> action;
+    if (decision == CONTENT_SETTING_ALLOW) {
       decision_string = "Accepted";
-    else if (decision == CONTENT_SETTING_BLOCK)
+      action = PermissionAction::GRANTED;
+    } else if (decision == CONTENT_SETTING_BLOCK) {
       decision_string = "Denied";
-    else if (decision == CONTENT_SETTING_ASK)
+      action = PermissionAction::DENIED;
+    } else if (decision == CONTENT_SETTING_ASK) {
       decision_string = "Dismissed";
+      action = PermissionAction::DISMISSED;
+    }
 
     if (!decision_string.empty()) {
       histograms.ExpectUniqueSample(
@@ -235,6 +262,20 @@ class PermissionContextBaseTests : public ChromeRenderViewHostTestHarness {
     histograms.ExpectUniqueSample(
         "Permissions.AutoBlocker.EmbargoStatus",
         static_cast<int>(PermissionEmbargoStatus::NOT_EMBARGOED), 1);
+
+    if (action.has_value()) {
+      auto entries = ukm_recorder.GetEntriesByName("Permission");
+      EXPECT_EQ(1u, entries.size());
+      auto* entry = entries.front();
+      ukm_recorder.ExpectEntrySourceHasUrl(entry, url);
+
+      EXPECT_EQ(*ukm_recorder.GetEntryMetric(entry, "Source"),
+                static_cast<int64_t>(PermissionSourceUI::PROMPT));
+      EXPECT_EQ(*ukm_recorder.GetEntryMetric(entry, "PermissionType"),
+                static_cast<int64_t>(content_settings_type));
+      EXPECT_EQ(*ukm_recorder.GetEntryMetric(entry, "Action"),
+                static_cast<int64_t>(action.value()));
+    }
   }
 
   void DismissMultipleTimesAndExpectBlock(
@@ -336,7 +377,7 @@ class PermissionContextBaseTests : public ChromeRenderViewHostTestHarness {
 
       for (uint32_t i = 0; i < 4; ++i) {
         TestPermissionContext permission_context(
-            profile(), CONTENT_SETTINGS_TYPE_GEOLOCATION);
+            profile(), ContentSettingsType::GEOLOCATION);
 
         const PermissionRequestID id(
             web_contents()->GetMainFrame()->GetProcess()->GetID(),
@@ -372,16 +413,16 @@ class PermissionContextBaseTests : public ChromeRenderViewHostTestHarness {
       // Flush the dismissal counts.
       auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
       map->ClearSettingsForOneType(
-          CONTENT_SETTINGS_TYPE_PERMISSION_AUTOBLOCKER_DATA);
+          ContentSettingsType::PERMISSION_AUTOBLOCKER_DATA);
     }
 
     EXPECT_TRUE(
         base::FeatureList::IsEnabled(features::kBlockPromptsIfDismissedOften));
 
     // Sanity check independence per permission type by checking two of them.
-    DismissMultipleTimesAndExpectBlock(url, CONTENT_SETTINGS_TYPE_GEOLOCATION,
+    DismissMultipleTimesAndExpectBlock(url, ContentSettingsType::GEOLOCATION,
                                        3);
-    DismissMultipleTimesAndExpectBlock(url, CONTENT_SETTINGS_TYPE_NOTIFICATIONS,
+    DismissMultipleTimesAndExpectBlock(url, ContentSettingsType::NOTIFICATIONS,
                                        3);
   }
 
@@ -409,8 +450,8 @@ class PermissionContextBaseTests : public ChromeRenderViewHostTestHarness {
     }
 
     for (uint32_t i = 0; i < 5; ++i) {
-      TestPermissionContext permission_context(
-          profile(), CONTENT_SETTINGS_TYPE_MIDI_SYSEX);
+      TestPermissionContext permission_context(profile(),
+                                               ContentSettingsType::MIDI_SYSEX);
 
       const PermissionRequestID id(
           web_contents()->GetMainFrame()->GetProcess()->GetID(),
@@ -456,7 +497,7 @@ class PermissionContextBaseTests : public ChromeRenderViewHostTestHarness {
 
     // Ensure that we finish in the block state.
     TestPermissionContext permission_context(profile(),
-                                             CONTENT_SETTINGS_TYPE_MIDI_SYSEX);
+                                             ContentSettingsType::MIDI_SYSEX);
     PermissionResult result = permission_context.GetPermissionStatus(
         nullptr /* render_frame_host */, url, url);
     EXPECT_EQ(CONTENT_SETTING_BLOCK, result.content_setting);
@@ -543,11 +584,37 @@ class PermissionContextBaseTests : public ChromeRenderViewHostTestHarness {
     EXPECT_TRUE(permission_context.IsPermissionKillSwitchOn());
   }
 
+  void TestSecureOriginRestrictedPermissionContextCheck(
+      const std::string& requesting_url_spec,
+      const std::string& embedding_url_spec,
+      bool expect_allowed) {
+    GURL requesting_origin(requesting_url_spec);
+    GURL embedding_origin(embedding_url_spec);
+    TestSecureOriginRestrictedPermissionContext permission_context(
+        profile(), ContentSettingsType::GEOLOCATION);
+    bool result = permission_context.IsPermissionAvailableToOrigins(
+        requesting_origin, embedding_origin);
+    EXPECT_EQ(expect_allowed, result)
+        << "test case (requesting, embedding): (" << requesting_url_spec << ", "
+        << embedding_url_spec << ") with secure-origin requirement"
+        << " on";
+
+    // With no secure-origin limitation, this check should always return pass.
+    TestPermissionContext new_context(profile(),
+                                      ContentSettingsType::GEOLOCATION);
+    result = new_context.IsPermissionAvailableToOrigins(requesting_origin,
+                                                        embedding_origin);
+    EXPECT_EQ(true, result)
+        << "test case (requesting, embedding): (" << requesting_url_spec << ", "
+        << embedding_url_spec << ") with secure-origin requirement"
+        << " off";
+  }
+
   // Don't call this more than once in the same test, as it persists data to
   // HostContentSettingsMap.
   void TestParallelRequests(ContentSetting response) {
-    TestPermissionContext permission_context(
-        profile(), CONTENT_SETTINGS_TYPE_NOTIFICATIONS);
+    TestPermissionContext permission_context(profile(),
+                                             ContentSettingsType::GEOLOCATION);
     GURL url("http://www.google.com");
     SetUpUrl(url);
 
@@ -587,8 +654,8 @@ class PermissionContextBaseTests : public ChromeRenderViewHostTestHarness {
                       const GURL& virtual_url,
                       const ContentSetting want_response,
                       const PermissionStatusSource& want_source) {
-    TestPermissionContext permission_context(
-        profile(), CONTENT_SETTINGS_TYPE_NOTIFICATIONS);
+    TestPermissionContext permission_context(profile(),
+                                             ContentSettingsType::GEOLOCATION);
 
     NavigateAndCommit(loaded_url);
     web_contents()->GetController().GetVisibleEntry()->SetVirtualURL(
@@ -604,6 +671,35 @@ class PermissionContextBaseTests : public ChromeRenderViewHostTestHarness {
     NavigateAndCommit(url);
     prompt_factory_->DocumentOnLoadCompletedInMainFrame();
   }
+
+#if defined(OS_CHROMEOS)
+  void TestWebKioskMode(const GURL& app_url,
+                        const GURL& request_url,
+                        ContentSetting response) {
+    const AccountId account_id = AccountId::FromUserEmail("lala@example.com");
+
+    auto fake_user_manager =
+        std::make_unique<chromeos::FakeChromeUserManager>();
+    // Stealing the pointer from unique ptr before it goes to the scoped user
+    // manager.
+    chromeos::FakeChromeUserManager* user_manager = fake_user_manager.get();
+    auto scoped_user_manager =
+        std::make_unique<user_manager::ScopedUserManager>(
+            std::move(fake_user_manager));
+    user_manager->AddWebKioskAppUser(account_id);
+    user_manager->LoginUser(account_id);
+
+    auto kiosk_app_manager = std::make_unique<chromeos::WebKioskAppManager>();
+    kiosk_app_manager->AddAppForTesting(account_id, app_url);
+
+    TestPermissionContext permission_context(profile(),
+                                             ContentSettingsType::GEOLOCATION);
+    PermissionResult result = permission_context.GetPermissionStatus(
+        nullptr, request_url, request_url);
+
+    EXPECT_EQ(result.content_setting, response);
+  }
+#endif  // defined(OS_CHROMEOS)
 
  private:
   // ChromeRenderViewHostTestHarness:
@@ -628,21 +724,21 @@ class PermissionContextBaseTests : public ChromeRenderViewHostTestHarness {
 // Simulates clicking Accept. The permission should be granted and
 // saved for future use.
 TEST_F(PermissionContextBaseTests, TestAskAndGrant) {
-  TestAskAndDecide_TestContent(CONTENT_SETTINGS_TYPE_NOTIFICATIONS,
+  TestAskAndDecide_TestContent(ContentSettingsType::NOTIFICATIONS,
                                CONTENT_SETTING_ALLOW);
 }
 
 // Simulates clicking Block. The permission should be denied and
 // saved for future use.
 TEST_F(PermissionContextBaseTests, TestAskAndBlock) {
-  TestAskAndDecide_TestContent(CONTENT_SETTINGS_TYPE_GEOLOCATION,
+  TestAskAndDecide_TestContent(ContentSettingsType::GEOLOCATION,
                                CONTENT_SETTING_BLOCK);
 }
 
 // Simulates clicking Dismiss (X) in the prompt.
 // The permission should be denied but not saved for future use.
 TEST_F(PermissionContextBaseTests, TestAskAndDismiss) {
-  TestAskAndDecide_TestContent(CONTENT_SETTINGS_TYPE_MIDI_SYSEX,
+  TestAskAndDecide_TestContent(ContentSettingsType::MIDI_SYSEX,
                                CONTENT_SETTING_ASK);
 }
 
@@ -661,45 +757,104 @@ TEST_F(PermissionContextBaseTests, TestDismissVariations) {
 // Simulates non-valid requesting URL.
 // The permission should be denied but not saved for future use.
 TEST_F(PermissionContextBaseTests, TestNonValidRequestingUrl) {
-  TestRequestPermissionInvalidUrl(CONTENT_SETTINGS_TYPE_GEOLOCATION);
-  TestRequestPermissionInvalidUrl(CONTENT_SETTINGS_TYPE_NOTIFICATIONS);
-  TestRequestPermissionInvalidUrl(CONTENT_SETTINGS_TYPE_MIDI_SYSEX);
+  TestRequestPermissionInvalidUrl(ContentSettingsType::GEOLOCATION);
+  TestRequestPermissionInvalidUrl(ContentSettingsType::NOTIFICATIONS);
+  TestRequestPermissionInvalidUrl(ContentSettingsType::MIDI_SYSEX);
 #if defined(OS_CHROMEOS)
   TestRequestPermissionInvalidUrl(
-      CONTENT_SETTINGS_TYPE_PROTECTED_MEDIA_IDENTIFIER);
+      ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER);
 #endif
 }
 
 // Simulates granting and revoking of permissions.
 TEST_F(PermissionContextBaseTests, TestGrantAndRevoke) {
-  TestGrantAndRevoke_TestContent(CONTENT_SETTINGS_TYPE_GEOLOCATION,
+  TestGrantAndRevoke_TestContent(ContentSettingsType::GEOLOCATION,
                                  CONTENT_SETTING_ASK);
-  TestGrantAndRevoke_TestContent(CONTENT_SETTINGS_TYPE_MIDI_SYSEX,
+  TestGrantAndRevoke_TestContent(ContentSettingsType::MIDI_SYSEX,
                                  CONTENT_SETTING_ASK);
 #if defined(OS_ANDROID)
   TestGrantAndRevoke_TestContent(
-      CONTENT_SETTINGS_TYPE_PROTECTED_MEDIA_IDENTIFIER, CONTENT_SETTING_ASK);
+      ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER, CONTENT_SETTING_ASK);
   // TODO(timvolodine): currently no test for
-  // CONTENT_SETTINGS_TYPE_NOTIFICATIONS because notification permissions work
+  // ContentSettingsType::NOTIFICATIONS because notification permissions work
   // differently with infobars as compared to bubbles (crbug.com/453784).
 #else
-  TestGrantAndRevoke_TestContent(CONTENT_SETTINGS_TYPE_NOTIFICATIONS,
+  TestGrantAndRevoke_TestContent(ContentSettingsType::NOTIFICATIONS,
                                  CONTENT_SETTING_ASK);
 #endif
 }
 
 // Tests the global kill switch by enabling/disabling the Field Trials.
 TEST_F(PermissionContextBaseTests, TestGlobalKillSwitch) {
-  TestGlobalPermissionsKillSwitch(CONTENT_SETTINGS_TYPE_GEOLOCATION);
-  TestGlobalPermissionsKillSwitch(CONTENT_SETTINGS_TYPE_NOTIFICATIONS);
-  TestGlobalPermissionsKillSwitch(CONTENT_SETTINGS_TYPE_MIDI_SYSEX);
-  TestGlobalPermissionsKillSwitch(CONTENT_SETTINGS_TYPE_DURABLE_STORAGE);
+  TestGlobalPermissionsKillSwitch(ContentSettingsType::GEOLOCATION);
+  TestGlobalPermissionsKillSwitch(ContentSettingsType::NOTIFICATIONS);
+  TestGlobalPermissionsKillSwitch(ContentSettingsType::MIDI_SYSEX);
+  TestGlobalPermissionsKillSwitch(ContentSettingsType::DURABLE_STORAGE);
 #if defined(OS_ANDROID) || defined(OS_CHROMEOS)
   TestGlobalPermissionsKillSwitch(
-      CONTENT_SETTINGS_TYPE_PROTECTED_MEDIA_IDENTIFIER);
+      ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER);
 #endif
-  TestGlobalPermissionsKillSwitch(CONTENT_SETTINGS_TYPE_MEDIASTREAM_MIC);
-  TestGlobalPermissionsKillSwitch(CONTENT_SETTINGS_TYPE_MEDIASTREAM_CAMERA);
+  TestGlobalPermissionsKillSwitch(ContentSettingsType::MEDIASTREAM_MIC);
+  TestGlobalPermissionsKillSwitch(ContentSettingsType::MEDIASTREAM_CAMERA);
+}
+
+// Tests that secure origins are examined if switch is on, or ignored if off.
+TEST_F(PermissionContextBaseTests,
+       TestSecureOriginRestrictedPermissionContextSwitch) {
+  struct {
+    std::string requesting_url_spec;
+    std::string embedding_url_spec;
+    bool expect_permission_allowed;
+  } kTestCases[] = {
+      // Secure-origins that should be allowed.
+      {"https://google.com", "https://foo.com",
+       /*expect_allowed=*/true},
+      {"https://www.bar.com", "https://foo.com",
+       /*expect_allowed=*/true},
+      {"https://localhost", "http://localhost",
+       /*expect_allowed=*/true},
+
+      {"http://localhost", "https://google.com",
+       /*expect_allowed=*/true},
+      {"https://google.com", "http://localhost",
+       /*expect_allowed=*/true},
+      {"https://foo.com", "file://some-file",
+       /*expect_allowed=*/true},
+      {"file://some-file", "https://foo.com",
+       /*expect_allowed=*/true},
+      {"https://foo.com", "about:blank",
+       /*expect_allowed=*/true},
+      {"about:blank", "https://foo.com",
+       /*expect_allowed=*/true},
+
+      // Extensions are exempt from checking the embedder chain.
+      {"chrome-extension://some-extension", "http://not-secure.com",
+       /*expect_allowed=*/true},
+
+      // Insecure-origins that should be blocked.
+      {"http://foo.com", "file://some-file",
+       /*expect_allowed=*/false},
+      {"fake://foo.com", "about:blank",
+       /*expect_allowed=*/false},
+      {"http://localhost", "http://foo.com",
+       /*expect_allowed=*/false},
+      {"http://localhost", "foo.com",
+       /*expect_allowed=*/false},
+      {"http://bar.com", "https://foo.com",
+       /*expect_permission_allowed=*/false},
+      {"https://foo.com", "http://bar.com",
+       /*expect_permission_allowed=*/false},
+      {"http://localhost", "http://foo.com",
+       /*expect_permission_allowed=*/false},
+      {"http://foo.com", "http://localhost",
+       /*expect_permission_allowed=*/false},
+      {"bar.com", "https://foo.com", /*expect_permission_allowed=*/false},
+      {"https://foo.com", "bar.com", /*expect_permission_allowed=*/false}};
+  for (const auto& test_case : kTestCases) {
+    TestSecureOriginRestrictedPermissionContextCheck(
+        test_case.requesting_url_spec, test_case.embedding_url_spec,
+        test_case.expect_permission_allowed);
+  }
 }
 
 TEST_F(PermissionContextBaseTests, TestParallelRequestsAllowed) {
@@ -730,3 +885,15 @@ TEST_F(PermissionContextBaseTests, TestVirtualURLSameOrigin) {
                  GURL("http://www.google.com/foo"), CONTENT_SETTING_ASK,
                  PermissionStatusSource::UNSPECIFIED);
 }
+
+#if defined(OS_CHROMEOS)
+TEST_F(PermissionContextBaseTests, TestWebKioskModeSameOrigin) {
+  TestWebKioskMode(GURL("https://google.com/launch"),
+                   GURL("https://google.com/page"), CONTENT_SETTING_ALLOW);
+}
+
+TEST_F(PermissionContextBaseTests, TestWebKioskModeDifferentOrigin) {
+  TestWebKioskMode(GURL("https://google.com/launch"),
+                   GURL("https://notgoogle.com/page"), CONTENT_SETTING_ASK);
+}
+#endif  // defined(OS_CHROMEOS)

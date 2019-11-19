@@ -33,6 +33,10 @@ class AlternativeBrowserDriver {
   // Tries to launch |browser| at the specified URL, using whatever
   // method is most appropriate.
   virtual bool TryLaunch(const GURL& url) = 0;
+
+  // Returns the i18n code for the name of the alternative browser, if it was
+  // auto-detected. If the name couldn't be auto-detected, returns 0.
+  virtual std::string GetBrowserName() const = 0;
 };
 
 // Default concrete implementation for |AlternativeBrowserDriver|. Uses a
@@ -44,6 +48,7 @@ class AlternativeBrowserDriverImpl : public AlternativeBrowserDriver {
 
   // AlternativeBrowserDriver
   bool TryLaunch(const GURL& url) override;
+  std::string GetBrowserName() const override;
 
   // Create the CommandLine object that would be used to launch an external
   // process.

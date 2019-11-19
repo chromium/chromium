@@ -9,7 +9,8 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/network_interfaces.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
@@ -34,7 +35,7 @@ class PrivetTrafficDetector
  public:
   // Called on the UI thread.
   PrivetTrafficDetector(content::BrowserContext* profile,
-                        const base::RepeatingClosure& on_traffic_detected);
+                        base::RepeatingClosure on_traffic_detected);
   ~PrivetTrafficDetector() override;
 
   // network::NetworkConnectionTracker::NetworkConnectionObserver:
@@ -43,13 +44,13 @@ class PrivetTrafficDetector
  private:
   // Constructed by PrivetTrafficDetector on the UI thread. but lives on the IO
   // thread and destroyed on the IO thread.
-  class Helper : public network::mojom::UDPSocketReceiver {
+  class Helper : public network::mojom::UDPSocketListener {
    public:
     Helper(content::BrowserContext* profile,
-           const base::RepeatingClosure& on_traffic_detected);
+           base::RepeatingClosure on_traffic_detected);
     ~Helper() override;
 
-    // network::mojom::UDPSocketReceiver:
+    // network::mojom::UDPSocketListener:
     void OnReceived(int32_t result,
                     const base::Optional<net::IPEndPoint>& src_addr,
                     base::Optional<base::span<const uint8_t>> data) override;
@@ -79,14 +80,13 @@ class PrivetTrafficDetector
     // Only accessed on the IO thread.
     net::NetworkInterfaceList networks_;
     net::IPEndPoint recv_addr_;
-    base::Time start_time_;
-    network::mojom::UDPSocketPtr socket_;
+    mojo::Remote<network::mojom::UDPSocket> socket_;
 
-    // Implementation of socket receiver callback.
+    // Implementation of socket listener callback.
     // Initialized on the UI thread, but only accessed on the IO thread.
-    mojo::Binding<network::mojom::UDPSocketReceiver> receiver_binding_;
+    mojo::Receiver<network::mojom::UDPSocketListener> listener_receiver_{this};
 
-    base::WeakPtrFactory<Helper> weak_ptr_factory_;
+    base::WeakPtrFactory<Helper> weak_ptr_factory_{this};
 
     DISALLOW_COPY_AND_ASSIGN(Helper);
   };

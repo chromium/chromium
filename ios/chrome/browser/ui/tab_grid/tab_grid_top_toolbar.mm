@@ -32,6 +32,10 @@
 
 #pragma mark - UIView
 
+- (CGSize)intrinsicContentSize {
+  return CGSizeMake(UIViewNoIntrinsicMetric, kTabGridTopToolbarHeight);
+}
+
 - (void)willMoveToSuperview:(UIView*)newSuperview {
   // The first time this moves to a superview, perform the view setup.
   if (newSuperview && self.subviews.count == 0) {

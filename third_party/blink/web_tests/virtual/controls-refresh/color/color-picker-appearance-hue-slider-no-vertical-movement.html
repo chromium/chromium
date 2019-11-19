@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+testRunner.dumpAsText();
+testRunner.waitUntilDone();
+</script>
+<script src='../../../fast/forms/resources/picker-common.js'></script>
+</head>
+<body>
+<input type='color' id='color'>
+
+<p id='description' style='opacity: 0'></p>
+<div id='console' style='opacity: 0'></div>
+
+<script src='color-picker-appearance-no-movement-helper.js'></script>
+<script>
+let descriptionContainer = document.getElementById('description');
+openPicker(document.getElementById('color'), openPickerCallback, openPickerCallback);
+
+function openPickerCallback() {
+  if (internals.pagePopupWindow) {
+    descriptionContainer.append('Popup opened.', document.createElement('br'));
+    popupWindow.focus();
+    const popupDocument = popupWindow.document;
+    const hueSlider = popupDocument.querySelector('hue-slider');
+    const hueSliderRect = hueSlider.getBoundingClientRect();
+    const hueSliderSelectionRing = popupDocument.querySelector('hue-slider > color-selection-ring');
+    eventSender.mouseMoveTo(hueSliderRect.left + (hueSliderRect.width / 2), hueSliderRect.top);
+    eventSender.mouseDown();
+    eventSender.mouseUp();
+
+    let hueSliderSelectionRingCurrentLeft = hueSliderSelectionRing.left;
+    let hueSliderSelectionRingCurrentTop = hueSliderSelectionRing.top;
+    eventSender.keyDown('ArrowUp');
+    logKeyboardMovementResult(descriptionContainer, 'ArrowUp', 'hue slider', hueSliderSelectionRing,
+        hueSliderSelectionRingCurrentLeft, hueSliderSelectionRingCurrentTop);
+
+    hueSliderSelectionRingCurrentLeft = hueSliderSelectionRing.left;
+    hueSliderSelectionRingCurrentTop = hueSliderSelectionRing.top;
+    eventSender.keyDown('ArrowUp', ['ctrlKey']);
+    logKeyboardMovementResult(descriptionContainer, 'ctrlKey+ArrowUp', 'hue slider', hueSliderSelectionRing,
+        hueSliderSelectionRingCurrentLeft, hueSliderSelectionRingCurrentTop);
+
+    hueSliderSelectionRingCurrentLeft = hueSliderSelectionRing.left;
+    hueSliderSelectionRingCurrentTop = hueSliderSelectionRing.top;
+    eventSender.keyDown('ArrowDown');
+    logKeyboardMovementResult(descriptionContainer, 'ArrowDown', 'hue slider', hueSliderSelectionRing,
+        hueSliderSelectionRingCurrentLeft, hueSliderSelectionRingCurrentTop);
+
+    hueSliderSelectionRingCurrentLeft = hueSliderSelectionRing.left;
+    hueSliderSelectionRingCurrentTop = hueSliderSelectionRing.top;
+    eventSender.keyDown('ArrowDown', ['ctrlKey']);
+    logKeyboardMovementResult(descriptionContainer, 'ctrlKey+ArrowDown', 'hue slider', hueSliderSelectionRing,
+        hueSliderSelectionRingCurrentLeft, hueSliderSelectionRingCurrentTop);
+  } else {
+    descriptionContainer.append('Popup did not open.', document.createElement('br'));
+  }
+  descriptionContainer.append('TEST COMPLETE');
+  testRunner.notifyDone();
+}
+
+function isHueSliderSelectionRingAtSamePosition(hueSliderSelectionRing,
+    hueSliderSelectionRingOriginalLeft, hueSliderSelectionRingOriginalTop) {
+  return (hueSliderSelectionRingOriginalLeft === hueSliderSelectionRing.left) &&
+      (hueSliderSelectionRingOriginalTop === hueSliderSelectionRing.top);
+}
+</script>
+</body>
+</html>

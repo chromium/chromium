@@ -17,6 +17,8 @@
 #include "chrome/browser/chromeos/login/wizard_controller.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/chromeos/login/arc_kiosk_splash_screen_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/encryption_migration_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "chromeos/login/auth/user_context.h"
 #include "components/account_id/account_id.h"
@@ -30,8 +32,8 @@ constexpr base::TimeDelta kArcKioskSplashScreenMinTime =
 
 ArcKioskController::ArcKioskController(LoginDisplayHost* host, OobeUI* oobe_ui)
     : host_(host),
-      arc_kiosk_splash_screen_view_(oobe_ui->GetArcKioskSplashScreenView()),
-      weak_ptr_factory_(this) {}
+      arc_kiosk_splash_screen_view_(
+          oobe_ui->GetView<ArcKioskSplashScreenHandler>()) {}
 
 ArcKioskController::~ArcKioskController() {
   if (arc_kiosk_splash_screen_view_)
@@ -51,6 +53,16 @@ void ArcKioskController::StartArcKiosk(const AccountId& account_id) {
 
   login_performer_ = std::make_unique<ChromeLoginPerformer>(this);
   login_performer_->LoginAsArcKioskAccount(account_id);
+}
+
+void ArcKioskController::OnCancelArcKioskLaunch() {
+  KioskAppLaunchError::Save(KioskAppLaunchError::USER_CANCEL);
+  CleanUp();
+  chrome::AttemptUserExit();
+}
+
+void ArcKioskController::OnDeletingSplashScreenView() {
+  arc_kiosk_splash_screen_view_ = nullptr;
 }
 
 void ArcKioskController::CleanUp() {
@@ -106,7 +118,7 @@ void ArcKioskController::SetAuthFlowOffline(bool offline) {
 void ArcKioskController::OnOldEncryptionDetected(
     const UserContext& user_context,
     bool has_incomplete_migration) {
-  host_->StartWizard(OobeScreen::SCREEN_ENCRYPTION_MIGRATION);
+  host_->StartWizard(EncryptionMigrationScreenView::kScreenId);
 
   EncryptionMigrationScreen* migration_screen =
       static_cast<EncryptionMigrationScreen*>(
@@ -147,16 +159,6 @@ void ArcKioskController::OnAppWindowLaunched() {
   if (splash_wait_timer_.IsRunning())
     return;
   CloseSplashScreen();
-}
-
-void ArcKioskController::OnCancelArcKioskLaunch() {
-  KioskAppLaunchError::Save(KioskAppLaunchError::USER_CANCEL);
-  CleanUp();
-  chrome::AttemptUserExit();
-}
-
-void ArcKioskController::OnDeletingSplashScreenView() {
-  arc_kiosk_splash_screen_view_ = nullptr;
 }
 
 }  // namespace chromeos

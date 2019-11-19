@@ -14,7 +14,7 @@
 #include "components/nacl/common/nacl_process_type.h"
 #include "content/public/browser/child_process_data.h"
 #include "content/public/common/process_type.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -77,7 +77,7 @@ class ChildProcessTaskTest
   std::map<base::ProcessHandle, Task*> provided_tasks_;
 
  private:
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
 
   DISALLOW_COPY_AND_ASSIGN(ChildProcessTaskTest);
 };

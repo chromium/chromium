@@ -1,9 +1,0 @@
-This tests the NonDocumentTypeChildNode interface previousElementSibling property on a DocumentType node.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS doctype.previousElementSibling is undefined.
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

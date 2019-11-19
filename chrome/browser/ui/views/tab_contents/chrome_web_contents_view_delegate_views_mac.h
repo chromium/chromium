@@ -23,6 +23,8 @@ class ChromeWebContentsViewDelegateViewsMac
   void ResetStoredFocus() override;
   bool Focus() override;
   bool TakeFocus(bool reverse) override;
+  void OnPerformDrop(const content::DropData& drop_data,
+                     DropCompletionCallback callback) override;
 
  private:
   content::WebContents* web_contents_;

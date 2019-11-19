@@ -10,11 +10,13 @@
 
 #include "base/base64.h"
 #include "base/bind.h"
+#include "base/bind_helpers.h"
 #include "base/guid.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/json/string_escape.h"
 #include "base/macros.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -37,6 +39,7 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/cpp/simple_url_loader_stream_consumer.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 
 #if !defined(OS_ANDROID)
 #include "content/public/browser/devtools_frontend_host.h"
@@ -46,10 +49,23 @@ namespace content {
 
 namespace {
 
+std::vector<ShellDevToolsBindings*>* GetShellDevtoolsBindingsInstances() {
+  static base::NoDestructor<std::vector<ShellDevToolsBindings*>> instance;
+  return instance.get();
+}
+
 std::unique_ptr<base::DictionaryValue> BuildObjectForResponse(
-    const net::HttpResponseHeaders* rh) {
+    const net::HttpResponseHeaders* rh,
+    bool success) {
   auto response = std::make_unique<base::DictionaryValue>();
-  response->SetInteger("statusCode", rh ? rh->response_code() : 200);
+  int responseCode = 200;
+  if (rh) {
+    responseCode = rh->response_code();
+  } else if (!success) {
+    // In case of no headers, assume file:// URL and failed to load
+    responseCode = 404;
+  }
+  response->SetInteger("statusCode", responseCode);
 
   auto headers = std::make_unique<base::DictionaryValue>();
   size_t iterator = 0;
@@ -85,7 +101,7 @@ class ShellDevToolsBindings::NetworkResourceLoader
 
  private:
   void OnResponseStarted(const GURL& final_url,
-                         const network::ResourceResponseHead& response_head) {
+                         const network::mojom::URLResponseHead& response_head) {
     response_headers_ = response_head.headers;
   }
 
@@ -110,7 +126,7 @@ class ShellDevToolsBindings::NetworkResourceLoader
   }
 
   void OnComplete(bool success) override {
-    auto response = BuildObjectForResponse(response_headers_.get());
+    auto response = BuildObjectForResponse(response_headers_.get(), success);
     bindings_->SendMessageAck(request_id_, response.get());
     bindings_->loaders_.erase(bindings_->loaders_.find(this));
   }
@@ -148,12 +164,31 @@ ShellDevToolsBindings::ShellDevToolsBindings(WebContents* devtools_contents,
       inspected_contents_(inspected_contents),
       delegate_(delegate),
       inspect_element_at_x_(-1),
-      inspect_element_at_y_(-1),
-      weak_factory_(this) {}
+      inspect_element_at_y_(-1) {
+  auto* bindings = GetShellDevtoolsBindingsInstances();
+  DCHECK(!base::Contains(*bindings, this));
+  bindings->push_back(this);
+}
 
 ShellDevToolsBindings::~ShellDevToolsBindings() {
   if (agent_host_)
     agent_host_->DetachClient(this);
+
+  auto* bindings = GetShellDevtoolsBindingsInstances();
+  DCHECK(base::Contains(*bindings, this));
+  base::Erase(*bindings, this);
+}
+
+// static
+std::vector<ShellDevToolsBindings*>
+ShellDevToolsBindings::GetInstancesForWebContents(WebContents* web_contents) {
+  auto* bindings = GetShellDevtoolsBindingsInstances();
+  std::vector<ShellDevToolsBindings*> result;
+  std::copy_if(bindings->begin(), bindings->end(), std::back_inserter(result),
+               [web_contents](ShellDevToolsBindings* binding) {
+                 return binding->inspected_contents() == web_contents;
+               });
+  return result;
 }
 
 void ShellDevToolsBindings::ReadyToCommitNavigation(
@@ -162,8 +197,8 @@ void ShellDevToolsBindings::ReadyToCommitNavigation(
   content::RenderFrameHost* frame = navigation_handle->GetRenderFrameHost();
   if (navigation_handle->IsInMainFrame()) {
     frontend_host_ = DevToolsFrontendHost::Create(
-        frame,
-        base::Bind(&ShellDevToolsBindings::HandleMessageFromDevToolsFrontend,
+        frame, base::BindRepeating(
+                   &ShellDevToolsBindings::HandleMessageFromDevToolsFrontend,
                    base::Unretained(this)));
     return;
   }
@@ -177,7 +212,7 @@ void ShellDevToolsBindings::ReadyToCommitNavigation(
 #endif
 }
 
-void ShellDevToolsBindings::Attach() {
+void ShellDevToolsBindings::AttachInternal() {
   if (agent_host_)
     agent_host_->DetachClient(this);
   agent_host_ = DevToolsAgentHost::GetOrCreateFor(inspected_contents_);
@@ -188,6 +223,20 @@ void ShellDevToolsBindings::Attach() {
     inspect_element_at_x_ = -1;
     inspect_element_at_y_ = -1;
   }
+}
+
+void ShellDevToolsBindings::Attach() {
+  AttachInternal();
+}
+
+void ShellDevToolsBindings::UpdateInspectedWebContents(
+    WebContents* new_contents) {
+  inspected_contents_ = new_contents;
+  if (!agent_host_)
+    return;
+  AttachInternal();
+  CallClientFunction("DevToolsAPI.reattachMainTarget", nullptr, nullptr,
+                     nullptr);
 }
 
 void ShellDevToolsBindings::WebContentsDestroyed() {
@@ -219,7 +268,8 @@ void ShellDevToolsBindings::HandleMessageFromDevToolsFrontend(
     agent_host_->DispatchProtocolMessage(this, protocol_message);
   } else if (method == "loadCompleted") {
     web_contents()->GetMainFrame()->ExecuteJavaScriptForTests(
-        base::ASCIIToUTF16("DevToolsAPI.setUseSoftMenu(true);"));
+        base::ASCIIToUTF16("DevToolsAPI.setUseSoftMenu(true);"),
+        base::NullCallback());
   } else if (method == "loadNetworkResource" && params->GetSize() == 3) {
     // TODO(pfeldman): handle some of the embedder messages in content.
     std::string url;
@@ -299,7 +349,8 @@ void ShellDevToolsBindings::HandleMessageFromDevToolsFrontend(
     preferences_.RemoveWithoutPathExpansion(name, nullptr);
   } else if (method == "requestFileSystems") {
     web_contents()->GetMainFrame()->ExecuteJavaScriptForTests(
-        base::ASCIIToUTF16("DevToolsAPI.fileSystemsLoaded([]);"));
+        base::ASCIIToUTF16("DevToolsAPI.fileSystemsLoaded([]);"),
+        base::NullCallback());
   } else if (method == "reattach") {
     if (!agent_host_)
       return;
@@ -327,7 +378,8 @@ void ShellDevToolsBindings::DispatchProtocolMessage(
     base::EscapeJSONString(message, true, &param);
     std::string code = "DevToolsAPI.dispatchMessage(" + param + ");";
     base::string16 javascript = base::UTF8ToUTF16(code);
-    web_contents()->GetMainFrame()->ExecuteJavaScriptForTests(javascript);
+    web_contents()->GetMainFrame()->ExecuteJavaScriptForTests(
+        javascript, base::NullCallback());
     return;
   }
 
@@ -340,7 +392,8 @@ void ShellDevToolsBindings::DispatchProtocolMessage(
     std::string code = "DevToolsAPI.dispatchMessageChunk(" + param + "," +
                        std::to_string(pos ? 0 : total_size) + ");";
     base::string16 javascript = base::UTF8ToUTF16(code);
-    web_contents()->GetMainFrame()->ExecuteJavaScriptForTests(javascript);
+    web_contents()->GetMainFrame()->ExecuteJavaScriptForTests(
+        javascript, base::NullCallback());
   }
 }
 
@@ -364,7 +417,7 @@ void ShellDevToolsBindings::CallClientFunction(const std::string& function_name,
   }
   javascript.append(");");
   web_contents()->GetMainFrame()->ExecuteJavaScriptForTests(
-      base::UTF8ToUTF16(javascript));
+      base::UTF8ToUTF16(javascript), base::NullCallback());
 }
 
 void ShellDevToolsBindings::SendMessageAck(int request_id,

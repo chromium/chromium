@@ -43,7 +43,10 @@ H264Encoder::EncodeParams::EncodeParams()
       framerate(0),
       cpb_window_size_ms(kCPBWindowSizeMs),
       cpb_size_bits(0),
-      qp(kDefaultQP) {}
+      qp(kDefaultQP),
+      max_num_ref_frames(kMaxNumReferenceFrames),
+      max_ref_pic_list0_size(kMaxRefIdxL0Size),
+      max_ref_pic_list1_size(kMaxRefIdxL1Size) {}
 
 H264Encoder::Accelerator::~Accelerator() = default;
 
@@ -56,7 +59,9 @@ H264Encoder::~H264Encoder() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-bool H264Encoder::Initialize(const VideoEncodeAccelerator::Config& config) {
+bool H264Encoder::Initialize(
+    const VideoEncodeAccelerator::Config& config,
+    const AcceleratedVideoEncoder::Config& ave_config) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   switch (config.output_profile) {
     case H264PROFILE_BASELINE:
@@ -88,13 +93,36 @@ bool H264Encoder::Initialize(const VideoEncodeAccelerator::Config& config) {
   mb_height_ = coded_size_.height() / kH264MacroblockSizeInPixels;
 
   profile_ = config.output_profile;
-  level_ = config.h264_output_level.value_or(
-      VideoEncodeAccelerator::kDefaultH264Level);
+  level_ = config.h264_output_level.value_or(H264SPS::kLevelIDC4p0);
   uint32_t initial_framerate = config.initial_framerate.value_or(
       VideoEncodeAccelerator::kDefaultFramerate);
+
+  // Checks if |level_| is valid. If it is invalid, set |level_| to a minimum
+  // level that comforts Table A-1 in H.264 spec with specified bitrate,
+  // framerate and dimension.
   if (!CheckH264LevelLimits(profile_, level_, config.initial_bitrate,
-                            initial_framerate, mb_width_ * mb_height_))
-    return false;
+                            initial_framerate, mb_width_ * mb_height_)) {
+    base::Optional<uint8_t> valid_level =
+        FindValidH264Level(profile_, config.initial_bitrate, initial_framerate,
+                           mb_width_ * mb_height_);
+    if (!valid_level) {
+      VLOGF(1) << "Could not find a valid h264 level for"
+               << " profile=" << profile_
+               << " bitrate=" << config.initial_bitrate
+               << " framerate=" << initial_framerate
+               << " size=" << config.input_visible_size.ToString();
+      return false;
+    }
+    level_ = *valid_level;
+  }
+
+  curr_params_.max_ref_pic_list0_size =
+      std::min(kMaxRefIdxL0Size, ave_config.max_num_ref_frames & 0xffff);
+  curr_params_.max_ref_pic_list1_size = std::min(
+      kMaxRefIdxL1Size, (ave_config.max_num_ref_frames >> 16) & 0xffff);
+  curr_params_.max_num_ref_frames =
+      std::min(kMaxNumReferenceFrames, curr_params_.max_ref_pic_list0_size +
+                                           curr_params_.max_ref_pic_list1_size);
 
   VideoBitrateAllocation initial_bitrate_allocation;
   initial_bitrate_allocation.SetBitrate(0, 0, config.initial_bitrate);
@@ -117,7 +145,7 @@ gfx::Size H264Encoder::GetCodedSize() const {
 size_t H264Encoder::GetMaxNumOfRefFrames() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  return kMaxNumReferenceFrames;
+  return curr_params_.max_num_ref_frames;
 }
 
 bool H264Encoder::PrepareEncodeJob(EncodeJob* encode_job) {
@@ -241,8 +269,9 @@ void H264Encoder::UpdateSPS() {
       // constrained and non-constrained baseline profiles. Since many codecs
       // can't do non-constrained, and constrained is usually what we mean (and
       // it's a subset of non-constrained), default to it.
-      current_sps_.profile_idc = H264SPS::kProfileIDCBaseline;
+      current_sps_.profile_idc = H264SPS::kProfileIDCConstrainedBaseline;
       current_sps_.constraint_set0_flag = true;
+      current_sps_.constraint_set1_flag = true;
       break;
     case H264PROFILE_MAIN:
       current_sps_.profile_idc = H264SPS::kProfileIDCMain;
@@ -270,7 +299,7 @@ void H264Encoder::UpdateSPS() {
   current_sps_.pic_order_cnt_type = 0;
   current_sps_.log2_max_pic_order_cnt_lsb_minus4 =
       base::bits::Log2Ceiling(curr_params_.idr_period_frames * 2) - 4;
-  current_sps_.max_num_ref_frames = kMaxRefIdxL0Size;
+  current_sps_.max_num_ref_frames = curr_params_.max_num_ref_frames;
 
   current_sps_.frame_mbs_only_flag = true;
 
@@ -340,10 +369,13 @@ void H264Encoder::UpdatePPS() {
   current_pps_.entropy_coding_mode_flag =
       current_sps_.profile_idc >= H264SPS::kProfileIDCMain;
 
-  DCHECK_GT(kMaxRefIdxL0Size, 0u);
-  current_pps_.num_ref_idx_l0_default_active_minus1 = kMaxRefIdxL0Size - 1;
+  DCHECK_GT(curr_params_.max_ref_pic_list0_size, 0u);
+  current_pps_.num_ref_idx_l0_default_active_minus1 =
+      curr_params_.max_ref_pic_list0_size - 1;
   current_pps_.num_ref_idx_l1_default_active_minus1 =
-      kMaxRefIdxL1Size > 0 ? kMaxRefIdxL1Size - 1 : kMaxRefIdxL1Size;
+      curr_params_.max_ref_pic_list1_size > 0
+          ? curr_params_.max_ref_pic_list1_size - 1
+          : curr_params_.max_ref_pic_list1_size;
   DCHECK_LE(curr_params_.qp, 51);
   current_pps_.pic_init_qp_minus26 = curr_params_.qp - 26;
   current_pps_.deblocking_filter_control_present_flag = true;

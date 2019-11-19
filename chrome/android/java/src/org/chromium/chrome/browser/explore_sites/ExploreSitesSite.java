@@ -16,13 +16,13 @@ public class ExploreSitesSite {
     static final int DEFAULT_TILE_INDEX = -1;
     static final PropertyModel.ReadableIntPropertyKey ID_KEY =
             new PropertyModel.ReadableIntPropertyKey();
-    static final PropertyModel.WritableIntPropertyKey TILE_INDEX_KEY =
+    public static final PropertyModel.WritableIntPropertyKey TILE_INDEX_KEY =
             new PropertyModel.WritableIntPropertyKey();
-    static final PropertyModel.ReadableObjectPropertyKey<String> TITLE_KEY =
+    public static final PropertyModel.ReadableObjectPropertyKey<String> TITLE_KEY =
             new PropertyModel.ReadableObjectPropertyKey<>();
-    static final PropertyModel.ReadableObjectPropertyKey<String> URL_KEY =
+    public static final PropertyModel.ReadableObjectPropertyKey<String> URL_KEY =
             new PropertyModel.ReadableObjectPropertyKey<>();
-    static final PropertyModel.WritableObjectPropertyKey<Bitmap> ICON_KEY =
+    public static final PropertyModel.WritableObjectPropertyKey<Bitmap> ICON_KEY =
             new PropertyModel.WritableObjectPropertyKey<>();
     static final PropertyModel.WritableBooleanPropertyKey BLACKLISTED_KEY =
             new PropertyModel.WritableBooleanPropertyKey();

@@ -13,14 +13,14 @@ interface RemovableStorageWriter {
   // restricted to removable drives by the utility process.
   Write(mojo_base.mojom.FilePath source,
         mojo_base.mojom.FilePath target,
-        RemovableStorageWriterClient client);
+        pending_remote<RemovableStorageWriterClient> client);
 
   // Verifies that the contents of the source file was written to the target
   // file. Again, the target is restricted to removable drives by the utility
   // process.
   Verify(mojo_base.mojom.FilePath source,
          mojo_base.mojom.FilePath target,
-         RemovableStorageWriterClient client);
+         pending_remote<RemovableStorageWriterClient> client);
 };
 
 interface RemovableStorageWriterClient {

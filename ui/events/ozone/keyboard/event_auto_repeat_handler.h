@@ -61,7 +61,7 @@ class EVENTS_OZONE_EXPORT EventAutoRepeatHandler {
 
   Delegate* delegate_ = nullptr;
 
-  base::WeakPtrFactory<EventAutoRepeatHandler> weak_ptr_factory_;
+  base::WeakPtrFactory<EventAutoRepeatHandler> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(EventAutoRepeatHandler);
 };

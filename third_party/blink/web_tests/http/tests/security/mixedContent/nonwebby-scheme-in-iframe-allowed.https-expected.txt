@@ -1,4 +1,4 @@
-CONSOLE WARNING: line 16: Mixed Content: The page at 'https://127.0.0.1:8443/security/mixedContent/nonwebby-scheme-in-iframe-allowed.https.html' was loaded over HTTPS, but requested an insecure resource 'nonwebbyscheme://this-will-fail-but-no-mixed-content-error-should-appear'. This content should also be served over HTTPS.
+CONSOLE WARNING: line 16: Mixed Content: The page at 'https://127.0.0.1:8443/security/mixedContent/nonwebby-scheme-in-iframe-allowed.https.html' was loaded over HTTPS, but requested an insecure frame 'nonwebbyscheme://this-will-fail-but-no-mixed-content-error-should-appear'. This content should also be served over HTTPS.
 This tests that non-webby URLs are not blocked as mixed content. The test passes if a mixed content warning is displayed and the load proceeds. The test fails if a mixed content error is displayed, and the load is blocked.
 
 --------

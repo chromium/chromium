@@ -8,7 +8,7 @@ traits_headers = [ "//services/network/public/cpp/address_list_mojom_traits.h" ]
 sources = [
   "//services/network/public/cpp/address_list_mojom_traits.cc",
 ]
-type_mappings = [ "network.mojom.AddressList=net::AddressList" ]
+type_mappings = [ "network.mojom.AddressList=::net::AddressList" ]
 public_deps = [
   "//net",
 ]

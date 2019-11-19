@@ -15,8 +15,11 @@
 #include "components/translate/core/browser/translate_driver.h"
 #include "components/translate/core/common/translate_errors.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "mojo/public/cpp/bindings/binding_set.h"
-#include "services/network/public/mojom/url_loader_factory.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace content {
 class NavigationController;
@@ -26,8 +29,6 @@ class WebContents;
 namespace language {
 class UrlLanguageHistogram;
 }  // namespace language
-
-class TemplateURLService;
 
 namespace translate {
 
@@ -64,7 +65,6 @@ class ContentTranslateDriver : public TranslateDriver,
 
   ContentTranslateDriver(
       content::NavigationController* nav_controller,
-      const TemplateURLService* template_url_service,
       language::UrlLanguageHistogram* url_language_histogram);
   ~ContentTranslateDriver() override;
 
@@ -98,6 +98,7 @@ class ContentTranslateDriver : public TranslateDriver,
   const std::string& GetContentsMimeType() override;
   const GURL& GetLastCommittedURL() override;
   const GURL& GetVisibleURL() override;
+  ukm::SourceId GetUkmSourceId() override;
   bool HasCurrentPage() override;
   void OpenUrlInNewTab(const GURL& url) override;
 
@@ -112,25 +113,16 @@ class ContentTranslateDriver : public TranslateDriver,
                         const std::string& translated_lang,
                         TranslateErrors::Type error_type);
 
-  // Adds a binding in |bindings_| for the passed |request|.
-  void AddBinding(translate::mojom::ContentTranslateDriverRequest request);
+  // Adds a receiver in |receivers_| for the passed |receiver|.
+  void AddReceiver(
+      mojo::PendingReceiver<translate::mojom::ContentTranslateDriver> receiver);
   // Called when a page has been loaded and can be potentially translated.
-  void RegisterPage(translate::mojom::PagePtr page,
+  void RegisterPage(mojo::PendingRemote<translate::mojom::Page> page,
                     const translate::LanguageDetectionDetails& details,
                     bool page_needs_translation) override;
 
  private:
   void OnPageAway(int page_seq_no);
-
-  bool IsDefaultSearchEngineOriginator(
-      const url::Origin& originating_origin) const;
-
-  // Creates a URLLoaderFactory that may be used by the translate scripts that
-  // get injected into isolated worlds within the page to be translated.  Such
-  // scripts (or rather, their isolated worlds) are associated with a
-  // translate-specific origin like https://translate.googleapis.com and use
-  // this origin as |request_initiator| of http requests.
-  network::mojom::URLLoaderFactoryPtr CreateURLLoaderFactory();
 
   // The navigation controller of the tab we are associated with.
   content::NavigationController* navigation_controller_;
@@ -142,14 +134,12 @@ class ContentTranslateDriver : public TranslateDriver,
   // Max number of attempts before checking if a page has been reloaded.
   int max_reload_check_attempts_;
 
-  const TemplateURLService* template_url_service_;
-
   // Records mojo connections with all current alive pages.
   int next_page_seq_no_;
-  // PagePtr is the connection between this driver and a TranslateHelper (which
-  // are per RenderFrame). Each TranslateHelper has a |binding_| member,
-  // representing the other end of this pipe.
-  std::map<int, mojom::PagePtr> pages_;
+  // mojo::Remote<Page> is the connection between this driver and a
+  // TranslateHelper (which are per RenderFrame). Each TranslateHelper has a
+  // |binding_| member, representing the other end of this pipe.
+  std::map<int, mojo::Remote<mojom::Page>> pages_;
 
   // Histogram to be notified about detected language of every page visited. Not
   // owned here.
@@ -157,10 +147,10 @@ class ContentTranslateDriver : public TranslateDriver,
 
   // ContentTranslateDriver is a singleton per web contents but multiple render
   // frames may be contained in a single web contents. TranslateHelpers get the
-  // other end of this binding in the form of a ContentTranslateDriverPtr.
-  mojo::BindingSet<translate::mojom::ContentTranslateDriver> bindings_;
+  // other end of this receiver in the form of a ContentTranslateDriver.
+  mojo::ReceiverSet<translate::mojom::ContentTranslateDriver> receivers_;
 
-  base::WeakPtrFactory<ContentTranslateDriver> weak_pointer_factory_;
+  base::WeakPtrFactory<ContentTranslateDriver> weak_pointer_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ContentTranslateDriver);
 };

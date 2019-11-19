@@ -6,8 +6,7 @@
 
 #include "base/bind.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/message_loop/message_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
 #include "components/leveldb_proto/internal/proto_leveldb_wrapper.h"
@@ -53,7 +52,7 @@ class SharedProtoDatabaseTest : public testing::Test {
         FROM_HERE,
         base::BindOnce(&SharedProtoDatabase::Init, db_, create_if_missing,
                        client_name, std::move(callback),
-                       scoped_task_environment_.GetMainThreadTaskRunner()));
+                       task_environment_.GetMainThreadTaskRunner()));
   }
 
   void KillDB() { db_.reset(); }
@@ -85,14 +84,14 @@ class SharedProtoDatabaseTest : public testing::Test {
   }
 
   scoped_refptr<base::SequencedTaskRunner> GetMainThreadTaskRunner() {
-    return scoped_task_environment_.GetMainThreadTaskRunner();
+    return task_environment_.GetMainThreadTaskRunner();
   }
 
   SharedProtoDatabase* db() { return db_.get(); }
   ProtoLevelDBWrapper* wrapper() { return db_->db_wrapper_.get(); }
 
  private:
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
 
   std::unique_ptr<base::ScopedTempDir> temp_dir_;
   scoped_refptr<SharedProtoDatabase> db_;
@@ -145,6 +144,50 @@ TEST_F(SharedProtoDatabaseTest, GetClient_DifferentThreads) {
   base::RunLoop quit_cooldown;
   GetMainThreadTaskRunner()->PostDelayedTask(
       FROM_HERE, quit_cooldown.QuitClosure(), base::TimeDelta::FromSeconds(3));
+}
+
+// If not attempt to create the db, kInvalidOperation will be returned in the
+// callback.
+TEST_F(SharedProtoDatabaseTest, InitNotCreateDb) {
+  base::RunLoop run_init_loop;
+  InitDB(false /* create_if_missing */, "TestDatabaseUMA",
+         base::BindOnce(
+             [](base::OnceClosure signal, Enums::InitStatus status,
+                SharedDBMetadataProto::MigrationStatus migration_status) {
+               EXPECT_EQ(SharedDBMetadataProto::MIGRATION_NOT_ATTEMPTED,
+                         migration_status);
+               EXPECT_EQ(status, Enums::InitStatus::kInvalidOperation);
+               std::move(signal).Run();
+             },
+             run_init_loop.QuitClosure()));
+  run_init_loop.Run();
+}
+
+// If two initialize calls with different create_if_missing parameter arrive at
+// the same time, the shared db will be created.
+TEST_F(SharedProtoDatabaseTest, InitWithDifferentCreateIfMissing) {
+  base::RunLoop run_init_loop;
+  InitDB(false /* create_if_missing */, "TestDatabaseUMA1",
+         base::BindOnce(
+             [](base::OnceClosure signal, Enums::InitStatus status,
+                SharedDBMetadataProto::MigrationStatus migration_status) {
+               EXPECT_EQ(SharedDBMetadataProto::MIGRATION_NOT_ATTEMPTED,
+                         migration_status);
+               EXPECT_EQ(status, Enums::InitStatus::kOK);
+               std::move(signal).Run();
+             },
+             run_init_loop.QuitClosure()));
+
+  InitDB(true /* create_if_missing */, "TestDatabaseUMA2",
+         base::BindOnce(
+             [](Enums::InitStatus status,
+                SharedDBMetadataProto::MigrationStatus migration_status) {
+               EXPECT_EQ(SharedDBMetadataProto::MIGRATION_NOT_ATTEMPTED,
+                         migration_status);
+               EXPECT_EQ(status, Enums::InitStatus::kOK);
+             }));
+
+  run_init_loop.Run();
 }
 
 // Tests that the shared DB's destructor behaves appropriately once the

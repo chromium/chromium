@@ -25,6 +25,17 @@ MATCHER_P(SignatureIsSameAs,
   return false;
 }
 
+MATCHER_P(SignatureIs,
+          signature,
+          std::string(negation ? "signature isn't " : "signature is ") +
+              base::NumberToString(signature)) {
+  if (signature == arg.form_signature())
+    return true;
+
+  *result_listener << "signature is " << arg.form_signature() << " instead";
+  return false;
+}
+
 MATCHER_P(SubmissionEventIsSameAs,
           expected_submission_event,
           std::string(negation ? "submission event isn't "

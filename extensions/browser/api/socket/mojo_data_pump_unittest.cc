@@ -5,12 +5,12 @@
 #include "extensions/browser/api/socket/mojo_data_pump.h"
 
 #include <memory>
-#include <utility>
 #include <string>
+#include <utility>
 
 #include "base/run_loop.h"
 #include "base/test/bind_test_util.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/test_completion_callback.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -20,7 +20,7 @@ namespace extensions {
 // Tests that if |MojoDataPump::receive_stream_| is not ready, MojoDataPump will
 // wait and not error out.
 TEST(MojoDataPumpTest, ReceiveStreamNotReady) {
-  base::test::ScopedTaskEnvironment scoped_task_environment;
+  base::test::TaskEnvironment task_environment;
   mojo::DataPipe receive_pipe;
   mojo::DataPipe send_pipe;
   auto pump =
@@ -63,7 +63,7 @@ TEST(MojoDataPumpTest, ReceiveStreamNotReady) {
 // Tests that if |MojoDataPump::receive_stream_| is closed, an error is
 // propagated.
 TEST(MojoDataPumpTest, ReceiveStreamClosed) {
-  base::test::ScopedTaskEnvironment scoped_task_environment;
+  base::test::TaskEnvironment task_environment;
   mojo::DataPipe receive_pipe;
   mojo::DataPipe send_pipe;
   auto pump =
@@ -88,7 +88,7 @@ TEST(MojoDataPumpTest, ReceiveStreamClosed) {
 
 // Tests that if |MojoDataPump::send_stream_| is closed, Write() will fail.
 TEST(MojoDataPumpTest, SendStreamClosed) {
-  base::test::ScopedTaskEnvironment scoped_task_environment;
+  base::test::TaskEnvironment task_environment;
   mojo::DataPipe receive_pipe;
   mojo::DataPipe send_pipe;
   auto pump =

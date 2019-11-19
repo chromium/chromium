@@ -6,20 +6,13 @@
 
 #include <algorithm>
 #include <array>
-#include <memory>
-#include <string>
 #include <utility>
 
 #include "ash/public/cpp/app_types.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/time/clock.h"
-#include "base/time/tick_clock.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/fake_power_manager_client.h"
-#include "chromeos/dbus/fake_session_manager_client.h"
-#include "chromeos/dbus/power_manager/idle.pb.h"
+#include "chromeos/dbus/session_manager/fake_session_manager_client.h"
 #include "components/arc/arc_prefs.h"
 #include "components/arc/arc_service_manager.h"
 #include "components/arc/metrics/arc_metrics_constants.h"
@@ -27,142 +20,14 @@
 #include "components/arc/test/test_browser_context.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/session_manager/core/session_manager.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
-#include "ui/aura/test/test_window_delegate.h"
 #include "ui/aura/test/test_windows.h"
 #include "ui/aura/window.h"
 
 namespace arc {
 namespace {
-
-// Fake ArcWindowDelegate to help test recording UMA on focus changes,
-// not depending on the full setup of Exo and Ash.
-class FakeArcWindowDelegate : public ArcMetricsService::ArcWindowDelegate {
- public:
-  FakeArcWindowDelegate() = default;
-  ~FakeArcWindowDelegate() override = default;
-
-  bool IsArcAppWindow(const aura::Window* window) const override {
-    return focused_window_id_ == arc_window_id_;
-  }
-
-  void RegisterActivationChangeObserver() override {}
-  void UnregisterActivationChangeObserver() override {}
-
-  std::unique_ptr<aura::Window> CreateFakeArcWindow() {
-    const int id = next_id_++;
-    arc_window_id_ = id;
-    std::unique_ptr<aura::Window> window(
-        base::WrapUnique(aura::test::CreateTestWindowWithDelegate(
-            &dummy_delegate_, id, gfx::Rect(), nullptr)));
-    window->SetProperty(aura::client::kAppType,
-                        static_cast<int>(ash::AppType::ARC_APP));
-    return window;
-  }
-
-  std::unique_ptr<aura::Window> CreateFakeNonArcWindow() {
-    const int id = next_id_++;
-    return base::WrapUnique(aura::test::CreateTestWindowWithDelegate(
-        &dummy_delegate_, id, gfx::Rect(), nullptr));
-  }
-
-  void FocusWindow(const aura::Window* window) {
-    focused_window_id_ = window->id();
-  }
-
- private:
-  aura::test::TestWindowDelegate dummy_delegate_;
-  int next_id_ = 0;
-  int arc_window_id_ = 0;
-  int focused_window_id_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeArcWindowDelegate);
-};
-
-// Fake base::Clock to simulate wall clock time changes, which ArcMetricsService
-// uses to determine if cumulative metrics should be recorded to UMA.
-class FakeClock : public base::Clock {
- public:
-  FakeClock() : now_(base::Time::Now()) {}
-
-  ~FakeClock() override = default;
-
-  base::Time Now() const override { return now_; }
-
-  void TimeElapsed(base::TimeDelta delta) { now_ += delta; }
-
- private:
-  base::Time now_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeClock);
-};
-
-// Fake base::TickClock to simulate time changes which are being recorded by
-// metrics.
-class FakeTickClock : public base::TickClock {
- public:
-  FakeTickClock() = default;
-  ~FakeTickClock() override = default;
-
-  base::TimeTicks NowTicks() const override { return now_ticks_; }
-
-  void TimeElapsed(base::TimeDelta delta) { now_ticks_ += delta; }
-
- private:
-  base::TimeTicks now_ticks_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeTickClock);
-};
-
-// Helper class that initializes DBusThreadManager for testing, and ensures the
-// lifetime of DBusThreadManager.
-class DBusThreadManagerLifetimeHelper {
- public:
-  DBusThreadManagerLifetimeHelper() {
-    // Get DBusThreadManagerSetter for setting fake DBusThreadManager clients.
-    // This also initializes the global DBusThreadManager instance.
-    std::unique_ptr<chromeos::DBusThreadManagerSetter>
-        dbus_thread_manager_setter =
-            chromeos::DBusThreadManager::GetSetterForTesting();
-
-    // Set fake clients for testing.
-    dbus_thread_manager_setter->SetSessionManagerClient(
-        std::make_unique<chromeos::FakeSessionManagerClient>());
-    chromeos::PowerManagerClient::Initialize();
-  }
-
-  ~DBusThreadManagerLifetimeHelper() {
-    chromeos::PowerManagerClient::Shutdown();
-    // Destroy the global DBusThreadManager instance.
-    chromeos::DBusThreadManager::Shutdown();
-  }
-};
-
-// Helper class that ensures lifetime of StabilityMetricsManager for testing.
-class ScopedStabilityMetricsManager {
- public:
-  ScopedStabilityMetricsManager() {
-    prefs::RegisterLocalStatePrefs(local_state_.registry());
-    StabilityMetricsManager::Initialize(&local_state_);
-  }
-
-  ~ScopedStabilityMetricsManager() { StabilityMetricsManager::Shutdown(); }
-
- private:
-  TestingPrefServiceSimple local_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedStabilityMetricsManager);
-};
-
-// Initializes dependencies before creating ArcMetricsService instance.
-ArcMetricsService* CreateArcMetricsService(TestBrowserContext* context) {
-  // Register preferences for ARC++ engagement time metrics.
-  prefs::RegisterProfilePrefs(context->pref_registry());
-
-  return ArcMetricsService::GetForBrowserContextForTesting(context);
-}
 
 // The event names the container sends to Chrome.
 constexpr std::array<const char*, 11> kBootEvents{
@@ -180,24 +45,33 @@ constexpr std::array<const char*, 11> kBootEvents{
 
 class ArcMetricsServiceTest : public testing::Test {
  protected:
-  ArcMetricsServiceTest()
-      : arc_service_manager_(std::make_unique<ArcServiceManager>()),
-        context_(std::make_unique<TestBrowserContext>()),
-        service_(CreateArcMetricsService(context_.get())) {
-    GetSessionManagerClient()->set_arc_available(true);
+  ArcMetricsServiceTest() {
+    prefs::RegisterLocalStatePrefs(local_state_.registry());
+    StabilityMetricsManager::Initialize(&local_state_);
+    chromeos::PowerManagerClient::InitializeFake();
+    chromeos::SessionManagerClient::InitializeFakeInMemory();
+    chromeos::FakeSessionManagerClient::Get()->set_arc_available(true);
 
-    auto fake_arc_window_delegate = std::make_unique<FakeArcWindowDelegate>();
-    fake_arc_window_delegate_ = fake_arc_window_delegate.get();
-    service_->SetArcWindowDelegateForTesting(
-        std::move(fake_arc_window_delegate));
-    fake_arc_window_ = fake_arc_window_delegate_->CreateFakeArcWindow();
-    fake_non_arc_window_ = fake_arc_window_delegate_->CreateFakeNonArcWindow();
+    arc_service_manager_ = std::make_unique<ArcServiceManager>();
+    context_ = std::make_unique<TestBrowserContext>();
+    prefs::RegisterProfilePrefs(context_->pref_registry());
+    service_ =
+        ArcMetricsService::GetForBrowserContextForTesting(context_.get());
 
-    service_->SetClockForTesting(&fake_clock_);
-    service_->SetTickClockForTesting(&fake_tick_clock_);
+    CreateFakeWindows();
   }
 
-  ~ArcMetricsServiceTest() override {}
+  ~ArcMetricsServiceTest() override {
+    fake_non_arc_window_.reset();
+    fake_arc_window_.reset();
+
+    context_.reset();
+    arc_service_manager_.reset();
+
+    chromeos::SessionManagerClient::Shutdown();
+    chromeos::PowerManagerClient::Shutdown();
+    StabilityMetricsManager::Shutdown();
+  }
 
   ArcMetricsService* service() { return service_; }
 
@@ -205,7 +79,8 @@ class ArcMetricsServiceTest : public testing::Test {
     const base::TimeTicks arc_start_time =
         base::TimeDelta::FromMilliseconds(arc_start_time_in_ms) +
         base::TimeTicks();
-    GetSessionManagerClient()->set_arc_start_time(arc_start_time);
+    chromeos::FakeSessionManagerClient::Get()->set_arc_start_time(
+        arc_start_time);
   }
 
   std::vector<mojom::BootProgressEventPtr> GetBootProgressEvents(
@@ -219,58 +94,29 @@ class ArcMetricsServiceTest : public testing::Test {
     return events;
   }
 
-  void SetSessionState(session_manager::SessionState state) {
-    session_manager_.SetSessionState(state);
-  }
-
-  void SetScreenDimmed(bool is_screen_dimmed) {
-    power_manager::ScreenIdleState screen_idle_state;
-    screen_idle_state.set_dimmed(is_screen_dimmed);
-    GetPowerManagerClient()->SendScreenIdleStateChanged(screen_idle_state);
-  }
-
-  void TriggerRecordEngagementTimeToUma() {
-    // Trigger UMA record by changing to next day.
-    fake_clock_.TimeElapsed(base::TimeDelta::FromDays(1));
-    service_->OnSessionStateChanged();
-  }
-
-  FakeArcWindowDelegate* fake_arc_window_delegate() {
-    return fake_arc_window_delegate_;
-  }
   aura::Window* fake_arc_window() { return fake_arc_window_.get(); }
   aura::Window* fake_non_arc_window() { return fake_non_arc_window_.get(); }
 
-  FakeTickClock* fake_tick_clock() { return &fake_tick_clock_; }
-
  private:
-  chromeos::FakeSessionManagerClient* GetSessionManagerClient() {
-    return static_cast<chromeos::FakeSessionManagerClient*>(
-        chromeos::DBusThreadManager::Get()->GetSessionManagerClient());
+  void CreateFakeWindows() {
+    fake_arc_window_.reset(aura::test::CreateTestWindowWithId(
+        /*id=*/0, nullptr));
+    fake_arc_window_->SetProperty(aura::client::kAppType,
+                                  static_cast<int>(ash::AppType::ARC_APP));
+    fake_non_arc_window_.reset(aura::test::CreateTestWindowWithId(
+        /*id=*/1, nullptr));
   }
 
-  chromeos::FakePowerManagerClient* GetPowerManagerClient() {
-    return static_cast<chromeos::FakePowerManagerClient*>(
-        chromeos::PowerManagerClient::Get());
-  }
-
-  content::TestBrowserThreadBundle thread_bundle_;
-  std::unique_ptr<ArcServiceManager> arc_service_manager_;
-
-  // DBusThreadManager, SessionManager and StabilityMetricsManager should
-  // outlive TestBrowserContext which destructs ArcMetricsService in dtor.
-  DBusThreadManagerLifetimeHelper dbus_thread_manager_lifetime_helper_;
+  content::BrowserTaskEnvironment task_environment_;
+  TestingPrefServiceSimple local_state_;
   session_manager::SessionManager session_manager_;
-  ScopedStabilityMetricsManager scoped_stability_metrics_manager_;
+
+  std::unique_ptr<ArcServiceManager> arc_service_manager_;
   std::unique_ptr<TestBrowserContext> context_;
+  ArcMetricsService* service_;
 
   std::unique_ptr<aura::Window> fake_arc_window_;
   std::unique_ptr<aura::Window> fake_non_arc_window_;
-  FakeArcWindowDelegate* fake_arc_window_delegate_;  // Owned by |service_|
-  FakeClock fake_clock_;
-  FakeTickClock fake_tick_clock_;
-
-  ArcMetricsService* const service_;
 
   DISALLOW_COPY_AND_ASSIGN(ArcMetricsServiceTest);
 };
@@ -412,7 +258,6 @@ TEST_F(ArcMetricsServiceTest, ReportNativeBridge) {
 
 TEST_F(ArcMetricsServiceTest, RecordArcWindowFocusAction) {
   base::HistogramTester tester;
-  fake_arc_window_delegate()->FocusWindow(fake_arc_window());
 
   service()->OnWindowActivated(
       wm::ActivationChangeObserver::ActivationReason::INPUT_EVENT,
@@ -427,7 +272,6 @@ TEST_F(ArcMetricsServiceTest, RecordNothingNonArcWindowFocusAction) {
   base::HistogramTester tester;
 
   // Focus an ARC window once so that the histogram is created.
-  fake_arc_window_delegate()->FocusWindow(fake_arc_window());
   service()->OnWindowActivated(
       wm::ActivationChangeObserver::ActivationReason::INPUT_EVENT,
       fake_arc_window(), nullptr);
@@ -436,7 +280,6 @@ TEST_F(ArcMetricsServiceTest, RecordNothingNonArcWindowFocusAction) {
       static_cast<int>(UserInteractionType::APP_CONTENT_WINDOW_INTERACTION), 1);
 
   // Focusing a non-ARC window should not increase the bucket count.
-  fake_arc_window_delegate()->FocusWindow(fake_non_arc_window());
   service()->OnWindowActivated(
       wm::ActivationChangeObserver::ActivationReason::INPUT_EVENT,
       fake_non_arc_window(), nullptr);
@@ -444,151 +287,6 @@ TEST_F(ArcMetricsServiceTest, RecordNothingNonArcWindowFocusAction) {
   tester.ExpectBucketCount(
       "Arc.UserInteraction",
       static_cast<int>(UserInteractionType::APP_CONTENT_WINDOW_INTERACTION), 1);
-}
-
-TEST_F(ArcMetricsServiceTest, RecordEngagementTimeSessionLocked) {
-  base::HistogramTester tester;
-
-  // Make session inactive for 1 sec. Nothing should be recorded.
-  SetSessionState(session_manager::SessionState::LOCKED);
-  fake_tick_clock()->TimeElapsed(base::TimeDelta::FromSeconds(1));
-
-  TriggerRecordEngagementTimeToUma();
-  tester.ExpectTimeBucketCount("Arc.EngagementTime.Total",
-                               base::TimeDelta::FromSeconds(0), 1);
-  tester.ExpectTimeBucketCount("Arc.EngagementTime.ArcTotal",
-                               base::TimeDelta::FromSeconds(0), 1);
-  tester.ExpectTimeBucketCount("Arc.EngagementTime.Foreground",
-                               base::TimeDelta::FromSeconds(0), 1);
-  tester.ExpectTimeBucketCount("Arc.EngagementTime.Background",
-                               base::TimeDelta::FromSeconds(0), 1);
-}
-
-TEST_F(ArcMetricsServiceTest, RecordEngagementTimeSessionActive) {
-  base::HistogramTester tester;
-
-  // Make session active for 1 sec. Should be recorded as total time.
-  SetSessionState(session_manager::SessionState::ACTIVE);
-  fake_tick_clock()->TimeElapsed(base::TimeDelta::FromSeconds(1));
-
-  TriggerRecordEngagementTimeToUma();
-  tester.ExpectTimeBucketCount("Arc.EngagementTime.Total",
-                               base::TimeDelta::FromSeconds(1), 1);
-  tester.ExpectTimeBucketCount("Arc.EngagementTime.ArcTotal",
-                               base::TimeDelta::FromSeconds(0), 1);
-  tester.ExpectTimeBucketCount("Arc.EngagementTime.Foreground",
-                               base::TimeDelta::FromSeconds(0), 1);
-  tester.ExpectTimeBucketCount("Arc.EngagementTime.Background",
-                               base::TimeDelta::FromSeconds(0), 1);
-}
-
-TEST_F(ArcMetricsServiceTest, RecordEngagementTimeScreenDimmed) {
-  base::HistogramTester tester;
-  SetSessionState(session_manager::SessionState::ACTIVE);
-
-  // Dim screen off for 1 sec. Nothing should be recorded.
-  SetScreenDimmed(true);
-  fake_tick_clock()->TimeElapsed(base::TimeDelta::FromSeconds(1));
-
-  TriggerRecordEngagementTimeToUma();
-  tester.ExpectTimeBucketCount("Arc.EngagementTime.Total",
-                               base::TimeDelta::FromSeconds(0), 1);
-  tester.ExpectTimeBucketCount("Arc.EngagementTime.ArcTotal",
-                               base::TimeDelta::FromSeconds(0), 1);
-  tester.ExpectTimeBucketCount("Arc.EngagementTime.Foreground",
-                               base::TimeDelta::FromSeconds(0), 1);
-  tester.ExpectTimeBucketCount("Arc.EngagementTime.Background",
-                               base::TimeDelta::FromSeconds(0), 1);
-}
-
-TEST_F(ArcMetricsServiceTest, RecordEngagementTimeArcWindowFocused) {
-  base::HistogramTester tester;
-  SetSessionState(session_manager::SessionState::ACTIVE);
-
-  // Focus an ARC++ window for 1 sec. Should be recorded as total time and
-  // foreground time.
-  fake_arc_window_delegate()->FocusWindow(fake_arc_window());
-  service()->OnWindowActivated(
-      wm::ActivationChangeObserver::ActivationReason::INPUT_EVENT,
-      fake_arc_window(), nullptr);
-  fake_tick_clock()->TimeElapsed(base::TimeDelta::FromSeconds(1));
-
-  TriggerRecordEngagementTimeToUma();
-  tester.ExpectTimeBucketCount("Arc.EngagementTime.Total",
-                               base::TimeDelta::FromSeconds(1), 1);
-  tester.ExpectTimeBucketCount("Arc.EngagementTime.ArcTotal",
-                               base::TimeDelta::FromSeconds(1), 1);
-  tester.ExpectTimeBucketCount("Arc.EngagementTime.Foreground",
-                               base::TimeDelta::FromSeconds(1), 1);
-  tester.ExpectTimeBucketCount("Arc.EngagementTime.Background",
-                               base::TimeDelta::FromSeconds(0), 1);
-}
-
-TEST_F(ArcMetricsServiceTest, RecordEngagementTimeNonArcWindowFocused) {
-  base::HistogramTester tester;
-  SetSessionState(session_manager::SessionState::ACTIVE);
-
-  // Focus an non-ARC++ window for 1 sec. Should be recorded as total time.
-  fake_arc_window_delegate()->FocusWindow(fake_non_arc_window());
-  service()->OnWindowActivated(
-      wm::ActivationChangeObserver::ActivationReason::INPUT_EVENT,
-      fake_arc_window(), nullptr);
-  fake_tick_clock()->TimeElapsed(base::TimeDelta::FromSeconds(1));
-
-  TriggerRecordEngagementTimeToUma();
-  tester.ExpectTimeBucketCount("Arc.EngagementTime.Total",
-                               base::TimeDelta::FromSeconds(1), 1);
-  tester.ExpectTimeBucketCount("Arc.EngagementTime.ArcTotal",
-                               base::TimeDelta::FromSeconds(0), 1);
-  tester.ExpectTimeBucketCount("Arc.EngagementTime.Foreground",
-                               base::TimeDelta::FromSeconds(0), 1);
-  tester.ExpectTimeBucketCount("Arc.EngagementTime.Background",
-                               base::TimeDelta::FromSeconds(0), 1);
-}
-
-TEST_F(ArcMetricsServiceTest, RecordEngagementTimeAppInBackground) {
-  base::HistogramTester tester;
-  SetSessionState(session_manager::SessionState::ACTIVE);
-
-  // Open an ARC++ app in the background and wait for 1 sec. Should be recorded
-  // as total time and background time.
-  service()->OnTaskCreated(1, "", "", "");
-  fake_tick_clock()->TimeElapsed(base::TimeDelta::FromSeconds(1));
-
-  TriggerRecordEngagementTimeToUma();
-  tester.ExpectTimeBucketCount("Arc.EngagementTime.Total",
-                               base::TimeDelta::FromSeconds(1), 1);
-  tester.ExpectTimeBucketCount("Arc.EngagementTime.ArcTotal",
-                               base::TimeDelta::FromSeconds(1), 1);
-  tester.ExpectTimeBucketCount("Arc.EngagementTime.Foreground",
-                               base::TimeDelta::FromSeconds(0), 1);
-  tester.ExpectTimeBucketCount("Arc.EngagementTime.Background",
-                               base::TimeDelta::FromSeconds(1), 1);
-}
-
-TEST_F(ArcMetricsServiceTest,
-       RecordEngagementTimeAppInBackgroundAndArcWindowFocused) {
-  base::HistogramTester tester;
-  SetSessionState(session_manager::SessionState::ACTIVE);
-
-  // With an ARC++ app in the background, focus an ARC++ window for 1 sec.
-  // Should be recorded as total time and foreground time.
-  service()->OnTaskCreated(1, "", "", "");
-  fake_arc_window_delegate()->FocusWindow(fake_arc_window());
-  service()->OnWindowActivated(
-      wm::ActivationChangeObserver::ActivationReason::INPUT_EVENT,
-      fake_arc_window(), nullptr);
-  fake_tick_clock()->TimeElapsed(base::TimeDelta::FromSeconds(1));
-
-  TriggerRecordEngagementTimeToUma();
-  tester.ExpectTimeBucketCount("Arc.EngagementTime.Total",
-                               base::TimeDelta::FromSeconds(1), 1);
-  tester.ExpectTimeBucketCount("Arc.EngagementTime.ArcTotal",
-                               base::TimeDelta::FromSeconds(1), 1);
-  tester.ExpectTimeBucketCount("Arc.EngagementTime.Foreground",
-                               base::TimeDelta::FromSeconds(1), 1);
-  tester.ExpectTimeBucketCount("Arc.EngagementTime.Background",
-                               base::TimeDelta::FromSeconds(0), 1);
 }
 
 }  // namespace

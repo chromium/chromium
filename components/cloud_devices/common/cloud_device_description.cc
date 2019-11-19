@@ -22,11 +22,11 @@ CloudDeviceDescription::CloudDeviceDescription()
 CloudDeviceDescription::~CloudDeviceDescription() = default;
 
 bool CloudDeviceDescription::InitFromString(const std::string& json) {
-  std::unique_ptr<base::Value> value = base::JSONReader::ReadDeprecated(json);
+  base::Optional<base::Value> value = base::JSONReader::Read(json);
   if (!value)
     return false;
 
-  return InitFromValue(base::Value::FromUniquePtrValue(std::move(value)));
+  return InitFromValue(std::move(*value));
 }
 
 bool CloudDeviceDescription::InitFromValue(base::Value ticket) {

@@ -17,7 +17,7 @@ from py_utils import discover
 
 def _GetAllSystemHealthBenchmarks():
   all_perf_benchmarks = discover.DiscoverClasses(
-      path_util.GetPerfBenchmarksDir(), path_util.GetPerfDir(),
+      path_util.GetOfficialBenchmarksDir(), path_util.GetPerfDir(),
       benchmark_module.Benchmark,
       index_by_class_name=True).values()
   return [b for b in all_perf_benchmarks if

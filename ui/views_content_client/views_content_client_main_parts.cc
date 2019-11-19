@@ -10,7 +10,7 @@
 #include "build/build_config.h"
 #include "content/public/browser/context_factory.h"
 #include "content/shell/browser/shell_browser_context.h"
-#include "ui/base/ime/input_method_initializer.h"
+#include "ui/base/ime/init/input_method_initializer.h"
 #include "ui/base/material_design/material_design_controller.h"
 #include "ui/views/test/desktop_test_views_delegate.h"
 #include "ui/views_content_client/views_content_client.h"
@@ -33,7 +33,7 @@ void ViewsContentClientMainParts::PreCreateMainMessageLoop() {}
 void ViewsContentClientMainParts::PreMainMessageLoopRun() {
   ui::MaterialDesignController::Initialize();
   ui::InitializeInputMethodForTesting();
-  browser_context_.reset(new content::ShellBrowserContext(false, NULL));
+  browser_context_ = std::make_unique<content::ShellBrowserContext>(false);
 
   std::unique_ptr<views::TestViewsDelegate> test_views_delegate(
       new views::DesktopTestViewsDelegate);

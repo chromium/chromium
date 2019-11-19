@@ -5,15 +5,15 @@ package org.chromium.chrome.browser.ntp.snippets;
 
 import android.annotation.SuppressLint;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.ColorInt;
-import android.support.annotation.Nullable;
+
+import androidx.annotation.ColorInt;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.DiscardableReferencePool.DiscardableReference;
 import org.chromium.chrome.browser.ntp.cards.NewTabPageViewHolder.PartialBindCallback;
 import org.chromium.chrome.browser.suggestions.OfflinableSuggestion;
 import org.chromium.ui.modelutil.PropertyObservable;
 
-import java.io.File;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -80,18 +80,6 @@ public class SnippetArticle
 
     /** The thumbnail dominant color. */
     private @ColorInt Integer mThumbnailDominantColor;
-
-    /** Whether the linked article represents an asset download. */
-    private boolean mIsAssetDownload;
-
-    /** The GUID of the asset download (only for asset download articles). */
-    private String mAssetDownloadGuid;
-
-    /** The path to the asset download (only for asset download articles). */
-    private File mAssetDownloadFile;
-
-    /** The mime type of the asset download (only for asset download articles). */
-    private String mAssetDownloadMimeType;
 
     /** The tab id of the corresponding tab (only for recent tab articles). */
     private int mRecentTabId;
@@ -197,76 +185,9 @@ public class SnippetArticle
         return mCategory == KnownCategories.ARTICLES;
     }
 
-    /** @return whether a snippet is a contextual suggestion. */
-    public boolean isContextual() {
-        return mCategory == KnownCategories.CONTEXTUAL;
-    }
-
-    /** @return whether a snippet is either offline page or asset download. */
-    public boolean isDownload() {
-        return mCategory == KnownCategories.DOWNLOADS;
-    }
-
-    /** @return whether a snippet is asset download. */
-    public boolean isAssetDownload() {
-        return mIsAssetDownload;
-    }
-
-    /**
-     * @return the GUID of the asset download. May only be called if {@link #mIsAssetDownload} is
-     * {@code true} (which implies that this snippet belongs to the DOWNLOADS category).
-     */
-    public String getAssetDownloadGuid() {
-        assert isDownload();
-        assert mIsAssetDownload;
-        return mAssetDownloadGuid;
-    }
-
-    /**
-     * @return the asset download path. May only be called if {@link #mIsAssetDownload} is
-     * {@code true} (which implies that this snippet belongs to the DOWNLOADS category).
-     */
-    public File getAssetDownloadFile() {
-        assert isDownload();
-        assert mIsAssetDownload;
-        return mAssetDownloadFile;
-    }
-
-    /**
-     * @return the mime type of the asset download. May only be called if {@link #mIsAssetDownload}
-     * is {@code true} (which implies that this snippet belongs to the DOWNLOADS category).
-     */
-    public String getAssetDownloadMimeType() {
-        assert isDownload();
-        assert mIsAssetDownload;
-        return mAssetDownloadMimeType;
-    }
-
-    /**
-     * Marks the article suggestion as an asset download with the given path and mime type. May only
-     * be called if this snippet belongs to DOWNLOADS category.
-     */
-    public void setAssetDownloadData(String downloadGuid, String filePath, String mimeType) {
-        assert isDownload();
-        mIsAssetDownload = true;
-        mAssetDownloadGuid = downloadGuid;
-        mAssetDownloadFile = new File(filePath);
-        mAssetDownloadMimeType = mimeType;
-    }
-
-    /**
-     * Marks the article suggestion as an offline page download with the given id. May only
-     * be called if this snippet belongs to DOWNLOADS category.
-     */
-    public void setOfflinePageDownloadData(long offlinePageId) {
-        assert isDownload();
-        mIsAssetDownload = false;
-        setOfflinePageOfflineId(offlinePageId);
-    }
-
     @Override
     public boolean requiresExactOfflinePage() {
-        return isDownload();
+        return false;
     }
 
     @Override

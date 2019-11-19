@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web/web_state/ui/web_view_js_utils.h"
+#import "ios/web/js_messaging/web_view_js_utils.h"
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"

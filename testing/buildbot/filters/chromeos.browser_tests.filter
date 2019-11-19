@@ -1,0 +1,41 @@
+# TODO(crbug.com/977736): Enable this.
+-ActiveDirectoryWebUILoginTest.PasswordChange_ReopenClearErrors
+
+# TODO(crbug.com/979355): Enable this.
+-AutotestPrivateWithPolicyApiTest.PolicyAPITest
+
+# TODO(crbug.com/977738): Enable this.
+-ChromePluginTest.InstalledPlugins
+
+# TODO(crbug.com/977740): Enable this.
+-LoginUIKeyboardTest.CheckPODScreenDefault
+-LoginUIKeyboardTestWithUsersAndOwner.CheckPODScreenKeyboard
+
+# TODO(crbug.com/977741): Enable this.
+-LoginUtilsTest.RlzInitialized
+
+# TODO(crbug.com/976083): Enable this.
+-MSE_Widevine/EncryptedMediaTest.*
+
+# TODO(crbug.com/977743): Enable this.
+-ManagementApiKioskTest.ManagementApi
+
+# TODO(crbug.com/985390): Enable this.
+-OSSettingsPeoplePageAccountManagerTest.AllJsTests
+
+# TODO(crbug.com/977744): Enable this.
+-ProcessMemoryMetricsEmitterTest.RendererBuildId
+
+# TODO(crbug.com/990819): Enable this.
+-StructSequence/OobeLocalizationTest.LocalizationTest/0
+
+# TODO(crbug.com/978051): Enable this.
+-TabManagerTestWithTwoTabs.TabProactiveDiscardAndFocusBeforeFreezeCompletes
+
+# TODO(crbug.com/1002652): Enable this.
+-TabStripTabListTest.All
+-TabStripTabTest.All
+
+# TODO(crbug.com/977749): Enable this.
+-TestAsNormalAndGuestUser/SpokenFeedbackTest.OverviewMode/0
+-TestAsNormalAndGuestUser/SpokenFeedbackTest.OverviewMode/1

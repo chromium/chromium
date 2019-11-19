@@ -7,7 +7,7 @@ package org.chromium.net;
 /**
  * Subclass of {@link NetworkException} which contains a detailed
  * <a href="https://www.chromium.org/quic">QUIC</a> error code from <a
- * href=https://cs.chromium.org/chromium/src/net/quic/quic_protocol.h?type=cs&q=%22enum+QuicErrorCode+%7B%22+file:src/net/quic/quic_protocol.h>
+ * href="https://cs.chromium.org/search/?q=symbol:%5CbQuicErrorCode%5Cb">
  * QuicErrorCode</a>. An instance of {@code QuicException} is passed to {@code onFailed} callbacks
  * when the error code is {@link NetworkException#ERROR_QUIC_PROTOCOL_FAILED
  * NetworkException.ERROR_QUIC_PROTOCOL_FAILED}.
@@ -28,7 +28,7 @@ public abstract class QuicException extends NetworkException {
     /**
      * Returns the <a href="https://www.chromium.org/quic">QUIC</a> error code, which is a value
      * from <a
-     * href=https://cs.chromium.org/chromium/src/net/quic/core/quic_error_codes.h?type=cs&q=%22enum+QuicErrorCode+%7B%22>
+     * href="https://cs.chromium.org/search/?q=symbol:%5CbQuicErrorCode%5Cb">
      * QuicErrorCode</a>.
      */
     public abstract int getQuicDetailedErrorCode();

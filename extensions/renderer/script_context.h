@@ -18,13 +18,13 @@
 #include "extensions/common/features/feature.h"
 #include "extensions/common/permissions/api_permission_set.h"
 #include "extensions/renderer/module_system.h"
-#include "extensions/renderer/request_sender.h"
 #include "extensions/renderer/safe_builtins.h"
 #include "extensions/renderer/script_injection_callback.h"
 #include "url/gurl.h"
 #include "v8/include/v8.h"
 
 namespace blink {
+class WebDocumentLoader;
 class WebLocalFrame;
 }
 
@@ -43,7 +43,7 @@ class Extension;
 //
 // Note that ScriptContexts bound to worker threads will not have the full
 // functionality as those bound to the main RenderThread.
-class ScriptContext : public RequestSender::Source {
+class ScriptContext {
  public:
   using RunScriptExceptionHandler = base::Callback<void(const v8::TryCatch&)>;
 
@@ -53,7 +53,7 @@ class ScriptContext : public RequestSender::Source {
                 Feature::Context context_type,
                 const Extension* effective_extension,
                 Feature::Context effective_context_type);
-  ~ScriptContext() override;
+  ~ScriptContext();
 
   // Returns whether |url| from any Extension in |extension_set| is sandboxed,
   // as declared in each Extension's manifest.
@@ -156,6 +156,8 @@ class ScriptContext : public RequestSender::Source {
     return service_worker_version_id_;
   }
 
+  bool IsForServiceWorker() const;
+
   // Sets the URL of this ScriptContext. Usually this will automatically be set
   // on construction, unless this isn't constructed with enough information to
   // determine the URL (e.g. frame was null).
@@ -175,6 +177,21 @@ class ScriptContext : public RequestSender::Source {
   bool IsAnyFeatureAvailableToContext(const extensions::Feature& api,
                                       CheckAliasStatus check_alias);
 
+  // Scope which maps a frame to a document loader. This is used by various
+  // static methods below, which need to account for "just about to load"
+  // document when retrieving URL.
+  class ScopedFrameDocumentLoader {
+   public:
+    ScopedFrameDocumentLoader(blink::WebLocalFrame* frame,
+                              blink::WebDocumentLoader* document_loader);
+    ~ScopedFrameDocumentLoader();
+
+   private:
+    blink::WebLocalFrame* frame_;
+    blink::WebDocumentLoader* document_loader_;
+    DISALLOW_COPY_AND_ASSIGN(ScopedFrameDocumentLoader);
+  };
+
   // Utility to get the URL we will match against for a frame. If the frame has
   // committed, this is the commited URL. Otherwise it is the provisional URL.
   // The returned URL may be invalid.
@@ -193,14 +210,6 @@ class ScriptContext : public RequestSender::Source {
   static GURL GetEffectiveDocumentURL(blink::WebLocalFrame* frame,
                                       const GURL& document_url,
                                       bool match_about_blank);
-
-  // RequestSender::Source implementation.
-  ScriptContext* GetContext() override;
-  void OnResponseReceived(const std::string& name,
-                          int request_id,
-                          bool success,
-                          const base::ListValue& response,
-                          const std::string& error) override;
 
   // Grants a set of content capabilities to this context.
   void set_content_capabilities(APIPermissionSet capabilities) {

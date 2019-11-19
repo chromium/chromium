@@ -83,6 +83,7 @@ static constexpr float kToastYPaddingDMM = 0.02f;
 static constexpr float kToastCornerRadiusDMM = 0.004f;
 static constexpr float kToastTextFontHeightDMM = 0.023f;
 static constexpr int kToastTimeoutSeconds = 6;
+static constexpr int kWmrInitialIndicatorsTimeoutSeconds = 10;
 static constexpr float kPlatformToastVerticalOffset = 0.5f;
 
 static constexpr float kSplashScreenTextDistance = 2.5f;
@@ -283,6 +284,8 @@ static constexpr float kOverflowMenuYPadding = 0.012f;
 static constexpr float kOverflowMenuItemHeight = 0.080f;
 static constexpr float kOverflowMenuItemXPadding = 0.024f;
 static constexpr float kOverflowMenuMaxSpan = 0.384f - kOverflowMenuYPadding;
+
+static constexpr const char* kCrashVrBrowserUrl = "chrome://crash-vr-browser";
 
 }  // namespace vr
 

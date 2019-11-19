@@ -4,9 +4,8 @@
 
 #include "components/metrics/file_metrics_provider.h"
 
-#include <functional>
-
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/files/file_util.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/files/scoped_temp_dir.h"
@@ -28,6 +27,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
 
 namespace {
@@ -114,7 +114,7 @@ class FileMetricsProviderTest : public testing::TestWithParam<bool> {
   bool HasIndependentMetrics() { return provider()->HasIndependentMetrics(); }
 
   bool ProvideIndependentMetrics(
-      SystemProfileProto* profile_proto,
+      ChromeUserMetricsExtension* uma_proto,
       base::HistogramSnapshotManager* snapshot_manager) {
     bool success = false;
     bool success_set = false;
@@ -125,7 +125,7 @@ class FileMetricsProviderTest : public testing::TestWithParam<bool> {
               *set_ptr = true;
             },
             &success, &success_set),
-        profile_proto, snapshot_manager);
+        uma_proto, snapshot_manager);
 
     RunTasks();
     CHECK(success_set);
@@ -154,9 +154,9 @@ class FileMetricsProviderTest : public testing::TestWithParam<bool> {
   size_t GetIndependentHistogramCount() {
     HistogramFlattenerDeltaRecorder flattener;
     base::HistogramSnapshotManager snapshot_manager(&flattener);
-    SystemProfileProto profile_proto;
+    ChromeUserMetricsExtension uma_proto;
     provider()->ProvideIndependentMetrics(base::BindOnce([](bool success) {}),
-                                          &profile_proto, &snapshot_manager);
+                                          &uma_proto, &snapshot_manager);
 
     RunTasks();
     return flattener.GetRecordedDeltaHistogramNames().size();
@@ -205,8 +205,7 @@ class FileMetricsProviderTest : public testing::TestWithParam<bool> {
       const base::FilePath& file_path,
       base::Time write_time,
       int histogram_count,
-      const std::function<void(base::PersistentHistogramAllocator*)>&
-          callback) {
+      base::OnceCallback<void(base::PersistentHistogramAllocator*)> callback) {
     base::GlobalHistogramAllocator::CreateWithLocalMemory(
         create_large_files_ ? kLargeFileSize : kSmallFileSize,
         0, kMetricsName);
@@ -215,7 +214,7 @@ class FileMetricsProviderTest : public testing::TestWithParam<bool> {
 
     std::unique_ptr<base::PersistentHistogramAllocator> histogram_allocator =
         base::GlobalHistogramAllocator::ReleaseForTesting();
-    callback(histogram_allocator.get());
+    std::move(callback).Run(histogram_allocator.get());
 
     WriteMetricsFileAtTime(file_path, histogram_allocator.get(), write_time);
     return histogram_allocator;
@@ -225,7 +224,7 @@ class FileMetricsProviderTest : public testing::TestWithParam<bool> {
   CreateMetricsFileWithHistograms(int histogram_count) {
     return CreateMetricsFileWithHistograms(
         metrics_file(), base::Time::Now(), histogram_count,
-        [](base::PersistentHistogramAllocator* allocator) {});
+        base::BindOnce([](base::PersistentHistogramAllocator* allocator) {}));
   }
 
   base::HistogramBase* GetCreatedHistogram(int index) {
@@ -508,15 +507,15 @@ TEST_P(FileMetricsProviderTest, AccessDirectoryWithInvalidFiles) {
   CreateMetricsFileWithHistograms(
       metrics_files.GetPath().AppendASCII("h1.pma"),
       base_time + base::TimeDelta::FromMinutes(1), 1,
-      [](base::PersistentHistogramAllocator* allocator) {
+      base::BindOnce([](base::PersistentHistogramAllocator* allocator) {
         allocator->memory_allocator()->SetMemoryState(
             base::PersistentMemoryAllocator::MEMORY_DELETED);
-      });
+      }));
 
   CreateMetricsFileWithHistograms(
       metrics_files.GetPath().AppendASCII("h2.pma"),
       base_time + base::TimeDelta::FromMinutes(2), 2,
-      [](base::PersistentHistogramAllocator* allocator) {
+      base::BindOnce([](base::PersistentHistogramAllocator* allocator) {
         SystemProfileProto profile_proto;
         SystemProfileProto::FieldTrial* trial = profile_proto.add_field_trial();
         trial->set_name_id(123);
@@ -526,15 +525,15 @@ TEST_P(FileMetricsProviderTest, AccessDirectoryWithInvalidFiles) {
         persistent_profile.RegisterPersistentAllocator(
             allocator->memory_allocator());
         persistent_profile.SetSystemProfile(profile_proto, true);
-      });
+      }));
 
   CreateMetricsFileWithHistograms(
       metrics_files.GetPath().AppendASCII("h3.pma"),
       base_time + base::TimeDelta::FromMinutes(3), 3,
-      [](base::PersistentHistogramAllocator* allocator) {
+      base::BindOnce([](base::PersistentHistogramAllocator* allocator) {
         allocator->memory_allocator()->SetMemoryState(
             base::PersistentMemoryAllocator::MEMORY_DELETED);
-      });
+      }));
 
   {
     base::File empty(metrics_files.GetPath().AppendASCII("h4.pma"),
@@ -902,11 +901,11 @@ TEST_P(FileMetricsProviderTest, AccessEmbeddedProfileMetricsWithoutProfile) {
   {
     HistogramFlattenerDeltaRecorder flattener;
     base::HistogramSnapshotManager snapshot_manager(&flattener);
-    SystemProfileProto profile;
+    ChromeUserMetricsExtension uma_proto;
 
     // A read of metrics with internal profiles should return nothing.
     EXPECT_FALSE(HasIndependentMetrics());
-    EXPECT_FALSE(ProvideIndependentMetrics(&profile, &snapshot_manager));
+    EXPECT_FALSE(ProvideIndependentMetrics(&uma_proto, &snapshot_manager));
   }
   EXPECT_TRUE(base::PathExists(metrics_file()));
   OnDidCreateMetricsLog();
@@ -918,7 +917,7 @@ TEST_P(FileMetricsProviderTest, AccessEmbeddedProfileMetricsWithProfile) {
   ASSERT_FALSE(PathExists(metrics_file()));
   CreateMetricsFileWithHistograms(
       metrics_file(), base::Time::Now(), 2,
-      [](base::PersistentHistogramAllocator* allocator) {
+      base::BindOnce([](base::PersistentHistogramAllocator* allocator) {
         SystemProfileProto profile_proto;
         SystemProfileProto::FieldTrial* trial = profile_proto.add_field_trial();
         trial->set_name_id(123);
@@ -928,7 +927,7 @@ TEST_P(FileMetricsProviderTest, AccessEmbeddedProfileMetricsWithProfile) {
         persistent_profile.RegisterPersistentAllocator(
             allocator->memory_allocator());
         persistent_profile.SetSystemProfile(profile_proto, true);
-      });
+      }));
 
   // Register the file and allow the "checker" task to run.
   ASSERT_TRUE(PathExists(metrics_file()));
@@ -946,11 +945,11 @@ TEST_P(FileMetricsProviderTest, AccessEmbeddedProfileMetricsWithProfile) {
     EXPECT_EQ(0U, flattener.GetRecordedDeltaHistogramNames().size());
 
     // A read of metrics with internal profiles should return one result.
-    SystemProfileProto profile;
+    ChromeUserMetricsExtension uma_proto;
     EXPECT_TRUE(HasIndependentMetrics());
-    EXPECT_TRUE(ProvideIndependentMetrics(&profile, &snapshot_manager));
+    EXPECT_TRUE(ProvideIndependentMetrics(&uma_proto, &snapshot_manager));
     EXPECT_FALSE(HasIndependentMetrics());
-    EXPECT_FALSE(ProvideIndependentMetrics(&profile, &snapshot_manager));
+    EXPECT_FALSE(ProvideIndependentMetrics(&uma_proto, &snapshot_manager));
   }
   RunTasks();
   EXPECT_FALSE(base::PathExists(metrics_file()));
@@ -977,9 +976,9 @@ TEST_P(FileMetricsProviderTest, AccessEmbeddedFallbackMetricsWithoutProfile) {
     EXPECT_EQ(2U, flattener.GetRecordedDeltaHistogramNames().size());
 
     // A read of metrics with internal profiles should return nothing.
-    SystemProfileProto profile;
+    ChromeUserMetricsExtension uma_proto;
     EXPECT_FALSE(HasIndependentMetrics());
-    EXPECT_FALSE(ProvideIndependentMetrics(&profile, &snapshot_manager));
+    EXPECT_FALSE(ProvideIndependentMetrics(&uma_proto, &snapshot_manager));
   }
   EXPECT_TRUE(base::PathExists(metrics_file()));
   OnDidCreateMetricsLog();
@@ -991,7 +990,7 @@ TEST_P(FileMetricsProviderTest, AccessEmbeddedFallbackMetricsWithProfile) {
   ASSERT_FALSE(PathExists(metrics_file()));
   CreateMetricsFileWithHistograms(
       metrics_file(), base::Time::Now(), 2,
-      [](base::PersistentHistogramAllocator* allocator) {
+      base::BindOnce([](base::PersistentHistogramAllocator* allocator) {
         SystemProfileProto profile_proto;
         SystemProfileProto::FieldTrial* trial = profile_proto.add_field_trial();
         trial->set_name_id(123);
@@ -1001,7 +1000,7 @@ TEST_P(FileMetricsProviderTest, AccessEmbeddedFallbackMetricsWithProfile) {
         persistent_profile.RegisterPersistentAllocator(
             allocator->memory_allocator());
         persistent_profile.SetSystemProfile(profile_proto, true);
-      });
+      }));
 
   // Register the file and allow the "checker" task to run.
   ASSERT_TRUE(PathExists(metrics_file()));
@@ -1020,11 +1019,11 @@ TEST_P(FileMetricsProviderTest, AccessEmbeddedFallbackMetricsWithProfile) {
     EXPECT_EQ(0U, flattener.GetRecordedDeltaHistogramNames().size());
 
     // A read of metrics with internal profiles should return one result.
-    SystemProfileProto profile;
+    ChromeUserMetricsExtension uma_proto;
     EXPECT_TRUE(HasIndependentMetrics());
-    EXPECT_TRUE(ProvideIndependentMetrics(&profile, &snapshot_manager));
+    EXPECT_TRUE(ProvideIndependentMetrics(&uma_proto, &snapshot_manager));
     EXPECT_FALSE(HasIndependentMetrics());
-    EXPECT_FALSE(ProvideIndependentMetrics(&profile, &snapshot_manager));
+    EXPECT_FALSE(ProvideIndependentMetrics(&uma_proto, &snapshot_manager));
   }
   RunTasks();
   EXPECT_FALSE(base::PathExists(metrics_file()));
@@ -1037,7 +1036,7 @@ TEST_P(FileMetricsProviderTest, AccessEmbeddedProfileMetricsFromDir) {
   for (int i = 0; i < file_count; ++i) {
     CreateMetricsFileWithHistograms(
         metrics_file(), base::Time::Now(), 2,
-        [](base::PersistentHistogramAllocator* allocator) {
+        base::BindOnce([](base::PersistentHistogramAllocator* allocator) {
           SystemProfileProto profile_proto;
           SystemProfileProto::FieldTrial* trial =
               profile_proto.add_field_trial();
@@ -1048,7 +1047,7 @@ TEST_P(FileMetricsProviderTest, AccessEmbeddedProfileMetricsFromDir) {
           persistent_profile.RegisterPersistentAllocator(
               allocator->memory_allocator());
           persistent_profile.SetSystemProfile(profile_proto, true);
-        });
+        }));
     ASSERT_TRUE(PathExists(metrics_file()));
     char new_name[] = "hX";
     new_name[1] = '1' + i;
@@ -1072,14 +1071,14 @@ TEST_P(FileMetricsProviderTest, AccessEmbeddedProfileMetricsFromDir) {
   // A read of metrics with internal profiles should return one result.
   HistogramFlattenerDeltaRecorder flattener;
   base::HistogramSnapshotManager snapshot_manager(&flattener);
-  SystemProfileProto profile;
+  ChromeUserMetricsExtension uma_proto;
   for (int i = 0; i < file_count; ++i) {
     EXPECT_TRUE(HasIndependentMetrics()) << i;
-    EXPECT_TRUE(ProvideIndependentMetrics(&profile, &snapshot_manager)) << i;
+    EXPECT_TRUE(ProvideIndependentMetrics(&uma_proto, &snapshot_manager)) << i;
     RunTasks();
   }
   EXPECT_FALSE(HasIndependentMetrics());
-  EXPECT_FALSE(ProvideIndependentMetrics(&profile, &snapshot_manager));
+  EXPECT_FALSE(ProvideIndependentMetrics(&uma_proto, &snapshot_manager));
 
   OnDidCreateMetricsLog();
   RunTasks();

@@ -61,22 +61,6 @@ SyncInternalsWebUITest.prototype = {
   }
 };
 
-function SyncInternalsWebUITestWithStandaloneTransport() {}
-
-SyncInternalsWebUITestWithStandaloneTransport.prototype = {
-  __proto__: SyncInternalsWebUITest.prototype,
-
-  featureList: ['switches::kSyncStandaloneTransport', ''],
-};
-
-function SyncInternalsWebUITestWithoutStandaloneTransport() {}
-
-SyncInternalsWebUITestWithoutStandaloneTransport.prototype = {
-  __proto__: SyncInternalsWebUITest.prototype,
-
-  featureList: ['', 'switches::kSyncStandaloneTransport'],
-};
-
 /**
  * Constant hard-coded value to return from mock getAllNodes.
  * @const
@@ -258,15 +242,30 @@ TEST_F('SyncInternalsWebUITest', 'Uninitialized', function() {
    assertNotEquals(null, chrome.sync.aboutInfo);
 });
 
-// TODO(crbug.com/814787): On ChromeOS, browser tests are signed in by default,
-// so the test expectations below should be different. However, the way the
-// account is set up for tests is broken (it happens much later than in real
-// life), so it doesn't make it to sync-internals.
-TEST_F('SyncInternalsWebUITest', 'SignedOut', function() {
+GEN('#if defined(OS_CHROMEOS)');
+
+// On ChromeOS, browser tests are signed in by default to mimic production,
+// so the sync transport layer should be enabled. Note that the sync *feature*
+// might still be disabled depending on how the test infrastructure is
+// configured.
+TEST_F('SyncInternalsWebUITest', 'SyncTransportEnabledByDefault', function() {
+  // The specific transport state is dependent on the timing of startup, but it
+  // should not be disabled.
+  expectFalse(this.hasInDetails(true, 'Transport State', 'Disabled'));
+});
+
+GEN('#else');
+
+// On non-ChromeOS, sync should be disabled if there was no primary account
+// set.
+TEST_F('SyncInternalsWebUITest', 'SyncDisabledByDefault', function() {
   expectTrue(this.hasInDetails(true, 'Transport State', 'Disabled'));
-  expectTrue(this.hasInDetails(true, 'Disable Reasons', 'Not signed in'));
+  expectTrue(
+      this.hasInDetails(true, 'Disable Reasons', 'Not signed in, User choice'));
   expectTrue(this.hasInDetails(true, 'Username', ''));
 });
+
+GEN('#endif  // defined(OS_CHROMEOS)');
 
 TEST_F('SyncInternalsWebUITest', 'LoadPastedAboutInfo', function() {
   // Expose the text field.

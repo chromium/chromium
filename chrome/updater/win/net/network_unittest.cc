@@ -3,15 +3,17 @@
 // found in the LICENSE file.
 
 #include "chrome/updater/win/net/network.h"
+
 #include "base/memory/ref_counted.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
+#include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace updater {
 
 TEST(UpdaterTestNetwork, NetworkFetcherWinHTTPFactory) {
-  base::MessageLoopForUI message_loop;
+  base::test::SingleThreadTaskEnvironment task_environment(
+      base::test::SingleThreadTaskEnvironment::MainThreadType::UI);
   auto fetcher = base::MakeRefCounted<NetworkFetcherFactory>()->Create();
   EXPECT_NE(nullptr, fetcher.get());
 }

@@ -2,10 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/update_client/utils.h"
+
+#include <iterator>
+
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "components/update_client/updater_state.h"
-#include "components/update_client/utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -28,7 +31,7 @@ TEST(UpdateClientUtils, VerifyFileHash256) {
   EXPECT_TRUE(VerifyFileHash256(
       MakeTestFilePath("jebgalgnebhfojomionfpkfelancnnkf.crx"),
       std::string(
-          "6fc4b93fd11134de1300c2c0bb88c12b644a4ec0fd7c9b12cb7cc067667bde87")));
+          "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498")));
 
   EXPECT_FALSE(VerifyFileHash256(
       MakeTestFilePath("jebgalgnebhfojomionfpkfelancnnkf.crx"),
@@ -77,6 +80,16 @@ TEST(UpdateClientUtils, GetCrxComponentId) {
 
   EXPECT_EQ(std::string("abcdefghijklmnopabcdefghijklmnop"),
             GetCrxComponentID(component));
+}
+
+TEST(UpdateClientUtils, GetCrxIdFromPublicKeyHash) {
+  static const uint8_t kHash[16] = {
+      0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef,
+      0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef,
+  };
+
+  EXPECT_EQ(std::string("abcdefghijklmnopabcdefghijklmnop"),
+            GetCrxIdFromPublicKeyHash({std::cbegin(kHash), std::cend(kHash)}));
 }
 
 // Tests that the name of an InstallerAttribute matches ^[-_=a-zA-Z0-9]{1,256}$

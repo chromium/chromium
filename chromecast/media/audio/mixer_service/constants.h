@@ -7,22 +7,21 @@
 
 #include <stdint.h>
 
-#include "chromecast/media/audio/mixer_service/mixer_service_buildflags.h"
-
 namespace chromecast {
 namespace media {
 namespace mixer_service {
 
-#if BUILDFLAG(USE_UNIX_SOCKETS)
 constexpr char kDefaultUnixDomainSocketPath[] = "/tmp/mixer-service";
-#else
 constexpr int kDefaultTcpPort = 12854;
-#endif
 
+// First 2 bytes of each message indicate if it is metadata (protobuf) or audio.
 enum class MessageType : int16_t {
   kMetadata,
   kAudio,
 };
+
+// Returns true if the full mixer is present on the system, false otherwise.
+bool HaveFullMixer();
 
 }  // namespace mixer_service
 }  // namespace media

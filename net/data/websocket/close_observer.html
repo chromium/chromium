@@ -1,0 +1,28 @@
+<!doctype html>
+<title>Observe the connection from a closed tab "Going Away"</title>
+<script>
+'use strict';
+
+let protocol = location.protocol.replace('http', 'ws');
+let url = protocol + '//' + location.host + '/close-observer?role=observer';
+
+// Do connection test.
+let ws = new WebSocket(url);
+
+ws.onmessage = e => {
+  console.log('close_observer.html got message: ' + e.data);
+  document.title = (e.data === 'OK' ? 'PASS' : 'FAIL');
+  ws.onclose = null;
+}
+
+ws.onclose = () => {
+  console.log('close_observer.html saw close with no message');
+  document.title = 'FAIL';
+}
+
+setTimeout(() => {
+  console.log('close_observer.html had timeout');
+  document.title = 'FAIL';
+}, 1000);
+
+</script>

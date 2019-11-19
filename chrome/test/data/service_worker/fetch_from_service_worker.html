@@ -1,0 +1,16 @@
+<script>
+  async function setup() {
+    await navigator.serviceWorker.register('fetch_from_service_worker.js');
+    await navigator.serviceWorker.ready;
+    return 'ready';
+  }
+
+  function fetch_from_service_worker(url) {
+    return new Promise(async resolve => {
+      const registration = await navigator.serviceWorker.ready;
+      const channel = new MessageChannel();
+      channel.port1.onmessage = e => { resolve(e.data); };
+      registration.active.postMessage({url}, [channel.port2]);
+    });
+  }
+  </script>

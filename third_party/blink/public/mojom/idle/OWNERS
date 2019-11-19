@@ -1,0 +1,6 @@
+file://content/browser/idle/OWNERS
+
+per-file *.mojom=set noparent
+per-file *.mojom=file://ipc/SECURITY_OWNERS
+
+# TEAM: fugu-dev@chromium.org

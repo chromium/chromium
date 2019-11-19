@@ -9,7 +9,6 @@ import android.accounts.Account;
 import android.accounts.AccountAuthenticatorResponse;
 import android.accounts.AccountManager;
 import android.accounts.AuthenticatorException;
-import android.accounts.NetworkErrorException;
 import android.accounts.OperationCanceledException;
 import android.app.Activity;
 import android.content.Context;
@@ -48,7 +47,7 @@ public class DummySpnegoAuthenticator extends AbstractAccountAuthenticator {
 
     @Override
     public Bundle addAccount(AccountAuthenticatorResponse arg0, String accountType, String arg2,
-            String[] arg3, Bundle arg4) throws NetworkErrorException {
+            String[] arg3, Bundle arg4) {
         Bundle result = new Bundle();
         result.putInt(AccountManager.KEY_ERROR_CODE, AccountManager.ERROR_CODE_BAD_REQUEST);
         result.putString(AccountManager.KEY_ERROR_MESSAGE, "Can't add new SPNEGO accounts");
@@ -56,8 +55,7 @@ public class DummySpnegoAuthenticator extends AbstractAccountAuthenticator {
     }
 
     @Override
-    public Bundle confirmCredentials(AccountAuthenticatorResponse arg0, Account arg1, Bundle arg2)
-            throws NetworkErrorException {
+    public Bundle confirmCredentials(AccountAuthenticatorResponse arg0, Account arg1, Bundle arg2) {
         Bundle result = new Bundle();
         result.putBoolean(AccountManager.KEY_BOOLEAN_RESULT, true);
         return result;
@@ -70,7 +68,7 @@ public class DummySpnegoAuthenticator extends AbstractAccountAuthenticator {
 
     @Override
     public Bundle getAuthToken(AccountAuthenticatorResponse response, Account account,
-            String authTokenType, Bundle options) throws NetworkErrorException {
+            String authTokenType, Bundle options) {
         long nativeQuery = nativeGetNextQuery(sNativeDummySpnegoAuthenticator);
         String incomingToken = options.getString(HttpNegotiateConstants.KEY_INCOMING_AUTH_TOKEN);
         nativeCheckGetTokenArguments(nativeQuery, incomingToken);
@@ -106,8 +104,7 @@ public class DummySpnegoAuthenticator extends AbstractAccountAuthenticator {
     }
 
     @Override
-    public Bundle hasFeatures(AccountAuthenticatorResponse arg0, Account arg1, String[] features)
-            throws NetworkErrorException {
+    public Bundle hasFeatures(AccountAuthenticatorResponse arg0, Account arg1, String[] features) {
         Bundle result = new Bundle();
         for (String feature : features) {
             if (!feature.equals(HttpNegotiateConstants.SPNEGO_FEATURE)) {
@@ -120,8 +117,8 @@ public class DummySpnegoAuthenticator extends AbstractAccountAuthenticator {
     }
 
     @Override
-    public Bundle updateCredentials(AccountAuthenticatorResponse arg0, Account arg1, String arg2,
-            Bundle arg3) throws NetworkErrorException {
+    public Bundle updateCredentials(
+            AccountAuthenticatorResponse arg0, Account arg1, String arg2, Bundle arg3) {
         Bundle result = new Bundle();
         result.putInt(AccountManager.KEY_ERROR_CODE, AccountManager.ERROR_CODE_BAD_REQUEST);
         result.putString(AccountManager.KEY_ERROR_MESSAGE, "Can't add new SPNEGO accounts");

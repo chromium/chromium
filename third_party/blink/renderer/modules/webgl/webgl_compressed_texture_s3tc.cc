@@ -32,6 +32,15 @@ namespace blink {
 WebGLCompressedTextureS3TC::WebGLCompressedTextureS3TC(
     WebGLRenderingContextBase* context)
     : WebGLExtension(context) {
+  context->ExtensionsUtil()->EnsureExtensionEnabled(
+      "GL_EXT_texture_compression_s3tc");
+  context->ExtensionsUtil()->EnsureExtensionEnabled(
+      "GL_ANGLE_texture_compression_dxt1");
+  context->ExtensionsUtil()->EnsureExtensionEnabled(
+      "GL_ANGLE_texture_compression_dxt3");
+  context->ExtensionsUtil()->EnsureExtensionEnabled(
+      "GL_ANGLE_texture_compression_dxt5");
+
   context->AddCompressedTextureFormat(GL_COMPRESSED_RGB_S3TC_DXT1_EXT);
   context->AddCompressedTextureFormat(GL_COMPRESSED_RGBA_S3TC_DXT1_EXT);
   context->AddCompressedTextureFormat(GL_COMPRESSED_RGBA_S3TC_DXT3_EXT);
@@ -52,11 +61,11 @@ bool WebGLCompressedTextureS3TC::Supported(WebGLRenderingContextBase* context) {
   return extensions_util->SupportsExtension(
              "GL_EXT_texture_compression_s3tc") ||
          (extensions_util->SupportsExtension(
-              "GL_EXT_texture_compression_dxt1") &&
+              "GL_ANGLE_texture_compression_dxt1") &&
           extensions_util->SupportsExtension(
-              "GL_CHROMIUM_texture_compression_dxt3") &&
+              "GL_ANGLE_texture_compression_dxt3") &&
           extensions_util->SupportsExtension(
-              "GL_CHROMIUM_texture_compression_dxt5"));
+              "GL_ANGLE_texture_compression_dxt5"));
 }
 
 const char* WebGLCompressedTextureS3TC::ExtensionName() {

@@ -1,17 +1,19 @@
 rootWebArea
 ++genericContainer
 ++++listBox setSize=8
-++++++group name='Enabled' setSize=0
-++++++++staticText name='Enabled'
-++++++++++inlineTextBox name='Enabled'
-++++++listBoxOption name='One' setSize=8 posInSet=1 selected=false
-++++++listBoxOption name='Two' setSize=8 posInSet=2 selected=false
-++++++listBoxOption name='Three' setSize=8 posInSet=3 selected=false
-++++++listBoxOption name='Four' setSize=8 posInSet=4 selected=false
-++++++group name='Disabled' setSize=0
-++++++++staticText name='Disabled'
-++++++++++inlineTextBox name='Disabled'
-++++++listBoxOption name='One' restriction=disabled setSize=8 posInSet=5
-++++++listBoxOption name='Two' restriction=disabled setSize=8 posInSet=6
-++++++listBoxOption name='Three' restriction=disabled setSize=8 posInSet=7
-++++++listBoxOption name='Four' restriction=disabled setSize=8 posInSet=8
+++++++genericContainer ignored
+++++++++group name='Enabled' setSize=0
+++++++++++staticText name='Enabled'
+++++++++++++inlineTextBox name='Enabled'
+++++++++listBoxOption name='One' setSize=8 posInSet=1 selected=false
+++++++++listBoxOption name='Two' setSize=8 posInSet=2 selected=false
+++++++++listBoxOption name='Three' setSize=8 posInSet=3 selected=false
+++++++++listBoxOption name='Four' setSize=8 posInSet=4 selected=false
+++++++genericContainer ignored
+++++++++group name='Disabled' setSize=0
+++++++++++staticText name='Disabled'
+++++++++++++inlineTextBox name='Disabled'
+++++++++listBoxOption name='One' restriction=disabled setSize=8 posInSet=5
+++++++++listBoxOption name='Two' restriction=disabled setSize=8 posInSet=6
+++++++++listBoxOption name='Three' restriction=disabled setSize=8 posInSet=7
+++++++++listBoxOption name='Four' restriction=disabled setSize=8 posInSet=8

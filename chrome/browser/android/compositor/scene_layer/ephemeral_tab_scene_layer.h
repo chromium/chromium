@@ -5,15 +5,9 @@
 #ifndef CHROME_BROWSER_ANDROID_COMPOSITOR_SCENE_LAYER_EPHEMERAL_TAB_SCENE_LAYER_H_
 #define CHROME_BROWSER_ANDROID_COMPOSITOR_SCENE_LAYER_EPHEMERAL_TAB_SCENE_LAYER_H_
 
-#include <memory>
-#include <vector>
-
 #include "base/android/jni_android.h"
-#include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "chrome/browser/android/compositor/scene_layer/scene_layer.h"
-#include "ui/android/resources/resource_manager_impl.h"
 
 namespace cc {
 class Layer;
@@ -33,20 +27,26 @@ class EphemeralTabSceneLayer : public SceneLayer {
   void CreateEphemeralTabLayer(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& object,
-      const base::android::JavaParamRef<jobject>& jresource_manager);
+      const base::android::JavaParamRef<jobject>& jresource_manager,
+      const base::android::JavaParamRef<jobject>& jfavicon_callback);
 
   void SetResourceIds(JNIEnv* env,
                       const base::android::JavaParamRef<jobject>& object,
                       jint text_resource_id,
-                      jint bar_background_resource_id,
+                      jint panel_shadow_resource_id,
+                      jint rounded_bar_top_resource_id,
                       jint bar_shadow_resource_id,
                       jint panel_icon_resource_id,
+                      jint drag_handlebar_resource_id,
+                      jint open_tab_icon_resource_id,
                       jint close_icon_resource_id);
 
   void Update(JNIEnv* env,
               const base::android::JavaParamRef<jobject>& object,
               jint title_view_resource_id,
               jint caption_view_resource_id,
+              jint caption_icon_resource_id,
+              jfloat caption_icon_opacity,
               jfloat caption_animation_percentage,
               jfloat text_layer_min_height,
               jfloat term_caption_spacing,
@@ -61,16 +61,20 @@ class EphemeralTabSceneLayer : public SceneLayer {
               jfloat panel_y,
               jfloat panel_width,
               jfloat panel_height,
+              jint bar_background_color,
               jfloat bar_margin_side,
+              jfloat bar_margin_top,
               jfloat bar_height,
               jboolean bar_border_visible,
               jfloat bar_border_height,
-              jboolean bar_shadow_visible,
-              jfloat bar_shadow_opacity,
+              jint icon_color,
+              jint drag_handlebar_color,
+              jfloat favicon_opacity,
               jboolean progress_bar_visible,
               jfloat progress_bar_height,
               jfloat progress_bar_opacity,
-              jint progress_bar_completion);
+              jfloat progress_bar_completion,
+              jint separator_line_color);
 
   void SetContentTree(
       JNIEnv* env,
@@ -85,6 +89,7 @@ class EphemeralTabSceneLayer : public SceneLayer {
   scoped_refptr<EphemeralTabLayer> ephemeral_tab_layer_;
   scoped_refptr<cc::SolidColorLayer> color_overlay_;
   scoped_refptr<cc::Layer> content_container_;
+  bool is_new_layout_;
   DISALLOW_COPY_AND_ASSIGN(EphemeralTabSceneLayer);
 };
 

@@ -7,23 +7,25 @@
 
 <org.chromium.chrome.browser.contacts_picker.ContactsPickerToolbar
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingStart="0dp"
-    android:paddingEnd="0dp">
+    android:paddingEnd="8dp">
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end">
 
-        <ImageView
+        <android.support.v7.widget.AppCompatImageView
             android:id="@+id/search"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:background="@drawable/ic_search"
-            android:contentDescription="@string/search" />
+            android:src="@drawable/ic_search"
+            android:contentDescription="@string/search"
+            app:tint="@color/default_icon_color" />
 
         <org.chromium.ui.widget.ButtonCompat
             android:id="@+id/done"

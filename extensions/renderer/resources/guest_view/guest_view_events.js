@@ -8,23 +8,10 @@ var $EventTarget = require('safeMethods').SafeMethods.$EventTarget;
 var GuestViewInternalNatives = requireNative('guest_view_internal');
 var MessagingNatives = requireNative('messaging_natives');
 
-var EventBindings;
 var CreateEvent = function(name) {
-  if (bindingUtil) {
-    return bindingUtil.createCustomEvent(name, null,
-                                         true /* supportsFilters */,
-                                         false /* supportsLazyListeners */);
-  }
-  var eventOpts = {
-    __proto__: null,
-    supportsListeners: true,
-    supportsFilters: true,
-    // GuestView-related events never support lazy listeners.
-    supportsLazyListeners: false,
-  };
-  if (!EventBindings)
-    EventBindings = require('event_bindings');
-  return new EventBindings.Event(name, undefined, eventOpts);
+  return bindingUtil.createCustomEvent(name,
+                                       true /* supportsFilters */,
+                                       false /* supportsLazyListeners */);
 };
 
 function GuestViewEvents(view) {

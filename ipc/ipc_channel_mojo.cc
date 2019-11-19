@@ -26,7 +26,9 @@
 #include "ipc/ipc_mojo_bootstrap.h"
 #include "ipc/ipc_mojo_handle_attachment.h"
 #include "ipc/native_handle_type_converters.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/lib/message_quota_checker.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 
 namespace IPC {
@@ -43,15 +45,22 @@ class MojoChannelFactory : public ChannelFactory {
       : handle_(std::move(handle)),
         mode_(mode),
         ipc_task_runner_(ipc_task_runner),
-        proxy_task_runner_(proxy_task_runner) {}
+        proxy_task_runner_(proxy_task_runner),
+        quota_checker_(mojo::internal::MessageQuotaChecker::MaybeCreate()) {}
 
   std::unique_ptr<Channel> BuildChannel(Listener* listener) override {
     return ChannelMojo::Create(std::move(handle_), mode_, listener,
-                               ipc_task_runner_, proxy_task_runner_);
+                               ipc_task_runner_, proxy_task_runner_,
+                               quota_checker_);
   }
 
   scoped_refptr<base::SingleThreadTaskRunner> GetIPCTaskRunner() override {
     return ipc_task_runner_;
+  }
+
+  scoped_refptr<mojo::internal::MessageQuotaChecker> GetQuotaChecker()
+      override {
+    return quota_checker_;
   }
 
  private:
@@ -59,6 +68,7 @@ class MojoChannelFactory : public ChannelFactory {
   const Channel::Mode mode_;
   scoped_refptr<base::SingleThreadTaskRunner> ipc_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> proxy_task_runner_;
+  scoped_refptr<mojo::internal::MessageQuotaChecker> quota_checker_;
 
   DISALLOW_COPY_AND_ASSIGN(MojoChannelFactory);
 };
@@ -85,9 +95,11 @@ std::unique_ptr<ChannelMojo> ChannelMojo::Create(
     Mode mode,
     Listener* listener,
     const scoped_refptr<base::SingleThreadTaskRunner>& ipc_task_runner,
-    const scoped_refptr<base::SingleThreadTaskRunner>& proxy_task_runner) {
+    const scoped_refptr<base::SingleThreadTaskRunner>& proxy_task_runner,
+    const scoped_refptr<mojo::internal::MessageQuotaChecker>& quota_checker) {
   return base::WrapUnique(new ChannelMojo(std::move(handle), mode, listener,
-                                          ipc_task_runner, proxy_task_runner));
+                                          ipc_task_runner, proxy_task_runner,
+                                          quota_checker));
 }
 
 // static
@@ -115,14 +127,12 @@ ChannelMojo::ChannelMojo(
     Mode mode,
     Listener* listener,
     const scoped_refptr<base::SingleThreadTaskRunner>& ipc_task_runner,
-    const scoped_refptr<base::SingleThreadTaskRunner>& proxy_task_runner)
-    : task_runner_(ipc_task_runner),
-      pipe_(handle.get()),
-      listener_(listener),
-      weak_factory_(this) {
+    const scoped_refptr<base::SingleThreadTaskRunner>& proxy_task_runner,
+    const scoped_refptr<mojo::internal::MessageQuotaChecker>& quota_checker)
+    : task_runner_(ipc_task_runner), pipe_(handle.get()), listener_(listener) {
   weak_ptr_ = weak_factory_.GetWeakPtr();
   bootstrap_ = MojoBootstrap::Create(std::move(handle), mode, ipc_task_runner,
-                                     proxy_task_runner);
+                                     proxy_task_runner, quota_checker);
 }
 
 void ChannelMojo::ForwardMessageFromThreadSafePtr(mojo::Message message) {
@@ -153,8 +163,8 @@ bool ChannelMojo::Connect() {
 
   WillConnect();
 
-  mojom::ChannelAssociatedPtr sender;
-  mojom::ChannelAssociatedRequest receiver;
+  mojo::AssociatedRemote<mojom::Channel> sender;
+  mojo::PendingAssociatedReceiver<mojom::Channel> receiver;
   bootstrap_->Connect(&sender, &receiver);
 
   DCHECK(!message_reader_);
@@ -287,7 +297,7 @@ MojoResult ChannelMojo::ReadFromMessageAttachmentSet(
     auto serialized_handle = mojo::native::SerializedHandle::New();
     serialized_handle->the_handle = attachment->TakeMojoHandle();
     serialized_handle->type =
-        mojo::ConvertTo<mojo::native::SerializedHandle::Type>(
+        mojo::ConvertTo<mojo::native::SerializedHandleType>(
             attachment->GetType());
     output_handles.emplace_back(std::move(serialized_handle));
   }

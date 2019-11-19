@@ -9,7 +9,8 @@ namespace ui {
 TestNativeTheme::TestNativeTheme() {}
 TestNativeTheme::~TestNativeTheme() {}
 
-SkColor TestNativeTheme::GetSystemColor(ColorId color_id) const {
+SkColor TestNativeTheme::GetSystemColor(ColorId color_id,
+                                        ColorScheme color_scheme) const {
   return SK_ColorRED;
 }
 
@@ -23,7 +24,8 @@ void TestNativeTheme::Paint(cc::PaintCanvas* canvas,
                             Part part,
                             State state,
                             const gfx::Rect& rect,
-                            const ExtraParams& extra) const {}
+                            const ExtraParams& extra,
+                            ColorScheme color_scheme) const {}
 
 bool TestNativeTheme::SupportsNinePatch(Part part) const {
   return false;
@@ -38,11 +40,24 @@ gfx::Rect TestNativeTheme::GetNinePatchAperture(Part part) const {
 }
 
 bool TestNativeTheme::UsesHighContrastColors() const {
-  return false;
+  return high_contrast_;
 }
 
-bool TestNativeTheme::SystemDarkModeEnabled() const {
+bool TestNativeTheme::ShouldUseDarkColors() const {
   return dark_mode_;
+}
+
+NativeTheme::PreferredColorScheme TestNativeTheme::GetPreferredColorScheme()
+    const {
+  return CalculatePreferredColorScheme();
+}
+
+void TestNativeTheme::AddColorSchemeNativeThemeObserver(
+    NativeTheme* theme_to_update) {
+  color_scheme_observer_ =
+      std::make_unique<ui::NativeTheme::ColorSchemeNativeThemeObserver>(
+          theme_to_update);
+  AddObserver(color_scheme_observer_.get());
 }
 
 }  // namespace ui

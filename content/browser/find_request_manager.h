@@ -5,9 +5,9 @@
 #ifndef CONTENT_BROWSER_FIND_REQUEST_MANAGER_H_
 #define CONTENT_BROWSER_FIND_REQUEST_MANAGER_H_
 
+#include <memory>
 #include <unordered_map>
 #include <unordered_set>
-#include <utility>
 #include <vector>
 
 #include "base/containers/queue.h"
@@ -277,7 +277,7 @@ class CONTENT_EXPORT FindRequestManager {
   // in all find-related IPCs, which allows reply IPCs containing results from
   // previous sessions (with |request_id| < |current_session_id_|) to be easily
   // identified and ignored.
-  int current_session_id_;
+  int current_session_id_ = kInvalidId;
 
   // The current find request.
   FindRequest current_request_;
@@ -290,13 +290,13 @@ class CONTENT_EXPORT FindRequestManager {
 
   // The frame (if any) that is still expected to reply to the last pending
   // "find next" request.
-  RenderFrameHost* pending_find_next_reply_;
+  RenderFrameHost* pending_find_next_reply_ = nullptr;
 
   // Indicates whether an update to the active match ordinal is expected. Once
   // set, |pending_active_match_ordinal_| will not reset until an update to the
   // active match ordinal is received in response to the find request with ID
   // |current_request_.id| (the latest request).
-  bool pending_active_match_ordinal_;
+  bool pending_active_match_ordinal_ = false;
 
   // The FindInPageClient associated with each frame. There will necessarily be
   // entries in this map for every frame that is being (or has been) searched in
@@ -307,16 +307,16 @@ class CONTENT_EXPORT FindRequestManager {
   // The total number of matches found in the current find-in-page session. This
   // should always be equal to the sum of all the entries in
   // |matches_per_frame_|.
-  int number_of_matches_;
+  int number_of_matches_ = 0;
 
   // The frame containing the active match, if one exists, or nullptr otherwise.
-  RenderFrameHostImpl* active_frame_;
+  RenderFrameHostImpl* active_frame_ = nullptr;
 
   // The active match ordinal relative to the matches found in its own frame.
-  int relative_active_match_ordinal_;
+  int relative_active_match_ordinal_ = 0;
 
   // The overall active match ordinal for the current find-in-page session.
-  int active_match_ordinal_;
+  int active_match_ordinal_ = 0;
 
   // The rectangle around the active match, in screen coordinates.
   gfx::Rect selection_rect_;
@@ -327,7 +327,7 @@ class CONTENT_EXPORT FindRequestManager {
 
   // Keeps track of the find request ID of the last find reply reported via
   // NotifyFindReply().
-  int last_reported_id_;
+  int last_reported_id_ = kInvalidId;
 
   // WebContentsObservers to observe frame changes in |contents_| and its inner
   // WebContentses.

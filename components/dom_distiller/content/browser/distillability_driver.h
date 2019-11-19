@@ -5,14 +5,17 @@
 #ifndef COMPONENTS_DOM_DISTILLER_CONTENT_BROWSER_DISTILLIBILITY_DRIVER_H_
 #define COMPONENTS_DOM_DISTILLER_CONTENT_BROWSER_DISTILLIBILITY_DRIVER_H_
 
+#include <string>
+
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
+#include "base/optional.h"
 #include "components/dom_distiller/content/browser/distillable_page_utils.h"
-#include "components/dom_distiller/content/common/distillability_service.mojom.h"
+#include "components/dom_distiller/content/common/mojom/distillability_service.mojom.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
-#include "services/service_manager/public/cpp/binder_registry.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace dom_distiller {
 
@@ -22,30 +25,32 @@ class DistillabilityDriver
       public content::WebContentsUserData<DistillabilityDriver> {
  public:
   ~DistillabilityDriver() override;
-  void CreateDistillabilityService(mojom::DistillabilityServiceRequest request);
+  void CreateDistillabilityService(
+      mojo::PendingReceiver<mojom::DistillabilityService> receiver);
 
-  void SetDelegate(const DistillabilityDelegate& delegate);
-
-  // content::WebContentsObserver implementation.
-  void OnInterfaceRequestFromFrame(
-      content::RenderFrameHost* render_frame_host,
-      const std::string& interface_name,
-      mojo::ScopedMessagePipeHandle* interface_pipe) override;
+  base::ObserverList<DistillabilityObserver>* GetObserverList() {
+    return &observers_;
+  }
+  base::Optional<DistillabilityResult> GetLatestResult() const {
+    return latest_result_;
+  }
 
  private:
   explicit DistillabilityDriver(content::WebContents* web_contents);
   friend class content::WebContentsUserData<DistillabilityDriver>;
   friend class DistillabilityServiceImpl;
 
-  void OnDistillability(bool distillable,
-                        bool is_last,
-                        bool is_mobile_friendly);
+  void OnDistillability(const DistillabilityResult& result);
 
-  DistillabilityDelegate m_delegate_;
+  base::ObserverList<DistillabilityObserver> observers_;
 
-  service_manager::BinderRegistry frame_interfaces_;
+  // The most recently received result from the distillability service.
+  //
+  // TODO(https://crbug.com/952042): Set this to nullopt when navigating to a
+  // new page, accounting for same-document navigation.
+  base::Optional<DistillabilityResult> latest_result_;
 
-  base::WeakPtrFactory<DistillabilityDriver> weak_factory_;
+  base::WeakPtrFactory<DistillabilityDriver> weak_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 

@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/payments/test_payment_request.h"
 
+#include "components/autofill/core/browser/geo/region_data_loader.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/autofill/core/browser/region_data_loader.h"
 #include "components/payments/core/payment_request_data_util.h"
 #include "components/payments/core/payments_profile_comparator.h"
 #include "components/payments/core/web_payment_request.h"

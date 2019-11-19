@@ -25,7 +25,9 @@ namespace printing {
 
 namespace {
 
-bool DIBFormatNativelySupported(HDC dc, uint32_t escape, const BYTE* bits,
+bool DIBFormatNativelySupported(HDC dc,
+                                uint32_t escape,
+                                const BYTE* bits,
                                 int size) {
   BOOL supported = FALSE;
   if (ExtEscape(dc, QUERYESCSUPPORT, sizeof(escape),
@@ -114,9 +116,7 @@ bool Emf::SafePlayback(HDC context) const {
   gfx::Rect bound = GetPageBounds(1);
   RECT rect = bound.ToRECT();
   return bound.IsEmpty() ||
-         EnumEnhMetaFile(context,
-                         emf_,
-                         &Emf::SafePlaybackProc,
+         EnumEnhMetaFile(context, emf_, &Emf::SafePlaybackProc,
                          reinterpret_cast<void*>(&playback_context),
                          &rect) != 0;
 }
@@ -131,8 +131,7 @@ gfx::Rect Emf::GetPageBounds(unsigned int page_number) const {
   }
   // Add 1 to right and bottom because it's inclusive rectangle.
   // See ENHMETAHEADER.
-  return gfx::Rect(header.rclBounds.left,
-                   header.rclBounds.top,
+  return gfx::Rect(header.rclBounds.left, header.rclBounds.top,
                    header.rclBounds.right - header.rclBounds.left + 1,
                    header.rclBounds.bottom - header.rclBounds.top + 1);
 }
@@ -179,16 +178,13 @@ Emf::EnumerationContext::EnumerationContext() {
   memset(this, 0, sizeof(*this));
 }
 
-Emf::Record::Record(const ENHMETARECORD* record)
-    : record_(record) {
+Emf::Record::Record(const ENHMETARECORD* record) : record_(record) {
   DCHECK(record_);
 }
 
 bool Emf::Record::Play(Emf::EnumerationContext* context) const {
-  return 0 != PlayEnhMetaFileRecord(context->hdc,
-                                    context->handle_table,
-                                    record_,
-                                    context->objects_count);
+  return 0 != PlayEnhMetaFileRecord(context->hdc, context->handle_table,
+                                    record_, context->objects_count);
 }
 
 bool Emf::Record::SafePlayback(Emf::EnumerationContext* context) const {
@@ -241,7 +237,7 @@ bool Emf::Record::SafePlayback(Emf::EnumerationContext* context) const {
     case EMR_STRETCHDIBITS: {
       const EMRSTRETCHDIBITS* sdib_record =
           reinterpret_cast<const EMRSTRETCHDIBITS*>(record());
-      const BYTE* record_start = reinterpret_cast<const BYTE *>(record());
+      const BYTE* record_start = reinterpret_cast<const BYTE*>(record());
       const BITMAPINFOHEADER* bmih = reinterpret_cast<const BITMAPINFOHEADER*>(
           record_start + sdib_record->offBmiSrc);
       const BYTE* bits = record_start + sdib_record->offBitsSrc;
@@ -277,15 +273,13 @@ bool Emf::Record::SafePlayback(Emf::EnumerationContext* context) const {
           }
           BITMAPINFOHEADER bmi = {0};
           skia::CreateBitmapHeader(bitmap->width(), bitmap->height(), &bmi);
-          res = (0 != StretchDIBits(hdc, sdib_record->xDest, sdib_record->yDest,
-                                    sdib_record->cxDest,
-                                    sdib_record->cyDest, sdib_record->xSrc,
-                                    sdib_record->ySrc,
-                                    sdib_record->cxSrc, sdib_record->cySrc,
-                                    pixels,
-                                    reinterpret_cast<const BITMAPINFO *>(&bmi),
-                                    sdib_record->iUsageSrc,
-                                    sdib_record->dwRop));
+          res = (0 !=
+                 StretchDIBits(hdc, sdib_record->xDest, sdib_record->yDest,
+                               sdib_record->cxDest, sdib_record->cyDest,
+                               sdib_record->xSrc, sdib_record->ySrc,
+                               sdib_record->cxSrc, sdib_record->cySrc, pixels,
+                               reinterpret_cast<const BITMAPINFO*>(&bmi),
+                               sdib_record->iUsageSrc, sdib_record->dwRop));
         }
       }
       break;
@@ -296,7 +290,7 @@ bool Emf::Record::SafePlayback(Emf::EnumerationContext* context) const {
       HDC hdc = context->hdc;
       if (base_matrix) {
         res = 0 != SetWorldTransform(hdc, base_matrix) &&
-                   ModifyWorldTransform(hdc, xform, MWT_LEFTMULTIPLY);
+              ModifyWorldTransform(hdc, xform, MWT_LEFTMULTIPLY);
       } else {
         res = 0 != SetWorldTransform(hdc, xform);
       }
@@ -323,7 +317,7 @@ bool Emf::Record::SafePlayback(Emf::EnumerationContext* context) const {
         case 4:  // MWT_SET
           if (base_matrix) {
             res = 0 != SetWorldTransform(hdc, base_matrix) &&
-                       ModifyWorldTransform(hdc, xform, MWT_LEFTMULTIPLY);
+                  ModifyWorldTransform(hdc, xform, MWT_LEFTMULTIPLY);
           } else {
             res = 0 != SetWorldTransform(hdc, xform);
           }
@@ -348,8 +342,7 @@ bool Emf::Record::SafePlayback(Emf::EnumerationContext* context) const {
 
 void Emf::StartPage(const gfx::Size& /*page_size*/,
                     const gfx::Rect& /*content_area*/,
-                    const float& /*scale_factor*/) {
-}
+                    const float& /*scale_factor*/) {}
 
 bool Emf::FinishPage() {
   return true;
@@ -357,19 +350,15 @@ bool Emf::FinishPage() {
 
 Emf::Enumerator::Enumerator(const Emf& emf, HDC context, const RECT* rect) {
   items_.clear();
-  if (!EnumEnhMetaFile(context,
-                       emf.emf(),
-                       &Emf::Enumerator::EnhMetaFileProc,
-                       reinterpret_cast<void*>(this),
-                       rect)) {
+  if (!EnumEnhMetaFile(context, emf.emf(), &Emf::Enumerator::EnhMetaFileProc,
+                       reinterpret_cast<void*>(this), rect)) {
     NOTREACHED();
     items_.clear();
   }
   DCHECK_EQ(context_.hdc, context);
 }
 
-Emf::Enumerator::~Enumerator() {
-}
+Emf::Enumerator::~Enumerator() {}
 
 Emf::Enumerator::const_iterator Emf::Enumerator::begin() const {
   return items_.begin();

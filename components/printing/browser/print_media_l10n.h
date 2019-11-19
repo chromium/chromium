@@ -9,7 +9,8 @@
 
 namespace printing {
 
-// Map a paper vendor ID to a localized name.
+// Maps a paper vendor ID to a localized name; returns the localized
+// name if any is found, else returns an empty string.
 std::string LocalizePaperDisplayName(const std::string& vendor_id);
 
 }  // namespace printing

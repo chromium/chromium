@@ -14,7 +14,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
-#include "chromeos/dbus/auth_policy_client.h"
+#include "chromeos/dbus/auth_policy/auth_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
@@ -109,7 +109,7 @@ class DeviceAccountInitializer : public CloudPolicyClient::Observer,
   // The robot account refresh token.
   std::string robot_refresh_token_;
 
-  base::WeakPtrFactory<DeviceAccountInitializer> weak_ptr_factory_;
+  base::WeakPtrFactory<DeviceAccountInitializer> weak_ptr_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(DeviceAccountInitializer);
 };
 

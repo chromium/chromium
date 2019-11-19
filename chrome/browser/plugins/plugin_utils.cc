@@ -6,7 +6,6 @@
 
 #include "base/values.h"
 #include "chrome/browser/profiles/profile_io_data.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/plugin_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -16,6 +15,10 @@
 #include "url/origin.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/common/pref_names.h"
+#include "components/prefs/pref_service.h"
+#include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_util.h"
 #include "extensions/browser/info_map.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
@@ -41,18 +44,18 @@ void GetPluginContentSettingInternal(
   bool uses_plugin_specific_setting = false;
   if (use_javascript_setting) {
     value = host_content_settings_map->GetWebsiteSetting(
-        main_frame_url, main_frame_url, CONTENT_SETTINGS_TYPE_JAVASCRIPT,
+        main_frame_url, main_frame_url, ContentSettingsType::JAVASCRIPT,
         std::string(), &info);
   } else {
     content_settings::SettingInfo specific_info;
     std::unique_ptr<base::Value> specific_setting =
         host_content_settings_map->GetWebsiteSetting(
-            main_frame_url, plugin_url, CONTENT_SETTINGS_TYPE_PLUGINS, resource,
+            main_frame_url, plugin_url, ContentSettingsType::PLUGINS, resource,
             &specific_info);
     content_settings::SettingInfo general_info;
     std::unique_ptr<base::Value> general_setting =
         host_content_settings_map->GetWebsiteSetting(
-            main_frame_url, plugin_url, CONTENT_SETTINGS_TYPE_PLUGINS,
+            main_frame_url, plugin_url, ContentSettingsType::PLUGINS,
             std::string(), &general_info);
     // If there is a plugin-specific setting, we use it, unless the general
     // setting was set by policy, in which case it takes precedence.
@@ -88,13 +91,17 @@ void GetPluginContentSettingInternal(
     // Unless the setting is explicitly ALLOW, return BLOCK for any scheme that
     // is not HTTP, HTTPS, FILE, or chrome-extension.
     if (*setting != CONTENT_SETTING_ALLOW &&
-        PluginUtils::ShouldPreferHtmlOverPlugins(host_content_settings_map) &&
         !main_frame_url.SchemeIsHTTPOrHTTPS() &&
         !main_frame_url.SchemeIsFile() &&
         !main_frame_url.SchemeIs(extensions::kExtensionScheme)) {
       *setting = CONTENT_SETTING_BLOCK;
     }
   }
+
+  // For Plugins, ASK is obsolete. Show as DETECT_IMPORTANT_CONTENT to reflect
+  // actual behavior.
+  if (*setting == ContentSetting::CONTENT_SETTING_ASK)
+    *setting = ContentSetting::CONTENT_SETTING_DETECT_IMPORTANT_CONTENT;
 }
 
 }  // namespace
@@ -130,6 +137,23 @@ ContentSetting PluginUtils::GetFlashPluginContentSetting(
 }
 
 // static
+ContentSetting PluginUtils::UnsafeGetRawDefaultFlashContentSetting(
+    const HostContentSettingsMap* host_content_settings_map,
+    bool* is_managed) {
+  std::string provider_id;
+  ContentSetting plugin_setting =
+      host_content_settings_map->GetDefaultContentSetting(
+          ContentSettingsType::PLUGINS, &provider_id);
+
+  if (is_managed) {
+    *is_managed = HostContentSettingsMap::GetProviderTypeFromSource(
+                      provider_id) == HostContentSettingsMap::POLICY_PROVIDER;
+  }
+
+  return plugin_setting;
+}
+
+// static
 void PluginUtils::RememberFlashChangedForSite(
     HostContentSettingsMap* host_content_settings_map,
     const GURL& top_level_url) {
@@ -139,47 +163,57 @@ void PluginUtils::RememberFlashChangedForSite(
   constexpr char kFlagKey[] = "flashPreviouslyChanged";
   dict->SetKey(kFlagKey, base::Value(true));
   host_content_settings_map->SetWebsiteSettingDefaultScope(
-      top_level_url, top_level_url, CONTENT_SETTINGS_TYPE_PLUGINS_DATA,
+      top_level_url, top_level_url, ContentSettingsType::PLUGINS_DATA,
       std::string(), std::move(dict));
 }
 
 // static
-bool PluginUtils::ShouldPreferHtmlOverPlugins(
-    const HostContentSettingsMap* host_content_settings_map) {
-  return base::FeatureList::IsEnabled(features::kPreferHtmlOverPlugins);
+std::string PluginUtils::GetExtensionIdForMimeType(
+    content::BrowserContext* browser_context,
+    const std::string& mime_type) {
+  auto map = GetMimeTypeToExtensionIdMap(browser_context);
+  auto it = map.find(mime_type);
+  if (it != map.end())
+    return it->second;
+  return std::string();
 }
 
-// static
-std::string PluginUtils::GetExtensionIdForMimeType(
-    content::ResourceContext* resource_context,
-    const std::string& mime_type) {
+base::flat_map<std::string, std::string>
+PluginUtils::GetMimeTypeToExtensionIdMap(
+    content::BrowserContext* browser_context) {
+  base::flat_map<std::string, std::string> mime_type_to_extension_id_map;
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  ProfileIOData* io_data = ProfileIOData::FromResourceContext(resource_context);
-  bool profile_is_off_the_record = io_data->IsOffTheRecord();
-  const scoped_refptr<const extensions::InfoMap> extension_info_map(
-      io_data->GetExtensionInfoMap());
+  Profile* profile = Profile::FromBrowserContext(browser_context);
   std::vector<std::string> whitelist = MimeTypesHandler::GetMIMETypeWhitelist();
   // Go through the white-listed extensions and try to use them to intercept
   // the URL request.
   for (const std::string& extension_id : whitelist) {
     const extensions::Extension* extension =
-        extension_info_map->extensions().GetByID(extension_id);
-    // The white-listed extension may not be installed, so we have to NULL check
-    // |extension|.
-    if (!extension || (profile_is_off_the_record &&
-                       !extension_info_map->IsIncognitoEnabled(extension_id))) {
+        extensions::ExtensionRegistry::Get(browser_context)
+            ->enabled_extensions()
+            .GetByID(extension_id);
+    // The white-listed extension may not be installed, so we have to nullptr
+    // check |extension|.
+    if (!extension ||
+        (profile->IsOffTheRecord() && !extensions::util::IsIncognitoEnabled(
+                                          extension_id, browser_context))) {
       continue;
     }
 
     if (extension_id == extension_misc::kPdfExtensionId &&
-        io_data->always_open_pdf_externally()->GetValue()) {
+        profile->GetPrefs()->GetBoolean(
+            prefs::kPluginsAlwaysOpenPdfExternally)) {
       continue;
     }
 
-    MimeTypesHandler* handler = MimeTypesHandler::GetHandler(extension);
-    if (handler && handler->CanHandleMIMEType(mime_type))
-      return extension_id;
+    if (MimeTypesHandler* handler = MimeTypesHandler::GetHandler(extension)) {
+      for (const auto& supported_mime_type : handler->mime_type_set()) {
+        DCHECK(!base::Contains(mime_type_to_extension_id_map,
+                               supported_mime_type));
+        mime_type_to_extension_id_map[supported_mime_type] = extension_id;
+      }
+    }
   }
 #endif
-  return std::string();
+  return mime_type_to_extension_id_map;
 }

@@ -14,6 +14,8 @@ Usage:
   compact_blocklist.py <gatt_blocklist.txt>
 """
 
+from __future__ import print_function
+
 import collections
 import string
 import sys

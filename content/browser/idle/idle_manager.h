@@ -16,7 +16,8 @@
 #include "base/timer/timer.h"
 #include "content/browser/idle/idle_monitor.h"
 #include "mojo/public/cpp/bindings/binding_set.h"
-#include "third_party/blink/public/platform/modules/idle/idle_manager.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "third_party/blink/public/mojom/idle/idle_manager.mojom.h"
 #include "ui/base/idle/idle.h"
 #include "url/origin.h"
 
@@ -50,13 +51,11 @@ class CONTENT_EXPORT IdleManager : public blink::mojom::IdleManager {
   IdleManager();
   ~IdleManager() override;
 
-  // TODO: Origin for permission check; needed?
-  void CreateService(blink::mojom::IdleManagerRequest request,
-                     const url::Origin& origin);
+  void CreateService(blink::mojom::IdleManagerRequest request);
 
   // blink.mojom.IdleManager:
   void AddMonitor(base::TimeDelta threshold,
-                  blink::mojom::IdleMonitorPtr monitor_ptr,
+                  mojo::PendingRemote<blink::mojom::IdleMonitor> monitor_remote,
                   AddMonitorCallback callback) override;
 
   // Testing helpers.
@@ -98,7 +97,7 @@ class CONTENT_EXPORT IdleManager : public blink::mojom::IdleManager {
   base::LinkedList<IdleMonitor> monitors_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-  base::WeakPtrFactory<IdleManager> weak_factory_;
+  base::WeakPtrFactory<IdleManager> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(IdleManager);
 };

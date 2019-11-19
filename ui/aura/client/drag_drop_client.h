@@ -5,6 +5,8 @@
 #ifndef UI_AURA_CLIENT_DRAG_DROP_CLIENT_H_
 #define UI_AURA_CLIENT_DRAG_DROP_CLIENT_H_
 
+#include <memory>
+
 #include "ui/aura/aura_export.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/gfx/native_widget_types.h"
@@ -32,7 +34,7 @@ class AURA_EXPORT DragDropClient {
   // applied at the end of the drag drop session. |screen_location| is in
   // screen coordinates. At most one drag and drop operation is allowed.
   // It must not start drag operation while |IsDragDropInProgress| returns true.
-  virtual int StartDragAndDrop(const ui::OSExchangeData& data,
+  virtual int StartDragAndDrop(std::unique_ptr<ui::OSExchangeData> data,
                                aura::Window* root_window,
                                aura::Window* source_window,
                                const gfx::Point& screen_location,

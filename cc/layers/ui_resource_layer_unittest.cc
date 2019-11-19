@@ -9,7 +9,7 @@
 #include "cc/resources/scoped_ui_resource.h"
 #include "cc/test/fake_layer_tree_host.h"
 #include "cc/test/geometry_test_utils.h"
-#include "cc/test/layer_test_common.h"
+#include "cc/test/layer_tree_impl_test_base.h"
 #include "cc/test/stub_layer_tree_host_single_thread_client.h"
 #include "cc/trees/single_thread_proxy.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -47,7 +47,7 @@ class UIResourceLayerTest : public testing::Test {
   FakeLayerTreeHost* layer_tree_host() { return layer_impl_test_.host(); }
 
  private:
-  LayerTestCommon::LayerImplTest layer_impl_test_;
+  LayerTreeImplTestBase layer_impl_test_;
 };
 
 TEST_F(UIResourceLayerTest, SetBitmap) {
@@ -131,7 +131,7 @@ TEST_F(UIResourceLayerTest, BitmapClearedOnSetUIResourceId) {
   // Add to a layer tree; now the UIResourceManager holds onto a ref
   // indefinitely.
   {
-    LayerTestCommon::LayerImplTest impl;
+    LayerTreeImplTestBase impl;
     impl.host()->SetRootLayer(test_layer);
 
     test_layer->SetBitmap(bitmap);
@@ -182,7 +182,7 @@ TEST_F(UIResourceLayerTest, SharedBitmap) {
   // still be the same. We can make sure it's using the same shared bitmap by
   // verifying that whatever ID it has, it changes away from and back to when we
   // change the shared bitmap to something else then back to the original.
-  LayerTestCommon::LayerImplTest impl;
+  LayerTreeImplTestBase impl;
   impl.host()->SetRootLayer(layer1);
   layer1->Update();
   EXPECT_TRUE(layer1->DrawsContent());

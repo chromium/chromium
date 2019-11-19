@@ -4,6 +4,7 @@
 
 #include "content/browser/bluetooth/frame_connected_bluetooth_devices.h"
 
+#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "content/browser/bluetooth/web_bluetooth_service_impl.h"
 #include "content/test/test_render_view_host.h"
@@ -12,9 +13,10 @@
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "device/bluetooth/test/mock_bluetooth_device.h"
 #include "device/bluetooth/test/mock_bluetooth_gatt_connection.h"
-#include "mojo/public/cpp/bindings/associated_interface_ptr.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom.h"
 
 namespace content {
 
@@ -30,17 +32,18 @@ using testing::_;
 
 namespace {
 
-const WebBluetoothDeviceId kDeviceId0("000000000000000000000A==");
+const blink::WebBluetoothDeviceId kDeviceId0("000000000000000000000A==");
 constexpr char kDeviceAddress0[] = "0";
 constexpr char kDeviceName0[] = "Device0";
 
-const WebBluetoothDeviceId kDeviceId1("111111111111111111111A==");
+const blink::WebBluetoothDeviceId kDeviceId1("111111111111111111111A==");
 constexpr char kDeviceAddress1[] = "1";
 constexpr char kDeviceName1[] = "Device1";
 
-blink::mojom::WebBluetoothServerClientAssociatedPtr CreateServerClient() {
-  blink::mojom::WebBluetoothServerClientAssociatedPtr client;
-  mojo::MakeRequestAssociatedWithDedicatedPipe(&client);
+mojo::AssociatedRemote<blink::mojom::WebBluetoothServerClient>
+CreateServerClient() {
+  mojo::AssociatedRemote<blink::mojom::WebBluetoothServerClient> client;
+  ignore_result(client.BindNewEndpointAndPassDedicatedReceiverForTesting());
   return client;
 }
 

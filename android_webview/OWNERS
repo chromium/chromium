@@ -4,6 +4,12 @@ michaelbai@chromium.org
 tobiasjs@chromium.org
 torne@chromium.org
 
+# Documentation changes:
+per-file *.md=ntfschr@chromium.org
+
+# Build file refactoring:
+per-file *.gn=ntfschr@chromium.org
+
 # Translation artifacts:
 per-file *.xtb=file://tools/translation/TRANSLATION_OWNERS
 

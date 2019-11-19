@@ -19,7 +19,9 @@
 #include "components/viz/test/fake_external_begin_frame_source.h"
 #include "components/viz/test/mock_compositor_frame_sink_client.h"
 #include "components/viz/test/mock_display_client.h"
-#include "components/viz/test/test_display_provider.h"
+#include "components/viz/test/test_output_surface_provider.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace viz {
@@ -37,17 +39,18 @@ struct RootCompositorFrameSinkData {
     auto params = mojom::RootCompositorFrameSinkParams::New();
     params->frame_sink_id = frame_sink_id;
     params->widget = gpu::kNullSurfaceHandle;
-    params->compositor_frame_sink = MakeRequest(&compositor_frame_sink);
+    params->compositor_frame_sink =
+        compositor_frame_sink.BindNewEndpointAndPassReceiver();
     params->compositor_frame_sink_client =
-        compositor_frame_sink_client.BindInterfacePtr().PassInterface();
-    params->display_private = MakeRequest(&display_private);
-    params->display_client = display_client.BindInterfacePtr().PassInterface();
+        compositor_frame_sink_client.BindInterfaceRemote();
+    params->display_private = display_private.BindNewEndpointAndPassReceiver();
+    params->display_client = display_client.BindRemote();
     return params;
   }
 
-  mojom::CompositorFrameSinkAssociatedPtr compositor_frame_sink;
+  mojo::AssociatedRemote<mojom::CompositorFrameSink> compositor_frame_sink;
   MockCompositorFrameSinkClient compositor_frame_sink_client;
-  mojom::DisplayPrivateAssociatedPtr display_private;
+  mojo::AssociatedRemote<mojom::DisplayPrivate> display_private;
   MockDisplayClient display_client;
 };
 
@@ -56,9 +59,7 @@ struct RootCompositorFrameSinkData {
 class FrameSinkManagerTest : public testing::Test {
  public:
   FrameSinkManagerTest()
-      : manager_(&shared_bitmap_manager_,
-                 kDefaultActivationDeadlineInFrames,
-                 &display_provider_) {}
+      : manager_(&shared_bitmap_manager_, &output_surface_provider_) {}
   ~FrameSinkManagerTest() override = default;
 
   std::unique_ptr<CompositorFrameSinkSupport> CreateCompositorFrameSinkSupport(
@@ -80,8 +81,8 @@ class FrameSinkManagerTest : public testing::Test {
 
   // Checks if a [Root]CompositorFrameSinkImpl exists for |frame_sink_id|.
   bool CompositorFrameSinkExists(const FrameSinkId& frame_sink_id) {
-    return base::ContainsKey(manager_.sink_map_, frame_sink_id) ||
-           base::ContainsKey(manager_.root_sink_map_, frame_sink_id);
+    return base::Contains(manager_.sink_map_, frame_sink_id) ||
+           base::Contains(manager_.root_sink_map_, frame_sink_id);
   }
 
   // testing::Test implementation.
@@ -98,7 +99,7 @@ class FrameSinkManagerTest : public testing::Test {
 
  protected:
   ServerSharedBitmapManager shared_bitmap_manager_;
-  TestDisplayProvider display_provider_;
+  TestOutputSurfaceProvider output_surface_provider_;
   FrameSinkManagerImpl manager_;
 };
 
@@ -121,10 +122,10 @@ TEST_F(FrameSinkManagerTest, CreateCompositorFrameSink) {
 
   // Create a CompositorFrameSinkImpl.
   MockCompositorFrameSinkClient compositor_frame_sink_client;
-  mojom::CompositorFrameSinkPtr compositor_frame_sink;
+  mojo::Remote<mojom::CompositorFrameSink> compositor_frame_sink;
   manager_.CreateCompositorFrameSink(
-      kFrameSinkIdA, MakeRequest(&compositor_frame_sink),
-      compositor_frame_sink_client.BindInterfacePtr());
+      kFrameSinkIdA, compositor_frame_sink.BindNewPipeAndPassReceiver(),
+      compositor_frame_sink_client.BindInterfaceRemote());
   EXPECT_TRUE(CompositorFrameSinkExists(kFrameSinkIdA));
 
   // Invalidating should destroy the CompositorFrameSinkImpl.
@@ -137,10 +138,10 @@ TEST_F(FrameSinkManagerTest, CompositorFrameSinkConnectionLost) {
 
   // Create a CompositorFrameSinkImpl.
   MockCompositorFrameSinkClient compositor_frame_sink_client;
-  mojom::CompositorFrameSinkPtr compositor_frame_sink;
+  mojo::Remote<mojom::CompositorFrameSink> compositor_frame_sink;
   manager_.CreateCompositorFrameSink(
-      kFrameSinkIdA, MakeRequest(&compositor_frame_sink),
-      compositor_frame_sink_client.BindInterfacePtr());
+      kFrameSinkIdA, compositor_frame_sink.BindNewPipeAndPassReceiver(),
+      compositor_frame_sink_client.BindInterfaceRemote());
   EXPECT_TRUE(CompositorFrameSinkExists(kFrameSinkIdA));
 
   // Close the connection from the renderer.
@@ -149,8 +150,7 @@ TEST_F(FrameSinkManagerTest, CompositorFrameSinkConnectionLost) {
   // Closing the connection will destroy the CompositorFrameSinkImpl along with
   // the mojom::CompositorFrameSinkClient binding.
   base::RunLoop run_loop;
-  compositor_frame_sink_client.set_connection_error_handler(
-      run_loop.QuitClosure());
+  compositor_frame_sink_client.set_disconnect_handler(run_loop.QuitClosure());
   run_loop.Run();
 
   // Check that the CompositorFrameSinkImpl was destroyed.
@@ -207,72 +207,6 @@ TEST_F(FrameSinkManagerTest, ClientRestart) {
 
   manager_.UnregisterBeginFrameSource(&source);
   EXPECT_EQ(nullptr, GetBeginFrameSource(client));
-}
-
-// This test verifies that a PrimaryBeginFrameSource will receive BeginFrames
-// from the first BeginFrameSource registered. If that BeginFrameSource goes
-// away then it will receive BeginFrames from the second BeginFrameSource.
-TEST_F(FrameSinkManagerTest, PrimaryBeginFrameSource) {
-  // This PrimaryBeginFrameSource should track the first BeginFrameSource
-  // registered with the SurfaceManager.
-  testing::NiceMock<MockBeginFrameObserver> obs;
-  BeginFrameSource* begin_frame_source = manager_.GetPrimaryBeginFrameSource();
-  begin_frame_source->AddObserver(&obs);
-
-  auto root1 = CreateCompositorFrameSinkSupport(FrameSinkId(1, 1));
-  std::unique_ptr<FakeExternalBeginFrameSource> external_source1 =
-      std::make_unique<FakeExternalBeginFrameSource>(60.f, false);
-  manager_.RegisterBeginFrameSource(external_source1.get(),
-                                    root1->frame_sink_id());
-
-  auto root2 = CreateCompositorFrameSinkSupport(FrameSinkId(2, 2));
-  std::unique_ptr<FakeExternalBeginFrameSource> external_source2 =
-      std::make_unique<FakeExternalBeginFrameSource>(60.f, false);
-  manager_.RegisterBeginFrameSource(external_source2.get(),
-                                    root2->frame_sink_id());
-
-  // Ticking |external_source2| does not propagate to |begin_frame_source|.
-  {
-    BeginFrameArgs args = CreateBeginFrameArgsForTesting(
-        BEGINFRAME_FROM_HERE, external_source2->source_id(), 1);
-    EXPECT_CALL(obs, OnBeginFrame(testing::_)).Times(0);
-    external_source2->TestOnBeginFrame(args);
-    testing::Mock::VerifyAndClearExpectations(&obs);
-  }
-
-  // Ticking |external_source1| does propagate to |begin_frame_source| and
-  // |obs|.
-  {
-    BeginFrameArgs args = CreateBeginFrameArgsForTesting(
-        BEGINFRAME_FROM_HERE, external_source1->source_id(), 1);
-    EXPECT_CALL(obs, OnBeginFrame(args)).Times(1);
-    external_source1->TestOnBeginFrame(args);
-    testing::Mock::VerifyAndClearExpectations(&obs);
-  }
-
-  // Getting rid of |external_source1| means those BeginFrames will not
-  // propagate. Instead, |external_source2|'s BeginFrames will propagate
-  // to |begin_frame_source|.
-  {
-    BeginFrameArgs args = CreateBeginFrameArgsForTesting(
-        BEGINFRAME_FROM_HERE, external_source1->source_id(), 2);
-    manager_.UnregisterBeginFrameSource(external_source1.get());
-    EXPECT_CALL(obs, OnBeginFrame(testing::_)).Times(0);
-    external_source1->TestOnBeginFrame(args);
-    testing::Mock::VerifyAndClearExpectations(&obs);
-  }
-
-  {
-    BeginFrameArgs args = CreateBeginFrameArgsForTesting(
-        BEGINFRAME_FROM_HERE, external_source2->source_id(), 2);
-    EXPECT_CALL(obs, OnBeginFrame(testing::_)).Times(1);
-    external_source2->TestOnBeginFrame(args);
-    testing::Mock::VerifyAndClearExpectations(&obs);
-  }
-
-  // Tear down
-  manager_.UnregisterBeginFrameSource(external_source2.get());
-  begin_frame_source->RemoveObserver(&obs);
 }
 
 TEST_F(FrameSinkManagerTest, MultipleDisplays) {

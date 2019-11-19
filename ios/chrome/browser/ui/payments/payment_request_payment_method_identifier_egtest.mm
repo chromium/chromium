@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import <EarlGrey/EarlGrey.h>
+
 #include <vector>
 
 #import "ios/chrome/browser/payments/payment_request_cache.h"
 #import "ios/chrome/browser/ui/payments/payment_request_egtest_base.h"
-#import "ios/chrome/test/app/chrome_test_util.h"
+#import "ios/chrome/test/app/tab_test_util.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/web/public/test/http_server/http_server.h"
 #import "ios/web/public/test/web_view_interaction_test_util.h"
@@ -43,7 +45,7 @@ const char kPaymentMethodIdentifierPage[] =
   [ChromeEarlGrey
       loadURL:web::test::HttpServer::MakeUrl(kPaymentMethodIdentifierPage)];
 
-  [ChromeEarlGrey tapWebViewElementWithID:@"buy"];
+  [ChromeEarlGrey tapWebStateElementWithID:@"buy"];
 
   const payments::PaymentRequestCache::PaymentRequestSet& requests =
       [self paymentRequestsForWebState:GetCurrentWebState()];
@@ -64,7 +66,7 @@ const char kPaymentMethodIdentifierPage[] =
   [ChromeEarlGrey
       loadURL:web::test::HttpServer::MakeUrl(kPaymentMethodIdentifierPage)];
 
-  [ChromeEarlGrey tapWebViewElementWithID:@"buyBasicCard"];
+  [ChromeEarlGrey tapWebStateElementWithID:@"buyBasicCard"];
 
   const payments::PaymentRequestCache::PaymentRequestSet& requests =
       [self paymentRequestsForWebState:GetCurrentWebState()];
@@ -84,70 +86,6 @@ const char kPaymentMethodIdentifierPage[] =
   GREYAssertEqual("visa", supportedCardNetworks[7], @"");
 }
 
-// Specifying 'basic-card' after having explicitely included a network yields
-// the expected order when in different supportedMethods lists.
-- (void)testBasicCardNetworkThenBasicCardDifferentList {
-  [ChromeEarlGrey
-      loadURL:web::test::HttpServer::MakeUrl(kPaymentMethodIdentifierPage)];
-
-  web::test::ExecuteJavaScript(GetCurrentWebState(),
-                               "buyHelper([{"
-                               "  supportedMethods: 'mastercard',"
-                               "}, {"
-                               "  supportedMethods: 'basic-card'"
-                               "}]);");
-
-  const payments::PaymentRequestCache::PaymentRequestSet& requests =
-      [self paymentRequestsForWebState:GetCurrentWebState()];
-  GREYAssertEqual(1U, requests.size(), @"Expected one request.");
-  std::vector<std::string> supportedCardNetworks =
-      (*requests.begin())->supported_card_networks();
-  GREYAssertEqual(8U, supportedCardNetworks.size(),
-                  @"Expected eight supported card networks.");
-  // 'mastercard' is first because it was explicitely specified first. The rest
-  // is alphabetical.
-  GREYAssertEqual("mastercard", supportedCardNetworks[0], @"");
-  GREYAssertEqual("amex", supportedCardNetworks[1], @"");
-  GREYAssertEqual("diners", supportedCardNetworks[2], @"");
-  GREYAssertEqual("discover", supportedCardNetworks[3], @"");
-  GREYAssertEqual("jcb", supportedCardNetworks[4], @"");
-  GREYAssertEqual("mir", supportedCardNetworks[5], @"");
-  GREYAssertEqual("unionpay", supportedCardNetworks[6], @"");
-  GREYAssertEqual("visa", supportedCardNetworks[7], @"");
-}
-
-// Specifying 'basic-card' after having explicitely included a network yields
-// the expected order when in the same supportedMethods list.
-- (void)testBasicCardNetworkThenBasicCardSameList {
-  [ChromeEarlGrey
-      loadURL:web::test::HttpServer::MakeUrl(kPaymentMethodIdentifierPage)];
-
-  web::test::ExecuteJavaScript(GetCurrentWebState(),
-                               "buyHelper([{"
-                               "  supportedMethods: 'visa'"
-                               "}, {"
-                               "  supportedMethods: 'basic-card'"
-                               "}]);");
-
-  const payments::PaymentRequestCache::PaymentRequestSet& requests =
-      [self paymentRequestsForWebState:GetCurrentWebState()];
-  GREYAssertEqual(1U, requests.size(), @"Expected one request.");
-  std::vector<std::string> supportedCardNetworks =
-      (*requests.begin())->supported_card_networks();
-  GREYAssertEqual(8U, supportedCardNetworks.size(),
-                  @"Expected eight supported card networks.");
-  // 'visa' is first because it was explicitely specified first. The rest
-  // is alphabetical.
-  GREYAssertEqual("visa", supportedCardNetworks[0], @"");
-  GREYAssertEqual("amex", supportedCardNetworks[1], @"");
-  GREYAssertEqual("diners", supportedCardNetworks[2], @"");
-  GREYAssertEqual("discover", supportedCardNetworks[3], @"");
-  GREYAssertEqual("jcb", supportedCardNetworks[4], @"");
-  GREYAssertEqual("mastercard", supportedCardNetworks[5], @"");
-  GREYAssertEqual("mir", supportedCardNetworks[6], @"");
-  GREYAssertEqual("unionpay", supportedCardNetworks[7], @"");
-}
-
 // Specifying 'basic-card' with some networks after having explicitely included
 // the same networks does not yield duplicates and has the expected order.
 - (void)testBasicCardNetworkThenBasicCardWithSameNetwork {
@@ -157,9 +95,10 @@ const char kPaymentMethodIdentifierPage[] =
   web::test::ExecuteJavaScript(
       GetCurrentWebState(),
       "buyHelper([{"
-      "  supportedMethods: 'mastercard'"
-      "}, {"
-      "  supportedMethods: 'visa'"
+      "  supportedMethods: 'basic-card',"
+      "  data: {"
+      "    supportedNetworks: ['mastercard'],"
+      "  }"
       "}, {"
       "  supportedMethods: 'basic-card',"
       "  data: {"

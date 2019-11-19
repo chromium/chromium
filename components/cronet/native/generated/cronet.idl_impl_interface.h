@@ -239,8 +239,9 @@ struct Cronet_RequestFinishedInfoListener {
   }
   Cronet_ClientContext client_context() const { return client_context_; }
 
-  virtual void OnRequestFinished(
-      Cronet_RequestFinishedInfoPtr request_info) = 0;
+  virtual void OnRequestFinished(Cronet_RequestFinishedInfoPtr request_info,
+                                 Cronet_UrlResponseInfoPtr response_info,
+                                 Cronet_ErrorPtr error) = 0;
 
  private:
   Cronet_ClientContext client_context_ = nullptr;

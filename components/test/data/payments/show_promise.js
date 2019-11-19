@@ -38,7 +38,7 @@ function buildPaymentRequest() {
 /**
  * Calls PaymentRequest.show() without a promise.
  */
-function buyWithNoPromise() {  // eslint-disable-line no-unused-vars
+function buyWithNoPromise() { // eslint-disable-line no-unused-vars
   try {
     request = buildPaymentRequest();
     print('The final donation amount is USD $1.00.');
@@ -63,7 +63,7 @@ function buyWithNoPromise() {  // eslint-disable-line no-unused-vars
 /**
  * Calls PaymentRequest.show() with a promise that resolves.
  */
-function buyWithResolvingPromise() {  // eslint-disable-line no-unused-vars
+function buyWithResolvingPromise() { // eslint-disable-line no-unused-vars
   try {
     var request = buildPaymentRequest();
     print('The initial donation amount is USD $1.00.');
@@ -83,7 +83,7 @@ function buyWithResolvingPromise() {  // eslint-disable-line no-unused-vars
             };
 
             resolve(details);
-          }, 5000);  // 5 seconds
+          }, 5000); // 5 seconds
         }))
         .then(function(instrumentResponse) {
           instrumentResponse.complete('success');
@@ -99,7 +99,7 @@ function buyWithResolvingPromise() {  // eslint-disable-line no-unused-vars
 /**
  * Calls PaymentRequest.show() with a promise that rejects.
  */
-function buyWithRejectingPromise() {  // eslint-disable-line no-unused-vars
+function buyWithRejectingPromise() { // eslint-disable-line no-unused-vars
   try {
     var request = buildPaymentRequest();
     print('The initial donation amount is USD $1.00.');
@@ -108,7 +108,7 @@ function buyWithRejectingPromise() {  // eslint-disable-line no-unused-vars
           print('Calculating the final donation amount...');
           window.setTimeout(function() {
             reject('Unable to calculate final donation amount.');
-          }, 5000);  // 5 seconds
+          }, 5000); // 5 seconds
         }))
         .then(function(instrumentResponse) {
           instrumentResponse.complete('success');

@@ -1,1 +1,4 @@
 file://third_party/blink/common/origin_trials/OWNERS
+
+per-file navigation_origin_trial_features.cc=set noparent
+per-file navigation_origin_trial_features.cc=file://third_party/blink/SECURITY_OWNERS

@@ -1,0 +1,32 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option java_multiple_files = true;
+option java_package = "org.chromium.components.sync.protocol";
+
+option optimize_for = LITE_RUNTIME;
+
+package sync_pb;
+
+// WebApp data. This is a synced part of
+// chrome/browser/web_applications/proto/web_app.proto data.
+message WebAppSpecifics {
+  // This enum should be a subset of the DisplayMode enum in
+  // chrome/browser/web_applications/proto/web_app.proto and
+  // third_party/blink/public/mojom/manifest/display_mode.mojom
+  enum UserDisplayMode {
+    // UNDEFINED is never serialized.
+    BROWSER = 1;
+    // MINIMAL_UI is never serialized.
+    STANDALONE= 3;
+    // FULLSCREEN is never serialized.
+  }
+
+  optional string launch_url = 1;
+  optional string name = 2;
+  optional UserDisplayMode user_display_mode = 3;
+  optional uint32 theme_color = 4;
+}

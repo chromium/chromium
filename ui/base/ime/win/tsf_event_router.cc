@@ -5,11 +5,11 @@
 #include "ui/base/ime/win/tsf_event_router.h"
 
 #include <msctf.h>
-#include <wrl/client.h>
 #include <set>
 #include <utility>
 
 #include "base/bind.h"
+#include "base/win/atl.h"
 #include "ui/base/win/atl_module.h"
 #include "ui/gfx/range/range.h"
 
@@ -256,8 +256,7 @@ TSFEventRouter::TSFEventRouter(TSFEventRouterObserver* observer)
   CComObject<Delegate>* delegate;
   ui::win::CreateATLModuleIfNeeded();
   if (SUCCEEDED(CComObject<Delegate>::CreateInstance(&delegate))) {
-    delegate->AddRef();
-    delegate_.Attach(delegate);
+    delegate_ = delegate;
     delegate_->SetRouter(this);
   }
 }

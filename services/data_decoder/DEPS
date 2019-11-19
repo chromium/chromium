@@ -1,6 +1,9 @@
 include_rules = [
+  "+components/cbor",
+  "+device/bluetooth/public",
   "+gin",
-  "+jni",
+  "+net",
+  "+services/data_decoder/public/cpp/android/safe_json_jni_headers",
   "+skia",
   "+third_party/libxml/chromium",
   "+third_party/blink/public",

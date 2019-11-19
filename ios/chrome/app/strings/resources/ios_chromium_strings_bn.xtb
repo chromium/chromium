@@ -1,40 +1,34 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="bn">
-<translation id="102360288709523007">Google এ ব্যবহারের পরিসংখ্যান এবং ক্র্যাশ প্রতিবেদনগুলি পাঠিয়ে Chromium কে আরও ভাল করে তুলতে সহায়তা করুন।</translation>
+<translation id="102360288709523007">Google-এ ব্যবহারের পরিসংখ্যান এবং ক্র্যাশ রিপোর্ট পাঠিয়ে Chromium-কে আরও ভাল করে তুলতে সহায়তা করুন।</translation>
 <translation id="1185134272377778587">Chromium সম্পর্কে</translation>
 <translation id="1289966288285062467">Chromium এর গোপনীয়তা বিজ্ঞপ্তি</translation>
 <translation id="1472013873724362412">আপনার অ্যাকাউন্ট Chromium-এ কাজ করে না৷ সাইন-ইন করার জন্য আপনার ডোমেন অ্যাডমিনিস্ট্রেটরের সঙ্গে যোগাযোগ করুন বা কোন সাধারণ Google অ্যাকাউন্ট ব্যবহার করুন৷</translation>
+<translation id="1507010443238049608">Chromium-এর ফিচার এবং পারফর্ম্যান্স উন্নত করতে সাহায্য করুন</translation>
+<translation id="1617663976202781617">Chromium সিঙ্ক থেকে ডেটা</translation>
 <translation id="1736662517232558588">Chromium ডেটা সাফ করা হয়েছে</translation>
 <translation id="1838412507805038478"><ph name="ISSUER" /> যে এই ওয়েবসাইটের শংসাপত্র প্রকাশ করেছে Chromium তা যাচাই করেছে।</translation>
-<translation id="1843424232666537147">Google Chrome এর এমন বৈশিষ্ট্য রয়েছে যা আপনাকে আপনার ইন্টারনেট ডেটা পরিচালনা করতে এবং কীভাবে আপনি ওয়েবপৃষ্ঠাগুলি দ্রুত লোড করতে সক্ষম হবেন সে বিষয়ে সহায়তা করে।
-<ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
-<translation id="2075400798887076382">সরাসরি এখান থেকে, আপনি আপনার কম্পিউটারে যেসব ট্যাব খোলা আছে সেগুলি অ্যাক্সেস করুন। আপনার কম্পিউটারে কেবলমাত্র Chromium খুলুন, মেনুতে যান এবং "Chromium এ প্রবেশ করুন..." বেছে নিন।</translation>
+<translation id="1843424232666537147">Google Chrome-এর এমন বৈশিষ্ট্য রয়েছে যা আপনাকে আপনার ইন্টারনেট ডেটা পরিচালনা করতে এবং কিভাবে আপনি ওয়েবপৃষ্ঠাগুলি দ্রুত লোড করতে পারবেন সে বিষয়ে সহায়তা করে।
+<ph name="BEGIN_LINK" />আরো জানুন<ph name="END_LINK" /></translation>
+<translation id="2075400798887076382">সরাসরি এখান থেকে, আপনি আপনার কম্পিউটারে যেসব ট্যাব খোলা আছে সেগুলি অ্যাক্সেস করুন। আপনার কম্পিউটারে কেবলমাত্র Chromium খুলুন, মেনুতে যান এবং "Chromium-এ সাইন-ইন..." বেছে নিন।</translation>
 <translation id="2168108852149185974">কিছু অ্যাড-অনের কারণে Chromium ক্র্যাশ করতে পারে৷ দয়া করে আনইনস্টল করুন:</translation>
 <translation id="2178608107313874732">Chromium এই মুহূর্তে আপনার ক্যামেরা ব্যবহার করতে পারছে না</translation>
 <translation id="2195025571279539885">আপনি কি এরপর থেকে এই সাইটের <ph name="LANGUAGE_NAME" /> পৃষ্ঠাগুলিকে অনুবাদ করে দেওয়ার জন্য Chromium থেকে প্রম্পট পেতে চান?</translation>
-<translation id="2517624234762908348">আপনার Chromium ডেটা সিঙ্ক করুন</translation>
-<translation id="2647554856022461007">Chromium আপনার ব্রাউজিংয়ের অভিজ্ঞতাকে উন্নত করতে ওয়েব পরিষেবাগুলি ব্যবহার করতে পারে৷ আপনি আপনার ইচ্ছা অনুযায়ী এই পরিষেবাগুলিকে অক্ষম করতে পারেন৷ <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
+<translation id="2590893390871230428">আপনার Chromium ডেটা সিঙ্ক করুন</translation>
 <translation id="2730884209570016437">Chromium আপনার ক্যামেরা ব্যবহার করতে পারছে না কারণ এটি অন্য একটি অ্যাপ্লিকেশান দ্বারা ব্যবহার করা হচ্ছে</translation>
 <translation id="2915596697727466327">Chromium আপনার পাসওয়ার্ডে অনুমোদিত অ্যাক্সেস নিশ্চিত করতে Face ID ব্যবহার করে।</translation>
 <translation id="3256316712990552818">Chromium-এ প্রতিলিপি করা হয়েছে</translation>
-<translation id="3413120535237193088">সব ডিভাইসে আপনার বুকমার্কগুলি পেতে, Chromium এ প্রবেশ করুন।</translation>
-<translation id="3473048256428424907">Chromium QR স্ক্যানার চালু করুন</translation>
-<translation id="3605252743693911722">আপনার বুকমার্ক, পাসওয়ার্ড, এবং অন্যান্য জিনিস আপনার সমস্ত ডিভাইসে পেতে Chromium এ সাইন-ইন করুন।</translation>
 <translation id="3805899903892079518">আপনার ফটো এবং ভিডিওগুলিতে Chromium এর অ্যাক্সেস নেই৷ iOS সেটিংস &gt; গোপনীয়তা &gt; ফটোগুলিতে অ্যাক্সেস সক্ষম করুন৷</translation>
-<translation id="4024541897090868497">আপনার সব ডিভাইসে আপনার ট্যাবগুলি পেতে, Chromium এ সাইন-ইন করুন।</translation>
-<translation id="4157467675761413638">Chromium টিপ। ট্যাবে আরও বিকল্পের জন্য, আপনার স্ক্রিনের নিচে অথবা উপরে থাকা টুলবারে দেখানো ট্যাবটি প্রেস করে ধরে থাকুন।</translation>
-<translation id="4241912885070669028"><ph name="SIGNOUT_MANAGED_DOMAIN" /> পরিচালিত একটি অ্যাকাউন্ট থেকে আপনি সাইন আউট করছেন৷ এটি এই ডিভাইস থেকে আপনার Chromium ডেটা মুছে ফেলবে, কিন্তু আপনার Google অ্যাকাউন্টে ডেটা থেকে যাবে৷</translation>
-<translation id="4272892696084633551">Chromium-এর ফিচার এবং পারফরম্যান্স উন্নত করতে সাহায্য করুন</translation>
 <translation id="4555020257205549924">যখন এই বৈশিষ্ট্যটি চালু করা হয় তখন Chromium, Google অনুবাদ ব্যবহার করে অন্যান্য ভাষায় লিখিত পৃষ্ঠাগুলি অনুবাদ করার অফার করবে৷ <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
+<translation id="4681781466797808448">Chromium স্ক্যানার চালু করুন</translation>
 <translation id="4787850887676698916">আপনার অন্য ডিভাইসগুলিতে Chromium এ আপনি যে ট্যাবগুলি খুলেছেন সেগুলি এখানে দেখা যাবে।</translation>
-<translation id="495292094137889840">Chromium QR স্ক্যানার ব্যবহার করা শুরু করুন</translation>
 <translation id="4999538639245140991"><ph name="SIGNOUT_MANAGED_DOMAIN" /> দ্বারা ম্যানেজ করা একটি অ্যাকাউন্ট থেকে আপনি সাইন-আউট করছেন বলে, এই ডিভাইস থেকে আপনার Chromium ডেটা মুছে যাবে। আপনার Google অ্যাকাউন্টে এই ডেটা থেকে যাবে।</translation>
-<translation id="5231355151045086930">Chromium থেকে প্রস্থান করুন</translation>
+<translation id="5573014823074921752">Chromium সংক্রান্ত পরামর্শ। আরও ট্যাবের বিকল্প দেখতে আপনার স্ক্রিনের নিচে অথবা উপরের দিকে থাকা টুলবারে 'ট্যাব দেখান' বিকল্পটি টাচ করে ধরে থাকুন।</translation>
 <translation id="5862307444128926510">Chromium-এ স্বাগতম</translation>
-<translation id="5945387852661427312">আপনি <ph name="DOMAIN" /> পরিচালিত একটি অ্যাকাউন্টের মাধ্যমে সাইন ইন করছেন এবং এর প্রশাসককে আপনার Chromium ডেটা নিয়ন্ত্রণ করতে দিচ্ছেন৷ আপনার ডেটা এই অ্যাকাউন্টের সাথে স্থায়ীভাবে আবদ্ধ হবে৷ Chromium থেকে সাইন আউট করলে এই ডিভাইস থেকে আপনার ডেটা মুছে ফেলা হবে, কিন্তু এটি আপনার Google অ্যাকাউন্টে সঞ্চিত থাকবে।</translation>
+<translation id="5945387852661427312">আপনি <ph name="DOMAIN" /> পরিচালিত একটি অ্যাকাউন্টের মাধ্যমে সাইন-ইন করছেন এবং এর অ্যাডমিনিস্ট্রেটরকে আপনার Chromium ডেটা নিয়ন্ত্রণ করতে দিচ্ছেন৷ আপনার ডেটা এই অ্যাকাউন্টের সাথে স্থায়ীভাবে আবদ্ধ হবে৷ Chromium থেকে সাইন-আউট করলে এই ডিভাইস থেকে আপনার ডেটা মুছে ফেলা হবে, কিন্তু এটি আপনার Google অ্যাকাউন্টে সঞ্চিত থাকবে।</translation>
 <translation id="6068866989048414399">Chromium পরিষেবার শর্তাদি</translation>
-<translation id="6268381023930128611">Chromium থেকে প্রস্থান করবেন?</translation>
+<translation id="6268381023930128611">Chromium থেকে সাইন-আউট করবেন?</translation>
 <translation id="6424492062988593837">Chrome আরও ভাল হয়েছে! একটি নতুন ভার্সন উপলব্ধ আছে৷</translation>
 <translation id="6604711459180487467">আপনার অবস্থানের উপর ভিত্তি করে Chromium এ আরও ভাল অভিজ্ঞতা লাভ করুন৷</translation>
 <translation id="6626296268883197964">এই অ্যাপ্লিকেশনটি ব্যবহার করার মাধ্যমে, আপনি Chromium এর <ph name="BEGIN_LINK_TOS" />পরিষেবার শর্তাবলী<ph name="END_LINK_TOS" /> এবং <ph name="BEGIN_LINK_PRIVACY" />গোপনীয়তা বিজ্ঞপ্তি<ph name="END_LINK_PRIVACY" /> সম্মত হন।</translation>
@@ -47,11 +41,13 @@
 <translation id="7674213385180944843">সেটিংস &gt; গোপনীয়তা &gt; ক্যামেরা &gt; Chromium খুলুন এবং ক্যামেরা চালু করুন।</translation>
 <translation id="7746854981345936341">Chromium টিপ। কিছু বোতাম এখন আপনার স্ক্রিনে নিচের দিকে রয়েছে যেমন, ব্যাক, ফরওয়ার্ড এবং সার্চ বোতাম।</translation>
 <translation id="786327964234957808">আপনি সিঙ্ক অ্যাকাউন্টগুলিকে <ph name="USER_EMAIL1" /> থেকে <ph name="USER_EMAIL2" /> এ সুইচ করছেন। আপনার বিদ্যমান Chromium ডেটা <ph name="DOMAIN" /> দ্বারা পরিচালিত হয়। এটি এই ডিভাইস থেকে আপনার ডেটা মুছে দেবে, কিন্তু <ph name="USER_EMAIL1" /> এ আপনার ডেটা থাকবে।</translation>
+<translation id="7890287942691234100">Chromium স্ক্যানার ব্যবহার করা শুরু করুন</translation>
 <translation id="8073677936375100957">এই ডিভাইস থেকে আপনার Chromium ডেটা সরিয়ে ফেলবেন?</translation>
-<translation id="8175055321229419309">টিপ: <ph name="BEGIN_LINK" />Chromium কে আপনার ডকে সরান<ph name="END_LINK" /></translation>
+<translation id="8175055321229419309">টিপ: <ph name="BEGIN_LINK" />Chromium-কে আপনার ডকে সরান<ph name="END_LINK" /></translation>
 <translation id="8252885722420466166">আপনার অবস্থানের উপর ভিত্তি করে Chromium এ আরও ভাল Google অভিজ্ঞতা লাভ করুন৷</translation>
 <translation id="8586442755830160949">কপিরাইট <ph name="YEAR" /> Chromium রচয়িতা৷ সর্বস্বত্ত্ব সংরক্ষিত৷</translation>
 <translation id="8809780021347235332">ছবি সংরক্ষণ করতে, Chromium কে আপনার ফটোগুলি ব্যবহার করার অনুমতি দিতে সেটিংসে আলতো চাপুন</translation>
-<translation id="9022552996538154597">Chromium-এ প্রবেশ করুন</translation>
+<translation id="9022552996538154597">Chromium-এ সাইন-ইন করুন</translation>
+<translation id="9217078088703304241"><ph name="BEGIN_LINK" />আপডেট করা Chromium-এর পরিষেবার শর্তাবলী পর্যালোচনা করুন।<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">Chromium রচয়িতা</translation>
 </translationbundle>

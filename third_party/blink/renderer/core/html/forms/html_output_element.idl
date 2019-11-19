@@ -24,8 +24,10 @@
  */
 
 // https://html.spec.whatwg.org/C/#the-output-element
-[HTMLConstructor]
-interface HTMLOutputElement : HTMLElement {
+[
+    Exposed=Window,
+    HTMLConstructor
+] interface HTMLOutputElement : HTMLElement {
     [PutForwards=value] readonly attribute DOMTokenList htmlFor;
     [ImplementedAs=formOwner] readonly attribute HTMLFormElement? form;
     [CEReactions, Reflect] attribute DOMString name;

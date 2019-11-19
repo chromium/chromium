@@ -144,8 +144,9 @@ class EasyUnlockTpmKeyManager : public KeyedService {
   // Queued up |PrepareTpmKey| callbacks.
   std::vector<base::Closure> prepare_tpm_key_callbacks_;
 
-  base::WeakPtrFactory<EasyUnlockTpmKeyManager> get_tpm_slot_weak_ptr_factory_;
-  base::WeakPtrFactory<EasyUnlockTpmKeyManager> weak_ptr_factory_;
+  base::WeakPtrFactory<EasyUnlockTpmKeyManager> get_tpm_slot_weak_ptr_factory_{
+      this};
+  base::WeakPtrFactory<EasyUnlockTpmKeyManager> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(EasyUnlockTpmKeyManager);
 };

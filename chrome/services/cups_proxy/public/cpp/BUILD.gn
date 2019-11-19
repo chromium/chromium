@@ -1,0 +1,44 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+import("//printing/buildflags/buildflags.gni")
+
+assert(is_chromeos, "Non-Chrome-OS builds must not depend on this")
+assert(use_cups, "Non-CUPS builds must not depend on this")
+
+source_set("cpp") {
+  sources = [
+    "cups_util.cc",
+    "cups_util.h",
+    "ipp_messages.cc",
+    "ipp_messages.h",
+    "type_conversions.cc",
+    "type_conversions.h",
+  ]
+
+  deps = [
+    "//base",
+  ]
+
+  public_deps = [
+    "//chrome/services/ipp_parser/public/cpp",
+    "//printing",
+  ]
+
+  configs += [ "//printing:cups" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "cups_util_unittest.cc",
+  ]
+  deps = [
+    ":cpp",
+    "//base",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

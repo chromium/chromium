@@ -155,7 +155,7 @@ class InputScrollElasticityController {
   bool received_overscroll_update_;
   cc::OverscrollBehavior overscroll_behavior_;
 
-  base::WeakPtrFactory<InputScrollElasticityController> weak_factory_;
+  base::WeakPtrFactory<InputScrollElasticityController> weak_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(InputScrollElasticityController);
 };
 

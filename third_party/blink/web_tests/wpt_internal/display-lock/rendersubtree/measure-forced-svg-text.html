@@ -1,0 +1,68 @@
+<!doctype HTML>
+<html>
+<meta charset="utf8">
+<title>Display Locking: measure forced SVG text</title>
+<link rel="author" title="Vladimir Levin" href="mailto:vmpstr@chromium.org">
+<link rel="help" href="https://github.com/WICG/display-locking">
+<script src="resources/utils.js"></script>
+
+<style>
+#container {
+  width: 100px;
+  height: 100px;
+  background: lightgreen;
+}
+</style>
+
+<div id="parent"></div>
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<script>
+async_test((t) => {
+  function measureForced() {
+    t.step(() => {
+      assert_not_equals(document.getElementById("text").getComputedTextLength(), 0, "forced");
+    });
+  }
+
+  function measureInCommit() {
+    t.step(() => {
+      assert_not_equals(document.getElementById("text").getComputedTextLength(), 0, "in commit");
+    });
+  }
+
+  function construct(container) {
+    container.innerHTML = `
+      <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <style>
+          .t { font: 10px sans-serif; }
+        </style>
+        <text id="text" x="10" y="10" class="t">This is text</text>
+      </svg>
+    `;
+  }
+
+  async function runTest() {
+    const container = document.createElement("div");
+    container.id = "container";
+    await setInvisible(container);
+
+    document.getElementById("parent").appendChild(container);
+    construct(container);
+    measureForced();
+
+    setVisible(container).then(() => {
+      measureInCommit();
+      t.done();
+    });
+  }
+
+  window.onload = function() {
+    requestAnimationFrame(() => requestAnimationFrame(runTest));
+  };
+}, "Measure Forced SVG Text");
+</script>
+
+</html>

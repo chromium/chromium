@@ -33,6 +33,11 @@ class BrowserAccessibilityMac : public BrowserAccessibility {
   uint32_t PlatformChildCount() const override;
   BrowserAccessibility* PlatformGetChild(uint32_t child_index) const override;
 
+  BrowserAccessibility* PlatformGetFirstChild() const override;
+  BrowserAccessibility* PlatformGetLastChild() const override;
+  BrowserAccessibility* PlatformGetNextSibling() const override;
+  BrowserAccessibility* PlatformGetPreviousSibling() const override;
+
   // The BrowserAccessibilityCocoa associated with us.
   BrowserAccessibilityCocoa* native_view() const {
     return browser_accessibility_cocoa_;

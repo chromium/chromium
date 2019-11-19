@@ -19,15 +19,17 @@
  */
 
 // https://html.spec.whatwg.org/C/#the-a-element
-[HTMLConstructor]
-interface HTMLAnchorElement : HTMLElement {
+[
+    Exposed=Window,
+    HTMLConstructor
+] interface HTMLAnchorElement : HTMLElement {
     [CEReactions, Reflect] attribute DOMString target;
     [CEReactions, Reflect] attribute DOMString download;
     [CEReactions, Reflect] attribute USVString ping;
     [CEReactions, Reflect] attribute DOMString rel;
     [SameObject, PutForwards=value] readonly attribute DOMTokenList relList;
     [CEReactions, Reflect] attribute DOMString hreflang;
-    [OriginTrialEnabled=HrefTranslate, CEReactions, Reflect] attribute DOMString hrefTranslate;
+    [RuntimeEnabled=HrefTranslate, CEReactions, Reflect] attribute DOMString hrefTranslate;
     [CEReactions, Reflect] attribute DOMString type;
     [CEReactions, Reflect, ReflectOnly=("","no-referrer","origin","no-referrer-when-downgrade","origin-when-cross-origin","unsafe-url"), ReflectMissing="", ReflectInvalid=""] attribute DOMString referrerPolicy;
 
@@ -42,4 +44,4 @@ interface HTMLAnchorElement : HTMLElement {
     [CEReactions, Reflect] attribute DOMString shape;
 };
 
-HTMLAnchorElement implements HTMLHyperlinkElementUtils;
+HTMLAnchorElement includes HTMLHyperlinkElementUtils;

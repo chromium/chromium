@@ -25,7 +25,7 @@ public class TitleUtilTest {
      */
     @Test
     @Feature({"Ntp"})
-    public void testGetTitleForDisplay() throws Exception {
+    public void testGetTitleForDisplay() {
         // If the title is not null or empty it is simply returned.
         assertEquals("title", TitleUtil.getTitleForDisplay("title", "https://example.com/path"));
         assertEquals("title", TitleUtil.getTitleForDisplay("title", ""));

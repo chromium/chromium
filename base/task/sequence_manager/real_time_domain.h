@@ -25,9 +25,13 @@ class BASE_EXPORT RealTimeDomain : public TimeDomain {
   bool MaybeFastForwardToNextTask(bool quit_when_idle_requested) override;
 
  protected:
+  void OnRegisterWithSequenceManager(
+      SequenceManagerImpl* sequence_manager) override;
   const char* GetName() const override;
 
  private:
+  const TickClock* tick_clock_ = nullptr;
+
   DISALLOW_COPY_AND_ASSIGN(RealTimeDomain);
 };
 

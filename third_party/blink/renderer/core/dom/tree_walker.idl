@@ -20,7 +20,9 @@
 
 // https://dom.spec.whatwg.org/#interface-treewalker
 
-interface TreeWalker {
+[
+    Exposed=Window
+] interface TreeWalker {
     [SameObject] readonly attribute Node root;
     readonly attribute unsigned long whatToShow;
     readonly attribute NodeFilter? filter;

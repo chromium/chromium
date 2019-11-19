@@ -16,7 +16,7 @@
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -93,10 +93,10 @@ class WriteCallbacksObserver {
 void WriteCallbacksObserver::ObserveNextWriteCallbacks(
     ImportantFileWriter* writer) {
   writer->RegisterOnNextWriteCallbacks(
-      base::Bind(&WriteCallbacksObserver::OnBeforeWrite,
-                 base::Unretained(this)),
-      base::Bind(&WriteCallbacksObserver::OnAfterWrite,
-                 base::Unretained(this)));
+      base::BindOnce(&WriteCallbacksObserver::OnBeforeWrite,
+                     base::Unretained(this)),
+      base::BindOnce(&WriteCallbacksObserver::OnAfterWrite,
+                     base::Unretained(this)));
 }
 
 WriteCallbackObservationState
@@ -124,7 +124,7 @@ class ImportantFileWriterTest : public testing::Test {
  protected:
   WriteCallbacksObserver write_callback_observer_;
   FilePath file_;
-  test::ScopedTaskEnvironment scoped_task_environment_;
+  test::TaskEnvironment task_environment_;
 
  private:
   ScopedTempDir temp_dir_;

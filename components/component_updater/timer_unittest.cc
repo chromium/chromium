@@ -7,7 +7,7 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/component_updater/timer.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -19,12 +19,12 @@ namespace component_updater {
 class ComponentUpdaterTimerTest : public testing::Test {
  public:
   ComponentUpdaterTimerTest()
-      : scoped_task_environment_(
-            base::test::ScopedTaskEnvironment::MainThreadType::UI) {}
+      : task_environment_(
+            base::test::SingleThreadTaskEnvironment::MainThreadType::UI) {}
   ~ComponentUpdaterTimerTest() override {}
 
  private:
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
 TEST_F(ComponentUpdaterTimerTest, Start) {

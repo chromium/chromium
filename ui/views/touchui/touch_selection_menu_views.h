@@ -22,6 +22,8 @@ class LabelButton;
 class VIEWS_EXPORT TouchSelectionMenuViews : public BubbleDialogDelegateView,
                                              public ButtonListener {
  public:
+  METADATA_HEADER(TouchSelectionMenuViews);
+
   TouchSelectionMenuViews(TouchSelectionMenuRunnerViews* owner,
                           ui::TouchSelectionMenuClient* client,
                           aura::Window* context);

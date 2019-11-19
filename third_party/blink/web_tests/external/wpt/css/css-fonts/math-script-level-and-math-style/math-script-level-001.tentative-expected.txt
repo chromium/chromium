@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+FAIL Initial value of math-script-level assert_equals: expected "0" but got ""
+FAIL Inherited values of math-script-level assert_equals: expected "11" but got ""
+FAIL Specified math-script-level: auto assert_equals: expected "10" but got ""
+FAIL Specified math-script-level: <integer> assert_equals: expected "11" but got ""
+FAIL Specified math-script-level: add(<integer>) assert_equals: expected "15" but got ""
+Harness: the test ran to completion.
+

@@ -10,7 +10,7 @@
 #include "base/command_line.h"
 #include "base/file_descriptor_posix.h"
 #include "base/logging.h"
-#include "base/message_loop/message_loop.h"
+#include "base/message_loop/message_pump_type.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
@@ -24,6 +24,7 @@
 #include "ipc/ipc_channel.h"
 #include "ipc/ipc_channel_handle.h"
 #include "ipc/ipc_sync_channel.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "native_client/src/public/nonsfi/irt_random.h"
 #include "ppapi/nacl_irt/irt_manifest.h"
 #include "ppapi/nacl_irt/plugin_startup.h"
@@ -41,17 +42,16 @@ NonSfiListener::NonSfiListener()
                       base::WaitableEvent::InitialState::NOT_SIGNALED),
       key_fd_map_(new std::map<std::string, int>) {
   io_thread_.StartWithOptions(
-      base::Thread::Options(base::MessageLoop::TYPE_IO, 0));
+      base::Thread::Options(base::MessagePumpType::IO, 0));
 }
 
 NonSfiListener::~NonSfiListener() {
 }
 
 void NonSfiListener::Listen() {
-  mojo::ScopedMessagePipeHandle channel_handle;
-  auto service = CreateNaClService(io_thread_.task_runner(), &channel_handle);
+  NaClService service(io_thread_.task_runner());
   channel_ = IPC::SyncChannel::Create(
-      channel_handle.release(), IPC::Channel::MODE_CLIENT,
+      service.TakeChannelPipe().release(), IPC::Channel::MODE_CLIENT,
       this,  // As a Listener.
       io_thread_.task_runner(), base::ThreadTaskRunnerHandle::Get(),
       true,  // Create pipe now.
@@ -106,10 +106,10 @@ void NonSfiListener::OnStart(const nacl::NaClStartParams& params) {
   ppapi::StartUpPlugin();
 
   trusted_listener_ = std::make_unique<NaClTrustedListener>(
-      mojo::MakeProxy(nacl::mojom::NaClRendererHostPtrInfo(
+      mojo::PendingRemote<nacl::mojom::NaClRendererHost>(
           mojo::ScopedMessagePipeHandle(
               params.trusted_service_channel_handle.mojo_handle),
-          nacl::mojom::NaClRendererHost::Version_)),
+          nacl::mojom::NaClRendererHost::Version_),
       io_thread_.task_runner().get());
 
   // Ensure that the validation cache key (used as an extra input to the

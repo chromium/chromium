@@ -207,8 +207,8 @@ TEST_F(TaskSchedulerTests, GetTaskNameList) {
 
   std::vector<base::string16> task_names;
   EXPECT_TRUE(task_scheduler_->GetTaskNameList(&task_names));
-  EXPECT_TRUE(base::ContainsValue(task_names, kTaskName1));
-  EXPECT_TRUE(base::ContainsValue(task_names, kTaskName2));
+  EXPECT_TRUE(base::Contains(task_names, kTaskName1));
+  EXPECT_TRUE(base::Contains(task_names, kTaskName2));
 
   EXPECT_TRUE(task_scheduler_->DeleteTask(kTaskName1));
   EXPECT_TRUE(task_scheduler_->DeleteTask(kTaskName2));
@@ -228,7 +228,7 @@ TEST_F(TaskSchedulerTests, GetTasksIncludesHidden) {
 
   std::vector<base::string16> task_names;
   EXPECT_TRUE(task_scheduler_->GetTaskNameList(&task_names));
-  EXPECT_TRUE(base::ContainsValue(task_names, kTaskName1));
+  EXPECT_TRUE(base::Contains(task_names, kTaskName1));
 
   EXPECT_TRUE(task_scheduler_->DeleteTask(kTaskName1));
 }

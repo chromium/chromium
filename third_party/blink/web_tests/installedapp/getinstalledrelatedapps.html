@@ -3,7 +3,7 @@
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
 <script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
-<script src="file:///gen/third_party/blink/public/platform/modules/installedapp/installed_app_provider.mojom.js"></script>
+<script src="file:///gen/third_party/blink/public/mojom/installedapp/installed_app_provider.mojom.js"></script>
 <script src="resources/installedapp-test-helper.js"></script>
 <script>
 
@@ -12,8 +12,8 @@ installedapp_test((t, mock) => {
   // list of related_applications from this page's manifest. The mock service
   // returns the empty list, implying that none are installed.
   mock.pushExpectedCall(
-      [{platform: 'play', url: null, id: 'com.test'},
-       {platform: 'itunes', url: 'https://itunes.apple.com/', id: null}],
+      [{platform: 'play', url: null, id: 'com.test', version: null},
+       {platform: 'itunes', url: 'https://itunes.apple.com/', id: null, version: null}],
       []);
   return navigator.getInstalledRelatedApps().then(result => {
     assert_array_relatedapplication_equals(result, []);
@@ -29,10 +29,10 @@ installedapp_test((t, mock) => {
       [{platform: 'play', url: null, id: 'com.test'},
        {platform: 'itunes', url: 'https://itunes.apple.com/', id: null}],
       [{platform: 'play', url: null, id: 'com.test'}]);
-  // TODO(mgiuca): The |url| field should be omitted from the result, not ''.
+
   return navigator.getInstalledRelatedApps().then(result => {
     assert_array_relatedapplication_equals(
-        result, [{platform: 'play', url: '', id: 'com.test'}]);
+        result, [{platform: 'play', id: 'com.test'}]);
   });
 }, 'getInstalledRelatedApps with related and installed apps (no url)');
 
@@ -44,14 +44,14 @@ installedapp_test((t, mock) => {
   mock.pushExpectedCall(
       [{platform: 'play', url: null, id: 'com.test'},
        {platform: 'itunes', url: 'https://itunes.apple.com/', id: null}],
-      [{platform: 'play', url: null, id: 'com.test'},
-       {platform: 'itunes', url: 'https://itunes.apple.com/', id: null}]);
-  // TODO(mgiuca): The null fields should be omitted from the result, not ''.
+      [{platform: 'play', url: null, id: 'com.test', version: '1.4.2'},
+       {platform: 'itunes', url: 'https://itunes.apple.com/', id: null, version: null}]);
+
   return navigator.getInstalledRelatedApps().then(result => {
     assert_array_relatedapplication_equals(
         result,
-        [{platform: 'play', url: '', id: 'com.test'},
-         {platform: 'itunes', url: 'https://itunes.apple.com/', id: ''}]);
+        [{platform: 'play', id: 'com.test', version: '1.4.2'},
+         {platform: 'itunes', url: 'https://itunes.apple.com/'}]);
   });
 }, 'getInstalledRelatedApps with multiple related and installed apps');
 

@@ -7,12 +7,12 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/time/time.h"
+#include "chrome/android/public/profiles/jni_headers/CookiesFetcher_jni.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_switches.h"
-#include "jni/CookiesFetcher_jni.h"
 #include "net/url_request/url_request_context.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 
@@ -110,7 +110,13 @@ static void JNI_CookiesFetcher_RestoreCookies(
 
   // Assume HTTPS - since the cookies are being restored from another store,
   // they have already gone through the strict secure check.
+  //
+  // Similarly, permit samesite cookies to be imported.
+  net::CookieOptions options;
+  options.set_include_httponly();
+  options.set_same_site_cookie_context(
+      net::CookieOptions::SameSiteCookieContext::SAME_SITE_STRICT);
   GetCookieServiceClient()->SetCanonicalCookie(
-      *cookie, "https", true /* modify_http_only */,
+      *cookie, "https", options,
       network::mojom::CookieManager::SetCanonicalCookieCallback());
 }

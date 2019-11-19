@@ -1,6 +1,0 @@
-# These values are obtained from components/services/heap_profiling/stream.h.
-stream_signature="\xF6\x10\x3B\x71"
-alloc_packet="\xF6\x10\x3B\x72"
-free_packet="\xF6\x10\x3B\x73"
-barrier_packet="\xF6\x10\x3B\x74"
-string_mapping_packet="\xF6\x10\x3B\x75"

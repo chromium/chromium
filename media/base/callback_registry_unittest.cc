@@ -7,7 +7,7 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -20,7 +20,7 @@ using ::testing::IsNull;
 
 class CallbackRegistryTest : public testing::Test {
  protected:
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
 };
 
 TEST_F(CallbackRegistryTest, RegisterWithNoParam) {
@@ -32,7 +32,7 @@ TEST_F(CallbackRegistryTest, RegisterWithNoParam) {
 
   EXPECT_CALL(callback, Run());
   registry.Notify();
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 }
 
 TEST_F(CallbackRegistryTest, RegisterWithOneParam) {
@@ -44,7 +44,7 @@ TEST_F(CallbackRegistryTest, RegisterWithOneParam) {
 
   EXPECT_CALL(callback, Run(1));
   registry.Notify(1);
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 }
 
 TEST_F(CallbackRegistryTest, RegisterWithTwoParams) {
@@ -56,7 +56,7 @@ TEST_F(CallbackRegistryTest, RegisterWithTwoParams) {
 
   EXPECT_CALL(callback, Run(1, 2));
   registry.Notify(1, 2);
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 }
 
 TEST_F(CallbackRegistryTest, RegisterWithMoveOnlyParam) {
@@ -69,7 +69,7 @@ TEST_F(CallbackRegistryTest, RegisterWithMoveOnlyParam) {
 
   EXPECT_CALL(callback, Run(_));
   registry.Notify(std::make_unique<int>(1));
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 }
 
 TEST_F(CallbackRegistryTest, RegisterWithPointerParam) {
@@ -81,7 +81,7 @@ TEST_F(CallbackRegistryTest, RegisterWithPointerParam) {
 
   EXPECT_CALL(callback, Run(IsNull()));
   registry.Notify(nullptr);
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 }
 
 TEST_F(CallbackRegistryTest, RegisterWithReferenceParam) {
@@ -94,7 +94,7 @@ TEST_F(CallbackRegistryTest, RegisterWithReferenceParam) {
   int i = 1;
   EXPECT_CALL(callback, Run(i));
   registry.Notify(i);
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 }
 
 TEST_F(CallbackRegistryTest, RegisterAfterNotify) {
@@ -106,7 +106,7 @@ TEST_F(CallbackRegistryTest, RegisterAfterNotify) {
 
   EXPECT_CALL(callback_1, Run());
   registry.Notify();
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   base::MockCallback<base::RepeatingClosure> callback_2;
   auto registration_2 = registry.Register(callback_2.Get());
@@ -115,7 +115,7 @@ TEST_F(CallbackRegistryTest, RegisterAfterNotify) {
   EXPECT_CALL(callback_1, Run());
   EXPECT_CALL(callback_2, Run());
   registry.Notify();
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 }
 
 TEST_F(CallbackRegistryTest, EmptyRegistry) {
@@ -136,16 +136,16 @@ TEST_F(CallbackRegistryTest, UnregisterCallback) {
   EXPECT_CALL(callback_1, Run());
   EXPECT_CALL(callback_2, Run());
   registry.Notify();
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   registration_1.reset();
   EXPECT_CALL(callback_2, Run());
   registry.Notify();
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   registration_2.reset();
   registry.Notify();
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 }
 
 TEST_F(CallbackRegistryTest, RegisterDuringNotification) {
@@ -162,13 +162,13 @@ TEST_F(CallbackRegistryTest, RegisterDuringNotification) {
     registration_2 = registry.Register(callback_2.Get());
   }));
   registry.Notify();
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
   EXPECT_TRUE(registration_2);
 
   EXPECT_CALL(callback_1, Run());
   EXPECT_CALL(callback_2, Run());
   registry.Notify();
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 }
 
 }  // namespace

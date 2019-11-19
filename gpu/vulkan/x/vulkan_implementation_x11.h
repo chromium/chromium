@@ -17,12 +17,11 @@ namespace gpu {
 class COMPONENT_EXPORT(VULKAN_X11) VulkanImplementationX11
     : public VulkanImplementation {
  public:
-  VulkanImplementationX11();
-  explicit VulkanImplementationX11(XDisplay* x_display);
+  explicit VulkanImplementationX11(bool use_swiftshader = false);
   ~VulkanImplementationX11() override;
 
   // VulkanImplementation:
-  bool InitializeVulkanInstance() override;
+  bool InitializeVulkanInstance(bool using_surface) override;
   VulkanInstance* GetVulkanInstance() override;
   std::unique_ptr<VulkanSurface> CreateViewSurface(
       gfx::AcceleratedWidget window) override;
@@ -35,14 +34,27 @@ class COMPONENT_EXPORT(VULKAN_X11) VulkanImplementationX11
   std::unique_ptr<gfx::GpuFence> ExportVkFenceToGpuFence(
       VkDevice vk_device,
       VkFence vk_fence) override;
+  VkSemaphore CreateExternalSemaphore(VkDevice vk_device) override;
+  VkSemaphore ImportSemaphoreHandle(VkDevice vk_device,
+                                    SemaphoreHandle handle) override;
+  SemaphoreHandle GetSemaphoreHandle(VkDevice vk_device,
+                                     VkSemaphore vk_semaphore) override;
+  VkExternalMemoryHandleTypeFlagBits GetExternalImageHandleType() override;
+  bool CanImportGpuMemoryBuffer(
+      gfx::GpuMemoryBufferType memory_buffer_type) override;
+  bool CreateImageFromGpuMemoryHandle(
+      VkDevice vk_device,
+      gfx::GpuMemoryBufferHandle gmb_handle,
+      gfx::Size size,
+      VkImage* vk_image,
+      VkImageCreateInfo* vk_image_info,
+      VkDeviceMemory* vk_device_memory,
+      VkDeviceSize* mem_allocation_size,
+      base::Optional<VulkanYCbCrInfo>* ycbcr_info) override;
 
  private:
-  XDisplay* const x_display_;
+  bool using_surface_ = true;
   VulkanInstance vulkan_instance_;
-
-  PFN_vkGetPhysicalDeviceXlibPresentationSupportKHR
-      vkGetPhysicalDeviceXlibPresentationSupportKHR_ = nullptr;
-  PFN_vkCreateXlibSurfaceKHR vkCreateXlibSurfaceKHR_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(VulkanImplementationX11);
 };

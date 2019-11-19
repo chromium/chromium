@@ -102,7 +102,7 @@ const CGFloat kLabelMargin = 2.5f;
     [self addSubview:self.textBadge];
     self.didAddSubviews = YES;
     [self activateConstraints];
-    self.backgroundColor = [UIColor clearColor];
+    self.backgroundColor = UIColor.clearColor;
     // Start hidden.
     self.alpha = 0.0;
     self.hidden = YES;

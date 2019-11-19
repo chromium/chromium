@@ -3,18 +3,18 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/html/parser/resource_preloader.h"
-#include "third_party/blink/renderer/core/loader/network_hints_interface.h"
+
+#include <utility>
 
 namespace blink {
 
 void ResourcePreloader::TakeAndPreload(PreloadRequestStream& r) {
   PreloadRequestStream requests;
-  NetworkHintsInterfaceImpl network_hints_interface;
   requests.swap(r);
 
   for (PreloadRequestStream::iterator it = requests.begin();
        it != requests.end(); ++it)
-    Preload(std::move(*it), network_hints_interface);
+    Preload(std::move(*it));
 }
 
 }  // namespace blink

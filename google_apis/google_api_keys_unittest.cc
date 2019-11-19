@@ -13,6 +13,7 @@
 #include "google_apis/google_api_keys_unittest.h"
 
 #include "base/stl_util.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "google_apis/gaia/gaia_switches.h"
 
@@ -88,7 +89,7 @@ void GoogleAPIKeysTest::TearDown() {
 // This is the default baked-in value for OAuth IDs and secrets.
 static const char kDummyToken[] = "dummytoken";
 
-#if defined(GOOGLE_CHROME_BUILD) || defined(USE_OFFICIAL_GOOGLE_API_KEYS)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) || defined(USE_OFFICIAL_GOOGLE_API_KEYS)
 // Test official build behavior, since we are in a checkout where this
 // is possible.
 namespace official_build {
@@ -186,11 +187,15 @@ TEST_F(GoogleAPIKeysTest, OfficialKeys) {
   EXPECT_NE(DUMMY_API_TOKEN, secret_remoting_host);
   EXPECT_NE(kDummyToken, secret_remoting_host);
 }
-#endif  // defined(GOOGLE_CHROME_BUILD) || defined(USE_OFFICIAL_GOOGLE_API_KEYS)
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) ||
+        // defined(USE_OFFICIAL_GOOGLE_API_KEYS)
 
 // After this test, for the remainder of this compilation unit, we
 // need official keys to not be used.
-#undef GOOGLE_CHROME_BUILD
+#undef BUILDFLAG_INTERNAL_CHROMIUM_BRANDING
+#undef BUILDFLAG_INTERNAL_GOOGLE_CHROME_BRANDING
+#define BUILDFLAG_INTERNAL_CHROMIUM_BRANDING() (1)
+#define BUILDFLAG_INTERNAL_GOOGLE_CHROME_BRANDING() (0)
 #undef USE_OFFICIAL_GOOGLE_API_KEYS
 
 // Test the set of keys temporarily baked into Chromium by default.
@@ -398,7 +403,7 @@ TEST_F(GoogleAPIKeysTest, OverrideAllKeys) {
   EXPECT_EQ("SECRET_REMOTING_HOST", secret_remoting_host);
 }
 
-#if !defined(GOOGLE_CHROME_BUILD)
+#if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 // Override all keys using both preprocessor defines and environment
 // variables.  The environment variables should win.
@@ -488,7 +493,7 @@ TEST_F(GoogleAPIKeysTest, OverrideAllKeysUsingEnvironment) {
   EXPECT_EQ("env-SECRET_REMOTING_HOST", secret_remoting_host);
 }
 
-#endif  // !defined(GOOGLE_CHROME_BUILD)
+#endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 #if defined(OS_IOS)
 // Override all keys using both preprocessor defines and setters.

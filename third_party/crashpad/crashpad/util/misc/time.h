@@ -69,6 +69,14 @@ void GetTimeOfDay(timeval* tv);
 
 #endif  // OS_WIN
 
+#if defined(OS_LINUX) || defined(OS_ANDROID) || DOXYGEN
+//! \brief Get the kernel boot time. Subsequent calls to this function may
+//!     return different results due to the system clock being changed or
+//!     imprecision in measuring the boot time.
+//! \return `true` on success. Otherwise, `false` with a message logged.
+bool GetBootTime(timespec* ts);
+#endif  // OS_LINUX || OS_ANDROID || DOXYGEN
+
 }  // namespace crashpad
 
 #endif  // CRASHPAD_UTIL_MISC_TIME_H_

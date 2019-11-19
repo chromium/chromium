@@ -30,6 +30,12 @@ pkg_config("atk_base") {
   defines = [
     "ATK_LIB_DIR=\"$atk_lib_dir\"",
     "USE_ATK_BRIDGE",
+
+    # The AtkValue interface methods we implement and test have been deprecated
+    # in favor of new API. But that new API cannot be used until corresponding
+    # support has been added to AT-SPI2 and we stop supporting earlier versions
+    # of ATK (i.e. < 2.12).
+    "ATK_DISABLE_DEPRECATION_WARNINGS",
   ]
 }
 

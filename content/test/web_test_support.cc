@@ -4,34 +4,20 @@
 
 #include "content/public/test/web_test_support.h"
 
-#include <stddef.h>
-
-#include <algorithm>
-#include <unordered_map>
+#include <memory>
+#include <string>
 #include <utility>
-#include <vector>
 
-#include "base/bind.h"
 #include "base/callback.h"
-#include "base/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
-#include "cc/base/switches.h"
-#include "cc/test/pixel_test_output_surface.h"
-#include "components/viz/common/features.h"
-#include "components/viz/common/frame_sinks/copy_output_request.h"
-#include "components/viz/service/display/skia_output_surface.h"
-#include "components/viz/test/test_layer_tree_frame_sink.h"
 #include "content/browser/bluetooth/bluetooth_device_chooser_controller.h"
-#include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
+#include "content/browser/storage_partition_impl.h"
 #include "content/browser/worker_host/shared_worker_service_impl.h"
+#include "content/browser/worker_host/test_shared_worker_service_impl.h"
 #include "content/common/renderer.mojom.h"
 #include "content/common/unique_name_helper.h"
 #include "content/public/browser/storage_partition.h"
-#include "content/public/common/gpu_stream_constants.h"
-#include "content/public/common/page_state.h"
-#include "content/public/common/screen_info.h"
 #include "content/renderer/compositor/layer_tree_view.h"
 #include "content/renderer/input/render_widget_input_handler_delegate.h"
 #include "content/renderer/loader/request_extra_data.h"
@@ -40,8 +26,6 @@
 #include "content/renderer/render_thread_impl.h"
 #include "content/renderer/render_view_impl.h"
 #include "content/renderer/render_widget.h"
-#include "content/renderer/renderer_blink_platform_impl.h"
-#include "content/renderer/web_test_dependencies.h"
 #include "content/shell/common/shell_switches.h"
 #include "content/shell/common/web_test/web_test_switches.h"
 #include "content/shell/renderer/web_test/blink_test_runner.h"
@@ -51,12 +35,12 @@
 #include "content/shell/test_runner/web_test_interfaces.h"
 #include "content/shell/test_runner/web_view_test_proxy.h"
 #include "content/shell/test_runner/web_widget_test_proxy.h"
-#include "gpu/ipc/service/image_transport_surface.h"
-#include "services/ws/public/cpp/gpu/context_provider_command_buffer.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/platform/web_float_rect.h"
 #include "third_party/blink/public/platform/web_input_event.h"
 #include "third_party/blink/public/platform/web_rect.h"
+#include "third_party/blink/public/web/web_manifest_manager.h"
 #include "third_party/blink/public/web/web_view.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/events/blink/blink_event_util.h"
@@ -72,7 +56,6 @@
 #include "third_party/skia/include/core/SkFontMgr.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/ports/SkTypeface_win.h"
-#include "ui/gfx/win/direct_write.h"
 #endif
 
 using blink::WebRect;
@@ -90,7 +73,7 @@ RenderViewImpl* CreateWebViewTestProxy(CompositorDependencies* compositor_deps,
   auto* render_view_proxy =
       new test_runner::WebViewTestProxy(compositor_deps, params);
 
-  BlinkTestRunner* test_runner = new BlinkTestRunner(render_view_proxy);
+  auto test_runner = std::make_unique<BlinkTestRunner>(render_view_proxy);
   // TODO(lukasza): Using the 1st BlinkTestRunner as the main delegate is wrong,
   // but it is difficult to change because this behavior has been baked for a
   // long time into test assumptions (i.e. which PrintMessage gets delivered to
@@ -98,25 +81,23 @@ RenderViewImpl* CreateWebViewTestProxy(CompositorDependencies* compositor_deps,
   static bool first_test_runner = true;
   if (first_test_runner) {
     first_test_runner = false;
-    interfaces->SetDelegate(test_runner);
+    interfaces->SetDelegate(test_runner.get());
   }
 
-  render_view_proxy->Initialize(interfaces, test_runner);
+  render_view_proxy->Initialize(interfaces, std::move(test_runner));
   return render_view_proxy;
 }
 
-scoped_refptr<RenderWidget> CreateRenderWidgetForFrame(
+std::unique_ptr<RenderWidget> CreateRenderWidgetForFrame(
     int32_t routing_id,
     CompositorDependencies* compositor_deps,
-    const ScreenInfo& screen_info,
-    blink::WebDisplayMode display_mode,
+    blink::mojom::DisplayMode display_mode,
     bool swapped_out,
-    bool hidden,
     bool never_visible,
-    mojom::WidgetRequest widget_request) {
-  return base::MakeRefCounted<test_runner::WebWidgetTestProxy>(
-      routing_id, compositor_deps, screen_info, display_mode, swapped_out,
-      hidden, never_visible, std::move(widget_request));
+    mojo::PendingReceiver<mojom::Widget> widget_receiver) {
+  return std::make_unique<test_runner::WebWidgetTestProxy>(
+      routing_id, compositor_deps, display_mode, swapped_out,
+      /*hidden=*/true, never_visible, std::move(widget_receiver));
 }
 
 RenderFrameImpl* CreateWebFrameTestProxy(RenderFrameImpl::CreateParams params) {
@@ -132,12 +113,6 @@ RenderFrameImpl* CreateWebFrameTestProxy(RenderFrameImpl::CreateParams params) {
   return render_frame_proxy;
 }
 
-float GetWindowToViewportScale(RenderWidget* render_widget) {
-  blink::WebFloatRect rect(0, 0, 1.0f, 0.0);
-  render_widget->ConvertWindowToViewport(&rect);
-  return rect.width;
-}
-
 #if defined(OS_WIN)
 // DirectWrite only has access to %WINDIR%\Fonts by default. For developer
 // side-loading, support kRegisterFontFiles to allow access to additional fonts.
@@ -150,10 +125,6 @@ void RegisterSideloadedTypefaces(SkFontMgr* fontmgr) {
 #endif  // OS_WIN
 
 }  // namespace
-
-test_runner::WebViewTestProxy* GetWebViewTestProxy(RenderView* render_view) {
-  return static_cast<test_runner::WebViewTestProxy*>(render_view);
-}
 
 test_runner::WebWidgetTestProxy* GetWebWidgetTestProxy(
     blink::WebLocalFrame* frame) {
@@ -173,195 +144,17 @@ void EnableWebTestProxyCreation() {
 }
 
 void FetchManifest(blink::WebView* view, FetchManifestCallback callback) {
-  RenderFrameImpl::FromWebFrame(view->MainFrame())
-      ->GetManifestManager()
-      .RequestManifest(std::move(callback));
+  blink::WebManifestManager::RequestManifestForTesting(
+      RenderFrameImpl::FromWebFrame(view->MainFrame())->GetWebFrame(),
+      std::move(callback));
 }
 
 void SetWorkerRewriteURLFunction(RewriteURLFunction rewrite_url_function) {
   WebWorkerFetchContextImpl::InstallRewriteURLFunction(rewrite_url_function);
 }
 
-namespace {
-
-// Invokes a callback on commit (on the main thread) to obtain the output
-// surface that should be used, then asks that output surface to submit the copy
-// request at SwapBuffers time.
-class CopyRequestSwapPromise : public cc::SwapPromise {
- public:
-  using FindLayerTreeFrameSinkCallback =
-      base::Callback<viz::TestLayerTreeFrameSink*()>;
-  CopyRequestSwapPromise(
-      std::unique_ptr<viz::CopyOutputRequest> request,
-      FindLayerTreeFrameSinkCallback find_layer_tree_frame_sink_callback)
-      : copy_request_(std::move(request)),
-        find_layer_tree_frame_sink_callback_(
-            std::move(find_layer_tree_frame_sink_callback)) {}
-
-  // cc::SwapPromise implementation.
-  void OnCommit() override {
-    layer_tree_frame_sink_from_commit_ =
-        find_layer_tree_frame_sink_callback_.Run();
-    DCHECK(layer_tree_frame_sink_from_commit_);
-  }
-  void DidActivate() override {}
-  void WillSwap(viz::CompositorFrameMetadata*) override {
-    layer_tree_frame_sink_from_commit_->RequestCopyOfOutput(
-        std::move(copy_request_));
-  }
-  void DidSwap() override {}
-  void DidNotSwap(DidNotSwapReason r) override {
-    // The compositor should always swap in web test mode.
-    NOTREACHED() << "did not swap for reason " << r;
-  }
-  int64_t TraceId() const override { return 0; }
-
- private:
-  std::unique_ptr<viz::CopyOutputRequest> copy_request_;
-  FindLayerTreeFrameSinkCallback find_layer_tree_frame_sink_callback_;
-  viz::TestLayerTreeFrameSink* layer_tree_frame_sink_from_commit_ = nullptr;
-};
-
-}  // namespace
-
-class WebTestDependenciesImpl : public WebTestDependencies,
-                                public viz::TestLayerTreeFrameSinkClient {
- public:
-  bool UseDisplayCompositorPixelDump() const override {
-    base::CommandLine* cmd = base::CommandLine::ForCurrentProcess();
-    return cmd->HasSwitch(switches::kEnableDisplayCompositorPixelDump);
-  }
-
-  std::unique_ptr<cc::LayerTreeFrameSink> CreateLayerTreeFrameSink(
-      int32_t routing_id,
-      scoped_refptr<gpu::GpuChannelHost> gpu_channel,
-      scoped_refptr<viz::ContextProvider> compositor_context_provider,
-      scoped_refptr<viz::RasterContextProvider> worker_context_provider,
-      gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
-      CompositorDependencies* deps) override {
-    // This could override the GpuChannel for a LayerTreeFrameSink that was
-    // previously being created but in that case the old GpuChannel would be
-    // lost as would the LayerTreeFrameSink.
-    gpu_channel_ = gpu_channel;
-    gpu_memory_buffer_manager_ = gpu_memory_buffer_manager;
-
-    auto* task_runner = deps->GetCompositorImplThreadTaskRunner().get();
-    bool synchronous_composite = !task_runner;
-    if (!task_runner)
-      task_runner = base::ThreadTaskRunnerHandle::Get().get();
-
-    viz::RendererSettings renderer_settings;
-    base::CommandLine* cmd = base::CommandLine::ForCurrentProcess();
-    renderer_settings.allow_antialiasing &=
-        !cmd->HasSwitch(cc::switches::kDisableCompositedAntialiasing);
-    renderer_settings.highp_threshold_min = 2048;
-    // Keep texture sizes exactly matching the bounds of the RenderPass to avoid
-    // floating point badness in texcoords.
-    renderer_settings.dont_round_texture_sizes_for_pixel_tests = true;
-    renderer_settings.use_skia_renderer = features::IsUsingSkiaRenderer();
-
-    constexpr bool disable_display_vsync = false;
-    constexpr double refresh_rate = 60.0;
-    auto layer_tree_frame_sink = std::make_unique<viz::TestLayerTreeFrameSink>(
-        std::move(compositor_context_provider),
-        std::move(worker_context_provider), gpu_memory_buffer_manager,
-        renderer_settings, task_runner, synchronous_composite,
-        disable_display_vsync, refresh_rate);
-    layer_tree_frame_sink->SetClient(this);
-    layer_tree_frame_sinks_[routing_id] = layer_tree_frame_sink.get();
-    return std::move(layer_tree_frame_sink);
-  }
-
-  std::unique_ptr<cc::SwapPromise> RequestCopyOfOutput(
-      int32_t routing_id,
-      std::unique_ptr<viz::CopyOutputRequest> request) override {
-    // Note that we can't immediately check layer_tree_frame_sinks_, since it
-    // may not have been created yet. Instead, we wait until OnCommit to find
-    // the currently active LayerTreeFrameSink for the given RenderWidget
-    // routing_id.
-    return std::make_unique<CopyRequestSwapPromise>(
-        std::move(request),
-        base::Bind(&WebTestDependenciesImpl::FindLayerTreeFrameSink,
-                   // |this| will still be valid, because its lifetime is tied
-                   // to RenderThreadImpl, which outlives web test execution.
-                   base::Unretained(this), routing_id));
-  }
-
-  // TestLayerTreeFrameSinkClient implementation.
-  std::unique_ptr<viz::SkiaOutputSurface> CreateDisplaySkiaOutputSurface()
-      override {
-    // No test is requesting SkiaRenderer with this WebTestDependenciesImpl,
-    // so return nullptr for now. 
-    NOTIMPLEMENTED();
-    return nullptr;
-  }
-
-  std::unique_ptr<viz::OutputSurface> CreateDisplayOutputSurface(
-      scoped_refptr<viz::ContextProvider> compositor_context_provider)
-      override {
-    // This is for an offscreen context for the compositor. So the default
-    // framebuffer doesn't need alpha, depth, stencil, antialiasing.
-    gpu::ContextCreationAttribs attributes;
-    attributes.alpha_size = -1;
-    attributes.depth_size = 0;
-    attributes.stencil_size = 0;
-    attributes.samples = 0;
-    attributes.sample_buffers = 0;
-    attributes.bind_generates_resource = false;
-    attributes.lose_context_when_out_of_memory = true;
-    const bool automatic_flushes = false;
-    const bool support_locking = false;
-    const bool support_grcontext = true;
-
-    scoped_refptr<viz::ContextProvider> context_provider;
-
-    gpu::ContextResult context_result = gpu::ContextResult::kTransientFailure;
-    while (context_result != gpu::ContextResult::kSuccess) {
-      context_provider = base::MakeRefCounted<ws::ContextProviderCommandBuffer>(
-          gpu_channel_, gpu_memory_buffer_manager_, kGpuStreamIdDefault,
-          kGpuStreamPriorityDefault, gpu::kNullSurfaceHandle,
-          GURL("chrome://gpu/"
-               "WebTestDependenciesImpl::CreateOutputSurface"),
-          automatic_flushes, support_locking, support_grcontext,
-          gpu::SharedMemoryLimits(), attributes,
-          ws::command_buffer_metrics::ContextType::FOR_TESTING);
-      context_result = context_provider->BindToCurrentThread();
-
-      // Web tests can't recover from a fatal or surface failure.
-      CHECK(!gpu::IsFatalOrSurfaceFailure(context_result));
-    }
-
-    bool flipped_output_surface = false;
-    return std::make_unique<cc::PixelTestOutputSurface>(
-        std::move(context_provider), flipped_output_surface);
-  }
-  void DisplayReceivedLocalSurfaceId(
-      const viz::LocalSurfaceId& local_surface_id) override {}
-  void DisplayReceivedCompositorFrame(
-      const viz::CompositorFrame& frame) override {}
-  void DisplayWillDrawAndSwap(bool will_draw_and_swap,
-                              viz::RenderPassList* render_passes) override {}
-  void DisplayDidDrawAndSwap() override {}
-
- private:
-  viz::TestLayerTreeFrameSink* FindLayerTreeFrameSink(int32_t routing_id) {
-    auto it = layer_tree_frame_sinks_.find(routing_id);
-    return it == layer_tree_frame_sinks_.end() ? nullptr : it->second;
-  }
-
-  // Entries are not removed, so this map can grow. However, it is only used in
-  // web tests, so this memory usage does not occur in production.
-  // Entries in this map will outlive the output surface, because this object is
-  // owned by RenderThreadImpl, which outlives web test execution.
-  std::unordered_map<int32_t, viz::TestLayerTreeFrameSink*>
-      layer_tree_frame_sinks_;
-  scoped_refptr<gpu::GpuChannelHost> gpu_channel_;
-  gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager_ = nullptr;
-};
-
 void EnableRendererWebTestMode() {
-  RenderThreadImpl::current()->set_web_test_dependencies(
-      std::make_unique<WebTestDependenciesImpl>());
+  RenderThreadImpl::current()->enable_web_test_mode();
 
   UniqueNameHelper::PreserveStableUniqueNameForTesting();
 
@@ -377,11 +170,22 @@ void EnableBrowserWebTestMode() {
   RenderWidgetHostImpl::DisableResizeAckCheckForTesting();
 }
 
-void TerminateAllSharedWorkersForTesting(StoragePartition* storage_partition,
-                                         base::OnceClosure callback) {
-  static_cast<SharedWorkerServiceImpl*>(
+void InjectTestSharedWorkerService(StoragePartition* storage_partition) {
+  auto* storage_partition_impl =
+      static_cast<StoragePartitionImpl*>(storage_partition);
+
+  storage_partition_impl->OverrideSharedWorkerServiceForTesting(
+      std::make_unique<TestSharedWorkerServiceImpl>(
+          storage_partition_impl,
+          storage_partition_impl->GetServiceWorkerContext(),
+          storage_partition_impl->GetAppCacheService()));
+}
+
+void TerminateAllSharedWorkers(StoragePartition* storage_partition,
+                               base::OnceClosure callback) {
+  static_cast<TestSharedWorkerServiceImpl*>(
       storage_partition->GetSharedWorkerService())
-      ->TerminateAllWorkersForTesting(std::move(callback));
+      ->TerminateAllWorkers(std::move(callback));
 }
 
 int GetLocalSessionHistoryLength(RenderView* render_view) {
@@ -395,7 +199,9 @@ void SetFocusAndActivate(RenderView* render_view, bool enable) {
 }
 
 void ForceResizeRenderView(RenderView* render_view, const WebSize& new_size) {
-  auto* render_view_impl = static_cast<RenderViewImpl*>(render_view);
+  RenderViewImpl* render_view_impl = static_cast<RenderViewImpl*>(render_view);
+  if (!render_view_impl->GetMainRenderFrame())
+    return;
   RenderWidget* render_widget = render_view_impl->GetWidget();
   gfx::Rect window_rect(render_widget->WindowRect().x,
                         render_widget->WindowRect().y, new_size.width,
@@ -404,14 +210,10 @@ void ForceResizeRenderView(RenderView* render_view, const WebSize& new_size) {
 }
 
 void SetDeviceScaleFactor(RenderView* render_view, float factor) {
-  RenderWidget* render_widget =
-      static_cast<RenderViewImpl*>(render_view)->GetWidget();
-  render_widget->SetDeviceScaleFactorForTesting(factor);
-}
-
-float GetWindowToViewportScale(RenderView* render_view) {
-  return GetWindowToViewportScale(
-      static_cast<RenderViewImpl*>(render_view)->GetWidget());
+  RenderViewImpl* render_view_impl = static_cast<RenderViewImpl*>(render_view);
+  if (!render_view_impl->GetMainRenderFrame())
+    return;
+  render_view_impl->GetWidget()->SetDeviceScaleFactorForTesting(factor);
 }
 
 std::unique_ptr<blink::WebInputEvent> TransformScreenToWidgetCoordinates(
@@ -422,9 +224,30 @@ std::unique_ptr<blink::WebInputEvent> TransformScreenToWidgetCoordinates(
   RenderWidget* render_widget =
       static_cast<RenderWidget*>(web_widget_test_proxy);
 
+  // Compute the scale from window (dsf-independent) to blink (dsf-dependent
+  // under UseZoomForDSF).
+  blink::WebFloatRect rect(0, 0, 1.0f, 0.0);
+  render_widget->ConvertWindowToViewport(&rect);
+  float scale = rect.width;
+
   blink::WebRect view_rect = render_widget->ViewRect();
-  float scale = GetWindowToViewportScale(render_widget);
   gfx::Vector2d delta(-view_rect.x, -view_rect.y);
+
+  // The coordinates are given in terms of the root widget, so adjust for the
+  // position of the main frame.
+  // TODO(sgilhuly): This doesn't work for events sent to OOPIFs because the
+  // main frame is remote, and doesn't have a corresponding RenderWidget.
+  // Currently none of those tests are run out of headless mode.
+  blink::WebFrame* frame =
+      web_widget_test_proxy->GetWebViewTestProxy()->webview()->MainFrame();
+  if (frame->IsWebLocalFrame()) {
+    test_runner::WebWidgetTestProxy* root_widget =
+        GetWebWidgetTestProxy(frame->ToWebLocalFrame());
+    blink::WebRect root_rect = root_widget->ViewRect();
+    gfx::Vector2d root_delta(root_rect.x, root_rect.y);
+    delta.Add(root_delta);
+  }
+
   return ui::TranslateAndScaleWebInputEvent(event, delta, scale);
 }
 
@@ -445,9 +268,10 @@ gfx::ColorSpace GetTestingColorSpace(const std::string& name) {
 
 void SetDeviceColorSpace(RenderView* render_view,
                          const gfx::ColorSpace& color_space) {
-  RenderWidget* render_widget =
-      static_cast<RenderViewImpl*>(render_view)->GetWidget();
-  render_widget->SetDeviceColorSpaceForTesting(color_space);
+  RenderViewImpl* render_view_impl = static_cast<RenderViewImpl*>(render_view);
+  if (!render_view_impl->GetMainRenderFrame())
+    return;
+  render_view_impl->GetWidget()->SetDeviceColorSpaceForTesting(color_space);
 }
 
 void SetTestBluetoothScanDuration(BluetoothTestScanDurationSetting setting) {
@@ -466,23 +290,26 @@ void SetTestBluetoothScanDuration(BluetoothTestScanDurationSetting setting) {
 }
 
 void UseSynchronousResizeMode(RenderView* render_view, bool enable) {
-  RenderWidget* render_widget =
-      static_cast<RenderViewImpl*>(render_view)->GetWidget();
-  render_widget->UseSynchronousResizeModeForTesting(enable);
+  RenderViewImpl* render_view_impl = static_cast<RenderViewImpl*>(render_view);
+  if (!render_view_impl->GetMainRenderFrame())
+    return;
+  render_view_impl->GetWidget()->UseSynchronousResizeModeForTesting(enable);
 }
 
 void EnableAutoResizeMode(RenderView* render_view,
                           const WebSize& min_size,
                           const WebSize& max_size) {
-  RenderWidget* render_widget =
-      static_cast<RenderViewImpl*>(render_view)->GetWidget();
-  render_widget->EnableAutoResizeForTesting(min_size, max_size);
+  RenderViewImpl* render_view_impl = static_cast<RenderViewImpl*>(render_view);
+  if (!render_view_impl->GetMainRenderFrame())
+    return;
+  render_view_impl->GetWidget()->EnableAutoResizeForTesting(min_size, max_size);
 }
 
 void DisableAutoResizeMode(RenderView* render_view, const WebSize& new_size) {
-  RenderWidget* render_widget =
-      static_cast<RenderViewImpl*>(render_view)->GetWidget();
-  render_widget->DisableAutoResizeForTesting(new_size);
+  RenderViewImpl* render_view_impl = static_cast<RenderViewImpl*>(render_view);
+  if (!render_view_impl->GetMainRenderFrame())
+    return;
+  render_view_impl->GetWidget()->DisableAutoResizeForTesting(new_size);
 }
 
 void SchedulerRunIdleTasks(base::OnceClosure callback) {

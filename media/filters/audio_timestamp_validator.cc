@@ -131,18 +131,18 @@ void AudioTimestampValidator::CheckForTimestampGap(
 }
 
 void AudioTimestampValidator::RecordOutputDuration(
-    const scoped_refptr<AudioBuffer>& audio_buffer) {
+    const AudioBuffer& audio_buffer) {
   if (!audio_output_ts_helper_) {
     DCHECK_NE(audio_base_ts_, kNoTimestamp);
     // SUBTLE: deliberately creating this with output buffer sample rate because
     // demuxer stream config is potentially stale for implicit AAC.
     audio_output_ts_helper_.reset(
-        new AudioTimestampHelper(audio_buffer->sample_rate()));
+        new AudioTimestampHelper(audio_buffer.sample_rate()));
     audio_output_ts_helper_->SetBaseTimestamp(audio_base_ts_);
   }
 
-  DVLOG(3) << __func__ << " " << audio_buffer->frame_count() << " frames";
-  audio_output_ts_helper_->AddFrames(audio_buffer->frame_count());
+  DVLOG(3) << __func__ << " " << audio_buffer.frame_count() << " frames";
+  audio_output_ts_helper_->AddFrames(audio_buffer.frame_count());
 }
 
 }  // namespace media

@@ -143,6 +143,18 @@ Polymer({
       type: Number,
       value: 1000,
     },
+
+    /**
+     * The time in milliseconds at which discovery was started attempt (when the
+     * page was opened with Bluetooth on, or when Bluetooth turned on while the
+     * page was active).
+     * @private {?number}
+     */
+    discoveryStartTimestampMs_: {
+      type: Number,
+      value: null,
+    },
+
   },
 
   observers: [
@@ -192,16 +204,6 @@ Polymer({
   deviceListChanged_: function() {
     this.saveScroll(this.$.pairedDevices);
     this.saveScroll(this.$.unpairedDevices);
-
-    // In Polymer 1, default values for |pairedDeviceList_| and
-    // |unpairedDeviceList_| might not have been set yet by the time
-    // |deviceList_| changes.
-    if (this.pairedDeviceList_ === undefined) {
-      this.pairedDeviceList_ = [];
-    }
-    if (this.unpairedDeviceList_ === undefined) {
-      this.unpairedDeviceList_ = [];
-    }
 
     this.pairedDeviceList_ = this.getUpdatedDeviceList_(
       this.pairedDeviceList_,
@@ -353,6 +355,9 @@ Polymer({
    * @private
    */
   getOnOffString_: function(enabled, onstr, offstr) {
+    // If these strings are changed to convey more information other than "On"
+    // and "Off" in the future, revisit the a11y implementation to ensure no
+    // meaningful information is skipped.
     return enabled ? onstr : offstr;
   },
 
@@ -390,21 +395,38 @@ Polymer({
    * @private
    */
   connectDevice_: function(device) {
+    if (device.connecting || device.connected) {
+      return;
+    }
+
     // If the device is not paired, show the pairing dialog before connecting.
-    if (!device.paired) {
+    // TODO(crbug.com/966170): Need to check if the device is pairable as well.
+    const isPaired = device.paired;
+    if (!isPaired) {
       this.pairingDevice_ = device;
       this.openDialog_();
     }
 
+    if (isPaired !== undefined && device.transport !== undefined) {
+      this.recordDeviceSelectionDuration_(isPaired, device.transport);
+    }
+
     const address = device.address;
     this.bluetoothPrivate.connect(address, result => {
+      if (isPaired) {
+        this.recordUserInitiatedReconnectionAttemptResult_(result);
+      }
+
       // If |pairingDevice_| has changed, ignore the connect result.
       if (this.pairingDevice_ && address != this.pairingDevice_.address) {
         return;
       }
+
       // Let the dialog handle any errors, otherwise close the dialog.
       const dialog = this.$.deviceDialog;
-      if (dialog.handleError(device, chrome.runtime.lastError, result)) {
+      if (dialog.endConnectionAttempt(
+              device, !isPaired /* wasPairing */, chrome.runtime.lastError,
+              result)) {
         this.openDialog_();
       } else if (
           result != chrome.bluetoothPrivate.ConnectResultType.IN_PROGRESS) {
@@ -489,10 +511,12 @@ Polymer({
       this.updateTimerId_ =
         window.setInterval(this.refreshBluetoothList_.bind(this),
                            this.listUpdateFrequencyMs);
+      this.discoveryStartTimestampMs_ = Date.now();
       return;
     }
     window.clearInterval(this.updateTimerId_);
     this.updateTimerId_ = undefined;
+    this.discoveryStartTimestampMs_ = null;
     this.deviceList_ = [];
   },
 
@@ -509,5 +533,61 @@ Polymer({
     this.updateTimerId_ = undefined;
 
     this.startOrStopRefreshingDeviceList_();
-  }
+  },
+
+  /**
+   * Record metrics for user-initiated attempts to reconnect to an already
+   * paired device.
+   * @param {!chrome.bluetoothPrivate.ConnectResultType} result The connection
+   *     result.
+   * @private
+   */
+  recordUserInitiatedReconnectionAttemptResult_: function(result) {
+    let success;
+    if (chrome.runtime.lastError) {
+      success = false;
+    } else {
+      switch (result) {
+        case chrome.bluetoothPrivate.ConnectResultType.SUCCESS:
+          success = true;
+          break;
+        case chrome.bluetoothPrivate.ConnectResultType.AUTH_CANCELED:
+        case chrome.bluetoothPrivate.ConnectResultType.IN_PROGRESS:
+          // Don't record metrics until connection has ended, and don't record
+          // cancellations.
+          return;
+        default:
+          success = false;
+          break;
+      }
+    }
+
+    chrome.bluetoothPrivate.recordReconnection(success);
+  },
+
+  /**
+   * Record metrics for how long it took between when discovery started on the
+   * Settings page, and the user selected the device they wanted to connect to.
+   * @param {!boolean} wasPaired If the selected device was already
+   *     paired.
+   * @param {!chrome.bluetooth.Transport} transport The transport type
+   *     of the device.
+   * @private
+   */
+  recordDeviceSelectionDuration_: function(wasPaired, transport) {
+    if (!this.discoveryStartTimestampMs_) {
+      // It's not necessarily an error that |discoveryStartTimestampMs_| isn't
+      // present; it's intentionally cleared after the first device selection
+      // (see further on in this method). Recording subsequent device selections
+      // after the first would provide inflated durations that don't truly
+      // reflect how long it took for the user to find the device they're
+      // looking for.
+      return;
+    }
+
+    chrome.bluetoothPrivate.recordDeviceSelection(
+        Date.now() - this.discoveryStartTimestampMs_, wasPaired, transport);
+
+    this.discoveryStartTimestampMs_ = null;
+  },
 });

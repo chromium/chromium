@@ -7,6 +7,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "content/common/frame.mojom.h"
+#include "content/common/navigation_params.mojom.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
 
@@ -17,20 +18,20 @@ namespace content {
 
 class SiteInstance;
 
-// Verifies that |params| are valid and can be accessed by |process_id|.
+// Verifies that |params| are valid and can be accessed by the renderer process
+// associated with |site_instance|.
 //
 // Returns true if the |params| are valid.  As a side-effect of the verification
-// |out_blob_url_token_info| will be populated.
+// |out_blob_url_token_remote| will be populated.
 //
 // Terminates the renderer with the given |process_id| and returns false if the
 // |params| are invalid.
 //
-// This function may be called on either the IO thread or the UI thread
-// (but not on other threads).
+// This function has to be called on the UI thread.
 bool VerifyDownloadUrlParams(
-    int process_id,
+    SiteInstance* site_instance,
     const FrameHostMsg_DownloadUrl_Params& params,
-    blink::mojom::BlobURLTokenPtrInfo* out_blob_url_token_info);
+    mojo::PendingRemote<blink::mojom::BlobURLToken>* out_blob_url_token_remote);
 
 // Verifies that |params| are valid and can be accessed by the renderer process
 // associated with |site_instance|.
@@ -59,8 +60,9 @@ bool VerifyOpenURLParams(SiteInstance* site_instance,
 // returns false if the CommonNavigationParams are invalid.
 //
 // This function has to be called on the UI thread.
-bool VerifyBeginNavigationCommonParams(SiteInstance* site_instance,
-                                       CommonNavigationParams* common_params);
+bool VerifyBeginNavigationCommonParams(
+    SiteInstance* site_instance,
+    mojom::CommonNavigationParams* common_params);
 
 }  // namespace content
 

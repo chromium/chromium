@@ -10,13 +10,16 @@
 
 #include "base/stl_util.h"
 #include "base/values.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/preferences/public/cpp/lib/util.h"
 
 namespace prefs {
 
 class PrefStoreImpl::Observer {
  public:
-  Observer(mojom::PrefStoreObserverPtr observer, std::set<std::string> prefs)
+  Observer(mojo::PendingRemote<mojom::PrefStoreObserver> observer,
+           std::set<std::string> prefs)
       : observer_(std::move(observer)), prefs_(std::move(prefs)) {}
 
   void OnInitializationCompleted(bool succeeded) {
@@ -24,7 +27,7 @@ class PrefStoreImpl::Observer {
   }
 
   void OnPrefChanged(const std::string& key, const base::Value& value) const {
-    if (!base::ContainsKey(prefs_, key))
+    if (!base::Contains(prefs_, key))
       return;
 
     std::vector<mojom::PrefUpdatePtr> updates;
@@ -34,7 +37,7 @@ class PrefStoreImpl::Observer {
   }
 
   void OnPrefRemoved(const std::string& key) const {
-    if (!base::ContainsKey(prefs_, key))
+    if (!base::Contains(prefs_, key))
       return;
 
     std::vector<mojom::PrefUpdatePtr> updates;
@@ -44,7 +47,7 @@ class PrefStoreImpl::Observer {
   }
 
  private:
-  mojom::PrefStoreObserverPtr observer_;
+  mojo::Remote<mojom::PrefStoreObserver> observer_;
   const std::set<std::string> prefs_;
 
   DISALLOW_COPY_AND_ASSIGN(Observer);
@@ -87,16 +90,15 @@ void PrefStoreImpl::OnInitializationCompleted(bool succeeded) {
 
 mojom::PrefStoreConnectionPtr PrefStoreImpl::AddObserver(
     const std::vector<std::string>& prefs_to_observe) {
-  mojom::PrefStoreObserverPtr observer_ptr;
-  auto request = mojo::MakeRequest(&observer_ptr);
+  mojo::PendingRemote<mojom::PrefStoreObserver> observer_remote;
   std::set<std::string> observed_prefs(prefs_to_observe.begin(),
                                        prefs_to_observe.end());
   auto result = mojom::PrefStoreConnection::New(
-      std::move(request),
+      observer_remote.InitWithNewPipeAndPassReceiver(),
       base::Value::FromUniquePtrValue(
           FilterPrefs(backing_pref_store_->GetValues(), observed_prefs)),
       backing_pref_store_->IsInitializationComplete());
-  observers_.push_back(std::make_unique<Observer>(std::move(observer_ptr),
+  observers_.push_back(std::make_unique<Observer>(std::move(observer_remote),
                                                   std::move(observed_prefs)));
   return result;
 }

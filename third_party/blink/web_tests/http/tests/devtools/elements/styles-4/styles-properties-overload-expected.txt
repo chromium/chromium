@@ -4,7 +4,7 @@ Verifies that inspector figures out overloaded properties correctly.
 element.style { ()
 
 [expanded] 
-#inspect { (<style>…</style>)
+#inspect { (<style>)
     margin-top: 1px;
     margin-left: 1px;
     margin-right: 1px;
@@ -22,7 +22,7 @@ element.style { ()
         font-family: Arial;
 
 [expanded] 
-div { (<style>…</style>)
+div { (<style>)
 /-- overloaded --/     margin: 1px;
     /-- overloaded --/     margin-top: 1px;
     /-- overloaded --/     margin-right: 1px;
@@ -53,7 +53,7 @@ div { (user agent stylesheet)
 
 ======== Inherited from div.container ========
 [expanded] 
-.container { (<style>…</style>)
+.container { (<style>)
 /-- overloaded --/     font-size: 10px;
 
 ======== Inherited from html ========

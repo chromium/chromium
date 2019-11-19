@@ -1,6 +1,0 @@
-PASS successfullyParsed is true
-
-TEST COMPLETE
-PASS width is 0
-PASS height is 0
-

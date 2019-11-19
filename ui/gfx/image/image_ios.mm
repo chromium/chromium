@@ -30,13 +30,12 @@ UIImage* CreateErrorUIImage(float scale) {
   base::ScopedCFTypeRef<CGColorSpaceRef> color_space(
       CGColorSpaceCreateDeviceRGB());
   base::ScopedCFTypeRef<CGContextRef> context(CGBitmapContextCreate(
-      NULL,  // Allow CG to allocate memory.
-      16,    // width
-      16,    // height
-      8,     // bitsPerComponent
-      0,     // CG will calculate by default.
-      color_space,
-      kCGImageAlphaPremultipliedFirst | kCGBitmapByteOrder32Host));
+      nullptr,  // Allow CG to allocate memory.
+      16,       // width
+      16,       // height
+      8,        // bitsPerComponent
+      0,        // CG will calculate by default.
+      color_space, kCGImageAlphaPremultipliedFirst | kCGBitmapByteOrder32Host));
   CGContextSetRGBFillColor(context, 1.0, 0.0, 0.0, 1.0);
   CGContextFillRect(context, CGRectMake(0.0, 0.0, 16, 16));
   base::ScopedCFTypeRef<CGImageRef> cg_image(
@@ -63,7 +62,7 @@ scoped_refptr<base::RefCountedMemory> Get1xPNGBytesFromUIImage(
   NSData* data = UIImagePNGRepresentation(uiimage);
 
   if ([data length] == 0)
-    return NULL;
+    return nullptr;
 
   scoped_refptr<base::RefCountedBytes> png_bytes(
       new base::RefCountedBytes());
@@ -103,24 +102,24 @@ scoped_refptr<base::RefCountedMemory> Get1xPNGBytesFromImageSkia(
   // hold on to it.
   const gfx::ImageSkiaRep& image_skia_rep = skia->GetRepresentation(1.0f);
   if (image_skia_rep.scale() != 1.0f)
-    return NULL;
+    return nullptr;
 
   UIImage* image = UIImageFromImageSkiaRep(image_skia_rep);
   return Get1xPNGBytesFromUIImage(image);
 }
 
-ImageSkia* ImageSkiaFromPNG(
+ImageSkia ImageSkiaFromPNG(
     const std::vector<gfx::ImagePNGRep>& image_png_reps) {
   // iOS does not expose libpng, so conversion from PNG to ImageSkia must go
   // through UIImage.
-  gfx::ImageSkia* image_skia = new gfx::ImageSkia();
+  ImageSkia image_skia;
   for (size_t i = 0; i < image_png_reps.size(); ++i) {
     base::scoped_nsobject<UIImage> uiimage(
         CreateUIImageFromImagePNGRep(image_png_reps[i]));
     gfx::ImageSkiaRep image_skia_rep = ImageSkiaRepOfScaleFromUIImage(
         uiimage, image_png_reps[i].scale);
     if (!image_skia_rep.is_null())
-      image_skia->AddRepresentation(image_skia_rep);
+      image_skia.AddRepresentation(image_skia_rep);
   }
   return image_skia;
 }

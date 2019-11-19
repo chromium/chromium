@@ -112,7 +112,7 @@ class SyncEngineInitializer : public SyncTask {
 
   std::unique_ptr<google_apis::FileResource> sync_root_folder_;
 
-  base::WeakPtrFactory<SyncEngineInitializer> weak_ptr_factory_;
+  base::WeakPtrFactory<SyncEngineInitializer> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SyncEngineInitializer);
 };

@@ -36,9 +36,7 @@ class UwSCatalog;
 // Unwanted Programs (PUPs). We use a class instead of the null terminating
 // C-Arrays directly so that we can filter based on UwSId's when only a subset
 // of the PUPs are needed (e.g., the cleaner module is only interested in the
-// PUPs that scanner has found). The static data is stored in |kPUPs| which is
-// set with generated data in raw_pup_data.cc and can be reset be the friend
-// class TestPUPData.
+// PUPs that scanner has found).
 class PUPData {
  public:
   // These flags are applied to whole PUPs.
@@ -129,10 +127,6 @@ class PUPData {
 
   // The character used to escape wild-cards into registry key name patterns.
   static const wchar_t kRegistryPatternEscapeCharacter;
-
-  // The prefixes used to quickly differentiate Removed and Observed PUPs.
-  static const char kRemovedPUPNamePrefix[];
-  static const char kObservedPUPNamePrefix[];
 
   // A disk footprint is just a path.
   struct StaticDiskFootprint {
@@ -331,9 +325,10 @@ class PUPData {
     std::vector<ForceInstalledExtension> matched_extensions;
 
    protected:
-    // Allow PUPData to update |signature_| when UpdateCachedUwS is called.
-    // The signature pointers can be invalidated when TestPUPData creates new
-    // test UwS, causing an existing vector of test UwS to be resized.
+    // Allow PUPData to update |signature_| when UpdateCachedUwSForTesting is
+    // called. The signature pointers can be invalidated when TestPUPData
+    // creates new test UwS, causing an existing vector of test UwS to be
+    // resized.
     friend PUPData;
 
     const UwSSignature* signature_;
@@ -344,10 +339,10 @@ class PUPData {
 
   using UwSCatalogs = std::vector<const UwSCatalog*>;
 
-  // Loads cached information from kPUPS (and similar static UwS arrays) and
-  // the given |uws_catalogs|. Must be called in order to use static functions
-  // of PUPData. Calling it again will delete and re-create all cached PUP
-  // structures, which will lose their state (detected disk footprints, etc.)
+  // Loads cached information from the given |uws_catalogs|. Must be called in
+  // order to use static functions of PUPData. Calling it again will delete all
+  // cached PUP structures, which will lose their state (detected disk
+  // footprints, etc.)
   static void InitializePUPData(const UwSCatalogs& uws_catalogs);
 
   // Returns the |uws_catalogs| used in the last call to InitializePUPData.
@@ -400,9 +395,6 @@ class PUPData {
   static bool HasFlaggedPUP(const std::vector<UwSId>& input_pup_list,
                             bool (*chooser)(Flags));
 
-  // Returns set of files found in service registrations of |uws|.
-  static FilePathSet GetFilesDetectedInServices(const std::vector<UwSId>& uws);
-
   // Convert a RegistryRoot to its corresponding HKEY. If
   // |registry_root| is a group policy, and |policy_file| is not null, the path
   // to the group policy file is set in |policy_file|.
@@ -439,7 +431,7 @@ class PUPData {
   static Engine::Name GetEngine(UwSId id);
 
  private:
-  // So that tests can set mock |kPUPs| Data.
+  // So that tests can call UpdateCachedUwSForTesting to add new test UwS.
   friend TestPUPData;
 
   // Returns a cached map of PUPs from static arrays and caches it in a map.
@@ -447,26 +439,16 @@ class PUPData {
   static const PUPData::PUPDataMap* GetAllPUPs();
 
   // Updates all cached UwSSignature objects to point to the current contents
-  // of kPUPs (and similar static UwS arrays). Creates new PUP objects and adds
-  // them to the cache for any UwSSignature's that are not already in the
-  // cache. Does not delete any cached UwS; for that, call InitializePUPData
-  // again.
+  // of the catalogs. Creates new PUP objects and adds them to the cache for
+  // any UwSSignature's that are not already in the cache. Does not delete any
+  // cached UwS; for that, call InitializePUPData again.
   //
   // This can be used when new test UwS is created to add that UwS to the cache
   // without invalidating any existing PUP objects that may already contain
   // expanded disk footprints.
-  //
-  // TODO(joenotcharles): This does not add any UwS from UwSCatalog's. UwS in
-  // catalogs is only loaded by InitializePUPData.
-  static void UpdateCachedUwS();
+  static void UpdateCachedUwSForTesting();
 
   static void AddPUPToMap(std::unique_ptr<PUPData::PUP> pup);
-
-  // For each signature in |signature_array|, creates a PUPData::PUP object and
-  // adds it to cached_pup_map_ if none exists for that ID, or updates the
-  // existing PUP object for that ID to point to the signature.
-  static void AddUwSSignaturesToMap(
-      const PUPData::UwSSignature* signature_array);
 
   // Cached PUPData information.
   static PUPDataMap* cached_pup_map_;
@@ -475,23 +457,6 @@ class PUPData {
   static std::vector<UwSId>* cached_uws_ids_;
 
   static UwSCatalogs* last_uws_catalogs_;
-
-  // The information of all the PUPs, which is set by the generated PUP data,
-  // and can be reset by tests.
-  static const UwSSignature* kPUPs;
-
-  // Observed PUPs
-  static const UwSSignature* kObservedPUPs;
-
-  // Removed PUPs
-  static const UwSSignature* kRemovedPUPs;
-
-  // The IDs of the PUPs of interest. This is ignored when |has_filter_| is set
-  // to false.
-  std::vector<UwSId> filter_;
-
-  // Set to true when a filter is set to narrow the PUPs of interest.
-  bool has_filter_;
 
   DISALLOW_COPY_AND_ASSIGN(PUPData);
 };

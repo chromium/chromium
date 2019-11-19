@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<title>Test using a placeholder canvas as an image source.</title>
+<head>
+  <title>Test if the users can change Image Rendering Quality in Offscreen Canvas</title>
+  <style type="text/css">
+#can {
+width: 500px;
+height: 500px;
+image-rendering: auto;
+}
+  </style>
+</head>
+
+<body>
+  <canvas id="can" width="50" height="50"></canvas>
+
+<script id='myWorker' type='text/worker'>
+
+var ctx_o;
+self.onmessage = function(msg) {
+  ctx_o = msg.data.getContext('2d');
+  draw();
+};
+
+function draw() {
+  ctx_o.clearRect(0, 0, 50, 50);
+  ctx_o.fillRect(10, 10, 30, 30);
+  const d = ctx_o.getImageData(20, 20, 1, 1);
+  if (d.data[0] == 0 && d.data[3] == 255) {
+    self.postMessage("done");
+  } else {
+    requestAnimationFrame(draw);
+  }
+}
+</script>
+
+<script>
+var canvas = document.getElementById("can");
+canvas.width = 50;
+canvas.height = 50;
+var offscreen = canvas.transferControlToOffscreen();
+
+var blob = new Blob([document.getElementById('myWorker').textContent]);
+var worker = new Worker(URL.createObjectURL(blob));
+canvas.style.imageRendering = "pixelated";
+worker.postMessage(offscreen, [offscreen]);
+
+function waitForCanvasToDraw() {
+  return new Promise(resolve => {
+    var i = 0;
+    const testPixel = function() {
+      canvas.toBlob(blob => {
+        createImageBitmap(blob).then(image => {
+          if (verifyImage(image, "verify if image is drawn on offscreencanvas.")) {
+            setTimeout(resolve, 2000);
+          } else {
+            requestAnimationFrame(testPixel);
+          }
+        })
+      });
+    }
+    testPixel();
+  })
+}
+
+function verifyImage(image, description) {
+  var testCanvas = document.createElement('canvas');
+  var testCtx = testCanvas.getContext('2d');
+  testCtx.drawImage(image, 0, 0);
+  const d = testCtx.getImageData(20, 20, 1, 1);
+  return (d.data[0] == 0 && d.data[3] == 255);
+}
+
+if (window.testRunner) {
+  testRunner.waitUntilDone();
+}
+
+waitForCanvasToDraw().then(() => {
+  if (window.testRunner) {
+    testRunner.notifyDone();
+  }
+}).catch(err => {
+  testRunner.notifyDone();
+  throw err;
+});
+
+</script>
+
+</body>

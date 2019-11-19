@@ -6,7 +6,7 @@
 #define IOS_CHROME_BROWSER_WEB_WEB_NAVIGATION_UTIL_H_
 
 #include "components/search_engines/template_url.h"
-#import "ios/web/public/navigation_manager.h"
+#import "ios/web/public/navigation/navigation_manager.h"
 #include "ui/base/page_transition_types.h"
 
 namespace web {

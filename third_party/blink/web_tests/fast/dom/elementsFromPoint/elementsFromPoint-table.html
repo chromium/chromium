@@ -60,9 +60,6 @@ window.jsTestIsAsync = true;
 if (window.testRunner)
     testRunner.dumpAsText();
 
-if (window.internals)
-    internals.settings.setMockScrollbarsEnabled(true);
-
 onload = function() {
     // Check area hits fully inside table cells.
     assertElementsFromPoint('document.elementsFromPoint(125, 125)', [td11, testtable, sandbox, document.body, document.documentElement]);

@@ -10,6 +10,8 @@
 // clang-format off
 #include "third_party/blink/renderer/bindings/tests/results/core/v8_array_buffer.h"
 
+#include <algorithm>
+
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
@@ -21,6 +23,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/runtime_call_stats.h"
 #include "third_party/blink/renderer/platform/bindings/v8_object_constructor.h"
+#include "third_party/blink/renderer/platform/scheduler/public/cooperative_scheduling_manager.h"
 #include "third_party/blink/renderer/platform/wtf/get_ptr.h"
 
 namespace blink {
@@ -66,6 +69,9 @@ static_assert(
 TestArrayBuffer* V8ArrayBuffer::ToImpl(v8::Local<v8::Object> object) {
   DCHECK(object->IsArrayBuffer());
   v8::Local<v8::ArrayBuffer> v8buffer = object.As<v8::ArrayBuffer>();
+  // TODO(ahaas): The use of IsExternal is wrong here. Instead we should call
+  // ToScriptWrappable(object)->ToImpl<ArrayBuffer>() and check for nullptr.
+  // We can then also avoid the call to Externalize below.
   if (v8buffer->IsExternal()) {
     const WrapperTypeInfo* wrapper_type = ToWrapperTypeInfo(object);
     CHECK(wrapper_type);
@@ -75,12 +81,9 @@ TestArrayBuffer* V8ArrayBuffer::ToImpl(v8::Local<v8::Object> object) {
 
   // Transfer the ownership of the allocated memory to an ArrayBuffer without
   // copying.
-  v8::ArrayBuffer::Contents v8_contents = v8buffer->Externalize();
-  WTF::ArrayBufferContents::DataHandle data(v8_contents.Data(),
-                                            v8_contents.ByteLength(),
-                                            v8_contents.Deleter(),
-                                            v8_contents.DeleterData());
-  WTF::ArrayBufferContents contents(std::move(data), WTF::ArrayBufferContents::kNotShared);
+  auto backing_store = v8buffer->GetBackingStore();
+  v8buffer->Externalize(backing_store);
+  ArrayBufferContents contents(std::move(backing_store));
   TestArrayBuffer* buffer = TestArrayBuffer::Create(contents);
   v8::Local<v8::Object> associatedWrapper = buffer->AssociateWithWrapper(v8::Isolate::GetCurrent(), buffer->GetWrapperTypeInfo(), object);
   DCHECK(associatedWrapper == object);

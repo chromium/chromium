@@ -162,7 +162,7 @@ void ExtensionAssetsManagerChromeOS::InstallExtension(
     return;
   }
 
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&ExtensionAssetsManagerChromeOS::CheckSharedExtension,
                      extension->id(), extension->VersionString(),
@@ -183,7 +183,7 @@ void ExtensionAssetsManagerChromeOS::UninstallExtension(
   if (GetSharedInstallDir().IsParent(extension_root)) {
     // In some test extensions installed outside local_install_dir emulate
     // previous behavior that just do nothing in this case.
-    base::PostTaskWithTraits(
+    base::PostTask(
         FROM_HERE, {BrowserThread::UI},
         base::BindOnce(
             &ExtensionAssetsManagerChromeOS::MarkSharedExtensionUnused, id,
@@ -350,7 +350,7 @@ void ExtensionAssetsManagerChromeOS::InstallSharedExtension(
   base::FilePath shared_install_dir = GetSharedInstallDir();
   base::FilePath shared_version_dir = file_util::InstallExtension(
       unpacked_extension_root, id, version, shared_install_dir);
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::UI},
       base::BindOnce(
           &ExtensionAssetsManagerChromeOS::InstallSharedExtensionDone, id,

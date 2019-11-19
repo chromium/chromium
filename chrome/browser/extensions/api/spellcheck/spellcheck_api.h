@@ -8,10 +8,10 @@
 #include "base/macros.h"
 #include "base/scoped_observer.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 
 namespace extensions {
-class ExtensionRegistry;
 
 class SpellcheckAPI : public BrowserContextKeyedAPI,
                       public ExtensionRegistryObserver {
@@ -39,7 +39,7 @@ class SpellcheckAPI : public BrowserContextKeyedAPI,
 
   // Listen to extension load, unloaded notifications.
   ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      extension_registry_observer_;
+      extension_registry_observer_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SpellcheckAPI);
 };

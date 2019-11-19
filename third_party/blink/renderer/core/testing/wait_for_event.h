@@ -16,8 +16,6 @@ class Element;
 // on the given element.
 class WaitForEvent : public NativeEventListener {
  public:
-  static WaitForEvent* Create(Element*, const AtomicString&);
-
   WaitForEvent(Element*, const AtomicString&);
 
   void Invoke(ExecutionContext*, Event*) final;

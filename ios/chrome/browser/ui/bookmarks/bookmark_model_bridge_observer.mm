@@ -42,23 +42,23 @@ void BookmarkModelBridge::BookmarkModelBeingDeleted(BookmarkModel* model) {
 
 void BookmarkModelBridge::BookmarkNodeMoved(BookmarkModel* model,
                                             const BookmarkNode* old_parent,
-                                            int old_index,
+                                            size_t old_index,
                                             const BookmarkNode* new_parent,
-                                            int new_index) {
-  const BookmarkNode* node = new_parent->GetChild(new_index);
+                                            size_t new_index) {
+  const BookmarkNode* node = new_parent->children()[new_index].get();
   [observer_ bookmarkNode:node movedFromParent:old_parent toParent:new_parent];
 }
 
 void BookmarkModelBridge::BookmarkNodeAdded(BookmarkModel* model,
                                             const BookmarkNode* parent,
-                                            int index) {
+                                            size_t index) {
   [observer_ bookmarkNodeChildrenChanged:parent];
 }
 
 void BookmarkModelBridge::BookmarkNodeRemoved(
     BookmarkModel* model,
     const BookmarkNode* parent,
-    int old_index,
+    size_t old_index,
     const BookmarkNode* node,
     const std::set<GURL>& removed_urls) {
   [observer_ bookmarkNodeDeleted:node fromFolder:parent];

@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_OPEN_FROM_CLIPBOARD_CLIPBOARD_RECENT_CONTENT_IOS_H_
 #define COMPONENTS_OPEN_FROM_CLIPBOARD_CLIPBOARD_RECENT_CONTENT_IOS_H_
 
+#include <string>
+
 #include "base/mac/scoped_nsobject.h"
 #include "base/macros.h"
 #include "base/time/time.h"
@@ -33,7 +35,8 @@ class ClipboardRecentContentIOS : public ClipboardRecentContent {
                             NSUserDefaults* group_user_defaults);
 
   // Constructor that directly takes an |implementation|. For use in tests.
-  ClipboardRecentContentIOS(ClipboardRecentContentImplIOS* implementation);
+  explicit ClipboardRecentContentIOS(
+      ClipboardRecentContentImplIOS* implementation);
 
   ~ClipboardRecentContentIOS() override;
 
@@ -43,6 +46,7 @@ class ClipboardRecentContentIOS : public ClipboardRecentContent {
   base::Optional<gfx::Image> GetRecentImageFromClipboard() override;
   base::TimeDelta GetClipboardContentAge() const override;
   void SuppressClipboardContent() override;
+  void ClearClipboardContent() override;
 
  private:
   // The implementation instance.

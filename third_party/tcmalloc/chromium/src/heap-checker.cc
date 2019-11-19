@@ -445,7 +445,8 @@ static __thread int thread_disable_counter
 // the cost you can't dlopen this library.  But dlopen on heap-checker
 // doesn't work anyway -- it must run before main -- so this is a good
 // trade-off.
-# ifdef HAVE___ATTRIBUTE__
+# if defined(HAVE___ATTRIBUTE__) && \
+    !(defined(__GNUC__) && !defined(__clang__) && defined(__arm__))
    __attribute__ ((tls_model ("initial-exec")))
 # endif
     ;

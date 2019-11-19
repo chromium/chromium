@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 // Include test fixture.
-GEN_INCLUDE(['../testing/chromevox_e2e_test_base.js',
+GEN_INCLUDE(['//chrome/browser/resources/chromeos/chromevox/testing/chromevox_e2e_test_base.js',
              '../testing/assert_additions.js']);
 
 /**
- * Test fixture for cvox.BrailleTranslatorManager tests.
+ * Test fixture for BrailleTranslatorManager tests.
  * This is an E2E test because there's no easy way to load a data file in
  * a webui-style test.
  * @constructor
@@ -23,7 +23,7 @@ ChromeVoxBrailleTranslatorManagerTest.prototype = {
   /** @override */
   setUp: function() {
     this.liblouis = new FakeLibLouis();
-    this.manager = new cvox.BrailleTranslatorManager(this.liblouis);
+    this.manager = new BrailleTranslatorManager(this.liblouis);
     this.liblouis.translatorManager = this.manager;
     // This is called by an event handler in production, but we don't rely
     // on that for this test.
@@ -35,7 +35,7 @@ ChromeVoxBrailleTranslatorManagerTest.prototype = {
   },
 };
 
-/** @extends {cvox.LibLouis} */
+/** @extends {LibLouis} */
 function FakeLibLouis() {
 }
 
@@ -60,8 +60,8 @@ FakeLibLouis.prototype = {
 };
 
 /**
- * @extends {cvox.LibLouis.Translator}
- * @param {cvox.BrailleTable.Table} table
+ * @extends {LibLouis.Translator}
+ * @param {BrailleTable.Table} table
  * @constructor
  */
 function FakeTranslator(table) {
@@ -107,7 +107,7 @@ TEST_F('ChromeVoxBrailleTranslatorManagerTest', 'testRefreshWithChange',
     assertNotEquals(null, this.manager.getExpandingTranslator());
     this.addChangeListener(function() {
       assertEquals('en-UEB-g2', this.manager.getDefaultTranslator().table.id);
-      assertEquals('en-UEB-g1',
+      assertEquals('en-US-comp8',
                    this.manager.getUncontractedTranslator().table.id);
     });
     this.manager.refresh('en-UEB-g2');

@@ -1,0 +1,19 @@
+\bthi\s+tran\s+van\s+dien\b	ttvan dien
+\bho\s+chi\s+minh\s+city\b	hcm
+\bho\s+chi\s+minh\b	hcm
+\bthanh\s+pho\b	tp
+\bthi\s+tran\b	tt
+\btpha\s+noi\b	ha noi
+\bviet\s+nam\b	vn
+\bvietnam\b	vn
+\bphuong\b	p
+\bthi\s+xa\b	tx
+\bhuyen\b	h.
+\bhcmc\b	hcm
+\bquan\b	q.
+\bph\.\b	p
+\btp\.\b	tp
+\btt\.\b	tt
+\btx\.\b	tx
+\bp\.\b	p
+\bxa\b	x.

@@ -1,4 +1,5 @@
-CONSOLE WARNING: line 121: 'window.webkitStorageInfo' is deprecated. Please use 'navigator.webkitTemporaryStorage' or 'navigator.webkitPersistentStorage' instead.
+CONSOLE WARNING: line 124: 'window.webkitStorageInfo' is deprecated. Please use 'navigator.webkitTemporaryStorage' or 'navigator.webkitPersistentStorage' instead.
+CONSOLE WARNING: line 124: Application Cache API use is deprecated and will be removed in M82, around April 2020. See https://www.chromestatus.com/features/6192449487634432 for more details.
 Tests property access on a cached DOMWindow after the associated frame is navigated. Test should not crash and properties read from the cached DOMWindow should be identical to properties through the 'current' DOMWindow.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
@@ -45,6 +46,8 @@ PASS oldChildWindow.navigator.cookieEnabled is newChildWindow.navigator.cookieEn
 PASS oldChildWindow.navigator.deviceMemory is newChildWindow.navigator.deviceMemory
 PASS oldChildWindow.navigator.doNotTrack is newChildWindow.navigator.doNotTrack
 PASS oldChildWindow.navigator.hardwareConcurrency is newChildWindow.navigator.hardwareConcurrency
+PASS oldChildWindow.navigator.hid.onconnect is newChildWindow.navigator.hid.onconnect
+PASS oldChildWindow.navigator.hid.ondisconnect is newChildWindow.navigator.hid.ondisconnect
 PASS oldChildWindow.navigator.language is newChildWindow.navigator.language
 PASS oldChildWindow.navigator.maxTouchPoints is newChildWindow.navigator.maxTouchPoints
 PASS oldChildWindow.navigator.mediaDevices.ondevicechange is newChildWindow.navigator.mediaDevices.ondevicechange
@@ -77,6 +80,7 @@ PASS oldChildWindow.onanimationiteration is newChildWindow.onanimationiteration
 PASS oldChildWindow.onanimationstart is newChildWindow.onanimationstart
 PASS oldChildWindow.onappinstalled is newChildWindow.onappinstalled
 PASS oldChildWindow.onauxclick is newChildWindow.onauxclick
+PASS oldChildWindow.onbeforeactivate is newChildWindow.onbeforeactivate
 PASS oldChildWindow.onbeforeinstallprompt is newChildWindow.onbeforeinstallprompt
 PASS oldChildWindow.onbeforeprint is newChildWindow.onbeforeprint
 PASS oldChildWindow.onbeforeunload is newChildWindow.onbeforeunload
@@ -144,7 +148,7 @@ PASS oldChildWindow.onpointerleave is newChildWindow.onpointerleave
 PASS oldChildWindow.onpointermove is newChildWindow.onpointermove
 PASS oldChildWindow.onpointerout is newChildWindow.onpointerout
 PASS oldChildWindow.onpointerover is newChildWindow.onpointerover
-PASS oldChildWindow.onpointerrawmove is newChildWindow.onpointerrawmove
+PASS oldChildWindow.onpointerrawupdate is newChildWindow.onpointerrawupdate
 PASS oldChildWindow.onpointerup is newChildWindow.onpointerup
 PASS oldChildWindow.onpopstate is newChildWindow.onpopstate
 PASS oldChildWindow.onportalactivate is newChildWindow.onportalactivate
@@ -189,8 +193,6 @@ PASS oldChildWindow.pageXOffset is newChildWindow.pageXOffset
 PASS oldChildWindow.pageYOffset is newChildWindow.pageYOffset
 PASS oldChildWindow.performance.navigation.redirectCount is newChildWindow.performance.navigation.redirectCount
 PASS oldChildWindow.performance.navigation.type is newChildWindow.performance.navigation.type
-PASS oldChildWindow.performance.onelementtimingbufferfull is newChildWindow.performance.onelementtimingbufferfull
-PASS oldChildWindow.performance.oneventtimingbufferfull is newChildWindow.performance.oneventtimingbufferfull
 PASS oldChildWindow.performance.onresourcetimingbufferfull is newChildWindow.performance.onresourcetimingbufferfull
 PASS oldChildWindow.performance.timing.connectEnd is newChildWindow.performance.timing.connectEnd
 PASS oldChildWindow.performance.timing.connectStart is newChildWindow.performance.timing.connectStart
@@ -215,17 +217,23 @@ PASS oldChildWindow.performance.timing.unloadEventEnd is newChildWindow.performa
 PASS oldChildWindow.performance.timing.unloadEventStart is newChildWindow.performance.timing.unloadEventStart
 PASS oldChildWindow.personalbar.visible is newChildWindow.personalbar.visible
 PASS oldChildWindow.portalHost is newChildWindow.portalHost
+PASS oldChildWindow.scheduler.currentTaskQueue.priority is newChildWindow.scheduler.currentTaskQueue.priority
 PASS oldChildWindow.screen.availHeight is newChildWindow.screen.availHeight
 PASS oldChildWindow.screen.availLeft is newChildWindow.screen.availLeft
 PASS oldChildWindow.screen.availTop is newChildWindow.screen.availTop
 PASS oldChildWindow.screen.availWidth is newChildWindow.screen.availWidth
 PASS oldChildWindow.screen.colorDepth is newChildWindow.screen.colorDepth
 PASS oldChildWindow.screen.height is newChildWindow.screen.height
-PASS oldChildWindow.screen.keepAwake is newChildWindow.screen.keepAwake
+PASS oldChildWindow.screen.internal is newChildWindow.screen.internal
+PASS oldChildWindow.screen.left is newChildWindow.screen.left
+PASS oldChildWindow.screen.name is newChildWindow.screen.name
 PASS oldChildWindow.screen.orientation.angle is newChildWindow.screen.orientation.angle
 PASS oldChildWindow.screen.orientation.onchange is newChildWindow.screen.orientation.onchange
 PASS oldChildWindow.screen.orientation.type is newChildWindow.screen.orientation.type
 PASS oldChildWindow.screen.pixelDepth is newChildWindow.screen.pixelDepth
+PASS oldChildWindow.screen.primary is newChildWindow.screen.primary
+PASS oldChildWindow.screen.scaleFactor is newChildWindow.screen.scaleFactor
+PASS oldChildWindow.screen.top is newChildWindow.screen.top
 PASS oldChildWindow.screen.width is newChildWindow.screen.width
 PASS oldChildWindow.screenLeft is newChildWindow.screenLeft
 PASS oldChildWindow.screenTop is newChildWindow.screenTop
@@ -242,6 +250,7 @@ PASS oldChildWindow.status is newChildWindow.status
 PASS oldChildWindow.statusbar.visible is newChildWindow.statusbar.visible
 PASS oldChildWindow.styleMedia.type is newChildWindow.styleMedia.type
 PASS oldChildWindow.toolbar.visible is newChildWindow.toolbar.visible
+PASS oldChildWindow.trustedTypes.defaultPolicy is newChildWindow.trustedTypes.defaultPolicy
 PASS oldChildWindow.visualViewport.height is newChildWindow.visualViewport.height
 PASS oldChildWindow.visualViewport.offsetLeft is newChildWindow.visualViewport.offsetLeft
 PASS oldChildWindow.visualViewport.offsetTop is newChildWindow.visualViewport.offsetTop

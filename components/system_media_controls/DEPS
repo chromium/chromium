@@ -1,0 +1,6 @@
+include_rules = [
+  "+components/dbus",
+  "+dbus",
+  "+third_party/skia",
+  "+ui/gfx",
+]

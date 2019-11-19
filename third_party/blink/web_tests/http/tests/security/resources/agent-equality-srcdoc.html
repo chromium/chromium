@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>srcdoc iframe test</title>
+</head>
+<body>
+<iframe srcdoc="&lt;script&gt;window.parent.postMessage(internals.getDocumentAgentId(document), '*');&lt;/script&gt;">
+</iframe>
+<script>
+// This test loads an iframe whose content is specified as its srcdoc
+// attribute. It posts it's agent ID to this frame, and we report the agent
+// IDs of this frame and the child iframe.
+//
+// Success condition: The agent IDs of this frame and the child frame are
+// the same (the child frame is same-origin as the parent frame, unlike the
+// data: URL's case. See:
+// https://html.spec.whatwg.org/C#determining-the-origin )
+
+function onMessage(evt) {
+  let iframeAgentId = evt.data;
+  let message = [
+    'srcdoc iframe test',
+    internals.getDocumentAgentId(document),
+    iframeAgentId
+  ];
+  window.parent.postMessage(message, '*');
+}
+
+window.addEventListener('message', onMessage, {'once': true});
+</script>
+</body>
+</html>

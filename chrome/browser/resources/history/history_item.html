@@ -9,11 +9,12 @@
 <link rel="import" href="chrome://resources/cr_elements/icons.html">
 <link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
 <link rel="import" href="chrome://resources/html/cr/ui/focus_row_behavior.html">
+<link rel="import" href="chrome://resources/html/cr/ui/focus_without_ink.html">
 <link rel="import" href="chrome://resources/html/icon.html">
 <link rel="import" href="chrome://resources/html/util.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 
-<!-- Lazy loaded: paper-icon-button-light. -->
+<!-- Lazy loaded: cr-icon-button. -->
 
 <dom-module id="history-item">
   <template>
@@ -102,25 +103,16 @@
         margin-inline-start: 16px;
       }
 
-      #menu-button-container {
-        margin-inline-end: 12px;
+      #menu-button {
+        --cr-icon-button-margin-end: 12px;
+        --cr-icon-button-margin-start: 12px;
       }
 
-      #star-container {
-        margin-inline-end: 4px;
-        margin-inline-start: 12px;
-        width: 32px;
-      }
-
-      #bookmark-star-container {
-        color: var(--interactive-color);
-        height: 32px;
-        width: 32px;
-      }
-
-      #bookmark-star-container iron-icon {
-        height: 16px;
-        width: 16px;
+      #bookmark-star {
+        --cr-icon-button-color: var(--interactive-color);
+        --cr-icon-button-icon-size: 16px;
+        --cr-icon-button-margin-start: 12px;
+        --cr-icon-button-size: 32px;
       }
 
       #time-gap-separator {
@@ -129,8 +121,10 @@
         margin-inline-start: 77px;
       }
 
-      :host-context([dark]) #time-gap-separator {
-        border-color: var(--google-grey-refresh-500);
+      @media (prefers-color-scheme: dark) {
+        #time-gap-separator {
+          border-color: var(--google-grey-refresh-500);
+        }
       }
 
       #background-clip {
@@ -180,7 +174,7 @@
       <div id="background-clip">
         <div id="background"></div>
       </div>
-      <div id="date-accessed" class="card-title">
+      <div id="date-accessed" class="card-title" role="heading" aria-level="2">
         [[cardTitle_(numberOfItems, item.dateRelativeDay, searchTerm)]]
       </div>
       <div id="item-container" focus-row-container
@@ -208,25 +202,17 @@
           <span id="domain">[[item.domain]]</span>
         </div>
         <div id="star-container">
-          <template is="dom-if" if="[[item.starred]]" notify-dom-change>
-            <paper-icon-button-light id="bookmark-star-container">
-              <button id="bookmark-star" focus-row-control focus-type="star"
-                  title="$i18n{removeBookmark}" on-click="onRemoveBookmarkTap_">
-                <iron-icon icon="cr:star"></iron-icon>
-              </button>
-            </paper-icon-button-light>
+          <template is="dom-if" if="[[item.starred]]">
+            <cr-icon-button id="bookmark-star" iron-icon="cr:star"
+                focus-row-control focus-type="star"
+                title="$i18n{removeBookmark}" on-click="onRemoveBookmarkTap_">
+            </cr-icon-button>
           </template>
         </div>
-        <paper-icon-button-light id="menu-button-container"
-            class="more-vert-button">
-          <button id="menu-button" focus-row-control focus-type="cr-menu-button"
-              title="$i18n{actionMenuDescription}" on-click="onMenuButtonTap_"
-              aria-haspopup="menu">
-            <div></div>
-            <div></div>
-            <div></div>
-          </button>
-        </paper-icon-button-light>
+        <cr-icon-button id="menu-button" iron-icon="cr:more-vert"
+            focus-row-control focus-type="cr-menu-button"
+            title="$i18n{actionMenuDescription}" on-click="onMenuButtonTap_"
+            aria-haspopup="menu"></cr-icon-button>
       </div>
       <div id="time-gap-separator" hidden="[[!hasTimeGap]]"></div>
     </div>

@@ -2,14 +2,15 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-mojom = "//services/viz/public/interfaces/compositing/compositor_frame.mojom"
+mojom = "//services/viz/public/mojom/compositing/compositor_frame.mojom"
 deps = [
   "//components/viz/common",
 ]
 public_headers = [ "//components/viz/common/quads/compositor_frame.h" ]
 traits_headers =
-    [ "//services/viz/public/cpp/compositing/compositor_frame_struct_traits.h" ]
+    [ "//services/viz/public/cpp/compositing/compositor_frame_mojom_traits.h" ]
 sources = [
-  "//services/viz/public/cpp/compositing/compositor_frame_struct_traits.cc",
+  "//services/viz/public/cpp/compositing/compositor_frame_mojom_traits.cc",
 ]
-type_mappings = [ "viz.mojom.CompositorFrame=viz::CompositorFrame[move_only]" ]
+type_mappings =
+    [ "viz.mojom.CompositorFrame=::viz::CompositorFrame[move_only]" ]

@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+FAIL e.style['opacity'] = "min(1)" should set the property value assert_equals: serialization should be canonical expected "min(1)" but got "1"
+FAIL e.style['opacity'] = "max(1)" should set the property value assert_equals: serialization should be canonical expected "max(1)" but got "1"
+FAIL e.style['opacity'] = "min(1, 2, 3)" should set the property value assert_equals: serialization should be canonical expected "min(1, 2, 3)" but got "1"
+FAIL e.style['opacity'] = "min(3, 2, 1)" should set the property value assert_equals: serialization should be canonical expected "min(3, 2, 1)" but got "1"
+FAIL e.style['opacity'] = "max(1, 2, 3)" should set the property value assert_equals: serialization should be canonical expected "max(1, 2, 3)" but got "3"
+FAIL e.style['opacity'] = "max(3, 2, 1)" should set the property value assert_equals: serialization should be canonical expected "max(3, 2, 1)" but got "3"
+FAIL e.style['opacity'] = "calc(min(1) + min(2))" should set the property value assert_equals: serialization should be canonical expected "calc(min(1) + min(2))" but got "3"
+FAIL e.style['opacity'] = "calc(max(1) + max(2))" should set the property value assert_equals: serialization should be canonical expected "calc(max(1) + max(2))" but got "3"
+FAIL e.style['opacity'] = "calc(1 + min(1))" should set the property value assert_equals: serialization should be canonical expected "calc(1 + min(1))" but got "2"
+FAIL e.style['opacity'] = "calc(min(1) + 1)" should set the property value assert_equals: serialization should be canonical expected "calc(1 + min(1))" but got "2"
+FAIL e.style['opacity'] = "calc(1 + max(1))" should set the property value assert_equals: serialization should be canonical expected "calc(1 + max(1))" but got "2"
+FAIL e.style['opacity'] = "calc(max(1) + 1)" should set the property value assert_equals: serialization should be canonical expected "calc(1 + max(1))" but got "2"
+Harness: the test ran to completion.
+

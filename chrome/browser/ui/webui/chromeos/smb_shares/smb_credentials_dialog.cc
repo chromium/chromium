@@ -87,7 +87,7 @@ SmbCredentialsDialogUI::SmbCredentialsDialogUI(content::WebUI* web_ui)
 
   AddSmbCredentialsDialogStrings(source);
 
-  source->SetJsonPath("strings.js");
+  source->UseStringsJs();
   source->SetDefaultResource(IDR_SMB_CREDENTIALS_DIALOG_CONTAINER_HTML);
   source->AddResourcePath("smb_credentials_dialog.html",
                           IDR_SMB_CREDENTIALS_DIALOG_HTML);

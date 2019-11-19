@@ -5,7 +5,10 @@
 #ifndef COMPONENTS_SYNC_TEST_TEST_MATCHERS_H_
 #define COMPONENTS_SYNC_TEST_TEST_MATCHERS_H_
 
+#include <map>
+#include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "components/sync/model/metadata_batch.h"
@@ -43,8 +46,21 @@ MATCHER_P2(MetadataBatchContains, state, entities, "") {
                           arg->GetModelTypeState(), result_listener)) {
     return false;
   }
-  return ExplainMatchResult(testing::Matcher<EntityMetadataMap>(entities),
-                            arg->TakeAllMetadata(), result_listener);
+
+  // We need to convert the map values to non-pointers in order to make them
+  // copyable and use gmock.
+  std::map<std::string, std::unique_ptr<sync_pb::EntityMetadata>> metadata =
+      arg->TakeAllMetadata();
+  std::map<std::string, sync_pb::EntityMetadata> copyable_metadata;
+  for (std::pair<const std::string, std::unique_ptr<sync_pb::EntityMetadata>>&
+           kv : metadata) {
+    copyable_metadata[kv.first] = std::move(*(kv.second));
+  }
+
+  return ExplainMatchResult(
+      testing::Matcher<std::map<std::string, sync_pb::EntityMetadata>>(
+          entities),
+      copyable_metadata, result_listener);
 }
 
 // Matcher for sync_pb::ModelTypeState: verifies that field

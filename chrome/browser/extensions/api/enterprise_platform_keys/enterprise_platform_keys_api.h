@@ -15,13 +15,13 @@
 
 namespace net {
 class X509Certificate;
-typedef std::vector<scoped_refptr<X509Certificate> > CertificateList;
-}
+using CertificateList = std::vector<scoped_refptr<X509Certificate>>;
+}  // namespace net
 
 namespace extensions {
 
 class EnterprisePlatformKeysInternalGenerateKeyFunction
-    : public UIThreadExtensionFunction {
+    : public ExtensionFunction {
  private:
   ~EnterprisePlatformKeysInternalGenerateKeyFunction() override;
   ResponseAction Run() override;
@@ -35,8 +35,7 @@ class EnterprisePlatformKeysInternalGenerateKeyFunction
                              ENTERPRISE_PLATFORMKEYSINTERNAL_GENERATEKEY)
 };
 
-class EnterprisePlatformKeysGetCertificatesFunction
-    : public UIThreadExtensionFunction {
+class EnterprisePlatformKeysGetCertificatesFunction : public ExtensionFunction {
  private:
   ~EnterprisePlatformKeysGetCertificatesFunction() override;
   ResponseAction Run() override;
@@ -51,7 +50,7 @@ class EnterprisePlatformKeysGetCertificatesFunction
 };
 
 class EnterprisePlatformKeysImportCertificateFunction
-    : public UIThreadExtensionFunction {
+    : public ExtensionFunction {
  private:
   ~EnterprisePlatformKeysImportCertificateFunction() override;
   ResponseAction Run() override;
@@ -65,7 +64,7 @@ class EnterprisePlatformKeysImportCertificateFunction
 };
 
 class EnterprisePlatformKeysRemoveCertificateFunction
-    : public UIThreadExtensionFunction {
+    : public ExtensionFunction {
  private:
   ~EnterprisePlatformKeysRemoveCertificateFunction() override;
   ResponseAction Run() override;
@@ -79,7 +78,7 @@ class EnterprisePlatformKeysRemoveCertificateFunction
 };
 
 class EnterprisePlatformKeysInternalGetTokensFunction
-    : public UIThreadExtensionFunction {
+    : public ExtensionFunction {
  private:
   ~EnterprisePlatformKeysInternalGetTokensFunction() override;
   ResponseAction Run() override;
@@ -94,46 +93,38 @@ class EnterprisePlatformKeysInternalGetTokensFunction
 };
 
 class EnterprisePlatformKeysChallengeMachineKeyFunction
-    : public UIThreadExtensionFunction {
+    : public ExtensionFunction {
  public:
   EnterprisePlatformKeysChallengeMachineKeyFunction();
-  explicit EnterprisePlatformKeysChallengeMachineKeyFunction(
-      EPKPChallengeMachineKey* impl_for_testing);
 
  private:
   ~EnterprisePlatformKeysChallengeMachineKeyFunction() override;
   ResponseAction Run() override;
 
-  // Called when the challenge operation is complete. If the operation succeeded
-  // |success| will be true and |data| will contain the challenge response data.
-  // Otherwise |success| will be false and |data| is an error message.
-  void OnChallengedKey(bool success, const std::string& data);
+  // Called when the challenge operation is complete.
+  void OnChallengedKey(
+      const chromeos::attestation::TpmChallengeKeyResult& result);
 
-  std::unique_ptr<EPKPChallengeMachineKey> default_impl_;
-  EPKPChallengeMachineKey* impl_;
+  EPKPChallengeKey impl_;
 
   DECLARE_EXTENSION_FUNCTION("enterprise.platformKeys.challengeMachineKey",
                              ENTERPRISE_PLATFORMKEYS_CHALLENGEMACHINEKEY)
 };
 
 class EnterprisePlatformKeysChallengeUserKeyFunction
-    : public UIThreadExtensionFunction {
+    : public ExtensionFunction {
  public:
   EnterprisePlatformKeysChallengeUserKeyFunction();
-  explicit EnterprisePlatformKeysChallengeUserKeyFunction(
-      EPKPChallengeUserKey* impl_for_testing);
 
  private:
   ~EnterprisePlatformKeysChallengeUserKeyFunction() override;
   ResponseAction Run() override;
 
-  // Called when the challenge operation is complete. If the operation succeeded
-  // |success| will be true and |data| will contain the challenge response data.
-  // Otherwise |success| will be false and |data| is an error message.
-  void OnChallengedKey(bool success, const std::string& data);
+  // Called when the challenge operation is complete.
+  void OnChallengedKey(
+      const chromeos::attestation::TpmChallengeKeyResult& result);
 
-  std::unique_ptr<EPKPChallengeUserKey> default_impl_;
-  EPKPChallengeUserKey* impl_;
+  EPKPChallengeKey impl_;
 
   DECLARE_EXTENSION_FUNCTION("enterprise.platformKeys.challengeUserKey",
                              ENTERPRISE_PLATFORMKEYS_CHALLENGEUSERKEY)

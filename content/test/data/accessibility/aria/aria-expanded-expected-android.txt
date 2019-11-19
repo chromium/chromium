@@ -1,9 +1,9 @@
 android.webkit.WebView focusable focused scrollable
 ++android.view.View role_description='menu'
 ++++android.view.MenuItem role_description='menu item' clickable name='New'
-++++android.view.MenuItem role_description='menu item' clickable name='Open'
-++++android.view.MenuItem role_description='menu item' clickable name='Save'
-++++android.view.MenuItem role_description='menu item' clickable name='Quit'
+++++android.view.MenuItem role_description='menu item' clickable name='Open' item_index=1 row_index=1
+++++android.view.MenuItem role_description='menu item' clickable name='Save' item_index=2 row_index=2
+++++android.view.MenuItem role_description='menu item' clickable name='Quit' item_index=3 row_index=3
 ++android.view.View role_description='splitter'
 ++android.view.View role_description='splitter'
 ++android.view.View role_description='splitter'

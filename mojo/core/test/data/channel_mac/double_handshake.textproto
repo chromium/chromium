@@ -1,0 +1,21 @@
+endpoint_type: REMOTE
+fuzz_handshake: true
+messages: [
+  {
+    local_port: SEND
+    id: 0x6d6a6873
+    include_body_if_not_complex: true
+  },
+  {
+    id: 0x4d4f4a4f
+    include_body_if_not_complex: false
+    [mojo_fuzzer.MojoMessage.mojo_message]: {
+      data: "message, then handshake again (error)"
+    }
+  },
+  {
+    local_port: SEND
+    id: 0x6d6a6873
+    include_body_if_not_complex: true
+  }
+]

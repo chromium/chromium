@@ -1,0 +1,20 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module arc.mojom;
+
+// Describes the type of action to invoke.
+[Extensible]
+enum ActionType {
+  VIEW,           // Can handle only one URL.
+  SEND,           // Can handle only one URL.
+  SEND_MULTIPLE,  // Can handle multiple URLs.
+  CREATE_NOTE,    // Can handle only one URL.
+};
+
+// Describes an activity.
+struct ActivityName {
+  string package_name;
+  string? activity_name;  // may be null to indicate any activity within package
+};

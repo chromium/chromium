@@ -1,4 +1,3 @@
-<html>
 <head>
   <title>Destroy and Hide Element in Animation End Event</title>
   <style type="text/css" media="screen">
@@ -16,11 +15,11 @@
       to { transform: translate(100px, 0px); }
     }
   </style>
+  <script src="../../resources/testharness.js"></script>
+  <script src="../../resources/testharnessreport.js"></script>
   <script type="text/javascript" charset="utf-8">
-    if (window.testRunner) {
-        testRunner.dumpAsText();
-        testRunner.waitUntilDone();
-    }
+    'use strict';
+    var test = async_test("Tests element removal and hiding within the webkitAnimationIteration event handler. Should not crash");
 
     var numDone = 0;
     function animationIterated()
@@ -30,41 +29,33 @@
         if (window.GCController)
           GCController.collect();
 
-        document.getElementById('results').innerHTML = 'Did not crash, so PASSED';
-
-        if (window.testRunner)
-          testRunner.notifyDone();
+        test.done();
       }
     }
 
     function startTest()
     {
       var box1 = document.getElementById('box1');
+      var box2 = document.getElementById('box2');
+      box2.offsetTop; // force style recalc
+
       box1.addEventListener('webkitAnimationIteration', function() {
         box1.parentNode.removeChild(box1);
         animationIterated();
       }, false);
       box1.style.webkitAnimationName = 'move';
 
-      var box2 = document.getElementById('box2');
       box2.addEventListener('webkitAnimationIteration', function() {
         box2.style.display = 'none';
         animationIterated();
       }, false);
       box2.style.webkitAnimationName = 'move';
     }
-    
-    window.addEventListener('load', startTest, false);
+
+    window.addEventListener('load', test.step_func(startTest), false);
   </script>
 </head>
-<body>
-
-<p>Tests element removal and hiding within the webkitAnimationIteration event handler. Should not crash.</p>
-
 <div id="container">
   <div id="box1" class="box"></div>
   <div id="box2" class="box"></div>
 </div>
-<div id="results"></div>
-</body>
-</html>

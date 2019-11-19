@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+PASS the toast has a status role
+FAIL the toast has no role attribute assert_false: expected false got true
+PASS the toast has manually set role
+Harness: the test ran to completion.
+

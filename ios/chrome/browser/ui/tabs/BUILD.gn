@@ -28,11 +28,11 @@ source_set("tabs") {
     "resources:open_new_tab_background",
     "resources:tabstrip_background_tab",
     "resources:tabstrip_foreground_tab",
+    "resources:tabstrip_inactive_tab_close_button_color",
+    "resources:tabstrip_inactive_tab_text_color",
     "resources:tabstrip_incognito_background_tab",
     "resources:tabstrip_incognito_foreground_tab",
     "resources:tabstrip_new_tab",
-    "resources:tabstrip_new_tab_incognito",
-    "resources:tabstrip_new_tab_incognito_pressed",
     "resources:tabstrip_new_tab_pressed",
     "resources:tabstrip_tab_switcher_count_button",
     "resources:tabstrip_tab_switcher_count_button_pressed",
@@ -45,15 +45,16 @@ source_set("tabs") {
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/drag_and_drop",
     "//ios/chrome/browser/snapshots",
-    "//ios/chrome/browser/ui",
+    "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/bubble",
     "//ios/chrome/browser/ui/colors",
     "//ios/chrome/browser/ui/commands",
-    "//ios/chrome/browser/ui/favicon/resources:default_favicon",
-    "//ios/chrome/browser/ui/favicon/resources:default_favicon_incognito",
+    "//ios/chrome/browser/ui/elements",
+    "//ios/chrome/browser/ui/favicon/resources:default_world_favicon",
     "//ios/chrome/browser/ui/fullscreen",
     "//ios/chrome/browser/ui/image_util",
     "//ios/chrome/browser/ui/ntp:util",
+    "//ios/chrome/browser/ui/open_in",
     "//ios/chrome/browser/ui/popup_menu/public",
     "//ios/chrome/browser/ui/tab_grid/grid/resources:grid_cell_close_button",
     "//ios/chrome/browser/ui/tabs/requirements",
@@ -61,9 +62,10 @@ source_set("tabs") {
     "//ios/chrome/browser/web_state_list",
     "//ios/chrome/common",
     "//ios/chrome/common:common_extension",
+    "//ios/chrome/common/colors",
+    "//ios/chrome/common/ui_util",
     "//ios/third_party/material_components_ios",
     "//ios/web",
-    "//third_party/google_toolbox_for_mac",
     "//ui/base",
     "//ui/gfx",
   ]
@@ -99,7 +101,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/sessions:test_support",
     "//ios/chrome/browser/tabs",
-    "//ios/chrome/browser/ui",
+    "//ios/chrome/browser/ui/util",
     "//ios/chrome/browser/web_state_list",
     "//ios/chrome/browser/web_state_list:test_support",
     "//ios/web/public",
@@ -111,6 +113,7 @@ source_set("unit_tests") {
 }
 
 source_set("eg_tests") {
+  defines = [ "CHROME_EARL_GREY_1" ]
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
@@ -120,11 +123,30 @@ source_set("eg_tests") {
     ":tabs",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser",
-    "//ios/chrome/browser/ui",
     "//ios/chrome/test/app:test_support",
     "//ios/chrome/test/earl_grey:test_support",
+    "//ios/testing/earl_grey:earl_grey_support",
     "//ios/third_party/earl_grey:earl_grey+link",
     "//ui/base",
   ]
   libs = [ "XCTest.framework" ]
+}
+
+source_set("eg2_tests") {
+  defines = [ "CHROME_EARL_GREY_2" ]
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+  sources = [
+    "tab_strip_egtest.mm",
+  ]
+  deps = [
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/third_party/earl_grey2:test_lib",
+    "//net:test_support",
+  ]
+  libs = [ "UIKit.framework" ]
 }

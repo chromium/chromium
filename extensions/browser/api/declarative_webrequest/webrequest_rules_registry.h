@@ -22,7 +22,6 @@
 #include "extensions/browser/api/declarative_webrequest/request_stage.h"
 #include "extensions/browser/api/declarative_webrequest/webrequest_action.h"
 #include "extensions/browser/api/declarative_webrequest/webrequest_condition.h"
-#include "extensions/browser/info_map.h"
 #include "extensions/common/extension_id.h"
 
 namespace content {
@@ -34,6 +33,7 @@ struct EventResponseDelta;
 }
 
 namespace extensions {
+class PermissionHelper;
 
 using WebRequestRule = DeclarativeRule<WebRequestCondition, WebRequestAction>;
 
@@ -81,7 +81,7 @@ class WebRequestRulesRegistry : public RulesRegistry {
   // Returns which modifications should be executed on the network request
   // according to the rules registered in this registry.
   std::list<extension_web_request_api_helpers::EventResponseDelta> CreateDeltas(
-      const InfoMap* extension_info_map,
+      PermissionHelper* permission_helper,
       const WebRequestData& request_data,
       bool crosses_incognito);
 
@@ -104,11 +104,6 @@ class WebRequestRulesRegistry : public RulesRegistry {
   virtual base::Time GetExtensionInstallationTime(
       const std::string& extension_id) const;
   virtual void ClearCacheOnNavigation();
-
-  void SetExtensionInfoMapForTesting(
-      scoped_refptr<InfoMap> extension_info_map) {
-    extension_info_map_ = extension_info_map;
-  }
 
   const std::set<const WebRequestRule*>&
   rules_with_untriggered_conditions_for_test() const {
@@ -177,7 +172,6 @@ class WebRequestRulesRegistry : public RulesRegistry {
   url_matcher::URLMatcher url_matcher_;
 
   content::BrowserContext* browser_context_;
-  scoped_refptr<InfoMap> extension_info_map_;
 
   DISALLOW_COPY_AND_ASSIGN(WebRequestRulesRegistry);
 };

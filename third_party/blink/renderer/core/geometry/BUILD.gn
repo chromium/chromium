@@ -5,8 +5,6 @@
 import("//third_party/blink/renderer/core/core.gni")
 
 blink_core_sources("geometry") {
-  split_count = 5
-
   sources = [
     "dom_matrix.cc",
     "dom_matrix.h",

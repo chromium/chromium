@@ -22,6 +22,7 @@
 #include "mojo/core/embedder/embedder.h"
 #include "remoting/base/breakpad.h"
 #include "remoting/host/evaluate_capability.h"
+#include "remoting/host/host_config_upgrader.h"
 #include "remoting/host/host_exit_codes.h"
 #include "remoting/host/logging.h"
 #include "remoting/host/resources.h"
@@ -48,26 +49,33 @@ int DesktopProcessMain();
 int FileChooserMain();
 int RdpDesktopSessionMain();
 #endif  // defined(OS_WIN)
+#if defined(OS_LINUX)
+int XSessionChooserMain();
+#endif  // defined(OS_LINUX)
 
 namespace {
 
 typedef int (*MainRoutineFn)();
 
 const char kUsageMessage[] =
-  "Usage: %s [options]\n"
-  "\n"
-  "Options:\n"
-  "  --audio-pipe-name=<pipe> - Sets the pipe name to capture audio on Linux.\n"
-  "  --console                - Runs the daemon interactively.\n"
-  "  --daemon-pipe=<pipe>     - Specifies the pipe to connect to the daemon.\n"
-  "  --elevate=<binary>       - Runs <binary> elevated.\n"
-  "  --host-config=<config>   - Specifies the host configuration.\n"
-  "  --help, -?               - Prints this message.\n"
-  "  --type                   - Specifies process type.\n"
-  "  --version                - Prints the host version and exits.\n"
-  "  --window-id=<id>         - Specifies a window to remote,"
-                                " instead of the whole desktop.\n"
-  "  --evaluate-type=<type>   - Evaluates the capability of the host.\n";
+    "Usage: %s [options]\n"
+    "\n"
+    "Options:\n"
+    "  --audio-pipe-name=<pipe> - Sets the pipe name to capture audio on "
+    "Linux.\n"
+    "  --console                - Runs the daemon interactively.\n"
+    "  --daemon-pipe=<pipe>     - Specifies the pipe to connect to the "
+    "daemon.\n"
+    "  --elevate=<binary>       - Runs <binary> elevated.\n"
+    "  --host-config=<config>   - Specifies the host configuration.\n"
+    "  --help, -?               - Prints this message.\n"
+    "  --type                   - Specifies process type.\n"
+    "  --version                - Prints the host version and exits.\n"
+    "  --window-id=<id>         - Specifies a window to remote,"
+    " instead of the whole desktop.\n"
+    "  --evaluate-type=<type>   - Evaluates the capability of the host.\n"
+    "  --upgrade-token          - Upgrades the OAuth token in the host "
+    "config.\n";
 
 void Usage(const base::FilePath& program_name) {
   printf(kUsageMessage, program_name.MaybeAsASCII().c_str());
@@ -138,6 +146,10 @@ MainRoutineFn SelectMainRoutine(const std::string& process_type) {
   } else if (process_type == kProcessTypeRdpDesktopSession) {
     main_routine = &RdpDesktopSessionMain;
 #endif  // defined(OS_WIN)
+#if defined(OS_LINUX)
+  } else if (process_type == kProcessTypeXSessionChooser) {
+    main_routine = &XSessionChooserMain;
+#endif  // defined(OS_LINUX)
   }
 
   return main_routine;
@@ -203,6 +215,11 @@ int HostMain(int argc, char** argv) {
 
   // Enable debug logs.
   InitHostLogging();
+
+  // Perform token upgrade if specified on command-line.
+  if (command_line->HasSwitch(kUpgradeTokenSwitchName)) {
+    return HostConfigUpgrader::UpgradeConfigFile();
+  }
 
 #if defined(REMOTING_ENABLE_BREAKPAD)
   // Initialize Breakpad as early as possible. On Mac the command-line needs to

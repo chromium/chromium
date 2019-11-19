@@ -5,8 +5,12 @@
 #ifndef CHROMEOS_SERVICES_ASSISTANT_PUBLIC_FEATURES_H_
 #define CHROMEOS_SERVICES_ASSISTANT_PUBLIC_FEATURES_H_
 
+#include <string>
+
 #include "base/component_export.h"
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
+#include "base/time/time.h"
 
 namespace chromeos {
 namespace assistant {
@@ -14,11 +18,11 @@ namespace features {
 
 // Enable Assistant Feedback UI.
 COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)
-extern const base::Feature kAssistantFeedbackUi;
+extern const base::Feature kAssistantAudioEraser;
 
-// Enables Assistant voice match enrollment.
+// Enable Assistant Feedback UI.
 COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)
-extern const base::Feature kAssistantVoiceMatch;
+extern const base::Feature kAssistantFeedbackUi;
 
 // Enables Assistant warmer welcome.
 COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)
@@ -27,6 +31,27 @@ extern const base::Feature kAssistantWarmerWelcomeFeature;
 // Enables Assistant app support.
 COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)
 extern const base::Feature kAssistantAppSupport;
+
+// Enables Assistant proactive suggestions.
+COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)
+extern const base::Feature kAssistantProactiveSuggestions;
+
+// A comma-delimited list of experiment IDs to trigger on the proactive
+// suggestions server.
+COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)
+extern const base::FeatureParam<std::string>
+    kAssistantProactiveSuggestionsServerExperimentIds;
+
+// Enables suppression of Assistant proactive suggestions that have already been
+// shown to the user.
+COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)
+extern const base::FeatureParam<bool>
+    kAssistantProactiveSuggestionsSuppressDuplicates;
+
+// The timeout threshold (in milliseconds) for the proactive suggestions chip.
+COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)
+extern const base::FeatureParam<int>
+    kAssistantProactiveSuggestionsTimeoutThresholdMillis;
 
 // Enables Assistant routines.
 COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)
@@ -44,31 +69,34 @@ extern const base::Feature kEnableClearCutLog;
 COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)
 extern const base::Feature kEnableDspHotword;
 
+// Enables MediaSession Integration.
+COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)
+extern const base::Feature kEnableMediaSessionIntegration;
+
 // Enables stereo audio input.
 COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)
 extern const base::Feature kEnableStereoAudioInput;
-
-// Enables timer notifications.
-COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)
-extern const base::Feature kTimerNotification;
 
 // Enables power management features i.e. Wake locks and wake up alarms.
 COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)
 extern const base::Feature kEnablePowerManager;
 
-// Enables timer ticks. This feature causes alarms/timers tracked by the
-// AssistantAlarmTimerController to tick at a fixed interval, delivering updates
-// to AssistantAlarmTimerModelObservers of time remaining/elapsed since expiry.
-// When enabled in conjunction with |kTimerNotification|, Assistant alarm/timer
-// notifications will be updated at each tick.
+// Enables sending the client discourse context with text queries.
 COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)
-extern const base::Feature kTimerTicks;
+extern const base::Feature kEnableTextQueriesWithClientDiscourseContext;
 
-// Enables Assistant key remapping on keyboards.
 COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)
-extern const base::Feature kAssistantKeyRemapping;
+int GetProactiveSuggestionsMaxWidth();
+
+COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)
+std::string GetProactiveSuggestionsServerExperimentIds();
+
+COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)
+base::TimeDelta GetProactiveSuggestionsTimeoutThreshold();
 
 COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) bool IsAppSupportEnabled();
+
+COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) bool IsAudioEraserEnabled();
 
 COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) bool IsClearCutLogEnabled();
 
@@ -79,23 +107,33 @@ COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) bool IsFeedbackUiEnabled();
 COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)
 bool IsInAssistantNotificationsEnabled();
 
+COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) bool IsKeyRemappingEnabled();
+
+COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)
+bool IsMediaSessionIntegrationEnabled();
+
+COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) bool IsPowerManagerEnabled();
+
+COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) bool IsProactiveSuggestionsEnabled();
+
+COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)
+bool IsProactiveSuggestionsShowOnScrollEnabled();
+
+COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)
+bool IsProactiveSuggestionsSuppressDuplicatesEnabled();
+
 COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) bool IsRoutinesEnabled();
+
+COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) bool IsScreenContextQueryEnabled();
 
 COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) bool IsStereoAudioInputEnabled();
 
-COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) bool IsTimerNotificationEnabled();
-
-COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) bool IsTimerTicksEnabled();
-
 COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) bool IsWarmerWelcomeEnabled();
 
-COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) bool IsKeyRemappingEnabled();
+COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) bool IsVoiceMatchDisabled();
 
-// Enables sending the client discourse context with text queries.
 COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)
-extern const base::Feature kEnableTextQueriesWithClientDiscourseContext;
-
-COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) bool IsPowerManagerEnabled();
+bool IsAssistantWebContainerEnabled();
 
 }  // namespace features
 }  // namespace assistant

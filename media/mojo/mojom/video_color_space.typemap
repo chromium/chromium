@@ -1,0 +1,17 @@
+# Copyright 2017 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+mojom = "//media/mojo/mojom/media_types.mojom"
+public_headers = [
+  "//media/base/video_color_space.h",
+  "//ui/gfx/color_space.h",
+]
+traits_headers = [ "//media/mojo/mojom/video_color_space_mojom_traits.h" ]
+type_mappings = [
+  "media.mojom.VideoColorSpace.PrimaryID=::media::VideoColorSpace::PrimaryID",
+  "media.mojom.VideoColorSpace.TransferID=::media::VideoColorSpace::TransferID",
+  "media.mojom.VideoColorSpace.MatrixID=::media::VideoColorSpace::MatrixID",
+  "media.mojom.VideoColorSpace.RangeID=::gfx::ColorSpace::RangeID",
+  "media.mojom.VideoColorSpace=::media::VideoColorSpace",
+]

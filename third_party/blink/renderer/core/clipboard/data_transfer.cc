@@ -67,7 +67,7 @@ class DraggedNodeImageBuilder {
   STACK_ALLOCATED();
 
  public:
-  DraggedNodeImageBuilder(const LocalFrame& local_frame, Node& node)
+  DraggedNodeImageBuilder(LocalFrame& local_frame, Node& node)
       : local_frame_(&local_frame),
         node_(&node)
 #if DCHECK_IS_ON()
@@ -101,10 +101,9 @@ class DraggedNodeImageBuilder {
     // object contains transparency and there are other elements in the same
     // stacking context which stacked below.
     PaintLayer* layer = dragged_layout_object->EnclosingLayer();
-    if (!layer->GetLayoutObject().StyleRef().IsStackingContext()) {
-      layer =
-          PaintLayerStackingNode::AncestorStackingContextNode(layer)->Layer();
-    }
+    if (!layer->GetLayoutObject().StyleRef().IsStackingContext())
+      layer = layer->AncestorStackingContext();
+
     IntRect absolute_bounding_box =
         dragged_layout_object->AbsoluteBoundingBoxRectIncludingDescendants();
     // TODO(chrishtr): consider using the root frame's visible rect instead
@@ -119,14 +118,12 @@ class DraggedNodeImageBuilder {
 
     FloatRect bounding_box =
         layer->GetLayoutObject()
-            .AbsoluteToLocalQuad(FloatQuad(absolute_bounding_box),
-                                 kUseTransforms)
+            .AbsoluteToLocalQuad(FloatQuad(absolute_bounding_box))
             .BoundingBox();
     PaintLayerPaintingInfo painting_info(
         layer, CullRect(EnclosingIntRect(bounding_box)),
-        kGlobalPaintFlattenCompositingLayers, LayoutSize());
-    PaintLayerFlags flags = kPaintLayerHaveTransparency |
-                            kPaintLayerUncachedClipRects;
+        kGlobalPaintFlattenCompositingLayers, PhysicalOffset());
+    PaintLayerFlags flags = kPaintLayerHaveTransparency;
     PaintRecordBuilder builder;
 
     dragged_layout_object->GetDocument().Lifecycle().AdvanceTo(
@@ -150,7 +147,7 @@ class DraggedNodeImageBuilder {
   }
 
  private:
-  const Member<const LocalFrame> local_frame_;
+  const Member<LocalFrame> local_frame_;
   const Member<Node> node_;
 #if DCHECK_IS_ON()
   const uint64_t dom_tree_version_;
@@ -159,7 +156,7 @@ class DraggedNodeImageBuilder {
 }  // namespace
 static DragOperation ConvertEffectAllowedToDragOperation(const String& op) {
   // Values specified in
-  // http://www.whatwg.org/specs/web-apps/current-work/multipage/dnd.html#dom-datatransfer-effectallowed
+  // https://html.spec.whatwg.org/multipage/dnd.html#dom-datatransfer-effectallowed
   if (op == "uninitialized")
     return kDragOperationEvery;
   if (op == "none")
@@ -320,7 +317,7 @@ Vector<String> DataTransfer::types() {
 }
 
 FileList* DataTransfer::files() const {
-  FileList* files = FileList::Create();
+  auto* files = MakeGarbageCollected<FileList>();
   if (!CanReadData())
     return files;
 
@@ -385,7 +382,7 @@ FloatSize DataTransfer::DeviceSpaceSize(const FloatSize& css_size,
 // Returns a DragImage whose bitmap contains |contents|, positioned and scaled
 // in device space.
 std::unique_ptr<DragImage> DataTransfer::CreateDragImageForFrame(
-    const LocalFrame& frame,
+    LocalFrame& frame,
     float opacity,
     RespectImageOrientationEnum image_orientation,
     const FloatSize& css_size,
@@ -416,8 +413,9 @@ std::unique_ptr<DragImage> DataTransfer::CreateDragImageForFrame(
 
   scoped_refptr<Image> image =
       StaticBitmapImage::Create(surface->makeImageSnapshot());
+  ChromeClient& chrome_client = frame.GetPage()->GetChromeClient();
   float screen_device_scale_factor =
-      frame.GetPage()->GetChromeClient().GetScreenInfo().device_scale_factor;
+      chrome_client.GetScreenInfo(frame).device_scale_factor;
 
   return DragImage::Create(image.get(), image_orientation,
                            screen_device_scale_factor, kInterpolationDefault,
@@ -425,7 +423,7 @@ std::unique_ptr<DragImage> DataTransfer::CreateDragImageForFrame(
 }
 
 // static
-std::unique_ptr<DragImage> DataTransfer::NodeImage(const LocalFrame& frame,
+std::unique_ptr<DragImage> DataTransfer::NodeImage(LocalFrame& frame,
                                                    Node& node) {
   DraggedNodeImageBuilder image_node(frame, node);
   return image_node.CreateImage();
@@ -597,11 +595,11 @@ bool DataTransfer::HasDropZoneType(const String& keyword) {
 }
 
 DataTransferItemList* DataTransfer::items() {
-  // FIXME: According to the spec, we are supposed to return the same collection
+  // TODO: According to the spec, we are supposed to return the same collection
   // of items each time. We now return a wrapper that always wraps the *same*
   // set of items, so JS shouldn't be able to tell, but we probably still want
   // to fix this.
-  return DataTransferItemList::Create(this, data_object_);
+  return MakeGarbageCollected<DataTransferItemList>(this, data_object_);
 }
 
 DataObject* DataTransfer::GetDataObject() const {

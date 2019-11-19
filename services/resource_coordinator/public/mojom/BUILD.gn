@@ -9,16 +9,9 @@ mojom_component("mojom") {
   macro_prefix = "RESOURCE_COORDINATOR_PUBLIC_MOJOM"
 
   sources = [
-    "coordination_unit.mojom",
-    "coordination_unit_introspector.mojom",
-    "coordination_unit_provider.mojom",
-    "lifecycle.mojom",
     "memory_instrumentation/constants.mojom",
     "memory_instrumentation/memory_instrumentation.mojom",
-    "page_signal.mojom",
-    "service_constants.mojom",
-    "signals.mojom",
-    "webui_graph_dump.mojom",
+    "resource_coordinator_service.mojom",
   ]
 
   public_deps = [

@@ -32,8 +32,7 @@ AffiliationBackend::AffiliationBackend(
     : task_runner_(task_runner),
       clock_(time_source),
       tick_clock_(time_tick_source),
-      construction_time_(clock_->Now()),
-      weak_ptr_factory_(this) {
+      construction_time_(clock_->Now()) {
   DCHECK_LT(base::Time(), clock_->Now());
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
@@ -66,14 +65,14 @@ void AffiliationBackend::Initialize(
 void AffiliationBackend::GetAffiliationsAndBranding(
     const FacetURI& facet_uri,
     StrategyOnCacheMiss cache_miss_strategy,
-    const AffiliationService::ResultCallback& callback,
+    AffiliationService::ResultCallback callback,
     const scoped_refptr<base::TaskRunner>& callback_task_runner) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   FacetManager* facet_manager = GetOrCreateFacetManager(facet_uri);
   DCHECK(facet_manager);
-  facet_manager->GetAffiliationsAndBranding(cache_miss_strategy, callback,
-                                            callback_task_runner);
+  facet_manager->GetAffiliationsAndBranding(
+      cache_miss_strategy, std::move(callback), callback_task_runner);
 
   if (facet_manager->CanBeDiscarded())
     facet_managers_.erase(facet_uri);

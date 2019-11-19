@@ -23,10 +23,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// https://dvcs.w3.org/hg/speech-api/raw-file/tip/webspeechapi.html#dfn-speechgrammar
+// https://w3c.github.io/speech-api/#speechgrammar
 
 [
     Constructor,
+    Measure,
     NoInterfaceObject
 ] interface SpeechGrammar {
     [URL,CallWith=ScriptState] attribute DOMString src;

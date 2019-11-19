@@ -39,7 +39,6 @@ if (is_android) {
       "android/java/src/org/chromium/components/navigation_interception/InterceptNavigationDelegate.java",
       "android/java/src/org/chromium/components/navigation_interception/NavigationParams.java",
     ]
-    jni_package = "navigation_interception"
   }
 }
 

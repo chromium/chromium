@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<title>CSS Transform Module Level 2: parsing transform with valid values</title>
+<link rel="help" href="https://drafts.csswg.org/css-transforms-2/#transform-property">
+<meta name="assert" content="transform supports the full grammar 'none | <transform-list>'.">
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/css/support/parsing-testcommon.js"></script>
+
+<script>
+// Regression test for crbug.com/995038
+// Maximum values in CSS are UA-specified, and so cannot be upstreamed to WPT.
+// See https://drafts.csswg.org/css-values-4/#numeric-ranges
+test_valid_value("transform", "translateX(2e80px)", "translateX(3.40282e+38px)");
+test_valid_value("transform", "rotate(2e80deg)", "rotate(3.40282e+38deg)");
+test_valid_value("transform", "scaleX(2e80)", "scaleX(3.40282e+38)");
+test_valid_value("transform", "skewX(2e80deg)", "skewX(3.40282e+38deg)");
+</script>

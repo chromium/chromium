@@ -12,15 +12,19 @@ public_headers = [
 traits_headers = [
   "//services/network/public/cpp/network_ipc_param_traits.h",
   "//services/network/public/cpp/url_request_mojom_traits.h",
+  "//services/network/public/cpp/network_isolation_key_mojom_traits.h",
+  "//url/mojom/origin_mojom_traits.h",
+  "//url/mojom/url_gurl_mojom_traits.h",
 ]
 public_deps = [
   "//base",
   "//services/network/public/cpp:cpp_base",
 ]
 type_mappings = [
-  "network.mojom.URLRequest=network::ResourceRequest",
-  "network.mojom.URLRequestBody=scoped_refptr<network::ResourceRequestBody>[nullable_is_same_type,copyable_pass_by_value]",
-  "network.mojom.URLRequestReferrerPolicy=net::URLRequest::ReferrerPolicy",
-  "network.mojom.RequestPriority=net::RequestPriority",
-  "network.mojom.DataElement=network::DataElement[move_only]",
+  "network.mojom.TrustedUrlRequestParams=::network::ResourceRequest::TrustedParams",
+  "network.mojom.URLRequest=::network::ResourceRequest",
+  "network.mojom.URLRequestBody=::scoped_refptr<::network::ResourceRequestBody>[nullable_is_same_type,copyable_pass_by_value]",
+  "network.mojom.URLRequestReferrerPolicy=::net::URLRequest::ReferrerPolicy",
+  "network.mojom.RequestPriority=::net::RequestPriority",
+  "network.mojom.DataElement=::network::DataElement[move_only]",
 ]

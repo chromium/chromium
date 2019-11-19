@@ -9,18 +9,14 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
 
-namespace {
-
-const char kJsScreenPath[] = "login.MultiDeviceSetupScreen";
-
-}  // namespace
-
 namespace chromeos {
+
+constexpr StaticOobeScreenId MultiDeviceSetupScreenView::kScreenId;
 
 MultiDeviceSetupScreenHandler::MultiDeviceSetupScreenHandler(
     JSCallsContainer* js_calls_container)
     : BaseScreenHandler(kScreenId, js_calls_container) {
-  set_call_js_prefix(kJsScreenPath);
+  set_user_acted_method_path("login.MultiDeviceSetupScreen.userActed");
 }
 
 MultiDeviceSetupScreenHandler::~MultiDeviceSetupScreenHandler() = default;

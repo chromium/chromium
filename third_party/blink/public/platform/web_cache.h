@@ -31,6 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_CACHE_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_CACHE_H_
 
+#include "third_party/blink/public/common/web_cache/web_cache_resource_type_stats.h"
 #include "third_party/blink/public/platform/web_common.h"
 
 namespace blink {
@@ -41,23 +42,6 @@ class WebCache {
   struct UsageStats {
     size_t capacity;
     size_t size;
-  };
-
-  // A struct mirroring blink::MemoryCache::TypeStatistic.
-  struct ResourceTypeStat {
-    size_t count;
-    size_t size;
-    size_t decoded_size;
-  };
-
-  // A struct mirroring blink::MemoryCache::Statistics.
-  struct ResourceTypeStats {
-    ResourceTypeStat images;
-    ResourceTypeStat css_style_sheets;
-    ResourceTypeStat scripts;
-    ResourceTypeStat xsl_style_sheets;
-    ResourceTypeStat fonts;
-    ResourceTypeStat other;
   };
 
   // Sets the capacities of the resource cache, evicting objects as necessary.
@@ -72,7 +56,8 @@ class WebCache {
   BLINK_PLATFORM_EXPORT static void GetUsageStats(UsageStats*);
 
   // Get usage stats about the resource cache.
-  BLINK_PLATFORM_EXPORT static void GetResourceTypeStats(ResourceTypeStats*);
+  BLINK_PLATFORM_EXPORT static void GetResourceTypeStats(
+      WebCacheResourceTypeStats*);
 
  private:
   WebCache() = delete;  // Not intended to be instanced.

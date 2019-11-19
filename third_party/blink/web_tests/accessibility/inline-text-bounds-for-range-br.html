@@ -1,12 +1,11 @@
 <!DOCTYPE HTML>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 
 <p id="paragraph">Line 1<br>Line 2</p>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     // Due to rounding we won't get identical bounds as getBoundingClientRect(),
     // so allow the test to pass if we're within 1 pixel.
     var epsilon = 1;

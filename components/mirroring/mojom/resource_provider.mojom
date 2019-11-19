@@ -6,18 +6,19 @@ module mirroring.mojom;
 
 import "media/capture/mojom/video_capture.mojom";
 import "services/network/public/mojom/network_context.mojom";
-import "media/mojo/interfaces/remoting.mojom";
-import "media/mojo/interfaces/audio_data_pipe.mojom";
-import "media/mojo/interfaces/audio_input_stream.mojom";
-import "media/mojo/interfaces/audio_parameters.mojom";
+import "media/mojo/mojom/remoting.mojom";
+import "media/mojo/mojom/audio_data_pipe.mojom";
+import "media/mojo/mojom/audio_input_stream.mojom";
+import "media/mojo/mojom/audio_parameters.mojom";
+import "services/viz/public/mojom/gpu.mojom";
 
 // This interface is used by ResourceProvider to notify that an audio input
 // stream is created as requested. The lifetime of the stream is limited by the
 // lifetime of this client.
 interface AudioStreamCreatorClient {
   StreamCreated(
-      media.mojom.AudioInputStream stream,
-      media.mojom.AudioInputStreamClient& client_request,
+      pending_remote<media.mojom.AudioInputStream> stream,
+      pending_receiver<media.mojom.AudioInputStreamClient> client_receiver,
       media.mojom.ReadOnlyAudioDataPipe data_pipe,
       bool initially_muted);
 };
@@ -25,14 +26,19 @@ interface AudioStreamCreatorClient {
 // This interface is used by the Mirroring Service to ask the browser to provide
 // resources.
 interface ResourceProvider {
-  GetVideoCaptureHost(media.mojom.VideoCaptureHost& request);
-  GetNetworkContext(network.mojom.NetworkContext& request);
-  CreateAudioStream(AudioStreamCreatorClient client,
+  // Acquires an interface to the GPU process.
+  BindGpu(pending_receiver<viz.mojom.Gpu> receiver);
+
+  // Binds the media.mojom.VideoCaptureHost pending receiver to its remote
+  // implementation in the browser process, to allow commanding video capture
+  // events (Start, Stop, etc) from its client in the renderer process.
+  GetVideoCaptureHost(pending_receiver<media.mojom.VideoCaptureHost> receiver);
+
+  GetNetworkContext(pending_receiver<network.mojom.NetworkContext> receiver);
+  CreateAudioStream(pending_remote<AudioStreamCreatorClient> client,
                     media.mojom.AudioParameters param,
                     uint32 shared_memory_count);
-  ConnectToRemotingSource(media.mojom.Remoter remoter,
-                          media.mojom.RemotingSource& request);
-
-  // TODO(xjz): Add interface for HW encoder profiles query and VEA create
-  // support.
+  ConnectToRemotingSource(
+      pending_remote<media.mojom.Remoter> remoter,
+      pending_receiver<media.mojom.RemotingSource> receiver);
 };

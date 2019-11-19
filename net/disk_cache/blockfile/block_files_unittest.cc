@@ -115,11 +115,11 @@ TEST_F(DiskCacheTest, BlockFiles_Recover) {
 
   Addr address(entries[kNumEntries / 2]);
   MappedFile* file = files.GetFile(address);
-  ASSERT_TRUE(NULL != file);
+  ASSERT_TRUE(nullptr != file);
 
   BlockFileHeader* header =
       reinterpret_cast<BlockFileHeader*>(file->buffer());
-  ASSERT_TRUE(NULL != header);
+  ASSERT_TRUE(nullptr != header);
 
   ASSERT_EQ(0, header->updating);
 
@@ -140,10 +140,10 @@ TEST_F(DiskCacheTest, BlockFiles_Recover) {
 
   // The file must have been fixed.
   file = files.GetFile(address);
-  ASSERT_TRUE(NULL != file);
+  ASSERT_TRUE(nullptr != file);
 
   header = reinterpret_cast<BlockFileHeader*>(file->buffer());
-  ASSERT_TRUE(NULL != header);
+  ASSERT_TRUE(nullptr != header);
 
   ASSERT_EQ(0, header->updating);
 
@@ -211,10 +211,10 @@ TEST_F(DiskCacheTest, BlockFiles_Counters) {
   EXPECT_TRUE(files.CreateBlock(RANKINGS, 2, &address));
 
   MappedFile* file = files.GetFile(address);
-  ASSERT_TRUE(NULL != file);
+  ASSERT_TRUE(nullptr != file);
 
   BlockFileHeader* header = reinterpret_cast<BlockFileHeader*>(file->buffer());
-  ASSERT_TRUE(NULL != header);
+  ASSERT_TRUE(nullptr != header);
   ASSERT_EQ(0, header->updating);
 
   // Alter the counters so that the free space doesn't add up.
@@ -223,9 +223,9 @@ TEST_F(DiskCacheTest, BlockFiles_Counters) {
 
   ASSERT_TRUE(files.Init(false));
   file = files.GetFile(address);
-  ASSERT_TRUE(NULL != file);
+  ASSERT_TRUE(nullptr != file);
   header = reinterpret_cast<BlockFileHeader*>(file->buffer());
-  ASSERT_TRUE(NULL != header);
+  ASSERT_TRUE(nullptr != header);
 
   // The file must have been fixed.
   ASSERT_EQ(0, header->empty[2]);
@@ -237,9 +237,9 @@ TEST_F(DiskCacheTest, BlockFiles_Counters) {
 
   ASSERT_TRUE(files.Init(false));
   file = files.GetFile(address);
-  ASSERT_TRUE(NULL != file);
+  ASSERT_TRUE(nullptr != file);
   header = reinterpret_cast<BlockFileHeader*>(file->buffer());
-  ASSERT_TRUE(NULL != header);
+  ASSERT_TRUE(nullptr != header);
 
   // The file must have been "fixed".
   ASSERT_EQ(2, header->num_entries);
@@ -263,7 +263,7 @@ TEST_F(DiskCacheTest, BlockFiles_InvalidFile) {
 
   // Let's access block 10 of file 5. (There is no file).
   Addr addr(BLOCK_256, 1, 5, 10);
-  EXPECT_TRUE(NULL == files.GetFile(addr));
+  EXPECT_TRUE(nullptr == files.GetFile(addr));
 
   // Let's create an invalid file.
   base::FilePath filename(files.Name(5));
@@ -272,10 +272,10 @@ TEST_F(DiskCacheTest, BlockFiles_InvalidFile) {
   EXPECT_EQ(kBlockHeaderSize,
             base::WriteFile(filename, header, kBlockHeaderSize));
 
-  EXPECT_TRUE(NULL == files.GetFile(addr));
+  EXPECT_TRUE(nullptr == files.GetFile(addr));
 
   // The file should not have been changed (it is still invalid).
-  EXPECT_TRUE(NULL == files.GetFile(addr));
+  EXPECT_TRUE(nullptr == files.GetFile(addr));
 }
 
 // Tests that we generate the correct file stats.

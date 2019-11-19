@@ -11,8 +11,7 @@
 
 namespace extensions {
 
-class MediaPerceptionPrivateGetStateFunction
-    : public UIThreadExtensionFunction {
+class MediaPerceptionPrivateGetStateFunction : public ExtensionFunction {
  public:
   MediaPerceptionPrivateGetStateFunction();
   DECLARE_EXTENSION_FUNCTION("mediaPerceptionPrivate.getState",
@@ -29,8 +28,7 @@ class MediaPerceptionPrivateGetStateFunction
   DISALLOW_COPY_AND_ASSIGN(MediaPerceptionPrivateGetStateFunction);
 };
 
-class MediaPerceptionPrivateSetStateFunction
-    : public UIThreadExtensionFunction {
+class MediaPerceptionPrivateSetStateFunction : public ExtensionFunction {
  public:
   MediaPerceptionPrivateSetStateFunction();
   DECLARE_EXTENSION_FUNCTION("mediaPerceptionPrivate.setState",
@@ -47,8 +45,7 @@ class MediaPerceptionPrivateSetStateFunction
   DISALLOW_COPY_AND_ASSIGN(MediaPerceptionPrivateSetStateFunction);
 };
 
-class MediaPerceptionPrivateGetDiagnosticsFunction
-    : public UIThreadExtensionFunction {
+class MediaPerceptionPrivateGetDiagnosticsFunction : public ExtensionFunction {
  public:
   MediaPerceptionPrivateGetDiagnosticsFunction();
   DECLARE_EXTENSION_FUNCTION("mediaPerceptionPrivate.getDiagnostics",
@@ -67,7 +64,7 @@ class MediaPerceptionPrivateGetDiagnosticsFunction
 };
 
 class MediaPerceptionPrivateSetAnalyticsComponentFunction
-    : public UIThreadExtensionFunction {
+    : public ExtensionFunction {
  public:
   MediaPerceptionPrivateSetAnalyticsComponentFunction();
   DECLARE_EXTENSION_FUNCTION("mediaPerceptionPrivate.setAnalyticsComponent",
@@ -87,7 +84,7 @@ class MediaPerceptionPrivateSetAnalyticsComponentFunction
 };
 
 class MediaPerceptionPrivateSetComponentProcessStateFunction
-    : public UIThreadExtensionFunction {
+    : public ExtensionFunction {
  public:
   MediaPerceptionPrivateSetComponentProcessStateFunction();
   DECLARE_EXTENSION_FUNCTION("mediaPerceptionPrivate.setComponentProcessState",

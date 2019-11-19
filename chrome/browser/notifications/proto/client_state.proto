@@ -1,0 +1,54 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package notifications.proto;
+
+import "impression.proto";
+
+// The type of clients using the notification scheduler system.
+enum SchedulerClientType {
+  TEST_1 = -1;
+  TEST_2 = -2;
+  TEST_3 = -3;
+  UNKNOWN = 0;
+  WEBUI = 1;
+  CHROME_UPDATE = 2;
+}
+
+// Contains details about supression and recovery after suppression expired.
+// Should match SuppressionInfo in impression_types.h.
+// Next tag: 4
+message SuppressionInfo {
+  // The suppression trigger time stamp in milliseconds since epoch.
+  optional int64 last_trigger_time = 1;
+
+  // The duration for the suppression in milliseconds.
+  optional int64 duration_ms = 2;
+
+  // The maximum number of notification to show after the suppression expired.
+  optional int32 recover_goal = 3;
+}
+
+// Stores the global states about how often the notification can be shown
+// to the user and the history of user interactions to a particular notification
+// client. Should match ClientState in impression_types.h.
+// Next tag: 5
+message ClientState {
+  // The type of notification using the scheduler.
+  optional SchedulerClientType type = 1;
+
+  // The maximum number of notifications shown to the user for this type. May
+  // change if the user interacts with the notification.
+  optional int32 current_max_daily_show = 2;
+
+  // A list of user impression history. Sorted by creation time.
+  repeated Impression impressions = 3;
+
+  // Suppression details, no value if there is currently no suppression.
+  optional SuppressionInfo suppression_info = 4;
+}

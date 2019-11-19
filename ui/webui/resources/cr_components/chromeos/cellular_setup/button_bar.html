@@ -1,0 +1,44 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/html/i18n_behavior.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
+<link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
+<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout.html">
+
+<dom-module id="button-bar">
+  <template>
+    <style include="iron-flex">
+      :host {
+        @apply --layout-horizontal;
+        @apply --layout-justified;
+        padding: 10px 0;
+      }
+    </style>
+    <cr-button id="backward"
+        class="cancel-button"
+        on-click="onBackwardButtonClicked_"
+        hidden$="[[showCancelButton]]">
+      [[i18n('back')]]
+    </cr-button>
+    <cr-button id="cancel"
+        class="cancel-button"
+        on-click="onBackwardButtonClicked_"
+        hidden$="[[!showCancelButton]]">
+      [[i18n('cancel')]]
+    </cr-button>
+    <cr-button id="tryAgain"
+        class="action-button"
+        on-click="onTryAgainButtonClicked_"
+        hidden$="[[!showTryAgainButton]]">
+      [[i18n('tryAgain')]]
+    </cr-button>
+    <cr-button id="finish"
+        class="action-button"
+        on-click="onFinishButtonClicked_"
+        hidden$="[[!showFinishButton]]">
+      [[i18n('finish')]]
+    </cr-button>
+  </template>
+  <script src="button_bar.js"></script>
+</dom-module>

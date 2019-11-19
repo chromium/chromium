@@ -1,0 +1,38 @@
+config("private_join_and_compute_config") {
+  include_dirs = [
+    "//third_party/boringssl/src/include",
+  ]
+}
+
+source_set("ec_commutative_cipher") {
+  sources = [
+    "chromium_patch.h",
+    "crypto/big_num.cc",
+    "crypto/big_num.h",
+    "crypto/context.cc",
+    "crypto/context.h",
+    "crypto/ec_commutative_cipher.cc",
+    "crypto/ec_commutative_cipher.h",
+    "crypto/ec_group.cc",
+    "crypto/ec_group.h",
+    "crypto/ec_point.cc",
+    "crypto/ec_point.h",
+    "crypto/openssl.inc",
+    "util/canonical_errors.cc",
+    "util/canonical_errors.h",
+    "util/status.cc",
+    "util/status.h",
+    "util/status.inc",
+    "util/status_builder.h",
+    "util/status_macros.h",
+    "util/statusor.cc",
+    "util/statusor.h",
+  ]
+  deps = [
+    "//base",
+    "//third_party/boringssl",
+  ]
+
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  public_configs = [ ":private_join_and_compute_config" ]
+}

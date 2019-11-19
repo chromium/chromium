@@ -8,8 +8,8 @@
 
 #include "base/macros.h"
 #include "base/stl_util.h"
-#include "components/sync/base/cryptographer.h"
 #include "components/sync/engine_impl/syncer_util.h"
+#include "components/sync/syncable/directory_cryptographer.h"
 #include "components/sync/syncable/entry.h"
 #include "components/sync/syncable/nigori_handler.h"
 #include "components/sync/syncable/nigori_util.h"
@@ -277,7 +277,7 @@ void Traversal::AddDeletedParents(const std::set<int64_t>& ready_unsynced_set,
       // We're not interested in non-deleted parents.
       break;
     }
-    if (base::ContainsValue(traversed, handle)) {
+    if (base::Contains(traversed, handle)) {
       // We've already added this parent (and therefore all of its parents).
       // We can return early.
       break;
@@ -365,7 +365,7 @@ void Traversal::AddDeletes(const std::set<int64_t>& ready_unsynced_set) {
     if (HaveItem(handle))
       continue;
 
-    if (base::ContainsValue(deletion_list, handle)) {
+    if (base::Contains(deletion_list, handle)) {
       continue;
     }
 
@@ -519,7 +519,8 @@ void GetCommitIdsForType(syncable::BaseTransaction* trans,
 
   ModelTypeSet encrypted_types;
   bool passphrase_missing = false;
-  Cryptographer* cryptographer = dir->GetCryptographer(trans);
+  const DirectoryCryptographer* cryptographer =
+      dir->GetNigoriHandler()->GetDirectoryCryptographer(trans);
   if (cryptographer) {
     encrypted_types = dir->GetNigoriHandler()->GetEncryptedTypes(trans);
     passphrase_missing = cryptographer->has_pending_keys();

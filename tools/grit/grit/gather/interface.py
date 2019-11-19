@@ -5,9 +5,11 @@
 '''Interface for all gatherers.
 '''
 
+from __future__ import print_function
 
 import os.path
-import types
+
+import six
 
 from grit import clique
 from grit import util
@@ -160,7 +162,7 @@ class GathererBase(object):
     '''A convenience function for subclasses that loads the contents of the
     input file.
     '''
-    if isinstance(self.rc_file, types.StringTypes):
+    if isinstance(self.rc_file, six.string_types):
       path = self.GetInputPath()
       # Hack: some unit tests supply an absolute path and no root node.
       if not os.path.isabs(path):

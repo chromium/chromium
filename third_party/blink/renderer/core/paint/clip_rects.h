@@ -44,7 +44,7 @@ class ClipRects : public RefCounted<ClipRects> {
 
   ClipRects() : fixed_(0) {}
 
-  void Reset(const LayoutRect& r) {
+  void Reset(const PhysicalRect& r) {
     overflow_clip_rect_ = r;
     fixed_clip_rect_ = r;
     pos_clip_rect_ = r;
@@ -80,7 +80,7 @@ class ClipRects : public RefCounted<ClipRects> {
   }
 
  private:
-  ClipRects(const LayoutRect& r)
+  ClipRects(const PhysicalRect& r)
       : overflow_clip_rect_(r),
         fixed_clip_rect_(r),
         pos_clip_rect_(r),

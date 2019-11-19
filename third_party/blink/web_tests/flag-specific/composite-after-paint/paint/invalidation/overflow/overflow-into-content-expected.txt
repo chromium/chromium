@@ -1,0 +1,33 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "LayoutNGBlockFlow (positioned) DIV",
+          "rect": [8, 158, 106, 106],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutNGBlockFlow (positioned) DIV",
+          "rect": [8, 8, 106, 106],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutNGBlockFlow DIV",
+          "rect": [8, 308, 100, 100],
+          "reason": "disappeared"
+        },
+        {
+          "object": "LayoutNGBlockFlow DIV id='target3'",
+          "rect": [8, 388, 100, 20],
+          "reason": "disappeared"
+        }
+      ]
+    }
+  ]
+}
+

@@ -12,13 +12,40 @@ import win32gui
 import win32process
 
 
+def get_process_name(p):
+  """A wrapper to return a psutil.Process name."""
+  # Process.name was a property prior to version 2.0.
+  if psutil.version_info[0] < 2:
+    return p.name
+  # But it's a function since 2.0.
+  return p.name()
+
+
+def get_process_exe(p):
+  """A wrapper to return a psutil.Process exe."""
+  # Process.exe was a property prior to version 2.0.
+  if psutil.version_info[0] < 2:
+    return p.exe
+  # But it's a function since 2.0.
+  return p.exe()
+
+
+def get_process_ppid(p):
+  """A wrapper to return a psutil.Process ppid."""
+  # Process.ppid was a property prior to version 2.0.
+  if psutil.version_info[0] < 2:
+    return p.ppid
+  # But it's a function since 2.0.
+  return p.ppid()
+
+
 def GetProcessIDAndPathPairs():
   """Returns a list of 2-tuples of (process id, process path).
   """
   process_id_and_path_pairs = []
   for process in psutil.process_iter():
     try:
-      process_id_and_path_pairs.append((process.pid, process.exe))
+      process_id_and_path_pairs.append((process.pid, get_process_exe(process)))
     except psutil.Error:
       # It's normal that some processes are not accessible.
       pass
@@ -49,11 +76,12 @@ def WaitForChromeExit(chrome_path):
     chrome_processes = dict()
     for process in psutil.process_iter():
       try:
-        if process.exe == chrome_path:
+        if get_process_exe(process) == chrome_path:
           chrome_processes[process.pid] = process
-          logging.info('Found chrome process %s' % process.exe)
-        elif process.name == os.path.basename(chrome_path):
-          raise Exception('Found other chrome process %s' % process.exe)
+          logging.info('Found chrome process %s' % get_process_exe(process))
+        elif get_process_name(process) == os.path.basename(chrome_path):
+          raise Exception(
+              'Found other chrome process %s' % get_process_exe(process))
       except psutil.Error:
         pass
     return chrome_processes
@@ -64,7 +92,7 @@ def WaitForChromeExit(chrome_path):
     # Find the one whose parent isn't a chrome.exe process.
     for process in chrome_processes.itervalues():
       try:
-        if process.ppid not in chrome_processes:
+        if get_process_ppid(process) not in chrome_processes:
           return process
       except psutil.Error:
         pass
@@ -79,8 +107,8 @@ def WaitForChromeExit(chrome_path):
       process = next(chrome_processes.itervalues())
     if process.is_running():
       logging.info(
-        'Waiting on PID %s for %s %s processes to exit' %
-        (process.pid, len(chrome_processes), process.exe))
+        'Waiting on %s for %s %s processes to exit' %
+        (str(process), len(chrome_processes), get_process_exe(process)))
       process.wait()
     # Check for stragglers and keep waiting until all are gone.
     chrome_processes = GetChromeProcesses(chrome_path)

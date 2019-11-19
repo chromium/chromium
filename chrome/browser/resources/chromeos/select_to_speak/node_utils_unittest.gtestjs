@@ -256,7 +256,7 @@ TEST_F('SelectToSpeakNodeUtilsUnitTest',
       state: {}};
   let child3 = {name: ',', children: [], role: 'inlineTextBox', state: {}};
   let child4 = {name: 'Hello,', children: [child1, child2, child3],
-      role: 'staticText', state: {}};
+      role: 'staticText', state: {}, firstChild: child1, lastChild: child3};
   child1.parent = child4;
   child2.parent = child4;
   child3.parent = child4;
@@ -264,12 +264,13 @@ TEST_F('SelectToSpeakNodeUtilsUnitTest',
   let child5 = {name: ' ', children: [], role: 'inlineTextBox', state: {}};
   let child6 = {name: 'world', children: [], role: 'inlineTextBox', state: {}};
   let child7 = {name: ' world', children: [child5, child6], role: 'staticText',
-      state: {}};
+      state: {}, firstChild: child5, lastChild: child6};
   child5.parent = child7;
   child6.parent = child7;
 
-  let root = {name: 'Hello, world', children: [child4, child7],
-      role: 'genericContainer', state: {}};
+  let root = {name: undefined, children: [child4, child7],
+      role: 'genericContainer', state: {}, firstChild: child4,
+      lastChild: child7};
   child4.parent = root;
   child7.parent = root;
 
@@ -277,15 +278,19 @@ TEST_F('SelectToSpeakNodeUtilsUnitTest',
   assertEquals(child1, result.node);
   assertEquals(0, result.offset);
 
-  result = NodeUtils.getDeepEquivalentForSelection(root, 5, true);
-  assertEquals(child3, result.node);
-  assertEquals(0, result.offset);
-
-  result = NodeUtils.getDeepEquivalentForSelection(root, 6, true);
+  result = NodeUtils.getDeepEquivalentForSelection(root, 1, true);
   assertEquals(child5, result.node);
   assertEquals(0, result.offset);
 
-  result = NodeUtils.getDeepEquivalentForSelection(root, 9, true);
+  result = NodeUtils.getDeepEquivalentForSelection(root, 2, false);
   assertEquals(child6, result.node);
+  assertEquals(5, result.offset);
+
+  result = NodeUtils.getDeepEquivalentForSelection(child4, 2, true);
+  assertEquals(child1, result.node);
   assertEquals(2, result.offset);
+
+  result = NodeUtils.getDeepEquivalentForSelection(child4, 5, true);
+  assertEquals(child3, result.node);
+  assertEquals(0, result.offset);
 });

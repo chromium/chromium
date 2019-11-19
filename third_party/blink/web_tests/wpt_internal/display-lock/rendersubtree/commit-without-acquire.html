@@ -1,0 +1,44 @@
+<!doctype HTML>
+<html class="reftest-wait">
+<meta charset="utf8">
+<title>Display Locking: commit without acquire</title>
+<link rel="author" title="Vladimir Levin" href="mailto:vmpstr@chromium.org">
+<link rel="help" href="https://github.com/WICG/display-locking">
+<link rel="match" href="commit-without-acquire-ref.html">
+<script src="/common/reftest-wait.js"></script>
+<script src="resources/utils.js"></script>
+
+<style>
+#container {
+  width: 150px;
+  height: 150px;
+  background: lightblue;
+}
+#child {
+  width: 50px;
+  height: 50px;
+  background: lightgreen;
+}
+</style>
+
+<div id="log"></div>
+
+<script>
+function finishTest(status_string) {
+  if (document.getElementById("log").innerHTML === "")
+    document.getElementById("log").innerHTML = status_string;
+  takeScreenshot();
+}
+
+function runTest() {
+  const container = document.createElement("div");
+  container.id = "container";
+  setVisible(container).then(
+      () => { finishTest("PASS"); },
+      (e) => { finishTest("FAIL " + e.message); });
+  document.body.appendChild(container);
+}
+
+window.onload = runTest;
+</script>
+</html>

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/ash/wallpaper_controller_client.h"
 
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "chrome/browser/chromeos/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/ui/ash/test_wallpaper_controller.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
@@ -22,16 +22,15 @@ class WallpaperControllerClientTest : public testing::Test {
  private:
   ScopedTestingLocalState local_state_;
   chromeos::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
 
   DISALLOW_COPY_AND_ASSIGN(WallpaperControllerClientTest);
 };
 
 TEST_F(WallpaperControllerClientTest, Construction) {
-  WallpaperControllerClient client;
   TestWallpaperController controller;
-  client.InitForTesting(controller.CreateInterfacePtr());
-  client.FlushForTesting();
+  WallpaperControllerClient client;
+  client.InitForTesting(&controller);
 
   // Singleton was initialized.
   EXPECT_EQ(&client, WallpaperControllerClient::Get());

@@ -7,8 +7,11 @@
 #include <string>
 #include <utility>
 
+#include "ash/public/cpp/ash_switches.h"
 #include "base/bind.h"
 #include "base/macros.h"
+#include "base/memory/ref_counted.h"
+#include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/stringprintf.h"
@@ -17,17 +20,19 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/chromeos/login/existing_user_controller.h"
-#include "chrome/browser/chromeos/login/screens/gaia_view.h"
 #include "chrome/browser/chromeos/login/signin/oauth2_login_manager.h"
 #include "chrome/browser/chromeos/login/signin/oauth2_login_manager_factory.h"
 #include "chrome/browser/chromeos/login/signin_specifics.h"
 #include "chrome/browser/chromeos/login/startup_utils.h"
 #include "chrome/browser/chromeos/login/test/fake_gaia_mixin.h"
 #include "chrome/browser/chromeos/login/test/js_checker.h"
+#include "chrome/browser/chromeos/login/test/network_portal_detector_mixin.h"
 #include "chrome/browser/chromeos/login/test/oobe_base_test.h"
+#include "chrome/browser/chromeos/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/chromeos/login/ui/login_display_host.h"
 #include "chrome/browser/chromeos/login/wizard_controller.h"
 #include "chrome/browser/extensions/chrome_extension_test_notification_observer.h"
+#include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -35,20 +40,26 @@
 #include "chrome/browser/ui/javascript_dialogs/javascript_dialog_tab_helper.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/signin_screen_handler.h"
+#include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/login/auth/key.h"
 #include "chromeos/login/auth/user_context.h"
 #include "components/account_id/account_id.h"
-#include "components/browser_sync/browser_sync_switches.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/sync/driver/sync_driver_switches.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_service.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test_utils.h"
+#include "extensions/browser/extension_host.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
@@ -58,8 +69,6 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_getter.h"
-#include "services/identity/public/cpp/identity_manager.h"
-#include "services/identity/public/cpp/identity_test_utils.h"
 
 using net::test_server::BasicHttpResponse;
 using net::test_server::HttpRequest;
@@ -100,7 +109,7 @@ std::string PickAccountId(Profile* profile,
                           const std::string& email) {
   return IdentityManagerFactory::GetInstance()
       ->GetForProfile(profile)
-      ->LegacyPickAccountIdForAccount(gaia_id, email);
+      ->PickAccountIdForAccount(gaia_id, email);
 }
 
 const char* BoolToString(bool value) {
@@ -206,10 +215,9 @@ class RequestDeferrer {
 
   void InterceptRequest(const HttpRequest& request) {
     start_event_.Signal();
-    base::PostTaskWithTraits(
-        FROM_HERE, {content::BrowserThread::UI},
-        base::BindOnce(&RequestDeferrer::QuitRunnerOnUIThread,
-                       base::Unretained(this)));
+    base::PostTask(FROM_HERE, {content::BrowserThread::UI},
+                   base::BindOnce(&RequestDeferrer::QuitRunnerOnUIThread,
+                                  base::Unretained(this)));
     blocking_event_.Wait();
   }
 
@@ -236,6 +244,9 @@ class OAuth2Test : public OobeBaseTest {
   // OobeBaseTest overrides.
   void SetUpCommandLine(base::CommandLine* command_line) override {
     OobeBaseTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(ash::switches::kShowWebUiLogin);
+
+    base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir_);
 
     // Disable sync since we don't really need this for these tests and it also
     // makes OAuth2Test.MergeSession test flaky http://crbug.com/408867.
@@ -265,6 +276,15 @@ class OAuth2Test : public OobeBaseTest {
                                      kTestRefreshToken);
   }
 
+  const extensions::Extension* LoadMergeSessionExtension() {
+    extensions::ChromeTestExtensionLoader loader(GetProfile());
+    scoped_refptr<const extensions::Extension> extension =
+        loader.LoadExtension(test_data_dir_.AppendASCII("extensions")
+                                 .AppendASCII("api_test")
+                                 .AppendASCII("merge_session"));
+    return extension.get();
+  }
+
   void SetupGaiaServerForUnexpiredAccount() {
     FakeGaia::MergeSessionParams params;
     params.email = kTestEmail;
@@ -284,17 +304,12 @@ class OAuth2Test : public OobeBaseTest {
   }
 
   void LoginAsExistingUser() {
-    content::WindowedNotificationObserver(
-        chrome::NOTIFICATION_LOGIN_OR_LOCK_WEBUI_VISIBLE,
-        content::NotificationService::AllSources())
-        .Wait();
-
     test::OobeJS().ExpectTrue("!!document.querySelector('#account-picker')");
     test::OobeJS().ExpectTrue("!!document.querySelector('#pod-row')");
 
-    std::string account_id = PickAccountId(
-        ProfileManager::GetPrimaryUserProfile(), kTestGaiaId, kTestEmail);
-
+    // PickAccountId does not work at this point as the primary user profile has
+    // not yet been created.
+    const std::string account_id = kTestEmail;
     EXPECT_EQ(GetOAuthStatusFromLocalState(account_id),
               user_manager::User::OAUTH2_TOKEN_STATUS_VALID);
 
@@ -303,12 +318,13 @@ class OAuth2Test : public OobeBaseTest {
         TryToLogin(AccountId::FromUserEmailGaiaId(kTestEmail, kTestGaiaId),
                    kTestAccountPassword));
     Profile* profile = ProfileManager::GetPrimaryUserProfile();
+    ASSERT_EQ(account_id, PickAccountId(profile, kTestGaiaId, kTestEmail));
 
     // Wait for the session merge to finish.
     WaitForMergeSessionCompletion(OAuth2LoginManager::SESSION_RESTORE_DONE);
 
     // Check for existence of refresh token.
-    identity::IdentityManager* identity_manager =
+    signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForProfile(profile);
     EXPECT_TRUE(identity_manager->HasAccountWithRefreshToken(account_id));
 
@@ -346,11 +362,11 @@ class OAuth2Test : public OobeBaseTest {
 
  protected:
   // OobeBaseTest overrides.
-  Profile* profile() override {
+  Profile* GetProfile() {
     if (user_manager::UserManager::Get()->GetActiveUser())
       return ProfileManager::GetPrimaryUserProfile();
 
-    return OobeBaseTest::profile();
+    return ProfileManager::GetActiveUserProfile();
   }
 
   bool AddUserToSession(const AccountId& account_id,
@@ -366,10 +382,7 @@ class OAuth2Test : public OobeBaseTest {
                              account_id);
     user_context.SetKey(Key(password));
     controller->Login(user_context, SigninSpecifics());
-    content::WindowedNotificationObserver(
-        chrome::NOTIFICATION_SESSION_STARTED,
-        content::NotificationService::AllSources())
-        .Wait();
+    test::WaitForPrimaryUserSessionStart();
     const user_manager::UserList& logged_users =
         user_manager::UserManager::Get()->GetLoggedInUsers();
     for (user_manager::UserList::const_iterator it = logged_users.begin();
@@ -382,13 +395,13 @@ class OAuth2Test : public OobeBaseTest {
 
   void CheckSessionState(OAuth2LoginManager::SessionRestoreState state) {
     OAuth2LoginManager* login_manager =
-        OAuth2LoginManagerFactory::GetInstance()->GetForProfile(profile());
+        OAuth2LoginManagerFactory::GetInstance()->GetForProfile(GetProfile());
     ASSERT_EQ(state, login_manager->state());
   }
 
   void SetSessionRestoreState(OAuth2LoginManager::SessionRestoreState state) {
     OAuth2LoginManager* login_manager =
-        OAuth2LoginManagerFactory::GetInstance()->GetForProfile(profile());
+        OAuth2LoginManagerFactory::GetInstance()->GetForProfile(GetProfile());
     login_manager->SetSessionRestoreState(state);
   }
 
@@ -399,7 +412,7 @@ class OAuth2Test : public OobeBaseTest {
     states.insert(OAuth2LoginManager::SESSION_RESTORE_DONE);
     states.insert(OAuth2LoginManager::SESSION_RESTORE_FAILED);
     states.insert(OAuth2LoginManager::SESSION_RESTORE_CONNECTION_FAILED);
-    OAuth2LoginManagerStateWaiter merge_session_waiter(profile());
+    OAuth2LoginManagerStateWaiter merge_session_waiter(GetProfile());
     merge_session_waiter.WaitForStates(states);
     EXPECT_EQ(merge_session_waiter.final_state(), final_state);
   }
@@ -410,18 +423,14 @@ class OAuth2Test : public OobeBaseTest {
     SimulateNetworkOnline();
     WaitForGaiaPageLoad();
 
-    content::WindowedNotificationObserver session_start_waiter(
-        chrome::NOTIFICATION_SESSION_STARTED,
-        content::NotificationService::AllSources());
-
     // Use capitalized and dotted user name on purpose to make sure
     // our email normalization kicks in.
     LoginDisplayHost::default_host()
         ->GetOobeUI()
-        ->GetGaiaScreenView()
+        ->GetView<GaiaScreenHandler>()
         ->ShowSigninScreenForTest(kTestRawEmail, kTestAccountPassword,
                                   kTestAccountServices);
-    session_start_waiter.Wait();
+    test::WaitForPrimaryUserSessionStart();
 
     if (wait_for_merge) {
       // Wait for the session merge to finish.
@@ -431,7 +440,7 @@ class OAuth2Test : public OobeBaseTest {
 
   OAuth2LoginManager::SessionRestoreStrategy GetSessionRestoreStrategy() {
     OAuth2LoginManager* login_manager =
-        OAuth2LoginManagerFactory::GetInstance()->GetForProfile(profile());
+        OAuth2LoginManagerFactory::GetInstance()->GetForProfile(GetProfile());
     return login_manager->restore_strategy_;
   }
 
@@ -451,62 +460,53 @@ class OAuth2Test : public OobeBaseTest {
     request_deferers_[path] = request_deferer;
   }
 
+  void SimulateNetworkOnline() {
+    network_portal_detector_.SimulateDefaultNetworkState(
+        NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
+  }
+
   FakeGaiaMixin fake_gaia_{&mixin_host_, embedded_test_server()};
+  NetworkPortalDetectorMixin network_portal_detector_{&mixin_host_};
 
  private:
+  base::FilePath test_data_dir_;
   std::map<std::string, RequestDeferrer*> request_deferers_;
 
   DISALLOW_COPY_AND_ASSIGN(OAuth2Test);
 };
 
-class CookieReader : public base::RefCountedThreadSafe<CookieReader> {
+class CookieReader {
  public:
-  CookieReader() {}
+  CookieReader() = default;
+  ~CookieReader() = default;
 
   void ReadCookies(Profile* profile) {
-    context_ = profile->GetRequestContext();
-    base::PostTaskWithTraits(
-        FROM_HERE, {content::BrowserThread::IO},
-        base::BindOnce(&CookieReader::ReadCookiesOnIOThread, this));
-    run_loop_ = std::make_unique<base::RunLoop>();
-    run_loop_->Run();
+    base::RunLoop run_loop;
+    content::BrowserContext::GetDefaultStoragePartition(profile)
+        ->GetCookieManagerForBrowserProcess()
+        ->GetAllCookies(base::BindOnce(&CookieReader::OnGotAllCookies,
+                                       base::Unretained(this),
+                                       run_loop.QuitClosure()));
+    run_loop.Run();
   }
 
   std::string GetCookieValue(const std::string& name) {
-    for (std::vector<net::CanonicalCookie>::const_iterator iter =
-             cookie_list_.begin();
-         iter != cookie_list_.end(); ++iter) {
-      if (iter->Name() == name) {
-        return iter->Value();
+    for (const auto& item : cookie_list_) {
+      if (item.Name() == name) {
+        return item.Value();
       }
     }
     return std::string();
   }
 
  private:
-  friend class base::RefCountedThreadSafe<CookieReader>;
-
-  virtual ~CookieReader() {}
-
-  void ReadCookiesOnIOThread() {
-    context_->GetURLRequestContext()->cookie_store()->GetAllCookiesAsync(
-        base::BindOnce(&CookieReader::OnGetAllCookiesOnUIThread, this));
-  }
-
-  void OnGetAllCookiesOnUIThread(
-      const net::CookieList& cookies,
-      const net::CookieStatusList& excluded_cookies) {
+  void OnGotAllCookies(base::OnceClosure callback,
+                       const net::CookieList& cookies) {
     cookie_list_ = cookies;
-    base::PostTaskWithTraits(
-        FROM_HERE, {content::BrowserThread::UI},
-        base::BindOnce(&CookieReader::OnCookiesReadyOnUIThread, this));
+    std::move(callback).Run();
   }
 
-  void OnCookiesReadyOnUIThread() { run_loop_->Quit(); }
-
-  scoped_refptr<net::URLRequestContextGetter> context_;
   net::CookieList cookie_list_;
-  std::unique_ptr<base::RunLoop> run_loop_;
 
   DISALLOW_COPY_AND_ASSIGN(CookieReader);
 };
@@ -516,17 +516,17 @@ IN_PROC_BROWSER_TEST_F(OAuth2Test, PRE_PRE_PRE_MergeSession) {
   StartNewUserSession(/*wait_for_merge=*/true,
                       /*is_under_advanced_protection=*/false);
   // Check for existence of refresh token.
-  std::string account_id = PickAccountId(profile(), kTestGaiaId, kTestEmail);
-  identity::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile());
+  std::string account_id = PickAccountId(GetProfile(), kTestGaiaId, kTestEmail);
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(GetProfile());
   EXPECT_TRUE(identity_manager->HasAccountWithRefreshToken(account_id));
 
   EXPECT_EQ(GetOAuthStatusFromLocalState(account_id),
             user_manager::User::OAUTH2_TOKEN_STATUS_VALID);
-  scoped_refptr<CookieReader> cookie_reader(new CookieReader());
-  cookie_reader->ReadCookies(profile());
-  EXPECT_EQ(cookie_reader->GetCookieValue("SID"), kTestSessionSIDCookie);
-  EXPECT_EQ(cookie_reader->GetCookieValue("LSID"), kTestSessionLSIDCookie);
+  CookieReader cookie_reader;
+  cookie_reader.ReadCookies(GetProfile());
+  EXPECT_EQ(cookie_reader.GetCookieValue("SID"), kTestSessionSIDCookie);
+  EXPECT_EQ(cookie_reader.GetCookieValue("LSID"), kTestSessionLSIDCookie);
 }
 
 // MergeSession test is running merge session process for an existing profile
@@ -537,52 +537,49 @@ IN_PROC_BROWSER_TEST_F(OAuth2Test, PRE_PRE_MergeSession) {
   SetupGaiaServerForUnexpiredAccount();
   SimulateNetworkOnline();
   LoginAsExistingUser();
-  scoped_refptr<CookieReader> cookie_reader(new CookieReader());
-  cookie_reader->ReadCookies(profile());
+  CookieReader cookie_reader;
+  cookie_reader.ReadCookies(GetProfile());
   // These are still cookie values from the initial session since
   // /ListAccounts
-  EXPECT_EQ(cookie_reader->GetCookieValue("SID"), kTestSessionSIDCookie);
-  EXPECT_EQ(cookie_reader->GetCookieValue("LSID"), kTestSessionLSIDCookie);
+  EXPECT_EQ(cookie_reader.GetCookieValue("SID"), kTestSessionSIDCookie);
+  EXPECT_EQ(cookie_reader.GetCookieValue("LSID"), kTestSessionLSIDCookie);
 }
 
 // MergeSession test is running merge session process for an existing profile
 // that was generated in PRE_PRE_MergeSession test.
-// Disabled due to flakiness: crbug.com/496832
-IN_PROC_BROWSER_TEST_F(OAuth2Test, DISABLED_PRE_MergeSession) {
+IN_PROC_BROWSER_TEST_F(OAuth2Test, PRE_MergeSession) {
   SetupGaiaServerForExpiredAccount();
   SimulateNetworkOnline();
   LoginAsExistingUser();
-  scoped_refptr<CookieReader> cookie_reader(new CookieReader());
-  cookie_reader->ReadCookies(profile());
+  CookieReader cookie_reader;
+  cookie_reader.ReadCookies(GetProfile());
   // These should be cookie values that we generated by calling /MergeSession,
   // since /ListAccounts should have tell us that the initial session cookies
   // are stale.
-  EXPECT_EQ(cookie_reader->GetCookieValue("SID"), kTestSession2SIDCookie);
-  EXPECT_EQ(cookie_reader->GetCookieValue("LSID"), kTestSession2LSIDCookie);
+  EXPECT_EQ(cookie_reader.GetCookieValue("SID"), kTestSession2SIDCookie);
+  EXPECT_EQ(cookie_reader.GetCookieValue("LSID"), kTestSession2LSIDCookie);
 }
 
 // MergeSession test is attempting to merge session for an existing profile
 // that was generated in PRE_PRE_MergeSession test. This attempt should fail
 // since FakeGaia instance isn't configured to return relevant tokens/cookies.
-// Disabled due to flakiness: crbug.com/496832
-IN_PROC_BROWSER_TEST_F(OAuth2Test, DISABLED_MergeSession) {
+IN_PROC_BROWSER_TEST_F(OAuth2Test, MergeSession) {
   SimulateNetworkOnline();
-
-  content::WindowedNotificationObserver(
-      chrome::NOTIFICATION_LOGIN_OR_LOCK_WEBUI_VISIBLE,
-      content::NotificationService::AllSources())
-      .Wait();
 
   test::OobeJS().ExpectTrue("!!document.querySelector('#account-picker')");
   test::OobeJS().ExpectTrue("!!document.querySelector('#pod-row')");
 
-  std::string account_id = PickAccountId(profile(), kTestGaiaId, kTestEmail);
+  // PickAccountId does not work at this point as the primary user profile has
+  // not yet been created.
+  const std::string account_id = kTestEmail;
   EXPECT_EQ(GetOAuthStatusFromLocalState(account_id),
             user_manager::User::OAUTH2_TOKEN_STATUS_VALID);
 
   EXPECT_TRUE(
       TryToLogin(AccountId::FromUserEmailGaiaId(kTestEmail, kTestGaiaId),
                  kTestAccountPassword));
+
+  ASSERT_EQ(account_id, PickAccountId(GetProfile(), kTestGaiaId, kTestEmail));
 
   // Wait for the session merge to finish.
   WaitForMergeSessionCompletion(OAuth2LoginManager::SESSION_RESTORE_FAILED);
@@ -602,12 +599,6 @@ IN_PROC_BROWSER_TEST_F(OAuth2Test, DISABLED_OverlappingContinueSessionRestore) {
   SetupGaiaServerForUnexpiredAccount();
   SimulateNetworkOnline();
 
-  // Waits for login screen to be ready.
-  content::WindowedNotificationObserver(
-      chrome::NOTIFICATION_LOGIN_OR_LOCK_WEBUI_VISIBLE,
-      content::NotificationService::AllSources())
-      .Wait();
-
   // Blocks database thread to control TokenService::LoadCredentials timing.
   // TODO(achuith): Fix this. crbug.com/753615.
   auto thread_blocker = std::make_unique<ThreadBlocker>(nullptr);
@@ -622,16 +613,16 @@ IN_PROC_BROWSER_TEST_F(OAuth2Test, DISABLED_OverlappingContinueSessionRestore) {
             GetSessionRestoreStrategy());
 
   // Checks that refresh token is not yet loaded.
-  identity::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile());
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(GetProfile());
   const std::string account_id =
-      PickAccountId(profile(), kTestGaiaId, kTestEmail);
+      PickAccountId(GetProfile(), kTestGaiaId, kTestEmail);
   EXPECT_FALSE(identity_manager->HasAccountWithRefreshToken(account_id));
 
   // Invokes ContinueSessionRestore multiple times and there should be
   // no DCHECK failures.
   OAuth2LoginManager* login_manager =
-      OAuth2LoginManagerFactory::GetInstance()->GetForProfile(profile());
+      OAuth2LoginManagerFactory::GetInstance()->GetForProfile(GetProfile());
   login_manager->ContinueSessionRestore();
   login_manager->ContinueSessionRestore();
 
@@ -666,7 +657,7 @@ IN_PROC_BROWSER_TEST_F(OAuth2Test, TerminateOnBadMergeSessionAfterOnlineAuth) {
   // Simulate an online sign-in.
   LoginDisplayHost::default_host()
       ->GetOobeUI()
-      ->GetGaiaScreenView()
+      ->GetView<GaiaScreenHandler>()
       ->ShowSigninScreenForTest(kTestRawEmail, kTestAccountPassword,
                                 kTestAccountServices);
 
@@ -684,10 +675,11 @@ IN_PROC_BROWSER_TEST_F(OAuth2Test, VerifyInAdvancedProtectionAfterOnlineAuth) {
 
   // Verify that AccountInfo is properly updated.
   auto* identity_manager =
-      IdentityManagerFactory::GetInstance()->GetForProfile(profile());
+      IdentityManagerFactory::GetInstance()->GetForProfile(GetProfile());
   EXPECT_TRUE(
       identity_manager
-          ->FindAccountInfoForAccountWithRefreshTokenByAccountId(kTestEmail)
+          ->FindExtendedAccountInfoForAccountWithRefreshTokenByAccountId(
+              kTestEmail)
           ->is_under_advanced_protection);
 }
 
@@ -698,10 +690,11 @@ IN_PROC_BROWSER_TEST_F(OAuth2Test,
 
   // Verify that AccountInfo is properly updated.
   auto* identity_manager =
-      IdentityManagerFactory::GetInstance()->GetForProfile(profile());
+      IdentityManagerFactory::GetInstance()->GetForProfile(GetProfile());
   EXPECT_FALSE(
       identity_manager
-          ->FindAccountInfoForAccountWithRefreshTokenByAccountId(kTestEmail)
+          ->FindExtendedAccountInfoForAccountWithRefreshTokenByAccountId(
+              kTestEmail)
           ->is_under_advanced_protection);
 }
 
@@ -720,12 +713,6 @@ IN_PROC_BROWSER_TEST_F(OAuth2Test, SetInvalidTokenStatus) {
   SetupGaiaServerForUnexpiredAccount();
   SimulateNetworkOnline();
 
-  // Waits for login screen to be ready.
-  content::WindowedNotificationObserver(
-      chrome::NOTIFICATION_LOGIN_OR_LOCK_WEBUI_VISIBLE,
-      content::NotificationService::AllSources())
-      .Wait();
-
   // Signs in as the existing user created in pre test.
   ExistingUserController* const controller =
       ExistingUserController::current_controller();
@@ -742,12 +729,12 @@ IN_PROC_BROWSER_TEST_F(OAuth2Test, SetInvalidTokenStatus) {
 
   // Make sure that merge session is not finished.
   OAuth2LoginManager* const login_manager =
-      OAuth2LoginManagerFactory::GetInstance()->GetForProfile(profile());
+      OAuth2LoginManagerFactory::GetInstance()->GetForProfile(GetProfile());
   ASSERT_NE(OAuth2LoginManager::SESSION_RESTORE_DONE, login_manager->state());
 
   // Generate an auth error.
-  identity::SetInvalidRefreshTokenForAccount(
-      IdentityManagerFactory::GetInstance()->GetForProfile(profile()),
+  signin::SetInvalidRefreshTokenForAccount(
+      IdentityManagerFactory::GetInstance()->GetForProfile(GetProfile()),
       kTestEmail);
 
   // Let go /ListAccounts request.
@@ -791,9 +778,9 @@ class FakeGoogle {
     std::unique_ptr<BasicHttpResponse> http_response(new BasicHttpResponse());
     if (request_path == kHelloPagePath) {  // Serving "google" page.
       start_event_.Signal();
-      base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::UI},
-                               base::BindOnce(&FakeGoogle::QuitRunnerOnUIThread,
-                                              base::Unretained(this)));
+      base::PostTask(FROM_HERE, {content::BrowserThread::UI},
+                     base::BindOnce(&FakeGoogle::QuitRunnerOnUIThread,
+                                    base::Unretained(this)));
 
       http_response->set_code(net::HTTP_OK);
       http_response->set_content_type("text/html");
@@ -804,10 +791,9 @@ class FakeGoogle {
       http_response->set_content(kRandomPageContent);
     } else if (hang_merge_session_ && request_path == kMergeSessionPath) {
       merge_session_event_.Signal();
-      base::PostTaskWithTraits(
-          FROM_HERE, {content::BrowserThread::UI},
-          base::BindOnce(&FakeGoogle::QuitMergeRunnerOnUIThread,
-                         base::Unretained(this)));
+      base::PostTask(FROM_HERE, {content::BrowserThread::UI},
+                     base::BindOnce(&FakeGoogle::QuitMergeRunnerOnUIThread,
+                                    base::Unretained(this)));
       return std::make_unique<HungResponse>();
     } else {
       return std::unique_ptr<HttpResponse>();  // Request not understood.
@@ -912,7 +898,7 @@ class MergeSessionTest : public OAuth2Test,
   void JsExpectOnBackgroundPageAsync(const std::string& extension_id,
                                      const std::string& expression) {
     extensions::ProcessManager* manager =
-        extensions::ProcessManager::Get(profile());
+        extensions::ProcessManager::Get(GetProfile());
     extensions::ExtensionHost* host =
         manager->GetBackgroundHostForExtension(extension_id);
     if (host == NULL) {
@@ -935,7 +921,7 @@ class MergeSessionTest : public OAuth2Test,
 
   const GURL& GetBackGroundPageUrl(const std::string& extension_id) {
     extensions::ProcessManager* manager =
-        extensions::ProcessManager::Get(profile());
+        extensions::ProcessManager::Get(GetProfile());
     extensions::ExtensionHost* host =
         manager->GetBackgroundHostForExtension(extension_id);
     return host->host_contents()->GetURL();
@@ -944,7 +930,7 @@ class MergeSessionTest : public OAuth2Test,
   void JsExpectOnBackgroundPage(const std::string& extension_id,
                                 const std::string& expression) {
     extensions::ProcessManager* manager =
-        extensions::ProcessManager::Get(profile());
+        extensions::ProcessManager::Get(GetProfile());
     extensions::ExtensionHost* host =
         manager->GetBackgroundHostForExtension(extension_id);
     if (host == NULL) {
@@ -978,7 +964,7 @@ IN_PROC_BROWSER_TEST_P(MergeSessionTest, PageThrottle) {
                       /*is_under_advanced_protection=*/false);
 
   // Try to open a page from google.com.
-  Browser* browser = FindOrCreateVisibleBrowser(profile());
+  Browser* browser = FindOrCreateVisibleBrowser(GetProfile());
   ui_test_utils::NavigateToURLWithDisposition(
       browser, fake_google_page_url_, WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_NONE);
@@ -1020,17 +1006,12 @@ IN_PROC_BROWSER_TEST_P(MergeSessionTest, PageThrottle) {
   DVLOG(1) << "Loaded page at the end : " << title;
 }
 
-IN_PROC_BROWSER_TEST_P(MergeSessionTest, XHRThrottle) {
+IN_PROC_BROWSER_TEST_P(MergeSessionTest, Throttle) {
   StartNewUserSession(/*wait_for_merge=*/false,
                       /*is_under_advanced_protection=*/false);
 
   // Wait until we get send merge session request.
   WaitForMergeSessionToStart();
-
-  // Reset ExtensionBrowserTest::observer_ to the right browser object.
-  Browser* browser = FindOrCreateVisibleBrowser(profile());
-  observer_.reset(
-      new extensions::ChromeExtensionTestNotificationObserver(browser));
 
   // Run background page tests. The tests will just wait for XHR request
   // to complete.
@@ -1041,8 +1022,7 @@ IN_PROC_BROWSER_TEST_P(MergeSessionTest, XHRThrottle) {
 
   // Load extension with a background page. The background page will
   // attempt to load |fake_google_page_url_| via XHR.
-  const extensions::Extension* ext =
-      LoadExtension(test_data_dir_.AppendASCII("merge_session"));
+  const extensions::Extension* ext = LoadMergeSessionExtension();
   ASSERT_TRUE(ext);
 
   // Kick off XHR request from the extension.
@@ -1083,7 +1063,14 @@ IN_PROC_BROWSER_TEST_P(MergeSessionTest, XHRThrottle) {
   EXPECT_TRUE(fake_google_.IsPageRequested());
 }
 
-IN_PROC_BROWSER_TEST_P(MergeSessionTest, XHRNotThrottled) {
+// TODO(https://crbug.com/990844): Re-enable once flakiness is fixed.
+// TODO(crbug.com/998330): The test is flaky (timeout) on Chromium OS MSAN.
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_XHRNotThrottled DISABLED_XHRNotThrottled
+#else
+#define MAYBE_XHRNotThrottled XHRNotThrottled
+#endif
+IN_PROC_BROWSER_TEST_P(MergeSessionTest, MAYBE_XHRNotThrottled) {
   StartNewUserSession(/*wait_for_merge=*/false,
                       /*is_under_advanced_protection=*/false);
 
@@ -1096,11 +1083,6 @@ IN_PROC_BROWSER_TEST_P(MergeSessionTest, XHRNotThrottled) {
   // Wait for the session merge to finish.
   WaitForMergeSessionCompletion(OAuth2LoginManager::SESSION_RESTORE_DONE);
 
-  // Reset ExtensionBrowserTest::observer_ to the right browser object.
-  Browser* browser = FindOrCreateVisibleBrowser(profile());
-  observer_.reset(
-      new extensions::ChromeExtensionTestNotificationObserver(browser));
-
   // Run background page tests. The tests will just wait for XHR request
   // to complete.
   extensions::ResultCatcher catcher;
@@ -1110,8 +1092,7 @@ IN_PROC_BROWSER_TEST_P(MergeSessionTest, XHRNotThrottled) {
 
   // Load extension with a background page. The background page will
   // attempt to load |fake_google_page_url_| via XHR.
-  const extensions::Extension* ext =
-      LoadExtension(test_data_dir_.AppendASCII("merge_session"));
+  const extensions::Extension* ext = LoadMergeSessionExtension();
   ASSERT_TRUE(ext);
 
   // Kick off XHR request from the extension.
@@ -1172,11 +1153,6 @@ IN_PROC_BROWSER_TEST_P(MergeSessionTimeoutTest, XHRMergeTimeout) {
 
   WaitForMergeSessionToStart();
 
-  // Reset ExtensionBrowserTest::observer_ to the right browser object.
-  Browser* browser = FindOrCreateVisibleBrowser(profile());
-  observer_.reset(
-      new extensions::ChromeExtensionTestNotificationObserver(browser));
-
   // Run background page tests. The tests will just wait for XHR request
   // to complete.
   extensions::ResultCatcher catcher;
@@ -1186,8 +1162,7 @@ IN_PROC_BROWSER_TEST_P(MergeSessionTimeoutTest, XHRMergeTimeout) {
 
   // Load extension with a background page. The background page will
   // attempt to load |fake_google_page_url_| via XHR.
-  const extensions::Extension* ext =
-      LoadExtension(test_data_dir_.AppendASCII("merge_session"));
+  const extensions::Extension* ext = LoadMergeSessionExtension();
   ASSERT_TRUE(ext);
 
   const base::Time start_time = base::Time::Now();

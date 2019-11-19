@@ -134,6 +134,10 @@ unsigned int MockTransferBuffer::GetFragmentedFreeSize() const {
   return 0;
 }
 
+unsigned int MockTransferBuffer::GetMaxSize() const {
+  return 0;
+}
+
 void MockTransferBuffer::ShrinkLastBlock(unsigned int new_size) {}
 
 uint32_t MockTransferBuffer::MaxTransferBufferSize() {

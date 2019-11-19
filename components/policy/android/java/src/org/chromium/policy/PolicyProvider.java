@@ -6,8 +6,9 @@ package org.chromium.policy;
 
 import android.os.Bundle;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.VisibleForTesting;
 
 /**
  * Base class for Policy providers.

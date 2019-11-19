@@ -209,9 +209,9 @@ tracked this as [Issue
 
 Click To Play greatly reduces the risk that Flash-borne Spectre (and other)
 exploits will be effective at scale.  Additionally, the enterprise policies
-[PluginsBlockedForUrls](https://www.chromium.org/administrators/policy-list-3#PluginsBlockedForUrls)
+[PluginsBlockedForUrls](https://cloud.google.com/docs/chrome-enterprise/policies/?policy=PluginsBlockedForUrls)
 and
-[PluginsAllowedForUrls](https://www.chromium.org/administrators/policy-list-3#PluginsAllowedForUrls)
+[PluginsAllowedForUrls](https://cloud.google.com/docs/chrome-enterprise/policies/?policy=PluginsAllowedForUrls)
 can be combined to restrict Flash to specific websites.
 Even so,
 [we might want to consider teaching CORB about Flash flavour of CORS](https://crbug.com/816318).

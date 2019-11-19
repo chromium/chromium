@@ -1,0 +1,70 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# A wayland templater takes one or more |protocols| and processes its
+# |sources| so as to instantiate a template for fuzzing wayland.
+# The output of the wayland source will be the input's path, rebased
+# under the gen/ directory and with the .tmpl suffix removed.
+#
+# This templater is used for all kinds of files (i.e. more than just
+# c++), so we do not provide a convenient source_set target to depend
+# on. Instead you must manually depend on the outputs like:
+#
+# wayland_templater("foo_tmpl") {
+#   ...
+# }
+#
+# source_set("foo") {
+#   sources = get_target_outputs(":foo_tmpl")
+#   deps = [
+#     ":foo_tmpl",
+#   ]
+# }
+#
+# If needed, the user can set 'script_override=foo.py' to use a different
+# templating script to the default (wayland_templater.py).
+template("wayland_templater") {
+  assert(defined(invoker.sources), "Need sources for wayland_templater")
+  assert(defined(invoker.protocols), "Need protocols for wayland_templater")
+
+  # Process the inputs to determine the output:
+  # "//a/b/c.xyz.tmpl" -> "gen/a/b/c.xyz"
+  template_outputs = []
+  foreach(src, invoker.sources) {
+    dir = get_path_info(src, "dir")
+    name = get_path_info(src, "name")
+    template_outputs += [ "${target_gen_dir}/${dir}/${name}" ]
+  }
+
+  templater_script_name = "wayland_templater.py"
+  if (defined(invoker.script_override)) {
+    templater_script_name = invoker.script_override
+  }
+
+  # Jinja2 doesnt like having ".." in the target path, so we give it the
+  # source-tree's path rather than the build-directory's relative path (which
+  # usually contains "..").
+  build_to_src_path = rebase_path("//", root_build_dir)
+  src_path_to_inputs = rebase_path(invoker.sources, "//")
+  build_path_to_outputs = rebase_path(template_outputs, root_build_dir)
+  build_path_to_protocols = rebase_path(invoker.protocols, root_build_dir)
+
+  action(target_name) {
+    script = "//third_party/blink/renderer/build/scripts/run_with_pythonpath.py"
+    sources = [
+                script,
+                templater_script_name,
+              ] + invoker.sources + invoker.protocols
+    outputs = template_outputs
+    args = [
+             "-I",
+             rebase_path("//third_party", root_build_dir),
+             rebase_path(templater_script_name, root_build_dir),
+             "--directory",
+             build_to_src_path,
+             "--input",
+           ] + src_path_to_inputs + [ "--output" ] + build_path_to_outputs +
+           [ "--spec" ] + build_path_to_protocols
+  }
+}

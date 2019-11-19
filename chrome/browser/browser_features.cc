@@ -13,30 +13,9 @@ const base::Feature kDoubleTapToZoomInTabletMode{
     "DoubleTapToZoomInTabletMode", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
-#if !defined(OS_ANDROID)
-// Whether to enable "dark mode" enhancements in Mac Mojave or Windows 10 for
-// UIs implemented with web technologies.
-const base::Feature kWebUIDarkMode {
-  "WebUIDarkMode",
-#if defined(OS_MACOSX) || defined(OS_WIN)
-      base::FEATURE_ENABLED_BY_DEFAULT
-#else
-      base::FEATURE_DISABLED_BY_DEFAULT
-#endif  // defined(OS_MACOSX) || defined(OS_WIN)
-};
-#endif  // !defined(OS_ANDROID)
-
-// Enables grouping tabs together in the tab strip. https://crbug.com/905491
-const base::Feature kTabGroups{"TabGroups", base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Enables popup cards containing tab information when hovering over a tab.
-// https://crbug.com/910739
-const base::Feature kTabHoverCards{"TabHoverCards",
-                                   base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Enables preview images in hover cards. See kTabHoverCards.
-// https://crbug.com/928954
-const base::Feature kTabHoverCardImages{"TabHoverCardImages",
-                                        base::FEATURE_DISABLED_BY_DEFAULT};
+#if defined(OS_WIN) || defined(OS_MACOSX) || defined(OS_LINUX)
+const base::Feature kSyncClipboardServiceFeature{
+    "SyncClipboardService", base::FEATURE_DISABLED_BY_DEFAULT};
+#endif  // OS_WIN || OS_MACOSX || OS_LINUX
 
 }  // namespace features

@@ -17,7 +17,7 @@
     TestRunner.addResult('\n' + request.url());
     var graph = SDK.networkLog.initiatorGraphForRequest(request);
     TestRunner.addResult('Initiators ' + Array.from(graph.initiators).map(request => request._url));
-    TestRunner.addResult('Initiated ' + Array.from(graph.initiated).map(request => request._url));
+    TestRunner.addResult('Initiated ' + Array.from(graph.initiated.keys()).map(request => request._url));
   });
 
   TestRunner.completeTest();

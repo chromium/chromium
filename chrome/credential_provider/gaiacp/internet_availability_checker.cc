@@ -4,10 +4,10 @@
 
 #include "chrome/credential_provider/gaiacp/internet_availability_checker.h"
 
-#include <netlistmgr.h>  // For CLSID_NetworkListManager
-
 #include <atlbase.h>
 #include <atlcom.h>
+#include <netlistmgr.h>  // For CLSID_NetworkListManager
+#include <wrl/client.h>
 
 #include "chrome/credential_provider/gaiacp/gcp_utils.h"
 #include "chrome/credential_provider/gaiacp/logging.h"
@@ -20,8 +20,9 @@ bool InternetConnectionAvailable() {
   // If any errors occur, return that internet connection is available.  At
   // worst the credential provider will try to connect and fail.
 
-  CComPtr<INetworkListManager> manager;
-  HRESULT hr = manager.CoCreateInstance(CLSID_NetworkListManager);
+  Microsoft::WRL::ComPtr<INetworkListManager> manager;
+  HRESULT hr = ::CoCreateInstance(CLSID_NetworkListManager, nullptr, CLSCTX_ALL,
+                                  IID_PPV_ARGS(&manager));
   if (FAILED(hr)) {
     LOGFN(ERROR) << "CoCreateInstance(NetworkListManager) hr=" << putHR(hr);
     return true;

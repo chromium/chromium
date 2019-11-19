@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<body>
+  <!-- An image should be annotated. -->
+  <img src="red.png" width=16 height=16>
+
+  <!-- If there's an image in a link, both should be annotated. -->
+  <a href="#">
+    <img src="green.png" width=16 height=16>
+  </a>
+
+  <!-- If there are two images, the link should not be annotated. -->
+  <a href="#">
+    <img src="red.png">
+    <img src="printer.png">
+  </a>
+
+  <!-- If there's text and an image, the link should not be annotated. -->
+  <a href="#">
+    <img src="red.png">
+    Text
+  </a>
+
+  <!-- An extra div is fine, we should still annotate the link. -->
+  <a href="#">
+    <div>
+      <img src="printer.png" width=16 height=16>
+    </div>
+  </a>
+
+  <!-- A positioned image should still annotate the link. -->
+  <a href="#">
+    <img src="green.png" width=16 height=16 style="position: absolute">
+  </a>
+
+</body>

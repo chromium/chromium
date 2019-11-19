@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>let additionalChromiumResources = ["resources/xr-internal-device-mocking.js"];</script>
+<script src="/webxr/resources/webxr_util.js"></script>
+<script src="/webxr/resources/webxr_test_constants.js"></script>
+<script src="/webxr/resources/webxr_test_asserts.js"></script>
+<canvas />
+
+<script>
+// While the logic of not handing out animation frames in certain scenarios is
+// specced, the notion of what the browser does during those cases is not.
+// This tests that blink appropriately reports throttled state to the browser
+// process. Note that the throttled state is defined as being in a state where
+// blink is not handing out poses to the page, but the page is properly set up.
+let testName =
+  "Blink appropriately reports when frames are throttled";
+
+let testFunction = function(session, fakeDeviceController, t) {
+
+  // We need to yield some reasonable amount of time so that mojo messages can
+  // propagate. This provides a convinience method to do this via promises and
+  // timeouts.
+  function runAfterTimeout(callback, timeout = 100) {
+    return new Promise((resolve) => {
+      t.step_timeout(() => {
+        resolve(callback());
+      }, timeout);
+    });
+  }
+
+  let service = navigator.xr.test.getService();
+  fakeDeviceController.simulateVisibilityChange("hidden");
+
+  function onXRFrame() {
+    session.requestAnimationFrame(onXRFrame);
+  }
+
+  return runAfterTimeout(() => {
+    assert_false(service.getFramesThrottled(),
+      "Without a frame loop, the page shouldn't be considered throttled");
+  })
+  .then(() => {
+    // Start a simple frame loop.
+    session.requestAnimationFrame(onXRFrame);
+
+    return runAfterTimeout(() => {
+      assert_true(service.getFramesThrottled(),
+        "With a properly configured frame loop, and a hidden device state, " +
+        "the page should be considered throttled.");
+    });
+  })
+  .then(() => {
+    fakeDeviceController.simulateVisibilityChange("visible");
+
+    return runAfterTimeout(() => {
+      assert_false(service.getFramesThrottled(),
+        "While properly configured and visible, frames should not be throttled");
+    });
+  });
+};
+
+xr_session_promise_test(
+  testName, testFunction, TRACKED_IMMERSIVE_DEVICE, 'immersive-vr');
+
+</script>

@@ -173,8 +173,8 @@ bool Zip(const ZipParams& params) {
 }
 
 bool Unzip(const base::FilePath& src_file, const base::FilePath& dest_dir) {
-  return UnzipWithFilterCallback(src_file, dest_dir,
-                                 base::Bind(&ExcludeNoFilesFilter), true);
+  return UnzipWithFilterCallback(
+      src_file, dest_dir, base::BindRepeating(&ExcludeNoFilesFilter), true);
 }
 
 bool UnzipWithFilterCallback(const base::FilePath& src_file,
@@ -249,11 +249,11 @@ bool ZipWithFilterCallback(const base::FilePath& src_dir,
 bool Zip(const base::FilePath& src_dir, const base::FilePath& dest_file,
          bool include_hidden_files) {
   if (include_hidden_files) {
-    return ZipWithFilterCallback(
-        src_dir, dest_file, base::Bind(&ExcludeNoFilesFilter));
+    return ZipWithFilterCallback(src_dir, dest_file,
+                                 base::BindRepeating(&ExcludeNoFilesFilter));
   } else {
     return ZipWithFilterCallback(
-        src_dir, dest_file, base::Bind(&ExcludeHiddenFilesFilter));
+        src_dir, dest_file, base::BindRepeating(&ExcludeHiddenFilesFilter));
   }
 }
 

@@ -1,0 +1,154 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// API exposed by the wilco_dtc_supportd daemon. Normally the consumer of this
+// API is the browser.
+
+// NOTE: This mojom should be kept in sync with the copy in Chromium OS's repo
+// in src/platform2/diagnostics/mojo/.
+
+module chromeos.wilco_dtc_supportd.mojom;
+
+[Extensible]
+enum WilcoDtcSupportdWebRequestHttpMethod {
+  kGet,
+  kHead,
+  kPost,
+  kPut,
+};
+
+[Extensible]
+enum WilcoDtcSupportdWebRequestStatus {
+  // The request was successfully completed with a 2xx HTTP status.
+  kOk,
+  // Failed to make the web request. This covers such cases when the network
+  // is unavailable, or connection attempt failed, or TLS handshake failed,
+  // or too many pending requests, etc.
+  kNetworkError,
+  // HTTP request finished with a non-2xx status.
+  kHttpError,
+};
+
+[Extensible]
+enum WilcoDtcSupportdEvent {
+  // An unauthorized battery is connected.
+  kBatteryAuth,
+  // Charger is unauthorized, and battery will not charge.
+  kNonWilcoCharger,
+  // Attached dock is incompatible.
+  kIncompatibleDock,
+  // Attached dock presents hardware failures.
+  kDockError,
+  // HDMI and USB Type-C cannot be used for displays at the same time
+  // with the attached dock.
+  kDockDisplay,
+  // Attached dock will operate in USB Type-C compatible mode.
+  kDockThunderbolt,
+};
+
+// Factory interface exposed by the wilco_dtc_supportd daemon, which allows both
+// endpoints (the wilco_dtc_supportd and the browser) to exchange with their
+// interfaces (WilcoDtcSupportdService and WilcoDtcSupportdClient
+// correspondingly).
+interface WilcoDtcSupportdServiceFactory {
+  // Returns an interface to WilcoDtcSupportdService in response to the passed
+  // interface to WilcoDtcSupportdClient.
+  GetService@0(pending_receiver<WilcoDtcSupportdService> service,
+               pending_remote<WilcoDtcSupportdClient> client)
+      => ();
+};
+
+// Interface exposed by the wilco_dtc_supportd daemon.
+interface WilcoDtcSupportdService {
+  // Sends a message, originating from the wilco_dtc UI extension (hosted by
+  // the browser), to the wilco_dtc daemon. The message contents are serialized
+  // JSON. Delivery of the message is not guaranteed (for example, if the
+  // wilco_dtc daemon isn't running at the moment).
+  //
+  // NOTE: the |json_message| message must not exceed 1 MB (1'000'000 bytes).
+  //
+  // The response will contain the JSON message returned by the wilco_dtc
+  // daemon. The response handle will be unset if the request wasn't delivered
+  // to the daemon or the daemon made no reply.
+  //
+  // NOTE: Both request and response messages are opaque to Chrome and not
+  // interpreted by it in any way (except for the JSON validity verification
+  // of the response message that happens in the target extension's renderer
+  // process). This method simply transmits data between two endpoints that are
+  // implemented by third parties (the wilco_dtc UI extension and the wilco_dtc
+  // daemon).
+  SendUiMessageToWilcoDtc@0(handle json_message)
+      => (handle? response_json_message);
+
+  // Called when new configuration data blob is available. This happens when
+  // the device policy, passing this configuration data blob, gets updated.
+  // It is only a notification that the configuration data has been changed.
+  // The GetConfigurationData method of WilcoDtcSupportdClient needs to be
+  // called to retrieve the actual configuration data.
+  //
+  // NOTE: This notification is only triggered for changes that occur after the
+  // current Mojo connection was established;
+  // an initial call to GetConfigurationData should be used in order to fetch
+  // the changes that happened beforehand.
+  NotifyConfigurationDataChanged@1();
+};
+
+// Interface exposed by the consumer of WilcoDtcSupportdService. In production
+// this is the browser.
+interface WilcoDtcSupportdClient {
+  // Performs a web request, originating from the wilco_dtc daemon, using the
+  // browser's network stack.
+  //
+  // The web request:
+  // * |http_method| - the HTTP method of the web request,
+  // * |url| - the URL with HTTPS scheme.
+  // * |headers| - the list of HTTP headers.
+  // * |request_body| - the body of the HTTP request.
+  // NOTE: the total size of all |handle| fields in the request must not exceed
+  // 1 MB (1'000'000 bytes).
+  //
+  // The response to that web request:
+  // * the |status| of the web request,
+  // * |http_status| - the HTTP status code if the |status| is |kOk| or
+  //                   |kHttpError|, otherwise the HTTP status code is 0.
+  // * |response_body| - the web response payload. The handle is valid only
+  //                     if |status| is |kOk| or |kHttpError|. And the length
+  //                     is guaranteed to not exceed 1 MB (1'000'000 bytes).
+  PerformWebRequest@0(WilcoDtcSupportdWebRequestHttpMethod http_method,
+                      handle url,
+                      array<handle> headers,
+                      handle? request_body)
+      => (WilcoDtcSupportdWebRequestStatus status, int32 http_status,
+          handle? response_body);
+
+  // Sends a message, originating from the wilco_dtc daemon, to the wilco_dtc
+  // UI extension (hosted by the browser). The message contents are serialized
+  // JSON. Delivery of the message is not guaranteed (for example, if no user is
+  // currently logged in that has the wilco_dtc UI extension installed).
+  //
+  // NOTE: the size of the |json_message| must not exceed 1 MB (1'000'000
+  // bytes).
+  //
+  // The response will contain the JSON message returned by the extension. The
+  // response handle will be unset if the request wasn't delivered to the
+  // extension or the extension made no reply. The response is guaranteed to not
+  // exceed 1 MB (1'000'000 bytes).
+  //
+  // NOTE: Both request and response messages are opaque to Chrome and not
+  // interpreted by it in any way (except for the JSON validity verification
+  // of the input message that happens in the target extension's renderer
+  // process). This method simply transmits data between two endpoints that are
+  // implemented by third parties (the wilco_dtc UI extension and the wilco_dtc
+  // daemon).
+  SendWilcoDtcMessageToUi@1(handle json_message)
+      => (handle? response_json_message);
+
+  // Retrieves a JSON-formatted configuration data. The length of
+  // |json_configuration_data| does not exceed 20'000 bytes.
+  GetConfigurationData@2() => (string json_configuration_data);
+
+  // Handles actionable EC events related to power (i.e., battery,
+  // charger) and connected docking solutions.
+  HandleEvent@3(WilcoDtcSupportdEvent event);
+};

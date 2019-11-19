@@ -1,0 +1,28 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "LayoutBlockFlow DIV",
+          "rect": [8, 58, 105, 62],
+          "reason": "incremental"
+        },
+        {
+          "object": "LayoutTextControl INPUT id='target'",
+          "rect": [8, 58, 105, 62],
+          "reason": "incremental"
+        },
+        {
+          "object": "LayoutBlockFlow DIV",
+          "rect": [10, 58, 1, 57],
+          "reason": "incremental"
+        }
+      ]
+    }
+  ]
+}
+

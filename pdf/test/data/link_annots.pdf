@@ -1,0 +1,159 @@
+%PDF-1.7
+% ò¤ô
+1 0 obj <<
+  /Type /Catalog
+  /Pages 2 0 R
+>>
+endobj
+2 0 obj <<
+  /Type /Pages
+  /MediaBox [0 0 612 792]
+  /CropBox [0 0 612 792]
+  /Resources <<
+    /Font <<
+      /F1 5 0 R
+      /F2 6 0 R
+    >>
+  >>
+  /Count 2
+  /Kids [3 0 R 4 0 R]
+>>
+endobj
+3 0 obj <<
+  /Type /Page
+  /Parent 2 0 R
+  /Contents 7 0 R
+  /Annots [9 0 R 10 0 R 11 0 R 12 0 R]
+>>
+endobj
+4 0 obj <<
+  /Type /Page
+  /Parent 2 0 R
+  /Contents 8 0 R
+>>
+endobj
+5 0 obj <<
+  /Type /Font
+  /Subtype /Type1
+  /BaseFont /Times-Roman
+>>
+endobj
+6 0 obj <<
+  /Type /Font
+  /Subtype /Type1
+  /BaseFont /Helvetica
+>>
+endobj
+7 0 obj <<
+  /Length 391
+>>
+stream
+BT
+70 700 Td
+/F1 18 Tf
+(Link Annotations - Page 1) Tj
+10 -85 Td
+/F2 14 Tf
+(Link with destination to second page) Tj
+-12 -84 Td
+/F2 10 Tf
+(PDF Reference, Version 1.7, Section 8.4.5 defines Annotations) Tj
+2 -53 Td
+(3. Hello World) Tj
+0 -18 Td
+(https://pdfium.googlesource.com/pdfium is link in plain text, not link annotation. These are referred to) Tj
+0 -17 Td
+(as WebLinks in PDFium.)Tj
+ET
+endstream
+endobj
+8 0 obj <<
+  /Length 43
+>>
+stream
+BT
+70 700 Td
+/F1 18 Tf
+(Second Page) Tj
+ET
+endstream
+endobj
+9 0 obj <<
+  /Type /Annot
+  /Subtype /Link
+  /BS <<
+    /W 0
+  >>
+  /Rect [80 613 542 633]
+  /Dest [4 0 R /XYZ 200 725 1.75]
+  /F 4
+>>
+endobj
+10 0 obj <<
+  /Type /Annot
+  /Subtype /Link
+  /BS <<
+    /W 0
+  >>
+  /Rect [196 544 66 529]
+  /A <<
+    /Type /Action
+    /S /URI
+    /URI (https://www.adobe.com)
+  >>
+  /F 4
+>>
+endobj
+11 0 obj <<
+  /Type /Annot
+  /Subtype /Link
+  /BS <<
+    /W 0
+  >>
+  /Rect [83 430 178 453]
+  /QuadPoints [83 453 178 453 83 440 178 440 83 440 178 440 83 430 178 430]
+  /A <<
+    /Type /Action
+    /S /URI
+    /URI (https://cs.chromium.org)
+  >>
+  /F 4
+>>
+endobj
+12 0 obj <<
+  /Type /Annot
+  /Subtype /Link
+  /BS <<
+    /W 0
+  >>
+  /Rect [40 80 60 100]
+  /A <<
+    /Type /Action
+    /S /URI
+    /URI (https://www.google.com)
+  >>
+  /F 4
+>>
+endobj
+xref
+0 13
+0000000000 65535 f 
+0000000015 00000 n 
+0000000068 00000 n 
+0000000261 00000 n 
+0000000369 00000 n 
+0000000438 00000 n 
+0000000516 00000 n 
+0000000592 00000 n 
+0000001035 00000 n 
+0000001129 00000 n 
+0000001271 00000 n 
+0000001456 00000 n 
+0000001719 00000 n 
+trailer <<
+  /Root 1 0 R
+  /Size 13
+>>
+startxref
+1903
+%%EOF

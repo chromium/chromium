@@ -1,9 +1,0 @@
-{
-    "dependencies": [
-        "common"
-    ],
-    "scripts": [
-        "FormatterWorkerPool.js",
-        "ScriptFormatter.js"
-    ]
-}

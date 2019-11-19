@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Unsized Media feature policy - disabled without origin trial token</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../../../resources/origin-trials-helper.js"></script>
+<script>
+test(t => {
+  if (OriginTrialsHelper.is_runtime_flag_enabled('unsizedMediaPolicyEnabled')) {
+    // The runtime flag overrides the absence of a token.
+    assert_in_array("unsized-media", document.featurePolicy.features());
+  } else {
+    // Runtime flag disabled and no token, so policy should not be available.
+    assert_equals(document.featurePolicy.features().indexOf('unsized-media'), -1,
+                  'The unsized-media feature should not be available');
+  }
+}, 'The unsized-media policy is not available without origin trial token');
+</script>

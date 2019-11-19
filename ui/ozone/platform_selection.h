@@ -5,16 +5,16 @@
 #ifndef UI_OZONE_PLATFORM_SELECTION_H_
 #define UI_OZONE_PLATFORM_SELECTION_H_
 
-#include "ui/ozone/ozone_export.h"
+#include "base/component_export.h"
 #include "ui/ozone/platform_list.h"
 
 namespace ui {
 
 // Get active platform id (by parsing --ozone-platform flag).
-OZONE_EXPORT int GetOzonePlatformId();
+COMPONENT_EXPORT(OZONE) int GetOzonePlatformId();
 
 // Get active platform name.
-OZONE_EXPORT const char* GetOzonePlatformName();
+COMPONENT_EXPORT(OZONE) const char* GetOzonePlatformName();
 
 }  // namespace ui
 

@@ -2,11 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-mojom = "//services/viz/public/interfaces/compositing/surface_range.mojom"
+mojom = "//services/viz/public/mojom/compositing/surface_range.mojom"
 public_headers = [ "//components/viz/common/surfaces/surface_range.h" ]
 deps = [
   "//components/viz/common",
 ]
 traits_headers =
-    [ "//services/viz/public/cpp/compositing/surface_range_struct_traits.h" ]
-type_mappings = [ "viz.mojom.SurfaceRange=viz::SurfaceRange" ]
+    [ "//services/viz/public/cpp/compositing/surface_range_mojom_traits.h" ]
+type_mappings = [ "viz.mojom.SurfaceRange=::viz::SurfaceRange" ]

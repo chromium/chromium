@@ -99,6 +99,16 @@ class SERVICE_MANAGER_SANDBOX_EXPORT SandboxLinux {
     // be done so again. Set to true to indicate that there isn't a zygote
     // for this process and the step is to be performed here explicitly.
     bool engage_namespace_sandbox = false;
+
+    // Allow starting the sandbox with multiple threads already running. This
+    // will enable TSYNC for seccomp-BPF, which syncs the seccomp-BPF policy
+    // across all running threads.
+    bool allow_threads_during_sandbox_init = false;
+
+    // Enables the CHECK for open directories. The open directory check is only
+    // useful for the chroot jail (from the semantic layer of the sandbox), and
+    // can safely be disabled if we are only enabling the seccomp-BPF layer.
+    bool check_for_open_directories = true;
   };
 
   // Callers can provide this hook to run code right before the policy
@@ -176,9 +186,11 @@ class SERVICE_MANAGER_SANDBOX_EXPORT SandboxLinux {
   // be used directly.
   sandbox::SetuidSandboxClient* setuid_sandbox_client() const;
 
-  // Check the policy and eventually start the seccomp-bpf sandbox. This should
-  // never be called with threads started. If we detect that threads have
-  // started we will crash.
+  // Check the policy and eventually start the seccomp-bpf sandbox. Fine to be
+  // called with threads, as long as
+  // |options.allow_threads_during_sandbox_init| is true and the kernel
+  // supports seccomp's TSYNC feature. If TSYNC is not available we treat
+  // multiple threads as a fatal error.
   bool StartSeccompBPF(service_manager::SandboxType sandbox_type,
                        PreSandboxHook hook,
                        const Options& options);

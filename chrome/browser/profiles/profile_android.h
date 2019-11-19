@@ -47,6 +47,10 @@ class ProfileAndroid : public base::SupportsUserData::Data {
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj);
 
+  base::android::ScopedJavaLocalRef<jobject> GetProfileKey(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& obj);
+
   // Whether this profile is off the record.
   jboolean IsOffTheRecord(JNIEnv* env,
                           const base::android::JavaParamRef<jobject>& obj);
@@ -54,6 +58,8 @@ class ProfileAndroid : public base::SupportsUserData::Data {
   // Whether this profile is signed in to a child account.
   jboolean IsChild(JNIEnv* env,
                    const base::android::JavaParamRef<jobject>& obj);
+
+  void Wipe(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
 
   explicit ProfileAndroid(Profile* profile);
   ~ProfileAndroid() override;

@@ -6,7 +6,7 @@
 #define ASH_WM_OVERLAY_LAYOUT_MANAGER_H_
 
 #include "ash/ash_export.h"
-#include "ash/wm/wm_snap_to_pixel_layout_manager.h"
+#include "ash/wm/wm_default_layout_manager.h"
 #include "base/macros.h"
 #include "ui/display/display_observer.h"
 
@@ -18,7 +18,7 @@ namespace ash {
 
 // Updates the bounds of widgets in the overlay container whenever the display
 // bounds change. Keeps children snapped to pixel bounds.
-class ASH_EXPORT OverlayLayoutManager : public wm::WmSnapToPixelLayoutManager,
+class ASH_EXPORT OverlayLayoutManager : public WmDefaultLayoutManager,
                                         public display::DisplayObserver {
  public:
   explicit OverlayLayoutManager(aura::Window* overlay_container);

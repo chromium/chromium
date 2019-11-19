@@ -128,7 +128,7 @@ Polymer({
   /**
    * Returns true if we're in minimal migration mode.
    * @param {EncryptionMigrationUIState} state Current UI state
-   * @priave
+   * @private
    */
   isMigratingMinimal_: function(state) {
     return state == EncryptionMigrationUIState.MIGRATING_MINIMAL;
@@ -168,52 +168,58 @@ Polymer({
 
   /**
    * Computes the label shown under progress bar.
+   * @param {string} locale
    * @param {number} progress
    * @return {string}
    * @private
    */
-  computeProgressLabel_: function(progress) {
+  computeProgressLabel_: function(locale, progress) {
     return this.i18n('migrationProgressLabel', Math.floor(progress * 100));
   },
 
   /**
    * Computes the warning label when battery level is not enough.
+   * @param {string} locale
    * @param {number} batteryPercent
    * @return {string}
    * @private
    */
-  computeBatteryWarningLabel_: function(batteryPercent) {
+  computeBatteryWarningLabel_: function(locale, batteryPercent) {
     return this.i18n('migrationBatteryWarningLabel', batteryPercent);
   },
 
   /**
    * Computes the label to show the necessary battery level for migration.
+   * @param {string} locale
    * @param {number} necessaryBatteryPercent
    * @return {string}
    * @private
    */
-  computeNecessaryBatteryLevelLabel_: function(necessaryBatteryPercent) {
+  computeNecessaryBatteryLevelLabel_: function(
+      locale, necessaryBatteryPercent) {
     return this.i18n(
         'migrationNecessaryBatteryLevelLabel', necessaryBatteryPercent);
   },
 
   /**
    * Computes the label to show the current available space.
+   * @param {string} locale
    * @param {string} availableSpaceInString
    * @return {string}
    * @private
    */
-  computeAvailableSpaceLabel_: function(availableSpaceInString) {
+  computeAvailableSpaceLabel_: function(locale, availableSpaceInString) {
     return this.i18n('migrationAvailableSpaceLabel', availableSpaceInString);
   },
 
   /**
    * Computes the label to show the necessary space to start migration.
+   * @param {string} locale
    * @param {string} necessarySpaceInString
    * @return {string}
    * @private
    */
-  computeNecessarySpaceLabel_: function(necessarySpaceInString) {
+  computeNecessarySpaceLabel_: function(locale, necessarySpaceInString) {
     return this.i18n('migrationNecessarySpaceLabel', necessarySpaceInString);
   },
 

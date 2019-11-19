@@ -20,12 +20,24 @@ struct DWriteFontStyle {
   uint8 font_stretch;
 };
 
+struct FallbackFamilyAndStyle {
+  string fallback_family_name;
+  uint16 weight;
+  uint8 width;
+  uint8 slant;
+};
+
 struct MapCharactersResult {
   uint32 family_index;
   mojo_base.mojom.String16 family_name;
   uint32 mapped_length;
   float scale;
   DWriteFontStyle font_style;
+};
+
+enum UniqueFontLookupMode {
+    kRetrieveTable,
+    kSingleLookups
 };
 
 interface DWriteFontProxy {
@@ -51,14 +63,45 @@ interface DWriteFontProxy {
      => (array<mojo_base.mojom.FilePath> file_paths,
          array<mojo_base.mojom.File> file_handles);
 
-  // Returns a protobuf structured lookup list of
+  // Returns which font unique name matching lookup mode is to be used on the
+  // current machine. On DirectWrite 10 and above, single lookups can be
+  // performed directly against DirectWrite API. On older DirectWrite (Windows
+  // 7-8.1), unique font lookups need to be performed against a shared memory
+  // region which contains the lookup table. Compare GetUniqueFontLookupTable()
+  // for lookup mode kRetrieveTable and MatchUniqueFont for
+  // lookup mode kSingleLookups.
+  [Sync]
+  GetUniqueFontLookupMode() => (UniqueFontLookupMode lookup_mode);
+
+  // On supported Windows versions, matches a unique PostScript or full font
+  // name against the installed fonts using DirectWrite API. Returns a file path
+  // and ttc_index from which the unique font can be instantiated.  Check which
+  // mode is supported using GetFontUniqueNameLookupMode().  Returns empty path
+  // and 0 ttc index if no font is found. Must not be called if
+  // GetUniqueFontLookupMode() returned kRetrieveTable.
+  [Sync]
+  MatchUniqueFont(mojo_base.mojom.String16 font_unique_name)
+      => (mojo_base.mojom.FilePath file_path, uint32 ttc_index);
+
+  // Synchronously returns a protobuf structured lookup list of
+  // (full_font_name|postscript_name) => (font_file + ttc_index) to the
+  // renderer process as a ReadOnlySharedMemoryRegion if it is available
+  // immediately without any blocking operations. Use FontTableMatcher to
+  // perform searches in it. If it is not available without blocking operations,
+  // sync_available is false and no shared memory region is provided.
+  [Sync]
+  GetUniqueNameLookupTableIfAvailable()
+      => (bool sync_available,
+          mojo_base.mojom.ReadOnlySharedMemoryRegion? font_lookup_table);
+
+  // Asynchronously returns a protobuf structured lookup list of
   // (full_font_name|postscript_name) => (font_file + ttc_index) to the
   // renderer process as a ReadOnlySharedMemoryRegion. The lookup list is built
   // on the first renderer call to retrieving this list. Use FontTableMatcher
-  // to perform searches in it.
-  [Sync]
+  // to perform searches in it. Retrieval may take up to several seconds if the
+  // table needs rebuilding on browser side.
   GetUniqueNameLookupTable() =>
-  (mojo_base.mojom.ReadOnlySharedMemoryRegion font_lookup_table);
+  (mojo_base.mojom.ReadOnlySharedMemoryRegion? font_lookup_table);
 
   // Locates a font family that is able to render the specified text using the
   // specified style. If successful, the family_index and family_name will
@@ -74,4 +117,18 @@ interface DWriteFontProxy {
                 uint32 reading_direction,
                 mojo_base.mojom.String16 base_family_name)
       => (MapCharactersResult out);
+
+  // For a given base family name, bcp47 language tag, and codepoint to look up,
+  // return a font family name that is available on the system to display the
+  // given codepoint. This internally calls Skia's
+  // SkFontMgr_DirectWrite::matchFamilyStyleCharacter which executes
+  // IDWriteTextLayout based fallback code, which cannot be run in the renderer
+  // due triggering loading the DWrite system font collection.
+  // Use only on Windows 8.0 and earlier - otherwise better fallback API is
+  // available through using a proxies IDWriteFontFallback.
+  [Sync]
+  FallbackFamilyAndStyleForCodepoint(string base_family_name,
+                                     string bcp47_language_tag,
+                                     uint32 codepoint)
+      => (FallbackFamilyAndStyle fallback_result);
 };

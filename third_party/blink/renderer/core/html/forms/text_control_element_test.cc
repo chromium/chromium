@@ -46,7 +46,7 @@ void TextControlElementTest::SetUp() {
   Page::PageClients page_clients;
   FillWithEmptyClients(page_clients);
   dummy_page_holder_ =
-      DummyPageHolder::Create(IntSize(800, 600), &page_clients);
+      std::make_unique<DummyPageHolder>(IntSize(800, 600), &page_clients);
 
   document_ = &dummy_page_holder_->GetDocument();
   document_->documentElement()->SetInnerHTMLFromString(

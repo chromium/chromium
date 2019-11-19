@@ -19,22 +19,23 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/task_runner.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/bind_test_util.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 #include "net/base/test_completion_callback.h"
-#include "net/disk_cache/disk_cache.h"
 #include "storage/browser/blob/blob_data_builder.h"
 #include "storage/browser/blob/blob_data_handle.h"
 #include "storage/browser/blob/blob_reader.h"
 #include "storage/browser/blob/blob_storage_context.h"
-#include "storage/browser/fileapi/file_stream_reader.h"
-#include "storage/browser/fileapi/file_system_context.h"
-#include "storage/browser/fileapi/file_system_file_util.h"
+#include "storage/browser/file_system/file_stream_reader.h"
+#include "storage/browser/file_system/file_system_context.h"
+#include "storage/browser/file_system/file_system_file_util.h"
 #include "storage/browser/test/async_file_test_helper.h"
+#include "storage/browser/test/fake_blob_data_handle.h"
 #include "storage/browser/test/test_file_system_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -49,9 +50,6 @@ using FileCreationInfo = storage::BlobMemoryController::FileCreationInfo;
 namespace storage {
 namespace {
 
-const int kTestDiskCacheStreamIndex = 0;
-const int kTestDiskCacheSideStreamIndex = 1;
-
 void SaveBlobStatusAndFiles(BlobStatus* status_ptr,
                             std::vector<FileCreationInfo>* files_ptr,
                             BlobStatus status,
@@ -60,152 +58,6 @@ void SaveBlobStatusAndFiles(BlobStatus* status_ptr,
   for (FileCreationInfo& info : files) {
     files_ptr->push_back(std::move(info));
   }
-}
-
-// Our disk cache tests don't need a real data handle since the tests themselves
-// scope the disk cache and entries.
-class EmptyDataHandle : public storage::BlobDataBuilder::DataHandle {
- private:
-  ~EmptyDataHandle() override = default;
-};
-
-// A disk_cache::Entry that arbitrarily delays the completion of a read
-// operation to allow testing some races without flake. This is particularly
-// relevant in this unit test, which uses the always-synchronous MEMORY_CACHE.
-class DelayedReadEntry : public disk_cache::Entry {
- public:
-  explicit DelayedReadEntry(disk_cache::ScopedEntryPtr entry)
-      : entry_(std::move(entry)) {}
-  ~DelayedReadEntry() override { EXPECT_FALSE(HasPendingReadCallbacks()); }
-
-  bool HasPendingReadCallbacks() { return !pending_read_callbacks_.empty(); }
-
-  void RunPendingReadCallbacks() {
-    std::vector<base::OnceCallback<void(void)>> callbacks;
-    pending_read_callbacks_.swap(callbacks);
-    for (auto& callback : callbacks)
-      std::move(callback).Run();
-  }
-
-  // From disk_cache::Entry:
-  void Doom() override { entry_->Doom(); }
-
-  void Close() override { delete this; }  // Note this is required by the API.
-
-  std::string GetKey() const override { return entry_->GetKey(); }
-
-  base::Time GetLastUsed() const override { return entry_->GetLastUsed(); }
-
-  base::Time GetLastModified() const override {
-    return entry_->GetLastModified();
-  }
-
-  int32_t GetDataSize(int index) const override {
-    return entry_->GetDataSize(index);
-  }
-
-  int ReadData(int index,
-               int offset,
-               IOBuffer* buf,
-               int buf_len,
-               CompletionOnceCallback original_callback) override {
-    net::TestCompletionCallback callback;
-    int rv = entry_->ReadData(index, offset, buf, buf_len, callback.callback());
-    DCHECK_NE(rv, net::ERR_IO_PENDING)
-        << "Test expects to use a MEMORY_CACHE instance, which is synchronous.";
-    pending_read_callbacks_.push_back(
-        base::BindOnce(std::move(original_callback), rv));
-    return net::ERR_IO_PENDING;
-  }
-
-  int WriteData(int index,
-                int offset,
-                IOBuffer* buf,
-                int buf_len,
-                CompletionOnceCallback callback,
-                bool truncate) override {
-    return entry_->WriteData(index, offset, buf, buf_len, std::move(callback),
-                             truncate);
-  }
-
-  int ReadSparseData(int64_t offset,
-                     IOBuffer* buf,
-                     int buf_len,
-                     CompletionOnceCallback callback) override {
-    return entry_->ReadSparseData(offset, buf, buf_len, std::move(callback));
-  }
-
-  int WriteSparseData(int64_t offset,
-                      IOBuffer* buf,
-                      int buf_len,
-                      CompletionOnceCallback callback) override {
-    return entry_->WriteSparseData(offset, buf, buf_len, std::move(callback));
-  }
-
-  int GetAvailableRange(int64_t offset,
-                        int len,
-                        int64_t* start,
-                        CompletionOnceCallback callback) override {
-    return entry_->GetAvailableRange(offset, len, start, std::move(callback));
-  }
-
-  bool CouldBeSparse() const override { return entry_->CouldBeSparse(); }
-
-  void CancelSparseIO() override { entry_->CancelSparseIO(); }
-
-  net::Error ReadyForSparseIO(CompletionOnceCallback callback) override {
-    return entry_->ReadyForSparseIO(std::move(callback));
-  }
-  void SetLastUsedTimeForTest(base::Time time) override { NOTREACHED(); }
-
- private:
-  disk_cache::ScopedEntryPtr entry_;
-  std::vector<base::OnceCallback<void(void)>> pending_read_callbacks_;
-};
-
-std::unique_ptr<disk_cache::Backend> CreateInMemoryDiskCache() {
-  std::unique_ptr<disk_cache::Backend> cache;
-  net::TestCompletionCallback callback;
-  int rv = disk_cache::CreateCacheBackend(
-      net::MEMORY_CACHE, net::CACHE_BACKEND_DEFAULT, FilePath(), 0, false,
-      nullptr, &cache, callback.callback());
-  EXPECT_EQ(net::OK, callback.GetResult(rv));
-
-  return cache;
-}
-
-disk_cache::ScopedEntryPtr CreateDiskCacheEntry(disk_cache::Backend* cache,
-                                                const char* key,
-                                                const std::string& data) {
-  disk_cache::Entry* temp_entry = nullptr;
-  net::TestCompletionCallback callback;
-  int rv =
-      cache->CreateEntry(key, net::HIGHEST, &temp_entry, callback.callback());
-  if (callback.GetResult(rv) != net::OK)
-    return nullptr;
-  disk_cache::ScopedEntryPtr entry(temp_entry);
-
-  scoped_refptr<net::StringIOBuffer> iobuffer =
-      base::MakeRefCounted<net::StringIOBuffer>(data);
-  rv = entry->WriteData(kTestDiskCacheStreamIndex, 0, iobuffer.get(),
-                        iobuffer->size(), callback.callback(), false);
-  EXPECT_EQ(static_cast<int>(data.size()), callback.GetResult(rv));
-  return entry;
-}
-
-disk_cache::ScopedEntryPtr CreateDiskCacheEntryWithSideData(
-    disk_cache::Backend* cache,
-    const char* key,
-    const std::string& data,
-    const std::string& side_data) {
-  disk_cache::ScopedEntryPtr entry = CreateDiskCacheEntry(cache, key, data);
-  scoped_refptr<net::StringIOBuffer> iobuffer =
-      base::MakeRefCounted<net::StringIOBuffer>(side_data);
-  net::TestCompletionCallback callback;
-  int rv = entry->WriteData(kTestDiskCacheSideStreamIndex, 0, iobuffer.get(),
-                            iobuffer->size(), callback.callback(), false);
-  EXPECT_EQ(static_cast<int>(side_data.size()), callback.GetResult(rv));
-  return entry;
 }
 
 template <typename T>
@@ -419,7 +271,7 @@ class BlobReaderTest : public ::testing::Test {
     return reader_->total_size_calculated();
   }
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
 
   BlobStorageContext context_;
   std::unique_ptr<BlobDataHandle> blob_handle_;
@@ -523,17 +375,12 @@ TEST_F(BlobReaderTest, BasicFileSystem) {
   EXPECT_EQ(0, memcmp(buffer->data(), "FileData!!!", kData.size()));
 }
 
-TEST_F(BlobReaderTest, BasicDiskCache) {
-  std::unique_ptr<disk_cache::Backend> cache = CreateInMemoryDiskCache();
-  ASSERT_TRUE(cache);
-
+TEST_F(BlobReaderTest, BasicReadableDataHandle) {
   auto b = std::make_unique<BlobDataBuilder>("uuid");
   const std::string kData = "Test Blob Data";
-  scoped_refptr<BlobDataBuilder::DataHandle> data_handle =
-      new EmptyDataHandle();
-  disk_cache::ScopedEntryPtr entry =
-      CreateDiskCacheEntry(cache.get(), "test entry", kData);
-  b->AppendDiskCacheEntry(data_handle, entry.get(), kTestDiskCacheStreamIndex);
+  auto data_handle =
+      base::MakeRefCounted<storage::FakeBlobDataHandle>(kData, "");
+  b->AppendReadableDataHandle(std::move(data_handle));
   this->InitializeReader(std::move(b));
 
   int size_result = -1;
@@ -558,20 +405,13 @@ TEST_F(BlobReaderTest, BasicDiskCache) {
   EXPECT_EQ(0, memcmp(buffer->data(), "Test Blob Data", kData.size()));
 }
 
-TEST_F(BlobReaderTest, DiskCacheWithSideData) {
-  std::unique_ptr<disk_cache::Backend> cache = CreateInMemoryDiskCache();
-  ASSERT_TRUE(cache);
-
+TEST_F(BlobReaderTest, ReadableDataHandleWithSideData) {
   auto b = std::make_unique<BlobDataBuilder>("uuid");
   const std::string kData = "Test Blob Data";
   const std::string kSideData = "Test side data";
-  scoped_refptr<BlobDataBuilder::DataHandle> data_handle =
-      new EmptyDataHandle();
-  disk_cache::ScopedEntryPtr entry = CreateDiskCacheEntryWithSideData(
-      cache.get(), "test entry", kData, kSideData);
-  b->AppendDiskCacheEntryWithSideData(data_handle, entry.get(),
-                                      kTestDiskCacheStreamIndex,
-                                      kTestDiskCacheSideStreamIndex);
+  auto data_handle =
+      base::MakeRefCounted<storage::FakeBlobDataHandle>(kData, kSideData);
+  b->AppendReadableDataHandle(std::move(data_handle));
   this->InitializeReader(std::move(b));
 
   int size_result = -1;
@@ -581,14 +421,15 @@ TEST_F(BlobReaderTest, DiskCacheWithSideData) {
   CheckSizeCalculatedSynchronously(kData.size(), size_result);
 
   EXPECT_TRUE(reader_->has_side_data());
-  BlobReader::Status status = BlobReader::Status::DONE;
-  EXPECT_EQ(BlobReader::Status::DONE,
-            reader_->ReadSideData(
-                base::BindOnce(&SetValue<BlobReader::Status>, &status)));
+  BlobReader::Status status = BlobReader::Status::NET_ERROR;
+  // As this is using a FakeBlobDataHandle, expect this to be synchronous.
+  reader_->ReadSideData(base::BindOnce(&SetValue<BlobReader::Status>, &status));
   EXPECT_EQ(net::OK, reader_->net_error());
-  EXPECT_TRUE(reader_->side_data());
-  std::string result(reader_->side_data()->data(),
-                     reader_->side_data()->size());
+  EXPECT_EQ(BlobReader::Status::DONE, status);
+  auto side_data = reader_->TakeSideData();
+  EXPECT_TRUE(side_data.has_value());
+  std::string result(reinterpret_cast<const char*>(side_data->data()),
+                     side_data->size());
   EXPECT_EQ(kSideData, result);
 }
 
@@ -697,7 +538,7 @@ TEST_F(BlobReaderTest, SegmentedBufferAndMemory) {
     for (size_t j = 0; j < kItemSize; j++) {
       buf[j] = current_value++;
     }
-    b->AppendData(buf, kItemSize);
+    b->AppendData(std::string(buf, kItemSize));
   }
   this->InitializeReader(std::move(b));
 
@@ -803,19 +644,14 @@ TEST_F(BlobReaderTest, FileSystemAsync) {
   EXPECT_EQ(0, memcmp(buffer->data(), "FileData!!!", kData.size()));
 }
 
-TEST_F(BlobReaderTest, DiskCacheAsync) {
-  std::unique_ptr<disk_cache::Backend> cache = CreateInMemoryDiskCache();
-  ASSERT_TRUE(cache);
-
+TEST_F(BlobReaderTest, ReadableDataHandleSingle) {
   auto b = std::make_unique<BlobDataBuilder>("uuid");
-  const std::string kData = "Test Blob Data";
-  scoped_refptr<BlobDataBuilder::DataHandle> data_handle =
-      new EmptyDataHandle();
-  std::unique_ptr<DelayedReadEntry> delayed_read_entry(new DelayedReadEntry(
-      CreateDiskCacheEntry(cache.get(), "test entry", kData)));
-  b->AppendDiskCacheEntry(data_handle, delayed_read_entry.get(),
-                          kTestDiskCacheStreamIndex);
+  const std::string kOrigData = "12345 Test Blob Data 12345";
+  auto data_handle =
+      base::MakeRefCounted<storage::FakeBlobDataHandle>(kOrigData, "");
+  b->AppendReadableDataHandle(data_handle, 6, 14);
   this->InitializeReader(std::move(b));
+  const std::string kData = kOrigData.substr(6, 14);
 
   int size_result = -1;
   EXPECT_FALSE(IsReaderTotalSizeCalculated());
@@ -823,20 +659,73 @@ TEST_F(BlobReaderTest, DiskCacheAsync) {
                                           &SetValue<int>, &size_result)));
   CheckSizeCalculatedSynchronously(kData.size(), size_result);
 
+  // This test checks the optimized single mojo data item path, where the
+  // data pipe passed in gets passed directly to the MojoDataItem.
+  EXPECT_TRUE(reader_->IsSingleMojoDataItem());
+
+  mojo::ScopedDataPipeProducerHandle producer;
+  mojo::ScopedDataPipeConsumerHandle consumer;
+  MojoResult pipe_result = mojo::CreateDataPipe(nullptr, &producer, &consumer);
+  ASSERT_EQ(MOJO_RESULT_OK, pipe_result);
+
+  int bytes_read = net::ERR_UNEXPECTED;
+  reader_->ReadSingleMojoDataItem(
+      std::move(producer),
+      base::BindLambdaForTesting([&](int result) { bytes_read = result; }));
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_EQ(kData.size(), static_cast<size_t>(bytes_read));
+
+  std::vector<uint8_t> buffer(bytes_read);
+  uint32_t num_bytes = bytes_read;
+  MojoReadDataFlags flags = MOJO_READ_DATA_FLAG_ALL_OR_NONE;
+  MojoResult read_result = consumer->ReadData(buffer.data(), &num_bytes, flags);
+  ASSERT_EQ(MOJO_RESULT_OK, read_result);
+  ASSERT_EQ(kData.size(), num_bytes);
+
+  EXPECT_EQ(0, memcmp(buffer.data(), kData.c_str(), kData.size()));
+}
+
+TEST_F(BlobReaderTest, ReadableDataHandleMultipleSlices) {
+  auto b = std::make_unique<BlobDataBuilder>("uuid");
+  const std::string kData1 = "Test Blob Data";
+  const std::string kData2 = "Extra test blob data";
+
+  // Create readable data handles with various slices of data.
+  // It's important to test that both the first element we read and a
+  // non-first element that we read handle slices, as these touch different
+  // pieces of code.
+  b->AppendReadableDataHandle(
+      base::MakeRefCounted<storage::FakeBlobDataHandle>(kData1, ""), 5, 4);
+  b->AppendReadableDataHandle(
+      base::MakeRefCounted<storage::FakeBlobDataHandle>(kData2, ""), 6, 9);
+  this->InitializeReader(std::move(b));
+
+  std::string kData = kData1.substr(5, 4) + kData2.substr(6, 9);
+
+  int size_result = -1;
+  EXPECT_FALSE(IsReaderTotalSizeCalculated());
+  EXPECT_EQ(BlobReader::Status::DONE, reader_->CalculateSize(base::BindOnce(
+                                          &SetValue<int>, &size_result)));
+  CheckSizeCalculatedSynchronously(kData.size(), size_result);
+
+  // Verify this condition while we are here.
+  EXPECT_FALSE(reader_->IsSingleMojoDataItem());
+
   scoped_refptr<net::IOBuffer> buffer =
       base::MakeRefCounted<net::IOBuffer>(kData.size());
 
   int bytes_read = 0;
   int async_bytes_read = 0;
-  EXPECT_EQ(BlobReader::Status::IO_PENDING,
-            reader_->Read(buffer.get(), kData.size(), &bytes_read,
-                          base::BindOnce(&SetValue<int>, &async_bytes_read)));
-  EXPECT_TRUE(delayed_read_entry->HasPendingReadCallbacks());
-  delayed_read_entry->RunPendingReadCallbacks();
+  BlobReader::Status result =
+      reader_->Read(buffer.get(), kData.size(), &bytes_read,
+                    base::BindOnce(&SetValue<int>, &async_bytes_read));
   EXPECT_EQ(net::OK, reader_->net_error());
-  EXPECT_EQ(0, bytes_read);
-  EXPECT_EQ(kData.size(), static_cast<size_t>(async_bytes_read));
-  EXPECT_EQ(0, memcmp(buffer->data(), "Test Blob Data", kData.size()));
+  EXPECT_EQ(result, BlobReader::Status::DONE);
+  EXPECT_EQ(0, async_bytes_read);
+  EXPECT_EQ(kData.size(), static_cast<size_t>(bytes_read));
+
+  EXPECT_EQ(0, memcmp(buffer->data(), kData.data(), kData.size()));
 }
 
 TEST_F(BlobReaderTest, FileRange) {
@@ -882,19 +771,14 @@ TEST_F(BlobReaderTest, FileRange) {
   EXPECT_EQ(0, memcmp(buffer->data(), "leD", kReadLength));
 }
 
-TEST_F(BlobReaderTest, DiskCacheRange) {
-  std::unique_ptr<disk_cache::Backend> cache = CreateInMemoryDiskCache();
-  ASSERT_TRUE(cache);
-
+TEST_F(BlobReaderTest, ReadableDataHandleRange) {
   auto b = std::make_unique<BlobDataBuilder>("uuid");
   const std::string kData = "Test Blob Data";
   const uint64_t kOffset = 2;
   const uint64_t kReadLength = 3;
-  scoped_refptr<BlobDataBuilder::DataHandle> data_handle =
-      new EmptyDataHandle();
-  disk_cache::ScopedEntryPtr entry =
-      CreateDiskCacheEntry(cache.get(), "test entry", kData);
-  b->AppendDiskCacheEntry(data_handle, entry.get(), kTestDiskCacheStreamIndex);
+  auto data_handle =
+      base::MakeRefCounted<storage::FakeBlobDataHandle>(kData, "");
+  b->AppendReadableDataHandle(std::move(data_handle));
   this->InitializeReader(std::move(b));
 
   int size_result = -1;
@@ -992,9 +876,7 @@ TEST_F(BlobReaderTest, FileSomeAsyncSegmentedOffsetsUnknownSizes) {
 }
 
 TEST_F(BlobReaderTest, MixedContent) {
-  // Includes data, a file, and a disk cache entry.
-  std::unique_ptr<disk_cache::Backend> cache = CreateInMemoryDiskCache();
-  ASSERT_TRUE(cache);
+  // Includes data, a file, and a data handle entry.
 
   auto b = std::make_unique<BlobDataBuilder>("uuid");
   const std::string kData1("Hello ");
@@ -1006,14 +888,12 @@ TEST_F(BlobReaderTest, MixedContent) {
   const base::Time kTime = base::Time::Now();
   const FilePath kData1Path = FilePath::FromUTF8Unsafe("/fake/file.txt");
 
-  disk_cache::ScopedEntryPtr entry3 =
-      CreateDiskCacheEntry(cache.get(), "test entry", kData3);
+  auto data_handle =
+      base::MakeRefCounted<storage::FakeBlobDataHandle>(kData3, "");
 
   b->AppendFile(kData1Path, 0, kData1.size(), kTime);
   b->AppendData(kData2);
-  b->AppendDiskCacheEntry(
-      scoped_refptr<BlobDataBuilder::DataHandle>(new EmptyDataHandle()),
-      entry3.get(), kTestDiskCacheStreamIndex);
+  b->AppendReadableDataHandle(std::move(data_handle));
   b->AppendData(kData4);
 
   this->InitializeReader(std::move(b));
@@ -1254,7 +1134,8 @@ TEST_F(BlobReaderTest, ReadFromIncompleteBlob) {
       BlobReader::Status::IO_PENDING,
       reader_->CalculateSize(base::BindOnce(&SetValue<int>, &size_result)));
   EXPECT_FALSE(reader_->IsInMemory());
-  future_data.Populate(base::make_span(kData.data(), kDataSize), 0);
+  future_data.Populate(base::as_bytes(base::make_span(kData.data(), kDataSize)),
+                       0);
   context_.NotifyTransportComplete(kUuid);
   base::RunLoop().RunUntilIdle();
   CheckSizeCalculatedAsynchronously(kDataSize, size_result);

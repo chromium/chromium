@@ -71,7 +71,7 @@ class TrafficAnnotationExporter {
 
   // Checks if the current platform is in the os list of archived annotation.
   bool MatchesCurrentPlatform(const ArchivedAnnotation& annotation) const {
-    return base::ContainsValue(annotation.os_list, current_platform_);
+    return base::Contains(annotation.os_list, current_platform_);
   }
 
   // Produces the list of annotations that are not defined in this platform.

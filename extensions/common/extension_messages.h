@@ -13,7 +13,7 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/shared_memory.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "base/values.h"
 #include "content/public/common/common_param_traits.h"
 #include "content/public/common/socket_permission_request.h"
@@ -118,11 +118,12 @@ IPC_STRUCT_BEGIN(ExtensionHostMsg_Request_Params)
   IPC_STRUCT_MEMBER(bool, user_gesture)
 
   // If this API call is for a service worker, then this is the worker thread
-  // id. Otherwise, this is -1.
+  // id. Otherwise, this is kMainThreadId.
   IPC_STRUCT_MEMBER(int, worker_thread_id)
 
   // If this API call is for a service worker, then this is the service
-  // worker version id. Otherwise, this is -1.
+  // worker version id. Otherwise, this is set to
+  // blink::mojom::kInvalidServiceWorkerVersionId.
   IPC_STRUCT_MEMBER(int64_t, service_worker_version_id)
 IPC_STRUCT_END()
 
@@ -169,10 +170,6 @@ IPC_STRUCT_BEGIN(ExtensionMsg_ExecuteCode_Params)
 
   // When to inject the code.
   IPC_STRUCT_MEMBER(extensions::UserScript::RunLocation, run_at)
-
-  // Whether to execute code in the main world (as opposed to an isolated
-  // world).
-  IPC_STRUCT_MEMBER(bool, in_main_world)
 
   // Whether the request is coming from a <webview>.
   IPC_STRUCT_MEMBER(bool, is_web_view)
@@ -578,8 +575,8 @@ IPC_MESSAGE_ROUTED1(ExtensionMsg_ExecuteCode,
                     ExtensionMsg_ExecuteCode_Params)
 
 // Notification that the user scripts have been updated. It has one
-// SharedMemoryHandle argument consisting of the pickled script data. This
-// handle is valid in the context of the renderer.
+// ReadOnlySharedMemoryRegion argument consisting of the pickled script data.
+// This memory region is valid in the context of the renderer.
 // If |owner| is not empty, then the shared memory handle refers to |owner|'s
 // programmatically-defined scripts. Otherwise, the handle refers to all
 // hosts' statically defined scripts. So far, only extension-hosts support
@@ -592,7 +589,7 @@ IPC_MESSAGE_ROUTED1(ExtensionMsg_ExecuteCode,
 // If |whitelisted_only| is true, this process should only run whitelisted
 // scripts and not all user scripts.
 IPC_MESSAGE_CONTROL4(ExtensionMsg_UpdateUserScripts,
-                     base::SharedMemoryHandle,
+                     base::ReadOnlySharedMemoryRegion,
                      HostID /* owner */,
                      std::set<HostID> /* changed hosts */,
                      bool /* whitelisted_only */)
@@ -736,12 +733,6 @@ IPC_MESSAGE_ROUTED1(ExtensionMsg_SetSpatialNavigationEnabled,
 // request. The browser will always respond with a ExtensionMsg_Response.
 IPC_MESSAGE_ROUTED1(ExtensionHostMsg_Request,
                     ExtensionHostMsg_Request_Params)
-
-// A renderer sends this message when an extension process starts an API
-// request. The browser will always respond with a ExtensionMsg_Response.
-IPC_MESSAGE_CONTROL2(ExtensionHostMsg_RequestForIOThread,
-                     int /* routing_id */,
-                     ExtensionHostMsg_Request_Params)
 
 // Notify the browser that the given extension added a listener to an event.
 IPC_MESSAGE_CONTROL5(ExtensionHostMsg_AddListener,
@@ -919,11 +910,6 @@ IPC_MESSAGE_ROUTED0(ExtensionHostMsg_IncrementLazyKeepaliveCount)
 // alive.
 IPC_MESSAGE_ROUTED0(ExtensionHostMsg_DecrementLazyKeepaliveCount)
 
-// Fetches a globally unique ID (for the lifetime of the browser) from the
-// browser process.
-IPC_SYNC_MESSAGE_CONTROL0_1(ExtensionHostMsg_GenerateUniqueID,
-                            int /* unique_id */)
-
 // Notify the browser that an app window is ready and can resume resource
 // requests.
 IPC_MESSAGE_ROUTED0(ExtensionHostMsg_AppWindowReady)
@@ -1035,8 +1021,10 @@ IPC_MESSAGE_CONTROL2(ExtensionHostMsg_DecrementServiceWorkerActivity,
 
 // Tells the browser that an event with |event_id| was successfully dispatched
 // to the worker with version |service_worker_version_id|.
-IPC_MESSAGE_CONTROL2(ExtensionHostMsg_EventAckWorker,
+IPC_MESSAGE_CONTROL4(ExtensionHostMsg_EventAckWorker,
+                     std::string /* extension_id */,
                      int64_t /* service_worker_version_id */,
+                     int /* worker_thread_id */,
                      int /* event_id */)
 
 // Tells the browser that an extension service worker context was initialized,
@@ -1106,6 +1094,7 @@ IPC_STRUCT_TRAITS_BEGIN(ui::AXTreeData)
   IPC_STRUCT_TRAITS_MEMBER(loaded)
   IPC_STRUCT_TRAITS_MEMBER(loading_progress)
   IPC_STRUCT_TRAITS_MEMBER(focus_id)
+  IPC_STRUCT_TRAITS_MEMBER(sel_is_backward)
   IPC_STRUCT_TRAITS_MEMBER(sel_anchor_object_id)
   IPC_STRUCT_TRAITS_MEMBER(sel_anchor_offset)
   IPC_STRUCT_TRAITS_MEMBER(sel_anchor_affinity)

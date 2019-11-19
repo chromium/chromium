@@ -16,7 +16,6 @@ enum class FrameOriginType {
   kMainFrame = 0,
   kSameOriginFrame = 1,
   kCrossOriginFrame = 2,
-
   kCount = 3
 };
 

@@ -70,7 +70,7 @@ class WebGLContextGroup final : public GarbageCollected<WebGLContextGroup>,
 
   uint32_t number_of_context_losses_;
 
-  HeapHashSet<TraceWrapperMember<WebGLRenderingContextBase>> contexts_;
+  HeapHashSet<Member<WebGLRenderingContextBase>> contexts_;
 
   DISALLOW_COPY_AND_ASSIGN(WebGLContextGroup);
 };

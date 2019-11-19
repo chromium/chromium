@@ -87,7 +87,7 @@ class CursorView : public fast_ink::FastInkView,
   // UI thread state.
   ui::Compositor* compositor_ = nullptr;
   SEQUENCE_CHECKER(ui_sequence_checker_);
-  base::WeakPtrFactory<CursorView> weak_ptr_factory_;
+  base::WeakPtrFactory<CursorView> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(CursorView);
 };

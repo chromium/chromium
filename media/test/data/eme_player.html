@@ -59,13 +59,39 @@
     var player;
     var heartbeatCount = 0;
 
+    function getTimeRanges(range) {
+      const result = [];
+      for (let i = 0; i < range.length; i++) {
+        result.push(`[${range.start(i)},${range.end(i)}]`);
+      }
+      return '[' + result.join(', ') + ']';
+    }
+
+    function getVideoStatus(video) {
+      if (video == null) {
+        return 'null';
+      }
+      const result = [];
+      result.push(`paused: ${video.paused}`);
+      result.push(`ended: ${video.ended}`);
+      result.push(`currentTime: ${video.currentTime}`);
+      result.push(`duration: ${video.duration}`);
+      result.push(`buffered: ${getTimeRanges(video.buffered)}`);
+      result.push(`played: ${getTimeRanges(video.played)}`);
+      if (video.error) {
+        result.push(`error: {${video.error.code},${video.error.message}}`);
+      }
+      return result.join(', ');
+    }
+
     function initApp() {
       testConfig = new TestConfig();
       testConfig.loadQueryParams();
       // Update document with test configuration values.
       emeApp = new EMEApp(testConfig);
       setInterval(function () {
-                      Utils.timeLog('heartbeat #' + ++heartbeatCount);
+                      Utils.timeLog('heartbeat #' + ++heartbeatCount +
+                                    ' video: ' + getVideoStatus(player.video));
                   }, 1000);
     }
 
@@ -112,18 +138,18 @@
       video.addEventListener('canplaythrough', onLogEvent);
       video.addEventListener('stalled', onLogEvent);
       video.addEventListener('waiting', onLogEvent);
+      video.addEventListener('waitingforkey', onLogEvent);
       document.addEventListener('visibilitychange', onVisibilityChange);
       Utils.resetTitleChange();
       if (playTwice) {
         // Wait for the first play to complete.
         video.addEventListener('ended', onFirstPlayEnded);
-        video.play();
-        return;
+        return video.play();
       }
       // Ended should not fire before onTimeUpdate.
       video.addEventListener('ended', Utils.failTest);
       video.addEventListener('timeupdate', onTimeUpdate);
-      video.play();
+      return video.play();
     }
 
     function toggleDisplay(id) {
@@ -143,7 +169,7 @@
       emeApp.createPlayer()
           .then(function(p) {
               player = p;
-              play(player.video, testConfig.playTwice);
+              return play(player.video, testConfig.playTwice);
           }).catch(function(error) {
               Utils.timeLog(error);
               Utils.failTest('Unable to play video.');

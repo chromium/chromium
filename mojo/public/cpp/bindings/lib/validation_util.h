@@ -147,16 +147,24 @@ bool ValidateHandleOrInterfaceNonNullable(
     ValidationContext* validation_context);
 
 template <typename T>
-bool ValidateContainer(const Pointer<T>& input,
-                       ValidationContext* validation_context,
-                       const ContainerValidateParams* validate_params) {
-  ValidationContext::ScopedDepthTracker depth_tracker(validation_context);
+bool ValidateParams(const Pointer<T>& input,
+                    ValidationContext* validation_context) {
   if (validation_context->ExceedsMaxDepth()) {
     ReportValidationError(validation_context,
                           VALIDATION_ERROR_MAX_RECURSION_DEPTH);
     return false;
   }
-  return ValidatePointer(input, validation_context) &&
+
+  return ValidatePointer(input, validation_context);
+}
+
+template <typename T>
+bool ValidateContainer(const Pointer<T>& input,
+                       ValidationContext* validation_context,
+                       const ContainerValidateParams* validate_params) {
+  ValidationContext::ScopedDepthTracker depth_tracker(validation_context);
+
+  return ValidateParams(input, validation_context) &&
          T::Validate(input.Get(), validation_context, validate_params);
 }
 
@@ -164,12 +172,8 @@ template <typename T>
 bool ValidateStruct(const Pointer<T>& input,
                     ValidationContext* validation_context) {
   ValidationContext::ScopedDepthTracker depth_tracker(validation_context);
-  if (validation_context->ExceedsMaxDepth()) {
-    ReportValidationError(validation_context,
-                          VALIDATION_ERROR_MAX_RECURSION_DEPTH);
-    return false;
-  }
-  return ValidatePointer(input, validation_context) &&
+
+  return ValidateParams(input, validation_context) &&
          T::Validate(input.Get(), validation_context);
 }
 
@@ -189,12 +193,8 @@ template <typename T>
 bool ValidateNonInlinedUnion(const Pointer<T>& input,
                              ValidationContext* validation_context) {
   ValidationContext::ScopedDepthTracker depth_tracker(validation_context);
-  if (validation_context->ExceedsMaxDepth()) {
-    ReportValidationError(validation_context,
-                          VALIDATION_ERROR_MAX_RECURSION_DEPTH);
-    return false;
-  }
-  return ValidatePointer(input, validation_context) &&
+
+  return ValidateParams(input, validation_context) &&
          T::Validate(input.Get(), validation_context, false);
 }
 

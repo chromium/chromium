@@ -32,7 +32,7 @@
     CheckSecurity=Receiver,
     Exposed=Window
 ] interface Location {
-    [CallWith=Isolate, RaisesException, Unforgeable] void assign(URLString url);
+    [CallWith=Isolate, RaisesException, Unforgeable] void assign(USVString url);
 
     // |replace|, and *writing* |href| do not require a security check, as they
     // *change* the page, and thus these do not change any property of an
@@ -40,13 +40,13 @@
     // However, *reading* |href|, or accessing any component, is a security
     // problem, since that allows tracking navigation.
     // https://html.spec.whatwg.org/C/#crossoriginproperties-(-o-)
-    [CallWith=Isolate, CrossOrigin, RaisesException, Unforgeable] void replace(URLString url);
+    [CallWith=Isolate, CrossOrigin, RaisesException, Unforgeable] void replace(USVString url);
     [Unforgeable] void reload();
 
     // TODO(foolip): |ancestorOrigins| should have [Unforgeable, SameObject].
     [Unforgeable] readonly attribute DOMStringList ancestorOrigins;
 
-    [Affects=Nothing, SetterCallWith=Isolate, CrossOrigin=Setter, RaisesException=Setter, Unforgeable] attribute URLString href;
+    [Affects=Nothing, SetterCallWith=Isolate, CrossOrigin=Setter, RaisesException=Setter, Unforgeable] attribute USVString href;
     // TODO(yukishiino): Use [Unforgeable] stringifier instead of toString.
     [Unforgeable] DOMString toString();
     [MeasureAs=LocationOrigin, Unforgeable] readonly attribute USVString origin;
@@ -58,6 +58,8 @@
     [SetterCallWith=Isolate, RaisesException=Setter, Unforgeable] attribute USVString pathname;
     [SetterCallWith=Isolate, RaisesException=Setter, Unforgeable] attribute USVString search;
     [SetterCallWith=Isolate, RaisesException=Setter, Unforgeable] attribute USVString hash;
+
+    [RuntimeEnabled=TextFragmentIdentifiers] readonly attribute FragmentDirective fragmentDirective;
 
     // TODO(foolip): Location does not have a valueOf() override in the spec.
     // See the comment in Location.h for the purpose of this.

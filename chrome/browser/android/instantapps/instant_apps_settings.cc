@@ -9,10 +9,10 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "chrome/android/chrome_jni_headers/InstantAppsSettings_jni.h"
 #include "chrome/browser/banners/app_banner_settings_helper.h"
 #include "chrome/browser/installable/installable_logging.h"
 #include "content/public/browser/web_contents.h"
-#include "jni/InstantAppsSettings_jni.h"
 #include "url/gurl.h"
 
 using base::android::JavaParamRef;

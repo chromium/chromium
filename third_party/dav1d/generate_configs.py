@@ -23,7 +23,8 @@ import gn_helpers
 MESON = ['meson.py']
 
 DEFAULT_BUILD_ARGS = [
-    '-Dbuild_tools=false', '-Dbuild_tests=false', '--buildtype', 'release'
+    '-Denable_tools=false', '-Denable_tests=false', '-Ddefault_library=static',
+    '--buildtype', 'release'
 ]
 
 WINDOWS_BUILD_ARGS = ['-Dc_winlibs=']
@@ -117,18 +118,23 @@ def GenerateConfig(config_dir, env, special_args=[]):
       cwd='libdav1d',
       env=env)
 
-  # We don't want non-visible log strings polluting the official binary.
   RewriteFile(
       os.path.join(temp_dir, 'config.h'),
-      [(r'(#define CONFIG_LOG .*)',
-        r'// \1 -- Logging is controlled by Chromium')])
+      [
+          # We don't want non-visible log strings polluting the official binary.
+          (r'(#define CONFIG_LOG .*)',
+           r'// \1 -- Logging is controlled by Chromium'),
 
-  # Clang LTO doesn't respect stack alignment, so we must use the platform's
-  # default stack alignment in that case; https://crbug.com/928743.
-  RewriteFile(
-      os.path.join(temp_dir, 'config.h'),
-      [(r'(#define STACK_ALIGNMENT \d{1,2})',
-        r'// \1 -- Stack alignment is controlled by Chromium')])
+          # The Chromium build system already defines this.
+          (r'(#define _WIN32_WINNT .*)',
+           r'// \1 -- Windows version is controlled by Chromium'),
+
+          # Clang LTO doesn't respect stack alignment, so we must use the
+          # platform's default stack alignment; https://crbug.com/928743.
+          (r'(#define STACK_ALIGNMENT \d{1,2})',
+           r'// \1 -- Stack alignment is controlled by Chromium'),
+      ])
+
   if (os.path.exists(os.path.join(config_dir, 'config.asm'))):
     RewriteFile(
         os.path.join(temp_dir, 'config.asm'),
@@ -138,12 +144,27 @@ def GenerateConfig(config_dir, env, special_args=[]):
   CopyConfigsAndCleanup(temp_dir, config_dir)
 
 
+def GenerateWindowsArm64Config(src_dir):
+  win_arm64_dir = 'config/win/arm64'
+  if not os.path.exists(win_arm64_dir):
+    os.makedirs(win_arm64_dir)
+
+  shutil.copy(os.path.join(src_dir, 'config.h'), win_arm64_dir)
+
+  # Flip flags such that it looks like an arm64 configuration.
+  RewriteFile(
+      os.path.join(win_arm64_dir, 'config.h'),
+      [(r'#define ARCH_X86 1', r'#define ARCH_X86 0'),
+       (r'#define ARCH_X86_64 1', r'#define ARCH_X86_64 0'),
+       (r'#define ARCH_AARCH64 0', r'#define ARCH_AARCH64 1')])
+
+
 def main():
   linux_env = os.environ
   linux_env['CC'] = 'clang'
 
   GenerateConfig('config/linux/x64', linux_env)
-  GenerateConfig('config/linux-noasm/x64', linux_env, ['-Dbuild_asm=false'])
+  GenerateConfig('config/linux-noasm/x64', linux_env, ['-Denable_asm=false'])
 
   GenerateConfig('config/linux/x86', linux_env,
                  ['--cross-file', '../crossfiles/linux32.crossfile'])
@@ -153,14 +174,19 @@ def main():
                  ['--cross-file', '../crossfiles/arm64.crossfile'])
 
   win_x86_env = SetupWindowsCrossCompileToolchain('x86')
-  GenerateConfig(
-      'config/win/x86', win_x86_env,
-      ['--cross-file', '../crossfiles/win32.crossfile'] + WINDOWS_BUILD_ARGS)
+  GenerateConfig('config/win/x86', win_x86_env,
+                 ['--cross-file', '../crossfiles/win32.crossfile'] +
+                 WINDOWS_BUILD_ARGS)
 
+  win_x64_dir = 'config/win/x64'
   win_x64_env = SetupWindowsCrossCompileToolchain('x64')
-  GenerateConfig(
-      'config/win/x64', win_x64_env,
-      ['--cross-file', '../crossfiles/win64.crossfile'] + WINDOWS_BUILD_ARGS)
+  GenerateConfig(win_x64_dir, win_x64_env,
+                 ['--cross-file', '../crossfiles/win64.crossfile'] +
+                 WINDOWS_BUILD_ARGS)
+
+  # Sadly meson doesn't support arm64 + clang-cl, so we need to create the
+  # Windows arm64 config from the Windows x64 config.
+  GenerateWindowsArm64Config(win_x64_dir)
 
 
 if __name__ == '__main__':

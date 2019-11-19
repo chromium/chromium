@@ -10,7 +10,6 @@
 #include "components/viz/service/display_embedder/server_shared_bitmap_manager.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
-#include "components/viz/service/surfaces/surface_dependency_tracker.h"
 #include "components/viz/test/begin_frame_args_test.h"
 #include "components/viz/test/compositor_frame_helpers.h"
 #include "components/viz/test/fake_external_begin_frame_source.h"
@@ -58,8 +57,8 @@ TEST(SurfaceTest, PresentationCallback) {
             .Build();
     EXPECT_CALL(client, DidReceiveCompositorFrameAck(testing::_)).Times(1);
     support->SubmitCompositorFrame(local_surface_id, std::move(frame));
-    ASSERT_EQ(1u, support->presentation_feedbacks().size());
-    EXPECT_EQ(frame_token, support->presentation_feedbacks().begin()->first);
+    ASSERT_EQ(1u, support->timing_details().size());
+    EXPECT_EQ(frame_token, support->timing_details().begin()->first);
     testing::Mock::VerifyAndClearExpectations(&client);
   }
 }

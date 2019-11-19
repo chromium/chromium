@@ -16,21 +16,24 @@
 #include "chromeos/components/drivefs/drivefs_bootstrap.h"
 #include "chromeos/components/drivefs/drivefs_host.h"
 #include "chromeos/components/drivefs/mojom/drivefs.mojom.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace drivefs {
 
 class FakeDriveFsBootstrapListener : public DriveFsBootstrapListener {
  public:
   explicit FakeDriveFsBootstrapListener(
-      drivefs::mojom::DriveFsBootstrapPtrInfo bootstrap);
+      mojo::PendingRemote<drivefs::mojom::DriveFsBootstrap> bootstrap);
   ~FakeDriveFsBootstrapListener() override;
 
  private:
   void SendInvitationOverPipe(base::ScopedFD) override;
-  mojom::DriveFsBootstrapPtr bootstrap() override;
+  mojo::PendingRemote<mojom::DriveFsBootstrap> bootstrap() override;
 
-  drivefs::mojom::DriveFsBootstrapPtrInfo bootstrap_;
+  mojo::PendingRemote<drivefs::mojom::DriveFsBootstrap> bootstrap_;
 
   DISALLOW_COPY_AND_ASSIGN(FakeDriveFsBootstrapListener);
 };
@@ -61,9 +64,10 @@ class FakeDriveFs : public drivefs::mojom::DriveFs,
   class SearchQuery;
 
   // drivefs::mojom::DriveFsBootstrap:
-  void Init(drivefs::mojom::DriveFsConfigurationPtr config,
-            drivefs::mojom::DriveFsRequest drive_fs_request,
-            drivefs::mojom::DriveFsDelegatePtr delegate) override;
+  void Init(
+      drivefs::mojom::DriveFsConfigurationPtr config,
+      mojo::PendingReceiver<drivefs::mojom::DriveFs> receiver,
+      mojo::PendingRemote<drivefs::mojom::DriveFsDelegate> delegate) override;
 
   // drivefs::mojom::DriveFs:
   void GetMetadata(const base::FilePath& path,
@@ -86,7 +90,7 @@ class FakeDriveFs : public drivefs::mojom::DriveFs,
                 CopyFileCallback callback) override;
 
   void StartSearchQuery(
-      drivefs::mojom::SearchQueryRequest query,
+      mojo::PendingReceiver<drivefs::mojom::SearchQuery> receiver,
       drivefs::mojom::QueryParametersPtr query_params) override;
 
   void FetchAllChangeLogs() override;
@@ -94,16 +98,21 @@ class FakeDriveFs : public drivefs::mojom::DriveFs,
   void FetchChangeLog(
       std::vector<mojom::FetchChangeLogOptionsPtr> options) override;
 
+  void SendNativeMessageRequest(
+      const std::string& request,
+      SendNativeMessageRequestCallback callback) override;
+
   const base::FilePath mount_path_;
 
   std::map<base::FilePath, FileMetadata> metadata_;
 
-  mojo::Binding<drivefs::mojom::DriveFs> binding_;
-  drivefs::mojom::DriveFsDelegatePtr delegate_;
-  mojo::Binding<drivefs::mojom::DriveFsBootstrap> bootstrap_binding_;
-  drivefs::mojom::DriveFsDelegateRequest pending_delegate_request_;
+  mojo::Receiver<drivefs::mojom::DriveFs> receiver_{this};
+  mojo::Remote<drivefs::mojom::DriveFsDelegate> delegate_;
+  mojo::Receiver<drivefs::mojom::DriveFsBootstrap> bootstrap_receiver_{this};
+  mojo::PendingReceiver<drivefs::mojom::DriveFsDelegate>
+      pending_delegate_receiver_;
 
-  base::WeakPtrFactory<FakeDriveFs> weak_factory_;
+  base::WeakPtrFactory<FakeDriveFs> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FakeDriveFs);
 };

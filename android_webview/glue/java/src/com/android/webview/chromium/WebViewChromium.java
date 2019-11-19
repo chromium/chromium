@@ -24,7 +24,6 @@ import android.os.Looper;
 import android.os.Message;
 import android.os.SystemClock;
 import android.print.PrintDocumentAdapter;
-import android.support.annotation.IntDef;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.DragEvent;
@@ -53,32 +52,40 @@ import android.webkit.WebView;
 import android.webkit.WebView.VisualStateCallback;
 import android.webkit.WebViewClient;
 import android.webkit.WebViewProvider;
+import android.webkit.WebViewRenderProcess;
+import android.webkit.WebViewRenderProcessClient;
 import android.widget.TextView;
+
+import androidx.annotation.IntDef;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwContentsStatics;
 import org.chromium.android_webview.AwPrintDocumentAdapter;
+import org.chromium.android_webview.AwRenderProcess;
 import org.chromium.android_webview.AwSettings;
-import org.chromium.android_webview.ResourcesContextWrapperFactory;
-import org.chromium.android_webview.ScopedSysTraceEvent;
 import org.chromium.android_webview.gfx.AwDrawFnImpl;
 import org.chromium.android_webview.renderer_priority.RendererPriority;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.CachedMetrics.EnumeratedHistogramSample;
 import org.chromium.base.metrics.CachedMetrics.TimesHistogramSample;
+import org.chromium.base.metrics.ScopedSysTraceEvent;
 import org.chromium.base.task.PostTask;
 import org.chromium.components.autofill.AutofillProvider;
+import org.chromium.components.embedder_support.application.ClassLoaderContextWrapperFactory;
 import org.chromium.content_public.browser.NavigationHistory;
 import org.chromium.content_public.browser.SmartClipProvider;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Map;
+import java.util.WeakHashMap;
 import java.util.concurrent.Callable;
+import java.util.concurrent.Executor;
 
 /**
  * This class is the delegate to which WebViewProxy forwards all API calls.
@@ -248,7 +255,7 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
             mWebView = webView;
             mWebViewPrivate = webViewPrivate;
             mHitTestResult = new WebView.HitTestResult();
-            mContext = ResourcesContextWrapperFactory.get(mWebView.getContext());
+            mContext = ClassLoaderContextWrapperFactory.get(mWebView.getContext());
             mAppTargetSdkVersion = mContext.getApplicationInfo().targetSdkVersion;
             mFactory = factory;
             mShouldDisableThreadChecking = shouldDisableThreadChecking;
@@ -263,6 +270,75 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
         AwContents childContents =
                 child == null ? null : ((WebViewChromium) child.getWebViewProvider()).mAwContents;
         parentContents.supplyContentsForPopup(childContents);
+    }
+
+    @TargetApi(Build.VERSION_CODES.Q)
+    private static class WebViewRenderProcessAdapter extends WebViewRenderProcess {
+        private static WeakHashMap<AwRenderProcess, WebViewRenderProcessAdapter> sInstances =
+                new WeakHashMap<>();
+
+        private WeakReference<AwRenderProcess> mAwRenderProcessWeakRef;
+
+        public static WebViewRenderProcessAdapter getInstanceFor(AwRenderProcess awRenderProcess) {
+            if (awRenderProcess == null) {
+                return null;
+            }
+            WebViewRenderProcessAdapter instance = sInstances.get(awRenderProcess);
+            if (instance == null) {
+                sInstances.put(awRenderProcess,
+                        instance = new WebViewRenderProcessAdapter(awRenderProcess));
+            }
+            return instance;
+        }
+
+        private WebViewRenderProcessAdapter(AwRenderProcess awRenderProcess) {
+            mAwRenderProcessWeakRef = new WeakReference<>(awRenderProcess);
+        }
+
+        @Override
+        @SuppressLint("Override")
+        public boolean terminate() {
+            AwRenderProcess renderer = mAwRenderProcessWeakRef.get();
+            if (renderer == null) {
+                return false;
+            }
+            return renderer.terminate();
+        }
+    }
+
+    private static class WebViewRenderProcessClientAdapter
+            extends SharedWebViewRendererClientAdapter {
+        private Executor mExecutor;
+        private WebViewRenderProcessClient mWebViewRenderProcessClient;
+
+        public WebViewRenderProcessClientAdapter(
+                Executor executor, WebViewRenderProcessClient webViewRenderProcessClient) {
+            mExecutor = executor;
+            mWebViewRenderProcessClient = webViewRenderProcessClient;
+        }
+
+        public WebViewRenderProcessClient getWebViewRenderProcessClient() {
+            return mWebViewRenderProcessClient;
+        }
+
+        @Override
+        @TargetApi(Build.VERSION_CODES.Q)
+        public void onRendererUnresponsive(
+                final WebView view, final AwRenderProcess renderProcess) {
+            WebViewRenderProcess renderer =
+                    WebViewRenderProcessAdapter.getInstanceFor(renderProcess);
+            mExecutor.execute(
+                    () -> mWebViewRenderProcessClient.onRenderProcessUnresponsive(view, renderer));
+        }
+
+        @Override
+        @TargetApi(Build.VERSION_CODES.Q)
+        public void onRendererResponsive(final WebView view, final AwRenderProcess renderProcess) {
+            WebViewRenderProcess renderer =
+                    WebViewRenderProcessAdapter.getInstanceFor(renderProcess);
+            mExecutor.execute(
+                    () -> mWebViewRenderProcessClient.onRenderProcessResponsive(view, renderer));
+        }
     }
 
     // WebViewProvider methods --------------------------------------------------------------------
@@ -958,7 +1034,7 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
             final long requestId, final VisualStateCallback callback) {
         sWebViewApiCallSample.record(ApiCall.INSERT_VISUAL_STATE_CALLBACK);
         mSharedWebViewChromium.insertVisualStateCallback(
-                requestId, new AwContents.VisualStateCallback() {
+                requestId, callback == null ? null : new AwContents.VisualStateCallback() {
                     @Override
                     public void onComplete(long requestId) {
                         callback.onComplete(requestId);
@@ -1463,6 +1539,36 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
     public WebViewClient getWebViewClient() {
         sWebViewApiCallSample.record(ApiCall.GET_WEBVIEW_CLIENT);
         return mSharedWebViewChromium.getWebViewClient();
+    }
+
+    @Override
+    public WebViewRenderProcess getWebViewRenderProcess() {
+        return WebViewRenderProcessAdapter.getInstanceFor(
+                mSharedWebViewChromium.getRenderProcess());
+    }
+
+    @Override
+    public void setWebViewRenderProcessClient(
+            Executor executor, WebViewRenderProcessClient webViewRenderProcessClient) {
+        if (webViewRenderProcessClient == null) {
+            mSharedWebViewChromium.setWebViewRendererClientAdapter(null);
+        } else {
+            if (executor == null) {
+                executor = (Runnable r) -> r.run();
+            }
+            mSharedWebViewChromium.setWebViewRendererClientAdapter(
+                    new WebViewRenderProcessClientAdapter(executor, webViewRenderProcessClient));
+        }
+    }
+
+    @Override
+    public WebViewRenderProcessClient getWebViewRenderProcessClient() {
+        SharedWebViewRendererClientAdapter adapter =
+                mSharedWebViewChromium.getWebViewRendererClientAdapter();
+        if (adapter == null || !(adapter instanceof WebViewRenderProcessClientAdapter)) {
+            return null;
+        }
+        return ((WebViewRenderProcessClientAdapter) adapter).getWebViewRenderProcessClient();
     }
 
     @Override

@@ -6,9 +6,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_NOTIFICATIONS_NOTIFICATION_RESOURCES_LOADER_H_
 
 #include <memory>
-#include "third_party/blink/public/mojom/notifications/notification.mojom-blink.h"
+
+#include "third_party/blink/public/mojom/notifications/notification.mojom-blink-forward.h"
+#include "third_party/blink/renderer/core/loader/threaded_icon_loader.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/modules/notifications/notification_image_loader.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/heap/heap_allocator.h"
@@ -20,11 +21,12 @@
 namespace blink {
 
 class ExecutionContext;
+struct WebSize;
 
 // Fetches the resources specified in a given NotificationData. Uses a
 // callback to notify the caller when all fetches have finished.
 class MODULES_EXPORT NotificationResourcesLoader final
-    : public GarbageCollectedFinalized<NotificationResourcesLoader> {
+    : public GarbageCollected<NotificationResourcesLoader> {
   USING_PRE_FINALIZER(NotificationResourcesLoader, Stop);
 
  public:
@@ -56,23 +58,21 @@ class MODULES_EXPORT NotificationResourcesLoader final
   virtual void Trace(blink::Visitor* visitor);
 
  private:
-  void LoadImage(ExecutionContext* context,
-                 NotificationImageLoader::Type type,
-                 const KURL& url,
-                 NotificationImageLoader::ImageCallback image_callback);
-  void DidLoadImage(const SkBitmap& image);
-  void DidLoadIcon(const SkBitmap& image);
-  void DidLoadBadge(const SkBitmap& image);
-  void DidLoadActionIcon(wtf_size_t action_index, const SkBitmap& image);
+  void LoadIcon(ExecutionContext* context,
+                const KURL& url,
+                const WebSize& resize_dimensions,
+                ThreadedIconLoader::IconCallback icon_callback);
 
-  // Decrements |m_pendingRequestCount| and runs |m_completionCallback| if
+  void DidLoadIcon(SkBitmap* out_icon, SkBitmap icon, double resize_scale);
+
+  // Decrements |pending_request_count_| and runs |completion_callback_| if
   // there are no more pending requests.
   void DidFinishRequest();
 
   bool started_;
   CompletionCallback completion_callback_;
   int pending_request_count_;
-  HeapVector<Member<NotificationImageLoader>> image_loaders_;
+  HeapVector<Member<ThreadedIconLoader>> icon_loaders_;
   SkBitmap image_;
   SkBitmap icon_;
   SkBitmap badge_;

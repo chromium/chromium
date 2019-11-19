@@ -13,8 +13,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/supervised_user/supervised_users.h"
 #include "components/prefs/pref_store.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 
 namespace base {
 class DictionaryValue;
@@ -26,10 +24,9 @@ class SupervisedUserSettingsService;
 
 // A PrefStore that gets its values from supervised user settings via the
 // SupervisedUserSettingsService passed in at construction.
-class SupervisedUserPrefStore : public PrefStore,
-                                public content::NotificationObserver {
+class SupervisedUserPrefStore : public PrefStore {
  public:
-  SupervisedUserPrefStore(
+  explicit SupervisedUserPrefStore(
       SupervisedUserSettingsService* supervised_user_settings_service);
 
   // PrefStore overrides:
@@ -41,20 +38,19 @@ class SupervisedUserPrefStore : public PrefStore,
   bool HasObservers() const override;
   bool IsInitializationComplete() const override;
 
-  // NotificationObserver implementation.
-  void Observe(int type,
-               const content::NotificationSource& src,
-               const content::NotificationDetails& details) override;
-
  private:
   ~SupervisedUserPrefStore() override;
 
   void OnNewSettingsAvailable(const base::DictionaryValue* settings);
 
+  void OnSettingsServiceShutdown();
+
   std::unique_ptr<
       base::CallbackList<void(const base::DictionaryValue*)>::Subscription>
       user_settings_subscription_;
-  content::NotificationRegistrar unsubscriber_registrar_;
+
+  std::unique_ptr<base::CallbackList<void()>::Subscription>
+      shutdown_subscription_;
 
   std::unique_ptr<PrefValueMap> prefs_;
 

@@ -4,6 +4,8 @@
 
 #include "gpu/ipc/common/gpu_memory_buffer_impl_native_pixmap.h"
 
+#include <vulkan/vulkan.h>
+
 #include <utility>
 
 #include "base/bind.h"
@@ -35,12 +37,10 @@ GpuMemoryBufferImplNativePixmap::GpuMemoryBufferImplNativePixmap(
     gfx::BufferFormat format,
     DestructionCallback callback,
     std::unique_ptr<gfx::ClientNativePixmap> pixmap,
-    const std::vector<gfx::NativePixmapPlane>& planes,
-    std::vector<base::ScopedFD> fds)
+    gfx::NativePixmapHandle handle)
     : GpuMemoryBufferImpl(id, size, format, std::move(callback)),
       pixmap_(std::move(pixmap)),
-      planes_(planes),
-      fds_(std::move(fds)) {}
+      handle_(std::move(handle)) {}
 
 GpuMemoryBufferImplNativePixmap::~GpuMemoryBufferImplNativePixmap() = default;
 
@@ -48,38 +48,20 @@ GpuMemoryBufferImplNativePixmap::~GpuMemoryBufferImplNativePixmap() = default;
 std::unique_ptr<GpuMemoryBufferImplNativePixmap>
 GpuMemoryBufferImplNativePixmap::CreateFromHandle(
     gfx::ClientNativePixmapFactory* client_native_pixmap_factory,
-    const gfx::GpuMemoryBufferHandle& handle,
+    gfx::GpuMemoryBufferHandle handle,
     const gfx::Size& size,
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
     DestructionCallback callback) {
-  std::vector<base::ScopedFD> fds;
-  std::vector<base::ScopedFD> dup_fds;
-  for (auto& fd : handle.native_pixmap_handle.fds) {
-    DCHECK(fd.auto_close);
-    // Take ownership of FD
-    fds.emplace_back(fd.fd);
-    // Duplicate FD for GpuMemoryBufferImplNativePixmap ctor.
-    dup_fds.emplace_back(HANDLE_EINTR(dup(fd.fd)));
-    if (!dup_fds.back().is_valid()) {
-      PLOG(ERROR) << "dup";
-      return nullptr;
-    }
-  }
-
-  gfx::NativePixmapHandle native_pixmap_handle;
-  for (auto& fd : dup_fds) {
-    native_pixmap_handle.fds.emplace_back(fd.release(), true /* auto_close */);
-  }
-  native_pixmap_handle.planes = handle.native_pixmap_handle.planes;
   std::unique_ptr<gfx::ClientNativePixmap> native_pixmap =
       client_native_pixmap_factory->ImportFromHandle(
-          std::move(native_pixmap_handle), size, usage);
-  DCHECK(native_pixmap);
+          CloneHandleForIPC(handle.native_pixmap_handle), size, format, usage);
+  if (!native_pixmap)
+    return nullptr;
 
   return base::WrapUnique(new GpuMemoryBufferImplNativePixmap(
       handle.id, size, format, std::move(callback), std::move(native_pixmap),
-      handle.native_pixmap_handle.planes, std::move(fds)));
+      std::move(handle.native_pixmap_handle)));
 }
 
 // static
@@ -92,8 +74,8 @@ base::OnceClosure GpuMemoryBufferImplNativePixmap::AllocateForTesting(
   scoped_refptr<gfx::NativePixmap> pixmap =
       ui::OzonePlatform::GetInstance()
           ->GetSurfaceFactoryOzone()
-          ->CreateNativePixmap(gfx::kNullAcceleratedWidget, size, format,
-                               usage);
+          ->CreateNativePixmap(gfx::kNullAcceleratedWidget, VK_NULL_HANDLE,
+                               size, format, usage);
   handle->native_pixmap_handle = pixmap->ExportHandle();
 #else
   // TODO(j.isorce): use gbm_bo_create / gbm_bo_get_fd from system libgbm.
@@ -106,6 +88,8 @@ base::OnceClosure GpuMemoryBufferImplNativePixmap::AllocateForTesting(
 
 bool GpuMemoryBufferImplNativePixmap::Map() {
   DCHECK(!mapped_);
+  DCHECK_EQ(gfx::NumberOfPlanesForLinearBufferFormat(GetFormat()),
+            handle_.planes.size());
   mapped_ = pixmap_->Map();
   return mapped_;
 }
@@ -122,7 +106,7 @@ void GpuMemoryBufferImplNativePixmap::Unmap() {
 }
 
 int GpuMemoryBufferImplNativePixmap::stride(size_t plane) const {
-  DCHECK_LT(plane, gfx::NumberOfPlanesForBufferFormat(format_));
+  DCHECK_LT(plane, gfx::NumberOfPlanesForLinearBufferFormat(format_));
   return pixmap_->GetStride(plane);
 }
 
@@ -135,12 +119,7 @@ gfx::GpuMemoryBufferHandle GpuMemoryBufferImplNativePixmap::CloneHandle()
   gfx::GpuMemoryBufferHandle handle;
   handle.type = gfx::NATIVE_PIXMAP;
   handle.id = id_;
-  gfx::NativePixmapHandle native_pixmap_handle;
-  for (const auto& fd : fds_) {
-    native_pixmap_handle.fds.emplace_back(fd.get(), false /* auto_close */);
-  }
-  native_pixmap_handle.planes = planes_;
-  handle.native_pixmap_handle = gfx::CloneHandleForIPC(native_pixmap_handle);
+  handle.native_pixmap_handle = gfx::CloneHandleForIPC(handle_);
   return handle;
 }
 

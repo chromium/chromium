@@ -1,0 +1,52 @@
+This is a testharness.js-based test.
+PASS idl_test setup
+PASS idl_test validation
+PASS Partial interface Navigator: original interface defined
+PASS Partial interface Navigator: valid exposure set
+PASS Partial interface Navigator: member names are unique
+PASS Partial interface mixin NavigatorID: member names are unique
+PASS Navigator includes NavigatorID: member names are unique
+PASS Navigator includes NavigatorLanguage: member names are unique
+PASS Navigator includes NavigatorOnLine: member names are unique
+PASS Navigator includes NavigatorContentUtils: member names are unique
+PASS Navigator includes NavigatorCookies: member names are unique
+PASS Navigator includes NavigatorPlugins: member names are unique
+PASS Navigator includes NavigatorConcurrentHardware: member names are unique
+PASS MediaSession interface: existence and properties of interface object
+PASS MediaSession interface object length
+PASS MediaSession interface object name
+PASS MediaSession interface: existence and properties of interface prototype object
+PASS MediaSession interface: existence and properties of interface prototype object's "constructor" property
+PASS MediaSession interface: existence and properties of interface prototype object's @@unscopables property
+PASS MediaSession interface: attribute metadata
+PASS MediaSession interface: attribute playbackState
+PASS MediaSession interface: operation setActionHandler(MediaSessionAction, MediaSessionActionHandler)
+FAIL MediaSession interface: operation setPositionState(MediaPositionState) assert_equals: property has wrong .length expected 0 but got 1
+PASS MediaSession must be primary interface of navigator.mediaSession
+PASS Stringification of navigator.mediaSession
+PASS MediaSession interface: navigator.mediaSession must inherit property "metadata" with the proper type
+PASS MediaSession interface: navigator.mediaSession must inherit property "playbackState" with the proper type
+PASS MediaSession interface: navigator.mediaSession must inherit property "setActionHandler(MediaSessionAction, MediaSessionActionHandler)" with the proper type
+PASS MediaSession interface: calling setActionHandler(MediaSessionAction, MediaSessionActionHandler) on navigator.mediaSession with too few arguments must throw TypeError
+PASS MediaSession interface: navigator.mediaSession must inherit property "setPositionState(MediaPositionState)" with the proper type
+PASS MediaSession interface: calling setPositionState(MediaPositionState) on navigator.mediaSession with too few arguments must throw TypeError
+PASS MediaMetadata interface: existence and properties of interface object
+PASS MediaMetadata interface object length
+PASS MediaMetadata interface object name
+PASS MediaMetadata interface: existence and properties of interface prototype object
+PASS MediaMetadata interface: existence and properties of interface prototype object's "constructor" property
+PASS MediaMetadata interface: existence and properties of interface prototype object's @@unscopables property
+PASS MediaMetadata interface: attribute title
+PASS MediaMetadata interface: attribute artist
+PASS MediaMetadata interface: attribute album
+PASS MediaMetadata interface: attribute artwork
+PASS MediaMetadata must be primary interface of new MediaMetadata()
+PASS Stringification of new MediaMetadata()
+PASS MediaMetadata interface: new MediaMetadata() must inherit property "title" with the proper type
+PASS MediaMetadata interface: new MediaMetadata() must inherit property "artist" with the proper type
+PASS MediaMetadata interface: new MediaMetadata() must inherit property "album" with the proper type
+PASS MediaMetadata interface: new MediaMetadata() must inherit property "artwork" with the proper type
+PASS Navigator interface: attribute mediaSession
+PASS Navigator interface: navigator must inherit property "mediaSession" with the proper type
+Harness: the test ran to completion.
+

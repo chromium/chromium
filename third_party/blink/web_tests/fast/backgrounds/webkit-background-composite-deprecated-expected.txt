@@ -1,2 +1,0 @@
-CONSOLE WARNING: '-webkit-background-composite' is deprecated and will be removed in M51, around May 2016. See https://www.chromestatus.com/features/6607299456008192 for more details.
-

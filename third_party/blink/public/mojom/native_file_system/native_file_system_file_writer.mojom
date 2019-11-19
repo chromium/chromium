@@ -1,0 +1,40 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "third_party/blink/public/mojom/blob/blob.mojom";
+import "third_party/blink/public/mojom/native_file_system/native_file_system_error.mojom";
+
+// Represents an object to modify a file.
+interface NativeFileSystemFileWriter {
+  // Write data from |data| to the given |position| in the file being written
+  // to. Returns whether the operation succeeded and if so how many bytes were
+  // written.
+  // TODO(mek): This might need some way of reporting progress events back to
+  // the renderer.
+  Write(uint64 offset, pending_remote<Blob> data) => (NativeFileSystemError result,
+                                      uint64 bytes_written);
+
+  // Write data from |stream| to the given |position| in the file being written
+  // to. Returns whether the operation succeeded and if so how many bytes were
+  // written.
+  // TODO(mek): This might need some way of reporting progress events back to
+  // the renderer.
+  WriteStream(uint64 offset, handle<data_pipe_consumer> stream) =>
+      (NativeFileSystemError result, uint64 bytes_written);
+
+  // Changes the length of the file to be |length|. If |length| is larger than
+  // the current size of the file, the file will be extended, and the extended
+  // part is filled with null bytes.
+  Truncate(uint64 length) => (NativeFileSystemError result);
+
+  // Closes the file writer. This will materialize the writes operations on the
+  // intended file target in the case of atomic writes.
+  // Close() will close the mojo pipe after completion.
+  // If the mojo pipe closes before Close() is invoked, the write operation is deemed
+  // unsuccessful. Any temporary artifacts will be deleted.
+  // Returns whether the operation succeeded.
+  Close() => (NativeFileSystemError result);
+};

@@ -17,9 +17,9 @@
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "storage/browser/fileapi/quota/quota_reservation.h"
+#include "storage/browser/file_system/quota/quota_reservation.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/origin.h"
 
@@ -121,7 +121,7 @@ class QuotaReservationTest : public testing::Test {
   }
 
  private:
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   base::ScopedTempDir work_dir_;
   std::unique_ptr<storage::QuotaReservationManager> reservation_manager_;
 

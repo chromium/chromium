@@ -29,14 +29,13 @@ sys.path.append(os.path.join(_BUILD_ANDROID, 'gyp'))
 import jinja_template
 from util import build_utils
 
-sys.path.append(os.path.join(host_paths.DIR_SOURCE_ROOT, 'build'))
-import find_depot_tools  # pylint: disable=import-error
-
+_DEPOT_TOOLS_PATH = os.path.join(host_paths.DIR_SOURCE_ROOT, 'third_party',
+                                 'depot_tools')
 _DEFAULT_ANDROID_MANIFEST_PATH = os.path.join(
     host_paths.DIR_SOURCE_ROOT, 'build', 'android', 'gradle',
     'AndroidManifest.xml')
 _FILE_DIR = os.path.dirname(__file__)
-_SRCJARS_SUBDIR = 'extracted-srcjars'
+_GENERATED_JAVA_SUBDIR = 'generated_java'
 _JNI_LIBS_SUBDIR = 'symlinked-libs'
 _ARMEABI_SUBDIR = 'armeabi'
 _RES_SUBDIR = 'extracted-res'
@@ -46,6 +45,7 @@ _CMAKE_FILE = 'CMakeLists.txt'
 _MODULE_ALL = '_all'
 _SRC_INTERNAL = os.path.join(
     os.path.dirname(host_paths.DIR_SOURCE_ROOT), 'src-internal')
+_INSTRUMENTATION_TARGET_SUFFIX = '_test_apk__test_apk__apk'
 
 _DEFAULT_TARGETS = [
     '//android_webview/test/embedded_test_server:aw_net_test_support_apk',
@@ -114,9 +114,9 @@ def _ReadPropertiesFile(path):
 
 def _RunGnGen(output_dir, args=None):
   cmd = [
-    os.path.join(find_depot_tools.DEPOT_TOOLS_PATH, 'gn'),
-    'gen',
-    output_dir,
+      os.path.join(_DEPOT_TOOLS_PATH, 'gn'),
+      'gen',
+      output_dir,
   ]
   if args:
     cmd.extend(args)
@@ -124,12 +124,11 @@ def _RunGnGen(output_dir, args=None):
   subprocess.check_call(cmd)
 
 
-def _RunNinja(output_dir, args, j):
+def _RunNinja(output_dir, args):
   cmd = [
-    os.path.join(find_depot_tools.DEPOT_TOOLS_PATH, 'ninja'),
-    '-C',
-    output_dir,
-    '-j{}'.format(j),
+      os.path.join(_DEPOT_TOOLS_PATH, 'autoninja'),
+      '-C',
+      output_dir,
   ]
   cmd.extend(args)
   logging.info('Running: %r', cmd)
@@ -139,11 +138,11 @@ def _RunNinja(output_dir, args, j):
 def _QueryForAllGnTargets(output_dir):
   # Query ninja rather than GN since it's faster.
   cmd = [
-    os.path.join(find_depot_tools.DEPOT_TOOLS_PATH, 'ninja'),
-    '-C',
-    output_dir,
-    '-t',
-    'targets',
+      os.path.join(_DEPOT_TOOLS_PATH, 'ninja'),
+      '-C',
+      output_dir,
+      '-t',
+      'targets',
   ]
   logging.info('Running: %r', cmd)
   ninja_output = build_utils.CheckOutput(cmd)
@@ -215,6 +214,10 @@ class _ProjectEntry(object):
       ninja_target = ninja_target[1:]
     return ninja_target.replace(':', os.path.sep)
 
+  def GeneratedJavaSubdir(self):
+    return _RebasePath(
+        os.path.join('gen', self.GradleSubdir(), _GENERATED_JAVA_SUBDIR))
+
   def ProjectName(self):
     """Returns the Gradle project name."""
     return self.GradleSubdir().replace(os.path.sep, '.')
@@ -242,11 +245,12 @@ class _ProjectEntry(object):
 
   def IsValid(self):
     return self.GetType() in (
-      'android_apk',
-      'java_library',
-      "java_annotation_processor",
-      'java_binary',
-      'junit_binary',
+        'android_apk',
+        'android_app_bundle_module',
+        'java_library',
+        "java_annotation_processor",
+        'java_binary',
+        'junit_binary',
     )
 
   def ResZips(self):
@@ -264,9 +268,6 @@ class _ProjectEntry(object):
         java_files = build_utils.ReadSourcesList(java_sources_file)
       self._java_files = java_files
     return self._java_files
-
-  def GeneratedJavaFiles(self):
-    return [p for p in self.JavaFiles() if not p.startswith('..')]
 
   def PrebuiltJars(self):
     all_jars = self.Gradle().get('dependent_prebuilt_jars', [])
@@ -349,12 +350,6 @@ class _ProjectContextGenerator(object):
   def _Relativize(self, entry, paths):
     return _RebasePath(paths, self.EntryOutputDir(entry))
 
-  def _Srcjars(self, entry):
-    srcjars = _RebasePath(entry.Gradle().get('bundled_srcjars', []))
-    if not self.use_gradle_process_resources:
-      srcjars += _RebasePath(entry.DepsInfo().get('owned_resource_srcjars', []))
-    return srcjars
-
   def _GetEntries(self, entry):
     if self.split_projects:
       return [entry]
@@ -363,37 +358,23 @@ class _ProjectContextGenerator(object):
   def EntryOutputDir(self, entry):
     return os.path.join(self.project_dir, entry.GradleSubdir())
 
-  def AllSrcjars(self, root_entry):
-    srcjars = []
-    for entry in self._GetEntries(root_entry):
-      srcjars += self._Srcjars(entry)
-    return set(srcjars)
-
   def AllResZips(self, root_entry):
     res_zips = []
     for entry in self._GetEntries(root_entry):
       res_zips += entry.ResZips()
     return set(_RebasePath(res_zips))
 
-  def GeneratedInputs(self, root_entry, fast=None):
+  def GeneratedInputs(self, root_entry):
     generated_inputs = set()
-    if not fast:
-      generated_inputs.update(self.AllResZips(root_entry))
-      generated_inputs.update(self.AllSrcjars(root_entry))
+    generated_inputs.update(self.AllResZips(root_entry))
     for entry in self._GetEntries(root_entry):
-      generated_inputs.update(entry.GeneratedJavaFiles())
       generated_inputs.update(entry.PrebuiltJars())
     return generated_inputs
 
-  def GeneratedZips(self, root_entry, fast=None):
+  def GeneratedZips(self, root_entry):
     entry_output_dir = self.EntryOutputDir(root_entry)
-    tuples = []
-    if not fast:
-      tuples.extend((s, os.path.join(entry_output_dir, _SRCJARS_SUBDIR))
-                    for s in self.AllSrcjars(root_entry))
-      tuples.extend((s, os.path.join(entry_output_dir, _RES_SUBDIR))
-                    for s in self.AllResZips(root_entry))
-    return tuples
+    return [(s, os.path.join(entry_output_dir, _RES_SUBDIR))
+            for s in self.AllResZips(root_entry)]
 
   def GenerateManifest(self, root_entry):
     android_manifest = root_entry.DepsInfo().get('android_manifest')
@@ -406,8 +387,8 @@ class _ProjectContextGenerator(object):
     # things up at all.
     variables = {}
     java_dirs, excludes = self._GenJavaDirs(root_entry)
-    java_dirs.append(
-        os.path.join(self.EntryOutputDir(root_entry), _SRCJARS_SUBDIR))
+    java_dirs.extend(
+        e.GeneratedJavaSubdir() for e in self._GetEntries(root_entry))
     self.processed_java_dirs.update(java_dirs)
     java_dirs.sort()
     variables['java_dirs'] = self._Relativize(root_entry, java_dirs)
@@ -710,13 +691,13 @@ def _GenerateSettingsGradle(project_entries):
 
 
 def _ExtractFile(zip_path, extracted_path):
-  logging.info('Extracting %s to %s', zip_path, extracted_path)
+  logging.debug('Extracting %s to %s', zip_path, extracted_path)
   with zipfile.ZipFile(zip_path) as z:
     z.extractall(extracted_path)
 
 
 def _ExtractZips(entry_output_dir, zip_tuples):
-  """Extracts all srcjars to the directory given by the tuples."""
+  """Extracts all zips to the directory given in the tuples."""
   extracted_paths = set(s[1] for s in zip_tuples)
   for extracted_path in extracted_paths:
     assert _IsSubpathOf(extracted_path, entry_output_dir)
@@ -753,8 +734,8 @@ def _CombineTestEntries(entries):
   android_test_entries = collections.defaultdict(list)
   for entry in entries:
     target_name = entry.GnTarget()
-    if (target_name.endswith('_test_apk__apk') and
-        'apk_under_test' in entry.Gradle()):
+    if (target_name.endswith(_INSTRUMENTATION_TARGET_SUFFIX)
+        and 'apk_under_test' in entry.Gradle()):
       apk_name = entry.Gradle()['apk_under_test']
       android_test_entries[apk_name].append(entry)
     else:
@@ -805,12 +786,6 @@ def main():
                       action='store_true',
                       help='Split projects by their gn deps rather than '
                            'combining all the dependencies of each target')
-  parser.add_argument('--fast',
-                      action='store_true',
-                      help='Skip generating R.java and other generated files.')
-  parser.add_argument('-j',
-                      default=1000 if os.path.exists(_SRC_INTERNAL) else 50,
-                      help='Value for number of parallel jobs for ninja')
   parser.add_argument('--native-target',
                       dest='native_targets',
                       action='append',
@@ -869,13 +844,15 @@ def main():
       _RunGnGen(output_dir)
     else:
       # Faster than running "gn gen" in the no-op case.
-      _RunNinja(output_dir, ['build.ninja'], args.j)
+      _RunNinja(output_dir, ['build.ninja'])
     # Query ninja for all __build_config_crbug_908819 targets.
     targets = _QueryForAllGnTargets(output_dir)
   else:
     assert not args.native_targets, 'Native editing requires --all.'
-    targets = [re.sub(r'_test_apk$', '_test_apk__apk', t)
-               for t in targets_from_args]
+    targets = [
+        re.sub(r'_test_apk$', _INSTRUMENTATION_TARGET_SUFFIX, t)
+        for t in targets_from_args
+    ]
     # Necessary after "gn clean"
     if not os.path.exists(os.path.join(output_dir, 'build_vars.txt')):
       _RunGnGen(output_dir)
@@ -899,16 +876,19 @@ def main():
   main_entries = [_ProjectEntry.FromGnTarget(t) for t in targets]
 
   logging.warning('Building .build_config files...')
-  _RunNinja(
-      output_dir, [e.NinjaBuildConfigTarget() for e in main_entries], args.j)
+  _RunNinja(output_dir, [e.NinjaBuildConfigTarget() for e in main_entries])
 
   if args.all:
     # There are many unused libraries, so restrict to those that are actually
-    # used by apks/binaries/tests or that are explicitly mentioned in --targets.
-    main_entries = [e for e in main_entries if (
-        e.GetType() in ('android_apk', 'java_binary', 'junit_binary') or
-        e.GnTarget() in targets_from_args or
-        e.GnTarget().endswith('_test_apk__apk'))]
+    # used by apks/bundles/binaries/tests or that are explicitly mentioned in
+    # --targets.
+    BASE_TYPES = ('android_apk', 'android_app_bundle_module', 'java_binary',
+                  'junit_binary')
+    main_entries = [
+        e for e in main_entries
+        if (e.GetType() in BASE_TYPES or e.GnTarget() in targets_from_args
+            or e.GnTarget().endswith(_INSTRUMENTATION_TARGET_SUFFIX))
+    ]
 
   if args.split_projects:
     main_entries = _FindAllProjectEntries(main_entries)
@@ -956,16 +936,16 @@ def main():
     entries_to_gen.extend(entry.android_test_entries)
     for entry_to_gen in entries_to_gen:
       # Build all paths references by .gradle that exist within output_dir.
-      generated_inputs.update(
-          generator.GeneratedInputs(entry_to_gen, args.fast))
-      zip_tuples.extend(generator.GeneratedZips(entry_to_gen, args.fast))
+      generated_inputs.update(generator.GeneratedInputs(entry_to_gen))
+      zip_tuples.extend(generator.GeneratedZips(entry_to_gen))
   if generated_inputs:
-    logging.warning('Building generated source files...')
     targets = _RebasePath(generated_inputs, output_dir)
-    _RunNinja(output_dir, targets, args.j)
+    _RunNinja(output_dir, targets)
   if zip_tuples:
+    # This extracts generated xml files (e.g. strings).
     _ExtractZips(generator.project_dir, zip_tuples)
 
+  logging.warning('Generated files will only appear once you\'ve built them.')
   logging.warning('Generated projects for Android Studio %s', channel)
   logging.warning('For more tips: https://chromium.googlesource.com/chromium'
                   '/src.git/+/master/docs/android_studio.md')

@@ -33,6 +33,7 @@
 #include <google/protobuf/stubs/common.h>
 #include <google/protobuf/io/coded_stream.h>
 #include <google/protobuf/io/zero_copy_stream.h>
+#include <google/protobuf/stubs/once.h>
 #include <google/protobuf/util/internal/default_value_objectwriter.h>
 #include <google/protobuf/util/internal/error_listener.h>
 #include <google/protobuf/util/internal/json_objectwriter.h>
@@ -42,7 +43,11 @@
 #include <google/protobuf/util/type_resolver.h>
 #include <google/protobuf/util/type_resolver_util.h>
 #include <google/protobuf/stubs/bytestream.h>
+
+#include <google/protobuf/stubs/strutil.h>
 #include <google/protobuf/stubs/status_macros.h>
+
+#include <google/protobuf/port_def.inc>
 
 namespace google {
 namespace protobuf {
@@ -78,7 +83,7 @@ void ZeroCopyStreamByteSink::Append(const char* bytes, size_t len) {
 }  // namespace internal
 
 util::Status BinaryToJsonStream(TypeResolver* resolver,
-                                  const string& type_url,
+                                  const std::string& type_url,
                                   io::ZeroCopyInputStream* binary_input,
                                   io::ZeroCopyOutputStream* json_output,
                                   const JsonPrintOptions& options) {
@@ -93,8 +98,8 @@ util::Status BinaryToJsonStream(TypeResolver* resolver,
   converter::JsonObjectWriter json_writer(options.add_whitespace ? " " : "",
                                           &out_stream);
   if (options.always_print_primitive_fields) {
-    converter::DefaultValueObjectWriter default_value_writer(
-        resolver, type, &json_writer);
+    converter::DefaultValueObjectWriter default_value_writer(resolver, type,
+                                                             &json_writer);
     default_value_writer.set_preserve_proto_field_names(
         options.preserve_proto_field_names);
     default_value_writer.set_print_enums_as_ints(
@@ -106,9 +111,9 @@ util::Status BinaryToJsonStream(TypeResolver* resolver,
 }
 
 util::Status BinaryToJsonString(TypeResolver* resolver,
-                                  const string& type_url,
-                                  const string& binary_input,
-                                  string* json_output,
+                                  const std::string& type_url,
+                                  const std::string& binary_input,
+                                  std::string* json_output,
                                   const JsonPrintOptions& options) {
   io::ArrayInputStream input_stream(binary_input.data(), binary_input.size());
   io::StringOutputStream output_stream(json_output);
@@ -120,40 +125,56 @@ namespace {
 class StatusErrorListener : public converter::ErrorListener {
  public:
   StatusErrorListener() {}
-  virtual ~StatusErrorListener() {}
+  ~StatusErrorListener() override {}
 
   util::Status GetStatus() { return status_; }
 
-  virtual void InvalidName(const converter::LocationTrackerInterface& loc,
-                           StringPiece unknown_name, StringPiece message) {
-    status_ = util::Status(util::error::INVALID_ARGUMENT,
-                             loc.ToString() + ": " + string(message));
-  }
-
-  virtual void InvalidValue(const converter::LocationTrackerInterface& loc,
-                            StringPiece type_name, StringPiece value) {
+  void InvalidName(const converter::LocationTrackerInterface& loc,
+                   StringPiece unknown_name,
+                   StringPiece message) override {
+    std::string loc_string = GetLocString(loc);
+    if (!loc_string.empty()) {
+      loc_string.append(" ");
+    }
     status_ =
         util::Status(util::error::INVALID_ARGUMENT,
-                       loc.ToString() + ": invalid value " + string(value) +
-                           " for type " + string(type_name));
+                       StrCat(loc_string, unknown_name, ": ", message));
   }
 
-  virtual void MissingField(const converter::LocationTrackerInterface& loc,
-                            StringPiece missing_name) {
+  void InvalidValue(const converter::LocationTrackerInterface& loc,
+                    StringPiece type_name,
+                    StringPiece value) override {
     status_ = util::Status(
         util::error::INVALID_ARGUMENT,
-        loc.ToString() + ": missing field " + string(missing_name));
+        StrCat(GetLocString(loc), ": invalid value ", string(value),
+                     " for type ", string(type_name)));
+  }
+
+  void MissingField(const converter::LocationTrackerInterface& loc,
+                    StringPiece missing_name) override {
+    status_ = util::Status(util::error::INVALID_ARGUMENT,
+                             StrCat(GetLocString(loc), ": missing field ",
+                                          std::string(missing_name)));
   }
 
  private:
   util::Status status_;
+
+  std::string GetLocString(const converter::LocationTrackerInterface& loc) {
+    std::string loc_string = loc.ToString();
+    StripWhitespace(&loc_string);
+    if (!loc_string.empty()) {
+      loc_string = StrCat("(", loc_string, ")");
+    }
+    return loc_string;
+  }
 
   GOOGLE_DISALLOW_EVIL_CONSTRUCTORS(StatusErrorListener);
 };
 }  // namespace
 
 util::Status JsonToBinaryStream(TypeResolver* resolver,
-                                  const string& type_url,
+                                  const std::string& type_url,
                                   io::ZeroCopyInputStream* json_input,
                                   io::ZeroCopyOutputStream* binary_output,
                                   const JsonParseOptions& options) {
@@ -163,17 +184,20 @@ util::Status JsonToBinaryStream(TypeResolver* resolver,
   StatusErrorListener listener;
   converter::ProtoStreamObjectWriter::Options proto_writer_options;
   proto_writer_options.ignore_unknown_fields = options.ignore_unknown_fields;
-  converter::ProtoStreamObjectWriter proto_writer(resolver, type, &sink,
-                                                  &listener,
-                                                  proto_writer_options);
+  proto_writer_options.ignore_unknown_enum_values =
+      options.ignore_unknown_fields;
+  proto_writer_options.case_insensitive_enum_parsing =
+      options.case_insensitive_enum_parsing;
+  converter::ProtoStreamObjectWriter proto_writer(
+      resolver, type, &sink, &listener, proto_writer_options);
 
   converter::JsonStreamParser parser(&proto_writer);
   const void* buffer;
   int length;
   while (json_input->Next(&buffer, &length)) {
     if (length == 0) continue;
-    RETURN_IF_ERROR(
-        parser.Parse(StringPiece(static_cast<const char*>(buffer), length)));
+    RETURN_IF_ERROR(parser.Parse(
+        StringPiece(static_cast<const char*>(buffer), length)));
   }
   RETURN_IF_ERROR(parser.FinishParse());
 
@@ -181,23 +205,24 @@ util::Status JsonToBinaryStream(TypeResolver* resolver,
 }
 
 util::Status JsonToBinaryString(TypeResolver* resolver,
-                                  const string& type_url,
-                                  const string& json_input,
-                                  string* binary_output,
+                                  const std::string& type_url,
+                                  StringPiece json_input,
+                                  std::string* binary_output,
                                   const JsonParseOptions& options) {
   io::ArrayInputStream input_stream(json_input.data(), json_input.size());
   io::StringOutputStream output_stream(binary_output);
-  return JsonToBinaryStream(
-      resolver, type_url, &input_stream, &output_stream, options);
+  return JsonToBinaryStream(resolver, type_url, &input_stream, &output_stream,
+                            options);
 }
 
 namespace {
 const char* kTypeUrlPrefix = "type.googleapis.com";
 TypeResolver* generated_type_resolver_ = NULL;
-GOOGLE_PROTOBUF_DECLARE_ONCE(generated_type_resolver_init_);
+PROTOBUF_NAMESPACE_ID::internal::once_flag generated_type_resolver_init_;
 
-string GetTypeUrl(const Message& message) {
-  return string(kTypeUrlPrefix) + "/" + message.GetDescriptor()->full_name();
+std::string GetTypeUrl(const Message& message) {
+  return std::string(kTypeUrlPrefix) + "/" +
+         message.GetDescriptor()->full_name();
 }
 
 void DeleteGeneratedTypeResolver() { delete generated_type_resolver_; }
@@ -209,14 +234,13 @@ void InitGeneratedTypeResolver() {
 }
 
 TypeResolver* GetGeneratedTypeResolver() {
-  ::google::protobuf::GoogleOnceInit(
-      &GOOGLE_PROTOBUF_GET_ONCE(generated_type_resolver_init_),
-      &InitGeneratedTypeResolver);
+  PROTOBUF_NAMESPACE_ID::internal::call_once(generated_type_resolver_init_,
+                                             InitGeneratedTypeResolver);
   return generated_type_resolver_;
 }
 }  // namespace
 
-util::Status MessageToJsonString(const Message& message, string* output,
+util::Status MessageToJsonString(const Message& message, std::string* output,
                                    const JsonOptions& options) {
   const DescriptorPool* pool = message.GetDescriptor()->file()->pool();
   TypeResolver* resolver =
@@ -232,16 +256,16 @@ util::Status MessageToJsonString(const Message& message, string* output,
   return result;
 }
 
-util::Status JsonStringToMessage(const string& input, Message* message,
+util::Status JsonStringToMessage(StringPiece input, Message* message,
                                    const JsonParseOptions& options) {
   const DescriptorPool* pool = message->GetDescriptor()->file()->pool();
   TypeResolver* resolver =
       pool == DescriptorPool::generated_pool()
           ? GetGeneratedTypeResolver()
           : NewTypeResolverForDescriptorPool(kTypeUrlPrefix, pool);
-  string binary;
-  util::Status result = JsonToBinaryString(
-      resolver, GetTypeUrl(*message), input, &binary, options);
+  std::string binary;
+  util::Status result = JsonToBinaryString(resolver, GetTypeUrl(*message),
+                                             input, &binary, options);
   if (result.ok() && !message->ParseFromString(binary)) {
     result =
         util::Status(util::error::INVALID_ARGUMENT,

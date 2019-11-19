@@ -17,16 +17,7 @@ class FilePath;
 
 namespace apps {
 
-// Returns true if |app_id| was successfully opened in a window, and false
-// otherwise.
-bool OpenApplicationWindow(Profile* profile,
-                           const std::string& app_id,
-                           const base::CommandLine& command_line,
-                           const base::FilePath& current_directory);
-
-// Returns true if |app_id| was successfully opened in a tab, and false
-// otherwise.
-bool OpenApplicationTab(Profile* profile, const std::string& app_id);
+// TODO(crbug.com/966288): Move these methods into LaunchService.
 
 // Tries to open |app_id|, and prompts the user if the app is disabled. Returns
 // true if the app was successfully opened and false otherwise.

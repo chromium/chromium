@@ -1,8 +1,0 @@
-This is a testharness.js-based test.
-PASS Importing a same-origin top-level script with the same-origin policy.
-PASS Importing a remote-origin top-level script with the same-origin policy.
-PASS Importing a same-origin descendant script from a same-origin top-level script with the same-origin policy.
-PASS Importing a remote-origin descendant script from a same-origin top-level script with the same-origin policy.
-FAIL Importing a remote-origin descendant script from a remote-origin top-level script with the same-origin policy. assert_equals: Referrer should not be sent for the remote-origin descendant script even if it is imported from the script in the same remote-origin. expected "" but got "http://www1.web-platform.test:8001/html/semantics/scripting-1/the-script-element/module/resources/import-referrer-checker.sub.js?name=remote_remote"
-Harness: the test ran to completion.
-

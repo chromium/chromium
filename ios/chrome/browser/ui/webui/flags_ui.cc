@@ -14,6 +14,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "build/branding_buildflags.h"
 #include "components/flags_ui/flags_ui_constants.h"
 #include "components/flags_ui/flags_ui_pref_names.h"
 #include "components/flags_ui/pref_service_flags_storage.h"
@@ -23,12 +24,12 @@
 #include "components/strings/grit/components_chromium_strings.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/version_info/version_info.h"
-#include "ios/chrome/browser/about_flags.h"
 #include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
-#include "ios/web/public/web_ui_ios_data_source.h"
+#include "ios/chrome/browser/flags/about_flags.h"
 #include "ios/web/public/webui/web_ui_ios.h"
+#include "ios/web/public/webui/web_ui_ios_data_source.h"
 #include "ios/web/public/webui/web_ui_ios_message_handler.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -38,15 +39,13 @@ namespace {
 web::WebUIIOSDataSource* CreateFlagsUIHTMLSource() {
   web::WebUIIOSDataSource* source =
       web::WebUIIOSDataSource::Create(kChromeUIFlagsHost);
-
-  source->AddLocalizedString(flags_ui::kFlagsRestartNotice,
-                             IDS_FLAGS_UI_RELAUNCH_NOTICE);
   source->AddString(flags_ui::kVersion, version_info::GetVersionNumber());
 
-  source->SetJsonPath("strings.js");
+  source->UseStringsJs();
+  FlagsUI::AddFlagsIOSStrings(source);
   source->AddResourcePath(flags_ui::kFlagsJS, IDR_FLAGS_UI_FLAGS_JS);
   source->SetDefaultResource(IDR_FLAGS_UI_FLAGS_HTML);
-  source->UseGzip();
+  source->UseStringsJs();
   return source;
 }
 
@@ -171,9 +170,9 @@ void FlagsDOMHandler::HandleEnableExperimentalFeatureMessage(
 }
 
 void FlagsDOMHandler::HandleRestartBrowser(const base::ListValue* args) {
-#if CHROMIUM_BUILD
+#if BUILDFLAG(CHROMIUM_BRANDING)
   CHECK(false);
-#endif  // CHROMIUM_BUILD
+#endif  // BUILDFLAG(CHROMIUM_BRANDING)
 }
 
 void FlagsDOMHandler::HandleResetAllFlags(const base::ListValue* args) {
@@ -206,3 +205,36 @@ FlagsUI::FlagsUI(web::WebUIIOS* web_ui)
 }
 
 FlagsUI::~FlagsUI() {}
+
+// static
+void FlagsUI::AddFlagsIOSStrings(web::WebUIIOSDataSource* source) {
+  // Strings added here are all marked a non-translatable, so they are not
+  // actually localized.
+  source->AddLocalizedString(flags_ui::kFlagsRestartNotice,
+                             IDS_FLAGS_UI_RELAUNCH_NOTICE);
+  source->AddLocalizedString("available", IDS_FLAGS_UI_AVAILABLE_FEATURE);
+  source->AddLocalizedString("clear-search", IDS_FLAGS_UI_CLEAR_SEARCH);
+  source->AddLocalizedString("disabled", IDS_FLAGS_UI_DISABLED_FEATURE);
+  source->AddLocalizedString("enabled", IDS_FLAGS_UI_ENABLED_FEATURE);
+  source->AddLocalizedString("experiment-enabled",
+                             IDS_FLAGS_UI_EXPERIMENT_ENABLED);
+  source->AddLocalizedString("heading", IDS_FLAGS_UI_TITLE);
+  source->AddLocalizedString("no-results", IDS_FLAGS_UI_NO_RESULTS);
+  source->AddLocalizedString("not-available-platform",
+                             IDS_FLAGS_UI_NOT_AVAILABLE_ON_PLATFORM);
+  source->AddLocalizedString("page-warning", IDS_FLAGS_UI_PAGE_WARNING);
+  source->AddLocalizedString("page-warning-explanation",
+                             IDS_FLAGS_UI_PAGE_WARNING_EXPLANATION);
+  source->AddLocalizedString("relaunch", IDS_FLAGS_UI_RELAUNCH);
+  source->AddLocalizedString("reset", IDS_FLAGS_UI_PAGE_RESET);
+  source->AddLocalizedString("reset-acknowledged",
+                             IDS_FLAGS_UI_RESET_ACKNOWLEDGED);
+  source->AddLocalizedString("search-placeholder",
+                             IDS_FLAGS_UI_SEARCH_PLACEHOLDER);
+  source->AddLocalizedString("title", IDS_FLAGS_UI_TITLE);
+  source->AddLocalizedString("unavailable", IDS_FLAGS_UI_UNAVAILABLE_FEATURE);
+  source->AddLocalizedString("searchResultsSingular",
+                             IDS_FLAGS_UI_SEARCH_RESULTS_SINGULAR);
+  source->AddLocalizedString("searchResultsPlural",
+                             IDS_FLAGS_UI_SEARCH_RESULTS_PLURAL);
+}

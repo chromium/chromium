@@ -9,6 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "content/common/frame.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace content {
 
@@ -25,7 +26,7 @@ class KeepAliveHandleFactory final {
   explicit KeepAliveHandleFactory(RenderProcessHost* process_host);
   ~KeepAliveHandleFactory();
 
-  void Create(mojom::KeepAliveHandleRequest request);
+  void Create(mojo::PendingReceiver<mojom::KeepAliveHandle> receiver);
 
   // Sets the timeout after which all created handles will be invalidated.
   void SetTimeout(base::TimeDelta timeout);

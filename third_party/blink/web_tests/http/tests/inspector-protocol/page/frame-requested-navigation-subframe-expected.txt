@@ -1,0 +1,4 @@
+Tests that when a frame casues another frame to navigate, frameId is that of target frame
+Got frameRequestedNavigation from "subframe-same-origin", reason: formSubmissionPost
+Got frameRequestedNavigation from "subframe-cross-origin", reason: formSubmissionGet
+

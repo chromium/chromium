@@ -16,14 +16,15 @@ package metrics;
 message ExtensionInstallProto {
   // The type of extension item this is.
   enum Type {
-    UNKNOWN_TYPE = 0;         // Unknown (hopefully never used)
-    EXTENSION = 1;            // A browser extension
-    THEME = 2;                // A browser theme
-    USER_SCRIPT = 3;          // An extension converted from a user script
-    HOSTED_APP = 4;           // A hosted app
-    LEGACY_PACKAGED_APP = 5;  // A (deprecated) v1 packaged app
-    PLATFORM_APP = 6;         // A platform app
-    SHARED_MODULE = 7;        // A shared module
+    UNKNOWN_TYPE = 0;            // Unknown (hopefully never used)
+    EXTENSION = 1;               // A browser extension
+    THEME = 2;                   // A browser theme
+    USER_SCRIPT = 3;             // An extension converted from a user script
+    HOSTED_APP = 4;              // A hosted app
+    LEGACY_PACKAGED_APP = 5;     // A (deprecated) v1 packaged app
+    PLATFORM_APP = 6;            // A platform app
+    SHARED_MODULE = 7;           // A shared module
+    LOGIN_SCREEN_EXTENSION = 8;  // An extension running on the login screen
   }
   optional Type type = 1;
 

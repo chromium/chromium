@@ -20,7 +20,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
@@ -36,6 +35,7 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 
 import java.util.concurrent.Callable;
@@ -59,7 +59,7 @@ public class MultiWindowIntegrationTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         mTestServer.stopAndDestroyServer();
     }
 
@@ -68,14 +68,10 @@ public class MultiWindowIntegrationTest {
     @Feature("MultiWindow")
     @TargetApi(Build.VERSION_CODES.N)
     @CommandLineFlags.Add(ChromeSwitches.DISABLE_TAB_MERGING_FOR_TESTING)
-    public void testIncognitoNtpHandledCorrectly() throws InterruptedException {
+    public void testIncognitoNtpHandledCorrectly() {
         try {
-            ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-                @Override
-                public void run() {
-                    FirstRunStatus.setFirstRunFlowComplete(true);
-                }
-            });
+            TestThreadUtils.runOnUiThreadBlocking(
+                    () -> FirstRunStatus.setFirstRunFlowComplete(true));
 
             mActivityTestRule.newIncognitoTabFromMenu();
             Assert.assertTrue(mActivityTestRule.getActivity().getActivityTab().isIncognito());
@@ -86,30 +82,22 @@ public class MultiWindowIntegrationTest {
 
             final ChromeTabbedActivity2 cta2 = waitForSecondChromeTabbedActivity();
 
-            CriteriaHelper.pollUiThread(Criteria.equals(1,
-                    new Callable<Integer>() {
-                        @Override
-                        public Integer call() throws Exception {
-                            return cta2.getTabModelSelector().getModel(true).getCount();
-                        }
-                    }));
-
-            ThreadUtils.runOnUiThreadBlocking(new Runnable() {
+            CriteriaHelper.pollUiThread(Criteria.equals(1, new Callable<Integer>() {
                 @Override
-                public void run() {
-                    Assert.assertEquals(1, TabWindowManager.getInstance().getIncognitoTabCount());
-
-                    // Ensure the same tab exists in the new activity.
-                    Assert.assertEquals(incognitoTabId, cta2.getActivityTab().getId());
+                public Integer call() {
+                    return cta2.getTabModelSelector().getModel(true).getCount();
                 }
+            }));
+
+            TestThreadUtils.runOnUiThreadBlocking(() -> {
+                Assert.assertEquals(1, TabWindowManager.getInstance().getIncognitoTabCount());
+
+                // Ensure the same tab exists in the new activity.
+                Assert.assertEquals(incognitoTabId, cta2.getActivityTab().getId());
             });
         } finally {
-            ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-                @Override
-                public void run() {
-                    FirstRunStatus.setFirstRunFlowComplete(false);
-                }
-            });
+            TestThreadUtils.runOnUiThreadBlocking(
+                    () -> FirstRunStatus.setFirstRunFlowComplete(false));
         }
     }
 
@@ -119,7 +107,8 @@ public class MultiWindowIntegrationTest {
     @TargetApi(Build.VERSION_CODES.N)
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_TAB_MERGING_FOR_TESTING,
             ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-    public void testMoveTabTwice() throws InterruptedException {
+    public void
+    testMoveTabTwice() {
         // Load 'google' in separate tab.
         int googleTabId = mActivityTestRule
                                   .loadUrlInNewTab(mTestServer.getURL(

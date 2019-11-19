@@ -1,0 +1,50 @@
+<style>
+  :host {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    padding: 20px var(--print-preview-sidebar-margin) 12px;
+  }
+
+  @media (prefers-color-scheme: light) {
+    :host {
+      background-color: white;
+    }
+  }
+
+  #headerContainer {
+    align-items: center;
+    display: flex;
+  }
+
+  .summary,
+  .title {
+    color: var(--cr-primary-text-color);
+    line-height: calc(20/13 * 1em);
+    margin: 0;
+  }
+
+  .title {
+    font-size: calc(16/13 * 1em);
+    font-weight: 400;
+  }
+
+  .summary {
+    font-weight: 500;
+  }
+
+  iron-icon {
+    align-self: center;
+    fill: var(--cr-secondary-text-color);
+    height: 16px;
+    margin-inline-start: 8px;
+    width: 16px;
+  }
+</style>
+<div id="headerContainer">
+  <h1 class="title">$i18n{title}</h1>
+  <iron-icon hidden$="[[!managed]]" icon="print-preview:business"
+       alt="" title="$i18n{managedSettings}">
+  </iron-icon>
+</div>
+<span class="summary">[[summary_]]</span>

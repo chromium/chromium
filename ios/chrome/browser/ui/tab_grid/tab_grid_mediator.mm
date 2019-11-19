@@ -23,7 +23,6 @@
 #import "ios/chrome/browser/tabs/tab_title_util.h"
 #import "ios/chrome/browser/ui/tab_grid/grid/grid_consumer.h"
 #import "ios/chrome/browser/ui/tab_grid/grid/grid_item.h"
-#include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/web/tab_id_tab_helper.h"
 #include "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
@@ -31,9 +30,9 @@
 #include "ios/chrome/browser/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/web_state_list/web_usage_enabler/web_state_list_web_usage_enabler.h"
 #import "ios/chrome/browser/web_state_list/web_usage_enabler/web_state_list_web_usage_enabler_factory.h"
-#import "ios/web/public/navigation_manager.h"
-#import "ios/web/public/web_state/web_state.h"
-#import "ios/web/public/web_state/web_state_observer_bridge.h"
+#import "ios/web/public/navigation/navigation_manager.h"
+#import "ios/web/public/web_state.h"
+#import "ios/web/public/web_state_observer_bridge.h"
 #include "ui/gfx/image/image.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -65,11 +64,6 @@ NSArray* CreateItems(WebStateList* web_state_list) {
 
 // Returns the ID of the active tab in |web_state_list|.
 NSString* GetActiveTabId(WebStateList* web_state_list) {
-  // TODO(crbug.com/877792) : Real-world crashes have been caused by
-  // |web_state_list| being nil in this function. Capture histogram to retain
-  // visibility of issue severity.
-  UMA_HISTOGRAM_BOOLEAN("IOS.TabGridMediator.GetActiveTabIDNilWebStateList",
-                        !web_state_list);
   if (!web_state_list)
     return nil;
 
@@ -215,11 +209,6 @@ web::WebState* GetWebStateWithId(WebStateList* web_state_list,
 - (void)webStateList:(WebStateList*)webStateList
     didDetachWebState:(web::WebState*)webState
               atIndex:(int)index {
-  // TODO(crbug.com/877792) : Real-world crashes have been caused by
-  // |webStateList| being nil in this callback. Capture histogram to retain
-  // visibility of issue severity.
-  UMA_HISTOGRAM_BOOLEAN("IOS.TabGridMediator.DidDetachNilWebStateList",
-                        !webStateList);
   if (!webStateList)
     return;
   TabIdTabHelper* tabHelper = TabIdTabHelper::FromWebState(webState);
@@ -341,26 +330,11 @@ web::WebState* GetWebStateWithId(WebStateList* web_state_list,
 - (void)undoCloseAllItems {
   if (!self.closedSessionWindow)
     return;
-  DCHECK(self.tabModel.browserState);
-  // Don't trigger the initial load for these restored WebStates since the
-  // number of WKWebViews is unbounded and may lead to an OOM crash.
-  WebStateListWebUsageEnabler* webUsageEnabler =
-      WebStateListWebUsageEnablerFactory::GetInstance()->GetForBrowserState(
-          self.tabModel.browserState);
-  webUsageEnabler->SetTriggersInitialLoad(false);
-  web::WebState::CreateParams createParams(self.tabModel.browserState);
-  DeserializeWebStateList(
-      self.webStateList, self.closedSessionWindow,
-      base::BindRepeating(&web::WebState::CreateWithStorageSession,
-                          createParams));
-  webUsageEnabler->SetTriggersInitialLoad(true);
-
-  self.closedSessionWindow = nil;
-  [self removeEntriesFromTabRestoreService];
-  self.closedTabsCount = 0;
-  // Unmark all images for deletion since they are now active tabs again.
-  ios::ChromeBrowserState* browserState = self.tabModel.browserState;
-  [SnapshotCacheFactory::GetForBrowserState(browserState) unmarkAllImages];
+  __weak TabGridMediator* weakSelf = self;
+  self.webStateList->PerformBatchOperation(
+      base::BindOnce(^(WebStateList* web_state_list) {
+        [weakSelf restoreClosedSessionWindowAndUpdateTabRestoreService];
+      }));
 }
 
 - (void)discardSavedClosedItems {
@@ -401,16 +375,10 @@ web::WebState* GetWebStateWithId(WebStateList* web_state_list,
   if (IsURLNtp(webState->GetVisibleURL())) {
     return;
   }
-  UIImage* defaultFavicon;
-  if (IsUIRefreshPhase1Enabled()) {
-    if (webState->GetBrowserState()->IsOffTheRecord()) {
-      defaultFavicon = [UIImage imageNamed:@"default_world_favicon_incognito"];
-    } else {
-      defaultFavicon = [UIImage imageNamed:@"default_world_favicon_regular"];
-    }
-  } else {
-    defaultFavicon = [UIImage imageNamed:@"default_favicon"];
-  }
+  UIImage* defaultFavicon =
+      webState->GetBrowserState()->IsOffTheRecord()
+          ? [UIImage imageNamed:@"default_world_favicon_incognito"]
+          : [UIImage imageNamed:@"default_world_favicon_regular"];
   completion(defaultFavicon);
 
   favicon::FaviconDriver* faviconDriver =
@@ -466,6 +434,33 @@ web::WebState* GetWebStateWithId(WebStateList* web_state_list,
   for (const SessionID sessionID : identifiers) {
     self.tabRestoreService->RemoveTabEntryById(sessionID);
   }
+}
+
+// Restores the saved |self.closedSessionWindow| and updates the
+// TabRestoreService.
+- (void)restoreClosedSessionWindowAndUpdateTabRestoreService {
+  if (!self.closedSessionWindow)
+    return;
+  DCHECK(self.tabModel.browserState);
+  // Don't trigger the initial load for these restored WebStates since the
+  // number of WKWebViews is unbounded and may lead to an OOM crash.
+  WebStateListWebUsageEnabler* webUsageEnabler =
+      WebStateListWebUsageEnablerFactory::GetInstance()->GetForBrowserState(
+          self.tabModel.browserState);
+  webUsageEnabler->SetTriggersInitialLoad(false);
+  web::WebState::CreateParams createParams(self.tabModel.browserState);
+  DeserializeWebStateList(
+      self.webStateList, self.closedSessionWindow,
+      base::BindRepeating(&web::WebState::CreateWithStorageSession,
+                          createParams));
+  webUsageEnabler->SetTriggersInitialLoad(true);
+
+  self.closedSessionWindow = nil;
+  [self removeEntriesFromTabRestoreService];
+  self.closedTabsCount = 0;
+  // Unmark all images for deletion since they are now active tabs again.
+  ios::ChromeBrowserState* browserState = self.tabModel.browserState;
+  [SnapshotCacheFactory::GetForBrowserState(browserState) unmarkAllImages];
 }
 
 // Returns a SnapshotCache for the current BrowserState.

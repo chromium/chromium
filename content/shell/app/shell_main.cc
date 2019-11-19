@@ -7,6 +7,7 @@
 #include "content/shell/app/shell_main_delegate.h"
 
 #if defined(OS_WIN)
+#include "base/win/win_util.h"
 #include "content/public/app/sandbox_helper_win.h"
 #include "sandbox/win/src/sandbox_types.h"
 #endif
@@ -19,6 +20,9 @@ int APIENTRY wWinMain(HINSTANCE instance, HINSTANCE, wchar_t*, int) {
 int main() {
   HINSTANCE instance = GetModuleHandle(NULL);
 #endif
+  // Load and pin user32.dll to avoid having to load it once tests start while
+  // on the main thread loop where blocking calls are disallowed.
+  base::win::PinUser32();
   sandbox::SandboxInterfaceInfo sandbox_info = {0};
   content::InitializeSandboxInfo(&sandbox_info);
   content::ShellMainDelegate delegate;

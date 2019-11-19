@@ -10,7 +10,8 @@
     NoInterfaceObject,
     RaisesException=Constructor
 ] interface ReadableStreamDefaultController {
-    [CallWith=ScriptState, NotEnumerable] void close();
+    [NotEnumerable] readonly attribute double? desiredSize;
+    [CallWith=ScriptState, NotEnumerable, RaisesException] void close();
     [CallWith=ScriptState, NotEnumerable, RaisesException] void enqueue(
         optional any chunk);
     [CallWith=ScriptState, NotEnumerable] void error(optional any e);

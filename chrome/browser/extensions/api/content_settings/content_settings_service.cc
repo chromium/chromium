@@ -5,14 +5,14 @@
 #include "chrome/browser/extensions/api/content_settings/content_settings_service.h"
 
 #include "base/lazy_instance.h"
-#include "extensions/browser/extension_prefs.h"
+#include "base/memory/scoped_refptr.h"
 #include "extensions/browser/extension_prefs_scope.h"
 #include "extensions/browser/pref_names.h"
 
 namespace extensions {
 
 ContentSettingsService::ContentSettingsService(content::BrowserContext* context)
-    : content_settings_store_(new ContentSettingsStore()) {}
+    : content_settings_store_(base::MakeRefCounted<ContentSettingsStore>()) {}
 
 ContentSettingsService::~ContentSettingsService() {}
 
@@ -67,6 +67,15 @@ void ContentSettingsService::OnExtensionStateChanged(
     const std::string& extension_id,
     bool state) {
   content_settings_store_->SetExtensionState(extension_id, state);
+}
+
+void ContentSettingsService::OnExtensionPrefsWillBeDestroyed(
+    ExtensionPrefs* prefs) {
+  scoped_observer_.Remove(prefs);
+}
+
+void ContentSettingsService::OnExtensionPrefsAvailable(ExtensionPrefs* prefs) {
+  scoped_observer_.Add(prefs);
 }
 
 }  // namespace extensions

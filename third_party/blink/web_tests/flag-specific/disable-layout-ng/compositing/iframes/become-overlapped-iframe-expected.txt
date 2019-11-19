@@ -1,0 +1,81 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutIFrame (floating) IFRAME id='iframe'",
+      "bounds": [350, 200],
+      "transform": 1
+    },
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [305, 230],
+      "backgroundColor": "#C0C0C0",
+      "transform": 2
+    },
+    {
+      "name": "LayoutBlockFlow DIV id='iframe-content' class='box'",
+      "bounds": [210, 210],
+      "contentsOpaque": true,
+      "backgroundColor": "#0000FF",
+      "transform": 3
+    },
+    {
+      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "position": [305, 0],
+      "bounds": [15, 170],
+      "transform": 2
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV id='overlay'",
+      "bounds": [150, 150],
+      "backgroundColor": "#00000099",
+      "transform": 4
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [58, 58, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "parent": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [15, 15, 0, 1]
+      ]
+    },
+    {
+      "id": 3,
+      "parent": 2,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [18, 10, 0, 1]
+      ]
+    },
+    {
+      "id": 4,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [5, 5, 0, 1]
+      ]
+    }
+  ]
+}
+

@@ -14,7 +14,6 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/deprecation.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
-#include "third_party/blink/renderer/core/frame/use_counter.h"
 #include "third_party/blink/renderer/core/loader/mixed_content_checker.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/presentation/presentation_availability.h"
@@ -25,6 +24,8 @@
 #include "third_party/blink/renderer/modules/presentation/presentation_controller.h"
 #include "third_party/blink/renderer/modules/presentation/presentation_error.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
 
@@ -59,7 +60,7 @@ PresentationRequest* PresentationRequest::Create(
     const Vector<String>& urls,
     ExceptionState& exception_state) {
   if (To<Document>(execution_context)
-          ->IsSandboxed(kSandboxPresentationController)) {
+          ->IsSandboxed(WebSandboxFlags::kPresentationController)) {
     exception_state.ThrowSecurityError(
         "The document is sandboxed and lacks the 'allow-presentation' flag.");
     return nullptr;
@@ -145,7 +146,7 @@ ScriptPromise PresentationRequest::start(ScriptState* script_state) {
       !LocalFrame::HasTransientUserActivation(doc->GetFrame()))
     return ScriptPromise::RejectWithDOMException(
         script_state,
-        DOMException::Create(
+        MakeGarbageCollected<DOMException>(
             DOMExceptionCode::kInvalidAccessError,
             "PresentationRequest::start() requires user gesture."));
 
@@ -154,11 +155,11 @@ ScriptPromise PresentationRequest::start(ScriptState* script_state) {
   if (!controller)
     return ScriptPromise::RejectWithDOMException(
         script_state,
-        DOMException::Create(
+        MakeGarbageCollected<DOMException>(
             DOMExceptionCode::kInvalidStateError,
             "The PresentationRequest is no longer associated to a frame."));
 
-  ScriptPromiseResolver* resolver = ScriptPromiseResolver::Create(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
 
   controller->GetPresentationService()->StartPresentation(
       urls_,
@@ -175,11 +176,11 @@ ScriptPromise PresentationRequest::reconnect(ScriptState* script_state,
   if (!controller)
     return ScriptPromise::RejectWithDOMException(
         script_state,
-        DOMException::Create(
+        MakeGarbageCollected<DOMException>(
             DOMExceptionCode::kInvalidStateError,
             "The PresentationRequest is no longer associated to a frame."));
 
-  ScriptPromiseResolver* resolver = ScriptPromiseResolver::Create(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
 
   ControllerPresentationConnection* existing_connection =
       controller->FindExistingConnection(urls_, id);
@@ -205,7 +206,7 @@ ScriptPromise PresentationRequest::getAvailability(ScriptState* script_state) {
   if (!controller)
     return ScriptPromise::RejectWithDOMException(
         script_state,
-        DOMException::Create(
+        MakeGarbageCollected<DOMException>(
             DOMExceptionCode::kInvalidStateError,
             "The PresentationRequest is no longer associated to a frame."));
 
@@ -216,7 +217,7 @@ ScriptPromise PresentationRequest::getAvailability(ScriptState* script_state) {
             PresentationAvailabilityProperty::kReady);
 
     controller->GetAvailabilityState()->RequestAvailability(
-        urls_, std::make_unique<PresentationAvailabilityCallbacks>(
+        urls_, MakeGarbageCollected<PresentationAvailabilityCallbacks>(
                    availability_property_, urls_));
   }
   return availability_property_->Promise(script_state->World());

@@ -5,6 +5,8 @@
 #include "chrome/elevation_service/elevated_recovery_impl.h"
 
 #include <windows.h>
+#include <wrl/implements.h>
+
 #include <memory>
 #include <vector>
 
@@ -59,48 +61,117 @@ const base::FilePath TestFile(const std::string& file) {
       .AppendASCII(file);
 }
 
+// A mock implementation of IServerSecurity that allows for the production code
+// that calls ::CoImpersonateClient() to work.
+class MockServerSecurity
+    : public Microsoft::WRL::RuntimeClass<
+          Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
+          IServerSecurity> {
+ public:
+  MockServerSecurity() : is_impersonating_(false) {}
+
+  IFACEMETHOD(QueryBlanket)
+  (DWORD* authentication_service,
+   DWORD* authorization_service,
+   OLECHAR** server_principal_name,
+   DWORD* authentication_level,
+   DWORD* impersonation_level,
+   void** privilege,
+   DWORD* capabilities) {
+    return E_NOTIMPL;
+  }
+  IFACEMETHOD(ImpersonateClient)() {
+    is_impersonating_ = true;
+    return S_OK;
+  }
+  IFACEMETHOD(RevertToSelf)() {
+    is_impersonating_ = false;
+    return S_OK;
+  }
+  IFACEMETHOD_(BOOL, IsImpersonating)() { return is_impersonating_; }
+
+ private:
+  ~MockServerSecurity() override { EXPECT_FALSE(is_impersonating_); }
+
+  bool is_impersonating_;
+
+  DISALLOW_COPY_AND_ASSIGN(MockServerSecurity);
+};
+
 }  // namespace
 
-TEST(ElevatedRecoveryTest, Do_RunChromeRecoveryCRX_InvalidArgs) {
+void SetupMockContext() {
+  auto server_security = Microsoft::WRL::Make<MockServerSecurity>();
+  server_security->AddRef();
+  Microsoft::WRL::ComPtr<IUnknown> original_call_context;
+
+  // We set the call context to a mock object that implements IServerSecurity.
+  // This allows for the production code that calls ::CoImpersonateClient() to
+  // succeed.
+  EXPECT_HRESULT_SUCCEEDED(
+      ::CoSwitchCallContext(server_security.Get(), &original_call_context));
+  EXPECT_EQ(nullptr, original_call_context.Get());
+}
+
+void TeardownMockContext() {
+  Microsoft::WRL::ComPtr<IUnknown> call_context;
+  EXPECT_HRESULT_SUCCEEDED(::CoSwitchCallContext(nullptr, &call_context));
+  EXPECT_NE(nullptr, call_context.Get());
+}
+
+class ElevatedRecoveryTest : public testing::Test {
+ protected:
+  ElevatedRecoveryTest() = default;
+
+  void SetUp() override { SetupMockContext(); }
+
+  void TearDown() override { TeardownMockContext(); }
+
+ private:
+  DISALLOW_COPY_AND_ASSIGN(ElevatedRecoveryTest);
+};
+
+TEST_F(ElevatedRecoveryTest, Do_RunChromeRecoveryCRX_InvalidArgs) {
   base::win::ScopedHandle proc_handle;
 
   // Empty browser_appid/browser_version/session_id.
-  EXPECT_EQ(E_INVALIDARG,
-            elevation_service::RunChromeRecoveryCRX(
-                TestFile("valid_publisher.crx3"), base::string16(),
-                base::string16(), base::string16(), 0, &proc_handle));
+  EXPECT_EQ(
+      E_INVALIDARG,
+      elevation_service::RunChromeRecoveryCRX(
+          TestFile("valid_publisher.crx3"), base::string16(), base::string16(),
+          base::string16(), ::GetCurrentProcessId(), &proc_handle));
 
   // Invalid browser_appid, valid browser_version/session_id.
   EXPECT_EQ(E_INVALIDARG,
             elevation_service::RunChromeRecoveryCRX(
-                TestFile("valid_publisher.crx3"), L"invalidappid",
-                L"1.2.3.4", L"{c49ab053-2387-4809-b188-1902648802e1}", 0,
-                &proc_handle));
+                TestFile("valid_publisher.crx3"), L"invalidappid", L"1.2.3.4",
+                L"{c49ab053-2387-4809-b188-1902648802e1}",
+                ::GetCurrentProcessId(), &proc_handle));
 
   // Empty browser_appid, invalid browser_version, valid session_id.
-  EXPECT_EQ(E_INVALIDARG,
-            elevation_service::RunChromeRecoveryCRX(
-                TestFile("valid_publisher.crx3"), base::string16(),
-                L"invalidbrowserversion",
-                L"{c49ab053-2387-4809-b188-1902648802e1}", 0, &proc_handle));
+  EXPECT_EQ(E_INVALIDARG, elevation_service::RunChromeRecoveryCRX(
+                              TestFile("valid_publisher.crx3"),
+                              base::string16(), L"invalidbrowserversion",
+                              L"{c49ab053-2387-4809-b188-1902648802e1}",
+                              ::GetCurrentProcessId(), &proc_handle));
 
   // Valid browser_appid, invalid browser_version, valid session_id.
-  EXPECT_EQ(
-      E_INVALIDARG,
-      elevation_service::RunChromeRecoveryCRX(
-          TestFile("valid_publisher.crx3"),
-          L"{c49ab053-2387-4809-b188-1902648802e1}", L"invalidbrowserversion",
-          L"{c49ab053-2387-4809-b188-1902648802e1}", 0, &proc_handle));
+  EXPECT_EQ(E_INVALIDARG, elevation_service::RunChromeRecoveryCRX(
+                              TestFile("valid_publisher.crx3"),
+                              L"{c49ab053-2387-4809-b188-1902648802e1}",
+                              L"invalidbrowserversion",
+                              L"{c49ab053-2387-4809-b188-1902648802e1}",
+                              ::GetCurrentProcessId(), &proc_handle));
 
   // Valid browser_appid, valid browser_version, invalid session_id.
   EXPECT_EQ(E_INVALIDARG,
             elevation_service::RunChromeRecoveryCRX(
                 TestFile("valid_publisher.crx3"),
                 L"{c49ab053-2387-4809-b188-1902648802e1}", L"57.8.0.1",
-                L"invalidsessionid", 0, &proc_handle));
+                L"invalidsessionid", ::GetCurrentProcessId(), &proc_handle));
 }
 
-TEST(ElevatedRecoveryTest, Do_RunCRX_InvalidArgs) {
+TEST_F(ElevatedRecoveryTest, Do_RunCRX_InvalidArgs) {
   base::win::ScopedHandle proc_handle;
 
   // Non-matching CRX/CRX-hash.
@@ -110,7 +181,8 @@ TEST(ElevatedRecoveryTest, Do_RunCRX_InvalidArgs) {
                 base::CommandLine(base::CommandLine::NO_PROGRAM),
                 crx_file::VerifierFormat::CRX3_WITH_PUBLISHER_PROOF,
                 GetValidPublisherCrx3Hash(), GetUnpackDir(),
-                base::FilePath(kManifestJSONFileName), 0, &proc_handle));
+                base::FilePath(kManifestJSONFileName), ::GetCurrentProcessId(),
+                &proc_handle));
 
   // Non-existent CRX file.
   EXPECT_EQ(HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND),
@@ -119,7 +191,8 @@ TEST(ElevatedRecoveryTest, Do_RunCRX_InvalidArgs) {
                 base::CommandLine(base::CommandLine::NO_PROGRAM),
                 crx_file::VerifierFormat::CRX3_WITH_PUBLISHER_PROOF,
                 GetValidPublisherCrx3Hash(), GetUnpackDir(),
-                base::FilePath(kManifestJSONFileName), 0, &proc_handle));
+                base::FilePath(kManifestJSONFileName), ::GetCurrentProcessId(),
+                &proc_handle));
 
   // manifest.json is not a Windows executable, ::CreateProcess therefore
   // returns ERROR_BAD_EXE_FORMAT.
@@ -129,20 +202,22 @@ TEST(ElevatedRecoveryTest, Do_RunCRX_InvalidArgs) {
                 base::CommandLine(base::CommandLine::NO_PROGRAM),
                 crx_file::VerifierFormat::CRX3_WITH_PUBLISHER_PROOF,
                 GetValidPublisherCrx3Hash(), GetUnpackDir(),
-                base::FilePath(kManifestJSONFileName), 0, &proc_handle));
+                base::FilePath(kManifestJSONFileName), ::GetCurrentProcessId(),
+                &proc_handle));
 }
 
-TEST(ElevatedRecoveryTest, Do_RunCRX_ValidArgs) {
+TEST_F(ElevatedRecoveryTest, Do_RunCRX_ValidArgs) {
   base::win::ScopedHandle proc_handle;
 
   // ChromeRecovery.crx3 contains ChromeRecovery.exe which returns a hardcoded
   // value of 1877345072.
-  EXPECT_EQ(S_OK, elevation_service::RunCRX(
-                      TestFile("ChromeRecovery.crx3"),
-                      base::CommandLine(base::CommandLine::NO_PROGRAM),
-                      crx_file::VerifierFormat::CRX3,
-                      GetRunactionTestWinCrx3Hash(), GetUnpackDir(),
-                      base::FilePath(kRecoveryExeName), 0, &proc_handle));
+  EXPECT_EQ(S_OK,
+            elevation_service::RunCRX(
+                TestFile("ChromeRecovery.crx3"),
+                base::CommandLine(base::CommandLine::NO_PROGRAM),
+                crx_file::VerifierFormat::CRX3, GetRunactionTestWinCrx3Hash(),
+                GetUnpackDir(), base::FilePath(kRecoveryExeName),
+                ::GetCurrentProcessId(), &proc_handle));
 
   EXPECT_EQ(WAIT_OBJECT_0, ::WaitForSingleObject(proc_handle.Get(), 500));
   DWORD exit_code = 0;
@@ -150,7 +225,7 @@ TEST(ElevatedRecoveryTest, Do_RunCRX_ValidArgs) {
   EXPECT_EQ(1877345072UL, exit_code);
 }
 
-TEST(ElevatedRecoveryTest, Do_CleanupChromeRecoveryDirectory) {
+TEST(ElevatedRecoveryCleanupTest, Do_CleanupChromeRecoveryDirectory) {
   base::FilePath recovery_dir;
   ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &recovery_dir));
   recovery_dir = recovery_dir.DirName().DirName().Append(

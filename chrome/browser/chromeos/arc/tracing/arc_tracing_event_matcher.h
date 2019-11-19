@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/optional.h"
 
 namespace arc {
 
@@ -20,13 +21,18 @@ class ArcTracingEvent;
 class ArcTracingEventMatcher {
  public:
   ArcTracingEventMatcher();
-  // Format category:name(arg_name=arg_value;..) For example:
+  // Format category:name[*]?(arg_name=arg_value;..)
+  // For example:
   // exo:Surface::Attach
   // exo:Surface::Attach(buffer_id=0x7f9f5110690)
+  // android:HW_VSYNC_0|*
   explicit ArcTracingEventMatcher(const std::string& data);
 
   // Returns true in case |event| matches criteria set.
   bool Match(const ArcTracingEvent& event) const;
+
+  base::Optional<int64_t> ReadAndroidEventInt64(
+      const ArcTracingEvent& event) const;
 
   // Sets the expected phase. Tested event does not match if its phase does not
   // match |phase|. This is an optional criteria.
@@ -50,6 +56,8 @@ class ArcTracingEventMatcher {
   std::string category_;
   // Defines the name to match.
   std::string name_;
+  // If true, name_ is a prefix to match instead of the entire string.
+  bool name_prefix_match_ = false;
   // Defines set of arguments to match if needed.
   std::map<std::string, std::string> args_;
 

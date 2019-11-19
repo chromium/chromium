@@ -1,0 +1,41 @@
+<html>
+<head>
+  <title>Ensure correct behavior of drawImage video elements.</title>
+  <style type="text/css">
+  video {
+    display: none;
+  }
+  </style>
+</head>
+<body>
+  <canvas id="canvas"></canvas>
+  <video id="video">
+    <source src="resources/canvas_video.webm" type='video/webm' />
+    <source src="resources/canvas_video.mp4"  type='video/mp4' />
+    <source src="resources/canvas_video.ogv"  type='video/ogg' />
+  </video>
+  <script>
+  var length = 150;
+  var canvas = document.getElementById("canvas");
+  canvas.setAttribute("width", length);
+  canvas.setAttribute("height", length);
+  var ctx = canvas.getContext("2d");
+
+  var video = document.getElementById("video");
+  video.addEventListener("playing", drawImageToCanvas, true);
+  video.play();
+
+  function drawImageToCanvas() {
+    video.removeEventListener("playing", drawImageToCanvas, true);
+    ctx.fillStyle = "blue";
+    ctx.fillRect(0, 0, length, length);
+    ctx.drawImage(video, 0, 0);
+    ctx.globalAlpha = 0.5;
+    ctx.drawImage(video, 0, 60);
+    video.srcObject = null;
+    if (window.testRunner)
+      testRunner.notifyDone();
+  }
+  </script>
+</body>
+</html>

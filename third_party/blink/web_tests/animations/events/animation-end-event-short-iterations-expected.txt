@@ -1,2 +1,0 @@
-Checks that we still end an animation properly (i.e. fire a animationend event) when using more than one iteration with very short durations.
-PASS: got animationend event

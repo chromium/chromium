@@ -4,7 +4,7 @@
 
 module printing.mojom;
 
-import "ui/gfx/geometry/mojo/geometry.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
 
 struct PdfRenderSettings {
   enum Mode {

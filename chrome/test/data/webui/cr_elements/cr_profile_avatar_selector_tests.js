@@ -63,7 +63,7 @@ cr.define('cr_profile_avatar_selector', function() {
           const items = getGridItems();
 
           // Simulate tapping the third avatar.
-          MockInteractions.tap(items[2]);
+          items[2].click();
           assertEquals(
               'chrome://avatar3.png', avatarSelector.selectedAvatar.url);
           assertFalse(items[0].classList.contains('iron-selected'));
@@ -79,41 +79,41 @@ cr.define('cr_profile_avatar_selector', function() {
         const items = getGridItems();
 
         items[0].focus();
-        assertTrue(items[0].focused);
+        assertEquals(getDeepActiveElement(), items[0]);
 
         MockInteractions.keyDownOn(items[0], 39, [], 'ArrowRight');
-        assertTrue(items[1].focused);
+        assertEquals(getDeepActiveElement(), items[1]);
 
         MockInteractions.keyDownOn(items[0], 37, [], 'ArrowLeft');
-        assertTrue(items[0].focused);
+        assertEquals(getDeepActiveElement(), items[0]);
 
         avatarSelector.ignoreModifiedKeyEvents = true;
 
         MockInteractions.keyDownOn(items[0], 39, 'alt', 'ArrowRight');
-        assertTrue(items[0].focused);
+        assertEquals(getDeepActiveElement(), items[0]);
 
         MockInteractions.keyDownOn(items[0], 39, 'ctrl', 'ArrowRight');
-        assertTrue(items[0].focused);
+        assertEquals(getDeepActiveElement(), items[0]);
 
         MockInteractions.keyDownOn(items[0], 39, 'meta', 'ArrowRight');
-        assertTrue(items[0].focused);
+        assertEquals(getDeepActiveElement(), items[0]);
 
         MockInteractions.keyDownOn(items[0], 39, 'shift', 'ArrowRight');
-        assertTrue(items[0].focused);
+        assertEquals(getDeepActiveElement(), items[0]);
 
         // Test RTL case.
         selector.dir = 'rtl';
         MockInteractions.keyDownOn(items[0], 37, [], 'ArrowLeft');
-        assertTrue(items[1].focused);
+        assertEquals(getDeepActiveElement(), items[1]);
 
         MockInteractions.keyDownOn(items[0], 37, [], 'ArrowLeft');
-        assertTrue(items[2].focused);
+        assertEquals(getDeepActiveElement(), items[2]);
 
         MockInteractions.keyDownOn(items[0], 37, [], 'ArrowRight');
-        assertTrue(items[1].focused);
+        assertEquals(getDeepActiveElement(), items[1]);
 
         MockInteractions.keyDownOn(items[0], 37, [], 'ArrowRight');
-        assertTrue(items[0].focused);
+        assertEquals(getDeepActiveElement(), items[0]);
       });
     });
   }

@@ -14,6 +14,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnCreateContextMenuListener;
+import android.view.ViewGroup;
+import android.widget.TextView;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.R;
@@ -21,10 +23,10 @@ import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
 import org.chromium.chrome.browser.ThemeColorProvider;
 import org.chromium.chrome.browser.ThemeColorProvider.TintObserver;
+import org.chromium.chrome.browser.flags.FeatureUtilities;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.partnercustomizations.HomepageManager;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.util.FeatureUtilities;
 import org.chromium.ui.widget.ChromeImageButton;
 
 /**
@@ -44,19 +46,40 @@ public class HomeButton extends ChromeImageButton
     /** The {@link ActivityTabProvider} used to know if the active tab is on the NTP. */
     private ActivityTabProvider mActivityTabProvider;
 
+    /** The home button text label. */
+    private TextView mLabel;
+
+    /** The wrapper View that contains the home button and the label. */
+    private View mWrapper;
+
     public HomeButton(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        final int homeButtonIcon = FeatureUtilities.isNewTabPageButtonEnabled()
-                ? R.drawable.ic_home
-                : R.drawable.btn_toolbar_home;
+        final int homeButtonIcon = R.drawable.btn_toolbar_home;
         setImageDrawable(ContextCompat.getDrawable(context, homeButtonIcon));
-        if (!FeatureUtilities.isNewTabPageButtonEnabled()
-                && !FeatureUtilities.isBottomToolbarEnabled()) {
+        if (!FeatureUtilities.isBottomToolbarEnabled()) {
             setOnCreateContextMenuListener(this);
         }
 
         HomepageManager.getInstance().addListener(this);
+    }
+
+    /**
+     * @param wrapper The wrapping View of this button.
+     */
+    public void setWrapperView(ViewGroup wrapper) {
+        mWrapper = wrapper;
+        mLabel = mWrapper.findViewById(R.id.home_button_label);
+        if (FeatureUtilities.isLabeledBottomToolbarEnabled()) mLabel.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void setOnClickListener(OnClickListener listener) {
+        if (mWrapper != null) {
+            mWrapper.setOnClickListener(listener);
+        } else {
+            super.setOnClickListener(listener);
+        }
     }
 
     public void destroy() {
@@ -81,6 +104,7 @@ public class HomeButton extends ChromeImageButton
     @Override
     public void onTintChanged(ColorStateList tint, boolean useLight) {
         ApiCompatibilityUtils.setImageTintList(this, tint);
+        if (mLabel != null) mLabel.setTextColor(tint);
     }
 
     @Override
@@ -97,7 +121,7 @@ public class HomeButton extends ChromeImageButton
 
     @Override
     public void onHomepageStateUpdated() {
-        updateButtonEnabledState();
+        updateButtonEnabledState(null);
     }
 
     public void setActivityTabProvider(ActivityTabProvider activityTabProvider) {
@@ -105,30 +129,60 @@ public class HomeButton extends ChromeImageButton
         mActivityTabTabObserver = new ActivityTabTabObserver(activityTabProvider) {
             @Override
             public void onObservingDifferentTab(Tab tab) {
-                updateButtonEnabledState();
+                if (tab == null) return;
+                updateButtonEnabledState(tab);
             }
 
             @Override
             public void onUpdateUrl(Tab tab, String url) {
-                updateButtonEnabledState();
+                if (tab == null) return;
+                updateButtonEnabledState(tab);
             }
         };
     }
 
-    private void updateButtonEnabledState() {
-        if (FeatureUtilities.isNewTabPageButtonEnabled() || !HomepageManager.isHomepageEnabled()) {
-            setEnabled(!isActiveTabNTP());
+    /**
+     * Menu button is enabled when not in NTP or if in NTP and homepage is enabled and set to
+     * somewhere other than the NTP.
+     * @param tab The notifying {@link Tab} that might be selected soon, this is a hint that a tab
+     *         change is likely.
+     */
+    private void updateButtonEnabledState(Tab tab) {
+        // New tab page button takes precedence over homepage.
+        final boolean isHomepageEnabled = HomepageManager.isHomepageEnabled();
+
+        boolean isEnabled;
+        if (getActiveTab() != null) {
+            // Now tab shows a webpage, let's check if the webpage is not the NTP, or the webpage is
+            // NTP but homepage is not NTP.
+            isEnabled = !isTabNTP(getActiveTab())
+                    || (isHomepageEnabled
+                            && !NewTabPage.isNTPUrl(HomepageManager.getHomepageUri()));
         } else {
-            setEnabled(true);
+            // There is no active tab, which means tab is in transition, ex tab swither view to tab
+            // view, or from one tab to another tab.
+            isEnabled = !isTabNTP(tab);
         }
+        setEnabled(isEnabled);
+        if (mWrapper != null) mWrapper.setEnabled(isEnabled);
+        if (mLabel != null) mLabel.setEnabled(isEnabled);
     }
 
-    private boolean isActiveTabNTP() {
-        if (mActivityTabProvider == null) return false;
+    /**
+     * Check if the provided tab is NTP. The tab is a hint that
+     * @param tab The notifying {@link Tab} that might be selected soon, this is a hint that a tab
+     *         change is likely.
+     */
+    private boolean isTabNTP(Tab tab) {
+        return tab != null && NewTabPage.isNTPUrl(tab.getUrl());
+    }
 
-        final Tab tab = mActivityTabProvider.getActivityTab();
-        if (tab == null) return false;
+    /**
+     * Return the active tab. If no active tab is shown, return null.
+     */
+    private Tab getActiveTab() {
+        if (mActivityTabProvider == null) return null;
 
-        return NewTabPage.isNTPUrl(tab.getUrl());
+        return mActivityTabProvider.get();
     }
 }

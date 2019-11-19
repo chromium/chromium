@@ -1,0 +1,20 @@
+<style>
+  :host {
+    height: 100%;
+  }
+
+  #container {
+    display: grid;
+    flex-shrink: 0;
+    grid-auto-flow: column;
+    grid-gap: 4px;
+    height: 100%;
+  }
+
+  /* Pinned tabs only show the first indicator. */
+  :host-context([pinned]) tabstrip-alert-indicator:not(:first-child) {
+    display: none;
+  }
+</style>
+
+<div id="container"></div>

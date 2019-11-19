@@ -1,0 +1,17 @@
+# Copyright 2017 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+mojom = "//services/viz/privileged/mojom/compositing/renderer_settings.mojom"
+public_headers = [ "//components/viz/common/display/renderer_settings.h" ]
+traits_headers = [ "//services/viz/privileged/mojom/compositing/renderer_settings_mojom_traits.h" ]
+deps = [
+  "//cc",
+]
+public_deps = [
+  "//ui/gfx/geometry/mojom",
+]
+sources = [
+  "renderer_settings_mojom_traits.cc",
+]
+type_mappings = [ "viz.mojom.RendererSettings=::viz::RendererSettings" ]

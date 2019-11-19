@@ -13,10 +13,10 @@
 #include "base/process/kill.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "services/resource_coordinator/public/cpp/coordination_unit_id.h"
 #include "url/gurl.h"
 
 namespace resource_coordinator {
@@ -29,10 +29,17 @@ class ResourceCoordinatorTabHelper
  public:
   ~ResourceCoordinatorTabHelper() override;
 
+  // Helper function to check if a given WebContents is loaded. Returns true by
+  // default if there's no TabHelper for this content.
+  static bool IsLoaded(content::WebContents* contents);
+
+  // Helper function to check if a given WebContents is frozen. Returns false by
+  // default if there's no TabHelper for this content.
+  static bool IsFrozen(content::WebContents* contents);
+
   // WebContentsObserver overrides.
   void DidStartLoading() override;
   void DidReceiveResponse() override;
-  void DidStopLoading() override;
   void DidFailLoad(content::RenderFrameHost* render_frame_host,
                    const GURL& validated_url,
                    int error_code,
@@ -48,7 +55,7 @@ class ResourceCoordinatorTabHelper
 
 #if !defined(OS_ANDROID)
   LocalSiteCharacteristicsWebContentsObserver*
-  local_site_characteristics_wc_observer_for_testing() {
+  local_site_characteristics_wc_observer() {
     return local_site_characteristics_wc_observer_.get();
   }
 #endif
@@ -56,9 +63,6 @@ class ResourceCoordinatorTabHelper
  private:
   explicit ResourceCoordinatorTabHelper(content::WebContents* web_contents);
 
-  // The coordination unit ID of the page node associated with |web_contents()|,
-  // if any.
-  CoordinationUnitID page_cu_id_;
   // TODO(siggi): This is used by the TabLifecycleUnit, remove this with it.
   ukm::SourceId ukm_source_id_ = ukm::kInvalidSourceId;
 

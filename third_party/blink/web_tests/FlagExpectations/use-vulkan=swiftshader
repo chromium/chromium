@@ -1,0 +1,22 @@
+# OffscreenCanvas not rendering.
+crbug.com/1002538 fast/canvas/OffscreenCanvas-2d-drawImage-in-worker.html [ Skip ]
+crbug.com/1002538 fast/canvas/OffscreenCanvas-2d-drawImage.html [ Skip ]
+crbug.com/1002538 fast/canvas/OffscreenCanvas-2d-gradients-in-worker.html [ Skip ]
+crbug.com/1002538 fast/canvas/OffscreenCanvas-2d-imageSmoothing-in-worker.html [ Skip ]
+crbug.com/1002538 fast/canvas/OffscreenCanvas-2d-imageSmoothing.html [ Skip ]
+crbug.com/1002538 fast/canvas/OffscreenCanvas-2d-pattern-in-worker.html [ Skip ]
+crbug.com/1002538 fast/canvas/OffscreenCanvas-2d-pattern.html [ Skip ]
+crbug.com/1002538 fast/canvas/OffscreenCanvas-Bitmaprenderer-TransferToImageBitmapResetsToBlack.html [ Skip ]
+crbug.com/1002538 fast/canvas/OffscreenCanvas-clearRect-in-worker.html [ Skip ]
+crbug.com/1002538 fast/canvas/OffscreenCanvas-fillRect-in-worker.html [ Skip ]
+crbug.com/1002538 fast/canvas/OffscreenCanvas-filter-in-worker.html [ Skip ]
+crbug.com/1002538 fast/canvas/OffscreenCanvas-paths-in-worker.html [ Skip ]
+crbug.com/1002538 fast/canvas/OffscreenCanvas-strokeRect-in-worker.html [ Skip ]
+crbug.com/1002538 fast/canvas/OffscreenCanvas-text-FontFace-in-worker.html [ Skip ]
+crbug.com/1002538 fast/canvas/OffscreenCanvas-text-rendering-in-worker.html [ Skip ]
+crbug.com/1002538 fast/canvas/OffscreenCanvas-transform-shadow-in-worker.html [ Skip ]
+
+# Expected Image Region Rendering Nothing.
+crbug.com/1002547 fast/canvas/imagebitmap/transferFromImageBitmap-alpha.html [ Skip ]
+crbug.com/1002547 fast/canvas/imagebitmap/transferFromImageBitmap-no-alpha.html [ Skip ]
+crbug.com/1002547 fast/canvas/imagebitmap/transferFromImageBitmap.html [ Skip ]

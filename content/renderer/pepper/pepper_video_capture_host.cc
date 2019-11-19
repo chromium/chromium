@@ -4,7 +4,7 @@
 
 #include "content/renderer/pepper/pepper_video_capture_host.h"
 
-#include "content/renderer/media/stream/media_stream_video_source.h"
+#include "base/numerics/ranges.h"
 #include "content/renderer/pepper/host_globals.h"
 #include "content/renderer/pepper/pepper_media_device_manager.h"
 #include "content/renderer/pepper/pepper_platform_video_capture.h"
@@ -20,6 +20,7 @@
 #include "ppapi/shared_impl/host_resource.h"
 #include "ppapi/thunk/enter.h"
 #include "ppapi/thunk/ppb_buffer_api.h"
+#include "third_party/blink/public/web/modules/mediastream/media_stream_video_source.h"
 
 using ppapi::HostResource;
 using ppapi::TrackedCallback;
@@ -120,27 +121,24 @@ void PepperVideoCaptureHost::PostErrorReply() {
           static_cast<uint32_t>(PP_ERROR_FAILED)));
 }
 
-void PepperVideoCaptureHost::OnFrameReady(
-    const scoped_refptr<media::VideoFrame>& frame) {
-  DCHECK(frame.get());
-
-  if (alloc_size_ != frame->visible_rect().size() || buffers_.empty()) {
-    alloc_size_ = frame->visible_rect().size();
+void PepperVideoCaptureHost::OnFrameReady(const media::VideoFrame& frame) {
+  if (alloc_size_ != frame.visible_rect().size() || buffers_.empty()) {
+    alloc_size_ = frame.visible_rect().size();
     double frame_rate;
     int rounded_frame_rate;
-    if (frame->metadata()->GetDouble(media::VideoFrameMetadata::FRAME_RATE,
-                                     &frame_rate))
+    if (frame.metadata()->GetDouble(media::VideoFrameMetadata::FRAME_RATE,
+                                    &frame_rate))
       rounded_frame_rate = static_cast<int>(frame_rate + 0.5 /* round */);
     else
-      rounded_frame_rate = MediaStreamVideoSource::kUnknownFrameRate;
+      rounded_frame_rate = blink::MediaStreamVideoSource::kUnknownFrameRate;
     AllocBuffers(alloc_size_, rounded_frame_rate);
   }
 
   for (uint32_t i = 0; i < buffers_.size(); ++i) {
     if (!buffers_[i].in_use) {
-      DCHECK_EQ(frame->format(), media::PIXEL_FORMAT_I420);
+      DCHECK_EQ(frame.format(), media::PIXEL_FORMAT_I420);
       if (buffers_[i].buffer->size() <
-          media::VideoFrame::AllocationSize(frame->format(), alloc_size_)) {
+          media::VideoFrame::AllocationSize(frame.format(), alloc_size_)) {
         // TODO(ihf): handle size mismatches gracefully here.
         return;
       }
@@ -148,12 +146,12 @@ void PepperVideoCaptureHost::OnFrameReady(
       static_assert(media::VideoFrame::kYPlane == 0, "y plane should be 0");
       static_assert(media::VideoFrame::kUPlane == 1, "u plane should be 1");
       static_assert(media::VideoFrame::kVPlane == 2, "v plane should be 2");
-      for (size_t j = 0; j < media::VideoFrame::NumPlanes(frame->format());
+      for (size_t j = 0; j < media::VideoFrame::NumPlanes(frame.format());
            ++j) {
-        const uint8_t* src = frame->visible_data(j);
-        const size_t row_bytes = frame->row_bytes(j);
-        const size_t src_stride = frame->stride(j);
-        for (int k = 0; k < frame->rows(j); ++k) {
+        const uint8_t* src = frame.visible_data(j);
+        const size_t row_bytes = frame.row_bytes(j);
+        const size_t src_stride = frame.stride(j);
+        for (int k = 0; k < frame.rows(j); ++k) {
           memcpy(dst, src, row_bytes);
           dst += row_bytes;
           src += src_stride;
@@ -220,11 +218,11 @@ void PepperVideoCaptureHost::AllocBuffers(const gfx::Size& resolution,
     {
       EnterResourceNoLock<PPB_Buffer_API> enter2(res, true);
       DCHECK(enter2.succeeded());
-      base::SharedMemory* shm;
+      base::UnsafeSharedMemoryRegion* shm;
       int32_t result = enter2.object()->GetSharedMemory(&shm);
       DCHECK(result == PP_OK);
       params.AppendHandle(ppapi::proxy::SerializedHandle(
-          dispatcher->ShareSharedMemoryHandleWithRemote(shm->handle()), size));
+          dispatcher->ShareUnsafeSharedMemoryRegionWithRemote(*shm)));
     }
   }
 
@@ -342,11 +340,11 @@ void PepperVideoCaptureHost::SetRequestedInfo(
     const PP_VideoCaptureDeviceInfo_Dev& device_info,
     uint32_t buffer_count) {
   // Clamp the buffer count to between 1 and |kMaxBuffers|.
-  buffer_count_hint_ = std::min(std::max(buffer_count, 1U), kMaxBuffers);
+  buffer_count_hint_ = base::ClampToRange(buffer_count, 1U, kMaxBuffers);
   // Clamp the frame rate to between 1 and |kMaxFramesPerSecond - 1|.
   int frames_per_second =
-      std::min(std::max(device_info.frames_per_second, 1U),
-               static_cast<uint32_t>(media::limits::kMaxFramesPerSecond - 1));
+      base::ClampToRange(device_info.frames_per_second, 1U,
+                         uint32_t{media::limits::kMaxFramesPerSecond - 1});
 
   video_capture_params_.requested_format = media::VideoCaptureFormat(
       gfx::Size(device_info.width, device_info.height), frames_per_second,

@@ -172,7 +172,7 @@ std::string DisplayIdListToString(const DisplayIdList& list) {
 
 display::ManagedDisplayInfo CreateDisplayInfo(int64_t id,
                                               const gfx::Rect& bounds) {
-  display::ManagedDisplayInfo info(id, "x-" + base::Int64ToString(id), false);
+  display::ManagedDisplayInfo info(id, "x-" + base::NumberToString(id), false);
   info.SetBounds(bounds);
   return info;
 }

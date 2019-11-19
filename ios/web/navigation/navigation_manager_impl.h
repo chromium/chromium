@@ -13,9 +13,9 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #import "ios/web/navigation/navigation_item_impl.h"
-#import "ios/web/public/navigation_item_list.h"
-#import "ios/web/public/navigation_manager.h"
-#include "ios/web/public/reload_type.h"
+#import "ios/web/public/deprecated/navigation_item_list.h"
+#import "ios/web/public/navigation/navigation_manager.h"
+#include "ios/web/public/navigation/reload_type.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 
@@ -94,8 +94,8 @@ class NavigationManagerImpl : public NavigationManager {
   virtual void OnNavigationItemsPruned(size_t pruned_item_count) = 0;
   virtual void OnNavigationItemCommitted() = 0;
 
-  // Called when renderer-initiated navigation has started.
-  virtual void OnRendererInitiatedNavigationStarted(const GURL& url) = 0;
+  // Called when a navigation has started.
+  virtual void OnNavigationStarted(const GURL& url) = 0;
 
   // Prepares for the deletion of WKWebView such as caching necessary data.
   virtual void DetachFromWebView();
@@ -130,6 +130,18 @@ class NavigationManagerImpl : public NavigationManager {
   // items owned by navigation manager and/or outside of navigation manager.
   virtual void CommitPendingItem(std::unique_ptr<NavigationItemImpl> item) = 0;
 
+  // Removes pending item, so it can be stored in NavigationContext.
+  // Pending item is stored in this object when NavigationContext object does
+  // not yet exist (e.g. when navigation was just requested, or when navigation
+  // has aborted).
+  virtual std::unique_ptr<NavigationItemImpl> ReleasePendingItem() = 0;
+
+  // Allows transferring pending item from NavigationContext to this object.
+  // Pending item can be moved from NavigationContext to this object when
+  // navigation is aborted, but pending item should be retained.
+  virtual void SetPendingItem(
+      std::unique_ptr<web::NavigationItemImpl> item) = 0;
+
   // Returns the navigation index that differs from the current item (or pending
   // item if it exists) by the specified |offset|, skipping redirect navigation
   // items. The index returned is not guaranteed to be valid.
@@ -157,6 +169,13 @@ class NavigationManagerImpl : public NavigationManager {
 
   // Applies the workaround for crbug.com/887497.
   virtual void ApplyWKWebViewForwardHistoryClobberWorkaround();
+
+  // Set ShouldSkipSerialization to true for the next pending item, provided it
+  // matches |url|.  Applies the workaround for crbug.com/997182
+  virtual void SetWKWebViewNextPendingUrlNotSerializable(const GURL& url);
+
+  // Returns true if specific URL is blocked from session restore.
+  virtual bool ShouldBlockUrlDuringRestore(const GURL& url) = 0;
 
   // Resets the transient url rewriter list.
   void RemoveTransientURLRewriters();

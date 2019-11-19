@@ -14,11 +14,10 @@
 #include <stdint.h>
 
 #include "base/compiler_specific.h"
-#include "base/files/file.h"
+#include "base/files/platform_file.h"
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/read_only_shared_memory_region.h"
-#include "base/memory/shared_memory_handle.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/memory/writable_shared_memory_region.h"
 #include "base/process/process_handle.h"
@@ -76,6 +75,14 @@ enum class UnwrappedSharedMemoryHandleProtection {
   kReadOnly,
 };
 
+// Wraps and unwraps base::subtle::PlatformSharedMemoryRegions. This should be
+// used only while transitioning from the legacy shared memory API. In new code
+// only base::*SharedMemoryRegion should be used instead.
+MOJO_CPP_SYSTEM_EXPORT ScopedSharedBufferHandle
+WrapPlatformSharedMemoryRegion(base::subtle::PlatformSharedMemoryRegion region);
+MOJO_CPP_SYSTEM_EXPORT base::subtle::PlatformSharedMemoryRegion
+UnwrapPlatformSharedMemoryRegion(ScopedSharedBufferHandle mojo_handle);
+
 // Wraps a PlatformHandle from the C++ platform support library as a Mojo
 // handle.
 MOJO_CPP_SYSTEM_EXPORT ScopedHandle WrapPlatformHandle(PlatformHandle handle);
@@ -92,61 +99,6 @@ ScopedHandle WrapPlatformFile(base::PlatformFile platform_file);
 // Unwraps a PlatformFile from a Mojo handle.
 MOJO_CPP_SYSTEM_EXPORT
 MojoResult UnwrapPlatformFile(ScopedHandle handle, base::PlatformFile* file);
-
-// DEPRECATED: Don't introduce new uses of base::SharedMemoryHandle, and please
-// attempt to avoid using this function. Use the new base shared memory APIs
-// (base::ReadOnlySharedMemoryRegion et al) and the corresponding wrap/unwrap
-// calls defined below instead.
-//
-// Wraps a base::SharedMemoryHandle as a Mojo handle. Takes ownership of the
-// SharedMemoryHandle. |size| indicates the size of the underlying
-// base::SharedMemory object, and |current_protection| indicates whether or
-// not |memory_handle| supports being mapped to writable memory segments.
-//
-// ***** IMPORTANT. PLEASE READ BELOW CAREFULLY. *****
-//
-// THIS CALL DOES NOT IN ANY WAY AFFECT THE MEMORY PROTECTION STATUS OF THE
-// WRAPPED HANDLE.
-//
-// The |current_protection| argument is only an indication of the current memory
-// protection status of |memory_handle| as known by the caller.
-//
-// DO NOT wrap a writable |memory_handle| with |current_protection| set to
-// |UnwrappedSharedMemoryHandleProtection::kReadOnly|, as this will mislead
-// corresponding callers to |UnwrapSharedMemoryHandle()|: the subsequently
-// unwrapped SharedMemoryHandle will appear to be read-only on the surface, but
-// will still be mappable to a writable memory segment.
-//
-// Use base::SharedMemory::GetReadOnlyHandle() to acquire a read-only handle to
-// a shared memory object if you intend to wrap the handle with
-// |UnwrappedSharedMemoryHandleProtection::kReadOnly|.
-MOJO_CPP_SYSTEM_EXPORT
-ScopedSharedBufferHandle WrapSharedMemoryHandle(
-    const base::SharedMemoryHandle& memory_handle,
-    size_t size,
-    UnwrappedSharedMemoryHandleProtection current_protection);
-
-// DEPRECATED: Don't introduce new uses of base::SharedMemoryHandle, and please
-// attempt to avoid using this function. Use the new base shared memory APIs
-// (base::ReadOnlySharedMemoryRegion et al) and the corresponding wrap/unwrap
-// calls defined below instead.
-//
-// Unwraps a base::SharedMemoryHandle from a Mojo handle. The caller assumes
-// responsibility for the lifetime of the SharedMemoryHandle. On success,
-// |*memory_handle| is set to a valid handle, |*size| is is set to the size of
-// that handle's underlying base::SharedMemory object, and
-// |*protection| indicates whether or not the handle may only be mapped
-// to a read-only memory segment.
-//
-// Note that if |*protection| is
-// |UnwrappedSharedMemoryHandleProtection::kReadOnly| upon return, writable
-// mapping of |*memory_handle| should not be attempted, and (unless there
-// is buggy code misusing WrapSharedMemoryHandle above) will always fail.
-MOJO_CPP_SYSTEM_EXPORT MojoResult
-UnwrapSharedMemoryHandle(ScopedSharedBufferHandle handle,
-                         base::SharedMemoryHandle* memory_handle,
-                         size_t* size,
-                         UnwrappedSharedMemoryHandleProtection* protection);
 
 // Helpers for wrapping and unwrapping new base shared memory API primitives.
 // If the input |region| is valid for the Wrap* functions, they will always

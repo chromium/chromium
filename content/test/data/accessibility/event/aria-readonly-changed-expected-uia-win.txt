@@ -1,0 +1,6 @@
+AriaProperties changed on role=textbox, name=textarea2
+AriaProperties changed on role=textbox, name=textarea3
+AriaProperties changed on role=textbox, name=textarea4
+ValueIsReadOnly changed on role=textbox, name=textarea2
+ValueIsReadOnly changed on role=textbox, name=textarea3
+ValueIsReadOnly changed on role=textbox, name=textarea4

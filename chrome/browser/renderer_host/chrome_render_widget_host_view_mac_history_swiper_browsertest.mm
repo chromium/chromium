@@ -102,7 +102,10 @@ class ChromeRenderWidgetHostViewMacHistorySwiperTest
     ui::SetEventTickClockForTesting(&mock_clock_);
   }
 
-  void TearDownOnMainThread() override { event_queue_.reset(); }
+  void TearDownOnMainThread() override {
+    ui::SetEventTickClockForTesting(nullptr);
+    event_queue_.reset();
+  }
 
  protected:
   // Returns the active web contents.

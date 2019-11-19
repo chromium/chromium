@@ -27,7 +27,7 @@ base::CancelableTaskTracker::TaskId GetFaviconImageForPageURL(
     FaviconService* favicon_service,
     const GURL& page_url,
     favicon_base::IconType type,
-    const favicon_base::FaviconImageCallback& callback,
+    favicon_base::FaviconImageCallback callback,
     base::CancelableTaskTracker* tracker);
 
 }  // namespace favicon

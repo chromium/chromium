@@ -138,7 +138,7 @@ class LoadablePluginPlaceholder : public PluginPlaceholderBase {
 
   gfx::Rect unobscured_rect_;
 
-  base::WeakPtrFactory<LoadablePluginPlaceholder> weak_factory_;
+  base::WeakPtrFactory<LoadablePluginPlaceholder> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(LoadablePluginPlaceholder);
 };

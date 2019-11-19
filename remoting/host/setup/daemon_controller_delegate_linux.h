@@ -20,6 +20,7 @@ class DaemonControllerDelegateLinux : public DaemonController::Delegate {
   // DaemonController::Delegate interface.
   DaemonController::State GetState() override;
   std::unique_ptr<base::DictionaryValue> GetConfig() override;
+  void CheckPermission(bool it2me, DaemonController::BoolCallback) override;
   void SetConfigAndStart(
       std::unique_ptr<base::DictionaryValue> config,
       bool consent,

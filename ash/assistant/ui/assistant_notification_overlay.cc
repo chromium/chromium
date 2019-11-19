@@ -51,7 +51,7 @@ AssistantOverlay::LayoutParams AssistantNotificationOverlay::GetLayoutParams()
 }
 
 void AssistantNotificationOverlay::ViewHierarchyChanged(
-    const ViewHierarchyChangedDetails& details) {
+    const views::ViewHierarchyChangedDetails& details) {
   if (details.parent == this)
     PreferredSizeChanged();
 }

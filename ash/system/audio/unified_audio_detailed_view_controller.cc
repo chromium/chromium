@@ -15,12 +15,10 @@ UnifiedAudioDetailedViewController::UnifiedAudioDetailedViewController(
     UnifiedSystemTrayController* tray_controller)
     : detailed_view_delegate_(
           std::make_unique<DetailedViewDelegate>(tray_controller)) {
-  DCHECK(CrasAudioHandler::IsInitialized());
   CrasAudioHandler::Get()->AddAudioObserver(this);
 }
 
 UnifiedAudioDetailedViewController::~UnifiedAudioDetailedViewController() {
-  DCHECK(CrasAudioHandler::IsInitialized());
   CrasAudioHandler::Get()->RemoveAudioObserver(this);
 }
 

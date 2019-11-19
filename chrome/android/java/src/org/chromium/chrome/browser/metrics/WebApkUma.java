@@ -10,15 +10,21 @@ import android.os.Build;
 import android.os.Environment;
 import android.os.StatFs;
 import android.provider.Settings;
-import android.support.annotation.IntDef;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
+
+import androidx.annotation.IntDef;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.util.ConversionUtils;
-import org.chromium.chrome.browser.webapps.WebApkInfo;
+import org.chromium.chrome.browser.webapps.WebApkDistributor;
+import org.chromium.chrome.browser.webapps.WebApkUkmRecorder;
+import org.chromium.chrome.browser.webapps.WebappDataStorage;
+import org.chromium.chrome.browser.webapps.WebappRegistry;
 
 import java.io.File;
 import java.lang.annotation.Retention;
@@ -113,16 +119,58 @@ public class WebApkUma {
 
     private static final String HISTOGRAM_LAUNCH_TO_SPLASHSCREEN_VISIBLE =
             "WebApk.Startup.Cold.ShellLaunchToSplashscreenVisible";
+    private static final String HISTOGRAM_NEW_STYLE_LAUNCH_TO_SPLASHSCREEN_VISIBLE =
+            "WebApk.Startup.Cold.NewStyle.ShellLaunchToSplashscreenVisible";
     private static final String HISTOGRAM_LAUNCH_TO_SPLASHSCREEN_HIDDEN =
             "WebApk.Startup.Cold.ShellLaunchToSplashscreenHidden";
 
-    private static final int WEBAPK_OPEN_MAX = 3;
-    public static final int WEBAPK_OPEN_LAUNCH_SUCCESS = 0;
-    // Obsolete: WEBAPK_OPEN_NO_LAUNCH_INTENT = 1;
-    public static final int WEBAPK_OPEN_ACTIVITY_NOT_FOUND = 2;
-
     private static final long WEBAPK_EXTRA_INSTALLATION_SPACE_BYTES =
             100 * (long) ConversionUtils.BYTES_PER_MEGABYTE; // 100 MB
+
+    /** Makes recordings that were deferred in order to not load native. */
+    public static void recordDeferredUma() {
+        SharedPreferencesManager preferencesManager = SharedPreferencesManager.getInstance();
+        Set<String> uninstalledPackages =
+                preferencesManager.readStringSet(ChromePreferenceKeys.WEBAPK_UNINSTALLED_PACKAGES);
+        if (uninstalledPackages.isEmpty()) return;
+
+        long fallbackUninstallTimestamp = System.currentTimeMillis();
+        WebappRegistry.warmUpSharedPrefs();
+        for (String uninstalledPackage : uninstalledPackages) {
+            RecordHistogram.recordBooleanHistogram("WebApk.Uninstall.Browser", true);
+
+            String webApkId = WebappRegistry.webApkIdForPackage(uninstalledPackage);
+            WebappDataStorage webappDataStorage =
+                    WebappRegistry.getInstance().getWebappDataStorage(webApkId);
+            if (webappDataStorage != null) {
+                long uninstallTimestamp = webappDataStorage.getWebApkUninstallTimestamp();
+                if (uninstallTimestamp == 0) {
+                    uninstallTimestamp = fallbackUninstallTimestamp;
+                }
+                WebApkUkmRecorder.recordWebApkUninstall(webappDataStorage.getWebApkManifestUrl(),
+                        WebApkDistributor.BROWSER, webappDataStorage.getWebApkVersionCode(),
+                        webappDataStorage.getLaunchCount(),
+                        uninstallTimestamp - webappDataStorage.getWebApkInstallTimestamp());
+            }
+        }
+        preferencesManager.writeStringSet(
+                ChromePreferenceKeys.WEBAPK_UNINSTALLED_PACKAGES, new HashSet<String>());
+
+        // TODO(http://crbug.com/1000312): Clear WebappDataStorage for uninstalled WebAPK.
+    }
+
+    /** Sets WebAPK uninstall to be recorded next time that native is loaded. */
+    public static void deferRecordWebApkUninstalled(String packageName) {
+        SharedPreferencesManager.getInstance().addToStringSet(
+                ChromePreferenceKeys.WEBAPK_UNINSTALLED_PACKAGES, packageName);
+        String webApkId = WebappRegistry.webApkIdForPackage(packageName);
+        WebappRegistry.warmUpSharedPrefsForId(webApkId);
+        WebappDataStorage webappDataStorage =
+                WebappRegistry.getInstance().getWebappDataStorage(webApkId);
+        if (webappDataStorage != null) {
+            webappDataStorage.setWebApkUninstallTimestamp();
+        }
+    }
 
     /**
      * Records the time point when a request to update a WebAPK is sent to the WebAPK Server.
@@ -144,19 +192,28 @@ public class WebApkUma {
     }
 
     /**
-     * Records duration between starting of the WebAPK shell until the splashscreen is shown.
+     * Records duration between starting the WebAPK shell until the splashscreen is shown.
      * @param durationMs duration in milliseconds
      */
-    public static void recordShellApkLaunchToSplashscreenVisible(long durationMs) {
+    public static void recordShellApkLaunchToSplashVisible(long durationMs) {
         RecordHistogram.recordMediumTimesHistogram(
                 HISTOGRAM_LAUNCH_TO_SPLASHSCREEN_VISIBLE, durationMs);
+    }
+
+    /**
+     * Records duration between starting the WebAPK shell until the shell displays the
+     * splashscreen for new-style WebAPKs.
+     */
+    public static void recordNewStyleShellApkLaunchToSplashVisible(long durationMs) {
+        RecordHistogram.recordMediumTimesHistogram(
+                HISTOGRAM_NEW_STYLE_LAUNCH_TO_SPLASHSCREEN_VISIBLE, durationMs);
     }
 
     /**
      * Records duration between starting of the WebAPK shell until the splashscreen is hidden.
      * @param durationMs duration in milliseconds
      */
-    public static void recordShellApkLaunchToSplashscreenHidden(long durationMs) {
+    public static void recordShellApkLaunchToSplashHidden(long durationMs) {
         RecordHistogram.recordMediumTimesHistogram(
                 HISTOGRAM_LAUNCH_TO_SPLASHSCREEN_HIDDEN, durationMs);
     }
@@ -195,7 +252,7 @@ public class WebApkUma {
 
     /** Records the duration of a WebAPK session (from launch/foreground to background). */
     public static void recordWebApkSessionDuration(
-            @WebApkInfo.WebApkDistributor int distributor, long duration) {
+            @WebApkDistributor int distributor, long duration) {
         RecordHistogram.recordLongTimesHistogram(
                 "WebApk.Session.TotalDuration2." + getWebApkDistributorUmaSuffix(distributor),
                 duration);
@@ -203,18 +260,17 @@ public class WebApkUma {
 
     /** Records the current Shell APK version. */
     public static void recordShellApkVersion(
-            int shellApkVersion, @WebApkInfo.WebApkDistributor int distributor) {
+            int shellApkVersion, @WebApkDistributor int distributor) {
         RecordHistogram.recordSparseHistogram(
                 "WebApk.ShellApkVersion2." + getWebApkDistributorUmaSuffix(distributor),
                 shellApkVersion);
     }
 
-    private static String getWebApkDistributorUmaSuffix(
-            @WebApkInfo.WebApkDistributor int distributor) {
+    private static String getWebApkDistributorUmaSuffix(@WebApkDistributor int distributor) {
         switch (distributor) {
-            case WebApkInfo.WebApkDistributor.BROWSER:
+            case WebApkDistributor.BROWSER:
                 return "Browser";
-            case WebApkInfo.WebApkDistributor.DEVICE_POLICY:
+            case WebApkDistributor.DEVICE_POLICY:
                 return "DevicePolicy";
             default:
                 return "Other";
@@ -292,6 +348,13 @@ public class WebApkUma {
     }
 
     /**
+     * Records whether a WebAPK navigation is within the WebAPK's scope.
+     */
+    public static void recordNavigation(boolean isNavigationInScope) {
+        RecordHistogram.recordBooleanHistogram("WebApk.Navigation.InScope", isNavigationInScope);
+    }
+
+    /**
      * Log necessary disk usage and cache size UMAs when WebAPK installation fails.
      */
     public static void logSpaceUsageUMAWhenInstallationFails() {
@@ -348,20 +411,10 @@ public class WebApkUma {
      * @return The available space that can be used to install WebAPK. Negative value means there is
      * less free space available than the system's minimum by the given amount.
      */
-    @SuppressWarnings("deprecation")
     public static long getAvailableSpaceAboveLowSpaceLimit() {
-        long partitionAvailableBytes;
-        long partitionTotalBytes;
         StatFs partitionStats = new StatFs(Environment.getDataDirectory().getAbsolutePath());
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            partitionAvailableBytes = partitionStats.getAvailableBytes();
-            partitionTotalBytes = partitionStats.getTotalBytes();
-        } else {
-            // these APIs were deprecated in API level 18.
-            long blockSize = partitionStats.getBlockSize();
-            partitionAvailableBytes = blockSize * (long) partitionStats.getAvailableBlocks();
-            partitionTotalBytes = blockSize * (long) partitionStats.getBlockCount();
-        }
+        long partitionAvailableBytes = partitionStats.getAvailableBytes();
+        long partitionTotalBytes = partitionStats.getTotalBytes();
         long minimumFreeBytes = getLowSpaceLimitBytes(partitionTotalBytes);
 
         long webApkExtraSpaceBytes = 0;
@@ -399,17 +452,10 @@ public class WebApkUma {
         long minFreeBytes = 0;
 
         // Retrieve platform-appropriate values first
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            minFreePercent = Settings.Global.getInt(
-                    resolver, sysStorageThresholdPercentage, defaultThresholdPercentage);
-            minFreeBytes = Settings.Global.getLong(
-                    resolver, sysStorageThresholdMaxBytes, defaultThresholdMaxBytes);
-        } else {
-            minFreePercent = Settings.Secure.getInt(
-                    resolver, sysStorageThresholdPercentage, defaultThresholdPercentage);
-            minFreeBytes = Settings.Secure.getLong(
-                    resolver, sysStorageThresholdMaxBytes, defaultThresholdMaxBytes);
-        }
+        minFreePercent = Settings.Global.getInt(
+                resolver, sysStorageThresholdPercentage, defaultThresholdPercentage);
+        minFreeBytes = Settings.Global.getLong(
+                resolver, sysStorageThresholdMaxBytes, defaultThresholdMaxBytes);
 
         long minFreePercentInBytes = (partitionTotalBytes * minFreePercent) / 100;
 

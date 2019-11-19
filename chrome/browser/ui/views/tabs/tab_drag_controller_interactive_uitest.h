@@ -36,7 +36,10 @@ class TabDragControllerTest : public InProcessBrowserTest {
 
   // Adds a new blank tab to |browser|, stops animations and resets the ids of
   // the tabs in |browser|.
-  void AddTabAndResetBrowser(Browser* browser);
+  void AddTabsAndResetBrowser(Browser* browser, int additional_tabs);
+
+  // Resizes browser1 and browser2 to be side by side.
+  void Resize(Browser* browser1, Browser* browser2);
 
   // Creates a new Browser and resizes browser() and the new browser to be side
   // by side.
@@ -50,7 +53,7 @@ class TabDragControllerTest : public InProcessBrowserTest {
  protected:
   void HandleGestureEvent(TabStrip* tab_strip, ui::GestureEvent* event);
 
-  bool HasDragStarted(const TabStrip* tab_strip) const;
+  bool HasDragStarted(TabStrip* tab_strip) const;
 
   // InProcessBrowserTest:
   void SetUp() override;

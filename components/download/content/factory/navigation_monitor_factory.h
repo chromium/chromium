@@ -5,24 +5,21 @@
 #ifndef COMPONENTS_DOWNLOAD_CONTENT_FACTORY_NAVIGATION_MONITOR_FACTORY_H_
 #define COMPONENTS_DOWNLOAD_CONTENT_FACTORY_NAVIGATION_MONITOR_FACTORY_H_
 
+#include <memory>
+
 #include "base/macros.h"
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "components/keyed_service/core/simple_keyed_service_factory.h"
 
 namespace download {
 
 class NavigationMonitor;
 
 // Creates the DownloadNavigationMonitor instance.
-class NavigationMonitorFactory : public BrowserContextKeyedServiceFactory {
+class NavigationMonitorFactory : public SimpleKeyedServiceFactory {
  public:
-  // Returns singleton instance of DownloadServiceFactory.
   static NavigationMonitorFactory* GetInstance();
-
-  // Helper method to create the DownloadNavigationMonitor instance from
-  // |context| if it doesn't exist.
-  static download::NavigationMonitor* GetForBrowserContext(
-      content::BrowserContext* context);
+  static download::NavigationMonitor* GetForKey(SimpleFactoryKey* key);
 
  private:
   friend struct base::DefaultSingletonTraits<NavigationMonitorFactory>;
@@ -30,11 +27,10 @@ class NavigationMonitorFactory : public BrowserContextKeyedServiceFactory {
   NavigationMonitorFactory();
   ~NavigationMonitorFactory() override;
 
-  // BrowserContextKeyedServiceFactory implementation.
-  KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* context) const override;
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override;
+  // SimpleKeyedServiceFactory implementation.
+  std::unique_ptr<KeyedService> BuildServiceInstanceFor(
+      SimpleFactoryKey* key) const override;
+  SimpleFactoryKey* GetKeyToUse(SimpleFactoryKey* key) const override;
 
   DISALLOW_COPY_AND_ASSIGN(NavigationMonitorFactory);
 };

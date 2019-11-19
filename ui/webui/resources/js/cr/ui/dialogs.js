@@ -18,10 +18,34 @@ cr.define('cr.ui.dialogs', function() {
     // so we can restore it when we're hidden.
     this.previousActiveElement_ = null;
 
-    this.initDom_();
-
     /** @private{boolean} */
     this.showing_ = false;
+
+    /** @protected {?Element} */
+    this.container = null;
+
+    /** @protected {?Element} */
+    this.frame = null;
+
+    /** @protected {?Element} */
+    this.title = null;
+
+    /** @protected {?Element} */
+    this.text = null;
+
+    /** @protected {?Element} */
+    this.closeButton = null;
+
+    /** @protected {?Element} */
+    this.okButton = null;
+
+    /** @protected {?Element} */
+    this.cancelButton = null;
+
+    /** @protected {?Element} */
+    this.buttons = null;
+
+    this.initDom();
   }
 
   /**
@@ -39,56 +63,56 @@ cr.define('cr.ui.dialogs', function() {
   BaseDialog.ANIMATE_STABLE_DURATION = 500;
 
   /** @protected */
-  BaseDialog.prototype.initDom_ = function() {
+  BaseDialog.prototype.initDom = function() {
     const doc = this.document_;
-    this.container_ = doc.createElement('div');
-    this.container_.className = 'cr-dialog-container';
-    this.container_.addEventListener(
-        'keydown', this.onContainerKeyDown_.bind(this));
+    this.container = doc.createElement('div');
+    this.container.className = 'cr-dialog-container';
+    this.container.addEventListener(
+        'keydown', this.onContainerKeyDown.bind(this));
     this.shield_ = doc.createElement('div');
     this.shield_.className = 'cr-dialog-shield';
-    this.container_.appendChild(this.shield_);
-    this.container_.addEventListener(
+    this.container.appendChild(this.shield_);
+    this.container.addEventListener(
         'mousedown', this.onContainerMouseDown_.bind(this));
 
-    this.frame_ = doc.createElement('div');
-    this.frame_.className = 'cr-dialog-frame';
+    this.frame = doc.createElement('div');
+    this.frame.className = 'cr-dialog-frame';
+    this.frame.setAttribute('role', 'dialog');
     // Elements that have negative tabIndex can be focused but are not traversed
     // by Tab key.
-    this.frame_.tabIndex = -1;
-    this.container_.appendChild(this.frame_);
+    this.frame.tabIndex = -1;
+    this.container.appendChild(this.frame);
 
-    this.title_ = doc.createElement('div');
-    this.title_.className = 'cr-dialog-title';
-    this.frame_.appendChild(this.title_);
+    this.title = doc.createElement('div');
+    this.title.className = 'cr-dialog-title';
+    this.frame.appendChild(this.title);
 
-    this.closeButton_ = doc.createElement('div');
-    this.closeButton_.className = 'cr-dialog-close';
-    this.closeButton_.addEventListener('click', this.onCancelClick_.bind(this));
-    this.frame_.appendChild(this.closeButton_);
+    this.closeButton = doc.createElement('div');
+    this.closeButton.className = 'cr-dialog-close';
+    this.closeButton.addEventListener('click', this.onCancelClick_.bind(this));
+    this.frame.appendChild(this.closeButton);
 
-    this.text_ = doc.createElement('div');
-    this.text_.className = 'cr-dialog-text';
-    this.frame_.appendChild(this.text_);
+    this.text = doc.createElement('div');
+    this.text.className = 'cr-dialog-text';
+    this.frame.appendChild(this.text);
 
     this.buttons = doc.createElement('div');
     this.buttons.className = 'cr-dialog-buttons';
-    this.frame_.appendChild(this.buttons);
+    this.frame.appendChild(this.buttons);
 
-    this.okButton_ = doc.createElement('button');
-    this.okButton_.className = 'cr-dialog-ok';
-    this.okButton_.textContent = BaseDialog.OK_LABEL;
-    this.okButton_.addEventListener('click', this.onOkClick_.bind(this));
-    this.buttons.appendChild(this.okButton_);
+    this.okButton = doc.createElement('button');
+    this.okButton.className = 'cr-dialog-ok';
+    this.okButton.textContent = BaseDialog.OK_LABEL;
+    this.okButton.addEventListener('click', this.onOkClick_.bind(this));
+    this.buttons.appendChild(this.okButton);
 
-    this.cancelButton_ = doc.createElement('button');
-    this.cancelButton_.className = 'cr-dialog-cancel';
-    this.cancelButton_.textContent = BaseDialog.CANCEL_LABEL;
-    this.cancelButton_.addEventListener(
-        'click', this.onCancelClick_.bind(this));
-    this.buttons.appendChild(this.cancelButton_);
+    this.cancelButton = doc.createElement('button');
+    this.cancelButton.className = 'cr-dialog-cancel';
+    this.cancelButton.textContent = BaseDialog.CANCEL_LABEL;
+    this.cancelButton.addEventListener('click', this.onCancelClick_.bind(this));
+    this.buttons.appendChild(this.cancelButton);
 
-    this.initialFocusElement_ = this.okButton_;
+    this.initialFocusElement_ = this.okButton;
   };
 
   /** @private {Function|undefined} */
@@ -98,9 +122,9 @@ cr.define('cr.ui.dialogs', function() {
   BaseDialog.prototype.onCancel_ = null;
 
   /** @protected */
-  BaseDialog.prototype.onContainerKeyDown_ = function(event) {
+  BaseDialog.prototype.onContainerKeyDown = function(event) {
     // Handle Escape.
-    if (event.keyCode == 27 && !this.cancelButton_.disabled) {
+    if (event.keyCode == 27 && !this.cancelButton.disabled) {
       this.onCancelClick_(event);
       event.stopPropagation();
       // Prevent the event from being handled by the container of the dialog.
@@ -111,8 +135,8 @@ cr.define('cr.ui.dialogs', function() {
 
   /** @private */
   BaseDialog.prototype.onContainerMouseDown_ = function(event) {
-    if (event.target == this.container_) {
-      const classList = this.container_.classList;
+    if (event.target == this.container) {
+      const classList = this.container.classList;
       // Start 'pulse' animation.
       classList.remove('pulse');
       setTimeout(classList.add.bind(classList, 'pulse'), 0);
@@ -138,16 +162,16 @@ cr.define('cr.ui.dialogs', function() {
 
   /** @param {string} label */
   BaseDialog.prototype.setOkLabel = function(label) {
-    this.okButton_.textContent = label;
+    this.okButton.textContent = label;
   };
 
   /** @param {string} label */
   BaseDialog.prototype.setCancelLabel = function(label) {
-    this.cancelButton_.textContent = label;
+    this.cancelButton.textContent = label;
   };
 
   BaseDialog.prototype.setInitialFocusOnCancel = function() {
-    this.initialFocusElement_ = this.cancelButton_;
+    this.initialFocusElement_ = this.cancelButton;
   };
 
   /**
@@ -170,7 +194,7 @@ cr.define('cr.ui.dialogs', function() {
    */
   BaseDialog.prototype.showHtml = function(
       title, message, opt_onOk, opt_onCancel, opt_onShow) {
-    this.text_.innerHTML = message;
+    this.text.innerHTML = message;
     this.show_(title, opt_onOk, opt_onCancel, opt_onShow);
   };
 
@@ -207,7 +231,7 @@ cr.define('cr.ui.dialogs', function() {
    */
   BaseDialog.prototype.showWithTitle = function(
       title, message, opt_onOk, opt_onCancel, opt_onShow) {
-    this.text_.textContent = message;
+    this.text.textContent = message;
     this.show_(title, opt_onOk, opt_onCancel, opt_onShow);
   };
 
@@ -231,24 +255,26 @@ cr.define('cr.ui.dialogs', function() {
     });
 
     this.previousActiveElement_ = this.document_.activeElement;
-    this.parentNode_.appendChild(this.container_);
+    this.parentNode_.appendChild(this.container);
 
     this.onOk_ = opt_onOk;
     this.onCancel_ = opt_onCancel;
 
     if (title) {
-      this.title_.textContent = title;
-      this.title_.hidden = false;
+      this.title.textContent = title;
+      this.title.hidden = false;
+      this.frame.setAttribute('aria-label', title);
     } else {
-      this.title_.textContent = '';
-      this.title_.hidden = true;
+      this.title.textContent = '';
+      this.title.hidden = true;
+      this.frame.removeAttribute('aria-label');
     }
 
     const self = this;
     setTimeout(function() {
       // Check that hide() was not called in between.
       if (self.showing_) {
-        self.container_.classList.add('shown');
+        self.container.classList.add('shown');
         self.initialFocusElement_.focus();
       }
       setTimeout(function() {
@@ -274,23 +300,23 @@ cr.define('cr.ui.dialogs', function() {
     this.deactivatedNodes_ = null;
     this.tabIndexes_ = null;
 
-    this.container_.classList.remove('shown');
+    this.container.classList.remove('shown');
 
     if (this.previousActiveElement_) {
       this.previousActiveElement_.focus();
     } else {
       this.document_.body.focus();
     }
-    this.frame_.classList.remove('pulse');
+    this.frame.classList.remove('pulse');
 
     const self = this;
     setTimeout(function() {
       // Wait until the transition is done before removing the dialog.
       // Check show() was not called in between.
       // It is also possible to show/hide/show/hide and have hide called twice
-      // and container_ already removed from parentNode_.
-      if (!self.showing_ && self.parentNode_ === self.container_.parentNode) {
-        self.parentNode_.removeChild(self.container_);
+      // and container already removed from parentNode_.
+      if (!self.showing_ && self.parentNode_ === self.container.parentNode) {
+        self.parentNode_.removeChild(self.container);
       }
       if (opt_onHide) {
         opt_onHide();
@@ -305,7 +331,7 @@ cr.define('cr.ui.dialogs', function() {
    */
   function AlertDialog(parentNode) {
     BaseDialog.call(this, parentNode);
-    this.cancelButton_.style.display = 'none';
+    this.cancelButton.style.display = 'none';
   }
 
   AlertDialog.prototype = {__proto__: BaseDialog.prototype};
@@ -344,7 +370,7 @@ cr.define('cr.ui.dialogs', function() {
     this.input_.addEventListener('focus', this.onInputFocus.bind(this));
     this.input_.addEventListener('keydown', this.onKeyDown_.bind(this));
     this.initialFocusElement_ = this.input_;
-    this.frame_.insertBefore(this.input_, this.text_.nextSibling);
+    this.frame.insertBefore(this.input_, this.text.nextSibling);
   }
 
   PromptDialog.prototype = {__proto__: BaseDialog.prototype};

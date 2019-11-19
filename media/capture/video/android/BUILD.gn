@@ -37,7 +37,6 @@ generate_jni("capture_jni_headers") {
     "java/src/org/chromium/media/VideoCapture.java",
     "java/src/org/chromium/media/VideoCaptureFactory.java",
   ]
-  jni_package = "media"
 }
 
 java_cpp_enum("media_java_enums_srcjar") {
@@ -52,8 +51,10 @@ java_cpp_enum("media_java_enums_srcjar") {
 android_library("capture_java") {
   deps = [
     "//base:base_java",
-    "//third_party/android_deps:android_support_annotations_java",
+    "//base:jni_java",
+    "//third_party/android_deps:androidx_annotation_annotation_java",
   ]
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 
   srcjar_deps = [ ":media_java_enums_srcjar" ]
 

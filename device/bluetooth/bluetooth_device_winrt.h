@@ -143,7 +143,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceWinrt : public BluetoothDevice {
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
-  base::WeakPtrFactory<BluetoothDeviceWinrt> weak_ptr_factory_;
+  base::WeakPtrFactory<BluetoothDeviceWinrt> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(BluetoothDeviceWinrt);
 };

@@ -4,12 +4,14 @@
 
 package org.chromium.components.sync;
 
+import androidx.annotation.VisibleForTesting;
+
 import com.google.ipc.invalidation.external.client.types.ObjectId;
 import com.google.protos.ipc.invalidation.Types;
 
 import org.chromium.base.ApiCompatibilityUtils;
-import org.chromium.base.VisibleForTesting;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -100,7 +102,7 @@ public class ModelTypeHelper {
         if (modelType == ModelType.PROXY_TABS) {
             return "PROXY_TABS";
         }
-        return nativeModelTypeToNotificationType(modelType);
+        return ModelTypeHelperJni.get().modelTypeToNotificationType(modelType);
     }
 
     /**
@@ -125,5 +127,8 @@ public class ModelTypeHelper {
         sDelegate = delegate;
     }
 
-    private static native String nativeModelTypeToNotificationType(int modelType);
+    @NativeMethods
+    interface Natives {
+        String modelTypeToNotificationType(int modelType);
+    }
 }

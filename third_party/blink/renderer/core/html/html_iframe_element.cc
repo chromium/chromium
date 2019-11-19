@@ -24,32 +24,31 @@
 
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 
+#include "third_party/blink/public/mojom/feature_policy/feature_policy.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/string_or_trusted_html.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_html_iframe_element.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
+#include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/feature_policy/feature_policy_parser.h"
 #include "third_party/blink/renderer/core/feature_policy/iframe_policy.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/sandbox_flags.h"
-#include "third_party/blink/renderer/core/frame/use_counter.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/layout/layout_iframe.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
-using namespace html_names;
-
-inline HTMLIFrameElement::HTMLIFrameElement(Document& document)
-    : HTMLFrameElementBase(kIFrameTag, document),
+HTMLIFrameElement::HTMLIFrameElement(Document& document)
+    : HTMLFrameElementBase(html_names::kIFrameTag, document),
       collapsed_by_client_(false),
-      sandbox_(HTMLIFrameElementSandbox::Create(this)),
+      sandbox_(MakeGarbageCollected<HTMLIFrameElementSandbox>(this)),
       referrer_policy_(network::mojom::ReferrerPolicy::kDefault) {}
-
-DEFINE_NODE_FACTORY(HTMLIFrameElement)
 
 void HTMLIFrameElement::Trace(Visitor* visitor) {
   visitor->Trace(sandbox_);
@@ -63,8 +62,7 @@ HTMLIFrameElement::~HTMLIFrameElement() = default;
 const AttrNameToTrustedType& HTMLIFrameElement::GetCheckedAttributeTypes()
     const {
   DEFINE_STATIC_LOCAL(AttrNameToTrustedType, attribute_map,
-                      ({{"src", SpecificTrustedType::kTrustedURL},
-                        {"srcdoc", SpecificTrustedType::kTrustedHTML}}));
+                      ({{"srcdoc", SpecificTrustedType::kTrustedHTML}}));
   return attribute_map;
 }
 
@@ -77,7 +75,10 @@ void HTMLIFrameElement::SetCollapsed(bool collapse) {
   // This is always called in response to an IPC, so should not happen in the
   // middle of a style recalc.
   DCHECK(!GetDocument().InStyleRecalc());
-  LazyReattachIfAttached();
+
+  // Trigger style recalc to trigger layout tree re-attachment.
+  SetNeedsStyleRecalc(kLocalStyleChange, StyleChangeReasonForTracing::Create(
+                                             style_change_reason::kFrame));
 }
 
 DOMTokenList* HTMLIFrameElement::sandbox() const {
@@ -87,15 +88,16 @@ DOMTokenList* HTMLIFrameElement::sandbox() const {
 DOMFeaturePolicy* HTMLIFrameElement::featurePolicy() {
   if (!policy_) {
     policy_ = MakeGarbageCollected<IFramePolicy>(
-        &GetDocument(), ContainerPolicy(), GetOriginForFeaturePolicy());
+        &GetDocument(), GetFramePolicy().container_policy,
+        GetOriginForFeaturePolicy());
   }
   return policy_.Get();
 }
 
 bool HTMLIFrameElement::IsPresentationAttribute(
     const QualifiedName& name) const {
-  if (name == kWidthAttr || name == kHeightAttr || name == kAlignAttr ||
-      name == kFrameborderAttr)
+  if (name == html_names::kWidthAttr || name == html_names::kHeightAttr ||
+      name == html_names::kAlignAttr || name == html_names::kFrameborderAttr)
     return true;
   return HTMLFrameElementBase::IsPresentationAttribute(name);
 }
@@ -104,20 +106,20 @@ void HTMLIFrameElement::CollectStyleForPresentationAttribute(
     const QualifiedName& name,
     const AtomicString& value,
     MutableCSSPropertyValueSet* style) {
-  if (name == kWidthAttr) {
-    AddHTMLLengthToStyle(style, CSSPropertyWidth, value);
-  } else if (name == kHeightAttr) {
-    AddHTMLLengthToStyle(style, CSSPropertyHeight, value);
-  } else if (name == kAlignAttr) {
+  if (name == html_names::kWidthAttr) {
+    AddHTMLLengthToStyle(style, CSSPropertyID::kWidth, value);
+  } else if (name == html_names::kHeightAttr) {
+    AddHTMLLengthToStyle(style, CSSPropertyID::kHeight, value);
+  } else if (name == html_names::kAlignAttr) {
     ApplyAlignmentAttributeToStyle(value, style);
-  } else if (name == kFrameborderAttr) {
+  } else if (name == html_names::kFrameborderAttr) {
     // LocalFrame border doesn't really match the HTML4 spec definition for
     // iframes. It simply adds a presentational hint that the border should be
     // off if set to zero.
     if (!value.ToInt()) {
       // Add a rule that nulls out our border width.
       AddPropertyToPresentationAttributeStyle(
-          style, CSSPropertyBorderWidth, 0,
+          style, CSSPropertyID::kBorderWidth, 0,
           CSSPrimitiveValue::UnitType::kPixels);
     }
   } else {
@@ -130,7 +132,7 @@ void HTMLIFrameElement::ParseAttribute(
     const AttributeModificationParams& params) {
   const QualifiedName& name = params.name;
   const AtomicString& value = params.new_value;
-  if (name == kNameAttr) {
+  if (name == html_names::kNameAttr) {
     if (IsInDocumentTree() && GetDocument().IsHTMLDocument()) {
       HTMLDocument& document = ToHTMLDocument(GetDocument());
       document.RemoveNamedItem(name_);
@@ -140,15 +142,37 @@ void HTMLIFrameElement::ParseAttribute(
     name_ = value;
     if (name_ != old_name)
       FrameOwnerPropertiesChanged();
-  } else if (name == kSandboxAttr) {
+  } else if (name == html_names::kSandboxAttr) {
     sandbox_->DidUpdateAttributeValue(params.old_value, value);
     String invalid_tokens;
-    SetSandboxFlags(value.IsNull() ? kSandboxNone
-                                   : ParseSandboxPolicy(sandbox_->TokenSet(),
-                                                        invalid_tokens));
+    bool feature_policy_for_sandbox =
+        RuntimeEnabledFeatures::FeaturePolicyForSandboxEnabled();
+    WebSandboxFlags current_flags =
+        value.IsNull()
+            ? WebSandboxFlags::kNone
+            : ParseSandboxPolicy(sandbox_->TokenSet(), invalid_tokens);
+    SetAllowedToDownloadWithoutUserActivation(
+        (current_flags & WebSandboxFlags::kDownloads) ==
+        WebSandboxFlags::kNone);
+    // With FeaturePolicyForSandbox, sandbox flags are represented as part of
+    // the container policies. However, not all sandbox flags are yet converted
+    // and for now the residue will stay around in the stored flags.
+    // (see https://crbug.com/812381).
+    WebSandboxFlags sandbox_to_set = current_flags;
+    sandbox_flags_converted_to_feature_policies_ = WebSandboxFlags::kNone;
+    if (feature_policy_for_sandbox && current_flags != WebSandboxFlags::kNone) {
+      // Residue sandbox which will not be mapped to feature policies.
+      sandbox_to_set =
+          GetSandboxFlagsNotImplementedAsFeaturePolicy(current_flags);
+      // The part of sandbox which will be mapped to feature policies.
+      sandbox_flags_converted_to_feature_policies_ =
+          current_flags & ~sandbox_to_set;
+    }
+    SetSandboxFlags(sandbox_to_set);
     if (!invalid_tokens.IsNull()) {
       GetDocument().AddConsoleMessage(ConsoleMessage::Create(
-          kOtherMessageSource, mojom::ConsoleMessageLevel::kError,
+          mojom::ConsoleMessageSource::kOther,
+          mojom::ConsoleMessageLevel::kError,
           "Error while parsing the 'sandbox' attribute: " + invalid_tokens));
     }
     if (RuntimeEnabledFeatures::FeaturePolicyForSandboxEnabled()) {
@@ -157,13 +181,13 @@ void HTMLIFrameElement::ParseAttribute(
       if (!messages.IsEmpty()) {
         for (const String& message : messages) {
           GetDocument().AddConsoleMessage(ConsoleMessage::Create(
-              kOtherMessageSource, mojom::ConsoleMessageLevel::kWarning,
-              message));
+              mojom::ConsoleMessageSource::kOther,
+              mojom::ConsoleMessageLevel::kWarning, message));
         }
       }
     }
     UseCounter::Count(GetDocument(), WebFeature::kSandboxViaIFrame);
-  } else if (name == kReferrerpolicyAttr) {
+  } else if (name == html_names::kReferrerpolicyAttr) {
     referrer_policy_ = network::mojom::ReferrerPolicy::kDefault;
     if (!value.IsNull()) {
       SecurityPolicy::ReferrerPolicyFromString(
@@ -171,7 +195,7 @@ void HTMLIFrameElement::ParseAttribute(
       UseCounter::Count(GetDocument(),
                         WebFeature::kHTMLIFrameElementReferrerPolicyAttribute);
     }
-  } else if (name == kAllowfullscreenAttr) {
+  } else if (name == html_names::kAllowfullscreenAttr) {
     bool old_allow_fullscreen = allow_fullscreen_;
     allow_fullscreen_ = !value.IsNull();
     if (allow_fullscreen_ != old_allow_fullscreen) {
@@ -186,19 +210,20 @@ void HTMLIFrameElement::ParseAttribute(
       FrameOwnerPropertiesChanged();
       UpdateContainerPolicy();
     }
-  } else if (name == kAllowpaymentrequestAttr) {
+  } else if (name == html_names::kAllowpaymentrequestAttr) {
     bool old_allow_payment_request = allow_payment_request_;
     allow_payment_request_ = !value.IsNull();
     if (allow_payment_request_ != old_allow_payment_request) {
       FrameOwnerPropertiesChanged();
       UpdateContainerPolicy();
     }
-  } else if (name == kCspAttr) {
+  } else if (name == html_names::kCspAttr) {
     if (!ContentSecurityPolicy::IsValidCSPAttr(
             value.GetString(), GetDocument().RequiredCSP().GetString())) {
       required_csp_ = g_null_atom;
       GetDocument().AddConsoleMessage(ConsoleMessage::Create(
-          kOtherMessageSource, mojom::ConsoleMessageLevel::kError,
+          mojom::ConsoleMessageSource::kOther,
+          mojom::ConsoleMessageLevel::kError,
           "'csp' attribute is not a valid policy: " + value));
       return;
     }
@@ -206,7 +231,7 @@ void HTMLIFrameElement::ParseAttribute(
       required_csp_ = value;
       FrameOwnerPropertiesChanged();
     }
-  } else if (name == kAllowAttr) {
+  } else if (name == html_names::kAllowAttr) {
     if (allow_ != value) {
       allow_ = value;
       Vector<String> messages;
@@ -214,8 +239,8 @@ void HTMLIFrameElement::ParseAttribute(
       if (!messages.IsEmpty()) {
         for (const String& message : messages) {
           GetDocument().AddConsoleMessage(ConsoleMessage::Create(
-              kOtherMessageSource, mojom::ConsoleMessageLevel::kWarning,
-              message));
+              mojom::ConsoleMessageSource::kOther,
+              mojom::ConsoleMessageLevel::kWarning, message));
         }
       }
       if (!value.IsEmpty()) {
@@ -231,18 +256,19 @@ void HTMLIFrameElement::ParseAttribute(
     // To avoid polluting the console, this is being recorded only once per
     // page.
     if (name == "gesture" && value == "media" && GetDocument().Loader() &&
-        !GetDocument().Loader()->GetUseCounter().HasRecordedMeasurement(
+        !GetDocument().Loader()->GetUseCounterHelper().HasRecordedMeasurement(
             WebFeature::kHTMLIFrameElementGestureMedia)) {
       UseCounter::Count(GetDocument(),
                         WebFeature::kHTMLIFrameElementGestureMedia);
-      GetDocument().AddConsoleMessage(ConsoleMessage::Create(
-          kOtherMessageSource, mojom::ConsoleMessageLevel::kWarning,
-          "<iframe gesture=\"media\"> is not supported. "
-          "Use <iframe allow=\"autoplay\">, "
-          "https://goo.gl/ximf56"));
+      GetDocument().AddConsoleMessage(
+          ConsoleMessage::Create(mojom::ConsoleMessageSource::kOther,
+                                 mojom::ConsoleMessageLevel::kWarning,
+                                 "<iframe gesture=\"media\"> is not supported. "
+                                 "Use <iframe allow=\"autoplay\">, "
+                                 "https://goo.gl/ximf56"));
     }
 
-    if (name == kSrcAttr)
+    if (name == html_names::kSrcAttr)
       LogUpdateAttributeIfIsolatedWorldAndInDocument("iframe", params);
     HTMLFrameElementBase::ParseAttribute(params);
   }
@@ -255,26 +281,29 @@ ParsedFeaturePolicy HTMLIFrameElement::ConstructContainerPolicy(
       GetDocument().GetSecurityOrigin();
 
   // Start with the allow attribute
-  ParsedFeaturePolicy container_policy = ParseFeaturePolicyAttribute(
+  ParsedFeaturePolicy container_policy = FeaturePolicyParser::ParseAttribute(
       allow_, self_origin, src_origin, messages, &GetDocument());
 
   // Next, process sandbox flags. These all only take effect if a corresponding
   // policy does *not* exist in the allow attribute's value.
   if (RuntimeEnabledFeatures::FeaturePolicyForSandboxEnabled()) {
-    SandboxFlags sandbox_flags = GetSandboxFlags();
-
     // If the frame is sandboxed at all, then warn if feature policy attributes
     // will override the sandbox attributes.
-    if (messages && (sandbox_flags & kSandboxNavigation)) {
-      if (!(sandbox_flags & kSandboxForms) &&
-          IsFeatureDeclared(mojom::FeaturePolicyFeature::kFormSubmission,
-                            container_policy)) {
-        messages->push_back(
-            "Allow and Sandbox attributes both mention forms. Allow will take "
-            "precedence.");
+    if (messages && (sandbox_flags_converted_to_feature_policies_ &
+                     WebSandboxFlags::kNavigation) != WebSandboxFlags::kNone) {
+      for (const auto& pair : SandboxFlagsWithFeaturePolicies()) {
+        if ((sandbox_flags_converted_to_feature_policies_ & pair.first) !=
+                WebSandboxFlags::kNone &&
+            IsFeatureDeclared(pair.second, container_policy)) {
+          messages->push_back(String::Format(
+              "Allow and Sandbox attributes both mention '%s'. Allow will take "
+              "precedence.",
+              GetNameForFeature(pair.second).Utf8().c_str()));
+        }
       }
     }
-    ApplySandboxFlagsToParsedFeaturePolicy(sandbox_flags, container_policy);
+    ApplySandboxFlagsToParsedFeaturePolicy(
+        sandbox_flags_converted_to_feature_policies_, container_policy);
   }
 
   // Finally, process the allow* attribuets. Like sandbox attributes, they only
@@ -315,7 +344,8 @@ bool HTMLIFrameElement::LayoutObjectIsNeeded(const ComputedStyle& style) const {
          HTMLElement::LayoutObjectIsNeeded(style);
 }
 
-LayoutObject* HTMLIFrameElement::CreateLayoutObject(const ComputedStyle&) {
+LayoutObject* HTMLIFrameElement::CreateLayoutObject(const ComputedStyle&,
+                                                    LegacyLayout) {
   return new LayoutIFrame(this);
 }
 
@@ -331,7 +361,8 @@ Node::InsertionNotificationRequest HTMLIFrameElement::InsertedInto(
             required_csp_, GetDocument().RequiredCSP().GetString())) {
       if (!required_csp_.IsEmpty()) {
         GetDocument().AddConsoleMessage(ConsoleMessage::Create(
-            kOtherMessageSource, mojom::ConsoleMessageLevel::kError,
+            mojom::ConsoleMessageSource::kOther,
+            mojom::ConsoleMessageLevel::kError,
             "'csp' attribute is not a valid policy: " + required_csp_));
       }
       if (required_csp_ != GetDocument().RequiredCSP()) {
@@ -340,7 +371,7 @@ Node::InsertionNotificationRequest HTMLIFrameElement::InsertedInto(
       }
     }
   }
-  LogAddElementIfIsolatedWorldAndInDocument("iframe", kSrcAttr);
+  LogAddElementIfIsolatedWorldAndInDocument("iframe", html_names::kSrcAttr);
   return result;
 }
 

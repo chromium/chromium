@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grit latest_public_release="0" current_release="1" output_all_resource_defines="false">
+  <outputs>
+    <output filename="grit/welcome_resources.h"
+            type="rc_header">
+      <emit emit_type='prepend'></emit>
+    </output>
+    <output filename="grit/welcome_resources_map.cc"
+            type="resource_file_map_source" />
+    <output filename="grit/welcome_resources_map.h"
+            type="resource_map_header" />
+    <output filename="welcome_resources.pak"
+            type="data_package" />
+  </outputs>
+  <release seq="1">
+    <includes>
+      <include name="IDR_WELCOME_IMAGES_BACKGROUND_SVGS_BLUE_CIRCLE_SVG"
+               file="images/background_svgs/blue_circle.svg"
+               compress="gzip"
+               type="BINDATA" />
+      <include name="IDR_WELCOME_IMAGES_BACKGROUND_SVGS_GREEN_RECTANGLE_SVG"
+               file="images/background_svgs/green_rectangle.svg"
+               compress="gzip"
+               type="BINDATA" />
+      <include name="IDR_WELCOME_IMAGES_BACKGROUND_SVGS_GREY_OVAL_SVG"
+               file="images/background_svgs/grey_oval.svg"
+               compress="gzip"
+               type="BINDATA" />
+      <include name="IDR_WELCOME_IMAGES_BACKGROUND_SVGS_GREY_ROUNDED_RECTANGLE_SVG"
+               file="images/background_svgs/grey_rounded_rectangle.svg"
+               compress="gzip"
+               type="BINDATA" />
+      <include name="IDR_WELCOME_IMAGES_BACKGROUND_SVGS_RED_TRIANGLE_SVG"
+               file="images/background_svgs/red_triangle.svg"
+               compress="gzip"
+               type="BINDATA" />
+      <include name="IDR_WELCOME_IMAGES_BACKGROUND_SVGS_YELLOW_DOTS_SVG"
+               file="images/background_svgs/yellow_dots.svg"
+               compress="gzip"
+               type="BINDATA" />
+      <include name="IDR_WELCOME_IMAGES_BACKGROUND_SVGS_YELLOW_SEMICIRCLE_SVG"
+               file="images/background_svgs/yellow_semicircle.svg"
+               compress="gzip"
+               type="BINDATA" />
+
+      <!-- Generated Polymer 3 elements -->
+      <include name="IDR_WELCOME_APP_JS"
+               file="${root_gen_dir}/chrome/browser/resources/welcome/welcome_app.js"
+               use_base_dir="false" type="BINDATA" compress="gzip" preprocess="true"/>
+      <include name="IDR_GOOGLE_APPS_JS"
+               file="${root_gen_dir}/chrome/browser/resources/welcome/google_apps/nux_google_apps.js"
+               use_base_dir="false" type="BINDATA" compress="gzip" preprocess="true"/>
+      <include name="IDR_SET_AS_DEFAULT_JS"
+               file="${root_gen_dir}/chrome/browser/resources/welcome/set_as_default/nux_set_as_default.js"
+               use_base_dir="false" type="BINDATA" compress="gzip" preprocess="true"/>
+      <include name="IDR_WELCOME_LANDING_VIEW_JS"
+               file="${root_gen_dir}/chrome/browser/resources/welcome/landing_view.js"
+               use_base_dir="false" type="BINDATA" compress="gzip"/>
+      <include name="IDR_WELCOME_SIGNIN_VIEW_JS"
+               file="${root_gen_dir}/chrome/browser/resources/welcome/signin_view.js"
+               use_base_dir="false" type="BINDATA" compress="gzip"/>
+      <include name="IDR_NTP_BACKGROUND_JS"
+               file="${root_gen_dir}/chrome/browser/resources/welcome/ntp_background/nux_ntp_background.js"
+               use_base_dir="false" type="BINDATA" compress="gzip"/>
+      <include name="IDR_WELCOME_SHARED_STEP_INDICATOR_JS"
+               file="${root_gen_dir}/chrome/browser/resources/welcome/shared/step_indicator.js"
+               use_base_dir="false" type="BINDATA" compress="gzip"/>
+      <include name="IDR_WELCOME_SHARED_ONBOARDING_BACKGROUND_JS"
+               file="${root_gen_dir}/chrome/browser/resources/welcome/shared/onboarding_background.js"
+               use_base_dir="false" type="BINDATA" compress="gzip"/>
+
+
+      <!-- Generated style files -->
+      <include name="IDR_WELCOME_SHARED_ANIMATIONS_CSS_JS"
+               file="${root_gen_dir}/chrome/browser/resources/welcome/shared/animations_css.js"
+               use_base_dir="false" type="BINDATA" compress="gzip"/>
+      <include name="IDR_WELCOME_SHARED_CHOOSER_SHARED_CSS_JS"
+               file="${root_gen_dir}/chrome/browser/resources/welcome/shared/chooser_shared_css.js"
+               use_base_dir="false" type="BINDATA" compress="gzip"/>
+      <include name="IDR_WELCOME_SHARED_NAVI_COLORS_CSS_JS"
+               file="${root_gen_dir}/chrome/browser/resources/welcome/shared/navi_colors_css.js"
+               use_base_dir="false" type="BINDATA" compress="gzip"/>
+      <include name="IDR_WELCOME_SHARED_ACTION_LINK_STYLE_CSS_JS"
+               file="${root_gen_dir}/chrome/browser/resources/welcome/shared/action_link_style_css.js"
+               use_base_dir="false" type="BINDATA" compress="gzip"/>
+      <include name="IDR_WELCOME_SHARED_SPLASH_PAGES_SHARED_CSS_JS"
+               file="${root_gen_dir}/chrome/browser/resources/welcome/shared/splash_pages_shared_css.js"
+               use_base_dir="false" type="BINDATA" compress="gzip"/>
+    </includes>
+    <structures>
+      <structure name="IDR_WELCOME_LANDING_VIEW_PROXY_JS"
+                 file="landing_view_proxy.js"
+                 type="chrome_html"
+                 compress="gzip"
+                 preprocess="true"/>
+      <structure name="IDR_WELCOME_NAVIGATION_BEHAVIOR_JS"
+                 file="navigation_behavior.js"
+                 type="chrome_html"
+                 compress="gzip"
+                 preprocess="true"/>
+      <structure name="IDR_WELCOME_SHARED_BOOKMARK_PROXY_JS"
+                 file="shared/bookmark_proxy.js"
+                 compress="gzip"
+                 type="chrome_html" />
+      <structure name="IDR_WELCOME_SHARED_MODULE_METRICS_PROXY_JS"
+                 file="shared/module_metrics_proxy.js"
+                 compress="gzip"
+                 type="chrome_html" />
+      <structure name="IDR_WELCOME_SHARED_NUX_TYPES_JS"
+                 file="shared/nux_types.js"
+                 compress="gzip"
+                 type="chrome_html" />
+      <structure name="IDR_WELCOME_SIGNIN_VIEW_PROXY_JS"
+                 file="signin_view_proxy.js"
+                 type="chrome_html"
+                 compress="gzip"
+                 preprocess="true"/>
+      <structure name="IDR_WELCOME_BROWSER_PROXY_JS"
+                 file="welcome_browser_proxy.js"
+                 compress="gzip"
+                 type="chrome_html"/>
+      <structure name="IDR_WELCOME_CSS"
+                 file="welcome.css"
+                 type="chrome_html"
+                 compress="gzip"
+                 preprocess="true"/>
+      <structure name="IDR_WELCOME_HTML"
+                 file="welcome.html"
+                 type="chrome_html"
+                 compress="gzip"
+                 preprocess="true"/>
+      <structure name="IDR_WELCOME_JS"
+                 file="welcome.js"
+                 type="chrome_html"
+                 compress="gzip"
+                 preprocess="true"/>
+
+       <!-- Google apps-->
+      <structure name="IDR_GOOGLE_APP_PROXY_JS"
+                 file="google_apps/google_app_proxy.js"
+                 compress="gzip"
+                 type="chrome_html" />
+      <structure name="IDR_GOOGLE_APPS_METRICS_PROXY_JS"
+                 file="google_apps/google_apps_metrics_proxy.js"
+                 compress="gzip"
+                 type="chrome_html" />
+
+      <!-- Set as default-->
+      <structure name="IDR_SET_AS_DEFAULT_PROXY_JS"
+                 file="set_as_default/nux_set_as_default_proxy.js"
+                 compress="gzip"
+                 type="chrome_html" />
+
+      <!-- NTP background-->
+      <structure name="IDR_NTP_BACKGROUND_PROXY_JS"
+                 file="ntp_background/ntp_background_proxy.js"
+                 compress="gzip"
+                 type="chrome_html" />
+      <structure name="IDR_NTP_BACKGROUND_METRICS_PROXY_JS"
+                 file="ntp_background/ntp_background_metrics_proxy.js"
+                 compress="gzip"
+                 type="chrome_html" />
+    </structures>
+  </release>
+</grit>

@@ -15,8 +15,8 @@ if (is_android) {
 
 if (is_fuchsia) {
   import("//build/config/chromecast_build.gni")
+  import("//build/config/fuchsia/generate_runner_scripts.gni")
   import("//build/config/fuchsia/package.gni")
-  import("//build/config/fuchsia/rules.gni")
 }
 
 if (is_chromeos) {
@@ -47,9 +47,6 @@ template("test") {
     ]
 
     assert(_use_raw_android_executable || enable_java_templates)
-
-    _incremental_apk_only =
-        incremental_apk_by_default && !_use_raw_android_executable
 
     if (_use_raw_android_executable) {
       _exec_target = "${target_name}__exec"
@@ -90,16 +87,20 @@ template("test") {
         }
       }
     } else {
-      _library_target = "_${target_name}__library"
-      _apk_target = "${target_name}_apk"
+      _library_target = "${target_name}__library"
+      _apk_target = "${target_name}__apk"
       _apk_specific_vars = [
         "android_manifest",
         "android_manifest_dep",
         "enable_multidex",
+        "product_config_java_packages",
+        "min_sdk_version",
         "proguard_configs",
         "proguard_enabled",
+        "shared_resources",
+        "srcjar_deps",
+        "target_sdk_version",
         "use_default_launcher",
-        "write_asset_list",
         "use_native_activity",
       ]
 
@@ -155,103 +156,51 @@ template("test") {
         if (defined(_unwind_table_asset_name)) {
           deps += [ ":${_unwind_table_asset_name}" ]
         }
-
-        # TODO(agrieve): Remove this data_dep once bots don't build the _apk
-        #     target (post-GYP).
-        # It's a bit backwards for the apk to depend on the runner script, since
-        # the apk is conceptually a runtime_dep of the script. However, it is
-        # currently necessary because the bots build this _apk target directly
-        # rather than the group() below.
-        data_deps = [
-          ":$_test_runner_target",
-        ]
-      }
-
-      _test_runner_target = "${_output_name}__test_runner_script"
-      _incremental_test_name = "${_output_name}_incremental"
-      _incremental_test_runner_target =
-          "${_output_name}_incremental__test_runner_script"
-      if (_incremental_apk_only) {
-        _incremental_test_name = _output_name
-        _incremental_test_runner_target = _test_runner_target
-      }
-
-      # Incremental test targets work only for .apks.
-      test_runner_script(_incremental_test_runner_target) {
-        forward_variables_from(invoker,
-                               _wrapper_script_vars + [
-                                     "data",
-                                     "data_deps",
-                                     "deps",
-                                     "public_deps",
-                                   ])
-        apk_target = ":$_apk_target"
-        test_name = _incremental_test_name
-        test_type = "gtest"
-        test_suite = _output_name
-        incremental_install = true
-      }
-      group("${target_name}_incremental") {
-        testonly = true
-        data_deps = [
-          ":$_incremental_test_runner_target",
-        ]
-        deps = [
-          ":${_apk_target}_incremental",
-        ]
       }
     }
 
-    if (!_incremental_apk_only) {
-      test_runner_script(_test_runner_target) {
-        forward_variables_from(invoker,
-                               _wrapper_script_vars + [
-                                     "data",
-                                     "data_deps",
-                                     "deps",
-                                     "public_deps",
-                                   ])
-
-        if (_use_raw_android_executable) {
-          executable_dist_dir = "$root_out_dir/$_dist_target"
-        } else {
-          apk_target = ":$_apk_target"
-        }
-        test_name = _output_name
-        test_type = "gtest"
-        test_suite = _output_name
-      }
-    }
-
-    test_runner_script(target_name) {
-      forward_variables_from(invoker,
-                             _wrapper_script_vars + [
-                                   "data",
-                                   "data_deps",
-                                   "deps",
-                                   "public_deps",
-                                 ])
+    test_runner_script(_test_runner_target) {
+      forward_variables_from(invoker, _wrapper_script_vars)
 
       if (_use_raw_android_executable) {
         executable_dist_dir = "$root_out_dir/$_dist_target"
-        deps += [
-          ":$_dist_target",
-          ":$_test_runner_target",
-        ]
       } else {
         apk_target = ":$_apk_target"
-        deps += [ ":$_apk_target" ]
-        if (_incremental_apk_only) {
-          deps += [ ":${target_name}_incremental" ]
-        } else {
-          deps += [ ":$_test_runner_target" ]
-        }
+        incremental_apk = incremental_install
+
+        # Dep needed for the test runner .runtime_deps file to pick up data
+        # deps from the forward_variables_from(invoker, "*") on the library.
+        data_deps = [
+          ":$_library_target",
+        ]
       }
-      generated_script = "$root_build_dir/$_output_name"
-      incremental_install = _incremental_apk_only
       test_name = _output_name
       test_suite = _output_name
       test_type = "gtest"
+    }
+
+    # Create a wrapper script rather than using a group() in order to ensure
+    # "ninja $target_name" always works. If this was a group(), then GN would
+    # not create a top-level alias for it if a target exists in another
+    # directory with the same $target_name.
+    # Also - bots run this script directly for "components_perftests".
+    generate_wrapper(target_name) {
+      testonly = true
+      executable = "$root_build_dir/bin/run_$_output_name"
+      wrapper_script = "$root_build_dir/$_output_name"
+      deps = [
+        ":$_test_runner_target",
+      ]
+      if (_use_raw_android_executable) {
+        deps += [ ":$_dist_target" ]
+      } else {
+        # Dep needed for the swarming .isolate file to pick up data
+        # deps from the forward_variables_from(invoker, "*") on the library.
+        deps += [
+          ":$_apk_target",
+          ":$_library_target",
+        ]
+      }
     }
   } else if (is_fuchsia) {
     _output_name = invoker.target_name
@@ -274,20 +223,29 @@ template("test") {
       ]
     }
 
+    fuchsia_package(_pkg_target) {
+      testonly = true
+      forward_variables_from(invoker, [ "manifest" ])
+      binary = ":$_exec_target"
+      package_name_override = _output_name
+    }
+
     executable(_exec_target) {
       forward_variables_from(invoker, "*")
       testonly = true
       output_name = _exec_target
     }
-
-    fuchsia_package(_pkg_target) {
-      testonly = true
-      binary = ":$_exec_target"
-      package_name_override = _output_name
-    }
   } else if (is_ios) {
     import("//build/config/ios/ios_sdk.gni")
     import("//build/config/ios/rules.gni")
+
+    declare_args() {
+      # Keep the unittest-as-xctest functionality defaulted to off until the
+      # bots are updated to handle it properly.
+      # TODO(crbug.com/1001667): Remove this arg once the iOS test runner
+      # supports running unittests with xctest.
+      enable_run_ios_unittests_with_xctest = false
+    }
 
     _test_target = target_name
     _resources_bundle_data = target_name + "_resources_bundle_data"
@@ -302,8 +260,18 @@ template("test") {
       ]
     }
 
-    ios_app_bundle(_test_target) {
+    if (enable_run_ios_unittests_with_xctest) {
+      ios_test_target_type = "ios_xctest_test"
+    } else {
+      ios_test_target_type = "ios_app_bundle"
+    }
+
+    target(ios_test_target_type, _test_target) {
       testonly = true
+
+      if (enable_run_ios_unittests_with_xctest) {
+        xctest_module_target = "//base/test:google_test_runner"
+      }
 
       # See above call.
       set_sources_assignment_filter([])
@@ -315,10 +283,8 @@ template("test") {
         info_plist = "//testing/gtest_ios/unittest-Info.plist"
       }
 
-      _bundle_id_suffix = ios_generic_test_bundle_id_suffix
-      if (!ios_automatically_manage_certs) {
-        _bundle_id_suffix = "${target_name}"
-      }
+      _bundle_id_suffix = "${target_name}"
+
       if (!defined(extra_substitutions)) {
         extra_substitutions = []
       }
@@ -369,68 +335,18 @@ template("test") {
         deps = []
       }
 
+      if (is_win) {
+        # Initializing CFG data during process creation is a significant
+        # bottleneck for large test binaries, and CFG is not needed for tests,
+        # so disable it. See https://crbug.com/950923 for details.
+        configs -= [ "//build/config/win:cfi_linker" ]
+      }
       testonly = true
       deps += [
         # Give tests the default manifest on Windows (a no-op elsewhere).
         "//build/win:default_exe_manifest",
       ]
     }
-  }
-}
-
-template("generated_script_test") {
-  # Invoker must define generator_script location which is used to generate
-  # the executable script. The generator_script will be invoked as follows:
-  # $ <generator_script> --script-output-path=<path to generate the executable>
-  #                      [extra args]
-  # For this template, it's expected to generate the executable script in bin/
-  # directory of the output directory.
-  assert(defined(invoker.generator_script), "Generator script must be defined")
-
-  # Invoker can add extra arguments to be passed to the generator script
-  # through defining |extra_args|.
-  _extra_args = []
-  if (defined(invoker.extra_args)) {
-    _extra_args += invoker.extra_args
-  }
-
-  _generator_script = invoker.generator_script
-  _gen_runner_target = "${target_name}__runner"
-  _target_name = target_name
-
-  action(_gen_runner_target) {
-    if (is_win) {
-      _target_executable = "run_${_target_name}.bat"
-    } else {
-      _target_executable = "run_${_target_name}"
-    }
-    _wrapper_dir = "${root_build_dir}/bin"
-    script = _generator_script
-    inputs = []
-    outputs = [
-      "$_wrapper_dir/$_target_executable",
-    ]
-    args = [
-      "--script-output-path",
-      rebase_path(outputs[0], root_build_dir),
-    ]
-    args += _extra_args
-  }
-
-  group(target_name) {
-    testonly = true
-    forward_variables_from(invoker,
-                           [
-                             "deps",
-                             "testonly",
-                             "data",
-                             "data_deps",
-                           ])
-
-    if (!defined(invoker.deps)) {
-      deps = []
-    }
-    deps += [ ":$_gen_runner_target" ]
   }
 }
 

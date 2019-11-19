@@ -155,18 +155,15 @@ TEST_P(ParameterizedDeclarativeContentActionTest, ShowAction) {
   EXPECT_TRUE(error.empty()) << error;
   ASSERT_TRUE(result.get());
 
-  ExtensionAction* action = nullptr;
   auto* action_manager = ExtensionActionManager::Get(env.profile());
-  const bool is_browser_action =
-      GetParam() == ExtensionBuilder::ActionType::BROWSER_ACTION;
-  if (is_browser_action) {
-    action = action_manager->GetBrowserAction(*extension);
-    ASSERT_TRUE(action);
+  ExtensionAction* action = action_manager->GetExtensionAction(*extension);
+  ASSERT_TRUE(action);
+  if (GetParam() == ExtensionBuilder::ActionType::BROWSER_ACTION) {
+    EXPECT_EQ(ActionInfo::TYPE_BROWSER, action->action_type());
     // Switch the default so we properly see the action toggling.
     action->SetIsVisible(ExtensionAction::kDefaultTabId, false);
   } else {
-    action = action_manager->GetPageAction(*extension);
-    ASSERT_TRUE(action);
+    EXPECT_EQ(ActionInfo::TYPE_PAGE, action->action_type());
   }
 
   std::unique_ptr<content::WebContents> contents = env.MakeTab();
@@ -242,21 +239,21 @@ TEST(DeclarativeContentActionTest, SetIcon) {
                   "Extensions.DeclarativeSetIconWasVisibleRendered"),
               testing::ElementsAre(base::Bucket(1, 1)));
 
-  ExtensionAction* page_action =
-      ExtensionActionManager::Get(env.profile())->GetPageAction(*extension);
+  ExtensionAction* action = ExtensionActionManager::Get(env.profile())
+                                ->GetExtensionAction(*extension);
   std::unique_ptr<content::WebContents> contents = env.MakeTab();
   const int tab_id = ExtensionTabUtil::GetTabId(contents.get());
-  EXPECT_FALSE(page_action->GetIsVisible(tab_id));
+  EXPECT_FALSE(action->GetIsVisible(tab_id));
   ContentAction::ApplyInfo apply_info = {
     extension, env.profile(), contents.get(), 100
   };
 
   // The declarative icon shouldn't exist unless the content action is applied.
-  EXPECT_TRUE(page_action->GetDeclarativeIcon(tab_id).IsEmpty());
+  EXPECT_TRUE(action->GetDeclarativeIcon(tab_id).IsEmpty());
   result->Apply(apply_info);
-  EXPECT_FALSE(page_action->GetDeclarativeIcon(tab_id).IsEmpty());
+  EXPECT_FALSE(action->GetDeclarativeIcon(tab_id).IsEmpty());
   result->Revert(apply_info);
-  EXPECT_TRUE(page_action->GetDeclarativeIcon(tab_id).IsEmpty());
+  EXPECT_TRUE(action->GetDeclarativeIcon(tab_id).IsEmpty());
 }
 
 TEST(DeclarativeContentActionTest, SetInvisibleIcon) {

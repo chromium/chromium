@@ -110,7 +110,7 @@ source_set("geolocation") {
   }
   if (is_chromeos) {
     deps += [
-      "//chromeos/dbus",
+      "//chromeos/dbus/shill",
       "//chromeos/network",
     ]
   }
@@ -121,6 +121,15 @@ source_set("geolocation") {
       "Foundation.framework",
     ]
   }
+
+  if (is_win) {
+    sources += [
+      "win/location_provider_winrt.cc",
+      "win/location_provider_winrt.h",
+    ]
+
+    deps += [ "//services/device/public/cpp:device_features" ]
+  }
 }
 
 if (is_android) {
@@ -129,7 +138,6 @@ if (is_android) {
       "android/java/src/org/chromium/device/geolocation/LocationProviderAdapter.java",
       "android/java/src/org/chromium/device/geolocation/LocationProviderFactory.java",
     ]
-    jni_package = "device"
   }
 
   android_library("geolocation_java") {
@@ -147,9 +155,11 @@ if (is_android) {
       "$google_play_services_package:google_play_services_basement_java",
       "$google_play_services_package:google_play_services_location_java",
       "//base:base_java",
+      "//base:jni_java",
       "//components/location/android:location_java",
       "//services/device/public/java:geolocation_java",
     ]
+    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   }
 }
 

@@ -6,7 +6,9 @@
 
 #include "base/time/time.h"
 #include "components/viz/common/quads/compositor_frame.h"
+#include "components/viz/service/surfaces/surface.h"
 #include "components/viz/service/surfaces/surface_manager.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -109,15 +111,18 @@ VideoDetector::~VideoDetector() {
 void VideoDetector::OnVideoActivityEnded() {
   DCHECK(video_is_playing_);
   video_is_playing_ = false;
-  observers_.ForAllPtrs([](mojom::VideoDetectorObserver* observer) {
+  for (auto& observer : observers_) {
     observer->OnVideoActivityEnded();
-  });
+  }
 }
 
-void VideoDetector::AddObserver(mojom::VideoDetectorObserverPtr observer) {
+void VideoDetector::AddObserver(
+    mojo::PendingRemote<mojom::VideoDetectorObserver> pending_observer) {
+  mojo::Remote<mojom::VideoDetectorObserver> observer(
+      std::move(pending_observer));
   if (video_is_playing_)
     observer->OnVideoActivityStarted();
-  observers_.AddPtr(std::move(observer));
+  observers_.Add(std::move(observer));
 }
 
 void VideoDetector::OnFrameSinkIdRegistered(const FrameSinkId& frame_sink_id) {
@@ -158,9 +163,9 @@ void VideoDetector::OnSurfaceWillBeDrawn(Surface* surface) {
                                 &VideoDetector::OnVideoActivityEnded);
     if (!video_is_playing_) {
       video_is_playing_ = true;
-      observers_.ForAllPtrs([](mojom::VideoDetectorObserver* observer) {
+      for (auto& observer : observers_) {
         observer->OnVideoActivityStarted();
-      });
+      }
     }
   }
 }

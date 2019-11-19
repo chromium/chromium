@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/feature_list.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_export.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -19,9 +18,6 @@ class IOBuffer;
 // Represents a read/write socket.
 class NET_EXPORT Socket {
  public:
-  // Name of the field trial for using ReadyIfReady() instead of Read().
-  static const base::Feature kReadIfReadyExperiment;
-
   virtual ~Socket() {}
 
   // Reads data, up to |buf_len| bytes, from the socket.  The number of bytes

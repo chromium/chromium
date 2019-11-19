@@ -3,7 +3,6 @@
 <script src="../../../resources/testharnessreport.js"></script>
 <script src="../../assert_selection.js"></script>
 <script>
-const usesBidiAffinity = window.internals && internals.runtimeFlags.bidiCaretAffinityEnabled;
 
 selection_test(
   '<div contenteditable dir="ltr" style="white-space: pre;">|abc<!-- -->\n<!-- -->def</div>',

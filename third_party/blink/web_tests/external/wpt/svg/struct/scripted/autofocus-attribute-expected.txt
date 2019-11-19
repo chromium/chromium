@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+PASS <a> should support autofocus
+PASS Renderable element with tabindex should support autofocus
+FAIL Never-rendered element with tabindex should not support autofocus promise_test: Unhandled rejection with value: object "TypeError: Cannot read property 'tagName' of null"
+Harness: the test ran to completion.
+

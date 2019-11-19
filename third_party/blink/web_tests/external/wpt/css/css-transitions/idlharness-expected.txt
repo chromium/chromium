@@ -1,6 +1,31 @@
 This is a testharness.js-based test.
+Found 64 tests; 46 PASS, 18 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
+PASS idl_test validation
 PASS Partial interface mixin GlobalEventHandlers: original interface mixin defined
+PASS Partial interface mixin GlobalEventHandlers: member names are unique
+PASS Partial interface Document: member names are unique
+PASS Partial interface Document[2]: member names are unique
+PASS Partial interface Window: member names are unique
+PASS Document includes GlobalEventHandlers: member names are unique
+PASS Document includes DocumentAndElementEventHandlers: member names are unique
+PASS Document includes NonElementParentNode: member names are unique
+PASS Document includes ParentNode: member names are unique
+PASS Document includes XPathEvaluatorBase: member names are unique
+PASS HTMLElement includes GlobalEventHandlers: member names are unique
+PASS HTMLElement includes DocumentAndElementEventHandlers: member names are unique
+PASS HTMLElement includes ElementContentEditable: member names are unique
+PASS HTMLElement includes HTMLOrSVGElement: member names are unique
+PASS Window includes GlobalEventHandlers: member names are unique
+PASS Window includes WindowEventHandlers: member names are unique
+PASS Window includes WindowOrWorkerGlobalScope: member names are unique
+PASS Window includes AnimationFrameProvider: member names are unique
+PASS Window includes WindowSessionStorage: member names are unique
+PASS Window includes WindowLocalStorage: member names are unique
+PASS Element includes ParentNode: member names are unique
+PASS Element includes NonDocumentTypeChildNode: member names are unique
+PASS Element includes ChildNode: member names are unique
+PASS Element includes Slotable: member names are unique
 PASS TransitionEvent interface: existence and properties of interface object
 PASS TransitionEvent interface object length
 PASS TransitionEvent interface object name
@@ -17,11 +42,11 @@ PASS TransitionEvent interface: new TransitionEvent("transitionend") must inheri
 PASS TransitionEvent interface: new TransitionEvent("transitionend") must inherit property "pseudoElement" with the proper type
 FAIL HTMLElement interface: attribute ontransitionrun assert_true: The prototype object must have a property "ontransitionrun" expected true got false
 FAIL HTMLElement interface: attribute ontransitionstart assert_true: The prototype object must have a property "ontransitionstart" expected true got false
-FAIL HTMLElement interface: attribute ontransitionend assert_true: The prototype object must have a property "ontransitionend" expected true got false
+PASS HTMLElement interface: attribute ontransitionend
 FAIL HTMLElement interface: attribute ontransitioncancel assert_true: The prototype object must have a property "ontransitioncancel" expected true got false
 FAIL HTMLElement interface: document must inherit property "ontransitionrun" with the proper type assert_inherits: property "ontransitionrun" not found in prototype chain
 FAIL HTMLElement interface: document must inherit property "ontransitionstart" with the proper type assert_inherits: property "ontransitionstart" not found in prototype chain
-FAIL HTMLElement interface: document must inherit property "ontransitionend" with the proper type assert_inherits: property "ontransitionend" not found in prototype chain
+PASS HTMLElement interface: document must inherit property "ontransitionend" with the proper type
 FAIL HTMLElement interface: document must inherit property "ontransitioncancel" with the proper type assert_inherits: property "ontransitioncancel" not found in prototype chain
 FAIL Window interface: attribute ontransitionrun assert_own_property: The global object must have a property "ontransitionrun" expected property "ontransitionrun" missing
 FAIL Window interface: attribute ontransitionstart assert_own_property: The global object must have a property "ontransitionstart" expected property "ontransitionstart" missing
@@ -33,11 +58,11 @@ PASS Window interface: window must inherit property "ontransitionend" with the p
 FAIL Window interface: window must inherit property "ontransitioncancel" with the proper type assert_own_property: expected property "ontransitioncancel" missing
 FAIL Document interface: attribute ontransitionrun assert_true: The prototype object must have a property "ontransitionrun" expected true got false
 FAIL Document interface: attribute ontransitionstart assert_true: The prototype object must have a property "ontransitionstart" expected true got false
-FAIL Document interface: attribute ontransitionend assert_true: The prototype object must have a property "ontransitionend" expected true got false
+PASS Document interface: attribute ontransitionend
 FAIL Document interface: attribute ontransitioncancel assert_true: The prototype object must have a property "ontransitioncancel" expected true got false
 FAIL Document interface: document must inherit property "ontransitionrun" with the proper type assert_inherits: property "ontransitionrun" not found in prototype chain
 FAIL Document interface: document must inherit property "ontransitionstart" with the proper type assert_inherits: property "ontransitionstart" not found in prototype chain
-FAIL Document interface: document must inherit property "ontransitionend" with the proper type assert_inherits: property "ontransitionend" not found in prototype chain
+PASS Document interface: document must inherit property "ontransitionend" with the proper type
 FAIL Document interface: document must inherit property "ontransitioncancel" with the proper type assert_inherits: property "ontransitioncancel" not found in prototype chain
 Harness: the test ran to completion.
 

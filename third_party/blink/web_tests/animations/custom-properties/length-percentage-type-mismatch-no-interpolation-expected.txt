@@ -1,7 +1,0 @@
-CONSOLE WARNING: line 26: Invalid keyframe value for property --length: 10%
-CONSOLE WARNING: line 37: Invalid keyframe value for property --percentage: 10px
-This is a testharness.js-based test.
-PASS <length> properties don't accept percentages in animation keyframes
-PASS <percentage> properties don't accept lengths in animation keyframes
-Harness: the test ran to completion.
-

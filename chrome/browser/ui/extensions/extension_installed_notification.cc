@@ -5,14 +5,14 @@
 #include "chrome/browser/ui/extensions/extension_installed_notification.h"
 
 #include "ash/public/cpp/notification_utils.h"
-#include "ash/public/cpp/vector_icons/vector_icons.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/apps/launch_service/launch_service.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/ui/extensions/app_launch_params.h"
-#include "chrome/browser/ui/extensions/application_launch.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/browser_thread.h"
@@ -50,11 +50,12 @@ ExtensionInstalledNotification::ExtensionInstalledNotification(
           GURL(extension_urls::kChromeWebstoreBaseURL) /* origin_url */,
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT, kNotifierId),
-          {}, this, ash::kNotificationInstalledIcon,
+          {}, this, kNotificationInstalledIcon,
           message_center::SystemNotificationWarningLevel::NORMAL);
 
   NotificationDisplayService::GetForProfile(profile_)->Display(
-      NotificationHandler::Type::TRANSIENT, *notification);
+      NotificationHandler::Type::TRANSIENT, *notification,
+      /*metadata=*/nullptr);
 }
 
 ExtensionInstalledNotification::~ExtensionInstalledNotification() {}
@@ -71,8 +72,8 @@ void ExtensionInstalledNotification::Click(
   if (!extension)
     return;
 
-  AppLaunchParams params = CreateAppLaunchParamsUserContainer(
+  apps::AppLaunchParams params = CreateAppLaunchParamsUserContainer(
       profile_, extension, WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      extensions::SOURCE_INSTALLED_NOTIFICATION);
-  OpenApplication(params);
+      apps::mojom::AppLaunchSource::kSourceInstalledNotification);
+  apps::LaunchService::Get(profile_)->OpenApplication(params);
 }

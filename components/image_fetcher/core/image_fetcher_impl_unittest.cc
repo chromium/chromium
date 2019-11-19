@@ -11,7 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/test/bind_test_util.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "components/image_fetcher/core/fake_image_decoder.h"
 #include "components/image_fetcher/core/image_fetcher.h"
 #include "net/http/http_util.h"
@@ -48,7 +48,7 @@ class ImageFetcherImplTest : public testing::Test {
         std::move(decoder), shared_factory_);
   }
 
-  void RunUntilIdle() { scoped_task_environment_.RunUntilIdle(); }
+  void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
   FakeImageDecoder* image_decoder() { return fake_image_decoder_; }
   network::TestURLLoaderFactory* test_url_loader_factory() {
@@ -61,7 +61,7 @@ class ImageFetcherImplTest : public testing::Test {
   FakeImageDecoder* fake_image_decoder_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_factory_;
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
 
   DISALLOW_COPY_AND_ASSIGN(ImageFetcherImplTest);
 };

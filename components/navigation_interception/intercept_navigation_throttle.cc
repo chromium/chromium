@@ -5,12 +5,7 @@
 #include "components/navigation_interception/intercept_navigation_throttle.h"
 
 #include "base/bind.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "base/time/time.h"
-#include "base/timer/elapsed_timer.h"
-#include "build/build_config.h"
-#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "url/gurl.h"
 
@@ -27,22 +22,14 @@ InterceptNavigationThrottle::InterceptNavigationThrottle(
     : content::NavigationThrottle(navigation_handle),
       should_ignore_callback_(should_ignore_callback),
       ui_task_runner_(base::ThreadTaskRunnerHandle::Get()),
-      mode_(async_mode),
-      weak_factory_(this) {}
+      mode_(async_mode) {}
 
-InterceptNavigationThrottle::~InterceptNavigationThrottle() {
-  UMA_HISTOGRAM_BOOLEAN("Navigation.Intercept.Ignored", should_ignore_);
-}
+InterceptNavigationThrottle::~InterceptNavigationThrottle() = default;
 
 content::NavigationThrottle::ThrottleCheckResult
 InterceptNavigationThrottle::WillStartRequest() {
   DCHECK(!should_ignore_);
-  base::ElapsedTimer timer;
-
-  auto result = CheckIfShouldIgnoreNavigation(false /* is_redirect */);
-  UMA_HISTOGRAM_COUNTS_10M("Navigation.Intercept.WillStart",
-                           timer.Elapsed().InMicroseconds());
-  return result;
+  return CheckIfShouldIgnoreNavigation(false /* is_redirect */);
 }
 
 content::NavigationThrottle::ThrottleCheckResult
@@ -128,13 +115,14 @@ bool InterceptNavigationThrottle::ShouldCheckAsynchronously() const {
 
 NavigationParams InterceptNavigationThrottle::GetNavigationParams(
     bool is_redirect) const {
-  return NavigationParams(
-      navigation_handle()->GetURL(), navigation_handle()->GetReferrer(),
-      navigation_handle()->HasUserGesture(), navigation_handle()->IsPost(),
-      navigation_handle()->GetPageTransition(), is_redirect,
-      navigation_handle()->IsExternalProtocol(), true,
-      navigation_handle()->IsRendererInitiated(),
-      navigation_handle()->GetBaseURLForDataURL());
+  return NavigationParams(navigation_handle()->GetURL(),
+                          content::Referrer(navigation_handle()->GetReferrer()),
+                          navigation_handle()->HasUserGesture(),
+                          navigation_handle()->IsPost(),
+                          navigation_handle()->GetPageTransition(), is_redirect,
+                          navigation_handle()->IsExternalProtocol(), true,
+                          navigation_handle()->IsRendererInitiated(),
+                          navigation_handle()->GetBaseURLForDataURL());
 }
 
 }  // namespace navigation_interception

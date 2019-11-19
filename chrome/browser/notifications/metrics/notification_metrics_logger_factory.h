@@ -24,7 +24,7 @@ class NotificationMetricsLoggerFactory
 
   NotificationMetricsLoggerFactory();
 
-  // BrowserContextKeyedBaseFactory implementation.
+  // BrowserContextKeyedServiceFactory implementation.
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(

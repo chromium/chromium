@@ -1,0 +1,10 @@
+{
+   "manifest_version": 2,
+   "name": "grey ntp",
+   "theme": {
+      "colors": {
+         "ntp_background": [100, 100, 100]
+      }
+   },
+   "version": "2.0"
+}

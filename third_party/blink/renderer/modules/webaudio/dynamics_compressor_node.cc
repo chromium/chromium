@@ -156,7 +156,7 @@ void DynamicsCompressorHandler::SetChannelCount(
   } else {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
-        ExceptionMessages::IndexOutsideRange<unsigned long>(
+        ExceptionMessages::IndexOutsideRange<uint32_t>(
             "channelCount", channel_count, 1,
             ExceptionMessages::kInclusiveBound, 2,
             ExceptionMessages::kInclusiveBound));
@@ -194,42 +194,51 @@ void DynamicsCompressorHandler::SetChannelCountMode(
 
 DynamicsCompressorNode::DynamicsCompressorNode(BaseAudioContext& context)
     : AudioNode(context),
-      threshold_(
-          AudioParam::Create(context,
-                             kParamTypeDynamicsCompressorThreshold,
-                             -24,
-                             AudioParamHandler::AutomationRate::kControl,
-                             AudioParamHandler::AutomationRateMode::kFixed,
-                             -100,
-                             0)),
-      knee_(AudioParam::Create(context,
-                               kParamTypeDynamicsCompressorKnee,
-                               30,
-                               AudioParamHandler::AutomationRate::kControl,
-                               AudioParamHandler::AutomationRateMode::kFixed,
-                               0,
-                               40)),
-      ratio_(AudioParam::Create(context,
-                                kParamTypeDynamicsCompressorRatio,
-                                12,
-                                AudioParamHandler::AutomationRate::kControl,
-                                AudioParamHandler::AutomationRateMode::kFixed,
-                                1,
-                                20)),
-      attack_(AudioParam::Create(context,
-                                 kParamTypeDynamicsCompressorAttack,
-                                 0.003,
-                                 AudioParamHandler::AutomationRate::kControl,
-                                 AudioParamHandler::AutomationRateMode::kFixed,
-                                 0,
-                                 1)),
-      release_(AudioParam::Create(context,
-                                  kParamTypeDynamicsCompressorRelease,
-                                  0.250,
-                                  AudioParamHandler::AutomationRate::kControl,
-                                  AudioParamHandler::AutomationRateMode::kFixed,
-                                  0,
-                                  1)) {
+      threshold_(AudioParam::Create(
+          context,
+          Uuid(),
+          AudioParamHandler::kParamTypeDynamicsCompressorThreshold,
+          -24,
+          AudioParamHandler::AutomationRate::kControl,
+          AudioParamHandler::AutomationRateMode::kFixed,
+          -100,
+          0)),
+      knee_(AudioParam::Create(
+          context,
+          Uuid(),
+          AudioParamHandler::kParamTypeDynamicsCompressorKnee,
+          30,
+          AudioParamHandler::AutomationRate::kControl,
+          AudioParamHandler::AutomationRateMode::kFixed,
+          0,
+          40)),
+      ratio_(AudioParam::Create(
+          context,
+          Uuid(),
+          AudioParamHandler::kParamTypeDynamicsCompressorRatio,
+          12,
+          AudioParamHandler::AutomationRate::kControl,
+          AudioParamHandler::AutomationRateMode::kFixed,
+          1,
+          20)),
+      attack_(AudioParam::Create(
+          context,
+          Uuid(),
+          AudioParamHandler::kParamTypeDynamicsCompressorAttack,
+          0.003,
+          AudioParamHandler::AutomationRate::kControl,
+          AudioParamHandler::AutomationRateMode::kFixed,
+          0,
+          1)),
+      release_(AudioParam::Create(
+          context,
+          Uuid(),
+          AudioParamHandler::kParamTypeDynamicsCompressorRelease,
+          0.250,
+          AudioParamHandler::AutomationRate::kControl,
+          AudioParamHandler::AutomationRateMode::kFixed,
+          0,
+          1)) {
   SetHandler(DynamicsCompressorHandler::Create(
       *this, context.sampleRate(), threshold_->Handler(), knee_->Handler(),
       ratio_->Handler(), attack_->Handler(), release_->Handler()));
@@ -299,6 +308,24 @@ AudioParam* DynamicsCompressorNode::attack() const {
 
 AudioParam* DynamicsCompressorNode::release() const {
   return release_;
+}
+
+void DynamicsCompressorNode::ReportDidCreate() {
+  GraphTracer().DidCreateAudioNode(this);
+  GraphTracer().DidCreateAudioParam(attack_);
+  GraphTracer().DidCreateAudioParam(knee_);
+  GraphTracer().DidCreateAudioParam(ratio_);
+  GraphTracer().DidCreateAudioParam(release_);
+  GraphTracer().DidCreateAudioParam(threshold_);
+}
+
+void DynamicsCompressorNode::ReportWillBeDestroyed() {
+  GraphTracer().WillDestroyAudioParam(attack_);
+  GraphTracer().WillDestroyAudioParam(knee_);
+  GraphTracer().WillDestroyAudioParam(ratio_);
+  GraphTracer().WillDestroyAudioParam(release_);
+  GraphTracer().WillDestroyAudioParam(threshold_);
+  GraphTracer().WillDestroyAudioNode(this);
 }
 
 }  // namespace blink

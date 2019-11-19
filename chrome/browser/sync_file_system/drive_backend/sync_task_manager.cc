@@ -65,8 +65,7 @@ SyncTaskManager::SyncTaskManager(
       maximum_background_task_(maximum_background_task),
       pending_task_seq_(0),
       task_token_seq_(SyncTaskToken::kMinimumBackgroundTaskTokenID),
-      task_runner_(task_runner),
-      weak_ptr_factory_(this) {}
+      task_runner_(task_runner) {}
 
 SyncTaskManager::~SyncTaskManager() {
   weak_ptr_factory_.InvalidateWeakPtrs();

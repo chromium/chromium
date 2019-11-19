@@ -74,9 +74,9 @@ up.
 
 Examples:
 
-* chrome-devtools:
+* devtools:
 * chrome-extensions:
-* chrome: 
+* chrome:
 * file:
 * view-source:
 
@@ -157,6 +157,12 @@ Visiting `chrome://donuts` should show in something like:
 
 Delicious success.
 
+By default $i18n{} escapes strings for HTML. $i18nRaw{} can be used for
+translations that embed HTML, and $i18nPolymer{} can be used for Polymer
+bindings. See
+[this comment](https://bugs.chromium.org/p/chromium/issues/detail?id=1010815#c1)
+for more information.
+
 ## C++ classes
 
 ### WebUI
@@ -218,9 +224,12 @@ void OvenHandler::RegisterMessages() {
       base::Bind(&OvenHandler::HandleBakeDonuts, base::Unretained(this)));
 }
 
-void OverHandler::HandleBakeDonuts(const base::ListValue* args) {
-  double num_donuts;
-  CHECK(args->GetDouble(0, &num_donuts));  // JavaScript numbers are doubles.
+void OvenHandler::HandleBakeDonuts(const base::ListValue* args) {
+  AllowJavascript();
+
+  CHECK_EQ(1u, args->GetSize());
+  // JavaScript numbers are doubles.
+  double num_donuts = args->GetList()[0].GetDouble();
   GetOven()->BakeDonuts(static_cast<int>(num_donuts));
 }
 ```
@@ -238,9 +247,42 @@ $('bakeDonutsButton').onclick = function() {
 <a name="AllowJavascript"></a>
 ### WebUIMessageHandler::AllowJavascript()
 
-This method determines whether browser &rarr; renderer communication is allowed.
-It is called in response to a signal from JavaScript that the page is ready to
-communicate.
+A tab that has been used for settings UI may be reloaded, or may navigate to an
+external origin. In both cases, one does not want callbacks from C++ to
+Javascript to run. In the former case, the callbacks will occur when the
+Javascript doesn't expect them. In the latter case, sensitive information may be
+delivered to an untrusted origin.
+
+Therefore each message handler maintains
+[a boolean](https://cs.chromium.org/search/?q=WebUIMessageHandler::javascript_allowed_)
+that describes whether delivering callbacks to Javascript is currently
+appropriate. This boolean is set by calling `AllowJavascript`, which should be
+done when handling a call from Javascript, because that indicates that the page
+is ready for the subsequent callback. (See
+[design doc](https://drive.google.com/open?id=1z1diKvwgMmn4YFzlW1kss0yHmo8yy68TN_FUhUzRz7Q).)
+If the tab navigates or reloads,
+[`DisallowJavascript`](https://cs.chromium.org/search/?q=WebUIMessageHandler::DisallowJavascript)
+is called to clear the flag.
+
+Therefore, before each callback from C++ to Javascript, the flag must be tested
+by calling
+[`IsJavascriptAllowed`](https://cs.chromium.org/search/?q=WebUIMessageHandler::IsJavascriptAllowed).
+If false, then the callback must be dropped. (When the flag is false, calling
+[`ResolveJavascriptCallback`](https://cs.chromium.org/search/?q=WebUIMessageHandler::ResolveJavascriptCallback)
+will crash. See
+[design doc](https://docs.google.com/document/d/1udXoW3aJL0-l5wrbsOg5bpYWB0qOCW5K7yXpv4tFeA8).)
+
+Also beware of [ABA](https://en.wikipedia.org/wiki/ABA_problem) issues: Consider
+the case where an asynchronous operation is started, the settings page is
+reloaded, and the user triggers another operation using the original message
+handler. The `javascript_allowed_` boolean will be true, but the original
+callback should still be dropped because it relates to a operation that was
+discarded by the reload. (Reloading settings UI does _not_ cause message handler
+objects to be deleted.)
+
+Thus a message handler may override
+[`OnJavascriptDisallowed`](https://cs.chromium.org/search/?q=WebUIMessageHandler::OnJavascriptDisallowed)
+to learn when pending callbacks should be canceled.
 
 In the JS:
 
@@ -396,7 +438,7 @@ There's a number of situations that result in this method being called:
 
 * renderer doesn't exist yet
 * renderer exists but isn't ready
-* renderer is ready but application-specifici JS isn't ready yet
+* renderer is ready but application-specific JS isn't ready yet
 * tab refresh
 * renderer crash
 
@@ -434,12 +476,11 @@ callbacks in the chain.
 
 ```c++
 void OvenHandler::HandleBakeDonuts(const base::ListValue* args) {
-base::Value* callback_id;
-args->Get(0, &callback_id);
-if (!GetOven()->HasGas()) {
-  RejectJavascriptCallback(callback_id,
-                           base::StringValue("need gas to cook the donuts!"));
-}
+  AllowJavascript();
+  if (!GetOven()->HasGas()) {
+    RejectJavascriptCallback(args->GetList()[0],
+                             base::StringValue("need gas to cook the donuts!"));
+  }
 ```
 
 This method is basically just a
@@ -476,10 +517,9 @@ Some handling C++ might do this:
 
 ```c++
 void OvenHandler::HandleBakeDonuts(const base::ListValue* args) {
-  base::Value* callback_id;
-  args->Get(0, &callback_id);
+  AllowJavascript();
   double num_donuts_baked = GetOven()->BakeDonuts();
-  ResolveJavascriptCallback(*callback_id, num_donuts_baked);
+  ResolveJavascriptCallback(args->GetList()[0], num_donuts_baked);
 }
 ```
 
@@ -616,10 +656,11 @@ JavaScript and calling the `then()` function.
 
 ```c++
 void DonutHandler::HandleGetNumberOfDonuts(const base::ListValue* args) {
-  base::Value* callback_id;
-  args->Get(0, &callback_id);
+  AllowJavascript();
+
+  const base::Value& callback_id = args->GetList()[0];
   size_t num_donuts = GetOven()->GetNumberOfDonuts();
-  ResolveJavascriptCallback(*callback_id, base::FundamentalValue(num_donuts));
+  ResolveJavascriptCallback(callback_id, base::FundamentalValue(num_donuts));
 }
 ```
 

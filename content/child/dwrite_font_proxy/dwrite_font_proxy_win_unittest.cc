@@ -9,9 +9,10 @@
 #include <wrl.h>
 
 #include <memory>
+#include <utility>
 
 #include "base/memory/ref_counted.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "content/test/dwrite_font_fake_sender_win.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -27,7 +28,7 @@ class DWriteFontProxyUnitTest : public testing::Test {
     fake_collection_ = std::make_unique<FakeFontCollection>();
     SetupFonts(fake_collection_.get());
     DWriteFontCollectionProxy::Create(&collection_, factory.Get(),
-                                      fake_collection_->CreatePtr());
+                                      fake_collection_->CreateRemote());
     EXPECT_TRUE(collection_.Get());
   }
 
@@ -67,7 +68,7 @@ class DWriteFontProxyUnitTest : public testing::Test {
   }
 
  protected:
-  base::test::ScopedTaskEnvironment task_environment;
+  base::test::TaskEnvironment task_environment;
   std::unique_ptr<FakeFontCollection> fake_collection_;
   mswr::ComPtr<DWriteFontCollectionProxy> collection_;
 
@@ -343,7 +344,7 @@ TEST_F(DWriteFontProxyUnitTest, TestCustomFontFiles) {
   }
   mswr::ComPtr<DWriteFontCollectionProxy> collection;
   DWriteFontCollectionProxy::Create(&collection, factory.Get(),
-                                    fonts.CreatePtr());
+                                    fonts.CreateRemote());
 
   // Check that we can get the font family and match a font.
   UINT32 index = UINT_MAX;

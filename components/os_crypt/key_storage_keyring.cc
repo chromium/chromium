@@ -9,11 +9,12 @@
 #include "base/rand_util.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
+#include "build/branding_buildflags.h"
 #include "components/os_crypt/keyring_util_linux.h"
 
 namespace {
 
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 const char kApplicationName[] = "chrome";
 #else
 const char kApplicationName[] = "chromium";

@@ -11,7 +11,8 @@
 #include "base/containers/flat_set.h"
 #include "base/optional.h"
 #include "content/common/content_export.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/media_session/public/mojom/media_controller.mojom.h"
 #include "ui/base/accelerators/media_keys_listener.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -38,28 +39,21 @@ class CONTENT_EXPORT HardwareKeyMediaController
   void MediaSessionActionsChanged(
       const std::vector<media_session::mojom::MediaSessionAction>& actions)
       override;
+  void MediaSessionChanged(
+      const base::Optional<base::UnguessableToken>& request_id) override {}
+  void MediaSessionPositionChanged(
+      const base::Optional<media_session::MediaPosition>& position) override {}
 
   // ui::MediaKeysListener::Delegate:
   void OnMediaKeysAccelerator(const ui::Accelerator& accelerator) override;
 
   void FlushForTesting();
   void SetMediaControllerForTesting(
-      media_session::mojom::MediaControllerPtr controller) {
-    media_controller_ptr_ = std::move(controller);
+      mojo::Remote<media_session::mojom::MediaController> controller) {
+    media_controller_remote_ = std::move(controller);
   }
 
  private:
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  enum class MediaHardwareKeyAction {
-    kActionPlay = 0,
-    kActionPause,
-    kActionStop,
-    kActionNextTrack,
-    kActionPreviousTrack,
-    kMaxValue = kActionPreviousTrack
-  };
-
   // Used for converting between MediaSessionAction and KeyboardCode.
   media_session::mojom::MediaSessionAction KeyCodeToMediaSessionAction(
       ui::KeyboardCode key_code) const;
@@ -71,10 +65,9 @@ class CONTENT_EXPORT HardwareKeyMediaController
 
   bool SupportsAction(media_session::mojom::MediaSessionAction action) const;
   void PerformAction(media_session::mojom::MediaSessionAction action);
-  void RecordAction(MediaHardwareKeyAction action);
 
   // Used to control the active session.
-  media_session::mojom::MediaControllerPtr media_controller_ptr_;
+  mojo::Remote<media_session::mojom::MediaController> media_controller_remote_;
 
   // Used to check whether a play/pause key should play or pause (based on
   // current playback state).
@@ -84,8 +77,8 @@ class CONTENT_EXPORT HardwareKeyMediaController
   base::flat_set<media_session::mojom::MediaSessionAction> actions_;
 
   // Used to receive updates to the active media controller.
-  mojo::Binding<media_session::mojom::MediaControllerObserver>
-      media_controller_observer_binding_{this};
+  mojo::Receiver<media_session::mojom::MediaControllerObserver>
+      media_controller_observer_receiver_{this};
 
   DISALLOW_COPY_AND_ASSIGN(HardwareKeyMediaController);
 };

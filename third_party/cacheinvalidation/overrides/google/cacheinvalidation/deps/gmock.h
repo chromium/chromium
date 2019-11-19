@@ -25,7 +25,7 @@ class WhenDeserializedAsMatcher {
 
   // Deserializes the string as a protobuf of the same type as the expected
   // protobuf.
-  Proto* Deserialize(const string& str) const {
+  Proto* Deserialize(const std::string& str) const {
     Proto* proto = new Proto;
     if (proto->ParsePartialFromString(str)) {
       return proto;
@@ -45,7 +45,8 @@ class WhenDeserializedAsMatcher {
     proto_matcher_.DescribeTo(os);
   }
 
-  bool MatchAndExplain(const string& arg, MatchResultListener* listener) const {
+  bool MatchAndExplain(const std::string& arg,
+                       MatchResultListener* listener) const {
     // Deserializes the string arg as a protobuf of the same type as the
     // expected protobuf.
     std::unique_ptr<const Proto> deserialized_arg(Deserialize(arg));

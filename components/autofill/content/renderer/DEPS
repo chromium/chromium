@@ -1,26 +1,10 @@
 include_rules = [
   "+content/public/common",
   "+content/public/renderer",
+  "+components/safe_browsing/buildflags.h",
   "+third_party/re2",
   # Allow inclusion of WebKit API files.
   "+third_party/blink/public/common",
   "+third_party/blink/public/platform",
   "+third_party/blink/public/web",
 ]
-
-specific_include_rules = {
-  # TODO(elawrence): remove this when the Form-Not-Secure feature is fully
-  # launched. https://crbug.com/677295
-  "password_autofill_agent\.cc" : [
-    "+components/security_state/core",
-    "+components/password_manager/core/common",
-  ],
-  # TODO(melandory): remove once password selection feature is launched.
-  # https://crbug.com/753806.
-  "password_form_conversion_utils\.cc" : [
-    "+components/password_manager/core/common",
-  ],
-  "password_form_conversion_utils_browsertest\.cc" : [
-    "+components/password_manager/core/common",
-  ],
-}

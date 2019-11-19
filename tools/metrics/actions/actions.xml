@@ -538,6 +538,54 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="Accel_Desks_ActivateLeft">
+  <owner>afakhry@chromium.org</owner>
+  <description>
+    User activates the virtual desk positioned to the left of the currently
+    active one by pressing a keyboard shortcut.
+  </description>
+</action>
+
+<action name="Accel_Desks_ActivateRight">
+  <owner>afakhry@chromium.org</owner>
+  <description>
+    User activates the virtual desk positioned to the right of the currently
+    active one by pressing a keyboard shortcut.
+  </description>
+</action>
+
+<action name="Accel_Desks_MoveWindowLeft">
+  <owner>afakhry@chromium.org</owner>
+  <description>
+    User moves the currently active window (or the currently selected item in
+    overview mode) to an existing virtual desk to the left of the currently
+    active one by pressing a keyboard shortcut.
+  </description>
+</action>
+
+<action name="Accel_Desks_MoveWindowRight">
+  <owner>afakhry@chromium.org</owner>
+  <description>
+    User moves the currently active window (or the currently selected item in
+    overview mode) to an existing virtual desk to the right of the currently
+    active one by pressing a keyboard shortcut.
+  </description>
+</action>
+
+<action name="Accel_Desks_NewDesk">
+  <owner>afakhry@chromium.org</owner>
+  <description>
+    User creates a new virtual desk by pressing a keyboard shortcut.
+  </description>
+</action>
+
+<action name="Accel_Desks_RemoveDesk">
+  <owner>afakhry@chromium.org</owner>
+  <description>
+    User removes an existing virtual desk by pressing a keyboard shortcut.
+  </description>
+</action>
+
 <action name="Accel_Disable_Caps_Lock">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
@@ -701,6 +749,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Accel_Minimize_Top_Window_On_Back">
+  <owner>minch@chromium.org</owner>
+  <description>
+    Metric recorded when the user press back key in the keyboard to minimize the
+    top window at bottom page while in tablet mode.
+  </description>
+</action>
+
 <action name="Accel_Move_Active_Window_Between_Displays">
   <owner>warx@chromium.org</owner>
   <description>
@@ -839,8 +895,33 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Accel_Restore_Tab">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <description>Please enter the description of this user action.</description>
+  <owner>mpearson@chromium.org</owner>
+  <owner>chrisha@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <description>
+    Emitted when the Ash window manager hotkey handler handles the
+    &quot;Ctrl-Shift-T&quot; shortcut that causes the most recently closed tab
+    to be restored. Because it's related to Ash, it's ChromeOS only. This is
+    only emitted when the Ash hotkey handler handles the shortcut, which only
+    happens when a non-Chrome window is focussed on ChromeOS. (The launcher is
+    an example of a non-Chrome window.) If a Chrome window was focussed on
+    ChromeOS as the user presses the keyboard shortcut, it's handled by Chrome's
+    keyboard shortcut handler system. In that case, the user action RestoreTab
+    is emitted, not Accel_Restore_Tab.
+
+    It's never the case that both Accel_Restore_Tab and RestoreTab are emitted
+    for the same keyboard shortcut press.
+
+    Note: if the last user action was to close an entire window with multiple
+    tabs, this keyboard shortcut will cause the entire window to be restored,
+    containing multiple tabs. This user action is only emitted once however,
+    regardless of the number of tabs.
+
+    This is not emitted during session restore that occurs as part of startup.
+
+    This user action is of special interest to the chrome-analysis-team@. Do not
+    change its semantics or retire it without talking to them first.
+  </description>
 </action>
 
 <action name="Accel_Rotate_Active_Window">
@@ -1176,7 +1257,31 @@ should be able to be added at any place in this file.
   <description>A user has used autoclick to perform an action.</description>
 </action>
 
+<action name="Accessibility.Autoclick.ChangeScrollPoint">
+  <owner>katie@chromium.org</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>dmazzoni@chromium.org</owner>
+  <description>
+    A user has changed the position at which a scroll will occur by performing a
+    dwell at the new scroll point.
+  </description>
+</action>
+
+<action name="Accessibility.Autoclick.ScrollMenu.CloseButton">
+  <owner>katie@chromium.org</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>dmazzoni@chromium.org</owner>
+  <description>
+    A user has closed the autoclick Scroll menu using the close button within
+    the menu bubble.
+  </description>
+</action>
+
 <action name="Accessibility.Autoclick.TrayMenu.Open">
+  <obsolete>
+    Removed 3/2019. The autoclick menu is always onscreen when autoclick is
+    enabled.
+  </obsolete>
   <owner>katie@chromium.org</owner>
   <owner>dtseng@chromium.org</owner>
   <owner>dmazzoni@chromium.org</owner>
@@ -1184,6 +1289,9 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Accessibility.Autoclick.TrayMenu.Settings">
+  <obsolete>
+    Removed 3/2019. There is no longer a settings button in the autoclick menu.
+  </obsolete>
   <owner>katie@chromium.org</owner>
   <owner>dtseng@chromium.org</owner>
   <owner>dmazzoni@chromium.org</owner>
@@ -1234,6 +1342,16 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Accessibility.CrosAutoclick.TrayMenu.ChangePosition">
+  <owner>katie@chromium.org</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>dmazzoni@chromium.org</owner>
+  <description>
+    A user has tapped the button to change the position of the autoclick bubble
+    menu.
+  </description>
+</action>
+
 <action name="Accessibility.CrosSelectToSpeak.CancelSpeech">
   <owner>katie@chromium.org</owner>
   <description>
@@ -1251,6 +1369,42 @@ should be able to be added at any place in this file.
 <action name="Accessibility.CrosSelectToSpeak.StartSpeech">
   <owner>katie@chromium.org</owner>
   <description>A Chrome OS user manually starts Select To Speak.</description>
+</action>
+
+<action name="Accessibility.NativeApi.DoDefault">
+  <owner>aleventhal@chromium.org</owner>
+  <owner>dmazzoni@chromium.org</owner>
+  <description>
+    The DoDefault action (for example, to click on a button or link) has been
+    called on an accessibility node using a native accessibility API.
+  </description>
+</action>
+
+<action name="Accessibility.NativeApi.HitTest">
+  <owner>aleventhal@chromium.org</owner>
+  <owner>dmazzoni@chromium.org</owner>
+  <description>
+    The HitTest action has been called on an accessibility node using a native
+    accessibility API.
+  </description>
+</action>
+
+<action name="Accessibility.NativeApi.ScrollToMakeVisible">
+  <owner>aleventhal@chromium.org</owner>
+  <owner>dmazzoni@chromium.org</owner>
+  <description>
+    The ScrollToMakeVisible action has been called on an accessibility node
+    using a native accessibility API.
+  </description>
+</action>
+
+<action name="Accessibility.NativeApi.SetFocus">
+  <owner>aleventhal@chromium.org</owner>
+  <owner>dmazzoni@chromium.org</owner>
+  <description>
+    The SetFocus action has been called on an accessibility node using a native
+    accessibility API.
+  </description>
 </action>
 
 <action name="Accessibility.TwoFingersHeldDown">
@@ -1285,6 +1439,51 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="AddSupervisionDialog_AttemptedSignoutAfterEnrollment">
+  <owner>tobyhuang@chromium.org</owner>
+  <owner>michaelpg@chromium.org</owner>
+  <owner>danan@chromium.org</owner>
+  <description>
+    Emitted when the user clicks &quot;Sign out&quot; to complete the Add
+    Supervision process.
+  </description>
+</action>
+
+<action name="AddSupervisionDialog_Closed">
+  <owner>tobyhuang@chromium.org</owner>
+  <owner>michaelpg@chromium.org</owner>
+  <owner>danan@chromium.org</owner>
+  <description>
+    Emitted when the Add Supervision dialog is closed, excluding sign out.
+  </description>
+</action>
+
+<action name="AddSupervisionDialog_EnrollmentCompleted">
+  <owner>tobyhuang@chromium.org</owner>
+  <owner>michaelpg@chromium.org</owner>
+  <owner>danan@chromium.org</owner>
+  <description>
+    Emitted when the user's account is successfully enrolled in supervision.
+  </description>
+</action>
+
+<action name="AddSupervisionDialog_Launched">
+  <owner>tobyhuang@chromium.org</owner>
+  <owner>michaelpg@chromium.org</owner>
+  <owner>danan@chromium.org</owner>
+  <description>Emitted when the Add Supervision dialog is opened.</description>
+</action>
+
+<action name="AddSupervisionDialog_SwitchedAccounts">
+  <owner>tobyhuang@chromium.org</owner>
+  <owner>michaelpg@chromium.org</owner>
+  <owner>danan@chromium.org</owner>
+  <description>
+    Emitted when the user signs out from within the Add Supervision dialog to
+    switch accounts before enrollment is completed.
+  </description>
+</action>
+
 <action name="AlertIndicatorButton_Dragged">
   <owner>miu@chromium.org</owner>
   <description>
@@ -1306,9 +1505,16 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="AltClickMappedToRightClick">
+  <owner>zentaro@chromium.org</owner>
+  <description>
+    User pressed alt click on a touchpad device to generate right click.
+  </description>
+</action>
+
 <action name="Android.BookmarkPage.RemoveItem">
-  <owner>huayinz@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
+  <owner>chrome-android-app@chromium.org</owner>
   <description>
     User removed an item on the native Android bookmark page by clicking
     &quot;delete&quot; from the &quot;more&quot; menu.
@@ -1316,8 +1522,8 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Android.BookmarkPage.SelectFromMenu">
-  <owner>huayinz@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
+  <owner>chrome-android-app@chromium.org</owner>
   <description>
     User selected an item on the native Android bookmark page by clicking
     &quot;select&quot; from the &quot;more&quot; menu.
@@ -1347,12 +1553,14 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Android.ChromeHome.Closed">
+  <obsolete>Unused as of 7/2019</obsolete>
   <owner>mdjones@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <description>User closed the Chrome Home bottom sheet.</description>
 </action>
 
 <action name="Android.ChromeHome.ClosedByBackPress">
+  <obsolete>Unused as of 7/2019</obsolete>
   <owner>mdjones@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <description>
@@ -1361,6 +1569,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Android.ChromeHome.ClosedByNavigation">
+  <obsolete>Unused as of 7/2019</obsolete>
   <owner>mdjones@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <description>
@@ -1380,6 +1589,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Android.ChromeHome.ClosedBySwipe">
+  <obsolete>Unused as of 7/2019</obsolete>
   <owner>mdjones@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <description>
@@ -1388,6 +1598,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Android.ChromeHome.ClosedByTapScrim">
+  <obsolete>Unused as of 7/2019</obsolete>
   <owner>mdjones@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <description>
@@ -1396,6 +1607,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Android.ChromeHome.FullState">
+  <obsolete>Unused as of 7/2019</obsolete>
   <owner>mdjones@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <description>
@@ -1404,6 +1616,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Android.ChromeHome.HalfState">
+  <obsolete>Unused as of 7/2019</obsolete>
   <owner>mdjones@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <description>
@@ -1412,6 +1625,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Android.ChromeHome.IPHMenuItemClicked">
+  <obsolete>Unused as of 7/2019</obsolete>
   <owner>mdjones@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <description>
@@ -1421,6 +1635,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Android.ChromeHome.NativeNTPShown">
+  <obsolete>Unused as of 7/2019</obsolete>
   <owner>mdjones@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <description>
@@ -1485,6 +1700,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Android.ChromeHome.OptOutSnackbarClicked">
+  <obsolete>Unused as of 7/2019</obsolete>
   <owner>mdjones@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <description>
@@ -1546,6 +1762,23 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Android.DarkTheme.Preference">
+  <owner>twellington@chromium.org</owner>
+  <owner>chrome-android-app@chromium.org</owner>
+  <description>
+    User changed preference to use system default, light, or dark theme.
+  </description>
+</action>
+
+<action name="Android.DirectAction.List">
+  <owner>szermatt@chromium.org</owner>
+  <owner>autofill_assistant@google.com</owner>
+  <description>
+    Call to Activity.onListDirectActions made by the system on behalf of the
+    assist app. Available starting with Android Q.
+  </description>
+</action>
+
 <action name="Android.Download.InfoBar.Accelerated">
   <owner>shaktisahu@chromium.org</owner>
   <description>
@@ -1562,8 +1795,12 @@ should be able to be added at any place in this file.
 
 <action name="Android.Download.InfoBar.LinkClicked.OpenDownload">
   <owner>shaktisahu@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
   <description>
     User tapped on the infobar link to open the downloaded file.
+
+    This user action is of special interest to the chrome-analysis-team@. Do not
+    change its semantics or retire it without talking to them first.
   </description>
 </action>
 
@@ -1634,6 +1871,9 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Android.DownloadManager.List.Selection.Menu.Images.Action">
+  <obsolete>
+    Deprecated October 2019. Feature dropped during implementation review.
+  </obsolete>
   <owner>dtrainor@chromium.org</owner>
   <description>
     User triggered a menu action on the images section header of download home.
@@ -1642,8 +1882,12 @@ should be able to be added at any place in this file.
 
 <action name="Android.DownloadManager.List.View.Action">
   <owner>dtrainor@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
   <description>
     User triggered actions on an offline item in download home.
+
+    This user action is of special interest to the chrome-analysis-team@. Do not
+    change its semantics or retire it without talking to them first.
   </description>
 </action>
 
@@ -1675,7 +1919,6 @@ should be able to be added at any place in this file.
     Deprecated in favor of Android.DownloadManager.List.View.Action.
   </obsolete>
   <owner>dtrainor@chromium.org</owner>
-  <owner>huayinz@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <description>
     User removed an item on the native Android download page by clicking
@@ -1726,10 +1969,25 @@ should be able to be added at any place in this file.
   <description>User opened NTP with enabled ExploreSites section.</description>
 </action>
 
+<action name="Android.ExploreSitesPage.ClickOnSiteIcon">
+  <owner>dimich@chromium.org</owner>
+  <description>
+    User clicked on a site icon while on ExploreSites page.
+  </description>
+</action>
+
 <action name="Android.ExploreSitesPage.Open">
   <owner>dimich@chromium.org</owner>
   <description>
     User opened ExploreSites page, typically by clicking on a NTP category icon.
+  </description>
+</action>
+
+<action name="Android.ExploreSitesPage.Scrolled">
+  <owner>dimich@chromium.org</owner>
+  <description>
+    User scrolled the ExploreSites page. Reported once per ExploreSitesPage
+    instance shown.
   </description>
 </action>
 
@@ -1758,24 +2016,36 @@ should be able to be added at any place in this file.
 
 <action name="Android.HistoryPage.OpenItem">
   <owner>twellington@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
   <description>
     User opened an item on the native Android history page.
+
+    This user action is of special interest to the chrome-analysis-team@. Do not
+    change its semantics or retire it without talking to them first.
   </description>
 </action>
 
 <action name="Android.HistoryPage.OpenSelected">
   <owner>twellington@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
   <description>
     User opened one or more selected items in new tabs on the native Android
     history page.
+
+    This user action is of special interest to the chrome-analysis-team@. Do not
+    change its semantics or retire it without talking to them first.
   </description>
 </action>
 
 <action name="Android.HistoryPage.OpenSelectedIncognito">
   <owner>twellington@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
   <description>
     User opened one or more selected items in new incognito tabs on the native
     Android history page.
+
+    This user action is of special interest to the chrome-analysis-team@. Do not
+    change its semantics or retire it without talking to them first.
   </description>
 </action>
 
@@ -1818,24 +2088,36 @@ should be able to be added at any place in this file.
 
 <action name="Android.HistoryPage.Search.OpenItem">
   <owner>twellington@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
   <description>
     User opened an item while searching on the native Android history page.
+
+    This user action is of special interest to the chrome-analysis-team@. Do not
+    change its semantics or retire it without talking to them first.
   </description>
 </action>
 
 <action name="Android.HistoryPage.Search.OpenSelected">
   <owner>twellington@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
   <description>
     User opened one or more selected items in new tabs while searching on the
     native Android history page.
+
+    This user action is of special interest to the chrome-analysis-team@. Do not
+    change its semantics or retire it without talking to them first.
   </description>
 </action>
 
 <action name="Android.HistoryPage.Search.OpenSelectedIncognito">
   <owner>twellington@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
   <description>
     User opened one or more selected items in new incognito tabs while searching
     on the native Android history page.
+
+    This user action is of special interest to the chrome-analysis-team@. Do not
+    change its semantics or retire it without talking to them first.
   </description>
 </action>
 
@@ -2058,6 +2340,22 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="ApplicationShortcut.NewIncognitoSearchPressed">
+  <owner>pschaffner@chromium.com</owner>
+  <description>
+    Force pressed on a springboard shortcut and tapped Incognito Search in
+    Chrome for iOS.
+  </description>
+</action>
+
+<action name="ApplicationShortcut.NewSearchPressed">
+  <owner>pschaffner@chromium.com</owner>
+  <description>
+    Force pressed on a springboard shortcut and tapped New Search in Chrome for
+    iOS.
+  </description>
+</action>
+
 <action name="AppList_AutoLaunchCanceled">
   <obsolete>Voice search in Launcher is not supported anymore.</obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
@@ -2068,6 +2366,11 @@ should be able to be added at any place in this file.
   <obsolete>Voice search in Launcher is not supported anymore.</obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
+</action>
+
+<action name="AppList_BackButtonPressed">
+  <owner>andrewxu@chromium.org</owner>
+  <description>User pressed the back button.</description>
 </action>
 
 <action name="AppList_ClickOnApp">
@@ -2111,6 +2414,16 @@ should be able to be added at any place in this file.
 <action name="AppList_FullToPeeking">
   <owner>vadimt@chromium.org</owner>
   <description>CrOS Launcher went from full to peeking state.</description>
+</action>
+
+<action name="AppList_HomeButtonPressedClamshell">
+  <owner>andrewxu@chromium.org</owner>
+  <description>User pressed the launcher button in clamshell.</description>
+</action>
+
+<action name="AppList_HomeButtonPressedTablet">
+  <owner>andrewxu@chromium.org</owner>
+  <description>User pressed the launcher button in tablet.</description>
 </action>
 
 <action name="AppList_HomeLauncherToMRUWindow">
@@ -2172,6 +2485,15 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="AppList_ShowPlayStoreQueryResults">
+  <owner>jennyz@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
+  <description>
+    Cros Launcher shows play store apps to user in response for a user typed
+    query with reason time for user to see and take action.
+  </description>
+</action>
+
 <action name="AppList_ShowZeroStateSuggestions">
   <owner>jennyz@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
@@ -2191,6 +2513,17 @@ should be able to be added at any place in this file.
   <obsolete>App list doesn't have voice search anymore.</obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
+</action>
+
+<action name="AppList_WindowFocused">
+  <owner>newcomer@chromium.org</owner>
+  <description>
+    Emitted when the AppList has gained focus. The AppList gains focus every
+    time it is shown to the user, so this is equivalent to being emitted when
+    the AppList is shown to the user. This can be used in combination with
+    launch/activation metrics to calculate the click through rate in the
+    AppList.
+  </description>
 </action>
 
 <action name="AppList_ZeroStateOpenInstalledApp">
@@ -2244,6 +2577,14 @@ should be able to be added at any place in this file.
 <action name="AutoDetectChange">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
+</action>
+
+<action name="Autofill_ClearedForm">
+  <owner>ftirelo@chromium.org</owner>
+  <description>
+    This user action is logged when a user has cleared the form after having
+    accepted an Autofill suggestion.
+  </description>
 </action>
 
 <action name="Autofill_FilledCreditCardSuggestion">
@@ -2332,7 +2673,7 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action name="Autofill_ParsedProfileForm">
+<action name="Autofill_ParsedProfileForm" not_user_triggered="true">
   <owner>sebsg@chromium.org</owner>
   <description>
     This user action is logged when a profile form is parsed.
@@ -2454,6 +2795,15 @@ should be able to be added at any place in this file.
   <owner>gab@chromium.org</owner>
   <description>
     User clicked the reset button on the AutomaticSettingsReset banner.
+  </description>
+</action>
+
+<action name="AvatarToolbarButtonHighlighted">
+  <owner>siyua@chromium.org</owner>
+  <owner>droger@chromium.org</owner>
+  <description>
+    Recorded when the avatar toolbar button is highlighted following an autofill
+    event.
   </description>
 </action>
 
@@ -3123,18 +3473,43 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="BookmarkBar_ContextMenu_OpenAll">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <description>Please enter the description of this user action.</description>
+  <owner>dfried@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <description>
+    The user opened one or more bookmarks in the Bookmarks Bar using the context
+    menu. Distinguished from launching from e.g. the application menu or the
+    bookmark manager. This is for opening bookmarks normally (in the same
+    window).
+
+    This user action is of special interest to the chrome-analysis-team@. Do not
+    change its semantics or retire it without talking to them first.
+  </description>
 </action>
 
 <action name="BookmarkBar_ContextMenu_OpenAllIncognito">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <description>Please enter the description of this user action.</description>
+  <owner>dfried@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <description>
+    The user opened one or more bookmarks in the Bookmarks Bar using the context
+    menu. Distinguished from launching from e.g. the application menu or the
+    bookmark manager. This is for opening bookmarks in an incognito window.
+
+    This user action is of special interest to the chrome-analysis-team@. Do not
+    change its semantics or retire it without talking to them first.
+  </description>
 </action>
 
 <action name="BookmarkBar_ContextMenu_OpenAllInNewWindow">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <description>Please enter the description of this user action.</description>
+  <owner>dfried@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <description>
+    The user opened one or more bookmarks in the Bookmarks Bar using the context
+    menu. Distinguished from launching from e.g. the application menu or the
+    bookmark manager. This is for opening bookmarks in a new window.
+
+    This user action is of special interest to the chrome-analysis-team@. Do not
+    change its semantics or retire it without talking to them first.
+  </description>
 </action>
 
 <action name="BookmarkBar_ContextMenu_OpenInNewTab">
@@ -3507,6 +3882,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="BrowserActions.MenuOpened">
+  <obsolete>Deprecated in M77 with the removal of Browser Actions.</obsolete>
   <owner>ltian@chromium.org</owner>
   <description>
     A Browser Actions menu is opened in Chrome. A Browser Actions menu is a
@@ -3515,6 +3891,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="BrowserActions.TabOpenedNotificationClicked">
+  <obsolete>Deprecated in M77 with the removal of Browser Actions.</obsolete>
   <owner>ltian@chromium.org</owner>
   <description>
     Users click the notification of opening tab in background.
@@ -3522,6 +3899,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="BrowserActions.TabOpenedNotificationCreated">
+  <obsolete>Deprecated in M77 with the removal of Browser Actions.</obsolete>
   <owner>ltian@chromium.org</owner>
   <description>
     Browser Actions creates a notifcation of opening tab in background.
@@ -3768,6 +4146,39 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="ChromeColors_ColorApplied">
+  <owner>gayane@chromium.org</owner>
+  <description>Chrome Colors was applied from Colors menu.</description>
+</action>
+
+<action name="ChromeColors_DefaultApplied">
+  <owner>gayane@chromium.org</owner>
+  <description>Default theme was applied from Colors menu.</description>
+</action>
+
+<action name="ChromeColors_MenuCancel">
+  <obsolete>Deprecated as of 7/2019.</obsolete>
+  <owner>gayane@chromium.org</owner>
+  <description>Applied changes where canceled from Colors menu.</description>
+</action>
+
+<action name="ChromeColors_MenuDone">
+  <obsolete>Deprecated as of 7/2019.</obsolete>
+  <owner>gayane@chromium.org</owner>
+  <description>Applied changes where confirmed from Colors menu.</description>
+</action>
+
+<action name="ChromeColors_TabClosed">
+  <obsolete>Deprecated as of 7/2019.</obsolete>
+  <owner>gayane@chromium.org</owner>
+  <description>Tab with open Colors menu was closed.</description>
+</action>
+
+<action name="ChromeColors_ThemeUninstalled">
+  <owner>gayane@chromium.org</owner>
+  <description>Webstore theme uninstalled from Colors menu.</description>
+</action>
+
 <action name="ChromeGeneratedCustomTab.StartedInitially">
   <owner>tedchoc@chromium.org</owner>
   <description>
@@ -3816,6 +4227,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ClearBrowsingData_ChannelIDs">
+  <obsolete>Deprecated as of 4/2019.</obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of the metric.</description>
 </action>
@@ -4048,8 +4460,16 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ClickedBookmarkBarURLButton">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <description>Please enter the description of this user action.</description>
+  <owner>chrome-analysis-team@google.com</owner>
+  <owner>dfried@chromium.org</owner>
+  <description>
+    User clicks a bookmark to open it, either in the bookmarks bar or in a
+    bookmarks bar folder or overflow menu. (Changed in M75 to include
+    non-top-level bookmarks.)
+
+    This user action is of special interest to the chrome-analysis-team@. Do not
+    change its semantics or retire it without talking to them first.
+  </description>
 </action>
 
 <action name="ClickToPlay_AllowAlways">
@@ -4272,6 +4692,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ContentSuggestions.RemoteSuggestionsPreferenceOn">
+  <obsolete>Removed as of 09/2019.</obsolete>
   <owner>dgn@chromium.org</owner>
   <owner>finkm@chromium.org</owner>
   <description>
@@ -4465,14 +4886,14 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ContextualSuggestions">
-  <owner>huayinz@chromium.org</owner>
+  <obsolete>This feature was deprecated in M74</obsolete>
   <owner>twellington@chromium.com</owner>
   <owner>wylieb@chromium.com</owner>
   <description>Android: User interacts with the feature directly.</description>
 </action>
 
 <action name="ContextualSuggestions.ContextMenu">
-  <owner>huayinz@chromium.org</owner>
+  <obsolete>This feature was deprecated in M74</obsolete>
   <owner>twellington@chromium.com</owner>
   <description>
     Android: User used the context menu on a suggested item on the contextual
@@ -4481,7 +4902,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ContextualSuggestions.Preference.Disabled">
-  <owner>huayinz@chromium.org</owner>
+  <obsolete>This feature was deprecated in M74</obsolete>
   <owner>twellington@chromium.org</owner>
   <description>
     Android: Contextual suggestions are disabled by a user click on the switch
@@ -4490,7 +4911,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ContextualSuggestions.Preference.Enabled">
-  <owner>huayinz@chromium.org</owner>
+  <obsolete>This feature was deprecated in M74</obsolete>
   <owner>twellington@chromium.org</owner>
   <description>
     Android: Contextual suggestions are enabled by a user click on the switch
@@ -4508,9 +4929,62 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="CookieControls.Bubble.NotWorking">
+  <owner>dullweber@chromium.org</owner>
+  <owner>huanzhong@chromium.org</owner>
+  <description>
+    &quot;Site not working&quot; button was clicked in the cookie controls UI.
+  </description>
+</action>
+
+<action name="CookieControls.Bubble.Opened">
+  <owner>dullweber@chromium.org</owner>
+  <owner>huanzhong@chromium.org</owner>
+  <description>The cookie controls UI was opened.</description>
+</action>
+
+<action name="CookieControls.Bubble.TurnOff">
+  <owner>dullweber@chromium.org</owner>
+  <owner>huanzhong@chromium.org</owner>
+  <description>
+    Cookie blocking was disabled for a site through the cookie controls UI.
+  </description>
+</action>
+
+<action name="CookieControls.Bubble.TurnOn">
+  <owner>dullweber@chromium.org</owner>
+  <owner>huanzhong@chromium.org</owner>
+  <description>
+    Cookie blocking was enabled for a site through the cookie controls UI.
+  </description>
+</action>
+
+<action name="CookieControls.NTP.Disabled">
+  <owner>dullweber@chromium.org</owner>
+  <owner>huanzhong@chromium.org</owner>
+  <description>
+    Third-party cookie blocking was disabled on the incognito NTP.
+  </description>
+</action>
+
+<action name="CookieControls.NTP.Enabled">
+  <owner>dullweber@chromium.org</owner>
+  <owner>huanzhong@chromium.org</owner>
+  <description>
+    Third-party cookie blocking was enabled on the incognito NTP.
+  </description>
+</action>
+
 <action name="Copy">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
+</action>
+
+<action name="CopyCustomTabBarUrl">
+  <owner>desktop-pwas-team@google.com</owner>
+  <description>
+    &quot;Copy URL&quot; option in right-click context menu on CustomTabBar.
+  </description>
 </action>
 
 <action name="CopyToFindPboard">
@@ -4524,8 +4998,13 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="CreateHostedApp">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <description>Please enter the description of this user action.</description>
+  <obsolete>
+    Deprecated as of 06/2019 (replaced by InstallWebAppFromMenu and
+    CreateShortcut).
+  </obsolete>
+  <owner>alancutter@chromium.org</owner>
+  <owner>raymes@chromium.org</owner>
+  <description>The sum of CreateShortcut and InstallWebAppFromMenu</description>
 </action>
 
 <action name="CreateLink">
@@ -4539,9 +5018,12 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="CreateShortcut">
-  <obsolete>Deprecated as of 04/2017 (replaced by CreateHostedApp).</obsolete>
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <description>Please enter the description of this user action.</description>
+  <owner>alancutter@chromium.org</owner>
+  <owner>raymes@chromium.org</owner>
+  <description>
+    Shortcut app creation triggered via &quot;Menu &gt; More Tools &gt; Create
+    Shortcut...&quot;
+  </description>
 </action>
 
 <action name="CredentialManager_AccountChooser_Accepted">
@@ -4683,12 +5165,12 @@ should be able to be added at any place in this file.
   <description>User hit &quot;read it later&quot; menu item.</description>
 </action>
 
-<action name="CustomTabsRemoteViewsShown">
+<action name="CustomTabsRemoteViewsShown" not_user_triggered="true">
   <owner>ianwen@chromium.org</owner>
   <description>A RemoteViews based bottom bar was shown.</description>
 </action>
 
-<action name="CustomTabsRemoteViewsUpdated">
+<action name="CustomTabsRemoteViewsUpdated" not_user_triggered="true">
   <owner>ianwen@chromium.org</owner>
   <description>
     A RemoteViews based bottom bar was updated through service API.
@@ -4977,82 +5459,98 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="DevicesPage_AddPrintersClicked">
+  <obsolete>No longer recorded as of Sep 2013.</obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="DevicesPage_LogInStartedFromDeviceListPromo">
+  <obsolete>No longer recorded as of Sep 2013.</obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="DevicesPage_LogInStartedFromRegisterPromo">
+  <obsolete>No longer recorded as of Sep 2013.</obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="DevicesPage_ManageClicked">
+  <obsolete>No longer recorded as of Sep 2013.</obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="DevicesPage_Opened">
+  <obsolete>No longer recorded as of Sep 2013.</obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="DevicesPage_RegisterCancel">
+  <obsolete>No longer recorded as of Sep 2013.</obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="DevicesPage_RegisterClicked">
+  <obsolete>No longer recorded as of Sep 2013.</obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="DevicesPage_RegisterFailure">
+  <obsolete>No longer recorded as of Sep 2013.</obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="DevicesPage_RegisterSuccess">
+  <obsolete>No longer recorded as of Sep 2013.</obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="DevTools_InspectAndroidPage">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <owner>yangguo@chromium.org</owner>
+  <owner>bmeurer@chromium.org</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="DevTools_InspectAndroidWebView">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <owner>yangguo@chromium.org</owner>
+  <owner>bmeurer@chromium.org</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="DevTools_InspectElement">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <owner>yangguo@chromium.org</owner>
+  <owner>bmeurer@chromium.org</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="DevTools_InspectRenderer">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <owner>yangguo@chromium.org</owner>
+  <owner>bmeurer@chromium.org</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="DevTools_InspectWorker">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <owner>yangguo@chromium.org</owner>
+  <owner>bmeurer@chromium.org</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="DevTools_ToggleConsole">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <owner>yangguo@chromium.org</owner>
+  <owner>bmeurer@chromium.org</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="DevTools_ToggleWindow">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <owner>yangguo@chromium.org</owner>
+  <owner>bmeurer@chromium.org</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
@@ -5276,6 +5774,33 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Downloads_OpenUrlOfDownloadedItem">
+  <owner>xingliu@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <description>
+    Records clicks on the URL of download items in chrome://downloads page.
+
+    This user action is of special interest to the chrome-analysis-team@. Do not
+    change its semantics or retire it without talking to them first.
+  </description>
+</action>
+
+<action name="Downloads_OpenUrlOfDownloadedItemFromContextMenu">
+  <owner>xingliu@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <description>
+    Records open a URL of download items in chrome://downloads page from context
+    menu.
+
+    As of M-76, &quot;Save link as...&quot;, &quot;Copy link address&quot;, and
+    &quot;Copy link text&quot; context menu actions no longer log this action
+    (this was accidentally the case before M-76).
+
+    This user action is of special interest to the chrome-analysis-team@. Do not
+    change its semantics or retire it without talking to them first.
+  </description>
+</action>
+
 <action name="Duplicate">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
@@ -5354,9 +5879,13 @@ should be able to be added at any place in this file.
 <action name="ExploreSites.ContextMenu">
   <owner>chili@chromium.org</owner>
   <owner>dewittj@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
   <description>
     Android: user used the context menu on a suggested item in the explore sites
     native page UI.
+
+    This user action is of special interest to the chrome-analysis-team@. Do not
+    change its semantics or retire it without talking to them first.
   </description>
 </action>
 
@@ -5396,6 +5925,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Feedback.SrtPromptAccepted">
+  <obsolete>This was never fully implemented.</obsolete>
   <owner>tmartino@chromium.org</owner>
   <description>
     User accepted invitation on Feedback form to download Software Removal Tool.
@@ -5403,6 +5933,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Feedback.SrtPromptClosed">
+  <obsolete>This was never fully implemented.</obsolete>
   <owner>tmartino@chromium.org</owner>
   <description>
     User closed Feedback form when prompted to download Software Removal Tool.
@@ -5410,6 +5941,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Feedback.SrtPromptDeclined">
+  <obsolete>This was never fully implemented.</obsolete>
   <owner>tmartino@chromium.org</owner>
   <description>
     User declined invitation on Feedback form to download Software Removal Tool.
@@ -5913,6 +6445,47 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="GridTabSwitch.UndoCloseTab">
+  <owner>yusufo@chromium.org</owner>
+  <owner>wychen@chromium.org</owner>
+  <description>
+    User undoes the closed tab that was closed from grid tab switcher.
+  </description>
+</action>
+
+<action name="GridTabSwitcher.Drag.AddToGroupOrCreateGroup">
+  <obsolete>
+    Deprecated as of 8/2019. Replaced with TabGroup.Created.DropToMerge.
+  </obsolete>
+  <owner>yusufo@chromium.org</owner>
+  <owner>wychen@chromium.org</owner>
+  <description>
+    User drags a tab and drops it on another tab to form a new group in grid tab
+    switcher.
+  </description>
+</action>
+
+<action name="GridTabSwitcher.DropTabToMerge">
+  <obsolete>
+    Deprecated as of 6/2019. Replaced with
+    GridTabSwitcher.Drag.AddToGroupOrCreateGroup.
+  </obsolete>
+  <owner>yusufo@chromium.org</owner>
+  <owner>wychen@chromium.org</owner>
+  <description>
+    User drags a tab and drops it on another tab to form a group in grid tab
+    switcher.
+  </description>
+</action>
+
+<action name="GridTabSwitcher.UndoCloseTabGroup">
+  <owner>yusufo@chromium.org</owner>
+  <owner>wychen@chromium.org</owner>
+  <description>
+    User undoes closed group that was closed from grid tab switcher.
+  </description>
+</action>
+
 <action name="HarmfulInterstitial.Advanced">
   <owner>felt@chromium.org</owner>
   <description>
@@ -5938,6 +6511,10 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="HatsBubble.Show">
+  <obsolete>
+    Deprecated as of 08/2019. Replaced by HappinessTrackingSurvey.BubbleUsage
+    histogram.
+  </obsolete>
   <owner>jeffreycohen@chromium.org</owner>
   <description>User saw a Happiness Tracking Survey.</description>
 </action>
@@ -5983,13 +6560,30 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="HistoryPage_EntryLinkClick">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <description>Please enter the description of this user action.</description>
+  <owner>mpearson@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <description>
+    On desktop, user clicked a link to a URL from history on the
+    chrome://history page to navigate to the URL.
+
+    This user action is of special interest to the chrome-analysis-team@. Do not
+    change its semantics or retire it without talking to them first.
+  </description>
 </action>
 
 <action name="HistoryPage_EntryLinkRightClick">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <description>Please enter the description of this user action.</description>
+  <owner>mpearson@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <description>
+    On desktop, user right-clicked a link to a URL from history on the
+    chrome://history page. This causes the context menu to be displayed.
+    Sometimes the user will select an &quot;open in&quot; action, which would
+    cause a navigation. Selections such as &quot;save link as&quot; or
+    &quot;copy link address&quot; will not cause a navigation.
+
+    This user action is of special interest to the chrome-analysis-team@. Do not
+    change its semantics or retire it without talking to them first.
+  </description>
 </action>
 
 <action name="HistoryPage_EntryMenuRemoveFromHistory">
@@ -6086,6 +6680,11 @@ should be able to be added at any place in this file.
 <action name="ImportLockDialogView_Shown">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
+</action>
+
+<action name="IncognitoMenu_Show">
+  <owner>rhalavati@chromium.org.</owner>
+  <description>The user opened incognito menu.</description>
 </action>
 
 <action name="IncompatibleApplicationsPage.ApplicationRemoved">
@@ -7525,6 +8124,14 @@ should be able to be added at any place in this file.
 <action name="InstallSite">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
+</action>
+
+<action name="InstallWebAppFromMenu">
+  <owner>alancutter@chromium.org</owner>
+  <owner>raymes@chromium.org</owner>
+  <description>
+    PWA install triggered via &quot;Menu &gt; Install App name...&quot;
+  </description>
 </action>
 
 <action name="InstantExtended.MostVisitedClicked">
@@ -10000,6 +10607,12 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="LinkOpenedInNewTab">
+  <owner>yusufo@chromium.org</owner>
+  <owner>wychen@chromium.org</owner>
+  <description>Users long pressed and opened in new tab.</description>
+</action>
+
 <action name="LoadURL">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
@@ -10223,6 +10836,14 @@ should be able to be added at any place in this file.
   <description>
     The user closed the Manual Fallback view by pulling. This happens when the
     user pulls enough to the right, similar to &quot;pull to refresh&quot;.
+  </description>
+</action>
+
+<action name="ManualFallback_CreditCard_OpenAddPaymentMethod">
+  <owner>javierrobles@chromium.org</owner>
+  <description>
+    The user tapped on &quot;Add Payment Method...&quot; on the Password Manual
+    Fallback view.
   </description>
 </action>
 
@@ -10673,6 +11294,17 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Media.OpenPreferencesClicked">
+  <owner>guidou@chromium.org</owner>
+  <owner>engedy@chromium.org</owner>
+  <owner>hkamila@chromium.org</owner>
+  <description>
+    Logs when the user clicks &quot;Open Preferences&quot;, which is a button,
+    that upon being clicked, triggers showing the &quot;Security &amp;
+    Privacy&quot; pane of macOS System Preferences.
+  </description>
+</action>
+
 <action name="Media.Session.BackgroundResume">
   <owner>avayvod@chromium.org</owner>
   <description>User resumed a backgrounded video. Android-only.</description>
@@ -10690,6 +11322,17 @@ should be able to be added at any place in this file.
   <owner>avayvod@chromium.org</owner>
   <description>
     User brought the frame containing a video to the foreground.
+  </description>
+</action>
+
+<action name="Media.ShowSystemMediaPermissionBubble">
+  <owner>guidou@chromium.org</owner>
+  <owner>engedy@chromium.org</owner>
+  <owner>hkamila@chromium.org</owner>
+  <description>
+    Logs when the user clicks the camera or microphone sliding icon which
+    triggers showing the &quot;Security &amp; Privacy&quot; pane of macOS System
+    Preferences.
   </description>
 </action>
 
@@ -10852,6 +11495,11 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MediaRouter.CastStreaming.Session.End">
+  <owner>miu@google.com</owner>
+  <description>User ended a Cast Streaming session.</description>
+</action>
+
 <action name="MediaRouter_Icon_Click">
   <owner>apacible@chromium.org</owner>
   <description>
@@ -10925,6 +11573,15 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="MiddleClickedBookmarkBarFolder">
+  <owner>dfried@chromium.org</owner>
+  <description>
+    Triggered when user middle-clicks a bookmarks bar folder, resulting in all
+    bookmarks in the folder being opened. Applies to all folders reachable from
+    the bookmark bar, including subfolders and overflow.
+  </description>
+</action>
+
 <action name="MinButton_Clk">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
@@ -10938,6 +11595,30 @@ should be able to be added at any place in this file.
 <action name="MixedScript_LoadAnyway_Bubble">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
+</action>
+
+<action name="Mobile.OmniboxContextMenu.SearchCopiedImage">
+  <owner>rkgibson@google.com</owner>
+  <owner>stkhapugin@google.com</owner>
+  <description>
+    User pressed 'Search Copied Image' in the omnibox context menu (iOS only).
+  </description>
+</action>
+
+<action name="Mobile.OmniboxContextMenu.SearchCopiedText">
+  <owner>rkgibson@google.com</owner>
+  <owner>stkhapugin@google.com</owner>
+  <description>
+    User pressed 'Search Copied Text' in the omnibox context menu (iOS only).
+  </description>
+</action>
+
+<action name="Mobile.OmniboxContextMenu.VisitCopiedLink">
+  <owner>rkgibson@google.com</owner>
+  <owner>stkhapugin@google.com</owner>
+  <description>
+    User pressed 'Visit Copied Link' in the omnibox context menu (iOS only).
+  </description>
 </action>
 
 <action name="Mobile_FocusedDefocusedOmnibox_WithNoAction">
@@ -10991,9 +11672,33 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileAddBookmarkViaIntent">
+  <obsolete>Feature removed 11/2019</obsolete>
   <owner>newt@chromium.org</owner>
   <description>
     User added a bookmark to Chrome via an intent from a third-party app.
+  </description>
+</action>
+
+<action name="MobileAddCreditCard.AddPaymentMethodButton">
+  <owner>gambard@chromium.org</owner>
+  <description>
+    User tapped on &quot;Add Payment Method&quot; using the settings payment
+    methods screen.
+  </description>
+</action>
+
+<action name="MobileAddCreditCard.CreditCardAdded">
+  <owner>gambard@chromium.org</owner>
+  <description>
+    User adds a valid credit card using the add credit card screen.
+  </description>
+</action>
+
+<action name="MobileAddCreditCard.UseCameraButton">
+  <owner>gambard@chromium.org</owner>
+  <description>
+    User tapped on &quot;Use Camera&quot; from the settings add credit card
+    screen.
   </description>
 </action>
 
@@ -11007,6 +11712,48 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="MobileBookmarkManagerClose">
+  <owner>twellington@google.com</owner>
+  <owner>chrome-android-app@chromium.org</owner>
+  <description>
+    Recorded when a user closes the Android bookmark manager.
+  </description>
+</action>
+
+<action name="MobileBookmarkManagerDeleteBulk">
+  <owner>twellington@google.com</owner>
+  <owner>chrome-android-app@chromium.org</owner>
+  <description>
+    Recorded when a user deletes all selected bookmarks in the Android bookmark
+    manager.
+  </description>
+</action>
+
+<action name="MobileBookmarkManagerDragReorder">
+  <owner>jhimawan@google.com</owner>
+  <owner>twellington@google.com</owner>
+  <description>
+    Recorded when a user drops a bookmark after a drag in the Android bookmark
+    manager.
+  </description>
+</action>
+
+<action name="MobileBookmarkManagerEditBookmark">
+  <owner>twellington@google.com</owner>
+  <owner>chrome-android-app@chromium.org</owner>
+  <description>
+    Recorded when a user edits a bookmark in the Android bookmark manager.
+  </description>
+</action>
+
+<action name="MobileBookmarkManagerEditFolder">
+  <owner>twellington@google.com</owner>
+  <owner>chrome-android-app@chromium.org</owner>
+  <description>
+    Recorded when a user edits a folder in the Android bookmark manager.
+  </description>
+</action>
+
 <action name="MobileBookmarkManagerEntryDeleted">
   <owner>sczs@chromium.org</owner>
   <description>
@@ -11016,10 +11763,77 @@ should be able to be added at any place in this file.
 
 <action name="MobileBookmarkManagerEntryOpened">
   <owner>ianwen@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
   <description>
     A bookmark was opened from the bookmark manager. Bookmarks opened directly
     from the NTP will not be counted. Instead those will be counted in the
     NewTabPage.ContentSuggestions.* histograms.
+
+    This user action is of special interest to the chrome-analysis-team@. Do not
+    change its semantics or retire it without talking to them first.
+  </description>
+</action>
+
+<action name="MobileBookmarkManagerEntryOpenedInIncognito">
+  <owner>twellington@google.com</owner>
+  <owner>chrome-android-app@chromium.org</owner>
+  <description>
+    Recorded when all selected bookmarks are opened in new incognito tabs from
+    the Android bookmarks manager.
+  </description>
+</action>
+
+<action name="MobileBookmarkManagerEntryOpenedInNewTab">
+  <owner>twellington@google.com</owner>
+  <owner>chrome-android-app@chromium.org</owner>
+  <description>
+    Recorded when all selected bookmarks are opened in new tabs from the Android
+    bookmarks manager.
+  </description>
+</action>
+
+<action name="MobileBookmarkManagerLongPressToggleSelect">
+  <owner>twellington@google.com</owner>
+  <owner>chrome-android-app@chromium.org</owner>
+  <description>
+    Recorded when a user long presses on a bookmark item to toggle selection in
+    the Android bookmark manager.
+  </description>
+</action>
+
+<action name="MobileBookmarkManagerMoveDown">
+  <owner>jhimawan@google.com</owner>
+  <owner>twellington@google.com</owner>
+  <description>
+    Recorded when a user uses the &quot;Move Down&quot; button to reorder
+    bookmarks in the Android bookmark manager.
+  </description>
+</action>
+
+<action name="MobileBookmarkManagerMoveToFolder">
+  <owner>twellington@google.com</owner>
+  <owner>chrome-android-app@chromium.org</owner>
+  <description>
+    Recorded when a user moves one bookmark to a new folder in the Android
+    bookmark manager.
+  </description>
+</action>
+
+<action name="MobileBookmarkManagerMoveToFolderBulk">
+  <owner>twellington@google.com</owner>
+  <owner>chrome-android-app@chromium.org</owner>
+  <description>
+    Recorded when a user moves all selected bookmark items to a new folder in
+    the Android bookmark manager.
+  </description>
+</action>
+
+<action name="MobileBookmarkManagerMoveUp">
+  <owner>jhimawan@google.com</owner>
+  <owner>twellington@google.com</owner>
+  <description>
+    Recorded when a user uses the &quot;Move Up&quot; button to reorder
+    bookmarks in the Android bookmark manager.
   </description>
 </action>
 
@@ -11028,6 +11842,14 @@ should be able to be added at any place in this file.
   <description>
     Action indictating the bookmark manager is created, either by menu or NTP
     button, or by navigation.
+  </description>
+</action>
+
+<action name="MobileBookmarkManagerOpenFolder">
+  <owner>twellington@google.com</owner>
+  <owner>chrome-android-app@chromium.org</owner>
+  <description>
+    Recorded when a user opens a folder in the Android bookmark manager.
   </description>
 </action>
 
@@ -11045,6 +11867,63 @@ should be able to be added at any place in this file.
   <description>
     Action indicating that the selected bookmark entries were deleted from the
     bookmark manager.
+  </description>
+</action>
+
+<action name="MobileBookmarkManagerShowInFolder">
+  <owner>twellington@google.com</owner>
+  <owner>chrome-android-app@chromium.org</owner>
+  <description>
+    Recorded when a user uses the &quot;Show in folder&quot; button from Android
+    bookmark search in order to see the bookmark of interest inside of its
+    parent folder.
+  </description>
+</action>
+
+<action name="MobileBookmarkManagerTapToggleSelect">
+  <owner>twellington@google.com</owner>
+  <owner>chrome-android-app@chromium.org</owner>
+  <description>
+    Recorded when a user taps on an item in order to select it from the Android
+    bookmark manager (this can only occur while in selection mode).
+  </description>
+</action>
+
+<action name="MobileBottomToolbarHomeButton">
+  <owner>mdjones@chromium.org</owner>
+  <owner>chrome-android-apps@chromium.org</owner>
+  <description>
+    The user tapped on the bottom toolbar's home button.
+  </description>
+</action>
+
+<action name="MobileBottomToolbarNewTabButton">
+  <owner>mdjones@chromium.org</owner>
+  <owner>chrome-android-apps@chromium.org</owner>
+  <description>
+    The user tapped on the bottom toolbar's new tab button.
+  </description>
+</action>
+
+<action name="MobileBottomToolbarShareButton">
+  <owner>mdjones@chromium.org</owner>
+  <owner>chrome-android-apps@chromium.org</owner>
+  <description>
+    The user tapped on the bottom toolbar's share button.
+  </description>
+</action>
+
+<action name="MobileBottomToolbarShowMenu">
+  <owner>mdjones@chromium.org</owner>
+  <owner>chrome-android-apps@chromium.org</owner>
+  <description>The bottom toolbar's overflow menu was shown.</description>
+</action>
+
+<action name="MobileBottomToolbarTabSwitcherButtonInBrowsingView">
+  <owner>mdjones@chromium.org</owner>
+  <owner>chrome-android-apps@chromium.org</owner>
+  <description>
+    The user tapped on the bottom toolbar's tab switcher button.
   </description>
 </action>
 
@@ -11241,6 +12120,51 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="MobileCreditCardScanner.Close">
+  <owner>gambard@chromium.org</owner>
+  <description>
+    User closed the Credit Card Scanner without scanning a credit card.
+  </description>
+</action>
+
+<action name="MobileCreditCardScanner.Error">
+  <owner>gambard@chromium.org</owner>
+  <description>
+    User closed the Credit Card Scanner from an error dialog.
+  </description>
+</action>
+
+<action name="MobileCreditCardScanner.ScannedCard">
+  <owner>gambard@chromium.org</owner>
+  <description>
+    User scanned a credit card using the Credit Card Scanner.
+  </description>
+</action>
+
+<action name="MobileCreditCardScanner.ScannedCardNumberModified">
+  <owner>gambard@chromium.org</owner>
+  <description>
+    User scanned a credit card using the Credit Card Scanner and scanned card
+    number was modified.
+  </description>
+</action>
+
+<action name="MobileCreditCardScanner.ScannedExpiryMonthModified">
+  <owner>gambard@chromium.org</owner>
+  <description>
+    User scanned a credit card using the Credit Card Scanner and scanned card
+    expiry month was modified.
+  </description>
+</action>
+
+<action name="MobileCreditCardScanner.ScannedExpiryYearModified">
+  <owner>gambard@chromium.org</owner>
+  <description>
+    User scanned a credit card using the Credit Card Scanner and scanned card
+    expiry year was modified.
+  </description>
+</action>
+
 <action name="MobileCustomFeedback">
   <obsolete>
     Deprecated 12/2018. CustomFeedback never shipped to 100% and is no longer
@@ -11281,6 +12205,16 @@ should be able to be added at any place in this file.
   <owner>eugenebut@chromium.org</owner>
   <description>
     User attempted to retry downloading a file after the download failed.
+  </description>
+</action>
+
+<action name="MobileExitStackView">
+  <owner>yusufo@chromium.org</owner>
+  <owner>wychen@chromium.org</owner>
+  <description>
+    User exited the Android tab switcher due to one of the listed actions,
+    opened a new normal/incognito tab, selected an existed tab, or pressed
+    system back button.
   </description>
 </action>
 
@@ -11395,6 +12329,30 @@ should be able to be added at any place in this file.
   <description>The Help and Feedback dialog is shown.</description>
 </action>
 
+<action name="MobileHistoryPage_EntryLinkOpenNewIncognitoTab">
+  <owner>sczs@chromium.org</owner>
+  <owner>rohitrao@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <description>
+    User opened a History entry in a new Incognito Tab.
+
+    This user action is of special interest to the chrome-analysis-team@. Do not
+    change its semantics or retire it without talking to them first.
+  </description>
+</action>
+
+<action name="MobileHistoryPage_EntryLinkOpenNewTab">
+  <owner>sczs@chromium.org</owner>
+  <owner>rohitrao@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <description>
+    User opened a History entry in a new Tab.
+
+    This user action is of special interest to the chrome-analysis-team@. Do not
+    change its semantics or retire it without talking to them first.
+  </description>
+</action>
+
 <action name="MobileMenuAddToBookmarks">
   <owner>aurimas@chromium.org</owner>
   <description>
@@ -11432,8 +12390,8 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileMenuCloseTab">
-  <obsolete>This menu item was never added to the app menu.</obsolete>
-  <owner>aurimas@chromium.org</owner>
+  <owner>lazzzis@google.com</owner>
+  <owner>twellington@chromium.org</owner>
   <description>User pressed 'Close tab' in the app menu.</description>
 </action>
 
@@ -11487,6 +12445,12 @@ should be able to be added at any place in this file.
   <description>User pressed 'Fullscreen' in the app menu.</description>
 </action>
 
+<action name="MobileMenuGroupTabs">
+  <owner>yusufo@chromium.org</owner>
+  <owner>wychen@chromium.org</owner>
+  <description>User pressed 'Group tabs' in the tab switcher menu.</description>
+</action>
+
 <action name="MobileMenuHelp">
   <owner>gambard@chromium.org</owner>
   <description>User pressed 'Help' in the app menu.</description>
@@ -11495,6 +12459,14 @@ should be able to be added at any place in this file.
 <action name="MobileMenuHistory">
   <owner>aurimas@chromium.org</owner>
   <description>User pressed 'History' in the app menu.</description>
+</action>
+
+<action name="MobileMenuIncognitoSearch">
+  <owner>gambard@chromium.org</owner>
+  <description>
+    The user tapped the &quot;Incognito Search&quot; button in the mobile menu
+    displayed when long pressing the New Tab button.
+  </description>
 </action>
 
 <action name="MobileMenuNewIncognitoTab">
@@ -11583,6 +12555,14 @@ should be able to be added at any place in this file.
   <description>User pressed 'Scan QR Code' in the app menu.</description>
 </action>
 
+<action name="MobileMenuSearch">
+  <owner>gambard@chromium.org</owner>
+  <description>
+    The user tapped the &quot;New Search&quot; button in the mobile menu
+    displayed when long pressing the New Tab button.
+  </description>
+</action>
+
 <action name="MobileMenuSearchCopiedImage">
   <owner>rkgibson@google.com</owner>
   <description>User pressed 'Search Copied Image' in the app menu.</description>
@@ -11623,6 +12603,69 @@ should be able to be added at any place in this file.
   <description>User pressed 'Voice Search' in the app menu.</description>
 </action>
 
+<action name="MobileMessagesBadgeAcceptedTapped">
+  <owner>sczs@chromium.org</owner>
+  <owner>thegreenfrog@chromium.org</owner>
+  <description>
+    User tapped on an accepted Infobar Message badge which displayed the Modal.
+  </description>
+</action>
+
+<action name="MobileMessagesBadgeNonAcceptedTapped">
+  <owner>sczs@chromium.org</owner>
+  <owner>thegreenfrog@chromium.org</owner>
+  <description>
+    User tapped on a non-accepted Infobar Message badge which displayed the
+    Modal.
+  </description>
+</action>
+
+<action name="MobileMessagesBannerDraggedDown">
+  <owner>sczs@chromium.org</owner>
+  <owner>thegreenfrog@chromium.org</owner>
+  <description>
+    User dragged down the Infobar Message Banner which expanded it into a Modal.
+  </description>
+</action>
+
+<action name="MobileMessagesBannerTapped">
+  <owner>sczs@chromium.org</owner>
+  <owner>thegreenfrog@chromium.org</owner>
+  <description>
+    User tapped the Infobar Message Banner which expanded it into a Modal.
+  </description>
+</action>
+
+<action name="MobileMessagesModalAcceptedTapped">
+  <owner>sczs@chromium.org</owner>
+  <owner>thegreenfrog@chromium.org</owner>
+  <description>User accepted the Infobar Modal main action.</description>
+</action>
+
+<action name="MobileMessagesModalCancelledTapped">
+  <owner>sczs@chromium.org</owner>
+  <owner>thegreenfrog@chromium.org</owner>
+  <description>
+    User dismissed the Infobar Modal without any action.
+  </description>
+</action>
+
+<action name="MobileMessagesModalNever">
+  <owner>sczs@chromium.org</owner>
+  <owner>thegreenfrog@chromium.org</owner>
+  <description>
+    User dismissed both the Infobar Modal and the InfobarBadge.
+  </description>
+</action>
+
+<action name="MobileMessagesModalSettings">
+  <owner>sczs@chromium.org</owner>
+  <owner>thegreenfrog@chromium.org</owner>
+  <description>
+    User dismissed the Infobar Modal by opening the Infobar Settings.
+  </description>
+</action>
+
 <action name="MobileMWSession">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
@@ -11631,6 +12674,18 @@ should be able to be added at any place in this file.
 <action name="MobileNewTabOpened">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
+</action>
+
+<action name="MobileNewTabOpenedTabStrip">
+  <obsolete>
+    Deprecated as of 8/2019. Replaced with MobileNewTabOpened.TabStrip.
+  </obsolete>
+  <owner>yusufo@chromium.org</owner>
+  <owner>wychen@chromium.org</owner>
+  <description>
+    Users tapped '+' button on the tab strip, causing a new tab to be created in
+    the group.
+  </description>
 </action>
 
 <action name="MobileNTP.Interests.Click">
@@ -11727,6 +12782,13 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileNTPExploreSites">
+  <owner>dewittj@chromium.org</owner>
+  <description>
+    Recorded when a user clicks on an Explore Sites category tile on the NTP.
+  </description>
+</action>
+
 <action name="MobileNTPForeignSession">
   <obsolete>
     Deprecated as of 01/2017. Replaced with
@@ -11736,9 +12798,17 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="MobileNTPIdentityDiscTapped">
+  <owner>msarda@chromium.org</owner>
+  <owner>pkl@chromium.org</owner>
+  <description>
+    Recorded when a user taps on the Identity Disc on NTP.
+  </description>
+</action>
+
 <action name="MobileNTPMostVisited">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <description>Please enter the description of this user action.</description>
+  <owner>dewittj@chromium.org</owner>
+  <description>Recorded when a user clicks on a Most Visited tile.</description>
 </action>
 
 <action name="MobileNTPOpenedInNewTab">
@@ -11746,6 +12816,15 @@ should be able to be added at any place in this file.
   <description>
     The user manually created a New Tab Page (NTP) in a new tab that has not
     been shown before. This includes the initial tab (when starting Chrome).
+  </description>
+</action>
+
+<action name="MobileNTPPaused">
+  <owner>skym@chromium.org</owner>
+  <owner>carloks@chromium.org</owner>
+  <owner>twellington@chromium.org</owner>
+  <description>
+    The New Tab Page (NTP) was open when Chrome was backgrounded by the user.
   </description>
 </action>
 
@@ -11786,6 +12865,9 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileNTPSwitchToBookmarks">
+  <obsolete>
+    Removed with deprecation of Bookmark suggestions category.
+  </obsolete>
   <owner>ianwen@chromium.org</owner>
   <description>
     Action indicating the user has clicked the boomkark button on NTP to swith
@@ -11794,6 +12876,9 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileNTPSwitchToDownloadManager">
+  <obsolete>
+    Removed with deprecation of Download suggestions category.
+  </obsolete>
   <owner>bauerb@chromium.org</owner>
   <description>
     Android: User clicked on the &quot;More&quot; card at the end of the section
@@ -11946,6 +13031,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileOmniboxUse.GridTabSwitcher">
+  <owner>mattsimmons@chromium.org</owner>
+  <owner>memex-team@google.com</owner>
+  <description>
+    User used the omnibox while it is showing on top of the grid tab switcher.
+  </description>
+</action>
+
 <action name="MobileOmniboxVoiceSearch">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
@@ -12079,7 +13172,13 @@ should be able to be added at any place in this file.
 
 <action name="MobileReadingListOpen">
   <owner>gambard@chromium.org</owner>
-  <description>User opened a ReadingList entry.</description>
+  <owner>chrome-analysis-team@google.com</owner>
+  <description>
+    User opened a ReadingList entry.
+
+    This user action is of special interest to the chrome-analysis-team@. Do not
+    change its semantics or retire it without talking to them first.
+  </description>
 </action>
 
 <action name="MobileReceivedExternalIntent">
@@ -12109,21 +13208,41 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileRecentTabManagerOpenAllTabsFromOtherDevice">
+  <owner>sczs@chromium.org</owner>
+  <owner>edchin@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <description>
+    The user has selected to Open all tabs from other device in Recent Tabs.
+
+    This user action is of special interest to the chrome-analysis-team@. Do not
+    change its semantics or retire it without talking to them first.
+  </description>
+</action>
+
 <action name="MobileRecentTabManagerRecentTabOpened">
   <owner>finkm@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
   <description>
     A recently closed tab was opened from the recent tabs manager. Recently
     closed tabs opened directly from the NTP will not be counted. Instead those
     will be counted in the NewTabPage.ContentSuggestions.* histograms.
+
+    This user action is of special interest to the chrome-analysis-team@. Do not
+    change its semantics or retire it without talking to them first.
   </description>
 </action>
 
 <action name="MobileRecentTabManagerTabFromOtherDeviceOpened">
   <owner>finkm@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
   <description>
     A tab from another device was opened from the recent tabs manager. Tabs from
     another device opened directly from the NTP will not be counted. Instead
     those will be counted in the NewTabPage.ContentSuggestions.* histograms.
+
+    This user action is of special interest to the chrome-analysis-team@. Do not
+    change its semantics or retire it without talking to them first.
   </description>
 </action>
 
@@ -12221,6 +13340,14 @@ should be able to be added at any place in this file.
   <description>
     User requested the desktop or mobile version of a site web from the share
     menu.
+  </description>
+</action>
+
+<action name="MobileShareMenuSendTabToSelf">
+  <owner>jeffreycohen@chromium.org</owner>
+  <owner>sebsg@chromium.org</owner>
+  <description>
+    The user pressed &quot;Send Tab To Self&quot; from the share action menu.
   </description>
 </action>
 
@@ -12534,11 +13661,9 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileTabReturnedToCurrentTab">
-  <owner>rlanday@chromium.org</owner>
-  <description>
-    User in the Android tab switcher returned to the tab that was active when
-    the tab switcher was opened.
-  </description>
+  <owner>yusufo@chromium.org</owner>
+  <owner>wychen@chromium.org</owner>
+  <description>Users returned to the tab that was active.</description>
 </action>
 
 <action name="MobileTabStripCloseTab">
@@ -12569,8 +13694,8 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileToolbarCloseAllIncognitoTabsButtonTap">
-  <owner>amaralp@chromium.org</owner>
   <owner>mdjones@chromium.org</owner>
+  <owner>chrome-android-apps@chromium.org</owner>
   <description>
     User tapped the close all incognito tabs button in the tab switcher bottom
     toolbar.
@@ -12578,8 +13703,8 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileToolbarCloseAllRegularTabsButtonTap">
-  <owner>amaralp@chromium.org</owner>
   <owner>mdjones@chromium.org</owner>
+  <owner>chrome-android-apps@chromium.org</owner>
   <description>
     User tapped the close all regular tabs button in the tab switcher bottom
     toolbar.
@@ -12598,6 +13723,12 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="MobileToolbarIdentityDiscTap">
+  <owner>pavely@chromium.org</owner>
+  <owner>chrome-android-app@chromium.org</owner>
+  <description>User tapped on IdentityDisc button on toolbar.</description>
+</action>
+
 <action name="MobileToolbarNewTab">
   <obsolete>Deprecated as of 5/2015</obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
@@ -12606,7 +13737,7 @@ should be able to be added at any place in this file.
 
 <action name="MobileToolbarOmniboxAcceleratorTap">
   <owner>mdjones@chromium.org</owner>
-  <owner>amaralp@chromium.org</owner>
+  <owner>chrome-android-apps@chromium.org</owner>
   <description>
     User tapped the omnibox accelerator button in the bottom toolbar.
   </description>
@@ -12640,6 +13771,13 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="MobileToolbarShowNewTabMenu">
+  <owner>gambard@chromium.org</owner>
+  <description>
+    The user long-pressed on the NewTab button in the toolbar
+  </description>
+</action>
+
 <action name="MobileToolbarShowSearchMenu">
   <owner>gambard@chromium.org</owner>
   <description>
@@ -12665,6 +13803,15 @@ should be able to be added at any place in this file.
   <description>
     User long pressed the toolbar navigation buttons to display the tab history
     menu.
+  </description>
+</action>
+
+<action name="MobileToolbarStackViewButtonInBrowsingView">
+  <owner>mdjones@chromium.org</owner>
+  <owner>chrome-android-apps@chromium.org</owner>
+  <description>
+    User in the Android browsing mode tapped the tab switcher button on the
+    toolbar to enter the tab switcher.
   </description>
 </action>
 
@@ -12696,6 +13843,28 @@ should be able to be added at any place in this file.
 <action name="MobileToolbarToggleBookmark">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
+</action>
+
+<action name="MobileTopToolbarHomeButton">
+  <owner>mdjones@chromium.org</owner>
+  <owner>chrome-android-apps@chromium.org</owner>
+  <description>The user tapped on the top toolbar's home button.</description>
+</action>
+
+<action name="MobileTopToolbarNewTabButton">
+  <owner>mdjones@chromium.org</owner>
+  <owner>chrome-android-apps@chromium.org</owner>
+  <description>
+    The user tapped on the top toolbar's new tab button.
+  </description>
+</action>
+
+<action name="MobileTopToolbarShowMenu">
+  <owner>mdjones@chromium.org</owner>
+  <owner>chrome-android-apps@chromium.org</owner>
+  <description>
+    Action indicating the top toolbar's overflow menu was shown.
+  </description>
 </action>
 
 <action name="MobileUsingMenuByHwButtonDragging">
@@ -12818,6 +13987,18 @@ should be able to be added at any place in this file.
   <owner>sfiera@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <description>An NTP tile was clicked. Desktop only.</description>
+</action>
+
+<action name="MostVisited_ClickedFromContextMenu">
+  <owner>dbeam@chromium.org</owner>
+  <owner>kristipark@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <description>
+    An NTP tile was opened from the context menu. Desktop only.
+
+    This user action is of special interest to the chrome-analysis-team@. Do not
+    change its semantics or retire it without talking to them first.
+  </description>
 </action>
 
 <action name="MostVisited_UrlBlacklisted">
@@ -13015,6 +14196,24 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="NativeFileSystemAPI.OpenedBubble">
+  <owner>mek@chromium.org</owner>
+  <owner>src/content/browser/native_file_system/OWNERS</owner>
+  <description>
+    Recorded any time the user opens the usage indicator bubble for the Native
+    File System API.
+  </description>
+</action>
+
+<action name="NativeFileSystemAPI.RevokePermissions">
+  <owner>mek@chromium.org</owner>
+  <owner>src/content/browser/native_file_system/OWNERS</owner>
+  <description>
+    Recorded any time the user revokes all Native File System API permissions
+    from the usage indicator bubble.
+  </description>
+</action>
+
 <action name="NativeUI_Applications">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
@@ -13147,6 +14346,59 @@ should be able to be added at any place in this file.
   <description>Recorded when a persistent notification gets shown.</description>
 </action>
 
+<action name="Notifications.Quiet.AnimatedIconClicked">
+  <owner>andypaicu@chromium.org</owner>
+  <owner>engedy@chromium.org</owner>
+  <owner>hkamila@chromium.org</owner>
+  <description>
+    Logs when the user clicks on the notification permission request animated
+    icon on the omnibox, that upon being clicked, opens the permission request
+    bubble .
+  </description>
+</action>
+
+<action name="Notifications.Quiet.ManageClicked">
+  <owner>andypaicu@chromium.org</owner>
+  <owner>engedy@chromium.org</owner>
+  <owner>hkamila@chromium.org</owner>
+  <description>
+    Logs when the user clicks &quot;Manage&quot;, which is a button, that upon
+    being clicked, navigates the user to the notifications category settings
+    page.
+  </description>
+</action>
+
+<action name="Notifications.Quiet.PermissionRequestShown">
+  <owner>andypaicu@chromium.org</owner>
+  <owner>engedy@chromium.org</owner>
+  <owner>hkamila@chromium.org</owner>
+  <description>
+    The notification permission request was shown quietly as an icon in the
+    omnibox.
+  </description>
+</action>
+
+<action name="Notifications.Quiet.ShowForSiteClicked">
+  <owner>andypaicu@chromium.org</owner>
+  <owner>engedy@chromium.org</owner>
+  <owner>hkamila@chromium.org</owner>
+  <description>
+    Logs when the user clicks &quot;Show for site&quot;, which is a button, that
+    upon being clicked, allows the site to send notifications.
+  </description>
+</action>
+
+<action name="Notifications.Quiet.StaticIconClicked">
+  <owner>andypaicu@chromium.org</owner>
+  <owner>engedy@chromium.org</owner>
+  <owner>hkamila@chromium.org</owner>
+  <description>
+    Logs when the user clicks on the notification permission request static icon
+    on the omnibox, that upon being clicked, opens the permission request bubble
+    .
+  </description>
+</action>
+
 <action name="Notifications.ShowMessageCenter">
   <owner>dewittj@chromium.org</owner>
   <description>
@@ -13192,6 +14444,22 @@ should be able to be added at any place in this file.
   <description>Recorded when the NPAPI removal infobar is shown.</description>
 </action>
 
+<action name="NTP_LinkOpenedFromContextMenu">
+  <owner>kmilka@chromium.org</owner>
+  <owner>ramyan@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <description>
+    Recorded when a link on the New Tab Page is opened via the context menu.
+    This can include: Middle-slot promos, Doodles, the One Google Bar, and
+    custom background image attributions, but *not* shortcuts. For shortcuts see
+    MostVisited_Clicked. Logged only when Google is the default search provider,
+    as these elements only appear on the Google NTP.
+
+    This user action is of special interest to the chrome-analysis-team@. Do not
+    change its semantics or retire it without talking to them first.
+  </description>
+</action>
+
 <action name="NTPPromoClosed">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
@@ -13200,6 +14468,155 @@ should be able to be added at any place in this file.
 <action name="NTPPromoShown">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
+</action>
+
+<action name="NTPRicherPicker.Backgrounds.BackClicked">
+  <owner>yyushkina@chromium.org</owner>
+  <owner>dbeam@chromium.org</owner>
+  <description>The back arrow was clicked the richer picker.</description>
+</action>
+
+<action name="NTPRicherPicker.Backgrounds.BackgroundDeselected">
+  <obsolete>Deprecated 08/2019.</obsolete>
+  <owner>yyushkina@chromium.org</owner>
+  <owner>dbeam@chromium.org</owner>
+  <description>
+    A background image tile was deselected in the richer picker.
+  </description>
+</action>
+
+<action name="NTPRicherPicker.Backgrounds.BackgroundReset">
+  <owner>yyushkina@chromium.org</owner>
+  <owner>dbeam@chromium.org</owner>
+  <description>
+    The NTP background image was reset to default from the richer picker.
+  </description>
+</action>
+
+<action name="NTPRicherPicker.Backgrounds.BackgroundSelected">
+  <owner>yyushkina@chromium.org</owner>
+  <owner>dbeam@chromium.org</owner>
+  <description>
+    A background image tile was selected in the richer picker.
+  </description>
+</action>
+
+<action name="NTPRicherPicker.Backgrounds.BackgroundSet">
+  <owner>yyushkina@chromium.org</owner>
+  <owner>dbeam@chromium.org</owner>
+  <description>
+    A background image was set as the NTP background from the richer picker.
+  </description>
+</action>
+
+<action name="NTPRicherPicker.Backgrounds.CollectionClicked">
+  <owner>yyushkina@chromium.org</owner>
+  <owner>dbeam@chromium.org</owner>
+  <description>
+    A collection tile was selected in the richer picker.
+  </description>
+</action>
+
+<action name="NTPRicherPicker.Backgrounds.DailyRefreshEnabled">
+  <owner>yyushkina@chromium.org</owner>
+  <owner>dbeam@chromium.org</owner>
+  <description>
+    Daily refresh was enabled by clicking 'Done' in the richer picker
+  </description>
+</action>
+
+<action name="NTPRicherPicker.Backgrounds.DefaultDeselected">
+  <obsolete>Deprecated 08/2019.</obsolete>
+  <owner>yyushkina@chromium.org</owner>
+  <owner>dbeam@chromium.org</owner>
+  <description>
+    'No background' was deselected in the richer picker.
+  </description>
+</action>
+
+<action name="NTPRicherPicker.Backgrounds.DefaultSelected">
+  <owner>yyushkina@chromium.org</owner>
+  <owner>dbeam@chromium.org</owner>
+  <description>'No background' was selected in the richer picker.</description>
+</action>
+
+<action name="NTPRicherPicker.Backgrounds.RefreshToggleClicked">
+  <owner>yyushkina@chromium.org</owner>
+  <owner>dbeam@chromium.org</owner>
+  <description>
+    'Refresh daily' toggle was clicked in the richer picker.
+  </description>
+</action>
+
+<action name="NTPRicherPicker.Backgrounds.UploadCanceled">
+  <owner>yyushkina@chromium.org</owner>
+  <owner>dbeam@chromium.org</owner>
+  <description>
+    'Cancel' was clicked on the file select dialog originating from the richer
+    picker.
+  </description>
+</action>
+
+<action name="NTPRicherPicker.Backgrounds.UploadClicked">
+  <owner>yyushkina@chromium.org</owner>
+  <owner>dbeam@chromium.org</owner>
+  <description>
+    'Upload from device' was clicked in the richer picker.
+  </description>
+</action>
+
+<action name="NTPRicherPicker.Backgrounds.UploadConfirmed">
+  <owner>yyushkina@chromium.org</owner>
+  <owner>dbeam@chromium.org</owner>
+  <description>
+    'Open' was clicked on the file select dialog originating from the richer
+    picker.
+  </description>
+</action>
+
+<action name="NTPRicherPicker.CancelClicked">
+  <owner>yyushkina@chromium.org</owner>
+  <owner>dbeam@chromium.org</owner>
+  <description>'Cancel' was clicked in the richer picker.</description>
+</action>
+
+<action name="NTPRicherPicker.DoneClicked">
+  <owner>yyushkina@chromium.org</owner>
+  <owner>dbeam@chromium.org</owner>
+  <description>'Done' was clicked in the richer picker.</description>
+</action>
+
+<action name="NTPRicherPicker.Opened">
+  <owner>yyushkina@chromium.org</owner>
+  <owner>dbeam@chromium.org</owner>
+  <description>The richer picker was opened.</description>
+</action>
+
+<action name="NTPRicherPicker.Shortcuts.CustomLinksClicked">
+  <owner>yyushkina@chromium.org</owner>
+  <owner>dbeam@chromium.org</owner>
+  <description>
+    The 'My shortcuts' (i.e. custom links) option was clicked in the richer
+    picker shortcuts submenu.
+  </description>
+</action>
+
+<action name="NTPRicherPicker.Shortcuts.MostVisitedClicked">
+  <owner>yyushkina@chromium.org</owner>
+  <owner>dbeam@chromium.org</owner>
+  <description>
+    The 'Most visited sites' option was clicked in the richer picker shortcuts
+    submenu.
+  </description>
+</action>
+
+<action name="NTPRicherPicker.Shortcuts.VisibilityToggleClicked">
+  <owner>yyushkina@chromium.org</owner>
+  <owner>dbeam@chromium.org</owner>
+  <description>
+    The 'Hide shortcuts' toggle was clicked in the richer picker shortcuts
+    submenu.
+  </description>
 </action>
 
 <action name="OfflinePages.Edit.RemoveButtonClicked">
@@ -13389,6 +14806,15 @@ should be able to be added at any place in this file.
   <description>
     Recorded when a snackbar shown when viewing an offline page with no network
     is dismissed without &quot;Edit&quot; button being clicked.
+  </description>
+</action>
+
+<action name="Omnibox.ClipboardSuggestionRemoved">
+  <owner>gangwu@chromium.org</owner>
+  <owner>lzbylut@google.com</owner>
+  <description>
+    User long pressed a clipboard suggestion from the omnibox suggestion list to
+    remove it from the omnibox suggestion and the system clipboard on Android.
   </description>
 </action>
 
@@ -13724,12 +15150,12 @@ should be able to be added at any place in this file.
 
 <action name="Options_AccessibilitySwitchAccess_Disable">
   <owner>dmazzoni@chromium.org</owner>
-  <description>Settings: Accessibility: Disable switch access</description>
+  <description>Settings: Accessibility: Disable Switch Access</description>
 </action>
 
 <action name="Options_AccessibilitySwitchAccess_Enable">
   <owner>dmazzoni@chromium.org</owner>
-  <description>Settings: Accessibility: Enable switch access</description>
+  <description>Settings: Accessibility: Enable Switch Access</description>
 </action>
 
 <action name="Options_AccessibilitySystemMenu_Disable">
@@ -15482,10 +16908,17 @@ should be able to be added at any place in this file.
 
 <action name="PageLoad" not_user_triggered="true">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <description>Please enter the description of this user action.</description>
+  <description>
+    When a page load starts. This can include page loads that are not completed,
+    sub frames, and pre sign-in ChromeOS pages.
+  </description>
 </action>
 
 <action name="PageLoadInIncognito" not_user_triggered="true">
+  <obsolete>
+    Removed 06/2019, replaced with Navigation.MainFrameProfileType histogram to
+    cover all profile types in a commom context.
+  </obsolete>
   <owner>dullweber@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
   <description>A page was loaded in incognito mode.</description>
@@ -16253,6 +17686,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="ProfileChooser_CookieSettingsClicked">
+  <owner>msalama@chromium.org</owner>
+  <description>
+    User clicked on settings from the user menu prompted message to go to cookie
+    settings. The prompt was shown because sync is paused due to cookie settings
+    set to clear cookies on exit.
+  </description>
+</action>
+
 <action name="ProfileChooser_GuestClicked">
   <owner>vasilii@chromium.org</owner>
   <owner>ewald@chromium.org</owner>
@@ -16266,6 +17708,15 @@ should be able to be added at any place in this file.
   <owner>ewald@chromium.org</owner>
   <description>
     User clicked 'Manage people' in the profile chooser menu.
+  </description>
+</action>
+
+<action name="ProfileChooser_ManageGoogleAccountClicked">
+  <owner>droger@chromium.org</owner>
+  <owner>msarda@chromium.org</owner>
+  <owner>tangltom@chromium.org</owner>
+  <description>
+    User clicked 'Manage your Google Account' in the profile chooser menu.
   </description>
 </action>
 
@@ -16294,6 +17745,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ProfileChooser_Show">
+  <obsolete>This is replaced with ProfileMenu_Opened.</obsolete>
   <owner>vasilii@chromium.org</owner>
   <owner>ewald@chromium.org</owner>
   <description>The user opened the profile chooser menu.</description>
@@ -16312,6 +17764,70 @@ should be able to be added at any place in this file.
   <owner>ewald@chromium.org</owner>
   <description>
     The profile chooser opened with 'Sign in again' button.
+  </description>
+</action>
+
+<action name="ProfileMenu_ActionableItemClicked">
+  <owner>msarda@chromium.org</owner>
+  <owner>tangltom@chromium.org</owner>
+  <description>
+    The user clicked a button or a link in the profile menu.
+  </description>
+</action>
+
+<action name="ProfileMenu_ActionableItemClicked_Guest">
+  <owner>droger@chromium.org</owner>
+  <owner>tangltom@chromium.org</owner>
+  <description>
+    The user clicked a button or a link in the guest profile menu.
+  </description>
+</action>
+
+<action name="ProfileMenu_ActionableItemClicked_Incognito">
+  <owner>droger@chromium.org</owner>
+  <owner>tangltom@chromium.org</owner>
+  <description>
+    The user clicked a button or a link in the incognito profile menu.
+  </description>
+</action>
+
+<action name="ProfileMenu_ActionableItemClicked_Regular">
+  <owner>droger@chromium.org</owner>
+  <owner>tangltom@chromium.org</owner>
+  <description>
+    The user clicked a button or a link in the regular profile menu.
+  </description>
+</action>
+
+<action name="ProfileMenu_Opened">
+  <owner>msarda@chromium.org</owner>
+  <owner>tangltom@chromium.org</owner>
+  <description>The user opened the profile menu.</description>
+</action>
+
+<action name="ProfileMenu_Opened_Guest">
+  <owner>droger@chromium.org</owner>
+  <owner>tangltom@chromium.org</owner>
+  <description>The user opened the guest profile menu.</description>
+</action>
+
+<action name="ProfileMenu_Opened_Incognito">
+  <owner>droger@chromium.org</owner>
+  <owner>tangltom@chromium.org</owner>
+  <description>The user opened the incognito profile menu.</description>
+</action>
+
+<action name="ProfileMenu_Opened_Regular">
+  <owner>droger@chromium.org</owner>
+  <owner>tangltom@chromium.org</owner>
+  <description>The user opened the regular profile menu.</description>
+</action>
+
+<action name="PWAInstallIcon">
+  <owner>alancutter@chromium.org</owner>
+  <description>
+    The plus icon shown in the omnibox when a site has passed the browser's PWA
+    promotability checks.
   </description>
 </action>
 
@@ -16398,6 +17914,35 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="ReleaseNotes.LaunchedAboutPage">
+  <owner>yulunwu@chromium.org</owner>
+  <description>
+    Release Notes was launched from clicking link in about page.
+  </description>
+</action>
+
+<action name="ReleaseNotes.LaunchedNotification">
+  <owner>yulunwu@chromium.org</owner>
+  <description>
+    Release Notes was launched from clicking notification.
+  </description>
+</action>
+
+<action name="ReleaseNotes.NotificationShown">
+  <owner>yulunwu@chromium.org</owner>
+  <description>Release Notes notification was shown.</description>
+</action>
+
+<action name="ReleaseNotes.ShowReleaseNotes">
+  <owner>yulunwu@chromium.org</owner>
+  <description>Release Notes app was launched.</description>
+</action>
+
+<action name="ReleaseNotes.SuggestionChipLaunched">
+  <owner>yulunwu@chromium.org</owner>
+  <description>Release Notes was launched from suggestion chip.</description>
+</action>
+
 <action name="Reload">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
@@ -16438,8 +17983,31 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="RestoreTab">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <description>Please enter the description of this user action.</description>
+  <owner>mpearson@chromium.org</owner>
+  <owner>chrisha@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <description>
+    Emitted anytime the most recently closed tab is restored via
+    browser/ui/browser_tab_restorer.cc. This occurs either via the
+    (Ctrl-Shift-T) hotkey or the tab context menu. These are cases where the
+    user hasn't explicitly selected a recently closed tab; the user is asking
+    that the most recently closed tab be restored. Thus, it's not recorded, for
+    example, if the user uses three-dots menu &gt; History &gt; Recently Closed
+    Tabs and selects a tab, as in this case the user has selected a recently
+    closed tab explicitly. That case and cases like it go directly to
+    TabRestoreService::RestoreEntryById and bypass the browser_tab_restorer code
+    path.
+
+    Note: if the last user action was to close an entire window with multiple
+    tabs, this RestoreTab action will cause the entire window to be restored,
+    containing multiple tabs. This user action is only emitted once however,
+    regardless of the number of tabs.
+
+    This is not emitted during session restore that occurs as part of startup.
+
+    This user action is of special interest to the chrome-analysis-team@. Do not
+    change its semantics or retire it without talking to them first.
+  </description>
 </action>
 
 <action name="Save">
@@ -16752,6 +18320,15 @@ should be able to be added at any place in this file.
   <description>User interacts with an answer card.</description>
 </action>
 
+<action name="SearchClickMappedToRightClick">
+  <owner>zentaro@chromium.org</owner>
+  <description>
+    User pressed search click on a touchpad device to generate right click. This
+    is measuring the transition of use from the legacy alt click behaviour that
+    is tracked by AltClickMappedToRightClick.
+  </description>
+</action>
+
 <action name="SearchEngine_ManualChange">
   <owner>ianwen@chromium.org</owner>
   <description>
@@ -17009,6 +18586,18 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="SettingsPage.OpenAppManagement">
+  <obsolete>
+    Removed in M79, replaced by the histogram AppManagement.EntryPoints.
+  </obsolete>
+  <owner>jshikaram@chromium.org</owner>
+  <owner>dominickn@chromium.org</owner>
+  <description>
+    The user clicked on the &quot;Manage your apps&quot; external link in the
+    settings page.
+  </description>
+</action>
+
 <action name="SettingsResetBubble.LearnMore">
   <owner>mad@chromium.org</owner>
   <description>Please enter the description of this user action.</description>
@@ -17093,6 +18682,26 @@ should be able to be added at any place in this file.
 <action name="ShowApplications">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
+</action>
+
+<action name="ShowAppManagementDetailPage">
+  <obsolete>
+    Removed in M79, replaced by the histogram AppManagement.EntryPoints.
+  </obsolete>
+  <owner>jshikaram@chromium.org</owner>
+  <owner>dominickn@chromium.org</owner>
+  <description>
+    The user selected the App Info context menu item in the app launcher.
+  </description>
+</action>
+
+<action name="ShowAppManagementPage">
+  <obsolete>Replaced with ShowAppManagementDetailPage</obsolete>
+  <owner>jshikaram@chromium.org</owner>
+  <owner>dominickn@chromium.org</owner>
+  <description>
+    The user selected the App Info context menu item in the app launcher.
+  </description>
 </action>
 
 <action name="ShowAppMenu">
@@ -18006,6 +19615,14 @@ should be able to be added at any place in this file.
   <description>
     Recorded on sign in start from access point
     signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER.
+  </description>
+</action>
+
+<action name="Signin_Signin_ShowAdvancedSyncSettings">
+  <owner>triploblastic@chromium.org</owner>
+  <owner>bsazonov@chromium.org</owner>
+  <description>
+    Recorded when advanced turn on sync flow is started.
   </description>
 </action>
 
@@ -19152,6 +20769,70 @@ should be able to be added at any place in this file.
   <description>Please enter the description of the metric.</description>
 </action>
 
+<action name="StartSurface.SinglePane">
+  <owner>gogerald@chromium.org</owner>
+  <description>
+    Metric record when the single pane start surface is shown (the user taps the
+    tab switcher button or on chrome start).
+  </description>
+</action>
+
+<action name="StartSurface.SinglePane.MoreTabs">
+  <owner>gogerald@chromium.org</owner>
+  <description>
+    Metric record when the user taps the more tabs button on the single pane
+    start surface.
+  </description>
+</action>
+
+<action name="StartSurface.TasksOnly">
+  <owner>gogerald@chromium.org</owner>
+  <description>
+    Metric record when the tasks only start surface is shown (the user taps the
+    tab switcher button or on chrome start).
+  </description>
+</action>
+
+<action name="StartSurface.TwoPanes">
+  <owner>gogerald@chromium.org</owner>
+  <description>
+    Metric record when the two panes start surface is shown (the user taps the
+    tab switcher button or on chrome start).
+  </description>
+</action>
+
+<action name="StartSurface.TwoPanes.BottomBar.TapExploreSurface">
+  <owner>gogerald@chromium.org</owner>
+  <description>
+    Metric record when the user taps the explore button on the two panes start
+    surface.
+  </description>
+</action>
+
+<action name="StartSurface.TwoPanes.BottomBar.TapHome">
+  <owner>gogerald@chromium.org</owner>
+  <description>
+    Metric record when the user taps the home button on the two panes start
+    surface
+  </description>
+</action>
+
+<action name="StartSurface.TwoPanes.DefaultOnExploreSurface">
+  <owner>gogerald@chromium.org</owner>
+  <description>
+    Metric record when the two panes start surface is shown with explore surface
+    visible by default.
+  </description>
+</action>
+
+<action name="StartSurface.TwoPanes.DefaultOnHomeSurface">
+  <owner>gogerald@chromium.org</owner>
+  <description>
+    Metric record when the two panes start surface is shown with home surface
+    visible by default.
+  </description>
+</action>
+
 <action name="StartupTick" not_user_triggered="true">
   <obsolete>Deprecated in favor of AboutFlags.Seen histogram.</obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
@@ -19201,13 +20882,15 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="StatusArea_AutoClickDisabled">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <description>Please enter the description of this user action.</description>
+  <owner>katie@chromium.org</owner>
+  <owner>dmazzoni@chromium.org</owner>
+  <description>User disabled autoclick from the SystemTray</description>
 </action>
 
 <action name="StatusArea_AutoClickEnabled">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <description>Please enter the description of this user action.</description>
+  <owner>katie@chromium.org</owner>
+  <owner>dmazzoni@chromium.org</owner>
+  <description>User enabled autoclick from the SystemTray</description>
 </action>
 
 <action name="StatusArea_Bluetooth_Connect_Known">
@@ -19550,11 +21233,22 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="StatusArea_Notifications_ClearAll">
+  <obsolete>
+    Deprecated in favour of StatusArea_Notifications_StackingBarClearAll.
+  </obsolete>
   <owner>tetsui@chromium.org</owner>
   <description>
     User removed all notifications using the bottom Clear All button in the
-    system menu. Note that there are two clear all buttons, and this button is
-    located on the bottom of the notification list.
+    system menu. This button, which no longer exists, was located on the bottom
+    of the notification list.
+  </description>
+</action>
+
+<action name="StatusArea_Notifications_SeeAllNotifications">
+  <owner>amehfooz@chromium.org</owner>
+  <description>
+    User expanded the message center by clicking on the see all notifications
+    button in the system menu.
   </description>
 </action>
 
@@ -19562,8 +21256,7 @@ should be able to be added at any place in this file.
   <owner>tengs@chromium.org</owner>
   <description>
     User removed all notifications using the top Clear All button in the system
-    menu. Note that there are two clear all buttons, and this one is located on
-    the top stacking bar of the notification list.
+    menu.
   </description>
 </action>
 
@@ -19686,6 +21379,22 @@ should be able to be added at any place in this file.
 <action name="StatusArea_StickyKeysEnabled">
   <owner>minch@chromium.org</owner>
   <description>Ash system menu: Accessibility: Enable sticky keys</description>
+</action>
+
+<action name="StatusArea_SwitchAccessDisabled">
+  <owner>anastasi@google.com</owner>
+  <owner>dtseng@chromium.org</owner>
+  <description>
+    Ash system menu: Accessibility: Disable Switch Access
+  </description>
+</action>
+
+<action name="StatusArea_SwitchAccessEnabled">
+  <owner>anastasi@google.com</owner>
+  <owner>dtseng@chromium.org</owner>
+  <description>
+    Ash system menu: Accessibility: Enable Switch Access
+  </description>
 </action>
 
 <action name="StatusArea_TapDraggingDisabled">
@@ -19841,6 +21550,9 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Suggestions.Category.ViewAll">
+  <obsolete>
+    Removed with deprecation of Download suggestions category.
+  </obsolete>
   <owner>finkm@chromium.org</owner>
   <owner>dgn@chromium.org</owner>
   <description>
@@ -19857,7 +21569,13 @@ should be able to be added at any place in this file.
 <action name="Suggestions.Content.Opened">
   <owner>finkm@chromium.org</owner>
   <owner>dgn@chromium.org</owner>
-  <description>User opened a content suggestion.</description>
+  <owner>chrome-analysis-team@google.com</owner>
+  <description>
+    User opened a content suggestion.
+
+    This user action is of special interest to the chrome-analysis-team@. Do not
+    change its semantics or retire it without talking to them first.
+  </description>
 </action>
 
 <action name="Suggestions.ContextMenu">
@@ -19906,8 +21624,8 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Suggestions.ExpandableHeader.Collapsed">
-  <owner>huayinz@chromium.org</owner>
   <owner>twellington@chromium.com</owner>
+  <owner>chrome-android-app@chromium.org</owner>
   <description>
     Android: The suggestions section is collapsed by user click on the section
     header.
@@ -19915,8 +21633,8 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Suggestions.ExpandableHeader.Expanded">
-  <owner>huayinz@chromium.org</owner>
   <owner>twellington@chromium.com</owner>
+  <owner>chrome-android-app@chromium.org</owner>
   <description>
     Android: The suggestions section is expanded by user click on the section
     header.
@@ -20007,6 +21725,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Suggestions.Tile.Tapped.GridTabSwitcher">
+  <owner>mattsimmons@chromium.org</owner>
+  <owner>memex-team@google.com</owner>
+  <description>
+    User tapped on a suggestions tile while viewing the tab switcher.
+    Android-only.
+  </description>
+</action>
+
 <action name="SuspiciousExtensionBubbleDismissed">
   <owner>finnur@chromium.org</owner>
   <description>Please enter the description of this user action.</description>
@@ -20029,6 +21756,15 @@ should be able to be added at any place in this file.
 <action name="SyncedNotifications.SendingServiceEnabled">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
+</action>
+
+<action name="SyncPreferences_ManageGoogleAccountClicked">
+  <owner>triploblastic@google.com</owner>
+  <owner>msarda@chromium.org</owner>
+  <description>
+    Used clicked 'Manage your Google Account' in sync and google services menu
+    in android.
+  </description>
 </action>
 
 <action name="SystemBack">
@@ -20083,6 +21819,7 @@ should be able to be added at any place in this file.
 <action name="TabContextMenu_AddToExistingGroup">
   <owner>bsep@google.com</owner>
   <owner>tbergquist@google.com</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
   <description>
     User selected an entry in the Add to existing group submenu from the tab
     context menu.
@@ -20092,12 +21829,14 @@ should be able to be added at any place in this file.
 <action name="TabContextMenu_AddToNewGroup">
   <owner>bsep@google.com</owner>
   <owner>tbergquist@google.com</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
   <description>
     User selected Add to new group from the tab context menu.
   </description>
 </action>
 
 <action name="TabContextMenu_BookmarkAllTabs">
+  <obsolete>Deprecated due to removal.</obsolete>
   <owner>wittman@chromium.org</owner>
   <description>
     User selected Bookmark All Tabs from the tab context menu.
@@ -20105,33 +21844,53 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="TabContextMenu_CloseOtherTabs">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <description>Please enter the description of this user action.</description>
+  <owner>tbergquist@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    User selected Close Other Tabs from the tab context menu. Temporarily
+    removed in M78.
+  </description>
 </action>
 
 <action name="TabContextMenu_CloseTab">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <description>Please enter the description of this user action.</description>
+  <owner>tbergquist@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>User selected Close Tabs from tab context menu.</description>
 </action>
 
 <action name="TabContextMenu_CloseTabsOpenedBy">
+  <obsolete>Could not find traces of this used in code.</obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="TabContextMenu_CloseTabsToRight">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <description>Please enter the description of this user action.</description>
+  <owner>tbergquist@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    User selected Close Tabs to the Right from tab context menu.
+  </description>
 </action>
 
 <action name="TabContextMenu_CompactNavigationBar">
+  <obsolete>Could not find traces of this used in code.</obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="TabContextMenu_Duplicate">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <description>Please enter the description of this user action.</description>
+  <owner>tbergquist@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>User selected Duplicate from tab context menu.</description>
+</action>
+
+<action name="TabContextMenu_FocusMode">
+  <owner>dfried@chromium.org</owner>
+  <owner>yiningwang@google.com</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    User selected Focus This Tab from the tab context menu.
+  </description>
 </action>
 
 <action name="TabContextMenu_MuteTabs">
@@ -20142,41 +21901,90 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="TabContextMenu_NewTab">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <description>Please enter the description of this user action.</description>
+  <owner>tbergquist@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    User selected New Tab to the Right from the tabstrip context menu.
+  </description>
 </action>
 
 <action name="TabContextMenu_OpenTabsLeftToRight">
+  <obsolete>Could not find traces of this used in code.</obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="TabContextMenu_OpenTabsRightToLeft">
+  <obsolete>Could not find traces of this used in code.</obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="TabContextMenu_Reload">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <description>Please enter the description of this user action.</description>
+  <owner>tbergquist@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>User selected Reload from tab context menu.</description>
 </action>
 
 <action name="TabContextMenu_RemoveFromGroup">
   <owner>bsep@google.com</owner>
   <owner>tbergquist@google.com</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
   <description>
     User selected Remove from group from the tab context menu.
   </description>
 </action>
 
 <action name="TabContextMenu_RestoreTab">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <description>Please enter the description of this user action.</description>
+  <obsolete>Deprecated due to removal.</obsolete>
+  <owner>mpearson@chromium.org</owner>
+  <owner>chrisha@chromium.org</owner>
+  <description>
+    Emitted when the user uses the tab strip context menu and selects
+    &quot;Reopen Closed Tab&quot;. This interaction also causes the user action
+    RestoreTab to be emitted.
+
+    Note: if the last user action was to close an entire window with multiple
+    tabs, this &quot;Reopen Closed Tab&quot; action will cause the entire window
+    to be restored, containing multiple tabs. This user action is only emitted
+    once however, regardless of the number of tabs.
+  </description>
+</action>
+
+<action name="TabContextMenu_SendTabToSelf_Clicked">
+  <obsolete>Deprecated because of using histogram.</obsolete>
+  <owner>jeffreycohen@chromium.org</owner>
+  <owner>sebsg@chromium.org</owner>
+  <description>
+    User send current tab to other synced devices by clicking on the option in
+    the tab strip menu.
+  </description>
+</action>
+
+<action name="TabContextMenu_SendTabToSelf_Shown">
+  <obsolete>Deprecated because of using histogram.</obsolete>
+  <owner>jeffreycohen@chromium.org</owner>
+  <owner>sebsg@chromium.org</owner>
+  <description>Self share option shows in the tab context menu.</description>
+</action>
+
+<action name="TabContextMenu_SendToMyDevices">
+  <obsolete>
+    Deprecated since SendTabToSelf is collecting two kinds of metrics (shown and
+    cliked).
+  </obsolete>
+  <owner>jeffreycohen@chromium.org</owner>
+  <owner>sebsg@chromium.org</owner>
+  <description>
+    User send current tab to other synced devices by clicking on the option in
+    the tab strip menu.
+  </description>
 </action>
 
 <action name="TabContextMenu_TogglePinned">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <description>Please enter the description of this user action.</description>
+  <owner>tbergquist@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>User selected Pin/Unpin from tab context menu.</description>
 </action>
 
 <action name="TabContextMenu_UnmuteTabs">
@@ -20187,18 +21995,87 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="TabContextMenu_UseDestinationsTab_Off">
+  <obsolete>Could not find traces of this used in code.</obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="TabContextMenu_UseDestinationsTab_On">
+  <obsolete>Could not find traces of this used in code.</obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="TabContextMenu_UseVerticalTabs">
+  <obsolete>Could not find traces of this used in code.</obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
+</action>
+
+<action name="TabGrid.Drag">
+  <owner>yusufo@chromium.org</owner>
+  <owner>wychen@chromium.org</owner>
+  <description>User drags a tab to reorder it.</description>
+</action>
+
+<action name="TabGrid.DragToReorder">
+  <obsolete>
+    Deprecated as of 6/2019. Replaced with TabGrid.Drag.Reordered.
+  </obsolete>
+  <owner>yusufo@chromium.org</owner>
+  <owner>wychen@chromium.org</owner>
+  <description>User drags a tab to reorder it.</description>
+</action>
+
+<action name="TabGridDialog">
+  <owner>yusufo@chromium.org</owner>
+  <owner>wychen@chromium.org</owner>
+  <description>User took an action on the TabGridDialog.</description>
+</action>
+
+<action name="TabGridDialog.Drag.RemoveFromGroup">
+  <obsolete>
+    Deprecated as of 8/2019. Replaced with TabGrid.Drag.RemoveFromGroup.
+  </obsolete>
+  <owner>yusufo@chromium.org</owner>
+  <owner>wychen@chromium.org</owner>
+  <description>
+    User drags a tab in tab grid dialog and drops it on the ungroup bar to move
+    the tab out of the group.
+  </description>
+</action>
+
+<action name="TabGridSheet.UndoCloseTab">
+  <obsolete>Deprecated as of 11/2019. Sheet UI is no longer used.</obsolete>
+  <owner>yusufo@chromium.org</owner>
+  <owner>wychen@chromium.org</owner>
+  <description>
+    User undoes the closed tab that was closed from tab grid sheet.
+  </description>
+</action>
+
+<action name="TabGroup.Created">
+  <owner>yusufo@chromium.org</owner>
+  <owner>wychen@chromium.org</owner>
+  <description>Users created a new tab group.</description>
+</action>
+
+<action name="TabGroup.ExpandedFromStrip">
+  <owner>yusufo@chromium.org</owner>
+  <owner>wychen@chromium.org</owner>
+  <description>
+    Users tapped &quot;^&quot; button on the tab strip, causing tab group
+    component to be shown.
+  </description>
+</action>
+
+<action name="TabGroup.MinimizedFromGrid">
+  <owner>yusufo@chromium.org</owner>
+  <owner>wychen@chromium.org</owner>
+  <description>
+    Users tapped &quot;v&quot; button on tab group bottom sheet toolbar, causing
+    tab group bottom sheet to be hidden.
+  </description>
 </action>
 
 <action name="Tablet.WindowDrag.OpenedOverview">
@@ -20271,6 +22148,12 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="TabMultiSelect">
+  <owner>yusufo@chromium.org</owner>
+  <owner>wychen@chromium.org</owner>
+  <description>User took an action on the TabSelectionEditor.</description>
+</action>
+
 <action name="TabOverview_DetachCell">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
@@ -20306,6 +22189,14 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="TabStrip.UndoCloseTab">
+  <owner>yusufo@chromium.org</owner>
+  <owner>wychen@chromium.org</owner>
+  <description>
+    User undoes the closed tab that was closed from tab strip.
+  </description>
+</action>
+
 <action name="TaskManagement.OpenInChromeActionButtonClicked">
   <obsolete>The button option was removed and code deleted.</obsolete>
   <owner>dfalcantara@chromium.org</owner>
@@ -20331,6 +22222,37 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="TasksSurface.FakeBox.LongPressed">
+  <owner>gogerald@chromium.org</owner>
+  <description>
+    Recorded when the user long pressed the fake box on the tasks surface.
+  </description>
+</action>
+
+<action name="TasksSurface.FakeBox.Tapped">
+  <owner>gogerald@chromium.org</owner>
+  <description>
+    Recorded when the user taps the fake box on the tasks surface.
+  </description>
+</action>
+
+<action name="TasksSurface.FakeBox.VoiceSearch">
+  <owner>gogerald@chromium.org</owner>
+  <description>
+    Recorded when the user taps the voice search button in the fake box on the
+    tasks surface.
+  </description>
+</action>
+
+<action name="TerminalSystemAppMenuButtonButton_Clicked">
+  <owner>alancutter@chromium.org</owner>
+  <owner>calamity@chromium.org</owner>
+  <owner>joelhockey@chromium.org</owner>
+  <description>
+    User clicked on the terminal system app menu button. Chrome OS only.
+  </description>
+</action>
+
 <action name="Terminate_ProcessMismatch_CreateNewWidget">
   <obsolete>
     Replaced in 1/2018 with bad_message::WCI_NEW_WIDGET_PROCESS_MISMATCH.
@@ -20342,6 +22264,11 @@ should be able to be added at any place in this file.
 <action name="Terminate_ProcessMismatch_CreateNewWindow">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
+</action>
+
+<action name="Test_Action">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <description>Please enter the description of the metric.</description>
 </action>
 
 <action name="TextToSpeech.Pause">
@@ -20493,12 +22420,14 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ToggleDevTools">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <owner>yangguo@chromium.org</owner>
+  <owner>bmeurer@chromium.org</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="ToggleDevToolsConsole">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <owner>yangguo@chromium.org</owner>
+  <owner>bmeurer@chromium.org</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
@@ -20525,6 +22454,45 @@ should be able to be added at any place in this file.
 <action name="Toolbar_DragStar">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
+</action>
+
+<action name="TopMenu_Bookmarks_LaunchURL">
+  <owner>dfried@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <description>
+    The user opened a bookmark from the application menu at the top of the
+    screen on, for example, MacOS. Distinguished from launching from the
+    wrench/app menu or the bookmarks bar.
+
+    This user action is of special interest to the chrome-analysis-team@. Do not
+    change its semantics or retire it without talking to them first.
+  </description>
+</action>
+
+<action name="TopMenu_History_RecentlyClosed">
+  <owner>dfried@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <description>
+    The user opened a link from the Recently Closed section in the application
+    menu at the top of the screen on macOS. Distinguished from launching from
+    the wrench/app menu.
+
+    This user action is of special interest to the chrome-analysis-team@. Do not
+    change its semantics or retire it without talking to them first.
+  </description>
+</action>
+
+<action name="TopMenu_History_RecentlyVisited">
+  <owner>dfried@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <description>
+    The user opened a link from the Recently Visited section in the application
+    menu at the top of the screen on macOS. Distinguished from launching from
+    the wrench/app menu.
+
+    This user action is of special interest to the chrome-analysis-team@. Do not
+    change its semantics or retire it without talking to them first.
+  </description>
 </action>
 
 <action name="Touchpad_Gesture_Overview">
@@ -20881,6 +22849,36 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="ViewContextMenu_SendTabToSelf_Clicked">
+  <obsolete>Deprecated because of using histogram.</obsolete>
+  <owner>jeffreycohen@chromium.org</owner>
+  <owner>sebsg@chromium.org</owner>
+  <description>
+    User send current tab to other synced devices by clicking on the option in
+    the view context menu.
+  </description>
+</action>
+
+<action name="ViewContextMenu_SendTabToSelf_Shown">
+  <obsolete>Deprecated because of using histogram.</obsolete>
+  <owner>jeffreycohen@chromium.org</owner>
+  <owner>sebsg@chromium.org</owner>
+  <description>Self share option shows in the view context menu.</description>
+</action>
+
+<action name="ViewContextMenu_SendToMyDevices">
+  <obsolete>
+    Deprecated since SendTabToSelf is collecting two kinds of metrics (shown and
+    cliked).
+  </obsolete>
+  <owner>jeffreycohen@chromium.org</owner>
+  <owner>sebsg@chromium.org</owner>
+  <description>
+    User send current tab to other synced devices by clicking on the option in
+    the view context menu.
+  </description>
+</action>
+
 <action name="ViewSource">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
@@ -20909,6 +22907,11 @@ should be able to be added at any place in this file.
   <description>
     User launched voice interaction session through Assistant key.
   </description>
+</action>
+
+<action name="VoiceInteraction.Started.HomeButtonLongPress">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <description>Please enter the description of the metric.</description>
 </action>
 
 <action name="VoiceInteraction.Started.Search_A">
@@ -21367,17 +23370,78 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="WrenchMenu_Bookmarks_ContextMenu_OpenAll">
+  <owner>dfried@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <description>
+    The user opened one or more bookmarks in the Bookmarks Bar using the context
+    menu. Distinguished from launching from e.g. the application menu or the
+    bookmark manager. This is for opening bookmarks normally (in the same
+    window).
+
+    This user action is of special interest to the chrome-analysis-team@. Do not
+    change its semantics or retire it without talking to them first.
+  </description>
+</action>
+
+<action name="WrenchMenu_Bookmarks_ContextMenu_OpenAllIncognito">
+  <owner>dfried@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <description>
+    The user opened one or more bookmarks in the Bookmarks Bar using the context
+    menu. Distinguished from launching from e.g. the application menu or the
+    bookmark manager. This is for opening bookmarks in an incognito window.
+
+    This user action is of special interest to the chrome-analysis-team@. Do not
+    change its semantics or retire it without talking to them first.
+  </description>
+</action>
+
+<action name="WrenchMenu_Bookmarks_ContextMenu_OpenAllInNewWindow">
+  <owner>dfried@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <description>
+    The user opened one or more bookmarks in the Bookmarks Bar using the context
+    menu. Distinguished from launching from e.g. the application menu or the
+    bookmark manager. This is for opening bookmarks in a new window.
+
+    This user action is of special interest to the chrome-analysis-team@. Do not
+    change its semantics or retire it without talking to them first.
+  </description>
+</action>
+
+<action name="WrenchMenu_Bookmarks_LaunchURL">
+  <owner>dfried@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <description>
+    The user opened a bookmark from the wrench/application/three-dot menu.
+    Distinguished from launching from e.g. the bookmarks bar or bookmark
+    manager.
+
+    This user action is of special interest to the chrome-analysis-team@. Do not
+    change its semantics or retire it without talking to them first.
+  </description>
+</action>
+
 <action name="WrenchMenu_OpenRecentTabFromDevice">
   <owner>jwd@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
   <description>
     Hot Dog Menu: Recent Tabs: Open a recent tab from a device.
+
+    This user action is of special interest to the chrome-analysis-team@. Do not
+    change its semantics or retire it without talking to them first.
   </description>
 </action>
 
 <action name="WrenchMenu_OpenRecentTabFromLocal">
   <owner>jwd@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
   <description>
     Hot Dog Menu: Recent Tabs: Open a recent tab link from local.
+
+    This user action is of special interest to the chrome-analysis-team@. Do not
+    change its semantics or retire it without talking to them first.
   </description>
 </action>
 
@@ -21444,13 +23508,19 @@ should be able to be added at any place in this file.
   <suffix name="ContextualSuggestions"
       label="For ContextualSuggestions feature."/>
   <suffix name="DataSaverDetail" label="For DataSaverDetail feature."/>
+  <suffix name="DataSaverMilestonePromo"
+      label="For DataSaverMilestonePromo feature."/>
   <suffix name="DataSaverPreview" label="For DataSaverPreview feature."/>
   <suffix name="DownloadHome" label="For DownloadHome feature."/>
   <suffix name="DownloadPage" label="For DownloadPage feature."/>
   <suffix name="DownloadPageScreenshot"
       label="For DownloadPageScreenshot feature."/>
+  <suffix name="ExploreSitesTile" label="For Explore Sites feature."/>
+  <suffix name="FeedCardMenu" label="For FeedCardMenu feature."/>
+  <suffix name="GlobalMediaControls" label="For GlobalMediaControls feature."/>
   <suffix name="HomePageButton" label="For HomePageButton feature."/>
   <suffix name="HomepageTile" label="For HomepageTile feature."/>
+  <suffix name="IdentityDisc" label="For IdentityDisc feature."/>
   <suffix name="IncognitoWindow" label="For IncognitoWindow feature."/>
   <suffix name="LongPressToolbarTip" label="For LongPressToolbar feature."/>
   <suffix name="MediaDownload" label="For MediaDownload feature."/>
@@ -21461,6 +23531,12 @@ should be able to be added at any place in this file.
   <suffix name="PreviewsOmniboxUI"
       label="For the Previews UI in the Android Omnibox feature."/>
   <suffix name="ReopenTab" label="For ReopenTab feature."/>
+  <suffix name="TabGroupsDragAndDrop" label="For drop-to-merge in tab group."/>
+  <suffix name="TabGroupsQuicklyComparePages"
+      label="For long press links to create tab groups."/>
+  <suffix name="TabGroupsTapToSeeAnotherTab" label="For tab strip."/>
+  <suffix name="TabGroupsYourTabsTogether"
+      label="For tab switcher with tab groups."/>
   <suffix name="TranslateMenuButton" label="For translate menu button."/>
   <affected-action name="InProductHelp.NotifyEvent.IPH"/>
   <affected-action name="InProductHelp.NotifyUsedEvent.IPH"/>
@@ -21500,6 +23576,7 @@ should be able to be added at any place in this file.
 <action-suffix separator="." ordering="suffix">
   <suffix name="Cancel" label="User canceled downloading an offline item."/>
   <suffix name="MenuDelete" label="User deleted a specific offline item."/>
+  <suffix name="MenuRename" label="User renamed a specific offline item."/>
   <suffix name="MenuShare" label="User shared a specific offline item."/>
   <suffix name="Open" label="User opened an offline item."/>
   <suffix name="Pause" label="User paused downloading an offline item."/>
@@ -21529,10 +23606,193 @@ should be able to be added at any place in this file.
 
 <action-suffix separator="." ordering="suffix">
   <suffix name="DoubleClick" label="Double click action."/>
-  <suffix name="DragAndDrop" label="DragAndDrop action."/>
+  <suffix name="DragAndDrop" label="Click and drag action."/>
   <suffix name="LeftClick" label="Left click action."/>
   <suffix name="RightClick" label="Right click action."/>
+  <suffix name="ScrollDown" label="Scroll down action."/>
+  <suffix name="ScrollLeft" label="Scroll left action."/>
+  <suffix name="ScrollRight" label="Scroll right action."/>
+  <suffix name="ScrollUp" label="Scroll up action."/>
   <affected-action name="Accessibility.Autoclick"/>
+</action-suffix>
+
+<action-suffix separator="." ordering="suffix">
+  <suffix name="DeveloperRequestedNewTab"
+      label="Users tapped on a link with a target=_blank"/>
+  <suffix name="DropToMerge"
+      label="Users dragged a single tab and dropped it on another single tab
+             to create a group."/>
+  <suffix name="OpenInNewTab"
+      label="Users long pressed a link and opened in new tab."/>
+  <suffix name="TabMultiSelect"
+      label="Users tapped the 'Group' button in the TabSelectionEditor."/>
+  <suffix name="TabSwitcher"
+      label="Users tapped the 'Create group' button in TabSwitcher."/>
+  <affected-action name="TabGroup.Created"/>
+</action-suffix>
+
+<action-suffix separator="." ordering="suffix">
+  <suffix name="GridTabSwitcher"
+      label="Users switched tabs from the grid layout TabSwitcher."/>
+  <suffix name="TabGridDialogFromStrip"
+      label="Users switched tabs within the tab grid dialog."/>
+  <suffix name="TabGridDialogInSwitcher"
+      label="Users switched tabs between groups using tab grid dialog."/>
+  <suffix name="TabGridSheet"
+      label="Users switched tabs from the tab group in the bottom sheet
+             switcher."/>
+  <suffix name="TabStrip" label="Users switched tabs from the tab strip."/>
+  <affected-action name="MobileTabSwitched"/>
+</action-suffix>
+
+<action-suffix separator="." ordering="suffix">
+  <suffix name="TabGridDialogFromStrip"
+      label="Users tapped '+' button on the tab group dialog toolbar, causing
+             a new tab to be created in the group. The dialog is expanded
+             from tab strip"/>
+  <suffix name="TabGridDialogInSwitcher"
+      label="Users tapped '+' button on the tab group dialog toolbar, causing
+             a new tab to be created in the group. The dialog is in tab
+             switcher."/>
+  <suffix name="TabGridSheet"
+      label="Users tapped '+' button on the tab group bottom sheet toolbar
+             causes a new tab to be created in the group."/>
+  <suffix name="TabStrip"
+      label="Users tapped '+' button on the tab strip, causing a new tab to
+             be created in the group."/>
+  <affected-action name="MobileNewTabOpened"/>
+</action-suffix>
+
+<action-suffix separator="." ordering="suffix">
+  <suffix name="GridTabSwitcher"
+      label="Users tapped 'x' button on the tab in grid layout TabSwitcher,
+             causing a tab to be closed."/>
+  <suffix name="TabGridSheet"
+      label="Users tapped 'x' button on the tab in tab group bottom sheet,
+             causing a tab to be closed in the group."/>
+  <suffix name="TabStrip"
+      label="Users tapped the currently selected tab's favicon on the tab
+             strip, causing a tab to be closed in the group."/>
+  <affected-action name="MobileTabClosed"/>
+</action-suffix>
+
+<action-suffix separator="." ordering="suffix">
+  <suffix name="GridTabSwitcher"
+      label="Users tapped the currently selected tab in grid layout
+             TabSwitcher."/>
+  <suffix name="TabGridSheet"
+      label="Users tapped the currently selected tab in tab group bottom
+             sheet."/>
+  <affected-action name="MobileTabReturnedToCurrentTab"/>
+</action-suffix>
+
+<action-suffix separator="." ordering="suffix">
+  <suffix name="Dark" label="Users selected dark theme preference."/>
+  <suffix name="Light" label="Users selected light theme preference."/>
+  <suffix name="SystemDefault"
+      label="Users selected system default theme preference."/>
+  <affected-action name="Android.DarkTheme.Preference"/>
+</action-suffix>
+
+<action-suffix separator="." ordering="suffix">
+  <suffix name="GridTabSwitcher"
+      label="Users swipe to close a tab in grid layout TabSwitcher."/>
+  <suffix name="TabGridDialogFromStrip"
+      label="Users swipe to close a tab in tab grid dialog from tab strip."/>
+  <suffix name="TabGridDialogInSwitcher"
+      label="Users swipe to close a tab in tab grid dialog from grid tab
+             switcher."/>
+  <suffix name="TabGridSheet"
+      label="Users swipe to close a tab in tab group bottom sheet."/>
+  <affected-action name="MobileStackViewSwipeCloseTab"/>
+</action-suffix>
+
+<action-suffix separator="." ordering="suffix">
+  <suffix name="DropToMerge"
+      label="Users use drop-to-merge to combine a single tab and a group or
+             two groups."/>
+  <suffix name="RemoveFromGroup.TabGridDialogFromStrip"
+      label="Users ungroup a tab by dropping it on the ungroup bar in tab
+             grid dialog from tab strip."/>
+  <suffix name="RemoveFromGroup.TabGridDialogInSwitcher"
+      label="Users ungroup a tab by dropping it on the ungroup bar in tab
+             grid dialog from grid tab switcher."/>
+  <suffix name="Reordered.GridTabSwitcher"
+      label="Users drag to reorder tabs in grid layout TabSwitcher. Recorded
+             at each mini reordering during the gesture."/>
+  <suffix name="Reordered.TabGridDialogFromStrip"
+      label="Users drag to reorder tabs in tab grid dialog from tab strip.
+             Recorded at each mini reordering during the gesture."/>
+  <suffix name="Reordered.TabGridDialogInSwitcher"
+      label="Users drag to reorder tabs in tab grid dialog from grid tab
+             switcher. Recorded at each mini reordering during the gesture."/>
+  <suffix name="Reordered.TabGridSheet"
+      label="Users drag to reorder tabs in tab group bottom sheet. Recorded
+             at each mini reordering during the gesture."/>
+  <suffix name="Start.GridTabSwitcher"
+      label="Users long tap on a tab to trigger dragging in grid layout
+             TabSwitcher."/>
+  <suffix name="Start.TabGridDialogFromStrip"
+      label="Users long tap on a tab to trigger dragging in tab grid dialog
+             from tab strip."/>
+  <suffix name="Start.TabGridDialogInSwitcher"
+      label="Users long tap on a tab to trigger dragging in tab grid dialog
+             from grid tab switcher."/>
+  <suffix name="Start.TabGridSheet"
+      label="Users long tap on a tab to trigger dragging in tab group bottom
+             sheet."/>
+  <affected-action name="TabGrid.Drag"/>
+</action-suffix>
+
+<action-suffix separator="." ordering="suffix">
+  <suffix name="Cancelled"
+      label="Users exited the TabSelectionEditor to the tab switcher via the
+             back arrow or through the system back."/>
+  <suffix name="Done"
+      label="Users tapped the action button on the top right corner."/>
+  <suffix name="TabSelected"
+      label="Users selected a tab in TabSelectionEditor."/>
+  <suffix name="TabUnselected"
+      label="Users un-selected a tab in TabSelectionEditor."/>
+  <affected-action name="TabMultiSelect"/>
+</action-suffix>
+
+<action-suffix separator="." ordering="suffix">
+  <suffix name="LongTapMenu" label="Users closed a tab by long tap menu"/>
+  <affected-action name="MobileMenuCloseTab"/>
+</action-suffix>
+
+<action-suffix separator="." ordering="suffix">
+  <suffix name="AppMenu" label="Users opened a new tab by app menu"/>
+  <suffix name="LongTapMenu" label="Users opened a new tab by long tap menu"/>
+  <affected-action name="MobileMenuNewTab"/>
+</action-suffix>
+
+<action-suffix separator="." ordering="suffix">
+  <suffix name="AppMenu" label="Users opened a new incognito tab by app menu"/>
+  <suffix name="LongTapMenu"
+      label="Users opened a new incognito tab by long tap menu"/>
+  <affected-action name="MobileMenuNewIncognitoTab"/>
+</action-suffix>
+
+<action-suffix separator="." ordering="suffix">
+  <suffix name="TabGridDialog"
+      label="Users tapped expand button on the tab strip, causing tab grid
+             dialog to be shown."/>
+  <suffix name="TabGridSheet"
+      label="Users tapped expand button on the tab strip, causing tab grid
+             sheet to be shown."/>
+  <affected-action name="TabGroup.ExpandedFromStrip"/>
+</action-suffix>
+
+<action-suffix separator="." ordering="suffix">
+  <suffix name="Exit"
+      label="Users click the back button or the scrim to exit the tab group
+             dialog."/>
+  <suffix name="ExpandedFromSwitcher"
+      label="Users click a card in TabSwitcher to open a dialog. See also
+             TabGroup.ExpandedFromStrip.TabGridDialog."/>
+  <affected-action name="TabGridDialog"/>
 </action-suffix>
 
 </actions>

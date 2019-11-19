@@ -8,6 +8,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "net/base/io_buffer.h"
 #include "net/base/ip_endpoint.h"
@@ -16,7 +17,7 @@
 #include "net/ftp/ftp_request_info.h"
 #include "net/socket/socket_test_util.h"
 #include "net/test/gtest_util.h"
-#include "net/test/test_with_scoped_task_environment.h"
+#include "net/test/test_with_task_environment.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -399,49 +400,26 @@ class FtpSocketDataProviderFileDownload : public FtpSocketDataProvider {
       return MockWriteResult(ASYNC, data.length());
     switch (state()) {
       case PRE_SIZE:
-        return Verify("SIZE /file\r\n", data, PRE_CWD, "213 18\r\n");
+        return Verify(base::StringPrintf("SIZE %s\r\n", file_path_.c_str()),
+                      data, PRE_CWD, "213 18\r\n");
       case PRE_CWD:
-        return Verify("CWD /file\r\n", data,
-                      use_epsv() ? PRE_RETR_EPSV : PRE_RETR_PASV,
+        return Verify(base::StringPrintf("CWD %s\r\n", file_path_.c_str()),
+                      data, use_epsv() ? PRE_RETR_EPSV : PRE_RETR_PASV,
                       "550 Not a directory\r\n");
       case PRE_RETR:
-        return Verify("RETR /file\r\n", data, PRE_QUIT, "200 OK\r\n");
+        return Verify(base::StringPrintf("RETR %s\r\n", file_path_.c_str()),
+                      data, PRE_QUIT, "200 OK\r\n");
       default:
         return FtpSocketDataProvider::OnWrite(data);
     }
   }
 
+  void set_file_path(const std::string& file_path) { file_path_ = file_path; }
+
  private:
+  std::string file_path_ = "/file";
+
   DISALLOW_COPY_AND_ASSIGN(FtpSocketDataProviderFileDownload);
-};
-
-class FtpSocketDataProviderPathSeparatorsNotUnescaped
-    : public FtpSocketDataProvider {
- public:
-  FtpSocketDataProviderPathSeparatorsNotUnescaped() = default;
-  ~FtpSocketDataProviderPathSeparatorsNotUnescaped() override = default;
-
-  MockWriteResult OnWrite(const std::string& data) override {
-    if (InjectFault())
-      return MockWriteResult(ASYNC, data.length());
-    switch (state()) {
-      case PRE_SIZE:
-        return Verify("SIZE /foo%2f..%2fbar%5c\r\n", data, PRE_CWD,
-                      "213 18\r\n");
-      case PRE_CWD:
-        return Verify("CWD /foo%2f..%2fbar%5c\r\n", data,
-                      use_epsv() ? PRE_RETR_EPSV : PRE_RETR_PASV,
-                      "550 Not a directory\r\n");
-      case PRE_RETR:
-        return Verify("RETR /foo%2f..%2fbar%5c\r\n", data, PRE_QUIT,
-                      "200 OK\r\n");
-      default:
-        return FtpSocketDataProvider::OnWrite(data);
-    }
-  }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FtpSocketDataProviderPathSeparatorsNotUnescaped);
 };
 
 class FtpSocketDataProviderFileNotFound : public FtpSocketDataProvider {
@@ -580,34 +558,6 @@ class FtpSocketDataProviderVMSFileDownload : public FtpSocketDataProvider {
 
  private:
   DISALLOW_COPY_AND_ASSIGN(FtpSocketDataProviderVMSFileDownload);
-};
-
-class FtpSocketDataProviderEscaping : public FtpSocketDataProviderFileDownload {
- public:
-  FtpSocketDataProviderEscaping() = default;
-  ~FtpSocketDataProviderEscaping() override = default;
-
-  MockWriteResult OnWrite(const std::string& data) override {
-    if (InjectFault())
-      return MockWriteResult(ASYNC, data.length());
-    switch (state()) {
-      case PRE_SIZE:
-        return Verify("SIZE / !\"#$%y\200\201\r\n", data, PRE_CWD,
-                      "213 18\r\n");
-      case PRE_CWD:
-        return Verify("CWD / !\"#$%y\200\201\r\n", data,
-                      use_epsv() ? PRE_RETR_EPSV : PRE_RETR_PASV,
-                      "550 Not a directory\r\n");
-      case PRE_RETR:
-        return Verify("RETR / !\"#$%y\200\201\r\n", data, PRE_QUIT,
-                      "200 OK\r\n");
-      default:
-        return FtpSocketDataProviderFileDownload::OnWrite(data);
-    }
-  }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FtpSocketDataProviderEscaping);
 };
 
 class FtpSocketDataProviderFileDownloadInvalidResponse
@@ -759,7 +709,7 @@ class FtpSocketDataProviderEvilLogin
 
 class FtpNetworkTransactionTest : public PlatformTest,
                                   public ::testing::WithParamInterface<int>,
-                                  public WithScopedTaskEnvironment {
+                                  public WithTaskEnvironment {
  public:
   FtpNetworkTransactionTest() : host_resolver_(new MockHostResolver) {
     SetUpTransaction();
@@ -1322,16 +1272,31 @@ TEST_P(FtpNetworkTransactionTest, DownloadTransactionSpaceInPassword) {
   ExecuteTransaction(&ctrl_socket, "ftp://test:hello%20world@host/file", OK);
 }
 
-// Make sure FtpNetworkTransaction doesn't request paths like
-// "/foo/../bar".  Doing so wouldn't be a security issue, client side, but just
-// doesn't seem like a good idea.
-TEST_P(FtpNetworkTransactionTest,
-       DownloadTransactionPathSeparatorsNotUnescaped) {
-  FtpSocketDataProviderPathSeparatorsNotUnescaped ctrl_socket;
-  ExecuteTransaction(&ctrl_socket, "ftp://host/foo%2f..%2fbar%5c", OK);
+TEST_P(FtpNetworkTransactionTest, FailOnInvalidUrls) {
+  const char* const kBadUrls[]{
+      // Make sure FtpNetworkTransaction doesn't request paths like
+      // "/foo/../bar".  Doing so wouldn't be a security issue, client side, but
+      // just doesn't seem like a good idea.
+      "ftp://host/foo%2f..%2fbar%5c",
 
-  // We pass an artificial value of 18 as a response to the SIZE command.
-  EXPECT_EQ(18, transaction_->GetResponseInfo()->expected_content_size);
+      // LF
+      "ftp://host/foo%10.txt",
+      // CR
+      "ftp://host/foo%13.txt",
+
+      "ftp://host/foo%00.txt",
+  };
+
+  for (const char* bad_url : kBadUrls) {
+    SCOPED_TRACE(bad_url);
+
+    SetUpTransaction();
+    FtpRequestInfo request_info = GetRequestInfo(bad_url);
+    ASSERT_EQ(
+        ERR_INVALID_URL,
+        transaction_->Start(&request_info, callback_.callback(),
+                            NetLogWithSource(), TRAFFIC_ANNOTATION_FOR_TESTS));
+  }
 }
 
 TEST_P(FtpNetworkTransactionTest, EvilRestartUser) {
@@ -1403,9 +1368,27 @@ TEST_P(FtpNetworkTransactionTest, EvilRestartPassword) {
 }
 
 TEST_P(FtpNetworkTransactionTest, Escaping) {
-  FtpSocketDataProviderEscaping ctrl_socket;
-  ExecuteTransaction(&ctrl_socket, "ftp://host/%20%21%22%23%24%25%79%80%81",
-                     OK);
+  const struct TestCase {
+    const char* url;
+    const char* expected_path;
+  } kTestCases[] = {
+      {"ftp://host/%20%21%22%23%24%25%79%80%81", "/ !\"#$%y\200\201"},
+      // This is no allowed to be unescaped by UnescapeURLComponent, since it's
+      // a lock icon. But it has no special meaning or security concern in the
+      // context of making FTP requests.
+      {"ftp://host/%F0%9F%94%92", "/\xF0\x9F\x94\x92"},
+      // Invalid UTF-8 character, which again has no special meaning over FTP.
+      {"ftp://host/%81", "/\x81"},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.url);
+
+    SetUpTransaction();
+    FtpSocketDataProviderFileDownload ctrl_socket;
+    ctrl_socket.set_file_path(test_case.expected_path);
+    ExecuteTransaction(&ctrl_socket, test_case.url, OK);
+  }
 }
 
 // Test for http://crbug.com/23794.

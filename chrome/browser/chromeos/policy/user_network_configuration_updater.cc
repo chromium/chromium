@@ -40,14 +40,12 @@ UserNetworkConfigurationUpdater::~UserNetworkConfigurationUpdater() {
 std::unique_ptr<UserNetworkConfigurationUpdater>
 UserNetworkConfigurationUpdater::CreateForUserPolicy(
     Profile* profile,
-    bool allow_trusted_certs_from_policy,
     const user_manager::User& user,
     PolicyService* policy_service,
     chromeos::ManagedNetworkConfigurationHandler* network_config_handler) {
   std::unique_ptr<UserNetworkConfigurationUpdater> updater(
-      new UserNetworkConfigurationUpdater(
-          profile, allow_trusted_certs_from_policy, user, policy_service,
-          network_config_handler));
+      new UserNetworkConfigurationUpdater(profile, user, policy_service,
+                                          network_config_handler));
   updater->Init();
   return updater;
 }
@@ -58,26 +56,29 @@ void UserNetworkConfigurationUpdater::SetClientCertificateImporterForTest(
   SetClientCertificateImporter(std::move(client_certificate_importer));
 }
 
+// static
+bool UserNetworkConfigurationUpdater::PolicyHasWebTrustedAuthorityCertificate(
+    const PolicyMap& policy_map) {
+  return NetworkConfigurationUpdater::PolicyHasWebTrustedAuthorityCertificate(
+      policy_map, onc::ONC_SOURCE_USER_POLICY, key::kOpenNetworkConfiguration);
+}
+
 UserNetworkConfigurationUpdater::UserNetworkConfigurationUpdater(
     Profile* profile,
-    bool allow_trusted_certs_from_policy,
     const user_manager::User& user,
     PolicyService* policy_service,
     chromeos::ManagedNetworkConfigurationHandler* network_config_handler)
     : NetworkConfigurationUpdater(onc::ONC_SOURCE_USER_POLICY,
                                   key::kOpenNetworkConfiguration,
-                                  allow_trusted_certs_from_policy,
                                   policy_service,
                                   network_config_handler),
-      user_(&user),
-      weak_factory_(this) {
+      user_(&user) {
   // The updater is created with |client_certificate_importer_| unset and is
   // responsible for creating it. This requires |GetNSSCertDatabaseForProfile|
   // call, which is not safe before the profile initialization is finalized.
   // Thus, listen for PROFILE_ADDED notification, on which |cert_importer_|
-  // creation should start.
-  registrar_.Add(this,
-                 chrome::NOTIFICATION_PROFILE_ADDED,
+  // creation should start. https://crbug.com/171406
+  registrar_.Add(this, chrome::NOTIFICATION_PROFILE_ADDED,
                  content::Source<Profile>(profile));
 
   // Make sure that the |NetworkCertLoader| which makes certificates available
@@ -110,13 +111,13 @@ void UserNetworkConfigurationUpdater::ApplyNetworkPolicy(
 
   // Call on UserSessionManager to send the user's password to session manager
   // if the password substitution variable exists in the ONC.
-  bool send_password =
+  bool save_password =
       chromeos::onc::HasUserPasswordSubsitutionVariable(network_configs_onc);
-  chromeos::UserSessionManager::GetInstance()->OnUserNetworkPolicyParsed(
-      send_password);
+  chromeos::UserSessionManager::GetInstance()->VoteForSavingLoginPassword(
+      chromeos::UserSessionManager::PasswordConsumingService::kNetwork,
+      save_password);
 
-  network_config_handler_->SetPolicy(onc_source_,
-                                     user_->username_hash(),
+  network_config_handler_->SetPolicy(onc_source_, user_->username_hash(),
                                      *network_configs_onc,
                                      *global_network_config);
 }
@@ -140,8 +141,7 @@ void UserNetworkConfigurationUpdater::CreateAndSetClientCertificateImporter(
   DCHECK(database);
   SetClientCertificateImporter(
       std::make_unique<chromeos::onc::CertificateImporterImpl>(
-          base::CreateSingleThreadTaskRunnerWithTraits(
-              {content::BrowserThread::IO}),
+          base::CreateSingleThreadTaskRunner({content::BrowserThread::IO}),
           database));
 }
 

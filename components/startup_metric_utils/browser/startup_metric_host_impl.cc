@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 namespace startup_metric_utils {
 
@@ -17,9 +17,9 @@ StartupMetricHostImpl::~StartupMetricHostImpl() = default;
 
 // static
 void StartupMetricHostImpl::Create(
-    mojom::StartupMetricHostRequest request) {
-  mojo::MakeStrongBinding(std::make_unique<StartupMetricHostImpl>(),
-                          std::move(request));
+    mojo::PendingReceiver<mojom::StartupMetricHost> receiver) {
+  mojo::MakeSelfOwnedReceiver(std::make_unique<StartupMetricHostImpl>(),
+                              std::move(receiver));
 }
 
 void StartupMetricHostImpl::RecordRendererMainEntryTime(

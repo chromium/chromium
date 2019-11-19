@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+PASS Rule is applied
+PASS Can read "syntax" from declaration
+PASS Can read "inherits" from declaration
+PASS Can read "initial-value" from declaration
+Harness: the test ran to completion.
+

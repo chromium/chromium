@@ -35,17 +35,19 @@
 
 #include "base/containers/span.h"
 #include "base/optional.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
+#include "third_party/blink/public/mojom/native_file_system/native_file_system_transfer_token.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/transferables.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/mojo/mojo_handle.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/core/typed_arrays/array_buffer/array_buffer_contents.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
-#include "third_party/blink/renderer/platform/wtf/typed_arrays/array_buffer_contents.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -56,7 +58,6 @@ class ExceptionState;
 class ExecutionContext;
 class MessagePort;
 class ScriptValue;
-class SharedBuffer;
 class StaticBitmapImage;
 class Transferables;
 class UnpackedSerializedScriptValue;
@@ -72,12 +73,13 @@ class CORE_EXPORT SerializedScriptValue
   USING_FAST_MALLOC(SerializedScriptValue);
 
  public:
-  using ArrayBufferContentsArray = Vector<WTF::ArrayBufferContents, 1>;
-  using SharedArrayBufferContentsArray = Vector<WTF::ArrayBufferContents, 1>;
+  using ArrayBufferContentsArray = Vector<ArrayBufferContents, 1>;
+  using SharedArrayBufferContentsArray = Vector<ArrayBufferContents, 1>;
   using ImageBitmapContentsArray = Vector<scoped_refptr<StaticBitmapImage>, 1>;
-  using TransferredWasmModulesArray =
-      WTF::Vector<v8::WasmModuleObject::TransferrableModule>;
+  using TransferredWasmModulesArray = WTF::Vector<v8::CompiledWasmModule>;
   using MessagePortChannelArray = Vector<MessagePortChannel>;
+  using NativeFileSystemTokensArray =
+      Vector<mojo::PendingRemote<mojom::blink::NativeFileSystemTransferToken>>;
 
   // Increment this for each incompatible change to the wire format.
   // Version 2: Added StringUCharTag for UChar v8 strings.
@@ -206,7 +208,7 @@ class CORE_EXPORT SerializedScriptValue
                                    Transferables&,
                                    ExceptionState&);
   static bool ExtractTransferables(v8::Isolate*,
-                                   const Vector<ScriptValue>&,
+                                   const HeapVector<ScriptValue>&,
                                    Transferables&,
                                    ExceptionState&);
 
@@ -248,6 +250,9 @@ class CORE_EXPORT SerializedScriptValue
     return shared_array_buffers_contents_;
   }
   BlobDataHandleMap& BlobDataHandles() { return blob_data_handles_; }
+  NativeFileSystemTokensArray& NativeFileSystemTokens() {
+    return native_file_system_tokens_;
+  }
   MojoScopedHandleArray& MojoHandles() { return mojo_handles_; }
   ArrayBufferContentsArray& GetArrayBufferContentsArray() {
     return array_buffer_contents_array_;
@@ -266,6 +271,10 @@ class CORE_EXPORT SerializedScriptValue
     return !wasm_modules_.IsEmpty() ||
            !shared_array_buffers_contents_.IsEmpty();
   }
+
+  // Returns true after serializing script values that remote origins cannot
+  // access.
+  bool IsOriginCheckRequired() const;
 
  private:
   friend class ScriptValueSerializer;
@@ -333,9 +342,9 @@ class CORE_EXPORT SerializedScriptValue
   BlobDataHandleMap blob_data_handles_;
   MojoScopedHandleArray mojo_handles_;
   SharedArrayBufferContentsArray shared_array_buffers_contents_;
+  NativeFileSystemTokensArray native_file_system_tokens_;
 
   bool has_registered_external_allocation_;
-  bool transferables_need_external_allocation_registration_;
 #if DCHECK_IS_ON()
   bool was_unpacked_ = false;
 #endif

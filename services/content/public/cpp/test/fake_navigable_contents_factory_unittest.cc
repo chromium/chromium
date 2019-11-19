@@ -3,10 +3,11 @@
 // found in the LICENSE file.
 
 #include "services/content/public/cpp/test/fake_navigable_contents_factory.h"
+
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "net/http/http_response_headers.h"
 #include "services/content/public/cpp/navigable_contents.h"
 #include "services/content/public/cpp/navigable_contents_observer.h"
@@ -22,21 +23,21 @@ namespace {
 class FakeNavigableContentsFactoryTest : public testing::Test {
  public:
   FakeNavigableContentsFactoryTest() {
-    factory_.BindRequest(mojo::MakeRequest(&factory_proxy_));
+    factory_.BindReceiver(remote_factory_.BindNewPipeAndPassReceiver());
   }
 
   ~FakeNavigableContentsFactoryTest() override = default;
 
   FakeNavigableContentsFactory& factory() { return factory_; }
 
-  mojom::NavigableContentsFactory* factory_proxy() const {
-    return factory_proxy_.get();
+  mojom::NavigableContentsFactory* remote_factory() {
+    return remote_factory_.get();
   }
 
  private:
-  base::test::ScopedTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
 
-  mojom::NavigableContentsFactoryPtr factory_proxy_;
+  mojo::Remote<mojom::NavigableContentsFactory> remote_factory_;
   FakeNavigableContentsFactory factory_;
 
   DISALLOW_COPY_AND_ASSIGN(FakeNavigableContentsFactoryTest);
@@ -96,7 +97,7 @@ class NavigationObserver : public NavigableContentsObserver {
 };
 
 TEST_F(FakeNavigableContentsFactoryTest, BasicNavigation) {
-  NavigableContents contents(factory_proxy());
+  NavigableContents contents(remote_factory());
   FakeNavigableContents contents_impl;
   factory().WaitForAndBindNextContentsRequest(&contents_impl);
 
@@ -113,11 +114,11 @@ TEST_F(FakeNavigableContentsFactoryTest, BasicNavigation) {
 }
 
 TEST_F(FakeNavigableContentsFactoryTest, MultipleClients) {
-  NavigableContents contents1(factory_proxy());
+  NavigableContents contents1(remote_factory());
   FakeNavigableContents contents1_impl;
   factory().WaitForAndBindNextContentsRequest(&contents1_impl);
 
-  NavigableContents contents2(factory_proxy());
+  NavigableContents contents2(remote_factory());
   FakeNavigableContents contents2_impl;
   factory().WaitForAndBindNextContentsRequest(&contents2_impl);
 
@@ -143,7 +144,7 @@ TEST_F(FakeNavigableContentsFactoryTest, MultipleClients) {
 }
 
 TEST_F(FakeNavigableContentsFactoryTest, CustomHeaders) {
-  NavigableContents contents(factory_proxy());
+  NavigableContents contents(remote_factory());
   FakeNavigableContents contents_impl;
   factory().WaitForAndBindNextContentsRequest(&contents_impl);
 

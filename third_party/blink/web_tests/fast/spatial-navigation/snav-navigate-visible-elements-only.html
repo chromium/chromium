@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="resources/snav-testharness.js"></script>
+
+<style>
+  div {
+    width: 100px;
+    height: 100px;
+    background-color: green;
+    position: absolute;
+  }
+
+  #blocker {
+    top: 30px;
+    background-color: yellow;
+  }
+
+  #A {
+    top: 601px;
+    height: 50px;
+  }
+</style>
+
+<div id="start" tabindex="0"></div>
+<div id="blocker"></div>
+<div id="A" tabindex="0"></div>
+
+<script>
+  // This test checks that focusless mode allows entering focus into an element
+  // with the enter key and exiting it with the escape key.
+  const A = document.getElementById("A");
+  const start = document.getElementById("start");
+
+  snav.assertSnavEnabledAndTestable();
+  start.focus();
+
+  test(() => {
+    assert_equals(window.scrollY, 0, "Start at 0 scroll offset.")
+    assert_equals(window.internals.interestedElement,
+                  start, "Top DIV starts off focused");
+
+    // Down should scroll the visual viewport, since there's no targets
+    // availabe on screen.
+    snav.triggerMove('Down');
+
+    assert_equals(window.internals.interestedElement,
+                  start,
+                  "First navigation should't move interest");
+    assert_greater_than(window.scrollY, 0,
+                  "First navigation should scroll");
+    assert_greater_than(window.innerHeight,
+                        A.getBoundingClientRect().top,
+                        "A element should now be at least partially visible");
+
+    snav.triggerMove('Down');
+    assert_equals(window.internals.interestedElement,
+                  A,
+                  "Navigate to onscreen element.");
+
+    snav.triggerMove('Up');
+    assert_equals(window.internals.interestedElement,
+                  A,
+                  "Don't navigate to obscured(in viewport) element even if it has visible part outside of viewport.");
+
+    snav.triggerMove('Up');
+    assert_equals(window.internals.interestedElement,
+                  start,
+                  "Navigate to onscreen element.");
+  }, "Don't navigate to elements that are off screen.");
+</script>

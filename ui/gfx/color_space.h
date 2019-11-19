@@ -18,12 +18,28 @@
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "ui/gfx/color_space_export.h"
 
+// These forward declarations are used to give IPC code friend access to private
+// fields of gfx::ColorSpace for the purpose of serialization and
+// deserialization.
 namespace IPC {
 template <class P>
 struct ParamTraits;
 }  // namespace IPC
 
+namespace mojo {
+template <class T, class U>
+struct StructTraits;
+}  // namespace mojo
+
+namespace gl {
+class ColorSpaceUtils;
+}  // namespace gl
+
 namespace gfx {
+
+namespace mojom {
+class ColorSpaceDataView;
+}  // namespace mojom
 
 class ICCProfile;
 
@@ -135,6 +151,7 @@ class COLOR_SPACE_EXPORT ColorSpace {
              const skcms_TransferFunction& fn,
              MatrixID matrix,
              RangeID full_range);
+
   explicit ColorSpace(const SkColorSpace& sk_color_space);
 
   // Returns true if this is not the default-constructor object.
@@ -151,6 +168,8 @@ class COLOR_SPACE_EXPORT ColorSpace {
   }
   static ColorSpace CreateCustom(const skcms_Matrix3x3& to_XYZD50,
                                  const skcms_TransferFunction& fn);
+  static ColorSpace CreateCustom(const skcms_Matrix3x3& to_XYZD50,
+                                 TransferID transfer);
   static constexpr ColorSpace CreateXYZD50() {
     return ColorSpace(PrimaryID::XYZ_D50, TransferID::LINEAR, MatrixID::RGB,
                       RangeID::FULL);
@@ -167,6 +186,12 @@ class COLOR_SPACE_EXPORT ColorSpace {
   // for all real values.
   static constexpr ColorSpace CreateSCRGBLinear() {
     return ColorSpace(PrimaryID::BT709, TransferID::LINEAR_HDR, MatrixID::RGB,
+                      RangeID::FULL);
+  }
+
+  // HDR10 uses BT.2020 primaries with SMPTE ST 2084 PQ transfer function.
+  static constexpr ColorSpace CreateHDR10() {
+    return ColorSpace(PrimaryID::BT2020, TransferID::SMPTEST2084, MatrixID::RGB,
                       RangeID::FULL);
   }
 
@@ -188,7 +213,9 @@ class COLOR_SPACE_EXPORT ColorSpace {
 
   // Generates a process global unique ID that can be used to key a color space.
   static int GetNextId();
-  static int kInvalidId;
+  static constexpr int kInvalidId = -1;
+
+  static constexpr float kDefaultSDRWhiteLevel = 80.f;
 
   bool operator==(const ColorSpace& other) const;
   bool operator!=(const ColorSpace& other) const;
@@ -196,19 +223,11 @@ class COLOR_SPACE_EXPORT ColorSpace {
   size_t GetHash() const;
   std::string ToString() const;
 
-  // Returns true if the decoded values can be outside of the 0.0-1.0 range.
+  // Returns true if the transfer function is an HDR one (SMPTE 2084, HLG, etc).
   bool IsHDR() const;
 
   // Returns true if the encoded values can be outside of the 0.0-1.0 range.
   bool FullRangeEncodedValues() const;
-
-  // Returns true if this color space is parametric (or a sufficiently accurate
-  // approximation of its ICCProfile that we can use it directly).
-  bool IsParametricAccurate() const;
-
-  // Return a parametric approximation of this color space (if it is not already
-  // parametric).
-  ColorSpace GetParametricApproximation() const;
 
   // Return this color space with any YUV to RGB conversion stripped off.
   ColorSpace GetAsRGB() const;
@@ -229,6 +248,10 @@ class COLOR_SPACE_EXPORT ColorSpace {
   // If |this| is the final output color space, return the color space that
   // would be appropriate for blending.
   ColorSpace GetBlendingColorSpace() const;
+
+  // Return a combined color space with has the same primary and transfer than
+  // the caller but replacing the matrix and range with the given values.
+  ColorSpace GetWithMatrixAndRange(MatrixID matrix, RangeID range) const;
 
   // This will return nullptr for non-RGB spaces, spaces with non-FULL
   // range, and unspecified spaces.
@@ -271,18 +294,15 @@ class COLOR_SPACE_EXPORT ColorSpace {
   // order.
   float custom_transfer_params_[7] = {0, 0, 0, 0, 0, 0, 0};
 
-  // This is set if and only if this color space is to represent an ICC profile
-  // that cannot be sufficiently accurately represented with a custom primary
-  // matrix and transfer function. It can be used to look up the original
-  // ICCProfile to create a LUT based transform.
-  uint64_t icc_profile_id_ = 0;
-
   friend class ICCProfile;
   friend class ICCProfileCache;
   friend class ColorTransform;
   friend class ColorTransformInternal;
   friend class ColorSpaceWin;
   friend struct IPC::ParamTraits<ColorSpace>;
+  friend struct mojo::StructTraits<gfx::mojom::ColorSpaceDataView,
+                                   gfx::ColorSpace>;
+  friend class gl::ColorSpaceUtils;
   FRIEND_TEST_ALL_PREFIXES(SimpleColorSpace, GetColorSpace);
 };
 

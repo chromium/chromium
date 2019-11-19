@@ -8,10 +8,10 @@
 package org.chromium.chrome.browser.preferences;
 
 import android.content.Context;
-import android.preference.Preference;
+import android.support.v7.preference.Preference;
+import android.support.v7.preference.PreferenceViewHolder;
 import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.view.View;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
@@ -59,14 +59,14 @@ public class SeekBarPreference extends Preference implements OnSeekBarChangeList
     }
 
     @Override
-    protected void onBindView(View view) {
-        super.onBindView(view);
-        SeekBar seekBar = (SeekBar) view.findViewById(R.id.seekbar);
+    public void onBindViewHolder(PreferenceViewHolder holder) {
+        super.onBindViewHolder(holder);
+        SeekBar seekBar = (SeekBar) holder.findViewById(R.id.seekbar);
         seekBar.setOnSeekBarChangeListener(this);
         seekBar.setMax(prefValueToSeekBarProgress(mMax));
         seekBar.setProgress(prefValueToSeekBarProgress(mValue));
         seekBar.setEnabled(isEnabled());
-        mSummaryView = (TextView) view.findViewById(R.id.seekbar_amount);
+        mSummaryView = (TextView) holder.findViewById(R.id.seekbar_amount);
         mSummaryView.setText(mSummary);
     }
 

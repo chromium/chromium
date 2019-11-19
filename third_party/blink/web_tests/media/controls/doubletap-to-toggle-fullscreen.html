@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<title>Test that player will enter fullscreen if double tapped.</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../media-controls.js"></script>
+<video controls width=400 src="../content/60_sec_video.webm"></video>
+<script>
+async_test(t => {
+  const video = document.querySelector('video');
+
+  video.addEventListener('playing', () => {
+    // Double tap on the left side.
+    const coordinates = videoLeftEdgeCoordinates(video);
+    doubleTapAtCoordinates(coordinates[0], coordinates[1]);
+  }, { once: true });
+
+  video.addEventListener('webkitfullscreenchange', t.step_func(() => {
+    assert_equals(video, document.fullscreenElement);
+
+    // We are now fullscreen, update the event handler and doubletap to exit
+    video.addEventListener('webkitfullscreenchange',
+        t.step_func_done(), { once: true });
+
+    const coordinates = videoLeftEdgeCoordinates(video);
+    doubleTapAtCoordinates(coordinates[0], coordinates[1]);
+  }), { once: true });
+
+  video.play();
+});
+</script>
+</html>

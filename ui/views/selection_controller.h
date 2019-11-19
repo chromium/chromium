@@ -98,7 +98,7 @@ class VIEWS_EXPORT SelectionController {
 
   // Used to track double and triple clicks. Can take the values 0, 1 and 2
   // which specify a single, double and triple click respectively. Alternates
-  // between a double and triple click for continous clicks.
+  // between a double and triple click for continuous clicks.
   size_t aggregated_clicks_;
 
   // The range selected on a double click.

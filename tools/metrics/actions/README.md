@@ -152,12 +152,26 @@ User action descriptions should clearly state when the action is emitted.
 
 ### Owners
 
-User actions need to be owned by a person or set of people.  These indicate who
-the current experts on it are.  Being the owner means you are responsible for
-answering questions about it, handling the maintenance if there are functional
-changes.  The owners should be added in the original user action description.
-If you are using a user action heavily and understand it intimately, feel free
-to add yourself as an owner. @chromium.org email addresses are preferred.
+User actions need to have owners, who are the current experts on the metric. The
+owners are the contact points for any questions or maintenance tasks. It's a
+best practice to list multiple owners, so that there's no single point of
+failure for such communication.
+
+Being an owner means you are responsible for answering questions about the
+metric, handling the maintenance if there are functional changes, and
+deprecating the metric if it outlives its usefulness. If you are using a metric
+heavily and understand it intimately, feel free to add yourself as an owner.
+@chromium.org email addresses are preferred.
+
+If an appropriate mailing list is available, it's a good idea to include the
+mailing list as a secondary owner. However, it's always a best practice to list
+an individual as the primary owner. Listing an individual owner makes it clearer
+who is ultimately most responsible for maintaining the metric, which makes it
+less likely that such maintenance tasks will slip through the cracks.
+
+Notably, owners are asked to evaluate whether user actions have outlived their
+usefulness. The metrics team may file a bug in Monorail. It's important that
+somebody familiar with the user action notices and triages such bugs!
 
 ### Beware `not_user_triggered="true"`
 
@@ -165,12 +179,22 @@ actions.xml allows you to annotate an action as `not_user_triggered="true"`.  Th
 feature should be used rarely.  If you think you want to annotate your action
 thusly, please re-review the best practices above.
 
-## Deleting User Action Entries
+## Cleaning Up User Action Entries
 
 Do not delete actions from actions.xml.  Instead, mark unused user actions as
 obsolete, annotating them with the associated date or milestone in the obsolete
-tag entry.  If your user action is being replaced by a new version, we suggest
-noting that in the previous user action's description.
+tag entry.
+
+If the user action is being replaced by a new version:
+
+* Note in the `<obsolete>` message the name of the replacement action.
+
+* Make sure the descriptions of the original and replacement user actions
+  are different.  It's never appropriate for them to be identical.  Either
+  the old description was wrong, and it should be revised to explain what
+  it actually measured, or the old user action was measuring something not
+  as useful as the replacement, in which case the new user action is
+  measuring something different and needs to have a new description.
 
 A changelist that marks a user action as obsolete should be reviewed by all
 current owners.

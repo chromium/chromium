@@ -9,23 +9,23 @@
 #include <Windows.h>
 #include <vector>
 
+#include "base/component_export.h"
 #include "ui/base/ime/text_input_mode.h"
 #include "ui/base/ime/text_input_type.h"
-#include "ui/base/ime/ui_base_ime_export.h"
 
 namespace ui {
 namespace tsf_inputscope {
 
 // Initializes the TSF for input scopes. It loads the tsf dll and get the
 // function pointer for setting the input scopes in TSF.
-UI_BASE_IME_EXPORT void InitializeTsfForInputScopes();
+COMPONENT_EXPORT(UI_BASE_IME_WIN) void InitializeTsfForInputScopes();
 
 // Returns InputScope list corresoponding to ui::TextInputType and
 // ui::TextInputMode.
 // This function is only used from following functions but declared for test.
-UI_BASE_IME_EXPORT std::vector<InputScope> GetInputScopes(
-    TextInputType text_input_type,
-    TextInputMode text_input_mode);
+COMPONENT_EXPORT(UI_BASE_IME_WIN)
+std::vector<InputScope> GetInputScopes(TextInputType text_input_type,
+                                       TextInputMode text_input_mode);
 
 // Returns an instance of ITfInputScope, which is the Windows-specific
 // category representation corresponding to ui::TextInputType and
@@ -33,18 +33,19 @@ UI_BASE_IME_EXPORT std::vector<InputScope> GetInputScopes(
 // in the target field.
 // The returned instance has 0 reference count. The caller must maintain its
 // reference count.
-UI_BASE_IME_EXPORT ITfInputScope* CreateInputScope(
-    TextInputType text_input_type,
-    TextInputMode text_input_mode);
+COMPONENT_EXPORT(UI_BASE_IME_WIN)
+ITfInputScope* CreateInputScope(TextInputType text_input_type,
+                                TextInputMode text_input_mode,
+                                bool should_do_learning);
 
 // A wrapper of the SetInputScopes API exported by msctf.dll.
 // http://msdn.microsoft.com/en-us/library/windows/desktop/ms629026.aspx
 // Does nothing on Windows XP in case TSF is disabled.
 // NOTE: For TSF-aware window, you should use ITfInputScope instead.
-UI_BASE_IME_EXPORT void SetInputScopeForTsfUnawareWindow(
-    HWND window_handle,
-    TextInputType text_input_type,
-    TextInputMode text_input_mode);
+COMPONENT_EXPORT(UI_BASE_IME_WIN)
+void SetInputScopeForTsfUnawareWindow(HWND window_handle,
+                                      TextInputType text_input_type,
+                                      TextInputMode text_input_mode);
 
 }  // namespace tsf_inputscope
 }  // namespace ui

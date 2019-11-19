@@ -1,0 +1,15 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+mac_signing_sources = [
+  "signing/__init__.py",
+  "signing/commands.py",
+  "signing/chromium_config.py",
+  "signing/config.py",
+  "signing/model.py",
+  "signing/modification.py",
+  "signing/notarize.py",
+  "signing/pipeline.py",
+  "signing/signing.py",
+]

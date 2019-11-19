@@ -1,56 +1,55 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_link_row/cr_link_row.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-button/paper-button.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-icon-button/paper-icon-button-light.html">
 <link rel="import" href="crostini_browser_proxy.html">
 <link rel="import" href="../i18n_setup.html">
 <link rel="import" href="../prefs/prefs_behavior.html">
+<link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
 <link rel="import" href="../settings_shared_css.html">
 
 <dom-module id="settings-crostini-subpage">
   <template>
     <style include="settings-shared"></style>
-    <div id="crostini-shared-paths" class="settings-box first"
-        actionable on-click="onSharedPathsTap_">
-      <div class="start">$i18n{crostiniSharedPaths}</div>
-      <paper-icon-button-light class="subpage-arrow">
-        <button aria-label="$i18n{crostiniSharedPaths}"></button>
-      </paper-icon-button-light>
-    </div>
-    <template is="dom-if" if="[[enableCrostiniUsbDeviceSupport_]]">
-      <div id="crostini-shared-usb-devices" class="settings-box"
-          actionable on-click="onSharedUsbDevicesTap_">
-        <div class="start">$i18n{crostiniSharedUsbDevicesLabel}</div>
-        <paper-icon-button-light class="subpage-arrow">
-          <button aria-label="$i18n{crostiniSharedUsbDevicesLabel}"></button>
-        </paper-icon-button-light>
-      </div>
-    </template>
+    <cr-link-row
+        id="crostini-shared-paths"
+        label="$i18n{crostiniSharedPaths}"
+        on-click="onSharedPathsClick_"
+        role-description="$i18n{subpageArrowRoleDescription}">
+    </cr-link-row>
+    <cr-link-row
+        class="hr"
+        label="$i18n{crostiniSharedUsbDevicesLabel}"
+        id="crostini-shared-usb-devices"
+        on-click="onSharedUsbDevicesClick_"
+        role-description="$i18n{subpageArrowRoleDescription}">
+    </cr-link-row>
     <template is="dom-if" if="[[showCrostiniExportImport_]]">
-      <div class="settings-box">$i18n{crostiniExportImportTitle}</div>
-      <div class="list-frame vertical-list">
-        <div id="export" class="list-item">
-          <div class="start secondary">$i18n{crostiniExportLabel}</div>
-          <paper-button on-click="onExportClick_">
-             $i18n{crostiniExport}
-          </paper-button>
-        </div>
-        <div id="import" class="list-item">
-          <div class="start secondary">$i18n{crostiniImportLabel}</div>
-          <paper-button on-click="onImportClick_">
-             $i18n{crostiniImport}
-          </paper-button>
-        </div>
-      </div>
+      <cr-link-row
+          class="hr"
+          label="$i18n{crostiniExportImportTitle}"
+          id="crostini-export-import"
+          on-click="onExportImportClick_"
+          role-description="$i18n{subpageArrowRoleDescription}">
+      </cr-link-row>
+    </template>
+    <template is="dom-if" if="[[showArcAdbSideloading_]]">
+      <cr-link-row
+          class="hr"
+          label="$i18n{crostiniArcAdbTitle}"
+          id="crostini-enable-arc-adb"
+          on-click="onEnableArcAdbClick_"
+          role-description="$i18n{subpageArrowRoleDescription}">
+      </cr-link-row>
     </template>
     <template is="dom-if" if="[[!hideCrostiniUninstall_]]">
-      <div id="remove" class="settings-box"
-           actionable on-click="onRemoveTap_">
-        <div class="start">$i18n{crostiniRemove}</div>
-        <paper-icon-button-light class="subpage-arrow">
-          <button aria-label="$i18n{crostiniRemove}"></button>
-        </paper-icon-button-light>
+      <div id="remove" class="settings-box">
+        <div id="removeCrostiniLabel" class="start">$i18n{crostiniRemove}</div>
+        <cr-button on-click="onRemoveClick_"
+          aria-labelledby="removeCrostiniLabel">
+           $i18n{crostiniRemoveButton}
+        </cr-button>
       </div>
     </template>
   </template>

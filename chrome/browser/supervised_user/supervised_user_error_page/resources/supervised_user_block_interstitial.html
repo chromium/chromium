@@ -1,0 +1,65 @@
+<!doctype html>
+<html dir="$i18n{textdirection}" lang="$i18n{language}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport"
+    content="initial-scale=1, minimum-scale=1, width=device-width">
+<title>$i18n{blockPageTitle}</title>
+<link href="https://fonts.googleapis.com/css?family=Google+Sans" rel="stylesheet">
+<link rel="stylesheet" href="../../../../../components/security_interstitials/core/common/resources/interstitial_core.css">
+<link rel="stylesheet" href="supervised_user_block_interstitial.css">
+<script src="../../../../../ui/webui/resources/js/cr.js"></script>
+<script src="../../../../../ui/webui/resources/js/util.js"></script>
+<script src="supervised_user_block_interstitial.js"></script>
+</head>
+<body class="supervised-user-block">
+<div class="main-frame-blocked">
+  <div id="information-container">
+    <div class="icon" id="icon"></div>
+    <div id="main-message">
+      <h1 id="block-page-header">$i18n{blockPageHeader}</h1>
+      <p id="block-page-message">$i18n{blockPageMessage}</p>
+      <h1 id="request-failed-message" hidden>$i18n{requestFailedMessage}</h1>
+      <h1 id="request-sent-message" hidden>$i18n{requestSentMessage}</h1>
+    </div>
+    <div id="custodians-information" hidden>
+      <div id="custodian-information" class="custodian-information">
+        <img id="custodian-avatar-img" class="avatar-img">
+        <div id="custodian-contact">
+          <div id="custodian-name" class="custodian-name"></div>
+          <div id="custodian-email" class="custodian-email"></div>
+        </div>
+      </div>
+      <div id="second-custodian-information" class="custodian-information" hidden>
+        <img id="second-custodian-avatar-img" class="avatar-img" hidden>
+        <div id="second-custodian-contact">
+          <div id="second-custodian-name" class="custodian-name"></div>
+          <div id="second-custodian-email" class="custodian-email"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="button-container">
+    <button id="request-access-button" class="ask-permission-button">
+      $i18n{requestAccessButton}
+    </button>
+    <div id="details-button-container">
+      <button id="show-details-link" class="details-button small-link">
+        $i18n{showDetailsLink}
+      </button>
+      <button id="hide-details-link" class="details-button small-link" hidden>
+        $i18n{hideDetailsLink}
+      </button>
+    </div>
+    <button id="back-button" class="go-back-button" hidden>
+      $i18n{backButton}
+    </button>
+  </div>
+  <div id="details" hidden>
+    <p id="details-header">$i18n{blockReasonHeader}</p>
+    <p id="details-message">$i18n{blockReasonMessage}</p>
+    <p id="feedback">$i18nRaw{feedbackLink}</p>
+  </div>
+</div>
+</body>
+</html>

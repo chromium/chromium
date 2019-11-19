@@ -16,6 +16,8 @@ Usage example:
     --namespace extensions windows.json tabs.json
 """
 
+from __future__ import print_function
+
 import optparse
 import os
 import shlex
@@ -204,11 +206,11 @@ if __name__ == '__main__':
 
   include_rules = []
   if opts.include_rules:
-    include_rules = map(split_path_and_namespace,
-                        shlex.split(opts.include_rules))
+    include_rules = list(
+        map(split_path_and_namespace, shlex.split(opts.include_rules)))
 
   result = GenerateSchema(opts.generator, file_paths, opts.root, opts.destdir,
                           opts.namespace, opts.bundle_name, opts.impl_dir,
                           include_rules)
   if not opts.destdir:
-    print result
+    print(result)

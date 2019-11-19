@@ -1,0 +1,393 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+import("//build/config/locales.gni")
+import("//build/config/sanitizers/sanitizers.gni")
+import("//build/config/ui.gni")
+import("//build/config/win/console_app.gni")
+import("//build/config/win/manifest.gni")
+import("//gpu/vulkan/features.gni")
+import("//media/media_options.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
+import("//tools/grit/grit_rule.gni")
+import("//tools/grit/repack.gni")
+import("//tools/v8_context_snapshot/v8_context_snapshot.gni")
+if (is_android) {
+  import("//build/config/android/config.gni")
+} else if (is_mac) {
+  import("//build/config/mac/rules.gni")
+  import("//build/mac/tweak_info_plist.gni")
+  import("//content/public/app/mac_helpers.gni")
+  import("//third_party/icu/config.gni")
+  import("//ui/gl/features.gni")
+  import("//v8/gni/v8.gni")
+}
+
+source_set("android_descriptors") {
+  sources = [
+    "browser/android_descriptors.h",
+  ]
+  public_deps = [
+    "//content/public/common:content_descriptors",
+  ]
+}
+
+if (is_android) {
+  grit("generate_components_strings") {
+    source = "../components/components_strings.grd"
+
+    # components_strings contains strings from all components. WebLayer
+    # will never display most of them, so we try to limit the included
+    # strings.
+    whitelist = rebase_path("grit_strings_whitelist.txt", root_build_dir)
+    inputs = [
+      "//weblayer/grit_strings_whitelist.txt",
+    ]
+    grit_flags = [
+      "-w",
+      whitelist,
+    ]
+    outputs = [
+      "grit/components_strings.h",
+      "java/res/values-am/components_strings.xml",
+      "java/res/values-ar/components_strings.xml",
+      "java/res/values-bg/components_strings.xml",
+      "java/res/values-bn/components_strings.xml",
+      "java/res/values-ca/components_strings.xml",
+      "java/res/values-cs/components_strings.xml",
+      "java/res/values-da/components_strings.xml",
+      "java/res/values-de/components_strings.xml",
+      "java/res/values-el/components_strings.xml",
+      "java/res/values-en-rGB/components_strings.xml",
+      "java/res/values-es/components_strings.xml",
+      "java/res/values-es-rUS/components_strings.xml",
+      "java/res/values-et/components_strings.xml",
+      "java/res/values-fa/components_strings.xml",
+      "java/res/values-fi/components_strings.xml",
+      "java/res/values-fr/components_strings.xml",
+      "java/res/values-gu/components_strings.xml",
+      "java/res/values-hi/components_strings.xml",
+      "java/res/values-hr/components_strings.xml",
+      "java/res/values-hu/components_strings.xml",
+      "java/res/values-in/components_strings.xml",
+      "java/res/values-it/components_strings.xml",
+      "java/res/values-iw/components_strings.xml",
+      "java/res/values-ja/components_strings.xml",
+      "java/res/values-kn/components_strings.xml",
+      "java/res/values-ko/components_strings.xml",
+      "java/res/values-lt/components_strings.xml",
+      "java/res/values-lv/components_strings.xml",
+      "java/res/values-ml/components_strings.xml",
+      "java/res/values-mr/components_strings.xml",
+      "java/res/values-ms/components_strings.xml",
+      "java/res/values-nb/components_strings.xml",
+      "java/res/values-nl/components_strings.xml",
+      "java/res/values-pl/components_strings.xml",
+      "java/res/values-pt-rBR/components_strings.xml",
+      "java/res/values-pt-rPT/components_strings.xml",
+      "java/res/values-ro/components_strings.xml",
+      "java/res/values-ru/components_strings.xml",
+      "java/res/values-sk/components_strings.xml",
+      "java/res/values-sl/components_strings.xml",
+      "java/res/values-sr/components_strings.xml",
+      "java/res/values-sv/components_strings.xml",
+      "java/res/values-sw/components_strings.xml",
+      "java/res/values-ta/components_strings.xml",
+      "java/res/values-te/components_strings.xml",
+      "java/res/values-th/components_strings.xml",
+      "java/res/values-tl/components_strings.xml",
+      "java/res/values-tr/components_strings.xml",
+      "java/res/values-uk/components_strings.xml",
+      "java/res/values-vi/components_strings.xml",
+      "java/res/values-zh-rCN/components_strings.xml",
+      "java/res/values-zh-rTW/components_strings.xml",
+      "java/res/values/components_strings.xml",
+    ]
+    foreach(_locale, locales_with_fake_bidi) {
+      outputs += [ "components_strings_${_locale}.pak" ]
+    }
+  }
+
+  repack("weblayer_locales") {
+    sources = [
+      "${root_gen_dir}/weblayer/components_strings_en-US.pak",
+    ]
+    deps = [
+      ":generate_components_strings",
+    ]
+    output = "$root_out_dir/weblayer/locales/en-US.pak"
+  }
+
+  android_assets("locale_pak_assets") {
+    disable_compression = true
+    renaming_sources = [ "$root_out_dir/weblayer/locales/en-US.pak" ]
+    renaming_destinations = [ "stored-locales/weblayer/en-US.pak" ]
+    treat_as_locale_paks = true
+    deps = [
+      ":weblayer_locales",
+    ]
+  }
+}
+
+jumbo_static_library("weblayer_lib") {
+  sources = [
+    "app/content_main_delegate_impl.cc",
+    "app/content_main_delegate_impl.h",
+    "app/main.cc",
+    "browser/browser_main_parts_impl.cc",
+    "browser/browser_main_parts_impl.h",
+    "browser/content_browser_client_impl.cc",
+    "browser/content_browser_client_impl.h",
+    "browser/file_select_helper.cc",
+    "browser/file_select_helper.h",
+    "browser/i18n_util.cc",
+    "browser/i18n_util.h",
+    "browser/isolated_world_ids.h",
+    "browser/navigation_controller_impl.cc",
+    "browser/navigation_controller_impl.h",
+    "browser/navigation_impl.cc",
+    "browser/navigation_impl.h",
+    "browser/profile_impl.cc",
+    "browser/profile_impl.h",
+    "browser/ssl_blocking_page.cc",
+    "browser/ssl_blocking_page.h",
+    "browser/ssl_error_handler.cc",
+    "browser/ssl_error_handler.h",
+    "browser/ssl_host_state_delegate_impl.cc",
+    "browser/ssl_host_state_delegate_impl.h",
+    "browser/tab_impl.cc",
+    "browser/tab_impl.h",
+    "browser/weblayer_content_browser_overlay_manifest.cc",
+    "browser/weblayer_content_browser_overlay_manifest.h",
+    "browser/webui/web_ui_controller_factory.cc",
+    "browser/webui/web_ui_controller_factory.h",
+    "browser/webui/weblayer_internals_ui.cc",
+    "browser/webui/weblayer_internals_ui.h",
+    "common/content_client_impl.cc",
+    "common/content_client_impl.h",
+    "common/features.cc",
+    "common/features.h",
+    "common/weblayer_paths.cc",
+    "common/weblayer_paths.h",
+    "public/download_delegate.h",
+    "public/error_page_delegate.h",
+    "public/fullscreen_delegate.h",
+    "public/main.h",
+    "public/navigation.h",
+    "public/navigation_controller.h",
+    "public/navigation_observer.h",
+    "public/new_tab_delegate.h",
+    "public/profile.h",
+    "public/tab.h",
+    "public/tab_observer.h",
+    "renderer/content_renderer_client_impl.cc",
+    "renderer/content_renderer_client_impl.h",
+    "renderer/ssl_error_helper.cc",
+    "renderer/ssl_error_helper.h",
+    "utility/content_utility_client_impl.cc",
+    "utility/content_utility_client_impl.h",
+  ]
+
+  if (is_android) {
+    # TODO(timvolodine): move this to safe_browsing/
+    sources += [
+      "browser/devtools_manager_delegate_android.cc",
+      "browser/devtools_manager_delegate_android.h",
+      "browser/devtools_server_android.cc",
+      "browser/devtools_server_android.h",
+      "browser/safe_browsing/safe_browsing_service.cc",
+      "browser/safe_browsing/safe_browsing_service.h",
+      "browser/safe_browsing/safe_browsing_ui_manager.cc",
+      "browser/safe_browsing/safe_browsing_ui_manager.h",
+      "browser/safe_browsing/url_checker_delegate_impl.cc",
+      "browser/safe_browsing/url_checker_delegate_impl.h",
+      "browser/weblayer_impl_android.cc",
+    ]
+  }
+
+  configs += [
+    "//build/config:precompiled_headers",
+
+    # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
+    "//build/config/compiler:no_size_t_to_int_warning",
+  ]
+
+  public_deps = [
+    ":android_descriptors",
+  ]
+  deps = [
+    "//base",
+    "//base:base_static",
+    "//base/third_party/dynamic_annotations",
+    "//cc",
+    "//components/crash/content/app",
+    "//components/crash/content/browser",
+    "//components/security_interstitials/content:security_interstitial_page",
+    "//components/security_interstitials/content/renderer:security_interstitial_page_controller",
+    "//components/security_interstitials/core",
+    "//components/version_info",
+    "//components/web_cache/browser",
+    "//content:resources",
+    "//content/app/resources",
+    "//content/public/app:both",
+    "//content/public/browser",
+    "//content/public/child",
+    "//content/public/common",
+    "//content/public/common:service_names",
+    "//content/public/renderer",
+    "//content/public/utility",
+    "//net",
+    "//net:net_resources",
+    "//sandbox",
+    "//services/network/public/mojom",
+    "//services/service_manager/embedder:embedder_result_codes",
+    "//skia",
+    "//third_party/blink/public/common",
+    "//third_party/blink/public/strings",
+    "//third_party/icu",
+    "//ui/base",
+    "//ui/base/clipboard",
+    "//ui/base/ime/init",
+    "//ui/display",
+    "//ui/events:events_base",
+    "//ui/gfx",
+    "//ui/gfx/geometry",
+    "//ui/gfx/ipc",
+    "//ui/gfx/ipc/geometry",
+    "//ui/gfx/ipc/skia",
+    "//ui/gl",
+    "//ui/platform_window",
+    "//ui/shell_dialogs",
+    "//ui/webui",
+    "//url",
+    "//v8",
+    "//weblayer:resources",
+    "//weblayer/browser/webui:mojo_bindings",
+  ]
+
+  if (is_android) {
+    sources += [
+      "common/crash_reporter/crash_keys.cc",
+      "common/crash_reporter/crash_keys.h",
+      "common/crash_reporter/crash_reporter_client.cc",
+      "common/crash_reporter/crash_reporter_client.h",
+    ]
+    deps += [
+      "//android_webview:generate_aw_resources",
+      "//android_webview:generate_aw_strings",
+      "//components/crash/android:crashpad_main",
+      "//components/safe_browsing",
+      "//components/safe_browsing/android:remote_database_manager",
+      "//components/safe_browsing/android:safe_browsing_api_handler",
+      "//components/safe_browsing/browser",
+      "//components/safe_browsing/browser:network_context",
+      "//components/safe_browsing/db:database_manager",
+      "//components/version_info/android:channel_getter",
+    ]
+  }
+
+  if (enable_vulkan) {
+    deps += [ "//gpu/vulkan/init" ]
+  }
+  if (mojo_media_host == "browser") {
+    deps += [
+      "//media/mojo/mojom:constants",
+      "//media/mojo/services",
+    ]
+  }
+
+  if (is_win) {
+    deps += [ "//content:sandbox_helper_win" ]
+    if (win_console_app) {
+      defines = [ "WIN_CONSOLE_APP" ]
+    }
+  }
+
+  if (is_linux) {
+    deps += [
+      "//build/config/freetype",
+      "//third_party/fontconfig",
+    ]
+  }
+
+  if (is_android) {
+    deps += [
+      "//components/embedder_support/android:web_contents_delegate",
+      "//components/version_info",
+      "//ui/android",
+      "//weblayer/browser/java:jni",
+    ]
+    sources += [
+      "app/jni_onload.cc",
+      "app/jni_onload.h",
+      "browser/content_view_render_view.cc",
+      "browser/content_view_render_view.h",
+      "browser/download_callback_proxy.cc",
+      "browser/download_callback_proxy.h",
+      "browser/error_page_callback_proxy.cc",
+      "browser/error_page_callback_proxy.h",
+      "browser/fullscreen_callback_proxy.cc",
+      "browser/fullscreen_callback_proxy.h",
+      "browser/new_tab_callback_proxy.cc",
+      "browser/new_tab_callback_proxy.h",
+      "browser/tab_callback_proxy.cc",
+      "browser/tab_callback_proxy.h",
+      "browser/top_controls_container_view.cc",
+      "browser/top_controls_container_view.h",
+    ]
+  }
+  if (!is_android) {
+    deps += [ "//ui/views/controls/webview" ]
+  }
+
+  if (toolkit_views) {
+    deps += [ "//ui/views" ]
+  }
+
+  if (use_aura) {
+    deps += [
+      "//ui/aura",
+      "//ui/events",
+      "//ui/strings",
+      "//ui/wm",
+    ]
+  }
+}
+
+grit("resources") {
+  source = "weblayer_resources.grd"
+
+  source_is_generated = true
+
+  outputs = [
+    "grit/weblayer_resources.h",
+    "weblayer_resources.pak",
+  ]
+  grit_flags = [
+    "-E",
+    "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
+  ]
+  deps = [
+    "//weblayer/browser/webui:mojo_bindings_js",
+  ]
+}
+
+# TODO(jam): move weblayer_shell_resources_grit and copy_shell_resources here in
+# a way that's shareable?
+
+if (is_android) {
+  shared_library("libweblayer") {
+    sources = [
+      "app/entry_point.cc",
+    ]
+    deps = [
+      ":weblayer_lib",
+      "//base",
+      "//content/public/app:both",
+    ]
+    configs -= [ "//build/config/android:hide_all_but_jni_onload" ]
+    configs += [ "//build/config/android:hide_all_but_jni" ]
+  }
+}

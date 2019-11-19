@@ -15,6 +15,10 @@
 #   actions will be logged to stderr.  The same debugging information will
 #   also be enabled when "Library/Google/Google Chrome Updater Debug" in the
 #   root directory or in ${HOME} exists.
+# GOOGLE_CHROME_UPDATER_TEST_PATH
+#   When set to a non-empty value, the product at this path will be updated.
+#   ksadmin will not be consulted to locate the installed product, nor will it
+#   be called to update any tickets.
 #
 # Exit codes:
 #  0  Happiness
@@ -64,9 +68,13 @@ readonly ME
 
 readonly KS_CHANNEL_KEY="KSChannelID"
 
-# Workaround for http://code.google.com/p/chromium/issues/detail?id=83180#c3
-# In bash 4.0, "declare VAR" no longer initializes VAR if not already set.
+# Workaround for https://crbug.com/83180#c3: in bash 4.0, "declare VAR" no
+# longer initializes VAR if not already set. (Apple has never shipped a bash
+# newer than 3.2, but a small number of people seem to have replaced their
+# system /bin/sh with a newer bash, probably all before SIP became a thing.)
 : ${GOOGLE_CHROME_UPDATER_DEBUG:=}
+: ${GOOGLE_CHROME_UPDATER_TEST_PATH:=}
+
 err() {
   local error="${1}"
 
@@ -222,8 +230,8 @@ ensure_writable_symlink() {
     fi
     temp_link="${temp_link_dir}/$(basename "${symlink}")"
 
-    (ln -fhs "${target}" "${temp_link}" && \
-        chmod -h 755 "${temp_link}" && \
+    (ln -fhs "${target}" "${temp_link}" &&
+        chmod -h 755 "${temp_link}" &&
         mv -f "${temp_link}" "${symlink_dir}/") || true
     rm -rf "${temp_link_dir}"
   fi
@@ -351,7 +359,16 @@ g_ksadmin_version=
 ksadmin_version() {
   if [[ -z "${g_checked_ksadmin_version}" ]]; then
     g_checked_ksadmin_version="y"
-    g_ksadmin_version="$(ksadmin --ksadmin-version || true)"
+    if [[ -n "${GOOGLE_CHROME_UPDATER_TEST_PATH}" ]]; then
+      note "test mode: not calling Keystone, g_ksadmin_version is fake"
+
+      # This isn't very special, it's just what happens to be current as this is
+      # written. It's new enough that all of the feature checks
+      # (ksadmin_supports_*) pass.
+      g_ksadmin_version="1.2.13.41"
+    else
+      g_ksadmin_version="$(ksadmin --ksadmin-version || true)"
+    fi
     note "g_ksadmin_version = ${g_ksadmin_version}"
   fi
   echo "${g_ksadmin_version}"
@@ -552,7 +569,9 @@ mark_failed_patch_update() {
 
   note "ksadmin_args = ${ksadmin_args[*]}"
 
-  if ! ksadmin "${ksadmin_args[@]}"; then
+  if [[ -n "${GOOGLE_CHROME_UPDATER_TEST_PATH}" ]]; then
+    note "test mode: not calling Keystone to mark failed patch update"
+  elif ! ksadmin "${ksadmin_args[@]}"; then
     err "ksadmin failed to mark failed patch update"
   else
     note "marked failed patch update"
@@ -584,9 +603,13 @@ main() {
   readonly PATCH_DIR=".patch"
   readonly CONTENTS_DIR="Contents"
   readonly APP_PLIST="${CONTENTS_DIR}/Info"
-  readonly VERSIONS_DIR="${CONTENTS_DIR}/Versions"
+  readonly VERSIONS_DIR_NEW=\
+"${CONTENTS_DIR}/Frameworks/${FRAMEWORK_DIR}/Versions"
+  readonly VERSIONS_DIR_OLD="${CONTENTS_DIR}/Versions"
   readonly UNROOTED_BRAND_PLIST="Library/Google/Google Chrome Brand"
   readonly UNROOTED_DEBUG_FILE="Library/Google/Google Chrome Updater Debug"
+  readonly UNROOTED_KS_BUNDLE_DIR=\
+"Library/Google/GoogleSoftwareUpdate/GoogleSoftwareUpdate.bundle"
 
   readonly APP_VERSION_KEY="CFBundleShortVersionString"
   readonly APP_BUNDLEID_KEY="CFBundleIdentifier"
@@ -596,19 +619,18 @@ main() {
   readonly KS_BRAND_KEY="KSBrandID"
 
   readonly QUARANTINE_ATTR="com.apple.quarantine"
-  readonly KEYCHAIN_REAUTHORIZE_DIR=".keychain_reauthorize"
 
-  # Don't use rsync -a, because -a expands to -rlptgoD.  -g and -o copy owners
-  # and groups, respectively, from the source, and that is undesirable in this
-  # case.  -D copies devices and special files; copying devices only works
-  # when running as root, so for consistency between privileged and
-  # unprivileged operation, this option is omitted as well.
-  #  -I, --ignore-times  don't skip files that match in size and mod-time
-  #  -l, --links         copy symlinks as symlinks
-  #  -r, --recursive     recurse into directories
-  #  -p, --perms         preserve permissions
-  #  -t, --times         preserve times
-  readonly RSYNC_FLAGS="-Ilprt"
+  # Don't use rsync --archive, because --archive includes --group and --owner,
+  # which copy groups and owners, respectively, from the source, and that is
+  # undesirable in this case (often, this script will have permission to set
+  # those attributes).  --archive also includes --devices and --specials, which
+  # copy files that should never occur in the transfer; --devices only works
+  # when running as root, so for consistency between privileged and unprivileged
+  # operation, this option is omitted as well.  --archive does not include
+  # --ignore-times, which is desirable, as it forces rsync to copy files even
+  # when their sizes and modification times are identical, as their content
+  # still may be different.
+  readonly RSYNC_FLAGS="--ignore-times --links --perms --recursive --times"
 
   # It's difficult to get GOOGLE_CHROME_UPDATER_DEBUG set in the environment
   # when this script is called from Keystone.  If a "debug file" exists in
@@ -681,7 +703,7 @@ main() {
   local patch_app_dir=
   local patch_versioned_dir=
 
-  local update_version_app update_version_ks product_id
+  local update_version_app update_version_ks product_id update_layout_new
   if [[ -z "${is_patch}" ]]; then
     update_app="${update_dmg_mount_point}/${APP_DIR}"
     note "update_app = ${update_app}"
@@ -738,6 +760,11 @@ main() {
       exit 2
     fi
     note "product_id = ${product_id}"
+
+    if [[ -d "${update_app}/${VERSIONS_DIR_NEW}" ]]; then
+      update_layout_new="y"
+    fi
+    note "update_layout_new = ${update_layout_new}"
   else  # [[ -n "${is_patch}" ]]
     # Get some information about the update.
     note "reading update values"
@@ -777,13 +804,20 @@ main() {
     fi
     note "patch_app_dir = ${patch_app_dir}"
 
-    patch_versioned_dir=\
+    patch_versioned_dir="${patch_dir}/\
+framework_${update_version_app_old}_${update_version_app}.dirpatch"
+    if [[ -d "${patch_versioned_dir}" ]]; then
+      update_layout_new="y"
+    else
+      patch_versioned_dir=\
 "${patch_dir}/version_${update_version_app_old}_${update_version_app}.dirpatch"
-    if ! [[ -d "${patch_versioned_dir}" ]]; then
-      err "couldn't locate patch_versioned_dir"
-      exit 6
+      if ! [[ -d "${patch_versioned_dir}" ]]; then
+        err "couldn't locate patch_versioned_dir"
+        exit 6
+      fi
     fi
     note "patch_versioned_dir = ${patch_versioned_dir}"
+    note "update_layout_new = ${update_layout_new}"
   fi
 
   # ksadmin is required. Keystone should have set a ${PATH} that includes it.
@@ -791,12 +825,16 @@ main() {
   # unlikely event that ksadmin is missing.
   note "checking Keystone"
 
-  local ksadmin_path
-  if ! ksadmin_path="$(type -p ksadmin)" || [[ -z "${ksadmin_path}" ]]; then
-    err "couldn't locate ksadmin_path"
-    exit 3
+  if [[ -n "${GOOGLE_CHROME_UPDATER_TEST_PATH}" ]]; then
+    note "test mode: not setting ksadmin_path"
+  else
+    local ksadmin_path
+    if ! ksadmin_path="$(type -p ksadmin)" || [[ -z "${ksadmin_path}" ]]; then
+      err "couldn't locate ksadmin_path"
+      exit 3
+    fi
+    note "ksadmin_path = ${ksadmin_path}"
   fi
-  note "ksadmin_path = ${ksadmin_path}"
 
   # Call ksadmin_version once to prime the global state.  This is needed
   # because subsequent calls to ksadmin_version that occur in $(...)
@@ -811,7 +849,10 @@ main() {
 
   # Figure out where to install.
   local installed_app
-  if ! installed_app="$(ksadmin -pP "${product_id}" | sed -Ene \
+  if [[ -n "${GOOGLE_CHROME_UPDATER_TEST_PATH}" ]]; then
+    note "test mode: not calling Keystone, installed_app is from environment"
+    installed_app="${GOOGLE_CHROME_UPDATER_TEST_PATH}"
+  elif ! installed_app="$(ksadmin -pP "${product_id}" | sed -Ene \
       "s%^[[:space:]]+xc=<KSPathExistenceChecker:.* path=(/.+)>\$%\\1%p")" ||
       [[ -z "${installed_app}" ]]; then
     err "couldn't locate installed_app"
@@ -836,12 +877,12 @@ main() {
   fi
   note "system_ticket = ${system_ticket}"
 
-  # If this script is being driven by a user ticket, but a system ticket is
-  # also present, there's a potential for the two to collide.  Both ticket
-  # types might be present if another user on the system promoted the ticket
-  # to system: the other user could not have removed this user's user ticket.
-  # Handle that case here by deleting the user ticket and exiting early with
-  # a discrete exit code.
+  # If this script is being driven by a user ticket, but a system ticket is also
+  # present and system Keystone is installed, there's a potential for the two
+  # tickets to collide.  Both ticket types might be present if another user on
+  # the system promoted the ticket to system: the other user could not have
+  # removed this user's user ticket.  Handle that case here by deleting the user
+  # ticket and exiting early with a discrete exit code.
   #
   # Current versions of ksadmin will exit 1 (false) when asked to print tickets
   # and given a specific product ID to print.  Older versions of ksadmin would
@@ -852,7 +893,9 @@ main() {
   # sufficiently recent ksadmin.  Older ksadmins are tolerated: the update will
   # likely fail for another reason and the user ticket will hang around until
   # something is eventually able to remove it.
-  if [[ -z "${system_ticket}" ]] &&
+  if [[ -z "${GOOGLE_CHROME_UPDATER_TEST_PATH}" ]] &&
+     [[ -z "${system_ticket}" ]] &&
+     [[ -d "/${UNROOTED_KS_BUNDLE_DIR}" ]] &&
      ksadmin -S --print-tickets --productid "${product_id}" >& /dev/null; then
     ksadmin --delete --productid "${product_id}" || true
     err "can't update on a user ticket when a system ticket is also present"
@@ -890,14 +933,28 @@ main() {
     fi
   fi
 
-  local installed_versions_dir="${installed_app}/${VERSIONS_DIR}"
+  local installed_versions_dir_new="${installed_app}/${VERSIONS_DIR_NEW}"
+  note "installed_versions_dir_new = ${installed_versions_dir_new}"
+  local installed_versions_dir_old="${installed_app}/${VERSIONS_DIR_OLD}"
+  note "installed_versions_dir_old = ${installed_versions_dir_old}"
+
+  local installed_versions_dir
+  if [[ -n "${update_layout_new}" ]]; then
+    installed_versions_dir="${installed_versions_dir_new}"
+  else
+    installed_versions_dir="${installed_versions_dir_old}"
+  fi
   note "installed_versions_dir = ${installed_versions_dir}"
 
-  # If the installed application is incredibly old, old_versioned_dir may not
-  # exist.
+  # If the installed application is incredibly old, or in a skeleton bootstrap
+  # installation, old_versioned_dir may not exist.
   local old_versioned_dir
   if [[ -n "${old_version_app}" ]]; then
-    old_versioned_dir="${installed_versions_dir}/${old_version_app}"
+    if [[ -d "${installed_versions_dir_new}/${old_version_app}" ]]; then
+      old_versioned_dir="${installed_versions_dir_new}/${old_version_app}"
+    elif [[ -d "${installed_versions_dir_old}/${old_version_app}" ]]; then
+      old_versioned_dir="${installed_versions_dir_old}/${old_version_app}"
+    fi
   fi
   note "old_versioned_dir = ${old_versioned_dir}"
 
@@ -913,7 +970,13 @@ main() {
 
   local update_versioned_dir=
   if [[ -z "${is_patch}" ]]; then
-    update_versioned_dir="${update_app}/${VERSIONS_DIR}/${update_version_app}"
+    if [[ -n "${update_layout_new}" ]]; then
+      update_versioned_dir=\
+"${update_app}/${VERSIONS_DIR_NEW}/${update_version_app}"
+    else
+      update_versioned_dir=\
+"${update_app}/${VERSIONS_DIR_OLD}/${update_version_app}"
+    fi
     note "update_versioned_dir = ${update_versioned_dir}"
   fi
 
@@ -925,8 +988,8 @@ main() {
 
   # Make sure that ${installed_versions_dir} exists, so that it can receive
   # the versioned directory.  It may not exist if updating from an older
-  # version that did not use the versioned layout on disk.  Later, during the
-  # rsync to copy the application directory, the mode bits and timestamp on
+  # version that did not use the same versioned layout on disk.  Later, during
+  # the rsync to copy the application directory, the mode bits and timestamp on
   # ${installed_versions_dir} will be set to conform to whatever is present in
   # the update.
   #
@@ -991,6 +1054,19 @@ main() {
                                "${old_ks_plist}" \
                                "${old_version_app}" \
                                "${system_ticket}"
+
+      if [[ -n "${update_layout_new}" ]] &&
+         [[ "${versioned_dir_target}" = "${new_versioned_dir}" ]]; then
+        # If the dirpatcher of a new-layout versioned directory failed while
+        # writing directly to the target location, remove it. The incomplete
+        # version would break code signature validation under the new layout.
+        # If it was being staged in a temporary directory, there's nothing to
+        # clean up beyond cleaning up the temporary directory, which will happen
+        # normally at exit.
+        note "cleaning up new_versioned_dir"
+        rm -rf "${new_versioned_dir}"
+      fi
+
       exit 12
     fi
   fi
@@ -1017,6 +1093,14 @@ main() {
     if ! rsync ${RSYNC_FLAGS} --delete-before "${update_versioned_dir}/" \
                                               "${new_versioned_dir}"; then
       err "rsync of versioned directory failed, status ${PIPESTATUS[0]}"
+
+      if [[ -n "${update_layout_new}" ]]; then
+        # If the rsync of a new-layout versioned directory failed, remove it.
+        # The incomplete version would break code signature validation.
+        note "cleaning up new_versioned_dir"
+        rm -rf "${new_versioned_dir}"
+      fi
+
       exit 7
     fi
   fi
@@ -1073,10 +1157,14 @@ main() {
   # much to copy in this step, because most of the application is in the
   # versioned directory.  This step only accounts for around 50 files, most of
   # which are small localized InfoPlist.strings files.  Note that
-  # ${VERSIONS_DIR} is included to copy its mode bits and timestamp, but its
-  # contents are excluded, having already been installed above.
+  # ${VERSIONS_DIR_NEW} or ${VERSIONS_DIR_OLD} are included to copy their mode
+  # bits and timestamps, but their contents are excluded, having already been
+  # installed above. The ${VERSIONS_DIR_NEW}/Current symbolic link is updated
+  # or created in this step, however.
   note "rsyncing app directory"
-  if ! rsync ${RSYNC_FLAGS} --delete-after --exclude "/${VERSIONS_DIR}/*" \
+  if ! rsync ${RSYNC_FLAGS} --delete-after \
+       --include="/${VERSIONS_DIR_NEW}/Current" \
+       --exclude="/${VERSIONS_DIR_NEW}/*" --exclude="/${VERSIONS_DIR_OLD}/*" \
        "${update_app}/" "${installed_app}"; then
     err "rsync of app directory failed, status ${PIPESTATUS[0]}"
     exit 8
@@ -1247,7 +1335,7 @@ main() {
     ksadmin_brand_plist_path="${brand_plist_path}"
     ksadmin_brand_key="${KS_BRAND_KEY}"
 
-    if [[ ! -f "${ksadmin_brand_plist_path}" ]]; then
+    if ! [[ -f "${ksadmin_brand_plist_path}" ]]; then
       # Clear any branding information.
       ksadmin_brand_plist_path=
       ksadmin_brand_key=
@@ -1296,7 +1384,9 @@ main() {
 
   note "ksadmin_args = ${ksadmin_args[*]}"
 
-  if ! ksadmin "${ksadmin_args[@]}"; then
+  if [[ -n "${GOOGLE_CHROME_UPDATER_TEST_PATH}" ]]; then
+    note "test mode: not calling Keystone to update ticket"
+  elif ! ksadmin "${ksadmin_args[@]}"; then
     err "ksadmin failed"
     exit 11
   fi
@@ -1337,10 +1427,12 @@ main() {
   note "cleaning up old versioned directories"
 
   local versioned_dir
-  for versioned_dir in "${installed_versions_dir}/"*; do
+  for versioned_dir in "${installed_versions_dir_new}/"* \
+                       "${installed_versions_dir_old}/"*; do
     note "versioned_dir = ${versioned_dir}"
-    if [[ "${versioned_dir}" = "${new_versioned_dir}" ]] || \
-       [[ "${versioned_dir}" = "${old_versioned_dir}" ]]; then
+    if [[ "${versioned_dir}" = "${new_versioned_dir}" ]] ||
+       [[ "${versioned_dir}" = "${old_versioned_dir}" ]] ||
+       [[ "${versioned_dir}" = "${installed_versions_dir_new}/Current" ]]; then
       # This is the versioned directory corresponding to the update that was
       # just applied or the version that was previously in use.  Leave it
       # alone.
@@ -1357,7 +1449,14 @@ main() {
     # Look for any processes using the framework dylib.  This will catch
     # browser processes where the ps check will not, but it is limited to
     # processes running as the effective user.
-    local lsof_file="${versioned_dir}/${FRAMEWORK_DIR}/${FRAMEWORK_NAME}"
+    local lsof_file
+    if [[ -e "${versioned_dir}/${FRAMEWORK_DIR}/${FRAMEWORK_NAME}" ]]; then
+      # Old layout.
+      lsof_file="${versioned_dir}/${FRAMEWORK_DIR}/${FRAMEWORK_NAME}"
+    else
+      # New layout.
+      lsof_file="${versioned_dir}/${FRAMEWORK_NAME}"
+    fi
     note "lsof_file = ${lsof_file}"
 
     # ps -e displays all users' processes, -ww causes ps to not truncate
@@ -1386,6 +1485,27 @@ main() {
       note "versioned_dir is in use, skipping"
     fi
   done
+
+  # When the last old-layout version is gone, remove the old-layout Versions
+  # directory. Note that this isn't attempted when the last new-layout Versions
+  # directory disappears, because hopefully there won't ever be an "upgrade" (at
+  # least not long-term) that needs to revert from the new to the old layout. If
+  # this does become necessary, the rmdir should attempt to remove, from
+  # innermost to outermost, ${installed_versions_dir_new} out to
+  # ${installed_app}/${CONTENTS_DIR}/Frameworks. Even though that removal isn't
+  # attempted here, a subsequent update will do this cleanup as a side effect of
+  # the outer app rsync, which will remove these directories if empty when
+  # "updating" to another old-layout version.
+  if [[ -n "${update_layout_new}" ]] &&
+     [[ -d "${installed_versions_dir_old}" ]]; then
+    note "attempting removal of installed_versions_dir_old"
+    rmdir "${installed_versions_dir_old}" >& /dev/null
+    if [[ -d "${installed_versions_dir_old}" ]]; then
+      note "removal of installed_versions_dir_old failed"
+    else
+      note "removal of installed_versions_dir_old succeeded"
+    fi
+  fi
 
   # If this script is being driven by a user Keystone ticket, it is not
   # running as root.  If the application is installed somewhere under
@@ -1446,51 +1566,6 @@ main() {
   note "lifting quarantine"
 
   xattr -d -r "${QUARANTINE_ATTR}" "${installed_app}" 2> /dev/null
-
-  # Do Keychain reauthorization. This involves running a stub executable on
-  # the dmg that loads the newly-updated framework and jumps to it to perform
-  # the reauthorization. The stub executable can be signed by the old
-  # certificate even after the rest of Chrome switches to the new certificate,
-  # so it still has access to the old Keychain items. The stub executable is
-  # an unbundled flat file executable whose name matches the real
-  # application's bundle identifier, so it's permitted access to the Keychain
-  # items. Doing a reauthorization step at update time reauthorizes Keychain
-  # items for users who never bother restarting Chrome, and provides a
-  # mechanism to continue doing reauthorizations even after the certificate
-  # changes. However, it only works for non-system ticket installations of
-  # Chrome, because the updater runs as root when on a system ticket, and root
-  # can't access individual user Keychains.
-  #
-  # Even if the reauthorization tool is launched, it doesn't necessarily try
-  # to do anything. It will only attempt to perform a reauthorization if one
-  # hasn't yet been done at update time.
-  note "maybe reauthorizing Keychain"
-
-  if [[ -z "${system_ticket}" ]]; then
-    local new_bundleid_app
-      new_bundleid_app="$(defaults read "${installed_app_plist}" \
-                                        "${APP_BUNDLEID_KEY}" || true)"
-      note "new_bundleid_app = ${new_bundleid_app}"
-
-    local keychain_reauthorize_dir="\
-${update_dmg_mount_point}/${KEYCHAIN_REAUTHORIZE_DIR}"
-    local keychain_reauthorize_path="\
-${keychain_reauthorize_dir}/${new_bundleid_app}"
-    note "keychain_reauthorize_path = ${keychain_reauthorize_path}"
-
-    if [[ -x "${keychain_reauthorize_path}" ]]; then
-      local framework_dir="${new_versioned_dir}/${FRAMEWORK_DIR}"
-      local framework_dylib_path="${framework_dir}/${FRAMEWORK_NAME}"
-      note "framework_dylib_path = ${framework_dylib_path}"
-
-      if [[ -f "${framework_dylib_path}" ]]; then
-        note "reauthorizing Keychain"
-        "${keychain_reauthorize_path}" "${framework_dylib_path}"
-      fi
-    fi
-  else
-    note "system ticket, not reauthorizing Keychain"
-  fi
 
   # Great success!
   note "done!"

@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<title>This tests an animation with zero duration and infinite iterations. See http:://crbug.com/322575</title>
 <style>
 p {
   animation: test infinite;
@@ -8,11 +9,8 @@ p {
   }
 }
 </style>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
 <script>
-  if (window.testRunner)
-    testRunner.dumpAsText();
+done();
 </script>
-<body>
-<p>This tests an animation with zero duration and infinite iterations. See http:://crbug.com/322575.
-<p>This test passes if it doesn't crash.
-<body

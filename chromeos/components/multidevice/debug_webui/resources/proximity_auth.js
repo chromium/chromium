@@ -3,7 +3,47 @@
  * found in the LICENSE file.
  */
 
-ProximityAuth = {
+/**
+ * An object containing information about the Chromebook's latest Enrollment or
+ * DeviceSync call to the CryptAuth server.
+ * @typedef {{
+ *   lastSuccessTime: number,
+ *   nextRefreshTime: number,
+ *   recoveringFromFailure: boolean,
+ *   operationInProgress: boolean,
+ * }}
+ */
+let SyncState;
+
+/**
+ * @typedef {{
+ *   userPresent: number,
+ *   secureScreenLock: number,
+ *   trustAgent: number,
+ *}}
+ */
+let RemoteState;
+
+/**
+ * An object containing data for devices returned by CryptAuth DeviceSync.
+ * @typedef {{
+ *   publicKey: string,
+ *   publicKeyTruncated: string,
+ *   friendlyDeviceName: string,
+ *   noPiiName: string,
+ *   unlockKey: boolean,
+ *   hasMobileHotspot: boolean,
+ *   connectionStatus: string,
+ *   featureStates: string,
+ *   remoteState: (!RemoteState|undefined),
+ *   isArcPlusPlusEnrollment: (boolean|undefined),
+ *   isPixelPhone: (boolean|undefined),
+ *   bluetoothAddress: (string|undefined),
+ * }}
+ */
+let RemoteDevice;
+
+const ProximityAuth = {
   cryptauthController_: null,
   remoteDevicesController_: null,
   findEligibleDevicesController_: null,
@@ -54,12 +94,13 @@ class CryptAuthController {
         this.showExistingUserNewChromebookNotification_.bind(this);
 
     this.multiDeviceSetup =
-        chromeos.multideviceSetup.mojom.MultiDeviceSetup.getProxy();
+        chromeos.multideviceSetup.mojom.MultiDeviceSetup.getRemote();
   }
 
   /**
    * Sets the local device's ID. Note that this value is truncated since the
    * full value is very long and does not cleanly fit on the screen.
+   * @param {string} deviceIdTruncated
    */
   setLocalDeviceId(deviceIdTruncated) {
     this.elements_.localDeviceId.textContent = deviceIdTruncated;
@@ -67,6 +108,7 @@ class CryptAuthController {
 
   /**
    * Update the enrollment state in the UI.
+   * @param {!SyncState} state
    */
   updateEnrollmentState(state) {
     this.elements_.lastEnrollment.textContent =
@@ -74,9 +116,9 @@ class CryptAuthController {
     this.elements_.nextEnrollment.textContent =
         this.getNextRefreshString_(state);
 
-    if (state['recoveringFromFailure']) {
+    if (state.recoveringFromFailure) {
       this.elements_.enrollmentTitle.setAttribute('state', 'failure');
-    } else if (state['operationInProgress']) {
+    } else if (state.operationInProgress) {
       this.elements_.enrollmentTitle.setAttribute('state', 'in-progress');
     } else {
       this.elements_.enrollmentTitle.setAttribute('state', 'synced');
@@ -85,6 +127,7 @@ class CryptAuthController {
 
   /**
    * Updates the device sync state in the UI.
+   * @param {!SyncState} state
    */
   updateDeviceSyncState(state) {
     this.elements_.lastDeviceSync.textContent =
@@ -92,9 +135,9 @@ class CryptAuthController {
     this.elements_.nextDeviceSync.textContent =
         this.getNextRefreshString_(state);
 
-    if (state['recoveringFromFailure']) {
+    if (state.recoveringFromFailure) {
       this.elements_.deviceSyncTitle.setAttribute('state', 'failure');
-    } else if (state['operationInProgress']) {
+    } else if (state.operationInProgress) {
       this.elements_.deviceSyncTitle.setAttribute('state', 'in-progress');
     } else {
       this.elements_.deviceSyncTitle.setAttribute('state', 'synced');
@@ -103,6 +146,8 @@ class CryptAuthController {
 
   /**
    * Returns the formatted string of the time of the last sync to be displayed.
+   * @param {!SyncState} syncState
+   * @return {string}
    */
   getLastSyncTimeString_(syncState, neverSyncedString) {
     if (syncState.lastSuccessTime == 0)
@@ -113,6 +158,8 @@ class CryptAuthController {
 
   /**
    * Returns the formatted string of the next time to refresh to be displayed.
+   * @param {!SyncState} syncState
+   * @return {string}
    */
   getNextRefreshString_(syncState) {
     var deltaMillis = syncState.nextRefreshTime;
@@ -180,6 +227,7 @@ class CryptAuthController {
 
   /**
    * Shows a "MultiDevice Setup" notification of the given type.
+   * @param {!chromeos.multideviceSetup.mojom.EventTypeForDebugging} type
    */
   showMultiDeviceSetupPromoNotification_(type) {
     this.multiDeviceSetup.triggerEventForDebugging(type).then(
@@ -212,6 +260,7 @@ class DeviceListController {
 
   /**
    * Updates the UI with the given remote devices.
+   * @param {!Array<!RemoteDevice>} remoteDevices
    */
   updateRemoteDevices(remoteDevices) {
     var existingItems =
@@ -230,38 +279,42 @@ class DeviceListController {
 
   /**
    * Creates a DOM element for a given remote device.
+   * @param {!RemoteDevice} remoteDevice
+   * @return {!Node}
    */
   createRemoteDeviceItem_(remoteDevice) {
-    var isUnlockKey = !!remoteDevice['unlockKey'];
-    var hasMobileHotspot = !!remoteDevice['hasMobileHotspot'];
-    var isArcPlusPlusEnrollment = !!remoteDevice['isArcPlusPlusEnrollment'];
-    var isPixelPhone = !!remoteDevice['isPixelPhone'];
+    var isUnlockKey = !!remoteDevice.unlockKey;
+    var hasMobileHotspot = !!remoteDevice.hasMobileHotspot;
+    var isArcPlusPlusEnrollment = !!remoteDevice.isArcPlusPlusEnrollment;
+    var isPixelPhone = !!remoteDevice.isPixelPhone;
 
     var t = this.remoteDeviceTemplate_.content;
     t.querySelector('.device-connection-status').setAttribute(
-        'state', remoteDevice['connectionStatus']);
+        'state', remoteDevice.connectionStatus);
     t.querySelector('.device-name').textContent =
-        remoteDevice['friendlyDeviceName'];
+        remoteDevice.friendlyDeviceName;
+    t.querySelector('.no-pii-name').textContent =
+        remoteDevice.noPiiName;
     t.querySelector('.device-id').textContent =
-        remoteDevice['publicKeyTruncated'];
+        remoteDevice.publicKeyTruncated;
     t.querySelector('.software-features').textContent =
-        remoteDevice['featureStates'];
+        remoteDevice.featureStates;
     t.querySelector('.is-unlock-key').textContent = isUnlockKey;
     t.querySelector('.supports-mobile-hotspot').textContent = hasMobileHotspot;
     t.querySelector('.is-arc-plus-plus-enrollment').textContent =
         isArcPlusPlusEnrollment;
     t.querySelector('.is-pixel-phone').textContent = isPixelPhone;
-    if (!!remoteDevice['bluetoothAddress']) {
+    if (!!remoteDevice.bluetoothAddress) {
       t.querySelector('.bluetooth-address-row').classList.remove('hidden');
       t.querySelector('.bluetooth-address').textContent =
-          remoteDevice['bluetoothAddress'];
+          remoteDevice.bluetoothAddress;
     }
 
     var scanButton = t.querySelector('.device-scan');
     scanButton.classList.toggle(
         'hidden', !this.showScanButton_ || !isUnlockKey);
     scanButton.textContent =
-        remoteDevice['connectionStatus'] == 'disconnected'
+        remoteDevice.connectionStatus == 'disconnected'
             ? 'EasyUnlock Scan' : 'EasyUnlock Disconnect';
     t.querySelector('.device-toggle-key').classList.toggle(
         'hidden', !this.showToggleUnlockKeyButton_ || !isUnlockKey);
@@ -270,16 +323,17 @@ class DeviceListController {
 
     // Initialize buttons on new element.
     element.querySelector('.device-scan').onclick =
-        this.scanForDevice_.bind(this, remoteDevice['publicKey']);
+        this.scanForDevice_.bind(this, remoteDevice.publicKey);
     element.querySelector('.device-toggle-key').onclick =
         this.toggleUnlockKey_.bind(
-            this, remoteDevice['publicKey'], !remoteDevice['unlockKey']);
+            this, remoteDevice.publicKey, !remoteDevice.unlockKey);
 
     return element;
   }
 
   /**
    * Button handler to start scanning and connecting to a device.
+   * @param {string} publicKey
    */
   scanForDevice_(publicKey) {
     WebUI.toggleConnection(publicKey);
@@ -287,6 +341,8 @@ class DeviceListController {
 
   /**
    * Button handler to toggle a device as an unlock key.
+   * @param {string} publicKey
+   * @param {boolean} makeUnlockKey
    */
   toggleUnlockKey_(publicKey, makeUnlockKey) {
     console.log(publicKey);
@@ -309,6 +365,8 @@ class EligibleDevicesController {
 
   /**
    * Updates the UI with the fetched eligible and ineligible devices.
+   * @param {!Array<!RemoteDevice>} eligibleDevices
+   * @param {!Array<!RemoteDevice>} ineligibleDevices
    */
   updateEligibleDevices(eligibleDevices, ineligibleDevices) {
     this.eligibleDeviceList_.updateRemoteDevices(eligibleDevices);
@@ -326,7 +384,13 @@ class EligibleDevicesController {
 /**
  * Interface for the native WebUI to call into our JS.
  */
-LocalStateInterface = {
+const LocalStateInterface = {
+  /**
+   * @param {string} localDeviceId
+   * @param {!SyncState} enrollmentState
+   * @param {!SyncState} deviceSyncState
+   * @param {!Array<!RemoteDevice>} remoteDevices
+   */
   onGotLocalState: function(
       localDeviceId, enrollmentState, deviceSyncState, remoteDevices) {
     LocalStateInterface.setLocalDeviceId(localDeviceId);
@@ -335,18 +399,22 @@ LocalStateInterface = {
     LocalStateInterface.onRemoteDevicesChanged(remoteDevices);
   },
 
+  /** @param {string} localDeviceId */
   setLocalDeviceId: function(localDeviceId) {
     ProximityAuth.cryptauthController_.setLocalDeviceId(localDeviceId);
   },
 
+  /** @param {!SyncState} enrollmentState */
   onEnrollmentStateChanged: function(enrollmentState) {
     ProximityAuth.cryptauthController_.updateEnrollmentState(enrollmentState);
   },
 
+  /** @param {!SyncState} deviceSyncState */
   onDeviceSyncStateChanged: function(deviceSyncState) {
     ProximityAuth.cryptauthController_.updateDeviceSyncState(deviceSyncState);
   },
 
+  /** @param {!Array<!RemoteDevice>} remoteDevices */
   onRemoteDevicesChanged: function(remoteDevices) {
     ProximityAuth.remoteDevicesController_.updateRemoteDevices(remoteDevices);
   }
@@ -355,7 +423,11 @@ LocalStateInterface = {
 /**
  * Interface for the native WebUI to call into our JS.
  */
-CryptAuthInterface = {
+const CryptAuthInterface = {
+  /**
+   * @param {!Array<!RemoteDevice>} eligibleDevices
+   * @param {!Array<!RemoteDevice>} ineligibleDevices
+   */
   onGotEligibleDevices: function(eligibleDevices, ineligibleDevices) {
     ProximityAuth.eligibleDevicesController_.updateEligibleDevices(
         eligibleDevices, ineligibleDevices);

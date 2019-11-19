@@ -65,12 +65,6 @@ config("compiler") {
   # an Objective C struct won't be called, which is very bad.
   cflags_objcc = [ "-fobjc-call-cxx-cdtors" ]
 
-  # TODO(crbug.com/910200): Disable experimental isel until
-  # https://llvm.org/PR40887 is fixed.
-  if (is_debug) {
-    cflags += [ "-fno-experimental-isel" ]
-  }
-
   ldflags = common_ios_flags
 }
 

@@ -11,6 +11,7 @@
 #include "base/component_export.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "chromeos/network/onc/certificate_scope.h"
 
 namespace base {
 class Value;
@@ -33,6 +34,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) OncParsedCertificates {
     enum class Type { kServer, kAuthority };
 
     ServerOrAuthorityCertificate(
+        CertificateScope scope,
         Type type,
         const std::string& guid,
         const scoped_refptr<net::X509Certificate>& certificate,
@@ -47,6 +49,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) OncParsedCertificates {
     bool operator==(const ServerOrAuthorityCertificate& other) const;
     bool operator!=(const ServerOrAuthorityCertificate& other) const;
 
+    CertificateScope scope() const { return scope_; }
+
     Type type() const { return type_; }
 
     const std::string& guid() const { return guid_; }
@@ -58,6 +62,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) OncParsedCertificates {
     bool web_trust_requested() const { return web_trust_requested_; }
 
    private:
+    CertificateScope scope_;
     Type type_;
     std::string guid_;
     scoped_refptr<net::X509Certificate> certificate_;

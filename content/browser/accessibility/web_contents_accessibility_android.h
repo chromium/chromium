@@ -202,6 +202,14 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
                      const base::android::JavaParamRef<jobject>& obj,
                      jint id);
 
+  // Add a fake spelling error for testing spelling spannables.
+  void AddSpellingErrorForTesting(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& obj,
+      jint id,
+      jint start_offset,
+      jint end_offset);
+
   // Request loading inline text boxes for a given node.
   void LoadInlineTextBoxes(JNIEnv* env,
                            const base::android::JavaParamRef<jobject>& obj,

@@ -12,6 +12,7 @@
   "orientation": "portrait",
   "theme_color": "2147483648L",
   "background_color": "2147483648L",
+  "background_color_xml": "#F8F9FA",
   "icon_urls_and_icon_murmur2_hashes": "http://www.pwa.rocks/icon1.png 0 http://www.pwa.rocks/icon2.png 0",
   "web_manifest_url": "https://pwa.rocks/pwa.webmanifest",
   "distributor": "other",

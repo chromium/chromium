@@ -106,7 +106,7 @@ TransformationPatchGenerator* MakeGenerator(Element* old_element,
   }
 
   LOG(WARNING) << "Unexpected Element::Kind " << old_element->kind();
-  return NULL;
+  return nullptr;
 }
 
 // Checks to see if the proposed comparison is 'unsafe'.  Sometimes one element
@@ -180,7 +180,7 @@ Status FindGenerators(Ensemble* old_ensemble, Ensemble* new_ensemble,
     // prioritize elements that are of a similar size or similar position in the
     // sequence of elements.
     //
-    Element* best_old_element = NULL;
+    Element* best_old_element = nullptr;
     size_t best_difference = std::numeric_limits<size_t>::max();
     for (size_t old_index = 0;  old_index < old_elements.size();  ++old_index) {
       Element* old_element = old_elements[old_index];
@@ -204,7 +204,7 @@ Status FindGenerators(Ensemble* old_ensemble, Ensemble* new_ensemble,
         VLOG(1) << "Skip " << new_element->Name()
                 << " - identical to " << old_element->Name();
         best_difference = 0;
-        best_old_element = NULL;
+        best_old_element = nullptr;
         break;
       }
       if (difference < best_difference) {

@@ -25,26 +25,14 @@ jumbo_component("util") {
     "//base",
     "//skia",
     "//ui/display/types",
+    "//ui/gfx:color_space",
     "//ui/gfx/geometry",
   ]
 
-  if (use_x11 || ozone_platform_x11) {
-    sources += [
-      "x11/edid_parser_x11.cc",
-      "x11/edid_parser_x11.h",
-    ]
-    configs += [
-      "//build/config/linux:x11",
-      "//build/config/linux:xrandr",
-    ]
-    deps += [ "//ui/gfx/x" ]
-  }
   if (is_chromeos) {
     deps += [ "//ui/display/types" ]
   } else if (is_mac) {
-    libs = [
-      "IOSurface.framework",
-    ]
+    libs = [ "IOSurface.framework" ]
   }
 }
 

@@ -54,7 +54,12 @@ KNOWN_ISOLATED_SCRIPT_TEST_RUNNERS = {'run_web_tests.py'}
 # Known typ test runners this script wraps. They need a different argument name
 # when selecting which tests to run.
 # TODO(dpranke): Detect if the wrapped test suite uses typ better.
-KNOWN_TYP_TEST_RUNNERS = {'run_blinkpy_tests.py', 'metrics_python_tests.py'}
+KNOWN_TYP_TEST_RUNNERS = {
+    'run_blinkpy_tests.py',
+    'metrics_python_tests.py',
+    'run_mac_signing_tests.py',
+    'run_polymer_tools_tests.py',
+}
 
 
 class IsolatedScriptTestAdapter(common.BaseIsolatedScriptArgsAdapter):

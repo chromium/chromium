@@ -28,10 +28,6 @@
 #include "content/public/browser/web_contents.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
-#include "net/url_request/test_url_fetcher_factory.h"
-#include "net/url_request/url_fetcher.h"
-#include "net/url_request/url_fetcher_factory.h"
-#include "net/url_request/url_request_status.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"
@@ -152,8 +148,8 @@ TEST_F(ChromeOmniboxNavigationObserverTest, LoadStateAfterPendingNavigation) {
 
   std::unique_ptr<content::NavigationEntry> entry =
       content::NavigationController::CreateNavigationEntry(
-          GURL(), content::Referrer(), ui::PAGE_TRANSITION_FROM_ADDRESS_BAR,
-          false, std::string(), profile(),
+          GURL(), content::Referrer(), base::nullopt,
+          ui::PAGE_TRANSITION_FROM_ADDRESS_BAR, false, std::string(), profile(),
           nullptr /* blob_url_loader_factory */);
 
   content::NotificationService::current()->Notify(
@@ -195,9 +191,9 @@ TEST_F(ChromeOmniboxNavigationObserverTest, DeleteBrokenCustomSearchEngines) {
                                             match, AutocompleteMatch());
     auto navigation_entry =
         content::NavigationController::CreateNavigationEntry(
-            GURL(), content::Referrer(), ui::PAGE_TRANSITION_FROM_ADDRESS_BAR,
-            false, std::string(), profile(),
-            nullptr /* blob_url_loader_factory */);
+            GURL(), content::Referrer(), base::nullopt,
+            ui::PAGE_TRANSITION_FROM_ADDRESS_BAR, false, std::string(),
+            profile(), nullptr /* blob_url_loader_factory */);
     content::LoadCommittedDetails details;
     details.http_status_code = cases[i].status_code;
     details.entry = navigation_entry.get();
@@ -214,8 +210,9 @@ TEST_F(ChromeOmniboxNavigationObserverTest, DeleteBrokenCustomSearchEngines) {
           profile(), base::ASCIIToUTF16("url navigation"), AutocompleteMatch(),
           AutocompleteMatch());
   auto navigation_entry = content::NavigationController::CreateNavigationEntry(
-      GURL(), content::Referrer(), ui::PAGE_TRANSITION_FROM_ADDRESS_BAR, false,
-      std::string(), profile(), nullptr /* blob_url_loader_factory */);
+      GURL(), content::Referrer(), base::nullopt,
+      ui::PAGE_TRANSITION_FROM_ADDRESS_BAR, false, std::string(), profile(),
+      nullptr /* blob_url_loader_factory */);
   content::LoadCommittedDetails details;
   details.http_status_code = 404;
   details.entry = navigation_entry.get();
@@ -297,13 +294,14 @@ TEST_F(ChromeOmniboxNavigationObserverTest, AlternateNavInfoBar) {
       net::RedirectInfo redir_info;
       redir_info.new_url = GURL(response.urls[dest]);
       redir_info.status_code = net::HTTP_MOVED_PERMANENTLY;
-      network::ResourceResponseHead redir_head =
-          network::CreateResourceResponseHead(net::HTTP_MOVED_PERMANENTLY);
-      redirects.push_back({redir_info, redir_head});
+      auto redir_head =
+          network::CreateURLResponseHead(net::HTTP_MOVED_PERMANENTLY);
+      redirects.push_back({redir_info, std::move(redir_head)});
     }
 
     // Fill in final response.
-    network::ResourceResponseHead http_head;
+    network::mojom::URLResponseHeadPtr http_head =
+        network::mojom::URLResponseHead::New();
     network::URLLoaderCompletionStatus net_status;
     network::TestURLLoaderFactory::ResponseProduceFlags response_flags =
         network::TestURLLoaderFactory::kResponseDefault;
@@ -315,13 +313,13 @@ TEST_F(ChromeOmniboxNavigationObserverTest, AlternateNavInfoBar) {
       net_status = network::URLLoaderCompletionStatus(net::ERR_FAILED);
     } else {
       net_status = network::URLLoaderCompletionStatus(net::OK);
-      http_head = network::CreateResourceResponseHead(
+      http_head = network::CreateURLResponseHead(
           static_cast<net::HttpStatusCode>(response.http_response_code));
     }
 
-    test_url_loader_factory.AddResponse(GURL(response.urls[0]), http_head,
-                                        response.content, net_status,
-                                        redirects);
+    test_url_loader_factory.AddResponse(GURL(response.urls[0]),
+                                        std::move(http_head), response.content,
+                                        net_status, std::move(redirects));
 
     // Create the alternate nav match and the observer.
     // |observer| gets deleted automatically after all fetchers complete.
@@ -337,9 +335,9 @@ TEST_F(ChromeOmniboxNavigationObserverTest, AlternateNavInfoBar) {
     // Send the observer NAV_ENTRY_PENDING to get the URL fetcher to start.
     auto navigation_entry =
         content::NavigationController::CreateNavigationEntry(
-            GURL(), content::Referrer(), ui::PAGE_TRANSITION_FROM_ADDRESS_BAR,
-            false, std::string(), profile(),
-            nullptr /* blob_url_loader_factory */);
+            GURL(), content::Referrer(), base::nullopt,
+            ui::PAGE_TRANSITION_FROM_ADDRESS_BAR, false, std::string(),
+            profile(), nullptr /* blob_url_loader_factory */);
     content::NotificationService::current()->Notify(
         content::NOTIFICATION_NAV_ENTRY_PENDING,
         content::Source<content::NavigationController>(navigation_controller()),

@@ -1,7 +1,6 @@
 <!DOCTYPE HTML>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 
 <map name="imagemap1">
   <area shape="rect" coords="10,20,100,30" href="#" title="Link1" />
@@ -18,7 +17,7 @@ function findAllImageMapLinks(node, list) {
     findAllImageMapLinks(node.childAtIndex(i), list);
 }
 
-test_after_layout_and_paint(function(t) {
+test(function(t) {
   var links = [];
   findAllImageMapLinks(accessibilityController.rootElement, links);
 

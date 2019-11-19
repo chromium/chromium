@@ -6,7 +6,7 @@
 
 #include <cstring>
 
-#include "base/hash.h"
+#include "base/hash/hash.h"
 #include "base/macros.h"
 
 namespace base {

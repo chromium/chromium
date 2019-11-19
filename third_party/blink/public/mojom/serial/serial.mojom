@@ -5,6 +5,7 @@
 module blink.mojom;
 
 import "mojo/public/mojom/base/unguessable_token.mojom";
+import "services/device/public/mojom/serial.mojom";
 
 struct SerialPortInfo {
   // Opaque identifier for this port.
@@ -31,4 +32,9 @@ interface SerialService {
 
   // Requests permission to access a port.
   RequestPort(array<SerialPortFilter> filters) => (SerialPortInfo? port);
+
+  // Connects an instance of the SerialPort interface attached to the serial
+  // port identified by |token|.
+  GetPort(mojo_base.mojom.UnguessableToken token,
+          pending_receiver<device.mojom.SerialPort> port_receiver);
 };

@@ -8,7 +8,7 @@
 #include "third_party/skia/include/core/SkFontMgr.h"
 
 #include "build/build_config.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #if defined(OS_WIN) || defined(OS_MACOSX)
 #include "third_party/skia/include/ports/SkFontMgr_empty.h"
 #endif

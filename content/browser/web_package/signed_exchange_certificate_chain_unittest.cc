@@ -11,6 +11,7 @@
 #include "base/strings/string_piece.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
+#include "content/browser/web_package/signed_exchange_test_utils.h"
 #include "content/public/common/content_paths.h"
 #include "net/cert/x509_util.h"
 #include "net/test/cert_test_util.h"
@@ -23,6 +24,16 @@ namespace {
 
 cbor::Value CBORByteString(base::StringPiece str) {
   return cbor::Value(str, cbor::Value::Type::BYTE_STRING);
+}
+
+scoped_refptr<net::X509Certificate> LoadCertificate(
+    const std::string& cert_file) {
+  base::FilePath dir_path;
+  base::PathService::Get(content::DIR_TEST_DATA, &dir_path);
+  dir_path = dir_path.AppendASCII("sxg");
+
+  return net::CreateCertificateChainFromFile(
+      dir_path, cert_file, net::X509Certificate::FORMAT_PEM_CERT_SEQUENCE);
 }
 
 }  // namespace
@@ -197,6 +208,30 @@ TEST(SignedExchangeCertificateParseTest, ParseGoldenFile) {
   auto parsed = SignedExchangeCertificateChain::Parse(
       base::as_bytes(base::make_span(contents)), nullptr);
   ASSERT_TRUE(parsed);
+}
+
+TEST(SignedExchangeCertificateChainTest, IgnoreErrorsSPKIList) {
+  SignedExchangeCertificateChain::IgnoreErrorsSPKIList ignore_nothing("");
+  SignedExchangeCertificateChain::IgnoreErrorsSPKIList ignore_ecdsap256(
+      kPEMECDSAP256SPKIHash);
+  SignedExchangeCertificateChain::IgnoreErrorsSPKIList ignore_ecdsap384(
+      kPEMECDSAP384SPKIHash);
+  SignedExchangeCertificateChain::IgnoreErrorsSPKIList ignore_both(
+      std::string(kPEMECDSAP256SPKIHash) + "," + kPEMECDSAP384SPKIHash);
+
+  scoped_refptr<net::X509Certificate> cert_ecdsap256 =
+      LoadCertificate("prime256v1-sha256.public.pem");
+  scoped_refptr<net::X509Certificate> cert_ecdsap384 =
+      LoadCertificate("secp384r1-sha256.public.pem");
+
+  EXPECT_FALSE(ignore_nothing.ShouldIgnoreErrorsInternal(cert_ecdsap256));
+  EXPECT_FALSE(ignore_nothing.ShouldIgnoreErrorsInternal(cert_ecdsap384));
+  EXPECT_TRUE(ignore_ecdsap256.ShouldIgnoreErrorsInternal(cert_ecdsap256));
+  EXPECT_FALSE(ignore_ecdsap256.ShouldIgnoreErrorsInternal(cert_ecdsap384));
+  EXPECT_FALSE(ignore_ecdsap384.ShouldIgnoreErrorsInternal(cert_ecdsap256));
+  EXPECT_TRUE(ignore_ecdsap384.ShouldIgnoreErrorsInternal(cert_ecdsap384));
+  EXPECT_TRUE(ignore_both.ShouldIgnoreErrorsInternal(cert_ecdsap256));
+  EXPECT_TRUE(ignore_both.ShouldIgnoreErrorsInternal(cert_ecdsap384));
 }
 
 }  // namespace content

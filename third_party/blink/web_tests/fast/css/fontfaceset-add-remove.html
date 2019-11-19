@@ -4,7 +4,7 @@
 <style>
 @font-face {
     font-family: TestFont;
-    src: local(Arial);
+    src: local(Arial), local(Arimo Regular);
 }
 @font-face {
     font-family: Ahem;
@@ -25,8 +25,10 @@
 promise_test(() => {
   let ahemFace = new FontFace('TestFont', 'url(../../resources/Ahem.ttf)', {});
   assert_equals(ahemFace.status, 'unloaded');
+  ahemLoadPromise = ahemFace.load()
+  localLoadPromise = document.fonts.ready;
 
-  return ahemFace.load().then(() => {
+  return Promise.all([ahemLoadPromise, localLoadPromise]).then(() => {
     let testElement = document.getElementById('test');
     let arialElement = document.getElementById('arial');
     let ahemElement = document.getElementById('ahem');

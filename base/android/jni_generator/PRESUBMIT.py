@@ -14,24 +14,24 @@ def CommonChecks(input_api, output_api):
 
   env = dict(input_api.environ)
   env.update({
-    'PYTHONPATH': base_android_jni_generator_dir,
-    'PYTHONDONTWRITEBYTECODE': '1',
+      'PYTHONPATH': base_android_jni_generator_dir,
+      'PYTHONDONTWRITEBYTECODE': '1',
   })
 
   return input_api.canned_checks.RunUnitTests(
       input_api,
       output_api,
       unit_tests=[
-        input_api.os_path.join(
-            base_android_jni_generator_dir, 'jni_generator_tests.py')
+          input_api.os_path.join(base_android_jni_generator_dir,
+                                 'jni_generator_tests.py')
       ],
       env=env,
   )
 
 
 def CheckChangeOnUpload(input_api, output_api):
-    return CommonChecks(input_api, output_api)
+  return CommonChecks(input_api, output_api)
 
 
 def CheckChangeOnCommit(input_api, output_api):
-    return CommonChecks(input_api, output_api)
+  return CommonChecks(input_api, output_api)

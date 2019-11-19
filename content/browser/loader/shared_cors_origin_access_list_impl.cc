@@ -9,7 +9,6 @@
 #include "base/task/post_task.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "services/network/public/cpp/features.h"
 
 namespace content {
 
@@ -26,39 +25,17 @@ void SharedCorsOriginAccessListImpl::SetForOrigin(
     std::vector<network::mojom::CorsOriginPatternPtr> block_patterns,
     base::OnceClosure closure) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (base::FeatureList::IsEnabled(network::features::kNetworkService)) {
-    origin_access_list_.SetAllowListForOrigin(source_origin, allow_patterns);
-    origin_access_list_.SetBlockListForOrigin(source_origin, block_patterns);
-    std::move(closure).Run();
-  } else {
-    base::PostTaskWithTraitsAndReply(
-        FROM_HERE, {BrowserThread::IO},
-        base::BindOnce(&SharedCorsOriginAccessListImpl::SetForOriginOnIOThread,
-                       base::RetainedRef(this), source_origin,
-                       std::move(allow_patterns), std::move(block_patterns)),
-        std::move(closure));
-  }
+  origin_access_list_.SetAllowListForOrigin(source_origin, allow_patterns);
+  origin_access_list_.SetBlockListForOrigin(source_origin, block_patterns);
+  std::move(closure).Run();
 }
 
 const network::cors::OriginAccessList&
-SharedCorsOriginAccessListImpl::GetOriginAccessList() const {
-  if (base::FeatureList::IsEnabled(network::features::kNetworkService))
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  else
-    DCHECK_CURRENTLY_ON(BrowserThread::IO);
+SharedCorsOriginAccessListImpl::GetOriginAccessList() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return origin_access_list_;
 }
 
 SharedCorsOriginAccessListImpl::~SharedCorsOriginAccessListImpl() = default;
-
-void SharedCorsOriginAccessListImpl::SetForOriginOnIOThread(
-    const url::Origin source_origin,
-    std::vector<network::mojom::CorsOriginPatternPtr> allow_patterns,
-    std::vector<network::mojom::CorsOriginPatternPtr> block_patterns) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  DCHECK(!base::FeatureList::IsEnabled(network::features::kNetworkService));
-  origin_access_list_.SetAllowListForOrigin(source_origin, allow_patterns);
-  origin_access_list_.SetBlockListForOrigin(source_origin, block_patterns);
-}
 
 }  // namespace content

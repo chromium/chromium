@@ -1,9 +1,9 @@
 [document web] focusable focused
 ++[panel]
 ++++[toggle button] name='details tag' expandable focusable
-++++++[text] name='details tag'
+++++++[static] name='details tag'
 ++[panel]
 ++++[toggle button] name='details tag open' expandable expanded focusable
-++++++[text] name='details tag open'
+++++++[static] name='details tag open'
 ++++[paragraph]
-++++++[text] name='The details tag with open specifies that the details should be visible (open) to the user.'
+++++++[static] name='The details tag with open specifies that the details should be visible (open) to the user.'

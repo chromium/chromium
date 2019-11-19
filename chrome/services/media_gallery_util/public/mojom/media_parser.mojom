@@ -4,7 +4,7 @@
 
 module chrome.mojom;
 
-import "media/mojo/interfaces/media_types.mojom";
+import "media/mojo/mojom/media_types.mojom";
 import "mojo/public/mojom/base/file.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/values.mojom";
@@ -24,7 +24,7 @@ interface MediaParser {
   ParseMediaMetadata(string mime_type,
                      int64 total_size,
                      bool get_attached_images,
-                     MediaDataSource media_data_source)
+                     pending_remote<MediaDataSource> media_data_source)
       => (bool parse_success,
           MediaMetadata metadata,
           array<AttachedImage> attached_images);
@@ -35,7 +35,7 @@ interface MediaParser {
   [EnableIf=is_android]
   ExtractVideoFrame(string mime_type,
                     uint32 total_size,
-                    MediaDataSource media_data_source)
+                    pending_remote<MediaDataSource> media_data_source)
       => (bool success,
           VideoFrameData frame_data,
           media.mojom.VideoDecoderConfig? config);
@@ -62,7 +62,7 @@ interface MediaParserFactory {
   // for instance) and the media parser may be run in a sandboxed process with
   // no such access.
   CreateMediaParser(int64 libyuv_cpu_flags, int64 libavutil_cpu_flags)
-      => (MediaParser media_parser);
+      => (pending_remote<MediaParser> media_parser);
 };
 
 interface MediaDataSource {

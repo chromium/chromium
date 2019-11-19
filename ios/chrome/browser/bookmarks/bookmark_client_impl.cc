@@ -38,12 +38,12 @@ base::CancelableTaskTracker::TaskId
 BookmarkClientImpl::GetFaviconImageForPageURL(
     const GURL& page_url,
     favicon_base::IconType type,
-    const favicon_base::FaviconImageCallback& callback,
+    favicon_base::FaviconImageCallback callback,
     base::CancelableTaskTracker* tracker) {
   return favicon::GetFaviconImageForPageURL(
       ios::FaviconServiceFactory::GetForBrowserState(
           browser_state_, ServiceAccessType::EXPLICIT_ACCESS),
-      page_url, type, callback, tracker);
+      page_url, type, std::move(callback), tracker);
 }
 
 bool BookmarkClientImpl::SupportsTypedCountForUrls() {
@@ -80,8 +80,9 @@ void BookmarkClientImpl::RecordAction(const base::UserMetricsAction& action) {
   base::RecordAction(action);
 }
 
-bookmarks::LoadExtraCallback BookmarkClientImpl::GetLoadExtraNodesCallback() {
-  return bookmarks::LoadExtraCallback();
+bookmarks::LoadManagedNodeCallback
+BookmarkClientImpl::GetLoadManagedNodeCallback() {
+  return bookmarks::LoadManagedNodeCallback();
 }
 
 bool BookmarkClientImpl::CanSetPermanentNodeTitle(

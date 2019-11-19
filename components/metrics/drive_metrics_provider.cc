@@ -20,7 +20,7 @@
 namespace metrics {
 
 DriveMetricsProvider::DriveMetricsProvider(int local_state_path_key)
-    : local_state_path_key_(local_state_path_key), weak_ptr_factory_(this) {}
+    : local_state_path_key_(local_state_path_key) {}
 
 DriveMetricsProvider::~DriveMetricsProvider() {}
 
@@ -33,9 +33,9 @@ void DriveMetricsProvider::ProvideSystemProfileMetrics(
 }
 
 void DriveMetricsProvider::AsyncInit(const base::Closure& done_callback) {
-  base::PostTaskWithTraitsAndReplyWithResult(
+  base::PostTaskAndReplyWithResult(
       FROM_HERE,
-      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
       base::Bind(&DriveMetricsProvider::GetDriveMetricsOnBackgroundThread,
                  local_state_path_key_),

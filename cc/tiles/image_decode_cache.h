@@ -73,6 +73,17 @@ class CC_EXPORT ImageDecodeCache {
     return ScopedTaskType::kInRaster;
   }
 
+  static devtools_instrumentation::ScopedImageDecodeTask::ImageType
+  ToScopedImageType(ImageType image_type) {
+    using ScopedImageType =
+        devtools_instrumentation::ScopedImageDecodeTask::ImageType;
+    if (image_type == ImageType::kWEBP)
+      return ScopedImageType::kWebP;
+    if (image_type == ImageType::kJPEG)
+      return ScopedImageType::kJpeg;
+    return ScopedImageType::kOther;
+  }
+
   virtual ~ImageDecodeCache() {}
 
   struct CC_EXPORT TaskResult {
@@ -144,8 +155,9 @@ class CC_EXPORT ImageDecodeCache {
   // draw).
   virtual bool UseCacheForDrawImage(const DrawImage& image) const = 0;
 
- protected:
-  void RecordImageMipLevelUMA(int mip_level);
+  // Should be called periodically to record statistics about cache use and
+  // performance.
+  virtual void RecordStats() = 0;
 };
 
 }  // namespace cc

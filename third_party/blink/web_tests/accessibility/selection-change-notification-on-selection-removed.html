@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script src="../resources/run-after-layout-and-paint.js"></script>
+
+<div id="textbox" role="textbox" contenteditable>
+  <p>
+      One paragraph in an ARIA textbox.
+    </p>
+</div>
+
+<script>
+  setup(() => {
+    textbox.focus();
+    let selectionRange = document.createRange();
+    selectionRange.selectNodeContents(textbox);
+    getSelection().removeAllRanges();
+    getSelection().addRange(selectionRange);
+  });
+
+  async_test_after_layout_and_paint((t) => {
+    let axRoot = accessibilityController.rootElement;
+
+    axRoot.addNotificationListener(t.step_func((notification) => {
+      if (notification == 'DocumentSelectionChanged') {
+        axRoot.removeNotificationListener();
+        assert_equals(axRoot.selectionAnchorObject, null, 'selectionAnchorObject');
+        assert_equals(axRoot.selectionAnchorOffset, -1, 'selectionAnchorOffset');
+        assert_equals(axRoot.selectionFocusObject, null, 'selectionFocusObject');
+        assert_equals(axRoot.selectionFocusOffset, -1, 'selectionFocusOffset');
+        t.done();
+      }
+    }));
+
+    getSelection().removeAllRanges();
+  }, "Tests that a 'selected text changed' notification fires on the document object when the selection is removed.");
+</script>

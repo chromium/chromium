@@ -1,3 +1,0 @@
-CONSOLE ERROR: line 4: The XSS Auditor refused to execute a script in 'http://localhost:8000/security/xssAuditor/resources/echo-intertag.pl?q=%3Csvg%3E%3Cscript%3E/%3C1/%3Ealert(0)%3C/script%3E%3C/svg%3E' because its source code was found within the request. The server sent an 'X-XSS-Protection' header requesting this behavior.
-CONSOLE ERROR: line 4: Uncaught SyntaxError: Invalid regular expression: missing /
- Ensures regexps are handled in even with nested script blocks.

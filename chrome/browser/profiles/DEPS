@@ -1,14 +1,7 @@
 specific_include_rules = {
   "profile_impl.cc": [
-    # Profile creates the App Service that manages a profile's installed apps.
-    "+chrome/services/app_service/app_service.h",
-    "+chrome/services/app_service/public/mojom/constants.mojom.h",
-
     # Profile embeds the Identity Service, but the dependence
     # should be used *only* for Identity Service creation.
     "+services/identity/identity_service.h",
-
-    # Profile embeds the image_annotation service.
-    "+services/image_annotation/image_annotation_service.h",
   ],
 }

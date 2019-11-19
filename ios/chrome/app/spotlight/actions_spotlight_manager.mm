@@ -9,7 +9,7 @@
 #include "base/mac/foundation_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/sys_string_conversions.h"
-#include "ios/chrome/browser/app_startup_parameters.h"
+#import "ios/chrome/app/app_startup_parameters.h"
 #include "ios/chrome/common/app_group/app_group_constants.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "net/base/mac/url_conversions.h"
@@ -147,13 +147,13 @@ BOOL SetStartupParametersForSpotlightAction(
           NSString* voiceSearchAction =
               base::SysUTF8ToNSString(spotlight::kSpotlightActionVoiceSearch);
 
-          NSString* newTabTitle =
-              l10n_util::GetNSString(IDS_IOS_APPLICATION_SHORTCUT_NEWTAB_TITLE);
+          NSString* newTabTitle = l10n_util::GetNSString(
+              IDS_IOS_APPLICATION_SHORTCUT_NEWSEARCH_TITLE);
           NSString* newTabAction =
               base::SysUTF8ToNSString(spotlight::kSpotlightActionNewTab);
 
           NSString* incognitoTitle = l10n_util::GetNSString(
-              IDS_IOS_APPLICATION_SHORTCUT_NEWINCOGNITOTAB_TITLE);
+              IDS_IOS_APPLICATION_SHORTCUT_INCOGNITOSEARCH_TITLE);
           NSString* incognitoAction = base::SysUTF8ToNSString(
               spotlight::kSpotlightActionNewIncognitoTab);
 

@@ -48,7 +48,7 @@ Polymer({
 
   /** @return {!HTMLInputElement} */
   getSearchInput: function() {
-    return this.$.searchInput;
+    return /** @type {!HTMLInputElement} */ (this.$.searchInput);
   },
 
   /** @return {boolean} */
@@ -138,6 +138,7 @@ Polymer({
   clearSearch_: function(e) {
     this.setValue('');
     this.focus_();
+    this.spinnerActive = false;
   },
 
   /**

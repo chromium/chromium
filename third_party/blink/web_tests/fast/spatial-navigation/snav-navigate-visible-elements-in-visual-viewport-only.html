@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="resources/snav-testharness.js"></script>
+
+<style>
+  div {
+    width: 100px;
+    height: 100px;
+    background-color: green;
+    position: absolute;
+  }
+
+  #blocker {
+    top: 480px;
+    height: 50px;
+    background-color: yellow;
+  }
+
+  #A {
+    top: 490px;
+  }
+</style>
+
+<div id="start" tabindex="0"></div>
+<div id="A" tabindex="0"></div>
+<div id="blocker"></div>
+
+<script>
+  const A = document.getElementById("A");
+  const start = document.getElementById("start");
+
+  snav.assertSnavEnabledAndTestable();
+  start.focus();
+
+  test(() => {
+    window.internals.setPageScaleFactor(1.2);
+
+    // Down should scroll the visual viewport, since there's no targets
+    // availabe on screen(Visible part of element 'A' is obscured by
+    // blocker element).
+    snav.triggerMove('Down');
+    assert_equals(document.activeElement,
+                  start,
+                  "Focus should not be moved.");
+    snav.triggerMove('Up');
+
+    window.internals.setPageScaleFactor(1);
+    // Now we can see visible part of element 'A'.
+    snav.triggerMove('Down');
+    assert_equals(document.activeElement,
+                  A,
+                  "Focus should be moved to A.");
+  }, "Don't navigate to elements that are off screen.");
+</script>

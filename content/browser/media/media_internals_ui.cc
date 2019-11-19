@@ -12,6 +12,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
+#include "media/base/media_switches.h"
 
 namespace content {
 namespace {
@@ -20,11 +21,16 @@ WebUIDataSource* CreateMediaInternalsHTMLSource() {
   WebUIDataSource* source =
       WebUIDataSource::Create(kChromeUIMediaInternalsHost);
 
-  source->SetJsonPath("strings.js");
+  source->UseStringsJs();
 
-  source->AddResourcePath("media_internals.js", IDR_MEDIA_INTERNALS_JS);
+  if (base::FeatureList::IsEnabled(media::kMediaInspectorLogging)) {
+    source->AddResourcePath("media_internals.js",
+                            IDR_MEDIA_INTERNALS_JS_DISABLED);
+  } else {
+    source->AddResourcePath("media_internals.js", IDR_MEDIA_INTERNALS_JS);
+  }
+
   source->SetDefaultResource(IDR_MEDIA_INTERNALS_HTML);
-  source->UseGzip();
   return source;
 }
 

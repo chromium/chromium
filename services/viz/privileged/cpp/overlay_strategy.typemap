@@ -1,0 +1,14 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+mojom = "//services/viz/privileged/mojom/compositing/overlay_strategy.mojom"
+public_headers = [ "//components/viz/common/display/overlay_strategy.h" ]
+traits_headers =
+    [ "//services/viz/privileged/cpp/overlay_strategy_mojom_traits.h" ]
+public_deps = [
+  "//components/viz/common",
+  #"//services/viz/privileged/mojom/compositing"
+]
+
+type_mappings = [ "viz.mojom.OverlayStrategy=::viz::OverlayStrategy" ]

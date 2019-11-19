@@ -12,8 +12,8 @@
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
+#include "base/test/task_environment.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/bluetooth_advertisement.h"
@@ -166,7 +166,8 @@ class BluetoothAdvertisementBlueZTest : public testing::Test {
 
   BluetoothAdvertisement::ErrorCode last_error_code_;
 
-  base::MessageLoopForIO message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
 
   std::unique_ptr<TestBluetoothAdvertisementObserver> observer_;
   scoped_refptr<BluetoothAdapter> adapter_;

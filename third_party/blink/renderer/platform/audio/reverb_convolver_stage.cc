@@ -49,6 +49,7 @@ ReverbConvolverStage::ReverbConvolverStage(
     size_t render_phase,
     size_t render_slice_size,
     ReverbAccumulationBuffer* accumulation_buffer,
+    float scale,
     bool direct_mode)
     : accumulation_buffer_(accumulation_buffer),
       accumulation_read_index_(0),
@@ -60,6 +61,13 @@ ReverbConvolverStage::ReverbConvolverStage(
   if (!direct_mode_) {
     fft_kernel_ = std::make_unique<FFTFrame>(fft_size);
     fft_kernel_->DoPaddedFFT(impulse_response + stage_offset, stage_length);
+    // Account for the normalization (if any) of the convolver.  By linearity,
+    // we can scale the FFT by the factor instead of the input.  We do it this
+    // way so we don't need to create a temporary for the scaled result before
+    // computing the FFT.
+    if (scale != 1) {
+      fft_kernel_->ScaleFFT(scale);
+    }
     fft_convolver_ = std::make_unique<FFTConvolver>(fft_size);
   } else {
     DCHECK(!stage_offset);
@@ -67,6 +75,11 @@ ReverbConvolverStage::ReverbConvolverStage(
 
     auto direct_kernel = std::make_unique<AudioFloatArray>(fft_size / 2);
     direct_kernel->CopyToRange(impulse_response, 0, stage_length);
+    // Account for the normalization (if any) of the convolver node.
+    if (scale != 1) {
+      vector_math::Vsmul(direct_kernel->Data(), 1, &scale,
+                         direct_kernel->Data(), 1, stage_length);
+    }
     direct_convolver_ = std::make_unique<DirectConvolver>(
         render_slice_size, std::move(direct_kernel));
   }

@@ -7,15 +7,11 @@
 namespace dom_distiller {
 namespace test {
 
-MockDistillerPageFactory::MockDistillerPageFactory() {
-}
-MockDistillerPageFactory::~MockDistillerPageFactory() {
-}
+MockDistillerPageFactory::MockDistillerPageFactory() {}
+MockDistillerPageFactory::~MockDistillerPageFactory() {}
 
-MockDistillerPage::MockDistillerPage() {
-}
-MockDistillerPage::~MockDistillerPage() {
-}
+MockDistillerPage::MockDistillerPage() {}
+MockDistillerPage::~MockDistillerPage() {}
 
 }  // namespace test
 }  // namespace dom_distiller

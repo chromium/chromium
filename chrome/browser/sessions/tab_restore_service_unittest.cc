@@ -30,6 +30,7 @@
 #include "components/history/core/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/sessions/content/content_live_tab.h"
+#include "components/sessions/content/content_test_helper.h"
 #include "components/sessions/core/serialized_navigation_entry_test_helper.h"
 #include "components/sessions/core/session_types.h"
 #include "components/sessions/core/tab_restore_service_observer.h"
@@ -50,6 +51,7 @@ typedef sessions::TabRestoreService::Window Window;
 
 using content::NavigationEntry;
 using content::WebContentsTester;
+using sessions::ContentTestHelper;
 using sessions::SerializedNavigationEntry;
 using sessions::SerializedNavigationEntryTestHelper;
 
@@ -148,8 +150,7 @@ class TabRestoreServiceImplTest : public ChromeRenderViewHostTestHarness {
 
     SessionService* session_service =
         SessionServiceFactory::GetForProfile(profile());
-    session_service->SetWindowType(window_id(), Browser::TYPE_TABBED,
-                                   SessionService::TYPE_NORMAL);
+    session_service->SetWindowType(window_id(), Browser::TYPE_NORMAL);
     session_service->SetTabWindow(window_id(), tab_id());
     session_service->SetTabIndexInWindow(window_id(), tab_id(), 0);
     session_service->SetSelectedTabInWindow(window_id(), 0);
@@ -157,8 +158,7 @@ class TabRestoreServiceImplTest : public ChromeRenderViewHostTestHarness {
       session_service->SetPinnedState(window_id(), tab_id(), true);
     session_service->UpdateTabNavigation(
         window_id(), tab_id(),
-        SerializedNavigationEntryTestHelper::CreateNavigation(url1_.spec(),
-                                                              "title"));
+        ContentTestHelper::CreateNavigation(url1_.spec(), "title"));
   }
 
   // Creates a SessionService and assigns it to the Profile. The SessionService
@@ -870,10 +870,9 @@ TEST_F(TabRestoreServiceImplTest, PruneEntries) {
 
   const size_t max_entries = kMaxEntries;
   for (size_t i = 0; i < max_entries + 5; i++) {
-    SerializedNavigationEntry navigation =
-        SerializedNavigationEntryTestHelper::CreateNavigation(
-            base::StringPrintf("http://%d", static_cast<int>(i)),
-            base::NumberToString(i));
+    SerializedNavigationEntry navigation = ContentTestHelper::CreateNavigation(
+        base::StringPrintf("http://%d", static_cast<int>(i)),
+        base::NumberToString(i));
 
     auto tab = std::make_unique<Tab>();
     tab->navigations.push_back(navigation);
@@ -893,8 +892,7 @@ TEST_F(TabRestoreServiceImplTest, PruneEntries) {
   // Prune older first.
   const char kRecentUrl[] = "http://recent";
   SerializedNavigationEntry navigation =
-      SerializedNavigationEntryTestHelper::CreateNavigation(kRecentUrl,
-                                                            "Most recent");
+      ContentTestHelper::CreateNavigation(kRecentUrl, "Most recent");
   auto tab = std::make_unique<Tab>();
   tab->navigations.push_back(navigation);
   tab->current_navigation_index = 0;
@@ -907,8 +905,8 @@ TEST_F(TabRestoreServiceImplTest, PruneEntries) {
                                   .virtual_url());
 
   // Ignore NTPs.
-  navigation = SerializedNavigationEntryTestHelper::CreateNavigation(
-      chrome::kChromeUINewTabURL, "New tab");
+  navigation = ContentTestHelper::CreateNavigation(chrome::kChromeUINewTabURL,
+                                                   "New tab");
 
   tab = std::make_unique<Tab>();
   tab->navigations.push_back(navigation);

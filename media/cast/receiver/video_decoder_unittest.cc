@@ -125,14 +125,14 @@ class VideoDecoderTest : public ::testing::TestWithParam<Codec> {
 
  private:
   // Called by |vp8_decoder_| to deliver each frame of decoded video.
-  void OnDecodedFrame(const scoped_refptr<VideoFrame>& expected_video_frame,
+  void OnDecodedFrame(scoped_refptr<VideoFrame> expected_video_frame,
                       bool should_be_continuous,
-                      const scoped_refptr<VideoFrame>& video_frame,
+                      scoped_refptr<VideoFrame> video_frame,
                       bool is_continuous) {
     DCHECK(cast_environment_->CurrentlyOn(CastEnvironment::MAIN));
 
     // A NULL |video_frame| indicates a decode error, which we don't expect.
-    ASSERT_TRUE(video_frame.get());
+    ASSERT_TRUE(video_frame);
 
     // Did the decoder detect whether frames were dropped?
     EXPECT_EQ(should_be_continuous, is_continuous);
@@ -142,7 +142,7 @@ class VideoDecoderTest : public ::testing::TestWithParam<Codec> {
               video_frame->coded_size().width());
     EXPECT_EQ(expected_video_frame->coded_size().height(),
               video_frame->coded_size().height());
-    EXPECT_LT(40.0, I420PSNR(expected_video_frame, video_frame));
+    EXPECT_LT(40.0, I420PSNR(*expected_video_frame, *video_frame));
     // TODO(miu): Once we start using VideoFrame::timestamp_, check that here.
 
     // Signal the main test thread that more video was decoded.

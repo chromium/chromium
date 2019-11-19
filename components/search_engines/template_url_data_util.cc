@@ -108,6 +108,8 @@ std::unique_ptr<TemplateURLData> TemplateURLDataFromDictionary(
 
   dict.GetBoolean(DefaultSearchManager::kCreatedByPolicy,
                   &result->created_by_policy);
+  dict.GetBoolean(DefaultSearchManager::kCreatedFromPlayAPI,
+                  &result->created_from_play_api);
   return result;
 }
 
@@ -170,6 +172,8 @@ std::unique_ptr<base::DictionaryValue> TemplateURLDataToDictionary(
 
   url_dict->SetBoolean(DefaultSearchManager::kCreatedByPolicy,
                        data.created_by_policy);
+  url_dict->SetBoolean(DefaultSearchManager::kCreatedFromPlayAPI,
+                       data.created_from_play_api);
   return url_dict;
 }
 

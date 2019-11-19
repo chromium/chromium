@@ -16,7 +16,7 @@
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "components/spellcheck/common/spellcheck_common.h"
 #include "components/spellcheck/common/spellcheck_result.h"
@@ -60,7 +60,7 @@ class SpellCheckTest : public testing::Test {
   }
 
   void UninitializeSpellCheck() {
-    spell_check_ = std::make_unique<SpellCheck>(nullptr, &embedder_provider_);
+    spell_check_ = std::make_unique<SpellCheck>(&embedder_provider_);
   }
 
   bool InitializeIfNeeded() {
@@ -70,9 +70,12 @@ class SpellCheckTest : public testing::Test {
   void InitializeSpellCheck(const std::string& language) {
     base::FilePath hunspell_directory = GetHunspellDirectory();
     EXPECT_FALSE(hunspell_directory.empty());
-    base::File file(
-        spellcheck::GetVersionedFileName(language, hunspell_directory),
-        base::File::FLAG_OPEN | base::File::FLAG_READ);
+    base::FilePath hunspell_file_path =
+        spellcheck::GetVersionedFileName(language, hunspell_directory);
+    base::File file(hunspell_file_path,
+                    base::File::FLAG_OPEN | base::File::FLAG_READ);
+    EXPECT_TRUE(file.IsValid()) << hunspell_file_path << " is not valid"
+                                << file.ErrorToString(file.GetLastFileError());
 #if defined(OS_MACOSX)
     // TODO(groby): Forcing spellcheck to use hunspell, even on OSX.
     // Instead, tests should exercise individual spelling engines.
@@ -127,26 +130,29 @@ class SpellCheckTest : public testing::Test {
  private:
   spellcheck::EmptyLocalInterfaceProvider embedder_provider_;
   std::unique_ptr<SpellCheck> spell_check_;
-  base::test::ScopedTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
+};
+
+struct MockTextCheckingResult {
+  size_t completion_count_ = 0;
+  blink::WebVector<blink::WebTextCheckingResult> last_results_;
 };
 
 // A fake completion object for verification.
 class MockTextCheckingCompletion : public blink::WebTextCheckingCompletion {
  public:
-  MockTextCheckingCompletion()
-      : completion_count_(0) {
-  }
+  explicit MockTextCheckingCompletion(MockTextCheckingResult* result)
+      : result_(result) {}
 
   void DidFinishCheckingText(
       const blink::WebVector<blink::WebTextCheckingResult>& results) override {
-    completion_count_++;
-    last_results_ = results;
+    result_->completion_count_++;
+    result_->last_results_ = results;
   }
 
-  void DidCancelCheckingText() override { completion_count_++; }
+  void DidCancelCheckingText() override { result_->completion_count_++; }
 
-  size_t completion_count_;
-  blink::WebVector<blink::WebTextCheckingResult> last_results_;
+  MockTextCheckingResult* result_;
 };
 
 // Operates unit tests for the content::SpellCheck::SpellCheckWord() function
@@ -464,7 +470,7 @@ TEST_F(SpellCheckTest, SpellCheckSuggestions_EN_US) {
     EXPECT_EQ(test_case.expected_result, result);
 
     // Check if the suggested words occur.
-    bool suggested_word_is_present = base::ContainsValue(
+    bool suggested_word_is_present = base::Contains(
         suggestions, base::WideToUTF16(test_case.suggested_word));
     EXPECT_TRUE(suggested_word_is_present);
   }
@@ -509,6 +515,11 @@ TEST_F(SpellCheckTest, SpellCheckText) {
       L"uspo\x0159\x00E1\x0064\x0061t informace z cel\x00E9ho sv\x011Bta "
       L"tak, aby byly v\x0161\x0065obecn\x011B p\x0159\x00EDstupn\x00E9 "
       L"a u\x017Eite\x010Dn\x00E9."
+    }, {
+      // Welsh
+      "cy-GB",
+      L"Y genhadaeth yw trefnu gwybodaeth y byd a'i gwneud yn hygyrch ac yn "
+      L"ddefnyddiol i bawb."
     }, {
       // Danish
       "da-DK",
@@ -625,6 +636,18 @@ TEST_F(SpellCheckTest, SpellCheckText) {
       // L"univerzalno " - to be added.
       L"pristupa\x010Dnima i korisnima."
     }, {
+      // Armenian
+      "hy",
+      L"Google- \x056B \x0561\x057C\x0561\x0584\x0565\x056C\x0578\x0582\x0569"
+      L"\x0575\x0578\x0582\x0576\x0576 \x0567 \x0570\x0561\x0574\x0561\x0577"
+      L"\x056D\x0561\x0580\x0570\x0561\x0575\x056B\x0576 \x057F\x0565\x0572"
+      L"\x0565\x056F\x0561\x057F\x057E\x0578\x0582\x0569\x0575\x0578\x0582"
+      L"\x0576\x0568 \x056F\x0561\x0566\x0574\x0561\x056F\x0565\x0580\x057A"
+      L"\x0565\x056C \x0565\x0582 \x0564\x0561\x0580\x0571\x0576\x0565\x056C "
+      L"\x0561\x0575\x0576 \x0570\x0561\x0574\x0568\x0576\x0564\x0570\x0561"
+      L"\x0576\x0578\x0582\x0580 \x0570\x0561\x057D\x0561\x0576\x0565\x056C"
+      L"\x056B \x0565\x0582 \x0585\x0563\x057F\x0561\x056F\x0561\x0580:"
+    }, {
       // Indonesian
       "id-ID",
       L"Misi Google adalah untuk mengelola informasi dunia dan membuatnya "
@@ -713,21 +736,20 @@ TEST_F(SpellCheckTest, SpellCheckText) {
     }, {
       // Serbo-Croatian (Serbian Latin)
       "sh",
-      L"Google-ova misija je da organizuje sve informacije na svetu i "
-      L"u\x010dini ih univerzal-no dostupnim i korisnim."
+      L"Guglova misija je organizirati svjetske informacije i u\x010diniti ih "
+      L"univerzalno dostupnim i korisnim."
     }, {
       // Serbian
       "sr",
-      L"\x0047\x006f\x006f\x0067\x006c\x0065\x002d\x043e\x0432\x0430 "
-      L"\x043c\x0438\x0441\x0438\x0458\x0430 \x0458\x0435 \x0434\x0430 "
-      L"\x043e\x0440\x0433\x0430\x043d\x0438\x0437\x0443\x0458\x0435 "
-      L"\x0441\x0432\x0435 "
-      L"\x0438\x043d\x0444\x043e\x0440\x043c\x0430\x0446\x0438\x0458\x0435 "
-      L"\x043d\x0430 \x0441\x0432\x0435\x0442\x0443 \x0438 "
-      L"\x0443\x0447\x0438\x043d\x0438 \x0438\x0445 "
-      L"\x0443\x043d\x0438\x0432\x0435\x0440\x0437\x0430\x043b\x043d\x043e "
-      L"\x0434\x043e\x0441\x0442\x0443\x043f\x043d\x0438\x043c \x0438 "
-      L"\x043a\x043e\x0440\x0438\x0441\x043d\x0438\x043c."
+      L"\x0413\x0443\x0433\x043B\x043E\x0432\x0430 "
+      L"\x043C\x0438\x0441\x0438\x0458\x0430 \x0458\x0435 \x0434\x0430 "
+      L"\x043E\x0440\x0433\x0430\x043D\x0438\x0437\x0443\x0458\x0435 "
+      L"\x0441\x0432\x0435\x0442\x0441\x043A\x0435 "
+      L"\x0438\x043D\x0444\x043E\x0440\x043C\x0430\x0446\x0438\x0458\x0435 "
+      L"\x0438 \x0443\x0447\x0438\x043D\x0438 \x0438\x0445 "
+      L"\x0443\x043D\x0438\x0432\x0435\x0440\x0437\x0430\x043B\x043D\x0438"
+      L"\x043C \x0434\x043E\x0441\x0442\x0443\x043F\x043D\x0438\x043C \x0438 "
+      L"\x043A\x043E\x0440\x0438\x0441\x043D\x0438\x043C."
     }, {
       // Slovak
       "sk-SK",
@@ -982,9 +1004,11 @@ TEST_F(SpellCheckTest, SpellCheckParagraphLongSentenceMultipleMisspellings) {
 
 // Make sure RequestTextChecking does not crash if input is empty.
 TEST_F(SpellCheckTest, RequestSpellCheckWithEmptyString) {
-  MockTextCheckingCompletion completion;
+  MockTextCheckingResult completion;
 
-  spell_check()->RequestTextChecking(base::string16(), &completion);
+  spell_check()->RequestTextChecking(
+      base::string16(),
+      std::make_unique<MockTextCheckingCompletion>(&completion));
 
   base::RunLoop().RunUntilIdle();
 
@@ -993,10 +1017,11 @@ TEST_F(SpellCheckTest, RequestSpellCheckWithEmptyString) {
 
 // A simple test case having no misspellings.
 TEST_F(SpellCheckTest, RequestSpellCheckWithoutMisspelling) {
-  MockTextCheckingCompletion completion;
+  MockTextCheckingResult completion;
 
   const base::string16 text = base::ASCIIToUTF16("hello");
-  spell_check()->RequestTextChecking(text, &completion);
+  spell_check()->RequestTextChecking(
+      text, std::make_unique<MockTextCheckingCompletion>(&completion));
 
   base::RunLoop().RunUntilIdle();
 
@@ -1005,10 +1030,11 @@ TEST_F(SpellCheckTest, RequestSpellCheckWithoutMisspelling) {
 
 // A simple test case having one misspelling.
 TEST_F(SpellCheckTest, RequestSpellCheckWithSingleMisspelling) {
-  MockTextCheckingCompletion completion;
+  MockTextCheckingResult completion;
 
   const base::string16 text = base::ASCIIToUTF16("apple, zz");
-  spell_check()->RequestTextChecking(text, &completion);
+  spell_check()->RequestTextChecking(
+      text, std::make_unique<MockTextCheckingCompletion>(&completion));
 
   base::RunLoop().RunUntilIdle();
 
@@ -1020,10 +1046,11 @@ TEST_F(SpellCheckTest, RequestSpellCheckWithSingleMisspelling) {
 
 // A simple test case having a few misspellings.
 TEST_F(SpellCheckTest, RequestSpellCheckWithMisspellings) {
-  MockTextCheckingCompletion completion;
+  MockTextCheckingResult completion;
 
   const base::string16 text = base::ASCIIToUTF16("apple, zz, orange, zz");
-  spell_check()->RequestTextChecking(text, &completion);
+  spell_check()->RequestTextChecking(
+      text, std::make_unique<MockTextCheckingCompletion>(&completion));
 
   base::RunLoop().RunUntilIdle();
 
@@ -1038,7 +1065,7 @@ TEST_F(SpellCheckTest, RequestSpellCheckWithMisspellings) {
 // A test case that multiple requests comes at once. Make sure all
 // requests are processed.
 TEST_F(SpellCheckTest, RequestSpellCheckWithMultipleRequests) {
-  MockTextCheckingCompletion completion[3];
+  MockTextCheckingResult completion[3];
 
   const base::string16 text[3] = {
     base::ASCIIToUTF16("what, zz"),
@@ -1047,7 +1074,8 @@ TEST_F(SpellCheckTest, RequestSpellCheckWithMultipleRequests) {
   };
 
   for (int i = 0; i < 3; ++i)
-    spell_check()->RequestTextChecking(text[i], &completion[i]);
+    spell_check()->RequestTextChecking(
+        text[i], std::make_unique<MockTextCheckingCompletion>(&completion[i]));
 
   base::RunLoop().RunUntilIdle();
 
@@ -1064,10 +1092,11 @@ TEST_F(SpellCheckTest, RequestSpellCheckWithMultipleRequests) {
 TEST_F(SpellCheckTest, RequestSpellCheckWithoutInitialization) {
   UninitializeSpellCheck();
 
-  MockTextCheckingCompletion completion;
+  MockTextCheckingResult completion;
   const base::string16 text = base::ASCIIToUTF16("zz");
 
-  spell_check()->RequestTextChecking(text, &completion);
+  spell_check()->RequestTextChecking(
+      text, std::make_unique<MockTextCheckingCompletion>(&completion));
 
   // The task will not be posted yet.
   base::RunLoop().RunUntilIdle();
@@ -1079,7 +1108,7 @@ TEST_F(SpellCheckTest, RequestSpellCheckWithoutInitialization) {
 TEST_F(SpellCheckTest, RequestSpellCheckMultipleTimesWithoutInitialization) {
   UninitializeSpellCheck();
 
-  MockTextCheckingCompletion completion[3];
+  MockTextCheckingResult completion[3];
   const base::string16 text[3] = {
     base::ASCIIToUTF16("what, zz"),
     base::ASCIIToUTF16("apple, zz"),
@@ -1088,7 +1117,8 @@ TEST_F(SpellCheckTest, RequestSpellCheckMultipleTimesWithoutInitialization) {
 
   // Calls RequestTextchecking a few times.
   for (int i = 0; i < 3; ++i)
-    spell_check()->RequestTextChecking(text[i], &completion[i]);
+    spell_check()->RequestTextChecking(
+        text[i], std::make_unique<MockTextCheckingCompletion>(&completion[i]));
 
   // The last task will be posted after initialization, however the other
   // requests should be pressed without spellchecking.
@@ -1310,29 +1340,16 @@ TEST_F(SpellCheckTest, EnglishWords) {
 
 // Checks that NOSUGGEST works in English dictionaries.
 TEST_F(SpellCheckTest, NoSuggest) {
+  ReinitializeSpellCheck("xx-XX");
+
   static const struct {
     const char* input;
     const char* suggestion;
-    const char* locale;
     bool should_pass;
-  } kTestCases[] = {
-    {"suckerbert", "cocksucker",  "en-GB", true},
-    {"suckerbert", "cocksucker",  "en-US", true},
-    {"suckerbert", "cocksucker",  "en-CA", true},
-    {"suckerbert", "cocksucker",  "en-AU", true},
-    {"suckerbert", "cocksuckers", "en-GB", true},
-    {"suckerbert", "cocksuckers", "en-US", true},
-    {"suckerbert", "cocksuckers", "en-CA", true},
-    {"suckerbert", "cocksuckers", "en-AU", true},
-    {"Batasunaa",  "Batasuna",    "ca-ES", true},
-    {"pornoo",     "porno",       "it-IT", true},
-    {"catass",     "catas",       "lt-LT", true},
-    {"kuracc",     "kurac",       "sl-SI", true},
-    {"pittt",      "pitt",        "sv-SE", true},
-  };
+  } kTestCases[] = {{"typograpy", "typographit", true},
+                    {"typograpy", "typographits", true}};
 
   for (const auto& test_case : kTestCases) {
-    ReinitializeSpellCheck(test_case.locale);
     size_t suggestion_length = 0;
     if (test_case.suggestion)
       suggestion_length = strlen(test_case.suggestion);
@@ -1346,10 +1363,8 @@ TEST_F(SpellCheckTest, NoSuggest) {
         suggestion_length, kNoTag, &misspelling_start, &misspelling_length,
         nullptr);
 
-    EXPECT_EQ(test_case.should_pass, result)
-        << test_case.suggestion << " in " << test_case.locale;
-    // TODO(cb/673424): Bring this back when suggestions are sped up.
-#if 0
+    EXPECT_EQ(test_case.should_pass, result) << test_case.suggestion;
+
     // Now verify that this test case does not show up as a suggestion.
     std::vector<base::string16> suggestions;
     size_t input_length = 0;
@@ -1359,19 +1374,18 @@ TEST_F(SpellCheckTest, NoSuggest) {
         base::ASCIIToUTF16(test_case.input).c_str(), kNoOffset,
         input_length, kNoTag, &misspelling_start,
         &misspelling_length, &suggestions);
+
     // Input word should be a misspelling.
-    EXPECT_FALSE(result) << test_case.input << " is not a misspelling in "
-                         << test_case.locale;
+    EXPECT_FALSE(result) << test_case.input << " is not a misspelling";
+
     // Check if the suggested words occur.
     for (const base::string16& suggestion : suggestions) {
       for (const auto& test_case_to_check : kTestCases) {
         int compare_result = suggestion.compare(
             base::ASCIIToUTF16(test_case_to_check.suggestion));
-        EXPECT_FALSE(compare_result == 0)
-            << test_case_to_check.suggestion << " in " << test_case.locale;
+        EXPECT_FALSE(compare_result == 0) << test_case_to_check.suggestion;
       }
     }
-#endif
   }
 }
 

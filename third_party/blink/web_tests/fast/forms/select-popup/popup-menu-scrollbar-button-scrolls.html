@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../resources/common.js"></script>
+<script src="../resources/picker-common.js"></script>
+</head>
+<body>
+<select id="menu">
+  <option>option1</option>
+  <option>option2</option>
+  <option>option3</option>
+  <option>option4</option>
+  <option>option5</option>
+  <option>option6</option>
+  <option>option7</option>
+  <option>option8</option>
+  <option>option9</option>
+  <option>option10</option>
+  <option>option11</option>
+  <option>option12</option>
+  <option>option13</option>
+  <option>option14</option>
+  <option>option15</option>
+  <option>option16</option>
+  <option>option17</option>
+  <option>option18</option>
+  <option>option19</option>
+  <option>option20</option>
+  <option>option21</option>
+  <option>option22</option>
+  <option>option23</option>
+  <option>option24</option>
+  <option>option25</option>
+  <option>option26</option>
+  <option>option27</option>
+  <option>option28</option>
+</select>
+<script>
+internals.settings.setScrollAnimatorEnabled(false);
+
+let test = async_test(function(test) {
+  openPicker(menu, test.step_func(testScrollbarScroll),
+      test.unreached_func('Picker failed to open'));
+}, "Scrollbar clicks in a popup must scroll");
+
+function testScrollbarScroll() {
+    let picker = internals.pagePopupWindow.global.picker;
+    let scrollEvents = 0;
+
+    // Click on the scrollbar forward button, and then validate with
+    // a pixel test that the scrollbar/scrollable area scrolled.
+    //
+    // Note: when there is an active popup, eventSender's events are sent with
+    // coordinates relative to the popup itself, so we don't need to take the
+    // outer select element's position into account.
+    let selectElement = internals.pagePopupWindow.global.picker._selectElement;
+    let innerSelectRect = selectElement.getBoundingClientRect();
+    let scrollbarX = innerSelectRect.x + innerSelectRect.width - 5;
+    let scrollbarY = innerSelectRect.y + innerSelectRect.height - 10;
+    eventSender.mouseMoveTo(scrollbarX, scrollbarY);
+    eventSender.mouseDown();
+    eventSender.mouseUp();
+    requestAnimationFrame(test.step_func(function() {
+      requestAnimationFrame(test.step_func(function() {
+          assert_greater_than(selectElement.scrollTop, 0);
+          test.done();
+      }));
+    }));
+}
+
+</script>
+</body>
+</html>
+

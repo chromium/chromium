@@ -29,6 +29,12 @@ class TestWebClient : public web::WebClient {
   // Returns true for kTestWebUIScheme and kTestNativeContentScheme URL schemes.
   bool IsAppSpecificURL(const GURL& url) const override;
 
+  bool ShouldBlockUrlDuringRestore(const GURL& url,
+                                   WebState* web_state) const override;
+
+  void AddSerializableData(web::SerializableUserDataManager* user_data_manager,
+                           web::WebState* web_state) override;
+
   std::string GetUserAgent(UserAgentType type) const override;
 
   // Returns |plugin_not_supported_text_| as the text to be displayed for an
@@ -36,6 +42,7 @@ class TestWebClient : public web::WebClient {
   base::string16 GetPluginNotSupportedText() const override;
 
   base::RefCountedMemory* GetDataResourceBytes(int id) const override;
+
   NSString* GetDocumentStartScriptForMainFrame(
       BrowserState* browser_state) const override;
   void AllowCertificateError(WebState*,
@@ -43,7 +50,17 @@ class TestWebClient : public web::WebClient {
                              const net::SSLInfo&,
                              const GURL&,
                              bool overridable,
+                             int64_t navigation_id,
                              const base::Callback<void(bool)>&) override;
+  void PrepareErrorPage(WebState* web_state,
+                        const GURL& url,
+                        NSError* error,
+                        bool is_post,
+                        bool is_off_the_record,
+                        const base::Optional<net::SSLInfo>& info,
+                        int64_t navigation_id,
+                        base::OnceCallback<void(NSString*)> callback) override;
+  UIView* GetWindowedContainer() override;
 
   // Sets |plugin_not_supported_text_|.
   void SetPluginNotSupportedText(const base::string16& text);

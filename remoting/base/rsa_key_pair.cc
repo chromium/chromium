@@ -34,7 +34,7 @@ scoped_refptr<RsaKeyPair> RsaKeyPair::Generate() {
       crypto::RSAPrivateKey::Create(2048));
   if (!key) {
     LOG(ERROR) << "Cannot generate private key.";
-    return NULL;
+    return nullptr;
   }
   return new RsaKeyPair(std::move(key));
 }
@@ -45,7 +45,7 @@ scoped_refptr<RsaKeyPair> RsaKeyPair::FromString(
   std::string key_str;
   if (!base::Base64Decode(key_base64, &key_str)) {
     LOG(ERROR) << "Failed to decode private key.";
-    return NULL;
+    return nullptr;
   }
 
   std::vector<uint8_t> key_buf(key_str.begin(), key_str.end());
@@ -53,7 +53,7 @@ scoped_refptr<RsaKeyPair> RsaKeyPair::FromString(
       crypto::RSAPrivateKey::CreateFromPrivateKeyInfo(key_buf));
   if (!key) {
     LOG(ERROR) << "Invalid private key.";
-    return NULL;
+    return nullptr;
   }
 
   return new RsaKeyPair(std::move(key));
@@ -61,7 +61,7 @@ scoped_refptr<RsaKeyPair> RsaKeyPair::FromString(
 
 std::string RsaKeyPair::ToString() const {
   // Check that the key initialized.
-  DCHECK(key_.get() != NULL);
+  DCHECK(key_.get() != nullptr);
 
   std::vector<uint8_t> key_buf;
   CHECK(key_->ExportPrivateKey(&key_buf));

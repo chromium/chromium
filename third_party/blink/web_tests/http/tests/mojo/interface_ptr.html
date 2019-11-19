@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
+<script src="/gen/mojo/public/interfaces/bindings/tests/math_calculator.mojom.js"></script>
+<script src="/gen/mojo/public/interfaces/bindings/tests/sample_interfaces.mojom.js"></script>
+<script>
+'use strict';
+
+function CalculatorImpl() {
+  this.total = 0;
+}
+
+CalculatorImpl.prototype.clear = function() {
+  this.total = 0;
+  return Promise.resolve({value: this.total});
+};
+
+CalculatorImpl.prototype.add = function(value) {
+  this.total += value;
+  return Promise.resolve({value: this.total});
+};
+
+CalculatorImpl.prototype.multiply = function(value) {
+  this.total *= value;
+  return Promise.resolve({value: this.total});
+};
+
+function IntegerAccessorImpl() {
+  this.integer = 0;
+}
+
+IntegerAccessorImpl.prototype.getInteger = function() {
+  return Promise.resolve({data: this.integer});
+};
+
+IntegerAccessorImpl.prototype.setInteger = function(value) {
+  this.integer = value;
+};
+
+test(() => {
+  var calc = new math.CalculatorPtr();
+  assert_false(calc.ptr.isBound());
+
+  var request = mojo.makeRequest(calc);
+  assert_true(calc.ptr.isBound());
+
+  calc.ptr.reset();
+  assert_false(calc.ptr.isBound());
+}, 'is bound');
+
+promise_test(async () => {
+  var calc = new math.CalculatorPtr();
+  var calcBinding = new mojo.Binding(
+      math.Calculator, new CalculatorImpl(), mojo.makeRequest(calc));
+
+  assert_equals((await calc.add(2)).value, 2);
+  assert_equals((await calc.multiply(5)).value, 10);
+  assert_equals((await calc.clear()).value, 0);
+}, 'end to end');
+
+promise_test(async () => {
+  var calc = new math.CalculatorPtr();
+  var calcImpl1 = new CalculatorImpl();
+  var calcBinding1 = new mojo.Binding(math.Calculator, calcImpl1,
+                                      mojo.makeRequest(calc));
+  var calcImpl2 = new CalculatorImpl();
+  var calcBinding2 = new mojo.Binding(math.Calculator, calcImpl2);
+
+  assert_equals((await calc.add(2)).value, 2);
+  calcBinding2.bind(mojo.makeRequest(calc));
+  assert_equals((await calc.add(2)).value, 2);
+  assert_equals(calcImpl1.total, 2);
+  assert_equals(calcImpl2.total, 2);
+}, 'reusable');
+
+promise_test(async () => {
+  var calc = new math.CalculatorPtr();
+  var calcBinding = new mojo.Binding(math.Calculator, new CalculatorImpl(),
+                                     mojo.makeRequest(calc));
+
+  await new Promise((resolve, reject) => {
+    calc.ptr.setConnectionErrorHandler(() => { resolve(); });
+    calcBinding.close();
+  });
+}, 'connection error');
+
+promise_test(async () => {
+  var calc = new math.CalculatorPtr();
+  var calcBinding = new mojo.Binding(math.Calculator, new CalculatorImpl(),
+                                     mojo.makeRequest(calc));
+
+  await new Promise((resolve, reject) => {
+    calc.ptr.setConnectionErrorHandler(({customReason, description}) => {
+      assert_equals(customReason, 42);
+      assert_equals(description, 'hey');
+      resolve();
+    });
+    calcBinding.closeWithReason({customReason: 42, description: 'hey'});
+  });
+}, 'connection error with reason');
+
+promise_test(async () => {
+  var calc = new math.CalculatorPtr();
+  var newCalc = null;
+  var calcBinding = new mojo.Binding(math.Calculator, new CalculatorImpl(),
+                                     mojo.makeRequest(calc));
+
+  assert_equals((await calc.add(2)).value, 2);
+  newCalc = new math.CalculatorPtr();
+  newCalc.ptr.bind(calc.ptr.passInterface());
+  assert_false(calc.ptr.isBound());
+  assert_equals((await newCalc.add(2)).value, 4);
+
+}, 'pass interface');
+
+promise_test(async () => {
+  var pipe = Mojo.createMessagePipe();
+  var calc = new math.CalculatorPtr(pipe.handle0);
+  var newCalc = null;
+  var calcBinding = new mojo.Binding(math.Calculator, new CalculatorImpl(),
+                                     pipe.handle1);
+
+  assert_equals((await calc.add(2)).value, 2);
+
+}, 'bind raw handle');
+
+promise_test(async () => {
+  var integerAccessorPtr = new sample.IntegerAccessorPtr();
+
+  var integerAccessorBinding = new mojo.Binding(
+      sample.IntegerAccessor, new IntegerAccessorImpl(),
+      mojo.makeRequest(integerAccessorPtr));
+  assert_equals(integerAccessorPtr.ptr.version, 0);
+
+  assert_equals(await integerAccessorPtr.ptr.queryVersion(), 3);
+  assert_equals(integerAccessorPtr.ptr.version, 3);
+}, 'query version');
+
+promise_test(async () => {
+  var integerAccessorImpl = new IntegerAccessorImpl();
+  var integerAccessorPtr = new sample.IntegerAccessorPtr();
+  var integerAccessorBinding = new mojo.Binding(
+      sample.IntegerAccessor, integerAccessorImpl,
+      mojo.makeRequest(integerAccessorPtr));
+
+  // Inital version is 0.
+  assert_equals(integerAccessorPtr.ptr.version, 0);
+
+  integerAccessorPtr.ptr.requireVersion(1);
+  assert_equals(integerAccessorPtr.ptr.version, 1);
+  integerAccessorPtr.setInteger(123, sample.Enum.VALUE);
+  assert_equals((await integerAccessorPtr.getInteger()).data, 123);
+
+  integerAccessorPtr.ptr.requireVersion(3);
+  assert_equals(integerAccessorPtr.ptr.version, 3);
+  integerAccessorPtr.setInteger(456, sample.Enum.VALUE);
+  assert_equals((await integerAccessorPtr.getInteger()).data, 456);
+
+  // Require a version that is not supported by the impl side.
+  integerAccessorPtr.ptr.requireVersion(4);
+  assert_equals(integerAccessorPtr.ptr.version, 4);
+  integerAccessorPtr.setInteger(789, sample.Enum.VALUE);
+
+  await new Promise((resolve, reject) => {
+    integerAccessorPtr.ptr.setConnectionErrorHandler(() => {
+      resolve();
+    });
+  });
+  assert_equals(integerAccessorImpl.integer, 456);
+
+}, 'require version');
+
+</script>

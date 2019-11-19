@@ -81,7 +81,7 @@ TEST_F(AtExitTest, Param) {
 
 TEST_F(AtExitTest, Task) {
   ZeroTestCounters();
-  base::AtExitManager::RegisterTask(base::Bind(&ExpectParamIsCounter,
-                                               &g_test_counter_1));
+  base::AtExitManager::RegisterTask(
+      base::BindOnce(&ExpectParamIsCounter, &g_test_counter_1));
   base::AtExitManager::ProcessCallbacksNow();
 }

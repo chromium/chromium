@@ -1,0 +1,13 @@
+Name: Checker Qual
+Short Name: checker-qual
+URL: https://checkerframework.org
+Version: 2.5.2
+License: GPL v2 with the classpath exception
+License File: NOT_SHIPPED
+Security Critical: no
+
+Description:
+Checker Qual is the set of annotations (qualifiers) and supporting classes used by the Checker Framework to type check Java source code. Please see artifact: org.checkerframework:checker
+
+Local Modifications:
+No modifications.

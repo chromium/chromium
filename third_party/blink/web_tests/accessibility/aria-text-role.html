@@ -3,7 +3,6 @@
 <head>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 </head>
 <body id="body">
 
@@ -15,7 +14,7 @@
 
 <script>
 
-test_after_layout_and_paint((t) => {
+test((t) => {
     document.getElementById("textrole").focus();
     var textrole = accessibilityController.focusedElement;
     assert_equals(textrole.role, 'AXRole: AXStaticText');

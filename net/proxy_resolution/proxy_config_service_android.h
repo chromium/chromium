@@ -119,6 +119,12 @@ class NET_EXPORT ProxyConfigServiceAndroid : public ProxyConfigService {
   // For tests.
   void ProxySettingsChanged();
 
+  // For tests.
+  void ProxySettingsChangedTo(const std::string& host,
+                              int port,
+                              const std::string& pac_url,
+                              const std::vector<std::string>& exclusion_list);
+
   scoped_refptr<Delegate> delegate_;
 
   DISALLOW_COPY_AND_ASSIGN(ProxyConfigServiceAndroid);

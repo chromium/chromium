@@ -1,0 +1,19 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://gpuweb.github.io/gpuweb/
+
+typedef unsigned long long GPUBufferSize;
+typedef (sequence<double> or GPUColorDict) GPUColor;
+typedef (sequence<unsigned long> or GPUExtent3DDict) GPUExtent3D;
+typedef (sequence<unsigned long> or GPUOrigin3DDict) GPUOrigin3D;
+
+[
+    Exposed(Window WebGPU, Worker WebGPU)
+] interface GPU {
+    [
+      RuntimeEnabled=WebGPU,
+      CallWith=ScriptState
+    ] Promise<GPUAdapter> requestAdapter(optional GPURequestAdapterOptions options = {});
+};

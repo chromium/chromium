@@ -12,22 +12,19 @@
 # from their PDB files.
 #
 # See https://msdn.microsoft.com/en-us/library/jj620914.aspx for how they work.
-#
-# Since these only add ldflags, the targets themselves are not rebuilt when the
-# natvis files are updated. To debug, erase the .pdb file and build to re-link.
 
 import("//build/config/compiler/compiler.gni")
 
 assert(is_win)
 
 config("chrome") {
+  # chrome.natvis listed as an input in //base:base to guarantee relinking on
+  # changes.
   ldflags = [ "/NATVIS:" + rebase_path("chrome.natvis", root_build_dir) ]
 }
 
-config("skia") {
-  ldflags = [ "/NATVIS:" + rebase_path("skia.natvis", root_build_dir) ]
-}
-
 config("webkit") {
+  # webkit.natvis listed as an input in
+  # //third_party/blink/renderer/platform/wtf to guarantee relinking on changes.
   ldflags = [ "/NATVIS:" + rebase_path("webkit.natvis", root_build_dir) ]
 }

@@ -1,0 +1,24 @@
+<!doctype html>
+<html>
+<head>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+</head>
+<body>
+
+  <button id="button">before<span id="span"></span> <span id="span2"></span>
+    </button>
+
+<script>
+test((t) => {
+  // Remove the spans, so the button will have multiple contiguous text children
+  button.removeChild(span);
+  button.removeChild(span2);
+  var axButton = accessibilityController.accessibleElementById('button');
+  assert_equals(axButton.name, "before ");
+}, "Multiple text node children do not result in duplicated text");
+
+
+</script>
+</body>
+</html>

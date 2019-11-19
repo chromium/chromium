@@ -36,13 +36,12 @@ SERVICE_MANAGER_SANDBOX_EXPORT extern const char kImeSandbox[];
 // Flags owned by the service manager sandbox.
 SERVICE_MANAGER_SANDBOX_EXPORT extern const char kAllowNoSandboxJob[];
 SERVICE_MANAGER_SANDBOX_EXPORT extern const char kAllowSandboxDebugging[];
-SERVICE_MANAGER_SANDBOX_EXPORT extern const char kDisableAppContainer[];
 SERVICE_MANAGER_SANDBOX_EXPORT extern const char kDisableGpuSandbox[];
 SERVICE_MANAGER_SANDBOX_EXPORT extern const char kDisableNamespaceSandbox[];
 SERVICE_MANAGER_SANDBOX_EXPORT extern const char kDisableSeccompFilterSandbox[];
 SERVICE_MANAGER_SANDBOX_EXPORT extern const char kDisableSetuidSandbox[];
 SERVICE_MANAGER_SANDBOX_EXPORT extern const char kDisableWin32kLockDown[];
-SERVICE_MANAGER_SANDBOX_EXPORT extern const char kEnableAppContainer[];
+SERVICE_MANAGER_SANDBOX_EXPORT extern const char kEnableAudioServiceSandbox[];
 SERVICE_MANAGER_SANDBOX_EXPORT extern const char kGpuSandboxAllowSysVShm[];
 SERVICE_MANAGER_SANDBOX_EXPORT extern const char kGpuSandboxFailuresFatal[];
 SERVICE_MANAGER_SANDBOX_EXPORT extern const char kNoSandbox[];

@@ -1,0 +1,32 @@
+// Copyright 2016 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module viz.mojom;
+
+import "services/viz/public/mojom/compositing/copy_output_request.mojom";
+import "services/viz/public/mojom/compositing/filter_operations.mojom";
+import "services/viz/public/mojom/compositing/quads.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+import "ui/gfx/mojom/color_space.mojom";
+import "ui/gfx/mojom/rrect_f.mojom";
+import "ui/gfx/mojom/transform.mojom";
+
+// See components/viz/common/quads/render_pass.h.
+struct RenderPass {
+  uint64 id;
+  gfx.mojom.Rect output_rect;
+  gfx.mojom.Rect damage_rect;
+  gfx.mojom.Transform transform_to_root_target;
+  FilterOperations filters;
+  FilterOperations backdrop_filters;
+  gfx.mojom.RRectF? backdrop_filter_bounds;
+  gfx.mojom.ColorSpace color_space;
+  bool has_transparent_background;
+  bool cache_render_pass = false;
+  bool has_damage_from_contributing_content = false;
+  bool generate_mipmap = false;
+  // |copy_requests| are only allowed by privileged clients.
+  array<CopyOutputRequest> copy_requests;
+  array<DrawQuad> quad_list;
+};

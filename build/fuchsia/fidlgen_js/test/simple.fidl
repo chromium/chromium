@@ -49,9 +49,9 @@ struct LargerStructWithArray {
 };
 
 union UnionOfStructs {
-  StructWithBool swb;
-  StructWithUint swu;
-  LargerStructWithArray lswa;
+  1: StructWithBool swb;
+  2: StructWithUint swu;
+  3: LargerStructWithArray lswa;
 };
 
 struct StructOfMultipleUnions {
@@ -65,7 +65,7 @@ const int64 ANOTHER_COPY = NO_TIMESTAMP;
 const string SOME_STRING = "a 你好 thing\" containing ' quotes";
 
 struct VariousDefaults {
-  Blorp blorp_defaulting_to_beta = BETA;
+  Blorp blorp_defaulting_to_beta = Blorp.BETA;
   int64 int64_defaulting_to_no_timestamp = NO_TIMESTAMP;
   int64 int64_defaulting_to_const = 0x7fffffffffffff11;
   string string_with_default = "stuff";

@@ -1,0 +1,72 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module media.mojom;
+
+import "media/mojo/mojom/media_types.mojom";
+import "mojo/public/mojom/base/unguessable_token.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
+// Provides mojo clients with AndroidOverlay instances.  This will live in the
+// browser, with clients in the GPU process or renderer.  Note that if you're
+// trying to use overlays somewhere in chromium, then this isn't the interface
+// you're looking for.  Please see media::AndroidOverlayFactory instead.  The
+// AndroidOverlayProvider mojo client implements that interface.
+interface AndroidOverlayProvider {
+  // Create an overlay and send it to |client|, using |config| as the initial
+  // configuration.  |overlay| will hold the overlay object.
+  CreateOverlay(pending_receiver<AndroidOverlay> overlay,
+                pending_remote<AndroidOverlayClient> client,
+                AndroidOverlayConfig config);
+};
+
+// One overlay instance.  This will be provided by the provider to clients
+// elsewhere.  Note that you probably want to use media::AndroidOverlay instead
+// of this if you're trying to use overlays somewhere in chromium.  The mojo
+// client here is an implementation detail of AndroidOverlay via mojo.
+interface AndroidOverlay {
+  // Cause a layout to occur later.
+  ScheduleLayout(gfx.mojom.Rect rect);
+};
+
+// Provided by the client to receive status updates about the overlay.  Normally
+// only the AndroidOverlay mojo client will use this directly; application code
+// shouldn't need this.
+interface AndroidOverlayClient {
+  // |surface_key| is the key that can be used to retrieve the surface via
+  // binder separately.
+  OnSurfaceReady(uint64 surface_key);
+
+  // Indicates that this overlay has been permanently destroyed, or failed to
+  // initialize.  It can happen before or after OnSurfaceReady.  It will be the
+  // last callback from the overlay in any case.
+  OnDestroyed();
+
+  // Called to provide the current power-efficiency state.  May be called more
+  // than once.
+  OnPowerEfficientState(bool is_power_efficient);
+};
+
+// This is not a mirror of AndroidOverlay::Config, since it contains things that
+// are specific to the mojo implementation.  Application code should use that
+// one instead.
+struct AndroidOverlayConfig {
+  // |routing_token| provides the client with an opaque handle that will attach
+  // an overlay to a the correct WindowAndroid.  Typical usage is that a
+  // RenderFrameHostImpl will provide this token to the RenderFrame.  When the
+  // overlay is created, the WindowAndroid that currently hosts the render frame
+  // will be the parent of the overlay.  For legacy reasons, we need this token
+  // to be sent via IPC, so using the message pipe, or other mojo construct, as
+  // the identifier won't work yet.
+  mojo_base.mojom.UnguessableToken routing_token;
+
+  // Initial rectangle.
+  gfx.mojom.Rect rect;
+
+  // Is a secure overlay required, such as for displaying protected content?
+  bool secure;
+
+  // Is a power-efficient overlay required?
+  bool power_efficient;
+};

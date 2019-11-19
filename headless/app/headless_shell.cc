@@ -23,6 +23,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/task_runner_util.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "cc/base/switches.h"
 #include "components/os_crypt/os_crypt_switches.h"
@@ -32,7 +33,7 @@
 #include "content/public/common/content_switches.h"
 #include "headless/app/headless_shell.h"
 #include "headless/app/headless_shell_switches.h"
-#include "headless/lib/browser/headless_devtools.h"
+#include "headless/lib/headless_content_main_delegate.h"
 #include "headless/public/headless_devtools_target.h"
 #include "net/base/filename_util.h"
 #include "net/base/host_port_pair.h"
@@ -52,6 +53,11 @@
 #include "sandbox/win/src/sandbox_types.h"
 #endif
 
+#if !defined(CHROME_MULTIPLE_DLL_CHILD)
+#include "headless/lib/browser/headless_browser_impl.h"
+#include "headless/lib/browser/headless_devtools.h"
+#endif
+
 namespace headless {
 
 namespace {
@@ -65,7 +71,8 @@ const char kDefaultPDFFileName[] = "output.pdf";
 
 bool ParseWindowSize(const std::string& window_size,
                      gfx::Size* parsed_window_size) {
-  int width, height = 0;
+  int width = 0;
+  int height = 0;
   if (sscanf(window_size.c_str(), "%d%*[x,]%d", &width, &height) >= 2 &&
       width >= 0 && height >= 0) {
     parsed_window_size->set_width(width);
@@ -135,19 +142,85 @@ base::FilePath GetSSLKeyLogFile(const base::CommandLine* command_line) {
 #endif
 }
 
+#endif  // !defined(CHROME_MULTIPLE_DLL_CHILD)
+
+int RunContentMain(
+    HeadlessBrowser::Options options,
+    base::OnceCallback<void(HeadlessBrowser*)> on_browser_start_callback) {
+  content::ContentMainParams params(nullptr);
+#if defined(OS_WIN)
+  // Sandbox info has to be set and initialized.
+  CHECK(options.sandbox_info);
+  params.instance = options.instance;
+  params.sandbox_info = std::move(options.sandbox_info);
+#elif !defined(OS_ANDROID)
+  params.argc = options.argc;
+  params.argv = options.argv;
 #endif
+
+  // TODO(skyostil): Implement custom message pumps.
+  DCHECK(!options.message_pump);
+
+#if defined(CHROME_MULTIPLE_DLL_CHILD)
+  HeadlessContentMainDelegate delegate(std::move(options));
+#else
+  auto browser = std::make_unique<HeadlessBrowserImpl>(
+      std::move(on_browser_start_callback), std::move(options));
+  HeadlessContentMainDelegate delegate(std::move(browser));
+#endif
+  params.delegate = &delegate;
+  return content::ContentMain(params);
+}
+
+bool ValidateCommandLine(const base::CommandLine& command_line) {
+  if (!command_line.HasSwitch(switches::kRemoteDebuggingPort) &&
+      !command_line.HasSwitch(switches::kRemoteDebuggingPipe)) {
+    if (command_line.GetArgs().size() <= 1)
+      return true;
+    LOG(ERROR) << "Open multiple tabs is only supported when "
+               << "remote debugging is enabled.";
+    return false;
+  }
+  if (command_line.HasSwitch(switches::kDefaultBackgroundColor)) {
+    LOG(ERROR) << "Setting default background color is disabled "
+               << "when remote debugging is enabled.";
+    return false;
+  }
+  if (command_line.HasSwitch(switches::kDumpDom)) {
+    LOG(ERROR) << "Dump DOM is disabled when remote debugging is enabled.";
+    return false;
+  }
+  if (command_line.HasSwitch(switches::kPrintToPDF)) {
+    LOG(ERROR) << "Print to PDF is disabled "
+               << "when remote debugging is enabled.";
+    return false;
+  }
+  if (command_line.HasSwitch(switches::kRepl)) {
+    LOG(ERROR) << "Evaluate Javascript is disabled "
+               << "when remote debugging is enabled.";
+    return false;
+  }
+  if (command_line.HasSwitch(switches::kScreenshot)) {
+    LOG(ERROR) << "Capture screenshot is disabled "
+               << "when remote debugging is enabled.";
+    return false;
+  }
+  if (command_line.HasSwitch(switches::kTimeout)) {
+    LOG(ERROR) << "Navigation timeout is disabled "
+               << "when remote debugging is enabled.";
+    return false;
+  }
+  if (command_line.HasSwitch(switches::kVirtualTimeBudget)) {
+    LOG(ERROR) << "Virtual time budget is disabled "
+               << "when remote debugging is enabled.";
+    return false;
+  }
+  return true;
+}
 
 }  // namespace
 
-HeadlessShell::HeadlessShell()
-    : browser_(nullptr),
-#if !defined(CHROME_MULTIPLE_DLL_CHILD)
-      web_contents_(nullptr),
-      browser_context_(nullptr),
-#endif
-      processed_page_ready_(false),
-      weak_factory_(this) {
-}
+HeadlessShell::HeadlessShell() = default;
 
 HeadlessShell::~HeadlessShell() = default;
 
@@ -155,8 +228,8 @@ HeadlessShell::~HeadlessShell() = default;
 void HeadlessShell::OnStart(HeadlessBrowser* browser) {
   browser_ = browser;
   devtools_client_ = HeadlessDevToolsClient::Create();
-  file_task_runner_ = base::CreateSequencedTaskRunnerWithTraits(
-      {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
+  file_task_runner_ = base::CreateSequencedTaskRunner(
+      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT});
 
   HeadlessBrowserContext::Builder context_builder =
       browser_->CreateBrowserContextBuilder();
@@ -218,9 +291,7 @@ void HeadlessShell::OnGotURLs(const std::vector<GURL>& urls) {
   }
 }
 
-void HeadlessShell::Shutdown() {
-  if (!web_contents_)
-    return;
+void HeadlessShell::Detach() {
   if (!RemoteDebuggingEnabled()) {
     devtools_client_->GetEmulation()->GetExperimental()->RemoveObserver(this);
     devtools_client_->GetInspector()->GetExperimental()->RemoveObserver(this);
@@ -231,6 +302,11 @@ void HeadlessShell::Shutdown() {
   }
   web_contents_->RemoveObserver(this);
   web_contents_ = nullptr;
+}
+
+void HeadlessShell::Shutdown() {
+  if (web_contents_)
+    Detach();
   browser_context_->Close();
   browser_->Shutdown();
 }
@@ -299,8 +375,16 @@ void HeadlessShell::DevToolsTargetReady() {
                        weak_factory_.GetWeakPtr()),
         base::TimeDelta::FromMilliseconds(timeout_ms));
   }
-
   // TODO(skyostil): Implement more features to demonstrate the devtools API.
+}
+
+void HeadlessShell::HeadlessWebContentsDestroyed() {
+  // Detach now, but defer shutdown till the HeadlessWebContents
+  // removal is complete.
+  Detach();
+  browser_->BrowserMainThread()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&HeadlessShell::Shutdown, weak_factory_.GetWeakPtr()));
 }
 #endif  // !defined(CHROME_MULTIPLE_DLL_CHILD)
 
@@ -328,7 +412,9 @@ void HeadlessShell::PollReadyState() {
 
 void HeadlessShell::OnReadyState(
     std::unique_ptr<runtime::EvaluateResult> result) {
-  if (result->GetResult()->GetValue()->is_string()) {
+  // |result| can be nullptr if HeadlessDevToolsClientImpl::DispatchMessageReply
+  // sees an error.
+  if (result && result->GetResult()->GetValue()->is_string()) {
     std::stringstream stream(result->GetResult()->GetValue()->GetString());
     std::string ready_state;
     std::string url;
@@ -551,57 +637,11 @@ bool HeadlessShell::RemoteDebuggingEnabled() const {
           command_line.HasSwitch(switches::kRemoteDebuggingPipe));
 }
 
-bool ValidateCommandLine(const base::CommandLine& command_line) {
-  if (!command_line.HasSwitch(switches::kRemoteDebuggingPort) &&
-      !command_line.HasSwitch(switches::kRemoteDebuggingPipe)) {
-    if (command_line.GetArgs().size() <= 1)
-      return true;
-    LOG(ERROR) << "Open multiple tabs is only supported when "
-               << "remote debugging is enabled.";
-    return false;
-  }
-  if (command_line.HasSwitch(switches::kDefaultBackgroundColor)) {
-    LOG(ERROR) << "Setting default background color is disabled "
-               << "when remote debugging is enabled.";
-    return false;
-  }
-  if (command_line.HasSwitch(switches::kDumpDom)) {
-    LOG(ERROR) << "Dump DOM is disabled when remote debugging is enabled.";
-    return false;
-  }
-  if (command_line.HasSwitch(switches::kPrintToPDF)) {
-    LOG(ERROR) << "Print to PDF is disabled "
-               << "when remote debugging is enabled.";
-    return false;
-  }
-  if (command_line.HasSwitch(switches::kRepl)) {
-    LOG(ERROR) << "Evaluate Javascript is disabled "
-               << "when remote debugging is enabled.";
-    return false;
-  }
-  if (command_line.HasSwitch(switches::kScreenshot)) {
-    LOG(ERROR) << "Capture screenshot is disabled "
-               << "when remote debugging is enabled.";
-    return false;
-  }
-  if (command_line.HasSwitch(switches::kTimeout)) {
-    LOG(ERROR) << "Navigation timeout is disabled "
-               << "when remote debugging is enabled.";
-    return false;
-  }
-  if (command_line.HasSwitch(switches::kVirtualTimeBudget)) {
-    LOG(ERROR) << "Virtual time budget is disabled "
-               << "when remote debugging is enabled.";
-    return false;
-  }
-  return true;
-}
-
 #if defined(OS_WIN)
 int HeadlessShellMain(HINSTANCE instance,
                       sandbox::SandboxInterfaceInfo* sandbox_info) {
   base::CommandLine::Init(0, nullptr);
-#if defined(HEADLESS_USE_CRASPHAD)
+#if defined(HEADLESS_USE_CRASHPAD)
   std::string process_type =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           ::switches::kProcessType);
@@ -610,7 +650,7 @@ int HeadlessShellMain(HINSTANCE instance,
         *base::CommandLine::ForCurrentProcess(), base::FilePath(),
         ::switches::kProcessType, switches::kUserDataDir);
   }
-#endif  // defined(HEADLESS_USE_CRASPHAD)
+#endif  // defined(HEADLESS_USE_CRASHPAD)
   RunChildProcessIfNeeded(instance, sandbox_info);
   HeadlessBrowser::Options::Builder builder(0, nullptr);
   builder.SetInstance(instance);
@@ -633,7 +673,7 @@ int HeadlessShellMain(int argc, const char** argv) {
     return EXIT_FAILURE;
 
 // Crash reporting in headless mode is enabled by default in official builds.
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   builder.SetCrashReporterEnabled(true);
   base::FilePath dumps_path;
   base::PathService::Get(base::DIR_TEMP, &dumps_path);
@@ -650,7 +690,6 @@ int HeadlessShellMain(int argc, const char** argv) {
     // Compositor flags
     command_line.AppendSwitch(::switches::kRunAllCompositorStagesBeforeDraw);
     command_line.AppendSwitch(::switches::kDisableNewContentRenderingTimeout);
-    command_line.AppendSwitch(::switches::kEnableSurfaceSynchronization);
     // Ensure that image animations don't resync their animation timestamps when
     // looping back around.
     command_line.AppendSwitch(::switches::kDisableImageAnimationResync);
@@ -775,6 +814,52 @@ int HeadlessShellMain(const content::ContentMainParams& params) {
 #else
   return HeadlessShellMain(params.argc, params.argv);
 #endif
+}
+
+#if defined(OS_WIN)
+void RunChildProcessIfNeeded(HINSTANCE instance,
+                             sandbox::SandboxInterfaceInfo* sandbox_info) {
+  base::CommandLine::Init(0, nullptr);
+  HeadlessBrowser::Options::Builder builder(0, nullptr);
+  builder.SetInstance(instance);
+  builder.SetSandboxInfo(std::move(sandbox_info));
+#else
+void RunChildProcessIfNeeded(int argc, const char** argv) {
+  base::CommandLine::Init(argc, argv);
+  HeadlessBrowser::Options::Builder builder(argc, argv);
+#endif  // defined(OS_WIN)
+  const base::CommandLine& command_line(
+      *base::CommandLine::ForCurrentProcess());
+
+  if (!command_line.HasSwitch(::switches::kProcessType))
+    return;
+
+  if (command_line.HasSwitch(switches::kUserAgent)) {
+    std::string ua = command_line.GetSwitchValueASCII(switches::kUserAgent);
+    if (net::HttpUtil::IsValidHeaderValue(ua))
+      builder.SetUserAgent(ua);
+  }
+
+  exit(RunContentMain(builder.Build(),
+                      base::OnceCallback<void(HeadlessBrowser*)>()));
+}
+
+int HeadlessBrowserMain(
+    HeadlessBrowser::Options options,
+    base::OnceCallback<void(HeadlessBrowser*)> on_browser_start_callback) {
+  DCHECK(!on_browser_start_callback.is_null());
+#if DCHECK_IS_ON()
+  // The browser can only be initialized once.
+  static bool browser_was_initialized;
+  DCHECK(!browser_was_initialized);
+  browser_was_initialized = true;
+
+  // Child processes should not end up here.
+  DCHECK(!base::CommandLine::ForCurrentProcess()->HasSwitch(
+      ::switches::kProcessType));
+#endif
+  return RunContentMain(std::move(options),
+                        std::move(on_browser_start_callback));
 }
 
 }  // namespace headless

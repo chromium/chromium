@@ -1,23 +1,2 @@
 This directory contains test data for ChromeOS-specific network configuration
 tests.
-
-==== Certificates ====
-The certificates in here are extracted from /net/data/ssl/certificates using the
-script setup-certificates.sh.
-The script produces:
-(*) root_ca_cert.pem: An Authority certificate that is the root of the hierarchy.
-(*) root-ca-cert.onc: ONC policy for specifying root_ca_cert.pem as an
-    additional trust anchor for Web navigations.
-(*) ok_cert.pem: A Server certificate that is signed by root_ca_cert.pem.
-(*) intermediate_ca_cert.pem: An Authority certificate that is signed by
-    root_ca_cert.pem
-(*) root-and-intermediate-ca-certs.onc: ONC policy for specifying
-    root_ca_cert.pem as an additional trust anchor for Web navigations, and
-    intermediate_ca_cert.pem as an untrusted Authority.
-(*) ok_cert_by_intermediate.pem: A Server certificate that is signed by
-    intermediate_ca_cert.pem.
-
-Run
-The script takes two arguments: Input directory, output directory.
-./setup-certificates.sh ${chromium_dir}/src/net/data/ssl/certificates .
-in this directory to sync the certificates.

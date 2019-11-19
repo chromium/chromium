@@ -36,7 +36,7 @@
 
     // Clicking above the last line in the first column should not select anything from the first
     // line on the second column.
-    hitOffset = document.caretRangeFromPoint(target.offsetLeft + 80, target.offsetTop + 193).startOffset;
+    hitOffset = document.caretRangeFromPoint(target.offsetLeft + 2, target.offsetTop + 193).startOffset;
     log(hitOffset === 11 ? "PASS" : "FAIL: hit offset " + hitOffset + ".");
 
     // Clicking below the first line in the second column should not snap to the beginning of the line.

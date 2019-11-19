@@ -21,8 +21,8 @@ ContentBrowserSanityChecker::ContentBrowserSanityChecker() {
   g_sanity_checks_already_enabled = true;
 
   creation_hook_ =
-      base::Bind(&ContentBrowserSanityChecker::OnWebContentsCreated,
-                 base::Unretained(this));
+      base::BindRepeating(&ContentBrowserSanityChecker::OnWebContentsCreated,
+                          base::Unretained(this));
   WebContentsImpl::FriendWrapper::AddCreatedCallbackForTesting(creation_hook_);
 }
 

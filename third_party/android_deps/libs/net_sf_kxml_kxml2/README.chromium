@@ -1,0 +1,13 @@
+Name: kXML 2 is a small XML pull parser based on the common XML pull API
+Short Name: kxml2
+URL: http://kxml.sourceforge.net/
+Version: 2.3.0
+License: MIT
+License File: NOT_SHIPPED
+Security Critical: no
+
+Description:
+kXML is a small XML pull parser, specially designed for constrained environments such as Applets, Personal Java or MIDP devices. In contrast to kXML 1, kXML 2 is based on the common XML pull API.
+
+Local Modifications:
+No modifications.

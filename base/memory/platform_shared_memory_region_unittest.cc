@@ -72,6 +72,19 @@ TEST_F(PlatformSharedMemoryRegionTest, CreateTooLargeRegionIsInvalid) {
   EXPECT_FALSE(region2.IsValid());
 }
 
+// Tests that creating a region of maximum possible value returns an invalid
+// region.
+TEST_F(PlatformSharedMemoryRegionTest, CreateMaxSizeRegionIsInvalid) {
+  size_t max_region_size = std::numeric_limits<size_t>::max();
+  PlatformSharedMemoryRegion region =
+      PlatformSharedMemoryRegion::CreateWritable(max_region_size);
+  EXPECT_FALSE(region.IsValid());
+
+  PlatformSharedMemoryRegion region2 =
+      PlatformSharedMemoryRegion::CreateUnsafe(max_region_size);
+  EXPECT_FALSE(region2.IsValid());
+}
+
 // Tests that regions consistently report their size as the size requested at
 // creation time even if their allocation size is larger due to platform
 // constraints.

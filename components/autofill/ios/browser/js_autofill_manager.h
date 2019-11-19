@@ -8,7 +8,7 @@
 #include "base/ios/block_types.h"
 #include "base/values.h"
 #include "components/autofill/core/common/autofill_constants.h"
-#import "ios/web/public/web_state/js/crw_js_injection_receiver.h"
+#import "ios/web/public/deprecated/crw_js_injection_receiver.h"
 
 namespace web {
 class WebFrame;

@@ -47,7 +47,7 @@ public class NativeTestInstrumentationTestRunner extends Instrumentation {
     public static final String EXTRA_TEST =
             "org.chromium.native_test.NativeTestInstrumentationTestRunner.Test";
 
-    private static final String TAG = "cr_NativeTest";
+    private static final String TAG = "NativeTest";
 
     private static final long DEFAULT_SHARD_NANO_TIMEOUT = 60 * 1000000000L;
     // Default to no size limit.

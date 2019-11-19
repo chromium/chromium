@@ -15,7 +15,7 @@ namespace blink {
 
 class CSPSourceTest : public testing::Test {
  public:
-  CSPSourceTest() : csp(ContentSecurityPolicy::Create()) {}
+  CSPSourceTest() : csp(MakeGarbageCollected<ContentSecurityPolicy>()) {}
 
  protected:
   Persistent<ContentSecurityPolicy> csp;
@@ -144,7 +144,8 @@ TEST_F(CSPSourceTest, SchemeIsEmpty) {
 
   // Self scheme is http.
   {
-    Persistent<ContentSecurityPolicy> csp(ContentSecurityPolicy::Create());
+    Persistent<ContentSecurityPolicy> csp(
+        MakeGarbageCollected<ContentSecurityPolicy>());
     csp->SetupSelf(*SecurityOrigin::CreateFromString("http://a.com/"));
     CSPSource source(csp.Get(), "", "a.com", 0, "/", CSPSource::kNoWildcard,
                      CSPSource::kNoWildcard);
@@ -155,7 +156,8 @@ TEST_F(CSPSourceTest, SchemeIsEmpty) {
 
   // Self scheme is https.
   {
-    Persistent<ContentSecurityPolicy> csp(ContentSecurityPolicy::Create());
+    Persistent<ContentSecurityPolicy> csp(
+        MakeGarbageCollected<ContentSecurityPolicy>());
     csp->SetupSelf(*SecurityOrigin::CreateFromString("https://a.com/"));
     CSPSource source(csp.Get(), "", "a.com", 0, "/", CSPSource::kNoWildcard,
                      CSPSource::kNoWildcard);
@@ -166,7 +168,8 @@ TEST_F(CSPSourceTest, SchemeIsEmpty) {
 
   // Self scheme is not in the http familly.
   {
-    Persistent<ContentSecurityPolicy> csp(ContentSecurityPolicy::Create());
+    Persistent<ContentSecurityPolicy> csp(
+        MakeGarbageCollected<ContentSecurityPolicy>());
     csp->SetupSelf(*SecurityOrigin::CreateFromString("ftp://a.com/"));
     CSPSource source(csp.Get(), "", "a.com", 0, "/", CSPSource::kNoWildcard,
                      CSPSource::kNoWildcard);
@@ -176,7 +179,8 @@ TEST_F(CSPSourceTest, SchemeIsEmpty) {
 
   // Self scheme is unique
   {
-    Persistent<ContentSecurityPolicy> csp(ContentSecurityPolicy::Create());
+    Persistent<ContentSecurityPolicy> csp(
+        MakeGarbageCollected<ContentSecurityPolicy>());
     csp->SetupSelf(
         *SecurityOrigin::CreateFromString("non-standard-scheme://a.com/"));
     CSPSource source(csp.Get(), "", "a.com", 0, "/", CSPSource::kNoWildcard,
@@ -195,7 +199,7 @@ TEST_F(CSPSourceTest, SchemeIsEmpty) {
 TEST_F(CSPSourceTest, InsecureHostSchemePortMatchesSecurePort) {
   KURL base;
 
-  // source scheme is "http"
+  // source scheme is "http", source port is 80
   {
     CSPSource source(csp.Get(), "http", "example.com", 80, "/",
                      CSPSource::kNoWildcard, CSPSource::kNoWildcard);
@@ -220,9 +224,17 @@ TEST_F(CSPSourceTest, InsecureHostSchemePortMatchesSecurePort) {
     EXPECT_FALSE(source.Matches(KURL(base, "https://not-example.com:443/")));
   }
 
+  // source scheme is "http", source port is 443
+  {
+    CSPSource source(csp.Get(), "http", "example.com", 443, "/",
+                     CSPSource::kNoWildcard, CSPSource::kNoWildcard);
+    EXPECT_TRUE(source.Matches(KURL(base, "https://example.com/")));
+  }
+
   // source scheme is empty
   {
-    Persistent<ContentSecurityPolicy> csp(ContentSecurityPolicy::Create());
+    Persistent<ContentSecurityPolicy> csp(
+        MakeGarbageCollected<ContentSecurityPolicy>());
     csp->SetupSelf(*SecurityOrigin::CreateFromString("http://example.com"));
     CSPSource source(csp.Get(), "", "example.com", 80, "/",
                      CSPSource::kNoWildcard, CSPSource::kNoWildcard);
@@ -248,7 +260,8 @@ TEST_F(CSPSourceTest, InsecureHostSchemePortMatchesSecurePort) {
 
 TEST_F(CSPSourceTest, HostMatches) {
   KURL base;
-  Persistent<ContentSecurityPolicy> csp(ContentSecurityPolicy::Create());
+  Persistent<ContentSecurityPolicy> csp(
+      MakeGarbageCollected<ContentSecurityPolicy>());
   csp->SetupSelf(*SecurityOrigin::CreateFromString("http://a.com"));
 
   // Host is * (source-expression = "http://*")

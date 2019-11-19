@@ -7,7 +7,7 @@
 #include <memory>
 #include <stdint.h>
 
-#include "base/hash.h"
+#include "base/hash/hash.h"
 #include "base/lazy_instance.h"
 #include "base/memory/singleton.h"
 #include "build/build_config.h"
@@ -180,6 +180,7 @@ InterfaceList::InterfaceList() {
              INTERFACE_THUNK_NAME(iface_struct)(), \
              current_required_permission);
 
+  // clang-format off
   {
     Permission current_required_permission = PERMISSION_NONE;
     #include "ppapi/thunk/interfaces_ppb_private_no_permissions.h"
@@ -207,9 +208,14 @@ InterfaceList::InterfaceList() {
     Permission current_required_permission = PERMISSION_DEV_CHANNEL;
     #include "ppapi/thunk/interfaces_ppb_public_dev_channel.h"
   }
+  {
+    Permission current_required_permission = PERMISSION_SOCKET;
+    #include "ppapi/thunk/interfaces_ppb_public_socket.h"
+  }
+  // clang-format on
 
-  #undef PROXIED_API
-  #undef PROXIED_IFACE
+#undef PROXIED_API
+#undef PROXIED_IFACE
 
   // Manually add some special proxies. Some of these don't have interfaces
   // that they support, so aren't covered by the macros above, but have proxies

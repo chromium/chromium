@@ -4,11 +4,13 @@
   <title>Media Engagement</title>
   <meta charset="utf-8">
   <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
-  <script src="chrome://resources/js/mojo_bindings_lite.js"></script>
+  <script src="chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js"></script>
   <script src="chrome://resources/js/promise_resolver.js"></script>
+  <script src="chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-lite.js"></script>
+  <script src="chrome://resources/mojo/url/mojom/url.mojom-lite.js"></script>
+  <script src="chrome://resources/mojo/url/mojom/origin.mojom-lite.js"></script>
   <script src="chrome://resources/js/util.js"></script>
 
-  <script src="url/mojom/url.mojom-lite.js"></script>
   <script src="chrome/browser/media/media_engagement_score_details.mojom-lite.js">
   </script>
 
@@ -31,15 +33,15 @@
     table td,
     table th {
       border: 1px solid #777;
-      padding-left: 4px;
-      padding-right: 4px;
+      padding-inline-end: 4px;
+      padding-inline-start: 4px;
     }
 
     table th {
       background: rgb(224, 236, 255);
       cursor: pointer;
       padding-bottom: 4px;
-      padding-right: 4px;
+      padding-inline-end: 4px;
       padding-top: 4px;
       white-space: nowrap;
     }
@@ -63,14 +65,14 @@
     .audible-playbacks-count-cell,
     .significant-playbacks-count-cell {
       background-color: rgba(230, 230, 230, 0.5);
-      text-align: right;
+      text-align: end;
       white-space: nowrap;
     }
 
     .base-score-input {
       border: 1px solid #ccc;
       border-radius: 2px;
-      text-align: right;
+      text-align: end;
       width: 70px;
     }
 
@@ -89,7 +91,7 @@
     }
 
     th.sort-column {
-      padding-right: 16px;
+      padding-inline-end: 16px;
     }
 
     th.sort-column::after {
@@ -138,26 +140,11 @@
         <th sort-key="mediaPlaybacks" sort-reverse>
           Sessions with playback
         </th>
-        <th sort-key="audioContextPlaybacks" sort-reverse>
-          Sessions with playback<br>(audio context only)
-        </th>
-        <th sort-key="mediaElementPlaybacks" sort-reverse>
-          Sessions with playback<br>(media element only)
-        </th>
-        <th sort-key="audiblePlaybacks" sort-reverse>
-          Audible Playbacks*
-        </th>
-        <th sort-key="significantPlaybacks" sort-reverse>
-          Significant Playbacks*
-        </th>
         <th sort-key="lastMediaPlaybackTime" sort-reverse>
           Last Playback
         </th>
         <th sort-key="isHigh" sort-reverse>
           Is High
-        </th>
-        <th sort-key="highScoreChanges" sort-reverse>
-          Is High Changes
         </th>
         <th sort-key="totalScore" class="sort-column" sort-reverse>
           Score
@@ -168,22 +155,13 @@
     </tbody>
   </table>
 
-  <p>
-    * These columns are experimental and do not currently affect the MEI score.
-  </p>
-
   <template id="datarow">
     <tr>
       <td class="origin-cell"></td>
       <td class="visits-count-cell"></td>
       <td class="media-playbacks-count-cell"></td>
-      <td class="audio-context-playbacks-count-cell"></td>
-      <td class="media-element-playbacks-count-cell"></td>
-      <td class="audible-playbacks-count-cell"></td>
-      <td class="significant-playbacks-count-cell"></td>
       <td class="last-playback-time-cell"></td>
       <td class="is-high-cell"></td>
-      <td class="is-high-changes-cell"></td>
       <td class="total-score-cell"></td>
       <td class="engagement-bar-cell">
         <div class="engagement-bar"></div>

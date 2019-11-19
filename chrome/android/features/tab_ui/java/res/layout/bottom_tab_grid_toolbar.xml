@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2018 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<org.chromium.chrome.browser.tasks.tab_management.TabGroupUiToolbarView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/tab_group_toolbar"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/tab_grid_dialog_background">
+    <LinearLayout
+        android:id="@+id/main_content"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/bottom_sheet_peek_height"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:focusable="true"
+        android:focusableInTouchMode="true">
+        <org.chromium.ui.widget.ChromeImageView
+            android:id="@+id/toolbar_left_button"
+            style="@style/BottomToolbarButton"
+            android:src="@drawable/ic_expand_more_black_24dp"
+            app:tint="@color/standard_mode_tint"
+            android:contentDescription="@string/accessibility_bottom_tab_grid_close_tab_sheet" />
+        <EditText
+            tools:ignore="LabelFor"
+            android:id="@+id/title"
+            android:cursorVisible="false"
+            android:layout_height="@dimen/bottom_sheet_peek_height"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:textAppearance="@style/TextAppearance.BlackTitle1"
+            android:inputType="text|textNoSuggestions"
+            android:imeOptions="actionDone"
+            android:theme="@style/TabGridDialogTitleTheme"
+            android:gravity="center"/>
+        <org.chromium.ui.widget.ChromeImageView
+            android:id="@+id/toolbar_right_button"
+            style="@style/BottomToolbarButton"
+            android:src="@drawable/plus"
+            app:tint="@color/standard_mode_tint"
+            android:contentDescription="@string/bottom_tab_grid_new_tab" />
+        <org.chromium.ui.widget.ChromeImageView
+            android:id="@+id/toolbar_menu_button"
+            style="@style/ToolbarMenuButtonPhone"
+            android:src="@drawable/ic_more_vert_24dp"
+            android:layout_gravity="center"
+            app:tint="@color/standard_mode_tint"
+            android:contentDescription="@string/accessibility_toolbar_btn_menu" />
+   </LinearLayout>
+</org.chromium.chrome.browser.tasks.tab_management.TabGroupUiToolbarView>

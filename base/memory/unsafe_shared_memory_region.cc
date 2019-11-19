@@ -10,8 +10,14 @@
 
 namespace base {
 
+UnsafeSharedMemoryRegion::CreateFunction*
+    UnsafeSharedMemoryRegion::create_hook_ = nullptr;
+
 // static
 UnsafeSharedMemoryRegion UnsafeSharedMemoryRegion::Create(size_t size) {
+  if (create_hook_)
+    return create_hook_(size);
+
   subtle::PlatformSharedMemoryRegion handle =
       subtle::PlatformSharedMemoryRegion::CreateUnsafe(size);
 

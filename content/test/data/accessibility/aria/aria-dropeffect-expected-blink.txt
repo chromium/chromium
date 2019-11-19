@@ -1,0 +1,23 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer dropeffect=copy
+++++++staticText name='copy'
+++++++++inlineTextBox name='copy'
+++++genericContainer dropeffect=move
+++++++staticText name='move'
+++++++++inlineTextBox name='move'
+++++genericContainer dropeffect=link
+++++++staticText name='link'
+++++++++inlineTextBox name='link'
+++++genericContainer dropeffect=execute
+++++++staticText name='execute'
+++++++++inlineTextBox name='execute'
+++++genericContainer dropeffect=popup
+++++++staticText name='popup'
+++++++++inlineTextBox name='popup'
+++++genericContainer dropeffect=none
+++++++staticText name='none(default)'
+++++++++inlineTextBox name='none(default)'
+++++genericContainer dropeffect=link popup
+++++++staticText name='link popup'
+++++++++inlineTextBox name='link popup'

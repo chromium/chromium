@@ -58,18 +58,10 @@
     "extension_types": ["extension"],
     "platforms": ["win", "mac"]
   },
-  "chrome_ui_overrides": [{
+  "chrome_ui_overrides": {
     "channel": "dev",
     "extension_types": ["extension"]
-  }, {
-    "channel": "stable",
-    "extension_types": ["extension"],
-    "whitelist": [
-      "D5736E4B5CF695CB93A2FB57E4FDC6E5AFAB6FE2", // http://crbug.com/312900
-      "D57DE394F36DC1C3220E7604C575D29C51A6C495", // http://crbug.com/319444
-      "3F65507A3B39259B38C8173C6FFA3D12DF64CCE9"  // http://crbug.com/371562
-    ]
-  }],
+  },
   "chrome_url_overrides": {
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app"]
@@ -94,7 +86,14 @@
     // "event_rules" does not grant any capabilities, it's just
     // an optimisation for any API which uses events, so it's safe
     // to expose to all extension types.
-    "extension_types": "all"
+    "extension_types": [
+      "extension",
+      "legacy_packaged_app",
+      "platform_app",
+      "hosted_app",
+      "shared_module",
+      "theme"
+    ]
   },
   "devtools_page": {
     "channel": "stable",
@@ -174,6 +173,10 @@
       "extension", "legacy_packaged_app", "hosted_app", "platform_app"
     ]
   },
+  "natively_connectable": {
+    "channel": "dev",
+    "extension_types": ["extension"]
+  },
   "omnibox": {
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app"]
@@ -218,7 +221,12 @@
   },
   "storage": {
     "channel": "stable",
-    "extension_types": ["extension", "legacy_packaged_app", "platform_app"],
+    "extension_types": [
+      "extension",
+      "legacy_packaged_app",
+      "platform_app",
+      "login_screen_extension"
+    ],
     "min_manifest_version": 2
   },
   "system_indicator": [

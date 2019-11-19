@@ -121,6 +121,7 @@ void MergeMetadata(cros::mojom::CameraMetadataPtr* to,
     tags.insert(entry->tag);
     (*to)->entries->push_back(entry->Clone());
   }
+  SortCameraMetadata(to);
 }
 
 }  // namespace media

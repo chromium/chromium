@@ -28,7 +28,7 @@ void DocumentTiming::NotifyDocumentTimingChanged() {
 }
 
 void DocumentTiming::MarkDomLoading() {
-  dom_loading_ = CurrentTimeTicks();
+  dom_loading_ = base::TimeTicks::Now();
   TRACE_EVENT_MARK_WITH_TIMESTAMP1("blink.user_timing,rail", "domLoading",
                                    dom_loading_, "frame",
                                    ToTraceValue(GetFrame()));
@@ -36,7 +36,7 @@ void DocumentTiming::MarkDomLoading() {
 }
 
 void DocumentTiming::MarkDomInteractive() {
-  dom_interactive_ = CurrentTimeTicks();
+  dom_interactive_ = base::TimeTicks::Now();
   TRACE_EVENT_MARK_WITH_TIMESTAMP1("blink.user_timing,rail", "domInteractive",
                                    dom_interactive_, "frame",
                                    ToTraceValue(GetFrame()));
@@ -44,7 +44,7 @@ void DocumentTiming::MarkDomInteractive() {
 }
 
 void DocumentTiming::MarkDomContentLoadedEventStart() {
-  dom_content_loaded_event_start_ = CurrentTimeTicks();
+  dom_content_loaded_event_start_ = base::TimeTicks::Now();
   TRACE_EVENT_MARK_WITH_TIMESTAMP1(
       "blink.user_timing,rail", "domContentLoadedEventStart",
       dom_content_loaded_event_start_, "frame", ToTraceValue(GetFrame()));
@@ -52,7 +52,7 @@ void DocumentTiming::MarkDomContentLoadedEventStart() {
 }
 
 void DocumentTiming::MarkDomContentLoadedEventEnd() {
-  dom_content_loaded_event_end_ = CurrentTimeTicks();
+  dom_content_loaded_event_end_ = base::TimeTicks::Now();
   TRACE_EVENT_MARK_WITH_TIMESTAMP1(
       "blink.user_timing,rail", "domContentLoadedEventEnd",
       dom_content_loaded_event_end_, "frame", ToTraceValue(GetFrame()));
@@ -65,7 +65,7 @@ void DocumentTiming::MarkDomContentLoadedEventEnd() {
 }
 
 void DocumentTiming::MarkDomComplete() {
-  dom_complete_ = CurrentTimeTicks();
+  dom_complete_ = base::TimeTicks::Now();
   TRACE_EVENT_MARK_WITH_TIMESTAMP1("blink.user_timing,rail", "domComplete",
                                    dom_complete_, "frame",
                                    ToTraceValue(GetFrame()));
@@ -73,7 +73,7 @@ void DocumentTiming::MarkDomComplete() {
 }
 
 void DocumentTiming::MarkFirstLayout() {
-  first_layout_ = CurrentTimeTicks();
+  first_layout_ = base::TimeTicks::Now();
   TRACE_EVENT_MARK_WITH_TIMESTAMP1("blink.user_timing,rail", "firstLayout",
                                    first_layout_, "frame",
                                    ToTraceValue(GetFrame()));

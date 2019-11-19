@@ -24,7 +24,7 @@ class SVGLengthInterpolationType : public SVGInterpolationType {
                 attribute)) {}
 
   static std::unique_ptr<InterpolableValue> NeutralInterpolableValue();
-  static InterpolationValue ConvertSVGLength(const SVGLength&);
+  static InterpolationValue MaybeConvertSVGLength(const SVGLength&);
   static SVGLength* ResolveInterpolableSVGLength(
       const InterpolableValue&,
       const SVGLengthContext&,

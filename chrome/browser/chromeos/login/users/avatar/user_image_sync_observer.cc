@@ -6,11 +6,9 @@
 
 #include "base/bind.h"
 #include "chrome/browser/chrome_notification_types.h"
-#include "chrome/browser/chromeos/login/screens/user_image_screen.h"
 #include "chrome/browser/chromeos/login/users/avatar/user_image_manager.h"
 #include "chrome/browser/chromeos/login/users/chrome_user_manager.h"
 #include "chrome/browser/chromeos/login/users/default_user_image/default_user_images.h"
-#include "chrome/browser/chromeos/login/wizard_controller.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/prefs/pref_service_syncable_util.h"
 #include "chrome/common/pref_names.h"
@@ -36,8 +34,6 @@ bool IsIndexSupported(int index) {
 }
 
 }  // anonymous namespace
-
-UserImageSyncObserver::Observer::~Observer() {}
 
 UserImageSyncObserver::UserImageSyncObserver(const user_manager::User* user)
     : user_(user),
@@ -69,15 +65,8 @@ UserImageSyncObserver::~UserImageSyncObserver() {
 void UserImageSyncObserver::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry_) {
   registry_->RegisterDictionaryPref(
-      kUserImageInfo, user_prefs::PrefRegistrySyncable::SYNCABLE_PRIORITY_PREF);
-}
-
-void UserImageSyncObserver::AddObserver(Observer* observer) {
-  observer_list_.AddObserver(observer);
-}
-
-void UserImageSyncObserver::RemoveObserver(Observer* observer) {
-  observer_list_.RemoveObserver(observer);
+      kUserImageInfo,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PRIORITY_PREF);
 }
 
 void UserImageSyncObserver::OnProfileGained(Profile* profile) {
@@ -100,12 +89,10 @@ void UserImageSyncObserver::OnInitialSync() {
   bool local_image_updated = false;
   if (!GetSyncedImageIndex(&synced_index) || local_image_changed_) {
     UpdateSyncedImageFromLocal();
-  } else if (IsIndexSupported(synced_index) && CanUpdateLocalImageNow()) {
+  } else if (IsIndexSupported(synced_index)) {
     UpdateLocalImageFromSynced();
     local_image_updated = true;
   }
-  for (auto& observer : observer_list_)
-    observer.OnInitialSync(local_image_updated);
 }
 
 void UserImageSyncObserver::OnPreferenceChanged(const std::string& pref_name) {
@@ -114,7 +101,7 @@ void UserImageSyncObserver::OnPreferenceChanged(const std::string& pref_name) {
     is_synced_ = true;
     prefs_->RemoveObserver(this);
     OnInitialSync();
-  } else if (CanUpdateLocalImageNow()) {
+  } else {
     UpdateLocalImageFromSynced();
   }
 }
@@ -182,19 +169,6 @@ bool UserImageSyncObserver::GetSyncedImageIndex(int* index) {
   *index = user_manager::User::USER_IMAGE_INVALID;
   const base::DictionaryValue* dict = prefs_->GetDictionary(kUserImageInfo);
   return dict && dict->GetInteger(kImageIndex, index);
-}
-
-bool UserImageSyncObserver::CanUpdateLocalImageNow() {
-  if (WizardController* wizard_controller =
-          WizardController::default_controller()) {
-    UserImageScreen* screen =
-        UserImageScreen::Get(wizard_controller->screen_manager());
-    if (wizard_controller->current_screen() == screen) {
-      if (screen->user_selected_image())
-        return false;
-    }
-  }
-  return true;
 }
 
 }  // namespace chromeos

@@ -6,6 +6,7 @@
 #define MEDIA_FORMATS_WEBM_WEBM_COLOUR_PARSER_H_
 
 #include "base/macros.h"
+#include "base/optional.h"
 #include "media/base/hdr_metadata.h"
 #include "media/base/video_color_space.h"
 #include "media/formats/webm/webm_parser.h"
@@ -25,7 +26,7 @@ struct MEDIA_EXPORT WebMColorMetadata {
 
   VideoColorSpace color_space;
 
-  HDRMetadata hdr_metadata;
+  base::Optional<HDRMetadata> hdr_metadata;
 
   WebMColorMetadata();
   WebMColorMetadata(const WebMColorMetadata& rhs);

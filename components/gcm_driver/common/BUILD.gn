@@ -5,9 +5,13 @@
 component("common") {
   sources = [
     "gcm_driver_export.h",
-    "gcm_messages.cc",
-    "gcm_messages.h",
+    "gcm_message.cc",
+    "gcm_message.h",
   ]
 
   defines = [ "GCM_DRIVER_IMPLEMENTATION" ]
+
+  deps = [
+    "//base",
+  ]
 }

@@ -39,7 +39,7 @@ TEST(OfflineItemConversionsTest, OfflinePageItemConversion) {
 
   OfflinePageItem offline_page_item(kTestUrl, offline_id, client_id, file_path,
                                     file_size, creation_time);
-  offline_page_item.original_url = kTestOriginalUrl;
+  offline_page_item.original_url_if_different = kTestOriginalUrl;
   offline_page_item.title = base::UTF8ToUTF16(title);
   offline_page_item.last_access_time = last_access_time;
   offline_page_item.file_missing_time = base::Time::Now();

@@ -9,11 +9,14 @@
 #include <string>
 
 #include "base/macros.h"
+#include "build/build_config.h"
 #include "chrome/browser/ssl/cert_logger.pb.h"
 #include "chrome/browser/ssl/certificate_error_reporter.h"
-#include "chrome/browser/ssl/ssl_cert_reporter.h"
+#include "components/security_interstitials/content/ssl_cert_reporter.h"
 
+#if !defined(OS_ANDROID)
 class Browser;
+#endif
 
 namespace base {
 class RunLoop;
@@ -53,8 +56,10 @@ class SSLCertReporterCallback {
   DISALLOW_COPY_AND_ASSIGN(SSLCertReporterCallback);
 };
 
+#if !defined(OS_ANDROID)
 // Sets the browser preference to enable or disable extended reporting.
 void SetCertReportingOptIn(Browser* browser, OptIn opt_in);
+#endif
 
 // Creates a mock SSLCertReporter and return a pointer to it, which will
 // be owned by the caller. The mock SSLCertReporter will call

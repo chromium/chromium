@@ -42,9 +42,9 @@ Polymer({
     'updateSelectionLabel_(show, selectionLabel)',
   ],
 
-  /** @return {PaperButtonElement} */
+  /** @return {HTMLElement} */
   get deleteButton() {
-    return /** @type {PaperButtonElement} */ (this.$$('#delete'));
+    return /** @type {HTMLElement} */ (this.$$('#delete'));
   },
 
   /** @private */

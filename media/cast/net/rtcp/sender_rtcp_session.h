@@ -10,7 +10,7 @@
 #include <utility>
 
 #include "base/containers/queue.h"
-#include "base/hash.h"
+#include "base/hash/hash.h"
 #include "base/time/time.h"
 #include "media/cast/net/cast_transport.h"
 #include "media/cast/net/pacing/paced_sender.h"

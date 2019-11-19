@@ -3,18 +3,23 @@
 // found in the LICENSE file.
 
 #include "base/bind.h"
+#include "base/strings/pattern.h"
 #include "build/build_config.h"
-#include "chrome/browser/extensions/api/image_writer_private/operation.h"
+#include "chrome/browser/extensions/api/image_writer_private/error_messages.h"
 #include "chrome/browser/extensions/api/image_writer_private/removable_storage_provider.h"
 #include "chrome/browser/extensions/api/image_writer_private/test_utils.h"
 #include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/extensions/extension_function_test_utils.h"
 #include "chrome/common/extensions/api/image_writer_private.h"
+#include "chrome/common/pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/api/file_system/file_system_api.h"
-
+#include "extensions/browser/api_unittest.h"
 namespace extensions {
 
 using api::image_writer_private::RemovableStorageDevice;
+using extension_function_test_utils::RunFunctionAndReturnError;
 using extensions::image_writer::FakeImageWriterClient;
 
 class ImageWriterPrivateApiTest : public ExtensionApiTest {
@@ -101,5 +106,4 @@ IN_PROC_BROWSER_TEST_F(ImageWriterPrivateApiTest, TestWriteFromFile) {
   ASSERT_TRUE(RunPlatformAppTest("image_writer_private/write_from_file"))
       << message_;
 }
-
 }  // namespace extensions

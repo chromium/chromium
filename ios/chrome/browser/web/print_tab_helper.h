@@ -6,8 +6,8 @@
 #define IOS_CHROME_BROWSER_WEB_PRINT_TAB_HELPER_H_
 
 #include "base/macros.h"
-#include "ios/web/public/web_state/web_state_observer.h"
-#import "ios/web/public/web_state/web_state_user_data.h"
+#include "ios/web/public/web_state_observer.h"
+#import "ios/web/public/web_state_user_data.h"
 
 @protocol WebStatePrinter;
 class GURL;
@@ -33,14 +33,16 @@ class PrintTabHelper : public web::WebStateObserver,
   void WebStateDestroyed(web::WebState* web_state) override;
 
   // Called when print message is sent by the web page.
-  bool OnPrintCommand(web::WebState* web_state,
+  void OnPrintCommand(web::WebState* web_state,
                       const base::DictionaryValue& command,
                       const GURL& page_url,
                       bool user_initiated,
-                      bool is_main_frame,
                       web::WebFrame* sender_frame);
 
   __weak id<WebStatePrinter> printer_;
+
+  // Subscription for JS message.
+  std::unique_ptr<web::WebState::ScriptCommandSubscription> subscription_;
 
   WEB_STATE_USER_DATA_KEY_DECL();
 

@@ -13,7 +13,7 @@
 namespace sql {
 class Database;
 class Statement;
-}
+}  // namespace sql
 
 namespace history {
 
@@ -84,8 +84,10 @@ class VisitDatabase {
   // is used for history expiration.)
   //
   // The results will be in increasing order of date.
-  bool GetAllVisitsInRange(base::Time begin_time, base::Time end_time,
-                           int max_results, VisitVector* visits);
+  bool GetAllVisitsInRange(base::Time begin_time,
+                           base::Time end_time,
+                           int max_results,
+                           VisitVector* visits);
 
   // Fills all visits with specified transition in the time range [begin, end)
   // to the given vector. Either time can be is_null(), in which case the times
@@ -129,8 +131,7 @@ class VisitDatabase {
   //
   // If non-NULL, the given visit row will be filled with the information of
   // the found visit. When no visit is found, the row will be unchanged.
-  VisitID GetMostRecentVisitForURL(URLID url_id,
-                                   VisitRow* visit_row);
+  VisitID GetMostRecentVisitForURL(URLID url_id, VisitRow* visit_row);
 
   // Returns the |max_results| most recent visit sessions for |url_id|.
   //
@@ -181,12 +182,21 @@ class VisitDatabase {
                        const base::Time& end_time,
                        int* count);
 
+  // Gets the last time any webpage on the given host was visited within the
+  // time range [|begin_time|, |end_time|). If the given host has not been
+  // visited in the given time range, this will return true and |last_visit|
+  // will be set to null. False will be returned if the host is not a valid
+  // HTTP or HTTPS url or for other database errors.
+  bool GetLastVisitToHost(const GURL& host,
+                          base::Time begin_time,
+                          base::Time end_time,
+                          base::Time* last_visit);
+
   // Get the time of the first item in our database.
   bool GetStartDate(base::Time* first_visit);
 
   // Get the source information about the given visits.
-  void GetVisitsSource(const VisitVector& visits,
-                       VisitSourceMap* sources);
+  void GetVisitsSource(const VisitVector& visits, VisitSourceMap* sources);
 
   // Returns the list of Google domain visits of the user based on the Google
   // searches issued in the specified time interval.
@@ -232,7 +242,6 @@ class VisitDatabase {
       std::vector<URLID>* visited_url_rowids_sorted);
 
  private:
-
   DISALLOW_COPY_AND_ASSIGN(VisitDatabase);
 };
 

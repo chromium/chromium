@@ -1,0 +1,36 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "mojo/public/mojom/base/string16.mojom";
+import "ui/base/ime/mojom/ime_types.mojom";
+
+struct DateTimeSuggestion {
+  // The date/time value represented as a double.
+  double value;
+
+  // The localized value to be shown to the user.
+  mojo_base.mojom.String16 localized_value;
+
+  // The label for the suggestion.
+  mojo_base.mojom.String16 label;
+};
+
+struct DateTimeDialogValue {
+  ui.mojom.TextInputType dialog_type;
+  double dialog_value;
+  double minimum;
+  double maximum;
+  double step;
+  array<DateTimeSuggestion> suggestions;
+};
+
+// Interface exposed by the browser to the renderer.
+interface DateTimeChooser {
+  // Requires for opening a date/time dialog, and then |dialog_value| is
+  // returned to replace a date/time input field.
+  OpenDateTimeDialog(DateTimeDialogValue value) =>
+      (bool success, double dialog_value);
+};

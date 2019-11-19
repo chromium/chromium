@@ -203,31 +203,17 @@ cdm::KeyStatus ToCdmKeyStatus(CdmKeyInformation::KeyStatus status) {
   return cdm::kInternalError;
 }
 
-cdm::EncryptionScheme ToCdmEncryptionScheme(const EncryptionScheme& scheme) {
-  switch (scheme.mode()) {
-    case EncryptionScheme::CIPHER_MODE_UNENCRYPTED:
+cdm::EncryptionScheme ToCdmEncryptionScheme(EncryptionScheme scheme) {
+  switch (scheme) {
+    case EncryptionScheme::kUnencrypted:
       return cdm::EncryptionScheme::kUnencrypted;
-    case EncryptionScheme::CIPHER_MODE_AES_CTR:
+    case EncryptionScheme::kCenc:
       return cdm::EncryptionScheme::kCenc;
-    case EncryptionScheme::CIPHER_MODE_AES_CBC:
+    case EncryptionScheme::kCbcs:
       return cdm::EncryptionScheme::kCbcs;
   }
 
-  NOTREACHED() << "Unexpected EncryptionScheme mode " << scheme.mode();
-  return cdm::EncryptionScheme::kUnencrypted;
-}
-
-cdm::EncryptionScheme ToCdmEncryptionScheme(const EncryptionMode& mode) {
-  switch (mode) {
-    case EncryptionMode::kUnencrypted:
-      return cdm::EncryptionScheme::kUnencrypted;
-    case EncryptionMode::kCenc:
-      return cdm::EncryptionScheme::kCenc;
-    case EncryptionMode::kCbcs:
-      return cdm::EncryptionScheme::kCbcs;
-  }
-
-  NOTREACHED() << "Unexpected EncryptionMode";
+  NOTREACHED() << "Unexpected EncryptionScheme";
   return cdm::EncryptionScheme::kUnencrypted;
 }
 
@@ -569,7 +555,11 @@ cdm::VideoDecoderConfig_3 ToCdmVideoDecoderConfig(
   cdm::VideoDecoderConfig_3 cdm_config = {};
   cdm_config.codec = ToCdmVideoCodec(config.codec());
   cdm_config.profile = ToCdmVideoCodecProfile(config.profile());
-  cdm_config.format = ToCdmVideoFormat(config.format());
+
+  // TODO(dalecurtis): CDM doesn't support alpha, so delete |format|.
+  DCHECK_EQ(config.alpha_mode(), VideoDecoderConfig::AlphaMode::kIsOpaque);
+  cdm_config.format = cdm::kI420;
+
   cdm_config.color_space = ToCdmColorSpace(config.color_space_info());
   cdm_config.coded_size.width = config.coded_size().width();
   cdm_config.coded_size.height = config.coded_size().height();
@@ -622,7 +612,7 @@ void ToCdmInputBuffer(const DecoderBuffer& encrypted_buffer,
   input_buffer->num_subsamples = num_subsamples;
 
   input_buffer->encryption_scheme =
-      ToCdmEncryptionScheme(decrypt_config->encryption_mode());
+      ToCdmEncryptionScheme(decrypt_config->encryption_scheme());
   if (decrypt_config->HasPattern()) {
     input_buffer->pattern = {
         decrypt_config->encryption_pattern()->crypt_byte_block(),

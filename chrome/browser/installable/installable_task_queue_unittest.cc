@@ -1,73 +1,101 @@
 // Copyright 2017 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#include "chrome/browser/installable/installable_manager.h"
 
+#include "chrome/browser/installable/installable_task_queue.h"
+
+#include "chrome/browser/installable/installable_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using IconPurpose = blink::Manifest::ImageResource::Purpose;
-
-class InstallableTaskQueueUnitTest : public testing::Test {};
+// A POD struct which holds booleans for creating and comparing against
+// a (move-only) InstallableTask.
+struct TaskParams {
+  bool valid_manifest = false;
+  bool has_worker = false;
+  bool valid_primary_icon = false;
+  bool valid_badge_icon = false;
+};
 
 // Constructs an InstallableTask, with the supplied bools stored in it.
-InstallableTask CreateTask(bool valid_manifest,
-                           bool has_worker,
-                           bool valid_primary_icon,
-                           bool valid_badge_icon) {
+InstallableTask CreateTask(const TaskParams& params) {
   InstallableTask task;
-  task.params.valid_manifest = valid_manifest;
-  task.params.has_worker = has_worker;
-  task.params.valid_primary_icon = valid_primary_icon;
-  task.params.valid_badge_icon = valid_badge_icon;
+  task.params.valid_manifest = params.valid_manifest;
+  task.params.has_worker = params.has_worker;
+  task.params.valid_primary_icon = params.valid_primary_icon;
+  task.params.valid_badge_icon = params.valid_badge_icon;
   return task;
 }
 
-bool IsEqual(const InstallableTask& task1, const InstallableTask& task2) {
-  return task1.params.valid_manifest == task2.params.valid_manifest &&
-         task1.params.has_worker == task2.params.has_worker &&
-         task1.params.valid_primary_icon == task2.params.valid_primary_icon &&
-         task1.params.valid_badge_icon == task2.params.valid_badge_icon;
+bool IsEqual(const TaskParams& params, const InstallableTask& task) {
+  return task.params.valid_manifest == params.valid_manifest &&
+         task.params.has_worker == params.has_worker &&
+         task.params.valid_primary_icon == params.valid_primary_icon &&
+         task.params.valid_badge_icon == params.valid_badge_icon;
 }
+
+class InstallableTaskQueueUnitTest : public testing::Test {};
 
 TEST_F(InstallableTaskQueueUnitTest, PausingMakesNextTaskAvailable) {
   InstallableTaskQueue task_queue;
-  InstallableTask task1 = CreateTask(false, false, false, false);
-  InstallableTask task2 = CreateTask(true, true, true, true);
+  TaskParams task1 = {false, false, false, false};
+  TaskParams task2 = {true, true, true, true};
 
-  task_queue.Add(task1);
-  task_queue.Add(task2);
+  EXPECT_FALSE(task_queue.HasCurrent());
+  EXPECT_FALSE(task_queue.HasPaused());
 
+  task_queue.Add(CreateTask(task1));
+  task_queue.Add(CreateTask(task2));
+
+  EXPECT_TRUE(task_queue.HasCurrent());
+  EXPECT_FALSE(task_queue.HasPaused());
   EXPECT_TRUE(IsEqual(task1, task_queue.Current()));
+
   // There is another task in the main queue, so it becomes current.
   task_queue.PauseCurrent();
+  EXPECT_TRUE(task_queue.HasCurrent());
+  EXPECT_TRUE(task_queue.HasPaused());
   EXPECT_TRUE(IsEqual(task2, task_queue.Current()));
+
+  task_queue.Reset();
+  EXPECT_FALSE(task_queue.HasCurrent());
+  EXPECT_FALSE(task_queue.HasPaused());
 }
 
 TEST_F(InstallableTaskQueueUnitTest, PausedTaskCanBeRetrieved) {
   InstallableTaskQueue task_queue;
-  InstallableTask task1 = CreateTask(false, false, false, false);
-  InstallableTask task2 = CreateTask(true, true, true, true);
+  TaskParams task1 = {false, false, false, false};
+  TaskParams task2 = {true, true, true, true};
 
-  task_queue.Add(task1);
-  task_queue.Add(task2);
+  task_queue.Add(CreateTask(task1));
+  task_queue.Add(CreateTask(task2));
 
   EXPECT_TRUE(IsEqual(task1, task_queue.Current()));
   task_queue.PauseCurrent();
+  EXPECT_TRUE(task_queue.HasCurrent());
+  EXPECT_TRUE(task_queue.HasPaused());
   EXPECT_TRUE(IsEqual(task2, task_queue.Current()));
   task_queue.UnpauseAll();
+
   // We've unpaused "1", but "2" is still current.
+  EXPECT_TRUE(task_queue.HasCurrent());
+  EXPECT_FALSE(task_queue.HasPaused());
   EXPECT_TRUE(IsEqual(task2, task_queue.Current()));
   task_queue.Next();
+  EXPECT_TRUE(task_queue.HasCurrent());
   EXPECT_TRUE(IsEqual(task1, task_queue.Current()));
+
+  task_queue.Reset();
+  EXPECT_FALSE(task_queue.HasCurrent());
+  EXPECT_FALSE(task_queue.HasPaused());
 }
 
 TEST_F(InstallableTaskQueueUnitTest, NextDiscardsTask) {
   InstallableTaskQueue task_queue;
-  InstallableTask task1 = CreateTask(false, false, false, false);
-  InstallableTask task2 = CreateTask(true, true, true, true);
+  TaskParams task1 = {false, false, false, false};
+  TaskParams task2 = {true, true, true, true};
 
-  task_queue.Add(task1);
-  task_queue.Add(task2);
+  task_queue.Add(CreateTask(task1));
+  task_queue.Add(CreateTask(task2));
 
   EXPECT_TRUE(IsEqual(task1, task_queue.Current()));
   task_queue.Next();

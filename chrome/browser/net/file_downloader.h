@@ -64,7 +64,7 @@ class FileDownloader {
 
   base::FilePath local_path_;
 
-  base::WeakPtrFactory<FileDownloader> weak_ptr_factory_;
+  base::WeakPtrFactory<FileDownloader> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FileDownloader);
 };

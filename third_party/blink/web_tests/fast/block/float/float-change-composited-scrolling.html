@@ -3,8 +3,7 @@
 <script>
 if (window.internals) {
   internals.settings.setPreferCompositingToLCDTextEnabled(true);
-  internals.settings.setMockScrollbarsEnabled(true);
-  internals.runtimeFlags.overlayScrollbarsEnabled = true;
+  internals.useMockOverlayScrollbars();
 }
 
 if (window.testRunner)

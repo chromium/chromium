@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Copyright 2019 The Chromium Authors. All rights reserved.  Use of this
+  source code is governed by a BSD-style license that can be found in the
+  LICENSE file.
+-->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingStart="?android:attr/expandableListPreferredItemPaddingLeft"
+    android:paddingTop="16dp"
+    android:paddingBottom="16dp"
+    android:gravity="center"
+    android:orientation="horizontal">
+
+    <!--suppress HardcodedText -->
+    <ImageView
+        android:layout_height="35dp"
+        android:layout_width="35dp"
+        android:id="@+id/crash_package_icon"
+        android:layout_marginEnd="2dp"
+        android:contentDescription="package icon"/>
+
+    <include layout="@layout/two_line_list_item"
+        android:id="@+id/crash_header"/>
+
+</LinearLayout>

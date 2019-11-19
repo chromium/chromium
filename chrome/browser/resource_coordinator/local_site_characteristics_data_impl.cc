@@ -32,17 +32,35 @@ base::TimeDelta GetTickDeltaSinceEpoch() {
   return NowTicks() - base::TimeTicks::UnixEpoch();
 }
 
-// Returns all the SiteCharacteristicsFeatureProto elements contained in a
-// SiteCharacteristicsProto protobuf object.
-std::vector<SiteCharacteristicsFeatureProto*> GetAllFeaturesFromProto(
-    SiteCharacteristicsProto* proto) {
-  std::vector<SiteCharacteristicsFeatureProto*> ret(
+// Returns all the SiteDataFeatureProto elements contained in a
+// SiteDataProto protobuf object.
+std::vector<SiteDataFeatureProto*> GetAllFeaturesFromProto(
+    SiteDataProto* proto) {
+  std::vector<SiteDataFeatureProto*> ret(
       {proto->mutable_updates_favicon_in_background(),
        proto->mutable_updates_title_in_background(),
        proto->mutable_uses_audio_in_background(),
        proto->mutable_uses_notifications_in_background()});
 
   return ret;
+}
+
+const char* FeatureTypeToFeatureName(
+    const LocalSiteCharacteristicsDataImpl::TrackedBackgroundFeatures feature) {
+  switch (feature) {
+    case LocalSiteCharacteristicsDataImpl::TrackedBackgroundFeatures::
+        kFaviconUpdate:
+      return "FaviconUpdateInBackground";
+    case LocalSiteCharacteristicsDataImpl::TrackedBackgroundFeatures::
+        kTitleUpdate:
+      return "TitleUpdateInBackground";
+    case LocalSiteCharacteristicsDataImpl::TrackedBackgroundFeatures::
+        kAudioUsage:
+      return "AudioUsageInBackground";
+    case LocalSiteCharacteristicsDataImpl::TrackedBackgroundFeatures::
+        kNotificationUsageUsage:
+      return "NotificationsUsageInBackground";
+  }
 }
 
 }  // namespace
@@ -61,10 +79,10 @@ void LocalSiteCharacteristicsDataImpl::NotifySiteLoaded() {
 }
 
 void LocalSiteCharacteristicsDataImpl::NotifySiteUnloaded(
-    TabVisibility tab_visibility) {
+    performance_manager::TabVisibility tab_visibility) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (tab_visibility == TabVisibility::kBackground)
+  if (tab_visibility == performance_manager::TabVisibility::kBackground)
     DecrementNumLoadedBackgroundTabs();
 
   loaded_tabs_count_--;
@@ -94,28 +112,28 @@ void LocalSiteCharacteristicsDataImpl::NotifyLoadedSiteForegrounded() {
   DecrementNumLoadedBackgroundTabs();
 }
 
-SiteFeatureUsage LocalSiteCharacteristicsDataImpl::UpdatesFaviconInBackground()
-    const {
+performance_manager::SiteFeatureUsage
+LocalSiteCharacteristicsDataImpl::UpdatesFaviconInBackground() const {
   return GetFeatureUsage(
       site_characteristics_.updates_favicon_in_background(),
       GetSiteCharacteristicsDatabaseParams().favicon_update_observation_window);
 }
 
-SiteFeatureUsage LocalSiteCharacteristicsDataImpl::UpdatesTitleInBackground()
-    const {
+performance_manager::SiteFeatureUsage
+LocalSiteCharacteristicsDataImpl::UpdatesTitleInBackground() const {
   return GetFeatureUsage(
       site_characteristics_.updates_title_in_background(),
       GetSiteCharacteristicsDatabaseParams().title_update_observation_window);
 }
 
-SiteFeatureUsage LocalSiteCharacteristicsDataImpl::UsesAudioInBackground()
-    const {
+performance_manager::SiteFeatureUsage
+LocalSiteCharacteristicsDataImpl::UsesAudioInBackground() const {
   return GetFeatureUsage(
       site_characteristics_.uses_audio_in_background(),
       GetSiteCharacteristicsDatabaseParams().audio_usage_observation_window);
 }
 
-SiteFeatureUsage
+performance_manager::SiteFeatureUsage
 LocalSiteCharacteristicsDataImpl::UsesNotificationsInBackground() const {
   return GetFeatureUsage(
       site_characteristics_.uses_notifications_in_background(),
@@ -139,24 +157,24 @@ void LocalSiteCharacteristicsDataImpl::RegisterDataLoadedCallback(
 void LocalSiteCharacteristicsDataImpl::NotifyUpdatesFaviconInBackground() {
   NotifyFeatureUsage(
       site_characteristics_.mutable_updates_favicon_in_background(),
-      "FaviconUpdateInBackground");
+      TrackedBackgroundFeatures::kFaviconUpdate);
 }
 
 void LocalSiteCharacteristicsDataImpl::NotifyUpdatesTitleInBackground() {
   NotifyFeatureUsage(
       site_characteristics_.mutable_updates_title_in_background(),
-      "TitleUpdateInBackground");
+      TrackedBackgroundFeatures::kTitleUpdate);
 }
 
 void LocalSiteCharacteristicsDataImpl::NotifyUsesAudioInBackground() {
   NotifyFeatureUsage(site_characteristics_.mutable_uses_audio_in_background(),
-                     "AudioUsageInBackground");
+                     TrackedBackgroundFeatures::kAudioUsage);
 }
 
 void LocalSiteCharacteristicsDataImpl::NotifyUsesNotificationsInBackground() {
   NotifyFeatureUsage(
       site_characteristics_.mutable_uses_notifications_in_background(),
-      "NotificationsUsageInBackground");
+      TrackedBackgroundFeatures::kNotificationUsageUsage);
 }
 
 void LocalSiteCharacteristicsDataImpl::NotifyLoadTimePerformanceMeasurement(
@@ -181,6 +199,15 @@ void LocalSiteCharacteristicsDataImpl::ExpireAllObservationWindowsForTesting() {
     IncrementFeatureObservationDuration(iter, longest_observation_window);
 }
 
+void LocalSiteCharacteristicsDataImpl::RegisterFeatureUsageCallbackForTesting(
+    const TrackedBackgroundFeatures feature_type,
+    base::OnceClosure callback) {
+  DCHECK(
+      !feature_usage_callback_for_testing_[static_cast<size_t>(feature_type)]);
+  feature_usage_callback_for_testing_[static_cast<size_t>(feature_type)] =
+      std::move(callback);
+}
+
 LocalSiteCharacteristicsDataImpl::LocalSiteCharacteristicsDataImpl(
     const url::Origin& origin,
     OnDestroyDelegate* delegate,
@@ -194,8 +221,7 @@ LocalSiteCharacteristicsDataImpl::LocalSiteCharacteristicsDataImpl(
       database_(database),
       delegate_(delegate),
       fully_initialized_(false),
-      is_dirty_(false),
-      weak_factory_(this) {
+      is_dirty_(false) {
   DCHECK(database_);
   DCHECK(delegate_);
 
@@ -223,7 +249,7 @@ LocalSiteCharacteristicsDataImpl::~LocalSiteCharacteristicsDataImpl() {
 }
 
 base::TimeDelta LocalSiteCharacteristicsDataImpl::FeatureObservationDuration(
-    const SiteCharacteristicsFeatureProto& feature_proto) const {
+    const SiteDataFeatureProto& feature_proto) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Get the current observation duration value if available.
   base::TimeDelta observation_time_for_feature;
@@ -247,7 +273,7 @@ base::TimeDelta LocalSiteCharacteristicsDataImpl::FeatureObservationDuration(
 
 // static:
 void LocalSiteCharacteristicsDataImpl::IncrementFeatureObservationDuration(
-    SiteCharacteristicsFeatureProto* feature_proto,
+    SiteDataFeatureProto* feature_proto,
     base::TimeDelta extra_observation_duration) {
   if (!feature_proto->has_use_timestamp() ||
       InternalRepresentationToTimeDelta(feature_proto->use_timestamp())
@@ -286,8 +312,9 @@ void LocalSiteCharacteristicsDataImpl::
   TransitionToFullyInitialized();
 }
 
-SiteFeatureUsage LocalSiteCharacteristicsDataImpl::GetFeatureUsage(
-    const SiteCharacteristicsFeatureProto& feature_proto,
+performance_manager::SiteFeatureUsage
+LocalSiteCharacteristicsDataImpl::GetFeatureUsage(
+    const SiteDataFeatureProto& feature_proto,
     const base::TimeDelta min_obs_time) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -299,17 +326,17 @@ SiteFeatureUsage LocalSiteCharacteristicsDataImpl::GetFeatureUsage(
   // TODO(sebmarchand): Check the timestamp and reset features that haven't been
   // observed in a long time, https://crbug.com/826446.
   if (feature_proto.has_use_timestamp())
-    return SiteFeatureUsage::kSiteFeatureInUse;
+    return performance_manager::SiteFeatureUsage::kSiteFeatureInUse;
 
   if (FeatureObservationDuration(feature_proto) >= min_obs_time)
-    return SiteFeatureUsage::kSiteFeatureNotInUse;
+    return performance_manager::SiteFeatureUsage::kSiteFeatureNotInUse;
 
-  return SiteFeatureUsage::kSiteFeatureUsageUnknown;
+  return performance_manager::SiteFeatureUsage::kSiteFeatureUsageUnknown;
 }
 
 void LocalSiteCharacteristicsDataImpl::NotifyFeatureUsage(
-    SiteCharacteristicsFeatureProto* feature_proto,
-    const char* feature_name) {
+    SiteDataFeatureProto* feature_proto,
+    const TrackedBackgroundFeatures feature_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(IsLoaded());
   DCHECK_GT(loaded_tabs_in_background_count_, 0U);
@@ -320,7 +347,7 @@ void LocalSiteCharacteristicsDataImpl::NotifyFeatureUsage(
     base::UmaHistogramCustomTimes(
         base::StringPrintf(
             "ResourceCoordinator.LocalDB.ObservationTimeBeforeFirstUse.%s",
-            feature_name),
+            FeatureTypeToFeatureName(feature_type)),
         InternalRepresentationToTimeDelta(
             feature_proto->observation_duration()),
         base::TimeDelta::FromSeconds(1), base::TimeDelta::FromDays(1), 100);
@@ -329,10 +356,16 @@ void LocalSiteCharacteristicsDataImpl::NotifyFeatureUsage(
   feature_proto->Clear();
   feature_proto->set_use_timestamp(
       TimeDeltaToInternalRepresentation(GetTickDeltaSinceEpoch()));
+
+  if (feature_usage_callback_for_testing_[static_cast<size_t>(feature_type)]) {
+    std::move(
+        feature_usage_callback_for_testing_[static_cast<size_t>(feature_type)])
+        .Run();
+  }
 }
 
 void LocalSiteCharacteristicsDataImpl::OnInitCallback(
-    base::Optional<SiteCharacteristicsProto> db_site_characteristics) {
+    base::Optional<SiteDataProto> db_site_characteristics) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Check if the initialization has succeeded.
   if (db_site_characteristics) {
@@ -398,8 +431,7 @@ void LocalSiteCharacteristicsDataImpl::DecrementNumLoadedBackgroundTabs() {
     FlushFeaturesObservationDurationToProto();
 }
 
-const SiteCharacteristicsProto&
-LocalSiteCharacteristicsDataImpl::FlushStateToProto() {
+const SiteDataProto& LocalSiteCharacteristicsDataImpl::FlushStateToProto() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Update the proto with the most current performance measurement averages.
   if (cpu_usage_estimate_.num_datums() ||

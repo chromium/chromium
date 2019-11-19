@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script>
+  CSS.registerProperty({
+    name: '--my-font-size',
+    syntax: '<length>',
+    inherits: false,
+    initialValue: '0px'
+  });
+
+  CSS.registerProperty({
+    name: '--my-color',
+    syntax: '<color>',
+    inherits: false,
+    initialValue: 'white'
+  });
+</script>
+<style>
+@keyframes anim1 {
+  from { --my-font-size: 10px; }
+  to { --my-font-size: 20px; }
+}
+
+@keyframes anim2 {
+  from { --my-color: rgb(0, 0, 0); }
+  to { --my-color: rgb(100, 100, 100); }
+}
+
+#target1 {
+  animation: anim1 3600s steps(2, start);
+  font-size: var(--my-font-size);
+  width: 10em;
+}
+
+#target2 {
+  animation: anim2 3600s steps(2, start);
+  color: var(--my-color);
+  background-color: currentColor;
+}
+</style>
+<div id="target1"></div>
+<div id="target2"></div>
+<script>
+
+test(() => {
+  target1.offsetTop;
+  target1.classList.toggle('test');
+  let style = getComputedStyle(target1);
+  assert_equals(style.getPropertyValue('--my-font-size'), '15px');
+  assert_equals(style.getPropertyValue('font-size'), '15px');
+  assert_equals(style.getPropertyValue('width'), '150px');
+}, 'Animating var() used in font-size causes em unit to change');
+
+test(() => {
+  target2.offsetTop;
+  target2.classList.toggle('test');
+  let style = getComputedStyle(target2);
+  assert_equals(style.getPropertyValue('--my-color'), 'rgb(50, 50, 50)');
+  assert_equals(style.getPropertyValue('color'), 'rgb(50, 50, 50)');
+  assert_equals(style.getPropertyValue('background-color'), 'rgb(50, 50, 50)');
+}, 'Animating var() used in color causes currentColor to change');
+
+</script>

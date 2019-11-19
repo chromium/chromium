@@ -89,7 +89,7 @@ bool AudioDecoderSoftwareWrapper::SetConfig(const AudioConfig& config) {
     return true;
   }
 
-  if (base::ContainsValue(kPassthroughCodecs, config.codec)) {
+  if (base::Contains(kPassthroughCodecs, config.codec)) {
     LOG(INFO) << "Cannot use software decoder for " << config.codec;
     return false;
   }
@@ -112,7 +112,8 @@ bool AudioDecoderSoftwareWrapper::SetConfig(const AudioConfig& config) {
   }
   output_config_.bytes_per_channel = 2;
   output_config_.samples_per_second = config.samples_per_second;
-  output_config_.encryption_scheme = Unencrypted();
+  output_config_.encryption_scheme = EncryptionScheme::kUnencrypted;
+  output_config_.channel_layout = config.channel_layout;
   return backend_decoder_->SetConfig(output_config_);
 }
 
@@ -140,7 +141,6 @@ bool AudioDecoderSoftwareWrapper::CreateSoftwareDecoder(
   software_decoder_ = media::CastAudioDecoder::Create(
       base::ThreadTaskRunnerHandle::Get(), config,
       media::CastAudioDecoder::kOutputSigned16,
-      media::CastAudioDecoder::OutputChannelLayoutFromConfig(config),
       base::BindOnce(&AudioDecoderSoftwareWrapper::OnDecoderInitialized,
                      base::Unretained(this)));
   return (software_decoder_.get() != nullptr);

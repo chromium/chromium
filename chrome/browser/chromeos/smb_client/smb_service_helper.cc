@@ -28,5 +28,37 @@ bool ParseUserPrincipalName(const std::string& user_principal_name,
   return true;
 }
 
+bool ParseDownLevelLogonName(const std::string& logon_name,
+                             std::string* user_name,
+                             std::string* workgroup) {
+  DCHECK(user_name);
+  DCHECK(workgroup);
+  std::vector<std::string> parts = base::SplitString(
+      logon_name, "\\", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+  if (parts.size() != 2 || parts.at(0).empty() || parts.at(1).empty()) {
+    // Don't log logon_name, it might contain sensitive data.
+    LOG(ERROR) << "Failed to parse down-level logon name. Expected form "
+                  "'DOMAIN\\user'.";
+    return false;
+  }
+  *workgroup = base::ToUpperASCII(std::move(parts.at(0)));
+  *user_name = std::move(parts.at(1));
+  return true;
+}
+
+bool ParseUserName(const std::string& name,
+                   std::string* user_name,
+                   std::string* workgroup) {
+  if (name.find('@') != std::string::npos) {
+    return ParseUserPrincipalName(name, user_name, workgroup);
+  } else if (name.find('\\') != std::string::npos) {
+    return ParseDownLevelLogonName(name, user_name, workgroup);
+  }
+  // If user principal or down-level logon name format is not detected, fall
+  // back to treating the name as a plain user name.
+  *user_name = name;
+  return true;
+}
+
 }  // namespace smb_client
 }  // namespace chromeos

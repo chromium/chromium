@@ -165,8 +165,12 @@ void ConfigDirPolicyLoader::LoadFromPath(const base::FilePath& path,
 
     // Detach the "3rdparty" node.
     std::unique_ptr<base::Value> third_party;
-    if (dictionary_value->Remove("3rdparty", &third_party))
-      Merge3rdPartyPolicy(third_party.get(), level, bundle);
+    if (dictionary_value->Remove("3rdparty", &third_party)) {
+      Merge3rdPartyPolicy(third_party.get(), level, bundle,
+                          /*signin_profile=*/true);
+      Merge3rdPartyPolicy(third_party.get(), level, bundle,
+                          /*signin_profile=*/false);
+    }
 
     // Add chrome policy.
     PolicyMap policy_map;
@@ -177,10 +181,10 @@ void ConfigDirPolicyLoader::LoadFromPath(const base::FilePath& path,
   }
 }
 
-void ConfigDirPolicyLoader::Merge3rdPartyPolicy(
-    const base::Value* policies,
-    PolicyLevel level,
-    PolicyBundle* bundle) {
+void ConfigDirPolicyLoader::Merge3rdPartyPolicy(const base::Value* policies,
+                                                PolicyLevel level,
+                                                PolicyBundle* bundle,
+                                                bool signin_profile) {
   // The first-level entries in |policies| are PolicyDomains. The second-level
   // entries are component IDs, and the third-level entries are the policies
   // for that domain/component namespace.
@@ -193,11 +197,13 @@ void ConfigDirPolicyLoader::Merge3rdPartyPolicy(
 
   // Helper to lookup a domain given its string name.
   std::map<std::string, PolicyDomain> supported_domains;
-  supported_domains["extensions"] = POLICY_DOMAIN_EXTENSIONS;
+  supported_domains["extensions"] = signin_profile
+                                        ? POLICY_DOMAIN_SIGNIN_EXTENSIONS
+                                        : POLICY_DOMAIN_EXTENSIONS;
 
   for (base::DictionaryValue::Iterator domains_it(*domains_dictionary);
        !domains_it.IsAtEnd(); domains_it.Advance()) {
-    if (!base::ContainsKey(supported_domains, domains_it.key())) {
+    if (!base::Contains(supported_domains, domains_it.key())) {
       LOG(WARNING) << "Unsupported 3rd party policy domain: "
                    << domains_it.key();
       continue;

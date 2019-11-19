@@ -8,7 +8,8 @@
 #include <string>
 
 #include "base/macros.h"
-#include "chrome/browser/chromeos/login/mixin_based_in_process_browser_test.h"
+#include "chrome/browser/chromeos/login/test/embedded_test_server_mixin.h"
+#include "chrome/test/base/mixin_based_in_process_browser_test.h"
 
 class AccountId;
 
@@ -28,11 +29,8 @@ class LoginManagerTest : public MixinBasedInProcessBrowserTest {
                    bool should_initialize_webui);
   ~LoginManagerTest() override;
 
-  // InProcessBrowserTest:
-  void TearDownOnMainThread() override;
   void SetUpCommandLine(base::CommandLine* command_line) override;
   void SetUpOnMainThread() override;
-  void SetUp() override;
 
   // Registers the user with the given |user_id| on the device.
   // This method should be called in PRE_* test.
@@ -58,9 +56,16 @@ class LoginManagerTest : public MixinBasedInProcessBrowserTest {
   // Add user with |user_id| to session.
   void AddUser(const AccountId& user_id);
 
+  void set_force_webui_login(bool force) { force_webui_login_ = force; }
+
  private:
+  // If set, the tests will use deprecated webui login.
+  // TODO(tbarzic): Migrate all tests to work with views login implementation.
+  bool force_webui_login_ = true;
   const bool should_launch_browser_;
   const bool should_initialize_webui_;
+  EmbeddedTestServerSetupMixin embedded_test_server_{&mixin_host_,
+                                                     embedded_test_server()};
 
   DISALLOW_COPY_AND_ASSIGN(LoginManagerTest);
 };

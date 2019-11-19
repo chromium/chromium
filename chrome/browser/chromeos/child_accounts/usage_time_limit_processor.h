@@ -10,12 +10,17 @@
 #define CHROME_BROWSER_CHROMEOS_CHILD_ACCOUNTS_USAGE_TIME_LIMIT_PROCESSOR_H_
 
 #include <memory>
+#include <set>
 #include <unordered_map>
 
+#include "base/macros.h"
 #include "base/optional.h"
 #include "base/time/time.h"
-#include "base/values.h"
 #include "chromeos/settings/timezone_settings.h"
+
+namespace base {
+class Value;
+}  // namespace base
 
 namespace chromeos {
 namespace usage_time_limit {
@@ -39,6 +44,10 @@ struct TimeWindowLimitBoundaries {
 
 struct TimeWindowLimitEntry {
   TimeWindowLimitEntry();
+  bool operator==(const TimeWindowLimitEntry&) const;
+  bool operator!=(const TimeWindowLimitEntry& rhs) const {
+    return !(*this == rhs);
+  }
 
   // Whether the time window limit entry ends on the following day from its
   // start.
@@ -62,6 +71,8 @@ class TimeWindowLimit {
   ~TimeWindowLimit();
   TimeWindowLimit(TimeWindowLimit&&);
   TimeWindowLimit& operator=(TimeWindowLimit&&);
+  bool operator==(const TimeWindowLimit&) const;
+  bool operator!=(const TimeWindowLimit& rhs) const { return !(*this == rhs); }
 
   std::unordered_map<Weekday, base::Optional<TimeWindowLimitEntry>> entries;
 
@@ -71,6 +82,10 @@ class TimeWindowLimit {
 
 struct TimeUsageLimitEntry {
   TimeUsageLimitEntry();
+  bool operator==(const TimeUsageLimitEntry&) const;
+  bool operator!=(const TimeUsageLimitEntry& rhs) const {
+    return !(*this == rhs);
+  }
 
   base::TimeDelta usage_quota;
   base::Time last_updated;
@@ -82,6 +97,8 @@ class TimeUsageLimit {
   ~TimeUsageLimit();
   TimeUsageLimit(TimeUsageLimit&&);
   TimeUsageLimit& operator=(TimeUsageLimit&&);
+  bool operator==(const TimeUsageLimit&) const;
+  bool operator!=(const TimeUsageLimit& rhs) const { return !(*this == rhs); }
 
   std::unordered_map<Weekday, base::Optional<TimeUsageLimitEntry>> entries;
   base::TimeDelta resets_at;
@@ -89,28 +106,10 @@ class TimeUsageLimit {
  private:
   DISALLOW_COPY_AND_ASSIGN(TimeUsageLimit);
 };
-
-class TimeLimitOverride {
- public:
-  enum class Action { kLock, kUnlock };
-
-  explicit TimeLimitOverride(const base::Value& override_dict);
-  ~TimeLimitOverride();
-  TimeLimitOverride(TimeLimitOverride&&);
-  TimeLimitOverride& operator=(TimeLimitOverride&&);
-
-  Action action;
-  base::Time created_at;
-  base::Optional<base::TimeDelta> duration;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TimeLimitOverride);
-};
-
 }  // namespace internal
 
-enum class ActivePolicies {
-  kNoActivePolicy,
+enum class PolicyType {
+  kNoPolicy,
   kOverride,
   kFixedLimit,  // Past bed time (ie, 9pm)
   kUsageLimit   // Too much time on screen (ie, 30 minutes per day)
@@ -122,8 +121,8 @@ struct State {
 
   // Which policy is responsible for the current state.
   // If it is locked, one of [ kOverride, kFixedLimit, kUsageLimit ]
-  // If it is not locked, one of [ kNoActivePolicy, kOverride ]
-  ActivePolicies active_policy;
+  // If it is not locked, one of [ kNoPolicy, kOverride ]
+  PolicyType active_policy;
 
   // Whether time_usage_limit is currently active.
   bool is_time_usage_limit_enabled = false;
@@ -145,7 +144,7 @@ struct State {
   base::Time next_state_change_time;
 
   // The policy that will be active in the next state.
-  ActivePolicies next_state_active_policy;
+  PolicyType next_state_active_policy;
 
   // This is the next time that the user's session will be unlocked. This is
   // only set when is_locked=true;
@@ -154,7 +153,15 @@ struct State {
 
 // Returns the current state of the user session with the given usage time limit
 // policy.
-State GetState(const std::unique_ptr<base::DictionaryValue>& time_limit,
+// |time_limit| dictionary with UsageTimeLimit policy data.
+// |local_override| dictionary with data of the last local override (authorized
+//                  by parent access code).
+// |used_time| time used in the current day.
+// |usage_timestamp| when was |used_time| data collected. Usually differs from
+//                   |current_time| by milliseconds.
+// |previous_state| state previously returned by UsageTimeLimitProcessor.
+State GetState(const base::Value& time_limit,
+               const base::Value* local_override,
                const base::TimeDelta& used_time,
                const base::Time& usage_timestamp,
                const base::Time& current_time,
@@ -162,22 +169,38 @@ State GetState(const std::unique_ptr<base::DictionaryValue>& time_limit,
                const base::Optional<State>& previous_state);
 
 // Returns the expected time that the used time stored should be reset.
-base::Time GetExpectedResetTime(
-    const std::unique_ptr<base::DictionaryValue>& time_limit,
-    base::Time current_time,
-    const icu::TimeZone* const time_zone);
+// |time_limit| dictionary with UsageTimeLimit policy data.
+// |local_override| dictionary with data of the last local override (authorized
+//                  by parent access code).
+base::Time GetExpectedResetTime(const base::Value& time_limit,
+                                const base::Value* local_override,
+                                base::Time current_time,
+                                const icu::TimeZone* const time_zone);
 
 // Returns the remaining time usage if the time usage limit is enabled.
+// |time_limit| dictionary with UsageTimeLimit policy data.
+// |local_override| dictionary with data of the last local override (authorized
+//                  by parent access code).
+// |used_time| time used in the current day.
 base::Optional<base::TimeDelta> GetRemainingTimeUsage(
-    const std::unique_ptr<base::DictionaryValue>& time_limit,
+    const base::Value& time_limit,
+    const base::Value* local_override,
     const base::Time current_time,
     const base::TimeDelta& used_time,
     const icu::TimeZone* const time_zone);
 
 // Returns time of the day when TimeUsageLimit policy is reset, represented by
-// the distance from midnight.
-base::TimeDelta GetTimeUsageLimitResetTime(
-    const std::unique_ptr<base::DictionaryValue>& time_limit);
+// the distance from midnight. |time_limit| needs to be a dictionary.
+base::TimeDelta GetTimeUsageLimitResetTime(const base::Value& time_limit);
+
+// Compares two Usage Time Limit policy dictionaries and returns which
+// PolicyTypes changed between the two versions. Changes on simple overrides are
+// not reported, but changes on override with durations are, the reason is that
+// this method is intended for notifications, and the former does not trigger
+// those while the latter does. |old_policy| and |new_policy| need to be
+// dictionaries.
+std::set<PolicyType> UpdatedPolicyTypes(const base::Value& old_policy,
+                                        const base::Value& new_policy);
 
 }  // namespace usage_time_limit
 }  // namespace chromeos

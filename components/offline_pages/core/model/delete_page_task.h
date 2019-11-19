@@ -21,7 +21,6 @@ class Database;
 
 namespace offline_pages {
 
-struct ClientId;
 class OfflinePageMetadataStore;
 
 // Task that deletes pages from the metadata store. It takes the store and
@@ -33,48 +32,21 @@ class OfflinePageMetadataStore;
 // The tasks have to be created by using the static CreateTask* methods.
 class DeletePageTask : public Task {
  public:
-  struct DeletePageTaskResult {
-    DeletePageTaskResult();
-    DeletePageTaskResult(
-        DeletePageResult result,
-        const std::vector<OfflinePageModel::DeletedPageInfo>& infos);
-    DeletePageTaskResult(const DeletePageTaskResult& other);
-    ~DeletePageTaskResult();
+  struct DeletePageTaskResult;
+  using DeletePageTaskCallback =
+      base::OnceCallback<void(DeletePageResult,
+                              const std::vector<OfflinePageItem>&)>;
 
-    DeletePageResult result;
-    std::vector<OfflinePageModel::DeletedPageInfo> infos;
-  };
-  typedef base::OnceCallback<void(
-      DeletePageResult,
-      const std::vector<OfflinePageModel::DeletedPageInfo>&)>
-      DeletePageTaskCallback;
-
-  // Creates a task to delete pages with offline ids in |offline_ids|.
-  static std::unique_ptr<DeletePageTask> CreateTaskMatchingOfflineIds(
+  static std::unique_ptr<DeletePageTask> CreateTaskWithCriteria(
       OfflinePageMetadataStore* store,
-      DeletePageTask::DeletePageTaskCallback callback,
-      const std::vector<int64_t>& offline_ids);
-
-  // Creates a task to delete pages with client ids in |client_ids|.
-  static std::unique_ptr<DeletePageTask> CreateTaskMatchingClientIds(
-      OfflinePageMetadataStore* store,
-      DeletePageTask::DeletePageTaskCallback callback,
-      const std::vector<ClientId>& client_ids);
-
-  // Creates a task to delete pages with the client ids in |client_ids|
-  // provided they also have origin |origin|.
-  static std::unique_ptr<DeletePageTask> CreateTaskMatchingClientIdsAndOrigin(
-      OfflinePageMetadataStore* store,
-      DeletePageTask::DeletePageTaskCallback callback,
-      const std::vector<ClientId>& client_ids,
-      const std::string& origin);
+      const PageCriteria& criteria,
+      DeletePageTask::DeletePageTaskCallback callback);
 
   // Creates a task to delete pages which satisfy |predicate|.
   static std::unique_ptr<DeletePageTask>
   CreateTaskMatchingUrlPredicateForCachedPages(
       OfflinePageMetadataStore* store,
       DeletePageTask::DeletePageTaskCallback callback,
-      ClientPolicyController* policy_controller,
       const UrlPredicate& predicate);
 
   // Creates a task to delete old pages that have the same url and namespace
@@ -84,7 +56,6 @@ class DeletePageTask : public Task {
   static std::unique_ptr<DeletePageTask> CreateTaskDeletingForPageLimit(
       OfflinePageMetadataStore* store,
       DeletePageTask::DeletePageTaskCallback callback,
-      ClientPolicyController* policy_controller,
       const OfflinePageItem& page);
 
   ~DeletePageTask() override;
@@ -92,9 +63,20 @@ class DeletePageTask : public Task {
   // Task implementation.
   void Run() override;
 
+  // Deletes a single page from the database. This function reads
+  // from the database and should be called from within an
+  // |SqlStoreBase::Execute()| call.
+  static bool DeletePageFromDbSync(int64_t offline_id, sql::Database* db);
+  // Deletes all pages with matching offline_ids from the database. Returns
+  // false and aborts if a page could not be deleted. This function reads
+  // from the database and should be called from within an
+  // |SqlStoreBase::Execute()| call.
+  static bool DeletePagesFromDbSync(const std::vector<int64_t>& offline_ids,
+                                    sql::Database* db);
+
  private:
-  typedef base::OnceCallback<DeletePageTaskResult(sql::Database*)>
-      DeleteFunction;
+  using DeleteFunction =
+      base::OnceCallback<DeletePageTaskResult(sql::Database*)>;
 
   // Making the constructor private, in order to use static methods to create
   // tasks.
@@ -114,7 +96,7 @@ class DeletePageTask : public Task {
   DeleteFunction func_;
   DeletePageTaskCallback callback_;
 
-  base::WeakPtrFactory<DeletePageTask> weak_ptr_factory_;
+  base::WeakPtrFactory<DeletePageTask> weak_ptr_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(DeletePageTask);
 };
 

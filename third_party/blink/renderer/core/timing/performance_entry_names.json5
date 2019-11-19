@@ -7,8 +7,9 @@
   data: [
     "element",
     "event",
-    "firstInput",
-    "layoutJank",
+    "first-input",
+    "largest-contentful-paint",
+    "layout-shift",
     "longtask",
     "mark",
     "measure",

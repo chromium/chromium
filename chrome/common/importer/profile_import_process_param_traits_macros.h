@@ -14,7 +14,6 @@
 #include "base/strings/string16.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/common/common_param_traits_macros.h"
 #include "chrome/common/importer/imported_bookmark_entry.h"
 #include "chrome/common/importer/importer_autofill_form_data_entry.h"
 #include "chrome/common/importer/importer_data_types.h"

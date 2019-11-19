@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>CSS RenderSubtree Test: render-subtree inheritance</title>
+<link rel="author" title="Vladimir Levin" href="mailto:vmpstr@chromium.org">
+<meta name="assert" content="render-subtree does not inherit">
+<meta name="assert" content="render-subtree has initial value 'none'">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/css/support/parsing-testcommon.js"></script>
+<script src="/css/support/inheritance-testcommon.js"></script>
+</head>
+<body>
+<div id="container">
+<div id="target"></div>
+</div>
+<script>
+assert_not_inherited("render-subtree", "none", "invisible");
+</script>
+</body>
+</html>
+

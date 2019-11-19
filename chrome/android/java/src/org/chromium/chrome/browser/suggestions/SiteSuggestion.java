@@ -4,6 +4,10 @@
 
 package org.chromium.chrome.browser.suggestions;
 
+import org.chromium.chrome.browser.suggestions.tile.TileSectionType;
+import org.chromium.chrome.browser.suggestions.tile.TileSource;
+import org.chromium.chrome.browser.suggestions.tile.TileTitleSource;
+
 import java.util.Date;
 
 /**
@@ -27,7 +31,10 @@ public class SiteSuggestion {
     @TileSource
     public final int source;
 
-    /** The {@link TileSectionType} the tile is contained in. */
+    /**
+     * The {@link org.chromium.chrome.browser.suggestions.tile.TileSectionType} the tile is
+     * contained in.
+     */
     @TileSectionType
     public final int sectionType;
 

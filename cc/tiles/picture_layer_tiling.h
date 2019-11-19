@@ -14,10 +14,10 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "cc/base/region.h"
 #include "cc/base/tiling_data.h"
 #include "cc/cc_export.h"
+#include "cc/paint/paint_worklet_input.h"
 #include "cc/tiles/tile.h"
 #include "cc/tiles/tile_priority.h"
 #include "cc/trees/occlusion.h"
@@ -41,8 +41,7 @@ class CC_EXPORT PictureLayerTilingClient {
   // Create a tile at the given content_rect (in the contents scale of the
   // tiling) This might return null if the client cannot create such a tile.
   virtual std::unique_ptr<Tile> CreateTile(const Tile::CreateInfo& info) = 0;
-  virtual gfx::Size CalculateTileSize(
-    const gfx::Size& content_bounds) const = 0;
+  virtual gfx::Size CalculateTileSize(const gfx::Size& content_bounds) = 0;
   // This invalidation region defines the area (if any, it can by null) that
   // tiles can not be shared between pending and active trees.
   virtual const Region* GetPendingInvalidation() = 0;
@@ -50,6 +49,7 @@ class CC_EXPORT PictureLayerTilingClient {
       const PictureLayerTiling* tiling) const = 0;
   virtual bool HasValidTilePriorities() const = 0;
   virtual bool RequiresHighResToDraw() const = 0;
+  virtual const PaintWorkletRecordMap& GetPaintWorkletRecords() const = 0;
 
  protected:
   virtual ~PictureLayerTilingClient() {}
@@ -95,7 +95,10 @@ class CC_EXPORT PictureLayerTiling {
                      PictureLayerTilingClient* client,
                      float min_preraster_distance,
                      float max_preraster_distance);
+  PictureLayerTiling(const PictureLayerTiling&) = delete;
   ~PictureLayerTiling();
+
+  PictureLayerTiling& operator=(const PictureLayerTiling&) = delete;
 
   PictureLayerTilingClient* client() const { return client_; }
 
@@ -132,6 +135,9 @@ class CC_EXPORT PictureLayerTiling {
 
   const scoped_refptr<RasterSource>& raster_source() const {
     return raster_source_;
+  }
+  const PaintWorkletRecordMap& GetPaintWorkletRecords() const {
+    return client_->GetPaintWorkletRecords();
   }
   gfx::Size tiling_size() const { return tiling_data_.tiling_size(); }
   gfx::Rect live_tiles_rect() const { return live_tiles_rect_; }
@@ -392,9 +398,6 @@ class CC_EXPORT PictureLayerTiling {
   bool has_soon_border_rect_tiles_ = false;
   bool has_eventually_rect_tiles_ = false;
   bool all_tiles_done_ = true;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PictureLayerTiling);
 };
 
 }  // namespace cc

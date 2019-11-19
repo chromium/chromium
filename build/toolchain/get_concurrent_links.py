@@ -5,6 +5,8 @@
 # This script computs the number of concurrent links we want to run in the build
 # as a function of machine spec. It's based on GetDefaultConcurrentLinks in GYP.
 
+from __future__ import print_function
+
 import multiprocessing
 import optparse
 import os
@@ -76,8 +78,8 @@ def main():
   parser.disable_interspersed_args()
   options, _ = parser.parse_args()
 
-  print _GetDefaultConcurrentLinks(options.mem_per_link_gb,
-                                   options.reserve_mem_gb)
+  print(_GetDefaultConcurrentLinks(options.mem_per_link_gb,
+                                   options.reserve_mem_gb))
   return 0
 
 if __name__ == '__main__':

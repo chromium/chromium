@@ -28,8 +28,8 @@ public class LocalStorageInfo implements Serializable {
 
     public void clear(StorageInfoClearedCallback callback) {
         // TODO(dullweber): Cookies should call a callback when cleared as well.
-        WebsitePreferenceBridge.nativeClearCookieData(mOrigin);
-        WebsitePreferenceBridge.nativeClearLocalStorageData(mOrigin, callback);
+        WebsitePreferenceBridgeJni.get().clearCookieData(mOrigin);
+        WebsitePreferenceBridgeJni.get().clearLocalStorageData(mOrigin, callback);
     }
 
     public long getSize() {

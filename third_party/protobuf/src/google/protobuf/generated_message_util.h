@@ -44,70 +44,47 @@
 #include <string>
 #include <vector>
 
-#include <google/protobuf/stubs/logging.h>
 #include <google/protobuf/stubs/common.h>
-#include <google/protobuf/stubs/once.h>  // Add direct dep on port for pb.cc
 #include <google/protobuf/has_bits.h>
 #include <google/protobuf/implicit_weak_message.h>
-#include <google/protobuf/map_entry_lite.h>
 #include <google/protobuf/message_lite.h>
+#include <google/protobuf/stubs/once.h>  // Add direct dep on port for pb.cc
+#include <google/protobuf/port.h>
 #include <google/protobuf/wire_format_lite.h>
+#include <google/protobuf/stubs/strutil.h>
+#include <google/protobuf/stubs/casts.h>
+
+#include <google/protobuf/port_def.inc>
+
+#ifdef SWIG
+#error "You cannot SWIG proto headers"
+#endif
 
 namespace google {
-
 namespace protobuf {
 
 class Arena;
 
-namespace io { class CodedInputStream; }
+namespace io {
+class CodedInputStream;
+}
 
 namespace internal {
 
-
-// Annotation for the compiler to emit a deprecation message if a field marked
-// with option 'deprecated=true' is used in the code, or for other things in
-// generated code which are deprecated.
-//
-// For internal use in the pb.cc files, deprecation warnings are suppressed
-// there.
-#undef DEPRECATED_PROTOBUF_FIELD
-#define PROTOBUF_DEPRECATED
-
-#define GOOGLE_PROTOBUF_DEPRECATED_ATTR
+template <typename To, typename From>
+inline To DownCast(From* f) {
+  return PROTOBUF_NAMESPACE_ID::internal::down_cast<To>(f);
+}
+template <typename To, typename From>
+inline To DownCast(From& f) {
+  return PROTOBUF_NAMESPACE_ID::internal::down_cast<To>(f);
+}
 
 
-// Returns the offset of the given field within the given aggregate type.
-// This is equivalent to the ANSI C offsetof() macro.  However, according
-// to the C++ standard, offsetof() only works on POD types, and GCC
-// enforces this requirement with a warning.  In practice, this rule is
-// unnecessarily strict; there is probably no compiler or platform on
-// which the offsets of the direct fields of a class are non-constant.
-// Fields inherited from superclasses *can* have non-constant offsets,
-// but that's not what this macro will be used for.
-#if defined(__clang__)
-// For Clang we use __builtin_offsetof() and suppress the warning,
-// to avoid Control Flow Integrity and UBSan vptr sanitizers from
-// crashing while trying to validate the invalid reinterpet_casts.
-#define GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TYPE, FIELD)  \
-  _Pragma("clang diagnostic push")                                   \
-  _Pragma("clang diagnostic ignored \"-Winvalid-offsetof\"")         \
-  __builtin_offsetof(TYPE, FIELD)                                    \
-  _Pragma("clang diagnostic pop")
-#else
-// Note that we calculate relative to the pointer value 16 here since if we
-// just use zero, GCC complains about dereferencing a NULL pointer.  We
-// choose 16 rather than some other number just in case the compiler would
-// be confused by an unaligned pointer.
-#define GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TYPE, FIELD)  \
-  static_cast< ::google::protobuf::uint32>(                           \
-      reinterpret_cast<const char*>(                                 \
-          &reinterpret_cast<const TYPE*>(16)->FIELD) -               \
-      reinterpret_cast<const char*>(16))
-#endif
+PROTOBUF_EXPORT void InitProtobufDefaults();
 
-// Constants for special floating point values.
-LIBPROTOBUF_EXPORT double Infinity();
-LIBPROTOBUF_EXPORT double NaN();
+// This used by proto1
+PROTOBUF_EXPORT const ::std::string& GetEmptyString();
 
 
 // True if IsInitialized() is true for all elements of t.  Type is expected
@@ -115,8 +92,9 @@ LIBPROTOBUF_EXPORT double NaN();
 // helper here to keep the protobuf compiler from ever having to emit loops in
 // IsInitialized() methods.  We want the C++ compiler to inline this or not
 // as it sees fit.
-template <class Type> bool AllAreInitialized(const Type& t) {
-  for (int i = t.size(); --i >= 0; ) {
+template <class Type>
+bool AllAreInitialized(const Type& t) {
+  for (int i = t.size(); --i >= 0;) {
     if (!t.Get(i).IsInitialized()) return false;
   }
   return true;
@@ -126,52 +104,16 @@ template <class Type> bool AllAreInitialized(const Type& t) {
 // This version operates on MessageLite to avoid introducing a dependency on the
 // concrete message type.
 template <class T>
-bool AllAreInitializedWeak(const ::google::protobuf::RepeatedPtrField<T>& t) {
+bool AllAreInitializedWeak(const RepeatedPtrField<T>& t) {
   for (int i = t.size(); --i >= 0;) {
-    if (!reinterpret_cast<const ::google::protobuf::internal::RepeatedPtrFieldBase&>(t)
-             .Get<::google::protobuf::internal::ImplicitWeakTypeHandler<T> >(i)
+    if (!reinterpret_cast<const RepeatedPtrFieldBase&>(t)
+             .Get<ImplicitWeakTypeHandler<T> >(i)
              .IsInitialized()) {
       return false;
     }
   }
   return true;
 }
-
-LIBPROTOBUF_EXPORT void InitProtobufDefaults();
-
-struct LIBPROTOBUF_EXPORT FieldMetadata {
-  uint32 offset;  // offset of this field in the struct
-  uint32 tag;     // field * 8 + wire_type
-  // byte offset * 8 + bit_offset;
-  // if the high bit is set then this is the byte offset of the oneof_case
-  // for this field.
-  uint32 has_offset;
-  uint32 type;      // the type of this field.
-  const void* ptr;  // auxiliary data
-
-  // From the serializer point of view each fundamental type can occur in
-  // 4 different ways. For simplicity we treat all combinations as a cartesion
-  // product although not all combinations are allowed.
-  enum FieldTypeClass {
-    kPresence,
-    kNoPresence,
-    kRepeated,
-    kPacked,
-    kOneOf,
-    kNumTypeClasses  // must be last enum
-  };
-  // C++ protobuf has 20 fundamental types, were we added Cord and StringPiece
-  // and also distinquish the same types if they have different wire format.
-  enum {
-    kCordType = 19,
-    kStringPieceType = 20,
-    kInlinedType = 21,
-    kNumTypes = 21,
-    kSpecial = kNumTypes * kNumTypeClasses,
-  };
-
-  static int CalculateType(int fundamental_type, FieldTypeClass type_class);
-};
 
 inline bool IsPresent(const void* base, uint32 hasbit) {
   const uint32* has_bits_array = static_cast<const uint32*>(base);
@@ -186,116 +128,21 @@ inline bool IsOneofPresent(const void* base, uint32 offset, uint32 tag) {
 
 typedef void (*SpecialSerializer)(const uint8* base, uint32 offset, uint32 tag,
                                   uint32 has_offset,
-                                  ::google::protobuf::io::CodedOutputStream* output);
+                                  io::CodedOutputStream* output);
 
-LIBPROTOBUF_EXPORT void ExtensionSerializer(const uint8* base, uint32 offset, uint32 tag,
-                         uint32 has_offset,
-                         ::google::protobuf::io::CodedOutputStream* output);
-LIBPROTOBUF_EXPORT void UnknownFieldSerializerLite(const uint8* base, uint32 offset, uint32 tag,
-                                uint32 has_offset,
-                                ::google::protobuf::io::CodedOutputStream* output);
+PROTOBUF_EXPORT void ExtensionSerializer(const uint8* base, uint32 offset,
+                                         uint32 tag, uint32 has_offset,
+                                         io::CodedOutputStream* output);
+PROTOBUF_EXPORT void UnknownFieldSerializerLite(const uint8* base,
+                                                uint32 offset, uint32 tag,
+                                                uint32 has_offset,
+                                                io::CodedOutputStream* output);
 
-struct SerializationTable {
-  int num_fields;
-  const FieldMetadata* field_table;
-};
-
-LIBPROTOBUF_EXPORT void SerializeInternal(const uint8* base, const FieldMetadata* table,
-                       int num_fields, ::google::protobuf::io::CodedOutputStream* output);
-
-inline void TableSerialize(const ::google::protobuf::MessageLite& msg,
-                           const SerializationTable* table,
-                           ::google::protobuf::io::CodedOutputStream* output) {
-  const FieldMetadata* field_table = table->field_table;
-  int num_fields = table->num_fields - 1;
-  const uint8* base = reinterpret_cast<const uint8*>(&msg);
-  // TODO(gerbens) This skips the first test if we could use the fast
-  // array serialization path, we should make this
-  // int cached_size =
-  //    *reinterpret_cast<const int32*>(base + field_table->offset);
-  // SerializeWithCachedSize(msg, field_table + 1, num_fields, cached_size, ...)
-  // But we keep conformance with the old way for now.
-  SerializeInternal(base, field_table + 1, num_fields, output);
-}
-
-uint8* SerializeInternalToArray(const uint8* base, const FieldMetadata* table,
-                                int num_fields, bool is_deterministic,
-                                uint8* buffer);
-
-inline uint8* TableSerializeToArray(const ::google::protobuf::MessageLite& msg,
-                                    const SerializationTable* table,
-                                    bool is_deterministic, uint8* buffer) {
-  const uint8* base = reinterpret_cast<const uint8*>(&msg);
-  const FieldMetadata* field_table = table->field_table + 1;
-  int num_fields = table->num_fields - 1;
-  return SerializeInternalToArray(base, field_table, num_fields,
-                                  is_deterministic, buffer);
-}
-
-template <typename T>
-struct CompareHelper {
-  bool operator()(const T& a, const T& b) { return a < b; }
-};
-
-template <>
-struct CompareHelper<ArenaStringPtr> {
-  bool operator()(const ArenaStringPtr& a, const ArenaStringPtr& b) {
-    return a.Get() < b.Get();
-  }
-};
-
-struct CompareMapKey {
-  template <typename T>
-  bool operator()(const MapEntryHelper<T>& a, const MapEntryHelper<T>& b) {
-    return Compare(a.key_, b.key_);
-  }
-  template <typename T>
-  bool Compare(const T& a, const T& b) {
-    return CompareHelper<T>()(a, b);
-  }
-};
-
-template <typename MapFieldType, const SerializationTable* table>
-void MapFieldSerializer(const uint8* base, uint32 offset, uint32 tag,
-                        uint32 has_offset,
-                        ::google::protobuf::io::CodedOutputStream* output) {
-  typedef MapEntryHelper<typename MapFieldType::EntryTypeTrait> Entry;
-  typedef typename MapFieldType::MapType::const_iterator Iter;
-
-  const MapFieldType& map_field =
-      *reinterpret_cast<const MapFieldType*>(base + offset);
-  const SerializationTable* t =
-      table +
-      has_offset;  // has_offset is overloaded for maps to mean table offset
-  if (!output->IsSerializationDeterministic()) {
-    for (Iter it = map_field.GetMap().begin(); it != map_field.GetMap().end();
-         ++it) {
-      Entry map_entry(*it);
-      output->WriteVarint32(tag);
-      output->WriteVarint32(map_entry._cached_size_);
-      SerializeInternal(reinterpret_cast<const uint8*>(&map_entry),
-                        t->field_table, t->num_fields, output);
-    }
-  } else {
-    std::vector<Entry> v;
-    for (Iter it = map_field.GetMap().begin(); it != map_field.GetMap().end();
-         ++it) {
-      v.push_back(Entry(*it));
-    }
-    std::sort(v.begin(), v.end(), CompareMapKey());
-    for (int i = 0; i < v.size(); i++) {
-      output->WriteVarint32(tag);
-      output->WriteVarint32(v[i]._cached_size_);
-      SerializeInternal(reinterpret_cast<const uint8*>(&v[i]), t->field_table,
-                        t->num_fields, output);
-    }
-  }
-}
-
-LIBPROTOBUF_EXPORT MessageLite* DuplicateIfNonNullInternal(MessageLite* message);
-LIBPROTOBUF_EXPORT MessageLite* GetOwnedMessageInternal(Arena* message_arena,
-                                     MessageLite* submessage,
-                                     Arena* submessage_arena);
+PROTOBUF_EXPORT MessageLite* DuplicateIfNonNullInternal(MessageLite* message);
+PROTOBUF_EXPORT MessageLite* GetOwnedMessageInternal(Arena* message_arena,
+                                                     MessageLite* submessage,
+                                                     Arena* submessage_arena);
+PROTOBUF_EXPORT void GenericSwap(MessageLite* m1, MessageLite* m2);
 
 template <typename T>
 T* DuplicateIfNonNull(T* message) {
@@ -317,17 +164,18 @@ T* GetOwnedMessage(Arena* message_arena, T* submessage,
 
 // Hide atomic from the public header and allow easy change to regular int
 // on platforms where the atomic might have a perf impact.
-class LIBPROTOBUF_EXPORT CachedSize {
+class PROTOBUF_EXPORT CachedSize {
  public:
   int Get() const { return size_.load(std::memory_order_relaxed); }
   void Set(int size) { size_.store(size, std::memory_order_relaxed); }
+
  private:
   std::atomic<int> size_{0};
 };
 
 // SCCInfo represents information of a strongly connected component of
 // mutual dependent messages.
-struct LIBPROTOBUF_EXPORT SCCInfoBase {
+struct PROTOBUF_EXPORT SCCInfoBase {
   // We use 0 for the Initialized state, because test eax,eax, jnz is smaller
   // and is subject to macro fusion.
   enum {
@@ -335,7 +183,16 @@ struct LIBPROTOBUF_EXPORT SCCInfoBase {
     kRunning = 1,
     kUninitialized = -1,  // initial state
   };
+#if defined(_MSC_VER) && !defined(__clang__)
+  // MSVC doesnt make std::atomic constant initialized. This union trick
+  // makes it so.
+  union {
+    int visit_status_to_make_linker_init;
+    std::atomic<int> visit_status;
+  };
+#else
   std::atomic<int> visit_status;
+#endif
   int num_deps;
   void (*init_func)();
   // This is followed by an array  of num_deps
@@ -352,15 +209,29 @@ struct SCCInfo {
   SCCInfoBase* deps[N ? N : 1];
 };
 
-LIBPROTOBUF_EXPORT void InitSCCImpl(SCCInfoBase* scc);
+PROTOBUF_EXPORT void InitSCCImpl(SCCInfoBase* scc);
 
 inline void InitSCC(SCCInfoBase* scc) {
   auto status = scc->visit_status.load(std::memory_order_acquire);
-  if (GOOGLE_PREDICT_FALSE(status != SCCInfoBase::kInitialized)) InitSCCImpl(scc);
+  if (PROTOBUF_PREDICT_FALSE(status != SCCInfoBase::kInitialized))
+    InitSCCImpl(scc);
+}
+
+PROTOBUF_EXPORT void DestroyMessage(const void* message);
+PROTOBUF_EXPORT void DestroyString(const void* s);
+// Destroy (not delete) the message
+inline void OnShutdownDestroyMessage(const void* ptr) {
+  OnShutdownRun(DestroyMessage, ptr);
+}
+// Destroy the string (call std::string destructor)
+inline void OnShutdownDestroyString(const std::string* ptr) {
+  OnShutdownRun(DestroyString, ptr);
 }
 
 }  // namespace internal
 }  // namespace protobuf
-
 }  // namespace google
+
+#include <google/protobuf/port_undef.inc>
+
 #endif  // GOOGLE_PROTOBUF_GENERATED_MESSAGE_UTIL_H__

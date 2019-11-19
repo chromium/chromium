@@ -25,6 +25,11 @@ FindTabHelper::FindTabHelper(web::WebState* web_state) {
 
 FindTabHelper::~FindTabHelper() {}
 
+void FindTabHelper::SetResponseDelegate(
+    id<FindInPageResponseDelegate> response_delegate) {
+  controller_.responseDelegate = response_delegate;
+}
+
 void FindTabHelper::StartFinding(NSString* search_term,
                                  FindInPageCompletionBlock completion) {
   base::RecordAction(base::UserMetricsAction(kFindActionName));

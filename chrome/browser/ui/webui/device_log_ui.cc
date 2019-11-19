@@ -11,6 +11,7 @@
 #include "base/bind_helpers.h"
 #include "base/macros.h"
 #include "base/values.h"
+#include "chrome/browser/ui/webui/localized_string.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
@@ -35,6 +36,10 @@ class DeviceLogMessageHandler : public content::WebUIMessageHandler {
         "DeviceLog.getLog",
         base::BindRepeating(&DeviceLogMessageHandler::GetLog,
                             base::Unretained(this)));
+    web_ui()->RegisterMessageCallback(
+        "DeviceLog.clearLog",
+        base::BindRepeating(&DeviceLogMessageHandler::ClearLog,
+                            base::Unretained(this)));
   }
 
  private:
@@ -43,6 +48,10 @@ class DeviceLogMessageHandler : public content::WebUIMessageHandler {
         device_event_log::NEWEST_FIRST, "json", "",
         device_event_log::LOG_LEVEL_DEBUG, 0));
     web_ui()->CallJavascriptFunctionUnsafe("DeviceLogUI.getLogCallback", data);
+  }
+
+  void ClearLog(const base::ListValue* value) const {
+    device_event_log::ClearAll();
   }
 
   DISALLOW_COPY_AND_ASSIGN(DeviceLogMessageHandler);
@@ -57,34 +66,35 @@ DeviceLogUI::DeviceLogUI(content::WebUI* web_ui)
   content::WebUIDataSource* html =
       content::WebUIDataSource::Create(chrome::kChromeUIDeviceLogHost);
 
-  html->AddLocalizedString("titleText", IDS_DEVICE_LOG_TITLE);
-  html->AddLocalizedString("autoRefreshText", IDS_DEVICE_AUTO_REFRESH);
-  html->AddLocalizedString("logRefreshText", IDS_DEVICE_LOG_REFRESH);
+  static constexpr LocalizedString kStrings[] = {
+      {"titleText", IDS_DEVICE_LOG_TITLE},
+      {"autoRefreshText", IDS_DEVICE_AUTO_REFRESH},
+      {"logRefreshText", IDS_DEVICE_LOG_REFRESH},
+      {"logClearText", IDS_DEVICE_LOG_CLEAR},
+      {"logNoEntriesText", IDS_DEVICE_LOG_NO_ENTRIES},
+      {"logLevelShowText", IDS_DEVICE_LOG_LEVEL_SHOW},
+      {"logLevelErrorText", IDS_DEVICE_LOG_LEVEL_ERROR},
+      {"logLevelUserText", IDS_DEVICE_LOG_LEVEL_USER},
+      {"logLevelEventText", IDS_DEVICE_LOG_LEVEL_EVENT},
+      {"logLevelDebugText", IDS_DEVICE_LOG_LEVEL_DEBUG},
+      {"logLevelFileinfoText", IDS_DEVICE_LOG_FILEINFO},
+      {"logLevelTimeDetailText", IDS_DEVICE_LOG_TIME_DETAIL},
+      {"logTypeLoginText", IDS_DEVICE_LOG_TYPE_LOGIN},
+      {"logTypeNetworkText", IDS_DEVICE_LOG_TYPE_NETWORK},
+      {"logTypePowerText", IDS_DEVICE_LOG_TYPE_POWER},
+      {"logTypeBluetoothText", IDS_DEVICE_LOG_TYPE_BLUETOOTH},
+      {"logTypeUsbText", IDS_DEVICE_LOG_TYPE_USB},
+      {"logTypeHidText", IDS_DEVICE_LOG_TYPE_HID},
+      {"logTypePrinterText", IDS_DEVICE_LOG_TYPE_PRINTER},
+      {"logTypeFidoText", IDS_DEVICE_LOG_TYPE_FIDO},
+      {"logEntryFormat", IDS_DEVICE_LOG_ENTRY},
+  };
+  AddLocalizedStringsBulk(html, kStrings, base::size(kStrings));
 
-  html->AddLocalizedString("logLevelShowText", IDS_DEVICE_LOG_LEVEL_SHOW);
-  html->AddLocalizedString("logLevelErrorText", IDS_DEVICE_LOG_LEVEL_ERROR);
-  html->AddLocalizedString("logLevelUserText", IDS_DEVICE_LOG_LEVEL_USER);
-  html->AddLocalizedString("logLevelEventText", IDS_DEVICE_LOG_LEVEL_EVENT);
-  html->AddLocalizedString("logLevelDebugText", IDS_DEVICE_LOG_LEVEL_DEBUG);
-  html->AddLocalizedString("logLevelFileinfoText", IDS_DEVICE_LOG_FILEINFO);
-  html->AddLocalizedString("logLevelTimeDetailText",
-                           IDS_DEVICE_LOG_TIME_DETAIL);
-
-  html->AddLocalizedString("logTypeLoginText", IDS_DEVICE_LOG_TYPE_LOGIN);
-  html->AddLocalizedString("logTypeNetworkText", IDS_DEVICE_LOG_TYPE_NETWORK);
-  html->AddLocalizedString("logTypePowerText", IDS_DEVICE_LOG_TYPE_POWER);
-  html->AddLocalizedString("logTypeBluetoothText",
-                           IDS_DEVICE_LOG_TYPE_BLUETOOTH);
-  html->AddLocalizedString("logTypeUsbText", IDS_DEVICE_LOG_TYPE_USB);
-  html->AddLocalizedString("logTypeHidText", IDS_DEVICE_LOG_TYPE_HID);
-  html->AddLocalizedString("logTypePrinterText", IDS_DEVICE_LOG_TYPE_PRINTER);
-
-  html->AddLocalizedString("logEntryFormat", IDS_DEVICE_LOG_ENTRY);
-  html->SetJsonPath("strings.js");
+  html->UseStringsJs();
   html->AddResourcePath("device_log_ui.css", IDR_DEVICE_LOG_UI_CSS);
   html->AddResourcePath("device_log_ui.js", IDR_DEVICE_LOG_UI_JS);
   html->SetDefaultResource(IDR_DEVICE_LOG_UI_HTML);
-  html->UseGzip();
 
   content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
                                 html);

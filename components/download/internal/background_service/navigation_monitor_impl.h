@@ -40,7 +40,7 @@ class NavigationMonitorImpl : public NavigationMonitor {
   base::TimeDelta navigation_completion_delay_;
   base::TimeDelta navigation_timeout_delay_;
 
-  base::WeakPtrFactory<NavigationMonitorImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<NavigationMonitorImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(NavigationMonitorImpl);
 };

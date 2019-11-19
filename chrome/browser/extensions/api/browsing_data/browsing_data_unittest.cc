@@ -55,7 +55,7 @@ class BrowsingDataApiTest : public ExtensionServiceTestBase {
 
     browser_window_ = std::make_unique<TestBrowserWindow>();
     Browser::CreateParams params(profile(), true);
-    params.type = Browser::TYPE_TABBED;
+    params.type = Browser::TYPE_NORMAL;
     params.window = browser_window_.get();
     browser_ = std::make_unique<Browser>(params);
 
@@ -270,9 +270,7 @@ class BrowsingDataApiTest : public ExtensionServiceTestBase {
         GetAsMask(data_to_remove, "serviceWorkers",
                   content::BrowsingDataRemover::DATA_TYPE_SERVICE_WORKERS) |
         GetAsMask(data_to_remove, "webSQL",
-                  content::BrowsingDataRemover::DATA_TYPE_WEB_SQL) |
-        GetAsMask(data_to_remove, "serverBoundCertificates",
-                  content::BrowsingDataRemover::DATA_TYPE_CHANNEL_IDS);
+                  content::BrowsingDataRemover::DATA_TYPE_WEB_SQL);
 
     EXPECT_EQ(expected_removal_mask, removal_mask);
   }
@@ -302,9 +300,8 @@ class BrowsingDataApiTest : public ExtensionServiceTestBase {
         << " for " << args;
   }
 
-  void VerifyFilterBuilder(
-      const std::string& options,
-      const content::BrowsingDataFilterBuilder& filter_builder) {
+  void VerifyFilterBuilder(const std::string& options,
+                           content::BrowsingDataFilterBuilder* filter_builder) {
     delegate()->ExpectCall(
         base::Time::UnixEpoch(), base::Time::Max(),
         content::BrowsingDataRemover::DATA_TYPE_LOCAL_STORAGE, UNPROTECTED_WEB,
@@ -375,7 +372,6 @@ TEST_F(BrowsingDataApiTest, RemoveBrowsingDataAll) {
       // TODO(ramyasharma): implement clearing of external protocol data
       // via the browsing data API. https://crbug.com/692850.
       content::BrowsingDataRemover::DATA_TYPE_COOKIES |
-          content::BrowsingDataRemover::DATA_TYPE_CHANNEL_IDS |
           (content::BrowsingDataRemover::DATA_TYPE_DOM_STORAGE &
            ~content::BrowsingDataRemover::DATA_TYPE_BACKGROUND_FETCH &
            ~content::BrowsingDataRemover::DATA_TYPE_EMBEDDER_DOM_STORAGE) |
@@ -434,9 +430,6 @@ TEST_F(BrowsingDataApiTest, BrowsingDataRemovalMask) {
       "indexedDB", content::BrowsingDataRemover::DATA_TYPE_INDEXED_DB);
   RunBrowsingDataRemoveWithKeyAndCompareRemovalMask(
       "localStorage", content::BrowsingDataRemover::DATA_TYPE_LOCAL_STORAGE);
-  RunBrowsingDataRemoveWithKeyAndCompareRemovalMask(
-      "serverBoundCertificates",
-      content::BrowsingDataRemover::DATA_TYPE_CHANNEL_IDS);
   RunBrowsingDataRemoveWithKeyAndCompareRemovalMask(
       "passwords", ChromeBrowsingDataRemoverDelegate::DATA_TYPE_PASSWORDS);
   // We can't remove plugin data inside a test profile.
@@ -510,8 +503,7 @@ TEST_F(BrowsingDataApiTest, ShortcutFunctionRemovalMask) {
   RunAndCompareRemovalMask<BrowsingDataRemoveCacheStorageFunction>(
       content::BrowsingDataRemover::DATA_TYPE_CACHE_STORAGE);
   RunAndCompareRemovalMask<BrowsingDataRemoveCookiesFunction>(
-      content::BrowsingDataRemover::DATA_TYPE_COOKIES |
-      content::BrowsingDataRemover::DATA_TYPE_CHANNEL_IDS);
+      content::BrowsingDataRemover::DATA_TYPE_COOKIES);
   RunAndCompareRemovalMask<BrowsingDataRemoveDownloadsFunction>(
       content::BrowsingDataRemover::DATA_TYPE_DOWNLOADS);
   RunAndCompareRemovalMask<BrowsingDataRemoveFileSystemsFunction>(
@@ -574,7 +566,6 @@ TEST_F(BrowsingDataApiTest, SettingsFunctionSimple) {
 TEST_F(BrowsingDataApiTest, SettingsFunctionSiteData) {
   int supported_site_data_except_plugins =
       (content::BrowsingDataRemover::DATA_TYPE_COOKIES |
-       content::BrowsingDataRemover::DATA_TYPE_CHANNEL_IDS |
        content::BrowsingDataRemover::DATA_TYPE_DOM_STORAGE) &
       ~content::BrowsingDataRemover::DATA_TYPE_BACKGROUND_FETCH &
       ~content::BrowsingDataRemover::DATA_TYPE_EMBEDDER_DOM_STORAGE;
@@ -606,7 +597,6 @@ TEST_F(BrowsingDataApiTest, SettingsFunctionSiteData) {
 TEST_F(BrowsingDataApiTest, SettingsFunctionAssorted) {
   int supported_site_data =
       (content::BrowsingDataRemover::DATA_TYPE_COOKIES |
-       content::BrowsingDataRemover::DATA_TYPE_CHANNEL_IDS |
        content::BrowsingDataRemover::DATA_TYPE_DOM_STORAGE) &
       ~content::BrowsingDataRemover::DATA_TYPE_BACKGROUND_FETCH &
       ~content::BrowsingDataRemover::DATA_TYPE_EMBEDDER_DOM_STORAGE;
@@ -626,7 +616,7 @@ TEST_F(BrowsingDataApiTest, RemoveWithoutFilter) {
       content::BrowsingDataFilterBuilder::BLACKLIST);
   ASSERT_TRUE(filter_builder->IsEmptyBlacklist());
 
-  VerifyFilterBuilder("{}", *filter_builder);
+  VerifyFilterBuilder("{}", filter_builder.get());
 }
 
 TEST_F(BrowsingDataApiTest, RemoveWithWhitelistFilter) {
@@ -635,7 +625,7 @@ TEST_F(BrowsingDataApiTest, RemoveWithWhitelistFilter) {
   filter_builder->AddOrigin(url::Origin::Create(GURL("http://example.com")));
 
   VerifyFilterBuilder(R"({"origins": ["http://example.com"]})",
-                      *filter_builder);
+                      filter_builder.get());
 }
 
 TEST_F(BrowsingDataApiTest, RemoveWithBlacklistFilter) {
@@ -644,7 +634,7 @@ TEST_F(BrowsingDataApiTest, RemoveWithBlacklistFilter) {
   filter_builder->AddOrigin(url::Origin::Create(GURL("http://example.com")));
 
   VerifyFilterBuilder(R"({"excludeOrigins": ["http://example.com"]})",
-                      *filter_builder);
+                      filter_builder.get());
 }
 
 TEST_F(BrowsingDataApiTest, RemoveWithSpecialUrlFilter) {
@@ -656,7 +646,7 @@ TEST_F(BrowsingDataApiTest, RemoveWithSpecialUrlFilter) {
   VerifyFilterBuilder(
       R"({"excludeOrigins": ["file:///tmp/foo.html/",
           "filesystem:http://example.com/foo.txt"]})",
-      *filter_builder);
+      filter_builder.get());
 }
 
 TEST_F(BrowsingDataApiTest, RemoveCookiesWithFilter) {
@@ -665,7 +655,7 @@ TEST_F(BrowsingDataApiTest, RemoveCookiesWithFilter) {
   filter_builder->AddRegisterableDomain("example.com");
   delegate()->ExpectCall(base::Time::UnixEpoch(), base::Time::Max(),
                          content::BrowsingDataRemover::DATA_TYPE_COOKIES,
-                         UNPROTECTED_WEB, *filter_builder);
+                         UNPROTECTED_WEB, filter_builder.get());
 
   auto function = base::MakeRefCounted<BrowsingDataRemoveFunction>();
   EXPECT_EQ(RunFunctionAndReturnSingleResult(
@@ -685,7 +675,7 @@ TEST_F(BrowsingDataApiTest, RemoveCookiesAndStorageWithFilter) {
   filter_builder1->AddRegisterableDomain("example.com");
   delegate()->ExpectCall(base::Time::UnixEpoch(), base::Time::Max(),
                          content::BrowsingDataRemover::DATA_TYPE_COOKIES,
-                         UNPROTECTED_WEB, *filter_builder1);
+                         UNPROTECTED_WEB, filter_builder1.get());
 
   auto filter_builder2 = content::BrowsingDataFilterBuilder::Create(
       content::BrowsingDataFilterBuilder::WHITELIST);
@@ -693,7 +683,7 @@ TEST_F(BrowsingDataApiTest, RemoveCookiesAndStorageWithFilter) {
       url::Origin::Create(GURL("http://www.example.com")));
   delegate()->ExpectCall(base::Time::UnixEpoch(), base::Time::Max(),
                          content::BrowsingDataRemover::DATA_TYPE_LOCAL_STORAGE,
-                         UNPROTECTED_WEB, *filter_builder2);
+                         UNPROTECTED_WEB, filter_builder2.get());
 
   auto function = base::MakeRefCounted<BrowsingDataRemoveFunction>();
   EXPECT_EQ(RunFunctionAndReturnSingleResult(

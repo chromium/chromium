@@ -17,7 +17,7 @@
 #include "net/cert/ct_verify_result.h"
 #include "net/cert/x509_certificate.h"
 #include "net/log/net_log_with_source.h"
-#include "net/third_party/quic/core/crypto/proof_verifier.h"
+#include "net/third_party/quiche/src/quic/core/crypto/proof_verifier.h"
 
 namespace net {
 
@@ -73,7 +73,8 @@ class NET_EXPORT_PRIVATE ProofVerifierChromium : public quic::ProofVerifier {
   ProofVerifierChromium(CertVerifier* cert_verifier,
                         CTPolicyEnforcer* ct_policy_enforcer,
                         TransportSecurityState* transport_security_state,
-                        CTVerifier* cert_transparency_verifier);
+                        CTVerifier* cert_transparency_verifier,
+                        std::set<std::string> hostnames_to_allow_unknown_roots);
   ~ProofVerifierChromium() override;
 
   // quic::ProofVerifier interface
@@ -93,6 +94,8 @@ class NET_EXPORT_PRIVATE ProofVerifierChromium : public quic::ProofVerifier {
   quic::QuicAsyncStatus VerifyCertChain(
       const std::string& hostname,
       const std::vector<std::string>& certs,
+      const std::string& ocsp_response,
+      const std::string& cert_sct,
       const quic::ProofVerifyContext* verify_context,
       std::string* error_details,
       std::unique_ptr<quic::ProofVerifyDetails>* verify_details,
@@ -113,6 +116,8 @@ class NET_EXPORT_PRIVATE ProofVerifierChromium : public quic::ProofVerifier {
 
   TransportSecurityState* const transport_security_state_;
   CTVerifier* const cert_transparency_verifier_;
+
+  std::set<std::string> hostnames_to_allow_unknown_roots_;
 
   DISALLOW_COPY_AND_ASSIGN(ProofVerifierChromium);
 };

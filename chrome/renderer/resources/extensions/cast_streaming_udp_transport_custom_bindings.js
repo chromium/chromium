@@ -4,11 +4,9 @@
 
 // Custom binding for the Cast Streaming UdpTransport API.
 
-var binding = apiBridge ||
-              require('binding').Binding.create('cast.streaming.udpTransport');
 var natives = requireNative('cast_streaming_natives');
 
-binding.registerCustomHook(function(bindingsAPI, extensionId) {
+apiBridge.registerCustomHook(function(bindingsAPI, extensionId) {
   var apiFunctions = bindingsAPI.apiFunctions;
 
   apiFunctions.setHandleRequest('destroy', function(transportId) {
@@ -23,6 +21,3 @@ binding.registerCustomHook(function(bindingsAPI, extensionId) {
       natives.SetOptionsCastUdpTransport(transportId, options);
   });
 });
-
-if (!apiBridge)
-  exports.$set('binding', binding.generate());

@@ -9,8 +9,8 @@
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "content/public/test/test_browser_thread_bundle.h"
-#include "mojo/public/cpp/bindings/interface_request.h"
+#include "content/public/test/browser_task_environment.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
@@ -19,8 +19,9 @@ namespace {
 
 class TestSerialConnection : public SerialConnection {
  public:
-  explicit TestSerialConnection(device::mojom::SerialPortPtrInfo port_ptr_info)
-      : SerialConnection("dummy_id", std::move(port_ptr_info)) {}
+  explicit TestSerialConnection(
+      mojo::PendingRemote<device::mojom::SerialPort> port)
+      : SerialConnection("dummy_id", std::move(port)) {}
   ~TestSerialConnection() override {}
 
   void SetReceiveBuffer(const std::vector<uint8_t>& receive_buffer) {
@@ -40,7 +41,7 @@ class TestSerialConnection : public SerialConnection {
   }
 
   void StartPolling(const ReceiveEventCallback& callback) override {
-    set_paused(false);
+    SetPaused(false);
     callback.Run(std::move(receive_buffer_), api::serial::RECEIVE_ERROR_NONE);
     receive_buffer_.clear();
   }
@@ -103,11 +104,11 @@ std::vector<uint8_t> ToByteVector(const char (&array)[N]) {
 class ViscaWebcamTest : public testing::Test {
  protected:
   ViscaWebcamTest() {
-    device::mojom::SerialPortPtrInfo port_ptr_info;
-    mojo::MakeRequest(&port_ptr_info);
+    mojo::PendingRemote<device::mojom::SerialPort> port;
+    ignore_result(port.InitWithNewPipeAndPassReceiver());
     webcam_ = new ViscaWebcam;
     webcam_->OpenForTesting(
-        std::make_unique<TestSerialConnection>(std::move(port_ptr_info)));
+        std::make_unique<TestSerialConnection>(std::move(port)));
   }
   ~ViscaWebcamTest() override {}
 
@@ -119,7 +120,7 @@ class ViscaWebcamTest : public testing::Test {
   }
 
  private:
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   scoped_refptr<ViscaWebcam> webcam_;
 };
 

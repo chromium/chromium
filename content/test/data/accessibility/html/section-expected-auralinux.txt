@@ -1,3 +1,5 @@
 [document web]
 ++[section] xml-roles:region
-++++[text] name='This is a section element.'
+++++[static] name='This is a section element.'
+++[landmark] name='section' xml-roles:region
+++++[static] name='This is a named section element.'

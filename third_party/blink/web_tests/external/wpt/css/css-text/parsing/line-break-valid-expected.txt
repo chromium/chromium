@@ -1,8 +1,0 @@
-This is a testharness.js-based test.
-PASS e.style['line-break'] = "auto" should set the property value
-PASS e.style['line-break'] = "loose" should set the property value
-PASS e.style['line-break'] = "normal" should set the property value
-PASS e.style['line-break'] = "strict" should set the property value
-FAIL e.style['line-break'] = "anywhere" should set the property value assert_not_equals: property should be set got disallowed value ""
-Harness: the test ran to completion.
-

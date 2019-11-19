@@ -1,7 +1,11 @@
 This is a testharness.js-based test.
+Found 52 tests; 16 PASS, 36 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
+PASS idl_test validation
 PASS Partial interface CSSRule: original interface defined
+PASS Partial interface CSSRule: member names are unique
 PASS Partial interface CSSRule[2]: original interface defined
+PASS Partial interface CSSRule[2]: member names are unique
 PASS CSSFontFaceRule interface: existence and properties of interface object
 PASS CSSFontFaceRule interface object length
 PASS CSSFontFaceRule interface object name

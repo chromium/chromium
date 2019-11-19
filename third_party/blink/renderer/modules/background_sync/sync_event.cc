@@ -15,10 +15,9 @@ SyncEvent::SyncEvent(const AtomicString& type,
       last_chance_(last_chance) {}
 
 SyncEvent::SyncEvent(const AtomicString& type, const SyncEventInit* init)
-    : ExtendableEvent(type, init) {
-  tag_ = init->tag();
-  last_chance_ = init->lastChance();
-}
+    : ExtendableEvent(type, init),
+      tag_(init->tag()),
+      last_chance_(init->lastChance()) {}
 
 SyncEvent::~SyncEvent() = default;
 
@@ -26,16 +25,12 @@ const AtomicString& SyncEvent::InterfaceName() const {
   return event_interface_names::kSyncEvent;
 }
 
-String SyncEvent::tag() {
+const String& SyncEvent::tag() const {
   return tag_;
 }
 
-bool SyncEvent::lastChance() {
+bool SyncEvent::lastChance() const {
   return last_chance_;
-}
-
-void SyncEvent::Trace(blink::Visitor* visitor) {
-  ExtendableEvent::Trace(visitor);
 }
 
 }  // namespace blink

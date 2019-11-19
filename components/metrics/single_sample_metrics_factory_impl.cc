@@ -7,6 +7,8 @@
 #include <memory>
 
 #include "base/threading/thread_checker.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace metrics {
 
@@ -14,7 +16,7 @@ namespace {
 
 class SingleSampleMetricImpl : public base::SingleSampleMetric {
  public:
-  SingleSampleMetricImpl(mojom::SingleSampleMetricPtr metric)
+  SingleSampleMetricImpl(mojo::PendingRemote<mojom::SingleSampleMetric> metric)
       : metric_(std::move(metric)) {}
 
   ~SingleSampleMetricImpl() override {
@@ -28,7 +30,7 @@ class SingleSampleMetricImpl : public base::SingleSampleMetric {
 
  private:
   base::ThreadChecker thread_checker_;
-  mojom::SingleSampleMetricPtr metric_;
+  mojo::Remote<mojom::SingleSampleMetric> metric_;
 
   DISALLOW_COPY_AND_ASSIGN(SingleSampleMetricImpl);
 };
@@ -63,10 +65,10 @@ SingleSampleMetricsFactoryImpl::CreateMetric(const std::string& histogram_name,
                                              base::HistogramBase::Sample max,
                                              uint32_t bucket_count,
                                              int32_t flags) {
-  mojom::SingleSampleMetricPtr metric;
-  GetProvider()->AcquireSingleSampleMetric(histogram_name, min, max,
-                                           bucket_count, flags,
-                                           mojo::MakeRequest(&metric));
+  mojo::PendingRemote<mojom::SingleSampleMetric> metric;
+  GetProvider()->AcquireSingleSampleMetric(
+      histogram_name, min, max, bucket_count, flags,
+      metric.InitWithNewPipeAndPassReceiver());
   return std::make_unique<SingleSampleMetricImpl>(std::move(metric));
 }
 
@@ -79,13 +81,13 @@ SingleSampleMetricsFactoryImpl::GetProvider() {
 
   // If not, create a new one which will persist until process shutdown and put
   // it in the TLS slot for the current thread.
-  mojom::SingleSampleMetricsProviderPtr* provider =
-      new mojom::SingleSampleMetricsProviderPtr();
+  mojo::Remote<mojom::SingleSampleMetricsProvider>* provider =
+      new mojo::Remote<mojom::SingleSampleMetricsProvider>();
   provider_tls_.Set(provider);
 
   // Start the provider connection and return it; it won't be fully connected
   // until later, but mojo will buffer all calls prior to completion.
-  create_provider_cb_.Run(mojo::MakeRequest(provider));
+  create_provider_cb_.Run(provider->BindNewPipeAndPassReceiver());
   return provider->get();
 }
 

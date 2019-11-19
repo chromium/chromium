@@ -1,0 +1,28 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "LayoutButton INPUT",
+          "rect": [7, 7, 59, 24],
+          "reason": "subtree"
+        },
+        {
+          "object": "LayoutButton INPUT",
+          "rect": [7, 7, 59, 24],
+          "reason": "chunk appeared"
+        },
+        {
+          "object": "InlineTextBox 'Submit'",
+          "rect": [16, 11, 41, 16],
+          "reason": "subtree"
+        }
+      ]
+    }
+  ]
+}
+

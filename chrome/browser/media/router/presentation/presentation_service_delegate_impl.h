@@ -20,7 +20,7 @@
 #include "chrome/browser/media/router/media_router.h"
 #include "chrome/browser/media/router/presentation/presentation_service_delegate_observers.h"
 #include "chrome/common/media_router/media_source.h"
-#include "chrome/common/media_router/mojo/media_router.mojom.h"
+#include "chrome/common/media_router/mojom/media_router.mojom.h"
 #include "content/public/browser/presentation_request.h"
 #include "content/public/browser/presentation_service_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -307,7 +307,7 @@ class PresentationServiceDelegateImpl
 
   PresentationServiceDelegateObservers observers_;
 
-  base::WeakPtrFactory<PresentationServiceDelegateImpl> weak_factory_;
+  base::WeakPtrFactory<PresentationServiceDelegateImpl> weak_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 

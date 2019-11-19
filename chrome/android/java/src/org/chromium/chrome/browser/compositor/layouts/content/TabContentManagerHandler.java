@@ -1,0 +1,64 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.compositor.layouts.content;
+
+import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
+
+/**
+ * Helper class attaching Tab's content layer to {@link TabContentManager}.
+ */
+public final class TabContentManagerHandler extends TabModelSelectorTabObserver {
+    private final TabContentManager mTabContentManager;
+
+    // Indicates that thumbnail cache should be removed when tab becomes interactive.
+    // Used when a request is made while a tab is not in interactive state so
+    // the job should be done in a delayed manner.
+    private boolean mShouldRemoveThumbnail;
+
+    // A tab whose thumbnail needs to be removed.
+    private Tab mThumbnailTab;
+
+    public static void create(TabContentManager manager, TabModelSelector selector) {
+        new TabContentManagerHandler(manager, selector);
+    }
+
+    private TabContentManagerHandler(TabContentManager manager, TabModelSelector selector) {
+        super(selector);
+        mTabContentManager = manager;
+    }
+
+    @Override
+    public void onTabRegistered(Tab tab) {
+        // TODO(dtrainor): Remove this and move to a pull model instead of pushing the layer
+        mTabContentManager.attachTab(tab);
+    }
+
+    @Override
+    public void onTabUnregistered(Tab tab) {
+        mTabContentManager.detachTab(tab);
+    }
+
+    @Override
+    public void onInteractabilityChanged(boolean interactable) {
+        if (interactable && mShouldRemoveThumbnail && mThumbnailTab != null) {
+            mTabContentManager.removeTabThumbnail(mThumbnailTab.getId());
+            mShouldRemoveThumbnail = false;
+            mThumbnailTab = null;
+        }
+    }
+
+    @Override
+    public void onEnterFullscreenMode(Tab tab, final FullscreenOptions options) {
+        if (!tab.isUserInteractable()) {
+            mTabContentManager.removeTabThumbnail(tab.getId());
+        } else {
+            mThumbnailTab = tab;
+            mShouldRemoveThumbnail = true;
+        }
+    }
+}

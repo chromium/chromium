@@ -241,6 +241,29 @@ suite('SiteEntry', function() {
     });
   });
 
+  test(
+      'large number data usage shown correctly for grouped entries',
+      function() {
+        // Clone this object to avoid propagating changes made in this test.
+        const testSiteGroup =
+            JSON.parse(JSON.stringify(TEST_MULTIPLE_SITE_GROUP));
+        const numBytes1 = 2000000000;
+        const numBytes2 = 10000000000;
+        const numBytes3 = 7856;
+        testSiteGroup.origins[0].usage = numBytes1;
+        testSiteGroup.origins[1].usage = numBytes2;
+        testSiteGroup.origins[2].usage = numBytes3;
+        testElement.siteGroup = testSiteGroup;
+        Polymer.dom.flush();
+        return browserProxy.whenCalled('getFormattedBytes').then((args) => {
+          const sumBytes = numBytes1 + numBytes2 + numBytes3;
+          assertEquals(
+              `${sumBytes} B`,
+              testElement.root.querySelector('#displayName .data-unit')
+                  .textContent.trim());
+        });
+      });
+
   test('favicon with www.etld+1 chosen for site group', function() {
     // Clone this object to avoid propagating changes made in this test.
     const testSiteGroup = JSON.parse(JSON.stringify(TEST_MULTIPLE_SITE_GROUP));

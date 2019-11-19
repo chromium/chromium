@@ -84,6 +84,11 @@ const AtomicString& SearchClearButton() {
   return name;
 }
 
+const AtomicString& PasswordRevealButton() {
+  DEFINE_STATIC_LOCAL(AtomicString, name, ("password-reveal"));
+  return name;
+}
+
 const AtomicString& SearchDecoration() {
   DEFINE_STATIC_LOCAL(AtomicString, name, ("decoration"));
   return name;

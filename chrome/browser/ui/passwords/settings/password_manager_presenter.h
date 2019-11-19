@@ -53,6 +53,15 @@ class PasswordManagerPresenter
   // Gets the password entry at |index|.
   const autofill::PasswordForm* GetPassword(size_t index) const;
 
+  // Gets the vector of password entries with the same credentials and from the
+  // same site as the one stored at |index|.
+  base::span<const std::unique_ptr<autofill::PasswordForm>> GetPasswords(
+      size_t index) const;
+
+  // Gets the vector of usernames from password entries from the same site as
+  // the one stored at |index|. Note that this vector can contain duplicates.
+  std::vector<base::string16> GetUsernamesForRealm(size_t index);
+
   // password::manager::CredentialProviderInterface:
   std::vector<std::unique_ptr<autofill::PasswordForm>> GetAllPasswords()
       override;
@@ -62,8 +71,8 @@ class PasswordManagerPresenter
 
   // Changes the username and password corresponding to |sort_key|.
   void ChangeSavedPassword(const std::string& sort_key,
-                           base::string16 new_username,
-                           base::Optional<base::string16> new_password);
+                           const base::string16& new_username,
+                           const base::Optional<base::string16>& new_password);
 
   // Removes the saved password entries at |index|, or corresponding to
   // |sort_key|, respectively.
@@ -136,7 +145,7 @@ class PasswordManagerPresenter
   void SetPasswordExceptionList();
 
   // Returns the password store associated with the currently active profile.
-  password_manager::PasswordStore* GetPasswordStore();
+  password_manager::PasswordStore* GetPasswordStore(bool use_account_store);
 
   PasswordFormMap password_map_;
   PasswordFormMap exception_map_;

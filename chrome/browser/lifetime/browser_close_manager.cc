@@ -120,9 +120,7 @@ void BrowserCloseManager::ConfirmCloseWithPendingDownloads(
   Browser* browser = BrowserList::GetInstance()->GetLastActive();
   DCHECK(browser);
   browser->window()->ConfirmBrowserCloseWithPendingDownloads(
-      download_count,
-      Browser::DOWNLOAD_CLOSE_BROWSER_SHUTDOWN,
-      true,
+      download_count, Browser::DownloadCloseType::kBrowserShutdown, true,
       callback);
 }
 
@@ -181,7 +179,7 @@ void BrowserCloseManager::CloseBrowsers() {
         browser->tab_strip_model()->DetachWebContentsAt(0);
       browser->window()->DestroyBrowser();
       // Destroying the browser should have removed it from the browser list.
-      DCHECK(!base::ContainsValue(*BrowserList::GetInstance(), browser));
+      DCHECK(!base::Contains(*BrowserList::GetInstance(), browser));
     }
   }
 

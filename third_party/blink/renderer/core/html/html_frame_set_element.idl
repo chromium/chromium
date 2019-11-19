@@ -22,6 +22,7 @@
 
 // FIXME: HTMLFrameSetElement should not have [OverrideBuiltins].
 [
+    Exposed=Window,
     HTMLConstructor,
     OverrideBuiltins
 ] interface HTMLFrameSetElement : HTMLElement {
@@ -29,7 +30,7 @@
     [CEReactions, Reflect] attribute DOMString rows;
 
     // TODO(foolip): These event handler attributes should be inherited from
-    // HTMLElement (which implements GlobalEventHandlers), but have different
+    // HTMLElement (which includes GlobalEventHandlers), but have different
     // behavior. See https://www.w3.org/Bugs/Public/show_bug.cgi?id=28166
     attribute EventHandler onblur;
     attribute EventHandler onerror;
@@ -42,4 +43,4 @@
     [RuntimeEnabled=OrientationEvent] attribute EventHandler onorientationchange;
 };
 
-HTMLFrameSetElement implements WindowEventHandlers;
+HTMLFrameSetElement includes WindowEventHandlers;

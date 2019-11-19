@@ -10,11 +10,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/ash/ash_util.h"
 #include "chrome/browser/ui/views/touch_selection_menu_runner_chromeos.h"
-#include "components/arc/arc_bridge_service.h"
 #include "components/arc/arc_service_manager.h"
-#include "services/ws/public/cpp/property_type_converters.h"
-#include "services/ws/public/mojom/window_manager.mojom.h"
-#include "ui/base/ui_base_features.h"
+#include "components/arc/session/arc_bridge_service.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/image/image_skia.h"
@@ -33,10 +30,7 @@ TouchSelectionMenuChromeOS::TouchSelectionMenuChromeOS(
     ui::TouchSelectionMenuClient* client,
     aura::Window* context,
     arc::mojom::TextSelectionActionPtr action)
-    : views::TouchSelectionMenuViews(
-          owner,
-          client,
-          features::IsUsingWindowService() ? nullptr : context),
+    : views::TouchSelectionMenuViews(owner, client, context),
       action_(std::move(action)),
       display_id_(
           display::Screen::GetScreen()->GetDisplayNearestWindow(context).id()) {
@@ -50,8 +44,7 @@ void TouchSelectionMenuChromeOS::SetActionsForTesting(
   // default action buttons are already added, we should remove the existent
   // buttons if any, and then call CreateButtons, this will call the parent
   // method too.
-  if (has_children())
-    RemoveAllChildViews(/*delete_children=*/true);
+  RemoveAllChildViews(/*delete_children=*/true);
 
   CreateButtons();
 }
@@ -100,8 +93,6 @@ void TouchSelectionMenuChromeOS::OnBeforeBubbleWidgetInit(
     views::Widget* widget) const {
   ash_util::SetupWidgetInitParamsForContainer(
       params, ash::kShellWindowId_SettingBubbleContainer);
-  params->mus_properties[ws::mojom::WindowManager::kDisplayId_InitProperty] =
-      mojo::ConvertTo<std::vector<uint8_t>>(display_id_);
 }
 
 TouchSelectionMenuChromeOS::~TouchSelectionMenuChromeOS() = default;

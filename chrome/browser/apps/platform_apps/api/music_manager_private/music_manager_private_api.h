@@ -10,8 +10,7 @@
 namespace chrome_apps {
 namespace api {
 
-class MusicManagerPrivateGetDeviceIdFunction
-    : public UIThreadExtensionFunction {
+class MusicManagerPrivateGetDeviceIdFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("musicManagerPrivate.getDeviceId",
                              MUSICMANAGERPRIVATE_GETDEVICEID)
@@ -21,7 +20,7 @@ class MusicManagerPrivateGetDeviceIdFunction
  protected:
   ~MusicManagerPrivateGetDeviceIdFunction() override;
 
-  // UIThreadExtensionFunction:
+  // ExtensionFunction:
   ResponseAction Run() override;
 
   void DeviceIdCallback(const std::string& device_id);

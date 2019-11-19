@@ -5,9 +5,16 @@
 #ifndef CHROME_BROWSER_SYNC_SESSIONS_SYNC_SESSIONS_ROUTER_TAB_HELPER_H_
 #define CHROME_BROWSER_SYNC_SESSIONS_SYNC_SESSIONS_ROUTER_TAB_HELPER_H_
 
+#include "chrome/browser/translate/chrome_translate_client.h"
+#include "components/favicon/core/favicon_driver_observer.h"
 #include "components/sessions/core/session_id.h"
+#include "components/translate/content/browser/content_translate_driver.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
+
+namespace favicon {
+class FaviconDriver;
+}
 
 namespace sync_sessions {
 
@@ -15,14 +22,15 @@ class SyncSessionsWebContentsRouter;
 
 // TabHelper class that forwards tab-level WebContentsObserver events to a
 // (per-profile) sessions router. The router is responsible for forwarding
-// these events to sessions sync. This class also tracks the source tab id
-// of its corresponding tab, if available.
+// these events to sessions sync.
 // A TabHelper is a WebContentsObserver tied to the top level WebContents for a
 // browser tab.
 // https://chromium.googlesource.com/chromium/src/+/master/docs/tab_helpers.md
 class SyncSessionsRouterTabHelper
     : public content::WebContentsUserData<SyncSessionsRouterTabHelper>,
-      public content::WebContentsObserver {
+      public content::WebContentsObserver,
+      public translate::ContentTranslateDriver::Observer,
+      public favicon::FaviconDriverObserver {
  public:
   ~SyncSessionsRouterTabHelper() override;
 
@@ -46,13 +54,17 @@ class SyncSessionsRouterTabHelper
                            bool started_from_context_menu,
                            bool renderer_initiated) override;
 
-  // Sets the source tab id for the given child WebContents to the id of the
-  // WebContents that owns this helper.
-  void SetSourceTabIdForChild(content::WebContents* child_contents);
+  // ContentTranslateDriver::Observer implementation.
+  void OnLanguageDetermined(
+      const translate::LanguageDetectionDetails& details) override;
 
-  // Get the tab id of the tab responsible for creating the tab this helper
-  // corresponds to. Returns an invalid ID if there is no such tab.
-  SessionID source_tab_id() const { return source_tab_id_; }
+  // favicon::FaviconDriverObserver implementation.
+  void OnFaviconUpdated(
+      favicon::FaviconDriver* favicon_driver,
+      FaviconDriverObserver::NotificationIconType notification_icon_type,
+      const GURL& icon_url,
+      bool icon_url_changed,
+      const gfx::Image& image) override;
 
  private:
   friend class content::WebContentsUserData<SyncSessionsRouterTabHelper>;
@@ -60,21 +72,14 @@ class SyncSessionsRouterTabHelper
   explicit SyncSessionsRouterTabHelper(content::WebContents* web_contents,
                                        SyncSessionsWebContentsRouter* router);
 
-  // Set the tab id of the tab reponsible for creating the tab this helper
-  // corresponds to.
-  void set_source_tab_id(SessionID id) { source_tab_id_ = id; }
-
   void NotifyRouter(bool page_load_completed = false);
 
   // |router_| is a KeyedService and is guaranteed to outlive |this|.
   SyncSessionsWebContentsRouter* router_;
-  // Tab id of the tab from which this tab was created. Example events that
-  // create this relationship:
-  // * From context menu, "Open link in new tab".
-  // * From context menu, "Open link in new window".
-  // * Ctrl-click.
-  // * Click on a link with target='_blank'.
-  SessionID source_tab_id_;
+
+  ChromeTranslateClient* chrome_translate_client_;
+
+  favicon::FaviconDriver* favicon_driver_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 

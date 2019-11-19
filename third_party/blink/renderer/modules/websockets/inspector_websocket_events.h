@@ -23,7 +23,7 @@ class InspectorWebSocketCreateEvent {
 
  public:
   static std::unique_ptr<TracedValue> Data(ExecutionContext*,
-                                           unsigned long identifier,
+                                           uint64_t identifier,
                                            const KURL&,
                                            const String& protocol);
 };
@@ -33,7 +33,7 @@ class InspectorWebSocketEvent {
 
  public:
   static std::unique_ptr<TracedValue> Data(ExecutionContext*,
-                                           unsigned long identifier);
+                                           uint64_t identifier);
 };
 
 }  // namespace blink

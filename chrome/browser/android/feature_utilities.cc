@@ -4,14 +4,19 @@
 
 #include "chrome/browser/android/feature_utilities.h"
 
-#include "jni/FeatureUtilities_jni.h"
+#include "chrome/android/chrome_jni_headers/FeatureUtilities_jni.h"
 
+#include "base/android/jni_string.h"
 #include "chrome/browser/ntp_snippets/content_suggestions_service_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/ntp_snippets/content_suggestions_service.h"
+#include "content/public/common/content_features.h"
+#include "content/public/common/network_service_util.h"
 #include "services/metrics/public/cpp/ukm_source.h"
 
+using base::android::ConvertJavaStringToUTF8;
 using base::android::JavaParamRef;
+using base::android::ScopedJavaLocalRef;
 
 namespace {
 bool custom_tab_visible = false;
@@ -35,6 +40,13 @@ bool IsDownloadAutoResumptionEnabledInNative() {
   return Java_FeatureUtilities_isDownloadAutoResumptionEnabledInNative(env);
 }
 
+std::string GetReachedCodeProfilerTrialGroup() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  ScopedJavaLocalRef<jstring> group =
+      Java_FeatureUtilities_getReachedCodeProfilerTrialGroup(env);
+  return ConvertJavaStringToUTF8(env, group);
+}
+
 } // namespace android
 } // namespace chrome
 
@@ -51,3 +63,8 @@ static void JNI_FeatureUtilities_SetIsInMultiWindowMode(
   is_in_multi_window_mode = j_is_in_multi_window_mode;
 }
 
+static jboolean JNI_FeatureUtilities_IsNetworkServiceWarmUpEnabled(
+    JNIEnv* env) {
+  return content::IsOutOfProcessNetworkService() &&
+         base::FeatureList::IsEnabled(features::kWarmUpNetworkProcess);
+}

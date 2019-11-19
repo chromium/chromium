@@ -40,9 +40,6 @@ class VIZ_COMMON_EXPORT ParentLocalSurfaceIdAllocator {
   bool UpdateFromChild(
       const LocalSurfaceIdAllocation& child_local_surface_id_allocation);
 
-  // Resets this allocator with the provided |local_surface_id| as a seed.
-  void Reset(const LocalSurfaceId& local_surface_id);
-
   // Marks the last known LocalSurfaceId as invalid until the next call to
   // GenerateId. This is used to defer commits until some LocalSurfaceId is
   // provided from an external source.

@@ -14,6 +14,7 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/trace_event/trace_event.h"
+#include "build/build_config.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/frame_sinks/delay_based_time_source.h"
 
@@ -61,6 +62,13 @@ class VIZ_COMMON_EXPORT BeginFrameObserver {
 
   // Whether the observer also wants to receive animate_only BeginFrames.
   virtual bool WantsAnimateOnlyBeginFrames() const = 0;
+
+  // Indicates whether this observer is the root frame sink. This helps in
+  // a workaround for input jank, allowing us to deliver BeginFrames to the
+  // root last, avoiding a race.
+  // TODO(ericrk): Remove this once we have a longer-term fix.
+  // https://crbug.com/947717
+  virtual bool IsRoot() const;
 };
 
 // Simple base class which implements a BeginFrameObserver which checks the
@@ -168,9 +176,21 @@ class VIZ_COMMON_EXPORT BeginFrameSource {
   // The BeginFrameSource should not send the begin-frame messages to clients if
   // gpu is busy.
   bool is_gpu_busy_ = false;
+
   // Keeps track of whether a begin-frame was paused, and whether
   // OnGpuNoLongerBusy() should be invoked when the gpu is no longer busy.
-  bool request_notification_on_gpu_availability_ = false;
+  enum class GpuBusyThrottlingState {
+    // No BeginFrames ticks were received since gpu was marked busy.
+    kIdle,
+    // One BeginFrame has been dispatched since gpu was marked busy.
+    kOneBeginFrameAfterBusySent,
+    // At least one BeginFrame was throttled since gpu was marked busy. If set
+    // to throttled state, the sub-class is informed to send the throttled
+    // BeginFrame once gpu is marked not busy.
+    kThrottled
+  };
+  GpuBusyThrottlingState gpu_busy_response_state_ =
+      GpuBusyThrottlingState::kIdle;
 
   DISALLOW_COPY_AND_ASSIGN(BeginFrameSource);
 };
@@ -226,7 +246,7 @@ class VIZ_COMMON_EXPORT BackToBackBeginFrameSource
   base::flat_set<BeginFrameObserver*> observers_;
   base::flat_set<BeginFrameObserver*> pending_begin_frame_observers_;
   uint64_t next_sequence_number_;
-  base::WeakPtrFactory<BackToBackBeginFrameSource> weak_factory_;
+  base::WeakPtrFactory<BackToBackBeginFrameSource> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(BackToBackBeginFrameSource);
 };
@@ -256,6 +276,11 @@ class VIZ_COMMON_EXPORT DelayBasedBeginFrameSource
   void OnTimerTick() override;
 
  private:
+  // The created BeginFrameArgs' sequence_number is calculated based on what
+  // interval |frame_time| is in. For example, if |last_frame_time_| is 100,
+  // |next_sequence_number_| is 5, |last_timebase_| is 110 and the interval is
+  // 20, then a |frame_time| of 175 would result in the sequence number being 8
+  // (3 intervals since 110).
   BeginFrameArgs CreateBeginFrameArgs(base::TimeTicks frame_time);
   void IssueBeginFrameToObserver(BeginFrameObserver* obs,
                                  const BeginFrameArgs& args);
@@ -264,6 +289,16 @@ class VIZ_COMMON_EXPORT DelayBasedBeginFrameSource
   base::flat_set<BeginFrameObserver*> observers_;
   base::TimeTicks last_timebase_;
   BeginFrameArgs last_begin_frame_args_;
+
+  // Used for determining what the sequence number should be on
+  // CreateBeginFrameArgs.
+  base::TimeTicks next_expected_frame_time_;
+
+  // This is what the sequence number should be for any args created between
+  // |next_expected_frame_time_| to |next_expected_frame_time_| + vsync
+  // interval. Args created outside of this range will have their sequence
+  // number assigned relative to this, based on how many intervals the frame
+  // time is off.
   uint64_t next_sequence_number_;
 
   DISALLOW_COPY_AND_ASSIGN(DelayBasedBeginFrameSource);
@@ -298,6 +333,12 @@ class VIZ_COMMON_EXPORT ExternalBeginFrameSource : public BeginFrameSource {
 
   void OnSetBeginFrameSourcePaused(bool paused);
   void OnBeginFrame(const BeginFrameArgs& args);
+
+#if defined(OS_ANDROID)
+  // Notifies when the refresh rate of the display is updated. |refresh_rate| is
+  // the rate in frames per second.
+  virtual void UpdateRefreshRate(float refresh_rate) {}
+#endif
 
  protected:
   // Called on AddObserver and gets missed BeginFrameArgs for the given

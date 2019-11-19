@@ -1,0 +1,27 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.mojom;
+
+// Interface to control system volume through Ash.
+interface AssistantVolumeControl {
+  // Sets system volume to |volume|, which is between 0 - 100.
+  SetVolume(int32 volume, bool user_initiated);
+
+  // Sets mute state to |muted|.
+  SetMuted(bool muted);
+
+  // Adds volume observer. The observer will be immediately notified of volume
+  // and mute status when added.
+  AddVolumeObserver(pending_remote<VolumeObserver> observer);
+};
+
+// Observes volume state changes.
+interface VolumeObserver {
+  // Called when volume is updated.
+  OnVolumeChanged(int32 volume);
+
+  // Called when mute state changed.
+  OnMuteStateChanged(bool muted);
+};

@@ -48,6 +48,7 @@ class ContentSettingImageModel {
     FRAMEBUST = 14,
     CLIPBOARD_READ = 15,
     SENSORS = 16,
+    NOTIFICATIONS_QUIET_PROMPT = 17,
 
     NUM_IMAGE_TYPES
   };
@@ -81,6 +82,13 @@ class ContentSettingImageModel {
   // so that we do not restart it when the parent view is updated.
   void SetAnimationHasRun(content::WebContents* web_contents);
 
+  // Whether to automatically trigger the new bubble.
+  bool ShouldAutoOpenBubble(content::WebContents* contents);
+
+  // Remembers that the bubble was auto-opened for the given |web_contents|,
+  // so that we do not auto-open it again when the parent view is updated.
+  void SetBubbleWasAutoOpened(content::WebContents* contents);
+
   bool is_visible() const { return is_visible_; }
 
   // Retrieve the icon that represents this content setting. Blocked content
@@ -91,11 +99,22 @@ class ContentSettingImageModel {
   // we don't wish to show anything.
   int explanatory_string_id() const { return explanatory_string_id_; }
   const base::string16& get_tooltip() const { return tooltip_; }
+  const gfx::VectorIcon* get_icon_badge() const { return icon_badge_; }
 
   ImageType image_type() const { return image_type_; }
 
+  // Public for testing.
+  void set_explanatory_string_id(int text_id) {
+    explanatory_string_id_ = text_id;
+  }
+
+  bool ShouldNotifyAccessibility(content::WebContents* contents) const;
+  void AccessibilityWasNotified(content::WebContents* contents);
+
  protected:
-  explicit ContentSettingImageModel(ImageType type);
+  explicit ContentSettingImageModel(
+      ImageType type,
+      bool image_type_should_notify_accessibility = false);
 
   // Notifies this model that its setting might have changed and it may need to
   // update its visibility, icon and tooltip. This method returns whether the
@@ -112,28 +131,31 @@ class ContentSettingImageModel {
     icon_badge_ = &badge;
   }
 
-  void set_explanatory_string_id(int text_id) {
-    explanatory_string_id_ = text_id;
-  }
   void set_tooltip(const base::string16& tooltip) { tooltip_ = tooltip; }
+  void set_should_auto_open_bubble(const bool should_auto_open_bubble) {
+    should_auto_open_bubble_ = should_auto_open_bubble;
+  }
 
  private:
-  bool is_visible_;
+  bool is_visible_ = false;
 
   const gfx::VectorIcon* icon_;
   const gfx::VectorIcon* icon_badge_;
-  int explanatory_string_id_;
+  int explanatory_string_id_ = 0;
   base::string16 tooltip_;
   const ImageType image_type_;
-
+  const bool image_type_should_notify_accessibility_;
+  bool should_auto_open_bubble_ = false;
   DISALLOW_COPY_AND_ASSIGN(ContentSettingImageModel);
 };
 
 // A subclass for an image model tied to a single content type.
 class ContentSettingSimpleImageModel : public ContentSettingImageModel {
  public:
-  ContentSettingSimpleImageModel(ImageType type,
-                                 ContentSettingsType content_type);
+  ContentSettingSimpleImageModel(
+      ImageType type,
+      ContentSettingsType content_type,
+      bool image_type_should_notify_accessibility = false);
 
   // ContentSettingImageModel implementation.
   std::unique_ptr<ContentSettingBubbleModel> CreateBubbleModelImpl(

@@ -5,6 +5,7 @@
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("video_capture") {
+  generate_java = true
   sources = [
     "video_capture.mojom",
     "video_capture_types.mojom",
@@ -13,9 +14,13 @@ mojom("video_capture") {
   public_deps = [
     "//gpu/ipc/common:interfaces",
     "//mojo/public/mojom/base",
-    "//ui/gfx/geometry/mojo",
-    "//ui/gfx/mojo",
+    "//ui/gfx/geometry/mojom",
+    "//ui/gfx/mojom",
   ]
+
+  export_class_attribute_blink = "BLINK_PLATFORM_EXPORT"
+  export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
+  export_header_blink = "third_party/blink/public/platform/web_common.h"
 }
 
 mojom("image_capture") {

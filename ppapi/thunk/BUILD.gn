@@ -19,6 +19,7 @@ source_set("thunk") {
     "interfaces_ppb_private_no_permissions.h",
     "interfaces_ppb_public_dev.h",
     "interfaces_ppb_public_dev_channel.h",
+    "interfaces_ppb_public_socket.h",
     "interfaces_ppb_public_stable.h",
     "interfaces_preamble.h",
     "ppapi_thunk_export.h",

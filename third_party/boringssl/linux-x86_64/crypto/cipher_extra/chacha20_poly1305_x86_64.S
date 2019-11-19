@@ -8984,3 +8984,4 @@ seal_avx2_short_tail:
 	jmp	seal_sse_tail_16
 .cfi_endproc	
 #endif
+.section	.note.GNU-stack,"",@progbits

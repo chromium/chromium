@@ -7,7 +7,7 @@
 ++++++++++[tool bar] name='video' description='video' horizontal
 ++++++++++++[tool bar] name='video' description='video' horizontal
 ++++++++++++++[push button] name='play'
-++++++++++++++[text] name='0:00'
+++++++++++++++[static] name='0:00'
 ++++++++++++++[section]
 ++++++++++++++++[section]
 ++++++++++++++++[push button] name='mute'

@@ -60,6 +60,8 @@ component("google_toolbox_for_mac") {
       "src/Foundation/GTMSQLite.m",
       "src/Foundation/GTMStringEncoding.h",
       "src/Foundation/GTMStringEncoding.m",
+      "src/Foundation/GTMTimeUtils.h",
+      "src/Foundation/GTMTimeUtils.m",
       "src/iPhone/GTMFadeTruncatingLabel.h",
       "src/iPhone/GTMFadeTruncatingLabel.m",
       "src/iPhone/GTMRoundedRectPath.h",

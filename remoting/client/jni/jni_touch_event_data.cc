@@ -4,7 +4,7 @@
 
 #include "remoting/client/jni/jni_touch_event_data.h"
 
-#include "jni/TouchEventData_jni.h"
+#include "remoting/android/jni_headers/TouchEventData_jni.h"
 #include "remoting/proto/event.pb.h"
 
 namespace remoting {

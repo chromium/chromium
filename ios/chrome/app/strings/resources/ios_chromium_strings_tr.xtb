@@ -5,6 +5,8 @@
 <translation id="1185134272377778587">Chromium hakkında</translation>
 <translation id="1289966288285062467">Chromium Gizlilik Uyarısı</translation>
 <translation id="1472013873724362412">Hesabınız Chromium'da kullanılamıyor. Lütfen alan adı yöneticinizle iletişim kurun veya oturum açmak için normal bir Google Hesabı kullanın.</translation>
+<translation id="1507010443238049608">Chromium'un Özelliklerini ve Performansını İyileştirmeye Yardımcı Olun</translation>
+<translation id="1617663976202781617">Chromium senkronizasyonundan veriler</translation>
 <translation id="1736662517232558588">Chromium verileri temizlendi</translation>
 <translation id="1838412507805038478">Chromium, bu web sitesi sertifikasının <ph name="ISSUER" /> tarafından yayınlandığını doğruladı.</translation>
 <translation id="1843424232666537147">Chromium İnternet verilerinizi yönetmenize ve web sayfalarını hızlı yükleyebilmenize yardımcı olacak özelliklere sahiptir.
@@ -13,24 +15,16 @@
 <translation id="2168108852149185974">Bazı eklentiler Chromium'un kilitlenmesine neden oluyor. Lütfen şunların yüklemelerini kaldırın:</translation>
 <translation id="2178608107313874732">Chromium şu anda kameranızı kullanamıyor</translation>
 <translation id="2195025571279539885">Chromium'un bir dahaki sefere bu siteden <ph name="LANGUAGE_NAME" /> dilindeki sayfaları çevirmeyi önermesini ister misiniz?</translation>
-<translation id="2517624234762908348">Chromium verilerimi senkronize et</translation>
-<translation id="2647554856022461007">Chromium, göz atma deneyiminizi iyileştirmek için web hizmetleri kullanabilir. İsteğe bağlı olarak bu hizmetleri devre dışı bırakabilirsiniz. <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>
+<translation id="2590893390871230428">Chromium Verilerimi Senkronize Et</translation>
 <translation id="2730884209570016437">Kameranız başka bir uygulama tarafından kullanıldığından Chromium, kameranızı kullanamıyor.</translation>
 <translation id="2915596697727466327">Chromium, şifrelerinize yetkili erişim sağlanması için Face ID kullanır.</translation>
 <translation id="3256316712990552818">Chromium'a kopyalandı</translation>
-<translation id="3413120535237193088">Yer işaretlerinizi tüm cihazlarınızda almak için Chromium'da oturum açın.</translation>
-<translation id="3473048256428424907">Chromium QR tarayıcısını açın</translation>
-<translation id="3605252743693911722">Tüm cihazlarınızda yer işaretlerinizi, şifrelerinizi almak ve daha pek çok şey yapmak için Chromium'da oturum açın.</translation>
 <translation id="3805899903892079518">Chromium, fotoğraflarınıza veya videolarınıza erişemiyor. iOS Ayarlar &gt; Gizlilik &gt; Fotoğraflar'dan erişimi etkinleştirin.</translation>
-<translation id="4024541897090868497">Sekmelerinize tüm cihazlarınızda ulaşmak için Chromium'da oturum açın.</translation>
-<translation id="4157467675761413638">Chromium için ipucu: Sekmelerle ilgili daha fazla seçenek görmek için ekranınızın altında veya üstünde görünen araç çubuğunda Sekmeleri Göster düğmesini basılı tutun.</translation>
-<translation id="4241912885070669028"><ph name="SIGNOUT_MANAGED_DOMAIN" /> tarafından yönetilen bir hesabın oturumunu kapatıyorsunuz. Bu işlemle Chromium verileriniz bu cihazdan silinir, ancak Google hesabınızda kalmaya devam eder.</translation>
-<translation id="4272892696084633551">Chromium'un özelliklerini ve performansını iyileştirmeye yardımcı olun</translation>
 <translation id="4555020257205549924">Bu özellik açık durumdayken Chromium, diğer dillerde yazılmış sayfaları Google Çeviri'yi kullanarak çevirmeyi teklif eder. <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>
+<translation id="4681781466797808448">Chromium tarayıcıyı açın</translation>
 <translation id="4787850887676698916">Diğer cihazlarınızda Chromium'da açtığınız sekmeler burada görünür.</translation>
-<translation id="495292094137889840">Chromium QR tarayıcısını kullanmaya başlayın</translation>
 <translation id="4999538639245140991"><ph name="SIGNOUT_MANAGED_DOMAIN" /> tarafından yönetilen bir hesabın oturumunu kapattığınız için Chromium verileriniz bu cihazdan silinecek. Ancak verileriniz Google Hesabınızda kalmaya devam edecek.</translation>
-<translation id="5231355151045086930">Chromium oturumunu kapatın</translation>
+<translation id="5573014823074921752">Chromium için ipucu. Sekmelerle ilgili daha fazla seçenek görmek için ekranınızın altında veya üstünde görünen araç çubuğunda Sekmeleri Göster düğmesine dokunup basılı tutun.</translation>
 <translation id="5862307444128926510">Chromium'a Hoş Geldiniz</translation>
 <translation id="5945387852661427312"><ph name="DOMAIN" /> tarafından yönetilen bir hesapla oturum açıyor ve yöneticiye tüm Chromium verileriniz üzerinde denetim olanağı veriyorsunuz. Verileriniz kalıcı olarak bu hesaba bağlanacaktır. Chromium'da oturumu kapattığınızda verileriniz bu cihazdan silinir ancak Google Hesabınızda kalmaya devam eder.</translation>
 <translation id="6068866989048414399">Chromium Hizmet Şartları</translation>
@@ -47,11 +41,13 @@
 <translation id="7674213385180944843">Ayarlar &gt; Gizlilik &gt; Kamera &gt; Chromium'a gidin ve kamerayı açın.</translation>
 <translation id="7746854981345936341">Chromium için ipucu: Geri, İleri ve Ara gibi bazı düğmeler artık ekranınızın alt bölümünde bulunuyor.</translation>
 <translation id="786327964234957808">Senkronizasyon hesapları arasında (<ph name="USER_EMAIL1" /> hesabından <ph name="USER_EMAIL2" /> hesabına) geçiş yapıyorsunuz. Mevcut Chromium verileriniz <ph name="DOMAIN" /> tarafından yönetiliyor. Bu işlemle verileriniz bu cihazdan silinir, ancak <ph name="USER_EMAIL1" /> hesabınızda kalmaya devam eder.</translation>
+<translation id="7890287942691234100">Chromium tarayıcıyı kullanmaya başlayın</translation>
 <translation id="8073677936375100957">Chromium verileriniz bu cihazdan temizlensin mi?</translation>
 <translation id="8175055321229419309">İpucu: <ph name="BEGIN_LINK" />Chromium'u yuva bölümüne taşıyın<ph name="END_LINK" /></translation>
 <translation id="8252885722420466166">Chromium'da, konumunuza dayalı olarak daha iyi bir Google deneyimi yaşayın.</translation>
 <translation id="8586442755830160949">Telif Hakkı <ph name="YEAR" /> The Chromium Authors. Tüm hakları saklıdır.</translation>
 <translation id="8809780021347235332">Resimleri kaydetmek için Ayarlar'a dokunarak Chromium'un fotoğraflarınızı kullanmasına izin verin</translation>
 <translation id="9022552996538154597">Chromium'da oturum aç</translation>
+<translation id="9217078088703304241"><ph name="BEGIN_LINK" />Güncellenen Chromium Hizmet Şartları'nı inceleyin.<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
 </translationbundle>

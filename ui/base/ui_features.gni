@@ -12,10 +12,7 @@ declare_args() {
   has_native_accessibility = use_atk || is_win || is_mac
 
   # Whether the message center should be included for displaying notifications.
-  enable_message_center = is_win || is_mac || is_linux || is_chromeos
-
-  # Set to true to if mus (aka the window service) is enabled.
-  enable_mus = is_chromeos
+  enable_message_center = is_win || is_mac || is_linux
 }
 
-enable_hidpi = is_mac || is_win || is_linux
+enable_hidpi = is_mac || is_win || is_linux || is_ios

@@ -9,19 +9,15 @@
 #include <utility>
 #include <vector>
 
-#include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
-#include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
-#include "chromeos/dbus/cryptohome_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 
 namespace chromeos {
 namespace version_loader {
@@ -62,18 +58,6 @@ std::string GetVersion(VersionFormat format) {
   }
 
   return version;
-}
-
-void GetTpmVersion(GetTpmVersionCallback callback) {
-  chromeos::DBusThreadManager::Get()->GetCryptohomeClient()->TpmGetVersion(
-      base::BindOnce(
-          [](GetTpmVersionCallback callback,
-             base::Optional<CryptohomeClient::TpmVersionInfo>
-                 tpm_version_info) {
-            std::move(callback).Run(
-                tpm_version_info.value_or(CryptohomeClient::TpmVersionInfo()));
-          },
-          std::move(callback)));
 }
 
 std::string GetARCVersion() {

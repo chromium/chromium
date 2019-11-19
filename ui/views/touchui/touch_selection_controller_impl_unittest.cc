@@ -4,6 +4,8 @@
 
 #include <stddef.h>
 
+#include <memory>
+
 #include "base/command_line.h"
 #include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
@@ -46,8 +48,8 @@ const int kBarBottomAllowance = 3;
 // the same location.
 int CompareTextSelectionBounds(const gfx::SelectionBound& b1,
                                const gfx::SelectionBound& b2) {
-  if (b1.edge_top().y() < b2.edge_top().y() ||
-      b1.edge_top().x() < b2.edge_top().x()) {
+  if (b1.edge_start().y() < b2.edge_start().y() ||
+      b1.edge_start().x() < b2.edge_start().x()) {
     return -1;
   }
   if (b1 == b2)
@@ -62,10 +64,7 @@ namespace views {
 class TouchSelectionControllerImplTest : public ViewsTestBase {
  public:
   TouchSelectionControllerImplTest()
-      : textfield_widget_(nullptr),
-        widget_(nullptr),
-        textfield_(nullptr),
-        views_tsc_factory_(new ViewsTouchEditingControllerFactory) {
+      : views_tsc_factory_(new ViewsTouchEditingControllerFactory) {
     ui::TouchEditingControllerFactory::SetInstance(views_tsc_factory_.get());
   }
 
@@ -75,7 +74,8 @@ class TouchSelectionControllerImplTest : public ViewsTestBase {
 
   void SetUp() override {
     ViewsTestBase::SetUp();
-    test_cursor_client_.reset(new aura::test::TestCursorClient(GetContext()));
+    test_cursor_client_ =
+        std::make_unique<aura::test::TestCursorClient>(GetContext());
   }
 
   void TearDown() override {
@@ -93,24 +93,24 @@ class TouchSelectionControllerImplTest : public ViewsTestBase {
     Widget::InitParams params =
         CreateParams(Widget::InitParams::TYPE_WINDOW_FRAMELESS);
     params.bounds = gfx::Rect(0, 0, 200, 200);
-    textfield_widget_->Init(params);
+    textfield_widget_->Init(std::move(params));
     View* container = new View();
     textfield_widget_->SetContentsView(container);
     container->AddChildView(textfield_);
 
     textfield_->SetBoundsRect(gfx::Rect(0, 0, 200, 21));
-    textfield_->set_id(1);
+    textfield_->SetID(1);
     textfield_widget_->Show();
 
     textfield_->RequestFocus();
-    textfield_test_api_.reset(new TextfieldTestApi(textfield_));
+    textfield_test_api_ = std::make_unique<TextfieldTestApi>(textfield_);
   }
 
   void CreateWidget() {
     widget_ = new Widget;
     Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_POPUP);
     params.bounds = gfx::Rect(0, 0, 200, 200);
-    widget_->Init(params);
+    widget_->Init(std::move(params));
     widget_->Show();
 }
 
@@ -292,7 +292,7 @@ class TouchSelectionControllerImplTest : public ViewsTestBase {
     textfield_->OnGestureEvent(&tap);
 
     // Select some text such that one handle is hidden.
-    textfield_->SelectRange(gfx::Range(
+    textfield_->SetSelectedRange(gfx::Range(
         selection_start, static_cast<uint32_t>(textfield_text.length())));
 
     // Check that one selection handle is hidden.
@@ -303,10 +303,10 @@ class TouchSelectionControllerImplTest : public ViewsTestBase {
               textfield_->GetSelectedRange());
   }
 
-  Widget* textfield_widget_;
-  Widget* widget_;
+  Widget* textfield_widget_ = nullptr;
+  Widget* widget_ = nullptr;
 
-  Textfield* textfield_;
+  Textfield* textfield_ = nullptr;
   std::unique_ptr<TextfieldTestApi> textfield_test_api_;
   std::unique_ptr<ViewsTouchEditingControllerFactory> views_tsc_factory_;
   std::unique_ptr<aura::test::TestCursorClient> test_cursor_client_;
@@ -327,7 +327,7 @@ TEST_F(TouchSelectionControllerImplTest, SelectionInTextfieldTest) {
   textfield_->OnGestureEvent(&tap);
 
   // Test selecting a range.
-  textfield_->SelectRange(gfx::Range(3, 7));
+  textfield_->SetSelectedRange(gfx::Range(3, 7));
   VerifyHandlePositions(false, true, FROM_HERE);
 
   // Test selecting everything.
@@ -365,38 +365,38 @@ TEST_F(TouchSelectionControllerImplTest, SelectionInBidiTextfieldTest) {
   VerifyHandlePositions(false, true, FROM_HERE);
 
   // Test selection range inside one run and starts or ends at run boundary.
-  textfield_->SelectRange(gfx::Range(2, 3));
+  textfield_->SetSelectedRange(gfx::Range(2, 3));
   VerifyHandlePositions(false, true, FROM_HERE);
 
-  textfield_->SelectRange(gfx::Range(3, 2));
+  textfield_->SetSelectedRange(gfx::Range(3, 2));
   VerifyHandlePositions(false, true, FROM_HERE);
 
   // TODO(mfomitchev): crbug.com/429705
   // The correct behavior for handles in mixed ltr/rtl text line is not known,
   // so passing false for |check_direction| in some of these tests.
-  textfield_->SelectRange(gfx::Range(3, 4));
+  textfield_->SetSelectedRange(gfx::Range(3, 4));
   VerifyHandlePositions(false, false, FROM_HERE);
 
-  textfield_->SelectRange(gfx::Range(4, 3));
+  textfield_->SetSelectedRange(gfx::Range(4, 3));
   VerifyHandlePositions(false, false, FROM_HERE);
 
-  textfield_->SelectRange(gfx::Range(3, 6));
+  textfield_->SetSelectedRange(gfx::Range(3, 6));
   VerifyHandlePositions(false, false, FROM_HERE);
 
-  textfield_->SelectRange(gfx::Range(6, 3));
+  textfield_->SetSelectedRange(gfx::Range(6, 3));
   VerifyHandlePositions(false, false, FROM_HERE);
 
   // Test selection range accross runs.
-  textfield_->SelectRange(gfx::Range(0, 6));
+  textfield_->SetSelectedRange(gfx::Range(0, 6));
   VerifyHandlePositions(false, true, FROM_HERE);
 
-  textfield_->SelectRange(gfx::Range(6, 0));
+  textfield_->SetSelectedRange(gfx::Range(6, 0));
   VerifyHandlePositions(false, true, FROM_HERE);
 
-  textfield_->SelectRange(gfx::Range(1, 4));
+  textfield_->SetSelectedRange(gfx::Range(1, 4));
   VerifyHandlePositions(false, true, FROM_HERE);
 
-  textfield_->SelectRange(gfx::Range(4, 1));
+  textfield_->SetSelectedRange(gfx::Range(4, 1));
   VerifyHandlePositions(false, true, FROM_HERE);
 }
 
@@ -410,7 +410,7 @@ TEST_F(TouchSelectionControllerImplTest, SelectRectCallbackTest) {
   details.set_tap_count(1);
   ui::GestureEvent tap(0, 0, 0, base::TimeTicks(), details);
   textfield_->OnGestureEvent(&tap);
-  textfield_->SelectRange(gfx::Range(3, 7));
+  textfield_->SetSelectedRange(gfx::Range(3, 7));
 
   gfx::Point textfield_origin;
   textfield_->ConvertPointToScreen(&textfield_origin);
@@ -454,7 +454,7 @@ TEST_F(TouchSelectionControllerImplTest, SelectRectInBidiCallbackTest) {
   textfield_->OnGestureEvent(&tap);
 
   // Select [c] from left to right.
-  textfield_->SelectRange(gfx::Range(2, 3));
+  textfield_->SetSelectedRange(gfx::Range(2, 3));
   EXPECT_EQ(WideToUTF16(L"c"), textfield_->GetSelectedText());
   VerifyHandlePositions(false, true, FROM_HERE);
 
@@ -472,7 +472,7 @@ TEST_F(TouchSelectionControllerImplTest, SelectRectInBidiCallbackTest) {
   VerifyHandlePositions(true, true, FROM_HERE);
 
   // Select [c] from right to left.
-  textfield_->SelectRange(gfx::Range(3, 2));
+  textfield_->SetSelectedRange(gfx::Range(3, 2));
   EXPECT_EQ(WideToUTF16(L"c"), textfield_->GetSelectedText());
   VerifyHandlePositions(false, true, FROM_HERE);
 
@@ -489,7 +489,7 @@ TEST_F(TouchSelectionControllerImplTest, SelectRectInBidiCallbackTest) {
   VerifyHandlePositions(false, true, FROM_HERE);
 
   // Select [\x5e1] from right to left.
-  textfield_->SelectRange(gfx::Range(3, 4));
+  textfield_->SetSelectedRange(gfx::Range(3, 4));
   EXPECT_EQ(WideToUTF16(L"\x05e1"), textfield_->GetSelectedText());
   // TODO(mfomitchev): crbug.com/429705
   // The correct behavior for handles in mixed ltr/rtl text line is not known,
@@ -518,7 +518,7 @@ TEST_F(TouchSelectionControllerImplTest, SelectRectInBidiCallbackTest) {
   VerifyHandlePositions(true, true, FROM_HERE);
 
   // Select [\x5e1] from left to right.
-  textfield_->SelectRange(gfx::Range(4, 3));
+  textfield_->SetSelectedRange(gfx::Range(4, 3));
   EXPECT_EQ(WideToUTF16(L"\x05e1"), textfield_->GetSelectedText());
   VerifyHandlePositions(false, false, FROM_HERE);
 
@@ -537,7 +537,7 @@ TEST_F(TouchSelectionControllerImplTest, SelectRectInBidiCallbackTest) {
   VerifyHandlePositions(false, true, FROM_HERE);
 
   // Select [\x05r3] from right to left.
-  textfield_->SelectRange(gfx::Range(5, 6));
+  textfield_->SetSelectedRange(gfx::Range(5, 6));
   EXPECT_EQ(WideToUTF16(L"\x05e3"), textfield_->GetSelectedText());
   VerifyHandlePositions(false, false, FROM_HERE);
 
@@ -554,7 +554,7 @@ TEST_F(TouchSelectionControllerImplTest, SelectRectInBidiCallbackTest) {
   VerifyHandlePositions(true, true, FROM_HERE);
 
   // Select [\x05r3] from left to right.
-  textfield_->SelectRange(gfx::Range(6, 5));
+  textfield_->SetSelectedRange(gfx::Range(6, 5));
   EXPECT_EQ(WideToUTF16(L"\x05e3"), textfield_->GetSelectedText());
   VerifyHandlePositions(false, false, FROM_HERE);
 
@@ -584,7 +584,7 @@ TEST_F(TouchSelectionControllerImplTest,
     // Make sure that the visible handle is being dragged.
     EXPECT_NE(visible_handle_position, textfield_->GetSelectedRange().end());
     visible_handle_position = textfield_->GetSelectedRange().end();
-    EXPECT_EQ((size_t) 10, textfield_->GetSelectedRange().start());
+    EXPECT_EQ(10u, textfield_->GetSelectedRange().start());
   }
 }
 
@@ -648,7 +648,7 @@ class TestTouchEditable : public ui::TouchEditable {
     cursor_bound_.set_type(gfx::SelectionBound::Type::CENTER);
   }
 
-  ~TestTouchEditable() override {}
+  ~TestTouchEditable() override = default;
 
  private:
   // Overridden from ui::TouchEditable.
@@ -697,7 +697,6 @@ class TestTouchEditable : public ui::TouchEditable {
   gfx::Rect bounds_;
 
   // Cursor position inside the client view.
-  //gfx::Rect cursor_rect_;
   gfx::SelectionBound cursor_bound_;
 
   DISALLOW_COPY_AND_ASSIGN(TestTouchEditable);

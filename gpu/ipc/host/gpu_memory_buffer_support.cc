@@ -4,25 +4,13 @@
 
 #include "gpu/ipc/host/gpu_memory_buffer_support.h"
 
-#include "base/command_line.h"
 #include "base/logging.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
-#include "gpu/ipc/host/gpu_switches.h"
 #include "ui/gl/gl_bindings.h"
 
 namespace gpu {
-
-bool AreNativeGpuMemoryBuffersEnabled() {
-#if defined(OS_MACOSX)
-  return !base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kDisableNativeGpuMemoryBuffers);
-#else
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kEnableNativeGpuMemoryBuffers);
-#endif
-}
 
 GpuMemoryBufferConfigurationSet GetNativeGpuMemoryBufferConfigurations(
     GpuMemoryBufferSupport* support) {
@@ -30,58 +18,35 @@ GpuMemoryBufferConfigurationSet GetNativeGpuMemoryBufferConfigurations(
 
 #if defined(USE_OZONE) || defined(OS_MACOSX) || defined(OS_WIN) || \
     defined(OS_ANDROID)
-  if (AreNativeGpuMemoryBuffersEnabled()) {
-    const gfx::BufferFormat kNativeFormats[] = {
-        gfx::BufferFormat::R_8,
-        gfx::BufferFormat::RG_88,
-        gfx::BufferFormat::R_16,
-        gfx::BufferFormat::BGR_565,
-        gfx::BufferFormat::RGBA_4444,
-        gfx::BufferFormat::RGBA_8888,
-        gfx::BufferFormat::BGRA_8888,
-        gfx::BufferFormat::BGRX_1010102,
-        gfx::BufferFormat::RGBX_1010102,
-        gfx::BufferFormat::RGBA_F16,
-        gfx::BufferFormat::UYVY_422,
-        gfx::BufferFormat::YVU_420,
-        gfx::BufferFormat::YUV_420_BIPLANAR};
-    const gfx::BufferUsage kNativeUsages[] = {
-        gfx::BufferUsage::GPU_READ,
-        gfx::BufferUsage::SCANOUT,
-        gfx::BufferUsage::SCANOUT_CAMERA_READ_WRITE,
-        gfx::BufferUsage::CAMERA_AND_CPU_READ_WRITE,
-        gfx::BufferUsage::SCANOUT_CPU_READ_WRITE,
-        gfx::BufferUsage::GPU_READ_CPU_READ_WRITE,
-        gfx::BufferUsage::GPU_READ_CPU_READ_WRITE_PERSISTENT};
-    for (auto format : kNativeFormats) {
-      for (auto usage : kNativeUsages) {
-        if (support->IsNativeGpuMemoryBufferConfigurationSupported(format,
-                                                                   usage))
-          configurations.insert(std::make_pair(format, usage));
-      }
-    }
-  }
+  const gfx::BufferFormat kBufferFormats[] = {
+      gfx::BufferFormat::R_8,          gfx::BufferFormat::R_16,
+      gfx::BufferFormat::RG_88,        gfx::BufferFormat::BGR_565,
+      gfx::BufferFormat::RGBA_4444,    gfx::BufferFormat::RGBX_8888,
+      gfx::BufferFormat::RGBA_8888,    gfx::BufferFormat::BGRX_8888,
+      gfx::BufferFormat::BGRX_1010102, gfx::BufferFormat::RGBX_1010102,
+      gfx::BufferFormat::BGRA_8888,    gfx::BufferFormat::RGBA_F16,
+      gfx::BufferFormat::YVU_420,      gfx::BufferFormat::YUV_420_BIPLANAR,
+      gfx::BufferFormat::P010};
 
-  const gfx::BufferFormat kGPUReadWriteFormats[] = {
-      gfx::BufferFormat::BGR_565,   gfx::BufferFormat::RGBA_8888,
-      gfx::BufferFormat::RGBX_8888, gfx::BufferFormat::BGRA_8888,
-      gfx::BufferFormat::BGRX_8888, gfx::BufferFormat::UYVY_422,
-      gfx::BufferFormat::YVU_420,   gfx::BufferFormat::YUV_420_BIPLANAR,
-      gfx::BufferFormat::R_8};
-  const gfx::BufferUsage kGPUReadWriteUsages[] = {
+  const gfx::BufferUsage kUsages[] = {
       gfx::BufferUsage::GPU_READ,
       gfx::BufferUsage::SCANOUT,
       gfx::BufferUsage::SCANOUT_CAMERA_READ_WRITE,
       gfx::BufferUsage::CAMERA_AND_CPU_READ_WRITE,
       gfx::BufferUsage::SCANOUT_CPU_READ_WRITE,
-      gfx::BufferUsage::SCANOUT_VDA_WRITE};
-  for (auto format : kGPUReadWriteFormats) {
-    for (auto usage : kGPUReadWriteUsages) {
+      gfx::BufferUsage::SCANOUT_VDA_WRITE,
+      gfx::BufferUsage::GPU_READ_CPU_READ_WRITE,
+      gfx::BufferUsage::SCANOUT_VEA_READ_CAMERA_AND_CPU_READ_WRITE,
+  };
+
+  for (auto format : kBufferFormats) {
+    for (auto usage : kUsages) {
       if (support->IsNativeGpuMemoryBufferConfigurationSupported(format, usage))
         configurations.insert(std::make_pair(format, usage));
     }
   }
-#endif  // defined(USE_OZONE) || defined(OS_MACOSX) || defined(OS_WIN)
+#endif  // defined(USE_OZONE) || defined(OS_MACOSX) || defined(OS_WIN) ||
+        // defined(OS_ANDROID)
 
   return configurations;
 }

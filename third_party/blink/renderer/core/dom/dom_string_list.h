@@ -40,10 +40,6 @@ class CORE_EXPORT DOMStringList final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static DOMStringList* Create() {
-    return MakeGarbageCollected<DOMStringList>();
-  }
-
   explicit DOMStringList() = default;
 
   bool IsEmpty() const { return strings_.IsEmpty(); }

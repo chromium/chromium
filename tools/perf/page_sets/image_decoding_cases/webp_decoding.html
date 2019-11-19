@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+        <title>WebP image decoding</title>
+        <script src="decoding_story_helpers.js"></script>
+        <script src="webp_squares_base64.js"></script>
+    </head>
+
+    <body>
+        <img id="img">
+        <script>
+            var numSquares = webp_squares_base64.length;
+            drawColorfulSquares(numSquares, webp_squares_base64);
+        </script>
+    </body>
+</html>

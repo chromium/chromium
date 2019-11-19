@@ -41,5 +41,5 @@
                                                                                 optional boolean lowerOpen = false,
                                                                                 optional boolean upperOpen = false);
 
-    [CallWith=ScriptState, RaisesException] boolean _includes(any key);
+    [CallWith=ScriptState, RaisesException] boolean includes(any key);
 };

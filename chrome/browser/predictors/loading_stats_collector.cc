@@ -75,7 +75,7 @@ void ReportPreconnectPredictionAccuracy(const PreconnectPrediction& prediction,
 
 void ReportPreconnectAccuracy(
     const PreconnectStats& stats,
-    const std::map<GURL, OriginRequestSummary>& requests) {
+    const std::map<url::Origin, OriginRequestSummary>& requests) {
   if (stats.requests_stats.empty())
     return;
 
@@ -135,8 +135,7 @@ void LoadingStatsCollector::RecordPreconnectStats(
   const GURL& main_frame_url = stats->url;
   auto it = preconnect_stats_.find(main_frame_url);
   if (it != preconnect_stats_.end()) {
-    ReportPreconnectAccuracy(*it->second,
-                             std::map<GURL, OriginRequestSummary>());
+    ReportPreconnectAccuracy(*it->second, {});
     preconnect_stats_.erase(it);
   }
 
@@ -162,8 +161,7 @@ void LoadingStatsCollector::CleanupAbandonedStats() {
   base::TimeTicks time_now = base::TimeTicks::Now();
   for (auto it = preconnect_stats_.begin(); it != preconnect_stats_.end();) {
     if (time_now - it->second->start_time > max_stats_age_) {
-      ReportPreconnectAccuracy(*it->second,
-                               std::map<GURL, OriginRequestSummary>());
+      ReportPreconnectAccuracy(*it->second, {});
       it = preconnect_stats_.erase(it);
     } else {
       ++it;

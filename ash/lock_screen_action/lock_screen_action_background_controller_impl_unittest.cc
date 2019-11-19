@@ -80,7 +80,9 @@ class LockScreenActionBackgroundControllerImplTest : public AshTestBase {
             .GetContentsView();
     views::View* background =
         LockScreenActionBackgroundViewTestApi(contents_view).GetBackground();
-    background->layer()->CompleteAllAnimations();
+    // The ink drop's layer is a sibling of the background's layer, so call this
+    // from the background's layer's parent.
+    background->layer()->parent()->CompleteAllAnimations();
   }
 
   views::Widget* GetBackgroundWidget() {

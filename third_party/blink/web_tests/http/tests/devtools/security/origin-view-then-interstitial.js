@@ -8,14 +8,14 @@
   await TestRunner.loadModule('security_test_runner');
   await TestRunner.showPanel('security');
 
-  var request1 = new SDK.NetworkRequest(0, 'https://foo.test/', 'https://foo.test', 0, 0, null);
-  request1.setSecurityState(Protocol.Security.SecurityState.Secure);
+  var request1 = new SDK.NetworkRequest(0, 'http://foo.test/', 'http://foo.test', 0, 0, null);
+  request1.setSecurityState(Protocol.Security.SecurityState.Insecure);
   SecurityTestRunner.dispatchRequestFinished(request1);
 
   TestRunner.addResult('Before selecting origin view:');
   TestRunner.dumpDeepInnerHTML(Security.SecurityPanel._instance()._visibleView.contentElement);
 
-  Security.SecurityPanel._instance()._sidebarTree._elementsByOrigin.get('https://foo.test').select();
+  Security.SecurityPanel._instance()._sidebarTree._elementsByOrigin.get('http://foo.test').select();
 
   TestRunner.addResult('Panel on origin view before interstitial:');
   TestRunner.dumpDeepInnerHTML(Security.SecurityPanel._instance()._visibleView.contentElement);

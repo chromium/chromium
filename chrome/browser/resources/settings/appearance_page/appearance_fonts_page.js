@@ -13,7 +13,15 @@ const FONT_SIZE_RANGE = [
 
 /** @type {!Array<number>} */
 const MINIMUM_FONT_SIZE_RANGE =
-    [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 20, 22, 24];
+    [0, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 20, 22, 24];
+
+/**
+ * @param {!Array<number>} ticks
+ * @return {!Array<!cr_slider.SliderTick>}
+ */
+function ticksWithLabels(ticks) {
+  return ticks.map(x => ({label: `${x}`, value: x}));
+}
 
 /**
  * 'settings-appearance-fonts-page' is the settings page containing appearance
@@ -41,22 +49,22 @@ Polymer({
 
     /**
      * Common font sizes.
-     * @private {!Array<number>}
+     * @private {!Array<!cr_slider.SliderTick>}
      */
     fontSizeRange_: {
       readOnly: true,
       type: Array,
-      value: FONT_SIZE_RANGE,
+      value: ticksWithLabels(FONT_SIZE_RANGE),
     },
 
     /**
      * Reasonable, minimum font sizes.
-     * @private {!Array<number>}
+     * @private {!Array<!cr_slider.SliderTick>}
      */
     minimumFontSizeRange_: {
       readOnly: true,
       type: Array,
-      value: MINIMUM_FONT_SIZE_RANGE,
+      value: ticksWithLabels(MINIMUM_FONT_SIZE_RANGE),
     },
 
     /**
@@ -67,6 +75,10 @@ Polymer({
       notify: true,
     },
   },
+
+  observers: [
+    'onMinimumSizeChange_(prefs.webkit.webprefs.minimum_font_size.value)',
+  ],
 
   /** @private {?settings.FontsBrowserProxy} */
   browserProxy_: null,
@@ -128,12 +140,18 @@ Polymer({
 
   /**
    * Get the minimum font size, accounting for unset prefs.
-   * @return {?}
+   * @return {number}
    * @private
    */
   computeMinimumFontSize_: function() {
-    return this.get('prefs.webkit.webprefs.minimum_font_size.value') ||
-        MINIMUM_FONT_SIZE_RANGE[0];
+    const prefValue = this.get('prefs.webkit.webprefs.minimum_font_size.value');
+    return /** @type {number} */ (prefValue) || MINIMUM_FONT_SIZE_RANGE[0];
+  },
+
+
+  /** @private */
+  onMinimumSizeChange_: function() {
+    this.$.minimumSizeSample.hidden = this.computeMinimumFontSize_() <= 0;
   },
 });
 })();

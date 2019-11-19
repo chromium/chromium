@@ -4,8 +4,6 @@
 
 #include "mojo/public/cpp/base/big_buffer_mojom_traits.h"
 
-#include <vector>
-
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "mojo/public/cpp/bindings/array_data_view.h"
@@ -55,10 +53,10 @@ UnionTraits<mojo_base::mojom::BigBufferDataView, mojo_base::BigBuffer>::GetTag(
 }
 
 // static
-const std::vector<uint8_t>&
+base::span<const uint8_t>
 UnionTraits<mojo_base::mojom::BigBufferDataView, mojo_base::BigBuffer>::bytes(
     const mojo_base::BigBuffer& buffer) {
-  return buffer.bytes();
+  return buffer.byte_span();
 }
 
 // static

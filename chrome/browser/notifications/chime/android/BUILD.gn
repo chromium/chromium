@@ -1,0 +1,37 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+android_library("java") {
+  java_files = [ "java/src/org/chromium/chrome/browser/notifications/chime/ChimeSession.java" ]
+
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+
+  deps = [
+    "//base:base_java",
+    "//base:jni_java",
+    "//chrome/android/modules/chime/public:java",
+  ]
+}
+
+source_set("android") {
+  sources = [
+    "features.cc",
+    "features.h",
+  ]
+
+  deps = [
+    ":jni_headers",
+    "//base",
+  ]
+}
+
+generate_jni("jni_headers") {
+  visibility = [ ":*" ]
+
+  sources = [
+    "java/src/org/chromium/chrome/browser/notifications/chime/ChimeSession.java",
+  ]
+}

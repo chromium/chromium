@@ -9,12 +9,12 @@
 
 #include "base/command_line.h"
 #include "base/strings/stringprintf.h"
+#include "chrome/browser/apps/launch_service/launch_service.h"
 #include "chrome/browser/extensions/api/tabs/tabs_api.h"
 #include "chrome/browser/extensions/extension_function_test_utils.h"
 #include "chrome/browser/ui/apps/chrome_app_delegate.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/extensions/app_launch_params.h"
-#include "chrome/browser/ui/extensions/application_launch.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_types.h"
 #include "content/public/test/browser_test_utils.h"
@@ -29,7 +29,7 @@
 
 #if defined(OS_CHROMEOS)
 #include "chrome/browser/media/router/media_routes_observer.h"
-#include "chrome/browser/ui/ash/cast_config_client_media_router.h"
+#include "chrome/browser/ui/ash/cast_config_controller_media_router.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #endif
 
@@ -71,13 +71,13 @@ void PlatformAppBrowserTest::SetUpOnMainThread() {
   ON_CALL(*media_router_, RegisterMediaSinksObserver(testing::_))
       .WillByDefault(testing::Return(true));
 
-  CastConfigClientMediaRouter::SetMediaRouterForTest(media_router_.get());
+  CastConfigControllerMediaRouter::SetMediaRouterForTest(media_router_.get());
 #endif
 }
 
 void PlatformAppBrowserTest::TearDownOnMainThread() {
 #if defined(OS_CHROMEOS)
-  CastConfigClientMediaRouter::SetMediaRouterForTest(nullptr);
+  CastConfigControllerMediaRouter::SetMediaRouterForTest(nullptr);
 #endif
   ExtensionApiTest::TearDownOnMainThread();
 }
@@ -154,16 +154,19 @@ const Extension* PlatformAppBrowserTest::InstallAndLaunchPlatformApp(
 }
 
 void PlatformAppBrowserTest::LaunchPlatformApp(const Extension* extension) {
-  OpenApplication(AppLaunchParams(
-      browser()->profile(), extension, LAUNCH_CONTAINER_NONE,
-      WindowOpenDisposition::NEW_WINDOW, extensions::SOURCE_TEST));
+  apps::LaunchService::Get(browser()->profile())
+      ->OpenApplication(apps::AppLaunchParams(
+          extension->id(), LaunchContainer::kLaunchContainerNone,
+          WindowOpenDisposition::NEW_WINDOW,
+          apps::mojom::AppLaunchSource::kSourceTest));
 }
 
 void PlatformAppBrowserTest::LaunchHostedApp(const Extension* extension) {
-  OpenApplication(CreateAppLaunchParamsUserContainer(
-      browser()->profile(), extension,
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      extensions::SOURCE_COMMAND_LINE));
+  apps::LaunchService::Get(browser()->profile())
+      ->OpenApplication(CreateAppLaunchParamsUserContainer(
+          browser()->profile(), extension,
+          WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          apps::mojom::AppLaunchSource::kSourceCommandLine));
 }
 
 WebContents* PlatformAppBrowserTest::GetFirstAppWindowWebContents() {

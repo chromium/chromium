@@ -25,11 +25,6 @@
   background: #00000050;
 }
 
-/** Fix height to prevent vertical shift on view mode change. */
-#select-form {
-  min-height: 380px;
-}
-
 /** Options side panel */
 .options {
   z-index: 5; /* Side panel layer */
@@ -318,16 +313,6 @@ input[type='file'] {
   position: absolute;
   top: -100%;
   opacity: 0;
-}
-
-#select-form .msg-bad-compare {
-  color: #f00;
-  font-size: 0.7em;
-  margin-top: 5px;
-  visibility: hidden;
-}
-#select-form .msg-bad-compare.visible {
-  visibility: visible;
 }
 
 /** Tweaks for smaller screen sizes */

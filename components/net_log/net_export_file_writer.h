@@ -19,6 +19,7 @@
 #include "base/observer_list.h"
 #include "base/threading/thread_checker.h"
 #include "base/values.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/log/net_log_capture_mode.h"
 #include "services/network/public/mojom/net_log.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
@@ -34,8 +35,6 @@ class NetworkContext;
 }  // namespace network
 
 namespace net_log {
-
-class ChromeNetLog;
 
 // NetExportFileWriter is used exclusively as a support class for
 // chrome://net-export/. There's a single instance created globally that acts as
@@ -134,7 +133,6 @@ class NetExportFileWriter {
   // (1) The NetExportFileWriter is not initialized.
   // (2) The log file does not exist.
   // (3) The NetExportFileWriter is currently logging.
-  // (4) The log file's permissions could not be set to all.
   //
   // |path_callback| will be executed at the end of GetFilePathToCompletedLog()
   // asynchronously.
@@ -151,7 +149,6 @@ class NetExportFileWriter {
   void SetDefaultLogBaseDirectoryGetterForTest(const DirectoryGetter& getter);
 
  private:
-  friend class ChromeNetLog;
   friend class NetExportFileWriterTest;
 
   // The possible logging states of NetExportFileWriter.
@@ -217,7 +214,7 @@ class NetExportFileWriter {
   base::FilePath log_path_;  // base::FilePath to the NetLog file.
 
   // Used to ask the network service to do the actual exporting.
-  network::mojom::NetLogExporterPtr net_log_exporter_;
+  mojo::Remote<network::mojom::NetLogExporter> net_log_exporter_;
 
   // List of StateObservers to notify on state changes.
   base::ObserverList<StateObserver, true>::Unchecked state_observer_list_;
@@ -226,7 +223,7 @@ class NetExportFileWriter {
   // during initialization. This getter is initialized to base::GetTempDir().
   DirectoryGetter default_log_base_dir_getter_;
 
-  base::WeakPtrFactory<NetExportFileWriter> weak_ptr_factory_;
+  base::WeakPtrFactory<NetExportFileWriter> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(NetExportFileWriter);
 };

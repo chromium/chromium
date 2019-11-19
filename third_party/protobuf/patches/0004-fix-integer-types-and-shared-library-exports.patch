@@ -1,22 +1,27 @@
---- protobuf-cleaned/src/google/protobuf/stubs/port.h	2015-12-30 13:21:46.000000000 -0800
-+++ protobuf-patched/src/google/protobuf/stubs/port.h	2016-03-31 13:25:26.840024811 -0700
-@@ -66,18 +66,34 @@
-     #define PROTOBUF_LITTLE_ENDIAN 1
-   #endif
- #endif
+--- a/third_party/protobuf/src/google/protobuf/port_def.inc
++++ b/third_party/protobuf/src/google/protobuf/port_def.inc
+@@ -275,8 +275,8 @@
+ #define PROTOBUF_LL_FORMAT "I64"  // As in printf("%I64d", ...)
+ #else
+ // By long long, we actually mean int64.
+-#define PROTOBUF_LONGLONG(x) x##LL
+-#define PROTOBUF_ULONGLONG(x) x##ULL
++#define PROTOBUF_LONGLONG(x) INT64_C(x)
++#define PROTOBUF_ULONGLONG(x) UINT64_C(x)
+ // Used to format real long long integers.
+ #define PROTOBUF_LL_FORMAT \
+   "ll"  // As in "%lld". Note that "q" is poor form also.
+--- a/third_party/protobuf/src/google/protobuf/stubs/port.h
++++ b/third_party/protobuf/src/google/protobuf/stubs/port.h
+@@ -87,18 +87,31 @@
+ 
+ // Legacy: some users reference these (internal-only) macros even though we
+ // don't need them any more.
 -#if defined(_MSC_VER) && defined(PROTOBUF_USE_DLLS)
 -  #ifdef LIBPROTOBUF_EXPORTS
 -    #define LIBPROTOBUF_EXPORT __declspec(dllexport)
 -  #else
 -    #define LIBPROTOBUF_EXPORT __declspec(dllimport)
--  #endif
--  #ifdef LIBPROTOC_EXPORTS
--    #define LIBPROTOC_EXPORT   __declspec(dllexport)
--  #else
--    #define LIBPROTOC_EXPORT   __declspec(dllimport)
-+
-+// The macros defined below are required in order to make protobuf_lite a
-+// component on all platforms. See http://crbug.com/172800.
 +#if defined(COMPONENT_BUILD) && defined(PROTOBUF_USE_DLLS)
 +  #if defined(_MSC_VER)
 +    #ifdef LIBPROTOBUF_EXPORTS
@@ -41,20 +46,13 @@
 +      #define LIBPROTOC_EXPORT
 +    #endif
    #endif
+-  #ifdef LIBPROTOC_EXPORTS
+-    #define LIBPROTOC_EXPORT   __declspec(dllexport)
+-  #else
+-    #define LIBPROTOC_EXPORT   __declspec(dllimport)
+-  #endif
 -#else
 +#else  // defined(COMPONENT_BUILD) && defined(PROTOBUF_USE_DLLS)
    #define LIBPROTOBUF_EXPORT
    #define LIBPROTOC_EXPORT
  #endif
-@@ -149,9 +149,9 @@
- #define GOOGLE_LL_FORMAT "I64"  // As in printf("%I64d", ...)
- #else
- // By long long, we actually mean int64.
--#define GOOGLE_LONGLONG(x) x##LL
--#define GOOGLE_ULONGLONG(x) x##ULL
-+#define GOOGLE_LONGLONG(x) INT64_C(x)
-+#define GOOGLE_ULONGLONG(x) UINT64_C(x)
- // Used to format real long long integers.
- #define GOOGLE_LL_FORMAT "ll"  // As in "%lld". Note that "q" is poor form also.
- #endif
- 

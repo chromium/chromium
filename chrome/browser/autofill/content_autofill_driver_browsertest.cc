@@ -35,9 +35,6 @@
 namespace autofill {
 namespace {
 
-const base::FilePath::CharType kDocRoot[] =
-    FILE_PATH_LITERAL("chrome/test/data");
-
 class MockAutofillClient : public TestAutofillClient {
  public:
   MockAutofillClient() {}
@@ -49,11 +46,12 @@ class MockAutofillClient : public TestAutofillClient {
     return prefs_.registry();
   }
 
-  MOCK_METHOD5(ShowAutofillPopup,
+  MOCK_METHOD6(ShowAutofillPopup,
                void(const gfx::RectF& element_bounds,
                     base::i18n::TextDirection text_direction,
                     const std::vector<autofill::Suggestion>& suggestions,
                     bool autoselect_first_suggestion,
+                    PopupType popup_type,
                     base::WeakPtr<AutofillPopupDelegate> delegate));
 
   MOCK_METHOD0(HideAutofillPopup, void());
@@ -105,7 +103,6 @@ class ContentAutofillDriverBrowserTest : public InProcessBrowserTest,
         web_contents, &autofill_client(), "en-US",
         AutofillManager::DISABLE_AUTOFILL_DOWNLOAD_MANAGER);
 
-    embedded_test_server()->AddDefaultHandlers(base::FilePath(kDocRoot));
     // Serve both a.com and b.com (and any other domain).
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());

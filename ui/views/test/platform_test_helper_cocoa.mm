@@ -9,9 +9,9 @@
 #import "base/mac/scoped_nsobject.h"
 #import "base/mac/scoped_objc_class_swizzler.h"
 #include "base/macros.h"
+#import "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
 #include "ui/views/widget/native_widget_mac.h"
 #include "ui/views/widget/widget.h"
-#import "ui/views_bridge_mac/bridged_native_widget_impl.h"
 
 namespace views {
 

@@ -229,7 +229,7 @@ class KeyPermissions {
   PrefService* const profile_prefs_;
   policy::PolicyService* const profile_policies_;
   extensions::StateStore* const extensions_state_store_;
-  base::WeakPtrFactory<KeyPermissions> weak_factory_;
+  base::WeakPtrFactory<KeyPermissions> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(KeyPermissions);
 };

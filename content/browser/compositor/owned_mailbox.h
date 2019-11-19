@@ -50,7 +50,7 @@ class CONTENT_EXPORT OwnedMailbox : public base::RefCounted<OwnedMailbox> {
   gpu::gles2::GLES2Interface* const gl_;
   uint32_t texture_id_;
   gpu::MailboxHolder mailbox_holder_;
-  base::WeakPtrFactory<OwnedMailbox> weak_ptr_factory_;
+  base::WeakPtrFactory<OwnedMailbox> weak_ptr_factory_{this};
 };
 
 }  // namespace content

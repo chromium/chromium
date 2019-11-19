@@ -9,20 +9,21 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/views/payments/editor_view_controller.h"
 #include "chrome/browser/ui/views/payments/payment_request_browsertest_base.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view_ids.h"
 #include "chrome/browser/ui/views/payments/validating_textfield.h"
-#include "components/autofill/core/browser/address_combobox_model.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/geo/test_region_data_loader.h"
 #include "components/autofill/core/browser/payments/payments_service_url.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
-#include "components/autofill/core/browser/test_region_data_loader.h"
+#include "components/autofill/core/browser/ui/address_combobox_model.h"
 #include "components/payments/content/payment_request.h"
 #include "components/payments/content/payment_request_spec.h"
-#include "components/payments/core/autofill_payment_instrument.h"
+#include "components/payments/core/autofill_payment_app.h"
 #include "components/payments/core/features.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_test_utils.h"
@@ -58,10 +59,10 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCreditCardEditorTest, EnteringValidData) {
 
   InvokePaymentRequestUI();
 
-  // No instruments are available.
+  // No apps are available.
   PaymentRequest* request = GetPaymentRequests(GetActiveWebContents()).front();
-  EXPECT_EQ(0U, request->state()->available_instruments().size());
-  EXPECT_EQ(nullptr, request->state()->selected_instrument());
+  EXPECT_EQ(0U, request->state()->available_apps().size());
+  EXPECT_EQ(nullptr, request->state()->selected_app());
 
   // But there must be at least one address available for billing.
   autofill::AutofillProfile billing_profile(autofill::test::GetFullProfile());
@@ -100,10 +101,10 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCreditCardEditorTest, EnteringValidData) {
   EXPECT_EQ(base::ASCIIToUTF16("Bob Jones"),
             credit_card->GetRawInfo(autofill::CREDIT_CARD_NAME_FULL));
 
-  // One instrument is available and selected.
-  EXPECT_EQ(1U, request->state()->available_instruments().size());
-  EXPECT_EQ(request->state()->available_instruments().back().get(),
-            request->state()->selected_instrument());
+  // One app is available and selected.
+  EXPECT_EQ(1U, request->state()->available_apps().size());
+  EXPECT_EQ(request->state()->available_apps().back().get(),
+            request->state()->selected_app());
 }
 
 IN_PROC_BROWSER_TEST_F(PaymentRequestCreditCardEditorTest,
@@ -118,10 +119,10 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCreditCardEditorTest,
 
   InvokePaymentRequestUI();
 
-  // No instruments are available.
+  // No apps are available.
   PaymentRequest* request = GetPaymentRequests(GetActiveWebContents()).front();
-  EXPECT_EQ(0U, request->state()->available_instruments().size());
-  EXPECT_EQ(nullptr, request->state()->selected_instrument());
+  EXPECT_EQ(0U, request->state()->available_apps().size());
+  EXPECT_EQ(nullptr, request->state()->selected_app());
 
   OpenCreditCardEditorScreen();
 
@@ -159,10 +160,10 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCreditCardEditorTest,
   EXPECT_EQ(base::ASCIIToUTF16("Bob Jones"),
             credit_card->GetRawInfo(autofill::CREDIT_CARD_NAME_FULL));
 
-  // One instrument is available and selected.
-  EXPECT_EQ(1U, request->state()->available_instruments().size());
-  EXPECT_EQ(request->state()->available_instruments().back().get(),
-            request->state()->selected_instrument());
+  // One app is available and selected.
+  EXPECT_EQ(1U, request->state()->available_apps().size());
+  EXPECT_EQ(request->state()->available_apps().back().get(),
+            request->state()->selected_app());
 }
 
 IN_PROC_BROWSER_TEST_F(PaymentRequestCreditCardEditorTest, CancelFromEditor) {
@@ -213,7 +214,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCreditCardEditorTest,
   views::View* save_button = dialog_view()->GetViewByID(
       static_cast<int>(DialogViewID::EDITOR_SAVE_BUTTON));
 
-  EXPECT_FALSE(save_button->enabled());
+  EXPECT_FALSE(save_button->GetEnabled());
   ClickOnDialogViewAndWait(DialogViewID::EDITOR_SAVE_BUTTON);
 
   autofill::PersonalDataManager* personal_data_manager = GetDataManager();
@@ -221,14 +222,23 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCreditCardEditorTest,
 
   SetComboboxValue(base::ASCIIToUTF16("12"), autofill::CREDIT_CARD_EXP_MONTH);
 
-  EXPECT_TRUE(save_button->enabled());
+  EXPECT_TRUE(save_button->GetEnabled());
 }
 
-IN_PROC_BROWSER_TEST_F(PaymentRequestCreditCardEditorTest, EditingMaskedCard) {
-  // Masked cards are from Google Pay.
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(features::kReturnGooglePayInBasicCard);
+class PaymentRequestCreditCardEditorTestWithGooglePayEnabled
+    : public PaymentRequestCreditCardEditorTest {
+ public:
+  PaymentRequestCreditCardEditorTestWithGooglePayEnabled() {
+    // Masked cards are from Google Pay.
+    feature_list_.InitAndEnableFeature(features::kReturnGooglePayInBasicCard);
+  }
 
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(PaymentRequestCreditCardEditorTestWithGooglePayEnabled,
+                       EditingMaskedCard) {
   NavigateTo("/payment_request_no_shipping_test.html");
   autofill::TestAutofillClock test_clock;
   test_clock.SetNow(kJune2017);
@@ -250,9 +260,9 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCreditCardEditorTest, EditingMaskedCard) {
   views::View* list_view = dialog_view()->GetViewByID(
       static_cast<int>(DialogViewID::PAYMENT_METHOD_SHEET_LIST_VIEW));
   EXPECT_TRUE(list_view);
-  EXPECT_EQ(1, list_view->child_count());
+  EXPECT_EQ(1u, list_view->children().size());
 
-  views::View* edit_button = list_view->child_at(0)->GetViewByID(
+  views::View* edit_button = list_view->children().front()->GetViewByID(
       static_cast<int>(DialogViewID::EDIT_ITEM_BUTTON));
 
   ResetEventWaiter(DialogEvent::CREDIT_CARD_EDITOR_OPENED);
@@ -277,13 +287,13 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCreditCardEditorTest, EditingMaskedCard) {
       dialog_view()->GetViewByID(EditorViewController::GetInputFieldViewId(
           autofill::ADDRESS_BILLING_LINE1)));
   ASSERT_NE(nullptr, billing_address_combobox);
-  EXPECT_TRUE(billing_address_combobox->enabled());
+  EXPECT_TRUE(billing_address_combobox->GetEnabled());
   autofill::AddressComboboxModel* model =
       static_cast<autofill::AddressComboboxModel*>(
           billing_address_combobox->model());
   EXPECT_EQ(
       billing_profile.guid(),
-      model->GetItemIdentifierAt(billing_address_combobox->selected_index()));
+      model->GetItemIdentifierAt(billing_address_combobox->GetSelectedIndex()));
 
   // Select a different billing address.
   SelectBillingAddress(additional_profile.guid());
@@ -302,18 +312,14 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCreditCardEditorTest, EditingMaskedCard) {
   data_loop.Run();
 
   PaymentRequest* request = GetPaymentRequests(GetActiveWebContents()).front();
-  autofill::CreditCard* selected = static_cast<AutofillPaymentInstrument*>(
-                                       request->state()->selected_instrument())
-                                       ->credit_card();
+  autofill::CreditCard* selected =
+      static_cast<AutofillPaymentApp*>(request->state()->selected_app())
+          ->credit_card();
   EXPECT_EQ(additional_profile.guid(), selected->billing_address_id());
 }
 
-IN_PROC_BROWSER_TEST_F(PaymentRequestCreditCardEditorTest,
+IN_PROC_BROWSER_TEST_F(PaymentRequestCreditCardEditorTestWithGooglePayEnabled,
                        EditingMaskedCard_ClickOnPaymentsLink) {
-  // Masked cards are from Google Pay.
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(features::kReturnGooglePayInBasicCard);
-
   NavigateTo("/payment_request_no_shipping_test.html");
   autofill::TestAutofillClock test_clock;
   test_clock.SetNow(kJune2017);
@@ -335,9 +341,9 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCreditCardEditorTest,
   views::View* list_view = dialog_view()->GetViewByID(
       static_cast<int>(DialogViewID::PAYMENT_METHOD_SHEET_LIST_VIEW));
   EXPECT_TRUE(list_view);
-  EXPECT_EQ(1, list_view->child_count());
+  EXPECT_EQ(1u, list_view->children().size());
 
-  views::View* edit_button = list_view->child_at(0)->GetViewByID(
+  views::View* edit_button = list_view->children().front()->GetViewByID(
       static_cast<int>(DialogViewID::EDIT_ITEM_BUTTON));
 
   ResetEventWaiter(DialogEvent::CREDIT_CARD_EDITOR_OPENED);
@@ -354,7 +360,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCreditCardEditorTest,
       web_contents_added_observer.GetWebContents();
 
   // A tab has opened at the Google Payments link.
-  EXPECT_EQ(autofill::payments::GetManageAddressesUrl(0),
+  EXPECT_EQ(autofill::payments::GetManageAddressesUrl(),
             new_tab_contents->GetVisibleURL());
 }
 
@@ -537,11 +543,11 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCreditCardEditorTest, EditingExpiredCard) {
   // Focus expectations are different in Keyboard Accessible mode.
   dialog_view()->GetFocusManager()->SetKeyboardAccessible(false);
 
-  // One instrument is available, and it's selected because being expired can
-  // still select the instrument.
+  // One app is available, and it's selected because that's allowed for expired
+  // credit cards.
   PaymentRequest* request = GetPaymentRequests(GetActiveWebContents()).front();
-  EXPECT_EQ(1U, request->state()->available_instruments().size());
-  EXPECT_NE(nullptr, request->state()->selected_instrument());
+  EXPECT_EQ(1U, request->state()->available_apps().size());
+  EXPECT_NE(nullptr, request->state()->selected_app());
 
   OpenPaymentMethodScreen();
 
@@ -549,9 +555,9 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCreditCardEditorTest, EditingExpiredCard) {
   views::View* list_view = dialog_view()->GetViewByID(
       static_cast<int>(DialogViewID::PAYMENT_METHOD_SHEET_LIST_VIEW));
   EXPECT_TRUE(list_view);
-  EXPECT_EQ(1, list_view->child_count());
+  EXPECT_EQ(1u, list_view->children().size());
 
-  views::View* edit_button = list_view->child_at(0)->GetViewByID(
+  views::View* edit_button = list_view->children().front()->GetViewByID(
       static_cast<int>(DialogViewID::EDIT_ITEM_BUTTON));
 
   ResetEventWaiter(DialogEvent::CREDIT_CARD_EDITOR_OPENED);
@@ -604,10 +610,10 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCreditCardEditorTest, EditingExpiredCard) {
   EXPECT_EQ(base::ASCIIToUTF16("Test User"),
             credit_card->GetRawInfo(autofill::CREDIT_CARD_NAME_FULL));
 
-  // Still have one instrument, and it's still selected.
-  EXPECT_EQ(1U, request->state()->available_instruments().size());
-  EXPECT_EQ(request->state()->available_instruments().back().get(),
-            request->state()->selected_instrument());
+  // Still have one app, and it's still selected.
+  EXPECT_EQ(1U, request->state()->available_apps().size());
+  EXPECT_EQ(request->state()->available_apps().back().get(),
+            request->state()->selected_app());
 }
 
 IN_PROC_BROWSER_TEST_F(PaymentRequestCreditCardEditorTest,
@@ -625,10 +631,10 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCreditCardEditorTest,
 
   InvokePaymentRequestUI();
 
-  // One instrument is available, but it's not selected.
+  // One app is available, but it's not selected.
   PaymentRequest* request = GetPaymentRequests(GetActiveWebContents()).front();
-  EXPECT_EQ(1U, request->state()->available_instruments().size());
-  EXPECT_EQ(nullptr, request->state()->selected_instrument());
+  EXPECT_EQ(1U, request->state()->available_apps().size());
+  EXPECT_EQ(nullptr, request->state()->selected_app());
 
   OpenPaymentMethodScreen();
 
@@ -666,10 +672,10 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCreditCardEditorTest,
   EXPECT_EQ(base::ASCIIToUTF16("Test User"),
             credit_card->GetRawInfo(autofill::CREDIT_CARD_NAME_FULL));
 
-  // Still have one instrument, but now it's selected.
-  EXPECT_EQ(1U, request->state()->available_instruments().size());
-  EXPECT_EQ(request->state()->available_instruments().back().get(),
-            request->state()->selected_instrument());
+  // Still have one app, but now it's selected.
+  EXPECT_EQ(1U, request->state()->available_apps().size());
+  EXPECT_EQ(request->state()->available_apps().back().get(),
+            request->state()->selected_app());
 }
 
 IN_PROC_BROWSER_TEST_F(PaymentRequestCreditCardEditorTest,
@@ -686,10 +692,10 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCreditCardEditorTest,
 
   InvokePaymentRequestUI();
 
-  // One instrument is available, but it's not selected.
+  // One app is available, but it's not selected.
   PaymentRequest* request = GetPaymentRequests(GetActiveWebContents()).front();
-  EXPECT_EQ(1U, request->state()->available_instruments().size());
-  EXPECT_EQ(nullptr, request->state()->selected_instrument());
+  EXPECT_EQ(1U, request->state()->available_apps().size());
+  EXPECT_EQ(nullptr, request->state()->selected_app());
 
   OpenPaymentMethodScreen();
 
@@ -729,10 +735,10 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCreditCardEditorTest,
   EXPECT_EQ(base::ASCIIToUTF16("4111111111111111"), credit_card->number());
   EXPECT_EQ(billing_profile.guid(), credit_card->billing_address_id());
 
-  // Still have one instrument, but now it's selected.
-  EXPECT_EQ(1U, request->state()->available_instruments().size());
-  EXPECT_EQ(request->state()->available_instruments().back().get(),
-            request->state()->selected_instrument());
+  // Still have one app, but now it's selected.
+  EXPECT_EQ(1U, request->state()->available_apps().size());
+  EXPECT_EQ(request->state()->available_apps().back().get(),
+            request->state()->selected_app());
 }
 
 IN_PROC_BROWSER_TEST_F(PaymentRequestCreditCardEditorTest,
@@ -747,14 +753,14 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCreditCardEditorTest,
 
   InvokePaymentRequestUI();
 
-  // One instrument is available, it is not selected, but is properly named.
+  // One app is available, it is not selected, but is properly named.
   PaymentRequest* request = GetPaymentRequests(GetActiveWebContents()).front();
-  EXPECT_EQ(1U, request->state()->available_instruments().size());
-  EXPECT_EQ(nullptr, request->state()->selected_instrument());
+  EXPECT_EQ(1U, request->state()->available_apps().size());
+  EXPECT_EQ(nullptr, request->state()->selected_app());
   EXPECT_EQ(
       card.GetInfo(autofill::AutofillType(autofill::CREDIT_CARD_NAME_FULL),
                    request->state()->GetApplicationLocale()),
-      request->state()->available_instruments()[0]->GetSublabel());
+      request->state()->available_apps()[0]->GetSublabel());
 
   OpenPaymentMethodScreen();
 
@@ -780,15 +786,21 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCreditCardEditorTest,
   ClickOnDialogViewAndWait(DialogViewID::EDITOR_SAVE_BUTTON);
   data_loop.Run();
 
-  // One instrument is available, is selected, and is properly named.
-  EXPECT_EQ(1U, request->state()->available_instruments().size());
-  EXPECT_NE(nullptr, request->state()->selected_instrument());
+  // One app is available, is selected, and is properly named.
+  EXPECT_EQ(1U, request->state()->available_apps().size());
+  EXPECT_NE(nullptr, request->state()->selected_app());
   EXPECT_EQ(base::ASCIIToUTF16("Bob the second"),
-            request->state()->selected_instrument()->GetSublabel());
+            request->state()->selected_app()->GetSublabel());
 }
 
+// FLAKY on Windows: crbug.com/1001365
+#if defined(OS_WIN)
+#define MAYBE_CreateNewBillingAddress DISABLED_CreateNewBillingAddress
+#else
+#define MAYBE_CreateNewBillingAddress CreateNewBillingAddress
+#endif
 IN_PROC_BROWSER_TEST_F(PaymentRequestCreditCardEditorTest,
-                       CreateNewBillingAddress) {
+                       MAYBE_CreateNewBillingAddress) {
   NavigateTo("/payment_request_no_shipping_test.html");
   autofill::CreditCard card = autofill::test::GetCreditCard();
   // Make sure to clear billing address and have none available.
@@ -800,10 +812,10 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCreditCardEditorTest,
 
   InvokePaymentRequestUI();
 
-  // One instrument is available, but it's not selected.
+  // One app is available, but it's not selected.
   PaymentRequest* request = GetPaymentRequests(GetActiveWebContents()).front();
-  EXPECT_EQ(1U, request->state()->available_instruments().size());
-  EXPECT_EQ(nullptr, request->state()->selected_instrument());
+  EXPECT_EQ(1U, request->state()->available_apps().size());
+  EXPECT_EQ(nullptr, request->state()->selected_app());
 
   OpenPaymentMethodScreen();
 
@@ -815,7 +827,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCreditCardEditorTest,
       dialog_view()->GetViewByID(EditorViewController::GetInputFieldViewId(
           autofill::ADDRESS_BILLING_LINE1));
   ASSERT_NE(nullptr, billing_address_combobox);
-  EXPECT_FALSE(billing_address_combobox->enabled());
+  EXPECT_FALSE(billing_address_combobox->GetEnabled());
 
   // Add some region data to load synchonously.
   autofill::TestRegionDataLoader test_region_data_loader_;
@@ -852,8 +864,8 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCreditCardEditorTest,
       dialog_view()->GetViewByID(EditorViewController::GetInputFieldViewId(
           autofill::ADDRESS_BILLING_LINE1)));
   ASSERT_NE(nullptr, billing_combobox);
-  EXPECT_FALSE(billing_combobox->invalid());
-  EXPECT_TRUE(billing_combobox->enabled());
+  EXPECT_FALSE(billing_combobox->GetInvalid());
+  EXPECT_TRUE(billing_combobox->GetEnabled());
 
   // And then save credit card state and come back to payment sheet.
   ResetEventWaiter(DialogEvent::BACK_TO_PAYMENT_SHEET_NAVIGATION);
@@ -869,11 +881,11 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCreditCardEditorTest,
   ClickOnDialogViewAndWait(DialogViewID::EDITOR_SAVE_BUTTON);
   data_loop.Run();
 
-  // Still have one instrument, but now it's selected.
-  EXPECT_EQ(1U, request->state()->available_instruments().size());
-  EXPECT_EQ(request->state()->available_instruments().back().get(),
-            request->state()->selected_instrument());
-  EXPECT_TRUE(request->state()->selected_instrument()->IsCompleteForPayment());
+  // Still have one app, but now it's selected.
+  EXPECT_EQ(1U, request->state()->available_apps().size());
+  EXPECT_EQ(request->state()->available_apps().back().get(),
+            request->state()->selected_app());
+  EXPECT_TRUE(request->state()->selected_app()->IsCompleteForPayment());
 }
 
 IN_PROC_BROWSER_TEST_F(PaymentRequestCreditCardEditorTest,
@@ -890,10 +902,10 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCreditCardEditorTest,
 
   InvokePaymentRequestUI();
 
-  // One instrument is available, but it's not selected.
+  // One app is available, but it's not selected.
   PaymentRequest* request = GetPaymentRequests(GetActiveWebContents()).front();
-  EXPECT_EQ(1U, request->state()->available_instruments().size());
-  EXPECT_EQ(nullptr, request->state()->selected_instrument());
+  EXPECT_EQ(1U, request->state()->available_apps().size());
+  EXPECT_EQ(nullptr, request->state()->selected_app());
 
   // Now add the billing address to the personal data.
   AddAutofillProfile(billing_profile);
@@ -904,11 +916,11 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCreditCardEditorTest,
                            /*wait_for_animation=*/false);
   InvokePaymentRequestUI();
 
-  // Still have one instrument, but now it's selected.
+  // Still have one app, but now it's selected.
   request = GetPaymentRequests(GetActiveWebContents()).front();
-  EXPECT_EQ(1U, request->state()->available_instruments().size());
-  EXPECT_EQ(request->state()->available_instruments().back().get(),
-            request->state()->selected_instrument());
+  EXPECT_EQ(1U, request->state()->available_apps().size());
+  EXPECT_EQ(request->state()->available_apps().back().get(),
+            request->state()->selected_app());
 }
 
 IN_PROC_BROWSER_TEST_F(PaymentRequestCreditCardEditorTest, EnteringEmptyData) {
@@ -943,7 +955,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCreditCardEditorTest, DoneButtonDisabled) {
   views::View* save_button = dialog_view()->GetViewByID(
       static_cast<int>(DialogViewID::EDITOR_SAVE_BUTTON));
 
-  EXPECT_FALSE(save_button->enabled());
+  EXPECT_FALSE(save_button->GetEnabled());
 
   // Set all fields but one:
   SetEditorTextfieldValue(base::ASCIIToUTF16("Bob Jones"),
@@ -955,20 +967,20 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCreditCardEditorTest, DoneButtonDisabled) {
                    autofill::CREDIT_CARD_EXP_4_DIGIT_YEAR);
 
   // Still disabled.
-  EXPECT_FALSE(save_button->enabled());
+  EXPECT_FALSE(save_button->GetEnabled());
 
   // Set the last field.
   SelectBillingAddress(billing_profile.guid());
 
   // Should be good to go.
-  EXPECT_TRUE(save_button->enabled());
+  EXPECT_TRUE(save_button->GetEnabled());
 
   // Change a field to something invalid, to make sure it works both ways.
   SetEditorTextfieldValue(base::ASCIIToUTF16("Ni!"),
                           autofill::CREDIT_CARD_NUMBER);
 
   // Back to being disabled.
-  EXPECT_FALSE(save_button->enabled());
+  EXPECT_FALSE(save_button->GetEnabled());
 }
 
 IN_PROC_BROWSER_TEST_F(PaymentRequestCreditCardEditorTest,
@@ -980,10 +992,10 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCreditCardEditorTest,
 
   InvokePaymentRequestUI();
 
-  // No instruments are available.
+  // No apps are available.
   PaymentRequest* request = GetPaymentRequests(GetActiveWebContents()).front();
-  EXPECT_EQ(0U, request->state()->available_instruments().size());
-  EXPECT_EQ(nullptr, request->state()->selected_instrument());
+  EXPECT_EQ(0U, request->state()->available_apps().size());
+  EXPECT_EQ(nullptr, request->state()->selected_app());
 
   // But there must be at least one address available for billing.
   autofill::AutofillProfile billing_profile(autofill::test::GetFullProfile());
@@ -1009,13 +1021,13 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCreditCardEditorTest,
   ClickOnDialogViewAndWait(DialogViewID::EDITOR_SAVE_BUTTON);
 
   // Since this is incognito, the credit card shouldn't have been added to the
-  // PersonalDataManager but it should be available in available_instruments.
+  // PersonalDataManager but it should be available in available_apps.
   EXPECT_EQ(0U, personal_data_manager->GetCreditCards().size());
 
-  // One instrument is available and selected.
-  EXPECT_EQ(1U, request->state()->available_instruments().size());
-  EXPECT_EQ(request->state()->available_instruments().back().get(),
-            request->state()->selected_instrument());
+  // One app is available and selected.
+  EXPECT_EQ(1U, request->state()->available_apps().size());
+  EXPECT_EQ(request->state()->available_apps().back().get(),
+            request->state()->selected_app());
 }
 
 }  // namespace payments

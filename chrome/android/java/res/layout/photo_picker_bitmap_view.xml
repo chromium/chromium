@@ -33,7 +33,28 @@
             android:background="@drawable/file_picker_scrim"
             tools:ignore="ContentDescription"
             android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/video_duration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:layout_marginEnd="6dp"
+            android:layout_gravity="end"
+            style="@style/TextAppearance.WhiteBody"/>
     </FrameLayout>
+
+    <ImageView
+        android:id="@+id/play_video"
+        android:layout_width="26dp"
+        android:layout_height="26dp"
+        android:layout_marginStart="2dp"
+        android:layout_marginBottom="2dp"
+        android:layout_marginEnd="2dp"
+        android:contentDescription="@string/accessibility_play_video"
+        android:layout_gravity="bottom|end"
+        android:visibility="gone"
+        app:srcCompat="@drawable/ic_play_circle_filled_blue" />
 
     <ImageView
         android:id="@+id/selected"
@@ -71,7 +92,7 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             tools:ignore="ContentDescription"
-            android:tint="@color/photo_picker_special_tile_color" />
+            android:tint="@color/photo_picker_tile_bg_color" />
 
         <TextView
             android:id="@+id/special_tile_label"

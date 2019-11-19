@@ -11,13 +11,18 @@
 namespace mojo {
 
 // static
-WTF::Vector<network::mojom::blink::HttpRequestHeaderKeyValuePair>
+WTF::Vector<network::mojom::blink::HttpRequestHeaderKeyValuePairPtr>
 StructTraits<network::mojom::HttpRequestHeadersDataView,
              blink::HTTPHeaderMap>::headers(const blink::HTTPHeaderMap& map) {
   std::unique_ptr<blink::CrossThreadHTTPHeaderMapData> headers = map.CopyData();
-  WTF::Vector<network::mojom::blink::HttpRequestHeaderKeyValuePair> headers_out;
+  WTF::Vector<network::mojom::blink::HttpRequestHeaderKeyValuePairPtr>
+      headers_out;
   for (const auto& header : *headers) {
-    headers_out.emplace_back(header.first, header.second);
+    auto header_ptr =
+        network::mojom::blink::HttpRequestHeaderKeyValuePair::New();
+    header_ptr->key = header.first;
+    header_ptr->value = header.second;
+    headers_out.push_back(std::move(header_ptr));
   }
   return headers_out;
 }

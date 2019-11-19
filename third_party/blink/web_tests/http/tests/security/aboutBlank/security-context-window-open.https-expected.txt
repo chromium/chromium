@@ -1,0 +1,28 @@
+--- Test begins ---
+* "about:blank"
+document.URL = about:blank
+document.baseURI = about:blank
+document.cookie = cookie=parent
+* ""
+document.URL = about:blank
+document.baseURI = about:blank
+document.cookie = cookie=parent
+--- After document.open() ---
+* "about:blank"
+document.URL = https://127.0.0.1:8443/security/aboutBlank/security-context-window-open.https.html
+document.baseURI = https://127.0.0.1:8443/security/aboutBlank/security-context-window-open.https.html
+document.cookie = cookie=parent
+* ""
+document.URL = https://127.0.0.1:8443/security/aboutBlank/security-context-window-open.https.html
+document.baseURI = https://127.0.0.1:8443/security/aboutBlank/security-context-window-open.https.html
+document.cookie = cookie=parent
+--- After document.close() ---
+* "about:blank"
+document.URL = https://127.0.0.1:8443/security/aboutBlank/security-context-window-open.https.html
+document.baseURI = https://127.0.0.1:8443/security/aboutBlank/security-context-window-open.https.html
+document.cookie = cookie=parent
+* ""
+document.URL = https://127.0.0.1:8443/security/aboutBlank/security-context-window-open.https.html
+document.baseURI = https://127.0.0.1:8443/security/aboutBlank/security-context-window-open.https.html
+document.cookie = cookie=parent
+--- Test ends ---

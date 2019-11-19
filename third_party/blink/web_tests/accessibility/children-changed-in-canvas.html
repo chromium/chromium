@@ -8,7 +8,7 @@
 </canvas>
 
 <script>
-async_test_after_layout_and_paint(function(t) {
+async_test(function(t) {
     var container = document.getElementById("container");
     var axContainer = accessibilityController.accessibleElementById("container");
     assert_equals(axContainer.childrenCount, 3, "Initial");

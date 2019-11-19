@@ -1,0 +1,37 @@
+\brural\s+delivery\b	
+\bocean\s+beach\b	oceanbeach
+\blong\s+beach\b	longbeach
+\bboulevard\b	blvd
+\bcrescent\b	cres
+\bheights\b	hts
+\bhighway\b	hwy
+\bparkway\b	pkwy
+\bzealand\b	nz
+\bavenue\b	ave
+\bcommon\b	comm
+\bparade\b	pde
+\bstreet\b	st
+\bcourt\b	ct
+\bdrive\b	dr
+\bmount\b	mt
+\bnorth\b	n
+\bplace\b	pl
+\bpoint\b	pt
+\bsaint\b	st
+\bsouth\b	s
+\beast\b	e
+\blane\b	ln
+\bn\.z\.\b	nz
+\broad\b	rd
+\bwest\b	w
+\bmt\.\b	mt
+\bn\.z\b	nz
+\bnth\b	n
+\bpt\.\b	pt
+\bst\.\b	st
+\bsth\b	s
+\be\.\b	e
+\bn\.\b	n
+\bs\.\b	s
+\bw\.\b	w
+\bd\b	

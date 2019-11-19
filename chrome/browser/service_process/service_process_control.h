@@ -22,6 +22,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/upgrade_detector/upgrade_observer.h"
 #include "chrome/common/service_process.mojom.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 
 #if defined(OS_CHROMEOS)
@@ -191,7 +192,7 @@ class ServiceProcessControl : public UpgradeObserver {
   std::unique_ptr<mojo::IsolatedConnection> mojo_connection_;
 
   service_manager::InterfaceProvider remote_interfaces_;
-  chrome::mojom::ServiceProcessPtr service_process_;
+  mojo::Remote<chrome::mojom::ServiceProcess> service_process_;
 
   // Service process launcher.
   scoped_refptr<Launcher> launcher_;
@@ -214,7 +215,7 @@ class ServiceProcessControl : public UpgradeObserver {
   // Same as |Launcher::saved_pid_|.
   base::ProcessId saved_pid_;
 
-  base::WeakPtrFactory<ServiceProcessControl> weak_factory_;
+  base::WeakPtrFactory<ServiceProcessControl> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ServiceProcessControl);
 };

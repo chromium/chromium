@@ -114,7 +114,7 @@ Polymer({
    * @return {string}
    */
   getContinueMessage_: function(isConfirmStep) {
-    return this.i18n(isConfirmStep ? 'confirm' : 'configurePinContinueButton');
+    return this.i18n(isConfirmStep ? 'confirm' : 'continue');
   },
 });
 

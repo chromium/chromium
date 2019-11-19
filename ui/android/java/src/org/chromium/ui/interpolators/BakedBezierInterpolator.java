@@ -4,11 +4,14 @@
 
 package org.chromium.ui.interpolators;
 
+import android.support.v4.view.animation.FastOutLinearInInterpolator;
+import android.support.v4.view.animation.FastOutSlowInInterpolator;
+import android.support.v4.view.animation.LinearOutSlowInInterpolator;
 import android.view.animation.Interpolator;
 
 /**
  * A pre-baked bezier-curved interpolator for quantum-paper transitions.
- * TODO(dtrainor): Move to the API Compatability version iff that supports the curves we need and
+ * TODO(dtrainor): Move to the API Compatibility version iff that supports the curves we need and
  * once we move to that SDK.
  */
 public class BakedBezierInterpolator implements Interpolator {
@@ -105,19 +108,28 @@ public class BakedBezierInterpolator implements Interpolator {
 
     /**
      * 0.4 to 0.2 bezier curve.  Should be used for general movement.
+     * Use {@link CompositorAnimator#FAST_OUT_SLOW_IN_INTERPOLATOR} or
+     * {@link FastOutSlowInInterpolator} instead.
      */
+    @Deprecated
     public static final BakedBezierInterpolator TRANSFORM_CURVE =
             new BakedBezierInterpolator(TRANSFORM_VALUES);
 
     /**
      * 0.4 to 1.0 bezier curve.  Should be used for fading out.
+     * Use {@link CompositorAnimator#FAST_OUT_LINEAR_IN_INTERPOLATOR} or
+     * {@link FastOutLinearInInterpolator} instead.
      */
+    @Deprecated
     public static final BakedBezierInterpolator FADE_OUT_CURVE =
             new BakedBezierInterpolator(FADE_OUT_VALUES);
 
     /**
      * 0.0 to 0.2 bezier curve.  Should be used for fading in.
+     * Use {@link CompositorAnimator#LINEAR_OUT_SLOW_IN_INTERPOLATOR} or
+     * {@link LinearOutSlowInInterpolator} instead.
      */
+    @Deprecated
     public static final BakedBezierInterpolator FADE_IN_CURVE =
             new BakedBezierInterpolator(FADE_IN_VALUES);
 

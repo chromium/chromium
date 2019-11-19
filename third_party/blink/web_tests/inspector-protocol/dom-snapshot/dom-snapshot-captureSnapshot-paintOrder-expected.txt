@@ -1,0 +1,48 @@
+Tests DOMSnapshot.captureSnapshot method returning paint order indexes.
+[
+    [0] : {
+        node : box3
+        paintOrder : 2
+    }
+    [1] : {
+        node : box2
+        paintOrder : 3
+    }
+    [2] : {
+        node : box5
+        paintOrder : 4
+    }
+    [3] : {
+        node : box6
+        paintOrder : 5
+    }
+    [4] : {
+        node : box4
+        paintOrder : 6
+    }
+    [5] : {
+        node : box1
+        paintOrder : 7
+    }
+    [6] : {
+        node : box7
+        paintOrder : 8
+    }
+    [7] : {
+        node : iframe
+        paintOrder : 9
+    }
+    [8] : {
+        node : mydiv
+        paintOrder : 11
+    }
+    [9] : {
+        node : shadow-host
+        paintOrder : 12
+    }
+    [10] : {
+        node : shadow-div
+        paintOrder : 12
+    }
+]
+

@@ -1,0 +1,19 @@
+<html>
+  <head>
+    <!-- Disable referrer to test that the redirect loop detection works even
+      when referrer policy prevents setting of referrer-->
+    <meta name="referrer" content="no-referrer" />
+
+    <title>Test page that causes a client redirect loop while script execution is deferred.</title>
+    <script>
+    if (document.getElementById("bodyend")) {
+      document.location.href = "/client_redirect_base.html";
+    } else {
+      document.location.href = "/defer_all_script_browsertest.html";
+    }
+    </script>
+  </head>
+  <body>
+    <pre id="bodyend">End</pre>
+  </body>
+</html>

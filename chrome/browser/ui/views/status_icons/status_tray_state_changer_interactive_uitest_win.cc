@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <wrl/client.h>
+#include <wrl/implements.h>
+
 #include <memory>
 #include <utility>
 
@@ -21,8 +24,8 @@ class StatusTrayStateChangerWinTest : public testing::Test {
 
   void SetUp() override {
     testing::Test::SetUp();
-    com_.reset(new base::win::ScopedCOMInitializer());
-    status_tray_.reset(new StatusTrayWin());
+    com_ = std::make_unique<base::win::ScopedCOMInitializer>();
+    status_tray_ = std::make_unique<StatusTrayWin>();
     SkBitmap bitmap;
 
     // Put a real bitmap into "bitmap".  2x2 bitmap of green 32 bit pixels.
@@ -32,12 +35,12 @@ class StatusTrayStateChangerWinTest : public testing::Test {
         StatusTray::OTHER_ICON,
         gfx::ImageSkia::CreateFrom1xBitmap(bitmap),
         base::string16());
-    tray_watcher_ = new StatusTrayStateChangerWin(status_icon_win_->icon_id(),
-                                                  status_icon_win_->window());
+    tray_watcher_ = Microsoft::WRL::Make<StatusTrayStateChangerWin>(
+        status_icon_win_->icon_id(), status_icon_win_->window());
   }
 
   void TearDown() override {
-    tray_watcher_ = NULL;
+    tray_watcher_.Reset();
     status_tray_.reset();
     com_.reset();
     testing::Test::TearDown();
@@ -77,7 +80,7 @@ class StatusTrayStateChangerWinTest : public testing::Test {
 
   std::unique_ptr<base::win::ScopedCOMInitializer> com_;
   std::unique_ptr<StatusTrayWin> status_tray_;
-  scoped_refptr<StatusTrayStateChangerWin> tray_watcher_;
+  Microsoft::WRL::ComPtr<StatusTrayStateChangerWin> tray_watcher_;
 
   StatusIconWin* status_icon_win_;
 

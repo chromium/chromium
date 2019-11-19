@@ -42,14 +42,14 @@ std::string ReadMessage(const ScopedMessagePipeHandle& handle) {
 
 class ThreadedRunner : public base::SimpleThread {
  public:
-  explicit ThreadedRunner(const base::Closure& callback)
-      : SimpleThread("ThreadedRunner"), callback_(callback) {}
+  explicit ThreadedRunner(base::OnceClosure callback)
+      : SimpleThread("ThreadedRunner"), callback_(std::move(callback)) {}
   ~ThreadedRunner() override { Join(); }
 
-  void Run() override { callback_.Run(); }
+  void Run() override { std::move(callback_).Run(); }
 
  private:
-  const base::Closure callback_;
+  base::OnceClosure callback_;
 
   DISALLOW_COPY_AND_ASSIGN(ThreadedRunner);
 };
@@ -125,7 +125,7 @@ TEST_F(WaitTest, Basic) {
 TEST_F(WaitTest, DelayedWrite) {
   MessagePipe p;
 
-  ThreadedRunner write_after_delay(base::Bind(
+  ThreadedRunner write_after_delay(base::BindOnce(
       [](ScopedMessagePipeHandle* handle) {
         // Wait a little while, then write a message.
         base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(200));
@@ -145,7 +145,7 @@ TEST_F(WaitTest, DelayedWrite) {
 TEST_F(WaitTest, DelayedPeerClosure) {
   MessagePipe p;
 
-  ThreadedRunner close_after_delay(base::Bind(
+  ThreadedRunner close_after_delay(base::BindOnce(
       [](ScopedMessagePipeHandle* handle) {
         // Wait a little while, then close the handle.
         base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(200));
@@ -164,7 +164,7 @@ TEST_F(WaitTest, DelayedPeerClosure) {
 
 TEST_F(WaitTest, CloseWhileWaiting) {
   MessagePipe p;
-  ThreadedRunner close_after_delay(base::Bind(
+  ThreadedRunner close_after_delay(base::BindOnce(
       [](ScopedMessagePipeHandle* handle) {
         base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(200));
         handle->reset();
@@ -234,7 +234,7 @@ TEST_F(WaitManyTest, CloseWhileWaiting) {
                                   MOJO_HANDLE_SIGNAL_READABLE,
                                   MOJO_HANDLE_SIGNAL_READABLE};
 
-  ThreadedRunner close_after_delay(base::Bind(
+  ThreadedRunner close_after_delay(base::BindOnce(
       [](ScopedMessagePipeHandle* handle) {
         base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(200));
         handle->reset();
@@ -251,7 +251,7 @@ TEST_F(WaitManyTest, CloseWhileWaiting) {
 TEST_F(WaitManyTest, DelayedWrite) {
   MessagePipe p;
 
-  ThreadedRunner write_after_delay(base::Bind(
+  ThreadedRunner write_after_delay(base::BindOnce(
       [](ScopedMessagePipeHandle* handle) {
         // Wait a little while, then write a message.
         base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(200));
@@ -278,7 +278,7 @@ TEST_F(WaitManyTest, DelayedWrite) {
 TEST_F(WaitManyTest, DelayedPeerClosure) {
   MessagePipe p, q;
 
-  ThreadedRunner close_after_delay(base::Bind(
+  ThreadedRunner close_after_delay(base::BindOnce(
       [](ScopedMessagePipeHandle* handle) {
         // Wait a little while, then close the handle.
         base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(200));

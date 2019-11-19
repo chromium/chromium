@@ -8,10 +8,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.UsedByReflection;
+import org.chromium.base.task.PostTask;
 import org.chromium.components.safe_browsing.SafeBrowsingApiHandler;
-import org.chromium.components.safe_browsing.SafeBrowsingApiHandler.Observer;
+import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -55,10 +55,15 @@ public class MockSafeBrowsingApiHandler implements SafeBrowsingApiHandler {
     public void startUriLookup(final long callbackId, String uri, int[] threatsOfInterest) {
         final String metadata = getMetadata(uri, threatsOfInterest);
         // clang-format off
-        ThreadUtils.runOnUiThread(
+        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
                 (Runnable) () -> mObserver.onUrlCheckDone(
                         callbackId, SafeBrowsingResult.SUCCESS, metadata, DEFAULT_CHECK_DELTA_US));
         // clang-format on
+    }
+
+    @Override
+    public boolean startAllowlistLookup(final String uri, int threatType) {
+        return false;
     }
 
     private String getMetadata(String uri, int[] threatsOfInterest) {

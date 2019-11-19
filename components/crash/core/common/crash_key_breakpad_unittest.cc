@@ -12,6 +12,7 @@ namespace crash_reporter {
 class CrashKeyBreakpadTest : public testing::Test {
  public:
   void SetUp() override {
+    internal::ResetCrashKeyStorageForTesting();
     InitializeCrashKeys();
     ASSERT_TRUE(internal::GetCrashKeyStorage());
   }
@@ -39,19 +40,19 @@ TEST_F(CrashKeyBreakpadTest, ConstantAssertions) {
 TEST_F(CrashKeyBreakpadTest, Allocation) {
   const size_t kSentinel = internal::kCrashKeyStorageNumEntries;
 
-  static CrashKeyString<32> key1("short");
+  static CrashKeyStringBreakpad<32> key1("short");
   ASSERT_EQ(1u, GetIndexArrayCount(&key1));
   auto* indexes = GetIndexArray(&key1);
   EXPECT_EQ(kSentinel, indexes[0]);
 
   // An extra index slot is created for lengths equal to the value size.
-  static CrashKeyString<128> key2("extra");
+  static CrashKeyStringBreakpad<128> key2("extra");
   ASSERT_EQ(2u, GetIndexArrayCount(&key2));
   indexes = GetIndexArray(&key2);
   EXPECT_EQ(kSentinel, indexes[0]);
   EXPECT_EQ(kSentinel, indexes[1]);
 
-  static CrashKeyString<395> key3("large");
+  static CrashKeyStringBreakpad<395> key3("large");
   ASSERT_EQ(4u, GetIndexArrayCount(&key3));
   indexes = GetIndexArray(&key3);
   EXPECT_EQ(kSentinel, indexes[0]);
@@ -61,7 +62,7 @@ TEST_F(CrashKeyBreakpadTest, Allocation) {
 }
 
 TEST_F(CrashKeyBreakpadTest, SetClearSingle) {
-  static CrashKeyString<32> key("test-key");
+  static CrashKeyStringBreakpad<32> key("test-key");
 
   EXPECT_FALSE(storage()->GetValueForKey("test-key"));
   EXPECT_EQ(0u, storage()->GetCount());
@@ -87,7 +88,7 @@ TEST_F(CrashKeyBreakpadTest, SetChunked) {
   std::string chunk2(128, 'B');
   std::string chunk3(128, 'C');
 
-  static CrashKeyString<400> key("chunky");
+  static CrashKeyStringBreakpad<400> key("chunky");
 
   EXPECT_EQ(0u, storage()->GetCount());
 
@@ -122,8 +123,8 @@ TEST_F(CrashKeyBreakpadTest, SetChunked) {
 }
 
 TEST_F(CrashKeyBreakpadTest, SetTwoChunked) {
-  static CrashKeyString<600> key1("big");
-  static CrashKeyString<256> key2("small");
+  static CrashKeyStringBreakpad<600> key1("big");
+  static CrashKeyStringBreakpad<256> key2("small");
 
   EXPECT_EQ(0u, storage()->GetCount());
 
@@ -169,7 +170,7 @@ TEST_F(CrashKeyBreakpadTest, SetTwoChunked) {
 }
 
 TEST_F(CrashKeyBreakpadTest, ChunkSingleEntry) {
-  static CrashKeyString<200> crash_key("split");
+  static CrashKeyStringBreakpad<200> crash_key("split");
 
   EXPECT_EQ(0u, storage()->GetCount());
 

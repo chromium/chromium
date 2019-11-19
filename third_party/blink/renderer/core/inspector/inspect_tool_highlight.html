@@ -1,0 +1,832 @@
+<!--
+ Copyright (C) 2012 Google Inc. All rights reserved.
+
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions
+ are met:
+
+ 1.  Redistributions of source code must retain the above copyright
+     notice, this list of conditions and the following disclaimer.
+ 2.  Redistributions in binary form must reproduce the above copyright
+     notice, this list of conditions and the following disclaimer in the
+     documentation and/or other materials provided with the distribution.
+ 3.  Neither the name of Apple Computer, Inc. ("Apple") nor the names of
+     its contributors may be used to endorse or promote products derived
+     from this software without specific prior written permission.
+
+ THIS SOFTWARE IS PROVIDED BY APPLE AND ITS CONTRIBUTORS "AS IS" AND ANY
+ EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ DISCLAIMED. IN NO EVENT SHALL APPLE OR ITS CONTRIBUTORS BE LIABLE FOR ANY
+ DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-->
+<!DOCTYPE html>
+<html>
+<head>
+<script src="inspect_tool_common.js"></script>
+<link rel="stylesheet" href="inspect_tool_common.css">
+<style>
+body {
+    --arrow-width: 15px;
+    --arrow-height: 8px;
+    --shadow-up: 5px;
+    --shadow-down: -5px;
+    --shadow-direction: var(--shadow-up);
+    --arrow-up: polygon(0 0, 100% 0, 50% 100%);
+    --arrow-down: polygon(50% 0, 0 100%, 100% 100%);
+    --arrow: var(--arrow-up);
+}
+
+.px {
+    color: rgb(128, 128, 128);
+}
+
+#element-title {
+    position: absolute;
+    z-index: 10;
+}
+
+/* Material */
+
+.tooltip-content {
+    position: absolute;
+    z-index: 10;
+    -webkit-user-select: none;
+}
+
+.tooltip-content {
+    background-color: white;
+    padding: 5px 8px;
+    border-radius: 3px;
+    box-sizing: border-box;
+    min-width: 100px;
+    max-width: 300px;
+    z-index: 1;
+    background-clip: padding-box;
+    will-change: transform;
+    text-rendering: optimizeLegibility;
+    pointer-events: none;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.35));
+}
+
+.tooltip-content::after {
+    content: "";
+    background: white;
+    width: var(--arrow-width);
+    height: var(--arrow-height);
+    clip-path: var(--arrow);
+    position: absolute;
+    top: var(--arrow-top);
+    left: var(--arrow-left);
+    visibility: var(--arrow-visibility);
+}
+
+.element-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.element-info-header {
+    display: flex;
+    align-items: baseline;
+}
+
+.element-info-body {
+    display: flex;
+    flex-direction: column;
+    padding-top: 2px;
+    margin-top: 2px;
+}
+
+.element-info-row {
+    display: flex;
+    line-height: 19px;
+}
+
+.element-info-contrast-row {
+    border-top: 1px solid #ddd;
+    padding-top: 5px;
+    margin-top: 5px;
+}
+
+.element-info-name {
+    color: #666;
+}
+
+.element-info-gap {
+    flex: auto;
+}
+
+.element-info-value-color {
+    display: flex;
+    color: rgb(48, 57, 66);
+    margin-left: 10px;
+    align-items: baseline;
+}
+
+.element-info-value-contrast {
+    display: flex;
+    text-align: right;
+    color: rgb(48, 57, 66);
+    margin-left: 10px;
+}
+
+.element-info-value-text {
+    text-align: right;
+    color: rgb(48, 57, 66);
+    margin-left: 10px;
+    align-items: baseline;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.color-swatch {
+    display: flex;
+    margin-right: 2px;
+    width: 10px;
+    height: 10px;
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAIAAADZF8uwAAAAGUlEQVQYV2M4gwH+YwCGIasIUwhT25BVBADtzYNYrHvv4gAAAABJRU5ErkJggg==);
+    line-height: 10px;
+}
+
+.color-swatch-inner {
+    flex: auto;
+    border: 1px solid rgba(128, 128, 128, 0.6);
+}
+
+.element-description {
+    flex: 1 1;
+    font-weight: bold;
+    word-wrap: break-word;
+    word-break: break-all;
+}
+
+.dimensions {
+    color: hsl(0, 0%, 45%);
+    text-align: right;
+    margin-left: 10px;
+}
+
+.material-node-width {
+    margin-right: 2px;
+}
+
+.material-node-height {
+    margin-left: 2px;
+}
+
+.material-tag-name {
+    /* Keep this in sync with inspectorSyntaxHighlight.css (--dom-tag-name-color) */
+    color: rgb(136, 18, 128);
+}
+
+.material-class-name, .material-node-id {
+    /* Keep this in sync with inspectorSyntaxHighlight.css (.webkit-html-attribute-value) */
+    color: rgb(26, 26, 166);
+}
+
+.contrast-text {
+    width: 16px;
+    height: 16px;
+    text-align: center;
+    line-height: 16px;
+    margin-right: 8px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    padding: 0 1px;
+}
+
+.a11y-icon {
+    width: 16px;
+    height: 16px;
+    margin-left: 2px;
+    background-repeat: no-repeat;
+}
+
+.a11y-icon-warning {
+    background-image: url("data:image/svg+xml;charset=UTF-8, %3csvg xmlns='http://www.w3.org/2000/svg' width='16px' height='16px' viewBox='0 0 18 18' fill='%23ffc107'%3e%3cpath d='M0 0h18v18H0z' fill='none'/%3e%3cpath d='M.5 16h17L9 1 .5 16zm9.5-2H8v-2h2v2zm0-3H8V7h2v4z'/%3e%3c/svg%3e ");
+}
+
+.a11y-icon-ok {
+    background-image: url("data:image/svg+xml;charset=UTF-8, %3csvg xmlns='http://www.w3.org/2000/svg' width='16px' height='16px' viewBox='0 0 48 48' fill='%2300a000'%3e%3cpath d='M0 0h48v48H0z' fill='none'/%3e%3cpath d='M18 32.34L9.66 24l-2.83 2.83L18 38l24-24-2.83-2.83z'/%3e%3c/svg%3e");
+}
+
+</style>
+
+
+<script>
+const lightGridColor = "rgba(0,0,0,0.2)";
+const darkGridColor = "rgba(0,0,0,0.7)";
+const transparentColor = "rgba(0, 0, 0, 0)";
+const gridBackgroundColor = "rgba(255, 255, 255, 0.8)";
+
+function _drawAxis(context, rulerAtRight, rulerAtBottom)
+{
+    if (window._gridPainted)
+        return;
+    window._gridPainted = true;
+
+    context.save();
+
+    var pageFactor = pageZoomFactor * pageScaleFactor * emulationScaleFactor;
+    var scrollX = window.scrollX * pageScaleFactor;
+    var scrollY = window.scrollY * pageScaleFactor;
+    function zoom(x)
+    {
+        return Math.round(x * pageFactor);
+    }
+    function unzoom(x)
+    {
+        return Math.round(x / pageFactor);
+    }
+
+    var width = canvasWidth / pageFactor;
+    var height = canvasHeight / pageFactor;
+
+    const gridSubStep = 5;
+    const gridStep = 50;
+
+    {
+        // Draw X grid background
+        context.save();
+        context.fillStyle = gridBackgroundColor;
+        if (rulerAtBottom)
+            context.fillRect(0, zoom(height) - 15, zoom(width), zoom(height));
+        else
+            context.fillRect(0, 0, zoom(width), 15);
+
+        // Clip out backgrounds intersection
+        context.globalCompositeOperation = "destination-out";
+        context.fillStyle = "red";
+        if (rulerAtRight)
+            context.fillRect(zoom(width) - 15, 0, zoom(width), zoom(height));
+        else
+            context.fillRect(0, 0, 15, zoom(height));
+        context.restore();
+
+        // Draw Y grid background
+        context.fillStyle = gridBackgroundColor;
+        if (rulerAtRight)
+            context.fillRect(zoom(width) - 15, 0, zoom(width), zoom(height));
+        else
+            context.fillRect(0, 0, 15, zoom(height));
+    }
+
+    context.lineWidth = 1;
+    context.strokeStyle = darkGridColor;
+    context.fillStyle = darkGridColor;
+    {
+        // Draw labels.
+        context.save();
+        context.translate(-scrollX, 0.5 - scrollY);
+        var maxY = height + unzoom(scrollY);
+        for (var y = 2 * gridStep; y < maxY; y += 2 * gridStep) {
+            context.save();
+            context.translate(scrollX, zoom(y));
+            context.rotate(-Math.PI / 2);
+            context.fillText(y, 2, rulerAtRight ? zoom(width) - 7 : 13);
+            context.restore();
+        }
+        context.translate(0.5, -0.5);
+        var maxX = width + unzoom(scrollX);
+        for (var x = 2 * gridStep; x < maxX; x += 2 * gridStep) {
+            context.save();
+            context.fillText(x, zoom(x) + 2, rulerAtBottom ? scrollY + zoom(height) - 7 : scrollY + 13);
+            context.restore();
+        }
+        context.restore();
+    }
+
+    {
+        // Draw vertical grid
+        context.save();
+        if (rulerAtRight) {
+            context.translate(zoom(width), 0);
+            context.scale(-1, 1);
+        }
+        context.translate(-scrollX, 0.5 - scrollY);
+        var maxY = height + unzoom(scrollY);
+        for (var y = gridStep; y < maxY; y += gridStep) {
+            context.beginPath();
+            context.moveTo(scrollX, zoom(y));
+            var markLength = (y % (gridStep * 2)) ? 5 : 8;
+            context.lineTo(scrollX + markLength, zoom(y));
+            context.stroke();
+        }
+        context.strokeStyle = lightGridColor;
+        for (var y = gridSubStep; y < maxY; y += gridSubStep) {
+            if (!(y % gridStep))
+                continue;
+            context.beginPath();
+            context.moveTo(scrollX, zoom(y));
+            context.lineTo(scrollX + gridSubStep, zoom(y));
+            context.stroke();
+        }
+        context.restore();
+    }
+
+    {
+        // Draw horizontal grid
+        context.save();
+        if (rulerAtBottom) {
+            context.translate(0, zoom(height));
+            context.scale(1, -1);
+        }
+        context.translate(0.5 - scrollX, -scrollY);
+        var maxX = width + unzoom(scrollX);
+        for (var x = gridStep; x < maxX; x += gridStep) {
+            context.beginPath();
+            context.moveTo(zoom(x), scrollY);
+            var markLength = (x % (gridStep * 2)) ? 5 : 8;
+            context.lineTo(zoom(x), scrollY + markLength);
+            context.stroke();
+        }
+        context.strokeStyle = lightGridColor;
+        for (var x = gridSubStep; x < maxX; x += gridSubStep) {
+            if (!(x % gridStep))
+                continue;
+            context.beginPath();
+            context.moveTo(zoom(x), scrollY);
+            context.lineTo(zoom(x), scrollY + gridSubStep);
+            context.stroke();
+        }
+        context.restore();
+    }
+
+    context.restore();
+}
+
+function doReset()
+{
+  document.getElementById("tooltip-container").removeChildren();
+  window._gridPainted = false;
+}
+
+/**
+ * @param {!String} hexa
+ * @return {!Array<number>}
+ */
+function parseHexa(hexa) {
+  return hexa.match(/#(\w\w)(\w\w)(\w\w)(\w\w)/).slice(1).map(c => parseInt(c, 16) / 255);
+}
+
+/**
+ * @param {!String} hexa
+ * @return {!Array<number>}
+ */
+function normalizeColorString(hexa) {
+  if (hexa.endsWith("FF"))
+    return hexa.substr(0, 7);
+  const [r, g, b, a] = parseHexa(hexa);
+  return `rgba(${(r * 255).toFixed()}, ${(g * 255).toFixed()}, ${(b * 255).toFixed()}, ${Math.round(a * 100) / 100})`;
+}
+
+/**
+* Calculate the contrast ratio between a foreground and a background color.
+* Returns the ratio to 1, for example for two colors with a contrast ratio of 21:1,
+* this function will return 21.
+* See http://www.w3.org/TR/2008/REC-WCAG20-20081211/#contrast-ratiodef
+* @param {!Array<number>} fgRGBA
+* @param {!Array<number>} bgRGBA
+* @return {number}
+*/
+function contrastRatio(fgRGBA, bgRGBA) {
+    // If we have a semi-transparent background color over an unknown
+    // background, draw the line for the "worst case" scenario: where
+    // the unknown background is the same color as the text.
+    bgRGBA = blendColors(bgRGBA, fgRGBA);
+    const fgLuminance = luminance(blendColors(fgRGBA, bgRGBA));
+    const bgLuminance = luminance(bgRGBA);
+    const result = (Math.max(fgLuminance, bgLuminance) + 0.05) / (Math.min(fgLuminance, bgLuminance) + 0.05);
+    return result.toFixed(2);
+
+    /**
+    * Calculate the luminance of this color using the WCAG algorithm.
+    * See http://www.w3.org/TR/2008/REC-WCAG20-20081211/#relativeluminancedef
+    * @param {!Array<number>} rgba
+    * @return {number}
+    */
+    function luminance(rgba) {
+        const rSRGB = rgba[0];
+        const gSRGB = rgba[1];
+        const bSRGB = rgba[2];
+
+        const r = rSRGB <= 0.03928 ? rSRGB / 12.92 : Math.pow(((rSRGB + 0.055) / 1.055), 2.4);
+        const g = gSRGB <= 0.03928 ? gSRGB / 12.92 : Math.pow(((gSRGB + 0.055) / 1.055), 2.4);
+        const b = bSRGB <= 0.03928 ? bSRGB / 12.92 : Math.pow(((bSRGB + 0.055) / 1.055), 2.4);
+
+        return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+    }
+
+    /**
+    * Combine the two given color according to alpha blending.
+    * @param {!Array<number>} fgRGBA
+    * @param {!Array<number>} bgRGBA
+    * @return {!Array<number>}
+    */
+    function blendColors(fgRGBA, bgRGBA) {
+        const alpha = fgRGBA[3];
+        return [
+          ((1 - alpha) * bgRGBA[0]) + (alpha * fgRGBA[0]),
+          ((1 - alpha) * bgRGBA[1]) + (alpha * fgRGBA[1]),
+          ((1 - alpha) * bgRGBA[2]) + (alpha * fgRGBA[2]),
+          alpha + (bgRGBA[3] * (1 - alpha))
+        ];
+    }
+}
+
+function computeIsLargeFont(contrast) {
+    const boldWeights = new Set(['bold', 'bolder', '600', '700', '800', '900']);
+
+    const fontSizePx = parseFloat(contrast.fontSize.replace('px', ''));
+    const isBold = boldWeights.has(contrast.fontWeight);
+
+    const fontSizePt = fontSizePx * 72 / 96;
+    if (isBold)
+      return fontSizePt >= 14;
+    else
+      return fontSizePt >= 18;
+}
+
+function _createElementDescription(elementInfo)
+{
+    const elementInfoElement = createElement("div", "element-info");
+    const elementInfoHeaderElement = elementInfoElement.createChild("div", "element-info-header");
+    const descriptionElement = elementInfoHeaderElement.createChild("div", "element-description monospace");
+    const tagNameElement = descriptionElement.createChild("span", "material-tag-name");
+    tagNameElement.textContent = elementInfo.tagName;
+    const nodeIdElement = descriptionElement.createChild("span", "material-node-id");
+    const maxLength = 80;
+    nodeIdElement.textContent = elementInfo.idValue ? "#" + elementInfo.idValue.trimEnd(maxLength) : "";
+    nodeIdElement.classList.toggle("hidden", !elementInfo.idValue);
+
+    const classNameElement = descriptionElement.createChild("span", "material-class-name");
+    if (nodeIdElement.textContent.length < maxLength)
+      classNameElement.textContent = (elementInfo.className || "").trimEnd(maxLength - nodeIdElement.textContent.length);
+    classNameElement.classList.toggle("hidden", !elementInfo.className);
+    const dimensionsElement = elementInfoHeaderElement.createChild("div", "dimensions");
+    dimensionsElement.createChild("span", "material-node-width").textContent = Math.round(elementInfo.nodeWidth * 100) / 100;
+    dimensionsElement.createTextChild("\u00d7");
+    dimensionsElement.createChild("span", "material-node-height").textContent = Math.round(elementInfo.nodeHeight * 100) / 100;
+
+    const style = elementInfo.style || {};
+    let elementInfoBodyElement;
+
+    if (elementInfo.isLockedAncestor)
+       addTextRow("Showing the locked ancestor", "");
+
+    const color = style["color"];
+    if (color && color !== "#00000000")
+        addColorRow("Color", color);
+
+    const fontFamily = style["font-family"];
+    const fontSize = style["font-size"];
+    if (fontFamily && fontSize !== "0px")
+        addTextRow("Font", `${fontSize} ${fontFamily}`);
+
+    const bgcolor = style["background-color"];
+    if (bgcolor && bgcolor !== "#00000000")
+        addColorRow("Background", bgcolor);
+
+    const margin = style["margin"];
+    if (margin && margin !== "0px")
+        addTextRow("Margin", margin);
+
+    const padding = style["padding"];
+    if (padding && padding !== "0px")
+        addTextRow("Padding", padding);
+
+    const cbgColor = elementInfo.contrast ? elementInfo.contrast.backgroundColor : null;
+    if (color && color !== "#00000000" && cbgColor && cbgColor !== "#00000000")
+        addContrastRow(style["color"], elementInfo.contrast);
+
+    function addRow(name, rowClassName, valueClassName) {
+        if (!elementInfoBodyElement)
+            elementInfoBodyElement = elementInfoElement.createChild("div", "element-info-body")
+        const rowElement = elementInfoBodyElement.createChild("div", "element-info-row");
+        if (rowClassName)
+            rowElement.classList.add(rowClassName);
+        const nameElement = rowElement.createChild("div", "element-info-name");
+        nameElement.textContent = name;
+        rowElement.createChild("div", "element-info-gap");
+        return rowElement.createChild("div", valueClassName || "");
+    }
+
+    function addTextRow(name, value) {
+        addRow(name, "", "element-info-value-text").createTextChild(value);
+    }
+
+    function addColorRow(name, color) {
+        const valueElement = addRow(name, "", "element-info-value-color");
+        const swatch = valueElement.createChild("div", "color-swatch");
+        const inner = swatch.createChild("div", "color-swatch-inner");
+        inner.style.backgroundColor = color;
+        valueElement.createTextChild(normalizeColorString(color));
+    }
+
+    function addContrastRow(fgColor, contrast) {
+        const ratio = contrastRatio(parseHexa(fgColor), parseHexa(contrast.backgroundColor));
+        const threshold = computeIsLargeFont(contrast) ? 3.0 : 4.5;
+        const valueElement = addRow("Contrast", "element-info-contrast-row", "element-info-value-contrast");
+        const sampleText = valueElement.createChild("div", "contrast-text");
+        sampleText.style.color = fgColor;
+        sampleText.style.backgroundColor = contrast.backgroundColor;
+        sampleText.textContent = "Aa";
+        const valueSpan = valueElement.createChild("span");
+        valueSpan.textContent = Math.round(ratio * 100) / 100;
+        valueElement.createChild("div", ratio < threshold ? "a11y-icon a11y-icon-warning" : "a11y-icon a11y-icon-ok");
+    }
+
+    return elementInfoElement;
+}
+
+function _drawElementTitle(elementInfo, bounds)
+{
+    const tooltipContainer = document.getElementById("tooltip-container");
+    tooltipContainer.removeChildren();
+    _createMaterialTooltip(tooltipContainer, bounds, _createElementDescription(elementInfo), true);
+}
+
+function _createMaterialTooltip(parentElement, bounds, contentElement, withArrow)
+{
+    const tooltipContainer = parentElement.createChild("div");
+    const tooltipContent = tooltipContainer.createChild("div", "tooltip-content");
+    tooltipContent.appendChild(contentElement);
+
+    const titleWidth = tooltipContent.offsetWidth;
+    const titleHeight = tooltipContent.offsetHeight;
+    const arrowHalfWidth = 8;
+    const pageMargin = 2;
+    const arrowWidth = arrowHalfWidth * 2;
+    const arrowInset = arrowHalfWidth + 2;
+
+    const containerMinX = pageMargin + arrowInset;
+    const containerMaxX = canvasWidth - pageMargin - arrowInset - arrowWidth;
+
+    // Left align arrow to the tooltip but ensure it is pointing to the element.
+    // Center align arrow if the inspected element bounds are too narrow.
+    const boundsAreTooNarrow = bounds.maxX - bounds.minX < arrowWidth + 2 * arrowInset;
+    let arrowX;
+    if (boundsAreTooNarrow) {
+        arrowX = (bounds.minX + bounds.maxX) * 0.5 - arrowHalfWidth;
+    } else {
+        const xFromLeftBound = bounds.minX + arrowInset;
+        const xFromRightBound = bounds.maxX - arrowInset - arrowWidth;
+        if (xFromLeftBound > containerMinX && xFromLeftBound < containerMaxX)
+            arrowX = xFromLeftBound;
+        else
+            arrowX = Number.constrain(containerMinX, xFromLeftBound, xFromRightBound);
+    }
+    // Hide arrow if element is completely off the sides of the page.
+    const arrowHidden = !withArrow || arrowX < containerMinX || arrowX > containerMaxX;
+
+    let boxX = arrowX - arrowInset;
+    boxX = Number.constrain(boxX, pageMargin, canvasWidth - titleWidth - pageMargin);
+
+    let boxY = bounds.minY - arrowHalfWidth - titleHeight;
+    let onTop = true;
+    if (boxY < 0) {
+        boxY = Math.min(canvasHeight - titleHeight, bounds.maxY + arrowHalfWidth);
+        onTop = false;
+    } else if (bounds.minY > canvasHeight) {
+        boxY = canvasHeight - arrowHalfWidth - titleHeight;
+    }
+
+    // If tooltip intersects with the bounds, hide it.
+    // Allow bounds to contain the box though for the large elements like <body>.
+    const includes = boxX >= bounds.minX && boxX + titleWidth <= bounds.maxX &&
+      boxY >= bounds.minY && boxY + titleHeight <= bounds.maxY;
+    const overlaps = boxX < bounds.maxX && boxX + titleWidth > bounds.minX &&
+        boxY < bounds.maxY && boxY + titleHeight > bounds.minY;
+    if (overlaps && !includes) {
+      tooltipContent.style.display = 'none';
+      return;
+    }
+
+    tooltipContent.style.top = boxY + "px";
+    tooltipContent.style.left = boxX + "px";
+    tooltipContent.style.setProperty('--arrow-visibility', (arrowHidden || includes) ? 'hidden' : 'visible');
+    if (arrowHidden)
+        return;
+
+    tooltipContent.style.setProperty('--arrow', onTop ? 'var(--arrow-up)' : 'var(--arrow-down)');
+    tooltipContent.style.setProperty('--shadow-direction', onTop ? 'var(--shadow-up)' : 'var(--shadow-down)');
+    tooltipContent.style.setProperty('--arrow-top', (onTop ? titleHeight : -arrowHalfWidth) + 'px');
+    tooltipContent.style.setProperty('--arrow-left', (arrowX - boxX) + 'px');
+}
+
+function _drawRulers(context, bounds, rulerAtRight, rulerAtBottom)
+{
+    context.save();
+    var width = canvasWidth;
+    var height = canvasHeight;
+    context.strokeStyle = "rgba(128, 128, 128, 0.3)";
+    context.lineWidth = 1;
+    context.translate(0.5, 0.5);
+
+    if (rulerAtRight) {
+        for (var y in bounds.rightmostXForY) {
+            context.beginPath();
+            context.moveTo(width, y);
+            context.lineTo(bounds.rightmostXForY[y], y);
+            context.stroke();
+        }
+    } else {
+        for (var y in bounds.leftmostXForY) {
+            context.beginPath();
+            context.moveTo(0, y);
+            context.lineTo(bounds.leftmostXForY[y], y);
+            context.stroke();
+        }
+    }
+
+    if (rulerAtBottom) {
+        for (var x in bounds.bottommostYForX) {
+            context.beginPath();
+            context.moveTo(x, height);
+            context.lineTo(x, bounds.topmostYForX[x]);
+            context.stroke();
+        }
+    } else {
+        for (var x in bounds.topmostYForX) {
+            context.beginPath();
+            context.moveTo(x, 0);
+            context.lineTo(x, bounds.topmostYForX[x]);
+            context.stroke();
+        }
+    }
+
+    context.restore();
+}
+
+function buildPath(commands, bounds) {
+    var commandsIndex = 0;
+
+    function extractPoints(count)
+    {
+        var points = [];
+
+        for (var i = 0; i < count; ++i) {
+            var x = Math.round(commands[commandsIndex++] * emulationScaleFactor);
+            bounds.maxX = Math.max(bounds.maxX, x);
+            bounds.minX = Math.min(bounds.minX, x);
+
+            var y = Math.round(commands[commandsIndex++] * emulationScaleFactor);
+            bounds.maxY = Math.max(bounds.maxY, y);
+            bounds.minY = Math.min(bounds.minY, y);
+
+            bounds.leftmostXForY[y] = Math.min(bounds.leftmostXForY[y] || Number.MAX_VALUE, x);
+            bounds.rightmostXForY[y] = Math.max(bounds.rightmostXForY[y] || Number.MIN_VALUE, x);
+            bounds.topmostYForX[x] = Math.min(bounds.topmostYForX[x] || Number.MAX_VALUE, y);
+            bounds.bottommostYForX[x] = Math.max(bounds.bottommostYForX[x] || Number.MIN_VALUE, y);
+            points.push(x, y);
+        }
+        return points;
+    }
+
+    var commandsLength = commands.length;
+    var path = new Path2D();
+    while (commandsIndex < commandsLength) {
+        switch (commands[commandsIndex++]) {
+        case "M":
+            path.moveTo.apply(path, extractPoints(1));
+            break;
+        case "L":
+            path.lineTo.apply(path, extractPoints(1));
+            break;
+        case "C":
+            path.bezierCurveTo.apply(path, extractPoints(3));
+            break;
+        case "Q":
+            path.quadraticCurveTo.apply(path, extractPoints(2));
+            break;
+        case "Z":
+            path.closePath();
+            break;
+        }
+    }
+    path.closePath();
+    return path;
+}
+
+function drawPath(context, commands, fillColor, outlineColor, bounds)
+{
+    context.save();
+    const path = buildPath(commands, bounds);
+    if (fillColor) {
+        context.fillStyle = fillColor;
+        context.fill(path);
+    }
+    if (outlineColor) {
+        context.lineWidth = 2;
+        context.strokeStyle = outlineColor;
+        context.stroke(path);
+    }
+    context.restore();
+    return path;
+}
+
+function emptyBounds()
+{
+    var bounds = {
+        minX: Number.MAX_VALUE,
+        minY: Number.MAX_VALUE,
+        maxX: Number.MIN_VALUE,
+        maxY: Number.MIN_VALUE,
+        leftmostXForY: {},
+        rightmostXForY: {},
+        topmostYForX: {},
+        bottommostYForX: {}
+    };
+    return bounds;
+}
+
+function _drawLayoutGridHighlight(highlight, context)
+{
+    context.save();
+    context.translate(0.5, 0.5);
+    context.setLineDash([3, 3]);
+    context.lineWidth = 0;
+    context.strokeStyle = highlight.color;
+    context.stroke(buildPath(highlight.cells, emptyBounds()));
+    context.restore();
+}
+
+function clipLayoutGridCells(highlight) {
+    if (highlight.gridInfo) {
+        for (const grid of highlight.gridInfo) {
+            if (!grid.isPrimaryGrid)
+                continue;
+            const path = buildPath(grid.cells, emptyBounds());
+            context.clip(path);
+        }
+    }
+}
+
+function drawHighlight(highlight, context)
+{
+    context = context || window.context;
+    context.save();
+
+    var bounds = emptyBounds();
+
+    for (var paths = highlight.paths.slice(); paths.length;) {
+        var path = paths.pop();
+        // Clip content quad using the data grid cells info to create white stripes.
+        context.save();
+        if (path.name === "content")
+            clipLayoutGridCells(highlight);
+        drawPath(context, path.path, path.fillColor, path.outlineColor, bounds);
+        if (paths.length) {
+            context.globalCompositeOperation = "destination-out";
+            drawPath(context, paths[paths.length - 1].path, "red", null, bounds);
+        }
+        context.restore();
+    }
+    context.restore();
+
+    context.save();
+
+    var rulerAtRight = highlight.paths.length && highlight.showRulers && bounds.minX < 20 && bounds.maxX + 20 < canvasWidth;
+    var rulerAtBottom = highlight.paths.length && highlight.showRulers && bounds.minY < 20 && bounds.maxY + 20 < canvasHeight;
+
+    if (highlight.showRulers)
+        _drawAxis(context, rulerAtRight, rulerAtBottom);
+
+    if (highlight.paths.length) {
+        if (highlight.showExtensionLines)
+            _drawRulers(context, bounds, rulerAtRight, rulerAtBottom);
+
+        if (highlight.elementInfo)
+           _drawElementTitle(highlight.elementInfo, bounds);
+    }
+    if (highlight.gridInfo) {
+        for (var grid of highlight.gridInfo)
+            _drawLayoutGridHighlight(grid, context);
+    }
+    context.restore();
+
+    return { bounds: bounds };
+}
+
+function test() {
+    document.body.classList.add("platform-mac");
+    reset(window);
+    drawHighlight(
+        {"paths":[{"path":["M",122,133.796875,"L",822,133.796875,"L",822,208.796875,"L",122,208.796875,"Z"], "fillColor":"rgba(111, 168, 220, 0.658823529411765)","name":"content"},
+        {"path":["M",122,113.796875,"L",822,113.796875,"L",822,228.796875,"L",122,228.796875,"Z"],"fillColor":"rgba(246, 178, 107, 0.66)","name":"margin"}],"showRulers":false,"showExtensionLines":false,
+        "elementInfo":{"tagName":"button","className":"class.name", "idValue":"download-hero","nodeWidth":"700","nodeHeight":"75","style":{"color":"#FFFFFFFF","font-family":"\"Product Sans\", \"Open Sans\", Roboto, Arial, \"Product Sans\", \"Open Sans\", Roboto, Arial","font-size":"20px","line-height":"25px","padding":"0px","margin":"20px 0px","background-color":"#00000000"},"contrast":{"fontSize":"20px","fontWeight":"400","backgroundColor":"#F9B826BF"}}, showExtensionLines: true, showRulers: true});
+}
+
+</script>
+</head>
+<body class="fill">
+  <canvas id="canvas" class="fill"></canvas>
+  <div id="tooltip-container"></div>
+</body>
+</html>

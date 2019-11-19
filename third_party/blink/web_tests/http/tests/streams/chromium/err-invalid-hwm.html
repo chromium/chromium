@@ -15,7 +15,8 @@ test(() => {
   } catch (e) {
     assert_equals(
         e.message,
-        'A queueing strategy\'s highWaterMark property must be a nonnegative,' +
+        'Failed to construct \'ReadableStream\': ' +
+        'A queuing strategy\'s highWaterMark property must be a nonnegative,' +
             ' non-NaN number',
         'message should be relevant');
   }
@@ -29,7 +30,8 @@ test(() => {
   } catch (e) {
     assert_equals(
         e.message,
-        'A queueing strategy\'s highWaterMark property must be a nonnegative,' +
+        'Failed to construct \'WritableStream\': ' +
+        'A queuing strategy\'s highWaterMark property must be a nonnegative,' +
             ' non-NaN number',
         'message should be relevant');
   }

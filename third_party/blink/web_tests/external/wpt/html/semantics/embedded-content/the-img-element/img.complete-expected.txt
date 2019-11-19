@@ -1,9 +1,20 @@
 This is a testharness.js-based test.
 PASS img src and srcset omitted
-PASS img src and srcset empty
+PASS img src and srcset omitted on newly-created image
+FAIL img src and srcset omitted on newly-created-and-inserted image assert_true: expected true got false
+FAIL img src and srcset omitted on newly-created-via-innerHTML image assert_true: expected true got false
+PASS img src empty and srcset omitted
+FAIL img src empty and srcset omitted on newly-created image assert_true: expected true got false
+FAIL img src empty and srcset omitted on newly-created-and-inserted image assert_true: expected true got false
+FAIL img src empty and srcset omitted on newly-created-via-innerHTML image assert_true: expected true got false
+FAIL img src and srcset omitted on image after it started a load assert_true: expected true got false
 PASS async src complete test
 PASS async srcset complete test
-FAIL IDL attribute complete returns true when image resource has been fetched but not run yet & image is not in broken state assert_unreached: .complete didn't change to true Reached unreachable code
+PASS IDL attribute complete cannot "randomly" change during a task
 PASS async src broken test
+FAIL async src removal test assert_true: Should be complete, since we removed the src expected true got false
+FAIL async srcset removal test assert_true: Should be complete, since we removed the srcset expected true got false
+PASS async src available image lookup test
+PASS async pending request test
 Harness: the test ran to completion.
 

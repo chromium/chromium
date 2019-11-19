@@ -12,6 +12,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 
 /**
  * Helper class for publishing download files to the public download collection.
@@ -73,7 +74,7 @@ public class DownloadCollectionBridge {
      * @param filePath File path of the download.
      * @return True if the download needs to be published, or false otherwise.
      */
-    protected boolean needToPublishDownload(final String filePath) {
+    public boolean needToPublishDownload(final String filePath) {
         return false;
     }
 
@@ -116,10 +117,12 @@ public class DownloadCollectionBridge {
     }
 
     /**
-     * @return whether a download with the file name exists.
+     * Gets the content URI of the download that has the given file name.
+     * @param pendingUri name of the file.
+     * @return Uri of the download with the given display name.
      */
-    protected boolean checkFileNameExists(final String fileName) {
-        return false;
+    public Uri getDownloadUriForFileName(final String fileName) {
+        return null;
     }
 
     /**
@@ -148,6 +151,28 @@ public class DownloadCollectionBridge {
     }
 
     /**
+     * @return whether download collection is supported.
+     */
+    protected boolean isDownloadCollectionSupported() {
+        return false;
+    }
+
+    /**
+     *  Refreshes the expiration date so the unpublished download won't get abandoned.
+     *  @param intermediateUri The intermediate Uri that is not yet published.
+     */
+    protected void refreshExpirationDate(final String intermediateUri) {}
+
+    /**
+     * Gets the display name for a download.
+     * @param downloadUri Uri of the download.
+     * @return the display name of the download.
+     */
+    protected String getDisplayNameForUri(final String downloadUri) {
+        return null;
+    }
+
+    /**
      * Creates an intermediate URI for download to be written into. On completion, call
      * nativeOnCreateIntermediateUriResult() with |callbackId|.
      * @param fileName Name of the file.
@@ -156,7 +181,7 @@ public class DownloadCollectionBridge {
      * @param referrer Referrer of the download.
      */
     @CalledByNative
-    private static String createIntermediateUriForPublish(final String fileName,
+    public static String createIntermediateUriForPublish(final String fileName,
             final String mimeType, final String originalUrl, final String referrer) {
         Uri uri = getDownloadCollectionBridge().createPendingSession(
                 fileName, mimeType, originalUrl, referrer);
@@ -180,7 +205,7 @@ public class DownloadCollectionBridge {
      * @return True on success, or false otherwise.
      */
     @CalledByNative
-    private static boolean copyFileToIntermediateUri(
+    public static boolean copyFileToIntermediateUri(
             final String sourcePath, final String destinationUri) {
         return getDownloadCollectionBridge().copyFileToPendingUri(sourcePath, destinationUri);
     }
@@ -190,7 +215,7 @@ public class DownloadCollectionBridge {
      * @param uri Intermediate Uri that is going to be deleted.
      */
     @CalledByNative
-    private static void deleteIntermediateUri(final String uri) {
+    public static void deleteIntermediateUri(final String uri) {
         getDownloadCollectionBridge().abandonPendingUri(uri);
     }
 
@@ -200,7 +225,7 @@ public class DownloadCollectionBridge {
      * @return Uri of the published file.
      */
     @CalledByNative
-    private static String publishDownload(final String intermediateUri) {
+    public static String publishDownload(final String intermediateUri) {
         Uri uri = getDownloadCollectionBridge().publishCompletedDownload(intermediateUri);
         return uri == null ? null : uri.toString();
     }
@@ -216,6 +241,7 @@ public class DownloadCollectionBridge {
             ContentResolver resolver = ContextUtils.getApplicationContext().getContentResolver();
             ParcelFileDescriptor pfd =
                     resolver.openFileDescriptor(Uri.parse(intermediateUri), "rw");
+            getDownloadCollectionBridge().refreshExpirationDate(intermediateUri);
             return pfd.detachFd();
         } catch (Exception e) {
             Log.e(TAG, "Cannot open intermediate Uri.", e);
@@ -228,7 +254,8 @@ public class DownloadCollectionBridge {
      */
     @CalledByNative
     private static boolean fileNameExists(final String fileName) {
-        return getDownloadCollectionBridge().checkFileNameExists(fileName);
+        Uri uri = getDownloadCollectionBridge().getDownloadUriForFileName(fileName);
+        return uri != null;
     }
 
     /**
@@ -257,5 +284,34 @@ public class DownloadCollectionBridge {
     @CalledByNative
     private static DisplayNameInfo[] getDisplayNamesForDownloads() {
         return getDownloadCollectionBridge().getDisplayNames();
+    }
+
+    /**
+     * @return whether download collection is supported.
+     */
+    public static boolean supportsDownloadCollection() {
+        return getDownloadCollectionBridge().isDownloadCollectionSupported();
+    }
+
+    /**
+     * @return number of days for an intermediate download to expire.
+     */
+    public static int getExpirationDurationInDays() {
+        return DownloadCollectionBridgeJni.get().getExpirationDurationInDays();
+    }
+
+    /**
+     * Gets the display name for a download.
+     * @param downloadUri Uri of the download.
+     * @return the display name of the download.
+     */
+    @CalledByNative
+    private static String getDisplayName(final String downloadUri) {
+        return getDownloadCollectionBridge().getDisplayNameForUri(downloadUri);
+    }
+
+    @NativeMethods
+    interface Natives {
+        int getExpirationDurationInDays();
     }
 }

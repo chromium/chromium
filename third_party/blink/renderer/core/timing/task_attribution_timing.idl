@@ -3,13 +3,12 @@
 // found in the LICENSE file.
 
 // https://w3c.github.io/longtasks/#sec-TaskAttributionTiming
+[Exposed=Window]
 interface TaskAttributionTiming : PerformanceEntry {
-    [RuntimeEnabled=LongTaskV2] readonly attribute DOMString scriptURL;
     readonly attribute DOMString containerType;
     readonly attribute DOMString containerSrc;
     readonly attribute DOMString containerId;
     readonly attribute DOMString containerName;
 
-    // TODO(peria): toJSON is not in spec. https://crbug.com/736332
     [CallWith=ScriptState, ImplementedAs=toJSONForBinding] object toJSON();
 };

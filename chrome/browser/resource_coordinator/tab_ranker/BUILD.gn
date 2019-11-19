@@ -14,6 +14,8 @@ source_set("tab_ranker") {
   sources = [
     "native_inference.cc",
     "native_inference.h",
+    "pairwise_inference.cc",
+    "pairwise_inference.h",
     "tab_features.cc",
     "tab_score_predictor.cc",
     "window_features.cc",
@@ -22,12 +24,12 @@ source_set("tab_ranker") {
   deps = [
     "//base",
     "//chrome/browser:resources",
+    "//chrome/browser/resource_coordinator:tab_manager_features",
     "//chrome/browser/resource_coordinator:tab_metrics_event_proto",
     "//components/assist_ranker",
     "//components/assist_ranker/proto",
     "//components/sessions",
     "//services/metrics/public/cpp:ukm_builders",
-    "//ui/base",
   ]
 }
 

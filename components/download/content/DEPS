@@ -5,4 +5,5 @@ include_rules = [
   "+content/public/test",
   "+base",
   "+net",
+  "+services/network/public/cpp/shared_url_loader_factory.h",
 ]

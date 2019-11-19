@@ -1,3 +1,6 @@
 file://cloud_print/OWNERS
 
+per-file service_utility_process_host_receiver_bindings.cc=set noparent
+per-file service_utility_process_host_receiver_bindings.cc=file://ipc/SECURITY_OWNERS
+
 # COMPONENT: Services>CloudPrint

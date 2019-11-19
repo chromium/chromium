@@ -1,0 +1,21 @@
+This is a testharness.js-based test.
+FAIL same-origin document opening popup to http://web-platform.test:8001 with COOP: "" assert_equals: expected "" but got "same-origin_to_SAME_ORIGIN_"
+FAIL same-origin document opening popup to http://web-platform.test:8001 with COOP: "jibberish" assert_equals: expected "" but got "same-origin_to_SAME_ORIGIN_jibberish"
+FAIL same-origin document opening popup to http://web-platform.test:8001 with COOP: "same-site" assert_equals: expected "" but got "same-origin_to_SAME_ORIGIN_same-site"
+FAIL same-origin document opening popup to http://web-platform.test:8001 with COOP: "same-site unsafe-allow-outgoing" assert_equals: expected "" but got "same-origin_to_SAME_ORIGIN_same-site-unsafe-allow-outgoing"
+PASS same-origin document opening popup to http://web-platform.test:8001 with COOP: "same-origin"
+FAIL same-origin document opening popup to http://web-platform.test:8001 with COOP: "same-origin unsafe-allow-outgoing" assert_equals: expected "" but got "same-origin_to_SAME_ORIGIN_same-origin-unsafe-allow-outgoing"
+FAIL same-origin document opening popup to http://www1.web-platform.test:8001 with COOP: "" assert_equals: expected "" but got "same-origin_to_SAME_SITE_"
+FAIL same-origin document opening popup to http://www1.web-platform.test:8001 with COOP: "jibberish" assert_equals: expected "" but got "same-origin_to_SAME_SITE_jibberish"
+FAIL same-origin document opening popup to http://www1.web-platform.test:8001 with COOP: "same-site" assert_equals: expected "" but got "same-origin_to_SAME_SITE_same-site"
+FAIL same-origin document opening popup to http://www1.web-platform.test:8001 with COOP: "same-site unsafe-allow-outgoing" assert_equals: expected "" but got "same-origin_to_SAME_SITE_same-site-unsafe-allow-outgoing"
+FAIL same-origin document opening popup to http://www1.web-platform.test:8001 with COOP: "same-origin" assert_equals: expected "" but got "same-origin_to_SAME_SITE_same-origin"
+FAIL same-origin document opening popup to http://www1.web-platform.test:8001 with COOP: "same-origin unsafe-allow-outgoing" assert_equals: expected "" but got "same-origin_to_SAME_SITE_same-origin-unsafe-allow-outgoing"
+FAIL same-origin document opening popup to http://not-web-platform.test:8001 with COOP: "" assert_equals: expected "" but got "same-origin_to_CROSS_ORIGIN_"
+FAIL same-origin document opening popup to http://not-web-platform.test:8001 with COOP: "jibberish" assert_equals: expected "" but got "same-origin_to_CROSS_ORIGIN_jibberish"
+FAIL same-origin document opening popup to http://not-web-platform.test:8001 with COOP: "same-site" assert_equals: expected "" but got "same-origin_to_CROSS_ORIGIN_same-site"
+FAIL same-origin document opening popup to http://not-web-platform.test:8001 with COOP: "same-site unsafe-allow-outgoing" assert_equals: expected "" but got "same-origin_to_CROSS_ORIGIN_same-site-unsafe-allow-outgoing"
+FAIL same-origin document opening popup to http://not-web-platform.test:8001 with COOP: "same-origin" assert_equals: expected "" but got "same-origin_to_CROSS_ORIGIN_same-origin"
+FAIL same-origin document opening popup to http://not-web-platform.test:8001 with COOP: "same-origin unsafe-allow-outgoing" assert_equals: expected "" but got "same-origin_to_CROSS_ORIGIN_same-origin-unsafe-allow-outgoing"
+Harness: the test ran to completion.
+

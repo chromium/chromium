@@ -8,56 +8,33 @@ import("//media/gpu/args.gni")
 source_set("helpers") {
   testonly = true
   sources = [
-    "video_accelerator_unittest_helpers.h",
+    "image.cc",
+    "image.h",
+    "video_frame_helpers.cc",
+    "video_frame_helpers.h",
+    "video_test_environment.cc",
+    "video_test_environment.h",
   ]
   deps = [
     "//base:base",
-  ]
-}
-
-source_set("render_helpers") {
-  testonly = true
-  sources = [
-    "rendering_helper.cc",
-    "rendering_helper.h",
-    "texture_ref.cc",
-    "texture_ref.h",
-    "video_frame_helpers.cc",
-    "video_frame_helpers.h",
-  ]
-  deps = [
+    "//base/test:test_config",
+    "//base/test:test_support",
+    "//gpu/ipc/common",
+    "//media:test_support",
     "//media/gpu",
+    "//mojo/core/embedder:embedder",
     "//third_party/libyuv",
-    "//ui/gl/init:init",
   ]
+  public_deps = [
+    "//testing/gtest",
+  ]
+
   if (use_ozone) {
     deps += [ "//ui/ozone" ]
   }
-}
-
-source_set("frame_mapper") {
-  testonly = true
-  sources = [
-    "video_frame_mapper.h",
-    "video_frame_mapper_factory.cc",
-    "video_frame_mapper_factory.h",
-  ]
-  if (is_chromeos) {
-    sources += [
-      "generic_dmabuf_video_frame_mapper.cc",
-      "generic_dmabuf_video_frame_mapper.h",
-    ]
-    if (use_vaapi) {
-      sources += [
-        "vaapi_dmabuf_video_frame_mapper.cc",
-        "vaapi_dmabuf_video_frame_mapper.h",
-      ]
-    }
+  if (use_vaapi) {
+    deps += [ "//media/gpu/vaapi" ]
   }
-
-  deps = [
-    "//media/gpu",
-  ]
 }
 
 source_set("frame_validator") {
@@ -65,9 +42,6 @@ source_set("frame_validator") {
   sources = [
     "video_frame_validator.cc",
     "video_frame_validator.h",
-  ]
-  public_deps = [
-    ":frame_mapper",
   ]
   deps = [
     ":decode_helpers",
@@ -83,8 +57,7 @@ source_set("frame_file_writer") {
     "video_frame_file_writer.h",
   ]
   deps = [
-    ":frame_mapper",
-    ":render_helpers",
+    ":helpers",
     "//media/gpu",
     "//ui/gfx/codec:codec",
   ]
@@ -98,7 +71,6 @@ source_set("decode_helpers") {
   ]
   public_deps = [
     ":helpers",
-    ":render_helpers",
   ]
   deps = [
     "//media/gpu",
@@ -109,103 +81,79 @@ source_set("decode_helpers") {
   }
 }
 
-source_set("encode_helpers") {
+static_library("video_player_thumbnail_renderer") {
   testonly = true
   sources = [
-    "video_encode_accelerator_unittest_helpers.cc",
-    "video_encode_accelerator_unittest_helpers.h",
-  ]
-  public_deps = [
-    ":helpers",
-    ":render_helpers",
+    "video_player/frame_renderer.h",
+    "video_player/frame_renderer_thumbnail.cc",
+    "video_player/frame_renderer_thumbnail.h",
   ]
   deps = [
-    ":frame_mapper",
+    ":decode_helpers",
+    "//gpu/command_buffer/common",
     "//media/gpu",
+    "//ui/gfx/codec:codec",
+    "//ui/gl:gl",
+    "//ui/gl/init:init",
   ]
 }
 
-# TODO(dstaessens@) Make this work on other platforms too.
-if (is_chromeos) {
-  static_library("video_player_thumbnail_renderer") {
-    testonly = true
-    sources = [
-      "video_player/frame_renderer.h",
-      "video_player/frame_renderer_thumbnail.cc",
-      "video_player/frame_renderer_thumbnail.h",
-    ]
-    deps = [
-      ":decode_helpers",
-      "//gpu/command_buffer/common",
-      "//media/gpu",
-      "//ui/gfx/codec:codec",
-      "//ui/gl:gl",
-      "//ui/gl/init:init",
-    ]
-  }
-
-  static_library("video_player") {
-    testonly = true
-    sources = [
-      "video_player/frame_renderer.h",
-      "video_player/frame_renderer_dummy.cc",
-      "video_player/frame_renderer_dummy.h",
-      "video_player/video.cc",
-      "video_player/video.h",
-      "video_player/video_collection.cc",
-      "video_player/video_collection.h",
-      "video_player/video_decoder_client.cc",
-      "video_player/video_decoder_client.h",
-      "video_player/video_player.cc",
-      "video_player/video_player.h",
-    ]
-    deps = [
-      ":decode_helpers",
-      "//media/gpu",
-    ]
-  }
-
-  static_library("video_player_test_environment") {
-    testonly = true
-    sources = [
-      "video_player/video_player_test_environment.cc",
-      "video_player/video_player_test_environment.h",
-    ]
-    data = [
-      "//media/test/data/",
-    ]
-    deps = [
-      ":video_player",
-      "//base/test:test_config",
-      "//base/test:test_support",
-      "//media/gpu",
-      "//testing/gtest:gtest",
-    ]
-    if (use_ozone) {
-      deps += [ "//ui/ozone" ]
-    }
-    if (use_vaapi) {
-      deps += [ "//media/gpu/vaapi" ]
-    }
-  }
-}
-
-static_library("image_processor") {
+static_library("video_player") {
   testonly = true
   sources = [
-    "image.cc",
-    "image.h",
-    "image_processor/image_processor_client.cc",
-    "image_processor/image_processor_client.h",
+    "video_player/frame_renderer.h",
+    "video_player/frame_renderer_dummy.cc",
+    "video_player/frame_renderer_dummy.h",
+    "video_player/test_vda_video_decoder.cc",
+    "video_player/test_vda_video_decoder.h",
+    "video_player/video.cc",
+    "video_player/video.h",
+    "video_player/video_decoder_client.cc",
+    "video_player/video_decoder_client.h",
+    "video_player/video_player.cc",
+    "video_player/video_player.h",
   ]
   deps = [
-    ":render_helpers",
-    "//media:test_support",
+    ":decode_helpers",
     "//media/gpu",
-    "//testing/gtest",
-    "//third_party/libyuv",
+    "//testing/gtest:gtest",
+  ]
+}
+
+static_library("video_player_test_environment") {
+  testonly = true
+  sources = [
+    "video_player/video_player_test_environment.cc",
+    "video_player/video_player_test_environment.h",
   ]
   data = [
     "//media/test/data/",
   ]
+  deps = [
+    ":frame_file_writer",
+    ":helpers",
+    ":video_player",
+    "//media/gpu",
+  ]
+}
+
+if (use_vaapi || use_v4l2_codec) {
+  static_library("image_processor") {
+    testonly = true
+    sources = [
+      "image_processor/image_processor_client.cc",
+      "image_processor/image_processor_client.h",
+    ]
+    deps = [
+      ":helpers",
+      "//media:test_support",
+      "//media/gpu",
+      "//media/gpu/chromeos",
+      "//testing/gtest",
+      "//third_party/libyuv",
+    ]
+    data = [
+      "//media/test/data/",
+    ]
+  }
 }

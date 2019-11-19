@@ -20,7 +20,7 @@
         android:strokeWidth="1"
         android:pathData="M 0 0 H 16 V 16 H 0 V 0 Z" />
     <path
-        android:fillColor="@color/google_red_700"
+        android:fillColor="@color/google_red_600"
         android:fillType="evenOdd"
         android:pathData="M0.5,14l15,0l-7.5,-13l-7.5,13l0,0zm8.5,-2l-2,0l0,-2l2,0l0,2l0,0zm0,-3l-2,0l0,-3l2,0l0,3l0,0z" />
 </vector>

@@ -10,7 +10,6 @@ generate_jni("jni_headers") {
     "java/src/org/chromium/components/language/AndroidLanguageMetricsBridge.java",
     "java/src/org/chromium/components/language/GeoLanguageProviderBridge.java",
   ]
-  jni_package = "components/language"
 }
 
 source_set("language_bridge") {
@@ -33,5 +32,7 @@ android_library("language_bridge_java") {
 
   deps = [
     "//base:base_java",
+    "//base:jni_java",
   ]
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }

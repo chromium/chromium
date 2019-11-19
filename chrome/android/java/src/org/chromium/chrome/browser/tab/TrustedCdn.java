@@ -4,9 +4,10 @@
 
 package org.chromium.chrome.browser.tab;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.ChromeActivity;
 import org.chromium.chrome.browser.ssl.SecurityStateModel;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
@@ -50,23 +51,23 @@ public class TrustedCdn extends TabWebContentsUserData {
     private TrustedCdn(Tab tab) {
         super(tab);
         mTab = tab;
-        mNativeTrustedCdn = nativeInit();
+        mNativeTrustedCdn = TrustedCdnJni.get().init(TrustedCdn.this);
     }
 
     @Override
     public void initWebContents(WebContents webContents) {
-        nativeSetWebContents(mNativeTrustedCdn, webContents);
+        TrustedCdnJni.get().setWebContents(mNativeTrustedCdn, TrustedCdn.this, webContents);
     }
 
     @Override
     public void cleanupWebContents(WebContents webContents) {
-        nativeResetWebContents(mNativeTrustedCdn);
+        TrustedCdnJni.get().resetWebContents(mNativeTrustedCdn, TrustedCdn.this);
         mPublisherUrl = null;
     }
 
     @Override
     public void destroyInternal() {
-        nativeOnDestroyed(mNativeTrustedCdn);
+        TrustedCdnJni.get().onDestroyed(mNativeTrustedCdn, TrustedCdn.this);
     }
 
     @Nullable
@@ -87,8 +88,11 @@ public class TrustedCdn extends TabWebContentsUserData {
         mPublisherUrl = url;
     }
 
-    private native long nativeInit();
-    private native void nativeOnDestroyed(long nativeTrustedCdn);
-    private native void nativeSetWebContents(long nativeTrustedCdn, WebContents webContents);
-    private native void nativeResetWebContents(long nativeTrustedCdn);
+    @NativeMethods
+    interface Natives {
+        long init(TrustedCdn caller);
+        void onDestroyed(long nativeTrustedCdn, TrustedCdn caller);
+        void setWebContents(long nativeTrustedCdn, TrustedCdn caller, WebContents webContents);
+        void resetWebContents(long nativeTrustedCdn, TrustedCdn caller);
+    }
 }

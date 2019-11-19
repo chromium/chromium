@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser;
 
-import static org.chromium.base.test.util.ScalableTimeout.scaleTimeout;
-
 import android.os.Environment;
 import android.support.test.InstrumentationRegistry;
 import android.text.TextUtils;
@@ -88,7 +86,7 @@ public class PopularUrlsTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         if (mStatus != null) {
             mStatus.cleanUp();
         }
@@ -229,10 +227,8 @@ public class PopularUrlsTest {
      * @param url the page URL
      * @param failureWriter the writer where failures/crashes/timeouts are logged.
      * @throws IOException unable to read from input or write to writer.
-     * @throws InterruptedException the thread was interrupted waiting for the page to load.
      */
-    public void loadUrl(final String url, OutputStreamWriter failureWriter)
-            throws InterruptedException, IOException {
+    public void loadUrl(final String url, OutputStreamWriter failureWriter) throws IOException {
         Tab tab = mActivityTestRule.getActivity().getActivityTab();
         final CallbackHelper loadedCallback = new CallbackHelper();
         final CallbackHelper failedCallback = new CallbackHelper();
@@ -285,14 +281,12 @@ public class PopularUrlsTest {
             }
         } else {
             try {
-                failedCallback.waitForCallback(
-                        0, 1, scaleTimeout(100 * 1000), TimeUnit.MILLISECONDS);
+                failedCallback.waitForCallback(0, 1, (long) (100 * 1000), TimeUnit.MILLISECONDS);
             } catch (TimeoutException ex) {
                 failed = false;
             }
             try {
-                crashedCallback.waitForCallback(
-                        0, 1, scaleTimeout(100 * 1000), TimeUnit.MILLISECONDS);
+                crashedCallback.waitForCallback(0, 1, (long) (100 * 1000), TimeUnit.MILLISECONDS);
             } catch (TimeoutException ex) {
                 crashed = false;
             }
@@ -324,11 +318,10 @@ public class PopularUrlsTest {
      * @param clearCache determines whether the cache is cleared before loading each page.
      * @param loopCount the number of times to loop through the list of pages.
      * @throws IOException unable to read from input or write to writer.
-     * @throws InterruptedException the thread was interrupted waiting for the page to load.
      */
     private void loopUrls(BufferedReader input, OutputStreamWriter outputWriter,
             OutputStreamWriter failureWriter, boolean clearCache, int loopCount)
-            throws IOException, InterruptedException {
+            throws IOException {
         List<String> pages = new ArrayList<>();
 
         String page;
@@ -377,9 +370,8 @@ public class PopularUrlsTest {
      * Navigate to all the pages listed in the input.
      * @param perf Whether this is a performance test or stability test.
      * @throws IOException
-     * @throws InterruptedException
      */
-    public void loadPages(boolean perf) throws IOException, InterruptedException {
+    public void loadPages(boolean perf) throws IOException {
         OutputStreamWriter outputWriter = null;
         if (perf) {
             outputWriter = getOutputStream(OUTPUT_FILE);
@@ -416,7 +408,7 @@ public class PopularUrlsTest {
      */
     @Test
     @Manual
-    public void testLoadPerformance() throws IOException, InterruptedException {
+    public void testLoadPerformance() throws IOException {
         loadPages(true);
     }
 
@@ -425,7 +417,7 @@ public class PopularUrlsTest {
      */
     @Test
     @Manual
-    public void testStability() throws IOException, InterruptedException {
+    public void testStability() throws IOException {
         loadPages(false);
     }
 }

@@ -19,7 +19,7 @@ TEST(BitmapTest, DefaultConstructor) {
   disk_cache::Bitmap map;
   EXPECT_EQ(0, map.Size());
   EXPECT_EQ(0, map.ArraySize());
-  EXPECT_TRUE(NULL == map.GetMap());
+  EXPECT_TRUE(nullptr == map.GetMap());
 }
 
 TEST(BitmapTest, Basics) {

@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_mute_button_element.h"
 
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
@@ -15,7 +16,7 @@ namespace blink {
 
 MediaControlMuteButtonElement::MediaControlMuteButtonElement(
     MediaControlsImpl& media_controls)
-    : MediaControlInputElement(media_controls, kMediaIgnore) {
+    : MediaControlInputElement(media_controls) {
   setType(input_type_names::kButton);
   SetShadowPseudoId(AtomicString("-webkit-media-controls-mute-button"));
 }
@@ -29,21 +30,20 @@ void MediaControlMuteButtonElement::UpdateDisplayType() {
   // 'muted' when the volume is 0 even if the element is not muted. This allows
   // the painting and the display type to actually match.
   bool muted = MediaElement().muted() || MediaElement().volume() == 0;
-  setAttribute(html_names::kAriaLabelAttr,
-               WTF::AtomicString(GetLocale().QueryString(
-                   muted ? WebLocalizedString::kAXMediaUnMuteButton
-                         : WebLocalizedString::kAXMediaMuteButton)));
+  setAttribute(
+      html_names::kAriaLabelAttr,
+      WTF::AtomicString(GetLocale().QueryString(
+          muted ? IDS_AX_MEDIA_UNMUTE_BUTTON : IDS_AX_MEDIA_MUTE_BUTTON)));
   SetClass("muted", muted);
   UpdateOverflowString();
 
   MediaControlInputElement::UpdateDisplayType();
 }
 
-WebLocalizedString::Name MediaControlMuteButtonElement::GetOverflowStringName()
-    const {
+int MediaControlMuteButtonElement::GetOverflowStringId() const {
   if (MediaElement().muted())
-    return WebLocalizedString::kOverflowMenuUnmute;
-  return WebLocalizedString::kOverflowMenuMute;
+    return IDS_MEDIA_OVERFLOW_MENU_UNMUTE;
+  return IDS_MEDIA_OVERFLOW_MENU_MUTE;
 }
 
 bool MediaControlMuteButtonElement::HasOverflowButton() const {
@@ -59,8 +59,8 @@ const char* MediaControlMuteButtonElement::GetNameForHistograms() const {
 }
 
 void MediaControlMuteButtonElement::DefaultEventHandler(Event& event) {
-  if (event.type() == event_type_names::kClick ||
-      event.type() == event_type_names::kGesturetap) {
+  if (!IsDisabled() && (event.type() == event_type_names::kClick ||
+                        event.type() == event_type_names::kGesturetap)) {
     if (MediaElement().muted()) {
       Platform::Current()->RecordAction(
           UserMetricsAction("Media.Controls.Unmute"));
@@ -70,7 +70,9 @@ void MediaControlMuteButtonElement::DefaultEventHandler(Event& event) {
     }
 
     MediaElement().setMuted(!MediaElement().muted());
-    event.SetDefaultHandled();
+
+    if (!IsOverflowElement())
+      event.SetDefaultHandled();
   }
 
   if (!IsOverflowElement()) {

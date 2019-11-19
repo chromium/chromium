@@ -14,10 +14,10 @@
 #include "net/base/io_buffer.h"
 #include "net/base/net_export.h"
 #include "net/socket/datagram_client_socket.h"
-#include "net/third_party/quic/core/quic_connection.h"
-#include "net/third_party/quic/core/quic_packet_writer.h"
-#include "net/third_party/quic/core/quic_packets.h"
-#include "net/third_party/quic/core/quic_types.h"
+#include "net/third_party/quiche/src/quic/core/quic_connection.h"
+#include "net/third_party/quiche/src/quic/core/quic_packet_writer.h"
+#include "net/third_party/quiche/src/quic/core/quic_packets.h"
+#include "net/third_party/quiche/src/quic/core/quic_types.h"
 
 namespace net {
 
@@ -126,7 +126,7 @@ class NET_EXPORT_PRIVATE QuicChromiumPacketWriter
   base::OneShotTimer retry_timer_;
 
   CompletionRepeatingCallback write_callback_;
-  base::WeakPtrFactory<QuicChromiumPacketWriter> weak_factory_;
+  base::WeakPtrFactory<QuicChromiumPacketWriter> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(QuicChromiumPacketWriter);
 };

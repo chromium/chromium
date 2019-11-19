@@ -42,7 +42,7 @@ PASS iframe.relList in http://www.w3.org/1999/xhtml namespace should be undefine
 PASS output.relList in http://www.w3.org/1999/xhtml namespace should be undefined.
 PASS td.relList in http://www.w3.org/1999/xhtml namespace should be undefined.
 PASS th.relList in http://www.w3.org/1999/xhtml namespace should be undefined.
-FAIL a.relList in http://www.w3.org/2000/svg namespace should be DOMTokenList. assert_equals: expected "[object DOMTokenList]" but got "[object Undefined]"
+FAIL a.relList in http://www.w3.org/2000/svg namespace should be DOMTokenList. assert_class_string: expected "[object DOMTokenList]" but got "[object Undefined]"
 PASS area.relList in http://www.w3.org/2000/svg namespace should be undefined.
 PASS link.relList in http://www.w3.org/2000/svg namespace should be undefined.
 PASS iframe.relList in http://www.w3.org/2000/svg namespace should be undefined.

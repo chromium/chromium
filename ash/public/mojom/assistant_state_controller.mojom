@@ -1,0 +1,70 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.mojom;
+
+// The initial state is NOT_READY, after Assistant service started it becomes
+// READY. When Assistant UI shows up the state becomes VISIBLE.
+enum AssistantState {
+  // The Assistant service is not ready yet.
+  NOT_READY = 0,
+  // The Assistant service is ready.
+  READY,
+  // The Assistant service is ready.
+  // TODO(b/142428671): This is set when the Assistant backend signals it is
+  // ready to handle queries, where |READY| is signaled when it is started.
+  // If this signal turns out to be reliable it should replace |READY| and be
+  // renamed to |READY|.
+  NEW_READY,
+};
+
+enum AssistantAllowedState {
+  // Assistant feature is allowed.
+  ALLOWED = 0,
+  // Disallowed because search and assistant is disabled by policy.
+  DISALLOWED_BY_POLICY,
+  // Disallowed because user's locale is not compatible.
+  DISALLOWED_BY_LOCALE,
+  // Disallowed because current user is not primary user.
+  DISALLOWED_BY_NONPRIMARY_USER,
+  // Disallowed because current user is supervised user.
+  DISALLOWED_BY_SUPERVISED_USER,
+  // Disallowed because incognito mode.
+  DISALLOWED_BY_INCOGNITO,
+  // Disallowed because the device is in demo mode.
+  DISALLOWED_BY_DEMO_MODE,
+  // Disallowed because the device is in public session.
+  DISALLOWED_BY_PUBLIC_SESSION,
+  // Disallowed because the user's account type is currently not supported.
+  DISALLOWED_BY_ACCOUNT_TYPE,
+  // Disallowed because the device is in Kiosk mode.
+  DISALLOWED_BY_KIOSK_MODE
+};
+
+// Allows observing changes to Assistant status and settings.
+interface AssistantStateObserver {
+  // Called when Assistant state changes.
+  OnAssistantStatusChanged(AssistantState state);
+
+  // Called when assistant feature allowed state has changed.
+  OnAssistantFeatureAllowedChanged(AssistantAllowedState state);
+
+  // Called when Google Play Store is enabled/disabled.
+  OnArcPlayStoreEnabledChanged(bool enabled);
+
+  // Called when locale is changed in pref. The locale is in the format can be
+  // "en-US" or simply "en". When locale is not set in pref, it returns empty
+  // string.
+  OnLocaleChanged(string locale);
+
+  // Called when locked full screen state has changed.
+  OnLockedFullScreenStateChanged(bool enabled);
+};
+
+// Interface for ash client (Assistant service) to connect to state controller,
+// which notifies changes of Assistant status and settings.
+interface AssistantStateController {
+  // Add an observer.
+  AddMojomObserver(pending_remote<AssistantStateObserver> observer);
+};

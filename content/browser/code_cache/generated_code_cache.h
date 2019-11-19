@@ -8,11 +8,12 @@
 #include <queue>
 
 #include "base/containers/queue.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
-#include "net/base/completion_callback.h"
+#include "mojo/public/cpp/base/big_buffer.h"
 #include "net/base/io_buffer.h"
 #include "net/disk_cache/disk_cache.h"
 #include "url/origin.h"
@@ -44,9 +45,8 @@ class CONTENT_EXPORT GeneratedCodeCache {
  public:
   using ReadDataCallback =
       base::RepeatingCallback<void(const base::Time&,
-                                   const std::vector<uint8_t>&)>;
+                                   mojo_base::BigBuffer data)>;
   using GetBackendCallback = base::OnceCallback<void(disk_cache::Backend*)>;
-  static const int kResponseTimeSizeInBytes = sizeof(int64_t);
 
   // Cache type. Used for collecting statistics for JS and Wasm in separate
   // buckets.
@@ -88,10 +88,10 @@ class CONTENT_EXPORT GeneratedCodeCache {
   // Writes data to the cache. If there is an entry corresponding to
   // <|resource_url|, |origin_lock|> this overwrites the existing data. If
   // there is no entry it creates a new one.
-  void WriteData(const GURL& resource_url,
-                 const GURL& origin_lock,
-                 const base::Time& response_time,
-                 const std::vector<uint8_t>& data);
+  void WriteEntry(const GURL& resource_url,
+                  const GURL& origin_lock,
+                  const base::Time& response_time,
+                  mojo_base::BigBuffer data);
 
   // Fetch entry corresponding to <resource_url, origin_lock> from the cache
   // and return it using the ReadDataCallback.
@@ -119,10 +119,17 @@ class CONTENT_EXPORT GeneratedCodeCache {
   enum BackendState { kInitializing, kInitialized, kFailed };
 
   // The operation requested.
-  enum Operation { kFetch, kWrite, kDelete, kGetBackend };
+  enum Operation {
+    kFetch,
+    kFetchWithSHAKey,
+    kWrite,
+    kWriteWithSHAKey,
+    kDelete,
+    kGetBackend
+  };
 
   // Data streams corresponding to each entry.
-  enum { kDataIndex = 1 };
+  enum { kSmallDataStream = 0, kLargeDataStream = 1 };
 
   // Creates a simple_disk_cache backend.
   void CreateBackend();
@@ -130,69 +137,69 @@ class CONTENT_EXPORT GeneratedCodeCache {
       scoped_refptr<base::RefCountedData<ScopedBackendPtr>> backend_ptr,
       int rv);
 
-  // The requests that are received while tha backend is being initialized
-  // are recorded in pending operations list. This function issues all pending
-  // operations.
+  // Adds operation to the appropriate queue.
+  void EnqueueOperation(std::unique_ptr<PendingOperation> op);
+
+  // Issues ops that were received while the backend was being initialized.
   void IssuePendingOperations();
-
-  // Write entry to cache
-  void WriteDataImpl(const std::string& key,
-                     scoped_refptr<net::IOBufferWithSize> buffer);
-  void CompleteForWriteData(
-      scoped_refptr<net::IOBufferWithSize> buffer,
-      const std::string& key,
-      scoped_refptr<base::RefCountedData<disk_cache::EntryWithOpened>>
-          entry_struct,
-      int rv);
-  void WriteDataCompleted(const std::string& key, int rv);
-
-  // Fetch entry from cache
-  void FetchEntryImpl(const std::string& key, ReadDataCallback);
-  void OpenCompleteForReadData(
-      ReadDataCallback callback,
-      const std::string& key,
-      scoped_refptr<base::RefCountedData<disk_cache::Entry*>> entry,
-      int rv);
-  void ReadDataComplete(const std::string& key,
-                        ReadDataCallback callback,
-                        scoped_refptr<net::IOBufferWithSize> buffer,
-                        int rv);
-
-  // Delete entry from cache
-  void DeleteEntryImpl(const std::string& key);
-
-  // Issues the queued operation at the front of the queue for the given |key|.
-  void IssueQueuedOperationForEntry(const std::string& key);
-  // Enqueues into the list if there is an in-progress operation. Otherwise
-  // creates an entry to indicate there is an active operation.
-  bool EnqueueAsPendingOperation(const std::string& key,
-                                 std::unique_ptr<PendingOperation> op);
   void IssueOperation(PendingOperation* op);
 
-  void DoPendingGetBackend(GetBackendCallback callback);
+  // Writes entry to cache.
+  void WriteEntryImpl(PendingOperation* op);
+  void OpenCompleteForWrite(PendingOperation* op,
+                            disk_cache::EntryResult result);
+  void WriteSmallBufferComplete(PendingOperation* op, int rv);
+  void WriteLargeBufferComplete(PendingOperation* op, int rv);
+  void WriteComplete(PendingOperation* op);
+
+  // Fetches entry from cache.
+  void FetchEntryImpl(PendingOperation* op);
+  void OpenCompleteForRead(PendingOperation* op,
+                           disk_cache::EntryResult result);
+  void ReadSmallBufferComplete(PendingOperation* op, int rv);
+  void ReadLargeBufferComplete(PendingOperation* op, int rv);
+  void ReadComplete(PendingOperation* op);
+
+  // Deletes entry from cache.
+  void DeleteEntryImpl(PendingOperation* op);
+
+  void DoomEntry(PendingOperation* op);
+
+  // Issues the next operation on the queue for |key|.
+  void IssueNextOperation(const std::string& key);
+  // Removes |op| and issues the next operation on its queue.
+  void CloseOperationAndIssueNext(PendingOperation* op);
+
+  // Enqueues the operation issues it if there are no pending operations for
+  // its key.
+  void EnqueueOperationAndIssueIfNext(std::unique_ptr<PendingOperation> op);
+  // Dequeues the operation and transfers ownership to caller.
+  std::unique_ptr<PendingOperation> DequeueOperation(PendingOperation* op);
+
+  void DoPendingGetBackend(PendingOperation* op);
 
   void OpenCompleteForSetLastUsedForTest(
-      scoped_refptr<base::RefCountedData<disk_cache::Entry*>> entry,
       base::Time time,
       base::RepeatingCallback<void(void)> callback,
-      int rv);
+      disk_cache::EntryResult result);
 
   void CollectStatistics(GeneratedCodeCache::CacheEntryStatus status);
 
   std::unique_ptr<disk_cache::Backend> backend_;
   BackendState backend_state_;
 
-  std::vector<std::unique_ptr<PendingOperation>> pending_ops_;
+  // Queue for operations received while initializing the backend.
+  using PendingOperationQueue = base::queue<std::unique_ptr<PendingOperation>>;
+  PendingOperationQueue pending_ops_;
 
-  // Map from key to queue ops.
-  std::map<std::string, base::queue<std::unique_ptr<PendingOperation>>>
-      active_entries_map_;
+  // Map from key to queue of pending operations.
+  std::map<std::string, PendingOperationQueue> active_entries_map_;
 
   base::FilePath path_;
   int max_size_bytes_;
   CodeCacheType cache_type_;
 
-  base::WeakPtrFactory<GeneratedCodeCache> weak_ptr_factory_;
+  base::WeakPtrFactory<GeneratedCodeCache> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(GeneratedCodeCache);
 };

@@ -1,0 +1,55 @@
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package kids_chrome_management;
+
+// Basic user profile information.
+message UserProfile {
+  // Obfuscated Gaia ID of the member. Required.
+  optional string obfuscated_user_id = 1;
+
+  // Primary email address of the user. Required.
+  optional string email = 2;
+
+  // The user's full name, synthesized with structured and unstructured name
+  // fields informed by the user. Optional.
+  optional string display_name = 3;
+
+  // Portrait photo of the user. Optional.
+  optional string profile_image_url = 4;
+
+  // Default profile image to use if profile_image_url is not set. Required.
+  optional string default_profile_image_url = 5;
+
+  // Next id: 6
+}
+
+// The role a user has within a family.
+// Details on which actions are tied to those roles.
+enum FamilyRole {
+  UNKNOWN_FAMILY_ROLE = 0;
+  // The (only) head of household of the family.
+  HEAD_OF_HOUSEHOLD = 1;
+  // A parent in the family.
+  PARENT = 2;
+  // A member of the family. Can be an overage child or any other member
+  // without approval rights.
+  MEMBER = 3;
+  // An underage child in the family. The user always has a Unicorn account.
+  CHILD = 4;
+  // An unconfirmed member of the family who has been directly added to the
+  // family.
+  UNCONFIRMED_MEMBER = 5;
+
+  // next ID: 6
+}
+
+// Data about a family member.
+message FamilyMember {
+  // The user's role in the family. Required.
+  optional FamilyRole role = 1;
+
+  // Profile of the family member. Required.
+  optional UserProfile profile = 2;
+}

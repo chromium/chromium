@@ -8,39 +8,35 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/message_loop/message_loop.h"
+#include "base/feature_list.h"
+#include "base/message_loop/message_pump_type.h"
+#include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_monitor_device_source.h"
 #include "base/single_thread_task_runner.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "build/build_config.h"
+#include "components/ui_devtools/buildflags.h"
 #include "components/viz/service/gl/gpu_service_impl.h"
 #include "gpu/command_buffer/common/activity_flags.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "gpu/ipc/gpu_in_process_thread_service.h"
 #include "gpu/ipc/service/gpu_init.h"
 #include "gpu/ipc/service/gpu_watchdog_thread.h"
 #include "media/gpu/buildflags.h"
 #include "services/metrics/public/cpp/delegating_ukm_recorder.h"
 #include "services/metrics/public/cpp/mojo_ukm_recorder.h"
-#include "services/metrics/public/mojom/constants.mojom.h"
-#include "services/service_manager/public/cpp/connector.h"
 #include "third_party/skia/include/core/SkFontLCDConfig.h"
-
-#if defined(USE_OZONE)
-#include "ui/ozone/public/ozone_platform.h"
-#endif
 
 namespace {
 
 std::unique_ptr<base::Thread> CreateAndStartIOThread() {
   // TODO(sad): We do not need the IO thread once gpu has a separate process.
   // It should be possible to use |main_task_runner_| for doing IO tasks.
-  base::Thread::Options thread_options(base::MessageLoop::TYPE_IO, 0);
-  thread_options.priority = base::ThreadPriority::NORMAL;
-#if defined(OS_ANDROID) || defined(OS_CHROMEOS) || defined(USE_OZONE)
+  base::Thread::Options thread_options(base::MessagePumpType::IO, 0);
   // TODO(reveman): Remove this in favor of setting it explicitly for each
   // type of process.
-  thread_options.priority = base::ThreadPriority::DISPLAY;
-#endif
+  if (base::FeatureList::IsEnabled(features::kGpuUseDisplayThreadPriority))
+    thread_options.priority = base::ThreadPriority::DISPLAY;
   auto io_thread = std::make_unique<base::Thread>("GpuIOThread");
   CHECK(io_thread->StartWithOptions(thread_options));
   return io_thread;
@@ -66,45 +62,49 @@ VizMainImpl::VizMainImpl(Delegate* delegate,
     : delegate_(delegate),
       dependencies_(std::move(dependencies)),
       gpu_init_(std::move(gpu_init)),
-      gpu_thread_task_runner_(base::ThreadTaskRunnerHandle::Get()),
-      binding_(this),
-      associated_binding_(this) {
+      gpu_thread_task_runner_(base::ThreadTaskRunnerHandle::Get()) {
   DCHECK(gpu_init_);
 
   // TODO(crbug.com/609317): Remove this when Mus Window Server and GPU are
   // split into separate processes. Until then this is necessary to be able to
   // run Mushrome (chrome with mus) with Mus running in the browser process.
-  if (!base::PowerMonitor::Get()) {
-    power_monitor_ = std::make_unique<base::PowerMonitor>(
+  if (!base::PowerMonitor::IsInitialized()) {
+    base::PowerMonitor::Initialize(
         std::make_unique<base::PowerMonitorDeviceSource>());
   }
 
   if (!dependencies_.io_thread_task_runner)
     io_thread_ = CreateAndStartIOThread();
   if (dependencies_.create_display_compositor) {
-    viz_compositor_thread_runner_ =
-        std::make_unique<VizCompositorThreadRunner>();
+    if (dependencies.viz_compositor_thread_runner) {
+      viz_compositor_thread_runner_ = dependencies.viz_compositor_thread_runner;
+    } else {
+      viz_compositor_thread_runner_impl_ =
+          std::make_unique<VizCompositorThreadRunnerImpl>();
+      viz_compositor_thread_runner_ = viz_compositor_thread_runner_impl_.get();
+    }
     if (delegate_) {
       delegate_->PostCompositorThreadCreated(
           viz_compositor_thread_runner_->task_runner());
     }
   }
 
-  CreateUkmRecorderIfNeeded(dependencies.connector);
+  if (!gpu_init_->gpu_info().in_process_gpu && dependencies.ukm_recorder) {
+    // NOTE: If the GPU is running in the browser process, we can use the
+    // browser's UKMRecorder.
+    ukm_recorder_ = std::move(dependencies.ukm_recorder);
+    ukm::DelegatingUkmRecorder::Get()->AddDelegate(ukm_recorder_->GetWeakPtr());
+  }
 
   gpu_service_ = std::make_unique<GpuServiceImpl>(
       gpu_init_->gpu_info(), gpu_init_->TakeWatchdogThread(), io_task_runner(),
       gpu_init_->gpu_feature_info(), gpu_init_->gpu_preferences(),
       gpu_init_->gpu_info_for_hardware_gpu(),
       gpu_init_->gpu_feature_info_for_hardware_gpu(),
-      gpu_init_->vulkan_implementation(),
+      gpu_init_->gpu_extra_info(), gpu_init_->vulkan_implementation(),
       base::BindOnce(&VizMainImpl::ExitProcess, base::Unretained(this)));
   if (dependencies_.create_display_compositor)
     gpu_service_->set_oopd_enabled();
-
-#if defined(USE_OZONE)
-  ui::OzonePlatform::GetInstance()->AddInterfaces(&registry_);
-#endif
 }
 
 VizMainImpl::~VizMainImpl() {
@@ -114,14 +114,16 @@ VizMainImpl::~VizMainImpl() {
   // compositor first, before destroying the gpu service. However, before the
   // compositor is destroyed, close the binding, so that the gpu service doesn't
   // need to process commands from the host as it is shutting down.
-  binding_.Close();
-  associated_binding_.Close();
+  receiver_.reset();
 
-  // If the VizCompositorThread was started then this will block until the
-  // thread has been shutdown. All RootCompositorFrameSinks must be destroyed
-  // before now, otherwise the compositor thread will deadlock waiting for a
-  // response from the blocked GPU thread.
-  viz_compositor_thread_runner_.reset();
+  // If the VizCompositorThread was started and owned by VizMainImpl, then this
+  // will block until the thread has been shutdown. All RootCompositorFrameSinks
+  // must be destroyed before now, otherwise the compositor thread will deadlock
+  // waiting for a response from the blocked GPU thread.
+  // For the non-owned case for Android WebView, Viz does not communicate with
+  // this thread so there is no need to shutdown viz first.
+  viz_compositor_thread_runner_ = nullptr;
+  viz_compositor_thread_runner_impl_.reset();
 
   if (ukm_recorder_)
     ukm::DelegatingUkmRecorder::Get()->RemoveDelegate(ukm_recorder_.get());
@@ -131,33 +133,22 @@ void VizMainImpl::SetLogMessagesForHost(LogMessages log_messages) {
   log_messages_ = std::move(log_messages);
 }
 
-void VizMainImpl::Bind(mojom::VizMainRequest request) {
-  binding_.Bind(std::move(request));
+void VizMainImpl::BindAssociated(
+    mojo::PendingAssociatedReceiver<mojom::VizMain> pending_receiver) {
+  receiver_.Bind(std::move(pending_receiver));
 }
-
-void VizMainImpl::BindAssociated(mojom::VizMainAssociatedRequest request) {
-  associated_binding_.Bind(std::move(request));
-}
-
-#if defined(USE_OZONE)
-bool VizMainImpl::CanBindInterface(const std::string& interface_name) const {
-  return registry_.CanBindInterface(interface_name);
-}
-
-void VizMainImpl::BindInterface(const std::string& interface_name,
-                                mojo::ScopedMessagePipeHandle interface_pipe) {
-  registry_.BindInterface(interface_name, std::move(interface_pipe));
-}
-#endif
 
 void VizMainImpl::CreateGpuService(
-    mojom::GpuServiceRequest request,
-    mojom::GpuHostPtr gpu_host,
-    discardable_memory::mojom::DiscardableSharedMemoryManagerPtr
+    mojo::PendingReceiver<mojom::GpuService> pending_receiver,
+    mojo::PendingRemote<mojom::GpuHost> pending_gpu_host,
+    mojo::PendingRemote<
+        discardable_memory::mojom::DiscardableSharedMemoryManager>
         discardable_memory_manager,
     mojo::ScopedSharedBufferHandle activity_flags,
     gfx::FontRenderParams::SubpixelRendering subpixel_rendering) {
   DCHECK(gpu_thread_task_runner_->BelongsToCurrentThread());
+
+  mojo::Remote<mojom::GpuHost> gpu_host(std::move(pending_gpu_host));
 
   // If GL is disabled then don't try to collect GPUInfo, we're not using GPU.
   if (gl::GetGLImplementation() != gl::kGLImplementationDisabled)
@@ -192,9 +183,9 @@ void VizMainImpl::CreateGpuService(
       gfx::FontRenderParams::SubpixelRenderingToSkiaLCDOrientation(
           subpixel_rendering));
 
-  gpu_service_->Bind(std::move(request));
+  gpu_service_->Bind(std::move(pending_receiver));
   gpu_service_->InitializeWithHost(
-      std::move(gpu_host),
+      gpu_host.Unbind(),
       gpu::GpuProcessActivityFlags(std::move(activity_flags)),
       gpu_init_->TakeDefaultOffscreenSurface(),
       dependencies_.sync_point_manager, dependencies_.shared_image_manager,
@@ -207,18 +198,6 @@ void VizMainImpl::CreateGpuService(
   }
   if (delegate_)
     delegate_->OnGpuServiceConnection(gpu_service_.get());
-}
-
-void VizMainImpl::CreateUkmRecorderIfNeeded(
-    service_manager::Connector* connector) {
-  // If GPU is running in the browser process, we can use browser's UKMRecorder.
-  if (gpu_init_->gpu_info().in_process_gpu)
-    return;
-
-  DCHECK(connector) << "Unable to initialize UKMRecorder in the GPU process - "
-                    << "no valid connector.";
-  ukm_recorder_ = ukm::MojoUkmRecorder::Create(connector);
-  ukm::DelegatingUkmRecorder::Get()->AddDelegate(ukm_recorder_->GetWeakPtr());
 }
 
 void VizMainImpl::CreateFrameSinkManager(
@@ -248,20 +227,29 @@ void VizMainImpl::CreateFrameSinkManagerInternal(
     DCHECK_EQ(gl::GetGLImplementation(), gl::kGLImplementationDisabled);
   }
 
-  task_executor_ = base::MakeRefCounted<gpu::GpuInProcessThreadService>(
-      gpu_thread_task_runner_, gpu_service_->scheduler(),
+  // When the host loses its connection to the viz process, it assumes the
+  // process has crashed and tries to reinitialize it. However, it is possible
+  // to have lost the connection for other reasons (e.g. deserialization
+  // errors) and the viz process is already set up. We cannot recreate
+  // FrameSinkManagerImpl, so just do a hard CHECK rather than crashing down the
+  // road so that all crash reports caused by this issue look the same and have
+  // the same signature. https://crbug.com/928845
+  CHECK(!task_executor_);
+  task_executor_ = std::make_unique<gpu::GpuInProcessThreadService>(
+      gpu_thread_task_runner_, gpu_service_->GetGpuScheduler(),
       gpu_service_->sync_point_manager(), gpu_service_->mailbox_manager(),
       gpu_service_->share_group(), format, gpu_service_->gpu_feature_info(),
       gpu_service_->gpu_channel_manager()->gpu_preferences(),
       gpu_service_->shared_image_manager(),
-      gpu_service_->gpu_channel_manager()->program_cache());
+      gpu_service_->gpu_channel_manager()->program_cache(),
+      gpu_service_->GetContextState());
 
   viz_compositor_thread_runner_->CreateFrameSinkManager(
-      std::move(params), task_executor_, gpu_service_.get());
+      std::move(params), task_executor_.get(), gpu_service_.get());
 }
 
 void VizMainImpl::CreateVizDevTools(mojom::VizDevToolsParamsPtr params) {
-#if defined(USE_VIZ_DEVTOOLS)
+#if BUILDFLAG(USE_VIZ_DEVTOOLS)
   viz_compositor_thread_runner_->CreateVizDevTools(std::move(params));
 #endif
 }
@@ -270,8 +258,7 @@ void VizMainImpl::ExitProcess() {
   DCHECK(gpu_thread_task_runner_->BelongsToCurrentThread());
 
   // Close mojom::VizMain bindings first so the browser can't try to reconnect.
-  binding_.Close();
-  associated_binding_.Close();
+  receiver_.reset();
 
   if (viz_compositor_thread_runner_) {
     // OOP-D requires destroying RootCompositorFrameSinkImpls on the compositor

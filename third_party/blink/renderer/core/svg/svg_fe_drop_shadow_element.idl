@@ -29,4 +29,4 @@ interface SVGFEDropShadowElement : SVGElement {
     [MeasureAs=SVG1DOMFilter] void setStdDeviation(float stdDeviationX, float stdDeviationY);
 };
 
-SVGFEDropShadowElement implements SVGFilterPrimitiveStandardAttributes;
+SVGFEDropShadowElement includes SVGFilterPrimitiveStandardAttributes;

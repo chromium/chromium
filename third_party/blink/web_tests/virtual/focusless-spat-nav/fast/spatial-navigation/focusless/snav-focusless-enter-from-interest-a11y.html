@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<script src="../../../../../resources/testharness.js"></script>
+<script src="../../../../../resources/testharnessreport.js"></script>
+<script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
+<script src="file:///gen/third_party/blink/public/mojom/page/spatial_navigation.mojom.js"></script>
+<script src="../../../../../fast/spatial-navigation/resources/mock-snav-service.js"></script>
+<script src="../../../../../fast/spatial-navigation/resources/snav-testharness.js"></script>
+
+<a id="link" href="#active">Activate</a>
+
+<script>
+  // This test checks that pressing enter over a focused element will route the
+  // event to the element and follow the link.
+  let link = document.getElementById("link");
+
+  testRunner.overridePreference("WebKitTabToLinksPreferenceKey", 1);
+  // We have to call this or overriding preferences will un-set spat-nav being
+  // enabled.
+  testRunner.overridePreference('WebKitSpatialNavigationEnabled', 1);
+
+  test(() => {
+    assert_true(!!window.internals);
+
+    // Move interest to 'link'
+    snav.triggerMove('Down');
+
+    assert_equals(document.activeElement,
+                  link,
+                  "'link' must be focused");
+    assert_equals(window.internals.interestedElement,
+                  link,
+                  "'link' must be interested");
+    assert_not_equals(window.location.hash,
+                      "#active",
+                      "Conferring focus must not cause navigation.");
+
+    // Press enter key. Ensure that the link was activated by making sure we
+    // navigated to the fragment.
+    eventSender.keyDown('Enter');
+    assert_equals(window.location.hash,
+                  "#active",
+                  "Enter key over 'link' should cause navigation");
+  }, "Enter key from unfocused element.");
+</script>

@@ -24,6 +24,7 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "content/shell/common/shell_switches.h"
+#include "gpu/command_buffer/service/gpu_switches.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -89,8 +90,8 @@ class SnapshotBrowserTest : public ContentBrowserTest {
         &SnapshotBrowserTest::HandleRequest, base::Unretained(this)));
     ASSERT_TRUE(embedded_test_server()->Start());
 
-    ASSERT_NO_FATAL_FAILURE(content::NavigateToURL(
-        shell(), embedded_test_server()->GetURL("/test")));
+    ASSERT_TRUE(
+        NavigateToURL(shell(), embedded_test_server()->GetURL("/test")));
   }
 
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
@@ -357,7 +358,7 @@ IN_PROC_BROWSER_TEST_F(SnapshotBrowserTest, MAYBE_AsyncMultiWindowTest) {
       ExpectedColor expected;
       do {
         PickRandomColor(&expected);
-      } while (base::ContainsValue(expected_snapshots, expected));
+      } while (base::Contains(expected_snapshots, expected));
       expected_snapshots.push_back(expected);
 
       std::string colorString = base::StringPrintf("#%02x%02x%02x", expected.r,

@@ -1,5 +1,6 @@
 include_rules = [
   # This folder contains Android-specific code.
   "+base/android",
+  "+chrome/android/test_support_jni_headers",
   "+chrome/browser/android",
 ]

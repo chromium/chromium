@@ -1,4 +1,6 @@
 include_rules = [
+  "+components/autofill/ios",
   "+components/security_state/core",
+  "+ios/web/common",
   "+ios/web/public",
 ]

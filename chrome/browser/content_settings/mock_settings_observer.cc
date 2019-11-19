@@ -6,11 +6,10 @@
 
 #include "chrome/browser/chrome_notification_types.h"
 #include "components/content_settings/core/browser/content_settings_details.h"
-#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "url/gurl.h"
 
 MockSettingsObserver::MockSettingsObserver(HostContentSettingsMap* map)
-    : map_(map), observer_(this) {
+    : map_(map) {
   observer_.Add(map_);
 }
 
@@ -32,6 +31,6 @@ void MockSettingsObserver::OnContentSettingChanged(
   // This checks that calling a Get function from an observer doesn't
   // deadlock.
   GURL url("http://random-hostname.com/");
-  map_->GetContentSetting(
-      url, url, CONTENT_SETTINGS_TYPE_COOKIES, std::string());
+  map_->GetContentSetting(url, url, ContentSettingsType::COOKIES,
+                          std::string());
 }

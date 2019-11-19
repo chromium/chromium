@@ -1,0 +1,20 @@
+<!--
+@WIN-DENY:EVENT_OBJECT_FOCUS*
+@UIA-WIN-DENY:AutomationFocusChanged*
+-->
+<!DOCTYPE html>
+<input id="value" type="range" min="0" max="10" value="1">
+<script>
+  var go_passes = [
+    () => document.querySelector('#value').setAttribute('value', 2),
+    () => document.querySelector('#value').removeAttribute('value'),
+    () => document.querySelector('#value').setAttribute('aria-valuenow', 3),
+    () => document.querySelector('#value').removeAttribute('aria-valuenow'),
+  ];
+
+  var current_pass = 0;
+  function go() {
+    go_passes[current_pass++].call();
+    return current_pass < go_passes.length;
+  }
+</script>

@@ -27,3 +27,4 @@ document.URL = http://127.0.0.1:8000/security/aboutBlank/security-context-grandc
 document.baseURI = http://127.0.0.1:8000/security/aboutBlank/security-context-grandchildren-write-lexical.html
 document.cookie = cookie=parent
 --- Test ends ---
+Helpers loaded!

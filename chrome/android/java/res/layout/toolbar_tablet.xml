@@ -47,10 +47,10 @@
         <!-- The src will be set in onFinishInflate. -->
         <org.chromium.ui.widget.ChromeImageButton
             android:id="@+id/refresh_button"
-            style="@style/ToolbarButton"
+            android:src="@drawable/btn_reload_stop"
             android:contentDescription="@string/accessibility_btn_refresh"
-            tools:tint="@color/standard_mode_tint"
-            tools:src="@drawable/btn_reload_stop" />
+            app:tint="@color/standard_mode_tint"
+            style="@style/ToolbarButton" />
 
         <org.chromium.chrome.browser.omnibox.LocationBarTablet
             android:id="@+id/location_bar"
@@ -61,6 +61,14 @@
             android:background="@drawable/modern_toolbar_text_box_background"
             android:paddingEnd="@dimen/location_bar_lateral_padding"
             android:paddingStart="2dp" />
+
+        <ViewStub
+            android:id="@+id/experimental_button_stub"
+            android:inflatedId="@+id/experimental_toolbar_button"
+            android:layout="@layout/experimental_toolbar_button"
+            style="@style/ToolbarButton"
+            android:paddingStart="8dp"
+            android:visibility="gone" />
 
         <org.chromium.chrome.browser.toolbar.top.ToggleTabStackButton
             android:id="@+id/tab_switcher_button"
@@ -76,7 +84,7 @@
             <org.chromium.ui.widget.ChromeImageButton
                 android:id="@+id/menu_button"
                 style="@style/ToolbarMenuButtonTablet"
-                android:src="@drawable/ic_more_vert_black_24dp"
+                android:src="@drawable/ic_more_vert_24dp"
                 android:contentDescription="@string/accessibility_toolbar_btn_menu"
                 android:layout_gravity="center"
                 app:tint="@color/standard_mode_tint" />

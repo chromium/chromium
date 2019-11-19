@@ -1,0 +1,54 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+option java_outer_classname = "UserDemographicsProtos";
+option java_package = "org.chromium.components.metrics";
+
+package metrics;
+
+// Limited demographics information about the user.
+//
+// This data is drawn from the signed-in user's GAIA id and is provided to
+// Chrome via syncable priority pref.
+//
+// Next tag: 3
+message UserDemographicsProto {
+  // The (noisy) year of birth specified by the user. The value reported in this
+  // field cannot safely be interpreted as the true value for the user; it may
+  // be offset by a randomly chosen number of years from [-2, +2].
+  optional int32 birth_year = 1;
+
+  // The supported gender identifiers. These values correspond to those offered
+  // in the "Gender" section of the Google Account settings. Note that these
+  // values deliberately do not address the rich spectrum of possible gender
+  // identities with high granularity because we do not want these values to be
+  // highly identifying.
+  //
+  // Values from this enum are both sent to Chrome via Chrome Sync, and
+  // selectively forwarded from Chrome to UMA logs.
+  enum Gender {
+    // The default value for clients that do not have any gender information.
+    GENDER_UNKNOWN = 0;
+    // The user specified that they prefer to be referred to as male.
+    GENDER_MALE = 1;
+    // The user specified that they prefer to be referred to as female.
+    GENDER_FEMALE = 2;
+    // The user specified that they prefer not to disclose a gender or the user
+    // provided a custom gender identifier. This value may be synced to Chrome,
+    // but it is not transmitted to UMA because the population size is
+    // relatively small vs MALE/FEMALE and thus may be highly identifying.
+    // Instead, these users will not submit any demographics, blending them into
+    // the GENDER_UNKNOWN group (which is large).
+    GENDER_CUSTOM_OR_OTHER = 3;
+  }
+
+  // The gender specified by the user. If the user's gender is unknown or non-
+  // binary, this field will be omitted, corresponding to a default
+  // value of GENDER_UNKNOWN.
+  optional Gender gender = 2;
+}

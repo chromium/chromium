@@ -21,7 +21,7 @@ Status CastTracker::OnEvent(DevToolsClient* client,
                             const std::string& method,
                             const base::DictionaryValue& params) {
   if (method == "Cast.sinksUpdated") {
-    const base::Value* sinks = params.FindKey("sinkNames");
+    const base::Value* sinks = params.FindKey("sinks");
     if (sinks)
       sinks_ = sinks->Clone();
   } else if (method == "Cast.issueUpdated") {

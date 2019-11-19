@@ -38,7 +38,8 @@ TEST(FilterOperationsTest, mapRectNoFilter) {
 
 TEST(FilterOperationsTest, mapRectBlur) {
   FilterOperations ops;
-  ops.Operations().push_back(BlurFilterOperation::Create(Length::Fixed(20.0)));
+  ops.Operations().push_back(
+      MakeGarbageCollected<BlurFilterOperation>(Length::Fixed(20.0)));
   EXPECT_TRUE(ops.HasFilterThatMovesPixels());
   EXPECT_EQ(IntRect(-57, -57, 124, 124),
             EnclosingIntRect(ops.MapRect(FloatRect(0, 0, 10, 10))));
@@ -55,7 +56,7 @@ TEST(FilterOperationsTest, mapRectDropShadow) {
 
 TEST(FilterOperationsTest, mapRectBoxReflect) {
   FilterOperations ops;
-  ops.Operations().push_back(BoxReflectFilterOperation::Create(
+  ops.Operations().push_back(MakeGarbageCollected<BoxReflectFilterOperation>(
       BoxReflection(BoxReflection::kVerticalReflection, 100)));
   EXPECT_TRUE(ops.HasFilterThatMovesPixels());
 
@@ -69,7 +70,7 @@ TEST(FilterOperationsTest, mapRectDropShadowAndBoxReflect) {
   FilterOperations ops;
   ops.Operations().push_back(DropShadowFilterOperation::Create(ShadowData(
       FloatPoint(100, 200), 0, 0, kNormal, StyleColor(Color::kBlack))));
-  ops.Operations().push_back(BoxReflectFilterOperation::Create(
+  ops.Operations().push_back(MakeGarbageCollected<BoxReflectFilterOperation>(
       BoxReflection(BoxReflection::kVerticalReflection, 50)));
   EXPECT_TRUE(ops.HasFilterThatMovesPixels());
   EXPECT_EQ(FloatRect(0, -160, 110, 370), ops.MapRect(FloatRect(0, 0, 10, 10)));

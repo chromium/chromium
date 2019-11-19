@@ -1,5 +1,4 @@
 include_rules = [
-  "+content/public",
   "+media",
   "+third_party/libyuv",
 ]

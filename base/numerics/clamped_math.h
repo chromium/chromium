@@ -192,12 +192,14 @@ constexpr ClampedNumeric<typename UnderlyingType<T>::type> MakeClampedNum(
   return value;
 }
 
+#if !BASE_NUMERICS_DISABLE_OSTREAM_OPERATORS
 // Overload the ostream output operator to make logging work nicely.
 template <typename T>
 std::ostream& operator<<(std::ostream& os, const ClampedNumeric<T>& value) {
   os << static_cast<T>(value);
   return os;
 }
+#endif
 
 // These implement the variadic wrapper for the math operations.
 template <template <typename, typename, typename> class M,

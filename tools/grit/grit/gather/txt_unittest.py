@@ -5,6 +5,7 @@
 
 '''Unit tests for TxtFile gatherer'''
 
+from __future__ import print_function
 
 import os
 import sys
@@ -12,15 +13,16 @@ if __name__ == '__main__':
   sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
 
 
-import StringIO
 import unittest
+
+from six import StringIO
 
 from grit.gather import txt
 
 
 class TxtUnittest(unittest.TestCase):
   def testGather(self):
-    input = StringIO.StringIO('Hello there\nHow are you?')
+    input = StringIO('Hello there\nHow are you?')
     gatherer = txt.TxtFile(input)
     gatherer.Parse()
     self.failUnless(gatherer.GetText() == input.getvalue())

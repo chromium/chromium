@@ -94,10 +94,10 @@ class VariationsSeedStore {
   // store.
   base::Time GetLastFetchTime() const;
 
-  // Records the current time as the last time at which a seed was fetched
+  // Records |fetch_time| as the last time at which a seed was fetched
   // successfully. Also updates the safe seed's fetch time if the latest and
   // safe seeds are identical.
-  void RecordLastFetchTime();
+  void RecordLastFetchTime(base::Time fetch_time);
 
   // Updates |kVariationsSeedDate| and logs when previous date was from a
   // different day.

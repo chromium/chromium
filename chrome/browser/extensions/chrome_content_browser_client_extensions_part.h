@@ -9,14 +9,16 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/optional.h"
 #include "chrome/browser/chrome_content_browser_client_parts.h"
+#include "content/public/browser/browser_or_resource_context.h"
 #include "content/public/common/resource_type.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "ui/base/page_transition_types.h"
 
 namespace content {
-struct Referrer;
 class RenderFrameHost;
 class RenderProcessHost;
 class ResourceContext;
@@ -64,21 +66,18 @@ class ChromeContentBrowserClientExtensionsPart
       content::RenderFrameHost* main_frame);
   static bool ShouldSwapBrowsingInstancesForNavigation(
       content::SiteInstance* site_instance,
-      const GURL& current_url,
-      const GURL& new_url);
-  static bool AllowServiceWorker(const GURL& scope,
-                                 const GURL& first_party_url,
-                                 content::ResourceContext* context);
-  static void OverrideNavigationParams(content::SiteInstance* site_instance,
-                                       ui::PageTransition* transition,
-                                       bool* is_renderer_initiated,
-                                       content::Referrer* referrer);
-
-  // Similiar to ChromeContentBrowserClient::ShouldAllowOpenURL(), but the
-  // return value indicates whether to use |result| or not.
-  static bool ShouldAllowOpenURL(content::SiteInstance* site_instance,
-                                 const GURL& to_url,
-                                 bool* result);
+      const GURL& current_effective_url,
+      const GURL& destination_effective_url);
+  // TODO(crbug.com/824858): Remove the OnIO method.
+  static bool AllowServiceWorkerOnIO(const GURL& scope,
+                                     const GURL& first_party_url,
+                                     const GURL& script_url,
+                                     content::ResourceContext* context);
+  static bool AllowServiceWorkerOnUI(const GURL& scope,
+                                     const GURL& first_party_url,
+                                     const GURL& script_url,
+                                     content::BrowserContext* context);
+  static std::vector<url::Origin> GetOriginsRequiringDedicatedProcess();
 
   // Helper function to call InfoMap::SetSigninProcess().
   static void SetSigninProcess(content::SiteInstance* site_instance);
@@ -88,48 +87,22 @@ class ChromeContentBrowserClientExtensionsPart
   static std::unique_ptr<content::VpnServiceProxy> GetVpnServiceProxy(
       content::BrowserContext* browser_context);
 
-  static void LogInitiatorSchemeBypassingDocumentBlocking(
-      const url::Origin& initiator_origin,
-      int render_process_id,
-      content::ResourceType resource_type);
-
-  static network::mojom::URLLoaderFactoryPtrInfo
+  static mojo::PendingRemote<network::mojom::URLLoaderFactory>
   CreateURLLoaderFactoryForNetworkRequests(
       content::RenderProcessHost* process,
       network::mojom::NetworkContext* network_context,
-      network::mojom::TrustedURLLoaderHeaderClientPtrInfo* header_client,
-      const url::Origin& request_initiator);
+      mojo::PendingRemote<network::mojom::TrustedURLLoaderHeaderClient>*
+          header_client,
+      const url::Origin& origin,
+      const url::Origin& main_world_origin,
+      const base::Optional<net::NetworkIsolationKey>& network_isolation_key);
 
   static bool IsBuiltinComponent(content::BrowserContext* browser_context,
                                  const url::Origin& origin);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ChromeContentBrowserClientExtensionsPartTest,
-                           ShouldAllowOpenURLMetricsForEmptySiteURL);
-  FRIEND_TEST_ALL_PREFIXES(ChromeContentBrowserClientExtensionsPartTest,
-                           ShouldAllowOpenURLMetricsForKnownSchemes);
-  FRIEND_TEST_ALL_PREFIXES(ChromeContentBrowserClientExtensionsPartTest,
                            IsolatedOriginsAndHostedAppWebExtents);
-
-  // Specifies reasons why web-accessible resource checks in ShouldAllowOpenURL
-  // might fail.
-  //
-  // This enum backs an UMA histogram.  The order of existing values
-  // should not be changed, and new values should only be added before
-  // FAILURE_LAST.
-  enum ShouldAllowOpenURLFailureReason {
-    FAILURE_FILE_SYSTEM_URL = 0,
-    FAILURE_BLOB_URL,
-    FAILURE_SCHEME_NOT_HTTP_OR_HTTPS_OR_EXTENSION,
-    FAILURE_RESOURCE_NOT_WEB_ACCESSIBLE,
-    FAILURE_LAST,
-  };
-
-  // Records metrics when ShouldAllowOpenURL blocks a load.  |site_url|
-  // corresponds to the SiteInstance that initiated the blocked load.
-  static void RecordShouldAllowOpenURLFailure(
-      ShouldAllowOpenURLFailureReason reason,
-      const GURL& site_url);
 
   // ChromeContentBrowserClientParts:
   void RenderProcessWillLaunch(content::RenderProcessHost* host) override;
@@ -151,7 +124,6 @@ class ChromeContentBrowserClientExtensionsPart
       base::CommandLine* command_line,
       content::RenderProcessHost* process,
       Profile* profile) override;
-  void ResourceDispatcherHostCreated() override;
 
   DISALLOW_COPY_AND_ASSIGN(ChromeContentBrowserClientExtensionsPart);
 };

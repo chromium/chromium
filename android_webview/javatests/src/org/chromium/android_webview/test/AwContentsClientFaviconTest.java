@@ -68,7 +68,7 @@ public class AwContentsClientFaviconTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         if (mWebServer != null) mWebServer.shutdown();
     }
 

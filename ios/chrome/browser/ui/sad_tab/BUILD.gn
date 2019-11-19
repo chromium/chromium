@@ -16,11 +16,12 @@ source_set("sad_tab") {
     "//components/strings",
     "//components/ui_metrics",
     "//ios/chrome/browser",
-    "//ios/chrome/browser/ui",
     "//ios/chrome/browser/ui/colors",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/overscroll_actions",
     "//ios/chrome/browser/ui/util",
+    "//ios/chrome/common/colors",
+    "//ios/chrome/common/ui_util",
     "//ios/third_party/material_components_ios",
     "//ios/third_party/material_roboto_font_loader_ios",
     "//ios/web",
@@ -75,6 +76,7 @@ source_set("unit_tests") {
 }
 
 source_set("eg_tests") {
+  defines = [ "CHROME_EARL_GREY_1" ]
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
@@ -95,4 +97,31 @@ source_set("eg_tests") {
     "//ui/base",
   ]
   libs = [ "XCTest.framework" ]
+}
+
+source_set("eg2_tests") {
+  defines = [ "CHROME_EARL_GREY_2" ]
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+  sources = [
+    "sad_tab_view_egtest.mm",
+  ]
+
+  deps = [
+    "//components/strings",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ui/popup_menu:constants",
+    "//ios/chrome/test:eg_test_support+eg2",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing:embedded_test_server_support",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/third_party/earl_grey2:test_lib",
+    "//ios/web/public/test/http_server",
+    "//ui/base",
+  ]
+
+  libs = [ "UIKit.framework" ]
 }

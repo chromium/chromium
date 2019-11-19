@@ -1,0 +1,4 @@
+document
+++group
+++++spinbutton RangeValue.IsReadOnly=false RangeValue.LargeChange=10.00 RangeValue.SmallChange=1.00 RangeValue.Maximum=0.00 RangeValue.Minimum=0.00 RangeValue.Value=1.00 Value.Value='1'
+++++spinbutton RangeValue.IsReadOnly=false RangeValue.LargeChange=10.00 RangeValue.SmallChange=1.00 RangeValue.Maximum=10.00 RangeValue.Minimum=5.00 RangeValue.Value=6.00 Value.Value='6'

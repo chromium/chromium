@@ -6,7 +6,7 @@
 #define COMPONENTS_ARC_TEST_FAKE_ARC_BRIDGE_HOST_H_
 
 #include "base/macros.h"
-#include "components/arc/common/arc_bridge.mojom.h"
+#include "components/arc/mojom/arc_bridge.mojom.h"
 
 namespace arc {
 
@@ -30,6 +30,7 @@ class FakeArcBridgeHost : public mojom::ArcBridgeHost {
       mojom::BluetoothInstancePtr bluetooth_ptr) override;
   void OnBootPhaseMonitorInstanceReady(
       mojom::BootPhaseMonitorInstancePtr boot_phase_monitor_ptr) override;
+  void OnCameraInstanceReady(mojom::CameraInstancePtr camera_ptr) override;
   void OnCastReceiverInstanceReady(
       mojom::CastReceiverInstancePtr cast_receiver_ptr) override;
   void OnCertStoreInstanceReady(
@@ -49,6 +50,8 @@ class FakeArcBridgeHost : public mojom::ArcBridgeHost {
       mojom::InputMethodManagerInstancePtr input_method_manager_ptr) override;
   void OnIntentHelperInstanceReady(
       mojom::IntentHelperInstancePtr intent_helper_ptr) override;
+  void OnKeymasterInstanceReady(
+      mojom::KeymasterInstancePtr keymaster_ptr) override;
   void OnKioskInstanceReady(mojom::KioskInstancePtr kiosk_ptr) override;
   void OnLockScreenInstanceReady(
       mojom::LockScreenInstancePtr lock_screen_ptr) override;
@@ -67,6 +70,8 @@ class FakeArcBridgeHost : public mojom::ArcBridgeHost {
   void OnPolicyInstanceReady(mojom::PolicyInstancePtr policy_ptr) override;
   void OnPowerInstanceReady(mojom::PowerInstancePtr power_ptr) override;
   void OnPrintInstanceReady(mojom::PrintInstancePtr print_ptr) override;
+  void OnPrintSpoolerInstanceReady(
+      mojom::PrintSpoolerInstancePtr print_spooler_ptr) override;
   void OnProcessInstanceReady(mojom::ProcessInstancePtr process_ptr) override;
   void OnPropertyInstanceReady(
       mojom::PropertyInstancePtr property_ptr) override;
@@ -74,6 +79,8 @@ class FakeArcBridgeHost : public mojom::ArcBridgeHost {
       mojom::RotationLockInstancePtr rotation_lock_ptr) override;
   void OnScreenCaptureInstanceReady(
       mojom::ScreenCaptureInstancePtr screen_capture_ptr) override;
+  void OnSmartCardManagerInstanceReady(
+      mojom::SmartCardManagerInstancePtr smart_card_manager_ptr) override;
   void OnStorageManagerInstanceReady(
       mojom::StorageManagerInstancePtr storage_manager_ptr) override;
   void OnTimerInstanceReady(mojom::TimerInstancePtr timer_ptr) override;

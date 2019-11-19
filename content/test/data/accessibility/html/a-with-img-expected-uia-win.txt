@@ -1,0 +1,13 @@
+document
+++group
+++++link Name='Link with image at start.'
+++++++img Name='Link'
+++++description Name=' '
+++++link Name='Link with image in the middle.'
+++++++img Name='image'
+++++description Name=' '
+++++link Name='Link with broken in the middle.'
+++++++img Name='broken'
+++++description Name=' '
+++++link Name='Link with image at the end'
+++++++img Name='end'

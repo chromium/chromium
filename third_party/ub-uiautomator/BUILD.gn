@@ -8,8 +8,8 @@ android_java_prebuilt("ub_uiautomator_java") {
   testonly = true
   jar_path = "lib/ub-uiautomator.jar"
   deps = [
-    "//third_party/android_tools:android_test_base_java",
-    "//third_party/android_tools:android_test_runner_java",
+    "//third_party/android_sdk:android_test_base_java",
+    "//third_party/android_sdk:android_test_runner_java",
     "//third_party/junit:junit",
   ]
 }

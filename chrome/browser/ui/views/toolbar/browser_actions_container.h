@@ -12,7 +12,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/optional.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_bar.h"
@@ -110,19 +109,24 @@ class Separator;
 class BrowserActionsContainer : public views::View,
                                 public ToolbarActionsBarDelegate,
                                 public views::ResizeAreaDelegate,
-                                public gfx::AnimationDelegate,
+                                public views::AnimationDelegateViews,
                                 public ToolbarActionView::Delegate,
                                 public views::WidgetObserver {
  public:
   class Delegate {
    public:
+    virtual ~Delegate() {}
+
     // Returns the view of the toolbar actions overflow menu to use as a
     // reference point for a popup when this view isn't visible.
-    virtual views::MenuButton* GetOverflowReferenceView() = 0;
+    virtual views::LabelButton* GetOverflowReferenceView() = 0;
 
     // Returns the maximum width the browser actions container can have. An
     // empty value means there is no maximum.
     virtual base::Optional<int> GetMaxBrowserActionsWidth() const = 0;
+
+    // Whether the container supports showing extensions outside of the menu.
+    virtual bool CanShowIconInToolbar() const;
 
     // Creates a ToolbarActionsBar for the BrowserActionsContainer to use.
     virtual std::unique_ptr<ToolbarActionsBar> CreateToolbarActionsBar(
@@ -140,6 +144,8 @@ class BrowserActionsContainer : public views::View,
                           BrowserActionsContainer* main_container,
                           Delegate* delegate,
                           bool interactive = true);
+  BrowserActionsContainer(const BrowserActionsContainer&) = delete;
+  BrowserActionsContainer& operator=(const BrowserActionsContainer&) = delete;
   ~BrowserActionsContainer() override;
 
   // Get the number of toolbar actions being displayed.
@@ -217,7 +223,7 @@ class BrowserActionsContainer : public views::View,
   void OnResize(int resize_amount, bool done_resizing) override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 
-  // Overridden from gfx::AnimationDelegate:
+  // Overridden from views::AnimationDelegateViews:
   void AnimationProgressed(const gfx::Animation* animation) override;
   void AnimationCanceled(const gfx::Animation* animation) override;
   void AnimationEnded(const gfx::Animation* animation) override;
@@ -225,8 +231,9 @@ class BrowserActionsContainer : public views::View,
   // Overridden from ToolbarActionView::Delegate:
   content::WebContents* GetCurrentWebContents() override;
   bool ShownInsideMenu() const override;
+  bool CanShowIconInToolbar() const override;
   void OnToolbarActionViewDragDone() override;
-  views::MenuButton* GetOverflowReferenceView() override;
+  views::LabelButton* GetOverflowReferenceView() const override;
   gfx::Size GetToolbarActionSize() override;
 
   // ToolbarActionsBarDelegate:
@@ -255,7 +262,7 @@ class BrowserActionsContainer : public views::View,
  protected:
   // Overridden from views::View:
   void ViewHierarchyChanged(
-      const ViewHierarchyChangedDetails& details) override;
+      const views::ViewHierarchyChangedDetails& details) override;
   void OnPaint(gfx::Canvas* canvas) override;
 
  private:
@@ -346,8 +353,6 @@ class BrowserActionsContainer : public views::View,
 
   // The extension bubble that is actively showing, if any.
   views::BubbleDialogDelegateView* active_bubble_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserActionsContainer);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_BROWSER_ACTIONS_CONTAINER_H_

@@ -1,0 +1,64 @@
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<link rel="import" href="chrome://resources/cr_elements/icons.html">
+
+<dom-module id="security-token-pin">
+  <link rel="stylesheet" href="oobe_dialog_host.css">
+  <link rel="stylesheet" href="oobe_flex_layout.css">
+  <link rel="stylesheet" href="security_token_pin.css">
+
+  <template>
+
+    <oobe-dialog class="gaia-dialog" has-buttons role="dialog"
+        aria-labelledby="title" aria-describedby="description">
+      <hd-iron-icon slot="oobe-icon" icon1x="oobe-32:lock"
+          icon2x="oobe-64:lock">
+      </hd-iron-icon>
+      <h1 slot="title" id="title">
+        [[i18nDynamic(locale, 'securityTokenPinDialogTitle')]]
+      </h1>
+      <div slot="subtitle" id="subtitle">
+        <span id="description">
+          [[i18nDynamic(locale, 'securityTokenPinDialogSubtitle')]]
+        </span>
+        <a href="#" id="learnMore">
+          [[i18nDynamic(locale, 'learnMoreButton')]]
+        </a>
+      </div>
+      <div slot="footer">
+        <div id="pinKeyboardContainer">
+          <pin-keyboard id="pinKeyboard"
+              has-error="[[hasError_(parameters, userEdited_)]]"
+              aria-label$="[[getAriaLabel_(locale, parameters, errorLabelId_,
+                                           userEdited_)]]"
+              on-pin-change="onPinChange_">
+            <div id="errorContainer" problem
+                hidden="[[!hasError_(parameters, userEdited_)]]">
+              <iron-icon id="errorIcon" icon="cr:error-outline"></iron-icon>
+              <span hidden="[[!isErrorLabelVisible_(
+                                   errorLabelId_, userEdited_)]]">
+                [[i18nDynamic(locale, errorLabelId_)]]
+              </span>
+              <span hidden="[[!isErrorLabelVisible_(
+                                   errorLabelId_, userEdited_)]]">
+                [[i18nDynamic(locale, 'securityTokenPinDialogTryAgain')]]
+              </span>
+              <span hidden="[[!isAttemptsLeftVisible_(parameters)]]">
+                [[i18nDynamic(locale, 'securityTokenPinDialogAttemptsLeft',
+                              parameters.attemptsLeft)]]
+              </span>
+            </div>
+          </pin-keyboard>
+        </div>
+      </div>
+      <div slot="bottom-buttons" class="layout horizontal justified">
+        <oobe-back-button on-tap="onBackClicked_"></oobe-back-button>
+        <oobe-next-button on-tap="onNextClicked_"
+            disabled="[[processingCompletion_]]"></oobe-next-button>
+      </div>
+    </oobe-dialog>
+
+  </template>
+</dom-module>

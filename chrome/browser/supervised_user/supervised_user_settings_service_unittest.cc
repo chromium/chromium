@@ -17,7 +17,7 @@
 #include "components/sync/model/sync_change_processor_wrapper_for_test.h"
 #include "components/sync/model/sync_error_factory_mock.h"
 #include "components/sync/protocol/sync.pb.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -60,7 +60,7 @@ const char kSplitItemName[] = "X-SuperMoosePowers";
 
 class SupervisedUserSettingsServiceTest : public ::testing::Test {
  protected:
-  SupervisedUserSettingsServiceTest() : settings_service_(nullptr) {}
+  SupervisedUserSettingsServiceTest() {}
   ~SupervisedUserSettingsServiceTest() override {}
 
   std::unique_ptr<syncer::SyncChangeProcessor> CreateSyncProcessor() {
@@ -124,7 +124,7 @@ class SupervisedUserSettingsServiceTest : public ::testing::Test {
   void SetUp() override {
     TestingPrefStore* pref_store = new TestingPrefStore;
     settings_service_.Init(pref_store);
-    user_settings_subscription_ = settings_service_.Subscribe(
+    user_settings_subscription_ = settings_service_.SubscribeForSettingsChange(
         base::Bind(&SupervisedUserSettingsServiceTest::OnNewSettingsAvailable,
                    base::Unretained(this)));
     pref_store->SetInitializationCompleted();
@@ -135,7 +135,7 @@ class SupervisedUserSettingsServiceTest : public ::testing::Test {
 
   void TearDown() override { settings_service_.Shutdown(); }
 
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   base::DictionaryValue split_items_;
   std::unique_ptr<base::Value> atomic_setting_value_;
   SupervisedUserSettingsService settings_service_;

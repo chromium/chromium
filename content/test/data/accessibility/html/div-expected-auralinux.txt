@@ -1,5 +1,5 @@
 [document web]
 ++[section]
-++++[text] name='Unfocusable div'
+++++[static] name='Unfocusable div'
 ++[section] name='Focusable div'
-++++[text] name='Focusable div'
+++++[static] name='Focusable div'

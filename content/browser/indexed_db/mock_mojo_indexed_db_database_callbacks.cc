@@ -6,15 +6,14 @@
 
 namespace content {
 
-MockMojoIndexedDBDatabaseCallbacks::MockMojoIndexedDBDatabaseCallbacks()
-    : binding_(this) {}
-MockMojoIndexedDBDatabaseCallbacks::~MockMojoIndexedDBDatabaseCallbacks() {}
+MockMojoIndexedDBDatabaseCallbacks::MockMojoIndexedDBDatabaseCallbacks() =
+    default;
+MockMojoIndexedDBDatabaseCallbacks::~MockMojoIndexedDBDatabaseCallbacks() =
+    default;
 
-blink::mojom::IDBDatabaseCallbacksAssociatedPtrInfo
+mojo::PendingAssociatedRemote<blink::mojom::IDBDatabaseCallbacks>
 MockMojoIndexedDBDatabaseCallbacks::CreateInterfacePtrAndBind() {
-  blink::mojom::IDBDatabaseCallbacksAssociatedPtrInfo ptr_info;
-  binding_.Bind(::mojo::MakeRequest(&ptr_info));
-  return ptr_info;
+  return receiver_.BindNewEndpointAndPassRemote();
 }
 
 }  // namespace content

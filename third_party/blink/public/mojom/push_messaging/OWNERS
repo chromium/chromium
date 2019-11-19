@@ -1,0 +1,7 @@
+file://third_party/blink/renderer/modules/push_messaging/OWNERS
+
+per-file *.mojom=set noparent
+per-file *.mojom=file://ipc/SECURITY_OWNERS
+
+# TEAM: platform-capabilities@chromium.org
+# COMPONENT: Blink>PushAPI

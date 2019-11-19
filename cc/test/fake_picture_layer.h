@@ -30,22 +30,12 @@ class FakePictureLayer : public PictureLayer {
   // Layer implementation.
   std::unique_ptr<LayerImpl> CreateLayerImpl(LayerTreeImpl* tree_impl) override;
   bool Update() override;
-  bool HasSlowPaths() const override;
-  bool HasNonAAPaint() const override;
 
   int update_count() const { return update_count_; }
   void reset_update_count() { update_count_ = 0; }
 
   void set_always_update_resources(bool always_update_resources) {
     always_update_resources_ = always_update_resources;
-  }
-
-  void set_force_content_has_slow_paths(bool flag) {
-    force_content_has_slow_paths_ = flag;
-  }
-
-  void set_force_content_has_non_aa_paint(bool flag) {
-    force_content_has_non_aa_paint_ = flag;
   }
 
   void set_fixed_tile_size(gfx::Size fixed_tile_size) {
@@ -61,8 +51,6 @@ class FakePictureLayer : public PictureLayer {
   int update_count_ = 0;
   bool always_update_resources_ = false;
 
-  bool force_content_has_slow_paths_ = false;
-  bool force_content_has_non_aa_paint_ = false;
   gfx::Size fixed_tile_size_;
 };
 

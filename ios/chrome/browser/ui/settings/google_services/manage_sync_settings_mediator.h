@@ -18,6 +18,9 @@ namespace syncer {
 class SyncService;
 }  // syncer
 
+// Accessibility identifier for the Data from Chrome Sync cell.
+extern NSString* const kDataFromChromeSyncAccessibilityIdentifier;
+
 // Mediator for the manager sync settings.
 @interface ManageSyncSettingsMediator
     : NSObject <ManageSyncSettingsServiceDelegate,

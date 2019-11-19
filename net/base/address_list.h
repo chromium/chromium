@@ -13,9 +13,12 @@
 #include "base/compiler_specific.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_export.h"
-#include "net/log/net_log_parameters_callback.h"
 
 struct addrinfo;
+
+namespace base {
+class Value;
+}
 
 namespace net {
 
@@ -25,6 +28,7 @@ class NET_EXPORT AddressList {
  public:
   AddressList();
   AddressList(const AddressList&);
+  AddressList& operator=(const AddressList&);
   ~AddressList();
 
   // Creates an address list for a single IP literal.
@@ -52,10 +56,12 @@ class NET_EXPORT AddressList {
   // Sets canonical name to the literal of the first IP address on the list.
   void SetDefaultCanonicalName();
 
-  // Creates a callback for use with the NetLog that returns a Value
-  // representation of the address list.  The callback must be destroyed before
-  // |this| is.
-  NetLogParametersCallback CreateNetLogCallback() const;
+  // Creates a value representation of the address list, appropriate for
+  // inclusion in a NetLog.
+  base::Value NetLogParams() const;
+
+  // Deduplicates the stored addresses while otherwise preserving their order.
+  void Deduplicate();
 
   using iterator = std::vector<IPEndPoint>::iterator;
   using const_iterator = std::vector<IPEndPoint>::const_iterator;

@@ -13,6 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
+#include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -23,6 +24,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test_utils.h"
 #include "url/gurl.h"
 
@@ -39,9 +41,20 @@ constexpr char XrBrowserTestBase::kVrConfigPathEnvVar[];
 constexpr char XrBrowserTestBase::kVrConfigPathVal[];
 constexpr char XrBrowserTestBase::kVrLogPathEnvVar[];
 constexpr char XrBrowserTestBase::kVrLogPathVal[];
+constexpr char XrBrowserTestBase::kOpenXrConfigPathEnvVar[];
+constexpr char XrBrowserTestBase::kOpenXrConfigPathVal[];
 constexpr char XrBrowserTestBase::kTestFileDir[];
+constexpr char XrBrowserTestBase::kSwitchIgnoreRuntimeRequirements[];
+const std::vector<std::string> XrBrowserTestBase::kRequiredTestSwitches{
+    "enable-gpu", "enable-pixel-output-in-tests",
+    "run-through-xr-wrapper-script"};
+const std::vector<std::pair<std::string, std::string>>
+    XrBrowserTestBase::kRequiredTestSwitchesWithValues{
+        std::pair<std::string, std::string>("test-launcher-jobs", "1")};
 
-XrBrowserTestBase::XrBrowserTestBase() : env_(base::Environment::Create()) {}
+XrBrowserTestBase::XrBrowserTestBase() : env_(base::Environment::Create()) {
+  enable_features_.push_back(features::kLogJsConsoleMessages);
+}
 
 XrBrowserTestBase::~XrBrowserTestBase() = default;
 
@@ -79,25 +92,87 @@ std::string MakeExecutableRelative(const char* path) {
 }
 
 void XrBrowserTestBase::SetUp() {
+  // Check whether the required flags were passed to the test - without these,
+  // we can fail in ways that are non-obvious, so fail more explicitly here if
+  // they aren't present.
+  auto* cmd_line = base::CommandLine::ForCurrentProcess();
+  for (auto req_switch : kRequiredTestSwitches) {
+    ASSERT_TRUE(cmd_line->HasSwitch(req_switch))
+        << "Missing switch " << req_switch << " required to run tests properly";
+  }
+  for (auto req_switch_pair : kRequiredTestSwitchesWithValues) {
+    ASSERT_TRUE(cmd_line->HasSwitch(req_switch_pair.first))
+        << "Missing switch " << req_switch_pair.first
+        << " required to run tests properly";
+    ASSERT_TRUE(cmd_line->GetSwitchValueASCII(req_switch_pair.first) ==
+                req_switch_pair.second)
+        << "Have required switch " << req_switch_pair.first
+        << ", but not required value " << req_switch_pair.second;
+  }
+
+  // Get the set of runtime requirements to ignore.
+  if (cmd_line->HasSwitch(kSwitchIgnoreRuntimeRequirements)) {
+    auto reqs = cmd_line->GetSwitchValueASCII(kSwitchIgnoreRuntimeRequirements);
+    if (reqs != "") {
+      for (auto req : base::SplitString(
+               reqs, ",", base::WhitespaceHandling::TRIM_WHITESPACE,
+               base::SplitResult::SPLIT_WANT_NONEMPTY)) {
+        ignored_requirements_.insert(req);
+      }
+    }
+  }
+
+  // Check whether we meet all runtime requirements for this test.
+  XR_CONDITIONAL_SKIP_PRETEST(runtime_requirements_, ignored_requirements_,
+                              &test_skipped_at_startup_)
+
   // Set the environment variable to use the mock OpenVR client.
-  EXPECT_TRUE(
+  ASSERT_TRUE(
       env_->SetVar(kVrOverrideEnvVar, MakeExecutableRelative(kVrOverrideVal)))
       << "Failed to set OpenVR mock client location environment variable";
-  EXPECT_TRUE(env_->SetVar(kVrConfigPathEnvVar,
+  ASSERT_TRUE(env_->SetVar(kVrConfigPathEnvVar,
                            MakeExecutableRelative(kVrConfigPathVal)))
       << "Failed to set OpenVR config location environment variable";
-  EXPECT_TRUE(
+  ASSERT_TRUE(
       env_->SetVar(kVrLogPathEnvVar, MakeExecutableRelative(kVrLogPathVal)))
       << "Failed to set OpenVR log location environment variable";
+
+  // Set the environment variable to use the mock OpenXR client.
+  // If the kOpenXrConfigPathEnvVar environment variable is set, the OpenXR
+  // loader will look for the OpenXR runtime specified in that json file. The
+  // json file contains the path to the runtime, relative to the json file
+  // itself. Otherwise, the OpenXR loader loads the active OpenXR runtime
+  // installed on the system, which is specified by a registry key.
+  ASSERT_TRUE(env_->SetVar(kOpenXrConfigPathEnvVar,
+                           MakeExecutableRelative(kOpenXrConfigPathVal)))
+      << "Failed to set OpenXR JSON location environment variable";
 
   // Set any command line flags that subclasses have set, e.g. enabling WebVR
   // and OpenVR support.
   for (const auto& switch_string : append_switches_) {
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(switch_string);
+    cmd_line->AppendSwitch(switch_string);
   }
-  scoped_feature_list_.InitWithFeatures(enable_features_, {});
+
+  for (const auto& blink_feature : enable_blink_features_) {
+    cmd_line->AppendSwitchASCII("enable-blink-features", blink_feature);
+  }
+
+  scoped_feature_list_.InitWithFeatures(enable_features_, disable_features_);
 
   InProcessBrowserTest::SetUp();
+}
+
+void XrBrowserTestBase::TearDown() {
+  if (test_skipped_at_startup_) {
+    // Since we didn't complete startup, no need to do teardown, either. Doing
+    // so can result in hitting a DCHECK.
+    return;
+  }
+  InProcessBrowserTest::TearDown();
+}
+
+XrBrowserTestBase::RuntimeType XrBrowserTestBase::GetRuntimeType() const {
+  return XrBrowserTestBase::RuntimeType::RUNTIME_NONE;
 }
 
 GURL XrBrowserTestBase::GetFileUrlForHtmlTestFile(
@@ -132,24 +207,41 @@ content::WebContents* XrBrowserTestBase::GetCurrentWebContents() {
 
 void XrBrowserTestBase::LoadUrlAndAwaitInitialization(const GURL& url) {
   ui_test_utils::NavigateToURL(browser(), url);
-  EXPECT_TRUE(PollJavaScriptBoolean("isInitializationComplete()",
+  ASSERT_TRUE(PollJavaScriptBoolean("isInitializationComplete()",
                                     kPollTimeoutMedium,
                                     GetCurrentWebContents()))
       << "Timed out waiting for JavaScript test initialization.";
+
+#if defined(OS_WIN)
+  // Now that the browser is opened and has focus, keep track of this window so
+  // that we can restore the proper focus after entering each session. This is
+  // required for WMR tests that create multiple sessions to work properly.
+  hwnd_ = GetForegroundWindow();
+#endif
 }
 
 void XrBrowserTestBase::RunJavaScriptOrFail(
     const std::string& js_expression,
     content::WebContents* web_contents) {
-  EXPECT_TRUE(content::ExecuteScript(web_contents, js_expression))
+  if (javascript_failed_) {
+    LogJavaScriptFailure();
+    return;
+  }
+
+  ASSERT_TRUE(content::ExecuteScript(web_contents, js_expression))
       << "Failed to run given JavaScript: " << js_expression;
 }
 
 bool XrBrowserTestBase::RunJavaScriptAndExtractBoolOrFail(
     const std::string& js_expression,
     content::WebContents* web_contents) {
+  if (javascript_failed_) {
+    LogJavaScriptFailure();
+    return false;
+  }
+
   bool result;
-  DLOG(ERROR) << "Run JavaScript: " << js_expression;
+  DLOG(INFO) << "Run JavaScript: " << js_expression;
   EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
       web_contents,
       "window.domAutomationController.send(" + js_expression + ")", &result))
@@ -160,6 +252,11 @@ bool XrBrowserTestBase::RunJavaScriptAndExtractBoolOrFail(
 std::string XrBrowserTestBase::RunJavaScriptAndExtractStringOrFail(
     const std::string& js_expression,
     content::WebContents* web_contents) {
+  if (javascript_failed_) {
+    LogJavaScriptFailure();
+    return "";
+  }
+
   std::string result;
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
       web_contents,
@@ -192,7 +289,7 @@ void XrBrowserTestBase::PollJavaScriptBooleanOrFail(
     const std::string& bool_expression,
     const base::TimeDelta& timeout,
     content::WebContents* web_contents) {
-  EXPECT_TRUE(PollJavaScriptBoolean(bool_expression, timeout, web_contents))
+  ASSERT_TRUE(PollJavaScriptBoolean(bool_expression, timeout, web_contents))
       << "Timed out polling JavaScript boolean expression: " << bool_expression;
 }
 
@@ -244,7 +341,7 @@ void XrBrowserTestBase::WaitOnJavaScriptStep(
   // code to do so.
   bool code_available = RunJavaScriptAndExtractBoolOrFail(
       "typeof javascriptDone !== 'undefined'", web_contents);
-  EXPECT_TRUE(code_available) << "Attempted to wait on a JavaScript test step "
+  ASSERT_TRUE(code_available) << "Attempted to wait on a JavaScript test step "
                               << "without the code to do so. You either forgot "
                               << "to import webxr_e2e.js or "
                               << "are incorrectly using a C++ function.";
@@ -278,6 +375,18 @@ void XrBrowserTestBase::WaitOnJavaScriptStep(
       reason +=
           " JavaScript testharness reported failure reason: " + result_string;
     }
+    // Store that we've failed waiting for a JavaScript step so we can abort
+    // further attempts to run JavaScript, which has the potential to do weird
+    // things and produce non-useful output due to JavaScript code continuing
+    // to run when it's in a known bad state.
+    // This is a workaround for the fact that FAIL() and other gtest macros that
+    // cause test failures only abort the current function. Thus, a failure here
+    // will show up as a test failure, but there's nothing that actually stops
+    // the test from continuing to run since FAIL() is not being called in the
+    // main test body.
+    javascript_failed_ = true;
+    // Newlines to help the failure reason stick out.
+    LOG(ERROR) << "\n\n\nvvvvvvvvvvvvvvvvv Useful Stack vvvvvvvvvvvvvvvvv\n\n";
     FAIL() << reason;
   }
 
@@ -376,6 +485,12 @@ void XrBrowserTestBase::EndTest() {
 
 void XrBrowserTestBase::AssertNoJavaScriptErrors() {
   AssertNoJavaScriptErrors(GetCurrentWebContents());
+}
+
+void XrBrowserTestBase::LogJavaScriptFailure() {
+  LOG(ERROR) << "HEY! LISTEN! Not running requested JavaScript due to previous "
+                "failure. Failures below this are likely garbage. Look for the "
+                "useful stack above.";
 }
 
 }  // namespace vr

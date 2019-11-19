@@ -5,11 +5,13 @@ element.style
   --another-div-variable
   --div-variable
   --span-variable
+  --camelCased
 span
   --body-variable
   --another-div-variable
   --div-variable
   --span-variable
+  --camelCased
 .myelement
   --body-variable
   --another-div-variable

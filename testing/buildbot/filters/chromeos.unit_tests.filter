@@ -1,0 +1,9 @@
+# TODO(crbug.com/970790): Enable this.
+-InputMethodManagerImplTest.TestEnableLayouts
+-InputMethodManagerImplTest.TestEnableLayoutsNonUsHardwareKeyboard
+-InputMethodManagerImplTest.TestEnableMultipleHardwareKeyboardLayout
+-InputMethodManagerImplTest.TestLastUsedInputMethod
+-InputMethodManagerImplTest.TestNextInputMethod
+-InputMethodManagerImplTest.TestObserver
+# TODO(crbug.com/970806): Enable this.
+-KeyboardShortcutViewerMetadataTest.ModifyAcceleratorShouldUpdateMetadata

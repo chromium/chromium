@@ -5,6 +5,8 @@
 #ifndef PRINTING_PRINT_DIALOG_GTK_INTERFACE_H_
 #define PRINTING_PRINT_DIALOG_GTK_INTERFACE_H_
 
+#include <memory>
+
 #include "base/strings/string16.h"
 #include "printing/printing_context_linux.h"
 #include "ui/gfx/native_widget_types.h"
@@ -24,7 +26,7 @@ class PrintDialogGtkInterface {
 
   // Updates the dialog to use |settings|. Only used when printing without the
   // system print dialog. E.g. for Print Preview.
-  virtual void UpdateSettings(PrintSettings* settings) = 0;
+  virtual void UpdateSettings(std::unique_ptr<PrintSettings> settings) = 0;
 
   // Shows the dialog and handles the response with |callback|. Only used when
   // printing with the native print dialog.

@@ -5,13 +5,13 @@
 #include <string>
 
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/signin/core/browser/signin_investigator.h"
-#include "components/signin/core/browser/signin_metrics.h"
-#include "components/signin/core/browser/signin_pref_names.h"
+#include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
-#include "services/identity/public/cpp/identity_test_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using signin_metrics::AccountEquality;
@@ -33,9 +33,9 @@ class FakeProvider : public SigninInvestigator::DependencyProvider {
   PrefService* GetPrefs() override { return &prefs_; }
 
  private:
-  base::test::ScopedTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
   sync_preferences::TestingPrefServiceSyncable prefs_;
-  identity::IdentityTestEnvironment identity_test_env_;
+  signin::IdentityTestEnvironment identity_test_env_;
 };
 }  // namespace
 
@@ -116,14 +116,14 @@ TEST_F(SigninInvestigatorTest, EqualityDifferentEmailFallbackEmptyCurrentId) {
 
 TEST_F(SigninInvestigatorTest, InvestigateSameAccount) {
   AssertInvestigatedScenario(kSameEmail, kSameId,
-                             InvestigatedScenario::SAME_ACCOUNT);
+                             InvestigatedScenario::kSameAccount);
 }
 
-TEST_F(SigninInvestigatorTest, InvestigateUpgrade) {
-  AssertInvestigatedScenario("", "", InvestigatedScenario::UPGRADE_LOW_RISK);
+TEST_F(SigninInvestigatorTest, InvestigateFirstSignIn) {
+  AssertInvestigatedScenario("", "", InvestigatedScenario::kFirstSignIn);
 }
 
 TEST_F(SigninInvestigatorTest, InvestigateDifferentAccount) {
   AssertInvestigatedScenario(kDifferentEmail, kDifferentId,
-                             InvestigatedScenario::DIFFERENT_ACCOUNT);
+                             InvestigatedScenario::kDifferentAccount);
 }

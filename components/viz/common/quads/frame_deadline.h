@@ -24,6 +24,8 @@ namespace viz {
 //    start time + deadline in frames * frame interval
 class VIZ_COMMON_EXPORT FrameDeadline {
  public:
+  static FrameDeadline MakeZero();
+
   FrameDeadline() = default;
   FrameDeadline(base::TimeTicks frame_start_time,
                 uint32_t deadline_in_frames,
@@ -65,6 +67,8 @@ class VIZ_COMMON_EXPORT FrameDeadline {
   bool use_default_lower_bound_deadline() const {
     return use_default_lower_bound_deadline_;
   }
+
+  bool IsZero() const;
 
   std::string ToString() const;
 

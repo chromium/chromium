@@ -4,6 +4,8 @@
 
 #include "chrome/browser/permissions/chooser_context_base_mock_permission_observer.h"
 
+#include "url/origin.h"
+
 MockPermissionObserver::MockPermissionObserver() {}
 
 MockPermissionObserver::~MockPermissionObserver() {}

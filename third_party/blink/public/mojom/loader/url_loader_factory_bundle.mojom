@@ -25,9 +25,9 @@ struct URLLoaderFactoryBundle {
   // A mapping from URL scheme to factory interface.
   map<string, network.mojom.URLLoaderFactory> scheme_specific_factories;
 
-  // A mapping from request-initiator-origin to factory interface.
+  // A mapping from isolated world's origin to factory interface.
   map<url.mojom.Origin, network.mojom.URLLoaderFactory>
-      initiator_specific_factories;
+      isolated_world_factories;
 
   // A special factory that is used for AppCache.
   // TODO(https://crbug.com/582750): Drop this when AppCache is deprecated.

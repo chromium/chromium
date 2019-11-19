@@ -19,6 +19,8 @@
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "chromeos/network/onc/onc_signature.h"
+#include "components/crx_file/id_util.h"
+#include "components/device_event_log/device_event_log.h"
 
 namespace chromeos {
 namespace onc {
@@ -28,14 +30,9 @@ namespace {
 // According to the IEEE 802.11 standard the SSID is a series of 0 to 32 octets.
 const int kMaximumSSIDLengthInBytes = 32;
 
-template <typename T, size_t N>
-std::vector<T> toVector(T const (&array)[N]) {
-  return std::vector<T>(array, array + N);
-}
-
 void AddKeyToList(const char* key, base::Value::ListStorage& list) {
   base::Value key_value(key);
-  if (!base::ContainsValue(list, key_value))
+  if (!base::Contains(list, key_value))
     list.push_back(std::move(key_value));
 }
 
@@ -49,7 +46,7 @@ bool FieldIsRecommended(const base::DictionaryValue& object,
   const base::Value* recommended =
       object.FindKeyOfType(::onc::kRecommended, base::Value::Type::LIST);
   return recommended &&
-         base::ContainsValue(recommended->GetList(), base::Value(field_name));
+         base::Contains(recommended->GetList(), base::Value(field_name));
 }
 
 bool FieldIsSetToValueOrRecommended(const base::DictionaryValue& object,
@@ -162,6 +159,8 @@ std::unique_ptr<base::DictionaryValue> Validator::MapObject(
       valid = ValidateEAP(repaired.get());
     } else if (&signature == &kCertificateSignature) {
       valid = ValidateCertificate(repaired.get());
+    } else if (&signature == &kScopeSignature) {
+      valid = ValidateScope(repaired.get());
     } else if (&signature == &kTetherWithStateSignature) {
       valid = ValidateTether(repaired.get());
     }
@@ -328,23 +327,28 @@ bool Validator::ValidateRecommendedField(
 
 bool Validator::ValidateClientCertFields(bool allow_cert_type_none,
                                          base::DictionaryValue* result) {
-  using namespace ::onc::client_cert;
-  const char* const kValidCertTypes[] = {kRef, kPattern, kPKCS11Id};
-  std::vector<const char*> valid_cert_types(toVector(kValidCertTypes));
+  std::vector<const char*> valid_cert_types = {::onc::client_cert::kRef,
+                                               ::onc::client_cert::kPattern,
+                                               ::onc::client_cert::kPKCS11Id};
   if (allow_cert_type_none)
-    valid_cert_types.push_back(kClientCertTypeNone);
-  if (FieldExistsAndHasNoValidValue(*result, kClientCertType, valid_cert_types))
+    valid_cert_types.push_back(::onc::client_cert::kClientCertTypeNone);
+  if (FieldExistsAndHasNoValidValue(
+          *result, ::onc::client_cert::kClientCertType, valid_cert_types))
     return false;
 
-  std::string cert_type = GetStringFromDict(*result, kClientCertType);
+  std::string cert_type =
+      GetStringFromDict(*result, ::onc::client_cert::kClientCertType);
   bool all_required_exist = true;
 
-  if (cert_type == kPattern)
-    all_required_exist &= RequireField(*result, kClientCertPattern);
-  else if (cert_type == kRef)
-    all_required_exist &= RequireField(*result, kClientCertRef);
-  else if (cert_type == kPKCS11Id)
-    all_required_exist &= RequireField(*result, kClientCertPKCS11Id);
+  if (cert_type == ::onc::client_cert::kPattern)
+    all_required_exist &=
+        RequireField(*result, ::onc::client_cert::kClientCertPattern);
+  else if (cert_type == ::onc::client_cert::kRef)
+    all_required_exist &=
+        RequireField(*result, ::onc::client_cert::kClientCertRef);
+  else if (cert_type == ::onc::client_cert::kPKCS11Id)
+    all_required_exist &=
+        RequireField(*result, ::onc::client_cert::kClientCertPKCS11Id);
 
   return !error_on_missing_field_ || all_required_exist;
 }
@@ -523,8 +527,8 @@ bool Validator::ValidateSSIDAndHexSSID(base::DictionaryValue* object) {
   std::string hex_ssid_string;
   if (object->GetStringWithoutPathExpansion(::onc::wifi::kHexSSID,
                                             &hex_ssid_string)) {
-    std::vector<uint8_t> decoded_ssid;
-    if (!base::HexStringToBytes(hex_ssid_string, &decoded_ssid)) {
+    std::string decoded_ssid;
+    if (!base::HexStringToString(hex_ssid_string, &decoded_ssid)) {
       path_.push_back(::onc::wifi::kHexSSID);
       std::ostringstream msg;
       msg << "Not a valid hex representation: '" << hex_ssid_string << "'";
@@ -546,9 +550,7 @@ bool Validator::ValidateSSIDAndHexSSID(base::DictionaryValue* object) {
     // HexSSID contains the UTF-8 encoding of SSID. If not, remove the SSID
     // field.
     if (ssid_string.length() > 0) {
-      std::string decoded_ssid_string(
-          reinterpret_cast<const char*>(&decoded_ssid[0]), decoded_ssid.size());
-      if (ssid_string != decoded_ssid_string) {
+      if (ssid_string != decoded_ssid) {
         path_.push_back(::onc::wifi::kSSID);
         std::ostringstream msg;
         msg << "Fields '" << ::onc::wifi::kSSID << "' and '"
@@ -605,12 +607,11 @@ bool Validator::IsGlobalNetworkConfigInUserImport(
 }
 
 bool Validator::ValidateToplevelConfiguration(base::DictionaryValue* result) {
-  using namespace ::onc::toplevel_config;
-
-  const char* const kValidTypes[] = {kUnencryptedConfiguration,
-                                     kEncryptedConfiguration};
-  const std::vector<const char*> valid_types(toVector(kValidTypes));
-  if (FieldExistsAndHasNoValidValue(*result, kType, valid_types))
+  const std::vector<const char*> valid_types = {
+      ::onc::toplevel_config::kUnencryptedConfiguration,
+      ::onc::toplevel_config::kEncryptedConfiguration};
+  if (FieldExistsAndHasNoValidValue(*result, ::onc::toplevel_config::kType,
+                                    valid_types))
     return false;
 
   if (IsGlobalNetworkConfigInUserImport(*result))
@@ -620,41 +621,49 @@ bool Validator::ValidateToplevelConfiguration(base::DictionaryValue* result) {
 }
 
 bool Validator::ValidateNetworkConfiguration(base::DictionaryValue* result) {
-  using namespace ::onc::network_config;
+  const std::string* onc_type =
+      result->FindStringKey(::onc::network_config::kType);
+  if (onc_type && *onc_type == ::onc::network_type::kWimaxDeprecated) {
+    AddValidationIssue(/*is_error=*/false, "WiMax is deprecated");
+    return true;
+  }
 
-  const char* const kValidTypes[] = {
+  const std::vector<const char*> valid_types = {
       ::onc::network_type::kEthernet, ::onc::network_type::kVPN,
       ::onc::network_type::kWiFi,     ::onc::network_type::kCellular,
-      ::onc::network_type::kWimax,    ::onc::network_type::kTether};
-  const std::vector<const char*> valid_types(toVector(kValidTypes));
-  const char* const kValidIPConfigTypes[] = {kIPConfigTypeDHCP,
-                                             kIPConfigTypeStatic};
-  const std::vector<const char*> valid_ipconfig_types(
-      toVector(kValidIPConfigTypes));
-  if (FieldExistsAndHasNoValidValue(*result, kType, valid_types) ||
-      FieldExistsAndHasNoValidValue(*result, kIPAddressConfigType,
+      ::onc::network_type::kTether,
+  };
+  const std::vector<const char*> valid_ipconfig_types = {
+      ::onc::network_config::kIPConfigTypeDHCP,
+      ::onc::network_config::kIPConfigTypeStatic};
+  if (FieldExistsAndHasNoValidValue(*result, ::onc::network_config::kType,
+                                    valid_types) ||
+      FieldExistsAndHasNoValidValue(*result,
+                                    ::onc::network_config::kIPAddressConfigType,
                                     valid_ipconfig_types) ||
-      FieldExistsAndHasNoValidValue(*result, kNameServersConfigType,
-                                    valid_ipconfig_types) ||
-      FieldExistsAndIsEmpty(*result, kGUID)) {
+      FieldExistsAndHasNoValidValue(
+          *result, ::onc::network_config::kNameServersConfigType,
+          valid_ipconfig_types) ||
+      FieldExistsAndIsEmpty(*result, ::onc::network_config::kGUID)) {
     return false;
   }
 
-  if (!CheckGuidIsUniqueAndAddToSet(*result, kGUID, &network_guids_))
+  if (!CheckGuidIsUniqueAndAddToSet(*result, ::onc::network_config::kGUID,
+                                    &network_guids_))
     return false;
 
-  bool all_required_exist = RequireField(*result, kGUID);
+  bool all_required_exist = RequireField(*result, ::onc::network_config::kGUID);
 
   bool remove = false;
   result->GetBooleanWithoutPathExpansion(::onc::kRemove, &remove);
   if (!remove) {
-    all_required_exist &=
-        RequireField(*result, kName) && RequireField(*result, kType);
+    all_required_exist &= RequireField(*result, ::onc::network_config::kName) &&
+                          RequireField(*result, ::onc::network_config::kType);
 
     if (!NetworkHasCorrectStaticIPConfig(result))
       return false;
 
-    std::string type = GetStringFromDict(*result, kType);
+    std::string type = GetStringFromDict(*result, ::onc::network_config::kType);
 
     // Prohibit anything but WiFi and Ethernet for device-level policy (which
     // corresponds to shared networks). See also http://crosbug.com/28741.
@@ -676,9 +685,9 @@ bool Validator::ValidateNetworkConfiguration(base::DictionaryValue* result) {
     } else if (type == ::onc::network_type::kCellular) {
       all_required_exist &=
           RequireField(*result, ::onc::network_config::kCellular);
-    } else if (type == ::onc::network_type::kWimax) {
+    } else if (type == ::onc::network_type::kWimaxDeprecated) {
       all_required_exist &=
-          RequireField(*result, ::onc::network_config::kWimax);
+          RequireField(*result, ::onc::network_config::kWimaxDeprecated);
     } else if (type == ::onc::network_type::kVPN) {
       all_required_exist &= RequireField(*result, ::onc::network_config::kVPN);
     } else if (type == ::onc::network_type::kTether) {
@@ -691,30 +700,26 @@ bool Validator::ValidateNetworkConfiguration(base::DictionaryValue* result) {
 }
 
 bool Validator::ValidateEthernet(base::DictionaryValue* result) {
-  using namespace ::onc::ethernet;
-
-  const char* const kValidAuthentications[] = {kAuthenticationNone, k8021X};
-  const std::vector<const char*> valid_authentications(
-      toVector(kValidAuthentications));
-  if (FieldExistsAndHasNoValidValue(
-          *result, kAuthentication, valid_authentications)) {
+  const std::vector<const char*> valid_authentications = {
+      ::onc::ethernet::kAuthenticationNone, ::onc::ethernet::k8021X};
+  if (FieldExistsAndHasNoValidValue(*result, ::onc::ethernet::kAuthentication,
+                                    valid_authentications)) {
     return false;
   }
 
   bool all_required_exist = true;
-  std::string auth = GetStringFromDict(*result, kAuthentication);
-  if (auth == k8021X)
-    all_required_exist &= RequireField(*result, kEAP);
+  std::string auth =
+      GetStringFromDict(*result, ::onc::ethernet::kAuthentication);
+  if (auth == ::onc::ethernet::k8021X)
+    all_required_exist &= RequireField(*result, ::onc::ethernet::kEAP);
 
   return !error_on_missing_field_ || all_required_exist;
 }
 
 bool Validator::ValidateIPConfig(base::DictionaryValue* result,
                                  bool require_fields) {
-  using namespace ::onc::ipconfig;
-
-  const char* const kValidTypes[] = {kIPv4, kIPv6};
-  const std::vector<const char*> valid_types(toVector(kValidTypes));
+  const std::vector<const char*> valid_types = {::onc::ipconfig::kIPv4,
+                                                ::onc::ipconfig::kIPv6};
   if (FieldExistsAndHasNoValidValue(
           *result, ::onc::ipconfig::kType, valid_types))
     return false;
@@ -722,22 +727,25 @@ bool Validator::ValidateIPConfig(base::DictionaryValue* result,
   std::string type = GetStringFromDict(*result, ::onc::ipconfig::kType);
   int lower_bound = 1;
   // In case of missing type, choose higher upper_bound.
-  int upper_bound = (type == kIPv4) ? 32 : 128;
-  if (FieldExistsAndIsNotInRange(
-          *result, kRoutingPrefix, lower_bound, upper_bound)) {
+  int upper_bound = (type == ::onc::ipconfig::kIPv4) ? 32 : 128;
+  if (FieldExistsAndIsNotInRange(*result, ::onc::ipconfig::kRoutingPrefix,
+                                 lower_bound, upper_bound)) {
     return false;
   }
 
   bool all_required_exist = true;
   if (require_fields) {
-    all_required_exist &= RequireField(*result, kIPAddress);
-    all_required_exist &= RequireField(*result, kRoutingPrefix);
-    all_required_exist &= RequireField(*result, kGateway);
-  } else {
-    all_required_exist &= FieldShouldExistOrBeRecommended(*result, kIPAddress);
+    all_required_exist &= RequireField(*result, ::onc::ipconfig::kIPAddress);
     all_required_exist &=
-        FieldShouldExistOrBeRecommended(*result, kRoutingPrefix);
-    all_required_exist &= FieldShouldExistOrBeRecommended(*result, kGateway);
+        RequireField(*result, ::onc::ipconfig::kRoutingPrefix);
+    all_required_exist &= RequireField(*result, ::onc::ipconfig::kGateway);
+  } else {
+    all_required_exist &=
+        FieldShouldExistOrBeRecommended(*result, ::onc::ipconfig::kIPAddress);
+    all_required_exist &= FieldShouldExistOrBeRecommended(
+        *result, ::onc::ipconfig::kRoutingPrefix);
+    all_required_exist &=
+        FieldShouldExistOrBeRecommended(*result, ::onc::ipconfig::kGateway);
   }
 
   return !error_on_missing_field_ || all_required_exist;
@@ -745,101 +753,98 @@ bool Validator::ValidateIPConfig(base::DictionaryValue* result,
 
 bool Validator::NetworkHasCorrectStaticIPConfig(
     base::DictionaryValue* network) {
-  using namespace ::onc::network_config;
-  using namespace ::onc::ipconfig;
-
   bool must_have_ip_config = FieldIsSetToValueOrRecommended(
-      *network, kIPAddressConfigType, base::Value(kIPConfigTypeStatic));
+      *network, ::onc::network_config::kIPAddressConfigType,
+      base::Value(::onc::network_config::kIPConfigTypeStatic));
   bool must_have_nameservers = FieldIsSetToValueOrRecommended(
-      *network, kNameServersConfigType, base::Value(kIPConfigTypeStatic));
+      *network, ::onc::network_config::kNameServersConfigType,
+      base::Value(::onc::network_config::kIPConfigTypeStatic));
 
   if (!must_have_ip_config && !must_have_nameservers)
     return true;
 
-  if (!RequireField(*network, kStaticIPConfig))
+  if (!RequireField(*network, ::onc::network_config::kStaticIPConfig))
     return false;
 
   base::DictionaryValue* static_ip_config = nullptr;
-  network->GetDictionary(kStaticIPConfig, &static_ip_config);
+  network->GetDictionary(::onc::network_config::kStaticIPConfig,
+                         &static_ip_config);
   bool valid = true;
   // StaticIPConfig should have all fields required by the corresponding
   // IPAddressConfigType and NameServersConfigType values.
   if (must_have_ip_config)
     valid &= ValidateIPConfig(static_ip_config, false /* require_fields */);
   if (must_have_nameservers)
-    valid &= FieldShouldExistOrBeRecommended(*static_ip_config, kNameServers);
+    valid &= FieldShouldExistOrBeRecommended(*static_ip_config,
+                                             ::onc::ipconfig::kNameServers);
   return valid;
 }
 
 bool Validator::ValidateWiFi(base::DictionaryValue* result) {
-  using namespace ::onc::wifi;
-
-  const char* const kValidSecurities[] = {kSecurityNone, kWEP_PSK, kWEP_8021X,
-                                          kWPA_PSK, kWPA_EAP};
-  const std::vector<const char*> valid_securities(toVector(kValidSecurities));
-  if (FieldExistsAndHasNoValidValue(*result, kSecurity, valid_securities))
+  const std::vector<const char*> valid_securities = {
+      ::onc::wifi::kSecurityNone, ::onc::wifi::kWEP_PSK,
+      ::onc::wifi::kWEP_8021X, ::onc::wifi::kWPA_PSK, ::onc::wifi::kWPA_EAP};
+  if (FieldExistsAndHasNoValidValue(*result, ::onc::wifi::kSecurity,
+                                    valid_securities))
     return false;
 
   if (!ValidateSSIDAndHexSSID(result))
     return false;
 
-  bool all_required_exist = RequireField(*result, kSecurity);
+  bool all_required_exist = RequireField(*result, ::onc::wifi::kSecurity);
 
   // One of {kSSID, kHexSSID} must be present.
-  if (!result->HasKey(kSSID))
-    all_required_exist &= RequireField(*result, kHexSSID);
-  if (!result->HasKey(kHexSSID))
-    all_required_exist &= RequireField(*result, kSSID);
+  if (!result->HasKey(::onc::wifi::kSSID))
+    all_required_exist &= RequireField(*result, ::onc::wifi::kHexSSID);
+  if (!result->HasKey(::onc::wifi::kHexSSID))
+    all_required_exist &= RequireField(*result, ::onc::wifi::kSSID);
 
-  std::string security = GetStringFromDict(*result, kSecurity);
-  if (security == kWEP_8021X || security == kWPA_EAP)
-    all_required_exist &= RequireField(*result, kEAP);
-  else if (security == kWEP_PSK || security == kWPA_PSK)
-    all_required_exist &= RequireField(*result, kPassphrase);
+  std::string security = GetStringFromDict(*result, ::onc::wifi::kSecurity);
+  if (security == ::onc::wifi::kWEP_8021X || security == ::onc::wifi::kWPA_EAP)
+    all_required_exist &= RequireField(*result, ::onc::wifi::kEAP);
+  else if (security == ::onc::wifi::kWEP_PSK ||
+           security == ::onc::wifi::kWPA_PSK)
+    all_required_exist &= RequireField(*result, ::onc::wifi::kPassphrase);
 
   return !error_on_missing_field_ || all_required_exist;
 }
 
 bool Validator::ValidateVPN(base::DictionaryValue* result) {
-  using namespace ::onc::vpn;
-
-  const char* const kValidTypes[] = {kIPsec, kTypeL2TP_IPsec, kOpenVPN,
-                                     kThirdPartyVpn, kArcVpn};
-  const std::vector<const char*> valid_types(toVector(kValidTypes));
+  const std::vector<const char*> valid_types = {
+      ::onc::vpn::kIPsec, ::onc::vpn::kTypeL2TP_IPsec, ::onc::vpn::kOpenVPN,
+      ::onc::vpn::kThirdPartyVpn, ::onc::vpn::kArcVpn};
   if (FieldExistsAndHasNoValidValue(*result, ::onc::vpn::kType, valid_types))
     return false;
 
   bool all_required_exist = RequireField(*result, ::onc::vpn::kType);
   std::string type = GetStringFromDict(*result, ::onc::vpn::kType);
-  if (type == kOpenVPN) {
-    all_required_exist &= RequireField(*result, kOpenVPN);
-  } else if (type == kIPsec) {
-    all_required_exist &= RequireField(*result, kIPsec);
-  } else if (type == kTypeL2TP_IPsec) {
-    all_required_exist &=
-        RequireField(*result, kIPsec) && RequireField(*result, kL2TP);
-  } else if (type == kThirdPartyVpn) {
-    all_required_exist &= RequireField(*result, kThirdPartyVpn);
-  } else if (type == kArcVpn) {
-    all_required_exist &= RequireField(*result, kArcVpn);
+  if (type == ::onc::vpn::kOpenVPN) {
+    all_required_exist &= RequireField(*result, ::onc::vpn::kOpenVPN);
+  } else if (type == ::onc::vpn::kIPsec) {
+    all_required_exist &= RequireField(*result, ::onc::vpn::kIPsec);
+  } else if (type == ::onc::vpn::kTypeL2TP_IPsec) {
+    all_required_exist &= RequireField(*result, ::onc::vpn::kIPsec) &&
+                          RequireField(*result, ::onc::vpn::kL2TP);
+  } else if (type == ::onc::vpn::kThirdPartyVpn) {
+    all_required_exist &= RequireField(*result, ::onc::vpn::kThirdPartyVpn);
+  } else if (type == ::onc::vpn::kArcVpn) {
+    all_required_exist &= RequireField(*result, ::onc::vpn::kArcVpn);
   }
 
   return !error_on_missing_field_ || all_required_exist;
 }
 
 bool Validator::ValidateIPsec(base::DictionaryValue* result) {
-  using namespace ::onc::ipsec;
-
-  const char* const kValidAuthentications[] = {kPSK, kCert};
-  const std::vector<const char*> valid_authentications(
-      toVector(kValidAuthentications));
-  if (FieldExistsAndHasNoValidValue(
-          *result, kAuthenticationType, valid_authentications) ||
-      FieldExistsAndIsEmpty(*result, kServerCARefs)) {
+  const std::vector<const char*> valid_authentications = {::onc::ipsec::kPSK,
+                                                          ::onc::ipsec::kCert};
+  if (FieldExistsAndHasNoValidValue(*result, ::onc::ipsec::kAuthenticationType,
+                                    valid_authentications) ||
+      FieldExistsAndIsEmpty(*result, ::onc::ipsec::kServerCARefs)) {
     return false;
   }
 
-  if (!OnlyOneFieldSet(*result, kServerCARefs, kServerCARef))
+  if (!OnlyOneFieldSet(*result, ::onc::ipsec::kServerCARefs,
+                       ::onc::ipsec::kServerCARef))
     return false;
 
   if (!ValidateClientCertFields(false,  // don't allow ClientCertType None
@@ -847,25 +852,29 @@ bool Validator::ValidateIPsec(base::DictionaryValue* result) {
     return false;
   }
 
-  bool all_required_exist = RequireField(*result, kAuthenticationType) &&
-                            RequireField(*result, kIKEVersion);
-  std::string auth = GetStringFromDict(*result, kAuthenticationType);
-  bool has_server_ca_cert =
-      result->HasKey(kServerCARefs) || result->HasKey(kServerCARef);
-  if (auth == kCert) {
+  bool all_required_exist =
+      RequireField(*result, ::onc::ipsec::kAuthenticationType) &&
+      RequireField(*result, ::onc::ipsec::kIKEVersion);
+  std::string auth =
+      GetStringFromDict(*result, ::onc::ipsec::kAuthenticationType);
+  bool has_server_ca_cert = result->HasKey(::onc::ipsec::kServerCARefs) ||
+                            result->HasKey(::onc::ipsec::kServerCARef);
+  if (auth == ::onc::ipsec::kCert) {
     all_required_exist &=
         RequireField(*result, ::onc::client_cert::kClientCertType);
     if (!has_server_ca_cert) {
       all_required_exist = false;
       std::ostringstream msg;
-      msg << "The required field '" << kServerCARefs << "' is missing.";
+      msg << "The required field '" << ::onc::ipsec::kServerCARefs
+          << "' is missing.";
       AddValidationIssue(error_on_missing_field_, msg.str());
     }
   } else if (has_server_ca_cert) {
     std::ostringstream msg;
-    msg << "Field '" << kServerCARefs << "' (or '" << kServerCARef
-        << "') can only be set if '" << kAuthenticationType << "' is set to '"
-        << kCert << "'.";
+    msg << "Field '" << ::onc::ipsec::kServerCARefs << "' (or '"
+        << ::onc::ipsec::kServerCARef << "') can only be set if '"
+        << ::onc::ipsec::kAuthenticationType << "' is set to '"
+        << ::onc::ipsec::kCert << "'.";
     AddValidationIssue(true /* is_error */, msg.str());
     return false;
   }
@@ -874,31 +883,24 @@ bool Validator::ValidateIPsec(base::DictionaryValue* result) {
 }
 
 bool Validator::ValidateOpenVPN(base::DictionaryValue* result) {
-  using namespace ::onc::openvpn;
-
-  const char* const kValidAuthRetryValues[] = {::onc::openvpn::kNone, kInteract,
-                                               kNoInteract};
-  const std::vector<const char*> valid_auth_retry_values(
-      toVector(kValidAuthRetryValues));
-  const char* const kValidCertTlsValues[] = {::onc::openvpn::kNone,
-                                             ::onc::openvpn::kServer};
-  const std::vector<const char*> valid_cert_tls_values(
-      toVector(kValidCertTlsValues));
-  const char* const kValidUserAuthTypes[] = {
-      ::onc::openvpn_user_auth_type::kNone,
-      ::onc::openvpn_user_auth_type::kOTP,
+  const std::vector<const char*> valid_auth_retry_values = {
+      ::onc::openvpn::kNone, ::onc::openvpn::kInteract,
+      ::onc::openvpn::kNoInteract};
+  const std::vector<const char*> valid_cert_tls_values = {
+      ::onc::openvpn::kNone, ::onc::openvpn::kServer};
+  const std::vector<const char*> valid_user_auth_types = {
+      ::onc::openvpn_user_auth_type::kNone, ::onc::openvpn_user_auth_type::kOTP,
       ::onc::openvpn_user_auth_type::kPassword,
       ::onc::openvpn_user_auth_type::kPasswordAndOTP};
-  const std::vector<const char*> valid_user_auth_types(
-      toVector(kValidUserAuthTypes));
 
-  if (FieldExistsAndHasNoValidValue(
-          *result, kAuthRetry, valid_auth_retry_values) ||
-      FieldExistsAndHasNoValidValue(
-          *result, kRemoteCertTLS, valid_cert_tls_values) ||
-      FieldExistsAndHasNoValidValue(
-          *result, kUserAuthenticationType, valid_user_auth_types) ||
-      FieldExistsAndIsEmpty(*result, kServerCARefs)) {
+  if (FieldExistsAndHasNoValidValue(*result, ::onc::openvpn::kAuthRetry,
+                                    valid_auth_retry_values) ||
+      FieldExistsAndHasNoValidValue(*result, ::onc::openvpn::kRemoteCertTLS,
+                                    valid_cert_tls_values) ||
+      FieldExistsAndHasNoValidValue(*result,
+                                    ::onc::openvpn::kUserAuthenticationType,
+                                    valid_user_auth_types) ||
+      FieldExistsAndIsEmpty(*result, ::onc::openvpn::kServerCARefs)) {
     return false;
   }
 
@@ -933,7 +935,8 @@ bool Validator::ValidateOpenVPN(base::DictionaryValue* result) {
     }
   }
 
-  if (!OnlyOneFieldSet(*result, kServerCARefs, kServerCARef))
+  if (!OnlyOneFieldSet(*result, ::onc::openvpn::kServerCARefs,
+                       ::onc::openvpn::kServerCARef))
     return false;
 
   if (!ValidateClientCertFields(true /* allow ClientCertType None */, result))
@@ -960,30 +963,30 @@ bool Validator::ValidateARCVPN(base::DictionaryValue* result) {
 }
 
 bool Validator::ValidateVerifyX509(base::DictionaryValue* result) {
-  using namespace ::onc::verify_x509;
+  const std::vector<const char*> valid_types = {
+      ::onc::verify_x509::types::kName, ::onc::verify_x509::types::kNamePrefix,
+      ::onc::verify_x509::types::kSubject};
 
-  const char* const kValidTypes[] = {types::kName, types::kNamePrefix,
-                                     types::kSubject};
-  const std::vector<const char*> valid_types(toVector(kValidTypes));
-
-  if (FieldExistsAndHasNoValidValue(*result, kType, valid_types))
+  if (FieldExistsAndHasNoValidValue(*result, ::onc::verify_x509::kType,
+                                    valid_types))
     return false;
 
-  bool all_required_exist = RequireField(*result, kName);
+  bool all_required_exist = RequireField(*result, ::onc::verify_x509::kName);
 
   return !error_on_missing_field_ || all_required_exist;
 }
 
 bool Validator::ValidateCertificatePattern(base::DictionaryValue* result) {
-  using namespace ::onc::client_cert;
-
   bool all_required_exist = true;
-  if (!result->HasKey(kSubject) && !result->HasKey(kIssuer) &&
-      !result->HasKey(kIssuerCARef)) {
+  if (!result->HasKey(::onc::client_cert::kSubject) &&
+      !result->HasKey(::onc::client_cert::kIssuer) &&
+      !result->HasKey(::onc::client_cert::kIssuerCARef)) {
     all_required_exist = false;
     std::ostringstream msg;
-    msg << "None of the fields '" << kSubject << "', '" << kIssuer << "', and '"
-        << kIssuerCARef << "' is present, but at least one is required.";
+    msg << "None of the fields '" << ::onc::client_cert::kSubject << "', '"
+        << ::onc::client_cert::kIssuer << "', and '"
+        << ::onc::client_cert::kIssuerCARef
+        << "' is present, but at least one is required.";
     AddValidationIssue(error_on_missing_field_, msg.str());
   }
 
@@ -992,102 +995,104 @@ bool Validator::ValidateCertificatePattern(base::DictionaryValue* result) {
 
 bool Validator::ValidateGlobalNetworkConfiguration(
     base::DictionaryValue* result) {
-  using namespace ::onc::global_network_config;
-  using namespace ::onc::network_config;
-
   // Validate that kDisableNetworkTypes, kAllowOnlyPolicyNetworksToConnect and
   // kBlacklistedHexSSIDs are only allowed in device policy.
-  if (!IsInDevicePolicy(result, kDisableNetworkTypes) ||
-      !IsInDevicePolicy(result, kAllowOnlyPolicyNetworksToConnect) ||
-      !IsInDevicePolicy(result, kAllowOnlyPolicyNetworksToConnectIfAvailable) ||
-      !IsInDevicePolicy(result, kBlacklistedHexSSIDs)) {
+  if (!IsInDevicePolicy(result,
+                        ::onc::global_network_config::kDisableNetworkTypes) ||
+      !IsInDevicePolicy(
+          result,
+          ::onc::global_network_config::kAllowOnlyPolicyNetworksToConnect) ||
+      !IsInDevicePolicy(result,
+                        ::onc::global_network_config::
+                            kAllowOnlyPolicyNetworksToConnectIfAvailable) ||
+      !IsInDevicePolicy(result,
+                        ::onc::global_network_config::kBlacklistedHexSSIDs)) {
     return false;
   }
 
   // Ensure the list contains only legitimate network type identifiers.
-  const char* const kValidNetworkTypeValues[] = {kCellular, kEthernet, kWiFi,
-                                                 kWimax, kTether};
-  const std::vector<const char*> valid_network_type_values(
-      toVector(kValidNetworkTypeValues));
-  if (!ListFieldContainsValidValues(*result, kDisableNetworkTypes,
-                                    valid_network_type_values)) {
+  const std::vector<const char*> valid_network_type_values = {
+      ::onc::network_config::kCellular, ::onc::network_config::kEthernet,
+      ::onc::network_config::kWiFi, ::onc::network_config::kWimaxDeprecated,
+      ::onc::network_config::kTether};
+  if (!ListFieldContainsValidValues(
+          *result, ::onc::global_network_config::kDisableNetworkTypes,
+          valid_network_type_values)) {
     return false;
   }
   return true;
 }
 
 bool Validator::ValidateProxySettings(base::DictionaryValue* result) {
-  using namespace ::onc::proxy;
-
-  const char* const kValidTypes[] = {kDirect, kManual, kPAC, kWPAD};
-  const std::vector<const char*> valid_types(toVector(kValidTypes));
+  const std::vector<const char*> valid_types = {
+      ::onc::proxy::kDirect, ::onc::proxy::kManual, ::onc::proxy::kPAC,
+      ::onc::proxy::kWPAD};
   if (FieldExistsAndHasNoValidValue(*result, ::onc::proxy::kType, valid_types))
     return false;
 
   bool all_required_exist = RequireField(*result, ::onc::proxy::kType);
   std::string type = GetStringFromDict(*result, ::onc::proxy::kType);
-  if (type == kManual)
-    all_required_exist &= RequireField(*result, kManual);
-  else if (type == kPAC)
-    all_required_exist &= RequireField(*result, kPAC);
+  if (type == ::onc::proxy::kManual)
+    all_required_exist &= RequireField(*result, ::onc::proxy::kManual);
+  else if (type == ::onc::proxy::kPAC)
+    all_required_exist &= RequireField(*result, ::onc::proxy::kPAC);
 
   return !error_on_missing_field_ || all_required_exist;
 }
 
 bool Validator::ValidateProxyLocation(base::DictionaryValue* result) {
-  using namespace ::onc::proxy;
-
-  bool all_required_exist =
-      RequireField(*result, kHost) && RequireField(*result, kPort);
+  bool all_required_exist = RequireField(*result, ::onc::proxy::kHost) &&
+                            RequireField(*result, ::onc::proxy::kPort);
 
   return !error_on_missing_field_ || all_required_exist;
 }
 
 bool Validator::ValidateEAP(base::DictionaryValue* result) {
-  using namespace ::onc::eap;
+  const std::vector<const char*> valid_inner_values = {
+      ::onc::eap::kAutomatic, ::onc::eap::kGTC, ::onc::eap::kMD5,
+      ::onc::eap::kMSCHAPv2, ::onc::eap::kPAP};
+  const std::vector<const char*> valid_outer_values = {
+      ::onc::eap::kPEAP,   ::onc::eap::kEAP_TLS, ::onc::eap::kEAP_TTLS,
+      ::onc::eap::kLEAP,   ::onc::eap::kEAP_SIM, ::onc::eap::kEAP_FAST,
+      ::onc::eap::kEAP_AKA};
 
-  const char* const kValidInnerValues[] = {
-      kAutomatic, kGTC, kMD5, kMSCHAPv2, kPAP};
-  const std::vector<const char*> valid_inner_values(
-      toVector(kValidInnerValues));
-  const char* const kValidOuterValues[] = {
-      kPEAP, kEAP_TLS, kEAP_TTLS, kLEAP, kEAP_SIM, kEAP_FAST, kEAP_AKA};
-  const std::vector<const char*> valid_outer_values(
-      toVector(kValidOuterValues));
-
-  if (FieldExistsAndHasNoValidValue(*result, kInner, valid_inner_values) ||
-      FieldExistsAndHasNoValidValue(*result, kOuter, valid_outer_values) ||
-      FieldExistsAndIsEmpty(*result, kServerCARefs)) {
+  if (FieldExistsAndHasNoValidValue(*result, ::onc::eap::kInner,
+                                    valid_inner_values) ||
+      FieldExistsAndHasNoValidValue(*result, ::onc::eap::kOuter,
+                                    valid_outer_values) ||
+      FieldExistsAndIsEmpty(*result, ::onc::eap::kServerCARefs)) {
     return false;
   }
 
-  if (!OnlyOneFieldSet(*result, kServerCARefs, kServerCARef))
+  if (!OnlyOneFieldSet(*result, ::onc::eap::kServerCARefs,
+                       ::onc::eap::kServerCARef))
     return false;
 
   if (!ValidateClientCertFields(true /* allow ClientCertType None */, result))
     return false;
 
-  bool all_required_exist = RequireField(*result, kOuter);
+  bool all_required_exist = RequireField(*result, ::onc::eap::kOuter);
 
   return !error_on_missing_field_ || all_required_exist;
 }
 
 bool Validator::ValidateCertificate(base::DictionaryValue* result) {
-  using namespace ::onc::certificate;
-
-  const char* const kValidTypes[] = {kClient, kServer, kAuthority};
-  const std::vector<const char*> valid_types(toVector(kValidTypes));
-  if (FieldExistsAndHasNoValidValue(*result, kType, valid_types) ||
-      FieldExistsAndIsEmpty(*result, kGUID)) {
+  const std::vector<const char*> valid_types = {::onc::certificate::kClient,
+                                                ::onc::certificate::kServer,
+                                                ::onc::certificate::kAuthority};
+  if (FieldExistsAndHasNoValidValue(*result, ::onc::certificate::kType,
+                                    valid_types) ||
+      FieldExistsAndIsEmpty(*result, ::onc::certificate::kGUID)) {
     return false;
   }
 
-  std::string type = GetStringFromDict(*result, kType);
+  std::string type = GetStringFromDict(*result, ::onc::certificate::kType);
 
-  if (!CheckGuidIsUniqueAndAddToSet(*result, kGUID, &certificate_guids_))
+  if (!CheckGuidIsUniqueAndAddToSet(*result, ::onc::certificate::kGUID,
+                                    &certificate_guids_))
     return false;
 
-  bool all_required_exist = RequireField(*result, kGUID);
+  bool all_required_exist = RequireField(*result, ::onc::certificate::kGUID);
 
   bool remove = false;
   result->GetBooleanWithoutPathExpansion(::onc::kRemove, &remove);
@@ -1100,29 +1105,58 @@ bool Validator::ValidateCertificate(base::DictionaryValue* result) {
     return false;
   }
 
-  all_required_exist &= RequireField(*result, kType);
+  all_required_exist &= RequireField(*result, ::onc::certificate::kType);
 
-  if (type == kClient)
-    all_required_exist &= RequireField(*result, kPKCS12);
-  else if (type == kServer || type == kAuthority)
-    all_required_exist &= RequireField(*result, kX509);
+  if (type == ::onc::certificate::kClient)
+    all_required_exist &= RequireField(*result, ::onc::certificate::kPKCS12);
+  else if (type == ::onc::certificate::kServer ||
+           type == ::onc::certificate::kAuthority)
+    all_required_exist &= RequireField(*result, ::onc::certificate::kX509);
+
+  return !error_on_missing_field_ || all_required_exist;
+}
+
+bool Validator::ValidateScope(base::DictionaryValue* result) {
+  const std::vector<const char*> valid_types = {::onc::scope::kDefault,
+                                                ::onc::scope::kExtension};
+  if (FieldExistsAndHasNoValidValue(*result, ::onc::scope::kType,
+                                    valid_types) ||
+      FieldExistsAndIsEmpty(*result, ::onc::scope::kId)) {
+    return false;
+  }
+
+  bool all_required_exist = RequireField(*result, ::onc::scope::kType);
+  const std::string* type_string = result->FindStringKey(::onc::scope::kType);
+  if (type_string && *type_string == ::onc::scope::kExtension) {
+    all_required_exist &= RequireField(*result, ::onc::scope::kId);
+    // Check Id validity for type 'Extension'.
+    const std::string* id_string = result->FindStringKey(::onc::scope::kId);
+    if (id_string && !crx_file::id_util::IdIsValid(*id_string)) {
+      std::ostringstream msg;
+      msg << "Field '" << ::onc::scope::kId << "' is not a valid extension id.";
+      AddValidationIssue(false /* is_error */, msg.str());
+      return false;
+    }
+  }
 
   return !error_on_missing_field_ || all_required_exist;
 }
 
 bool Validator::ValidateTether(base::DictionaryValue* result) {
-  using namespace ::onc::tether;
-
-  if (FieldExistsAndIsNotInRange(*result, kBatteryPercentage, 0, 100) ||
-      FieldExistsAndIsNotInRange(*result, kSignalStrength, 0, 100) ||
-      FieldExistsAndIsEmpty(*result, kCarrier)) {
+  if (FieldExistsAndIsNotInRange(*result, ::onc::tether::kBatteryPercentage, 0,
+                                 100) ||
+      FieldExistsAndIsNotInRange(*result, ::onc::tether::kSignalStrength, 0,
+                                 100) ||
+      FieldExistsAndIsEmpty(*result, ::onc::tether::kCarrier)) {
     return false;
   }
 
-  bool all_required_exist = RequireField(*result, kHasConnectedToHost);
-  all_required_exist &= RequireField(*result, kBatteryPercentage);
-  all_required_exist &= RequireField(*result, kSignalStrength);
-  all_required_exist &= RequireField(*result, kCarrier);
+  bool all_required_exist =
+      RequireField(*result, ::onc::tether::kHasConnectedToHost);
+  all_required_exist &=
+      RequireField(*result, ::onc::tether::kBatteryPercentage);
+  all_required_exist &= RequireField(*result, ::onc::tether::kSignalStrength);
+  all_required_exist &= RequireField(*result, ::onc::tether::kCarrier);
 
   return !error_on_missing_field_ || all_required_exist;
 }
@@ -1135,9 +1169,9 @@ void Validator::AddValidationIssue(bool is_error,
   std::string message = msg.str();
 
   if (is_error)
-    LOG(ERROR) << message;
+    NET_LOG(ERROR) << message;
   else if (log_warnings_)
-    LOG(WARNING) << message;
+    NET_LOG(DEBUG) << message;
 
   validation_issues_.push_back({is_error, message});
 }

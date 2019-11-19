@@ -135,7 +135,7 @@ bool FilterEffect::InputsTaintOrigin() const {
 sk_sp<PaintFilter> FilterEffect::CreateTransparentBlack() const {
   PaintFilter::CropRect rect = GetCropRect();
   sk_sp<SkColorFilter> color_filter =
-      SkColorFilter::MakeModeFilter(0, SkBlendMode::kClear);
+      SkColorFilters::Blend(0, SkBlendMode::kClear);
   return sk_make_sp<ColorFilterPaintFilter>(std::move(color_filter), nullptr,
                                             &rect);
 }

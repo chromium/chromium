@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
@@ -14,11 +15,9 @@
 #include "content/browser/compositor/surface_utils.h"
 #include "content/browser/dom_storage/dom_storage_context_wrapper.h"
 #include "content/browser/dom_storage/session_storage_namespace_impl.h"
-#include "content/browser/loader/resource_dispatcher_host_impl.h"
 #include "content/browser/renderer_host/input/synthetic_gesture_target.h"
 #include "content/browser/renderer_host/render_widget_host_input_event_router.h"
 #include "content/browser/site_instance_impl.h"
-#include "content/common/dom_storage/dom_storage_types.h"
 #include "content/common/frame_messages.h"
 #include "content/common/view_messages.h"
 #include "content/public/browser/browser_context.h"
@@ -105,7 +104,7 @@ TestRenderWidgetHostView::~TestRenderWidgetHostView() {
     manager->InvalidateFrameSinkId(frame_sink_id_);
 }
 
-gfx::NativeView TestRenderWidgetHostView::GetNativeView() const {
+gfx::NativeView TestRenderWidgetHostView::GetNativeView() {
 #if defined(USE_AURA)
   return window_.get();
 #else
@@ -121,7 +120,7 @@ ui::TextInputClient* TestRenderWidgetHostView::GetTextInputClient() {
   return &text_input_client_;
 }
 
-bool TestRenderWidgetHostView::HasFocus() const {
+bool TestRenderWidgetHostView::HasFocus() {
   return true;
 }
 
@@ -146,14 +145,13 @@ void TestRenderWidgetHostView::WasOccluded() {
   is_occluded_ = true;
 }
 
-void TestRenderWidgetHostView::RenderProcessGone(base::TerminationStatus status,
-                                                 int error_code) {
+void TestRenderWidgetHostView::RenderProcessGone() {
   delete this;
 }
 
 void TestRenderWidgetHostView::Destroy() { delete this; }
 
-gfx::Rect TestRenderWidgetHostView::GetViewBounds() const {
+gfx::Rect TestRenderWidgetHostView::GetViewBounds() {
   return gfx::Rect();
 }
 
@@ -191,7 +189,7 @@ void TestRenderWidgetHostView::TakeFallbackContentFrom(
     SetBackgroundColor(*color);
 }
 
-bool TestRenderWidgetHostView::LockMouse() {
+bool TestRenderWidgetHostView::LockMouse(bool) {
   return false;
 }
 
@@ -292,7 +290,7 @@ bool TestRenderViewHost::CreateRenderView(
   return true;
 }
 
-MockRenderProcessHost* TestRenderViewHost::GetProcess() const {
+MockRenderProcessHost* TestRenderViewHost::GetProcess() {
   return static_cast<MockRenderProcessHost*>(RenderViewHostImpl::GetProcess());
 }
 
@@ -301,7 +299,7 @@ void TestRenderViewHost::SimulateWasHidden() {
 }
 
 void TestRenderViewHost::SimulateWasShown() {
-  GetWidget()->WasShown(false /* record_presentation_time */);
+  GetWidget()->WasShown(base::nullopt /* record_tab_switch_time_request */);
 }
 
 WebPreferences TestRenderViewHost::TestComputeWebPreferences() {
@@ -312,6 +310,10 @@ void TestRenderViewHost::OnWebkitPreferencesChanged() {
   RenderViewHostImpl::OnWebkitPreferencesChanged();
   if (webkit_preferences_changed_counter_)
     ++*webkit_preferences_changed_counter_;
+}
+
+bool TestRenderViewHost::IsTestRenderViewHost() const {
+  return true;
 }
 
 void TestRenderViewHost::TestOnStartDragging(

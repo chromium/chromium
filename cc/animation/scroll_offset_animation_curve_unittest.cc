@@ -205,6 +205,33 @@ TEST(ScrollOffsetAnimationCurveTest, InverseDeltaDuration) {
   EXPECT_EQ(largeDeltaDuration, curve->Duration().InSecondsF());
 }
 
+TEST(ScrollOffsetAnimationCurveTest, ConstantVelocityDuration) {
+  // Testing autoscroll downwards for a scroller of length 1000px.
+  gfx::ScrollOffset current_offset(0.f, 0.f);
+  gfx::ScrollOffset target_offset(0.f, 1000.f);
+  std::unique_ptr<ScrollOffsetAnimationCurve> curve(
+      ScrollOffsetAnimationCurve::Create(
+          target_offset, LinearTimingFunction::Create(),
+          ScrollOffsetAnimationCurve::DurationBehavior::CONSTANT_VELOCITY));
+
+  const float autoscroll_velocity = 800.f;  // pixels per second.
+  curve->SetInitialValue(current_offset, base::TimeDelta(),
+                         autoscroll_velocity);
+  EXPECT_FLOAT_EQ(1.25f, curve->Duration().InSecondsF());
+
+  // Test scrolling down from half way.
+  current_offset = gfx::ScrollOffset(0.f, 500.f);
+  curve->SetInitialValue(current_offset, base::TimeDelta(),
+                         autoscroll_velocity);
+  EXPECT_FLOAT_EQ(0.625f, curve->Duration().InSecondsF());
+
+  // Test scrolling down when max_offset is reached.
+  current_offset = gfx::ScrollOffset(0.f, 1000.f);
+  curve->SetInitialValue(current_offset, base::TimeDelta(),
+                         autoscroll_velocity);
+  EXPECT_FLOAT_EQ(0.f, curve->Duration().InSecondsF());
+}
+
 TEST(ScrollOffsetAnimationCurveTest, CurveWithDelay) {
   std::unique_ptr<ScrollOffsetAnimationCurve> curve(
       ScrollOffsetAnimationCurve::Create(
@@ -244,7 +271,7 @@ TEST(ScrollOffsetAnimationCurveTest, CurveWithLargeDelay) {
       ScrollOffsetAnimationCurve::SegmentDuration(
           gfx::Vector2dF(0.f, 200.f),
           ScrollOffsetAnimationCurve::DurationBehavior::INVERSE_DELTA,
-          base::TimeDelta::FromSecondsD(0.01))
+          base::TimeDelta::FromSecondsD(0.01), /*velocity*/ 0)
           .InSecondsF();
   EXPECT_EQ(duration, curve->Duration().InSecondsF());
 
@@ -255,7 +282,7 @@ TEST(ScrollOffsetAnimationCurveTest, CurveWithLargeDelay) {
   duration = ScrollOffsetAnimationCurve::SegmentDuration(
                  gfx::Vector2dF(0.f, 500.f),
                  ScrollOffsetAnimationCurve::DurationBehavior::INVERSE_DELTA,
-                 base::TimeDelta::FromSecondsD(0.01))
+                 base::TimeDelta::FromSecondsD(0.01), /*velocity*/ 0)
                  .InSecondsF();
   EXPECT_EQ(duration, curve->Duration().InSecondsF());
 
@@ -288,7 +315,7 @@ TEST(ScrollOffsetAnimationCurveTest, UpdateTargetZeroLastSegmentDuration) {
       ScrollOffsetAnimationCurve::SegmentDuration(
           gfx::Vector2dF(new_delta.x(), new_delta.y()),
           ScrollOffsetAnimationCurve::DurationBehavior::INVERSE_DELTA,
-          base::TimeDelta())
+          base::TimeDelta(), /*velocity*/ 0)
           .InSecondsF() +
       0.05;
   curve->UpdateTarget(base::TimeDelta::FromSecondsD(0.05),
@@ -309,7 +336,7 @@ TEST(ScrollOffsetAnimationCurveTest, UpdateTargetZeroLastSegmentDuration) {
       ScrollOffsetAnimationCurve::SegmentDuration(
           gfx::Vector2dF(new_delta.x(), new_delta.y()),
           ScrollOffsetAnimationCurve::DurationBehavior::INVERSE_DELTA,
-          base::TimeDelta::FromSecondsD(0.15))
+          base::TimeDelta::FromSecondsD(0.15), /*velocity*/ 0)
           .InSecondsF();
   curve->UpdateTarget(base::TimeDelta::FromSecondsD(-0.1),
                       gfx::ScrollOffset(0.f, 500.f));

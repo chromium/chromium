@@ -1,10 +1,10 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_expand_button/cr_expand_button.html">
 <link rel="import" href="chrome://resources/cr_elements/policy/cr_policy_pref_indicator.html">
 <link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-collapse/iron-collapse.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-button/paper-button.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/paper-spinner/paper-spinner-lite.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/paper-styles/color.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
@@ -60,10 +60,10 @@
         <cr-policy-pref-indicator pref="[[prefs.software_reporter.enabled]]">
         </cr-policy-pref-indicator>
         <div class="separator"></div>
-        <paper-button id="action-button" class="action-button"
+        <cr-button id="action-button" class="action-button"
             disabled$="[[!cleanupEnabled_]]" on-click="proceed_">
           [[actionButtonLabel_]]
-        </paper-button>
+        </cr-button>
       </template>
     </div>
     <div class="settings-box continuation">

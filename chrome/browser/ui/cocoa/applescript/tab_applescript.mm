@@ -38,9 +38,9 @@ using content::WebContents;
 namespace {
 
 void ResumeAppleEventAndSendReply(NSAppleEventManagerSuspensionID suspension_id,
-                                  const base::Value* result_value) {
+                                  base::Value result_value) {
   NSAppleEventDescriptor* result_descriptor =
-      chrome::mac::ValueToAppleEventDescriptor(result_value);
+      chrome::mac::ValueToAppleEventDescriptor(&result_value);
 
   NSAppleEventManager* manager = [NSAppleEventManager sharedAppleEventManager];
   NSAppleEventDescriptor* reply_event =
@@ -315,11 +315,11 @@ void ResumeAppleEventAndSendReply(NSAppleEventManagerSuspensionID suspension_id,
   NSAppleEventManagerSuspensionID suspensionID =
       [manager suspendCurrentAppleEvent];
   content::RenderFrameHost::JavaScriptResultCallback callback =
-      base::Bind(&ResumeAppleEventAndSendReply, suspensionID);
+      base::BindOnce(&ResumeAppleEventAndSendReply, suspensionID);
 
   base::string16 script = base::SysNSStringToUTF16(
       [[command evaluatedArguments] objectForKey:@"javascript"]);
-  frame->ExecuteJavaScriptInIsolatedWorld(script, callback,
+  frame->ExecuteJavaScriptInIsolatedWorld(script, std::move(callback),
                                           ISOLATED_WORLD_ID_APPLESCRIPT);
 
   return nil;

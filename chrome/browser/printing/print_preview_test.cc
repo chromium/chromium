@@ -9,6 +9,6 @@
 PrintPreviewTest::PrintPreviewTest() {}
 PrintPreviewTest::~PrintPreviewTest() {}
 
-BrowserWindow* PrintPreviewTest::CreateBrowserWindow() {
-  return new DialogTestBrowserWindow;
+std::unique_ptr<BrowserWindow> PrintPreviewTest::CreateBrowserWindow() {
+  return std::make_unique<DialogTestBrowserWindow>();
 }

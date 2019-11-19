@@ -9,6 +9,8 @@
 If the file was pretty-printed, the updated version is pretty-printed too.
 """
 
+from __future__ import print_function
+
 import json
 import os.path
 import sys
@@ -22,7 +24,7 @@ NET_ROOT_CERTS_PATH = 'net/data/ssl/root_stores/root_stores.json'
 
 def main():
   if len(sys.argv) > 1:
-    print >>sys.stderr, 'No arguments expected!'
+    print('No arguments expected!', file=sys.stderr)
     sys.stderr.write(__doc__)
     sys.exit(1)
 

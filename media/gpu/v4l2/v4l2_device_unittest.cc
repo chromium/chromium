@@ -8,6 +8,7 @@
 #include <sstream>
 #include <vector>
 
+#include "media/base/color_plane_layout.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/native_pixmap_handle.h"
 
@@ -78,20 +79,45 @@ TEST(V4L2DeviceTest, V4L2FormatToVideoFrameLayoutNV12) {
   ASSERT_TRUE(layout.has_value());
   EXPECT_EQ(PIXEL_FORMAT_NV12, layout->format());
   EXPECT_EQ(gfx::Size(300, 180), layout->coded_size());
-  constexpr uint64_t kNoModifier = gfx::NativePixmapPlane::kNoModifier;
-  std::vector<VideoFrameLayout::Plane> expected_planes(
-      {{320, 0u, kNoModifier}, {320, 57600u, kNoModifier}});
+  std::vector<ColorPlaneLayout> expected_planes(
+      {{320, 0u, 86400u}, {320, 57600u, 28800u}});
   EXPECT_EQ(expected_planes, layout->planes());
-  EXPECT_EQ(std::vector<size_t>({86400u}), layout->buffer_sizes());
-  EXPECT_EQ(86400u, layout->GetTotalBufferSize());
+  EXPECT_EQ(layout->is_multi_planar(), false);
   std::ostringstream ostream;
   ostream << *layout;
-  const std::string kNoModifierStr = std::to_string(kNoModifier);
-  EXPECT_EQ(ostream.str(),
-            "VideoFrameLayout(format: PIXEL_FORMAT_NV12, coded_size: 300x180, "
-            "planes (stride, offset, modifier): [(320, 0, " +
-                kNoModifierStr + "), (320, 57600, " + kNoModifierStr +
-                ")], buffer_sizes: [86400])");
+  const std::string kNoModifierStr =
+      std::to_string(gfx::NativePixmapHandle::kNoModifier);
+  EXPECT_EQ(
+      ostream.str(),
+      "VideoFrameLayout(format: PIXEL_FORMAT_NV12, coded_size: 300x180, "
+      "planes (stride, offset, size): [(320, 0, 86400), (320, 57600, 28800)], "
+      "is_multi_planar: 0, buffer_addr_align: 4096, modifier: " +
+          kNoModifierStr + ")");
+}
+
+// Test V4L2FormatToVideoFrameLayout with NV12M pixelformat, which has two
+// buffers and two color planes.
+TEST(V4L2DeviceTest, V4L2FormatToVideoFrameLayoutNV12M) {
+  auto layout = V4L2Device::V4L2FormatToVideoFrameLayout(
+      V4L2FormatVideoOutputMplane(300, 180, V4L2_PIX_FMT_NV12, V4L2_FIELD_ANY,
+                                  {320, 320}, {57600, 28800}));
+  ASSERT_TRUE(layout.has_value());
+  EXPECT_EQ(PIXEL_FORMAT_NV12, layout->format());
+  EXPECT_EQ(gfx::Size(300, 180), layout->coded_size());
+  std::vector<ColorPlaneLayout> expected_planes(
+      {{320, 0u, 57600u}, {320, 0u, 28800u}});
+  EXPECT_EQ(expected_planes, layout->planes());
+  EXPECT_EQ(layout->is_multi_planar(), true);
+  std::ostringstream ostream;
+  ostream << *layout;
+  const std::string kNoModifierStr =
+      std::to_string(gfx::NativePixmapHandle::kNoModifier);
+  EXPECT_EQ(
+      ostream.str(),
+      "VideoFrameLayout(format: PIXEL_FORMAT_NV12, coded_size: 300x180, "
+      "planes (stride, offset, size): [(320, 0, 57600), (320, 0, 28800)], "
+      "is_multi_planar: 1, buffer_addr_align: 4096, modifier: " +
+          kNoModifierStr + ")");
 }
 
 // Test V4L2FormatToVideoFrameLayout with YUV420 pixelformat, which has one
@@ -103,23 +129,19 @@ TEST(V4L2DeviceTest, V4L2FormatToVideoFrameLayoutYUV420) {
   ASSERT_TRUE(layout.has_value());
   EXPECT_EQ(PIXEL_FORMAT_I420, layout->format());
   EXPECT_EQ(gfx::Size(300, 180), layout->coded_size());
-  constexpr uint64_t kNoModifier = gfx::NativePixmapPlane::kNoModifier;
-  std::vector<VideoFrameLayout::Plane> expected_planes(
-      {{320, 0u, kNoModifier},
-       {160, 57600u, kNoModifier},
-       {160, 72000u, kNoModifier}});
+  std::vector<ColorPlaneLayout> expected_planes(
+      {{320, 0u, 86400}, {160, 57600u, 14400u}, {160, 72000u, 14400u}});
   EXPECT_EQ(expected_planes, layout->planes());
-  EXPECT_EQ(std::vector<size_t>({86400u}), layout->buffer_sizes());
-  EXPECT_EQ(86400u, layout->GetTotalBufferSize());
   std::ostringstream ostream;
   ostream << *layout;
-  const std::string kNoModifierStr = std::to_string(kNoModifier);
+  const std::string kNoModifierStr =
+      std::to_string(gfx::NativePixmapHandle::kNoModifier);
   EXPECT_EQ(ostream.str(),
             "VideoFrameLayout(format: PIXEL_FORMAT_I420, coded_size: 300x180, "
-            "planes (stride, offset, modifier): [(320, 0, " +
-                kNoModifierStr + "), (160, 57600, " + kNoModifierStr +
-                "), (160, 72000, " + kNoModifierStr +
-                ")], buffer_sizes: [86400])");
+            "planes (stride, offset, size): [(320, 0, 86400), (160, 57600, "
+            "14400), (160, 72000, 14400)], "
+            "is_multi_planar: 0, buffer_addr_align: 4096, modifier: " +
+                kNoModifierStr + ")");
 }
 
 // Test V4L2FormatToVideoFrameLayout with single planar v4l2_format.
@@ -156,6 +178,21 @@ TEST(V4L2DeviceTest, V4L2FormatToVideoFrameLayoutWrongStrideValue) {
       V4L2Device::V4L2FormatToVideoFrameLayout(V4L2FormatVideoOutputMplane(
           300, 180, V4L2_PIX_FMT_YUV420, V4L2_FIELD_ANY, {319}, {86400}));
   EXPECT_FALSE(layout.has_value());
+}
+
+// Test GetNumPlanesOfV4L2PixFmt.
+TEST(V4L2DeviceTest, GetNumPlanesOfV4L2PixFmt) {
+  EXPECT_EQ(1u, V4L2Device::GetNumPlanesOfV4L2PixFmt(V4L2_PIX_FMT_NV12));
+  EXPECT_EQ(1u, V4L2Device::GetNumPlanesOfV4L2PixFmt(V4L2_PIX_FMT_YUV420));
+  EXPECT_EQ(1u, V4L2Device::GetNumPlanesOfV4L2PixFmt(V4L2_PIX_FMT_YVU420));
+  EXPECT_EQ(1u, V4L2Device::GetNumPlanesOfV4L2PixFmt(V4L2_PIX_FMT_RGB32));
+
+  EXPECT_EQ(2u, V4L2Device::GetNumPlanesOfV4L2PixFmt(V4L2_PIX_FMT_NV12M));
+  EXPECT_EQ(2u, V4L2Device::GetNumPlanesOfV4L2PixFmt(V4L2_PIX_FMT_MT21C));
+
+  EXPECT_EQ(3u, V4L2Device::GetNumPlanesOfV4L2PixFmt(V4L2_PIX_FMT_YUV420M));
+  EXPECT_EQ(3u, V4L2Device::GetNumPlanesOfV4L2PixFmt(V4L2_PIX_FMT_YVU420M));
+  EXPECT_EQ(3u, V4L2Device::GetNumPlanesOfV4L2PixFmt(V4L2_PIX_FMT_YUV422M));
 }
 
 }  // namespace media

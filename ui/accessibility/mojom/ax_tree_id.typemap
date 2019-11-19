@@ -12,4 +12,4 @@ sources = [
 public_deps = [
   "//ui/accessibility",
 ]
-type_mappings = [ "ax.mojom.AXTreeID=ui::AXTreeID" ]
+type_mappings = [ "ax.mojom.AXTreeID=::ui::AXTreeID" ]

@@ -10,7 +10,7 @@
 
 #include "base/metrics/histogram_samples.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #import "ios/chrome/browser/metrics/previous_session_info.h"
 #import "ios/chrome/browser/web_state_list/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
@@ -89,7 +89,7 @@ class TabUsageRecorderTest : public PlatformTest {
     tab_usage_recorder_.termination_timestamps_.push_back(time);
   }
 
-  base::test::ScopedTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
   FakeWebStateListDelegate web_state_list_delegate_;
   WebStateList web_state_list_;
   base::HistogramTester histogram_tester_;
@@ -341,6 +341,15 @@ TEST_F(TabUsageRecorderTest, RendererTerminated) {
   // Tests that the logged count of recently alive renderers is equal to the
   // live count at termination plus the recent termination and the
   // renderer terminated just now.
+  histogram_tester_.ExpectUniqueSample(
+      kRendererTerminationRecentlyAliveRenderers,
+      kAliveTabsCountAtRendererTermination + 2, 1);
+
+  // Regression test for crbug.com/935205
+  // Terminate the same tab again. Verify that it isn't double-counted.
+  mock_tab_a->OnRenderProcessGone();
+  histogram_tester_.ExpectUniqueSample(kRendererTerminationAliveRenderers,
+                                       kAliveTabsCountAtRendererTermination, 1);
   histogram_tester_.ExpectUniqueSample(
       kRendererTerminationRecentlyAliveRenderers,
       kAliveTabsCountAtRendererTermination + 2, 1);

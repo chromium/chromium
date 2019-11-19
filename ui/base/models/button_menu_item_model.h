@@ -54,8 +54,11 @@ class UI_BASE_EXPORT ButtonMenuItemModel {
   // this method will have the same size, based on the largest button.
   void AddGroupItemWithStringId(int command_id, int string_id);
 
-  // Adds a button that has an icon instead of a label.
-  void AddItemWithImage(int command_id, int icon_idr);
+  // Adds a button that has an icon instead of a label. Note that the image
+  // itself must be separately configured by platform-specific code; this method
+  // simply serves to add a blank item in the menu with a specified
+  // |command_id|.
+  void AddImageItem(int command_id);
 
   // Adds a non-clickable button with a desensitized label that doesn't do
   // anything. Usually combined with IsItemForCommandIdDynamic() to add
@@ -83,10 +86,6 @@ class UI_BASE_EXPORT ButtonMenuItemModel {
 
   // Returns the current label value for the button at |index|.
   base::string16 GetLabelAt(int index) const;
-
-  // If the button at |index| should have an icon instead, returns true and
-  // sets the IDR |icon|.
-  bool GetIconAt(int index, int* icon) const;
 
   // If the button at |index| should have its size equalized along with all
   // other items that have their PartOfGroup bit set.

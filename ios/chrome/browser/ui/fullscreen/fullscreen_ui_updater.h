@@ -5,32 +5,62 @@
 #ifndef IOS_CLEAN_CHROME_BROWSER_UI_FULLSCREEN_FULLSCREEN_UI_UPDATER_H_
 #define IOS_CLEAN_CHROME_BROWSER_UI_FULLSCREEN_FULLSCREEN_UI_UPDATER_H_
 
+#include "base/scoped_observer.h"
+#import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller_observer.h"
 
 @protocol FullscreenUIElement;
 
-// Observer that updates FullscreenUIElements for FullscreenController events.
-class FullscreenUIUpdater : public FullscreenControllerObserver {
+// Forwards signals received via FullscreenControllerObserver callbacks to
+// FullscreenUIElements.
+class FullscreenUIUpdater {
  public:
-  // Contructor for an observer that updates |ui_element|.  |ui_element| is not
-  // retained.
-  explicit FullscreenUIUpdater(id<FullscreenUIElement> ui_element);
+  // Constructor for an updater that updates |ui_element| for observed events
+  // from |controller|.  Both arguments must be non-null.  |ui_element| is not
+  // retained.  The updater will observe |controller| until the controller is
+  // shut down or the updater is destroyed.
+  FullscreenUIUpdater(FullscreenController* controller,
+                      id<FullscreenUIElement> ui_element);
+  ~FullscreenUIUpdater();
 
  private:
-  // FullscreenControllerObserver:
-  void FullscreenViewportInsetRangeChanged(
-      FullscreenController* controller,
-      UIEdgeInsets min_viewport_insets,
-      UIEdgeInsets max_viewport_insets) override;
-  void FullscreenProgressUpdated(FullscreenController* controller,
-                                 CGFloat progress) override;
-  void FullscreenEnabledStateChanged(FullscreenController* controller,
-                                     bool enabled) override;
-  void FullscreenWillAnimate(FullscreenController* controller,
-                             FullscreenAnimator* animator) override;
+  // Stops observing |controller_|.
+  void Disconnect();
 
-  // The UI element being updated by this observer.
-  __weak id<FullscreenUIElement> ui_element_;
+  // Helper object that forwards FullscreenControllerObserver callbacks to their
+  // FullscreenUIElement counterparts.
+  class FullscreenControllerObserverForwarder
+      : public FullscreenControllerObserver {
+   public:
+    // Constructor for a forwarder that updates |ui_element| for |updater|.
+    FullscreenControllerObserverForwarder(FullscreenUIUpdater* updater,
+                                          id<FullscreenUIElement> ui_element);
+
+    // FullscreenControllerObserver:
+    void FullscreenViewportInsetRangeChanged(
+        FullscreenController* controller,
+        UIEdgeInsets min_viewport_insets,
+        UIEdgeInsets max_viewport_insets) override;
+    void FullscreenProgressUpdated(FullscreenController* controller,
+                                   CGFloat progress) override;
+    void FullscreenEnabledStateChanged(FullscreenController* controller,
+                                       bool enabled) override;
+    void FullscreenWillAnimate(FullscreenController* controller,
+                               FullscreenAnimator* animator) override;
+    void FullscreenControllerWillShutDown(
+        FullscreenController* controller) override;
+
+   private:
+    FullscreenUIUpdater* updater_ = nullptr;
+    __weak id<FullscreenUIElement> ui_element_ = nil;
+  };
+
+  // The FullscreenController being observed.
+  FullscreenController* controller_ = nullptr;
+  // The observer forwarder.
+  FullscreenControllerObserverForwarder forwarder_;
+  // Scoped observer for |forwarder_|.
+  ScopedObserver<FullscreenController, FullscreenControllerObserver> observer_;
 };
 
 #endif  // IOS_CLEAN_CHROME_BROWSER_UI_FULLSCREEN_FULLSCREEN_UI_UPDATER_H_

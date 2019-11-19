@@ -232,24 +232,22 @@ void StorageArea::HandleFunctionCall(const std::string& method_name,
 
   std::vector<v8::Local<v8::Value>> argument_list = arguments->GetAll();
 
-  std::unique_ptr<base::ListValue> converted_arguments;
-  v8::Local<v8::Function> callback;
-  std::string error;
   const APISignature* signature = type_refs_->GetTypeMethodSignature(
       base::StringPrintf("%s.%s", "storage.StorageArea", method_name.c_str()));
   DCHECK(signature);
-  if (!signature->ParseArgumentsToJSON(context, argument_list, *type_refs_,
-                                       &converted_arguments, &callback,
-                                       &error)) {
+  APISignature::JSONParseResult parse_result =
+      signature->ParseArgumentsToJSON(context, argument_list, *type_refs_);
+  if (!parse_result.succeeded()) {
     arguments->ThrowTypeError(api_errors::InvocationError(
-        full_method_name, signature->GetExpectedSignature(), error));
+        full_method_name, signature->GetExpectedSignature(),
+        *parse_result.error));
     return;
   }
 
-  converted_arguments->Insert(0u, std::make_unique<base::Value>(name_));
+  parse_result.arguments->Insert(0u, std::make_unique<base::Value>(name_));
   request_handler_->StartRequest(
-      context, full_method_name, std::move(converted_arguments), callback,
-      v8::Local<v8::Function>(), binding::RequestThread::UI);
+      context, full_method_name, std::move(parse_result.arguments),
+      parse_result.callback, v8::Local<v8::Function>());
 }
 
 v8::Local<v8::Value> StorageArea::GetOnChangedEvent(

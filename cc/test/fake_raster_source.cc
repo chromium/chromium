@@ -10,6 +10,7 @@
 #include "cc/paint/paint_flags.h"
 #include "cc/test/fake_recording_source.h"
 #include "cc/test/skia_common.h"
+#include "cc/test/test_paint_worklet_input.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBlendMode.h"
 #include "ui/gfx/geometry/size.h"
@@ -61,6 +62,19 @@ scoped_refptr<FakeRasterSource> FakeRasterSource::CreateFilledWithImages(
           CreateDiscardablePaintImage(gfx::Size(100, 100)), gfx::Point(x, y));
     }
   }
+  recording_source->Rerecord();
+  return base::WrapRefCounted(new FakeRasterSource(recording_source.get()));
+}
+
+scoped_refptr<FakeRasterSource> FakeRasterSource::CreateFilledWithPaintWorklet(
+    const gfx::Size& size) {
+  auto recording_source =
+      FakeRecordingSource::CreateFilledRecordingSource(size);
+
+  auto input = base::MakeRefCounted<TestPaintWorkletInput>(gfx::SizeF(size));
+  recording_source->add_draw_image(
+      CreatePaintWorkletPaintImage(std::move(input)), gfx::Point(0, 0));
+
   recording_source->Rerecord();
   return base::WrapRefCounted(new FakeRasterSource(recording_source.get()));
 }

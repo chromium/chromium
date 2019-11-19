@@ -1,12 +1,14 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
+<link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_scrollable_behavior.html">
 <link rel="import" href="chrome://resources/cr_elements/icons.html">
+<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-icon-button/paper-icon-button-light.html">
 <link rel="import" href="../route.html">
 <link rel="import" href="../settings_shared_css.html">
+<link rel="import" href="../settings_vars_css.html">
 
 <dom-module id="settings-user-list">
   <template>
@@ -18,7 +20,7 @@
       }
 
       .user {
-        border-bottom: var(--settings-separator-line);
+        border-bottom: var(--cr-separator-line);
       }
 
       .user-icon {
@@ -34,22 +36,33 @@
       .user-info {
         padding-inline-start: 20px;
       }
+
+      :host([disabled]) .user-list {
+        opacity: var(--cr-disabled-opacity);
+        overflow: auto;
+      }
     </style>
     <div class="user-list" scrollable>
       <template is="dom-repeat" items="[[users_]]">
         <div class="user layout horizontal center two-line">
-          <img class="user-icon" src="[[getProfilePictureUrl_(item)]]">
+          <img class="user-icon" src="[[getProfilePictureUrl_(item)]]"
+              aria-hidden="true">
           <div class="flex layout vertical user-info no-min-width">
-            <div class="text-elide">[[getUserName_(item)]]</div>
-            <div class="secondary text-elide"
-                hidden$="[[!shouldShowEmail_(item)]]">
+            <div class="text-elide" title="[[getTooltip_(item)]]"
+                aria-describedby="user-email">
+              [[getUserName_(item)]]
+            </div>
+            <div class="secondary text-elide" id="user-email"
+                title="[[item.displayEmail]]"
+                hidden$="[[!shouldShowEmail_(item)]]"
+                aria-hidden="true">
               [[item.displayEmail]]
             </div>
           </div>
-          <paper-icon-button-light class="icon-clear"
-              hidden="[[shouldHideCloseButton_(disabled, item.isOwner)]]">
-            <button on-click="removeUser_"></button>
-          </paper-icon-button-light>
+          <cr-icon-button class="icon-clear"
+              hidden="[[shouldHideCloseButton_(disabled, item.isOwner)]]"
+              title="[[getRemoveUserTooltip_(item)]]" on-click="removeUser_">
+          </cr-icon-button>
         </div>
       </template>
     </div>

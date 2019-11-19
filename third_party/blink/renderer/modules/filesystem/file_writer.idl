@@ -31,30 +31,34 @@
 
 // https://www.w3.org/TR/2012/WD-file-writer-api-20120417/#idl-def-FileWriter
 [
-    ActiveScriptWrappable,
-    NoInterfaceObject
+  ActiveScriptWrappable,
+  NoInterfaceObject
 ] interface FileWriter : EventTarget {
-    // ready states
-    const unsigned short INIT = 0;
-    const unsigned short WRITING = 1;
-    const unsigned short DONE = 2;
-    [ImplementedAs=getReadyState] readonly attribute unsigned short readyState;
+  // ready states
+  const unsigned short INIT = 0;
+  const unsigned short WRITING = 1;
+  const unsigned short DONE = 2;
+  [ImplementedAs=getReadyState] readonly attribute unsigned short readyState;
 
-    // async write/modify methods
-    [RaisesException] void write(Blob data);
-    [RaisesException] void seek(long long position);
-    [RaisesException] void truncate(long long size);
+  // async write/modify methods
+  [MeasureAs=DeprecatedFileSystemWrite, RaisesException]
+  void write(Blob data);
 
-    [RaisesException] void abort();
+  [RaisesException] void seek(long long position);
 
-    readonly attribute DOMException? error;
-    readonly attribute long long position;
-    readonly attribute long long length;
+  [MeasureAs=DeprecatedFileSystemWrite, RaisesException]
+  void truncate(long long size);
 
-             attribute EventHandler onwritestart;
-             attribute EventHandler onprogress;
-             attribute EventHandler onwrite;
-             attribute EventHandler onabort;
-             attribute EventHandler onerror;
-             attribute EventHandler onwriteend;
+  [RaisesException] void abort();
+
+  readonly attribute DOMException? error;
+  readonly attribute long long position;
+  readonly attribute long long length;
+
+  attribute EventHandler onwritestart;
+  attribute EventHandler onprogress;
+  attribute EventHandler onwrite;
+  attribute EventHandler onabort;
+  attribute EventHandler onerror;
+  attribute EventHandler onwriteend;
 };

@@ -67,15 +67,15 @@
   z-index: 2;
 }
 </style>
-<base i18n-values="href:baseurl">
+<base href="$i18n{baseurl}">
 </head>
 
 <body>
-  <div i18n-values="title:name" id="outer">
-    <img id="poster" i18n-values="srcset:poster">
+  <div title="$i18n{name}" id="outer">
+    <img id="poster" srcset="$i18n{poster}">
     <div id="shielding"></div>
     <div id="inner-container"
-         i18n-values=".style.width:visibleWidth;.style.height:visibleHeight">
+         style="width:$i18n{visibleWidth};height:$i18n{visibleHeight}">
       <img id="plugin-icon" src="plugin_power_saver_play.png" />
     </div>
   </div>

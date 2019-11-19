@@ -1,0 +1,492 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV class='test image'",
+      "bounds": [60, 44],
+      "contentsOpaque": true,
+      "backfaceVisibility": "hidden",
+      "paintInvalidations": [
+        {
+          "object": "LayoutBlockFlow (positioned) DIV class='test image'",
+          "rect": [0, 40, 60, 4],
+          "reason": "incremental"
+        }
+      ],
+      "transform": 1
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV class='test image size-cover'",
+      "bounds": [60, 44],
+      "contentsOpaque": true,
+      "backfaceVisibility": "hidden",
+      "paintInvalidations": [
+        {
+          "object": "LayoutBlockFlow (positioned) DIV class='test image size-cover'",
+          "rect": [0, 0, 60, 44],
+          "reason": "background"
+        }
+      ],
+      "transform": 2
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV class='test image size-contain'",
+      "bounds": [60, 44],
+      "contentsOpaque": true,
+      "backfaceVisibility": "hidden",
+      "paintInvalidations": [
+        {
+          "object": "LayoutBlockFlow (positioned) DIV class='test image size-contain'",
+          "rect": [0, 0, 60, 44],
+          "reason": "background"
+        }
+      ],
+      "transform": 3
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV class='test image fixed-height'",
+      "bounds": [60, 44],
+      "contentsOpaque": true,
+      "backfaceVisibility": "hidden",
+      "paintInvalidations": [
+        {
+          "object": "LayoutBlockFlow (positioned) DIV class='test image fixed-height'",
+          "rect": [0, 40, 60, 4],
+          "reason": "incremental"
+        }
+      ],
+      "transform": 4
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV class='test image percent-height'",
+      "bounds": [60, 44],
+      "contentsOpaque": true,
+      "backfaceVisibility": "hidden",
+      "paintInvalidations": [
+        {
+          "object": "LayoutBlockFlow (positioned) DIV class='test image percent-height'",
+          "rect": [0, 0, 60, 44],
+          "reason": "background"
+        }
+      ],
+      "transform": 5
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV class='test image top'",
+      "bounds": [60, 44],
+      "contentsOpaque": true,
+      "backfaceVisibility": "hidden",
+      "paintInvalidations": [
+        {
+          "object": "LayoutBlockFlow (positioned) DIV class='test image top'",
+          "rect": [0, 40, 60, 4],
+          "reason": "incremental"
+        }
+      ],
+      "transform": 6
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV class='test image bottom'",
+      "bounds": [60, 44],
+      "contentsOpaque": true,
+      "backfaceVisibility": "hidden",
+      "paintInvalidations": [
+        {
+          "object": "LayoutBlockFlow (positioned) DIV class='test image bottom'",
+          "rect": [0, 0, 60, 44],
+          "reason": "background"
+        }
+      ],
+      "transform": 7
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV class='test image center'",
+      "bounds": [60, 44],
+      "contentsOpaque": true,
+      "backfaceVisibility": "hidden",
+      "paintInvalidations": [
+        {
+          "object": "LayoutBlockFlow (positioned) DIV class='test image center'",
+          "rect": [0, 0, 60, 44],
+          "reason": "background"
+        }
+      ],
+      "transform": 8
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV class='test image no-repeat'",
+      "bounds": [60, 44],
+      "backfaceVisibility": "hidden",
+      "paintInvalidations": [
+        {
+          "object": "LayoutBlockFlow (positioned) DIV class='test image no-repeat'",
+          "rect": [0, 40, 60, 4],
+          "reason": "incremental"
+        }
+      ],
+      "transform": 9
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV class='test image repeat-space'",
+      "bounds": [60, 44],
+      "backfaceVisibility": "hidden",
+      "paintInvalidations": [
+        {
+          "object": "LayoutBlockFlow (positioned) DIV class='test image repeat-space'",
+          "rect": [0, 0, 60, 44],
+          "reason": "background"
+        }
+      ],
+      "transform": 10
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV class='test image repeat-round'",
+      "bounds": [60, 44],
+      "contentsOpaque": true,
+      "backfaceVisibility": "hidden",
+      "paintInvalidations": [
+        {
+          "object": "LayoutBlockFlow (positioned) DIV class='test image repeat-round'",
+          "rect": [0, 0, 60, 44],
+          "reason": "background"
+        }
+      ],
+      "transform": 11
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV class='test generated'",
+      "bounds": [60, 44],
+      "contentsOpaque": true,
+      "backfaceVisibility": "hidden",
+      "paintInvalidations": [
+        {
+          "object": "LayoutBlockFlow (positioned) DIV class='test generated'",
+          "rect": [0, 0, 60, 44],
+          "reason": "background"
+        }
+      ],
+      "transform": 12
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV class='test generated size-cover'",
+      "bounds": [60, 44],
+      "contentsOpaque": true,
+      "backfaceVisibility": "hidden",
+      "paintInvalidations": [
+        {
+          "object": "LayoutBlockFlow (positioned) DIV class='test generated size-cover'",
+          "rect": [0, 0, 60, 44],
+          "reason": "background"
+        }
+      ],
+      "transform": 13
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV class='test generated size-contain'",
+      "bounds": [60, 44],
+      "contentsOpaque": true,
+      "backfaceVisibility": "hidden",
+      "paintInvalidations": [
+        {
+          "object": "LayoutBlockFlow (positioned) DIV class='test generated size-contain'",
+          "rect": [0, 0, 60, 44],
+          "reason": "background"
+        }
+      ],
+      "transform": 14
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV class='test generated percent-height'",
+      "bounds": [60, 44],
+      "contentsOpaque": true,
+      "backfaceVisibility": "hidden",
+      "paintInvalidations": [
+        {
+          "object": "LayoutBlockFlow (positioned) DIV class='test generated percent-height'",
+          "rect": [0, 0, 60, 44],
+          "reason": "background"
+        }
+      ],
+      "transform": 15
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV class='test generated top'",
+      "bounds": [60, 44],
+      "contentsOpaque": true,
+      "backfaceVisibility": "hidden",
+      "paintInvalidations": [
+        {
+          "object": "LayoutBlockFlow (positioned) DIV class='test generated top'",
+          "rect": [0, 0, 60, 44],
+          "reason": "background"
+        }
+      ],
+      "transform": 16
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV class='test generated bottom'",
+      "bounds": [60, 44],
+      "contentsOpaque": true,
+      "backfaceVisibility": "hidden",
+      "paintInvalidations": [
+        {
+          "object": "LayoutBlockFlow (positioned) DIV class='test generated bottom'",
+          "rect": [0, 0, 60, 44],
+          "reason": "background"
+        }
+      ],
+      "transform": 17
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV class='test generated center'",
+      "bounds": [60, 44],
+      "contentsOpaque": true,
+      "backfaceVisibility": "hidden",
+      "paintInvalidations": [
+        {
+          "object": "LayoutBlockFlow (positioned) DIV class='test generated center'",
+          "rect": [0, 0, 60, 44],
+          "reason": "background"
+        }
+      ],
+      "transform": 18
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV class='test generated no-repeat'",
+      "bounds": [60, 44],
+      "backfaceVisibility": "hidden",
+      "paintInvalidations": [
+        {
+          "object": "LayoutBlockFlow (positioned) DIV class='test generated no-repeat'",
+          "rect": [0, 0, 60, 44],
+          "reason": "background"
+        }
+      ],
+      "transform": 19
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV class='test generated repeat-space'",
+      "bounds": [60, 44],
+      "backfaceVisibility": "hidden",
+      "paintInvalidations": [
+        {
+          "object": "LayoutBlockFlow (positioned) DIV class='test generated repeat-space'",
+          "rect": [0, 0, 60, 44],
+          "reason": "background"
+        }
+      ],
+      "transform": 20
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV class='test generated repeat-round'",
+      "bounds": [60, 44],
+      "contentsOpaque": true,
+      "backfaceVisibility": "hidden",
+      "paintInvalidations": [
+        {
+          "object": "LayoutBlockFlow (positioned) DIV class='test generated repeat-round'",
+          "rect": [0, 0, 60, 44],
+          "reason": "background"
+        }
+      ],
+      "transform": 21
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [8, 8, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [58, 8, 0, 1]
+      ]
+    },
+    {
+      "id": 3,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [108, 8, 0, 1]
+      ]
+    },
+    {
+      "id": 4,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [158, 8, 0, 1]
+      ]
+    },
+    {
+      "id": 5,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [208, 8, 0, 1]
+      ]
+    },
+    {
+      "id": 6,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [258, 8, 0, 1]
+      ]
+    },
+    {
+      "id": 7,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [308, 8, 0, 1]
+      ]
+    },
+    {
+      "id": 8,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [358, 8, 0, 1]
+      ]
+    },
+    {
+      "id": 9,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [408, 8, 0, 1]
+      ]
+    },
+    {
+      "id": 10,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [458, 8, 0, 1]
+      ]
+    },
+    {
+      "id": 11,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [508, 8, 0, 1]
+      ]
+    },
+    {
+      "id": 12,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [8, 108, 0, 1]
+      ]
+    },
+    {
+      "id": 13,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [58, 108, 0, 1]
+      ]
+    },
+    {
+      "id": 14,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [108, 108, 0, 1]
+      ]
+    },
+    {
+      "id": 15,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [208, 108, 0, 1]
+      ]
+    },
+    {
+      "id": 16,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [258, 108, 0, 1]
+      ]
+    },
+    {
+      "id": 17,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [308, 108, 0, 1]
+      ]
+    },
+    {
+      "id": 18,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [358, 108, 0, 1]
+      ]
+    },
+    {
+      "id": 19,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [408, 108, 0, 1]
+      ]
+    },
+    {
+      "id": 20,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [458, 108, 0, 1]
+      ]
+    },
+    {
+      "id": 21,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [508, 108, 0, 1]
+      ]
+    }
+  ]
+}
+

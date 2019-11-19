@@ -22,14 +22,14 @@ class AudioParamMap final : public ScriptWrappable,
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit AudioParamMap(
-      const HeapHashMap<String, Member<AudioParam>>& parameter_map);
+  using MapType = HeapHashMap<String, Member<AudioParam>>;
+
+  explicit AudioParamMap(const MapType& parameter_map);
 
   // IDL attributes / methods
   uint32_t size() const { return parameter_map_.size(); }
 
-  AudioParam* At(String name) { return parameter_map_.at(name); }
-  bool Contains(String name) { return parameter_map_.Contains(name); }
+  const MapType& GetHashMap() const { return parameter_map_; }
 
   void Trace(blink::Visitor* visitor) override {
     visitor->Trace(parameter_map_);
@@ -45,7 +45,7 @@ class AudioParamMap final : public ScriptWrappable,
                    AudioParam*&,
                    ExceptionState&) override;
 
-  const HeapHashMap<String, Member<AudioParam>> parameter_map_;
+  const MapType parameter_map_;
 };
 
 }  // namespace blink

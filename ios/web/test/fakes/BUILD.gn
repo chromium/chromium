@@ -8,10 +8,13 @@ source_set("fakes") {
 
   deps = [
     "//base",
+    "//ios/third_party/webkit",
     "//ios/web/navigation",
     "//ios/web/navigation:core",
-    "//ios/web/public:public",
+    "//ios/web/public",
+    "//ios/web/public/security",
     "//ios/web/web_state/ui:crw_web_view_navigation_proxy",
+    "//ios/web/web_state/ui:wk_web_view_configuration_provider",
     "//testing/gmock",
     "//third_party/ocmock:ocmock",
   ]
@@ -23,15 +26,17 @@ source_set("fakes") {
     "crw_fake_nsurl_session_task.mm",
     "crw_fake_session_controller_delegate.h",
     "crw_fake_session_controller_delegate.mm",
+    "crw_fake_wk_frame_info.h",
+    "crw_fake_wk_frame_info.mm",
     "crw_fake_wk_navigation_action.h",
     "crw_fake_wk_navigation_action.mm",
     "crw_fake_wk_navigation_response.h",
     "crw_fake_wk_navigation_response.mm",
     "fake_navigation_manager_delegate.h",
     "fake_navigation_manager_delegate.mm",
+    "fake_wk_configuration_provider_observer.h",
+    "fake_wk_configuration_provider_observer.mm",
     "mock_interstitial_delegate.h",
     "mock_interstitial_delegate.mm",
   ]
-
-  libs = [ "WebKit.framework" ]
 }

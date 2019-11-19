@@ -42,11 +42,6 @@ namespace blink {
 // Interpolation sampling.
 class CORE_EXPORT InertEffect final : public AnimationEffect {
  public:
-  static InertEffect* Create(KeyframeEffectModelBase*,
-                             const Timing&,
-                             bool paused,
-                             double inherited_time);
-
   InertEffect(KeyframeEffectModelBase*,
               const Timing&,
               bool paused,
@@ -62,7 +57,7 @@ class CORE_EXPORT InertEffect final : public AnimationEffect {
 
  protected:
   void UpdateChildrenAndEffects() const override {}
-  double CalculateTimeToEffectChange(
+  AnimationTimeDelta CalculateTimeToEffectChange(
       bool forwards,
       double inherited_time,
       double time_to_next_iteration) const override;
@@ -70,7 +65,7 @@ class CORE_EXPORT InertEffect final : public AnimationEffect {
  private:
   Member<KeyframeEffectModelBase> model_;
   bool paused_;
-  double inherited_time_;
+  base::Optional<double> inherited_time_;
 };
 
 DEFINE_TYPE_CASTS(InertEffect,

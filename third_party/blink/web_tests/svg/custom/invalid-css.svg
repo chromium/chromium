@@ -16,7 +16,6 @@
             stroke-dasharray: 10 5 10 auto;
             clip-path: url(#clip1) auto;
             clip-rule: evenodd auto;
-            opacity: 0%; /* does not seem supported yet */
             visibility: hidden auto;
         }
         #circle {

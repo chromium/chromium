@@ -4,28 +4,13 @@
 
 #include "chrome/browser/page_load_metrics/observers/data_reduction_proxy_metrics_observer_test_utils.h"
 
-#include "chrome/browser/loader/chrome_navigation_data.h"
-#include "chrome/browser/page_load_metrics/metrics_web_contents_observer.h"
-#include "chrome/browser/page_load_metrics/page_load_metrics_observer.h"
-#include "chrome/browser/page_load_metrics/page_load_tracker.h"
 #include "chrome/browser/previews/previews_ui_tab_helper.h"
+#include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
+#include "components/page_load_metrics/browser/page_load_metrics_observer.h"
+#include "components/page_load_metrics/browser/page_load_tracker.h"
 #include "content/public/test/web_contents_tester.h"
 
 namespace data_reduction_proxy {
-
-DataReductionProxyData* DataForNavigationHandle(
-    content::WebContents* web_contents,
-    content::NavigationHandle* navigation_handle) {
-  auto chrome_navigation_data = std::make_unique<ChromeNavigationData>();
-
-  auto drp_data = std::make_unique<DataReductionProxyData>();
-  DataReductionProxyData* data = drp_data.get();
-  chrome_navigation_data->SetDataReductionProxyData(std::move(drp_data));
-
-  content::WebContentsTester::For(web_contents)
-      ->SetNavigationData(navigation_handle, std::move(chrome_navigation_data));
-  return data;
-}
 
 previews::PreviewsUserData* PreviewsDataForNavigationHandle(
     content::NavigationHandle* navigation_handle) {
@@ -47,7 +32,9 @@ CreateDataReductionProxyResource(bool was_cached,
                                  double compression_ratio) {
   auto resource_data_update =
       page_load_metrics::mojom::ResourceDataUpdate::New();
-  resource_data_update->was_fetched_via_cache = was_cached;
+  resource_data_update->cache_type =
+      was_cached ? page_load_metrics::mojom::CacheType::kHttp
+                 : page_load_metrics::mojom::CacheType::kNotCached;
   resource_data_update->delta_bytes = was_cached ? 0 : delta_bytes;
   resource_data_update->encoded_body_length = delta_bytes;
   resource_data_update->is_complete = is_complete;
@@ -57,37 +44,9 @@ CreateDataReductionProxyResource(bool was_cached,
   return resource_data_update;
 }
 
-TestPingbackClient::TestPingbackClient()
-    : DataReductionProxyPingbackClientImpl(nullptr,
-                                           base::ThreadTaskRunnerHandle::Get(),
-                                           "unknown"),
-      send_pingback_called_(false) {}
-
-TestPingbackClient::~TestPingbackClient() {}
-
-void TestPingbackClient::SendPingback(
-    const DataReductionProxyData& data,
-    const DataReductionProxyPageLoadTiming& timing) {
-  timing_.reset(new DataReductionProxyPageLoadTiming(timing));
-  send_pingback_called_ = true;
-  data_ = data.DeepCopy();
-}
-
-void TestPingbackClient::Reset() {
-  send_pingback_called_ = false;
-  timing_.reset();
-}
-
-FakeInputEvent::FakeInputEvent(blink::WebInputEvent::Type type)
-    : WebInputEvent(sizeof(FakeInputEvent),
-                    type,
-                    blink::WebInputEvent::kNoModifiers,
-                    base::TimeTicks::Now()) {}
-
 DataReductionProxyMetricsObserverTestBase::
     DataReductionProxyMetricsObserverTestBase()
-    : pingback_client_(new TestPingbackClient()),
-      data_reduction_proxy_used_(false),
+    : data_reduction_proxy_used_(false),
       is_using_lite_page_(false),
       opt_out_expected_(false),
       black_listed_(false) {}
@@ -124,8 +83,7 @@ void DataReductionProxyMetricsObserverTestBase::RunTest(
   opt_out_expected_ = opt_out_expected;
   black_listed_ = black_listed;
   NavigateAndCommit(GURL(kDefaultTestUrl));
-  SimulateTimingUpdate(timing_);
-  pingback_client_->Reset();
+  tester()->SimulateTimingUpdate(timing_);
 }
 
 void DataReductionProxyMetricsObserverTestBase::
@@ -134,7 +92,7 @@ void DataReductionProxyMetricsObserverTestBase::
                                      bool opt_out_expected) {
   RunTest(data_reduction_proxy_used, is_using_lite_page, opt_out_expected,
           false);
-  NavigateToUntrackedUrl();
+  tester()->NavigateToUntrackedUrl();
 }
 
 void DataReductionProxyMetricsObserverTestBase::RunLitePageRedirectTest(
@@ -143,13 +101,7 @@ void DataReductionProxyMetricsObserverTestBase::RunLitePageRedirectTest(
   preview_info_ = preview_info;
   ect_ = ect;
   NavigateAndCommit(GURL(kDefaultTestUrl));
-  SimulateTimingUpdate(timing_);
-  pingback_client_->Reset();
-}
-
-void DataReductionProxyMetricsObserverTestBase::SimulateRendererCrash() {
-  observer()->RenderProcessGone(
-      base::TerminationStatus::TERMINATION_STATUS_ABNORMAL_TERMINATION);
+  tester()->SimulateTimingUpdate(timing_);
 }
 
 // Verify that, if expected and actual are set, their values are equal.
@@ -163,64 +115,6 @@ void DataReductionProxyMetricsObserverTestBase::ExpectEqualOrUnset(
     EXPECT_TRUE(!expected);
     EXPECT_TRUE(!actual);
   }
-}
-
-void DataReductionProxyMetricsObserverTestBase::ValidateTimes() {
-  EXPECT_TRUE(pingback_client_->send_pingback_called());
-  EXPECT_EQ(timing_.navigation_start,
-            pingback_client_->timing()->navigation_start);
-  EXPECT_GT(pingback_client_->timing()->page_end_time, base::TimeDelta());
-  ExpectEqualOrUnset(timing_.paint_timing->first_contentful_paint,
-                     pingback_client_->timing()->first_contentful_paint);
-  ExpectEqualOrUnset(
-      timing_.paint_timing->first_meaningful_paint,
-      pingback_client_->timing()->experimental_first_meaningful_paint);
-  ExpectEqualOrUnset(timing_.response_start,
-                     pingback_client_->timing()->response_start);
-  ExpectEqualOrUnset(timing_.document_timing->load_event_start,
-                     pingback_client_->timing()->load_event_start);
-  ExpectEqualOrUnset(timing_.paint_timing->first_image_paint,
-                     pingback_client_->timing()->first_image_paint);
-  EXPECT_EQ(opt_out_expected_, pingback_client_->timing()->opt_out_occurred);
-  EXPECT_EQ(timing_.document_timing->load_event_start
-                ? static_cast<int64_t>(kMemoryKb)
-                : 0,
-            pingback_client_->timing()->renderer_memory_usage_kb);
-}
-
-void DataReductionProxyMetricsObserverTestBase::ValidateLoFiInPingback(
-    bool lofi_expected) {
-  EXPECT_TRUE(pingback_client_->send_pingback_called());
-  EXPECT_EQ(lofi_expected, pingback_client_->data().lofi_received());
-}
-
-void DataReductionProxyMetricsObserverTestBase::ValidateBlackListInPingback(
-    bool black_listed) {
-  EXPECT_TRUE(pingback_client_->send_pingback_called());
-  EXPECT_EQ(black_listed, pingback_client_->data().black_listed());
-}
-
-void DataReductionProxyMetricsObserverTestBase::
-    ValidatePreviewsStateInPingback() {
-  EXPECT_EQ(!!preview_info_, pingback_client_->send_pingback_called());
-  if (preview_info_) {
-    EXPECT_EQ(preview_info_->drp_session_key,
-              pingback_client_->data().session_key());
-    EXPECT_EQ(preview_info_->page_id, pingback_client_->data().page_id());
-    EXPECT_EQ(ect_, pingback_client_->data().effective_connection_type());
-    EXPECT_EQ(preview_info_->status,
-              pingback_client_->timing()->lite_page_redirect_status.value());
-    // This is tested better in PreviewsLitePageRedirectMetricsObserverTest.
-    EXPECT_GT(pingback_client_->timing()->lite_page_redirect_penalty.value(),
-              base::TimeDelta());
-  }
-}
-
-void DataReductionProxyMetricsObserverTestBase::ValidateRendererCrash(
-    bool renderer_crashed) {
-  EXPECT_TRUE(pingback_client_->send_pingback_called());
-  EXPECT_EQ(renderer_crashed, pingback_client_->timing()->host_id !=
-                                  content::ChildProcessHost::kInvalidUniqueID);
 }
 
 void DataReductionProxyMetricsObserverTestBase::SetUp() {

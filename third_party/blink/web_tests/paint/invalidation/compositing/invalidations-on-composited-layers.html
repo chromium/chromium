@@ -8,14 +8,14 @@ This test checks that repaint testing works with composited layers.
 <head>
   <style type="text/css">
     #parent {
-        transform: translateZ(0px);
+        will-change: transform;
         width: 400px;
         height: 400px;
         background: blue;
     }
 
     #child {
-        transform: translateZ(0px);
+        will-change: transform;
         position: relative;
         left: 50px;
         top: 50px;

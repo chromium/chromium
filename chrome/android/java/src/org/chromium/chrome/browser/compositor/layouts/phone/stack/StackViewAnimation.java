@@ -9,7 +9,6 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
 import android.content.res.Resources;
-import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -18,7 +17,9 @@ import android.widget.FrameLayout;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.layouts.phone.stack.StackAnimation.OverviewAnimationType;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabThemeColorHelper;
 import org.chromium.chrome.browser.tabmodel.TabList;
+import org.chromium.chrome.browser.ui.widget.animation.Interpolators;
 
 /**
  * A factory that builds Android view animations for the tab stack.
@@ -72,7 +73,7 @@ public class StackViewAnimation {
         // Set up the view hierarchy
         if (view.getParent() != null) ((ViewGroup) view.getParent()).removeView(view);
         ViewGroup bgView = new FrameLayout(view.getContext());
-        bgView.setBackgroundColor(tab.getBackgroundColor());
+        bgView.setBackgroundColor(TabThemeColorHelper.getBackgroundColor(tab));
         bgView.addView(view);
         container.addView(
                 bgView, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
@@ -86,19 +87,19 @@ public class StackViewAnimation {
         PropertyValuesHolder viewAlpha = PropertyValuesHolder.ofFloat(View.ALPHA, 0.f, 1.f);
         ObjectAnimator viewAlphaAnimator = ObjectAnimator.ofPropertyValuesHolder(view, viewAlpha);
         viewAlphaAnimator.setDuration(TAB_OPENED_VIEW_ANIMATION_DURATION);
-        viewAlphaAnimator.setInterpolator(new FastOutSlowInInterpolator());
+        viewAlphaAnimator.setInterpolator(Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR);
 
         PropertyValuesHolder yTranslation =
                 PropertyValuesHolder.ofFloat(View.TRANSLATION_Y, mTranslationYStart, 0.f);
         ObjectAnimator viewYTranslationAnimator =
                 ObjectAnimator.ofPropertyValuesHolder(view, yTranslation);
         viewYTranslationAnimator.setDuration(TAB_OPENED_VIEW_ANIMATION_DURATION);
-        viewYTranslationAnimator.setInterpolator(new FastOutSlowInInterpolator());
+        viewYTranslationAnimator.setInterpolator(Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR);
 
         PropertyValuesHolder bgAlpha = PropertyValuesHolder.ofFloat(View.ALPHA, 0.f, 1.f);
         ObjectAnimator bgAlphaAnimator = ObjectAnimator.ofPropertyValuesHolder(bgView, bgAlpha);
         bgAlphaAnimator.setDuration(TAB_OPENED_BG_ANIMATION_DURATION);
-        bgAlphaAnimator.setInterpolator(new FastOutSlowInInterpolator());
+        bgAlphaAnimator.setInterpolator(Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR);
 
         AnimatorSet set = new AnimatorSet();
         set.playTogether(viewAlphaAnimator, viewYTranslationAnimator, bgAlphaAnimator);

@@ -48,9 +48,9 @@ public class FilterChipsProvider implements ChipsProvider, OfflineItemFilterObse
         mDelegate = delegate;
         mSource = source;
 
-        Chip noneChip =
-                new Chip(Filters.FilterType.NONE, R.string.download_manager_ui_all_downloads,
-                        Chip.INVALID_ICON_ID, () -> onChipSelected(Filters.FilterType.NONE));
+        Chip noneChip = new Chip(Filters.FilterType.NONE,
+                R.string.download_manager_ui_all_downloads, R.drawable.settings_all_sites,
+                () -> onChipSelected(Filters.FilterType.NONE));
         Chip videosChip = new Chip(Filters.FilterType.VIDEOS, R.string.download_manager_ui_video,
                 R.drawable.ic_videocam_24dp, () -> onChipSelected(Filters.FilterType.VIDEOS));
         Chip musicChip = new Chip(Filters.FilterType.MUSIC, R.string.download_manager_ui_audio,

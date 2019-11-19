@@ -5,6 +5,7 @@
 #ifndef FUCHSIA_ENGINE_WEB_ENGINE_MAIN_DELEGATE_H_
 #define FUCHSIA_ENGINE_WEB_ENGINE_MAIN_DELEGATE_H_
 
+#include <fuchsia/web/cpp/fidl.h>
 #include <lib/zx/channel.h>
 #include <memory>
 #include <string>
@@ -23,7 +24,8 @@ class WebEngineContentRendererClient;
 class WEB_ENGINE_EXPORT WebEngineMainDelegate
     : public content::ContentMainDelegate {
  public:
-  explicit WebEngineMainDelegate(zx::channel context_channel);
+  explicit WebEngineMainDelegate(
+      fidl::InterfaceRequest<fuchsia::web::Context> request);
   ~WebEngineMainDelegate() override;
 
   static WebEngineMainDelegate* GetInstanceForTest();
@@ -46,7 +48,7 @@ class WEB_ENGINE_EXPORT WebEngineMainDelegate
   std::unique_ptr<WebEngineContentBrowserClient> browser_client_;
   std::unique_ptr<WebEngineContentRendererClient> renderer_client_;
 
-  zx::channel context_channel_;
+  fidl::InterfaceRequest<fuchsia::web::Context> request_;
 
   DISALLOW_COPY_AND_ASSIGN(WebEngineMainDelegate);
 };

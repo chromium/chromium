@@ -14,12 +14,35 @@ CertVerifyResult::CertVerifyResult() {
   Reset();
 }
 
-CertVerifyResult::CertVerifyResult(const CertVerifyResult& other) = default;
+CertVerifyResult::CertVerifyResult(const CertVerifyResult& other) {
+  *this = other;
+}
 
 CertVerifyResult::~CertVerifyResult() = default;
 
+CertVerifyResult& CertVerifyResult::operator=(const CertVerifyResult& other) {
+  verified_cert = other.verified_cert;
+  cert_status = other.cert_status;
+  has_md2 = other.has_md2;
+  has_md4 = other.has_md4;
+  has_md5 = other.has_md5;
+  has_sha1 = other.has_sha1;
+  has_sha1_leaf = other.has_sha1_leaf;
+  is_issued_by_known_root = other.is_issued_by_known_root;
+  is_issued_by_additional_trust_anchor =
+      other.is_issued_by_additional_trust_anchor;
+
+  public_key_hashes = other.public_key_hashes;
+  ocsp_result = other.ocsp_result;
+
+  ClearAllUserData();
+  CloneDataFrom(other);
+
+  return *this;
+}
+
 void CertVerifyResult::Reset() {
-  verified_cert = NULL;
+  verified_cert = nullptr;
   cert_status = 0;
   has_md2 = false;
   has_md4 = false;
@@ -31,6 +54,8 @@ void CertVerifyResult::Reset() {
 
   public_key_hashes.clear();
   ocsp_result = OCSPVerifyResult();
+
+  ClearAllUserData();
 }
 
 bool CertVerifyResult::operator==(const CertVerifyResult& other) const {

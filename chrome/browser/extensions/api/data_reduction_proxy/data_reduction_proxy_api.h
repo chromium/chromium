@@ -15,8 +15,7 @@ class DataUsageBucket;
 
 namespace extensions {
 
-class DataReductionProxyClearDataSavingsFunction
-    : public UIThreadExtensionFunction {
+class DataReductionProxyClearDataSavingsFunction : public ExtensionFunction {
  private:
   ~DataReductionProxyClearDataSavingsFunction() override {}
 
@@ -26,8 +25,7 @@ class DataReductionProxyClearDataSavingsFunction
   ResponseAction Run() override;
 };
 
-class DataReductionProxyGetDataUsageFunction
-    : public UIThreadExtensionFunction {
+class DataReductionProxyGetDataUsageFunction : public ExtensionFunction {
  private:
   ~DataReductionProxyGetDataUsageFunction() override {}
 

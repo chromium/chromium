@@ -10,9 +10,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
-#include "base/strings/string_split.h"
 #include "base/win/reference.h"
 #include "base/win/scoped_hstring.h"
 #include "base/win/vector.h"
@@ -92,24 +90,12 @@ namespace device {
 
 namespace {
 
-constexpr size_t kNumBytesCanonicalUuid = 16;
-
 std::vector<ComPtr<IBluetoothLEAdvertisementDataSection>> ToDataSections(
     const BluetoothDevice::ServiceDataMap& service_data) {
   std::vector<ComPtr<IBluetoothLEAdvertisementDataSection>> data_sections;
   data_sections.reserve(service_data.size());
   for (const auto& pair : service_data) {
-    std::vector<uint8_t> data;
-    data.reserve(kNumBytesCanonicalUuid + pair.second.size());
-
-    // HexDecode the UUID while ignoring dashes.
-    for (const auto& token :
-         base::SplitStringPiece(pair.first.canonical_value(), "-",
-                                base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL)) {
-      std::vector<uint8_t> tmp;
-      base::HexStringToBytes(token, &tmp);
-      data.insert(data.end(), tmp.begin(), tmp.end());
-    }
+    std::vector<uint8_t> data = pair.first.GetBytes();
 
     // Reverse the data as UUIDs are specified in little endian order in the
     // advertisement payload.

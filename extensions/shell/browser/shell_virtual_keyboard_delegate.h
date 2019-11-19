@@ -43,6 +43,7 @@ class ShellVirtualKeyboardDelegate : public VirtualKeyboardDelegate {
   bool SetRequestedKeyboardState(int state_enum) override;
   bool SetOccludedBounds(const std::vector<gfx::Rect>& bounds) override;
   bool SetHitTestBounds(const std::vector<gfx::Rect>& bounds) override;
+  bool SetAreaToRemainOnScreen(const gfx::Rect& bounds) override;
 
   api::virtual_keyboard::FeatureRestrictions RestrictFeatures(
       const api::virtual_keyboard::RestrictFeatures::Params& params) override;

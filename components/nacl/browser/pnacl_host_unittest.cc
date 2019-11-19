@@ -15,7 +15,7 @@
 #include "build/build_config.h"
 #include "components/nacl/browser/pnacl_translation_cache.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "net/base/test_completion_callback.h"
 #include "net/disk_cache/disk_cache.h"
@@ -39,7 +39,7 @@ class PnaclHostTest : public testing::Test {
       : host_(NULL),
         temp_callback_count_(0),
         write_callback_count_(0),
-        thread_bundle_(content::TestBrowserThreadBundle::IO_MAINLOOP) {}
+        task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP) {}
   void SetUp() override {
     host_ = PnaclHost::GetInstance();
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
@@ -108,7 +108,7 @@ class PnaclHostTest : public testing::Test {
   PnaclHost* host_;
   int temp_callback_count_;
   int write_callback_count_;
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
 };
 
@@ -427,8 +427,8 @@ TEST_F(PnaclHostTest, ClearTranslationCache) {
   EXPECT_EQ(2, GetCacheSize());
   net::TestCompletionCallback cb;
   // Since we are using a memory backend, the clear should happen immediately.
-  host_->ClearTranslationCacheEntriesBetween(
-      base::Time(), base::Time(), base::Bind(cb.callback(), 0));
+  host_->ClearTranslationCacheEntriesBetween(base::Time(), base::Time(),
+                                             base::BindOnce(cb.callback(), 0));
   // Check that the translation cache has been cleared before flushing the
   // queues, because the backend will be freed once it is.
   EXPECT_EQ(0, GetCacheSize());

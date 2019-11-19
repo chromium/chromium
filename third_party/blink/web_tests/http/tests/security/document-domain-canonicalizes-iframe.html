@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<head>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<iframe></iframe>
+
+<script>
+  let iframe = document.querySelector("iframe");
+  function navigate_iframe(url) {
+    return new Promise(resolve => {
+      iframe.onload = resolve;
+      iframe.src = url;
+    });
+  };
+
+  // Navigate the iframe to URLs whose host aren't canonical. They need to be
+  // percent encoded. Several navigation are made to ensure potential assertions
+  // can be reached before the end of the test. See https://crbug.com/901489.
+  async_test(async function(t) {
+    await navigate_iframe("http://foo,.example.test/resources/dummy.html");
+    await navigate_iframe("http://bar,.example.test/resources/dummy.html");
+    await navigate_iframe("http://baz,.example.test/resources/dummy.html");
+    t.done();
+  }, "Navigate iframe to URL with non-canonicalized hostname");
+</script>
+</body>

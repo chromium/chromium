@@ -14,13 +14,12 @@
 #include "chrome/browser/media/router/discovery/dial/dial_media_sink_service_impl.h"
 #include "chrome/browser/media/router/route_message_util.h"
 #include "chrome/browser/media/router/test/test_helper.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/http/http_status_code.h"
-#include "services/data_decoder/data_decoder_service.h"
-#include "services/data_decoder/public/cpp/testing_json_parser.h"
-#include "services/data_decoder/public/mojom/constants.mojom.h"
-#include "services/service_manager/public/cpp/connector.h"
-#include "services/service_manager/public/cpp/test/test_connector_factory.h"
+#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -33,10 +32,9 @@ namespace media_router {
 
 class TestDialMediaSinkServiceImpl : public DialMediaSinkServiceImpl {
  public:
-  explicit TestDialMediaSinkServiceImpl(service_manager::Connector* connector)
-      : DialMediaSinkServiceImpl(connector,
-                                 base::DoNothing(),
-                                 /* task_runner */ nullptr) {}
+  TestDialMediaSinkServiceImpl()
+      : DialMediaSinkServiceImpl(base::DoNothing(),
+                                 /*task_runner=*/nullptr) {}
 
   ~TestDialMediaSinkServiceImpl() override = default;
 
@@ -87,21 +85,18 @@ class TestDialMediaSinkServiceImpl : public DialMediaSinkServiceImpl {
 
 class DialMediaRouteProviderTest : public ::testing::Test {
  public:
-  DialMediaRouteProviderTest()
-      : data_decoder_service_(connector_factory_.RegisterInstance(
-            data_decoder::mojom::kServiceName)),
-        mock_sink_service_(connector_factory_.GetDefaultConnector()) {}
+  DialMediaRouteProviderTest() = default;
 
   void SetUp() override {
-    mojom::MediaRouterPtr router_ptr;
-    router_binding_ = std::make_unique<mojo::Binding<mojom::MediaRouter>>(
-        &mock_router_, mojo::MakeRequest(&router_ptr));
+    mojo::PendingRemote<mojom::MediaRouter> router_remote;
+    router_receiver_ = std::make_unique<mojo::Receiver<mojom::MediaRouter>>(
+        &mock_router_, router_remote.InitWithNewPipeAndPassReceiver());
 
     EXPECT_CALL(mock_router_, OnSinkAvailabilityUpdated(_, _));
     provider_ = std::make_unique<DialMediaRouteProvider>(
-        mojo::MakeRequest(&provider_ptr_), router_ptr.PassInterface(),
-        &mock_sink_service_, connector_factory_.GetDefaultConnector(),
-        "hash-token", base::SequencedTaskRunnerHandle::Get());
+        provider_remote_.BindNewPipeAndPassReceiver(), std::move(router_remote),
+        &mock_sink_service_, "hash-token",
+        base::SequencedTaskRunnerHandle::Get());
 
     auto activity_manager =
         std::make_unique<TestDialActivityManager>(&loader_factory_);
@@ -259,10 +254,10 @@ class DialMediaRouteProviderTest : public ::testing::Test {
 
     // Simulate a successful launch response.
     app_instance_url_ = GURL(app_launch_url.spec() + "/run");
-    network::ResourceResponseHead response_head;
-    response_head.headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
-    response_head.headers->AddHeader("LOCATION: " + app_instance_url_.spec());
-    loader_factory_.AddResponse(app_launch_url, response_head, "",
+    auto response_head = network::mojom::URLResponseHead::New();
+    response_head->headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
+    response_head->headers->AddHeader("LOCATION: " + app_instance_url_.spec());
+    loader_factory_.AddResponse(app_launch_url, std::move(response_head), "",
                                 network::URLLoaderCompletionStatus());
     std::vector<MediaRoute> routes;
     EXPECT_CALL(mock_router_, OnRoutesUpdated(_, Not(IsEmpty()), _, IsEmpty()))
@@ -280,7 +275,7 @@ class DialMediaRouteProviderTest : public ::testing::Test {
     activity_manager_->SetExpectedRequest(app_instance_url_, "DELETE",
                                           base::nullopt);
     loader_factory_.AddResponse(app_instance_url_,
-                                network::ResourceResponseHead(), "",
+                                network::mojom::URLResponseHead::New(), "",
                                 network::URLLoaderCompletionStatus());
     EXPECT_CALL(*this, OnTerminateRoute(_, RouteRequestResult::OK));
     provider_->TerminateRoute(
@@ -320,7 +315,7 @@ class DialMediaRouteProviderTest : public ::testing::Test {
     activity_manager_->SetExpectedRequest(app_instance_url_, "DELETE",
                                           base::nullopt);
     loader_factory_.AddResponse(app_instance_url_,
-                                network::ResourceResponseHead(), "",
+                                network::mojom::URLResponseHead::New(), "",
                                 network::URLLoaderCompletionStatus());
 
     provider_->SendRouteMessage(route_id, kStopSessionMessage);
@@ -357,7 +352,7 @@ class DialMediaRouteProviderTest : public ::testing::Test {
     activity_manager_->SetExpectedRequest(app_instance_url_, "DELETE",
                                           base::nullopt);
     loader_factory_.AddResponse(
-        app_instance_url_, network::ResourceResponseHead(), "",
+        app_instance_url_, network::mojom::URLResponseHead::New(), "",
         network::URLLoaderCompletionStatus(net::HTTP_SERVICE_UNAVAILABLE));
     EXPECT_CALL(*this,
                 OnTerminateRoute(_, testing::Ne(RouteRequestResult::OK)));
@@ -376,17 +371,14 @@ class DialMediaRouteProviderTest : public ::testing::Test {
                     RouteRequestResult::ResultCode));
 
  protected:
-  content::TestBrowserThreadBundle thread_bundle_;
-  service_manager::TestConnectorFactory connector_factory_;
-  data_decoder::DataDecoderService data_decoder_service_;
+  content::BrowserTaskEnvironment task_environment_;
+  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 
   network::TestURLLoaderFactory loader_factory_;
 
-  mojom::MediaRouteProviderPtr provider_ptr_;
+  mojo::Remote<mojom::MediaRouteProvider> provider_remote_;
   MockMojoMediaRouter mock_router_;
-  std::unique_ptr<mojo::Binding<mojom::MediaRouter>> router_binding_;
-
-  data_decoder::TestingJsonParser::ScopedFactoryOverride parser_override_;
+  std::unique_ptr<mojo::Receiver<mojom::MediaRouter>> router_receiver_;
 
   TestDialMediaSinkServiceImpl mock_sink_service_;
   TestDialActivityManager* activity_manager_ = nullptr;

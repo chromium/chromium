@@ -38,6 +38,16 @@ class FakeGCMProfileService::CustomFakeGCMDriver
   void OnDispatchMessage(const std::string& app_id,
                          const IncomingMessage& message);
 
+  // instance_id::FakeGCMDriverForInstanceID overrides:
+  void SendWebPushMessage(const std::string& app_id,
+                          const std::string& authorized_entity,
+                          const std::string& p256dh,
+                          const std::string& auth_secret,
+                          const std::string& fcm_token,
+                          crypto::ECPrivateKey* vapid_key,
+                          WebPushMessage message,
+                          WebPushCallback callback) override;
+
  protected:
   // FakeGCMDriver overrides:
   void RegisterImpl(const std::string& app_id,
@@ -54,11 +64,11 @@ class FakeGCMProfileService::CustomFakeGCMDriver
                 const std::string& authorized_entity,
                 const std::string& scope,
                 const std::map<std::string, std::string>& options,
-                const GetTokenCallback& callback) override;
+                GetTokenCallback callback) override;
   void DeleteToken(const std::string& app_id,
                    const std::string& authorized_entity,
                    const std::string& scope,
-                   const DeleteTokenCallback& callback) override;
+                   DeleteTokenCallback callback) override;
 
  private:
   void DoRegister(const std::string& app_id,
@@ -74,7 +84,8 @@ class FakeGCMProfileService::CustomFakeGCMDriver
   // when unregister is called.
   int registration_count_ = 0;
 
-  base::WeakPtrFactory<CustomFakeGCMDriver> weak_factory_;  // Must be last.
+  base::WeakPtrFactory<CustomFakeGCMDriver> weak_factory_{
+      this};  // Must be last.
 
   DISALLOW_COPY_AND_ASSIGN(CustomFakeGCMDriver);
 };
@@ -83,8 +94,7 @@ FakeGCMProfileService::CustomFakeGCMDriver::CustomFakeGCMDriver(
     FakeGCMProfileService* service)
     : instance_id::FakeGCMDriverForInstanceID(
           base::ThreadTaskRunnerHandle::Get()),
-      service_(service),
-      weak_factory_(this) {}
+      service_(service) {}
 
 FakeGCMProfileService::CustomFakeGCMDriver::~CustomFakeGCMDriver() {}
 
@@ -152,6 +162,21 @@ void FakeGCMProfileService::CustomFakeGCMDriver::SendImpl(
                      app_id, receiver_id, message));
 }
 
+void FakeGCMProfileService::CustomFakeGCMDriver::SendWebPushMessage(
+    const std::string& app_id,
+    const std::string& authorized_entity,
+    const std::string& p256dh,
+    const std::string& auth_secret,
+    const std::string& fcm_token,
+    crypto::ECPrivateKey* vapid_key,
+    WebPushMessage message,
+    WebPushCallback callback) {
+  if (service_->collect_) {
+    service_->last_receiver_id_ = fcm_token;
+    service_->last_web_push_message_ = std::move(message);
+  }
+}
+
 void FakeGCMProfileService::CustomFakeGCMDriver::DoSend(
     const std::string& app_id,
     const std::string& receiver_id,
@@ -168,24 +193,24 @@ void FakeGCMProfileService::CustomFakeGCMDriver::GetToken(
     const std::string& authorized_entity,
     const std::string& scope,
     const std::map<std::string, std::string>& options,
-    const GetTokenCallback& callback) {
+    GetTokenCallback callback) {
   if (service_->is_offline_)
     return;  // Drop request.
 
-  instance_id::FakeGCMDriverForInstanceID::GetToken(app_id, authorized_entity,
-                                                    scope, options, callback);
+  instance_id::FakeGCMDriverForInstanceID::GetToken(
+      app_id, authorized_entity, scope, options, std::move(callback));
 }
 
 void FakeGCMProfileService::CustomFakeGCMDriver::DeleteToken(
     const std::string& app_id,
     const std::string& authorized_entity,
     const std::string& scope,
-    const DeleteTokenCallback& callback) {
+    DeleteTokenCallback callback) {
   if (service_->is_offline_)
     return;  // Drop request.
 
   instance_id::FakeGCMDriverForInstanceID::DeleteToken(
-      app_id, authorized_entity, scope, callback);
+      app_id, authorized_entity, scope, std::move(callback));
 }
 
 void FakeGCMProfileService::CustomFakeGCMDriver::OnDispatchMessage(

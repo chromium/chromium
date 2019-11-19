@@ -131,7 +131,7 @@ class DOMAIN_RELIABILITY_EXPORT DomainReliabilityContext {
   const base::TimeTicks* last_network_change_time_;
   const UploadAllowedCallback& upload_allowed_callback_;
 
-  base::WeakPtrFactory<DomainReliabilityContext> weak_factory_;
+  base::WeakPtrFactory<DomainReliabilityContext> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DomainReliabilityContext);
 };

@@ -17,8 +17,8 @@ class RTCError final : public DOMException {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static RTCError* Create(String message, const RTCErrorInit* init);
-  RTCError(String message, const RTCErrorInit* init);
+  static RTCError* Create(const RTCErrorInit* init, String message);
+  RTCError(const RTCErrorInit* init, String message);
 
   const String& errorDetail() const;
   int32_t sdpLineNumber(bool& is_null) const;

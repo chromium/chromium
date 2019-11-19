@@ -1,0 +1,90 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ios/ios_sdk.gni")
+import("//build/config/ios/rules.gni")
+import("//ios/chrome/test/earl_grey2/chrome_ios_eg2_test.gni")
+
+group("all_tests") {
+  testonly = true
+  deps = [
+    ":ios_cwt_chromedriver_tests",
+    ":ios_cwt_chromedriver_tests_module",
+  ]
+}
+
+chrome_ios_eg2_test_app_host("ios_cwt_chromedriver_tests") {
+  deps = [
+    ":eg_app_support+eg2",
+  ]
+}
+
+chrome_ios_eg2_test("ios_cwt_chromedriver_tests_module") {
+  xcode_test_application_name = "ios_cwt_chromedriver_tests"
+
+  deps = [
+    ":cwt_chromedriver_tests",
+  ]
+}
+
+source_set("shared_helper_headers") {
+  testonly = true
+  sources = [
+    "cwt_webdriver_app_interface.h",
+  ]
+}
+
+source_set("eg_app_support+eg2") {
+  defines = [ "CHROME_EARL_GREY_2" ]
+  testonly = true
+  configs += [ "//build/config/compiler:enable_arc" ]
+
+  sources = [
+    "cwt_webdriver_app_interface.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//ios/chrome/app:app_internal",
+    "//ios/chrome/browser/tabs:tabs",
+    "//ios/chrome/browser/web:tab_id_tab_helper",
+    "//ios/chrome/browser/web_state_list",
+    "//ios/chrome/test/app:test_support",
+    "//ios/testing:nserror_support",
+    "//ios/testing/earl_grey:eg_app_support+eg2",
+    "//ios/third_party/earl_grey2:app_framework+link",
+    "//ios/web/public/test",
+    "//ui/gfx",
+  ]
+
+  public_deps = [
+    ":shared_helper_headers",
+  ]
+}
+
+source_set("cwt_chromedriver_tests") {
+  defines = [ "CHROME_EARL_GREY_2" ]
+  testonly = true
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+
+  sources = [
+    "cwt_chrome_driver.mm",
+    "cwt_request_handler.h",
+    "cwt_request_handler.mm",
+  ]
+
+  deps = [
+    ":shared_helper_headers",
+    "//components/version_info:version_info",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/third_party/earl_grey2:test_lib",
+    "//net:test_support",
+  ]
+
+  libs = [ "UIKit.framework" ]
+}

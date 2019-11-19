@@ -16,6 +16,10 @@
 
 class CollectedCookiesViewsTest : public InProcessBrowserTest {
  public:
+  CollectedCookiesViewsTest() = default;
+  ~CollectedCookiesViewsTest() override = default;
+
+  // InProcessBrowserTest:
   void SetUpOnMainThread() override {
     ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -27,16 +31,17 @@ class CollectedCookiesViewsTest : public InProcessBrowserTest {
     ui_test_utils::NavigateToURL(
         browser(), embedded_test_server()->GetURL("/cookie1.html"));
 
-    // Spawn a cookies dialog.  Note that |cookies_dialog_| will delete itself
-    // automatically when it closes.
-    cookies_dialog_ = new CollectedCookiesViews(
-        browser()->tab_strip_model()->GetActiveWebContents());
+    // Spawn a cookies dialog.
+    auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+    CollectedCookiesViews::CreateAndShowForWebContents(web_contents);
+    cookies_dialog_ = static_cast<CollectedCookiesViews*>(
+        web_contents->GetUserData(CollectedCookiesViews::UserDataKey()));
   }
 
   // Closing dialog with modified data will shows infobar.
   void SetDialogChanged() { cookies_dialog_->status_changed_ = true; }
 
-  void CloseCookiesDialog() { cookies_dialog_->Close(); }
+  void CloseCookiesDialog() { cookies_dialog_->GetWidget()->Close(); }
 
   size_t infobar_count() const {
     content::WebContents* web_contents =
@@ -47,6 +52,8 @@ class CollectedCookiesViewsTest : public InProcessBrowserTest {
 
  private:
   CollectedCookiesViews* cookies_dialog_ = nullptr;
+
+  DISALLOW_COPY_AND_ASSIGN(CollectedCookiesViewsTest);
 };
 
 IN_PROC_BROWSER_TEST_F(CollectedCookiesViewsTest, CloseDialog) {
@@ -85,4 +92,15 @@ IN_PROC_BROWSER_TEST_F(CollectedCookiesViewsTest, ChangeAndCloseTab) {
   browser()->tab_strip_model()->GetActiveWebContents()->Close();
 
   EXPECT_EQ(0u, infobar_count());
+}
+
+// Closing the widget asynchronously destroys the CollectedCookiesViews object,
+// but synchronously removes it from the WebContentsModalDialogManager. Make
+// sure there's no crash when trying to re-open the CollectedCookiesViews right
+// after closing it. Regression test for https://crbug.com/989888
+IN_PROC_BROWSER_TEST_F(CollectedCookiesViewsTest, CloseDialogAndReopen) {
+  CloseCookiesDialog();
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  CollectedCookiesViews::CreateAndShowForWebContents(web_contents);
+  // If the test didn't crash, it has passed.
 }

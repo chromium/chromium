@@ -36,7 +36,8 @@ ChildCallStackProfileCollector::ChildCallStackProfileCollector() {}
 ChildCallStackProfileCollector::~ChildCallStackProfileCollector() {}
 
 void ChildCallStackProfileCollector::SetParentProfileCollector(
-    metrics::mojom::CallStackProfileCollectorPtr parent_collector) {
+    mojo::PendingRemote<metrics::mojom::CallStackProfileCollector>
+        parent_collector) {
   base::AutoLock alock(lock_);
   // This function should only invoked once, during the mode of operation when
   // retaining profiles after construction.
@@ -45,13 +46,17 @@ void ChildCallStackProfileCollector::SetParentProfileCollector(
   task_runner_ = base::ThreadTaskRunnerHandle::Get();
   // This should only be set one time per child process.
   DCHECK(!parent_collector_);
-  parent_collector_ = std::move(parent_collector);
-  if (parent_collector_) {
-    for (ProfileState& state : profiles_) {
-      mojom::SampledProfilePtr mojo_profile = mojom::SampledProfile::New();
-      mojo_profile->contents = std::move(state.profile);
-      parent_collector_->Collect(state.start_timestamp,
-                                 std::move(mojo_profile));
+  // If |parent_collector| is mojo::NullRemote(), it skips Bind since
+  // mojo::Remote doesn't allow Bind with mojo::NullRemote().
+  if (parent_collector) {
+    parent_collector_.Bind(std::move(parent_collector));
+    if (parent_collector_) {
+      for (ProfileState& state : profiles_) {
+        mojom::SampledProfilePtr mojo_profile = mojom::SampledProfile::New();
+        mojo_profile->contents = std::move(state.profile);
+        parent_collector_->Collect(state.start_timestamp,
+                                   std::move(mojo_profile));
+      }
     }
   }
   profiles_.clear();

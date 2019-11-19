@@ -46,7 +46,7 @@ public class AwSecondBrowserProcessTest {
     private int mSecondBrowserServicePid;
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         stopSecondBrowserProcess(false);
     }
 
@@ -109,7 +109,7 @@ public class AwSecondBrowserProcessTest {
         mSecondBrowserProcessLatch = null;
     }
 
-    private void stopSecondBrowserProcess(boolean sync) throws Exception {
+    private void stopSecondBrowserProcess(boolean sync) {
         if (mSecondBrowserServicePid <= 0) return;
         Assert.assertTrue(isSecondBrowserServiceRunning());
         // Note that using killProcess ensures that the service record gets removed

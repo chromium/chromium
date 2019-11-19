@@ -31,6 +31,7 @@
 <translation id="4769065380738716500">Bilderna har ersatts av deras alt-text.</translation>
 <translation id="4896660567607030658">Ingen feedback, visa bara markören.</translation>
 <translation id="4937901943818762779">Tillåt animerade bilder, men bara en gång.</translation>
+<translation id="4949131196216960195">Aktivera textmarkörläget med &lt;span class='key'&gt;Sök&lt;/span&gt; + &lt;img src='increase_brightness.png'&gt; (tangenten för att öka ljusstyrkan eller F7) för att aktivera textmarkörläget. Inaktivera det genom att trycka en gång till.</translation>
 <translation id="4954450790315188152">När textmarkörläget är aktiverat:</translation>
 <translation id="5041932793799765940">Färgjustering</translation>
 <translation id="5094574508723441140">Ökad kontrast</translation>
@@ -60,7 +61,6 @@
 <translation id="7658239707568436148">Avbryt</translation>
 <translation id="786423340267544509">Lägg till ramar i element med attributen aria-describedat eller longdesc.</translation>
 <translation id="7942349550061667556">Röd</translation>
-<translation id="8254860724243898966">Tryck på &lt;span class='key'&gt;Alt&lt;/span&gt; + &lt;img src='increase_brightness.png'&gt; (tangenten för att öka ljusstyrkan eller F7) för att aktivera textmarkörläget. Tryck igen för att inaktivera det.</translation>
 <translation id="8260673944985561857">Alternativ för textmarkörläget</translation>
 <translation id="8321034316479930120">Animeringspolicy</translation>
 <translation id="8480209185614411573">Hög kontrast</translation>

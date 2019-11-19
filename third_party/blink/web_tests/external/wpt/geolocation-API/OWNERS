@@ -1,3 +1,5 @@
 # TEAM: device-dev@chromium.org
-# COMPONENT: Blink>Location
+# COMPONENT: Blink>Geolocation
+
+# Original (legacy) owner.
 mcasas@chromium.org

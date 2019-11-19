@@ -22,10 +22,11 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
-#include "base/message_loop/message_loop.h"
+#include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/task/task_scheduler/task_scheduler.h"
+#include "base/task/single_thread_task_executor.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_clock.h"
@@ -41,6 +42,8 @@
 #include "google_apis/gcm/engine/mcs_client.h"
 #include "google_apis/gcm/monitoring/fake_gcm_stats_recorder.h"
 #include "mojo/core/embedder/embedder.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/cert/cert_verifier.h"
 #include "net/dns/host_resolver.h"
 #include "net/http/http_auth_handler_factory.h"
@@ -151,6 +154,8 @@ class MyTestCertVerifier : public net::CertVerifier {
              net::CompletionOnceCallback callback,
              std::unique_ptr<Request>* out_req,
              const net::NetLogWithSource& net_log) override {
+    verify_result->Reset();
+    verify_result->verified_cert = params.certificate();
     return net::OK;
   }
   void SetConfig(const Config& config) override {}
@@ -166,7 +171,10 @@ class MCSProbeAuthPreferences : public net::HttpAuthPreferences {
   bool CanUseDefaultCredentials(const GURL& auth_origin) const override {
     return false;
   }
-  bool CanDelegate(const GURL& auth_origin) const override { return false; }
+  net::HttpAuth::DelegationType GetDelegationType(
+      const GURL& auth_origin) const override {
+    return net::HttpAuth::DelegationType::kNone;
+  }
 };
 
 class MCSProbe {
@@ -181,7 +189,8 @@ class MCSProbe {
 
  private:
   void RequestProxyResolvingSocketFactory(
-      network::mojom::ProxyResolvingSocketFactoryRequest request);
+      mojo::PendingReceiver<network::mojom::ProxyResolvingSocketFactory>
+          receiver);
   void CheckIn();
   void InitializeNetworkState();
 
@@ -209,9 +218,7 @@ class MCSProbe {
   std::unique_ptr<net::URLRequestContext> url_request_context_;
   net::NetLog net_log_;
   std::unique_ptr<net::FileNetLogObserver> logger_;
-  std::unique_ptr<net::HostResolver> host_resolver_;
   MCSProbeAuthPreferences http_auth_preferences_;
-  std::unique_ptr<net::HttpAuthHandlerFactory> http_auth_handler_factory_;
 
   FakeGCMStatsRecorder recorder_;
   std::unique_ptr<GCMStore> gcm_store_;
@@ -223,7 +230,7 @@ class MCSProbe {
   base::Thread file_thread_;
 
   std::unique_ptr<network::NetworkContext> network_context_;
-  network::mojom::NetworkContextPtr network_context_pipe_;
+  mojo::Remote<network::mojom::NetworkContext> network_context_remote_;
   network::mojom::URLLoaderFactoryPtr url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
 
@@ -280,14 +287,15 @@ void MCSProbe::Start() {
       endpoints, kDefaultBackoffPolicy,
       base::BindRepeating(&MCSProbe::RequestProxyResolvingSocketFactory,
                           base::Unretained(this)),
-      &recorder_, network_connection_tracker_.get());
+      base::ThreadTaskRunnerHandle::Get(), &recorder_,
+      network_connection_tracker_.get());
   gcm_store_ = std::make_unique<GCMStoreImpl>(
       gcm_store_path_, file_thread_.task_runner(),
       std::make_unique<FakeEncryptor>());
 
-  mcs_client_ =
-      std::make_unique<MCSClient>("probe", &clock_, connection_factory_.get(),
-                                  gcm_store_.get(), &recorder_);
+  mcs_client_ = std::make_unique<MCSClient>(
+      "probe", &clock_, connection_factory_.get(), gcm_store_.get(),
+      base::ThreadTaskRunnerHandle::Get(), &recorder_);
   run_loop_ = std::make_unique<base::RunLoop>();
   gcm_store_->Load(GCMStore::CREATE_IF_MISSING,
                    base::Bind(&MCSProbe::LoadCallback,
@@ -332,19 +340,17 @@ void MCSProbe::InitializeNetworkState() {
     base::FilePath log_path = command_line_.GetSwitchValuePath(kLogFileSwitch);
     logger_ = net::FileNetLogObserver::CreateUnbounded(log_path, nullptr);
     net::NetLogCaptureMode capture_mode =
-        net::NetLogCaptureMode::IncludeCookiesAndCredentials();
+        net::NetLogCaptureMode::kIncludeSensitive;
     logger_->StartObserving(&net_log_, capture_mode);
   }
 
-  host_resolver_ = net::HostResolver::CreateDefaultResolver(&net_log_);
-  http_auth_handler_factory_ = net::HttpAuthHandlerRegistryFactory::Create(
-      &http_auth_preferences_, std::vector<std::string>{net::kBasicAuthScheme});
-
   net::URLRequestContextBuilder builder;
   builder.set_net_log(&net_log_);
-  builder.set_shared_host_resolver(host_resolver_.get());
-  builder.set_shared_http_auth_handler_factory(
-      http_auth_handler_factory_.get());
+  builder.set_host_resolver(
+      net::HostResolver::CreateStandaloneResolver(&net_log_));
+  builder.SetHttpAuthHandlerFactory(net::HttpAuthHandlerRegistryFactory::Create(
+      &http_auth_preferences_,
+      std::vector<std::string>{net::kBasicAuthScheme}));
   builder.set_proxy_resolution_service(
       net::ProxyResolutionService::CreateDirect());
 
@@ -355,7 +361,8 @@ void MCSProbe::InitializeNetworkState() {
 
   // Wrap it up with network service APIs.
   network_context_ = std::make_unique<network::NetworkContext>(
-      nullptr /* network_service */, mojo::MakeRequest(&network_context_pipe_),
+      nullptr /* network_service */,
+      network_context_remote_.BindNewPipeAndPassReceiver(),
       url_request_context_.get(),
       /*cors_exempt_header_list=*/std::vector<std::string>());
   auto url_loader_factory_params =
@@ -375,9 +382,10 @@ void MCSProbe::ErrorCallback() {
 }
 
 void MCSProbe::RequestProxyResolvingSocketFactory(
-    network::mojom::ProxyResolvingSocketFactoryRequest request) {
+    mojo::PendingReceiver<network::mojom::ProxyResolvingSocketFactory>
+        receiver) {
   return network_context_->CreateProxyResolvingSocketFactory(
-      std::move(request));
+      std::move(receiver));
 }
 
 void MCSProbe::CheckIn() {
@@ -396,7 +404,8 @@ void MCSProbe::CheckIn() {
   checkin_request_ = std::make_unique<CheckinRequest>(
       GServicesSettings().GetCheckinURL(), request_info, kDefaultBackoffPolicy,
       base::Bind(&MCSProbe::OnCheckInCompleted, base::Unretained(this)),
-      shared_url_loader_factory_, &recorder_);
+      shared_url_loader_factory_, base::ThreadTaskRunnerHandle::Get(),
+      &recorder_);
   checkin_request_->Start();
 }
 
@@ -436,13 +445,14 @@ int MCSProbeMain(int argc, char* argv[]) {
 
   base::CommandLine::Init(argc, argv);
   logging::LoggingSettings settings;
-  settings.logging_dest = logging::LOG_TO_SYSTEM_DEBUG_LOG;
+  settings.logging_dest =
+      logging::LOG_TO_SYSTEM_DEBUG_LOG | logging::LOG_TO_STDERR;
   logging::InitLogging(settings);
 
   mojo::core::Init();
 
-  base::MessageLoopForIO message_loop;
-  base::TaskScheduler::CreateAndStartWithDefaultParams("MCSProbe");
+  base::SingleThreadTaskExecutor io_task_executor(base::MessagePumpType::IO);
+  base::ThreadPoolInstance::CreateAndStartWithDefaultParams("MCSProbe");
 
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
@@ -453,7 +463,7 @@ int MCSProbeMain(int argc, char* argv[]) {
   base::RunLoop run_loop;
   run_loop.Run();
 
-  base::TaskScheduler::GetInstance()->Shutdown();
+  base::ThreadPoolInstance::Get()->Shutdown();
 
   return 0;
 }

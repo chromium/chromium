@@ -10,3 +10,7 @@
   margin-bottom: 25px;
   margin-top: 20px;
 }
+
+.update-error {
+  font-weight: bold;
+}

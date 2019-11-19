@@ -1,0 +1,89 @@
+// Copyright 2016 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module media.mojom;
+
+import "mojo/public/mojom/base/unguessable_token.mojom";
+import "media/mojo/mojom/audio_data_pipe.mojom";
+import "media/mojo/mojom/audio_parameters.mojom";
+import "media/mojo/mojom/media_types.mojom";
+
+// An interface for controlling an audio output stream.
+// To close the stream, just close the message pipe.
+// The AudioOutputStream may expire due to other reasons than actual errors,
+// such as user-initiated actions to close the stream. In this case, the
+// connection is closed without calling OnError.
+interface AudioOutputStream {
+  // Starts rendering audio.
+  Play();
+
+  // Stops rendering audio and sends a signal on the AudioDataPipe indicating
+  // this.
+  Pause();
+
+  // Flushes buffered audio.  This should not be called when playing.
+  Flush();
+
+  // Sets volume. Volume must be in the range [0, 1].
+  SetVolume(double volume);
+};
+
+// An AudioOutputStreamObserver gets notifications about events related to an
+// AudioOutputStream. DidStartPlaying() is invoked when the stream starts
+// playing and it is eventually followed by a DidStopPlaying() call. A stream
+// may start playing again after being stopped.
+//
+// Note: It is possible that DidStopPlaying() is not called in shutdown
+// situations.
+interface AudioOutputStreamObserver {
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum DisconnectReason {
+    // The Disconnect reason wasn't given explicitly. This probably means that
+    // the audio service crashed.
+    kDefault = 0,
+    // This code is used as disconnect reason when stream ended or failed to
+    // start due to an unrecoverable platform error, e.g. the hardware device is
+    // busy or disconnected.
+    kPlatformError = 1,
+    kTerminatedByClient = 2,
+    kStreamCreationFailed = 3,
+    kDocumentDestroyed = 4,
+  };
+
+  // This notification indicates that the stream started playing. The stream
+  // should be considered non-audible until a DidChangeAudibleState() call says
+  // otherwise.
+  DidStartPlaying();
+
+  // This notification indicates that the stream stopped playing. The stream
+  // should be considered no longer audible at this time; no further
+  // audible-state change notifications will be issued.
+  DidStopPlaying();
+
+  // This notification carries the latest value of the audible state of the
+  // stream. Multiple instances of this notification may occur after
+  // DidStartPlaying() and before DidStopPlaying().
+  DidChangeAudibleState(bool is_audible);
+};
+
+interface AudioOutputStreamProvider {
+  // Creates a new AudioOutputStream using |params|. |client| is notified when
+  // the stream is ready. The stream lifetime is bound by the lifetime of
+  // |client|. |processing_id|, if provided, identifies the group of input and
+  // output streams that are related during audio processing.
+  // This method fails if it is called more than once.
+  Acquire(AudioParameters params,
+          pending_remote<AudioOutputStreamProviderClient> client,
+          mojo_base.mojom.UnguessableToken? processing_id);
+};
+
+interface AudioOutputStreamProviderClient {
+  // |stream| is used to pass commands to the stream, and |data_pipe| is used
+  // to transfer the audio data.
+  // TODO(https://crbug.com/787806): Currently, this will be called at most
+  // once. In the future, it may be called several times.
+  Created(pending_remote<AudioOutputStream> stream,
+          ReadWriteAudioDataPipe data_pipe);
+};

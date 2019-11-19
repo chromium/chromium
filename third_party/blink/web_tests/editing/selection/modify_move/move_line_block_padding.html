@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../assert_selection.js"></script>
+<script>
+const kStyle = '<style>p { font-family: monospace; padding: 50px; }</style>';
+
+selection_test(
+    [
+      kStyle,
+      '<div contenteditable>',
+      '<p>foo b|ar baz</p>',
+      '<p>foo bar baz</p>',
+      '</div>'
+    ],
+    selection => selection.modify('move', 'forward', 'line'),
+    [
+      kStyle,
+      '<div contenteditable>',
+      '<p>foo bar baz</p>',
+      '<p>foo b|ar baz</p>',
+      '</div>'
+    ],
+    'Move forward line across large padding');
+
+selection_test(
+    [
+      kStyle,
+      '<div contenteditable>',
+      '<p>foo bar baz</p>',
+      '<p>foo b|ar baz</p>',
+      '</div>'
+    ],
+    selection => selection.modify('move', 'backward', 'line'),
+    [
+      kStyle,
+      '<div contenteditable>',
+      '<p>foo b|ar baz</p>',
+      '<p>foo bar baz</p>',
+      '</div>'
+    ],
+    'Move backward line across large padding');
+</script>

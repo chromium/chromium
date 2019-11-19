@@ -1,9 +1,11 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
+<link rel="import" href="chrome://resources/cr_components/chromeos/network/network_listener_behavior.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_action_menu/cr_action_menu.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_link_row/cr_link_row.html">
 <link rel="import" href="chrome://resources/cr_elements/icons.html">
-<link rel="import" href="chrome://resources/cr_elements/policy/cr_policy_network_behavior.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-icon-button/paper-icon-button-light.html">
+<link rel="import" href="chrome://resources/cr_elements/policy/cr_policy_network_behavior_mojo.html">
 <link rel="import" href="../settings_shared_css.html">
 
 <dom-module id="settings-internet-known-networks-page">
@@ -21,34 +23,30 @@
     <div class="settings-box settings-box-text">
       <div class="secondary">$i18n{knownNetworksPreferred}</div>
     </div>
-    <div class="list-frame vertical-list">
-      <div class="list-item settings-box-text"
-          hidden$="[[havePreferred_(networkStateList_)]]">
+    <div class="list-frame vertical-list"
+        hidden$="[[havePreferred_(networkStateList_)]]">
+      <div class="list-item settings-box-text">
         $i18n{internetNoNetworks}
       </div>
+    </div>
+    <div class="list-frame vertical-list"
+        hidden$="[[!havePreferred_(networkStateList_)]]">
       <template is="dom-repeat" items="[[networkStateList_]]"
           filter="networkIsPreferred_">
         <div class="list-item">
-          <div actionable class="flex layout horizontal center"
-              on-click="fireShowDetails_">
-            <div class="flex settings-box-text">[[item.Name]]</div>
-            <template is="dom-if" if="[[isPolicySource(item.Source))]]">
+          <cr-link-row embedded label="[[getNetworkDisplayName_(item)]]"
+              on-click="fireShowDetails_"
+              role-description="$i18n{subpageArrowRoleDescription}">
+            <template is="dom-if" if="[[isPolicySource(item.source))]]">
               <cr-policy-indicator on-click="doNothing_"
-                  indicator-type="[[getIndicatorTypeForSource(item.Source)]]">
+                  indicator-type="[[getIndicatorTypeForSource(item.source)]]">
               </cr-policy-indicator>
             </template>
-            <paper-icon-button-light class="subpage-arrow">
-              <button actionable on-click="fireShowDetails_"
-                  tabindex$="[[tabindex]]" aria-label$="[[item.Name]]">
-              </button>
-            </paper-icon-button-light>
-          </div>
+          </cr-link-row>
           <div class="separator"></div>
-          <paper-icon-button-light class="icon-more-vert">
-            <button preferred tabindex$="[[tabindex]]"
-                on-click="onMenuButtonTap_" title="$i18n{moreActions}">
-            </button>
-          </paper-icon-button-light>
+          <cr-icon-button class="icon-more-vert" tabindex$="[[tabindex]]"
+              on-click="onMenuButtonTap_" title="$i18n{moreActions}">
+          </cr-icon-button>
         </div>
       </template>
     </div>
@@ -61,31 +59,24 @@
       <template is="dom-repeat" items="[[networkStateList_]]"
           filter="networkIsNotPreferred_">
         <div class="list-item">
-          <div actionable class="flex layout horizontal center"
-              on-click="fireShowDetails_">
-            <div class="flex settings-box-text">[[item.Name]]</div>
-            <template is="dom-if" if="[[isPolicySource(item.Source))]]">
+          <cr-link-row embedded label="[[getNetworkDisplayName_(item)]]"
+              on-click="fireShowDetails_"
+              role-description="$i18n{subpageArrowRoleDescription}">
+            <template is="dom-if" if="[[isPolicySource(item.source))]]">
               <cr-policy-indicator on-click="doNothing_"
-                  indicator-type="[[getIndicatorTypeForSource(item.Source)]]">
+                  indicator-type="[[getIndicatorTypeForSource(item.source)]]">
               </cr-policy-indicator>
             </template>
-            <paper-icon-button-light class="subpage-arrow">
-              <button actionable on-click="fireShowDetails_"
-                  tabindex$="[[tabindex]]" aria-label$="[[item.Name]]">
-              </button>
-            </paper-icon-button-light>
-          </div>
+          </cr-link-row>
           <div class="separator"></div>
-          <paper-icon-button-light class="icon-more-vert">
-            <button tabindex$="[[tabindex]]" on-click="onMenuButtonTap_"
-                title="$i18n{moreActions}">
-            </button>
-          </paper-icon-button-light>
+          <cr-icon-button class="icon-more-vert" tabindex$="[[tabindex]]"
+              on-click="onMenuButtonTap_" title="$i18n{moreActions}">
+          </cr-icon-button>
         </div>
       </template>
     </div>
 
-    <cr-action-menu id="dotsMenu">
+    <cr-action-menu id="dotsMenu" role-description="$i18n{menu}">
       <button class="dropdown-item" hidden="[[!showAddPreferred_]]"
           on-click="onAddPreferredTap_">
         $i18n{knownNetworksMenuAddPreferred}

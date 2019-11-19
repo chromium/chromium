@@ -1,1 +1,4 @@
 parastoog@google.com
+
+per-file *type_controller*=jkrcal@chromium.org
+per-file *type_controller*=file://components/sync/OWNERS

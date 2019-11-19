@@ -7,9 +7,13 @@ package org.chromium.chrome.browser.toolbar;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.util.AttributeSet;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.FeatureUtilities;
 
 /**
  * The Button used for switching tabs. Currently this class is only being used for the bottom
@@ -21,8 +25,41 @@ public class TabSwitcherButtonView extends ImageView {
      */
     private TabSwitcherDrawable mTabSwitcherButtonDrawable;
 
+    /** The tab switcher button text label. */
+    private TextView mLabel;
+
+    /** The wrapper View that contains the tab switcher button and the label. */
+    private View mWrapper;
+
     public TabSwitcherButtonView(Context context, AttributeSet attrs) {
         super(context, attrs);
+    }
+
+    /**
+     * @param wrapper The wrapping View of this button.
+     */
+    public void setWrapperView(ViewGroup wrapper) {
+        mWrapper = wrapper;
+        mLabel = mWrapper.findViewById(R.id.tab_switcher_button_label);
+        if (FeatureUtilities.isLabeledBottomToolbarEnabled()) mLabel.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void setOnClickListener(OnClickListener listener) {
+        if (mWrapper != null) {
+            mWrapper.setOnClickListener(listener);
+            setClickable(false);
+        }
+        super.setOnClickListener(listener);
+    }
+
+    @Override
+    public void setOnLongClickListener(OnLongClickListener listener) {
+        if (mWrapper != null) {
+            mWrapper.setOnLongClickListener(listener);
+            setClickable(false);
+        }
+        super.setOnLongClickListener(listener);
     }
 
     @Override
@@ -50,5 +87,6 @@ public class TabSwitcherButtonView extends ImageView {
      */
     public void setTint(ColorStateList tint) {
         mTabSwitcherButtonDrawable.setTint(tint);
+        if (mLabel != null) mLabel.setTextColor(tint);
     }
 }

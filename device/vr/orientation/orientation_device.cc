@@ -9,6 +9,9 @@
 #include "base/numerics/math_constants.h"
 #include "base/time/time.h"
 #include "device/vr/orientation/orientation_device.h"
+#include "device/vr/orientation/orientation_session.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "services/device/public/cpp/generic_sensor/sensor_reading.h"
 #include "services/device/public/cpp/generic_sensor/sensor_reading_shared_buffer_reader.h"
 #include "services/device/public/mojom/sensor_provider.mojom.h"
 #include "ui/display/display.h"
@@ -25,16 +28,8 @@ namespace {
 static constexpr int kDefaultPumpFrequencyHz = 60;
 
 mojom::VRDisplayInfoPtr CreateVRDisplayInfo(mojom::XRDeviceId id) {
-  static const char DEVICE_NAME[] = "VR Orientation Device";
-
   mojom::VRDisplayInfoPtr display_info = mojom::VRDisplayInfo::New();
   display_info->id = id;
-  display_info->displayName = DEVICE_NAME;
-  display_info->capabilities = mojom::VRDisplayCapabilities::New();
-  display_info->capabilities->hasPosition = false;
-  display_info->capabilities->hasExternalDisplay = false;
-  display_info->capabilities->canPresent = false;
-
   return display_info;
 }
 
@@ -50,21 +45,21 @@ display::Display::Rotation GetRotation() {
 
 }  // namespace
 
-VROrientationDevice::VROrientationDevice(
-    mojom::SensorProviderPtr* sensor_provider,
-    base::OnceClosure ready_callback)
+VROrientationDevice::VROrientationDevice(mojom::SensorProvider* sensor_provider,
+                                         base::OnceClosure ready_callback)
     : VRDeviceBase(mojom::XRDeviceId::ORIENTATION_DEVICE_ID),
-      ready_callback_(std::move(ready_callback)),
-      binding_(this) {
-  (*sensor_provider)
-      ->GetSensor(kOrientationSensorType,
-                  base::BindOnce(&VROrientationDevice::SensorReady,
-                                 base::Unretained(this)));
+      ready_callback_(std::move(ready_callback)) {
+  DVLOG(2) << __func__;
+  sensor_provider->GetSensor(kOrientationSensorType,
+                             base::BindOnce(&VROrientationDevice::SensorReady,
+                                            base::Unretained(this)));
 
   SetVRDisplayInfo(CreateVRDisplayInfo(GetId()));
 }
 
-VROrientationDevice::~VROrientationDevice() = default;
+VROrientationDevice::~VROrientationDevice() {
+  DVLOG(2) << __func__;
+}
 
 void VROrientationDevice::SensorReady(
     device::mojom::SensorCreationResult,
@@ -76,6 +71,7 @@ void VROrientationDevice::SensorReady(
     return;
   }
 
+  DVLOG(2) << __func__;
   constexpr size_t kReadBufferSize = sizeof(device::SensorReadingSharedBuffer);
 
   DCHECK_EQ(0u, params->buffer_offset % kReadBufferSize);
@@ -85,28 +81,19 @@ void VROrientationDevice::SensorReady(
 
   sensor_.Bind(std::move(params->sensor));
 
-  binding_.Bind(std::move(params->client_request));
+  receiver_.Bind(std::move(params->client_receiver));
 
-  shared_buffer_handle_ = std::move(params->memory);
-  DCHECK(!shared_buffer_);
-  shared_buffer_ = shared_buffer_handle_->MapAtOffset(kReadBufferSize,
-                                                      params->buffer_offset);
-
-  if (!shared_buffer_) {
+  shared_buffer_reader_ = device::SensorReadingSharedBufferReader::Create(
+      std::move(params->memory), params->buffer_offset);
+  if (!shared_buffer_reader_) {
     // If we cannot read data, we cannot supply a device.
     HandleSensorError();
     std::move(ready_callback_).Run();
     return;
   }
 
-  const device::SensorReadingSharedBuffer* buffer =
-      static_cast<const device::SensorReadingSharedBuffer*>(
-          shared_buffer_.get());
-  shared_buffer_reader_.reset(
-      new device::SensorReadingSharedBufferReader(buffer));
-
   default_config.set_frequency(kDefaultPumpFrequencyHz);
-  sensor_.set_connection_error_handler(base::BindOnce(
+  sensor_.set_disconnect_handler(base::BindOnce(
       &VROrientationDevice::HandleSensorError, base::Unretained(this)));
   sensor_->ConfigureReadingChangeNotifications(false /* disabled */);
   sensor_->AddConfiguration(
@@ -134,24 +121,61 @@ void VROrientationDevice::RaiseError() {
 
 void VROrientationDevice::HandleSensorError() {
   sensor_.reset();
-  shared_buffer_handle_.reset();
-  shared_buffer_.reset();
-  binding_.Close();
+  shared_buffer_reader_.reset();
+  receiver_.reset();
 }
 
 void VROrientationDevice::RequestSession(
     mojom::XRRuntimeSessionOptionsPtr options,
     mojom::XRRuntime::RequestSessionCallback callback) {
+  DVLOG(2) << __func__;
   DCHECK(!options->immersive);
+
   // TODO(http://crbug.com/695937): Perform a check to see if sensors are
   // available when RequestSession is called for non-immersive sessions.
-  ReturnNonImmersiveSession(std::move(callback));
+
+  mojo::PendingRemote<mojom::XRFrameDataProvider> data_provider;
+  mojo::PendingRemote<mojom::XRSessionController> controller;
+  magic_window_sessions_.push_back(std::make_unique<VROrientationSession>(
+      this, data_provider.InitWithNewPipeAndPassReceiver(),
+      controller.InitWithNewPipeAndPassReceiver()));
+
+  auto session = mojom::XRSession::New();
+  session->data_provider = std::move(data_provider);
+  if (display_info_) {
+    session->display_info = display_info_.Clone();
+  }
+
+  std::move(callback).Run(std::move(session), std::move(controller));
+
+  // The sensor may have been suspended, so resume it now.
+  sensor_->Resume();
 }
 
-void VROrientationDevice::OnGetInlineFrameData(
+void VROrientationDevice::EndMagicWindowSession(VROrientationSession* session) {
+  DVLOG(2) << __func__;
+  base::EraseIf(magic_window_sessions_,
+                [session](const std::unique_ptr<VROrientationSession>& item) {
+                  return item.get() == session;
+                });
+
+  // If there are no more magic window sessions, suspend the sensor until we get
+  // a new one.
+  if (magic_window_sessions_.empty()) {
+    sensor_->Suspend();
+  }
+}
+
+void VROrientationDevice::GetInlineFrameData(
     mojom::XRFrameDataProvider::GetFrameDataCallback callback) {
+  // Orientation sessions should never be exclusive or presenting.
+  DCHECK(!HasExclusiveSession());
+  if (!inline_poses_enabled_) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
   mojom::VRPosePtr pose = mojom::VRPose::New();
-  pose->orientation.emplace(4);
 
   SensorReading latest_reading;
   // If the reading fails just return the last pose that we got.
@@ -165,10 +189,7 @@ void VROrientationDevice::OnGetInlineFrameData(
         WorldSpaceToUserOrientedSpace(SensorSpaceToWorldSpace(latest_pose_));
   }
 
-  pose->orientation.value()[0] = latest_pose_.x();
-  pose->orientation.value()[1] = latest_pose_.y();
-  pose->orientation.value()[2] = latest_pose_.z();
-  pose->orientation.value()[3] = latest_pose_.w();
+  pose->orientation = latest_pose_;
 
   mojom::XRFrameDataPtr frame_data = mojom::XRFrameData::New();
   frame_data->pose = std::move(pose);

@@ -15,9 +15,12 @@
 #include "base/optional.h"
 #include "content/common/content_export.h"
 #include "content/renderer/accessibility/render_accessibility_impl.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/image_annotation/public/cpp/image_processor.h"
 #include "services/image_annotation/public/mojom/image_annotation.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 
 namespace blink {
 
@@ -35,19 +38,27 @@ class ContentClient;
 // owns it to update the relevant image annotations.
 class CONTENT_EXPORT AXImageAnnotator : public base::CheckedObserver {
  public:
-  AXImageAnnotator(RenderAccessibilityImpl* const render_accessibility,
-                   image_annotation::mojom::AnnotatorPtr annotator_ptr);
+  AXImageAnnotator(
+      RenderAccessibilityImpl* const render_accessibility,
+      const std::string& preferred_language,
+      mojo::PendingRemote<image_annotation::mojom::Annotator> annotator);
   ~AXImageAnnotator() override;
 
   void Destroy();
 
   std::string GetImageAnnotation(blink::WebAXObject& image) const;
+  ax::mojom::ImageAnnotationStatus GetImageAnnotationStatus(
+      blink::WebAXObject& image) const;
   bool HasAnnotationInCache(blink::WebAXObject& image) const;
   bool HasImageInCache(const blink::WebAXObject& image) const;
 
   void OnImageAdded(blink::WebAXObject& image);
   void OnImageUpdated(blink::WebAXObject& image);
   void OnImageRemoved(blink::WebAXObject& image);
+
+  void set_preferred_language(const std::string& language) {
+    preferred_language_ = language;
+  }
 
  private:
   // Keeps track of the image data and the automatic annotation for each image.
@@ -56,11 +67,18 @@ class CONTENT_EXPORT AXImageAnnotator : public base::CheckedObserver {
     ImageInfo(const blink::WebAXObject& image);
     virtual ~ImageInfo();
 
-    image_annotation::mojom::ImageProcessorPtr GetImageProcessor();
+    mojo::PendingRemote<image_annotation::mojom::ImageProcessor>
+    GetImageProcessor();
     bool HasAnnotation() const;
 
+    ax::mojom::ImageAnnotationStatus status() const { return status_; }
+
+    void set_status(ax::mojom::ImageAnnotationStatus status) {
+      DCHECK_NE(status, ax::mojom::ImageAnnotationStatus::kNone);
+      status_ = status;
+    }
+
     std::string annotation() const {
-      DCHECK(annotation_.has_value());
       return annotation_.value_or("");
     }
 
@@ -68,6 +86,7 @@ class CONTENT_EXPORT AXImageAnnotator : public base::CheckedObserver {
 
    private:
     image_annotation::ImageProcessor image_processor_;
+    ax::mojom::ImageAnnotationStatus status_;
     base::Optional<std::string> annotation_;
   };
 
@@ -78,7 +97,7 @@ class CONTENT_EXPORT AXImageAnnotator : public base::CheckedObserver {
   virtual ContentClient* GetContentClient() const;
 
   // Given a WebImage, it uses the URL of the main document and the src
-  // attribute of the image, generates a unique identifier for the image that
+  // attribute of the image, to generate a unique identifier for the image that
   // could be provided to the image annotation service.
   //
   // This method is virtual to allow overriding it from tests.
@@ -87,6 +106,11 @@ class CONTENT_EXPORT AXImageAnnotator : public base::CheckedObserver {
 
   // Removes the automatic image annotations from all images.
   void MarkAllImagesDirty();
+
+  // Marks a node in the accessibility tree dirty when an image annotation
+  // changes. Also marks dirty a link or document that immediately contains
+  // an image.
+  void MarkDirty(const blink::WebAXObject& image) const;
 
   // Gets called when an image gets annotated by the image annotation service.
   void OnImageAnnotated(const blink::WebAXObject& image,
@@ -98,8 +122,11 @@ class CONTENT_EXPORT AXImageAnnotator : public base::CheckedObserver {
   // Weak, owns us.
   RenderAccessibilityImpl* const render_accessibility_;
 
+  // The language in which to request image descriptions.
+  std::string preferred_language_;
+
   // A pointer to the automatic image annotation service.
-  image_annotation::mojom::AnnotatorPtr annotator_ptr_;
+  mojo::Remote<image_annotation::mojom::Annotator> annotator_;
 
   // Keeps track of the image data and the automatic annotations for each image.
   //
@@ -107,7 +134,7 @@ class CONTENT_EXPORT AXImageAnnotator : public base::CheckedObserver {
   std::unordered_map<int, ImageInfo> image_annotations_;
 
   // This member needs to be last because it should destructed first.
-  base::WeakPtrFactory<AXImageAnnotator> weak_factory_;
+  base::WeakPtrFactory<AXImageAnnotator> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AXImageAnnotator);
 };

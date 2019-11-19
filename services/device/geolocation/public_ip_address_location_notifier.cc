@@ -20,19 +20,20 @@ constexpr base::TimeDelta kNetworkChangeReactionDelay =
 
 PublicIpAddressLocationNotifier::PublicIpAddressLocationNotifier(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    network::NetworkConnectionTracker* network_connection_tracker,
     const std::string& api_key)
     : network_changed_since_last_request_(true),
       api_key_(api_key),
       url_loader_factory_(url_loader_factory),
-      network_traffic_annotation_tag_(nullptr),
-      weak_ptr_factory_(this) {
+      network_connection_tracker_(network_connection_tracker),
+      network_traffic_annotation_tag_(nullptr) {
   // Subscribe to notifications of changes in network configuration.
-  net::NetworkChangeNotifier::AddNetworkChangeObserver(this);
+  network_connection_tracker_->AddNetworkConnectionObserver(this);
 }
 
 PublicIpAddressLocationNotifier::~PublicIpAddressLocationNotifier() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  net::NetworkChangeNotifier::RemoveNetworkChangeObserver(this);
+  network_connection_tracker_->RemoveNetworkConnectionObserver(this);
 }
 
 void PublicIpAddressLocationNotifier::QueryNextPosition(
@@ -69,8 +70,8 @@ void PublicIpAddressLocationNotifier::QueryNextPosition(
   callbacks_.push_back(std::move(callback));
 }
 
-void PublicIpAddressLocationNotifier::OnNetworkChanged(
-    net::NetworkChangeNotifier::ConnectionType type) {
+void PublicIpAddressLocationNotifier::OnConnectionChanged(
+    network::mojom::ConnectionType type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Post a cancelable task to react to this network change after a reasonable

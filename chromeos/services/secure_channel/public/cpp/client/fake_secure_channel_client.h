@@ -61,8 +61,8 @@ class FakeSecureChannelClient : public SecureChannelClient {
       multidevice::RemoteDeviceRef device_to_connect,
       multidevice::RemoteDeviceRef local_device) {
     auto device_id_pair = std::make_pair(device_to_connect, local_device);
-    if (!base::ContainsKey(device_pair_to_next_initiate_connection_attempt_,
-                           device_id_pair)) {
+    if (!base::Contains(device_pair_to_next_initiate_connection_attempt_,
+                        device_id_pair)) {
       return nullptr;
     }
 
@@ -74,8 +74,8 @@ class FakeSecureChannelClient : public SecureChannelClient {
       multidevice::RemoteDeviceRef device_to_connect,
       multidevice::RemoteDeviceRef local_device) {
     auto device_id_pair = std::make_pair(device_to_connect, local_device);
-    if (!base::ContainsKey(device_pair_to_next_listen_connection_attempt_,
-                           device_id_pair)) {
+    if (!base::Contains(device_pair_to_next_listen_connection_attempt_,
+                        device_id_pair)) {
       return nullptr;
     }
 

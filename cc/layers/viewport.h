@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "cc/layers/layer_impl.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
@@ -38,24 +37,27 @@ class CC_EXPORT Viewport {
 
   static std::unique_ptr<Viewport> Create(LayerTreeHostImpl* host_impl);
 
+  Viewport(const Viewport&) = delete;
+  Viewport& operator=(const Viewport&) = delete;
+
   // Differs from scrolling in that only the visual viewport is moved, without
   // affecting the browser controls or outer viewport.
   void Pan(const gfx::Vector2dF& delta);
 
   // Scrolls the viewport, applying the unique bubbling between the inner and
   // outer viewport unless the scroll_outer_viewport bit is off. Scrolls can be
-  // consumed by browser controls.
-  ScrollResult ScrollBy(const gfx::Vector2dF& delta,
+  // consumed by browser controls. The delta is in physical pixels, that is, it
+  // will be scaled by the page scale to ensure the content moves
+  // |physical_delta| number of pixels.
+  ScrollResult ScrollBy(const gfx::Vector2dF& physical_delta,
                         const gfx::Point& viewport_point,
-                        bool is_wheel_scroll,
+                        bool is_direct_manipulation,
                         bool affect_browser_controls,
                         bool scroll_outer_viewport);
 
   bool CanScroll(const ScrollState& scroll_state) const;
 
-  // Scrolls the viewport. Unlike the above method, scrolls the inner before
-  // the outer viewport. Doesn't affect browser controls or return a result
-  // since callers don't need it.
+  // TODO(bokan): Callers can now be replaced by ScrollBy.
   void ScrollByInnerFirst(const gfx::Vector2dF& delta);
 
   // Scrolls the viewport, bubbling the delta between the inner and outer
@@ -68,10 +70,13 @@ class CC_EXPORT Viewport {
   void PinchUpdate(float magnify_delta, const gfx::Point& anchor);
   void PinchEnd(const gfx::Point& anchor, bool snap_to_min);
 
-  // Returns the "representative" viewport layer. That is, the one that's set
-  // as the currently scrolling layer when the viewport scrolls and the one used
-  // in the scrolling code to indicate scrolling should happen via this class.
-  LayerImpl* MainScrollLayer() const;
+  // Returns true if the given scroll node should be scrolled via this class,
+  // false if it should be scrolled directly.
+  bool ShouldScroll(const ScrollNode& scroll_node);
+
+  // Returns the "representative" viewport scroll node. That is, the one that's
+  // set as the currently scrolling node when the viewport scrolls.
+  ScrollNode* MainScrollNode() const;
 
  private:
   explicit Viewport(LayerTreeHostImpl* host_impl);
@@ -103,8 +108,6 @@ class CC_EXPORT Viewport {
   gfx::Vector2d pinch_anchor_adjustment_;
 
   FRIEND_TEST_ALL_PREFIXES(ViewportTest, ShouldAnimateViewport);
-
-  DISALLOW_COPY_AND_ASSIGN(Viewport);
 };
 
 }  // namespace cc

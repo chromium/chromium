@@ -16,7 +16,7 @@
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -87,8 +87,8 @@ class AudioLowLatencyInputOutputTest : public testing::Test {
   }
 
  private:
-  base::test::ScopedTaskEnvironment task_environment_{
-      base::test::ScopedTaskEnvironment::MainThreadType::UI};
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::MainThreadType::UI};
   std::unique_ptr<AudioManager> audio_manager_;
 
   DISALLOW_COPY_AND_ASSIGN(AudioLowLatencyInputOutputTest);
@@ -253,7 +253,7 @@ class AudioInputStreamTraits {
       const AudioParameters& params) {
     return audio_manager->MakeAudioInputStream(
         params, AudioDeviceDescription::kDefaultDeviceId,
-        base::Bind(&OnLogMessage));
+        base::BindRepeating(&OnLogMessage));
   }
 };
 
@@ -269,8 +269,8 @@ class AudioOutputStreamTraits {
 
   static StreamType* CreateStream(AudioManager* audio_manager,
       const AudioParameters& params) {
-    return audio_manager->MakeAudioOutputStream(params, std::string(),
-                                                base::Bind(&OnLogMessage));
+    return audio_manager->MakeAudioOutputStream(
+        params, std::string(), base::BindRepeating(&OnLogMessage));
   }
 };
 

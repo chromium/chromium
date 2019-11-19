@@ -5,11 +5,12 @@
 package org.chromium.chrome.browser.ntp.snippets;
 
 import android.content.Context;
-import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import androidx.annotation.Nullable;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.suggestions.SuggestionsMetrics;

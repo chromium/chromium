@@ -25,15 +25,14 @@ smb_client::SmbService* GetSmbService(Profile* profile) {
 base::Value BuildShareList(const std::vector<smb_client::SmbUrl>& shares) {
   base::Value shares_list(base::Value::Type::LIST);
   for (const auto& share : shares) {
-    shares_list.GetList().push_back(base::Value(share.GetWindowsUNCString()));
+    shares_list.Append(base::Value(share.GetWindowsUNCString()));
   }
   return shares_list;
 }
 
 }  // namespace
 
-SmbHandler::SmbHandler(Profile* profile)
-    : profile_(profile), weak_ptr_factory_(this) {}
+SmbHandler::SmbHandler(Profile* profile) : profile_(profile) {}
 
 SmbHandler::~SmbHandler() = default;
 
@@ -53,7 +52,7 @@ void SmbHandler::RegisterMessages() {
 }
 
 void SmbHandler::HandleSmbMount(const base::ListValue* args) {
-  CHECK_EQ(7U, args->GetSize());
+  CHECK_EQ(8U, args->GetSize());
   std::string callback_id;
   CHECK(args->GetString(0, &callback_id));
 
@@ -63,12 +62,14 @@ void SmbHandler::HandleSmbMount(const base::ListValue* args) {
   std::string password;
   bool use_kerberos;
   bool should_open_file_manager_after_mount;
+  bool save_credentials;
   CHECK(args->GetString(1, &mount_url));
   CHECK(args->GetString(2, &mount_name));
   CHECK(args->GetString(3, &username));
   CHECK(args->GetString(4, &password));
   CHECK(args->GetBoolean(5, &use_kerberos));
   CHECK(args->GetBoolean(6, &should_open_file_manager_after_mount));
+  CHECK(args->GetBoolean(7, &save_credentials));
 
   smb_client::SmbService* const service = GetSmbService(profile_);
   if (!service) {
@@ -82,10 +83,11 @@ void SmbHandler::HandleSmbMount(const base::ListValue* args) {
   auto mount_response =
       base::BindOnce(&SmbHandler::HandleSmbMountResponse,
                      weak_ptr_factory_.GetWeakPtr(), callback_id);
-  auto mount_call = base::BindOnce(
-      &smb_client::SmbService::Mount, base::Unretained(service), mo,
-      base::FilePath(mount_url), username, password, use_kerberos,
-      should_open_file_manager_after_mount, std::move(mount_response));
+  auto mount_call =
+      base::BindOnce(&smb_client::SmbService::Mount, base::Unretained(service),
+                     mo, base::FilePath(mount_url), username, password,
+                     use_kerberos, should_open_file_manager_after_mount,
+                     save_credentials, std::move(mount_response));
 
   if (host_discovery_done_) {
     std::move(mount_call).Run();
@@ -122,9 +124,11 @@ void SmbHandler::HandleDiscoveryDone() {
 }
 
 void SmbHandler::HandleGatherSharesResponse(
-    const std::vector<smb_client::SmbUrl>& shares_gathered) {
+    const std::vector<smb_client::SmbUrl>& shares_gathered,
+    bool done) {
   AllowJavascript();
-  FireWebUIListener("on-shares-found", BuildShareList(shares_gathered));
+  FireWebUIListener("on-shares-found", BuildShareList(shares_gathered),
+                    base::Value(done));
 }
 
 void SmbHandler::HandleUpdateCredentials(const base::ListValue* args) {

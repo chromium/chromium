@@ -1,0 +1,3 @@
+AriaProperties changed on role=group, name=Item2
+AriaProperties changed on role=group, name=Item3
+AriaProperties changed on role=group, name=Item4

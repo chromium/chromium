@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<script>
+fetch('./large_image.png')
+  .then(response => response.blob())
+  .then(blob => {
+    var reader = new FileReader();
+    reader.onloadend = () => {
+      download(reader.result);
+    }
+    reader.readAsDataURL(blob);
+  });
+
+function download(url) {
+  var a = document.createElement("a");
+  a.href = url;
+  a.download = 'large.png';
+  document.body.appendChild(a);
+  a.click();
+}
+</script>
+

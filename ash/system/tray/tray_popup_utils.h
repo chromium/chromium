@@ -100,13 +100,6 @@ class TrayPopupUtils {
   // TODO(bruthig): Update all system menu rows to use this.
   static views::ImageView* CreateMainImageView();
 
-  // Returns an image view to be used in the 'more' region of default rows. This
-  // is used for all 'more' images as well as other images that appear in this
-  // region, e.g. audio output icon.
-  //
-  // TODO(bruthig): Update all default rows to use this.
-  static views::ImageView* CreateMoreImageView();
-
   // Returns a slider configured for proper layout within a TriView container
   // with a FillLayout.
   static views::Slider* CreateSlider(views::SliderListener* listener);
@@ -124,9 +117,6 @@ class TrayPopupUtils {
 
   // Sets up |view| to be a sticky header in a tray detail scroll view.
   static void ConfigureAsStickyHeader(views::View* view);
-
-  // Configures a |view| to have a visible separator below.
-  static void ShowStickyHeaderSeparator(views::View* view, bool show_separator);
 
   // Configures |container_view| just like CreateDefaultRowView() would
   // configure |container| on its returned TriView. To be used when mutliple
@@ -164,7 +154,7 @@ class TrayPopupUtils {
       TrayPopupInkDropStyle ink_drop_style,
       const views::View* host,
       const gfx::Point& center_point,
-      SkColor color = kTrayPopupInkDropBaseColor);
+      SkColor background_color);
 
   // Creates in InkDropHighlight instance for |host| according to the
   // |ink_drop_style|.
@@ -174,13 +164,12 @@ class TrayPopupUtils {
   static std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight(
       TrayPopupInkDropStyle ink_drop_style,
       const views::View* host,
-      SkColor color = kTrayPopupInkDropBaseColor);
+      SkColor background_color);
 
-  // Creates a SkPath matching the TrayPopupInkDropStyle. This path is normally
-  // used to generate the focus ring and ink drop shapes.
-  static std::unique_ptr<SkPath> CreateHighlightPath(
-      TrayPopupInkDropStyle ink_drop_style,
-      const views::View* host);
+  // Installs a HighlightPathGenerator matching the TrayPopupInkDropStyle.
+  static void InstallHighlightPathGenerator(
+      views::View* host,
+      TrayPopupInkDropStyle ink_drop_style);
 
   // Creates and returns a horizontal separator line to be drawn between rows
   // in a detailed view. If |left_inset| is true, then the separator is inset on
@@ -188,35 +177,22 @@ class TrayPopupUtils {
   // ownership of the returned separator.
   static views::Separator* CreateListItemSeparator(bool left_inset);
 
-  // Creates and returns a horizontal separator line to be drawn between rows
-  // in a detailed view above the sub-header rows. Caller assumes ownership of
-  // the returned separator.
-  static views::Separator* CreateListSubHeaderSeparator();
-
   // Returns true if it is possible to open WebUI settings in a browser window,
   // i.e. the user is logged in, not on the lock screen, not adding a secondary
   // user, and not in the supervised user creation flow.
   static bool CanOpenWebUISettings();
 
   // Initializes a row in the system menu as checkable and update the check mark
-  // status of this row.
+  // status of this row. If |enterprise_managed| is true, adds an enterprise
+  // managed icon to the row.
   static void InitializeAsCheckableRow(HoverHighlightView* container,
-                                       bool checked);
-
+                                       bool checked,
+                                       bool enterprise_managed);
   // Updates the visibility and a11y state of the checkable row |container|.
   static void UpdateCheckMarkVisibility(HoverHighlightView* container,
                                         bool visible);
 
  private:
-  // Returns the effective ink drop insets for |host| according to the
-  // |ink_drop_style|.
-  static gfx::Insets GetInkDropInsets(TrayPopupInkDropStyle ink_drop_style);
-
-  // Returns the effective ink drop bounds for |host| according to the
-  // |ink_drop_style|.
-  static gfx::Rect GetInkDropBounds(TrayPopupInkDropStyle ink_drop_style,
-                                    const views::View* host);
-
   DISALLOW_IMPLICIT_CONSTRUCTORS(TrayPopupUtils);
 };
 

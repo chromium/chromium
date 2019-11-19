@@ -27,8 +27,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_CLIP_RECT_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/geometry/layout_rect.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
@@ -40,12 +40,12 @@ class CORE_EXPORT ClipRect {
 
  public:
   ClipRect();
-  ClipRect(const LayoutRect& rect)
+  ClipRect(const PhysicalRect& rect)
       : rect_(rect), has_radius_(false), is_infinite_(false) {}
   ClipRect(const FloatClipRect& rect);
 
-  void SetRect(const LayoutRect& rect);
-  const LayoutRect& Rect() const { return rect_; }
+  void SetRect(const PhysicalRect& rect);
+  const PhysicalRect& Rect() const { return rect_; }
   void SetRect(const FloatClipRect& rect);
 
   // HasRadius is true if the clip this ClipRect has rounded corners.
@@ -67,16 +67,14 @@ class CORE_EXPORT ClipRect {
   bool operator!=(const ClipRect& other) const {
     return Rect() != other.Rect() || HasRadius() != other.HasRadius();
   }
-  bool operator!=(const LayoutRect& other_rect) const {
+  bool operator!=(const PhysicalRect& other_rect) const {
     return Rect() != other_rect;
   }
 
-  void Intersect(const LayoutRect& other);
+  void Intersect(const PhysicalRect& other);
   void Intersect(const ClipRect& other);
 
-  void Move(const LayoutSize& size) { rect_.Move(size); }
-  void Move(const IntSize& size) { rect_.Move(size); }
-  void MoveBy(const LayoutPoint& point) { rect_.MoveBy(point); }
+  void Move(const PhysicalOffset& offset) { rect_.offset += offset; }
 
   bool IsEmpty() const { return rect_.IsEmpty(); }
   bool Intersects(const HitTestLocation&) const;
@@ -86,7 +84,9 @@ class CORE_EXPORT ClipRect {
   String ToString() const;
 
  private:
-  LayoutRect rect_;
+  void SetRectInternal(const FloatClipRect&);
+
+  PhysicalRect rect_;
   bool has_radius_ : 1;
   bool is_infinite_ : 1;
 };

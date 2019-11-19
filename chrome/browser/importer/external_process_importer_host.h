@@ -159,7 +159,7 @@ class ExternalProcessImporterHost
   bool cancelled_;
 
   // Vends weak pointers for the importer to call us back.
-  base::WeakPtrFactory<ExternalProcessImporterHost> weak_ptr_factory_;
+  base::WeakPtrFactory<ExternalProcessImporterHost> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ExternalProcessImporterHost);
 };

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<org.chromium.chrome.browser.explore_sites.ExploreSitesTileView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="@dimen/explore_sites_dense_title_right_tile_view_width"
+    android:layout_height="wrap_content"
+    android:minHeight="@dimen/explore_sites_dense_title_right_tile_view_height"
+    android:orientation="horizontal"
+    app:iconCornerRadius="@dimen/explore_sites_dense_icon_corner_radius">
+    <!-- The icon background. -->
+    <View
+        android:id="@+id/tile_view_icon_background"
+        android:layout_width="@dimen/explore_sites_dense_icon_size"
+        android:layout_height="@dimen/explore_sites_dense_icon_size"
+        android:layout_marginStart="@dimen/explore_sites_dense_title_bottom_icon_margin_top"
+        android:layout_gravity="center_vertical"
+        android:background="@drawable/explore_sites_dense_tile_background"/>
+    <!-- The main icon. -->
+    <ImageView
+        android:id="@+id/tile_view_icon"
+        android:layout_width="@dimen/explore_sites_dense_icon_size"
+        android:layout_height="@dimen/explore_sites_dense_icon_size"
+        android:layout_marginStart="@dimen/explore_sites_dense_title_right_icon_margin_start"
+        android:layout_gravity="center_vertical"
+        tools:ignore="ContentDescription" />
+
+    <!-- The touch highlight. -->
+    <View
+        android:id="@+id/tile_view_highlight"
+        android:background="@drawable/tile_view_highlight"
+        android:layout_width="@dimen/explore_sites_dense_icon_size"
+        android:layout_height="@dimen/explore_sites_dense_icon_size"
+        android:layout_marginStart="@dimen/explore_sites_dense_title_right_icon_margin_start"
+        android:layout_gravity="center_vertical" />
+
+    <!-- The offline badge. -->
+    <ImageView
+        android:id="@+id/offline_badge"
+        android:layout_width="@dimen/tile_view_offline_badge_size_modern"
+        android:layout_height="@dimen/tile_view_offline_badge_size_modern"
+        android:layout_marginTop="0dp"
+        android:layout_marginStart="@dimen/explore_sites_dense_offline_badge_margin_start"
+        android:visibility="gone"
+        android:contentDescription="@string/accessibility_ntp_offline_badge"
+        app:srcCompat="@drawable/ic_offline_pin_blue_white" />
+
+    <org.chromium.ui.widget.TextViewWithLeading
+        android:id="@+id/tile_view_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/explore_sites_dense_title_right_title_margin_top"
+        android:layout_marginStart="@dimen/explore_sites_dense_title_right_title_margin_start"
+        android:ellipsize="end"
+        android:gravity="center_vertical"
+        android:lines="2"
+        android:textAppearance="@style/TextAppearance.BlackCaption"
+        app:leading="@dimen/text_size_small_leading" />
+</org.chromium.chrome.browser.explore_sites.ExploreSitesTileView>

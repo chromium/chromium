@@ -1,0 +1,57 @@
+// Copyright 2016 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module viz.mojom;
+
+import "components/discardable_memory/public/mojom/discardable_shared_memory_manager.mojom";
+import "services/network/public/mojom/tcp_socket.mojom";
+import "services/viz/public/mojom/compositing/compositing_mode_watcher.mojom";
+import "services/viz/privileged/mojom/compositing/frame_sink_manager.mojom";
+import "services/viz/privileged/mojom/gl/gpu_host.mojom";
+import "services/viz/privileged/mojom/gl/gpu_service.mojom";
+import "ui/gfx/mojom/font_render_params.mojom";
+
+struct FrameSinkManagerParams {
+  // An id that changes for each viz process restart.
+  uint32 restart_id;
+
+  // Indicates whether CompositorFrames should activate after the deadline
+  // below passes.
+  bool use_activation_deadline = true;
+
+  // Default number of frames to CompositorFrame activation deadline.
+  uint32 activation_deadline_in_frames = 4;
+
+  // Host to viz interface.
+  pending_receiver<FrameSinkManager> frame_sink_manager;
+
+  // Viz to host interface.
+  pending_remote<FrameSinkManagerClient> frame_sink_manager_client;
+};
+
+struct VizDevToolsParams {
+  // Socket for viz devtools server.
+  pending_remote<network.mojom.TCPServerSocket> server_socket;
+
+  // Port the devtools server socket is bound to.
+  uint16 server_port;
+};
+
+// This is the primordial interface used to (re)start the viz services.
+interface VizMain {
+  CreateFrameSinkManager(FrameSinkManagerParams params);
+
+  CreateGpuService(
+      pending_receiver<GpuService> gpu_service,
+      pending_remote<GpuHost> gpu_host,
+      pending_remote<discardable_memory.mojom.DiscardableSharedMemoryManager>
+          discardable_memory_manager,
+      handle<shared_buffer>? activity_flags,
+      gfx.mojom.SubpixelRendering subpixel_rendering);
+
+  // The viz devtools server is for use by developers to observe the
+  // FrameSinkManager in the viz compositor. This is only called if the flag
+  // --enable-viz-devtools is used.
+  CreateVizDevTools(VizDevToolsParams params);
+};

@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "components/reading_list/core/reading_list_model.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/reading_list/reading_list_download_service.h"
 #include "ios/chrome/browser/reading_list/reading_list_download_service_factory.h"
@@ -15,8 +14,7 @@
 namespace reading_list {
 
 ReadingListRemoverHelper::ReadingListRemoverHelper(
-    ios::ChromeBrowserState* browser_state)
-    : scoped_observer_(this) {
+    ios::ChromeBrowserState* browser_state) {
   reading_list_model_ =
       ReadingListModelFactory::GetForBrowserState(browser_state);
   reading_list_download_service_ =

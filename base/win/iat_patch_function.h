@@ -67,10 +67,10 @@ class BASE_EXPORT IATPatchFunction {
 
 
  private:
-  HMODULE module_handle_;
-  void* intercept_function_;
-  void* original_function_;
-  IMAGE_THUNK_DATA* iat_thunk_;
+  HMODULE module_handle_ = nullptr;
+  void* intercept_function_ = nullptr;
+  void* original_function_ = nullptr;
+  IMAGE_THUNK_DATA* iat_thunk_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(IATPatchFunction);
 };

@@ -78,7 +78,7 @@ function moveAnimationTimelineAndSample(index) {
     try {
         newTime += animation.getStartTime();
     } catch(e) {
-        debug('Exception thrown: ' + e);
+        // No current interval.
     }
 
     // The sample time is relative to the start time of the animation, take that into account.

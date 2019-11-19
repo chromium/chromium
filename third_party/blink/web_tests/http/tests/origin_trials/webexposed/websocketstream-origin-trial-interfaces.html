@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<!-- Generate token with the command:
+generate_token.py http://127.0.0.1:8000 WebSocketStream --expire-timestamp=2000000000
+-- -->
+<meta http-equiv="origin-trial" content="AovxB5EAf+bgIQw+MOxYfbnAmABpekAiY1AEKLYmIt8pSraHVlspyUTgDONbj4cpvKONZBgsRH7+202rI+29iQUAAABXeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiV2ViU29ja2V0U3RyZWFtIiwgImV4cGlyeSI6IDIwMDAwMDAwMDB9" />
+<title>WebSocketStream API - interfaces and properties exposed by origin trial</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/origin-trials-helper.js"></script>
+<script>
+test(t => {
+  OriginTrialsHelper.check_properties_exist(this,
+      {'WebSocketStream': ['url', 'connection', 'closed', 'close'],
+       });
+}, 'WebSocketStream API interfaces and properties in Origin-Trial enabled document.');
+</script>

@@ -4,14 +4,17 @@
 
 #include "third_party/blink/renderer/core/offscreencanvas/offscreen_canvas.h"
 
-#include "services/viz/public/interfaces/hit_test/hit_test_region_list.mojom-blink.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "services/viz/public/mojom/hit_test/hit_test_region_list.mojom-blink.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
-#include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/modules/canvas/htmlcanvas/html_canvas_element_module.h"
 #include "third_party/blink/renderer/modules/canvas/offscreencanvas2d/offscreen_canvas_rendering_context_2d.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
@@ -33,11 +36,11 @@ constexpr uint32_t kSinkId = 1;
 
 struct TestParams {
   bool alpha;
-  bool low_latency;
+  bool desynchronized;
 };
 }  // unnamed namespace
 
-class OffscreenCanvasTest : public PageTestBase,
+class OffscreenCanvasTest : public ::testing::Test,
                             public ::testing::WithParamInterface<TestParams> {
  protected:
   OffscreenCanvasTest();
@@ -52,7 +55,16 @@ class OffscreenCanvasTest : public PageTestBase,
     return ToScriptStateForMainWorld(GetDocument().GetFrame());
   }
 
+  Document& GetDocument() const {
+    return *web_view_helper_.GetWebView()
+                ->MainFrameImpl()
+                ->GetFrame()
+                ->DomWindow()
+                ->document();
+  }
+
  private:
+  frame_test_helpers::WebViewHelper web_view_helper_;
   Persistent<OffscreenCanvas> offscreen_canvas_;
   Persistent<OffscreenCanvasRenderingContext2D> context_;
   FakeGLES2Interface gl_;
@@ -69,13 +81,18 @@ void OffscreenCanvasTest::SetUp() {
   };
   SharedGpuContext::SetContextProviderFactoryForTesting(
       WTF::BindRepeating(factory, WTF::Unretained(&gl_)));
-  PageTestBase::SetUp();
-  SetHtmlInnerHTML("<body><canvas id='c'></canvas></body>");
-  HTMLCanvasElement* canvas_element = ToHTMLCanvasElement(GetElementById("c"));
+
+  web_view_helper_.Initialize();
+
+  GetDocument().documentElement()->SetInnerHTMLFromString(
+      String::FromUTF8("<body><canvas id='c'></canvas></body>"));
+
+  auto* canvas_element =
+      To<HTMLCanvasElement>(GetDocument().getElementById("c"));
 
   DummyExceptionStateForTesting exception_state;
   offscreen_canvas_ = HTMLCanvasElementModule::transferControlToOffscreen(
-      *canvas_element, exception_state);
+      &GetDocument(), *canvas_element, exception_state);
   // |offscreen_canvas_| should inherit the FrameSinkId from |canvas_element|s
   // SurfaceLayerBridge, but in tests this id is zero; fill it up by hand.
   offscreen_canvas_->SetFrameSinkId(kClientId, kSinkId);
@@ -83,7 +100,7 @@ void OffscreenCanvasTest::SetUp() {
   CanvasContextCreationAttributesCore attrs;
   if (testing::UnitTest::GetInstance()->current_test_info()->value_param()) {
     attrs.alpha = GetParam().alpha;
-    attrs.low_latency = GetParam().low_latency;
+    attrs.desynchronized = GetParam().desynchronized;
   }
   context_ = static_cast<OffscreenCanvasRenderingContext2D*>(
       offscreen_canvas_->GetCanvasRenderingContext(&GetDocument(), String("2d"),
@@ -110,11 +127,11 @@ TEST_P(OffscreenCanvasTest, CompositorFrameOpacity) {
   // by OffscreenCanvas's CanvasResourceDispatcher, we have to override the Mojo
   // EmbeddedFrameSinkProvider interface impl and its CompositorFrameSinkClient.
   MockEmbeddedFrameSinkProvider mock_embedded_frame_sink_provider;
-  mojo::Binding<mojom::blink::EmbeddedFrameSinkProvider>
-      embedded_frame_sink_provider_binding(&mock_embedded_frame_sink_provider);
+  mojo::Receiver<mojom::blink::EmbeddedFrameSinkProvider>
+      embedded_frame_sink_provider_receiver(&mock_embedded_frame_sink_provider);
   auto override =
       mock_embedded_frame_sink_provider.CreateScopedOverrideMojoInterface(
-          &embedded_frame_sink_provider_binding);
+          &embedded_frame_sink_provider_receiver);
 
   // Call here DidDraw() to simulate having drawn something before PushFrame()/
   // Commit(); DidDraw() will in turn cause a CanvasResourceDispatcher to be
@@ -173,10 +190,11 @@ TEST_P(OffscreenCanvasTest, CompositorFrameOpacity) {
   platform->RunUntilIdle();
 }
 
-const TestParams kTestCases[] = {{false /* alpha */, false /* low_latency */},
-                                 {false, true},
-                                 {true, false},
-                                 {true, true}};
+const TestParams kTestCases[] = {
+    {false /* alpha */, false /* desynchronized */},
+    {false, true},
+    {true, false},
+    {true, true}};
 
 INSTANTIATE_TEST_SUITE_P(, OffscreenCanvasTest, ValuesIn(kTestCases));
 }  // namespace blink

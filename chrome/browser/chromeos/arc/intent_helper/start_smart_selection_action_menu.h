@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "components/arc/common/intent_helper.mojom.h"
+#include "components/arc/mojom/intent_helper.mojom.h"
 #include "components/renderer_context_menu/render_view_context_menu_observer.h"
 #include "ui/gfx/image/image.h"
 
@@ -35,7 +35,7 @@ class StartSmartSelectionActionMenu : public RenderViewContextMenuObserver {
   void HandleTextSelectionActions(
       std::vector<mojom::TextSelectionActionPtr> actions);
 
-  std::unique_ptr<gfx::Image> GetIconImage(mojom::ActivityIconPtr icon);
+  gfx::Image GetIconImage(mojom::ActivityIconPtr icon);
 
   RenderViewContextMenuProxy* const proxy_;  // Owned by RenderViewContextMenu.
 

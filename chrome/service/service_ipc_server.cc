@@ -87,6 +87,6 @@ void ServiceIPCServer::GetInterface(const std::string& interface_name,
 }
 
 void ServiceIPCServer::HandleServiceProcessConnection(
-    chrome::mojom::ServiceProcessRequest request) {
-  service_process_bindings_.AddBinding(this, std::move(request));
+    mojo::PendingReceiver<chrome::mojom::ServiceProcess> receiver) {
+  service_process_receivers_.Add(this, std::move(receiver));
 }

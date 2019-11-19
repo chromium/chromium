@@ -37,21 +37,22 @@ class CONTENT_EXPORT WebUIDataSourceImpl : public URLDataSourceImpl,
       const base::DictionaryValue& localized_strings) override;
   void AddBoolean(base::StringPiece name, bool value) override;
   void AddInteger(base::StringPiece name, int32_t value) override;
-  void SetJsonPath(base::StringPiece path) override;
+  void UseStringsJs() override;
   void AddResourcePath(base::StringPiece path, int resource_id) override;
   void SetDefaultResource(int resource_id) override;
-  void SetRequestFilter(
-      const WebUIDataSource::HandleRequestCallback& callback) override;
+  void SetRequestFilter(const WebUIDataSource::ShouldHandleRequestCallback&
+                            should_handle_request_callback,
+                        const WebUIDataSource::HandleRequestCallback&
+                            handle_request_callback) override;
   void DisableReplaceExistingSource() override;
   void DisableContentSecurityPolicy() override;
   void OverrideContentSecurityPolicyScriptSrc(const std::string& data) override;
   void OverrideContentSecurityPolicyObjectSrc(const std::string& data) override;
   void OverrideContentSecurityPolicyChildSrc(const std::string& data) override;
+  void OverrideContentSecurityPolicyWorkerSrc(const std::string& data) override;
   void DisableDenyXFrameOptions() override;
-  void UseGzip() override;
-  void UseGzip(base::RepeatingCallback<bool(const std::string&)>
-                   is_gzipped_callback) override;
-  std::string GetSource() const override;
+  void EnableReplaceI18nInJS() override;
+  std::string GetSource() override;
 
   // URLDataSourceImpl:
   const ui::TemplateReplacements* GetReplacements() const override;
@@ -67,7 +68,8 @@ class CONTENT_EXPORT WebUIDataSourceImpl : public URLDataSourceImpl,
 
   // Completes a request by sending our dictionary of localized strings.
   void SendLocalizedStringsAsJSON(
-      const URLDataSource::GotDataCallback& callback);
+      const URLDataSource::GotDataCallback& callback,
+      bool from_js_module);
 
   // Protected for testing.
   virtual const base::DictionaryValue* GetLocalizedStrings() const;
@@ -78,30 +80,28 @@ class CONTENT_EXPORT WebUIDataSourceImpl : public URLDataSourceImpl,
   friend class WebUIDataSource;
   friend class WebUIDataSourceTest;
 
-  FRIEND_TEST_ALL_PREFIXES(WebUIDataSourceTest, IsGzipped);
-  FRIEND_TEST_ALL_PREFIXES(WebUIDataSourceTest, IsGzippedWithCallback);
-
   // Methods that match URLDataSource which are called by
   // InternalDataSource.
   std::string GetMimeType(const std::string& path) const;
-  void StartDataRequest(
-      const std::string& path,
-      const ResourceRequestInfo::WebContentsGetter& wc_getter,
-      const URLDataSource::GotDataCallback& callback);
+  void StartDataRequest(const GURL& url,
+                        const WebContents::Getter& wc_getter,
+                        const URLDataSource::GotDataCallback& callback);
+
+  int PathToIdrOrDefault(const std::string& path) const;
 
   // Note: this must be called before StartDataRequest() to have an effect.
   void disable_load_time_data_defaults_for_testing() {
     add_load_time_data_defaults_ = false;
   }
 
-  bool IsGzipped(const std::string& path) const;
+  bool ShouldReplaceI18nInJS() const;
 
   // The name of this source.
   // E.g., for favicons, this could be "favicon", which results in paths for
   // specific resources like "favicon/34" getting sent to this source.
   std::string source_name_;
   int default_resource_;
-  std::string json_path_;
+  bool use_strings_js_ = false;
   std::map<std::string, int> path_to_idr_map_;
   // The replacements are initiallized in the main thread and then used in the
   // IO thread. The map is safe to read from multiple threads as long as no
@@ -112,18 +112,21 @@ class CONTENT_EXPORT WebUIDataSourceImpl : public URLDataSourceImpl,
   // to |load_time_flags_| if the usage is reduced to storing flags only).
   base::DictionaryValue localized_strings_;
   WebUIDataSource::HandleRequestCallback filter_callback_;
-  bool add_csp_;
-  bool script_src_set_;
+  WebUIDataSource::ShouldHandleRequestCallback should_handle_request_callback_;
+
+  bool add_csp_ = true;
+  bool script_src_set_ = false;
   std::string script_src_;
-  bool object_src_set_;
+  bool object_src_set_ = false;
   std::string object_src_;
-  bool frame_src_set_;
+  bool frame_src_set_ = false;
   std::string frame_src_;
-  bool deny_xframe_options_;
-  bool add_load_time_data_defaults_;
-  bool replace_existing_source_;
-  bool use_gzip_;
-  base::RepeatingCallback<bool(const std::string&)> is_gzipped_callback_;
+  bool worker_src_set_ = false;
+  std::string worker_src_;
+  bool deny_xframe_options_ = true;
+  bool add_load_time_data_defaults_ = true;
+  bool replace_existing_source_ = true;
+  bool should_replace_i18n_in_js_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(WebUIDataSourceImpl);
 };

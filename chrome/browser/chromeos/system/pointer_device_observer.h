@@ -50,7 +50,7 @@ class PointerDeviceObserver : public ui::InputDeviceEventObserver {
 
   base::ObserverList<Observer>::Unchecked observers_;
 
-  base::WeakPtrFactory<PointerDeviceObserver> weak_factory_;
+  base::WeakPtrFactory<PointerDeviceObserver> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PointerDeviceObserver);
 };

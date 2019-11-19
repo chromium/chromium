@@ -4,7 +4,7 @@
 
 module blink.mojom;
 
-import "components/services/filesystem/public/interfaces/types.mojom";
+import "components/services/filesystem/public/mojom/types.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 import "mojo/public/mojom/base/file_error.mojom";
@@ -12,7 +12,6 @@ import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/file_info.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/string16.mojom";
-import "third_party/blink/public/mojom/filesystem/file_writer.mojom";
 
 enum FileSystemType {
   kTemporary,
@@ -27,17 +26,9 @@ struct FileSystemInfo {
   FileSystemType mount_type = kTemporary;
 };
 
-// Entries as returned by the ChooseEntry method below. Each entry is
-// represented by the ID of the isolated filesystem containing the entry and
-// the name of the file in that filesystem.
-struct FileSystemEntry {
-  string file_system_id;
-  string base_name;
-};
-
 // Interface for renderers to cancel running file system operations. A
-// FileSystemCancellableOperationRequest is passed as a parameter for any
-// operation that can be cancelled.
+// pending_receiver<FileSystemCancellableOperation> is passed as a parameter for
+// any operation that can be cancelled.
 interface FileSystemCancellableOperation {
   // Cancels the associated operation. It may not always be possible to cancel
   // an operation, and partial writes are possible. |error_code| indicates if
@@ -47,8 +38,8 @@ interface FileSystemCancellableOperation {
 
 // Operations that need to repeatedly call a particular callback use this
 // interface. For example, the Write operation needs to call DidWrite
-// repeatedly, and uses a FileSystemOperationListenerPtr passed from the
-// renderer to call it.
+// repeatedly, and uses a pending_remote<FileSystemOperationListener> passed
+// from the renderer to call it.
 // Note: For operations that only need a callback called once, we can directly
 // use mojo return value callbacks.
 interface FileSystemOperationListener {
@@ -68,27 +59,10 @@ interface FileSystemOperationListener {
 };
 
 // Used by the renderer to notify the browser that it has received a snapshot
-// after calling CreateSnapshotFile. The browser sends an interface ptr along
+// after calling CreateSnapshotFile. The browser sends a pending remote along
 // with the result of the CreateSnapshotFile call.
 interface ReceivedSnapshotListener {
   DidReceiveSnapshotFile();
-};
-
-enum ChooseFileSystemEntryType {
-  kOpenFile,
-  kOpenMultipleFiles,
-  kSaveFile,
-  kOpenDirectory
-};
-
-// Struct to represent individual options for types of files that are accepted
-// by calls to ChooseEnrty. Each type has an optional description, and any
-// number of mime types and/or extensions.
-// Options with no extensions and no known mime types will be ignored.
-struct ChooseFileSystemEntryAcceptsOption {
-  mojo_base.mojom.String16 description;
-  array<string> mime_types;
-  array<string> extensions;
 };
 
 // Interface provided by the browser to the renderer to carry out filesystem
@@ -168,7 +142,8 @@ interface FileSystemManager {
   // Reads directory entries of a given directory at |path|. Calls
   // ResultsRetrieved on |listener| when results are ready, or ErrorOccurred
   // if the operation fails.
-  ReadDirectory(url.mojom.Url path, FileSystemOperationListener listener);
+  ReadDirectory(url.mojom.Url path,
+                pending_remote<FileSystemOperationListener> listener);
   [Sync]
   ReadDirectorySync(url.mojom.Url path) =>
     (array<filesystem.mojom.DirectoryEntry> entries,
@@ -177,12 +152,12 @@ interface FileSystemManager {
   // Write data (indicated by |blob_uuid|) to the given file at |file_path|,
   // at |position|. Calls DidWrite on |listener| to provide progress updates on
   // the write, and |ErrorOccurred| if the operation fails. The operation can
-  // also be cancelled using the interface ptr associated with |op_request|.
+  // also be cancelled using the remote associated with |op_receiver|.
   Write(url.mojom.Url file_path,
         string blob_uuid,
         int64 position,
-        FileSystemCancellableOperation& op_request,
-        FileSystemOperationListener listener);
+        pending_receiver<FileSystemCancellableOperation> op_receiver,
+        pending_remote<FileSystemOperationListener> listener);
   [Sync]
   WriteSync(url.mojom.Url file_path, string blob_uuid, int64 position) =>
       (int64 byte_count, mojo_base.mojom.FileError error_code);
@@ -190,10 +165,10 @@ interface FileSystemManager {
   // Changes the file length of the file at |file_path| to the |length|
   // indicated. Returns |error_code| after completion to indicate if the
   // operation succeeded or failed. The operation can also be cancelled using
-  // the interface ptr associated with |op_request|.
+  // the remote associated with |op_receiver|.
   Truncate(url.mojom.Url file_path,
            int64 length,
-           FileSystemCancellableOperation& op_request) =>
+           pending_receiver<FileSystemCancellableOperation> op_receiver) =>
       (mojo_base.mojom.FileError error_code);
   [Sync]
   TruncateSync(url.mojom.Url file_path, int64 length) =>
@@ -221,27 +196,10 @@ interface FileSystemManager {
       (mojo_base.mojom.FileInfo file_info,
        mojo_base.mojom.FilePath platform_path,
        mojo_base.mojom.FileError error_code,
-       ReceivedSnapshotListener? snapshot_listener);
+       pending_remote<ReceivedSnapshotListener>? snapshot_listener);
 
   // Synchronously gets the platform path for the given |file_path|.
   [Sync]
   GetPlatformPath(url.mojom.Url file_path) =>
       (mojo_base.mojom.FilePath platform_path);
-
-  // Creates a writer for the given file at |file_path|.
-  CreateWriter(url.mojom.Url file_path) =>
-      (mojo_base.mojom.FileError result,
-       blink.mojom.FileWriter? writer);
-
-  // Prompts the user to select a file from the native filesystem. Returns an
-  // error code if something failed, or a list of the selected entries on
-  // success.
-  // If |include_accepts_all| is true, a "all files" option is included in the
-  // dialog displayed to the user. If no valid options are present in |accepts|
-  // |include_accepts_all| is treated as if it was true.
-  ChooseEntry(ChooseFileSystemEntryType type,
-              array<ChooseFileSystemEntryAcceptsOption> accepts,
-              bool include_accepts_all) =>
-      (mojo_base.mojom.FileError error_code,
-       array<FileSystemEntry> entries);
 };

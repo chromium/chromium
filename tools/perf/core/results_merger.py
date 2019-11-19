@@ -8,6 +8,8 @@
 # This file is responsbile for merging JSON test results in both the simplified
 # JSON format and the Chromium JSON test results format version 3.
 
+from __future__ import print_function
+
 import copy
 import json
 import sys
@@ -278,7 +280,7 @@ def main(files):
   for f in files[1:]:
     sys.stderr.write('Merging %s\n' % f)
     result = merge_test_results([result, json.load(open(f))])
-  print json.dumps(result)
+  print(json.dumps(result))
   return 0
 
 

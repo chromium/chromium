@@ -135,8 +135,7 @@ CheckerImageTracker::CheckerImageTracker(ImageController* image_controller,
     : image_controller_(image_controller),
       client_(client),
       enable_checker_imaging_(enable_checker_imaging),
-      min_image_bytes_to_checker_(min_image_bytes_to_checker),
-      weak_factory_(this) {}
+      min_image_bytes_to_checker_(min_image_bytes_to_checker) {}
 
 CheckerImageTracker::~CheckerImageTracker() = default;
 
@@ -210,6 +209,7 @@ void CheckerImageTracker::ClearTracker(bool can_clear_decode_policy_tracking) {
   image_id_to_decode_.clear();
 
   if (can_clear_decode_policy_tracking) {
+    decoding_mode_map_.clear();
     image_async_decode_state_.clear();
   } else {
     // If we can't clear the decode policy, we need to make sure we still
@@ -387,6 +387,7 @@ void CheckerImageTracker::UpdateDecodeState(const DrawImage& draw_image,
       std::max(decode_state->scale.fHeight, draw_image.scale().fHeight));
   decode_state->filter_quality =
       std::max(decode_state->filter_quality, draw_image.filter_quality());
+  decode_state->color_space = draw_image.target_color_space();
   decode_state->frame_index = draw_image.frame_index();
 }
 
@@ -426,7 +427,7 @@ void CheckerImageTracker::ScheduleNextImageDecode() {
         it->second.filter_quality,
         SkMatrix::MakeScale(it->second.scale.width(),
                             it->second.scale.height()),
-        it->second.frame_index);
+        it->second.frame_index, it->second.color_space);
     outstanding_image_decode_.emplace(candidate);
     break;
   }

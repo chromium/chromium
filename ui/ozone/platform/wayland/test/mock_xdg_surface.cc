@@ -104,17 +104,22 @@ void GetZXdgPopupV6(struct wl_client* client,
     return;
   }
 
+  wl_resource* xdg_popup_resource = wl_resource_create(
+      client, &zxdg_popup_v6_interface, wl_resource_get_version(resource), id);
   auto* positioner = GetUserDataAs<TestPositioner>(positioner_resource);
-  if (positioner->size().width() == 0 ||
-      positioner->anchor_rect().width() == 0) {
+  DCHECK(positioner);
+
+  auto mock_xdg_popup =
+      std::make_unique<MockXdgPopup>(xdg_popup_resource, &kZxdgPopupV6Impl);
+  mock_xdg_popup->set_position(positioner->position());
+  if (mock_xdg_popup->size().IsEmpty() ||
+      mock_xdg_popup->anchor_rect().IsEmpty()) {
     wl_resource_post_error(resource, ZXDG_SHELL_V6_ERROR_INVALID_POSITIONER,
                            "Positioner object is not complete");
     return;
   }
 
-  CreateResourceWithImpl<MockXdgPopup>(client, &zxdg_popup_v6_interface,
-                                       wl_resource_get_version(resource),
-                                       &kZxdgPopupV6Impl, id);
+  mock_xdg_surface->set_xdg_popup(std::move(mock_xdg_popup));
 }
 
 const struct xdg_surface_interface kMockXdgSurfaceImpl = {

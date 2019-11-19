@@ -29,6 +29,8 @@
 import unittest
 
 from blinkpy.web_tests.models.test_results import TestResult
+from blinkpy.web_tests.port.driver import DriverOutput
+from blinkpy.web_tests.models import test_failures
 
 
 class TestResultsTest(unittest.TestCase):
@@ -51,3 +53,16 @@ class TestResultsTest(unittest.TestCase):
 
         # Also check that != is implemented.
         self.assertFalse(new_result != result)
+
+    def test_results_has_stderr(self):
+        driver_output = DriverOutput(None, None, None, None, error='error')
+        failures = [test_failures.FailureCrash(driver_output, None)]
+        result = TestResult('foo', failures=failures)
+        self.assertTrue(result.has_stderr)
+
+    def test_results_has_repaint_overlay(self):
+        driver_output = DriverOutput(
+            '"paintInvalidations": [', None, None, None)
+        failures = [test_failures.FailureTextMismatch(driver_output, None)]
+        result = TestResult('foo', failures=failures)
+        self.assertTrue(result.has_repaint_overlay)

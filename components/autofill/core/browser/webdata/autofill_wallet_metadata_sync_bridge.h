@@ -14,6 +14,7 @@
 #include "base/sequence_checker.h"
 #include "base/supports_user_data.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
+#include "components/autofill/core/browser/webdata/autofill_webdata_backend.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_observer.h"
 #include "components/sync/model/metadata_change_list.h"
 #include "components/sync/model/model_error.h"
@@ -27,7 +28,6 @@ struct EntityData;
 namespace autofill {
 
 class AutofillTable;
-class AutofillWebDataBackend;
 class AutofillWebDataService;
 
 // Sync bridge responsible for propagating local changes to the processor and
@@ -53,10 +53,6 @@ class AutofillWalletMetadataSyncBridge
       AutofillWebDataBackend* web_data_backend);
   ~AutofillWalletMetadataSyncBridge() override;
 
-  // Determines whether this bridge should be monitoring the Wallet data. This
-  // should be called whenever the data bridge sync state changes.
-  void OnWalletDataTrackingStateChanged(bool is_tracking);
-
   base::WeakPtr<AutofillWalletMetadataSyncBridge> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
@@ -74,6 +70,8 @@ class AutofillWalletMetadataSyncBridge
   void GetAllDataForDebugging(DataCallback callback) override;
   std::string GetClientTag(const syncer::EntityData& entity_data) override;
   std::string GetStorageKey(const syncer::EntityData& entity_data) override;
+  void ApplyStopSyncChanges(std::unique_ptr<syncer::MetadataChangeList>
+                                delete_metadata_change_list) override;
 
   // AutofillWebDataServiceObserverOnDBSequence implementation.
   void AutofillProfileChanged(const AutofillProfileChange& change) override;
@@ -87,6 +85,16 @@ class AutofillWalletMetadataSyncBridge
   // autofill table and pass the latter to the processor so that it can start
   // tracking changes.
   void LoadDataCacheAndMetadata();
+
+  // Deletes old metadata entities that have no corresponding data entities.
+  // This routine is here to help with really corner-case scenarios, e.g.
+  //  - having one client create a metadata entity M for new data D while other
+  //  clients are off;
+  //  - switch off this client forever and remove the entity D from Wallet;
+  //  - turn on other clients so that they receive M from sync;
+  //  - these other clients never knew about D and thus they have no reason to
+  //  delete M when they receive an update from the Walllet server.
+  void DeleteOldOrphanMetadata();
 
   // Reads local wallet metadata from the database and passes them into
   // |callback|. If |storage_keys_set| is not set, it returns all data entries.
@@ -116,22 +124,19 @@ class AutofillWalletMetadataSyncBridge
   // SupportsUserData, so it's guaranteed to outlive |this|.
   AutofillWebDataBackend* const web_data_backend_;
 
-  ScopedObserver<AutofillWebDataBackend, AutofillWalletMetadataSyncBridge>
-      scoped_observer_;
+  ScopedObserver<AutofillWebDataBackend,
+                 AutofillWebDataServiceObserverOnDBSequence>
+      scoped_observer_{this};
 
   // Cache of the local data that allows figuring out the diff for local
   // changes; keyed by storage keys.
   std::map<std::string, AutofillMetadata> cache_;
 
-  // Indicates whether we should rely on wallet data being actively synced. If
-  // true, the bridge will prune metadata entries without corresponding wallet
-  // data entry.
-  bool track_wallet_data_;
-
   // The bridge should be used on the same sequence where it is constructed.
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::WeakPtrFactory<AutofillWalletMetadataSyncBridge> weak_ptr_factory_;
+  base::WeakPtrFactory<AutofillWalletMetadataSyncBridge> weak_ptr_factory_{
+      this};
 
   DISALLOW_COPY_AND_ASSIGN(AutofillWalletMetadataSyncBridge);
 };

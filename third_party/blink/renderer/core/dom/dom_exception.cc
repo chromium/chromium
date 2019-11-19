@@ -140,6 +140,16 @@ const struct DOMExceptionEntry {
     // https://github.com/WICG/BackgroundSync/issues/124
     {DOMExceptionCode::kPermissionDeniedError, "PermissionDeniedError",
      "User or security policy denied the request."},
+
+    // Serial API - https://wicg.github.io/serial
+    {DOMExceptionCode::kBreakError, "BreakError",
+     "A break condition has been detected."},
+    {DOMExceptionCode::kBufferOverrunError, "BufferOverrunError",
+     "A buffer overrun has been detected."},
+    {DOMExceptionCode::kFramingError, "FramingError",
+     "A framing error has been detected."},
+    {DOMExceptionCode::kParityError, "ParityError",
+     "A parity error has been detected."},
 };
 
 uint16_t ToLegacyErrorCode(DOMExceptionCode exception_code) {
@@ -170,17 +180,6 @@ uint16_t FindLegacyErrorCode(const String& name) {
 }  // namespace
 
 // static
-DOMException* DOMException::Create(DOMExceptionCode exception_code,
-                                   const String& sanitized_message,
-                                   const String& unsanitized_message) {
-  const DOMExceptionEntry* entry = FindErrorEntry(exception_code);
-  return MakeGarbageCollected<DOMException>(
-      ToLegacyErrorCode(entry->code), entry->name ? entry->name : "Error",
-      sanitized_message.IsNull() ? String(entry->message) : sanitized_message,
-      unsanitized_message);
-}
-
-// static
 DOMException* DOMException::Create(const String& message, const String& name) {
   return MakeGarbageCollected<DOMException>(FindLegacyErrorCode(name), name,
                                             message, String());
@@ -207,6 +206,18 @@ String DOMException::GetErrorMessage(DOMExceptionCode exception_code) {
 
   return entry->message;
 }
+
+DOMException::DOMException(DOMExceptionCode exception_code,
+                           const String& sanitized_message,
+                           const String& unsanitized_message)
+    : DOMException(ToLegacyErrorCode(FindErrorEntry(exception_code)->code),
+                   FindErrorEntry(exception_code)->name
+                       ? FindErrorEntry(exception_code)->name
+                       : "Error",
+                   sanitized_message.IsNull()
+                       ? String(FindErrorEntry(exception_code)->message)
+                       : sanitized_message,
+                   unsanitized_message) {}
 
 DOMException::DOMException(uint16_t legacy_code,
                            const String& name,

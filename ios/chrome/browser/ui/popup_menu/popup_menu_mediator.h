@@ -17,6 +17,7 @@ namespace feature_engagement {
 class Tracker;
 }
 @protocol BrowserCommands;
+class OverlayPresenter;
 @protocol PopupMenuConsumer;
 class ReadingListModel;
 class TemplateURLService;
@@ -39,6 +40,10 @@ class WebStateList;
 // The WebStateList that this mediator listens for any changes on the current
 // WebState.
 @property(nonatomic, assign) WebStateList* webStateList;
+// The overlay presenter for OverlayModality::kWebContentArea.  This mediator
+// listens for overlay presentation events to determine whether the "Read Later"
+// button should be enabled.
+@property(nonatomic, assign) OverlayPresenter* webContentAreaOverlayPresenter;
 // The consumer to be configured with this mediator.
 @property(nonatomic, strong) id<PopupMenuConsumer> popupMenu;
 // Dispatcher.

@@ -11,7 +11,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#include <linux/ashmem.h>
+#include "third_party/ashmem/ashmem.h"
 
 #include "crazy_linker_system.h"
 #include "crazy_linker_memory_mapping.h"
@@ -19,30 +19,16 @@
 namespace crazy {
 
 bool AshmemRegion::Allocate(size_t region_size, const char* region_name) {
-  int fd = TEMP_FAILURE_RETRY(open("/dev/ashmem", O_RDWR));
+  int fd = ashmem_create_region(region_name, region_size);
   if (fd < 0)
     return false;
 
-  if (ioctl(fd, ASHMEM_SET_SIZE, region_size) < 0)
-    goto ERROR;
-
-  if (region_name) {
-    char buf[256];
-    strlcpy(buf, region_name, sizeof(buf));
-    if (ioctl(fd, ASHMEM_SET_NAME, buf) < 0)
-      goto ERROR;
-  }
-
   Reset(fd);
   return true;
-
-ERROR:
-  ::close(fd);
-  return false;
 }
 
 bool AshmemRegion::SetProtectionFlags(int prot) {
-  return ioctl(fd_, ASHMEM_SET_PROT_MASK, prot) == 0;
+  return ashmem_set_prot_region(fd_, prot) == 0;
 }
 
 // static

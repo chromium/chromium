@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/permissions_test_util.h"
 
 #include "base/run_loop.h"
+#include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/permissions/permission_set.h"
@@ -21,7 +22,7 @@ std::vector<std::string> GetPatternsAsStrings(const URLPatternSet& patterns) {
     // the extension to retrieve a favicon for a given URL). Just ignore it when
     // generating host sets.
     std::string pattern_string = pattern.GetAsString();
-    if (pattern_string != "chrome://favicon/*")
+    if (pattern_string != std::string(chrome::kChromeUIFaviconURL) + "*")
       pattern_strings.push_back(pattern_string);
   }
 

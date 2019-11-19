@@ -82,7 +82,7 @@ ShadowRoot::~ShadowRoot() = default;
 
 SlotAssignment& ShadowRoot::EnsureSlotAssignment() {
   if (!slot_assignment_)
-    slot_assignment_ = SlotAssignment::Create(*this);
+    slot_assignment_ = MakeGarbageCollected<SlotAssignment>(*this);
   return *slot_assignment_;
 }
 
@@ -141,6 +141,7 @@ void ShadowRoot::setInnerHTML(const StringOrTrustedHTML& stringOrHtml,
 void ShadowRoot::RecalcStyle(const StyleRecalcChange change) {
   // ShadowRoot doesn't support custom callbacks.
   DCHECK(!HasCustomStyleCallbacks());
+  DCHECK(!RuntimeEnabledFeatures::FlatTreeStyleRecalcEnabled());
 
   StyleRecalcChange child_change = change;
   if (GetStyleChangeType() == kSubtreeStyleChange)
@@ -155,9 +156,9 @@ void ShadowRoot::RecalcStyle(const StyleRecalcChange change) {
 }
 
 void ShadowRoot::RebuildLayoutTree(WhitespaceAttacher& whitespace_attacher) {
-  ClearNeedsReattachLayoutTree();
+  DCHECK(!NeedsReattachLayoutTree());
+  DCHECK(!ChildNeedsReattachLayoutTree());
   RebuildChildrenLayoutTrees(whitespace_attacher);
-  ClearChildNeedsReattachLayoutTree();
 }
 
 Node::InsertionNotificationRequest ShadowRoot::InsertedInto(
@@ -223,14 +224,14 @@ void ShadowRoot::ChildrenChanged(const ChildrenChange& change) {
     CheckForSiblingStyleChanges(
         change.type == kElementRemoved ? kSiblingElementRemoved
                                        : kSiblingElementInserted,
-        ToElement(change.sibling_changed), change.sibling_before_change,
+        To<Element>(change.sibling_changed.Get()), change.sibling_before_change,
         change.sibling_after_change);
   }
 }
 
 StyleSheetList& ShadowRoot::StyleSheets() {
   if (!style_sheet_list_)
-    SetStyleSheets(StyleSheetList::Create(this));
+    SetStyleSheets(MakeGarbageCollected<StyleSheetList>(this));
   return *style_sheet_list_;
 }
 
@@ -247,8 +248,6 @@ void ShadowRoot::SetNeedsDistributionRecalc() {
     return;
   needs_distribution_recalc_ = true;
   host().MarkAncestorsWithChildNeedsDistributionRecalc();
-  if (!IsV1())
-    V0().ClearDistribution();
 }
 
 void ShadowRoot::Trace(Visitor* visitor) {

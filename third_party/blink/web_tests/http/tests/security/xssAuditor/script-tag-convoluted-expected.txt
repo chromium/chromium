@@ -1,2 +1,0 @@
-CONSOLE ERROR: line 4: The XSS Auditor refused to execute a script in 'http://localhost:8000/security/xssAuditor/resources/echo-intertag.pl?q=%3Cscript%3Edocument.write(%22scri%22)%3C/script%3Ept%20src=%22xss.js%22%3E%3C/script%3E' because its source code was found within the request. The server sent an 'X-XSS-Protection' header requesting this behavior.
-

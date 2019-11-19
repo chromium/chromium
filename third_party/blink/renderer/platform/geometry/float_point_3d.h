@@ -24,7 +24,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_FLOAT_POINT_3D_H_
 
 #include "third_party/blink/renderer/platform/geometry/float_point.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/skia/include/core/SkPoint3.h"
 
@@ -111,7 +111,7 @@ class PLATFORM_EXPORT FloatPoint3D {
   float DistanceTo(const FloatPoint3D& a) const;
 
   operator SkPoint3() const { return SkPoint3::Make(x_, y_, z_); }
-  operator gfx::Point3F() const;
+  operator gfx::Point3F() const { return gfx::Point3F(x_, y_, z_); }
 
   String ToString() const;
 

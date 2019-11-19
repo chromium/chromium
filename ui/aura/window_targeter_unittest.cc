@@ -8,9 +8,7 @@
 
 #include "base/macros.h"
 #include "ui/aura/scoped_window_targeter.h"
-#include "ui/aura/test/aura_mus_test_base.h"
 #include "ui/aura/test/aura_test_base.h"
-#include "ui/aura/test/mus/test_window_tree.h"
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/aura/window.h"
 #include "ui/display/display.h"
@@ -23,8 +21,7 @@ namespace aura {
 // Always returns the same window.
 class StaticWindowTargeter : public WindowTargeter {
  public:
-  explicit StaticWindowTargeter(aura::Window* window)
-      : window_(window) {}
+  explicit StaticWindowTargeter(aura::Window* window) : window_(window) {}
   ~StaticWindowTargeter() override {}
 
  private:
@@ -51,9 +48,9 @@ gfx::RectF GetEffectiveVisibleBoundsInRootWindow(Window* window) {
   return bounds;
 }
 
-using WindowTargeterTest = test::AuraTestBaseWithType;
+using WindowTargeterTest = test::AuraTestBase;
 
-TEST_P(WindowTargeterTest, Basic) {
+TEST_F(WindowTargeterTest, Basic) {
   test::TestWindowDelegate delegate;
   std::unique_ptr<Window> window(
       CreateNormalWindow(1, root_window(), &delegate));
@@ -82,13 +79,12 @@ TEST_P(WindowTargeterTest, Basic) {
   one->RemovePreTargetHandler(&handler);
 }
 
-TEST_P(WindowTargeterTest, FindTargetInRootWindow) {
+TEST_F(WindowTargeterTest, FindTargetInRootWindow) {
   WindowTargeter targeter;
 
   display::Display display =
       display::Screen::GetScreen()->GetDisplayNearestWindow(root_window());
   EXPECT_EQ(display.bounds(), root_window()->GetBoundsInScreen());
-  EXPECT_EQ(display.bounds(), gfx::Rect(0, 0, 800, 600));
 
   // Mouse and touch presses inside the display yield null targets.
   gfx::Point inside = display.bounds().CenterPoint();
@@ -112,7 +108,7 @@ TEST_P(WindowTargeterTest, FindTargetInRootWindow) {
             targeter.FindTargetInRootWindow(root_window(), touch2));
 }
 
-TEST_P(WindowTargeterTest, ScopedWindowTargeter) {
+TEST_F(WindowTargeterTest, ScopedWindowTargeter) {
   test::TestWindowDelegate delegate;
   std::unique_ptr<Window> window(
       CreateNormalWindow(1, root_window(), &delegate));
@@ -152,7 +148,7 @@ TEST_P(WindowTargeterTest, ScopedWindowTargeter) {
 
 // Test that ScopedWindowTargeter does not crash if the window for which it
 // replaces the targeter gets destroyed before it does.
-TEST_P(WindowTargeterTest, ScopedWindowTargeterWindowDestroyed) {
+TEST_F(WindowTargeterTest, ScopedWindowTargeterWindowDestroyed) {
   test::TestWindowDelegate delegate;
   std::unique_ptr<Window> window(
       CreateNormalWindow(1, root_window(), &delegate));
@@ -167,7 +163,7 @@ TEST_P(WindowTargeterTest, ScopedWindowTargeterWindowDestroyed) {
   // We did not crash!
 }
 
-TEST_P(WindowTargeterTest, TargetTransformedWindow) {
+TEST_F(WindowTargeterTest, TargetTransformedWindow) {
   root_window()->Show();
 
   test::TestWindowDelegate delegate;
@@ -229,7 +225,7 @@ class IdCheckingEventTargeter : public WindowTargeter {
   int id_;
 };
 
-TEST_P(WindowTargeterTest, Bounds) {
+TEST_F(WindowTargeterTest, Bounds) {
   test::TestWindowDelegate delegate;
   std::unique_ptr<Window> parent(
       CreateNormalWindow(1, root_window(), &delegate));
@@ -307,7 +303,7 @@ class IgnoreWindowTargeter : public WindowTargeter {
 
 // Verifies that an EventTargeter installed on an EventTarget can dictate
 // whether the target itself can process an event.
-TEST_P(WindowTargeterTest, TargeterChecksOwningEventTarget) {
+TEST_F(WindowTargeterTest, TargeterChecksOwningEventTarget) {
   test::TestWindowDelegate delegate;
   std::unique_ptr<Window> child(
       CreateNormalWindow(1, root_window(), &delegate));
@@ -328,39 +324,6 @@ TEST_P(WindowTargeterTest, TargeterChecksOwningEventTarget) {
                         gfx::Point(10, 10), ui::EventTimeForNow(), ui::EF_NONE,
                         ui::EF_NONE);
   EXPECT_EQ(root_window(), targeter->FindTargetForEvent(root_target, &mouse2));
-}
-
-INSTANTIATE_TEST_SUITE_P(/* no prefix */,
-                         WindowTargeterTest,
-                         ::testing::Values(Env::Mode::LOCAL, Env::Mode::MUS));
-
-using WindowTargeterMus = aura::test::AuraMusClientTestBase;
-
-TEST_F(WindowTargeterMus, SetInsets) {
-  aura::Window window(nullptr);
-  window.Init(ui::LAYER_NOT_DRAWN);
-  std::unique_ptr<WindowTargeter> window_targeter_ptr =
-      std::make_unique<WindowTargeter>();
-  WindowTargeter* window_targeter = window_targeter_ptr.get();
-  window.SetEventTargeter(std::move(window_targeter_ptr));
-  const gfx::Insets insets1(1, 2, 3, 4);
-  const gfx::Insets insets2(11, 12, 13, 14);
-  window_targeter->SetInsets(insets1, insets2);
-  EXPECT_EQ(insets1, window_tree()->last_mouse_hit_test_insets());
-  EXPECT_EQ(insets2, window_tree()->last_touch_hit_test_insets());
-}
-
-TEST_F(WindowTargeterMus, SetInsetsBeforeInstall) {
-  aura::Window window(nullptr);
-  window.Init(ui::LAYER_NOT_DRAWN);
-  std::unique_ptr<WindowTargeter> window_targeter =
-      std::make_unique<WindowTargeter>();
-  const gfx::Insets insets1(1, 2, 3, 4);
-  const gfx::Insets insets2(11, 12, 13, 14);
-  window_targeter->SetInsets(insets1, insets2);
-  window.SetEventTargeter(std::move(window_targeter));
-  EXPECT_EQ(insets1, window_tree()->last_mouse_hit_test_insets());
-  EXPECT_EQ(insets2, window_tree()->last_touch_hit_test_insets());
 }
 
 }  // namespace aura

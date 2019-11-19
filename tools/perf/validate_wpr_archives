@@ -9,6 +9,8 @@ import os
 import sys
 
 from core import path_util
+path_util.AddTelemetryToPath()
+
 from core import benchmark_finders
 
 from py_utils import cloud_storage
@@ -33,7 +35,8 @@ def GetAllStorySets():
       'skpicture_printer',
       'cros_tab_switching.typical_24',
       'multipage_skpicture_printer',
-      'leak_detection.cluster_telemetry']
+      'leak_detection.cluster_telemetry',
+      'generic_trace_ct']
 
   for benchmark in benchmark_finders.GetAllBenchmarks():
     if benchmark.Name() in benchmarks_to_skip:

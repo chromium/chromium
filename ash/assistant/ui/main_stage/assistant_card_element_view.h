@@ -33,12 +33,15 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantCardElementView
   void AboutToRequestFocusFromTabTraversal(bool reverse) override;
   void OnFocus() override;
   void OnGestureEvent(ui::GestureEvent* event) override;
+  void ScrollRectToVisible(const gfx::Rect& rect) override;
 
   // content::NavigableContentsObserver:
   void DidAutoResizeView(const gfx::Size& new_size) override;
   void DidSuppressNavigation(const GURL& url,
                              WindowOpenDisposition disposition,
                              bool from_user_gesture) override;
+  void FocusedNodeChanged(bool is_editable_node,
+                          const gfx::Rect& node_bounds_in_screen) override;
 
   // Returns a reference to the native view associated with the underlying web
   // contents. When animating AssistantCardElementView, we should animate the
@@ -53,6 +56,9 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantCardElementView
 
   // Owned by AssistantCardElement.
   content::NavigableContents* const contents_;
+
+  // Rect of the focused node in the |contents_|.
+  gfx::Rect focused_node_rect_;
 
   DISALLOW_COPY_AND_ASSIGN(AssistantCardElementView);
 };

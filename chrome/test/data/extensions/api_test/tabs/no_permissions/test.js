@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 function assertNoSensitiveFields(tab) {
-  ['url', 'title', 'favIconUrl'].forEach(function(field) {
+  ['url', 'pendingUrl', 'title', 'favIconUrl'].forEach(function(field) {
     chrome.test.assertEq(undefined, tab[field],
                          'Sensitive property ' + field + ' is visible')
   });

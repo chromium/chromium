@@ -1,0 +1,12 @@
+[document web]
+++[list box] setsize:4
+++++[list item] name='Item 1' selectable posinset:1 setsize:4
+++++[list item] name='Item 2' selectable posinset:2 setsize:4
+++++[list item] name='Item 3' selectable posinset:3 setsize:4
+++++[list item] name='Item 4' selectable posinset:4 setsize:4
+++[list box] setsize:5
+++++[list item] name='Item 1' selectable posinset:1 setsize:5
+++++[list item] name='Item 2' selectable posinset:2 setsize:5
+++++[list item] name='Item 3' selectable posinset:3 setsize:5
+++++[list item] name='Item 4' selectable posinset:4 setsize:5
+++++[list item] name='Item 5' selectable posinset:5 setsize:5

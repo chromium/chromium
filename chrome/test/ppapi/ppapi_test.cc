@@ -151,7 +151,7 @@ void PPAPITestBase::SetUpCommandLine(base::CommandLine* command_line) {
 void PPAPITestBase::SetUpOnMainThread() {
   // Always allow access to the PPAPI broker.
   HostContentSettingsMapFactory::GetForProfile(browser()->profile())
-      ->SetDefaultContentSetting(CONTENT_SETTINGS_TYPE_PPAPI_BROKER,
+      ->SetDefaultContentSetting(ContentSettingsType::PPAPI_BROKER,
                                  CONTENT_SETTING_ALLOW);
 }
 

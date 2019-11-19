@@ -15,11 +15,12 @@
 #include "components/safe_browsing/db/util.h"
 #include "components/safe_browsing/db/v4_protocol_manager_util.h"
 #include "components/subresource_filter/content/browser/subresource_filter_safe_browsing_activation_throttle.h"
+#include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/console_message_level.h"
-#include "third_party/blink/public/web/web_triggering_event_info.h"
+#include "third_party/blink/public/common/navigation/triggering_event_info.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 
 namespace {
 
@@ -27,19 +28,6 @@ void LogAction(SafeBrowsingTriggeredPopupBlocker::Action action) {
   UMA_HISTOGRAM_ENUMERATION("ContentSettings.Popups.StrongBlockerActions",
                             action,
                             SafeBrowsingTriggeredPopupBlocker::Action::kCount);
-}
-
-subresource_filter::ActivationPosition GetActivationPosition(
-    size_t match_index,
-    size_t num_checks) {
-  DCHECK_GT(num_checks, 0u);
-  if (num_checks == 1)
-    return subresource_filter::ActivationPosition::kOnly;
-  if (match_index == 0)
-    return subresource_filter::ActivationPosition::kFirst;
-  if (match_index == num_checks - 1)
-    return subresource_filter::ActivationPosition::kLast;
-  return subresource_filter::ActivationPosition::kMiddle;
 }
 
 }  // namespace
@@ -99,7 +87,7 @@ bool SafeBrowsingTriggeredPopupBlocker::ShouldApplyAbusivePopupBlocker() {
   LogAction(Action::kBlocked);
   current_page_data_->inc_num_popups_blocked();
   web_contents()->GetMainFrame()->AddMessageToConsole(
-      content::CONSOLE_MESSAGE_LEVEL_ERROR, kAbusiveEnforceMessage);
+      blink::mojom::ConsoleMessageLevel::kError, kAbusiveEnforceMessage);
   return true;
 }
 
@@ -136,9 +124,23 @@ void SafeBrowsingTriggeredPopupBlocker::DidFinishNavigation(
   if (level == SubresourceFilterLevel::ENFORCE) {
     current_page_data_->set_is_triggered(true);
     LogAction(Action::kEnforcedSite);
+    // When a page is restored from back-forward cache, we don't get
+    // OnSafeBrowsingChecksComplete callback, so |level| will always
+    // be empty.
+    // To work around this, we disable back-forward cache if the original
+    // page load had abusive enforcement - this means that not doing checks on
+    // back-forward navigation is fine as it's guaranteed that
+    // the original page load didn't have enforcement.
+    // Note that it's possible for the safe browsing list to update while
+    // the page is in the cache, the risk of this is mininal due to
+    // having a time limit for how long pages are allowed to be in the
+    // cache.
+    content::BackForwardCache::DisableForRenderFrameHost(
+        navigation_handle->GetRenderFrameHost(),
+        "SafeBrowsingTriggeredPopupBlocker");
   } else if (level == SubresourceFilterLevel::WARN) {
     web_contents()->GetMainFrame()->AddMessageToConsole(
-        content::CONSOLE_MESSAGE_LEVEL_WARNING, kAbusiveWarnMessage);
+        blink::mojom::ConsoleMessageLevel::kWarning, kAbusiveWarnMessage);
     LogAction(Action::kWarningSite);
   }
   LogAction(Action::kNavigation);
@@ -146,6 +148,9 @@ void SafeBrowsingTriggeredPopupBlocker::DidFinishNavigation(
 
 // This method will always be called before the DidFinishNavigation associated
 // with this handle.
+// The exception is a navigation restoring a page from back-forward cache --
+// in that case don't issue any requests, therefore we don't get any
+// safe browsing callbacks. See the comment above for the mitigation.
 void SafeBrowsingTriggeredPopupBlocker::OnSafeBrowsingChecksComplete(
     content::NavigationHandle* navigation_handle,
     const SafeBrowsingCheckResults& results) {
@@ -169,9 +174,6 @@ void SafeBrowsingTriggeredPopupBlocker::OnSafeBrowsingChecksComplete(
 
   if (match_level.has_value()) {
     level_for_next_committed_navigation_ = match_level;
-    UMA_HISTOGRAM_ENUMERATION(
-        "ContentSettings.Popups.StrongBlockerActivationPosition",
-        GetActivationPosition(match_index.value(), results.size()));
   }
 }
 

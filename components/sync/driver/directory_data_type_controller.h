@@ -31,8 +31,8 @@ class DirectoryDataTypeController : public DataTypeController {
 
   // Directory based data types register with backend before LoadModels in
   // BeforeLoadModels. No need to do anything in RegisterWithBackend.
-  void RegisterWithBackend(base::OnceCallback<void(bool)> set_downloaded,
-                           ModelTypeConfigurer* configurer) override;
+  RegisterWithBackendResult RegisterWithBackend(
+      ModelTypeConfigurer* configurer) override;
 
   // Directory specific implementation of ActivateDataType with the
   // type specific ChangeProcessor and ModelSafeGroup.

@@ -40,9 +40,8 @@ typedef (HTMLImageElement or
 
 [
     LegacyTreatAsPartialInterface,
-    NoInterfaceObject, // Always used on target of 'implements'
     Exposed=(Window,Worker)
-] interface WindowOrWorkerGlobalScope {
+] interface mixin WindowOrWorkerGlobalScope {
     // base64 utility methods
     [RaisesException] DOMString btoa(DOMString btoa);
     [RaisesException] DOMString atob(DOMString atob);

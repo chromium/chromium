@@ -24,10 +24,8 @@
 
 namespace blink {
 
-inline SVGPolygonElement::SVGPolygonElement(Document& document)
+SVGPolygonElement::SVGPolygonElement(Document& document)
     : SVGPolyElement(svg_names::kPolygonTag, document) {}
-
-DEFINE_NODE_FACTORY(SVGPolygonElement)
 
 Path SVGPolygonElement::AsPath() const {
   Path path = AsPathFromPoints();

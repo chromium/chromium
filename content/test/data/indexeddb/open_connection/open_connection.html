@@ -1,0 +1,75 @@
+<title>IndexedDB Open Connection</title>
+<script>
+    var connections = {};
+
+    var next_request_id = 1;
+
+    function OpenConnection(name) {
+      return new Promise(resolve => {
+        let request = window.indexedDB.open(name, 1);
+
+        request.onsuccess = e => {
+          connections[name] = e.target.result;
+          resolve(true);
+        };
+        request.onerror = e => {
+          resolve(false);
+        }
+      });
+    }
+
+    function CloseConnection(name) {
+      connections[name].close();
+      connections[name] = undefined;
+    }
+
+    function OpenConnectionFromDedicatedWorker() {
+      return new Promise(resolve => {
+        const worker = new Worker('open_connection_from_dedicated_worker.js');
+        let data = {op: 'open_connection', rqid: next_request_id++};
+        worker.postMessage(data);
+        const listener = event => {
+          if (event.data.rqid !== data.rqid)
+            return;
+          worker.onmessage = undefined;
+          resolve(event.data.result);
+        };
+        worker.onmessage = listener;
+      });
+    }
+
+    function OpenConnectionFromSharedWorker() {
+      return new Promise(resolve => {
+        const worker = new SharedWorker(
+            'open_connection_from_shared_worker.js');
+        let data = {op: 'open_connection', rqid: next_request_id++};
+        worker.port.postMessage(data);
+        const listener = event => {
+          if (event.data.rqid !== data.rqid)
+            return;
+          worker.port.onmessage = undefined;
+          resolve(event.data.result);
+        };
+        worker.port.onmessage = listener;
+      });
+    }
+
+    function OpenConnectionFromServiceWorker() {
+      return new Promise(async resolve => {
+        await navigator.serviceWorker.register(
+            'open_connection_from_service_worker.js');
+        registration = await navigator.serviceWorker.ready;
+
+        var message_channel = new MessageChannel();
+        message_channel.port1.onmessage = event => {
+          if (event.data.rqid !== data.rqid)
+            return;
+          message_channel.port1.onmessage = undefined;
+          resolve(event.data.result);
+        }
+        let data = {op: 'open_connection', rqid: next_request_id++};
+       registration.active.postMessage(
+            data, [message_channel.port2]);
+      });
+    }
+</script>

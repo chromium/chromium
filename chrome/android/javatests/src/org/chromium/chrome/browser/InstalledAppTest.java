@@ -81,7 +81,7 @@ public class InstalledAppTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         mTab.removeObserver(mUpdateWaiter);
         mTestServer.stopAndDestroyServer();
     }

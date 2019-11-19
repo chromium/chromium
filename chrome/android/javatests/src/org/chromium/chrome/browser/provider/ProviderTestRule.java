@@ -14,9 +14,9 @@ import org.junit.Assert;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.ChromeActivity;
 import org.chromium.chrome.test.ChromeActivityTestRule;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
  * Base class for Chrome's ContentProvider tests.
@@ -47,13 +47,10 @@ public class ProviderTestRule extends ChromeActivityTestRule<ChromeActivity> {
         Assert.assertNotNull(activity);
 
         final ContentProvider provider = new ChromeBrowserProvider();
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                ProviderInfo providerInfo = new ProviderInfo();
-                providerInfo.authority = ChromeBrowserProvider.getApiAuthority(activity);
-                provider.attachInfo(activity, providerInfo);
-            }
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            ProviderInfo providerInfo = new ProviderInfo();
+            providerInfo.authority = ChromeBrowserProvider.getApiAuthority(activity);
+            provider.attachInfo(activity, providerInfo);
         });
 
         MockContentResolver resolver = new MockContentResolver();

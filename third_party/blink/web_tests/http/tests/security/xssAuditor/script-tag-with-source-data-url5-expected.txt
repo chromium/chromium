@@ -1,2 +1,0 @@
-CONSOLE ERROR: line 3: The XSS Auditor refused to execute a script in 'http://localhost:8000/security/xssAuditor/resources/echo-property.pl?q=%22%3E%3Cscript%20src%3ddata:%26comma%3balert(1)%3b%22' because its source code was found within the request. The server sent an 'X-XSS-Protection' header requesting this behavior.
-

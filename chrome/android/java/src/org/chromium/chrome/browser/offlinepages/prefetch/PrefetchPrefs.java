@@ -7,7 +7,7 @@ package org.chromium.chrome.browser.offlinepages.prefetch;
 import org.chromium.base.ContextUtils;
 
 /**
- * Preferences used to provide prefetch related notofications.
+ * Preferences used to provide prefetch related notifications.
  *  - Having new pages: boolean indicating whether new pages have been saved or not
  *  - Notification timestamp: the last time a notification is shown
  *  - Offline counter: how many times the task ran and seen that we are offline
@@ -15,11 +15,30 @@ import org.chromium.base.ContextUtils;
  *    reacting to it
  */
 public class PrefetchPrefs {
+    static final String PREF_PREFETCH_NOTIFICATION_ENABLED = "prefetch_notification_enabled";
     static final String PREF_PREFETCH_HAS_NEW_PAGES = "prefetch_notification_has_new_pages";
     static final String PREF_PREFETCH_NOTIFICATION_TIME = "prefetch_notification_shown_time";
     static final String PREF_PREFETCH_OFFLINE_COUNTER = "prefetch_notification_offline_counter";
     static final String PREF_PREFETCH_IGNORED_NOTIFICATION_COUNTER =
             "prefetch_notification_ignored_counter";
+
+    /**
+     * Sets the flag to tell whether prefetch notifications are enabled in user settings.
+     */
+    public static void setNotificationEnabled(boolean enabled) {
+        ContextUtils.getAppSharedPreferences()
+                .edit()
+                .putBoolean(PREF_PREFETCH_NOTIFICATION_ENABLED, enabled)
+                .apply();
+    }
+
+    /**
+     * Returns the flag to tell whether prefetch notifications are enabled in user settings.
+     */
+    public static boolean getNotificationEnabled() {
+        return ContextUtils.getAppSharedPreferences().getBoolean(
+                PREF_PREFETCH_NOTIFICATION_ENABLED, true);
+    }
 
     /**
      * Sets the flag to tell whether new pages have been saved.

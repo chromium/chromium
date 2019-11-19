@@ -33,14 +33,11 @@ class MockLaunchd : public Launchd {
   MockLaunchd(const base::FilePath& file,
               scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
               base::OnceClosure quit_closure,
-              bool create_socket,
               bool as_service);
   ~MockLaunchd() override;
 
   bool GetJobInfo(const std::string& label,
                   mac::services::JobInfo* info) override;
-  bool CheckIn(const std::string& socket_key,
-               mac::services::JobCheckinInfo* info) override;
   bool RemoveJob(const std::string& label) override;
   bool RestartJob(Domain domain,
                   Type type,
@@ -69,7 +66,6 @@ class MockLaunchd : public Launchd {
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
   base::OnceClosure quit_closure_;
   std::unique_ptr<MultiProcessLock> running_lock_;
-  bool create_socket_;
   bool as_service_;
   bool restart_called_;
   bool remove_called_;

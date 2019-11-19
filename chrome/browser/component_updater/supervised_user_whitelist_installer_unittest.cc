@@ -36,10 +36,9 @@
 #include "components/update_client/crx_update_item.h"
 #include "components/update_client/update_client.h"
 #include "components/update_client/utils.h"
-#include "content/public/test/test_browser_thread_bundle.h"
-#include "content/public/test/test_service_manager_context.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
-#include "services/data_decoder/public/cpp/testing_json_parser.h"
+#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -165,8 +164,7 @@ class MockComponentUpdateService : public ComponentUpdateService,
 
 class WhitelistLoadObserver {
  public:
-  explicit WhitelistLoadObserver(SupervisedUserWhitelistInstaller* installer)
-      : weak_ptr_factory_(this) {
+  explicit WhitelistLoadObserver(SupervisedUserWhitelistInstaller* installer) {
     installer->Subscribe(base::Bind(&WhitelistLoadObserver::OnWhitelistReady,
                                     weak_ptr_factory_.GetWeakPtr()));
   }
@@ -193,7 +191,7 @@ class WhitelistLoadObserver {
   base::FilePath whitelist_path_;
 
   base::RunLoop run_loop_;
-  base::WeakPtrFactory<WhitelistLoadObserver> weak_ptr_factory_;
+  base::WeakPtrFactory<WhitelistLoadObserver> weak_ptr_factory_{this};
 };
 
 }  // namespace
@@ -212,10 +210,12 @@ class SupervisedUserWhitelistInstallerTest : public testing::Test {
 
     profile_attributes_storage()->AddProfile(
         GetProfilePath(kClientId), base::ASCIIToUTF16("A Profile"),
-        std::string(), base::string16(), 0, std::string(), EmptyAccountId());
+        std::string(), base::string16(), false, 0, std::string(),
+        EmptyAccountId());
     profile_attributes_storage()->AddProfile(
         GetProfilePath(kOtherClientId), base::ASCIIToUTF16("Another Profile"),
-        std::string(), base::string16(), 0, std::string(), EmptyAccountId());
+        std::string(), base::string16(), false, 0, std::string(),
+        EmptyAccountId());
 
     installer_ = SupervisedUserWhitelistInstaller::Create(
         &component_update_service_,
@@ -297,11 +297,10 @@ class SupervisedUserWhitelistInstallerTest : public testing::Test {
     EXPECT_EQ(version, component->version.GetString());
   }
 
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager testing_profile_manager_;
-  data_decoder::TestingJsonParser::ScopedFactoryOverride json_parser_override_;
+  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   TestingPrefServiceSimple local_state_;
-  content::TestServiceManagerContext service_manager_context_;
   std::unique_ptr<SupervisedUserWhitelistInstaller> installer_;
   base::FilePath whitelist_base_directory_;
   base::FilePath whitelist_directory_;

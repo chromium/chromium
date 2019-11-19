@@ -15,7 +15,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser_command_controller.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/render_messages.h"
@@ -32,6 +31,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/context_menu_params.h"
+#include "extensions/buildflags/buildflags.h"
 #include "net/base/load_states.h"
 #include "net/http/http_request_headers.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
@@ -39,6 +39,7 @@
 
 #if !defined(OS_ANDROID)
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #endif
 
@@ -57,9 +58,7 @@ const int kImageSearchThumbnailMaxHeight = 600;
 }  // namespace
 
 CoreTabHelper::CoreTabHelper(WebContents* web_contents)
-    : content::WebContentsObserver(web_contents),
-      content_restrictions_(0),
-      weak_factory_(this) {}
+    : content::WebContentsObserver(web_contents), content_restrictions_(0) {}
 
 CoreTabHelper::~CoreTabHelper() {}
 
@@ -87,7 +86,7 @@ void CoreTabHelper::UpdateContentRestrictions(int content_restrictions) {
 void CoreTabHelper::SearchByImageInNewTab(
     content::RenderFrameHost* render_frame_host,
     const GURL& src_url) {
-  chrome::mojom::ChromeRenderFrameAssociatedPtr chrome_render_frame;
+  mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame> chrome_render_frame;
   render_frame_host->GetRemoteAssociatedInterfaces()->GetInterface(
       &chrome_render_frame);
   // Bind the InterfacePtr into the callback so that it's kept alive until
@@ -234,7 +233,8 @@ void CoreTabHelper::NavigationEntriesDeleted() {
 // Handles the image thumbnail for the context node, composes a image search
 // request based on the received thumbnail and opens the request in a new tab.
 void CoreTabHelper::DoSearchByImageInNewTab(
-    chrome::mojom::ChromeRenderFrameAssociatedPtr chrome_render_frame,
+    mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame>
+        chrome_render_frame,
     const GURL& src_url,
     const std::vector<uint8_t>& thumbnail_data,
     const gfx::Size& original_size) {
@@ -272,7 +272,6 @@ void CoreTabHelper::DoSearchByImageInNewTab(
   const std::string& post_data = post_content.second;
   if (!post_data.empty()) {
     DCHECK(!content_type.empty());
-    open_url_params.uses_post = true;
     open_url_params.post_data = network::ResourceRequestBody::CreateFromBytes(
         post_data.data(), post_data.size());
     open_url_params.extra_headers += base::StringPrintf(

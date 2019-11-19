@@ -10,6 +10,7 @@ java_library("junit_test_support") {
   testonly = true
   java_files = [ "src/org/chromium/webapk/test/WebApkTestHelper.java" ]
   deps = [
+    "//chrome/android/webapk/libs/common:common_java",
     "//third_party/mockito:mockito_java",
     "//third_party/robolectric:robolectric_all_java",
   ]

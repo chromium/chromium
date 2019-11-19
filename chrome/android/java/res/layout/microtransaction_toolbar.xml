@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@color/sheet_bg_color"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent">
+
+    <!-- Drag handle. -->
+    <ImageView
+        android:id="@+id/drag_handle"
+        android:importantForAccessibility="no"
+        android:layout_centerHorizontal="true"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:padding="@dimen/microtransaction_drag_handle_spacing"
+        android:src="@drawable/drag_handlebar"/>
+
+    <!-- Payment app icon. -->
+    <ImageView
+        android:id="@+id/payment_app_icon"
+        android:importantForAccessibility="no"
+        android:layout_alignParentStart="true"
+        android:layout_below="@id/drag_handle"
+        android:layout_height="@dimen/microtransaction_toolbar_icon_size"
+        android:layout_marginBottom="@dimen/microtransaction_app_icon_bottom_spacing"
+        android:layout_marginEnd="@dimen/microtransaction_app_icon_horizontal_spacing"
+        android:layout_marginStart="@dimen/microtransaction_app_icon_horizontal_spacing"
+        android:layout_width="@dimen/microtransaction_toolbar_icon_size"
+        android:scaleType="centerCrop"/>
+
+    <!-- Large status message, e.g., "Not recognized" or "Complete". -->
+    <TextView
+        android:alpha="0"
+        android:id="@+id/large_status_message"
+        android:layout_below="@id/drag_handle"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/payment_app_icon"
+        android:layout_width="wrap_content"
+        android:paddingTop="@dimen/microtransaction_large_text_vertical_spacing"
+        android:textAppearance="@style/TextAppearance.BlackBodyDefault"/>
+
+    <!-- Payment app name, e.g., "Bob Pay". -->
+    <TextView
+        android:alpha="0"
+        android:id="@+id/payment_app_name"
+        android:layout_below="@id/drag_handle"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/payment_app_icon"
+        android:layout_width="wrap_content"
+        android:paddingTop="@dimen/microtransaction_large_text_vertical_spacing"
+        android:textAppearance="@style/TextAppearance.BlackTitle1"/>
+
+    <!-- Small emphasized status message, e.g., "Touch sensor to pay". -->
+    <TextView
+        android:id="@+id/small_emphasized_status_message"
+        android:layout_below="@id/drag_handle"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/payment_app_icon"
+        android:layout_width="wrap_content"
+        android:paddingTop="@dimen/microtransaction_toolbar_small_status_text_top_spacing"
+        android:textAppearance="@style/TextAppearance.BlueLink3"/>
+
+    <!-- Currency label, e.g., "USD". -->
+    <TextView
+        android:id="@+id/currency"
+        android:layout_below="@id/small_emphasized_status_message"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/payment_app_icon"
+        android:layout_width="wrap_content"
+        android:textAppearance="@style/TextAppearance.BlackBodyDefault"/>
+
+    <!-- Bold formatted amount, e.g., "$1.00". -->
+    <TextView
+        android:id="@+id/amount"
+        android:layout_below="@id/small_emphasized_status_message"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/currency"
+        android:layout_width="wrap_content"
+        android:paddingStart="@dimen/microtransaction_amount_currency_spacing"
+        android:textAppearance="@style/TextAppearance.BlackTitle2"/>
+
+    <!-- Status icon, e.g., the fingerprint icon. -->
+    <ImageView
+        android:id="@+id/status_icon"
+        android:importantForAccessibility="no"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@id/drag_handle"
+        android:layout_height="@dimen/microtransaction_toolbar_icon_size"
+        android:layout_marginEnd="@dimen/microtransaction_spacing"
+        android:layout_marginStart="@dimen/microtransaction_spacing"
+        android:layout_width="@dimen/microtransaction_toolbar_icon_size"
+        android:scaleType="centerCrop"/>
+
+    <!-- Processing spinner. -->
+    <ProgressBar
+        android:id="@+id/processing_spinner"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@id/drag_handle"
+        android:layout_height="@dimen/microtransaction_toolbar_icon_size"
+        android:layout_marginEnd="@dimen/microtransaction_spacing"
+        android:layout_marginStart="@dimen/microtransaction_spacing"
+        android:layout_width="@dimen/microtransaction_toolbar_icon_size"/>
+
+    <!-- "Pay" button. -->
+    <org.chromium.ui.widget.ButtonCompat
+        android:id="@+id/pay_button"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@id/drag_handle"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/microtransaction_spacing"
+        android:layout_marginStart="@dimen/microtransaction_spacing"
+        android:layout_width="wrap_content"
+        android:text="@string/payments_pay_button"
+        style="@style/FilledButton.Flat"/>
+
+</RelativeLayout>

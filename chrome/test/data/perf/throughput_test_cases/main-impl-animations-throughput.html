@@ -1,0 +1,105 @@
+<!doctype html>
+<!--
+Copyright 2019 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>JS Bin</title>
+  <style>
+    #mainanim {
+      width: 200px;
+      height: 200px;
+      background-color: red;
+      will-change: transform;
+    }
+
+    #cssanim {
+      width: 200px;
+      height: 200px;
+      background-color: green;
+    }
+
+    @keyframes mymove {
+      0% { transform: translateX(0px); }
+      50% { transform: translateX(150px); }
+      100% { transform: translateX(0px); }
+    }
+
+    .anim {
+      animation: mymove 1s linear infinite;
+    }
+
+    .paused {
+      animation-play-state: paused;
+    }
+  </style>
+</head>
+<body>
+<div id='mainanim'></div>
+<hr>
+<div id='cssanim' class='anim paused'></div>
+
+<hr>
+Press any key to toggle animation.
+
+</body>
+<script>
+
+const targetMainFps =
+  window.location.hash.length > 1 ? +window.location.hash.substr(1) : 0;
+const skipEvery = targetMainFps > 0 ? parseInt(60 / targetMainFps) : 0;
+
+var currentValue = 0;
+const maxValue = 150;
+const valueChange = 5 * skipEvery;
+const minValue = 0;
+const attributeName = 'transform';
+const setProp = (v) => 'translateX(' + v + 'px)';
+
+var animating = false;
+var incrementing = false;
+var frameCount = 0;
+
+function animateStep() {
+  if (skipEvery && ++frameCount % skipEvery == 0) {
+    if (incrementing) {
+      currentValue += valueChange;
+      if (currentValue >= maxValue)
+        incrementing = false;
+    } else {
+      currentValue -= valueChange;
+      if (currentValue <= minValue)
+        incrementing = true;
+    }
+    mainanim.style[attributeName] = setProp(currentValue);
+  }
+  if (animating)
+    requestAnimationFrame(animateStep);
+}
+
+function startAnimation() {
+  animating = true;
+  requestAnimationFrame(animateStep);
+  cssanim.classList.remove('paused');
+}
+
+function stopAnimation() {
+  animating = false;
+  cssanim.classList.add('paused');
+}
+
+function toggle() {
+  if (animating) {
+    stopAnimation();
+  } else {
+    startAnimation();
+  }
+}
+
+window.onkeypress = toggle;
+</script>
+</html>

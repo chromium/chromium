@@ -81,6 +81,7 @@ class MEDIA_EXPORT AlsaPcmOutputStream : public AudioOutputStream {
   void Close() override;
   void Start(AudioSourceCallback* callback) override;
   void Stop() override;
+  void Flush() override;
   void SetVolume(double volume) override;
   void GetVolume(double* volume) override;
 
@@ -218,7 +219,7 @@ class MEDIA_EXPORT AlsaPcmOutputStream : public AudioOutputStream {
   // Allows us to run tasks on the AlsaPcmOutputStream instance which are
   // bound by its lifetime.
   // NOTE: Weak pointers must be invalidated before all other member variables.
-  base::WeakPtrFactory<AlsaPcmOutputStream> weak_factory_;
+  base::WeakPtrFactory<AlsaPcmOutputStream> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AlsaPcmOutputStream);
 };

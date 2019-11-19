@@ -8,9 +8,8 @@
 
 #import "base/mac/foundation_util.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
-#include "components/autofill/core/browser/credit_card.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/grit/components_scaled_resources.h"
-#import "ios/chrome/browser/ui/authentication/cells/legacy_account_control_item.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_configurator.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_delegate.h"
 #import "ios/chrome/browser/ui/authentication/signin_promo_view_mediator.h"
@@ -39,7 +38,6 @@
 #import "ios/public/provider/chrome/browser/signin/signin_resources_provider.h"
 #import "ios/third_party/material_components_ios/src/components/CollectionCells/src/MaterialCollectionCells.h"
 #import "ios/third_party/material_components_ios/src/components/Palettes/src/MaterialPalettes.h"
-#import "ios/third_party/material_components_ios/src/components/Typography/src/MaterialTypography.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -89,7 +87,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeAutofillDynamicHeight,
   ItemTypeAutofillCVC,
   ItemTypeAutofillStatus,
-  ItemTypeAccountControlDynamicHeight,
   ItemTypeFooter,
   ItemTypeSyncPassphraseError,
   ItemTypeContentSuggestions,
@@ -290,13 +287,6 @@ const CGFloat kCardIssuerNetworkIconDimension = 25.0;
   [model addItem:[self accountItemCheckMark]
       toSectionWithIdentifier:SectionIdentifierAccountCell];
 
-  // Account control cells.
-  [model addSectionWithIdentifier:SectionIdentifierAccountControlCell];
-  [model addItem:[self accountControlItem]
-      toSectionWithIdentifier:SectionIdentifierAccountControlCell];
-  [model addItem:[self accountControlItemWithExtraLongText]
-      toSectionWithIdentifier:SectionIdentifierAccountControlCell];
-
   // Content Suggestions cells.
   [model addSectionWithIdentifier:SectionIdentifierContentSuggestionsCell];
   [model addItem:[self contentSuggestionsItem]
@@ -327,7 +317,6 @@ const CGFloat kCardIssuerNetworkIconDimension = 25.0;
     case ItemTypeContentSuggestions:
     case ItemTypeFooter:
     case ItemTypeSwitchDynamicHeight:
-    case ItemTypeAccountControlDynamicHeight:
     case ItemTypeTextCheckmark:
     case ItemTypeTextDetail:
     case ItemTypeText:
@@ -432,29 +421,6 @@ const CGFloat kCardIssuerNetworkIconDimension = 25.0;
       @"eiusmod tempor incididunt ut labore et dolore magna aliqua.";
   accountItemCheckMark.accessoryType = MDCCollectionViewCellAccessoryCheckmark;
   return accountItemCheckMark;
-}
-
-- (CollectionViewItem*)accountControlItem {
-  LegacyAccountControlItem* item = [[LegacyAccountControlItem alloc]
-      initWithType:ItemTypeAccountControlDynamicHeight];
-  item.cellStyle = CollectionViewCellStyle::kUIKit;
-  item.image = [UIImage imageNamed:@"settings_sync"];
-  item.text = @"Account Sync Settings";
-  item.detailText = @"Detail text";
-  item.accessoryType = MDCCollectionViewCellAccessoryDisclosureIndicator;
-  return item;
-}
-
-- (CollectionViewItem*)accountControlItemWithExtraLongText {
-  LegacyAccountControlItem* item = [[LegacyAccountControlItem alloc]
-      initWithType:ItemTypeAccountControlDynamicHeight];
-  item.cellStyle = CollectionViewCellStyle::kUIKit;
-  item.image = [ChromeIcon infoIcon];
-  item.text = @"Account Control Settings";
-  item.detailText =
-      @"Detail text detail text detail text detail text detail text.";
-  item.accessoryType = MDCCollectionViewCellAccessoryDisclosureIndicator;
-  return item;
 }
 
 #pragma mark Private

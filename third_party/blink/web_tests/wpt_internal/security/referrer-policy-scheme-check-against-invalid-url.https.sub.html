@@ -1,0 +1,9 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+  promise_test(t => {
+    return fetch("https://{{domains[www]}}:0/", {mode: "cors"}).catch(_ => {});
+  }, "Chromium doesn't crash when requesting URLs with an explicit 0 port value from HTTPS pages.");
+</script>

@@ -1,0 +1,22 @@
+<a id="a" target="i" href="about:blank"></a>
+<input id="input" type="text" autofocus="true" onkeydown="a.click()" onfocus="setTimeout(test, 0)">
+<iframe name="i"></iframe>
+<script>
+if (window.testRunner) {
+  testRunner.dumpAsText();
+  testRunner.waitUntilDone();
+}
+
+function test() {
+  if (!window.eventSender) {
+    document.body.appendChild(document.createTextNode(
+        "To run manually, type into the input field and see if text appears"));
+    return;
+  }
+  eventSender.keyDown("a");
+  document.body.appendChild(document.createTextNode(
+      input.value == "a" ? "PASS" : "FAIL"));
+  if (window.testRunner)
+    testRunner.notifyDone();
+}
+</script>

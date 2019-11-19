@@ -5,11 +5,12 @@
 package org.chromium.chrome.browser.toolbar;
 
 import android.content.res.ColorStateList;
-import android.support.annotation.ColorRes;
-import android.support.annotation.DrawableRes;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
+
+import androidx.annotation.ColorRes;
+import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ntp.NewTabPage;
@@ -21,7 +22,9 @@ import org.chromium.components.security_state.ConnectionSecurityLevel;
 /**
  * Defines the data that is exposed to properly render the Toolbar.
  */
-public interface ToolbarDataProvider {
+// TODO(crbug.com/865801): Refine split between common/generally toolbar properties and
+//                         sub-component properties.
+public interface ToolbarDataProvider extends ToolbarCommonPropertiesModel {
     /**
      * @return The tab that contains the information currently displayed in the toolbar.
      */
@@ -37,17 +40,31 @@ public interface ToolbarDataProvider {
      * @return The current url for the current tab. Returns empty string when there is no tab.
      */
     @NonNull
+    @Override
     String getCurrentUrl();
 
     /**
      * @return The NewTabPage shown for the current Tab or null if one is not being shown.
      */
+    @Override
     NewTabPage getNewTabPageForCurrentTab();
 
     /**
      * @return Whether the toolbar is currently being displayed for incognito.
      */
+    @Override
     boolean isIncognito();
+
+    /**
+     * @return Whether the toolbar is currently being displayed in overview mode and showing the
+     *  omnibox.
+     */
+    boolean isInOverviewAndShowingOmnibox();
+
+    /**
+     * @return Whether the location bar should show when in overview mode.
+     */
+    boolean shouldShowLocationBarInOverviewMode();
 
     /**
      * @return The current {@link Profile}.
@@ -91,6 +108,14 @@ public interface ToolbarDataProvider {
     int getSecurityLevel();
 
     /**
+     * @param isFocusedFromFakebox If the omnibox focus originated from the fakebox.
+     * @return The current page classification.
+     */
+    default int getPageClassification(boolean isFocusedFromFakebox) {
+        return 0;
+    }
+
+    /**
      * @return The resource ID of the icon that should be displayed or 0 if no icon should be shown.
      */
     @DrawableRes
@@ -103,7 +128,7 @@ public interface ToolbarDataProvider {
     default int getSecurityIconContentDescription() {
         switch (getSecurityLevel()) {
             case ConnectionSecurityLevel.NONE:
-            case ConnectionSecurityLevel.HTTP_SHOW_WARNING:
+            case ConnectionSecurityLevel.WARNING:
                 return R.string.accessibility_security_btn_warn;
             case ConnectionSecurityLevel.DANGEROUS:
                 return R.string.accessibility_security_btn_dangerous;
@@ -124,7 +149,15 @@ public interface ToolbarDataProvider {
     int getSecurityIconColorStateList();
 
     /**
-     * @return Whether or not we should display search terms instead of a URL for query in omnibox.
+     * If the current tab state is eligible for displaying the search query terms instead of the
+     * URL, this extracts the query terms from the current URL.
+     *
+     * @return The search terms. Returns null if the tab is ineligible to display the search terms
+     *         instead of the URL.
      */
-    boolean shouldDisplaySearchTerms();
+    @Nullable
+    @Override
+    public default String getDisplaySearchTerms() {
+        return null;
+    }
 }

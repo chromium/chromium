@@ -8,8 +8,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
-
-#include <SkFont.h>
+#include "third_party/skia/include/core/SkFont.h"
 
 namespace blink {
 
@@ -118,6 +117,8 @@ void WebFontRenderStyle::ApplyToSkFont(SkFont* font,
       (sk_hint_style != SkFontHinting::kFull || device_scale_factor > 1.0f);
 
   font->setSubpixel(force_subpixel_positioning || use_subpixel_positioning);
+
+  font->setLinearMetrics(use_subpixel_positioning == 1);
 }
 
 }  // namespace blink

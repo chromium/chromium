@@ -11,6 +11,56 @@
 #include "third_party/blink/renderer/core/geometry/dom_rect_init.h"
 
 namespace blink {
+namespace {
+
+class DOMQuadPoint final : public DOMPoint {
+ public:
+  static DOMQuadPoint* Create(double x,
+                              double y,
+                              double z,
+                              double w,
+                              DOMQuad* quad) {
+    return MakeGarbageCollected<DOMQuadPoint>(x, y, z, w, quad);
+  }
+
+  static DOMQuadPoint* FromPoint(const DOMPointInit* other, DOMQuad* quad) {
+    return MakeGarbageCollected<DOMQuadPoint>(other->x(), other->y(),
+                                              other->z(), other->w(), quad);
+  }
+
+  DOMQuadPoint(double x, double y, double z, double w, DOMQuad* quad)
+      : DOMPoint(x, y, z, w), quad_(quad) {}
+
+  void setX(double x) override {
+    DOMPoint::setX(x);
+    if (quad_)
+      quad_->set_needs_bounds_calculation(true);
+  }
+
+  void setY(double y) override {
+    DOMPoint::setY(y);
+    if (quad_)
+      quad_->set_needs_bounds_calculation(true);
+  }
+
+  void Trace(blink::Visitor* visitor) override {
+    visitor->Trace(quad_);
+    DOMPoint::Trace(visitor);
+  }
+
+ private:
+  WeakMember<DOMQuad> quad_;
+};
+
+double min4(double a, double b, double c, double d) {
+  return std::min(std::min(a, b), std::min(c, d));
+}
+
+double max4(double a, double b, double c, double d) {
+  return std::max(std::max(a, b), std::max(c, d));
+}
+
+}  // namespace
 
 DOMQuad* DOMQuad::Create(const DOMPointInit* p1,
                          const DOMPointInit* p2,
@@ -33,42 +83,35 @@ DOMQuad* DOMQuad::fromQuad(const DOMQuadInit* other) {
 }
 
 DOMRect* DOMQuad::getBounds() {
-  return DOMRect::Create(left_, top_, right_ - left_, bottom_ - top_);
+  if (needs_bounds_calculation_)
+    CalculateBounds();
+  return DOMRect::Create(x_, y_, width_, height_);
 }
 
 void DOMQuad::CalculateBounds() {
-  left_ = std::min(p1()->x(), p2()->x());
-  left_ = std::min(left_, p3()->x());
-  left_ = std::min(left_, p4()->x());
-  top_ = std::min(p1()->y(), p2()->y());
-  top_ = std::min(top_, p3()->y());
-  top_ = std::min(top_, p4()->y());
-  right_ = std::max(p1()->x(), p2()->x());
-  right_ = std::max(right_, p3()->x());
-  right_ = std::max(right_, p4()->x());
-  bottom_ = std::max(p1()->y(), p2()->y());
-  bottom_ = std::max(bottom_, p3()->y());
-  bottom_ = std::max(bottom_, p4()->y());
+  x_ = min4(p1()->x(), p2()->x(), p3()->x(), p4()->x());
+  y_ = min4(p1()->y(), p2()->y(), p3()->y(), p4()->y());
+  width_ = max4(p1()->x(), p2()->x(), p3()->x(), p4()->x()) - x_;
+  height_ = max4(p1()->y(), p2()->y(), p3()->y(), p4()->y()) - y_;
+  needs_bounds_calculation_ = false;
 }
 
 DOMQuad::DOMQuad(const DOMPointInit* p1,
                  const DOMPointInit* p2,
                  const DOMPointInit* p3,
                  const DOMPointInit* p4)
-    : p1_(DOMPoint::fromPoint(p1)),
-      p2_(DOMPoint::fromPoint(p2)),
-      p3_(DOMPoint::fromPoint(p3)),
-      p4_(DOMPoint::fromPoint(p4)) {
-  CalculateBounds();
-}
+    : p1_(DOMQuadPoint::FromPoint(p1, this)),
+      p2_(DOMQuadPoint::FromPoint(p2, this)),
+      p3_(DOMQuadPoint::FromPoint(p3, this)),
+      p4_(DOMQuadPoint::FromPoint(p4, this)),
+      needs_bounds_calculation_(true) {}
 
 DOMQuad::DOMQuad(double x, double y, double width, double height)
-    : p1_(DOMPoint::Create(x, y, 0, 1)),
-      p2_(DOMPoint::Create(x + width, y, 0, 1)),
-      p3_(DOMPoint::Create(x + width, y + height, 0, 1)),
-      p4_(DOMPoint::Create(x, y + height, 0, 1)) {
-  CalculateBounds();
-}
+    : p1_(DOMQuadPoint::Create(x, y, 0, 1, this)),
+      p2_(DOMQuadPoint::Create(x + width, y, 0, 1, this)),
+      p3_(DOMQuadPoint::Create(x + width, y + height, 0, 1, this)),
+      p4_(DOMQuadPoint::Create(x, y + height, 0, 1, this)),
+      needs_bounds_calculation_(true) {}
 
 ScriptValue DOMQuad::toJSONForBinding(ScriptState* script_state) const {
   V8ObjectBuilder result(script_state);

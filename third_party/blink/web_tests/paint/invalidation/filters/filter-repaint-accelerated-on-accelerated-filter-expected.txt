@@ -1,35 +1,24 @@
 {
   "layers": [
     {
-      "name": "LayoutView #document",
-      "bounds": [800, 600],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [800, 600],
-      "drawsContent": false
-    },
-    {
       "name": "Scrolling Contents Layer",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutBlockFlow DIV class='blur accelerated'",
+      "name": "LayoutNGBlockFlow DIV class='blur accelerated'",
       "bounds": [200, 200],
       "transform": 1
     },
     {
-      "name": "LayoutBlockFlow DIV id='resize' class='drop-shadow accelerated'",
+      "name": "LayoutNGBlockFlow DIV id='resize' class='drop-shadow accelerated'",
       "bounds": [100, 200],
       "contentsOpaque": true,
       "backgroundColor": "#008000",
       "paintInvalidations": [
         {
-          "object": "LayoutBlockFlow DIV id='resize' class='drop-shadow accelerated'",
+          "object": "LayoutNGBlockFlow DIV id='resize' class='drop-shadow accelerated'",
           "rect": [0, 0, 100, 200],
           "reason": "geometry"
         }

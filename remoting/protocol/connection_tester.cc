@@ -5,7 +5,6 @@
 #include "remoting/protocol/connection_tester.h"
 
 #include "base/bind.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -23,18 +22,17 @@ StreamConnectionTester::StreamConnectionTester(P2PStreamSocket* client_socket,
                                                P2PStreamSocket* host_socket,
                                                int message_size,
                                                int message_count)
-    : task_runner_(base::ThreadTaskRunnerHandle::Get()),
-      host_socket_(host_socket),
+    : host_socket_(host_socket),
       client_socket_(client_socket),
       message_size_(message_size),
       test_data_size_(message_size * message_count),
-      done_(false),
       write_errors_(0),
       read_errors_(0) {}
 
 StreamConnectionTester::~StreamConnectionTester() = default;
 
-void StreamConnectionTester::Start() {
+void StreamConnectionTester::Start(base::OnceClosure on_done) {
+  on_done_ = std::move(on_done);
   InitBuffers();
   DoRead();
   DoWrite();
@@ -54,9 +52,7 @@ void StreamConnectionTester::CheckResults() {
 }
 
 void StreamConnectionTester::Done() {
-  done_ = true;
-  task_runner_->PostTask(FROM_HERE,
-                         base::RunLoop::QuitCurrentWhenIdleClosureDeprecated());
+  std::move(on_done_).Run();
 }
 
 void StreamConnectionTester::InitBuffers() {
@@ -114,7 +110,7 @@ void StreamConnectionTester::DoRead() {
 
 void StreamConnectionTester::OnRead(int result) {
   HandleReadResult(result);
-  if (!done_)
+  if (!on_done_.is_null())
     DoRead();  // Don't try to read again when we are done reading.
 }
 
@@ -128,137 +124,6 @@ void StreamConnectionTester::HandleReadResult(int result) {
     input_buffer_->set_offset(input_buffer_->offset() + result);
     if (input_buffer_->offset() == test_data_size_)
       Done();
-  }
-}
-
-DatagramConnectionTester::DatagramConnectionTester(
-    P2PDatagramSocket* client_socket,
-    P2PDatagramSocket* host_socket,
-    int message_size,
-    int message_count,
-    int delay_ms)
-    : task_runner_(base::ThreadTaskRunnerHandle::Get()),
-      host_socket_(host_socket),
-      client_socket_(client_socket),
-      message_size_(message_size),
-      message_count_(message_count),
-      delay_ms_(delay_ms),
-      done_(false),
-      write_errors_(0),
-      read_errors_(0),
-      packets_sent_(0),
-      packets_received_(0),
-      bad_packets_received_(0) {
-  sent_packets_.resize(message_count_);
-}
-
-DatagramConnectionTester::~DatagramConnectionTester() = default;
-
-void DatagramConnectionTester::Start() {
-  DoRead();
-  DoWrite();
-}
-
-void DatagramConnectionTester::CheckResults() {
-  EXPECT_EQ(0, write_errors_);
-  EXPECT_EQ(0, read_errors_);
-
-  EXPECT_EQ(0, bad_packets_received_);
-
-  // Verify that we've received at least one packet.
-  EXPECT_GT(packets_received_, 0);
-  VLOG(0) << "Received " << packets_received_ << " packets out of "
-          << message_count_;
-}
-
-void DatagramConnectionTester::Done() {
-  done_ = true;
-  task_runner_->PostTask(FROM_HERE,
-                         base::RunLoop::QuitCurrentWhenIdleClosureDeprecated());
-}
-
-void DatagramConnectionTester::DoWrite() {
-  if (packets_sent_ >= message_count_) {
-    Done();
-    return;
-  }
-
-  scoped_refptr<net::IOBuffer> packet(
-      base::MakeRefCounted<net::IOBuffer>(message_size_));
-  for (int i = 0; i < message_size_; ++i) {
-    packet->data()[i] = static_cast<char>(i);
-  }
-  sent_packets_[packets_sent_] = packet;
-  // Put index of this packet in the beginning of the packet body.
-  memcpy(packet->data(), &packets_sent_, sizeof(packets_sent_));
-
-  int result = client_socket_->Send(
-      packet.get(), message_size_,
-      base::Bind(&DatagramConnectionTester::OnWritten, base::Unretained(this)));
-  HandleWriteResult(result);
-}
-
-void DatagramConnectionTester::OnWritten(int result) {
-  HandleWriteResult(result);
-}
-
-void DatagramConnectionTester::HandleWriteResult(int result) {
-  if (result <= 0 && result != net::ERR_IO_PENDING) {
-    LOG(ERROR) << "Received error " << result << " when trying to write";
-    write_errors_++;
-    Done();
-  } else if (result > 0) {
-    EXPECT_EQ(message_size_, result);
-    packets_sent_++;
-    task_runner_->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&DatagramConnectionTester::DoWrite,
-                       base::Unretained(this)),
-        base::TimeDelta::FromMilliseconds(delay_ms_));
-  }
-}
-
-void DatagramConnectionTester::DoRead() {
-  int result = 1;
-  while (result > 0) {
-    int kReadSize = message_size_ * 2;
-    read_buffer_ = base::MakeRefCounted<net::IOBuffer>(kReadSize);
-
-    result = host_socket_->Recv(
-        read_buffer_.get(), kReadSize,
-        base::Bind(&DatagramConnectionTester::OnRead, base::Unretained(this)));
-    HandleReadResult(result);
-  };
-}
-
-void DatagramConnectionTester::OnRead(int result) {
-  HandleReadResult(result);
-  DoRead();
-}
-
-void DatagramConnectionTester::HandleReadResult(int result) {
-  if (result <= 0 && result != net::ERR_IO_PENDING) {
-    // Error will be received after the socket is closed.
-    LOG(ERROR) << "Received error " << result << " when trying to read";
-    read_errors_++;
-    Done();
-  } else if (result > 0) {
-    packets_received_++;
-    if (message_size_ != result) {
-      // Invalid packet size;
-      bad_packets_received_++;
-    } else {
-      // Validate packet body.
-      int packet_id;
-      memcpy(&packet_id, read_buffer_->data(), sizeof(packet_id));
-      if (packet_id < 0 || packet_id >= message_count_) {
-        bad_packets_received_++;
-      } else {
-        if (memcmp(read_buffer_->data(), sent_packets_[packet_id]->data(),
-                   message_size_) != 0)
-          bad_packets_received_++;
-      }
-    }
   }
 }
 

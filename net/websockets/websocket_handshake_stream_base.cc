@@ -145,10 +145,4 @@ void WebSocketHandshakeStreamBase::RecordHandshakeResult(
                             HandshakeResult::NUM_HANDSHAKE_RESULT_TYPES);
 }
 
-void WebSocketHandshakeStreamBase::RecordDeflateMode(
-    WebSocketDeflateParameters::ContextTakeOverMode deflate_mode) {
-  UMA_HISTOGRAM_ENUMERATION("Net.WebSocket.DeflateMode", deflate_mode,
-                            WebSocketDeflater::NUM_CONTEXT_TAKEOVER_MODE_TYPES);
-}
-
 }  // namespace net

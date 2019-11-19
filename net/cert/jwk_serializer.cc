@@ -52,7 +52,7 @@ bool ConvertEcKeyToJwk(EVP_PKEY* pkey,
   bssl::UniquePtr<BIGNUM> x(BN_new());
   bssl::UniquePtr<BIGNUM> y(BN_new());
   if (!EC_POINT_get_affine_coordinates_GFp(ec_group, ec_point, x.get(), y.get(),
-                                           NULL)) {
+                                           nullptr)) {
     return false;
   }
 

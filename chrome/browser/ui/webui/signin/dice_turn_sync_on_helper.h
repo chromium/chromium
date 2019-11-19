@@ -16,12 +16,13 @@
 #include "chrome/browser/sync/sync_startup_tracker.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "components/keyed_service/core/keyed_service_shutdown_notifier.h"
-#include "components/signin/core/browser/account_info.h"
-#include "components/signin/core/browser/signin_metrics.h"
+#include "components/policy/core/common/policy_service.h"
+#include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/identity_manager/account_info.h"
 
 class Browser;
 
-namespace identity {
+namespace signin {
 class IdentityManager;
 }
 
@@ -32,7 +33,9 @@ class SyncSetupInProgressHandle;
 
 // Handles details of setting the primary account with IdentityManager and
 // turning on sync for an account for which there is already a refresh token.
-class DiceTurnSyncOnHelper : public SyncStartupTracker::Observer {
+class DiceTurnSyncOnHelper
+    : public SyncStartupTracker::Observer,
+      public policy::PolicyService::ProviderUpdateObserver {
  public:
   // Behavior when the signin is aborted (by an error or cancelled by the user).
   enum class SigninAbortedMode {
@@ -99,7 +102,7 @@ class DiceTurnSyncOnHelper : public SyncStartupTracker::Observer {
                        signin_metrics::AccessPoint signin_access_point,
                        signin_metrics::PromoAction signin_promo_action,
                        signin_metrics::Reason signin_reason,
-                       const std::string& account_id,
+                       const CoreAccountId& account_id,
                        SigninAbortedMode signin_aborted_mode,
                        std::unique_ptr<Delegate> delegate,
                        base::OnceClosure callback);
@@ -110,7 +113,7 @@ class DiceTurnSyncOnHelper : public SyncStartupTracker::Observer {
                        signin_metrics::AccessPoint signin_access_point,
                        signin_metrics::PromoAction signin_promo_action,
                        signin_metrics::Reason signin_reason,
-                       const std::string& account_id,
+                       const CoreAccountId& account_id,
                        SigninAbortedMode signin_aborted_mode);
 
   // SyncStartupTracker::Observer:
@@ -160,6 +163,10 @@ class DiceTurnSyncOnHelper : public SyncStartupTracker::Observer {
   // true if policy was successfully fetched.
   void OnPolicyFetchComplete(bool success);
 
+  // policy::PolicyService::ProviderUpdateObserver
+  void OnProviderUpdatePropagated(
+      policy::ConfigurationPolicyProvider* provider) override;
+
   // Called to create a new profile, which is then signed in with the
   // in-progress auth credentials currently stored in this object.
   void CreateNewSignedInProfile();
@@ -196,7 +203,7 @@ class DiceTurnSyncOnHelper : public SyncStartupTracker::Observer {
 
   std::unique_ptr<Delegate> delegate_;
   Profile* profile_;
-  identity::IdentityManager* identity_manager_;
+  signin::IdentityManager* identity_manager_;
   const signin_metrics::AccessPoint signin_access_point_;
   const signin_metrics::PromoAction signin_promo_action_;
   const signin_metrics::Reason signin_reason_;
@@ -222,7 +229,7 @@ class DiceTurnSyncOnHelper : public SyncStartupTracker::Observer {
   std::unique_ptr<KeyedServiceShutdownNotifier::Subscription>
       shutdown_subscription_;
 
-  base::WeakPtrFactory<DiceTurnSyncOnHelper> weak_pointer_factory_;
+  base::WeakPtrFactory<DiceTurnSyncOnHelper> weak_pointer_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(DiceTurnSyncOnHelper);
 };
 

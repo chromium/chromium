@@ -27,5 +27,5 @@
 
 [Exposed=(Window,Worker)]
 interface PerformanceMeasure : PerformanceEntry {
-  [CallWith=ScriptState, RuntimeEnabled=CustomUserTiming] readonly attribute any detail;
+  [CallWith=ScriptState] readonly attribute any detail;
 };

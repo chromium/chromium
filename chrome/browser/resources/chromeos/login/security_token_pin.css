@@ -1,0 +1,54 @@
+/* Copyright 2019 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+#pinKeyboardContainer {
+  margin-top: 36px;
+  position: relative;
+}
+
+#pinKeyboard {
+  --pin-keyboard-pin-input-style: {
+    width: 244px;
+    padding-bottom: 24px;
+  };
+  --pin-keyboard-backspace-paper-ripple-offset: 9px;
+  --pin-keyboard-digit-button: {
+    margin: 0 6px;
+    width: 48px;
+  };
+  --pin-keyboard-number-color: var(--google-grey-900);
+  --pin-keyboard-paper-ripple: {
+    border-radius: 50%;
+    color: rgba(0, 0, 0, .34);
+    height: 60px;
+    left: -6px;
+    position: absolute;
+    top: -6px;
+    width: 60px;
+  };
+  --pin-button-width: 20px;
+  --pin-button-height: 32px;
+  --cr-icon-button-margin-start: 5px;
+}
+
+#learnMore {
+  color: var(--google-blue-500);
+  text-decoration: none;
+}
+
+#errorContainer {
+  color: var(--google-red-600);
+  font-size: 10px;
+  font-weight: 500;
+  position: absolute;
+  text-align: center;
+  top: 40px;
+  width: 100%;
+}
+
+#errorIcon {
+  --iron-icon-width: 20px;
+  --iron-icon-height: 20px;
+  margin-inline-end: 3px;
+}

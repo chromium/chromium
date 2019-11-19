@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IPC_IPC_PLATFORM_FILE_ATTACHMENT_H_
-#define IPC_IPC_PLATFORM_FILE_ATTACHMENT_H_
+#ifndef IPC_IPC_PLATFORM_FILE_ATTACHMENT_POSIX_H_
+#define IPC_IPC_PLATFORM_FILE_ATTACHMENT_POSIX_H_
 
+#include "base/files/platform_file.h"
+#include "base/files/scoped_file.h"
 #include "ipc/ipc_message_attachment.h"
 #include "ipc/ipc_message_support_export.h"
 
@@ -41,4 +43,4 @@ base::PlatformFile GetPlatformFile(scoped_refptr<MessageAttachment> attachment);
 }  // namespace internal
 }  // namespace IPC
 
-#endif  // IPC_IPC_PLATFORM_FILE_ATTACHMENT_H_
+#endif  // IPC_IPC_PLATFORM_FILE_ATTACHMENT_POSIX_H_

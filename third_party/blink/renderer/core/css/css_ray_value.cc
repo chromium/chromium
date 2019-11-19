@@ -11,12 +11,6 @@
 namespace blink {
 namespace cssvalue {
 
-CSSRayValue* CSSRayValue::Create(const CSSPrimitiveValue& angle,
-                                 const CSSIdentifierValue& size,
-                                 const CSSIdentifierValue* contain) {
-  return MakeGarbageCollected<CSSRayValue>(angle, size, contain);
-}
-
 CSSRayValue::CSSRayValue(const CSSPrimitiveValue& angle,
                          const CSSIdentifierValue& size,
                          const CSSIdentifierValue* contain)

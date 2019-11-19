@@ -4,8 +4,8 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
+#include "base/task/single_thread_task_executor.h"
 #include "mojo/public/cpp/bindings/binding_set.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
 #include "services/service_manager/public/cpp/connector.h"
@@ -31,11 +31,11 @@ class ConnectTestClassApp : public Service,
     class_interface_bindings_.set_connection_error_handler(base::BindRepeating(
         &ConnectTestClassApp::HandleInterfaceClose, base::Unretained(this)));
     registry_.AddInterface<test::mojom::ConnectTestService>(
-        base::Bind(&ConnectTestClassApp::BindConnectTestServiceRequest,
-                   base::Unretained(this)));
+        base::BindRepeating(&ConnectTestClassApp::BindConnectTestServiceRequest,
+                            base::Unretained(this)));
     registry_.AddInterface<test::mojom::ClassInterface>(
-        base::Bind(&ConnectTestClassApp::BindClassInterfaceRequest,
-                   base::Unretained(this)));
+        base::BindRepeating(&ConnectTestClassApp::BindClassInterfaceRequest,
+                            base::Unretained(this)));
   }
 
   ~ConnectTestClassApp() override = default;
@@ -87,7 +87,7 @@ class ConnectTestClassApp : public Service,
 }  // namespace service_manager
 
 void ServiceMain(service_manager::mojom::ServiceRequest request) {
-  base::MessageLoop message_loop;
+  base::SingleThreadTaskExecutor main_task_executor;
   service_manager::ConnectTestClassApp(std::move(request))
       .RunUntilTermination();
 }

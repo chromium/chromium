@@ -1,0 +1,9 @@
+AriaProperties changed on role=option, name=Apple
+AriaProperties changed on role=option, name=Orange
+AutomationFocusChanged on role=option, name=Orange
+SelectionItem_ElementSelected on role=option, name=Orange
+=== Start Continuation ===
+AriaProperties changed on role=option, name=Banana
+AriaProperties changed on role=option, name=Orange
+AutomationFocusChanged on role=option, name=Banana
+SelectionItem_ElementSelected on role=option, name=Banana

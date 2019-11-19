@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/bind_helpers.h"
 #include "base/command_line.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
@@ -87,19 +88,11 @@ GURL WebTestDevToolsBindings::MapTestURLIfNeeded(const GURL& test_url,
   base::FilePath dev_tools_path;
   bool is_debug_dev_tools = base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kDebugDevTools);
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kCustomDevToolsFrontend)) {
-    dev_tools_path = base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
-        switches::kCustomDevToolsFrontend);
-  } else {
-    std::string folder = is_debug_dev_tools ? "debug/" : "";
-    dev_tools_path = dir_exe.AppendASCII("resources/inspector/" + folder);
-  }
-
-  GURL result = net::FilePathToFileURL(
-      dev_tools_path.AppendASCII("integration_test_runner.html"));
-  std::string url_string =
-      base::StringPrintf("%s?experiments=true", result.spec().c_str());
+  // The test runner hosts DevTools resources at this path.
+  std::string url_string = "http://localhost:8000/inspector-sources/";
+  if (is_debug_dev_tools)
+    url_string += "debug/";
+  url_string += "integration_test_runner.html?experiments=true";
   if (is_debug_dev_tools)
     url_string += "&debugFrontend=true";
   url_string += "&test=" + test_url_string;
@@ -119,7 +112,8 @@ void WebTestDevToolsBindings::Attach() {
   ShellDevToolsBindings::Attach();
   web_contents()->GetMainFrame()->ExecuteJavaScriptForTests(
       base::UTF8ToUTF16("TestRunner._startupTestSetupFinished();\n//# "
-                        "sourceURL=layout_test_devtools_bindings.cc"));
+                        "sourceURL=layout_test_devtools_bindings.cc"),
+      base::NullCallback());
 }
 
 WebTestDevToolsBindings::WebTestDevToolsBindings(

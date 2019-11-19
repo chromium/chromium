@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src='../../../resources/testharness.js'></script>
+<script src='../../../resources/testharnessreport.js'></script>
+<script src='../../../fast/forms/resources/picker-common.js'></script>
+</head>
+<body style='zoom: 1.5;'>
+<input type='color' id='color' value='#80d9ff'>
+<script>
+'use strict';
+
+let t = async_test('Color picker: Color values at the bottom edge of the color picker at zoom 150% should be valid numbers.');
+t.step(() => {
+  let colorControl = document.getElementById('color');
+  openPicker(colorControl, t.step_func_done(() => {
+    popupWindow.focus();
+    const popupDocument = popupWindow.document;
+    const hexValueContainer = popupDocument.getElementById('hexValueContainer');
+    assert_equals(hexValueContainer.value, '#80d9ff');
+    eventSender.keyDown('Tab');
+    const colorWellSelectionRing = popupDocument.querySelector('color-well > color-selection-ring');
+    assert_equals(popupDocument.activeElement, colorWellSelectionRing);
+    for (let i = 0; i < 10; i++) {
+      eventSender.keyDown('ArrowDown', ['ctrlKey']);
+    }
+    assert_equals(hexValueContainer.value, '#000000', 'Selected color value should be \'#000000\'');
+  }), t.step_func_done(() => {
+    assert_false(internals.runtimeFlags.formControlsRefreshEnabled, "Popup should only not open when the formControlsRefresh flag is disabled.");
+  }));
+});
+</script>
+</body>
+</html>

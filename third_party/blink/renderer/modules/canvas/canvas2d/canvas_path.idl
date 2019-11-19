@@ -4,17 +4,15 @@
 
 // https://html.spec.whatwg.org/C/#canvaspath
 
-[
-    NoInterfaceObject // Always used on target of 'implements'
-] interface CanvasPath {
+interface mixin CanvasPath {
     // shared path API methods
     void closePath();
-    void moveTo(unrestricted float x, unrestricted float y);
-    void lineTo(unrestricted float x, unrestricted float y);
-    void quadraticCurveTo(unrestricted float cpx, unrestricted float cpy, unrestricted float x, unrestricted float y);
-    void bezierCurveTo(unrestricted float cp1x, unrestricted float cp1y, unrestricted float cp2x, unrestricted float cp2y, unrestricted float x, unrestricted float y);
-    [RaisesException] void arcTo(unrestricted float x1, unrestricted float y1, unrestricted float x2, unrestricted float y2, unrestricted float radius);
-    void rect(unrestricted float x, unrestricted float y, unrestricted float width, unrestricted float height);
-    [RaisesException] void arc(unrestricted float x, unrestricted float y, unrestricted float radius, unrestricted float startAngle, unrestricted float endAngle, optional boolean anticlockwise = false);
-    [RaisesException] void ellipse(unrestricted float x, unrestricted float y, unrestricted float radiusX, unrestricted float radiusY, unrestricted float rotation, unrestricted float startAngle, unrestricted float endAngle, optional boolean anticlockwise = false);
+    void moveTo(unrestricted double x, unrestricted double y);
+    void lineTo(unrestricted double x, unrestricted double y);
+    void quadraticCurveTo(unrestricted double cpx, unrestricted double cpy, unrestricted double x, unrestricted double y);
+    void bezierCurveTo(unrestricted double cp1x, unrestricted double cp1y, unrestricted double cp2x, unrestricted double cp2y, unrestricted double x, unrestricted double y);
+    [RaisesException] void arcTo(unrestricted double x1, unrestricted double y1, unrestricted double x2, unrestricted double y2, unrestricted double radius);
+    void rect(unrestricted double x, unrestricted double y, unrestricted double width, unrestricted double height);
+    [RaisesException] void arc(unrestricted double x, unrestricted double y, unrestricted double radius, unrestricted double startAngle, unrestricted double endAngle, optional boolean anticlockwise = false);
+    [RaisesException] void ellipse(unrestricted double x, unrestricted double y, unrestricted double radiusX, unrestricted double radiusY, unrestricted double rotation, unrestricted double startAngle, unrestricted double endAngle, optional boolean anticlockwise = false);
 };

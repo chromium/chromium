@@ -16,6 +16,11 @@
 #include "media/base/media_resource.h"
 #include "media/base/renderer.h"
 #include "media/base/renderer_client.h"
+#include "media/mojo/mojom/renderer_extensions.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -29,32 +34,34 @@ class MediaPlayerRendererWebContentsObserver;
 //
 // Each MediaPlayerRenderer is associated with one MediaPlayerRendererClient,
 // living in WMPI in the Renderer process.
-//
-// N.B: MediaPlayerRenderer implements MediaPlayerManager, since
-// MediaPlayerBridge is tightly coupled with the manager abstraction.
-// |player_id| is ignored in all MediaPlayerManager calls, as there is only one
-// MediaPlayer per MediaPlayerRenderer.
 class CONTENT_EXPORT MediaPlayerRenderer
     : public media::Renderer,
+      public media::mojom::MediaPlayerRendererExtension,
       public media::MediaPlayerBridge::Client {
  public:
+  using RendererExtension = media::mojom::MediaPlayerRendererExtension;
+  using ClientExtension = media::mojom::MediaPlayerRendererClientExtension;
+
   // Permits embedders to handle custom urls.
   static void RegisterMediaUrlInterceptor(
       media::MediaUrlInterceptor* media_url_interceptor);
 
-  MediaPlayerRenderer(int process_id,
-                      int routing_id,
-                      WebContents* web_contents);
+  MediaPlayerRenderer(
+      int process_id,
+      int routing_id,
+      WebContents* web_contents,
+      mojo::PendingReceiver<RendererExtension> renderer_extension_receiver,
+      mojo::PendingRemote<ClientExtension> client_extension_remote);
 
   ~MediaPlayerRenderer() override;
 
   // media::Renderer implementation
   void Initialize(media::MediaResource* media_resource,
                   media::RendererClient* client,
-                  const media::PipelineStatusCB& init_cb) override;
+                  media::PipelineStatusCallback init_cb) override;
   void SetCdm(media::CdmContext* cdm_context,
-              const media::CdmAttachedCB& cdm_attached_cb) override;
-  void Flush(const base::Closure& flush_cb) override;
+              media::CdmAttachedCB cdm_attached_cb) override;
+  void Flush(base::OnceClosure flush_cb) override;
   void StartPlayingFrom(base::TimeDelta time) override;
 
   // N.B: MediaPlayerBridge doesn't support variable playback rates (but it
@@ -76,6 +83,8 @@ class CONTENT_EXPORT MediaPlayerRenderer
   void OnUpdateAudioMutingState(bool muted);
   void OnWebContentsDestroyed();
 
+  // media::mojom::MediaPlayerRendererExtension implementation.
+  //
   // Registers a request in the content::ScopedSurfaceRequestManager, and
   // returns the token associated to the request. The token can then be used to
   // complete the request via the gpu::ScopedSurfaceRequestConduit.
@@ -83,18 +92,22 @@ class CONTENT_EXPORT MediaPlayerRenderer
   //
   // NOTE: If a request is already pending, calling this method again will
   // safely cancel the pending request before registering a new one.
-  base::UnguessableToken InitiateScopedSurfaceRequest();
+  void InitiateScopedSurfaceRequest(
+      InitiateScopedSurfaceRequestCallback callback) override;
+
   void OnScopedSurfaceRequestCompleted(gl::ScopedJavaSurface surface);
 
  private:
   void CreateMediaPlayer(const media::MediaUrlParams& params,
-                         const media::PipelineStatusCB& init_cb);
+                         media::PipelineStatusCallback init_cb);
 
   // Cancels the pending request started by InitiateScopedSurfaceRequest(), if
   // it exists. No-ops otherwise.
   void CancelScopedSurfaceRequest();
 
   void UpdateVolume();
+
+  mojo::Remote<ClientExtension> client_extension_;
 
   // Identifiers to find the RenderFrameHost that created |this|.
   // NOTE: We store these IDs rather than a RenderFrameHost* because we do not
@@ -122,8 +135,10 @@ class CONTENT_EXPORT MediaPlayerRenderer
   MediaPlayerRendererWebContentsObserver* web_contents_observer_;
   float volume_;
 
+  mojo::Receiver<MediaPlayerRendererExtension> renderer_extension_receiver_;
+
   // NOTE: Weak pointers must be invalidated before all other member variables.
-  base::WeakPtrFactory<MediaPlayerRenderer> weak_factory_;
+  base::WeakPtrFactory<MediaPlayerRenderer> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(MediaPlayerRenderer);
 };

@@ -57,10 +57,17 @@ const char kAccessibilityAutoclickEventType[] =
 // another event type action, or whether it should stay as the other event type.
 const char kAccessibilityAutoclickRevertToLeftClick[] =
     "settings.a11y.autoclick_revert_to_left_click";
+// Whether Autoclick should stabilize the cursor movement before a click occurs
+// or not.
+const char kAccessibilityAutoclickStabilizePosition[] =
+    "settings.a11y.autoclick_stabilize_position";
 // The default threshold of mouse movement, measured in DIP, that will initiate
 // a new autoclick.
 const char kAccessibilityAutoclickMovementThreshold[] =
     "settings.a11y.autoclick_movement_threshold";
+// The Autoclick menu position on the screen, an AutoclickMenuPosition.
+const char kAccessibilityAutoclickMenuPosition[] =
+    "settings.a11y.autoclick_menu_position";
 // A boolean pref which determines whether caret highlighting is enabled.
 const char kAccessibilityCaretHighlightEnabled[] =
     "settings.a11y.caret_highlight";
@@ -73,17 +80,45 @@ const char kAccessibilityFocusHighlightEnabled[] =
 // A boolean pref which determines whether select-to-speak is enabled.
 const char kAccessibilitySelectToSpeakEnabled[] =
     "settings.a11y.select_to_speak";
-// A boolean pref which determines whether switch access is enabled.
-const char kAccessibilitySwitchAccessEnabled[] = "settings.a11y.switch_access";
+// A boolean pref which determines whether Switch Access is enabled.
+const char kAccessibilitySwitchAccessEnabled[] =
+    "settings.a11y.switch_access.enabled";
+// A pref that stores the key code for the "select" action.
+const char kAccessibilitySwitchAccessSelectKeyCodes[] =
+    "settings.a11y.switch_access.select.key_codes";
+// A pref that stores the setting value for the "select" action.
+const char kAccessibilitySwitchAccessSelectSetting[] =
+    "settings.a11y.switch_access.select.setting";
+// A pref that stores the key code for the "next" action.
+const char kAccessibilitySwitchAccessNextKeyCodes[] =
+    "settings.a11y.switch_access.next.key_codes";
+// A pref that stores the setting value for the "next" action.
+const char kAccessibilitySwitchAccessNextSetting[] =
+    "settings.a11y.switch_access.next.setting";
+// A pref that stores the key code for the "previous" action.
+const char kAccessibilitySwitchAccessPreviousKeyCodes[] =
+    "settings.a11y.switch_access.previous.key_codes";
+// A pref that stores the setting value for the "previous" action.
+const char kAccessibilitySwitchAccessPreviousSetting[] =
+    "settings.a11y.switch_access.previous.setting";
+// A boolean pref which determines whether auto-scanning is enabled within
+// Switch Access.
+const char kAccessibilitySwitchAccessAutoScanEnabled[] =
+    "settings.a11y.switch_access.auto_scan.enabled";
+// An integer pref which determines time delay in ms before automatically
+// scanning forward (when auto-scan is enabled).
+const char kAccessibilitySwitchAccessAutoScanSpeedMs[] =
+    "settings.a11y.switch_access.auto_scan.speed_ms";
+// An integer pref which determines time delay in ms before automatically
+// scanning forward while navigating the keyboard (when auto-scan is
+// enabled).
+const char kAccessibilitySwitchAccessAutoScanKeyboardSpeedMs[] =
+    "settings.a11y.switch_access.auto_scan.keyboard.speed_ms";
 // A boolean pref which determines whether dictation is enabled.
 const char kAccessibilityDictationEnabled[] = "settings.a11y.dictation";
 // A boolean pref which determines whether the accessibility menu shows
 // regardless of the state of a11y features.
 const char kShouldAlwaysShowAccessibilityMenu[] = "settings.a11y.enable_menu";
-
-// A boolean pref that stores whether the Kiosk Next Shell is enabled. When it
-// is, we start it after sign in.
-const char kKioskNextShellEnabled[] = "ash.kiosk_next_shell.enabled";
 
 // A boolean pref storing the enabled status of the Docked Magnifier feature.
 const char kDockedMagnifierEnabled[] = "ash.docked_magnifier.enabled";
@@ -109,8 +144,9 @@ const char kDictationAcceleratorDialogHasBeenAccepted[] =
     "settings.a11y.dictation_accelerator_dialog_has_been_accepted";
 // A boolean pref which indicates whether the display rotation confirmation
 // dialog has ever been shown.
-const char kDisplayRotationAcceleratorDialogHasBeenAccepted[] =
-    "settings.a11y.display_rotation_accelerator_dialog_has_been_accepted";
+// Renamed 10/2019 to force reset the pref to false.
+const char kDisplayRotationAcceleratorDialogHasBeenAccepted2[] =
+    "settings.a11y.display_rotation_accelerator_dialog_has_been_accepted2";
 
 // A dictionary pref that stores the mixed mirror mode parameters.
 const char kDisplayMixedMirrorModeParams[] =
@@ -160,6 +196,9 @@ const char kMessageCenterLockScreenMode[] =
 const char kMessageCenterLockScreenModeShow[] = "show";
 const char kMessageCenterLockScreenModeHide[] = "hide";
 const char kMessageCenterLockScreenModeHideSensitive[] = "hideSensitive";
+
+// A boolean pref storing the enabled status of the ambient color feature.
+const char kAmbientColorEnabled[] = "ash.ambient_color.enabled";
 
 // A boolean pref storing the enabled status of the NightLight feature.
 const char kNightLightEnabled[] = "ash.night_light.enabled";
@@ -281,8 +320,17 @@ const char kPowerWaitForInitialUserActivity[] =
 const char kPowerForceNonzeroBrightnessForUserActivity[] =
     "power.force_nonzero_brightness_for_user_activity";
 
+// Boolean controlling whether a shorter suspend delay should be used after the
+// user forces the display off by pressing the power button. Provided to allow
+// policy to control this behavior.
+const char kPowerFastSuspendWhenBacklightsForcedOff[] =
+    "power.fast_suspend_when_backlights_forced_off";
+
 // Boolean controlling whether smart dim model is enabled.
 const char kPowerSmartDimEnabled[] = "power.smart_dim_enabled";
+
+// Boolean controlling whether ALS logging is enabled.
+const char kPowerAlsLoggingEnabled[] = "power.als_logging_enabled";
 
 // |kShelfAlignment| and |kShelfAutoHideBehavior| have a local variant. The
 // local variant is not synced and is used if set. If the local variant is not
@@ -346,6 +394,84 @@ const char kAssistantNumWarmerWelcomeTriggered[] =
 
 // Whether the user is allowed to disconnect and configure VPN connections.
 const char kVpnConfigAllowed[] = "vpn_config_allowed";
+
+// A boolean pref that indicates whether power peak shift is enabled.
+// Ignored unless powerd is configured to honor charging-related prefs.
+const char kPowerPeakShiftEnabled[] = "ash.power.peak_shift_enabled";
+
+// An integer pref that specifies the power peak shift battery threshold in
+// percent.
+// Ignored unless powerd is configured to honor charging-related prefs.
+const char kPowerPeakShiftBatteryThreshold[] =
+    "ash.power.peak_shift_battery_threshold";
+
+// A dictionary pref that specifies the power peak shift day configs.
+// For details see "DevicePowerPeakShiftDayConfig" in policy_templates.json.
+// Ignored unless powerd is configured to honor charging-related prefs.
+const char kPowerPeakShiftDayConfig[] = "ash.power.peak_shift_day_config";
+
+// A boolean pref that indicates whether boot on AC is enabled.
+const char kBootOnAcEnabled[] = "ash.power.boot_on_ac_enabled";
+
+// A boolean pref that indicates whether advanced battery charge mode is
+// enabled.
+// Ignored unless powerd is configured to honor charging-related prefs.
+const char kAdvancedBatteryChargeModeEnabled[] =
+    "ash.power.advanced_battery_charge_mode_enabled";
+
+// A dictionary pref that specifies the advanced battery charge mode day config.
+// For details see "DeviceAdvancedBatteryChargeModeDayConfig" in
+// policy_templates.json.
+// Ignored unless powerd is configured to honor charging-related prefs.
+const char kAdvancedBatteryChargeModeDayConfig[] =
+    "ash.power.advanced_battery_charge_mode_day_config";
+
+// An integer pref that specifies the battery charge mode.
+// For details see "DeviceBatteryChargeMode" in policy_templates.json.
+// Ignored unless powerd is configured to honor charging-related prefs.
+const char kBatteryChargeMode[] = "ash.power.battery_charge_mode";
+
+// An integer pref that specifies the battery charge custom start charging in
+// percent.
+// For details see "DeviceBatteryChargeCustomStartCharging" in
+// policy_templates.json.
+// Ignored unless powerd is configured to honor charging-related prefs.
+const char kBatteryChargeCustomStartCharging[] =
+    "ash.power.battery_charge_custom_start_charging";
+
+// An integer pref that specifies the battery charge custom stop charging in
+// percent.
+// For details see "DeviceBatteryChargeCustomStopCharging" in
+// policy_templates.json.
+// Ignored unless powerd is configured to honor charging-related prefs.
+const char kBatteryChargeCustomStopCharging[] =
+    "ash.power.battery_charge_custom_stop_charging";
+
+// A boolean pref that indicates whether USB power share is enabled.
+// For details see "DeviceUsbPowerShareEnabled" in policy_templates.json.
+// Ignored unless powerd is configured to honor charging-related prefs.
+const char kUsbPowerShareEnabled[] = "ash.power.usb_power_share_enabled";
+
+// An integer pref that specifies how many times the Assistant privacy info has
+// been shown in Launcher. This value will increment by one every time when
+// Launcher changes state from Peeking to Half or FullscreenSearch up to a
+// predefined threshold, e.g. six times. If the info has been shown for more
+// than the threshold, do not show the privacy info any more.
+const char kAssistantPrivacyInfoShownInLauncher[] =
+    "ash.launcher.assistant_privacy_info_shown";
+
+// A boolean pref that indicates whether the Assistant privacy info may be
+// displayed to user. A false value indicates that the info can be displayed if
+// the value of |kAssistantPrivacyInfoShownInLauncher| is smaller than the
+// predefined threshold. A true value implies that the user has dismissed the
+// info view, and do not show the privacy info any more.
+const char kAssistantPrivacyInfoDismissedInLauncher[] =
+    "ash.launcher.assistant_privacy_info_dismissed";
+
+// A boolean pref that indicates whether lock screen media controls are enabled.
+// Controlled by user policy.
+const char kLockScreenMediaControlsEnabled[] =
+    "ash.lock_screen_media_controls_enabled";
 
 // NOTE: New prefs should start with the "ash." prefix. Existing prefs moved
 // into this file should not be renamed, since they may be synced.

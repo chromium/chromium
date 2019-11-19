@@ -2,30 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-function clobberJSON() {
-  JSON.parse = function() {
-    return "JSON.parse clobbered by content script.";
-  };
-
-  JSON.stringify = function() {
-    return "JSON.stringify clobbered by content script.";
-  };
-
-  Array.prototype.toJSON = function() {
-    return "Array.prototype.toJSON clobbered by content script.";
-  };
-
-  Object.prototype.toJSON = function() {
-    return "Object.prototype.toJSON clobbered by content script.";
-  };
-}
-
-chrome.test.getConfig((config) => {
-  // We don't clobber JSON with native bindings. See https://crbug.com/792602.
-  if (!config.nativeCrxBindingsEnabled)
-    clobberJSON();
-});
-
 // For complex connect tests.
 chrome.runtime.onConnect.addListener(function onConnect(port) {
   console.log('connected');

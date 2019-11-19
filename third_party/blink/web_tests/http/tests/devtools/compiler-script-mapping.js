@@ -69,13 +69,13 @@
         TestRunner.addResult('Location checks passed. Requesting content');
         uiSourceCode1.requestContent().then(didRequestContent1);
 
-        function didRequestContent1(content, contentEncoded, mimeType) {
+        function didRequestContent1({ content, error, isEncoded }) {
           TestRunner.addResult('Content1 arrived.');
           TestRunner.assertEquals(0, content.indexOf('window.addEventListener'));
           uiSourceCode2.requestContent().then(didRequestContent2);
         }
 
-        function didRequestContent2(content, contentEncoded, mimeType) {
+        function didRequestContent2({ content, error, isEncoded }) {
           TestRunner.addResult('Content2 arrived.');
           TestRunner.assertEquals(0, content.indexOf('function ClickHandler()'));
           next();
@@ -121,7 +121,7 @@
         TestRunner.addResult('Location checks passed. Requesting content');
         uiSourceCode.requestContent().then(didRequestContent);
 
-        function didRequestContent(content, contentEncoded, mimeType) {
+        function didRequestContent({ content, error, isEncoded }) {
           TestRunner.addResult('<source content> === ' + content);
           next();
         }

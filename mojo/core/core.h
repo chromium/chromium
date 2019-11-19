@@ -12,7 +12,6 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/memory/shared_memory_handle.h"
 #include "base/synchronization/lock.h"
 #include "base/task_runner.h"
 #include "build/build_config.h"
@@ -30,14 +29,9 @@
 #include "mojo/public/c/system/trap.h"
 #include "mojo/public/c/system/types.h"
 
-namespace base {
-class PortProvider;
-}
-
 namespace mojo {
 namespace core {
 
-class MachPortRelay;
 class PlatformSharedMemoryMapping;
 
 // |Core| is an object that implements the Mojo system calls. All public methods
@@ -59,7 +53,7 @@ class MOJO_SYSTEM_IMPL_EXPORT Core {
   scoped_refptr<Dispatcher> GetDispatcher(MojoHandle handle);
   scoped_refptr<Dispatcher> GetAndRemoveDispatcher(MojoHandle handle);
 
-  void SetDefaultProcessErrorCallback(const ProcessErrorCallback& callback);
+  void SetDefaultProcessErrorCallback(ProcessErrorCallback callback);
 
   // Creates a message pipe endpoint with an unbound peer port returned in
   // |*peer|. Useful for setting up cross-process bootstrap message pipes. The
@@ -88,11 +82,6 @@ class MOJO_SYSTEM_IMPL_EXPORT Core {
       const std::vector<std::pair<std::string, ports::PortRef>>& attached_ports,
       const ProcessErrorCallback& process_error_callback);
 
-  // Accepts an invitation via |connection_params|. The other end of the
-  // connection medium in |connection_params| must have been used by some other
-  // process to send an invitation.
-  void AcceptBrokerClientInvitation(ConnectionParams connection_params);
-
   // Extracts a named message pipe endpoint from the broker client invitation
   // accepted by this process. Must only be called after
   // AcceptBrokerClientInvitation.
@@ -111,13 +100,6 @@ class MOJO_SYSTEM_IMPL_EXPORT Core {
   void ConnectIsolated(ConnectionParams connection_params,
                        const ports::PortRef& port,
                        base::StringPiece connection_name);
-
-  // Sets the mach port provider for this process.
-  void SetMachPortProvider(base::PortProvider* port_provider);
-
-#if defined(OS_MACOSX) && !defined(OS_IOS)
-  MachPortRelay* GetMachPortRelay();
-#endif
 
   MojoHandle AddDispatcher(scoped_refptr<Dispatcher> dispatcher);
 
@@ -153,7 +135,7 @@ class MOJO_SYSTEM_IMPL_EXPORT Core {
   // loop, and the calling thread must continue running a MessageLoop at least
   // until the callback is called. If there is no running loop, the |callback|
   // may be called from any thread. Beware!
-  void RequestShutdown(const base::Closure& callback);
+  void RequestShutdown(base::OnceClosure callback);
 
   // ---------------------------------------------------------------------------
 

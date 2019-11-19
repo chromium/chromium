@@ -6,89 +6,31 @@
 
 #include <math.h>
 
+#include "base/numerics/ranges.h"
 #include "ui/gfx/animation/animation_delegate.h"
 
 namespace gfx {
 
-// How long animations should take by default.
-static const int kDefaultDurationMs = 120;
-
 SlideAnimation::SlideAnimation(AnimationDelegate* target)
-    : LinearAnimation(target),
-      target_(target),
-      tween_type_(Tween::EASE_OUT),
-      showing_(false),
-      value_start_(0),
-      value_end_(0),
-      value_current_(0),
-      slide_duration_(kDefaultDurationMs),
-      dampening_value_(1.0) {}
+    : LinearAnimation(target), target_(target) {}
 
-SlideAnimation::~SlideAnimation() {}
-
-void SlideAnimation::Reset() {
-  Reset(0);
-}
+SlideAnimation::~SlideAnimation() = default;
 
 void SlideAnimation::Reset(double value) {
-  Stop();
-  showing_ = static_cast<bool>(value == 1);
+  showing_ = value == 1;
   value_current_ = value;
+  Stop();
 }
 
 void SlideAnimation::Show() {
-  // If we're already showing (or fully shown), we have nothing to do.
-  if (showing_)
-    return;
-
-  showing_ = true;
-  value_start_ = value_current_;
-  value_end_ = 1.0;
-
-  // Make sure we actually have something to do.
-  if (slide_duration_ == 0) {
-    AnimateToState(1.0);  // Skip to the end of the animation.
-    if (delegate()) {
-      delegate()->AnimationProgressed(this);
-      delegate()->AnimationEnded(this);
-    }
-    return;
-  } else if (value_current_ == value_end_) {
-    return;
-  }
-
-  // This will also reset the currently-occurring animation.
-  SetDuration(GetDuration());
-  Start();
+  BeginAnimating(true);
 }
 
 void SlideAnimation::Hide() {
-  // If we're already hiding (or hidden), we have nothing to do.
-  if (!showing_)
-    return;
-
-  showing_ = false;
-  value_start_ = value_current_;
-  value_end_ = 0.0;
-
-  // Make sure we actually have something to do.
-  if (slide_duration_ == 0) {
-    AnimateToState(1.0);  // Skip to the end of the animation.
-    if (delegate()) {
-      delegate()->AnimationProgressed(this);
-      delegate()->AnimationEnded(this);
-    }
-    return;
-  } else if (value_current_ == value_end_) {
-    return;
-  }
-
-  // This will also reset the currently-occurring animation.
-  SetDuration(GetDuration());
-  Start();
+  BeginAnimating(false);
 }
 
-void SlideAnimation::SetSlideDuration(int duration) {
+void SlideAnimation::SetSlideDuration(base::TimeDelta duration) {
   slide_duration_ = duration;
 }
 
@@ -104,29 +46,40 @@ base::TimeDelta SlideAnimation::GetDuration() {
   const double current_progress =
       showing_ ? value_current_ : 1.0 - value_current_;
 
-  return base::TimeDelta::FromMillisecondsD(
-      slide_duration_ * (1 - pow(current_progress, dampening_value_)));
+  return slide_duration_ * (1 - pow(current_progress, dampening_value_));
+}
+
+void SlideAnimation::BeginAnimating(bool showing) {
+  if (showing_ == showing)
+    return;
+
+  showing_ = showing;
+  value_start_ = value_current_;
+  value_end_ = showing ? 1.0 : 0.0;
+
+  // Make sure we actually have something to do.
+  if (slide_duration_.is_zero()) {
+    AnimateToState(1.0);  // Skip to the end of the animation.
+    if (delegate()) {
+      delegate()->AnimationProgressed(this);
+      delegate()->AnimationEnded(this);
+    }
+  } else if (value_current_ != value_end_) {
+    // This will also reset the currently-occurring animation.
+    SetDuration(GetDuration());
+    Start();
+  }
 }
 
 void SlideAnimation::AnimateToState(double state) {
-  if (state > 1.0)
-    state = 1.0;
-  else if (state < 0)
-    state = 0;
-
-  state = Tween::CalculateValue(tween_type_, state);
-
+  state =
+      Tween::CalculateValue(tween_type_, base::ClampToRange(state, 0.0, 1.0));
   value_current_ = value_start_ + (value_end_ - value_start_) * state;
-
-  // Implement snapping.
-  if (tween_type_ == Tween::EASE_OUT_SNAP &&
-      fabs(value_current_ - value_end_) <= 0.06)
-    value_current_ = value_end_;
 
   // Correct for any overshoot (while state may be capped at 1.0, let's not
   // take any rounding error chances.
-  if ((value_end_ >= value_start_ && value_current_ > value_end_) ||
-      (value_end_ < value_start_ && value_current_ < value_end_)) {
+  if ((value_end_ >= value_start_) ? (value_current_ > value_end_)
+                                   : (value_current_ < value_end_)) {
     value_current_ = value_end_;
   }
 }

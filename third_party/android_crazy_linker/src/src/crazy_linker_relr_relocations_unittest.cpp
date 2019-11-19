@@ -71,7 +71,7 @@ TEST(RelrRelocations, ApplyWithSimpleBitmaps) {
   ELF::Relr relr_table[kRelrSize] = {};
   for (size_t n = 0; n < kDataSize; ++n) {
     if ((n % 3) == 0)
-      relr_table[n / kBitsPerWord] |= (1 | (2 << (n % kBitsPerWord)));
+      relr_table[n / kBitsPerWord] |= 1U | (ELF::Relr(2) << (n % kBitsPerWord));
   }
   RelrRelocations relr;
   relr.SetAddress(reinterpret_cast<uintptr_t>(relr_table));

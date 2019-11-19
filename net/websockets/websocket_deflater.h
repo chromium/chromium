@@ -23,8 +23,6 @@ class IOBufferWithSize;
 
 class NET_EXPORT_PRIVATE WebSocketDeflater {
  public:
-  // Do not reorder or remove entries of this enum. The values of them are used
-  // in UMA.
   enum ContextTakeOverMode {
     DO_NOT_TAKE_OVER_CONTEXT,
     TAKE_OVER_CONTEXT,

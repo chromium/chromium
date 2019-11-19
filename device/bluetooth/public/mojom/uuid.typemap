@@ -3,9 +3,9 @@
 # found in the LICENSE file.
 
 mojom = "//device/bluetooth/public/mojom/uuid.mojom"
-public_headers = [ "//device/bluetooth/bluetooth_uuid.h" ]
+public_headers = [ "//device/bluetooth/public/cpp/bluetooth_uuid.h" ]
 traits_headers = [ "//device/bluetooth/public/mojom/uuid_mojom_traits.h" ]
 deps = [
-  "//device/bluetooth",
+  "//device/bluetooth/public/cpp",
 ]
-type_mappings = [ "bluetooth.mojom.UUID=device::BluetoothUUID" ]
+type_mappings = [ "bluetooth.mojom.UUID=::device::BluetoothUUID" ]

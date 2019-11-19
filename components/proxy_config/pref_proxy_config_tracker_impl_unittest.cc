@@ -9,7 +9,7 @@
 
 #include "base/files/file_path.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -104,7 +104,7 @@ class PrefProxyConfigTrackerImplTest : public testing::Test {
     proxy_config_service_.reset();
   }
 
-  base::test::ScopedTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
   TestProxyConfigService* delegate_service_; // weak
   std::unique_ptr<net::ProxyConfigService> proxy_config_service_;

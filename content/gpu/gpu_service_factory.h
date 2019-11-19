@@ -9,12 +9,16 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
-#include "content/child/service_factory.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_preferences.h"
 #include "media/base/android_overlay_mojo_factory.h"
 #include "media/mojo/buildflags.h"
+#include "services/service_manager/public/mojom/service.mojom.h"
+
+namespace gpu {
+class GpuMemoryBufferFactory;
+}
 
 namespace media {
 class MediaGpuChannelManager;
@@ -22,21 +26,21 @@ class MediaGpuChannelManager;
 
 namespace content {
 
-// Customization of ServiceFactory for the GPU process.
-class GpuServiceFactory : public ServiceFactory {
+// Helper for handling incoming RunService requests on GpuChildThread.
+class GpuServiceFactory {
  public:
   GpuServiceFactory(
       const gpu::GpuPreferences& gpu_preferences,
       const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
       const gpu::GpuFeatureInfo& gpu_feature_info,
       base::WeakPtr<media::MediaGpuChannelManager> media_gpu_channel_manager,
+      gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory,
       media::AndroidOverlayMojoFactoryCB android_overlay_factory_cb);
-  ~GpuServiceFactory() override;
+  ~GpuServiceFactory();
 
-  // ServiceFactory overrides:
-  bool HandleServiceRequest(
+  void RunService(
       const std::string& service_name,
-      service_manager::mojom::ServiceRequest request) override;
+      mojo::PendingReceiver<service_manager::mojom::Service> receiver);
 
  private:
 #if BUILDFLAG(ENABLE_MOJO_MEDIA_IN_GPU_PROCESS)
@@ -47,6 +51,8 @@ class GpuServiceFactory : public ServiceFactory {
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   base::WeakPtr<media::MediaGpuChannelManager> media_gpu_channel_manager_;
   media::AndroidOverlayMojoFactoryCB android_overlay_factory_cb_;
+  // Indirectly owned by GpuChildThread.
+  gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory_;
   gpu::GpuPreferences gpu_preferences_;
   gpu::GpuDriverBugWorkarounds gpu_workarounds_;
   gpu::GpuFeatureInfo gpu_feature_info_;

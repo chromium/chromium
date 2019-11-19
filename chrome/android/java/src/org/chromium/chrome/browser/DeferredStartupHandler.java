@@ -9,9 +9,10 @@ import android.content.Context;
 import android.os.Looper;
 import android.os.SystemClock;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.VisibleForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.metrics.UmaUtils;
 

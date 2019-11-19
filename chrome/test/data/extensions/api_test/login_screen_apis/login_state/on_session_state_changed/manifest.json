@@ -1,0 +1,12 @@
+{
+  "name": "On Session State Changed",
+  "version": "0.1",
+  "manifest_version": 2,
+  "description": "Browser test for chrome.loginState.onSessionStateChanged()",
+  "background": {
+    "scripts": ["test.js"]
+  },
+  "permissions": [
+    "loginState"
+  ]
+}

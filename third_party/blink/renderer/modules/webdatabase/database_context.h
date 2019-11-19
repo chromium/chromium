@@ -38,7 +38,7 @@ class DatabaseThread;
 class ExecutionContext;
 class SecurityOrigin;
 
-class DatabaseContext final : public GarbageCollectedFinalized<DatabaseContext>,
+class DatabaseContext final : public GarbageCollected<DatabaseContext>,
                               public ContextLifecycleObserver {
   USING_GARBAGE_COLLECTED_MIXIN(DatabaseContext);
 

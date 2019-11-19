@@ -1,0 +1,25 @@
+// Copyright 2016 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ui.ozone.mojom;
+
+import "skia/public/mojom/bitmap.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+import "ui/gfx/mojom/accelerated_widget.mojom";
+
+// The DeviceCursor setting interface provided by a Mojo-enabled Ozone platform
+// where functionality equivalent to the DrmCursorProxy is exposed by a
+// dedicated thread within the Ozone platform.
+interface DeviceCursor {
+  // Sets the cursor |bitmaps| on |window| at |point| with
+  // |frame_delay_ms|.
+  SetCursor(gfx.mojom.AcceleratedWidget window,
+            array<skia.mojom.Bitmap> bitmaps,
+            gfx.mojom.Point point,
+            int32 frame_delay_ms);
+
+  // Moves the cursor in |window| to |point|.
+  MoveCursor(gfx.mojom.AcceleratedWidget window, gfx.mojom.Point point);
+};
+

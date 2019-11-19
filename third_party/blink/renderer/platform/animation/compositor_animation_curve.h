@@ -5,9 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_ANIMATION_COMPOSITOR_ANIMATION_CURVE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_ANIMATION_COMPOSITOR_ANIMATION_CURVE_H_
 
-#include "third_party/blink/renderer/platform/platform_export.h"
-
 #include <memory>
+
+#include "third_party/blink/renderer/platform/platform_export.h"
 
 namespace cc {
 class AnimationCurve;

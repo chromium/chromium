@@ -1,0 +1,52 @@
+<style>
+  :host {
+    -webkit-mask: center / contain no-repeat;
+    background-color: currentColor;
+    display: block;
+    height: 100%;
+    overflow: hidden;
+    width: 16px;
+  }
+
+  :host([alert-state_='0']),
+  :host([alert-state_='8']) {
+    -webkit-mask-image: url(alert_indicators/tab_media_recording.svg);
+    background-color: var(--tabstrip-indicator-recording-color);
+  }
+
+  :host([alert-state_='1']) {
+    -webkit-mask-image:
+        url(alert_indicators/tab_media_capturing_with_arrow.svg);
+    background-color: var(--tabstrip-indicator-capturing-color);
+  }
+
+  :host([alert-state_='2']) {
+    -webkit-mask-image: url(alert_indicators/tab_audio_rounded.svg);
+  }
+
+  :host([alert-state_='3']) {
+    -webkit-mask-image: url(alert_indicators/tab_audio_muting_rounded.svg);
+  }
+
+  :host([alert-state_='4']) {
+    -webkit-mask-image: url(alert_indicators/tab_bluetooth_connected.svg);
+  }
+
+  :host([alert-state_='5']) {
+    -webkit-mask-image: url(alert_indicators/tab_usb_connected.svg);
+    -webkit-mask-size: 20px;
+  }
+
+  :host([alert-state_='6']) {
+    -webkit-mask-image: url(alert_indicators/serial_port.svg);
+  }
+
+  :host([alert-state_='7']) {
+    -webkit-mask-image: url(alert_indicators/picture_in_picture_alt.svg);
+    background-color: var(--tabstrip-indicator-pip-color);
+  }
+
+  :host([alert-state_='9']) {
+    -webkit-mask-image: url(alert_indicators/vr_headset.svg);
+  }
+</style>

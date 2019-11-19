@@ -94,7 +94,7 @@ PASS Interfaces for figure
 PASS Interfaces for FIGURE
 PASS Interfaces for font
 PASS Interfaces for FONT
-FAIL Interfaces for foo-BAR assert_equals: Element foo-BAR should have HTMLUnknownElement as its primary interface. expected "[object HTMLUnknownElement]" but got "[object HTMLElement]"
+FAIL Interfaces for foo-BAR assert_class_string: Element foo-BAR should have HTMLUnknownElement as its primary interface. expected "[object HTMLUnknownElement]" but got "[object HTMLElement]"
 PASS Interfaces for foo-bar
 PASS Interfaces for FOO-BAR
 PASS Interfaces for foo
@@ -291,7 +291,7 @@ PASS Interfaces for wbr
 PASS Interfaces for WBR
 PASS Interfaces for xmp
 PASS Interfaces for XMP
-FAIL Interfaces for å-bar assert_equals: Element å-bar should have HTMLUnknownElement as its primary interface. expected "[object HTMLUnknownElement]" but got "[object HTMLElement]"
-FAIL Interfaces for Å-BAR assert_equals: Element Å-BAR should have HTMLUnknownElement as its primary interface. expected "[object HTMLUnknownElement]" but got "[object HTMLElement]"
+FAIL Interfaces for å-bar assert_class_string: Element å-bar should have HTMLUnknownElement as its primary interface. expected "[object HTMLUnknownElement]" but got "[object HTMLElement]"
+FAIL Interfaces for Å-BAR assert_class_string: Element Å-BAR should have HTMLUnknownElement as its primary interface. expected "[object HTMLUnknownElement]" but got "[object HTMLElement]"
 Harness: the test ran to completion.
 

@@ -4,7 +4,8 @@
 
 #include "chromeos/services/device_sync/cryptauth_key.h"
 
-#include "base/base64.h"
+#include "base/base64url.h"
+#include "chromeos/services/device_sync/value_string_encoding.h"
 #include "crypto/sha2.h"
 
 namespace chromeos {
@@ -21,10 +22,11 @@ const char kSymmetricKeyDictKey[] = "symmetric_key";
 const char kPublicKeyDictKey[] = "public_key";
 const char kPrivateKeyDictKey[] = "private_key";
 
-// Returns the base64-encoded SHA256 hash of the input string.
+// Returns the base64url-encoded SHA256 hash of the input string.
 std::string CreateHandle(const std::string& string_to_hash) {
   std::string handle;
-  base::Base64Encode(crypto::SHA256HashString(string_to_hash), &handle);
+  base::Base64UrlEncode(crypto::SHA256HashString(string_to_hash),
+                        base::Base64UrlEncodePolicy::INCLUDE_PADDING, &handle);
   return handle;
 }
 
@@ -61,35 +63,25 @@ base::Optional<CryptAuthKey> CryptAuthKey::FromDictionary(
     return base::nullopt;
 
   if (IsSymmetricKeyType(type)) {
-    const std::string* encoded_symmetric_key =
-        dict.FindStringKey(kSymmetricKeyDictKey);
-    if (!encoded_symmetric_key || encoded_symmetric_key->empty())
+    base::Optional<std::string> symmetric_key =
+        util::DecodeFromValueString(dict.FindKey(kSymmetricKeyDictKey));
+    if (!symmetric_key || symmetric_key->empty())
       return base::nullopt;
 
-    std::string decoded_symmetric_key;
-    if (!base::Base64Decode(*encoded_symmetric_key, &decoded_symmetric_key))
-      return base::nullopt;
-
-    return CryptAuthKey(decoded_symmetric_key, status, type, *handle);
+    return CryptAuthKey(*symmetric_key, status, type, *handle);
   }
 
   DCHECK(IsAsymmetricKeyType(type));
-  const std::string* encoded_public_key = dict.FindStringKey(kPublicKeyDictKey);
-  const std::string* encoded_private_key =
-      dict.FindStringKey(kPrivateKeyDictKey);
-  if (!encoded_public_key || encoded_public_key->empty() ||
-      !encoded_private_key) {
+
+  base::Optional<std::string> public_key =
+      util::DecodeFromValueString(dict.FindKey(kPublicKeyDictKey));
+  base::Optional<std::string> private_key =
+      util::DecodeFromValueString(dict.FindKey(kPrivateKeyDictKey));
+  if (!public_key || !private_key || public_key->empty()) {
     return base::nullopt;
   }
 
-  std::string decoded_public_key, decoded_private_key;
-  if (!base::Base64Decode(*encoded_public_key, &decoded_public_key) ||
-      !base::Base64Decode(*encoded_private_key, &decoded_private_key)) {
-    return base::nullopt;
-  }
-
-  return CryptAuthKey(decoded_public_key, decoded_private_key, status, type,
-                      *handle);
+  return CryptAuthKey(*public_key, *private_key, status, type, *handle);
 }
 
 CryptAuthKey::CryptAuthKey(const std::string& symmetric_key,
@@ -139,10 +131,7 @@ base::Value CryptAuthKey::AsSymmetricKeyDictionary() const {
   dict.SetKey(kHandleDictKey, base::Value(handle_));
   dict.SetKey(kStatusDictKey, base::Value(status_));
   dict.SetKey(kTypeDictKey, base::Value(type_));
-
-  std::string encoded_symmetric_key;
-  base::Base64Encode(symmetric_key_, &encoded_symmetric_key);
-  dict.SetKey(kSymmetricKeyDictKey, base::Value(encoded_symmetric_key));
+  dict.SetKey(kSymmetricKeyDictKey, util::EncodeAsValueString(symmetric_key_));
 
   return dict;
 }
@@ -154,13 +143,8 @@ base::Value CryptAuthKey::AsAsymmetricKeyDictionary() const {
   dict.SetKey(kHandleDictKey, base::Value(handle_));
   dict.SetKey(kStatusDictKey, base::Value(status_));
   dict.SetKey(kTypeDictKey, base::Value(type_));
-
-  std::string encoded_public_key;
-  base::Base64Encode(public_key_, &encoded_public_key);
-  dict.SetKey(kPublicKeyDictKey, base::Value(encoded_public_key));
-  std::string encoded_private_key;
-  base::Base64Encode(private_key_, &encoded_private_key);
-  dict.SetKey(kPrivateKeyDictKey, base::Value(encoded_private_key));
+  dict.SetKey(kPublicKeyDictKey, util::EncodeAsValueString(public_key_));
+  dict.SetKey(kPrivateKeyDictKey, util::EncodeAsValueString(private_key_));
 
   return dict;
 }

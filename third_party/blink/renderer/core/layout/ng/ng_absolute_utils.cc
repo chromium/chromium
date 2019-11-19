@@ -19,18 +19,20 @@ namespace blink {
 
 namespace {
 
-bool AbsoluteHorizontalNeedsEstimate(const ComputedStyle& style) {
-  const Length& width = style.Width();
-  return width.IsIntrinsic() || style.MinWidth().IsIntrinsic() ||
-         style.MaxWidth().IsIntrinsic() ||
-         (width.IsAuto() && (style.Left().IsAuto() || style.Right().IsAuto()));
+// Tables require special handling. The width/height is always considered as
+// 'auto', and the value for width/height is treated as an additional
+// min-width/min-height.
+bool IsTable(const ComputedStyle& style) {
+  return style.Display() == EDisplay::kTable ||
+         style.Display() == EDisplay::kInlineTable;
 }
 
-bool AbsoluteVerticalNeedsEstimate(const ComputedStyle& style) {
-  const Length& height = style.Height();
-  return height.IsIntrinsic() || style.MinHeight().IsIntrinsic() ||
-         style.MaxHeight().IsIntrinsic() ||
-         (height.IsAuto() && (style.Top().IsAuto() || style.Bottom().IsAuto()));
+bool IsLogicalWidthTreatedAsAuto(const ComputedStyle& style) {
+  return IsTable(style) || style.LogicalWidth().IsAuto();
+}
+
+bool IsLogicalHeightTreatAsAuto(const ComputedStyle& style) {
+  return IsTable(style) || style.LogicalHeight().IsAuto();
 }
 
 // Dominant side:
@@ -53,460 +55,239 @@ bool IsTopDominant(const WritingMode container_writing_mode,
          (container_direction != TextDirection::kRtl);
 }
 
-LayoutUnit ResolveWidth(const NGConstraintSpace& space,
-                        const ComputedStyle& style,
-                        const NGBoxStrut& border_padding,
-                        const base::Optional<MinMaxSize>& child_minmax,
-                        const Length& width,
-                        LengthResolveType type) {
-  if (space.GetWritingMode() == WritingMode::kHorizontalTb) {
-    return ResolveInlineLength(space, style, border_padding, child_minmax,
-                               width, type, LengthResolvePhase::kLayout);
-  }
-  LayoutUnit computed_width =
-      child_minmax.has_value() ? child_minmax->max_size : LayoutUnit();
-  return ResolveBlockLength(space, style, border_padding, width, computed_width,
-                            type, LengthResolvePhase::kLayout);
+inline LayoutUnit StaticPositionStartInset(bool is_static_position_start,
+                                           LayoutUnit static_position_offset,
+                                           LayoutUnit size) {
+  return is_static_position_start ? static_position_offset
+                                  : static_position_offset - size;
 }
 
-LayoutUnit ResolveHeight(const NGConstraintSpace& space,
-                         const ComputedStyle& style,
-                         const NGBoxStrut& border_padding,
-                         const base::Optional<MinMaxSize>& child_minmax,
-                         const Length& height,
-                         LengthResolveType type) {
-  if (space.GetWritingMode() != WritingMode::kHorizontalTb) {
-    return ResolveInlineLength(space, style, border_padding, child_minmax,
-                               height, type, LengthResolvePhase::kLayout);
-  }
-  LayoutUnit computed_height =
-      child_minmax.has_value() ? child_minmax->max_size : LayoutUnit();
-  return ResolveBlockLength(space, style, border_padding, height,
-                            computed_height, type, LengthResolvePhase::kLayout);
+inline LayoutUnit StaticPositionEndInset(bool is_static_position_start,
+                                         LayoutUnit static_position_offset,
+                                         LayoutUnit available_size,
+                                         LayoutUnit size) {
+  return available_size - static_position_offset -
+         (is_static_position_start ? size : LayoutUnit());
 }
 
-inline LayoutUnit ResolveMargin(const NGConstraintSpace& space,
-                                const Length& length) {
-  DCHECK(!length.IsAuto());
-  return MinimumValueForLength(
-      length, space.PercentageResolutionInlineSizeForParentWritingMode());
+LayoutUnit ComputeShrinkToFitSize(
+    const base::Optional<MinMaxSize>& child_minmax,
+    LayoutUnit computed_available_size,
+    LayoutUnit margin_start,
+    LayoutUnit margin_end) {
+  return child_minmax->ShrinkToFit(
+      (computed_available_size - margin_start - margin_end)
+          .ClampNegativeToZero());
 }
 
-// Available size can is maximum length Element can have without overflowing
-// container bounds. The position of Element's edges will determine
-// how much space there is available.
-LayoutUnit ComputeAvailableWidth(LayoutUnit container_width,
-                                 const base::Optional<LayoutUnit>& left,
-                                 const base::Optional<LayoutUnit>& right,
-                                 const base::Optional<LayoutUnit>& margin_left,
-                                 const base::Optional<LayoutUnit>& margin_right,
-                                 const NGStaticPosition& static_position) {
-  LayoutUnit available_width = container_width;
-  DCHECK(!left || !right);
-  if (!left && !right) {
-    if (static_position.HasLeft())
-      available_width -= static_position.Left();
-    else
-      available_width = static_position.Right();
-  } else if (!right) {
-    available_width -= *left;
-  } else {  // !left
-    available_width -= *right;
-  }
-  LayoutUnit margins = (margin_left ? *margin_left : LayoutUnit()) +
-                       (margin_right ? *margin_right : LayoutUnit());
-  return (available_width - margins).ClampNegativeToZero();
-}
-
-LayoutUnit ComputeAvailableHeight(
-    LayoutUnit container_height,
-    const base::Optional<LayoutUnit>& top,
-    const base::Optional<LayoutUnit>& bottom,
-    const base::Optional<LayoutUnit>& margin_top,
-    const base::Optional<LayoutUnit>& margin_bottom,
-    const NGStaticPosition& static_position) {
-  LayoutUnit available_height = container_height;
-  DCHECK(!top || !bottom);
-  if (!top && !bottom) {
-    if (static_position.HasTop())
-      available_height -= static_position.Top();
-    else
-      available_height = static_position.Bottom();
-  } else if (!bottom) {
-    available_height -= *top;
-  } else {  // !top
-    available_height -= *bottom;
-  }
-  LayoutUnit margins = (margin_top ? *margin_top : LayoutUnit()) +
-                       (margin_bottom ? *margin_bottom : LayoutUnit());
-  return (available_height - margins).ClampNegativeToZero();
-}
-
-// Implement absolute horizontal size resolution algorithm.
+// Implement the absolute size resolution algorithm.
 // https://www.w3.org/TR/css-position-3/#abs-non-replaced-width
-void ComputeAbsoluteHorizontal(const NGConstraintSpace& space,
-                               const ComputedStyle& style,
-                               const NGBoxStrut& border_padding,
-                               const base::Optional<LayoutUnit>& incoming_width,
-                               const NGStaticPosition& static_position,
-                               const base::Optional<MinMaxSize>& child_minmax,
-                               const WritingMode container_writing_mode,
-                               const TextDirection container_direction,
-                               NGAbsolutePhysicalPosition* position) {
-  LayoutUnit percentage_width =
-      LIKELY(space.GetWritingMode() == WritingMode::kHorizontalTb)
-          ? space.PercentageResolutionInlineSize()
-          : space.PercentageResolutionBlockSize();
+// https://www.w3.org/TR/css-position-3/#abs-non-replaced-height
+// |child_minmax| can have no value if an element is replaced, and has no
+// intrinsic width or height, but has an aspect ratio.
+void ComputeAbsoluteSize(const LayoutUnit border_padding_size,
+                         const base::Optional<MinMaxSize>& child_minmax,
+                         const LayoutUnit margin_percentage_resolution_size,
+                         const LayoutUnit available_size,
+                         const Length& margin_start_length,
+                         const Length& margin_end_length,
+                         const Length& inset_start_length,
+                         const Length& inset_end_length,
+                         const LayoutUnit min_size,
+                         const LayoutUnit max_size,
+                         const LayoutUnit static_position_offset,
+                         bool is_static_position_start,
+                         bool is_start_dominant,
+                         bool is_block_direction,
+                         base::Optional<LayoutUnit> size,
+                         LayoutUnit* size_out,
+                         LayoutUnit* inset_start_out,
+                         LayoutUnit* inset_end_out,
+                         LayoutUnit* margin_start_out,
+                         LayoutUnit* margin_end_out) {
+  DCHECK_NE(available_size, kIndefiniteSize);
 
-  base::Optional<LayoutUnit> margin_left;
-  if (!style.MarginLeft().IsAuto())
-    margin_left = ResolveMargin(space, style.MarginLeft());
-  base::Optional<LayoutUnit> margin_right;
-  if (!style.MarginRight().IsAuto())
-    margin_right = ResolveMargin(space, style.MarginRight());
-  base::Optional<LayoutUnit> left;
-  if (!style.Left().IsAuto())
-    left = MinimumValueForLength(style.Left(), percentage_width);
-  base::Optional<LayoutUnit> right;
-  if (!style.Right().IsAuto())
-    right = MinimumValueForLength(style.Right(), percentage_width);
-  base::Optional<LayoutUnit> width = incoming_width;
-  NGPhysicalSize container_size =
-      ToNGPhysicalSize(space.AvailableSize(), space.GetWritingMode());
-  DCHECK_NE(container_size.width, NGSizeIndefinite);
+  base::Optional<LayoutUnit> margin_start;
+  if (!margin_start_length.IsAuto()) {
+    margin_start = MinimumValueForLength(margin_start_length,
+                                         margin_percentage_resolution_size);
+  }
+  base::Optional<LayoutUnit> margin_end;
+  if (!margin_end_length.IsAuto()) {
+    margin_end = MinimumValueForLength(margin_end_length,
+                                       margin_percentage_resolution_size);
+  }
+  base::Optional<LayoutUnit> inset_start;
+  if (!inset_start_length.IsAuto()) {
+    inset_start = MinimumValueForLength(inset_start_length, available_size);
+  }
+  base::Optional<LayoutUnit> inset_end;
+  if (!inset_end_length.IsAuto()) {
+    inset_end = MinimumValueForLength(inset_end_length, available_size);
+  }
 
   // Solving the equation:
-  // left + marginLeft + width + marginRight + right  = container width
-  if (!left && !right && !width) {
-    // Standard: "If all three of left, width, and right are auto:"
-    if (!margin_left)
-      margin_left = LayoutUnit();
-    if (!margin_right)
-      margin_right = LayoutUnit();
-    DCHECK(child_minmax.has_value());
+  // |inset_start| + |margin_start| + |size| + |margin_end| + |inset_end| =
+  // |available_size|
+  if (!inset_start && !inset_end && !size) {
+    // "If all three of left, width, and right are auto:"
+    if (!margin_start)
+      margin_start = LayoutUnit();
+    if (!margin_end)
+      margin_end = LayoutUnit();
 
-    width = child_minmax->ShrinkToFit(
-        ComputeAvailableWidth(container_size.width, left, right, margin_left,
-                              margin_right, static_position));
-    if (IsLeftDominant(container_writing_mode, container_direction)) {
-      left = static_position.LeftInset(container_size.width, *width,
-                                       *margin_left, *margin_right);
+    LayoutUnit computed_available_size =
+        is_static_position_start ? available_size - static_position_offset
+                                 : static_position_offset;
+    size = ComputeShrinkToFitSize(child_minmax, computed_available_size,
+                                  *margin_start, *margin_end);
+    LayoutUnit margin_size = *size + *margin_start + *margin_end;
+    if (is_start_dominant) {
+      inset_start = StaticPositionStartInset(
+          is_static_position_start, static_position_offset, margin_size);
     } else {
-      right = static_position.RightInset(container_size.width, *width,
-                                         *margin_left, *margin_right);
+      inset_end = StaticPositionEndInset(is_static_position_start,
+                                         static_position_offset, available_size,
+                                         margin_size);
     }
-  } else if (left && right && width) {
-    // Standard: "If left, right, and width are not auto:"
+  } else if (inset_start && inset_end && size) {
+    // "If left, right, and width are not auto:"
     // Compute margins.
-    LayoutUnit margin_space = container_size.width - *left - *right - *width;
-    // When both margins are auto.
-    if (!margin_left && !margin_right) {
-      if (margin_space > 0) {
-        margin_left = margin_space / 2;
-        margin_right = margin_space - *margin_left;
+    LayoutUnit margin_space =
+        available_size - *inset_start - *inset_end - *size;
+
+    if (!margin_start && !margin_end) {
+      // When both margins are auto.
+      if (margin_space > 0 || is_block_direction) {
+        margin_start = margin_space / 2;
+        margin_end = margin_space - *margin_start;
       } else {
         // Margins are negative.
-        if (IsLeftDominant(container_writing_mode, container_direction)) {
-          margin_left = LayoutUnit();
-          margin_right = margin_space;
+        if (is_start_dominant) {
+          margin_start = LayoutUnit();
+          margin_end = margin_space;
         } else {
-          margin_right = LayoutUnit();
-          margin_left = margin_space;
+          margin_start = margin_space;
+          margin_end = LayoutUnit();
         }
       }
-    } else if (!margin_left) {
-      margin_left = margin_space - *margin_right;
-    } else if (!margin_right) {
-      margin_right = margin_space - *margin_left;
+    } else if (!margin_start) {
+      margin_start = margin_space - *margin_end;
+    } else if (!margin_end) {
+      margin_end = margin_space - *margin_start;
     } else {
-      // Are values overconstrained?
-      LayoutUnit margin_extra = margin_space - *margin_left - *margin_right;
+      // Are the values over-constrained?
+      LayoutUnit margin_extra = margin_space - *margin_start - *margin_end;
       if (margin_extra) {
         // Relax the end.
-        if (IsLeftDominant(container_writing_mode, container_direction))
-          right = *right + margin_extra;
+        if (is_start_dominant)
+          inset_end = *inset_end + margin_extra;
         else
-          left = *left + margin_extra;
+          inset_start = *inset_start + margin_extra;
       }
     }
   }
 
-  // Set unknown margins.
-  if (!margin_left)
-    margin_left = LayoutUnit();
-  if (!margin_right)
-    margin_right = LayoutUnit();
+  // Set any unknown margins.
+  if (!margin_start)
+    margin_start = LayoutUnit();
+  if (!margin_end)
+    margin_end = LayoutUnit();
 
-  // Rules 1 through 3, 2 out of 3 are unknown.
-  if (!left && !width) {
+  // Rules 1 through 3: 2 out of 3 are unknown.
+  if (!inset_start && !size) {
     // Rule 1: left/width are unknown.
-    DCHECK(right.has_value());
-    DCHECK(child_minmax.has_value());
-    width = child_minmax->ShrinkToFit(
-        ComputeAvailableWidth(container_size.width, left, right, margin_left,
-                              margin_right, static_position));
-  } else if (!left && !right) {
+    DCHECK(inset_end.has_value());
+    LayoutUnit computed_available_size = available_size - *inset_end;
+    size = ComputeShrinkToFitSize(child_minmax, computed_available_size,
+                                  *margin_start, *margin_end);
+  } else if (!inset_start && !inset_end) {
     // Rule 2.
-    DCHECK(width.has_value());
-    if (IsLeftDominant(container_writing_mode, container_direction))
-      left = static_position.LeftInset(container_size.width, *width,
-                                       *margin_left, *margin_right);
-    else
-      right = static_position.RightInset(container_size.width, *width,
-                                         *margin_left, *margin_right);
-  } else if (!width && !right) {
+    DCHECK(size.has_value());
+    LayoutUnit margin_size = *size + *margin_start + *margin_end;
+    if (is_start_dominant) {
+      inset_start = StaticPositionStartInset(
+          is_static_position_start, static_position_offset, margin_size);
+    } else {
+      inset_end = StaticPositionEndInset(is_static_position_start,
+                                         static_position_offset, available_size,
+                                         margin_size);
+    }
+  } else if (!size && !inset_end) {
     // Rule 3.
-    DCHECK(child_minmax.has_value());
-    width = child_minmax->ShrinkToFit(
-        ComputeAvailableWidth(container_size.width, left, right, margin_left,
-                              margin_right, static_position));
+    LayoutUnit computed_available_size = available_size - *inset_start;
+    size = ComputeShrinkToFitSize(child_minmax, computed_available_size,
+                                  *margin_start, *margin_end);
   }
 
-  // Rules 4 through 6, 1 out of 3 are unknown.
-  if (!left) {
-    left =
-        container_size.width - *width - *right - *margin_left - *margin_right;
-  } else if (!right) {
-    right =
-        container_size.width - *width - *left - *margin_left - *margin_right;
-  } else if (!width) {
-    width =
-        container_size.width - *left - *right - *margin_left - *margin_right;
+  // Rules 4 through 6: 1 out of 3 are unknown.
+  if (!inset_start) {
+    inset_start =
+        available_size - *size - *inset_end - *margin_start - *margin_end;
+  } else if (!inset_end) {
+    inset_end =
+        available_size - *size - *inset_start - *margin_start - *margin_end;
+  } else if (!size) {
+    size = available_size - *inset_start - *inset_end - *margin_start -
+           *margin_end;
   }
 
-  // The DCHECK is useful, but only holds true when not saturated.
-  if (!(left->MightBeSaturated() || right->MightBeSaturated() ||
-        width->MightBeSaturated() || margin_left->MightBeSaturated() ||
-        margin_right->MightBeSaturated()))
-    DCHECK_EQ(container_size.width,
-              *left + *right + *margin_left + *margin_right + *width);
-
-  // If calculated width is outside of min/max constraints,
-  // rerun the algorithm with constrained width.
-  LayoutUnit min = ResolveWidth(space, style, border_padding, child_minmax,
-                                style.MinWidth(), LengthResolveType::kMinSize);
-  LayoutUnit max = ResolveWidth(space, style, border_padding, child_minmax,
-                                style.MaxWidth(), LengthResolveType::kMaxSize);
-  if (width != ConstrainByMinMax(*width, min, max)) {
-    width = ConstrainByMinMax(*width, min, max);
-    // Because this function only changes "width" when it's not already
-    // set, it is safe to recursively call ourselves here because on the
-    // second call it is guaranteed to be within min..max.
-    ComputeAbsoluteHorizontal(
-        space, style, border_padding, width, static_position, child_minmax,
-        container_writing_mode, container_direction, position);
+  // If calculated |size| is outside of min/max constraints, rerun the
+  // algorithm with the constrained |size|.
+  LayoutUnit constrained_size = ConstrainByMinMax(*size, min_size, max_size);
+  if (size != constrained_size) {
+    // Because this function only changes "size" when it's not already set, it
+    // is safe to recursively call ourselves here because on the second call it
+    // is guaranteed to be within |min_size| and |max_size|.
+    ComputeAbsoluteSize(
+        border_padding_size, child_minmax, margin_percentage_resolution_size,
+        available_size, margin_start_length, margin_end_length,
+        inset_start_length, inset_end_length, min_size, max_size,
+        static_position_offset, is_static_position_start, is_start_dominant,
+        is_block_direction, constrained_size, size_out, inset_start_out,
+        inset_end_out, margin_start_out, margin_end_out);
     return;
   }
 
-  // Negative widths are not allowed.
-  LayoutUnit horizontal_border_padding =
-      border_padding
-          .ConvertToPhysical(space.GetWritingMode(), space.Direction())
-          .HorizontalSum();
-  width = std::max(*width, horizontal_border_padding);
-
-  position->inset.left = *left + *margin_left;
-  position->inset.right = *right + *margin_right;
-  position->margins.left = *margin_left;
-  position->margins.right = *margin_right;
-  position->size.width = *width;
-}
-
-// Implements absolute vertical size resolution algorithm.
-// https://www.w3.org/TR/css-position-3/#abs-non-replaced-height
-void ComputeAbsoluteVertical(const NGConstraintSpace& space,
-                             const ComputedStyle& style,
-                             const NGBoxStrut& border_padding,
-                             const base::Optional<LayoutUnit>& incoming_height,
-                             const NGStaticPosition& static_position,
-                             const base::Optional<MinMaxSize>& child_minmax,
-                             const WritingMode container_writing_mode,
-                             const TextDirection container_direction,
-                             NGAbsolutePhysicalPosition* position) {
-  LayoutUnit percentage_height =
-      LIKELY(space.GetWritingMode() == WritingMode::kHorizontalTb)
-          ? space.PercentageResolutionBlockSize()
-          : space.PercentageResolutionInlineSize();
-
-  base::Optional<LayoutUnit> margin_top;
-  if (!style.MarginTop().IsAuto())
-    margin_top = ResolveMargin(space, style.MarginTop());
-  base::Optional<LayoutUnit> margin_bottom;
-  if (!style.MarginBottom().IsAuto())
-    margin_bottom = ResolveMargin(space, style.MarginBottom());
-  base::Optional<LayoutUnit> top;
-  if (!style.Top().IsAuto())
-    top = MinimumValueForLength(style.Top(), percentage_height);
-  base::Optional<LayoutUnit> bottom;
-  if (!style.Bottom().IsAuto())
-    bottom = MinimumValueForLength(style.Bottom(), percentage_height);
-  base::Optional<LayoutUnit> height = incoming_height;
-
-  NGPhysicalSize container_size =
-      ToNGPhysicalSize(space.AvailableSize(), space.GetWritingMode());
-  DCHECK_NE(container_size.height, NGSizeIndefinite);
-
-  // Solving the equation:
-  // top + marginTop + height + marginBottom + bottom
-  // + border_padding = container height
-  if (!top && !bottom && !height) {
-    // Standard: "If all three of top, height, and bottom are auto:"
-    if (!margin_top)
-      margin_top = LayoutUnit();
-    if (!margin_bottom)
-      margin_bottom = LayoutUnit();
-    DCHECK(child_minmax.has_value());
-    height = child_minmax->ShrinkToFit(
-        ComputeAvailableHeight(container_size.height, top, bottom, margin_top,
-                               margin_bottom, static_position));
-    if (IsTopDominant(container_writing_mode, container_direction)) {
-      top = static_position.TopInset(container_size.height, *height,
-                                     *margin_top, *margin_bottom);
-    } else {
-      bottom = static_position.BottomInset(container_size.height, *height,
-                                           *margin_top, *margin_bottom);
-    }
-  } else if (top && bottom && height) {
-    // Standard: "If top, bottom, and height are not auto:"
-    // Compute margins.
-    LayoutUnit margin_space = container_size.height - *top - *bottom - *height;
-    if (!margin_top && !margin_bottom) {
-      // When both margins are auto.
-      margin_top = margin_space / 2;
-      margin_bottom = margin_space - *margin_top;
-    } else if (!margin_top) {
-      margin_top = margin_space - *margin_bottom;
-    } else if (!margin_bottom) {
-      margin_bottom = margin_space - *margin_top;
-    } else {
-      // Since none of the margins are auto (and we have non-auto top, bottom
-      // and height), we are over-constrained. Keep the dominant inset and
-      // override the other.
-      LayoutUnit margin_extra = margin_space - *margin_top - *margin_bottom;
-      if (margin_extra) {
-        if (IsTopDominant(container_writing_mode, container_direction))
-          bottom = *bottom + margin_extra;
-        else
-          top = *top + margin_extra;
-      }
-    }
-  }
-
-  // Set unknown margins.
-  if (!margin_top)
-    margin_top = LayoutUnit();
-  if (!margin_bottom)
-    margin_bottom = LayoutUnit();
-
-  // Rules 1 through 3, 2 out of 3 are unknown, fix 1.
-  if (!top && !height) {
-    // Rule 1.
-    DCHECK(bottom.has_value());
-    DCHECK(child_minmax.has_value());
-    height = child_minmax->ShrinkToFit(
-        ComputeAvailableHeight(container_size.height, top, bottom, margin_top,
-                               margin_bottom, static_position));
-  } else if (!top && !bottom) {
-    // Rule 2.
-    DCHECK(height.has_value());
-    if (IsTopDominant(container_writing_mode, container_direction)) {
-      top = static_position.TopInset(container_size.height, *height,
-                                     *margin_top, *margin_bottom);
-    } else {
-      bottom = static_position.BottomInset(container_size.height, *height,
-                                           *margin_top, *margin_bottom);
-    }
-  } else if (!height && !bottom) {
-    // Rule 3.
-    DCHECK(child_minmax.has_value());
-    height = child_minmax->ShrinkToFit(
-        ComputeAvailableHeight(container_size.height, top, bottom, margin_top,
-                               margin_bottom, static_position));
-  }
-
-  // Rules 4 through 6, 1 out of 3 are unknown.
-  if (!top) {
-    top = container_size.height - *height - *bottom - *margin_top -
-          *margin_bottom;
-  } else if (!bottom) {
-    bottom =
-        container_size.height - *height - *top - *margin_top - *margin_bottom;
-  } else if (!height) {
-    height =
-        container_size.height - *top - *bottom - *margin_top - *margin_bottom;
-  }
-  // The DCHECK is useful, but only holds true when not saturated.
-  if (!(top->MightBeSaturated() || bottom->MightBeSaturated() ||
-        height->MightBeSaturated() || margin_top->MightBeSaturated() ||
-        margin_bottom->MightBeSaturated())) {
-    DCHECK_EQ(container_size.height,
-              *top + *bottom + *margin_top + *margin_bottom + *height);
-  }
-  // If calculated height is outside of min/max constraints,
-  // rerun the algorithm with constrained width.
-  LayoutUnit min =
-      ResolveHeight(space, style, border_padding, child_minmax,
-                    style.MinHeight(), LengthResolveType::kMinSize);
-  LayoutUnit max =
-      ResolveHeight(space, style, border_padding, child_minmax,
-                    style.MaxHeight(), LengthResolveType::kMaxSize);
-  if (height != ConstrainByMinMax(*height, min, max)) {
-    height = ConstrainByMinMax(*height, min, max);
-    // Because this function only changes "height" when it's not already
-    // set, it is safe to recursively call ourselves here because on the
-    // second call it is guaranteed to be within min..max.
-    ComputeAbsoluteVertical(
-        space, style, border_padding, height, static_position, child_minmax,
-        container_writing_mode, container_direction, position);
-    return;
-  }
-  // Negative heights are not allowed.
-  LayoutUnit vertical_border_padding =
-      border_padding
-          .ConvertToPhysical(space.GetWritingMode(), space.Direction())
-          .VerticalSum();
-  height = std::max(*height, vertical_border_padding);
-
-  position->inset.top = *top + *margin_top;
-  position->inset.bottom = *bottom + *margin_bottom;
-  position->margins.top = *margin_top;
-  position->margins.bottom = *margin_bottom;
-  position->size.height = *height;
+  // Negative sizes are not allowed.
+  *size_out = std::max(*size, border_padding_size);
+  *inset_start_out = *inset_start + *margin_start;
+  *inset_end_out = *inset_end + *margin_end;
+  *margin_start_out = *margin_start;
+  *margin_end_out = *margin_end;
 }
 
 }  // namespace
 
-String NGAbsolutePhysicalPosition::ToString() const {
-  return String::Format("INSET(LRTB):%d,%d,%d,%d SIZE:%dx%d",
-                        inset.left.ToInt(), inset.right.ToInt(),
-                        inset.top.ToInt(), inset.bottom.ToInt(),
-                        size.width.ToInt(), size.height.ToInt());
+bool AbsoluteNeedsChildInlineSize(const ComputedStyle& style) {
+  bool is_logical_width_intrinsic =
+      !IsTable(style) && style.LogicalWidth().IsIntrinsic();
+  return is_logical_width_intrinsic || style.LogicalMinWidth().IsIntrinsic() ||
+         style.LogicalMaxWidth().IsIntrinsic() ||
+         (IsLogicalWidthTreatedAsAuto(style) &&
+          (style.LogicalLeft().IsAuto() || style.LogicalRight().IsAuto()));
 }
 
 bool AbsoluteNeedsChildBlockSize(const ComputedStyle& style) {
-  if (style.IsHorizontalWritingMode())
-    return AbsoluteVerticalNeedsEstimate(style);
-  else
-    return AbsoluteHorizontalNeedsEstimate(style);
-}
-
-bool AbsoluteNeedsChildInlineSize(const ComputedStyle& style) {
-  if (style.IsHorizontalWritingMode())
-    return AbsoluteHorizontalNeedsEstimate(style);
-  else
-    return AbsoluteVerticalNeedsEstimate(style);
+  bool is_logical_height_intrinsic =
+      !IsTable(style) && style.LogicalHeight().IsIntrinsic();
+  return is_logical_height_intrinsic ||
+         style.LogicalMinHeight().IsIntrinsic() ||
+         style.LogicalMaxHeight().IsIntrinsic() ||
+         (IsLogicalHeightTreatAsAuto(style) &&
+          (style.LogicalTop().IsAuto() || style.LogicalBottom().IsAuto()));
 }
 
 base::Optional<LayoutUnit> ComputeAbsoluteDialogYPosition(
     const LayoutObject& dialog,
     LayoutUnit height) {
-  if (!IsHTMLDialogElement(dialog.GetNode()))
+  auto* dialog_node = DynamicTo<HTMLDialogElement>(dialog.GetNode());
+  if (!dialog_node)
     return base::nullopt;
 
-  // This code implements <dialog> static position spec.
-  // //
+  // This code implements <dialog> static-position spec.
+  //
   // https://html.spec.whatwg.org/C/#the-dialog-element
-  HTMLDialogElement* dialog_node = ToHTMLDialogElement(dialog.GetNode());
   if (dialog_node->GetCenteringMode() == HTMLDialogElement::kNotCentered)
     return base::nullopt;
 
@@ -541,39 +322,64 @@ base::Optional<LayoutUnit> ComputeAbsoluteDialogYPosition(
   return top;
 }
 
-NGAbsolutePhysicalPosition ComputePartialAbsoluteWithChildInlineSize(
+NGLogicalOutOfFlowPosition ComputePartialAbsoluteWithChildInlineSize(
     const NGConstraintSpace& space,
     const ComputedStyle& style,
     const NGBoxStrut& border_padding,
-    const NGStaticPosition& static_position,
+    const NGLogicalStaticPosition& static_position,
     const base::Optional<MinMaxSize>& child_minmax,
-    const base::Optional<NGLogicalSize>& replaced_size,
+    const base::Optional<LogicalSize>& replaced_size,
     const WritingMode container_writing_mode,
     const TextDirection container_direction) {
-  NGAbsolutePhysicalPosition position;
-  if (style.IsHorizontalWritingMode()) {
-    base::Optional<LayoutUnit> width;
-    if (!style.Width().IsAuto()) {
-      width = ResolveWidth(space, style, border_padding, child_minmax,
-                           style.Width(), LengthResolveType::kContentSize);
-    } else if (replaced_size.has_value()) {
-      width = replaced_size->inline_size;
-    }
-    ComputeAbsoluteHorizontal(
-        space, style, border_padding, width, static_position, child_minmax,
-        container_writing_mode, container_direction, &position);
-  } else {
-    base::Optional<LayoutUnit> height;
-    if (!style.Height().IsAuto()) {
-      height = ResolveHeight(space, style, border_padding, child_minmax,
-                             style.Height(), LengthResolveType::kContentSize);
-    } else if (replaced_size.has_value()) {
-      height = replaced_size->inline_size;
-    }
-    ComputeAbsoluteVertical(
-        space, style, border_padding, height, static_position, child_minmax,
-        container_writing_mode, container_direction, &position);
+  NGLogicalOutOfFlowPosition position;
+
+  base::Optional<LayoutUnit> inline_size;
+  if (!IsLogicalWidthTreatedAsAuto(style)) {
+    inline_size = ResolveMainInlineLength(space, style, border_padding,
+                                          child_minmax, style.LogicalWidth());
+  } else if (replaced_size.has_value()) {
+    inline_size = replaced_size->inline_size;
   }
+
+  LayoutUnit min_inline_size = ResolveMinInlineLength(
+      space, style, border_padding, child_minmax, style.LogicalMinWidth(),
+      LengthResolvePhase::kLayout);
+  LayoutUnit max_inline_size = ResolveMaxInlineLength(
+      space, style, border_padding, child_minmax, style.LogicalMaxWidth(),
+      LengthResolvePhase::kLayout);
+
+  // Tables use the inline-size as a minimum.
+  if (IsTable(style) && !style.LogicalWidth().IsAuto()) {
+    min_inline_size =
+        std::max(min_inline_size,
+                 ResolveMainInlineLength(space, style, border_padding,
+                                         child_minmax, style.LogicalWidth()));
+  }
+
+  bool is_start_dominant;
+  if (style.GetWritingMode() == WritingMode::kHorizontalTb) {
+    is_start_dominant =
+        IsLeftDominant(container_writing_mode, container_direction) ==
+        IsLeftDominant(style.GetWritingMode(), style.Direction());
+  } else {
+    is_start_dominant =
+        IsTopDominant(container_writing_mode, container_direction) ==
+        IsTopDominant(style.GetWritingMode(), style.Direction());
+  }
+
+  ComputeAbsoluteSize(
+      border_padding.InlineSum(), child_minmax,
+      space.PercentageResolutionInlineSizeForParentWritingMode(),
+      space.AvailableSize().inline_size, style.MarginStart(), style.MarginEnd(),
+      style.LogicalInlineStart(), style.LogicalInlineEnd(), min_inline_size,
+      max_inline_size, static_position.offset.inline_offset,
+      static_position.inline_edge ==
+          NGLogicalStaticPosition::InlineEdge::kInlineStart,
+      is_start_dominant, false /* is_block_direction */, inline_size,
+      &position.size.inline_size, &position.inset.inline_start,
+      &position.inset.inline_end, &position.margins.inline_start,
+      &position.margins.inline_end);
+
   return position;
 }
 
@@ -581,43 +387,62 @@ void ComputeFullAbsoluteWithChildBlockSize(
     const NGConstraintSpace& space,
     const ComputedStyle& style,
     const NGBoxStrut& border_padding,
-    const NGStaticPosition& static_position,
+    const NGLogicalStaticPosition& static_position,
     const base::Optional<LayoutUnit>& child_block_size,
-    const base::Optional<NGLogicalSize>& replaced_size,
+    const base::Optional<LogicalSize>& replaced_size,
     const WritingMode container_writing_mode,
     const TextDirection container_direction,
-    NGAbsolutePhysicalPosition* position) {
-  // After partial size has been computed, child block size is either
-  // unknown, or fully computed, there is no minmax.
-  // To express this, a 'fixed' minmax is created where
-  // min and max are the same.
+    NGLogicalOutOfFlowPosition* position) {
+  // After partial size has been computed, child block size is either unknown,
+  // or fully computed, there is no minmax. To express this, a 'fixed' minmax
+  // is created where min and max are the same.
   base::Optional<MinMaxSize> child_minmax;
   if (child_block_size.has_value()) {
     child_minmax = MinMaxSize{*child_block_size, *child_block_size};
   }
-  if (style.IsHorizontalWritingMode()) {
-    base::Optional<LayoutUnit> height;
-    if (!style.Height().IsAuto()) {
-      height = ResolveHeight(space, style, border_padding, child_minmax,
-                             style.Height(), LengthResolveType::kContentSize);
-    } else if (replaced_size.has_value()) {
-      height = replaced_size->block_size;
-    }
-    ComputeAbsoluteVertical(
-        space, style, border_padding, height, static_position, child_minmax,
-        container_writing_mode, container_direction, position);
-  } else {
-    base::Optional<LayoutUnit> width;
-    if (!style.Width().IsAuto()) {
-      width = ResolveWidth(space, style, border_padding, child_minmax,
-                           style.Width(), LengthResolveType::kContentSize);
-    } else if (replaced_size.has_value()) {
-      width = replaced_size->block_size;
-    }
-    ComputeAbsoluteHorizontal(
-        space, style, border_padding, width, static_position, child_minmax,
-        container_writing_mode, container_direction, position);
+
+  LayoutUnit child_block_size_or_indefinite =
+      child_block_size.value_or(kIndefiniteSize);
+
+  base::Optional<LayoutUnit> block_size;
+  if (!IsLogicalHeightTreatAsAuto(style)) {
+    block_size = ResolveMainBlockLength(
+        space, style, border_padding, style.LogicalHeight(),
+        child_block_size_or_indefinite, LengthResolvePhase::kLayout);
+  } else if (replaced_size.has_value()) {
+    block_size = replaced_size->block_size;
   }
+
+  LayoutUnit min_block_size = ResolveMinBlockLength(
+      space, style, border_padding, style.LogicalMinHeight(),
+      child_block_size_or_indefinite, LengthResolvePhase::kLayout);
+  LayoutUnit max_block_size = ResolveMaxBlockLength(
+      space, style, border_padding, style.LogicalMaxHeight(),
+      child_block_size_or_indefinite, LengthResolvePhase::kLayout);
+
+  bool is_start_dominant;
+  if (style.GetWritingMode() == WritingMode::kHorizontalTb) {
+    is_start_dominant =
+        IsTopDominant(container_writing_mode, container_direction) ==
+        IsTopDominant(style.GetWritingMode(), style.Direction());
+  } else {
+    is_start_dominant =
+        IsLeftDominant(container_writing_mode, container_direction) ==
+        IsLeftDominant(style.GetWritingMode(), style.Direction());
+  }
+
+  ComputeAbsoluteSize(
+      border_padding.BlockSum(), child_minmax,
+      space.PercentageResolutionInlineSizeForParentWritingMode(),
+      space.AvailableSize().block_size, style.MarginBefore(),
+      style.MarginAfter(), style.LogicalTop(), style.LogicalBottom(),
+      min_block_size, max_block_size, static_position.offset.block_offset,
+      static_position.block_edge ==
+          NGLogicalStaticPosition::BlockEdge::kBlockStart,
+      is_start_dominant, true /* is_block_direction */, block_size,
+      &position->size.block_size, &position->inset.block_start,
+      &position->inset.block_end, &position->margins.block_start,
+      &position->margins.block_end);
 }
 
 }  // namespace blink

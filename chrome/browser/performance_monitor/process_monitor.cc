@@ -110,7 +110,7 @@ void ProcessMonitor::GatherMetricsMapOnUIThread() {
     MarkProcessAsAlive(data, current_update_sequence);
   }
 
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&ProcessMonitor::GatherMetricsMapOnIOThread,
                      base::Unretained(this), current_update_sequence));
@@ -167,7 +167,7 @@ void ProcessMonitor::GatherMetricsMapOnIOThread(int current_update_sequence) {
   browser_process_data.handle = base::GetCurrentProcessHandle();
   process_data_list->push_back(browser_process_data);
 
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&ProcessMonitor::MarkProcessesAsAliveOnUIThread,
                      base::Unretained(this), std::move(process_data_list),
@@ -181,7 +181,7 @@ void ProcessMonitor::MarkProcessesAsAliveOnUIThread(
   for (const ProcessMetricsMetadata& data : *process_data_list)
     MarkProcessAsAlive(data, current_update_sequence);
 
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&ProcessMonitor::UpdateMetricsOnIOThread,
                      base::Unretained(this), current_update_sequence));
@@ -202,9 +202,9 @@ void ProcessMonitor::UpdateMetricsOnIOThread(int current_update_sequence) {
     }
   }
 
-  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
-                           base::BindOnce(&ProcessMonitor::RunTriggersUIThread,
-                                          base::Unretained(this)));
+  base::PostTask(FROM_HERE, {BrowserThread::UI},
+                 base::BindOnce(&ProcessMonitor::RunTriggersUIThread,
+                                base::Unretained(this)));
 }
 
 void ProcessMonitor::RunTriggersUIThread() {

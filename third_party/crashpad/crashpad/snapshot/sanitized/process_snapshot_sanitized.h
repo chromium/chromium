@@ -29,6 +29,8 @@
 #include "util/misc/address_types.h"
 #include "util/misc/initialization_state_dcheck.h"
 #include "util/misc/range_set.h"
+#include "util/process/process_id.h"
+#include "util/process/process_memory_sanitized.h"
 
 namespace crashpad {
 
@@ -59,15 +61,18 @@ class ProcessSnapshotSanitized final : public ProcessSnapshot {
   //!     internal::StackSnapshotSanitized.
   //! \return `false` if \a snapshot does not meet sanitization requirements and
   //!     should be filtered entirely. Otherwise `true`.
-  bool Initialize(const ProcessSnapshot* snapshot,
-                  const std::vector<std::string>* annotations_whitelist,
-                  VMAddress target_module_address,
-                  bool sanitize_stacks);
+  bool Initialize(
+      const ProcessSnapshot* snapshot,
+      std::unique_ptr<const std::vector<std::string>> annotations_whitelist,
+      std::unique_ptr<const std::vector<std::pair<VMAddress, VMAddress>>>
+          memory_range_whitelist,
+      VMAddress target_module_address,
+      bool sanitize_stacks);
 
   // ProcessSnapshot:
 
-  pid_t ProcessID() const override;
-  pid_t ParentProcessID() const override;
+  crashpad::ProcessID ProcessID() const override;
+  crashpad::ProcessID ParentProcessID() const override;
   void SnapshotTime(timeval* snapshot_time) const override;
   void ProcessStartTime(timeval* start_time) const override;
   void ProcessCPUTimes(timeval* user_time, timeval* system_time) const override;
@@ -94,7 +99,8 @@ class ProcessSnapshotSanitized final : public ProcessSnapshot {
 
   RangeSet address_ranges_;
   const ProcessSnapshot* snapshot_;
-  const std::vector<std::string>* annotations_whitelist_;
+  ProcessMemorySanitized process_memory_;
+  std::unique_ptr<const std::vector<std::string>> annotations_whitelist_;
   bool sanitize_stacks_;
   InitializationStateDcheck initialized_;
 

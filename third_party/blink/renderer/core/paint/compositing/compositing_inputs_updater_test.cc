@@ -13,7 +13,7 @@ namespace blink {
 class CompositingInputsUpdaterTest : public RenderingTest {
  public:
   CompositingInputsUpdaterTest()
-      : RenderingTest(SingleChildLocalFrameClient::Create()) {}
+      : RenderingTest(MakeGarbageCollected<SingleChildLocalFrameClient>()) {}
 };
 
 // Tests that transitioning a sticky away from an ancestor overflow layer that
@@ -62,10 +62,10 @@ TEST_F(CompositingInputsUpdaterTest,
 
   // Now make the outer scroller non-scrollable (i.e. overflow: visible), and
   // the inner scroller into an actual scroller.
-  ToElement(outer_scroller->GetNode())
-      ->SetInlineStyleProperty(CSSPropertyOverflow, "visible");
-  ToElement(inner_scroller->GetNode())
-      ->SetInlineStyleProperty(CSSPropertyOverflow, "scroll");
+  To<Element>(outer_scroller->GetNode())
+      ->SetInlineStyleProperty(CSSPropertyID::kOverflow, "visible");
+  To<Element>(inner_scroller->GetNode())
+      ->SetInlineStyleProperty(CSSPropertyID::kOverflow, "scroll");
 
   // Before we update compositing inputs, validate that the current ancestor
   // overflow no longer has a scrollable area.
@@ -165,7 +165,7 @@ TEST_F(CompositingInputsUpdaterTest, MaskAncestor) {
   SetBodyInnerHTML(R"HTML(
     <div id="parent" style="-webkit-mask-image: linear-gradient(black, white);">
       <div id="child" style="width: 20px; height: 20px; will-change: transform">
-        <div id="grandchild" style="position: relative";
+        <div id="grandchild" style="position: relative"></div>
       </div>
     </div>
   )HTML");
@@ -180,6 +180,33 @@ TEST_F(CompositingInputsUpdaterTest, MaskAncestor) {
   EXPECT_EQ(nullptr, parent->MaskAncestor());
   EXPECT_EQ(parent, child->MaskAncestor());
   EXPECT_EQ(parent, grandchild->MaskAncestor());
+}
+
+TEST_F(CompositingInputsUpdaterTest, LayoutContainmentLayer) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="parent" style="contain: layout">
+      <div id="child" style="width: 20px; height: 20px; will-change: transform">
+        <div id="grandchild" style="contain: layout; position: relative">
+          <div id="greatgrandchild" style="position: relative"></div>
+        </div>
+      </div>
+    </div>
+  )HTML");
+
+  PaintLayer* parent =
+      ToLayoutBoxModelObject(GetLayoutObjectByElementId("parent"))->Layer();
+  PaintLayer* child =
+      ToLayoutBoxModelObject(GetLayoutObjectByElementId("child"))->Layer();
+  PaintLayer* grandchild =
+      ToLayoutBoxModelObject(GetLayoutObjectByElementId("grandchild"))->Layer();
+  PaintLayer* greatgrandchild =
+      ToLayoutBoxModelObject(GetLayoutObjectByElementId("greatgrandchild"))
+          ->Layer();
+
+  EXPECT_EQ(parent, parent->NearestContainedLayoutLayer());
+  EXPECT_EQ(parent, child->NearestContainedLayoutLayer());
+  EXPECT_EQ(grandchild, grandchild->NearestContainedLayoutLayer());
+  EXPECT_EQ(grandchild, greatgrandchild->NearestContainedLayoutLayer());
 }
 
 }  // namespace blink

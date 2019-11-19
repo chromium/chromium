@@ -1,0 +1,24 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module metrics.mojom;
+
+// See components/metrics/single_sample_metrics_factory_impl.h for details.
+interface SingleSampleMetricsProvider {
+  // Returns a SingleSampleMetric.
+  //
+  // A single sample metric only reports its sample once at destruction time.
+  // The sample may be changed prior to destruction using the SetSample() method
+  // as many times as desired.
+  //
+  // See base/metrics/histograms.h for parameter definitions. |receiver| is the
+  // returned histogram.
+  AcquireSingleSampleMetric(string histogram_name, int32 min, int32 max,
+                            uint32 bucket_count, int32 flags,
+                            pending_receiver<SingleSampleMetric> receiver);
+};
+
+interface SingleSampleMetric {
+  SetSample(int32 sample);
+};

@@ -48,7 +48,7 @@ class HidService {
       base::Callback<void(scoped_refptr<HidConnection> connection)>;
 
   static constexpr base::TaskTraits kBlockingTaskTraits = {
-      base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+      base::ThreadPool(), base::MayBlock(), base::TaskPriority::USER_VISIBLE,
       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN};
 
   // This function should be called on a thread with a MessageLoopForUI.

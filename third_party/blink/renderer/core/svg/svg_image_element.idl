@@ -34,11 +34,8 @@
     [MeasureAs=SVG1DOMImageElement] readonly attribute SVGAnimatedLength height;
     [MeasureAs=SVG1DOMImageElement] readonly attribute SVGAnimatedPreserveAspectRatio preserveAspectRatio;
     [CEReactions, Reflect, ReflectOnly=("async", "sync", "auto"), ReflectMissing="auto", ReflectInvalid="auto"] attribute DOMString decoding;
-    // https://github.com/ojanvafai/intrinsicsize-attribute/blob/master/README.md
-    [RuntimeEnabled=ExperimentalProductivityFeatures, CEReactions, Reflect] attribute DOMString intrinsicSize;
-
     // Follow HTMLImageElement's spec
     [CallWith=ScriptState, RaisesException] Promise<void> decode();
 };
 
-SVGImageElement implements SVGURIReference;
+SVGImageElement includes SVGURIReference;

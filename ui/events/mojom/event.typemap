@@ -1,0 +1,29 @@
+# Copyright 2016 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+mojom = "//ui/events/mojom/event.mojom"
+public_headers = [ "//ui/events/event.h" ]
+traits_headers = [ "//ui/events/mojom/event_mojom_traits.h" ]
+public_deps = [
+  "//ui/events",
+  "//ui/events:dom_keycode_converter",
+  "//ui/gfx/geometry/mojom",
+  "//ui/latency/mojom",
+]
+deps = [
+  "//ipc:param_traits",
+]
+sources = [
+  "//ui/events/mojom/event_mojom_traits.cc",
+  "//ui/events/mojom/event_mojom_traits.h",
+]
+
+# TODO(moshayedi): crbug.com/617167. Map mojom.Event directly to ui::Event.
+type_mappings = [
+  "ui.mojom.Event=::std::unique_ptr<::ui::Event>[move_only]",
+  "ui.mojom.EventMomentumPhase=::ui::EventMomentumPhase",
+  "ui.mojom.PointerDetails=::ui::PointerDetails",
+  "ui.mojom.ScrollEventPhase=::ui::ScrollEventPhase",
+  "ui.mojom.GestureDeviceType=::ui::GestureDeviceType",
+]

@@ -14,7 +14,9 @@ action("embed_js_in_cpp") {
     "js/call_function.js",
     "js/dispatch_touch_event.js",
     "js/execute_async_script.js",
+    "js/execute_script.js",
     "js/focus.js",
+    "js/get_element_location.js",
     "js/get_element_region.js",
     "js/is_option_element_toggleable.js",
   ]
@@ -106,12 +108,16 @@ source_set("automation_client_lib") {
     "chrome/devtools_client.h",
     "chrome/devtools_client_impl.cc",
     "chrome/devtools_client_impl.h",
+    "chrome/devtools_endpoint.cc",
+    "chrome/devtools_endpoint.h",
     "chrome/devtools_event_listener.cc",
     "chrome/devtools_event_listener.h",
     "chrome/devtools_http_client.cc",
     "chrome/devtools_http_client.h",
     "chrome/dom_tracker.cc",
     "chrome/dom_tracker.h",
+    "chrome/download_directory_override_manager.cc",
+    "chrome/download_directory_override_manager.h",
     "chrome/frame_tracker.cc",
     "chrome/frame_tracker.h",
     "chrome/geolocation_override_manager.cc",
@@ -162,6 +168,8 @@ source_set("automation_client_lib") {
     "log_replay/replay_http_client.h",
     "net/adb_client_socket.cc",
     "net/adb_client_socket.h",
+    "net/command_id.cc",
+    "net/command_id.h",
     "net/net_util.cc",
     "net/net_util.h",
     "net/sync_websocket.h",
@@ -191,6 +199,7 @@ source_set("automation_client_lib") {
     ":embed_user_data_dir_in_cpp",
     "//base",
     "//base/third_party/dynamic_annotations",
+    "//chrome/common:version_header",
     "//net",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
@@ -227,6 +236,7 @@ source_set("lib") {
     "command_listener_proxy.h",
     "commands.cc",
     "commands.h",
+    "constants/version.h",
     "devtools_events_logger.cc",
     "devtools_events_logger.h",
     "element_commands.cc",
@@ -251,8 +261,8 @@ source_set("lib") {
     "session_thread_map.h",
     "util.cc",
     "util.h",
-    "version.cc",
-    "version.h",
+    "webauthn_commands.cc",
+    "webauthn_commands.h",
     "window_commands.cc",
     "window_commands.h",
   ]
@@ -273,8 +283,11 @@ source_set("lib") {
     ":automation_client_lib",
     "//base",
     "//base/third_party/dynamic_annotations",
+    "//build:branding_buildflags",
     "//chrome/common:constants",
     "//chrome/common:version_header",
+    "//chrome/test/chromedriver/constants:version_header",
+    "//components/crx_file",
     "//components/version_info:generate_version_info",
     "//crypto",
     "//net",
@@ -302,6 +315,7 @@ source_set("lib") {
 }
 
 executable("chromedriver") {
+  testonly = true
   sources = [
     "server/chromedriver_server.cc",
   ]
@@ -313,6 +327,8 @@ executable("chromedriver") {
     ":lib",
     "//build/win:default_exe_manifest",
     "//mojo/core/embedder",
+    "//net/server:http_server",
+    "//net/traffic_annotation:test_support",
     "//services/network/public/mojom",
   ]
 }
@@ -363,8 +379,10 @@ test("chromedriver_unittests") {
     "chrome/console_logger_unittest.cc",
     "chrome/device_manager_unittest.cc",
     "chrome/devtools_client_impl_unittest.cc",
+    "chrome/devtools_endpoint_unittest.cc",
     "chrome/devtools_http_client_unittest.cc",
     "chrome/dom_tracker_unittest.cc",
+    "chrome/download_directory_override_manager_unittest.cc",
     "chrome/frame_tracker_unittest.cc",
     "chrome/geolocation_override_manager_unittest.cc",
     "chrome/heap_snapshot_taker_unittest.cc",
@@ -428,38 +446,6 @@ test("chromedriver_unittests") {
     "//ui/events:test_support",
     "//ui/gfx",
     "//ui/gfx/geometry",
-    "//url",
-  ]
-}
-
-# ChromeDriver tests that aren't run on the main buildbot. Available as an
-# optional test type on trybots.
-test("chromedriver_tests") {
-  sources = [
-    "key_converter_unittest.cc",
-    "keycode_text_conversion_unittest.cc",
-    "net/net_util_unittest.cc",
-    "net/sync_websocket_impl_unittest.cc",
-    "net/test_http_server.cc",
-    "net/test_http_server.h",
-    "net/websocket_unittest.cc",
-  ]
-
-  # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
-  configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
-
-  deps = [
-    ":lib",
-    "//base",
-    "//base/test:run_all_unittests",
-    "//mojo/core/embedder",
-    "//net",
-    "//net:test_support",
-    "//net/server:http_server",
-    "//services/network/public/cpp",
-    "//services/network/public/mojom",
-    "//testing/gtest",
-    "//ui/events:test_support",
     "//url",
   ]
 }

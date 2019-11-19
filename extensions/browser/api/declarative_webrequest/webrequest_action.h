@@ -31,7 +31,7 @@ struct EventResponseDelta;
 
 namespace extensions {
 class Extension;
-class InfoMap;
+class PermissionHelper;
 struct WebRequestData;
 }
 
@@ -77,7 +77,7 @@ class WebRequestAction : public base::RefCounted<WebRequestAction> {
   // essentially a parameter pack, so the pointers refer to local structures of
   // whatever function is calling one of those methods.
   struct ApplyInfo {
-    const InfoMap* extension_info_map;
+    PermissionHelper* permission_helper;
     const WebRequestData& request_data;
     bool crosses_incognito;
     // Modified by each applied action:
@@ -112,7 +112,7 @@ class WebRequestAction : public base::RefCounted<WebRequestAction> {
   // Returns whether the specified extension has permission to execute this
   // action on |request|. Checks the host permission if the host permissions
   // strategy is STRATEGY_DEFAULT.
-  // |apply_info->extension_info_map| may only be NULL for during testing, in
+  // |apply_info->permission_helper| may only be nullptr for during testing, in
   // which case host permissions are ignored. |crosses_incognito| specifies
   // whether the request comes from a different profile than |extension_id|
   // but was processed because the extension is in spanning mode.

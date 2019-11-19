@@ -43,11 +43,6 @@
     TestRunner.addResult('Visible view is a cookie view: ' + (view.visibleView instanceof Resources.CookieItemsView));
   }
 
-  function fireFrameNavigated() {
-    var rtm = TestRunner.resourceTreeModel;
-    rtm.dispatchEventToListeners(SDK.ResourceTreeModel.Events.FrameNavigated, rtm.mainFrame);
-  }
-
   await new Promise(createIndexedDB);
   await ApplicationTestRunner.createWebSQLDatabase('database-for-test');
   UI.viewManager.showView('resources');

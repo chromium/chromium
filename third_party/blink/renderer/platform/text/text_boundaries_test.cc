@@ -21,10 +21,9 @@ std::pair<String, int> ParsePositionMarker(const std::string input8) {
   input16.Ensure16Bit();
   const size_t position = input16.find('|');
   DCHECK(position != kNotFound) << input8 << " should have position marker(|).";
-  String text16 = input16.Left(position);
-  text16.append(input16.Substring(position + 1));
-  text16.Ensure16Bit();
-  return {text16, position};
+  String output = input16.Left(position) + input16.Substring(position + 1);
+  output.Ensure16Bit();
+  return {output, position};
 }
 
 std::string MakeResultText(const String& text, int start, int end) {
@@ -46,8 +45,7 @@ std::string MakeResultText(const String& text, int start, int end) {
     builder.Append('|');
   }
   builder.Append(text.Substring(end));
-  const CString result8 = builder.ToString().Utf8();
-  return std::string(result8.data(), result8.length());
+  return builder.ToString().Utf8();
 }
 
 // Returns word boundray with start(^) and end(|) markes from text with

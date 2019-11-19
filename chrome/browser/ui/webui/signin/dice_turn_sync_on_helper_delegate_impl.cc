@@ -90,16 +90,15 @@ void DiceTurnSyncOnHelperDelegateImpl::SigninDialogDelegate::
 
 DiceTurnSyncOnHelperDelegateImpl::DiceTurnSyncOnHelperDelegateImpl(
     Browser* browser)
-    : browser_(browser),
-      profile_(browser_->profile()),
-      scoped_browser_list_observer_(this),
-      scoped_login_ui_service_observer_(this) {
+    : browser_(browser), profile_(browser_->profile()) {
   DCHECK(browser);
   DCHECK(profile_);
-  scoped_browser_list_observer_.Add(BrowserList::GetInstance());
+  BrowserList::AddObserver(this);
 }
 
-DiceTurnSyncOnHelperDelegateImpl::~DiceTurnSyncOnHelperDelegateImpl() {}
+DiceTurnSyncOnHelperDelegateImpl::~DiceTurnSyncOnHelperDelegateImpl() {
+  BrowserList::RemoveObserver(this);
+}
 
 void DiceTurnSyncOnHelperDelegateImpl::ShowLoginError(
     const std::string& email,

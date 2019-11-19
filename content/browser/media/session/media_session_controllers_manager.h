@@ -18,6 +18,10 @@ namespace media {
 enum class MediaContentType;
 }  // namespace media
 
+namespace media_session {
+struct MediaPosition;
+}  // namespace media_session
+
 namespace content {
 
 class MediaSessionController;
@@ -28,9 +32,9 @@ class RenderFrameHost;
 // handles MediaSessionController instances.
 class CONTENT_EXPORT MediaSessionControllersManager {
  public:
-  using MediaPlayerId = WebContentsObserver::MediaPlayerId;
   using ControllersMap =
       std::map<MediaPlayerId, std::unique_ptr<MediaSessionController>>;
+  using PositionMap = std::map<MediaPlayerId, media_session::MediaPosition>;
 
   explicit MediaSessionControllersManager(
       MediaWebContentsObserver* media_web_contents_observer);
@@ -54,6 +58,11 @@ class CONTENT_EXPORT MediaSessionControllersManager {
   // Called when the given player |id| has ended.
   void OnEnd(const MediaPlayerId& id);
 
+  // Called when the media position state for the player |id| has changed.
+  void OnMediaPositionStateChanged(
+      const MediaPlayerId& id,
+      const media_session::MediaPosition& position);
+
   // Called when the WebContents was muted or unmuted.
   void WebContentsMutedStateChanged(bool muted);
 
@@ -64,6 +73,10 @@ class CONTENT_EXPORT MediaSessionControllersManager {
   MediaWebContentsObserver* const media_web_contents_observer_;
 
   ControllersMap controllers_map_;
+
+  // Stores the last position for each player. This is because a controller
+  // may be created after we have already received the position state.
+  PositionMap position_map_;
 
   DISALLOW_COPY_AND_ASSIGN(MediaSessionControllersManager);
 };

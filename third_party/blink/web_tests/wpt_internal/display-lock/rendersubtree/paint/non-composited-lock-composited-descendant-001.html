@@ -1,0 +1,47 @@
+<!doctype HTML>
+<html class="reftest-wait">
+<meta charset="utf8">
+<title>Display Locking: acquire on a non-composited layer with a composited descendant</title>
+<link rel="author" title="Vladimir Levin" href="mailto:vmpstr@chromium.org">
+<link rel="help" href="https://github.com/WICG/display-locking">
+<link rel="match" href="pass-if-nothing-below-ref.html">
+<script src="/common/reftest-wait.js"></script>
+<script src="../resources/utils.js"></script>
+
+<style>
+#outer {
+  width: 100px;
+  height: 100px;
+  color: blue;
+}
+#inner {
+  will-change: transform;
+  width: 50px;
+  height: 50px;
+  background: lightgreen;
+  color: green;
+}
+</style>
+
+The test passes if there's nothing below.
+<div id="outer">
+  Lorem
+  <div id="inner">
+    Ipsum
+  </div>
+</div>
+
+<script>
+async function runTest() {
+  const container = document.getElementById("outer");
+  await setInvisible(container);
+  takeScreenshot();
+}
+
+window.onload = () => {
+  requestAnimationFrame(() => {
+    requestAnimationFrame(runTest);
+  });
+};
+</script>
+</html>

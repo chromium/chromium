@@ -1,0 +1,70 @@
+// Copyright 2014 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Include test fixture.
+GEN_INCLUDE(['//ui/accessibility/extensions/chromevoxclassic/testing/chromevox_unittest_base.js']);
+
+/**
+ * @extends {cvox.BrailleInterface}
+ * @constructor
+ */
+function FakeBraille() {
+}
+
+FakeBraille.prototype = {
+  /** @override */
+  write: function(content) {
+    this.content = content;
+  }
+};
+
+/** @constructor */
+function FakeNavigationManager() {
+}
+
+FakeNavigationManager.prototype = {
+  getBraille: function() {
+    return this.navBraille;
+  },
+
+  setNavBraille: function(navBraille) {
+    this.navBraille = navBraille;
+  }
+};
+
+
+/**
+ * Test fixture.
+ * @constructor
+ * @extends {ChromeVoxUnitTestBase}
+ */
+function ChromeVoxBrailleTextHandlerUnitTest() {}
+
+ChromeVoxBrailleTextHandlerUnitTest.prototype = {
+  __proto__: ChromeVoxUnitTestBase.prototype,
+
+  /** @override */
+  closureModuleDeps: [
+    'cvox.BrailleInterface',
+    'cvox.BrailleTextHandler',
+    'cvox.NavBraille',
+    'cvox.NavigationManager',
+  ],
+
+  /** @override */
+  setUp: function() {
+    this.navigationManager = new FakeNavigationManager();
+    this.braille = new FakeBraille();
+    cvox.ChromeVox.navigationManager = this.navigationManager;
+    this.brailleTextHandler = new cvox.BrailleTextHandler(this.braille);
+  }
+};
+
+TEST_F('ChromeVoxBrailleTextHandlerUnitTest', 'UpdateByUser', function() {
+  var navBraille = new cvox.NavBraille({ text: 'Hello, world!' });
+  this.navigationManager.setNavBraille(navBraille);
+
+  this.brailleTextHandler.changed('', 0, 0, false);
+  assertEquals(navBraille, this.braille.content);
+});

@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
+namespace cssvalue {
 
 CSSGridTemplateAreasValue::CSSGridTemplateAreasValue(
     const NamedGridAreaMap& grid_area_map,
@@ -81,4 +82,5 @@ bool CSSGridTemplateAreasValue::Equals(
          row_count_ == other.row_count_ && column_count_ == other.column_count_;
 }
 
+}  // namespace cssvalue
 }  // namespace blink

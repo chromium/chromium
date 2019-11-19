@@ -1,3 +1,5 @@
 include_rules = [
+  "+components/services/heap_profiling",
+  "+components/services/heap_profiling/public/mojom",
   "+content/public/utility",
 ]

@@ -3,7 +3,7 @@
 <head>
 <style>
     div {
-        transform:translateZ(0);
+        will-change:transform;
         position: absolute;
         top: 100px;
         left: 0px;
@@ -25,8 +25,10 @@
 </head>
 <script>
 function runTest() {
-    if (window.testRunner)
-        testRunner.waitUntilDone(true);
+    if (window.testRunner) {
+        testRunner.waitUntilDone();
+        testRunner.dumpAsText();
+    }
 
     var video = document.querySelector('video');
     enableTestMode(video);
@@ -35,8 +37,10 @@ function runTest() {
 }
 
 function endTest() {
-    if (window.testRunner)
+    if (window.testRunner && window.internals) {
+        testRunner.setCustomTextOutput(internals.layerTreeAsText(document));
         testRunner.notifyDone();
+    }
 }
 </script>
 <body onload="runTest()">

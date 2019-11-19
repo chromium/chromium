@@ -9,8 +9,6 @@ jumbo_component("cpp") {
   output_name = "ui_message_center_cpp"
 
   sources = [
-    "features.cc",
-    "features.h",
     "message_center_constants.h",
     "message_center_public_export.h",
     "notification.cc",

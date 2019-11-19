@@ -30,7 +30,7 @@ class WallpaperSetWallpaperFunction : public WallpaperFunctionBase {
  protected:
   ~WallpaperSetWallpaperFunction() override;
 
-  // UIThreadExtensionFunction overrides.
+  // ExtensionFunction overrides.
   ResponseAction Run() override;
 
  private:

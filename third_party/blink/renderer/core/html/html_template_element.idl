@@ -29,7 +29,9 @@
  */
 
 // https://html.spec.whatwg.org/C/#the-template-element
-[HTMLConstructor]
-interface HTMLTemplateElement : HTMLElement {
+[
+    Exposed=Window,
+    HTMLConstructor
+] interface HTMLTemplateElement : HTMLElement {
     readonly attribute DocumentFragment content;
 };

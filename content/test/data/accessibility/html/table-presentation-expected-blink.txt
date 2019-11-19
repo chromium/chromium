@@ -1,13 +1,15 @@
 rootWebArea name='Table with role=presentation'
-++genericContainer
-++++staticText name='1'
-++++++inlineTextBox name='1'
-++genericContainer
-++++staticText name='2'
-++++++inlineTextBox name='2'
-++genericContainer
-++++staticText name='4'
-++++++inlineTextBox name='4'
-++genericContainer
-++++staticText name='5'
-++++++inlineTextBox name='5'
+++genericContainer ignored
+++++presentational ignored
+++++++genericContainer
+++++++++staticText name='1'
+++++++++++inlineTextBox name='1'
+++++++genericContainer
+++++++++staticText name='2'
+++++++++++inlineTextBox name='2'
+++++++genericContainer
+++++++++staticText name='4'
+++++++++++inlineTextBox name='4'
+++++++genericContainer
+++++++++staticText name='5'
+++++++++++inlineTextBox name='5'

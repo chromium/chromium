@@ -99,7 +99,7 @@ bool MediaPipelineBackendAndroid::SetPlaybackRate(float rate) {
 int64_t MediaPipelineBackendAndroid::GetCurrentPts() {
   if (audio_decoder_) {
     int64_t pts = audio_decoder_->current_pts();
-    LOG(INFO) << __func__ << ": pts=" << pts;
+    DVLOG(2) << __func__ << ": pts=" << pts;
     return pts;
   }
   LOG(INFO) << __func__ << ": pts=<invalid>";

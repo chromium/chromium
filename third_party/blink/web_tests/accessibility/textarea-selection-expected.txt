@@ -30,6 +30,10 @@ PASS textareaAccessible is textareaAccessible.selectionAnchorObject
 PASS textareaAccessible.selectionAnchorOffset is 14
 PASS textareaAccessible is textareaAccessible.selectionFocusObject
 PASS textareaAccessible.selectionFocusOffset is 21
+PASS emptyTextareaAccessible is textareaAccessible.selectionAnchorObject
+PASS textareaAccessible.selectionAnchorOffset is 0
+PASS emptyTextareaAccessible is textareaAccessible.selectionFocusObject
+PASS textareaAccessible.selectionFocusOffset is 0
 PASS textareaAccessible is textareaAccessible.selectionAnchorObject
 PASS textareaAccessible.selectionAnchorOffset is 14
 PASS textareaAccessible is textareaAccessible.selectionFocusObject

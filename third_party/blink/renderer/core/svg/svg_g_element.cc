@@ -26,13 +26,11 @@
 
 namespace blink {
 
-inline SVGGElement::SVGGElement(Document& document,
-                                ConstructionType construction_type)
+SVGGElement::SVGGElement(Document& document, ConstructionType construction_type)
     : SVGGraphicsElement(svg_names::kGTag, document, construction_type) {}
 
-DEFINE_NODE_FACTORY(SVGGElement)
-
-LayoutObject* SVGGElement::CreateLayoutObject(const ComputedStyle& style) {
+LayoutObject* SVGGElement::CreateLayoutObject(const ComputedStyle& style,
+                                              LegacyLayout) {
   // SVG 1.1 testsuite explicitly uses constructs like
   // <g display="none"><linearGradient>
   // We still have to create layoutObjects for the <g> & <linearGradient>

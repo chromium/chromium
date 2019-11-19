@@ -1,0 +1,133 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "LayoutBlockFlow DIV",
+          "rect": [10, 138, 292, 160],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutBlockFlow DIV",
+          "rect": [10, 303, 292, 50],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'Curabitur pretium, quam quis semper'",
+          "rect": [10, 138, 291, 159],
+          "reason": "disappeared"
+        },
+        {
+          "object": "InlineTextBox 'Phasellus vehicula, sem at posuere vehicula,'",
+          "rect": [10, 138, 291, 159],
+          "reason": "disappeared"
+        },
+        {
+          "object": "InlineTextBox 'augue nibh molestie nisl, nec ullamcorper'",
+          "rect": [10, 138, 291, 159],
+          "reason": "disappeared"
+        },
+        {
+          "object": "InlineTextBox 'fringilla orci nibh sed neque. Quisque eu nulla'",
+          "rect": [10, 138, 291, 159],
+          "reason": "disappeared"
+        },
+        {
+          "object": "InlineTextBox 'lacus ante vulputate pede.'",
+          "rect": [10, 138, 291, 159],
+          "reason": "disappeared"
+        },
+        {
+          "object": "InlineTextBox 'laoreet ac, laoreet non, suscipit sed, sapien.'",
+          "rect": [10, 138, 291, 159],
+          "reason": "disappeared"
+        },
+        {
+          "object": "InlineTextBox 'malesuada, est libero feugiat libero, vel'",
+          "rect": [10, 138, 291, 159],
+          "reason": "disappeared"
+        },
+        {
+          "object": "InlineTextBox 'non nisi molestie accumsan. Etiam tellus urna,'",
+          "rect": [10, 138, 291, 159],
+          "reason": "disappeared"
+        },
+        {
+          "object": "LayoutBlockFlow DIV",
+          "rect": [10, 138, 242, 200],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutBlockFlow DIV",
+          "rect": [10, 343, 242, 50],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutTableCell TD id='col1'",
+          "rect": [10, 353, 242, 40],
+          "reason": "incremental"
+        },
+        {
+          "object": "InlineTextBox 'Curabitur pretium, quam quis semper'",
+          "rect": [10, 138, 235, 199],
+          "reason": "appeared"
+        },
+        {
+          "object": "InlineTextBox 'Phasellus vehicula, sem at posuere'",
+          "rect": [10, 138, 235, 199],
+          "reason": "appeared"
+        },
+        {
+          "object": "InlineTextBox 'Quisque eu nulla non nisi molestie'",
+          "rect": [10, 138, 235, 199],
+          "reason": "appeared"
+        },
+        {
+          "object": "InlineTextBox 'ac, laoreet non, suscipit sed, sapien.'",
+          "rect": [10, 138, 235, 199],
+          "reason": "appeared"
+        },
+        {
+          "object": "InlineTextBox 'accumsan. Etiam tellus urna, laoreet'",
+          "rect": [10, 138, 235, 199],
+          "reason": "appeared"
+        },
+        {
+          "object": "InlineTextBox 'malesuada, est libero feugiat libero,'",
+          "rect": [10, 138, 235, 199],
+          "reason": "appeared"
+        },
+        {
+          "object": "InlineTextBox 'nec ullamcorper lacus ante vulputate'",
+          "rect": [10, 138, 235, 199],
+          "reason": "appeared"
+        },
+        {
+          "object": "InlineTextBox 'pede.'",
+          "rect": [10, 138, 235, 199],
+          "reason": "appeared"
+        },
+        {
+          "object": "InlineTextBox 'vehicula, augue nibh molestie nisl,'",
+          "rect": [10, 138, 235, 199],
+          "reason": "appeared"
+        },
+        {
+          "object": "InlineTextBox 'vel fringilla orci nibh sed neque.'",
+          "rect": [10, 138, 235, 199],
+          "reason": "appeared"
+        },
+        {
+          "object": "LayoutTableCell TD id='col1'",
+          "rect": [252, 138, 50, 215],
+          "reason": "incremental"
+        }
+      ]
+    }
+  ]
+}
+

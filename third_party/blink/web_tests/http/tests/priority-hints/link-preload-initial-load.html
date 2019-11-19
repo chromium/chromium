@@ -1,6 +1,72 @@
-<script src=resources/common.js></script>
+<script src=../priorities/resources/common.js></script>
 <script src=../resources/testharness.js></script>
 <script src=../resources/testharnessreport.js></script>
+
+<!-- Setup getResourcePriority promises. -->
+<script>
+const priority_tests = [
+  {
+    promise: internals.getResourcePriority(new URL('../resources/dummy.css', location), document),
+    expected_priority: kLow,
+    description: 'low importance on <link rel=preload as=style> must be fetched with kLow resource load priority'
+  },
+  {
+    promise: internals.getResourcePriority(new URL('../resources/dummy.css?1', location), document),
+    expected_priority: kVeryHigh,
+    description: 'missing importance on <link rel=preload as=style> must have no effect on resource load priority'
+  },
+  {
+    promise: internals.getResourcePriority(new URL('../resources/dummy.css?2', location), document),
+    expected_priority: kVeryHigh,
+    description: 'high importance on <link rel=preload as=style> must have no effect on resource load priority'
+  },
+  {
+    promise: internals.getResourcePriority(new URL('../resources/dummy.js', location), document),
+    expected_priority: kLow,
+    description: 'low importance on <link rel=preload as=script> must be fetched with kLow resource load priority'
+  },
+  {
+    promise: internals.getResourcePriority(new URL('../resources/dummy.js?1', location), document),
+    expected_priority: kHigh,
+    description: 'missing importance on <link rel=preload as=script> must have no effect on resource load priority'
+  },
+  {
+    promise: internals.getResourcePriority(new URL('../resources/dummy.js?2', location), document),
+    expected_priority: kHigh,
+    description: 'high importance on <link rel=preload as=script> must have no effect on resource load priority'
+  },
+  {
+    promise: internals.getResourcePriority(new URL('../resources/dummy.txt', location), document),
+    expected_priority: kLow,
+    description: 'low importance on <link rel=preload as=fetch> must be fetched with kLow resource load priority'
+  },
+  {
+    promise: internals.getResourcePriority(new URL('../resources/dummy.txt?1', location), document),
+    expected_priority: kHigh,
+    description: 'missing importance on <link rel=preload as=fetch> must have no effect on resource load priority'
+  },
+  {
+    promise: internals.getResourcePriority(new URL('../resources/dummy.txt?2', location), document),
+    expected_priority: kHigh,
+    description: 'high importance on <link rel=preload as=fetch> must have no effect on resource load priority'
+  },
+  {
+    promise: internals.getResourcePriority(new URL('../resources/square.png', location), document),
+    expected_priority: kLow,
+    description: 'low importance on <link rel=preload as=image> must have no effect on resource load priority'
+  },
+  {
+    promise: internals.getResourcePriority(new URL('../resources/square.png?1', location), document),
+    expected_priority: kLow,
+    description: 'missing importance on <link rel=preload as=image> must have no effect on resource load priority'
+  },
+  {
+    promise: internals.getResourcePriority(new URL('../resources/square.png?2', location), document),
+    expected_priority: kHigh,
+    description: 'high importance on <link rel=preload as=image> must be fetched with kHigh resource load priority'
+  }
+];
+</script>
 
 <!-- as=style -->
 <!-- don't need to test for invalid and explicit auto importance here, since we already do that in the other link test -->
@@ -24,39 +90,31 @@
 <link id=link12 importance=high rel=preload as=image href=../resources/square.png?2>
 
 <script>
-  async_test(t => {
-    addEventListener('DOMContentLoaded', t.step_func(() => {
-      const msg = 'all preloads must be fetched by the preload scanner';
-      assert_true(internals.isPreloaded(link1.href), msg);
-      assert_true(internals.isPreloaded(link2.href), msg);
-      assert_true(internals.isPreloaded(link3.href), msg);
-      assert_true(internals.isPreloaded(link4.href), msg);
-      assert_true(internals.isPreloaded(link5.href), msg);
-      assert_true(internals.isPreloaded(link6.href), msg);
-      assert_true(internals.isPreloaded(link7.href), msg);
-      assert_true(internals.isPreloaded(link8.href), msg);
-      assert_true(internals.isPreloaded(link9.href), msg);
-      assert_true(internals.isPreloaded(link10.href), msg);
-      assert_true(internals.isPreloaded(link11.href), msg);
-      assert_true(internals.isPreloaded(link12.href), msg);
+  promise_test(async (t) => {
+    await new Promise(resolve => {
+      addEventListener('DOMContentLoaded', resolve);
+    });
 
-      assert_equals(getPriority(link1.href), kLow, 'low importance on <link rel=preload as=style> must be fetched with kLow resource load priority');
-      assert_equals(getPriority(link2.href), kVeryHigh, 'missing importance on <link rel=preload as=style> must have no effect on resource load priority');
-      assert_equals(getPriority(link3.href), kVeryHigh, 'high importance on <link rel=preload as=style> must have no effect on resource load priority');
+    const base_msg = ' was fetched by the preload scanner';
+    assert_true(internals.isPreloaded(link1.href), link1.href + base_msg);
+    assert_true(internals.isPreloaded(link2.href), link2.href + base_msg);
+    assert_true(internals.isPreloaded(link3.href), link3.href + base_msg);
+    assert_true(internals.isPreloaded(link4.href), link4.href + base_msg);
+    assert_true(internals.isPreloaded(link5.href), link5.href + base_msg);
+    assert_true(internals.isPreloaded(link6.href), link6.href + base_msg);
+    assert_true(internals.isPreloaded(link7.href), link7.href + base_msg);
+    assert_true(internals.isPreloaded(link8.href), link8.href + base_msg);
+    assert_true(internals.isPreloaded(link9.href), link9.href + base_msg);
+    assert_true(internals.isPreloaded(link10.href), link10.href + base_msg);
+    assert_true(internals.isPreloaded(link11.href), link11.href + base_msg);
+    assert_true(internals.isPreloaded(link12.href), link12.href + base_msg);
+  }, 'all preloads must be fetched by the preload scanner');
 
-      assert_equals(getPriority(link4.href), kLow, 'low importance on <link rel=preload as=script> must be fetched with kLow resource load priority');
-      assert_equals(getPriority(link5.href), kHigh, 'missing importance on <link rel=preload as=script> must have no effect on resource load priority');
-      assert_equals(getPriority(link6.href), kHigh, 'high importance on <link rel=preload as=script> must have no effect on resource load priority');
-
-      assert_equals(getPriority(link7.href), kLow, 'low importance on <link rel=preload as=fetch> must be fetched with kLow resource load priority');
-      assert_equals(getPriority(link8.href), kHigh, 'missing importance on <link rel=preload as=fetch> must have no effect on resource load priority');
-      assert_equals(getPriority(link9.href), kHigh, 'high importance on <link rel=preload as=fetch> must have no effect on resource load priority');
-
-      assert_equals(getPriority(link10.href), kLow, 'low importance on <link rel=preload as=image> must have no effect on resource load priority');
-      assert_equals(getPriority(link11.href), kLow, 'missing importance on <link rel=preload as=image> must have no effect on resource load priority');
-      assert_equals(getPriority(link12.href), kHigh, 'high importance on <link rel=preload as=image> must be fetched with kHigh resource load priority');
-
-      t.done();
-    }));
-  }, 'importance attribute on <link rel=preload>s with supported as= values fetched by the preload scanner correctly influences resource load priority');
+  // Setup the tests described by |priority_tests|.
+  for (test of priority_tests) {
+    promise_test(async () => {
+      const priority = await test.promise;
+      assert_equals(priority, test.expected_priority);
+    }, test.description);
+  }
 </script>

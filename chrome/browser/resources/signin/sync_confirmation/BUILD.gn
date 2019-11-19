@@ -1,0 +1,75 @@
+# Copyright 2018 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/polymer.gni")
+
+group("closure_compile") {
+  deps = [
+    ":closure_compile_polymer2",
+    ":closure_compile_polymer3",
+  ]
+}
+
+js_type_check("closure_compile_polymer2") {
+  deps = [
+    ":sync_disabled_confirmation",
+  ]
+}
+
+js_type_check("closure_compile_polymer3") {
+  is_polymer3 = true
+  deps = [
+    ":sync_confirmation",
+    ":sync_confirmation_app",
+    ":sync_confirmation_browser_proxy",
+  ]
+}
+
+js_library("sync_confirmation") {
+  deps = [
+    ":sync_confirmation_browser_proxy",
+    "//ui/webui/resources/js:cr.m",
+  ]
+}
+
+js_library("sync_confirmation_app") {
+  deps = [
+    ":sync_confirmation_browser_proxy",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:load_time_data.m",
+    "//ui/webui/resources/js:web_ui_listener_behavior.m",
+  ]
+}
+
+js_library("sync_confirmation_browser_proxy") {
+  deps = [
+    "//ui/webui/resources/js:cr.m",
+  ]
+  externs_list = [
+    "$externs_path/chrome_send.js",
+    "$externs_path/metrics_private.js",
+  ]
+}
+
+js_library("sync_disabled_confirmation") {
+  deps = [
+    "//ui/webui/resources/js:assert",
+    "//ui/webui/resources/js:cr",
+    "//ui/webui/resources/js:util",
+  ]
+}
+
+group("polymer3_elements") {
+  deps = [
+    ":sync_confirmation_app_module",
+  ]
+}
+
+polymer_modulizer("sync_confirmation_app") {
+  html_file = "sync_confirmation_app.html"
+  js_file = "sync_confirmation_app.js"
+  html_type = "v3-ready"
+}

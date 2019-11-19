@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<html>
+  <title>Page Title</title>
+  <body>
+    <script>
+      var url = new URL(window.location)
+      var delay = parseInt(url.searchParams.get("delay"))
+
+      function delayed_animation_frame(timestamp) {
+          // Delay an amount of time in ms indicated by the query param.
+          var start = performance.now();
+          while ((performance.now() - start) <= delay);
+          window.domAutomationController.send("RAF DONE");
+      }
+
+      window.requestAnimationFrame(delayed_animation_frame);
+    </script>
+  </body>
+</html>

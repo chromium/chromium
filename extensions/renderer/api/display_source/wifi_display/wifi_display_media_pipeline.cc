@@ -23,26 +23,25 @@ WiFiDisplayMediaPipeline::WiFiDisplayMediaPipeline(
     wds::SessionType type,
     const WiFiDisplayVideoEncoder::InitParameters& video_parameters,
     const wds::AudioCodec& audio_codec,
-    const std::string& sink_ip_address,
+    const net::IPAddress& sink_ip_address,
     const std::pair<int, int>& sink_rtp_ports,
     const RegisterMediaServiceCallback& service_callback,
     const ErrorCallback& error_callback)
-  : type_(type),
-    video_parameters_(video_parameters),
-    audio_codec_(audio_codec),
-    sink_ip_address_(sink_ip_address),
-    sink_rtp_ports_(sink_rtp_ports),
-    service_callback_(service_callback),
-    error_callback_(error_callback),
-    weak_factory_(this) {
-}
+    : type_(type),
+      video_parameters_(video_parameters),
+      audio_codec_(audio_codec),
+      sink_ip_address_(sink_ip_address),
+      sink_rtp_ports_(sink_rtp_ports),
+      service_callback_(service_callback),
+      error_callback_(error_callback),
+      weak_factory_(this) {}
 
 // static
 std::unique_ptr<WiFiDisplayMediaPipeline> WiFiDisplayMediaPipeline::Create(
     wds::SessionType type,
     const WiFiDisplayVideoEncoder::InitParameters& video_parameters,
     const wds::AudioCodec& audio_codec,
-    const std::string& sink_ip_address,
+    const net::IPAddress& sink_ip_address,
     const std::pair<int, int>& sink_rtp_ports,
     const RegisterMediaServiceCallback& service_callback,
     const ErrorCallback& error_callback) {
@@ -60,10 +59,10 @@ WiFiDisplayMediaPipeline::~WiFiDisplayMediaPipeline() {
 }
 
 void WiFiDisplayMediaPipeline::InsertRawVideoFrame(
-    const scoped_refptr<media::VideoFrame>& video_frame,
+    scoped_refptr<media::VideoFrame> video_frame,
     base::TimeTicks reference_time) {
   DCHECK(video_encoder_);
-  video_encoder_->InsertRawVideoFrame(video_frame, reference_time);
+  video_encoder_->InsertRawVideoFrame(std::move(video_frame), reference_time);
 }
 
 void WiFiDisplayMediaPipeline::RequestIDRPicture() {
@@ -134,7 +133,7 @@ void WiFiDisplayMediaPipeline::OnInitialize(
       break;
     case InitializationStep::MEDIA_SERVICE:
       service_callback_.Run(
-          mojo::MakeRequest(&media_service_),
+          media_service_.BindNewPipeAndPassReceiver(),
           base::Bind(&WiFiDisplayMediaPipeline::OnMediaServiceRegistered,
                      weak_factory_.GetWeakPtr(), callback));
       break;
@@ -205,10 +204,10 @@ void WiFiDisplayMediaPipeline::OnMediaServiceRegistered(
     const InitCompletionCallback& callback) {
   DCHECK(media_service_);
   auto error_callback = base::Bind(error_callback_, kErrorUnableSendMedia);
-  media_service_.set_connection_error_handler(error_callback);
-  media_service_->SetDesinationPoint(
-      sink_ip_address_,
-      static_cast<int32_t>(sink_rtp_ports_.first),
+  media_service_.set_disconnect_handler(error_callback);
+  media_service_->SetDestinationPoint(
+      net::IPEndPoint(sink_ip_address_,
+                      static_cast<uint16_t>(sink_rtp_ports_.first)),
       callback);
 }
 

@@ -33,7 +33,8 @@ class UsageClock
 
  private:
   void OnSessionStarted(base::TimeTicks session_start) override;
-  void OnSessionEnded(base::TimeDelta session_length) override;
+  void OnSessionEnded(base::TimeDelta session_length,
+                      base::TimeTicks session_end) override;
 
   // The total time elapsed in completed usage sessions. The duration of the
   // current usage session, if any, must be added to this to get the total usage

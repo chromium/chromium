@@ -191,6 +191,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) Validator : public Mapper {
   bool ValidateProxyLocation(base::DictionaryValue* result);
   bool ValidateEAP(base::DictionaryValue* result);
   bool ValidateCertificate(base::DictionaryValue* result);
+  bool ValidateScope(base::DictionaryValue* result);
   bool ValidateTether(base::DictionaryValue* result);
 
   bool IsValidValue(const std::string& field_value,

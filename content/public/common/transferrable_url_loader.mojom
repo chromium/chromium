@@ -4,6 +4,7 @@
 
 module content.mojom;
 
+import "services/network/public/mojom/url_response_head.mojom";
 import "services/network/public/mojom/url_loader.mojom";
 import "url/mojom/url.mojom";
 
@@ -12,6 +13,6 @@ import "url/mojom/url.mojom";
 struct TransferrableURLLoader {
   url.mojom.Url url;
   network.mojom.URLLoader url_loader;
-  network.mojom.URLLoaderClient& url_loader_client;
+  pending_receiver<network.mojom.URLLoaderClient> url_loader_client;
   network.mojom.URLResponseHead head;
 };

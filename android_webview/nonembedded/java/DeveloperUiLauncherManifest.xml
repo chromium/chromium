@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Copyright (c) 2019 The Chromium Authors. All rights reserved.  Use of this
+  source code is governed by a BSD-style license that can be found in the
+  LICENSE file.
+-->
+
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="org.chromium.android_webview.devui">
+
+    <!--suppress HardcodedText -->
+    <application>
+        <activity-alias android:name="org.chromium.android_webview.devui.LauncherActivity"
+                  android:targetActivity="org.chromium.android_webview.devui.MainActivity"
+                  android:label="WebView DevTools"
+                  android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity-alias>
+    </application>
+</manifest>

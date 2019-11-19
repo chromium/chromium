@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="resources/snav-testharness.js"></script>
+
+<style>
+  div {
+    width: 100px;
+    height: 100px;
+    margin: 5px;
+    margin-top: 400px;
+    border: 1px solid black;
+  }
+  span {
+    position: absolute;
+    left: 300px;
+    overflow: hidden;
+    width: 1px;
+    height: 1px;
+    clip: rect(1px 1px 1px 1px);
+  }
+</style>
+
+<div id="first" tabindex="0"></div>
+<a id="link" href="https://example.com">
+  <!-- Because this span comes first in DOM order, but is positioned to the
+  right of the text node below, some bounding box calculations return an empty
+  rect. Make spatial-navigation behaves correctly in this case. -->
+  <span>
+    Invisible Text
+  </span>
+  Visible Text
+</a>
+
+<div id="offscreen" tabindex="0"></div>
+
+<script>
+  test(function(t) {
+    assert_true(internals.runtimeFlags.keyboardFocusableScrollersEnabled);
+  }, "Make sure KeyboardFocusableScrollers is set.");
+
+  // This test checks that focusless mode allows entering focus into an element
+  // with the enter key and exiting it with the escape key.
+  const first = document.getElementById("first");
+  const link = document.getElementById("link");
+
+  snav.assertSnavEnabledAndTestable();
+
+  test(() => {
+    assert_equals(window.scrollY, 0, "Start at 0 scroll offset.")
+
+    // Move interest onto the link.
+    snav.triggerMove('Down');
+    snav.triggerMove('Down');
+
+    assert_equals(window.internals.interestedElement,
+                  link,
+                  "link should start off interested.");
+
+    // Move interest down from the link. Since the bottom div is offscreen, we
+    // should scroll down rather than moving interest. In particular, make sure
+    // interest doesn't move back to the upper box.
+    snav.triggerMove('Down');
+    assert_greater_than(window.scrollY, 0, "Start at 0 scroll offset.")
+    assert_not_equals(document.activeElement,
+                      first,
+                      "Interest must not move up.");
+  }, "Clipped anchor doesn't caused looped-navigation bug.");
+</script>

@@ -5,7 +5,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//      http://www.apache.org/licenses/LICENSE-2.0
+//      https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -163,6 +163,12 @@
 // Compilers can use the information that a certain branch is not likely to be
 // taken (for instance, a CHECK failure) to optimize for the common case in
 // the absence of better information (ie. compiling gcc with `-fprofile-arcs`).
+//
+// Recommendation: Modern CPUs dynamically predict branch execution paths,
+// typically with accuracy greater than 97%. As a result, annotating every
+// branch in a codebase is likely counterproductive; however, annotating
+// specific branches that are both hot and consistently mispredicted is likely
+// to yield performance improvements.
 #if ABSL_HAVE_BUILTIN(__builtin_expect) || \
     (defined(__GNUC__) && !defined(__clang__))
 #define ABSL_PREDICT_FALSE(x) (__builtin_expect(x, 0))

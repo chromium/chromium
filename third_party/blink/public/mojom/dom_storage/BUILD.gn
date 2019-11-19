@@ -1,0 +1,29 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom_component("dom_storage") {
+  output_prefix = "dom_storage_mojom"
+  macro_prefix = "DOM_STORAGE_MOJOM"
+
+  sources = [
+    "session_storage_namespace.mojom",
+    "storage_area.mojom",
+    "storage_partition_service.mojom",
+  ]
+
+  public_deps = [
+    "//url/mojom:url_mojom_origin",
+  ]
+
+  # The Blink variant is linked directly into the private platform
+  # implementation and so it requires the corresponding export configuration to
+  # override the normal mojom_component() target exports.
+  export_class_attribute_blink = "PLATFORM_EXPORT"
+  export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
+  export_header_blink = "third_party/blink/renderer/platform/platform_export.h"
+
+  generate_java = true
+}

@@ -1,7 +1,8 @@
 achuith@chromium.org
-anthonyvd@chromium.org
 msarda@chromium.org
-rogerta@chromium.org
 xiyuan@chromium.org
+
+per-file inline_login_handler_impl*=file://chrome/credential_provider/OWNERS
+per-file inline_login_handler.*=file://chrome/credential_provider/OWNERS
 
 # COMPONENT: Services>SignIn

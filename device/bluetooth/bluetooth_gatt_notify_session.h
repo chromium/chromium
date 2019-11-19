@@ -44,7 +44,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattNotifySession {
   // necessarily stop value updates from the characteristic -- since updates
   // are shared among BluetoothGattNotifySession instances -- but it will
   // terminate this session.
-  virtual void Stop(const base::Closure& callback);
+  virtual void Stop(base::OnceClosure callback);
 
  private:
   // The associated characteristic.

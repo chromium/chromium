@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+FAIL Setting non-array index while named property exists (loose) assert_equals: expected (object) Element node <a id="named"></a> but got (string) "foo"
+FAIL Setting non-array index while named property exists (strict) assert_throws: function "function() {
+    c[name] = "foo";
+  }" did not throw
+PASS Setting non-array index while named property doesn't exist (loose)
+PASS Setting non-array index while named property doesn't exist (strict)
+PASS Setting array index while indexed property exists (loose)
+PASS Setting array index while indexed property exists (strict)
+PASS Setting array index while indexed property doesn't exist (loose)
+PASS Setting array index while indexed property doesn't exist (strict)
+Harness: the test ran to completion.
+

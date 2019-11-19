@@ -12,11 +12,11 @@
 #include "base/metrics/field_trial.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/feature_engagement/internal/availability_model.h"
-#include "components/feature_engagement/internal/configuration.h"
 #include "components/feature_engagement/internal/event_model.h"
 #include "components/feature_engagement/internal/noop_display_lock_controller.h"
 #include "components/feature_engagement/internal/proto/feature_event.pb.h"
 #include "components/feature_engagement/internal/test/event_util.h"
+#include "components/feature_engagement/public/configuration.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

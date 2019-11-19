@@ -1,8 +1,0 @@
-CONSOLE MESSAGE: line 23: First visit.
-CONSOLE MESSAGE: line 17: Visited fragment and waited.
-This test checks that interrupting a slow navigation with a fragment navigation will cancel the first navigation.
-
-============== Back Forward List ==============
-        http://127.0.0.1:8000/navigation/navigation-interrupted-by-fragment.html
-curr->  http://127.0.0.1:8000/navigation/navigation-interrupted-by-fragment.html#abc
-===============================================

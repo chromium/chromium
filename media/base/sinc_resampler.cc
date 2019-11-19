@@ -116,9 +116,9 @@ static int CalculateChunkSize(int block_size_, double io_ratio) {
 
 SincResampler::SincResampler(double io_sample_rate_ratio,
                              int request_frames,
-                             const ReadCB& read_cb)
+                             const ReadCB read_cb)
     : io_sample_rate_ratio_(io_sample_rate_ratio),
-      read_cb_(read_cb),
+      read_cb_(std::move(read_cb)),
       request_frames_(request_frames),
       input_buffer_size_(request_frames_ + kKernelSize),
       // Create input buffers with a 16-byte alignment for SSE optimizations.

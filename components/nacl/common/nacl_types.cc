@@ -19,7 +19,7 @@ NaClStartParams::NaClStartParams()
       process_type(kUnknownNaClProcessType) {
 }
 
-NaClStartParams::NaClStartParams(const NaClStartParams& other) = default;
+NaClStartParams::NaClStartParams(NaClStartParams&& other) = default;
 
 NaClStartParams::~NaClStartParams() {
 }
@@ -98,14 +98,13 @@ NaClLaunchResult::NaClLaunchResult(
     const IPC::ChannelHandle& manifest_service_ipc_channel_handle,
     base::ProcessId plugin_pid,
     int plugin_child_id,
-    base::SharedMemoryHandle crash_info_shmem_handle)
+    base::ReadOnlySharedMemoryRegion crash_info_shmem_region)
     : ppapi_ipc_channel_handle(ppapi_ipc_channel_handle),
       trusted_ipc_channel_handle(trusted_ipc_channel_handle),
       manifest_service_ipc_channel_handle(manifest_service_ipc_channel_handle),
       plugin_pid(plugin_pid),
       plugin_child_id(plugin_child_id),
-      crash_info_shmem_handle(crash_info_shmem_handle) {
-}
+      crash_info_shmem_region(std::move(crash_info_shmem_region)) {}
 
 NaClLaunchResult::~NaClLaunchResult() {
 }

@@ -51,7 +51,7 @@ std::unique_ptr<BufferedSocketWriter> BufferedSocketWriter::CreateForSocket(
   return result;
 }
 
-BufferedSocketWriter::BufferedSocketWriter() : weak_factory_(this) {}
+BufferedSocketWriter::BufferedSocketWriter() {}
 
 BufferedSocketWriter::~BufferedSocketWriter() {
   DCHECK(thread_checker_.CalledOnValidThread());

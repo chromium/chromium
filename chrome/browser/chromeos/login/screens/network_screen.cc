@@ -10,10 +10,8 @@
 #include "chrome/browser/chromeos/login/helper.h"
 #include "chrome/browser/chromeos/login/oobe_screen.h"
 #include "chrome/browser/chromeos/login/screen_manager.h"
-#include "chrome/browser/chromeos/login/screens/base_screen_delegate.h"
-#include "chrome/browser/chromeos/login/screens/network_screen_view.h"
-#include "chrome/browser/chromeos/login/screens/screen_exit_code.h"
 #include "chrome/browser/chromeos/login/wizard_controller.h"
+#include "chrome/browser/ui/webui/chromeos/login/network_screen_handler.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/network/network_handler.h"
@@ -35,17 +33,15 @@ namespace chromeos {
 // static
 NetworkScreen* NetworkScreen::Get(ScreenManager* manager) {
   return static_cast<NetworkScreen*>(
-      manager->GetScreen(OobeScreen::SCREEN_OOBE_NETWORK));
+      manager->GetScreen(NetworkScreenView::kScreenId));
 }
 
-NetworkScreen::NetworkScreen(BaseScreenDelegate* base_screen_delegate,
-                             NetworkScreenView* view,
+NetworkScreen::NetworkScreen(NetworkScreenView* view,
                              const ScreenExitCallback& exit_callback)
-    : BaseScreen(base_screen_delegate, OobeScreen::SCREEN_OOBE_NETWORK),
+    : BaseScreen(NetworkScreenView::kScreenId),
       view_(view),
       exit_callback_(exit_callback),
-      network_state_helper_(std::make_unique<login::NetworkStateHelper>()),
-      weak_ptr_factory_(this) {
+      network_state_helper_(std::make_unique<login::NetworkStateHelper>()) {
   if (view_)
     view_->Bind(this);
 }

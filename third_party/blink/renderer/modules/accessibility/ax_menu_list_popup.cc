@@ -59,7 +59,7 @@ bool AXMenuListPopup::ComputeAccessibilityIsIgnored(
 AXMenuListOption* AXMenuListPopup::MenuListOptionAXObject(
     HTMLElement* element) const {
   DCHECK(element);
-  if (!IsHTMLOptionElement(*element))
+  if (!IsA<HTMLOptionElement>(*element))
     return nullptr;
 
   AXObject* object = AXObjectCache().GetOrCreate(element);
@@ -73,11 +73,10 @@ int AXMenuListPopup::GetSelectedIndex() const {
   if (!parent_)
     return -1;
 
-  Node* parent_node = parent_->GetNode();
-  if (!IsHTMLSelectElement(parent_node))
+  auto* html_select_element = DynamicTo<HTMLSelectElement>(parent_->GetNode());
+  if (!html_select_element)
     return -1;
 
-  HTMLSelectElement* html_select_element = ToHTMLSelectElement(parent_node);
   return html_select_element->selectedIndex();
 }
 
@@ -93,11 +92,10 @@ void AXMenuListPopup::AddChildren() {
   if (!parent_)
     return;
 
-  Node* parent_node = parent_->GetNode();
-  if (!IsHTMLSelectElement(parent_node))
+  auto* html_select_element = DynamicTo<HTMLSelectElement>(parent_->GetNode());
+  if (!html_select_element)
     return;
 
-  HTMLSelectElement* html_select_element = ToHTMLSelectElement(parent_node);
   have_children_ = true;
 
   if (active_index_ == -1)

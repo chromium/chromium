@@ -61,6 +61,13 @@ bool TestSafeBrowsingDatabaseManager::CheckResourceUrl(const GURL& url,
   return true;
 }
 
+AsyncMatch TestSafeBrowsingDatabaseManager::CheckUrlForHighConfidenceAllowlist(
+    const GURL& url,
+    Client* client) {
+  NOTIMPLEMENTED();
+  return AsyncMatch::NO_MATCH;
+}
+
 bool TestSafeBrowsingDatabaseManager::CheckUrlForSubresourceFilter(
     const GURL& url,
     Client* client) {

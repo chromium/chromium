@@ -12,12 +12,10 @@
 #include "base/macros.h"
 #include "chrome/browser/chromeos/login/screens/base_screen.h"
 #include "chromeos/tpm/tpm_password_fetcher.h"
-#include "components/login/screens/screen_context.h"
 #include "url/gurl.h"
 
 namespace chromeos {
 
-class BaseScreenDelegate;
 class EulaView;
 
 // Representation independent class that controls OOBE screen showing EULA
@@ -34,9 +32,7 @@ class EulaScreen : public BaseScreen, public TpmPasswordFetcherDelegate {
   };
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
-  EulaScreen(BaseScreenDelegate* base_screen_delegate,
-             EulaView* view,
-             const ScreenExitCallback& exit_callback);
+  EulaScreen(EulaView* view, const ScreenExitCallback& exit_callback);
   ~EulaScreen() override;
 
   // Returns URL of the OEM EULA page that should be displayed using current
@@ -46,6 +42,8 @@ class EulaScreen : public BaseScreen, public TpmPasswordFetcherDelegate {
   // Initiate TPM password fetch. Will call view's OnPasswordFetched() when
   // done.
   void InitiatePasswordFetch();
+
+  void SetUsageStatsEnabled(bool enabled);
 
   // Returns true if usage statistics reporting is enabled.
   bool IsUsageStatsEnabled() const;
@@ -62,7 +60,6 @@ class EulaScreen : public BaseScreen, public TpmPasswordFetcherDelegate {
   void Show() override;
   void Hide() override;
   void OnUserAction(const std::string& action_id) override;
-  void OnContextKeyUpdated(const ::login::ScreenContext::KeyType& key) override;
 
   // TpmPasswordFetcherDelegate implementation:
   void OnPasswordFetched(const std::string& tpm_password) override;

@@ -16,14 +16,15 @@
 <translation id="106222400312645156">rwhdr</translation>
 <translation id="1065552602950927991">Geçersiz giriş</translation>
 <translation id="1066085461259044485">Orman Yeşili</translation>
-<translation id="1080471004309605942">İtalik metin sonu</translation>
 <translation id="1082209053475788238">Önceki 6. düzey başlık yok.</translation>
 <translation id="1087788677726983142">Etkinlik akış filtrelerini gizle</translation>
 <translation id="1088219014394087294">Başlık yok.</translation>
 <translation id="1106741348836243114">Sesli geri bildirimi (ses sinyalleri) aç veya kapat.</translation>
-<translation id="1120743664840974483">{"a": "adana", "b": "bolu", "c": "ceyhan", "ç": "çanakkale", "d": "denizli", "e": "edirne", "f": "fatsa", "g": "giresun", "ğ": "yumuşak ge", "h": "hatay", "ı": "ısparta", "i": "izmir", "j": "jandarma", "k": "kayseri", "l": "lüleburgaz", "m": "muş", "n": "niğde", "o": "ordu","p": "polatlı", "r": "rize", "s": "sinop", "ş": "şırnak", "t": "tokat", "u": "uşak", "ü": "ünye", "v": "van", "y": "yozgat", "z": "zonguldak"}</translation>
+<translation id="1114836634143403764">Öneri</translation>
+<translation id="1120743664840974483">{"a": "adana", "b": "bolu", "c": "ceyhan", "ç": "çanakkale", "d": "denizli", "e": "edirne", "f": "fatsa", "g": "giresun", "ğ": "yumuşak ge", "h": "hatay", "ı": "ısparta", "i": "izmir", "j": "jandarma", "k": "kars", "l": "lüleburgaz", "m": "muş", "n": "niğde", "o": "ordu", "ö": "ödemiş", "p": "polatlı", "r": "rize", "s": "sinop", "ş": "şırnak", "t": "tokat", "u": "uşak", "ü": "ünye", "v": "van", "y": "yozgat", "z": "zonguldak"}</translation>
 <translation id="1120938014254001895">İki parmağınızı yukarı kaydırın</translation>
 <translation id="1124771028211010580">Mevcut görüntüleme stili yan yanadır.</translation>
+<translation id="1126928665165112660">İtalik değil</translation>
 <translation id="113582498867142724"><ph name="NUM" /> öğeye sahip <ph name="TAG" /> koleksiyonu</translation>
 <translation id="1155043339247954670">Sonraki liste öğesi yok.</translation>
 <translation id="1157782847298808853">Klavye Yardımı</translation>
@@ -56,6 +57,7 @@ Eğiticiyle işiniz bittiğinde, ChromeVox'ı kullanarak Kapat düğmesine gidin
 <translation id="1325946044405407859">Ten Rengi</translation>
 <translation id="1331702245475014624">toplam: <ph name="TOTAL" />, öğe: <ph name="INDEX" /></translation>
 <translation id="1334095593597963605">karakter ve kelime yansıtma</translation>
+<translation id="1334570596456017464">Alt simge</translation>
 <translation id="1339428534620983148">Önceki tablo sütunu</translation>
 <translation id="1342835525016946179">article</translation>
 <translation id="1346059596910821859">İpucu</translation>
@@ -97,6 +99,7 @@ Eğiticiyle işiniz bittiğinde, ChromeVox'ı kullanarak Kapat düğmesine gidin
 <translation id="1616111909442424068">Buğday</translation>
 <translation id="1618597272655350600">Mevcut konumun tam açıklamasını söyler</translation>
 <translation id="1627222324347828322">Kireç Beyazı</translation>
+<translation id="1630688379087270943">İtalik yazı tipi belirtin:</translation>
 <translation id="1639634871799530612">{COUNT,plural, =1{büyüktür işareti}other{# büyüktür işareti}}</translation>
 <translation id="1653266918374749391">Önceki 3. düzey başlık</translation>
 <translation id="1657616855184033958">Etkinlik akış filtrelerini göster</translation>
@@ -131,6 +134,7 @@ Eğiticiyle işiniz bittiğinde, ChromeVox'ı kullanarak Kapat düğmesine gidin
 <translation id="1905379170753160525">Başlıklar listesini göster</translation>
 <translation id="1912556590115083156">vlnk</translation>
 <translation id="1913761808037590218">#ed</translation>
+<translation id="1914424852593176649">Boyut <ph name="FONT_SIZE" /></translation>
 <translation id="1914635379910604678"><ph name="DOT" /> grubu</translation>
 <translation id="1923956950274750765">Orta Ton Orkide</translation>
 <translation id="1954623340234317532">Yılın haftası denetimi</translation>
@@ -140,18 +144,21 @@ Eğiticiyle işiniz bittiğinde, ChromeVox'ı kullanarak Kapat düğmesine gidin
 <translation id="1990932729021763163">Satır üst bilgisi:</translation>
 <translation id="2002895034995108595">Geçerli tuş eşleşmesini sıfırla</translation>
 <translation id="2007545860310005685">{COUNT,plural, =1{sol köşeli ayraç}other{# sol köşeli ayraç}}</translation>
+<translation id="2009187674653301682">Üst simge değil</translation>
 <translation id="2010555995361223825">ChromeVox Menüleri</translation>
 <translation id="2045490512405922022">seçili değil</translation>
 <translation id="20601713649439366">Önceki matematik ifadesi yok.</translation>
 <translation id="2063539687800151747">Yazıt</translation>
 <translation id="207477615537953741">Anlamsal yorum kapalı</translation>
 <translation id="2086961585857038472">Sonraki Kelime</translation>
+<translation id="2087981446621639008">dscrplst dtl</translation>
 <translation id="2089387485033699258">tr</translation>
 <translation id="2091933974477985526">Düzenlenebilir önceki metin alanı</translation>
 <translation id="2100350898815792233">Tüm noktalama işaretleri</translation>
 <translation id="2110480898214777136">Bir sayfa, iletişim veya kapsayıcı içinde baştan sona veya sondan başa sarma</translation>
 <translation id="2119965627982867824">spnbtn</translation>
 <translation id="2121067395472282800">erişim tuşu:<ph name="KEY" /></translation>
+<translation id="2126597928985245619">Bu öğeyle ilgili metin yok</translation>
 <translation id="2127747486437921899">İtalik</translation>
 <translation id="2138345533858834403">Ekranın üst kısmındaki ChromeVox panelinde yenilenebilir bir braille ekranın çıktısını simüle eder.</translation>
 <translation id="2163782704988363449">Yazım hataları</translation>
@@ -161,14 +168,17 @@ Eğiticiyle işiniz bittiğinde, ChromeVox'ı kullanarak Kapat düğmesine gidin
 <translation id="2197863150503783129">Kırmızımsı Kahverengi</translation>
 <translation id="2199994615414171367">Önceki matematik tuşu</translation>
 <translation id="2203046366315513658">Değeri azaltma</translation>
+<translation id="2216790501338699346">Bağlantı URL'si: <ph name="LINK_URL" /></translation>
 <translation id="2220529011494928058">Sorun bildir</translation>
 <translation id="2223693656926968778">Mevcut öğe üzerinde işlem yap</translation>
+<translation id="224426591676115802">Şu dil için ses yok: <ph name="LANGUAGE" /></translation>
 <translation id="225732394367814946">Konuşma hızını artır</translation>
+<translation id="2267538686624070261">Yazım hatasından çıkılıyor</translation>
 <translation id="2267945578749931355">Sonraki Karakter</translation>
 <translation id="2278490101488436824">Üç parmağınızı sola kaydırın</translation>
 <translation id="2281234842553884450">Önceki kaydırma çubuğu</translation>
-<translation id="2294136146931447363">İtalik metin başlangıcı</translation>
 <translation id="2311237334957139798">Ayrıntı düzeyinde önceki öğeye gidin</translation>
+<translation id="2314393392395134769">Alt simge değil</translation>
 <translation id="2318372665160196757">Ana</translation>
 <translation id="2329324941084714723">Sekme paneli</translation>
 <translation id="2344193891939537199">Tarih/saat denetimi</translation>
@@ -181,6 +191,7 @@ Eğiticiyle işiniz bittiğinde, ChromeVox'ı kullanarak Kapat düğmesine gidin
 <translation id="2416512023405990736">İşaretlenmemiş onay kutusu</translation>
 <translation id="2417569100218200841">İçerik bilgileri</translation>
 <translation id="2417948780551741035">Son notlar</translation>
+<translation id="2419852971200420169">Açıklama listesi</translation>
 <translation id="2421113964388408478">Silme</translation>
 <translation id="2422937916923936891">Menü öğesi onay kutusu</translation>
 <translation id="2428534162001909979">Komut Menüleri</translation>
@@ -202,12 +213,13 @@ Eğiticiyle işiniz bittiğinde, ChromeVox'ı kullanarak Kapat düğmesine gidin
 <translation id="257674075312929031">Grup</translation>
 <translation id="2582407057977008361">Kenar</translation>
 <translation id="2592212930811759050">Düzenlemeye başlamak için iki kez dokunun</translation>
-<translation id="2606210917827248971">{COUNT,plural, =1{# öğeyle}other{# öğeyle}}</translation>
+<translation id="2598495320872286378">Dil bilgisi hatası</translation>
 <translation id="2614981083756825552">Matematik ML Düzeni</translation>
 <translation id="2624431853467395961">Öğrenme modunu açar</translation>
 <translation id="2626530649491650971">tıklanabilir</translation>
 <translation id="2628764385451019380">Önceki birleşik giriş kutusu yok</translation>
 <translation id="2637227747952042642">Matematik</translation>
+<translation id="2638785836053527382"><ph name="FILE_NAME" /> dosyasını indirme işlemi devam ediyor</translation>
 <translation id="2639750663247012216">ChromeVox değiştirici</translation>
 <translation id="2644542693584024604">misspelled</translation>
 <translation id="2661530546602071611">Bildirim</translation>
@@ -224,12 +236,11 @@ Eğiticiyle işiniz bittiğinde, ChromeVox'ı kullanarak Kapat düğmesine gidin
 <translation id="2717271541250958000">tabpnl</translation>
 <translation id="2723001399770238859">ses</translation>
 <translation id="2732718972699418926">ÖÖ</translation>
-<translation id="2737520612859577214">Üst simge sonu</translation>
 <translation id="2749275490991666823">İşaretli</translation>
 <translation id="27527859628328957">Odaklanabilir sonraki öğeye atla</translation>
 <translation id="2770781857296573485">Grup keşfine geç</translation>
 <translation id="2777845298774924149">Çıkıldı</translation>
-<translation id="2781264313200109999">Bağlantı başlangıcı</translation>
+<translation id="2783001728278437613">{COUNT,plural, =1{+#}other{+#}}</translation>
 <translation id="2784959586797362050">Her zaman olduğu gibi Arama+a ve ardından i tuşlarına basarak geri bildiriminizi bize doğrudan gönderebilirsiniz. Düşüncelerinizi öğrenmeyi çok isteriz.</translation>
 <translation id="2800204403141299078">Başka farklı öğe yok.</translation>
 <translation id="2800780099804980316">Önceki 1. düzey başlık yok.</translation>
@@ -249,9 +260,9 @@ Eğiticiyle işiniz bittiğinde, ChromeVox'ı kullanarak Kapat düğmesine gidin
 <translation id="287383510823843610">Koyu Turuncu</translation>
 <translation id="2879867157561757640">Üç parmağınızı aşağı kaydırın</translation>
 <translation id="288178314850623291">Belirli öğe türlerine atlamak için atlama komutlarını kullanın. Başlıklar arasında ileriye atlamak için Arama + H tuşlarına, geriye atlamak için de Arama + Üst Karakter + H tuşlarına basın.</translation>
+<translation id="2885764457467528513">{COUNT,plural, =1{dakika}other{dakika}}</translation>
 <translation id="2894654529758326923">Bilgiler</translation>
 <translation id="2899328121302785497">{COUNT,plural, =1{sol küme parantezi}other{# sol küme parantezi}}</translation>
-<translation id="2909478709401302630">Üst simge başlangıcı</translation>
 <translation id="2911433807131383493">ChromeVox eğiticiyi aç</translation>
 <translation id="2912405967290226587">Üç parmağınızı sağa kaydırın</translation>
 <translation id="2932083475399492303">Yapısal veya düzen satır türü arasında geçiş yap</translation>
@@ -284,6 +295,7 @@ Eğiticiyle işiniz bittiğinde, ChromeVox'ı kullanarak Kapat düğmesine gidin
 <translation id="3084806535845658316">yazma yansıtması yok</translation>
 <translation id="3086746722712840547">note</translation>
 <translation id="308895241372589742">Sonraki matematik ifadesi yok.</translation>
+<translation id="3090227230165225418">İndirme bildirimlerini duyur</translation>
 <translation id="3090532668523289635">grp</translation>
 <translation id="3093176084511590672">Sonraki önemli nokta</translation>
 <translation id="3096671415663099226">cbo</translation>
@@ -303,16 +315,19 @@ Eğiticiyle işiniz bittiğinde, ChromeVox'ı kullanarak Kapat düğmesine gidin
 <translation id="3163593631834463955">Boş sütun üst bilgisi</translation>
 <translation id="316542773973815724">Gezinme</translation>
 <translation id="3172700825913348768">{COUNT,plural, =1{boşluk}other{# boşluk}}</translation>
+<translation id="3179119189286472195">Bağlantı verilmemiş</translation>
 <translation id="320961988183078793"><ph name="TYPE" /> girildi</translation>
 <translation id="321072937702597574">Orkide</translation>
 <translation id="3218691001991391708"><ph name="TEXT" />metnini yapıştır.</translation>
 <translation id="3223701887221307104"><ph name="NAME" />, sekme</translation>
+<translation id="3223779237381380437">Üstü çizili değil</translation>
 <translation id="3226035351387556942">chk</translation>
 <translation id="3229375994964697375">Ziyaret edilmiş bağlantı</translation>
 <translation id="3232388865800379423">Pop-up düğme</translation>
 <translation id="3241052487511142956">Ziyaret edilmiş olan önceki bağlantı</translation>
 <translation id="3241638166094654466">Her satırdaki hücre sayısı:</translation>
-<translation id="327361630706777244"><ph name="FONT_COLOR" /> sonu</translation>
+<translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
+<translation id="3260949043575829030">Önceki benzer öğe</translation>
 <translation id="3286372614333682499">dikey</translation>
 <translation id="3286390186030710347">Kaydırma çubuğu</translation>
 <translation id="3299925995433437805">Ziyaret edilmiş başka sonraki bağlantı yok.</translation>
@@ -328,6 +343,7 @@ Eğiticiyle işiniz bittiğinde, ChromeVox'ı kullanarak Kapat düğmesine gidin
 <translation id="3324983252691184275">Kızıl</translation>
 <translation id="3338224621010291843"><ph name="VALUE" /> <ph name="NAME" /> kaydırma çubuğu</translation>
 <translation id="335581015389089642">Konuşma</translation>
+<translation id="3356951775008366684">Kelimenin fonetik telaffuzunu söyler</translation>
 <translation id="3359142382821736686">seprtr</translation>
 <translation id="3374537878095184207">{COUNT,plural, =1{artı işareti}other{# artı işareti}}</translation>
 <translation id="338583716107319301">Ayırıcı</translation>
@@ -337,7 +353,6 @@ Eğiticiyle işiniz bittiğinde, ChromeVox'ı kullanarak Kapat düğmesine gidin
 <translation id="3393605254399152980">Dokunduğunuz öğenin açıklamasını duymak için bir parmağınızı sürükleyin</translation>
 <translation id="3406283310380167331">Form listesini göster</translation>
 <translation id="3414400929511680526">Alice Mavisi</translation>
-<translation id="3437941064431741545">Boyut <ph name="FONT_SIZE" /> sonu</translation>
 <translation id="344800400831402066">Peru</translation>
 <translation id="3457000393508828486">Kısmen basıldı</translation>
 <translation id="3458865416877308321"><ph name="NAME" />, kapat</translation>
@@ -354,9 +369,9 @@ Eğiticiyle işiniz bittiğinde, ChromeVox'ı kullanarak Kapat düğmesine gidin
 <translation id="3497063866483065785">{COUNT,plural, =1{soru işareti}other{# soru işareti}}</translation>
 <translation id="3514822174137761109">{COUNT,plural, =1{düzeltme işareti}other{# düzeltme işareti}}</translation>
 <translation id="352577523970648069">Düzenlenebilir metin alanı</translation>
+<translation id="3538907380453898475">dscrplst</translation>
 <translation id="3549141990712742152"><ph name="TEXT" />metnini kes.</translation>
 <translation id="3549680091535286226">Konuşmayı geçici olarak durdurmak için 2 parmağınızla dokunun</translation>
-<translation id="3555380819397253474"><ph name="FONT_FAMILY" /> başlangıcı</translation>
 <translation id="3568702578574425662"><ph name="NAME" /> adlı onay kutusu işaretli değil</translation>
 <translation id="3589661172894441357">Terimler sözlüğü</translation>
 <translation id="3591784666823501596">Kraliyet Mavisi</translation>
@@ -368,6 +383,7 @@ Eğiticiyle işiniz bittiğinde, ChromeVox'ı kullanarak Kapat düğmesine gidin
 <translation id="3646890046000188562">{COUNT,plural, =1{aksan işareti}other{# aksan işareti}}</translation>
 <translation id="3650317109285159359">chkmnuitm</translation>
 <translation id="3655855170848725876">{COUNT,plural, =1{dolar işareti}other{# dolar işareti}}</translation>
+<translation id="3658742229777143148">Düzeltme</translation>
 <translation id="3659787053479271466">alrt</translation>
 <translation id="3665563998540286755"><ph name="VALUE" />, liste kutusu</translation>
 <translation id="3681531118904532409">Papaya Rengi</translation>
@@ -386,7 +402,6 @@ Eğiticiyle işiniz bittiğinde, ChromeVox'ı kullanarak Kapat düğmesine gidin
 <translation id="3781428340399460090">Canlı Pembe</translation>
 <translation id="3783725005098956899">Günlüğü Göster</translation>
 <translation id="3793710123303304873">İletişim kutusundan çıkıldı.</translation>
-<translation id="3795836767122514678">+{COUNT,plural, =1{#}other{#}}</translation>
 <translation id="3801735343383419236">Otomatik tamamlama listesi</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3813387282697781382">Açık Mercan</translation>
@@ -405,6 +420,7 @@ Eğiticiyle işiniz bittiğinde, ChromeVox'ı kullanarak Kapat düğmesine gidin
 <translation id="3930498801443296724">Alıntı</translation>
 <translation id="3936394396199829062">Lila</translation>
 <translation id="3941269780691800708">Fare işaretçisinin altındaki metni oku.</translation>
+<translation id="394953087167197343">Yazım hatasını belirtin:</translation>
 <translation id="3962990492275676168">Mevcut konumdan okumaya başla</translation>
 <translation id="3970951409746498040">Kumlu Kahverengi</translation>
 <translation id="3989324057180830702">açm/kap dğm</translation>
@@ -416,7 +432,6 @@ Eğiticiyle işiniz bittiğinde, ChromeVox'ı kullanarak Kapat düğmesine gidin
 <translation id="4039983576244166038">Boş satır üst bilgisi</translation>
 <translation id="4042843249978639960">Sonraki 2. düzey başlık yok.</translation>
 <translation id="4043348641337972076">Önceki ARIA önemli noktası yok.</translation>
-<translation id="4045764028670444336">Yazım hatası başlangıcı</translation>
 <translation id="4047216625641135770">İşaretle</translation>
 <translation id="404803211695627272"><ph name="V1" />-<ph name="V2" /></translation>
 <translation id="4053520724192563562">Misket Limonu Yeşili</translation>
@@ -435,8 +450,8 @@ Eğiticiyle işiniz bittiğinde, ChromeVox'ı kullanarak Kapat düğmesine gidin
 <translation id="4148180433151187540">{COUNT,plural, =1{sağ küme parantezi}other{# sağ küme parantezi}}</translation>
 <translation id="4158704014418536539">Büyük/küçük harfe duyarlı.</translation>
 <translation id="4159784952369912983">Mor</translation>
+<translation id="4161104397932142764">{COUNT,plural, =1{saniye}other{saniye}}</translation>
 <translation id="4161663686871496107">ChromeVox sesli geri bildirim hazır</translation>
-<translation id="4166192625054637755">Alt simge sonu</translation>
 <translation id="4173994908659439270">Düzenlenebilir sonraki metin alanı yok.</translation>
 <translation id="4176463684765177261">Devre dışı</translation>
 <translation id="4187322598335821254">Satırlar arasında geçiş yapmak için yukarı veya aşağı doğru hızlıca kaydırın</translation>
@@ -452,6 +467,7 @@ Eğiticiyle işiniz bittiğinde, ChromeVox'ı kullanarak Kapat düğmesine gidin
 <translation id="42164919740161077">Camgöbeği</translation>
 <translation id="4218529045364428769">{COUNT,plural, =1{kısa çizgi}other{# kısa çizgi}}</translation>
 <translation id="421884353938374759">renk seçici</translation>
+<translation id="4221071177874897997">Kalın yazı tipi belirtin:</translation>
 <translation id="4229646983878045487">date time</translation>
 <translation id="4230834257931120629">Açık Kurşun Grisi</translation>
 <translation id="4231102694147661229">Geliştirici Seçeneklerini Etkinleştir</translation>
@@ -477,6 +493,7 @@ Eğiticiyle işiniz bittiğinde, ChromeVox'ı kullanarak Kapat düğmesine gidin
 <translation id="4372705107434148843">Konuşmayı durdur</translation>
 <translation id="4373197658375206385">Bağlantı olmayan önceki öğe yok.</translation>
 <translation id="4376316291247992553">Grafiği Braille Olarak Göster</translation>
+<translation id="437809255587011096">Metin stilini duyur</translation>
 <translation id="4378308539633073595">İleri kaydırma</translation>
 <translation id="4384583879834880242">Soru-Cevap</translation>
 <translation id="4391478986194775161">cntntinfo</translation>
@@ -494,10 +511,10 @@ Eğiticiyle işiniz bittiğinde, ChromeVox'ı kullanarak Kapat düğmesine gidin
 <translation id="4517854969512651305">Değeri artırma</translation>
 <translation id="4529987814483543472">Klasik tuş eşleşmesi</translation>
 <translation id="4532633738839459153">{COUNT,plural, =1{eğik çizgi}other{# eğik çizgi}}</translation>
+<translation id="4537277403911487429">Sonraki benzer öğe</translation>
 <translation id="4547556996012970016">Sonraki 5. düzey başlık</translation>
 <translation id="4562381607973973258">Üst bilgi</translation>
 <translation id="4569941707103739422">Gezinmek için yukarı veya aşağı oka, etkinleştirmek için Enter tuşuna basın.</translation>
-<translation id="4570424871453628777">Yazım hatası sonu</translation>
 <translation id="4591507479202817876">, seçili</translation>
 <translation id="4597532268155981612">form</translation>
 <translation id="4597896406374528575">Nisan</translation>
@@ -524,6 +541,8 @@ Eğiticiyle işiniz bittiğinde, ChromeVox'ı kullanarak Kapat düğmesine gidin
 <translation id="4763296182459741068">Alta döner</translation>
 <translation id="4763480195061959176">video</translation>
 <translation id="4764692524839457597">varsayılan</translation>
+<translation id="4772771694153161212">Altı çizili değil</translation>
+<translation id="4787577491510559358">Mevcut öğenin biçimini söyler</translation>
 <translation id="479989351350248267">ara</translation>
 <translation id="4804818685124855865">Bağlantıyı kes</translation>
 <translation id="481165870889056555">Mevcut sayfanın başlığını söyle</translation>
@@ -537,9 +556,9 @@ Eğiticiyle işiniz bittiğinde, ChromeVox'ı kullanarak Kapat düğmesine gidin
 <translation id="4842108708071771135">Sonraki blok alıntı yok.</translation>
 <translation id="4844625982113518938">Adını öğrenmek için herhangi bir tuşa basın. Ctrl+W, öğrenme modunu kapatır.</translation>
 <translation id="4846428657345567687">ChromeVox'a Hoş Geldiniz!</translation>
-<translation id="4846487886195635104">Üstü çizili metin sonu</translation>
 <translation id="4848993367330139335">tmr</translation>
 <translation id="4850023505158945298">Önceki benzer öğe.</translation>
+<translation id="4862744964787595316">Kalın değil</translation>
 <translation id="4866956062845190338">rdmnuitm</translation>
 <translation id="4867316986324544967">TTS günlük kaydını etkinleştir</translation>
 <translation id="4877261390094455813">Arama sorgusunu girin.</translation>
@@ -560,6 +579,7 @@ Eğiticiyle işiniz bittiğinde, ChromeVox'ı kullanarak Kapat düğmesine gidin
 <translation id="4983588134362688868">Sayfanın en üst kısmına atlar</translation>
 <translation id="4986606102545753256"><ph name="NAME" />, pencere</translation>
 <translation id="4993152509206108683">Hız yüzde <ph name="PERCENT" /></translation>
+<translation id="4994420463726586413">Mevcut pil durumunu söyler</translation>
 <translation id="4996716799442435517">Görsel</translation>
 <translation id="4997282455736854877"><ph name="NAME" />, radyo düğmesi seçili</translation>
 <translation id="4997475792277222884">Bağlantı olmayan sonraki öğe yok.</translation>
@@ -599,7 +619,7 @@ Eğiticiyle işiniz bittiğinde, ChromeVox'ı kullanarak Kapat düğmesine gidin
 <translation id="520883772648104506">Sonraki radyo düğmesi yok.</translation>
 <translation id="5263034204789987535">Mısır Püskülü</translation>
 <translation id="5263344797180442561">h2</translation>
-<translation id="528468243742722775">End</translation>
+<translation id="528468243742722775">Son</translation>
 <translation id="5291783959063340370">Nesne</translation>
 <translation id="5302089807023311274">Kaynakça referansı</translation>
 <translation id="5304943142864553931"><ph name="TITLE" />, sekme</translation>
@@ -611,9 +631,9 @@ Eğiticiyle işiniz bittiğinde, ChromeVox'ı kullanarak Kapat düğmesine gidin
 <translation id="5330443287809544590"><ph name="NAME" />, bağlantı</translation>
 <translation id="5336381510091010269">autoinl+lst</translation>
 <translation id="5349770431644471053">Geri bağlantı</translation>
-<translation id="5350654862897073517">Alt simge başlangıcı</translation>
 <translation id="536031132345979795">Sürekli okuma sırasında geriye doğru atla</translation>
 <translation id="5368000168321181111">Ses sinyalleri kapalı</translation>
+<translation id="5368505757342402527"><ph name="FILE_NAME" /> dosyası %<ph name="PROGRESS" /> oranında indirildi. Yaklaşık <ph name="TIME" /> <ph name="UNITS" /> kaldı.</translation>
 <translation id="5374320867641260420">Sonraki düğme yok.</translation>
 <translation id="5376407118396657359">Hücreden hücreye gitmek için Arama+Ctrl+Alt ve ok tuşlarına basın.</translation>
 <translation id="5382299583965267720">Sonraki 1. düzey başlık yok.</translation>
@@ -647,6 +667,7 @@ Eğiticiyle işiniz bittiğinde, ChromeVox'ı kullanarak Kapat düğmesine gidin
 <translation id="5574412348552378458">ChromeVox Öğrenme Modu</translation>
 <translation id="5583640892426849032">Geri al tuşu</translation>
 <translation id="5585044216466955529">Metni düzenle, e-posta girişi</translation>
+<translation id="5586942249556966598">Hiçbir şey yapma</translation>
 <translation id="5597170376237141345">Sonraki onay kutusu</translation>
 <translation id="5597933780944041114">Sonraki başlık yok.</translation>
 <translation id="5598905979683743333"><ph name="NAME" />, radyo düğmesi seçili değil</translation>
@@ -707,6 +728,7 @@ Eğiticiyle işiniz bittiğinde, ChromeVox'ı kullanarak Kapat düğmesine gidin
 <translation id="5956928062748260866">İletişim Kutusu</translation>
 <translation id="5963413905009737549">Bölüm</translation>
 <translation id="5968607524793740041">İçerik menüsünü göster</translation>
+<translation id="597121107011153418">{COUNT,plural, =1{# öğeli}other{# öğeli}}</translation>
 <translation id="5981446804259161541">Açık Camgöbeği</translation>
 <translation id="5983179082906765664">Gezinme hassasiyetini artır</translation>
 <translation id="5992285135956208197">Grafik dokümanı</translation>
@@ -718,10 +740,7 @@ Eğiticiyle işiniz bittiğinde, ChromeVox'ı kullanarak Kapat düğmesine gidin
 <translation id="6037602951055904232">İleri kaydır</translation>
 <translation id="6042826534790431634">Etkinleştirmek için Arama+Boşluk tuşlarına basın.</translation>
 <translation id="6044160928851315051">Ekranı kapat</translation>
-<translation id="605761629541007221">Kalın metin sonu</translation>
-<translation id="6065293622157674001">Dil bilgisi hatası başlangıcı</translation>
 <translation id="6082768461603900813">Temel Gezinme</translation>
-<translation id="6092707270915298410">Bağlantı sonu</translation>
 <translation id="6118126368611144850">Chrome için Android uygulamaları. Cihazınızda Play Store varsa Android uygulamaları ile ChromeVox'a önceden göz atın. Play Store'dan Google Chrome Canary sürümünü indirerek deneysel desteği deneyin.</translation>
 <translation id="611827076493383239">vtd</translation>
 <translation id="6119955456199054975">Hücrenin sonu.</translation>
@@ -759,6 +778,7 @@ Eğiticiyle işiniz bittiğinde, ChromeVox'ı kullanarak Kapat düğmesine gidin
 <translation id="6378394210114975876">Deve Dikeni</translation>
 <translation id="6385591741672306837">sütun</translation>
 <translation id="6387719785439924554">aside</translation>
+<translation id="6393014464788431702">Tüm etkinlik filtrelerini devre dışı bırak</translation>
 <translation id="6411426777058107714">Önceki radyo düğmesi yok.</translation>
 <translation id="6414968628640960377">Önceki farklı öğe.</translation>
 <translation id="6417265370957905582">Google Asistan</translation>
@@ -769,9 +789,8 @@ Eğiticiyle işiniz bittiğinde, ChromeVox'ı kullanarak Kapat düğmesine gidin
 <translation id="6459511626086141404">Düz tuş eşleme</translation>
 <translation id="6468049171101508116">Sonraki düğmesi</translation>
 <translation id="646954774886932461">Dizin</translation>
-<translation id="6470797302070897045">Boyut <ph name="FONT_SIZE" /> başlangıcı</translation>
+<translation id="6479792383819319132">Bundan sonra başka paragraf yok.</translation>
 <translation id="6493991254603208962">Parlaklığı azalt</translation>
-<translation id="6497864469186228849"><ph name="FONT_FAMILY" /> sonu</translation>
 <translation id="6501595918865591267">Turkuaz</translation>
 <translation id="6508059270146105198">Braille ekranını sayfanın altına taşı</translation>
 <translation id="6521550811716689390">Koyu Menekşe Rengi</translation>
@@ -793,9 +812,11 @@ Eğiticiyle işiniz bittiğinde, ChromeVox'ı kullanarak Kapat düğmesine gidin
 <translation id="6637586476836377253">log</translation>
 <translation id="6657128831881431364">İlerleme çubuğu</translation>
 <translation id="6659594942844771486">Sekme</translation>
+<translation id="6675661017770918201">Bundan önce başka paragraf yok.</translation>
 <translation id="667999046851023355">Doküman</translation>
 <translation id="6688209025607531203">Modal olmayan uyarı</translation>
 <translation id="6689672606256159458">Koyu Somon</translation>
+<translation id="669617842401078250"><ph name="FILE_NAME" /> dosyasını indirme işlemi duraklatıldı</translation>
 <translation id="6696967141280706829">Önsöz</translation>
 <translation id="6697092096875747123">Önceki birleşik kutu</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{ünlem}other{# ünlem}}</translation>
@@ -817,6 +838,7 @@ Eğiticiyle işiniz bittiğinde, ChromeVox'ı kullanarak Kapat düğmesine gidin
 <translation id="6833103209700200188">Alt bilgi</translation>
 <translation id="6858047746862060282">Prolog</translation>
 <translation id="6859876496651143278">Bir parmağınızı sola kaydırın</translation>
+<translation id="6865519907510167493">Yazım hatası</translation>
 <translation id="6871161210040114857">Büyük/küçük harf kullanımı yoksayılıyor.</translation>
 <translation id="6877435256196695200">Sonraki grafik yok.</translation>
 <translation id="6897341342232909480">Sola git</translation>
@@ -847,7 +869,7 @@ Bir sekmeyi kapatmak için Control+W tuşlarına basın.
 Açık sekmeler arasında ileriye doğru gitmek için Control+Sekme tuşlarını kullanın.
 Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translation>
 <translation id="7051308646573997571">Mercan</translation>
-<translation id="7062635574500127092">Turkuvaz</translation>
+<translation id="7062635574500127092">Turkuaz</translation>
 <translation id="7086377898680121060">Parlaklığı artır</translation>
 <translation id="7088743565397416204">Odaklanılan öğeyi etkinleştirmek için iki kez dokunun</translation>
 <translation id="7091296112653361280">Navaho Beyazı</translation>
@@ -857,11 +879,11 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="712735679809149106">kelime yansıtma</translation>
 <translation id="7137397390322864165">Somon</translation>
 <translation id="713824876195128146">Sonraki blok alıntı</translation>
+<translation id="7140168702531682811">Üst simge</translation>
 <translation id="7143034430156387447">6 ve 8 noktalı braille arasında geçiş yapar</translation>
 <translation id="7143207342074048698">Bağlanıyor</translation>
 <translation id="7153618581592392745">Lavanta</translation>
 <translation id="7157306005867877619">Özet</translation>
-<translation id="7161425887892204659">Eşleşen metin sonu</translation>
 <translation id="7161771961008409533">Pop-up düğme</translation>
 <translation id="7165714724802225287">Mevcut görüntüleme stili üst üste (interleave).</translation>
 <translation id="7167657087543110">karakter yansıtma</translation>
@@ -894,13 +916,12 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="7332592614823088566">Satır: <ph name="ROWINDEX" /> / <ph name="ROWTOTAL" />, Sütun: <ph name="COLINDEX" /> / <ph name="COLTOTAL" /></translation>
 <translation id="7336596009609913925">pop-up'ı var</translation>
 <translation id="7356165926712028380">8 noktalı braille'e geç</translation>
+<translation id="7356610683936413584">Açıklama listesi ayrıntısı</translation>
 <translation id="7362871137496673139">Önceki 2. düzey başlık yok.</translation>
 <translation id="7370432716629432284">{COUNT,plural, =1{ve işareti}other{# ve işareti}}</translation>
 <translation id="737396357417333429">clk</translation>
 <translation id="7374104575779636480">Tablodan çıkılıyor.</translation>
-<translation id="7374188624530452127"><ph name="FONT_COLOR" /> başlangıcı</translation>
 <translation id="738899727977260036">Kurşun Mavisi</translation>
-<translation id="7392145451309930991">Eşleşen metin başlangıcı</translation>
 <translation id="739763518212184081">Önceki Satır</translation>
 <translation id="7400575256015741911">Yazım hatası algılandı</translation>
 <translation id="7408482676469142474">tbl</translation>
@@ -929,10 +950,12 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="762020119231868829">Şu anda oynatılan tüm medya widget'larını duraklatır</translation>
 <translation id="7625690649919402823">Sonraki tablo</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), <ph name="GRADE" />. Derece</translation>
+<translation id="763535765081585392">Altı çizili stili belirtin:</translation>
 <translation id="7639968568612851608">Koyu Gri</translation>
 <translation id="7641134354185483015">Önceki 3. düzey başlık yok.</translation>
 <translation id="7659376057562985921"><ph name="VALUE" />, <ph name="NAME" />, metin kutusu</translation>
 <translation id="7663318257180412551">Başlık 2</translation>
+<translation id="7668307052366682650">{COUNT,plural, =1{saat}other{saat}}</translation>
 <translation id="7674576868851035240">Sonraki bağlantı</translation>
 <translation id="7674768236845044097">mark</translation>
 <translation id="7684431668231950609">Metni düzenle, URL girişi</translation>
@@ -947,9 +970,8 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
         <ph name="LINE_THROUGH_STRING" />
         <ph name="FONT_FAMILY_STRING" /></translation>
 <translation id="7701196182766842984">autolst</translation>
-<translation id="7712273827621319827">Altı çizili metin başlangıcı</translation>
+<translation id="7763537600611320912"><ph name="FILE_NAME" /> dosyası indirilmeye başlandı</translation>
 <translation id="7770823902658038748"><ph name="VALUE" />, <ph name="NAME" />, şifre metin kutusu</translation>
-<translation id="7773125101284285285">Altı çizili metin sonu</translation>
 <translation id="7776293189010177726">ChromeVox menülerini aç</translation>
 <translation id="7800558923657349506">Son söz</translation>
 <translation id="7805247615045262757">varsayılan gezinme</translation>
@@ -1073,11 +1095,12 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="8096975275316362544">Nane Yeşili</translation>
 <translation id="8098587210054821856">Kurşun Grisi</translation>
 <translation id="8110647606445335195">ARIA önemli noktası yok.</translation>
+<translation id="8121539003537428024">Tüm etkinlik filtrelerini etkinleştir</translation>
+<translation id="812886159861361726"><ph name="FILE_NAME" /> dosyasını indirme işlemi durduruldu</translation>
 <translation id="8138880386467279117">Dokunma</translation>
 <translation id="8153880621934657047">Tablonun içinde değil.</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{alt çizgi}other{# alt çizgi}}</translation>
 <translation id="8179976553408161302">Enter</translation>
-<translation id="8183813379996435469">ChromeVox dilini otomatik olarak algıla ve değiştir.</translation>
 <translation id="8184828902145951186">satır</translation>
 <translation id="8186185314313222077">tam ekrana geç</translation>
 <translation id="8199231515320852133">Mevcut hücrenin üst bilgilerini söyle</translation>
@@ -1101,7 +1124,6 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="8374154622594089836">ay</translation>
 <translation id="8378855320830505539">Bölge</translation>
 <translation id="8382679411218029383">Satır içi ve liste otomatik tamamlama</translation>
-<translation id="8384907037845425279">Kalın metin başlangıcı</translation>
 <translation id="8428603554127842284">seviye: <ph name="DEPTH" /></translation>
 <translation id="842922884199979200">Sonraki 3. düzey başlık yok.</translation>
 <translation id="8430049249787218991">mnubr</translation>
@@ -1109,18 +1131,20 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="8446884382197647889">Daha Fazla Bilgi Edinin</translation>
 <translation id="8455868257606149352">En çok: <ph name="X" /></translation>
 <translation id="84575901236241018">erişim tuşu var, <ph name="KEY" /></translation>
+<translation id="8463645336674919227">Dil bilgisi hatasından çıkılıyor</translation>
 <translation id="847154984256717791">meşgul</translation>
 <translation id="8476408756881832830">ChromeVox konuşurken çalmayı duraklat</translation>
 <translation id="8476508772960940536">pencere genel bakışı</translation>
 <translation id="8503360654911991865">Gezinme hassasiyetini azalt</translation>
-<translation id="8504695234784218301">Dil bilgisi hatası sonu</translation>
 <translation id="8520472399088452386">Dönme düğmesi</translation>
+<translation id="8534394844575788431">Biçimlendirme</translation>
 <translation id="8538744478902126321">Mevcut hücrenin satır üst bilgisini tahmin et</translation>
 <translation id="8540054775867439484">Üste döner</translation>
 <translation id="8542271685829952264">Tüm ChromeVox komutlarını ve kısayollarını keşfetmek için Ara + Nokta tuşlarına basın ve menüde gezinmek için Ok tuşlarını kullanın. Ardından Komutu etkinleştirmek için Enter'a basın. Ara + o ve ardından t tuşuna basarak buraya dönün.</translation>
 <translation id="8548973727659841685">Karakter</translation>
 <translation id="8561322612995434619">pop-up'ı var</translation>
 <translation id="8571096049907249734">çoklsçm</translation>
+<translation id="858006550102277544">Yorum</translation>
 <translation id="8584721346566392021">h5</translation>
 <translation id="8587549812518406253">Sonraki liste öğesi</translation>
 <translation id="860150890330522909"><ph name="NAME" /> onay kutusu işaretli</translation>
@@ -1143,6 +1167,7 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="8743786158317878347">tablo gibi yapısal içeriğe gir</translation>
 <translation id="8747966237988593539">Sıralı Liste</translation>
 <translation id="8749988712346667988">Gümüş</translation>
+<translation id="875769700429317857"><ph name="FILE_NAME" /> indirme işlemi tamamlandı</translation>
 <translation id="8759334257841767240">Sonraki bağlantı yok.</translation>
 <translation id="8767968232364267681">Sonraki 2. düzey başlık</translation>
 <translation id="8770473310765924354">tablo gibi yapısal içerikten çık</translation>
@@ -1157,6 +1182,7 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="8883850400338911892">8nkt urldz</translation>
 <translation id="8896347895970027998">ChromeVox'u etkinleştirin veya devre dışı bırakın.</translation>
 <translation id="8896479570570613387">Orta Ton Mor</translation>
+<translation id="8897030325301866860">Yazı tipi <ph name="FONT_FAMILY" /></translation>
 <translation id="8898516272131543774">Noktalama yansıtmayı döngüsel yap</translation>
 <translation id="8900148057318340779">Ön ek tuşu</translation>
 <translation id="8908714597367957477">colhdr</translation>
@@ -1166,6 +1192,7 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="8943175951035496220">Sağda hücre yok.</translation>
 <translation id="8943282376843390568">Küf yeşili</translation>
 <translation id="8946628535652548639">r<ph name="TABLECELLROWINDEX" />c<ph name="TABLECELLCOLUMNINDEX" /></translation>
+<translation id="8957142051395645063">Bildir</translation>
 <translation id="8978496506222343566">tltip</translation>
 <translation id="8986362086234534611">Unut</translation>
 <translation id="900114243503212879">file</translation>
@@ -1191,6 +1218,7 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="9149560530563164529">sctn</translation>
 <translation id="9150735707954472829">Sekme</translation>
 <translation id="9151211641321628915">Mevcut konumun kısa açıklamasını söyler</translation>
+<translation id="9151249085738989067">Kullandığım dile göre ChromeVox sesine otomatik olarak geç</translation>
 <translation id="9153606228985488238">Ses kalınlığı yüzde <ph name="PERCENT" /></translation>
 <translation id="9160096769946561184">Mevcut sütunun sonuna git</translation>
 <translation id="9173115498289768110">Ses düzeyi yüzde <ph name="PERCENT" /></translation>
@@ -1210,5 +1238,4 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="973955474346881951">Yapışkan modu etkinleştir/devre dışı bırak</translation>
 <translation id="976849232629612000">Öğe yok.</translation>
 <translation id="992256792861109788">Pembe</translation>
-<translation id="995852680044449248">Üstü çizili metin başlangıcı</translation>
 </translationbundle>

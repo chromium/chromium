@@ -14,8 +14,8 @@
   * Example usage:
 
   gn gen out/coverage \\
-      --args='use_clang_coverage=true is_component_build=false \\
-              dcheck_always_on=true'
+      --args="use_clang_coverage=true is_component_build=false\\
+              is_debug=false dcheck_always_on=true"
   gclient runhooks
   python tools/code_coverage/coverage.py crypto_unittests url_unittests \\
       -b out/coverage -o out/report -c 'out/coverage/crypto_unittests' \\
@@ -62,7 +62,7 @@
   For more options, please refer to tools/code_coverage/coverage.py -h.
 
   For an overview of how code coverage works in Chromium, please refer to
-  https://chromium.googlesource.com/chromium/src/+/master/docs/code_coverage.md
+  https://chromium.googlesource.com/chromium/src/+/master/docs/testing/code_coverage.md
 """
 
 from __future__ import print_function
@@ -84,7 +84,7 @@ sys.path.append(
     os.path.join(
         os.path.dirname(__file__), os.path.pardir, os.path.pardir, 'tools',
         'clang', 'scripts'))
-from update import LLVM_BUILD_DIR
+import update
 
 sys.path.append(
     os.path.join(
@@ -93,11 +93,10 @@ sys.path.append(
 from collections import defaultdict
 
 import coverage_utils
-import update_clang_coverage_tools
 
 # Absolute path to the code coverage tools binary. These paths can be
 # overwritten by user specified coverage tool paths.
-LLVM_BIN_DIR = os.path.join(LLVM_BUILD_DIR, 'bin')
+LLVM_BIN_DIR = os.path.join(update.LLVM_BUILD_DIR, 'bin')
 LLVM_COV_PATH = os.path.join(LLVM_BIN_DIR, 'llvm-cov')
 LLVM_PROFDATA_PATH = os.path.join(LLVM_BIN_DIR, 'llvm-profdata')
 
@@ -143,7 +142,7 @@ FILE_BUG_MESSAGE = (
     'If it persists, please file a bug with the command you used, git revision '
     'and args.gn config here: '
     'https://bugs.chromium.org/p/chromium/issues/entry?'
-    'components=Tools%3ECodeCoverage')
+    'components=Infra%3ETest%3ECodeCoverage')
 
 # String to replace with actual llvm profile path.
 LLVM_PROFILE_FILE_PATH_SUBSTITUTION = '<llvm_profile_file_path>'
@@ -158,13 +157,14 @@ def _ConfigureLLVMCoverageTools(args):
     LLVM_COV_PATH = os.path.join(llvm_bin_dir, 'llvm-cov')
     LLVM_PROFDATA_PATH = os.path.join(llvm_bin_dir, 'llvm-profdata')
   else:
-    update_clang_coverage_tools.DownloadCoverageToolsIfNeeded()
+    update.UpdatePackage('coverage_tools')
 
   coverage_tools_exist = (
       os.path.exists(LLVM_COV_PATH) and os.path.exists(LLVM_PROFDATA_PATH))
   assert coverage_tools_exist, ('Cannot find coverage tools, please make sure '
                                 'both \'%s\' and \'%s\' exist.') % (
                                     LLVM_COV_PATH, LLVM_PROFDATA_PATH)
+
 
 def _GetPathWithLLVMSymbolizerDir():
   """Add llvm-symbolizer directory to path for symbolized stacks."""
@@ -188,7 +188,6 @@ def _GetTargetOS():
 def _IsIOS():
   """Returns true if the target_os specified in args.gn file is ios"""
   return _GetTargetOS() == 'ios'
-
 
 
 def _GeneratePerFileLineByLineCoverageInHtml(binary_paths, profdata_file_path,
@@ -932,7 +931,7 @@ def Main():
   # Setup coverage binaries even when script is called with empty params. This
   # is used by coverage bot for initial setup.
   if len(sys.argv) == 1:
-    update_clang_coverage_tools.DownloadCoverageToolsIfNeeded()
+    update.UpdatePackage('coverage_tools')
     print(__doc__)
     return
 
@@ -996,13 +995,19 @@ def Main():
     profdata_file_path = args.profdata_file
     binary_paths = _GetBinaryPathsFromTargets(args.targets, args.build_dir)
 
-  # DEVELOPER_DIR needs to be set when Xcode isn't in a standard location
-  # and xcode-select wasn't run.  This path needs to be set prior to calling
-  # otool which happens on mac in coverage_utils.GetSharedLibraries().
-  _SetMacXcodePath()
-
+  # If the checkout uses the hermetic xcode binaries, then otool must be
+  # directly invoked. The indirection via /usr/bin/otool won't work unless
+  # there's an actual system install of Xcode.
+  otool_path = None
+  if sys.platform == 'darwin':
+    hermetic_otool_path = os.path.join(
+        SRC_ROOT_PATH, 'build', 'mac_files', 'xcode_binaries', 'Contents',
+        'Developer', 'Toolchains', 'XcodeDefault.xctoolchain', 'usr', 'bin',
+        'otool')
+    if os.path.exists(hermetic_otool_path):
+      otool_path = hermetic_otool_path
   binary_paths.extend(
-      coverage_utils.GetSharedLibraries(binary_paths, BUILD_DIR))
+      coverage_utils.GetSharedLibraries(binary_paths, BUILD_DIR, otool_path))
 
   logging.info('Generating code coverage report in html (this can take a while '
                'depending on size of target!).')

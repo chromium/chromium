@@ -1,0 +1,23 @@
+This is a testharness.js-based test.
+PASS Property position has initial value static
+PASS Property position does not inherit
+PASS Property top has initial value auto
+PASS Property top does not inherit
+PASS Property right has initial value auto
+PASS Property right does not inherit
+PASS Property bottom has initial value auto
+PASS Property bottom does not inherit
+PASS Property left has initial value auto
+PASS Property left does not inherit
+FAIL Property inset-before has initial value auto assert_true: inset-before doesn't seem to be supported in the computed style expected true got false
+FAIL Property inset-before does not inherit assert_true: expected true got false
+FAIL Property inset-after has initial value auto assert_true: inset-after doesn't seem to be supported in the computed style expected true got false
+FAIL Property inset-after does not inherit assert_true: expected true got false
+FAIL Property inset-start has initial value auto assert_true: inset-start doesn't seem to be supported in the computed style expected true got false
+FAIL Property inset-start does not inherit assert_true: expected true got false
+FAIL Property inset-end has initial value auto assert_true: inset-end doesn't seem to be supported in the computed style expected true got false
+FAIL Property inset-end does not inherit assert_true: expected true got false
+PASS Property z-index has initial value auto
+PASS Property z-index does not inherit
+Harness: the test ran to completion.
+

@@ -27,6 +27,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import errno
+import fnmatch
 import json
 import logging
 import math
@@ -47,7 +48,8 @@ class WebTestFinder(object):
         self._filesystem = self._port.host.filesystem
         self.WEB_TESTS_DIRECTORIES = ('src', 'third_party', 'blink', 'web_tests')
 
-    def find_tests(self, args, test_list=None, fastest_percentile=None):
+    def find_tests(self, args, test_list=None, fastest_percentile=None, filters=None):
+        filters = filters or []
         paths = self._strip_test_dir_prefixes(args)
         if test_list:
             paths += self._strip_test_dir_prefixes(self._read_test_names_from_file(test_list, self._port.TEST_PATH_SEPARATOR))
@@ -77,6 +79,7 @@ class WebTestFinder(object):
             test_files = all_tests
             running_all_tests = True
 
+        test_files = filter_tests(test_files, [f.split('::') for f in filters])
         return (paths, test_files, running_all_tests)
 
     def _times_trie(self):
@@ -182,7 +185,7 @@ class WebTestFinder(object):
     def split_into_chunks(self, test_names):
         """split into a list to run and a set to skip, based on --shard_index and --total_shards."""
         if self._options.shard_index is None and self._options.total_shards is None:
-            return test_names, set()
+            return test_names
 
         if self._options.shard_index is None:
             raise ValueError('Must provide --shard-index or GTEST_SHARD_INDEX when sharding.')
@@ -204,12 +207,62 @@ class WebTestFinder(object):
             test_name
             for test_name, test_index in tests_and_indices
             if test_index == index]
-        other_tests = [
-            test_name
-            for test_name, test_index in tests_and_indices
-            if test_index != index]
 
         _log.debug('chunk %d of %d contains %d tests of %d',
                    index, count, len(tests_to_run), len(test_names))
 
-        return tests_to_run, other_tests
+        return tests_to_run
+
+
+def filter_tests(tests, filters):
+    """Returns a filtered list of tests to run.
+
+    The test-filtering semantics are documented in
+    https://bit.ly/chromium-test-runner-api and
+    https://bit.ly/chromium-test-list-format, but are as follows:
+
+    Each filter is a list of glob expressions, with each expression optionally
+    prefixed by a "-". If the glob starts with a "-", it is a negative glob,
+    otherwise it is a positive glob.
+
+    A test passes the filter if and only if it is explicitly matched by at
+    least one positive glob and no negative globs, or if there are no
+    positive globs and it is not matched by any negative globs.
+
+    Globbing is fairly limited; "?" is not allowed, and "*" must only appear
+    at the end of the glob. If multiple globs match a test, the longest match
+    wins. If both globs are the same length, an error is raised.
+
+    A test will be run only if it passes every filter.
+    """
+
+    def glob_sort_key(k):
+        if k and k[0] == '-':
+            return (len(k[1:]), k[1:])
+        else:
+            return (len(k), k)
+
+    for globs in filters:
+        include_by_default = all(glob.startswith('-') for glob in globs)
+        filtered_tests = []
+        for test in tests:
+            include = include_by_default
+            for glob in sorted(globs, key=glob_sort_key):
+                if (glob.startswith('-') and not glob[1:]) or not glob:
+                    raise ValueError('Empty glob filter "%s"' % (filter,))
+                if '*' in glob[:-1]:
+                    raise ValueError('Bad test filter "%s" specified; '
+                                     'wildcards are only allowed at the end'
+                                     % (glob,))
+                if glob.startswith('-') and glob[1:] in globs:
+                    raise ValueError('Both "%s" and "%s" specified in test '
+                                     'filter' % (glob, glob[1:]))
+                if glob.startswith('-'):
+                    include = include and not fnmatch.fnmatch(test, glob[1:])
+                else:
+                    include = include or fnmatch.fnmatch(test, glob)
+            if include:
+                filtered_tests.append(test)
+        tests = filtered_tests
+
+    return tests

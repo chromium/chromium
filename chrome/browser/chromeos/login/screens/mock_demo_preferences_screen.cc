@@ -7,11 +7,15 @@
 namespace chromeos {
 
 MockDemoPreferencesScreen::MockDemoPreferencesScreen(
-    BaseScreenDelegate* base_screen_delegate,
-    DemoPreferencesScreenView* view)
-    : DemoPreferencesScreen(base_screen_delegate, view) {}
+    DemoPreferencesScreenView* view,
+    const ScreenExitCallback& exit_callback)
+    : DemoPreferencesScreen(view, exit_callback) {}
 
 MockDemoPreferencesScreen::~MockDemoPreferencesScreen() = default;
+
+void MockDemoPreferencesScreen::ExitScreen(Result result) {
+  exit_callback()->Run(result);
+}
 
 MockDemoPreferencesScreenView::MockDemoPreferencesScreenView() = default;
 

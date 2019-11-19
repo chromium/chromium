@@ -53,7 +53,7 @@ public class AccountManagerFacadeRobolectricTest {
     private AccountManagerFacade mFacade;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         Context context = RuntimeEnvironment.application;
         UserManager userManager = (UserManager) context.getSystemService(Context.USER_SERVICE);
         mShadowUserManager = (CustomShadowUserManager) shadowOf(userManager);
@@ -223,7 +223,7 @@ public class AccountManagerFacadeRobolectricTest {
 
     @Test
     @SmallTest
-    public void testCheckChildAccount() throws AccountManagerDelegateException {
+    public void testCheckChildAccount() {
         Account testAccount = addTestAccount("test@gmail.com");
         Account ucaAccount =
                 addTestAccount("uca@gmail.com", AccountManagerFacade.FEATURE_IS_CHILD_ACCOUNT_KEY);
@@ -246,7 +246,7 @@ public class AccountManagerFacadeRobolectricTest {
                                        .featureSet(new HashSet<>(Arrays.asList(features)))
                                        .build();
         mDelegate.addAccountHolderExplicitly(holder);
-        Assert.assertFalse(AccountManagerFacade.get().isUpdatePending());
+        Assert.assertFalse(AccountManagerFacade.get().isUpdatePending().get());
         return account;
     }
 

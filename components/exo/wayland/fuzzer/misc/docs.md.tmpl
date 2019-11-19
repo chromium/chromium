@@ -1,0 +1,28 @@
+Copyright 2019 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+
+{% for interface in interfaces %}
+# {{interface.name}}
+
+{% for line in interface.doc %}
+{{line}}
+{% endfor %}
+
+{% for message in interface.requests + interface.events %}
+## {{interface.name}} :: {{message.name}} ({{message.args | join(', ', attribute='name')}}) - {{message.tag}}
+
+   {% for line in message.doc %}
+   {{line}}
+   {% endfor %}
+
+{% for arg in message.args %}
+  {{arg.name}}: {{arg.type}} {{arg.interface | default('', true)}}
+    {% for line in arg.doc %}
+    {{line}}
+    {% endfor %}
+{% endfor %}
+
+{% endfor %}
+
+{% endfor %}

@@ -25,5 +25,6 @@
 
 // https://svgwg.org/svg2-draft/text.html#InterfaceSVGTextElement
 
+[Exposed=Window]
 interface SVGTextElement : SVGTextPositioningElement {
 };

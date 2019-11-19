@@ -6,6 +6,7 @@
 
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/callback.h"
@@ -19,63 +20,13 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/google/core/common/google_util.h"
-#include "google_apis/google_api_keys.h"
-#include "net/base/escape.h"
-#include "net/base/load_flags.h"
-#include "net/url_request/url_request_status.h"
-#include "services/network/public/cpp/resource_request.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "services/network/public/cpp/simple_url_loader.h"
-#include "url/url_constants.h"
 
 namespace safe_search_api {
 
 namespace {
 
-const char kSafeSearchApiUrl[] =
-    "https://safesearch.googleapis.com/v1:classify";
-const char kDataContentType[] = "application/x-www-form-urlencoded";
-const char kDataFormat[] = "key=%s&urls=%s&region_code=%s";
-
 const size_t kDefaultCacheSize = 1000;
 const size_t kDefaultCacheTimeoutSeconds = 3600;
-
-// Builds the POST data for SafeSearch API requests.
-std::string BuildRequestData(const std::string& api_key,
-                             const GURL& url,
-                             const std::string& region_code) {
-  std::string query = net::EscapeQueryParamValue(url.spec(), true);
-  return base::StringPrintf(kDataFormat, api_key.c_str(), query.c_str(),
-                            region_code.c_str());
-}
-
-// Parses a SafeSearch API |response| and stores the result in |is_porn|.
-// On errors, returns false and doesn't set |is_porn|.
-bool ParseResponse(const std::string& response, bool* is_porn) {
-  std::unique_ptr<base::Value> value =
-      base::JSONReader::ReadDeprecated(response);
-  const base::DictionaryValue* dict = nullptr;
-  if (!value || !value->GetAsDictionary(&dict)) {
-    DLOG(WARNING) << "ParseResponse failed to parse global dictionary";
-    return false;
-  }
-  const base::ListValue* classifications_list = nullptr;
-  if (!dict->GetList("classifications", &classifications_list)) {
-    DLOG(WARNING) << "ParseResponse failed to parse classifications list";
-    return false;
-  }
-  if (classifications_list->GetSize() != 1) {
-    DLOG(WARNING) << "ParseResponse expected exactly one result";
-    return false;
-  }
-  const base::DictionaryValue* classification_dict = nullptr;
-  if (!classifications_list->GetDictionary(0, &classification_dict)) {
-    DLOG(WARNING) << "ParseResponse failed to parse classification dict";
-    return false;
-  }
-  classification_dict->GetBoolean("pornography", is_porn);
-  return true;
-}
 
 }  // namespace
 
@@ -84,24 +35,14 @@ const base::Feature kAllowAllGoogleUrls{"SafeSearchAllowAllGoogleURLs",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
 struct URLChecker::Check {
-  Check(const GURL& url,
-        std::unique_ptr<network::SimpleURLLoader> simple_url_loader,
-        CheckCallback callback);
+  Check(const GURL& url, CheckCallback callback);
   ~Check();
 
   GURL url;
-  std::unique_ptr<network::SimpleURLLoader> simple_url_loader;
   std::vector<CheckCallback> callbacks;
-  base::TimeTicks start_time;
 };
 
-URLChecker::Check::Check(
-    const GURL& url,
-    std::unique_ptr<network::SimpleURLLoader> simple_url_loader,
-    CheckCallback callback)
-    : url(url),
-      simple_url_loader(std::move(simple_url_loader)),
-      start_time(base::TimeTicks::Now()) {
+URLChecker::Check::Check(const GURL& url, CheckCallback callback) : url(url) {
   callbacks.push_back(std::move(callback));
 }
 
@@ -117,36 +58,12 @@ URLChecker::CheckResult::CheckResult(Classification classification,
       uncertain(uncertain),
       timestamp(base::TimeTicks::Now()) {}
 
-URLChecker::URLChecker(
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    const net::NetworkTrafficAnnotationTag& traffic_annotation,
-    const std::string& country)
-    : URLChecker(std::move(url_loader_factory),
-                 traffic_annotation,
-                 country,
-                 kDefaultCacheSize) {}
+URLChecker::URLChecker(std::unique_ptr<URLCheckerClient> async_checker)
+    : URLChecker(std::move(async_checker), kDefaultCacheSize) {}
 
-URLChecker::URLChecker(
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    const net::NetworkTrafficAnnotationTag& traffic_annotation,
-    const std::string& country,
-    size_t cache_size)
-    : URLChecker(std::move(url_loader_factory),
-                 traffic_annotation,
-                 country,
-                 cache_size,
-                 google_apis::GetAPIKey()) {}
-
-URLChecker::URLChecker(
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    const net::NetworkTrafficAnnotationTag& traffic_annotation,
-    const std::string& country,
-    size_t cache_size,
-    const std::string& api_key)
-    : url_loader_factory_(std::move(url_loader_factory)),
-      traffic_annotation_(traffic_annotation),
-      country_(country),
-      api_key_(api_key),
+URLChecker::URLChecker(std::unique_ptr<URLCheckerClient> async_checker,
+                       size_t cache_size)
+    : async_checker_(std::move(async_checker)),
       cache_(cache_size),
       cache_timeout_(
           base::TimeDelta::FromSeconds(kDefaultCacheTimeoutSeconds)) {}
@@ -155,14 +72,14 @@ URLChecker::~URLChecker() = default;
 
 bool URLChecker::CheckURL(const GURL& url, CheckCallback callback) {
   if (base::FeatureList::IsEnabled(kAllowAllGoogleUrls)) {
-    // TODO(treib): Hack: For now, allow all Google URLs to save QPS.
+    // Hack: For now, allow all Google URLs to save QPS.
     if (google_util::IsGoogleDomainUrl(url, google_util::ALLOW_SUBDOMAIN,
                                        google_util::ALLOW_NON_STANDARD_PORTS)) {
       std::move(callback).Run(url, Classification::SAFE, false);
       return true;
     }
-    // TODO(treib): Hack: For now, allow all YouTube URLs since YouTube has its
-    // own Safety Mode anyway.
+    // Hack: For now, allow all YouTube URLs since YouTube has its own Safety
+    // Mode anyway.
     if (google_util::IsYoutubeDomainUrl(
             url, google_util::ALLOW_SUBDOMAIN,
             google_util::ALLOW_NON_STANDARD_PORTS)) {
@@ -195,54 +112,30 @@ bool URLChecker::CheckURL(const GURL& url, CheckCallback callback) {
     }
   }
 
-  DVLOG(1) << "Checking URL " << url;
-  auto resource_request = std::make_unique<network::ResourceRequest>();
-  resource_request->url = GURL(kSafeSearchApiUrl);
-  resource_request->method = "POST";
-  resource_request->load_flags =
-      net::LOAD_DO_NOT_SEND_COOKIES | net::LOAD_DO_NOT_SAVE_COOKIES;
-  std::unique_ptr<network::SimpleURLLoader> simple_url_loader =
-      network::SimpleURLLoader::Create(std::move(resource_request),
-                                       traffic_annotation_);
-  simple_url_loader->AttachStringForUpload(
-      BuildRequestData(api_key_, url, country_), kDataContentType);
   auto it = checks_in_progress_.insert(
       checks_in_progress_.begin(),
-      std::make_unique<Check>(url, std::move(simple_url_loader),
-                              std::move(callback)));
-  network::SimpleURLLoader* loader = it->get()->simple_url_loader.get();
-  loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-      url_loader_factory_.get(),
-      base::BindOnce(&URLChecker::OnSimpleLoaderComplete,
-                     base::Unretained(this), std::move(it)));
+      std::make_unique<Check>(url, std::move(callback)));
+  async_checker_->CheckURL(url,
+                           base::BindOnce(&URLChecker::OnAsyncCheckComplete,
+                                          base::Unretained(this), it));
+
   return false;
 }
 
-void URLChecker::OnSimpleLoaderComplete(
-    CheckList::iterator it,
-    std::unique_ptr<std::string> response_body) {
-  Check* check = it->get();
+void URLChecker::OnAsyncCheckComplete(CheckList::iterator it,
+                                      const GURL& url,
+                                      ClientClassification api_classification) {
+  bool uncertain = api_classification == ClientClassification::kUnknown;
 
-  GURL url = check->url;
-  std::vector<CheckCallback> callbacks = std::move(check->callbacks);
-  base::TimeTicks start_time = check->start_time;
-  checks_in_progress_.erase(it);
-
-  if (!response_body) {
-    DLOG(WARNING) << "URL request failed! Letting through...";
-    for (size_t i = 0; i < callbacks.size(); i++)
-      std::move(callbacks[i]).Run(url, Classification::SAFE, true);
-    return;
+  // Fallback to a |SAFE| classification when the result is not explicitly
+  // marked as restricted.
+  Classification classification = Classification::SAFE;
+  if (api_classification == ClientClassification::kRestricted) {
+    classification = Classification::UNSAFE;
   }
 
-  bool is_porn = false;
-  bool uncertain = !ParseResponse(*response_body, &is_porn);
-  Classification classification =
-      is_porn ? Classification::UNSAFE : Classification::SAFE;
-
-  // TODO(msramek): Consider moving this to SupervisedUserResourceThrottle.
-  UMA_HISTOGRAM_TIMES("ManagedUsers.SafeSitesDelay",
-                      base::TimeTicks::Now() - start_time);
+  std::vector<CheckCallback> callbacks = std::move(it->get()->callbacks);
+  checks_in_progress_.erase(it);
 
   cache_.Put(url, CheckResult(classification, uncertain));
 

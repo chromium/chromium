@@ -12,13 +12,13 @@
 #include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "chrome/android/chrome_jni_headers/BrowsingHistoryBridge_jni.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/sync/profile_sync_service_factory.h"
 #include "components/history/core/browser/browsing_history_service.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/url_formatter/url_formatter.h"
-#include "jni/BrowsingHistoryBridge_jni.h"
 
 using history::BrowsingHistoryService;
 

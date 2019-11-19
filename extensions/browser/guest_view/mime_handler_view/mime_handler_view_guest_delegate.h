@@ -5,6 +5,8 @@
 #ifndef EXTENSIONS_BROWSER_GUEST_VIEW_MIME_HANDLER_VIEW_MIME_HANDLER_VIEW_GUEST_DELEGATE_H_
 #define EXTENSIONS_BROWSER_GUEST_VIEW_MIME_HANDLER_VIEW_MIME_HANDLER_VIEW_GUEST_DELEGATE_H_
 
+#include <string>
+
 #include "base/macros.h"
 
 namespace content {
@@ -23,6 +25,9 @@ class MimeHandlerViewGuestDelegate {
   // Handles context menu, or returns false if unhandled.
   virtual bool HandleContextMenu(content::WebContents* web_contents,
                                  const content::ContextMenuParams& params);
+  // Called when MimeHandlerViewGuest has an associated embedder frame.
+  virtual void RecordLoadMetric(bool in_main_frame,
+                                const std::string& mime_type);
 
  private:
   DISALLOW_COPY_AND_ASSIGN(MimeHandlerViewGuestDelegate);

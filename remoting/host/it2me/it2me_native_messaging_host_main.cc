@@ -9,9 +9,10 @@
 #include "base/at_exit.h"
 #include "base/command_line.h"
 #include "base/i18n/icu_util.h"
-#include "base/message_loop/message_loop.h"
+#include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
-#include "base/task/task_scheduler/task_scheduler.h"
+#include "base/task/single_thread_task_executor.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "build/build_config.h"
 #include "mojo/core/embedder/embedder.h"
 #include "net/base/network_change_notifier.h"
@@ -25,6 +26,7 @@
 #include "remoting/host/native_messaging/pipe_messaging_channel.h"
 #include "remoting/host/policy_watcher.h"
 #include "remoting/host/resources.h"
+#include "remoting/host/switches.h"
 #include "remoting/host/usage_stats_consent.h"
 
 #if defined(OS_LINUX)
@@ -36,6 +38,7 @@
 
 #if defined(OS_MACOSX)
 #include "base/mac/scoped_nsautorelease_pool.h"
+#include "remoting/host/mac/permission_utils.h"
 #endif  // defined(OS_MACOSX)
 
 #if defined(OS_WIN)
@@ -67,9 +70,10 @@ bool CurrentProcessHasUiAccess() {
 }  // namespace
 
 // Creates a It2MeNativeMessagingHost instance, attaches it to stdin/stdout and
-// runs the message loop until It2MeNativeMessagingHost signals shutdown.
+// runs the task executor until It2MeNativeMessagingHost signals shutdown.
 int It2MeNativeMessagingHostMain(int argc, char** argv) {
-  // This object instance is required by Chrome code (such as MessageLoop).
+  // This object instance is required by Chrome code (such as
+  // SingleThreadTaskExecutor).
   base::AtExitManager exit_manager;
 
   base::CommandLine::Init(argc, argv);
@@ -102,7 +106,7 @@ int It2MeNativeMessagingHostMain(int argc, char** argv) {
 
   mojo::core::Init();
 
-  base::TaskScheduler::CreateAndStartWithDefaultParams("It2Me");
+  base::ThreadPoolInstance::CreateAndStartWithDefaultParams("It2Me");
 
   remoting::LoadResources("");
 
@@ -199,12 +203,22 @@ int It2MeNativeMessagingHostMain(int argc, char** argv) {
 #error Not implemented.
 #endif
 
-  base::MessageLoopForUI message_loop;
+  base::SingleThreadTaskExecutor main_task_executor(base::MessagePumpType::UI);
   base::RunLoop run_loop;
 
-  // NetworkChangeNotifier must be initialized after MessageLoop.
+#if defined(OS_MACOSX)
+  auto* cmd_line = base::CommandLine::ForCurrentProcess();
+  if (cmd_line->HasSwitch(kCheckAccessibilityPermissionSwitchName)) {
+    return mac::CanInjectInput() ? EXIT_SUCCESS : EXIT_FAILURE;
+  }
+  if (cmd_line->HasSwitch(kCheckScreenRecordingPermissionSwitchName)) {
+    return mac::CanRecordScreen() ? EXIT_SUCCESS : EXIT_FAILURE;
+  }
+#endif
+
+  // NetworkChangeNotifier must be initialized after SingleThreadTaskExecutor.
   std::unique_ptr<net::NetworkChangeNotifier> network_change_notifier(
-      net::NetworkChangeNotifier::Create());
+      net::NetworkChangeNotifier::CreateIfNeeded());
 
   std::unique_ptr<It2MeHostFactory> factory(new It2MeHostFactory());
 
@@ -217,7 +231,7 @@ int It2MeNativeMessagingHostMain(int argc, char** argv) {
 
   std::unique_ptr<ChromotingHostContext> context =
       ChromotingHostContext::Create(new remoting::AutoThreadTaskRunner(
-          message_loop.task_runner(), run_loop.QuitClosure()));
+          main_task_executor.task_runner(), run_loop.QuitClosure()));
   std::unique_ptr<PolicyWatcher> policy_watcher =
       PolicyWatcher::CreateWithTaskRunner(context->file_task_runner());
   std::unique_ptr<extensions::NativeMessageHost> host(
@@ -232,7 +246,7 @@ int It2MeNativeMessagingHostMain(int argc, char** argv) {
   run_loop.Run();
 
   // Block until tasks blocking shutdown have completed their execution.
-  base::TaskScheduler::GetInstance()->Shutdown();
+  base::ThreadPoolInstance::Get()->Shutdown();
 
   return kSuccessExitCode;
 }

@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/callback.h"
 #include "base/macros.h"
 #include "content/browser/web_package/signed_exchange_error.h"
 #include "content/common/content_export.h"
@@ -31,7 +30,7 @@ class CONTENT_EXPORT SignedExchangeReporter {
       const GURL& outer_url,
       const std::string& referrer,
       const network::ResourceResponseHead& response,
-      base::OnceCallback<int(void)> frame_tree_node_id_getter);
+      int frame_tree_node_id);
 
   ~SignedExchangeReporter();
 
@@ -44,15 +43,14 @@ class CONTENT_EXPORT SignedExchangeReporter {
   void ReportResultAndFinish(SignedExchangeLoadResult result);
 
  private:
-  SignedExchangeReporter(
-      const GURL& outer_url,
-      const std::string& referrer,
-      const network::ResourceResponseHead& response,
-      base::OnceCallback<int(void)> frame_tree_node_id_getter);
+  SignedExchangeReporter(const GURL& outer_url,
+                         const std::string& referrer,
+                         const network::ResourceResponseHead& response,
+                         int frame_tree_node_id);
 
   network::mojom::SignedExchangeReportPtr report_;
   const base::TimeTicks request_start_;
-  base::OnceCallback<int(void)> frame_tree_node_id_getter_;
+  const int frame_tree_node_id_;
   net::IPAddress cert_server_ip_address_;
 
   DISALLOW_COPY_AND_ASSIGN(SignedExchangeReporter);

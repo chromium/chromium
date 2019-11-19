@@ -7,9 +7,13 @@
 #include <memory>
 #include <utility>
 
+#include "build/build_config.h"
+#include "components/system_media_controls/system_media_controls.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/media/hardware_key_media_controller.h"
+#include "content/browser/media/system_media_controls_notifier.h"
 #include "ui/base/accelerators/accelerator.h"
+#include "ui/base/idle/idle.h"
 
 namespace content {
 
@@ -28,9 +32,11 @@ MediaKeysListenerManager* MediaKeysListenerManager::GetInstance() {
 
 MediaKeysListenerManagerImpl::MediaKeysListenerManagerImpl(
     service_manager::Connector* connector)
-    : hardware_key_media_controller_(
-          std::make_unique<HardwareKeyMediaController>(connector)),
-      media_key_handling_enabled_(true) {
+    : connector_(connector),
+      hardware_key_media_controller_(
+          std::make_unique<HardwareKeyMediaController>(connector_)),
+      media_key_handling_enabled_(true),
+      auxiliary_services_started_(false) {
   DCHECK(!MediaKeysListenerManager::GetInstance());
 }
 
@@ -111,6 +117,16 @@ void MediaKeysListenerManagerImpl::OnMediaKeysAccelerator(
   // We should never receive an accelerator that was never registered.
   DCHECK(delegate_map_.contains(accelerator.key_code()));
 
+#if defined(OS_MACOSX)
+  // For privacy, we don't want to handle media keys when the system is locked.
+  // On Windows and Mac OS X, this will happen unless we explicitly prevent it.
+  // TODO(steimel): Consider adding an idle monitor instead and disabling the
+  // RemoteCommandCenter/SystemMediaTransportControls on lock so that other OS
+  // apps can take control.
+  if (ui::CheckIdleStateIsLocked())
+    return;
+#endif
+
   ListeningData* listening_data = delegate_map_[accelerator.key_code()].get();
 
   // If the HardwareKeyMediaController is listening and is allowed to listen,
@@ -126,13 +142,49 @@ void MediaKeysListenerManagerImpl::OnMediaKeysAccelerator(
     delegate.OnMediaKeysAccelerator(accelerator);
 }
 
+void MediaKeysListenerManagerImpl::SetIsMediaPlaying(bool is_playing) {
+  if (is_media_playing_ == is_playing)
+    return;
+
+  is_media_playing_ = is_playing;
+
+  if (media_keys_listener_)
+    media_keys_listener_->SetIsMediaPlaying(is_media_playing_);
+}
+
+void MediaKeysListenerManagerImpl::EnsureAuxiliaryServices() {
+  if (auxiliary_services_started_)
+    return;
+
+  // Keep the SystemMediaControls notified of media playback state and metadata.
+  system_media_controls::SystemMediaControls* system_media_controls =
+      system_media_controls::SystemMediaControls::GetInstance();
+  if (system_media_controls) {
+    system_media_controls_notifier_ =
+        std::make_unique<SystemMediaControlsNotifier>(connector_,
+                                                      system_media_controls);
+  }
+
+#if defined(OS_MACOSX)
+  // On Mac OS, we need to initialize the idle monitor in order to check if the
+  // system is locked.
+  ui::InitIdleMonitor();
+#endif  // defined(OS_MACOSX)
+
+  auxiliary_services_started_ = true;
+}
+
 void MediaKeysListenerManagerImpl::EnsureMediaKeysListener() {
   if (media_keys_listener_)
     return;
 
+  EnsureAuxiliaryServices();
+
   media_keys_listener_ = ui::MediaKeysListener::Create(
       this, ui::MediaKeysListener::Scope::kGlobal);
   DCHECK(media_keys_listener_);
+
+  media_keys_listener_->SetIsMediaPlaying(is_media_playing_);
 }
 
 MediaKeysListenerManagerImpl::ListeningData*

@@ -5,12 +5,25 @@
 import("//chromecast/chromecast.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
+cast_source_set("queryable_data") {
+  sources = [
+    "queryable_data.cc",
+    "queryable_data.h",
+  ]
+
+  deps = [
+    "//base",
+  ]
+}
+
 cast_source_set("common") {
   sources = [
     "cast_content_client.cc",
     "cast_content_client.h",
     "cast_resource_delegate.cc",
     "cast_resource_delegate.h",
+    "cast_url_loader_throttle.cc",
+    "cast_url_loader_throttle.h",
     "global_descriptors.h",
   ]
 
@@ -21,6 +34,8 @@ cast_source_set("common") {
     "//chromecast/base:cast_version",
     "//chromecast/common/media",
     "//content/public/common",
+    "//net",
+    "//services/network/public/cpp:cpp",
     "//ui/base",
     "//ui/gfx",
     "//url:url",
@@ -36,8 +51,6 @@ cast_source_set("common") {
       "cast_redirect_manifest_handler.h",
       "extensions_api/cast_api_permissions.cc",
       "extensions_api/cast_api_permissions.h",
-      "extensions_api/cast_extension_messages.cc",
-      "extensions_api/cast_extension_messages.h",
     ]
 
     deps += [
@@ -51,5 +64,9 @@ cast_source_set("common") {
       "//extensions/shell:resources",
       "//extensions/shell:resources_grit",
     ]
+  }
+
+  if (!is_fuchsia) {
+    deps += [ "//components/services/heap_profiling/public/cpp" ]
   }
 }

@@ -14,10 +14,12 @@ int wmain(int argc, wchar_t **argv) {
       return sandbox::DispatchCall(argc, argv);
   }
 
+  // Force binary unduplication for crbug.com/959223.
+  // If you're reading this, it should be safe to remove.
+  DCHECK(argc >= 0);
+
   base::TestSuite test_suite(argc, argv);
   return base::LaunchUnitTests(
-      argc,
-      argv,
-      false,
-      base::Bind(&base::TestSuite::Run, base::Unretained(&test_suite)));
+      argc, argv, false,
+      base::BindOnce(&base::TestSuite::Run, base::Unretained(&test_suite)));
 }

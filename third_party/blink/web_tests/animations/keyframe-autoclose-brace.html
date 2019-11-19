@@ -12,7 +12,11 @@
         60%  { left: 200px; }
         to   { left: 300px;
   </style>
+  <script src="../resources/testharness.js"></script>
+  <script src="../resources/testharnessreport.js"></script>
   <script type="text/javascript" charset="utf-8">
+    var asyncHandle = async_test("Tests parsing the @keyframes rule without closing brace. 'User agents must close all open constructs ... at the end of the style sheet.'(http://www.w3.org/TR/CSS21/syndata.html#parsing-errors). So it must be parsed as if all braces are closed");
+
     function findKeyframesRule(rule)
     {
         var ss = document.styleSheets;
@@ -22,28 +26,20 @@
                     return ss[i].cssRules[j];
             }
         }
-        
+
         return null;
     }
-        
+
     function test()
     {
-        if (window.testRunner)
-            testRunner.dumpAsText();
-
         var keyframes = findKeyframesRule("foo");
         var length = keyframes ? keyframes.cssRules.length : undefined;
-        document.getElementById("console").textContent = length === 4
-            ? "PASS: keyframes rule has length 4"
-            : ("FAIL: keyframes rule should have length 4 but had length " + length);
+        assert_equals(length, 4, 'keyframes rule should have length 4');
     }
-    
+
+    window.onload = asyncHandle.step_func_done(test);
   </script>
 </head>
-<body onload="test()">
-<div>Tests parsing the @keyframes rule without closing brace. &quot;User agents must close all open constructs ... at the end of the style sheet.&quot;
-(<a href="http://www.w3.org/TR/CSS21/syndata.html#parsing-errors">http://www.w3.org/TR/CSS21/syndata.html#parsing-errors</a>). So it must be parsed as if
-all braces are closed.</div>
-<div id="console"></div>
+<body>
 </body>
 </html>

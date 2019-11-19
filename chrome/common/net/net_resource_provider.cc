@@ -8,7 +8,6 @@
 
 #include "base/i18n/rtl.h"
 #include "base/no_destructor.h"
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -23,8 +22,6 @@ namespace {
 // The net module doesn't have access to this HTML or the strings that need to
 // be localized.  The Chrome locale will never change while we're running, so
 // it's safe to have a static string that we always return a pointer into.
-// This allows us to have the ResourceProvider return a pointer into the actual
-// resource (via a StringPiece), instead of always copying resources.
 struct LazyDirectoryListerCacher {
   LazyDirectoryListerCacher() {
     base::DictionaryValue value;
@@ -44,26 +41,24 @@ struct LazyDirectoryListerCacher {
         l10n_util::GetStringFUTF16(IDS_DIRECTORY_LISTING_PARSING_ERROR_BOX_TEXT,
             l10n_util::GetStringUTF16(IDS_PRODUCT_NAME)));
     value.SetString("textdirection", base::i18n::IsRTL() ? "rtl" : "ltr");
-    html_data = webui::GetI18nTemplateHtml(
-        ui::ResourceBundle::GetSharedInstance().GetRawDataResource(
+    std::string str = webui::GetI18nTemplateHtml(
+        ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
             IDR_DIR_HEADER_HTML),
         &value);
+
+    html_data = base::RefCountedString::TakeString(&str);
   }
 
-  std::string html_data;
+  scoped_refptr<base::RefCountedMemory> html_data;
 };
 
 }  // namespace
 
-namespace chrome_common_net {
-
-base::StringPiece NetResourceProvider(int key) {
+scoped_refptr<base::RefCountedMemory> ChromeNetResourceProvider(int key) {
   static base::NoDestructor<LazyDirectoryListerCacher> lazy_dir_lister;
 
   if (IDR_DIR_HEADER_HTML == key)
-    return base::StringPiece(lazy_dir_lister->html_data);
+    return lazy_dir_lister->html_data;
 
-  return ui::ResourceBundle::GetSharedInstance().GetRawDataResource(key);
+  return ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytes(key);
 }
-
-}  // namespace chrome_common_net

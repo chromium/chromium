@@ -8,6 +8,7 @@ import android.content.Context;
 import android.view.ViewGroup;
 
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 
 /**
@@ -36,11 +37,11 @@ public class EphemeralTabBarControl {
     public EphemeralTabBarControl(EphemeralTabPanel panel, Context context, ViewGroup container,
             DynamicResourceLoader loader) {
         mTitle = new EphemeralTabTitleControl(panel, context, container, loader);
-        mCaption = panel.canPromoteToNewTab()
+        mCaption = OverlayPanel.isNewLayout() || panel.canPromoteToNewTab()
                 ? new EphemeralTabCaptionControl(panel, context, container, loader)
                 : null;
-        mTextLayerMinHeight = context.getResources().getDimension(
-                R.dimen.contextual_search_text_layer_min_height);
+        mTextLayerMinHeight =
+                context.getResources().getDimension(R.dimen.overlay_panel_text_layer_min_height);
         mTitleCaptionSpacing =
                 context.getResources().getDimension(R.dimen.contextual_search_term_caption_spacing);
     }
@@ -65,10 +66,14 @@ public class EphemeralTabBarControl {
      * @param percentage The percentage to the more opened state.
      */
     public void updateForCloseOrPeek(float percentage) {
-        if (percentage == SOLID_OPAQUE) updateForMaximize(SOLID_TRANSPARENT);
+        if (OverlayPanel.isNewLayout()) {
+            updateForMaximize(SOLID_OPAQUE);
+        } else {
+            if (percentage == SOLID_OPAQUE) updateForMaximize(SOLID_TRANSPARENT);
 
-        // When the panel is completely closed the caption should be hidden.
-        if (percentage == SOLID_TRANSPARENT && mCaption != null) mCaption.hide();
+            // When the panel is completely closed the caption should be hidden.
+            if (percentage == SOLID_TRANSPARENT && mCaption != null) mCaption.hide();
+        }
     }
 
     /**
@@ -108,7 +113,7 @@ public class EphemeralTabBarControl {
      *
      */
     public float getCaptionAnimationPercentage() {
-        return mCaption != null ? mCaption.getAnimationPercentage() : 0;
+        return mCaption.getAnimationPercentage();
     }
 
     /**

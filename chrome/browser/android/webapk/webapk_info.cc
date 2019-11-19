@@ -9,21 +9,27 @@
 WebApkInfo::WebApkInfo(std::string name,
                        std::string short_name,
                        std::string package_name,
+                       std::string id,
                        int shell_apk_version,
                        int version_code,
                        std::string uri,
                        std::string scope,
                        std::string manifest_url,
                        std::string manifest_start_url,
-                       blink::WebDisplayMode display,
+                       blink::mojom::DisplayMode display,
                        blink::WebScreenOrientationLockType orientation,
                        base::Optional<SkColor> theme_color,
                        base::Optional<SkColor> background_color,
                        base::Time last_update_check_time,
-                       bool relax_updates)
+                       base::Time last_update_completion_time,
+                       bool relax_updates,
+                       std::string backing_browser_package_name,
+                       bool is_backing_browser,
+                       std::string update_status)
     : name(std::move(name)),
       short_name(std::move(short_name)),
       package_name(std::move(package_name)),
+      id(std::move(id)),
       shell_apk_version(shell_apk_version),
       version_code(version_code),
       uri(std::move(uri)),
@@ -35,7 +41,11 @@ WebApkInfo::WebApkInfo(std::string name,
       theme_color(theme_color),
       background_color(background_color),
       last_update_check_time(last_update_check_time),
-      relax_updates(relax_updates) {}
+      last_update_completion_time(last_update_completion_time),
+      relax_updates(relax_updates),
+      backing_browser_package_name(std::move(backing_browser_package_name)),
+      is_backing_browser(is_backing_browser),
+      update_status(std::move(update_status)) {}
 
 WebApkInfo::~WebApkInfo() {}
 

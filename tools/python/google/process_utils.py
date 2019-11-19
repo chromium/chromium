@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 """Shared process-related utility functions."""
 
+from __future__ import print_function
+
 import errno
 import os
 import subprocess
@@ -62,7 +64,9 @@ def RunCommandFull(command, verbose=True, collect_output=False,
   Raises:
     CommandNotFound if the command executable could not be found.
   """
-  print '\n' + subprocess.list2cmdline(command).replace('\\', '/') + '\n', ###
+  print(
+      '\n' + subprocess.list2cmdline(command).replace('\\', '/') + '\n',
+      end=' ')
 
   if verbose:
     out = subprocess.PIPE
@@ -98,7 +102,7 @@ def RunCommandFull(command, verbose=True, collect_output=False,
       # \n.  (We could write \r instead, which doesn't get converted to \r\n,
       # but that's probably more troublesome for people trying to read the
       # files.)
-      print line + '\n',
+      print(line + '\n', end=' ')
 
       # Python on windows writes the buffer only when it reaches 4k. This is
       # not fast enough for all purposes.
@@ -162,7 +166,9 @@ def RunCommandsInParallel(commands, verbose=True, collect_output=False,
   eofs = [False for i in xrange(command_num)]
 
   for command in commands:
-    print '\n' + subprocess.list2cmdline(command).replace('\\', '/') + '\n',
+    print(
+        '\n' + subprocess.list2cmdline(command).replace('\\', '/') + '\n',
+        end=' ')
 
   if verbose:
     out = subprocess.PIPE
@@ -205,7 +211,7 @@ def RunCommandsInParallel(commands, verbose=True, collect_output=False,
           # write \n.  (We could write \r instead, which doesn't get converted
           # to \r\n, but that's probably more troublesome for people trying to
           # read the files.)
-          print line + '\n',
+          print(line + '\n', end=' ')
       else:
         eofs[i] = True
     if eof_all:

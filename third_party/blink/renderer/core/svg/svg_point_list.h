@@ -44,8 +44,6 @@ class SVGPointList final
  public:
   typedef SVGPointListTearOff TearOffType;
 
-  static SVGPointList* Create() { return MakeGarbageCollected<SVGPointList>(); }
-
   SVGPointList();
   ~SVGPointList() override;
 
@@ -55,7 +53,7 @@ class SVGPointList final
   String ValueAsString() const override;
 
   void Add(SVGPropertyBase*, SVGElement*) override;
-  void CalculateAnimatedValue(SVGAnimationElement*,
+  void CalculateAnimatedValue(const SVGAnimateElement&,
                               float percentage,
                               unsigned repeat_count,
                               SVGPropertyBase* from_value,

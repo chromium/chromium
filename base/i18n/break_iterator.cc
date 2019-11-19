@@ -47,6 +47,9 @@ bool BreakIterator::Init() {
     case BREAK_WORD:
       break_type = UBRK_WORD;
       break;
+    case BREAK_SENTENCE:
+      break_type = UBRK_SENTENCE;
+      break;
     case BREAK_LINE:
     case BREAK_NEWLINE:
     case RULE_BASED: // (Keep compiler happy, break_type not used in this case)
@@ -93,6 +96,7 @@ bool BreakIterator::Advance() {
     case BREAK_CHARACTER:
     case BREAK_WORD:
     case BREAK_LINE:
+    case BREAK_SENTENCE:
     case RULE_BASED:
       pos = ubrk_next(static_cast<UBreakIterator*>(iter_));
       if (pos == UBRK_DONE) {
@@ -168,6 +172,14 @@ bool BreakIterator::IsStartOfWord(size_t position) const {
   ubrk_next(iter);
   int32_t next_status = ubrk_getRuleStatus(iter);
   return (!!boundary && next_status != UBRK_WORD_NONE);
+}
+
+bool BreakIterator::IsSentenceBoundary(size_t position) const {
+  if (break_type_ != BREAK_SENTENCE && break_type_ != RULE_BASED)
+    return false;
+
+  UBreakIterator* iter = static_cast<UBreakIterator*>(iter_);
+  return !!ubrk_isBoundary(iter, static_cast<int32_t>(position));
 }
 
 bool BreakIterator::IsGraphemeBoundary(size_t position) const {

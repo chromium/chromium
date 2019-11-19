@@ -1,0 +1,146 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/process_version_rc_template.gni")
+import("//testing/test.gni")
+
+source_set("lib") {
+  sources = [
+    "configuration.cc",
+    "configuration.h",
+    "exit_code.h",
+    "installer.cc",
+    "installer.h",
+    "installer.rc",
+    "installer_constants.cc",
+    "installer_constants.h",
+    "installer_resource.h",
+    "pe_resource.cc",
+    "pe_resource.h",
+    "regkey.cc",
+    "regkey.h",
+    "string.cc",
+    "string.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/installer/util:with_no_strings",
+  ]
+}
+
+process_version_rc_template("version") {
+  template_file = "installer_version.rc.version"
+  output = "$root_out_dir/installer_version.rc"
+}
+
+# This target creats a list of runtime dependencies for the component
+# builds. This list is parsed by the |create_installer_archive| script, the
+# DLL paths extracted out from the list, and included in the archive.
+updater_runtime_deps = "$root_gen_dir/updater.runtime_deps"
+group("updater_runtime_deps") {
+  write_runtime_deps = updater_runtime_deps
+  data_deps = [
+    "//chrome/updater/win:updater",
+  ]
+}
+
+template("generate_installer") {
+  output_dir = invoker.out_dir
+  packed_files_rc_file = "$target_gen_dir/$target_name/packed_files.rc"
+  archive_name = target_name + "_archive"
+  staging_dir = "$target_gen_dir/$target_name"
+
+  action(archive_name) {
+    script = "create_installer_archive.py"
+
+    release_file = "updater.release"
+
+    inputs = [
+      release_file,
+    ]
+
+    outputs = [
+      "$output_dir/updater.packed.7z",
+      packed_files_rc_file,
+    ]
+
+    args = [
+      "--build_dir",
+      rebase_path(root_out_dir, root_build_dir),
+      "--staging_dir",
+      rebase_path(staging_dir, root_build_dir),
+      "--input_file",
+      rebase_path(release_file, root_build_dir),
+      "--resource_file_path",
+      rebase_path(packed_files_rc_file, root_build_dir),
+      "--output_dir",
+      rebase_path(output_dir, root_build_dir),
+      "--setup_runtime_deps",
+      rebase_path(updater_runtime_deps, root_build_dir),
+      "--output_name=updater",
+
+      # Optional argument for verbose archiving output.
+      #"--verbose",
+    ]
+
+    deps = [
+      ":updater_runtime_deps",
+      "//chrome/updater/win:uninstall.cmd",
+      "//chrome/updater/win:updater",
+    ]
+
+    if (is_component_build) {
+      args += [ "--component_build=1" ]
+    }
+  }
+
+  executable(target_name) {
+    output_name = invoker.output_name
+
+    sources = [
+      "installer_main.cc",
+      packed_files_rc_file,
+    ]
+
+    configs += [ "//build/config/win:windowed" ]
+
+    libs = [ "setupapi.lib" ]
+
+    deps = [
+      ":$archive_name",
+      ":lib",
+      ":version",
+      "//build/win:default_exe_manifest",
+      "//chrome/installer/util:with_no_strings",
+    ]
+  }
+}
+
+generate_installer("installer") {
+  out_dir = root_out_dir
+  output_name = "UpdaterSetup"
+}
+
+test("installer_unittest") {
+  testonly = true
+
+  output_name = "updater_installer_unittest"
+
+  sources = [
+    "configuration_unittest.cc",
+    "run_all_unittests.cc",
+    "string_unittest.cc",
+  ]
+
+  public_deps = [
+    ":lib",
+  ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//chrome/installer/util:with_no_strings",
+    "//testing/gtest",
+  ]
+}

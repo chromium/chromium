@@ -5,20 +5,22 @@
 package org.chromium.chrome.browser.firstrun;
 
 import android.app.Activity;
-import android.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.ContextUtils;
-import org.chromium.base.VisibleForTesting;
 import org.chromium.chrome.browser.ChromeFeatureList;
+import org.chromium.chrome.browser.SyncFirstSetupCompleteSource;
 import org.chromium.chrome.browser.preferences.PreferencesLauncher;
-import org.chromium.chrome.browser.preferences.SyncAndServicesPreferences;
-import org.chromium.chrome.browser.signin.AccountManagementFragment;
+import org.chromium.chrome.browser.preferences.sync.SyncAndServicesPreferences;
+import org.chromium.chrome.browser.signin.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.SigninManager;
 import org.chromium.chrome.browser.signin.SigninManager.SignInCallback;
 import org.chromium.chrome.browser.signin.UnifiedConsentServiceBridge;
-import org.chromium.chrome.browser.util.FeatureUtilities;
+import org.chromium.chrome.browser.sync.ProfileSyncService;
 
 /**
  * A helper to perform all necessary steps for the automatic FRE sign in.
@@ -50,7 +52,7 @@ public final class FirstRunSignInProcessor {
      * @param activity The context for the FRE parameters processor.
      */
     public static void start(final Activity activity) {
-        SigninManager signinManager = SigninManager.get();
+        SigninManager signinManager = IdentityServicesProvider.getSigninManager();
         signinManager.onFirstRunCheckDone();
 
         // Skip signin if the first run flow is not complete. Examples of cases where the user
@@ -66,22 +68,24 @@ public final class FirstRunSignInProcessor {
             return;
         }
         final String accountName = getFirstRunFlowSignInAccountName();
-        if (!FeatureUtilities.canAllowSync(activity) || !signinManager.isSignInAllowed()
+        if (!FirstRunUtils.canAllowSync() || !signinManager.isSignInAllowed()
                 || TextUtils.isEmpty(accountName)) {
             setFirstRunFlowSignInComplete(true);
             return;
         }
 
         final boolean setUp = getFirstRunFlowSignInSetup();
-        signinManager.signIn(accountName, activity, new SignInCallback() {
+        signinManager.signIn(accountName, new SignInCallback() {
             @Override
             public void onSignInComplete() {
-                if (ChromeFeatureList.isEnabled(ChromeFeatureList.UNIFIED_CONSENT)) {
-                    UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(true);
-                }
+                UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(true);
                 // Show sync settings if user pressed the "Settings" button.
                 if (setUp) {
                     openSignInSettings(activity);
+                } else if (ChromeFeatureList.isEnabled(
+                                   ChromeFeatureList.SYNC_MANUAL_START_ANDROID)) {
+                    ProfileSyncService.get().setFirstSetupComplete(
+                            SyncFirstSetupCompleteSource.BASIC_FLOW);
                 }
                 setFirstRunFlowSignInComplete(true);
             }
@@ -99,15 +103,8 @@ public final class FirstRunSignInProcessor {
      * Opens sign in settings as requested in the FRE sign-in dialog.
      */
     private static void openSignInSettings(Activity activity) {
-        final Class<? extends Fragment> fragment;
-        final Bundle arguments;
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.UNIFIED_CONSENT)) {
-            fragment = SyncAndServicesPreferences.class;
-            arguments = SyncAndServicesPreferences.createArguments(true);
-        } else {
-            fragment = AccountManagementFragment.class;
-            arguments = null;
-        }
+        final Class<? extends Fragment> fragment = SyncAndServicesPreferences.class;
+        final Bundle arguments = SyncAndServicesPreferences.createArguments(true);
         PreferencesLauncher.launchSettingsPage(activity, fragment, arguments);
     }
 
@@ -186,7 +183,7 @@ public final class FirstRunSignInProcessor {
      * Allows the user to sign-in if there are no pending FRE sign-in requests.
      */
     public static void updateSigninManagerFirstRunCheckDone() {
-        SigninManager manager = SigninManager.get();
+        SigninManager manager = IdentityServicesProvider.getSigninManager();
         if (manager.isSignInAllowed()) return;
         if (!FirstRunStatus.getFirstRunFlowComplete()) return;
         if (!getFirstRunFlowSignInComplete()) return;

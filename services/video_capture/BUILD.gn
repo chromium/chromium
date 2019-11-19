@@ -2,21 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//services/service_manager/public/cpp/service_executable.gni")
 import("//testing/test.gni")
-
-service_executable("video_capture") {
-  sources = [
-    "service_main.cc",
-  ]
-
-  deps = [
-    ":lib",
-    "//mojo/public/cpp/system",
-    "//services/video_capture/public/cpp",
-    "//services/video_capture/public/mojom",
-  ]
-}
 
 source_set("lib") {
   sources = [
@@ -24,8 +10,6 @@ source_set("lib") {
     "broadcasting_receiver.h",
     "device_factory_media_to_mojo_adapter.cc",
     "device_factory_media_to_mojo_adapter.h",
-    "device_factory_provider_impl.cc",
-    "device_factory_provider_impl.h",
     "device_media_to_mojo_adapter.cc",
     "device_media_to_mojo_adapter.h",
     "push_video_stream_subscription_impl.cc",
@@ -34,14 +18,14 @@ source_set("lib") {
     "receiver_mojo_to_media_adapter.h",
     "scoped_access_permission_media_to_mojo_adapter.cc",
     "scoped_access_permission_media_to_mojo_adapter.h",
-    "service_impl.cc",
-    "service_impl.h",
     "shared_memory_virtual_device_mojo_adapter.cc",
     "shared_memory_virtual_device_mojo_adapter.h",
     "testing_controls_impl.cc",
     "testing_controls_impl.h",
     "texture_virtual_device_mojo_adapter.cc",
     "texture_virtual_device_mojo_adapter.h",
+    "video_capture_service_impl.cc",
+    "video_capture_service_impl.h",
     "video_source_impl.cc",
     "video_source_impl.h",
     "video_source_provider_impl.cc",
@@ -59,16 +43,15 @@ source_set("lib") {
     "//media/capture/mojom:image_capture",
     "//media/mojo/common:common",
     "//mojo/public/cpp/system",
-    "//services/service_manager/public/cpp",
     "//services/video_capture/public/cpp",
     "//services/video_capture/public/mojom",
     "//services/video_capture/public/mojom:constants",
     "//services/video_capture/public/uma",
-    "//services/ws/public/cpp/gpu:gpu",
+    "//services/viz/public/cpp/gpu",
   ]
 
   if (is_chromeos) {
-    public_deps += [ "//media/capture/video/chromeos/mojo:cros_camera" ]
+    public_deps += [ "//media/capture/video/chromeos/mojom:cros_camera" ]
   }
 }
 
@@ -76,11 +59,8 @@ source_set("tests") {
   testonly = true
 
   sources = [
+    "broadcasting_receiver_unittest.cc",
     "device_media_to_mojo_adapter_unittest.cc",
-    "test/device_factory_provider_connectortest.cc",
-    "test/device_factory_provider_test.cc",
-    "test/device_factory_provider_test.h",
-    "test/device_factory_provider_unittest.cc",
     "test/fake_device_descriptor_test.cc",
     "test/fake_device_descriptor_test.h",
     "test/fake_device_descriptor_unittest.cc",
@@ -93,26 +73,22 @@ source_set("tests") {
     "test/mock_device_unittest.cc",
     "test/mock_devices_changed_observer.cc",
     "test/mock_devices_changed_observer.h",
+    "test/service_lifecycle_unittest.cc",
+    "test/video_capture_service_test.cc",
+    "test/video_capture_service_test.h",
+    "test/video_capture_service_unittest.cc",
     "test/virtual_device_unittest.cc",
     "texture_virtual_device_mojo_adapter_unittest.cc",
   ]
 
   deps = [
     ":lib",
-    ":video_capture",
     "//base/test:test_support",
     "//media/capture:test_support",
     "//media/capture/mojom:video_capture",
-    "//services/service_manager/public/cpp",
-    "//services/service_manager/public/cpp/test:test_support",
-    "//services/video_capture/public/cpp:manifest",
     "//services/video_capture/public/cpp:mocks",
     "//testing/gmock",
     "//testing/gtest",
     "//ui/gfx:test_support",
-  ]
-
-  data_deps = [
-    ":video_capture",
   ]
 }

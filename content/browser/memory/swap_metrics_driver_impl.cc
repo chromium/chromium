@@ -38,7 +38,7 @@ SwapMetricsDriverImpl::InitializeMetrics() {
   return result;
 }
 
-bool SwapMetricsDriverImpl::IsRunning() const {
+bool SwapMetricsDriverImpl::IsRunning() {
   return timer_.IsRunning();
 }
 

@@ -1,0 +1,39 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/html/i18n_behavior.html">
+<link rel="import" href="chrome://resources/cr_components/chromeos/cellular_setup/mojo_interface_provider.html">
+<link rel="import" href="chrome://resources/cr_components/chromeos/cellular_setup/button_bar.html">
+<link rel="import" href="chrome://resources/cr_components/chromeos/cellular_setup/sim_detect_page.html">
+<link rel="import" href="chrome://resources/cr_components/chromeos/cellular_setup/provisioning_page.html">
+<link rel="import" href="chrome://resources/cr_components/chromeos/cellular_setup/final_page.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-pages/iron-pages.html">
+
+<dom-module id="cellular-setup">
+  <template>
+    <style include="iron-flex">
+      :host {
+        @apply --layout-flex-auto;
+        @apply --layout-vertical;
+        padding: 10px;
+      }
+    </style>
+    <iron-pages attr-for-selected="is"
+        selected="[[selectedPageName_]]"
+        selected-item="{{selectedPage_}}">
+      <sim-detect-page show-error="[[showError_]]"></sim-detect-page>
+      <provisioning-page show-error="{{showError_}}"
+          cellular-metadata="[[cellularMetadata_]]"
+          on-carrier-portal-loaded="onCarrierPortalLoaded_"
+          on-carrier-portal-result="onCarrierPortalResult_">
+      </provisioning-page>
+      <final-page show-error="[[showError_]]"></final-page>
+    </iron-pages>
+    <button-bar show-try-again-button="[[showTryAgainButton_]]"
+        show-finish-button="[[showFinishButton_]]"
+        show-cancel-button="[[showCancelButton_]]"></button-bar>
+  </template>
+  <script src="cellular_setup.js">
+  </script>
+</dom-module>

@@ -16,7 +16,7 @@ std::string GetUpdateURLData(const ExtensionPrefs* prefs,
                              const std::string& extension_id);
 }  // namespace extension
 
-class ExtensionSetUpdateUrlDataFunction : public UIThreadExtensionFunction {
+class ExtensionSetUpdateUrlDataFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("extension.setUpdateUrlData",
                              EXTENSION_SETUPDATEURLDATA)
@@ -28,8 +28,7 @@ class ExtensionSetUpdateUrlDataFunction : public UIThreadExtensionFunction {
   ResponseAction Run() override;
 };
 
-class ExtensionIsAllowedIncognitoAccessFunction
-    : public UIThreadExtensionFunction {
+class ExtensionIsAllowedIncognitoAccessFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("extension.isAllowedIncognitoAccess",
                              EXTENSION_ISALLOWEDINCOGNITOACCESS)
@@ -41,8 +40,7 @@ class ExtensionIsAllowedIncognitoAccessFunction
   ResponseAction Run() override;
 };
 
-class ExtensionIsAllowedFileSchemeAccessFunction
-    : public UIThreadExtensionFunction {
+class ExtensionIsAllowedFileSchemeAccessFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("extension.isAllowedFileSchemeAccess",
                              EXTENSION_ISALLOWEDFILESCHEMEACCESS)

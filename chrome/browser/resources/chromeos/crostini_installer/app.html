@@ -1,0 +1,100 @@
+<style>
+  #img-linux-illustration {
+    align-self: center;
+    height: 180px;
+    margin-bottom: 80px;
+    width: 448px;
+  }
+
+  #icon {
+    fill: var(--google-blue-600);
+    height: 32px;
+    margin-top: 28px;
+    width: 32px;
+  }
+
+  #main {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    height: 608px;
+    justify-content: space-between;
+    padding: 0 64px;
+    width: 768px;
+  }
+
+  #title {
+    color: var(--cr-primary-text-color);
+    font-family: 'Google Sans';
+    font-size: 28px;
+    line-height: 1;
+    margin: 36px 0 14px;
+  }
+
+  #status-container {
+    color: var(--cr-secondary-text-color);
+    flex-grow: 1;
+    font-family: Roboto;
+    font-size: 13px;
+    line-height: 18px;
+  }
+
+  paper-progress {
+    --paper-progress-active-color: var(--google-blue-600);
+    --paper-progress-container-color: rgba(var(--google-blue-600-rgb), .24);
+    margin-top: 36px;
+    width: 100%;
+  }
+
+  #bottom-container {
+    text-align: center;
+  }
+
+  #button-container {
+    display: flex;
+    justify-content: flex-end;
+    margin: 32px 0;
+  }
+</style>
+
+<div id="main">
+  <svg id="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 116 121">
+    <path fill-rule="evenodd" d="M33.525 111.127C18.692 103.147 9.128 87.46 8.81 66.719c-1.433.726-3.064.848-4.943.163-5.377-1.96-4.169-8.51-2.197-14.348 1.633-4.835 7.21-8.365 9.942-9.103C17.969 19.072 32.883 0 58 0c25.416 0 40.433 18.285 46.611 43.495 2.8.862 8.129 4.332 9.719 9.04 1.972 5.838 3.18 12.386-2.197 14.347-1.878.685-3.51.563-4.942-.163-.29 20.873-9.852 36.5-24.678 44.438.894.72 1.4 1.651 1.4 2.843 0 3.866 1.882 7-11.913 7-10.067 0-11.785-2.13-11.98-4.447-.668-.422-1.342-1.053-2.02-1.053-.68 0-1.355.682-2.025 1.103C55.76 118.901 53.994 121 44 121c-13.795 0-11.914-3.134-11.914-7 0-1.208.521-2.15 1.439-2.873zM58 107c28.664 0 39-20.35 39-47.4 0-22.444-9.4-43.056-25-46.497C67 12 63.5 24 58 24s-9.5-12-14-10.897C28.334 16.943 19 38.342 19 59.6 19 85.125 29.336 107 58 107zM40 47a6 6 0 110-12 6 6 0 010 12zm36 0a6 6 0 110-12 6 6 0 010 12zm-16.914 3.24l8.234 3.613a2.78 2.78 0 01.934 4.442l-8.188 8.802a2.85 2.85 0 01-4.166-.006l-8.16-8.824a2.77 2.77 0 01.18-3.945c.222-.2.476-.365.75-.487l8.114-3.591a2.856 2.856 0 012.302-.004z"></path>
+  </svg>
+  <div id="status-container" role="status" aria-atomic="false">
+    <div id="title">[[getTitle_(state_)]]</div>
+
+    <!-- Message containers. Depending on the current state, only one of them
+      is visible. -->
+    <div id="prompt-message" hidden="[[!isState_(state_, State.PROMPT)]]">
+      <span>$i18n{promptMessage}</span>
+      <a href="$i18n{learnMoreUrl}" target="_blank">$i18n{learnMore}</a>
+    </div>
+    <div id="installing-message"
+        hidden="[[!isState_(state_, State.INSTALLING)]]">
+      <div>[[getProgressMessage_(installerState_)]]</div>
+      <paper-progress class="progress-bar" value="[[installerProgress_]]">
+      </paper-progress>
+    </div>
+    <div id="error-message" hidden="[[!isState_(state_, State.ERROR)]]">
+      <div>[[getErrorMessage_(error_)]]</div>
+    </div>
+    <div id="canceling-message" hidden="[[!isState_(state_, State.CANCELING)]]">
+      <div>$i18n{cancelingMessage}</div>
+      <paper-progress class="progress-bar" indeterminate></paper-progress>
+    </div>
+
+  </div>
+  <img id="img-linux-illustration" src="images/linux_illustration.png" alt="">
+  <div id="button-container">
+    <cr-button class="cancel-button" on-click="onCancelButtonClick_"
+        disabled="[[isState_(state_, State.CANCELING)]]">
+      $i18n{cancel}
+    </cr-button>
+    <cr-button class="action-button" on-click="onInstallButtonClick_"
+        aria-describedby="title" aria-details="prompt-message"
+        hidden="[[!canInstall_(state_)]]">
+      [[getInstallButtonLabel_(state_)]]
+    </cr-button>
+  </div>
+</div>

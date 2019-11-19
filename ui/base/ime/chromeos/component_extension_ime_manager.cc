@@ -12,61 +12,12 @@
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "chromeos/constants/chromeos_switches.h"
+#include "chromeos/ime/input_methods.h"
 #include "ui/base/ime/chromeos/extension_ime_util.h"
 
 namespace chromeos {
 
 namespace {
-
-// The whitelist for enabling extension based xkb keyboards at login session.
-const char* kLoginLayoutWhitelist[] = {
-  "be",
-  "br",
-  "ca",
-  "ca(eng)",
-  "ca(multix)",
-  "ch",
-  "ch(fr)",
-  "cz",
-  "cz(qwerty)",
-  "de",
-  "de(neo)",
-  "dk",
-  "ee",
-  "es",
-  "es(cat)",
-  "fi",
-  "fr",
-  "fr(bepo)",
-  "fr(oss)",
-  "gb(dvorak)",
-  "gb(extd)",
-  "hr",
-  "hu",
-  "ie",
-  "is",
-  "it",
-  "jp",
-  "latam",
-  "lt",
-  "lv(apostrophe)",
-  "mt",
-  "no",
-  "pl",
-  "pt",
-  "ro",
-  "se",
-  "si",
-  "tr",
-  "us",
-  "us(altgr-intl)",
-  "us(colemak)",
-  "us(dvorak)",
-  "us(dvp)",
-  "us(intl)",
-  "us(workman)",
-  "us(workman-intl)"
-};
 
 // Gets the input method category according to the given input method id.
 // This is used for sorting a list of input methods.
@@ -91,50 +42,44 @@ bool InputMethodCompare(const input_method::InputMethodDescriptor& im1,
 
 } // namespace
 
-ComponentExtensionEngine::ComponentExtensionEngine() {
-}
+ComponentExtensionEngine::ComponentExtensionEngine() = default;
 
 ComponentExtensionEngine::ComponentExtensionEngine(
     const ComponentExtensionEngine& other) = default;
 
-ComponentExtensionEngine::~ComponentExtensionEngine() {
-}
+ComponentExtensionEngine::~ComponentExtensionEngine() = default;
 
-ComponentExtensionIME::ComponentExtensionIME() {
-}
+ComponentExtensionIME::ComponentExtensionIME() = default;
 
 ComponentExtensionIME::ComponentExtensionIME(
     const ComponentExtensionIME& other) = default;
 
-ComponentExtensionIME::~ComponentExtensionIME() {
-}
+ComponentExtensionIME::~ComponentExtensionIME() = default;
 
-ComponentExtensionIMEManagerDelegate::ComponentExtensionIMEManagerDelegate() {
-}
+ComponentExtensionIMEManagerDelegate::ComponentExtensionIMEManagerDelegate() =
+    default;
 
-ComponentExtensionIMEManagerDelegate::~ComponentExtensionIMEManagerDelegate() {
-}
+ComponentExtensionIMEManagerDelegate::~ComponentExtensionIMEManagerDelegate() =
+    default;
 
 ComponentExtensionIMEManager::ComponentExtensionIMEManager() {
-  for (size_t i = 0; i < base::size(kLoginLayoutWhitelist); ++i) {
-    login_layout_set_.insert(kLoginLayoutWhitelist[i]);
+  for (const auto& input_method : input_method::kInputMethods) {
+    if (input_method.is_login_keyboard)
+      login_layout_set_.insert(input_method.xkb_layout_id);
   }
 }
 
-ComponentExtensionIMEManager::~ComponentExtensionIMEManager() {
-}
+ComponentExtensionIMEManager::~ComponentExtensionIMEManager() = default;
 
 void ComponentExtensionIMEManager::Initialize(
     std::unique_ptr<ComponentExtensionIMEManagerDelegate> delegate) {
   delegate_ = std::move(delegate);
   std::vector<ComponentExtensionIME> ext_list = delegate_->ListIME();
-  for (size_t i = 0; i < ext_list.size(); ++i) {
-    ComponentExtensionIME& ext = ext_list[i];
+  for (const auto& ext : ext_list) {
     bool extension_exists = IsWhitelistedExtension(ext.id);
     if (!extension_exists)
       component_extension_imes_[ext.id] = ext;
-    for (size_t j = 0; j < ext.engines.size(); ++j) {
-      ComponentExtensionEngine& ime = ext.engines[j];
+    for (const auto& ime : ext.engines) {
       const std::string input_method_id =
           extension_ime_util::GetComponentInputMethodID(ext.id, ime.engine_id);
       if (extension_exists && !IsWhitelisted(input_method_id))
@@ -213,9 +158,9 @@ ComponentExtensionIMEManager::GetXkbIMEAsInputMethodDescriptor() {
   input_method::InputMethodDescriptors result;
   const input_method::InputMethodDescriptors& descriptors =
       GetAllIMEAsInputMethodDescriptor();
-  for (size_t i = 0; i < descriptors.size(); ++i) {
-    if (extension_ime_util::IsKeyboardLayoutExtension(descriptors[i].id()))
-      result.push_back(descriptors[i]);
+  for (const auto& descriptor : descriptors) {
+    if (extension_ime_util::IsKeyboardLayoutExtension(descriptor.id()))
+      result.push_back(descriptor);
   }
   return result;
 }
@@ -228,8 +173,7 @@ bool ComponentExtensionIMEManager::FindEngineEntry(
 
   std::string extension_id =
       extension_ime_util::GetExtensionIDFromInputMethodID(input_method_id);
-  std::map<std::string, ComponentExtensionIME>::iterator it =
-      component_extension_imes_.find(extension_id);
+  auto it = component_extension_imes_.find(extension_id);
   if (it == component_extension_imes_.end())
     return false;
 
@@ -240,8 +184,8 @@ bool ComponentExtensionIMEManager::FindEngineEntry(
 
 bool ComponentExtensionIMEManager::IsInLoginLayoutWhitelist(
     const std::vector<std::string>& layouts) {
-  for (size_t i = 0; i < layouts.size(); ++i) {
-    if (login_layout_set_.find(layouts[i]) != login_layout_set_.end())
+  for (const auto& layout : layouts) {
+    if (login_layout_set_.find(layout) != login_layout_set_.end())
       return true;
   }
   return false;

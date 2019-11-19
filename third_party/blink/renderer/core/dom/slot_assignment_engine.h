@@ -5,19 +5,16 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_SLOT_ASSIGNMENT_ENGINE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_SLOT_ASSIGNMENT_ENGINE_H_
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 
 namespace blink {
 
 class ShadowRoot;
 
-class SlotAssignmentEngine final
+class CORE_EXPORT SlotAssignmentEngine final
     : public GarbageCollected<SlotAssignmentEngine> {
  public:
-  static SlotAssignmentEngine* Create() {
-    return MakeGarbageCollected<SlotAssignmentEngine>();
-  }
-
   explicit SlotAssignmentEngine();
 
   void AddShadowRootNeedingRecalc(ShadowRoot&);

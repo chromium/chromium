@@ -22,7 +22,8 @@ namespace bad_message {
 // values in histograms.
 enum BadMessageReason {
   WRLHH_LOGGING_STOPPED_BAD_STATE = 0,
-  PPH_EXTRA_PREVIEW_MESSAGE,
+  PPH_EXTRA_PREVIEW_MESSAGE = 1,
+  PMF_INVALID_INITIATOR_ORIGIN = 2,
 
   // Please add new elements here. The naming convention is abbreviated class
   // name (e.g. RenderFrameHost becomes RFH) plus a unique description of the

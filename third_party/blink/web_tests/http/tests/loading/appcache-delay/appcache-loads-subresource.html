@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html manifest="resources/appcache.manifest">
+<body>
+  <div id=result></div>
+  <script>
+  if (window.testRunner) {
+    testRunner.dumpAsText()
+    testRunner.waitUntilDone();
+  }
+  let first = true;
+  function loadiframe() {
+    if (!first) {
+      return;
+    }
+    first = false;
+    const iframe = document.createElement("iframe");
+    iframe.src = "resources/subresource-loaded.html";
+    document.body.appendChild(iframe);
+  };
+  window.addEventListener("message", e => {
+    document.getElementById("result").innerHTML = e.data;
+
+    if (window.testRunner) {
+        testRunner.notifyDone();
+    }
+  });
+
+  applicationCache.addEventListener('cached', loadiframe, false);
+  applicationCache.addEventListener('noupdate', loadiframe, false);
+  </script>

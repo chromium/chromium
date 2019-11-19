@@ -1,7 +1,6 @@
 <!DOCTYPE HTML>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 
 <div class="container">
   <div role="listbox">
@@ -11,7 +10,7 @@
 </div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var axOption1 = accessibilityController.accessibleElementById("option1");
     assert_equals(axOption1.name, "option 1");
     var axOption2 = accessibilityController.accessibleElementById("option2");

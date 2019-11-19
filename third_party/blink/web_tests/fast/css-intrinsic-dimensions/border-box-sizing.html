@@ -13,10 +13,6 @@
 <body onload="checkLayout('.container')">
 <div id=log></div>
 
-<div class="container" style="height: 20px; min-height: min-content; padding-top: 30px;" data-expected-height="80">
-   <div style="height: 50px; width: 50px;"></div>
-</div>
-
 <div style="display: flex; flex-direction: column; height: 20px;">
   <!-- uses the implied min-height: auto; should not flex-shrink below 80 -->
   <div class="container" style="padding-top: 30px;" data-expected-height="80">

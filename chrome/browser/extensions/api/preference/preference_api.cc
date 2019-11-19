@@ -17,14 +17,12 @@
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/api/content_settings/content_settings_service.h"
 #include "chrome/browser/extensions/api/preference/preference_api_constants.h"
 #include "chrome/browser/extensions/api/preference/preference_helpers.h"
 #include "chrome/browser/extensions/api/proxy/proxy_api.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/net/prediction_options.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/content_settings/core/common/pref_names.h"
@@ -35,9 +33,6 @@
 #include "components/safe_browsing/common/safe_browsing_prefs.h"
 #include "components/spellcheck/browser/pref_names.h"
 #include "components/translate/core/browser/translate_pref_names.h"
-#include "content/public/browser/notification_details.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_source.h"
 #include "extensions/browser/extension_pref_value_map.h"
 #include "extensions/browser/extension_pref_value_map_factory.h"
 #include "extensions/browser/extension_prefs.h"
@@ -82,7 +77,7 @@ const char kConversionErrorMessage[] =
     "properly.";
 
 const PrefMappingEntry kPrefMapping[] = {
-    {"spdy_proxy.enabled", prefs::kDataSaverEnabled,
+    {"spdy_proxy.enabled", data_reduction_proxy::prefs::kDataSaverEnabled,
      APIPermission::kDataReductionProxy, APIPermission::kDataReductionProxy},
     {"data_reduction.daily_original_length",
      data_reduction_proxy::prefs::kDailyHttpOriginalContentLength,
@@ -157,6 +152,9 @@ const PrefMappingEntry kPrefMapping[] = {
      APIPermission::kAccessibilityFeaturesRead,
      APIPermission::kAccessibilityFeaturesModify},
     {"screenMagnifier", ash::prefs::kAccessibilityScreenMagnifierEnabled,
+     APIPermission::kAccessibilityFeaturesRead,
+     APIPermission::kAccessibilityFeaturesModify},
+    {"selectToSpeak", ash::prefs::kAccessibilitySelectToSpeakEnabled,
      APIPermission::kAccessibilityFeaturesRead,
      APIPermission::kAccessibilityFeaturesModify},
     {"spokenFeedback", ash::prefs::kAccessibilitySpokenFeedbackEnabled,
@@ -306,7 +304,7 @@ class PrefMapping {
   void RegisterPrefTransformer(
       const std::string& browser_pref,
       std::unique_ptr<PrefTransformerInterface> transformer) {
-    DCHECK(!base::ContainsKey(transformers_, browser_pref))
+    DCHECK(!base::Contains(transformers_, browser_pref))
         << "Trying to register pref transformer for " << browser_pref
         << " twice";
     transformers_[browser_pref] = std::move(transformer);
@@ -361,14 +359,15 @@ PreferenceEventRouter::PreferenceEventRouter(Profile* profile)
                    base::Bind(&PreferenceEventRouter::OnPrefChanged,
                               base::Unretained(this), registrar_.prefs()));
   }
-  notification_registrar_.Add(this, chrome::NOTIFICATION_PROFILE_CREATED,
-                              content::NotificationService::AllSources());
-  notification_registrar_.Add(this, chrome::NOTIFICATION_PROFILE_DESTROYED,
-                              content::NotificationService::AllSources());
-  OnIncognitoProfileCreated(profile->GetOffTheRecordPrefs());
+  DCHECK(!profile_->IsOffTheRecord());
+  observed_profiles_.Add(profile_);
+  if (profile->HasOffTheRecordProfile())
+    OnOffTheRecordProfileCreated(profile->GetOffTheRecordProfile());
+  else
+    ObserveOffTheRecordPrefs(profile->GetReadOnlyOffTheRecordPrefs());
 }
 
-PreferenceEventRouter::~PreferenceEventRouter() { }
+PreferenceEventRouter::~PreferenceEventRouter() = default;
 
 void PreferenceEventRouter::OnPrefChanged(PrefService* pref_service,
                                           const std::string& browser_pref) {
@@ -420,33 +419,22 @@ void PreferenceEventRouter::OnPrefChanged(PrefService* pref_service,
       browser_pref);
 }
 
-void PreferenceEventRouter::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  switch (type) {
-    case chrome::NOTIFICATION_PROFILE_CREATED: {
-      Profile* profile = content::Source<Profile>(source).ptr();
-      if (profile != profile_ && profile->GetOriginalProfile() == profile_) {
-        OnIncognitoProfileCreated(profile->GetPrefs());
-      }
-      break;
-    }
-    case chrome::NOTIFICATION_PROFILE_DESTROYED: {
-      Profile* profile = content::Source<Profile>(source).ptr();
-      if (profile != profile_ && profile->GetOriginalProfile() == profile_) {
-        // The real PrefService is about to be destroyed so we must make sure we
-        // get the "dummy" one.
-        OnIncognitoProfileCreated(profile_->GetReadOnlyOffTheRecordPrefs());
-      }
-      break;
-    }
-    default:
-      NOTREACHED();
+void PreferenceEventRouter::OnOffTheRecordProfileCreated(
+    Profile* off_the_record) {
+  observed_profiles_.Add(off_the_record);
+  ObserveOffTheRecordPrefs(off_the_record->GetPrefs());
+}
+
+void PreferenceEventRouter::OnProfileWillBeDestroyed(Profile* profile) {
+  observed_profiles_.Remove(profile);
+  if (profile->IsOffTheRecord()) {
+    // The real PrefService is about to be destroyed so we must make sure we
+    // get the "dummy" one.
+    ObserveOffTheRecordPrefs(profile_->GetReadOnlyOffTheRecordPrefs());
   }
 }
 
-void PreferenceEventRouter::OnIncognitoProfileCreated(PrefService* prefs) {
+void PreferenceEventRouter::ObserveOffTheRecordPrefs(PrefService* prefs) {
   incognito_registrar_ = std::make_unique<PrefChangeRegistrar>();
   incognito_registrar_->Init(prefs);
   for (const auto& pref : kPrefMapping) {

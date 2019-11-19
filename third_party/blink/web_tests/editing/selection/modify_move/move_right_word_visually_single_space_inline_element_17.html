@@ -1,0 +1,230 @@
+<!doctype html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../assert_selection.js"></script>
+<script>
+if (window.internals)
+  internals.settings.setEditingBehavior('win');
+
+selection_test(
+  '<div contenteditable dir="rtl">|אבד opq דעפ <span>abc אאא def</span>ווש rst כטז</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">|אבד opq דעפ <span>abc אאא def</span>ווש rst כטז</div>',
+  '17-0 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">א|בד opq דעפ <span>abc אאא def</span>ווש rst כטז</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">|אבד opq דעפ <span>abc אאא def</span>ווש rst כטז</div>',
+  '17-1 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אב|ד opq דעפ <span>abc אאא def</span>ווש rst כטז</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">|אבד opq דעפ <span>abc אאא def</span>ווש rst כטז</div>',
+  '17-2 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד| opq דעפ <span>abc אאא def</span>ווש rst כטז</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">|אבד opq דעפ <span>abc אאא def</span>ווש rst כטז</div>',
+  '17-3 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד |opq דעפ <span>abc אאא def</span>ווש rst כטז</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">|אבד opq דעפ <span>abc אאא def</span>ווש rst כטז</div>',
+  '17-4 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד o|pq דעפ <span>abc אאא def</span>ווש rst כטז</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">אבד |opq דעפ <span>abc אאא def</span>ווש rst כטז</div>',
+  '17-5 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד op|q דעפ <span>abc אאא def</span>ווש rst כטז</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">אבד |opq דעפ <span>abc אאא def</span>ווש rst כטז</div>',
+  '17-6 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד opq| דעפ <span>abc אאא def</span>ווש rst כטז</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">אבד |opq דעפ <span>abc אאא def</span>ווש rst כטז</div>',
+  '17-7 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד opq |דעפ <span>abc אאא def</span>ווש rst כטז</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">אבד |opq דעפ <span>abc אאא def</span>ווש rst כטז</div>',
+  '17-8 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד opq ד|עפ <span>abc אאא def</span>ווש rst כטז</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">אבד opq |דעפ <span>abc אאא def</span>ווש rst כטז</div>',
+  '17-9 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד opq דע|פ <span>abc אאא def</span>ווש rst כטז</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">אבד opq |דעפ <span>abc אאא def</span>ווש rst כטז</div>',
+  '17-10 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד opq דעפ| <span>abc אאא def</span>ווש rst כטז</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">אבד opq |דעפ <span>abc אאא def</span>ווש rst כטז</div>',
+  '17-11 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד opq דעפ |<span>abc אאא def</span>ווש rst כטז</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">אבד opq |דעפ <span>abc אאא def</span>ווש rst כטז</div>',
+  '17-12 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד opq דעפ <span>|abc אאא def</span>ווש rst כטז</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">אבד opq |דעפ <span>abc אאא def</span>ווש rst כטז</div>',
+  '17-13 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד opq דעפ <span>a|bc אאא def</span>ווש rst כטז</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">אבד opq דעפ |<span>abc אאא def</span>ווש rst כטז</div>',
+  '17-14 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד opq דעפ <span>ab|c אאא def</span>ווש rst כטז</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">אבד opq דעפ |<span>abc אאא def</span>ווש rst כטז</div>',
+  '17-15 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד opq דעפ <span>abc| אאא def</span>ווש rst כטז</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">אבד opq דעפ |<span>abc אאא def</span>ווש rst כטז</div>',
+  '17-16 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד opq דעפ <span>abc |אאא def</span>ווש rst כטז</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">אבד opq דעפ |<span>abc אאא def</span>ווש rst כטז</div>',
+  '17-17 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד opq דעפ <span>abc א|אא def</span>ווש rst כטז</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">אבד opq דעפ <span>abc |אאא def</span>ווש rst כטז</div>',
+  '17-18 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד opq דעפ <span>abc אא|א def</span>ווש rst כטז</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">אבד opq דעפ <span>abc |אאא def</span>ווש rst כטז</div>',
+  '17-19 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד opq דעפ <span>abc אאא| def</span>ווש rst כטז</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">אבד opq דעפ <span>abc |אאא def</span>ווש rst כטז</div>',
+  '17-20 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד opq דעפ <span>abc אאא |def</span>ווש rst כטז</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">אבד opq דעפ <span>abc |אאא def</span>ווש rst כטז</div>',
+  '17-21 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד opq דעפ <span>abc אאא d|ef</span>ווש rst כטז</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">אבד opq דעפ <span>abc אאא |def</span>ווש rst כטז</div>',
+  '17-22 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד opq דעפ <span>abc אאא de|f</span>ווש rst כטז</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">אבד opq דעפ <span>abc אאא |def</span>ווש rst כטז</div>',
+  '17-23 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד opq דעפ <span>abc אאא def|</span>ווש rst כטז</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">אבד opq דעפ <span>abc אאא |def</span>ווש rst כטז</div>',
+  '17-24 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד opq דעפ <span>abc אאא def</span>|ווש rst כטז</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">אבד opq דעפ <span>abc אאא |def</span>ווש rst כטז</div>',
+  '17-25 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד opq דעפ <span>abc אאא def</span>ו|וש rst כטז</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">אבד opq דעפ <span>abc אאא |def</span>ווש rst כטז</div>',
+  '17-26 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד opq דעפ <span>abc אאא def</span>וו|ש rst כטז</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">אבד opq דעפ <span>abc אאא |def</span>ווש rst כטז</div>',
+  '17-27 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד opq דעפ <span>abc אאא def</span>ווש| rst כטז</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">אבד opq דעפ <span>abc אאא |def</span>ווש rst כטז</div>',
+  '17-28 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד opq דעפ <span>abc אאא def</span>ווש |rst כטז</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">אבד opq דעפ <span>abc אאא |def</span>ווש rst כטז</div>',
+  '17-29 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד opq דעפ <span>abc אאא def</span>ווש r|st כטז</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">אבד opq דעפ <span>abc אאא def</span>ווש |rst כטז</div>',
+  '17-30 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד opq דעפ <span>abc אאא def</span>ווש rs|t כטז</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">אבד opq דעפ <span>abc אאא def</span>ווש |rst כטז</div>',
+  '17-31 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד opq דעפ <span>abc אאא def</span>ווש rst| כטז</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">אבד opq דעפ <span>abc אאא def</span>ווש |rst כטז</div>',
+  '17-32 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד opq דעפ <span>abc אאא def</span>ווש rst |כטז</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">אבד opq דעפ <span>abc אאא def</span>ווש |rst כטז</div>',
+  '17-33 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד opq דעפ <span>abc אאא def</span>ווש rst כ|טז</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">אבד opq דעפ <span>abc אאא def</span>ווש rst |כטז</div>',
+  '17-34 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד opq דעפ <span>abc אאא def</span>ווש rst כט|ז</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">אבד opq דעפ <span>abc אאא def</span>ווש rst |כטז</div>',
+  '17-35 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד opq דעפ <span>abc אאא def</span>ווש rst כטז|</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">אבד opq דעפ <span>abc אאא def</span>ווש rst |כטז</div>',
+  '17-36 right word');
+</script>

@@ -7,7 +7,6 @@ import("//build/config/ios/asset_catalog.gni")
 imageset("keyboard_accessory_voice_search") {
   sources = [
     "keyboard_accessory_voice_search.imageset/Contents.json",
-    "keyboard_accessory_voice_search.imageset/keyboard_accessory_voice_search.png",
     "keyboard_accessory_voice_search.imageset/keyboard_accessory_voice_search@2x.png",
     "keyboard_accessory_voice_search.imageset/keyboard_accessory_voice_search@3x.png",
   ]
@@ -16,7 +15,6 @@ imageset("keyboard_accessory_voice_search") {
 imageset("keyboard_accessory_qr_scanner") {
   sources = [
     "keyboard_accessory_qr_scanner.imageset/Contents.json",
-    "keyboard_accessory_qr_scanner.imageset/keyboard_accessory_qr_scanner.png",
     "keyboard_accessory_qr_scanner.imageset/keyboard_accessory_qr_scanner@2x.png",
     "keyboard_accessory_qr_scanner.imageset/keyboard_accessory_qr_scanner@3x.png",
   ]

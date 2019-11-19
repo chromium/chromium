@@ -24,6 +24,7 @@ public interface CompositorSurfaceManager {
         public void surfaceChanged(Surface surface, int format, int width, int height);
         public void surfaceCreated(Surface surface);
         public void surfaceDestroyed(Surface surface);
+        public void unownedSurfaceDestroyed();
     }
 
     /**

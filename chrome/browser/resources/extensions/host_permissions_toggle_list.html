@@ -1,0 +1,51 @@
+<style include="cr-shared-style shared-style">
+  iron-icon {
+    --iron-icon-height: var(--cr-icon-size);
+    --iron-icon-width: var(--cr-icon-size);
+  }
+
+  #section-heading {
+    align-items: center;
+    color: var(--cr-primary-text-color);
+    display: flex;
+    justify-content: space-between;
+    margin-top: 12px;
+  }
+
+  .toggle-section {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: var(--cr-section-min-height);
+  }
+
+  .site-toggle {
+    border-top: var(--cr-separator-line);
+    margin-inline-start: var(--cr-section-indent-width);
+  }
+</style>
+<div id="section-heading">
+  <span>$i18n{hostPermissionsDescription}</span>
+  <a id="link-icon-button" aria-label="$i18n{learnMore}"
+      href="$i18n{hostPermissionsLearnMoreLink}" target="_blank">
+    <iron-icon icon="cr:help-outline"></iron-icon>
+  </a>
+</div>
+<div class="toggle-section">
+  <extensions-toggle-row checked="[[allowedOnAllHosts_(permissions.*)]]"
+      id="allHostsToggle"
+      on-change="onAllHostsToggleChanged_">
+    <span>$i18n{itemAllowOnFollowingSites}</span>
+  </extensions-toggle-row>
+</div>
+<template is="dom-repeat" items="[[getSortedHosts_(permissions.*)]]">
+  <div class="toggle-section site-toggle">
+    <extensions-toggle-row checked="[[item.granted]]"
+        class="host-toggle no-end-padding"
+        disabled="[[allowedOnAllHosts_(permissions.*)]]"
+        host="[[item.host]]"
+        on-change="onHostAccessChanged_">
+      <span>[[item.host]]</span>
+    </extensions-toggle-row>
+  </div>
+</template>

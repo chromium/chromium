@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<link id="target" rel="import" href="resources/html-imports-parent.html">
+
+<script src="../../../../resources/testharness.js"></script>
+<script src="../../../../resources/testharnessreport.js"></script>
+<script>
+  // Behavior is different depending on if the runtime flag is enabled.
+  if (self.internals.runtimeFlags.htmlImportsEnabled) {
+    // Runtime flag is enabled, so import will actually work. Explicitly call
+    // done() to avoid timeout while test framework waits for a test to run.
+    done();
+  } else {
+    test(() => {
+      assert_equals(document.nestedChildScriptHasRun, undefined);
+    }, 'Script should not run in nested child import');
+  }
+</script>

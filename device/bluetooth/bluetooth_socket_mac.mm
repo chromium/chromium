@@ -231,23 +231,8 @@ void empty_queue(base::queue<T>& queue) {
 
 // Converts |uuid| to a IOBluetoothSDPUUID instance.
 IOBluetoothSDPUUID* GetIOBluetoothSDPUUID(const BluetoothUUID& uuid) {
-  // The canonical UUID format is XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX.
-  const std::string uuid_str = uuid.canonical_value();
-  DCHECK_EQ(uuid_str.size(), 36U);
-  DCHECK_EQ(uuid_str[8], '-');
-  DCHECK_EQ(uuid_str[13], '-');
-  DCHECK_EQ(uuid_str[18], '-');
-  DCHECK_EQ(uuid_str[23], '-');
-  std::string numbers_only = uuid_str;
-  numbers_only.erase(23, 1);
-  numbers_only.erase(18, 1);
-  numbers_only.erase(13, 1);
-  numbers_only.erase(8, 1);
-  std::vector<uint8_t> uuid_bytes_vector;
-  base::HexStringToBytes(numbers_only, &uuid_bytes_vector);
-  DCHECK_EQ(uuid_bytes_vector.size(), 16U);
-
-  return [IOBluetoothSDPUUID uuidWithBytes:&uuid_bytes_vector.front()
+  std::vector<uint8_t> uuid_bytes_vector = uuid.GetBytes();
+  return [IOBluetoothSDPUUID uuidWithBytes:uuid_bytes_vector.data()
                                     length:uuid_bytes_vector.size()];
 }
 

@@ -1,23 +1,24 @@
 rootWebArea name='Table example'
-++table
-++++row
-++++++columnHeader name='Pair'
-++++++++staticText name='Pair'
-++++++++++inlineTextBox name='Pair'
-++++++columnHeader name='Single'
-++++++++staticText name='Single'
-++++++++++inlineTextBox name='Single'
-++++row
-++++++cell name='AB'
-++++++++staticText name='AB'
-++++++++++inlineTextBox name='AB'
-++++++cell name='B'
-++++++++staticText name='B'
-++++++++++inlineTextBox name='B'
-++++row
-++++++cell name='CD'
-++++++++staticText name='CD'
-++++++++++inlineTextBox name='CD'
-++++++cell name='D'
-++++++++staticText name='D'
-++++++++++inlineTextBox name='D'
+++genericContainer ignored
+++++table
+++++++row
+++++++++columnHeader name='Pair'
+++++++++++staticText name='Pair'
+++++++++++++inlineTextBox name='Pair'
+++++++++columnHeader name='Single'
+++++++++++staticText name='Single'
+++++++++++++inlineTextBox name='Single'
+++++++row
+++++++++cell name='AB'
+++++++++++staticText name='AB'
+++++++++++++inlineTextBox name='AB'
+++++++++cell name='B'
+++++++++++staticText name='B'
+++++++++++++inlineTextBox name='B'
+++++++row
+++++++++cell name='CD'
+++++++++++staticText name='CD'
+++++++++++++inlineTextBox name='CD'
+++++++++cell name='D'
+++++++++++staticText name='D'
+++++++++++++inlineTextBox name='D'

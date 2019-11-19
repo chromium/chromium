@@ -19,7 +19,6 @@ RenderWidgetSurfaceProperties::FromCompositorFrame(
   properties.bottom_controls_height = frame.metadata.bottom_controls_height;
   properties.bottom_controls_shown_ratio =
       frame.metadata.bottom_controls_shown_ratio;
-  properties.selection = frame.metadata.selection;
   properties.has_transparent_background =
       frame.render_pass_list.back()->has_transparent_background;
 #endif
@@ -44,7 +43,6 @@ bool RenderWidgetSurfaceProperties::operator==(
 #ifdef OS_ANDROID
          other.bottom_controls_height == bottom_controls_height &&
          other.bottom_controls_shown_ratio == bottom_controls_shown_ratio &&
-         other.selection == selection &&
          other.has_transparent_background == has_transparent_background &&
 #endif
          other.size == size;
@@ -94,7 +92,6 @@ std::string RenderWidgetSurfaceProperties::ToDiffString(
   }
 
 #ifdef OS_ANDROID
-
   if (bottom_controls_height != other.bottom_controls_height) {
     if (changed_properties > 0)
       stream << ", ";
@@ -111,15 +108,6 @@ std::string RenderWidgetSurfaceProperties::ToDiffString(
            << ", other: " << other.bottom_controls_shown_ratio << ")";
     ++changed_properties;
   }
-
-  if (selection != other.selection) {
-    if (changed_properties > 0)
-      stream << ", ";
-    stream << "selection(this: " << selection.ToString()
-           << ", other: " << other.selection.ToString() << ")";
-    ++changed_properties;
-  }
-
   if (has_transparent_background != other.has_transparent_background) {
     if (changed_properties > 0)
       stream << ", ";
@@ -127,7 +115,6 @@ std::string RenderWidgetSurfaceProperties::ToDiffString(
            << ", other: " << other.has_transparent_background << ")";
     ++changed_properties;
   }
-
 #endif
 
   stream << ")";

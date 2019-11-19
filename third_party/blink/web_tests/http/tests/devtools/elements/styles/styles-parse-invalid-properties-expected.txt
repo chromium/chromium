@@ -5,7 +5,7 @@ element.style { ()
 /-- overloaded --/     123: ;
 
 [expanded] 
-#inspected { (<style>…</style>)
+#inspected { (<style>)
 /-- overloaded --/     before property: hey;
 /-- overloaded --/     after property: hey;
 /-- overloaded --/     background color: orange;
@@ -19,7 +19,7 @@ element.style { ()
 /-- overloaded --/     bar: foo;
 
 [expanded] 
-#inspected { (<style>…</style>)
+#inspected { (<style>)
 /-- overloaded --/     color: blue;
 /-- overloaded --/     a property with spaces: red;
 /-- overloaded --/     --a-property-with-no-value: ;

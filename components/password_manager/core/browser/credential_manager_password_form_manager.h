@@ -39,27 +39,26 @@ class CredentialManagerPasswordFormManager : public PasswordFormManager {
   // This class does not take ownership of |delegate|.
   CredentialManagerPasswordFormManager(
       PasswordManagerClient* client,
-      const autofill::PasswordForm& observed_form,
       std::unique_ptr<autofill::PasswordForm> saved_form,
       CredentialManagerPasswordFormManagerDelegate* delegate,
       std::unique_ptr<FormSaver> form_saver,
       std::unique_ptr<FormFetcher> form_fetcher);
   ~CredentialManagerPasswordFormManager() override;
 
-  void ProcessMatches(
-      const std::vector<const autofill::PasswordForm*>& non_federated,
-      size_t filtered_count) override;
+  // FormFetcher::Consumer:
+  void OnFetchCompleted() override;
 
-  metrics_util::CredentialSourceType GetCredentialSource() override;
+  // PasswordFormManagerForUI:
+  metrics_util::CredentialSourceType GetCredentialSource() const override;
 
  private:
   // Calls OnProvisionalSaveComplete on |delegate_|.
   void NotifyDelegate();
 
   CredentialManagerPasswordFormManagerDelegate* delegate_;
-  std::unique_ptr<autofill::PasswordForm> saved_form_;
 
-  base::WeakPtrFactory<CredentialManagerPasswordFormManager> weak_factory_;
+  base::WeakPtrFactory<CredentialManagerPasswordFormManager> weak_factory_{
+      this};
 
   DISALLOW_COPY_AND_ASSIGN(CredentialManagerPasswordFormManager);
 };

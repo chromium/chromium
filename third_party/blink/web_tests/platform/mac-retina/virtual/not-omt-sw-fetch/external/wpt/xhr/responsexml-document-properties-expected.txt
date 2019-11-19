@@ -1,0 +1,27 @@
+This is a testharness.js-based test.
+PASS domain
+PASS URL
+PASS documentURI
+PASS baseURI
+PASS referrer
+PASS title
+PASS contentType
+PASS readyState
+PASS location
+PASS defaultView
+PASS body
+PASS doctype
+PASS all
+PASS cookie
+PASS Test document URL properties after redirect
+PASS Test document URL properties of document with <base> after redirect
+PASS lastModified set to time of response if no HTTP header provided
+PASS lastModified set to related HTTP header if provided
+PASS cookie (after setting it)
+PASS styleSheets should be an object
+PASS implementation should be an object
+PASS images should be an object
+PASS forms should be an object
+PASS links should be an object
+Harness: the test ran to completion.
+

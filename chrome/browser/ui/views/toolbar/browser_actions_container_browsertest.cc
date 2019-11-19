@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include "base/macros.h"
 #include "chrome/browser/extensions/api/extension_action/extension_action_api.h"
 #include "chrome/browser/extensions/extension_context_menu_model.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -51,12 +50,10 @@ IN_PROC_BROWSER_TEST_F(BrowserActionsBarBrowserTest, DragBrowserActions) {
           ->toolbar()->browser_actions();
 
   // The order of the child views should be the same.
-  EXPECT_EQ(container->GetViewForId(extension_a()->id()),
-            container->child_at(0));
-  EXPECT_EQ(container->GetViewForId(extension_b()->id()),
-            container->child_at(1));
-  EXPECT_EQ(container->GetViewForId(extension_c()->id()),
-            container->child_at(2));
+  const auto& children = container->children();
+  EXPECT_EQ(container->GetViewForId(extension_a()->id()), children[0]);
+  EXPECT_EQ(container->GetViewForId(extension_b()->id()), children[1]);
+  EXPECT_EQ(container->GetViewForId(extension_c()->id()), children[2]);
 
   // Simulate a drag and drop to the right.
   ui::OSExchangeData drop_data;
@@ -77,12 +74,9 @@ IN_PROC_BROWSER_TEST_F(BrowserActionsBarBrowserTest, DragBrowserActions) {
   EXPECT_EQ(extension_b()->id(), browser_actions_bar()->GetExtensionId(0));
   EXPECT_EQ(extension_a()->id(), browser_actions_bar()->GetExtensionId(1));
   EXPECT_EQ(extension_c()->id(), browser_actions_bar()->GetExtensionId(2));
-  EXPECT_EQ(container->GetViewForId(extension_b()->id()),
-            container->child_at(0));
-  EXPECT_EQ(container->GetViewForId(extension_a()->id()),
-            container->child_at(1));
-  EXPECT_EQ(container->GetViewForId(extension_c()->id()),
-            container->child_at(2));
+  EXPECT_EQ(container->GetViewForId(extension_b()->id()), children[0]);
+  EXPECT_EQ(container->GetViewForId(extension_a()->id()), children[1]);
+  EXPECT_EQ(container->GetViewForId(extension_c()->id()), children[2]);
 
   const extensions::ExtensionSet& extension_set =
       extensions::ExtensionRegistry::Get(profile())->enabled_extensions();
@@ -112,12 +106,9 @@ IN_PROC_BROWSER_TEST_F(BrowserActionsBarBrowserTest, DragBrowserActions) {
   EXPECT_EQ(extension_a()->id(), browser_actions_bar()->GetExtensionId(0));
   EXPECT_EQ(extension_b()->id(), browser_actions_bar()->GetExtensionId(1));
   EXPECT_EQ(extension_c()->id(), browser_actions_bar()->GetExtensionId(2));
-  EXPECT_EQ(container->GetViewForId(extension_a()->id()),
-            container->child_at(0));
-  EXPECT_EQ(container->GetViewForId(extension_b()->id()),
-            container->child_at(1));
-  EXPECT_EQ(container->GetViewForId(extension_c()->id()),
-            container->child_at(2));
+  EXPECT_EQ(container->GetViewForId(extension_a()->id()), children[0]);
+  EXPECT_EQ(container->GetViewForId(extension_b()->id()), children[1]);
+  EXPECT_EQ(container->GetViewForId(extension_c()->id()), children[2]);
 
   // Shrink the size of the container so we have an overflow menu.
   toolbar_model()->SetVisibleIconCount(2u);
@@ -246,7 +237,7 @@ namespace {
 class ForwardingDelegate : public BrowserActionsContainer::Delegate {
  public:
   explicit ForwardingDelegate(BrowserActionsContainer::Delegate* forward_to);
-  virtual ~ForwardingDelegate() = default;
+  ~ForwardingDelegate() override = default;
 
   BrowserActionsContainer::Delegate* forward_to() { return forward_to_; }
   void set_max_browser_actions_width(
@@ -256,7 +247,7 @@ class ForwardingDelegate : public BrowserActionsContainer::Delegate {
 
  protected:
   // BrowserActionsContainer::Delegate:
-  views::MenuButton* GetOverflowReferenceView() override;
+  views::LabelButton* GetOverflowReferenceView() override;
   std::unique_ptr<ToolbarActionsBar> CreateToolbarActionsBar(
       ToolbarActionsBarDelegate* delegate,
       Browser* browser,
@@ -273,7 +264,7 @@ ForwardingDelegate::ForwardingDelegate(
     : forward_to_(forward_to),
       max_browser_actions_width_(forward_to->GetMaxBrowserActionsWidth()) {}
 
-views::MenuButton* ForwardingDelegate::GetOverflowReferenceView() {
+views::LabelButton* ForwardingDelegate::GetOverflowReferenceView() {
   return forward_to_->GetOverflowReferenceView();
 }
 
@@ -296,6 +287,10 @@ base::Optional<int> ForwardingDelegate::GetMaxBrowserActionsWidth() const {
 class BrowserActionsContainerBrowserTest : public BrowserActionsBarBrowserTest {
  public:
   BrowserActionsContainerBrowserTest() = default;
+  BrowserActionsContainerBrowserTest(
+      const BrowserActionsContainerBrowserTest&) = delete;
+  BrowserActionsContainerBrowserTest& operator=(
+      const BrowserActionsContainerBrowserTest&) = delete;
   ~BrowserActionsContainerBrowserTest() override = default;
 
   ForwardingDelegate* test_delegate() { return test_delegate_.get(); }
@@ -314,8 +309,6 @@ class BrowserActionsContainerBrowserTest : public BrowserActionsBarBrowserTest {
   BrowserActionsContainer* GetContainer();
 
   std::unique_ptr<ForwardingDelegate> test_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserActionsContainerBrowserTest);
 };
 
 views::ResizeArea* BrowserActionsContainerBrowserTest::GetResizeArea() {
@@ -369,7 +362,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionsContainerBrowserTest,
   UpdateResizeArea();
 
   // Resize area should be enabled by default.
-  EXPECT_TRUE(resize_area->enabled());
+  EXPECT_TRUE(resize_area->GetEnabled());
 
   std::vector<std::string> action_ids;
   action_ids.push_back(extension_a()->id());
@@ -380,7 +373,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionsContainerBrowserTest,
   UpdateResizeArea();
 
   // Resize area is disabled in highlight mode.
-  EXPECT_FALSE(resize_area->enabled());
+  EXPECT_FALSE(resize_area->GetEnabled());
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserActionsContainerBrowserTest,
@@ -389,13 +382,13 @@ IN_PROC_BROWSER_TEST_F(BrowserActionsContainerBrowserTest,
   UpdateResizeArea();
 
   // Resize area should be enabled by default.
-  EXPECT_TRUE(resize_area->enabled());
+  EXPECT_TRUE(resize_area->GetEnabled());
 
   // Resize area should be enabled when there is enough space for one icon.
   const int required_space = GetMinimumSize();
   test_delegate()->set_max_browser_actions_width(required_space);
   UpdateResizeArea();
-  EXPECT_TRUE(resize_area->enabled());
+  EXPECT_TRUE(resize_area->GetEnabled());
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserActionsContainerBrowserTest,
@@ -404,21 +397,21 @@ IN_PROC_BROWSER_TEST_F(BrowserActionsContainerBrowserTest,
   UpdateResizeArea();
 
   // Resize area should be enabled by default.
-  EXPECT_TRUE(resize_area->enabled());
+  EXPECT_TRUE(resize_area->GetEnabled());
 
   // Resize area should be enabled when there is more than the maximum space
   // requested.
   const int max_space = GetMaximumSize();
   test_delegate()->set_max_browser_actions_width(max_space + 1);
   UpdateResizeArea();
-  EXPECT_TRUE(resize_area->enabled());
+  EXPECT_TRUE(resize_area->GetEnabled());
 
   // Resize area should remain enabled when the space shrinks to the minimum
   // required.
   const int required_space = GetMinimumSize();
   test_delegate()->set_max_browser_actions_width(required_space);
   UpdateResizeArea();
-  EXPECT_TRUE(resize_area->enabled());
+  EXPECT_TRUE(resize_area->GetEnabled());
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserActionsContainerBrowserTest,
@@ -427,18 +420,18 @@ IN_PROC_BROWSER_TEST_F(BrowserActionsContainerBrowserTest,
   UpdateResizeArea();
 
   // Resize area should be enabled by default.
-  EXPECT_TRUE(resize_area->enabled());
+  EXPECT_TRUE(resize_area->GetEnabled());
 
   // Resize area should be disabled when there is zero space available.
   test_delegate()->set_max_browser_actions_width(0);
   UpdateResizeArea();
-  EXPECT_FALSE(resize_area->enabled());
+  EXPECT_FALSE(resize_area->GetEnabled());
 
   // Resize area should be re-enabled when there is enough space.
   const int required_space = GetMinimumSize();
   test_delegate()->set_max_browser_actions_width(required_space);
   UpdateResizeArea();
-  EXPECT_TRUE(resize_area->enabled());
+  EXPECT_TRUE(resize_area->GetEnabled());
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserActionsContainerBrowserTest,
@@ -447,19 +440,19 @@ IN_PROC_BROWSER_TEST_F(BrowserActionsContainerBrowserTest,
   UpdateResizeArea();
 
   // Resize area should be enabled by default.
-  EXPECT_TRUE(resize_area->enabled());
+  EXPECT_TRUE(resize_area->GetEnabled());
 
   // Resize area should be disabled when there is less than the minimum space
   // for one icon.
   const int required_space = GetMinimumSize();
   test_delegate()->set_max_browser_actions_width(required_space - 1);
   UpdateResizeArea();
-  EXPECT_FALSE(resize_area->enabled());
+  EXPECT_FALSE(resize_area->GetEnabled());
 
   // Resize area should be re-enabled when there is enough space.
   test_delegate()->set_max_browser_actions_width(required_space);
   UpdateResizeArea();
-  EXPECT_TRUE(resize_area->enabled());
+  EXPECT_TRUE(resize_area->GetEnabled());
 }
 
 // Test the behavior of the overflow container for Extension Actions.
@@ -469,7 +462,11 @@ class BrowserActionsContainerOverflowTest
   BrowserActionsContainerOverflowTest() : main_bar_(nullptr),
                                           overflow_bar_(nullptr) {
   }
-  ~BrowserActionsContainerOverflowTest() override {}
+  BrowserActionsContainerOverflowTest(
+      const BrowserActionsContainerOverflowTest&) = delete;
+  BrowserActionsContainerOverflowTest& operator=(
+      const BrowserActionsContainerOverflowTest&) = delete;
+  ~BrowserActionsContainerOverflowTest() override = default;
 
  protected:
   // Returns true if the order of the ToolbarActionViews in |main_bar_|
@@ -501,15 +498,13 @@ class BrowserActionsContainerOverflowTest
   // have to open the app menu.
   // Owned by the |overflow_parent_|.
   BrowserActionsContainer* overflow_bar_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserActionsContainerOverflowTest);
 };
 
 void BrowserActionsContainerOverflowTest::SetUpOnMainThread() {
   BrowserActionsBarBrowserTest::SetUpOnMainThread();
   main_bar_ = BrowserView::GetBrowserViewForBrowser(browser())
                   ->toolbar()->browser_actions();
-  overflow_parent_.reset(new views::ResizeAwareParentView());
+  overflow_parent_ = std::make_unique<views::ResizeAwareParentView>();
   overflow_parent_->set_owned_by_client();
   overflow_bar_ = new BrowserActionsContainer(
       browser(), main_bar_,
@@ -544,11 +539,11 @@ BrowserActionsContainerOverflowTest::VerifyVisibleCount(
   // implicitly also guarantees that the proper number are visible).
   for (size_t i = 0; i < overflow_bar_->num_toolbar_actions(); ++i) {
     bool visible = i < expected_visible;
-    if (main_bar_->GetToolbarActionViewAt(i)->visible() != visible) {
+    if (main_bar_->GetToolbarActionViewAt(i)->GetVisible() != visible) {
       return testing::AssertionFailure() << "Index " << i <<
           " has improper visibility in main: " << !visible;
     }
-    if (overflow_bar_->GetToolbarActionViewAt(i)->visible() == visible) {
+    if (overflow_bar_->GetToolbarActionViewAt(i)->GetVisible() == visible) {
       return testing::AssertionFailure() << "Index " << i <<
           " has improper visibility in overflow: " << visible;
     }

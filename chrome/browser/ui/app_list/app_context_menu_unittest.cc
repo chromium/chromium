@@ -100,11 +100,12 @@ std::unique_ptr<KeyedService> MenuManagerFactory(
       context);
 }
 
-std::unique_ptr<ui::MenuModel> GetContextMenuModel(ChromeAppListItem* item) {
+std::unique_ptr<ui::SimpleMenuModel> GetContextMenuModel(
+    ChromeAppListItem* item) {
   base::RunLoop run_loop;
-  std::unique_ptr<ui::MenuModel> menu;
+  std::unique_ptr<ui::SimpleMenuModel> menu;
   item->GetContextMenuModel(base::BindLambdaForTesting(
-      [&](std::unique_ptr<ui::MenuModel> created_menu) {
+      [&](std::unique_ptr<ui::SimpleMenuModel> created_menu) {
         menu = std::move(created_menu);
         run_loop.Quit();
       }));
@@ -112,12 +113,12 @@ std::unique_ptr<ui::MenuModel> GetContextMenuModel(ChromeAppListItem* item) {
   return menu;
 }
 
-std::unique_ptr<ui::MenuModel> GetMenuModel(
+std::unique_ptr<ui::SimpleMenuModel> GetMenuModel(
     app_list::AppContextMenu* context_menu) {
   base::RunLoop run_loop;
-  std::unique_ptr<ui::MenuModel> menu;
+  std::unique_ptr<ui::SimpleMenuModel> menu;
   context_menu->GetMenuModel(base::BindLambdaForTesting(
-      [&](std::unique_ptr<ui::MenuModel> created_menu) {
+      [&](std::unique_ptr<ui::SimpleMenuModel> created_menu) {
         menu = std::move(created_menu);
         run_loop.Quit();
       }));
@@ -320,7 +321,6 @@ TEST_F(AppContextMenuTest, ArcMenu) {
   const std::string app_id = ArcAppTest::GetAppId(app_info);
   controller()->SetAppPinnable(app_id, AppListControllerDelegate::PIN_EDITABLE);
 
-  arc_test.app_instance()->RefreshAppList();
   arc_test.app_instance()->SendRefreshAppList(arc_test.fake_apps());
 
   ArcAppItem item(profile(), nullptr, nullptr, app_id, std::string());
@@ -409,7 +409,6 @@ TEST_F(AppContextMenuTest, ArcMenu) {
     }
 
   // Uninstall all apps.
-  arc_test.app_instance()->RefreshAppList();
   arc_test.app_instance()->SendRefreshAppList(
       std::vector<arc::mojom::AppInfo>());
   controller()->SetAppOpen(app_id, false);
@@ -485,7 +484,6 @@ TEST_F(AppContextMenuTest, ArcMenuStickyItem) {
   ArcAppTest arc_test;
   arc_test.SetUp(profile());
 
-  arc_test.app_instance()->RefreshAppList();
   arc_test.app_instance()->SendRefreshAppList(arc_test.fake_apps());
 
   {
@@ -528,7 +526,6 @@ TEST_F(AppContextMenuTest, ArcMenuSuspendedItem) {
   arc::mojom::AppInfo app = arc_test.fake_apps()[0];
   app.suspended = true;
 
-  arc_test.app_instance()->RefreshAppList();
   arc_test.app_instance()->SendRefreshAppList({app});
 
   const std::string app_id = ArcAppTest::GetAppId(app);

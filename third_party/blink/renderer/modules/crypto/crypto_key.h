@@ -47,10 +47,6 @@ class MODULES_EXPORT CryptoKey final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static CryptoKey* Create(const WebCryptoKey& key) {
-    return MakeGarbageCollected<CryptoKey>(key);
-  }
-
   explicit CryptoKey(const WebCryptoKey&);
   ~CryptoKey() override;
 

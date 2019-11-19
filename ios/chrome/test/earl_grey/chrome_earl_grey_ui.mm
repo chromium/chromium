@@ -6,29 +6,31 @@
 
 #import "base/test/ios/wait_util.h"
 #include "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/ui/history/history_ui_constants.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
-#import "ios/chrome/browser/ui/settings/clear_browsing_data/clear_browsing_data_ui_constants.h"
-#import "ios/chrome/browser/ui/settings/google_services/accounts_table_view_controller.h"
-#import "ios/chrome/browser/ui/settings/privacy_table_view_controller.h"
-#import "ios/chrome/browser/ui/settings/settings_table_view_controller.h"
-#import "ios/chrome/browser/ui/table_view/cells/table_view_url_item.h"
-#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
-#import "ios/chrome/test/app/chrome_test_util.h"
-#include "ios/chrome/test/app/navigation_test_util.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
-#import "ios/web/public/test/earl_grey/js_test_util.h"
-#import "ios/web/public/test/earl_grey/web_view_matchers.h"
+#import "ios/testing/earl_grey/earl_grey_test.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-using chrome_test_util::ClearBrowsingDataCollectionView;
+// Redefine EarlGrey macro to use line number and file name taken from the place
+// of ChromeEarlGreyUI macro instantiation, rather than local line number
+// inside test helper method. Original EarlGrey macro definition also expands to
+// EarlGreyImpl instantiation. [self earlGrey] is provided by a superclass and
+// returns EarlGreyImpl object created with correct line number and filename.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wmacro-redefined"
+#define EarlGrey [self earlGrey]
+#pragma clang diagnostic pop
+
+using chrome_test_util::ClearBrowsingDataView;
+using chrome_test_util::ConfirmClearBrowsingDataButton;
 using chrome_test_util::SettingsMenuButton;
 using chrome_test_util::ToolsMenuView;
+using base::test::ios::kWaitForUIElementTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
 
 namespace {
@@ -42,30 +44,47 @@ id<GREYAction> ScrollDown() {
   CGFloat const kMenuScrollDisplacement = 150;
   return grey_scrollInDirection(kGREYDirectionDown, kMenuScrollDisplacement);
 }
+
+bool IsAppCompactWidth() {
+#if defined(CHROME_EARL_GREY_1)
+  UIApplication* application = [UIApplication sharedApplication];
+  UIWindow* keyWindow = application.keyWindow;
+  UIUserInterfaceSizeClass sizeClass =
+      keyWindow.traitCollection.horizontalSizeClass;
+#elif defined(CHROME_EARL_GREY_2)
+  UIApplication* remoteApplication =
+      [GREY_REMOTE_CLASS_IN_APP(UIApplication) sharedApplication];
+  UIWindow* remoteKeyWindow = remoteApplication.keyWindow;
+  UIUserInterfaceSizeClass sizeClass =
+      remoteKeyWindow.traitCollection.horizontalSizeClass;
+#endif
+
+  return sizeClass == UIUserInterfaceSizeClassCompact;
+}
+
 }  // namespace
 
-@implementation ChromeEarlGreyUI
+@implementation ChromeEarlGreyUIImpl
 
-+ (void)openToolsMenu {
+- (void)openToolsMenu {
   // TODO(crbug.com/639524): Add logic to ensure the app is in the correct
   // state, for example DCHECK if no tabs are displayed.
   [[[EarlGrey
       selectElementWithMatcher:grey_allOf(chrome_test_util::ToolsMenuButton(),
                                           grey_sufficientlyVisible(), nil)]
          usingSearchAction:grey_swipeSlowInDirection(kGREYDirectionDown)
-      onElementWithMatcher:web::WebViewScrollView(
-                               chrome_test_util::GetCurrentWebState())]
+      onElementWithMatcher:chrome_test_util::WebStateScrollViewMatcher()]
       performAction:grey_tap()];
   // TODO(crbug.com/639517): Add webViewScrollView matcher so we don't have
   // to always find it.
 }
 
-+ (void)openSettingsMenu {
-  [ChromeEarlGreyUI openToolsMenu];
-  [ChromeEarlGreyUI tapToolsMenuButton:SettingsMenuButton()];
+- (void)openSettingsMenu {
+  [self openToolsMenu];
+  [self tapToolsMenuButton:SettingsMenuButton()];
 }
 
-+ (void)tapToolsMenuButton:(id<GREYMatcher>)buttonMatcher {
+- (void)tapToolsMenuButton:(id<GREYMatcher>)buttonMatcher {
   id<GREYMatcher> interactableSettingsButton =
       grey_allOf(buttonMatcher, grey_interactable(), nil);
   [[[EarlGrey selectElementWithMatcher:interactableSettingsButton]
@@ -73,7 +92,7 @@ id<GREYAction> ScrollDown() {
       onElementWithMatcher:ToolsMenuView()] performAction:grey_tap()];
 }
 
-+ (void)tapSettingsMenuButton:(id<GREYMatcher>)buttonMatcher {
+- (void)tapSettingsMenuButton:(id<GREYMatcher>)buttonMatcher {
   id<GREYMatcher> interactableButtonMatcher =
       grey_allOf(buttonMatcher, grey_interactable(), nil);
   [[[EarlGrey selectElementWithMatcher:interactableButtonMatcher]
@@ -82,20 +101,18 @@ id<GREYAction> ScrollDown() {
       performAction:grey_tap()];
 }
 
-+ (void)tapClearBrowsingDataMenuButton:(id<GREYMatcher>)buttonMatcher {
+- (void)tapClearBrowsingDataMenuButton:(id<GREYMatcher>)buttonMatcher {
   id<GREYMatcher> interactableButtonMatcher =
       grey_allOf(buttonMatcher, grey_interactable(), nil);
   [[[EarlGrey selectElementWithMatcher:interactableButtonMatcher]
          usingSearchAction:ScrollDown()
-      onElementWithMatcher:ClearBrowsingDataCollectionView()]
-      performAction:grey_tap()];
+      onElementWithMatcher:ClearBrowsingDataView()] performAction:grey_tap()];
 }
 
-+ (void)openAndClearBrowsingDataFromHistory {
+- (void)openAndClearBrowsingDataFromHistory {
   // Open Clear Browsing Data Button
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_accessibilityID(kHistoryToolbarClearBrowsingButtonIdentifier)]
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          HistoryClearBrowsingDataButton()]
       performAction:grey_tap()];
 
   // Uncheck "Cookies, Site Data" and "Cached Images and Files," which are
@@ -104,16 +121,36 @@ id<GREYAction> ScrollDown() {
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::ClearCacheButton()]
       performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kClearBrowsingDataButtonIdentifier)]
+
+  // Set 'Time Range' to 'All Time'.
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ButtonWithAccessibilityLabelId(
+                     IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_SELECTOR_TITLE)]
       performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                          ConfirmClearBrowsingDataButton()]
+  [[EarlGrey
+      selectElementWithMatcher:
+          chrome_test_util::ButtonWithAccessibilityLabelId(
+              IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_OPTION_BEGINNING_OF_TIME)]
+      performAction:grey_tap()];
+  [[[EarlGrey
+      selectElementWithMatcher:chrome_test_util::SettingsMenuBackButton()]
+      atIndex:0] performAction:grey_tap()];
+
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ClearBrowsingDataButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:ConfirmClearBrowsingDataButton()]
       performAction:grey_tap()];
 
   // Wait until activity indicator modal is cleared, meaning clearing browsing
   // data has been finished.
   [[GREYUIThreadExecutor sharedInstance] drainUntilIdle];
+
+  // Recheck "Cookies, Site Data" and "Cached Images and Files."
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::ClearCookiesButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::ClearCacheButton()]
+      performAction:grey_tap()];
 
   // Include sufficientlyVisible condition for the case of the clear browsing
   // dialog, which also has a "Done" button and is displayed over the history
@@ -124,7 +161,7 @@ id<GREYAction> ScrollDown() {
       performAction:grey_tap()];
 }
 
-+ (void)assertHistoryHasNoEntries {
+- (void)assertHistoryHasNoEntries {
   id<GREYMatcher> noHistoryMessageMatcher =
       grey_allOf(grey_text(l10n_util::GetNSString(IDS_HISTORY_NO_RESULTS)),
                  grey_sufficientlyVisible(), nil);
@@ -132,46 +169,45 @@ id<GREYAction> ScrollDown() {
       assertWithMatcher:grey_notNil()];
 
   id<GREYMatcher> historyEntryMatcher =
-      grey_allOf(grey_kindOfClass([TableViewURLCell class]),
+      grey_allOf(grey_kindOfClassName(@"TableViewURLCell"),
                  grey_sufficientlyVisible(), nil);
   [[EarlGrey selectElementWithMatcher:historyEntryMatcher]
       assertWithMatcher:grey_nil()];
 }
 
-+ (void)tapPrivacyMenuButton:(id<GREYMatcher>)buttonMatcher {
+- (void)tapPrivacyMenuButton:(id<GREYMatcher>)buttonMatcher {
   id<GREYMatcher> interactableButtonMatcher =
       grey_allOf(buttonMatcher, grey_interactable(), nil);
   [[[EarlGrey selectElementWithMatcher:interactableButtonMatcher]
          usingSearchAction:ScrollDown()
-      onElementWithMatcher:grey_accessibilityID(kPrivacyTableViewId)]
+      onElementWithMatcher:chrome_test_util::SettingsPrivacyTableView()]
       performAction:grey_tap()];
 }
 
-+ (void)tapAccountsMenuButton:(id<GREYMatcher>)buttonMatcher {
+- (void)tapAccountsMenuButton:(id<GREYMatcher>)buttonMatcher {
   [[[EarlGrey selectElementWithMatcher:buttonMatcher]
          usingSearchAction:ScrollDown()
-      onElementWithMatcher:grey_accessibilityID(kSettingsAccountsTableViewId)]
+      onElementWithMatcher:chrome_test_util::SettingsAccountsCollectionView()]
       performAction:grey_tap()];
 }
 
-+ (void)focusOmniboxAndType:(NSString*)text {
-    [[EarlGrey
-        selectElementWithMatcher:chrome_test_util::DefocusedLocationView()]
-        performAction:grey_tap()];
+- (void)focusOmniboxAndType:(NSString*)text {
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::DefocusedLocationView()]
+      performAction:grey_tap()];
 
-    if (text.length) {
-      [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-          performAction:grey_typeText(text)];
-    }
+  if (text.length) {
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
+        performAction:grey_typeText(text)];
+  }
 }
 
-+ (void)focusOmnibox {
+- (void)focusOmnibox {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::DefocusedLocationView()]
       performAction:grey_tap()];
 }
 
-+ (void)openNewTab {
-  [ChromeEarlGreyUI openToolsMenu];
+- (void)openNewTab {
+  [self openToolsMenu];
   id<GREYMatcher> newTabButtonMatcher =
       grey_accessibilityID(kToolsMenuNewTabId);
   [[EarlGrey selectElementWithMatcher:newTabButtonMatcher]
@@ -179,8 +215,8 @@ id<GREYAction> ScrollDown() {
   [[GREYUIThreadExecutor sharedInstance] drainUntilIdle];
 }
 
-+ (void)openNewIncognitoTab {
-  [ChromeEarlGreyUI openToolsMenu];
+- (void)openNewIncognitoTab {
+  [self openToolsMenu];
   id<GREYMatcher> newIncognitoTabMatcher =
       grey_accessibilityID(kToolsMenuNewIncognitoTabId);
   [[EarlGrey selectElementWithMatcher:newIncognitoTabMatcher]
@@ -188,22 +224,21 @@ id<GREYAction> ScrollDown() {
   [[GREYUIThreadExecutor sharedInstance] drainUntilIdle];
 }
 
-+ (void)reload {
+- (void)reload {
   // On iPhone Reload button is a part of tools menu, so open it.
-  if (IsCompactWidth()) {
+  if (IsAppCompactWidth()) {
     [self openToolsMenu];
   }
   [[EarlGrey selectElementWithMatcher:chrome_test_util::ReloadButton()]
       performAction:grey_tap()];
 }
 
-+ (void)openShareMenu {
+- (void)openShareMenu {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::ShareButton()]
       performAction:grey_tap()];
 }
 
-+ (void)waitForToolbarVisible:(BOOL)isVisible {
-  const NSTimeInterval kWaitForToolbarAnimationTimeout = 1.0;
+- (void)waitForToolbarVisible:(BOOL)isVisible {
   ConditionBlock condition = ^{
     NSError* error = nil;
     id<GREYMatcher> visibleMatcher = isVisible ? grey_notNil() : grey_nil();
@@ -214,9 +249,10 @@ id<GREYAction> ScrollDown() {
   };
   NSString* errorMessage =
       isVisible ? @"Toolbar was not visible" : @"Toolbar was visible";
-  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
-                 kWaitForToolbarAnimationTimeout, condition),
-             errorMessage);
+
+  bool toolbarVisibility = base::test::ios::WaitUntilConditionOrTimeout(
+      kWaitForUIElementTimeout, condition);
+  EG_TEST_HELPER_ASSERT_TRUE(toolbarVisibility, errorMessage);
 }
 
 @end

@@ -66,7 +66,7 @@ class HttpConnection {
   HttpRequestParser request_parser_;
   scoped_refptr<IOBufferWithSize> read_buf_;
 
-  base::WeakPtrFactory<HttpConnection> weak_factory_;
+  base::WeakPtrFactory<HttpConnection> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(HttpConnection);
 };

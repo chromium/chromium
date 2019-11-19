@@ -10,6 +10,7 @@
 #include "base/mac/mac_logging.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/rand_util.h"
+#include "build/branding_buildflags.h"
 #include "components/os_crypt/encryption_key_creation_util.h"
 #include "crypto/apple_keychain.h"
 
@@ -47,7 +48,7 @@ std::string AddRandomPasswordToKeychain(const AppleKeychain& keychain,
 // These two strings ARE indeed user facing.  But they are used to access
 // the encryption keyword.  So as to not lose encrypted data when system
 // locale changes we DO NOT LOCALIZE.
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 const char KeychainPassword::service_name[] = "Chrome Safe Storage";
 const char KeychainPassword::account_name[] = "Chrome";
 #else

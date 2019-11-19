@@ -20,10 +20,10 @@ namespace {
 // Returns a layout manager that will size views according to their preferred
 // size.
 std::unique_ptr<views::LayoutManager> CreatePreferredSizeLayoutManager() {
-  auto layout =
-      std::make_unique<views::BoxLayout>(views::BoxLayout::kHorizontal);
+  auto layout = std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kHorizontal);
   layout->set_cross_axis_alignment(
-      views::BoxLayout::CROSS_AXIS_ALIGNMENT_START);
+      views::BoxLayout::CrossAxisAlignment::kStart);
   return std::move(layout);
 }
 
@@ -157,13 +157,13 @@ TEST_F(TriViewTest, ViewsAddedToCorrectContainers) {
   tri_view_->AddView(TriView::Container::END, end_child);
 
   EXPECT_TRUE(GetContainer(TriView::Container::START)->Contains(start_child));
-  EXPECT_EQ(1, GetContainer(TriView::Container::START)->child_count());
+  EXPECT_EQ(1u, GetContainer(TriView::Container::START)->children().size());
 
   EXPECT_TRUE(GetContainer(TriView::Container::CENTER)->Contains(center_child));
-  EXPECT_EQ(1, GetContainer(TriView::Container::CENTER)->child_count());
+  EXPECT_EQ(1u, GetContainer(TriView::Container::CENTER)->children().size());
 
   EXPECT_TRUE(GetContainer(TriView::Container::END)->Contains(end_child));
-  EXPECT_EQ(1, GetContainer(TriView::Container::END)->child_count());
+  EXPECT_EQ(1u, GetContainer(TriView::Container::END)->children().size());
 }
 
 TEST_F(TriViewTest, MultipleViewsAddedToTheSameContainer) {
@@ -186,13 +186,13 @@ TEST_F(TriViewTest, ViewsRemovedOnRemoveAllChildren) {
 
   EXPECT_TRUE(GetContainer(TriView::Container::START)->Contains(child1));
   EXPECT_TRUE(GetContainer(TriView::Container::START)->Contains(child2));
-  EXPECT_EQ(2, GetContainer(TriView::Container::START)->child_count());
+  EXPECT_EQ(2u, GetContainer(TriView::Container::START)->children().size());
 
   tri_view_->RemoveAllChildren(TriView::Container::START, false);
 
   EXPECT_FALSE(GetContainer(TriView::Container::START)->Contains(child1));
   EXPECT_FALSE(GetContainer(TriView::Container::START)->Contains(child2));
-  EXPECT_EQ(0, GetContainer(TriView::Container::START)->child_count());
+  EXPECT_EQ(0u, GetContainer(TriView::Container::START)->children().size());
 
   delete child1;
   delete child2;

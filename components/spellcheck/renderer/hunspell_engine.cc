@@ -16,6 +16,7 @@
 #include "components/spellcheck/spellcheck_buildflags.h"
 #include "content/public/common/service_names.mojom.h"
 #include "content/public/renderer/render_thread.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/service_manager/public/cpp/local_interface_provider.h"
 #include "third_party/hunspell/src/hunspell/hunspell.hxx"
 
@@ -35,14 +36,6 @@ namespace {
   static_assert(kMaxSuggestLen <= kMaxCheckedLen,
                 "MaxSuggestLen too long");
 }  // namespace
-
-#if !BUILDFLAG(USE_BROWSER_SPELLCHECKER)
-SpellingEngine* CreateNativeSpellingEngine(
-    service_manager::LocalInterfaceProvider* embedder_provider) {
-  DCHECK(embedder_provider);
-  return new HunspellEngine(embedder_provider);
-}
-#endif
 
 HunspellEngine::HunspellEngine(
     service_manager::LocalInterfaceProvider* embedder_provider)
@@ -124,8 +117,9 @@ void HunspellEngine::FillSuggestionList(
 
 bool HunspellEngine::InitializeIfNeeded() {
   if (!initialized_ && !dictionary_requested_) {
-    spellcheck::mojom::SpellCheckHostPtr spell_check_host;
-    embedder_provider_->GetInterface(&spell_check_host);
+    mojo::Remote<spellcheck::mojom::SpellCheckHost> spell_check_host;
+    embedder_provider_->GetInterface(
+        spell_check_host.BindNewPipeAndPassReceiver());
     spell_check_host->RequestDictionary();
     dictionary_requested_ = true;
     return true;

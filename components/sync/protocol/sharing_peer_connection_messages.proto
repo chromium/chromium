@@ -1,0 +1,31 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package chrome_browser_sharing;
+
+// Required in Chrome.
+option optimize_for = LITE_RUNTIME;
+
+// Used to send offer and answer for signalling process of webRTC.
+message SignallingMessage {
+  // Required.
+  string session_description_message = 1;
+
+  // Required.
+  string session_type = 2;
+}
+
+// Used to exchange ice candidate messages between peers for webRTC connection.
+message IceCandidateMessage {
+  // Required.
+  string sdp_message = 1;
+
+  // Required.
+  int32 sdp_mline_index = 2;
+
+  // Required.
+  string sdp_mid = 3;
+}

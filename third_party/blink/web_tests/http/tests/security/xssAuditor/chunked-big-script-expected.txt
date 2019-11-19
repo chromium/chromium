@@ -1,6 +1,0 @@
-Test passes if xss auditor does not mistakenly fire in the middle of chunked content
-
---------
-Frame: '<!--framePath //<!--frame0-->-->'
---------
-The End

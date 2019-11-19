@@ -34,6 +34,7 @@ class PaymentRequestCreditCardEditMediatorTest
  protected:
   // PlatformTest:
   void SetUp() override {
+    PlatformTest::SetUp();
     DoSetUp();
 
     AddAutofillProfile(autofill::test::GetFullProfile());
@@ -41,7 +42,10 @@ class PaymentRequestCreditCardEditMediatorTest
   }
 
   // PlatformTest:
-  void TearDown() override { DoTearDown(); }
+  void TearDown() override {
+    DoTearDown();
+    PlatformTest::TearDown();
+  }
 };
 
 // Tests that the expected editor fields are created when creating a card.

@@ -1,1 +1,0 @@
-Font-size in the validation bubble should be same as this paragraph.

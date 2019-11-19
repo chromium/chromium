@@ -1968,8 +1968,9 @@ typedef void(GL_APIENTRYP PFNGLCOPYSUBTEXTURECHROMIUM)(
  */
 #ifndef GL_CHROMIUM_command_buffer_query
 #define GL_CHROMIUM_command_buffer_query 1
-// TODO(gman): Get official numbers for these constants.
-#define GL_COMMANDS_ISSUED_CHROMIUM 0x84F2
+// TODO(andrescj): Get official numbers for these constants.
+#define GL_COMMANDS_ISSUED_CHROMIUM 0x6004
+#define GL_COMMANDS_ISSUED_TIMESTAMP_CHROMIUM 0x6005
 #endif
 
 #ifdef __cplusplus

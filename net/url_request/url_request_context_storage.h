@@ -16,10 +16,10 @@
 namespace net {
 
 class CertVerifier;
-class ChannelIDService;
 class CookieStore;
 class CTPolicyEnforcer;
 class CTVerifier;
+class FtpAuthCache;
 class HostResolver;
 class HttpAuthHandlerFactory;
 class HttpNetworkSession;
@@ -30,6 +30,7 @@ class NetLog;
 class NetworkDelegate;
 class ProxyDelegate;
 class ProxyResolutionService;
+class QuicContext;
 class SSLConfigService;
 class TransportSecurityState;
 class URLRequestContext;
@@ -38,6 +39,7 @@ class URLRequestThrottlerManager;
 
 #if BUILDFLAG(ENABLE_REPORTING)
 class NetworkErrorLoggingService;
+class PersistentReportingAndNelStore;
 class ReportingService;
 #endif  // BUILDFLAG(ENABLE_REPORTING)
 
@@ -57,8 +59,6 @@ class NET_EXPORT URLRequestContextStorage {
   void set_net_log(std::unique_ptr<NetLog> net_log);
   void set_host_resolver(std::unique_ptr<HostResolver> host_resolver);
   void set_cert_verifier(std::unique_ptr<CertVerifier> cert_verifier);
-  void set_channel_id_service(
-      std::unique_ptr<ChannelIDService> channel_id_service);
   void set_http_auth_handler_factory(
       std::unique_ptr<HttpAuthHandlerFactory> http_auth_handler_factory);
   void set_proxy_delegate(std::unique_ptr<ProxyDelegate> proxy_delegate);
@@ -83,13 +83,19 @@ class NET_EXPORT URLRequestContextStorage {
   void set_job_factory(std::unique_ptr<URLRequestJobFactory> job_factory);
   void set_throttler_manager(
       std::unique_ptr<URLRequestThrottlerManager> throttler_manager);
+  void set_quic_context(std::unique_ptr<QuicContext> quic_context);
   void set_http_user_agent_settings(
       std::unique_ptr<HttpUserAgentSettings> http_user_agent_settings);
+#if !BUILDFLAG(DISABLE_FTP_SUPPORT)
+  void set_ftp_auth_cache(std::unique_ptr<FtpAuthCache> ftp_auth_cache);
+#endif  // !BUILDFLAG(DISABLE_FTP_SUPPORT)
 
 #if BUILDFLAG(ENABLE_REPORTING)
+  void set_persistent_reporting_and_nel_store(
+      std::unique_ptr<PersistentReportingAndNelStore>
+          persistent_reporting_and_nel_store);
   void set_reporting_service(
       std::unique_ptr<ReportingService> reporting_service);
-
   void set_network_error_logging_service(
       std::unique_ptr<NetworkErrorLoggingService>
           network_error_logging_service);
@@ -109,8 +115,6 @@ class NET_EXPORT URLRequestContextStorage {
   std::unique_ptr<NetLog> net_log_;
   std::unique_ptr<HostResolver> host_resolver_;
   std::unique_ptr<CertVerifier> cert_verifier_;
-  // The ChannelIDService must outlive the HttpTransactionFactory.
-  std::unique_ptr<ChannelIDService> channel_id_service_;
   std::unique_ptr<HttpAuthHandlerFactory> http_auth_handler_factory_;
   std::unique_ptr<ProxyDelegate> proxy_delegate_;
   std::unique_ptr<NetworkDelegate> network_delegate_;
@@ -122,6 +126,10 @@ class NET_EXPORT URLRequestContextStorage {
   std::unique_ptr<TransportSecurityState> transport_security_state_;
   std::unique_ptr<CTVerifier> cert_transparency_verifier_;
   std::unique_ptr<CTPolicyEnforcer> ct_policy_enforcer_;
+  std::unique_ptr<QuicContext> quic_context_;
+#if !BUILDFLAG(DISABLE_FTP_SUPPORT)
+  std::unique_ptr<FtpAuthCache> ftp_auth_cache_;
+#endif  // !BUILDFLAG(DISABLE_FTP_SUPPORT)
 
   // Not actually pointed at by the URLRequestContext, but may be used (but not
   // owned) by the HttpTransactionFactory.
@@ -132,6 +140,10 @@ class NET_EXPORT URLRequestContextStorage {
   std::unique_ptr<URLRequestThrottlerManager> throttler_manager_;
 
 #if BUILDFLAG(ENABLE_REPORTING)
+  // Must precede |reporting_service_| and |network_error_logging_service_|
+  std::unique_ptr<PersistentReportingAndNelStore>
+      persistent_reporting_and_nel_store_;
+
   std::unique_ptr<ReportingService> reporting_service_;
   std::unique_ptr<NetworkErrorLoggingService> network_error_logging_service_;
 #endif  // BUILDFLAG(ENABLE_REPORTING)

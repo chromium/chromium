@@ -16,7 +16,7 @@
 
 namespace views {
 
-typedef views::ViewsTestBase BubbleBorderTest;
+using BubbleBorderTest = views::ViewsTestBase;
 
 TEST_F(BubbleBorderTest, GetMirroredArrow) {
   // Horizontal mirroring.

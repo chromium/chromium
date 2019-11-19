@@ -19,6 +19,8 @@ jumbo_component("x") {
     "x11_connection.h",
     "x11_error_tracker.cc",
     "x11_error_tracker.h",
+    "x11_path.cc",
+    "x11_path.h",
     "x11_switches.cc",
     "x11_switches.h",
     "x11_types.cc",
@@ -31,5 +33,6 @@ jumbo_component("x") {
 
   deps = [
     "//base",
+    "//skia",
   ]
 }

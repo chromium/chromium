@@ -47,6 +47,16 @@ void String16VectorFromString16Internal(base::string16 word,
 
 // Matches within URL and Title Strings ----------------------------------------
 
+TermMatches MatchTermsInString(const String16Vector& terms,
+                               const base::string16& cleaned_string) {
+  TermMatches matches;
+  for (size_t i = 0; i < terms.size(); ++i) {
+    TermMatches term_matches = MatchTermInString(terms[i], cleaned_string, i);
+    matches.insert(matches.end(), term_matches.begin(), term_matches.end());
+  }
+  return matches;
+}
+
 TermMatches MatchTermInString(const base::string16& term,
                               const base::string16& cleaned_string,
                               int term_num) {
@@ -63,13 +73,15 @@ TermMatches MatchTermInString(const base::string16& term,
 }
 
 // Comparison function for sorting TermMatches by their offsets.
-bool MatchOffsetLess(const TermMatch& m1, const TermMatch& m2) {
-  return m1.offset < m2.offset;
+bool SortMatchComparator(const TermMatch& m1, const TermMatch& m2) {
+  // Return the match that occurs first (smallest offset). In the case of a tie,
+  // return the longer match.
+  return m1.offset == m2.offset ? m1.length > m2.length : m1.offset < m2.offset;
 }
 
 TermMatches SortMatches(const TermMatches& matches) {
   TermMatches sorted_matches(matches);
-  std::sort(sorted_matches.begin(), sorted_matches.end(), MatchOffsetLess);
+  std::sort(sorted_matches.begin(), sorted_matches.end(), SortMatchComparator);
   return sorted_matches;
 }
 
@@ -124,8 +136,7 @@ String16Set String16SetFromString16(const base::string16& cleaned_uni_string,
   for (auto& word : words)
     word = base::i18n::ToLower(word).substr(0, kMaxSignificantChars);
   return String16Set(std::make_move_iterator(words.begin()),
-                     std::make_move_iterator(words.end()),
-                     base::KEEP_FIRST_OF_DUPES);
+                     std::make_move_iterator(words.end()));
 }
 
 String16Vector String16VectorFromString16(
@@ -161,7 +172,7 @@ String16Vector String16VectorFromString16(
 }
 
 Char16Set Char16SetFromString16(const base::string16& term) {
-  return Char16Set(term.begin(), term.end(), base::KEEP_FIRST_OF_DUPES);
+  return Char16Set(term.begin(), term.end());
 }
 
 // HistoryInfoMapValue ---------------------------------------------------------

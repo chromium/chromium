@@ -12,7 +12,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
-    <org.chromium.chrome.browser.widget.FadingEdgeScrollView
+    <org.chromium.chrome.browser.ui.widget.FadingEdgeScrollView
         android:id="@+id/scroll_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -28,7 +28,7 @@
             android:paddingEnd="@dimen/pref_autofill_content_spacing"
             android:orientation="vertical" />
 
-    </org.chromium.chrome.browser.widget.FadingEdgeScrollView>
+    </org.chromium.chrome.browser.ui.widget.FadingEdgeScrollView>
 
     <include layout="@layout/preferences_action_bar_shadow"/>
 

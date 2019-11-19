@@ -8,18 +8,19 @@
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/win/scoped_handle.h"
-#include "chrome/chrome_cleaner/interfaces/parser_interface.mojom.h"
 #include "chrome/chrome_cleaner/ipc/mojo_task_runner.h"
+#include "chrome/chrome_cleaner/mojom/parser_interface.mojom.h"
 #include "chrome/chrome_cleaner/os/file_path_set.h"
 #include "chrome/chrome_cleaner/parsers/parser_utils/parse_tasks_remaining_counter.h"
 #include "chrome/chrome_cleaner/parsers/shortcut_parser/broker/shortcut_parser_api.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace chrome_cleaner {
 
 class SandboxedShortcutParser : public ShortcutParserAPI {
  public:
   SandboxedShortcutParser(MojoTaskRunner* mojo_task_runner,
-                          mojom::ParserPtr* parser_ptr);
+                          mojo::Remote<mojom::Parser>* parser);
 
   // ShortcutParserAPI
   void FindAndParseChromeShortcutsInFoldersAsync(
@@ -48,7 +49,7 @@ class SandboxedShortcutParser : public ShortcutParserAPI {
 
   base::Lock lock_;
   MojoTaskRunner* mojo_task_runner_;
-  mojom::ParserPtr* parser_ptr_;
+  mojo::Remote<mojom::Parser>* parser_;
 };
 
 }  // namespace chrome_cleaner

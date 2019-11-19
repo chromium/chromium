@@ -3,11 +3,13 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <org.chromium.chrome.browser.preferences.datareduction.DataReductionStatsPreference
         android:key="data_reduction_stats"
         android:layout="@layout/custom_preference"
-        android:selectable="false" />
+        android:selectable="false"
+        app:allowDividerAbove="true" />
 
 </PreferenceScreen>

@@ -26,9 +26,7 @@
 
 // https://svgwg.org/svg2-draft/types.html#InterfaceSVGFitToViewBox
 
-[
-    NoInterfaceObject // Always used on target of 'implements'
-] interface SVGFitToViewBox {
+interface mixin SVGFitToViewBox {
     [MeasureAs=SVG1DOMFitToViewBox] readonly attribute SVGAnimatedRect viewBox;
     [MeasureAs=SVG1DOMFitToViewBox] readonly attribute SVGAnimatedPreserveAspectRatio preserveAspectRatio;
 };

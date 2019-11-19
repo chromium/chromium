@@ -1,0 +1,59 @@
+<!doctype html>
+<!--
+A collection of helper functions and listeners to confirm the state of input
+sources for the same object tests.
+-->
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="../resources/webxr_e2e.css">
+  </head>
+  <body>
+    <canvas id="webgl-canvas"></canvas>
+    <script src="../../../../../../third_party/blink/web_tests/resources/testharness.js"></script>
+    <script src="../resources/webxr_e2e.js"></script>
+    <script src="../resources/webxr_boilerplate.js"></script>
+    <script>
+      let inputChangeEvents = 0;
+      function onInputSourcesChange() {
+        inputChangeEvents++;
+      }
+
+      onSessionStartedCallback = function(session) {
+        if (session.mode === "immersive-vr") {
+          session.addEventListener('inputsourceschange', onInputSourcesChange, false);
+        }
+      }
+
+      function getCurrentInputSources() {
+        let currentSession = sessionInfos[sessionTypes.IMMERSIVE].currentSession;
+        return Array.from(currentSession.inputSources.values());
+      }
+
+      let cached_input_source = null;
+      function updateCachedInputSource(id) {
+        let input_sources = getCurrentInputSources();
+        assert_less_than(id, input_sources.length);
+        cached_input_source = input_sources[id];
+      }
+
+      function validateCachedSourcePresence(present) {
+        assert_not_equals(cached_input_source, null);
+        assert_not_equals(present, undefined);
+        let current_sources = getCurrentInputSources();
+        assert_equals(current_sources.includes(cached_input_source), present);
+      }
+
+      function validateInputSourceLength(length) {
+        assert_equals(getCurrentInputSources().length, length);
+      }
+
+      function validateCurrentAndCachedGamepadMatch() {
+        assert_not_equals(cached_input_source, null);
+        let current_sources = getCurrentInputSources();
+        let index = current_sources.indexOf(cached_input_source);
+        assert_not_equals(index, -1);
+        assert_equals(cached_input_source.gamepad, current_sources[index].gamepad);
+      }
+    </script>
+  </body>
+</html>

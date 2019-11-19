@@ -1,0 +1,62 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package optimization_guide.proto;
+
+import "hints.proto";
+import "models.proto";
+
+// The types of StoreEntries.
+//
+// The values should match those of
+// components/previews/content/hint_cache_store.h
+enum StoreEntryType {
+  // StoreEntryType when the entry type is unknown.
+  EMPTY = 0;
+  // StoreEntryType when storing a metadata entry, which holds metadata about
+  // the store and the set of entries for a particular source, fetched or
+  // component.
+  METADATA = 1;
+  // StoreEntryType when storing a component hint entry, holds a hint that was
+  // provided by a component update. The version should be provided.
+  COMPONENT_HINT = 2;
+  // StoreEntryType when storing a fetched hint entry, holds a hint that was
+  // fetched from the remote Optimization Guide Service. |update_time_secs|
+  // should be provided.
+  FETCHED_HINT = 3;
+  // StoreEntryType when storing a prediction model entry, holds a prediction
+  // model provided by the remote Optimization Guide Service.
+  PREDICTION_MODEL = 4;
+  // StoreEntryType when storing a host model features entry, holds the model
+  // features keyed provided by host from the remote Optimization Guide
+  // Service. |update_time_secs| should be provided.
+  HOST_MODEL_FEATURES = 5;
+}
+
+message StoreEntry {
+  // Generic version field. For the schema metadata entry, version represents
+  // the schema version; for the component metadata entry, version represents
+  // the component version.
+  optional string version = 1;
+  // The actual hint data.
+  optional Hint hint = 2;
+  // Time when top host fetched hints are still usable but update should be
+  // requested. This is set on the fetched metadata entry and host model feature
+  // metadata entries.
+  optional int64 update_time_secs = 3;
+  // The type of entry stored.
+  optional StoreEntryType entry_type = 4;
+  // Expiry time for this Hint entry (i.e., when hint is no longer usable). This
+  // is set on OnePlatform Hint entries, as well as PredictionModel and
+  // HostModelFeatures entries.
+  optional int64 expiry_time_secs = 5;
+  // The actual PredictionModel data.
+  optional PredictionModel prediction_model = 6;
+  // The actual HostModelFeature data.
+  optional HostModelFeatures host_model_features = 7;
+}

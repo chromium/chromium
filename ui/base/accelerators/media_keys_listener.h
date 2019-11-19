@@ -49,6 +49,13 @@ class UI_BASE_EXPORT MediaKeysListener {
   virtual bool StartWatchingMediaKey(KeyboardCode key_code) = 0;
   // Stop listening for a given media key.
   virtual void StopWatchingMediaKey(KeyboardCode key_code) = 0;
+
+  // Informs the listener whether or not media is currently playing. In some
+  // implementations this will prevent us from calling PlayPause unnecessarily.
+  // TODO(https://crbug.com/974035): Once the MediaKeysListenerManager has been
+  // refactored to work with system media controls this should no longer be
+  // needed and should be deleted.
+  virtual void SetIsMediaPlaying(bool is_playing) = 0;
 };
 
 }  // namespace ui

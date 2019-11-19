@@ -4,8 +4,9 @@
 
 package org.chromium.chrome.browser.feedback;
 
-import android.support.annotation.Nullable;
 import android.util.Pair;
+
+import androidx.annotation.Nullable;
 
 import java.util.Map;
 

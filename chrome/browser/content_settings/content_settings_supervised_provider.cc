@@ -22,24 +22,26 @@ struct ContentSettingsFromSupervisedSettingsEntry {
 
 const ContentSettingsFromSupervisedSettingsEntry
     kContentSettingsFromSupervisedSettingsMap[] = {
-  {
-    supervised_users::kGeolocationDisabled,
-    CONTENT_SETTINGS_TYPE_GEOLOCATION,
-    CONTENT_SETTING_BLOCK,
-  }, {
-    supervised_users::kCameraMicDisabled,
-    CONTENT_SETTINGS_TYPE_MEDIASTREAM_CAMERA,
-    CONTENT_SETTING_BLOCK,
-  }, {
-    supervised_users::kCameraMicDisabled,
-    CONTENT_SETTINGS_TYPE_MEDIASTREAM_MIC,
-    CONTENT_SETTING_BLOCK,
-  }, {
-    supervised_users::kCookiesAlwaysAllowed,
-    CONTENT_SETTINGS_TYPE_COOKIES,
-    CONTENT_SETTING_ALLOW,
-  }
-};
+        {
+            supervised_users::kGeolocationDisabled,
+            ContentSettingsType::GEOLOCATION,
+            CONTENT_SETTING_BLOCK,
+        },
+        {
+            supervised_users::kCameraMicDisabled,
+            ContentSettingsType::MEDIASTREAM_CAMERA,
+            CONTENT_SETTING_BLOCK,
+        },
+        {
+            supervised_users::kCameraMicDisabled,
+            ContentSettingsType::MEDIASTREAM_MIC,
+            CONTENT_SETTING_BLOCK,
+        },
+        {
+            supervised_users::kCookiesAlwaysAllowed,
+            ContentSettingsType::COOKIES,
+            CONTENT_SETTING_ALLOW,
+        }};
 
 }  // namespace
 
@@ -52,8 +54,8 @@ SupervisedProvider::SupervisedProvider(
   // DependsOn the SupervisedUserSettingsService (through their factories).
   // This means this will get destroyed before the SUSS and will be
   // unsubscribed from it.
-  user_settings_subscription_ = supervised_user_settings_service->Subscribe(
-      base::Bind(
+  user_settings_subscription_ =
+      supervised_user_settings_service->SubscribeForSettingsChange(base::Bind(
           &content_settings::SupervisedProvider::OnSupervisedSettingsAvailable,
           base::Unretained(this)));
 }
@@ -103,7 +105,7 @@ bool SupervisedProvider::SetWebsiteSetting(
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_type,
     const ResourceIdentifier& resource_identifier,
-    base::Value* value) {
+    std::unique_ptr<base::Value>&& value) {
   return false;
 }
 

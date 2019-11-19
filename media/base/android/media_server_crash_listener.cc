@@ -6,7 +6,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/memory/singleton.h"
-#include "jni/MediaServerCrashListener_jni.h"
+#include "media/base/android/media_jni_headers/MediaServerCrashListener_jni.h"
 
 namespace media {
 

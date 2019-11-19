@@ -254,10 +254,6 @@ test(function() {
 }, 'Invalid basic card parameters should not throw when method name is not "basic-card".');
 
 test(function() {
-  new PaymentRequest([{'supportedMethods': 'basic-card', 'data': {'supportedTypes': 0, 'supportedNetworks': 'foo'}}], buildDetails());
-}, 'Invalid basic card parameters should not throw even when method name is "basic-card".');
-
-test(function() {
     new PaymentRequest([{'supportedMethods': 'https://android.com/pay', 'data': {'merchantName': 'Merchant Inc', 'merchantId': '123', 'allowedCardNetworks': ['AMEX', 'DISCOVER', 'MASTERCARD', 'VISA'], 'paymentMethodTokenizationParameters': {'tokenizationType': 'NETWORK_TOKEN', 'parameters': {'key': 'value'}}}}], buildDetails());
 }, 'Android Pay parameters for network token without environment key should not throw.');
 
@@ -353,6 +349,9 @@ generate_tests(assert_throws, [
     }],
     ['Empty string for payment method specific data parameter should throw', new TypeError(), function() {
         new PaymentRequest([{'supportedMethods': 'foo', 'data': ''}], buildDetails())
+    }],
+    ['PaymentRequest constructor should throw for invalid "basic-card" parameters.', new TypeError(), function() {
+        new PaymentRequest([{'supportedMethods': 'basic-card', 'data': {'supportedTypes': 0, 'supportedNetworks': 'foo'}}], buildDetails())
     }]
 ]);
 

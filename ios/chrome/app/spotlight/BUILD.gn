@@ -26,6 +26,7 @@ source_set("spotlight") {
     "//components/favicon_base",
     "//components/history/core/browser",
     "//components/suggestions",
+    "//ios/chrome/app",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser",
     "//ios/chrome/browser/bookmarks",

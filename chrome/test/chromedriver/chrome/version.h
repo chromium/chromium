@@ -7,6 +7,6 @@
 
 #include <string>
 
-extern const int kSupportedChromeMajorVersion;
+extern const int kSupportedBrowserMajorVersion;
 
 #endif  // CHROME_TEST_CHROMEDRIVER_CHROME_VERSION_H_

@@ -1,7 +1,5 @@
 <!DOCTYPE html>
 <html>
-<script src="../resources/run-after-layout-and-paint.js"></script>
-
 <style>
   object { border: 1px solid transparent }
 </style>
@@ -11,16 +9,4 @@
  <object width="500px" data="resources/red-at-12-oclock-with-color-profile.jpg">
  </object>
 </body>
-
-<script>
-window.onload = function() {
-  if (window.testRunner)
-    runAfterLayoutAndPaint(function() { testRunner.notifyDone() });
-};
-
-if (window.testRunner) {
-  testRunner.dumpAsTextWithPixelResults();
-  testRunner.waitUntilDone();
-}
-</script>
 </html>

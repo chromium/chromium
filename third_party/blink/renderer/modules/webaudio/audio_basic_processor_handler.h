@@ -43,7 +43,7 @@ class MODULES_EXPORT AudioBasicProcessorHandler : public AudioHandler {
   ~AudioBasicProcessorHandler() override;
 
   // AudioHandler
-  void Process(uint32_t frames_to_process) final;
+  void Process(uint32_t frames_to_process) override;
   void ProcessOnlyAudioParams(uint32_t frames_to_process) final;
   void PullInputs(uint32_t frames_to_process) final;
   void Initialize() final;
@@ -62,6 +62,14 @@ class MODULES_EXPORT AudioBasicProcessorHandler : public AudioHandler {
                              AudioNode&,
                              float sample_rate,
                              std::unique_ptr<AudioProcessor>);
+
+  // Returns true if the first output sample of any channel is non-finite.  This
+  // is a proxy for determining if the filter state is bad.  For
+  // BiquadFilterNodes and IIRFilterNodes, if the internal state has non-finite
+  // values, the non-finite value propagates pretty much forever in the output.
+  // This is because infinities and NaNs are sticky.
+  bool HasNonFiniteOutput() const;
+
  private:
   bool RequiresTailProcessing() const final;
   double TailTime() const final;

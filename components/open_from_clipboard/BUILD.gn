@@ -11,6 +11,7 @@ static_library("open_from_clipboard") {
   ]
 
   deps = [
+    ":feature_flags",
     ":open_from_clipboard_impl",
     "//base",
     "//components/variations",
@@ -26,6 +27,16 @@ static_library("open_from_clipboard") {
     ]
     deps += [ "//ui/base/clipboard" ]
   }
+}
+
+source_set("feature_flags") {
+  sources = [
+    "clipboard_recent_content_features.cc",
+    "clipboard_recent_content_features.h",
+  ]
+  deps = [
+    "//base",
+  ]
 }
 
 # Helper classes used by "open_from_clipboard" target. These classes must have

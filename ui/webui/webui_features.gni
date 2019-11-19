@@ -12,4 +12,7 @@ declare_args() {
   # enables the webui_closure_compile target which does a no-op without this
   # flag enabled. Requires Java.
   closure_compile = is_chromeos || is_linux || is_android
+
+  # Enable the WebUI version of the browser's tab strip.
+  enable_webui_tab_strip = is_chromeos
 }

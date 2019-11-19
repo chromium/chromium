@@ -34,7 +34,8 @@ interface DataReductionProxy {
   MarkProxiesAsBad(mojo_base.mojom.TimeDelta bypass_duration,
                    network.mojom.ProxyList bad_proxies) => ();
 
-  AddThrottleConfigObserver(DataReductionProxyThrottleConfigObserver observer);
+  AddThrottleConfigObserver(
+      pending_remote<DataReductionProxyThrottleConfigObserver> observer);
 
-  Clone(DataReductionProxy& request);
+  Clone(pending_receiver<DataReductionProxy> receiver);
 };

@@ -50,20 +50,9 @@ class SVGTransform final : public SVGPropertyBase {
     kConstructZeroTransform
   };
 
-  static SVGTransform* Create() { return MakeGarbageCollected<SVGTransform>(); }
-
-  static SVGTransform* Create(
-      SVGTransformType type,
-      ConstructionMode mode = kConstructIdentityTransform) {
-    return MakeGarbageCollected<SVGTransform>(type, mode);
-  }
-
-  static SVGTransform* Create(const AffineTransform& affine_transform) {
-    return MakeGarbageCollected<SVGTransform>(affine_transform);
-  }
-
   SVGTransform();
-  SVGTransform(SVGTransformType, ConstructionMode);
+  explicit SVGTransform(SVGTransformType,
+                        ConstructionMode = kConstructIdentityTransform);
   explicit SVGTransform(const AffineTransform&);
   SVGTransform(SVGTransformType,
                float,
@@ -99,7 +88,7 @@ class SVGTransform final : public SVGPropertyBase {
   String ValueAsString() const override;
 
   void Add(SVGPropertyBase*, SVGElement*) override;
-  void CalculateAnimatedValue(SVGAnimationElement*,
+  void CalculateAnimatedValue(const SVGAnimateElement&,
                               float percentage,
                               unsigned repeat_count,
                               SVGPropertyBase* from,

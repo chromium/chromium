@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+FAIL utf-8 assert_unreached: [object Event] Reached unreachable code
+FAIL shift-jis assert_unreached: [object Event] Reached unreachable code
+FAIL windows-1252 assert_unreached: [object Event] Reached unreachable code
+FAIL utf-7 assert_unreached: [object Event] Reached unreachable code
+Harness: the test ran to completion.
+

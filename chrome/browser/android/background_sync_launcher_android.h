@@ -13,31 +13,39 @@
 #include "base/callback_forward.h"
 #include "base/lazy_instance.h"
 #include "base/macros.h"
+#include "base/time/time.h"
+#include "third_party/blink/public/mojom/background_sync/background_sync.mojom.h"
 
-namespace content {
-class StoragePartition;
-}  // namespace content
-
-// The BackgroundSyncLauncherAndroid singleton owns the Java
-// BackgroundSyncLauncher object and is used to register interest in starting
+// BackgroundSyncLauncherAndroid is used to register interest in starting
 // the browser the next time the device goes online. This class runs on the UI
 // thread.
 class BackgroundSyncLauncherAndroid {
  public:
   static BackgroundSyncLauncherAndroid* Get();
 
-  static void LaunchBrowserIfStopped(bool launch_when_next_online,
-                                     int64_t min_delay_ms);
+  // Schedules a BackgroundTaskScheduler task for |sync_type| with delay |delay|
+  // to ensure that the browser is running when the device next goes online
+  // after that time has passed. If |delay| is base::TimeDelta::Max(), the
+  // wake-up task is cancelled.
+  static void ScheduleBrowserWakeUpWithDelay(
+      blink::mojom::BackgroundSyncType sync_type,
+      base::TimeDelta delay);
+
+  // Cancels the BackgroundTaskScheduler task that wakes up the browser to
+  // process Background Sync registrations of type |sync_type|.
+  static void CancelBrowserWakeup(blink::mojom::BackgroundSyncType sync_type);
 
   static bool ShouldDisableBackgroundSync();
 
-  // TODO(iclelland): Remove this once the bots have their play services package
-  // updated before every test run. (https://crbug.com/514449)
+  // TODO(crbug.com/514449): Remove this once the bots have their play services
+  // package updated before every test run.
   static void SetPlayServicesVersionCheckDisabledForTests(bool disabled);
 
   // Fires all pending Background Sync events across all storage partitions
   // for the last used profile.
+  // Fires one-shot Background Sync events for registration of |sync_type|.
   void FireBackgroundSyncEvents(
+      blink::mojom::BackgroundSyncType sync_type,
       const base::android::JavaParamRef<jobject>& j_runnable);
 
  private:
@@ -47,16 +55,11 @@ class BackgroundSyncLauncherAndroid {
   BackgroundSyncLauncherAndroid();
   ~BackgroundSyncLauncherAndroid();
 
-  void LaunchBrowserIfStoppedImpl(bool launch_when_next_online,
-                                  int64_t min_delay_ms);
-  void FireBackgroundSyncEventsForStoragePartition(
-      base::OnceClosure done_closure,
-      content::StoragePartition* storage_partition);
-  void OnFiredBackgroundSyncEvents(
-      base::android::ScopedJavaGlobalRef<jobject> j_runnable);
+  void ScheduleBrowserWakeUpWithDelayImpl(
+      blink::mojom::BackgroundSyncType sync_type,
+      base::TimeDelta soonest_wakeup_delta);
+  void CancelBrowserWakeupImpl(blink::mojom::BackgroundSyncType sync_type);
 
-  base::android::ScopedJavaGlobalRef<jobject>
-      java_gcm_network_manager_launcher_;
   base::android::ScopedJavaGlobalRef<jobject>
       java_background_sync_background_task_scheduler_launcher_;
 

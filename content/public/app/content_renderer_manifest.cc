@@ -16,24 +16,23 @@ const service_manager::Manifest& GetContentRendererManifest() {
       service_manager::ManifestBuilder()
           .WithServiceName(mojom::kRendererServiceName)
           .WithDisplayName("Content (renderer process)")
-          .ExposeCapability("service_manager:service_factory",
-                            std::set<const char*>{
-                                "service_manager.mojom.ServiceFactory",
-                            })
           .ExposeCapability(
               "browser",
               std::set<const char*>{
                   "blink.mojom.CodeCacheHost",
                   "blink.mojom.CrashMemoryMetricsReporter",
+                  "blink.mojom.EmbeddedWorkerInstanceClient",
                   "blink.mojom.LeakDetector",
                   "blink.mojom.OomIntervention",
+                  "blink.mojom.PeerConnectionManager",
                   "blink.mojom.SharedWorkerFactory",
                   "blink.mojom.WebDatabase",
                   "content.mojom.Child",
-                  "content.mojom.ChildControl",
                   "content.mojom.ChildHistogramFetcher",
                   "content.mojom.ChildHistogramFetcherFactory",
+                  "content.mojom.ChildProcess",
                   "content.mojom.FrameFactory",
+                  "content.mojom.MhtmlFileWriter",
                   "content.mojom.RenderWidgetWindowTreeClientFactory",
                   "content.mojom.ResourceUsageReporter",
                   "IPC.mojom.ChannelBootstrap",
@@ -45,13 +44,16 @@ const service_manager::Manifest& GetContentRendererManifest() {
           .RequireCapability("metrics", "url_keyed_metrics")
           .RequireCapability("ui", "discardable_memory")
           .RequireCapability("ui", "gpu_client")
+          .RequireCapability("device", "device:hid")
           .RequireCapability("device", "device:power_monitor")
           .RequireCapability("device", "device:screen_orientation")
           .RequireCapability("device", "device:time_zone_monitor")
           .RequireCapability(mojom::kBrowserServiceName, "dwrite_font_proxy")
-          .RequireCapability(mojom::kBrowserServiceName, "field_trials")
+          .RequireCapability(mojom::kSystemServiceName, "dwrite_font_proxy")
+          .RequireCapability(mojom::kSystemServiceName, "field_trials")
           .RequireCapability(mojom::kBrowserServiceName, "renderer")
-          .RequireCapability(mojom::kBrowserServiceName, "sandbox_support")
+          .RequireCapability(mojom::kSystemServiceName, "renderer")
+          .RequireCapability(mojom::kSystemServiceName, "sandbox_support")
           .RequireInterfaceFilterCapability_Deprecated(
               mojom::kBrowserServiceName, "navigation:shared_worker",
               "renderer")
@@ -65,13 +67,12 @@ const service_manager::Manifest& GetContentRendererManifest() {
               "navigation:frame", "browser",
               std::set<const char*>{
                   "blink.mojom.AppBannerController",
-                  "blink.mojom.EngagementClient",
+                  "blink.mojom.EngagementClient", "blink.mojom.ImageDownloader",
                   "blink.mojom.InstallationService",
                   "blink.mojom.ManifestManager",
-                  "blink.mojom.MediaDevicesListener",
                   "blink.mojom.MediaStreamDeviceObserver",
                   "blink.mojom.TextSuggestionBackend",
-                  "content.mojom.ImageDownloader",
+                  "blink.mojom.WebLaunchService",
                   "content.mojom.FrameInputHandler",
                   "content.mojom.FullscreenVideoElementHandler",
                   "content.mojom.Widget", "viz.mojom.InputTargetClient"})

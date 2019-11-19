@@ -8,10 +8,10 @@ import android.content.Context;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.datareduction.DataReductionProxyUma;
 import org.chromium.chrome.browser.net.spdyproxy.DataReductionProxySettings;
-import org.chromium.chrome.browser.preferences.datareduction.DataReductionBrandingResourceProvider;
-import org.chromium.chrome.browser.preferences.datareduction.DataReductionProxyUma;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.widget.Toast;
 
@@ -25,7 +25,7 @@ public class DataReductionPromoInfoBarDelegate {
      * @param webContents The {@link WebContents} in which to launch the {@link InfoBar}.
      */
     static void launch(WebContents webContents) {
-        nativeLaunch(webContents);
+        DataReductionPromoInfoBarDelegateJni.get().launch(webContents);
     }
 
     private DataReductionPromoInfoBarDelegate() {
@@ -52,10 +52,7 @@ public class DataReductionPromoInfoBarDelegate {
                 .dataReductionProxyUIAction(DataReductionProxyUma.ACTION_INFOBAR_ENABLED);
         DataReductionProxySettings.getInstance().setDataReductionProxyEnabled(
                 context, true);
-        Toast.makeText(context,
-                     context.getString(
-                             DataReductionBrandingResourceProvider.getDataSaverBrandedString(
-                                     R.string.data_reduction_enabled_toast)),
+        Toast.makeText(context, context.getString(R.string.data_reduction_enabled_toast_lite_mode),
                      Toast.LENGTH_LONG)
                 .show();
     }
@@ -71,5 +68,8 @@ public class DataReductionPromoInfoBarDelegate {
                 .dataReductionProxyUIAction(DataReductionProxyUma.ACTION_INFOBAR_DISMISSED);
     }
 
-    private static native void nativeLaunch(WebContents webContents);
+    @NativeMethods
+    interface Natives {
+        void launch(WebContents webContents);
+    }
 }

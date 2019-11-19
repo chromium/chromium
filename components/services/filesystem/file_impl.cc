@@ -19,7 +19,7 @@
 #include "components/services/filesystem/lock_table.h"
 #include "components/services/filesystem/shared_temp_dir.h"
 #include "components/services/filesystem/util.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 static_assert(sizeof(off_t) <= sizeof(int64_t), "off_t too big");
 static_assert(sizeof(size_t) >= sizeof(uint32_t), "size_t too small");
@@ -292,7 +292,8 @@ void FileImpl::Touch(mojom::TimespecOrNowPtr atime,
   std::move(callback).Run(base::File::Error::FILE_OK);
 }
 
-void FileImpl::Dup(mojom::FileRequest file, DupCallback callback) {
+void FileImpl::Dup(mojo::PendingReceiver<mojom::File> receiver,
+                   DupCallback callback) {
   if (!file_.IsValid()) {
     std::move(callback).Run(GetError(file_));
     return;
@@ -304,11 +305,11 @@ void FileImpl::Dup(mojom::FileRequest file, DupCallback callback) {
     return;
   }
 
-  if (file.is_pending()) {
-    mojo::MakeStrongBinding(
+  if (receiver) {
+    mojo::MakeSelfOwnedReceiver(
         std::make_unique<FileImpl>(path_, std::move(new_file), temp_dir_,
                                    lock_table_),
-        std::move(file));
+        std::move(receiver));
   }
   std::move(callback).Run(base::File::Error::FILE_OK);
 }

@@ -4,6 +4,9 @@
 
 #include "content/browser/devtools/shared_worker_devtools_agent_host.h"
 
+#include <memory>
+#include <utility>
+
 #include "content/browser/devtools/devtools_renderer_channel.h"
 #include "content/browser/devtools/devtools_session.h"
 #include "content/browser/devtools/protocol/inspector_handler.h"
@@ -13,7 +16,6 @@
 #include "content/browser/devtools/protocol/target_handler.h"
 #include "content/browser/devtools/shared_worker_devtools_manager.h"
 #include "content/browser/worker_host/shared_worker_host.h"
-#include "content/browser/worker_host/shared_worker_instance.h"
 #include "content/browser/worker_host/shared_worker_service_impl.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
@@ -28,7 +30,7 @@ SharedWorkerDevToolsAgentHost::SharedWorkerDevToolsAgentHost(
       state_(WORKER_NOT_READY),
       worker_host_(worker_host),
       devtools_worker_token_(devtools_worker_token),
-      instance_(new SharedWorkerInstance(*worker_host->instance())) {
+      instance_(worker_host->instance()) {
   NotifyCreated();
 }
 
@@ -40,7 +42,7 @@ BrowserContext* SharedWorkerDevToolsAgentHost::GetBrowserContext() {
   if (!worker_host_)
     return nullptr;
   RenderProcessHost* rph =
-      RenderProcessHost::FromID(worker_host_->process_id());
+      RenderProcessHost::FromID(worker_host_->worker_process_id());
   return rph ? rph->GetBrowserContext() : nullptr;
 }
 
@@ -49,11 +51,11 @@ std::string SharedWorkerDevToolsAgentHost::GetType() {
 }
 
 std::string SharedWorkerDevToolsAgentHost::GetTitle() {
-  return instance_->name();
+  return instance_.name();
 }
 
 GURL SharedWorkerDevToolsAgentHost::GetURL() {
-  return instance_->url();
+  return instance_.url();
 }
 
 bool SharedWorkerDevToolsAgentHost::Activate() {
@@ -65,14 +67,15 @@ void SharedWorkerDevToolsAgentHost::Reload() {
 
 bool SharedWorkerDevToolsAgentHost::Close() {
   if (worker_host_)
-    worker_host_->TerminateWorker();
+    worker_host_->Destruct();
   return true;
 }
 
 bool SharedWorkerDevToolsAgentHost::AttachSession(DevToolsSession* session) {
   session->AddHandler(std::make_unique<protocol::InspectorHandler>());
   session->AddHandler(std::make_unique<protocol::NetworkHandler>(
-      GetId(), devtools_worker_token_, GetIOContext()));
+      GetId(), devtools_worker_token_, GetIOContext(),
+      base::BindRepeating([] {})));
   session->AddHandler(std::make_unique<protocol::SchemaHandler>());
   session->AddHandler(std::make_unique<protocol::TargetHandler>(
       protocol::TargetHandler::AccessMode::kAutoAttachOnly, GetId(),
@@ -85,14 +88,23 @@ void SharedWorkerDevToolsAgentHost::DetachSession(DevToolsSession* session) {
 }
 
 bool SharedWorkerDevToolsAgentHost::Matches(SharedWorkerHost* worker_host) {
-  return instance_->Matches(*worker_host->instance());
+  return instance_.Matches(worker_host->instance().url(),
+                           worker_host->instance().name(),
+                           worker_host->instance().constructor_origin());
 }
 
-void SharedWorkerDevToolsAgentHost::WorkerReadyForInspection() {
+void SharedWorkerDevToolsAgentHost::WorkerReadyForInspection(
+    mojo::PendingRemote<blink::mojom::DevToolsAgent> agent_remote,
+    mojo::PendingReceiver<blink::mojom::DevToolsAgentHost>
+        agent_host_receiver) {
   DCHECK_EQ(WORKER_NOT_READY, state_);
   DCHECK(worker_host_);
   state_ = WORKER_READY;
-  UpdateRendererChannel(IsAttached());
+  GetRendererChannel()->SetRenderer(std::move(agent_remote),
+                                    std::move(agent_host_receiver),
+                                    worker_host_->worker_process_id());
+  for (auto* inspector : protocol::InspectorHandler::ForAgentHost(this))
+    inspector->TargetReloadedAfterCrash();
 }
 
 void SharedWorkerDevToolsAgentHost::WorkerRestarted(
@@ -101,9 +113,6 @@ void SharedWorkerDevToolsAgentHost::WorkerRestarted(
   DCHECK(!worker_host_);
   state_ = WORKER_NOT_READY;
   worker_host_ = worker_host;
-  for (auto* inspector : protocol::InspectorHandler::ForAgentHost(this))
-    inspector->TargetReloadedAfterCrash();
-  UpdateRendererChannel(IsAttached());
 }
 
 void SharedWorkerDevToolsAgentHost::WorkerDestroyed() {
@@ -113,24 +122,8 @@ void SharedWorkerDevToolsAgentHost::WorkerDestroyed() {
   for (auto* inspector : protocol::InspectorHandler::ForAgentHost(this))
     inspector->TargetCrashed();
   worker_host_ = nullptr;
-  UpdateRendererChannel(IsAttached());
-}
-
-void SharedWorkerDevToolsAgentHost::UpdateRendererChannel(bool force) {
-  if (state_ == WORKER_READY && force) {
-    blink::mojom::DevToolsAgentHostAssociatedPtrInfo host_ptr_info;
-    blink::mojom::DevToolsAgentHostAssociatedRequest host_request =
-        mojo::MakeRequest(&host_ptr_info);
-    blink::mojom::DevToolsAgentAssociatedPtr agent_ptr;
-    worker_host_->BindDevToolsAgent(std::move(host_ptr_info),
-                                    mojo::MakeRequest(&agent_ptr));
-    GetRendererChannel()->SetRendererAssociated(
-        std::move(agent_ptr), std::move(host_request),
-        worker_host_->process_id(), nullptr);
-  } else {
-    GetRendererChannel()->SetRendererAssociated(
-        nullptr, nullptr, ChildProcessHost::kInvalidUniqueID, nullptr);
-  }
+  GetRendererChannel()->SetRenderer(mojo::NullRemote(), mojo::NullReceiver(),
+                                    ChildProcessHost::kInvalidUniqueID);
 }
 
 }  // namespace content

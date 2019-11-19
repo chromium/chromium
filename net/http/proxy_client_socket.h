@@ -80,13 +80,6 @@ class NET_EXPORT_PRIVATE ProxyClientSocket : public StreamSocket {
   // fail.
   static bool SanitizeProxyAuth(HttpResponseInfo* response);
 
-  // When a redirect (e.g. 302 response) is received during tunnel
-  // construction, this method should be called to strip everything
-  // but the Location header from the redirect response.  If it returns
-  // false, the response should be discarded and tunnel construction should
-  // fail.
-  static bool SanitizeProxyRedirect(HttpResponseInfo* response);
-
  private:
   DISALLOW_COPY_AND_ASSIGN(ProxyClientSocket);
 };

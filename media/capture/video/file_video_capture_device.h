@@ -15,6 +15,7 @@
 #include "base/macros.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_checker.h"
+#include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "media/capture/video/video_capture_device.h"
 
 namespace media {
@@ -43,7 +44,9 @@ class CAPTURE_EXPORT FileVideoCaptureDevice : public VideoCaptureDevice {
 
   // Constructor of the class, with a fully qualified file path as input, which
   // represents the Y4M or MJPEG file to stream repeatedly.
-  explicit FileVideoCaptureDevice(const base::FilePath& file_path);
+  explicit FileVideoCaptureDevice(
+      const base::FilePath& file_path,
+      std::unique_ptr<gpu::GpuMemoryBufferSupport> gmb_support = nullptr);
 
   // VideoCaptureDevice implementation, class methods.
   ~FileVideoCaptureDevice() override;
@@ -87,6 +90,10 @@ class CAPTURE_EXPORT FileVideoCaptureDevice : public VideoCaptureDevice {
   base::TimeTicks next_frame_time_;
   // The system time when we receive the first frame.
   base::TimeTicks first_ref_time_;
+
+  // Whether GpuMemoryBuffer-based video capture buffer is enabled or not.
+  bool video_capture_use_gmb_ = false;
+  std::unique_ptr<gpu::GpuMemoryBufferSupport> gmb_support_;
 
   // Guards the below variables from concurrent access between methods running
   // on the main thread and |capture_thread_|.

@@ -16,7 +16,6 @@ static_library("browser") {
     "distiller_javascript_utils.h",
     "distiller_page_web_contents.cc",
     "distiller_page_web_contents.h",
-    "distiller_ui_handle.h",
     "dom_distiller_viewer_source.cc",
     "dom_distiller_viewer_source.h",
     "web_contents_main_frame_observer.cc",
@@ -29,10 +28,9 @@ static_library("browser") {
   ]
   deps = [
     "//base",
-    "//components/dom_distiller/content/common:mojo_bindings",
+    "//components/dom_distiller/content/common/mojom",
     "//components/resources",
     "//components/strings",
-    "//components/sync",
     "//content/public/browser",
     "//content/public/common",
     "//mojo/public/cpp/bindings",

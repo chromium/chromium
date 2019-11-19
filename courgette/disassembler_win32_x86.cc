@@ -42,7 +42,12 @@ void DisassemblerWin32X86::ParseRel32RelocsFromSection(const Section* section) {
     return;
 
   FileOffset start_file_offset = section->file_offset_of_raw_data;
-  FileOffset end_file_offset = start_file_offset + section->size_of_raw_data;
+  // |virtual_size < size_of_raw_data| is possible. In this case, disassembly
+  // should not proceed beyond |virtual_size|, so rel32 location RVAs remain
+  // translatable to file offsets.
+  FileOffset end_file_offset =
+      start_file_offset +
+      std::min(section->virtual_size, section->size_of_raw_data);
 
   const uint8_t* start_pointer = FileOffsetToPointer(start_file_offset);
   const uint8_t* end_pointer = FileOffsetToPointer(end_file_offset);

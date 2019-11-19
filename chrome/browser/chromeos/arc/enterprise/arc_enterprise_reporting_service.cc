@@ -9,10 +9,10 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
-#include "chrome/browser/chromeos/arc/arc_session_manager.h"
-#include "components/arc/arc_bridge_service.h"
+#include "chrome/browser/chromeos/arc/session/arc_session_manager.h"
 #include "components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "components/arc/arc_service_manager.h"
+#include "components/arc/session/arc_bridge_service.h"
 
 namespace arc {
 namespace {
@@ -48,8 +48,7 @@ ArcEnterpriseReportingService::GetForBrowserContext(
 ArcEnterpriseReportingService::ArcEnterpriseReportingService(
     content::BrowserContext* context,
     ArcBridgeService* bridge_service)
-    : arc_bridge_service_(bridge_service),
-      weak_ptr_factory_(this) {
+    : arc_bridge_service_(bridge_service) {
   arc_bridge_service_->enterprise_reporting()->SetHost(this);
 }
 

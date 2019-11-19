@@ -1,0 +1,7 @@
+Tests that SSP maintains focus if changes occur while editing
+
+Start editing
+Active element: SPAN, webkit-css-property text-prompt
+Apply-triggered update is ready
+Active element: SPAN, webkit-css-property text-prompt
+

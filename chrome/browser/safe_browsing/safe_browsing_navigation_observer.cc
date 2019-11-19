@@ -14,7 +14,6 @@
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/sessions/session_tab_helper.h"
 #include "chrome/browser/ui/page_info/page_info_ui.h"
-#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -107,8 +106,7 @@ SafeBrowsingNavigationObserver::SafeBrowsingNavigationObserver(
     : content::WebContentsObserver(contents),
       manager_(manager),
       has_user_gesture_(false),
-      last_user_gesture_timestamp_(base::Time()),
-      content_settings_observer_(this) {
+      last_user_gesture_timestamp_(base::Time()) {
   content_settings_observer_.Add(HostContentSettingsMapFactory::GetForProfile(
       Profile::FromBrowserContext(web_contents()->GetBrowserContext())));
 }

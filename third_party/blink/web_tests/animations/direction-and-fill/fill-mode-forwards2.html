@@ -1,54 +1,36 @@
-<html>
-<head>
-<script>
-    if (window.testRunner) {
-        testRunner.dumpAsText();
-        testRunner.waitUntilDone();
-    }
-
-    function animationEnded() {
-        var result = document.getElementById("result");
-        var square = document.getElementById('square');
-        var opacity = document.defaultView.getComputedStyle(square, null).getPropertyValue('opacity');
-
-        if (opacity == 0.5)
-            result.innerHTML = "PASS - Test working";
-        else
-            result.innerHTML = "FAIL - A opacity value must be 0.5";
-
-
-        if(window.testRunner)
-            testRunner.notifyDone();
-    }
-</script>
+<!DOCTYPE html>
 <style>
-    body {
-        margin-left: 100px;
-        margin-top: 50px;
-    }
-    #square {
-        width: 100px;
-        height: 100px;
-        position: absolute;
-        top: 100px;
-        background-color: blue;
-        opacity: 0;
-        animation-name: pop;
-        animation-duration: 1s;
-        animation-fill-mode: forwards;
-    }
-    @keyframes pop {
-        0% { transform: scale(0.05); opacity: 0; }
-        33% { transform: scale(1.00); opacity: 1; }
-        66% { transform: scale(1.66); opacity: 1; }
-        100% { transform: scale(0.95); opacity: 0.5; }
-    }
+body {
+  margin-left: 100px;
+  margin-top: 50px;
+}
+#square {
+  width: 100px;
+  height: 100px;
+  position: absolute;
+  top: 100px;
+  background-color: blue;
+  opacity: 0;
+  animation-name: pop;
+  animation-duration: 1s;
+  animation-fill-mode: forwards;
+}
+@keyframes pop {
+  0% { transform: scale(0.05); opacity: 0; }
+  33% { transform: scale(1.00); opacity: 1; }
+  66% { transform: scale(1.66); opacity: 1; }
+  100% { transform: scale(0.95); opacity: 0.5; }
+}
 </style>
-</head>
-
-<body>
-    <div id="square" onwebkitanimationend="animationEnded();"></div>
-    <div id="result"></div>
-</body>
-</html>
-
+<div id="square"></div>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script>
+async_test(t => {
+  const square = document.getElementById('square');
+  square.addEventListener("webkitAnimationEnd", t.step_func_done((e) => {
+    var opacity = document.defaultView.getComputedStyle(e.target, null).getPropertyValue('opacity');
+    assert_equals(opacity, "0.5", "A opacity value must be 0.5");
+  }));
+}, 'Test animaion-fill-mode');
+</script>

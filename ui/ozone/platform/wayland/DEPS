@@ -2,13 +2,10 @@ include_rules = [
   "+ui/base/buildflags.h",  # Doesn't bring in all of ui/base.
   "+ui/base/hit_test.h", # UI hit test doesn't bring in all of ui/base.
   "+ui/base/ui_base_features.h",
-  "+ui/base/ime/character_composer.h",
-  "+ui/base/ime/composition_text.h",
-  "+ui/base/ime/ime_text_span.h",
-  "+ui/base/ime/linux/linux_input_method_context.h",
-  "+ui/base/ime/linux/linux_input_method_context_factory.h",
   "+mojo/public",
+  "+ui/base/clipboard/clipboard_constants.h",
   "+ui/base/dragdrop/drag_drop_types.h",
+  "+ui/base/dragdrop/file_info.h",
   "+ui/base/dragdrop/os_exchange_data.h",
   "+ui/base/dragdrop/os_exchange_data_provider_aura.h",
 ]

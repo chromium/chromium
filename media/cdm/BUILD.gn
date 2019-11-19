@@ -23,6 +23,7 @@ source_set("cdm") {
     "//media/base/android",
 
     "//media/filters",
+    "//media/fuchsia/cdm",
   ]
 
   sources = [
@@ -36,13 +37,6 @@ source_set("cdm") {
     "cdm_context_ref_impl.h",
     "cenc_decryptor.cc",
     "cenc_decryptor.h",
-
-    # TODO(crbug.com/676224): Move this to |enable_library_cdms| block below
-    # when EnabledIf attribute is supported in mojom.
-    "cdm_proxy.cc",
-    "cdm_proxy.h",
-    "cdm_proxy_context.cc",
-    "cdm_proxy_context.h",
     "cenc_utils.cc",
     "cenc_utils.h",
     "default_cdm_factory.cc",
@@ -86,6 +80,14 @@ source_set("cdm") {
       "cdm_helpers.h",
       "cdm_module.cc",
       "cdm_module.h",
+
+      # Not putting these under |enable_cdm_proxy| so we don't have to if/def
+      # every usage of CdmProxy base types, e.g. in CdmCapability. This also
+      # helps enable more tests.
+      "cdm_proxy.cc",
+      "cdm_proxy.h",
+      "cdm_proxy_context.cc",
+      "cdm_proxy_context.h",
       "cdm_type_conversion.cc",
       "cdm_type_conversion.h",
       "cdm_wrapper.h",
@@ -106,31 +108,6 @@ source_set("cdm") {
   }
 }
 
-config("cdm_manager_implementation") {
-  defines = [ "CDM_MANAGER_IMPLEMENTATION" ]
-}
-
-# cdm_manager must not be a source_set() because CdmManager exposes a static
-# singleton, shared by multiple component()s.
-#
-# TODO(xhwang): Remove this component once AVDA no longer depends on it.
-component("cdm_manager") {
-  visibility = [
-    "//media/gpu",
-    "//media/mojo/services",
-  ]
-  sources = [
-    "cdm_manager.cc",
-    "cdm_manager.h",
-    "cdm_manager_export.h",
-  ]
-  configs += [ ":cdm_manager_implementation" ]
-  deps = [
-    "//base",
-    "//media",
-  ]
-}
-
 static_library("cdm_paths") {
   sources = [
     "cdm_paths.cc",
@@ -138,6 +115,7 @@ static_library("cdm_paths") {
   ]
   deps = [
     "//base",
+    "//media:media_buildflags",
   ]
 }
 
@@ -173,6 +151,7 @@ source_set("unit_tests") {
   if (enable_library_cdms) {
     sources += [
       "cdm_adapter_unittest.cc",
+      "cdm_paths_unittest.cc",
       "external_clear_key_test_helper.cc",
       "external_clear_key_test_helper.h",
       "mock_helpers.cc",

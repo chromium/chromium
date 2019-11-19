@@ -23,8 +23,8 @@
 #include "base/format_macros.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/posix/eintr_wrapper.h"
+#include "base/process/process_metrics.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
@@ -167,7 +167,7 @@ void DumpResidency(size_t start,
   }
 
   // First line: start-end of text range.
-  CHECK(IsOrderingSane());
+  CHECK(AreAnchorsSane());
   CHECK_LE(start, kStartOfText);
   CHECK_LE(kEndOfText, end);
   auto start_end = base::StringPrintf("%" PRIuS " %" PRIuS "\n",
@@ -188,9 +188,8 @@ void DumpResidency(size_t start,
   }
 }
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-// Used for "LibraryLoader.PrefetchDetailedStatus".
+// These values were used in the past for recording
+// "LibraryLoader.PrefetchDetailedStatus".
 enum class PrefetchStatus {
   kSuccess = 0,
   kWrongOrdering = 1,
@@ -268,9 +267,6 @@ void NativeLibraryPrefetcher::ForkAndPrefetchNativeLibrary(bool ordered_only) {
 #endif
 
   PrefetchStatus status = ForkAndPrefetch(ordered_only);
-  UMA_HISTOGRAM_BOOLEAN("LibraryLoader.PrefetchStatus",
-                        status == PrefetchStatus::kSuccess);
-  UMA_HISTOGRAM_ENUMERATION("LibraryLoader.PrefetchDetailedStatus", status);
   if (status != PrefetchStatus::kSuccess) {
     LOG(WARNING) << "Cannot prefetch the library. status = "
                  << static_cast<int>(status);
@@ -297,7 +293,7 @@ int NativeLibraryPrefetcher::PercentageOfResidentCode(size_t start,
 
 // static
 int NativeLibraryPrefetcher::PercentageOfResidentNativeLibraryCode() {
-  if (!IsOrderingSane()) {
+  if (!AreAnchorsSane()) {
     LOG(WARNING) << "Incorrect code ordering";
     return -1;
   }
@@ -336,7 +332,7 @@ void NativeLibraryPrefetcher::MadviseForOrderfile() {
 
 // static
 void NativeLibraryPrefetcher::MadviseForResidencyCollection() {
-  if (!IsOrderingSane()) {
+  if (!AreAnchorsSane()) {
     LOG(WARNING) << "Code not ordered, cannot madvise";
     return;
   }

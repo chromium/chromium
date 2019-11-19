@@ -111,8 +111,20 @@
     </Expand>
   </Type>
   <Type Name="blink::Length">
-    <DisplayString Condition="is_float_">{(blink::LengthType)type_} {float_value_}</DisplayString>
-    <DisplayString>{(blink::LengthType)type_} {int_value_}</DisplayString>
+    <DisplayString Condition="is_float_">{(blink::Length::Type)type_} {float_value_}</DisplayString>
+    <DisplayString>{(blink::Length::Type)type_} {int_value_}</DisplayString>
+  </Type>
+  <Type Name="blink::LogicalOffset">
+    <DisplayString>({inline_offset}, {block_offset})</DisplayString>
+  </Type>
+  <Type Name="blink::LogicalSize">
+    <DisplayString>({inline_size} x {block_size})</DisplayString>
+  </Type>
+  <Type Name="blink::PhysicalOffset">
+    <DisplayString>({left}, {top})</DisplayString>
+  </Type>
+  <Type Name="blink::PhysicalSize">
+    <DisplayString>({width} x {height})</DisplayString>
   </Type>
   <Type Name="blink::WebRect">
     <AlternativeType Name="blink::WebFloatRect"/>
@@ -140,11 +152,11 @@
   </Type>
   <!-- Component build version -->
   <Type Name="blink::WebString">
-    <DisplayString>{(blink_platform.dll!WTF::StringImpl*)(private_.storage_)}</DisplayString>
+    <DisplayString>{(wtf.dll!WTF::StringImpl*)(impl_.ptr_)}</DisplayString>
   </Type>
   <!-- Non-component build version -->
   <Type Name="blink::WebString" Priority="Low">
-    <DisplayString>{(WTF::StringImpl*)(private_.storage_)}</DisplayString>
+    <DisplayString>{(WTF::StringImpl*)(impl_.ptr_)}</DisplayString>
   </Type>
   <!-- DOM -->
   <Type Name="blink::QualifiedName">
@@ -269,18 +281,6 @@
         </Expand>
       </Synthetic>
     </Expand>
-  </Type>
-  <Type Name="blink::NGLogicalOffset">
-    <DisplayString>({inline_offset}, {block_offset})</DisplayString>
-  </Type>
-  <Type Name="blink::NGLogicalSize">
-    <DisplayString>({inline_size} x {block_size})</DisplayString>
-  </Type>
-  <Type Name="blink::NGPhysicalOffset">
-    <DisplayString>({left}, {top})</DisplayString>
-  </Type>
-  <Type Name="blink::NGPhysicalSize">
-    <DisplayString>({width} x {height})</DisplayString>
   </Type>
   <!-- Layout: TextRun -->
   <Type Name="blink::TextRun">

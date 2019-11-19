@@ -86,8 +86,7 @@ class PlatformKeysService::GenerateRSAKeyTask : public Task {
         callback_(callback),
         key_permissions_(key_permissions),
         service_(service),
-        browser_context_(browser_context),
-        weak_factory_(this) {}
+        browser_context_(browser_context) {}
 
   ~GenerateRSAKeyTask() override {}
 
@@ -178,7 +177,7 @@ class PlatformKeysService::GenerateRSAKeyTask : public Task {
   KeyPermissions* const key_permissions_;
   PlatformKeysService* const service_;
   content::BrowserContext* const browser_context_;
-  base::WeakPtrFactory<GenerateRSAKeyTask> weak_factory_;
+  base::WeakPtrFactory<GenerateRSAKeyTask> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(GenerateRSAKeyTask);
 };
@@ -216,8 +215,7 @@ class PlatformKeysService::SignTask : public Task {
         extension_id_(extension_id),
         callback_(callback),
         key_permissions_(key_permissions),
-        service_(service),
-        weak_factory_(this) {}
+        service_(service) {}
 
   ~SignTask() override {}
 
@@ -334,7 +332,7 @@ class PlatformKeysService::SignTask : public Task {
   KeyPermissions* const key_permissions_;
   std::vector<KeyPermissions::KeyLocation> key_locations_;
   PlatformKeysService* const service_;
-  base::WeakPtrFactory<SignTask> weak_factory_;
+  base::WeakPtrFactory<SignTask> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SignTask);
 };
@@ -374,8 +372,7 @@ class PlatformKeysService::SelectTask : public Task {
         callback_(callback),
         web_contents_(web_contents),
         key_permissions_(key_permissions),
-        service_(service),
-        weak_factory_(this) {}
+        service_(service) {}
   ~SelectTask() override {}
 
   void Start() override {
@@ -478,7 +475,7 @@ class PlatformKeysService::SelectTask : public Task {
             certificate->cert_buffer(), &unused_key_size, &actual_key_type);
         const std::vector<net::X509Certificate::PublicKeyType>& accepted_types =
             request_.certificate_key_types;
-        if (!base::ContainsValue(accepted_types, actual_key_type))
+        if (!base::Contains(accepted_types, actual_key_type))
           continue;
       }
 
@@ -655,7 +652,7 @@ class PlatformKeysService::SelectTask : public Task {
       extension_permissions_;
   KeyPermissions* const key_permissions_;
   PlatformKeysService* const service_;
-  base::WeakPtrFactory<SelectTask> weak_factory_;
+  base::WeakPtrFactory<SelectTask> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SelectTask);
 };
@@ -676,8 +673,7 @@ PlatformKeysService::PlatformKeysService(
       key_permissions_(profile_is_managed,
                        profile_prefs,
                        profile_policies,
-                       state_store),
-      weak_factory_(this) {
+                       state_store) {
   DCHECK(browser_context);
   DCHECK(state_store);
 }

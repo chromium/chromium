@@ -1,0 +1,17 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Specification at:
+// http://w3c.github.io/web-nfc/#dom-ndefreadingevent
+
+[
+    RuntimeEnabled=WebNFC,
+    SecureContext,
+    Constructor(DOMString type, NDEFReadingEventInit eventInitDict),
+    RaisesException=Constructor,
+    Exposed=Window
+] interface NDEFReadingEvent : Event {
+    readonly attribute DOMString serialNumber;
+    [SameObject] readonly attribute NDEFMessage message;
+};

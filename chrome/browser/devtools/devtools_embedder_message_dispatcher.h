@@ -21,7 +21,7 @@ class Value;
 
 /**
  * Dispatcher for messages sent from the DevTools frontend running in an
- * isolated renderer (on chrome-devtools://) to the embedder in the browser.
+ * isolated renderer (on devtools://) to the embedder in the browser.
  *
  * The messages are sent via InspectorFrontendHost.sendMessageToEmbedder method.
  */
@@ -92,6 +92,9 @@ class DevToolsEmbedderMessageDispatcher {
     virtual void RecordEnumeratedHistogram(const std::string& name,
                                            int sample,
                                            int boundary_value) = 0;
+    virtual void RecordPerformanceHistogram(const std::string& name,
+                                            double duration) = 0;
+    virtual void RecordUserMetricsAction(const std::string& name) = 0;
     virtual void SendJsonRequest(const DispatchCallback& callback,
                                  const std::string& browser_id,
                                  const std::string& url) = 0;

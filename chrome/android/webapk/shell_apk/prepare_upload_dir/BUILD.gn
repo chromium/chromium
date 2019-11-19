@@ -1,0 +1,67 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/copy_ex.gni")
+import(
+    "//chrome/android/webapk/shell_apk/generate_manifest_for_upload_outputs.gni")
+
+upload_dir = "${target_gen_dir}/upload_to_build_bucket"
+
+# Copies |source_dir| to |destination_dir|.
+template("copy_dir") {
+  copy_ex(target_name) {
+    source_dir = invoker.source_dir
+    dest = invoker.destination_dir
+
+    _sources_rel_build_rel =
+        exec_script("//build/android/gyp/find.py",
+                    [ rebase_path(source_dir, root_build_dir) ],
+                    "list lines")
+    renaming_sources = rebase_path(_sources_rel_build_rel, ".", root_build_dir)
+    renaming_destinations = rebase_path(renaming_sources, source_dir)
+  }
+}
+
+copy_dir("copy_res_to_upload_dir") {
+  source_dir = "//chrome/android/webapk/shell_apk/res"
+  destination_dir = "${upload_dir}/res"
+}
+
+copy_dir("copy_res_template_to_upload_dir") {
+  source_dir = "//chrome/android/webapk/shell_apk/res_template"
+  destination_dir = "${upload_dir}/res"
+}
+
+copy_dir("copy_libs_common_res_splash_to_upload_dir") {
+  source_dir = "//chrome/android/webapk/libs/common/res_splash"
+  destination_dir = "${upload_dir}/res"
+}
+
+copy_ex("copy_extra_files_to_upload_dir") {
+  dest = upload_dir
+
+  renaming_sources = [ generate_old_style_manifest_for_upload_output ]
+  renaming_destinations = [ "AndroidManifest.xml" ]
+
+  renaming_sources += [ generate_new_style_manifest_for_upload_output ]
+  renaming_destinations += [ "new_style_AndroidManifest.xml" ]
+
+  renaming_sources += [ "${root_out_dir}/resource_zips/chrome/android/webapk/shell_apk/webapk_strings_grd.resources.zip" ]
+  renaming_destinations += [ "res/strings.zip" ]
+
+  deps = [
+    "//chrome/android/webapk/shell_apk:generate_new_style_manifest_for_upload",
+    "//chrome/android/webapk/shell_apk:generate_old_style_manifest_for_upload",
+    "//chrome/android/webapk/shell_apk:webapk_strings_grd",
+  ]
+}
+
+group("prepare_webapk_shell_upload_dir") {
+  deps = [
+    ":copy_extra_files_to_upload_dir",
+    ":copy_libs_common_res_splash_to_upload_dir",
+    ":copy_res_template_to_upload_dir",
+    ":copy_res_to_upload_dir",
+  ]
+}

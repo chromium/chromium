@@ -47,15 +47,6 @@
     };
 
     /**
-     * The window.onpopstate event fires when the user navigates to one of the
-     * history entries created by restoreSession(). This handler forces a reload
-     * to reidrect to the target URL.
-     */
-    window.onpopstate = function(event) {
-      location.reload();
-    }
-
-    /**
      * Manipulates the current session history to mimic the provided serialized
      * history.
      * @param {string} sessionHistory An string serialization of a JSON object
@@ -99,8 +90,22 @@
               getRestoreURL(sessionHistoryObject.urls[i] || "about:blank"));
         }
 
+        // iOS12.2 added a throttling mechanism where previous pushStates may
+        // not immediately be available. Set a 10ms interval delay until
+        // history.length reaches sessionHistory.length.
         var currentItemOffset = parseInt(sessionHistoryObject.offset);
-        history.go(currentItemOffset);
+        var goWhenReady = setInterval(() => {
+          if (history.length == sessionHistoryObject.urls.length) {
+            history.go(currentItemOffset);
+            window.clearInterval(goWhenReady);
+
+            // Queue a reload to redirect to the target URL after history.go
+            // is processed.
+            setTimeout(() => {
+              location.reload();
+            });
+           }
+        }, 10);
       } catch (e) {
         handleError(e.name + ": " + e.message + " raw session history: " + sessionHistory);
       }
@@ -115,15 +120,10 @@
     }
 
     /**
-     * Sends error message to native controller.
+     * print error and show blank page.
      */
     function handleError(message) {
       console.log("Error: " + message);
-      if (__gCrWeb.message) {
-        __gCrWeb.message.invokeOnHost(
-          {"command": "restoresession.error", "message": message});
-        __gCrWeb.message.invokeQueues();
-      }
       window.location.replace("about:blank");
     }
   </script>

@@ -26,30 +26,31 @@ class TestClipboard : public Clipboard {
   // Creates and associates a TestClipboard with the current thread. When no
   // longer needed, the returned clipboard must be freed by calling
   // Clipboard::DestroyClipboardForCurrentThread() on the same thread.
-  static Clipboard* CreateForCurrentThread();
+  static TestClipboard* CreateForCurrentThread();
 
   // Sets the time to be returned by GetLastModifiedTime();
   void SetLastModifiedTime(const base::Time& time);
 
   // Clipboard overrides.
   void OnPreShutdown() override;
-  uint64_t GetSequenceNumber(ClipboardType type) const override;
+  uint64_t GetSequenceNumber(ClipboardBuffer buffer) const override;
   bool IsFormatAvailable(const ClipboardFormatType& format,
-                         ClipboardType type) const override;
-  void Clear(ClipboardType type) override;
-  void ReadAvailableTypes(ClipboardType type,
+                         ClipboardBuffer buffer) const override;
+  void Clear(ClipboardBuffer buffer) override;
+  void ReadAvailableTypes(ClipboardBuffer buffer,
                           std::vector<base::string16>* types,
                           bool* contains_filenames) const override;
-  void ReadText(ClipboardType type, base::string16* result) const override;
-  void ReadAsciiText(ClipboardType type, std::string* result) const override;
-  void ReadHTML(ClipboardType type,
+  void ReadText(ClipboardBuffer buffer, base::string16* result) const override;
+  void ReadAsciiText(ClipboardBuffer buffer,
+                     std::string* result) const override;
+  void ReadHTML(ClipboardBuffer buffer,
                 base::string16* markup,
                 std::string* src_url,
                 uint32_t* fragment_start,
                 uint32_t* fragment_end) const override;
-  void ReadRTF(ClipboardType type, std::string* result) const override;
-  SkBitmap ReadImage(ClipboardType type) const override;
-  void ReadCustomData(ClipboardType clipboard_type,
+  void ReadRTF(ClipboardBuffer buffer, std::string* result) const override;
+  SkBitmap ReadImage(ClipboardBuffer buffer) const override;
+  void ReadCustomData(ClipboardBuffer buffer,
                       const base::string16& type,
                       base::string16* result) const override;
   void ReadBookmark(base::string16* title, std::string* url) const override;
@@ -57,7 +58,12 @@ class TestClipboard : public Clipboard {
                 std::string* result) const override;
   base::Time GetLastModifiedTime() const override;
   void ClearLastModifiedTime() override;
-  void WriteObjects(ClipboardType type, const ObjectMap& objects) override;
+  void WritePortableRepresentations(ClipboardBuffer buffer,
+                                    const ObjectMap& objects) override;
+  void WritePlatformRepresentations(
+      ClipboardBuffer buffer,
+      std::vector<Clipboard::PlatformRepresentation> platform_representations)
+      override;
   void WriteText(const char* text_data, size_t text_len) override;
   void WriteHTML(const char* markup_data,
                  size_t markup_len,
@@ -88,13 +94,13 @@ class TestClipboard : public Clipboard {
   };
 
   // The non-const versions increment the sequence number as a side effect.
-  const DataStore& GetStore(ClipboardType type) const;
+  const DataStore& GetStore(ClipboardBuffer buffer) const;
   const DataStore& GetDefaultStore() const;
-  DataStore& GetStore(ClipboardType type);
+  DataStore& GetStore(ClipboardBuffer buffer);
   DataStore& GetDefaultStore();
 
-  ClipboardType default_store_type_;
-  mutable base::flat_map<ClipboardType, DataStore> stores_;
+  ClipboardBuffer default_store_buffer_;
+  mutable base::flat_map<ClipboardBuffer, DataStore> stores_;
   base::Time last_modified_time_;
 
   DISALLOW_COPY_AND_ASSIGN(TestClipboard);

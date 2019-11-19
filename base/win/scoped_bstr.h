@@ -12,7 +12,6 @@
 #include "base/base_export.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
 
 namespace base {
@@ -28,7 +27,7 @@ class BASE_EXPORT ScopedBstr {
   //
   // NOTE: Do not pass a BSTR to this constructor expecting ownership to
   // be transferred - even though it compiles! ;-)
-  explicit ScopedBstr(StringPiece16 non_bstr);
+  explicit ScopedBstr(WStringPiece non_bstr);
   ~ScopedBstr();
 
   // Give ScopedBstr ownership over an already allocated BSTR or null.
@@ -44,7 +43,7 @@ class BASE_EXPORT ScopedBstr {
   // ScopedBstr instance, call |reset| instead.
   //
   // Returns a pointer to the new BSTR.
-  BSTR Allocate(StringPiece16 str);
+  BSTR Allocate(WStringPiece str);
 
   // Allocates a new BSTR with the specified number of bytes.
   // Returns a pointer to the new BSTR.

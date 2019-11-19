@@ -34,18 +34,15 @@ enum LayoutConstant {
   BOOKMARK_BAR_NTP_PADDING,
 #endif
 
-  // The size of the app menu button in a hosted app browser window.
-  HOSTED_APP_MENU_BUTTON_SIZE,
+  // The size of the app menu button in a web app browser window.
+  WEB_APP_MENU_BUTTON_SIZE,
 
-  // The size of page action icons in a hosted app title bar.
-  HOSTED_APP_PAGE_ACTION_ICON_SIZE,
+  // The size of page action icons in a web app title bar.
+  WEB_APP_PAGE_ACTION_ICON_SIZE,
 
   // The vertical padding between the edge of a location bar bubble and its
   // contained text.
   LOCATION_BAR_BUBBLE_FONT_VERTICAL_PADDING,
-
-  // The corner radius used for the location bar bubble.
-  LOCATION_BAR_BUBBLE_CORNER_RADIUS,
 
   // The vertical inset to apply to the bounds of a location bar bubble's anchor
   // view, to bring the bubble closer to the anchor.  This compensates for the
@@ -93,6 +90,9 @@ enum LayoutConstant {
   // TODO(tbergquist): Remove this after pixel canvas or any deeper fix to
   // non-pixel-aligned drawing goes in.  See https://crbug.com/765723.
   TABSTRIP_TOOLBAR_OVERLAP,
+
+  // The total height, including icons and insets, of buttons in the toolbar.
+  TOOLBAR_BUTTON_HEIGHT,
 
   // Additional horizontal padding between the elements in the toolbar.
   TOOLBAR_ELEMENT_PADDING,

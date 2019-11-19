@@ -1,102 +1,17 @@
 <!DOCTYPE html>
 <meta charset="UTF-8">
-<style>
-.target {
-  width: 10px;
-  height: 10px;
-  background-color: black;
-}
-.expected {
-  background-color: green;
-}
-</style>
 <body>
 <script src="resources/interpolation-test.js"></script>
 <script>
-
-assertInterpolation({
-  property: 'offset',
-  from: 'path("M0 200H 700") 500px 800deg',
-  to: 'path("M0 300H 700 Z") 600px 900deg',
-  method: 'CSS Transitions',
-}, [
-  {at: -0.3, is: 'path("M0 300H 700 Z") 470px 770deg'},
-  {at: 0, is: 'path("M0 300H 700 Z") 500px 800deg'},
-  {at: 0.3, is: 'path("M0 300H 700 Z") 530px 830deg'},
-  {at: 0.6, is: 'path("M0 300H 700 Z") 560px 860deg'},
-  {at: 1, is: 'path("M0 300H 700 Z") 600px 900deg'},
-  {at: 1.5, is: 'path("M0 300H 700 Z") 650px 950deg'},
-]);
-
+// Regression test for crbug.com/994489
 assertInterpolation({
   property: 'offset',
   from: 'path("M0 0H 200") 500px auto',
   to: 'path("M0 0H 300") 600px 0deg',
-  method: 'CSS Transitions',
 }, [
-  {at: -0.3, is: 'path("M0 0H 170") 470px 0deg'},
-  {at: 0, is: 'path("M0 0H 200") 500px 0deg'},
-  {at: 0.3, is: 'path("M0 0H 230") 530px 0deg'},
-  {at: 0.6, is: 'path("M0 0H 260") 560px 0deg'},
-  {at: 1, is: 'path("M0 0H 300") 600px 0deg'},
-  {at: 1.5, is: 'path("M0 0H 350") 650px 0deg'},
+  {at: 3.40282e+038,  is: 'path("M0 0H 3.4e+38") 3.36e+07px 0deg'},
 ]);
 
-assertInterpolation({
-  property: 'offset',
-  from: 'path("M0 200H 700") 500px 800deg',
-  to: 'path("M0 300H 700 Z") 600px 900deg',
-  method: 'CSS Animations',
-}, [
-  {at: -0.3, is: 'path("M0 200H 700") 470px 770deg'},
-  {at: 0, is: 'path("M0 200H 700") 500px 800deg'},
-  {at: 0.3, is: 'path("M0 200H 700") 530px 830deg'},
-  {at: 0.6, is: 'path("M0 300H 700 Z") 560px 860deg'},
-  {at: 1, is: 'path("M0 300H 700 Z") 600px 900deg'},
-  {at: 1.5, is: 'path("M0 300H 700 Z") 650px 950deg'},
-]);
-
-assertInterpolation({
-  property: 'offset',
-  from: 'path("M0 0H 200") 500px auto',
-  to: 'path("M0 0H 300") 600px 0deg',
-  method: 'CSS Animations',
-}, [
-  {at: -0.3, is: 'path("M0 0H 170") 470px auto'},
-  {at: 0, is: 'path("M0 0H 200") 500px auto'},
-  {at: 0.3, is: 'path("M0 0H 230") 530px auto'},
-  {at: 0.6, is: 'path("M0 0H 260") 560px 0deg'},
-  {at: 1, is: 'path("M0 0H 300") 600px 0deg'},
-  {at: 1.5, is: 'path("M0 0H 350") 650px 0deg'},
-]);
-
-assertInterpolation({
-  property: 'offset',
-  from: 'path("M0 200H 700") 500px 800deg',
-  to: 'path("M0 300H 700 Z") 600px 900deg',
-  method: 'Web Animations',
-}, [
-  {at: -0.3, is: 'path("M0 200H 700") 470px 770deg'},
-  {at: 0, is: 'path("M0 200H 700") 500px 800deg'},
-  {at: 0.3, is: 'path("M0 200H 700") 530px 830deg'},
-  {at: 0.6, is: 'path("M0 300H 700 Z") 560px 860deg'},
-  {at: 1, is: 'path("M0 300H 700 Z") 600px 900deg'},
-  {at: 1.5, is: 'path("M0 300H 700 Z") 650px 950deg'},
-]);
-
-assertInterpolation({
-  property: 'offset',
-  from: 'path("M0 0V 200") 500px auto',
-  to: 'path("M0 0H 300") 600px 0deg',
-  method: 'Web Animations',
-}, [
-  {at: -0.3, is: 'path("M0 0V 200") 470px auto'},
-  {at: 0, is: 'path("M0 0V 200") 500px auto'},
-  {at: 0.3, is: 'path("M0 0V 200") 530px auto'},
-  {at: 0.6, is: 'path("M0 0H 300") 560px 0deg'},
-  {at: 1, is: 'path("M0 0H 300") 600px 0deg'},
-  {at: 1.5, is: 'path("M0 0H 300") 650px 0deg'},
-]);
-
+// More tests appear in external/wpt/css/motion/animation/offset-interpolation.html
 </script>
 </body>

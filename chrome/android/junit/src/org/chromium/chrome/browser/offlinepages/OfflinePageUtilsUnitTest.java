@@ -62,7 +62,7 @@ public class OfflinePageUtilsUnitTest {
     public final SadTabRule mSadTabRule = new SadTabRule();
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         MockitoAnnotations.initMocks(this);
         WrappedEnvironment.setDataDirectoryForTest(mMockDataDirectory);
 

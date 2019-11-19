@@ -8,8 +8,8 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
+#include "base/test/task_environment.h"
 #include "chromeos/dbus/oobe_config/oobe_config.pb.h"
 #include "dbus/message.h"
 #include "dbus/mock_bus.h"
@@ -102,7 +102,7 @@ class OobeConfigurationClientTest : public testing::Test {
   // The client to be tested.
   std::unique_ptr<OobeConfigurationClient> client_;
   // A message loop to emulate asynchronous behavior.
-  base::MessageLoop message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   // The mock bus.
   scoped_refptr<dbus::MockBus> mock_bus_;
   // The mock object proxy.
@@ -125,7 +125,7 @@ class OobeConfigurationClientTest : public testing::Test {
     EXPECT_EQ(expected_method_name_, method_call->GetMember());
     dbus::MessageReader reader(method_call);
     argument_checker_.Run(&reader);
-    message_loop_.task_runner()->PostTask(
+    task_environment_.GetMainThreadTaskRunner()->PostTask(
         FROM_HERE, base::BindOnce(std::move(*response), response_));
   }
 };

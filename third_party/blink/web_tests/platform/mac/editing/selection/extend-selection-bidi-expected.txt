@@ -16,7 +16,7 @@ layer at (0,0) size 800x600
       LayoutBlockFlow (anonymous) at (0,0) size 784x37
         LayoutText {#text} at (0,1) size 369x18
           text run at (0,1) width 369: "The selection range in the red box should look like this:   "
-        LayoutInline {SPAN} at (0,0) size 110x18 [bgcolor=#AFDAFF]
+        LayoutInline {SPAN} at (368,1) size 110x18 [bgcolor=#AFDAFF]
           LayoutText {#text} at (368,1) size 110x18
             text run at (368,1) width 27: "abc "
             text run at (423,1) width 9: "1"
@@ -28,7 +28,7 @@ layer at (0,0) size 800x600
         LayoutBR {BR} at (505,15) size 1x0
         LayoutBR {BR} at (0,19) size 0x18
       LayoutBlockFlow {DIV} at (0,37) size 784x57 [border: (2px solid #FF0000)]
-        LayoutInline {SPAN} at (0,0) size 200x28
+        LayoutInline {SPAN} at (14,15) size 200x28
           LayoutText {#text} at (14,15) size 200x28
             text run at (14,15) width 40: "abc "
             text run at (53,15) width 44 RTL: " \x{5D3}\x{5D4}\x{5D5}"

@@ -1,0 +1,14 @@
+This is a testharness.js-based test.
+PASS Should be parseable in a CSS stylesheet: '(navigation-controls)'
+FAIL Should be parseable in a CSS stylesheet: '(navigation-controls: none)' assert_true: expected true got false
+FAIL Should be parseable in a CSS stylesheet: '(navigation-controls: back-button)' assert_true: expected true got false
+PASS Should not be parseable in a CSS stylesheet: '(navigation-controls: none back-button)'
+PASS Should not be parseable in a CSS stylesheet: '(navigation-controls: back-button/none)'
+PASS Should be parseable in JS: '(navigation-controls)'
+FAIL Should be parseable in JS: '(navigation-controls: none)' assert_true: expected true got false
+FAIL Should be parseable in JS: '(navigation-controls: back-button)' assert_true: expected true got false
+PASS Should not be parseable in JS: '(navigation-controls: none back-button)'
+PASS Should not be parseable in JS: '(navigation-controls: back-button/none)'
+FAIL Check that none evaluates to false in the boolean context assert_equals: expected true but got false
+Harness: the test ran to completion.
+

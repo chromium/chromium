@@ -1,0 +1,7 @@
+{
+  "name" : "targetUrlPatterns test",
+  "version" : "0.1",
+  "manifest_version": 2,
+  "permissions": [ "contextMenus", "tabs" ],
+  "background": { "service_worker": "test.js" }
+}

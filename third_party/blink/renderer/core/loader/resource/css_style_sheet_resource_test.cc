@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/loader/resource/css_style_sheet_resource.h"
 
-#include <memory>
 #include "base/memory/scoped_refptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -46,8 +45,9 @@ namespace {
 class CSSStyleSheetResourceTest : public PageTestBase {
  protected:
   CSSStyleSheetResourceTest() {
-    original_memory_cache_ = ReplaceMemoryCacheForTesting(MemoryCache::Create(
-        blink::scheduler::GetSingleThreadTaskRunnerForTesting()));
+    original_memory_cache_ =
+        ReplaceMemoryCacheForTesting(MakeGarbageCollected<MemoryCache>(
+            blink::scheduler::GetSingleThreadTaskRunnerForTesting()));
   }
 
   ~CSSStyleSheetResourceTest() override {
@@ -95,10 +95,10 @@ TEST_F(CSSStyleSheetResourceTest, DuplicateResourceNotCached) {
   css_resource->ResponseReceived(response);
   css_resource->FinishForTest();
 
-  CSSParserContext* parser_context = CSSParserContext::Create(
+  auto* parser_context = MakeGarbageCollected<CSSParserContext>(
       kHTMLStandardMode, SecureContextMode::kInsecureContext);
-  StyleSheetContents* contents = StyleSheetContents::Create(parser_context);
-  CSSStyleSheet* sheet = CSSStyleSheet::Create(contents, GetDocument());
+  auto* contents = MakeGarbageCollected<StyleSheetContents>(parser_context);
+  auto* sheet = MakeGarbageCollected<CSSStyleSheet>(contents, GetDocument());
   EXPECT_TRUE(sheet);
 
   contents->CheckLoaded();
@@ -116,10 +116,10 @@ TEST_F(CSSStyleSheetResourceTest, DuplicateResourceNotCached) {
 TEST_F(CSSStyleSheetResourceTest, CreateFromCacheRestoresOriginalSheet) {
   CSSStyleSheetResource* css_resource = CreateAndSaveTestStyleSheetResource();
 
-  CSSParserContext* parser_context = CSSParserContext::Create(
+  auto* parser_context = MakeGarbageCollected<CSSParserContext>(
       kHTMLStandardMode, SecureContextMode::kInsecureContext);
-  StyleSheetContents* contents = StyleSheetContents::Create(parser_context);
-  CSSStyleSheet* sheet = CSSStyleSheet::Create(contents, GetDocument());
+  auto* contents = MakeGarbageCollected<StyleSheetContents>(parser_context);
+  auto* sheet = MakeGarbageCollected<CSSStyleSheet>(contents, GetDocument());
   ASSERT_TRUE(sheet);
 
   contents->ParseString("div { color: red; }");
@@ -140,10 +140,10 @@ TEST_F(CSSStyleSheetResourceTest,
        CreateFromCacheWithMediaQueriesCopiesOriginalSheet) {
   CSSStyleSheetResource* css_resource = CreateAndSaveTestStyleSheetResource();
 
-  CSSParserContext* parser_context = CSSParserContext::Create(
+  auto* parser_context = MakeGarbageCollected<CSSParserContext>(
       kHTMLStandardMode, SecureContextMode::kInsecureContext);
-  StyleSheetContents* contents = StyleSheetContents::Create(parser_context);
-  CSSStyleSheet* sheet = CSSStyleSheet::Create(contents, GetDocument());
+  auto* contents = MakeGarbageCollected<StyleSheetContents>(parser_context);
+  auto* sheet = MakeGarbageCollected<CSSStyleSheet>(contents, GetDocument());
   ASSERT_TRUE(sheet);
 
   contents->ParseString("@media { div { color: red; } }");
@@ -163,7 +163,7 @@ TEST_F(CSSStyleSheetResourceTest,
   ASSERT_TRUE(parsed_stylesheet);
 
   sheet->ClearOwnerNode();
-  sheet = CSSStyleSheet::Create(parsed_stylesheet, GetDocument());
+  sheet = MakeGarbageCollected<CSSStyleSheet>(parsed_stylesheet, GetDocument());
   ASSERT_TRUE(sheet);
 
   EXPECT_TRUE(contents->HasSingleOwnerDocument());

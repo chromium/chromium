@@ -5,7 +5,6 @@ import glob
 import os
 
 from telemetry.page import legacy_page_test
-from telemetry.value import scalar
 
 
 class SkpicturePrinter(legacy_page_test.LegacyPageTest):
@@ -32,5 +31,4 @@ class SkpicturePrinter(legacy_page_test.LegacyPageTest):
         'chrome.gpuBenchmarking.printToSkPicture({{ outpath }});',
         outpath=outpath)
     pictures = glob.glob(os.path.join(outpath, '*.skp'))
-    results.AddValue(scalar.ScalarValue(
-        results.current_page, 'saved_picture_count', 'count', len(pictures)))
+    results.AddMeasurement('saved_picture_count', 'count', len(pictures))

@@ -7,6 +7,7 @@
 
 #include <memory>
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
@@ -19,6 +20,8 @@ namespace blink {
 // the constructor gets destructed.
 
 class ScopedMainThreadOverrider final {
+  USING_FAST_MALLOC(ScopedMainThreadOverrider);
+
  public:
   explicit ScopedMainThreadOverrider(std::unique_ptr<Thread> main_thread);
   ~ScopedMainThreadOverrider();

@@ -4,7 +4,7 @@
 
 module blink.mojom;
 
-import "ui/gfx/geometry/mojo/geometry.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
 
 enum ViewportFit {
   // No effect - the whole web page is viewable (default).

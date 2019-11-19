@@ -47,7 +47,7 @@ public class AwPermissionManagerTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         mTestWebServer.shutdown();
         mTestWebServer = null;
     }
@@ -55,7 +55,7 @@ public class AwPermissionManagerTest {
     @Test
     @Feature({"AndroidWebView"})
     @SmallTest
-    public void testRequestMultiple() throws Throwable {
+    public void testRequestMultiple() {
         mPage = mTestWebServer.setResponse("/permissions", REQUEST_DUPLICATE,
                 CommonResources.getTextHtmlHeaders(true));
 
@@ -84,8 +84,7 @@ public class AwPermissionManagerTest {
         pollTitleAs("second-granted", awContents);
     }
 
-    private void pollTitleAs(final String title, final AwContents awContents)
-            throws Exception {
+    private void pollTitleAs(final String title, final AwContents awContents) {
         AwActivityTestRule.pollInstrumentationThread(
                 () -> title.equals(mActivityTestRule.getTitleOnUiThread(awContents)));
     }

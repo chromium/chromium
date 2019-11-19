@@ -11,7 +11,7 @@
 #include "ash/detachable_base/detachable_base_pairing_status.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/vector_icons/vector_icons.h"
-#include "ash/session/session_controller.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/strings/string16.h"
@@ -37,9 +37,7 @@ const char
 
 DetachableBaseNotificationController::DetachableBaseNotificationController(
     DetachableBaseHandler* detachable_base_handler)
-    : detachable_base_handler_(detachable_base_handler),
-      detachable_base_observer_(this),
-      session_observer_(this) {
+    : detachable_base_handler_(detachable_base_handler) {
   detachable_base_observer_.Add(detachable_base_handler);
   ShowPairingNotificationIfNeeded();
 }
@@ -106,9 +104,9 @@ void DetachableBaseNotificationController::ShowPairingNotificationIfNeeded() {
   if (Shell::Get()->session_controller()->IsUserSessionBlocked())
     return;
 
-  const mojom::UserSession* active_session =
+  const UserSession* active_session =
       Shell::Get()->session_controller()->GetUserSession(0);
-  if (!active_session || !active_session->user_info)
+  if (!active_session)
     return;
 
   DetachableBasePairingStatus pairing_status =
@@ -116,7 +114,7 @@ void DetachableBaseNotificationController::ShowPairingNotificationIfNeeded() {
   if (pairing_status == DetachableBasePairingStatus::kNone)
     return;
 
-  const mojom::UserInfo& user_info = *active_session->user_info;
+  const UserInfo& user_info = active_session->user_info;
   if (pairing_status == DetachableBasePairingStatus::kAuthenticated &&
       detachable_base_handler_->PairedBaseMatchesLastUsedByUser(user_info)) {
     // Set the current base as last used by the user.

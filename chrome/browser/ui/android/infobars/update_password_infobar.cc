@@ -9,9 +9,9 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "chrome/android/chrome_jni_headers/UpdatePasswordInfoBar_jni.h"
 #include "chrome/browser/password_manager/update_password_infobar_delegate_android.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
-#include "jni/UpdatePasswordInfoBar_jni.h"
 
 using base::android::JavaParamRef;
 
@@ -40,21 +40,22 @@ UpdatePasswordInfoBar::CreateRenderInfoBar(JNIEnv* env) {
       env, update_password_delegate->GetDetailsMessageText());
 
   std::vector<base::string16> usernames;
+  int selected_username = 0;
   if (update_password_delegate->ShowMultipleAccounts()) {
-    for (const auto& form : update_password_delegate->GetCurrentForms())
+    for (const auto& form : update_password_delegate->GetCurrentForms()) {
       usernames.push_back(form->username_value);
+      if (usernames.back() == update_password_delegate->get_default_username())
+        selected_username = usernames.size() - 1;
+    }
   } else {
-    usernames.push_back(
-        update_password_delegate->get_username_for_single_account());
+    usernames.push_back(update_password_delegate->get_default_username());
   }
 
   base::android::ScopedJavaLocalRef<jobject> infobar;
   infobar.Reset(Java_UpdatePasswordInfoBar_show(
       env, GetEnumeratedIconId(),
-      base::android::ToJavaArrayOfStrings(env, usernames), message_text,
-      update_password_delegate->message_link_range().start(),
-      update_password_delegate->message_link_range().end(),
-      details_message_text, ok_button_text));
+      base::android::ToJavaArrayOfStrings(env, usernames), selected_username,
+      message_text, details_message_text, ok_button_text));
 
   java_infobar_.Reset(env, infobar.obj());
   return infobar;

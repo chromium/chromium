@@ -16,6 +16,7 @@
 #include "ash/assistant/ui/assistant_ui_constants.h"
 #include "ash/assistant/ui/assistant_view_delegate.h"
 #include "ash/assistant/ui/assistant_web_view.h"
+#include "ash/assistant/util/assistant_util.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
@@ -25,7 +26,6 @@
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/animation/tween.h"
-#include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/layout/layout_manager.h"
 #include "ui/views/view.h"
@@ -153,38 +153,27 @@ class AssistantContainerLayout : public views::LayoutManager {
 
   // views::LayoutManager:
   gfx::Size GetPreferredSize(const views::View* host) const override {
+    // Our preferred width is the width of our largest visible child.
     int preferred_width = 0;
-
-    for (int i = 0; i < host->child_count(); ++i) {
-      const views::View* child = host->child_at(i);
-
-      // We do not include invisible children in our size calculation.
-      if (!child->visible())
-        continue;
-
-      // Our preferred width is the width of our largest visible child.
-      preferred_width =
-          std::max(child->GetPreferredSize().width(), preferred_width);
+    for (const views::View* child : host->children()) {
+      if (child->GetVisible()) {
+        preferred_width =
+            std::max(child->GetPreferredSize().width(), preferred_width);
+      }
     }
-
     return gfx::Size(preferred_width,
                      GetPreferredHeightForWidth(host, preferred_width));
   }
 
   int GetPreferredHeightForWidth(const views::View* host,
                                  int width) const override {
+    // Our preferred height is the height of our largest visible child.
     int preferred_height = 0;
-
-    for (int i = 0; i < host->child_count(); ++i) {
-      const views::View* child = host->child_at(i);
-
-      // We do not include invisible children in our size calculation.
-      if (!child->visible())
-        continue;
-
-      // Our preferred height is the height of our largest visible child.
-      preferred_height =
-          std::max(child->GetHeightForWidth(width), preferred_height);
+    for (const views::View* child : host->children()) {
+      if (child->GetVisible()) {
+        preferred_height =
+            std::max(child->GetHeightForWidth(width), preferred_height);
+      }
     }
 
     // The height of container view should not exceed work area height to
@@ -201,9 +190,7 @@ class AssistantContainerLayout : public views::LayoutManager {
     const int host_center_x = host->GetBoundsInScreen().CenterPoint().x();
     const int host_height = host->height();
 
-    for (int i = 0; i < host->child_count(); ++i) {
-      views::View* child = host->child_at(i);
-
+    for (auto* child : host->children()) {
       const gfx::Size child_size = child->GetPreferredSize();
 
       // Children are horizontally centered. This means that both the |host|
@@ -249,10 +236,10 @@ AssistantContainerView::AssistantContainerView(AssistantViewDelegate* delegate)
   views::BubbleDialogDelegateView::CreateBubble(this);
 
   // Corner radius can only be set after bubble creation.
-  GetBubbleFrameView()->bubble_border()->SetCornerRadius(
-      delegate_->GetUiModel()->ui_mode() == AssistantUiMode::kMiniUi
-          ? kMiniUiCornerRadiusDip
-          : kCornerRadiusDip);
+  GetBubbleFrameView()->SetCornerRadius(delegate_->GetUiModel()->ui_mode() ==
+                                                AssistantUiMode::kMiniUi
+                                            ? kMiniUiCornerRadiusDip
+                                            : kCornerRadiusDip);
 
   // Initialize non-client view layer.
   GetBubbleFrameView()->SetPaintToLayer();
@@ -275,11 +262,13 @@ const char* AssistantContainerView::GetClassName() const {
 }
 
 void AssistantContainerView::AddedToWidget() {
-  GetWidget()->GetNativeWindow()->SetEventTargeter(
-      std::make_unique<AssistantContainerEventTargeter>());
+  // Exclude the Assistant window for occlusion, so it doesn't trigger auto-pip.
+  auto* window = GetWidget()->GetNativeWindow();
+  occlusion_excluder_.emplace(window);
+  window->SetEventTargeter(std::make_unique<AssistantContainerEventTargeter>());
 }
 
-ax::mojom::Role AssistantContainerView::GetAccessibleWindowRole() const {
+ax::mojom::Role AssistantContainerView::GetAccessibleWindowRole() {
   return ax::mojom::Role::kWindow;
 }
 
@@ -307,7 +296,7 @@ void AssistantContainerView::ChildPreferredSizeChanged(views::View* child) {
 }
 
 void AssistantContainerView::ViewHierarchyChanged(
-    const ViewHierarchyChangedDetails& details) {
+    const views::ViewHierarchyChangedDetails& details) {
   // Do nothing. We override this method to prevent a super class implementation
   // from taking effect which would otherwise cause ChromeVox to read the entire
   // Assistant view hierarchy.
@@ -323,7 +312,7 @@ void AssistantContainerView::OnBeforeBubbleWidgetInit(
     views::Widget* widget) const {
   params->context = delegate_->GetRootWindowForNewWindows();
   params->corner_radius = kCornerRadiusDip;
-  params->keep_on_top = true;
+  params->z_order = ui::ZOrderLevel::kFloatingWindow;
 }
 
 views::ClientView* AssistantContainerView::CreateClientView(
@@ -343,19 +332,21 @@ void AssistantContainerView::Init() {
   layer()->SetFillsBoundsOpaquely(false);
 
   // Main view.
-  assistant_main_view_ = new AssistantMainView(delegate_);
-  AddChildView(assistant_main_view_);
+  assistant_main_view_ =
+      AddChildView(std::make_unique<AssistantMainViewDeprecated>(delegate_));
 
   // Mini view.
-  assistant_mini_view_ = new AssistantMiniView(delegate_);
-  AddChildView(assistant_mini_view_);
+  assistant_mini_view_ =
+      AddChildView(std::make_unique<AssistantMiniView>(delegate_));
 
   // Web view.
-  assistant_web_view_ = new AssistantWebView(delegate_);
-  AddChildView(assistant_web_view_);
+  assistant_web_view_ = AddChildView(std::make_unique<AssistantWebView>(
+      delegate_,
+      /*web_container_view_delegate=*/nullptr));
 
   // Update the view state based on the current UI mode.
-  OnUiModeChanged(delegate_->GetUiModel()->ui_mode());
+  OnUiModeChanged(delegate_->GetUiModel()->ui_mode(),
+                  /*due_to_interaction=*/false);
 }
 
 void AssistantContainerView::RequestFocus() {
@@ -375,6 +366,7 @@ void AssistantContainerView::RequestFocus() {
       if (assistant_web_view_)
         assistant_web_view_->RequestFocus();
       break;
+    case AssistantUiMode::kAmbientUi:
     case AssistantUiMode::kLauncherEmbeddedUi:
       NOTREACHED();
       break;
@@ -392,10 +384,10 @@ void AssistantContainerView::UpdateAnchor() {
   SetArrow(views::BubbleBorder::Arrow::BOTTOM_CENTER);
 }
 
-void AssistantContainerView::OnUiModeChanged(AssistantUiMode ui_mode) {
-  for (int i = 0; i < child_count(); ++i) {
-    child_at(i)->SetVisible(false);
-  }
+void AssistantContainerView::OnUiModeChanged(AssistantUiMode ui_mode,
+                                             bool due_to_interaction) {
+  for (auto* child : children())
+    child->SetVisible(false);
 
   switch (ui_mode) {
     case AssistantUiMode::kMiniUi:
@@ -407,6 +399,7 @@ void AssistantContainerView::OnUiModeChanged(AssistantUiMode ui_mode) {
     case AssistantUiMode::kWebUi:
       assistant_web_view_->SetVisible(true);
       break;
+    case AssistantUiMode::kAmbientUi:
     case AssistantUiMode::kLauncherEmbeddedUi:
       NOTREACHED();
       break;
@@ -440,6 +433,7 @@ views::View* AssistantContainerView::FindFirstFocusableView() {
     case AssistantUiMode::kWebUi:
       // Default views::FocusSearch behavior is acceptable.
       return nullptr;
+    case AssistantUiMode::kAmbientUi:
     case AssistantUiMode::kLauncherEmbeddedUi:
       NOTREACHED();
       return nullptr;
@@ -451,11 +445,11 @@ SkColor AssistantContainerView::GetBackgroundColor() const {
 }
 
 int AssistantContainerView::GetCornerRadius() const {
-  return GetBubbleFrameView()->bubble_border()->GetBorderCornerRadius();
+  return GetBubbleFrameView()->corner_radius();
 }
 
 void AssistantContainerView::SetCornerRadius(int corner_radius) {
-  GetBubbleFrameView()->bubble_border()->SetCornerRadius(corner_radius);
+  GetBubbleFrameView()->SetCornerRadius(corner_radius);
 }
 
 ui::Layer* AssistantContainerView::GetNonClientViewLayer() {

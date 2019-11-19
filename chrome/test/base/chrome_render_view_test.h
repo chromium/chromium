@@ -18,7 +18,7 @@ class ChromeContentRendererClient;
 namespace autofill {
 class AutofillAgent;
 class TestPasswordAutofillAgent;
-class TestPasswordGenerationAgent;
+class PasswordGenerationAgent;
 }
 
 class ChromeRenderViewTest : public content::RenderViewTest {
@@ -41,12 +41,10 @@ class ChromeRenderViewTest : public content::RenderViewTest {
   // Use when overriding CreateContentRendererClient.
   void InitChromeContentRendererClient(ChromeContentRendererClient* client);
 
-  void EnableUserGestureSimulationForAutofill();
-  void DisableUserGestureSimulationForAutofill();
   void WaitForAutofillDidAssociateFormControl();
 
   autofill::TestPasswordAutofillAgent* password_autofill_agent_;
-  autofill::TestPasswordGenerationAgent* password_generation_;
+  autofill::PasswordGenerationAgent* password_generation_;
   autofill::AutofillAgent* autofill_agent_;
 
   std::unique_ptr<service_manager::BinderRegistry> registry_;

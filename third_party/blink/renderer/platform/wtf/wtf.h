@@ -31,8 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_WTF_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_WTF_H_
 
-#include "third_party/blink/renderer/platform/wtf/compiler.h"
-#include "third_party/blink/renderer/platform/wtf/threading.h"
+#include "base/threading/platform_thread.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
 
 namespace WTF {

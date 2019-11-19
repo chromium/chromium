@@ -24,6 +24,7 @@ source_set("bluetooth") {
   ]
 
   deps = [
+    "//components/device_event_log",
     "//content/public/browser",
     "//extensions/common/api",
   ]

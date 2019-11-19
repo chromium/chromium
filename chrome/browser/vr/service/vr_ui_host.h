@@ -8,6 +8,7 @@
 #include "chrome/browser/vr/vr_export.h"
 #include "device/vr/public/mojom/isolated_xr_service.mojom.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace vr {
 
@@ -21,9 +22,9 @@ class VR_EXPORT VRUiHost {
  public:
   virtual ~VRUiHost() = 0;
 
-  using Factory =
-      std::unique_ptr<VRUiHost>(device::mojom::XRDeviceId device_id,
-                                device::mojom::XRCompositorHostPtr compositor);
+  using Factory = std::unique_ptr<VRUiHost>(
+      device::mojom::XRDeviceId device_id,
+      mojo::PendingRemote<device::mojom::XRCompositorHost> compositor);
 
   static void SetFactory(Factory* factory);
   static Factory* GetFactory();

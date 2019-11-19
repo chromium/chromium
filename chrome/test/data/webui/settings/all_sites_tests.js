@@ -116,15 +116,10 @@ suite('AllSites', function() {
       // Use resolver to ensure that the list container is populated.
       const resolver = new PromiseResolver();
       // In Polymer2, we need to wait until after the next render for the list
-      // to be populated. TODO (rbpotter): Remove conditional when migration to
-      // Polymer 2 is completed.
-      if (Polymer.DomIf) {
-        Polymer.RenderStatus.beforeNextRender(testElement, () => {
-          resolver.resolve();
-        });
-      } else {
-        testElement.async(resolver.resolve);
-      }
+      // to be populated.
+      Polymer.RenderStatus.beforeNextRender(testElement, () => {
+        resolver.resolve();
+      });
       return resolver.promise.then(() => {
         assertEquals(3, testElement.siteGroupMap.size);
 
@@ -155,8 +150,8 @@ suite('AllSites', function() {
           Polymer.dom.flush();
           const siteEntries =
               testElement.$.listContainer.querySelectorAll('site-entry');
-          const hiddenSiteEntries = Polymer.dom(testElement.root)
-                                        .querySelectorAll('site-entry[hidden]');
+          const hiddenSiteEntries =
+              testElement.shadowRoot.querySelectorAll('site-entry[hidden]');
           assertEquals(1, siteEntries.length - hiddenSiteEntries.length);
 
           for (let i = 0; i < siteEntries; ++i) {
@@ -406,7 +401,7 @@ suite('AllSites', function() {
       function() {
         // Test when one origin has data and cookies.
         // Clone this object to avoid propagating changes made in this test.
-        let siteGroup = JSON.parse(JSON.stringify(TEST_MULTIPLE_SITE_GROUP));
+        const siteGroup = JSON.parse(JSON.stringify(TEST_MULTIPLE_SITE_GROUP));
         siteGroup.origins[0].hasPermissionSettings = true;
         siteGroup.origins[0].usage = 100;
         siteGroup.origins[0].numCookies = 2;
@@ -427,7 +422,7 @@ suite('AllSites', function() {
     // cookies. In this case, a placeholder origin will be created with the
     // Etld+1 cookies number. Clone this object to avoid propagating changes
     // made in this test.
-    let siteGroup = JSON.parse(JSON.stringify(TEST_MULTIPLE_SITE_GROUP));
+    const siteGroup = JSON.parse(JSON.stringify(TEST_MULTIPLE_SITE_GROUP));
     siteGroup.numCookies = 5;
     testElement.siteGroupMap.set(
         siteGroup.etldPlus1, JSON.parse(JSON.stringify(siteGroup)));
@@ -498,7 +493,7 @@ suite('AllSites', function() {
   test('clear data via overflow menu (one origin has permission)', function() {
     // Test when there is one origin has permissions settings.
     // Clone this object to avoid propagating changes made in this test.
-    let siteGroup = JSON.parse(JSON.stringify(TEST_MULTIPLE_SITE_GROUP));
+    const siteGroup = JSON.parse(JSON.stringify(TEST_MULTIPLE_SITE_GROUP));
     siteGroup.origins[0].hasPermissionSettings = true;
     testElement.siteGroupMap.set(
         siteGroup.etldPlus1, JSON.parse(JSON.stringify(siteGroup)));

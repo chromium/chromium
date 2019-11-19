@@ -22,7 +22,6 @@
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_prefs_factory.h"
-#include "extensions/browser/extension_registry.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/manifest_constants.h"
 
@@ -110,8 +109,7 @@ std::unique_ptr<TemplateURLData> ConvertSearchProvider(
 
 SettingsOverridesAPI::SettingsOverridesAPI(content::BrowserContext* context)
     : profile_(Profile::FromBrowserContext(context)),
-      url_service_(TemplateURLServiceFactory::GetForProfile(profile_)),
-      extension_registry_observer_(this) {
+      url_service_(TemplateURLServiceFactory::GetForProfile(profile_)) {
   extension_registry_observer_.Add(ExtensionRegistry::Get(profile_));
 }
 

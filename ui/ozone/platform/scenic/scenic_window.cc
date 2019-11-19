@@ -18,19 +18,23 @@
 #include "ui/events/ozone/events_ozone.h"
 #include "ui/events/platform/platform_event_source.h"
 #include "ui/ozone/platform/scenic/scenic_window_manager.h"
-#include "ui/platform_window/platform_window_delegate.h"
 
 namespace ui {
 
 ScenicWindow::ScenicWindow(ScenicWindowManager* window_manager,
                            PlatformWindowDelegate* delegate,
-                           fuchsia::ui::gfx::ExportToken view_token)
+                           fuchsia::ui::views::ViewToken view_token,
+                           scenic::ViewRefPair view_ref_pair)
     : manager_(window_manager),
       delegate_(delegate),
       window_id_(manager_->AddWindow(this)),
       event_dispatcher_(this),
       scenic_session_(manager_->GetScenic()),
-      view_(&scenic_session_, std::move(view_token.value), "chromium window"),
+      view_(&scenic_session_,
+            std::move(view_token),
+            std::move(view_ref_pair.control_ref),
+            std::move(view_ref_pair.view_ref),
+            "chromium window"),
       node_(&scenic_session_),
       input_node_(&scenic_session_),
       render_node_(&scenic_session_) {
@@ -38,6 +42,7 @@ ScenicWindow::ScenicWindow(ScenicWindowManager* window_manager,
       fit::bind_member(this, &ScenicWindow::OnScenicError));
   scenic_session_.set_event_handler(
       fit::bind_member(this, &ScenicWindow::OnScenicEvents));
+  scenic_session_.SetDebugName("Chromium ScenicWindow");
 
   // Subscribe to metrics events from the node. These events are used to
   // get the device pixel ratio for the screen.
@@ -46,9 +51,7 @@ ScenicWindow::ScenicWindow(ScenicWindowManager* window_manager,
   // Add input shape.
   node_.AddChild(input_node_);
 
-  // Add rendering subtree. Hit testing is disabled to prevent GPU process from
-  // receiving input.
-  render_node_.SetHitTestBehavior(fuchsia::ui::gfx::HitTestBehavior::kSuppress);
+  // Add rendering subtree.
   node_.AddChild(render_node_);
 
   delegate_->OnAcceleratedWidgetAvailable(window_id_);
@@ -58,14 +61,23 @@ ScenicWindow::~ScenicWindow() {
   manager_->RemoveWindow(window_id_, this);
 }
 
-void ScenicWindow::ExportRenderingEntity(
-    fuchsia::ui::gfx::ExportToken export_token) {
-  scenic::EntityNode export_node(&scenic_session_);
+void ScenicWindow::AttachSurfaceView(
+    fuchsia::ui::views::ViewHolderToken token) {
+  surface_view_holder_ = std::make_unique<scenic::ViewHolder>(
+      &scenic_session_, std::move(token), "chromium window surface");
+
+  // Configure the ViewHolder not to be focusable, or hit-testable, to ensure
+  // that it cannot receive input.
+  fuchsia::ui::gfx::ViewProperties view_properties;
+  view_properties.bounding_box = {{-0.5f, -0.5f, -0.5f}, {0.5f, 0.5f, 0.5f}};
+  view_properties.focus_change = false;
+  surface_view_holder_->SetViewProperties(std::move(view_properties));
+  surface_view_holder_->SetHitTestBehavior(
+      fuchsia::ui::gfx::HitTestBehavior::kSuppress);
 
   render_node_.DetachChildren();
-  render_node_.AddChild(export_node);
+  render_node_.AddChild(*surface_view_holder_);
 
-  export_node.Export(std::move(export_token.value));
   scenic_session_.Present(
       /*presentation_time=*/0, [](fuchsia::images::PresentationInfo info) {});
 }
@@ -83,7 +95,7 @@ void ScenicWindow::SetTitle(const base::string16& title) {
   NOTIMPLEMENTED();
 }
 
-void ScenicWindow::Show() {
+void ScenicWindow::Show(bool inactive) {
   view_.AddChild(node_);
 
   // Call Present() to ensure that the scenic session commands are processed,
@@ -99,6 +111,11 @@ void ScenicWindow::Hide() {
 void ScenicWindow::Close() {
   Hide();
   delegate_->OnClosed();
+}
+
+bool ScenicWindow::IsVisible() const {
+  NOTIMPLEMENTED_LOG_ONCE();
+  return true;
 }
 
 void ScenicWindow::PrepareForShutdown() {
@@ -135,7 +152,22 @@ void ScenicWindow::Restore() {
 }
 
 PlatformWindowState ScenicWindow::GetPlatformWindowState() const {
-  return PLATFORM_WINDOW_STATE_NORMAL;
+  return PlatformWindowState::kNormal;
+}
+
+void ScenicWindow::Activate() {
+  NOTIMPLEMENTED_LOG_ONCE();
+}
+
+void ScenicWindow::Deactivate() {
+  NOTIMPLEMENTED_LOG_ONCE();
+}
+
+void ScenicWindow::SetUseNativeFrame(bool use_native_frame) {}
+
+bool ScenicWindow::ShouldUseNativeFrame() const {
+  NOTIMPLEMENTED_LOG_ONCE();
+  return false;
 }
 
 void ScenicWindow::SetCursor(PlatformCursor cursor) {
@@ -150,11 +182,6 @@ void ScenicWindow::ConfineCursorToBounds(const gfx::Rect& bounds) {
   NOTIMPLEMENTED();
 }
 
-PlatformImeController* ScenicWindow::GetPlatformImeController() {
-  NOTIMPLEMENTED();
-  return nullptr;
-}
-
 void ScenicWindow::SetRestoredBoundsInPixels(const gfx::Rect& bounds) {
   NOTIMPLEMENTED();
 }
@@ -162,6 +189,15 @@ void ScenicWindow::SetRestoredBoundsInPixels(const gfx::Rect& bounds) {
 gfx::Rect ScenicWindow::GetRestoredBoundsInPixels() const {
   NOTIMPLEMENTED();
   return gfx::Rect();
+}
+
+void ScenicWindow::SetWindowIcons(const gfx::ImageSkia& window_icon,
+                                  const gfx::ImageSkia& app_icon) {
+  NOTIMPLEMENTED();
+}
+
+void ScenicWindow::SizeConstraintsChanged() {
+  NOTIMPLEMENTED();
 }
 
 void ScenicWindow::UpdateSize() {
@@ -176,8 +212,8 @@ void ScenicWindow::UpdateSize() {
 
   // Translate the node by half of the view dimensions to put it in the center
   // of the view.
-  node_.SetTranslationRH(size_dips_.width() / 2.0, size_dips_.height() / 2.0,
-                         0.f);
+  node_.SetTranslation(size_dips_.width() / 2.0, size_dips_.height() / 2.0,
+                       0.f);
 
   // Scale the render node so that surface rect can always be 1x1.
   render_node_.SetScale(size_dips_.width(), size_dips_.height(), 1.f);
@@ -193,7 +229,6 @@ void ScenicWindow::UpdateSize() {
 
   delegate_->OnBoundsChanged(size_rect);
 }
-
 
 void ScenicWindow::OnScenicError(zx_status_t status) {
   LOG(ERROR) << "scenic::Session failed with code " << status << ".";

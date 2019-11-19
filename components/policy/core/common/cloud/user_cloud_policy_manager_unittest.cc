@@ -7,7 +7,7 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/sequenced_task_runner.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "components/policy/core/common/cloud/cloud_external_data_manager.h"
 #include "components/policy/core/common/cloud/mock_user_cloud_policy_store.h"
 #include "components/policy/core/common/external_data_fetcher.h"
@@ -51,7 +51,7 @@ class UserCloudPolicyManagerTest : public testing::Test {
   void CreateManager() {
     store_ = new MockUserCloudPolicyStore();
     EXPECT_CALL(*store_, Load());
-    const auto task_runner = scoped_task_environment_.GetMainThreadTaskRunner();
+    const auto task_runner = task_environment_.GetMainThreadTaskRunner();
     manager_.reset(new UserCloudPolicyManager(
         std::unique_ptr<UserCloudPolicyStore>(store_), base::FilePath(),
         std::unique_ptr<CloudExternalDataManager>(), task_runner,
@@ -62,7 +62,7 @@ class UserCloudPolicyManagerTest : public testing::Test {
   }
 
   // Needs to be the first member.
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
 
   // Convenience policy objects.
   PolicyMap policy_map_;

@@ -27,7 +27,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGL_WEBGL_CONTEXT_OBJECT_H_
 
 #include "third_party/blink/renderer/modules/webgl/webgl_object.h"
-#include "third_party/blink/renderer/platform/bindings/trace_wrapper_member.h"
 
 namespace blink {
 
@@ -54,7 +53,7 @@ class WebGLContextObject : public WebGLObject {
   gpu::gles2::GLES2Interface* GetAGLInterface() const final;
 
  private:
-  TraceWrapperMember<WebGLRenderingContextBase> context_;
+  Member<WebGLRenderingContextBase> context_;
 };
 
 }  // namespace blink

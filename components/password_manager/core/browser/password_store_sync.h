@@ -47,6 +47,48 @@ enum class FormRetrievalResult {
   kEncrytionServiceFailure,
 };
 
+// Error values for adding a login to the store.
+// Used in metrics: "PasswordManager.MergeSyncData.AddLoginSyncError" and
+// "PasswordManager.ApplySyncChanges.AddLoginSyncError". These values are
+// persisted to logs. Entries should not be renumbered and numeric values should
+// never be reused.
+enum class AddLoginError {
+  // Success.
+  kNone = 0,
+  // Database not available.
+  kDbNotAvailable = 1,
+  // The form doesn't the satisfy the constraints.
+  kConstraintViolation = 2,
+  // A service-level failure (e.g., on a platform using a keyring, the keyring
+  // is temporarily unavailable).
+  kEncrytionServiceFailure = 3,
+  // Database error.
+  kDbError = 4,
+
+  kMaxValue = kDbError,
+};
+
+// Error values for updating a login in the store.
+// Used in metrics: "PasswordManager.MergeSyncData.UpdateLoginSyncError" and
+// "PasswordManager.ApplySyncChanges.UpdateLoginSyncError". These values are
+// persisted to logs. Entries should not be renumbered and numeric values should
+// never be reused.
+enum class UpdateLoginError {
+  // Success.
+  kNone = 0,
+  // Database not available.
+  kDbNotAvailable = 1,
+  // No records were updated.
+  kNoUpdatedRecords = 2,
+  // A service-level failure (e.g., on a platform using a keyring, the keyring
+  // is temporarily unavailable).
+  kEncrytionServiceFailure = 3,
+  // Database error.
+  kDbError = 4,
+
+  kMaxValue = kDbError,
+};
+
 // PasswordStore interface for PasswordSyncableService. It provides access to
 // synchronous methods of PasswordStore which shouldn't be accessible to other
 // classes. These methods are to be called on the PasswordStore background
@@ -55,9 +97,11 @@ class PasswordStoreSync {
  public:
   class MetadataStore : public syncer::SyncMetadataStore {
    public:
-    // Read all the stored metadata for passwords and fill |metadata_batch|
-    // with it.
+    // Reads and returns all the stored sync metadata for passwords.
     virtual std::unique_ptr<syncer::MetadataBatch> GetAllSyncMetadata() = 0;
+
+    // Deletes all the stored sync metadata for passwords.
+    virtual void DeleteAllSyncMetadata() = 0;
   };
 
   PasswordStoreSync();
@@ -86,11 +130,13 @@ class PasswordStoreSync {
 
   // Synchronous implementation to add the given login.
   virtual PasswordStoreChangeList AddLoginSync(
-      const autofill::PasswordForm& form) = 0;
+      const autofill::PasswordForm& form,
+      AddLoginError* error = nullptr) = 0;
 
   // Synchronous implementation to update the given login.
   virtual PasswordStoreChangeList UpdateLoginSync(
-      const autofill::PasswordForm& form) = 0;
+      const autofill::PasswordForm& form,
+      UpdateLoginError* error = nullptr) = 0;
 
   // Synchronous implementation to remove the given login.
   virtual PasswordStoreChangeList RemoveLoginSync(
@@ -105,16 +151,26 @@ class PasswordStoreSync {
 
   // The methods below adds transaction support to the password store that's
   // required by sync to guarantee atomic writes of data and sync metadata.
-  // TODO(crbug.com/902349): The introduction of the two functions below
+  // TODO(crbug.com/902349): The introduction of the three functions below
   // question the existence of NotifyLoginsChanged() above and all the round
   // trips with PasswordStoreChangeList in the earlier functions. Instead,
   // observers could be notified inside CommitTransaction().
   virtual bool BeginTransaction() = 0;
+  virtual void RollbackTransaction() = 0;
   virtual bool CommitTransaction() = 0;
 
   // Returns a SyncMetadataStore that sync machinery would use to persist the
   // sync metadata.
   virtual MetadataStore* GetMetadataStore() = 0;
+
+  // Returns whether this is the profile-scoped or the account-scoped storage:
+  // true:  Gaia-account-scoped store, which is used for signed-in but not
+  //        syncing users.
+  // false: Profile-scoped store, which is used for local storage and for
+  //        syncing users.
+  virtual bool IsAccountStore() const = 0;
+
+  virtual bool DeleteAndRecreateDatabaseFile() = 0;
 
  protected:
   virtual ~PasswordStoreSync();

@@ -1,0 +1,35 @@
+# Copyright 2017 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+mojom = "//media/mojo/mojom/video_encode_accelerator.mojom"
+
+public_headers = [ "//media/video/video_encode_accelerator.h" ]
+
+traits_headers =
+    [ "//media/mojo/mojom/video_encode_accelerator_mojom_traits.h" ]
+
+sources = [
+  "//media/mojo/mojom/video_encode_accelerator_mojom_traits.cc",
+  "//media/mojo/mojom/video_encode_accelerator_mojom_traits.h",
+]
+
+public_deps = [
+  "//base",
+  "//media",
+]
+
+deps = [
+  "//base",
+  "//media",
+  "//media/base/ipc",
+  "//ui/gfx/geometry/mojom:mojom_traits",
+]
+
+type_mappings = [
+  "media.mojom.BitstreamBufferMetadata=::media::BitstreamBufferMetadata",
+  "media.mojom.VideoBitrateAllocation=::media::VideoBitrateAllocation",
+  "media.mojom.VideoEncodeAccelerator.Error=::media::VideoEncodeAccelerator::Error",
+  "media.mojom.VideoEncodeAcceleratorConfig=::media::VideoEncodeAccelerator::Config",
+  "media.mojom.Vp8Metadata=::media::Vp8Metadata",
+]

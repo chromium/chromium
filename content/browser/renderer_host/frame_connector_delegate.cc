@@ -38,9 +38,6 @@ void FrameConnectorDelegate::SynchronizeVisualProperties(
 
   if (!view_)
     return;
-#if defined(USE_AURA)
-  view_->SetFrameSinkId(frame_sink_id);
-#endif  // defined(USE_AURA)
 
   RenderWidgetHostImpl* render_widget_host = view_->host();
   DCHECK(render_widget_host);
@@ -48,7 +45,10 @@ void FrameConnectorDelegate::SynchronizeVisualProperties(
   render_widget_host->SetAutoResize(visual_properties.auto_resize_enabled,
                                     visual_properties.min_size_for_auto_resize,
                                     visual_properties.max_size_for_auto_resize);
-  render_widget_host->SetPageScaleFactor(visual_properties.page_scale_factor);
+  render_widget_host->SetVisualPropertiesFromParentFrame(
+      visual_properties.page_scale_factor,
+      visual_properties.is_pinch_gesture_active,
+      visual_properties.compositor_viewport);
 
   render_widget_host->SynchronizeVisualProperties();
 }
@@ -57,14 +57,6 @@ gfx::PointF FrameConnectorDelegate::TransformPointToRootCoordSpace(
     const gfx::PointF& point,
     const viz::SurfaceId& surface_id) {
   return gfx::PointF();
-}
-
-bool FrameConnectorDelegate::TransformPointToLocalCoordSpaceLegacy(
-    const gfx::PointF& point,
-    const viz::SurfaceId& original_surface,
-    const viz::SurfaceId& local_surface_id,
-    gfx::PointF* transformed_point) {
-  return false;
 }
 
 bool FrameConnectorDelegate::TransformPointToCoordSpaceForView(
@@ -84,7 +76,7 @@ bool FrameConnectorDelegate::HasFocus() {
   return false;
 }
 
-bool FrameConnectorDelegate::LockMouse() {
+bool FrameConnectorDelegate::LockMouse(bool request_unadjusted_movement) {
   return false;
 }
 

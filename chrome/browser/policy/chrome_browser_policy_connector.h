@@ -21,7 +21,7 @@ namespace policy {
 class ConfigurationPolicyProvider;
 
 #if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
-class MachineLevelUserCloudPolicyController;
+class ChromeBrowserCloudManagementController;
 class MachineLevelUserCloudPolicyManager;
 #endif
 
@@ -56,9 +56,9 @@ class ChromeBrowserPolicyConnector : public BrowserPolicyConnector {
   ConfigurationPolicyProvider* GetPlatformProvider();
 
 #if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
-  MachineLevelUserCloudPolicyController*
-  machine_level_user_cloud_policy_controller() {
-    return machine_level_user_cloud_policy_controller_.get();
+  ChromeBrowserCloudManagementController*
+  chrome_browser_cloud_management_controller() {
+    return chrome_browser_cloud_management_controller_.get();
   }
   MachineLevelUserCloudPolicyManager*
   machine_level_user_cloud_policy_manager() {
@@ -78,8 +78,8 @@ class ChromeBrowserPolicyConnector : public BrowserPolicyConnector {
   ConfigurationPolicyProvider* platform_provider_ = nullptr;
 
 #if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
-  std::unique_ptr<MachineLevelUserCloudPolicyController>
-      machine_level_user_cloud_policy_controller_;
+  std::unique_ptr<ChromeBrowserCloudManagementController>
+      chrome_browser_cloud_management_controller_;
   // Owned by base class.
   MachineLevelUserCloudPolicyManager* machine_level_user_cloud_policy_manager_ =
       nullptr;

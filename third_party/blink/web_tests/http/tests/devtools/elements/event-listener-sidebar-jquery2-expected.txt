@@ -4,33 +4,33 @@ Tests event listeners output in the Elements sidebar panel.
 ======== click ========
 == FrameworkUser
 [expanded] button#nodeRemoveevent-listener-sidebar-jquery2.js:18
-    useCapture: true
-    passive: false
-    once: false
     handler: function(){ console.log("second jquery"); }
+    once: false
+    passive: false
+    useCapture: true
 == FrameworkUser
 [expanded] button#nodeRemoveevent-listener-sidebar-jquery2.js:17
-    useCapture: true
-    passive: false
-    once: false
     handler: function(){ console.log("first jquery"); }
+    once: false
+    passive: false
+    useCapture: true
 == Raw
 [expanded] button#nodeRemoveevent-listener-sidebar-jquery2.js:20
-    useCapture: false
-    passive: false
-    once: false
     handler: function() { console.log("onclick"); }
+    once: false
+    passive: false
+    useCapture: false
 == Raw
 [expanded] button#nodeRemoveevent-listener-sidebar-jquery2.js:19
-    useCapture: false
-    passive: false
-    once: false
     handler: function() { console.log("addEventListener"); }
+    once: false
+    passive: false
+    useCapture: false
 == Framework
 [expanded] button#nodeRemovejquery-2.1.4.min.js:3
-    useCapture: false
-    passive: false
-    once: false
     handler: function(b){return typeof n!==U&&n.event.triggered!==b.type?n.event.dispatch.apply(a,arguments):void 0}
+    once: false
+    passive: false
+    useCapture: false
 Remove listeners..
 

@@ -7,24 +7,24 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
-#import "base/mac/scoped_nsautorelease_pool.h"
 #include "components/history/core/test/thumbnail-inl.h"
 #include "ui/gfx/image/image.h"
 
 namespace history {
 
 gfx::Image CreateGoogleThumbnailForTest() {
-  base::mac::ScopedNSAutoreleasePool pool;
-  // -[NSData dataWithBytesNoCopy:length:freeWhenDone:] takes it first parameter
-  // as a void* but does not modify it (API is not const clean) so we need to
-  // use const_cast<> here.
-  NSData* data =
-      [NSData dataWithBytesNoCopy:const_cast<void*>(static_cast<const void*>(
-                                      kGoogleThumbnail))
-                           length:sizeof(kGoogleThumbnail)
-                     freeWhenDone:NO];
-  UIImage* image = [UIImage imageWithData:data scale:1];
-  return gfx::Image([image retain]);
+  @autoreleasepool {
+    // -[NSData dataWithBytesNoCopy:length:freeWhenDone:] takes its first
+    // parameter as a void* but does not modify it (API is not const clean) so
+    // we need to use const_cast<> here.
+    NSData* data = [NSData
+        dataWithBytesNoCopy:const_cast<void*>(
+                                static_cast<const void*>(kGoogleThumbnail))
+                     length:sizeof(kGoogleThumbnail)
+               freeWhenDone:NO];
+    UIImage* image = [UIImage imageWithData:data scale:1];
+    return gfx::Image([image retain]);
+  }
 }
 
 }  // namespace

@@ -35,6 +35,7 @@ class PrefetchRequestFetcher {
       const GURL& url,
       const std::string& message,
       const std::string& testing_header_value,
+      bool empty_request,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       FinishedCallback callback);
 
@@ -49,6 +50,7 @@ class PrefetchRequestFetcher {
       const GURL& url,
       const std::string& message,
       const std::string& testing_header_value,
+      bool empty_request,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       FinishedCallback callback);
 
@@ -56,6 +58,9 @@ class PrefetchRequestFetcher {
       std::unique_ptr<std::string> response_body,
       std::string* data);
 
+  // Whether this is a GeneratePageBundle request with no pages (used for the
+  // server-enabled check).
+  bool empty_request_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
   FinishedCallback callback_;

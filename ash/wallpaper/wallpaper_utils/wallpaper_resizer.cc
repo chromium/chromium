@@ -111,8 +111,7 @@ WallpaperResizer::WallpaperResizer(const gfx::ImageSkia& image,
       original_image_id_(GetImageId(image_)),
       target_size_(target_size),
       wallpaper_info_(wallpaper_info),
-      task_runner_(std::move(task_runner)),
-      weak_ptr_factory_(this) {
+      task_runner_(std::move(task_runner)) {
   image_.MakeThreadSafe();
 }
 

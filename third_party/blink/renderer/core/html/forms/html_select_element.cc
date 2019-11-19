@@ -31,9 +31,11 @@
 
 #include "build/build_config.h"
 #include "third_party/blink/public/platform/task_type.h"
+#include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/blink/renderer/bindings/core/v8/html_element_or_long.h"
 #include "third_party/blink/renderer/bindings/core/v8/html_option_element_or_html_opt_group_element.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
+#include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/dom/attribute.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/events/scoped_event_queue.h"
@@ -49,6 +51,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/form_controller.h"
 #include "third_party/blink/renderer/core/html/forms/form_data.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
@@ -72,12 +75,11 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/spatial_navigation.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 
 namespace blink {
-
-using namespace html_names;
 
 // Upper limit of list_items_. According to the HTML standard, options larger
 // than this limit doesn't work well because |selectedIndex| IDL attribute is
@@ -85,31 +87,31 @@ using namespace html_names;
 static const unsigned kMaxListItems = INT_MAX;
 
 HTMLSelectElement::HTMLSelectElement(Document& document)
-    : HTMLFormControlElementWithState(kSelectTag, document),
+    : HTMLFormControlElementWithState(html_names::kSelectTag, document),
       type_ahead_(this),
       size_(0),
       last_on_change_option_(nullptr),
       is_multiple_(false),
+      is_in_non_contiguous_selection_(false),
       active_selection_state_(false),
       should_recalc_list_items_(false),
       is_autofilled_by_preview_(false),
       index_to_select_on_cancel_(-1),
       popup_is_visible_(false) {
   SetHasCustomStyleCallbacks();
-}
-
-HTMLSelectElement* HTMLSelectElement::Create(Document& document) {
-  HTMLSelectElement* select = MakeGarbageCollected<HTMLSelectElement>(document);
-  select->EnsureUserAgentShadowRoot();
-  return select;
+  EnsureUserAgentShadowRoot();
 }
 
 HTMLSelectElement::~HTMLSelectElement() = default;
 
 // static
 bool HTMLSelectElement::CanAssignToSelectSlot(const Node& node) {
-  return node.HasTagName(kOptionTag) || node.HasTagName(kOptgroupTag) ||
-         node.HasTagName(kHrTag);
+  // Even if options/optgroups are not rendered as children of LayoutMenuList,
+  // we still need to add them to the flat tree through slotting since we need
+  // their ComputedStyle for popup rendering.
+  return node.HasTagName(html_names::kOptionTag) ||
+         node.HasTagName(html_names::kOptgroupTag) ||
+         node.HasTagName(html_names::kHrTag);
 }
 
 const AtomicString& HTMLSelectElement::FormControlType() const {
@@ -139,9 +141,14 @@ bool HTMLSelectElement::HasPlaceholderLabelOption() const {
 
   // TODO(tkent): This function is called in CSS selector matching. Using
   // listItems() might have performance impact.
-  if (GetListItems().size() == 0 || !IsHTMLOptionElement(GetListItems()[0]))
+  if (GetListItems().size() == 0)
     return false;
-  return ToHTMLOptionElement(GetListItems()[0])->value().IsEmpty();
+
+  auto* option_element = DynamicTo<HTMLOptionElement>(GetListItems()[0].Get());
+  if (!option_element)
+    return false;
+
+  return option_element->value().IsEmpty();
 }
 
 String HTMLSelectElement::validationMessage() const {
@@ -150,8 +157,7 @@ String HTMLSelectElement::validationMessage() const {
   if (CustomError())
     return CustomValidationMessage();
   if (ValueMissing()) {
-    return GetLocale().QueryString(
-        WebLocalizedString::kValidationValueMissingForSelect);
+    return GetLocale().QueryString(IDS_FORM_VALIDATION_VALUE_MISSING_SELECT);
   }
   return String();
 }
@@ -290,7 +296,7 @@ void HTMLSelectElement::SetSuggestedValue(const String& value) {
 
 bool HTMLSelectElement::IsPresentationAttribute(
     const QualifiedName& name) const {
-  if (name == kAlignAttr) {
+  if (name == html_names::kAlignAttr) {
     // Don't map 'align' attribute. This matches what Firefox, Opera and IE do.
     // See http://bugs.webkit.org/show_bug.cgi?id=12072
     return false;
@@ -301,21 +307,20 @@ bool HTMLSelectElement::IsPresentationAttribute(
 
 void HTMLSelectElement::ParseAttribute(
     const AttributeModificationParams& params) {
-  if (params.name == kSizeAttr) {
+  if (params.name == html_names::kSizeAttr) {
     unsigned old_size = size_;
     if (!ParseHTMLNonNegativeInteger(params.new_value, size_))
       size_ = 0;
     SetNeedsValidityCheck();
     if (size_ != old_size) {
-      if (InActiveDocument())
-        LazyReattachIfAttached();
+      ChangeRendering();
       ResetToDefaultSelection();
       if (!UsesMenuList())
         SaveListboxActiveSelection();
     }
-  } else if (params.name == kMultipleAttr) {
+  } else if (params.name == html_names::kMultipleAttr) {
     ParseMultipleAttribute(params.new_value);
-  } else if (params.name == kAccesskeyAttr) {
+  } else if (params.name == html_names::kAccesskeyAttr) {
     // FIXME: ignore for the moment.
     //
   } else {
@@ -331,7 +336,8 @@ bool HTMLSelectElement::CanSelectAll() const {
   return !UsesMenuList();
 }
 
-LayoutObject* HTMLSelectElement::CreateLayoutObject(const ComputedStyle&) {
+LayoutObject* HTMLSelectElement::CreateLayoutObject(const ComputedStyle&,
+                                                    LegacyLayout) {
   if (UsesMenuList())
     return new LayoutMenuList(this);
   return new LayoutListBox(this);
@@ -380,7 +386,8 @@ void HTMLSelectElement::SetOption(unsigned index,
   if (index >= kMaxListItems ||
       GetListItems().size() + diff + 1 > kMaxListItems) {
     GetDocument().AddConsoleMessage(ConsoleMessage::Create(
-        kJSMessageSource, mojom::ConsoleMessageLevel::kWarning,
+        mojom::ConsoleMessageSource::kJavaScript,
+        mojom::ConsoleMessageLevel::kWarning,
         String::Format("Blocked to expand the option list and set an option at "
                        "index=%u.  The maximum list length is %u.",
                        index, kMaxListItems)));
@@ -412,7 +419,8 @@ void HTMLSelectElement::setLength(unsigned new_len,
   if (new_len > kMaxListItems ||
       GetListItems().size() + new_len - length() > kMaxListItems) {
     GetDocument().AddConsoleMessage(ConsoleMessage::Create(
-        kJSMessageSource, mojom::ConsoleMessageLevel::kWarning,
+        mojom::ConsoleMessageSource::kJavaScript,
+        mojom::ConsoleMessageLevel::kWarning,
         String::Format("Blocked to expand the option list to %u items.  The "
                        "maximum list length is %u.",
                        new_len, kMaxListItems)));
@@ -422,7 +430,8 @@ void HTMLSelectElement::setLength(unsigned new_len,
 
   if (diff < 0) {  // Add dummy elements.
     do {
-      AppendChild(HTMLOptionElement::Create(GetDocument()), exception_state);
+      AppendChild(MakeGarbageCollected<HTMLOptionElement>(GetDocument()),
+                  exception_state);
       if (exception_state.HadException())
         break;
     } while (++diff);
@@ -457,7 +466,7 @@ HTMLOptionElement* HTMLSelectElement::OptionAtListIndex(int list_index) const {
   const ListItems& items = GetListItems();
   if (static_cast<wtf_size_t>(list_index) >= items.size())
     return nullptr;
-  return ToHTMLOptionElementOrNull(items[list_index]);
+  return DynamicTo<HTMLOptionElement>(items[list_index].Get());
 }
 
 // Returns the 1st valid OPTION |skip| items from |listIndex| in direction
@@ -477,15 +486,16 @@ HTMLOptionElement* HTMLSelectElement::NextValidOption(int list_index,
        list_index += direction) {
     --skip;
     HTMLElement* element = list_items[list_index];
-    if (!IsHTMLOptionElement(*element))
+    auto* option_element = DynamicTo<HTMLOptionElement>(element);
+    if (!option_element)
       continue;
-    if (ToHTMLOptionElement(*element).IsDisplayNone())
+    if (option_element->IsDisplayNone())
       continue;
     if (element->IsDisabledFormControl())
       continue;
     if (!UsesMenuList() && !element->GetLayoutObject())
       continue;
-    last_good_option = ToHTMLOptionElement(element);
+    last_good_option = option_element;
     if (skip <= 0)
       break;
   }
@@ -568,9 +578,9 @@ void HTMLSelectElement::SaveLastSelection() {
 
   last_on_change_selection_.clear();
   for (auto& element : GetListItems()) {
-    last_on_change_selection_.push_back(
-        IsHTMLOptionElement(*element) &&
-        ToHTMLOptionElement(element)->Selected());
+    auto* option_element = DynamicTo<HTMLOptionElement>(element.Get());
+    last_on_change_selection_.push_back(option_element &&
+                                        option_element->Selected());
   }
 }
 
@@ -636,6 +646,7 @@ void HTMLSelectElement::UpdateListBoxSelection(bool deselect_other_options,
     ++i;
   }
 
+  UpdateMultiSelectListBoxFocus();
   SetNeedsValidityCheck();
   if (scroll)
     ScrollToSelection();
@@ -660,8 +671,8 @@ void HTMLSelectElement::ListBoxOnChange() {
   bool fire_on_change = false;
   for (unsigned i = 0; i < items.size(); ++i) {
     HTMLElement* element = items[i];
-    bool selected = IsHTMLOptionElement(*element) &&
-                    ToHTMLOptionElement(element)->Selected();
+    auto* option_element = DynamicTo<HTMLOptionElement>(element);
+    bool selected = option_element && option_element->Selected();
     if (selected != last_on_change_selection_[i])
       fire_on_change = true;
     last_on_change_selection_[i] = selected;
@@ -671,6 +682,20 @@ void HTMLSelectElement::ListBoxOnChange() {
     DispatchInputEvent();
     DispatchChangeEvent();
   }
+}
+
+void HTMLSelectElement::UpdateMultiSelectListBoxFocus() {
+  if (!is_multiple_)
+    return;
+
+  for (auto* const option : GetOptionList()) {
+    if (option->IsDisabledFormControl() || !option->GetLayoutObject())
+      continue;
+    bool is_focused =
+        (option == active_selection_end_) && is_in_non_contiguous_selection_;
+    option->SetMultiSelectFocusedState(is_focused);
+  }
+  ScrollToSelection();
 }
 
 void HTMLSelectElement::DispatchInputAndChangeEventForMenuList() {
@@ -753,33 +778,35 @@ void HTMLSelectElement::RecalcListItems() const {
 
   for (Element* current_element = ElementTraversal::FirstWithin(*this);
        current_element && list_items_.size() < kMaxListItems;) {
-    if (!current_element->IsHTMLElement()) {
+    auto* current_html_element = DynamicTo<HTMLElement>(current_element);
+    if (!current_html_element) {
       current_element =
           ElementTraversal::NextSkippingChildren(*current_element, this);
       continue;
     }
-    HTMLElement& current = ToHTMLElement(*current_element);
 
     // We should ignore nested optgroup elements. The HTML parser flatten
     // them.  However we need to ignore nested optgroups built by DOM APIs.
     // This behavior matches to IE and Firefox.
-    if (IsHTMLOptGroupElement(current)) {
-      if (current.parentNode() != this) {
-        current_element = ElementTraversal::NextSkippingChildren(current, this);
+    if (IsA<HTMLOptGroupElement>(*current_html_element)) {
+      if (current_html_element->parentNode() != this) {
+        current_element =
+            ElementTraversal::NextSkippingChildren(*current_html_element, this);
         continue;
       }
-      list_items_.push_back(&current);
-      if (Element* next_element = ElementTraversal::FirstWithin(current)) {
+      list_items_.push_back(current_html_element);
+      if (Element* next_element =
+              ElementTraversal::FirstWithin(*current_html_element)) {
         current_element = next_element;
         continue;
       }
     }
 
-    if (IsHTMLOptionElement(current))
-      list_items_.push_back(&current);
+    if (IsA<HTMLOptionElement>(*current_html_element))
+      list_items_.push_back(current_html_element);
 
-    if (IsHTMLHRElement(current))
-      list_items_.push_back(&current);
+    if (IsA<HTMLHRElement>(*current_html_element))
+      list_items_.push_back(current_html_element);
 
     // In conforming HTML code, only <optgroup> and <option> will be found
     // within a <select>. We call NodeTraversal::nextSkippingChildren so
@@ -863,7 +890,8 @@ void HTMLSelectElement::setSelectedIndex(int index) {
 int HTMLSelectElement::SelectedListIndex() const {
   int index = 0;
   for (const auto& item : GetListItems()) {
-    if (IsHTMLOptionElement(item) && ToHTMLOptionElement(item)->Selected())
+    auto* option_element = DynamicTo<HTMLOptionElement>(item.Get());
+    if (option_element && option_element->Selected())
       return index;
     ++index;
   }
@@ -908,10 +936,10 @@ void HTMLSelectElement::ScrollToOptionTask() {
   // OptionRemoved() makes sure option_to_scroll_to_ doesn't have an option with
   // another owner.
   DCHECK_EQ(option->OwnerSelectElement(), this);
-  GetDocument().UpdateStyleAndLayoutIgnorePendingStylesheets();
+  GetDocument().UpdateStyleAndLayout();
   if (!GetLayoutObject() || !GetLayoutObject()->IsListBox())
     return;
-  LayoutRect bounds = option->BoundingBoxForScrollIntoView();
+  PhysicalRect bounds = option->BoundingBoxForScrollIntoView();
   ToLayoutListBox(GetLayoutObject())->ScrollToRect(bounds);
 }
 
@@ -1127,10 +1155,8 @@ FormControlState HTMLSelectElement::SaveFormControlState() const {
   wtf_size_t length = items.size();
   FormControlState state;
   for (wtf_size_t i = 0; i < length; ++i) {
-    if (!IsHTMLOptionElement(*items[i]))
-      continue;
-    HTMLOptionElement* option = ToHTMLOptionElement(items[i]);
-    if (!option->Selected())
+    auto* option = DynamicTo<HTMLOptionElement>(items[i].Get());
+    if (!option || !option->Selected())
       continue;
     state.Append(option->value());
     state.Append(String::Number(i));
@@ -1147,9 +1173,10 @@ wtf_size_t HTMLSelectElement::SearchOptionsForValue(
   const ListItems& items = GetListItems();
   wtf_size_t loop_end_index = std::min(items.size(), list_index_end);
   for (wtf_size_t i = list_index_start; i < loop_end_index; ++i) {
-    if (!IsHTMLOptionElement(items[i]))
+    auto* option_element = DynamicTo<HTMLOptionElement>(items[i].Get());
+    if (!option_element)
       continue;
-    if (ToHTMLOptionElement(items[i])->value() == value)
+    if (option_element->value() == value)
       return i;
   }
   return kNotFound;
@@ -1169,17 +1196,20 @@ void HTMLSelectElement::RestoreFormControlState(const FormControlState& state) {
   DCHECK_GE(state.ValueSize(), 2u);
   if (!IsMultiple()) {
     unsigned index = state[1].ToUInt();
-    if (index < items_size && IsHTMLOptionElement(items[index]) &&
-        ToHTMLOptionElement(items[index])->value() == state[0]) {
-      ToHTMLOptionElement(items[index])->SetSelectedState(true);
-      ToHTMLOptionElement(items[index])->SetDirty(true);
-      last_on_change_option_ = ToHTMLOptionElement(items[index]);
+    auto* option_element =
+        index < items_size ? DynamicTo<HTMLOptionElement>(items[index].Get())
+                           : nullptr;
+    if (option_element && option_element->value() == state[0]) {
+      option_element->SetSelectedState(true);
+      option_element->SetDirty(true);
+      last_on_change_option_ = option_element;
     } else {
       wtf_size_t found_index = SearchOptionsForValue(state[0], 0, items_size);
       if (found_index != kNotFound) {
-        ToHTMLOptionElement(items[found_index])->SetSelectedState(true);
-        ToHTMLOptionElement(items[found_index])->SetDirty(true);
-        last_on_change_option_ = ToHTMLOptionElement(items[found_index]);
+        auto* option_element = To<HTMLOptionElement>(items[found_index].Get());
+        option_element->SetSelectedState(true);
+        option_element->SetDirty(true);
+        last_on_change_option_ = option_element;
       }
     }
   } else {
@@ -1187,10 +1217,12 @@ void HTMLSelectElement::RestoreFormControlState(const FormControlState& state) {
     for (wtf_size_t i = 0; i < state.ValueSize(); i += 2) {
       const String& value = state[i];
       const unsigned index = state[i + 1].ToUInt();
-      if (index < items_size && IsHTMLOptionElement(items[index]) &&
-          ToHTMLOptionElement(items[index])->value() == value) {
-        ToHTMLOptionElement(items[index])->SetSelectedState(true);
-        ToHTMLOptionElement(items[index])->SetDirty(true);
+      auto* option_element =
+          index < items_size ? DynamicTo<HTMLOptionElement>(items[index].Get())
+                             : nullptr;
+      if (option_element && option_element->value() == value) {
+        option_element->SetSelectedState(true);
+        option_element->SetDirty(true);
         start_index = index + 1;
       } else {
         wtf_size_t found_index =
@@ -1199,8 +1231,9 @@ void HTMLSelectElement::RestoreFormControlState(const FormControlState& state) {
           found_index = SearchOptionsForValue(value, 0, start_index);
         if (found_index == kNotFound)
           continue;
-        ToHTMLOptionElement(items[found_index])->SetSelectedState(true);
-        ToHTMLOptionElement(items[found_index])->SetDirty(true);
+        auto* option_element = To<HTMLOptionElement>(items[found_index].Get());
+        option_element->SetSelectedState(true);
+        option_element->SetDirty(true);
         start_index = found_index + 1;
       }
     }
@@ -1214,7 +1247,7 @@ void HTMLSelectElement::ParseMultipleAttribute(const AtomicString& value) {
   HTMLOptionElement* old_selected_option = SelectedOption();
   is_multiple_ = !value.IsNull();
   SetNeedsValidityCheck();
-  LazyReattachIfAttached();
+  ChangeRendering();
   // Restore selectedIndex after changing the multiple flag to preserve
   // selection as single-line and multi-line has different defaults.
   if (old_multiple != is_multiple_) {
@@ -1241,7 +1274,8 @@ void HTMLSelectElement::AppendToFormData(FormData& form_data) {
 
 void HTMLSelectElement::ResetImpl() {
   for (auto* const option : GetOptionList()) {
-    option->SetSelectedState(option->FastHasAttribute(kSelectedAttr));
+    option->SetSelectedState(
+        option->FastHasAttribute(html_names::kSelectedAttr));
     option->SetDirty(false);
   }
   ResetToDefaultSelection();
@@ -1293,6 +1327,11 @@ bool HTMLSelectElement::ShouldOpenPopupForKeyPressEvent(
 }
 
 void HTMLSelectElement::MenuListDefaultEventHandler(Event& event) {
+  // We need to make the layout tree up-to-date to have GetLayoutObject() give
+  // the correct result below. An author event handler may have set display to
+  // some element to none which will cause a layout tree detach.
+  GetDocument().UpdateStyleAndLayoutTree();
+
   if (event.type() == event_type_names::kKeydown) {
     if (!GetLayoutObject() || !event.IsKeyboardEvent())
       return;
@@ -1461,10 +1500,7 @@ void HTMLSelectElement::UpdateSelectedState(HTMLOptionElement* clicked_option,
 }
 
 HTMLOptionElement* HTMLSelectElement::EventTargetOption(const Event& event) {
-  Node* target_node = event.target()->ToNode();
-  if (!target_node || !IsHTMLOptionElement(*target_node))
-    return nullptr;
-  return ToHTMLOptionElement(target_node);
+  return DynamicTo<HTMLOptionElement>(event.target()->ToNode());
 }
 
 int HTMLSelectElement::ListIndexForOption(const HTMLOptionElement& option) {
@@ -1545,12 +1581,14 @@ void HTMLSelectElement::ListBoxDefaultEventHandler(Event& event) {
         !mouse_event.ButtonDown())
       return;
 
-    if (LayoutObject* object = GetLayoutObject())
-      object->GetFrameView()->UpdateAllLifecyclePhasesExceptPaint();
+    LayoutObject* layout_object = GetLayoutObject();
+    if (layout_object) {
+      layout_object->GetFrameView()->UpdateAllLifecyclePhasesExceptPaint();
 
-    if (Page* page = GetDocument().GetPage()) {
-      page->GetAutoscrollController().StartAutoscrollForSelection(
-          GetLayoutObject());
+      if (Page* page = GetDocument().GetPage()) {
+        page->GetAutoscrollController().StartAutoscrollForSelection(
+            layout_object);
+      }
     }
     // Mousedown didn't happen in this element.
     if (last_on_change_selection_.IsEmpty())
@@ -1649,6 +1687,21 @@ void HTMLSelectElement::ListBoxDefaultEventHandler(Event& event) {
         return;
     }
 
+    bool is_control_key = false;
+#if defined(OS_MACOSX)
+    is_control_key = ToKeyboardEvent(event).metaKey();
+#else
+    is_control_key = ToKeyboardEvent(event).ctrlKey();
+#endif
+
+    if (is_multiple_ && ToKeyboardEvent(event).keyCode() == ' ' &&
+        is_control_key && active_selection_end_) {
+      // Use ctrl+space to toggle selection change.
+      ToggleSelection(*active_selection_end_);
+      event.SetDefaultHandled();
+      return;
+    }
+
     if (end_option && handled) {
       // Save the selection so it can be compared to the new selection
       // when dispatching change events immediately after making the new
@@ -1657,12 +1710,14 @@ void HTMLSelectElement::ListBoxDefaultEventHandler(Event& event) {
 
       SetActiveSelectionEnd(end_option);
 
+      is_in_non_contiguous_selection_ = is_multiple_ && is_control_key;
       bool select_new_item =
           !is_multiple_ || ToKeyboardEvent(event).shiftKey() ||
-          !IsSpatialNavigationEnabled(GetDocument().GetFrame());
+          (!IsSpatialNavigationEnabled(GetDocument().GetFrame()) &&
+           !is_in_non_contiguous_selection_);
       if (select_new_item)
         active_selection_state_ = true;
-      // If the anchor is unitialized, or if we're going to deselect all
+      // If the anchor is uninitialized, or if we're going to deselect all
       // other options, then set the anchor index equal to the end index.
       bool deselect_others =
           !is_multiple_ ||
@@ -1674,9 +1729,12 @@ void HTMLSelectElement::ListBoxDefaultEventHandler(Event& event) {
       }
 
       ScrollToOption(end_option);
-      if (select_new_item) {
-        UpdateListBoxSelection(deselect_others);
-        ListBoxOnChange();
+      if (select_new_item || is_in_non_contiguous_selection_) {
+        if (select_new_item) {
+          UpdateListBoxSelection(deselect_others);
+          ListBoxOnChange();
+        }
+        UpdateMultiSelectListBoxFocus();
       } else {
         ScrollToSelection();
       }
@@ -1694,15 +1752,26 @@ void HTMLSelectElement::ListBoxDefaultEventHandler(Event& event) {
         Form()->SubmitImplicitly(event, false);
       event.SetDefaultHandled();
     } else if (is_multiple_ && key_code == ' ' &&
-               IsSpatialNavigationEnabled(GetDocument().GetFrame())) {
-      // Use space to toggle selection change.
-      active_selection_state_ = !active_selection_state_;
-      UpdateSelectedState(active_selection_end_.Get(), true /*multi*/,
-                          false /*shift*/);
-      ListBoxOnChange();
-      event.SetDefaultHandled();
+               (IsSpatialNavigationEnabled(GetDocument().GetFrame()) ||
+                is_in_non_contiguous_selection_)) {
+      HTMLOptionElement* option = active_selection_end_;
+      // If there's no active selection,
+      // act as if "ArrowDown" had been pressed.
+      if (!option)
+        option = NextSelectableOption(LastSelectedOption());
+      if (option) {
+        // Use space to toggle selection change.
+        ToggleSelection(*option);
+        event.SetDefaultHandled();
+      }
     }
   }
+}
+
+void HTMLSelectElement::ToggleSelection(HTMLOptionElement& option) {
+  active_selection_state_ = !active_selection_state_;
+  UpdateSelectedState(&option, true /*multi*/, false /*shift*/);
+  ListBoxOnChange();
 }
 
 void HTMLSelectElement::DefaultEventHandler(Event& event) {
@@ -1839,10 +1908,6 @@ bool HTMLSelectElement::IsInteractiveContent() const {
   return true;
 }
 
-bool HTMLSelectElement::SupportsAutofocus() const {
-  return true;
-}
-
 void HTMLSelectElement::Trace(Visitor* visitor) {
   visitor->Trace(list_items_);
   visitor->Trace(last_on_change_option_);
@@ -1871,9 +1936,9 @@ HTMLOptionElement* HTMLSelectElement::SpatialNavigationFocusedOption() {
 
 String HTMLSelectElement::ItemText(const Element& element) const {
   String item_string;
-  if (auto* optgroup = ToHTMLOptGroupElementOrNull(element))
+  if (auto* optgroup = DynamicTo<HTMLOptGroupElement>(element))
     item_string = optgroup->GroupLabelText();
-  else if (auto* option = ToHTMLOptionElementOrNull(element))
+  else if (auto* option = DynamicTo<HTMLOptionElement>(element))
     item_string = option->TextIndentedToRespectGroupLabel();
 
   if (GetLayoutObject() && GetLayoutObject()->Style())
@@ -1882,7 +1947,7 @@ String HTMLSelectElement::ItemText(const Element& element) const {
 }
 
 bool HTMLSelectElement::ItemIsDisplayNone(Element& element) const {
-  if (auto* option = ToHTMLOptionElementOrNull(element))
+  if (auto* option = DynamicTo<HTMLOptionElement>(element))
     return option->IsDisplayNone();
   const ComputedStyle* style = ItemComputedStyle(element);
   return !style || style->Display() == EDisplay::kNone;
@@ -1998,12 +2063,25 @@ void HTMLSelectElement::HidePopup() {
 
 void HTMLSelectElement::DidRecalcStyle(const StyleRecalcChange change) {
   HTMLFormControlElementWithState::DidRecalcStyle(change);
-  if (PopupIsVisible())
+  if (!change.ReattachLayoutTree() && PopupIsVisible())
     popup_->UpdateFromElement(PopupMenu::kByStyleChange);
 }
 
-void HTMLSelectElement::DetachLayoutTree(const AttachContext& context) {
-  HTMLFormControlElementWithState::DetachLayoutTree(context);
+void HTMLSelectElement::AttachLayoutTree(AttachContext& context) {
+  HTMLFormControlElementWithState::AttachLayoutTree(context);
+
+  if (const ComputedStyle* style = GetComputedStyle()) {
+    if (style->Visibility() != EVisibility::kHidden) {
+      if (IsMultiple())
+        UseCounter::Count(GetDocument(), WebFeature::kSelectElementMultiple);
+      else
+        UseCounter::Count(GetDocument(), WebFeature::kSelectElementSingle);
+    }
+  }
+}
+
+void HTMLSelectElement::DetachLayoutTree(bool performing_reattach) {
+  HTMLFormControlElementWithState::DetachLayoutTree(performing_reattach);
   if (popup_)
     popup_->DisconnectClient();
   popup_is_visible_ = false;
@@ -2045,7 +2123,7 @@ class HTMLSelectElement::PopupUpdater : public MutationObserver::Delegate {
       return;
     for (const auto& record : records) {
       if (record->type() == "attributes") {
-        const Element& element = *ToElement(record->target());
+        const auto& element = *To<Element>(record->target());
         if (record->oldValue() == element.getAttribute(record->attributeName()))
           continue;
       } else if (record->type() == "characterData") {
@@ -2094,6 +2172,17 @@ void HTMLSelectElement::CloneNonAttributePropertiesFrom(
   const auto& source_element = static_cast<const HTMLSelectElement&>(source);
   user_has_edited_the_field_ = source_element.user_has_edited_the_field_;
   HTMLFormControlElement::CloneNonAttributePropertiesFrom(source, flag);
+}
+
+void HTMLSelectElement::ChangeRendering() {
+  if (!InActiveDocument())
+    return;
+  // TODO(futhark): SetForceReattachLayoutTree() should be the correct way to
+  // create a new layout tree, but the code for updating the selected index
+  // relies on the layout tree to be nuked.
+  DetachLayoutTree();
+  SetNeedsStyleRecalc(kLocalStyleChange, StyleChangeReasonForTracing::Create(
+                                             style_change_reason::kControl));
 }
 
 }  // namespace blink

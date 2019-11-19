@@ -39,21 +39,6 @@ CGFloat CurrentScreenWidth();
 // Returns true if the device is an iPhone X.
 bool IsIPhoneX();
 
-// Returns whether the flag is enabled for switching to the regular tabs panel
-// in tab switcher when the last incognito tab is closed.
-bool IsClosingLastIncognitoTabEnabled();
-
-// Returns whether the UI Refresh Location Bar will be used.
-// TODO (crbug.com/884723): Remove all use of this flag.
-bool IsRefreshLocationBarEnabled();
-
-// Returns whether the first phase of the UI refresh will be displayed.
-// TODO (crbug.com/884725): Remove all use of this flag.
-bool IsUIRefreshPhase1Enabled();
-
-// Returns the height of the status bar, accounting for orientation.
-CGFloat StatusBarHeight();
-
 // Returns the approximate corner radius of the current device.
 CGFloat DeviceCornerRadius();
 
@@ -79,6 +64,9 @@ CGRect CGRectCopyWithOrigin(CGRect rect, CGFloat x, CGFloat y);
 // Returns a square CGRect centered at |x|, |y| with a width of |width|.
 // Both the position and the size of the CGRect will be aligned to points.
 CGRect CGRectMakeAlignedAndCenteredAt(CGFloat x, CGFloat y, CGFloat width);
+
+// Returns a rectangle of size |rectSize| centered inside |frameSize|.
+CGRect CGRectMakeCenteredRectInFrame(CGSize frameSize, CGSize rectSize);
 
 // Returns whether |a| and |b| are within CGFloat's epsilon value.
 bool AreCGFloatsEqual(CGFloat a, CGFloat b);

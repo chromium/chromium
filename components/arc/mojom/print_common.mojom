@@ -1,0 +1,128 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module arc.mojom;
+
+// android.print.PageRange
+struct PrintPageRange {
+  // First page inclusive.
+  int32 start;
+  // Last page inclusive.
+  int32 end;
+};
+
+// android.print.PrintAttributes.MediaSize
+struct PrintMediaSize {
+  // Id unique among media sizes.
+  string id;
+  // Localized label.
+  string label;
+  int32 width_mils;
+  int32 height_mils;
+};
+
+// android.print.PrintAttributes.Resolution
+struct PrintResolution {
+  // Id unique among resolutions.
+  string id;
+  // Localized label.
+  string label;
+  int32 horizontal_dpi;
+  int32 vertical_dpi;
+};
+
+// android.print.PrintAttributes.Margins
+struct PrintMargins {
+  int32 left_mils;
+  int32 top_mils;
+  int32 right_mils;
+  int32 bottom_mils;
+};
+
+// android.print.PrintAttributes.COLOR_MODE_*
+[Extensible]
+enum PrintColorMode {
+  MONOCHROME = 1,
+  COLOR = 2,
+};
+
+// android.print.PrintAttributes.DUPLEX_MODE_*
+[Extensible]
+enum PrintDuplexMode {
+  NONE = 1,
+  LONG_EDGE = 2,
+  SHORT_EDGE = 4,
+};
+
+// android.print.PrintDocumentInfo.CONTENT_TYPE_*
+[Extensible]
+enum PrintContentType {
+  UNKNOWN = -1,
+  DOCUMENT = 0,
+  PHOTO = 1,
+};
+
+// android.print.PrintAttributes
+struct PrintAttributes {
+  PrintMediaSize? media_size;
+  PrintResolution? resolution;
+  PrintMargins? min_margins;
+  PrintColorMode color_mode;
+  PrintDuplexMode duplex_mode;
+};
+
+struct PrintDocumentRequest {
+  array<PrintPageRange> pages;
+  PrintAttributes attributes;
+};
+
+struct PrintJobRequest {
+  // android.printservice.PrintJob fields:
+  array<int8> id;
+  string label;
+  string? printer_id;
+  int64 creation_time;
+  int32 copies;
+  array<PrintPageRange> pages;
+  PrintAttributes attributes;
+  // android.print.PrintDocumentInfo fields:
+  string document_name;
+  int32 document_page_count;
+  PrintContentType content_type;
+  int64 data_size;
+  // android.printservice.PrintDocument fields:
+  handle? data;
+};
+
+// android.print.PrinterInfo.STATUS_*
+[Extensible]
+enum PrinterStatus {
+  IDLE = 1,
+  BUSY = 2,
+  UNAVAILABLE = 3,
+};
+
+// android.print.PrinterCapabilitiesInfo
+struct PrinterCapabilities {
+  array<PrintMediaSize> media_sizes;
+  array<PrintResolution> resolutions;
+  PrintMargins min_margins;
+  PrintColorMode color_modes;
+  PrintDuplexMode duplex_modes;
+  PrintAttributes defaults;
+};
+
+// android.print.PrinterInfo
+struct PrinterInfo {
+  // Id unique among printers.
+  string id;
+  // Localized name.
+  string name;
+  PrinterStatus status;
+  // Localized description.
+  string? description;
+  // Intent for provider-specific settings.
+  string? info_intent;
+  PrinterCapabilities? capabilities;
+};

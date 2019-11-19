@@ -53,7 +53,7 @@ SharedImageInterface* GLInProcessContext::GetSharedImageInterface() {
 }
 
 ContextResult GLInProcessContext::Initialize(
-    scoped_refptr<CommandBufferTaskExecutor> task_executor,
+    CommandBufferTaskExecutor* task_executor,
     scoped_refptr<gl::GLSurface> surface,
     bool is_offscreen,
     SurfaceHandle window,
@@ -72,14 +72,14 @@ ContextResult GLInProcessContext::Initialize(
   DCHECK_GE(attribs.offscreen_framebuffer_size.width(), 0);
   DCHECK_GE(attribs.offscreen_framebuffer_size.height(), 0);
 
-  command_buffer_ =
-      std::make_unique<InProcessCommandBuffer>(std::move(task_executor));
+  command_buffer_ = std::make_unique<InProcessCommandBuffer>(
+      task_executor, GURL("chrome://gpu/GLInProcessContext::Initialize"));
 
-  auto result = command_buffer_->Initialize(
-      surface, is_offscreen, window, attribs, /*share_command_buffer=*/nullptr,
-      gpu_memory_buffer_manager, image_factory,
-      /*gpu_channel_manager_delegate=*/nullptr, std::move(task_runner), nullptr,
-      nullptr);
+  auto result =
+      command_buffer_->Initialize(surface, is_offscreen, window, attribs,
+                                  gpu_memory_buffer_manager, image_factory,
+                                  /*gpu_channel_manager_delegate=*/nullptr,
+                                  std::move(task_runner), nullptr, nullptr);
   if (result != ContextResult::kSuccess) {
     DLOG(ERROR) << "Failed to initialize InProcessCommmandBuffer";
     return result;

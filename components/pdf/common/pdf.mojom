@@ -5,7 +5,7 @@
 module pdf.mojom;
 
 import "third_party/blink/public/mojom/referrer.mojom";
-import "ui/gfx/geometry/mojo/geometry.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
 
 interface PdfListener {
@@ -21,7 +21,7 @@ interface PdfListener {
 };
 
 interface PdfService {
-  SetListener(PdfListener client);
+  SetListener(pending_remote<PdfListener> client);
 
   // Updates the content restrictions, i.e. to disable print/copy.
   UpdateContentRestrictions(int32 restrictions);

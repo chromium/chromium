@@ -2,11 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/** @fileoverview Suite of tests for activity-log-item. */
+/** @fileoverview Suite of tests for activity-log-stream. */
+
+import 'chrome://extensions/extensions.js';
+
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {TestService} from './test_service.js';
+import {testVisible} from './test_util.js';
+
 suite('ExtensionsActivityLogStreamTest', function() {
   /**
-   * Backing extension id, same id as the one in
-   * extension_test_util.createExtensionInfo
+   * Backing extension id, same id as the one in createExtensionInfo
    * @type {string}
    */
   const EXTENSION_ID = 'a'.repeat(32);
@@ -39,22 +45,22 @@ suite('ExtensionsActivityLogStreamTest', function() {
 
   /**
    * Extension activityLogStream created before each test.
-   * @type {extensions.ActivityLogStream}
+   * @type {ActivityLogStream}
    */
   let activityLogStream;
   let proxyDelegate;
-  let testVisible;
+  let boundTestVisible;
 
   // Initialize an extension activity log item before each test.
   setup(function() {
     PolymerTest.clearBody();
-    proxyDelegate = new extensions.TestService();
+    proxyDelegate = new TestService();
 
-    activityLogStream = new extensions.ActivityLogStream();
+    activityLogStream = document.createElement('activity-log-stream');
 
     activityLogStream.extensionId = EXTENSION_ID;
     activityLogStream.delegate = proxyDelegate;
-    testVisible = extension_test_util.testVisible.bind(null, activityLogStream);
+    boundTestVisible = testVisible.bind(null, activityLogStream);
 
     document.body.appendChild(activityLogStream);
   });
@@ -63,35 +69,35 @@ suite('ExtensionsActivityLogStreamTest', function() {
     activityLogStream.remove();
   });
 
+  // Returns a list of visible stream items. The not([hidden]) selector is
+  // needed for iron-list as it reuses components but hides them when not in
+  // use.
   function getStreamItems() {
     return activityLogStream.shadowRoot.querySelectorAll(
-        'activity-log-stream-item');
+        'activity-log-stream-item:not([hidden])');
   }
 
   test('button toggles stream on/off', function() {
-    Polymer.dom.flush();
+    flush();
 
     // Stream should be on when element is first attached to the DOM.
-    testVisible('.activity-subpage-header', true);
-    testVisible('#empty-stream-message', true);
-    testVisible('#stream-started-message', true);
+    boundTestVisible('.activity-subpage-header', true);
+    boundTestVisible('#empty-stream-message', true);
+    boundTestVisible('#stream-started-message', true);
 
     activityLogStream.$$('#toggle-stream-button').click();
-    testVisible('#stream-stopped-message', true);
+    boundTestVisible('#stream-stopped-message', true);
   });
 
   test(
       'new activity events are only shown while the stream is started',
       function() {
-        Polymer.dom.flush();
-        testVisible('#activity-stream-list', false);
+        flush();
         proxyDelegate.getOnExtensionActivity().callListeners(activity1);
 
-        Polymer.dom.flush();
+        flush();
         // One event coming in. Since the stream is on, we should be able to see
         // it.
-        testVisible('#activity-stream-list', true);
-
         let streamItems = getStreamItems();
         expectEquals(1, streamItems.length);
 
@@ -100,7 +106,7 @@ suite('ExtensionsActivityLogStreamTest', function() {
         proxyDelegate.getOnExtensionActivity().callListeners(
             contentScriptActivity);
 
-        Polymer.dom.flush();
+        flush();
         // One event was fired but the stream was paused, we should still see
         // only one item.
         streamItems = getStreamItems();
@@ -110,7 +116,7 @@ suite('ExtensionsActivityLogStreamTest', function() {
         activityLogStream.$$('#toggle-stream-button').click();
         proxyDelegate.getOnExtensionActivity().callListeners(activity2);
 
-        Polymer.dom.flush();
+        flush();
         streamItems = getStreamItems();
         expectEquals(2, streamItems.length);
 
@@ -121,10 +127,54 @@ suite('ExtensionsActivityLogStreamTest', function() {
             streamItems[1].$$('#activity-name').innerText, 'testAPI.DOMMethod');
       });
 
+  test('activities shown match search query', function() {
+    flush();
+    boundTestVisible('#empty-stream-message', true);
+
+    proxyDelegate.getOnExtensionActivity().callListeners(activity1);
+    proxyDelegate.getOnExtensionActivity().callListeners(activity2);
+
+    flush();
+    expectEquals(2, getStreamItems().length);
+
+    const search = activityLogStream.$$('cr-search-field');
+    assertTrue(!!search);
+
+    // Search for the apiCall of |activity1|.
+    search.setValue('testMethod');
+    flush();
+
+    const filteredStreamItems = getStreamItems();
+    expectEquals(1, getStreamItems().length);
+    expectEquals(
+        filteredStreamItems[0].$$('#activity-name').innerText,
+        'testAPI.testMethod');
+
+    // search again, expect none
+    search.setValue('not expecting any activities to match');
+    flush();
+
+    expectEquals(0, getStreamItems().length);
+    boundTestVisible('#empty-stream-message', false);
+    boundTestVisible('#empty-search-message', true);
+
+    // Another activity comes in while the stream is listening but search
+    // returns no results.
+    proxyDelegate.getOnExtensionActivity().callListeners(contentScriptActivity);
+
+    search.$$('#clearSearch').click();
+    flush();
+
+    // We expect 4 activities to appear as |contentScriptActivity| (which is
+    // split into 2 items) should be processed and stored in the stream
+    // regardless of the search input.
+    expectEquals(4, getStreamItems().length);
+  });
+
   test('content script events are split by content script names', function() {
     proxyDelegate.getOnExtensionActivity().callListeners(contentScriptActivity);
 
-    Polymer.dom.flush();
+    flush();
     let streamItems = getStreamItems();
     expectEquals(2, streamItems.length);
 
@@ -136,13 +186,13 @@ suite('ExtensionsActivityLogStreamTest', function() {
   test('clicking on clear button clears the activity log stream', function() {
     proxyDelegate.getOnExtensionActivity().callListeners(activity1);
 
-    Polymer.dom.flush();
+    flush();
     expectEquals(1, getStreamItems().length);
-    testVisible('.activity-table-headings', true);
+    boundTestVisible('.activity-table-headings', true);
     activityLogStream.$$('.clear-activities-button').click();
 
-    Polymer.dom.flush();
+    flush();
     expectEquals(0, getStreamItems().length);
-    testVisible('.activity-table-headings', false);
+    boundTestVisible('.activity-table-headings', false);
   });
 });

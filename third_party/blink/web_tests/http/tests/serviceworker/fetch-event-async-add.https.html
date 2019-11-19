@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<title>Service Worker: Fetch event should not be handled when listener is added after script initial evaluation.</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/test-helpers.js"></script>
+<body>
+<script>
+// This test should not be upstreamed to WPT because it asserts that the event
+// added after the initial evaluation of a worker script isn't fired. But
+// this precision is not mandated by the current specifications.
+promise_test(async function (t) {
+  const scope = 'resources/simple.html?fetch-event-async-add';
+  const script_url = 'resources/fetch-event-async-add-test-worker.js';
+
+  t.add_cleanup(() => {
+    frame.remove();
+    return service_worker_unregister(t, scope);
+  });
+
+  const registration =
+    await service_worker_unregister_and_register(t, script_url, scope);
+
+  await wait_for_state(t, registration.installing, 'activated');
+  const frame = await with_iframe(scope);
+
+  assert_equals(frame.contentDocument.body.textContent,
+                'Here\'s a simple html file.\n');
+}, 'Service worker does not handle fetch event added after initial evaluation of worker script');
+
+</script>
+</body>

@@ -9,8 +9,13 @@
 #include <string>
 
 #include "base/optional.h"
+#include "base/time/time.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/common/client_hints.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "third_party/blink/public/platform/web_client_hints_type.h"
+#include "url/origin.h"
 
 class GURL;
 
@@ -26,10 +31,9 @@ class NetworkQualityTracker;
 
 namespace content {
 
-class CONTENT_EXPORT ClientHintsControllerDelegate {
+class CONTENT_EXPORT ClientHintsControllerDelegate
+    : public client_hints::mojom::ClientHints {
  public:
-  virtual ~ClientHintsControllerDelegate() = default;
-
   virtual network::NetworkQualityTracker* GetNetworkQualityTracker() = 0;
 
   // Get which client hints opt-ins were persisted on current origin.
@@ -42,6 +46,17 @@ class CONTENT_EXPORT ClientHintsControllerDelegate {
   virtual std::string GetAcceptLanguageString() = 0;
 
   virtual blink::UserAgentMetadata GetUserAgentMetadata() = 0;
+
+  virtual void Bind(
+      mojo::PendingReceiver<client_hints::mojom::ClientHints> receiver) {}
+
+  // mojom::ClientHints implementation.
+  void PersistClientHints(
+      const url::Origin& primary_origin,
+      const std::vector<blink::mojom::WebClientHintsType>& client_hints,
+      base::TimeDelta expiration_duration) override = 0;
+
+  virtual void ResetForTesting() {}
 };
 
 }  // namespace content

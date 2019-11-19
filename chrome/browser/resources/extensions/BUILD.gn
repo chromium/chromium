@@ -1,0 +1,569 @@
+# Copyright 2018 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/common/features.gni")
+import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/grit/grit_rule.gni")
+import("//tools/polymer/polymer.gni")
+import("../optimize_webui.gni")
+
+if (optimize_webui) {
+  extensions_pak_file = "extensions_resources.pak"
+  unpak_folder = "extensions_resources.unpak"
+
+  optimize_webui("build") {
+    host = "extensions"
+    html_in_files = [ "extensions.html" ]
+    html_out_files = [ "vulcanized.html" ]
+    input = rebase_path("$target_gen_dir/$unpak_folder", root_build_dir)
+    js_out_files = [ "extensions.js" ]
+    js_module_in_files = [ "extensions.js" ]
+
+    deps = [
+      ":unpak",
+      "../../../../ui/webui/resources:modulize",
+    ]
+    excludes = [ "chrome://resources/js/cr.m.js" ]
+  }
+
+  unpak("unpak") {
+    pak_file = extensions_pak_file
+    out_folder = unpak_folder
+
+    deps = [
+      ":flattened_resources",
+    ]
+  }
+
+  grit("flattened_resources") {
+    source = "extensions_resources.grd"
+
+    # The .grd contains references to generated files.
+    source_is_generated = true
+    grit_flags = [
+      "-E",
+      "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
+    ]
+
+    deps = [
+      ":polymer3_elements",
+    ]
+    defines = chrome_grit_defines
+    outputs = [
+      "grit/extensions_resources.h",
+      "grit/extensions_resources_map.cc",
+      "grit/extensions_resources_map.h",
+      extensions_pak_file,
+    ]
+    output_dir = "$root_gen_dir/chrome/browser/resources/extensions"
+  }
+}
+
+group("closure_compile") {
+  deps = [
+    ":extensions_module_resources",
+    "activity_log:closure_compile_module",
+  ]
+}
+
+group("polymer3_elements") {
+  deps = [
+    ":code_section_module",
+    ":detail_view_module",
+    ":drop_overlay_module",
+    ":error_page_module",
+    ":host_permissions_toggle_list_module",
+    ":icons_module",
+    ":install_warnings_dialog_module",
+    ":item_list_module",
+    ":item_module",
+    ":keyboard_shortcuts_module",
+    ":load_error_module",
+    ":manager_module",
+    ":options_dialog_module",
+    ":pack_dialog_alert_module",
+    ":pack_dialog_module",
+    ":runtime_host_permissions_module",
+    ":runtime_hosts_dialog_module",
+    ":shared_style_module",
+    ":shared_vars_module",
+    ":shortcut_input_module",
+    ":sidebar_module",
+    ":toggle_row_module",
+    ":toolbar_module",
+    "activity_log:polymer3_elements",
+  ]
+  if (is_chromeos) {
+    deps += [ ":kiosk_dialog_module" ]
+  }
+}
+
+polymer_modulizer("code_section") {
+  js_file = "code_section.js"
+  html_file = "code_section.html"
+  html_type = "v3-ready"
+}
+
+polymer_modulizer("detail_view") {
+  js_file = "detail_view.js"
+  html_file = "detail_view.html"
+  html_type = "v3-ready"
+}
+
+polymer_modulizer("drop_overlay") {
+  js_file = "drop_overlay.js"
+  html_file = "drop_overlay.html"
+  html_type = "v3-ready"
+}
+
+polymer_modulizer("error_page") {
+  js_file = "error_page.js"
+  html_file = "error_page.html"
+  html_type = "v3-ready"
+}
+
+polymer_modulizer("host_permissions_toggle_list") {
+  js_file = "host_permissions_toggle_list.js"
+  html_file = "host_permissions_toggle_list.html"
+  html_type = "v3-ready"
+}
+
+polymer_modulizer("icons") {
+  js_file = "icons.js"
+  html_file = "icons.html"
+  html_type = "v3-ready"
+}
+
+polymer_modulizer("install_warnings_dialog") {
+  js_file = "install_warnings_dialog.js"
+  html_file = "install_warnings_dialog.html"
+  html_type = "v3-ready"
+}
+
+polymer_modulizer("item") {
+  js_file = "item.js"
+  html_file = "item.html"
+  html_type = "v3-ready"
+}
+
+polymer_modulizer("item_list") {
+  js_file = "item_list.js"
+  html_file = "item_list.html"
+  html_type = "v3-ready"
+}
+
+polymer_modulizer("keyboard_shortcuts") {
+  js_file = "keyboard_shortcuts.js"
+  html_file = "keyboard_shortcuts.html"
+  html_type = "v3-ready"
+}
+
+if (is_chromeos) {
+  polymer_modulizer("kiosk_dialog") {
+    js_file = "kiosk_dialog.js"
+    html_file = "kiosk_dialog.html"
+    html_type = "v3-ready"
+  }
+}
+
+polymer_modulizer("load_error") {
+  js_file = "load_error.js"
+  html_file = "load_error.html"
+  html_type = "v3-ready"
+}
+
+polymer_modulizer("manager") {
+  js_file = "manager.js"
+  html_file = "manager.html"
+  html_type = "v3-ready"
+}
+
+polymer_modulizer("options_dialog") {
+  js_file = "options_dialog.js"
+  html_file = "options_dialog.html"
+  html_type = "v3-ready"
+}
+
+polymer_modulizer("pack_dialog") {
+  js_file = "pack_dialog.js"
+  html_file = "pack_dialog.html"
+  html_type = "v3-ready"
+}
+
+polymer_modulizer("pack_dialog_alert") {
+  js_file = "pack_dialog_alert.js"
+  html_file = "pack_dialog_alert.html"
+  html_type = "v3-ready"
+}
+
+polymer_modulizer("runtime_host_permissions") {
+  js_file = "runtime_host_permissions.js"
+  html_file = "runtime_host_permissions.html"
+  html_type = "v3-ready"
+}
+
+polymer_modulizer("runtime_hosts_dialog") {
+  js_file = "runtime_hosts_dialog.js"
+  html_file = "runtime_hosts_dialog.html"
+  html_type = "v3-ready"
+}
+
+polymer_modulizer("shared_style") {
+  js_file = "shared_style.js"
+  html_file = "shared_style.html"
+  html_type = "v3-ready"
+}
+
+polymer_modulizer("shared_vars") {
+  js_file = "shared_vars.js"
+  html_file = "shared_vars.html"
+  html_type = "v3-ready"
+}
+
+polymer_modulizer("shortcut_input") {
+  js_file = "shortcut_input.js"
+  html_file = "shortcut_input.html"
+  html_type = "v3-ready"
+}
+
+polymer_modulizer("sidebar") {
+  js_file = "sidebar.js"
+  html_file = "sidebar.html"
+  html_type = "v3-ready"
+}
+
+polymer_modulizer("toggle_row") {
+  js_file = "toggle_row.js"
+  html_file = "toggle_row.html"
+  html_type = "v3-ready"
+}
+
+polymer_modulizer("toolbar") {
+  js_file = "toolbar.js"
+  html_file = "toolbar.html"
+  html_type = "v3-ready"
+}
+
+js_type_check("extensions_module_resources") {
+  closure_flags = default_closure_args + [
+                    "js_module_root=../../chrome/browser/resources/extensions/",
+                    "js_module_root=./gen/chrome/browser/resources/extensions/",
+                  ]
+  is_polymer3 = true
+  deps = [
+    ":code_section",
+    ":detail_view",
+    ":drag_and_drop_handler",
+    ":drop_overlay",
+    ":error_page",
+    ":host_permissions_toggle_list",
+    ":install_warnings_dialog",
+    ":item",
+    ":item_behavior",
+    ":item_list",
+    ":item_util",
+    ":keyboard_shortcut_delegate",
+    ":keyboard_shortcuts",
+    ":kiosk_browser_proxy",
+    ":load_error",
+    ":manager",
+    ":navigation_helper",
+    ":options_dialog",
+    ":pack_dialog",
+    ":pack_dialog_alert",
+    ":runtime_host_permissions",
+    ":runtime_hosts_dialog",
+    ":service",
+    ":shortcut_input",
+    ":shortcut_util",
+    ":sidebar",
+    ":toggle_row",
+    ":toolbar",
+  ]
+  if (is_chromeos) {
+    deps += [ ":kiosk_dialog" ]
+  }
+}
+
+js_library("code_section") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/js:load_time_data.m",
+  ]
+  externs_list = [ "$externs_path/developer_private.js" ]
+}
+
+js_library("detail_view") {
+  deps = [
+    ":item",
+    ":item_behavior",
+    ":item_util",
+    ":navigation_helper",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements:cr_container_shadow_behavior.m",
+    "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu.m",
+    "//ui/webui/resources/js:load_time_data.m",
+    "//ui/webui/resources/js/cr/ui:focus_without_ink.m",
+  ]
+  externs_list = [ "$externs_path/developer_private.js" ]
+}
+
+js_library("drop_overlay") {
+  deps = [
+    ":drag_and_drop_handler",
+    "//ui/webui/resources/js/cr/ui:drag_wrapper.m",
+  ]
+}
+
+js_library("drag_and_drop_handler") {
+  deps = [
+    ":service",
+    "//ui/webui/resources/js/cr/ui:drag_wrapper.m",
+  ]
+}
+
+js_library("error_page") {
+  deps = [
+    ":code_section",
+    ":item_util",
+    ":navigation_helper",
+    "//ui/webui/resources/cr_elements:cr_container_shadow_behavior.m",
+    "//ui/webui/resources/js/cr/ui:focus_outline_manager.m",
+    "//ui/webui/resources/js/cr/ui:focus_without_ink.m",
+  ]
+  externs_list = [
+    "$externs_path/developer_private.js",
+    "$externs_path/metrics_private.js",
+  ]
+}
+
+js_library("host_permissions_toggle_list") {
+  deps = [
+    ":item",
+  ]
+  externs_list = [ "$externs_path/developer_private.js" ]
+}
+
+js_library("install_warnings_dialog") {
+  deps = [
+    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
+  ]
+  externs_list = [ "$externs_path/developer_private.js" ]
+}
+
+js_library("item") {
+  deps = [
+    ":item_behavior",
+    ":item_util",
+    ":navigation_helper",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_toast:cr_toast_manager.m",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/js:load_time_data.m",
+  ]
+  externs_list = [ "$externs_path/developer_private.js" ]
+}
+
+js_library("item_behavior") {
+  deps = [
+    "//ui/webui/resources/js:load_time_data.m",
+  ]
+  externs_list = [ "$externs_path/developer_private.js" ]
+}
+
+js_library("item_list") {
+  deps = [
+    ":item",
+    "//third_party/polymer/v3_0/components-chromium/iron-a11y-announcer:iron-a11y-announcer",
+    "//ui/webui/resources/cr_elements:cr_container_shadow_behavior.m",
+    "//ui/webui/resources/js:i18n_behavior.m",
+  ]
+  externs_list = [
+    "$externs_path/developer_private.js",
+    "$externs_path/metrics_private.js",
+  ]
+}
+
+js_library("item_util") {
+  deps = [
+    ":navigation_helper",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:load_time_data.m",
+  ]
+  externs_list = [ "$externs_path/developer_private.js" ]
+}
+
+js_library("keyboard_shortcut_delegate") {
+  deps = []
+  externs_list = [ "$externs_path/developer_private.js" ]
+}
+
+js_library("keyboard_shortcuts") {
+  deps = [
+    ":item_behavior",
+    ":keyboard_shortcut_delegate",
+    "//ui/webui/resources/cr_elements:cr_container_shadow_behavior.m",
+  ]
+  externs_list = [
+    "$externs_path/developer_private.js",
+    "$externs_path/metrics_private.js",
+  ]
+}
+
+js_library("kiosk_browser_proxy") {
+  deps = [
+    "//ui/webui/resources/js:cr.m",
+  ]
+}
+
+if (is_chromeos) {
+  js_library("kiosk_dialog") {
+    deps = [
+      ":item_behavior",
+      ":kiosk_browser_proxy",
+      "//ui/webui/resources/js:web_ui_listener_behavior.m",
+    ]
+  }
+}
+
+js_library("load_error") {
+  deps = [
+    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
+    "//ui/webui/resources/js:assert.m",
+  ]
+  externs_list = [ "$externs_path/developer_private.js" ]
+}
+
+js_library("manager") {
+  deps = [
+    ":detail_view",
+    ":item",
+    ":item_list",
+    ":item_util",
+    ":keyboard_shortcuts",
+    ":kiosk_browser_proxy",
+    ":load_error",
+    ":navigation_helper",
+    ":service",
+    ":sidebar",
+    ":toolbar",
+    "activity_log:activity_log",
+    "//ui/webui/resources/cr_elements/cr_drawer:cr_drawer.m",
+    "//ui/webui/resources/cr_elements/cr_view_manager:cr_view_manager.m",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:load_time_data.m",
+  ]
+  externs_list = [ "$externs_path/developer_private.js" ]
+}
+
+js_library("navigation_helper") {
+  deps = [
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:load_time_data.m",
+  ]
+  externs_list = [ "$externs_path/developer_private.js" ]
+}
+
+js_library("options_dialog") {
+  deps = [
+    ":item_behavior",
+    ":navigation_helper",
+    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
+  ]
+  externs_list = [ "$externs_path/developer_private.js" ]
+}
+
+js_library("pack_dialog") {
+  externs_list = [ "$externs_path/developer_private.js" ]
+}
+
+js_library("pack_dialog_alert") {
+  deps = [
+    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
+    "//ui/webui/resources/js:load_time_data.m",
+  ]
+  externs_list = [ "$externs_path/developer_private.js" ]
+}
+
+js_library("runtime_host_permissions") {
+  deps = [
+    ":item",
+    ":runtime_hosts_dialog",
+    "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu.m",
+    "//ui/webui/resources/cr_elements/cr_radio_button:cr_radio_button.m",
+    "//ui/webui/resources/cr_elements/cr_radio_group:cr_radio_group.m",
+    "//ui/webui/resources/js/cr/ui:focus_without_ink.m",
+  ]
+  externs_list = [ "$externs_path/developer_private.js" ]
+}
+
+js_library("runtime_hosts_dialog") {
+  deps = [
+    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
+    "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
+    "//ui/webui/resources/js:load_time_data.m",
+  ]
+}
+
+js_library("service") {
+  deps = [
+    ":error_page",
+    ":item",
+    ":keyboard_shortcut_delegate",
+    ":load_error",
+    ":navigation_helper",
+    ":pack_dialog",
+    ":toolbar",
+    "activity_log:activity_log",
+    "activity_log:activity_log_history",
+    "activity_log:activity_log_stream",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:cr.m",
+  ]
+  externs_list = [
+    "$externs_path/activity_log_private.js",
+    "$externs_path/developer_private.js",
+    "$externs_path/management.js",
+    "$externs_path/metrics_private.js",
+  ]
+}
+
+js_library("shortcut_input") {
+  deps = [
+    ":keyboard_shortcut_delegate",
+    ":shortcut_util",
+    "//ui/webui/resources/js:assert.m",
+  ]
+  externs_list = [ "$externs_path/developer_private.js" ]
+}
+
+js_library("shortcut_util") {
+  deps = [
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:cr.m",
+  ]
+}
+
+js_library("sidebar") {
+  deps = [
+    ":navigation_helper",
+    "//ui/webui/resources/js:assert.m",
+  ]
+  externs_list = [ "$externs_path/metrics_private.js" ]
+}
+
+js_library("toggle_row") {
+}
+
+js_library("toolbar") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/iron-a11y-announcer:iron-a11y-announcer",
+    "//ui/webui/resources/cr_elements/cr_toast:cr_toast_manager.m",
+    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/js:util.m",
+  ]
+  externs_list = [ "$externs_path/metrics_private.js" ]
+}

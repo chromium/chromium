@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/gesture-util.js"></script>
+<script src="resources/snav-testharness.js"></script>
+
+<style>
+  div {
+    width: 100px;
+    height: 100px;
+    margin: 5px;
+    border: 1px solid black;
+  }
+  div:hover {
+    background-color: dodgerblue;
+  }
+  iframe {
+    width: 200px;
+    height: 200px;
+  }
+</style>
+
+<div id="first" tabindex="0">First</div>
+<iframe srcdoc="
+    <!DOCTYPE html>
+    <style>
+      div:hover {
+        background-color: dodgerblue;
+      }
+      div {
+        width: 100px;
+        height: 100px;
+        margin: 5px;
+        border: 1px solid black;
+      }
+    </style>
+    <div id='second' tabindex='0'>Second</div>"></iframe>
+<div id="third" tabindex="0">Third</div>
+
+<script>
+  window.onload = async () => {
+    // This test checks whether hover state is correctly applied and removed from
+    // elements as the become and lose interest but includes a mouse move to
+    // ensure it doesn't interfere with hover transitions.
+    const iframe = document.querySelector("iframe");
+    const first = document.getElementById("first");
+    const second = iframe.contentDocument.getElementById("second");
+    const third = document.getElementById("third");
+
+    promise_test(async () => {
+      snav.assertSnavEnabledAndTestable();
+
+      // Move interest to |second|.
+      snav.triggerMove("Down"); // |first|
+      snav.triggerMove("Down"); // |iframe|
+      snav.triggerMove("Down"); // |second|
+
+      assert_equals(window.internals.interestedElement,
+                    second, "|second| element gets interest.");
+      assert_true(second.matches(":hover"),
+                  "|second| should be hovered when interested.");
+      assert_true(iframe.matches(":hover"),
+                  "|iframe| should be hovered as element inside is hovered.");
+
+      // Arbitrary mouse move on the main frame. This will un-hover the iframe,
+      // ensure further spatial navigations remove and replace hover correctly.
+      await mouseMoveTo(300, 300);
+      assert_false(iframe.matches(":hover"),
+                  "Mouse move should unhover |iframe|.");
+
+      // Down again to interest |third|.
+      snav.triggerMove("Down");
+      assert_equals(window.internals.interestedElement,
+                    third, "|third| element gets interest.");
+      assert_true(third.matches(":hover"),
+                  "|third| should be hovered when interested.");
+      assert_false(second.matches(":hover"),
+                  "|second| should no longer be hovered.");
+      assert_false(iframe.matches(":hover"),
+                  "|iframe| should no longer be hovered.");
+
+    }, "Test hover application with mouse moves during spatial navigation.");
+  }
+</script>

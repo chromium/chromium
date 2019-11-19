@@ -7,19 +7,11 @@
 
 #include "base/macros.h"
 
-class PrefRegistrySimple;
-
 // Initializes and destroys the ash::Shell when Ash is running in process.
 class AshShellInit {
  public:
   AshShellInit();
   ~AshShellInit();
-
-  // Registers ash display prefs so that they can be provided synchronously
-  // to Shell from the local state (which is loaded asynchronously in Shell).
-  // |registry| should be the PrefRegistry for local state prefs.
-  // TODO(stevenjb): Improve how we do this. https://crbug.com/678949.
-  static void RegisterDisplayPrefs(PrefRegistrySimple* registry);
 
  private:
   DISALLOW_COPY_AND_ASSIGN(AshShellInit);

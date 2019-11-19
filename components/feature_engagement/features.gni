@@ -3,7 +3,5 @@
 # found in the LICENSE file.
 
 declare_args() {
-  # In-Product Help is only available in Windows and Linux OS for
-  # desktop.
-  enable_desktop_in_product_help = is_win || (is_linux && !is_chromeos)
+  enable_legacy_desktop_in_product_help = false
 }

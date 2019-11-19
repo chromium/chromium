@@ -23,23 +23,30 @@ typedef ios_web_view::WebViewInttestBase ScrollViewKvoTest;
 
 // Tests that CWVScrollView correctly reports |contentOffset| state.
 TEST_F(ScrollViewKvoTest, contentOffset) {
-  Observer* observer = [[Observer alloc] init];
-  [observer setObservedObject:web_view_.scrollView keyPath:@"contentOffset"];
+  Observer* offset_observer = [[Observer alloc] init];
+  [offset_observer setObservedObject:web_view_.scrollView
+                             keyPath:@"contentOffset"];
+  Observer* size_observer = [[Observer alloc] init];
+  [size_observer setObservedObject:web_view_.scrollView keyPath:@"contentSize"];
 
   // A page must be loaded before changing |contentOffset|. Otherwise the change
   // is ignored because the underlying UIScrollView hasn't been created.
   [web_view_
       loadRequest:[NSURLRequest
                       requestWithURL:[NSURL URLWithString:@"about:blank"]]];
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForPageLoadTimeout, ^bool {
+        return size_observer.lastValue;
+      }));
 
   web_view_.scrollView.contentOffset = CGPointMake(10, 20);
   EXPECT_NSEQ([NSValue valueWithCGPoint:CGPointMake(10, 20)],
-              observer.lastValue);
+              offset_observer.lastValue);
 
   [web_view_.scrollView setContentOffset:CGPointMake(30, 40) animated:YES];
   EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForUIElementTimeout, ^{
-        return static_cast<bool>([observer.lastValue
+        return static_cast<bool>([offset_observer.lastValue
             isEqual:[NSValue valueWithCGPoint:CGPointMake(30, 40)]]);
       }));
 }

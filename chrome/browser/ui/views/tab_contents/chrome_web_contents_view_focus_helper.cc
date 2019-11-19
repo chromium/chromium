@@ -56,14 +56,14 @@ bool ChromeWebContentsViewFocusHelper::TakeFocus(bool reverse) {
 }
 
 void ChromeWebContentsViewFocusHelper::StoreFocus() {
-  last_focused_view_tracker_.Clear();
+  last_focused_view_tracker_.SetView(nullptr);
   if (GetFocusManager())
     last_focused_view_tracker_.SetView(GetFocusManager()->GetFocusedView());
 }
 
 bool ChromeWebContentsViewFocusHelper::RestoreFocus() {
   views::View* view_to_focus = GetStoredFocus();
-  last_focused_view_tracker_.Clear();
+  last_focused_view_tracker_.SetView(nullptr);
   if (view_to_focus) {
     view_to_focus->RequestFocus();
     return true;
@@ -72,7 +72,7 @@ bool ChromeWebContentsViewFocusHelper::RestoreFocus() {
 }
 
 void ChromeWebContentsViewFocusHelper::ResetStoredFocus() {
-  last_focused_view_tracker_.Clear();
+  last_focused_view_tracker_.SetView(nullptr);
 }
 
 views::View* ChromeWebContentsViewFocusHelper::GetStoredFocus() {

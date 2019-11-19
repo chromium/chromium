@@ -2,20 +2,32 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "third_party/blink/renderer/modules/peerconnection/adapters/p2p_quic_transport.h"
 #include "base/bind.h"
+#include "net/quic/mock_crypto_client_stream.h"
+#include "net/quic/mock_crypto_client_stream_factory.h"
 #include "net/quic/quic_chromium_alarm_factory.h"
 #include "net/quic/test_task_runner.h"
 #include "net/test/gtest_util.h"
-#include "net/third_party/quic/core/tls_client_handshaker.h"
-#include "net/third_party/quic/core/tls_server_handshaker.h"
-#include "net/third_party/quic/test_tools/mock_clock.h"
+#include "net/third_party/quiche/src/quic/core/crypto/proof_verifier.h"
+#include "net/third_party/quiche/src/quic/core/crypto/quic_compressed_certs_cache.h"
+#include "net/third_party/quiche/src/quic/core/crypto/quic_crypto_server_config.h"
+#include "net/third_party/quiche/src/quic/core/quic_server_id.h"
+#include "net/third_party/quiche/src/quic/core/quic_session.h"
+#include "net/third_party/quiche/src/quic/platform/api/quic_mem_slice_span.h"
+#include "net/third_party/quiche/src/quic/platform/api/quic_string_piece.h"
+#include "net/third_party/quiche/src/quic/test_tools/mock_clock.h"
+#include "net/third_party/quiche/src/quic/test_tools/quic_test_utils.h"
+#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/modules/peerconnection/adapters/p2p_quic_crypto_config_factory_impl.h"
+#include "third_party/blink/renderer/modules/peerconnection/adapters/p2p_quic_crypto_stream_factory_impl.h"
 #include "third_party/blink/renderer/modules/peerconnection/adapters/p2p_quic_packet_transport.h"
 #include "third_party/blink/renderer/modules/peerconnection/adapters/p2p_quic_transport_factory_impl.h"
 #include "third_party/blink/renderer/modules/peerconnection/adapters/p2p_quic_transport_impl.h"
+#include "third_party/blink/renderer/modules/peerconnection/adapters/test/mock_p2p_quic_packet_transport.h"
 #include "third_party/blink/renderer/modules/peerconnection/adapters/test/mock_p2p_quic_stream_delegate.h"
 #include "third_party/blink/renderer/modules/peerconnection/adapters/test/mock_p2p_quic_transport_delegate.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/webrtc/rtc_base/rtc_certificate.h"
 #include "third_party/webrtc/rtc_base/ssl_fingerprint.h"
 #include "third_party/webrtc/rtc_base/ssl_identity.h"
@@ -26,15 +38,30 @@ namespace {
 
 using testing::_;
 using testing::ElementsAreArray;
+using testing::Eq;
 using testing::Invoke;
 using testing::InvokeWithoutArgs;
 using ::testing::MakePolymorphicAction;
 using ::testing::PolymorphicAction;
+using testing::Property;
+using testing::ResultOf;
+using testing::Return;
 
 const uint8_t kTriggerRemoteStreamPhrase[] = {'o', 'p', 'e', 'n', ' ', 's',
                                               'e', 's', 'a', 'm', 'e'};
+const uint8_t kMessage[] = {'h', 'o', 'w', 'd', 'y'};
+const uint8_t kMessage2[] = {'p', 'a', 'r', 't', 'n', 'e', 'r'};
+const uint8_t kClientMessage[] = {'h', 'o', 'w', 'd', 'y'};
+const uint8_t kServerMessage[] = {'p', 'a', 'r', 't', 'n', 'e', 'r'};
 const uint32_t kTransportWriteBufferSize = 100 * 1024;
 const uint32_t kTransportDelegateReadBufferSize = 100 * 1024;
+
+template <wtf_size_t Size>
+static Vector<uint8_t> VectorFromArray(const uint8_t (&array)[Size]) {
+  Vector<uint8_t> vector;
+  vector.Append(array, Size);
+  return vector;
+}
 
 // A custom gmock Action that fires the given callback. This is used in
 // conjuction with the CallbackRunLoop in order to drive the TestTaskRunner
@@ -214,7 +241,7 @@ class FakePacketTransport : public P2PQuicPacketTransport,
     }
   }
   // If async, packets are queued here to send.
-  quic::QuicDeque<quic::QuicString> packet_queue_;
+  quic::QuicDeque<std::string> packet_queue_;
   // Alarm used to send data asynchronously.
   quic::QuicArenaScopedPtr<quic::QuicAlarm> alarm_;
   // The P2PQuicTransportImpl, which sets itself as the delegate in its
@@ -321,26 +348,28 @@ class FailingProofVerifierStub : public quic::ProofVerifier {
 
   // ProofVerifier override.
   quic::QuicAsyncStatus VerifyProof(
-      const quic::QuicString& hostname,
+      const std::string& hostname,
       const uint16_t port,
-      const quic::QuicString& server_config,
+      const std::string& server_config,
       quic::QuicTransportVersion transport_version,
       quic::QuicStringPiece chlo_hash,
-      const std::vector<quic::QuicString>& certs,
-      const quic::QuicString& cert_sct,
-      const quic::QuicString& signature,
+      const std::vector<std::string>& certs,
+      const std::string& cert_sct,
+      const std::string& signature,
       const quic::ProofVerifyContext* context,
-      quic::QuicString* error_details,
+      std::string* error_details,
       std::unique_ptr<quic::ProofVerifyDetails>* verify_details,
       std::unique_ptr<quic::ProofVerifierCallback> callback) override {
     return quic::QUIC_FAILURE;
   }
 
   quic::QuicAsyncStatus VerifyCertChain(
-      const quic::QuicString& hostname,
-      const std::vector<quic::QuicString>& certs,
+      const std::string& hostname,
+      const std::vector<std::string>& certs,
+      const std::string& ocsp_response,
+      const std::string& cert_sct,
       const quic::ProofVerifyContext* context,
-      quic::QuicString* error_details,
+      std::string* error_details,
       std::unique_ptr<quic::ProofVerifyDetails>* details,
       std::unique_ptr<quic::ProofVerifierCallback> callback) override {
     return quic::QUIC_FAILURE;
@@ -359,8 +388,8 @@ class ProofSourceStub : public quic::ProofSource {
 
   // ProofSource override.
   void GetProof(const quic::QuicSocketAddress& server_addr,
-                const quic::QuicString& hostname,
-                const quic::QuicString& server_config,
+                const std::string& hostname,
+                const std::string& server_config,
                 quic::QuicTransportVersion transport_version,
                 quic::QuicStringPiece chlo_hash,
                 std::unique_ptr<Callback> callback) override {
@@ -373,15 +402,15 @@ class ProofSourceStub : public quic::ProofSource {
 
   quic::QuicReferenceCountedPointer<Chain> GetCertChain(
       const quic::QuicSocketAddress& server_address,
-      const quic::QuicString& hostname) override {
-    std::vector<quic::QuicString> certs;
-    certs.push_back("Test cert");
+      const std::string& hostname) override {
+    WebVector<std::string> certs;
+    certs.emplace_back("Test cert");
     return quic::QuicReferenceCountedPointer<Chain>(
-        new ProofSource::Chain(certs));
+        new ProofSource::Chain(certs.ReleaseVector()));
   }
   void ComputeTlsSignature(
       const quic::QuicSocketAddress& server_address,
-      const quic::QuicString& hostname,
+      const std::string& hostname,
       uint16_t signature_algorithm,
       quic::QuicStringPiece in,
       std::unique_ptr<SignatureCallback> callback) override {
@@ -398,20 +427,106 @@ class FailingQuicCryptoConfigFactory final : public P2PQuicCryptoConfigFactory {
   std::unique_ptr<quic::QuicCryptoClientConfig> CreateClientCryptoConfig()
       override {
     return std::make_unique<quic::QuicCryptoClientConfig>(
-        std::make_unique<FailingProofVerifierStub>(),
-        quic::TlsClientHandshaker::CreateSslCtx());
+        std::make_unique<FailingProofVerifierStub>());
   }
 
   std::unique_ptr<quic::QuicCryptoServerConfig> CreateServerCryptoConfig()
       override {
     return std::make_unique<quic::QuicCryptoServerConfig>(
         quic::QuicCryptoServerConfig::TESTING, quic_random_,
-        std::make_unique<ProofSourceStub>(), quic::KeyExchangeSource::Default(),
-        quic::TlsServerHandshaker::CreateSslCtx());
+        std::make_unique<ProofSourceStub>(),
+        quic::KeyExchangeSource::Default());
   }
 
  private:
   quic::QuicRandom* quic_random_;
+};
+
+// A CryptoClientStream that bypasses the QUIC handshake and becomes connected.
+class ConnectedCryptoClientStream final : public quic::QuicCryptoClientStream {
+ public:
+  ConnectedCryptoClientStream(
+      const quic::QuicServerId& server_id,
+      quic::QuicSession* session,
+      std::unique_ptr<quic::ProofVerifyContext> verify_context,
+      quic::QuicCryptoClientConfig* crypto_config,
+      quic::QuicCryptoClientStream::ProofHandler* proof_handler)
+      : quic::QuicCryptoClientStream(server_id,
+                                     session,
+                                     std::move(verify_context),
+                                     crypto_config,
+                                     proof_handler),
+        session_(session) {}
+  ~ConnectedCryptoClientStream() override {}
+
+  bool CryptoConnect() override {
+    encryption_established_ = true;
+    handshake_confirmed_ = true;
+    // quic::QuicSession checks that its config has been negotiated after the
+    // handshake has been confirmed. The easiest way to fake negotiated values
+    // is to have the config object process a hello message.
+    quic::QuicConfig config;
+    config.SetIdleNetworkTimeout(
+        quic::QuicTime::Delta::FromSeconds(2 * quic::kMaximumIdleTimeoutSecs),
+        quic::QuicTime::Delta::FromSeconds(quic::kMaximumIdleTimeoutSecs));
+    config.SetBytesForConnectionIdToSend(quic::PACKET_8BYTE_CONNECTION_ID);
+    config.SetMaxIncomingBidirectionalStreamsToSend(
+        quic::kDefaultMaxStreamsPerConnection / 2);
+    config.SetMaxIncomingUnidirectionalStreamsToSend(
+        quic::kDefaultMaxStreamsPerConnection / 2);
+    quic::CryptoHandshakeMessage message;
+    config.ToHandshakeMessage(&message,
+                              session()->connection()->transport_version());
+    std::string error_details;
+    session()->config()->ProcessPeerHello(message, quic::CLIENT,
+                                          &error_details);
+    session()->OnConfigNegotiated();
+    session()->OnCryptoHandshakeEvent(quic::QuicSession::HANDSHAKE_CONFIRMED);
+    return true;
+  }
+
+  quic::QuicSession* session() { return session_; }
+
+  bool encryption_established() const override {
+    return encryption_established_;
+  }
+
+  bool handshake_confirmed() const override { return handshake_confirmed_; }
+
+ private:
+  bool encryption_established_ = false;
+  bool handshake_confirmed_ = false;
+  // Outlives this object.
+  quic::QuicSession* session_;
+};
+
+// A P2PQuicCryptoStream factory that uses a ConnectedCryptoClientStream
+// test object that can fake a successful connection.
+class ConnectedCryptoClientStreamFactory final
+    : public P2PQuicCryptoStreamFactory {
+ public:
+  ~ConnectedCryptoClientStreamFactory() override {}
+
+  std::unique_ptr<quic::QuicCryptoClientStream> CreateClientCryptoStream(
+      quic::QuicSession* session,
+      quic::QuicCryptoClientConfig* crypto_config,
+      quic::QuicCryptoClientStream::ProofHandler* proof_handler) override {
+    quic::QuicServerId server_id("dummy_host", 12345);
+    return std::make_unique<ConnectedCryptoClientStream>(
+        server_id, session,
+        crypto_config->proof_verifier()->CreateDefaultContext(), crypto_config,
+        proof_handler);
+  }
+
+  // Creates a real quic::QuiCryptoServerStream.
+  std::unique_ptr<quic::QuicCryptoServerStream> CreateServerCryptoStream(
+      const quic::QuicCryptoServerConfig* crypto_config,
+      quic::QuicCompressedCertsCache* compressed_certs_cache,
+      quic::QuicSession* session,
+      quic::QuicCryptoServerStream::Helper* helper) override {
+    return std::make_unique<quic::QuicCryptoServerStream>(
+        crypto_config, compressed_certs_cache, session, helper);
+  }
 };
 
 }  // namespace
@@ -474,7 +589,8 @@ class P2PQuicTransportTest : public testing::Test {
         P2PQuicTransportImpl::Create(
             &clock_, alarm_factory_.get(), quic_random_,
             client_quic_transport_delegate.get(), client_packet_transport.get(),
-            client_config, std::move(client_crypto_factory));
+            client_config, std::move(client_crypto_factory),
+            std::make_unique<P2PQuicCryptoStreamFactoryImpl>());
 
     client_peer_ = std::make_unique<QuicPeerForTest>(
         std::move(client_packet_transport),
@@ -494,7 +610,8 @@ class P2PQuicTransportTest : public testing::Test {
         P2PQuicTransportImpl::Create(
             &clock_, alarm_factory_.get(), quic_random_,
             server_quic_transport_delegate.get(), server_packet_transport.get(),
-            server_config, std::move(server_crypto_factory));
+            server_config, std::move(server_crypto_factory),
+            std::make_unique<P2PQuicCryptoStreamFactoryImpl>());
 
     server_peer_ = std::make_unique<QuicPeerForTest>(
         std::move(server_packet_transport),
@@ -528,9 +645,9 @@ class P2PQuicTransportTest : public testing::Test {
   // This is done using a pre shared key.
   void Connect() {
     CallbackRunLoop run_loop(runner());
-    EXPECT_CALL(*client_peer_->quic_transport_delegate(), OnConnected())
+    EXPECT_CALL(*client_peer_->quic_transport_delegate(), OnConnected(_))
         .WillOnce(FireCallback(run_loop.CreateCallback()));
-    EXPECT_CALL(*server_peer_->quic_transport_delegate(), OnConnected())
+    EXPECT_CALL(*server_peer_->quic_transport_delegate(), OnConnected(_))
         .WillOnce(FireCallback(run_loop.CreateCallback()));
 
     server_peer_->quic_transport()->Start(
@@ -626,13 +743,6 @@ class P2PQuicTransportTest : public testing::Test {
 
   scoped_refptr<net::test::TestTaskRunner> runner() { return runner_; }
 
-  template <wtf_size_t Size>
-  static Vector<uint8_t> VectorFromArray(const uint8_t (&array)[Size]) {
-    Vector<uint8_t> vector;
-    vector.Append(array, Size);
-    return vector;
-  }
-
  private:
   quic::MockClock clock_;
   quic::QuicRandom* quic_random_;
@@ -653,9 +763,14 @@ TEST_F(P2PQuicTransportTest, HandshakeConnectsPeersWithPreSharedKeys) {
   Initialize();
 
   CallbackRunLoop run_loop(runner());
-  EXPECT_CALL(*client_peer()->quic_transport_delegate(), OnConnected())
+  // Datagrams should be supported.
+  EXPECT_CALL(*client_peer()->quic_transport_delegate(),
+              OnConnected(Property(
+                  &P2PQuicNegotiatedParams::datagrams_supported, Eq(true))))
       .WillOnce(FireCallback(run_loop.CreateCallback()));
-  EXPECT_CALL(*server_peer()->quic_transport_delegate(), OnConnected())
+  EXPECT_CALL(*server_peer()->quic_transport_delegate(),
+              OnConnected(Property(
+                  &P2PQuicNegotiatedParams::datagrams_supported, Eq(true))))
       .WillOnce(FireCallback(run_loop.CreateCallback()));
 
   server_peer()->quic_transport()->Start(
@@ -677,21 +792,26 @@ TEST_F(P2PQuicTransportTest, HandshakeConnectsPeersWithRemoteCertificates) {
   Initialize();
 
   CallbackRunLoop run_loop(runner());
-  EXPECT_CALL(*client_peer()->quic_transport_delegate(), OnConnected())
+  // Datagrams should be supported.
+  EXPECT_CALL(*client_peer()->quic_transport_delegate(),
+              OnConnected(Property(
+                  &P2PQuicNegotiatedParams::datagrams_supported, Eq(true))))
       .WillOnce(FireCallback(run_loop.CreateCallback()));
-  EXPECT_CALL(*server_peer()->quic_transport_delegate(), OnConnected())
+  EXPECT_CALL(*server_peer()->quic_transport_delegate(),
+              OnConnected(Property(
+                  &P2PQuicNegotiatedParams::datagrams_supported, Eq(true))))
       .WillOnce(FireCallback(run_loop.CreateCallback()));
 
   // Start the handshake with the remote fingerprints.
-  std::vector<std::unique_ptr<rtc::SSLFingerprint>> server_fingerprints;
-  server_fingerprints.emplace_back(rtc::SSLFingerprint::Create(
-      "sha-256", server_peer()->certificate()->identity()));
+  Vector<std::unique_ptr<rtc::SSLFingerprint>> server_fingerprints;
+  server_fingerprints.push_back(rtc::SSLFingerprint::CreateUnique(
+      "sha-256", *server_peer()->certificate()->identity()));
   server_peer()->quic_transport()->Start(
       P2PQuicTransport::StartConfig(std::move(server_fingerprints)));
 
-  std::vector<std::unique_ptr<rtc::SSLFingerprint>> client_fingerprints;
-  client_fingerprints.emplace_back(rtc::SSLFingerprint::Create(
-      "sha-256", client_peer()->certificate()->identity()));
+  Vector<std::unique_ptr<rtc::SSLFingerprint>> client_fingerprints;
+  client_fingerprints.push_back(rtc::SSLFingerprint::CreateUnique(
+      "sha-256", *client_peer()->certificate()->identity()));
   client_peer()->quic_transport()->Start(
       P2PQuicTransport::StartConfig(std::move(client_fingerprints)));
 
@@ -702,6 +822,7 @@ TEST_F(P2PQuicTransportTest, HandshakeConnectsPeersWithRemoteCertificates) {
   EXPECT_TRUE(server_peer()->quic_transport()->IsCryptoHandshakeConfirmed());
   EXPECT_TRUE(server_peer()->quic_transport()->IsEncryptionEstablished());
 }
+
 // Tests the standard case for the server side closing the connection.
 TEST_F(P2PQuicTransportTest, ServerStops) {
   Initialize();
@@ -838,27 +959,6 @@ TEST_F(P2PQuicTransportTest, ServerConnectionFailureAfterConnected) {
   server_connection()->CloseConnection(
       quic::QuicErrorCode::QUIC_INTERNAL_ERROR, "internal error",
       quic::ConnectionCloseBehavior::SEND_CONNECTION_CLOSE_PACKET);
-  run_loop.RunUntilCallbacksFired();
-
-  ExpectTransportsClosed();
-}
-
-// Tests that closing the connection with no ACK frame does not make any
-// difference in the closing procedure.
-TEST_F(P2PQuicTransportTest, ConnectionFailureNoAckFrame) {
-  Initialize();
-  Connect();
-  CallbackRunLoop run_loop(runner());
-  EXPECT_CALL(*client_peer()->quic_transport_delegate(),
-              OnConnectionFailed(_, _))
-      .WillOnce(FireCallback(run_loop.CreateCallback()));
-  EXPECT_CALL(*server_peer()->quic_transport_delegate(),
-              OnConnectionFailed(_, _))
-      .WillOnce(FireCallback(run_loop.CreateCallback()));
-
-  client_connection()->CloseConnection(
-      quic::QuicErrorCode::QUIC_INTERNAL_ERROR, "internal error",
-      quic::ConnectionCloseBehavior::SEND_CONNECTION_CLOSE_PACKET_WITH_NO_ACK);
   run_loop.RunUntilCallbacksFired();
 
   ExpectTransportsClosed();
@@ -1116,13 +1216,42 @@ TEST_F(P2PQuicTransportTest, StreamResetAfterReceivingFin) {
   ExpectStreamsClosed();
 }
 
+// Tests that when datagrams are sent from each side they are received on the
+// other end.
+TEST_F(P2PQuicTransportTest, DatagramsSentReceivedOnRemoteSide) {
+  Initialize();
+  Connect();
+  CallbackRunLoop run_loop(runner());
+
+  // We should get the appropriate message on each end.
+  EXPECT_CALL(*server_peer()->quic_transport_delegate(),
+              OnDatagramReceived(ElementsAreArray(kClientMessage)))
+      .WillOnce(FireCallback(run_loop.CreateCallback()));
+  EXPECT_CALL(*client_peer()->quic_transport_delegate(),
+              OnDatagramReceived(ElementsAreArray(kServerMessage)))
+      .WillOnce(FireCallback(run_loop.CreateCallback()));
+  // The OnDatagramSent callback should fire for each datagram being sent.
+  EXPECT_CALL(*server_peer()->quic_transport_delegate(), OnDatagramSent())
+      .Times(1)
+      .WillOnce(FireCallback(run_loop.CreateCallback()));
+  EXPECT_CALL(*client_peer()->quic_transport_delegate(), OnDatagramSent())
+      .Times(1)
+      .WillOnce(FireCallback(run_loop.CreateCallback()));
+
+  server_peer()->quic_transport()->SendDatagram(
+      VectorFromArray(kServerMessage));
+  client_peer()->quic_transport()->SendDatagram(
+      VectorFromArray(kClientMessage));
+
+  run_loop.RunUntilCallbacksFired();
+}
+
 // Tests that when data is sent on a stream it is received on the other end.
 TEST_F(P2PQuicTransportTest, StreamDataSentThenReceivedOnRemoteSide) {
   Initialize();
   Connect();
   SetupConnectedStreams();
   CallbackRunLoop run_loop(runner());
-  const uint8_t kMessage[] = {'h', 'o', 'w', 'd', 'y'};
 
   EXPECT_CALL(*server_peer()->stream_delegate(),
               OnDataReceived(ElementsAreArray(kMessage), false))
@@ -1143,8 +1272,6 @@ TEST_F(P2PQuicTransportTest, StreamDataSentWithFinClosesStreams) {
   Connect();
   SetupConnectedStreams();
   CallbackRunLoop run_loop(runner());
-  const uint8_t kServerMessage[] = {'s', 'e', 'r', 'v', 'e', 'r'};
-  const uint8_t kClientMessage[] = {'c', 'l', 'i', 'e', 'n', 't'};
 
   EXPECT_CALL(*server_peer()->stream_delegate(),
               OnDataReceived(VectorFromArray(kClientMessage), true))
@@ -1213,4 +1340,170 @@ TEST_F(P2PQuicTransportTest, GetStatsForNumberOfStreams) {
   EXPECT_GT(server_stats_2.timestamp, server_stats_1.timestamp);
 }
 
+// P2PQuicTransport tests that use a fake quic::QuicConnection.
+class P2PQuicTransportMockConnectionTest : public testing::Test {
+ public:
+  P2PQuicTransportMockConnectionTest() {
+    connection_helper_ = new quic::test::MockQuicConnectionHelper();
+    connection_ = new quic::test::MockQuicConnection(
+        connection_helper_, &alarm_factory_, quic::Perspective::IS_CLIENT);
+
+    rtc::scoped_refptr<rtc::RTCCertificate> certificate =
+        CreateTestCertificate();
+    P2PQuicTransportConfig config(quic::Perspective::IS_CLIENT, {certificate},
+                                  kTransportDelegateReadBufferSize,
+                                  kTransportWriteBufferSize);
+    quic::QuicConfig quic_config;
+    transport_ = std::make_unique<P2PQuicTransportImpl>(
+        &delegate_, &packet_transport_, config,
+        std::unique_ptr<quic::test::MockQuicConnectionHelper>(
+            connection_helper_),
+        std::unique_ptr<quic::test::MockQuicConnection>(connection_),
+        quic_config,
+        std::make_unique<P2PQuicCryptoConfigFactoryImpl>(&quic_random_),
+        std::make_unique<ConnectedCryptoClientStreamFactory>(), &clock_);
+    // Called once in P2PQuicTransportImpl::Start and once in the destructor.
+    EXPECT_CALL(packet_transport_, SetReceiveDelegate(transport())).Times(1);
+    EXPECT_CALL(packet_transport_, SetReceiveDelegate(nullptr)).Times(1);
+    // DCHECKS get hit when the clock is at 0.
+    connection_helper_->AdvanceTime(quic::QuicTime::Delta::FromSeconds(1));
+    transport_->Start(P2PQuicTransport::StartConfig("foobar"));
+  }
+
+  ~P2PQuicTransportMockConnectionTest() override {}
+
+  P2PQuicTransportImpl* transport() { return transport_.get(); }
+
+  MockP2PQuicTransportDelegate* delegate() { return &delegate_; }
+
+  quic::test::MockQuicConnection* connection() { return connection_; }
+
+ private:
+  quic::MockClock clock_;
+  MockP2PQuicPacketTransport packet_transport_;
+  quic::test::MockRandom quic_random_;
+  quic::test::MockAlarmFactory alarm_factory_;
+  MockP2PQuicTransportDelegate delegate_;
+  std::unique_ptr<P2PQuicTransportImpl> transport_;
+  // Owned by the |transport_|.
+  quic::test::MockQuicConnection* connection_;
+  quic::test::MockQuicConnectionHelper* connection_helper_;
+};
+
+// Test that when a datagram is received it properly fires the
+// OnDatagramReceived function on the delegate.
+TEST_F(P2PQuicTransportMockConnectionTest, OnDatagramReceived) {
+  EXPECT_TRUE(transport()->CanSendDatagram());
+  EXPECT_CALL(*delegate(), OnDatagramReceived(ElementsAreArray(kMessage)));
+  transport()->OnMessageReceived(quic::QuicStringPiece(
+      reinterpret_cast<const char*>(kMessage), sizeof(kMessage)));
+}
+
+// Test that when a datagram is sent that is properly fires the OnDatagramSent
+// function on the delegate.
+TEST_F(P2PQuicTransportMockConnectionTest, OnDatagramSent) {
+  EXPECT_CALL(*connection(), SendMessage(_, _))
+      .WillOnce(Invoke(
+          [](quic::QuicMessageId message_id, quic::QuicMemSliceSpan message) {
+            EXPECT_THAT(message.GetData(0), ElementsAreArray(kMessage));
+            return quic::MESSAGE_STATUS_SUCCESS;
+          }));
+  EXPECT_CALL(*delegate(), OnDatagramSent());
+
+  transport()->SendDatagram(VectorFromArray(kMessage));
+}
+
+// Test that when the quic::QuicConnection is congestion control blocked that
+// the datagram gets buffered and not sent.
+TEST_F(P2PQuicTransportMockConnectionTest, DatagramNotSent) {
+  EXPECT_CALL(*connection(), SendMessage(_, _))
+      .WillOnce(Return(quic::MESSAGE_STATUS_BLOCKED));
+  EXPECT_CALL(*delegate(), OnDatagramSent()).Times(0);
+
+  transport()->SendDatagram(VectorFromArray(kMessage));
+}
+
+// Test that when datagrams are buffered they are later sent when the transport
+// is no longer congestion control blocked.
+TEST_F(P2PQuicTransportMockConnectionTest, BufferedDatagramsSent) {
+  EXPECT_CALL(*connection(), SendMessage(_, _))
+      .WillOnce(Return(quic::MESSAGE_STATUS_BLOCKED));
+  transport()->SendDatagram(VectorFromArray(kMessage));
+  transport()->SendDatagram(VectorFromArray(kMessage2));
+
+  EXPECT_CALL(*delegate(), OnDatagramSent()).Times(2);
+  // Need to check equality with the function call matcher, instead of
+  // passing a lamda that checks equality in an Invoke as done in other tests.
+  EXPECT_CALL(*connection(),
+              SendMessage(_, ResultOf(
+                                 [](quic::QuicMemSliceSpan message) {
+                                   return message.GetData(0);
+                                 },
+                                 ElementsAreArray(kMessage))))
+      .WillOnce(Return(quic::MESSAGE_STATUS_SUCCESS));
+  EXPECT_CALL(*connection(),
+              SendMessage(_, ResultOf(
+                                 [](quic::QuicMemSliceSpan message) {
+                                   return message.GetData(0);
+                                 },
+                                 ElementsAreArray(kMessage2))))
+      .WillOnce(Return(quic::MESSAGE_STATUS_SUCCESS));
+
+  transport()->OnCanWrite();
+}
+
+// Tests the following scenario:
+// -Write blocked - datagrams are buffered.
+// -Write unblocked - send buffered datagrams.
+// -Write blocked - keep datagrams buffered.
+TEST_F(P2PQuicTransportMockConnectionTest, BufferedDatagramRemainBuffered) {
+  EXPECT_CALL(*connection(), SendMessage(_, _))
+      .WillOnce(Return(quic::MESSAGE_STATUS_BLOCKED));
+  transport()->SendDatagram(VectorFromArray(kMessage));
+  transport()->SendDatagram(VectorFromArray(kMessage2));
+
+  // The first datagram gets sent off after becoming write unblocked, while the
+  // second datagram is buffered.
+  EXPECT_CALL(*connection(),
+              SendMessage(_, ResultOf(
+                                 [](quic::QuicMemSliceSpan message) {
+                                   return message.GetData(0);
+                                 },
+                                 ElementsAreArray(kMessage))))
+      .WillOnce(Return(quic::MESSAGE_STATUS_SUCCESS));
+  EXPECT_CALL(*connection(),
+              SendMessage(_, ResultOf(
+                                 [](quic::QuicMemSliceSpan message) {
+                                   return message.GetData(0);
+                                 },
+                                 ElementsAreArray(kMessage2))))
+      .WillOnce(Return(quic::MESSAGE_STATUS_BLOCKED));
+  // No callback for the second datagram, as it is still buffered.
+  EXPECT_CALL(*delegate(), OnDatagramSent()).Times(1);
+
+  transport()->OnCanWrite();
+
+  // Sending another datagram at this point should just buffer it.
+  EXPECT_CALL(*connection(), SendMessage(_, _)).Times(0);
+  transport()->SendDatagram(VectorFromArray(kMessage));
+}
+
+TEST_F(P2PQuicTransportMockConnectionTest, LostDatagramUpdatesStats) {
+  // The ID the quic::QuicSession will assign to the datagram that is used for
+  // callbacks, like OnDatagramLost.
+  uint32_t datagram_id;
+  EXPECT_CALL(*connection(), SendMessage(_, _))
+      .WillOnce(Invoke([&datagram_id](quic::QuicMessageId message_id,
+                                      quic::QuicMemSliceSpan message) {
+        datagram_id = message_id;
+        return quic::MESSAGE_STATUS_SUCCESS;
+      }));
+  EXPECT_CALL(*delegate(), OnDatagramSent()).Times(1);
+  transport()->SendDatagram(VectorFromArray(kMessage));
+
+  EXPECT_EQ(0u, transport()->GetStats().num_datagrams_lost);
+  transport()->OnMessageLost(datagram_id);
+
+  EXPECT_EQ(1u, transport()->GetStats().num_datagrams_lost);
+}
 }  // namespace blink

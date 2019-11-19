@@ -12,7 +12,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.RetryOnFailure;
@@ -27,6 +26,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.DOMUtils;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.WebContentsUtils;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.ViewAndroidDelegate;
@@ -71,7 +71,7 @@ public class SelectPopupOtherContentViewTest {
     private boolean isSelectPopupVisibleOnUiThread() {
         try {
             // clang-format off
-            return ThreadUtils.runOnUiThreadBlocking(() ->
+            return TestThreadUtils.runOnUiThreadBlocking(() ->
                     WebContentsUtils.isSelectPopupVisible(mActivityTestRule.getWebContents()));
             // clang-format on
         } catch (ExecutionException e) {
@@ -88,8 +88,7 @@ public class SelectPopupOtherContentViewTest {
     @LargeTest
     @Feature({"Browser"})
     @RetryOnFailure
-    public void testPopupNotClosedByOtherContentView()
-            throws InterruptedException, Exception, Throwable {
+    public void testPopupNotClosedByOtherContentView() throws Exception, Throwable {
         // Load the test page.
         mActivityTestRule.startMainActivityWithURL(SELECT_URL);
 
@@ -98,18 +97,15 @@ public class SelectPopupOtherContentViewTest {
         CriteriaHelper.pollInstrumentationThread(new PopupShowingCriteria());
 
         // Now create and destroy a different WebContents.
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                WebContents webContents = WebContentsFactory.createWebContents(false, false);
-                ChromeActivity activity = mActivityTestRule.getActivity();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            WebContents webContents = WebContentsFactory.createWebContents(false, false);
+            ChromeActivity activity = mActivityTestRule.getActivity();
 
-                ContentView cv = ContentView.createContentView(activity, webContents);
-                webContents.initialize("", ViewAndroidDelegate.createBasicDelegate(cv), cv,
-                        new ActivityWindowAndroid(activity),
-                        WebContents.createDefaultInternalsHolder());
-                webContents.destroy();
-            }
+            ContentView cv = ContentView.createContentView(activity, webContents);
+            webContents.initialize("", ViewAndroidDelegate.createBasicDelegate(cv), cv,
+                    new ActivityWindowAndroid(activity),
+                    WebContents.createDefaultInternalsHolder());
+            webContents.destroy();
         });
 
         // Process some more events to give a chance to the dialog to hide if it were to.

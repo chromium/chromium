@@ -269,7 +269,7 @@ void ClientResourceProvider::ReceiveReturnsFromParent(
       // |cb| is destroyed when leaving scope.
     };
     release_callbacks.push_back(
-        base::BindOnce(run_callback, base::Passed(&imported.release_callback),
+        base::BindOnce(run_callback, std::move(imported.release_callback),
                        imported.returned_sync_token, imported.returned_lost));
     // We don't want to keep this resource, so we leave |imported_keep_end_it|
     // pointing to it (since it points past the end of what we're keeping). We
@@ -364,6 +364,7 @@ void ClientResourceProvider::ShutdownAndReleaseAllResources() {
 
 ClientResourceProvider::ScopedSkSurface::ScopedSkSurface(
     GrContext* gr_context,
+    sk_sp<SkColorSpace> color_space,
     GLuint texture_id,
     GLenum texture_target,
     const gfx::Size& size,
@@ -381,13 +382,13 @@ ClientResourceProvider::ScopedSkSurface::ScopedSkSurface(
   bool gpu_compositing = true;
   surface_ = SkSurface::MakeFromBackendTextureAsRenderTarget(
       gr_context, backend_texture, kTopLeft_GrSurfaceOrigin, msaa_sample_count,
-      ResourceFormatToClosestSkColorType(gpu_compositing, format), nullptr,
+      ResourceFormatToClosestSkColorType(gpu_compositing, format), color_space,
       &surface_props);
 }
 
 ClientResourceProvider::ScopedSkSurface::~ScopedSkSurface() {
   if (surface_)
-    surface_->prepareForExternalIO();
+    surface_->flush();
 }
 
 SkSurfaceProps ClientResourceProvider::ScopedSkSurface::ComputeSurfaceProps(

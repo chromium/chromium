@@ -9,7 +9,7 @@
 
 namespace extensions {
 
-class SystemCpuGetInfoFunction : public UIThreadExtensionFunction {
+class SystemCpuGetInfoFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("system.cpu.getInfo", SYSTEM_CPU_GETINFO)
   SystemCpuGetInfoFunction();
@@ -17,7 +17,7 @@ class SystemCpuGetInfoFunction : public UIThreadExtensionFunction {
  private:
   ~SystemCpuGetInfoFunction() override;
 
-  // UIThreadExtensionFunction:
+  // ExtensionFunction:
   ResponseAction Run() override;
 
   void OnGetCpuInfoCompleted(bool success);

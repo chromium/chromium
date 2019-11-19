@@ -260,6 +260,14 @@ const generateCSS = (options, fontSize=18)=> {
     button.${cssPrefix}-button[disabled=true] > .${cssPrefix}-logo > .${cssPrefix}-svg-error {
         display:initial;
     }
+
+    /*
+    * warning
+    */
+    div.webxrWarning {
+      color: #f00;
+      font-weight: bold;
+    }
   `);
 };
 
@@ -286,6 +294,7 @@ class EnterXRButton {
    * @param {string} [options.corners] set to 'round', 'square' or pixel value representing the corner radius
    * @param {string} [options.disabledOpacity] set opacity of button dom when disabled
    * @param {string} [options.cssprefix] set to change the css prefix from default 'webvr-ui'
+   * @param {array} [options.supportedSessionTypes] if set the button will keep it's own state updated with device changes
    */
   constructor(options) {
     options = options || {};
@@ -306,6 +315,7 @@ class EnterXRButton {
     options.onEndSession = options.onEndSession || (function() {});
 
     options.injectCSS = options.injectCSS !== false;
+    options.supportedSessionTypes = options.supportedSessionTypes || [];
 
     this.options = options;
 
@@ -322,6 +332,13 @@ class EnterXRButton {
     this.__forceDisabled = false;
     this.__setDisabledAttribute(true);
     this.setTitle(this.options.textXRNotFoundTitle);
+
+    if (options.supportedSessionTypes.length > 0 && navigator.xr) {
+      navigator.xr.addEventListener('devicechange', () => this.__onDeviceChange());
+
+      // Force a call now in case the initial event from the page load was missed.
+      this.__onDeviceChange();
+    }
   }
 
   /**
@@ -422,6 +439,23 @@ class EnterXRButton {
   }
 
   /**
+   * Add the button to the document header. WebXR is only available in secure
+   * contexts, so include a warning message above the button when using an
+   * insecure context.
+   * @return {EnterXRButton}
+   */
+  addToHeader() {
+    if (!window.isSecureContext) {
+      let warning_elem = document.createElement("div");
+      warning_elem.setAttribute("class", "webxrWarning");
+      warning_elem.innerText = "WebXR unavailable due to insecure context";
+      document.querySelector('header').appendChild(warning_elem);
+    }
+    document.querySelector('header').appendChild(this.domElement);
+    return this;
+  }
+
+  /**
    * clean up object for garbage collection
    */
   remove() {
@@ -474,6 +508,34 @@ class EnterXRButton {
       this.__setDisabledAttribute(true);
     }
   }
+
+  /**
+   * Handles a device change event
+   * @private
+   */
+  __onDeviceChange(attempt) {
+    if (attempt === undefined) {
+      attempt = 0;
+    }
+
+    if (attempt < this.options.supportedSessionTypes.length) {
+      let sessionMode = this.options.supportedSessionTypes[attempt];
+      navigator.xr.isSessionSupported(sessionMode).then((supported) => {
+        if (supported) {
+          this.enabled = true;
+          return;
+        }
+
+        attempt++;
+        if (attempt < this.options.supportedSessionTypes.length) {
+          this.__onDeviceChange(attempt);
+        } else {
+          this.enabled = false;
+        }
+      });
+    }
+  }
+
 }
 
 /**

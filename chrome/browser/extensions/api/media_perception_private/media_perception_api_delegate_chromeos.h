@@ -7,6 +7,7 @@
 
 #include "base/callback_forward.h"
 #include "extensions/browser/api/media_perception_private/media_perception_api_delegate.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace extensions {
 
@@ -20,12 +21,14 @@ class MediaPerceptionAPIDelegateChromeOS
   void LoadCrOSComponent(
       const api::media_perception_private::ComponentType& type,
       LoadCrOSComponentCallback load_callback) override;
-  void BindDeviceFactoryProviderToVideoCaptureService(
-      video_capture::mojom::DeviceFactoryProviderPtr* provider) override;
+  void BindVideoSourceProvider(
+      mojo::PendingReceiver<video_capture::mojom::VideoSourceProvider> receiver)
+      override;
   void SetMediaPerceptionRequestHandler(
       MediaPerceptionRequestHandler handler) override;
-  void ForwardMediaPerceptionRequest(
-      chromeos::media_perception::mojom::MediaPerceptionRequest request,
+  void ForwardMediaPerceptionReceiver(
+      mojo::PendingReceiver<chromeos::media_perception::mojom::MediaPerception>
+          receiver,
       content::RenderFrameHost* render_frame_host) override;
 
  private:

@@ -140,10 +140,10 @@ TEST_F(StorageApiUnittest, StorageAreaOnChanged) {
   RunSetFunction("key", "value");
   EXPECT_EQ(2u, event_observer.events().size());
 
-  EXPECT_TRUE(base::ContainsKey(event_observer.events(),
-                                api::storage::OnChanged::kEventName));
+  EXPECT_TRUE(base::Contains(event_observer.events(),
+                             api::storage::OnChanged::kEventName));
   EXPECT_TRUE(
-      base::ContainsKey(event_observer.events(), "storage.local.onChanged"));
+      base::Contains(event_observer.events(), "storage.local.onChanged"));
 }
 
 }  // namespace extensions

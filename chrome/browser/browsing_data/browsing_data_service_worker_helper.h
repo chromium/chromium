@@ -54,11 +54,11 @@ class BrowsingDataServiceWorkerHelper
  private:
   friend class base::RefCountedThreadSafe<BrowsingDataServiceWorkerHelper>;
 
-  // Enumerates all Service Worker instances on the IO thread.
-  void FetchServiceWorkerUsageInfoOnIOThread(FetchCallback callback);
+  // Enumerates all Service Worker instances on the service worker core thread.
+  void FetchServiceWorkerUsageInfoOnCoreThread(FetchCallback callback);
 
-  // Deletes Service Workers for an origin the IO thread.
-  void DeleteServiceWorkersOnIOThread(const GURL& origin);
+  // Deletes Service Workers for an origin on the service worker core thread.
+  void DeleteServiceWorkersOnCoreThread(const GURL& origin);
 
   DISALLOW_COPY_AND_ASSIGN(BrowsingDataServiceWorkerHelper);
 };

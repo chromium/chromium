@@ -1,0 +1,13 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer
+++++++genericContainer
+++++++++staticText name='Choose one:'
+++++++++++inlineTextBox name='Choose one:'
+++++++popUpButton name='Choose one: Foo'
+++++++++staticText name='Foo'
+++++++++++inlineTextBox name='Foo'
+++++++listBox name='Choose one:'
+++++++++listBoxOption name='Baz' selected=false
+++++++++listBoxOption name='Bar' selected=false
+++++++++listBoxOption name='Foo' selected=false

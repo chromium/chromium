@@ -10,26 +10,28 @@
 
 #import "ios/chrome/browser/ui/commands/activity_service_commands.h"
 #import "ios/chrome/browser/ui/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/ui/commands/infobar_commands.h"
 #import "ios/chrome/browser/ui/commands/page_info_commands.h"
 #import "ios/chrome/browser/ui/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/ui/commands/qr_scanner_commands.h"
 #import "ios/chrome/browser/ui/commands/snackbar_commands.h"
 
 class GURL;
-@class OpenNewTabCommand;
 @class ReadingListAddCommand;
+@class SendTabToSelfCommand;
 
 // Protocol for commands that will generally be handled by the "current tab",
 // which in practice is the BrowserViewController instance displaying the tab.
 // TODO(crbug.com/906662) : Extract BrowserCoordinatorCommands from
 // BrowserCommands.
-@protocol BrowserCommands<NSObject,
-                          ActivityServiceCommands,
-                          BrowserCoordinatorCommands,
-                          PageInfoCommands,
-                          PopupMenuCommands,
-                          QRScannerCommands,
-                          SnackbarCommands>
+@protocol BrowserCommands <NSObject,
+                           ActivityServiceCommands,
+                           BrowserCoordinatorCommands,
+                           InfobarCommands,
+                           PageInfoCommands,
+                           PopupMenuCommands,
+                           QRScannerCommands,
+                           SnackbarCommands>
 
 // Closes the current tab.
 - (void)closeCurrentTab;
@@ -63,6 +65,9 @@ class GURL;
 - (void)viewSource;
 #endif
 
+// Shows the translate infobar.
+- (void)showTranslate;
+
 // Shows the Find In Page bar.
 - (void)showFindInPage;
 
@@ -85,15 +90,14 @@ class GURL;
 // Shows the bookmarks manager.
 - (void)showBookmarksManager;
 
+// Shows the dialog for sending the current tab between a user's devices.
+- (void)showSendTabToSelfUI;
+
 // Requests the "desktop" version of the current page in the active tab.
 - (void)requestDesktopSite;
 
 // Requests the "mobile" version of the current page in the active tab.
 - (void)requestMobileSite;
-
-// Navigates to the Memex tab switcher.
-// TODO(crbug.com/799601): Delete this once its not needed.
-- (void)navigateToMemexTabSwitcher;
 
 // Prepares the browser to display a popup menu.
 - (void)prepareForPopupMenuPresentation:(PopupMenuCommandType)type;
@@ -104,6 +108,13 @@ class GURL;
 
 // Searches for an image in the current tab.
 - (void)searchByImage:(UIImage*)image;
+
+// Sends the tab to another of the user's devices using the data in |command|.
+- (void)sendTabToSelf:(SendTabToSelfCommand*)command;
+
+// Shows/Hides the activity indicator overlay that appears over the view to
+// prevent interaction with the web page.
+- (void)showActivityOverlay:(BOOL)show;
 
 @end
 

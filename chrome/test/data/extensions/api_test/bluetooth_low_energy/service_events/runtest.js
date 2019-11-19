@@ -32,7 +32,9 @@ chrome.bluetoothLowEnergy.onServiceChanged.addListener(function (service) {
 
 chrome.bluetoothLowEnergy.onServiceRemoved.addListener(function (service) {
   removedServices[service.instanceId] = service;
-  chrome.test.sendMessage('ready', function(message) {
-    chrome.test.runTests([testServiceEvents]);
-  });
 });
+
+chrome.test.sendMessage('ready', function(message) {
+  chrome.test.runTests([testServiceEvents]);
+});
+

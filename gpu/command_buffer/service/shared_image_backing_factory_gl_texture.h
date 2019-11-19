@@ -35,6 +35,12 @@ class ImageFactory;
 class GPU_GLES2_EXPORT SharedImageBackingFactoryGLTexture
     : public SharedImageBackingFactory {
  public:
+  struct UnpackStateAttribs {
+    bool es3_capable = false;
+    bool desktop_gl = false;
+    bool supports_unpack_subimage = false;
+  };
+
   SharedImageBackingFactoryGLTexture(const GpuPreferences& gpu_preferences,
                                      const GpuDriverBugWorkarounds& workarounds,
                                      const GpuFeatureInfo& gpu_feature_info,
@@ -47,7 +53,8 @@ class GPU_GLES2_EXPORT SharedImageBackingFactoryGLTexture
       viz::ResourceFormat format,
       const gfx::Size& size,
       const gfx::ColorSpace& color_space,
-      uint32_t usage) override;
+      uint32_t usage,
+      bool is_thread_safe) override;
   std::unique_ptr<SharedImageBacking> CreateSharedImage(
       const Mailbox& mailbox,
       viz::ResourceFormat format,
@@ -64,6 +71,8 @@ class GPU_GLES2_EXPORT SharedImageBackingFactoryGLTexture
       const gfx::Size& size,
       const gfx::ColorSpace& color_space,
       uint32_t usage) override;
+  bool CanImportGpuMemoryBuffer(
+      gfx::GpuMemoryBufferType memory_buffer_type) override;
 
   static std::unique_ptr<SharedImageBacking> CreateSharedImageForTest(
       const Mailbox& mailbox,
@@ -92,10 +101,12 @@ class GPU_GLES2_EXPORT SharedImageBackingFactoryGLTexture
       GLuint gl_type,
       const gles2::Texture::CompatibilitySwizzle* swizzle,
       bool is_cleared,
+      bool has_immutable_storage,
       viz::ResourceFormat format,
       const gfx::Size& size,
       const gfx::ColorSpace& color_space,
-      uint32_t usage);
+      uint32_t usage,
+      const UnpackStateAttribs& attribs);
 
   struct FormatInfo {
     FormatInfo();
@@ -146,9 +157,7 @@ class GPU_GLES2_EXPORT SharedImageBackingFactoryGLTexture
   GpuMemoryBufferFormatSet gpu_memory_buffer_formats_;
   int32_t max_texture_size_ = 0;
   bool texture_usage_angle_ = false;
-  bool es3_capable_ = false;
-  bool desktop_gl_ = false;
-  bool supports_unpack_subimage_ = false;
+  UnpackStateAttribs attribs;
 };
 
 }  // namespace gpu

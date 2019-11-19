@@ -58,7 +58,7 @@ Crypto* WorkerGlobalScopeCrypto::crypto(
 
 Crypto* WorkerGlobalScopeCrypto::crypto() const {
   if (!crypto_)
-    crypto_ = Crypto::Create();
+    crypto_ = MakeGarbageCollected<Crypto>();
   return crypto_.Get();
 }
 

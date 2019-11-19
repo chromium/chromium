@@ -12,6 +12,7 @@
 #include "base/macros.h"
 #include "base/scoped_observer.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/feature_switch.h"
@@ -21,8 +22,6 @@ class FilePath;
 }
 
 namespace extensions {
-
-class ExtensionRegistry;
 
 // An enhancement of ExtensionServiceTestBase that provides helpers to install,
 // update, and uninstall extensions.
@@ -146,7 +145,7 @@ class ExtensionServiceTestWithInstall : public ExtensionServiceTestBase,
   FeatureSwitch::ScopedOverride override_external_install_prompt_;
 
   ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      registry_observer_;
+      registry_observer_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ExtensionServiceTestWithInstall);
 };

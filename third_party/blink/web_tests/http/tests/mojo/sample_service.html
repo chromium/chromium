@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
+<script src="/gen/mojo/public/interfaces/bindings/tests/sample_service.mojom.js"></script>
+<script>
+'use strict';
+
+// Checks that values are set to the defaults if we don't override them.
+test(() => {
+  var bar = new sample.Bar();
+  assert_equals(bar.alpha, 255);
+  assert_equals(bar.type, sample.Bar.Type.VERTICAL);
+
+  var foo = new sample.Foo();
+  assert_equals(foo.name, "Fooby");
+  assert_true(foo.a);
+  assert_equals(foo.data, null);
+
+  var defaults = new sample.DefaultsTest();
+  assert_equals(defaults.a0, -12);
+  assert_equals(defaults.a1, sample.TWELVE);
+  assert_equals(defaults.a2, 1234);
+  assert_equals(defaults.a3, 34567);
+  assert_equals(defaults.a4, 123456);
+  assert_equals(defaults.a5, 3456789012);
+  assert_equals(defaults.a6, -111111111111);
+  // JS doesn't have a 64 bit integer type so this is just checking that the
+  // expected and actual values have the same closest double value.
+  assert_equals(defaults.a7, 9999999999999999999);
+  assert_equals(defaults.a8, 0x12345);
+  assert_equals(defaults.a9, -0x12345);
+  assert_equals(defaults.a10, 1234);
+  assert_true(defaults.a11);
+  assert_false(defaults.a12);
+  assert_equals(defaults.a13, 123.25);
+  assert_equals(defaults.a14, 1234567890.123);
+  assert_equals(defaults.a15, 1E10);
+  assert_equals(defaults.a16, -1.2E+20);
+  assert_equals(defaults.a17, 1.23E-20);
+  assert_equals(defaults.a20, sample.Bar.Type.BOTH);
+  assert_equals(defaults.a21, null);
+  assert_true(!!defaults.a22);
+  assert_equals(defaults.a22.shape, imported.Shape.RECTANGLE);
+  assert_equals(defaults.a22.color, imported.Color.BLACK);
+  assert_equals(defaults.a23, 0xFFFFFFFFFFFFFFFF);
+  assert_equals(defaults.a24, 0x123456789);
+  assert_equals(defaults.a25, -0x123456789);
+}, 'default values');
+
+promise_test(async () => {
+  function ServiceImpl() {
+  }
+
+  ServiceImpl.prototype.frobinate = function(foo, baz, port) {
+    checkFoo(foo);
+    assert_equals(baz, sample.Service.BazOptions.EXTRA);
+    assert_true(port.ptr.isBound());
+    return Promise.resolve({result: 1234});
+  };
+
+  var foo = makeFoo();
+  checkFoo(foo);
+
+  var service = new sample.ServicePtr();
+  var request = mojo.makeRequest(service);
+  var serviceBinding = new mojo.Binding(
+      sample.Service, new ServiceImpl(), request);
+
+  var port = new sample.PortPtr();
+  mojo.makeRequest(port);
+  assert_equals((await service.frobinate(foo, sample.Service.BazOptions.EXTRA,
+                                         port)).result, 1234);
+
+}, 'sample service');
+
+done();
+
+function makeFoo() {
+  var bar = new sample.Bar();
+  bar.alpha = 20;
+  bar.beta = 40;
+  bar.gamma = 60;
+  bar.type = sample.Bar.Type.VERTICAL;
+
+  var extraBars = new Array(3);
+  for (var i = 0; i < extraBars.length; ++i) {
+    var base = i * 100;
+    var type = i % 2 ? sample.Bar.Type.VERTICAL : sample.Bar.Type.HORIZONTAL;
+    extraBars[i] = new sample.Bar();
+    extraBars[i].alpha = base;
+    extraBars[i].beta = base + 20;
+    extraBars[i].gamma = base + 40;
+    extraBars[i].type = type;
+  }
+
+  var data = new Array(10);
+  for (var i = 0; i < data.length; ++i) {
+    data[i] = data.length - i;
+  }
+
+  var foo = new sample.Foo();
+  foo.name = "foopy";
+  foo.x = 1;
+  foo.y = 2;
+  foo.a = false;
+  foo.b = true;
+  foo.c = false;
+  foo.bar = bar;
+  foo.extraBars = extraBars;
+  foo.data = data;
+
+  foo.source = Mojo.createMessagePipe().handle0;
+
+  return foo;
+}
+
+// Checks that the given |Foo| is identical to the one made by |makeFoo()|.
+function checkFoo(foo) {
+  assert_equals(foo.name, "foopy");
+  assert_equals(foo.x, 1);
+  assert_equals(foo.y, 2);
+  assert_false(foo.a);
+  assert_true(foo.b);
+  assert_false(foo.c);
+  assert_equals(foo.bar.alpha, 20);
+  assert_equals(foo.bar.beta, 40);
+  assert_equals(foo.bar.gamma, 60);
+  assert_equals(foo.bar.type, sample.Bar.Type.VERTICAL);
+
+  assert_equals(foo.extraBars.length, 3);
+  for (var i = 0; i < foo.extraBars.length; ++i) {
+    var base = i * 100;
+    var type = i % 2 ?  sample.Bar.Type.VERTICAL : sample.Bar.Type.HORIZONTAL;
+    assert_equals(foo.extraBars[i].alpha, base);
+    assert_equals(foo.extraBars[i].beta, base + 20);
+    assert_equals(foo.extraBars[i].gamma, base + 40);
+    assert_equals(foo.extraBars[i].type, type);
+  }
+
+  assert_equals(foo.data.length, 10);
+  for (var i = 0; i < foo.data.length; ++i)
+    assert_equals(foo.data[i], foo.data.length -i);
+
+  assert_true(foo.source instanceof MojoHandle);
+}
+</script>

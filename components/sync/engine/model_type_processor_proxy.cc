@@ -62,10 +62,10 @@ void ModelTypeProcessorProxy::OnCommitCompleted(
 
 void ModelTypeProcessorProxy::OnUpdateReceived(
     const sync_pb::ModelTypeState& type_state,
-    const UpdateResponseDataList& updates) {
-  task_runner_->PostTask(FROM_HERE,
-                         base::BindOnce(&ModelTypeProcessor::OnUpdateReceived,
-                                        processor_, type_state, updates));
+    UpdateResponseDataList updates) {
+  task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&ModelTypeProcessor::OnUpdateReceived,
+                                processor_, type_state, std::move(updates)));
 }
 
 }  // namespace syncer

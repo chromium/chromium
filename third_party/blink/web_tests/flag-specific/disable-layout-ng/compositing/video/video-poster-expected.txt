@@ -1,0 +1,81 @@
+A <video> should not have a layer until playback begins.
+This test can not be run manually, it requires testRunner.layerTreeAsText.
+
+Case: No src, no poster
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    }
+  ]
+}
+
+
+Case: Displaying poster
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [785, 605],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "position": [785, 0],
+      "bounds": [15, 600],
+      "contentsOpaque": true
+    }
+  ]
+}
+
+
+Case: Displaying movie
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [785, 909],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "ContentsLayer for LayoutVideo VIDEO",
+      "bounds": [352, 288],
+      "transform": 1
+    },
+    {
+      "name": "LayoutFlexibleBox (relative positioned) DIV class='sizing-small phase-ready state-scrubbing'",
+      "bounds": [352, 288],
+      "transform": 1
+    },
+    {
+      "name": "Squashing Layer (first squashed layer: LayoutBlockFlow (positioned) DIV)",
+      "bounds": [352, 288],
+      "transform": 1
+    },
+    {
+      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "position": [785, 0],
+      "bounds": [15, 600],
+      "contentsOpaque": true
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [8, 8, 0, 1]
+      ]
+    }
+  ]
+}
+
+
+

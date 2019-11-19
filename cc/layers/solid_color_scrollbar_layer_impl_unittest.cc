@@ -6,7 +6,7 @@
 
 #include <stddef.h>
 
-#include "cc/test/layer_test_common.h"
+#include "cc/test/layer_tree_impl_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace cc {
@@ -16,28 +16,25 @@ TEST(SolidColorScrollbarLayerImplTest, Occlusion) {
   gfx::Size layer_size(10, 1000);
   gfx::Size viewport_size(1000, 1000);
 
-  LayerTestCommon::LayerImplTest impl;
+  LayerTreeImplTestBase impl;
 
   ScrollbarOrientation orientation = VERTICAL;
   int thumb_thickness = layer_size.width();
   int track_start = 0;
   bool is_left_side_vertical_scrollbar = false;
-  bool is_overlay = false;
 
   SolidColorScrollbarLayerImpl* scrollbar_layer_impl =
-      impl.AddChildToRoot<SolidColorScrollbarLayerImpl>(
-          orientation,
-          thumb_thickness,
-          track_start,
-          is_left_side_vertical_scrollbar,
-          is_overlay);
+      impl.AddLayer<SolidColorScrollbarLayerImpl>(
+          orientation, thumb_thickness, track_start,
+          is_left_side_vertical_scrollbar);
   scrollbar_layer_impl->SetBounds(layer_size);
   scrollbar_layer_impl->SetDrawsContent(true);
   scrollbar_layer_impl->SetCurrentPos(25.f);
   scrollbar_layer_impl->SetClipLayerLength(100.f);
   scrollbar_layer_impl->SetScrollLayerLength(200.f);
   // SolidColorScrollbarLayers construct with opacity = 0.f, so override.
-  scrollbar_layer_impl->test_properties()->opacity = 1.f;
+  CopyProperties(impl.root_layer(), scrollbar_layer_impl);
+  CreateEffectNode(scrollbar_layer_impl).opacity = 1.f;
 
   impl.CalcDrawProps(viewport_size);
 
@@ -50,7 +47,7 @@ TEST(SolidColorScrollbarLayerImplTest, Occlusion) {
     gfx::Rect occluded;
     impl.AppendQuadsWithOcclusion(scrollbar_layer_impl, occluded);
 
-    LayerTestCommon::VerifyQuadsExactlyCoverRect(impl.quad_list(), thumb_rect);
+    VerifyQuadsExactlyCoverRect(impl.quad_list(), thumb_rect);
     EXPECT_EQ(1u, impl.quad_list().size());
   }
 
@@ -59,7 +56,7 @@ TEST(SolidColorScrollbarLayerImplTest, Occlusion) {
     gfx::Rect occluded(scrollbar_layer_impl->visible_layer_rect());
     impl.AppendQuadsWithOcclusion(scrollbar_layer_impl, occluded);
 
-    LayerTestCommon::VerifyQuadsExactlyCoverRect(impl.quad_list(), gfx::Rect());
+    VerifyQuadsExactlyCoverRect(impl.quad_list(), gfx::Rect());
     EXPECT_EQ(impl.quad_list().size(), 0u);
   }
 
@@ -69,8 +66,8 @@ TEST(SolidColorScrollbarLayerImplTest, Occlusion) {
     impl.AppendQuadsWithOcclusion(scrollbar_layer_impl, occluded);
 
     size_t partially_occluded_count = 0;
-    LayerTestCommon::VerifyQuadsAreOccluded(
-        impl.quad_list(), occluded, &partially_occluded_count);
+    VerifyQuadsAreOccluded(impl.quad_list(), occluded,
+                           &partially_occluded_count);
     // The layer outputs one quad, which is partially occluded.
     EXPECT_EQ(1u, impl.quad_list().size());
     EXPECT_EQ(1u, partially_occluded_count);

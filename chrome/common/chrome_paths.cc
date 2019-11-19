@@ -36,8 +36,7 @@
 #include "base/win/registry.h"
 #endif
 
-#if BUILDFLAG(ENABLE_WIDEVINE) && BUILDFLAG(ENABLE_LIBRARY_CDMS)
-#include "media/cdm/cdm_paths.h"                           // nogncheck
+#if defined(OS_LINUX) && BUILDFLAG(ENABLE_WIDEVINE)
 #include "third_party/widevine/cdm/widevine_cdm_common.h"  // nogncheck
 #endif
 
@@ -56,17 +55,25 @@ const base::FilePath::CharType kPepperFlashSystemBaseDirectory[] =
 // The path to the external extension <id>.json files.
 // /usr/share seems like a good choice, see: http://www.pathname.com/fhs/
 const base::FilePath::CharType kFilepathSinglePrefExtensions[] =
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     FILE_PATH_LITERAL("/usr/share/google-chrome/extensions");
 #else
     FILE_PATH_LITERAL("/usr/share/chromium/extensions");
-#endif  // defined(GOOGLE_CHROME_BUILD)
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 // The path to the hint file that tells the pepper plugin loader
 // where it can find the latest component updated flash.
 const base::FilePath::CharType kComponentUpdatedFlashHint[] =
     FILE_PATH_LITERAL("latest-component-updated-flash");
 #endif  // defined(OS_LINUX)
+
+#if defined(OS_LINUX) && BUILDFLAG(ENABLE_WIDEVINE_CDM_COMPONENT)
+// The name of the hint file that tells the latest component updated Widevine
+// CDM directory. This file name should not be changed as otherwise existing
+// Widevine CDMs might not be loaded.
+const base::FilePath::CharType kComponentUpdatedWidevineCdmHint[] =
+    FILE_PATH_LITERAL("latest-component-updated-widevine-cdm");
+#endif  // defined(OS_LINUX) && BUILDFLAG(ENABLE_WIDEVINE_CDM_COMPONENT)
 
 #if defined(OS_CHROMEOS)
 const base::FilePath::CharType kChromeOSComponentFlash[] = FILE_PATH_LITERAL(
@@ -371,19 +378,37 @@ bool PathProvider(int key, base::FilePath* result) {
 #endif
       cur = cur.Append(FILE_PATH_LITERAL("pnacl"));
       break;
-#if BUILDFLAG(ENABLE_WIDEVINE) && BUILDFLAG(ENABLE_LIBRARY_CDMS)
-    // TODO(crbug.com/663554): Remove this after component updated CDM is
-    // supported on Linux and ChromeOS.
-    case chrome::FILE_WIDEVINE_CDM:
+
+#if defined(OS_LINUX) && BUILDFLAG(BUNDLE_WIDEVINE_CDM)
+    case chrome::DIR_BUNDLED_WIDEVINE_CDM:
       if (!GetComponentDirectory(&cur))
         return false;
-      cur =
-          cur.Append(
-                 media::GetPlatformSpecificDirectory(kWidevineCdmBaseDirectory))
-              .AppendASCII(base::GetNativeLibraryName(kWidevineCdmLibraryName));
+#if !defined(OS_CHROMEOS)
+      // TODO(crbug.com/971433): Move Widevine CDM to a separate folder on
+      // ChromeOS so that the manifest can be included.
+      cur = cur.AppendASCII(kWidevineCdmBaseDirectory);
+#endif  // !defined(OS_CHROMEOS)
       break;
-#endif  // BUILDFLAG(ENABLE_WIDEVINE) && BUILDFLAG(ENABLE_LIBRARY_CDMS)
-    case chrome::FILE_RESOURCES_PACK:
+#endif  // defined(OS_LINUX) && BUILDFLAG(BUNDLE_WIDEVINE_CDM)
+
+#if defined(OS_LINUX) && !defined(OS_CHROMEOS) && \
+    BUILDFLAG(ENABLE_WIDEVINE_CDM_COMPONENT)
+    case chrome::DIR_COMPONENT_UPDATED_WIDEVINE_CDM:
+      if (!base::PathService::Get(chrome::DIR_USER_DATA, &cur))
+        return false;
+      cur = cur.Append(kWidevineCdmBaseDirectory);
+      break;
+    case chrome::FILE_COMPONENT_WIDEVINE_CDM_HINT:
+      if (!base::PathService::Get(chrome::DIR_COMPONENT_UPDATED_WIDEVINE_CDM,
+                                  &cur))
+        return false;
+      cur = cur.Append(kComponentUpdatedWidevineCdmHint);
+      break;
+#endif  // defined(OS_LINUX) && !defined(OS_CHROMEOS) &&
+        // BUILDFLAG(ENABLE_WIDEVINE_CDM_COMPONENT)
+
+    case chrome::FILE_RESOURCES_PACK:  // Falls through.
+    case chrome::FILE_DEV_UI_RESOURCES_PACK:
 #if defined(OS_MACOSX)
       cur = base::mac::FrameworkBundlePath();
       cur = cur.Append(FILE_PATH_LITERAL("Resources"))
@@ -392,14 +417,21 @@ bool PathProvider(int key, base::FilePath* result) {
 #elif defined(OS_ANDROID)
       if (!base::PathService::Get(ui::DIR_RESOURCE_PAKS_ANDROID, &cur))
         return false;
+      if (key == chrome::FILE_DEV_UI_RESOURCES_PACK) {
+        cur = cur.Append(FILE_PATH_LITERAL("dev_ui_resources.pak"));
+      } else {
+        DCHECK_EQ(chrome::FILE_RESOURCES_PACK, key);
+        cur = cur.Append(FILE_PATH_LITERAL("resources.pak"));
+      }
 #else
       // If we're not bundled on mac or Android, resources.pak should be next
       // to the binary (e.g., for unit tests).
       if (!base::PathService::Get(base::DIR_MODULE, &cur))
         return false;
-#endif
       cur = cur.Append(FILE_PATH_LITERAL("resources.pak"));
+#endif
       break;
+
 #if defined(OS_CHROMEOS)
     case chrome::DIR_CHROMEOS_WALLPAPERS:
       if (!base::PathService::Get(chrome::DIR_USER_DATA, &cur))
@@ -461,7 +493,7 @@ bool PathProvider(int key, base::FilePath* result) {
       break;
 #if defined(OS_POSIX) && !defined(OS_MACOSX) && !defined(OS_OPENBSD)
     case chrome::DIR_POLICY_FILES: {
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       cur = base::FilePath(FILE_PATH_LITERAL("/etc/opt/chrome/policies"));
 #else
       cur = base::FilePath(FILE_PATH_LITERAL("/etc/chromium/policies"));
@@ -469,8 +501,8 @@ bool PathProvider(int key, base::FilePath* result) {
       break;
     }
 #endif
-#if defined(OS_CHROMEOS) || (defined(OS_LINUX) && defined(CHROMIUM_BUILD)) || \
-    defined(OS_MACOSX)
+#if defined(OS_CHROMEOS) || \
+    (defined(OS_LINUX) && BUILDFLAG(CHROMIUM_BRANDING)) || defined(OS_MACOSX)
     case chrome::DIR_USER_EXTERNAL_EXTENSIONS: {
       if (!base::PathService::Get(chrome::DIR_USER_DATA, &cur))
         return false;
@@ -516,7 +548,7 @@ bool PathProvider(int key, base::FilePath* result) {
 #if defined(OS_LINUX) || defined(OS_MACOSX)
     case chrome::DIR_NATIVE_MESSAGING:
 #if defined(OS_MACOSX)
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       cur = base::FilePath(FILE_PATH_LITERAL(
            "/Library/Google/Chrome/NativeMessagingHosts"));
 #else
@@ -524,7 +556,7 @@ bool PathProvider(int key, base::FilePath* result) {
           "/Library/Application Support/Chromium/NativeMessagingHosts"));
 #endif
 #else  // defined(OS_MACOSX)
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       cur = base::FilePath(FILE_PATH_LITERAL(
           "/etc/opt/chrome/native-messaging-hosts"));
 #else

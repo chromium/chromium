@@ -4,5 +4,5 @@
 merge_manifest.py
 util/__init__.py
 util/build_utils.py
-util/diff_utils.py
+util/manifest_utils.py
 util/md5_check.py

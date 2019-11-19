@@ -4,25 +4,34 @@ Message count: 100
 
 Running: testBetweenViewportAndExternal
 Setting focus in prompt:
-TEXTAREA:Code editor
+TEXTAREA:Console prompt
 
 Shift+Tab:
+SPAN:test://evaluations/0/console-key-navigation.js:20
+
+ArrowUp:
 DIV:console-key-navigation.js:20 Message #99
 
 Shift+Tab:
 DIV#console-messages.monospace
 
 Tab:
+SPAN:test://evaluations/0/console-key-navigation.js:20
+
+ArrowUp:
 DIV:console-key-navigation.js:20 Message #99
 
 Tab:
-TEXTAREA:Code editor
+TEXTAREA:Console prompt
 
 Running: testBetweenViewportAndExternalWithSelectedItemNotInDOM
 Setting focus in prompt:
-TEXTAREA:Code editor
+TEXTAREA:Console prompt
 
 Shift+Tab:
+SPAN:test://evaluations/0/console-key-navigation.js:20
+
+ArrowUp:
 DIV:console-key-navigation.js:20 Message #99
 
 Scrolling to top of viewport
@@ -32,19 +41,25 @@ Shift+Tab:
 DIV#console-messages.monospace
 
 Tab:
+SPAN:test://evaluations/0/console-key-navigation.js:20
+
+ArrowUp:
 DIV:console-key-navigation.js:20 Message #99
 
 Setting focus in prompt:
-TEXTAREA:Code editor
+TEXTAREA:Console prompt
 
 Shift+Tab:
+SPAN:test://evaluations/0/console-key-navigation.js:20
+
+ArrowUp:
 DIV:console-key-navigation.js:20 Message #99
 
 Scrolling to top of viewport
 DIV.console-group.console-group-messages
 
 Tab:
-TEXTAREA:Code editor
+TEXTAREA:Console prompt
 
 Running: testMoveAcrossLogsWithinViewport
 
@@ -55,10 +70,16 @@ Home:
 DIV:console-key-navigation.js:20 Message #0
 
 ArrowDown:
+SPAN:test://evaluations/0/console-key-navigation.js:20
+
+ArrowDown:
 DIV:console-key-navigation.js:20 Message #1
 
 End:
 DIV:console-key-navigation.js:20 Message #99
+
+ArrowUp:
+SPAN:test://evaluations/0/console-key-navigation.js:20
 
 ArrowUp:
 DIV:console-key-navigation.js:20 Message #98
@@ -79,22 +100,22 @@ Running: testViewportDoesNotStealFocusOnScroll
 Force selecting index 99
 DIV:console-key-navigation.js:20 Message #99
 Setting focus in prompt:
-TEXTAREA:Code editor
+TEXTAREA:Console prompt
 
 Scrolling to top of viewport
-TEXTAREA:Code editor
+TEXTAREA:Console prompt
 
 Scrolling to bottom of viewport
-TEXTAREA:Code editor
+TEXTAREA:Console prompt
 
 Running: testNewLogsShouldNotMoveFocus
 Setting focus in prompt:
-TEXTAREA:Code editor
+TEXTAREA:Console prompt
 Message count: 101
-TEXTAREA:Code editor
+TEXTAREA:Console prompt
 
 Running: testClearingConsoleFocusesPrompt
 
 Console cleared:
-TEXTAREA:Code editor
+TEXTAREA:Console prompt
 

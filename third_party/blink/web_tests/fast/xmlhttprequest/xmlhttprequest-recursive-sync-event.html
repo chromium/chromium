@@ -29,7 +29,7 @@ function test()
         }
     };
     xhr.open("GET", "recurse.html", false);
-    xhr.send(null);
+    try { xhr.send(null); } catch (e) {}
     log("PASS");
 }
 </script>

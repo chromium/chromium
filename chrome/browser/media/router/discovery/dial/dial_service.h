@@ -21,7 +21,7 @@ namespace net {
 class IPEndPoint;
 class StringIOBuffer;
 class NetLog;
-}
+}  // namespace net
 
 namespace media_router {
 
@@ -106,6 +106,10 @@ class DialServiceImpl : public DialService {
   bool HasObserver(const Observer* observer) const override;
 
  private:
+  friend void PostSendNetworkList(
+      base::WeakPtr<DialServiceImpl> impl,
+      const base::Optional<net::NetworkInterfaceList>& networks);
+
   // Represents a socket binding to a single network interface.
   // DialSocket lives on the IO thread.
   class DialSocket {
@@ -185,16 +189,9 @@ class DialServiceImpl : public DialService {
   // Starts the control flow for one discovery cycle.
   void StartDiscovery();
 
-  // Task to retrieve networks on UI thread.
-  void GetNetworkListOnUIThread();
-
-  // Callback invoked to send retrieved networks on IO thread.
-  void PostSendNetworkList(
-      const base::Optional<net::NetworkInterfaceList>& networks);
-
   // For each network interface in |list|, finds all unqiue IPv4 network
   // interfaces and call |DiscoverOnAddresses()| with their IP addresses.
-  void SendNetworkList(const net::NetworkInterfaceList& list);
+  void SendNetworkList(const base::Optional<net::NetworkInterfaceList>& list);
 
   // Calls |BindAndAddSocket()| for each address in |ip_addresses|, calls
   // |SendOneRequest()|, and start the timer to finish discovery if needed.
@@ -269,11 +266,8 @@ class DialServiceImpl : public DialService {
 
   base::CancelableTaskTracker task_tracker_;
 
-  // WeakPrtFactory for WeakPtrs that are invalidated on UI thread.
-  base::WeakPtrFactory<DialServiceImpl> weak_ptr_factory_for_ui_{this};
-
-  // WeakPrtFactory for WeakPtrs that are invalidated on IO thread.
-  base::WeakPtrFactory<DialServiceImpl> weak_ptr_factory_for_io_{this};
+  // WeakPtrFactory for WeakPtrs that are invalidated on IO thread.
+  base::WeakPtrFactory<DialServiceImpl> weak_ptr_factory_{this};
 
   friend class DialServiceTest;
   FRIEND_TEST_ALL_PREFIXES(DialServiceTest, TestSendMultipleRequests);

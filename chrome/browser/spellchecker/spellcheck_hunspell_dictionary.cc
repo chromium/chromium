@@ -22,9 +22,9 @@
 #include "build/build_config.h"
 #include "chrome/browser/spellchecker/spellcheck_service.h"
 #include "chrome/common/chrome_paths.h"
-#include "components/data_use_measurement/core/data_use_user_data.h"
 #include "components/spellcheck/browser/spellcheck_platform.h"
 #include "components/spellcheck/common/spellcheck_common.h"
+#include "components/spellcheck/common/spellcheck_features.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -110,16 +110,15 @@ SpellcheckHunspellDictionary::SpellcheckHunspellDictionary(
     const std::string& language,
     content::BrowserContext* browser_context,
     SpellcheckService* spellcheck_service)
-    : task_runner_(
-          base::CreateSequencedTaskRunnerWithTraits({base::MayBlock()})),
+    : task_runner_(base::CreateSequencedTaskRunner(
+          {base::ThreadPool(), base::MayBlock()})),
       language_(language),
       use_browser_spellchecker_(false),
       browser_context_(browser_context),
 #if !defined(OS_ANDROID)
       spellcheck_service_(spellcheck_service),
 #endif
-      download_status_(DOWNLOAD_NONE),
-      weak_ptr_factory_(this) {
+      download_status_(DOWNLOAD_NONE) {
 }
 
 SpellcheckHunspellDictionary::~SpellcheckHunspellDictionary() {
@@ -128,27 +127,31 @@ SpellcheckHunspellDictionary::~SpellcheckHunspellDictionary() {
         FROM_HERE,
         base::BindOnce(&CloseDictionary, std::move(dictionary_file_.file)));
   }
+
+#if BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+  // Disable the language from platform spellchecker.
+  if (spellcheck::UseBrowserSpellChecker())
+    spellcheck_platform::DisableLanguage(language_);
+#endif
 }
 
 void SpellcheckHunspellDictionary::Load() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
 #if BUILDFLAG(USE_BROWSER_SPELLCHECKER)
-  if (spellcheck_platform::SpellCheckerAvailable() &&
-      spellcheck_platform::PlatformSupportsLanguage(language_)) {
-    use_browser_spellchecker_ = true;
-    spellcheck_platform::SetLanguage(language_);
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &SpellcheckHunspellDictionary::InformListenersOfInitialization,
-            weak_ptr_factory_.GetWeakPtr()));
+  if (spellcheck::UseBrowserSpellChecker()) {
+    if (spellcheck_platform::SpellCheckerAvailable() &&
+        spellcheck_platform::PlatformSupportsLanguage(language_)) {
+      spellcheck_platform::SetLanguage(
+          language_, base::BindOnce(&SpellcheckHunspellDictionary::
+                                        SpellCheckPlatformSetLanguageCompleted,
+                                    base::Unretained(this)));
+    }
     return;
   }
 #endif  // USE_BROWSER_SPELLCHECKER
 
-// Mac falls back on hunspell if its platform spellchecker isn't available.
-// However, Android does not support hunspell.
+// Android does not support hunspell.
 #if !defined(OS_ANDROID)
   base::PostTaskAndReplyWithResult(
       task_runner_.get(), FROM_HERE,
@@ -300,8 +303,7 @@ void SpellcheckHunspellDictionary::DownloadDictionary(GURL url) {
 
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = url;
-  resource_request->load_flags =
-      net::LOAD_DO_NOT_SEND_COOKIES | net::LOAD_DO_NOT_SAVE_COOKIES;
+  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   simple_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
                                                     traffic_annotation);
   network::mojom::URLLoaderFactory* loader_factory =
@@ -442,3 +444,20 @@ void SpellcheckHunspellDictionary::InformListenersOfDownloadFailure() {
   for (Observer& observer : observers_)
     observer.OnHunspellDictionaryDownloadFailure(language_);
 }
+
+#if BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+void SpellcheckHunspellDictionary::SpellCheckPlatformSetLanguageCompleted(
+    bool result) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  if (!result)
+    return;
+
+  use_browser_spellchecker_ = true;
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &SpellcheckHunspellDictionary::InformListenersOfInitialization,
+          weak_ptr_factory_.GetWeakPtr()));
+}
+#endif

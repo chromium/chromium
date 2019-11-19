@@ -29,15 +29,6 @@ class FrameBufferPool;
 // [1] http://wiki.webmproject.org/alpha-channel
 class MEDIA_EXPORT VpxVideoDecoder : public OffloadableVideoDecoder {
  public:
-  enum class OffloadState {
-    kOffloaded,  // Indicates VpxVideoDecoder is being used with
-                 // OffloadVideoDecoder and that callbacks provided to
-                 // VideoDecoder methods should not be bound to the current
-                 // loop.
-
-    kNormal,  // Indicates VpxVideoDecoder is being used as a normal
-              // VideoDecoder, meaning callbacks should always be asynchronous.
-  };
   explicit VpxVideoDecoder(OffloadState offload_state = OffloadState::kNormal);
   ~VpxVideoDecoder() override;
 
@@ -46,12 +37,11 @@ class MEDIA_EXPORT VpxVideoDecoder : public OffloadableVideoDecoder {
   void Initialize(const VideoDecoderConfig& config,
                   bool low_delay,
                   CdmContext* cdm_context,
-                  const InitCB& init_cb,
+                  InitCB init_cb,
                   const OutputCB& output_cb,
                   const WaitingCB& waiting_cb) override;
-  void Decode(scoped_refptr<DecoderBuffer> buffer,
-              const DecodeCB& decode_cb) override;
-  void Reset(const base::Closure& reset_cb) override;
+  void Decode(scoped_refptr<DecoderBuffer> buffer, DecodeCB decode_cb) override;
+  void Reset(base::OnceClosure reset_cb) override;
 
   // OffloadableVideoDecoder implementation.
   void Detach() override;
@@ -123,11 +113,11 @@ class MEDIA_EXPORT VpxVideoDecoder : public OffloadableVideoDecoder {
 class OffloadingVpxVideoDecoder : public OffloadingVideoDecoder {
  public:
   OffloadingVpxVideoDecoder()
-      : OffloadingVideoDecoder(1024,
-                               std::vector<VideoCodec>(1, kCodecVP9),
-                               std::make_unique<VpxVideoDecoder>(
-                                   VpxVideoDecoder::OffloadState::kOffloaded)) {
-  }
+      : OffloadingVideoDecoder(
+            1024,
+            std::vector<VideoCodec>(1, kCodecVP9),
+            std::make_unique<VpxVideoDecoder>(
+                OffloadableVideoDecoder::OffloadState::kOffloaded)) {}
 };
 
 }  // namespace media

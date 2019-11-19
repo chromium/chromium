@@ -5,6 +5,7 @@
 #include "extensions/common/constants.h"
 
 #include "base/stl_util.h"
+#include "base/strings/string_piece.h"
 
 namespace extensions {
 
@@ -12,6 +13,8 @@ const char kExtensionScheme[] = "chrome-extension";
 
 const base::FilePath::CharType kManifestFilename[] =
     FILE_PATH_LITERAL("manifest.json");
+const base::FilePath::CharType kDifferentialFingerprintFilename[] =
+    FILE_PATH_LITERAL("manifest.fingerprint");
 const base::FilePath::CharType kLocaleFolder[] =
     FILE_PATH_LITERAL("_locales");
 const base::FilePath::CharType kMessagesFilename[] =
@@ -118,13 +121,40 @@ const char kYoutubeAppId[] = "blpcfgokakmgnkcojhhkbfbldkacnbeo";
 const char kGeniusAppId[] = "ljoammodoonkhnehlncldjelhidljdpi";
 
 #if defined(OS_CHROMEOS)
+// TODO(michaelpg): Deprecate old app IDs before adding new ones to avoid bloat.
 const char kHighlightsAppId[] = "lpmakjfjcconjeehbidjclhdlpjmfjjj";
-const char kHighlightsAlt1AppId[] = "iggildboghmjpbjcpmobahnkmoefkike";
-const char kHighlightsAlt2AppId[] = "elhbopodaklenjkeihkdhhfaghalllba";
+const char kHighlightsEveAppId[] = "iggildboghmjpbjcpmobahnkmoefkike";
+const char kHighlightsNocturneAppId[] = "elhbopodaklenjkeihkdhhfaghalllba";
+const char kHighlightsAltAppId[] = "gjeelkjnolfmhphfhhjokaijbicopfln";
 const char kScreensaverAppId[] = "mnoijifedipmbjaoekhadjcijipaijjc";
-const char kScreensaverAlt1AppId[] = "gdobaoeekhiklaljmhladjfdfkigampc";
-const char kScreensaverAlt2AppId[] = "lminefdanffajachfahfpmphfkhahcnj";
-#endif
+const char kScreensaverEveAppId[] = "gdobaoeekhiklaljmhladjfdfkigampc";
+const char kScreensaverNocturneAppId[] = "lminefdanffajachfahfpmphfkhahcnj";
+const char kScreensaverAltAppId[] = "bnabjkecnachpogjlfilfcnlpcmacglh";
+
+bool IsSystemUIApp(base::StringPiece extension_id) {
+  static const char* const kApps[] = {
+      // clang-format off
+      kCameraAppId,
+      kChromeVoxExtensionId,
+      kFeedbackExtensionId,
+      kFilesManagerAppId,
+      kHighlightsEveAppId,
+      kHighlightsNocturneAppId,
+      kHighlightsAltAppId,
+      kHighlightsAppId,
+      kScreensaverEveAppId,
+      kScreensaverNocturneAppId,
+      kScreensaverAltAppId,
+      kScreensaverAppId,
+      // clang-format on
+  };
+  for (const char* id : kApps) {
+    if (extension_id == id)
+      return true;
+  }
+  return false;
+}
+#endif  // defined(OS_CHROMEOS)
 
 const char kProdHangoutsExtensionId[] = "nckgahadagoaajjgafhacjanaoiihapd";
 const char* const kHangoutsExtensionIds[6] = {

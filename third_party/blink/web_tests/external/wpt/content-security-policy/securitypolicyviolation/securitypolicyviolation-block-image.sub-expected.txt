@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Non-redirected same-origin URLs are not stripped. Failed to construct 'URL': Invalid URL
+Harness: the test ran to completion.
+

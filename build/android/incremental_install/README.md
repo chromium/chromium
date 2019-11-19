@@ -7,37 +7,25 @@ rooted device.
 
 ## Building
 
-**Option 1:** Add the gn arg:
+Add the gn arg:
 
-    incremental_apk_by_default = true
+    incremental_install = true
 
-This causes all apks to be built as incremental (except for blacklisted ones).
-
-**Option 2:** Add `_incremental` to the apk target name. E.g.:
-
-    ninja -C out/Debug chrome_public_apk_incremental
-    ninja -C out/Debug chrome_public_test_apk_incremental
+This causes all apks to be built as incremental except for blacklisted ones.
 
 ## Running
 
-It is not enough to `adb install` them. You must use a generated wrapper script:
+It is not enough to `adb install` them. You must use the generated wrapper
+script:
 
-    out/Debug/bin/install_chrome_public_apk_incremental
-    out/Debug/bin/run_chrome_public_test_apk_incremental  # Automatically sets --fast-local-dev
-
-## Caveats
-
-Isolated processes (on L+) are incompatible with incremental install. As a
-work-around, you can disable isolated processes only for incremental apks using
-gn arg:
-
-    disable_incremental_isolated_processes = true
+    out/Debug/bin/your_apk run
+    out/Debug/bin/run_chrome_public_test_apk  # Automatically sets --fast-local-dev
 
 # How it Works
 
 ## Overview
 
-The basic idea is to side-load .dex and .so files to `/data/local/tmp` rather
+The basic idea is to sideload .dex and .so files to `/data/local/tmp` rather
 than bundling them in the .apk. Then, when making a change, only the changed
 .dex / .so needs to be pushed to the device.
 
@@ -59,7 +47,21 @@ Slower Initial Runs:
  * The first time you run an incremental .apk, the `DexOpt` needs to run on all
    .dex files. This step is normally done during `adb install`, but is done on
    start-up for incremental apks.
-   * DexOpt results are cached, so subsequent runs are much faster
+   * DexOpt results are cached, so subsequent runs are faster.
+   * The slowdown varies significantly based on the Android version. Android O+
+     has almost no visible slow-down.
+
+Caveats:
+ * Isolated processes (on L+) are incompatible with incremental install. As a
+   work-around, isolated processes are disabled when building incremental apks.
+ * Android resources, assets, and `loadable_modules` are not sideloaded (they
+   remain in the apk), so builds & installs that modify any of these are not as
+   fast as those that modify only .java / .cc.
+ * Since files are sideloaded to `/data/local/tmp`, you need to use the wrapper
+   scripts to uninstall them fully. E.g.:
+   ```shell
+   out/Default/bin/chrome_public_apk uninstall
+   ```
 
 ## The Code
 

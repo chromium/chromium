@@ -9,47 +9,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools" >
 
-    <!-- The icon background. -->
-    <View
-        android:id="@+id/tile_view_icon_background"
-        android:layout_width="@dimen/tile_view_icon_size"
-        android:layout_height="@dimen/tile_view_icon_size"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="@dimen/tile_view_icon_background_margin_top_modern"
-        android:background="@drawable/tile_view_icon_background_modern" />
-
-    <!-- The main icon. -->
-    <ImageView
-        android:id="@+id/tile_view_icon"
-        android:layout_width="@dimen/tile_view_icon_size_modern"
-        android:layout_height="@dimen/tile_view_icon_size_modern"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="@dimen/tile_view_icon_margin_top_modern"
-        tools:ignore="ContentDescription" />
-
-    <!-- The touch highlight. -->
-    <View
-        android:id="@+id/tile_view_highlight"
-        android:layout_width="@dimen/tile_view_icon_size"
-        android:layout_height="@dimen/tile_view_icon_size"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="@dimen/tile_view_icon_background_margin_top_modern"
-        android:background="@drawable/tile_view_highlight" />
-
-    <!-- The offline badge. -->
-    <ImageView
-        android:id="@+id/offline_badge"
-        android:layout_width="@dimen/tile_view_offline_badge_size_modern"
-        android:layout_height="@dimen/tile_view_offline_badge_size_modern"
-        android:layout_gravity="top|end"
-        android:layout_marginTop="@dimen/tile_view_offline_badge_margin_top_modern"
-        android:layout_marginEnd="@dimen/tile_view_offline_badge_margin_end_modern"
-        android:visibility="gone"
-        android:contentDescription="@string/accessibility_ntp_offline_badge"
-        app:srcCompat="@drawable/ic_offline_pin_blue_white" />
+    <include layout="@layout/tile_no_text_view" />
 
     <!-- The title. -->
-    <TextView
+    <org.chromium.ui.widget.TextViewWithLeading
         android:id="@+id/tile_view_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -57,7 +20,7 @@
         android:ellipsize="end"
         android:gravity="center_horizontal"
         android:lines="2"
-        android:lineSpacingMultiplier="1.17"
-        android:textAppearance="@style/TextAppearance.BlackCaption" />
+        android:textAppearance="@style/TextAppearance.BlackCaption"
+        app:leading="@dimen/text_size_small_leading" />
 
 </merge>

@@ -105,7 +105,7 @@ void SettingsResetPromptDelegateImpl::ShowSettingsResetPromptWithDelay() const {
     return;
 
   base::TimeDelta delay = config->delay_before_prompt();
-  base::PostDelayedTaskWithTraits(
+  base::PostDelayedTask(
       FROM_HERE, {content::BrowserThread::UI},
       base::BindOnce(MaybeShowSettingsResetPrompt, base::Passed(&config)),
       delay);

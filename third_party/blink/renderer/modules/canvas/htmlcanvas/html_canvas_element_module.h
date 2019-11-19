@@ -26,11 +26,13 @@ class MODULES_EXPORT HTMLCanvasElementModule {
                          const CanvasContextCreationAttributesModule*,
                          ExceptionState&,
                          RenderingContext&);
-  static OffscreenCanvas* transferControlToOffscreen(HTMLCanvasElement&,
+  static OffscreenCanvas* transferControlToOffscreen(ExecutionContext*,
+                                                     HTMLCanvasElement&,
                                                      ExceptionState&);
 
  private:
-  static OffscreenCanvas* TransferControlToOffscreenInternal(HTMLCanvasElement&,
+  static OffscreenCanvas* TransferControlToOffscreenInternal(ExecutionContext*,
+                                                             HTMLCanvasElement&,
                                                              ExceptionState&);
 };
 }  // namespace blink

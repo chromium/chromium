@@ -26,8 +26,9 @@ import android.widget.PopupWindow;
 import android.widget.PopupWindow.OnDismissListener;
 import android.widget.TextView;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.ApiCompatibilityUtils;
-import org.chromium.base.VisibleForTesting;
 import org.chromium.content.R;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.WindowAndroid;

@@ -4,19 +4,17 @@
 
 #include "remoting/host/host_details.h"
 
+#include "base/system/sys_info.h"
 #include "build/build_config.h"
 
 #if defined(OS_LINUX)
 #include "base/linux_util.h"
-#include "base/system/sys_info.h"
-#else
-#include "remoting/base/platform_details.h"
 #endif
 
 namespace remoting {
 
 // Get the host Operating System Name, removing the need to check for OS
-// definitions and keeps the keys used consistant.
+// definitions and keeps the keys used consistent.
 std::string GetHostOperatingSystemName() {
 #if defined(OS_WIN)
   return "Windows";
@@ -39,7 +37,7 @@ std::string GetHostOperatingSystemVersion() {
 #if defined(OS_LINUX)
   return base::GetLinuxDistro();
 #else
-  return GetOperatingSystemVersionString();
+  return base::SysInfo::OperatingSystemVersion();
 #endif
 }
 

@@ -24,7 +24,6 @@
 #include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_browser_context.h"
 #include "content/shell/browser/shell_devtools_manager_delegate.h"
-#include "content/shell/browser/shell_net_log.h"
 #include "content/shell/common/shell_switches.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "net/base/filename_util.h"
@@ -49,7 +48,7 @@
 #include "ui/events/devices/x11/touch_factory_x11.h"  // nogncheck
 #endif
 #if !defined(OS_CHROMEOS) && defined(USE_AURA) && defined(OS_LINUX)
-#include "ui/base/ime/input_method_initializer.h"
+#include "ui/base/ime/init/input_method_initializer.h"
 #endif
 #if defined(OS_CHROMEOS)
 #include "chromeos/dbus/dbus_thread_manager.h"
@@ -84,14 +83,12 @@ GURL GetStartupURL() {
       base::MakeAbsoluteFilePath(base::FilePath(args[0])));
 }
 
-base::StringPiece PlatformResourceProvider(int key) {
+scoped_refptr<base::RefCountedMemory> PlatformResourceProvider(int key) {
   if (key == IDR_DIR_HEADER_HTML) {
-    base::StringPiece html_data =
-        ui::ResourceBundle::GetSharedInstance().GetRawDataResource(
-            IDR_DIR_HEADER_HTML);
-    return html_data;
+    return ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytes(
+        IDR_DIR_HEADER_HTML);
   }
-  return base::StringPiece();
+  return nullptr;
 }
 
 }  // namespace
@@ -116,7 +113,7 @@ void ShellBrowserMainParts::PreMainMessageLoopStart() {
 void ShellBrowserMainParts::PostMainMessageLoopStart() {
 #if defined(OS_CHROMEOS)
   chromeos::DBusThreadManager::Initialize();
-  bluez::BluezDBusManager::Initialize();
+  bluez::BluezDBusManager::InitializeFake();
 #elif defined(OS_LINUX)
   bluez::DBusBluezManagerWrapperLinux::Initialize();
 #endif
@@ -137,9 +134,8 @@ int ShellBrowserMainParts::PreEarlyInitialization() {
 }
 
 void ShellBrowserMainParts::InitializeBrowserContexts() {
-  set_browser_context(new ShellBrowserContext(false, net_log_.get()));
-  set_off_the_record_browser_context(
-      new ShellBrowserContext(true, net_log_.get()));
+  set_browser_context(new ShellBrowserContext(false));
+  set_off_the_record_browser_context(new ShellBrowserContext(true));
 }
 
 void ShellBrowserMainParts::InitializeMessageLoopContext() {
@@ -158,8 +154,6 @@ int ShellBrowserMainParts::PreCreateThreads() {
         std::make_unique<crash_reporter::ChildProcessCrashObserver>());
   }
 #endif
-
-  net_log_ = std::make_unique<ShellNetLog>("content_shell");
   return 0;
 }
 

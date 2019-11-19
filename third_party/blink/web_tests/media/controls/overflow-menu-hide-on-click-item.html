@@ -3,6 +3,21 @@
 <script src='../../resources/testharness.js'></script>
 <script src='../../resources/testharnessreport.js'></script>
 <script src='../media-controls.js'></script>
+<style>
+
+/*
+ * We need to have the video small enough to have the mute button
+ * displayed in overflow menu. Meanwhile, we want the video element
+ * far from edge so that the overflow menu is fully displayed.
+ */
+video {
+  width: 150px;
+  position: absolute;
+  left: 400px;
+  top: 400px;
+}
+
+</style>
 <video controls></video>
 <script>
 async_test(t => {
@@ -17,8 +32,16 @@ async_test(t => {
     singleTapOnControl(overflowButton(video), t.step_func(() => {
       assert_not_equals(getComputedStyle(menu).display, 'none');
 
-      singleTapOnControl(captionsOverflowItem(video), t.step_func_done(() => {
+      singleTapOnControl(muteOverflowItem(video), t.step_func(() => {
         assert_equals(getComputedStyle(menu).display, 'none');
+
+        singleTapOnControl(overflowButton(video), t.step_func(() => {
+          assert_not_equals(getComputedStyle(menu).display, 'none');
+
+          singleTapOnControl(captionsOverflowItem(video), t.step_func_done(() => {
+            assert_equals(getComputedStyle(menu).display, 'none');
+          }));
+        }));
       }));
     }));
   });

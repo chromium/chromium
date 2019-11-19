@@ -29,8 +29,6 @@ namespace blink {
 
 class RadioButtonGroup : public GarbageCollected<RadioButtonGroup> {
  public:
-  static RadioButtonGroup* Create();
-
   RadioButtonGroup();
 
   bool IsEmpty() const { return members_.IsEmpty(); }
@@ -64,10 +62,6 @@ class RadioButtonGroup : public GarbageCollected<RadioButtonGroup> {
 
 RadioButtonGroup::RadioButtonGroup()
     : checked_button_(nullptr), required_count_(0) {}
-
-RadioButtonGroup* RadioButtonGroup::Create() {
-  return MakeGarbageCollected<RadioButtonGroup>();
-}
 
 inline bool RadioButtonGroup::IsValid() const {
   return !IsRequired() || checked_button_;
@@ -220,7 +214,7 @@ void RadioButtonGroupScope::AddButton(HTMLInputElement* element) {
   auto* key_value =
       name_to_group_map_->insert(element->GetName(), nullptr).stored_value;
   if (!key_value->value)
-    key_value->value = RadioButtonGroup::Create();
+    key_value->value = MakeGarbageCollected<RadioButtonGroup>();
   key_value->value->Add(element);
 }
 

@@ -1,0 +1,65 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+component("media_message_center") {
+  sources = [
+    "media_controls_progress_view.cc",
+    "media_controls_progress_view.h",
+    "media_notification_background.cc",
+    "media_notification_background.h",
+    "media_notification_constants.cc",
+    "media_notification_constants.h",
+    "media_notification_container.h",
+    "media_notification_controller.h",
+    "media_notification_item.cc",
+    "media_notification_item.h",
+    "media_notification_util.cc",
+    "media_notification_util.h",
+    "media_notification_view.cc",
+    "media_notification_view.h",
+    "media_session_notification_item.cc",
+    "media_session_notification_item.h",
+  ]
+
+  defines = [ "IS_MEDIA_MESSAGE_CENTER_IMPL" ]
+
+  deps = [
+    "//base",
+    "//components/strings:components_strings_grit",
+    "//components/vector_icons",
+    "//services/media_session/public/cpp",
+    "//services/media_session/public/mojom",
+    "//skia",
+    "//ui/accessibility",
+    "//ui/message_center",
+    "//ui/native_theme",
+    "//ui/views",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "media_controls_progress_view_unittest.cc",
+    "media_notification_background_unittest.cc",
+    "media_notification_view_unittest.cc",
+  ]
+
+  deps = [
+    ":media_message_center",
+    "//base",
+    "//base/test:test_support",
+    "//services/media_session/public/cpp/test:test_support",
+    "//services/media_session/public/mojom",
+    "//skia",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/accessibility",
+    "//ui/message_center",
+    "//ui/native_theme:test_support",
+    "//ui/views",
+    "//ui/views:test_support",
+  ]
+}

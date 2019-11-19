@@ -46,8 +46,8 @@ class LayoutSVGText final : public LayoutSVGBlock {
   FloatRect StrokeBoundingBox() const override;
   bool IsObjectBoundingBoxValid() const;
 
-  void AddOutlineRects(Vector<LayoutRect>&,
-                       const LayoutPoint& additional_offset,
+  void AddOutlineRects(Vector<PhysicalRect>&,
+                       const PhysicalOffset& additional_offset,
                        NGOutlineType) const override;
 
   static LayoutSVGText* LocateLayoutSVGTextAncestor(LayoutObject*);
@@ -75,10 +75,10 @@ class LayoutSVGText final : public LayoutSVGBlock {
 
   void Paint(const PaintInfo&) const override;
   bool NodeAtPoint(HitTestResult&,
-                   const HitTestLocation& location_in_parent,
-                   const LayoutPoint& accumulated_offset,
+                   const HitTestLocation&,
+                   const PhysicalOffset& accumulated_offset,
                    HitTestAction) override;
-  PositionWithAffinity PositionForPoint(const LayoutPoint&) const override;
+  PositionWithAffinity PositionForPoint(const PhysicalOffset&) const override;
 
   void UpdateLayout() override;
 

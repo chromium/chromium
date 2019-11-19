@@ -1,0 +1,15 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+group("polymer_tools_python_unittests") {
+  testonly = true
+
+  data = [
+    "//testing/scripts/common.py",
+    "//testing/scripts/run_isolated_script_test.py",
+    "//testing/xvfb.py",
+    "//tools/polymer/",
+    "//third_party/catapult/third_party/typ/",
+  ]
+}

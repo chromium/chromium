@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/metrics/histogram_macros.h"
 #include "components/leveldb_proto/internal/migration_delegate.h"
 #include "components/leveldb_proto/internal/shared_proto_database.h"
 #include "components/leveldb_proto/internal/shared_proto_database_provider.h"
@@ -24,6 +25,12 @@ void RunInitCallbackOnTaskRunner(
 }
 
 }  // namespace
+
+// static
+void ProtoDatabaseSelector::RecordInitState(
+    ProtoDatabaseSelector::ProtoDatabaseInitState state) {
+  UMA_HISTOGRAM_ENUMERATION("ProtoDB.SharedDbInitStatus", state);
+}
 
 ProtoDatabaseSelector::ProtoDatabaseSelector(
     ProtoDbType db_type,
@@ -57,22 +64,41 @@ void ProtoDatabaseSelector::InitWithDatabase(
       database, database_dir, options, false,
       base::BindOnce(&RunInitCallbackOnTaskRunner, std::move(callback),
                      callback_task_runner));
-  OnInitDone();
+  OnInitDone(ProtoDatabaseInitState::kLegacyInitCalled);
 }
 
 void ProtoDatabaseSelector::InitUniqueOrShared(
     const std::string& client_name,
     base::FilePath db_dir,
-    const leveldb_env::Options& options,
+    const leveldb_env::Options& unique_db_options,
     bool use_shared_db,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
     Callbacks::InitStatusCallback callback) {
+  RecordInitState(ProtoDatabaseInitState::kSharedDbInitAttempted);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   init_status_ = InitStatus::IN_PROGRESS;
   unique_database_dir_ = db_dir;
   client_name_ = client_name;
-  auto unique_db =
-      std::make_unique<UniqueProtoDatabase>(db_dir, options, task_runner_);
+
+  if (unique_database_dir_.empty()) {
+    DCHECK(!use_shared_db) << "Opening in memory shared db is not supported";
+    // In case we set up field trials by mistake, ignore the use shared flag and
+    // return unique db.
+    use_shared_db = false;
+  }
+
+  auto unique_options = unique_db_options;
+  // There are two Init methods, one that receives Options for its unique DB and
+  // another that uses CreateSimpleOptions() to open the unique DB. In case a
+  // shared DB needs to be used then we don't need to create a new unique DB if
+  // it doesn't exist. In case a unique DB needs to be used then we don't change
+  // the create_if_missing parameter, because it may have been set by a client.
+  if (use_shared_db) {
+    unique_options.create_if_missing = false;
+  }
+
+  auto unique_db = std::make_unique<UniqueProtoDatabase>(db_dir, unique_options,
+                                                         task_runner_);
   auto* unique_db_ptr = unique_db.get();
   unique_db_ptr->Init(
       client_name, base::BindOnce(&ProtoDatabaseSelector::OnInitUniqueDB, this,
@@ -94,7 +120,7 @@ void ProtoDatabaseSelector::OnInitUniqueDB(
   if (status == Enums::InitStatus::kCorrupt) {
     db_ = std::move(unique_db);
     std::move(callback).Run(Enums::InitStatus::kCorrupt);
-    OnInitDone();
+    OnInitDone(ProtoDatabaseInitState::kFailureUniqueDbCorrupted);
     return;
   }
 
@@ -104,11 +130,15 @@ void ProtoDatabaseSelector::OnInitUniqueDB(
     unique_db.reset();
 
   // If no SharedProtoDatabaseProvider is set then we use the unique DB (if it
-  // opened correctly).
-  if (!db_provider_) {
+  // opened correctly). If in memory db is requested then do not try to migrate
+  // data from shared db, which was the behavior when only unique db existed.
+  if (!db_provider_ || unique_database_dir_.empty()) {
     db_ = std::move(unique_db);
     std::move(callback).Run(status);
-    OnInitDone();
+    OnInitDone(
+        status == Enums::kOK
+            ? ProtoDatabaseInitState::kSuccessNoSharedDBProviderUniqueSucceeded
+            : ProtoDatabaseInitState::kFailureNoSharedDBProviderUniqueFailed);
     return;
   }
 
@@ -156,7 +186,7 @@ void ProtoDatabaseSelector::OnGetSharedDBClient(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!unique_db && !client) {
     std::move(callback).Run(Enums::InitStatus::kError);
-    OnInitDone();
+    OnInitDone(ProtoDatabaseInitState::kBothUniqueAndSharedFailedOpen);
     return;
   }
 
@@ -165,7 +195,7 @@ void ProtoDatabaseSelector::OnGetSharedDBClient(
       // If there's no shared client and one is requested we return an error,
       // because it should be created if missing.
       std::move(callback).Run(Enums::InitStatus::kError);
-      OnInitDone();
+      OnInitDone(ProtoDatabaseInitState::kSharedDbClientMissingInitFailed);
       return;
     } else {
       // ProtoLevelDBWrapper::InitWithDatabase() returns kInvalidOperation when
@@ -175,13 +205,14 @@ void ProtoDatabaseSelector::OnGetSharedDBClient(
         // return the unique DB.
         db_ = std::move(unique_db);
         std::move(callback).Run(Enums::InitStatus::kOK);
-        OnInitDone();
+        OnInitDone(
+            ProtoDatabaseInitState::kSharedDbClientMissingUniqueReturned);
         return;
       } else {
         // If the shared DB failed to open and a unique DB is requested then we
         // throw an error, as the shared DB may contain unmigrated data.
         std::move(callback).Run(Enums::InitStatus::kError);
-        OnInitDone();
+        OnInitDone(ProtoDatabaseInitState::kSharedDbOpenFailed);
         return;
       }
     }
@@ -202,14 +233,14 @@ void ProtoDatabaseSelector::OnGetSharedDBClient(
               SharedDBMetadataProto::MIGRATE_TO_SHARED_SUCCESSFUL);
           db_ = std::move(client);
           std::move(callback).Run(Enums::InitStatus::kOK);
-          OnInitDone();
+          OnInitDone(ProtoDatabaseInitState::kUniqueDbMissingSharedReturned);
           return;
         } else {
           // If the unique DB failed to open and the migration status is not
           // attempted then we return an error, as we don't know if the unique
           // DB contains any data.
           std::move(callback).Run(Enums::InitStatus::kError);
-          OnInitDone();
+          OnInitDone(ProtoDatabaseInitState::kUniqueDbOpenFailed);
           return;
         }
         break;
@@ -222,7 +253,7 @@ void ProtoDatabaseSelector::OnGetSharedDBClient(
         // and there's no way to migrate.
         db_ = std::move(client);
         std::move(callback).Run(Enums::InitStatus::kOK);
-        OnInitDone();
+        OnInitDone(ProtoDatabaseInitState::kMigratedSharedDbOpened);
         return;
         break;
       case SharedDBMetadataProto::MIGRATE_TO_UNIQUE_SUCCESSFUL:
@@ -231,7 +262,7 @@ void ProtoDatabaseSelector::OnGetSharedDBClient(
         // we throw an error. We ignore the deletion flag because we want both
         // databases to be open before we delete the shared DB.
         std::move(callback).Run(Enums::InitStatus::kError);
-        OnInitDone();
+        OnInitDone(ProtoDatabaseInitState::kUniqueDbOpenFailed);
         return;
         break;
     }
@@ -245,6 +276,7 @@ void ProtoDatabaseSelector::OnGetSharedDBClient(
         // Migrate from unique to shared.
         UniqueProtoDatabase* from = unique_db.get();
         UniqueProtoDatabase* to = client.get();
+        RecordInitState(ProtoDatabaseInitState::kMigrateToSharedAttempted);
         migration_delegate_->DoMigration(
             from, to,
             base::BindOnce(&ProtoDatabaseSelector::OnMigrationTransferComplete,
@@ -275,6 +307,7 @@ void ProtoDatabaseSelector::OnGetSharedDBClient(
         // Migrate from shared to unique.
         UniqueProtoDatabase* from = client.get();
         UniqueProtoDatabase* to = unique_db.get();
+        RecordInitState(ProtoDatabaseInitState::kMigrateToUniqueAttempted);
         migration_delegate_->DoMigration(
             from, to,
             base::BindOnce(&ProtoDatabaseSelector::OnMigrationTransferComplete,
@@ -339,12 +372,15 @@ void ProtoDatabaseSelector::MaybeDoMigrationOnDeletingOld(
             : SharedDBMetadataProto::MIGRATE_TO_SHARED_UNIQUE_TO_BE_DELETED);
     db_ = use_shared_db ? std::move(unique_db) : std::move(client);
     std::move(callback).Run(Enums::InitStatus::kOK);
-    OnInitDone();
+    OnInitDone(ProtoDatabaseInitState::kDeletionOfOldDataFailed);
     return;
   }
 
   auto* from = use_shared_db ? unique_db.get() : client.get();
   auto* to = use_shared_db ? client.get() : unique_db.get();
+  RecordInitState(use_shared_db
+                      ? ProtoDatabaseInitState::kMigrateToSharedAttempted
+                      : ProtoDatabaseInitState::kMigrateToUniqueAttempted);
   migration_delegate_->DoMigration(
       from, to,
       base::BindOnce(&ProtoDatabaseSelector::OnMigrationTransferComplete, this,
@@ -378,7 +414,8 @@ void ProtoDatabaseSelector::OnMigrationTransferComplete(
           : SharedDBMetadataProto::MIGRATE_TO_SHARED_UNIQUE_TO_BE_DELETED);
   db_ = use_shared_db ? std::move(unique_db) : std::move(client);
   std::move(callback).Run(Enums::InitStatus::kOK);
-  OnInitDone();
+  OnInitDone(use_shared_db ? ProtoDatabaseInitState::kMigrateToSharedFailed
+                           : ProtoDatabaseInitState::kMigrateToUniqueFailed);
 }
 
 void ProtoDatabaseSelector::OnMigrationCleanupComplete(
@@ -391,20 +428,27 @@ void ProtoDatabaseSelector::OnMigrationCleanupComplete(
   // We still return true in our callback below because we do have a database as
   // far as the original caller is concerned. As long as |db_| is assigned, we
   // return true.
+  ProtoDatabaseInitState state;
   if (success) {
     client->UpdateClientInitMetadata(
         use_shared_db ? SharedDBMetadataProto::MIGRATE_TO_SHARED_SUCCESSFUL
                       : SharedDBMetadataProto::MIGRATE_TO_UNIQUE_SUCCESSFUL);
+    state = use_shared_db ? ProtoDatabaseInitState::kMigrateToSharedSuccess
+                          : ProtoDatabaseInitState::kMigrateToUniqueSuccess;
   } else {
     client->UpdateClientInitMetadata(
         use_shared_db
             ? SharedDBMetadataProto::MIGRATE_TO_SHARED_UNIQUE_TO_BE_DELETED
             : SharedDBMetadataProto::MIGRATE_TO_UNIQUE_SHARED_TO_BE_DELETED);
+    state =
+        use_shared_db
+            ? ProtoDatabaseInitState::kMigrateToUniqueCompleteDeletionFailed
+            : ProtoDatabaseInitState::kMigrateToSharedCompleteDeletionFailed;
   }
   // Migration transfer was complete. So, we should use the requested database.
   db_ = use_shared_db ? std::move(client) : std::move(unique_db);
   std::move(callback).Run(Enums::InitStatus::kOK);
-  OnInitDone();
+  OnInitDone(state);
 }
 
 void ProtoDatabaseSelector::AddTransaction(base::OnceClosure task) {
@@ -560,7 +604,10 @@ void ProtoDatabaseSelector::RemoveKeysForTesting(
   db_->RemoveKeysForTesting(key_filter, target_prefix, std::move(callback));
 }
 
-void ProtoDatabaseSelector::OnInitDone() {
+void ProtoDatabaseSelector::OnInitDone(
+    ProtoDatabaseSelector::ProtoDatabaseInitState state) {
+  RecordInitState(state);
+
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   init_status_ = InitStatus::DONE;
   while (!pending_tasks_.empty()) {

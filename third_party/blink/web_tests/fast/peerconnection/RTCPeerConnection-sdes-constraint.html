@@ -12,7 +12,9 @@ sdes_constraint = {'mandatory': {'DtlsSrtpKeyAgreement': false}};
 
 promise_test(async t => {
   let pc1 = new RTCPeerConnection();
+  t.add_cleanup(() => pc1.close());
   let pc2 = new RTCPeerConnection();
+  t.add_cleanup(() => pc2.close());
   let stream = await navigator.mediaDevices.getUserMedia({audio: true});
   let track = stream.getAudioTracks()[0];
   pc1.addTrack(track);
@@ -30,7 +32,9 @@ promise_test(async t => {
 
 promise_test(async t => {
   let pc1 = new RTCPeerConnection(null, sdes_constraint);
+  t.add_cleanup(() => pc1.close());
   let pc2 = new RTCPeerConnection(null, sdes_constraint);
+  t.add_cleanup(() => pc2.close());
   pc1.oncandidate = c => pc2.addCandidate();
   pc2.oncandidate = c => pc1.addCandidate();
   let stream = await navigator.mediaDevices.getUserMedia({audio: true});
@@ -51,7 +55,9 @@ promise_test(async t => {
 
 promise_test(async t => {
   let pc1 = new RTCPeerConnection(null, sdes_constraint);
+  t.add_cleanup(() => pc1.close());
   let pc2 = new RTCPeerConnection();
+  t.add_cleanup(() => pc2.close());
   let stream = await navigator.mediaDevices.getUserMedia({audio: true});
   let track = stream.getAudioTracks()[0];
   pc1.addTrack(track);
@@ -63,12 +69,13 @@ promise_test(async t => {
   } catch(e) {
     assert_equals(e.name, 'InvalidAccessError');
   }
-
 }, 'SDES can\'t connect to default configuration');
 
 promise_test(async t => {
   let pc1 = new RTCPeerConnection();
+  t.add_cleanup(() => pc1.close());
   let pc2 = new RTCPeerConnection(null, sdes_constraint);
+  t.add_cleanup(() => pc2.close());
   let stream = await navigator.mediaDevices.getUserMedia({audio: true});
   let track = stream.getAudioTracks()[0];
   pc1.addTrack(track);

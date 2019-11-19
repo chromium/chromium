@@ -16,8 +16,6 @@ class ImageDecodingPage(rendering_story.RenderingStory):
                shared_page_state_class=shared_page_state.SharedPageState,
                name_suffix='',
                extra_browser_args=None):
-    if extra_browser_args is None:
-      extra_browser_args = ['--disable-accelerated-jpeg-decoding']
     super(ImageDecodingPage, self).__init__(
         page_set=page_set,
         shared_page_state_class=shared_page_state_class,
@@ -29,7 +27,12 @@ class ImageDecodingPage(rendering_story.RenderingStory):
       action_runner.Wait(5)
 
 
-class YuvDecodingPage(ImageDecodingPage):
-  BASE_NAME = 'yuv_decoding'
-  URL = 'file://../image_decoding_cases/yuv_decoding.html'
-  TAGS = ImageDecodingPage.TAGS + [story_tags.REPRESENTATIVE_MAC_DESKTOP]
+class WebPDecodingPage(ImageDecodingPage):
+  BASE_NAME = 'webp_decoding'
+  URL = 'file://../image_decoding_cases/webp_decoding.html'
+  TAGS = ImageDecodingPage.TAGS + [story_tags.GPU_RASTERIZATION]
+
+class JpegDecodingPage(ImageDecodingPage):
+  BASE_NAME = 'jpeg_decoding'
+  URL = 'file://../image_decoding_cases/jpeg_decoding.html'
+  TAGS = ImageDecodingPage.TAGS + [story_tags.GPU_RASTERIZATION]

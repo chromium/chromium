@@ -1,4 +1,5 @@
 include_rules = [
+  "+google_apis",
   "+google/protobuf",
   "+jingle/glue",
   "+net",
@@ -10,9 +11,11 @@ include_rules = [
   "+remoting/codec",
   "+remoting/signaling",
   "+third_party/boringssl",
+  "+third_party/grpc",
   "+third_party/libjingle_xmpp/xmpp",
   "+third_party/protobuf/src",
   "+third_party/webrtc",
+  "+third_party/webrtc_overrides",
   "+ui/events/keycodes/dom",
   "+services/network/test",
   "+services/network/public/cpp",

@@ -45,7 +45,7 @@ class PepperFlashDRMRendererHost : public ppapi::host::ResourceHost {
   // Non-owning pointer.
   content::RendererPpapiHost* renderer_ppapi_host_;
 
-  base::WeakPtrFactory<PepperFlashDRMRendererHost> weak_factory_;
+  base::WeakPtrFactory<PepperFlashDRMRendererHost> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PepperFlashDRMRendererHost);
 };

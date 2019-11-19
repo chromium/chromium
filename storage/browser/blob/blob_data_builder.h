@@ -19,13 +19,10 @@
 #include "storage/browser/blob/blob_data_item.h"
 #include "storage/browser/blob/blob_data_snapshot.h"
 #include "storage/browser/blob/blob_entry.h"
+#include "storage/browser/blob/mojom/blob_storage_context.mojom.h"
 #include "storage/browser/blob/shareable_blob_data_item.h"
 #include "storage/browser/blob/shareable_file_reference.h"
-#include "storage/browser/fileapi/file_system_context.h"
-
-namespace disk_cache {
-class Entry;
-}
+#include "storage/browser/file_system/file_system_context.h"
 
 namespace storage {
 class BlobSliceTest;
@@ -49,11 +46,11 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobDataBuilder {
 
   // Copies the given data into the blob.
   void AppendData(const std::string& data) {
-    AppendData(data.c_str(), data.size());
+    AppendData(base::as_bytes(base::make_span(data.c_str(), data.size())));
   }
 
   // Copies the given data into the blob.
-  void AppendData(const char* data, size_t length);
+  void AppendData(base::span<const uint8_t> data);
 
   // Represents a piece of unpopulated data.
   class COMPONENT_EXPORT(STORAGE_BROWSER) FutureData {
@@ -68,14 +65,14 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobDataBuilder {
     // Returns true if:
     // * The offset and length are valid, and
     // * data is a valid pointer.
-    bool Populate(base::span<const char> data, size_t offset = 0) const;
+    bool Populate(base::span<const uint8_t> data, size_t offset = 0) const;
 
     // Same as Populate, but rather than passing in the data to be
     // copied, this method returns a pointer where the caller can copy |length|
     // bytes of data to.
     // Returns nullptr if:
     // * The offset and length are not valid.
-    base::span<char> GetDataToPopulate(size_t offset, size_t length) const;
+    base::span<uint8_t> GetDataToPopulate(size_t offset, size_t length) const;
 
    private:
     friend class BlobDataBuilder;
@@ -145,15 +142,14 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobDataBuilder {
       const base::Time& expected_modification_time,
       scoped_refptr<FileSystemContext> file_system_context);
 
-  void AppendDiskCacheEntry(scoped_refptr<DataHandle> data_handle,
-                            disk_cache::Entry* disk_cache_entry,
-                            int disk_cache_stream_index);
-
-  // The content of the side data is accessible with BlobReader::ReadSideData().
-  void AppendDiskCacheEntryWithSideData(scoped_refptr<DataHandle> data_handle,
-                                        disk_cache::Entry* disk_cache_entry,
-                                        int disk_cache_stream_index,
-                                        int disk_cache_side_stream_index);
+  void AppendReadableDataHandle(scoped_refptr<DataHandle> data_handle) {
+    auto length = data_handle->GetSize();
+    AppendReadableDataHandle(std::move(data_handle), 0u, length);
+  }
+  void AppendReadableDataHandle(scoped_refptr<DataHandle> data_handle,
+                                uint64_t offset,
+                                uint64_t length);
+  void AppendMojoDataItem(mojom::BlobDataItemPtr item);
 
   void set_content_type(const std::string& content_type) {
     content_type_ = content_type;

@@ -7,16 +7,16 @@
     <item android:id="@android:id/progress">
         <rotate
             android:fromDegrees="270"
-            android:toDegrees="270" >
+            android:toDegrees="270">
             <shape
                 android:innerRadius="16dp"
                 android:thickness="2dp"
                 android:useLevel="true"
                 android:shape="ring">
                 <gradient
-                    android:startColor="@color/modern_grey_800"
-                    android:endColor="@color/modern_grey_800"
-                    android:type="sweep" />
+                    android:startColor="@color/circular_progress_outer_circle_progress_color_small"
+                    android:endColor="@color/circular_progress_outer_circle_progress_color_small"
+                    android:type="sweep"/>
             </shape>
         </rotate>
     </item>

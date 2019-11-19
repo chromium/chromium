@@ -1,7 +1,5 @@
 #include "rar.hpp"
 
-namespace third_party_unrar {
-
 #ifdef RARDLL
 static bool DllVolChange(RAROptions *Cmd,wchar *NextName,size_t NameSize);
 static bool DllVolNotify(RAROptions *Cmd,wchar *NextName);
@@ -21,7 +19,7 @@ bool MergeArchive(Archive &Arc,ComprDataIO *DataIO,bool ShowFileName,wchar Comma
   if (DataIO!=NULL && SplitHeader)
   {
     bool PackedHashPresent=Arc.Format==RARFMT50 || 
-         (hd->UnpVer>=20 && hd->FileHash.CRC32!=0xffffffff);
+         hd->UnpVer>=20 && hd->FileHash.CRC32!=0xffffffff;
     if (PackedHashPresent && 
         !DataIO->PackedDataHash.Cmp(&hd->FileHash,hd->UseHashKey ? hd->HashKey:NULL))
       uiMsg(UIERROR_CHECKSUMPACKED, Arc.FileName, hd->FileName);
@@ -36,7 +34,7 @@ bool MergeArchive(Archive &Arc,ComprDataIO *DataIO,bool ShowFileName,wchar Comma
   Arc.Close();
 
   wchar NextName[NM];
-  wcscpy(NextName,Arc.FileName);
+  wcsncpyz(NextName,Arc.FileName,ASIZE(NextName));
   NextVolumeName(NextName,ASIZE(NextName),!Arc.NewNumbering);
 
 #if !defined(SFX_MODULE) && !defined(RARDLL)
@@ -69,12 +67,12 @@ bool MergeArchive(Archive &Arc,ComprDataIO *DataIO,bool ShowFileName,wchar Comma
         // Checking for new style volumes renamed by user to old style
         // name format. Some users did it for unknown reason.
         wchar AltNextName[NM];
-        wcscpy(AltNextName,Arc.FileName);
+        wcsncpyz(AltNextName,Arc.FileName,ASIZE(AltNextName));
         NextVolumeName(AltNextName,ASIZE(AltNextName),true);
         OldSchemeTested=true;
         if (Arc.Open(AltNextName,OpenMode))
         {
-          wcscpy(NextName,AltNextName);
+          wcsncpyz(NextName,AltNextName,ASIZE(NextName));
           break;
         }
       }
@@ -187,7 +185,7 @@ bool DllVolChange(RAROptions *Cmd,wchar *NextName,size_t NameSize)
   if (Cmd->Callback!=NULL)
   {
     wchar OrgNextName[NM];
-    wcscpy(OrgNextName,NextName);
+    wcsncpyz(OrgNextName,NextName,ASIZE(OrgNextName));
     if (Cmd->Callback(UCM_CHANGEVOLUMEW,Cmd->UserData,(LPARAM)NextName,RAR_VOL_ASK)==-1)
       DllVolAborted=true;
     else
@@ -197,7 +195,7 @@ bool DllVolChange(RAROptions *Cmd,wchar *NextName,size_t NameSize)
       {
         char NextNameA[NM],OrgNextNameA[NM];
         WideToChar(NextName,NextNameA,ASIZE(NextNameA));
-        strcpy(OrgNextNameA,NextNameA);
+        strncpyz(OrgNextNameA,NextNameA,ASIZE(OrgNextNameA));
         if (Cmd->Callback(UCM_CHANGEVOLUME,Cmd->UserData,(LPARAM)NextNameA,RAR_VOL_ASK)==-1)
           DllVolAborted=true;
         else
@@ -288,5 +286,3 @@ bool DllVolNotify(RAROptions *Cmd,wchar *NextName)
 #pragma runtime_checks( "s", restore )
 #endif
 #endif
-
-}  // namespace third_party_unrar

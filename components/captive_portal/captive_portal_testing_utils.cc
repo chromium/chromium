@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
+#include "base/strings/string_piece.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"
@@ -13,10 +14,9 @@
 namespace {
 
 scoped_refptr<net::HttpResponseHeaders> CreateResponseHeaders(
-    const std::string& response_headers) {
-  std::string raw_headers = net::HttpUtil::AssembleRawHeaders(
-      response_headers.c_str(), static_cast<int>(response_headers.length()));
-  return new net::HttpResponseHeaders(raw_headers);
+    base::StringPiece response_headers) {
+  std::string raw_headers = net::HttpUtil::AssembleRawHeaders(response_headers);
+  return base::MakeRefCounted<net::HttpResponseHeaders>(raw_headers);
 }
 
 }  // namespace

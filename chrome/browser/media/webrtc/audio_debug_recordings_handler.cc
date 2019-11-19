@@ -18,7 +18,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
-#include "content/public/common/service_manager_connection.h"
+#include "content/public/browser/system_connector.h"
 #include "media/audio/audio_debug_recording_session.h"
 #include "services/audio/public/cpp/debug_recording_session_factory.h"
 #include "services/service_manager/public/cpp/connector.h"
@@ -71,8 +71,9 @@ void AudioDebugRecordingsHandler::StartAudioDebugRecordings(
     const RecordingErrorCallback& error_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  base::PostTaskWithTraitsAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+  base::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&GetLogDirectoryAndEnsureExists, browser_context_),
       base::BindOnce(&AudioDebugRecordingsHandler::DoStartAudioDebugRecordings,
                      this, host, delay, callback, error_callback));
@@ -84,8 +85,9 @@ void AudioDebugRecordingsHandler::StopAudioDebugRecordings(
     const RecordingErrorCallback& error_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   const bool is_manual_stop = true;
-  base::PostTaskWithTraitsAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+  base::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&GetLogDirectoryAndEnsureExists, browser_context_),
       base::BindOnce(&AudioDebugRecordingsHandler::DoStopAudioDebugRecordings,
                      this, host, is_manual_stop,
@@ -111,9 +113,7 @@ void AudioDebugRecordingsHandler::DoStartAudioDebugRecordings(
   host->EnableAudioDebugRecordings(prefix_path);
 
   audio_debug_recording_session_ = audio::CreateAudioDebugRecordingSession(
-      prefix_path, content::ServiceManagerConnection::GetForProcess()
-                       ->GetConnector()
-                       ->Clone());
+      prefix_path, content::GetSystemConnector()->Clone());
 
   if (delay.is_zero()) {
     const bool is_stopped = false, is_manual_stop = false;
@@ -122,7 +122,7 @@ void AudioDebugRecordingsHandler::DoStartAudioDebugRecordings(
   }
 
   const bool is_manual_stop = false;
-  base::PostDelayedTaskWithTraits(
+  base::PostDelayedTask(
       FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&AudioDebugRecordingsHandler::DoStopAudioDebugRecordings,
                      this, host, is_manual_stop,

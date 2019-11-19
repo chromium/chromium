@@ -1,4 +1,4 @@
 include_rules = [
-  "+jni",
+  "+remoting/android/jni_headers",
   "+ui/gfx/android",
 ]

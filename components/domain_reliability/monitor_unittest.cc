@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/strings/string_piece.h"
 #include "base/test/test_simple_task_runner.h"
 #include "components/domain_reliability/baked_in_configs.h"
 #include "components/domain_reliability/beacon.h"
@@ -34,10 +35,9 @@ namespace {
 typedef std::vector<const DomainReliabilityBeacon*> BeaconVector;
 
 scoped_refptr<net::HttpResponseHeaders> MakeHttpResponseHeaders(
-    const std::string& headers) {
-  return scoped_refptr<net::HttpResponseHeaders>(
-      new net::HttpResponseHeaders(net::HttpUtil::AssembleRawHeaders(
-          headers.c_str(), headers.length())));
+    base::StringPiece headers) {
+  return base::MakeRefCounted<net::HttpResponseHeaders>(
+      net::HttpUtil::AssembleRawHeaders(headers));
 }
 
 size_t CountQueuedBeacons(DomainReliabilityContext* context) {

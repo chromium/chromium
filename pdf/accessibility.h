@@ -9,23 +9,23 @@
 
 #include <vector>
 
-struct PP_PrivateAccessibilityCharInfo;
-struct PP_PrivateAccessibilityPageInfo;
-struct PP_PrivateAccessibilityTextRunInfo;
+#include "ppapi/cpp/private/pdf.h"
 
 namespace chrome_pdf {
 
 class PDFEngine;
 
-// Retrieve |page_info|, |text_runs|, and |chars| from |engine| for the page at
-// 0-indexed |page_index|. Returns true on success with all out parameters
-// filled, or false on failure with all out parameters untouched.
+// Retrieve |page_info|, |text_runs|, |chars|, and |page_objects| from
+// |engine| for the page at 0-indexed |page_index|. Returns true on success with
+// all out parameters filled, or false on failure with all out parameters
+// untouched.
 bool GetAccessibilityInfo(
     PDFEngine* engine,
     int32_t page_index,
     PP_PrivateAccessibilityPageInfo* page_info,
-    std::vector<PP_PrivateAccessibilityTextRunInfo>* text_runs,
-    std::vector<PP_PrivateAccessibilityCharInfo>* chars);
+    std::vector<pp::PDF::PrivateAccessibilityTextRunInfo>* text_runs,
+    std::vector<PP_PrivateAccessibilityCharInfo>* chars,
+    pp::PDF::PrivateAccessibilityPageObjects* page_objects);
 
 }  // namespace chrome_pdf
 

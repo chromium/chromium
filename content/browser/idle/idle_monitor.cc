@@ -15,7 +15,7 @@
 
 namespace content {
 
-IdleMonitor::IdleMonitor(blink::mojom::IdleMonitorPtr monitor,
+IdleMonitor::IdleMonitor(mojo::PendingRemote<blink::mojom::IdleMonitor> monitor,
                          blink::mojom::IdleStatePtr last_state,
                          base::TimeDelta threshold)
     : client_(std::move(monitor)),

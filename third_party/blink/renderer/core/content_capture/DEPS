@@ -1,6 +1,5 @@
 include_rules = [
     "+base/logging.h",
-    "+cc/paint/node_holder.h",
-    "+cc/paint/text_holder.h",
+    "+cc/paint/node_id.h",
     "+cc/trees/layer_tree_host.h",
 ]

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<table id='Grid1' role='grid' aria-multiselectable='true'><tbody>
+  <tr>
+    <td id='GridCell1' role='gridcell' aria-selected='true' tabindex='0'
+        onclick='tdclick(this, event)'>Grid1, GridCell1</td>
+    <td id='GridCell2' role='gridcell' aria-selected='false' tabindex='0'
+        onclick='tdclick(this, event)'>Grid1, GridCell2</td>
+  </tr>
+</tbody></table>
+<table id='Grid2' role='grid' aria-multiselectable='true'><tbody>
+  <tr>
+    <td id='GridCell1' role='gridcell' aria-selected='true' tabindex='0'
+        onclick='tdclick(this, event)'>Grid2, GridCell1</td>
+    <td id='GridCell2' role='gridcell' aria-selected='false' tabindex='0'
+        onclick='tdclick(this, event)'>Grid2, GridCell2</td>
+  </tr>
+</tbody></table>
+<table id='Grid3' role='grid' aria-multiselectable='false'><tbody>
+  <tr>
+    <td id='GridCell1' role='gridcell' aria-selected='true' tabindex='0'
+        onclick='tdclick(this, event)'>Grid3, GridCell1</td>
+    <td id='GridCell2' role='gridcell' aria-selected='false' tabindex='0'
+        onclick='tdclick(this, event)'>Grid3, GridCell2</td>
+  </tr>
+</tbody></table>
+<table id='Grid4' role='grid' aria-multiselectable='false'><tbody>
+  <tr>
+    <td id='GridCell1' role='gridcell' aria-selected='true' tabindex='0'
+        onclick='tdclick(this, event)'>Grid4, GridCell1</td>
+    <td id='GridCell2' role='gridcell' aria-selected='false' tabindex='0'
+        onclick='tdclick(this, event)'>Grid4, GridCell2</td>
+  </tr>
+</tbody></table>
+<select id='Select1'>
+  <option id='Option1' value='1'
+          onclick='option_click(this, event)'>Select1, Option1</option>
+  <option id='Option2' value='2'
+          onclick='option_click(this, event)'>Select1, Option2</option>
+</select>
+<select id='Select2'>
+  <option id='Option1' value='1'
+          onclick='option_click(this, event)'>Select2, Option1</option>
+  <option id='Option2' value='2'
+          onclick='option_click(this, event)'>Select2, Option2</option>
+</select>
+<div id='DivSelect' role='listbox'>
+  <div id='Option1' role='option' aria-selected='true'
+       onclick='div_option_click(this, event)'>DivSelect, Option1</div>
+  <div id='Option2' role='option' aria-selected='false'
+       onclick='div_option_click(this, event)'>DivSelect, Option2</div>
+</div>
+<script>
+  function aria_select(ele, container) {
+    var selected = ele.getAttribute('aria-selected') == 'true';
+    if (!selected && container.getAttribute('aria-multiselectable') != 'true') {
+      container.querySelectorAll('*[aria-selected=true]')
+          .forEach(function(item) {
+        item.setAttribute('aria-selected', false);
+      });
+    }
+    ele.setAttribute('aria-selected', !selected);
+  }
+
+  function tdclick(ele, event) {
+    aria_select(ele, ele.closest('*[role=grid]'));
+    event.stopPropagation();
+  }
+
+  function option_click(ele, event) {
+    ele.selected = true;
+    event.stopPropagation();
+  }
+
+  function div_option_click(ele, event) {
+    aria_select(ele, ele.closest('*[role=listbox]'));
+    event.stopPropagation();
+  }
+
+  const go_passes = [
+    () => document.querySelector('table#Grid1 td#GridCell1').click(),
+    () => document.querySelector('table#Grid2 td#GridCell2').click(),
+    () => document.querySelector('table#Grid3 td#GridCell1').click(),
+    () => document.querySelector('table#Grid4 td#GridCell2').click(),
+    () => document.querySelector('select#Select1 option#Option1').click(),
+    () => document.querySelector('select#Select2 option#Option2').click(),
+    () => document.querySelector('div#DivSelect div#Option2').click(),
+  ];
+
+  var current_pass = 0;
+  function go() {
+    go_passes[current_pass++].call();
+    return current_pass < go_passes.length;
+  }
+</script>

@@ -18,7 +18,7 @@ Style Attribute { ()
     CoLoR: blAck;
 
 [expanded] 
-#container { (<style>…</style>)
+#container { (<style>)
     -webkit-FONT-smoothing: antialiased;
 
 ======== Inherited from html ========

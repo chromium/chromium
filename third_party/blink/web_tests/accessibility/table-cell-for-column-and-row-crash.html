@@ -22,7 +22,7 @@ if (window.testRunner) {
     document.getElementById("body").focus();
     var axBody = accessibilityController.focusedElement;
 
-    var axTable = axBody.childAtIndex(0);
+    var axTable = axBody.childAtIndex(0).childAtIndex(0);
     shouldBe("axTable.role", "'AXRole: AXTable'");
 
     // Trying to reference the same cell for the table

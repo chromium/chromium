@@ -5,12 +5,13 @@
 package org.chromium.chrome.browser.jsdialog;
 
 import android.content.Context;
-import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+
+import androidx.annotation.Nullable;
 
 import org.chromium.chrome.R;
 

@@ -35,11 +35,11 @@ import org.chromium.android_webview.renderer_priority.RendererPriority;
 import org.chromium.android_webview.test.TestAwContentsClient.OnDownloadStartHelper;
 import org.chromium.android_webview.test.util.CommonResources;
 import org.chromium.base.BuildInfo;
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -287,7 +287,7 @@ public class AwContentsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    public void testClearCacheInQuickSuccession() throws Throwable {
+    public void testClearCacheInQuickSuccession() {
         final AwTestContainerView testContainer =
                 mActivityTestRule.createAwTestContainerViewOnMainSync(new TestAwContentsClient());
         final AwContents awContents = testContainer.getAwContents();
@@ -450,13 +450,12 @@ public class AwContentsTest {
                 mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
         final CallbackHelper callback = new CallbackHelper();
 
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
-            AwContents awContents = testView.getAwContents();
-            AwSettings awSettings = awContents.getSettings();
-            awSettings.setJavaScriptEnabled(true);
-            awContents.addJavascriptInterface(new JavaScriptObject(callback), "bridge");
-            awContents.evaluateJavaScriptForTests("window.bridge.run();", null);
-        });
+        AwContents awContents = testView.getAwContents();
+        AwActivityTestRule.enableJavaScriptOnUiThread(awContents);
+        AwActivityTestRule.addJavascriptInterfaceOnUiThread(
+                awContents, new JavaScriptObject(callback), "bridge");
+        mActivityTestRule.executeJavaScriptAndWaitForResult(
+                awContents, mContentsClient, "window.bridge.run();");
         callback.waitForCallback(0, 1, WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
     }
 
@@ -528,7 +527,7 @@ public class AwContentsTest {
     @Test
     @Feature({"AndroidWebView"})
     @SmallTest
-    public void testHardwareModeWorks() throws Throwable {
+    public void testHardwareModeWorks() {
         AwTestContainerView testContainer =
                 mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
         Assert.assertTrue(testContainer.isHardwareAccelerated());
@@ -586,7 +585,8 @@ public class AwContentsTest {
 
     private @RendererPriority int getRendererPriorityOnUiThread(final AwContents awContents)
             throws Exception {
-        return ThreadUtils.runOnUiThreadBlocking(() -> awContents.getEffectivePriorityForTesting());
+        return TestThreadUtils.runOnUiThreadBlocking(
+                () -> awContents.getEffectivePriorityForTesting());
     }
 
     private void setRendererPriorityOnUiThread(final AwContents awContents,
@@ -715,7 +715,7 @@ public class AwContentsTest {
 
     private AwRenderProcess getRenderProcessOnUiThread(final AwContents awContents)
             throws Exception {
-        return ThreadUtils.runOnUiThreadBlocking(() -> awContents.getRenderProcess());
+        return TestThreadUtils.runOnUiThreadBlocking(() -> awContents.getRenderProcess());
     }
 
     @Test
@@ -779,10 +779,7 @@ public class AwContentsTest {
         Assert.assertEquals(0, consoleHelper.getMessages().size());
     }
 
-    @Test
-    @Feature({"AndroidWebView"})
-    @SmallTest
-    public void testHardwareRenderingSmokeTest() throws Throwable {
+    private void doHardwareRenderingSmokeTest() throws Throwable {
         AwTestContainerView testView =
                 mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
         final AwContents awContents = testView.getAwContents();
@@ -839,6 +836,21 @@ public class AwContentsTest {
         Assert.assertEquals(Color.rgb(0, 255, 0), quadrantColors[1]);
         Assert.assertEquals(Color.rgb(0, 0, 255), quadrantColors[2]);
         Assert.assertEquals(Color.rgb(128, 128, 128), quadrantColors[3]);
+    }
+
+    @Test
+    @Feature({"AndroidWebView"})
+    @SmallTest
+    public void testHardwareRenderingSmokeTest() throws Throwable {
+        doHardwareRenderingSmokeTest();
+    }
+
+    @Test
+    @Feature({"AndroidWebView"})
+    @SmallTest
+    @CommandLineFlags.Add({"enable-features=UseSkiaRenderer", "disable-oop-rasterization"})
+    public void testHardwareRenderingSmokeTestSkiaRenderer() throws Throwable {
+        doHardwareRenderingSmokeTest();
     }
 
     @Test
@@ -923,12 +935,9 @@ public class AwContentsTest {
         }
     }
 
-    private int getHistogramSampleCount(String name) throws Throwable {
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                mHistogramTotalCount = RecordHistogram.getHistogramTotalCountForTesting(name);
-            }
+    private int getHistogramSampleCount(String name) {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mHistogramTotalCount = RecordHistogram.getHistogramTotalCountForTesting(name);
         });
         return mHistogramTotalCount;
     }
@@ -936,118 +945,7 @@ public class AwContentsTest {
     @Test
     @Feature({"AndroidWebView"})
     @SmallTest
-    public void testLoadDataRecordsOctothorpeHistogram() throws Throwable {
-        AwTestContainerView testView =
-                mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
-        final AwContents awContents = testView.getAwContents();
-
-        // AwContents.DATA_URI_HISTOGRAM_NAME is a boolean histogram, but as it only records
-        // positive samples we can just use the total count directly.
-        Assert.assertEquals(0, getHistogramSampleCount(AwContents.DATA_URI_HISTOGRAM_NAME));
-
-        // Check a URL with no '#' character.
-        mActivityTestRule.runOnUiThread(
-                () -> { awContents.loadData("<html>test</html>", "text/html", null); });
-        Assert.assertEquals(0, getHistogramSampleCount(AwContents.DATA_URI_HISTOGRAM_NAME));
-
-        // Check a URL with a '#' character.
-        mActivityTestRule.runOnUiThread(
-                () -> { awContents.loadData("<html>test#foo</html>", "text/html", null); });
-        Assert.assertEquals(1, getHistogramSampleCount(AwContents.DATA_URI_HISTOGRAM_NAME));
-
-        // An encoded '#' should not cause the histogram to increment.
-        mActivityTestRule.runOnUiThread(
-                () -> { awContents.loadData("<html>test%23foo</html>", "text/html", null); });
-        Assert.assertEquals(1, getHistogramSampleCount(AwContents.DATA_URI_HISTOGRAM_NAME));
-
-        // Finally, check null values are handled correctly.
-        mActivityTestRule.runOnUiThread(() -> { awContents.loadData(null, "text/html", "utf-8"); });
-        Assert.assertEquals(1, getHistogramSampleCount(AwContents.DATA_URI_HISTOGRAM_NAME));
-    }
-
-    @Test
-    @Feature({"AndroidWebView"})
-    @SmallTest
-    public void testLoadDataWithBaseURLRecordsOctothorpeHistogram() throws Throwable {
-        AwTestContainerView testView =
-                mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
-        final AwContents awContents = testView.getAwContents();
-
-        // AwContents.DATA_URI_HISTOGRAM_NAME is a boolean histogram, but as it only records
-        // positive samples we can just use the total count directly.
-        Assert.assertEquals(0, getHistogramSampleCount(AwContents.DATA_URI_HISTOGRAM_NAME));
-
-        // Check a URL with no '#' character.
-        mActivityTestRule.runOnUiThread(() -> {
-            awContents.loadDataWithBaseURL(
-                    "http://www.example.com", "<html>test</html>", "text/html", null, null);
-        });
-        Assert.assertEquals(0, getHistogramSampleCount(AwContents.DATA_URI_HISTOGRAM_NAME));
-
-        // '#' is legal if the baseUrl is not data scheme, because loadDataWithBaseURL accepts
-        // unencoded content.
-        mActivityTestRule.runOnUiThread(() -> {
-            awContents.loadDataWithBaseURL(
-                    "http://www.example.com", "<html>test#foo</html>", "text/html", null, null);
-        });
-        Assert.assertEquals(0, getHistogramSampleCount(AwContents.DATA_URI_HISTOGRAM_NAME));
-
-        // Check a URL with a '#' character, with data-scheme baseUrl.
-        mActivityTestRule.runOnUiThread(() -> {
-            awContents.loadDataWithBaseURL(
-                    "data:text/html", "<html>test#foo</html>", "text/html", null, null);
-        });
-        Assert.assertEquals(1, getHistogramSampleCount(AwContents.DATA_URI_HISTOGRAM_NAME));
-
-        // An encoded '#' should not cause the histogram to increment.
-        mActivityTestRule.runOnUiThread(() -> {
-            awContents.loadDataWithBaseURL(
-                    "http://www.example.com", "<html>test%23foo</html>", "text/html", null, null);
-        });
-        Assert.assertEquals(1, getHistogramSampleCount(AwContents.DATA_URI_HISTOGRAM_NAME));
-
-        // Finally, check null values are handled correctly.
-        mActivityTestRule.runOnUiThread(() -> {
-            awContents.loadDataWithBaseURL("http://www.example.com", null, "text/html", null, null);
-        });
-        Assert.assertEquals(1, getHistogramSampleCount(AwContents.DATA_URI_HISTOGRAM_NAME));
-    }
-
-    @Test
-    @Feature({"AndroidWebView"})
-    @SmallTest
-    public void testLoadUrlRecordsOctothorpeHistogram() throws Throwable {
-        AwTestContainerView testView =
-                mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
-        final AwContents awContents = testView.getAwContents();
-
-        // AwContents.DATA_URI_HISTOGRAM_NAME is a boolean histogram, but as it only records
-        // positive samples we can just use the total count directly.
-        Assert.assertEquals(0, getHistogramSampleCount(AwContents.DATA_URI_HISTOGRAM_NAME));
-
-        // Check a URL with no '#' character.
-        mActivityTestRule.runOnUiThread(
-                () -> { awContents.loadUrl("data:text/html,<html>test</html>"); });
-        Assert.assertEquals(0, getHistogramSampleCount(AwContents.DATA_URI_HISTOGRAM_NAME));
-
-        // Check a URL with a '#' character.
-        mActivityTestRule.runOnUiThread(
-                () -> { awContents.loadUrl("data:text/html,<html>test#foo</html>"); });
-        Assert.assertEquals(1, getHistogramSampleCount(AwContents.DATA_URI_HISTOGRAM_NAME));
-
-        // An encoded '#' should not cause the histogram to increment.
-        mActivityTestRule.runOnUiThread(
-                () -> { awContents.loadUrl("data:text/html,<html>test%23foo</html>"); });
-        Assert.assertEquals(1, getHistogramSampleCount(AwContents.DATA_URI_HISTOGRAM_NAME));
-
-        // |loadUrl| doesn't allow a null url, so it is not necessary to check that for this API.
-        // See http://crbug.com/864708.
-    }
-
-    @Test
-    @Feature({"AndroidWebView"})
-    @SmallTest
-    public void testLoadUrlRecordsScheme_http() throws Throwable {
+    public void testLoadUrlRecordsScheme_http() {
         // No need to spin up a web server, since we don't care if the load ever succeeds.
         final String httpUrlWithNoRealPage = "http://some.origin/some/path.html";
         loadUrlAndCheckScheme(httpUrlWithNoRealPage, AwContents.UrlScheme.HTTP_SCHEME);
@@ -1056,7 +954,7 @@ public class AwContentsTest {
     @Test
     @Feature({"AndroidWebView"})
     @SmallTest
-    public void testLoadUrlRecordsScheme_javascript() throws Throwable {
+    public void testLoadUrlRecordsScheme_javascript() {
         loadUrlAndCheckScheme(
                 "javascript:console.log('message')", AwContents.UrlScheme.JAVASCRIPT_SCHEME);
     }
@@ -1064,7 +962,7 @@ public class AwContentsTest {
     @Test
     @Feature({"AndroidWebView"})
     @SmallTest
-    public void testLoadUrlRecordsScheme_fileAndroidAsset() throws Throwable {
+    public void testLoadUrlRecordsScheme_fileAndroidAsset() {
         loadUrlAndCheckScheme("file:///android_asset/some/asset/page.html",
                 AwContents.UrlScheme.FILE_ANDROID_ASSET_SCHEME);
     }
@@ -1072,14 +970,14 @@ public class AwContentsTest {
     @Test
     @Feature({"AndroidWebView"})
     @SmallTest
-    public void testLoadUrlRecordsScheme_fileRegular() throws Throwable {
+    public void testLoadUrlRecordsScheme_fileRegular() {
         loadUrlAndCheckScheme("file:///some/path/on/disk.html", AwContents.UrlScheme.FILE_SCHEME);
     }
 
     @Test
     @Feature({"AndroidWebView"})
     @SmallTest
-    public void testLoadUrlRecordsScheme_data() throws Throwable {
+    public void testLoadUrlRecordsScheme_data() {
         loadUrlAndCheckScheme(
                 "data:text/html,<html><body>foo</body></html>", AwContents.UrlScheme.DATA_SCHEME);
     }
@@ -1087,12 +985,11 @@ public class AwContentsTest {
     @Test
     @Feature({"AndroidWebView"})
     @SmallTest
-    public void testLoadUrlRecordsScheme_blank() throws Throwable {
+    public void testLoadUrlRecordsScheme_blank() {
         loadUrlAndCheckScheme("about:blank", AwContents.UrlScheme.EMPTY);
     }
 
-    private void loadUrlAndCheckScheme(String url, @AwContents.UrlScheme int expectedSchemeEnum)
-            throws Throwable {
+    private void loadUrlAndCheckScheme(String url, @AwContents.UrlScheme int expectedSchemeEnum) {
         AwTestContainerView testView =
                 mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
         final AwContents awContents = testView.getAwContents();
@@ -1109,5 +1006,35 @@ public class AwContentsTest {
         Assert.assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         AwContents.LOAD_URL_SCHEME_HISTOGRAM_NAME, expectedSchemeEnum));
+    }
+
+    @Test
+    @Feature({"AndroidWebView"})
+    @SmallTest
+    public void testFindAllAsyncEmptySearchString() {
+        AwTestContainerView testView =
+                mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
+        final AwContents awContents = testView.getAwContents();
+        try {
+            awContents.findAllAsync(null);
+            Assert.fail("A null searchString should cause an exception to be thrown");
+        } catch (IllegalArgumentException e) {
+            // expected
+        }
+    }
+
+    @Test
+    @Feature({"AndroidWebView"})
+    @SmallTest
+    public void testInsertNullVisualStateCallback() {
+        AwTestContainerView testView =
+                mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
+        final AwContents awContents = testView.getAwContents();
+        try {
+            awContents.insertVisualStateCallback(0, null);
+            Assert.fail("A null VisualStateCallback should cause an exception to be thrown");
+        } catch (IllegalArgumentException e) {
+            // expected
+        }
     }
 }

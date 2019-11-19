@@ -8,13 +8,6 @@
 
 namespace ntp_snippets {
 
-DownloadSuggestionExtra::DownloadSuggestionExtra() = default;
-
-DownloadSuggestionExtra::DownloadSuggestionExtra(
-    const DownloadSuggestionExtra& other) = default;
-
-DownloadSuggestionExtra::~DownloadSuggestionExtra() = default;
-
 bool ContentSuggestion::ID::operator==(const ID& rhs) const {
   return category_ == rhs.category_ &&
          id_within_category_ == rhs.id_within_category_;
@@ -49,12 +42,6 @@ std::ostream& operator<<(std::ostream& os, const ContentSuggestion::ID& id) {
 // static
 GURL ContentSuggestion::GetFaviconDomain(const GURL& favicon_url) {
   return favicon_url.GetWithEmptyPath();
-}
-
-void ContentSuggestion::set_download_suggestion_extra(
-    std::unique_ptr<DownloadSuggestionExtra> download_suggestion_extra) {
-  DCHECK(id_.category().IsKnownCategory(KnownCategories::DOWNLOADS));
-  download_suggestion_extra_ = std::move(download_suggestion_extra);
 }
 
 void ContentSuggestion::set_reading_list_suggestion_extra(

@@ -36,16 +36,9 @@ class HTMLToken;
 
 class CORE_EXPORT HTMLViewSourceDocument final : public HTMLDocument {
  public:
-  enum SourceAnnotation { kAnnotateSourceAsSafe, kAnnotateSourceAsXSS };
-
-  static HTMLViewSourceDocument* Create(const DocumentInit& initializer,
-                                        const String& mime_type) {
-    return MakeGarbageCollected<HTMLViewSourceDocument>(initializer, mime_type);
-  }
-
   HTMLViewSourceDocument(const DocumentInit&, const String& mime_type);
 
-  void AddSource(const String&, HTMLToken&, SourceAnnotation);
+  void AddSource(const String&, HTMLToken&);
 
   void Trace(Visitor*) override;
 
@@ -54,19 +47,15 @@ class CORE_EXPORT HTMLViewSourceDocument final : public HTMLDocument {
 
   void ProcessDoctypeToken(const String& source, HTMLToken&);
   void ProcessEndOfFileToken(const String& source, HTMLToken&);
-  void ProcessTagToken(const String& source, HTMLToken&, SourceAnnotation);
+  void ProcessTagToken(const String& source, HTMLToken&);
   void ProcessCommentToken(const String& source, HTMLToken&);
-  void ProcessCharacterToken(const String& source,
-                             HTMLToken&,
-                             SourceAnnotation);
+  void ProcessCharacterToken(const String& source, HTMLToken&);
 
   void CreateContainingTable();
   Element* AddSpanWithClassName(const AtomicString&);
   void AddLine(const AtomicString& class_name);
   void FinishLine();
-  void AddText(const String& text,
-               const AtomicString& class_name,
-               SourceAnnotation = kAnnotateSourceAsSafe);
+  void AddText(const String& text, const AtomicString& class_name);
   int AddRange(const String& source,
                int start,
                int end,
@@ -75,13 +64,9 @@ class CORE_EXPORT HTMLViewSourceDocument final : public HTMLDocument {
                bool is_anchor = false,
                const AtomicString& link = g_null_atom);
   int AddSrcset(const String& source, int start, int end);
-  void MaybeAddSpanForAnnotation(SourceAnnotation);
 
   Element* AddLink(const AtomicString& url, bool is_anchor);
   Element* AddBase(const AtomicString& href);
-
-  // A view-source document is not a regular WebPage.
-  bool HasCustomizedFeaturePolicy() const final { return false; }
 
   String type_;
   Member<Element> current_;

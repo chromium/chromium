@@ -13,6 +13,7 @@
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "base/synchronization/lock.h"
+#include "base/unguessable_token.h"
 #include "content/common/content_export.h"
 #include "media/audio/audio_device_description.h"
 #include "media/audio/audio_sink_parameters.h"
@@ -55,7 +56,7 @@ class CONTENT_EXPORT AudioRendererMixerManager
   // |session_id| is used. Otherwise, |session_id| is ignored.
   scoped_refptr<media::AudioRendererMixerInput> CreateInput(
       int source_render_frame_id,
-      int session_id,
+      const base::UnguessableToken& session_id,
       const std::string& device_id,
       media::AudioLatency::LatencyType latency);
 

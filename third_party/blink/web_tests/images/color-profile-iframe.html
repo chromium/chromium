@@ -15,9 +15,7 @@ function load() {
     runAfterLayoutAndPaint(function() { testRunner.notifyDone() });
 }
 
-if (window.testRunner) {
-  testRunner.dumpAsTextWithPixelResults();
+if (window.testRunner)
   testRunner.waitUntilDone();
-}
 </script>
 </html>

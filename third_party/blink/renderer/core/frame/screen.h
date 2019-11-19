@@ -29,11 +29,14 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_SCREEN_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_SCREEN_H_
 
+#include "base/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "ui/display/mojom/display.mojom-blink.h"
 
 namespace blink {
 
@@ -46,10 +49,6 @@ class CORE_EXPORT Screen final : public ScriptWrappable,
   USING_GARBAGE_COLLECTED_MIXIN(Screen);
 
  public:
-  static Screen* Create(LocalFrame* frame) {
-    return MakeGarbageCollected<Screen>(frame);
-  }
-
   explicit Screen(LocalFrame*);
 
   int height() const;
@@ -62,6 +61,27 @@ class CORE_EXPORT Screen final : public ScriptWrappable,
   int availWidth() const;
 
   void Trace(blink::Visitor*) override;
+
+  // Proposed extensions to the Screen interface.
+  // https://github.com/spark008/screen-enumeration/blob/master/EXPLAINER.md
+  // TODO(msw): Resolve different info sources, caching, and lifetimes.
+  Screen(display::mojom::blink::DisplayPtr display, bool primary);
+  int left() const;
+  int top() const;
+  bool internal() const;
+  bool primary() const;
+  float scaleFactor() const;
+  const String name() const;
+
+ private:
+  // A static snapshot of the display's information, provided upon construction.
+  // This member is only valid for Screen objects obtained via the experimental
+  // Screen Enumeration API.
+  const display::mojom::blink::DisplayPtr display_;
+  // True if this is the primary screen of the operating system; it is a static
+  // value provided upon construction. This member is only valid for Screen
+  // objects obtained via the experimental Screen Enumeration API.
+  const base::Optional<bool> primary_;
 };
 
 }  // namespace blink

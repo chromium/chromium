@@ -13,66 +13,19 @@
 #endif
 
 @interface TabGridNewTabButton () {
-  UIView* _container;
-
   UIImage* _regularImage;
   UIImage* _incognitoImage;
-  UIImage* _smallRegularImage;
-  UIImage* _smallIncognitoImage;
-  UIImage* _largeRegularImage;
-  UIImage* _largeIncognitoImage;
-
-  NSArray* _smallButtonConstraints;
-  NSArray* _largeButtonConstraints;
 }
 @end
 
 @implementation TabGridNewTabButton
 
-- (instancetype)init {
-  self = [super init];
+- (instancetype)initWithRegularImage:(UIImage*)regularImage
+                      incognitoImage:(UIImage*)incognitoImage {
+  self = [super initWithFrame:CGRectZero];
   if (self) {
-    _smallRegularImage = [UIImage imageNamed:@"new_tab_toolbar_button"];
-    _smallIncognitoImage =
-        [UIImage imageNamed:@"new_tab_toolbar_button_incognito"];
-    _largeRegularImage = [UIImage imageNamed:@"new_tab_floating_button"];
-    _largeIncognitoImage =
-        [UIImage imageNamed:@"new_tab_floating_button_incognito"];
-    // Set UIBarButtonItem.image to get a built-in accessibility modal panel.
-    // The panel will be shown when user long press on the button, under
-    // accessibility font size. The image will be normalized into a bi-color
-    // image, so the incognito image is suitable because it has a transparent
-    // "+". Use the larger image for higher resolution.
-    self.image = _largeIncognitoImage;
-
-    _container = [[UIView alloc] init];
-    _container.translatesAutoresizingMaskIntoConstraints = NO;
-    self.customView = _container;
-
-    _button = [[UIButton alloc] init];
-    _button.translatesAutoresizingMaskIntoConstraints = NO;
-    // Set a high compression resistance priority otherwise the button will be
-    // compressed by UIToolbar's height constraint.
-    [_button
-        setContentCompressionResistancePriority:UILayoutPriorityDefaultHigh + 1
-                                        forAxis:UILayoutConstraintAxisVertical];
-    [_container addSubview:_button];
-
-    _smallButtonConstraints = @[
-      [_button.topAnchor constraintEqualToAnchor:_container.topAnchor],
-      [_button.bottomAnchor constraintEqualToAnchor:_container.bottomAnchor],
-      [_button.leadingAnchor constraintEqualToAnchor:_container.leadingAnchor],
-      [_button.trailingAnchor constraintEqualToAnchor:_container.trailingAnchor]
-    ];
-
-    _largeButtonConstraints = @[
-      [_button.topAnchor constraintEqualToAnchor:_container.topAnchor],
-      [_button.bottomAnchor
-          constraintEqualToAnchor:_container.bottomAnchor
-                         constant:-kTabGridFloatingButtonVerticalInset],
-      [_button.leadingAnchor constraintEqualToAnchor:_container.leadingAnchor],
-      [_button.trailingAnchor constraintEqualToAnchor:_container.trailingAnchor]
-    ];
+    _regularImage = regularImage;
+    _incognitoImage = incognitoImage;
   }
   return self;
 }
@@ -80,63 +33,28 @@
 #pragma mark - Public
 
 - (void)setPage:(TabGridPage)page {
-  if (page == _page)
-    return;
+  // self.page is inited to 0 (i.e. TabGridPageIncognito) so do not early return
+  // here, otherwise when app is launched in incognito mode the image will be
+  // missing.
+  UIImage* renderedImage;
   switch (page) {
     case TabGridPageIncognitoTabs:
-      self.button.accessibilityLabel =
+      self.accessibilityLabel =
           l10n_util::GetNSString(IDS_IOS_TAB_GRID_CREATE_NEW_INCOGNITO_TAB);
-      break;
-    case TabGridPageRegularTabs:
-      self.button.accessibilityLabel =
-          l10n_util::GetNSString(IDS_IOS_TAB_GRID_CREATE_NEW_TAB);
-      break;
-    case TabGridPageRemoteTabs:
-      break;
-  }
-  self.title = self.button.accessibilityLabel;
-  _page = page;
-  [self updateButtonImage];
-}
-
-- (void)setSizeClass:(TabGridNewTabButtonSizeClass)sizeClass {
-  if (sizeClass == _sizeClass)
-    return;
-  switch (sizeClass) {
-    case TabGridNewTabButtonSizeClassSmall:
-      _regularImage = _smallRegularImage;
-      _incognitoImage = _smallIncognitoImage;
-      [NSLayoutConstraint deactivateConstraints:_largeButtonConstraints];
-      [NSLayoutConstraint activateConstraints:_smallButtonConstraints];
-      break;
-    case TabGridNewTabButtonSizeClassLarge:
-      _regularImage = _largeRegularImage;
-      _incognitoImage = _largeIncognitoImage;
-      [NSLayoutConstraint deactivateConstraints:_smallButtonConstraints];
-      [NSLayoutConstraint activateConstraints:_largeButtonConstraints];
-      break;
-  }
-  _sizeClass = sizeClass;
-  [self updateButtonImage];
-}
-
-#pragma mark - Private
-
-- (void)updateButtonImage {
-  UIImage* renderedImage;
-  switch (self.page) {
-    case TabGridPageIncognitoTabs:
       renderedImage = [_incognitoImage
           imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
       break;
     case TabGridPageRegularTabs:
+      self.accessibilityLabel =
+          l10n_util::GetNSString(IDS_IOS_TAB_GRID_CREATE_NEW_TAB);
       renderedImage = [_regularImage
           imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
       break;
-    default:
+    case TabGridPageRemoteTabs:
       break;
   }
-  [self.button setImage:renderedImage forState:UIControlStateNormal];
+  _page = page;
+  [self setImage:renderedImage forState:UIControlStateNormal];
 }
 
 @end

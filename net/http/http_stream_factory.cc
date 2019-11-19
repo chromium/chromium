@@ -20,6 +20,7 @@
 #include "base/trace_event/process_memory_dump.h"
 #include "net/base/host_mapping_rules.h"
 #include "net/base/host_port_pair.h"
+#include "net/base/network_isolation_key.h"
 #include "net/base/parse_number.h"
 #include "net/base/port_util.h"
 #include "net/http/http_network_session.h"
@@ -31,14 +32,19 @@
 #include "net/quic/quic_http_utils.h"
 #include "net/spdy/bidirectional_stream_spdy_impl.h"
 #include "net/spdy/spdy_http_stream.h"
-#include "net/third_party/quic/core/quic_packets.h"
-#include "net/third_party/quic/core/quic_server_id.h"
+#include "net/third_party/quiche/src/quic/core/quic_packets.h"
+#include "net/third_party/quiche/src/quic/core/quic_server_id.h"
 #include "net/third_party/quiche/src/spdy/core/spdy_alt_svc_wire_format.h"
 #include "url/gurl.h"
 #include "url/scheme_host_port.h"
 #include "url/url_constants.h"
 
 namespace net {
+
+namespace {
+const char kAlternativeServiceHeader[] = "Alt-Svc";
+
+}  // namespace
 
 HttpStreamFactory::HttpStreamFactory(HttpNetworkSession* session)
     : session_(session), job_factory_(std::make_unique<JobFactory>()) {}
@@ -47,6 +53,7 @@ HttpStreamFactory::~HttpStreamFactory() {}
 
 void HttpStreamFactory::ProcessAlternativeServices(
     HttpNetworkSession* session,
+    const net::NetworkIsolationKey& network_isolation_key,
     const HttpResponseHeaders* headers,
     const url::SchemeHostPort& http_server) {
   if (!headers->HasHeader(kAlternativeServiceHeader))
@@ -62,48 +69,12 @@ void HttpStreamFactory::ProcessAlternativeServices(
     return;
   }
 
-  // Convert spdy::SpdyAltSvcWireFormat::AlternativeService entries
-  // to net::AlternativeServiceInfo.
-  AlternativeServiceInfoVector alternative_service_info_vector;
-  for (const spdy::SpdyAltSvcWireFormat::AlternativeService&
-           alternative_service_entry : alternative_service_vector) {
-    NextProto protocol =
-        NextProtoFromString(alternative_service_entry.protocol_id);
-    if (!IsAlternateProtocolValid(protocol) ||
-        !session->IsProtocolEnabled(protocol) ||
-        !IsPortValid(alternative_service_entry.port)) {
-      continue;
-    }
-    // Check if QUIC version is supported. Filter supported QUIC versions.
-    quic::QuicTransportVersionVector advertised_versions;
-    if (protocol == kProtoQUIC && !alternative_service_entry.version.empty()) {
-      advertised_versions = FilterSupportedAltSvcVersions(
-          alternative_service_entry, session->params().quic_supported_versions,
-          session->params().support_ietf_format_quic_altsvc);
-      if (advertised_versions.empty())
-        continue;
-    }
-    AlternativeService alternative_service(protocol,
-                                           alternative_service_entry.host,
-                                           alternative_service_entry.port);
-    base::Time expiration =
-        base::Time::Now() +
-        base::TimeDelta::FromSeconds(alternative_service_entry.max_age);
-    AlternativeServiceInfo alternative_service_info;
-    if (protocol == kProtoQUIC) {
-      alternative_service_info =
-          AlternativeServiceInfo::CreateQuicAlternativeServiceInfo(
-              alternative_service, expiration, advertised_versions);
-    } else {
-      alternative_service_info =
-          AlternativeServiceInfo::CreateHttp2AlternativeServiceInfo(
-              alternative_service, expiration);
-    }
-    alternative_service_info_vector.push_back(alternative_service_info);
-  }
-
   session->http_server_properties()->SetAlternativeServices(
-      RewriteHost(http_server), alternative_service_info_vector);
+      RewriteHost(http_server), network_isolation_key,
+      net::ProcessAlternativeServices(
+          alternative_service_vector, session->params().enable_http2,
+          session->params().enable_quic,
+          session->params().quic_params.supported_versions));
 }
 
 url::SchemeHostPort HttpStreamFactory::RewriteHost(
@@ -198,7 +169,7 @@ void HttpStreamFactory::PreconnectStreams(int num_streams,
 
   SSLConfig server_ssl_config;
   SSLConfig proxy_ssl_config;
-  session_->GetSSLConfig(request_info, &server_ssl_config, &proxy_ssl_config);
+  session_->GetSSLConfig(&server_ssl_config, &proxy_ssl_config);
 
   auto job_controller = std::make_unique<JobController>(
       this, nullptr, session_, job_factory_.get(), request_info,
@@ -217,94 +188,12 @@ const HostMappingRules* HttpStreamFactory::GetHostMappingRules() const {
 }
 
 void HttpStreamFactory::OnJobControllerComplete(JobController* controller) {
-  for (auto it = job_controller_set_.begin(); it != job_controller_set_.end();
-       ++it) {
-    if (it->get() == controller) {
-      job_controller_set_.erase(it);
-      return;
-    }
+  auto it = job_controller_set_.find(controller);
+  if (it != job_controller_set_.end()) {
+    job_controller_set_.erase(it);
+  } else {
+    NOTREACHED();
   }
-  NOTREACHED();
-}
-
-HttpStreamFactory::PreconnectingProxyServer::PreconnectingProxyServer(
-    ProxyServer proxy_server,
-    PrivacyMode privacy_mode)
-    : proxy_server(proxy_server), privacy_mode(privacy_mode) {}
-
-bool HttpStreamFactory::PreconnectingProxyServer::operator<(
-    const PreconnectingProxyServer& other) const {
-  return std::tie(proxy_server, privacy_mode) <
-         std::tie(other.proxy_server, other.privacy_mode);
-}
-
-bool HttpStreamFactory::PreconnectingProxyServer::operator==(
-    const PreconnectingProxyServer& other) const {
-  return proxy_server == other.proxy_server &&
-         privacy_mode == other.privacy_mode;
-}
-
-bool HttpStreamFactory::OnInitConnection(const JobController& controller,
-                                         const ProxyInfo& proxy_info,
-                                         PrivacyMode privacy_mode) {
-  if (!controller.is_preconnect()) {
-    // Connection initialization can be skipped only for the preconnect jobs.
-    return false;
-  }
-
-  if (!ProxyServerSupportsPriorities(proxy_info))
-    return false;
-
-  PreconnectingProxyServer preconnecting_proxy_server(proxy_info.proxy_server(),
-                                                      privacy_mode);
-
-  if (base::ContainsKey(preconnecting_proxy_servers_,
-                        preconnecting_proxy_server)) {
-    UMA_HISTOGRAM_EXACT_LINEAR("Net.PreconnectSkippedToProxyServers", 1, 2);
-    // Skip preconnect to the proxy server since we are already preconnecting
-    // (probably via some other job). See https://crbug.com/682041 for details.
-    return true;
-  }
-
-  // Add the proxy server to the set of preconnecting proxy servers.
-  // The maximum size of |preconnecting_proxy_servers_|.
-  static const size_t kMaxPreconnectingServerSize = 3;
-  if (preconnecting_proxy_servers_.size() >= kMaxPreconnectingServerSize) {
-    // Erase the first entry. A better approach (at the cost of higher memory
-    // overhead) may be to erase the least recently used entry.
-    preconnecting_proxy_servers_.erase(preconnecting_proxy_servers_.begin());
-  }
-
-  preconnecting_proxy_servers_.insert(preconnecting_proxy_server);
-  DCHECK_GE(kMaxPreconnectingServerSize, preconnecting_proxy_servers_.size());
-  // The first preconnect should be allowed.
-  return false;
-}
-
-void HttpStreamFactory::OnStreamReady(const ProxyInfo& proxy_info,
-                                      PrivacyMode privacy_mode) {
-  if (proxy_info.is_empty())
-    return;
-  preconnecting_proxy_servers_.erase(
-      PreconnectingProxyServer(proxy_info.proxy_server(), privacy_mode));
-}
-
-bool HttpStreamFactory::ProxyServerSupportsPriorities(
-    const ProxyInfo& proxy_info) const {
-  if (proxy_info.is_empty() || !proxy_info.proxy_server().is_valid())
-    return false;
-
-  if (!proxy_info.proxy_server().is_https())
-    return false;
-
-  HostPortPair host_port_pair = proxy_info.proxy_server().host_port_pair();
-  DCHECK(!host_port_pair.IsEmpty());
-
-  url::SchemeHostPort scheme_host_port("https", host_port_pair.host(),
-                                       host_port_pair.port());
-
-  return session_->http_server_properties()->SupportsRequestPriority(
-      scheme_host_port);
 }
 
 void HttpStreamFactory::DumpMemoryStats(

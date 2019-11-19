@@ -13,28 +13,40 @@ constexpr base::TimeDelta kActivationLifespan = base::TimeDelta::FromSeconds(5);
 
 void UserActivationState::Activate() {
   has_been_active_ = true;
-  is_active_ = true;
-  activation_timestamp_ = base::TimeTicks::Now();
+  ActivateTransientState();
 }
 
 void UserActivationState::Clear() {
   has_been_active_ = false;
-  is_active_ = false;
+  DeactivateTransientState();
 }
 
-bool UserActivationState::IsActive() {
-  if (is_active_ &&
-      (base::TimeTicks::Now() - activation_timestamp_ > kActivationLifespan)) {
-    is_active_ = false;
-  }
-  return is_active_;
+bool UserActivationState::IsActive() const {
+  return base::TimeTicks::Now() <= transient_state_expiry_time_;
 }
 
 bool UserActivationState::ConsumeIfActive() {
   if (!IsActive())
     return false;
-  is_active_ = false;
+  DeactivateTransientState();
   return true;
+}
+
+void UserActivationState::TransferFrom(UserActivationState& other) {
+  if (other.has_been_active_)
+    has_been_active_ = true;
+  if (transient_state_expiry_time_ < other.transient_state_expiry_time_)
+    transient_state_expiry_time_ = other.transient_state_expiry_time_;
+
+  other.Clear();
+}
+
+void UserActivationState::ActivateTransientState() {
+  transient_state_expiry_time_ = base::TimeTicks::Now() + kActivationLifespan;
+}
+
+void UserActivationState::DeactivateTransientState() {
+  transient_state_expiry_time_ = base::TimeTicks();
 }
 
 }  // namespace blink

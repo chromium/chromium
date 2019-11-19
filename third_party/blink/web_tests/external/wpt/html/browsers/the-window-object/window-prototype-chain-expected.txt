@@ -1,8 +1,8 @@
 This is a testharness.js-based test.
 PASS window object
-FAIL Window.prototype assert_equals: expected "[object WindowPrototype]" but got "[object Window]"
+FAIL Window.prototype assert_class_string: expected "[object WindowPrototype]" but got "[object Window]"
 PASS Global scope polluter
-FAIL EventTarget.prototype assert_equals: expected "[object EventTargetPrototype]" but got "[object EventTarget]"
+FAIL EventTarget.prototype assert_class_string: expected "[object EventTargetPrototype]" but got "[object EventTarget]"
 PASS Object.prototype
 Harness: the test ran to completion.
 

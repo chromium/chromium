@@ -208,7 +208,7 @@ std::string FFmpegVideoDecoder::GetDisplayName() const {
 void FFmpegVideoDecoder::Initialize(const VideoDecoderConfig& config,
                                     bool low_delay,
                                     CdmContext* /* cdm_context */,
-                                    const InitCB& init_cb,
+                                    InitCB init_cb,
                                     const OutputCB& output_cb,
                                     const WaitingCB& /* waiting_cb */) {
   DVLOG(1) << __func__ << ": " << config.AsHumanReadableString();
@@ -216,15 +216,15 @@ void FFmpegVideoDecoder::Initialize(const VideoDecoderConfig& config,
   DCHECK(config.IsValidConfig());
   DCHECK(output_cb);
 
-  InitCB bound_init_cb = BindToCurrentLoop(init_cb);
+  InitCB bound_init_cb = BindToCurrentLoop(std::move(init_cb));
 
   if (config.is_encrypted()) {
-    bound_init_cb.Run(false);
+    std::move(bound_init_cb).Run(false);
     return;
   }
 
   if (!ConfigureDecoder(config, low_delay)) {
-    bound_init_cb.Run(false);
+    std::move(bound_init_cb).Run(false);
     return;
   }
 
@@ -232,26 +232,26 @@ void FFmpegVideoDecoder::Initialize(const VideoDecoderConfig& config,
   config_ = config;
   output_cb_ = output_cb;
   state_ = kNormal;
-  bound_init_cb.Run(true);
+  std::move(bound_init_cb).Run(true);
 }
 
 void FFmpegVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
-                                const DecodeCB& decode_cb) {
+                                DecodeCB decode_cb) {
   DVLOG(3) << __func__;
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(buffer.get());
   DCHECK(decode_cb);
   CHECK_NE(state_, kUninitialized);
 
-  DecodeCB decode_cb_bound = BindToCurrentLoop(decode_cb);
+  DecodeCB decode_cb_bound = BindToCurrentLoop(std::move(decode_cb));
 
   if (state_ == kError) {
-    decode_cb_bound.Run(DecodeStatus::DECODE_ERROR);
+    std::move(decode_cb_bound).Run(DecodeStatus::DECODE_ERROR);
     return;
   }
 
   if (state_ == kDecodeFinished) {
-    decode_cb_bound.Run(DecodeStatus::OK);
+    std::move(decode_cb_bound).Run(DecodeStatus::OK);
     return;
   }
 
@@ -277,7 +277,7 @@ void FFmpegVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
 
   if (!FFmpegDecode(*buffer)) {
     state_ = kError;
-    decode_cb_bound.Run(DecodeStatus::DECODE_ERROR);
+    std::move(decode_cb_bound).Run(DecodeStatus::DECODE_ERROR);
     return;
   }
 
@@ -286,17 +286,17 @@ void FFmpegVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
 
   // VideoDecoderShim expects that |decode_cb| is called only after
   // |output_cb_|.
-  decode_cb_bound.Run(DecodeStatus::OK);
+  std::move(decode_cb_bound).Run(DecodeStatus::OK);
 }
 
-void FFmpegVideoDecoder::Reset(const base::Closure& closure) {
+void FFmpegVideoDecoder::Reset(base::OnceClosure closure) {
   DVLOG(2) << __func__;
   DCHECK(thread_checker_.CalledOnValidThread());
 
   avcodec_flush_buffers(codec_context_.get());
   state_ = kNormal;
   // PostTask() to avoid calling |closure| inmediately.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, closure);
+  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, std::move(closure));
 }
 
 FFmpegVideoDecoder::~FFmpegVideoDecoder() {

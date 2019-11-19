@@ -1,0 +1,62 @@
+<!doctype HTML>
+<html>
+<meta charset="utf8">
+<title>Display Locking: activatable allows selections (reference)</title>
+<link rel="author" title="Rakina Zata Amni" href="mailto:rakina@chromium.org">
+<link rel="help" href="https://github.com/WICG/display-locking">
+<style>
+  div {
+    contain: style layout;
+  }
+  #nonActivatable {
+    width: 20px; height: 20px;
+  }
+</style>
+<div id="host">
+  <div id="slottedToFirst" slot="first">
+    slotted to first slot
+  </div>
+  <div id="slottedToSecond" slot="second">
+    slotted to second slot
+  </div>
+</div>
+
+<script>
+/*
+Structure:
+<div id=host>  // locked, activatable
+ #shadowRoot
+  <slot first>
+    <div id=slottedToFirst> // locked, activatable
+      slotted to first slot
+  shadow text
+  <div id=nonActivatable>     // locked, non-activatable
+    non activatable
+  <slot second>
+    <div id=slottedToSecond>
+      slotted to second slot
+*/
+
+async function runTest() {
+  const shadowRoot = host.attachShadow({ mode: "open" });
+  shadowRoot.innerHTML = "<style> div { contain: style layout; } </style>";
+
+  const firstSlot = document.createElement("slot");
+  firstSlot.name = "first";
+  shadowRoot.appendChild(firstSlot);
+  shadowRoot.appendChild(document.createTextNode("shadow text"));
+  const nonActivatable = document.createElement("div");
+  nonActivatable.style = "width: 20px; height: 20px;";
+  shadowRoot.appendChild(nonActivatable);
+  const secondSlot = document.createElement("slot");
+  secondSlot.name = "second";
+  shadowRoot.appendChild(secondSlot);
+  window.getSelection().removeAllRanges();
+  const selectionRange = document.createRange();
+  selectionRange.setStart(slottedToFirst.firstChild, 8);
+  selectionRange.setEnd(slottedToSecond.firstChild, 10);
+  window.getSelection().addRange(selectionRange);
+  requestAnimationFrame(takeScreenshot);
+}
+window.onload = () => { requestAnimationFrame(runTest); };
+</script>

@@ -28,8 +28,7 @@ AndroidUsbSocket::AndroidUsbSocket(scoped_refptr<AndroidUsbDevice> device,
       local_id_(socket_id),
       remote_id_(0),
       is_connected_(false),
-      delete_callback_(delete_callback),
-      weak_factory_(this) {}
+      delete_callback_(delete_callback) {}
 
 AndroidUsbSocket::~AndroidUsbSocket() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

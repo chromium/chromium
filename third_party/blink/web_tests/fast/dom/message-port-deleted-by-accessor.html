@@ -9,10 +9,10 @@ window.onload = function()
     channel = new MessageChannel;
     event = document.createEvent("MessageEvent");
 
-    event.initMessageEvent(0, 0, 0, 0, 0, 0, 0, [channel.port1, channel.port2]);
+    event.initMessageEvent(0, 0, 0, 0, 0, 0, null, [channel.port1, channel.port2]);
 
     Array.prototype.__defineSetter__(0, function() {
-        event.initMessageEvent(0, 0, 0, 0, 0, 0, 0, [ ]);
+        event.initMessageEvent(0, 0, 0, 0, 0, 0, null, [ ]);
     });
 
     event.ports;

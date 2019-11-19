@@ -53,6 +53,7 @@ class NetworkingPrivateEventRouterImpl
   void DeviceListChanged() override;
   void NetworkPropertiesUpdated(const NetworkState* network) override;
   void DevicePropertiesUpdated(const DeviceState* device) override;
+  void ScanCompleted(const DeviceState* device) override;
 
   // NetworkCertificateHandler::Observer overrides:
   void OnCertificatesChanged() override;
@@ -237,6 +238,14 @@ void NetworkingPrivateEventRouterImpl::DevicePropertiesUpdated(
   for (const NetworkState* network : cellular_networks) {
     NetworkPropertiesUpdated(network);
   }
+}
+
+void NetworkingPrivateEventRouterImpl::ScanCompleted(
+    const DeviceState* device) {
+  // We include the scanning state for Cellular networks, so notify the UI when
+  // a scan completes.
+  if (chromeos::NetworkTypePattern::Wireless().MatchesType(device->type()))
+    DevicePropertiesUpdated(device);
 }
 
 void NetworkingPrivateEventRouterImpl::OnCertificatesChanged() {

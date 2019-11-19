@@ -357,7 +357,7 @@ application/x-futuresplash	spl
 application/x-gtar		gtar
 application/x-gzip
 application/x-hdf		hdf
-application/x-javascript	js
+application/x-javascript	js mjs
 application/x-java-jnlp-file	jnlp
 application/x-koan		skp skd skt skm
 application/x-latex		latex

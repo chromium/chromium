@@ -1,0 +1,27 @@
+# Copyright 2016 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("mojo") {
+  sources = [
+    "device_impl.cc",
+    "device_impl.h",
+    "device_manager_impl.cc",
+    "device_manager_impl.h",
+    "device_manager_test.cc",
+    "device_manager_test.h",
+  ]
+
+  deps = [
+    "//mojo/public/cpp/bindings",
+    "//net",
+    "//services/device/public/cpp/usb",
+    "//services/device/public/mojom:usb",
+    "//services/device/public/mojom:usb_test",
+    "//services/device/usb",
+  ]
+
+  if (is_chromeos) {
+    deps += [ "//chromeos/dbus/permission_broker" ]
+  }
+}

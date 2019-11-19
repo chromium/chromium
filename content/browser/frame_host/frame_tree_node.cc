@@ -18,11 +18,14 @@
 #include "base/strings/string_util.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/frame_host/frame_tree.h"
+#include "content/browser/frame_host/navigation_controller_impl.h"
 #include "content/browser/frame_host/navigation_request.h"
 #include "content/browser/frame_host/navigator.h"
 #include "content/browser/frame_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/common/frame_messages.h"
+#include "content/common/navigation_params.h"
+#include "content/common/navigation_params_utils.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/navigation_policy.h"
@@ -47,6 +50,8 @@ const double kLoadingProgressMinimum = 0.1;
 const double kLoadingProgressDone = 1.0;
 
 }  // namespace
+
+const int FrameTreeNode::kFrameTreeNodeInvalidId = -1;
 
 // This observer watches the opener of its owner FrameTreeNode and clears the
 // owner's opener if the opener is destroyed.
@@ -163,17 +168,42 @@ FrameTreeNode::~FrameTreeNode() {
 
   g_frame_tree_node_id_map.Get().erase(frame_tree_node_id_);
 
+  bool did_stop_loading = false;
+
   if (navigation_request_) {
-    // PlzNavigate: if a frame with a pending navigation is detached, make sure
-    // the WebContents (and its observers) update their loading state.
     navigation_request_.reset();
-    DidStopLoading();
+    // If a frame with a pending navigation is detached, make sure the
+    // WebContents (and its observers) update their loading state.
+    did_stop_loading = true;
   }
 
-  // ~SiteProcessCountTracker DCHECKs in some tests if CleanUpNavigation is not
-  // called last. Ideally this would be closer to (possible before) the
-  // ResetLoadingState() call above.
-  render_manager_.CleanUpNavigation();
+  // ~SiteProcessCountTracker DCHECKs in some tests if the speculative
+  // RenderFrameHostImpl is not destroyed last. Ideally this would be closer to
+  // (possible before) the ResetLoadingState() call above.
+  //
+  // There is an inherent race condition causing bugs 838348/915179/et al, where
+  // the renderer may have committed the speculative main frame and the browser
+  // has not heard about it yet. If this is a main frame, then in that case the
+  // speculative RenderFrame was unable to be deleted (it is owned by the
+  // renderer) and we should not be able to cancel the navigation at this point.
+  // CleanUpNavigation() would normally be called here but it will try to undo
+  // the navigation and expose the race condition. When it replaces the main
+  // frame with a RenderFrameProxy, that leaks the committed main frame, leaving
+  // the frame and its friend group with pointers that will become invalid
+  // shortly as we are shutting everything down and deleting the RenderView etc.
+  // We avoid this problematic situation by not calling CleanUpNavigation() or
+  // DiscardUnusedFrame() here. The speculative RenderFrameHost is simply
+  // returned and deleted immediately. This satisfies the requirement that the
+  // speculative RenderFrameHost is removed from the RenderFrameHostManager
+  // before it is destroyed.
+  if (render_manager_.speculative_frame_host()) {
+    did_stop_loading |= render_manager_.speculative_frame_host()->is_loading();
+    render_manager_.UnsetSpeculativeRenderFrameHost();
+  }
+
+  if (did_stop_loading)
+    DidStopLoading();
+
   DCHECK(!IsLoading());
 }
 
@@ -202,6 +232,20 @@ void FrameTreeNode::ResetForNavigation() {
   // before arriving here. We just need to clear them here and in the other
   // renderer processes that may have a reference to this frame.
   UpdateUserActivationState(blink::UserActivationUpdateType::kClearActivation);
+}
+
+size_t FrameTreeNode::GetFrameTreeSize() const {
+  if (is_collapsed())
+    return 0;
+
+  size_t size = 0;
+  for (size_t i = 0; i < child_count(); i++) {
+    size += child_at(i)->GetFrameTreeSize();
+  }
+
+  // Account for this node.
+  size++;
+  return size;
 }
 
 void FrameTreeNode::SetOpener(FrameTreeNode* opener) {
@@ -388,12 +432,11 @@ void FrameTreeNode::CreatedNavigationRequest(
   // RenderFrameHostManager will take care of updates to the speculative
   // RenderFrameHost in DidCreateNavigationRequest below.
   if (was_previously_loading) {
-    if (navigation_request_ && navigation_request_->navigation_handle()) {
+    if (navigation_request_ && navigation_request_->IsNavigationStarted()) {
       // Mark the old request as aborted.
-      navigation_request_->navigation_handle()->set_net_error_code(
-          net::ERR_ABORTED);
+      navigation_request_->set_net_error(net::ERR_ABORTED);
     }
-    ResetNavigationRequest(true, true);
+    ResetNavigationRequest(true);
   }
 
   navigation_request_ = std::move(navigation_request);
@@ -403,27 +446,17 @@ void FrameTreeNode::CreatedNavigationRequest(
   }
   render_manager()->DidCreateNavigationRequest(navigation_request_.get());
 
-  bool to_different_document = !FrameMsg_Navigate_Type::IsSameDocument(
+  bool to_different_document = !NavigationTypeUtils::IsSameDocument(
       navigation_request_->common_params().navigation_type);
 
   DidStartLoading(to_different_document, was_previously_loading);
 }
 
-void FrameTreeNode::ResetNavigationRequest(bool keep_state,
-                                           bool inform_renderer) {
+void FrameTreeNode::ResetNavigationRequest(bool keep_state) {
   if (!navigation_request_)
     return;
 
   devtools_instrumentation::OnResetNavigationRequest(navigation_request_.get());
-
-  // The renderer should be informed if the caller allows to do so and the
-  // navigation came from a BeginNavigation IPC.
-  bool need_to_inform_renderer =
-      !IsPerNavigationMojoInterfaceEnabled() & inform_renderer &&
-      navigation_request_->from_begin_navigation();
-
-  NavigationRequest::AssociatedSiteInstanceType site_instance_type =
-      navigation_request_->associated_site_instance_type();
   navigation_request_.reset();
 
   if (keep_state)
@@ -433,23 +466,6 @@ void FrameTreeNode::ResetNavigationRequest(bool keep_state,
   // it created for the navigation. Also register that the load stopped.
   DidStopLoading();
   render_manager_.CleanUpNavigation();
-
-  // When reusing the same SiteInstance, a pending WebUI may have been created
-  // on behalf of the navigation in the current RenderFrameHost. Clear it.
-  if (site_instance_type ==
-      NavigationRequest::AssociatedSiteInstanceType::CURRENT) {
-    current_frame_host()->ClearPendingWebUI();
-  }
-
-  // If the navigation is renderer-initiated, the renderer should also be
-  // informed that the navigation stopped if needed. In the case the renderer
-  // process asked for the navigation to be aborted, e.g. following a
-  // document.open, do not send an IPC to the renderer process as it already
-  // expects the navigation to stop.
-  if (need_to_inform_renderer) {
-    current_frame_host()->Send(
-        new FrameMsg_DroppedNavigation(current_frame_host()->GetRoutingID()));
-  }
 }
 
 void FrameTreeNode::DidStartLoading(bool to_different_document,
@@ -482,15 +498,17 @@ void FrameTreeNode::DidStopLoading() {
   // the WebContents of the load progress change.
   DidChangeLoadProgress(kLoadingProgressDone);
 
+  // Notify the RenderFrameHostManager of the event.
+  render_manager()->OnDidStopLoading();
+
   // Notify the WebContents.
   if (!frame_tree_->IsLoading())
     navigator()->GetDelegate()->DidStopLoading();
 
-  // Notify the RenderFrameHostManager of the event.
-  render_manager()->OnDidStopLoading();
-
   // Notify accessibility that the user is no longer trying to load or
   // reload a page.
+  // TODO(domfarolino): Remove this in favor of notifying via the delegate's
+  // DidStopLoading() above.
   BrowserAccessibilityManager* manager =
       current_frame_host()->browser_accessibility_manager();
   if (manager)
@@ -505,17 +523,9 @@ void FrameTreeNode::DidChangeLoadProgress(double load_progress) {
 }
 
 bool FrameTreeNode::StopLoading() {
-  if (navigation_request_) {
-    int expected_pending_nav_entry_id = navigation_request_->nav_entry_id();
-    if (navigation_request_->navigation_handle()) {
-      navigation_request_->navigation_handle()->set_net_error_code(
-          net::ERR_ABORTED);
-      expected_pending_nav_entry_id =
-          navigation_request_->navigation_handle()->pending_nav_entry_id();
-    }
-    navigator_->DiscardPendingEntryIfNeeded(expected_pending_nav_entry_id);
-  }
-  ResetNavigationRequest(false, true);
+  if (navigation_request_ && navigation_request_->IsNavigationStarted())
+    navigation_request_->set_net_error(net::ERR_ABORTED);
+  ResetNavigationRequest(false);
 
   // TODO(nasko): see if child frames should send IPCs in site-per-process
   // mode.
@@ -550,7 +560,7 @@ void FrameTreeNode::BeforeUnloadCanceled() {
   // as it has not been created yet. It is only created when the
   // BeforeUnloadACK is received.
   if (navigation_request_)
-    ResetNavigationRequest(false, true);
+    ResetNavigationRequest(false);
 }
 
 bool FrameTreeNode::NotifyUserActivation() {
@@ -562,12 +572,9 @@ bool FrameTreeNode::NotifyUserActivation() {
   }
   replication_state_.has_received_user_gesture = true;
 
-  // TODO(mustaq): The following block relaxes UAv2 a bit to make it slightly
-  // closer to the old (v1) model, to address a Hangout regression.  We will
-  // remove this after implementing a mechanism to delegate activation to
-  // subframes (https://crbug.com/728334)
-  if (base::FeatureList::IsEnabled(features::kUserActivationV2) &&
-      base::FeatureList::IsEnabled(
+  // See the "Same-origin Visibility" section in |UserActivationState| class
+  // doc.
+  if (base::FeatureList::IsEnabled(
           features::kUserActivationSameOriginVisibility)) {
     const url::Origin& current_origin =
         this->current_frame_host()->GetLastCommittedOrigin();
@@ -578,6 +585,11 @@ bool FrameTreeNode::NotifyUserActivation() {
       }
     }
   }
+
+  NavigationControllerImpl* controller =
+      static_cast<NavigationControllerImpl*>(navigator()->GetController());
+  if (controller)
+    controller->NotifyUserActivation();
 
   return true;
 }
@@ -595,20 +607,42 @@ bool FrameTreeNode::ClearUserActivation() {
   return true;
 }
 
+bool FrameTreeNode::VerifyUserActivation() {
+  if (!base::FeatureList::IsEnabled(features::kBrowserVerifiedUserActivation))
+    return true;
+  return render_manager_.current_frame_host()
+      ->GetRenderWidgetHost()
+      ->RemovePendingUserActivationIfAvailable();
+}
+
 bool FrameTreeNode::UpdateUserActivationState(
     blink::UserActivationUpdateType update_type) {
-  render_manager_.UpdateUserActivationState(update_type);
+  bool update_result = false;
   switch (update_type) {
     case blink::UserActivationUpdateType::kConsumeTransientActivation:
-      return ConsumeTransientUserActivation();
-
+      update_result = ConsumeTransientUserActivation();
+      break;
     case blink::UserActivationUpdateType::kNotifyActivation:
-      return NotifyUserActivation();
-
+      update_result = NotifyUserActivation();
+      break;
+    case blink::UserActivationUpdateType::
+        kNotifyActivationPendingBrowserVerification:
+      if (VerifyUserActivation()) {
+        update_result = NotifyUserActivation();
+        update_type = blink::UserActivationUpdateType::kNotifyActivation;
+      } else {
+        // TODO(crbug.com/848778): We need to decide what to do when user
+        // activation verification failed. NOTREACHED here will make all
+        // unrelated tests that inject event to renderer fail.
+        return false;
+      }
+      break;
     case blink::UserActivationUpdateType::kClearActivation:
-      return ClearUserActivation();
+      update_result = ClearUserActivation();
+      break;
   }
-  NOTREACHED() << "Invalid update_type.";
+  render_manager_.UpdateUserActivationState(update_type);
+  return update_result;
 }
 
 void FrameTreeNode::OnSetHasReceivedUserGestureBeforeNavigation(bool value) {
@@ -653,6 +687,18 @@ void FrameTreeNode::UpdateFramePolicyHeaders(
   // Notify any proxies if the policies have been changed.
   if (changed)
     render_manager()->OnDidSetFramePolicyHeaders();
+}
+
+void FrameTreeNode::TransferUserActivationFrom(
+    RenderFrameHostImpl* source_rfh) {
+  user_activation_state_.TransferFrom(
+      source_rfh->frame_tree_node()->user_activation_state_);
+
+  // Notify proxies in non-source and non-target renderer processes to
+  // transfer the activation state from the source proxy to the target
+  // so the user activation state of those proxies matches the source
+  // renderer and the target renderer (which are separately updated).
+  render_manager_.TransferUserActivationFrom(source_rfh);
 }
 
 void FrameTreeNode::PruneChildFrameNavigationEntries(

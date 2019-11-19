@@ -26,28 +26,71 @@ const char kEnterprisePasswordInterstitialHistogram[] =
 const char kEnterprisePasswordWarningDialogHistogram[] =
     "PasswordProtection.ModalWarningDialogAction."
     "NonGaiaEnterprisePasswordEntry";
+const char kGmailSyncPasswordEntryRequestOutcomeHistogram[] =
+    "PasswordProtection.RequestOutcome.GmailSyncPasswordEntry";
+const char kGmailNonSyncPasswordEntryRequestOutcomeHistogram[] =
+    "PasswordProtection.RequestOutcome.GmailNonSyncPasswordEntry";
 const char kGSuiteSyncPasswordEntryRequestOutcomeHistogram[] =
     "PasswordProtection.RequestOutcome.GSuiteSyncPasswordEntry";
+const char kGSuiteNonSyncPasswordEntryRequestOutcomeHistogram[] =
+    "PasswordProtection.RequestOutcome.GSuiteNonSyncPasswordEntry";
+const char kSavedPasswordEntryRequestOutcomeHistogram[] =
+    "PasswordProtection.RequestOutcome.SavedPasswordEntry";
 const char kGSuiteSyncPasswordEntryVerdictHistogram[] =
     "PasswordProtection.Verdict.GSuiteSyncPasswordEntry";
+const char kGSuiteNonSyncPasswordEntryVerdictHistogram[] =
+    "PasswordProtection.Verdict.GSuiteNonSyncPasswordEntry";
+const char kGmailSyncPasswordEntryVerdictHistogram[] =
+    "PasswordProtection.Verdict.GmailSyncPasswordEntry";
+const char kGmailNonSyncPasswordEntryVerdictHistogram[] =
+    "PasswordProtection.Verdict.GmailNonSyncPasswordEntry";
+const char kSavedPasswordEntryVerdictHistogram[] =
+    "PasswordProtection.Verdict.SavedPasswordEntry";
+const char kGmailNonSyncPasswordInterstitialHistogram[] =
+    "PasswordProtection.InterstitialAction.GmailNonSyncPasswordEntry";
+const char kGmailSyncPasswordPageInfoHistogram[] =
+    "PasswordProtection.PageInfoAction.GmailSyncPasswordEntry";
+const char kGmailNonSyncPasswordPageInfoHistogram[] =
+    "PasswordProtection.PageInfoAction.GmailNonSyncPasswordEntry";
+const char kSavedPasswordPageInfoHistogram[] =
+    "PasswordProtection.PageInfoAction.SavedPasswordEntry";
+const char kGmailSyncPasswordWarningDialogHistogram[] =
+    "PasswordProtection.ModalWarningDialogAction.GmailSyncPasswordEntry";
+const char kGmailNonSyncPasswordWarningDialogHistogram[] =
+    "PasswordProtection.ModalWarningDialogAction.GmailNonSyncPasswordEntry";
+const char kNonSyncPasswordInterstitialHistogram[] =
+    "PasswordProtection.InterstitialAction.NonSyncPasswordEntry";
+const char kNonSyncPasswordPageInfoHistogram[] =
+    "PasswordProtection.PageInfoAction.NonSyncPasswordEntry";
+
 const char kGSuiteSyncPasswordInterstitialHistogram[] =
     "PasswordProtection.InterstitialAction.GSuiteSyncPasswordEntry";
+const char kGSuiteNonSyncPasswordInterstitialHistogram[] =
+    "PasswordProtection.InterstitialAction.GSuiteNonSyncPasswordEntry";
 const char kGSuiteSyncPasswordPageInfoHistogram[] =
     "PasswordProtection.PageInfoAction.GSuiteSyncPasswordEntry";
+const char kGSuiteNonSyncPasswordPageInfoHistogram[] =
+    "PasswordProtection.PageInfoAction.GSuiteNonSyncPasswordEntry";
 const char kGSuiteSyncPasswordWarningDialogHistogram[] =
     "PasswordProtection.ModalWarningDialogAction.GSuiteSyncPasswordEntry";
+const char kGSuiteNonSyncPasswordWarningDialogHistogram[] =
+    "PasswordProtection.ModalWarningDialogAction.GSuiteNonSyncPasswordEntry";
+const char kSavedPasswordWarningDialogHistogram[] =
+    "PasswordProtection.ModalWarningDialogAction.SavedPasswordEntry";
+const char kNonSyncPasswordWarningDialogHistogram[] =
+    "PasswordProtection.ModalWarningDialogAction.NonSyncPasswordEntry";
 const char kPasswordOnFocusRequestOutcomeHistogram[] =
     "PasswordProtection.RequestOutcome.PasswordFieldOnFocus";
 const char kPasswordOnFocusVerdictHistogram[] =
     "PasswordProtection.Verdict.PasswordFieldOnFocus";
-const char kProtectedPasswordEntryRequestOutcomeHistogram[] =
-    "PasswordProtection.RequestOutcome.ProtectedPasswordEntry";
-const char kProtectedPasswordEntryVerdictHistogram[] =
-    "PasswordProtection.Verdict.ProtectedPasswordEntry";
+const char kNonSyncPasswordEntryRequestOutcomeHistogram[] =
+    "PasswordProtection.RequestOutcome.NonSyncPasswordEntry";
 const char kSyncPasswordEntryRequestOutcomeHistogram[] =
     "PasswordProtection.RequestOutcome.SyncPasswordEntry";
 const char kSyncPasswordEntryVerdictHistogram[] =
     "PasswordProtection.Verdict.SyncPasswordEntry";
+const char kNonSyncPasswordEntryVerdictHistogram[] =
+    "PasswordProtection.Verdict.NonSyncPasswordEntry";
 const char kSyncPasswordChromeSettingsHistogram[] =
     "PasswordProtection.ChromeSettingsAction.SyncPasswordEntry";
 const char kSyncPasswordInterstitialHistogram[] =
@@ -56,23 +99,49 @@ const char kSyncPasswordPageInfoHistogram[] =
     "PasswordProtection.PageInfoAction.SyncPasswordEntry";
 const char kSyncPasswordWarningDialogHistogram[] =
     "PasswordProtection.ModalWarningDialogAction.SyncPasswordEntry";
+const char kEnterprisePasswordAlertHistogram[] =
+    "PasswordProtection.PasswordAlertModeOutcome."
+    "NonGaiaEnterprisePasswordEntry";
+const char kGsuiteSyncPasswordAlertHistogram[] =
+    "PasswordProtection.PasswordAlertModeOutcome.GSuiteSyncPasswordEntry";
+const char kGsuiteNonSyncPasswordAlertHistogram[] =
+    "PasswordProtection.PasswordAlertModeOutcome.GSuiteNonSyncPasswordEntry";
 
-void LogPasswordEntryRequestOutcome(RequestOutcome outcome,
-                                    ReusedPasswordType password_type,
-                                    SyncAccountType sync_account_type) {
+void LogPasswordEntryRequestOutcome(
+    RequestOutcome outcome,
+    ReusedPasswordAccountType password_account_type) {
   UMA_HISTOGRAM_ENUMERATION(kAnyPasswordEntryRequestOutcomeHistogram, outcome);
-  if (password_type == PasswordReuseEvent::SIGN_IN_PASSWORD) {
-    if (sync_account_type == PasswordReuseEvent::GSUITE) {
+
+  bool is_gsuite_user =
+      password_account_type.account_type() == ReusedPasswordAccountType::GSUITE;
+  bool is_primary_account_password = password_account_type.is_account_syncing();
+  if (is_primary_account_password) {
+    if (is_gsuite_user) {
       UMA_HISTOGRAM_ENUMERATION(kGSuiteSyncPasswordEntryRequestOutcomeHistogram,
+                                outcome);
+    } else {
+      UMA_HISTOGRAM_ENUMERATION(kGmailSyncPasswordEntryRequestOutcomeHistogram,
                                 outcome);
     }
     UMA_HISTOGRAM_ENUMERATION(kSyncPasswordEntryRequestOutcomeHistogram,
                               outcome);
-  } else if (password_type == PasswordReuseEvent::ENTERPRISE_PASSWORD) {
+  } else if (password_account_type.account_type() ==
+             ReusedPasswordAccountType::NON_GAIA_ENTERPRISE) {
     UMA_HISTOGRAM_ENUMERATION(kEnterprisePasswordEntryRequestOutcomeHistogram,
                               outcome);
+  } else if (password_account_type.account_type() ==
+             ReusedPasswordAccountType::SAVED_PASSWORD) {
+    UMA_HISTOGRAM_ENUMERATION(kSavedPasswordEntryRequestOutcomeHistogram,
+                              outcome);
   } else {
-    UMA_HISTOGRAM_ENUMERATION(kProtectedPasswordEntryRequestOutcomeHistogram,
+    if (is_gsuite_user) {
+      UMA_HISTOGRAM_ENUMERATION(
+          kGSuiteNonSyncPasswordEntryRequestOutcomeHistogram, outcome);
+    } else {
+      UMA_HISTOGRAM_ENUMERATION(
+          kGmailNonSyncPasswordEntryRequestOutcomeHistogram, outcome);
+    }
+    UMA_HISTOGRAM_ENUMERATION(kNonSyncPasswordEntryRequestOutcomeHistogram,
                               outcome);
   }
 }
@@ -81,68 +150,95 @@ void LogPasswordOnFocusRequestOutcome(RequestOutcome outcome) {
   UMA_HISTOGRAM_ENUMERATION(kPasswordOnFocusRequestOutcomeHistogram, outcome);
 }
 
-void LogPasswordAlertModeOutcome(RequestOutcome outcome,
-                                 ReusedPasswordType password_type) {
-  DCHECK(password_type == PasswordReuseEvent::SIGN_IN_PASSWORD ||
-         password_type == PasswordReuseEvent::ENTERPRISE_PASSWORD);
-  if (password_type == PasswordReuseEvent::SIGN_IN_PASSWORD) {
-    UMA_HISTOGRAM_ENUMERATION(
-        "PasswordProtection.PasswordAlertModeOutcome.GSuiteSyncPasswordEntry",
-        outcome);
+void LogPasswordAlertModeOutcome(
+    RequestOutcome outcome,
+    ReusedPasswordAccountType password_account_type) {
+  DCHECK_NE(ReusedPasswordAccountType::GMAIL,
+            password_account_type.account_type());
+  if (password_account_type.account_type() ==
+      ReusedPasswordAccountType::NON_GAIA_ENTERPRISE) {
+    UMA_HISTOGRAM_ENUMERATION(kEnterprisePasswordAlertHistogram, outcome);
   } else {
-    UMA_HISTOGRAM_ENUMERATION(
-        "PasswordProtection.PasswordAlertModeOutcome."
-        "NonGaiaEnterprisePasswordEntry",
-        outcome);
+    if (password_account_type.is_account_syncing()) {
+      UMA_HISTOGRAM_ENUMERATION(kGsuiteSyncPasswordAlertHistogram, outcome);
+    } else {
+      UMA_HISTOGRAM_ENUMERATION(kGsuiteNonSyncPasswordAlertHistogram, outcome);
+    }
   }
 }
 
 void LogNoPingingReason(LoginReputationClientRequest::TriggerType trigger_type,
                         RequestOutcome reason,
-                        ReusedPasswordType password_type,
-                        SyncAccountType sync_account_type) {
+                        ReusedPasswordAccountType password_account_type) {
   DCHECK(trigger_type == LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE ||
          trigger_type == LoginReputationClientRequest::PASSWORD_REUSE_EVENT);
 
   if (trigger_type == LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE) {
     UMA_HISTOGRAM_ENUMERATION(kPasswordOnFocusRequestOutcomeHistogram, reason);
   } else {
-    LogPasswordEntryRequestOutcome(reason, password_type, sync_account_type);
+    LogPasswordEntryRequestOutcome(reason, password_account_type);
   }
 }
 
 void LogPasswordProtectionVerdict(
     LoginReputationClientRequest::TriggerType trigger_type,
-    ReusedPasswordType password_type,
-    SyncAccountType sync_account_type,
+    ReusedPasswordAccountType password_account_type,
     VerdictType verdict_type) {
+  bool is_gsuite_user =
+      password_account_type.account_type() == ReusedPasswordAccountType::GSUITE;
+  bool is_gmail_user =
+      password_account_type.account_type() == ReusedPasswordAccountType::GMAIL;
+  bool is_account_syncing = password_account_type.is_account_syncing();
+
   switch (trigger_type) {
     case LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE:
       UMA_HISTOGRAM_ENUMERATION(
           kPasswordOnFocusVerdictHistogram, verdict_type,
-          LoginReputationClientResponse_VerdictType_VerdictType_MAX + 1);
+          (LoginReputationClientResponse_VerdictType_VerdictType_MAX + 1));
       break;
     case LoginReputationClientRequest::PASSWORD_REUSE_EVENT:
       UMA_HISTOGRAM_ENUMERATION(
           kAnyPasswordEntryVerdictHistogram, verdict_type,
-          LoginReputationClientResponse_VerdictType_VerdictType_MAX + 1);
-      if (password_type == PasswordReuseEvent::SIGN_IN_PASSWORD) {
-        if (sync_account_type == PasswordReuseEvent::GSUITE) {
-          UMA_HISTOGRAM_ENUMERATION(
-              kGSuiteSyncPasswordEntryVerdictHistogram, verdict_type,
-              LoginReputationClientResponse_VerdictType_VerdictType_MAX + 1);
-        }
+          (LoginReputationClientResponse_VerdictType_VerdictType_MAX + 1));
+      if (is_account_syncing) {
         UMA_HISTOGRAM_ENUMERATION(
             kSyncPasswordEntryVerdictHistogram, verdict_type,
-            LoginReputationClientResponse_VerdictType_VerdictType_MAX + 1);
-      } else if (password_type == PasswordReuseEvent::ENTERPRISE_PASSWORD) {
+            (LoginReputationClientResponse_VerdictType_VerdictType_MAX + 1));
+      } else if (is_gsuite_user || is_gmail_user) {
+        UMA_HISTOGRAM_ENUMERATION(
+            kNonSyncPasswordEntryVerdictHistogram, verdict_type,
+            (LoginReputationClientResponse_VerdictType_VerdictType_MAX + 1));
+      }
+      if (is_gsuite_user) {
+        if (is_account_syncing) {
+          UMA_HISTOGRAM_ENUMERATION(
+              kGSuiteSyncPasswordEntryVerdictHistogram, verdict_type,
+              (LoginReputationClientResponse_VerdictType_VerdictType_MAX + 1));
+        } else {
+          UMA_HISTOGRAM_ENUMERATION(
+              kGSuiteNonSyncPasswordEntryVerdictHistogram, verdict_type,
+              (LoginReputationClientResponse_VerdictType_VerdictType_MAX + 1));
+        }
+      } else if (is_gmail_user) {
+        if (is_account_syncing) {
+          UMA_HISTOGRAM_ENUMERATION(
+              kGmailSyncPasswordEntryVerdictHistogram, verdict_type,
+              (LoginReputationClientResponse_VerdictType_VerdictType_MAX + 1));
+        } else {
+          UMA_HISTOGRAM_ENUMERATION(
+              kGmailNonSyncPasswordEntryVerdictHistogram, verdict_type,
+              (LoginReputationClientResponse_VerdictType_VerdictType_MAX + 1));
+        }
+      } else if (password_account_type.account_type() ==
+                 ReusedPasswordAccountType::NON_GAIA_ENTERPRISE) {
         UMA_HISTOGRAM_ENUMERATION(
             kEnterprisePasswordEntryVerdictHistogram, verdict_type,
-            LoginReputationClientResponse_VerdictType_VerdictType_MAX + 1);
-      } else {
+            (LoginReputationClientResponse_VerdictType_VerdictType_MAX + 1));
+      } else if (password_account_type.account_type() ==
+                 ReusedPasswordAccountType::SAVED_PASSWORD) {
         UMA_HISTOGRAM_ENUMERATION(
-            kProtectedPasswordEntryVerdictHistogram, verdict_type,
-            LoginReputationClientResponse_VerdictType_VerdictType_MAX + 1);
+            kSavedPasswordEntryVerdictHistogram, verdict_type,
+            (LoginReputationClientResponse_VerdictType_VerdictType_MAX + 1));
       }
       break;
     default:
@@ -169,57 +265,106 @@ void LogPasswordProtectionNetworkResponseAndDuration(
   }
 }
 
+void LogPasswordProtectionSampleReportSent() {
+  base::UmaHistogramBoolean("PasswordProtection.SampleReportSent", true);
+}
+
 void LogWarningAction(WarningUIType ui_type,
                       WarningAction action,
-                      ReusedPasswordType password_type,
-                      SyncAccountType sync_account_type) {
+                      ReusedPasswordAccountType password_account_type) {
   // |password_type| can be unknown if user directly navigates to
   // chrome://reset-password page. In this case, do not record user action.
-  if (password_type == PasswordReuseEvent::REUSED_PASSWORD_TYPE_UNKNOWN &&
+  if (password_account_type.account_type() ==
+          ReusedPasswordAccountType::UNKNOWN &&
       ui_type == WarningUIType::INTERSTITIAL) {
     return;
   }
-  bool is_sign_in_password =
-      password_type == PasswordReuseEvent::SIGN_IN_PASSWORD;
-  bool is_gsuite_user = sync_account_type == PasswordReuseEvent::GSUITE;
+
+  bool is_gsuite_user =
+      password_account_type.account_type() == ReusedPasswordAccountType::GSUITE;
+  bool is_primary_account_password = password_account_type.is_account_syncing();
   switch (ui_type) {
     case WarningUIType::PAGE_INFO:
-      if (is_sign_in_password) {
+      if (is_primary_account_password) {
         UMA_HISTOGRAM_ENUMERATION(kSyncPasswordPageInfoHistogram, action);
         if (is_gsuite_user) {
           UMA_HISTOGRAM_ENUMERATION(kGSuiteSyncPasswordPageInfoHistogram,
                                     action);
+        } else {
+          UMA_HISTOGRAM_ENUMERATION(kGmailSyncPasswordPageInfoHistogram,
+                                    action);
         }
-      } else {
+      } else if (password_account_type.account_type() ==
+                 ReusedPasswordAccountType::NON_GAIA_ENTERPRISE) {
         UMA_HISTOGRAM_ENUMERATION(kEnterprisePasswordPageInfoHistogram, action);
+      } else if (password_account_type.account_type() ==
+                 ReusedPasswordAccountType::SAVED_PASSWORD) {
+        UMA_HISTOGRAM_ENUMERATION(kSavedPasswordPageInfoHistogram, action);
+      } else {
+        UMA_HISTOGRAM_ENUMERATION(kNonSyncPasswordPageInfoHistogram, action);
+        if (is_gsuite_user) {
+          UMA_HISTOGRAM_ENUMERATION(kGSuiteNonSyncPasswordPageInfoHistogram,
+                                    action);
+        } else {
+          UMA_HISTOGRAM_ENUMERATION(kGmailNonSyncPasswordPageInfoHistogram,
+                                    action);
+        }
       }
       break;
     case WarningUIType::MODAL_DIALOG:
-      if (is_sign_in_password) {
+      if (is_primary_account_password) {
         UMA_HISTOGRAM_ENUMERATION(kSyncPasswordWarningDialogHistogram, action);
         if (is_gsuite_user) {
           UMA_HISTOGRAM_ENUMERATION(kGSuiteSyncPasswordWarningDialogHistogram,
                                     action);
+        } else {
+          UMA_HISTOGRAM_ENUMERATION(kGmailSyncPasswordWarningDialogHistogram,
+                                    action);
         }
-      } else {
+      } else if (password_account_type.account_type() ==
+                 ReusedPasswordAccountType::NON_GAIA_ENTERPRISE) {
         UMA_HISTOGRAM_ENUMERATION(kEnterprisePasswordWarningDialogHistogram,
                                   action);
+      } else if (password_account_type.account_type() ==
+                 ReusedPasswordAccountType::SAVED_PASSWORD) {
+        UMA_HISTOGRAM_ENUMERATION(kSavedPasswordWarningDialogHistogram, action);
+      } else {
+        UMA_HISTOGRAM_ENUMERATION(kNonSyncPasswordWarningDialogHistogram,
+                                  action);
+        if (is_gsuite_user) {
+          UMA_HISTOGRAM_ENUMERATION(
+              kGSuiteNonSyncPasswordWarningDialogHistogram, action);
+        } else {
+          UMA_HISTOGRAM_ENUMERATION(kGmailNonSyncPasswordWarningDialogHistogram,
+                                    action);
+        }
       }
       break;
     case WarningUIType::CHROME_SETTINGS:
-      DCHECK(is_sign_in_password);
+      DCHECK(is_primary_account_password);
       UMA_HISTOGRAM_ENUMERATION(kSyncPasswordChromeSettingsHistogram, action);
       break;
     case WarningUIType::INTERSTITIAL:
-      if (is_sign_in_password) {
+      if (is_primary_account_password) {
         UMA_HISTOGRAM_ENUMERATION(kSyncPasswordInterstitialHistogram, action);
         if (is_gsuite_user) {
           UMA_HISTOGRAM_ENUMERATION(kGSuiteSyncPasswordInterstitialHistogram,
                                     action);
         }
-      } else {
+      } else if (password_account_type.account_type() ==
+                 ReusedPasswordAccountType::NON_GAIA_ENTERPRISE) {
         UMA_HISTOGRAM_ENUMERATION(kEnterprisePasswordInterstitialHistogram,
                                   action);
+      } else {
+        UMA_HISTOGRAM_ENUMERATION(kNonSyncPasswordInterstitialHistogram,
+                                  action);
+        if (is_gsuite_user) {
+          UMA_HISTOGRAM_ENUMERATION(kGSuiteNonSyncPasswordInterstitialHistogram,
+                                    action);
+        } else {
+          UMA_HISTOGRAM_ENUMERATION(kGmailNonSyncPasswordInterstitialHistogram,
+                                    action);
+        }
       }
       break;
     case WarningUIType::NOT_USED:
@@ -232,13 +377,6 @@ void LogNumberOfReuseBeforeSyncPasswordChange(size_t reuse_count) {
   UMA_HISTOGRAM_COUNTS_100(
       "PasswordProtection.GaiaPasswordReusesBeforeGaiaPasswordChanged",
       reuse_count);
-}
-
-void LogContentsSize(const gfx::Size& size) {
-  if (size.width() <= 0 || size.height() <= 0)
-    return;
-  UMA_HISTOGRAM_COUNTS_10000("SafeBrowsing.ContentsSize.Width", size.width());
-  UMA_HISTOGRAM_COUNTS_10000("SafeBrowsing.ContentsSize.Height", size.height());
 }
 
 }  // namespace safe_browsing

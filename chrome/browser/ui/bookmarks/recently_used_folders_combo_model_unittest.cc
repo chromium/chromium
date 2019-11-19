@@ -11,7 +11,7 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/models/combobox_model_observer.h"
 
@@ -48,7 +48,7 @@ class RecentlyUsedFoldersComboModelTest : public testing::Test {
   RecentlyUsedFoldersComboModelTest() = default;
 
  private:
-  content::TestBrowserThreadBundle test_browser_thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
 
   DISALLOW_COPY_AND_ASSIGN(RecentlyUsedFoldersComboModelTest);
 };

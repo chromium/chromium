@@ -6,9 +6,10 @@
 
 #include <utility>
 
+#include "base/files/file_util.h"
 #include "base/memory/ptr_util.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
-#include "media/gpu/test/rendering_helper.h"
 #include "media/gpu/test/video_decode_accelerator_unittest_helpers.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gl/gl_context.h"
@@ -25,8 +26,8 @@ constexpr gfx::Size kThumbnailsPageSize(1600, 1200);
 // Size of the individual thumbnails that will be rendered.
 constexpr gfx::Size kThumbnailSize(160, 120);
 
-// Default file path used to store the thumbnail image.
-constexpr const base::FilePath::CharType* kDefaultOutputPath =
+// Default filename used to store the thumbnails image.
+constexpr const base::FilePath::CharType* kThumbnailFilename =
     FILE_PATH_LITERAL("thumbnail.png");
 
 // Vertex shader used to render thumbnails.
@@ -77,7 +78,7 @@ GLuint CreateTexture(GLenum texture_target, const gfx::Size& size) {
   glBindTexture(texture_target, texture_id);
   if (texture_target == GL_TEXTURE_2D) {
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, size.width(), size.height(), 0,
-                 GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+                 GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
   }
 
   glTexParameteri(texture_target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -90,81 +91,106 @@ GLuint CreateTexture(GLenum texture_target, const gfx::Size& size) {
   return texture_id;
 }
 
-// Helper class to automatically acquire and release the GL context.
-class AutoGLContext {
- public:
-  explicit AutoGLContext(FrameRenderer* const frame_renderer)
-      : frame_renderer_(frame_renderer) {
-    frame_renderer_->AcquireGLContext();
-  }
-  ~AutoGLContext() { frame_renderer_->ReleaseGLContext(); }
+void DeleteTexture(uint32_t texture_id) {
+  glDeleteTextures(1, &texture_id);
+  CHECK_EQ(static_cast<int>(glGetError()), GL_NO_ERROR);
+}
 
- private:
-  FrameRenderer* const frame_renderer_;
-};
+void RenderTexture(uint32_t texture_target, uint32_t texture_id) {
+  // The ExternalOES sampler is bound to GL_TEXTURE1 and the Texture2D sampler
+  // is bound to GL_TEXTURE0.
+  if (texture_target == GL_TEXTURE_2D) {
+    glActiveTexture(GL_TEXTURE0 + 0);
+  } else if (texture_target == GL_TEXTURE_EXTERNAL_OES) {
+    glActiveTexture(GL_TEXTURE0 + 1);
+  }
+  glBindTexture(texture_target, texture_id);
+  glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+  glBindTexture(texture_target, 0);
+
+  CHECK_EQ(static_cast<int>(glGetError()), GL_NO_ERROR);
+}
+
+void CreateShader(GLuint program, GLenum type, const char* source, int size) {
+  GLuint shader = glCreateShader(type);
+  glShaderSource(shader, 1, &source, &size);
+  glCompileShader(shader);
+  int result = GL_FALSE;
+  glGetShaderiv(shader, GL_COMPILE_STATUS, &result);
+  if (!result) {
+    char log[4096];
+    glGetShaderInfoLog(shader, base::size(log), nullptr, log);
+    LOG(FATAL) << log;
+  }
+  glAttachShader(program, shader);
+  glDeleteShader(shader);
+  CHECK_EQ(static_cast<int>(glGetError()), GL_NO_ERROR);
+}
+
+void GLSetViewPort(const gfx::Rect& area) {
+  glViewport(area.x(), area.y(), area.width(), area.height());
+  glScissor(area.x(), area.y(), area.width(), area.height());
+}
+
+// Helper function to convert from RGBA to RGB. Returns false if any alpha
+// channel is not 0xff, otherwise true.
+bool ConvertRGBAToRGB(const std::vector<unsigned char>& rgba,
+                      std::vector<unsigned char>* rgb) {
+  size_t num_pixels = rgba.size() / 4;
+  rgb->resize(num_pixels * 3);
+  // Drop the alpha channel, but check as we go that it is all 0xff.
+  bool solid = true;
+  for (size_t i = 0; i < num_pixels; i++) {
+    (*rgb)[3 * i] = rgba[4 * i];
+    (*rgb)[3 * i + 1] = rgba[4 * i + 1];
+    (*rgb)[3 * i + 2] = rgba[4 * i + 2];
+    solid = solid && (rgba[4 * i + 3] == 0xff);
+  }
+  return solid;
+}
 
 }  // namespace
 
 bool FrameRendererThumbnail::gl_initialized_ = false;
 
 FrameRendererThumbnail::FrameRendererThumbnail(
-    const std::vector<std::string>& thumbnail_checksums)
-    : frame_count_(0),
-      thumbnail_checksums_(thumbnail_checksums),
-      thumbnails_fbo_id_(0),
-      thumbnails_texture_id_(0),
-      vertex_buffer_(0),
-      program_(0) {
+    const std::vector<std::string>& thumbnail_checksums,
+    const base::FilePath& output_folder)
+    : thumbnail_checksums_(thumbnail_checksums), output_folder_(output_folder) {
   DETACH_FROM_SEQUENCE(renderer_sequence_checker_);
 }
 
 FrameRendererThumbnail::~FrameRendererThumbnail() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
 
-  base::AutoLock auto_lock(renderer_lock_);
-  DestroyThumbnailImage();
-  gl_context_ = nullptr;
-  gl_surface_ = nullptr;
-
-  CHECK(mailbox_texture_map_.empty());
+  if (renderer_task_runner_) {
+    base::WaitableEvent done;
+    renderer_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&FrameRendererThumbnail::DestroyTask,
+                                  base::Unretained(this), &done));
+    done.Wait();
+  }
 }
 
 // static
 std::unique_ptr<FrameRendererThumbnail> FrameRendererThumbnail::Create(
-    const std::vector<std::string> thumbnail_checksums) {
-  auto frame_renderer =
-      base::WrapUnique(new FrameRendererThumbnail(thumbnail_checksums));
+    const std::vector<std::string> thumbnail_checksums,
+    const base::FilePath& output_folder) {
+  auto frame_renderer = base::WrapUnique(
+      new FrameRendererThumbnail(thumbnail_checksums, output_folder));
   frame_renderer->Initialize();
   return frame_renderer;
 }
 
-// static
-std::unique_ptr<FrameRendererThumbnail> FrameRendererThumbnail::Create(
-    const base::FilePath& video_file_path) {
-  // Read thumbnail checksums from file.
-  std::vector<std::string> thumbnail_checksums =
-      media::test::ReadGoldenThumbnailMD5s(
-          video_file_path.AddExtension(FILE_PATH_LITERAL(".md5")));
+bool FrameRendererThumbnail::AcquireGLContext() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(renderer_sequence_checker_);
 
-  auto frame_renderer =
-      base::WrapUnique(new FrameRendererThumbnail(thumbnail_checksums));
-  frame_renderer->Initialize();
-  return frame_renderer;
-}
-
-void FrameRendererThumbnail::AcquireGLContext() {
-  gl_context_lock_.Acquire();
-  CHECK(gl_context_->MakeCurrent(gl_surface_.get()));
-}
-
-void FrameRendererThumbnail::ReleaseGLContext() {
-  gl_context_lock_.AssertAcquired();
-  gl_context_->ReleaseCurrent(gl_surface_.get());
-  gl_context_lock_.Release();
+  return gl_context_->MakeCurrent(gl_surface_.get());
 }
 
 gl::GLContext* FrameRendererThumbnail::GetGLContext() {
-  gl_context_lock_.AssertAcquired();
+  DCHECK_CALLED_ON_VALID_SEQUENCE(renderer_sequence_checker_);
+
   return gl_context_.get();
 }
 
@@ -172,15 +198,25 @@ void FrameRendererThumbnail::RenderFrame(
     scoped_refptr<VideoFrame> video_frame) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(renderer_sequence_checker_);
 
+  if (video_frame->metadata()->IsTrue(VideoFrameMetadata::END_OF_STREAM))
+    return;
+
+  if (!renderer_task_runner_)
+    renderer_task_runner_ = base::ThreadTaskRunnerHandle::Get();
+
+  if (thumbnails_texture_id_ == 0u)
+    InitializeThumbnailImageTask();
+
   // Find the texture associated with the video frame's mailbox.
-  base::AutoLock auto_lock(renderer_lock_);
   const gpu::MailboxHolder& mailbox_holder = video_frame->mailbox_holder(0);
   const gpu::Mailbox& mailbox = mailbox_holder.mailbox;
   auto it = mailbox_texture_map_.find(mailbox);
   ASSERT_NE(it, mailbox_texture_map_.end());
 
-  RenderThumbnail(mailbox_holder.texture_target, it->second);
+  RenderThumbnailTask(mailbox_holder.texture_target, it->second);
 }
+
+void FrameRendererThumbnail::WaitUntilRenderingDone() {}
 
 scoped_refptr<VideoFrame> FrameRendererThumbnail::CreateVideoFrame(
     VideoPixelFormat pixel_format,
@@ -197,19 +233,15 @@ scoped_refptr<VideoFrame> FrameRendererThumbnail::CreateVideoFrame(
 
   // Create a new video frame associated with the mailbox.
   base::OnceCallback<void(const gpu::SyncToken&)> mailbox_holder_release_cb =
-      base::BindOnce(&FrameRendererThumbnail::DeleteTexture,
+      base::BindOnce(&FrameRendererThumbnail::DeleteTextureTask,
                      base::Unretained(this), mailbox);
   scoped_refptr<VideoFrame> frame = VideoFrame::WrapNativeTextures(
       pixel_format, mailbox_holders, std::move(mailbox_holder_release_cb),
       texture_size, gfx::Rect(texture_size), texture_size, base::TimeDelta());
 
   // Create a texture and associate it with the mailbox.
-  {
-    AutoGLContext auto_gl_context(this);
-    *texture_id = CreateTexture(texture_target, texture_size);
-  }
+  *texture_id = CreateTexture(texture_target, texture_size);
 
-  base::AutoLock auto_lock(renderer_lock_);
   mailbox_texture_map_.insert(std::make_pair(mailbox, *texture_id));
 
   return frame;
@@ -218,28 +250,27 @@ scoped_refptr<VideoFrame> FrameRendererThumbnail::CreateVideoFrame(
 bool FrameRendererThumbnail::ValidateThumbnail() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
 
-  base::AutoLock auto_lock(renderer_lock_);
-  const std::vector<uint8_t> rgba = ConvertThumbnailToRGBA();
+  if (!renderer_task_runner_)
+    return false;
 
-  // Convert the thumbnail from RGBA to RGB.
-  std::vector<uint8_t> rgb;
-  EXPECT_EQ(media::test::ConvertRGBAToRGB(rgba, &rgb), true)
-      << "RGBA frame has incorrect alpha";
+  bool success = false;
+  base::WaitableEvent done;
+  renderer_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&FrameRendererThumbnail::ValidateThumbnailTask,
+                                base::Unretained(this), &success, &done));
+  done.Wait();
 
-  // Calculate the thumbnail's checksum and compare it to golden values.
-  std::string md5_string = base::MD5String(
-      base::StringPiece(reinterpret_cast<char*>(&rgb[0]), rgb.size()));
-  bool is_valid_thumbnail =
-      base::ContainsValue(thumbnail_checksums_, md5_string);
-
-  return is_valid_thumbnail;
+  return success;
 }
 
-void FrameRendererThumbnail::SaveThumbnail() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
+void FrameRendererThumbnail::SaveThumbnailTask() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(renderer_sequence_checker_);
 
-  base::AutoLock auto_lock(renderer_lock_);
-  const std::vector<uint8_t> rgba = ConvertThumbnailToRGBA();
+  // Create the directory tree if it doesn't exist yet.
+  if (!DirectoryExists(output_folder_))
+    base::CreateDirectory(output_folder_);
+
+  const std::vector<uint8_t> rgba = ConvertThumbnailToRGBATask();
 
   // Convert raw RGBA into PNG for export.
   std::vector<unsigned char> png;
@@ -247,9 +278,14 @@ void FrameRendererThumbnail::SaveThumbnail() {
                         kThumbnailsPageSize, kThumbnailsPageSize.width() * 4,
                         true, std::vector<gfx::PNGCodec::Comment>(), &png);
 
-  base::FilePath filepath(kDefaultOutputPath);
+  base::FilePath filepath =
+      base::MakeAbsoluteFilePath(output_folder_).Append(kThumbnailFilename);
+  LOG(INFO) << "Saving thumbnails image to " << filepath;
+
+  base::File thumbnail_file(
+      filepath, base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
   int num_bytes =
-      base::WriteFile(filepath, reinterpret_cast<char*>(&png[0]), png.size());
+      thumbnail_file.Write(0u, reinterpret_cast<char*>(&png[0]), png.size());
   ASSERT_NE(-1, num_bytes);
   EXPECT_EQ(static_cast<size_t>(num_bytes), png.size());
 }
@@ -266,19 +302,25 @@ void FrameRendererThumbnail::Initialize() {
   gl_surface_ = gl::init::CreateOffscreenGLSurface(gfx::Size());
   gl_context_ = gl::init::CreateGLContext(nullptr, gl_surface_.get(),
                                           gl::GLContextAttribs());
-
-  base::AutoLock auto_lock(renderer_lock_);
-  InitializeThumbnailImage();
 }
 
-// TODO(dstaessens@) This code is mostly duplicated from
-// RenderingHelper::Initialize(), as that code is unfortunately too inflexible
-// to reuse here. But most of the code in rendering helper can be removed soon
-// when the video_decoder_accelerator_unittests get deprecated.
-void FrameRendererThumbnail::InitializeThumbnailImage() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
+void FrameRendererThumbnail::DestroyTask(base::WaitableEvent* done) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(renderer_sequence_checker_);
+  DCHECK(mailbox_texture_map_.empty());
 
-  AutoGLContext auto_gl_context(this);
+  DestroyThumbnailImageTask();
+
+  // Release the |gl_context_| so it can be destroyed on the same thread it was
+  // created on. Otherwise random crashes might occur as not all resources are
+  // freed correctly.
+  gl_context_->ReleaseCurrent(gl_surface_.get());
+
+  done->Signal();
+}
+
+void FrameRendererThumbnail::InitializeThumbnailImageTask() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(renderer_sequence_checker_);
+
   GLint max_texture_size;
   glGetIntegerv(GL_MAX_TEXTURE_SIZE, &max_texture_size);
   CHECK_GE(max_texture_size, kThumbnailsPageSize.width());
@@ -292,7 +334,7 @@ void FrameRendererThumbnail::InitializeThumbnailImage() {
   glBindTexture(GL_TEXTURE_2D, thumbnails_texture_id_);
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, thumbnails_fbo_size_.width(),
                thumbnails_fbo_size_.height(), 0, GL_RGB,
-               GL_UNSIGNED_SHORT_5_6_5, NULL);
+               GL_UNSIGNED_SHORT_5_6_5, nullptr);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -333,17 +375,17 @@ void FrameRendererThumbnail::InitializeThumbnailImage() {
   glBufferData(GL_ARRAY_BUFFER, sizeof(kVertices), kVertices, GL_STATIC_DRAW);
 
   program_ = glCreateProgram();
-  RenderingHelper::CreateShader(program_, GL_VERTEX_SHADER, kVertexShader,
-                                base::size(kVertexShader));
-  RenderingHelper::CreateShader(program_, GL_FRAGMENT_SHADER, kFragmentShader,
-                                base::size(kFragmentShader));
+  CreateShader(program_, GL_VERTEX_SHADER, kVertexShader,
+               base::size(kVertexShader));
+  CreateShader(program_, GL_FRAGMENT_SHADER, kFragmentShader,
+               base::size(kFragmentShader));
   glLinkProgram(program_);
   GLint result = GL_FALSE;
   glGetProgramiv(program_, GL_LINK_STATUS, &result);
   if (!result) {
     constexpr GLsizei kLogBufferSize = 4096;
     char log[kLogBufferSize];
-    glGetShaderInfoLog(program_, kLogBufferSize, NULL, log);
+    glGetShaderInfoLog(program_, kLogBufferSize, nullptr, log);
     LOG(FATAL) << log;
   }
   glUseProgram(program_);
@@ -368,17 +410,20 @@ void FrameRendererThumbnail::InitializeThumbnailImage() {
   glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void FrameRendererThumbnail::DestroyThumbnailImage() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
+void FrameRendererThumbnail::DestroyThumbnailImageTask() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(renderer_sequence_checker_);
 
-  AutoGLContext auto_gl_context(this);
   glDeleteTextures(1, &thumbnails_texture_id_);
   glDeleteFramebuffersEXT(1, &thumbnails_fbo_id_);
   glDeleteBuffersARB(1, &vertex_buffer_);
+
+  thumbnails_texture_id_ = 0u;
+  thumbnails_fbo_id_ = 0u;
+  vertex_buffer_ = 0u;
 }
 
-void FrameRendererThumbnail::RenderThumbnail(uint32_t texture_target,
-                                             uint32_t texture_id) {
+void FrameRendererThumbnail::RenderThumbnailTask(uint32_t texture_target,
+                                                 uint32_t texture_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(renderer_sequence_checker_);
 
   const int width = thumbnail_size_.width();
@@ -389,11 +434,10 @@ void FrameRendererThumbnail::RenderThumbnail(uint32_t texture_target,
   const int col = frame_count_ % thumbnails_in_row;
   gfx::Rect area(col * width, row * height, width, height);
 
-  AutoGLContext auto_gl_context(this);
   glUniform1i(glGetUniformLocation(program_, "tex_flip"), 0);
   glBindFramebufferEXT(GL_FRAMEBUFFER, thumbnails_fbo_id_);
-  RenderingHelper::GLSetViewPort(area);
-  RenderingHelper::RenderTexture(texture_target, texture_id);
+  GLSetViewPort(area);
+  RenderTexture(texture_target, texture_id);
   glBindFramebufferEXT(GL_FRAMEBUFFER,
                        gl_surface_->GetBackingFramebufferObject());
   // We need to flush the GL commands before returning the thumbnail texture to
@@ -403,10 +447,10 @@ void FrameRendererThumbnail::RenderThumbnail(uint32_t texture_target,
   ++frame_count_;
 }
 
-const std::vector<uint8_t> FrameRendererThumbnail::ConvertThumbnailToRGBA() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
+const std::vector<uint8_t>
+FrameRendererThumbnail::ConvertThumbnailToRGBATask() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(renderer_sequence_checker_);
 
-  AutoGLContext auto_gl_context(this);
   std::vector<uint8_t> rgba;
   const size_t num_pixels = thumbnails_fbo_size_.GetArea();
   rgba.resize(num_pixels * 4);
@@ -422,17 +466,39 @@ const std::vector<uint8_t> FrameRendererThumbnail::ConvertThumbnailToRGBA() {
   return rgba;
 }
 
-void FrameRendererThumbnail::DeleteTexture(const gpu::Mailbox& mailbox,
-                                           const gpu::SyncToken&) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
+void FrameRendererThumbnail::ValidateThumbnailTask(bool* success,
+                                                   base::WaitableEvent* done) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(renderer_sequence_checker_);
 
-  base::AutoLock auto_lock(renderer_lock_);
+  const std::vector<uint8_t> rgba = ConvertThumbnailToRGBATask();
+
+  // Convert the thumbnail from RGBA to RGB.
+  std::vector<uint8_t> rgb;
+  EXPECT_EQ(ConvertRGBAToRGB(rgba, &rgb), true)
+      << "RGBA frame has incorrect alpha";
+
+  // Calculate the thumbnail's checksum and compare it to golden values.
+  std::string md5_string = base::MD5String(
+      base::StringPiece(reinterpret_cast<char*>(&rgb[0]), rgb.size()));
+  *success = base::Contains(thumbnail_checksums_, md5_string);
+
+  // If validation failed, write the thumbnail image to disk.
+  if (!success)
+    SaveThumbnailTask();
+
+  done->Signal();
+}
+
+void FrameRendererThumbnail::DeleteTextureTask(const gpu::Mailbox& mailbox,
+                                               const gpu::SyncToken&) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(renderer_sequence_checker_);
+
   auto it = mailbox_texture_map_.find(mailbox);
   ASSERT_NE(it, mailbox_texture_map_.end());
   uint32_t texture_id = it->second;
   mailbox_texture_map_.erase(mailbox);
 
-  RenderingHelper::DeleteTexture(texture_id);
+  DeleteTexture(texture_id);
 }
 
 }  // namespace test

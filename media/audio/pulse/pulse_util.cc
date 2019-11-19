@@ -13,6 +13,7 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "build/branding_buildflags.h"
 #include "media/audio/audio_device_description.h"
 #include "media/base/audio_timestamp_helper.h"
 
@@ -30,7 +31,7 @@ namespace pulse {
 
 namespace {
 
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 static const char kBrowserDisplayName[] = "google-chrome";
 #else
 static const char kBrowserDisplayName[] = "chromium-browser";
@@ -162,8 +163,10 @@ void GetDefaultDeviceIdCallback(pa_context* c,
                                 const pa_server_info* info,
                                 void* userdata) {
   DefaultDevicesData* data = static_cast<DefaultDevicesData*>(userdata);
-  data->input_ = info->default_source_name;
-  data->output_ = info->default_sink_name;
+  if (info->default_source_name)
+    data->input_ = info->default_source_name;
+  if (info->default_sink_name)
+    data->output_ = info->default_sink_name;
   pa_threaded_mainloop_signal(data->loop_, 0);
 }
 
@@ -289,17 +292,43 @@ pa_channel_map ChannelLayoutToPAChannelMap(ChannelLayout channel_layout) {
   return channel_map;
 }
 
-void WaitForOperationCompletion(pa_threaded_mainloop* pa_mainloop,
-                                pa_operation* operation) {
+bool WaitForOperationCompletion(pa_threaded_mainloop* mainloop,
+                                pa_operation* operation,
+                                pa_context* optional_context,
+                                pa_stream* optional_stream) {
   if (!operation) {
-    DLOG(WARNING) << "Operation is NULL";
-    return;
+    LOG(ERROR) << "pa_operation is nullptr.";
+    return false;
   }
 
-  while (pa_operation_get_state(operation) == PA_OPERATION_RUNNING)
-    pa_threaded_mainloop_wait(pa_mainloop);
+  while (pa_operation_get_state(operation) == PA_OPERATION_RUNNING) {
+    if (optional_context) {
+      pa_context_state_t context_state = pa_context_get_state(optional_context);
+      if (!PA_CONTEXT_IS_GOOD(context_state)) {
+        LOG(ERROR) << "pa_context went bad while waiting: state="
+                   << context_state << ", error="
+                   << pa_strerror(pa_context_errno(optional_context));
+        pa_operation_cancel(operation);
+        pa_operation_unref(operation);
+        return false;
+      }
+    }
+
+    if (optional_stream) {
+      pa_stream_state_t stream_state = pa_stream_get_state(optional_stream);
+      if (!PA_STREAM_IS_GOOD(stream_state)) {
+        LOG(ERROR) << "pa_stream went bad while waiting: " << stream_state;
+        pa_operation_cancel(operation);
+        pa_operation_unref(operation);
+        return false;
+      }
+    }
+
+    pa_threaded_mainloop_wait(mainloop);
+  }
 
   pa_operation_unref(operation);
+  return true;
 }
 
 base::TimeDelta GetHardwareLatency(pa_stream* stream) {
@@ -531,7 +560,7 @@ std::string GetBusOfInput(pa_threaded_mainloop* mainloop,
   InputBusData data(mainloop, name);
   pa_operation* operation =
       pa_context_get_source_info_list(context, InputBusCallback, &data);
-  WaitForOperationCompletion(mainloop, operation);
+  WaitForOperationCompletion(mainloop, operation, context);
   return data.bus_;
 }
 
@@ -544,7 +573,7 @@ std::string GetOutputCorrespondingTo(pa_threaded_mainloop* mainloop,
   OutputBusData data(mainloop, bus);
   pa_operation* operation =
       pa_context_get_sink_info_list(context, OutputBusCallback, &data);
-  WaitForOperationCompletion(mainloop, operation);
+  WaitForOperationCompletion(mainloop, operation, context);
   return data.name_;
 }
 
@@ -557,7 +586,7 @@ std::string GetRealDefaultDeviceId(pa_threaded_mainloop* mainloop,
   DefaultDevicesData data(mainloop);
   pa_operation* operation =
       pa_context_get_server_info(context, &GetDefaultDeviceIdCallback, &data);
-  WaitForOperationCompletion(mainloop, operation);
+  WaitForOperationCompletion(mainloop, operation, context);
   return (type == RequestType::INPUT) ? data.input_ : data.output_;
 }
 

@@ -73,7 +73,7 @@ class MEDIA_EXPORT DecryptingMediaResource : public MediaResource {
   // Called when the final DecryptingDemuxerStream has been initialized *or*
   // if one of the DecryptingDemuxerStreams failed to initialize correctly.
   InitCB init_cb_;
-  base::WeakPtrFactory<DecryptingMediaResource> weak_factory_;
+  base::WeakPtrFactory<DecryptingMediaResource> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DecryptingMediaResource);
 };

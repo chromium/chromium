@@ -11,19 +11,19 @@
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
 #include "third_party/blink/renderer/core/workers/worker_thread.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
-#include "third_party/blink/renderer/platform/wtf/time.h"
+
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
 // static
 ConsoleMessage* ConsoleMessage::CreateForRequest(
-    MessageSource source,
+    mojom::ConsoleMessageSource source,
     mojom::ConsoleMessageLevel level,
     const String& message,
     const String& url,
     DocumentLoader* loader,
-    unsigned long request_identifier) {
+    uint64_t request_identifier) {
   ConsoleMessage* console_message = ConsoleMessage::Create(
       source, level, message, SourceLocation::Capture(url, 0, 0));
   console_message->request_identifier_ =
@@ -33,7 +33,7 @@ ConsoleMessage* ConsoleMessage::CreateForRequest(
 
 // static
 ConsoleMessage* ConsoleMessage::Create(
-    MessageSource source,
+    mojom::ConsoleMessageSource source,
     mojom::ConsoleMessageLevel level,
     const String& message,
     std::unique_ptr<SourceLocation> location) {
@@ -42,7 +42,7 @@ ConsoleMessage* ConsoleMessage::Create(
 }
 
 // static
-ConsoleMessage* ConsoleMessage::Create(MessageSource source,
+ConsoleMessage* ConsoleMessage::Create(mojom::ConsoleMessageSource source,
                                        mojom::ConsoleMessageLevel level,
                                        const String& message) {
   return ConsoleMessage::Create(source, level, message,
@@ -55,8 +55,9 @@ ConsoleMessage* ConsoleMessage::CreateFromWorker(
     const String& message,
     std::unique_ptr<SourceLocation> location,
     WorkerThread* worker_thread) {
-  ConsoleMessage* console_message = ConsoleMessage::Create(
-      kWorkerMessageSource, level, message, std::move(location));
+  ConsoleMessage* console_message =
+      ConsoleMessage::Create(mojom::ConsoleMessageSource::kWorker, level,
+                             message, std::move(location));
   console_message->worker_id_ =
       IdentifiersFactory::IdFromToken(worker_thread->GetDevToolsWorkerToken());
   return console_message;
@@ -65,14 +66,14 @@ ConsoleMessage* ConsoleMessage::CreateFromWorker(
 ConsoleMessage* ConsoleMessage::CreateFromWebConsoleMessage(
     const WebConsoleMessage& message,
     LocalFrame* local_frame) {
-  MessageSource message_source = message.nodes.empty()
-                                     ? kOtherMessageSource
-                                     : kRecommendationMessageSource;
+  mojom::ConsoleMessageSource message_source =
+      message.nodes.empty() ? mojom::ConsoleMessageSource::kOther
+                            : mojom::ConsoleMessageSource::kRecommendation;
 
   ConsoleMessage* console_message = ConsoleMessage::Create(
       message_source, message.level, message.text,
-      SourceLocation::Create(message.url, message.line_number,
-                             message.column_number, nullptr));
+      std::make_unique<SourceLocation>(message.url, message.line_number,
+                                       message.column_number, nullptr));
 
   if (local_frame) {
     Vector<DOMNodeId> nodes;
@@ -84,7 +85,7 @@ ConsoleMessage* ConsoleMessage::CreateFromWebConsoleMessage(
   return console_message;
 }
 
-ConsoleMessage::ConsoleMessage(MessageSource source,
+ConsoleMessage::ConsoleMessage(mojom::ConsoleMessageSource source,
                                mojom::ConsoleMessageLevel level,
                                const String& message,
                                std::unique_ptr<SourceLocation> location)
@@ -92,7 +93,7 @@ ConsoleMessage::ConsoleMessage(MessageSource source,
       level_(level),
       message_(message),
       location_(std::move(location)),
-      timestamp_(WTF::CurrentTimeMS()),
+      timestamp_(base::Time::Now().ToDoubleT() * 1000.0),
       frame_(nullptr) {}
 
 ConsoleMessage::~ConsoleMessage() = default;
@@ -109,7 +110,7 @@ double ConsoleMessage::Timestamp() const {
   return timestamp_;
 }
 
-MessageSource ConsoleMessage::Source() const {
+mojom::ConsoleMessageSource ConsoleMessage::Source() const {
   return source_;
 }
 

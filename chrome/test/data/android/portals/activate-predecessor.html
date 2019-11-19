@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <script>
+    window.onportalactivate = e => {
+      var portal = e.adoptPredecessor();
+      document.body.appendChild(portal);
+      portal.activate();
+    }
+  </script>
+</body>
+</html>

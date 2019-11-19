@@ -105,7 +105,7 @@ TEST_F(MidiSysexPermissionContextTests, TestInsecureRequestingUrl) {
   ContentSetting setting =
       HostContentSettingsMapFactory::GetForProfile(profile())
           ->GetContentSetting(url.GetOrigin(), url.GetOrigin(),
-                              CONTENT_SETTINGS_TYPE_MIDI_SYSEX, std::string());
+                              ContentSettingsType::MIDI_SYSEX, std::string());
   EXPECT_EQ(CONTENT_SETTING_ASK, setting);
 }
 
@@ -120,17 +120,17 @@ TEST_F(MidiSysexPermissionContextTests, TestInsecureQueryingUrl) {
             HostContentSettingsMapFactory::GetForProfile(profile())
                 ->GetContentSetting(
                     insecure_url.GetOrigin(), insecure_url.GetOrigin(),
-                    CONTENT_SETTINGS_TYPE_MIDI_SYSEX, std::string()));
+                    ContentSettingsType::MIDI_SYSEX, std::string()));
   EXPECT_EQ(
       CONTENT_SETTING_ASK,
       HostContentSettingsMapFactory::GetForProfile(profile())
           ->GetContentSetting(secure_url.GetOrigin(), insecure_url.GetOrigin(),
-                              CONTENT_SETTINGS_TYPE_MIDI_SYSEX, std::string()));
+                              ContentSettingsType::MIDI_SYSEX, std::string()));
   EXPECT_EQ(
       CONTENT_SETTING_ASK,
       HostContentSettingsMapFactory::GetForProfile(profile())
           ->GetContentSetting(insecure_url.GetOrigin(), secure_url.GetOrigin(),
-                              CONTENT_SETTINGS_TYPE_MIDI_SYSEX, std::string()));
+                              ContentSettingsType::MIDI_SYSEX, std::string()));
 
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
             permission_context

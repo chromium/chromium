@@ -1,23 +1,23 @@
-<?xml version="1.0" encoding="utf-8"?>
-  <!-- Copyright (c) 2012 The Chromium Authors. All rights reserved. Use of
-       this source code is governed by a BSD-style license that can be found
-       in the LICENSE file. -->
-  <!-- package name must be unique so suffix with "tests" so package loader
-       doesn't ignore this. -->
-  <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-      package="org.chromium.content_shell_apk.tests">
-    <uses-sdk android:minSdkVersion="19" android:targetSdkVersion="23" />
+{% extends "content/shell/android/shell_apk/AndroidManifest.xml.jinja2" %}
+
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+{% block application_label %}Content Shell Test{% endblock %}
+
+{% block extra_uses_permissions %}
     <uses-permission android:name="android.permission.RUN_INSTRUMENTATION" />
-    <!-- We add an application tag here just so that we can indicate that this
-         package needs to link against the android.test library, which is
-         needed when building test cases. -->
-    <application>
+{% endblock %}
+
+{% block extra_application_definitions_for_test %}
         <uses-library android:name="android.test.runner" />
         <activity android:name="org.chromium.test.broker.OnDeviceInstrumentationBroker"
             android:exported="true"/>
-    </application>
+{% endblock %}
 
+{% block extra_root_definitions %}
     <instrumentation android:name="org.chromium.base.test.BaseChromiumAndroidJUnitRunner"
-        android:targetPackage="org.chromium.content_shell_apk"
-        android:label="JUnit4-based tests for org.chromium.content_shell_apk" />
-</manifest>
+        android:targetPackage="{{manifest_package}}"
+        android:label="JUnit4-based tests for content shell" />
+{% endblock %}

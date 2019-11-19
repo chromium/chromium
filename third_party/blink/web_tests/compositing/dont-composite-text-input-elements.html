@@ -8,6 +8,6 @@ if (window.internals)
 test(function() {
     var json = JSON.parse(internals.layerTreeAsText(document));
     // The <input> element's scroller should be painted into the root layer.
-    assert_equals(json["layers"].length, 3);
+    assert_equals(json["layers"].length, 1);
 }, "test");
 </script>

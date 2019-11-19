@@ -5,8 +5,8 @@
 #ifndef CONTENT_RENDERER_INPUT_INPUT_TARGET_CLIENT_IMPL_H_
 #define CONTENT_RENDERER_INPUT_INPUT_TARGET_CLIENT_IMPL_H_
 
-#include "mojo/public/cpp/bindings/binding.h"
-#include "services/viz/public/interfaces/hit_test/input_target_client.mojom.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "services/viz/public/mojom/hit_test/input_target_client.mojom.h"
 
 namespace content {
 
@@ -18,7 +18,8 @@ class InputTargetClientImpl : public viz::mojom::InputTargetClient {
   explicit InputTargetClientImpl(RenderFrameImpl* render_frame);
   ~InputTargetClientImpl() override;
 
-  void BindToRequest(viz::mojom::InputTargetClientRequest request);
+  void BindToReceiver(
+      mojo::PendingReceiver<viz::mojom::InputTargetClient> receiver);
 
   // viz::mojom::InputTargetClient:
   void FrameSinkIdAt(const gfx::PointF& point,
@@ -28,7 +29,7 @@ class InputTargetClientImpl : public viz::mojom::InputTargetClient {
  private:
   RenderFrameImpl* const render_frame_;
 
-  mojo::Binding<viz::mojom::InputTargetClient> binding_;
+  mojo::Receiver<viz::mojom::InputTargetClient> receiver_{this};
 
   DISALLOW_COPY_AND_ASSIGN(InputTargetClientImpl);
 };

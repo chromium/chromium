@@ -14,7 +14,7 @@
 
 /* In this test the scroller is composited (forcibly) but is not actually
    scrollable. This should result in a composited worklet animation being
-   created, but it should get a NaN currentTime. */
+   created, but it should get not get animated!. */
 .scroller {
   overflow: visible;
   height: 100px;
@@ -37,13 +37,9 @@
 <script id="visual_update"  type="text/worklet">
 registerAnimator("test_animator", class {
   animate(currentTime, effect) {
-    // A non-scrollable scroller should result in a NaN currentTime; set the
-    // localTime accordingly so we can spot this.
-    if (isNaN(currentTime)) {
-      effect.localTime = 500;
-    } else {
-      effect.localTime = 1000;
-    }
+    // A non-scrollable scroller means that the animation is not active which
+    // means this method should never be called.
+    effect.localTime = 500;
   }
 });
 </script>

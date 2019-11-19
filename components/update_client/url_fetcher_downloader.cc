@@ -14,7 +14,6 @@
 #include "base/sequenced_task_runner.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
-#include "components/data_use_measurement/core/data_use_user_data.h"
 #include "components/update_client/network.h"
 #include "components/update_client/utils.h"
 #include "url/gurl.h"
@@ -22,7 +21,7 @@
 namespace {
 
 constexpr base::TaskTraits kTaskTraits = {
-    base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+    base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT,
     base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN};
 
 }  // namespace
@@ -41,7 +40,7 @@ UrlFetcherDownloader::~UrlFetcherDownloader() {
 
 void UrlFetcherDownloader::DoStartDownload(const GURL& url) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  base::PostTaskWithTraitsAndReply(
+  base::PostTaskAndReply(
       FROM_HERE, kTaskTraits,
       base::BindOnce(&UrlFetcherDownloader::CreateDownloadDir,
                      base::Unretained(this)),
@@ -85,7 +84,7 @@ void UrlFetcherDownloader::StartURLFetch(const GURL& url) {
       base::BindRepeating(&UrlFetcherDownloader::OnDownloadProgress,
                           base::Unretained(this)),
       base::BindOnce(&UrlFetcherDownloader::OnNetworkFetcherComplete,
-                     base::Unretained(this)));
+                     base::Unretained(this), file_path));
 
   download_start_time_ = base::TimeTicks::Now();
 }
@@ -132,14 +131,15 @@ void UrlFetcherDownloader::OnNetworkFetcherComplete(base::FilePath file_path,
   download_metrics.download_time_ms = download_time.InMilliseconds();
 
   VLOG(1) << "Downloaded " << content_size << " bytes in "
-          << download_time.InMilliseconds() << "ms from " << final_url_.spec()
+          << download_time.InMilliseconds() << "ms from " << url().spec()
           << " to " << result.response.value();
 
   // Delete the download directory in the error cases.
-  if (error && !download_dir_.empty())
-    base::PostTaskWithTraits(
-        FROM_HERE, kTaskTraits,
-        base::BindOnce(IgnoreResult(&base::DeleteFile), download_dir_, true));
+  if (error && !download_dir_.empty()) {
+    base::PostTask(FROM_HERE, kTaskTraits,
+                   base::BindOnce(IgnoreResult(&base::DeleteFileRecursively),
+                                  download_dir_));
+  }
 
   main_task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&UrlFetcherDownloader::OnDownloadComplete,
@@ -148,14 +148,12 @@ void UrlFetcherDownloader::OnNetworkFetcherComplete(base::FilePath file_path,
 }
 
 // This callback is used to indicate that a download has been started.
-void UrlFetcherDownloader::OnResponseStarted(const GURL& final_url,
-                                             int response_code,
+void UrlFetcherDownloader::OnResponseStarted(int response_code,
                                              int64_t content_length) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  VLOG(1) << "url fetcher response started for: " << final_url.spec();
+  VLOG(1) << "url fetcher response started for: " << url().spec();
 
-  final_url_ = final_url;
   response_code_ = response_code;
   total_bytes_ = content_length;
 }

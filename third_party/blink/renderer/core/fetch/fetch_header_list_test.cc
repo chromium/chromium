@@ -15,7 +15,7 @@ namespace blink {
 namespace {
 
 TEST(FetchHeaderListTest, Append) {
-  FetchHeaderList* headerList = FetchHeaderList::Create();
+  auto* headerList = MakeGarbageCollected<FetchHeaderList>();
   headerList->Append("ConTenT-TyPe", "text/plain");
   headerList->Append("content-type", "application/xml");
   headerList->Append("CONTENT-type", "foo");
@@ -35,7 +35,7 @@ TEST(FetchHeaderListTest, Append) {
 }
 
 TEST(FetchHeaderListTest, Set) {
-  FetchHeaderList* headerList = FetchHeaderList::Create();
+  auto* headerList = MakeGarbageCollected<FetchHeaderList>();
   headerList->Append("ConTenT-TyPe", "text/plain");
   headerList->Append("content-type", "application/xml");
   headerList->Append("CONTENT-type", "foo");
@@ -58,7 +58,7 @@ TEST(FetchHeaderListTest, Set) {
 }
 
 TEST(FetchHeaderListTest, Erase) {
-  FetchHeaderList* headerList = FetchHeaderList::Create();
+  auto* headerList = MakeGarbageCollected<FetchHeaderList>();
   headerList->Remove("foo");
   EXPECT_EQ(0U, headerList->size());
   headerList->Append("ConTenT-TyPe", "text/plain");
@@ -80,7 +80,7 @@ TEST(FetchHeaderListTest, Erase) {
 }
 
 TEST(FetchHeaderListTest, Combine) {
-  FetchHeaderList* headerList = FetchHeaderList::Create();
+  auto* headerList = MakeGarbageCollected<FetchHeaderList>();
   headerList->Append("ConTenT-TyPe", "text/plain");
   headerList->Append("content-type", "application/xml");
   headerList->Append("CONTENT-type", "foo");
@@ -93,7 +93,7 @@ TEST(FetchHeaderListTest, Combine) {
 }
 
 TEST(FetchHeaderListTest, Contains) {
-  FetchHeaderList* headerList = FetchHeaderList::Create();
+  auto* headerList = MakeGarbageCollected<FetchHeaderList>();
   headerList->Append("ConTenT-TyPe", "text/plain");
   headerList->Append("content-type", "application/xml");
   headerList->Append("X-Foo", "bar");
@@ -103,7 +103,7 @@ TEST(FetchHeaderListTest, Contains) {
 }
 
 TEST(FetchHeaderListTest, SortAndCombine) {
-  FetchHeaderList* headerList = FetchHeaderList::Create();
+  auto* headerList = MakeGarbageCollected<FetchHeaderList>();
   EXPECT_TRUE(headerList->SortAndCombine().IsEmpty());
   headerList->Append("content-type", "multipart/form-data");
   headerList->Append("ConTenT-TyPe", "application/xml");

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 package org.chromium.ui.modelutil;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * An interface for models notifying about changes to a list of items. Note that ListObservable
@@ -62,5 +62,13 @@ public interface ListObservable<P> {
          */
         default void onItemRangeChanged(
                 ListObservable<P> source, int index, int count, @Nullable P payload) {}
+
+        /**
+         * Notifies that item at position {@code curIndex} will be moved to {@code newIndex}.
+         *
+         * @param curIndex Current position of the moved item.
+         * @param newIndex New position of the moved item.
+         */
+        default void onItemMoved(ListObservable source, int curIndex, int newIndex) {}
     }
 }

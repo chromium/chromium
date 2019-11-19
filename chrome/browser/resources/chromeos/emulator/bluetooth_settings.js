@@ -2,6 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
+import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
+import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.m.js';
+import 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.m.js';
+import 'chrome://resources/cr_elements/shared_style_css.m.js';
+import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
+import './icons.js';
+import './shared_styles.js';
+
+import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+
 /**
  * A bluetooth device.
  * @constructor
@@ -54,6 +70,10 @@ var BluetoothDevice = function() {
 Polymer({
   is: 'bluetooth-settings',
 
+  _template: html`{__html_template__}`,
+
+  behaviors: [WebUIListenerBehavior],
+
   properties: {
     /**
      * A set of bluetooth devices.
@@ -68,7 +88,7 @@ Polymer({
 
     /**
      * A set of predefined bluetooth devices.
-     * @type !Array<!Bluetooth>
+     * @type !Array<!BluetoothDevice>
      */
     predefinedDevices: {
       type: Array,
@@ -79,13 +99,11 @@ Polymer({
 
     /**
      * A bluetooth device object which is currently being edited.
-     * @type {BluetoothDevice}
+     * @type {?BluetoothDevice}
      */
     currentEditableObject: {
       type: Object,
-      value: function() {
-        return {};
-      }
+      value: null,
     },
 
     /**
@@ -104,7 +122,7 @@ Polymer({
      * A set of options for the possible bluetooth device classes/types.
      * Object |value| attribute comes from values in the WebUI, set in
      * setDeviceClassOptions.
-     * @type !Array<! {text: string, value: int} >
+     * @type !Array<!{text: string, value: number}>
      */
     deviceClassOptions: {
       type: Array,
@@ -150,6 +168,16 @@ Polymer({
   devicePaths: {},
 
   ready: function() {
+    this.addWebUIListener(
+        'bluetooth-device-added', this.addBluetoothDevice_.bind(this));
+    this.addWebUIListener(
+        'device-paired-from-tray', this.devicePairedFromTray_.bind(this));
+    this.addWebUIListener(
+        'device-removed-from-main-adapter',
+        this.deviceRemovedFromMainAdapter_.bind(this));
+    this.addWebUIListener('pair-failed', this.pairFailed_.bind(this));
+    this.addWebUIListener(
+        'bluetooth-info-updated', this.updateBluetoothInfo_.bind(this));
     chrome.send('requestBluetoothInfo');
   },
 
@@ -270,26 +298,31 @@ Polymer({
    * @return {boolean} Whether the PIN/passkey input field should be shown.
    */
   showAuthToken: function(pairMethod) {
-    return pairMethod && pairMethod != 'None';
+    return !!pairMethod && pairMethod != 'None';
   },
 
   /**
    * Called by the WebUI which provides a list of devices which are connected
    * to the main adapter.
-   * @param {!Array<!BluetoothDevice>} devices A list of bluetooth devices.
+   * @param {{
+   *   predefined_devices: !Array<!BluetoothDevice>,
+   *   devices: !Array<!BluetoothDevice>,
+   *   pairing_method_options: !Array<string>,
+   *   pairing_action_options: !Array<string>,
+   * }} info
+   * @private
    */
-  updateBluetoothInfo: function(
-      predefinedDevices, loadedCustomDevices, pairingMethodOptions,
-      pairingActionOptions) {
-    this.predefinedDevices = this.loadDevicesFromList(predefinedDevices, true);
-    this.devices = this.loadDevicesFromList(loadedCustomDevices, false);
-    this.deviceAuthenticationMethods = pairingMethodOptions;
-    this.deviceAuthenticationActions = pairingActionOptions;
+  updateBluetoothInfo_: function(info) {
+    this.predefinedDevices =
+        this.loadDevicesFromList(info.predefined_devices, true);
+    this.devices = this.loadDevicesFromList(info.devices, false);
+    this.deviceAuthenticationMethods = info.pairing_method_options;
+    this.deviceAuthenticationActions = info.pairing_action_options;
   },
 
   /**
    * Builds complete BluetoothDevice objects for each element in |devices_list|.
-   * @param {!Array<!BluetoothDevice>} devices_list A list of incomplete
+   * @param {!Array<!BluetoothDevice>} devices A list of incomplete
    *     BluetoothDevice provided by the C++ WebUI.
    * @param {boolean} predefined Whether or not the device is a predefined one.
    */
@@ -316,8 +349,9 @@ Polymer({
   /**
    * Called when a device is paired from the Tray. Checks the paired box for
    * the device with path |path|.
+   * @private
    */
-  devicePairedFromTray: function(path) {
+  devicePairedFromTray_: function(path) {
     var obj = this.devicePaths[path];
 
     if (obj == undefined)
@@ -366,8 +400,9 @@ Polymer({
   /**
    * Called from Chrome OS back-end when a pair request fails.
    * @param {string} path The path of the device which failed to pair.
+   * @private
    */
-  pairFailed: function(path) {
+  pairFailed_: function(path) {
     var obj = this.devicePaths[path];
 
     if (obj == undefined)
@@ -418,8 +453,9 @@ Polymer({
    * The device is only added to the view's list if it is not already in
    * the list (i.e. its path has not yet been recorded in |devicePaths|).
    * @param {BluetoothDevice} device A bluetooth device.
+   * @private
    */
-  addBluetoothDevice: function(device) {
+  addBluetoothDevice_: function(device) {
     if (this.devicePaths[device.path] != undefined) {
       var obj = this.devicePaths[device.path];
       var devicePath = (obj.predefined ? 'predefinedDevices.' : 'devices.');
@@ -475,7 +511,7 @@ Polymer({
   },
 
   /** @private */
-  onCloseTap_: function() {
+  onCloseClick_: function() {
     this.$.editDialog.close();
   },
 
@@ -499,8 +535,9 @@ Polymer({
    * adapter's device list. It sets that device's |.discoverable| and |.paired|
    * attributes to false.
    * @param {string} path A bluetooth device's path.
+   * @private
    */
-  deviceRemovedFromMainAdapter: function(path) {
+  deviceRemovedFromMainAdapter_: function(path) {
     if (this.devicePaths[path] == undefined)
       return;
 
@@ -522,6 +559,7 @@ Polymer({
       if (this.deviceClassOptions[i].value == classValue)
         return this.deviceClassOptions[i].text;
     }
+    return '';
   },
 
   /**

@@ -1,7 +1,11 @@
 This is a testharness.js-based test.
 PASS idl_test setup
+PASS idl_test validation
 PASS Partial interface UIEvent: original interface defined
+PASS Partial interface UIEvent: member names are unique
 PASS Partial dictionary UIEventInit: original dictionary defined
+PASS Partial dictionary UIEventInit: member names are unique
+PASS Partial interface UIEvent[2]: member names are unique
 PASS InputDeviceCapabilities interface: existence and properties of interface object
 PASS InputDeviceCapabilities interface object length
 PASS InputDeviceCapabilities interface object name

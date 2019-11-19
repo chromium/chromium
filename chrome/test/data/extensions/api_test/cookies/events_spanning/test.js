@@ -12,7 +12,7 @@ var SET_REMOVE_COOKIE = {
   path: '/',
   secure: false,
   httpOnly: false,
-  sameSite: chrome.cookies.SameSiteStatus.NO_RESTRICTION,
+  sameSite: chrome.cookies.SameSiteStatus.UNSPECIFIED,
   session: false,
   expirationDate: 12345678900,
   storeId: '1'

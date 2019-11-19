@@ -44,8 +44,6 @@ class CORE_EXPORT HTMLObjectElement final : public HTMLPlugInElement,
   USING_GARBAGE_COLLECTED_MIXIN(HTMLObjectElement);
 
  public:
-  static HTMLObjectElement* Create(Document&, const CreateElementFlags);
-
   HTMLObjectElement(Document&, const CreateElementFlags);
   ~HTMLObjectElement() override;
   void Trace(Visitor*) override;
@@ -91,6 +89,10 @@ class CORE_EXPORT HTMLObjectElement final : public HTMLPlugInElement,
   FormAssociated* ToFormAssociatedOrNull() override { return this; }
   void AssociateWith(HTMLFormElement*) override;
 
+  // Returns true if this object started to load something, and finished
+  // the loading regardless of success or failure.
+  bool DidFinishLoading() const;
+
  private:
   void ParseAttribute(const AttributeModificationParams&) override;
   bool IsPresentationAttribute(const QualifiedName&) const override;
@@ -129,6 +131,8 @@ class CORE_EXPORT HTMLObjectElement final : public HTMLPlugInElement,
   NamedItemType GetNamedItemType() const override {
     return NamedItemType::kNameOrId;
   }
+
+  int DefaultTabIndex() const override;
 
   String class_id_;
   bool use_fallback_content_ : 1;

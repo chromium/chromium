@@ -13,6 +13,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_checker.h"
+#include "base/unguessable_token.h"
 #include "content/common/content_export.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/audio_renderer_sink.h"
@@ -39,7 +40,7 @@ class CONTENT_EXPORT RendererWebAudioDeviceImpl
       int channels,
       const blink::WebAudioLatencyHint& latency_hint,
       blink::WebAudioDevice::RenderCallback* callback,
-      int session_id);
+      const base::UnguessableToken& session_id);
 
   // blink::WebAudioDevice implementation.
   void Start() override;
@@ -66,21 +67,21 @@ class CONTENT_EXPORT RendererWebAudioDeviceImpl
 
  protected:
   // Callback to get output device params (for tests).
-  using OutputDeviceParamsCallback =
-      base::Callback<media::AudioParameters(int frame_id,
-                                            int session_id,
-                                            const std::string& device_id)>;
+  using OutputDeviceParamsCallback = base::OnceCallback<media::AudioParameters(
+      int frame_id,
+      const base::UnguessableToken& session_id,
+      const std::string& device_id)>;
 
   // Callback get render frame ID for current context (for tests).
-  using RenderFrameIdCallback = base::Callback<int()>;
+  using RenderFrameIdCallback = base::OnceCallback<int()>;
 
   RendererWebAudioDeviceImpl(media::ChannelLayout layout,
                              int channels,
                              const blink::WebAudioLatencyHint& latency_hint,
                              blink::WebAudioDevice::RenderCallback* callback,
-                             int session_id,
-                             const OutputDeviceParamsCallback& device_params_cb,
-                             const RenderFrameIdCallback& render_frame_id_cb);
+                             const base::UnguessableToken& session_id,
+                             OutputDeviceParamsCallback device_params_cb,
+                             RenderFrameIdCallback render_frame_id_cb);
 
  private:
   const scoped_refptr<base::SingleThreadTaskRunner>& GetMediaTaskRunner();
@@ -100,7 +101,7 @@ class CONTENT_EXPORT RendererWebAudioDeviceImpl
   scoped_refptr<media::AudioRendererSink> sink_;
 
   // ID to allow browser to select the correct input device for unified IO.
-  int session_id_;
+  base::UnguessableToken session_id_;
 
   // Used to suspend |sink_| usage when silence has been detected for too long.
   std::unique_ptr<media::SilentSinkSuspender> webaudio_suspender_;

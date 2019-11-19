@@ -50,7 +50,7 @@ class SubresourceFilterSafeBrowsingClient {
     // without performance implications. Refactor this class if that ever
     // changes.
     safe_browsing::ThreatMetadata threat_metadata;
-    base::TimeDelta check_time;
+    base::TimeTicks start_time;
     bool finished = false;
 
     std::unique_ptr<base::trace_event::TracedValue> ToTracedValue() const;
@@ -65,7 +65,9 @@ class SubresourceFilterSafeBrowsingClient {
 
   ~SubresourceFilterSafeBrowsingClient();
 
-  void CheckUrlOnIO(const GURL& url, size_t request_id);
+  void CheckUrlOnIO(const GURL& url,
+                    size_t request_id,
+                    base::TimeTicks start_time);
 
   void OnCheckBrowseUrlResult(
       SubresourceFilterSafeBrowsingClientRequest* request,

@@ -12,7 +12,6 @@
 <translation id="2159915644201199628">No se ha podido decodificar la imagen <ph name="IMAGE_NAME" />.</translation>
 <translation id="2350172092385603347">Se ha utilizado la localización, pero no se ha especificado default_locale en el archivo de manifiesto.</translation>
 <translation id="2576842806987913196">Ya existe un archivo CRX con este nombre.</translation>
-<translation id="2753617847762399167">Ruta no válida (absoluta o relativa con ".."): <ph name="IMAGE_PATH" /></translation>
 <translation id="2785530881066938471">No se ha podido cargar el archivo "<ph name="RELATIVE_PATH" />" para el script de contenido. No está codificado con UTF-8.</translation>
 <translation id="2903070246402204397">El administrador ha bloqueado la extensión <ph name="EXTENSION_NAME" /> (ID de extensión "<ph name="EXTENSION_ID" />"). <ph name="ADMIN_INFO" /></translation>
 <translation id="2988488679308982380">No se ha podido instalar el paquete: "<ph name="ERROR_CODE" />".</translation>
@@ -38,8 +37,6 @@
 <translation id="5436430103864390185">No se admiten las ventanas con formas.</translation>
 <translation id="5456409301717116725">Esta extensión incluye el archivo de clave "<ph name="KEY_PATH" />". Probablemente no quieras incluir este archivo.</translation>
 <translation id="5486326529110362464">Debe existir un valor de entrada para la clave privada.</translation>
-<translation id="5627523580512561598">extensión <ph name="EXTENSION_NAME" /></translation>
-<translation id="5960890139610307736">ExtensionView: <ph name="EXTENSIONVIEW_TAG_NAME" /></translation>
 <translation id="5972529113578162692"><ph name="EXTENSION_NAME" /> no se puede desinstalar porque el administrador de este ordenador requiere que esté instalado.</translation>
 <translation id="6027032947578871493">Producto <ph name="PRODUCT_ID" /> de <ph name="VENDOR_NAME" /> desconocido (número de serie <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> del proveedor <ph name="VENDOR_ID" /></translation>
@@ -51,7 +48,6 @@
 <translation id="6542618148162044354"><ph name="APP_NAME" /> está solicitando acceso a uno o varios de tus dispositivos:</translation>
 <translation id="657064425229075395">No se ha podido cargar la secuencia de comandos en segundo plano "<ph name="BACKGROUND_SCRIPT" />".</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" /> de <ph name="VENDOR_NAME" /> (número de serie <ph name="SERIAL_NUMBER" />)</translation>
-<translation id="6731255991101203740">No se ha podido crear un directorio para descomprimir <ph name="DIRECTORY_PATH" />.</translation>
 <translation id="677806580227005219">Controlador MIME: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
 <translation id="6840444547062817500">Esta extensión se ha cargado con demasiada frecuencia.</translation>
 <translation id="7003844668372540529">Producto <ph name="PRODUCT_ID" /> de <ph name="VENDOR_NAME" /> desconocido</translation>

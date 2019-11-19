@@ -16,16 +16,6 @@ class CORE_EXPORT VideoTrack final : public ScriptWrappable, public TrackBase {
   USING_GARBAGE_COLLECTED_MIXIN(VideoTrack);
 
  public:
-  static VideoTrack* Create(const String& id,
-                            const AtomicString& kind,
-                            const AtomicString& label,
-                            const AtomicString& language,
-                            bool selected) {
-    return MakeGarbageCollected<VideoTrack>(
-        id, IsValidKindKeyword(kind) ? kind : g_empty_atom, label, language,
-        selected);
-  }
-
   VideoTrack(const String& id,
              const AtomicString& kind,
              const AtomicString& label,

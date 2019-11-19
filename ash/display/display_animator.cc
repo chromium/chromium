@@ -94,7 +94,7 @@ class CallbackRunningObserver {
 
 }  // namespace
 
-DisplayAnimator::DisplayAnimator() : weak_ptr_factory_(this) {
+DisplayAnimator::DisplayAnimator() {
   Shell::Get()->display_configurator()->AddObserver(this);
 }
 

@@ -15,12 +15,12 @@ class TabCaptureAccessHandler : public CaptureAccessHandlerBase {
 
   // MediaAccessHandler implementation.
   bool SupportsStreamType(content::WebContents* web_contents,
-                          const blink::MediaStreamType type,
+                          const blink::mojom::MediaStreamType type,
                           const extensions::Extension* extension) override;
   bool CheckMediaAccessPermission(
       content::RenderFrameHost* render_frame_host,
       const GURL& security_origin,
-      blink::MediaStreamType type,
+      blink::mojom::MediaStreamType type,
       const extensions::Extension* extension) override;
   void HandleRequest(content::WebContents* web_contents,
                      const content::MediaStreamRequest& request,

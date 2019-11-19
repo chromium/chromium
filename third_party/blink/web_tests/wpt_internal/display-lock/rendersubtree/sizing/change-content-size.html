@@ -1,0 +1,47 @@
+<!doctype HTML>
+<html class="reftest-wait">
+<meta charset="utf8">
+<title>Display Locking: re-acquire with a different size</title>
+<link rel="author" title="Rakina Zata Amni" href="mailto:rakina@chromium.org">
+<link rel="help" href="https://github.com/WICG/display-locking">
+<link rel="match" href="acquire-after-resize-ref.html">
+<script src="/common/reftest-wait.js"></script>
+<script src="../resources/utils.js"></script>
+
+<style>
+.contained {
+  intrinsic-size: 123px 456px;
+}
+#spacer {
+  width: 50px;
+  height: 50px;
+  background: lightgreen;
+}
+div:not([rendersubtree~="invisible"]) {
+  intrinsic-size: legacy !important;
+}
+</style>
+
+<div id="log"></div>
+<div id="small" class="contained"></div>
+<div id="spacer">
+
+<script>
+function finishTest(status_string) {
+  if (document.getElementById("log").innerHTML === "")
+    document.getElementById("log").innerHTML = status_string;
+  takeScreenshot();
+}
+
+function runTest() {
+  const container = document.getElementById("small");
+  setInvisible(container).then(() => {
+    container.style = "intrinsic-size: 150px 150px";
+    requestAnimationFrame(() => finishTest("PASS"));
+  });
+}
+
+window.onload = runTest;
+</script>
+</html>
+

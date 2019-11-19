@@ -10,8 +10,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
-import android.support.annotation.IntDef;
-import android.support.annotation.Nullable;
+
+import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
@@ -34,6 +35,9 @@ public class NotificationIntentInterceptor {
             "notifications.NotificationIntentInterceptor.EXTRA_NOTIFICATION_TYPE";
     private static final String EXTRA_ACTION_TYPE =
             "notifications.NotificationIntentInterceptor.EXTRA_ACTION_TYPE";
+    private static final String EXTRA_CREATE_TIME =
+            "notifications.NotificationIntentInterceptor.EXTRA_CREATE_TIME";
+    public static final long INVALID_CREATE_TIME = -1;
 
     /**
      * Enum that defines type of notification intent.
@@ -63,20 +67,24 @@ public class NotificationIntentInterceptor {
             int notificationType = intent.getIntExtra(
                     EXTRA_NOTIFICATION_TYPE, NotificationUmaTracker.SystemNotificationType.UNKNOWN);
 
+            long createTime = intent.getLongExtra(EXTRA_CREATE_TIME, INVALID_CREATE_TIME);
+
             switch (intentType) {
                 case IntentType.UNKNOWN:
                     break;
                 case IntentType.CONTENT_INTENT:
                     NotificationUmaTracker.getInstance().onNotificationContentClick(
-                            notificationType);
+                            notificationType, createTime);
                     break;
                 case IntentType.DELETE_INTENT:
-                    NotificationUmaTracker.getInstance().onNotificationDismiss(notificationType);
+                    NotificationUmaTracker.getInstance().onNotificationDismiss(
+                            notificationType, createTime);
                     break;
                 case IntentType.ACTION_INTENT:
                     int actionType = intent.getIntExtra(
                             EXTRA_ACTION_TYPE, NotificationUmaTracker.ActionType.UNKNOWN);
-                    NotificationUmaTracker.getInstance().onNotificationActionClick(actionType);
+                    NotificationUmaTracker.getInstance().onNotificationActionClick(
+                            actionType, notificationType, createTime);
                     break;
             }
 
@@ -110,6 +118,7 @@ public class NotificationIntentInterceptor {
         intent.putExtra(EXTRA_PENDING_INTENT, pendingIntent);
         intent.putExtra(EXTRA_INTENT_TYPE, intentType);
         intent.putExtra(EXTRA_NOTIFICATION_TYPE, metadata.type);
+        intent.putExtra(EXTRA_CREATE_TIME, System.currentTimeMillis());
         if (intentType == IntentType.ACTION_INTENT) {
             intent.putExtra(EXTRA_ACTION_TYPE, intentId);
         }

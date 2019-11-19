@@ -1,0 +1,53 @@
+# Copyright 2015 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+# Normally typemap traits sources should be build directly into mojom targets
+# via the typemap file. This target is for typemapped mojo_base types whose
+# traits are shared between chromium and blink variants.
+component("shared_typemap_traits") {
+  output_name = "skia_shared_typemap_traits"
+
+  sources = [
+    "bitmap_skbitmap_mojom_traits.cc",
+    "bitmap_skbitmap_mojom_traits.h",
+    "image_info_mojom_traits.cc",
+    "image_info_mojom_traits.h",
+  ]
+
+  defines = [ "IS_SKIA_SHARED_TRAITS_IMPL" ]
+
+  public_deps = [
+    "//base",
+    "//mojo/public/cpp/base:shared_typemap_traits",
+    "//skia",
+    "//skia/public/mojom:mojom_shared",
+  ]
+}
+
+mojom("mojom") {
+  generate_java = true
+  sources = [
+    "bitmap.mojom",
+    "blur_image_filter_tile_mode.mojom",
+    "image_info.mojom",
+    "skcolor.mojom",
+  ]
+
+  public_deps = [
+    "//mojo/public/mojom/base",
+  ]
+}
+
+mojom("test_interfaces") {
+  testonly = true
+  sources = [
+    "test/traits_test_service.mojom",
+  ]
+
+  public_deps = [
+    ":mojom",
+  ]
+}

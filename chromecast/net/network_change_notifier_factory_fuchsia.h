@@ -17,7 +17,7 @@ class NetworkChangeNotifierFactoryFuchsia
   ~NetworkChangeNotifierFactoryFuchsia() override;
 
   // net::NetworkChangeNotifierFactory implementation:
-  net::NetworkChangeNotifier* CreateInstance() override;
+  std::unique_ptr<net::NetworkChangeNotifier> CreateInstance() override;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(NetworkChangeNotifierFactoryFuchsia);

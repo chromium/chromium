@@ -8,6 +8,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
 #include "components/spellcheck/common/spellcheck.mojom.h"
+#include "components/spellcheck/common/spellcheck_features.h"
 #include "components/spellcheck/common/spellcheck_result.h"
 #include "components/spellcheck/renderer/spellcheck.h"
 #include "components/spellcheck/renderer/spellcheck_language.h"
@@ -84,8 +85,7 @@ SpellCheckProvider::SpellCheckProvider(
     : content::RenderFrameObserver(render_frame),
       content::RenderFrameObserverTracker<SpellCheckProvider>(render_frame),
       spellcheck_(spellcheck),
-      embedder_provider_(embedder_provider),
-      weak_factory_(this) {
+      embedder_provider_(embedder_provider) {
   DCHECK(spellcheck_);
   DCHECK(embedder_provider);
   if (render_frame)  // NULL in unit tests.
@@ -106,13 +106,14 @@ spellcheck::mojom::SpellCheckHost& SpellCheckProvider::GetSpellCheckHost() {
   if (spell_check_host_)
     return *spell_check_host_;
 
-  embedder_provider_->GetInterface(&spell_check_host_);
+  embedder_provider_->GetInterface(
+      spell_check_host_.BindNewPipeAndPassReceiver());
   return *spell_check_host_;
 }
 
 void SpellCheckProvider::RequestTextChecking(
     const base::string16& text,
-    WebTextCheckingCompletion* completion) {
+    std::unique_ptr<WebTextCheckingCompletion> completion) {
   // Ignore invalid requests.
   if (text.empty() || !HasWordCharacters(text, 0)) {
     completion->DidCancelCheckingText();
@@ -120,31 +121,38 @@ void SpellCheckProvider::RequestTextChecking(
   }
 
   // Try to satisfy check from cache.
-  if (SatisfyRequestFromCache(text, completion))
+  if (SatisfyRequestFromCache(text, completion.get()))
     return;
 
   // Send this text to a browser. A browser checks the user profile and send
   // this text to the Spelling service only if a user enables this feature.
   last_request_.clear();
   last_results_.Assign(blink::WebVector<blink::WebTextCheckingResult>());
-  last_identifier_ = text_check_completions_.Add(completion);
+  last_identifier_ = text_check_completions_.Add(std::move(completion));
 
 #if BUILDFLAG(USE_BROWSER_SPELLCHECKER)
-  // Text check (unified request for grammar and spell check) is only
-  // available for browser process, so we ask the system spellchecker
-  // over mojo or return an empty result if the checker is not available.
-  GetSpellCheckHost().RequestTextCheck(
-      text, routing_id(),
-      base::BindOnce(&SpellCheckProvider::OnRespondTextCheck,
-                     weak_factory_.GetWeakPtr(), last_identifier_, text));
-#else
-  GetSpellCheckHost().CallSpellingService(
-      text, base::BindOnce(&SpellCheckProvider::OnRespondSpellingService,
-                           weak_factory_.GetWeakPtr(), last_identifier_, text));
-#endif  // !USE_BROWSER_SPELLCHECKER
+  if (spellcheck::UseBrowserSpellChecker()) {
+    // Text check (unified request for grammar and spell check) is only
+    // available for browser process, so we ask the system spellchecker
+    // over mojo or return an empty result if the checker is not available.
+    GetSpellCheckHost().RequestTextCheck(
+        text, routing_id(),
+        base::BindOnce(&SpellCheckProvider::OnRespondTextCheck,
+                       weak_factory_.GetWeakPtr(), last_identifier_, text));
+  }
+#endif
+#if BUILDFLAG(USE_RENDERER_SPELLCHECKER)
+  if (!spellcheck::UseBrowserSpellChecker()) {
+    GetSpellCheckHost().CallSpellingService(
+        text,
+        base::BindOnce(&SpellCheckProvider::OnRespondSpellingService,
+                       weak_factory_.GetWeakPtr(), last_identifier_, text));
+  }
+#endif
 }
 
-void SpellCheckProvider::FocusedNodeChanged(const blink::WebNode& unused) {
+void SpellCheckProvider::FocusedElementChanged(
+    const blink::WebElement& unused) {
 #if defined(OS_ANDROID)
   if (!spell_check_host_.is_bound())
     return;
@@ -193,38 +201,35 @@ void SpellCheckProvider::CheckSpelling(
 
 void SpellCheckProvider::RequestCheckingOfText(
     const WebString& text,
-    WebTextCheckingCompletion* completion) {
-  RequestTextChecking(text.Utf16(), completion);
+    std::unique_ptr<WebTextCheckingCompletion> completion) {
+  RequestTextChecking(text.Utf16(), std::move(completion));
   UMA_HISTOGRAM_COUNTS_1M("SpellCheck.api.async",
                           base::saturated_cast<int>(text.length()));
 }
 
-#if !BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+#if BUILDFLAG(USE_RENDERER_SPELLCHECKER)
 void SpellCheckProvider::OnRespondSpellingService(
     int identifier,
     const base::string16& line,
     bool success,
     const std::vector<SpellCheckResult>& results) {
-  WebTextCheckingCompletion* completion =
-      text_check_completions_.Lookup(identifier);
-  if (!completion)
+  if (!text_check_completions_.Lookup(identifier))
     return;
+  std::unique_ptr<WebTextCheckingCompletion> completion(
+      text_check_completions_.Replace(identifier, nullptr));
   text_check_completions_.Remove(identifier);
 
   // If |success| is false, we use local spellcheck as a fallback.
   if (!success) {
-    spellcheck_->RequestTextChecking(line, completion);
+    spellcheck_->RequestTextChecking(line, std::move(completion));
     return;
   }
 
   // Double-check the returned spellchecking results with our spellchecker to
   // visualize the differences between ours and the on-line spellchecker.
   blink::WebVector<blink::WebTextCheckingResult> textcheck_results;
-  spellcheck_->CreateTextCheckingResults(SpellCheck::USE_NATIVE_CHECKER,
-                                         0,
-                                         line,
-                                         results,
-                                         &textcheck_results);
+  spellcheck_->CreateTextCheckingResults(SpellCheck::USE_NATIVE_CHECKER, 0,
+                                         line, results, &textcheck_results);
   completion->DidFinishCheckingText(textcheck_results);
 
   // Cache the request and the converted results.
@@ -254,10 +259,10 @@ void SpellCheckProvider::OnRespondTextCheck(
     const std::vector<SpellCheckResult>& results) {
   // TODO(groby): Unify with SpellCheckProvider::OnRespondSpellingService
   DCHECK(spellcheck_);
-  WebTextCheckingCompletion* completion =
-      text_check_completions_.Lookup(identifier);
-  if (!completion)
+  if (!text_check_completions_.Lookup(identifier))
     return;
+  std::unique_ptr<WebTextCheckingCompletion> completion(
+      text_check_completions_.Replace(identifier, nullptr));
   text_check_completions_.Remove(identifier);
   blink::WebVector<blink::WebTextCheckingResult> textcheck_results;
   spellcheck_->CreateTextCheckingResults(SpellCheck::DO_NOT_MODIFY,

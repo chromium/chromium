@@ -4,7 +4,7 @@
 
 #include "components/exo/keyboard.h"
 
-#include "ash/accessibility/accessibility_controller.h"
+#include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/macros.h"
@@ -238,6 +238,28 @@ TEST_F(KeyboardTest, OnKeyboardKey) {
   EXPECT_CALL(delegate, OnKeyboardKey(testing::_, ui::DomCode::US_W, false));
   generator.ReleaseKey(ui::VKEY_W, ui::EF_CONTROL_DOWN);
 
+  // Key events should be ignored when the focused window is not an
+  // exo::Surface.
+  auto window = CreateChildWindow(shell_surface->GetWidget()->GetNativeWindow(),
+                                  gfx::Rect(buffer_size));
+  // Moving the focus away will trigger the fallback path in GetEffectiveFocus.
+  // TODO(oshima): Consider removing the fallback path.
+  EXPECT_CALL(delegate, CanAcceptKeyboardEventsForSurface(surface.get()))
+      .WillOnce(testing::Return(true));
+  focus_client->FocusWindow(window.get());
+
+  EXPECT_CALL(delegate,
+              OnKeyboardKey(testing::_, ui::DomCode::ARROW_LEFT, true))
+      .Times(0);
+  seat.set_physical_code_for_currently_processing_event_for_testing(
+      ui::DomCode::ARROW_LEFT);
+  generator.PressKey(ui::VKEY_LEFT, 0);
+
+  EXPECT_CALL(delegate,
+              OnKeyboardKey(testing::_, ui::DomCode::ARROW_LEFT, false))
+      .Times(0);
+  generator.ReleaseKey(ui::VKEY_LEFT, 0);
+
   keyboard.reset();
 }
 
@@ -318,7 +340,7 @@ TEST_F(KeyboardTest, OnKeyboardTypeChanged) {
 
   ash::TabletModeController* tablet_mode_controller =
       ash::Shell::Get()->tablet_mode_controller();
-  tablet_mode_controller->EnableTabletModeWindowManager(true);
+  tablet_mode_controller->SetEnabledForTest(true);
 
   MockKeyboardDelegate delegate;
   Seat seat;
@@ -341,7 +363,7 @@ TEST_F(KeyboardTest, OnKeyboardTypeChanged) {
 
   keyboard.reset();
 
-  tablet_mode_controller->EnableTabletModeWindowManager(false);
+  tablet_mode_controller->SetEnabledForTest(false);
 }
 
 TEST_F(KeyboardTest, OnKeyboardTypeChanged_AccessibilityKeyboard) {
@@ -374,7 +396,7 @@ TEST_F(KeyboardTest, OnKeyboardTypeChanged_AccessibilityKeyboard) {
   keyboard->SetDeviceConfigurationDelegate(&configuration_delegate);
   EXPECT_TRUE(keyboard->HasDeviceConfigurationDelegate());
 
-  ash::AccessibilityController* accessibility_controller =
+  ash::AccessibilityControllerImpl* accessibility_controller =
       ash::Shell::Get()->accessibility_controller();
 
   // Enable a11y keyboard calls OnKeyboardTypeChanged() with false.

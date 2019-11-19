@@ -16,7 +16,7 @@ NSString* const kGridCellCloseButtonIdentifier =
     @"GridCellCloseButtonIdentifier";
 
 // Grid styling.
-const int kGridBackgroundColor = 0x222222;
+NSString* const kGridBackgroundColor = @"grid_background_color";
 
 // Definition of limited width for applicable size classes. The first refers to
 // the horizontal size class; the second to the vertical.
@@ -49,21 +49,13 @@ const CGFloat kReorderingInactiveCellOpacity = 0.80;
 const CGFloat kReorderingActiveCellScale = 1.15;
 
 // GridCell styling.
-// Common colors.
-const int kGridCellIconBackgroundColor = 0xF1F3F4;
-const int kGridCellSnapshotBackgroundColor = 0xE8EAED;
-// Light theme colors.
-const int kGridLightThemeCellTitleColor = 0x000000;
-const int kGridLightThemeCellHeaderColor = 0xF8F9FA;
-const int kGridLightThemeCellSelectionColor = 0x1A73E8;
-const int kGridLightThemeCellCloseButtonTintColor = 0x3C4043;
 // Dark theme colors.
+// Extra dark theme colors until iOS 12 gets removed.
 const int kGridDarkThemeCellTitleColor = 0xFFFFFF;
-const int kGridDarkThemeCellHeaderColor = 0x5F6368;
-const int kGridDarkThemeCellSelectionColor = 0x9AA0A6;
-const int kGridDarkThemeCellCloseButtonTintColor = 0xFFFFFF;
-const CGFloat kGridDarkThemeCellHighlightColorAlpha = 0.7;
-const int kGridDarkThemeCellSeparatorColor = 0x535354;
+const int kGridDarkThemeCellDetailColor = 0xEBEBF5;
+const CGFloat kGridDarkThemeCellDetailAlpha = 0.6;
+const int kGridDarkThemeCellTintColor = 0x8AB4F9;
+extern const int kGridDarkThemeCellSolidButtonTextColor = 0x202124;
 
 // GridCell dimensions.
 const CGSize kGridCellSizeSmall = CGSize{144.0f, 168.0f};

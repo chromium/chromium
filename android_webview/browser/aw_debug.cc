@@ -2,7 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "android_webview/common/aw_channel.h"
+#include <string.h>
+
+#include <memory>
+
+#include "android_webview/browser_jni_headers/AwDebug_jni.h"
 #include "android_webview/common/crash_reporter/aw_crash_reporter_client.h"
 #include "android_webview/common/crash_reporter/crash_keys.h"
 #include "base/android/jni_android.h"
@@ -17,14 +21,12 @@
 #include "components/crash/content/app/crashpad.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/minidump_uploader/rewrite_minidumps_as_mimes.h"
+#include "components/version_info/android/channel_getter.h"
 #include "components/version_info/version_info.h"
 #include "components/version_info/version_info_values.h"
-#include "jni/AwDebug_jni.h"
 #include "third_party/crashpad/crashpad/client/crash_report_database.h"
 #include "third_party/crashpad/crashpad/util/net/http_body.h"
 #include "third_party/crashpad/crashpad/util/net/http_multipart_builder.h"
-
-#include <memory>
 
 using base::android::ConvertJavaStringToUTF16;
 using base::android::ConvertUTF8ToJavaString;
@@ -47,7 +49,7 @@ class AwDebugCrashReporterClient
     *product_name = "AndroidWebView";
     *version = PRODUCT_VERSION;
     *channel =
-        version_info::GetChannelString(android_webview::GetChannelOrStable());
+        version_info::GetChannelString(version_info::android::GetChannel());
   }
 
   bool GetCrashDumpLocation(base::FilePath* debug_dir) override {
@@ -138,6 +140,12 @@ static jboolean JNI_AwDebug_DumpWithoutCrashing(
   if (!target.IsValid())
     return false;
 
+  if (!CrashReporterEnabled()) {
+    static constexpr char kMessage[] = "WebView isn't initialized";
+    return static_cast<size_t>(target.WriteAtCurrentPos(
+               kMessage, strlen(kMessage))) == strlen(kMessage);
+  }
+
   AwDebugCrashReporterClient client;
   base::FilePath database_path;
   if (!client.GetCrashDumpLocation(&database_path)) {
@@ -175,6 +183,14 @@ static void JNI_AwDebug_SetNonWhiteListedKeyForTesting(JNIEnv* env) {
   static ::crash_reporter::CrashKeyString<32> crash_key(
       "AW_NONWHITELISTED_DEBUG_KEY");
   crash_key.Set("AW_DEBUG_VALUE");
+}
+
+static void JNI_AwDebug_SetSupportLibraryWebkitVersionCrashKey(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jstring>& version) {
+  static ::crash_reporter::CrashKeyString<32> crash_key(
+      crash_keys::kSupportLibraryWebkitVersion);
+  crash_key.Set(ConvertJavaStringToUTF8(env, version));
 }
 
 }  // namespace android_webview

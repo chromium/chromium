@@ -46,10 +46,11 @@ BubbleView::BubbleView() {
                   kVerticalBottomPadding, kHorizontalPadding)));
   views::BoxLayout* layout =
       SetLayoutManager(std::make_unique<views::BoxLayout>(
-          views::BoxLayout::kHorizontal, gfx::Insets(), kIconTextSpacing));
-  layout->set_main_axis_alignment(views::BoxLayout::MAIN_AXIS_ALIGNMENT_CENTER);
+          views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
+          kIconTextSpacing));
+  layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kCenter);
   layout->set_cross_axis_alignment(
-      views::BoxLayout::CROSS_AXIS_ALIGNMENT_CENTER);
+      views::BoxLayout::CrossAxisAlignment::kCenter);
 }
 
 BubbleView::~BubbleView() = default;
@@ -84,19 +85,21 @@ void BubbleView::SetText(const base::string16& text) {
 gfx::Size BubbleView::CalculatePreferredSize() const {
   int width = 0;
   int height = 0;
-  for (int i = 0; i < child_count(); ++i) {
-    const auto child_size = child_at(i)->GetPreferredSize();
-    height = std::max(height, child_size.height());
-    width += child_size.width();
+  if (!children().empty()) {
+    for (const auto* child : children()) {
+      const auto child_size = child->GetPreferredSize();
+      height = std::max(height, child_size.height());
+      width += child_size.width();
+    }
+    width += kIconTextSpacing * (children().size() - 1);
   }
-  gfx::Size preferred_size(width + (kIconTextSpacing * (child_count() - 1)),
-                           height);
-  preferred_size.Enlarge(GetInsets().width(), GetInsets().height());
+  gfx::Size preferred_size(width + GetInsets().width(),
+                           height + GetInsets().height());
 
   // To avoid text and icon bubbles have different heights in a row.
   constexpr int kMinimumHeight = 32;
   preferred_size.SetToMax(gfx::Size(kMinimumHeight, kMinimumHeight));
-  // Make the width to be at lease as large as the height.
+  // Make the width to be at least as large as the height.
   preferred_size.set_width(
       std::max(preferred_size.width(), preferred_size.height()));
   return preferred_size;

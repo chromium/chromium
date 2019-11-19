@@ -29,7 +29,7 @@ class NetworkingConfigServiceFactory
   NetworkingConfigServiceFactory();
   ~NetworkingConfigServiceFactory() override;
 
-  // BrowserContextKeyedBaseFactory
+  // BrowserContextKeyedServiceFactory
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(

@@ -27,7 +27,12 @@ void BspWalkActionDrawPolygon::operator()(DrawPolygon* item) {
       item->original_ref()
           ->shared_quad_state->quad_to_target_transform.GetInverse(
               &inverse_transform);
-  DCHECK(invertible);
+
+  // Skip degenerate quads
+  if (!invertible) {
+    return;
+  }
+
   item->TransformToLayerSpace(inverse_transform);
   renderer_->DoDrawPolygon(*item, render_pass_scissor_,
                            using_scissor_as_optimization_);

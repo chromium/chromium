@@ -5,6 +5,7 @@
 #include "net/ssl/client_cert_identity_test_util.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -71,9 +72,9 @@ std::unique_ptr<FakeClientCertIdentity> FakeClientCertIdentity::Copy() {
 }
 
 void FakeClientCertIdentity::AcquirePrivateKey(
-    const base::Callback<void(scoped_refptr<SSLPrivateKey>)>&
+    base::OnceCallback<void(scoped_refptr<SSLPrivateKey>)>
         private_key_callback) {
-  private_key_callback.Run(key_);
+  std::move(private_key_callback).Run(key_);
 }
 
 #if defined(OS_MACOSX)

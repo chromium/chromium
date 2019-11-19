@@ -1,16 +1,15 @@
 # Blink GC API reference
 
-This is a through document for Oilpan API usage.
-If you want to learn the API usage quickly, look at
+This document describes the usage of Oilpan -- Blink's garbage collector.
+If you just want to get an overview of the API you can have a look at
 [this tutorial](https://docs.google.com/presentation/d/1XPu03ymz8W295mCftEC9KshH9Icxfq81YwIJQzQrvxo/edit#slide=id.p).
-If you're just interested in wrapper tracing,
-see [Wrapper Tracing Reference](../bindings/TraceWrapperReference.md).
+If you're interested in wrapper tracing, see [Wrapper Tracing Reference](../bindings/TraceWrapperReference.md).
 
 [TOC]
 
 ## Header file
 
-Unless otherwise noted, any of the primitives explained in this page requires the following `#include` statement:
+Unless otherwise noted, any of the primitives explained on this page require the following `#include` statement:
 
 ```c++
 #include "third_party/blink/renderer/platform/heap/handle.h"
@@ -20,8 +19,7 @@ Unless otherwise noted, any of the primitives explained in this page requires th
 
 ### GarbageCollected
 
-A class that wants the lifetime management of its instances to be managed by Blink GC (Oilpan), it must inherit from
-`GarbageCollected<YourClass>`.
+A class that wants the lifetime management of its instances to be managed by Oilpan, it must inherit from `GarbageCollected<T>`.
 
 ```c++
 class YourClass : public GarbageCollected<YourClass> {
@@ -29,116 +27,70 @@ class YourClass : public GarbageCollected<YourClass> {
 };
 ```
 
-Instances of such classes are said to be *on Oilpan heap*, or *on heap* for short, while instances of other classes
-are called *off heap*. In the rest of this document, the terms "on heap" or "on-heap objects" are used to mean the
-objects on Oilpan heap instead of on normal (default) dynamic allocator's heap space.
+Instances of such classes are said to be *on Oilpan heap*, or *on heap* for short, while instances of other classes are called *off heap*.
+In the rest of this document, the terms *on heap* or *on-heap objects* are used to mean the objects on Oilpan heap instead of on normal (default) dynamic allocator's heap space.
 
-You can create an instance of your class normally through `new`, while you may not free the object with `delete`,
-as the Blink GC system is responsible for deallocating the object once it determines the object is unreachable.
+You can create an instance of your class through `MakeGarbageCollected<T>`, while you may not free the object with `delete`, as Oilpan is responsible for deallocating the object once it determines the object is unreachable.
 
 You may not allocate an on-heap object on stack.
 
 Your class may need to have a tracing method. See [Tracing](#Tracing) for details.
 
-If your class needs finalization (i.e. some work needs to be done on destruction), use
-[GarbageCollectedFinalized](#GarbageCollectedFinalized) instead.
+Your class will be automatically finalized as long as it is non-trivially destructible.
+Non-final classes are required to have a virtual destructor.
+Note that finalization is done at an arbitrary time after the object becomes unreachable.
+Any destructor executed within the finalization period *must not* touch any other on-heap object because destructors can be executed in any order.
 
-`GarbageCollected<T>` or any class deriving from `GarbageCollected<T>`, directly or indirectly, must be the first
-element in its base class list (called "leftmost derivation rule"). This rule is needed to assure each on-heap object
-has its own canonical address.
+`GarbageCollected<T>` or any class deriving from `GarbageCollected<T>`, directly or indirectly, must be the first element in its base class list (called "leftmost derivation rule").
+This rule is needed to assure each on-heap object has its own canonical address.
 
 ```c++
-class A : public GarbageCollected<A>, public P { // OK, GarbageCollected<A> is leftmost.
+class A : public GarbageCollected<A>, public P {
+  // OK: GarbageCollected<A> is leftmost.
 };
 
-class B : public A, public Q { // OK, A is leftmost.
+class B : public A, public Q {
+  // OK: A is leftmost.
 };
 
-// class C : public R, public A { // BAD, A must be the first base class.
+// class C : public R, public A {
+//   BAD: A must be the first base class.
 // };
 ```
 
-If a non-leftmost base class needs to retain an on-heap object, that base class needs to inherit from
-[GarbageCollectedMixin](#GarbageCollectedMixin). It's generally recommended to make *any* non-leftmost base class
-inherit from `GarbageCollectedMixin`, because it's dangerous to save a pointer to a non-leftmost
-non-`GarbageCollectedMixin` subclass of an on-heap object.
-
-```c++
-void someFunction(P*);
-
-class A : public GarbageCollected<A>, public P {
-public:
-  void someMemberFunction()
-  {
-    someFunction(this); // DANGEROUS, a raw pointer to an on-heap object.
-  }
-};
-```
-
-### GarbageCollectedFinalized
-
-If you want to make your class garbage-collected and the class needs finalization, your class needs to inherit from
-`GarbageCollectedFinalized<YourClass>` instead of `GarbageCollected<YourClass>`.
-
-A class is said to *need finalization* when it meets either of the following criteria:
-
-*   It has non-empty destructor; or
-*   It has a member that needs finalization.
-
-```c++
-class YourClass : public GarbageCollectedFinalized<YourClass> {
-public:
-  ~YourClass() { ... } // Non-empty destructor means finalization is needed.
-
-private:
-  scoped_refptr<Something> something_; // scoped_refptr<> has non-empty destructor, so finalization is needed.
-};
-```
-
-Note that finalization is done at an arbitrary time after the object becomes unreachable.
-
-Any destructor executed within the finalization period must not touch any other on-heap object, because destructors
-can be executed in any order. If there is a need of having such destructor, consider using
-[EAGERLY_FINALIZE](#EAGERLY_FINALIZE).
-
-Because `GarbageCollectedFinalized<T>` is a special case of `GarbageCollected<T>`, all the restrictions that apply
-to `GarbageCollected<T>` classes also apply to `GarbageCollectedFinalized<T>`.
+If a non-leftmost base class needs to retain an on-heap object, that base class needs to inherit from [GarbageCollectedMixin](#GarbageCollectedMixin). It's generally recommended to make *any* non-leftmost base class inherit from `GarbageCollectedMixin` because it's dangerous to save a pointer to a non-leftmost non-`GarbageCollectedMixin` subclass of an on-heap object.
 
 ### GarbageCollectedMixin
 
-A non-leftmost base class of a garbage-collected class may derive from `GarbageCollectedMixin`. If a direct child
-class of `GarbageCollected<T>` or `GarbageCollectedFinalized<T>` has a non-leftmost base class deriving from
-`GarbageCollectedMixin`, the garbage-collected class must declare the `USING_GARBAGE_COLLECTED_MIXIN(ClassName)` macro
-in its class declaration.
+A non-leftmost base class of a garbage-collected class should derive from `GarbageCollectedMixin`.
+If a child class of `GarbageCollected<T>` has a non-leftmost base class deriving from `GarbageCollectedMixin`, the garbage-collected class must declare the `USING_GARBAGE_COLLECTED_MIXIN(ClassName)` macro in its class declaration.
 
-A class deriving from `GarbageCollectedMixin` can be treated similarly as garbage-collected classes. Specifically, it
-can have `Member<T>`s and `WeakMember<T>`s, and a tracing method. A pointer to such a class must be retained in the
-same smart pointer wrappers as a pointer to a garbage-collected class, such as `Member<T>` or `Persistent<T>`.
+A class deriving from `GarbageCollectedMixin` can be treated similarly as garbage-collected classes.
+Specifically, it can have `Member<T>`s and `WeakMember<T>`s, and a tracing method.
+A pointer to such a class must be retained in the same smart pointer wrappers as a pointer to a garbage-collected class, such as `Member<T>` or `Persistent<T>`.
 The tracing method of a garbage-collected class, if any, must contain a delegating call for each mixin base class.
 
 ```c++
 class P : public GarbageCollectedMixin {
  public:
-  // OK, needs to trace q_.
+  // OK: Needs to trace q_.
   virtual void Trace(Visitor* visitor) { visitor->Trace(q_); }
  private:
-  // OK, allowed to have Member<T>.
+  // OK: Allowed to have Member<T>.
   Member<Q> q_;
 };
 
-class A : public GarbageCollected<A>, public P {
+class A final : public GarbageCollected<A>, public P {
   USING_GARBAGE_COLLECTED_MIXIN(A);
  public:
   // Delegating call for P is needed.
-  virtual void Trace(Visitor* visitor) { ...; P::Trace(visitor); }
-  ...
+  virtual void Trace(Visitor* visitor) { P::Trace(visitor); }
 };
 ```
 
-Internally, `GarbageCollectedMixin` defines pure virtual functions, and `USING_GARBAGE_COLLECTED_MIXIN(ClassName)`
-implements these virtual functions. Therefore, you cannot instantiate a class that is a descendant of
-`GarbageCollectedMixin` but not a descendant of `GarbageCollected<T>`. Two or more base classes inheritng from
-`GarbageCollectedMixin` can be resolved with a single `USING_GARBAGE_COLLECTED_MIXIN(ClassName)` declaration.
+Internally, `GarbageCollectedMixin` defines pure virtual functions, and `USING_GARBAGE_COLLECTED_MIXIN(ClassName)` implements these virtual functions.
+Therefore, you cannot instantiate a class that is a descendant of `GarbageCollectedMixin` but not a descendant of `GarbageCollected<T>`.
+Two or more base classes inheritng from `GarbageCollectedMixin` can be resolved with a single `USING_GARBAGE_COLLECTED_MIXIN(ClassName)` declaration.
 
 ```c++
 class P : public GarbageCollectedMixin { };
@@ -146,17 +98,18 @@ class Q : public GarbageCollectedMixin { };
 class R : public Q { };
 
 class A : public GarbageCollected<A>, public P, public R {
-  USING_GARBAGE_COLLECTED_MIXIN(A); // OK, resolving pure virtual functions of P and R.
+  USING_GARBAGE_COLLECTED_MIXIN(A);
+  // OK: Resolving pure virtual functions of P and R.
 };
 
 class B : public GarbageCollected<B>, public P {
-  USING_GARBAGE_COLLECTED_MIXIN(B); // OK, different garbage-collected classes may inherit from the same mixin (P).
+  USING_GARBAGE_COLLECTED_MIXIN(B);
+  // OK: Different garbage-collected classes may inherit from the same mixin (P).
 };
 
-void someFunction()
-{
-  MakeGarbageCollected<A>(); // OK, A can be instantiated.
-  // MakeGarbageCollected<R>(); // BAD, R has pure virtual functions.
+void foo() {
+  MakeGarbageCollected<A>();    // OK: A can be instantiated.
+  // MakeGarbageCollected<R>(); // BAD: R has pure virtual functions.
 }
 ```
 
@@ -171,65 +124,69 @@ See [GarbageCollectedMixin](#GarbageCollectedMixin) for the use of `GarbageColle
 
 ### USING_PRE_FINALIZER
 
-`USING_PRE_FINALIZER(ClassName, functionName)` in a class declaration declares the class has a *pre-finalizer* of name
-`functionName`.
+`USING_PRE_FINALIZER(ClassName, FunctionName)` in a class declaration declares the class has a *pre-finalizer* of name `FunctionName`.
+A pre-finalizer must have the function signature `void()` but can have any name.
 
-A pre-finalizer is a user-defined member function of a garbage-collected class that is called when the object is going
-to be swept but before the garbage collector actually sweeps any objects. Therefore, it is allowed for a pre-finalizer
-to touch any other on-heap objects, while a destructor is not. It is useful for doing some cleanups that cannot be done
-with a destructor.
-
-A pre-finalizer must have the following function signature: `void preFinalizer()`. You can change the function name.
+A pre-finalizer is a user-defined member function of a garbage-collected class that is called when the object is going to be reclaimed.
+It is invoked before the sweeping phase starts to allow a pre-finalizer to touch any other on-heap objects which is forbidden from destructors.
+It is useful for doing cleanups that cannot be done with a destructor.
 
 ```c++
-class YourClass : public GarbageCollectedFinalized<YourClass> {
-  USING_PRE_FINALIZER(YourClass, dispose);
+class YourClass : public GarbageCollected<YourClass> {
+  USING_PRE_FINALIZER(YourClass, Dispose);
 public:
-  void dispose()
-  {
-    other_->dispose(); // OK; you can touch other on-heap objects in a pre-finalizer.
+  void Dispose() {
+    // OK: Other on-heap objects can be touched in a pre-finalizer.
+    other_->Dispose();
   }
-  ~YourClass()
-  {
-    // other_->dispose(); // BAD.
+
+  ~YourClass() {
+    // BAD: Not allowed.
+    // other_->Dispose();
   }
 
 private:
   Member<OtherClass> other_;
 };
 ```
+Sometimes it is necessary to further delegate pre-finalizers up the class hierarchy, similar to how destructors destruct in reverse order wrt. to construction.
+It is possible to construct such delegations using virtual methods.
 
-Pre-finalizers have some implications on the garbage collector's performance: the garbage-collector needs to iterate
-all registered pre-finalizers at every GC. Therefore, a pre-finalizer should be avoided unless it is really necessary.
+```c++
+class Parent : public GarbageCollected<Parent> {
+  USING_PRE_FINALIZER(Parent, Dispose);
+ public:
+  void Dispose() { DisposeImpl(); }
+
+  virtual void DisposeImpl() {
+    // Pre-finalizer for {Parent}.
+  }
+  // ...
+};
+
+class Child : public Parent {
+ public:
+  void DisposeImpl() {
+    // Pre-finalizer for {Child}.
+    Parent::DisposeImpl();
+  }
+  // ...
+};
+```
+
+*Notes*
+- Pre-finalizers are not allowed to allocate new on-heap objects or resurrect objects (i.e., they are not allowed to relink dead objects into the object graph).
+- Pre-finalizers have some implications on the garbage collector's performance: the garbage-collector needs to iterate all registered pre-finalizers at every GC.
+Therefore, a pre-finalizer should be avoided unless it is really necessary.
 Especially, avoid defining a pre-finalizer in a class that can be allocated a lot.
-
-### EAGERLY_FINALIZE
-
-A class-level annotation to indicate that class instances that the GC have determined as unreachable, should be eagerly
-swept and finalized by the garbage collector, before the Blink thread (the mutator) resumes after a garbage
-collection. The C++ destructor runs as part of this step. The default sweeping behavior is incremental, sweeping
-pages as demanded by later heap allocations.
-
-Like for the pre-finalizer mechanism, an `EAGERLY_FINALIZE()`d class is allowed to touch other heap objects, which
-is sometimes required, but the main use case for eager finalization is to promptly let go of off-heap resources
-and associations, by unregistering and destructing those eagerly. If not done, these external references would
-otherwise attempt to unsafely access an effectively-dead object (pending lazy sweeping of its heap page.)
-
-`EAGERLY_FINALIZE()` solves the same problem as pre-finalizers, but it arguably fits more naturally with the host
-language's mechanism for finalization (C++ destructors.) One `EAGERLY_FINALIZE()` caveat is that the destructor
-is not allowed to touch another eagerly finalized object (their finalization ordering isn't deterministic) nor
-any pre-finalized objects. Choose the one you think best fits your need for prompt finalization.
 
 ### STACK_ALLOCATED
 
-Class level annotation that should be used if the object is only stack allocated; it disallows use
-of `operator new`. Any garbage-collected objects should be kept as `Member<T>` references, but you do not
-need to define a `Trace()` method as they are on the stack, and automatically traced and kept alive should
-a conservative GC be required.
+Class level annotation that should be used if the object is only stack allocated; it disallows use of `operator new`. Any garbage-collected objects should be kept as `Member<T>` references, but you do not need to define a `Trace()` method as they are on the stack, and automatically traced and kept alive should a conservative GC be required.
 
-Classes with this annotation do not need a `Trace()` method, and should not inherit a garbage collected class.
+Classes with this annotation do not need a `Trace()` method and must not inherit a garbage collected class.
 
-### DISALLOW_NEW()
+### DISALLOW_NEW
 
 Class-level annotation declaring the class cannot be separately allocated using `operator new`.
 It can be used on stack, as a part of object, or as a value in a heap collection.
@@ -237,7 +194,6 @@ If the class has `Member<T>` references, you need a `Trace()` method which the o
 part object must call upon. The clang Blink GC plugin checks and enforces this.
 
 Classes with this annotation need a `Trace()` method, but should not inherit a garbage collected class.
-
 
 
 ## Handles
@@ -252,8 +208,7 @@ On-heap objects must be retained by any of these, depending on the situation.
 On-stack references to on-heap objects must be raw pointers.
 
 ```c++
-void someFunction()
-{
+void someFunction() {
   SomeGarbageCollectedClass* object = MakeGarbageCollected<SomeGarbageCollectedClass>(); // OK, retained by a pointer.
   ...
 }
@@ -336,16 +291,15 @@ are really necessary.
 
 ## Tracing
 
-A garbage-collected class may need to have *a tracing method*, which lists up all the on-heap objects it has. The
-tracing method is called when the garbage collector needs to determine (1) all the on-heap objects referred from a
-live object, and (2) all the weak handles that may be filled with `nullptr` later. These are done in the "marking"
-phase of the mark-and-sweep GC.
+A garbage-collected class may be required to have *a tracing method*, which lists up all the on-heap objects it has.
+The tracing method is called when the garbage collector needs to determine (1) all the on-heap objects referred from a
+live object, and (2) all the weak handles that may be filled with `nullptr` later.
 
 The basic form of tracing is illustrated below:
 
 ```c++
 // In a header file:
-class SomeGarbageCollectedClass
+class SomeGarbageCollectedClass final
     : public GarbageCollected<SomeGarbageCollectedClass> {
  public:
   void Trace(Visitor*);
@@ -360,37 +314,31 @@ void SomeGarbageCollectedClass::Trace(Visitor* visitor) {
 }
 ```
 
-Specifically, if your class needs a tracing method, you need to declare and
-define a `Trace(Visitor*)` method. This method is normally declared in the
-header file and defined once in the implementation file, but there are
-variations. Another common variation is to declare a virtual `Trace()` for base
-classes that will be subclassed.
+Specifically, if your class needs a tracing method, you need to declare and define a `Trace(Visitor*)` method.
+This method is normally declared in the header file and defined once in the implementation file, but there are variations.
+Another common variation is to declare a virtual `Trace()` for base classes that will be subclassed.
 
 The function implementation must contain:
-
-*   For each on-heap object `object` in your class, a tracing call: `visitor->Trace(object_);`.
-*   If your class has one or more weak references (`WeakMember<T>`), you have the option of
-    registering a *weak callback* for the object. See details below for how.
-*   For each base class of your class `BaseClass` that is a descendant of `GarbageCollected<T>` or
-    `GarbageCollectedMixin`, a delegation call to base class: `BaseClass::Trace(visitor);`"
-
+- For each on-heap object `object` in your class, a tracing call: `visitor->Trace(object);`.
+- For each base class of your class `BaseClass` that is a descendant of `GarbageCollected<T>` or `GarbageCollectedMixin`, a delegation call to base class: `BaseClass::Trace(visitor)`.
 It is recommended that the delegation call, if any, is put at the end of a tracing method.
+- See [Advanced weak handling](#Advanced%20Weak%20Handling) for implementing non-trivial weakness.
 
 The following example shows more involved usage:
 
 ```c++
 class A : public GarbageCollected<A> {
  public:
-  virtual void Trace(Visitor*) { } // Nothing to trace here.
+  virtual void Trace(Visitor*) {} // Nothing to trace here.
 };
 
 class B : public A {
   // Nothing to trace here; exempted from having a tracing method.
 };
 
-class C : public B {
+class C final : public B {
  public:
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) final;
 
  private:
   Member<X> x_;
@@ -406,110 +354,124 @@ void C::Trace(Visitor* visitor) {
 }
 ```
 
-Given that the class `C` above contained a `WeakMember<Y>` field, you could alternatively
-register a *weak callback* in the trace method, and have it be invoked after the marking
-phase:
-
-```c++
-
-void C::ClearWeakMembers(Visitor* visitor)
-{
-  if (ThreadHeap::isHeapObjectAlive(y_))
-    return;
-
-  // |y_| is not referred to by anyone else, clear the weak
-  // reference along with updating state / clearing any other
-  // resources at the same time. None of those operations are
-  // allowed to perform heap allocations:
-  y_->detach();
-
-  // Note: if the weak callback merely clears the weak reference,
-  // it is much simpler to just |trace| the field rather than
-  // install a custom weak callback.
-  y_ = nullptr;
-}
-
-void C::Trace(Visitor* visitor) {
-  visitor->template registerWeakMembers<C, &C::ClearWeakMembers>(this);
-  visitor->Trace(x_);
-  visitor->Trace(z_); // Heap collection does, too.
-  B::Trace(visitor); // Delegate to the parent. In this case it's empty, but this is required.
-}
-```
-
-Please notice that if the object (of type `C`) is also not reachable, its `Trace` method
-will not be invoked and any follow-on weak processing will not be done. Hence, if the
-object must always perform some operation when the weak reference is cleared, that
-needs to (also) happen during finalization.
-
-Weak callbacks have so far seen little use in Blink, but a mechanism that's available.
-
 ## Heap collections
 
-Heap collections are WTF collection types that support `Member<T>`, `WeakMember<T>`(see [below](#Weak collections)), and garbage collected objects as its elements.
+Oilpan, like any other managed runtime library, provides basic support for collections that integrate its managed types `Member<T>` and `WeakMember<T>`.
+Do not use heap collection with persistent types (e.g. HeapVector<Persistent<T>>).
 
-Here is the complete list:
+Collections compared to other libraries used in Blink:
 
-- WTF::Vector → blink::HeapVector
-- WTF::Deque → blink::HeapDeque
-- WTF::HashMap → blink::HeapHashMap
-- WTF::HashSet → blink::HeapHashSet
-- WTF::LinkedHashSet → blink::HeapLinkedHashSet
-- WTF::ListHashSet → blink::HeapListHashSet
-- WTF::HashCountedSet → blink::HeapHashCountedSet
+| stdlib             | WTF                 | Oilpan                    |
+| ------------------ | ------------------- | ------------------------- |
+| std::vector        | WTF::Vector         | blink::HeapVector         |
+| std::deque         | WTF::Deque          | blink::HeapDeque          |
+| std::unordered_map | WTF::HashMap        | blink::HeapHashMap        |
+| std::unordered_set | WTF::HashSet        | blink::HeapHashSet        |
+| -                  | WTF::LinkedHashSet  | blink::HeapLinkedHashSet  |
+| -                  | WTF::ListHashSet    | blink::HeapListHashSet    |
+| -                  | WTF::HashCountedSet | blink::HeapHashCountedSet |
 
-These heap collections work mostly the same way as their WTF collection counterparts but there are some things to keep in mind.
-
-Heap collections are special in that the types themselves do not inherit from GarbageCollected (hence they are not allocated on the Oilpan heap) but they still *need to be traced* from the trace method (because we need to trace the backing store which is on the Oilpan heap).
+These heap collections work mostly the same way as their stdlib or WTF collection counterparts but there are some things to keep in mind.
+Heap collections do not inherit from `GarbageCollected` but are nonetheless allocated on-heap and thus must be properly traced from a `Trace` method.
 
 ```c++
-class MyGarbageCollectedClass : public GarbageCollected<MyGarbageCollectedClass> {
+class A final : public GarbageCollected<A> {
  public:
-  void Trace(Visitor* visitor) { visitor->Trace(list_); }
+  void Trace(Visitor* visitor) { visitor->Trace(vec_); }
  private:
-  HeapVector<Member<AnotherGarbageCollectedClass>> list_;
+  HeapVector<Member<B>> vec_;
 };
 ```
 
-When you want to add a heap collection as a member of a non-garbage-collected class (on the main thread), please use a Persistent to reference it.
+Like any other object, they may be referred to from a non-garbage-collected class using `Persistent`.
 
 ```c++
-class MyNotGarbageCollectedClass {
+class NonGCed final {
  private:
-  Persistent<HeapVector<Member<MyGarbageCollectedClass>>> list_;
+  Persistent<HeapVector<Member<B>>> vec_;
 };
 ```
 
-On non-main threads these persistent heap collections have been disabled to simplify the thread termination sequence. Please wrap the heap collections in a `Persistent` instead.
+## Advanced weak handling
 
-Please be very cautious if you want to use a heap collection from multiple threads. Reference to heap collections may be passed to another thread using CrossThreadPersistents, but *you may not modify the collection from the non-owner thread*. This is because modifications to collections may trigger backing store reallocations, and Oilpan's per thread heap requires that modifications to a heap happen on its owner thread.
+In addition to basic weak handling using `WeakMember<T>` Oilpan also supports:
+- Weak collections
+- Custom weak callbacks
 
 ### Weak collections
 
-You can put `WeakMember<T>` in heap collections except for `HeapVector` and `HeapDeque` which we do not support.
+Like regular weakness, collections support weakness by putting references in `WeakMember<T>`.
 
-During an Oilpan GC, the weak members that refernce a collected object will be removed from its heap collection, meaning the size of the collection will shrink and you do not have to check for null weak members when iterating through the collection.
+In sequence containers such as `HeapVector` the `WeakMember<T>` references are just cleared without adding any additional handling.
+
+In associative containers such as `HeapHashMap` or `HeapHashSet` Oilpan distinguishes between *pure weakness* and *mixed weakness*:
+- Pure weakness: All entries in such containers are wrapped in `WeakMember<T>`.
+  Examples are `HeapHashSet<WeakMember<T>>` and `HeapHashMap<WeakMember<T>, WeakMember<U>>`.
+- Mixed weakness: Only some entries in such containers are wrapped in `WeakMember<T>`.
+  This can only happen in `HeapHashMap`.
+  Examples are `HeapHashMap<WeakMember<T>, Member<U>>, HeapHashMap<Member<T>, WeakMember<U>>, and HeapHashMap<WeakMember<T>, int>.
+  Note that in the last example the type `int` is traced even though it does not support tracing.
+
+The semantics then are as follows:
+- Pure weakness: Oilpan will automatically remove the entries from the container if any of its declared `WeakMember<T>` fields points to a dead object.
+- Mixed weakness: Oilpan applies ephemeron semantics meaning that the strong parts of an entry are only treated as strong if the `WeakMember<T>` fields point to a live object.
+
+### Custom weak callbacks
+
+In case very specific weakness semantics are required Oilpan allows adding custom weakness callbacks through its tracing method.
+
+There exist two helper methods on `blink::Visitor` to add such callbacks:
+- `RegisterWeakCallback`: Used to add custom weak callbacks of the form `void(void*, const blink::WeakCallbackInfo&)`.
+- `RegisterWeakCallbackMethod`: Helper for adding an instance method.
+
+Note that any custom weak callbacks should not be used to clear `WeakMember<T>` fields as such fields are automatically handled by Oilpan.
+Instead, users should wrap their managed fields in `UntracedMember<T>` indicating that Oilpan is ignoring those fields.
+
+The following example shows how this can be used:
+
+```c++
+
+class W final : public GarbageCollected<W> {
+ public:
+  virtual void Trace(Visitor*);
+ private:
+  void ProcessCustomWeakness(const WeakCallbackInfo&);
+
+  UntracedMember<C> other_;
+};
+
+void W::Trace(Visitor* visitor) {
+  visitor->template RegisterCustomWeakMethod<W, &W::ProcessCustomWeakness>(this);
+}
+
+void W::ProcessCustomWeakness(const WeakCallbackInfo& info) {
+  if (info.IsHeapObjectAlive(other_)) {
+    // Do something with other_.
+  }
+  other_ = nullptr;
+}
+```
+
+Note that the custom weakness callback in this example is only executed if `W` is alive and properly traced.
+If `W` itself dies than the callback will not be executed.
+Operations that must always happen should instead go into destructors or pre-finalizers.
 
 ## Traits helpers
 
-At times, one may be working on code that needs to deal with both "regular" types and classes managed by the Blink GC. The following helpers can aid in writing code that needs to use different wrappers and containers based on whether a type is managed by Oilpan.
+At times, one may be working on code that needs to deal with both, off heap and on heap, objects.
+The following helpers can aid in writing code that needs to use different wrappers and containers based on whether a type is managed by Oilpan.
 
 ### AddMemberIfNeeded<T>
 
-Given a type `T`, defines a type alias that is either `Member<T>` or `T` depending on whether `T` is a type managed by the Blink GC.
+Given a type `T`, defines a type alias that is either `Member<T>` or `T` depending on whether `T` is a type managed by Oilpan.
 
 ```c++
-class MyGarbageCollectedClass : public GarbageCollected<MyGarbageCollectedClass> {
-  // ...
-};
+class A final : public GarbageCollected<A> {};
+class B final {};
 
-class MyNotGarbageCollectedClass {
-  // ...
-};
-
-AddMemberIfNeeded<MyNotGarbageCollectedClass> v1;  // MyNotGarbageCollectedClass v1;
-AddMemberIfNeeded<int32_t> v2;                     // int32_t v2;
-AddMemberIfNeeded<MyGarbageCollectedClass> v3;     // Member<MyGarbageCollectedClass> v3;
+AddMemberIfNeeded<B> v1;       // B v1;
+AddMemberIfNeeded<int32_t> v2; // int32_t v2;
+AddMemberIfNeeded<A> v3;       // Member<A> v3;
 ```
 
 ### VectorOf<T>

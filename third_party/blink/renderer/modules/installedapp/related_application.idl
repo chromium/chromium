@@ -5,14 +5,9 @@
 // TODO(mgiuca): Link to full spec, rather than explainer, upon completion.
 // https://github.com/WICG/get-installed-related-apps/blob/master/EXPLAINER.md
 
-// TODO(mgiuca): This should be a dictionary, not an interface.
-// (NoInterfaceObject is basically a makeshift dictionary.)
-// https://crbug.com/687444.
-[
-    NoInterfaceObject,
-    OriginTrialEnabled=InstalledApp
-] interface RelatedApplication {
-    readonly attribute DOMString platform;
-    readonly attribute DOMString url;
-    readonly attribute DOMString id;
+dictionary RelatedApplication {
+    required USVString platform;
+    USVString url;
+    DOMString id;
+    DOMString version;
 };

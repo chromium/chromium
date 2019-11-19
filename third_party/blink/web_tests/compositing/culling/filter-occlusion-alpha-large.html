@@ -3,7 +3,7 @@
 <title>CSS filter blur occlusion test.</title>
 <style type="text/css">
   .composited {
-    transform: translateZ(0);
+    will-change: transform;
   }
   .green-parent {
     width: 800px;
@@ -20,11 +20,6 @@
     -webkit-filter: opacity(0%);
   }
 </style>
-<script type="text/javascript">
-  if (window.testRunner) {
-    testRunner.dumpAsTextWithPixelResults();
-  }
-</script>
 </head>
 <body>
 <!--

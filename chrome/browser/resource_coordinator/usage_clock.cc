@@ -40,7 +40,8 @@ void UsageClock::OnSessionStarted(base::TimeTicks session_start) {
   current_usage_session_start_time_ = NowTicks();
 }
 
-void UsageClock::OnSessionEnded(base::TimeDelta session_length) {
+void UsageClock::OnSessionEnded(base::TimeDelta session_length,
+                                base::TimeTicks session_end) {
   // Ignore |session_length| because it wasn't measured using the resource
   // coordinator clock.
   DCHECK(IsInUse());

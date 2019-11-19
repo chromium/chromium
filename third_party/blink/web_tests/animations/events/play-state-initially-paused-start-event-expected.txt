@@ -1,5 +1,0 @@
-Tests that an animation which is initially paused fires its start event as soon as its delay expires, not when it transitions to the running state.
-
-PASS: animation1: Start event fired without setting play state to running
-PASS: animation2: Start event fired without setting play state to running
-PASS: animation3: Start event fired after play state was set to running

@@ -8,7 +8,6 @@
 #include "chrome/browser/spellchecker/spellcheck_factory.h"
 #include "chrome/browser/spellchecker/spellcheck_service.h"
 #include "chrome/common/extensions/api/spellcheck/spellcheck_handler.h"
-#include "extensions/browser/extension_registry.h"
 #include "extensions/common/manifest_constants.h"
 
 namespace extensions {
@@ -36,13 +35,11 @@ SpellcheckService::DictionaryFormat GetDictionaryFormat(
 
 }  // namespace
 
-SpellcheckAPI::SpellcheckAPI(content::BrowserContext* context)
-    : extension_registry_observer_(this) {
+SpellcheckAPI::SpellcheckAPI(content::BrowserContext* context) {
   extension_registry_observer_.Add(ExtensionRegistry::Get(context));
 }
 
-SpellcheckAPI::~SpellcheckAPI() {
-}
+SpellcheckAPI::~SpellcheckAPI() = default;
 
 static base::LazyInstance<BrowserContextKeyedAPIFactory<SpellcheckAPI>>::
     DestructorAtExit g_spellcheck_api_factory = LAZY_INSTANCE_INITIALIZER;

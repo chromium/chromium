@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 
 /** Moves the mouse to the center of |element|. */
 const mouseMoveToCenter = element => {
@@ -116,7 +116,7 @@ const dragDomMoveTest = testCase => {
         else if (testCase.action == 'appendChild')
           movedItemDestination.appendChild(movedItem);
         else
-          return reject("Error: Invalid testCase.action. Please make sure the testCase is spelled correctly");
+          return reject('Error: Invalid testCase.action. Please make sure the testCase is spelled correctly');
 
         // Click to resolve test as backup in case dragend never triggers to
         // end the test.

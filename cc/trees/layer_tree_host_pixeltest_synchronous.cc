@@ -16,65 +16,65 @@
 namespace cc {
 namespace {
 
-class LayerTreeHostSynchronousPixelTest : public LayerTreePixelTest {
- public:
+class LayerTreeHostSynchronousPixelTest
+    : public LayerTreePixelTest,
+      public ::testing::WithParamInterface<LayerTreeTest::RendererType> {
+ protected:
   void InitializeSettings(LayerTreeSettings* settings) override {
     LayerTreePixelTest::InitializeSettings(settings);
     settings->single_thread_proxy_scheduler = false;
-    settings->use_zero_copy = true;
+    settings->gpu_rasterization_forced = gpu_rasterization_forced_;
+    settings->gpu_rasterization_disabled = !settings->gpu_rasterization_forced;
+    settings->use_zero_copy = use_zero_copy_;
   }
+
+  LayerTreeTest::RendererType renderer_type() { return GetParam(); }
 
   void BeginTest() override {
     LayerTreePixelTest::BeginTest();
     PostCompositeImmediatelyToMainThread();
   }
+
+  void DoContentLayerTest() {
+    gfx::Size bounds(200, 200);
+
+    FakeContentLayerClient client;
+    client.set_bounds(bounds);
+    PaintFlags green_flags;
+    green_flags.setColor(SkColorSetARGB(255, 0, 255, 0));
+    client.add_draw_rect(gfx::Rect(bounds), green_flags);
+    scoped_refptr<PictureLayer> root = PictureLayer::Create(&client);
+    root->SetBounds(bounds);
+    root->SetIsDrawable(true);
+
+    RunSingleThreadedPixelTest(renderer_type(), root,
+                               base::FilePath(FILE_PATH_LITERAL("green.png")));
+  }
+
+  bool gpu_rasterization_forced_ = false;
+  bool use_zero_copy_ = false;
 };
 
-TEST_F(LayerTreeHostSynchronousPixelTest, OneContentLayer) {
-  gfx::Size bounds(200, 200);
+LayerTreeTest::RendererType const kRendererTypesGpu[] = {
+    LayerTreeTest::RENDERER_GL,
+    LayerTreeTest::RENDERER_SKIA_GL,
+#if defined(ENABLE_CC_VULKAN_TESTS)
+    LayerTreeTest::RENDERER_SKIA_VK,
+#endif
+};
 
-  FakeContentLayerClient client;
-  client.set_bounds(bounds);
-  PaintFlags green_flags;
-  green_flags.setColor(SkColorSetARGB(255, 0, 255, 0));
-  client.add_draw_rect(gfx::Rect(bounds), green_flags);
-  scoped_refptr<PictureLayer> root = PictureLayer::Create(&client);
-  root->SetBounds(bounds);
-  root->SetIsDrawable(true);
+INSTANTIATE_TEST_SUITE_P(,
+                         LayerTreeHostSynchronousPixelTest,
+                         ::testing::ValuesIn(kRendererTypesGpu));
 
-  RunSingleThreadedPixelTest(
-      PIXEL_TEST_GL, root, base::FilePath(FILE_PATH_LITERAL("green.png")));
+TEST_P(LayerTreeHostSynchronousPixelTest, OneContentLayerZeroCopy) {
+  use_zero_copy_ = true;
+  DoContentLayerTest();
 }
 
-class LayerTreeHostSynchronousGPUPixelTest : public LayerTreePixelTest {
- public:
-  void InitializeSettings(LayerTreeSettings* settings) override {
-    LayerTreePixelTest::InitializeSettings(settings);
-    settings->single_thread_proxy_scheduler = false;
-    settings->gpu_rasterization_forced = true;
-  }
-
-  void BeginTest() override {
-    LayerTreePixelTest::BeginTest();
-    PostCompositeImmediatelyToMainThread();
-  }
-};
-
-TEST_F(LayerTreeHostSynchronousGPUPixelTest, OneContentLayer) {
-  gfx::Size bounds(200, 200);
-
-  FakeContentLayerClient client;
-  client.set_bounds(bounds);
-  PaintFlags green_flags;
-  green_flags.setColor(SkColorSetARGB(255, 0, 255, 0));
-  client.add_draw_rect(gfx::Rect(bounds), green_flags);
-  scoped_refptr<PictureLayer> root = PictureLayer::Create(&client);
-  root->SetBounds(bounds);
-  client.set_bounds(bounds);
-  root->SetIsDrawable(true);
-
-  RunSingleThreadedPixelTest(PIXEL_TEST_GL, root,
-                             base::FilePath(FILE_PATH_LITERAL("green.png")));
+TEST_P(LayerTreeHostSynchronousPixelTest, OneContentLayerGpuRasterization) {
+  gpu_rasterization_forced_ = true;
+  DoContentLayerTest();
 }
 
 }  // namespace

@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser;
 
-import static org.chromium.base.test.util.ScalableTimeout.scaleTimeout;
-
 import android.support.test.InstrumentationRegistry;
 import android.support.test.filters.LargeTest;
 
@@ -16,7 +14,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
@@ -27,9 +24,11 @@ import org.chromium.blink.mojom.document_metadata.Property;
 import org.chromium.blink.mojom.document_metadata.Values;
 import org.chromium.blink.mojom.document_metadata.WebPage;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
+import org.chromium.chrome.browser.util.UrlConstants;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.url.mojom.Url;
 
@@ -48,7 +47,7 @@ public class CopylessPasteTest {
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     // The default timeout (in seconds) for a callback to wait.
-    public static final long WAIT_TIMEOUT_SECONDS = scaleTimeout(20);
+    public static final long WAIT_TIMEOUT_SECONDS = 20L;
 
     // NODATA_PAGE doesn't contain desired metadata.
     private static final String NODATA_PAGE = "/chrome/test/data/android/about.html";
@@ -68,14 +67,14 @@ public class CopylessPasteTest {
 
         AppIndexingUtil.setCallbackForTesting(webpage -> mCallbackHelper.notifyCalled(webpage));
 
-        ThreadUtils.runOnUiThreadBlocking(() -> FirstRunStatus.setFirstRunFlowComplete(true));
+        TestThreadUtils.runOnUiThreadBlocking(() -> FirstRunStatus.setFirstRunFlowComplete(true));
         mActivityTestRule.startMainActivityOnBlankPage();
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         mTestServer.stopAndDestroyServer();
-        ThreadUtils.runOnUiThreadBlocking(() -> FirstRunStatus.setFirstRunFlowComplete(false));
+        TestThreadUtils.runOnUiThreadBlocking(() -> FirstRunStatus.setFirstRunFlowComplete(false));
         AppIndexingUtil.setCallbackForTesting(null);
     }
 
@@ -98,7 +97,7 @@ public class CopylessPasteTest {
     @Test
     @LargeTest
     @Feature({"CopylessPaste"})
-    public void testIncognito() throws InterruptedException, TimeoutException {
+    public void testIncognito() {
         // Incognito tabs are ignored.
         mActivityTestRule.newIncognitoTabsFromMenu(1);
         mActivityTestRule.loadUrl(mTestServer.getURL(NODATA_PAGE));
@@ -114,7 +113,7 @@ public class CopylessPasteTest {
     @Test
     @LargeTest
     @Feature({"CopylessPaste"})
-    public void testInvalidScheme() throws InterruptedException, TimeoutException {
+    public void testInvalidScheme() {
         // CopylessPaste only parses http and https.
         mActivityTestRule.loadUrl(UrlConstants.NTP_NON_NATIVE_URL);
         mActivityTestRule.loadUrl(UrlConstants.ABOUT_URL);
@@ -128,7 +127,7 @@ public class CopylessPasteTest {
     @LargeTest
     @RetryOnFailure
     @Feature({"CopylessPaste"})
-    public void testNoMeta() throws InterruptedException, TimeoutException {
+    public void testNoMeta() throws TimeoutException {
         mActivityTestRule.loadUrl(mTestServer.getURL(NODATA_PAGE));
         mCallbackHelper.waitForCallback(0, 1, WAIT_TIMEOUT_SECONDS, TimeUnit.SECONDS);
         Assert.assertNull(mCallbackHelper.getWebPage());
@@ -141,7 +140,7 @@ public class CopylessPasteTest {
     @LargeTest
     @RetryOnFailure
     @Feature({"CopylessPaste"})
-    public void testValid() throws InterruptedException, TimeoutException {
+    public void testValid() throws TimeoutException {
         mActivityTestRule.loadUrl(mTestServer.getURL(DATA_PAGE));
         mCallbackHelper.waitForCallback(0, 1, WAIT_TIMEOUT_SECONDS, TimeUnit.SECONDS);
         WebPage extracted = mCallbackHelper.getWebPage();
@@ -173,7 +172,7 @@ public class CopylessPasteTest {
     @LargeTest
     @RetryOnFailure
     @Feature({"CopylessPaste"})
-    public void testCache() throws InterruptedException, TimeoutException {
+    public void testCache() throws TimeoutException {
         mActivityTestRule.loadUrl(mTestServer.getURL(NODATA_PAGE));
         mCallbackHelper.waitForCallback(0, 1, WAIT_TIMEOUT_SECONDS, TimeUnit.SECONDS);
         mActivityTestRule.loadUrl(mTestServer.getURL(DATA_PAGE));

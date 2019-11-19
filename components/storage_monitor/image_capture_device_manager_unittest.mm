@@ -15,7 +15,7 @@
 #include "components/storage_monitor/image_capture_device_manager.h"
 #include "components/storage_monitor/test_storage_monitor.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -266,10 +266,10 @@ class ImageCaptureDeviceManagerTest : public testing::Test {
                   moreGoing:NO];
   }
 
-  void RunUntilIdle() { thread_bundle_.RunUntilIdle(); }
+  void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
  protected:
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   TestStorageMonitor* monitor_;
   TestCameraListener listener_;
 };

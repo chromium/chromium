@@ -14,14 +14,15 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
-import android.support.annotation.IntDef;
-import android.support.annotation.Nullable;
 import android.support.v4.app.ServiceCompat;
+
+import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
-import org.chromium.base.VisibleForTesting;
-import org.chromium.chrome.browser.AppHooks;
+import org.chromium.chrome.browser.notifications.ForegroundServiceUtils;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -60,7 +61,8 @@ public class DownloadForegroundService extends Service {
      */
     public static void startDownloadForegroundService(Context context) {
         // TODO(crbug.com/770389): Grab a WakeLock here until the service has started.
-        AppHooks.get().startForegroundService(new Intent(context, DownloadForegroundService.class));
+        ForegroundServiceUtils.getInstance().startForegroundService(
+                new Intent(context, DownloadForegroundService.class));
     }
 
     /**
@@ -241,14 +243,14 @@ public class DownloadForegroundService extends Service {
     @VisibleForTesting
     void startForegroundInternal(int notificationId, Notification notification) {
         Log.w(TAG, "startForegroundInternal id: " + notificationId);
-        AppHooks.get().startForeground(
+        ForegroundServiceUtils.getInstance().startForeground(
                 this, notificationId, notification, 0 /* foregroundServiceType */);
     }
 
     @VisibleForTesting
     void stopForegroundInternal(int flags) {
         Log.w(TAG, "stopForegroundInternal flags: " + flags);
-        ServiceCompat.stopForeground(this, flags);
+        ForegroundServiceUtils.getInstance().stopForeground(this, flags);
     }
 
     @VisibleForTesting

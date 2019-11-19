@@ -114,7 +114,6 @@ TEST_F(ScopedFeatureListTest, EnableWithFeatureParameters) {
 }
 
 TEST_F(ScopedFeatureListTest, OverrideWithFeatureParameters) {
-  FieldTrialList field_trial_list(nullptr);
   scoped_refptr<FieldTrial> trial =
       FieldTrialList::CreateFieldTrial("foo", "bar");
   const char kParam[] = "param_1";
@@ -167,7 +166,10 @@ TEST_F(ScopedFeatureListTest, OverrideWithFeatureParameters) {
     EXPECT_TRUE(FeatureList::IsEnabled(kTestFeature2));
     EXPECT_EQ("", GetFieldTrialParamValueByFeature(kTestFeature1, kParam));
     EXPECT_EQ(kValue, GetFieldTrialParamValueByFeature(kTestFeature2, kParam));
-    EXPECT_EQ(trial.get(), FeatureList::GetFieldTrial(kTestFeature1));
+    EXPECT_EQ(trial.get()->trial_name(),
+              FeatureList::GetFieldTrial(kTestFeature1)->trial_name());
+    EXPECT_EQ(trial.get()->group_name(),
+              FeatureList::GetFieldTrial(kTestFeature1)->group_name());
     EXPECT_NE(nullptr, FeatureList::GetFieldTrial(kTestFeature2));
   }
 
@@ -182,7 +184,6 @@ TEST_F(ScopedFeatureListTest, OverrideWithFeatureParameters) {
 }
 
 TEST_F(ScopedFeatureListTest, OverrideMultipleFeaturesWithParameters) {
-  FieldTrialList field_trial_list(nullptr);
   scoped_refptr<FieldTrial> trial1 =
       FieldTrialList::CreateFieldTrial("foo1", "bar1");
   const char kParam[] = "param_1";
@@ -240,6 +241,59 @@ TEST_F(ScopedFeatureListTest, OverrideMultipleFeaturesWithParameters) {
   EXPECT_EQ("", GetFieldTrialParamValueByFeature(kTestFeature2, kParam));
 }
 
+TEST_F(ScopedFeatureListTest, ParamsWithSpecialCharsPreserved) {
+  // Check that special characters in param names and values are preserved.
+  const char kParam[] = ";_\\<:>/_!?";
+  const char kValue[] = ",;:/'!?";
+  FieldTrialParams params0 = {{kParam, kValue}};
+
+  test::ScopedFeatureList feature_list0;
+  feature_list0.InitWithFeaturesAndParameters({{kTestFeature1, params0}}, {});
+  EXPECT_EQ(kValue, GetFieldTrialParamValueByFeature(kTestFeature1, kParam));
+
+  {
+    const char kValue1[] = "normal";
+    FieldTrialParams params1 = {{kParam, kValue1}};
+    test::ScopedFeatureList feature_list1;
+    feature_list1.InitWithFeaturesAndParameters({{kTestFeature1, params1}}, {});
+
+    EXPECT_EQ(kValue1, GetFieldTrialParamValueByFeature(kTestFeature1, kParam));
+  }
+  EXPECT_EQ(kValue, GetFieldTrialParamValueByFeature(kTestFeature1, kParam));
+
+  {
+    const char kValue2[] = "[<(2)>]";
+    FieldTrialParams params2 = {{kParam, kValue2}};
+    test::ScopedFeatureList feature_list2;
+    feature_list2.InitWithFeaturesAndParameters({{kTestFeature2, params2}}, {});
+
+    EXPECT_EQ(kValue2, GetFieldTrialParamValueByFeature(kTestFeature2, kParam));
+    EXPECT_EQ(kValue, GetFieldTrialParamValueByFeature(kTestFeature1, kParam));
+  }
+  EXPECT_EQ(kValue, GetFieldTrialParamValueByFeature(kTestFeature1, kParam));
+}
+
+TEST_F(ScopedFeatureListTest, ParamsWithEmptyValue) {
+  const char kParam[] = "p";
+  const char kEmptyValue[] = "";
+  FieldTrialParams params = {{kParam, kEmptyValue}};
+
+  test::ScopedFeatureList feature_list0;
+  feature_list0.InitWithFeaturesAndParameters({{kTestFeature1, params}}, {});
+  EXPECT_EQ(kEmptyValue,
+            GetFieldTrialParamValueByFeature(kTestFeature1, kParam));
+  {
+    const char kValue1[] = "normal";
+    FieldTrialParams params1 = {{kParam, kValue1}};
+    test::ScopedFeatureList feature_list1;
+    feature_list1.InitWithFeaturesAndParameters({{kTestFeature1, params1}}, {});
+
+    EXPECT_EQ(kValue1, GetFieldTrialParamValueByFeature(kTestFeature1, kParam));
+  }
+  EXPECT_EQ(kEmptyValue,
+            GetFieldTrialParamValueByFeature(kTestFeature1, kParam));
+}
+
 TEST_F(ScopedFeatureListTest, EnableFeatureOverrideDisable) {
   test::ScopedFeatureList feature_list1;
   feature_list1.InitWithFeatures({}, {kTestFeature1});
@@ -288,7 +342,6 @@ TEST_F(ScopedFeatureListTest, FeatureOverrideFeatureWithEnabledFieldTrial) {
   test::ScopedFeatureList feature_list1;
 
   std::unique_ptr<FeatureList> feature_list(new FeatureList);
-  FieldTrialList field_trial_list(nullptr);
   FieldTrial* trial = FieldTrialList::CreateFieldTrial("TrialExample", "A");
   feature_list->RegisterFieldTrialOverride(
       kTestFeature1.name, FeatureList::OVERRIDE_ENABLE_FEATURE, trial);
@@ -305,7 +358,6 @@ TEST_F(ScopedFeatureListTest, FeatureOverrideFeatureWithDisabledFieldTrial) {
   test::ScopedFeatureList feature_list1;
 
   std::unique_ptr<FeatureList> feature_list(new FeatureList);
-  FieldTrialList field_trial_list(nullptr);
   FieldTrial* trial = FieldTrialList::CreateFieldTrial("TrialExample", "A");
   feature_list->RegisterFieldTrialOverride(
       kTestFeature1.name, FeatureList::OVERRIDE_DISABLE_FEATURE, trial);
@@ -361,6 +413,17 @@ TEST_F(ScopedFeatureListTest, ScopedFeatureListIsNoopWhenNotInitialized) {
   { test::ScopedFeatureList feature_list2; }
 
   ExpectFeatures("*TestFeature1", std::string());
+}
+
+TEST(ScopedFeatureListTestWithMemberList, ScopedFeatureListLocalOverride) {
+  test::ScopedFeatureList initial_feature_list;
+  initial_feature_list.InitAndDisableFeature(kTestFeature1);
+  {
+    base::test::ScopedFeatureList scoped_features;
+    scoped_features.InitAndEnableFeatureWithParameters(kTestFeature1,
+                                                       {{"mode", "nobugs"}});
+    ASSERT_TRUE(FeatureList::IsEnabled(kTestFeature1));
+  }
 }
 
 }  // namespace test

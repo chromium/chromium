@@ -4,11 +4,11 @@
 
 #include "content/renderer/loader/frame_request_blocker.h"
 
-#include "content/public/common/url_loader_throttle.h"
+#include "third_party/blink/public/common/loader/url_loader_throttle.h"
 
 namespace content {
 
-class RequestBlockerThrottle : public URLLoaderThrottle,
+class RequestBlockerThrottle : public blink::URLLoaderThrottle,
                                public FrameRequestBlocker::Client {
  public:
   explicit RequestBlockerThrottle(
@@ -20,7 +20,7 @@ class RequestBlockerThrottle : public URLLoaderThrottle,
       frame_request_blocker_->RemoveObserver(this);
   }
 
-  // URLLoaderThrottle implementation:
+  // blink::URLLoaderThrottle implementation:
   void WillStartRequest(network::ResourceRequest* request,
                         bool* defer) override {
     // Wait until this method to add as a client for FrameRequestBlocker because
@@ -73,7 +73,7 @@ void FrameRequestBlocker::Cancel() {
   clients_->Notify(FROM_HERE, &Client::Cancel);
 }
 
-std::unique_ptr<URLLoaderThrottle>
+std::unique_ptr<blink::URLLoaderThrottle>
 FrameRequestBlocker::GetThrottleIfRequestsBlocked() {
   if (blocked_.IsZero())
     return nullptr;

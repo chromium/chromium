@@ -1,0 +1,7 @@
+include_rules = [
+  "+components/version_info",
+  "+content/public",
+  "+media/base/media_switches.h",
+  "+sandbox",
+  "+ui/base",
+]

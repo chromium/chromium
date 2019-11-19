@@ -15,6 +15,8 @@
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/load_flags.h"
 #include "net/base/mime_util.h"
 #include "net/http/http_status_code.h"
@@ -102,13 +104,14 @@ std::string MimeContentType() {
   return content_type;
 }
 
-void BindURLLoaderFactoryRequest(
-    network::mojom::URLLoaderFactoryRequest url_loader_factory_request) {
+void BindURLLoaderFactoryReceiver(
+    mojo::PendingReceiver<network::mojom::URLLoaderFactory>
+        url_loader_factory_receiver) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory =
       g_browser_process->shared_url_loader_factory();
   DCHECK(shared_url_loader_factory);
-  shared_url_loader_factory->Clone(std::move(url_loader_factory_request));
+  shared_url_loader_factory->Clone(std::move(url_loader_factory_receiver));
 }
 
 void OnURLLoadUploadProgress(uint64_t current, uint64_t total) {
@@ -151,6 +154,8 @@ WebRtcEventLogUploaderImpl::WebRtcEventLogUploaderImpl(
   if (!history_file_writer_) {
     // File either could not be created, or, if a different error occurred,
     // Create() will have tried to remove the file it has created.
+    UmaRecordWebRtcEventLoggingUpload(
+        WebRtcEventLoggingUploadUma::kHistoryFileCreationError);
     ReportResult(false);
     return;
   }
@@ -159,6 +164,8 @@ WebRtcEventLogUploaderImpl::WebRtcEventLogUploaderImpl(
   if (!history_file_writer_->WriteCaptureTime(log_file.last_modified) ||
       !history_file_writer_->WriteUploadTime(now)) {
     LOG(ERROR) << "Writing to history file failed.";
+    UmaRecordWebRtcEventLoggingUpload(
+        WebRtcEventLoggingUploadUma::kHistoryFileWriteError);
     DeleteHistoryFile();  // Avoid partial, potentially-corrupt history files.
     ReportResult(false);
     return;
@@ -167,7 +174,7 @@ WebRtcEventLogUploaderImpl::WebRtcEventLogUploaderImpl(
   std::string upload_data;
   if (!PrepareUploadData(&upload_data)) {
     // History file will reflect a failed upload attempt.
-    ReportResult(false);
+    ReportResult(false);  // UMA recorded by PrepareUploadData().
     return;
   }
 
@@ -203,8 +210,8 @@ const WebRtcLogFileInfo& WebRtcEventLogUploaderImpl::GetWebRtcLogFileInfo()
 bool WebRtcEventLogUploaderImpl::Cancel() {
   DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
 
-  // The upload either already completed, or was never properly started (due
-  // to a file read failure, etc.).
+  // The upload could already have been completed, or maybe was never properly
+  // started (due to a file read failure, etc.).
   const bool upload_was_active = (url_loader_.get() != nullptr);
 
   // Note that in this case, it might still be that the last bytes hit the
@@ -214,6 +221,11 @@ bool WebRtcEventLogUploaderImpl::Cancel() {
 
   DeleteLogFile();
   DeleteHistoryFile();
+
+  if (upload_was_active) {
+    UmaRecordWebRtcEventLoggingUpload(
+        WebRtcEventLoggingUploadUma::kUploadCancelled);
+  }
 
   return upload_was_active;
 }
@@ -225,6 +237,8 @@ bool WebRtcEventLogUploaderImpl::PrepareUploadData(std::string* upload_data) {
   if (!base::ReadFileToStringWithMaxSize(log_file_.path, &log_file_contents,
                                          max_log_file_size_bytes_)) {
     LOG(WARNING) << "Couldn't read event log file, or max file size exceeded.";
+    UmaRecordWebRtcEventLoggingUpload(
+        WebRtcEventLoggingUploadUma::kLogFileReadError);
     return false;
   }
 
@@ -234,6 +248,8 @@ bool WebRtcEventLogUploaderImpl::PrepareUploadData(std::string* upload_data) {
   const std::string filename_str = log_file_.path.BaseName().MaybeAsASCII();
   if (filename_str.empty()) {
     LOG(WARNING) << "Log filename is not according to acceptable format.";
+    UmaRecordWebRtcEventLoggingUpload(
+        WebRtcEventLoggingUploadUma::kLogFileNameError);
     return false;
   }
 
@@ -260,17 +276,16 @@ void WebRtcEventLogUploaderImpl::StartUpload(const std::string& upload_data) {
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = GURL(kUploadURL);
   resource_request->method = "POST";
-  resource_request->load_flags =
-      net::LOAD_DO_NOT_SAVE_COOKIES | net::LOAD_DO_NOT_SEND_COOKIES;
+  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
 
   // Create a new mojo pipe. It's safe to pass this around and use
   // immediately, even though it needs to finish initialization on the UI
   // thread.
-  network::mojom::URLLoaderFactoryPtr url_loader_factory_ptr;
-  base::PostTaskWithTraits(
+  mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory_remote;
+  base::PostTask(
       FROM_HERE, {content::BrowserThread::UI},
-      base::BindOnce(BindURLLoaderFactoryRequest,
-                     mojo::MakeRequest(&url_loader_factory_ptr)));
+      base::BindOnce(BindURLLoaderFactoryReceiver,
+                     url_loader_factory_remote.BindNewPipeAndPassReceiver()));
 
   url_loader_ = network::SimpleURLLoader::Create(
       std::move(resource_request), kWebrtcEventLogUploaderTrafficAnnotation);
@@ -281,7 +296,7 @@ void WebRtcEventLogUploaderImpl::StartUpload(const std::string& upload_data) {
   // See comment in destructor for an explanation about why using
   // base::Unretained(this) is safe here.
   url_loader_->DownloadToString(
-      url_loader_factory_ptr.get(),
+      url_loader_factory_remote.get(),
       base::BindOnce(&WebRtcEventLogUploaderImpl::OnURLLoadComplete,
                      base::Unretained(this)),
       kWebRtcEventLogMaxUploadIdBytes);
@@ -300,6 +315,9 @@ void WebRtcEventLogUploaderImpl::OnURLLoadComplete(
   const bool upload_successful =
       (response_body.get() != nullptr && !response_body->empty());
 
+  // NetError() is 0 when no error occurred.
+  UmaRecordWebRtcEventLoggingNetErrorType(url_loader_->NetError());
+
   DCHECK(history_file_writer_);
   if (upload_successful) {
     if (!history_file_writer_->WriteUploadId(*response_body)) {
@@ -313,6 +331,10 @@ void WebRtcEventLogUploaderImpl::OnURLLoadComplete(
     // By not writing an UploadId to the history file, it is inferrable that
     // the upload was initiated, but did not end successfully.
   }
+
+  UmaRecordWebRtcEventLoggingUpload(
+      upload_successful ? WebRtcEventLoggingUploadUma::kSuccess
+                        : WebRtcEventLoggingUploadUma::kUploadFailure);
 
   url_loader_.reset();  // Explicitly maintain determinant.
 

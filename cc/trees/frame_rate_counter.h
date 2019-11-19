@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/containers/ring_buffer.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 
 namespace cc {
@@ -20,6 +19,9 @@ namespace cc {
 class FrameRateCounter {
  public:
   static std::unique_ptr<FrameRateCounter> Create(bool has_impl_thread);
+
+  FrameRateCounter(const FrameRateCounter&) = delete;
+  FrameRateCounter& operator=(const FrameRateCounter&) = delete;
 
   size_t current_frame_number() const { return ring_buffer_.CurrentIndex(); }
   int dropped_frame_count() const { return dropped_frame_count_; }
@@ -51,8 +53,6 @@ class FrameRateCounter {
 
   bool has_impl_thread_;
   int dropped_frame_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(FrameRateCounter);
 };
 
 }  // namespace cc

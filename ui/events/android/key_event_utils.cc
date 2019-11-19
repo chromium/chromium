@@ -4,7 +4,7 @@
 
 #include "ui/events/android/key_event_utils.h"
 
-#include "jni/KeyEvent_jni.h"
+#include "ui/events/keyevent_jni_headers/KeyEvent_jni.h"
 
 namespace ui {
 namespace events {

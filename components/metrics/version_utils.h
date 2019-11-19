@@ -23,6 +23,10 @@ std::string GetVersionString();
 // SystemProfileProto::Channel.
 SystemProfileProto::Channel AsProtobufChannel(version_info::Channel channel);
 
+// Gets Chrome's package name in Android Chrome, or an empty string on other
+// platforms.
+std::string GetAppPackageName();
+
 }  // namespace metrics
 
 #endif  // COMPONENTS_METRICS_VERSION_UTILS_H_

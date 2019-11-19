@@ -4,44 +4,28 @@
      found in the LICENSE file. -->
 
 <vector
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:aapt="http://schemas.android.com/aapt"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:height="24dp" android:viewportHeight="48"
-    android:viewportWidth="48" android:width="24dp"
-    tools:targetApi="21">
-
-    <path android:fillColor="#eee" android:pathData="M33.92,43.63C41.09,40.01 46,32.58 46,24c0,-12.15 -9.85,-22 -22,-22 -1.31,0 -2.59,0.12 -3.84,0.34l-0.9,1.6L32.27,43.1l1.65,0.53z"/>
-    <path android:fillColor="#607d8b" android:pathData="M24.71,19v-2h6.31v-2H33v2h6v2h-1.58c-0.57,2.33 -1.84,4.78 -3.46,6.64l4.89,4.85 -1.32,1.32 -4.85,-4.85 -4.85,4.85 -1.32,-1.32 4.89,-4.85c-1.16,-1.34 -2.17,-3.07 -2.85,-4.64h2.08c0.43,0.86 1.1,2.14 2.05,3.25 2.2,-2.57 2.81,-5.25 2.81,-5.25H24.71z"/>
-    <path android:fillAlpha=".2" android:fillColor="#fff" android:pathData="M24,2.23c12.11,0 21.94,9.79 22,21.89v-0.11c0,-12.15 -9.85,-22 -22,-22C11.85,2 2,11.85 2,24v0.11c0.06,-12.09 9.89,-21.88 22,-21.88z"/>
-    <path android:fillAlpha=".15" android:fillColor="#263238" android:pathData="M24,45.77c12.11,0 21.94,-9.79 22,-21.89v0.11c0,12.15 -9.85,22 -22,22C11.85,46 2,36.15 2,24v-0.11c0.06,12.09 9.89,21.88 22,21.88z"/>
-    <path android:fillAlpha=".1" android:pathData="M24,24m-22,0a22,22 0,1 1,44 0a22,22 0,1 1,-44 0">
-        <aapt:attr name="android:fillColor">
-            <gradient android:centerX="8.649595"
-                android:centerY="8.650356"
-                android:gradientRadius="43.711006" android:type="radial">
-                <item android:color="#FFFFFFFF" android:offset="0"/>
-                <item android:color="#00FFFFFF" android:offset="1"/>
-            </gradient>
-        </aapt:attr>
-    </path>
-    <group>
-        <clip-path android:pathData="M24,24m-22,0a22,22 0,1 1,44 0a22,22 0,1 1,-44 0 M 0,0"/>
-        <path android:pathData="M20.03 2.25l32.38 32.38V56.9H22.05">
-            <aapt:attr name="android:fillColor">
-                <gradient android:endX="52.411" android:endY="29.579"
-                    android:startX="20.03" android:startY="29.579" android:type="linear">
-                    <item android:color="#19212121" android:offset="0"/>
-                    <item android:color="#05212121" android:offset="1"/>
-                </gradient>
-            </aapt:attr>
-        </path>
-    </group>
-    <group>
-        <clip-path android:pathData="M24,24m-22,0a22,22 0,1 1,44 0a22,22 0,1 1,-44 0 M 0,0"/>
-        <path android:fillColor="#4285f4" android:pathData="M2 24c0 12.15 9.85 22 22 22 3.57 0 6.94,-.85 9.93,-2.36L20.16 2.33C9.84 4.15 2 13.16 2 24z"/>
-        <path android:fillAlpha="0.1" android:fillColor="#fff"
-            android:pathData="M18.22,-2.68L35.2 48.24l.31.13L18.39,-2.96" android:strokeAlpha="0.1"/>
-        <path android:fillColor="#eee" android:pathData="M16.02 23v2h3.97c-.16 1.43,-1.2 3.42,-3.97 3.42,-2.39 0,-4.34,-1.98,-4.34,-4.42s1.95,-4.42 4.34,-4.42c1.36 0 2.27.58 2.79 1.08l1.9,-1.83c-1.22,-1.14,-2.8,-1.83,-4.69,-1.83,-3.87 0,-7 3.13,-7 7s3.13 7 7 7c4.04 0 6.72,-2.84 6.72,-6.84 0,-.46,-.05,-.81,-.11,-1.16h-6.61z"/>
-    </group>
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:aapt="http://schemas.android.com/aapt"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:width="36dp"
+        android:height="36dp"
+        android:viewportWidth="36.0"
+        android:viewportHeight="36.0"
+        tools:targetApi="21">
+    <path
+        android:pathData="M18,0L18,0C27.94,-0 36,8.06 36,18L36,18C36,27.94 27.94,36 18,36L18,36C8.06,36 0,27.94 0,18L0,18C-0,8.06 8.06,0 18,0Z"
+      android:fillColor="@color/light_active_color"
+        />
+    <path
+        android:pathData="M18.87,21.07L16.33,18.56L16.36,18.53C18.1,16.59 19.34,14.36 20.07,12L23,12L23,10L16,10L16,8L14,8L14,10L7,10L7,11.99L18.17,11.99C17.5,13.92 16.44,15.75 15,17.35C14.07,16.32 13.3,15.19 12.69,14L10.69,14C11.42,15.63 12.42,17.17 13.67,18.56L8.58,23.58L10,25L15,20L18.11,23.11L18.87,21.07Z"
+        android:fillColor="@color/default_icon_color_inverse"
+        />
+    <path
+        android:pathData="M24.5,16l-2,0l-4.5,12l2,0l1.12,-3l4.75,0l1.13,3l2,0z"
+        android:fillColor="@color/default_icon_color_inverse"
+        />
+    <path
+        android:pathData="M21.88,23l1.62,-4.33l1.62,4.33z"
+        android:fillColor="@color/light_active_color"
+        />
 </vector>

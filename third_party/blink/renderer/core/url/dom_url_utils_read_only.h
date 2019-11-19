@@ -28,14 +28,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_URL_DOM_URL_UTILS_READ_ONLY_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
-
-class ExceptionState;
-class USVStringOrTrustedURL;
 
 class CORE_EXPORT DOMURLUtilsReadOnly {
  public:
@@ -43,8 +39,7 @@ class CORE_EXPORT DOMURLUtilsReadOnly {
   virtual String Input() const = 0;
   virtual ~DOMURLUtilsReadOnly() = default;
 
-  void href(USVStringOrTrustedURL&);
-  String href(ExceptionState& = ASSERT_NO_EXCEPTION);
+  String href();
 
   static String origin(const KURL&);
   String origin() { return origin(Url()); }

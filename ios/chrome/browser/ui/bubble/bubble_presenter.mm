@@ -24,9 +24,9 @@
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #include "ios/chrome/grit/ios_chromium_strings.h"
 #include "ios/chrome/grit/ios_strings.h"
-#import "ios/web/public/web_state/ui/crw_web_view_proxy.h"
-#import "ios/web/public/web_state/ui/crw_web_view_scroll_view_proxy.h"
-#import "ios/web/public/web_state/web_state.h"
+#import "ios/web/public/ui/crw_web_view_proxy.h"
+#import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
+#import "ios/web/public/web_state.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -181,8 +181,8 @@ const CGFloat kBubblePresentationDelay = 1;
 
   BubbleArrowDirection arrowDirection =
       IsSplitToolbarMode() ? BubbleArrowDirectionDown : BubbleArrowDirectionUp;
-  NSString* text = l10n_util::GetNSStringWithFixup(
-      IDS_IOS_LONG_PRESS_TOOLBAR_IPH_PROMOTION_TEXT);
+  NSString* text =
+      l10n_util::GetNSString(IDS_IOS_LONG_PRESS_TOOLBAR_IPH_PROMOTION_TEXT);
   CGPoint searchButtonAnchor =
       IsRegularXRegularSizeClass()
           ? [self anchorPointToGuide:kTabStripTabSwitcherGuide
@@ -288,7 +288,7 @@ presentBubbleForFeature:(const base::Feature&)feature
   NSString* text =
       l10n_util::GetNSStringWithFixup(IDS_IOS_NEW_TAB_IPH_PROMOTION_TEXT);
   CGPoint tabSwitcherAnchor;
-  if (IsIPadIdiom()) {
+  if (IsRegularXRegularSizeClass()) {
     tabSwitcherAnchor = [self anchorPointToGuide:kTabStripTabSwitcherGuide
                                        direction:arrowDirection];
   } else {

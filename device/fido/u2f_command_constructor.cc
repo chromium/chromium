@@ -15,12 +15,12 @@ namespace device {
 
 bool IsConvertibleToU2fRegisterCommand(
     const CtapMakeCredentialRequest& request) {
-  if (request.user_verification() == UserVerificationRequirement::kRequired ||
-      request.resident_key_required())
+  if (request.user_verification == UserVerificationRequirement::kRequired ||
+      request.resident_key_required)
     return false;
 
   const auto& public_key_credential_info =
-      request.public_key_credential_params().public_key_credential_params();
+      request.public_key_credential_params.public_key_credential_params();
   return std::any_of(
       public_key_credential_info.begin(), public_key_credential_info.end(),
       [](const auto& credential_info) {
@@ -30,10 +30,8 @@ bool IsConvertibleToU2fRegisterCommand(
 }
 
 bool IsConvertibleToU2fSignCommand(const CtapGetAssertionRequest& request) {
-  const auto& allow_list = request.allow_list();
-  return request.user_verification() !=
-             UserVerificationRequirement::kRequired &&
-         allow_list && !allow_list->empty();
+  return request.user_verification != UserVerificationRequirement::kRequired &&
+         !request.allow_list.empty();
 }
 
 base::Optional<std::vector<uint8_t>> ConvertToU2fRegisterCommand(
@@ -41,20 +39,26 @@ base::Optional<std::vector<uint8_t>> ConvertToU2fRegisterCommand(
   if (!IsConvertibleToU2fRegisterCommand(request))
     return base::nullopt;
 
+  if (request.pin_auth && request.pin_auth->size() == 0) {
+    // An empty pin_auth in CTAP2 indicates that the device should just wait
+    // for a touch.
+    return ConstructBogusU2fRegistrationCommand();
+  }
+
   const bool is_invidual_attestation =
-      request.attestation_preference() ==
-      AttestationConveyancePreference::ENTERPRISE;
+      request.attestation_preference ==
+      AttestationConveyancePreference::kEnterprise;
   return ConstructU2fRegisterCommand(
-      fido_parsing_utils::CreateSHA256Hash(request.rp().rp_id()),
-      request.client_data_hash(), is_invidual_attestation);
+      fido_parsing_utils::CreateSHA256Hash(request.rp.id),
+      request.client_data_hash, is_invidual_attestation);
 }
 
-base::Optional<std::vector<uint8_t>> ConvertToU2fSignCommand(
+base::Optional<std::vector<uint8_t>> ConvertToU2fSignCommandWithBogusChallenge(
     const CtapMakeCredentialRequest& request,
     base::span<const uint8_t> key_handle) {
   return ConstructU2fSignCommand(
-      fido_parsing_utils::CreateSHA256Hash(request.rp().rp_id()),
-      request.client_data_hash(), key_handle);
+      fido_parsing_utils::CreateSHA256Hash(request.rp.id),
+      kBogusChallenge, key_handle);
 }
 
 base::Optional<std::vector<uint8_t>> ConvertToU2fSignCommand(
@@ -66,12 +70,12 @@ base::Optional<std::vector<uint8_t>> ConvertToU2fSignCommand(
 
   const auto& application_parameter =
       application_parameter_type == ApplicationParameterType::kPrimary
-          ? fido_parsing_utils::CreateSHA256Hash(request.rp_id())
-          : request.alternative_application_parameter().value_or(
+          ? fido_parsing_utils::CreateSHA256Hash(request.rp_id)
+          : request.alternative_application_parameter.value_or(
                 std::array<uint8_t, kRpIdHashLength>());
 
   return ConstructU2fSignCommand(application_parameter,
-                                 request.client_data_hash(), key_handle);
+                                 request.client_data_hash, key_handle);
 }
 
 std::vector<uint8_t> ConstructU2fRegisterCommand(

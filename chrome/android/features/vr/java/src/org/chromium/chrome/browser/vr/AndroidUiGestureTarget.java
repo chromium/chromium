@@ -10,6 +10,7 @@ import android.view.View;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.content_public.browser.MotionEventSynthesizer;
 
 /**
@@ -24,7 +25,8 @@ public class AndroidUiGestureTarget {
     public AndroidUiGestureTarget(
             View target, float scaleFactor, float scrollRatio, int touchSlop) {
         mMotionEventSynthesizer = MotionEventSynthesizer.create(target);
-        mNativePointer = nativeInit(scaleFactor, scrollRatio, touchSlop);
+        mNativePointer = AndroidUiGestureTargetJni.get().init(
+                AndroidUiGestureTarget.this, scaleFactor, scrollRatio, touchSlop);
     }
 
     @CalledByNative
@@ -61,5 +63,9 @@ public class AndroidUiGestureTarget {
         return mNativePointer;
     }
 
-    private native long nativeInit(float scaleFactor, float scrollRatio, int touchSlop);
+    @NativeMethods
+    interface Natives {
+        long init(
+                AndroidUiGestureTarget caller, float scaleFactor, float scrollRatio, int touchSlop);
+    }
 }

@@ -4,23 +4,20 @@
 
 import("//third_party/protobuf/proto_library.gni")
 
+# Nothing outside //chrome/chrome_cleaner can depend on these targets.
+visibility = [ "//chrome/chrome_cleaner/*" ]
+
 proto_library("uwe_matcher_proto") {
   sources = [
     "uwe_matcher.proto",
   ]
 
-  deps = [
-    ":uws_spec_by_version_proto",
-  ]
+  link_deps = [ ":uws_spec_by_version_proto" ]
 }
 
 proto_library("file_digest_proto") {
   sources = [
     "file_digest.proto",
-  ]
-
-  deps = [
-    "//third_party/protobuf:py_proto",
   ]
 }
 
@@ -30,23 +27,10 @@ proto_library("shared_pup_enums_proto") {
   ]
 }
 
-proto_library("spec_footprints_proto") {
-  sources = [
-    "spec_footprints.proto",
-  ]
-
-  deps = [
-    "//third_party/protobuf:py_proto",
-  ]
-}
-
 proto_library("uws_spec_by_version_proto") {
   sources = [
     "uws_spec_by_version.proto",
   ]
 
-  deps = [
-    ":shared_pup_enums_proto",
-    "//third_party/protobuf:py_proto",
-  ]
+  link_deps = [ ":shared_pup_enums_proto" ]
 }

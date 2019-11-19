@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/polymer.gni")
 
 js_type_check("closure_compile") {
   deps = [
@@ -19,14 +20,74 @@ js_library("cr_toolbar_search_field") {
 }
 
 js_library("cr_toolbar_selection_overlay") {
-  deps = [
-    "//third_party/polymer/v1_0/components-chromium/paper-button:paper-button-extracted",
-  ]
 }
 
 js_library("cr_toolbar") {
   deps = [
     ":cr_toolbar_search_field",
   ]
-  externs_list = [ "$externs_path/web_animations.js" ]
+}
+
+polymer_modulizer("cr_toolbar") {
+  js_file = "cr_toolbar.js"
+  html_file = "cr_toolbar.html"
+  html_type = "dom-module"
+  auto_imports =
+      [ "ui/webui/resources/html/polymer.html|afterNextRender,html,Polymer" ]
+  namespace_rewrites =
+      [ "Polymer.RenderStatus.afterNextRender|afterNextRender" ]
+}
+
+polymer_modulizer("cr_toolbar_search_field") {
+  js_file = "cr_toolbar_search_field.js"
+  html_file = "cr_toolbar_search_field.html"
+  html_type = "dom-module"
+  auto_imports = [ "ui/webui/resources/cr_elements/cr_search_field/cr_search_field_behavior.html|CrSearchFieldBehavior" ]
+}
+
+polymer_modulizer("cr_toolbar_selection_overlay") {
+  js_file = "cr_toolbar_selection_overlay.js"
+  html_file = "cr_toolbar_selection_overlay.html"
+  html_type = "dom-module"
+}
+
+js_type_check("closure_compile_module") {
+  is_polymer3 = true
+  deps = [
+    ":cr_toolbar.m",
+    ":cr_toolbar_search_field.m",
+    ":cr_toolbar_selection_overlay.m",
+  ]
+}
+
+js_library("cr_toolbar.m") {
+  sources = [
+    "$root_gen_dir/ui/webui/resources/cr_elements/cr_toolbar/cr_toolbar.m.js",
+  ]
+  deps = [
+    ":cr_toolbar_search_field.m",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  extra_deps = [ ":cr_toolbar_module" ]
+}
+
+js_library("cr_toolbar_search_field.m") {
+  sources = [
+    "$root_gen_dir/ui/webui/resources/cr_elements/cr_toolbar/cr_toolbar_search_field.m.js",
+  ]
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_search_field:cr_search_field_behavior.m",
+  ]
+  extra_deps = [ ":cr_toolbar_search_field_module" ]
+}
+
+js_library("cr_toolbar_selection_overlay.m") {
+  sources = [
+    "$root_gen_dir/ui/webui/resources/cr_elements/cr_toolbar/cr_toolbar_selection_overlay.m.js",
+  ]
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  extra_deps = [ ":cr_toolbar_selection_overlay_module" ]
 }

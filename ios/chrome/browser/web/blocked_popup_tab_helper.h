@@ -10,8 +10,8 @@
 #include "base/macros.h"
 #include "base/scoped_observer.h"
 #include "components/infobars/core/infobar_manager.h"
-#include "ios/web/public/referrer.h"
-#import "ios/web/public/web_state/web_state_user_data.h"
+#include "ios/web/public/navigation/referrer.h"
+#import "ios/web/public/web_state_user_data.h"
 #include "url/gurl.h"
 
 namespace infobars {

@@ -47,7 +47,7 @@ struct RecordingCondition {
       URLMatcherConditionFactory* url_matcher_condition_factory,
       const base::Value& condition,
       std::string* error) {
-    const base::DictionaryValue* dict = NULL;
+    const base::DictionaryValue* dict = nullptr;
     if (condition.GetAsDictionary(&dict) && dict->HasKey("bad_key")) {
       *error = "Found error key";
       return std::unique_ptr<RecordingCondition>();
@@ -69,7 +69,7 @@ TEST(DeclarativeConditionTest, ErrorConditionSet) {
 
   std::string error;
   std::unique_ptr<RecordingConditionSet> result = RecordingConditionSet::Create(
-      NULL, matcher.condition_factory(), conditions, &error);
+      nullptr, matcher.condition_factory(), conditions, &error);
   EXPECT_EQ("Found error key", error);
   ASSERT_FALSE(result);
 }
@@ -83,7 +83,7 @@ TEST(DeclarativeConditionTest, CreateConditionSet) {
   // Test insertion
   std::string error;
   std::unique_ptr<RecordingConditionSet> result = RecordingConditionSet::Create(
-      NULL, matcher.condition_factory(), conditions, &error);
+      nullptr, matcher.condition_factory(), conditions, &error);
   EXPECT_EQ("", error);
   ASSERT_TRUE(result);
   EXPECT_EQ(2u, result->conditions().size());
@@ -119,7 +119,7 @@ struct FulfillableCondition {
 
   bool IsFulfilled(const MatchData& match_data) const {
     if (condition_set_id != -1 &&
-        !base::ContainsKey(match_data.url_matches, condition_set_id))
+        !base::Contains(match_data.url_matches, condition_set_id))
       return false;
     return match_data.value <= max_value;
   }
@@ -159,7 +159,7 @@ TEST(DeclarativeConditionTest, FulfillConditionSet) {
   // Test insertion
   std::string error;
   std::unique_ptr<FulfillableConditionSet> result =
-      FulfillableConditionSet::Create(NULL, NULL, conditions, &error);
+      FulfillableConditionSet::Create(nullptr, nullptr, conditions, &error);
   ASSERT_EQ("", error);
   ASSERT_TRUE(result);
   EXPECT_EQ(4u, result->conditions().size());
@@ -215,15 +215,15 @@ class SummingAction : public base::RefCounted<SummingAction> {
       bool* bad_message) {
     int increment = 0;
     int min_priority = 0;
-    const base::DictionaryValue* dict = NULL;
+    const base::DictionaryValue* dict = nullptr;
     EXPECT_TRUE(action.GetAsDictionary(&dict));
     if (dict->HasKey("error")) {
       EXPECT_TRUE(dict->GetString("error", error));
-      return scoped_refptr<const SummingAction>(NULL);
+      return nullptr;
     }
     if (dict->HasKey("bad")) {
       *bad_message = true;
-      return scoped_refptr<const SummingAction>(NULL);
+      return nullptr;
     }
 
     EXPECT_TRUE(dict->GetInteger("value", &increment));
@@ -260,7 +260,7 @@ TEST(DeclarativeActionTest, ErrorActionSet) {
   std::string error;
   bool bad = false;
   std::unique_ptr<SummingActionSet> result =
-      SummingActionSet::Create(NULL, NULL, actions, &error, &bad);
+      SummingActionSet::Create(nullptr, nullptr, actions, &error, &bad);
   EXPECT_EQ("the error", error);
   EXPECT_FALSE(bad);
   EXPECT_FALSE(result);
@@ -268,7 +268,7 @@ TEST(DeclarativeActionTest, ErrorActionSet) {
   actions.clear();
   actions.push_back(ParseJsonDeprecated("{\"value\": 1}"));
   actions.push_back(ParseJsonDeprecated("{\"bad\": 3}"));
-  result = SummingActionSet::Create(NULL, NULL, actions, &error, &bad);
+  result = SummingActionSet::Create(nullptr, nullptr, actions, &error, &bad);
   EXPECT_EQ("", error);
   EXPECT_TRUE(bad);
   EXPECT_FALSE(result);
@@ -285,7 +285,7 @@ TEST(DeclarativeActionTest, ApplyActionSet) {
   std::string error;
   bool bad = false;
   std::unique_ptr<SummingActionSet> result =
-      SummingActionSet::Create(NULL, NULL, actions, &error, &bad);
+      SummingActionSet::Create(nullptr, nullptr, actions, &error, &bad);
   EXPECT_EQ("", error);
   EXPECT_FALSE(bad);
   ASSERT_TRUE(result);
@@ -327,7 +327,7 @@ TEST(DeclarativeRuleTest, Create) {
   URLMatcher matcher;
   std::string error;
   std::unique_ptr<Rule> rule(Rule::Create(
-      matcher.condition_factory(), NULL, extension.get(), install_time,
+      matcher.condition_factory(), nullptr, extension.get(), install_time,
       json_rule, Rule::ConsistencyChecker(), &error));
   EXPECT_EQ("", error);
   ASSERT_TRUE(rule.get());
@@ -392,7 +392,7 @@ TEST(DeclarativeRuleTest, CheckConsistency) {
                            "}"),
       &json_rule));
   std::unique_ptr<Rule> rule(Rule::Create(
-      matcher.condition_factory(), NULL, extension.get(), base::Time(),
+      matcher.condition_factory(), nullptr, extension.get(), base::Time(),
       json_rule, base::Bind(AtLeastOneCondition), &error));
   EXPECT_TRUE(rule);
   EXPECT_EQ("", error);
@@ -410,7 +410,7 @@ TEST(DeclarativeRuleTest, CheckConsistency) {
                                                     "  \"priority\": 200 \n"
                                                     "}"),
                                &json_rule));
-  rule = Rule::Create(matcher.condition_factory(), NULL, extension.get(),
+  rule = Rule::Create(matcher.condition_factory(), nullptr, extension.get(),
                       base::Time(), json_rule, base::Bind(AtLeastOneCondition),
                       &error);
   EXPECT_FALSE(rule);

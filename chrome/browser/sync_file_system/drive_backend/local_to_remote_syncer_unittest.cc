@@ -31,7 +31,7 @@
 #include "components/drive/drive_api_util.h"
 #include "components/drive/drive_uploader.h"
 #include "components/drive/service/fake_drive_service.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "google_apis/drive/drive_api_error_codes.h"
 #include "google_apis/drive/drive_api_parser.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -54,7 +54,7 @@ const int kRetryLimit = 100;
 class LocalToRemoteSyncerTest : public testing::Test {
  public:
   LocalToRemoteSyncerTest()
-      : thread_bundle_(content::TestBrowserThreadBundle::IO_MAINLOOP) {}
+      : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP) {}
   ~LocalToRemoteSyncerTest() override {}
 
   void SetUp() override {
@@ -248,7 +248,7 @@ class LocalToRemoteSyncerTest : public testing::Test {
   }
 
  private:
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   base::ScopedTempDir database_dir_;
   std::unique_ptr<leveldb::Env> in_memory_env_;
 

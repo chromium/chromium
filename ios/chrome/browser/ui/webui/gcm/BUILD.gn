@@ -14,6 +14,6 @@ source_set("gcm") {
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/gcm",
-    "//ios/web",
+    "//ios/web/public/webui",
   ]
 }

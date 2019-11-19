@@ -7,7 +7,8 @@
 
 #include <memory>
 
-#include "base/memory/shared_memory.h"
+#include "base/memory/shared_memory_mapping.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "ppapi/shared_impl/ppapi_shared_export.h"
 
 namespace ppapi {
@@ -16,19 +17,21 @@ class PPAPI_SHARED_EXPORT VpnProviderSharedBuffer {
  public:
   VpnProviderSharedBuffer(uint32_t capacity,
                           uint32_t packet_size,
-                          std::unique_ptr<base::SharedMemory> shm);
+                          base::UnsafeSharedMemoryRegion shm,
+                          base::WritableSharedMemoryMapping mapping);
   ~VpnProviderSharedBuffer();
 
   bool GetAvailable(uint32_t* id);
   void SetAvailable(uint32_t id, bool value);
   void* GetBuffer(uint32_t id);
-  base::SharedMemoryHandle GetHandle();
   uint32_t max_packet_size() { return max_packet_size_; }
+  base::UnsafeSharedMemoryRegion DuplicateRegion() const;
 
  private:
   uint32_t capacity_;
   uint32_t max_packet_size_;
-  std::unique_ptr<base::SharedMemory> shm_;
+  base::UnsafeSharedMemoryRegion shm_;
+  base::WritableSharedMemoryMapping shm_mapping_;
   std::vector<bool> available_;
 
   DISALLOW_COPY_AND_ASSIGN(VpnProviderSharedBuffer);

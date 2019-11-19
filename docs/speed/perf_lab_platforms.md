@@ -6,25 +6,28 @@
 
 ## Android
 
- * [android-go-perf](https://ci.chromium.org/buildbot/chromium.perf/android-go-perf/): Android O.
- * [android-go_webview-perf](https://ci.chromium.org/buildbot/chromium.perf/android-go_webview-perf/): Android OPM1.171019.021.
- * [Android Nexus5 Perf](https://ci.chromium.org/buildbot/chromium.perf/Android%20Nexus5%20Perf/): Android KOT49H.
- * [android-nexus5x-perf](https://ci.chromium.org/buildbot/chromium.perf/android-nexus5x-perf/): Android MMB29Q.
- * [Android Nexus5X WebView Perf](https://ci.chromium.org/buildbot/chromium.perf/Android%20Nexus5X%20WebView%20Perf/): Android AOSP MOB30K.
- * [Android Nexus6 WebView Perf](https://ci.chromium.org/buildbot/chromium.perf/Android%20Nexus6%20WebView%20Perf/): Android AOSP MOB30K.
+ * [android-go-perf](https://ci.chromium.org/p/chrome/builders/ci/android-go-perf): Android O (gobo).
+ * [android-go_webview-perf](https://ci.chromium.org/p/chrome/builders/ci/android-go_webview-perf): Android OPM1.171019.021 (gobo).
+ * [Android Nexus5 Perf](https://ci.chromium.org/p/chrome/builders/ci/Android%20Nexus5%20Perf): Android KOT49H.
+ * [android-nexus5x-perf](https://ci.chromium.org/p/chrome/builders/ci/android-nexus5x-perf): Android MMB29Q.
+ * [Android Nexus5X WebView Perf](https://ci.chromium.org/p/chrome/builders/ci/Android%20Nexus5X%20WebView%20Perf): Android AOSP MOB30K.
+ * [Android Nexus6 WebView Perf](https://ci.chromium.org/p/chrome/builders/ci/Android%20Nexus6%20WebView%20Perf): Android AOSP MOB30K.
+ * [android-pixel2-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel2-perf): Android OPM1.171019.021.
+ * [android-pixel2_weblayer-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel2_weblayer-perf): Android OPM1.171019.021.
+ * [android-pixel2_webview-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel2_webview-perf): Android OPM1.171019.021.
 
 ## Linux
 
- * [linux-perf](https://ci.chromium.org/buildbot/chromium.perf/linux-perf/): Ubuntu-14.04, 8 core, NVIDIA Quadro P400.
+ * [linux-perf](https://ci.chromium.org/p/chrome/builders/ci/linux-perf): Ubuntu-14.04, 8 core, NVIDIA Quadro P400.
 
 ## Mac
 
- * [mac-10_12_laptop_low_end-perf](https://ci.chromium.org/buildbot/chromium.perf/mac-10_12_laptop_low_end-perf/): MacBook Air, Core i5 1.8 GHz, 8GB RAM, 128GB SSD, HD Graphics.
- * [mac-10_13_laptop_high_end-perf](https://ci.chromium.org/buildbot/chromium.perf/mac-10_13_laptop_high_end-perf/): MacBook Pro, Core i7 2.8 GHz, 16GB RAM, 256GB SSD, Radeon 55.
+ * [mac-10_12_laptop_low_end-perf](https://ci.chromium.org/p/chrome/builders/ci/mac-10_12_laptop_low_end-perf): MacBook Air, Core i5 1.8 GHz, 8GB RAM, 128GB SSD, HD Graphics.
+ * [mac-10_13_laptop_high_end-perf](https://ci.chromium.org/p/chrome/builders/ci/mac-10_13_laptop_high_end-perf): MacBook Pro, Core i7 2.8 GHz, 16GB RAM, 256GB SSD, Radeon 55.
 
-## Windows
+## Win
 
- * [win-10-perf](https://ci.chromium.org/buildbot/chromium.perf/win-10-perf/): Windows Intel HD 630 towers, Core i7-7700 3.6 GHz, 16GB RAM, Intel Kaby Lake HD Graphics 630.
- * [Win 7 Nvidia GPU Perf](https://ci.chromium.org/buildbot/chromium.perf/Win%207%20Nvidia%20GPU%20Perf/): N/A.
- * [Win 7 Perf](https://ci.chromium.org/buildbot/chromium.perf/Win%207%20Perf/): N/A.
+ * [win-10-perf](https://ci.chromium.org/p/chrome/builders/ci/win-10-perf): Windows Intel HD 630 towers, Core i7-7700 3.6 GHz, 16GB RAM, Intel Kaby Lake HD Graphics 630.
+ * [Win 7 Nvidia GPU Perf](https://ci.chromium.org/p/chrome/builders/ci/Win%207%20Nvidia%20GPU%20Perf): N/A.
+ * [Win 7 Perf](https://ci.chromium.org/p/chrome/builders/ci/Win%207%20Perf): N/A.
 

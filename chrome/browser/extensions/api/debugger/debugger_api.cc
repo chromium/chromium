@@ -180,7 +180,7 @@ class ExtensionDevToolsClientHost : public content::DevToolsAgentHostClient,
 
   // Listen to extension unloaded notification.
   ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      extension_registry_observer_;
+      extension_registry_observer_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ExtensionDevToolsClientHost);
 };
@@ -195,8 +195,7 @@ ExtensionDevToolsClientHost::ExtensionDevToolsClientHost(
       extension_(std::move(extension)),
       last_request_id_(0),
       infobar_(nullptr),
-      detach_reason_(api::debugger::DETACH_REASON_TARGET_CLOSED),
-      extension_registry_observer_(this) {
+      detach_reason_(api::debugger::DETACH_REASON_TARGET_CLOSED) {
   CopyDebuggee(&debuggee_, debuggee);
 
   g_attached_client_hosts.Get().insert(this);
@@ -421,10 +420,10 @@ void DebuggerFunction::FormatErrorMessage(const std::string& format) {
 
 bool DebuggerFunction::InitAgentHost() {
   if (debuggee_.tab_id) {
-    WebContents* web_contents = NULL;
+    WebContents* web_contents = nullptr;
     bool result = ExtensionTabUtil::GetTabById(*debuggee_.tab_id, GetProfile(),
                                                include_incognito_information(),
-                                               NULL, NULL, &web_contents, NULL);
+                                               &web_contents);
     if (result && web_contents) {
       // TODO(rdevlin.cronin) This should definitely be GetLastCommittedURL().
       GURL url = web_contents->GetVisibleURL();
@@ -668,7 +667,7 @@ DebuggerGetTargetsFunction::~DebuggerGetTargetsFunction() {
 
 bool DebuggerGetTargetsFunction::RunAsync() {
   content::DevToolsAgentHost::List list = DevToolsAgentHost::GetOrCreateAll();
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {content::BrowserThread::UI},
       base::BindOnce(&DebuggerGetTargetsFunction::SendTargetList, this, list));
   return true;

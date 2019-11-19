@@ -40,11 +40,11 @@ TEST(NaClForkDelegateLinuxTest, EnvPassthrough) {
 
   base::LaunchOptions options;
   NaClForkDelegate::AddPassthroughEnvToOptions(&options);
-  EXPECT_EQ(value1, options.environ[passthrough1]);
-  EXPECT_EQ(0U, options.environ.count(passthrough2));
-  EXPECT_EQ(value3, options.environ[passthrough3]);
-  EXPECT_EQ(0U, options.environ.count(passthrough4));
-  EXPECT_EQ(value5, options.environ[passthrough5]);
+  EXPECT_EQ(value1, options.environment[passthrough1]);
+  EXPECT_EQ(0U, options.environment.count(passthrough2));
+  EXPECT_EQ(value3, options.environment[passthrough3]);
+  EXPECT_EQ(0U, options.environment.count(passthrough4));
+  EXPECT_EQ(value5, options.environment[passthrough5]);
 }
 
 }  // namespace nacl

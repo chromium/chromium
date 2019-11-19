@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_view_controller.h"
+#import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_legacy_view_controller.h"
 
 #include "components/omnibox/browser/autocomplete_match.h"
-#import "ios/chrome/browser/ui/omnibox/autocomplete_match_formatter.h"
+#import "ios/chrome/browser/ui/omnibox/popup/autocomplete_match_formatter.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_row.h"
 #include "testing/gtest_mac.h"
 #include "testing/platform_test.h"
@@ -20,10 +20,10 @@ class OmniboxPopupViewControllerTest : public PlatformTest {
  protected:
   void SetUp() override {
     PlatformTest::SetUp();
-    popup_view_controller_ = [[OmniboxPopupViewController alloc] init];
+    popup_view_controller_ = [[OmniboxPopupLegacyViewController alloc] init];
   }
 
-  OmniboxPopupViewController* popup_view_controller_;
+  OmniboxPopupLegacyViewController* popup_view_controller_;
 };
 
 TEST_F(OmniboxPopupViewControllerTest, HasCellsWhenShortcutsEnabled) {
@@ -36,7 +36,8 @@ TEST_F(OmniboxPopupViewControllerTest, HasCellsWhenShortcutsEnabled) {
   UITableView* table_view = [[UITableView alloc] init];
 
   // A stub view controller.
-  UIViewController* shortcutsViewController = [[UIViewController alloc] init];
+  UICollectionViewController* shortcutsViewController =
+      [[UICollectionViewController alloc] init];
 
   // Shortcuts are not enabled by default.
   EXPECT_FALSE(popup_view_controller_.shortcutsEnabled);

@@ -1,0 +1,62 @@
+<!DOCTYPE HTML>
+<html>
+<script src='test.js'></script>
+<script src='execute_script.js'></script>
+<script>
+
+function assertThrowsError(promise, opt_error) {
+  promise.then((result) => { assert(false); })
+  .catch((error) => {
+    if (opt_error)
+      assertEquals(error, opt_error);
+  });
+}
+
+async function testScriptThrows() {
+  const promise = executeScript('f(123);', []);
+  assertThrowsError(promise);
+}
+
+async function testScriptThrowingReturnsJSError() {
+  let script = 'let args = arguments; throw new Error(args[0]);';
+  let script_args = ['foo error', 'unused'];
+  executeScript(script, script_args).then((result) => { assert(false); })
+  .catch((error) => {
+    assert(error.message.indexOf('foo error') != -1);
+  });
+}
+
+async function testAwaitResolveSucceeds() {
+  let script = 'return await Promise.resolve(arguments[0]);';
+  let script_args = ['bar success', 'unused'];
+  let result = await executeScript(script, script_args);
+  assertEquals('bar success', result);
+}
+
+async function testAwaitRejectFails() {
+  let script = 'return await Promise.reject(arguments[0]);';
+  let script_args = ['foo failure', 'unused'];
+  assertThrowsError(executeScript(script, script_args), 'foo failure');
+}
+
+async function testScriptWithArgs() {
+  var injectedArgs = null;
+  function captureArguments(args) {
+    injectedArgs = args;
+  }
+  // Pass function captureArguments as the first argument. It is used to capture
+  // the injected arguments to the following script.
+  var script =
+      'var args = arguments; args[0](args); return args[1]';
+  var script_args = [captureArguments, 1];
+  var result = await executeScript(script, script_args);
+  assertEquals(2, injectedArgs.length);
+  assertEquals(captureArguments, injectedArgs[0]);
+  assertEquals(1, injectedArgs[1]);
+  assertEquals(1, result);
+}
+
+</script>
+<body>
+</body>
+</html>

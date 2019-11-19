@@ -30,55 +30,63 @@
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
-#include "third_party/blink/renderer/core/frame/use_counter.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
 
-using namespace html_names;
-
+// https://html.spec.whatwg.org/C/#the-dialog-element
 // This function chooses the focused element when show() or showModal() is
 // invoked, as described in their spec.
 static void SetFocusForDialog(HTMLDialogElement* dialog) {
-  Element* focusable_descendant = nullptr;
+  Element* control = nullptr;
   Node* next = nullptr;
 
   // TODO(kochi): How to find focusable element inside Shadow DOM is not
   // currently specified.  This may change at any time.
   // See crbug/383230 and https://github.com/whatwg/html/issues/2393 .
   for (Node* node = FlatTreeTraversal::FirstChild(*dialog); node; node = next) {
-    next = IsHTMLDialogElement(*node)
+    next = IsA<HTMLDialogElement>(*node)
                ? FlatTreeTraversal::NextSkippingChildren(*node, dialog)
                : FlatTreeTraversal::Next(*node, dialog);
 
-    if (!node->IsElementNode())
+    auto* element = DynamicTo<Element>(node);
+    if (!element)
       continue;
-    Element* element = ToElement(node);
-    if (element->IsFormControlElement()) {
-      HTMLFormControlElement* control = ToHTMLFormControlElement(node);
-      if (control->IsAutofocusable() && control->IsFocusable()) {
-        control->focus();
-        return;
-      }
+    if (element->IsAutofocusable() && element->IsFocusable()) {
+      control = element;
+      break;
     }
-    if (!focusable_descendant && element->IsFocusable())
-      focusable_descendant = element;
+    if (!control && element->IsFocusable())
+      control = element;
   }
+  if (!control)
+    control = dialog;
 
-  if (focusable_descendant) {
-    focusable_descendant->focus();
+  // 3. Run the focusing steps for control.
+  if (control->IsFocusable())
+    control->focus();
+  else
+    dialog->GetDocument().ClearFocusedElement();
+
+  // 4. Let topDocument be the active document of control's node document's
+  // browsing context's top-level browsing context.
+  // 5. If control's node document's origin is not the same as the origin of
+  // topDocument, then return.
+  Document& doc = control->GetDocument();
+  if (!doc.IsActive())
     return;
-  }
-
-  if (dialog->IsFocusable()) {
-    dialog->focus();
+  if (!doc.IsInMainFrame() &&
+      !doc.TopFrameOrigin()->CanAccess(doc.GetSecurityOrigin()))
     return;
-  }
 
-  dialog->GetDocument().ClearFocusedElement();
+  // 6. Empty topDocument's autofocus candidates.
+  // 7. Set topDocument's autofocus processed flag to true.
+  doc.TopDocument().FinalizeAutofocus();
 }
 
 static void InertSubtreesChanged(Document& document) {
@@ -95,22 +103,20 @@ static void InertSubtreesChanged(Document& document) {
   document.ClearAXObjectCache();
 }
 
-inline HTMLDialogElement::HTMLDialogElement(Document& document)
-    : HTMLElement(kDialogTag, document),
+HTMLDialogElement::HTMLDialogElement(Document& document)
+    : HTMLElement(html_names::kDialogTag, document),
       centering_mode_(kNotCentered),
       centered_position_(0),
       return_value_("") {
   UseCounter::Count(document, WebFeature::kDialogElement);
 }
 
-DEFINE_NODE_FACTORY(HTMLDialogElement)
-
 void HTMLDialogElement::close(const String& return_value) {
   // https://html.spec.whatwg.org/C/#close-the-dialog
 
-  if (!FastHasAttribute(kOpenAttr))
+  if (!FastHasAttribute(html_names::kOpenAttr))
     return;
-  SetBooleanAttribute(kOpenAttr, false);
+  SetBooleanAttribute(html_names::kOpenAttr, false);
 
   HTMLDialogElement* active_modal_dialog = GetDocument().ActiveModalDialog();
   GetDocument().RemoveFromTopLayer(this);
@@ -125,7 +131,7 @@ void HTMLDialogElement::close(const String& return_value) {
 
 void HTMLDialogElement::ForceLayoutForCentering() {
   centering_mode_ = kNeedsCentering;
-  GetDocument().UpdateStyleAndLayoutIgnorePendingStylesheets();
+  GetDocument().UpdateStyleAndLayout();
   if (centering_mode_ == kNeedsCentering)
     SetNotCentered();
 }
@@ -137,19 +143,19 @@ void HTMLDialogElement::ScheduleCloseEvent() {
 }
 
 void HTMLDialogElement::show() {
-  if (FastHasAttribute(kOpenAttr))
+  if (FastHasAttribute(html_names::kOpenAttr))
     return;
-  SetBooleanAttribute(kOpenAttr, true);
+  SetBooleanAttribute(html_names::kOpenAttr, true);
 
   // The layout must be updated here because setFocusForDialog calls
   // Element::isFocusable, which requires an up-to-date layout.
-  GetDocument().UpdateStyleAndLayoutIgnorePendingStylesheets();
+  GetDocument().UpdateStyleAndLayout();
 
   SetFocusForDialog(this);
 }
 
 void HTMLDialogElement::showModal(ExceptionState& exception_state) {
-  if (FastHasAttribute(kOpenAttr)) {
+  if (FastHasAttribute(html_names::kOpenAttr)) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "The element already has an 'open' "
                                       "attribute, and therefore cannot be "
@@ -169,7 +175,7 @@ void HTMLDialogElement::showModal(ExceptionState& exception_state) {
   }
 
   GetDocument().AddToTopLayer(this);
-  SetBooleanAttribute(kOpenAttr, true);
+  SetBooleanAttribute(html_names::kOpenAttr, true);
 
   ForceLayoutForCentering();
 
@@ -184,6 +190,13 @@ void HTMLDialogElement::showModal(ExceptionState& exception_state) {
 void HTMLDialogElement::RemovedFrom(ContainerNode& insertion_point) {
   HTMLElement::RemovedFrom(insertion_point);
   SetNotCentered();
+
+  // TODO(671907): Calling UpdateDistributionForFlatTreeTraversal here is a
+  // workaround for https://crbug.com/895511. This shouldn't be done during DOM
+  // mutation. However, Shadow DOM v0 will be removed, at which point this call
+  // can be removed.
+  GetDocument().UpdateDistributionForFlatTreeTraversal();
+
   InertSubtreesChanged(GetDocument());
 }
 
@@ -202,7 +215,7 @@ bool HTMLDialogElement::IsPresentationAttribute(
   // FIXME: Workaround for <https://bugs.webkit.org/show_bug.cgi?id=91058>:
   // modifying an attribute for which there is an attribute selector in html.css
   // sometimes does not trigger a style recalc.
-  if (name == kOpenAttr)
+  if (name == html_names::kOpenAttr)
     return true;
 
   return HTMLElement::IsPresentationAttribute(name);

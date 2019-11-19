@@ -7,9 +7,10 @@ package org.chromium.chrome.browser.identity;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.provider.Settings;
-import android.support.annotation.Nullable;
 
-import org.chromium.base.VisibleForTesting;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.chrome.browser.util.HashUtil;
 
 /**

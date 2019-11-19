@@ -4,6 +4,7 @@ include_rules = [
   "-chrome/browser/tab_contents",
   # Allow tab_util.h for GetWebContentsByID.
   "+chrome/browser/tab_contents/tab_util.h",
+  "+components/page_load_metrics/browser",
   "+third_party/ocmock/OCMock/OCMock.h",
   "+third_party/ocmock/ocmock_extensions.h",
 ]

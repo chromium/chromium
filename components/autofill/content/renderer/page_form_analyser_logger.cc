@@ -6,7 +6,11 @@
 
 #include <utility>
 
+#include "base/strings/string_util.h"
 #include "third_party/blink/public/platform/web_string.h"
+#include "third_party/blink/public/web/web_element.h"
+#include "third_party/blink/public/web/web_input_element.h"
+#include "third_party/blink/public/web/web_node.h"
 
 namespace autofill {
 
@@ -38,11 +42,31 @@ void PageFormAnalyserLogger::Flush() {
       text.clear();
       text += "[DOM] ";
       text += entry.message;
-      for (unsigned i = 0; i < entry.nodes.size(); ++i)
-        text += " %o";
+
+      std::vector<blink::WebNode> nodesToLog;
+      for (unsigned i = 0; i < entry.nodes.size(); ++i) {
+        if (entry.nodes[i].IsElementNode()) {
+          const blink::WebElement element =
+              entry.nodes[i].ToConst<blink::WebElement>();
+          const blink::WebInputElement* webInputElement =
+              blink::ToWebInputElement(&element);
+
+          // Filter out password inputs with values from being logged, as their
+          // values are also logged.
+          const bool shouldObfuscate =
+              webInputElement &&
+              webInputElement->IsPasswordFieldForAutofill() &&
+              !webInputElement->Value().IsEmpty();
+
+          if (!shouldObfuscate) {
+            text += " %o";
+            nodesToLog.push_back(element);
+          }
+        }
+      }
 
       blink::WebConsoleMessage message(level, blink::WebString::FromUTF8(text));
-      message.nodes = std::move(entry.nodes);  // avoids copying node vectors.
+      message.nodes = std::move(nodesToLog);  // avoids copying node vectors.
       frame_->AddMessageToConsole(message);
     }
   }

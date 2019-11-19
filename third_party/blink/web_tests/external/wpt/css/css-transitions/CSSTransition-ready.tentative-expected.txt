@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-FAIL ready promise is rejected when a transition is canceled by updating transition-property assert_true: Animation is initially pending expected true got undefined
-FAIL ready promise is rejected when a transition is canceled by changing the transition property to something not interpolable assert_true: Animation is initially pending expected true got undefined
-Harness: the test ran to completion.
-

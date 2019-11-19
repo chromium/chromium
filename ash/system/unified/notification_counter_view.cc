@@ -8,7 +8,7 @@
 
 #include "ash/public/cpp/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
-#include "ash/session/session_controller.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/message_center/ash_message_center_lock_screen_controller.h"
@@ -53,8 +53,8 @@ gfx::FontList GetNumberIconFontList() {
 class NumberIconImageSource : public gfx::CanvasImageSource {
  public:
   explicit NumberIconImageSource(size_t count)
-      : CanvasImageSource(gfx::Size(kUnifiedTrayIconSize, kUnifiedTrayIconSize),
-                          false),
+      : CanvasImageSource(
+            gfx::Size(kUnifiedTrayIconSize, kUnifiedTrayIconSize)),
         count_(count) {
     DCHECK_LE(count_, kTrayNotificationMaxCount + 1);
   }
@@ -103,7 +103,8 @@ NotificationCounterView::~NotificationCounterView() {
 }
 
 void NotificationCounterView::Update() {
-  SessionController* session_controller = Shell::Get()->session_controller();
+  SessionControllerImpl* session_controller =
+      Shell::Get()->session_controller();
   size_t notification_count =
       message_center::MessageCenter::Get()->NotificationCount();
   if (notification_count == 0 ||
@@ -128,6 +129,10 @@ void NotificationCounterView::Update() {
 void NotificationCounterView::OnSessionStateChanged(
     session_manager::SessionState state) {
   Update();
+}
+
+const char* NotificationCounterView::GetClassName() const {
+  return "NotificationCounterView";
 }
 
 QuietModeView::QuietModeView(Shelf* shelf) : TrayItemView(shelf) {
@@ -159,6 +164,10 @@ void QuietModeView::Update() {
 
 void QuietModeView::OnSessionStateChanged(session_manager::SessionState state) {
   Update();
+}
+
+const char* QuietModeView::GetClassName() const {
+  return "QuietModeView";
 }
 
 }  // namespace ash

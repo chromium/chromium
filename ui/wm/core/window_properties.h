@@ -21,11 +21,6 @@ enum WindowVisibilityAnimationTransition {
 
 // Alphabetical sort.
 
-// Containers with this property (true) are aligned with physical pixel
-// boundary.
-WM_CORE_EXPORT extern const ui::ClassProperty<bool>* const
-    kSnapChildrenToPixelBoundary;
-
 // Property to tell if the container uses screen coordinates for the child
 // windows.
 WM_CORE_EXPORT extern const ui::ClassProperty<bool>* const

@@ -37,7 +37,7 @@ class BrowserDMTokenStorageWin : public BrowserDMTokenStorage {
   scoped_refptr<base::SingleThreadTaskRunner> com_sta_task_runner_;
 
   // This should always be the last member of the class.
-  base::WeakPtrFactory<BrowserDMTokenStorageWin> weak_factory_;
+  base::WeakPtrFactory<BrowserDMTokenStorageWin> weak_factory_{this};
 
   FRIEND_TEST_ALL_PREFIXES(BrowserDMTokenStorageWinTest, InitClientId);
   FRIEND_TEST_ALL_PREFIXES(BrowserDMTokenStorageWinTest, InitEnrollmentToken);

@@ -1,0 +1,50 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("renderer") {
+  sources = [
+    "metrics_render_frame_observer.cc",
+    "metrics_render_frame_observer.h",
+    "page_resource_data_use.cc",
+    "page_resource_data_use.h",
+    "page_timing_metrics_sender.cc",
+    "page_timing_metrics_sender.h",
+    "page_timing_sender.h",
+  ]
+  deps = [
+    "//base",
+    "//components/data_reduction_proxy/core/common",
+    "//components/page_load_metrics/common",
+    "//components/page_load_metrics/common:page_load_metrics_mojom",
+    "//components/subresource_filter/content/renderer",
+    "//content/public/common",
+    "//content/public/renderer",
+    "//net",
+    "//services/network/public/cpp",
+    "//third_party/blink/public:blink_headers",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "fake_page_timing_sender.cc",
+    "fake_page_timing_sender.h",
+    "metrics_render_frame_observer_unittest.cc",
+    "page_timing_metrics_sender_unittest.cc",
+  ]
+
+  deps = [
+    ":renderer",
+    "//base",
+    "//base/test:test_support",
+    "//components/page_load_metrics/common",
+    "//components/page_load_metrics/common:page_load_metrics_mojom",
+    "//components/page_load_metrics/common:test_support",
+    "//testing/gtest",
+    "//third_party/blink/public:blink_headers",
+    "//url",
+  ]
+}

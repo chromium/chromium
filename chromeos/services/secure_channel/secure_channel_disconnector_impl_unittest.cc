@@ -54,7 +54,7 @@ class SecureChannelSecureChannelDisconnectorImplTest : public testing::Test {
   }
 
   bool HasChannelBeenDeleted(const base::UnguessableToken id) {
-    return base::ContainsKey(deleted_request_ids_, id);
+    return base::Contains(deleted_request_ids_, id);
   }
 
  private:

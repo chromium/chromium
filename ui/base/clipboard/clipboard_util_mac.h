@@ -10,7 +10,7 @@
 #include "base/component_export.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/memory/ref_counted.h"
-#include "ui/base/clipboard/clipboard_types.h"
+#include "ui/base/clipboard/clipboard_buffer.h"
 
 namespace ui {
 
@@ -70,8 +70,8 @@ class COMPONENT_EXPORT(BASE_CLIPBOARD) ClipboardUtil {
                                           NSArray** urls,
                                           NSArray** titles);
 
-  // Gets the NSPasteboard specified from the clipboard type.
-  static NSPasteboard* PasteboardFromType(ui::ClipboardType type);
+  // Gets the NSPasteboard specified from the clipboard buffer.
+  static NSPasteboard* PasteboardFromBuffer(ui::ClipboardBuffer buffer);
 
   // If there is RTF data on the pasteboard, returns an HTML version of it.
   // Otherwise returns nil.

@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 <style>
   .css-shape {
     shape-outside: circle();
@@ -21,17 +20,4 @@
   <img class="css-shape" src="resources/red-at-12-oclock-with-color-profile.jpg">
   <p>Lorem </p>
 </body>
-
-<script>
-window.onload = function() {
-  if (window.testRunner)
-    runAfterLayoutAndPaint(function() { testRunner.notifyDone() });
-};
-
-
-if (window.testRunner) {
-  testRunner.dumpAsTextWithPixelResults();
-  testRunner.waitUntilDone();
-}
-</script>
 </html>

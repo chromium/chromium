@@ -1,9 +1,9 @@
 # PLY package
 # Author: David Beazley (dave@dabeaz.com)
 # -----------------------------------------------------------------------------
-# ply: yacc.py
+# ply: __init__.py
 #
-# Copyright (C) 2001-2011,
+# Copyright (C) 2001-2018
 # David M. Beazley (Dabeaz LLC)
 # All rights reserved.
 #
@@ -33,4 +33,5 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # -----------------------------------------------------------------------------
 
+__version__ = '3.11'
 __all__ = ['lex','yacc']

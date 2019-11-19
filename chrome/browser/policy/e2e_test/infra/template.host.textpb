@@ -1,0 +1,131 @@
+# This file is used as a template to generate host files for our CI tests.
+# <xyz> tokens are replaced with real values by generate_host_files.py.
+
+project {
+  # ID of the project. Note that it's not the name of the project.
+  name: '<project_id>'
+
+  # All assets will be created in this zone. Note that this is NOT the region name.
+  zone: 'us-west1-b'
+}
+
+# Where the logs go.
+log_settings { admin_log: "admin" }
+
+
+storage {
+  # The GCS storage bucket.
+  bucket: "<storage_bucket>",
+
+  # all files used by CEL will be put under this directory.
+  prefix: "<storage_prefix>"
+}
+
+machine_type {
+  # Name must match the host_machine_type field in the windows_machine asset
+  # entries.
+  name: 'win2012r2'
+
+  # Going to specify instance properties for a new GCE instance. Alternatively,
+  # we could specify a GCE instance template name.
+  instance_properties {
+    # Go with 2 CPUs and 7.5GB of RAM. This is the GCE machine type, not to be
+    # confused with the CEL machine_type.
+    machineType: 'projects/${host.project.name}/zones/${host.project.zone}/machineTypes/n1-standard-2'
+
+    # Scheduling options. By default instances are not pre-emptible.
+    scheduling {
+      automaticRestart: true
+    }
+
+    # Disks. We only need one disk
+    disks {
+      # autoDelete must be set to true when specifying initializeParams.
+      # Otherwise the toolchain will remind you.
+      autoDelete: true
+
+      # ... which is a boot disk. This can be left out since the first disk
+      # will become the boot disk by default.
+      boot: true
+
+      initializeParams {
+        # This is a special form for referencing the URL property of the image
+        # object named windows-2012-r2. Furthermore, this image type is not
+        # defined in this file. Instead see the builtins.textpb file for a list
+        # of builtin host assets that can be included for convenience.
+        sourceImage: '${host.image.windows-2012-r2.url}'
+      }
+    }
+
+    # Note that we are leaving a bunch of fields out because their defaults are
+    # reasonable. See the GCE documentation, and in particular the REST API
+    # documentation for what these fields do. For our convenience, we generate
+    # a .proto file containing the Compute API schema which has the same
+    # information. This generated .proto file can be found at
+    # /schema/gcp/compute/compute-api.proto.
+  }
+}
+
+machine_type {
+  # Name must match the host_machine_type field in the windows_machine asset
+  # entries.
+  name: 'win2008r2'
+
+  instance_properties {
+    machineType: 'projects/${host.project.name}/zones/${host.project.zone}/machineTypes/n1-standard-2'
+
+    scheduling {
+      automaticRestart: true
+    }
+
+    disks {
+      autoDelete: true
+      boot: true
+
+      initializeParams {
+        sourceImage: '${host.image.windows-2008-r2.url}'
+      }
+    }
+  }
+}
+
+machine_type {
+  # Name must match the host_machine_type field in the windows_machine asset
+  # entries.
+  name: 'win2016'
+
+  instance_properties {
+    machineType: 'projects/${host.project.name}/zones/${host.project.zone}/machineTypes/n1-standard-2'
+
+    scheduling {
+      automaticRestart: true
+    }
+
+    disks {
+      autoDelete: true
+      boot: true
+
+      initializeParams {
+        sourceImage: '${host.image.windows-2016.url}'
+      }
+    }
+  }
+}
+
+machine_type {
+  name: 'win7'
+  nested_vm {
+    image: 'gs://<storage_bucket>/images/win7_sp1_ent_unlicensed.img'
+    user_name: 'win7'
+    password: 'pass@word!'
+  }
+}
+
+machine_type {
+  name: 'win10'
+  nested_vm {
+    image: 'gs://<storage_bucket>/images/win10_pro_1803.img'
+    user_name: 'win10'
+    password: 'pass@word!'
+  }
+}

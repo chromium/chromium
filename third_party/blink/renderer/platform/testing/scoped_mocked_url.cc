@@ -14,7 +14,7 @@ namespace test {
 ScopedMockedURL::ScopedMockedURL(const WebURL& url) : url_(url) {}
 
 ScopedMockedURL::~ScopedMockedURL() {
-  Platform::Current()->GetURLLoaderMockFactory()->UnregisterURL(url_);
+  url_test_helpers::RegisterMockedURLUnregister(url_);
 }
 
 ScopedMockedURLLoad::ScopedMockedURLLoad(const WebURL& full_url,

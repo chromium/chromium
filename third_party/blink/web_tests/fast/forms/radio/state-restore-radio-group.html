@@ -3,7 +3,7 @@
 <head>
 <script src="../../../resources/js-test.js"></script>
 </head>
-<body onload="runTest()">
+<body onload="setTimeout(runTest, 1)">
 <p>Test to restore form value states for a radio group.</p>
 <div id="console"></div>
 
@@ -16,14 +16,13 @@
 </div>
 
 <script>
+window.jsTestIsAsync = true;
 
 function runTest() {
     var parent = document.getElementById('parent');
     var state = document.getElementById('emptyOnFirstVisit');
     if (!state.value) {
         // First visit.
-        if (window.testRunner)
-            testRunner.waitUntilDone();
         state.value = 'visited';
 
         document.getElementById('input1').checked = true;
@@ -33,8 +32,7 @@ function runTest() {
         // Second visit.
         shouldBeTrue('document.getElementById("input1").checked');
         shouldBeFalse('document.getElementById("input2").checked');
-        if (window.testRunner)
-            testRunner.notifyDone();
+        finishJSTest();
     }
 }
 </script>

@@ -1,0 +1,14 @@
+# Copyright 2017 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+mojom = "//components/account_id/mojom/account_id.mojom"
+public_headers = [ "//components/account_id/account_id.h" ]
+traits_headers = [ "//components/account_id/mojom/account_id_traits.h" ]
+public_deps = [
+  "//components/account_id",
+]
+type_mappings = [
+  "signin.mojom.AccountType=::AccountType",
+  "signin.mojom.AccountId=::AccountId",
+]

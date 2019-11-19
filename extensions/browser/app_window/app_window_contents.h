@@ -46,7 +46,7 @@ class AppWindowContentsImpl : public AppWindowContents,
   // content::WebContentsObserver
   bool OnMessageReceived(const IPC::Message& message,
                          content::RenderFrameHost* sender) override;
-  void ReadyToCommitNavigation(content::NavigationHandle* handle) override;
+  void DidFinishNavigation(content::NavigationHandle* handle) override;
 
   void UpdateDraggableRegions(content::RenderFrameHost* sender,
                               const std::vector<DraggableRegion>& regions);

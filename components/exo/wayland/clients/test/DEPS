@@ -1,5 +1,6 @@
 specific_include_rules = {
   "run_all_client_perftests\.cc": [
+    "+components/viz/test/test_gpu_service_holder.h",
     "+mojo/core/embedder/embedder.h",
   ],
 }

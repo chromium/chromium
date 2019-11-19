@@ -7,13 +7,13 @@
 
 #include "base/logging.h"
 #include "base/time/time.h"
+#include "chrome/android/chrome_jni_headers/PrefetchBackgroundTask_jni.h"
+#include "chrome/browser/android/profile_key_util.h"
 #include "chrome/browser/offline_pages/prefetch/prefetch_service_factory.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_android.h"
+#include "chrome/browser/profiles/profile_key.h"
 #include "components/offline_pages/core/prefetch/prefetch_background_task.h"
 #include "components/offline_pages/core/prefetch/prefetch_dispatcher.h"
 #include "components/offline_pages/core/prefetch/prefetch_service.h"
-#include "jni/PrefetchBackgroundTask_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::ScopedJavaGlobalRef;
@@ -26,13 +26,12 @@ namespace prefetch {
 // JNI call to start request processing in scheduled mode.
 static jboolean JNI_PrefetchBackgroundTask_StartPrefetchTask(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jcaller,
-    const JavaParamRef<jobject>& jprofile) {
-  Profile* profile = ProfileAndroid::FromProfileAndroid(jprofile);
-  DCHECK(profile);
+    const JavaParamRef<jobject>& jcaller) {
+  ProfileKey* profile_key = ::android::GetLastUsedProfileKey();
+  DCHECK(profile_key);
 
   PrefetchService* prefetch_service =
-      PrefetchServiceFactory::GetForBrowserContext(profile);
+      PrefetchServiceFactory::GetForKey(profile_key);
   if (!prefetch_service)
     return false;
 

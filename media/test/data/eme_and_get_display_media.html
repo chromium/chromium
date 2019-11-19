@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<title>Test EME and getDisplayMedia()</title>
+<div id="logs"></div>
+<script src='eme_player_js/app_loader.js' type='text/javascript'></script>
+<script type='text/javascript'>
+  // This test only checks for 'createMediaRecorderBeforeMediaKeys' in the URL
+  // parameters. If it is there, then the MediaRecorder is setup and started
+  // before MediaKeys is created. If not there, then the MediaRecorder is only
+  // created after MediaKeys is created.
+  var createMediaRecorderBeforeMediaKeys =
+    (window.location.href.indexOf('createMediaRecorderBeforeMediaKeys') > -1);
+
+  // Use the default KEY_ID and KEY as specified in eme_player_js/globals.js.
+  const keyId = KEY_ID;
+  const key = KEY;
+
+  // Returns a MediaKeys object that is already setup with a single session
+  // containing the key needed to play a typical test file.
+  async function setUpEME() {
+    // This test doesn't play any media, so use a simple
+    // MediaKeySystemConfiguration that should be supported by
+    // all platforms where External ClearKey CDM is supported.
+    const config = [{
+      initDataTypes : [ 'keyids' ],
+      videoCapabilities: [{contentType: 'video/webm; codecs="vp8"'}],
+    }];
+    var access = await navigator.requestMediaKeySystemAccess(
+        OUTPUT_PROTECTION_TEST_KEYSYSTEM, config);
+    var mediaKeys = await access.createMediaKeys();
+    Utils.timeLog('Creating session');
+    var mediaKeySession = mediaKeys.createSession();
+
+    // Handle 'keystatuseschange' events. There will be one after update() is
+    // called, as well as a later one when output protection detects the media
+    // recording. As this is testing output protection, if it reports
+    // 'output-restricted', then the test is a success. If not, simply continue
+    // on.
+    mediaKeySession.addEventListener('keystatuseschange', function(event) {
+      var result = [];
+      for (let item of event.target.keyStatuses) {
+        result.push(`{kid:${
+            Utils.getHexString(
+                Utils.convertToUint8Array(item[0]))},status:${item[1]}}`);
+      }
+      Utils.timeLog('Event: keystatuseschange ' + result.join(','));
+      for (let item of event.target.keyStatuses) {
+        if (item[1] == 'output-restricted') {
+          Utils.setResultInTitle(UNIT_TEST_SUCCESS);
+        }
+      }
+    });
+
+    // Register for the 'message' event before it happens. Although the event
+    // shouldn't be generated until after the generateRequest() promise is
+    // resolved, the handlers may be queued before the JavaScript code runs
+    // (and thus be lost if an event handler is not registered).
+    const waitForMessagePromise = Utils.waitForEvent(
+        mediaKeySession, 'message', function(event, resolve, reject) {
+          // When the 'message' event happens, we know the key to be
+          // used, so simply call update() and then call |resolve| or
+          // |reject| as appropriate.
+          Utils.timeLog('Calling update()');
+          const mediaKeySession = event.target;
+          const jwkSet = Utils.createJWKData(keyId, key);
+          mediaKeySession.update(jwkSet).then(resolve, reject);
+        });
+
+    // As this is using 'webm' initDataType, the data to generateRequest()
+    // is simply the key ID.
+    Utils.timeLog('Calling generateRequest()');
+    const generateRequestPromise = mediaKeySession.generateRequest(
+        'webm', Utils.convertToUint8Array(keyId));
+
+    await Promise.all([generateRequestPromise, waitForMessagePromise]);
+    return mediaKeys;
+  }
+
+  // Return a MediaRecorder object setup to record something (browsertests set
+  // a flag to by default capture the screen, if run manually the user will
+  // have to select something).
+  async function setUpRecorder() {
+    Utils.timeLog(
+        'Creating MediaRecorder on navigator.mediaDevices.getDisplayMedia()');
+    captureStream = await navigator.mediaDevices.getDisplayMedia({});
+    var recorder = new MediaRecorder(captureStream, {});
+    recorder.addEventListener('start', function() {
+      Utils.timeLog('Event: MediaRecorder::start');
+    });
+    recorder.start();
+    return recorder;
+  }
+
+  async function sleep(timeout) {
+    return new Promise(function(resolve) {
+      Utils.timeLog('Sleeping for ' + timeout + 'ms');
+      window.setTimeout(function() {
+        resolve();
+      }, timeout);
+    });
+  }
+
+  async function runTest() {
+    Utils.resetTitleChange();
+
+    if (createMediaRecorderBeforeMediaKeys) {
+      // Create the MediaRecorder before setting up EME.
+      await setUpRecorder();
+    }
+
+    var mediaKeys = await setUpEME();
+
+    if (!createMediaRecorderBeforeMediaKeys) {
+      // Create the MediaRecorder after a delay of 1/2 second.
+      await sleep(500);
+      await setUpRecorder();
+    }
+  }
+
+  try {
+    runTest();
+  } catch (error) {
+    Utils.timeLog(error);
+    Utils.failTest('Failed test.');
+  }
+</script>
+</html>

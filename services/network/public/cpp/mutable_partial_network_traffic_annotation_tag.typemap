@@ -11,4 +11,4 @@ deps = [
   "//net/traffic_annotation",
 ]
 type_mappings = [ "network.mojom.MutablePartialNetworkTrafficAnnotationTag=" +
-                  "net::MutablePartialNetworkTrafficAnnotationTag" ]
+                  "::net::MutablePartialNetworkTrafficAnnotationTag" ]

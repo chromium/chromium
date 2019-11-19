@@ -14,9 +14,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/unguessable_token.h"
-#include "content/browser/devtools/devtools_url_loader_interceptor.h"
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
 #include "content/browser/devtools/protocol/network.h"
+#include "content/public/common/resource_type.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/net_errors.h"
 #include "net/cookies/canonical_cookie.h"
@@ -24,7 +24,6 @@
 
 namespace net {
 class HttpRequestHeaders;
-class URLRequest;
 class SSLInfo;
 class X509Certificate;
 }  // namespace net
@@ -39,14 +38,12 @@ namespace content {
 class BrowserContext;
 class DevToolsAgentHostImpl;
 class DevToolsIOContext;
+class DevToolsURLLoaderInterceptor;
 class RenderFrameHostImpl;
-class InterceptionHandle;
-class NavigationHandle;
+class RenderProcessHost;
 class NavigationRequest;
-class NavigationThrottle;
 class SignedExchangeEnvelope;
 class StoragePartition;
-struct GlobalRequestID;
 struct InterceptedRequestInfo;
 struct SignedExchangeError;
 
@@ -58,7 +55,8 @@ class NetworkHandler : public DevToolsDomainHandler,
  public:
   NetworkHandler(const std::string& host_id,
                  const base::UnguessableToken& devtools_token,
-                 DevToolsIOContext* io_context);
+                 DevToolsIOContext* io_context,
+                 base::RepeatingClosure update_loader_factories_callback);
   ~NetworkHandler() override;
 
   static std::vector<NetworkHandler*> ForAgentHost(DevToolsAgentHostImpl* host);
@@ -145,21 +143,29 @@ class NetworkHandler : public DevToolsDomainHandler,
       std::unique_ptr<TakeResponseBodyForInterceptionAsStreamCallback> callback)
       override;
 
+  // Note that |frame_token| below is for the frame that is associated with the
+  // factory being created, and is therefore not necessarily the same as one
+  // associated with the NetworkHandler itself (which is the token of the local
+  // root frame).
   bool MaybeCreateProxyForInterception(
-      RenderFrameHostImpl* rfh,
+      RenderProcessHost* rph,
+      const base::UnguessableToken& frame_token,
       bool is_navigation,
       bool is_download,
-      network::mojom::URLLoaderFactoryRequest* target_factory_request);
+      mojo::PendingReceiver<network::mojom::URLLoaderFactory>*
+          target_factory_receiver);
 
   void ApplyOverrides(net::HttpRequestHeaders* headers,
                       bool* skip_service_worker,
                       bool* disable_cache);
-  void NavigationRequestWillBeSent(const NavigationRequest& nav_request);
+  void NavigationRequestWillBeSent(const NavigationRequest& nav_request,
+                                   base::TimeTicks timestamp);
   void RequestSent(const std::string& request_id,
                    const std::string& loader_id,
                    const network::ResourceRequest& request,
                    const char* initiator_type,
-                   const base::Optional<GURL>& initiator_url);
+                   const base::Optional<GURL>& initiator_url,
+                   base::TimeTicks timestamp);
   void ResponseReceived(const std::string& request_id,
                         const std::string& loader_id,
                         const GURL& url,
@@ -180,6 +186,16 @@ class NetworkHandler : public DevToolsDomainHandler,
       const base::Optional<net::SSLInfo>& ssl_info,
       const std::vector<SignedExchangeError>& errors);
 
+  void OnRequestWillBeSentExtraInfo(
+      const std::string& devtools_request_id,
+      const net::CookieStatusList& request_cookie_list,
+      const std::vector<network::mojom::HttpRawHeaderPairPtr>& request_headers);
+  void OnResponseReceivedExtraInfo(
+      const std::string& devtools_request_id,
+      const net::CookieAndLineStatusList& response_cookie_list,
+      const std::vector<network::mojom::HttpRawHeaderPairPtr>& response_headers,
+      const base::Optional<std::string>& response_headers_text);
+
   bool enabled() const { return enabled_; }
 
   Network::Frontend* frontend() const { return frontend_.get(); }
@@ -188,16 +204,6 @@ class NetworkHandler : public DevToolsDomainHandler,
   static std::unique_ptr<Network::Request> CreateRequestFromResourceRequest(
       const network::ResourceRequest& request,
       const std::string& cookie_line);
-  static std::unique_ptr<Network::Request> CreateRequestFromURLRequest(
-      const net::URLRequest* request,
-      const std::string& cookie);
-
-  std::unique_ptr<NavigationThrottle> CreateThrottleForNavigation(
-      NavigationHandle* navigation_handle);
-  bool ShouldCancelNavigation(const GlobalRequestID& global_request_id);
-  void WillSendNavigationRequest(net::HttpRequestHeaders* headers,
-                                 bool* skip_service_worker,
-                                 bool* disable_cache);
 
  private:
   void RequestIntercepted(std::unique_ptr<InterceptedRequestInfo> request_info);
@@ -221,12 +227,12 @@ class NetworkHandler : public DevToolsDomainHandler,
   RenderFrameHostImpl* host_;
   bool enabled_;
   std::vector<std::pair<std::string, std::string>> extra_headers_;
-  std::unique_ptr<InterceptionHandle> interception_handle_;
   std::unique_ptr<DevToolsURLLoaderInterceptor> url_loader_interceptor_;
   bool bypass_service_worker_;
   bool cache_disabled_;
   std::unique_ptr<BackgroundSyncRestorer> background_sync_restorer_;
-  base::WeakPtrFactory<NetworkHandler> weak_factory_;
+  base::RepeatingClosure update_loader_factories_callback_;
+  base::WeakPtrFactory<NetworkHandler> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(NetworkHandler);
 };

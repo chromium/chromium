@@ -25,7 +25,7 @@ class PersistentTombstoneEntity : public LoopbackServerEntity {
 
   static std::unique_ptr<LoopbackServerEntity> CreateNew(
       const std::string& id,
-      const std::string& client_defined_unique_tag);
+      const std::string& client_tag_hash);
 
   // LoopbackServerEntity implementation.
   bool RequiresParentId() const override;
@@ -39,15 +39,15 @@ class PersistentTombstoneEntity : public LoopbackServerEntity {
   static std::unique_ptr<LoopbackServerEntity> CreateNewInternal(
       const std::string& id,
       int64_t version,
-      const std::string& client_defined_unique_tag);
+      const std::string& client_tag_hash);
 
   PersistentTombstoneEntity(const std::string& id,
                             int64_t version,
                             const syncer::ModelType& model_type,
-                            const std::string& client_defined_unique_tag);
+                            const std::string& client_tag_hash);
 
-  // The tag for this entity.
-  const std::string client_defined_unique_tag_;
+  // The tag hash for this entity.
+  const std::string client_tag_hash_;
 };
 
 }  // namespace syncer

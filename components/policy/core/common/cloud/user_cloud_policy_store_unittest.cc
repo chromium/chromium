@@ -8,7 +8,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
@@ -55,8 +55,8 @@ bool WriteStringToFile(const base::FilePath path, const std::string& data) {
 class UserCloudPolicyStoreTest : public testing::Test {
  public:
   UserCloudPolicyStoreTest()
-      : scoped_task_environment_(
-            base::test::ScopedTaskEnvironment::MainThreadType::UI) {}
+      : task_environment_(
+            base::test::SingleThreadTaskEnvironment::MainThreadType::UI) {}
 
   void SetUp() override {
     ASSERT_TRUE(tmp_dir_.CreateUniqueTempDir());
@@ -87,7 +87,7 @@ class UserCloudPolicyStoreTest : public testing::Test {
   }
 
   void InitPolicyPayload(enterprise_management::CloudPolicySettings* payload) {
-    payload->mutable_passwordmanagerenabled()->set_value(true);
+    payload->mutable_searchsuggestenabled()->set_value(true);
     payload->mutable_urlblacklist()->mutable_value()->add_entries(
         "chromium.org");
   }
@@ -104,7 +104,7 @@ class UserCloudPolicyStoreTest : public testing::Test {
   void VerifyPolicyMap(CloudPolicyStore* store) {
     EXPECT_EQ(2U, store->policy_map().size());
     const PolicyMap::Entry* entry =
-        store->policy_map().Get(key::kPasswordManagerEnabled);
+        store->policy_map().Get(key::kSearchSuggestEnabled);
     ASSERT_TRUE(entry);
     EXPECT_TRUE(base::Value(true).Equals(entry->value.get()));
     ASSERT_TRUE(store->policy_map().Get(key::kURLBlacklist));
@@ -135,7 +135,7 @@ class UserCloudPolicyStoreTest : public testing::Test {
   std::unique_ptr<UserCloudPolicyStore> store_;
   std::unique_ptr<MockCloudExternalDataManager> external_data_manager_;
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
 
   base::ScopedTempDir tmp_dir_;
 
@@ -330,7 +330,7 @@ TEST_F(UserCloudPolicyStoreTest, StoreTwoTimes) {
   // policy.
   UserPolicyBuilder first_policy;
   first_policy.SetDefaultInitialSigningKey();
-  first_policy.payload().mutable_passwordmanagerenabled()->set_value(false);
+  first_policy.payload().mutable_searchsuggestenabled()->set_value(false);
   first_policy.Build();
   StorePolicyAndEnsureLoaded(first_policy.policy());
 

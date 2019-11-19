@@ -2,9 +2,9 @@ This tests that the ARIA roles of list and listitem map correctly to Mac accessi
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-obj.childAtIndex(0).role = AXRole: AXList
-obj.childAtIndex(0).childAtIndex(0).role = AXRole: AXListItem
-obj.childAtIndex(0).childAtIndex(1).role = AXRole: AXListItem
+obj.childAtIndex(0).childAtIndex(0).role = AXRole: AXList
+obj.childAtIndex(0).childAtIndex(0).childAtIndex(0).role = AXRole: AXListItem
+obj.childAtIndex(0).childAtIndex(0).childAtIndex(1).role = AXRole: AXListItem
 PASS successfullyParsed is true
 
 TEST COMPLETE

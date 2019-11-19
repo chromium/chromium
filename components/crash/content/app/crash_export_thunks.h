@@ -68,13 +68,6 @@ void ClearReportsBetween_ExportThunk(time_t begin, time_t end);
 // |process|.
 bool DumpHungProcessWithPtype_ExportThunk(HANDLE process, const char* ptype);
 
-#if defined(ARCH_CPU_X86_64)
-// V8 support functions.
-void RegisterNonABICompliantCodeRange_ExportThunk(void* start,
-                                                  size_t size_in_bytes);
-void UnregisterNonABICompliantCodeRange_ExportThunk(void* start);
-#endif  // defined(ARCH_CPU_X86_64)
-
 }  // extern "C"
 
 #endif  // COMPONENTS_CRASH_CONTENT_APP_CRASH_EXPORT_THUNKS_H_

@@ -33,6 +33,7 @@
       type: "token"
     },
     {name: "aria-describedby", type: "IDREF_list"},
+    {name: "aria-description", type: "string"},
     {name: "aria-details", type: "IDREF"},
     {name: "aria-disabled", default: "false", type: "boolean"},
     {

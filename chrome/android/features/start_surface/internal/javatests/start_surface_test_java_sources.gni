@@ -1,0 +1,8 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+start_surface_test_java_sources = [
+  "//chrome/android/features/start_surface/internal/javatests/src/org/chromium/chrome/features/start_surface/StartSurfaceLayoutPerfTest.java",
+  "//chrome/android/features/start_surface/internal/javatests/src/org/chromium/chrome/features/start_surface/StartSurfaceLayoutTest.java",
+]

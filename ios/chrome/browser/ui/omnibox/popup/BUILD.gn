@@ -11,58 +11,125 @@ source_set("popup") {
     "omnibox_popup_presenter.h",
     "omnibox_popup_presenter.mm",
     "omnibox_popup_provider.h",
-    "omnibox_popup_view_controller.h",
-    "omnibox_popup_view_controller.mm",
     "omnibox_popup_view_ios.h",
     "omnibox_popup_view_ios.mm",
     "omnibox_popup_view_suggestions_delegate.h",
   ]
   deps = [
     ":popup_internal",
+    ":popup_ui",
     "//base",
     "//components/image_fetcher/ios",
     "//components/omnibox/browser",
     "//components/open_from_clipboard",
+    "//components/search_engines",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
-    "//ios/chrome/browser/ui:ui",
+    "//ios/chrome/browser/favicon",
+    "//ios/chrome/browser/search_engines",
+    "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/ntp:util",
-    "//ios/chrome/browser/ui/omnibox:omnibox_popup_shared",
     "//ios/chrome/browser/ui/omnibox:omnibox_util",
     "//ios/chrome/browser/ui/omnibox/popup/shortcuts",
     "//ios/chrome/browser/ui/toolbar/buttons",
+    "//ios/chrome/browser/ui/toolbar/public",
     "//ios/chrome/browser/ui/toolbar/public:feature_flags",
-    "//ios/chrome/browser/ui/toolbar/public:public",
     "//ios/chrome/browser/ui/util",
-    "//ios/chrome/browser/ui/util:util",
     "//ios/chrome/browser/web_state_list:web_state_list",
+    "//ios/chrome/common/colors",
+    "//ios/chrome/common/favicon",
+    "//ios/chrome/common/ui_util",
     "//ios/web/public:public",
     "//net",
+    "//ui/base",
+  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+source_set("popup_accessibility_identifier_constants") {
+  sources = [
+    "omnibox_popup_accessibility_identifier_constants.h",
+    "omnibox_popup_accessibility_identifier_constants.mm",
+  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+source_set("popup_ui") {
+  sources = [
+    "autocomplete_result_consumer.h",
+    "autocomplete_suggestion.h",
+    "favicon_retriever.h",
+    "image_retriever.h",
+    "omnibox_icon.h",
+    "omnibox_icon_view.h",
+    "omnibox_icon_view.mm",
+    "omnibox_popup_base_view_controller+internal.h",
+    "omnibox_popup_base_view_controller.h",
+    "omnibox_popup_base_view_controller.mm",
+    "omnibox_popup_legacy_view_controller.h",
+    "omnibox_popup_legacy_view_controller.mm",
+    "omnibox_popup_row.h",
+    "omnibox_popup_row.mm",
+    "omnibox_popup_row_cell.h",
+    "omnibox_popup_row_cell.mm",
+    "omnibox_popup_view_controller.h",
+    "omnibox_popup_view_controller.mm",
+    "self_sizing_table_view.h",
+    "self_sizing_table_view.mm",
+    "simple_omnibox_icon.h",
+    "simple_omnibox_icon.mm",
+  ]
+  deps = [
+    ":popup_accessibility_identifier_constants",
+    "resources:omnibox_popup_tab_match",
+    "resources:omnibox_suggestion_answer_icon_color",
+    "resources:omnibox_suggestion_answer_icon_dark_color",
+    "resources:omnibox_suggestion_icon_color",
+    "resources:omnibox_suggestion_icon_dark_color",
+    "//base",
+    "//components/omnibox/common",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/app/theme",
+    "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/ui/colors",
+    "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/elements",
+    "//ios/chrome/browser/ui/ntp_tile_views",
+    "//ios/chrome/browser/ui/omnibox:omnibox_popup_shared",
+    "//ios/chrome/browser/ui/omnibox:omnibox_suggestion_icon_util",
+    "//ios/chrome/browser/ui/toolbar/buttons",
+    "//ios/chrome/browser/ui/toolbar/public",
+    "//ios/chrome/browser/ui/util",
+    "//ios/chrome/common/colors",
+    "//ios/chrome/common/ui_util",
+    "//ios/public/provider/chrome/browser",
+    "//ios/public/provider/chrome/browser/images",
+    "//ui/base",
+    "//url",
   ]
   configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("popup_internal") {
   sources = [
-    "omnibox_popup_row.h",
-    "omnibox_popup_row.mm",
-    "self_sizing_table_view.h",
-    "self_sizing_table_view.mm",
+    "autocomplete_match_formatter.h",
+    "autocomplete_match_formatter.mm",
+    "omnibox_icon_formatter.h",
+    "omnibox_icon_formatter.mm",
   ]
   deps = [
-    "resources:omnibox_popup_tab_match",
+    ":popup_ui",
     "//base",
-    "//components/image_fetcher/ios",
     "//components/omnibox/browser",
-    "//ios/chrome/app/theme:theme",
     "//ios/chrome/browser/browser_state",
-    "//ios/chrome/browser/ui/omnibox:omnibox_popup_shared",
-    "//ios/chrome/browser/ui/toolbar/public",
+    "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/ui/colors",
+    "//ios/chrome/browser/ui/omnibox:omnibox_util",
     "//ios/chrome/browser/ui/util",
-    "//ios/chrome/browser/ui/util:util",
-    "//net",
+    "//ios/chrome/common/colors",
+    "//ios/third_party/material_components_ios",
   ]
   configs += [ "//build/config/compiler:enable_arc" ]
 }
@@ -71,16 +138,17 @@ source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
+    "omnibox_popup_row_cell_unittest.mm",
     "omnibox_popup_view_controller_unittest.mm",
   ]
   deps = [
     ":popup",
     ":popup_internal",
+    ":popup_ui",
     "//base",
     "//components/omnibox/browser",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser",
-    "//ios/chrome/browser/ui/omnibox:omnibox_internal",
     "//testing/gtest",
     "//ui/base",
   ]
@@ -92,19 +160,44 @@ source_set("eg_tests") {
     "omnibox_popup_egtest.mm",
   ]
   deps = [
+    ":popup_accessibility_identifier_constants",
     ":popup_internal",
+    ":popup_ui",
     "//base",
     "//base/test:test_support",
     "//components/omnibox/browser",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/content_suggestions:content_suggestions_constant",
-    "//ios/chrome/browser/ui/tab_grid:egtest_support",
     "//ios/chrome/test/app:test_support",
     "//ios/chrome/test/earl_grey:test_support",
     "//ios/testing/earl_grey:earl_grey_support",
     "//ios/third_party/earl_grey:earl_grey+link",
+    "//net:test_support",
     "//testing/gmock",
   ]
   libs = [ "XCTest.framework" ]
   configs += [ "//build/config/compiler:enable_arc" ]
+  defines = [ "CHROME_EARL_GREY_1" ]
+}
+
+source_set("eg2_tests") {
+  defines = [ "CHROME_EARL_GREY_2" ]
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+  sources = [
+    "omnibox_popup_egtest.mm",
+  ]
+  deps = [
+    ":popup_accessibility_identifier_constants",
+    "//base",
+    "//ios/chrome/browser/ui/content_suggestions:content_suggestions_constant",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/third_party/earl_grey2:test_lib",
+    "//net:test_support",
+  ]
+  libs = [ "UIKit.framework" ]
 }

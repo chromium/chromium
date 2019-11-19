@@ -23,12 +23,18 @@ class BackgroundDrainer;
 // as the backend, rather than TraceLog. It will directly stream
 // protos to a file specified with the '--perfetto-output-file'
 // switch.
-class PerfettoFileTracer : public tracing::mojom::TracingSession {
+class PerfettoFileTracer : public tracing::mojom::TracingSessionClient {
  public:
   PerfettoFileTracer();
   ~PerfettoFileTracer() override;
 
   static bool ShouldEnable();
+
+  // tracing::mojom::TracingSessionClient implementation:
+  void OnTracingEnabled() override;
+  void OnTracingDisabled() override;
+
+  bool is_finished_for_testing() const { return !background_drainer_; }
 
  private:
   void OnNoMorePackets(bool queued_after_disable);
@@ -38,11 +44,12 @@ class PerfettoFileTracer : public tracing::mojom::TracingSession {
 
   const scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
   base::SequenceBound<BackgroundDrainer> background_drainer_;
-  mojo::Binding<tracing::mojom::TracingSession> binding_;
+  mojo::Binding<tracing::mojom::TracingSessionClient> binding_{this};
+  tracing::mojom::TracingSessionHostPtr tracing_session_host_;
   tracing::mojom::ConsumerHostPtr consumer_host_;
   bool has_been_disabled_ = false;
 
-  base::WeakPtrFactory<PerfettoFileTracer> weak_factory_;
+  base::WeakPtrFactory<PerfettoFileTracer> weak_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(PerfettoFileTracer);
 };
 

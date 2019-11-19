@@ -124,7 +124,7 @@ LayoutTable* LayoutTableCol::Table() const {
   LayoutObject* table = Parent();
   if (table && !table->IsTable())
     table = table->Parent();
-  return table && table->IsTable() ? ToLayoutTable(table) : nullptr;
+  return table && table->IsTable() ? To<LayoutTable>(table) : nullptr;
 }
 
 LayoutTableCol* LayoutTableCol::EnclosingColumnGroup() const {

@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+FAIL Property text-decoration value 'none' computes to 'rgb(0, 0, 255)' assert_equals: expected "rgb(0, 0, 255)" but got "none solid rgb(0, 0, 255)"
+FAIL Property text-decoration value 'line-through' computes to 'line-through rgb(0, 0, 255)' assert_equals: expected "line-through rgb(0, 0, 255)" but got "line-through solid rgb(0, 0, 255)"
+FAIL Property text-decoration value 'solid' computes to 'rgb(0, 0, 255)' assert_equals: expected "rgb(0, 0, 255)" but got "none solid rgb(0, 0, 255)"
+FAIL Property text-decoration value 'currentcolor' computes to 'rgb(0, 0, 255)' assert_equals: expected "rgb(0, 0, 255)" but got "none solid rgb(0, 0, 255)"
+PASS Property text-decoration value 'double overline underline' computes to 'underline overline double rgb(0, 0, 255)'
+FAIL Property text-decoration value 'underline overline line-through red' computes to 'underline overline line-through rgb(255, 0, 0)' assert_equals: expected "underline overline line-through rgb(255, 0, 0)" but got "underline overline line-through solid rgb(255, 0, 0)"
+FAIL Property text-decoration value 'rgba(10, 20, 30, 0.4) dotted' computes to 'dotted rgba(10, 20, 30, 0.4)' assert_equals: expected "dotted rgba(10, 20, 30, 0.4)" but got "none dotted rgba(10, 20, 30, 0.4)"
+PASS Property text-decoration value 'underline dashed rgb(0, 255, 0)' computes to 'underline dashed rgb(0, 255, 0)'
+FAIL Property text-decoration value 'auto' computes to 'rgb(0, 0, 255)' assert_true: 'auto' is a supported value for text-decoration. expected true got false
+FAIL Property text-decoration value 'from-font' computes to 'rgb(0, 0, 255) from-font' assert_true: 'from-font' is a supported value for text-decoration. expected true got false
+FAIL Property text-decoration value '10px' computes to 'rgb(0, 0, 255) 10px' assert_true: '10px' is a supported value for text-decoration. expected true got false
+FAIL Property text-decoration value 'underline red from-font' computes to 'underline rgb(255, 0, 0) from-font' assert_true: 'underline red from-font' is a supported value for text-decoration. expected true got false
+Harness: the test ran to completion.
+

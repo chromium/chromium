@@ -38,7 +38,7 @@ void GetRequestsDone(RequestQueue::GetRequestsCallback callback,
 }  // namespace
 
 RequestQueue::RequestQueue(std::unique_ptr<RequestQueueStore> store)
-    : store_(std::move(store)), task_queue_(this), weak_ptr_factory_(this) {
+    : store_(std::move(store)), task_queue_(this) {
   Initialize();
 }
 
@@ -131,7 +131,6 @@ void RequestQueue::MarkAttemptDeferred(int64_t request_id,
 
 void RequestQueue::PickNextRequest(
     OfflinerPolicy* policy,
-    ClientPolicyController* policy_controller,
     PickRequestTask::RequestPickedCallback picked_callback,
     PickRequestTask::RequestNotPickedCallback not_picked_callback,
     PickRequestTask::RequestCountCallback request_count_callback,
@@ -140,7 +139,7 @@ void RequestQueue::PickNextRequest(
     base::circular_deque<int64_t>* prioritized_requests) {
   // Using the PickerContext, create a picker task.
   std::unique_ptr<Task> task(new PickRequestTask(
-      store_.get(), policy, policy_controller, std::move(picked_callback),
+      store_.get(), policy, std::move(picked_callback),
       std::move(not_picked_callback), std::move(request_count_callback),
       std::move(conditions), disabled_requests, prioritized_requests));
 

@@ -13,9 +13,9 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/signin/core/browser/account_info.h"
-#include "components/signin/core/browser/signin_buildflags.h"
-#include "components/signin/core/browser/signin_metrics.h"
+#include "components/signin/public/base/signin_buildflags.h"
+#include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/layout/fill_layout.h"
@@ -64,7 +64,7 @@ PasswordSignInPromoView::PasswordSignInPromoView(
         signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE);
     auto label = std::make_unique<views::Label>(
         l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_SIGNIN_PROMO_LABEL),
-        CONTEXT_BODY_TEXT_LARGE, STYLE_SECONDARY);
+        CONTEXT_BODY_TEXT_LARGE, views::style::STYLE_SECONDARY);
     label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     label->SetMultiLine(true);
     AddChildView(label.release());

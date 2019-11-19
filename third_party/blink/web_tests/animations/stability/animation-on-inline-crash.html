@@ -1,6 +1,6 @@
 <style>
     .box {
-      position: relative; 
+      position: relative;
       animation-delay: 5ms;
       animation-name: anim;
     }
@@ -8,20 +8,15 @@
       from { transform: translateX(10px); }
     }
 </style>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
 <script type="text/javascript" charset="utf-8">
-    if (window.testRunner) {
-        testRunner.dumpAsText();
-        testRunner.waitUntilDone();
-    }
-    
+    var test = async_test("Test passes if it does not crash when inline node has animation");
+
     function waitForAnimation()
     {
-        window.setTimeout(function() {
-            if (window.testRunner)
-                testRunner.notifyDone();
-        }, 50);
+        test.step_timeout(test.step_func_done(() => {}), 50);
     }
-    window.addEventListener('load', waitForAnimation, false);
+    window.addEventListener('load', test.step_func(waitForAnimation), false);
 </script>
-<p>Test passes if it does not crash.</p>
 <span class="box">Hello world</span>

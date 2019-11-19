@@ -17,8 +17,6 @@ class ScriptState;
 // context should be implemented in this class, not in ModulatorImplBase.
 class WorkerModulatorImpl final : public ModulatorImplBase {
  public:
-  static ModulatorImplBase* Create(ScriptState*);
-
   explicit WorkerModulatorImpl(ScriptState*);
 
   // Implements ModulatorImplBase.

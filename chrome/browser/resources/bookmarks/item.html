@@ -1,16 +1,4 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
 
-<link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_icons_css.html">
-<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
-<link rel="import" href="chrome://resources/html/icon.html">
-<link rel="import" href="actions.html">
-<link rel="import" href="shared_style.html">
-<link rel="import" href="store_client.html">
-<link rel="import" href="strings.html">
-
-<dom-module id="bookmarks-item">
-  <template>
     <style include="shared-style cr-icons">
       :host {
         align-items: center;
@@ -28,9 +16,15 @@
         background-color: var(--highlight-color);
       }
 
-      :host-context([dark]):host([is-selected-item_]),
-      :host-context([dark]):host([is-selected-item_]) .folder-icon {
-        color: var(--google-grey-refresh-700);
+      :host([is-selected-item_]) cr-icon-button {
+        --cr-icon-button-focus-color: var(--highlight-color);
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :host([is-selected-item_]),
+        :host([is-selected-item_]) .folder-icon {
+          color: var(--google-grey-refresh-700);
+        }
       }
 
       #website-title {
@@ -44,8 +38,10 @@
         flex: 0 auto;
       }
 
-      :host-context([dark]):host([is-selected-item_]) #website-title {
-        color: var(--google-grey-900);
+      @media (prefers-color-scheme: dark) {
+        :host([is-selected-item_]) #website-title {
+          color: var(--google-grey-900);
+        }
       }
 
       #website-url {
@@ -57,8 +53,10 @@
         min-width: 100px;
       }
 
-      :host-context([dark]) #website-url {
-        color: var(--google-grey-800);
+      @media (prefers-color-scheme: dark) {
+        #website-url {
+          color: var(--google-grey-800);
+        }
       }
 
       :host([is-selected-item_]) #website-url {
@@ -73,12 +71,20 @@
         margin-inline-end: 12px;
       }
 
-      :host-context([dark]):host([is-selected-item_]) cr-icon-button {
-        --cr-icon-button-ripple-color: var(--google-grey-700);
+      @media (prefers-color-scheme: dark) {
+        :host([is-selected-item_]) cr-icon-button {
+          --cr-icon-button-color: var(--google-grey-700);
+        }
       }
 
       :host(:focus) {
         z-index: 1;
+      }
+
+      .elided-text {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
     </style>
     <div id="icon"></div>
@@ -88,13 +94,11 @@
     <div id="website-url" class="elided-text" title="[[item_.url]]">
       [[item_.url]]
     </div>
-    <cr-icon-button class$="[[crIcon_]]"
+    <cr-icon-button class="icon-more-vert"
         id="menuButton"
         tabindex="[[ironListTabIndex]]"
         title="$i18n{moreActionsButtonTitle}"
-        aria-label$="[[getButtonAriaLabel_(item_)]]"
+        aria-label$="[[getButtonAriaLabel_(item_, isSelectedItem_,
+            isMultiSelect_)]]"
         on-click="onMenuButtonClick_"
         aria-haspopup="menu"></cr-icon-button>
-  </template>
-  <script src="item.js"></script>
-</dom-module>

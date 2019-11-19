@@ -110,7 +110,7 @@ class VIZ_COMMON_EXPORT ContextCacheController {
   uint32_t current_idle_generation_ = 0;
 
   base::WeakPtr<ContextCacheController> weak_ptr_;
-  base::WeakPtrFactory<ContextCacheController> weak_factory_;
+  base::WeakPtrFactory<ContextCacheController> weak_factory_{this};
 };
 
 }  // namespace viz

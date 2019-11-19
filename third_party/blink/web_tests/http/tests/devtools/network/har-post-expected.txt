@@ -36,3 +36,12 @@ request: {
   }
 }
 
+request: {
+  "url": "http://127.0.0.1:8000/devtools/network/resources/echo-payload.php",
+  "bodySize": 2,
+  "postData": {
+    "mimeType": "",
+    "text": "Cr"
+  }
+}
+

@@ -12,14 +12,7 @@ namespace auto_screen_brightness {
 
 ModelConfig::ModelConfig() = default;
 
-ModelConfig::ModelConfig(const ModelConfig& config) {
-  auto_brightness_als_horizon_seconds =
-      config.auto_brightness_als_horizon_seconds;
-  log_lux = config.log_lux;
-  brightness = config.brightness;
-  metrics_key = config.metrics_key;
-  model_als_horizon_seconds = config.model_als_horizon_seconds;
-}
+ModelConfig::ModelConfig(const ModelConfig& config) = default;
 
 ModelConfig::~ModelConfig() = default;
 
@@ -27,6 +20,9 @@ bool ModelConfig::operator==(const ModelConfig& config) const {
   const double kTol = 1e-10;
   if (std::abs(auto_brightness_als_horizon_seconds -
                config.auto_brightness_als_horizon_seconds) >= kTol)
+    return false;
+
+  if (enabled != config.enabled)
     return false;
 
   if (log_lux.size() != config.log_lux.size())
@@ -60,7 +56,7 @@ bool IsValidModelConfig(const ModelConfig& model_config) {
     return false;
 
   if (model_config.log_lux.size() != model_config.brightness.size() ||
-      model_config.brightness.empty())
+      model_config.brightness.size() < 2)
     return false;
 
   if (model_config.metrics_key.empty())

@@ -13,7 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observer.h"
 #include "base/time/time.h"
-#include "chromeos/dbus/power_manager_client.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "ui/events/devices/input_device_event_observer.h"
 #include "ui/events/event_handler.h"
 
@@ -89,7 +89,7 @@ class ASH_EXPORT PowerButtonDisplayController
   // order to force the backlights off.
   std::unique_ptr<ScopedBacklightsForcedOff> backlights_forced_off_;
 
-  base::WeakPtrFactory<PowerButtonDisplayController> weak_ptr_factory_;
+  base::WeakPtrFactory<PowerButtonDisplayController> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PowerButtonDisplayController);
 };

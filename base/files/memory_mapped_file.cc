@@ -46,6 +46,13 @@ bool MemoryMappedFile::Initialize(const FilePath& file_name, Access access) {
     case READ_WRITE_EXTEND:
       // Can't open with "extend" because no maximum size is known.
       NOTREACHED();
+      break;
+#if defined(OS_WIN)
+    case READ_CODE_IMAGE:
+      flags |= File::FLAG_OPEN | File::FLAG_READ | File::FLAG_EXCLUSIVE_WRITE |
+               File::FLAG_EXECUTE;
+      break;
+#endif
   }
   file_.Initialize(file_name, flags);
 
@@ -90,6 +97,13 @@ bool MemoryMappedFile::Initialize(File file,
         return false;
       }
       break;
+#if defined(OS_WIN)
+    case READ_CODE_IMAGE:
+      // Can't open with "READ_CODE_IMAGE", not supported outside Windows
+      // or with a |region|.
+      NOTREACHED();
+      break;
+#endif
   }
 
   if (IsValid())

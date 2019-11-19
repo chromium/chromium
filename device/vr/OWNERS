@@ -1,6 +1,7 @@
+alcooper@chromium.org
 bajones@chromium.org
-billorr@chromium.org
-mthiesse@chromium.org
+bialpio@chromium.org
+jacde@chromium.org
 
 per-file *.mojom=set noparent
 per-file *.mojom=file://ipc/SECURITY_OWNERS

@@ -10,7 +10,7 @@ namespace test {
 // This is a copy of the same named method in ::testing::internal.
 // TODO(jamessynge): See about getting something like VERIFY_* adopted by
 // gUnit (probably a very difficult task!).
-Http2String GetBoolAssertionFailureMessage(
+std::string GetBoolAssertionFailureMessage(
     const ::testing::AssertionResult& assertion_result,
     const char* expression_text,
     const char* actual_predicate_value,

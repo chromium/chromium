@@ -15,13 +15,8 @@
 #include "net/socket/next_proto.h"
 #include "net/socket/socket.h"
 
-namespace crypto {
-class ECPrivateKey;
-}
-
 namespace net {
 
-class ChannelIDService;
 class IPEndPoint;
 class NetLogWithSource;
 class SSLCertRequestInfo;
@@ -149,17 +144,6 @@ class NET_EXPORT StreamSocket : public Socket {
   // does not support SSL.
   virtual void GetSSLCertRequestInfo(
       SSLCertRequestInfo* cert_request_info) const;
-
-  // Returns the ChannelIDService used by this socket, or NULL if
-  // channel ids are not supported.  Must not be called on a socket that does
-  // not support SSL.
-  virtual ChannelIDService* GetChannelIDService() const;
-
-  // This method is only for debugging https://crbug.com/548423 and will be
-  // removed when that bug is closed. This returns the channel ID key that was
-  // used when establishing the connection (or NULL if no channel ID was used).
-  // Must not be called on a socket that does not support SSL.
-  virtual crypto::ECPrivateKey* GetChannelIDKey() const;
 
   // Overwrites |out| with the connection attempts made in the process of
   // connecting this socket.

@@ -123,13 +123,9 @@ class MockDRTPort(object):
         env['PATH'] = self.host.environ.get('PATH')
         return env
 
-    def lookup_virtual_test_args(self, test_name):
-        suite = self.__delegate.lookup_virtual_suite(test_name)
-        return suite.args + ['--virtual-test-suite-name', suite.name, '--virtual-test-suite-base', suite.base]
-
-    def lookup_virtual_reference_args(self, test_name):
-        suite = self.__delegate.lookup_virtual_suite(test_name)
-        return suite.reference_args + ['--virtual-test-suite-name', suite.name, '--virtual-test-suite-base', suite.base]
+    def _lookup_virtual_test_args(self, test_name):
+        # MockDRTPort doesn't support virtual test suites.
+        raise NotImplmentedError()
 
 
 def main(argv, host, stdin, stdout, stderr):
@@ -154,8 +150,6 @@ def parse_options(argv):
     options = optparse.Values({
         'actual_directory': get_arg('--actual-directory'),
         'platform': get_arg('--platform'),
-        'virtual_test_suite_base': get_arg('--virtual-test-suite-base'),
-        'virtual_test_suite_name': get_arg('--virtual-test-suite-name'),
     })
     return (options, argv)
 
@@ -208,9 +202,6 @@ class MockDRT(object):
 
     def output_for_test(self, test_input, is_reftest):
         port = self._port
-        if self._options.virtual_test_suite_name:
-            test_input.test_name = test_input.test_name.replace(
-                self._options.virtual_test_suite_base, self._options.virtual_test_suite_name)
         actual_text = port.expected_text(test_input.test_name)
         actual_audio = port.expected_audio(test_input.test_name)
         actual_image = None

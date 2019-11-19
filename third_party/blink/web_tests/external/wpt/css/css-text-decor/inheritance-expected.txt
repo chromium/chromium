@@ -1,0 +1,21 @@
+This is a testharness.js-based test.
+PASS Property text-decoration-color has initial value rgba(2, 3, 4, 0.5)
+PASS Property text-decoration-color does not inherit
+PASS Property text-decoration-line has initial value none
+PASS Property text-decoration-line does not inherit
+PASS Property text-decoration-style has initial value solid
+PASS Property text-decoration-style does not inherit
+FAIL Property text-emphasis-color has initial value rgba(2, 3, 4, 0.5) assert_true: text-emphasis-color doesn't seem to be supported in the computed style expected true got false
+FAIL Property text-emphasis-color inherits assert_true: text-emphasis-color doesn't seem to be supported in the computed style expected true got false
+FAIL Property text-emphasis-position has initial value over right assert_true: text-emphasis-position doesn't seem to be supported in the computed style expected true got false
+FAIL Property text-emphasis-position inherits assert_true: text-emphasis-position doesn't seem to be supported in the computed style expected true got false
+FAIL Property text-emphasis-style has initial value none assert_true: text-emphasis-style doesn't seem to be supported in the computed style expected true got false
+FAIL Property text-emphasis-style inherits assert_true: text-emphasis-style doesn't seem to be supported in the computed style expected true got false
+PASS Property text-shadow has initial value none
+PASS Property text-shadow inherits
+PASS Property text-underline-position has initial value auto
+PASS Property text-underline-position inherits
+PASS Property text-decoration-skip-ink has initial value auto
+PASS Property text-decoration-skip-ink inherits
+Harness: the test ran to completion.
+

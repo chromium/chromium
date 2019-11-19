@@ -1,10 +1,14 @@
 specific_include_rules = {
+  "headless_browser_browsertest.cc": [
+    "+third_party/crashpad/crashpad/client",
+  ],
   "headless_content_main_delegate.cc": [
     "+cc/base/switches.h",
     "+components/viz/common/switches.h",
   ],
   "headless_web_contents_browsertest.cc": [
     "+cc/base/switches.h",
+    "+cc/test",
     "+components/viz/common/features.h",
     "+components/viz/common/switches.h",
     "+pdf",

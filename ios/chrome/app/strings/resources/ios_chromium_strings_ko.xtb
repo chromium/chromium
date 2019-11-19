@@ -5,6 +5,8 @@
 <translation id="1185134272377778587">Chromium 정보</translation>
 <translation id="1289966288285062467">Chromium 개인정보처리방침</translation>
 <translation id="1472013873724362412">계정이 Chromium에서 작동하지 않습니다. 도메인 관리자에게 문의하거나 일반 Google 계정을 사용하여 로그인하세요.</translation>
+<translation id="1507010443238049608">Chromium의 기능 및 성능 개선에 참여</translation>
+<translation id="1617663976202781617">Chromium 동기화 데이터</translation>
 <translation id="1736662517232558588">Chromium 데이터 삭제 완료</translation>
 <translation id="1838412507805038478">Chromium이 <ph name="ISSUER" />에서 이 웹사이트의 인증서를 발행했음을 확인했습니다.</translation>
 <translation id="1843424232666537147">Chromium에는 사용자가 간편하게 인터넷 데이터 및 웹페이지 로드 시간을 관리할 수 있는 기능이 있습니다.
@@ -13,24 +15,16 @@
 <translation id="2168108852149185974">일부 부가기능이 Chromium의 비정상 종료를 유발합니다. 다음을 제거하세요.</translation>
 <translation id="2178608107313874732">지금 Chromium에서 카메라를 사용할 수 없습니다.</translation>
 <translation id="2195025571279539885">다음에 Chromium에서 이 사이트의 <ph name="LANGUAGE_NAME" /> 페이지를 번역하시겠습니까?</translation>
-<translation id="2517624234762908348">Chromium 데이터 동기화</translation>
-<translation id="2647554856022461007">Chromium에서 사용자에게 더 나은 인터넷 사용 환경을 제공하기 위해 웹 서비스를 사용할 수 있습니다. 원하는 경우 서비스를 사용 중지하실 수 있습니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
+<translation id="2590893390871230428">Chromium 데이터 동기화</translation>
 <translation id="2730884209570016437">다른 애플리케이션에서 카메라를 사용하고 있으므로 Chromium에서 카메라를 사용할 수 없습니다.</translation>
 <translation id="2915596697727466327">Chromium은 얼굴 ID를 사용하여 승인된 사용자만 비밀번호에 액세스할 수 있도록 합니다.</translation>
 <translation id="3256316712990552818">Chromium에 복사됨</translation>
-<translation id="3413120535237193088">어느 기기에서나 내 북마크를 사용하려면 Chromium에 로그인하세요.</translation>
-<translation id="3473048256428424907">Chromium QR 스캐너 사용 설정</translation>
-<translation id="3605252743693911722">Chromium에 로그인하여 모든 기기에서 내 북마크, 비밀번호 등을 사용하세요.</translation>
 <translation id="3805899903892079518">Chromium에서 사진 또는 동영상에 액세스할 수 없습니다. 'iOS 설정 &gt; 개인정보 보호 &gt; 사진'에서 액세스를 허용하세요.</translation>
-<translation id="4024541897090868497">어느 기기에서나 내 탭을 사용하려면 Chromium에 로그인하세요.</translation>
-<translation id="4157467675761413638">Chromium 도움말. 더 많은 탭 옵션을 보려면 화면 하단이나 상단에 있는 툴바에서 탭 표시 버튼을 길게 누릅니다.</translation>
-<translation id="4241912885070669028"><ph name="SIGNOUT_MANAGED_DOMAIN" />에서 관리하는 계정에서 로그아웃합니다. 이렇게 하면 내 Chromium 데이터가 이 기기에서 삭제되지만 Google 계정에는 그대로 유지됩니다.</translation>
-<translation id="4272892696084633551">Chromium의 기능 및 성능 개선에 참여</translation>
 <translation id="4555020257205549924">이 기능을 사용하면 Chromium에서 Google 번역을 사용하여 외국어로 작성된 페이지를 번역합니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
+<translation id="4681781466797808448">Chromium 스캐너 사용</translation>
 <translation id="4787850887676698916">다른 기기의 Chromium에서 연 탭이 여기에 표시됩니다.</translation>
-<translation id="495292094137889840">Chromium QR 스캐너 사용 시작</translation>
 <translation id="4999538639245140991"><ph name="SIGNOUT_MANAGED_DOMAIN" />에서 관리하는 계정에서 로그아웃하면 Chromium 데이터가 기기에서 삭제되나 Google 계정에는 그대로 유지됩니다.</translation>
-<translation id="5231355151045086930">Chromium에서 로그아웃</translation>
+<translation id="5573014823074921752">Chromium 도움말. 더 많은 탭 옵션을 보려면 화면 하단이나 상단에 있는 툴바에서 탭 표시 버튼을 길게 터치하세요.</translation>
 <translation id="5862307444128926510">Chromium에 오신 것을 환영합니다.</translation>
 <translation id="5945387852661427312"><ph name="DOMAIN" />에서 관리하는 계정으로 로그인합니다. 계정 관리자가 내 Chromium 데이터를 관리하게 되며 데이터는 이 계정에 영구적으로 연결됩니다. Chromium에서 로그아웃하면 데이터가 기기에서 삭제되지만 Google 계정에는 그대로 유지됩니다.</translation>
 <translation id="6068866989048414399">Chromium 서비스 약관</translation>
@@ -47,11 +41,13 @@
 <translation id="7674213385180944843">설정 &gt; 개인정보 보호 &gt; 카메라 &gt; Chromium을 열고 카메라를 사용 설정하세요.</translation>
 <translation id="7746854981345936341">Chromium 도움말. 뒤로, 앞으로, 검색과 같은 일부 버튼이 화면 하단으로 이동했습니다.</translation>
 <translation id="786327964234957808">동기화 계정을 <ph name="USER_EMAIL1" />에서 <ph name="USER_EMAIL2" />(으)로 전환합니다. 기존 Chromium 데이터는 <ph name="DOMAIN" />에서 관리됩니다. 이 기기에서는 데이터가 삭제되지만 <ph name="USER_EMAIL1" />에 계속해서 데이터가 보관됩니다.</translation>
+<translation id="7890287942691234100">Chromium 스캐너 사용 시작</translation>
 <translation id="8073677936375100957">기기에서 Chromium 데이터를 삭제하시겠습니까?</translation>
 <translation id="8175055321229419309">도움말: <ph name="BEGIN_LINK" />Chromium을 내 Dock에 추가하세요.<ph name="END_LINK" /></translation>
 <translation id="8252885722420466166">위치 정보를 기반으로 Chromium에서 더 좋은 Google 서비스를 제공할 수 있습니다.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. All rights reserved.</translation>
 <translation id="8809780021347235332">이미지를 저장하려면 설정을 탭하여 Chromium에 사진 사용 권한을 부여하세요.</translation>
 <translation id="9022552996538154597">Chromium에 로그인</translation>
+<translation id="9217078088703304241"><ph name="BEGIN_LINK" />업데이트된 Chromium 서비스 약관을 검토하세요.<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
 </translationbundle>

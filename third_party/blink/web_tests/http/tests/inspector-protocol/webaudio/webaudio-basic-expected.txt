@@ -1,0 +1,29 @@
+Tests basic function of the WebAudio domain.
+Enabled successfully: true
+context state after creation: suspended
+[
+    [0] : contextId
+    [1] : contextType
+    [2] : contextState
+    [3] : callbackBufferSize
+    [4] : maxOutputChannelCount
+    [5] : sampleRate
+]
+context state after suspension: running
+[
+    [0] : contextId
+    [1] : contextType
+    [2] : contextState
+    [3] : callbackBufferSize
+    [4] : maxOutputChannelCount
+    [5] : sampleRate
+]
+got context realtime data: false
+[
+    [0] : currentTime
+    [1] : renderCapacity
+    [2] : callbackIntervalMean
+    [3] : callbackIntervalVariance
+]
+Disabled successfully: true
+

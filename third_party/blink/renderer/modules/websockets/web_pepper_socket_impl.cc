@@ -31,17 +31,19 @@
 #include "third_party/blink/renderer/modules/websockets/web_pepper_socket_impl.h"
 
 #include <stddef.h>
+
 #include <memory>
+
+#include "base/callback.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/web/web_array_buffer.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/renderer/core/dom/document.h"
-#include "third_party/blink/renderer/core/inspector/console_types.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/modules/websockets/web_pepper_socket_channel_client_proxy.h"
 #include "third_party/blink/renderer/modules/websockets/websocket_channel.h"
 #include "third_party/blink/renderer/modules/websockets/websocket_channel_impl.h"
-#include "third_party/blink/renderer/platform/wtf/text/cstring.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -82,7 +84,7 @@ WebString WebPepperSocketImpl::Subprotocol() {
 
 bool WebPepperSocketImpl::SendText(const WebString& message) {
   String core_message = message;
-  CString encoded_message = core_message.Utf8();
+  std::string encoded_message = core_message.Utf8();
   size_t size = encoded_message.length();
   buffered_amount_ += size;
   if (is_closing_or_closed_)
@@ -94,13 +96,13 @@ bool WebPepperSocketImpl::SendText(const WebString& message) {
   if (is_closing_or_closed_)
     return true;
 
-  private_->Send(encoded_message);
+  private_->Send(encoded_message, base::OnceClosure());
   return true;
 }
 
 bool WebPepperSocketImpl::SendArrayBuffer(
     const WebArrayBuffer& web_array_buffer) {
-  size_t size = web_array_buffer.ByteLength();
+  unsigned size = web_array_buffer.ByteLength();
   buffered_amount_ += size;
   if (is_closing_or_closed_)
     buffered_amount_after_close_ += size;
@@ -112,7 +114,9 @@ bool WebPepperSocketImpl::SendArrayBuffer(
     return true;
 
   DOMArrayBuffer* array_buffer = web_array_buffer;
-  private_->Send(*array_buffer, 0, array_buffer->ByteLength());
+  private_->Send(*array_buffer, 0,
+                 array_buffer->DeprecatedByteLengthAsUnsigned(),
+                 base::OnceClosure());
   return true;
 }
 
@@ -123,7 +127,7 @@ void WebPepperSocketImpl::Close(int code, const WebString& reason) {
 
 void WebPepperSocketImpl::Fail(const WebString& reason) {
   private_->Fail(reason, mojom::ConsoleMessageLevel::kError,
-                 SourceLocation::Create(String(), 0, 0, nullptr));
+                 std::make_unique<SourceLocation>(String(), 0, 0, nullptr));
 }
 
 void WebPepperSocketImpl::Disconnect() {

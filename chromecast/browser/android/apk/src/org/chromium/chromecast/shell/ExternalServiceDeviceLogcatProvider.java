@@ -34,11 +34,25 @@ class ExternalServiceDeviceLogcatProvider extends ElidedLogcatProvider {
         Log.i(TAG, "Sending bind command");
         Intent intent = new Intent();
 
+        Context appContext = ContextUtils.getApplicationContext();
+        boolean foundLogsProvider = false;
         // TODO(sandv): Inject stub of service for testing
-        intent.setComponent(new ComponentName(
-                BuildConfig.DEVICE_LOGS_PROVIDER_PACKAGE, BuildConfig.DEVICE_LOGS_PROVIDER_CLASS));
+        for (String pkg : BuildConfig.DEVICE_LOGS_PROVIDER_PACKAGE.split(",")) {
+            intent.setComponent(new ComponentName(pkg, BuildConfig.DEVICE_LOGS_PROVIDER_CLASS));
+            if (appContext.getPackageManager().resolveService(intent, 0) != null) {
+                foundLogsProvider = true;
+                break;
+            }
+        }
 
-        ContextUtils.getApplicationContext().bindService(intent, new ServiceConnection() {
+        if (!foundLogsProvider) {
+            Log.e(TAG,
+                    "Failed to resolve logs provider: " + BuildConfig.DEVICE_LOGS_PROVIDER_PACKAGE
+                            + "/" + BuildConfig.DEVICE_LOGS_PROVIDER_CLASS);
+            return;
+        }
+
+        appContext.bindService(intent, new ServiceConnection() {
             @Override
             public void onServiceConnected(ComponentName name, IBinder service) {
                 Log.i(TAG, "onServiceConnected for this");
@@ -56,7 +70,7 @@ class ExternalServiceDeviceLogcatProvider extends ElidedLogcatProvider {
                         Log.e(TAG, "Can't get logs", e);
                         return new BufferedReader(new StringReader(""));
                     } finally {
-                        ContextUtils.getApplicationContext().unbindService(conn);
+                        appContext.unbindService(conn);
                     }
                 }, callback::onLogsDone);
             }

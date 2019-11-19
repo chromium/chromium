@@ -12,6 +12,4 @@ deps = [
 public_deps = [
   "//services/network/public/cpp:cpp_base",
 ]
-type_mappings = [
-  "network.mojom.URLLoaderCompletionStatus=network::URLLoaderCompletionStatus",
-]
+type_mappings = [ "network.mojom.URLLoaderCompletionStatus=::network::URLLoaderCompletionStatus" ]

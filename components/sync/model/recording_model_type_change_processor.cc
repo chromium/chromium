@@ -44,7 +44,7 @@ void RecordingModelTypeChangeProcessor::UntrackEntityForStorageKey(
 }
 
 void RecordingModelTypeChangeProcessor::UntrackEntityForClientTagHash(
-    const std::string& client_tag_hash) {
+    const ClientTagHash& client_tag_hash) {
   untrack_for_client_tag_hash_set_.insert(client_tag_hash);
 }
 
@@ -54,16 +54,11 @@ void RecordingModelTypeChangeProcessor::ModelReadyToSync(
 }
 
 bool RecordingModelTypeChangeProcessor::IsTrackingMetadata() {
-  return is_tracking_metadata_;
+  return true;
 }
 
 std::string RecordingModelTypeChangeProcessor::TrackedAccountId() {
   return "";
-}
-
-void RecordingModelTypeChangeProcessor::SetIsTrackingMetadata(
-    bool is_tracking) {
-  is_tracking_metadata_ = is_tracking;
 }
 
 // static

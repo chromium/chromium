@@ -5,7 +5,7 @@ related APIs.
 
 ## Related directories
 
-[`//storage/browser/fileapi/`](../../../storage/browser/fileapi) contains part
+[`//storage/browser/file_system/`](../../../storage/browser/file_system) contains part
 of the browser side implementation, while
 [`//content/browser/fileapi/`](../../../content/browser/fileapi) contains the
 rest of the browser side implementation and

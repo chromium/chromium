@@ -1,9 +1,0 @@
-{
-    "dependencies": [
-        "platform",
-        "dom_extension"
-    ],
-    "scripts": [
-        "Toolbox.js"
-    ]
-}

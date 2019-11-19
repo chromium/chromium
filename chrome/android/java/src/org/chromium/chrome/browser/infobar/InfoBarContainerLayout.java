@@ -18,10 +18,14 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
 
-import org.chromium.base.ObserverList;
+import androidx.annotation.IntDef;
+
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.infobar.InfoBarContainer.InfoBarAnimationListener;
+import org.chromium.ui.widget.OptimizedFrameLayout;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 
 /**
@@ -62,11 +66,22 @@ import java.util.ArrayList;
  *
  * TODO(newt): finalize animation timings and interpolators.
  */
-public class InfoBarContainerLayout extends FrameLayout {
+public class InfoBarContainerLayout extends OptimizedFrameLayout {
     /**
      * An interface for items that can be added to an InfoBarContainerLayout.
      */
     public interface Item {
+        // The infobar priority.
+        @IntDef({InfoBarPriority.CRITICAL, InfoBarPriority.USER_TRIGGERED,
+                InfoBarPriority.PAGE_TRIGGERED, InfoBarPriority.BACKGROUND})
+        @Retention(RetentionPolicy.SOURCE)
+        public @interface InfoBarPriority {
+            int CRITICAL = 0;
+            int USER_TRIGGERED = 1;
+            int PAGE_TRIGGERED = 2;
+            int BACKGROUND = 3;
+        }
+
         /**
          * Returns the View that represents this infobar. This should have no background or borders;
          * a background and shadow will be added by a wrapper view.
@@ -92,16 +107,12 @@ public class InfoBarContainerLayout extends FrameLayout {
         CharSequence getAccessibilityText();
 
         /**
-         * Returns whether the infobar is a legal disclosure and thus should be shown in front of
-         * any other infobars already visible.
+         * Returns the priority of an infobar. High priority infobar is shown in front of low
+         * priority infobar. If infobars have the same priorities, the most recently added one
+         * is shown behind previous ones.
+         *
          */
-        boolean isLegalDisclosure();
-
-        /**
-         * Returns whether the infobar is a low prirority one and thus if there are other infobars,
-         * they would be shown in front of this one.
-         */
-        boolean isBottomMostInfoBar();
+        int getPriority();
 
         /**
          * Returns the type of infobar, as best as can be determined at this time.  See
@@ -114,11 +125,13 @@ public class InfoBarContainerLayout extends FrameLayout {
     /**
      * Creates an empty InfoBarContainerLayout.
      */
-    InfoBarContainerLayout(Context context, Runnable makeContainerVisibleRunnable) {
-        super(context);
+    InfoBarContainerLayout(Context context, Runnable makeContainerVisibleRunnable,
+            InfoBarAnimationListener animationListener) {
+        super(context, null);
         Resources res = context.getResources();
         mBackInfobarHeight = res.getDimensionPixelSize(R.dimen.infobar_peeking_height);
         mFloatingBehavior = new FloatingBehavior(this);
+        mAnimationListener = animationListener;
         mMakeContainerVisibleRunnable = makeContainerVisibleRunnable;
     }
 
@@ -132,20 +145,16 @@ public class InfoBarContainerLayout extends FrameLayout {
     }
 
     /**
-     * Finds the appropriate index in the infobar stack for inserting this item. Legal disclosures
-     * are at the top and bottommost infobar at the bottom, everything else goes in the middle.
+     * Finds the appropriate index in the infobar stack for inserting this item.
      * @param item The infobar to be inserted.
      */
     private int findInsertIndex(Item item) {
-        if (item.isLegalDisclosure()) return 0;
-        if (item.isBottomMostInfoBar()) return mItems.size();
-
-        // Insert at the end before any bottom most infobars.
-        for (int i = 0; i < mItems.size(); i++) {
-            if (mItems.get(i).isBottomMostInfoBar()) return i;
+        for (int i = 0; i < mItems.size(); ++i) {
+            if (item.getPriority() < mItems.get(i).getPriority()) {
+                return i;
+            }
         }
 
-        // Just be the last in the stack by default.
         return mItems.size();
     }
 
@@ -172,20 +181,6 @@ public class InfoBarContainerLayout extends FrameLayout {
      */
     boolean isAnimating() {
         return mAnimation != null;
-    }
-
-    /**
-     * Adds a listener to receive updates when each animation is complete.
-     */
-    void addAnimationListener(InfoBarAnimationListener listener) {
-        mAnimationListeners.addObserver(listener);
-    }
-
-    /**
-     * Removes a listener that was receiving updates when each animation is complete.
-     */
-    void removeAnimationListener(InfoBarAnimationListener listener) {
-        mAnimationListeners.removeObserver(listener);
     }
 
     /////////////////////////////////////////
@@ -220,9 +215,7 @@ public class InfoBarContainerLayout extends FrameLayout {
                 public void onAnimationEnd(Animator animation) {
                     InfoBarAnimation.this.onAnimationEnd();
                     mAnimation = null;
-                    for (InfoBarAnimationListener listener : mAnimationListeners) {
-                        listener.notifyAnimationFinished(getAnimationType());
-                    }
+                    mAnimationListener.notifyAnimationFinished(getAnimationType());
                     processPendingAnimations();
                 }
             };
@@ -728,8 +721,8 @@ public class InfoBarContainerLayout extends FrameLayout {
      */
     private final ArrayList<InfoBarWrapper> mInfoBarWrappers = new ArrayList<>();
 
-    /** A list of observers that are notified when animations finish. */
-    private final ObserverList<InfoBarAnimationListener> mAnimationListeners = new ObserverList<>();
+    /** A observer that is notified when animations finish. */
+    private final InfoBarAnimationListener mAnimationListener;
 
     /** The current animation, or null if no animation is happening currently. */
     private InfoBarAnimation mAnimation;
@@ -823,9 +816,7 @@ public class InfoBarContainerLayout extends FrameLayout {
 
         // Fifth, now that we've stabilized, let listeners know that we have no more animations.
         Item frontItem = mInfoBarWrappers.size() > 0 ? mInfoBarWrappers.get(0).getItem() : null;
-        for (InfoBarAnimationListener listener : mAnimationListeners) {
-            listener.notifyAllAnimationsFinished(frontItem);
-        }
+        mAnimationListener.notifyAllAnimationsFinished(frontItem);
     }
 
     private void runAnimation(InfoBarAnimation animation) {

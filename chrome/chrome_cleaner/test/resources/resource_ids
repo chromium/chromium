@@ -17,7 +17,4 @@
   "chrome/chrome_cleaner/test/resources/test_resources.grd": {
     "includes": [9000],
   },
-  "chrome/chrome_cleaner/test/resources/test_strings.grd": {
-    "messages": [9500],
-  },
 }

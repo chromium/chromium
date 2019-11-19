@@ -26,6 +26,13 @@ std::string FakeBackgroundEidGenerator::IdentifyRemoteDeviceByAdvertisement(
   int* num_identify_calls_ptr = const_cast<int*>(&num_identify_calls_);
   *num_identify_calls_ptr = *num_identify_calls_ptr + 1;
 
+  // If only a specific matching service data should be valid, verify that it
+  // matches.
+  if (!matching_service_data_.empty() &&
+      advertisement_service_data != matching_service_data_) {
+    return std::string();
+  }
+
   return identified_device_id_;
 }
 

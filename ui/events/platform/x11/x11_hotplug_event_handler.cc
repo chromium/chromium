@@ -57,14 +57,14 @@ enum DeviceType {
   DEVICE_TYPE_OTHER
 };
 
-typedef base::Callback<void(const std::vector<InputDevice>&)>
-    KeyboardDeviceCallback;
+using KeyboardDeviceCallback =
+    base::OnceCallback<void(const std::vector<InputDevice>&)>;
 
-typedef base::Callback<void(const std::vector<TouchscreenDevice>&)>
-    TouchscreenDeviceCallback;
+using TouchscreenDeviceCallback =
+    base::OnceCallback<void(const std::vector<TouchscreenDevice>&)>;
 
-typedef base::Callback<void(const std::vector<InputDevice>&)>
-    InputDeviceCallback;
+using InputDeviceCallback =
+    base::OnceCallback<void(const std::vector<InputDevice>&)>;
 
 // Used for updating the state on the UI thread once device information is
 // parsed on helper threads.
@@ -73,7 +73,7 @@ struct UiCallbacks {
   TouchscreenDeviceCallback touchscreen_callback;
   InputDeviceCallback mouse_callback;
   InputDeviceCallback touchpad_callback;
-  base::Closure hotplug_finished_callback;
+  base::OnceClosure hotplug_finished_callback;
 };
 
 // Stores a copy of the XIValuatorClassInfo values so X11 device processing can
@@ -222,10 +222,9 @@ base::FilePath GetDevicePath(XDisplay* dpy, const XIDeviceInfo& device) {
 
 // Helper used to parse keyboard information. When it is done it uses
 // |reply_runner| and |callback| to update the state on the UI thread.
-void HandleKeyboardDevicesInWorker(
-    const std::vector<DeviceInfo>& device_infos,
-    scoped_refptr<base::TaskRunner> reply_runner,
-    const KeyboardDeviceCallback& callback) {
+void HandleKeyboardDevicesInWorker(const std::vector<DeviceInfo>& device_infos,
+                                   scoped_refptr<base::TaskRunner> reply_runner,
+                                   KeyboardDeviceCallback callback) {
   std::vector<InputDevice> devices;
 
   for (const DeviceInfo& device_info : device_infos) {
@@ -240,14 +239,15 @@ void HandleKeyboardDevicesInWorker(
     devices.push_back(keyboard);
   }
 
-  reply_runner->PostTask(FROM_HERE, base::BindOnce(callback, devices));
+  reply_runner->PostTask(FROM_HERE,
+                         base::BindOnce(std::move(callback), devices));
 }
 
 // Helper used to parse mouse information. When it is done it uses
 // |reply_runner| and |callback| to update the state on the UI thread.
 void HandleMouseDevicesInWorker(const std::vector<DeviceInfo>& device_infos,
                                 scoped_refptr<base::TaskRunner> reply_runner,
-                                const InputDeviceCallback& callback) {
+                                InputDeviceCallback callback) {
   std::vector<InputDevice> devices;
   for (const DeviceInfo& device_info : device_infos) {
     if (device_info.type != DEVICE_TYPE_MOUSE ||
@@ -259,14 +259,15 @@ void HandleMouseDevicesInWorker(const std::vector<DeviceInfo>& device_infos,
     devices.push_back(InputDevice(device_info.id, type, device_info.name));
   }
 
-  reply_runner->PostTask(FROM_HERE, base::BindOnce(callback, devices));
+  reply_runner->PostTask(FROM_HERE,
+                         base::BindOnce(std::move(callback), devices));
 }
 
 // Helper used to parse touchpad information. When it is done it uses
 // |reply_runner| and |callback| to update the state on the UI thread.
 void HandleTouchpadDevicesInWorker(const std::vector<DeviceInfo>& device_infos,
                                    scoped_refptr<base::TaskRunner> reply_runner,
-                                   const InputDeviceCallback& callback) {
+                                   InputDeviceCallback callback) {
   std::vector<InputDevice> devices;
   for (const DeviceInfo& device_info : device_infos) {
     if (device_info.type != DEVICE_TYPE_TOUCHPAD ||
@@ -278,7 +279,8 @@ void HandleTouchpadDevicesInWorker(const std::vector<DeviceInfo>& device_infos,
     devices.push_back(InputDevice(device_info.id, type, device_info.name));
   }
 
-  reply_runner->PostTask(FROM_HERE, base::BindOnce(callback, devices));
+  reply_runner->PostTask(FROM_HERE,
+                         base::BindOnce(std::move(callback), devices));
 }
 
 // Helper used to parse touchscreen information. When it is done it uses
@@ -287,7 +289,7 @@ void HandleTouchscreenDevicesInWorker(
     const std::vector<DeviceInfo>& device_infos,
     const DisplayState& display_state,
     scoped_refptr<base::TaskRunner> reply_runner,
-    const TouchscreenDeviceCallback& callback) {
+    TouchscreenDeviceCallback callback) {
   std::vector<TouchscreenDevice> devices;
   if (display_state.mt_position_x == x11::None ||
       display_state.mt_position_y == x11::None)
@@ -337,23 +339,25 @@ void HandleTouchscreenDevicesInWorker(
     }
   }
 
-  reply_runner->PostTask(FROM_HERE, base::BindOnce(callback, devices));
+  reply_runner->PostTask(FROM_HERE,
+                         base::BindOnce(std::move(callback), devices));
 }
 
 // Called on a worker thread to parse the device information.
-void HandleHotplugEventInWorker(
-    const std::vector<DeviceInfo>& devices,
-    const DisplayState& display_state,
-    scoped_refptr<base::TaskRunner> reply_runner,
-    const UiCallbacks& callbacks) {
-  HandleTouchscreenDevicesInWorker(
-      devices, display_state, reply_runner, callbacks.touchscreen_callback);
-  HandleKeyboardDevicesInWorker(
-      devices, reply_runner, callbacks.keyboard_callback);
-  HandleMouseDevicesInWorker(devices, reply_runner, callbacks.mouse_callback);
+void HandleHotplugEventInWorker(const std::vector<DeviceInfo>& devices,
+                                const DisplayState& display_state,
+                                scoped_refptr<base::TaskRunner> reply_runner,
+                                UiCallbacks callbacks) {
+  HandleTouchscreenDevicesInWorker(devices, display_state, reply_runner,
+                                   std::move(callbacks.touchscreen_callback));
+  HandleKeyboardDevicesInWorker(devices, reply_runner,
+                                std::move(callbacks.keyboard_callback));
+  HandleMouseDevicesInWorker(devices, reply_runner,
+                             std::move(callbacks.mouse_callback));
   HandleTouchpadDevicesInWorker(devices, reply_runner,
-                                callbacks.touchpad_callback);
-  reply_runner->PostTask(FROM_HERE, callbacks.hotplug_finished_callback);
+                                std::move(callbacks.touchpad_callback));
+  reply_runner->PostTask(FROM_HERE,
+                         std::move(callbacks.hotplug_finished_callback));
 }
 
 DeviceHotplugEventObserver* GetHotplugEventObserver() {
@@ -435,20 +439,22 @@ void X11HotplugEventHandler::OnHotplugEvent() {
   display_state.mt_position_y = gfx::GetAtom("Abs MT Position Y");
 
   UiCallbacks callbacks;
-  callbacks.keyboard_callback = base::Bind(&OnKeyboardDevices);
-  callbacks.touchscreen_callback = base::Bind(&OnTouchscreenDevices);
-  callbacks.mouse_callback = base::Bind(&OnMouseDevices);
-  callbacks.touchpad_callback = base::Bind(&OnTouchpadDevices);
-  callbacks.hotplug_finished_callback = base::Bind(&OnHotplugFinished);
+  callbacks.keyboard_callback = base::BindOnce(&OnKeyboardDevices);
+  callbacks.touchscreen_callback = base::BindOnce(&OnTouchscreenDevices);
+  callbacks.mouse_callback = base::BindOnce(&OnMouseDevices);
+  callbacks.touchpad_callback = base::BindOnce(&OnTouchpadDevices);
+  callbacks.hotplug_finished_callback = base::BindOnce(&OnHotplugFinished);
 
   // Parse the device information asynchronously since this operation may block.
   // Once the device information is extracted the parsed devices will be
   // returned via the callbacks.
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE,
-      {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      {base::ThreadPool(), base::MayBlock(),
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&HandleHotplugEventInWorker, device_infos, display_state,
-                     base::ThreadTaskRunnerHandle::Get(), callbacks));
+                     base::ThreadTaskRunnerHandle::Get(),
+                     std::move(callbacks)));
 }
 
 }  // namespace ui

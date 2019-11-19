@@ -45,6 +45,7 @@
 #include "sandbox/linux/system_headers/linux_futex.h"
 #include "sandbox/linux/system_headers/linux_signal.h"
 #include "sandbox/linux/system_headers/linux_syscalls.h"
+#include "sandbox/linux/system_headers/linux_time.h"
 
 // These defines are for PNaCl toolchain build.
 #if !defined(F_DUPFD_CLOEXEC)
@@ -57,10 +58,6 @@
 
 #if !defined(PROT_GROWSDOWN)
 #define PROT_GROWSDOWN 0x01000000
-#endif
-
-#if !defined(CLOCK_MONOTONIC_RAW)
-#define CLOCK_MONOTONIC_RAW 4
 #endif
 
 #if !defined(AF_INET)
@@ -586,11 +583,12 @@ BPF_TEST_C(NaClNonSfiSandboxTest,
 }
 
 BPF_DEATH_TEST_C(NaClNonSfiSandboxTest,
-                 clock_gettime_crash_monotonic_raw,
+                 clock_gettime_crash_clock_fd,
                  DEATH_SEGV_MESSAGE(sandbox::GetErrorMessageContentForTests()),
                  nacl::nonsfi::NaClNonSfiBPFSandboxPolicy) {
   struct timespec ts;
-  clock_gettime(CLOCK_MONOTONIC_RAW, &ts);
+  // Negative clock IDs are per pid/tid or clock FDs - and are disallowed.
+  clock_gettime(-1, &ts);
 }
 
 BPF_DEATH_TEST_C(NaClNonSfiSandboxTest,

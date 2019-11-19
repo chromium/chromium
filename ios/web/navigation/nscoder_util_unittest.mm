@@ -30,15 +30,13 @@ const char* testStrings[] = {
 
 TEST_F(NSCoderStdStringTest, encodeDecode) {
   for (size_t i = 0; i < base::size(testStrings); ++i) {
-    NSMutableData* data = [NSMutableData data];
-
     NSKeyedArchiver* archiver =
-        [[NSKeyedArchiver alloc] initForWritingWithMutableData:data];
+        [[NSKeyedArchiver alloc] initRequiringSecureCoding:NO];
     nscoder_util::EncodeString(archiver, @"test", testStrings[i]);
-    [archiver finishEncoding];
 
     NSKeyedUnarchiver* unarchiver =
-        [[NSKeyedUnarchiver alloc] initForReadingWithData:data];
+        [[NSKeyedUnarchiver alloc] initForReadingFromData:[archiver encodedData]
+                                                    error:nil];
     const std::string decoded = nscoder_util::DecodeString(unarchiver, @"test");
 
     EXPECT_EQ(decoded, testStrings[i]);
@@ -46,14 +44,12 @@ TEST_F(NSCoderStdStringTest, encodeDecode) {
 }
 
 TEST_F(NSCoderStdStringTest, decodeEmpty) {
-  NSMutableData* data = [NSMutableData data];
-
   NSKeyedArchiver* archiver =
-      [[NSKeyedArchiver alloc] initForWritingWithMutableData:data];
-  [archiver finishEncoding];
+      [[NSKeyedArchiver alloc] initRequiringSecureCoding:NO];
 
   NSKeyedUnarchiver* unarchiver =
-      [[NSKeyedUnarchiver alloc] initForReadingWithData:data];
+      [[NSKeyedUnarchiver alloc] initForReadingFromData:[archiver encodedData]
+                                                  error:nil];
   const std::string decoded = nscoder_util::DecodeString(unarchiver, @"test");
 
   EXPECT_EQ(decoded, "");

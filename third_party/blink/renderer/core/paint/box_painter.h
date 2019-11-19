@@ -9,16 +9,16 @@
 #include "third_party/blink/renderer/core/paint/rounded_inner_rect_clipper.h"
 #include "third_party/blink/renderer/platform/geometry/layout_size.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
-struct PaintInfo;
 class Color;
 class DisplayItemClient;
 class LayoutBox;
-class LayoutPoint;
-class LayoutRect;
+struct PaintInfo;
+struct PhysicalOffset;
+struct PhysicalRect;
 
 class BoxPainter {
   STACK_ALLOCATED();
@@ -29,26 +29,32 @@ class BoxPainter {
 
   void PaintChildren(const PaintInfo&);
   void PaintBoxDecorationBackground(const PaintInfo&,
-                                    const LayoutPoint& paint_offset);
-  void PaintMask(const PaintInfo&, const LayoutPoint& paint_offset);
+                                    const PhysicalOffset& paint_offset);
+  void PaintMask(const PaintInfo&, const PhysicalOffset& paint_offset);
 
-  void PaintMaskImages(const PaintInfo&, const LayoutRect&);
+  void PaintMaskImages(const PaintInfo&, const PhysicalRect&);
   void PaintBoxDecorationBackgroundWithRect(
       const PaintInfo&,
-      const LayoutRect&,
+      const PhysicalRect&,
       const DisplayItemClient& background_client);
 
   // Paint a hit test display item and record hit test data. This should be
   // called in the background paint phase even if there is no other painted
   // content.
   void RecordHitTestData(const PaintInfo&,
-                         const LayoutRect& paint_rect,
+                         const PhysicalRect& paint_rect,
                          const DisplayItemClient& background_client);
+
+  // Paint a scroll hit test display item and record scroll hit test data. This
+  // should be called in the background paint phase even if there is no other
+  // painted content.
+  void RecordScrollHitTestData(const PaintInfo&,
+                               const DisplayItemClient& background_client);
 
  private:
   bool BackgroundIsKnownToBeOpaque(const PaintInfo&);
   void PaintBackground(const PaintInfo&,
-                       const LayoutRect&,
+                       const PhysicalRect&,
                        const Color& background_color,
                        BackgroundBleedAvoidance = kBackgroundBleedNone);
 

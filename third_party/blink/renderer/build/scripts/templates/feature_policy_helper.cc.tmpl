@@ -1,0 +1,66 @@
+{% from 'templates/macros.tmpl' import license, source_files_for_generated_file %}
+{{license()}}
+
+{{source_files_for_generated_file(template_file, input_files)}}
+
+#include "third_party/blink/renderer/core/feature_policy/feature_policy_helper.h"
+
+#include "third_party/blink/public/mojom/feature_policy/feature_policy.mojom-blink.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/origin_trials/origin_trials.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+
+namespace blink {
+
+namespace {
+
+{% for feature in feature_policy_features %}
+const char k{{feature.name}}PolicyName[] = "{{feature.feature_policy_name}}";
+{% endfor %}
+
+}  // namespace
+
+// Features which depend on a flag also have the same flag controlling whether
+// they are in this map. Features which are shipping as part of an origin trial
+// add their feature names to this map unconditionally, as the trial token could
+// be added after the HTTP header needs to be parsed. This also means that
+// top-level documents which simply want to embed another page which uses an
+// origin trial feature, without using the feature themselves, can use feature
+// policy to allow use of the feature in subframes (The framed document will
+// still require a valid origin trial token to use the feature in this scenario).
+const FeatureNameMap& GetDefaultFeatureNameMap() {
+  DEFINE_STATIC_LOCAL(FeatureNameMap, default_feature_name_map, ());
+  if (default_feature_name_map.IsEmpty()) {
+    {% for feature in feature_policy_features %}
+    {% if not feature.depends_on or feature.in_origin_trial %}
+    default_feature_name_map.Set(k{{feature.name}}PolicyName,
+                                 mojom::FeaturePolicyFeature::k{{feature.name}});
+    {% endif %}
+    {% endfor %}
+    {% for runtime_feature_name, FP_features in runtime_to_feature_policy_map.items() %}
+    if (RuntimeEnabledFeatures::{{runtime_feature_name}}Enabled()) {
+      {% for feature in FP_features %}
+      default_feature_name_map.Set(k{{feature.name}}PolicyName,
+                                   mojom::FeaturePolicyFeature::k{{feature.name}});
+      {% endfor %}
+    }
+    {% endfor %}
+  }
+  return default_feature_name_map;
+}
+
+bool DisabledByOriginTrial(const String& feature_name,
+                           FeatureContext* feature_context) {
+  {% for feature_name, dependencies in origin_trial_dependency_map.items() %}
+  if (feature_name == k{{feature_name}}PolicyName) {
+    return
+    {%- for dependency in dependencies %}
+    {%- if not loop.first %} &&{% endif %}
+ !RuntimeEnabledFeatures::{{dependency.name}}Enabled(feature_context)
+    {%- endfor %};
+  }
+  {% endfor %}
+  return false;
+}
+
+}  // namespace blink

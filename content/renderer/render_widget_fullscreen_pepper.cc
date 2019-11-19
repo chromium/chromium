@@ -57,7 +57,8 @@ class FullscreenMouseLockDispatcher : public MouseLockDispatcher {
 
  private:
   // MouseLockDispatcher implementation.
-  void SendLockMouseRequest() override;
+  void SendLockMouseRequest(blink::WebLocalFrame* requester_frame,
+                            bool request_unadjusted_movement) override;
   void SendUnlockMouseRequest() override;
 
   RenderWidgetFullscreenPepper* widget_;
@@ -69,7 +70,7 @@ WebMouseEvent WebMouseEventFromGestureEvent(const WebGestureEvent& gesture) {
 
   // Only convert touch screen gesture events, do not convert
   // touchpad/mouse wheel gesture events. (crbug.com/620974)
-  if (gesture.SourceDevice() != blink::kWebGestureDeviceTouchscreen)
+  if (gesture.SourceDevice() != blink::WebGestureDevice::kTouchscreen)
     return WebMouseEvent();
 
   WebInputEvent::Type type = WebInputEvent::kUndefined;
@@ -116,9 +117,14 @@ FullscreenMouseLockDispatcher::FullscreenMouseLockDispatcher(
 FullscreenMouseLockDispatcher::~FullscreenMouseLockDispatcher() {
 }
 
-void FullscreenMouseLockDispatcher::SendLockMouseRequest() {
-  widget_->Send(
-      new WidgetHostMsg_LockMouse(widget_->routing_id(), false, true));
+void FullscreenMouseLockDispatcher::SendLockMouseRequest(
+    blink::WebLocalFrame* requester_frame,
+    bool request_unadjusted_movement) {
+  // TODO(mustaq): Why is it not checking user activation state at all?  In
+  // particular, the last Boolean param ("privileged") in the IPC below looks
+  // scary without this check.
+  widget_->Send(new WidgetHostMsg_LockMouse(widget_->routing_id(), false, true,
+                                            request_unadjusted_movement));
 }
 
 void FullscreenMouseLockDispatcher::SendUnlockMouseRequest() {
@@ -137,7 +143,7 @@ class PepperWidget : public WebWidget {
   virtual ~PepperWidget() {}
 
   // WebWidget API
-  void SetLayerTreeView(blink::WebLayerTreeView*, cc::AnimationHost*) override {
+  void SetAnimationHost(cc::AnimationHost*) override {
     // Does nothing, as the LayerTreeView can be accessed from the RenderWidget
     // directly.
   }
@@ -269,41 +275,35 @@ RenderWidgetFullscreenPepper* RenderWidgetFullscreenPepper::Create(
     int32_t routing_id,
     RenderWidget::ShowCallback show_callback,
     CompositorDependencies* compositor_deps,
+    const ScreenInfo& screen_info,
     PepperPluginInstanceImpl* plugin,
     const blink::WebURL& local_main_frame_url,
-    const ScreenInfo& screen_info,
-    mojom::WidgetRequest widget_request) {
+    mojo::PendingReceiver<mojom::Widget> widget_receiver) {
   DCHECK_NE(MSG_ROUTING_NONE, routing_id);
   DCHECK(show_callback);
-  scoped_refptr<RenderWidgetFullscreenPepper> widget =
-      new RenderWidgetFullscreenPepper(routing_id, compositor_deps, plugin,
-                                       screen_info, std::move(widget_request));
-  widget->Init(std::move(show_callback),
-               new PepperWidget(widget.get(), local_main_frame_url));
-  // Init() makes |this| self-referencing for the RenderWidget. But this class
-  // is also a FullscreenContainer which is also self-referencing. So we leave
-  // here with 2 self-references.
-  widget->AddRef();
-  return widget.get();
+  RenderWidgetFullscreenPepper* widget = new RenderWidgetFullscreenPepper(
+      routing_id, compositor_deps, plugin, std::move(widget_receiver));
+  widget->InitForPepperFullscreen(
+      std::move(show_callback), new PepperWidget(widget, local_main_frame_url),
+      screen_info);
+  return widget;
 }
 
 RenderWidgetFullscreenPepper::RenderWidgetFullscreenPepper(
     int32_t routing_id,
     CompositorDependencies* compositor_deps,
     PepperPluginInstanceImpl* plugin,
-    const ScreenInfo& screen_info,
-    mojom::WidgetRequest widget_request)
+    mojo::PendingReceiver<mojom::Widget> widget_receiver)
     : RenderWidget(routing_id,
                    compositor_deps,
-                   screen_info,
-                   blink::kWebDisplayModeUndefined,
-                   false,
-                   false,
-                   false,
-                   std::move(widget_request)),
+                   /*display_mode=*/blink::mojom::DisplayMode::kUndefined,
+                   /*is_undead=*/false,
+                   /*hidden=*/false,
+                   /*never_visible=*/false,
+                   std::move(widget_receiver)),
       plugin_(plugin),
-      layer_(nullptr),
-      mouse_lock_dispatcher_(new FullscreenMouseLockDispatcher(this)) {}
+      mouse_lock_dispatcher_(
+          std::make_unique<FullscreenMouseLockDispatcher>(this)) {}
 
 RenderWidgetFullscreenPepper::~RenderWidgetFullscreenPepper() {
 }
@@ -327,8 +327,9 @@ void RenderWidgetFullscreenPepper::Destroy() {
   // away.
   SetLayer(nullptr);
 
+  // This instructs the browser process, which owns this object, to send back a
+  // WidgetMsg_Close to destroy this object.
   Send(new WidgetHostMsg_Close(routing_id()));
-  Release();
 }
 
 void RenderWidgetFullscreenPepper::PepperDidChangeCursor(
@@ -345,7 +346,8 @@ void RenderWidgetFullscreenPepper::SetLayer(cc::Layer* layer) {
   }
   UpdateLayerBounds();
   layer_->SetIsDrawable(true);
-  layer_tree_view()->SetNonBlinkManagedRootLayer(layer_);
+  layer_->SetHitTestable(true);
+  layer_tree_host()->SetNonBlinkManagedRootLayer(layer_);
 }
 
 bool RenderWidgetFullscreenPepper::OnMessageReceived(const IPC::Message& msg) {
@@ -368,19 +370,17 @@ void RenderWidgetFullscreenPepper::DidInitiatePaint() {
     plugin_->ViewInitiatedPaint();
 }
 
-void RenderWidgetFullscreenPepper::Close() {
+void RenderWidgetFullscreenPepper::Close(std::unique_ptr<RenderWidget> widget) {
   // If the fullscreen window is closed (e.g. user pressed escape), reset to
   // normal mode.
   if (plugin_)
     plugin_->FlashSetFullscreen(false, false);
 
   // Call Close on the base class to destroy the WebWidget instance.
-  RenderWidget::Close();
+  RenderWidget::Close(std::move(widget));
 }
 
-void RenderWidgetFullscreenPepper::OnSynchronizeVisualProperties(
-    const VisualProperties& visual_properties) {
-  RenderWidget::OnSynchronizeVisualProperties(visual_properties);
+void RenderWidgetFullscreenPepper::AfterUpdateVisualProperties() {
   UpdateLayerBounds();
 }
 

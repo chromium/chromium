@@ -86,6 +86,7 @@ class NoOpLoggingService : public LoggingServiceAPI {
 
   void LogProcessInformation(SandboxType process_type,
                              const SystemResourceUsage& usage) override;
+
   bool AllExpectedRemovalsConfirmed() const override;
   std::string RawReportContent() override;
   bool ReadContentFromFile(const base::FilePath& log_file) override;

@@ -84,7 +84,7 @@ InkDropImplTest::InkDropImplTest()
   ink_drop_host_->set_disable_timers_for_test(true);
 }
 
-InkDropImplTest::~InkDropImplTest() {}
+InkDropImplTest::~InkDropImplTest() = default;
 
 void InkDropImplTest::RunPendingTasks() {
   task_runner_->RunPendingTasks();
@@ -120,7 +120,7 @@ InkDropImplAutoHighlightTest::InkDropImplAutoHighlightTest()
   ink_drop()->SetAutoHighlightMode(GetAutoHighlightMode());
 }
 
-InkDropImplAutoHighlightTest::~InkDropImplAutoHighlightTest() {}
+InkDropImplAutoHighlightTest::~InkDropImplAutoHighlightTest() = default;
 
 InkDropImpl::AutoHighlightMode
 InkDropImplAutoHighlightTest::GetAutoHighlightMode() const {
@@ -320,7 +320,7 @@ TEST_F(InkDropImplTest, RippleAndHighlightRecreatedOnSizeChange) {
 // Common AutoHighlightMode tests
 //
 
-typedef InkDropImplAutoHighlightTest InkDropImplCommonAutoHighlightTest;
+using InkDropImplCommonAutoHighlightTest = InkDropImplAutoHighlightTest;
 // Note: First argument is optional and intentionally left blank.
 // (it's a prefix for the generated test cases)
 INSTANTIATE_TEST_SUITE_P(
@@ -368,7 +368,7 @@ TEST_P(InkDropImplCommonAutoHighlightTest,
 // InkDropImpl::AutoHighlightMode::NONE specific tests
 //
 
-typedef InkDropImplAutoHighlightTest InkDropImplNoAutoHighlightTest;
+using InkDropImplNoAutoHighlightTest = InkDropImplAutoHighlightTest;
 // Note: First argument is optional and intentionally left blank.
 // (it's a prefix for the generated test cases)
 INSTANTIATE_TEST_SUITE_P(,
@@ -404,7 +404,7 @@ TEST_P(InkDropImplNoAutoHighlightTest, HiddenHighlightDuringRippleAnimations) {
 // InkDropImpl::AutoHighlightMode::HIDE_ON_RIPPLE specific tests
 //
 
-typedef InkDropImplAutoHighlightTest InkDropImplHideAutoHighlightTest;
+using InkDropImplHideAutoHighlightTest = InkDropImplAutoHighlightTest;
 // Note: First argument is optional and intentionally left blank.
 // (it's a prefix for the generated test cases)
 INSTANTIATE_TEST_SUITE_P(
@@ -564,7 +564,7 @@ TEST_P(InkDropImplHideAutoHighlightTest, NoCrashDuringRippleTearDown) {
 // InkDropImpl::AutoHighlightMode::SHOW_ON_RIPPLE specific tests
 //
 
-typedef InkDropImplAutoHighlightTest InkDropImplShowAutoHighlightTest;
+using InkDropImplShowAutoHighlightTest = InkDropImplAutoHighlightTest;
 // Note: First argument is optional and intentionally left blank.
 // (it's a prefix for the generated test cases)
 INSTANTIATE_TEST_SUITE_P(

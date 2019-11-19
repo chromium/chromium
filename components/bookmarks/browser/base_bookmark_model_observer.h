@@ -23,15 +23,15 @@ class BaseBookmarkModelObserver : public BookmarkModelObserver {
   void BookmarkModelBeingDeleted(BookmarkModel* model) override;
   void BookmarkNodeMoved(BookmarkModel* model,
                          const BookmarkNode* old_parent,
-                         int old_index,
+                         size_t old_index,
                          const BookmarkNode* new_parent,
-                         int new_index) override;
+                         size_t new_index) override;
   void BookmarkNodeAdded(BookmarkModel* model,
                          const BookmarkNode* parent,
-                         int index) override;
+                         size_t index) override;
   void BookmarkNodeRemoved(BookmarkModel* model,
                            const BookmarkNode* parent,
-                           int old_index,
+                           size_t old_index,
                            const BookmarkNode* node,
                            const std::set<GURL>& removed_urls) override;
   void BookmarkAllUserNodesRemoved(BookmarkModel* model,

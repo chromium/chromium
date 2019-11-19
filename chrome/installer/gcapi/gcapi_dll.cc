@@ -23,7 +23,8 @@ extern "C" BOOL WINAPI DllMain(HINSTANCE instance,
     g_exit_manager = new base::AtExitManager();
     base::CommandLine::Init(0, NULL);
     logging::LoggingSettings settings;
-    settings.logging_dest = logging::LOG_TO_SYSTEM_DEBUG_LOG;
+    settings.logging_dest =
+        logging::LOG_TO_SYSTEM_DEBUG_LOG | logging::LOG_TO_STDERR;
     logging::InitLogging(settings);
   } else if (reason == DLL_PROCESS_DETACH) {
     base::CommandLine::Reset();

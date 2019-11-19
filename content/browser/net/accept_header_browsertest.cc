@@ -91,59 +91,60 @@ class AcceptHeaderTest : public ContentBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(AcceptHeaderTest, Check) {
-  NavigateToURL(shell(), embedded_test_server()->GetURL("/accept-header.html"));
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("/accept-header.html")));
 
-  // RESOURCE_TYPE_MAIN_FRAME
+  // ResourceType::kMainFrame
   EXPECT_EQ(
       "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,"
-      "image/apng,*/*;q=0.8,application/signed-exchange;v=b3",
+      "image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
       GetFor("/accept-header.html"));
 
-  // RESOURCE_TYPE_SUB_FRAME
+  // ResourceType::kSubFrame
   EXPECT_EQ(
       "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,"
-      "image/apng,*/*;q=0.8,application/signed-exchange;v=b3",
+      "image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
       GetFor("/iframe.html"));
 
-  // RESOURCE_TYPE_STYLESHEET
+  // ResourceType::kStylesheet
   EXPECT_EQ("text/css,*/*;q=0.1", GetFor("/test.css"));
 
-  // RESOURCE_TYPE_SCRIPT
+  // ResourceType::kScript
   EXPECT_EQ("*/*", GetFor("/test.js"));
 
-  // RESOURCE_TYPE_IMAGE
+  // ResourceType::kImage
   EXPECT_EQ("image/webp,image/apng,image/*,*/*;q=0.8", GetFor("/image.gif"));
 
-  // RESOURCE_TYPE_FONT_RESOURCE
+  // ResourceType::kFontResource
   EXPECT_EQ("*/*", GetFor("/test.js"));
 
-  // RESOURCE_TYPE_MEDIA
+  // ResourceType::kMedia
   EXPECT_EQ("*/*", GetFor("/media.mp4"));
 
-  // RESOURCE_TYPE_WORKER
+  // ResourceType::kWorker
   EXPECT_EQ("*/*", GetFor("/worker.js"));
 
 // Shared workers aren't implemented on Android.
 // https://bugs.chromium.org/p/chromium/issues/detail?id=154571
 #if !defined(OS_ANDROID)
-  // RESOURCE_TYPE_SHARED_WORKER
+  // ResourceType::kSharedWorker
   EXPECT_EQ("*/*", GetFor("/shared_worker.js"));
 #endif
 
-  // RESOURCE_TYPE_PREFETCH
+  // ResourceType::kPrefetch
   EXPECT_EQ("application/signed-exchange;v=b3;q=0.9,*/*;q=0.8",
             GetFor("/prefetch"));
 
-  // RESOURCE_TYPE_XHR
+  // ResourceType::kXhr
   EXPECT_EQ("*/*", GetFor("/xhr"));
 
-  // RESOURCE_TYPE_PING
+  // ResourceType::kPing
   EXPECT_EQ("*/*", GetFor("/ping"));
 
-  // RESOURCE_TYPE_SERVICE_WORKER
+  // ResourceType::kServiceWorker
   EXPECT_EQ("*/*", GetFor("/service_worker.js"));
 
-  // RESOURCE_TYPE_CSP_REPORT
+  // ResourceType::kCspReport
   EXPECT_EQ("*/*", GetFor("/csp"));
 
   // Ensure that if an Accept header is already set, it is not overwritten.
@@ -152,22 +153,26 @@ IN_PROC_BROWSER_TEST_F(AcceptHeaderTest, Check) {
   shell()->web_contents()->GetManifest(
       base::BindOnce([](const GURL&, const blink::Manifest&) {}));
 
-  // RESOURCE_TYPE_SUB_RESOURCE
+  // ResourceType::kSubResource
   EXPECT_EQ("*/*", GetFor("/manifest"));
 
-  // RESOURCE_TYPE_OBJECT and RESOURCE_TYPE_FAVICON are tested in src/chrome's
+  // ResourceType::kObject and ResourceType::kFavicon are tested in src/chrome's
   // ChromeAcceptHeaderTest.ObjectAndFavicon.
 }
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 
-// Checks Accept header for RESOURCE_TYPE_PLUGIN_RESOURCE.
+// Checks Accept header for ResourceType::kPluginResource.
 IN_PROC_BROWSER_TEST_F(OutOfProcessPPAPITest, PluginAcceptHeader) {
   net::EmbeddedTestServer server(net::EmbeddedTestServer::TYPE_HTTP);
   server.ServeFilesFromSourceDirectory("ppapi/tests");
+  base::Lock plugin_accept_header_lock;
   std::string plugin_accept_header;
   server.RegisterRequestMonitor(base::BindLambdaForTesting(
       [&](const net::test_server::HttpRequest& request) {
+        // Note this callback runs on the EmbeddedTestServer's background
+        // thread.
+        base::AutoLock lock(plugin_accept_header_lock);
         if (request.relative_url == "/test_url_loader_data/hello.txt") {
           auto it = request.headers.find("Accept");
           if (it != request.headers.end())
@@ -179,7 +184,10 @@ IN_PROC_BROWSER_TEST_F(OutOfProcessPPAPITest, PluginAcceptHeader) {
   RunTestURL(
       server.GetURL(BuildQuery("/test_case.html?", "URLLoader_BasicGET")));
 
-  ASSERT_EQ("*/*", plugin_accept_header);
+  {
+    base::AutoLock lock(plugin_accept_header_lock);
+    ASSERT_EQ("*/*", plugin_accept_header);
+  }
 
   // Since the server uses local variables.
   ASSERT_TRUE(server.ShutdownAndWaitUntilComplete());

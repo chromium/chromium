@@ -15,7 +15,7 @@ class FormSubmissionObserver;
 // form submision.
 void NotifyDidNavigateMainFrame(bool is_renderer_initiated,
                                 ui::PageTransition transition,
-                                bool has_user_gesture,
+                                bool was_initiated_by_link_click,
                                 FormSubmissionObserver* observer);
 
 }  // namespace password_manager

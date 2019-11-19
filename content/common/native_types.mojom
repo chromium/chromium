@@ -68,7 +68,7 @@ enum Cancelability;
 enum GestureDevice;
 
 [Native]
-enum ScrollUnits;
+enum ScrollGranularity;
 
 [Native]
 enum InertialPhaseState;
@@ -95,4 +95,22 @@ struct SyntheticTap;
 struct SyntheticPointerAction;
 
 [Native]
-enum TouchAction;
+enum PreferredColorScheme;
+
+[Native]
+enum SystemThemeColor;
+
+[Native]
+struct ContentSecurityPolicy;
+
+[Native]
+struct CSPDirective;
+
+[Native]
+struct CSPSourceList;
+
+[Native]
+struct CSPSource;
+
+[Native]
+struct CSPViolationParams;

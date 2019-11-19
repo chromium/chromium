@@ -6,6 +6,6 @@
 dictionary XRRenderStateInit {
   double depthNear;
   double depthFar;
-  XRLayer? baseLayer;
-  XRPresentationContext? outputContext;
+  double inlineVerticalFieldOfView;
+  XRWebGLLayer? baseLayer;
 };

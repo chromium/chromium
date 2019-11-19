@@ -1,5 +1,5 @@
 [document web]
-++[text] name='Test that elements respawn in the accessibility tree after a modal dialog closes.'
+++[static] name='Test that elements respawn in the accessibility tree after a modal dialog closes.'
 ++[section]
 ++++[combo box] expandable haspopup:menu
 ++++++[menu]

@@ -1,0 +1,13 @@
+{
+  "name": "$i18nRaw{name}",
+  "display": "standalone",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "/",
+  "theme_color": "#fff"
+}

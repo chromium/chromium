@@ -10,9 +10,10 @@
   // Map from media content to MIME type. All test content must be added to this
   // map. (Feel free to extend it for your test case!)
   const MEDIA_MIMES = {
-    "aac_audio.mp4": "audio/mp4; codecs=\"mp4a.40.2\"",
-    "h264_video.mp4": "video/mp4; codecs=\"avc1.640028\"",
-    "tulip0.av1.mp4": "video/mp4; codecs=\"av01.0.05M.08\"",
+    'aac_audio.mp4': 'audio/mp4; codecs="mp4a.40.2"',
+    'h264_video.mp4': 'video/mp4; codecs="avc1.640028"',
+    'tulip0.av1.mp4': 'video/mp4; codecs="av01.0.05M.08"',
+    'tulip2.vp9.webm': 'video/webm; codecs="opus,vp9"',
   };
   const testParams = {}
 
@@ -32,16 +33,16 @@
     // waitForPageLoaded determines whether to wait for body.onload event or
     // to start right away.
     testParams.waitForPageLoaded =
-        (queryParameters["waitForPageLoaded"] === "true");
+        (queryParameters['waitForPageLoaded'] === 'true');
     // startOffset is used to start the media at an offset instead of at the
     // beginning of the file.
-    testParams.startOffset = parseInt(queryParameters["startOffset"] || "0");
-    // appendSize determines how large a chuck of the media file to append.
-    testParams.appendSize = parseInt(queryParameters["appendSize"] || "65536");
+    testParams.startOffset = parseInt(queryParameters['startOffset'] || '0');
+    // appendSize determines how large a chunk of the media file to append.
+    testParams.appendSize = parseInt(queryParameters['appendSize'] || '128000');
     // media argument lists the media files to play.
-    testParams.media = queryParameters["media"];
+    testParams.media = queryParameters['media'];
     if (!testParams.media)
-      throw Error("media parameter must be defined to provide test content");
+      throw Error('media parameter must be defined to provide test content');
     if (!Array.isArray(testParams.media))
       testParams.media = [testParams.media];
   }
@@ -54,7 +55,7 @@
       key = decodeURIComponent(match[1])
       value = decodeURIComponent(match[2]);
       if (value.includes(',')) {
-        value = value.split(",");
+        value = value.split(',');
       }
       params[key] = value;
     }
@@ -63,21 +64,31 @@
 
   function runTest() {
     let appenders = [];
-    let mediaElement = document.getElementById("video_id");
+    let mediaElement = document.getElementById('video_id');
     let mediaSource = new window.MediaSource();
     window.__mediaSource = mediaSource;
 
     // Pass the test if currentTime of the media increases since that means that
     // the file has started playing.
     // This code can be modified in the future for full playback tests.
-    mediaElement.addEventListener("timeupdate", () => {
+    mediaElement.addEventListener('timeupdate', () => {
       window.clearTimeout(timeout);
-      PassTest("Test completed after timeupdate event was received.")
+      PassTest('Test completed after timeupdate event was received.')
+    }, {once: true});
+
+    // Also pass the test if ended occurs; since we're appending small chunks
+    // there are cases where 'timeupdate' may not necessarily fire.
+    mediaElement.addEventListener('ended', () => {
+      window.clearTimeout(timeout);
+      if (mediaElement.currentTime > 0)
+        PassTest('Test completed after ended event was received.')
+      else
+        FailTest('Test failed because ended occured before currentTime > 0.')
     }, {once: true});
 
     // Fail the test if we time out.
     var timeout = setTimeout(function() {
-      FailTest("Test timed out waiting for a mediaElement timeupdate event.");
+      FailTest('Test timed out waiting for a timeupdate or ended event.');
     }, 10000);
 
     mediaSource.addEventListener('sourceopen', (open_event) => {
@@ -85,10 +96,18 @@
       for (let i = 0; i < appenders.length; ++i) {
         appenders[i].onSourceOpen(mediaSource);
       }
+
+      // Append each segment and wait for the append to complete.
+      let num_complete_appends = 0;
       for (let i = 0; i < appenders.length; ++i) {
-        appenders[i].attemptAppend(mediaSource);
+        appenders[i].attemptAppend(() => {
+          num_complete_appends++;
+          if (num_complete_appends === testParams.media.length) {
+            mediaSource.endOfStream();
+            mediaElement.play();
+          }
+        });
       }
-      mediaElement.play();
     });
 
     // Do not attach MediaSource object until all the buffer appenders have
@@ -119,7 +138,7 @@
       this.sourceBuffer = null;
     }
     requestMediaBytes(callback) {
-      this.xhr.addEventListener('loadend', callback);
+      this.xhr.addEventListener('loadend', callback, {once: true});
       this.xhr.open('GET', this.media_file);
       this.xhr.setRequestHeader(
           'Range', 'bytes=' + testParams.startOffset + '-' +
@@ -132,21 +151,22 @@
         return;
       this.sourceBuffer = mediaSource.addSourceBuffer(this.mimetype);
     }
-    attemptAppend() {
+    attemptAppend(callback) {
       if (!this.xhr.response || !this.sourceBuffer)
         return;
+      this.sourceBuffer.addEventListener('updateend', callback, {once: true});
       this.sourceBuffer.appendBuffer(this.xhr.response);
       this.xhr = null;
     }
   } // End BufferAppender
 
   function PassTest(message) {
-    console.log("Test passed: " + message);
+    console.log('Test passed: ' + message);
     window.__testDone = true;
   }
 
   function FailTest(error_message) {
-    console.error("Test failed: " + error_message);
+    console.error('Test failed: ' + error_message);
     window.__testFailed = true;
     window.__testError = error_message;
     window.__testDone = true;
@@ -162,5 +182,5 @@
   // These are outputs to be consumed by media Telemetry test driver code.
   window.__testDone = false;
   window.__testFailed = false;
-  window.__testError = "";
+  window.__testError = '';
 })();

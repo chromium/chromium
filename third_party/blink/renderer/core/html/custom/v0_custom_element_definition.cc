@@ -32,12 +32,6 @@
 
 namespace blink {
 
-V0CustomElementDefinition* V0CustomElementDefinition::Create(
-    const V0CustomElementDescriptor& descriptor,
-    V0CustomElementLifecycleCallbacks* callbacks) {
-  return MakeGarbageCollected<V0CustomElementDefinition>(descriptor, callbacks);
-}
-
 V0CustomElementDefinition::V0CustomElementDefinition(
     const V0CustomElementDescriptor& descriptor,
     V0CustomElementLifecycleCallbacks* callbacks)

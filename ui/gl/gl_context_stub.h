@@ -6,6 +6,7 @@
 #define UI_GL_GL_CONTEXT_STUB_H_
 
 #include "base/macros.h"
+#include "build/build_config.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_export.h"
 
@@ -28,11 +29,16 @@ class GL_EXPORT GLContextStub : public GLContextReal {
   void* GetHandle() override;
   std::string GetGLVersion() override;
   std::string GetGLRenderer() override;
-  bool WasAllocatedUsingRobustnessExtension() override;
+  unsigned int CheckStickyGraphicsResetStatus() override;
 
   void SetUseStubApi(bool stub_api);
   void SetExtensionsString(const char* extensions);
   void SetGLVersionString(const char* version_str);
+  bool HasRobustness();
+
+#if defined(OS_MACOSX)
+  void FlushForDriverCrashWorkaround() override;
+#endif
 
  protected:
   ~GLContextStub() override;
@@ -42,6 +48,7 @@ class GL_EXPORT GLContextStub : public GLContextReal {
  private:
   bool use_stub_api_;
   std::string version_str_;
+  unsigned int graphics_reset_status_ = 0;  // GL_NO_ERROR
 
   DISALLOW_COPY_AND_ASSIGN(GLContextStub);
 };

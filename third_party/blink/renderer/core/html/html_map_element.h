@@ -29,19 +29,18 @@
 namespace blink {
 
 class HTMLImageElement;
+struct PhysicalOffset;
 
 class CORE_EXPORT HTMLMapElement final : public HTMLElement {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  DECLARE_NODE_FACTORY(HTMLMapElement);
-
   explicit HTMLMapElement(Document&);
   ~HTMLMapElement() override;
 
   const AtomicString& GetName() const { return name_; }
 
-  HTMLAreaElement* AreaForPoint(const LayoutPoint&,
+  HTMLAreaElement* AreaForPoint(const PhysicalOffset&,
                                 const LayoutObject* container_object);
 
   HTMLImageElement* ImageElement();

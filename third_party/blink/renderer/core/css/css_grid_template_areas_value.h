@@ -33,20 +33,14 @@
 
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/style/grid_area.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 
 namespace blink {
+namespace cssvalue {
 
 class CSSGridTemplateAreasValue : public CSSValue {
  public:
-  static CSSGridTemplateAreasValue* Create(
-      const NamedGridAreaMap& grid_area_map,
-      size_t row_count,
-      size_t column_count) {
-    return MakeGarbageCollected<CSSGridTemplateAreasValue>(
-        grid_area_map, row_count, column_count);
-  }
-
   CSSGridTemplateAreasValue(const NamedGridAreaMap&,
                             size_t row_count,
                             size_t column_count);
@@ -70,8 +64,14 @@ class CSSGridTemplateAreasValue : public CSSValue {
   size_t column_count_;
 };
 
-DEFINE_CSS_VALUE_TYPE_CASTS(CSSGridTemplateAreasValue,
-                            IsGridTemplateAreasValue());
+}  // namespace cssvalue
+
+template <>
+struct DowncastTraits<cssvalue::CSSGridTemplateAreasValue> {
+  static bool AllowFrom(const CSSValue& value) {
+    return value.IsGridTemplateAreasValue();
+  }
+};
 
 }  // namespace blink
 

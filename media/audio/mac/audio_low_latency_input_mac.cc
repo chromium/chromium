@@ -232,7 +232,7 @@ AUAudioInputStream::AUAudioInputStream(
       glitches_detected_(0),
       log_callback_(log_callback) {
   DCHECK(manager_);
-  CHECK(!log_callback_.Equals(AudioManager::LogCallback()));
+  CHECK(log_callback_ != AudioManager::LogCallback());
   if (use_voice_processing_) {
     DCHECK(input_params.channels() == 1 || input_params.channels() == 2);
     const bool got_default_device =

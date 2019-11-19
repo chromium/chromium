@@ -125,7 +125,10 @@ void SkiaBenchmarking::Install(blink::WebLocalFrame* frame) {
     return;
 
   v8::Local<v8::Object> chrome = GetOrCreateChromeObject(isolate, context);
-  chrome->Set(gin::StringToV8(isolate, "skiaBenchmarking"), controller.ToV8());
+  chrome
+      ->Set(context, gin::StringToV8(isolate, "skiaBenchmarking"),
+            controller.ToV8())
+      .Check();
 }
 
 // static
@@ -277,21 +280,32 @@ void SkiaBenchmarking::GetOpTimings(gin::Arguments* args) {
   skia::BenchmarkingCanvas benchmarking_canvas(&canvas);
   picture->picture->playback(&benchmarking_canvas);
 
+  v8::Local<v8::Context> context = isolate->GetCurrentContext();
   v8::Local<v8::Array> op_times =
       v8::Array::New(isolate, benchmarking_canvas.CommandCount());
   for (size_t i = 0; i < benchmarking_canvas.CommandCount(); ++i) {
-    op_times->Set(i, v8::Number::New(isolate, benchmarking_canvas.GetTime(i)));
+    op_times
+        ->CreateDataProperty(
+            context, i,
+            v8::Number::New(isolate, benchmarking_canvas.GetTime(i)))
+        .Check();
   }
 
   v8::Local<v8::Object> result = v8::Object::New(isolate);
-  result->Set(v8::String::NewFromUtf8(isolate, "total_time",
-                                      v8::NewStringType::kInternalized)
-                  .ToLocalChecked(),
-              v8::Number::New(isolate, total_time.InMillisecondsF()));
-  result->Set(v8::String::NewFromUtf8(isolate, "cmd_times",
-                                      v8::NewStringType::kInternalized)
-                  .ToLocalChecked(),
-              op_times);
+  result
+      ->Set(context,
+            v8::String::NewFromUtf8(isolate, "total_time",
+                                    v8::NewStringType::kInternalized)
+                .ToLocalChecked(),
+            v8::Number::New(isolate, total_time.InMillisecondsF()))
+      .Check();
+  result
+      ->Set(context,
+            v8::String::NewFromUtf8(isolate, "cmd_times",
+                                    v8::NewStringType::kInternalized)
+                .ToLocalChecked(),
+            op_times)
+      .Check();
 
   args->Return(result);
 }
@@ -306,15 +320,22 @@ void SkiaBenchmarking::GetInfo(gin::Arguments* args) {
   if (!picture.get())
     return;
 
+  v8::Local<v8::Context> context = isolate->GetCurrentContext();
   v8::Local<v8::Object> result = v8::Object::New(isolate);
-  result->Set(v8::String::NewFromUtf8(isolate, "width",
-                                      v8::NewStringType::kInternalized)
-                  .ToLocalChecked(),
-              v8::Number::New(isolate, picture->layer_rect.width()));
-  result->Set(v8::String::NewFromUtf8(isolate, "height",
-                                      v8::NewStringType::kInternalized)
-                  .ToLocalChecked(),
-              v8::Number::New(isolate, picture->layer_rect.height()));
+  result
+      ->Set(context,
+            v8::String::NewFromUtf8(isolate, "width",
+                                    v8::NewStringType::kInternalized)
+                .ToLocalChecked(),
+            v8::Number::New(isolate, picture->layer_rect.width()))
+      .Check();
+  result
+      ->Set(context,
+            v8::String::NewFromUtf8(isolate, "height",
+                                    v8::NewStringType::kInternalized)
+                .ToLocalChecked(),
+            v8::Number::New(isolate, picture->layer_rect.height()))
+      .Check();
 
   args->Return(result);
 }

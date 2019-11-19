@@ -6,7 +6,4 @@ specific_include_rules = {
   '.*browsertest\.cc': [
     "+content/public/test",
   ],
-  'stack_unwinder_android_unittest.cc': [
-    "+jni",
-  ],
 }

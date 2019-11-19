@@ -103,7 +103,7 @@ class PnaclHost {
   // thread when finished.
   void ClearTranslationCacheEntriesBetween(base::Time initial_time,
                                            base::Time end_time,
-                                           const base::Closure& callback);
+                                           base::OnceClosure callback);
 
   // Return the number of tracked translations or FD requests currently pending.
   size_t pending_translations() {
@@ -175,13 +175,13 @@ class PnaclHost {
                                 std::unique_ptr<base::File> file,
                                 int file_error);
 
-  void OnEntriesDoomed(const base::Closure& callback, int net_error);
+  void OnEntriesDoomed(base::OnceClosure callback, int net_error);
 
   void DeInitIfSafe();
 
   scoped_refptr<base::SequencedTaskRunner> file_task_runner_ =
-      base::CreateSequencedTaskRunnerWithTraits(
-          {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
+      base::CreateSequencedTaskRunner({base::ThreadPool(), base::MayBlock(),
+                                       base::TaskPriority::USER_VISIBLE});
 
   // Operations which are pending with the cache backend, which we should
   // wait for before destroying it (see comment on DeInitIfSafe).

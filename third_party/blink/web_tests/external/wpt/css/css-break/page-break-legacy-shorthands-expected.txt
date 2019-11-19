@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-PASS Legacy values of the shorthands work as expected
-FAIL New values work on the new longhands, but serialize to the empty string in the legacy shorthands assert_equals: expected "" but got "auto"
-PASS New values of the break longhands don't work on legacy shorthands
-PASS Legacy shorthands really never appear on cssText, even when there are variable references
-Harness: the test ran to completion.
-

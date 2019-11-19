@@ -7,67 +7,56 @@
 <translation id="1051826050538111504">‏هناك برنامج ضار على جهاز الكمبيوتر. ويمكن لمتصفِّح Chrome إزالته واستعادة إعداداتك وإيقاف الإضافات لكي يعمل متصفِّحك بشكلٍ طبيعي من جديد.</translation>
 <translation id="1065672644894730302">لا يمكن قراءة تفضيلاتك. قد تكون بعض الميزات غير متاحة، ولن يتم حفظ التغييرات في التفضيلات.</translation>
 <translation id="1088300314857992706">‏كان <ph name="USER_EMAIL_ADDRESS" /> يستخدم Chrome سابقًا</translation>
+<translation id="1097330777386562916">‏محو بيانات الموقع الإلكتروني وملفات تعريف الارتباط عند الخروج من Chrome</translation>
 <translation id="1104959162601287462">‏حول &amp;نظام التشغيل Google Chrome</translation>
 <translation id="110877069173485804">‏هذا Chrome الخاص بك</translation>
 <translation id="1142745911746664600">‏تعذّر تحديث Chrome</translation>
 <translation id="1154147086299354128">‏&amp;فتح في Chrome</translation>
 <translation id="123620459398936149">‏تعذر على نظام التشغيل Chrome مزامنة البيانات. يُرجى تحديث عبارة مرور المزامنة.</translation>
-<translation id="127345590676626841">‏يجري تحديث Chrome تلقائيًا بحيث يكون لديك أحدث إصدار. عند اكتمال هذا التحميل، ستتم إعادة تشغيل Chrome وستبدأ العمل.</translation>
 <translation id="1302523850133262269">‏يُرجى الانتظار لحين تثبيت Chrome لآخر تحديثات النظام.</translation>
-<translation id="1312676208694947750">{0,plural, =0{‏يتوفر تحديث لنظام التشغيل Chrome}=1{‏يتوفر تحديث واحد لنظام التشغيل Chrome}two{‏يتوفر تحديث لنظام التشغيل Chrome منذ يومين (#)}few{‏يتوفر تحديث لنظام التشغيل Chrome منذ # أيام}many{‏يتوفر تحديث لنظام التشغيل Chrome منذ # يومًا}other{‏يتوفر تحديث لنظام التشغيل Chrome منذ # يوم}}</translation>
 <translation id="137466361146087520">‏الإصدار التجريبي من Google Chrome</translation>
-<translation id="1393853151966637042">‏الحصول على مساعدة بشأن استخدام Chrome</translation>
 <translation id="1399397803214730675">‏يحتوي جهاز الكمبيوتر هذا على نسخة أحدث من Google Chrome. إذا كان برنامج Google Chrome لا يعمل، فالرجاء إزالة Google Chrome وإعادة المحاولة.</translation>
 <translation id="1434626383986940139">‏تطبيقات Chrome Canary</translation>
-<translation id="1457721931618994305">‏جارٍ تحديث Google Chrome...</translation>
-<translation id="1469002951682717133">‏مشغل تطبيقات Chrome</translation>
 <translation id="1553358976309200471">‏تحديث Chrome‏</translation>
-<translation id="1585657529869845941">النقر على زر <ph name="BEGIN_BOLD" />التبديل على أي حال<ph name="END_BOLD" /> في حال ظهوره</translation>
 <translation id="1587223624401073077">‏يستخدم Google Chrome الكاميرا.</translation>
 <translation id="1587325591171447154">‏ملف <ph name="FILE_NAME" /> ضار، لذلك فقد حظره Chrome.</translation>
+<translation id="1590588151039584890">‏يجب إيقاف تشغيل Chrome على جهاز الكمبيوتر هذا لإجراء التحديث. وجرّاء ذلك، إنّ المستخدمين الآخرين الذين سجَّلوا الدخول إلى جهاز الكمبيوتر هذا قد يفقدون التغييرات غير المحفوظة.</translation>
 <translation id="1619887657840448962">‏لجعل Chrome أكثر أمنًا، أوقفنا الإضافة التالية التي لم تُدرج في <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> وربما تكون قد أضيفت دون علمك.</translation>
 <translation id="1628000112320670027">‏الحصول على مساعدة في Chrome</translation>
+<translation id="1635734105302489219">‏يتم محو ملفات تعريف الارتباط عند الخروج من Chrome. لمواصلة عملية المزامنة، يمكنك تغيير هذا <ph name="COOKIE_SETTINGS_LINK" />.</translation>
 <translation id="1662639173275167396">‏أصبح نظام التشغيل Chrome متاحًا من خلال <ph name="BEGIN_LINK_CROS_OSS" />برنامج مفتوح المصدر<ph name="END_LINK_CROS_OSS" />إضافي، كما في نظام التشغيل <ph name="BEGIN_LINK_LINUX_OSS" />Linux (إصدار تجريبي)<ph name="END_LINK_LINUX_OSS" />.</translation>
+<translation id="1666409074978194368">‏أوشك التحديث على الانتهاء. إعادة تشغيل Google Chrome لإنهاء التحديث لن تتم إعادة فتح نوافذ التصفح المتخفي.</translation>
 <translation id="1674870198290878346">‏فتح الرابط في نافذة تصفح متخفٍ في Chrome</translation>
 <translation id="1682634494516646069">‏يتعذر على Google Chrome القراءة والكتابة في دليل البيانات الخاص به:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="1698376642261615901">‏إن Google Chrome هو متصفح ويب يشغّل صفحات الويب والتطبيقات بسرعة خاطفة. فهذا المتصفح سريع ويتميز بالثبات وسهولة الاستخدام، ويمكنك من خلاله تصفح الويب بقدر أكبر من الأمان من خلال وجود حماية مضمنة داخله ضد البرامج الضارة والتصيّد.</translation>
-<translation id="1718131156967340976">‏تحديد <ph name="SMALL_PRODUCT_LOGO" /> <ph name="BEGIN_BOLD" />Google Chrome<ph name="END_BOLD" /></translation>
+<translation id="1713301662689114961">{0,plural, =1{‏ستتم إعادة تشغيل Chrome في غضون ساعة واحدة}zero{‏ستتم إعادة تشغيل Chrome في غضون # ساعة}two{‏ستتم إعادة تشغيل Chrome في غضون ساعتين}few{‏ستتم إعادة تشغيل Chrome في غضون # ساعات}many{‏ستتم إعادة تشغيل Chrome في غضون # ساعةً}other{‏ستتم إعادة تشغيل Chrome في غضون # ساعة}}</translation>
 <translation id="1734234790201236882">‏سيحفظ Chrome كلمة المرور هذه في حسابك على Google ولن تحتاج إلى تذكُّرها.</translation>
 <translation id="174539241580958092">‏تعذر على Google Chrome مزامنة البيانات نظرًا لوجود خطأ في تسجيل الدخول.</translation>
 <translation id="1759842336958782510">Chrome</translation>
-<translation id="1773601347087397504">‏الحصول على مساعدة بشأن استخدام نظام التشغيل Chrome</translation>
-<translation id="1795405610103747296">‏بادِر بتثبيت Chrome على هاتفك. سنرسل رسالة قصيرة SMS إلى هاتفك: <ph name="PHONE_NUMBER" /></translation>
 <translation id="1812689907177901597">‏من خلال إيقاف هذا الإعداد، يمكنك تسجيل الدخول إلى "مواقع Google" مثل Gmail بدون الحاجة إلى تسجيل الدخول إلى Chrome</translation>
 <translation id="1860536484129686729">‏يحتاج Chrome إلى إذن للوصول إلى الكاميرا من أجل موقع الويب هذا.</translation>
 <translation id="1873233029667955273">‏Google Chrome ليس متصفحك التلقائي.</translation>
 <translation id="1874309113135274312">‏الإصدار التجريبي من Google Chrome‏ (mDNS-In)</translation>
 <translation id="1877026089748256423">‏إصدار Chrome قديم</translation>
-<translation id="1915828456209461693">‏يتوفر تحديث جديد لبرنامج Chrome وسيتم تطبيقه عند إعادة التشغيل.</translation>
+<translation id="1900795423379050516">‏في حال عدم عرض إعداد على هذه الصفحة، انتقل إلى <ph name="LINK_BEGIN" />
+    إعدادات متصفِّح Chrome<ph name="LINK_END" />.</translation>
 <translation id="1919130412786645364">‏السماح بتسجيل الدخول إلى Chrome</translation>
 <translation id="2063848847527508675">‏يلزم إعادة تشغيل نظام التشغيل Chrome حتى يتم تطبيق التحديث.</translation>
 <translation id="2094919256425865063">‏هل تريد الخروج من Chrome على أي حال؟</translation>
 <translation id="2120620239521071941">‏سيعمل هذا على حذف <ph name="ITEMS_COUNT" /> من العناصر من هذا الجهاز. لاسترداد بياناتك لاحقًا، سجّل الدخول إلى Chrome كـ <ph name="USER_EMAIL" />.</translation>
-<translation id="2123055963409958220">‏ساعد في تحسين Chrome بالإبلاغ عن <ph name="BEGIN_LINK" />الإعدادات الحالية<ph name="END_LINK" /></translation>
-<translation id="216054706567564023">‏بادِر بتثبيت Chrome على هاتفك. سنرسل رسالة قصيرة SMS إلى رقم هاتف استرداد حسابك.</translation>
+<translation id="2123055963409958220">‏يمكنك المساعدة في تحسين Chrome بالإبلاغ عن <ph name="BEGIN_LINK" />الإعدادات الحالية<ph name="END_LINK" /></translation>
+<translation id="2151406531797534936">‏يُرجى إعادة تشغيل Chrome الآن</translation>
 <translation id="2246246234298806438">‏لا يمكن لـ Google Chrome عرض معاينة الطباعة عندما يكون عارض PDF المضمّن مفقودًا.</translation>
-<translation id="2252923619938421629">‏ساعد في تحسين Google Chrome بالإبلاغ عن الإعدادات الحالية</translation>
-<translation id="225363235161345695">{0,plural, =1{‏ستتم إعادة تشغيل Chrome خلال ساعة واحدة}zero{‏ستتم إعادة تشغيل Chrome خلال # ساعة}two{‏ستتم إعادة تشغيل Chrome خلال ساعتين (#)}few{‏ستتم إعادة تشغيل Chrome خلال # ساعات}many{‏ستتم إعادة تشغيل Chrome خلال # ساعةً}other{‏ستتم إعادة تشغيل Chrome خلال # ساعة}}</translation>
-<translation id="2286950485307333924">‏تم تسجيل دخولك الآن إلى Chrome</translation>
 <translation id="2290014774651636340">‏مفاتيح واجهة برمجة تطبيقات Google مفقودة. وسيترتب على ذلك توقف بعض وظائف Google Chrome عن العمل.</translation>
 <translation id="2290095356545025170">‏هل تريد فعلًا إزالة Google Chrome؟</translation>
 <translation id="2309047409763057870">‏هذا تثبيت ثانوي من Google Chrome، ولا يمكن جعله متصفحك التلقائي.</translation>
-<translation id="2334084861041072223">‏حقوق الطبع والنشر لعام <ph name="YEAR" /> لصالح شركة .Google Inc. جميع الحقوق محفوظة.</translation>
-<translation id="2346876346033403680">‏سجّل شخص ما الدخول من قبل إلى Chrome على هذا الكمبيوتر باعتباره <ph name="ACCOUNT_EMAIL_LAST" />. فإذا لم يكن هذا هو حسابك، فأنشئ حساب مستخدم Chrome جديدًا للإبقاء على معلوماتك بشكل منفصل.
-
-سيؤدي تسجيل الدخول على أيّ حال إلى دمج معلومات Chrome مثل الإشارات المرجعية والسجل والإعدادات الأخرى مع <ph name="ACCOUNT_EMAIL_NEW" />.</translation>
 <translation id="2348335408836342058">‏يحتاج Chrome إلى إذن للوصول إلى الكاميرا والميكروفون من أجل موقع الويب هذا.</translation>
 <translation id="2429317896000329049">‏تعذر على Google Chrome مزامنة البيانات نظرًا لأن المزامنة غير متاحة في نطاقك.</translation>
 <translation id="2467438592969358367">‏يرغب Google Chrome في تصدير كلمات مرورك، لذا يُرجى كتابة كلمة مرور Windows للسماح بذلك.</translation>
 <translation id="2485422356828889247">إزالة التثبيت</translation>
 <translation id="2534507159460261402">‏Google Pay (تم النسخ إلى Chrome)</translation>
-<translation id="2535429035253759792">‏يطلب المُشرِف إعادة تشغيل Chrome لتطبيق هذا التحديث.</translation>
 <translation id="2580411288591421699">‏لا يمكن تثبيت نفس الإصدار المثبت من Google Chrome والذي يتم تشغيله حاليًا. يُرجى إغلاق Google Chrome وإعادة المحاولة.</translation>
 <translation id="2586406160782125153">‏سيؤدي هذا إلى حذف بيانات التصفح من هذا الجهاز. لاسترداد بياناتك لاحقًا، سجّل الدخول إلى Chrome كـ <ph name="USER_EMAIL" />.</translation>
 <translation id="2588322182880276190">‏شعار Chrome</translation>
@@ -81,54 +70,45 @@
 <translation id="2847461019998147611">‏عرض Google Chrome بهذه اللغة</translation>
 <translation id="2857540653560290388">‏جارٍ إطلاق Chrome...</translation>
 <translation id="2871893339301912279">‏تم تسجيل دخولك إلى Chrome!</translation>
-<translation id="2888126860611144412">‏حول Chrome</translation>
+<translation id="2888126860611144412">‏لمحة عن Chrome</translation>
 <translation id="3037838751736561277">‏Google Chrome في وضع الخلفية.</translation>
-<translation id="3047079729301751317">‏سيؤدي قطع اتصال <ph name="USERNAME" /> إلى مسح السجّل والإشارات المرجعية والإعدادات وبيانات Chrome الأخرى المخزنة على هذا الجهاز. لن يتم مسح البيانات المخزنة في حساب Google ويمكن إدارتها على <ph name="GOOGLE_DASHBOARD_LINK" />لوحة تحكم Google<ph name="END_GOOGLE_DASHBOARD_LINK" />.</translation>
 <translation id="3065168410429928842">‏علامة تبويب Chrome</translation>
 <translation id="3080151273017101988">‏استمرار تشغيل تطبيقات الخلفية عند إغلاق Google Chrome</translation>
 <translation id="3089968997497233615">‏يتوفر إصدار جديد وأكثر أمانًا لمتصفح Google Chrome.</translation>
 <translation id="3149510190863420837">‏تطبيقات Chrome</translation>
-<translation id="3251381707915721925">‏لتعيين مواقع الويب التي يستطيع <ph name="NEW_PROFILE_NAME" /> عرضها، يمكنك تهيئة القيود والإعدادات عن طريق الانتقال إلى <ph name="BEGIN_LINK_1" /><ph name="DISPLAY_LINK" /><ph name="END_LINK_1" />. وفي حالة عدم تغيير الإعدادات التلقائية، يستطيع <ph name="NEW_PROFILE_NAME" /> تصفح جميع المواقع على الويب.
-
-لمنع <ph name="NEW_PROFILE_NAME" /> من الوصول إلى حسابك، تأكد من قفل ملفك الشخصي عندما لا تستخدم Chrome، ولإجراء ذلك، انقر على اسم ملفك الشخصي في الزاوية العليا اليسرى من المتصفح، وحدد "الخروج وتشغيل وضع القفل للأطفال"
-<ph name="BEGIN_LINK_2" />مزيد من المعلومات<ph name="END_LINK_2" />
-
-يُرجى التحقق من بريدك الإلكتروني على <ph name="ACCOUNT_EMAIL" /> للحصول على مزيد من التعليمات.</translation>
 <translation id="3282568296779691940">‏تسجيل الدخول إلى Chrome</translation>
+<translation id="3340978935015468852">الإعدادات</translation>
 <translation id="3360895254066713204">‏مساعد Chrome</translation>
+<translation id="3379938682270551431">{0,plural, =0{‏ستتم إعادة تشغيل Chrome الآن}=1{‏ستتم إعادة تشغيل Chrome في غضون ثانية واحدة}two{‏ستتم إعادة تشغيل Chrome في غضون ثانيتين}few{‏ستتم إعادة تشغيل Chrome في غضون # ثوان}many{‏ستتم إعادة تشغيل Chrome في غضون # ثانيةً}other{‏ستتم إعادة تشغيل Chrome في غضون # ثانية}}</translation>
 <translation id="3395323229510056640">‏الحصول على مساعدة في نظام التشغيل Chrome</translation>
 <translation id="3396977131400919238">‏حدث خطأ في نظام التشغيل أثناء عملية التثبيت. يُرجى تنزيل Google Chrome مرة أخرى.</translation>
 <translation id="3398288718845740432">‏الإخفاء في قائمة Chrome</translation>
 <translation id="3451115285585441894">‏جارٍ الإضافة إلى Chrome...</translation>
 <translation id="345171907106878721">‏إضافة نفسك إلى Chrome</translation>
-<translation id="3479552764303398839">ليس الآن</translation>
 <translation id="34857402635545079">‏محو البيانات من Chrome أيضًا (<ph name="URL" />)</translation>
 <translation id="3503306920980160878">‏يحتاج Chrome للوصول إلى موقعك الجغرافي لمشاركته مع موقع الويب هذا.</translation>
+<translation id="3576528680708590453">‏ضَبَط مشرف النظام Google Chrome لفتح متصفِّح بديل للوصول إلى <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="3582972582564653026">‏يمكنك مزامنة Chrome وتخصيصه على جميع أجهزتك.</translation>
+<translation id="3596080736082218006">{COUNT,plural, =0{‏يطلب المشرف إعادة تشغيل Chrome لتطبيق تحديث.}=1{‏يطلب المشرف إعادة تشغيل Chrome لتطبيق تحديث. لن تتم إعادة فتح نافذة التصفح المتخفي.}two{‏يطلب المشرف إعادة تشغيل Chrome لتطبيق تحديث. لن تتم إعادة فتح نافذتَي التصفح المتخفي.}few{‏يطلب المشرف إعادة تشغيل Chrome لتطبيق تحديث. لن تتم إعادة فتح نوافذ التصفّح المتخفي البالغ عددها #.}many{‏يطلب المشرف إعادة تشغيل Chrome لتطبيق تحديث. لن تتم إعادة فتح نوافذ التصفّح المتخفي البالغ عددها #.}other{‏يطلب المشرف إعادة تشغيل Chrome لتطبيق تحديث. لن تتم إعادة فتح نوافذ التصفّح المتخفي البالغ عددها #.}}</translation>
 <translation id="3622797965165704966">‏الآن أصبح استخدام Chrome مع حسابك في Google وفي أجهزة الكمبيوتر المشتركة أكثر سهولة.</translation>
 <translation id="3637702109597584617">‏<ph name="TERMS_OF_SERVICE_LINK" />بنود خدمة<ph name="END_TERMS_OF_SERVICE_LINK" /> نظام التشغيل Google Chrome</translation>
-<translation id="3716182511346448902">‏تستهلك هذه الصفحة مساحة كبيرة من الذاكرة، لذلك أوقفها Chrome مؤقتًا.</translation>
 <translation id="3718181793972440140">‏سيعمل هذا على حذف عنصر واحد من هذا الجهاز. لاسترداد بياناتك لاحقًا، سجّل الدخول إلى Chrome كـ <ph name="USER_EMAIL" />.</translation>
 <translation id="3735758079232443276">‏غيّرت الإضافة "<ph name="EXTENSION_NAME" />" الصفحة التي تظهر عند بدء Chrome.</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
-<translation id="3784527566857328444">‏إزالة من Chrome</translation>
 <translation id="386202838227397562">‏يُرجى إغلاق كل نوافذ Google Chrome وإعادة المحاولة.</translation>
-<translation id="3870154837782082782">Google Inc‎.‎</translation>
 <translation id="3873044882194371212">‏فتح الرابط في نافذة تصفح متخفٍ في Chrome</translation>
 <translation id="3889417619312448367">‏إزالة Google Chrome</translation>
-<translation id="3898493977366060150">‏تصفُح الويب من خلال ميزات Google الذكية</translation>
-<translation id="4028693306634653894">‏الوصول إلى Chrome بشكلٍ أسرع</translation>
 <translation id="4050175100176540509">تحسينات الأمان المهمة والميزات الجديدة متاحة في أحدث إصدار.</translation>
 <translation id="4053720452172726777">‏تخصيص Google Chrome والتحكم فيه</translation>
 <translation id="4143243756087420366">‏الاسم والصورة على Chrome</translation>
 <translation id="4147555960264124640">‏إنك تسجل الدخول باستخدام حساب مُدار وتمنح المشرف إمكانية التحكم في ملفك الشخصي في Google Chrome. وسيتم ربط بيانات Chrome التابعة لك، مثل التطبيقات والإشارات المرجعية والسجلّ وكلمات المرور والإعدادات الأخرى بالمستخدم <ph name="USER_NAME" />. وستتمكن من حذف هذه البيانات عبر لوحة تحكم حسابات Google، ولكنك لن تتمكن من إقران هذه البيانات بحساب آخر. <ph name="LEARN_MORE" /></translation>
 <translation id="4149882025268051530">‏فشلت أداة المثبِّت في فك ضغط الأرشيف. يُرجى تنزيل Google Chrome مرة أخرى.</translation>
-<translation id="424864128008805179">‏هل تريد الخروج من Chrome؟</translation>
+<translation id="4191857738314598978">{0,plural, =1{‏يجب إعادة تشغيل Chrome في غضون يوم واحد}zero{‏يجب إعادة تشغيل Chrome في غضون # يوم}two{‏يجب إعادة تشغيل Chrome في غضون يومين}few{‏يجب إعادة تشغيل Chrome في غضون # أيام}many{‏يجب إعادة تشغيل Chrome في غضون # يومًا}other{‏يجب إعادة تشغيل Chrome في غضون # يوم}}</translation>
+<translation id="424864128008805179">‏هل تريد تسجيل الخروج من Chrome؟</translation>
 <translation id="4251615635259297716">‏هل ترغب في ربط بياناتك في Chrome بهذا الحساب؟</translation>
-<translation id="4251625577313994583">‏الحصول على Chrome على جهاز iPhone</translation>
 <translation id="4293420128516039005">‏يمكنك تسجيل الدخول لمزامنة Chrome وتخصيصه على جميع أجهزتك.</translation>
 <translation id="4328355335528187361">‏إصدار مطوّري البرامج من Google Chrome ‏(mDNS-In)</translation>
-<translation id="4331809312908958774">Chrome OS</translation>
+<translation id="4331809312908958774">‏نظام تشغيل Chrome</translation>
 <translation id="4343195214584226067">‏تمت إضافة <ph name="EXTENSION_NAME" /> إلى Chrome</translation>
 <translation id="4407807842708586359">‏نظام تشغيل Google Chrome</translation>
 <translation id="4458462641685292929">‏عملية أخرى على Google Chrome قيد التقدم. يُرجى المحاولة مرة أخرى لاحقًا.</translation>
@@ -140,22 +120,18 @@
 <translation id="4600710005438004015">‏تعذّر تحديث Chrome إلى آخر إصدار، لذلك قد تفوتك الميزات وعمليات إصلاح الأمان الجديدة.</translation>
 <translation id="4631713731678262610">‏الإخفاء في قائمة Chrome</translation>
 <translation id="4633000520311261472">‏لجعل Chrome أكثر أمانًا، تم إيقاف بعض الإضافات غير المدرجة في <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> والتي ربما تمت إضافتها بدون علمك.</translation>
-<translation id="4700157086864140907">‏يمكن أن يقدم Google Chrome تدقيقًا إملائيًا أكثر دقة من خلال إرسال ما تكتبه في المتصفح إلى خوادم Google، مما يتيح لك استخدام تقنية التدقيق الإملائي ذاتها المستخدمة في بحث Google.</translation>
 <translation id="4728575227883772061">‏فشلت عملية التثبيت بسبب خطأ غير محدد. إذا كان Google Chrome في حالة التشغيل حاليًا، يُرجى إغلاقه وإعادة المحاولة.</translation>
 <translation id="4750550185319565338">‏إعادة تشغيل Chrome لتمكين <ph name="PLUGIN_NAME" /></translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4771048833395599659">‏قد يكون هذا الملف ضارًا، لذلك فقد حظره Chrome.</translation>
-<translation id="4794050651896644714">‏حفظ التفاصيل في Chrome</translation>
+<translation id="479167709087336770">‏يستخدم ذلك المدقق الإملائي نفسه الذي يتم استخدامه في "بحث Google". ويتم إرسال النص الذي تكتبه في المتصفّح إلى Google. يمكنك دائمًا تغيير هذا السلوك في الإعدادات.</translation>
 <translation id="4891791193823137474">‏دع Google Chrome يعمل في الخلفية</translation>
 <translation id="4895437082222824641">‏فتح الرابط في علامة تبويب جديدة في Chrome</translation>
-<translation id="4921569541910214635">‏هل تشارك جهاز كمبيوتر؟ يمكنك الآن إعداد Chrome بالطريقة التي تعجبك تمامًا.</translation>
-<translation id="4945319281866068441">{0,plural, =1{‏إعادة تشغيل نظام التشغيل Chrome خلال يوم واحد}zero{‏إعادة تشغيل نظام التشغيل Chrome خلال # يوم}two{‏إعادة تشغيل نظام التشغيل Chrome خلال يومين (#)}few{‏إعادة تشغيل نظام التشغيل Chrome خلال # أيام}many{‏إعادة تشغيل نظام التشغيل Chrome خلال # يومًا}other{‏إعادة تشغيل نظام التشغيل Chrome خلال # يوم}}</translation>
 <translation id="4953650215774548573">‏تعيين Google Chrome المتصفح التلقائي</translation>
 <translation id="495931528404527476">‏في Chrome</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5028489144783860647">‏تعذر على Google Chrome مزامنة البيانات. يُرجى تحديث عبارة مرور المزامنة.</translation>
 <translation id="5062123544085870375">‏إعادة تشغيل نظام التشغيل Chrome</translation>
-<translation id="5090044601776247154">‏لن تصبح الملفات الشخصية للمستخدمين تحت الإشراف متاحة بعد الآن بدءًا من إصدار Google Chrome 70.</translation>
 <translation id="5132929315877954718">‏يمكنك اكتشاف تطبيقات، وألعاب، وإضافات، ومظاهر رائعة لمتصفح Google Chrome.</translation>
 <translation id="5170938038195470297">‏لا يمكن استخدام ملفك الشخصي نظرًا لأنه من إصدار أحدث من Google Chrome.
 
@@ -165,23 +141,24 @@
 <translation id="5251420635869119124">‏يمكن للضيف استخدام Chrome بدون أن يترك أي أثر وراءه.</translation>
 <translation id="532046782124376502">‏تحذير: يتعذّر على Google Chrome منع الإضافات من تسجيل سجل تصفحك. لإيقاف هذه الإضافة في وضع التصفح المتخفي، ألغِ تحديد هذا الخيار.</translation>
 <translation id="5386244825306882791">‏كما أنها تتحكم في الصفحة التي تظهر عند تشغيل Chrome أو إجراء بحث من المربع متعدد الاستخدامات.</translation>
+<translation id="5394833366792865639">‏مشاركة علامة تبويب Chrome</translation>
 <translation id="5430073640787465221">‏ملف التفضيلات تالف أو غير صالح. يتعذر على Google Chrome استرداد إعداداتك.</translation>
-<translation id="5483595757826856374">{0,plural, =0{‏ستتم إعادة تشغيل Chrome الآن}=1{‏ستتم إعادة تشغيل Chrome خلال ثانية واحدة}two{‏ستتم إعادة تشغيل Chrome خلال ثانيتين (#)}few{‏ستتم إعادة تشغيل Chrome خلال # ثوانٍ}many{‏ستتم إعادة تشغيل Chrome خلال # ثانيةً}other{‏ستتم إعادة تشغيل Chrome خلال # ثانية}}</translation>
+<translation id="5543953544073077331">‏هناك نُسخ أخرى من Chrome قيد التشغيل. يُرجى إغلاقها لإجراء التحديث.</translation>
 <translation id="556024056938947818">‏يحاول Google Chrome إظهار كلمات المرور.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
+<translation id="5657226924540934362">‏في حال عدم عرض إعداد على هذه الصفحة، انتقل إلى <ph name="LINK_BEGIN" />
+      إعدادات نظام التشغيل Chrome<ph name="LINK_END" /></translation>
 <translation id="565744775970812598">‏قد يكون ملف <ph name="FILE_NAME" /> ضارًا، لذلك فقد حظره Chrome.</translation>
+<translation id="5678190148303298925">{COUNT,plural, =0{‏يطلب المشرف إعادة تشغيل Chrome لتطبيق هذا التحديث.}=1{‏يطلب المشرف إعادة تشغيل Chrome لتطبيق هذا التحديث. لن تتم إعادة فتح نافذة التصفح المتخفي.}two{‏يطلب المشرف إعادة تشغيل Chrome لتطبيق هذا التحديث. لن تتم إعادة فتح نافذتَي التصفح المتخفي.}few{‏يطلب المشرف إعادة تشغيل Chrome لتطبيق هذا التحديث. لن تتم إعادة فتح نوافذ التصفّح المتخفي البالغ عددها #.}many{‏يطلب المشرف إعادة تشغيل Chrome لتطبيق هذا التحديث. لن تتم إعادة فتح نوافذ التصفّح المتخفي البالغ عددها #.}other{‏يطلب المشرف إعادة تشغيل Chrome لتطبيق هذا التحديث. لن تتم إعادة فتح نوافذ التصفّح المتخفي البالغ عددها #.}}</translation>
 <translation id="5686916850681061684">‏تخصيص Google Chrome والتحكم فيه معلومات مهمة - انقر للحصول على التفاصيل.</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5715063361988620182">{SECONDS,plural, =1{‏ستتم إعادة تشغيل Google Chrome خلال ثانية واحدة}zero{‏ستتم إعادة تشغيل Google Chrome خلال # ثانية}two{‏ستتم إعادة تشغيل Google Chrome خلال ثانيتين (#)}few{‏ستتم إعادة تشغيل Google Chrome خلال # ثوانٍ}many{‏ستتم إعادة تشغيل Google Chrome خلال # ثانيةً}other{‏ستتم إعادة تشغيل Google Chrome خلال # ثانية}}</translation>
 <translation id="573759479754913123">‏حول نظام التشغيل Chrome</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">‏تعذَّر إطلاق Chrome. يُرجى إعادة المحاولة.</translation>
-<translation id="5877064549588274448">تم تغيير القناة. يمكنك إعادة تشغيل الجهاز لتدخل التغييرات حيز التنفيذ.</translation>
 <translation id="5895138241574237353">إعادة التشغيل</translation>
-<translation id="5906655207909574370">أوشك التحديث على الانتهاء! أعِد تشغيل الجهاز لإنهاء التحديث.</translation>
 <translation id="5940385492829620908">‏الويب والإشارات المرجعية وغيرها من عناصر Chrome توجد هنا.</translation>
 <translation id="5941830788786076944">‏جعل Google Chrome المتصفّح التلقائي</translation>
-<translation id="6014844626092547096">‏لقد سجلت الدخول الآن إلى Chrome! أوقف المشرف المزامنة.</translation>
-<translation id="6040143037577758943">إغلاق</translation>
 <translation id="6070348360322141662">‏لمزيد من الأمان، سيشفِّر Google Chrome بياناتك</translation>
 <translation id="6113794647360055231">‏Chrome أصبح أفضل</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
@@ -192,28 +169,21 @@
 <translation id="6291549208091401781">‏تم تثبيت Google Chrome من قبل لجميع المستخدمين على الكمبيوتر.</translation>
 <translation id="6338556085225130112">‏تحديث Google Chrome</translation>
 <translation id="6368958679917195344">‏أصبح نظام التشغيل Chrome متاحًا من خلال <ph name="BEGIN_LINK_CROS_OSS" />برنامج مفتوح المصدر<ph name="END_LINK_CROS_OSS" /> إضافي.</translation>
-<translation id="6468844726266617801">{0,plural, =1{‏إعادة تشغيل Chrome خلال يوم واحد}zero{‏إعادة تشغيل Chrome خلال # يوم}two{‏إعادة تشغيل Chrome خلال يومين (#)}few{‏إعادة تشغيل Chrome خلال # أيام}many{‏إعادة تشغيل Chrome خلال # يومًا}other{‏إعادة تشغيل Chrome خلال # يوم}}</translation>
 <translation id="6515495397637126556">‏<ph name="PAGE_TITLE" /> - إصدار قناة مطوري البرامج من Google Chrome</translation>
 <translation id="6566149418543181476">‏جارٍ تحديث Google Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
-<translation id="6598387184982954187">‏أنت تستخدم <ph name="PROFILE_EMAIL" /> لمزامنة عناصرك في Chrome. لتحديث تفضيل المزامنة أو استخدام Chrome بدون حساب Google، يمكنك الانتقال إلى <ph name="SETTINGS_LINK" />.</translation>
-<translation id="6600954340915313787">‏تم النسخ إلى Chrome</translation>
-<translation id="6634887557811630702">‏Google Chrome محدّث.</translation>
 <translation id="6676384891291319759">الدخول إلى الإنترنت</translation>
 <translation id="6679975945624592337">‏السماح بتشغيل Google Chrome في الخلفية</translation>
+<translation id="6750954913813541382">‏لإصلاح الأخطاء الإملائية، يرسِل Chrome النص الذي تكتبه في المتصفّح إلى Google.</translation>
 <translation id="677276454032249905">‏هل تريد الخروج من Chrome على أي حال؟</translation>
 <translation id="683440813066116847">‏قاعدة الوارد إلى Google Chrome Canary للسماح بحركة مرور mDNS.</translation>
-<translation id="686561893457936865">‏إمكانية استخدام Chrome في كل مكان</translation>
 <translation id="6885412569789873916">‏تطبيقات الإصدار التجريبي من Chrome</translation>
 <translation id="6943584222992551122">‏سيتم حذف بيانات تصفُّح هذا المستخدم من هذا الجهاز. لاسترداد البيانات، يُرجى تسجيل الدخول إلى Chrome بصفتك <ph name="USER_EMAIL" />.</translation>
-<translation id="6964107240822114422">{0,plural, =0{‏يتوفر تحديث لـ Chrome}=1{‏يتوفر تحديث واحد لـ Chrome}two{‏يتوفر تحديث لـ Chrome منذ يومين (#)}few{‏يتوفر تحديث لـ Chrome منذ # أيام}many{‏يتوفر تحديث لـ Chrome منذ # يومًا}other{‏يتوفر تحديث لـ Chrome منذ # يوم}}</translation>
 <translation id="6967962315388095737">‏قاعدة الوارد إلى الإصدار التجريبي من Google Chrome للسماح بحركة مرور mDNS.</translation>
-<translation id="6970811910055250180">جارٍ تحديث الجهاز...</translation>
 <translation id="6982337800632491844">‏<ph name="DOMAIN" /> يتطلب قراءة وقبول بنود الخدمة التالية قبل استخدام هذا الجهاز. وهذه البنود لا توسع أو تعدّل أو تقيّد بنود نظام التشغيل Google Chrome.</translation>
 <translation id="6989339256997917931">‏تم تحديث متصفح Google Chrome، ولكنك لم تستخدمه منذ أكثر من 30 يومًا.</translation>
-<translation id="7023651421574588884">‏يطلب المُشرِف إعادة تشغيل نظام التشغيل Chrome لتطبيق تحديث.</translation>
 <translation id="7098166902387133879">‏يستخدم Google Chrome الميكروفون.</translation>
 <translation id="7106741999175697885">‏مدير المهام - Google Chrome</translation>
-<translation id="7164397146364144019">‏يمكنك المساعدة في جعل Chrome أكثر أمانًا وأسهل استخدامًا بإبلاغ Google تلقائيًا بتفاصيل أي مخاطر أمنية محتملة.</translation>
+<translation id="7140653346177713799">{COUNT,plural, =0{‏يتوفر تحديث جديد لبرنامج Chrome وسيتم تطبيقه عند إعادة التشغيل.}=1{‏يتوفر تحديث جديد لبرنامج Chrome وسيتم تطبيقه عند إعادة التشغيل. لن تتم إعادة فتح نافذة التصفح المتخفي.}two{‏يتوفر تحديث جديد لبرنامج Chrome وسيتم تطبيقه عند إعادة التشغيل. لن تتم إعادة فتح نافذتَي التصفح المتخفي.}few{‏يتوفر تحديث جديد لبرنامج Chrome وسيتم تطبيقه عند إعادة التشغيل. لن تتم إعادة فتح نوافذ التصفّح المتخفي البالغ عددها #.}many{‏يتوفر تحديث جديد لبرنامج Chrome وسيتم تطبيقه عند إعادة التشغيل. لن تتم إعادة فتح نوافذ التصفّح المتخفي البالغ عددها #.}other{‏يتوفر تحديث جديد لبرنامج Chrome وسيتم تطبيقه عند إعادة التشغيل. لن تتم إعادة فتح نوافذ التصفّح المتخفي البالغ عددها #.}}</translation>
 <translation id="7242029209006116544">‏إنك تسجل الدخول باستخدام حساب مُدار وتمنح المشرف إمكانية التحكم في ملفك الشخصي في Google Chrome. وسيتم ربط بيانات Chrome التابعة لك، مثل التطبيقات والإشارات المرجعية والسجلّ وكلمات المرور والإعدادات الأخرى بالمستخدم <ph name="USER_NAME" />. وستتمكن من حذف هذه البيانات عبر لوحة تحكم حسابات Google، ولكنك لن تتمكن من إقران هذه البيانات بحساب آخر. ويُمكنك اختيار إنشاء ملف شخصي جديد للإبقاء على بياناتك الحالية في Chrome بشكل مستقل. <ph name="LEARN_MORE" /></translation>
 <translation id="7295052994004373688">‏يتم استخدام هذه اللغة لعرض واجهة مستخدم Google Chrome</translation>
 <translation id="7296210096911315575">معلومات مهمّة حول الأمان والاستخدام</translation>
@@ -222,74 +192,56 @@
 <translation id="7398801000654795464">‏تم تسجيل دخولك إلى Chrome باعتبارك <ph name="USER_EMAIL_ADDRESS" />. يُرجى استخدام الحساب نفسه لتسجيل الدخول مرة أخرى.</translation>
 <translation id="7408085963519505752">‏بنود نظام التشغيل Chrome</translation>
 <translation id="7419046106786626209">‏تعذر على نظام التشغيل Chrome مزامنة البيانات نظرًا لأن المزامنة غير متاحة في نطاقك.</translation>
-<translation id="7459554271817304652">‏يمكنك إعداد المزامنة لحفظ ميزات المتصفح المخصصة على الويب والدخول إليها من Google Chrome على أي كمبيوتر.</translation>
-<translation id="7473136999113284234">‏يجري تحديث Chrome تلقائيًا بحيث يكون لديك أحدث إصدار.</translation>
 <translation id="7486227612705979895">‏سيصل Chrome إلى Drive لإنشاء الاقتراحات في شريط العناوين.</translation>
+<translation id="7531671357096394523">‏الخروج من جميع نُسخ Chrome</translation>
 <translation id="7535429826459677826">‏إصدار مطوري البرامج من Google Chrome</translation>
-<translation id="7552219221109926349">‏عرض نظام تشغيل Chrome بهذه اللغة</translation>
-<translation id="7561940363513215021">{0,plural, =1{‏ستتم إعادة تشغيل Chrome خلال دقيقة واحدة}zero{‏ستتم إعادة تشغيل Chrome خلال # دقيقة}two{‏ستتم إعادة تشغيل Chrome خلال دقيقتين (#)}few{‏ستتم إعادة تشغيل Chrome خلال # دقائق}many{‏ستتم إعادة تشغيل Chrome خلال # دقيقةً}other{‏ستتم إعادة تشغيل Chrome خلال # دقيقة}}</translation>
+<translation id="7573289029918943991">‏للتأكّد من أن جهازك يستخدم أحدث إصدار من نظام التشغيل، يُرجى الانتقال إلى <ph name="LINK_BEGIN" />إعدادات نظام التشغيل Chrome<ph name="LINK_END" />.</translation>
 <translation id="7589360514048265910">‏لن يتلقى هذا الكمبيوتر تحديثات Google Chrome بعد الآن لأن نظام التشغيل Mac OS X 10.9 لم يعُد متاحًا.</translation>
 <translation id="7592736734348559088">‏تعذر على Google Chrome مزامنة البيانات نظرًا لأن تفاصيل تسجيل الدخول إلى حسابك قديمة.</translation>
 <translation id="7626032353295482388">‏مرحبًا بك في Chrome‏</translation>
+<translation id="7629695634924605473">‏يتم إعلامك من خلال Chrome في حال تم اختراق كلمات المرور في أي وقت.</translation>
+<translation id="7641148173327520642">‏ضَبَط مشرف النظام Google Chrome لفتح <ph name="ALTERNATIVE_BROWSER_NAME" /> للوصول إلى <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="7651907282515937834">‏شعار Chrome Enterprise</translation>
 <translation id="7747138024166251722">تعذر على أداة المثبِّت إنشاء دليل مؤقت. يُرجى التحقق من وجود مساحة خالية على القرص وتوفر الإذن اللازم لتثبيت البرنامج.</translation>
 <translation id="7761834446675418963">‏انقر على اسمك لفتح Chrome وبدء التصفح.</translation>
+<translation id="7777080907402804672">‏في حال لم تتضمن صورة  ما وصفًا مفيدًا، سيحاول Chrome توفير وصف لك. لإنشاء الأوصاف، سيتم إرسال الصور إلى Google. ويمكنك إيقاف هذه الميزة في الإعدادات في أي وقت.</translation>
 <translation id="7781002470561365167">‏يتوفر إصدار جديد من متصفح Google Chrome.</translation>
 <translation id="7787950393032327779">‏يبدو أن الملف الشخصي قيد الاستخدام بواسطة عملية أخرى في Google Chrome (<ph name="PROCESS_ID" />) على جهاز كمبيوتر آخر (<ph name="HOST_NAME" />). وقد تمّ قفل الملف الشخصي من جانب Chrome لضمان عدم تعرضه للتلف. فإذا كنت واثقًا من عدم وجود عمليات أخرى قيد التشغيل على جهاز الكمبيوتر، فيُمكنك إلغاء قفل الملف الشخصي وإعادة تشغيل Chrome مجددًا.</translation>
 <translation id="7808348361785373670">‏جارٍ الإزالة من Chrome...</translation>
 <translation id="7825851276765848807">‏فشل التثبيت نظرًا لحدوث خطأ غير محدد. يُرجى تنزيل Google Chrome مرة أخرى.</translation>
 <translation id="7855730255114109580">‏Google Chrome محدّث</translation>
-<translation id="7888186132678118370">‏تثبيت Chrome على شريط المهام</translation>
 <translation id="7890208801193284374">‏إذا كنت تشارك الكمبيوتر مع أصدقائك وعائلتك، فبإمكانهم التصفح على حدة وإعداد Chrome على النحو الذي يريدونه.</translation>
 <translation id="7896673875602241923">‏سجّل شخص ما الدخول من قبل إلى Chrome على جهاز الكمبيوتر هذا باسم <ph name="ACCOUNT_EMAIL_LAST" />. يُرجى إنشاء حساب مستخدم جديد في Chrome للإبقاء على معلوماتك بشكلٍ منفصل.</translation>
-<translation id="7908168227788431038">‏أوشك التحديث على الانتهاء! أعِد تشغيل Google Chrome لإنهاء التحديث.</translation>
 <translation id="7962410387636238736">‏لن يستلم جهاز الكمبيوتر هذا تحديثات Google Chrome لأن Windows XP وWindows Vista أصبحا غير مدعومين.</translation>
-<translation id="8005540215158006229">‏Chrome جاهز تقريبًا.</translation>
 <translation id="8008534537613507642">‏إعادة تثبيت Chrome</translation>
-<translation id="8030318113982266900">جارٍ تحديث جهازك إلى قناة <ph name="CHANNEL_NAME" />...</translation>
-<translation id="8032142183999901390">‏بعد إزالة حسابك من Chrome، قد تحتاج إلى إعادة تحميل علامات التبويب المفتوحة لتفعيلها.</translation>
-<translation id="8077352834923175128">‏يطلب المُشرِف إعادة تشغيل Chrome لتطبيق هذا التحديث.</translation>
+<translation id="8013993649590906847">‏في حال لم تتضمن صورة ما وصفًا مفيدًا، سيحاول Chrome توفير وصف لك. لإنشاء الأوصاف، سيتم إرسال الصور إلى Google.</translation>
 <translation id="8129812357326543296">‏&amp;حول Google Chrome</translation>
-<translation id="8179874765710681175">‏بادِر بتثبيت Chrome على هاتفك. سنرسل رسالة قصيرة إلى هاتفك.</translation>
-<translation id="8183957050892517584">‏سيخزّن Chrome معلوماتك الشخصية بشكلٍ آمن لكي لا تُضطر إلى كتابتها مرة أخرى.</translation>
-<translation id="8226081633851087288">{0,plural, =0{‏ستتم إعادة تشغيل نظام التشغيل Chrome الآن}=1{‏ستتم إعادة تشغيل نظام التشغيل Chrome خلال ثانية واحدة}two{‏ستتم إعادة تشغيل نظام التشغيل Chrome خلال ثانيتين (#)}few{‏ستتم إعادة تشغيل نظام التشغيل Chrome خلال # ثوانٍ}many{‏ستتم إعادة تشغيل نظام التشغيل Chrome خلال # ثانيةً}other{‏ستتم إعادة تشغيل نظام التشغيل Chrome خلال # ثانيةً}}</translation>
-<translation id="825412236959742607">‏تستهلك هذه الصفحة مساحة كبيرة من الذاكرة، لذلك أزال Chrome بعض محتواها.</translation>
 <translation id="8255190535488645436">‏يستخدم Google Chrome الكاميرا والميكروفون.</translation>
 <translation id="8286862437124483331">‏يحاول Google Chrome عرض كلمات المرور. اكتب كلمة مرور Windows للسماح بذلك.</translation>
 <translation id="8290100596633877290">‏للأسف! تعطل Google Chrome. هل تريد إعادة التشغيل الآن؟</translation>
 <translation id="8342675569599923794">‏هذا الملف ضار، لذلك فقد حظره Chrome.</translation>
-<translation id="8380166467911888159">‏لإصلاح الأخطاء الإملائية، يرسِل Chrome ما تكتبه في حقول النص إلى Google</translation>
+<translation id="8370517070665726704">‏حقوق الطبع والنشر لعام <ph name="YEAR" /> لشركة Google LLC. جميع الحقوق محفوظة.</translation>
 <translation id="840084489713044809">‏يرغب Google Chrome في تصدير كلمات المرور.</translation>
-<translation id="8406086379114794905">‏ساهم في تحسين Chrome</translation>
-<translation id="8432724323949790809">‏يجب إعادة تشغيل Google Chrome الآن</translation>
-<translation id="8455999171311319804">‏اختياري: ساعد في تحسين نظام التشغيل Chrome عن طريق إرسال بيانات التشخيص والاستخدام إلى Google تلقائيًا.</translation>
-<translation id="8478823064122749032">‏بادِر بتثبيت Chrome على هاتفك. سنرسل رسالة قصيرة SMS إلى رقم هاتف استرداد حسابك: <ph name="PHONE_NUMBER" /></translation>
+<translation id="8455999171311319804">‏اختياري: يمكنك المساعدة في تحسين نظام التشغيل Chrome عن طريق إرسال بيانات التشخيص والاستخدام إلى Google تلقائيًا.</translation>
 <translation id="8498858610309223613">‏تم للتو تطبيق تحديث أمان خاص لمتصفِّح Google Chrome. ويمكنك الآن إعادة التشغيل وستتم استعادة علامات التبويب.</translation>
 <translation id="8521348052903287641">‏قاعدة الوارد إلى إصدار مطوري البرامج من Google Chrome للسماح بحركة مرور mDNS.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
-<translation id="8547799825197623713">‏مشغل تطبيقات Chrome في Canary</translation>
 <translation id="8556340503434111824">‏يتوفر إصدار جديد من Google Chrome، وهو أسرع بكثير من ذي قبل.</translation>
-<translation id="8568392309447938879">‏يلزمك تسجيل الدخول إلى Chrome لتتمكن من استخدام التطبيقات. سيتيح هذا للمتصفح Chrome مزامنة تطبيقاتك والإشارات المرجعية والسجل وكلمات المرور وغير ذلك من الإعدادات على جميع الأجهزة.</translation>
-<translation id="8606668294522778825">‏قد يستخدم Google Chrome خدمات الويب لتحسين تجربة التصفح. ويمكنك بشكل اختياري إيقاف هذه الخدمات. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="8614913330719544658">‏لا يستجيب Google Chrome. هل تريد إعادة التشغيل الآن؟</translation>
-<translation id="8667808506758191620">جهاز <ph name="DEVICE_TYPE" /> مُحدّث.</translation>
+<translation id="8625237574518804553">{0,plural, =1{‏ستتم إعادة تشغيل Chrome في غضون دقيقة واحدة}zero{‏ستتم إعادة تشغيل Chrome في غضون # دقيقة}two{‏ستتم إعادة تشغيل Chrome في غضون دقيقتين}few{‏ستتم إعادة تشغيل Chrome في غضون # دقائق}many{‏ستتم إعادة تشغيل Chrome في غضون # دقيقةً}other{‏ستتم إعادة تشغيل Chrome في غضون # دقيقة}}</translation>
 <translation id="8669527147644353129">‏مساعد Google Chrome</translation>
 <translation id="8679801911857917785">‏كما أنها تتحكم في الصفحة التي تظهر عند تشغيل Chrome.</translation>
 <translation id="870251953148363156">‏&amp;تحديث Google Chrome</translation>
 <translation id="873133009373065397">‏يتعذَّر على Google Chrome تحديد المتصفح التلقائي أو تعيينه</translation>
-<translation id="8736674169840206667">‏يطلب المُشرِف إعادة تشغيل Chrome لتطبيق تحديث.</translation>
-<translation id="8788264404293392165">‏يتم استخدام هذه اللغة لعرض واجهة مستخدم نظام التشغيل Chrome</translation>
-<translation id="8791470158600044404">{0,plural, =1{‏ستتم إعادة تشغيل نظام التشغيل Chrome خلال دقيقة واحدة}zero{‏ستتم إعادة تشغيل نظام التشغيل Chrome خلال # دقيقة}two{‏ستتم إعادة تشغيل نظام التشغيل Chrome خلال دقيقتين (#)}few{‏ستتم إعادة تشغيل نظام التشغيل Chrome خلال # دقائق}many{‏ستتم إعادة تشغيل نظام التشغيل Chrome خلال # دقيقةً}other{‏ستتم إعادة تشغيل نظام التشغيل Chrome خلال # دقيقة}}</translation>
 <translation id="8823341990149967727">‏إصدار Chrome قديم</translation>
 <translation id="884296878221830158">‏كما أنها تتحكم في الصفحة التي تظهر عند تشغيل Chrome أو النقر على زر الصفحة الرئيسية.</translation>
 <translation id="8862326446509486874">لا تملك الحقوق الكافية للتثبيت على مستوى النظام. جرّب تشغيل المثبِّت بصفة مشرف.</translation>
 <translation id="8914504000324227558">‏إعادة تشغيل Chrome</translation>
+<translation id="8999208279178790196">{0,plural, =0{‏يتوفر تحديث لمتصفح Chrome}=1{‏يتوفر تحديث لمتصفح Chrome}two{‏يتوفر تحديث لمتصفح Chrome منذ يومين}few{‏يتوفر تحديث لمتصفح Chrome منذ # أيام}many{‏يتوفر تحديث لمتصفح Chrome منذ # يومًا}other{‏يتوفر تحديث لمتصفح Chrome منذ # يوم}}</translation>
 <translation id="9026991721384951619">‏تعذر على نظام التشغيل Chrome مزامنة البيانات نظرًا لأن تفاصيل تسجيل الدخول إلى حسابك قديمة.</translation>
 <translation id="9067395829937117663">‏يتطلب متصفح Google Chrome نظام التشغيل Windows 7 أو إصدارًا أحدث.</translation>
-<translation id="909149346112452267">{0,plural, =1{‏ستتم إعادة تشغيل نظام التشغيل Chrome خلال ساعة واحدة}zero{‏ستتم إعادة تشغيل نظام التشغيل Chrome خلال # ساعة}two{‏ستتم إعادة تشغيل نظام التشغيل Chrome خلال ساعتين (#)}few{‏ستتم إعادة تشغيل نظام التشغيل Chrome خلال # ساعات}many{‏ستتم إعادة تشغيل نظام التشغيل Chrome خلال # ساعةً}other{‏ستتم إعادة تشغيل نظام التشغيل Chrome خلال # ساعة}}</translation>
 <translation id="911206726377975832">هل تريد أيضًا حذف بيانات التصفح؟</translation>
 <translation id="9138603949443464873">‏لتطبيق التغييرات، يُرجى إعادة تشغيل Chrome</translation>
 <translation id="919706545465235479">‏تحديث Chrome لبدء المزامنة</translation>
-<translation id="924447568950697217">‏جعل Chrome المتصفح التلقائي</translation>
 <translation id="989369509083708165">‏Google Chrome هو متصفحك التلقائي</translation>
 </translationbundle>

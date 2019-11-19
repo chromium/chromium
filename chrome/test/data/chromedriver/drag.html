@@ -1,0 +1,14 @@
+<div id="target" style="width: 100px; height: 100px; left: 50px; top: 50px;
+                        background-color: blue; position:absolute;" />
+
+<script>
+target = document.getElementById('target');
+document.onmousemove = evt => {
+  // Do drag when the left mouse button is down.
+  if (evt.buttons === 1) {
+    target.style.left = (evt.clientX - 50) + 'px';
+    target.style.top  = (evt.clientY - 50) + 'px';
+    return false;
+  }
+}
+</script>

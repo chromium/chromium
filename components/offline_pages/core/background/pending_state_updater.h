@@ -47,7 +47,7 @@ class PendingStateUpdater {
   // download to complete. False otherwise.
   bool requests_pending_another_download_;
 
-  base::WeakPtrFactory<PendingStateUpdater> weak_ptr_factory_;
+  base::WeakPtrFactory<PendingStateUpdater> weak_ptr_factory_{this};
 };
 
 }  // namespace offline_pages

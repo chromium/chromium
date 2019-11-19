@@ -1,0 +1,21 @@
+This is a testharness.js-based test.
+PASS display: block
+FAIL display: run-in assert_true: display: run-in is not supported expected true got false
+FAIL display: flow assert_true: display: flow is not supported expected true got false
+PASS display: flow-root
+PASS display: table
+PASS display: list-item
+FAIL display: table-row-group assert_equals: afterLeft expected 0 but got 256
+FAIL display: table-header-group assert_equals: afterLeft expected 0 but got 256
+FAIL display: table-footer-group assert_equals: afterLeft expected 0 but got 256
+FAIL display: table-row assert_equals: afterLeft expected 0 but got 256
+FAIL display: table-cell assert_equals: afterLeft expected 0 but got 256
+FAIL display: table-column-group assert_equals: afterLeft expected 0 but got 256
+FAIL display: table-column assert_equals: afterLeft expected 0 but got 256
+FAIL display: table-caption assert_equals: afterLeft expected 0 but got 256
+FAIL display: ruby-base assert_true: display: ruby-base is not supported expected true got false
+FAIL display: ruby-text assert_true: display: ruby-text is not supported expected true got false
+FAIL display: ruby-base-container assert_true: display: ruby-base-container is not supported expected true got false
+FAIL display: ruby-text-container assert_true: display: ruby-text-container is not supported expected true got false
+Harness: the test ran to completion.
+

@@ -36,11 +36,6 @@ class CSSFontFaceRule final : public CSSRule {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static CSSFontFaceRule* Create(StyleRuleFontFace* rule,
-                                 CSSStyleSheet* sheet) {
-    return MakeGarbageCollected<CSSFontFaceRule>(rule, sheet);
-  }
-
   CSSFontFaceRule(StyleRuleFontFace*, CSSStyleSheet* parent);
   ~CSSFontFaceRule() override;
 

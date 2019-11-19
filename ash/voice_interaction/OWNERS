@@ -1,2 +1,0 @@
-per-file *_struct_traits*.*=set noparent
-per-file *_struct_traits*.*=file://ipc/SECURITY_OWNERS

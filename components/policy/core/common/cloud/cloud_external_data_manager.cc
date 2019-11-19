@@ -22,8 +22,7 @@ bool CloudExternalDataManager::MetadataEntry::operator!=(
   return url != other.url || hash != other.hash;
 }
 
-CloudExternalDataManager::CloudExternalDataManager()
-    : policy_store_(nullptr), weak_factory_(this) {}
+CloudExternalDataManager::CloudExternalDataManager() : policy_store_(nullptr) {}
 
 CloudExternalDataManager::~CloudExternalDataManager() {
 }

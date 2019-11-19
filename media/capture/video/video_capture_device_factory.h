@@ -10,15 +10,8 @@
 #include "base/threading/thread_checker.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "media/capture/video/video_capture_device.h"
-#include "media/mojo/interfaces/jpeg_decode_accelerator.mojom.h"
-#include "media/mojo/interfaces/jpeg_encode_accelerator.mojom.h"
 
 namespace media {
-
-using MojoJpegDecodeAcceleratorFactoryCB =
-    base::RepeatingCallback<void(media::mojom::JpegDecodeAcceleratorRequest)>;
-using MojoJpegEncodeAcceleratorFactoryCB =
-    base::RepeatingCallback<void(media::mojom::JpegEncodeAcceleratorRequest)>;
 
 // VideoCaptureDeviceFactory is the base class for creation of video capture
 // devices in the different platforms. VCDFs are created by MediaStreamManager
@@ -65,6 +58,10 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactory {
   virtual void GetCameraLocationsAsync(
       std::unique_ptr<VideoCaptureDeviceDescriptors> device_descriptors,
       DeviceDescriptorsCallback result_callback);
+
+#if defined(OS_CHROMEOS)
+  virtual bool IsSupportedCameraAppDeviceBridge();
+#endif  // defined(OS_CHROMEOS)
 
  protected:
   base::ThreadChecker thread_checker_;

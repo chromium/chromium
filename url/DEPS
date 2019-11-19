@@ -1,6 +1,4 @@
 include_rules = [
-  "+jni",
-
   # Limit files that can depend on icu.
   "-base/i18n",
   "-third_party/icu",

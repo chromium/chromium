@@ -44,15 +44,16 @@ class ReportingGarbageCollectorImpl : public ReportingGarbageCollector,
     if (timer_->IsRunning())
       return;
 
-    timer_->Start(
-        FROM_HERE, context_->policy().garbage_collection_interval,
-        base::BindRepeating(&ReportingGarbageCollectorImpl::CollectGarbage,
-                            base::Unretained(this)));
+    timer_->Start(FROM_HERE, context_->policy().garbage_collection_interval,
+                  base::BindOnce(&ReportingGarbageCollectorImpl::CollectGarbage,
+                                 base::Unretained(this)));
   }
 
  private:
+  // TODO(crbug.com/912622): Garbage collect clients, reports with no matching
+  // endpoints.
   void CollectGarbage() {
-    base::TimeTicks now = context_->tick_clock()->NowTicks();
+    base::TimeTicks now = context_->tick_clock().NowTicks();
     const ReportingPolicy& policy = context_->policy();
 
     std::vector<const ReportingReport*> all_reports;

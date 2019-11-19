@@ -12,7 +12,7 @@
 
 namespace download {
 
-NoopStore::NoopStore() : initialized_(false), weak_ptr_factory_(this) {}
+NoopStore::NoopStore() : initialized_(false) {}
 
 NoopStore::~NoopStore() = default;
 

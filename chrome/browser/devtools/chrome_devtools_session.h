@@ -22,6 +22,7 @@ class DevToolsAgentHostClient;
 class BrowserHandler;
 class CastHandler;
 class PageHandler;
+class SecurityHandler;
 class TargetHandler;
 class WindowManagerHandler;
 
@@ -61,6 +62,7 @@ class ChromeDevToolsSession : public protocol::FrontendChannel {
   std::unique_ptr<BrowserHandler> browser_handler_;
   std::unique_ptr<CastHandler> cast_handler_;
   std::unique_ptr<PageHandler> page_handler_;
+  std::unique_ptr<SecurityHandler> security_handler_;
   std::unique_ptr<TargetHandler> target_handler_;
 #if defined(OS_CHROMEOS)
   std::unique_ptr<WindowManagerHandler> window_manager_protocl_handler_;

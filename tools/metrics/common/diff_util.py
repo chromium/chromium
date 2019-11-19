@@ -6,6 +6,8 @@
 user-managed files are correct.
 """
 
+from __future__ import print_function
+
 import logging
 import os
 import webbrowser
@@ -39,7 +41,7 @@ def PromptUserToAcceptDiff(old_text, new_text, prompt):
     temp.write(html_diff)
     temp.close()  # Close the file so the browser process can access it.
     webbrowser.open('file://' + temp.name)
-    print prompt
+    print(prompt)
     response = raw_input('(Y/n): ').strip().lower()
   finally:
     temp.close()  # May be called on already closed file.

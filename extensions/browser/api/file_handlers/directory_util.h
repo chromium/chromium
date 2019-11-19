@@ -46,7 +46,7 @@ class IsDirectoryCollector {
   std::unique_ptr<std::set<base::FilePath>> result_;
   size_t left_;
   CompletionCallback callback_;
-  base::WeakPtrFactory<IsDirectoryCollector> weak_ptr_factory_;
+  base::WeakPtrFactory<IsDirectoryCollector> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(IsDirectoryCollector);
 };

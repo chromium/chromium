@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/svg/svg_matrix_tear_off.h"
 #include "third_party/blink/renderer/core/svg/svg_rect_tear_off.h"
 #include "third_party/blink/renderer/core/svg_names.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 
 namespace blink {
@@ -36,9 +37,10 @@ SVGGraphicsElement::SVGGraphicsElement(const QualifiedName& tag_name,
                                        ConstructionType construction_type)
     : SVGElement(tag_name, document, construction_type),
       SVGTests(this),
-      transform_(SVGAnimatedTransformList::Create(this,
-                                                  svg_names::kTransformAttr,
-                                                  CSSPropertyTransform)) {
+      transform_(MakeGarbageCollected<SVGAnimatedTransformList>(
+          this,
+          svg_names::kTransformAttr,
+          CSSPropertyID::kTransform)) {
   AddToPropertyMap(transform_);
 }
 
@@ -63,12 +65,11 @@ AffineTransform SVGGraphicsElement::ComputeCTM(
 
   for (const Element* current_element = this; current_element && !done;
        current_element = current_element->ParentOrShadowHostElement()) {
-    if (!current_element->IsSVGElement())
+    auto* svg_element = DynamicTo<SVGElement>(current_element);
+    if (!svg_element)
       break;
 
-    ctm = ToSVGElement(current_element)
-              ->LocalCoordinateSpaceTransform(mode)
-              .Multiply(ctm);
+    ctm = svg_element->LocalCoordinateSpaceTransform(mode).Multiply(ctm);
 
     switch (mode) {
       case kNearestViewportScope:
@@ -88,15 +89,16 @@ AffineTransform SVGGraphicsElement::ComputeCTM(
 }
 
 SVGMatrixTearOff* SVGGraphicsElement::getCTM() {
-  GetDocument().UpdateStyleAndLayoutIgnorePendingStylesheetsForNode(this);
+  GetDocument().UpdateStyleAndLayoutForNode(this);
 
-  return SVGMatrixTearOff::Create(ComputeCTM(kNearestViewportScope));
+  return MakeGarbageCollected<SVGMatrixTearOff>(
+      ComputeCTM(kNearestViewportScope));
 }
 
 SVGMatrixTearOff* SVGGraphicsElement::getScreenCTM() {
-  GetDocument().UpdateStyleAndLayoutIgnorePendingStylesheetsForNode(this);
+  GetDocument().UpdateStyleAndLayoutForNode(this);
 
-  return SVGMatrixTearOff::Create(ComputeCTM(kScreenScope));
+  return MakeGarbageCollected<SVGMatrixTearOff>(ComputeCTM(kScreenScope));
 }
 
 void SVGGraphicsElement::CollectStyleForPresentationAttribute(
@@ -105,7 +107,8 @@ void SVGGraphicsElement::CollectStyleForPresentationAttribute(
     MutableCSSPropertyValueSet* style) {
   if (name == svg_names::kTransformAttr) {
     AddPropertyToPresentationAttributeStyle(
-        style, CSSPropertyTransform, *transform_->CurrentValue()->CssValue());
+        style, CSSPropertyID::kTransform,
+        *transform_->CurrentValue()->CssValue());
     return;
   }
   SVGElement::CollectStyleForPresentationAttribute(name, value, style);
@@ -120,7 +123,7 @@ void SVGGraphicsElement::SvgAttributeChanged(const QualifiedName& attr_name) {
   // creation.
   if (SVGTests::IsKnownAttribute(attr_name)) {
     SVGElement::InvalidationGuard invalidation_guard(this);
-    LazyReattachIfAttached();
+    SetForceReattachLayoutTree();
     return;
   }
 
@@ -145,7 +148,7 @@ SVGElement* SVGGraphicsElement::nearestViewportElement() const {
   for (Element* current = ParentOrShadowHostElement(); current;
        current = current->ParentOrShadowHostElement()) {
     if (IsViewportElement(*current))
-      return ToSVGElement(current);
+      return To<SVGElement>(current);
   }
 
   return nullptr;
@@ -156,7 +159,7 @@ SVGElement* SVGGraphicsElement::farthestViewportElement() const {
   for (Element* current = ParentOrShadowHostElement(); current;
        current = current->ParentOrShadowHostElement()) {
     if (IsViewportElement(*current))
-      farthest = ToSVGElement(current);
+      farthest = To<SVGElement>(current);
   }
   return farthest;
 }
@@ -167,7 +170,7 @@ FloatRect SVGGraphicsElement::GetBBox() {
 }
 
 SVGRectTearOff* SVGGraphicsElement::getBBoxFromJavascript() {
-  GetDocument().UpdateStyleAndLayoutIgnorePendingStylesheets();
+  GetDocument().UpdateStyleAndLayout();
 
   // FIXME: Eventually we should support getBBox for detached elements.
   FloatRect boundingBox;

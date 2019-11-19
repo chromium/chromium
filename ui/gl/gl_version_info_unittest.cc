@@ -8,25 +8,19 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gl/gl_version_info.h"
 
-namespace {
-
-struct GLVersionTestData {
-  const char* gl_version;
-  unsigned expected_gl_major;
-  unsigned expected_gl_minor;
-  bool expected_is_es;
-  bool expected_is_es2;
-  bool expected_is_es3;
-  const char* expected_driver_vendor;
-  const char* expected_driver_version;
-};
-
-}  // namespace
-
 namespace gl {
 
 TEST(GLVersionInfoTest, ParseGLVersionStringTest) {
-  const GLVersionTestData kTestData[] = {
+  const struct GLVersionTestData {
+    const char* gl_version;
+    unsigned expected_gl_major;
+    unsigned expected_gl_minor;
+    bool expected_is_es;
+    bool expected_is_es2;
+    bool expected_is_es3;
+    const char* expected_driver_vendor;
+    const char* expected_driver_version;
+  } kTestData[] = {
       {"4.3 (Core Profile) Mesa 11.2.0", 4, 3, false, false, false, "Mesa",
        "11.2.0"},
       {"4.5.0 NVIDIA 364.19", 4, 5, false, false, false, "NVIDIA", "364.19"},
@@ -55,6 +49,7 @@ TEST(GLVersionInfoTest, ParseGLVersionStringTest) {
        false, false, "", "23.20.782.0"},
       // This is a non spec compliant string from Nexus6 on Android N.
       {"OpenGL ES 3.1V@104.0", 3, 1, true, false, true, "", "104.0"}};
+
   gfx::ExtensionSet extensions;
   for (size_t ii = 0; ii < base::size(kTestData); ++ii) {
     GLVersionInfo version_info(kTestData[ii].gl_version, nullptr, extensions);
@@ -70,4 +65,57 @@ TEST(GLVersionInfoTest, ParseGLVersionStringTest) {
   }
 }
 
+TEST(GLVersionInfoTest, DriverVendorForANGLE) {
+  const struct GLVersionTestData {
+    const char* gl_version;
+    const char* gl_renderer;
+    unsigned expected_gl_major;
+    unsigned expected_gl_minor;
+    bool expected_is_es;
+    bool expected_is_es2;
+    bool expected_is_es3;
+    bool expected_is_d3d;
+    const char* expected_driver_vendor;
+    const char* expected_driver_version;
+  } kTestData[] = {
+      {"OpenGL ES 2.0 (ANGLE 2.1.0.44063c804e4f)",
+       "ANGLE (NVIDIA Quadro P400 Direct3D11 vs_5_0 ps_5_0)",
+       2, 0, true, true, false, true,
+       "ANGLE (NVIDIA)", "2.1.0.44063c804e4f"},
+      {"OpenGL ES 2.0 (ANGLE 2.1.0.44063c804e4f)",
+       "ANGLE (Intel(R) HD Graphics 630 Direct3D11 vs_5_0 ps_5_0)",
+       2, 0, true, true, false, true,
+       "ANGLE (Intel)", "2.1.0.44063c804e4f"},
+      {"OpenGL ES 2.0 (ANGLE 2.1.0.44063c804e4f)",
+       "ANGLE (Radeon RX550/550 Series Direct3D11 vs_5_0 ps_5_0)",
+       2, 0, true, true, false, true,
+       "ANGLE (AMD)", "2.1.0.44063c804e4f"},
+      {"OpenGL ES 2.0 (ANGLE 2.1.0.44063c804e4f)",
+       "ANGLE (Vulkan 1.1.120(Intel(R) UHD Graphics 630 (0x00003E92)))",
+       2, 0, true, true, false, false,
+       "ANGLE (Intel)", "2.1.0.44063c804e4f"},
+      {"OpenGL ES 2.0 (ANGLE 2.1.0.44063c804e4f)",
+       "ANGLE (Intel, Intel(R) UHD Graphics 630, OpenGL 4.5 core)",
+       2, 0, true, true, false, false,
+       "ANGLE (Intel)", "2.1.0.44063c804e4f"},
+  };
+
+  gfx::ExtensionSet extensions;
+  for (size_t ii = 0; ii < base::size(kTestData); ++ii) {
+    GLVersionInfo version_info(kTestData[ii].gl_version,
+                               kTestData[ii].gl_renderer, extensions);
+    EXPECT_TRUE(version_info.is_angle);
+
+    EXPECT_EQ(kTestData[ii].expected_gl_major, version_info.major_version);
+    EXPECT_EQ(kTestData[ii].expected_gl_minor, version_info.minor_version);
+    EXPECT_EQ(kTestData[ii].expected_is_es, version_info.is_es);
+    EXPECT_EQ(kTestData[ii].expected_is_es2, version_info.is_es2);
+    EXPECT_EQ(kTestData[ii].expected_is_es3, version_info.is_es3);
+    EXPECT_EQ(kTestData[ii].expected_is_d3d, version_info.is_d3d);
+    EXPECT_STREQ(kTestData[ii].expected_driver_vendor,
+                 version_info.driver_vendor.c_str());
+    EXPECT_STREQ(kTestData[ii].expected_driver_version,
+                 version_info.driver_version.c_str());
+  }
+}
 }

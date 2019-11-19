@@ -23,10 +23,6 @@ class AutofillWebDataServiceObserverOnDBSequence {
   // the WebDatabase.
   virtual void CreditCardChanged(const CreditCardChange& change) {}
 
-  // Called on DB sequence when multiple Autofill entries have been modified by
-  // Sync.
-  virtual void AutofillMultipleChanged() {}
-
  protected:
   virtual ~AutofillWebDataServiceObserverOnDBSequence() {}
 };
@@ -35,7 +31,9 @@ class AutofillWebDataServiceObserverOnUISequence {
  public:
   // Called on UI sequence when multiple Autofill entries have been modified by
   // Sync.
-  virtual void AutofillMultipleChanged() {}
+  virtual void AutofillMultipleChangedBySync() {}
+
+  virtual void AutofillAddressConversionCompleted() {}
 
   virtual void AutofillProfileChanged(const AutofillProfileChange& change) {}
 

@@ -5,20 +5,20 @@
 #ifndef CHROME_BROWSER_CHROMEOS_LOGIN_SCREENS_MARKETING_OPT_IN_SCREEN_H_
 #define CHROME_BROWSER_CHROMEOS_LOGIN_SCREENS_MARKETING_OPT_IN_SCREEN_H_
 
+#include "base/callback.h"
 #include "base/macros.h"
 #include "chrome/browser/chromeos/login/screens/base_screen.h"
 
 namespace chromeos {
 
-class BaseScreenDelegate;
 class MarketingOptInScreenView;
 
 // This is Sync settings screen that is displayed as a part of user first
 // sign-in flow.
 class MarketingOptInScreen : public BaseScreen {
  public:
-  MarketingOptInScreen(BaseScreenDelegate* base_screen_delegate,
-                       MarketingOptInScreenView* view);
+  MarketingOptInScreen(MarketingOptInScreenView* view,
+                       const base::RepeatingClosure& exit_callback);
   ~MarketingOptInScreen() override;
 
   // BaseScreen:
@@ -31,6 +31,7 @@ class MarketingOptInScreen : public BaseScreen {
 
  private:
   MarketingOptInScreenView* const view_;
+  base::RepeatingClosure exit_callback_;
 
   DISALLOW_COPY_AND_ASSIGN(MarketingOptInScreen);
 };

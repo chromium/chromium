@@ -7,14 +7,14 @@ module content.mojom;
 import "content/common/document_scoped_interface_bundle.mojom";
 import "content/common/native_types.mojom";
 import "ipc/constants.mojom";
+import "mojo/public/mojom/base/generic_pending_receiver.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "services/network/public/mojom/network_types.mojom";
-import "services/service_manager/public/mojom/service.mojom";
+import "third_party/blink/public/mojom/manifest/manifest.mojom";
 import "third_party/blink/public/mojom/renderer_preferences.mojom";
-import "third_party/blink/public/mojom/service_worker/embedded_worker.mojom";
 import "third_party/blink/public/mojom/user_agent/user_agent_metadata.mojom";
-import "ui/gfx/geometry/mojo/geometry.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
 
 struct CreateViewParams {
   // Renderer-wide preferences.
@@ -75,7 +75,9 @@ struct CreateViewParams {
   // Whether or not the frame has previously committed a real load.
   bool has_committed_real_load;
 
-  // The initial renderer size.
+  // Initial state for the main frame RenderWidget.
+  // TODO(danakj): This should be optional and not included when there is no
+  // main_frame_widget_routing_id.
   VisualProperties visual_properties;
 
   // Whether lookup of frames in the created RenderView (e.g. lookup via
@@ -89,21 +91,21 @@ struct CreateViewParams {
 
 struct CreateFrameWidgetParams {
   // Gives the routing ID for the RenderWidget that will be attached to the
-  // new RenderFrame. If the RenderFrame does not need a RenderWidget, this
-  // is MSG_ROUTING_NONE and the other parameters are not read.
+  // new RenderFrame.
   int32 routing_id;
 
-  // Tells the new RenderWidget whether it is initially hidden.
-  bool hidden;
+  // The initial visual properties of the widget.
+  VisualProperties visual_properties;
 };
 
 struct CreateFrameParams {
   // Specifies the routing ID of the new RenderFrame object.
   int32 routing_id;
 
-  // If a valid |proxy_routing_id| is provided, the new frame will be
-  // configured to replace the proxy on commit.
-  int32 proxy_routing_id;
+  // If a valid |previous_routing_id| is provided, the new frame will be
+  // configured to replace either the previous frame or the previous proxy on
+  // commit.
+  int32 previous_routing_id;
 
   // Specifies the new frame's opener.  The opener will be null if this is
   // MSG_ROUTING_NONE.
@@ -143,44 +145,66 @@ struct CreateFrameParams {
 
   // Specifies properties for a new RenderWidget that will be attached to the
   // new RenderFrame (if one is needed).
-  CreateFrameWidgetParams widget_params;
+  CreateFrameWidgetParams? widget_params;
 
   // Whether or not the frame has previously committed a real load.
   bool has_committed_real_load;
 };
 
 struct UpdateScrollbarThemeParams {
+  // TODO(avi): Update these to optional values when optional numeric types are
+  // allowed. (https://crbug.com/657632)
+  bool has_initial_button_delay;
   float initial_button_delay;
+  bool has_autoscroll_button_delay;
   float autoscroll_button_delay;
+
   bool jump_on_track_click;
   ScrollerStyle preferred_scroller_style;
   bool redraw;
-  ScrollbarButtonsPlacement button_placement;
+
   bool scroll_view_rubber_banding;
 };
 
-enum RenderProcessState {
-  kVisible,
-  // Hidden render processes can still be foregrounded. For example, a hidden
-  // renderer playing audio would be foregrounded.
-  kHidden,
-  // Refers to a renderer that is hidden and running at background process
-  // priority.
+struct UpdateSystemColorInfoParams {
+  bool is_dark_mode;
+  bool is_high_contrast;
+  PreferredColorScheme preferred_color_scheme;
+  // uint32 represents a SkColor in the map.
+  map<SystemThemeColor, uint32> colors;
+};
+
+// The background state for the render process.  When backgrounded the process's
+// priority will be lower (via base::Process::SetProcessBackgrounded()) if
+// allowed on the current platform (as determined by
+// base::Process::CanBackgroundProcesses()).
+enum RenderProcessBackgroundState {
+  // The renderer process has not been backgrounded, a hidden renderer may still
+  // be foregrounded, e.g. when it is playing audio.
+  kForegrounded,
+  // The renderer process has been backgrounded, a visible renderer may still
+  // be backgrounded, e.g. when it is hosting only low priority frames.
   kBackgrounded,
+};
+
+// The visibility state for the renderer process, indicating whether or not any
+// of the frames associated with the renderer process are visible.
+enum RenderProcessVisibleState {
+  kVisible,
+  kHidden,
 };
 
 // The primordial Channel-associated interface implemented by a render process.
 // This should be used for implementing browser-to-renderer control messages
 // which need to retain FIFO with respect to legacy IPC messages.
 interface Renderer {
-  // Tells the renderer to ask its embedder to bind |service_request| to an
-  // embedder-provided renderer-side service implementation. This is required to
-  // ensure that embedder-provided renderer-side service is initialized at the
-  // appropriate time.
-  CreateEmbedderRendererService(service_manager.mojom.Service& service_request);
-
   // Tells the renderer to create a new view.
   CreateView(CreateViewParams params);
+
+  // Tells the renderer to destroy an existing view. This method must be called
+  // exactly once for each invocation of CreateView. |view_id| is synonymous
+  // with |routing_id|.
+  DestroyView(int32 view_id);
 
   // Tells the renderer to create a new RenderFrame.
   CreateFrame(CreateFrameParams params);
@@ -199,13 +223,6 @@ interface Renderer {
                    int32 opener_routing_id, int32 parent_routing_id,
                    FrameReplicationState replication_state,
                    mojo_base.mojom.UnguessableToken devtools_frame_token);
-
-  // Tells the renderer to create an EmbeddedWorkerInstanceClient, which is what
-  // manages service worker startup and shutdown.
-  // TODO(shimazu): Send all params for starting service worker to reduce the
-  // number of IPCs.
-  SetUpEmbeddedWorkerChannelForServiceWorker(
-      blink.mojom.EmbeddedWorkerInstanceClient& client_request);
 
   // Tells the renderer that the network type has changed so that
   // navigator.onLine and navigator.connection can be updated.
@@ -247,21 +264,22 @@ interface Renderer {
   OnSystemColorsChanged(int32 aqua_color_variant, string highlight_text_color,
                         string highlight_color);
 
+  // Tells the renderer process the new system color info.
+  UpdateSystemColorInfo(UpdateSystemColorInfoParams params);
+
   // Tells the renderer to empty its plugin list cache, optional reloading
   // pages containing plugins.
   PurgePluginListCache(bool reload_pages);
 
 
   // Tells the renderer process of a change in visibility or background state.
-  SetProcessState(RenderProcessState process_state);
+  SetProcessState(RenderProcessBackgroundState background_state,
+                  RenderProcessVisibleState visible_state);
 
   // Tells the scheduler about "keep-alive" state which can be due to:
   // service workers, shared workers, or fetch keep-alive.
   // If set to true, then the scheduler should not freeze the renderer.
   SetSchedulerKeepActive(bool keep_active);
-
-  // Tells the renderer process to purge and suspend.
-  ProcessPurgeAndSuspend();
 
   // Tells the renderer process that it has been locked to a site (i.e., a
   // scheme plus eTLD+1, such as https://google.com), or to a more specific

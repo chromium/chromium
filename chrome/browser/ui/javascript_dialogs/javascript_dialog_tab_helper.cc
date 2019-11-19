@@ -11,11 +11,8 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/javascript_dialogs/javascript_dialog.h"
 #include "chrome/browser/ui/tab_modal_confirm_dialog.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/app_modal/javascript_dialog_manager.h"
 #include "components/navigation_metrics/navigation_metrics.h"
 #include "components/ukm/content/source_url_recorder.h"
@@ -32,7 +29,10 @@
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #else
-#include "chrome/browser/ui/javascript_dialogs/javascript_dialog_views.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #endif
 
 namespace {
@@ -136,28 +136,6 @@ DialogOriginRelationship GetDialogOriginRelationship(
   }
   return DialogOriginRelationship::
       HTTP_MAIN_FRAME_NON_HTTP_ALERTING_FRAME_DIFFERENT_ORIGIN_ANCESTOR;
-}
-
-base::WeakPtr<JavaScriptDialog> CreateNewDialog(
-    content::WebContents* parent_web_contents,
-    content::WebContents* alerting_web_contents,
-    const base::string16& title,
-    content::JavaScriptDialogType dialog_type,
-    const base::string16& message_text,
-    const base::string16& default_prompt_text,
-    content::JavaScriptDialogManager::DialogClosedCallback dialog_callback,
-    base::OnceClosure dialog_closed_callback) {
-#if defined(OS_ANDROID)
-  return JavaScriptDialogAndroid::Create(
-      parent_web_contents, alerting_web_contents, title, dialog_type,
-      message_text, default_prompt_text, std::move(dialog_callback),
-      std::move(dialog_closed_callback));
-#else
-  return JavaScriptDialogViews::Create(
-      parent_web_contents, alerting_web_contents, title, dialog_type,
-      message_text, default_prompt_text, std::move(dialog_callback),
-      std::move(dialog_closed_callback));
-#endif
 }
 
 }  // namespace
@@ -264,7 +242,7 @@ void JavaScriptDialogTabHelper::RunJavaScriptDialog(
       case content::JAVASCRIPT_DIALOG_TYPE_CONFIRM: {
         *did_suppress_message = true;
         alerting_web_contents->GetMainFrame()->AddMessageToConsole(
-            content::CONSOLE_MESSAGE_LEVEL_WARNING,
+            blink::mojom::ConsoleMessageLevel::kWarning,
             base::StringPrintf(kDialogSuppressedConsoleMessageFormat, "confirm",
                                "5140698722467840"));
         return;
@@ -272,7 +250,7 @@ void JavaScriptDialogTabHelper::RunJavaScriptDialog(
       case content::JAVASCRIPT_DIALOG_TYPE_PROMPT: {
         *did_suppress_message = true;
         alerting_web_contents->GetMainFrame()->AddMessageToConsole(
-            content::CONSOLE_MESSAGE_LEVEL_WARNING,
+            blink::mojom::ConsoleMessageLevel::kWarning,
             base::StringPrintf(kDialogSuppressedConsoleMessageFormat, "prompt",
                                "5637107137642496"));
         return;
@@ -302,8 +280,9 @@ void JavaScriptDialogTabHelper::RunJavaScriptDialog(
   if (make_pending) {
     DCHECK(!dialog_);
     pending_dialog_ = base::BindOnce(
-        &CreateNewDialog, parent_web_contents, alerting_web_contents, title,
-        dialog_type, truncated_message_text, truncated_default_prompt_text,
+        &JavaScriptDialog::CreateNewDialog, parent_web_contents,
+        alerting_web_contents, title, dialog_type, truncated_message_text,
+        truncated_default_prompt_text,
         base::BindOnce(&JavaScriptDialogTabHelper::CloseDialog,
                        base::Unretained(this),
                        DismissalCause::kDialogButtonClicked),
@@ -312,7 +291,7 @@ void JavaScriptDialogTabHelper::RunJavaScriptDialog(
                        false, base::string16()));
   } else {
     DCHECK(!pending_dialog_);
-    dialog_ = CreateNewDialog(
+    dialog_ = JavaScriptDialog::CreateNewDialog(
         parent_web_contents, alerting_web_contents, title, dialog_type,
         truncated_message_text, truncated_default_prompt_text,
         base::BindOnce(&JavaScriptDialogTabHelper::CloseDialog,
@@ -369,7 +348,7 @@ void JavaScriptDialogTabHelper::RunBeforeUnloadDialog(
 #if !defined(OS_ANDROID)
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
   if (browser) {
-    browser_is_app = browser->is_app();
+    browser_is_app = browser->deprecated_is_app();
   }
 #endif
   return AppModalDialogManager()->RunBeforeUnloadDialogWithOptions(
@@ -412,24 +391,8 @@ void JavaScriptDialogTabHelper::OnVisibilityChanged(
   }
 }
 
-// This function handles the case where browser-side navigation (PlzNavigate) is
-// enabled. DidStartNavigationToPendingEntry, below, handles the case where
-// PlzNavigate is not enabled. TODO(avi): When the non-PlzNavigate code is
-// removed, remove DidStartNavigationToPendingEntry.
 void JavaScriptDialogTabHelper::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
-  // Close the dialog if the user started a new navigation. This allows reloads
-  // and history navigations to proceed.
-  CloseDialog(DismissalCause::kTabNavigated, false, base::string16());
-}
-
-// This function handles the case where browser-side navigation (PlzNavigate) is
-// not enabled. DidStartNavigation, above, handles the case where PlzNavigate is
-// enabled. TODO(avi): When the non-PlzNavigate code is removed, remove
-// DidStartNavigationToPendingEntry.
-void JavaScriptDialogTabHelper::DidStartNavigationToPendingEntry(
-    const GURL& url,
-    content::ReloadType reload_type) {
   // Close the dialog if the user started a new navigation. This allows reloads
   // and history navigations to proceed.
   CloseDialog(DismissalCause::kTabNavigated, false, base::string16());
@@ -449,34 +412,32 @@ void JavaScriptDialogTabHelper::OnTabStripModelChanged(
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {
   if (change.type() == TabStripModelChange::kReplaced) {
-    for (const auto& delta : change.deltas()) {
-      if (delta.replace.old_contents != WebContentsObserver::web_contents())
-        continue;
-
+    auto* replace = change.GetReplace();
+    if (replace->old_contents == WebContentsObserver::web_contents()) {
       // At this point, this WebContents is no longer in the tabstrip. The usual
       // teardown will not be able to turn off the attention indicator, so that
       // must be done here.
-      SetTabNeedsAttentionImpl(false, tab_strip_model, delta.replace.index);
+      SetTabNeedsAttentionImpl(false, tab_strip_model, replace->index);
 
       CloseDialog(DismissalCause::kTabSwitchedOut, false, base::string16());
     }
   } else if (change.type() == TabStripModelChange::kRemoved) {
-    for (const auto& delta : change.deltas()) {
-      if (delta.remove.contents != WebContentsObserver::web_contents())
-        continue;
-
-      // We don't call TabStripModel::SetTabNeedsAttention because it causes
-      // re-entrancy into TabStripModel and correctness of the |index| parameter
-      // is dependent on observer ordering.
-      // This is okay in the short term because the tab in question is being
-      // removed.
-      // TODO(erikchen): Clean up TabStripModel observer API so that this
-      // doesn't require re-entrancy and/or works correctly
-      // https://crbug.com/842194.
-      DCHECK(tab_strip_model_being_observed_);
-      tab_strip_model_being_observed_->RemoveObserver(this);
-      tab_strip_model_being_observed_ = nullptr;
-      CloseDialog(DismissalCause::kTabHelperDestroyed, false, base::string16());
+    for (const auto& contents : change.GetRemove()->contents) {
+      if (contents.contents == WebContentsObserver::web_contents()) {
+        // We don't call TabStripModel::SetTabNeedsAttention because it causes
+        // re-entrancy into TabStripModel and correctness of the |index|
+        // parameter is dependent on observer ordering. This is okay in the
+        // short term because the tab in question is being removed.
+        // TODO(erikchen): Clean up TabStripModel observer API so that this
+        // doesn't require re-entrancy and/or works correctly
+        // https://crbug.com/842194.
+        DCHECK(tab_strip_model_being_observed_);
+        tab_strip_model_being_observed_->RemoveObserver(this);
+        tab_strip_model_being_observed_ = nullptr;
+        CloseDialog(DismissalCause::kTabHelperDestroyed, false,
+                    base::string16());
+        break;
+      }
     }
   }
 }

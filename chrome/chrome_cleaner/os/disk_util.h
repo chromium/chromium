@@ -47,17 +47,6 @@ base::FilePath GetX86ProgramFilesPath(const base::FilePath& input_path);
 void CollectMatchingPaths(const base::FilePath& root_path,
                           std::vector<base::FilePath>* matches);
 
-// Collect files and folders under |file_path| and add them to |paths|.
-// |max_files| limits the number of files to be added to |pup|. Returns false if
-// a file is bigger than |max_filesize| a file has a greater size than
-// |max_filesize| or if a folder is found when |allow_folders| is false. |paths|
-// is left unchanged when this function returns false.
-bool CollectPathsRecursivelyWithLimits(const base::FilePath& file_path,
-                                       size_t max_files,
-                                       size_t max_filesize,
-                                       bool allow_folders,
-                                       FilePathSet* paths);
-
 // Return true when a file path contains the wild-card characters '*' or '?'.
 bool PathContainsWildcards(const base::FilePath& file_path);
 
@@ -77,12 +66,6 @@ typedef std::set<const wchar_t*, ExtensionsCompare> ExtensionSet;
 
 // Return true if |path| has a active file extension.
 bool PathHasActiveExtension(const base::FilePath& file_path);
-
-// Return true if an alternate file stream is specified in |file_path|.
-bool HasAlternateFileStream(const base::FilePath& file_path);
-
-// Returns true if the file at |path| contains a DOS executable file header.
-bool HasDosExecutableHeader(const base::FilePath& path);
 
 // Expand environment variables in path into expanded_path. When called
 // expanded_path must be an empty path. If any component of path contains
@@ -159,11 +142,6 @@ bool DeleteFileFromTempProcess(const base::FilePath& path,
                                uint32_t delay_before_delete_ms,
                                base::win::ScopedHandle* process_handle);
 
-// Return true when string |value| contains an occurrence of |substring|,
-// ignoring the string case and taking into account that |value| might be a
-// shortened path (with it's tail replaced by ~N).
-bool ShortPathContainsCaseInsensitive(const base::string16& value,
-                                      const base::string16& substring);
 // Return true if both paths represent the same file. This function takes care
 // of short/long path and case sensitive path.
 bool PathEqual(const base::FilePath& path1, const base::FilePath& path2);

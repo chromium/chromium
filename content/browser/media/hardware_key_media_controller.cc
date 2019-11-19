@@ -9,11 +9,14 @@
 #include <vector>
 
 #include "base/metrics/histogram_macros.h"
+#include "content/browser/browser_main_loop.h"
+#include "content/browser/media/media_keys_listener_manager_impl.h"
 #include "content/public/browser/media_keys_listener_manager.h"
 #include "services/media_session/public/mojom/constants.mojom.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "services/service_manager/public/cpp/connector.h"
 #include "ui/base/accelerators/accelerator.h"
+#include "ui/base/accelerators/media_keys_util.h"
 
 namespace content {
 
@@ -27,25 +30,31 @@ HardwareKeyMediaController::HardwareKeyMediaController(
 
   // Connect to the MediaControllerManager and create a MediaController that
   // controls the active session.
-  media_session::mojom::MediaControllerManagerPtr controller_manager_ptr;
-  connector->BindInterface(media_session::mojom::kServiceName,
-                           mojo::MakeRequest(&controller_manager_ptr));
-  controller_manager_ptr->CreateActiveMediaController(
-      mojo::MakeRequest(&media_controller_ptr_));
+  mojo::Remote<media_session::mojom::MediaControllerManager>
+      controller_manager_remote;
+  connector->Connect(media_session::mojom::kServiceName,
+                     controller_manager_remote.BindNewPipeAndPassReceiver());
+  controller_manager_remote->CreateActiveMediaController(
+      media_controller_remote_.BindNewPipeAndPassReceiver());
 
   // Observe the active media controller for changes to playback state and
   // supported actions.
-  media_session::mojom::MediaControllerObserverPtr media_controller_observer;
-  media_controller_observer_binding_.Bind(
-      mojo::MakeRequest(&media_controller_observer));
-  media_controller_ptr_->AddObserver(std::move(media_controller_observer));
+  media_controller_remote_->AddObserver(
+      media_controller_observer_receiver_.BindNewPipeAndPassRemote());
 }
 
 HardwareKeyMediaController::~HardwareKeyMediaController() = default;
 
 void HardwareKeyMediaController::MediaSessionInfoChanged(
     media_session::mojom::MediaSessionInfoPtr session_info) {
+  MediaKeysListenerManagerImpl* media_keys_listener_manager_impl =
+      BrowserMainLoop::GetInstance()->media_keys_listener_manager();
+  DCHECK(media_keys_listener_manager_impl);
+
   session_info_ = std::move(session_info);
+  media_keys_listener_manager_impl->SetIsMediaPlaying(
+      session_info_ && session_info_->playback_state ==
+                           media_session::mojom::MediaPlaybackState::kPlaying);
 }
 
 void HardwareKeyMediaController::MediaSessionActionsChanged(
@@ -85,7 +94,7 @@ void HardwareKeyMediaController::MediaSessionActionsChanged(
 }
 
 void HardwareKeyMediaController::FlushForTesting() {
-  media_controller_ptr_.FlushForTesting();
+  media_controller_remote_.FlushForTesting();
 }
 
 void HardwareKeyMediaController::OnMediaKeysAccelerator(
@@ -113,35 +122,36 @@ void HardwareKeyMediaController::PerformAction(MediaSessionAction action) {
   DCHECK(SupportsAction(action));
   switch (action) {
     case MediaSessionAction::kPreviousTrack:
-      media_controller_ptr_->PreviousTrack();
-      RecordAction(MediaHardwareKeyAction::kActionPreviousTrack);
+      media_controller_remote_->PreviousTrack();
+      ui::RecordMediaHardwareKeyAction(
+          ui::MediaHardwareKeyAction::kPreviousTrack);
       return;
     case MediaSessionAction::kPlay:
-      media_controller_ptr_->Resume();
-      RecordAction(MediaHardwareKeyAction::kActionPlay);
+      media_controller_remote_->Resume();
+      ui::RecordMediaHardwareKeyAction(ui::MediaHardwareKeyAction::kPlay);
       return;
     case MediaSessionAction::kPause:
-      media_controller_ptr_->Suspend();
-      RecordAction(MediaHardwareKeyAction::kActionPause);
+      media_controller_remote_->Suspend();
+      ui::RecordMediaHardwareKeyAction(
+          ui::MediaHardwareKeyAction::kPause);
       return;
     case MediaSessionAction::kNextTrack:
-      media_controller_ptr_->NextTrack();
-      RecordAction(MediaHardwareKeyAction::kActionNextTrack);
+      media_controller_remote_->NextTrack();
+      ui::RecordMediaHardwareKeyAction(
+          ui::MediaHardwareKeyAction::kNextTrack);
       return;
     case MediaSessionAction::kStop:
-      media_controller_ptr_->Stop();
-      RecordAction(MediaHardwareKeyAction::kActionStop);
+      media_controller_remote_->Stop();
+      ui::RecordMediaHardwareKeyAction(ui::MediaHardwareKeyAction::kStop);
       return;
     case MediaSessionAction::kSeekBackward:
     case MediaSessionAction::kSeekForward:
     case MediaSessionAction::kSkipAd:
+    case MediaSessionAction::kSeekTo:
+    case MediaSessionAction::kScrubTo:
       NOTREACHED();
       return;
   }
-}
-
-void HardwareKeyMediaController::RecordAction(MediaHardwareKeyAction action) {
-  UMA_HISTOGRAM_ENUMERATION("Media.HardwareKeyPressed", action);
 }
 
 MediaSessionAction HardwareKeyMediaController::KeyCodeToMediaSessionAction(
@@ -182,6 +192,8 @@ HardwareKeyMediaController::MediaSessionActionToKeyCode(
     case MediaSessionAction::kSeekBackward:
     case MediaSessionAction::kSeekForward:
     case MediaSessionAction::kSkipAd:
+    case MediaSessionAction::kSeekTo:
+    case MediaSessionAction::kScrubTo:
       return base::nullopt;
   }
 }

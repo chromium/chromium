@@ -41,10 +41,10 @@ class IconLoader {
   };
 
   // The callback invoked when an icon has been read. The parameters are:
-  // - The icon that was loaded, or null if there was a failure to load it.
+  // - The icon that was loaded (IsEmpty() will be true on failure to load).
   // - The determined group from the original requested path.
   using IconLoadedCallback =
-      base::OnceCallback<void(std::unique_ptr<gfx::Image>, const IconGroup&)>;
+      base::OnceCallback<void(gfx::Image, const IconGroup&)>;
 
   // Creates an IconLoader, which owns itself. If the IconLoader might outlive
   // the caller, be sure to use a weak pointer in the |callback|.
@@ -77,7 +77,8 @@ class IconLoader {
   // because they are fetching icons from the disk, yet the result will be seen
   // by the user so they should be prioritized accordingly.
   static constexpr base::TaskTraits traits() {
-    return {base::MayBlock(), base::TaskPriority::USER_VISIBLE};
+    return {base::ThreadPool(), base::MayBlock(),
+            base::TaskPriority::USER_VISIBLE};
   }
 
   // The task runner object of the thread in which we notify the delegate.

@@ -194,23 +194,23 @@ TEST(PolicyBundleTest, MergeFrom) {
   expected.Set(kPolicyClashing0, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
                POLICY_SOURCE_CLOUD, std::make_unique<base::Value>(0), nullptr);
   expected.GetMutable(kPolicyClashing0)
-      ->AddConflictingPolicy(*policy1.Get(kPolicyClashing0));
+      ->AddConflictingPolicy(policy1.Get(kPolicyClashing0)->DeepCopy());
   expected.GetMutable(kPolicyClashing0)
-      ->AddConflictingPolicy(*policy2.Get(kPolicyClashing0));
+      ->AddConflictingPolicy(policy2.Get(kPolicyClashing0)->DeepCopy());
   expected.GetMutable(kPolicyClashing0)
-      ->AddError(IDS_POLICY_CONFLICT_DIFF_VALUE);
+      ->AddWarning(IDS_POLICY_CONFLICT_DIFF_VALUE);
   expected.GetMutable(kPolicyClashing0)
-      ->AddError(IDS_POLICY_CONFLICT_DIFF_VALUE);
+      ->AddWarning(IDS_POLICY_CONFLICT_DIFF_VALUE);
   expected.Set(kPolicyClashing1, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
                POLICY_SOURCE_CLOUD, std::make_unique<base::Value>(1), nullptr);
   expected.GetMutable(kPolicyClashing1)
-      ->AddConflictingPolicy(*policy0.Get(kPolicyClashing1));
+      ->AddConflictingPolicy(policy0.Get(kPolicyClashing1)->DeepCopy());
   expected.GetMutable(kPolicyClashing1)
-      ->AddConflictingPolicy(*policy2.Get(kPolicyClashing1));
+      ->AddConflictingPolicy(policy2.Get(kPolicyClashing1)->DeepCopy());
   expected.GetMutable(kPolicyClashing1)
-      ->AddError(IDS_POLICY_CONFLICT_DIFF_VALUE);
+      ->AddWarning(IDS_POLICY_CONFLICT_DIFF_VALUE);
   expected.GetMutable(kPolicyClashing1)
-      ->AddError(IDS_POLICY_CONFLICT_DIFF_VALUE);
+      ->AddWarning(IDS_POLICY_CONFLICT_DIFF_VALUE);
   expected.Set(kPolicy0, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
                POLICY_SOURCE_CLOUD, std::make_unique<base::Value>(0), nullptr);
   expected.Set(kPolicy1, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,

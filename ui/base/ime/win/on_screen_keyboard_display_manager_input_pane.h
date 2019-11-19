@@ -12,12 +12,12 @@
 
 #include <memory>
 
+#include "base/component_export.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/win/windows_types.h"
 #include "ui/base/ime/input_method_keyboard_controller.h"
-#include "ui/base/ime/ui_base_ime_export.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace ui {
@@ -26,7 +26,8 @@ class OnScreenKeyboardTest;
 
 // This class provides an implementation of the OnScreenKeyboardDisplayManager
 // that uses InputPane which is available on Windows >= 10.0.10240.0.
-class UI_BASE_IME_EXPORT OnScreenKeyboardDisplayManagerInputPane final
+class COMPONENT_EXPORT(UI_BASE_IME_WIN)
+    OnScreenKeyboardDisplayManagerInputPane final
     : public InputMethodKeyboardController {
  public:
   explicit OnScreenKeyboardDisplayManagerInputPane(HWND hwnd);
@@ -58,7 +59,8 @@ class UI_BASE_IME_EXPORT OnScreenKeyboardDisplayManagerInputPane final
   const scoped_refptr<base::SingleThreadTaskRunner> background_task_runner_;
   scoped_refptr<VirtualKeyboardInputPane> virtual_keyboard_input_pane_;
   bool is_keyboard_visible_;
-  base::WeakPtrFactory<OnScreenKeyboardDisplayManagerInputPane> weak_factory_;
+  base::WeakPtrFactory<OnScreenKeyboardDisplayManagerInputPane> weak_factory_{
+      this};
 
   DISALLOW_COPY_AND_ASSIGN(OnScreenKeyboardDisplayManagerInputPane);
 };

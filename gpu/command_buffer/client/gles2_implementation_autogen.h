@@ -539,6 +539,13 @@ void MultiDrawArraysInstancedWEBGL(GLenum mode,
                                    const GLsizei* instance_counts,
                                    GLsizei drawcount) override;
 
+void MultiDrawArraysInstancedBaseInstanceWEBGL(GLenum mode,
+                                               const GLint* firsts,
+                                               const GLsizei* counts,
+                                               const GLsizei* instance_counts,
+                                               const GLuint* baseinstances,
+                                               GLsizei drawcount) override;
+
 void MultiDrawElementsWEBGL(GLenum mode,
                             const GLsizei* counts,
                             GLenum type,
@@ -551,6 +558,16 @@ void MultiDrawElementsInstancedWEBGL(GLenum mode,
                                      const GLsizei* offsets,
                                      const GLsizei* instance_counts,
                                      GLsizei drawcount) override;
+
+void MultiDrawElementsInstancedBaseVertexBaseInstanceWEBGL(
+    GLenum mode,
+    const GLsizei* counts,
+    GLenum type,
+    const GLsizei* offsets,
+    const GLsizei* instance_counts,
+    const GLint* basevertices,
+    const GLuint* baseinstances,
+    GLsizei drawcount) override;
 
 void StencilFunc(GLenum func, GLint ref, GLuint mask) override;
 
@@ -890,6 +907,14 @@ void DispatchCompute(GLuint num_groups_x,
                      GLuint num_groups_y,
                      GLuint num_groups_z) override;
 
+void DispatchComputeIndirect(GLintptr offset) override;
+
+void DrawArraysIndirect(GLenum mode, const void* offset) override;
+
+void DrawElementsIndirect(GLenum mode,
+                          GLenum type,
+                          const void* offset) override;
+
 void GetProgramInterfaceiv(GLuint program,
                            GLenum program_interface,
                            GLenum pname,
@@ -1048,11 +1073,26 @@ void DrawArraysInstancedANGLE(GLenum mode,
                               GLsizei count,
                               GLsizei primcount) override;
 
+void DrawArraysInstancedBaseInstanceANGLE(GLenum mode,
+                                          GLint first,
+                                          GLsizei count,
+                                          GLsizei primcount,
+                                          GLuint baseinstance) override;
+
 void DrawElementsInstancedANGLE(GLenum mode,
                                 GLsizei count,
                                 GLenum type,
                                 const void* indices,
                                 GLsizei primcount) override;
+
+void DrawElementsInstancedBaseVertexBaseInstanceANGLE(
+    GLenum mode,
+    GLsizei count,
+    GLenum type,
+    const void* indices,
+    GLsizei primcount,
+    GLint basevertex,
+    GLuint baseinstance) override;
 
 void VertexAttribDivisorANGLE(GLuint index, GLuint divisor) override;
 
@@ -1083,14 +1123,6 @@ void DiscardFramebufferEXT(GLenum target,
 
 void LoseContextCHROMIUM(GLenum current, GLenum other) override;
 
-void GenSyncTokenCHROMIUM(GLbyte* sync_token) override;
-
-void GenUnverifiedSyncTokenCHROMIUM(GLbyte* sync_token) override;
-
-void VerifySyncTokensCHROMIUM(GLbyte** sync_tokens, GLsizei count) override;
-
-void WaitSyncTokenCHROMIUM(const GLbyte* sync_token) override;
-
 void UnpremultiplyAndDitherCopyCHROMIUM(GLuint source_id,
                                         GLuint dest_id,
                                         GLint x,
@@ -1119,6 +1151,7 @@ void ScheduleOverlayPlaneCHROMIUM(GLint plane_z_order,
 void ScheduleCALayerSharedStateCHROMIUM(GLfloat opacity,
                                         GLboolean is_clipped,
                                         const GLfloat* clip_rect,
+                                        const GLfloat* rounded_corner_bounds,
                                         GLint sorting_context_id,
                                         const GLfloat* transform) override;
 
@@ -1139,8 +1172,8 @@ void FlushDriverCachesCHROMIUM() override;
 
 GLuint GetLastFlushIdCHROMIUM() override;
 
-void ScheduleDCLayerCHROMIUM(GLuint y_texture_id,
-                             GLuint uv_texture_id,
+void ScheduleDCLayerCHROMIUM(GLuint texture_0,
+                             GLuint texture_1,
                              GLint z_order,
                              GLint content_x,
                              GLint content_y,
@@ -1277,13 +1310,13 @@ void ProgramPathFragmentInputGenCHROMIUM(GLuint program,
                                          GLint components,
                                          const GLfloat* coeffs) override;
 
+void ContextVisibilityHintCHROMIUM(GLboolean visibility) override;
+
 void CoverageModulationCHROMIUM(GLenum components) override;
 
 GLenum GetGraphicsResetStatusKHR() override;
 
 void BlendBarrierKHR() override;
-
-void ApplyScreenSpaceAntialiasingCHROMIUM() override;
 
 void BindFragDataLocationIndexedEXT(GLuint program,
                                     GLuint colorNumber,
@@ -1347,12 +1380,12 @@ void DestroyGpuFenceCHROMIUM(GLuint gpu_fence_id) override;
 
 void InvalidateReadbackBufferShadowDataCHROMIUM(GLuint buffer_id) override;
 
-void FramebufferTextureMultiviewLayeredANGLE(GLenum target,
-                                             GLenum attachment,
-                                             GLuint texture,
-                                             GLint level,
-                                             GLint baseViewIndex,
-                                             GLsizei numViews) override;
+void FramebufferTextureMultiviewOVR(GLenum target,
+                                    GLenum attachment,
+                                    GLuint texture,
+                                    GLint level,
+                                    GLint baseViewIndex,
+                                    GLsizei numViews) override;
 
 void MaxShaderCompilerThreadsKHR(GLuint count) override;
 

@@ -46,6 +46,13 @@ public interface NativePage {
     void updateForUrl(String url);
 
     /**
+     * @return {@code true} if the native page is in inactive/frozen state.
+     */
+    default boolean isFrozen() {
+        return false;
+    }
+
+    /**
      * Called after a page has been removed from the view hierarchy and will no longer be used.
      */
     void destroy();

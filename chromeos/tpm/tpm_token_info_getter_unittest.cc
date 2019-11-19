@@ -10,16 +10,16 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/message_loop/message_loop.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/stl_util.h"
 #include "base/task_runner.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
-#include "chromeos/dbus/cryptohome_client.h"
-#include "chromeos/dbus/fake_cryptohome_client.h"
+#include "chromeos/dbus/cryptohome/cryptohome_client.h"
+#include "chromeos/dbus/cryptohome/fake_cryptohome_client.h"
 #include "chromeos/tpm/tpm_token_info_getter.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -190,8 +190,7 @@ class TestCryptohomeClient : public chromeos::FakeCryptohomeClient {
     // Called synchronously for convenience (to avoid using extra RunLoop in
     // tests). Unlike with other Cryptohome callbacks, TPMTokenInfoGetter does
     // not rely on this callback being called asynchronously.
-    base::ResetAndReturn(&pending_get_tpm_token_info_callback_)
-        .Run(tpm_token_info_);
+    std::move(pending_get_tpm_token_info_callback_).Run(tpm_token_info_);
   }
 
   AccountId account_id_;
@@ -227,7 +226,7 @@ class SystemTPMTokenInfoGetterTest : public testing::Test {
   std::vector<int64_t> delays_;
 
  private:
-  base::MessageLoop message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
 
   DISALLOW_COPY_AND_ASSIGN(SystemTPMTokenInfoGetterTest);
 };
@@ -253,7 +252,7 @@ class UserTPMTokenInfoGetterTest : public testing::Test {
   std::vector<int64_t> delays_;
 
  private:
-  base::MessageLoop message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
 
   DISALLOW_COPY_AND_ASSIGN(UserTPMTokenInfoGetterTest);
 };

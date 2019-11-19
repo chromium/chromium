@@ -47,6 +47,19 @@ class MEDIA_EXPORT CdmPromise {
     KEY_STATUS_TYPE
   };
 
+  // These values are reported to UMA. Never change existing values. Only add
+  // new values at the bottom of the list.
+  // TODO(xhwang): Make SystemCode an enum class and pass |system_code| as
+  // SystemCode everywhere.
+  enum SystemCode : uint32_t {
+    kMinValue = 1000000,  // To avoid conflict with system code reported by CDM.
+    kOk = kMinValue,
+    kFailure,
+    kAborted,
+    kConnectionError,
+    kMaxValue = kConnectionError,
+  };
+
   CdmPromise() = default;
   virtual ~CdmPromise() = default;
 
@@ -125,7 +138,7 @@ class CdmPromiseTemplate : public CdmPromise {
     std::string message =
         "Unfulfilled promise rejected automatically during destruction.";
     DVLOG(1) << message;
-    reject(Exception::INVALID_STATE_ERROR, 0, message);
+    reject(Exception::INVALID_STATE_ERROR, SystemCode::kAborted, message);
     DCHECK(is_settled_);
   }
 

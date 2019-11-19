@@ -31,11 +31,12 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_PRESCIENT_NETWORKING_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_PRESCIENT_NETWORKING_H_
 
-#include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
 
 namespace blink {
+
+class WebLocalFrame;
 
 class WebPrescientNetworking {
  public:
@@ -45,7 +46,9 @@ class WebPrescientNetworking {
   // the host resolution latency.
   virtual void PrefetchDNS(const WebString& hostname) {}
 
-  virtual void Preconnect(const WebURL& url, const bool allow_credentials) {}
+  virtual void Preconnect(blink::WebLocalFrame* web_local_frame,
+                          const WebURL& url,
+                          const bool allow_credentials) {}
 };
 
 }  // namespace blink

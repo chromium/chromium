@@ -20,6 +20,11 @@ chromium-third-party@google.com
 
 thakis@chromium.org
 
+# For build changes and structural changes to the repos (i.e.,
+# DEPS-related changes). For adding new third-party dependencies
+# please use one of the other reviewers.
+dpranke@chromium.org
+
 per-file .gitignore=*
 
 # Translation artifacts:

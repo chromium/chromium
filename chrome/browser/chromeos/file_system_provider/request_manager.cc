@@ -34,8 +34,7 @@ RequestManager::RequestManager(
       provider_id_(provider_id),
       notification_manager_(notification_manager),
       next_id_(1),
-      timeout_(base::TimeDelta::FromSeconds(kDefaultTimeout)),
-      weak_ptr_factory_(this) {}
+      timeout_(base::TimeDelta::FromSeconds(kDefaultTimeout)) {}
 
 RequestManager::~RequestManager() {
   // Abort all of the active requests.

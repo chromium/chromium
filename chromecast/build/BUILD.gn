@@ -1,0 +1,33 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chromecast/chromecast.gni")
+
+if (is_android) {
+  artifact_type_suffix = "$cast_build_incremental-$target_cpu"
+
+  copy("archive_public_cast_apk") {
+    sources = [
+      "$root_out_dir/apks/CastShell.apk",
+    ]
+    outputs = [
+      "$root_out_dir/archive/CastShell-$artifact_type_suffix.apk",
+    ]
+    deps = [
+      "//chromecast:cast_shell_apk",
+    ]
+  }
+}
+
+group("archive") {
+  if (chromecast_branding == "internal") {
+    deps = [
+      "//chromecast/internal/build:archive",
+    ]
+  } else if (is_android) {
+    deps = [
+      ":archive_public_cast_apk",
+    ]
+  }
+}

@@ -27,6 +27,15 @@ gfx::NativeWindow MockPermissionPrompt::GetNativeWindow() {
   return nullptr;
 }
 
+PermissionPrompt::TabSwitchingBehavior
+MockPermissionPrompt::GetTabSwitchingBehavior() {
+#if defined(OS_ANDROID)
+  return TabSwitchingBehavior::kKeepPromptAlive;
+#else
+  return TabSwitchingBehavior::kDestroyPromptButKeepRequestPending;
+#endif
+}
+
 MockPermissionPrompt::MockPermissionPrompt(MockPermissionPromptFactory* factory,
                                            Delegate* delegate)
     : factory_(factory), delegate_(delegate) {

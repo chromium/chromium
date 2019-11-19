@@ -1,0 +1,37 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+if (is_android) {
+  import("//build/config/android/config.gni")
+  import("//build/config/android/rules.gni")
+}
+
+group("touch_to_fill") {
+  public_deps = [
+    ":factory",
+    ":public",
+  ]
+}
+
+source_set("factory") {
+  if (is_android) {
+    sources = [
+      "touch_to_fill_view_factory.cc",
+      "touch_to_fill_view_factory.h",
+    ]
+
+    deps = [
+      "//chrome/browser/touch_to_fill/android",
+    ]
+  }
+
+  public_deps = [
+    ":public",
+  ]
+}
+
+source_set("public") {
+  sources = [
+    "touch_to_fill_view.h",
+  ]
+}

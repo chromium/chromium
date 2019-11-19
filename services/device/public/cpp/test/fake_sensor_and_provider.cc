@@ -10,7 +10,7 @@
 #include "base/logging.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/interface_request.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/device/public/cpp/generic_sensor/sensor_traits.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -70,8 +70,8 @@ double FakeSensor::GetMinimumSupportedFrequency() {
   return 1.0;
 }
 
-mojom::SensorClientRequest FakeSensor::GetClient() {
-  return mojo::MakeRequest(&client_);
+mojo::PendingReceiver<mojom::SensorClient> FakeSensor::GetClient() {
+  return client_.BindNewPipeAndPassReceiver();
 }
 
 uint64_t FakeSensor::GetBufferOffset() {
@@ -93,7 +93,7 @@ void FakeSensor::SensorReadingChanged() {
     client_->SensorReadingChanged();
 }
 
-FakeSensorProvider::FakeSensorProvider() : binding_(this) {}
+FakeSensorProvider::FakeSensorProvider() = default;
 
 FakeSensorProvider::~FakeSensorProvider() = default;
 
@@ -167,7 +167,7 @@ void FakeSensorProvider::GetSensor(mojom::SensorType type,
 
   if (sensor) {
     auto init_params = mojom::SensorInitParams::New();
-    init_params->client_request = sensor->GetClient();
+    init_params->client_receiver = sensor->GetClient();
     init_params->memory = shared_buffer_handle_->Clone(
         mojo::SharedBufferHandle::AccessMode::READ_ONLY);
     init_params->buffer_offset = sensor->GetBufferOffset();
@@ -175,8 +175,9 @@ void FakeSensorProvider::GetSensor(mojom::SensorType type,
     init_params->maximum_frequency = sensor->GetMaximumSupportedFrequency();
     init_params->minimum_frequency = sensor->GetMinimumSupportedFrequency();
 
-    mojo::MakeStrongBinding(std::move(sensor),
-                            mojo::MakeRequest(&init_params->sensor));
+    mojo::MakeSelfOwnedReceiver(
+        std::move(sensor),
+        init_params->sensor.InitWithNewPipeAndPassReceiver());
     std::move(callback).Run(mojom::SensorCreationResult::SUCCESS,
                             std::move(init_params));
   } else {
@@ -185,9 +186,10 @@ void FakeSensorProvider::GetSensor(mojom::SensorType type,
   }
 }
 
-void FakeSensorProvider::Bind(mojom::SensorProviderRequest request) {
-  DCHECK(!binding_.is_bound());
-  binding_.Bind(std::move(request));
+void FakeSensorProvider::Bind(
+    mojo::PendingReceiver<mojom::SensorProvider> receiver) {
+  DCHECK(!receiver_.is_bound());
+  receiver_.Bind(std::move(receiver));
 }
 
 void FakeSensorProvider::SetAmbientLightSensorData(double value) {

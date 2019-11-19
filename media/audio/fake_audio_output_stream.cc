@@ -22,10 +22,10 @@ AudioOutputStream* FakeAudioOutputStream::MakeFakeStream(
 FakeAudioOutputStream::FakeAudioOutputStream(AudioManagerBase* manager,
                                              const AudioParameters& params)
     : audio_manager_(manager),
+      fixed_data_delay_(FakeAudioWorker::ComputeFakeOutputDelay(params)),
       callback_(NULL),
       fake_worker_(manager->GetWorkerTaskRunner(), params),
-      audio_bus_(AudioBus::Create(params)) {
-}
+      audio_bus_(AudioBus::Create(params)) {}
 
 FakeAudioOutputStream::~FakeAudioOutputStream() {
   DCHECK(!callback_);
@@ -40,8 +40,8 @@ bool FakeAudioOutputStream::Open() {
 void FakeAudioOutputStream::Start(AudioSourceCallback* callback)  {
   DCHECK(audio_manager_->GetTaskRunner()->BelongsToCurrentThread());
   callback_ = callback;
-  fake_worker_.Start(base::Bind(
-      &FakeAudioOutputStream::CallOnMoreData, base::Unretained(this)));
+  fake_worker_.Start(base::BindRepeating(&FakeAudioOutputStream::CallOnMoreData,
+                                         base::Unretained(this)));
 }
 
 void FakeAudioOutputStream::Stop() {
@@ -56,16 +56,22 @@ void FakeAudioOutputStream::Close() {
   audio_manager_->ReleaseOutputStream(this);
 }
 
+void FakeAudioOutputStream::Flush() {}
+
 void FakeAudioOutputStream::SetVolume(double volume) {}
 
 void FakeAudioOutputStream::GetVolume(double* volume) {
   *volume = 0;
 }
 
-void FakeAudioOutputStream::CallOnMoreData() {
+void FakeAudioOutputStream::CallOnMoreData(base::TimeTicks ideal_time,
+                                           base::TimeTicks now) {
   DCHECK(audio_manager_->GetWorkerTaskRunner()->BelongsToCurrentThread());
-  callback_->OnMoreData(base::TimeDelta(), base::TimeTicks::Now(), 0,
-                        audio_bus_.get());
+  // Real streams provide small tweaks to their delay values, alongside the
+  // current system time; and so the same is done here.
+  const auto delay =
+      fixed_data_delay_ + std::max(base::TimeDelta(), ideal_time - now);
+  callback_->OnMoreData(delay, now, 0, audio_bus_.get());
 }
 
 void FakeAudioOutputStream::SetMute(bool muted) {}

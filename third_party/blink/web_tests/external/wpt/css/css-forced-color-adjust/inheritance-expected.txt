@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+FAIL Property forced-color-adjust has initial value auto assert_true: forced-color-adjust doesn't seem to be supported in the computed style expected true got false
+FAIL Property forced-color-adjust inherits assert_true: forced-color-adjust doesn't seem to be supported in the computed style expected true got false
+Harness: the test ran to completion.
+

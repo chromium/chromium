@@ -1,0 +1,30 @@
+# This is the filter for browser_tests that supports pixel tests.
+AskGoogleForSuggestionsDialogTest.*
+GlobalErrorBubbleTest.*
+ScreenCaptureNotificationUiBrowserTest.*
+UpdateRecommendedDialogTest.*
+AppInfoDialogBrowserTest.*
+BookmarkBubbleViewBrowserTest.*
+BookmarkEditorViewBrowserTest.*
+ExtensionInstallDialogViewInteractiveBrowserTest.*
+ExtensionUninstallDialogViewInteractiveBrowserTest.*
+FeaturePromoDialogTest.*
+ReopenTabPromoControllerDialogBrowserTest.*
+HatsBubbleTest.*
+HungRendererDialogViewBrowserTest.*
+ImportLockDialogViewBrowserTest.*
+ContentSettingBubbleDialogTest.*
+ZoomBubbleDialogTest.*
+NativeFileSystemUsageBubbleViewTest.*
+PageInfoBubbleViewBrowserTest.*
+RelaunchRecommendedBubbleViewDialogTest.*
+RelaunchRequiredDialogViewDialogTest.*
+PasswordReuseModalWarningTest.*
+SessionCrashedBubbleViewTest.*
+ProfileSigninConfirmationDialogTest.*
+TabGroupEditorBubbleViewDialogBrowserTest.*
+TabHoverCardBubbleViewBrowserTest.*
+OutdatedUpgradeBubbleTest.*
+
+# This test uses random network port and shows it on ui.
+-ContentSettingBubbleDialogTest.InvokeUi_popups

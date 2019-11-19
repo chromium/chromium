@@ -5,8 +5,7 @@
 package org.chromium.chrome.browser.preferences.website;
 
 import android.content.Context;
-import android.content.DialogInterface;
-import android.preference.DialogPreference;
+import android.support.v7.preference.DialogPreference;
 import android.util.AttributeSet;
 
 /**
@@ -14,24 +13,11 @@ import android.util.AttributeSet;
  */
 public class ClearWebsiteStorage extends DialogPreference {
 
-    private DialogInterface.OnClickListener mConfirmationListener;
-
     public ClearWebsiteStorage(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
     }
 
     public ClearWebsiteStorage(Context context, AttributeSet attrs) {
         super(context, attrs);
-    }
-
-    public void setConfirmationListener(DialogInterface.OnClickListener listener) {
-        mConfirmationListener = listener;
-    }
-
-    @Override
-    protected void onDialogClosed(boolean positiveResult) {
-        if (positiveResult && mConfirmationListener != null) {
-            mConfirmationListener.onClick(null, 0);
-        }
     }
 }

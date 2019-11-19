@@ -1,0 +1,12 @@
+This is a testharness.js-based test.
+FAIL scrollIntoView({"block":"start","inline":"start"}) assert_approx_equals: scrollX expected -200 +/- 0.5 but got 200
+FAIL scrollIntoView({"block":"start","inline":"center"}) assert_approx_equals: scrollX expected -200 +/- 0.5 but got 158
+FAIL scrollIntoView({"block":"start","inline":"end"}) assert_approx_equals: scrollX expected -200 +/- 0.5 but got 115
+FAIL scrollIntoView({"block":"center","inline":"start"}) assert_approx_equals: scrollX expected -157.5 +/- 0.5 but got 200
+FAIL scrollIntoView({"block":"center","inline":"center"}) assert_approx_equals: scrollX expected -157.5 +/- 0.5 but got 158
+FAIL scrollIntoView({"block":"center","inline":"end"}) assert_approx_equals: scrollX expected -157.5 +/- 0.5 but got 115
+FAIL scrollIntoView({"block":"end","inline":"start"}) assert_approx_equals: scrollX expected -115 +/- 0.5 but got 200
+FAIL scrollIntoView({"block":"end","inline":"center"}) assert_approx_equals: scrollX expected -115 +/- 0.5 but got 158
+FAIL scrollIntoView({"block":"end","inline":"end"}) assert_approx_equals: scrollX expected -115 +/- 0.5 but got 115
+Harness: the test ran to completion.
+

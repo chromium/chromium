@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-FAIL  scheduler: javascript: URL assert_array_equals: lengths differ, expected 4 got 3
-
-assert_array_equals: lengths differ, expected 4 got 3
-Harness: the test ran to completion.
-

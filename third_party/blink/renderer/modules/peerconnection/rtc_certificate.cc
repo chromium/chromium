@@ -54,11 +54,10 @@ HeapVector<Member<RTCDtlsFingerprint>> RTCCertificate::getFingerprints() {
            first_certificate_stats.get();
        certificate_stats; certificate_stats = certificate_stats->issuer.get()) {
     RTCDtlsFingerprint* fingerprint = RTCDtlsFingerprint::Create();
-    fingerprint->setAlgorithm(WTF::String::FromUTF8(
-        certificate_stats->fingerprint_algorithm.c_str()));
+    fingerprint->setAlgorithm(
+        WTF::String::FromUTF8(certificate_stats->fingerprint_algorithm));
     fingerprint->setValue(
-        WTF::String::FromUTF8(certificate_stats->fingerprint.c_str())
-            .LowerASCII());
+        WTF::String::FromUTF8(certificate_stats->fingerprint).LowerASCII());
     fingerprints.push_back(fingerprint);
   }
 

@@ -4,7 +4,7 @@ Tests that source data are extracted correctly from external stylesheets in UTF-
 element.style { ()
 
 [expanded] 
-h1 { (parse-utf8-bom-main.css:3 -> parse-utf8-bom-main.css:3:5)
+h1 { (parse-utf8-…-main.css:3 -> parse-utf8-bom-main.css:3:5)
     color: red;
 
 [expanded] 

@@ -50,10 +50,13 @@ class ExtensionBuilder {
     BROWSER_ACTION,
   };
 
-  enum class BackgroundPage {
-    PERSISTENT,
-    EVENT,
+  enum class BackgroundContext {
+    BACKGROUND_PAGE,
+    EVENT_PAGE,
+    SERVICE_WORKER,
   };
+
+  static constexpr char kServiceWorkerScriptFile[] = "sw.js";
 
   // Initializes an ExtensionBuilder that can be used with SetManifest() for
   // complete customization.
@@ -85,9 +88,8 @@ class ExtensionBuilder {
   // be set (though note that we synthesize a page action for most extensions).
   ExtensionBuilder& SetAction(ActionType action);
 
-  // Sets a background page for the extension to have. By default, no background
-  // page will be set.
-  ExtensionBuilder& SetBackgroundPage(BackgroundPage background_page);
+  // Sets a background context for the extension. By default, none will be set.
+  ExtensionBuilder& SetBackgroundContext(BackgroundContext background_context);
 
   // Adds a content script to the extension, with a script with the specified
   // |script_name| that matches the given |match_patterns|.

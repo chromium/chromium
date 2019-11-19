@@ -2,4 +2,10 @@ rjkroege@chromium.org
 spang@chromium.org
 kpschoedel@chromium.org
 
+# Touchpad input & touchscreen noise filtering
+seobrien@chromium.org
+
+# Touchscreen palm rejection
+robsc@chromium.org
+
 # TEAM: ozone-dev@chromium.org

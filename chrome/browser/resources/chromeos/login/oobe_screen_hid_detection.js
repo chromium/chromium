@@ -7,18 +7,6 @@
  */
 
 login.createScreen('HIDDetectionScreen', 'hid-detection', function() {
-  var CONTEXT_KEY_KEYBOARD_STATE = 'keyboard-state';
-  var CONTEXT_KEY_MOUSE_STATE = 'mouse-state';
-  var CONTEXT_KEY_KEYBOARD_PINCODE = 'keyboard-pincode';
-  var CONTEXT_KEY_KEYBOARD_ENTERED_PART_EXPECTED = 'num-keys-entered-expected';
-  var CONTEXT_KEY_KEYBOARD_ENTERED_PART_PINCODE = 'num-keys-entered-pincode';
-  var CONTEXT_KEY_MOUSE_DEVICE_NAME = 'mouse-device-name';
-  var CONTEXT_KEY_KEYBOARD_DEVICE_NAME = 'keyboard-device-name';
-  var CONTEXT_KEY_KEYBOARD_LABEL = 'keyboard-device-label';
-  var CONTEXT_KEY_CONTINUE_BUTTON_ENABLED = 'continue-button-enabled';
-
-  var PINCODE_LENGTH = 6;
-
   return {
     // Enumeration of possible connection states of a device.
     CONNECTION: {
@@ -31,49 +19,91 @@ login.createScreen('HIDDetectionScreen', 'hid-detection', function() {
       UPDATE: 'update',
     },
 
+    EXTERNAL_API: [
+      'setKeyboardState',
+      'setMouseState',
+      'setKeyboardPinCode',
+      'setNumKeysEnteredExpected',
+      'setNumKeysEnteredPincode',
+      'setMouseDeviceName',
+      'setKeyboardDeviceName',
+      'setKeyboardDeviceLabel',
+      'setContinueButtonEnabled',
+    ],
+
     /**
      * Button to move to usual OOBE flow after detection.
      * @private
      */
     continueButton_: null,
 
+    /** @type {string} */
+    keyboardState_: '',
+
+    /** @type {string} */
+    keyboardPinCode_: '',
+
+    /** @type {boolean} */
+    keyboardEnteredExpected_: false,
+
+    /** @type {number} */
+    numKeysEnteredPincode_: 0,
+
+    /** @type {string} */
+    keyboardDeviceLabel_: '',
+
+    setKeyboardState: function(stateId) {
+      this.keyboardState_ = stateId;
+
+      this.updatePincodeKeysState_();
+      if (stateId === undefined)
+        return;
+      $('oobe-hid-detection-md').setKeyboardState(stateId);
+      if (stateId == this.CONNECTION.PAIRED) {
+        $('oobe-hid-detection-md').keyboardPairedLabel =
+            this.keyboardDeviceLabel_;
+      } else if (stateId == this.CONNECTION.PAIRING) {
+        $('oobe-hid-detection-md').keyboardPairingLabel =
+            this.keyboardDeviceLabel_;
+      }
+    },
+
+    setMouseState: function(stateId) {
+      if (stateId === undefined)
+        return;
+      $('oobe-hid-detection-md').setMouseState(stateId);
+    },
+
+    setKeyboardPinCode: function(value) {
+      this.keyboardPinCode_ = value;
+      this.updatePincodeKeysState_();
+    },
+
+    setNumKeysEnteredExpected: function(value) {
+      this.keyboardEnteredExpected_ = value;
+      this.updatePincodeKeysState_();
+    },
+
+    setNumKeysEnteredPincode: function(value) {
+      this.numKeysEnteredPincode_ = value;
+      this.updatePincodeKeysState_();
+    },
+
+    setMouseDeviceName: function(value) {},
+
+    setKeyboardDeviceName: function(value) {},
+
+    setKeyboardDeviceLabel: function(value) {
+      this.keyboardDeviceLabel_ = value;
+    },
+
+    setContinueButtonEnabled: function(enabled) {
+      $('oobe-hid-detection-md').continueButtonDisabled = !enabled;
+    },
+
     /** @override */
     decorate: function() {
-      var self = this;
-
       $('oobe-hid-detection-md').screen = this;
-
-      this.context.addObserver(CONTEXT_KEY_MOUSE_STATE, function(stateId) {
-        if (stateId === undefined)
-          return;
-        $('oobe-hid-detection-md').setMouseState(stateId);
-      });
-      this.context.addObserver(CONTEXT_KEY_KEYBOARD_STATE, function(stateId) {
-        self.updatePincodeKeysState_();
-        if (stateId === undefined)
-          return;
-        $('oobe-hid-detection-md').setKeyboardState(stateId);
-        if (stateId == self.CONNECTION.PAIRED) {
-          $('oobe-hid-detection-md').keyboardPairedLabel =
-              self.context.get(CONTEXT_KEY_KEYBOARD_LABEL, '');
-        } else if (stateId == self.CONNECTION.PAIRING) {
-          $('oobe-hid-detection-md').keyboardPairingLabel =
-              self.context.get(CONTEXT_KEY_KEYBOARD_LABEL, '');
-        }
-      });
-      this.context.addObserver(
-          CONTEXT_KEY_KEYBOARD_PINCODE,
-          this.updatePincodeKeysState_.bind(this));
-      this.context.addObserver(
-          CONTEXT_KEY_KEYBOARD_ENTERED_PART_EXPECTED,
-          this.updatePincodeKeysState_.bind(this));
-      this.context.addObserver(
-          CONTEXT_KEY_KEYBOARD_ENTERED_PART_PINCODE,
-          this.updatePincodeKeysState_.bind(this));
-      this.context.addObserver(
-          CONTEXT_KEY_CONTINUE_BUTTON_ENABLED, function(enabled) {
-            $('oobe-hid-detection-md').continueButtonDisabled = !enabled;
-          });
     },
 
     /**
@@ -94,17 +124,15 @@ login.createScreen('HIDDetectionScreen', 'hid-detection', function() {
     },
 
     /**
-     * Updates state for pincode key elements based on context state.
+     * Updates state for pincode key elements.
      */
     updatePincodeKeysState_: function() {
-      var pincode = this.context.get(CONTEXT_KEY_KEYBOARD_PINCODE, '');
-      var state = this.context.get(CONTEXT_KEY_KEYBOARD_STATE, '');
-      var label = this.context.get(CONTEXT_KEY_KEYBOARD_LABEL, '');
-      var entered =
-          this.context.get(CONTEXT_KEY_KEYBOARD_ENTERED_PART_PINCODE, 0);
+      var pincode = this.keyboardPinCode_;
+      var state = this.keyboardState_;
+      var label = this.keyboardDeviceLabel_;
+      var entered = this.numKeysEnteredPincode_;
       // Whether the functionality of getting num of entered keys is available.
-      var expected =
-          this.context.get(CONTEXT_KEY_KEYBOARD_ENTERED_PART_EXPECTED, false);
+      var expected = this.keyboardEnteredExpected_;
 
       $('oobe-hid-detection-md').setKeyboardState(state);
       $('oobe-hid-detection-md')
@@ -119,5 +147,13 @@ login.createScreen('HIDDetectionScreen', 'hid-detection', function() {
       $('oobe-hid-detection-md').setMouseState(this.CONNECTION.SEARCHING);
       $('oobe-hid-detection-md').setKeyboardState(this.CONNECTION.SEARCHING);
     },
+
+    /**
+     * Updates localized content of the screen that is not updated via template.
+     */
+    updateLocalizedContent: function() {
+      $('oobe-hid-detection-md').i18nUpdateLocale();
+    },
+
   };
 });

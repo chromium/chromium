@@ -5,9 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_PUSH_PULL_FIFO_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_PUSH_PULL_FIFO_H_
 
-#include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
 #include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
@@ -37,7 +37,7 @@ struct PushPullFIFOStateForTest {
 // and fifo_Bus_) so the thread safety must be handled with care.
 //
 // TODO(hongchan): add a unit test for multi-thread access.
-class BLINK_PLATFORM_EXPORT PushPullFIFO {
+class PLATFORM_EXPORT PushPullFIFO {
   USING_FAST_MALLOC(PushPullFIFO);
 
  public:
@@ -67,15 +67,21 @@ class BLINK_PLATFORM_EXPORT PushPullFIFO {
   size_t Pull(AudioBus* output_bus, size_t frames_requested);
 
   size_t length() const { return fifo_length_; }
-  unsigned NumberOfChannels() const { return fifo_bus_->NumberOfChannels(); }
+  unsigned NumberOfChannels() const {
+    lock_.AssertAcquired();
+    return fifo_bus_->NumberOfChannels();
+  }
 
   // TODO(hongchan): For single thread unit test only. Consider refactoring.
-  AudioBus* GetFIFOBusForTest() const { return fifo_bus_.get(); }
+  AudioBus* GetFIFOBusForTest() {
+    MutexLocker locker(lock_);
+    return fifo_bus_.get();
+  }
 
   // For single thread unit test only. Get the current configuration that
   // consists of FIFO length, number of channels, read/write index position and
   // under/overflow count.
-  const PushPullFIFOStateForTest GetStateForTest() const;
+  const PushPullFIFOStateForTest GetStateForTest();
 
  private:
   // The size of the FIFO.
@@ -86,13 +92,12 @@ class BLINK_PLATFORM_EXPORT PushPullFIFO {
   unsigned overflow_count_ = 0;
   unsigned underflow_count_ = 0;
 
-  // This lock protects variables below.
   Mutex lock_;
   // The number of frames in the FIFO actually available for pulling.
-  size_t frames_available_ = 0;
-  size_t index_read_ = 0;
-  size_t index_write_ = 0;
-  scoped_refptr<AudioBus> fifo_bus_;
+  size_t frames_available_ GUARDED_BY(lock_) = 0;
+  size_t index_read_ GUARDED_BY(lock_) = 0;
+  size_t index_write_ GUARDED_BY(lock_) = 0;
+  scoped_refptr<AudioBus> fifo_bus_ GUARDED_BY(lock_);
 
   DISALLOW_COPY_AND_ASSIGN(PushPullFIFO);
 };

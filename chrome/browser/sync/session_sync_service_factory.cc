@@ -9,7 +9,6 @@
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/browser/sync/glue/sync_start_util.h"
 #include "chrome/browser/sync/model_type_store_service_factory.h"
 #include "chrome/browser/sync/sessions/sync_sessions_web_contents_router.h"
@@ -18,8 +17,6 @@
 #include "chrome/common/channel_info.h"
 #include "chrome/common/url_constants.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/sync/device_info/device_info_sync_service.h"
-#include "components/sync/device_info/local_device_info_provider.h"
 #include "components/sync/model/model_type_store_service.h"
 #include "components/sync_sessions/session_sync_prefs.h"
 #include "components/sync_sessions/session_sync_service_impl.h"
@@ -79,12 +76,6 @@ class SyncSessionsClientImpl : public sync_sessions::SyncSessionsClient {
         ->GetStoreFactory();
   }
 
-  const syncer::DeviceInfo* GetLocalDeviceInfo() override {
-    return DeviceInfoSyncServiceFactory::GetForProfile(profile_)
-        ->GetLocalDeviceInfoProvider()
-        ->GetLocalDeviceInfo();
-  }
-
   bool ShouldSyncURL(const GURL& url) const override {
     return ShouldSyncURLImpl(url);
   }
@@ -140,7 +131,6 @@ SessionSyncServiceFactory::SessionSyncServiceFactory()
     : BrowserContextKeyedServiceFactory(
           "SessionSyncService",
           BrowserContextDependencyManager::GetInstance()) {
-  DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
   DependsOn(FaviconServiceFactory::GetInstance());
   DependsOn(HistoryServiceFactory::GetInstance());
   DependsOn(ModelTypeStoreServiceFactory::GetInstance());

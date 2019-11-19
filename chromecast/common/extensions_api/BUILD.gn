@@ -15,10 +15,9 @@ extensions_api_schema_include_rules =
 schema_sources = [
   # TODO(crbug/837773) De-dupe Automation later.
   "accessibility_private.json",
-  "automation.idl",
-  "automation_internal.idl",
   "bookmarks.json",
   "braille_display_private.idl",
+  "command_line_private.json",
   "history.json",
   "identity.idl",
   "i18n.json",

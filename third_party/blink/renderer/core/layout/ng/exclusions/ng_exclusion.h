@@ -28,11 +28,28 @@ struct CORE_EXPORT NGExclusionShapeData {
 // Struct that represents an exclusion. This currently is just a float but
 // we've named it an exclusion to potentially support other types in the future.
 struct CORE_EXPORT NGExclusion : public RefCounted<NGExclusion> {
-  static scoped_refptr<NGExclusion> Create(
+  static scoped_refptr<const NGExclusion> Create(
       const NGBfcRect& rect,
       const EFloat type,
       std::unique_ptr<NGExclusionShapeData> shape_data = nullptr) {
     return base::AdoptRef(new NGExclusion(rect, type, std::move(shape_data)));
+  }
+
+  scoped_refptr<const NGExclusion> CopyWithOffset(
+      const NGBfcDelta& offset_delta) const {
+    if (!offset_delta.line_offset_delta && !offset_delta.block_offset_delta)
+      return this;
+
+    NGBfcRect new_rect = rect;
+    new_rect.start_offset += offset_delta;
+    new_rect.end_offset += offset_delta;
+
+    return base::AdoptRef(new NGExclusion(
+        new_rect, type,
+        shape_data ? std::make_unique<NGExclusionShapeData>(
+                         shape_data->layout_box, shape_data->margins,
+                         shape_data->shape_insets)
+                   : nullptr));
   }
 
   const NGBfcRect rect;

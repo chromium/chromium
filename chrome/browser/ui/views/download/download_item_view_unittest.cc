@@ -18,7 +18,7 @@ TEST_F(DownloadItemViewDangerousDownloadLabelTest, AdjustTextAndGetSize) {
   views::Label label(label_text);
   label.SetMultiLine(true);
   DownloadItemView::AdjustTextAndGetSize(&label);
-  EXPECT_EQ(label_text, label.text());
+  EXPECT_EQ(label_text, label.GetText());
 
   // When we have multiple linebreaks that result in the same minimum width, we
   // should place as much text as possible on the first line.
@@ -29,7 +29,7 @@ TEST_F(DownloadItemViewDangerousDownloadLabelTest, AdjustTextAndGetSize) {
       "aaaa aaaa aaaa aaaa aaaa aaaa");
   label.SetText(label_text);
   DownloadItemView::AdjustTextAndGetSize(&label);
-  EXPECT_EQ(expected_text, label.text());
+  EXPECT_EQ(expected_text, label.GetText());
 
   // If the label is a single word and extremely long, we should not break it
   // into 2 lines.
@@ -37,5 +37,35 @@ TEST_F(DownloadItemViewDangerousDownloadLabelTest, AdjustTextAndGetSize) {
       "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
   label.SetText(label_text);
   DownloadItemView::AdjustTextAndGetSize(&label);
-  EXPECT_EQ(label_text, label.text());
+  EXPECT_EQ(label_text, label.GetText());
+
+  // Two lines have the same length.
+  label_text =
+      base::ASCIIToUTF16("aaaa aaaa aaaa aaaa bb bb aaaa aaaa aaaa aaaa");
+  expected_text = base::ASCIIToUTF16(
+      "aaaa aaaa aaaa aaaa bb\n"
+      "bb aaaa aaaa aaaa aaaa");
+  label.SetText(label_text);
+  DownloadItemView::AdjustTextAndGetSize(&label);
+  EXPECT_EQ(expected_text, label.GetText());
+
+  // Text begins with a very long word.
+  label_text = base::ASCIIToUTF16(
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa aaaa aaaa");
+  expected_text = base::ASCIIToUTF16(
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n"
+      "aaaa aaaa");
+  label.SetText(label_text);
+  DownloadItemView::AdjustTextAndGetSize(&label);
+  EXPECT_EQ(expected_text, label.GetText());
+
+  // Text ends with a very long word.
+  label_text = base::ASCIIToUTF16(
+      "aaa aaaa aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+  expected_text = base::ASCIIToUTF16(
+      "aaa aaaa\n"
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+  label.SetText(label_text);
+  DownloadItemView::AdjustTextAndGetSize(&label);
+  EXPECT_EQ(expected_text, label.GetText());
 }

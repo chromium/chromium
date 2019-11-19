@@ -17,14 +17,18 @@
 @property(nonatomic, strong) UIImage* image;
 // Whether the cell associated with this item should be enabled.
 @property(nonatomic, assign) BOOL enabled;
-// Number to be displayed in the badge. If 0, the badge is hidden.
+// Number to be displayed in the badge. If 0, the badge is hidden. This is not
+// read by VoiceOver.
 @property(nonatomic, assign) NSInteger badgeNumber;
 // Text to be displayed in the badge. Set to nil to hide the badge. The text
-// badge is only displayed if the numbered badge is hidden.
+// badge is only displayed if the numbered badge is hidden. This is not read by
+// VoiceOver.
 @property(nonatomic, copy) NSString* badgeText;
 // Whether the item is associated with a destructive action. If |YES|, then a
 // specific styling is applied.
 @property(nonatomic, assign) BOOL destructiveAction;
+// Additional label. Read after |title| if not nil.
+@property(nonatomic, strong) NSString* additionalAccessibilityLabel;
 
 @end
 
@@ -40,6 +44,9 @@
 // Whether the cell is associated with a destructive action. If |YES|, then a
 // specific styling is applied.
 @property(nonatomic, assign) BOOL destructiveAction;
+
+// Additional label. Read after |title| if not nil.
+@property(nonatomic, strong) NSString* additionalAccessibilityLabel;
 
 // Sets the number on the badge number.
 - (void)setBadgeNumber:(NSInteger)badgeNumber;

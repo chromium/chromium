@@ -12,7 +12,7 @@ PASS Setting 'list-style-type' to a number throws TypeError
 PASS Setting 'list-style-type' to a position throws TypeError
 PASS Setting 'list-style-type' to a URL throws TypeError
 PASS Setting 'list-style-type' to a transform throws TypeError
-FAIL 'list-style-type' does not supported '"Note: "' assert_not_equals: Unsupported value must not be null got disallowed value null
+PASS 'list-style-type' does not supported '"Note: "'
 FAIL 'list-style-type' does not supported 'symbols("*" "A" "B" "C")' assert_not_equals: Unsupported value must not be null got disallowed value null
 Harness: the test ran to completion.
 

@@ -13,11 +13,9 @@
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 
 namespace content {
-
 namespace background_fetch {
 
 // Deletes inactive registrations marked for deletion.
-// TODO(crbug.com/780025): Log failed deletions to UMA.
 class CleanupTask : public background_fetch::DatabaseTask {
  public:
   explicit CleanupTask(DatabaseTaskHost* host);
@@ -40,13 +38,12 @@ class CleanupTask : public background_fetch::DatabaseTask {
 
   std::string HistogramName() const override;
 
-  base::WeakPtrFactory<CleanupTask> weak_factory_;  // Keep as last.
+  base::WeakPtrFactory<CleanupTask> weak_factory_{this};  // Keep as last.
 
   DISALLOW_COPY_AND_ASSIGN(CleanupTask);
 };
 
 }  // namespace background_fetch
-
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_BACKGROUND_FETCH_STORAGE_CLEANUP_TASK_H_

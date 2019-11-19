@@ -33,20 +33,15 @@
         endTest();
     };
 
-    if (!internals.runtimeFlags.userActivationV2Enabled) {
-        console.log("This test requires User Activation V2.");
-        endTest();
-    } else {
-        if (window.gamepadController) {
-            // Simulate pressing a button on a connected gamepad. A gamepad
-            // button press should be treated as a user activation for the
-            // fullscreen API.
-            gamepadController.connect(0);
-            gamepadController.setId(0, "FullScream Maximizer");
-            gamepadController.setButtonCount(0, 1);
-            gamepadController.setButtonData(0, 0, 1);
-            gamepadController.dispatchConnected(0);
-        }
-        waitForEvent(window, 'gamepadconnected', gamepadConnected, false, true);
+    waitForEvent(window, 'gamepadconnected', gamepadConnected, false, true);
+    if (window.gamepadController) {
+        // Simulate pressing a button on a connected gamepad. A gamepad
+        // button press should be treated as a user activation for the
+        // fullscreen API.
+        gamepadController.connect(0);
+        gamepadController.setId(0, "FullScream Maximizer");
+        gamepadController.setButtonCount(0, 1);
+        gamepadController.setButtonData(0, 0, 1);
+        gamepadController.dispatchConnected(0);
     }
 </script>

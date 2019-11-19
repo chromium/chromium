@@ -31,6 +31,13 @@
 #include "chrome/browser/password_manager/password_manager_util_win.h"
 #elif defined(OS_MACOSX)
 #include "chrome/browser/password_manager/password_manager_util_mac.h"
+#elif defined(OS_CHROMEOS)
+#include "chrome/browser/chromeos/login/quick_unlock/auth_token.h"
+#include "chrome/browser/chromeos/login/quick_unlock/quick_unlock_factory.h"
+#include "chrome/browser/chromeos/login/quick_unlock/quick_unlock_storage.h"
+#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chromeos/login/auth/password_visibility_utils.h"
+#include "components/user_manager/user.h"
 #endif
 
 namespace {
@@ -40,6 +47,14 @@ namespace {
 const char kExportInProgress[] = "in-progress";
 // The error message returned to the UI when the user fails to reauthenticate.
 const char kReauthenticationFailed[] = "reauth-failed";
+
+#if defined(OS_CHROMEOS)
+constexpr static base::TimeDelta kShowPasswordAuthTokenLifetime =
+    base::TimeDelta::FromSeconds(
+        PasswordAccessAuthenticator::kAuthValidityPeriodSeconds);
+constexpr static base::TimeDelta kExportPasswordsAuthTokenLifetime =
+    base::TimeDelta::FromSeconds(5);
+#endif
 
 // Map password_manager::ExportProgressStatus to
 // extensions::api::passwords_private::ExportProgressStatus.
@@ -204,6 +219,25 @@ bool PasswordsPrivateDelegateImpl::OsReauthCall(
       web_contents_->GetTopLevelNativeWindow(), purpose);
 #elif defined(OS_MACOSX)
   return password_manager_util_mac::AuthenticateUser(purpose);
+#elif defined(OS_CHROMEOS)
+  const bool user_cannot_manually_enter_password =
+      !chromeos::password_visibility::AccountHasUserFacingPassword(
+          chromeos::ProfileHelper::Get()
+              ->GetUserByProfile(profile_)
+              ->GetAccountId());
+  if (user_cannot_manually_enter_password)
+    return true;
+  chromeos::quick_unlock::QuickUnlockStorage* quick_unlock_storage =
+      chromeos::quick_unlock::QuickUnlockFactory::GetForProfile(profile_);
+  const chromeos::quick_unlock::AuthToken* auth_token =
+      quick_unlock_storage->GetAuthToken();
+  if (!auth_token || !auth_token->GetAge())
+    return false;
+  const base::TimeDelta auth_token_lifespan =
+      (purpose == password_manager::ReauthPurpose::EXPORT)
+          ? kExportPasswordsAuthTokenLifetime
+          : kShowPasswordAuthTokenLifetime;
+  return auth_token->GetAge() <= auth_token_lifespan;
 #else
   return true;
 #endif
@@ -230,6 +264,8 @@ void PasswordsPrivateDelegateImpl::SetPasswordList(
       entry.federation_text.reset(new std::string(l10n_util::GetStringFUTF8(
           IDS_PASSWORDS_VIA_FEDERATION, GetDisplayFederation(*form))));
     }
+
+    entry.from_account_store = form->IsUsingAccountStore();
 
     current_entries_.push_back(std::move(entry));
   }
@@ -258,6 +294,8 @@ void PasswordsPrivateDelegateImpl::SetPasswordExceptionList(
     current_exception_entry.urls = CreateUrlCollectionFromForm(*form);
     current_exception_entry.id = exception_id_generator_.GenerateId(
         password_manager::CreateSortKey(*form));
+
+    current_exception_entry.from_account_store = form->IsUsingAccountStore();
     current_exceptions_.push_back(std::move(current_exception_entry));
   }
 

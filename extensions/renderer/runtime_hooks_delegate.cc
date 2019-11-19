@@ -89,6 +89,28 @@ RuntimeHooksDelegate::RuntimeHooksDelegate(
     : messaging_service_(messaging_service) {}
 RuntimeHooksDelegate::~RuntimeHooksDelegate() {}
 
+// static
+RequestResult RuntimeHooksDelegate::GetURL(
+    ScriptContext* script_context,
+    const std::vector<v8::Local<v8::Value>>& arguments) {
+  DCHECK_EQ(1u, arguments.size());
+  DCHECK(arguments[0]->IsString());
+  DCHECK(script_context->extension());
+
+  v8::Isolate* isolate = script_context->isolate();
+  std::string path = gin::V8ToString(isolate, arguments[0]);
+
+  RequestResult result(RequestResult::HANDLED);
+  std::string url = base::StringPrintf(
+      "chrome-extension://%s%s%s", script_context->extension()->id().c_str(),
+      !path.empty() && path[0] == '/' ? "" : "/", path.c_str());
+  // GURL considers any possible path valid. Since the argument is only appended
+  // as part of the path, there should be no way this could conceivably fail.
+  DCHECK(GURL(url).is_valid());
+  result.return_value = gin::StringToV8(isolate, url);
+  return result;
+}
+
 RequestResult RuntimeHooksDelegate::HandleRequest(
     const std::string& method_name,
     const APISignature* signature,
@@ -139,16 +161,15 @@ RequestResult RuntimeHooksDelegate::HandleRequest(
                                                 allow_options, arguments);
   }
 
-  std::string error;
-  std::vector<v8::Local<v8::Value>> parsed_arguments;
-  if (!signature->ParseArgumentsToV8(context, *arguments, refs,
-                                     &parsed_arguments, &error)) {
+  APISignature::V8ParseResult parse_result =
+      signature->ParseArgumentsToV8(context, *arguments, refs);
+  if (!parse_result.succeeded()) {
     RequestResult result(RequestResult::INVALID_INVOCATION);
-    result.error = std::move(error);
+    result.error = std::move(*parse_result.error);
     return result;
   }
 
-  return (this->*handler)(script_context, parsed_arguments);
+  return (this->*handler)(script_context, *parse_result.arguments);
 }
 
 void RuntimeHooksDelegate::InitializeTemplate(
@@ -175,20 +196,7 @@ RequestResult RuntimeHooksDelegate::HandleGetManifest(
 RequestResult RuntimeHooksDelegate::HandleGetURL(
     ScriptContext* script_context,
     const std::vector<v8::Local<v8::Value>>& arguments) {
-  DCHECK_EQ(1u, arguments.size());
-  DCHECK(arguments[0]->IsString());
-  DCHECK(script_context->extension());
-
-  v8::Isolate* isolate = script_context->isolate();
-  std::string path = gin::V8ToString(isolate, arguments[0]);
-
-  RequestResult result(RequestResult::HANDLED);
-  std::string url = base::StringPrintf(
-      "chrome-extension://%s%s%s", script_context->extension()->id().c_str(),
-      !path.empty() && path[0] == '/' ? "" : "/", path.c_str());
-  result.return_value = gin::StringToV8(isolate, url);
-
-  return result;
+  return GetURL(script_context, arguments);
 }
 
 RequestResult RuntimeHooksDelegate::HandleSendMessage(

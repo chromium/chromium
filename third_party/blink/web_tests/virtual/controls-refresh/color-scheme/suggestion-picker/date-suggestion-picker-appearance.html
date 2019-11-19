@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+testRunner.waitUntilDone();
+</script>
+<script src="../../../../fast/forms/resources/picker-common.js"></script>
+</head>
+<body style="background-color: #eeffff;">
+<input type=date id=date value="10000-12-31" list="suggestions" style="width: 200px;">
+<datalist id=suggestions>
+    <option>2012-01-00</option> <!--invalid-->
+    <option>foo</option> <!--invalid-->
+    <option label="Today">2012-01-01</option>
+    <option label="Tomorrow">2012-01-02</option>
+    <option>2012-01-03</option>
+    <option>2012-01-04</option>
+    <option>2012-01-05</option>
+    <option>2012-01-06</option>
+    <option>2012-01-07</option>
+    <option>2012-01-08</option>
+    <option>2012-01-09</option>
+    <option>2012-01-10</option>
+    <option>2012-01-11</option>
+    <option>2012-01-12</option>
+    <option>2012-01-13</option>
+    <option>2012-01-14</option>
+    <option>2012-01-15</option>
+    <option>2012-01-16</option>
+</datalist>
+
+<script>
+openPicker(document.getElementById('date'), finishTest);
+
+function finishTest() {
+  popupWindow.focus();
+  eventSender.keyDown('ArrowDown');
+  testRunner.notifyDone();
+}
+</script>
+</body>
+</html>

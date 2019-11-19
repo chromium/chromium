@@ -32,18 +32,17 @@ class PPB_PDF_API {
   virtual void Print() = 0;
   virtual void SetSelectedText(const char* selected_text) = 0;
   virtual void SetLinkUnderCursor(const char* url) = 0;
-  virtual void GetV8ExternalSnapshotData(const char** natives_data_out,
-                                         int* natives_size_out,
-                                         const char** snapshot_data_out,
+  virtual void GetV8ExternalSnapshotData(const char** snapshot_data_out,
                                          int* snapshot_size_out) = 0;
   virtual void SetAccessibilityViewportInfo(
-      PP_PrivateAccessibilityViewportInfo* viewport_info) = 0;
+      const PP_PrivateAccessibilityViewportInfo* viewport_info) = 0;
   virtual void SetAccessibilityDocInfo(
-      PP_PrivateAccessibilityDocInfo* doc_info) = 0;
+      const PP_PrivateAccessibilityDocInfo* doc_info) = 0;
   virtual void SetAccessibilityPageInfo(
-      PP_PrivateAccessibilityPageInfo* page_info,
-      PP_PrivateAccessibilityTextRunInfo text_runs[],
-      PP_PrivateAccessibilityCharInfo chars[]) = 0;
+      const PP_PrivateAccessibilityPageInfo* page_info,
+      const PP_PrivateAccessibilityTextRunInfo text_runs[],
+      const PP_PrivateAccessibilityCharInfo chars[],
+      const PP_PrivateAccessibilityPageObjects* page_objects) = 0;
   virtual void SetCrashData(const char* pdf_url, const char* top_level_url) = 0;
   virtual void SelectionChanged(const PP_FloatPoint& left,
                                 int32_t left_height,

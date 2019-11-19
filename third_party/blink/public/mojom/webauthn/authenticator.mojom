@@ -1,0 +1,387 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "mojo/public/mojom/base/time.mojom";
+import "url/mojom/url.mojom";
+
+// This file describes the communication between the WebAuthentication renderer
+// implementation and browser-side implementations to create public key
+// credentials and use already-created credentials to get assertions.
+// See https://w3c.github.io/webauthn/.
+
+enum AuthenticatorStatus {
+  SUCCESS,
+  PENDING_REQUEST,
+  NOT_ALLOWED_ERROR,
+  INVALID_DOMAIN,
+  INVALID_ICON_URL,
+  CREDENTIAL_EXCLUDED,
+
+  // TODO(crbug/964439): Unused in Desktop, but kept around for Android. Delete
+  // once it's fully obsolete.
+  CREDENTIAL_NOT_RECOGNIZED,
+
+  NOT_IMPLEMENTED,
+  NOT_FOCUSED,
+  RESIDENT_CREDENTIALS_UNSUPPORTED,
+  USER_VERIFICATION_UNSUPPORTED,
+  ALGORITHM_UNSUPPORTED,
+  EMPTY_ALLOW_CREDENTIALS,
+  ANDROID_NOT_SUPPORTED_ERROR,
+  PROTECTION_POLICY_INCONSISTENT,
+  ABORT_ERROR,
+  OPAQUE_DOMAIN,
+  INVALID_PROTOCOL,
+  BAD_RELYING_PARTY_ID,
+  UNKNOWN_ERROR,
+};
+
+// See https://www.w3.org/TR/webauthn/#transport
+enum AuthenticatorTransport {
+  USB,
+  NFC,
+  BLE,
+  CABLE,
+  INTERNAL,
+};
+
+// Credential information returned by both Authenticator::MakeCredential
+// and Authenticator::GetAssertion.
+struct CommonCredentialInfo {
+  // The base64url encoding of |raw_id|.
+  string id;
+
+  // An identifier for the credential.
+  array<uint8> raw_id;
+
+  // A blob of data containing the JSON serialization of client data passed
+  // to the authenticator.
+  array<uint8> client_data_json;
+};
+
+// Content of user verification method extension returned by
+// Authenticator::GetAssertion.
+// See https://w3c.github.io/webauthn/#sctn-uvm-extension
+// Registry of the available values, see
+// https://fidoalliance.org/specs/fido-v2.0-id-20180227/fido-registry-v2.0-id-20180227.html#user-verification-methods
+[EnableIf=is_android]
+struct UvmEntry {
+  uint32 user_verification_method;
+  uint16 key_protection_type;
+  uint16 matcher_protection_type;
+};
+
+// The public key and attestation returned by Authenticator::MakeCredential.
+struct MakeCredentialAuthenticatorResponse {
+  CommonCredentialInfo info;
+
+  // A blob of data returned by the authenticator after creating a credential.
+  array<uint8> attestation_object;
+
+  // A list of transports that the authenticator supports, with the transport
+  // used for the registration as the first element.
+  array<AuthenticatorTransport> transports;
+
+  // True if getClientExtensionResults() called on the returned
+  // PublicKeyCredential instance should contain an `hmacCreateSecret`
+  // extension output. If so, |hmac_create_secret| contains the actual value.
+  bool echo_hmac_create_secret;
+  bool hmac_create_secret;
+
+  // Only supported by fido2 devices on android, will eventually supported by
+  // other platform.
+  // True if getClientExtensionResults() called on the returned
+  // PublicKeyCredential instance should contain an 'uvm' extension output.
+  // If so, |user_verification_methods| contains the actual value.
+  [EnableIf=is_android]
+  bool echo_user_verification_methods;
+  [EnableIf=is_android]
+  array<UvmEntry>? user_verification_methods;
+};
+
+struct GetAssertionAuthenticatorResponse {
+  CommonCredentialInfo info;
+
+  // A blob of data returned by the authenticator after generating an assertion.
+  array<uint8> authenticator_data;
+
+  // Cryptographic signature proving possession of the credential private key.
+  array<uint8> signature;
+
+  // Only supported by CTAP devices, not by U2F devices.
+  // Equivalent of the `user.id` passed into create().
+  // Maximum 64 bytes.
+  array<uint8>? user_handle;
+
+  // True if getClientExtensionResults() called on the returned
+  // PublicKeyCredential instance should contain an `appid` extension output.
+  // If so, |appid_extension| contains the actual value.
+  bool echo_appid_extension;
+  bool appid_extension;
+
+  // Only supported by fido2 devices on android, will eventually supported by
+  // other platform.
+  // True if getClientExtensionResults() called on the returned
+  // PublicKeyCredential instance should contain an 'uvm' extension output.
+  // If so, |user_verification_methods| contains the actual value.
+  [EnableIf=is_android]
+  bool echo_user_verification_methods;
+  [EnableIf=is_android]
+  array<UvmEntry>? user_verification_methods;
+};
+
+// Information about the relying party. These fields take arbitrary input.
+struct PublicKeyCredentialRpEntity {
+  // An ASCII serialization of an origin.
+  string id;
+
+  // Friendly name associated with the relying party intended for display.
+  // e.g. "Acme Corporation".
+  string name;
+
+  // Image associated with the entity. e.g. a relying party's logo.
+  url.mojom.Url? icon;
+};
+
+// Informatiom about the account held by the user. These fields take
+// arbitrary input.
+struct PublicKeyCredentialUserEntity {
+  // Unique identifier for a user account An opaque byte sequence with a
+  // maximum size of 64 bytes.
+  array<uint8> id;
+
+  // Friendly name associated with the entity intended for display.
+  // e.g."john.p.smith@example.com" or "+14255551234" for a user.
+  string name;
+
+  // Image associated with the entity. For example, a user’s avatar.
+  url.mojom.Url? icon;
+
+  // Contains a friendly name for the user account (e.g., "John P. Smith").
+  string display_name;
+};
+
+// Parameters that are used to generate an appropriate public key credential.
+struct PublicKeyCredentialParameters {
+  PublicKeyCredentialType type;
+  int32 algorithm_identifier;
+};
+
+// See https://w3c.github.io/webauthn/#enumdef-userverificationrequirement.
+enum UserVerificationRequirement {
+  REQUIRED,
+  PREFERRED,
+  DISCOURAGED,
+};
+
+// Cloud-assisted BLE extension data for getAssertion.
+struct CableAuthentication {
+  // The caBLE version requested.
+  uint8 version;
+
+  // A 16-byte ephemeral identifier that the browser will advertise.
+  array<uint8, 16> client_eid;
+
+  // A 16-byte ephemeral identifier that the browser expects to receive from a
+  // responding authenticator.
+  array<uint8, 16> authenticator_eid;
+
+  // A 32-byte pre-key used to compute a session key to encrypt messages between
+  // a paired client and authenticator following a successful discovery.
+  array<uint8, 32> session_pre_key;
+};
+
+// Cloud-assisted BLE extension data for makeCredential.
+struct CableRegistration {
+  // The caBLE versions supported by the relying party.
+  array<uint8> versions;
+
+  // The 65-byte ECDSA ephemeral public key belonging to the relying party
+  // for use in establishing an encrypted caBLE channel with an authenticator.
+  array<uint8, 65> relying_party_public_key;
+};
+
+// Parameters passed into calls to GetAssertion.
+struct PublicKeyCredentialRequestOptions {
+  // An indefinite-length blob passed from the the relying party server,
+  // to be sent to an authenticator for signing.
+  array<uint8> challenge;
+
+  // Time to wait for an authenticator to complete an operation.
+  // Adjusted to fall within a client-defined range.
+  mojo_base.mojom.TimeDelta adjusted_timeout;
+
+  // An ASCII serialization of the origin claimed by the relying party.
+  string relying_party_id;
+
+  // A list of credentials the relying party knows about and would
+  // accept as the signing credential.
+  array<PublicKeyCredentialDescriptor> allow_credentials;
+
+  // Indicates the relying party's need for a user-verifying authenticator.
+  UserVerificationRequirement user_verification;
+
+  // The contents of the appid extension, if any. See
+  // https://w3c.github.io/webauthn/#sctn-appid-extension
+  string? appid;
+
+  // The contents of the cloud assisted BLE extension for getAssertion
+  // requests, if any. This extension permits browsers and authenticator
+  // devices to establish a pairingless BLE connection.
+  // TODO(crbug.com/842371): Add link to spec when available.
+  // There may be multiple sets if multiple caBLE credentials have been
+  // registered with the relying party.
+  array<CableAuthentication> cable_authentication_data;
+
+  // Only supported by fido2 devices on android, will eventually supported by
+  // other platform.
+  // Whether the user verification method extension is requested by
+  // the RP. See https://w3c.github.io/webauthn/#sctn-uvm-extension
+  [EnableIf=is_android]
+  bool user_verification_methods;
+};
+
+// See https://w3c.github.io/webauthn/#enumdef-attestationconveyancepreference
+enum AttestationConveyancePreference {
+  NONE,
+  INDIRECT,
+  DIRECT,
+  // A non-standard addition that we hope will become standard. This indicates
+  // that the RP desires individual attestaion from the device.
+  ENTERPRISE,
+};
+
+// https://w3c.github.io/webauthn/#enumdef-authenticatorattachment.
+enum AuthenticatorAttachment {
+    NO_PREFERENCE,
+    PLATFORM,
+    CROSS_PLATFORM,
+};
+
+enum ProtectionPolicy {
+    // UNSPECIFIED means that no value was given at the Javascript level.
+    UNSPECIFIED,
+    NONE,
+    UV_OR_CRED_ID_REQUIRED,
+    UV_REQUIRED,
+};
+
+// See https://w3c.github.io/webauthn/#dictdef-authenticatorselectioncriteria.
+struct AuthenticatorSelectionCriteria {
+  // Filter authenticators by attachment type.
+  AuthenticatorAttachment authenticator_attachment;
+
+  // Whether the authenticator should store the created key so that the key
+  // can later be selected given only an RP ID (e.g. when |allow_credentials|
+  // is empty).
+  bool require_resident_key;
+
+  // Indicates the relying party's need for a user-verifying authenticator.
+  UserVerificationRequirement user_verification;
+};
+
+// Parameters passed into calls to MakeCredential.
+struct PublicKeyCredentialCreationOptions {
+  // Information about the relying party and user entities, respectively.
+  // Used by the authenticator to create or retrieve an appropriate public key
+  // credential for the requested account.
+  PublicKeyCredentialRpEntity relying_party;
+  PublicKeyCredentialUserEntity user;
+
+  // An indefinite-length blob passed from the the relying party server,
+  // to be sent to an authenticator to make a credential.
+  array<uint8> challenge;
+
+  // Parameters defining the type of created credential that the relying
+  // party would accept.
+  array<PublicKeyCredentialParameters> public_key_parameters;
+
+  // Time to wait for an authenticator to complete an operation.
+  // Adjusted to fall within a client-defined range.
+  mojo_base.mojom.TimeDelta adjusted_timeout;
+
+  // A list of credentials the relying party knows about. If an
+  // authenticator has one of these credentials, it should not
+  // create a new one.
+  array<PublicKeyCredentialDescriptor> exclude_credentials;
+
+  // Specify the relying party's authenticator attribute requirements.
+  AuthenticatorSelectionCriteria? authenticator_selection;
+
+  // Specifies whether the RP wants attestation information for the created
+  // credential.
+  AttestationConveyancePreference attestation;
+
+  // The contents of the cloud assisted BLE extension for makeCredential
+  // requests, if any. This extension permits browsers and authenticator
+  // devices to establish a pairingless BLE connection.
+  // TODO(crbug.com/842371): Add link to spec when available.
+  CableRegistration? cable_registration_data;
+
+  // The contents of the hmacCreateSecret extension, if any. See
+  // https://fidoalliance.org/specs/fido-v2.0-rd-20180702/fido-client-to-authenticator-protocol-v2.0-rd-20180702.html#sctn-hmac-secret-extension
+  bool hmac_create_secret;
+
+  // Only supported by fido2 devices on android, will eventually supported by
+  // other platform.
+  // Whether the user verification method extension is requested by
+  // the RP. See https://w3c.github.io/webauthn/#sctn-uvm-extension
+  [EnableIf=is_android]
+  bool user_verification_methods;
+
+  // The value of the `credentialProtectionPolicy` extension, or UNSPECIFIED if
+  // none was provided.
+  ProtectionPolicy protection_policy;
+  // The value of the `enforceCredentialProtectionPolicy`, or false if none was
+  // provided.
+  bool enforce_protection_policy;
+
+  // The contents of the appidExclude extension, if any. See
+  // https://w3c.github.io/webauthn/#sctn-appid-exclude-extension
+  string? appid_exclude;
+};
+
+enum PublicKeyCredentialType {
+  PUBLIC_KEY,
+};
+
+// Describes the credentials that the relying party already knows about for
+// the given account. If any of these are known to the authenticator,
+// it should not create a new credential.
+struct PublicKeyCredentialDescriptor {
+  PublicKeyCredentialType type;
+
+  // Blob representing a credential key handle. Up to 255 bytes for
+  // U2F authenticators.
+  array<uint8> id;
+
+  array<AuthenticatorTransport> transports;
+};
+
+// Interface to direct authenticators to create or use a public key credential.
+interface Authenticator {
+  // Gets the credential info for a new public key credential created by an
+  // authenticator for the given |PublicKeyCredentialCreationOptions|
+  // [MakeCredentialAuthenticatorResponse] will be set if and only if status == SUCCESS.
+  MakeCredential(PublicKeyCredentialCreationOptions options)
+      => (AuthenticatorStatus status, MakeCredentialAuthenticatorResponse? credential);
+
+  // Uses an existing credential to produce an assertion for the given
+  // |PublicKeyCredentialRequestOptions|.
+  // |GetAssertionResponse| will be set if and only if status == SUCCESS.
+  GetAssertion(PublicKeyCredentialRequestOptions options)
+      => (AuthenticatorStatus status, GetAssertionAuthenticatorResponse? credential);
+
+  // Returns true if the user platform provides an authenticator. Relying
+  // Parties use this method to determine whether they can create a new
+  // credential using a user-verifying platform authenticator.
+  IsUserVerifyingPlatformAuthenticatorAvailable() => (bool available);
+
+  // Cancel an ongoing MakeCredential or GetAssertion request
+  // Only one MakeCredential or GetAssertion call at a time is allowed,
+  // any future calls are cancelled
+  Cancel();
+};

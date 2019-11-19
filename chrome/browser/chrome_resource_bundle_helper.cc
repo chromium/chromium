@@ -99,6 +99,9 @@ std::string InitResourceBundleAndDetermineLocale(PrefService* local_state,
     base::PathService::Get(chrome::FILE_RESOURCES_PACK, &resources_pack_path);
 #if defined(OS_ANDROID)
     ui::LoadMainAndroidPackFile("assets/resources.pak", resources_pack_path);
+
+    // Avoid loading DFM native resources here, to keep startup lean. These
+    // resources are loaded on-use, when an already-installed DFM loads.
 #else
     ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
         resources_pack_path, ui::SCALE_FACTOR_NONE);

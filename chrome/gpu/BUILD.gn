@@ -14,11 +14,13 @@ static_library("gpu") {
   ]
 
   sources = [
+    "browser_exposed_gpu_interfaces.cc",
+    "browser_exposed_gpu_interfaces.h",
     "chrome_content_gpu_client.cc",
     "chrome_content_gpu_client.h",
   ]
 
-  if (enable_library_cdms) {
+  if (enable_cdm_proxy) {
     deps += [
       "//media/cdm:cdm_paths",
       "//media/cdm/library_cdm/clear_key_cdm:clear_key_cdm_proxy",
@@ -39,7 +41,7 @@ static_library("gpu") {
 
   if (is_chromeos) {
     deps += [
-      "//components/arc/common:media",
+      "//components/arc/mojom:media",
       "//components/arc/video_accelerator",
       "//gpu/command_buffer/service",
       "//services/service_manager/public/cpp",

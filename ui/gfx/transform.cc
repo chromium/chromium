@@ -14,6 +14,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/safe_integer_conversions.h"
 #include "ui/gfx/geometry/vector3d_f.h"
+#include "ui/gfx/rrect_f.h"
 #include "ui/gfx/skia_util.h"
 #include "ui/gfx/transform_util.h"
 
@@ -54,25 +55,9 @@ Transform::Transform(SkMScalar col1row1,
                      SkMScalar col3row4,
                      SkMScalar col4row4)
     : matrix_(SkMatrix44::kUninitialized_Constructor) {
-  matrix_.set(0, 0, col1row1);
-  matrix_.set(1, 0, col1row2);
-  matrix_.set(2, 0, col1row3);
-  matrix_.set(3, 0, col1row4);
-
-  matrix_.set(0, 1, col2row1);
-  matrix_.set(1, 1, col2row2);
-  matrix_.set(2, 1, col2row3);
-  matrix_.set(3, 1, col2row4);
-
-  matrix_.set(0, 2, col3row1);
-  matrix_.set(1, 2, col3row2);
-  matrix_.set(2, 2, col3row3);
-  matrix_.set(3, 2, col3row4);
-
-  matrix_.set(0, 3, col4row1);
-  matrix_.set(1, 3, col4row2);
-  matrix_.set(2, 3, col4row3);
-  matrix_.set(3, 3, col4row4);
+  matrix_.set4x4(col1row1, col1row2, col1row3, col1row4, col2row1, col2row2,
+                 col2row3, col2row4, col3row1, col3row2, col3row3, col3row4,
+                 col4row1, col4row2, col4row3, col4row4);
 }
 
 Transform::Transform(SkMScalar col1row1,
@@ -180,6 +165,10 @@ void Transform::RotateAbout(const Vector3dF& axis, double degrees) {
 
 void Transform::Scale(SkMScalar x, SkMScalar y) { matrix_.preScale(x, y, 1); }
 
+void Transform::PostScale(SkMScalar x, SkMScalar y) {
+  matrix_.postScale(x, y, 1);
+}
+
 void Transform::Scale3d(SkMScalar x, SkMScalar y, SkMScalar z) {
   matrix_.preScale(x, y, z);
 }
@@ -190,6 +179,14 @@ void Transform::Translate(const Vector2dF& offset) {
 
 void Transform::Translate(SkMScalar x, SkMScalar y) {
   matrix_.preTranslate(x, y, 0);
+}
+
+void Transform::PostTranslate(const Vector2dF& offset) {
+  PostTranslate(offset.x(), offset.y());
+}
+
+void Transform::PostTranslate(SkMScalar x, SkMScalar y) {
+  matrix_.postTranslate(x, y, 0);
 }
 
 void Transform::Translate3d(const Vector3dF& offset) {
@@ -396,13 +393,16 @@ void Transform::Transpose() {
 }
 
 void Transform::FlattenTo2d() {
-  matrix_.set(2, 0, 0.0);
-  matrix_.set(2, 1, 0.0);
-  matrix_.set(0, 2, 0.0);
-  matrix_.set(1, 2, 0.0);
-  matrix_.set(2, 2, 1.0);
-  matrix_.set(3, 2, 0.0);
-  matrix_.set(2, 3, 0.0);
+  float tmp[16];
+  matrix_.asColMajorf(tmp);
+  tmp[2] = 0.0;
+  tmp[6] = 0.0;
+  tmp[8] = 0.0;
+  tmp[9] = 0.0;
+  tmp[10] = 1.0;
+  tmp[11] = 0.0;
+  tmp[14] = 0.0;
+  matrix_.setColMajorf(tmp);
 }
 
 bool Transform::IsFlat() const {
@@ -483,6 +483,14 @@ bool Transform::TransformRectReverse(RectF* rect) const {
   SkRect src = RectFToSkRect(*rect);
   matrix.mapRect(&src);
   *rect = SkRectToRectF(src);
+  return true;
+}
+
+bool Transform::TransformRRectF(RRectF* rrect) const {
+  SkRRect result;
+  if (!SkRRect(*rrect).transform(matrix_, &result))
+    return false;
+  *rrect = gfx::RRectF(result);
   return true;
 }
 

@@ -75,7 +75,6 @@ void WaitForWebViewContainingText(NSString* text) {
 }
 
 // Tests loading simple HTML page and verifies that page contains expected text.
-// TODO(crbug.com/733452): Enable this test.
 - (void)testLoadingURL {
   std::string URLSpec = _testServer->GetURL("/destination.html").spec();
 

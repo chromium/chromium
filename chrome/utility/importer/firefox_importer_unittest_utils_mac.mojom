@@ -4,7 +4,7 @@
 
 module firefox_importer_unittest_utils_mac.mojom;
 
-import "components/autofill/content/common/autofill_types.mojom";
+import "components/autofill/core/common/mojom/autofill_types.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 

@@ -1,51 +1,81 @@
-<div id="container">
-<p id="description"></p>
-Manual steps:
-<ol>
-<li>Move middle of the first paragraph</li>
-<li>Type Ctrl+Up</li>
-<li>Caret should be start of paragrah</li>
-<li>Type Ctrl+Down</li>
-<li>Caret should be next paragrah</li>
-<li>Do above step with Ctrl+Shift key to extend selection</li>
-</ol>
-Sample editable:
-<div id="sample" contenteditable="true"><p>This is the first paragraph. Key binding of Ctrl+Up/Down are available only Windows.</p><p>This is second paragraph. Do you want to have these key bindings on other platforms?</p>
-</div>
-</div>
-<script src="../../resources/js-test.js"></script>
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
 <script>
-description('Test Ctrl+Up/Down motion');
-function $(id) { return document.getElementById(id); }
-var sample = $('sample');
-var selection = window.getSelection();
-var range = document.createRange();
-range.setStart(sample.firstChild.firstChild, 3);
-selection.addRange(range);
-sample.focus();
-var paragraph1 = sample.firstChild.firstChild;
-var paragraph2 = sample.childNodes[1].firstChild;
-if (window.eventSender) {
-    eventSender.keyDown('ArrowUp', ['ctrlKey']);
-    shouldBeEqualToString('selection.type', 'Caret');
-    shouldBe('selection.focusNode', 'paragraph1');
-    shouldBe('selection.focusOffset', '0');
+// Test Ctrl+Up/Down motion
 
-    eventSender.keyDown('ArrowDown', ['ctrlKey']);
-    shouldBeEqualToString('selection.type', 'Caret');
-    shouldBe('selection.focusNode', 'paragraph2');
-    shouldBe('selection.focusOffset', '3');
+selection_test(
+    [
+      '<div contenteditable style="font-family:monospace">',
+        '<p>foo| bar baz qux.</p>',
+        '<p>foo bar baz qux</p>',
+      '</div>'
+    ],
+    selection => {
+      assert_own_property(window, 'eventSender');
+      eventSender.keyDown('ArrowUp', ['ctrlKey']);
+    },
+    [
+      '<div contenteditable style="font-family:monospace">',
+        '<p>|foo bar baz qux.</p>',
+        '<p>foo bar baz qux</p>',
+      '</div>'
+    ]);
 
-    eventSender.keyDown('ArrowDown', ['ctrlKey', 'shiftKey']);
-    shouldBeEqualToString('selection.type', 'Range');
-    shouldBe('selection.focusNode', 'paragraph2');
-    shouldBe('selection.focusOffset', '84');
+selection_test(
+    [
+      '<div contenteditable style="font-family:monospace">',
+        '<p>foo| bar baz qux.</p>',
+        '<p>foo bar baz qux.</p>',
+      '</div>'
+    ],
+    selection => {
+      assert_own_property(window, 'eventSender');
+      eventSender.keyDown('ArrowUp', ['ctrlKey']);
+      eventSender.keyDown('ArrowDown', ['ctrlKey']);
+    },
+    [
+      '<div contenteditable style="font-family:monospace">',
+        '<p>foo bar baz qux.</p>',
+        '<p>foo| bar baz qux.</p>',
+      '</div>'
+    ]);
 
-    eventSender.keyDown('ArrowUp', ['ctrlKey', 'shiftKey']);
-    shouldBeEqualToString('selection.type', 'Range');
-    shouldBe('selection.focusNode', 'paragraph1');
-    shouldBe('selection.focusOffset', '3');
-}
-if (window.testRunner)
-    $('container').outerHTML = '';
+selection_test(
+    [
+      '<div contenteditable style="font-family:monospace">',
+        '<p>foo bar baz qux.</p>',
+        '<p>foo| bar baz qux.</p>',
+      '</div>'
+    ],
+    selection => {
+      assert_own_property(window, 'eventSender');
+      eventSender.keyDown('ArrowDown', ['ctrlKey', 'shiftKey']);
+    },
+    [
+      '<div contenteditable style="font-family:monospace">',
+        '<p>foo bar baz qux.</p>',
+        '<p>foo^ bar baz qux.|</p>',
+      '</div>'
+    ]);
+
+selection_test(
+    [
+      '<div contenteditable style="font-family:monospace">',
+        '<p>foo bar baz qux.</p>',
+        '<p>foo| bar baz qux.</p>',
+      '</div>'
+    ],
+    selection => {
+      assert_own_property(window, 'eventSender');
+      eventSender.keyDown('ArrowDown', ['ctrlKey', 'shiftKey']);
+      eventSender.keyDown('ArrowUp', ['ctrlKey', 'shiftKey']);
+    },
+    [
+      '<div contenteditable style="font-family:monospace">',
+        '<p>foo| bar baz qux.</p>',
+        '<p>foo^ bar baz qux.</p>',
+      '</div>'
+    ]);
 </script>

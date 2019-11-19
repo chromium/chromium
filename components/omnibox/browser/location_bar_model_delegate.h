@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_OMNIBOX_BROWSER_LOCATION_BAR_MODEL_DELEGATE_H_
 #define COMPONENTS_OMNIBOX_BROWSER_LOCATION_BAR_MODEL_DELEGATE_H_
 
+#include <memory>
 #include <string>
 
 #include "base/memory/ref_counted.h"
@@ -44,9 +45,14 @@ class LocationBarModelDelegate {
   // in the location bar.
   virtual bool ShouldDisplayURL() const;
 
-  // Returns the underlying security info of the page without regard to any
+  // Returns the underlying security level of the page without regard to any
   // user edits that may be in progress.
-  virtual void GetSecurityInfo(security_state::SecurityInfo* result) const;
+  virtual security_state::SecurityLevel GetSecurityLevel() const;
+
+  // Returns the underlying security state of the page without regard to any
+  // user edits that may be in progress. Should never return nullptr.
+  virtual std::unique_ptr<security_state::VisibleSecurityState>
+  GetVisibleSecurityState() const;
 
   // Returns the certificate for the current navigation entry.
   virtual scoped_refptr<net::X509Certificate> GetCertificate() const;
@@ -60,6 +66,15 @@ class LocationBarModelDelegate {
   // Returns whether the page is an offline page, sourced from a cache of
   // previously-downloaded content.
   virtual bool IsOfflinePage() const;
+
+  // Returns true if the current page is a New Tab Page rendered by Instant.
+  virtual bool IsInstantNTP() const;
+
+  // Returns whether |url| corresponds to the new tab page.
+  virtual bool IsNewTabPage(const GURL& url) const;
+
+  // Returns whether |url| corresponds to the user's home page.
+  virtual bool IsHomePage(const GURL& url) const;
 
   // Returns the AutocompleteClassifier instance for the current page.
   virtual AutocompleteClassifier* GetAutocompleteClassifier();

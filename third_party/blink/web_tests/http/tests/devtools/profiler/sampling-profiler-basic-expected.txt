@@ -1,0 +1,6 @@
+Tests that the sampling heap profiler works and supports nesting.
+
+profile1 size is ok: true
+profile2 size is ok: true
+Expected error: Error: Sampling profiler is not running.
+

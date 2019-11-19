@@ -299,12 +299,13 @@ bool ProtocolParserJSON::DoParse(const std::string& response_json,
     return false;
   }
   const auto* protocol = response_node->FindKey("protocol");
-  if (!protocol || !protocol->is_string() ||
-      protocol->GetString() != kProtocolVersion) {
-    ParseError(
-        "Missing/incorrect protocol."
-        "(expected '%s', found '%s')",
-        kProtocolVersion, protocol->GetString().c_str());
+  if (!protocol || !protocol->is_string()) {
+    ParseError("Missing/non-string protocol.");
+    return false;
+  }
+  if (protocol->GetString() != kProtocolVersion) {
+    ParseError("Incorrect protocol. (expected '%s', found '%s')",
+               kProtocolVersion, protocol->GetString().c_str());
     return false;
   }
 

@@ -104,6 +104,7 @@ MINIDUMP_ALLOW_OVERSIZED_DATA(IMAGE_DEBUG_MISC);
 MINIDUMP_ALLOW_OVERSIZED_DATA(MINIDUMP_STRING);
 MINIDUMP_ALLOW_OVERSIZED_DATA(CodeViewRecordPDB20);
 MINIDUMP_ALLOW_OVERSIZED_DATA(CodeViewRecordPDB70);
+MINIDUMP_ALLOW_OVERSIZED_DATA(CodeViewRecordBuildID);
 MINIDUMP_ALLOW_OVERSIZED_DATA(MinidumpUTF8String);
 
 // minidump_file_writer_test accesses its variable-sized test streams via a
@@ -179,14 +180,16 @@ const MINIDUMP_HEADER* MinidumpWritableAtLocationDescriptor<MINIDUMP_HEADER>(
     const MINIDUMP_LOCATION_DESCRIPTOR& location);
 
 template <>
-const MINIDUMP_MEMORY_LIST* MinidumpWritableAtLocationDescriptor<
-    MINIDUMP_MEMORY_LIST>(const std::string& file_contents,
-                          const MINIDUMP_LOCATION_DESCRIPTOR& location);
+const MINIDUMP_MEMORY_LIST*
+MinidumpWritableAtLocationDescriptor<MINIDUMP_MEMORY_LIST>(
+    const std::string& file_contents,
+    const MINIDUMP_LOCATION_DESCRIPTOR& location);
 
 template <>
-const MINIDUMP_MODULE_LIST* MinidumpWritableAtLocationDescriptor<
-    MINIDUMP_MODULE_LIST>(const std::string& file_contents,
-                          const MINIDUMP_LOCATION_DESCRIPTOR& location);
+const MINIDUMP_MODULE_LIST*
+MinidumpWritableAtLocationDescriptor<MINIDUMP_MODULE_LIST>(
+    const std::string& file_contents,
+    const MINIDUMP_LOCATION_DESCRIPTOR& location);
 
 template <>
 const MINIDUMP_UNLOADED_MODULE_LIST*
@@ -195,29 +198,40 @@ MinidumpWritableAtLocationDescriptor<MINIDUMP_UNLOADED_MODULE_LIST>(
     const MINIDUMP_LOCATION_DESCRIPTOR& location);
 
 template <>
-const MINIDUMP_THREAD_LIST* MinidumpWritableAtLocationDescriptor<
-    MINIDUMP_THREAD_LIST>(const std::string& file_contents,
-                          const MINIDUMP_LOCATION_DESCRIPTOR& location);
+const MINIDUMP_THREAD_LIST*
+MinidumpWritableAtLocationDescriptor<MINIDUMP_THREAD_LIST>(
+    const std::string& file_contents,
+    const MINIDUMP_LOCATION_DESCRIPTOR& location);
 
 template <>
-const MINIDUMP_HANDLE_DATA_STREAM* MinidumpWritableAtLocationDescriptor<
-    MINIDUMP_HANDLE_DATA_STREAM>(const std::string& file_contents,
-                                 const MINIDUMP_LOCATION_DESCRIPTOR& location);
+const MINIDUMP_HANDLE_DATA_STREAM*
+MinidumpWritableAtLocationDescriptor<MINIDUMP_HANDLE_DATA_STREAM>(
+    const std::string& file_contents,
+    const MINIDUMP_LOCATION_DESCRIPTOR& location);
 
 template <>
-const MINIDUMP_MEMORY_INFO_LIST* MinidumpWritableAtLocationDescriptor<
-    MINIDUMP_MEMORY_INFO_LIST>(const std::string& file_contents,
-                               const MINIDUMP_LOCATION_DESCRIPTOR& location);
+const MINIDUMP_MEMORY_INFO_LIST*
+MinidumpWritableAtLocationDescriptor<MINIDUMP_MEMORY_INFO_LIST>(
+    const std::string& file_contents,
+    const MINIDUMP_LOCATION_DESCRIPTOR& location);
 
 template <>
-const CodeViewRecordPDB20* MinidumpWritableAtLocationDescriptor<
-    CodeViewRecordPDB20>(const std::string& file_contents,
-                         const MINIDUMP_LOCATION_DESCRIPTOR& location);
+const CodeViewRecordPDB20*
+MinidumpWritableAtLocationDescriptor<CodeViewRecordPDB20>(
+    const std::string& file_contents,
+    const MINIDUMP_LOCATION_DESCRIPTOR& location);
 
 template <>
-const CodeViewRecordPDB70* MinidumpWritableAtLocationDescriptor<
-    CodeViewRecordPDB70>(const std::string& file_contents,
-                         const MINIDUMP_LOCATION_DESCRIPTOR& location);
+const CodeViewRecordPDB70*
+MinidumpWritableAtLocationDescriptor<CodeViewRecordPDB70>(
+    const std::string& file_contents,
+    const MINIDUMP_LOCATION_DESCRIPTOR& location);
+
+template <>
+const CodeViewRecordBuildID*
+MinidumpWritableAtLocationDescriptor<CodeViewRecordBuildID>(
+    const std::string& file_contents,
+    const MINIDUMP_LOCATION_DESCRIPTOR& location);
 
 template <>
 const MinidumpModuleCrashpadInfoList*

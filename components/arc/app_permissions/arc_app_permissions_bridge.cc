@@ -5,8 +5,8 @@
 #include "components/arc/app_permissions/arc_app_permissions_bridge.h"
 
 #include "base/memory/singleton.h"
-#include "components/arc/arc_bridge_service.h"
 #include "components/arc/arc_browser_context_keyed_service_factory_base.h"
+#include "components/arc/session/arc_bridge_service.h"
 
 namespace arc {
 

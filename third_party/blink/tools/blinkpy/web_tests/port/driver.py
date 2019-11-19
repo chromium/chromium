@@ -30,7 +30,6 @@ import base64
 import logging
 import re
 import shlex
-import sys
 import time
 
 from blinkpy.common.system import path
@@ -156,6 +155,7 @@ class Driver(object):
         port - reference back to the port object.
         worker_number - identifier for a particular worker/driver instance
         """
+        self.WPT_DIRS = port.WPT_DIRS
         self._port = port
         self._worker_number = worker_number
         self._no_timeout = no_timeout
@@ -176,6 +176,7 @@ class Driver(object):
         # "#LEAK". This leak detection is enabled only when the flag
         # --enable-leak-detection is passed to content_shell.
         self._leaked = False
+        self._leak_log = None
 
         # stderr reading is scoped on a per-test (not per-block) basis, so we store the accumulated
         # stderr output, as well as if we've seen #EOF on this driver instance.
@@ -241,7 +242,8 @@ class Driver(object):
         if crashed or timed_out or leaked:
             # We call stop() even if we crashed or timed out in order to get any remaining stdout/stderr output.
             # In the timeout case, we kill the hung process as well.
-            out, err = self._server_process.stop(0.0)
+            # Add a delay to allow process to finish post-run hooks, such as dumping code coverage data.
+            out, err = self._server_process.stop(self._port.get_option('driver_kill_timeout_secs'))
             if out:
                 text += out
             if err:
@@ -274,6 +276,7 @@ class Driver(object):
                             pid=pid)
 
     def _get_crash_log(self, stdout, stderr, newer_than):
+        # pylint: disable=protected-access
         return self._port._get_crash_log(self._crashed_process_name, self._crashed_pid, stdout, stderr, newer_than)
 
     # FIXME: Seems this could just be inlined into callers.
@@ -289,7 +292,6 @@ class Driver(object):
     HTTP_DIR = 'http/tests/'
     HTTP_LOCAL_DIR = 'http/tests/local/'
     HTTP_HOST_AND_PORTS = ('127.0.0.1', 8000, 8443)
-    WPT_DIR = 'external/wpt/'
     WPT_HOST_AND_PORTS = ('web-platform.test', 8001, 8444)
 
     def is_http_test(self, test_name):
@@ -311,17 +313,29 @@ class Driver(object):
             return path.abspath_to_uri(self._port.host.platform, self._port.abspath_for_test(test_name))
 
         if using_wptserve:
-            test_dir_prefix = self.WPT_DIR
+            for wpt_path, url_prefix in self.WPT_DIRS.items():
+                # The keys of WPT_DIRS do not have trailing slashes.
+                wpt_path += '/'
+                if test_name.startswith(wpt_path):
+                    test_dir_prefix = wpt_path
+                    test_url_prefix = url_prefix
+                    break
+            else:
+                # We really shouldn't reach here, but in case we do, fail gracefully.
+                _log.error('Unrecognized WPT test name: %s', test_name)
+                test_dir_prefix = 'external/wpt/'
+                test_url_prefix = '/'
             hostname, insecure_port, secure_port = self.WPT_HOST_AND_PORTS
         else:
             test_dir_prefix = self.HTTP_DIR
+            test_url_prefix = '/'
             hostname, insecure_port, secure_port = self.HTTP_HOST_AND_PORTS
 
         relative_path = test_name[len(test_dir_prefix):]
 
         if '/https/' in test_name or '.https.' in test_name or '.serviceworker.' in test_name:
-            return 'https://%s:%d/%s' % (hostname, secure_port, relative_path)
-        return 'http://%s:%d/%s' % (hostname, insecure_port, relative_path)
+            return 'https://%s:%d%s%s' % (hostname, secure_port, test_url_prefix, relative_path)
+        return 'http://%s:%d%s%s' % (hostname, insecure_port, test_url_prefix, relative_path)
 
     def _get_uri_prefixes(self, hostname, insecure_port, secure_port):
         """Returns the HTTP and HTTPS URI prefix for a hostname."""
@@ -347,7 +361,10 @@ class Driver(object):
                 return self.HTTP_DIR + uri[len(prefix):]
         for prefix in self._get_uri_prefixes(*self.WPT_HOST_AND_PORTS):
             if uri.startswith(prefix):
-                return self.WPT_DIR + uri[len(prefix):]
+                url_path = '/' + uri[len(prefix):]
+                for wpt_path, url_prefix in self.WPT_DIRS.items():
+                    if url_path.startswith(url_prefix):
+                        return wpt_path + '/' + url_path[len(url_prefix):]
         raise NotImplementedError('unknown url type: %s' % uri)
 
     def has_crashed(self):
@@ -381,7 +398,6 @@ class Driver(object):
         self._crashed_process_name = None
         self._crashed_pid = None
         self._leaked = False
-        self._leak_log = None
         cmd_line = self.cmd_line(per_test_args)
         self._server_process = self._port.server_process_constructor(
             self._port, server_name, cmd_line, environment, more_logging=self._port.get_option('driver_logging'))
@@ -420,7 +436,11 @@ class Driver(object):
         # Remote drivers will override this method to return the pid on the device.
         return self._server_process.pid()
 
-    def stop(self, timeout_secs=0.0):
+    def stop(self, timeout_secs=None):
+        if timeout_secs is None:
+            # Add a delay to allow process to finish post-run hooks, such as dumping code coverage data.
+            timeout_secs = self._port.get_option('driver_kill_timeout_secs')
+
         if self._server_process:
             self._server_process.stop(timeout_secs)
             self._server_process = None
@@ -441,12 +461,16 @@ class Driver(object):
         cmd += self._base_cmd_line()
         if self._no_timeout:
             cmd.append('--no-timeout')
-        primary_driver_flag = self._port.primary_driver_flag()
-        if primary_driver_flag:
-            cmd.append(primary_driver_flag)
         cmd.extend(self._port.additional_driver_flags())
         if self._port.get_option('enable_leak_detection'):
             cmd.append('--enable-leak-detection')
+
+        # Run tests with the new SameSite cookie behavior by default.
+        # By appending the features to --enable-features, they will be enabled if
+        # they are not also explicitly disabled (as base::FeatureList disables a
+        # feature that appears in both --disable-features and --enable-features).
+        cmd.append('--enable-features=SameSiteByDefaultCookies,CookiesWithoutSameSiteMustBeSecure')
+
         cmd.extend(per_test_args)
         cmd = coalesce_repeated_switches(cmd)
         cmd.append('-')
@@ -579,6 +603,7 @@ class Driver(object):
                 if out_line[-1] != '\n':
                     _log.error(
                         'Last character read from DRT stdout line was not a newline!  This indicates either a NRWT or DRT bug.')
+                # pylint: disable=protected-access
                 content_length_before_header_check = block._content_length
                 self._process_stdout_line(block, out_line)
                 # FIXME: Unlike HTTP, DRT dumps the content right after printing a Content-Length header.

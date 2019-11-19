@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 #include <memory>
 
+#include "base/cfi_buildflags.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
+#include "build/build_config.h"
 #include "chrome/test/media_router/media_router_integration_browsertest.h"
 #include "content/public/test/test_utils.h"
 #include "net/base/filename_util.h"
@@ -64,10 +66,19 @@ IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationOneUABrowserTest,
   RunFailToSendMessageTest();
 }
 
+#if defined(OS_LINUX) &&                                        \
+    (BUILDFLAG(CFI_CAST_CHECK) || BUILDFLAG(CFI_ICALL_CHECK) || \
+     BUILDFLAG(CFI_ENFORCEMENT_TRAP) || BUILDFLAG(CFI_ENFORCEMENT_DIAGNOSTIC))
+// https://crbug.com/966827. Flaky on Linux CFI.
+#define MAYBE_ReconnectSession DISABLED_ReconnectSession
+#else
+#define MAYBE_ReconnectSession ReconnectSession
+#endif
 IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationOneUABrowserTest,
-                       ReconnectSession) {
+                       MAYBE_ReconnectSession) {
   RunReconnectSessionTest();
 }
+#undef MAYBE_ReconnectSession
 
 IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationOneUABrowserTest,
                        ReconnectSessionSameTab) {

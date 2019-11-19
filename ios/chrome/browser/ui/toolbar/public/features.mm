@@ -11,8 +11,8 @@
 #error "This file requires ARC support."
 #endif
 
-const base::Feature kMemexTabSwitcher{"MemexTabSwitcher",
-                                      base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kToolbarNewTabButton{"ToolbarNewTabButton",
+                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kIconForSearchButtonFeature{
     "IconForSearchButtonFeature", base::FEATURE_DISABLED_BY_DEFAULT};

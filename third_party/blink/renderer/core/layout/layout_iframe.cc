@@ -30,7 +30,8 @@
 
 namespace blink {
 
-LayoutIFrame::LayoutIFrame(Element* element) : LayoutEmbeddedContent(element) {}
+LayoutIFrame::LayoutIFrame(HTMLFrameOwnerElement* element)
+    : LayoutEmbeddedContent(element) {}
 
 bool LayoutIFrame::ShouldComputeSizeAsReplaced() const {
   return true;
@@ -41,7 +42,7 @@ bool LayoutIFrame::IsInlineBlockOrInlineTable() const {
 }
 
 PaintLayerType LayoutIFrame::LayerTypeRequired() const {
-  if (StyleRef().Resize() != EResize::kNone)
+  if (StyleRef().HasResize())
     return kNormalPaintLayer;
   return LayoutEmbeddedContent::LayerTypeRequired();
 }

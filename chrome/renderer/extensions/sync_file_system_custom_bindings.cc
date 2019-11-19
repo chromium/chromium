@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "extensions/renderer/script_context.h"
-#include "storage/common/fileapi/file_system_util.h"
+#include "storage/common/file_system/file_system_util.h"
 #include "third_party/blink/public/web/web_dom_file_system.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "v8/include/v8.h"

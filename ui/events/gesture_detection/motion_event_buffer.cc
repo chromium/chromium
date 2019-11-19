@@ -130,8 +130,8 @@ std::unique_ptr<MotionEventGeneric> ResampleMotionEvent(
         event0, event1, event0_i, static_cast<size_t>(event1_i), alpha);
 
     if (event0_i == 0) {
-      event.reset(new MotionEventGeneric(MotionEvent::Action::MOVE,
-                                         resample_time, pointer));
+      event = std::make_unique<MotionEventGeneric>(MotionEvent::Action::MOVE,
+                                                   resample_time, pointer);
     } else {
       event->PushPointer(pointer);
     }

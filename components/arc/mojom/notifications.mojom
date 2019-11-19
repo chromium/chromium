@@ -1,0 +1,305 @@
+// Copyright 2015 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+//
+// Next MinVersion: 25
+
+module arc.mojom;
+
+import "components/arc/mojom/bitmap.mojom";
+import "components/arc/mojom/gfx.mojom";
+
+// These values must be matched with the NOTIFICATION_EVENT_* constants in
+// com.android.server.ArcNotificationListenerService.
+[Extensible]
+enum ArcNotificationEvent {
+  BODY_CLICKED = 0,
+  CLOSED = 1,
+  // Deprecated: Five button events
+  DEPRECATED_BUTTON_1_CLICKED = 2,
+  DEPRECATED_BUTTON_2_CLICKED = 3,
+  DEPRECATED_BUTTON_3_CLICKED = 4,
+  DEPRECATED_BUTTON_4_CLICKED = 5,
+  DEPRECATED_BUTTON_5_CLICKED = 6,
+  // expand/collapse the bundled notification
+  [MinVersion=10] TOGGLE_EXPANSION = 7,
+  // The notification is activated/deactivated. Please note that they are sent
+  // only in limited instances e.g. when remote input opens, or when spoken
+  // feedback is enabled.
+  [MinVersion=24] ACTIVATED = 8,
+  [MinVersion=24] DEACTIVATED = 9,
+};
+
+[Extensible]
+enum ArcNotificationType {
+  SIMPLE = 0,
+  DEPRECATED_IMAGE = 1,
+  DEPRECATED_PROGRESS = 2,
+  DEPRECATED_LIST = 3,
+  BUNDLED = 4,
+};
+
+// These values are corresponding to the priorities or importance of Android
+// notification.
+[Extensible]
+enum ArcNotificationPriority {
+  NONE = -3,
+  MIN = -2,
+  LOW = -1,
+  DEFAULT = 0,
+  HIGH = 1,
+  MAX = 2,
+};
+
+// DEPRECATED
+struct DeprecatedArcNotificationButton {
+  // Title
+  string label;
+};
+
+[Extensible, MinVersion=10]
+enum ArcNotificationExpandState {
+  FIXED_SIZE = 0,
+  COLLAPSED = 1,
+  EXPANDED = 2,
+};
+
+[Extensible, MinVersion=12]
+enum ArcNotificationRemoteInputState {
+  CLOSED = 0,
+  OPENED = 1,
+};
+
+// These values represent what shows in an ARC custom notification.
+[Extensible, MinVersion=11]
+enum ArcNotificationShownContents {
+  // The normal notification contents are shown.
+  CONTENTS_SHOWN = 0,
+  // The notification settings view is shown.
+  SETTINGS_SHOWN = 1,
+  // The notification snooze settings view is shown.
+  [MinVersion=17]
+  SNOOZE_SHOWN = 2,
+};
+
+// Flag for various feature of ARC notifications.
+[MinVersion=17]
+struct ArcNotificationFlags {
+  // Bits for features.
+  const uint32 SUPPORT_SNOOZE = 1;  // 1 << 0
+
+  // Bit-masked value.
+  uint32 value;
+};
+
+struct ArcNotificationData {
+  // Identifier of notification
+  string key;
+  // Type of notification
+  ArcNotificationType type;
+  // Body message of notification
+  string message;
+  // Title of notification
+  string title;
+  // DEPRECATED: Mimetype of |icon_data|
+  string? deprecated_icon_mimetype;
+  // DEPRECATED: Binary data of the icon
+  array<uint8>? deprecated_icon_data;
+  // Priority of notification
+  ArcNotificationPriority priority;
+  // Timestamp related to the notification
+  int64 time;
+  // DEPRECATED: The current value of progress, must be [0, progress_max].
+  int32 deprecated_progress_current;
+  // DEPRECATED: The maximum value of progress.
+  int32 deprecated_progress_max;
+  // DEPRECATED: Action buttons
+  array<DeprecatedArcNotificationButton>? deprecated_buttons;
+  // Flag if the notification has FLAG_NO_CLEAR.
+  [MinVersion=1]
+  bool no_clear;
+  // Flag if the notification has FLAG_ONGOING_EVENT.
+  [MinVersion=1]
+  bool ongoing_event;
+  // DEPRECATED: Subtexts for list notifications.
+  [MinVersion=3]
+  array<string>? deprecated_texts;
+  // DEPRECATED: Image for image notifications.
+  [MinVersion=3]
+  ArcBitmap? deprecated_big_picture;
+  // DEPRECATED: Flag if a notification is a custom notification backed by a
+  // notification surface.
+  [MinVersion=5]
+  bool deprecated_use_custom_notification;
+  [MinVersion=6]
+  ArcBitmap? small_icon;
+  // A snapshot image to show before the notification window is created.
+  [MinVersion=7]
+  ArcBitmap? snapshot_image;
+  [MinVersion=7]
+  float snapshot_image_scale;
+  // Accessibility text
+  [MinVersion=8]
+  string? accessible_name;
+  // Flag if the notification is expandable
+  [MinVersion=10]
+  ArcNotificationExpandState expand_state;
+  // Flag for what shows in a notification.
+  [MinVersion=11]
+  ArcNotificationShownContents shown_contents;
+  [MinVersion=12]
+  ArcNotificationRemoteInputState remote_input_state;
+  // Indicates a rect for which Android wants to handle swipe events for by
+  // itself. The coordinates in this Rect are in Android pixels and represent
+  // a sub-rectangle of the notification, with the origin being the top left
+  // of the notification.
+  [MinVersion=14]
+  Rect? swipe_input_rect;
+  [MinVersion=15]
+  string? package_name;
+  [MinVersion=17]
+  ArcNotificationFlags? flags;
+  [MinVersion=21]
+  bool hidden_on_lock_screen;
+  [MinVersion=21]
+  ArcBitmap? snapshot_image_public;
+  [MinVersion=23]
+  bool is_media_notification;
+};
+
+[MinVersion=18]
+struct ArcDoNotDisturbStatus {
+  bool enabled;
+};
+
+[MinVersion=21]
+struct ArcNotificationUserActionData {
+  // Unique action id for this user action.
+  uint32 action_id;
+  // Notification key of top-level notification which contains the notification
+  // which is initiating this action.
+  string top_level_notification_key;
+  // True if the task should be executed on the unlocked state.
+  bool defer_until_unlock;
+  // True if the notification view should be focused after unlock. This is
+  // effective only when |defer_until_unlock| is true.
+  bool to_be_focused_after_unlock;
+};
+
+[MinVersion=21]
+struct ArcLockScreenNotificationSetting {
+  // Flag whether to show the notifications on the lock screen.
+  bool show_notification;
+  // Flag whether to show the private content on the lock screen.
+  bool show_private_notification;
+};
+
+[MinVersion=22]
+struct NotificationConfiguration {
+  // Flag to enable notification expansion animations on arc.
+  // See b/35786193.
+  bool expansion_animation;
+};
+
+// Next Method ID: 11
+interface NotificationsHost {
+  // Set the Do-Not-Disturb status on Chrome side from Android side.
+  [MinVersion=18]
+  OnDoNotDisturbStatusUpdated@7(ArcDoNotDisturbStatus status);
+
+  // Tells the Chrome that a notification is posted (created or updated) on
+  // Android. If you know that the notification exists, please consider to use
+  // OnNotificationUpdate instead.
+  // |notification_data| is the data of notification (id, texts, icon and ...).
+  OnNotificationPosted@0(ArcNotificationData notification_data);
+
+  // Notifies that a notification is removed on Android.
+  // |key| is the identifier of the notification.
+  OnNotificationRemoved@1(string key);
+
+  [MinVersion=13]
+  // Notifies that an existing notiication is updated on Android.
+  OnNotificationUpdated@5(ArcNotificationData notification_data);
+
+  [MinVersion=16]
+  // Opens the Chrome OS message center.
+  OpenMessageCenter@6();
+
+  [MinVersion=20]
+  // Closes the Chrome OS message center.
+  CloseMessageCenter@8();
+
+  [MinVersion=21]
+  // Processes the user action initiated from Android side on Chrome side.
+  ProcessUserAction@9(ArcNotificationUserActionData data);
+
+  [MinVersion=21]
+  // Sets the lock screen setting on Chrome side from Android side. Usually
+  // invoked when the setting on Android side is chagned.
+  OnLockScreenSettingUpdated@10(ArcLockScreenNotificationSetting setting);
+};
+
+// Next Method ID: 13
+// TODO(lhchavez): Migrate all request/response messages to Mojo.
+interface NotificationsInstance {
+  // DEPRECATED: Please use Init@5 instead.
+  InitDeprecated@0(NotificationsHost host_ptr);
+
+  // Establishes full-duplex communication with the host.
+  [MinVersion=14] Init@5(NotificationsHost host_ptr) => ();
+
+  // Sends an event from Chrome notification UI to Android.
+  // |event| is a type of occured event.
+  SendNotificationEventToAndroid@1(string key, ArcNotificationEvent event);
+
+  // Requests to Android side to create the notification window.
+  // |key| is the identifier of the notification which is generated by Android
+  // side.
+  [MinVersion=7]
+  CreateNotificationWindow@2(string key);
+
+  // Requests to Android side to close the notification window.
+  // |key| is the identifier of the notification which is generated by Android
+  // side.
+  [MinVersion=7]
+  CloseNotificationWindow@3(string key);
+
+  // Requests to Android side to open notification settings.
+  // |key| is the identifier of the notification which is generated by Android
+  // side.
+  [MinVersion=9]
+  OpenNotificationSettings@4(string key);
+
+  // Requests to Android side to open snooze settings.
+  // |key| is the identifier of the notification which is generated by Android
+  // side.
+  [MinVersion=17]
+  OpenNotificationSnoozeSettings@6(string key);
+
+  // Sets the Do-Not-Disturb status on Android side from Chrome side.
+  [MinVersion=18]
+  SetDoNotDisturbStatusOnAndroid@7(ArcDoNotDisturbStatus status);
+
+  // Cancels the current press operation even during touching the view. This
+  // should be called when the on-going gesture is recognized not as a normal
+  // touch event but as a scroll event, and the on-going touch events should be
+  // cancelled.
+  [MinVersion=19]
+  CancelPress@8(string key);
+
+  // Performs the user action being deferred in Android.
+  [MinVersion=21]
+  PerformDeferredUserAction@9(uint32 action_id);
+
+  // Cancels the user action being deferred in Android.
+  [MinVersion=21]
+  CancelDeferredUserAction@10(uint32 action_id);
+
+  // Sets the lock screen notification setting on Android side from Chrome side.
+  [MinVersion=21]
+  SetLockScreenSettingOnAndroid@11(ArcLockScreenNotificationSetting setting);
+
+  // Set configuration variables for notifications.
+  [MinVersion=22]
+  SetNotificationConfiguration@12(NotificationConfiguration configuration);
+};

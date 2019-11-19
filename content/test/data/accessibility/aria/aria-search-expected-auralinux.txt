@@ -1,0 +1,3 @@
+[document web]
+++[landmark] xml-roles:search
+++++[static] name='ARIA role search.'

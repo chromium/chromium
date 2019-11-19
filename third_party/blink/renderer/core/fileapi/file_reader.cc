@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/fileapi/file_reader.h"
 
 #include "base/auto_reset.h"
+#include "base/timer/elapsed_timer.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/string_or_array_buffer.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -38,25 +39,24 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fileapi/file.h"
 #include "third_party/blink/renderer/core/fileapi/file_error.h"
-#include "third_party/blink/renderer/core/frame/use_counter.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
-#include "third_party/blink/renderer/platform/wtf/text/cstring.h"
-#include "third_party/blink/renderer/platform/wtf/time.h"
 
 namespace blink {
 
 namespace {
 
-const CString Utf8BlobUUID(Blob* blob) {
+const std::string Utf8BlobUUID(Blob* blob) {
   return blob->Uuid().Utf8();
 }
 
-const CString Utf8FilePath(Blob* blob) {
+const std::string Utf8FilePath(Blob* blob) {
   return blob->HasBackingFile() ? To<File>(blob)->GetPath().Utf8() : "";
 }
 
@@ -66,7 +66,8 @@ const CString Utf8FilePath(Blob* blob) {
 // excessive IPC congestion. We limit this to 100 per thread to throttle the
 // requests (the value is arbitrarily chosen).
 static const size_t kMaxOutstandingRequestsPerThread = 100;
-static const double kProgressNotificationIntervalMS = 50;
+static const base::TimeDelta kProgressNotificationInterval =
+    base::TimeDelta::FromMilliseconds(50);
 
 class FileReader::ThrottlingController final
     : public GarbageCollected<FileReader::ThrottlingController>,
@@ -96,7 +97,7 @@ class FileReader::ThrottlingController final
     if (!controller)
       return;
 
-    probe::AsyncTaskScheduled(context, "FileReader", reader);
+    probe::AsyncTaskScheduled(context, "FileReader", reader->async_task_id());
     controller->PushReader(reader);
   }
 
@@ -117,7 +118,7 @@ class FileReader::ThrottlingController final
       return;
 
     controller->FinishReader(reader, next_step);
-    probe::AsyncTaskCanceled(context, reader);
+    probe::AsyncTaskCanceled(context, reader->async_task_id());
   }
 
   explicit ThrottlingController(ExecutionContext& context)
@@ -201,8 +202,7 @@ FileReader::FileReader(ExecutionContext* context)
       state_(kEmpty),
       loading_state_(kLoadingStateNone),
       still_firing_events_(false),
-      read_type_(FileReaderLoader::kReadAsBinaryString),
-      last_progress_notification_time_ms_(0) {}
+      read_type_(FileReaderLoader::kReadAsBinaryString) {}
 
 FileReader::~FileReader() {
   Terminate();
@@ -390,14 +390,13 @@ void FileReader::DidStartLoading() {
 
 void FileReader::DidReceiveData() {
   // Fire the progress event at least every 50ms.
-  double now = CurrentTimeMS();
-  if (!last_progress_notification_time_ms_) {
-    last_progress_notification_time_ms_ = now;
-  } else if (now - last_progress_notification_time_ms_ >
-             kProgressNotificationIntervalMS) {
+  if (!last_progress_notification_time_) {
+    last_progress_notification_time_ = base::ElapsedTimer();
+  } else if (last_progress_notification_time_->Elapsed() >
+             kProgressNotificationInterval) {
     base::AutoReset<bool> firing_events(&still_firing_events_, true);
     FireEvent(event_type_names::kProgress);
-    last_progress_notification_time_ms_ = now;
+    last_progress_notification_time_ = base::ElapsedTimer();
   }
 }
 
@@ -460,7 +459,7 @@ void FileReader::DidFail(FileErrorCode error_code) {
 }
 
 void FileReader::FireEvent(const AtomicString& type) {
-  probe::AsyncTask async_task(GetExecutionContext(), this, "event");
+  probe::AsyncTask async_task(GetExecutionContext(), async_task_id(), "event");
   if (!loader_) {
     DispatchEvent(*ProgressEvent::Create(type, false, 0, 0));
     return;

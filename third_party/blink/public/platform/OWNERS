@@ -1,10 +1,8 @@
 per-file *.mojom=set noparent
 per-file *.mojom=file://ipc/SECURITY_OWNERS
 
-per-file *_enum_traits*.*=set noparent
-per-file *_enum_traits*.*=file://ipc/SECURITY_OWNERS
-per-file *_struct_traits*.*=set noparent
-per-file *_struct_traits*.*=file://ipc/SECURITY_OWNERS
+per-file *_mojom_traits*.*=set noparent
+per-file *_mojom_traits*.*=file://ipc/SECURITY_OWNERS
 per-file *.typemap=set noparent
 per-file *.typemap=file://ipc/SECURITY_OWNERS
 
@@ -14,6 +12,7 @@ per-file web_media_player*=mlamouri@chromium.org
 
 # Video SurfaceLayer functionality.
 per-file web_video_frame*=file://media/OWNERS
+per-file webaudiosourceprovider_impl.h=file://media/OWNERS
 per-file web_video_frame*=mlamouri@chromium.org
 per-file web_video_frame*=lethalantidote@chromium.org
 per-file web_surface_layer_bridge*=file://media/OWNERS

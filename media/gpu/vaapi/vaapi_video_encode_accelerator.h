@@ -24,7 +24,6 @@
 namespace media {
 
 class VaapiEncodeJob;
-class VaapiPictureFactory;
 
 // A VideoEncodeAccelerator implementation that uses VA-API
 // (https://01.org/vaapi) for HW-accelerated video encode.
@@ -37,9 +36,8 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
   // VideoEncodeAccelerator implementation.
   VideoEncodeAccelerator::SupportedProfiles GetSupportedProfiles() override;
   bool Initialize(const Config& config, Client* client) override;
-  void Encode(const scoped_refptr<VideoFrame>& frame,
-              bool force_keyframe) override;
-  void UseOutputBitstreamBuffer(const BitstreamBuffer& buffer) override;
+  void Encode(scoped_refptr<VideoFrame> frame, bool force_keyframe) override;
+  void UseOutputBitstreamBuffer(BitstreamBuffer buffer) override;
   void RequestEncodingParametersChange(uint32_t bitrate,
                                        uint32_t framerate) override;
   void RequestEncodingParametersChange(
@@ -96,8 +94,9 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
   // Checks if sufficient resources for a new encode job with |frame| as input
   // are available, and if so, claims them by associating them with
   // a VaapiEncodeJob, and returns the newly-created job, nullptr otherwise.
-  scoped_refptr<VaapiEncodeJob> CreateEncodeJob(scoped_refptr<VideoFrame> frame,
-                                                bool force_keyframe);
+  std::unique_ptr<VaapiEncodeJob> CreateEncodeJob(
+      scoped_refptr<VideoFrame> frame,
+      bool force_keyframe);
 
   // Continues encoding frames as long as input_queue_ is not empty, and we are
   // able to create new EncodeJobs.
@@ -111,8 +110,12 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
   void ExecuteEncode(VASurfaceID va_surface_id);
 
   // Callback that returns a no longer used VASurfaceID to
-  // available_va_surface_ids_ for reuse.
+  // |available_va_surface_ids_| for reuse.
   void RecycleVASurfaceID(VASurfaceID va_surface_id);
+
+  // Callback that returns a no longer used VASurfaceID to
+  // |available_vpp_va_surface_ids_| for reuse.
+  void RecycleVPPVASurfaceID(VASurfaceID va_surface_id);
 
   // Returns a bitstream buffer to the client if both a previously executed job
   // awaits to be completed and we have bitstream buffers available to download
@@ -121,7 +124,7 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
 
   // Downloads encoded data produced as a result of running |encode_job| into
   // |buffer|, and returns it to the client.
-  void ReturnBitstreamBuffer(scoped_refptr<VaapiEncodeJob> encode_job,
+  void ReturnBitstreamBuffer(std::unique_ptr<VaapiEncodeJob> encode_job,
                              std::unique_ptr<BitstreamBufferRef> buffer);
 
   // Puts the encoder into en error state and notifies the client
@@ -146,10 +149,8 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
   // and will free them on destruction.
   scoped_refptr<VaapiWrapper> vaapi_wrapper_;
 
-  // Input profile and sizes.
-  VideoCodec codec_;
-  gfx::Size visible_size_;
-  gfx::Size coded_size_;
+  // The aligned size of the allocated physical buffer for input buffer.
+  gfx::Size aligned_input_size_;
 
   // Size in bytes required for output bitstream buffers.
   size_t output_buffer_byte_size_;
@@ -167,26 +168,32 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
   // and two otherwise.
   size_t va_surfaces_per_video_frame_;
 
+  // The number of frames that needs to be held on encoding.
+  size_t num_frames_in_flight_;
+
   // All of the members below must be accessed on the encoder_thread_,
   // while it is running.
 
   // Encoder state. Encode tasks will only run in kEncoding state.
   State state_;
 
-  // Creates VaapiPictures to wrap incoming DmaBufs in |native_input_mode_|.
-  std::unique_ptr<VaapiPictureFactory> vaapi_picture_factory_;
-
   // Encoder instance managing video codec state and preparing encode jobs.
   std::unique_ptr<AcceleratedVideoEncoder> encoder_;
 
-  // VA surfaces available for reuse.
+  // VA surfaces available for encoding.
   std::vector<VASurfaceID> available_va_surface_ids_;
+  // VA surfaces available for scaling.
+  std::vector<VASurfaceID> available_vpp_va_surface_ids_;
+
+  // VASurfaceIDs internal format.
+  static constexpr unsigned int kVaSurfaceFormat = VA_RT_FORMAT_YUV420;
 
   // VA buffers for coded frames.
   std::vector<VABufferID> available_va_buffer_ids_;
 
   // Callback via which finished VA surfaces are returned to us.
-  VASurface::ReleaseCB va_surface_release_cb_;
+  base::RepeatingCallback<void(VASurfaceID)> va_surface_release_cb_;
+  base::RepeatingCallback<void(VASurfaceID)> vpp_va_surface_release_cb_;
 
   // Queue of input frames to be encoded.
   base::queue<std::unique_ptr<InputFrameRef>> input_queue_;
@@ -196,7 +203,7 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
 
   // Jobs submitted to driver for encode, awaiting bitstream buffers to become
   // available.
-  base::queue<scoped_refptr<VaapiEncodeJob>> submitted_encode_jobs_;
+  base::queue<std::unique_ptr<VaapiEncodeJob>> submitted_encode_jobs_;
 
   // Encoder thread. All tasks are executed on it.
   base::Thread encoder_thread_;
@@ -209,6 +216,10 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
   // child_task_runner_.
   std::unique_ptr<base::WeakPtrFactory<Client>> client_ptr_factory_;
   base::WeakPtr<Client> client_;
+
+  // VaapiWrapper for VPP (Video Pre Processing). This is used for scale down
+  // for the picture send to vaapi encoder.
+  scoped_refptr<VaapiWrapper> vpp_vaapi_wrapper_;
 
   // WeakPtr to post from the encoder thread back to the ChildThread, as it may
   // outlive this. Posting from the ChildThread using base::Unretained(this)

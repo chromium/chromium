@@ -5,8 +5,8 @@
 ++++++++[tool bar] name='audio' description='audio' horizontal
 ++++++++++[tool bar] name='audio' description='audio' horizontal
 ++++++++++++[push button] name='play' focusable
-++++++++++++[text] name='0:00'
-++++++++++++[text] name='/ 0:00'
+++++++++++++[static] name='0:00'
+++++++++++++[static] name='/ 0:00'
 ++++++++++++[slider] description='audio time scrubber' focusable horizontal
 ++++++++++++[section]
 ++++++++++++++[section]

@@ -1,0 +1,9 @@
+include_rules = [
+    "+base/strings/stringprintf.h",
+    "+media/audio/audio_sink_parameters.h",
+    "+media/base/audio_bus.h",
+    "+media/base/audio_capturer_source.h",
+    "+media/base/audio_latency.h",
+    "+media/base/audio_parameters.h",
+    "+media/base/sample_rates.h",
+]

@@ -2,8 +2,29 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
-:root {
+:host {
   --oobe-button-font-family: "Google Sans", Roboto, sans-serif;
   --oobe-default-font-family: Roboto, sans-serif;
-  --oobe-title-font-family: "Google Sans", Roboto, sans-serif;
+  --oobe-header-font-family: "Google Sans", Roboto, sans-serif;
+
+  --oobe-header-font-size: 28px;
+  --oobe-default-font-size: 13px;
+
+  --oobe-default-font-weight: 400; /* regular */
+  --oobe-header-font-weight: 400; /* regular */
+
+  --oobe-header-text-color: var(--google-grey-900);
+  --oobe-subheader-text-color: var(--google-grey-700);
+
+  --oobe-default-font: {
+      font-family: var(--oobe-default-font-family);
+      font-size: var(--oobe-default-font-size);
+      font-weight: var(--oobe-default-font-weight);
+  };
+
+  --oobe-header-font: {
+      font-family: var(--oobe-header-font-family);
+      font-size: var(--oobe-header-font-size);
+      font-weight: var(--oobe-default-font-weight);
+  };
 }

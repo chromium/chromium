@@ -11,7 +11,6 @@
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
-#include "third_party/blink/renderer/core/testing/use_mock_scrollbar_settings.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
 
 namespace blink {
@@ -19,8 +18,8 @@ namespace blink {
 class CompositingLayerPropertyUpdaterTest : public RenderingTest {
  private:
   void SetUp() override {
-    RenderingTest::SetUp();
     EnableCompositing();
+    RenderingTest::SetUp();
   }
 };
 
@@ -50,7 +49,11 @@ TEST_F(CompositingLayerPropertyUpdaterTest,
        EnsureOverlayScrollbarLayerHasEffectNode) {
   GetDocument().GetFrame()->GetSettings()->SetPreferCompositingToLCDTextEnabled(
       true);
-  UseMockScrollbarSettings mock_scrollbar(false, true);
+  ASSERT_TRUE(GetDocument()
+                  .GetFrame()
+                  ->GetPage()
+                  ->GetScrollbarTheme()
+                  .UsesOverlayScrollbars());
   SetBodyInnerHTML(R"HTML(
     <style>
       #scroller {
@@ -68,9 +71,6 @@ TEST_F(CompositingLayerPropertyUpdaterTest,
     </div>
   )HTML");
 
-  ASSERT_TRUE(
-      GetDocument().GetPage()->GetScrollbarTheme().UsesOverlayScrollbars());
-
   PaintLayer* scroller_layer =
       ToLayoutBoxModelObject(GetLayoutObjectByElementId("scroller"))->Layer();
   PaintLayerScrollableArea* scrollable_area =
@@ -78,8 +78,9 @@ TEST_F(CompositingLayerPropertyUpdaterTest,
   ASSERT_TRUE(scrollable_area);
 
   auto* horizontal_scrollbar_layer =
-      scrollable_area->LayerForHorizontalScrollbar();
-  auto* vertical_scrollbar_layer = scrollable_area->LayerForVerticalScrollbar();
+      scrollable_area->GraphicsLayerForHorizontalScrollbar();
+  auto* vertical_scrollbar_layer =
+      scrollable_area->GraphicsLayerForVerticalScrollbar();
   ASSERT_TRUE(horizontal_scrollbar_layer);
   ASSERT_TRUE(vertical_scrollbar_layer);
 
@@ -146,7 +147,7 @@ TEST_F(CompositingLayerPropertyUpdaterTest,
         document.View()->GetPage()->GetVisualViewport();
 
     auto* vertical_scrollbar_layer =
-        root_scrollable->LayerForVerticalScrollbar();
+        root_scrollable->GraphicsLayerForVerticalScrollbar();
     ASSERT_TRUE(vertical_scrollbar_layer);
     EXPECT_EQ(&vertical_scrollbar_layer->GetPropertyTreeState().Transform(),
               visual_viewport.GetOverscrollElasticityTransformNode()->Parent());
@@ -161,7 +162,7 @@ TEST_F(CompositingLayerPropertyUpdaterTest,
     ASSERT_TRUE(scrollable_area);
 
     auto* vertical_scrollbar_layer =
-        scrollable_area->LayerForVerticalScrollbar();
+        scrollable_area->GraphicsLayerForVerticalScrollbar();
     ASSERT_TRUE(vertical_scrollbar_layer);
 
     auto paint_properties = scroller_layer->GetLayoutObject()

@@ -1422,5 +1422,293 @@
 #define __NR_memfd_create 356
 #endif
 
+#if !defined(__NR_bpf)
+#define __NR_bpf 357
+#endif
+
+#if !defined(__NR_execveat)
+#define __NR_execveat 358
+#endif
+
+#if !defined(__NR_socket)
+#define __NR_socket 359
+#endif
+
+#if !defined(__NR_socketpair)
+#define __NR_socketpair 360
+#endif
+
+#if !defined(__NR_bind)
+#define __NR_bind 361
+#endif
+
+#if !defined(__NR_connect)
+#define __NR_connect 362
+#endif
+
+#if !defined(__NR_listen)
+#define __NR_listen 363
+#endif
+
+#if !defined(__NR_accept4)
+#define __NR_accept4 364
+#endif
+
+#if !defined(__NR_getsockopt)
+#define __NR_getsockopt 365
+#endif
+
+#if !defined(__NR_setsockopt)
+#define __NR_setsockopt 366
+#endif
+
+#if !defined(__NR_getsockname)
+#define __NR_getsockname 367
+#endif
+
+#if !defined(__NR_getpeername)
+#define __NR_getpeername 368
+#endif
+
+#if !defined(__NR_sendto)
+#define __NR_sendto 369
+#endif
+
+#if !defined(__NR_sendmsg)
+#define __NR_sendmsg 370
+#endif
+
+#if !defined(__NR_recvfrom)
+#define __NR_recvfrom 371
+#endif
+
+#if !defined(__NR_recvmsg)
+#define __NR_recvmsg 372
+#endif
+
+#if !defined(__NR_shutdown)
+#define __NR_shutdown 373
+#endif
+
+#if !defined(__NR_userfaultfd)
+#define __NR_userfaultfd 374
+#endif
+
+#if !defined(__NR_membarrier)
+#define __NR_membarrier 375
+#endif
+
+#if !defined(__NR_mlock2)
+#define __NR_mlock2 376
+#endif
+
+#if !defined(__NR_copy_file_range)
+#define __NR_copy_file_range 377
+#endif
+
+#if !defined(__NR_preadv2)
+#define __NR_preadv2 378
+#endif
+
+#if !defined(__NR_pwritev2)
+#define __NR_pwritev2 379
+#endif
+
+#if !defined(__NR_pkey_mprotect)
+#define __NR_pkey_mprotect 380
+#endif
+
+#if !defined(__NR_pkey_alloc)
+#define __NR_pkey_alloc 381
+#endif
+
+#if !defined(__NR_pkey_free)
+#define __NR_pkey_free 382
+#endif
+
+#if !defined(__NR_statx)
+#define __NR_statx 383
+#endif
+
+#if !defined(__NR_arch_prctl)
+#define __NR_arch_prctl 384
+#endif
+
+#if !defined(__NR_io_pgetevents)
+#define __NR_io_pgetevents 385
+#endif
+
+#if !defined(__NR_rseq)
+#define __NR_rseq 386
+#endif
+
+#if !defined(__NR_semget)
+#define __NR_semget 393
+#endif
+
+#if !defined(__NR_semctl)
+#define __NR_semctl 394
+#endif
+
+#if !defined(__NR_shmget)
+#define __NR_shmget 395
+#endif
+
+#if !defined(__NR_shmctl)
+#define __NR_shmctl 396
+#endif
+
+#if !defined(__NR_shmat)
+#define __NR_shmat 397
+#endif
+
+#if !defined(__NR_shmdt)
+#define __NR_shmdt 398
+#endif
+
+#if !defined(__NR_msgget)
+#define __NR_msgget 399
+#endif
+
+#if !defined(__NR_msgsnd)
+#define __NR_msgsnd 400
+#endif
+
+#if !defined(__NR_msgrcv)
+#define __NR_msgrcv 401
+#endif
+
+#if !defined(__NR_msgctl)
+#define __NR_msgctl 402
+#endif
+
+#if !defined(__NR_clock_gettime64)
+#define __NR_clock_gettime64 403
+#endif
+
+#if !defined(__NR_clock_settime64)
+#define __NR_clock_settime64 404
+#endif
+
+#if !defined(__NR_clock_adjtime64)
+#define __NR_clock_adjtime64 405
+#endif
+
+#if !defined(__NR_clock_getres_time64)
+#define __NR_clock_getres_time64 406
+#endif
+
+#if !defined(__NR_clock_nanosleep_time64)
+#define __NR_clock_nanosleep_time64 407
+#endif
+
+#if !defined(__NR_timer_gettime64)
+#define __NR_timer_gettime64 408
+#endif
+
+#if !defined(__NR_timer_settime64)
+#define __NR_timer_settime64 409
+#endif
+
+#if !defined(__NR_timerfd_gettime64)
+#define __NR_timerfd_gettime64 410
+#endif
+
+#if !defined(__NR_timerfd_settime64)
+#define __NR_timerfd_settime64 411
+#endif
+
+#if !defined(__NR_utimensat_time64)
+#define __NR_utimensat_time64 412
+#endif
+
+#if !defined(__NR_pselect6_time64)
+#define __NR_pselect6_time64 413
+#endif
+
+#if !defined(__NR_ppoll_time64)
+#define __NR_ppoll_time64 414
+#endif
+
+#if !defined(__NR_io_pgetevents_time64)
+#define __NR_io_pgetevents_time64 416
+#endif
+
+#if !defined(__NR_recvmmsg_time64)
+#define __NR_recvmmsg_time64 417
+#endif
+
+#if !defined(__NR_mq_timedsend_time64)
+#define __NR_mq_timedsend_time64 418
+#endif
+
+#if !defined(__NR_mq_timedreceive_time64)
+#define __NR_mq_timedreceive_time64 419
+#endif
+
+#if !defined(__NR_semtimedop_time64)
+#define __NR_semtimedop_time64 420
+#endif
+
+#if !defined(__NR_rt_sigtimedwait_time64)
+#define __NR_rt_sigtimedwait_time64 421
+#endif
+
+#if !defined(__NR_futex_time64)
+#define __NR_futex_time64 422
+#endif
+
+#if !defined(__NR_sched_rr_get_interval_time64)
+#define __NR_sched_rr_get_interval_time64 423
+#endif
+
+#if !defined(__NR_pidfd_send_signal)
+#define __NR_pidfd_send_signal 424
+#endif
+
+#if !defined(__NR_io_uring_setup)
+#define __NR_io_uring_setup 425
+#endif
+
+#if !defined(__NR_io_uring_enter)
+#define __NR_io_uring_enter 426
+#endif
+
+#if !defined(__NR_io_uring_register)
+#define __NR_io_uring_register 427
+#endif
+
+#if !defined(__NR_open_tree)
+#define __NR_open_tree 428
+#endif
+
+#if !defined(__NR_move_mount)
+#define __NR_move_mount 429
+#endif
+
+#if !defined(__NR_fsopen)
+#define __NR_fsopen 430
+#endif
+
+#if !defined(__NR_fsconfig)
+#define __NR_fsconfig 431
+#endif
+
+#if !defined(__NR_fsmount)
+#define __NR_fsmount 432
+#endif
+
+#if !defined(__NR_fspick)
+#define __NR_fspick 433
+#endif
+
+#if !defined(__NR_pidfd_open)
+#define __NR_pidfd_open 434
+#endif
+
+#if !defined(__NR_clone3)
+#define __NR_clone3 435
+#endif
+
 #endif  // SANDBOX_LINUX_SYSTEM_HEADERS_X86_32_LINUX_SYSCALLS_H_
 

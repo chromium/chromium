@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2018 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/autofill_assistant_shadow_bg"
+    android:padding="16dp"
+    android:visibility="gone"
+    android:orientation="vertical">
+    <LinearLayout android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:orientation="horizontal">
+
+        <LinearLayout android:layout_width="0dp"
+                      android:layout_height="wrap_content"
+                      android:layout_weight="1"
+                      android:layout_gravity="center_vertical"
+                      android:orientation="vertical">
+            <TextView
+                android:id="@+id/details_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:singleLine="true"
+                android:requiresFadingEdge="horizontal"
+                android:fadingEdgeLength="20dp"
+                android:ellipsize="none"
+                android:layout_marginBottom="0dp"/>
+
+            <TextView
+                android:id="@+id/details_line1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:singleLine="true"
+                android:requiresFadingEdge="horizontal"
+                android:fadingEdgeLength="20dp"
+                android:ellipsize="none"/>
+
+            <TextView
+                android:id="@+id/details_line2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:singleLine="true"
+                android:requiresFadingEdge="horizontal"
+                android:fadingEdgeLength="20dp"
+                android:ellipsize="none" />
+
+            <TextView
+                android:id="@+id/details_line3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:singleLine="true"
+                android:requiresFadingEdge="horizontal"
+                android:fadingEdgeLength="20dp"
+                android:ellipsize="none" />
+        </LinearLayout>
+
+        <org.chromium.ui.widget.ChromeImageView
+            android:id="@+id/details_image"
+            android:layout_width="@dimen/autofill_assistant_details_image_size"
+            android:layout_height="@dimen/autofill_assistant_details_image_size"
+            android:layout_marginStart="8dp"
+            android:scaleType="centerCrop"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/details_price"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+        <TextView
+            android:id="@+id/details_price_attribution"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:singleLine="true" />
+
+        <TextView
+            android:id="@+id/details_total_price_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="4dp"
+            android:singleLine="true"/>
+
+        <TextView
+            android:id="@+id/details_total_price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:singleLine="true"/>
+    </LinearLayout>
+</LinearLayout>

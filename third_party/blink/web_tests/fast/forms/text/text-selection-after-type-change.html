@@ -6,25 +6,19 @@
 <input>
 
 <script>
-var t = async_test('selectionStart/selectionEnd should be kept after input type changes.');
-t.step(() => {
+test(() => {
   assert_own_property(window, 'eventSender');
   var element = document.querySelector('input');
   element.value = '';
   element.focus();
   eventSender.keyDown('c');
-  assert_equals(element.selectionStart, 1);
+  assert_equals(element.selectionStart, 1, 'Before any type changes');
+  element.type = 'password';
+  assert_equals(element.selectionStart, 1, 'After changing to password');
   element.type = 'button';
-  assert_equals(element.selectionStart, null);
+  assert_equals(element.selectionStart, null, 'After changing to button');
   element.type = 'text';
-
-  // TODO(tkent): We need some delay before checking selectionStart because
-  // input type change doesn't update selectionStart immediately to avoid force
-  // layout. crbug.com/721217
-  t.step_timeout(() => {
-    assert_equals(element.selectionStart, 1);
-    t.done();
-  }, 1);
-});
+  assert_equals(element.selectionStart, 0, 'After changing back to text');
+}, 'selectionStart/selectionEnd should be kept after input type changes.');
 </script>
 </body>

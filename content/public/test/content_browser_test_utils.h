@@ -10,7 +10,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/ref_counted.h"
+#include "base/run_loop.h"
 #include "content/public/common/page_type.h"
 #include "ui/gfx/native_widget_types.h"
 #include "url/gurl.h"
@@ -41,8 +41,6 @@ class EmbeddedTestServer;
 // content\public\test\browser_test_utils.h
 
 namespace content {
-
-class MessageLoopRunner;
 class RenderFrameHost;
 class RenderWidgetHost;
 class Shell;
@@ -72,9 +70,21 @@ GURL GetTestUrl(const char* dir, const char* file);
 // |url|.  This is a browser-initiated navigation that simulates a user typing
 // |url| into the address bar.
 //
-// TODO(alexmos): any tests that use this function and expect successful
-// navigations should do EXPECT_TRUE(NavigateToURL()).
-bool NavigateToURL(Shell* window, const GURL& url);
+// Tests should ensure that NavigateToURL succeeds.  If the URL that will
+// eventually commit is different from |url|, such as with redirects, use the
+// version below which also takes the expected commit URL.  If the navigation
+// will not result in a commit, such as a download or a 204 response, use
+// NavigateToURLAndExpectNoCommit() instead.
+WARN_UNUSED_RESULT bool NavigateToURL(Shell* window, const GURL& url);
+
+// Same as above, but takes in an additional URL, |expected_commit_url|, to
+// which the navigation should eventually commit.  This is useful for cases
+// like redirects, where navigation starts on one URL but ends up committing a
+// different URL.  This function will return true if navigating to |url|
+// results in a successful commit to |expected_commit_url|.
+WARN_UNUSED_RESULT bool NavigateToURL(Shell* window,
+                                      const GURL& url,
+                                      const GURL& expected_commit_url);
 
 // Perform a renderer-initiated navigation of |window| to |url|, blocking
 // until the navigation finishes.  The navigation is done by assigning
@@ -96,7 +106,8 @@ void NavigateToURLBlockUntilNavigationsComplete(Shell* window,
 // Navigates |window| to |url|, blocks until the navigation finishes, and
 // checks that the navigation did not commit (e.g., due to a crash or
 // download).
-bool NavigateToURLAndExpectNoCommit(Shell* window, const GURL& url);
+WARN_UNUSED_RESULT bool NavigateToURLAndExpectNoCommit(Shell* window,
+                                                       const GURL& url);
 
 // Reloads |window|, blocking until the given number of navigations finishes.
 void ReloadBlockUntilNavigationsComplete(Shell* window,
@@ -134,8 +145,8 @@ class ShellAddedObserver {
  private:
   void ShellCreated(Shell* shell);
 
-  Shell* shell_;
-  scoped_refptr<MessageLoopRunner> runner_;
+  Shell* shell_ = nullptr;
+  std::unique_ptr<base::RunLoop> runner_;
 
   DISALLOW_COPY_AND_ASSIGN(ShellAddedObserver);
 };
@@ -224,6 +235,13 @@ void IsolateOriginsForTesting(
     net::test_server::EmbeddedTestServer* embedded_test_server,
     WebContents* web_contents,
     std::vector<std::string> hostnames_to_isolate);
+
+#if defined(OS_WIN)
+
+void SetMockCursorPositionForTesting(WebContents* web_contents,
+                                     const gfx::Point& position);
+
+#endif  // defined(OS_WIN)
 
 }  // namespace content
 

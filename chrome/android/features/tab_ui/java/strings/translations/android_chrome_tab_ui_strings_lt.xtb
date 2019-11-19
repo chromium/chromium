@@ -1,0 +1,29 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="lt">
+<translation id="1075622780330595106">Pastaruoju metu nebuvo naudojama tiek skirtukų: <ph name="NUMBER_OF_TABS" />. Uždaryti juos?</translation>
+<translation id="1181037720776840403">Pašalinti</translation>
+<translation id="125153950246128346">Palieskite, kad peržiūrėtumėte kitą skirtuką</translation>
+<translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> skirtukas}one{<ph name="TABS_COUNT_MANY" /> skirtukas}few{<ph name="TABS_COUNT_MANY" /> skirtukai}many{<ph name="TABS_COUNT_MANY" /> skirtuko}other{<ph name="TABS_COUNT_MANY" /> skirtukų}}</translation>
+<translation id="257674075312929031">Grupė</translation>
+<translation id="2613747923081026172">Sukurti grupę</translation>
+<translation id="2671423594960767771">Bendrinti grupę</translation>
+<translation id="2977480621796371840">Pašalinti iš grupės</translation>
+<translation id="4212246570487010370">Tęsti naršymą</translation>
+<translation id="4648718555153979859">Čia skirtukai suskirstyti į grupes</translation>
+<translation id="5007392906805964215">Peržiūrėti</translation>
+<translation id="5073204694187207510">Slėpti viso ekrano tinklelį</translation>
+<translation id="5082793167783849073">Sparčiai palyginkite puslapius sukūrę grupę. Jei norite pradėti, palieskite ir palaikykite nuorodą.</translation>
+<translation id="5580090775658607195">Sugrupuota tiek skirtukų: <ph name="TAB_COUNT" /></translation>
+<translation id="5792534911093536736">Daugiau skirtukų</translation>
+<translation id="58326064309361797">Vilkite skirtukus, kad juos sugrupuotumėte</translation>
+<translation id="6040143037577758943">Uždaryti</translation>
+<translation id="6193448654517602979">Pasirinkti skirtukus</translation>
+<translation id="6615455863669487791">Rodyti</translation>
+<translation id="6840760312327750441">Norėdami grupuoti skirtukus, palieskite ir palaikykite skirtuką. Tada nuvilkite jį į kitą skirtuką.</translation>
+<translation id="7151209024774799310">Pašalinti skirtukus iš grupės</translation>
+<translation id="7559245342362162951">Rodyti grupės skirtukus viso ekrano tinklelyje</translation>
+<translation id="9150694013019234766">Skirtukus perjunkite skirtukų grupėje netoli ekrano apačios</translation>
+<translation id="9169594135889675189">Pridėti naują skirtuką prie grupės</translation>
+<translation id="959682366969460160">Sutvarkykite</translation>
+</translationbundle>

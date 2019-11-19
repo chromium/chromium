@@ -1,32 +1,20 @@
 {
   "layers": [
     {
-      "name": "LayoutView #document",
-      "bounds": [800, 600],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [800, 600],
-      "drawsContent": false
-    },
-    {
       "name": "Scrolling Contents Layer",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutBlockFlow DIV class='accelerated-stacking-context'",
+      "name": "LayoutNGBlockFlow DIV class='accelerated-stacking-context'",
       "bounds": [784, 90],
-      "isolate": true,
       "contentsOpaque": true,
       "backgroundColor": "#0000FF",
       "transform": 1
     },
     {
-      "name": "LayoutBlockFlow DIV id='intermediary' class='accelerated-no-stacking-context'",
+      "name": "LayoutNGBlockFlow DIV id='intermediary' class='accelerated-no-stacking-context'",
       "bounds": [784, 90],
       "contentsOpaque": true,
       "backfaceVisibility": "hidden",
@@ -34,10 +22,8 @@
       "transform": 1
     },
     {
-      "name": "LayoutImage IMG class='accelerated blended'",
+      "name": "ContentsLayer for LayoutImage IMG class='accelerated blended'",
       "bounds": [160, 90],
-      "blendMode": "multiply",
-      "drawsContent": false,
       "transform": 1
     }
   ],

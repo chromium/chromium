@@ -36,10 +36,14 @@ static_library("snapshot") {
     "memory_snapshot.cc",
     "memory_snapshot.h",
     "memory_snapshot_generic.h",
+    "minidump/exception_snapshot_minidump.cc",
+    "minidump/exception_snapshot_minidump.h",
     "minidump/memory_snapshot_minidump.cc",
     "minidump/memory_snapshot_minidump.h",
     "minidump/minidump_annotation_reader.cc",
     "minidump/minidump_annotation_reader.h",
+    "minidump/minidump_context_converter.cc",
+    "minidump/minidump_context_converter.h",
     "minidump/minidump_simple_string_dictionary_reader.cc",
     "minidump/minidump_simple_string_dictionary_reader.h",
     "minidump/minidump_stream.h",
@@ -93,16 +97,9 @@ static_library("snapshot") {
       "mac/process_snapshot_mac.h",
       "mac/process_types.cc",
       "mac/process_types.h",
-      "mac/process_types/all.proctype",
-      "mac/process_types/annotation.proctype",
-      "mac/process_types/crashpad_info.proctype",
-      "mac/process_types/crashreporterclient.proctype",
       "mac/process_types/custom.cc",
-      "mac/process_types/dyld_images.proctype",
       "mac/process_types/flavors.h",
       "mac/process_types/internal.h",
-      "mac/process_types/loader.proctype",
-      "mac/process_types/nlist.proctype",
       "mac/process_types/traits.h",
       "mac/system_snapshot_mac.cc",
       "mac/system_snapshot_mac.h",
@@ -175,8 +172,6 @@ static_library("snapshot") {
       "win/exception_snapshot_win.h",
       "win/memory_map_region_snapshot_win.cc",
       "win/memory_map_region_snapshot_win.h",
-      "win/memory_snapshot_win.cc",
-      "win/memory_snapshot_win.h",
       "win/module_snapshot_win.cc",
       "win/module_snapshot_win.h",
       "win/pe_image_annotations_reader.cc",
@@ -241,15 +236,21 @@ static_library("snapshot") {
   }
 }
 
-fuzzer_test("elf_image_reader_fuzzer") {
-  sources = [
-    "elf/elf_image_reader_fuzzer.cc",
-  ]
+if (crashpad_is_linux && use_fuzzing_engine) {
+  # Since crashpad uses its own crashpad_fuzzer_test GN template to wrap
+  # Chromium's fuzzer_test template, it's better to rely on |use_fuzzing_engine|
+  # and disable fuzz targets as they will not build successfully without it.
+  crashpad_fuzzer_test("elf_image_reader_fuzzer") {
+    sources = [
+      "elf/elf_image_reader_fuzzer.cc",
+    ]
 
-  deps = [
-    ":snapshot",
-    "../third_party/mini_chromium:base",
-  ]
+    deps = [
+      ":snapshot",
+      "../third_party/mini_chromium:base",
+    ]
+    seed_corpus = "elf/elf_image_reader_fuzzer_corpus"
+  }
 }
 
 static_library("test_support") {
@@ -348,7 +349,6 @@ source_set("snapshot_test") {
       "crashpad_types/image_annotation_reader_test.cc",
       "elf/elf_image_reader_test.cc",
       "elf/elf_image_reader_test_note.S",
-      "elf/test_exported_symbols.sym",
     ]
   }
 

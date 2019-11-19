@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ko">
+<translation id="1036550831858290950">현재 탭을 북마크로 저장</translation>
 <translation id="104962181688258143">파일 앱 열기</translation>
 <translation id="1122869341872663659"><ph name="QUERY" />에 관한 검색결과 <ph name="N" />개 표시 중</translation>
 <translation id="1195667586424773550">링크를 탭의 검색주소창으로 드래그하세요.</translation>
@@ -12,6 +13,7 @@
 <translation id="1383876407941801731">검색</translation>
 <translation id="1454364489140280055"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT1" /><ph name="SEPARATOR2" /><ph name="G" /> 또는 <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="ENTER" /></translation>
 <translation id="1477442857810932985">행의 끝으로 이동</translation>
+<translation id="1499072997694708844">열려 있는 찾기 창을 닫거나 현재 페이지 로드를 중지합니다.</translation>
 <translation id="1510238584712386396">런처</translation>
 <translation id="152892567002884378">볼륨 크게</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />을 누르고 <ph name="ESC" /></translation>
@@ -21,6 +23,7 @@
 <translation id="169515659049020177">Shift</translation>
 <translation id="1732295673545939435"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="KEY" /></translation>
 <translation id="1733525068429116555">검색주소창에 입력한 주소에 www. 및 .com을 추가한 후 페이지 열기</translation>
+<translation id="1872219238824176091">현재 데스크 삭제</translation>
 <translation id="1920446759863417809"><ph name="SHIFT1" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />을 누르고 <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="TAB" /> 또는 <ph name="LEFT" /></translation>
 <translation id="1996162290124031907">다음 탭으로 이동</translation>
 <translation id="2010818616644390445">창의 마지막 탭으로 이동</translation>
@@ -33,20 +36,23 @@
 <translation id="2185166372312820725">이전 탭으로 이동</translation>
 <translation id="2194790690264064655"><ph name="CTRL" />을 누른 상태에서 링크를 클릭</translation>
 <translation id="2246352309084894470">전체 화면 런처 열기/닫기</translation>
+<translation id="2354531887393764880">마침표</translation>
 <translation id="2382644247745281995">현재 키보드 레이아웃에서는 지원되지 않습니다.</translation>
 <translation id="2397416548179033562">Chrome 메뉴 표시</translation>
 <translation id="2424073332829844142">Caps Lock 켜고 끄기</translation>
 <translation id="2441202986792279177">창 간에 빠르게 전환</translation>
 <translation id="2454251766545114447">축소 표시</translation>
 <translation id="2478303094958140141">ChromeVox(음성 피드백) 사용 또는 사용 중지</translation>
+<translation id="2480851840841871861">Google 어시스턴트 열기</translation>
+<translation id="2488661730534396940">왼쪽 데스크 활성화</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2530339807289914946">웹페이지를 아래로 스크롤</translation>
 <translation id="2574014812750545982">페이지 확대/축소 레벨 재설정</translation>
 <translation id="2596078834055697711">창 스크린샷 찍기</translation>
 <translation id="2685170433750953446"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />을 누르고 <ph name="TAB" /> 또는 <ph name="RIGHT" /></translation>
-<translation id="2699509451653686398">현재 웹페이지를 북마크로 저장</translation>
 <translation id="2750942583782703988">현재 페이지를 새로고침</translation>
 <translation id="2764005613199379871">검색주소창에 포커스를 둡니다.</translation>
+<translation id="2774822903829597107">새 데스크 생성</translation>
 <translation id="2789868185375229787">페이지를 축소</translation>
 <translation id="2804480015716812239"><ph name="ALT" />를 누른 상태에서 링크를 클릭</translation>
 <translation id="2830827904629746450">오른쪽에 창 고정</translation>
@@ -78,6 +84,7 @@
 <translation id="3792178297143798024">실행기에서 강조표시된 항목을 엽니다.</translation>
 <translation id="379295446891231126"><ph name="CTRL" /><ph name="SEPARATOR" /> 1부터 8</translation>
 <translation id="3837047332182291558">키보드 밝게(백라이트 키보드만 해당)</translation>
+<translation id="3949671998904569433">쉼표</translation>
 <translation id="3976863468609830880">실행기의 마지막 아이콘 클릭</translation>
 <translation id="3994783594793697310">확대/축소 레벨 재설정</translation>
 <translation id="4026843240379844265">디스플레이 간 활성 창 이동</translation>
@@ -97,6 +104,7 @@
 <translation id="4642092649622328492">부분 스크린샷 찍기</translation>
 <translation id="4698850295812410683">스타일러스 도구 표시</translation>
 <translation id="4801989101741319327">다음 단어의 끝으로 이동</translation>
+<translation id="4866066940972151697">오른쪽 데스크 활성화</translation>
 <translation id="4916163929714267752">새 창에서 링크 열기</translation>
 <translation id="5030659775136592441">북마크 관리자 표시</translation>
 <translation id="5034421018520995080">페이지 맨 위로 이동</translation>
@@ -112,6 +120,7 @@
 <translation id="5554139136362089836">현재 페이지 검색</translation>
 <translation id="5563050856984839829"><ph name="CTRL" /><ph name="SEPARATOR" /><ph name="SHIFT" />를 누르고 링크를 클릭</translation>
 <translation id="561814908794220892">새 탭에서 웹페이지 열기</translation>
+<translation id="5620219513321115856">활성 창을 오른쪽 데스크로 옮깁니다.</translation>
 <translation id="5710621673935162997"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="L" /> 또는 <ph name="ALT" /><ph name="SEPARATOR2" /><ph name="D" /></translation>
 <translation id="5757111373163288447">탭에서 링크 열기</translation>
 <translation id="5757474750054631686">키보드 어둡게(백라이트 키보드만 해당)</translation>
@@ -122,7 +131,6 @@
 <translation id="6045998054441862242">고대비 모드 사용</translation>
 <translation id="6052614013050385269">마우스 오른쪽 버튼으로 링크 클릭</translation>
 <translation id="6129953537138746214">공백</translation>
-<translation id="613146727819833328">창을 가운데로 이동</translation>
 <translation id="6143669479988153888">페이지를 확대</translation>
 <translation id="6185696379715117369">페이지 위로</translation>
 <translation id="6228457605945141550">어둡게</translation>
@@ -160,18 +168,20 @@
 <translation id="7422707470576323858">사용 가능한 다음 입력 방법으로 전환</translation>
 <translation id="743754632698445141">앱 고정 해제</translation>
 <translation id="7439718573248533901">다음 글자를 삭제(앞으로 삭제)</translation>
+<translation id="7500368597227394048">하이픈</translation>
 <translation id="7611271430932669992">포커스를 팝업 및 대화상자로 이동</translation>
 <translation id="766326951329901120">클립보드의 콘텐츠를 일반 텍스트로 붙여넣기</translation>
+<translation id="7703010453515335249">왼쪽 대괄호</translation>
 <translation id="7724603315864178912">잘라내기</translation>
 <translation id="7730490981846175479"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />을 누르고 <ph name="SPACE" /> 또는 <ph name="ENTER" /></translation>
 <translation id="7787242579016742662">브라우저에서 파일 열기</translation>
-<translation id="7917881398263220094">현재 페이지 로드를 중지</translation>
 <translation id="7952165122793773711">1~8번째 탭으로 이동합니다.</translation>
 <translation id="8026334261755873520">인터넷 사용 기록 삭제</translation>
 <translation id="8130528849632411619">문서 처음으로 이동</translation>
 <translation id="8147954207400281792"><ph name="CTRL" /><ph name="SEPARATOR" /><ph name="K" /> 또는 <ph name="E" /></translation>
 <translation id="8232835244134740473">상태 영역(계정 사진이 표시되는 곳), 런처, 검색주소창, 북마크바(표시된 경우), 열려 있는 웹페이지, 다운로드바(표시된 경우) 사이에 포커스를 전환합니다.</translation>
 <translation id="8234414138295101081">화면 90도 회전</translation>
+<translation id="8241665785394195545">오른쪽 대괄호</translation>
 <translation id="8264941229485248811">Developer Tools 검사기 표시 또는 숨기기</translation>
 <translation id="836869401750819675">다운로드 페이지 열기</translation>
 <translation id="8388247778047144397">링크를 탭 표시줄의 빈 영역으로 드래그</translation>
@@ -184,6 +194,7 @@
 <translation id="8717459106217102612">이전 단어 또는 글자를 선택</translation>
 <translation id="8727232706774971183">알림 확인</translation>
 <translation id="8855885154700222542">전체화면 키</translation>
+<translation id="8881584919399569791">활성 창을 왼쪽 데스크로 옮깁니다.</translation>
 <translation id="88986195241502842">페이지 아래로</translation>
 <translation id="8924883688469390268">이전 사용자로 전환</translation>
 <translation id="8977648847395357314">검색주소창의 콘텐츠를 선택</translation>

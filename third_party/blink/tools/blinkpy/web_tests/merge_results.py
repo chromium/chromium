@@ -551,10 +551,13 @@ class JSONTestResultsMerger(JSONMerger):
             ':random_order_seed$',
             ':version$',
         ]
-        for match_name in matching:
-            self.add_helper(
-                NameRegexMatch(match_name),
-                self.merge_equal)
+        # Note: the regex matcher is quite fast, so take advantage of it to
+        # combine identical actions into one. The JSON files contain many keys,
+        # and the cost of iterating over and executing multiple identical
+        # helpers is measurable.
+        self.add_helper(
+            NameRegexMatch('|'.join(matching)),
+            self.merge_equal)
 
         # These keys are accumulated sums we want to add together.
         addable = [
@@ -567,10 +570,9 @@ class JSONTestResultsMerger(JSONMerger):
             # All keys inside the num_failures_by_type entry.
             ':num_failures_by_type:',
         ]
-        for match_name in addable:
-            self.add_helper(
-                NameRegexMatch(match_name),
-                lambda o, name=None: sum(o))
+        self.add_helper(
+            NameRegexMatch('|'.join(addable)),
+            lambda o, name=None: sum(o))
 
         # If any shard is interrupted, mark the whole thing as interrupted.
         self.add_helper(
@@ -619,9 +621,12 @@ class WebTestDirMerger(DirMerger):
             FilenameRegexMatch(r'error_log\.txt$'),
             MergeFilesLinesSorted(self.filesystem))
 
-        # pywebsocket files aren't particularly useful, so just save them.
+        # wptserve and pywebsocket files don't need to be merged, so just save them.
         self.add_helper(
             FilenameRegexMatch(r'pywebsocket\.ws\.log-.*-err\.txt$'),
+            MergeFilesKeepFiles(self.filesystem))
+        self.add_helper(
+            FilenameRegexMatch(r'wptserve_stderr\.txt$'),
             MergeFilesKeepFiles(self.filesystem))
 
         # These JSON files have "result style" JSON in them.
@@ -664,10 +669,20 @@ def ensure_empty_dir(fs, directory, allow_existing, remove_existing):
             ('Output directory %s exists!\n'
              'Use --allow-existing-output-directory to continue') % directory)
 
-    if remove_existing and not fs.remove_contents(directory):
+    if not remove_existing:
+        return
+
+    # The directory name 'layout-test-results' needs to be consistent with
+    # //build/scripts/slave/recipe_modules/chromium_tests/steps.py and
+    # //src/testing/buildbot/gn_isolate_map.pyl.
+    layout_test_results = fs.join(directory, 'layout-test-results')
+    merged_output_json = fs.join(directory, 'output.json')
+    if fs.exists(layout_test_results) and not fs.remove_contents(layout_test_results):
         raise IOError(
             ('Unable to remove output directory %s contents!\n'
-             'See log output for errors.') % directory)
+             'See log output for errors.') % layout_test_results)
+    if fs.exists(merged_output_json):
+        fs.remove(merged_output_json)
 
 
 def main(argv):
@@ -707,9 +722,9 @@ directory. The script will be given the arguments plus
         action='store_true', default=False,
         help='Allow merging results into a directory which already exists.')
     parser.add_argument(
-        '--remove-existing-output-directory',
+        '--remove-existing-layout-test-results',
         action='store_true', default=False,
-        help='Remove merging results into a directory which already exists.')
+        help='Remove existing layout test results from the output directory.')
     parser.add_argument(
         '--input-directories', nargs='+',
         help='Directories to merge the results from.')
@@ -784,7 +799,7 @@ directory. The script will be given the arguments plus
         if not args.output_directory:
             args.output_directory = os.getcwd()
             args.allow_existing_output_directory = True
-            args.remove_existing_output_directory = True
+            args.remove_existing_layout_test_results = True
 
         assert not args.input_directories
         args.input_directories = [os.path.dirname(f) for f in args.positional]
@@ -796,7 +811,8 @@ directory. The script will be given the arguments plus
         args.input_directories = args.positional
 
     if not args.output_directory:
-        args.output_directory = tempfile.mkdtemp(suffix='webkit_layout_test_results.')
+        args.output_directory = tempfile.mkdtemp(suffix='_merged_web_test_results')
+        args.allow_existing_output_directory = True
 
     assert args.output_directory
     assert args.input_directories
@@ -820,7 +836,7 @@ directory. The script will be given the arguments plus
         FileSystem(),
         args.output_directory,
         allow_existing=args.allow_existing_output_directory,
-        remove_existing=args.remove_existing_output_directory)
+        remove_existing=args.remove_existing_layout_test_results)
 
     merger.merge(args.output_directory, args.input_directories)
 

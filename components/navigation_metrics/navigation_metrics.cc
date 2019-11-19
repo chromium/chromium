@@ -4,10 +4,13 @@
 
 #include "components/navigation_metrics/navigation_metrics.h"
 
+#include "base/i18n/rtl.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/stl_util.h"
 #include "components/dom_distiller/core/url_constants.h"
+#include "components/profile_metrics/browser_profile_type.h"
+#include "components/url_formatter/url_formatter.h"
 #include "url/gurl.h"
 
 namespace navigation_metrics {
@@ -29,7 +32,7 @@ const char* const kSchemeNames[] = {
     "chrome-native",
     "chrome-search",
     dom_distiller::kDomDistillerScheme,
-    "chrome-devtools",
+    "devtools",
     "chrome-extension",
     "view-source",
     "externalfile",
@@ -49,16 +52,25 @@ Scheme GetScheme(const GURL& url) {
   return Scheme::UNKNOWN;
 }
 
-void RecordMainFrameNavigation(const GURL& url,
-                               bool is_same_document,
-                               bool is_off_the_record) {
+void RecordMainFrameNavigation(
+    const GURL& url,
+    bool is_same_document,
+    bool is_off_the_record,
+    profile_metrics::BrowserProfileType profile_type) {
   Scheme scheme = GetScheme(url);
   UMA_HISTOGRAM_ENUMERATION("Navigation.MainFrameScheme", scheme,
                             Scheme::COUNT);
   if (!is_same_document) {
     UMA_HISTOGRAM_ENUMERATION("Navigation.MainFrameSchemeDifferentPage", scheme,
                               Scheme::COUNT);
+    UMA_HISTOGRAM_BOOLEAN("Navigation.MainFrameHasRTLDomainDifferentPage",
+                          base::i18n::StringContainsStrongRTLChars(
+                              url_formatter::IDNToUnicode(url.host())));
   }
+
+  UMA_HISTOGRAM_BOOLEAN("Navigation.MainFrameHasRTLDomain",
+                        base::i18n::StringContainsStrongRTLChars(
+                            url_formatter::IDNToUnicode(url.host())));
 
   if (is_off_the_record) {
     UMA_HISTOGRAM_ENUMERATION("Navigation.MainFrameSchemeOTR", scheme,
@@ -67,10 +79,8 @@ void RecordMainFrameNavigation(const GURL& url,
       UMA_HISTOGRAM_ENUMERATION("Navigation.MainFrameSchemeDifferentPageOTR",
                                 scheme, Scheme::COUNT);
     }
-
-    base::RecordAction(base::UserMetricsAction("PageLoadInIncognito"));
   }
-  base::RecordAction(base::UserMetricsAction("PageLoad"));
+  UMA_HISTOGRAM_ENUMERATION("Navigation.MainFrameProfileType", profile_type);
 }
 
 void RecordOmniboxURLNavigation(const GURL& url) {

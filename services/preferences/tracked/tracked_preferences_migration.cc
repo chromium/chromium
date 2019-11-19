@@ -32,9 +32,9 @@ class TrackedPreferencesMigrator
           unprotected_store_cleaner,
       const base::Callback<void(const std::string& key)>&
           protected_store_cleaner,
-      const base::Callback<void(const base::Closure&)>&
+      const base::Callback<void(base::OnceClosure)>&
           register_on_successful_unprotected_store_write_callback,
-      const base::Callback<void(const base::Closure&)>&
+      const base::Callback<void(base::OnceClosure)>&
           register_on_successful_protected_store_write_callback,
       std::unique_ptr<PrefHashStore> unprotected_pref_hash_store,
       std::unique_ptr<PrefHashStore> protected_pref_hash_store,
@@ -45,7 +45,7 @@ class TrackedPreferencesMigrator
   // class and then calls MigrateIfReady();
   void InterceptFilterOnLoad(
       PrefFilterID id,
-      const InterceptablePrefFilter::FinalizeFilterOnLoadCallback&
+      InterceptablePrefFilter::FinalizeFilterOnLoadCallback
           finalize_filter_on_load,
       std::unique_ptr<base::DictionaryValue> prefs);
 
@@ -63,9 +63,9 @@ class TrackedPreferencesMigrator
 
   const base::Callback<void(const std::string& key)> unprotected_store_cleaner_;
   const base::Callback<void(const std::string& key)> protected_store_cleaner_;
-  const base::Callback<void(const base::Closure&)>
+  const base::Callback<void(base::OnceClosure)>
       register_on_successful_unprotected_store_write_callback_;
-  const base::Callback<void(const base::Closure&)>
+  const base::Callback<void(base::OnceClosure)>
       register_on_successful_protected_store_write_callback_;
 
   InterceptablePrefFilter::FinalizeFilterOnLoadCallback
@@ -98,7 +98,7 @@ void CleanupPrefStore(
 // once the destination pref store they were migrated to was successfully
 // written to disk. Otherwise, executes the cleanup right away.
 void ScheduleSourcePrefStoreCleanup(
-    const base::Callback<void(const base::Closure&)>&
+    const base::Callback<void(base::OnceClosure)>&
         register_on_successful_destination_store_write_callback,
     const base::Callback<void(const std::string& key)>& source_store_cleaner,
     const std::set<std::string>& keys_to_clean,
@@ -197,9 +197,9 @@ TrackedPreferencesMigrator::TrackedPreferencesMigrator(
     const base::Callback<void(const std::string& key)>&
         unprotected_store_cleaner,
     const base::Callback<void(const std::string& key)>& protected_store_cleaner,
-    const base::Callback<void(const base::Closure&)>&
+    const base::Callback<void(base::OnceClosure)>&
         register_on_successful_unprotected_store_write_callback,
-    const base::Callback<void(const base::Closure&)>&
+    const base::Callback<void(base::OnceClosure)>&
         register_on_successful_protected_store_write_callback,
     std::unique_ptr<PrefHashStore> unprotected_pref_hash_store,
     std::unique_ptr<PrefHashStore> protected_pref_hash_store,
@@ -214,23 +214,22 @@ TrackedPreferencesMigrator::TrackedPreferencesMigrator(
       register_on_successful_protected_store_write_callback_(
           register_on_successful_protected_store_write_callback),
       unprotected_pref_hash_store_(std::move(unprotected_pref_hash_store)),
-      protected_pref_hash_store_(std::move(protected_pref_hash_store)) {
-}
+      protected_pref_hash_store_(std::move(protected_pref_hash_store)) {}
 
 TrackedPreferencesMigrator::~TrackedPreferencesMigrator() {}
 
 void TrackedPreferencesMigrator::InterceptFilterOnLoad(
     PrefFilterID id,
-    const InterceptablePrefFilter::FinalizeFilterOnLoadCallback&
+    InterceptablePrefFilter::FinalizeFilterOnLoadCallback
         finalize_filter_on_load,
     std::unique_ptr<base::DictionaryValue> prefs) {
   switch (id) {
     case UNPROTECTED_PREF_FILTER:
-      finalize_unprotected_filter_on_load_ = finalize_filter_on_load;
+      finalize_unprotected_filter_on_load_ = std::move(finalize_filter_on_load);
       unprotected_prefs_ = std::move(prefs);
       break;
     case PROTECTED_PREF_FILTER:
-      finalize_protected_filter_on_load_ = finalize_filter_on_load;
+      finalize_protected_filter_on_load_ = std::move(finalize_filter_on_load);
       protected_prefs_ = std::move(prefs);
       break;
   }
@@ -272,10 +271,10 @@ void TrackedPreferencesMigrator::MigrateIfReady() {
   }
 
   // Hand the processed prefs back to their respective filters.
-  finalize_unprotected_filter_on_load_.Run(std::move(unprotected_prefs_),
-                                           unprotected_prefs_altered);
-  finalize_protected_filter_on_load_.Run(std::move(protected_prefs_),
-                                         protected_prefs_altered);
+  std::move(finalize_unprotected_filter_on_load_)
+      .Run(std::move(unprotected_prefs_), unprotected_prefs_altered);
+  std::move(finalize_protected_filter_on_load_)
+      .Run(std::move(protected_prefs_), protected_prefs_altered);
 
   if (unprotected_prefs_need_cleanup) {
     // Schedule a cleanup of the |protected_pref_names_| from the unprotected
@@ -306,9 +305,9 @@ void SetupTrackedPreferencesMigration(
     const base::Callback<void(const std::string& key)>&
         unprotected_store_cleaner,
     const base::Callback<void(const std::string& key)>& protected_store_cleaner,
-    const base::Callback<void(const base::Closure&)>&
+    const base::Callback<void(base::OnceClosure)>&
         register_on_successful_unprotected_store_write_callback,
-    const base::Callback<void(const base::Closure&)>&
+    const base::Callback<void(base::OnceClosure)>&
         register_on_successful_protected_store_write_callback,
     std::unique_ptr<PrefHashStore> unprotected_pref_hash_store,
     std::unique_ptr<PrefHashStore> protected_pref_hash_store,
@@ -325,10 +324,10 @@ void SetupTrackedPreferencesMigration(
 
   // The callbacks bound below will own this TrackedPreferencesMigrator by
   // reference.
-  unprotected_pref_filter->InterceptNextFilterOnLoad(base::Bind(
+  unprotected_pref_filter->InterceptNextFilterOnLoad(base::BindOnce(
       &TrackedPreferencesMigrator::InterceptFilterOnLoad, prefs_migrator,
       TrackedPreferencesMigrator::UNPROTECTED_PREF_FILTER));
-  protected_pref_filter->InterceptNextFilterOnLoad(base::Bind(
+  protected_pref_filter->InterceptNextFilterOnLoad(base::BindOnce(
       &TrackedPreferencesMigrator::InterceptFilterOnLoad, prefs_migrator,
       TrackedPreferencesMigrator::PROTECTED_PREF_FILTER));
 }

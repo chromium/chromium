@@ -4,6 +4,7 @@
 
 // See https://webaudio.github.io/web-audio-api/#AudioScheduledSourceNode
 [
+    Exposed=Window,
     ActiveScriptWrappable
 ]
 interface AudioScheduledSourceNode : AudioNode {

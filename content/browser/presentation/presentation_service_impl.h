@@ -22,7 +22,10 @@
 #include "content/public/browser/presentation_service_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/frame_navigate_params.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/presentation/presentation.mojom.h"
 #include "url/gurl.h"
 
@@ -61,16 +64,17 @@ class CONTENT_EXPORT PresentationServiceImpl
 
   ~PresentationServiceImpl() override;
 
-  // Creates a binding between this object and |request|. Note that a
-  // PresentationServiceImpl instance can be bound to multiple requests.
-  void Bind(blink::mojom::PresentationServiceRequest request);
+  // Creates a binding between this object and |receiver|. Note that a
+  // PresentationServiceImpl instance can be bound to multiple receivers.
+  void Bind(mojo::PendingReceiver<blink::mojom::PresentationService> receiver);
 
   // PresentationService implementation.
   void SetDefaultPresentationUrls(
       const std::vector<GURL>& presentation_urls) override;
-  void SetController(
-      blink::mojom::PresentationControllerPtr controller) override;
-  void SetReceiver(blink::mojom::PresentationReceiverPtr receiver) override;
+  void SetController(mojo::PendingRemote<blink::mojom::PresentationController>
+                         presentation_controller_remote) override;
+  void SetReceiver(mojo::PendingRemote<blink::mojom::PresentationReceiver>
+                       presentation_receiver_remote) override;
   void ListenForScreenAvailability(const GURL& url) override;
   void StopListeningForScreenAvailability(const GURL& url) override;
   void StartPresentation(const std::vector<GURL>& presentation_urls,
@@ -117,7 +121,7 @@ class CONTENT_EXPORT PresentationServiceImpl
     ~ScreenAvailabilityListenerImpl() override;
 
     // PresentationScreenAvailabilityListener implementation.
-    GURL GetAvailabilityUrl() const override;
+    GURL GetAvailabilityUrl() override;
     void OnScreenAvailabilityChanged(
         blink::mojom::ScreenAvailability availability) override;
 
@@ -208,8 +212,10 @@ class CONTENT_EXPORT PresentationServiceImpl
   // Calls |receiver_| to create a new PresentationConnection on receiver page.
   void OnReceiverConnectionAvailable(
       blink::mojom::PresentationInfoPtr presentation_info,
-      PresentationConnectionPtr controller_connection_ptr,
-      PresentationConnectionRequest receiver_connection_request);
+      mojo::PendingRemote<blink::mojom::PresentationConnection>
+          controller_connection_remote,
+      mojo::PendingReceiver<blink::mojom::PresentationConnection>
+          receiver_connection_receiver);
 
   // Associates a ReconnectPresentation |callback| with a unique request ID and
   // stores it in a map. Moves out |callback| object if |callback| is registered
@@ -248,10 +254,12 @@ class CONTENT_EXPORT PresentationServiceImpl
   ReceiverPresentationServiceDelegate* receiver_delegate_;
 
   // Pointer to the PresentationController implementation in the renderer.
-  blink::mojom::PresentationControllerPtr controller_;
+  mojo::Remote<blink::mojom::PresentationController>
+      presentation_controller_remote_;
 
   // Pointer to the PresentationReceiver implementation in the renderer.
-  blink::mojom::PresentationReceiverPtr receiver_;
+  mojo::Remote<blink::mojom::PresentationReceiver>
+      presentation_receiver_remote_;
 
   std::vector<GURL> default_presentation_urls_;
 
@@ -270,8 +278,9 @@ class CONTENT_EXPORT PresentationServiceImpl
   std::unordered_map<int, std::unique_ptr<NewPresentationCallbackWrapper>>
       pending_reconnect_presentation_cbs_;
 
-  // RAII binding of |this| to PresentationService request.
-  mojo::Binding<blink::mojom::PresentationService> binding_;
+  // RAII receiver of |this| to PresentationService request.
+  mojo::Receiver<blink::mojom::PresentationService>
+      presentation_service_receiver_{this};
 
   // ID of the RenderFrameHost this object is associated with.
   int render_process_id_;
@@ -281,7 +290,7 @@ class CONTENT_EXPORT PresentationServiceImpl
   bool is_main_frame_;
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
-  base::WeakPtrFactory<PresentationServiceImpl> weak_factory_;
+  base::WeakPtrFactory<PresentationServiceImpl> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PresentationServiceImpl);
 };

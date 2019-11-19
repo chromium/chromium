@@ -30,6 +30,18 @@ cast_source_set("renderer") {
     "cast_content_renderer_client.h",
     "cast_media_playback_options.cc",
     "cast_media_playback_options.h",
+    "cast_url_loader_throttle_provider.cc",
+    "cast_url_loader_throttle_provider.h",
+    "js_channel_bindings.cc",
+    "js_channel_bindings.h",
+    "native_bindings_helper.cc",
+    "native_bindings_helper.h",
+    "on_load_script_injector.cc",
+    "on_load_script_injector.h",
+    "queryable_data_bindings.cc",
+    "queryable_data_bindings.h",
+    "queryable_data_store.cc",
+    "queryable_data_store.h",
   ]
 
   public_deps = [
@@ -45,6 +57,7 @@ cast_source_set("renderer") {
     "//chromecast:chromecast_buildflags",
     "//chromecast/base",
     "//chromecast/common",
+    "//chromecast/common:queryable_data",
     "//chromecast/common/media",
     "//chromecast/common/mojom",
     "//chromecast/media",
@@ -52,9 +65,12 @@ cast_source_set("renderer") {
     "//content/public/common",
     "//content/public/renderer",
     "//crypto",
+    "//gin",
     "//ipc",
     "//media",
+    "//services/network/public/cpp:cpp",
     "//services/service_manager/public/cpp",
+    "//v8",
   ]
 
   if (!is_fuchsia) {
@@ -72,18 +88,16 @@ cast_source_set("renderer") {
       "//chromecast/common/mojom",
       "//mojo/public/cpp/bindings",
     ]
+  } else {
+    deps += [ "//chromecast/media/audio:cast_audio_device_factory" ]
   }
 
   if (enable_chromecast_extensions) {
     sources += [
       "cast_extensions_dispatcher_delegate.cc",
-      "cast_extensions_dispatcher_delegate.g",
+      "cast_extensions_dispatcher_delegate.h",
       "cast_extensions_renderer_client.cc",
       "cast_extensions_renderer_client.h",
-      "extensions/automation_ax_tree_wrapper.cc",
-      "extensions/automation_ax_tree_wrapper.h",
-      "extensions/automation_internal_custom_bindings.cc",
-      "extensions/automation_internal_custom_bindings.h",
       "extensions/extension_hooks_delegate.cc",
       "extensions/extension_hooks_delegate.h",
       "extensions/tabs_hooks_delegate.cc",
@@ -96,6 +110,7 @@ cast_source_set("renderer") {
       "//chromecast/renderer:extensions_resources",
       "//components/version_info:version_info",
       "//extensions/common",
+      "//extensions/common/api",
       "//extensions/renderer",
       "//gin:gin",
     ]

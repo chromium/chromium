@@ -5,22 +5,11 @@
   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAq7zRobvA+AVlvNqkHSSVhh1sEWsHSqz4oR/XptkDe/Cz3+gW9ZGumZ20NCHjaac8j1iiesdigp8B1LJsd/2WWv2Dbnto4f8GrQ5MVphKyQ9WJHwejEHN2K4vzrTcwaXqv5BSTXwxlxS/mXCmXskTfryKTLuYrcHEWK8fCHb+0gvr8b/kvsi75A1aMmb6nUnFJvETmCkOCPNX5CHTdy634Ts/x0fLhRuPlahk63rdf7agxQv5viVjQFk+tbgv6aa9kdSd11Js/RZ9yZjrFgHOBWgP4jTBqud4+HUglrzu8qynFipyNRLCZsaxhm+NItTyNgesxLdxZcwOz56KD1Q4IQIDAQAB",
   "manifest_version": 2,
   "permissions": [
-    "hid",
-    "u2fDevices",
-    "usb",
     "cryptotokenPrivate",
     "externally_connectable.all_urls",
     "tabs",
     "https://*/*",
-    "http://*/*",
-    {
-      "usbDevices": [
-        {
-          "vendorId": 4176,
-          "productId": 529
-        }
-      ]
-    }
+    "http://*/*"
   ],
   "externally_connectable": {
     "matches": [
@@ -28,8 +17,7 @@
     ],
     "ids": [
       "fjajfjhkeibgmiggdfehjplbhmfkialk"
-    ],
-    "accepts_tls_channel_id": true
+    ]
   },
   "background": {
     "persistent": false,
@@ -47,7 +35,6 @@
       "webrequest.js",
       "messagetypes.js",
       "factoryregistry.js",
-      "closeable.js",
       "requesthelper.js",
       "asn1.js",
       "enroller.js",
@@ -62,23 +49,8 @@
       "window-timer.js",
       "cryptotokenorigincheck.js",
       "cryptotokenapprovedorigins.js",
-      "gnubbydevice.js",
-      "hidgnubbydevice.js",
-      "usbgnubbydevice.js",
-      "gnubbies.js",
-      "gnubby.js",
-      "gnubby-u2f.js",
-      "gnubbyfactory.js",
-      "singlesigner.js",
-      "multiplesigner.js",
-      "generichelper.js",
       "inherits.js",
       "individualattest.js",
-      "devicefactoryregistry.js",
-      "usbhelper.js",
-      "usbenrollhandler.js",
-      "usbsignhandler.js",
-      "usbgnubbyfactory.js",
       "googlecorpindividualattest.js",
       "cryptotokenbackground.js"
     ]

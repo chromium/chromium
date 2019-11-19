@@ -4,9 +4,7 @@
 
 #include <memory>
 
-#include "ash/note_taking_controller.h"
-#include "ash/shell.h"
-#include "ash/shell_test_api.h"
+#include "ash/public/cpp/note_taking_client.h"
 #include "ash/system/palette/mock_palette_tool_delegate.h"
 #include "ash/system/palette/palette_ids.h"
 #include "ash/system/palette/palette_tool.h"
@@ -18,47 +16,24 @@
 
 namespace ash {
 
-class TestNoteTakingControllerClient
-    : public ash::mojom::NoteTakingControllerClient {
+class TestNoteTakingControllerClient : public NoteTakingClient {
  public:
-  TestNoteTakingControllerClient() : binding_(this) {}
+  TestNoteTakingControllerClient() = default;
   ~TestNoteTakingControllerClient() override = default;
 
-  void Attach() {
-    DCHECK(!controller_);
-    Shell::Get()->note_taking_controller()->BindRequest(
-        mojo::MakeRequest(&controller_));
-    ash::mojom::NoteTakingControllerClientPtr client;
-    binding_.Bind(mojo::MakeRequest(&client));
-    controller_->SetClient(std::move(client));
-    controller_.FlushForTesting();
-  }
-
-  void Detach() {
-    DCHECK(controller_);
-    controller_ = nullptr;
-    DCHECK(binding_.is_bound());
-    binding_.Close();
-    FlushClientMojo();
-  }
-
   int GetCreateNoteCount() {
-    FlushClientMojo();
     return create_note_count_;
   }
 
-  // ash::mojom::NoteTakingControllerClient:
+  void set_can_create(bool can_create) { can_create_ = can_create; }
+
+  // NoteTakingClient:
+  bool CanCreateNote() override { return can_create_; }
   void CreateNote() override { create_note_count_++; }
 
  private:
-  void FlushClientMojo() {
-    Shell::Get()->note_taking_controller()->FlushMojoForTesting();
-  }
-
+  bool can_create_ = true;
   int create_note_count_ = 0;
-
-  mojo::Binding<ash::mojom::NoteTakingControllerClient> binding_;
-  ash::mojom::NoteTakingControllerPtr controller_;
 
   DISALLOW_COPY_AND_ASSIGN(TestNoteTakingControllerClient);
 };
@@ -76,13 +51,11 @@ class CreateNoteTest : public AshTestBase {
 
     palette_tool_delegate_ = std::make_unique<MockPaletteToolDelegate>();
     tool_ = std::make_unique<CreateNoteAction>(palette_tool_delegate_.get());
-    note_taking_client_ = std::make_unique<TestNoteTakingControllerClient>();
   }
 
  protected:
   std::unique_ptr<MockPaletteToolDelegate> palette_tool_delegate_;
   std::unique_ptr<PaletteTool> tool_;
-  std::unique_ptr<TestNoteTakingControllerClient> note_taking_client_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(CreateNoteTest);
@@ -95,12 +68,16 @@ TEST_F(CreateNoteTest, ViewOnlyCreatedWhenNoteAppIsAvailable) {
   EXPECT_FALSE(tool_->CreateView());
   tool_->OnViewDestroyed();
 
-  note_taking_client_->Attach();
+  auto note_taking_client = std::make_unique<TestNoteTakingControllerClient>();
   std::unique_ptr<views::View> view = base::WrapUnique(tool_->CreateView());
   EXPECT_TRUE(view);
   tool_->OnViewDestroyed();
 
-  note_taking_client_->Detach();
+  note_taking_client->set_can_create(false);
+  EXPECT_FALSE(tool_->CreateView());
+  tool_->OnViewDestroyed();
+
+  note_taking_client.reset();
   EXPECT_FALSE(tool_->CreateView());
   tool_->OnViewDestroyed();
 }
@@ -108,7 +85,7 @@ TEST_F(CreateNoteTest, ViewOnlyCreatedWhenNoteAppIsAvailable) {
 // Activating the note tool both creates a note on the client and also
 // disables the tool and hides the palette.
 TEST_F(CreateNoteTest, EnablingToolCreatesNewNoteAndDisablesTool) {
-  note_taking_client_->Attach();
+  auto note_taking_client = std::make_unique<TestNoteTakingControllerClient>();
   std::unique_ptr<views::View> view = base::WrapUnique(tool_->CreateView());
 
   EXPECT_CALL(*palette_tool_delegate_.get(),
@@ -116,7 +93,34 @@ TEST_F(CreateNoteTest, EnablingToolCreatesNewNoteAndDisablesTool) {
   EXPECT_CALL(*palette_tool_delegate_.get(), HidePalette());
 
   tool_->OnEnable();
-  EXPECT_EQ(1, note_taking_client_->GetCreateNoteCount());
+  EXPECT_EQ(1, note_taking_client->GetCreateNoteCount());
+}
+
+TEST_F(CreateNoteTest, ClientGetsDisabledAfterViewCreated) {
+  auto note_taking_client = std::make_unique<TestNoteTakingControllerClient>();
+  std::unique_ptr<views::View> view = base::WrapUnique(tool_->CreateView());
+
+  EXPECT_CALL(*palette_tool_delegate_.get(),
+              DisableTool(PaletteToolId::CREATE_NOTE));
+  EXPECT_CALL(*palette_tool_delegate_.get(), HidePalette());
+
+  note_taking_client->set_can_create(false);
+
+  tool_->OnEnable();
+  EXPECT_EQ(0, note_taking_client->GetCreateNoteCount());
+}
+
+TEST_F(CreateNoteTest, ClientGetsRemovedAfterViewCreated) {
+  auto note_taking_client = std::make_unique<TestNoteTakingControllerClient>();
+  std::unique_ptr<views::View> view = base::WrapUnique(tool_->CreateView());
+
+  EXPECT_CALL(*palette_tool_delegate_.get(),
+              DisableTool(PaletteToolId::CREATE_NOTE));
+  EXPECT_CALL(*palette_tool_delegate_.get(), HidePalette());
+
+  note_taking_client.reset();
+
+  tool_->OnEnable();
 }
 
 }  // namespace ash

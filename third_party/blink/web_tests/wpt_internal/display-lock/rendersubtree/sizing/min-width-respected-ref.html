@@ -1,0 +1,28 @@
+<!doctype HTML>
+<html>
+<meta charset="utf8">
+<title>Display Locking: min-width on locked root respected (reference)</title>
+<link rel="author" title="Vladimir Levin" href="mailto:vmpstr@chromium.org">
+<link rel="help" href="https://github.com/WICG/display-locking">
+
+<style>
+#border {
+  width: max-content;
+  border: 1px solid green;
+}
+#container {
+  contain: style layout;
+  width: 157px;
+}
+#sizer {
+  width: 123px;
+  height: 456px;
+}
+</style>
+
+<div id="border">
+  <div id="container">
+    <div id="sizer"></div>
+  </div>
+</div>
+</html>

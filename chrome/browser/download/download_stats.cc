@@ -71,12 +71,6 @@ void RecordMediaParserEvent(MediaParserEvent event) {
                             MediaParserEvent::kCount);
 }
 
-void RecordMediaParserCompletionTime(const base::TimeDelta& duration) {
-  UMA_HISTOGRAM_CUSTOM_TIMES("Download.MediaParser.CompletionTime", duration,
-                             base::TimeDelta::FromMilliseconds(10),
-                             base::TimeDelta::FromSeconds(60), 50);
-}
-
 void RecordMediaMetadataEvent(MediaMetadataEvent event) {
   UMA_HISTOGRAM_ENUMERATION("Download.MediaMetadata.Event", event,
                             MediaMetadataEvent::kCount);

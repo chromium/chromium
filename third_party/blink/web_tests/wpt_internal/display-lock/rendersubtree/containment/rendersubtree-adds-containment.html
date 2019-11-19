@@ -1,0 +1,70 @@
+<!doctype HTML>
+<html>
+<meta charset="utf8">
+<title>Display Locking: rendersubtree adds containment</title>
+<link rel="author" title="Rakina Zata Amni" href="mailto:rakina@chromium.org">
+<link rel="help" href="https://github.com/WICG/display-locking">
+
+<div id="container"></div>
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../resources/utils.js"></script>
+
+<script>
+function setUp() {
+  container.removeAttribute("rendersubtree");
+  container.style = "";
+  assert_equals(getComputedStyle(container).contain, "none");
+}
+
+test(() => {
+  setUp();
+  container.setAttribute("rendersubtree", INVISIBLE_NOT_ACTIVATABLE);
+  assert_equals(getComputedStyle(container).contain, "size layout style");
+}, "rendersubtree='invisible skip-activation' adds contain: size layout style;");
+
+test(() => {
+  setUp();
+  container.setAttribute("rendersubtree", INVISIBLE_ACTIVATABLE);
+  assert_equals(getComputedStyle(container).contain, "size layout style");
+}, "rendersubtree='invisible' adds contain: size layout style;");
+
+test(() => {
+  setUp();
+  container.setAttribute("rendersubtree", "InVisible");
+  assert_equals(getComputedStyle(container).contain, "size layout style");
+}, "rendersubtree=InVisible adds contain: size layout style;");
+
+test(() => {
+  setUp();
+  container.setAttribute("rendersubtree", "invalid");
+  assert_equals(getComputedStyle(container).contain, "layout style");
+  container.style = "contain: size;";
+  assert_equals(getComputedStyle(container).contain, "size layout style");
+  container.style = "contain: paint;";
+  assert_equals(getComputedStyle(container).contain, "layout style paint");
+}, "rendersubtree=invalid adds contain: layout style, keeps size and paint if exists");
+
+test(() => {
+  setUp();
+  container.setAttribute("rendersubtree", INVISIBLE_ACTIVATABLE);
+  container.style = "contain: style;";
+  assert_equals(getComputedStyle(container).contain, "size layout style");
+  container.style = "contain: style layout;";
+  assert_equals(getComputedStyle(container).contain, "size layout style");
+  container.style = "";
+  assert_equals(getComputedStyle(container).contain, "size layout style");
+}, "rendersubtree=invisible adds contain: size layout style, can't be overridden");
+
+test(() => {
+  setUp();
+  container.setAttribute("rendersubtree", INVISIBLE_ACTIVATABLE);
+  container.style = "contain: paint;";
+  assert_equals(getComputedStyle(container).contain, "size layout style paint");
+  container.style = "contain: strict;";
+  assert_equals(getComputedStyle(container).contain, "size layout style paint");
+  container.style = "contain: content;";
+  assert_equals(getComputedStyle(container).contain, "size layout style paint");
+}, "rendersubtree adds contain: size layout style and keeps paint if it exists");
+</script>

@@ -130,10 +130,11 @@ xsltParseStylesheetImport(xsltStylesheetPtr style, xmlNodePtr cur) {
 	int secres;
 
 	secres = xsltCheckRead(sec, NULL, URI);
-	if (secres == 0) {
-	    xsltTransformError(NULL, NULL, NULL,
-		 "xsl:import: read rights for %s denied\n",
-			     URI);
+	if (secres <= 0) {
+            if (secres == 0)
+                xsltTransformError(NULL, NULL, NULL,
+                     "xsl:import: read rights for %s denied\n",
+                                 URI);
 	    goto error;
 	}
     }

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/safe_browsing/download_protection/ppapi_download_request.h"
 
+#include <utility>
+
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -15,7 +17,6 @@
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "chrome/browser/sessions/session_tab_helper.h"
 #include "chrome/common/safe_browsing/file_type_policies.h"
-#include "components/data_use_measurement/core/data_use_user_data.h"
 #include "components/safe_browsing/common/utils.h"
 #include "components/safe_browsing/db/database_manager.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -44,7 +45,7 @@ PPAPIDownloadRequest::PPAPIDownloadRequest(
     const base::FilePath& default_file_path,
     const std::vector<base::FilePath::StringType>& alternate_extensions,
     Profile* profile,
-    const CheckDownloadCallback& callback,
+    CheckDownloadCallback callback,
     DownloadProtectionService* service,
     scoped_refptr<SafeBrowsingDatabaseManager> database_manager)
     : requestor_url_(requestor_url),
@@ -54,13 +55,12 @@ PPAPIDownloadRequest::PPAPIDownloadRequest(
       tab_id_(SessionTabHelper::IdForTab(web_contents)),
       default_file_path_(default_file_path),
       alternate_extensions_(alternate_extensions),
-      callback_(callback),
+      callback_(std::move(callback)),
       service_(service),
       database_manager_(database_manager),
       start_time_(base::TimeTicks::Now()),
       supported_path_(
-          GetSupportedFilePath(default_file_path, alternate_extensions)),
-      weakptr_factory_(this) {
+          GetSupportedFilePath(default_file_path, alternate_extensions)) {
   DCHECK(profile);
   is_extended_reporting_ = IsExtendedReportingEnabled(*profile->GetPrefs());
 
@@ -107,14 +107,13 @@ void PPAPIDownloadRequest::Start() {
   // verdict. The weak pointer used for the timeout will be invalidated (and
   // hence would prevent the timeout) if the check completes on time and
   // execution reaches Finish().
-  base::PostDelayedTaskWithTraits(
-      FROM_HERE, {BrowserThread::UI},
-      base::BindOnce(&PPAPIDownloadRequest::OnRequestTimedOut,
-                     weakptr_factory_.GetWeakPtr()),
-      base::TimeDelta::FromMilliseconds(
-          service_->download_request_timeout_ms()));
+  base::PostDelayedTask(FROM_HERE, {BrowserThread::UI},
+                        base::BindOnce(&PPAPIDownloadRequest::OnRequestTimedOut,
+                                       weakptr_factory_.GetWeakPtr()),
+                        base::TimeDelta::FromMilliseconds(
+                            service_->download_request_timeout_ms()));
 
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&PPAPIDownloadRequest::CheckWhitelistsOnIOThread,
                      requestor_url_, database_manager_,
@@ -142,10 +141,9 @@ void PPAPIDownloadRequest::CheckWhitelistsOnIOThread(
   bool url_was_whitelisted =
       requestor_url.is_valid() && database_manager &&
       database_manager->MatchDownloadWhitelistUrl(requestor_url);
-  base::PostTaskWithTraits(
-      FROM_HERE, {BrowserThread::UI},
-      base::BindOnce(&PPAPIDownloadRequest::WhitelistCheckComplete,
-                     download_request, url_was_whitelisted));
+  base::PostTask(FROM_HERE, {BrowserThread::UI},
+                 base::BindOnce(&PPAPIDownloadRequest::WhitelistCheckComplete,
+                                download_request, url_was_whitelisted));
 }
 
 void PPAPIDownloadRequest::WhitelistCheckComplete(bool was_on_whitelist) {
@@ -295,7 +293,7 @@ void PPAPIDownloadRequest::Finish(RequestOutcome reason,
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DVLOG(2) << __func__ << " response: " << static_cast<int>(response);
   if (!callback_.is_null())
-    base::ResetAndReturn(&callback_).Run(response);
+    std::move(callback_).Run(response);
   loader_.reset();
   weakptr_factory_.InvalidateWeakPtrs();
 

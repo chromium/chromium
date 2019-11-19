@@ -9,6 +9,7 @@ import android.graphics.Picture;
 
 import org.chromium.android_webview.CleanupReference;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 
 import java.io.OutputStream;
 
@@ -29,7 +30,7 @@ public class AwPicture extends Picture {
         }
         @Override
         public void run() {
-            nativeDestroy(mNativeAwPicture);
+            AwPictureJni.get().destroy(mNativeAwPicture);
         }
     }
 
@@ -57,17 +58,17 @@ public class AwPicture extends Picture {
 
     @Override
     public int getWidth() {
-        return nativeGetWidth(mNativeAwPicture);
+        return AwPictureJni.get().getWidth(mNativeAwPicture, AwPicture.this);
     }
 
     @Override
     public int getHeight() {
-        return nativeGetHeight(mNativeAwPicture);
+        return AwPictureJni.get().getHeight(mNativeAwPicture, AwPicture.this);
     }
 
     @Override
     public void draw(Canvas canvas) {
-        nativeDraw(mNativeAwPicture, canvas);
+        AwPictureJni.get().draw(mNativeAwPicture, AwPicture.this, canvas);
     }
 
     @SuppressWarnings("deprecation")
@@ -79,8 +80,11 @@ public class AwPicture extends Picture {
         throw new IllegalStateException("Unsupported in AwPicture");
     }
 
-    private static native void nativeDestroy(long nativeAwPicture);
-    private native int nativeGetWidth(long nativeAwPicture);
-    private native int nativeGetHeight(long nativeAwPicture);
-    private native void nativeDraw(long nativeAwPicture, Canvas canvas);
+    @NativeMethods
+    interface Natives {
+        void destroy(long nativeAwPicture);
+        int getWidth(long nativeAwPicture, AwPicture caller);
+        int getHeight(long nativeAwPicture, AwPicture caller);
+        void draw(long nativeAwPicture, AwPicture caller, Canvas canvas);
+    }
 }

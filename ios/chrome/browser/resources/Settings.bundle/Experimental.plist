@@ -44,12 +44,42 @@
 				<integer>0</integer>
 				<integer>1</integer>
 				<integer>2</integer>
+				<integer>3</integer>
 			</array>
 			<key>Titles</key>
 			<array>
 				<string>Default</string>
 				<string>Tip Command Test</string>
 				<string>Tip Move to Dock Promo</string>
+				<string>Tip Review Updated ToS</string>
+			</array>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Force Language</string>
+			<key>Key</key>
+			<string>UILanguageOverride</string>
+			<key>DefaultValue</key>
+			<string></string>
+			<key>Values</key>
+			<array>
+				<string></string>
+				<string>ar</string>
+				<string>en</string>
+				<string>fr</string>
+				<string>he</string>
+				<string>hi</string>
+			</array>
+			<key>Titles</key>
+			<array>
+				<string>Default</string>
+				<string>Arabic</string>
+				<string>English</string>
+				<string>French</string>
+				<string>Hebrew</string>
+				<string>Hindi</string>
 			</array>
 		</dict>
 		<dict>
@@ -65,6 +95,16 @@
 			<string>Enable Startup Crash</string>
 			<key>Key</key>
 			<string>EnableStartupCrash</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Disable DCHECK Crashes</string>
+			<key>Key</key>
+			<string>DisableDCHECKCrashes</string>
 			<key>DefaultValue</key>
 			<false/>
 		</dict>

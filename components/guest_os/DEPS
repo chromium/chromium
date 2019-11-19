@@ -1,0 +1,9 @@
+include_rules = [
+  "+chromeos/dbus",
+  "+components/exo",
+  "+components/prefs",
+  "+components/session_manager/core",
+  "+content/public",
+  "+ui/aura",
+  "+ui/wm/public",
+]

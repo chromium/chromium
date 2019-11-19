@@ -5,8 +5,9 @@
 #include "third_party/blink/renderer/core/testing/scoped_fake_plugin_registry.h"
 
 #include "base/files/file_path.h"
-#include "mojo/public/cpp/bindings/binding_set.h"
-#include "services/service_manager/public/cpp/connector.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
+#include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/plugins/plugin_registry.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -21,8 +22,9 @@ class FakePluginRegistryImpl : public mojom::blink::PluginRegistry {
  public:
   static void Bind(mojo::ScopedMessagePipeHandle handle) {
     DEFINE_STATIC_LOCAL(FakePluginRegistryImpl, impl, ());
-    impl.bindings_.AddBinding(
-        &impl, mojom::blink::PluginRegistryRequest(std::move(handle)));
+    impl.receivers_.Add(
+        &impl,
+        mojo::PendingReceiver<mojom::blink::PluginRegistry>(std::move(handle)));
   }
 
   // PluginRegistry
@@ -38,6 +40,7 @@ class FakePluginRegistryImpl : public mojom::blink::PluginRegistry {
     plugin->description = "pdf";
     plugin->filename = base::FilePath(FILE_PATH_LITERAL("pdf-files"));
     plugin->background_color = SkColorSetRGB(38, 38, 38);
+    plugin->may_use_external_handler = true;
     plugin->mime_types.push_back(std::move(mime));
 
     Vector<mojom::blink::PluginInfoPtr> plugins;
@@ -46,28 +49,20 @@ class FakePluginRegistryImpl : public mojom::blink::PluginRegistry {
   }
 
  private:
-  mojo::BindingSet<PluginRegistry> bindings_;
+  mojo::ReceiverSet<PluginRegistry> receivers_;
 };
 
 }  // namespace
 
 ScopedFakePluginRegistry::ScopedFakePluginRegistry() {
-  const char* interface_name = mojom::blink::PluginRegistry::Name_;
-  service_manager::Connector* connector = Platform::Current()->GetConnector();
-  auto browser_service_filter = service_manager::ServiceFilter::ByName(
-      Platform::Current()->GetBrowserServiceName());
-  DCHECK(!connector->HasBinderOverrideForTesting(browser_service_filter,
-                                                 interface_name));
-  connector->OverrideBinderForTesting(
-      browser_service_filter, interface_name,
+  Platform::Current()->GetBrowserInterfaceBroker()->SetBinderForTesting(
+      mojom::blink::PluginRegistry::Name_,
       WTF::BindRepeating(&FakePluginRegistryImpl::Bind));
 }
 
 ScopedFakePluginRegistry::~ScopedFakePluginRegistry() {
-  Platform::Current()->GetConnector()->ClearBinderOverrideForTesting(
-      service_manager::ServiceFilter::ByName(
-          Platform::Current()->GetBrowserServiceName()),
-      mojom::blink::PluginRegistry::Name_);
+  Platform::Current()->GetBrowserInterfaceBroker()->SetBinderForTesting(
+      mojom::blink::PluginRegistry::Name_, {});
 }
 
 }  // namespace blink

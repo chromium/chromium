@@ -32,6 +32,7 @@ static_library("channel_getter") {
   deps = [
     ":version_constants_bridge_jni",
     "..:channel",
+    "//base",  # for jni_generator_helper.h
   ]
 }
 
@@ -42,6 +43,7 @@ java_cpp_enum("channel_enum_srcjar") {
 }
 
 process_version("generate_version_constants") {
+  process_only = true
   template_file = "java/VersionConstants.java.version"
   output = _version_constants_java_file
   sources = [
@@ -57,5 +59,4 @@ generate_jni("version_constants_bridge_jni") {
   sources = [
     "java/src/org/chromium/components/version_info/VersionConstantsBridge.java",
   ]
-  jni_package = "version_constants_bridge"
 }

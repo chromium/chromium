@@ -39,32 +39,33 @@ scoped_refptr<base::RefCountedMemory> EncodeImageAsJPEG(
 
 void EncodeImageAndScheduleCallback(
     scoped_refptr<base::RefCountedMemory> (*encode_func)(const gfx::Image&),
-    const base::Callback<void(scoped_refptr<base::RefCountedMemory> data)>&
+    base::OnceCallback<void(scoped_refptr<base::RefCountedMemory> data)>
         callback,
     gfx::Image image) {
-  base::PostTaskWithTraitsAndReplyWithResult(
-      FROM_HERE, {base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-      base::Bind(encode_func, std::move(image)), callback);
+  base::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::ThreadPool(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(encode_func, std::move(image)), std::move(callback));
 }
 
 }  // namespace
 
-void GrabWindowSnapshotAsyncPNG(
-    gfx::NativeWindow window,
-    const gfx::Rect& source_rect,
-    const GrabWindowSnapshotAsyncPNGCallback& callback) {
+void GrabWindowSnapshotAsyncPNG(gfx::NativeWindow window,
+                                const gfx::Rect& source_rect,
+                                GrabWindowSnapshotAsyncPNGCallback callback) {
   GrabWindowSnapshotAsync(
       window, source_rect,
-      base::Bind(EncodeImageAndScheduleCallback, &EncodeImageAsPNG, callback));
+      base::BindOnce(&EncodeImageAndScheduleCallback, &EncodeImageAsPNG,
+                     std::move(callback)));
 }
 
-void GrabWindowSnapshotAsyncJPEG(
-    gfx::NativeWindow window,
-    const gfx::Rect& source_rect,
-    const GrabWindowSnapshotAsyncJPEGCallback& callback) {
+void GrabWindowSnapshotAsyncJPEG(gfx::NativeWindow window,
+                                 const gfx::Rect& source_rect,
+                                 GrabWindowSnapshotAsyncJPEGCallback callback) {
   GrabWindowSnapshotAsync(
       window, source_rect,
-      base::Bind(EncodeImageAndScheduleCallback, &EncodeImageAsJPEG, callback));
+      base::BindOnce(&EncodeImageAndScheduleCallback, &EncodeImageAsJPEG,
+                     std::move(callback)));
 }
 
 }  // namespace ui

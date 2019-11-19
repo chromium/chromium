@@ -5,7 +5,6 @@
 /**
  * @fileoverview Test suite for the SysInternals WebUI. (CrOS only)
  */
-const ROOT_PATH = '../../../../../';
 GEN('#include "chrome/common/chrome_features.h"');
 
 /* Set up this global variable to disable sending the update request. */
@@ -35,10 +34,10 @@ SysInternalsBrowserTest.prototype = {
     'page_switch_test.js',
     'page_unit_test.js',
     'test_util.js',
-    ROOT_PATH + 'third_party/mocha/mocha.js',
-    ROOT_PATH + 'third_party/polymer/v1_0/components-chromium/' +
+    '//third_party/mocha/mocha.js',
+    '//third_party/polymer/v1_0/components-chromium/' +
         'iron-test-helpers/mock-interactions.js',
-    ROOT_PATH + 'chrome/test/data/webui/mocha_adapter.js',
+    '//chrome/test/data/webui/mocha_adapter.js',
   ],
 };
 

@@ -7,7 +7,7 @@
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "ios/chrome/browser/payments/ios_payment_instrument.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -40,8 +40,7 @@ class TestIOSPaymentInstrumentFinder final : public IOSPaymentInstrumentFinder {
 class PaymentRequestIOSPaymentInstrumentFinderTest : public PlatformTest {
  public:
   PaymentRequestIOSPaymentInstrumentFinderTest()
-      : scoped_task_environment_(
-            base::test::ScopedTaskEnvironment::MainThreadType::IO),
+      : task_environment_(base::test::TaskEnvironment::MainThreadType::IO),
         shared_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_)),
@@ -142,7 +141,8 @@ class PaymentRequestIOSPaymentInstrumentFinderTest : public PlatformTest {
     ios_payment_instrument_finder_->num_instruments_to_find_ = 1;
     GURL web_app_manifest_url("https://bobpay.xyz/bob/manifest.json");
     ios_payment_instrument_finder_->OnWebAppManifestDownloaded(
-        method, web_app_manifest_url, web_app_manifest_url, content);
+        method, web_app_manifest_url, web_app_manifest_url, content,
+        /*error_message=*/"");
   }
 
   void RunLoop() {
@@ -155,7 +155,7 @@ class PaymentRequestIOSPaymentInstrumentFinderTest : public PlatformTest {
   }
 
  private:
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_factory_;
 

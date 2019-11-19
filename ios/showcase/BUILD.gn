@@ -6,6 +6,7 @@ import("//build/config/ios/rules.gni")
 import("//ios/build/chrome_build.gni")
 import("//ios/build/config.gni")
 import("//ios/third_party/earl_grey/ios_eg_test.gni")
+import("//ios/third_party/earl_grey2/ios_eg2_test.gni")
 import("//ios/third_party/firebase/firebase.gni")
 
 ios_app_bundle("showcase") {
@@ -22,8 +23,12 @@ ios_app_bundle("showcase") {
 
 group("features") {
   deps = [
+    "//ios/showcase/alert",
+    "//ios/showcase/badges",
     "//ios/showcase/bubble",
     "//ios/showcase/content_suggestions",
+    "//ios/showcase/infobars",
+    "//ios/showcase/omnibox_popup",
     "//ios/showcase/payments",
     "//ios/showcase/recent_tabs",
     "//ios/showcase/settings",
@@ -37,8 +42,47 @@ group("features") {
 group("all_tests") {
   testonly = true
   deps = [
+    ":ios_showcase_eg2tests",
     ":ios_showcase_egtests",
   ]
+}
+
+ios_eg2_test_app_host("ios_showcase_eg2tests") {
+  info_plist = "core/Info.plist"
+  extra_substitutions = [ "IOS_BUNDLE_ID_PREFIX=$ios_app_bundle_id_prefix" ]
+  deps = [
+    ":features",
+    "//ios/showcase/core:main_eg2",
+    "//ios/showcase/test:eg_app_support+eg2",
+    "//ios/testing/earl_grey:eg_app_support+eg2",
+  ]
+  bundle_deps = [
+    "//ios/showcase/core/resources",
+    "//ios/chrome/app/resources",
+    "//ios/third_party/earl_grey2:app_framework+bundle",
+    "//ios/third_party/gtx:gtx+bundle",
+  ]
+
+  # TODO(crbug.com/870935): This dependency of ios_showcase_egtests on
+  # Firebase SDK seems unnecessary. There must be some transitive
+  # dependencies that eventually led to ios/chrome/app:app_internal.
+  if (ios_enable_firebase_sdk) {
+    deps += [ "//ios/third_party/firebase" ]
+  }
+
+  assert_no_deps = ios_assert_no_deps
+}
+
+ios_eg2_test("ios_showcase_eg2tests_module") {
+  xcode_test_application_name = "ios_showcase_eg2tests"
+
+  xctest_bundle_principal_class = "ChromeEGTestBundleMain"
+  deps = [
+    "//ios/showcase/badges:eg2_tests",
+    "//ios/showcase/content_suggestions:eg2_tests",
+    "//ios/showcase/infobars:eg2_tests",
+  ]
+  bundle_deps = [ "//ios/showcase/core/resources" ]
 }
 
 ios_eg_test("ios_showcase_egtests") {
@@ -49,9 +93,11 @@ ios_eg_test("ios_showcase_egtests") {
     "//ios/showcase/core:main",
 
     # Add all eg_tests targets below.
+    "//ios/showcase/badges:eg_tests",
     "//ios/showcase/bubble:eg_tests",
     "//ios/showcase/content_suggestions:eg_tests",
     "//ios/showcase/core:eg_tests",
+    "//ios/showcase/infobars:eg_tests",
     "//ios/showcase/payments:eg_tests",
     "//ios/showcase/text_badge_view:eg_tests",
   ]

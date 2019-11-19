@@ -15,14 +15,14 @@
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/synchronization/lock.h"
-#include "components/password_manager/core/browser/password_manager.h"
+#include "components/password_manager/core/browser/http_auth_manager.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/global_request_id.h"
 #include "content/public/browser/login_delegate.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
-#include "content/public/browser/resource_request_info.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "net/base/auth.h"
 
 class GURL;
 class LoginInterstitialDelegate;
@@ -31,16 +31,23 @@ namespace content {
 class WebContents;
 }  // namespace content
 
-namespace net {
-class AuthChallengeInfo;
-}  // namespace net
-
 // This is the base implementation for the OS-specific classes that prompt for
 // authentication information.
 class LoginHandler : public content::LoginDelegate,
                      public content::NotificationObserver,
                      public content::WebContentsObserver {
  public:
+  // When committed interstitials are enabled, LoginHandler has pre-commit and
+  // post-commit modes that determines how main-frame cross-origin navigations
+  // are handled. Pre-commit, login challenges on such navigations are
+  // optionally handled by extensions and then cancelled so that an error page
+  // can commit. Post-commit, LoginHandler shows a login prompt on top of the
+  // committed error page.
+  enum HandlerMode {
+    PRE_COMMIT,
+    POST_COMMIT,
+  };
+
   // The purpose of this struct is to enforce that BuildViewImpl receives either
   // both the login model and the observed form, or none. That is a bit spoiled
   // by the fact that the model is a pointer to LoginModel, as opposed to a
@@ -49,14 +56,14 @@ class LoginHandler : public content::LoginDelegate,
   // structs, because the guide's rationale still applies. Therefore at least
   // the constructor DCHECKs that |login_model| is not null.
   struct LoginModelData {
-    LoginModelData(password_manager::LoginModel* login_model,
+    LoginModelData(password_manager::HttpAuthManager* login_model,
                    const autofill::PasswordForm& observed_form);
 
-    password_manager::LoginModel* const model;
+    password_manager::HttpAuthManager* const model;
     const autofill::PasswordForm& form;
   };
 
-  LoginHandler(net::AuthChallengeInfo* auth_info,
+  LoginHandler(const net::AuthChallengeInfo& auth_info,
                content::WebContents* web_contents,
                LoginAuthRequiredCallback auth_required_callback);
   ~LoginHandler() override;
@@ -67,14 +74,18 @@ class LoginHandler : public content::LoginDelegate,
   // them, the login request is aborted and the callback will not be called. The
   // callback must remain valid until one of those two events occurs.
   static std::unique_ptr<LoginHandler> Create(
-      net::AuthChallengeInfo* auth_info,
+      const net::AuthChallengeInfo& auth_info,
       content::WebContents* web_contents,
       LoginAuthRequiredCallback auth_required_callback);
 
+  // |mode| is ignored when committed interstitials are disabled. See the
+  // comment on HandlerMode for a description of how it affects LoginHandler's
+  // behavior when committed interstitials are enabled.
   void Start(const content::GlobalRequestID& request_id,
              bool is_main_frame,
              const GURL& request_url,
-             scoped_refptr<net::HttpResponseHeaders> response_headers);
+             scoped_refptr<net::HttpResponseHeaders> response_headers,
+             HandlerMode mode);
 
   // Resend the request with authentication credentials.
   // This function can be called from either thread.
@@ -93,7 +104,7 @@ class LoginHandler : public content::LoginDelegate,
                const content::NotificationDetails& details) override;
 
   // Who/where/what asked for the authentication.
-  const net::AuthChallengeInfo* auth_info() const { return auth_info_.get(); }
+  const net::AuthChallengeInfo& auth_info() const { return auth_info_; }
 
  protected:
   // Implement this to initialize the underlying platform specific view. If
@@ -119,8 +130,12 @@ class LoginHandler : public content::LoginDelegate,
   // Notify observers that authentication is cancelled.
   void NotifyAuthCancelled();
 
-  // Returns the PasswordManager for the web contents that needs login.
-  password_manager::PasswordManager* GetPasswordManagerForLogin();
+  // Returns the PasswordManagerClient from the web content.
+  password_manager::PasswordManagerClient*
+  GetPasswordManagerClientFromWebContent();
+
+  // Returns the HttpAuthManager.
+  password_manager::HttpAuthManager* GetHttpAuthManagerForLogin();
 
   // Returns whether authentication had been handled (SetAuth or CancelAuth).
   bool WasAuthHandled() const;
@@ -154,11 +169,14 @@ class LoginHandler : public content::LoginDelegate,
   // Continuation from |Start| after any potential interception from the
   // extensions WebRequest API. If |should_cancel| is |true| the request is
   // cancelled. Otherwise |credentials| are used if supplied. Finally if the
-  // request is NOT cancelled AND |credentials| is empty, then we'll actually
-  // show a login prompt.
+  // request is NOT cancelled AND |credentials| is empty, then we'll take the
+  // necessary steps to show a login prompt, depending on |mode| and whether
+  // committed interstitials are enabled (see comment on
+  // LoginHandler::HandlerMode).
   void MaybeSetUpLoginPrompt(
       const GURL& request_url,
       bool is_main_frame,
+      HandlerMode mode,
       const base::Optional<net::AuthCredentials>& credentials,
       bool should_cancel);
 
@@ -169,7 +187,7 @@ class LoginHandler : public content::LoginDelegate,
                           LoginModelData* login_model_data);
 
   // Who/where/what asked for the authentication.
-  scoped_refptr<net::AuthChallengeInfo> auth_info_;
+  net::AuthChallengeInfo auth_info_;
 
   // The PasswordForm sent to the PasswordManager. This is so we can refer to it
   // when later notifying the password manager if the credentials were accepted
@@ -185,7 +203,7 @@ class LoginHandler : public content::LoginDelegate,
 
   // True if the extensions logic has run and the prompt logic has started.
   bool prompt_started_;
-  base::WeakPtrFactory<LoginHandler> weak_factory_;
+  base::WeakPtrFactory<LoginHandler> weak_factory_{this};
 };
 
 // Details to provide the content::NotificationObserver.  Used by the automation
@@ -232,12 +250,13 @@ class AuthSuppliedLoginNotificationDetails : public LoginNotificationDetails {
 // request by destroying the returned LoginDelegate. It must do this before
 // invalidating the callback.
 std::unique_ptr<content::LoginDelegate> CreateLoginPrompt(
-    net::AuthChallengeInfo* auth_info,
+    const net::AuthChallengeInfo& auth_info,
     content::WebContents* web_contents,
     const content::GlobalRequestID& request_id,
     bool is_main_frame,
     const GURL& url,
     scoped_refptr<net::HttpResponseHeaders> response_headers,
+    LoginHandler::HandlerMode mode,
     LoginAuthRequiredCallback auth_required_callback);
 
 #endif  // CHROME_BROWSER_UI_LOGIN_LOGIN_HANDLER_H_

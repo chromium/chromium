@@ -1,0 +1,47 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module chromecast.mojom;
+
+// API for a touch-based media overlay UI. The client receives commands that
+// are triggered from the UI. The client may also set various attributes on
+// the UI, so that only relevant controls are visible to the user.
+interface MediaControlUi {
+  // Set a client for the UI.
+  SetClient(pending_remote<MediaControlClient> client);
+  // Update the UI to match the new attributes.
+  SetAttributes(MediaControlUiAttributes attributes);
+};
+
+enum MediaCommand {
+  TOGGLE_PLAY_PAUSE,
+  NEXT,
+  PREVIOUS,
+  FORWARD_30_SECONDS,
+  REPLAY_30_SECONDS,
+};
+
+// Endpoint for plumbing media commands invoked by the UI.
+interface MediaControlClient {
+  // Executes a media command on behalf of the UI. These commands are only
+  // triggered by user interaction via the touch-based UI.
+  Execute(MediaCommand command);
+};
+
+struct MediaControlUiAttributes {
+  // UI attributes.
+  bool show_seek;
+  bool show_next;
+  bool show_previous;
+
+  // Media attributes.
+  string title;
+  string metadata;
+  double current_time;
+  double duration;
+  bool is_playing;
+  bool is_paused;
+};
+
+

@@ -12,7 +12,7 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "services/service_manager/public/mojom/service_manager.mojom.h"
 
 namespace service_manager {
@@ -51,7 +51,7 @@ class TestServiceManagerListener
   std::string service_name_;
   std::map<std::string, uint32_t> service_start_counters_;
 
-  mojo::Binding<service_manager::mojom::ServiceManagerListener> binding_;
+  mojo::Receiver<service_manager::mojom::ServiceManagerListener> receiver_;
 
   DISALLOW_COPY_AND_ASSIGN(TestServiceManagerListener);
 };

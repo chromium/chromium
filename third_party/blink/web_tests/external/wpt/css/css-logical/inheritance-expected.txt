@@ -1,0 +1,72 @@
+This is a testharness.js-based test.
+Found 68 tests; 60 PASS, 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS Property block-size has initial value 0px
+PASS Property block-size does not inherit
+PASS Property border-block-end-color has initial value rgb(0, 0, 255)
+PASS Property border-block-end-color does not inherit
+PASS Property border-block-end-style has initial value none
+PASS Property border-block-end-style does not inherit
+PASS Property border-block-end-width has initial value 3px
+PASS Property border-block-end-width does not inherit
+PASS Property border-block-start-color has initial value rgb(0, 0, 255)
+PASS Property border-block-start-color does not inherit
+PASS Property border-block-start-style has initial value none
+PASS Property border-block-start-style does not inherit
+PASS Property border-block-start-width has initial value 3px
+PASS Property border-block-start-width does not inherit
+FAIL Property border-end-end-radius has initial value 0px assert_true: border-end-end-radius doesn't seem to be supported in the computed style expected true got false
+FAIL Property border-end-end-radius does not inherit assert_true: expected true got false
+FAIL Property border-end-start-radius has initial value 0px assert_true: border-end-start-radius doesn't seem to be supported in the computed style expected true got false
+FAIL Property border-end-start-radius does not inherit assert_true: expected true got false
+PASS Property border-inline-end-color has initial value rgb(0, 0, 255)
+PASS Property border-inline-end-color does not inherit
+PASS Property border-inline-end-style has initial value none
+PASS Property border-inline-end-style does not inherit
+PASS Property border-inline-end-width has initial value 3px
+PASS Property border-inline-end-width does not inherit
+PASS Property border-inline-start-color has initial value rgb(0, 0, 255)
+PASS Property border-inline-start-color does not inherit
+PASS Property border-inline-start-style has initial value none
+PASS Property border-inline-start-style does not inherit
+PASS Property border-inline-start-width has initial value 3px
+PASS Property border-inline-start-width does not inherit
+FAIL Property border-start-end-radius has initial value 0px assert_true: border-start-end-radius doesn't seem to be supported in the computed style expected true got false
+FAIL Property border-start-end-radius does not inherit assert_true: expected true got false
+FAIL Property border-start-start-radius has initial value 0px assert_true: border-start-start-radius doesn't seem to be supported in the computed style expected true got false
+FAIL Property border-start-start-radius does not inherit assert_true: expected true got false
+PASS Property inline-size has initial value 294px
+PASS Property inline-size does not inherit
+PASS Property inset-block-end has initial value auto
+PASS Property inset-block-end does not inherit
+PASS Property inset-block-start has initial value auto
+PASS Property inset-block-start does not inherit
+PASS Property inset-inline-end has initial value auto
+PASS Property inset-inline-end does not inherit
+PASS Property inset-inline-start has initial value auto
+PASS Property inset-inline-start does not inherit
+PASS Property margin-block-end has initial value 0px
+PASS Property margin-block-end does not inherit
+PASS Property margin-block-start has initial value 0px
+PASS Property margin-block-start does not inherit
+PASS Property margin-inline-end has initial value 0px
+PASS Property margin-inline-end does not inherit
+PASS Property margin-inline-start has initial value 0px
+PASS Property margin-inline-start does not inherit
+PASS Property max-block-size has initial value none
+PASS Property max-block-size does not inherit
+PASS Property max-inline-size has initial value none
+PASS Property max-inline-size does not inherit
+PASS Property min-block-size has initial value 0px
+PASS Property min-block-size does not inherit
+PASS Property min-inline-size has initial value 0px
+PASS Property min-inline-size does not inherit
+PASS Property padding-block-end has initial value 0px
+PASS Property padding-block-end does not inherit
+PASS Property padding-block-start has initial value 0px
+PASS Property padding-block-start does not inherit
+PASS Property padding-inline-end has initial value 0px
+PASS Property padding-inline-end does not inherit
+PASS Property padding-inline-start has initial value 0px
+PASS Property padding-inline-start does not inherit
+Harness: the test ran to completion.
+

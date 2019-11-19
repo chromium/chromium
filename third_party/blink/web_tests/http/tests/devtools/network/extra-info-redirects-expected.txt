@@ -1,0 +1,25 @@
+Verifies that Network.*ExtraInfo events get assigned to the correct SDK.NetworkRequest instance in the case of cross origin redirects.
+[
+  {
+    "url": "http://redirect-one.test:8000/devtools/network/resources/redirect-1.php",
+    "hasExtraRequestInfo": true,
+    "hasExtraResponseInfo": true,
+    "requestHostHeader": "redirect-one.test:8000",
+    "responseXDevToolsRedirectHeader": "1"
+  },
+  {
+    "url": "http://redirect-two.test:8000/devtools/network/resources/redirect-2.php",
+    "hasExtraRequestInfo": true,
+    "hasExtraResponseInfo": true,
+    "requestHostHeader": "redirect-two.test:8000",
+    "responseXDevToolsRedirectHeader": "2"
+  },
+  {
+    "url": "http://redirect-three.test:8000/devtools/network/resources/redirect-3.php",
+    "hasExtraRequestInfo": true,
+    "hasExtraResponseInfo": true,
+    "requestHostHeader": "redirect-three.test:8000",
+    "responseXDevToolsRedirectHeader": "3"
+  }
+]
+

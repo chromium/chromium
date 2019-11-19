@@ -10,6 +10,7 @@
 #include "base/macros.h"
 #include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "content/public/browser/web_ui_controller.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
 namespace chromeos {
@@ -36,7 +37,8 @@ class ProximityAuthUI : public ui::MojoWebUIController {
 
  protected:
   void BindMultiDeviceSetup(
-      multidevice_setup::mojom::MultiDeviceSetupRequest request);
+      mojo::PendingReceiver<multidevice_setup::mojom::MultiDeviceSetup>
+          receiver);
 
  private:
   DISALLOW_COPY_AND_ASSIGN(ProximityAuthUI);

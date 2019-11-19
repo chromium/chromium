@@ -1,0 +1,110 @@
+supported_platforms: [ANDROID, CHROME_OS]
+
+# Override created while bedtime is active
+cases {
+  input {
+    window_limits {
+      effective_day: MONDAY
+      starts_at {
+        hour: 23
+        minute: 0
+      }
+      ends_at {
+        hour: 8
+        minute: 0
+      }
+    }
+    overrides {
+      action: UNLOCK_WINDOW_LIMIT
+      # Monday, Jan 28th 2019 at 11:29pm
+      created_at_millis: 1548718140000
+    }
+  }
+  current_state {
+    # Monday, Jan 28th 2019 at 11:30pm
+    time_millis: 1548718200000
+    timezone: "GMT"
+  }
+  output {
+    is_locked: false
+    active_policy: OVERRIDE
+    next_active_policy: FIXED_LIMIT
+  }
+}
+
+# Override created before bedtime started
+cases {
+  input {
+    window_limits {
+      effective_day: MONDAY
+      starts_at {
+        hour: 23
+        minute: 0
+      }
+      ends_at {
+        hour: 8
+        minute: 0
+      }
+    }
+    overrides {
+      action: UNLOCK_WINDOW_LIMIT
+      # Monday, Jan 28th 2019 at 10:30pm
+      created_at_millis: 1548714600000
+    }
+  }
+  current_state {
+    # Monday, Jan 28th 2019 at 11:30pm
+    time_millis: 1548718200000
+    timezone: "GMT"
+  }
+  output {
+    is_locked: true
+    active_policy: FIXED_LIMIT
+    # Tuesday, Jan 29th 2019 at 8:00am
+    next_unlocking_time_millis: 1548748800000
+    next_active_policy: NO_ACTIVE_POLICY
+  }
+}
+
+# Override created during intersection of bedtimes
+cases {
+  input {
+    window_limits {
+      effective_day: MONDAY
+      starts_at {
+        hour: 23
+        minute: 0
+      }
+      ends_at {
+        hour: 8
+        minute: 0
+      }
+    }
+    window_limits {
+      effective_day: TUESDAY
+      starts_at {
+        hour: 2
+        minute: 0
+      }
+      ends_at {
+        hour: 11
+        minute: 0
+      }
+    }
+    overrides {
+      action: UNLOCK_WINDOW_LIMIT
+      # Tuesday, Jan 29th 2019 at 2:20am
+      created_at_millis: 1548728400000
+    }
+  }
+  current_state {
+    # Tuesday, Jan 29th 2019 at 2:30am
+    time_millis: 1548729000000
+    timezone: "GMT"
+  }
+  output {
+    is_locked: false
+    active_policy: OVERRIDE
+    next_active_policy: FIXED_LIMIT
+  }
+}

@@ -7,14 +7,13 @@
 
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
-#include "third_party/blink/renderer/platform/bindings/trace_wrapper_member.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 
 namespace blink {
 
 class V8AnimateCallback;
 class V8AnimatorConstructor;
-class V8Function;
+class V8StateCallback;
 
 // Represents a valid registered Javascript animator.  In particular it owns two
 // |v8::Function|s that are the "constructor" and "animate" functions of the
@@ -22,12 +21,12 @@ class V8Function;
 // |AnimationWorkletGlobalScope::registerAnimator| to validate the provided
 // Javascript class before completing the registration.
 class MODULES_EXPORT AnimatorDefinition final
-    : public GarbageCollectedFinalized<AnimatorDefinition>,
+    : public GarbageCollected<AnimatorDefinition>,
       public NameClient {
  public:
   explicit AnimatorDefinition(V8AnimatorConstructor* constructor,
                               V8AnimateCallback* animate,
-                              V8Function* state);
+                              V8StateCallback* state);
   ~AnimatorDefinition();
   virtual void Trace(blink::Visitor* visitor);
   const char* NameInHeapSnapshot() const override {
@@ -36,14 +35,15 @@ class MODULES_EXPORT AnimatorDefinition final
 
   V8AnimatorConstructor* ConstructorFunction() const { return constructor_; }
   V8AnimateCallback* AnimateFunction() const { return animate_; }
+  V8StateCallback* StateFunction() const { return state_; }
   bool IsStateful() const { return state_; }
 
  private:
   // This object keeps the constructor function, animate, and state function
   // alive. It participates in wrapper tracing as it holds onto V8 wrappers.
-  TraceWrapperMember<V8AnimatorConstructor> constructor_;
-  TraceWrapperMember<V8AnimateCallback> animate_;
-  TraceWrapperMember<V8Function> state_;
+  Member<V8AnimatorConstructor> constructor_;
+  Member<V8AnimateCallback> animate_;
+  Member<V8StateCallback> state_;
 };
 
 }  // namespace blink

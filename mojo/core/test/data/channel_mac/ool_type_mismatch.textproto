@@ -1,0 +1,10 @@
+endpoint_type: LOCAL
+fuzz_handshake: false
+messages {
+  id: 0x4d4f4a2b
+  descriptors {
+    port: SEND
+  }
+  include_body_if_not_complex: true
+  data: "Send a message with ID indicating OOL data, but provide the wrong descriptor type."
+}

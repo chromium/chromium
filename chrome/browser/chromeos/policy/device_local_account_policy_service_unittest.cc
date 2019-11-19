@@ -30,7 +30,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/constants/chromeos_paths.h"
-#include "chromeos/dbus/power_policy_controller.h"
+#include "chromeos/dbus/power/power_policy_controller.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_service.h"
@@ -162,6 +162,9 @@ void DeviceLocalAccountPolicyServiceTestBase::SetUp() {
       ->set_value(true);
   device_local_account_policy_.policy_data().set_policy_type(
       dm_protocol::kChromePublicAccountPolicyType);
+
+  mock_device_management_service_.ScheduleInitialization(0);
+  base::RunLoop().RunUntilIdle();
 }
 
 void DeviceLocalAccountPolicyServiceTestBase::TearDown() {
@@ -414,25 +417,35 @@ TEST_F(DeviceLocalAccountPolicyServiceTest, FetchPolicy) {
   service_->Connect(&mock_device_management_service_);
   EXPECT_TRUE(broker->core()->client());
 
-  em::DeviceManagementRequest request;
-  em::DeviceManagementResponse response;
-  response.mutable_policy_response()->add_responses()->CopyFrom(
-      device_local_account_policy_.policy());
-  EXPECT_CALL(mock_device_management_service_,
-              CreateJob(DeviceManagementRequestJob::TYPE_POLICY_FETCH, _))
-      .WillOnce(mock_device_management_service_.SucceedJob(response));
-  EXPECT_CALL(
-      mock_device_management_service_,
-      StartJob(dm_protocol::kValueRequestPolicy, std::string(), std::string(),
-               device_policy_->policy_data().request_token(), std::string(),
-               device_policy_->policy_data().device_id(), _))
-      .WillOnce(SaveArg<6>(&request));
+  DeviceManagementService::JobControl* job = nullptr;
+  DeviceManagementService::JobConfiguration::JobType job_type;
+  EXPECT_CALL(mock_device_management_service_, StartJob(_))
+      .WillOnce(
+          DoAll(mock_device_management_service_.CaptureJobType(&job_type),
+                mock_device_management_service_.StartJobFullControl(&job)));
   // This will be called twice, because the ComponentCloudPolicyService will
   // also become ready after flushing all the pending tasks.
   EXPECT_CALL(service_observer_, OnPolicyUpdated(account_1_user_id_)).Times(2);
   FlushDeviceSettings();
+
+  DCHECK(job);
+  ASSERT_EQ(DeviceManagementService::JobConfiguration::TYPE_POLICY_FETCH,
+            job_type);
+  std::string payload = job->GetConfiguration()->GetPayload();
+
+  em::DeviceManagementResponse response;
+  response.mutable_policy_response()->add_responses()->CopyFrom(
+      device_local_account_policy_.policy());
+  mock_device_management_service_.DoURLCompletion(
+      &job, net::OK, DeviceManagementService::kSuccess, response);
+  EXPECT_EQ(nullptr, job);
+  FlushDeviceSettings();
+
   Mock::VerifyAndClearExpectations(&service_observer_);
   Mock::VerifyAndClearExpectations(&mock_device_management_service_);
+
+  em::DeviceManagementRequest request;
+  request.ParseFromString(payload);
   EXPECT_TRUE(request.has_policy_request());
   ASSERT_EQ(2, request.policy_request().requests_size());
 
@@ -482,9 +495,9 @@ TEST_F(DeviceLocalAccountPolicyServiceTest, RefreshPolicy) {
   em::DeviceManagementResponse response;
   response.mutable_policy_response()->add_responses()->CopyFrom(
       device_local_account_policy_.policy());
-  EXPECT_CALL(mock_device_management_service_, CreateJob(_, _))
-      .WillOnce(mock_device_management_service_.SucceedJob(response));
-  EXPECT_CALL(mock_device_management_service_, StartJob(_, _, _, _, _, _, _));
+  EXPECT_CALL(mock_device_management_service_, StartJob(_))
+      .WillRepeatedly(
+          mock_device_management_service_.StartJobOKAsync(response));
   EXPECT_CALL(*this, OnRefreshDone(true)).Times(1);
   // This will be called twice, because the ComponentCloudPolicyService will
   // also become ready after flushing all the pending tasks.
@@ -817,11 +830,11 @@ void DeviceLocalAccountPolicyProviderTest::SetUp() {
   // Values implicitly enforced for public accounts.
   expected_policy_map_.Set(key::kShelfAutoHideBehavior, POLICY_LEVEL_MANDATORY,
                            POLICY_SCOPE_MACHINE,
-                           POLICY_SOURCE_PUBLIC_SESSION_OVERRIDE,
+                           POLICY_SOURCE_DEVICE_LOCAL_ACCOUNT_OVERRIDE,
                            std::make_unique<base::Value>("Never"), nullptr);
   expected_policy_map_.Set(key::kShowLogoutButtonInTray, POLICY_LEVEL_MANDATORY,
                            POLICY_SCOPE_MACHINE,
-                           POLICY_SOURCE_PUBLIC_SESSION_OVERRIDE,
+                           POLICY_SOURCE_DEVICE_LOCAL_ACCOUNT_OVERRIDE,
                            std::make_unique<base::Value>(true), nullptr);
 
   // Policy defaults (for policies not set by admin).
@@ -954,21 +967,19 @@ TEST_F(DeviceLocalAccountPolicyProviderTest, RefreshPolicies) {
 
   // Bring up the cloud connection. The refresh scheduler may fire refreshes at
   // this point which are not relevant for the test.
-  EXPECT_CALL(mock_device_management_service_, CreateJob(_, _))
-      .WillRepeatedly(
-          mock_device_management_service_.FailJob(DM_STATUS_REQUEST_FAILED));
-  EXPECT_CALL(mock_device_management_service_, StartJob(_, _, _, _, _, _, _))
-      .Times(AnyNumber());
+  EXPECT_CALL(mock_device_management_service_, StartJob(_))
+      .WillRepeatedly(mock_device_management_service_.StartJobAsync(
+          net::ERR_FAILED, DeviceManagementService::kSuccess));
   service_->Connect(&mock_device_management_service_);
   FlushDeviceSettings();
   Mock::VerifyAndClearExpectations(&mock_device_management_service_);
 
   // No callbacks until the refresh completes.
   EXPECT_CALL(provider_observer_, OnUpdatePolicy(_)).Times(0);
-  MockDeviceManagementJob* request_job;
-  EXPECT_CALL(mock_device_management_service_, CreateJob(_, _))
-      .WillOnce(mock_device_management_service_.CreateAsyncJob(&request_job));
-  EXPECT_CALL(mock_device_management_service_, StartJob(_, _, _, _, _, _, _));
+  DeviceManagementService::JobControl* job_control = nullptr;
+  EXPECT_CALL(mock_device_management_service_, StartJob(_))
+      .WillOnce(
+          mock_device_management_service_.StartJobFullControl(&job_control));
   provider_->RefreshPolicies();
   ReloadDeviceSettings();
   Mock::VerifyAndClearExpectations(&provider_observer_);
@@ -978,12 +989,14 @@ TEST_F(DeviceLocalAccountPolicyProviderTest, RefreshPolicies) {
   // When the response comes in, it should propagate and fire the notification.
   EXPECT_CALL(provider_observer_, OnUpdatePolicy(provider_.get()))
       .Times(AtLeast(1));
-  ASSERT_TRUE(request_job);
+  ASSERT_TRUE(job_control);
   em::DeviceManagementResponse response;
   device_local_account_policy_.Build();
   response.mutable_policy_response()->add_responses()->CopyFrom(
       device_local_account_policy_.policy());
-  request_job->SendResponse(DM_STATUS_SUCCESS, response);
+  mock_device_management_service_.DoURLCompletion(
+      &job_control, net::OK, DeviceManagementService::kSuccess, response);
+  EXPECT_EQ(nullptr, job_control);
   FlushDeviceSettings();
   Mock::VerifyAndClearExpectations(&provider_observer_);
 }

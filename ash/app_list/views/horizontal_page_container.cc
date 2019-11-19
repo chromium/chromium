@@ -4,28 +4,46 @@
 
 #include "ash/app_list/views/horizontal_page_container.h"
 
-#include "ash/app_list/pagination_controller.h"
+#include "ash/app_list/app_list_metrics.h"
 #include "ash/app_list/views/app_list_view.h"
 #include "ash/app_list/views/apps_container_view.h"
 #include "ash/app_list/views/contents_view.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/app_list/views/search_result_page_view.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
+#include "ash/public/cpp/app_list/app_list_features.h"
+#include "ash/public/cpp/pagination/pagination_controller.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/chromeos/search_box/search_box_constants.h"
+#include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/views/controls/label.h"
 
-namespace app_list {
+namespace ash {
+
+namespace {
+
+// The amount by which the apps container UI should be offset downwards when
+// shown on non apps page UI.
+constexpr int kNonAppsStateVerticalOffset = 24;
+
+// The opacity the apps container UI should have when shown on non apps page UI.
+constexpr float kNonAppsStateOpacity = 0.1;
+
+}  // namespace
 
 HorizontalPageContainer::HorizontalPageContainer(ContentsView* contents_view,
                                                  AppListModel* model)
     : contents_view_(contents_view) {
+  // Assumes all horizontal pages paint to their own layers.
+  SetPaintToLayer(ui::LAYER_NOT_DRAWN);
   pagination_model_.SetTransitionDurations(
-      AppListConfig::instance().page_transition_duration_ms(),
-      AppListConfig::instance().overscroll_page_transition_duration_ms());
+      AppListConfig::instance().page_transition_duration(),
+      AppListConfig::instance().overscroll_page_transition_duration());
   pagination_model_.AddObserver(this);
-  pagination_controller_ = std::make_unique<PaginationController>(
-      &pagination_model_, PaginationController::SCROLL_AXIS_HORIZONTAL);
+  pagination_controller_ = std::make_unique<ash::PaginationController>(
+      &pagination_model_, ash::PaginationController::SCROLL_AXIS_HORIZONTAL,
+      base::DoNothing(),
+      contents_view_->app_list_view()->is_tablet_mode());
 
   // Add horizontal pages.
   apps_container_view_ = new AppsContainerView(contents_view_, model);
@@ -65,53 +83,77 @@ void HorizontalPageContainer::OnGestureEvent(ui::GestureEvent* event) {
     event->SetHandled();
 }
 
+const char* HorizontalPageContainer::GetClassName() const {
+  return "HorizontalPageContainer";
+}
+
 void HorizontalPageContainer::OnWillBeHidden() {
   GetSelectedPage()->OnWillBeHidden();
 }
 
-void HorizontalPageContainer::OnAnimationUpdated(double progress,
-                                                 ash::AppListState from_state,
+void HorizontalPageContainer::OnAnimationStarted(ash::AppListState from_state,
                                                  ash::AppListState to_state) {
+  gfx::Rect contents_bounds = GetDefaultContentsBounds();
+
+  const gfx::Rect from_rect =
+      GetPageBoundsForState(from_state, contents_bounds, gfx::Rect());
+  const gfx::Rect to_rect =
+      GetPageBoundsForState(to_state, contents_bounds, gfx::Rect());
+  if (from_rect != to_rect) {
+    DCHECK_EQ(from_rect.size(), to_rect.size());
+    DCHECK_EQ(from_rect.x(), to_rect.x());
+
+    SetBoundsRect(to_rect);
+
+    gfx::Transform initial_transform;
+    initial_transform.Translate(0, from_rect.y() - to_rect.y());
+    layer()->SetTransform(initial_transform);
+
+    auto settings = contents_view()->CreateTransitionAnimationSettings(layer());
+    layer()->SetTransform(gfx::Transform());
+  }
+
+  // Set the page opacity.
+  if (app_list_features::IsScalableAppListEnabled()) {
+    auto settings = contents_view()->CreateTransitionAnimationSettings(layer());
+    UpdateOpacityForState(to_state);
+  }
+
   for (size_t i = 0; i < horizontal_pages_.size(); ++i) {
     HorizontalPage* page = horizontal_pages_[i];
-    gfx::Rect to_rect = page->GetPageBoundsForState(to_state);
-    gfx::Rect from_rect = page->GetPageBoundsForState(from_state);
+    gfx::Rect page_to_rect = page->GetPageBoundsForState(to_state);
+    gfx::Rect page_from_rect = page->GetPageBoundsForState(from_state);
 
-    // Invalidate layout when the state changes to ensure that SetBoundsRect
-    // below also triggers a layout.
-    if (from_state != to_state)
-      page->InvalidateLayout();
+    if (page_to_rect == page_from_rect)
+      continue;
 
-    // Animate linearly (the PaginationModel handles easing).
-    gfx::Rect bounds(
-        gfx::Tween::RectValueBetween(progress, from_rect, to_rect));
-    bounds.Offset(GetOffsetForPageIndex(i));
-    page->SetBoundsRect(bounds);
+    page_to_rect.Offset(GetOffsetForPageIndex(i));
+
+    auto settings =
+        contents_view()->CreateTransitionAnimationSettings(page->layer());
+    page->SetBoundsRect(page_to_rect);
   }
-}
-
-gfx::Rect HorizontalPageContainer::GetSearchBoxBounds() const {
-  return GetSearchBoxBoundsForState(contents_view_->GetActiveState());
-}
-
-gfx::Rect HorizontalPageContainer::GetSearchBoxBoundsForState(
-    ash::AppListState state) const {
-  // The search box bounds are decided by AppsContainerView and are not changed
-  // during horizontal page switching.
-  return apps_container_view_->GetSearchBoxExpectedBounds();
 }
 
 gfx::Rect HorizontalPageContainer::GetPageBoundsForState(
-    ash::AppListState state) const {
-  gfx::Rect onscreen_bounds = GetDefaultContentsBounds();
+    ash::AppListState state,
+    const gfx::Rect& contents_bounds,
+    const gfx::Rect& search_box_bounds) const {
+  if (state == ash::AppListState::kStateApps)
+    return contents_bounds;
+  if (!app_list_features::IsScalableAppListEnabled())
+    return GetBelowContentsOffscreenBounds(contents_bounds.size());
 
-  // Both STATE_START and STATE_APPS are AppsContainerView page.
-  if (state == ash::AppListState::kStateApps ||
-      state == ash::AppListState::kStateStart) {
-    return onscreen_bounds;
-  }
+  gfx::Rect bounds = contents_bounds;
+  bounds.Offset(0, kNonAppsStateVerticalOffset);
+  return bounds;
+}
 
-  return GetBelowContentsOffscreenBounds(onscreen_bounds.size());
+void HorizontalPageContainer::UpdateOpacityForState(ash::AppListState state) {
+  if (!app_list_features::IsScalableAppListEnabled())
+    return;
+  layer()->SetOpacity(
+      state == ash::AppListState::kStateApps ? 1.0f : kNonAppsStateOpacity);
 }
 
 views::View* HorizontalPageContainer::GetFirstFocusableView() {
@@ -126,14 +168,19 @@ bool HorizontalPageContainer::ShouldShowSearchBox() const {
   return GetSelectedPage()->ShouldShowSearchBox();
 }
 
-void HorizontalPageContainer::TotalPagesChanged() {}
+void HorizontalPageContainer::OnTabletModeChanged(bool started) {
+  pagination_controller_->set_is_tablet_mode(started);
+}
+
+void HorizontalPageContainer::TotalPagesChanged(int previous_page_count,
+                                                int new_page_count) {}
 
 void HorizontalPageContainer::SelectedPageChanged(int old_selected,
                                                   int new_selected) {
   Layout();
 }
 
-void HorizontalPageContainer::TransitionStarted() {
+void HorizontalPageContainer::TransitionStarting() {
   Layout();
 }
 
@@ -143,7 +190,7 @@ void HorizontalPageContainer::TransitionChanged() {
   // Transition the search box opacity.
   const int current_page = pagination_model_.selected_page();
   DCHECK(pagination_model_.is_valid_page(current_page));
-  const PaginationModel::Transition& transition =
+  const ash::PaginationModel::Transition& transition =
       pagination_model_.transition();
   const bool is_valid = pagination_model_.is_valid_page(transition.target_page);
   float search_box_opacity =
@@ -192,7 +239,7 @@ const HorizontalPage* HorizontalPageContainer::GetSelectedPage() const {
 gfx::Vector2d HorizontalPageContainer::GetOffsetForPageIndex(int index) const {
   const int current_page = pagination_model_.selected_page();
   DCHECK(pagination_model_.is_valid_page(current_page));
-  const PaginationModel::Transition& transition =
+  const ash::PaginationModel::Transition& transition =
       pagination_model_.transition();
   const bool is_valid = pagination_model_.is_valid_page(transition.target_page);
   const int dir = transition.target_page > current_page ? -1 : 1;
@@ -211,4 +258,4 @@ gfx::Vector2d HorizontalPageContainer::GetOffsetForPageIndex(int index) const {
   return gfx::Vector2d(x_offset, 0);
 }
 
-}  // namespace app_list
+}  // namespace ash

@@ -8,7 +8,54 @@ import("//testing/test.gni")
 group("all_tests") {
   testonly = true
   deps = [
-    ":ocmock_support_unittests",
+    ":ios_testing_unittests",
+  ]
+}
+
+source_set("verify_custom_webkit") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [
+    "verify_custom_webkit.h",
+    "verify_custom_webkit.mm",
+  ]
+  deps = [
+    "//base",
+  ]
+}
+
+source_set("hardware_keyboarr_support") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [
+    "hardware_keyboard_util.h",
+    "hardware_keyboard_util.mm",
+  ]
+  deps = [
+    "//base/test:test_support",
+  ]
+}
+
+source_set("block_swizzler") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [
+    "scoped_block_swizzler.h",
+    "scoped_block_swizzler.mm",
+    "scoped_method_swizzler.h",
+    "scoped_method_swizzler.mm",
+  ]
+  deps = [
+    "//base",
+  ]
+}
+
+source_set("nserror_support") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [
+    "nserror_util.h",
+    "nserror_util.mm",
   ]
 }
 
@@ -34,7 +81,6 @@ source_set("ocmock_support") {
   ]
 
   public_deps = [
-    "//third_party/google_toolbox_for_mac",
     "//third_party/ocmock",
   ]
 
@@ -44,9 +90,10 @@ source_set("ocmock_support") {
   ]
 }
 
-test("ocmock_support_unittests") {
+test("ios_testing_unittests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
+    ":block_swizzler",
     ":ocmock_support",
     "//base/test:run_all_unittests",
     "//base/test:test_support",
@@ -57,6 +104,8 @@ test("ocmock_support_unittests") {
 
   sources = [
     "ocmock_complex_type_helper_unittest.mm",
+    "scoped_block_swizzler_unittest.mm",
+    "scoped_method_swizzler_unittest.mm",
   ]
 
   assert_no_deps = ios_assert_no_deps
@@ -70,8 +119,10 @@ bundle_data("http_server_bundle_data") {
     "data/http_server_files/browsing_prevent_default_test_page.html",
     "data/http_server_files/chromium_logo.png",
     "data/http_server_files/chromium_logo_page.html",
+    "data/http_server_files/complex_document.pdf",
     "data/http_server_files/console.html",
     "data/http_server_files/console_with_iframe.html",
+    "data/http_server_files/context_menu.html",
     "data/http_server_files/destination.html",
     "data/http_server_files/fullscreen.html",
     "data/http_server_files/generic.pkpass",
@@ -89,11 +140,13 @@ bundle_data("http_server_bundle_data") {
     "data/http_server_files/opensearch.xml",
     "data/http_server_files/pony.html",
     "data/http_server_files/profile_form.html",
+    "data/http_server_files/readonly_form.html",
     "data/http_server_files/redchair.usdz",
     "data/http_server_files/redirect_refresh.html",
     "data/http_server_files/single_page_wide.pdf",
     "data/http_server_files/state_operations.html",
     "data/http_server_files/state_operations.js",
+    "data/http_server_files/tall_page.html",
     "data/http_server_files/testpage.pdf",
     "data/http_server_files/two_pages.pdf",
     "data/http_server_files/user_agent_test_page.html",

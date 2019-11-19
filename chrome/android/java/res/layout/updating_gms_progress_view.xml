@@ -3,7 +3,7 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
-<org.chromium.chrome.browser.widget.BoundedLinearLayout
+<org.chromium.chrome.browser.ui.widget.BoundedLinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:gravity="center"
@@ -18,13 +18,13 @@
         android:layout_height="32dp"
         android:layout_gravity="center_vertical" />
 
-    <TextView
+    <org.chromium.ui.widget.TextViewWithLeading
         android:id="@+id/message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:layout_marginStart="24dp"
         android:text="@string/signin_gms_updating"
-        android:lineSpacingMultiplier="1.4"
-        android:textSize="14sp" />
-</org.chromium.chrome.browser.widget.BoundedLinearLayout>
+        android:textAppearance="@style/TextAppearance.BlackBodyDefault"
+        app:leading="@dimen/text_size_medium_leading" />
+</org.chromium.chrome.browser.ui.widget.BoundedLinearLayout>

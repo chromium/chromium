@@ -12,6 +12,7 @@
 #include "base/macros.h"
 #include "base/scoped_observer.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/url_pattern_set.h"
@@ -25,7 +26,6 @@ class WebContents;
 namespace extensions {
 
 class Extension;
-class ExtensionRegistry;
 
 // Responsible for granting and revoking tab-specific permissions to extensions
 // with the activeTab or tabCapture permission.
@@ -82,7 +82,7 @@ class ActiveTabPermissionGranter
 
   // Listen to extension unloaded notifications.
   ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      extension_registry_observer_;
+      extension_registry_observer_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ActiveTabPermissionGranter);
 };

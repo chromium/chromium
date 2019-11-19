@@ -4,10 +4,12 @@
 
 #include "ios/chrome/browser/metrics/ios_chrome_stability_metrics_provider.h"
 
+#include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
-#import "ios/web/public/web_state/navigation_context.h"
-#import "ios/web/public/web_state/web_state.h"
+#include "ios/web/common/features.h"
+#import "ios/web/public/navigation/navigation_context.h"
+#include "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -63,7 +65,9 @@ void IOSChromeStabilityMetricsProvider::WebStateDidStartLoading(
     return;
 
   UMA_HISTOGRAM_BOOLEAN(kPageLoadCountLoadingStartedMetric, true);
-  helper_.LogLoadStarted();
+  if (!base::FeatureList::IsEnabled(
+          web::features::kLogLoadStartedInDidStartNavigation))
+    helper_.LogLoadStarted();
 }
 
 void IOSChromeStabilityMetricsProvider::WebStateDidStartNavigation(
@@ -79,7 +83,9 @@ void IOSChromeStabilityMetricsProvider::WebStateDidStartNavigation(
   } else if (navigation_context->IsSameDocument()) {
     type = PageLoadCountNavigationType::SAME_DOCUMENT_WEB_NAVIGATION;
   } else {
-    // TODO(crbug.com/786547): Move helper_.LogLoadStarted() here.
+    if (base::FeatureList::IsEnabled(
+            web::features::kLogLoadStartedInDidStartNavigation))
+      helper_.LogLoadStarted();
   }
   UMA_HISTOGRAM_ENUMERATION(kPageLoadCountMetric, type,
                             PageLoadCountNavigationType::COUNT);

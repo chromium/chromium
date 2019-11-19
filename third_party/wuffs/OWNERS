@@ -1,0 +1,7 @@
+nigeltao@chromium.org
+scroggo@chromium.org
+
+# See the comment at the top of the BUILD.gn file for the rationale.
+per-file BUILD.gn=file://ENG_REVIEW_OWNERS
+
+# COMPONENT: Internals>Skia

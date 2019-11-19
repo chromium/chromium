@@ -26,11 +26,6 @@ IDBValue::~IDBValue() {
     isolate_->AdjustAmountOfExternalAllocatedMemory(-external_allocated_size_);
 }
 
-std::unique_ptr<IDBValue> IDBValue::Create(scoped_refptr<SharedBuffer> data,
-                                           Vector<WebBlobInfo> blob_info) {
-  return base::WrapUnique(new IDBValue(std::move(data), std::move(blob_info)));
-}
-
 scoped_refptr<SerializedScriptValue> IDBValue::CreateSerializedValue() const {
   return SerializedScriptValue::Create(data_);
 }

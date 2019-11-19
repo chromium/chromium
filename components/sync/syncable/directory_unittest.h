@@ -10,7 +10,7 @@
 #include <memory>
 #include <string>
 
-#include "base/message_loop/message_loop.h"
+#include "base/test/task_environment.h"
 #include "components/sync/base/fake_encryptor.h"
 #include "components/sync/base/test_unrecoverable_error_handler.h"
 #include "components/sync/syncable/in_memory_directory_backing_store.h"
@@ -94,7 +94,7 @@ class SyncableDirectoryTest : public testing::Test {
                      int64_t server_version,
                      bool is_del);
 
-  base::MessageLoop message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   std::unique_ptr<Directory> dir_;
   NullDirectoryChangeDelegate delegate_;
   FakeEncryptor encryptor_;

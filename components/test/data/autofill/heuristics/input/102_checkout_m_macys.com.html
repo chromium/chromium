@@ -1,5 +1,5 @@
 <!-- Cropped from m.macys.com/chkout/payment -->
-<form id="paymentVB" novalidate="novalidate" action="https://m.macys.com/chkout/payment/continuecheckout" method="post" autocomplete="off">
+<form id="paymentVB" novalidate="novalidate" action="https://m.macys.com/chkout/payment/continuecheckout" method="post">
 <img src="https://www.macys.com/sns/web20/assets/img/checkout/loading.gif" alt="loading icon" />
 </div -->
 <div id="mainWrapper">
@@ -48,7 +48,7 @@ card type:
 <label for="paymentCardNumber" id="ariaCreditCardNo" >
 card number:
 </label>
-<input id="paymentCardNumber" name="creditCard.cardNumber"  aria-labelledby="ariaCreditCardNo" aria-required="true" maxlength="20 " type="tel" value="" autocomplete="off">
+<input id="paymentCardNumber" name="creditCard.cardNumber"  aria-labelledby="ariaCreditCardNo" aria-required="true" maxlength="20 " type="tel" value="">
 </div>
 <input id="maskedCreditCardNumber" name="creditCard.maskedCreditCardNumber"  aria-hidden="true" type="hidden" value=""><div id="paymentCardExpirationDate" >
 <div id="label-container-1"><label for="paymentCardExpMonth" id="ariaCreditCardExpMonth">
@@ -86,16 +86,16 @@ expiration:
 <option aria-selected="false" value="2023" id="ariaSelectFieldId32">2023</option></select></div></div>
 <div id="paymentCardSecurityCode" >
 <div id="label-container-4"><label for="paymentCardSecCode" id="ariaCreditCardSecurityCode">
-please enter security code: 
+please enter security code:
 </label></div>
 
 <input id="paymentCardSecCode" name="creditCard.securityCode"  pattern="[0-9]*" aria-labelledby="ariaCreditCardSecurityCode" aria-required="true" type="tel" value="" maxlength="4"><a id="whatThis"  href="javascript:void(0);" tabindex="0" title="security code help"></a>
-<div id="yui_3_8_1_8_1414183143751_292"  style="left: -161px; top: 22px; z-index: 5;"><span id="secCodeHintText"  aria-hidden="true"><div ><span  id="yui_3_8_1_8_1414183143751_359"><button type="button" id="yui_3_8_1_8_1414183143751_298" >Close</button></span></div> 
+<div id="yui_3_8_1_8_1414183143751_292"  style="left: -161px; top: 22px; z-index: 5;"><span id="secCodeHintText"  aria-hidden="true"><div ><span  id="yui_3_8_1_8_1414183143751_359"><button type="button" id="yui_3_8_1_8_1414183143751_298" >Close</button></span></div>
 <span>
 <img  src="https://m.macys.com/sns/web20/assets/img/cvvicon.png" alt="cvv icon">
 Enter the 3-digit number on the back of your card. American Express® cardholders use the 4-digit number on the front of the card.
-</span> 
-</span></div> 
+</span>
+</span></div>
 </div>
 <a id="debitLink" href="/sns/content/debitAuthorization.jsp">Paying with a debit card?</a>
 </div>
@@ -264,7 +264,7 @@ create a Macy’s account
 <label for="email" id="ariaEmailAdds">email address:</label>
 <span  id="ariaEmailDescription">Please enter your email address</span>
 <input id="email" name="user.profile.email" pattern="^[\w\.\-\_\+]+@([\w\-]+\.)+[a-zA-Z]{2,10}$" aria-labelledby="ariaEmailAdds" type="email" aria-describedby="ariaEmailDescription" value="" maxlength="75">
-</div>  
+</div>
 <div >
 <label for="confirmEmail">Confirm email address:</label>
 <span  id="ariaConfirmEmailDescription">Please Re enter your email address</span>
@@ -275,7 +275,7 @@ create a Macy’s account
 <span  id="ariaPasswordDescription">Please enter password</span>
 <input id="password" name="user.profile.password" pattern="^[a-zA-Z0-9]+" aria-labelledby="ariaPassword" aria-required="true"  maxlength="16" aria-describedby="ariaPasswordDescription" type="password" value="">
 </div>
-<div > 
+<div >
 <label for="cpassword" id="ariaRePassword">Confirm password:</label>
 <span  id="ariaRePasswordDescription">Please re-enter password</span>
 <input id="cpassword" name="user.profile.confirmPassword" pattern="^[a-zA-Z0-9]+" aria-labelledby="ariaRePassword" aria-required="true"  maxlength="16" aria-describedby="ariaRePasswordDescription" type="password" value="">
@@ -283,7 +283,7 @@ create a Macy’s account
 <div  id="birthday">
 <div id="label-container-4"><label id="ariaBirthday" for="birthday_month">Birthdate:</label></div>
 
-<div > 
+<div >
 <select id="birthday_month" name="user.profile.month"  aria-labelledby="ariaBirthday" aria-required="true" aria-activedescendant="ariaSelectFieldId96"><option  aria-selected="true" value="-1" id="ariaSelectFieldId96">Month</option>
 <option aria-selected="false" value="01" id="ariaSelectFieldId97">January</option>
 <option aria-selected="false" value="02" id="ariaSelectFieldId98">February</option>
@@ -427,7 +427,7 @@ create a Macy’s account
 <div >
 <input id="emailUpdates" name="user.profile.subscriptionInfo.emailSalesEvents" aria-labelledby="ariaEmailUpdates" type="checkbox" value="true" checked="" aria-checked="true"><input type="hidden" name="_user.profile.subscriptionInfo.emailSalesEvents" value="on"><label id="ariaEmailUpdates"  for="emailUpdates">Yes, send me email updates from Macy’s.com about the latest trends, products and promotions online and in-store.</label>
 <br >
-</div> 
+</div>
 <div >
 <input id="savePaymentDetails" name="user.savePaymentDetails"  type="checkbox" value="true" aria-checked="false"><input type="hidden" name="_user.savePaymentDetails" value="on"><label id="savePaymentInfo"  for="savePaymentDetails">Yes, save payment information to my Macy's profile.</label>
 <br >

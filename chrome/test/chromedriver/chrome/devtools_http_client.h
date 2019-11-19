@@ -15,6 +15,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/test/chromedriver/chrome/browser_info.h"
+#include "chrome/test/chromedriver/chrome/devtools_endpoint.h"
 #include "chrome/test/chromedriver/net/sync_websocket_factory.h"
 
 namespace base {
@@ -29,7 +30,6 @@ class URLLoaderFactory;
 
 struct DeviceMetrics;
 class DevToolsClient;
-class NetAddress;
 class Status;
 
 struct WebViewInfo {
@@ -79,7 +79,7 @@ class WebViewsInfo {
 
 class DevToolsHttpClient {
  public:
-  DevToolsHttpClient(const NetAddress& address,
+  DevToolsHttpClient(const DevToolsEndpoint& endpoint,
                      network::mojom::URLLoaderFactory* factory,
                      const SyncWebSocketFactory& socket_factory,
                      std::unique_ptr<DeviceMetrics> device_metrics,
@@ -107,8 +107,7 @@ class DevToolsHttpClient {
 
   network::mojom::URLLoaderFactory* url_loader_factory_;
   SyncWebSocketFactory socket_factory_;
-  std::string server_url_;
-  std::string web_socket_url_prefix_;
+  DevToolsEndpoint endpoint_;
   BrowserInfo browser_info_;
   std::unique_ptr<DeviceMetrics> device_metrics_;
   std::unique_ptr<std::set<WebViewInfo::Type>> window_types_;

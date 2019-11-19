@@ -30,6 +30,10 @@ source_set("scenic") {
     "scenic_window_canvas.h",
     "scenic_window_manager.cc",
     "scenic_window_manager.h",
+    "sysmem_buffer_collection.cc",
+    "sysmem_buffer_collection.h",
+    "sysmem_buffer_manager.cc",
+    "sysmem_buffer_manager.h",
   ]
 
   defines = [
@@ -45,24 +49,33 @@ source_set("scenic") {
     "//third_party/fuchsia-sdk/sdk:images",
     "//third_party/fuchsia-sdk/sdk:mem",
     "//third_party/fuchsia-sdk/sdk:scenic_cpp",
+    "//third_party/fuchsia-sdk/sdk:sys_cpp",
+    "//third_party/fuchsia-sdk/sdk:sysmem",
     "//third_party/fuchsia-sdk/sdk:ui_gfx",
     "//third_party/fuchsia-sdk/sdk:ui_scenic",
     "//ui/base",
-    "//ui/display/manager",
+    "//ui/base/ime/fuchsia",
+    "//ui/display/fake",
     "//ui/events:dom_keycode_converter",
     "//ui/events/ozone:events_ozone_layout",
     "//ui/gfx/geometry",
     "//ui/ozone:ozone_base",
     "//ui/ozone/common",
-    "//ui/ozone/public/interfaces",
+    "//ui/ozone/public/mojom",
     "//ui/platform_window",
   ]
 
+  data_deps = []
   if (enable_vulkan) {
     sources += [
       "vulkan_implementation_scenic.cc",
       "vulkan_implementation_scenic.h",
     ]
     defines += [ "VK_USE_PLATFORM_MAGMA_KHR" ]
+    deps += [ "//gpu/ipc/common:vulkan_ycbcr_info" ]
+    data_deps += [
+      "//third_party/angle:libEGL",
+      "//third_party/angle:libGLESv2",
+    ]
   }
 }

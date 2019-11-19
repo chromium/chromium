@@ -87,16 +87,20 @@ class ManifestTest : public testing::Test {
 
   scoped_refptr<extensions::Extension> LoadAndExpectWarning(
       const ManifestData& manifest,
-      const std::string& expected_error,
-      extensions::Manifest::Location location =
-          extensions::Manifest::INTERNAL,
+      const std::string& expected_warning,
+      extensions::Manifest::Location location = extensions::Manifest::INTERNAL,
       int flags = extensions::Extension::NO_FLAGS);
 
   scoped_refptr<extensions::Extension> LoadAndExpectWarning(
       char const* manifest_name,
-      const std::string& expected_error,
-      extensions::Manifest::Location location =
-          extensions::Manifest::INTERNAL,
+      const std::string& expected_warning,
+      extensions::Manifest::Location location = extensions::Manifest::INTERNAL,
+      int flags = extensions::Extension::NO_FLAGS);
+
+  scoped_refptr<extensions::Extension> LoadAndExpectWarnings(
+      char const* manifest_name,
+      const std::vector<std::string>& expected_warnings,
+      extensions::Manifest::Location location = extensions::Manifest::INTERNAL,
       int flags = extensions::Extension::NO_FLAGS);
 
   void VerifyExpectedError(extensions::Extension* extension,

@@ -64,6 +64,9 @@ class TestingPrefServiceBase : public SuperPrefService {
   // Do-nothing implementation for TestingPrefService.
   static void HandleReadError(PersistentPrefStore::PrefReadError error) {}
 
+  // Set initialization status of pref stores.
+  void SetInitializationCompleted();
+
  protected:
   TestingPrefServiceBase(TestingPrefStore* managed_prefs,
                          TestingPrefStore* extension_prefs,
@@ -228,6 +231,16 @@ template <class SuperPrefService, class ConstructionPrefRegistry>
 void TestingPrefServiceBase<SuperPrefService, ConstructionPrefRegistry>::
     RemovePref(TestingPrefStore* pref_store, const std::string& path) {
   pref_store->RemoveValue(path, WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
+}
+
+template <class SuperPrefService, class ConstructionPrefRegistry>
+void TestingPrefServiceBase<SuperPrefService, ConstructionPrefRegistry>::
+    SetInitializationCompleted() {
+  managed_prefs_->SetInitializationCompleted();
+  extension_prefs_->SetInitializationCompleted();
+  recommended_prefs_->SetInitializationCompleted();
+  // |user_prefs_| is initialized in PrefService constructor so no need to
+  // set initialization status again.
 }
 
 #endif  // COMPONENTS_PREFS_TESTING_PREF_SERVICE_H_

@@ -16,6 +16,7 @@
 #include "content/common/content_export.h"
 #include "content/common/render_message_filter.mojom.h"
 #include "content/common/widget.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/load_states.h"
 
 class GURL;
@@ -39,7 +40,7 @@ namespace content {
 
 class BrowserContext;
 class FrameTree;
-class RenderFrameHost;
+class RenderFrameHostImpl;
 class RenderViewHost;
 class RenderViewHostImpl;
 class RenderViewHostDelegateView;
@@ -132,12 +133,15 @@ class CONTENT_EXPORT RenderViewHostDelegate {
   // happen in response to ShowCreatedWidget.
   virtual void CreateNewWidget(int32_t render_process_id,
                                int32_t widget_route_id,
-                               mojom::WidgetPtr widget) {}
+                               mojo::PendingRemote<mojom::Widget> widget,
+                               RenderViewHostImpl* render_view_host) {}
 
   // Creates a full screen RenderWidget. Similar to above.
-  virtual void CreateNewFullscreenWidget(int32_t render_process_id,
-                                         int32_t widget_route_id,
-                                         mojom::WidgetPtr widget) {}
+  virtual void CreateNewFullscreenWidget(
+      int32_t render_process_id,
+      int32_t widget_route_id,
+      mojo::PendingRemote<mojom::Widget> widget,
+      RenderViewHostImpl* render_view_host) {}
 
   // Show the newly created widget with the specified bounds.
   // The widget is identified by the route_id passed to CreateNewWidget.
@@ -184,19 +188,22 @@ class CONTENT_EXPORT RenderViewHostDelegate {
   // Whether the WebContents as a persistent video.
   virtual bool HasPersistentVideo() const;
 
+  // Whether spatial navigation is permitted.
+  virtual bool IsSpatialNavigationDisabled() const;
+
   // Returns the RenderFrameHost for a pending or speculative main frame
   // navigation for the page.  Returns nullptr if there is no such navigation.
-  virtual RenderFrameHost* GetPendingMainFrame();
+  virtual RenderFrameHostImpl* GetPendingMainFrame();
 
   // The RenderView finished the first visually non-empty paint.
   virtual void DidFirstVisuallyNonEmptyPaint(RenderViewHostImpl* source) {}
 
-  // The RenderView has issued a draw command, signaling the it
-  // has been visually updated.
-  virtual void DidCommitAndDrawCompositorFrame(RenderViewHostImpl* source) {}
-
   // Returns true if the render view is rendering a portal.
   virtual bool IsPortal() const;
+
+  // Called when the theme color for the underlying document as specified
+  // by theme-color meta tag has changed.
+  virtual void OnThemeColorChanged(RenderViewHostImpl* source) {}
 
  protected:
   virtual ~RenderViewHostDelegate() {}

@@ -4,24 +4,20 @@
 
 #include "third_party/blink/renderer/modules/xr/xr_rigid_transform.h"
 
+#include <utility>
+
+#include "third_party/blink/renderer/core/geometry/dom_point_init.h"
+#include "third_party/blink/renderer/core/geometry/dom_point_read_only.h"
 #include "third_party/blink/renderer/modules/xr/xr_utils.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 
 namespace blink {
 
 // makes a deep copy of transformationMatrix
 XRRigidTransform::XRRigidTransform(
     const TransformationMatrix& transformationMatrix)
-    : matrix_(TransformationMatrix::Create(transformationMatrix)) {
-  DecomposeMatrix();
-}
-
-// takes ownership of transformationMatrix instead of copying it
-XRRigidTransform::XRRigidTransform(
-    std::unique_ptr<TransformationMatrix> transformationMatrix)
-    : matrix_(std::move(transformationMatrix)) {
-  if (!matrix_) {
-    matrix_ = TransformationMatrix::Create();
-  }
+    : matrix_(std::make_unique<TransformationMatrix>(transformationMatrix)) {
   DecomposeMatrix();
 }
 
@@ -29,41 +25,18 @@ void XRRigidTransform::DecomposeMatrix() {
   // decompose matrix to position and orientation
   TransformationMatrix::DecomposedType decomposed;
   bool succeeded = matrix_->Decompose(decomposed);
-  if (succeeded) {
-    position_ =
-        DOMPointReadOnly::Create(decomposed.translate_x, decomposed.translate_y,
-                                 decomposed.translate_z, 1.0);
-    orientation_ = makeNormalizedQuaternion(
-        decomposed.quaternion_x, decomposed.quaternion_y,
-        decomposed.quaternion_z, decomposed.quaternion_w);
-  } else {
-    // TODO: Is this the correct way to handle a failure here?
-    position_ = DOMPointReadOnly::Create(0.0, 0.0, 0.0, 1.0);
-    orientation_ = DOMPointReadOnly::Create(0.0, 0.0, 0.0, 1.0);
-  }
-}
-
-// deep copy
-XRRigidTransform::XRRigidTransform(const XRRigidTransform& other) {
-  *this = other;
-}
-
-// deep copy
-XRRigidTransform& XRRigidTransform::operator=(const XRRigidTransform& other) {
-  if (&other == this)
-    return *this;
+  DCHECK(succeeded) << "Matrix decompose failed for " << matrix_->ToString();
 
   position_ =
-      DOMPointReadOnly::Create(other.position_->x(), other.position_->y(),
-                               other.position_->z(), other.position_->w());
-  orientation_ = DOMPointReadOnly::Create(
-      other.orientation_->x(), other.orientation_->y(), other.orientation_->z(),
-      other.orientation_->w());
-  if (other.matrix_) {
-    matrix_ = TransformationMatrix::Create(*(other.matrix_.get()));
-  }
+      DOMPointReadOnly::Create(decomposed.translate_x, decomposed.translate_y,
+                               decomposed.translate_z, 1.0);
 
-  return *this;
+  // TODO(https://crbug.com/929841): Minuses are needed as a workaround for
+  // bug in TransformationMatrix so that callers can still pass non-inverted
+  // quaternions.
+  orientation_ = makeNormalizedQuaternion(
+      -decomposed.quaternion_x, -decomposed.quaternion_y,
+      -decomposed.quaternion_z, decomposed.quaternion_w);
 }
 
 XRRigidTransform::XRRigidTransform(DOMPointInit* position,
@@ -87,19 +60,57 @@ XRRigidTransform::XRRigidTransform(DOMPointInit* position,
 }
 
 XRRigidTransform* XRRigidTransform::Create(DOMPointInit* position,
-                                           DOMPointInit* orientation) {
+                                           DOMPointInit* orientation,
+                                           ExceptionState& exception_state) {
+  if (position && position->w() != 1.0) {
+    exception_state.ThrowTypeError("W component of position must be 1.0");
+    return nullptr;
+  }
+
+  if (orientation) {
+    double x = orientation->x();
+    double y = orientation->y();
+    double z = orientation->z();
+    double w = orientation->w();
+    double sq_len = x * x + y * y + z * z + w * w;
+
+    // The only way for the result of a square root to be 0 is if the squared
+    // number is 0, so save the square root operation and just compare to 0 now.
+    if (sq_len == 0.0) {
+      exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                        "Orientation's length cannot be 0");
+      return nullptr;
+    }
+  }
+
   return MakeGarbageCollected<XRRigidTransform>(position, orientation);
 }
 
 DOMFloat32Array* XRRigidTransform::matrix() {
   EnsureMatrix();
-  return transformationMatrixToDOMFloat32Array(*matrix_);
+  if (!matrix_array_) {
+    matrix_array_ = transformationMatrixToDOMFloat32Array(*matrix_);
+  }
+
+  if (!matrix_array_ || !matrix_array_->View() ||
+      !matrix_array_->View()->Data()) {
+    // A page may take the matrix_array_ value and detach it so matrix_array_ is
+    // a detached array buffer.  This breaks the inspector, so return null
+    // instead.
+    return nullptr;
+  }
+
+  return matrix_array_;
+}
+
+XRRigidTransform* XRRigidTransform::inverse() {
+  EnsureInverse();
+  return inverse_;
 }
 
 TransformationMatrix XRRigidTransform::InverseTransformMatrix() {
-  EnsureMatrix();
-  DCHECK(matrix_->IsInvertible());
-  return matrix_->Inverse();
+  EnsureInverse();
+  return inverse_->TransformMatrix();
 }
 
 TransformationMatrix XRRigidTransform::TransformMatrix() {
@@ -109,7 +120,7 @@ TransformationMatrix XRRigidTransform::TransformMatrix() {
 
 void XRRigidTransform::EnsureMatrix() {
   if (!matrix_) {
-    matrix_ = TransformationMatrix::Create();
+    matrix_ = std::make_unique<TransformationMatrix>();
     TransformationMatrix::DecomposedType decomp;
     memset(&decomp, 0, sizeof(decomp));
     decomp.perspective_w = 1;
@@ -133,9 +144,23 @@ void XRRigidTransform::EnsureMatrix() {
   }
 }
 
+void XRRigidTransform::EnsureInverse() {
+  // Only compute inverse matrix when it's requested, but cache it once we do.
+  // matrix_ does not change once the XRRigidTransfrorm has been constructed, so
+  // the caching is safe.
+  if (!inverse_) {
+    EnsureMatrix();
+    DCHECK(matrix_->IsInvertible());
+    inverse_ = MakeGarbageCollected<XRRigidTransform>(matrix_->Inverse());
+    inverse_->inverse_ = this;
+  }
+}
+
 void XRRigidTransform::Trace(blink::Visitor* visitor) {
   visitor->Trace(position_);
   visitor->Trace(orientation_);
+  visitor->Trace(inverse_);
+  visitor->Trace(matrix_array_);
   ScriptWrappable::Trace(visitor);
 }
 

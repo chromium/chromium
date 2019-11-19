@@ -10,7 +10,8 @@
 #include "cc/paint/image_transfer_cache_entry.h"
 #include "cc/paint/raw_memory_transfer_cache_entry.h"
 #include "cc/paint/transfer_cache_entry.h"
-#include "cc/test/test_in_process_context_provider.h"
+#include "components/viz/test/test_gpu_service_holder.h"
+#include "components/viz/test/test_in_process_context_provider.h"
 #include "gpu/command_buffer/client/client_transfer_cache.h"
 #include "gpu/command_buffer/client/gles2_cmd_helper.h"
 #include "gpu/command_buffer/client/gles2_implementation.h"
@@ -20,7 +21,6 @@
 #include "gpu/command_buffer/service/service_transfer_cache.h"
 #include "gpu/config/gpu_switches.h"
 #include "gpu/ipc/raster_in_process_context.h"
-#include "gpu/ipc/test_gpu_thread_holder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "ui/gl/gl_implementation.h"
@@ -48,7 +48,7 @@ class TransferCacheTest : public testing::Test {
 
     context_ = std::make_unique<gpu::RasterInProcessContext>();
     auto result = context_->Initialize(
-        gpu::GetTestGpuThreadHolder()->GetTaskExecutor(), attribs,
+        viz::TestGpuServiceHolder::GetInstance()->task_executor(), attribs,
         gpu::SharedMemoryLimits(), &gpu_memory_buffer_manager_, &image_factory_,
         /*gpu_channel_manager_delegate=*/nullptr, nullptr, nullptr);
 
@@ -85,7 +85,7 @@ class TransferCacheTest : public testing::Test {
 
  private:
   viz::TestGpuMemoryBufferManager gpu_memory_buffer_manager_;
-  TestImageFactory image_factory_;
+  viz::TestImageFactory image_factory_;
   std::unique_ptr<gpu::RasterInProcessContext> context_;
   gl::DisableNullDrawGLBindings enable_pixel_output_;
   ClientRawMemoryTransferCacheEntry test_client_entry_;

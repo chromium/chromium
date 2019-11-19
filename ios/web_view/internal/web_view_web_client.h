@@ -34,6 +34,7 @@ class WebViewWebClient : public web::WebClient {
       const net::SSLInfo& ssl_info,
       const GURL& request_url,
       bool overridable,
+      int64_t navigation_id,
       const base::RepeatingCallback<void(bool)>& callback) override;
 
  private:

@@ -1,0 +1,27 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos, "Non-Chrome-OS builds cannot depend on //chromeos")
+
+component("cros_healthd") {
+  defines = [ "IS_CROS_HEALTHD_IMPL" ]
+
+  deps = [
+    "//base",
+    "//chromeos/services/cros_healthd/public/mojom",
+    "//dbus",
+    "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/platform",
+    "//mojo/public/cpp/system",
+  ]
+
+  sources = [
+    "cros_healthd_client.cc",
+    "cros_healthd_client.h",
+    "fake_cros_healthd_client.cc",
+    "fake_cros_healthd_client.h",
+    "fake_cros_healthd_service.cc",
+    "fake_cros_healthd_service.h",
+  ]
+}

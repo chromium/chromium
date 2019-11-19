@@ -1,0 +1,13 @@
+Test that ObjectPropertiesSection expands recursively.
+
+JSON
+    foo: {bar: {baz: {quux: {corge: "plugh"}}}, quuz: {garply: "xyzzy", thud: {wibble: "wobble"}}}
+        bar: {baz: {quux: {corge: "plugh"}}}
+            baz: {quux: {corge: "plugh"}}
+                quux: {corge: "plugh"}
+                    corge: "plugh"
+        quuz: {garply: "xyzzy", thud: {wibble: "wobble"}}
+            garply: "xyzzy"
+            thud: {wibble: "wobble"}
+                wibble: "wobble"
+

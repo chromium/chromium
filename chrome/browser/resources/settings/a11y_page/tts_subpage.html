@@ -1,27 +1,27 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
-<link rel="import" href="chrome://resources/cr_elements/cr_input/cr_input.html"
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_expand_button/cr_expand_button.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_input/cr_input.html">
+<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
-<link rel="import" href="chrome://resources/html/md_select_css.html">
+<link rel="import" href="chrome://resources/cr_elements/md_select_css.html">
 <link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-button/paper-button.html">
 <link rel="import" href="../controls/settings_slider.html">
 <link rel="import" href="../i18n_setup.html">
 <link rel="import" href="../languages_page/languages_browser_proxy.html">
 <link rel="import" href="../settings_shared_css.html">
-<link rel="import" href="../settings_vars_css.html">
 
 <dom-module id="settings-tts-subpage">
   <template>
     <style include="settings-shared md-select">
       h2 {
-        padding-inline-start: var(--settings-box-row-padding);
+        padding-inline-start: var(--cr-section-padding);
       }
 
       .settings-box {
-        margin-inline-end: var(--settings-box-row-padding);
-        margin-inline-start: var(--settings-box-row-indent);
+        margin-inline-end: var(--cr-section-padding);
+        margin-inline-start: var(--cr-section-indent-padding);
         padding-inline-end: 0;
         padding-inline-start: 0;
       }
@@ -31,14 +31,16 @@
         --cr-input-error-display: none;
       }
 
-      #previewInput paper-button {
+      #previewInput cr-button {
         margin-inline-start: 8px;
       }
     </style>
 
     <h2>$i18n{textToSpeechProperties}</h2>
     <div class="settings-box first">
-      <div class="start" id="rate">$i18n{textToSpeechRate}</div>
+      <div class="start settings-box-text" id="rate">
+        $i18n{textToSpeechRate}
+      </div>
       <settings-slider show-markers
           pref="{{prefs.settings.tts.speech_rate}}"
           ticks="[[speechRateTicks_()]]"
@@ -48,7 +50,9 @@
       </settings-slider>
     </div>
     <div class="settings-box continuation">
-      <div class="start" id="pitch">$i18n{textToSpeechPitch}</div>
+      <div class="start settings-box-text" id="pitch">
+        $i18n{textToSpeechPitch}
+      </div>
       <settings-slider show-markers
           pref="{{prefs.settings.tts.speech_pitch}}"
           ticks="[[speechPitchTicks_()]]"
@@ -58,7 +62,9 @@
       </settings-slider>
     </div>
     <div class="settings-box continuation">
-      <div class="start" id="volume">$i18n{textToSpeechVolume}</div>
+      <div class="start settings-box-text" id="volume">
+        $i18n{textToSpeechVolume}
+      </div>
       <settings-slider show-markers
           pref="{{prefs.settings.tts.speech_volume}}"
           ticks="[[speechVolumeTicks_()]]"
@@ -70,7 +76,7 @@
 
     <h2>$i18n{textToSpeechPreviewHeading}</h2>
     <div class="settings-box first">
-      <div class="start">
+      <div class="start settings-box-text">
         $i18n{textToSpeechPreviewVoice}
       </div>
       <select id="previewVoice" class="md-select"
@@ -88,13 +94,14 @@
     </div>
     <div class="settings-box continuation">
       <cr-input id="previewInput" label="$i18n{textToSpeechPreviewInputLabel}"
-          value="{{previewText_}}">
-        <paper-button on-click="onPreviewTtsClick_"
+          value="{{previewText_}}"
+          disabled="[[isPreviewing_]]">
+        <cr-button on-click="onPreviewTtsClick_"
             disabled$="[[!enablePreviewButton_(allVoices, isPreviewing_,
                          previewText_)]]"
             slot="suffix">
           $i18n{textToSpeechPreviewPlay}
-        </paper-button>
+        </cr-button>
       </cr-input>
     </div>
 
@@ -103,7 +110,7 @@
         filter="isPrimaryLanguage_"
         sort="alphabeticalSort_">
       <div class="settings-box first">
-        <div class="start">
+        <div class="start settings-box-text">
           [[lang.language]]
         </div>
         <settings-dropdown-menu label="[[lang.language]]"
@@ -126,7 +133,7 @@
       <template is="dom-repeat" items="[[languagesToVoices]]"
           as="lang" sort="alphabeticalSort_" filter="isSecondaryLanguage_">
         <div class="settings-box continuation">
-          <div class="start">
+          <div class="start settings-box-text">
             [[lang.language]]
           </div>
           <settings-dropdown-menu label="[[lang.language]]"
@@ -139,21 +146,21 @@
         </div>
       </template>
     </iron-collapse>
-    <div class="settings-box first" hidden$="[[hasVoices]]">
+    <div class="settings-box first settings-box-text" hidden$="[[hasVoices]]">
       $i18n{textToSpeechNoVoicesMessage}
     </div>
 
     <h2>$i18n{textToSpeechEngines}</h2>
     <template is="dom-repeat" items="[[extensions]]" as="extension">
       <div class="settings-box continuation">
-        <div id="extension_name_[[index]]" class="start">
+        <div id="extension_name_[[index]]" class="start settings-box-text">
           [[extension.name]]
         </div>
-        <paper-button on-click="onEngineSettingsTap_"
+        <cr-button on-click="onEngineSettingsTap_"
             aria-describedby$="extension_name_[[index]]"
             hidden$="[[!extension.optionsPage]]">
           $i18n{settings}
-        </paper-button>
+        </cr-button>
       </div>
     </template>
   </template>

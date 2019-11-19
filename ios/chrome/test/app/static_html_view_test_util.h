@@ -5,7 +5,11 @@
 #ifndef IOS_CHROME_TEST_APP_STATIC_HTML_VIEW_TEST_UTIL_H_
 #define IOS_CHROME_TEST_APP_STATIC_HTML_VIEW_TEST_UTIL_H_
 
-#import "ios/web/public/web_state/web_state.h"
+#include <string>
+
+namespace web {
+class WebState;
+}
 
 namespace chrome_test_util {
 

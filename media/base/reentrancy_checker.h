@@ -40,7 +40,7 @@
 #define REENTRANCY_CHECKER(name) ::base::Lock name
 #define NON_REENTRANT_SCOPE(name) ::media::NonReentrantScope name##scope(name)
 #else  // DCHECK_IS_ON()
-#define REENTRANCY_CHECKER(name)
+#define REENTRANCY_CHECKER(name) static_assert(true, "")
 #define NON_REENTRANT_SCOPE(name)
 #endif  // DCHECK_IS_ON()
 

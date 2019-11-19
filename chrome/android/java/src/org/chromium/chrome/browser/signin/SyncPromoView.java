@@ -15,14 +15,16 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import org.chromium.base.ThreadUtils;
+import org.chromium.base.task.PostTask;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.preferences.PreferencesLauncher;
-import org.chromium.chrome.browser.signin.AccountSigninActivity.AccessPoint;
-import org.chromium.chrome.browser.sync.ui.SyncCustomizationFragment;
+import org.chromium.chrome.browser.preferences.sync.SyncAndServicesPreferences;
+import org.chromium.chrome.browser.signin.SigninActivity.AccessPoint;
 import org.chromium.chrome.browser.util.IntentUtils;
+import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.sync.AndroidSyncSettings;
 import org.chromium.components.sync.AndroidSyncSettings.AndroidSyncSettingsObserver;
+import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 /**
  * A View that shows the user the next step they must complete to start syncing their data (eg.
@@ -173,8 +175,10 @@ public class SyncPromoView extends LinearLayout implements AndroidSyncSettingsOb
                 : R.string.recent_tabs_sync_promo_enable_chrome_sync;
 
         ButtonState positiveButton = new ButtonPresent(R.string.enable_sync_button,
-                view -> PreferencesLauncher.launchSettingsPage(
-                        getContext(), SyncCustomizationFragment.class));
+                view
+                -> PreferencesLauncher.launchSettingsPage(getContext(),
+                        SyncAndServicesPreferences.class,
+                        SyncAndServicesPreferences.createArguments(false)));
 
         return new ViewState(descId, positiveButton);
     }
@@ -207,6 +211,6 @@ public class SyncPromoView extends LinearLayout implements AndroidSyncSettingsOb
     @Override
     public void androidSyncSettingsChanged() {
         // AndroidSyncSettings calls this method from non-UI threads.
-        ThreadUtils.runOnUiThread(this::update);
+        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, this::update);
     }
 }

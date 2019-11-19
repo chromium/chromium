@@ -14,15 +14,15 @@ namespace mojo {
 
 template <>
 struct CONTENT_EXPORT TypeConverter<content::mojom::ResourceTypeStatsPtr,
-                                    blink::WebCache::ResourceTypeStats> {
+                                    blink::WebCacheResourceTypeStats> {
   static content::mojom::ResourceTypeStatsPtr Convert(
-      const blink::WebCache::ResourceTypeStats& obj);
+      const blink::WebCacheResourceTypeStats& obj);
 };
 
 template <>
-struct CONTENT_EXPORT TypeConverter<blink::WebCache::ResourceTypeStats,
+struct CONTENT_EXPORT TypeConverter<blink::WebCacheResourceTypeStats,
                                     content::mojom::ResourceTypeStats> {
-  static blink::WebCache::ResourceTypeStats Convert(
+  static blink::WebCacheResourceTypeStats Convert(
       const content::mojom::ResourceTypeStats& obj);
 };
 

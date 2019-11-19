@@ -1,4 +1,10 @@
 <!DOCTYPE HTML>
+<script>
+if (window.internals) {
+    internals.useMockOverlayScrollbars();
+    internals.settings.setPreferCompositingToLCDTextEnabled(false);
+}
+</script>
 <style>
 #clipper {
     overflow: hidden;
@@ -30,12 +36,6 @@
     height: 500px;
 }
 </style>
-<script>
-if (window.internals) {
-    internals.runtimeFlags.overlayScrollbarsEnabled = true;
-    internals.settings.setPreferCompositingToLCDTextEnabled(false);
-}
-</script>
 <div id='clipper'>
     <div id='scroller'>
         <div id='fixed'></div>

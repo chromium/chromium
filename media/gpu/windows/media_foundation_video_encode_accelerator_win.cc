@@ -16,6 +16,8 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/shared_memory_mapping.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "base/win/scoped_co_mem.h"
@@ -57,7 +59,7 @@ eAVEncH264VProfile GetH264VProfile(VideoCodecProfile profile) {
       return eAVEncH264VProfile_Main;
     case H264PROFILE_HIGH: {
       // eAVEncH264VProfile_High requires Windows 8.
-      if (base::win::GetVersion() < base::win::VERSION_WIN8) {
+      if (base::win::GetVersion() < base::win::Version::WIN8) {
         return eAVEncH264VProfile_unknown;
       }
       return eAVEncH264VProfile_High;
@@ -89,11 +91,11 @@ class MediaFoundationVideoEncodeAccelerator::EncodeOutput {
 
 struct MediaFoundationVideoEncodeAccelerator::BitstreamBufferRef {
   BitstreamBufferRef(int32_t id,
-                     std::unique_ptr<base::SharedMemory> shm,
+                     base::WritableSharedMemoryMapping mapping,
                      size_t size)
-      : id(id), shm(std::move(shm)), size(size) {}
+      : id(id), mapping(std::move(mapping)), size(size) {}
   const int32_t id;
-  const std::unique_ptr<base::SharedMemory> shm;
+  const base::WritableSharedMemoryMapping mapping;
   const size_t size;
 
  private:
@@ -107,8 +109,7 @@ MediaFoundationVideoEncodeAccelerator::MediaFoundationVideoEncodeAccelerator(
     bool compatible_with_win7)
     : compatible_with_win7_(compatible_with_win7),
       main_client_task_runner_(base::ThreadTaskRunnerHandle::Get()),
-      encoder_thread_("MFEncoderThread"),
-      encoder_task_weak_factory_(this) {}
+      encoder_thread_("MFEncoderThread") {}
 
 MediaFoundationVideoEncodeAccelerator::
     ~MediaFoundationVideoEncodeAccelerator() {
@@ -254,7 +255,7 @@ bool MediaFoundationVideoEncodeAccelerator::Initialize(const Config& config,
 }
 
 void MediaFoundationVideoEncodeAccelerator::Encode(
-    const scoped_refptr<VideoFrame>& frame,
+    scoped_refptr<VideoFrame> frame,
     bool force_keyframe) {
   DVLOG(3) << __func__;
   DCHECK(main_client_task_runner_->BelongsToCurrentThread());
@@ -262,12 +263,12 @@ void MediaFoundationVideoEncodeAccelerator::Encode(
   encoder_thread_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&MediaFoundationVideoEncodeAccelerator::EncodeTask,
-                     encoder_task_weak_factory_.GetWeakPtr(), frame,
+                     encoder_task_weak_factory_.GetWeakPtr(), std::move(frame),
                      force_keyframe));
 }
 
 void MediaFoundationVideoEncodeAccelerator::UseOutputBitstreamBuffer(
-    const BitstreamBuffer& buffer) {
+    BitstreamBuffer buffer) {
   DVLOG(3) << __func__ << ": buffer size=" << buffer.size();
   DCHECK(main_client_task_runner_->BelongsToCurrentThread());
 
@@ -278,16 +279,19 @@ void MediaFoundationVideoEncodeAccelerator::UseOutputBitstreamBuffer(
     return;
   }
 
-  std::unique_ptr<base::SharedMemory> shm(
-      new base::SharedMemory(buffer.handle(), false));
-  if (!shm->Map(buffer.size())) {
+  auto region =
+      base::UnsafeSharedMemoryRegion::Deserialize(buffer.TakeRegion());
+  auto mapping = region.Map();
+  if (!region.IsValid() || !mapping.IsValid()) {
     DLOG(ERROR) << "Failed mapping shared memory.";
     NotifyError(kPlatformFailureError);
     return;
   }
+  // After mapping, |region| is no longer necessary and it can be
+  // destroyed. |mapping| will keep the shared memory region open.
 
   std::unique_ptr<BitstreamBufferRef> buffer_ref(
-      new BitstreamBufferRef(buffer.id(), std::move(shm), buffer.size()));
+      new BitstreamBufferRef(buffer.id(), std::move(mapping), buffer.size()));
   encoder_thread_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
@@ -343,7 +347,7 @@ bool MediaFoundationVideoEncodeAccelerator::CreateHardwareEncoderMFT() {
   DCHECK(main_client_task_runner_->BelongsToCurrentThread());
 
   if (!compatible_with_win7_ &&
-      base::win::GetVersion() < base::win::VERSION_WIN8) {
+      base::win::GetVersion() < base::win::Version::WIN8) {
     DVLOG(ERROR) << "Windows versions earlier than 8 are not supported.";
     return false;
   }
@@ -661,7 +665,7 @@ void MediaFoundationVideoEncodeAccelerator::ProcessOutput() {
 
   {
     MediaBufferScopedPointer scoped_buffer(output_buffer.Get());
-    memcpy(buffer_ref->shm->memory(), scoped_buffer.get(), size);
+    memcpy(buffer_ref->mapping.memory(), scoped_buffer.get(), size);
   }
 
   main_client_task_runner_->PostTask(
@@ -699,7 +703,7 @@ void MediaFoundationVideoEncodeAccelerator::ReturnBitstreamBuffer(
   DVLOG(3) << __func__;
   DCHECK(encoder_thread_task_runner_->BelongsToCurrentThread());
 
-  memcpy(buffer_ref->shm->memory(), encode_output->memory(),
+  memcpy(buffer_ref->mapping.memory(), encode_output->memory(),
          encode_output->size());
   main_client_task_runner_->PostTask(
       FROM_HERE,

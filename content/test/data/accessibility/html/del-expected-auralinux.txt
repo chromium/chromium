@@ -1,5 +1,5 @@
 [document web]
 ++[paragraph]
-++++[text] name='I am '
-++++[section]
-++++++[text] name='vegetarian'
+++++[static] name='I am '
+++++[content deletion]
+++++++[static] name='vegetarian'

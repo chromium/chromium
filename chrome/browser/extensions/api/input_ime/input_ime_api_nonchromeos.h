@@ -34,7 +34,7 @@ class InputImeEventRouter : public InputImeEventRouterBase {
   ~InputImeEventRouter() override;
 
   // Gets the input method engine if the extension is active.
-  input_method::InputMethodEngineBase* GetActiveEngine(
+  input_method::InputMethodEngineBase* GetEngineIfActive(
       const std::string& extension_id) override;
 
   // Actives the extension with new input method engine, and deletes the
@@ -55,40 +55,40 @@ class InputImeEventRouter : public InputImeEventRouterBase {
   DISALLOW_COPY_AND_ASSIGN(InputImeEventRouter);
 };
 
-class InputImeCreateWindowFunction : public UIThreadExtensionFunction {
+class InputImeCreateWindowFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("input.ime.createWindow", INPUT_IME_CREATEWINDOW)
 
  protected:
-  ~InputImeCreateWindowFunction() override {}
+  ~InputImeCreateWindowFunction() override = default;
 
   // ExtensionFunction:
   ExtensionFunction::ResponseAction Run() override;
 };
 
-class InputImeShowWindowFunction : public UIThreadExtensionFunction {
+class InputImeShowWindowFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("input.ime.showWindow", INPUT_IME_SHOWWINDOW)
 
  protected:
-  ~InputImeShowWindowFunction() override {}
+  ~InputImeShowWindowFunction() override = default;
 
   // ExtensionFunction:
   ExtensionFunction::ResponseAction Run() override;
 };
 
-class InputImeHideWindowFunction : public UIThreadExtensionFunction {
+class InputImeHideWindowFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("input.ime.hideWindow", INPUT_IME_HIDEWINDOW)
 
  protected:
-  ~InputImeHideWindowFunction() override {}
+  ~InputImeHideWindowFunction() override = default;
 
   // ExtensionFunction:
   ExtensionFunction::ResponseAction Run() override;
 };
 
-class InputImeActivateFunction : public UIThreadExtensionFunction {
+class InputImeActivateFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("input.ime.activate", INPUT_IME_ACTIVATE)
 
@@ -97,9 +97,9 @@ class InputImeActivateFunction : public UIThreadExtensionFunction {
   static bool disable_bubble_for_testing_;
 
  protected:
-  ~InputImeActivateFunction() override {}
+  ~InputImeActivateFunction() override = default;
 
-  // UIThreadExtensionFunction:
+  // ExtensionFunction:
   ResponseAction Run() override;
 
  private:
@@ -109,14 +109,14 @@ class InputImeActivateFunction : public UIThreadExtensionFunction {
   void OnPermissionBubbleFinished(ImeWarningBubblePermissionStatus status);
 };
 
-class InputImeDeactivateFunction : public UIThreadExtensionFunction {
+class InputImeDeactivateFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("input.ime.deactivate", INPUT_IME_DEACTIVATE)
 
  protected:
-  ~InputImeDeactivateFunction() override {}
+  ~InputImeDeactivateFunction() override = default;
 
-  // UIThreadExtensionFunction:
+  // ExtensionFunction:
   ResponseAction Run() override;
 };
 

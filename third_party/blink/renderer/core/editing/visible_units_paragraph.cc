@@ -104,7 +104,6 @@ PositionTemplate<Strategy> StartOfParagraphAlgorithm(
     if (layout_object->IsText() &&
         ToLayoutText(previous_node_iterator->GetLayoutObject())
             ->ResolvedTextLength()) {
-      SECURITY_DCHECK(previous_node_iterator->IsTextNode());
       if (style.PreserveNewline()) {
         LayoutText* text =
             ToLayoutText(previous_node_iterator->GetLayoutObject());
@@ -113,7 +112,7 @@ PositionTemplate<Strategy> StartOfParagraphAlgorithm(
           index = max(0, candidate_offset);
         while (--index >= 0) {
           if ((*text)[index] == '\n') {
-            return PositionTemplate<Strategy>(ToText(previous_node_iterator),
+            return PositionTemplate<Strategy>(To<Text>(previous_node_iterator),
                                               index + 1);
           }
         }
@@ -207,14 +206,13 @@ PositionTemplate<Strategy> EndOfParagraphAlgorithm(
     // can't accept the caret.
     if (layout_object->IsText() &&
         ToLayoutText(layout_object)->ResolvedTextLength()) {
-      SECURITY_DCHECK(next_node_iterator->IsTextNode());
       LayoutText* const text = ToLayoutText(layout_object);
       if (style.PreserveNewline()) {
         const int length = ToLayoutText(layout_object)->TextLength();
         for (int i = (next_node_iterator == start_node ? candidate_offset : 0);
              i < length; ++i) {
           if ((*text)[i] == '\n') {
-            return PositionTemplate<Strategy>(ToText(next_node_iterator),
+            return PositionTemplate<Strategy>(To<Text>(next_node_iterator),
                                               i + text->TextStartOffset());
           }
         }

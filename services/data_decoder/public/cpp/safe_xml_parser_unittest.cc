@@ -18,7 +18,7 @@ namespace data_decoder {
 namespace {
 
 std::unique_ptr<base::Value> ParseXml(const std::string& xml) {
-  XmlParser parser_impl(/*service_ref=*/nullptr);
+  XmlParser parser_impl;
   mojom::XmlParser& parser = parser_impl;
   std::unique_ptr<base::Value> root_node;
 

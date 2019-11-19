@@ -95,16 +95,23 @@ void TransformToFlattenedSkMatrix(const gfx::Transform& transform,
 }
 
 bool BitmapsAreEqual(const SkBitmap& bitmap1, const SkBitmap& bitmap2) {
-  void* addr1 = NULL;
-  void* addr2 = NULL;
-  size_t size1 = 0;
-  size_t size2 = 0;
+  if (bitmap1.isNull() != bitmap2.isNull() ||
+      bitmap1.dimensions() != bitmap2.dimensions())
+    return false;
 
-  addr1 = bitmap1.getAddr32(0, 0);
-  size1 = bitmap1.computeByteSize();
+  if (bitmap1.getGenerationID() == bitmap2.getGenerationID() ||
+      (bitmap1.empty() && bitmap2.empty()))
+    return true;
 
-  addr2 = bitmap2.getAddr32(0, 0);
-  size2 = bitmap2.computeByteSize();
+  // Calling getAddr32() on null or empty bitmaps will assert. The conditions
+  // above should return early if either bitmap is empty or null.
+  DCHECK(!bitmap1.isNull() && !bitmap2.isNull());
+  DCHECK(!bitmap1.empty() && !bitmap2.empty());
+
+  void* addr1 = bitmap1.getAddr32(0, 0);
+  void* addr2 = bitmap2.getAddr32(0, 0);
+  size_t size1 = bitmap1.computeByteSize();
+  size_t size2 = bitmap2.computeByteSize();
 
   return (size1 == size2) && (0 == memcmp(addr1, addr2, size1));
 }

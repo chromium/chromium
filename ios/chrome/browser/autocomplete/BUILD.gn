@@ -24,9 +24,10 @@ source_set("autocomplete") {
     "//components/history/core/browser",
     "//components/keyed_service/core",
     "//components/keyed_service/ios",
+    "//components/language/core/browser",
     "//components/omnibox/browser",
     "//components/prefs",
-    "//components/signin/core/browser",
+    "//components/signin/public/identity_manager",
     "//components/sync",
     "//components/unified_consent",
     "//ios/chrome/browser",
@@ -40,7 +41,6 @@ source_set("autocomplete") {
     "//ios/chrome/browser/web_state_list",
     "//ios/public/provider/chrome/browser",
     "//ios/web",
-    "//services/identity/public/cpp",
     "//url",
   ]
 }

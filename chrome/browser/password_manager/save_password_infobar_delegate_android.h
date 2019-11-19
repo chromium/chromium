@@ -13,6 +13,7 @@
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/password_manager/core/browser/password_manager_onboarding.h"
 #include "ui/gfx/range/range.h"
 
 namespace content {
@@ -32,7 +33,9 @@ class SavePasswordInfoBarDelegate : public PasswordManagerInfoBarDelegate {
   // for |web_contents|.
   static void Create(
       content::WebContents* web_contents,
-      std::unique_ptr<password_manager::PasswordFormManagerForUI> form_to_save);
+      std::unique_ptr<password_manager::PasswordFormManagerForUI> form_to_save,
+      std::unique_ptr<password_manager::SavingFlowMetricsRecorder>
+          saving_flow_recorder);
 
   ~SavePasswordInfoBarDelegate() override;
 
@@ -48,7 +51,9 @@ class SavePasswordInfoBarDelegate : public PasswordManagerInfoBarDelegate {
   SavePasswordInfoBarDelegate(
       content::WebContents* web_contents,
       std::unique_ptr<password_manager::PasswordFormManagerForUI> form_to_save,
-      bool is_smartlock_branding_enabled);
+      bool is_smartlock_branding_enabled,
+      std::unique_ptr<password_manager::SavingFlowMetricsRecorder>
+          saving_flow_recorder);
 
  private:
   // The PasswordFormManager managing the form we're asking the user about,
@@ -61,6 +66,9 @@ class SavePasswordInfoBarDelegate : public PasswordManagerInfoBarDelegate {
   // Measures the "Save password?" prompt lifetime. Used to report an UMA
   // signal.
   base::ElapsedTimer timer_;
+
+  std::unique_ptr<password_manager::SavingFlowMetricsRecorder>
+      saving_flow_recorder_;
 
   DISALLOW_COPY_AND_ASSIGN(SavePasswordInfoBarDelegate);
 };

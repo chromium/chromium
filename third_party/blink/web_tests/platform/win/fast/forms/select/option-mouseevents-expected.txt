@@ -49,7 +49,7 @@ PASS: event target should be [object HTMLOptionElement] and is
 PASS: event.pageX should be 22 and is
 PASS: event.pageY should be 262 and is
 PASS: event.offsetX should be 13 and is
-FAIL: event.offsetY should be 5 but instead is 2
+FAIL: event.offsetY should be 4.8125 but instead is 2
 PASS: event.x should be 22 and is
 PASS: event.y should be 262 and is
 PASS: event type should be click and is
@@ -57,7 +57,7 @@ PASS: event target should be [object HTMLOptionElement] and is
 PASS: event.pageX should be 22 and is
 PASS: event.pageY should be 262 and is
 PASS: event.offsetX should be 13 and is
-FAIL: event.offsetY should be 5 but instead is 2
+FAIL: event.offsetY should be 4.8125 but instead is 2
 PASS: event.x should be 22 and is
 PASS: event.y should be 262 and is
 PASS: event type should be dblclick and is

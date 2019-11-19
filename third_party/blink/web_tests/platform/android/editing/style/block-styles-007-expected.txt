@@ -1,0 +1,49 @@
+EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
+EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
+EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
+EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
+EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
+EDITING DELEGATE: webViewDidChange:WebViewDidChangeNotification
+layer at (0,0) size 800x600
+  LayoutView at (0,0) size 800x600
+layer at (0,0) size 800x600
+  LayoutBlockFlow {HTML} at (0,0) size 800x600
+    LayoutBlockFlow {BODY} at (8,8) size 784x584
+      LayoutBlockFlow {DIV} at (0,0) size 784x237 [border: (2px solid #0000FF)]
+        LayoutBlockFlow {DIV} at (14,14) size 756x83
+          LayoutText {#text} at (0,0) size 65x26
+            text run at (0,0) width 65: "Tests: "
+          LayoutBR {BR} at (0,0) size 0x0
+          LayoutText {#text} at (0,27) size 162x27
+            text run at (0,27) width 162: "Fix for this bug: "
+          LayoutInline {A} at (0,0) size 260x27 [color=#0000EE]
+            LayoutText {#text} at (162,27) size 260x27
+              text run at (162,27) width 260: "<rdar://problem/3977962>"
+          LayoutText {#text} at (422,27) size 749x55
+            text run at (422,27) width 327: " font loses bold style after pasting"
+            text run at (0,55) width 384: "next to existing text and pressing return"
+        LayoutBlockFlow {DIV} at (14,113) size 756x110
+          LayoutBlockFlow (anonymous) at (0,0) size 756x55
+            LayoutText {#text} at (0,0) size 189x26
+              text run at (0,0) width 189: "Expected Results: "
+            LayoutBR {BR} at (189,21) size 0x0
+            LayoutText {#text} at (0,27) size 436x27
+              text run at (0,27) width 436: "Should see this content in the red box below:"
+          LayoutBlockFlow {DIV} at (0,55) size 756x55
+            LayoutBlockFlow (anonymous) at (0,0) size 756x28
+              LayoutText {#text} at (0,0) size 32x27
+                text run at (0,0) width 32: "foo"
+            LayoutBlockFlow {DIV} at (0,28) size 756x27
+              LayoutInline {B} at (0,0) size 36x26
+                LayoutText {#text} at (0,0) size 36x26
+                  text run at (0,0) width 36: "bar"
+      LayoutBlockFlow {DIV} at (0,261) size 784x59
+        LayoutBlockFlow {DIV} at (0,0) size 784x59 [border: (2px solid #FF0000)]
+          LayoutBlockFlow {DIV} at (2,2) size 780x28
+            LayoutText {#text} at (0,0) size 32x27
+              text run at (0,0) width 32: "foo"
+          LayoutBlockFlow {DIV} at (2,30) size 780x27
+            LayoutInline {B} at (0,0) size 36x26
+              LayoutText {#text} at (0,0) size 36x26
+                text run at (0,0) width 36: "bar"
+caret: position 0 of child 0 {#text} of child 0 {B} of child 1 {DIV} of child 1 {DIV} of child 3 {DIV} of body

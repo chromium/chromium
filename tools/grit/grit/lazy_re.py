@@ -8,6 +8,8 @@ them on demand the first time they are used, thus speeding up startup
 time in some cases.
 '''
 
+from __future__ import print_function
+
 import re
 
 

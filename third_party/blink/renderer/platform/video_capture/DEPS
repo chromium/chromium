@@ -1,0 +1,34 @@
+include_rules = [
+    # Don't depend on platform.
+    "-third_party/blink/renderer/platform",
+
+    # Module.
+    "+third_party/blink/renderer/platform/video_capture",
+
+    # Dependencies.
+    "+media/base",
+    "+media/capture",
+    "+third_party/blink/renderer/platform/wtf",
+    "+third_party/blink/renderer/platform/platform_export.h",
+
+    # Dependencies for GpuMemoryBuffer.
+    "+gpu/command_buffer/client/shared_image_interface.h",
+    "+gpu/command_buffer/common/shared_image_usage.h",
+    "+gpu/ipc/common/gpu_memory_buffer_support.h",
+    "+media/video/gpu_video_accelerator_factories.h",
+]
+
+specific_include_rules = {
+    "video_capture_impl_test.cc": [
+        "+third_party/blink/renderer/platform/testing/gpu_memory_buffer_test_support.h",
+    ],
+    "gpu_memory_buffer_test_support.cc": [
+        "+components/viz/test/test_context_provider.h",
+        "+media/video/fake_gpu_memory_buffer.h",
+        "+media/video/mock_gpu_video_accelerator_factories.h",
+    ],
+    "gpu_memory_buffer_test_support.h": [
+        "+gpu/ipc/common/gpu_memory_buffer_support.h",
+        "+third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h",
+    ],
+}

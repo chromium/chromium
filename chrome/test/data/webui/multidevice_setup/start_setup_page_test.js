@@ -32,9 +32,21 @@ cr.define('multidevice_setup', () => {
 
       const START = 'start-setup-page';
       const DEVICES = [
-        {deviceName: 'Pixel XL', deviceId: 'abcdxl'},
-        {deviceName: 'Nexus 6P', deviceId: 'PpPpPp'},
-        {deviceName: 'Nexus 5', deviceId: '12345'},
+        {
+          remoteDevice: {deviceName: 'Pixel XL', deviceId: 'abcdxl'},
+          connectivityStatus:
+              chromeos.deviceSync.mojom.ConnectivityStatus.kOnline
+        },
+        {
+          remoteDevice: {deviceName: 'Nexus 6P', deviceId: 'PpPpPp'},
+          connectivityStatus:
+              chromeos.deviceSync.mojom.ConnectivityStatus.kOffline
+        },
+        {
+          remoteDevice: {deviceName: 'Nexus 5', deviceId: '12345'},
+          connectivityStatus:
+              chromeos.deviceSync.mojom.ConnectivityStatus.kUnknownConnectivity
+        },
       ];
 
       setup(() => {
@@ -68,9 +80,8 @@ cr.define('multidevice_setup', () => {
           });
 
       test(
-          'selectedDeviceId changes when dropdown options are selected',
-          () => {
-            selectOptionByTextContent('Nexus 6P');
+          'selectedDeviceId changes when dropdown options are selected', () => {
+            selectOptionByTextContent('Nexus 6P (offline)');
             assertEquals(startSetupPageElement.selectedDeviceId, 'PpPpPp');
             selectOptionByTextContent('Nexus 5');
             assertEquals(startSetupPageElement.selectedDeviceId, '12345');

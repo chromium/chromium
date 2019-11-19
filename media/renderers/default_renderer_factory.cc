@@ -73,8 +73,8 @@ std::unique_ptr<Renderer> DefaultRendererFactory::CreateRenderer(
       // RendererWrapper::Stop -> RendererWrapper::DestroyRenderer(). And the
       // RendererFactory is owned by WMPI and gets called after WMPI destructor
       // finishes.
-      base::Bind(&DefaultRendererFactory::CreateAudioDecoders,
-                 base::Unretained(this), media_task_runner),
+      base::BindRepeating(&DefaultRendererFactory::CreateAudioDecoders,
+                          base::Unretained(this), media_task_runner),
       media_log_));
 
   GpuVideoAcceleratorFactories* gpu_factories = nullptr;
@@ -97,9 +97,10 @@ std::unique_ptr<Renderer> DefaultRendererFactory::CreateRenderer(
       // RendererWrapper::Stop -> RendererWrapper::DestroyRenderer(). And the
       // RendererFactory is owned by WMPI and gets called after WMPI destructor
       // finishes.
-      base::Bind(&DefaultRendererFactory::CreateVideoDecoders,
-                 base::Unretained(this), media_task_runner,
-                 request_overlay_info_cb, target_color_space, gpu_factories),
+      base::BindRepeating(&DefaultRendererFactory::CreateVideoDecoders,
+                          base::Unretained(this), media_task_runner,
+                          request_overlay_info_cb, target_color_space,
+                          gpu_factories),
       true, media_log_, std::move(gmb_pool)));
 
   return std::make_unique<RendererImpl>(

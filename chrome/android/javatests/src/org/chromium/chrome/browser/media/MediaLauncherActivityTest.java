@@ -51,12 +51,12 @@ public class MediaLauncherActivityTest {
     @Before
     public void setUp() {
         mContext = InstrumentationRegistry.getTargetContext();
-        MediaViewerUtils.forceEnableMediaLauncherActivityForTest(mContext);
+        MediaViewerUtils.forceEnableMediaLauncherActivityForTest();
     }
 
     @After
     public void tearDown() {
-        MediaViewerUtils.stopForcingEnableMediaLauncherActivityForTest(mContext);
+        MediaViewerUtils.stopForcingEnableMediaLauncherActivityForTest();
     }
 
     @Test
@@ -89,7 +89,7 @@ public class MediaLauncherActivityTest {
 
     @Test
     @SmallTest
-    public void testFilterURI() throws Exception {
+    public void testFilterURI() {
         List<Pair<String, String>> testCases = CollectionUtil.newArrayList(
                 new Pair<>("file:///test.jpg", "file:///test.jpg"),
                 new Pair<>("file:///test.jp!g", "file:///test.jp!g"),
@@ -133,7 +133,7 @@ public class MediaLauncherActivityTest {
 
         CriteriaHelper.pollUiThread(Criteria.equals(expectedUrl, new Callable<String>() {
             @Override
-            public String call() throws Exception {
+            public String call() {
                 Tab tab = cta.getActivityTab();
                 if (tab == null) return null;
 

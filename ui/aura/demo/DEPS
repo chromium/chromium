@@ -1,6 +1,7 @@
 include_rules = [
   "+components/viz/host",
   "+components/viz/service",  # In-process viz service.
+  "+mojo/core/embedder/embedder.h",  # TestGpuServiceHolder needs Mojo.
   "+ui/display",          # Windows DPI Initialization.
   "+ui/gl/gl_switches.h",  # Disable Direct Composition Workaround.
   "+ui/gl/init/gl_factory.h",  # To initialize GL bindings.

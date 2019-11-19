@@ -7,11 +7,10 @@
 
 #include "base/macros.h"
 #include "ui/events/platform/platform_event_dispatcher.h"
+#include "ui/platform_window/platform_window_delegate.h"
 #include "ui/platform_window/stub/stub_window.h"
 
 namespace ui {
-
-class PlatformWindowDelegate;
 
 class PlatformWindowCast : public StubWindow, public PlatformEventDispatcher {
  public:

@@ -34,15 +34,33 @@ public class PropertyModelChangeProcessor<M extends PropertyObservable<P>, V, P>
      * @param model The model containing the data to be bound.
      * @param view The view to which data will be bound.
      * @param viewBinder A class that binds the model to the view.
+     * @param performInitialBind Whether all set model properties should be immediately bound.
      */
-    private PropertyModelChangeProcessor(M model, V view, ViewBinder<M, V, P> viewBinder) {
+    private PropertyModelChangeProcessor(
+            M model, V view, ViewBinder<M, V, P> viewBinder, boolean performInitialBind) {
         mModel = model;
         mView = view;
         mViewBinder = viewBinder;
-        for (P property : model.getAllSetProperties()) {
-            onPropertyChanged(model, property);
+
+        if (performInitialBind) {
+            for (P property : model.getAllSetProperties()) {
+                onPropertyChanged(model, property);
+            }
         }
+
         model.addObserver(mPropertyObserver);
+    }
+
+    /**
+     * Creates a new PropertyModelChangeProcessor observing the given {@code model}. All set model
+     * properties will be bound.
+     * @param model The model containing the data to be bound.
+     * @param view The view to which data will be bound.
+     * @param viewBinder A class that binds the model to the view.
+     */
+    public static <M extends PropertyObservable<P>, V, P> PropertyModelChangeProcessor<M, V, P>
+    create(M model, V view, ViewBinder<M, V, P> viewBinder) {
+        return create(model, view, viewBinder, true);
     }
 
     /**
@@ -50,10 +68,11 @@ public class PropertyModelChangeProcessor<M extends PropertyObservable<P>, V, P>
      * @param model The model containing the data to be bound.
      * @param view The view to which data will be bound.
      * @param viewBinder A class that binds the model to the view.
+     * @param performInitialBind Whether all set model properties should be immediately bound.
      */
     public static <M extends PropertyObservable<P>, V, P> PropertyModelChangeProcessor<M, V, P>
-    create(M model, V view, ViewBinder<M, V, P> viewBinder) {
-        return new PropertyModelChangeProcessor<>(model, view, viewBinder);
+    create(M model, V view, ViewBinder<M, V, P> viewBinder, boolean performInitialBind) {
+        return new PropertyModelChangeProcessor<>(model, view, viewBinder, performInitialBind);
     }
 
     /**

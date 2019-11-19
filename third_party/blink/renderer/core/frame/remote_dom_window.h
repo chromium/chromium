@@ -13,10 +13,6 @@ namespace blink {
 
 class RemoteDOMWindow final : public DOMWindow {
  public:
-  static RemoteDOMWindow* Create(RemoteFrame& frame) {
-    return MakeGarbageCollected<RemoteDOMWindow>(frame);
-  }
-
   explicit RemoteDOMWindow(RemoteFrame&);
 
   RemoteFrame* GetFrame() const {
@@ -46,8 +42,7 @@ class RemoteDOMWindow final : public DOMWindow {
 
   void ForwardPostMessage(MessageEvent*,
                           scoped_refptr<const SecurityOrigin> target,
-                          Document* source,
-                          bool has_user_gesture);
+                          Document* source);
 };
 
 template <>

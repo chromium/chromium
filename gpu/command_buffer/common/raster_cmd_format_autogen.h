@@ -187,6 +187,65 @@ static_assert(offsetof(DeleteQueriesEXTImmediate, header) == 0,
 static_assert(offsetof(DeleteQueriesEXTImmediate, n) == 4,
               "offset of DeleteQueriesEXTImmediate n should be 4");
 
+struct QueryCounterEXT {
+  typedef QueryCounterEXT ValueType;
+  static const CommandId kCmdId = kQueryCounterEXT;
+  static const cmd::ArgFlags kArgFlags = cmd::kFixed;
+  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(3);
+
+  static uint32_t ComputeSize() {
+    return static_cast<uint32_t>(sizeof(ValueType));  // NOLINT
+  }
+
+  void SetHeader() { header.SetCmd<ValueType>(); }
+
+  void Init(GLuint _id,
+            GLenum _target,
+            uint32_t _sync_data_shm_id,
+            uint32_t _sync_data_shm_offset,
+            GLuint _submit_count) {
+    SetHeader();
+    id = _id;
+    target = _target;
+    sync_data_shm_id = _sync_data_shm_id;
+    sync_data_shm_offset = _sync_data_shm_offset;
+    submit_count = _submit_count;
+  }
+
+  void* Set(void* cmd,
+            GLuint _id,
+            GLenum _target,
+            uint32_t _sync_data_shm_id,
+            uint32_t _sync_data_shm_offset,
+            GLuint _submit_count) {
+    static_cast<ValueType*>(cmd)->Init(_id, _target, _sync_data_shm_id,
+                                       _sync_data_shm_offset, _submit_count);
+    return NextCmdAddress<ValueType>(cmd);
+  }
+
+  gpu::CommandHeader header;
+  uint32_t id;
+  uint32_t target;
+  uint32_t sync_data_shm_id;
+  uint32_t sync_data_shm_offset;
+  uint32_t submit_count;
+};
+
+static_assert(sizeof(QueryCounterEXT) == 24,
+              "size of QueryCounterEXT should be 24");
+static_assert(offsetof(QueryCounterEXT, header) == 0,
+              "offset of QueryCounterEXT header should be 0");
+static_assert(offsetof(QueryCounterEXT, id) == 4,
+              "offset of QueryCounterEXT id should be 4");
+static_assert(offsetof(QueryCounterEXT, target) == 8,
+              "offset of QueryCounterEXT target should be 8");
+static_assert(offsetof(QueryCounterEXT, sync_data_shm_id) == 12,
+              "offset of QueryCounterEXT sync_data_shm_id should be 12");
+static_assert(offsetof(QueryCounterEXT, sync_data_shm_offset) == 16,
+              "offset of QueryCounterEXT sync_data_shm_offset should be 16");
+static_assert(offsetof(QueryCounterEXT, submit_count) == 20,
+              "offset of QueryCounterEXT submit_count should be 20");
+
 struct BeginQueryEXT {
   typedef BeginQueryEXT ValueType;
   static const CommandId kCmdId = kBeginQueryEXT;
@@ -313,49 +372,6 @@ static_assert(offsetof(LoseContextCHROMIUM, current) == 4,
 static_assert(offsetof(LoseContextCHROMIUM, other) == 8,
               "offset of LoseContextCHROMIUM other should be 8");
 
-struct InsertFenceSyncCHROMIUM {
-  typedef InsertFenceSyncCHROMIUM ValueType;
-  static const CommandId kCmdId = kInsertFenceSyncCHROMIUM;
-  static const cmd::ArgFlags kArgFlags = cmd::kFixed;
-  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(1);
-
-  static uint32_t ComputeSize() {
-    return static_cast<uint32_t>(sizeof(ValueType));  // NOLINT
-  }
-
-  void SetHeader() { header.SetCmd<ValueType>(); }
-
-  void Init(GLuint64 _release_count) {
-    SetHeader();
-    gles2::GLES2Util::MapUint64ToTwoUint32(
-        static_cast<uint64_t>(_release_count), &release_count_0,
-        &release_count_1);
-  }
-
-  void* Set(void* cmd, GLuint64 _release_count) {
-    static_cast<ValueType*>(cmd)->Init(_release_count);
-    return NextCmdAddress<ValueType>(cmd);
-  }
-
-  GLuint64 release_count() const volatile {
-    return static_cast<GLuint64>(gles2::GLES2Util::MapTwoUint32ToUint64(
-        release_count_0, release_count_1));
-  }
-
-  gpu::CommandHeader header;
-  uint32_t release_count_0;
-  uint32_t release_count_1;
-};
-
-static_assert(sizeof(InsertFenceSyncCHROMIUM) == 12,
-              "size of InsertFenceSyncCHROMIUM should be 12");
-static_assert(offsetof(InsertFenceSyncCHROMIUM, header) == 0,
-              "offset of InsertFenceSyncCHROMIUM header should be 0");
-static_assert(offsetof(InsertFenceSyncCHROMIUM, release_count_0) == 4,
-              "offset of InsertFenceSyncCHROMIUM release_count_0 should be 4");
-static_assert(offsetof(InsertFenceSyncCHROMIUM, release_count_1) == 8,
-              "offset of InsertFenceSyncCHROMIUM release_count_1 should be 8");
-
 struct BeginRasterCHROMIUMImmediate {
   typedef BeginRasterCHROMIUMImmediate ValueType;
   static const CommandId kCmdId = kBeginRasterCHROMIUMImmediate;
@@ -375,13 +391,11 @@ struct BeginRasterCHROMIUMImmediate {
   void Init(GLuint _sk_color,
             GLuint _msaa_sample_count,
             GLboolean _can_use_lcd_text,
-            GLuint _color_space_transfer_cache_id,
             const GLbyte* _mailbox) {
     SetHeader();
     sk_color = _sk_color;
     msaa_sample_count = _msaa_sample_count;
     can_use_lcd_text = _can_use_lcd_text;
-    color_space_transfer_cache_id = _color_space_transfer_cache_id;
     memcpy(ImmediateDataAddress(this), _mailbox, ComputeDataSize());
   }
 
@@ -389,11 +403,9 @@ struct BeginRasterCHROMIUMImmediate {
             GLuint _sk_color,
             GLuint _msaa_sample_count,
             GLboolean _can_use_lcd_text,
-            GLuint _color_space_transfer_cache_id,
             const GLbyte* _mailbox) {
-    static_cast<ValueType*>(cmd)->Init(
-        _sk_color, _msaa_sample_count, _can_use_lcd_text,
-        _color_space_transfer_cache_id, _mailbox);
+    static_cast<ValueType*>(cmd)->Init(_sk_color, _msaa_sample_count,
+                                       _can_use_lcd_text, _mailbox);
     const uint32_t size = ComputeSize();
     return NextImmediateCmdAddressTotalSize<ValueType>(cmd, size);
   }
@@ -402,11 +414,10 @@ struct BeginRasterCHROMIUMImmediate {
   uint32_t sk_color;
   uint32_t msaa_sample_count;
   uint32_t can_use_lcd_text;
-  uint32_t color_space_transfer_cache_id;
 };
 
-static_assert(sizeof(BeginRasterCHROMIUMImmediate) == 20,
-              "size of BeginRasterCHROMIUMImmediate should be 20");
+static_assert(sizeof(BeginRasterCHROMIUMImmediate) == 16,
+              "size of BeginRasterCHROMIUMImmediate should be 16");
 static_assert(offsetof(BeginRasterCHROMIUMImmediate, header) == 0,
               "offset of BeginRasterCHROMIUMImmediate header should be 0");
 static_assert(offsetof(BeginRasterCHROMIUMImmediate, sk_color) == 4,
@@ -417,10 +428,6 @@ static_assert(
 static_assert(
     offsetof(BeginRasterCHROMIUMImmediate, can_use_lcd_text) == 12,
     "offset of BeginRasterCHROMIUMImmediate can_use_lcd_text should be 12");
-static_assert(offsetof(BeginRasterCHROMIUMImmediate,
-                       color_space_transfer_cache_id) == 16,
-              "offset of BeginRasterCHROMIUMImmediate "
-              "color_space_transfer_cache_id should be 16");
 
 struct RasterCHROMIUM {
   typedef RasterCHROMIUM ValueType;

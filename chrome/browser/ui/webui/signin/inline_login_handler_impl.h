@@ -125,7 +125,7 @@ class InlineLoginHandlerImpl : public InlineLoginHandler {
   // process.
   bool confirm_untrusted_signin_;
 
-  base::WeakPtrFactory<InlineLoginHandlerImpl> weak_factory_;
+  base::WeakPtrFactory<InlineLoginHandlerImpl> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(InlineLoginHandlerImpl);
 };

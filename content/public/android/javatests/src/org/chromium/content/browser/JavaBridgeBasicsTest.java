@@ -102,7 +102,7 @@ public class JavaBridgeBasicsTest {
     TestController mTestController;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mActivityTestRule.setUpContentView();
         mTestController = new TestController();
         mActivityTestRule.injectObjectAndReload(mTestController, "testController");
@@ -550,7 +550,7 @@ public class JavaBridgeBasicsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
-    public void testBlockingUiThreadDoesNotBlockCallsFromJs() throws Throwable {
+    public void testBlockingUiThreadDoesNotBlockCallsFromJs() {
         class TestObject {
             private CountDownLatch mLatch;
             public TestObject() {
@@ -560,7 +560,7 @@ public class JavaBridgeBasicsTest {
                 return mLatch.await(scaleTimeout(10000),
                         java.util.concurrent.TimeUnit.MILLISECONDS);
             }
-            public void unlockTheLatch() throws Exception {
+            public void unlockTheLatch() {
                 mTestController.setStringValue("unlocked");
                 mLatch.countDown();
             }

@@ -2,9 +2,9 @@
 Entering interactive Python shell. Quick reference:
 
 SizeInfo: metadata, native_symbols, pak_symbols, raw_symbols, section_sizes, size_path, symbols
-Symbol: FlagsString, IsBss, IsDelta, IsDex, IsGeneratedByToolchain, IsGroup, IsNative, IsOther, IsOverhead, IsPak, IsStringLiteral, IterLeafSymbols, address, aliases, component, end_address, flags, full_name, generated_source, is_anonymous, name, num_aliases, object_path, padding, padding_pss, pss, pss_without_padding, section, section_name, size, size_without_padding, source_path, template_name
+Symbol: FlagsString, IsBss, IsDelta, IsDex, IsGeneratedByToolchain, IsGroup, IsNameUnique, IsNative, IsOther, IsOverhead, IsPak, IsStringLiteral, IterLeafSymbols, SetName, address, aliases, component, end_address, flags, full_name, generated_source, is_anonymous, name, num_aliases, object_path, padding, padding_pss, pss, pss_without_padding, section, section_name, size, size_without_padding, source_path, template_name
 
-SymbolGroup (extends Symbol): CountUniqueSymbols, Filter, GroupedBy, GroupedByAliases, GroupedByComponent, GroupedByFullName, GroupedByName, GroupedByPath, GroupedBySectionName, Inverted, IterUniqueSymbols, SetName, Sorted, SortedByAddress, SortedByCount, SortedByName, WhereAddressInRange, WhereComponentMatches, WhereFullNameMatches, WhereGeneratedByToolchain, WhereHasAnyAttribution, WhereHasComponent, WhereHasPath, WhereInSection, WhereIsDex, WhereIsGroup, WhereIsNative, WhereIsPak, WhereIsTemplate, WhereMatches, WhereNameMatches, WhereObjectPathMatches, WherePathMatches, WherePssBiggerThan, WhereSizeBiggerThan, WhereSourceIsGenerated, WhereSourcePathMatches, WhereTemplateNameMatches, index, is_default_sorted
+SymbolGroup (extends Symbol): CountUniqueSymbols, Filter, GroupedBy, GroupedByAliases, GroupedByComponent, GroupedByFullName, GroupedByName, GroupedByPath, GroupedBySectionName, Inverted, IterUniqueSymbols, Sorted, SortedByAddress, SortedByCount, SortedByName, WhereAddressInRange, WhereComponentMatches, WhereFullNameMatches, WhereGeneratedByToolchain, WhereHasAnyAttribution, WhereHasComponent, WhereHasFlag, WhereHasPath, WhereInSection, WhereIsDex, WhereIsGroup, WhereIsNative, WhereIsPak, WhereIsTemplate, WhereMatches, WhereNameMatches, WhereObjectPathMatches, WherePathMatches, WherePssBiggerThan, WhereSizeBiggerThan, WhereSourceIsGenerated, WhereSourcePathMatches, WhereTemplateNameMatches, index, is_default_sorted
 
 DeltaSizeInfo: after, before, native_symbols, pak_symbols, raw_symbols, section_sizes, symbols
 DeltaSymbol (extends Symbol): after_symbol, before_symbol, diff_status
@@ -12,7 +12,7 @@ DeltaSymbolGroup (extends SymbolGroup): CountsByDiffStatus, WhereDiffStatusIs, d
 
 canned_queries: CategorizeByChromeComponent, CategorizeGenerated, LargeFiles, PakByPath, StaticInitializers, TemplatesByName
 
-Functions: Csv(), Diff(), Disassemble(), ExpandRegex(), Print(), ReadStringLiterals(), ShowExamples()
+Functions: Csv(), Diff(), Disassemble(), ExpandRegex(), Print(), ReadStringLiterals(), SaveNdjson(), ShowExamples(), SizeStats()
 Variables:
   printed: List of objects passed to Print().
   size_info: Loaded from {redacted}
@@ -49,6 +49,10 @@ Print(print_syms - print_syms.WherePathMatches(r"^components/"))
 # Diff two .size files and save result to a file:
 Print(Diff(size_info1, size_info2), to_file="output.txt")
 
+# Save a .ndjson containing only the filtered symbols
+filtered_symbols = size_info.raw_symbols.Filter(lambda l: l.IsPak())
+SaveNdjson(filtered_symbols, size_info, to_file="oneoff_paks.ndjson")
+
 # View per-component breakdowns, then drill into the last entry.
 c = canned_queries.CategorizeByChromeComponent()
 Print(c)
@@ -56,13 +60,14 @@ Print(c[-1].GroupedByPath(depth=2).Sorted())
 
 # For even more inspiration, look at canned_queries.py
 # (and feel free to add your own!).
-0: (.rodata@266e600(size_without_padding=5,padding=0,full_name=string literal,object_path=base/base/page_allocator.o,source_path=base/page_allocator.cc,flags={},num_aliases=2,component=Blink>Internal), 'Str1\x00')
-1: (.rodata@266e605(size_without_padding=16,padding=0,full_name=string literal,object_path=third_party/icu/icuuc/ucnv_ext.o,source_path=third_party/icu/ucnv_ext.c,flags={gen},num_aliases=1,component=Internal>Android), 'String literal2\x00')
+0: (.rodata@266e600(size_without_padding=5,padding=0,full_name="Str1",object_path=base/base/page_allocator.o,source_path=base/page_allocator.cc,flags={},num_aliases=2,component=Blink>Internal), 'Str1\x00')
+1: (.rodata@266e605(size_without_padding=16,padding=0,full_name="String literal2",object_path=third_party/icu/icuuc/ucnv_ext.o,source_path=third_party/icu/ucnv_ext.c,flags={gen},num_aliases=1,component=Internal>Android), 'String literal2\x00')
 Metadata:
     elf_arch=arm
     elf_build_id=WhatAnAmazingBuildId
     elf_file_name=elf
     elf_mtime={redacted}
+    elf_relocations_count=394087
     git_revision=abc123
     gn_args=var1=true var2="foo"
     linker_name=gold
@@ -74,20 +79,20 @@ Section Sizes (Total=128.0mb (134218045 bytes)):
     .bss: 1.24mb (1300456 bytes) (not included in totals)
     .data: 99.4kb (101768 bytes) (0.1%)
     .data.rel.ro: 1.02mb (1065224 bytes) (0.8%)
-    .other: 32.4mb (33984171 bytes) (25.3%)
+    .other: 32.3mb (33902635 bytes) (25.3%)
     .rel.dyn: 2.53mb (2655384 bytes) (2.0%)
     .rodata: 5.65mb (5927652 bytes) (4.4%)
     .strtab: 33.2mb (34841854 bytes) (26.0%)
     .symtab: 16.4mb (17166112 bytes) (12.8%)
-    .text: 34.2mb (35900712 bytes) (26.7%)
+    .text: 34.3mb (35982248 bytes) (26.8%)
 
-Showing 53 symbols (47 unique) with total pss: 77769551 bytes
+Showing 51 symbols (45 unique) with total pss: 37418251 bytes
 Histogram of symbols based on PSS:
-     [2,4): 6    [16,32): 12     [128,256): 2    [65536,131072): 2    [524288,1048576): 2   [33554432,67108864): 2
-     [4,8): 6    [32,64): 9      [256,512): 1   [131072,262144): 2   [1048576,2097152): 2
-    [8,16): 3   [64,128): 1    [2048,4096): 1   [262144,524288): 1   [2097152,4194304): 1
-Sizes: .text=34.2mb     .rodata=5.65mb     .data.rel.ro=1.02mb     .data=99.4kb     .bss=512kb      .other=32.4mb     total=74.2mb
-Counts: .text=22 .rodata=12 .data.rel.ro=4 .data=6 .bss=6 .other=1
+     [2,4): 7    [16,32): 12     [128,256): 2      [8192,16384): 1     [262144,524288): 1   [33554432,67108864): 1
+     [4,8): 6    [32,64): 9      [256,512): 1    [65536,131072): 1    [524288,1048576): 2
+    [8,16): 3   [64,128): 1    [2048,4096): 1   [131072,262144): 2   [1048576,2097152): 1
+Sizes: .text=81.8kb     .rodata=2.52mb     .data.rel.ro=92 bytes   .data=168 bytes  .bss=512kb      .other=32.3mb     total=35.7mb
+Counts: .text=21 .rodata=11 .data.rel.ro=3 .data=5 .bss=6 .other=1
 Number of unique paths: 9
 
 Section Legend: t=.text, r=.rodata, R=.data.rel.ro, d=.data, b=.bss, o=.other
@@ -103,98 +108,94 @@ Index | Running Total | Section@Address | PSS | Path
              base::android::g_renderer_histogram_code
 4)        168 (0.0%)  d@0x2de70a4  4              third_party/container/container.c
              base::android::g_library_version_number
-5)     101768 (0.1%)  d@0x2dffd88  101600         {no path}
-             ** symbol gap 0 (end of section)
-6)     101824 (0.1%)  R@0x2cd8500  56             third_party/paint.cc
+5)        224 (0.0%)  R@0x2cd8500  56             third_party/paint.cc
              ChromeMainDelegateAndroid [vtable]
-7)     101848 (0.1%)  R@0x2cd8538  24             base/page_allocator.cc
+6)        248 (0.0%)  R@0x2cd8538  24             base/page_allocator.cc
              mojo::MessageReceiver [vtable]
-8)     101860 (0.1%)  R@0x2cd8550  12             base/page_allocator.cc
+7)        260 (0.0%)  R@0x2cd8550  12             base/page_allocator.cc
              kMethodsAnimationFrameTimeHistogram
-9)    1166992 (1.5%)  R@0x2ddc608  1065132        {no path}
-             ** symbol gap 0 (end of section)
-10)   1167048 (1.5%)  R@0x2c176f0  56             $root_gen_dir/third_party/icu/ucnv_ext.c
+8)        316 (0.0%)  R@0x2c176f0  56             $root_gen_dir/third_party/icu/ucnv_ext.c
              ChromeMainDelegate [vtable]
-11)   1167072 (1.5%)  R@0x2c17728  24             $root_gen_dir/third_party/icu/ucnv_ext.c
+9)        340 (0.0%)  R@0x2c17728  24             $root_gen_dir/third_party/icu/ucnv_ext.c
              chrome::mojom::FieldTrialRecorder [vtable]
-12)   1956976 (2.5%)  R@0x2c17740  789904         third_party/container/container.c
+10)    790244 (2.1%)  R@0x2c17740  789904         third_party/container/container.c
              chrome::mojom::FieldTrialRecorderProxy [vtable]
-13)   1957008 (2.5%)  R@0x2cd84e0  32             third_party/gvr-android-sdk/libgvr_shim_static_arm.a/libcontroller_api_impl.a_controller_api_impl.o
+11)    790276 (2.1%)  R@0x2cd84e0  32             third_party/gvr-android-sdk/libgvr_shim_static_arm.a/libcontroller_api_impl.a_controller_api_impl.o
              .Lswitch.table.45
-14)   1957016 (2.5%)  R@0x2cd84f0  8              third_party/gvr-android-sdk/libgvr_shim_static_arm.a/libport_android_jni.a_jni_utils.o
+12)    790284 (2.1%)  R@0x2cd84f0  8              third_party/gvr-android-sdk/libgvr_shim_static_arm.a/libport_android_jni.a_jni_utils.o
              kSystemClassPrefixes
-15)  35941187 (46.2%) o@0x0        33984171       {no path}
+13)  34692919 (92.7%) o@0x0        33902635       {no path}
              Overhead: ELF file
-16)  35941189 (46.2%) r@0x266e600  2.5 (size=5)   base/page_allocator.cc
-             string literal (num_aliases=2)
-17)  35941192 (46.2%) r@0x266e600  2.5 (size=5)   $root_gen_dir/third_party/icu/ucnv_ext.c
-             string literal (num_aliases=2)
-18)  35941208 (46.2%) r@0x266e605  16             $root_gen_dir/third_party/icu/ucnv_ext.c
-             string literal
-19)  35941251 (46.2%) r@0x266e630  43             {no path}
+14)  34692921 (92.7%) r@0x266e600  2.5 (size=5)   base/page_allocator.cc
+             "Str1" (num_aliases=2)
+15)  34692924 (92.7%) r@0x266e600  2.5 (size=5)   $root_gen_dir/third_party/icu/ucnv_ext.c
+             "Str1" (num_aliases=2)
+16)  34692940 (92.7%) r@0x266e605  16             $root_gen_dir/third_party/icu/ucnv_ext.c
+             "String literal2"
+17)  34692983 (92.7%) r@0x266e630  43             {no path}
              ** merge strings
-20)  37906596 (48.7%) r@0x284d600  1965345        {no path}
+18)  36658328 (98.0%) r@0x284d600  1965345        {no path}
              ** merge constants
-21)  41192711 (53.0%) r@Group      3286115        {no path}
-             ** symbol gaps (count=2)
-22)  41192719 (53.0%) r@0x284e364  8              base/page_allocator.cc
-23)  41192763 (53.0%) r@0x284e370  44             base/page_allocator.cc
+19)  36658331 (98.0%) r@0x284e364  3              {no path}
+             ** symbol gap 0
+20)  36658339 (98.0%) r@0x284e364  8              base/page_allocator.cc
+21)  36658383 (98.0%) r@0x284e370  44             base/page_allocator.cc
              Name
-24)  41192795 (53.0%) r@0x284e398  32             third_party/container/container.c
+22)  36658415 (98.0%) r@0x284e398  32             third_party/container/container.c
              chrome::mojom::FilePatcher::Name_
-25)  41868835 (53.8%) r@0x28f3450  676040         third_party/paint.cc
+23)  37334455 (99.8%) r@0x28f3450  676040         third_party/paint.cc
              kAnimationFrameTimeHistogramClassPath
-26)  41868839 (53.8%) r@0x28f3480  4              third_party/paint.cc
+24)  37334459 (99.8%) r@0x28f3480  4              third_party/paint.cc
              blink::CSSValueKeywordsHash::findValueImpl::value_word_list
-27)  41868855 (53.8%) t@0x28d900   16             base/page_allocator.cc
+25)  37334475 (99.8%) t@0x28d900   16             base/page_allocator.cc
              _GLOBAL__sub_I_page_allocator.cc
-28)  41868911 (53.8%) t@0x28d910   56             base/page_allocator.cc
+26)  37334531 (99.8%) t@0x28d910   56             base/page_allocator.cc
              _GLOBAL__sub_I_bbr_sender.cc
-29)  41868939 (53.8%) t@0x28d948   28             base/page_allocator.cc
+27)  37334559 (99.8%) t@0x28d948   28             base/page_allocator.cc
              _GLOBAL__sub_I_pacing_sender.cc
-30)  41868977 (53.8%) t@0x28d964   38             base/page_allocator.cc
+28)  37334597 (99.8%) t@0x28d964   38             base/page_allocator.cc
              extFromUUseMapping
-31)  41869009 (53.8%) t@0x28d98a   32             base/page_allocator.cc
+29)  37334629 (99.8%) t@0x28d98a   32             base/page_allocator.cc
              extFromUUseMapping
-32)  77695687 (99.9%) t@Group      35826678       {no path}
-             ** symbol gaps (count=3)
-33)  77696135 (99.9%) t@0x28f000   448            $root_gen_dir/third_party/icu/ucnv_ext.c
+30)  37344387 (99.8%) t@Group      9758           {no path}
+             ** symbol gaps (count=2)
+31)  37344835 (99.8%) t@0x28f000   448            $root_gen_dir/third_party/icu/ucnv_ext.c
              ucnv_extMatchFromU
-34)  77696163 (99.9%) t@0x28f1c8   28             $root_gen_dir/third_party/icu/ucnv_ext.c
+32)  37344863 (99.8%) t@0x28f1c8   28             $root_gen_dir/third_party/icu/ucnv_ext.c
              _GLOBAL__sub_I_SkDeviceProfile.cpp
-35)  77765287 (100.0%) t@0x28f1e0   69124          $root_gen_dir/third_party/icu/ucnv_ext.c
+33)  37413987 (100.0%) t@0x28f1e0   69124          $root_gen_dir/third_party/icu/ucnv_ext.c
              foo_bar
-36)  77765311 (100.0%) t@0x2a0000   24 (size=48)   $root_gen_dir/third_party/icu/ucnv_ext.c
+34)  37414011 (100.0%) t@0x2a0000   24 (size=48)   $root_gen_dir/third_party/icu/ucnv_ext.c
              BazAlias (num_aliases=2)
-37)  77765335 (100.0%) t@0x2a0000   24 (size=48)   {no path}
+35)  37414035 (100.0%) t@0x2a0000   24 (size=48)   {no path}
              blink::ContiguousContainerBase::shrinkToFit (num_aliases=2)
-38)  77765338 (100.0%) t@0x2a0010   3 (size=12)    third_party/fft_float.cc
+36)  37414038 (100.0%) t@0x2a0010   3 (size=12)    third_party/fft_float.cc
              BarAlias (num_aliases=4)
-39)  77765341 (100.0%) t@0x2a0010   3 (size=12)    third_party/fft_float.cc
+37)  37414041 (100.0%) t@0x2a0010   3 (size=12)    third_party/fft_float.cc
              FooAlias (num_aliases=4)
-40)  77765344 (100.0%) t@0x2a0010   3 (size=12)    $root_gen_dir/third_party/icu/ucnv_ext.c
+38)  37414044 (100.0%) t@0x2a0010   3 (size=12)    $root_gen_dir/third_party/icu/ucnv_ext.c
              blink::ContiguousContainerBase::shrinkToFit (num_aliases=4)
-41)  77765347 (100.0%) t@0x2a0010   3 (size=12)    third_party/paint.cc
+39)  37414047 (100.0%) t@0x2a0010   3 (size=12)    third_party/paint.cc
              blink::ContiguousContainerBase::shrinkToFit (num_aliases=4)
-42)  77765375 (100.0%) t@0x2a0020   28             third_party/container/container.c
+40)  37414075 (100.0%) t@0x2a0020   28             third_party/container/container.c
              blink::ContiguousContainerBase::ContiguousContainerBase
-43)  77765469 (100.0%) t@0x2a1000   94             third_party/container/container.c
+41)  37414169 (100.0%) t@0x2a1000   94             third_party/container/container.c
              blink::PaintChunker::releasePaintChunks
-44)  77769503 (100.0%) t@0x2a2000   4034           third_party/container/container.c
+42)  37418203 (100.0%) t@0x2a2000   4034           third_party/container/container.c
              ** outlined function
-45)  77769527 (100.0%) t@0x2a2020   24 (size=48)   {no path}
+43)  37418227 (100.0%) t@0x2a2020   24 (size=48)   {no path}
              ** outlined function * 2 (num_aliases=2)
-46)  77769551 (100.0%) t@0x2a2020   24 (size=48)   {no path}
+44)  37418251 (100.0%) t@0x2a2020   24 (size=48)   {no path}
              aliasedWithOutlinedFunction (num_aliases=2)
-47)  77769551 (100.0%) b@0x0        262144         third_party/fft_float.cc
+45)  37418251 (100.0%) b@0x0        262144         third_party/fft_float.cc
              ff_cos_131072
-48)  77769551 (100.0%) b@0x0        131072         third_party/fft_fixed.cc
+46)  37418251 (100.0%) b@0x0        131072         third_party/fft_fixed.cc
              ff_cos_131072_fixed
-49)  77769551 (100.0%) b@0x0        131072         third_party/fft_float.cc
+47)  37418251 (100.0%) b@0x0        131072         third_party/fft_float.cc
              ff_cos_65536
-50)  77769551 (100.0%) b@0x2dffda0  28             $root_gen_dir/third_party/icu/ucnv_ext.c
+48)  37418251 (100.0%) b@0x2dffda0  28             $root_gen_dir/third_party/icu/ucnv_ext.c
              g_chrome_content_browser_client
-51)  77769551 (100.0%) b@0x2dffe80  200            $root_gen_dir/third_party/icu/ucnv_ext.c
+49)  37418251 (100.0%) b@0x2dffe80  200            $root_gen_dir/third_party/icu/ucnv_ext.c
              SaveHistogram::atomic_histogram_pointer
-52)  77769551 (100.0%) b@0x2dffe84  4              $root_gen_dir/third_party/icu/ucnv_ext.c
+50)  37418251 (100.0%) b@0x2dffe84  4              $root_gen_dir/third_party/icu/ucnv_ext.c
              g_AnimationFrameTimeHistogram_clazz

@@ -10,8 +10,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 
-DevToolsBrowserContextManager::DevToolsBrowserContextManager()
-    : weak_factory_(this) {}
+DevToolsBrowserContextManager::DevToolsBrowserContextManager() {}
 
 DevToolsBrowserContextManager::~DevToolsBrowserContextManager() = default;
 

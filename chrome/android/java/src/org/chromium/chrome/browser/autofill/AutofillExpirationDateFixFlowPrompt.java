@@ -20,8 +20,6 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 
-import java.util.Calendar;
-
 /**
  * Prompt that asks users to confirm the expiration date before saving card to Google.
  * TODO(crbug.com/848955)
@@ -79,27 +77,28 @@ public class AutofillExpirationDateFixFlowPrompt
         mMonthInput.addTextChangedListener(this);
         mMonthInput.setOnFocusChangeListener((view, hasFocus) -> {
             mDidFocusOnMonth |= hasFocus;
-            validate();
         });
 
         mYearInput = (EditText) mDialogView.findViewById(R.id.cc_year_edit);
         mYearInput.addTextChangedListener(this);
         mYearInput.setOnFocusChangeListener((view, hasFocus) -> {
             mDidFocusOnYear |= hasFocus;
-            validate();
         });
 
-        mDialogModel = new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
-                               .with(ModalDialogProperties.CONTROLLER, this)
-                               .with(ModalDialogProperties.TITLE, title)
-                               .with(ModalDialogProperties.TITLE_ICON, context, drawableId)
-                               .with(ModalDialogProperties.CUSTOM_VIEW, mDialogView)
-                               .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, confirmButtonLabel)
-                               .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
-                                       context.getResources(), R.string.cancel)
-                               .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
-                               .with(ModalDialogProperties.POSITIVE_BUTTON_DISABLED, true)
-                               .build();
+        PropertyModel.Builder builder =
+                new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
+                        .with(ModalDialogProperties.CONTROLLER, this)
+                        .with(ModalDialogProperties.TITLE, title)
+                        .with(ModalDialogProperties.CUSTOM_VIEW, mDialogView)
+                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, confirmButtonLabel)
+                        .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, context.getResources(),
+                                R.string.cancel)
+                        .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, false)
+                        .with(ModalDialogProperties.POSITIVE_BUTTON_DISABLED, true);
+        if (drawableId != 0) {
+            builder.with(ModalDialogProperties.TITLE_ICON, context, drawableId);
+        }
+        mDialogModel = builder.build();
     }
 
     /**
@@ -135,11 +134,8 @@ public class AutofillExpirationDateFixFlowPrompt
         if (buttonType == ModalDialogProperties.ButtonType.POSITIVE) {
             String monthString = mMonthInput.getText().toString().trim();
             String yearString = mYearInput.getText().toString().trim();
-            if (isValidExpirationDate(monthString, yearString)) {
-                mDelegate.onUserAccept(monthString, yearString);
-                mModalDialogManager.dismissDialog(
-                        model, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
-            }
+            mDelegate.onUserAccept(monthString, yearString);
+            mModalDialogManager.dismissDialog(model, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
         } else if (buttonType == ModalDialogProperties.ButtonType.NEGATIVE) {
             mModalDialogManager.dismissDialog(model, DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
         }
@@ -147,37 +143,12 @@ public class AutofillExpirationDateFixFlowPrompt
 
     @Override
     public void onDismiss(PropertyModel model, int dismissalCause) {
-        mDelegate.onPromptDismissed();
-    }
-
-    private boolean isValidExpirationDate(String monthString, String yearString) {
-        if (monthString.isEmpty() || yearString.isEmpty()) {
-            return false;
+        // Do not call dismissed on the delegate if dialog was dismissed either because the user
+        // accepted to save the card or was dismissed by native code.
+        if (dismissalCause != DialogDismissalCause.POSITIVE_BUTTON_CLICKED
+                && dismissalCause != DialogDismissalCause.DISMISSED_BY_NATIVE) {
+            mDelegate.onPromptDismissed();
         }
-
-        Calendar calendar = Calendar.getInstance();
-        int currentMonth = calendar.get(Calendar.MONTH);
-        int currentYear = calendar.get(Calendar.YEAR) % 100;
-        int year, month;
-        try {
-            year = Integer.valueOf(yearString.trim());
-            month = Integer.valueOf(monthString.trim());
-        } catch (NumberFormatException e) {
-            return false;
-        }
-
-        if (month <= 0 || month > 12) {
-            return false;
-        }
-
-        if (year < currentYear) {
-            return false;
-        }
-
-        if (year == currentYear) {
-            return month >= currentMonth;
-        }
-        return true;
     }
 
     /**
@@ -204,17 +175,14 @@ public class AutofillExpirationDateFixFlowPrompt
      * @param errorType The type of error detected.
      */
     private void moveFocus(@ErrorType int errorType) {
-        if (errorType != ErrorType.NOT_ENOUGH_INFO) {
-            // There is an error or the month and year is filled and valid.
-            return;
-        }
         if (mMonthInput.isFocused()
                 && mMonthInput.getText().length() == AutofillUiUtils.EXPIRATION_FIELDS_LENGTH) {
-            // The user just finished typing in the month field and there are no validation
-            // errors.
-            // Year was not filled, move focus there.
-            mYearInput.requestFocus();
-            mDidFocusOnYear = true;
+            // The user just finished typing in the month field and if there are no errors in the
+            // month, then move focus to the year input.
+            if (errorType != ErrorType.EXPIRATION_MONTH) {
+                mYearInput.requestFocus();
+                mDidFocusOnYear = true;
+            }
         }
     }
 }

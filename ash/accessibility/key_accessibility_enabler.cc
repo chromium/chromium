@@ -25,9 +25,7 @@ KeyAccessibilityEnabler::~KeyAccessibilityEnabler() {
 void KeyAccessibilityEnabler::OnKeyEvent(ui::KeyEvent* event) {
   if ((event->type() != ui::ET_KEY_PRESSED &&
        event->type() != ui::ET_KEY_RELEASED) ||
-      !Shell::Get()
-           ->tablet_mode_controller()
-           ->IsTabletModeWindowManagerEnabled())
+      !Shell::Get()->tablet_mode_controller()->InTabletMode())
     return;
 
   if (event->key_code() == ui::VKEY_VOLUME_DOWN)

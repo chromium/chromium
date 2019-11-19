@@ -8,6 +8,9 @@
 #include <stddef.h>
 #include <cstdint>
 
+#include "base/component_export.h"
+#include "base/strings/string16.h"
+
 namespace device {
 
 #pragma pack(push, 4)
@@ -88,33 +91,32 @@ class GamepadPose {
   GamepadVector linear_acceleration;
 };
 
-enum class GamepadHand { kNone = 0, kLeft = 1, kRight = 2 };
+enum class GamepadMapping { kNone = 0, kStandard = 1, kXrStandard = 2 };
 
-// UTF-16 character type
-#if defined(WIN32)
-using UChar = wchar_t;
-#else
-using UChar = unsigned short;
-#endif
+enum class GamepadHand { kNone = 0, kLeft = 1, kRight = 2 };
 
 // This structure is intentionally POD and fixed size so that it can be shared
 // memory between hardware polling threads and the rest of the browser. See
 // also gamepads.h.
-class Gamepad {
+class COMPONENT_EXPORT(GAMEPAD_PUBLIC) Gamepad {
  public:
   static constexpr size_t kIdLengthCap = 128;
-  static constexpr size_t kMappingLengthCap = 16;
   static constexpr size_t kAxesLengthCap = 16;
   static constexpr size_t kButtonsLengthCap = 32;
 
   Gamepad();
   Gamepad(const Gamepad& other);
 
+  // If src is too long, then the contents of id will be truncated to
+  // kIdLengthCap-1. id will be null-terminated and any extra space in the
+  // buffer will be zeroed out.
+  void SetID(const base::string16& src);
+
   // Is there a gamepad connected at this index?
   bool connected;
 
   // Device identifier (based on manufacturer, model, etc.).
-  UChar id[kIdLengthCap];
+  base::char16 id[kIdLengthCap];
 
   // Time value representing the last time the data for this gamepad was
   // updated. Measured as TimeTicks::Now().since_origin().InMicroseconds().
@@ -134,8 +136,8 @@ class Gamepad {
 
   GamepadHapticActuator vibration_actuator;
 
-  // Mapping type (for example "standard")
-  UChar mapping[kMappingLengthCap];
+  // Mapping type
+  GamepadMapping mapping;
 
   GamepadPose pose;
 

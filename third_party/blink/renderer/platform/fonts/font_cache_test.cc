@@ -63,6 +63,25 @@ TEST(FontCache, firstAvailableOrFirst) {
             FontCache::FirstAvailableOrFirst(", not exist, not exist"));
 }
 
+// https://crbug.com/969402
+TEST(FontCache, getLargerThanMaxUnsignedFont) {
+  FontCache* font_cache = FontCache::GetFontCache();
+  ASSERT_TRUE(font_cache);
+
+  FontDescription font_description;
+  font_description.SetGenericFamily(FontDescription::kStandardFamily);
+  font_description.SetComputedSize(std::numeric_limits<unsigned>::max() + 1.f);
+  FontFaceCreationParams creation_params;
+  scoped_refptr<blink::SimpleFontData> font_data =
+      font_cache->GetFontData(font_description, AtomicString());
+#if !defined(OS_ANDROID) && !defined(OS_MACOSX) && !defined(OS_WIN)
+  // Unfortunately, we can't ensure a font here since on Android and Mac the
+  // unittests can't access the font configuration. However, this test passes
+  // when it's not crashing in FontCache.
+  EXPECT_TRUE(font_data);
+#endif
+}
+
 #if !defined(OS_MACOSX)
 TEST(FontCache, systemFont) {
   FontCache::SystemFontFamily();

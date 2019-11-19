@@ -6,22 +6,30 @@
 
 #include "base/macros.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
+#include "chrome/browser/chromeos/printing/printers_sync_bridge.h"
 #include "chrome/browser/sync/test/integration/printers_helper.h"
 #include "chrome/browser/sync/test/integration/profile_sync_service_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "content/public/test/test_utils.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 namespace {
 
 using printers_helper::AddPrinter;
 using printers_helper::AllProfilesContainSamePrinters;
-using printers_helper::EditPrinterDescription;
 using printers_helper::CreateTestPrinter;
+using printers_helper::CreateTestPrinterSpecifics;
+using printers_helper::EditPrinterDescription;
 using printers_helper::GetPrinterCount;
 using printers_helper::GetPrinterStore;
 using printers_helper::PrintersMatchChecker;
 using printers_helper::RemovePrinter;
+using ::testing::EndsWith;
+using ::testing::IsEmpty;
+using ::testing::Not;
+using ::testing::StartsWith;
 
 constexpr char kOverwrittenDescription[] = "I should not show up";
 constexpr char kLatestDescription[] = "YAY!  More recent changes win!";
@@ -107,7 +115,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientPrintersSyncTest, RemoveAndEditPrinters) {
   ASSERT_TRUE(PrintersMatchChecker().Wait());
   EXPECT_EQ(2, GetPrinterCount(0));
   EXPECT_EQ(updated_description,
-            GetPrinterStore(1)->GetConfiguredPrinters()[0].description());
+            GetPrinterStore(1)->GetSavedPrinters()[0].description());
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientPrintersSyncTest, ConflictResolution) {
@@ -140,9 +148,9 @@ IN_PROC_BROWSER_TEST_F(TwoClientPrintersSyncTest, ConflictResolution) {
   // due to lack of a strong consistency model on the server).
   ProfileSyncServiceHarness::AwaitQuiescence({GetClient(1)});
 
-  ASSERT_EQ(GetPrinterStore(0)->GetConfiguredPrinters()[0].description(),
+  ASSERT_EQ(GetPrinterStore(0)->GetSavedPrinters()[0].description(),
             kLatestDescription);
-  ASSERT_EQ(GetPrinterStore(1)->GetConfiguredPrinters()[0].description(),
+  ASSERT_EQ(GetPrinterStore(1)->GetSavedPrinters()[0].description(),
             kOverwrittenDescription);
 
   // Client 0 goes online, which results in a conflict (local wins).
@@ -151,9 +159,9 @@ IN_PROC_BROWSER_TEST_F(TwoClientPrintersSyncTest, ConflictResolution) {
   // Run tasks until the most recent update has been applied to all stores.
   ASSERT_TRUE(PrintersMatchChecker().Wait());
 
-  EXPECT_EQ(GetPrinterStore(0)->GetConfiguredPrinters()[0].description(),
+  EXPECT_EQ(GetPrinterStore(0)->GetSavedPrinters()[0].description(),
             kLatestDescription);
-  EXPECT_EQ(GetPrinterStore(1)->GetConfiguredPrinters()[0].description(),
+  EXPECT_EQ(GetPrinterStore(1)->GetSavedPrinters()[0].description(),
             kLatestDescription);
 }
 
@@ -189,9 +197,9 @@ IN_PROC_BROWSER_TEST_F(TwoClientPrintersSyncTest,
   // involved.
   ASSERT_TRUE(PrintersMatchChecker().Wait());
 
-  EXPECT_EQ(GetPrinterStore(0)->GetConfiguredPrinters()[0].description(),
+  EXPECT_EQ(GetPrinterStore(0)->GetSavedPrinters()[0].description(),
             kLatestDescription);
-  EXPECT_EQ(GetPrinterStore(1)->GetConfiguredPrinters()[0].description(),
+  EXPECT_EQ(GetPrinterStore(1)->GetSavedPrinters()[0].description(),
             kLatestDescription);
 }
 
@@ -212,4 +220,35 @@ IN_PROC_BROWSER_TEST_F(TwoClientPrintersSyncTest, SimpleMerge) {
   // Stores should contain the same values now.
   EXPECT_EQ(4, GetPrinterCount(0));
   EXPECT_TRUE(AllProfilesContainSamePrinters());
+}
+
+IN_PROC_BROWSER_TEST_F(TwoClientPrintersSyncTest, MakeAndModelMigration) {
+  ASSERT_TRUE(SetupClients());
+  base::HistogramTester histograms;
+  const char kMake[] = "make";
+  const char kModel[] = "model";
+
+  // Initialize sync bridge with test printer.
+  auto printer = CreateTestPrinterSpecifics(0);
+  const std::string spec_printer_id = printer->id();
+  printer->set_manufacturer(kMake);
+  printer->set_model(kModel);
+  auto* bridge = GetPrinterStore(0)->GetSyncBridge();
+  bridge->AddPrinter(std::move(printer));
+
+  // Confirm that the bridge is not migrated.
+  auto spec_printer = bridge->GetPrinter(spec_printer_id);
+  ASSERT_TRUE(spec_printer);
+  ASSERT_THAT(spec_printer->make_and_model(), IsEmpty());
+
+  ASSERT_TRUE(SetupSync());
+  spec_printer = bridge->GetPrinter(spec_printer_id);
+  ASSERT_TRUE(spec_printer);
+
+  base::StringPiece make_and_model = spec_printer->make_and_model();
+  EXPECT_THAT(make_and_model, Not(IsEmpty()));
+  EXPECT_THAT(make_and_model, StartsWith(kMake));
+  EXPECT_THAT(make_and_model, EndsWith(kModel));
+  histograms.ExpectBucketCount("Printing.CUPS.MigratedMakeAndModel",
+                               1 /* kMigrated */, 1);
 }

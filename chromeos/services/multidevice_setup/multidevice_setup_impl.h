@@ -12,8 +12,8 @@
 #include "chromeos/services/multidevice_setup/host_status_provider.h"
 #include "chromeos/services/multidevice_setup/multidevice_setup_base.h"
 #include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
-#include "mojo/public/cpp/bindings/binding_set.h"
-#include "mojo/public/cpp/bindings/interface_ptr_set.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 #include "url/gurl.h"
 
 class PrefService;
@@ -80,11 +80,15 @@ class MultiDeviceSetupImpl : public MultiDeviceSetupBase,
 
   // mojom::MultiDeviceSetup:
   void SetAccountStatusChangeDelegate(
-      mojom::AccountStatusChangeDelegatePtr delegate) override;
-  void AddHostStatusObserver(mojom::HostStatusObserverPtr observer) override;
+      mojo::PendingRemote<mojom::AccountStatusChangeDelegate> delegate)
+      override;
+  void AddHostStatusObserver(
+      mojo::PendingRemote<mojom::HostStatusObserver> observer) override;
   void AddFeatureStateObserver(
-      mojom::FeatureStateObserverPtr observer) override;
+      mojo::PendingRemote<mojom::FeatureStateObserver> observer) override;
   void GetEligibleHostDevices(GetEligibleHostDevicesCallback callback) override;
+  void GetEligibleActiveHostDevices(
+      GetEligibleActiveHostDevicesCallback callback) override;
   void SetHostDevice(const std::string& host_device_id,
                      const std::string& auth_token,
                      SetHostDeviceCallback callback) override;
@@ -136,8 +140,8 @@ class MultiDeviceSetupImpl : public MultiDeviceSetupBase,
       android_sms_app_installing_host_observer_;
   AuthTokenValidator* auth_token_validator_;
 
-  mojo::InterfacePtrSet<mojom::HostStatusObserver> host_status_observers_;
-  mojo::InterfacePtrSet<mojom::FeatureStateObserver> feature_state_observers_;
+  mojo::RemoteSet<mojom::HostStatusObserver> host_status_observers_;
+  mojo::RemoteSet<mojom::FeatureStateObserver> feature_state_observers_;
 
   DISALLOW_COPY_AND_ASSIGN(MultiDeviceSetupImpl);
 };

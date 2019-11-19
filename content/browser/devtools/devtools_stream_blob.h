@@ -10,7 +10,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "content/browser/devtools/devtools_io_context.h"
 #include "net/base/net_errors.h"
-#include "storage/common/blob_storage/blob_storage_constants.h"
+#include "storage/browser/blob/blob_storage_constants.h"
 
 #include <memory>
 

@@ -12,8 +12,8 @@
 #include "base/compiler_specific.h"
 #include "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
-#include "components/browser_sync/profile_sync_service_mock.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync/driver/mock_sync_service.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/sync/profile_sync_service_factory.h"
 #include "ios/chrome/browser/sync/sync_setup_service.h"
@@ -117,7 +117,7 @@ TEST_F(SyncEncryptionPassphraseTableViewControllerTest,
        TestConstructorDestructor) {
   CreateController();
   CheckController();
-  EXPECT_CALL(*fake_sync_service_->GetUserSettingsMock(),
+  EXPECT_CALL(*fake_sync_service_->GetMockUserSettings(),
               SetDecryptionPassphrase(_))
       .Times(0);
   // Simulate the view appearing.
@@ -141,11 +141,11 @@ TEST_F(SyncEncryptionPassphraseTableViewControllerTest,
       SyncController();
   EXPECT_CALL(*fake_sync_service_, AddObserver(_)).Times(AtLeast(1));
   EXPECT_CALL(*fake_sync_service_, RemoveObserver(_)).Times(AtLeast(1));
-  EXPECT_CALL(*fake_sync_service_->GetUserSettingsMock(),
+  EXPECT_CALL(*fake_sync_service_->GetMockUserSettings(),
               SetDecryptionPassphrase(_));
   [[sync_controller passphrase] setText:@"decodeme"];
   // Set the return value for setting the passphrase to failure.
-  ON_CALL(*fake_sync_service_->GetUserSettingsMock(),
+  ON_CALL(*fake_sync_service_->GetMockUserSettings(),
           SetDecryptionPassphrase(_))
       .WillByDefault(Return(false));
   [sync_controller signInPressed];
@@ -157,11 +157,11 @@ TEST_F(SyncEncryptionPassphraseTableViewControllerTest,
       SyncController();
   EXPECT_CALL(*fake_sync_service_, AddObserver(_)).Times(AtLeast(1));
   EXPECT_CALL(*fake_sync_service_, RemoveObserver(_)).Times(AtLeast(1));
-  EXPECT_CALL(*fake_sync_service_->GetUserSettingsMock(),
+  EXPECT_CALL(*fake_sync_service_->GetMockUserSettings(),
               SetDecryptionPassphrase(_));
   [[sync_controller passphrase] setText:@"decodeme"];
   // Set the return value for setting the passphrase to success.
-  ON_CALL(*fake_sync_service_->GetUserSettingsMock(),
+  ON_CALL(*fake_sync_service_->GetMockUserSettings(),
           SetDecryptionPassphrase(_))
       .WillByDefault(Return(true));
   [sync_controller signInPressed];
@@ -177,7 +177,7 @@ TEST_F(SyncEncryptionPassphraseTableViewControllerTest,
   EXPECT_EQ([nav_controller_ topViewController], sync_controller);
 
   // Set up the fake sync service to still require the passphrase.
-  ON_CALL(*fake_sync_service_->GetUserSettingsMock(), IsPassphraseRequired())
+  ON_CALL(*fake_sync_service_->GetMockUserSettings(), IsPassphraseRequired())
       .WillByDefault(Return(true));
   [sync_controller onSyncStateChanged];
   // The controller should only reload. Because there is text in the passphrase
@@ -195,9 +195,9 @@ TEST_F(SyncEncryptionPassphraseTableViewControllerTest,
   EXPECT_EQ([nav_controller_ topViewController], sync_controller);
 
   // Set up the fake sync service to have accepted the passphrase.
-  ON_CALL(*fake_sync_service_->GetUserSettingsMock(), IsPassphraseRequired())
+  ON_CALL(*fake_sync_service_->GetMockUserSettings(), IsPassphraseRequired())
       .WillByDefault(Return(false));
-  ON_CALL(*fake_sync_service_->GetUserSettingsMock(),
+  ON_CALL(*fake_sync_service_->GetMockUserSettings(),
           IsUsingSecondaryPassphrase())
       .WillByDefault(Return(true));
   [sync_controller onSyncStateChanged];

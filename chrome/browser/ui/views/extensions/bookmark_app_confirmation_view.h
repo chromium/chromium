@@ -23,7 +23,7 @@ class BookmarkAppConfirmationView : public views::DialogDelegateView,
                                     public views::TextfieldController {
  public:
   BookmarkAppConfirmationView(
-      const WebApplicationInfo& web_app_info,
+      std::unique_ptr<WebApplicationInfo> web_app_info,
       chrome::AppInstallationAcceptanceCallback callback);
   ~BookmarkAppConfirmationView() override;
 
@@ -37,7 +37,6 @@ class BookmarkAppConfirmationView : public views::DialogDelegateView,
 
   // Overriden from views::DialogDelegateView:
   bool Accept() override;
-  base::string16 GetDialogButtonLabel(ui::DialogButton button) const override;
   bool IsDialogButtonEnabled(ui::DialogButton button) const override;
 
   // Overridden from views::TextfieldController:
@@ -48,16 +47,17 @@ class BookmarkAppConfirmationView : public views::DialogDelegateView,
   base::string16 GetTrimmedTitle() const;
 
   // The WebApplicationInfo that the user is editing.
-  WebApplicationInfo web_app_info_;
+  // Cleared when the dialog completes (Accept/WindowClosing).
+  std::unique_ptr<WebApplicationInfo> web_app_info_;
 
   // The callback to be invoked when the dialog is completed.
   chrome::AppInstallationAcceptanceCallback callback_;
 
   // Checkbox to launch as a window.
-  views::Checkbox* open_as_window_checkbox_;
+  views::Checkbox* open_as_window_checkbox_ = nullptr;
 
   // Textfield showing the title of the app.
-  views::Textfield* title_tf_;
+  views::Textfield* title_tf_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(BookmarkAppConfirmationView);
 };

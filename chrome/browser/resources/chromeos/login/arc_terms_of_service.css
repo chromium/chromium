@@ -4,17 +4,11 @@
 
 a {
   color: var(--google-blue-500);
-  font-family: 'Roboto';
-  font-size: 13px;
-  font-weight: 400;
   text-decoration: none;
 }
 
 p {
   color: rgba(0, 0, 0, 0.54);
-  font-family: 'Roboto';
-  font-size: 13px;
-  font-weight: 400;
   line-height: 16px;
   margin: 0;
   padding: 0;
@@ -46,7 +40,8 @@ p {
   display: none;
 }
 
-#arc-tos-dialog:not(.arc-tos-for-demo-mode) #arc-tos-back-button {
+#arc-tos-dialog:not(.arc-tos-for-demo-mode) #arc-tos-back-button,
+#arc-tos-dialog:not(.arc-tos-for-demo-mode) #arc-tos-metrics-demo-apps {
   display: none;
 }
 
@@ -77,13 +72,8 @@ p {
   font-weight: 600;
 }
 
-#arc-tos-dialog {
-  height: 640px;
-}
-
 #arc-tos-container {
   box-shadow: 0 -2px 2px -2px rgba(0, 0, 0, 0.14);
-  padding: -4px 0 0 0;
 }
 
 #arc-tos-container::-webkit-scrollbar {
@@ -92,19 +82,18 @@ p {
 
 #arc-tos-view {
   display: block;
-  height: 10px;
+  height: 100%;
   margin: auto;
+  min-height: 40px;
   padding: 0;
-  width: 638px;
+  width: 100%;
 }
 
 #arc-tos-view-container {
   border: 1px solid #d9d9d9;
   box-sizing: border-box;
-  flex: auto;
   margin: 0;
   padding: 0;
-  width: 100%;
 }
 
 #arc-tos-back-button,

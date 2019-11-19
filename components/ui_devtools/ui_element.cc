@@ -16,6 +16,24 @@ static int node_ids = 0;
 
 }  // namespace
 
+UIElement::ClassProperties::ClassProperties(
+    std::string class_name,
+    std::vector<UIElement::UIProperty> properties)
+    : class_name_(class_name), properties_(properties) {}
+
+UIElement::ClassProperties::ClassProperties(
+    const UIElement::ClassProperties& other) = default;
+
+UIElement::ClassProperties::~ClassProperties() = default;
+
+UIElement::Source::Source(std::string path, int line)
+    : path_(path), line_(line) {}
+
+// static
+void UIElement::ResetNodeId() {
+  node_ids = 0;
+}
+
 UIElement::~UIElement() {
   if (owns_children_) {
     for (auto* child : children_)
@@ -76,19 +94,23 @@ void UIElement::RemoveChild(UIElement* child, bool notify_delegate) {
   children_.erase(iter);
 }
 
-void UIElement::ReorderChild(UIElement* child, int new_index) {
-  auto iter = std::find(children_.begin(), children_.end(), child);
-  DCHECK(iter != children_.end());
+void UIElement::ReorderChild(UIElement* child, int index) {
+  auto i = std::find(children_.begin(), children_.end(), child);
+  DCHECK(i != children_.end());
+  DCHECK_GE(index, 0);
+  DCHECK_LT(static_cast<size_t>(index), children_.size());
 
-  // Don't re-order if the new position is the same as the old position.
-  if (std::distance(children_.begin(), iter) == new_index)
+  // If |child| is already at the desired position, there's nothing to do.
+  const auto pos = std::next(children_.begin(), index);
+  if (i == pos)
     return;
-  children_.erase(iter);
 
-  // Move child to new position |new_index| in vector |children_|.
-  new_index = std::min(static_cast<int>(children_.size()) - 1, new_index);
-  iter = children_.begin() + new_index;
-  children_.insert(iter, child);
+  // Rotate |child| to be at the desired position.
+  if (pos < i)
+    std::rotate(pos, i, std::next(i));
+  else
+    std::rotate(i, std::next(i), std::next(pos));
+
   delegate()->OnUIElementReordered(child->parent(), child);
 }
 
@@ -98,11 +120,32 @@ int UIElement::FindUIElementIdForBackendElement(T* element) const {
   return 0;
 }
 
+std::vector<UIElement::ClassProperties>
+UIElement::GetCustomPropertiesForMatchedStyle() const {
+  return {};
+}
+
 UIElement::UIElement(const UIElementType type,
                      UIElementDelegate* delegate,
                      UIElement* parent)
     : node_id_(++node_ids), type_(type), parent_(parent), delegate_(delegate) {
   delegate_->OnUIElementAdded(nullptr, this);
+}
+
+bool UIElement::SetPropertiesFromString(const std::string& text) {
+  NOTREACHED();
+  return false;
+}
+
+void UIElement::AddSource(std::string path, int line) {
+  sources_.emplace_back(path, line);
+}
+
+std::vector<UIElement::Source> UIElement::GetSources() {
+  if (sources_.empty())
+    InitSources();
+
+  return sources_;
 }
 
 }  // namespace ui_devtools

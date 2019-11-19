@@ -57,11 +57,12 @@ TEST_F(NGOutOfFlowLayoutPartTest, FixedInsideAbs) {
 
   // Test whether the oof fragments have been collected at NG->Legacy boundary.
   Element* rel = GetDocument().getElementById("rel");
-  LayoutBlockFlow* block_flow = ToLayoutBlockFlow(rel->GetLayoutObject());
+  auto* block_flow = To<LayoutBlockFlow>(rel->GetLayoutObject());
   scoped_refptr<const NGLayoutResult> result =
       block_flow->GetCachedLayoutResult();
   EXPECT_TRUE(result);
-  EXPECT_EQ(result->OutOfFlowPositionedDescendants().size(), (size_t)2);
+  EXPECT_EQ(result->PhysicalFragment().OutOfFlowPositionedDescendants().size(),
+            2u);
 
   // Test the final result.
   Element* fixed_1 = GetDocument().getElementById("fixed1");

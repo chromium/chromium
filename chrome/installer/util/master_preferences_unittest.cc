@@ -76,7 +76,6 @@ TEST_F(MasterPreferencesTest, ParseDistroParams) {
       "  \"distribution\": { \n"
       "     \"show_welcome_page\": true,\n"
       "     \"import_bookmarks_from_file\": \"c:\\\\foo\",\n"
-      "     \"welcome_page_on_os_upgrade_enabled\": true,\n"
       "     \"do_not_create_any_shortcuts\": true,\n"
       "     \"do_not_create_desktop_shortcut\": true,\n"
       "     \"do_not_create_quick_launch_shortcut\": true,\n"
@@ -99,7 +98,6 @@ TEST_F(MasterPreferencesTest, ParseDistroParams) {
   EXPECT_TRUE(prefs.read_from_file());
 
   const char* const expected_true[] = {
-      installer::master_preferences::kDistroWelcomePageOnOSUpgradeEnabled,
       installer::master_preferences::kDoNotCreateAnyShortcuts,
       installer::master_preferences::kDoNotCreateDesktopShortcut,
       installer::master_preferences::kDoNotCreateQuickLaunchShortcut,
@@ -154,7 +152,6 @@ TEST_F(MasterPreferencesTest, ParseMissingDistroParams) {
   }
 
   const char* const missing_bools[] = {
-    installer::master_preferences::kDistroWelcomePageOnOSUpgradeEnabled,
     installer::master_preferences::kDoNotRegisterForUpdateLaunch,
     installer::master_preferences::kMakeChromeDefault,
     installer::master_preferences::kMakeChromeDefaultForUser,

@@ -9,8 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "extensions/browser/api/api_resource_manager.h"
-#include "extensions/browser/api/async_api_function.h"
+#include "extensions/browser/extension_function.h"
 #include "extensions/common/api/serial.h"
 #include "services/device/public/mojom/serial.mojom.h"
 
@@ -20,26 +19,18 @@ class SerialConnection;
 
 namespace api {
 
-class SerialPortManager;
-
-class SerialAsyncApiFunction : public AsyncApiFunction {
+class SerialExtensionFunction : public ExtensionFunction {
  public:
-  SerialAsyncApiFunction();
+  SerialExtensionFunction();
 
  protected:
-  ~SerialAsyncApiFunction() override;
-
-  // AsyncApiFunction:
-  bool PrePrepare() override;
-  bool Respond() override;
+  ~SerialExtensionFunction() override;
 
   SerialConnection* GetSerialConnection(int api_resource_id);
   void RemoveSerialConnection(int api_resource_id);
-
-  ApiResourceManager<SerialConnection>* manager_;
 };
 
-class SerialGetDevicesFunction : public UIThreadExtensionFunction {
+class SerialGetDevicesFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("serial.getDevices", SERIAL_GETDEVICES)
 
@@ -48,7 +39,7 @@ class SerialGetDevicesFunction : public UIThreadExtensionFunction {
  protected:
   ~SerialGetDevicesFunction() override;
 
-  // ExtensionFunction:
+  // ExtensionFunction
   ResponseAction Run() override;
 
  private:
@@ -57,7 +48,7 @@ class SerialGetDevicesFunction : public UIThreadExtensionFunction {
   DISALLOW_COPY_AND_ASSIGN(SerialGetDevicesFunction);
 };
 
-class SerialConnectFunction : public SerialAsyncApiFunction {
+class SerialConnectFunction : public SerialExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("serial.connect", SERIAL_CONNECT)
 
@@ -66,9 +57,8 @@ class SerialConnectFunction : public SerialAsyncApiFunction {
  protected:
   ~SerialConnectFunction() override;
 
-  // AsyncApiFunction:
-  bool Prepare() override;
-  void AsyncWorkStart() override;
+  // ExtensionFunction
+  ResponseAction Run() override;
 
  private:
   void OnConnected(bool success);
@@ -76,20 +66,13 @@ class SerialConnectFunction : public SerialAsyncApiFunction {
                      bool got_complete_info,
                      std::unique_ptr<serial::ConnectionInfo> info);
 
-  std::unique_ptr<serial::Connect::Params> params_;
-
-  // SerialPortManager is owned by a BrowserContext.
-  SerialPortManager* serial_port_manager_;
-
   // This connection is created within SerialConnectFunction.
   // From there its ownership is transferred to the
   // ApiResourceManager<SerialConnection> upon success.
   std::unique_ptr<SerialConnection> connection_;
-
-  device::mojom::SerialPortPtrInfo serial_port_info_;
 };
 
-class SerialUpdateFunction : public SerialAsyncApiFunction {
+class SerialUpdateFunction : public SerialExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("serial.update", SERIAL_UPDATE)
 
@@ -98,17 +81,14 @@ class SerialUpdateFunction : public SerialAsyncApiFunction {
  protected:
   ~SerialUpdateFunction() override;
 
-  // AsyncApiFunction:
-  bool Prepare() override;
-  void AsyncWorkStart() override;
+  // ExtensionFunction
+  ResponseAction Run() override;
 
  private:
   void OnUpdated(bool success);
-
-  std::unique_ptr<serial::Update::Params> params_;
 };
 
-class SerialDisconnectFunction : public SerialAsyncApiFunction {
+class SerialDisconnectFunction : public SerialExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("serial.disconnect", SERIAL_DISCONNECT)
 
@@ -117,15 +97,14 @@ class SerialDisconnectFunction : public SerialAsyncApiFunction {
  protected:
   ~SerialDisconnectFunction() override;
 
-  // AsyncApiFunction:
-  bool Prepare() override;
-  void Work() override;
+  // ExtensionFunction
+  ResponseAction Run() override;
 
  private:
-  std::unique_ptr<serial::Disconnect::Params> params_;
+  void OnCloseComplete(int connection_id);
 };
 
-class SerialSetPausedFunction : public SerialAsyncApiFunction {
+class SerialSetPausedFunction : public SerialExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("serial.setPaused", SERIAL_SETPAUSED)
 
@@ -134,16 +113,11 @@ class SerialSetPausedFunction : public SerialAsyncApiFunction {
  protected:
   ~SerialSetPausedFunction() override;
 
-  // AsyncApiFunction:
-  bool Prepare() override;
-  void Work() override;
-
- private:
-  std::unique_ptr<serial::SetPaused::Params> params_;
-  SerialPortManager* serial_port_manager_;
+  // ExtensionFunction
+  ResponseAction Run() override;
 };
 
-class SerialGetInfoFunction : public SerialAsyncApiFunction {
+class SerialGetInfoFunction : public SerialExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("serial.getInfo", SERIAL_GETINFO)
 
@@ -152,18 +126,16 @@ class SerialGetInfoFunction : public SerialAsyncApiFunction {
  protected:
   ~SerialGetInfoFunction() override;
 
-  // AsyncApiFunction:
-  bool Prepare() override;
-  void AsyncWorkStart() override;
+  // ExtensionFunction
+  ResponseAction Run() override;
 
  private:
-  void OnGotInfo(bool got_complete_info,
+  void OnGotInfo(int connection_id,
+                 bool got_complete_info,
                  std::unique_ptr<serial::ConnectionInfo> info);
-
-  std::unique_ptr<serial::GetInfo::Params> params_;
 };
 
-class SerialGetConnectionsFunction : public SerialAsyncApiFunction {
+class SerialGetConnectionsFunction : public SerialExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("serial.getConnections", SERIAL_GETCONNECTIONS)
 
@@ -172,9 +144,8 @@ class SerialGetConnectionsFunction : public SerialAsyncApiFunction {
  protected:
   ~SerialGetConnectionsFunction() override;
 
-  // AsyncApiFunction:
-  bool Prepare() override;
-  void AsyncWorkStart() override;
+  // ExtensionFunction
+  ResponseAction Run() override;
 
  private:
   void OnGotOne(int connection_id,
@@ -186,7 +157,7 @@ class SerialGetConnectionsFunction : public SerialAsyncApiFunction {
   std::vector<serial::ConnectionInfo> infos_;
 };
 
-class SerialSendFunction : public SerialAsyncApiFunction {
+class SerialSendFunction : public SerialExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("serial.send", SERIAL_SEND)
 
@@ -195,17 +166,14 @@ class SerialSendFunction : public SerialAsyncApiFunction {
  protected:
   ~SerialSendFunction() override;
 
-  // AsyncApiFunction:
-  bool Prepare() override;
-  void AsyncWorkStart() override;
+  // ExtensionFunction
+  ResponseAction Run() override;
 
  private:
   void OnSendComplete(uint32_t bytes_sent, serial::SendError error);
-
-  std::unique_ptr<serial::Send::Params> params_;
 };
 
-class SerialFlushFunction : public SerialAsyncApiFunction {
+class SerialFlushFunction : public SerialExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("serial.flush", SERIAL_FLUSH)
 
@@ -214,17 +182,14 @@ class SerialFlushFunction : public SerialAsyncApiFunction {
  protected:
   ~SerialFlushFunction() override;
 
-  // AsyncApiFunction:
-  bool Prepare() override;
-  void AsyncWorkStart() override;
+  // ExtensionFunction
+  ResponseAction Run() override;
 
  private:
   void OnFlushed(bool success);
-
-  std::unique_ptr<serial::Flush::Params> params_;
 };
 
-class SerialGetControlSignalsFunction : public SerialAsyncApiFunction {
+class SerialGetControlSignalsFunction : public SerialExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("serial.getControlSignals",
                              SERIAL_GETCONTROLSIGNALS)
@@ -234,18 +199,15 @@ class SerialGetControlSignalsFunction : public SerialAsyncApiFunction {
  protected:
   ~SerialGetControlSignalsFunction() override;
 
-  // AsyncApiFunction:
-  bool Prepare() override;
-  void AsyncWorkStart() override;
+  // ExtensionFunction
+  ResponseAction Run() override;
 
  private:
   void OnGotControlSignals(
       std::unique_ptr<serial::DeviceControlSignals> signals);
-
-  std::unique_ptr<serial::GetControlSignals::Params> params_;
 };
 
-class SerialSetControlSignalsFunction : public SerialAsyncApiFunction {
+class SerialSetControlSignalsFunction : public SerialExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("serial.setControlSignals",
                              SERIAL_SETCONTROLSIGNALS)
@@ -255,17 +217,14 @@ class SerialSetControlSignalsFunction : public SerialAsyncApiFunction {
  protected:
   ~SerialSetControlSignalsFunction() override;
 
-  // AsyncApiFunction:
-  bool Prepare() override;
-  void AsyncWorkStart() override;
+  // ExtensionFunction
+  ResponseAction Run() override;
 
  private:
   void OnSetControlSignals(bool success);
-
-  std::unique_ptr<serial::SetControlSignals::Params> params_;
 };
 
-class SerialSetBreakFunction : public SerialAsyncApiFunction {
+class SerialSetBreakFunction : public SerialExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("serial.setBreak", SERIAL_SETBREAK)
   SerialSetBreakFunction();
@@ -273,17 +232,14 @@ class SerialSetBreakFunction : public SerialAsyncApiFunction {
  protected:
   ~SerialSetBreakFunction() override;
 
-  // AsyncApiFunction:
-  bool Prepare() override;
-  void AsyncWorkStart() override;
+  // ExtensionFunction
+  ResponseAction Run() override;
 
  private:
   void OnSetBreak(bool success);
-
-  std::unique_ptr<serial::SetBreak::Params> params_;
 };
 
-class SerialClearBreakFunction : public SerialAsyncApiFunction {
+class SerialClearBreakFunction : public SerialExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("serial.clearBreak", SERIAL_CLEARBREAK)
   SerialClearBreakFunction();
@@ -291,14 +247,11 @@ class SerialClearBreakFunction : public SerialAsyncApiFunction {
  protected:
   ~SerialClearBreakFunction() override;
 
-  // AsyncApiFunction:
-  bool Prepare() override;
-  void AsyncWorkStart() override;
+  // ExtensionFunction
+  ResponseAction Run() override;
 
  private:
   void OnClearBreak(bool success);
-
-  std::unique_ptr<serial::ClearBreak::Params> params_;
 };
 
 }  // namespace api

@@ -13,8 +13,8 @@
 #include "chrome/test/base/chrome_unit_test_suite.h"
 #include "components/autofill/content/renderer/autofill_agent.h"
 #include "components/autofill/content/renderer/password_autofill_agent.h"
+#include "components/autofill/content/renderer/password_generation_agent.h"
 #include "components/autofill/content/renderer/test_password_autofill_agent.h"
-#include "components/autofill/content/renderer/test_password_generation_agent.h"
 #include "components/spellcheck/renderer/spellcheck.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
 #include "content/public/browser/native_web_keyboard_event.h"
@@ -35,7 +35,6 @@
 #include "extensions/browser/extension_function_dispatcher.h"
 #include "extensions/common/extension.h"
 #include "extensions/renderer/dispatcher.h"
-#include "extensions/renderer/event_bindings.h"
 #endif
 
 using autofill::AutofillAgent;
@@ -66,7 +65,6 @@ class MockAutofillAgent : public AutofillAgent {
                       password_autofill_agent,
                       password_generation_agent,
                       registry) {
-    ON_CALL(*this, IsUserGesture()).WillByDefault(Return(true));
   }
 
   ~MockAutofillAgent() override {}
@@ -77,8 +75,6 @@ class MockAutofillAgent : public AutofillAgent {
     run_loop_->Run();
     run_loop_.reset();
   }
-
-  MOCK_CONST_METHOD0(IsUserGesture, bool());
 
  private:
   void DidAssociateFormControlsDynamically() override {
@@ -101,8 +97,7 @@ ChromeRenderViewTest::ChromeRenderViewTest()
       chrome_render_thread_(NULL) {
 }
 
-ChromeRenderViewTest::~ChromeRenderViewTest() {
-}
+ChromeRenderViewTest::~ChromeRenderViewTest() = default;
 
 void ChromeRenderViewTest::SetUp() {
   ChromeUnitTestSuite::InitializeProviders();
@@ -125,7 +120,7 @@ void ChromeRenderViewTest::SetUp() {
   // create another set.
   password_autofill_agent_ = new autofill::TestPasswordAutofillAgent(
       view_->GetMainRenderFrame(), &associated_interfaces_);
-  password_generation_ = new autofill::TestPasswordGenerationAgent(
+  password_generation_ = new autofill::PasswordGenerationAgent(
       view_->GetMainRenderFrame(), password_autofill_agent_,
       &associated_interfaces_);
   autofill_agent_ = new NiceMock<MockAutofillAgent>(
@@ -176,16 +171,6 @@ void ChromeRenderViewTest::InitChromeContentRendererClient(
 #if BUILDFLAG(ENABLE_SPELLCHECK)
   client->InitSpellCheck();
 #endif
-}
-
-void ChromeRenderViewTest::EnableUserGestureSimulationForAutofill() {
-  EXPECT_CALL(*(static_cast<MockAutofillAgent*>(autofill_agent_)),
-              IsUserGesture()).WillRepeatedly(Return(true));
-}
-
-void ChromeRenderViewTest::DisableUserGestureSimulationForAutofill() {
-  EXPECT_CALL(*(static_cast<MockAutofillAgent*>(autofill_agent_)),
-              IsUserGesture()).WillRepeatedly(Return(false));
 }
 
 void ChromeRenderViewTest::WaitForAutofillDidAssociateFormControl() {

@@ -22,6 +22,14 @@ BASE_EXPORT extern char g_linux_distro[];
 // Get the Linux Distro if we can, or return "Unknown".
 BASE_EXPORT std::string GetLinuxDistro();
 
+#if defined(UNIT_TEST)
+// Get the value of given key from the given input (content of the
+// /etc/os-release file. Exposed for testing.
+BASE_EXPORT std::string GetKeyValueFromOSReleaseFileForTesting(
+    const std::string& input,
+    const char* key);
+#endif  // defined(UNIT_TEST)
+
 // Set the Linux Distro string.
 BASE_EXPORT void SetLinuxDistro(const std::string& distro);
 

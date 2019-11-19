@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/apps/directory_access_confirmation_dialog.h"
 
+#include <memory>
+
 #include "base/callback.h"
 #include "chrome/browser/ui/tab_modal_confirm_dialog.h"
 #include "chrome/browser/ui/tab_modal_confirm_dialog_delegate.h"
@@ -93,7 +95,7 @@ void CreateDirectoryAccessConfirmationDialog(bool writable,
                                              const base::Closure& on_accept,
                                              const base::Closure& on_cancel) {
   TabModalConfirmDialog::Create(
-      new DirectoryAccessConfirmationDialog(
+      std::make_unique<DirectoryAccessConfirmationDialog>(
           writable, app_name, web_contents, on_accept, on_cancel),
       web_contents);
 }

@@ -11,9 +11,6 @@
 namespace printing {
 namespace features {
 
-// Use pdf compositor service to generate PDF files for printing.
-extern const base::Feature kUsePdfCompositorServiceForPrint;
-
 #if defined(OS_MACOSX)
 extern const base::Feature kEnableCustomMacPaperSizes;
 #endif

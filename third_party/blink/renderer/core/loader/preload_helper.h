@@ -6,17 +6,16 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_PRELOAD_HELPER_H_
 
 #include "base/optional.h"
+#include "third_party/blink/renderer/core/page/viewport_description.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 
 namespace blink {
 
+class AlternateSignedExchangeResourceInfo;
 class Document;
 class LocalFrame;
-class NetworkHintsInterface;
 class SingleModuleClient;
 struct LinkLoadParameters;
-struct ViewportDescription;
-struct ViewportDescriptionWrapper;
 
 // PreloadHelper is a helper class for preload, module preload, prefetch,
 // DNS prefetch, and preconnect triggered by <link> elements and "Link" HTTP
@@ -35,14 +34,16 @@ class PreloadHelper final {
   // can be preloaded at commit time.
   enum MediaPreloadPolicy { kLoadAll, kOnlyLoadNonMedia, kOnlyLoadMedia };
 
-  static void LoadLinksFromHeader(const String& header_value,
-                                  const KURL& base_url,
-                                  LocalFrame&,
-                                  Document*,  // can be nullptr
-                                  const NetworkHintsInterface&,
-                                  CanLoadResources,
-                                  MediaPreloadPolicy,
-                                  ViewportDescriptionWrapper*);
+  static void LoadLinksFromHeader(
+      const String& header_value,
+      const KURL& base_url,
+      LocalFrame&,
+      Document*,  // can be nullptr
+      CanLoadResources,
+      MediaPreloadPolicy,
+      const base::Optional<ViewportDescription>&,
+      std::unique_ptr<AlternateSignedExchangeResourceInfo>,
+      base::Optional<base::UnguessableToken>);
   static Resource* StartPreload(ResourceType,
                                 FetchParameters&,
                                 ResourceFetcher*);
@@ -56,23 +57,21 @@ class PreloadHelper final {
   static void DnsPrefetchIfNeeded(const LinkLoadParameters&,
                                   Document*,
                                   LocalFrame*,
-                                  const NetworkHintsInterface&,
                                   LinkCaller);
   static void PreconnectIfNeeded(const LinkLoadParameters&,
                                  Document*,
                                  LocalFrame*,
-                                 const NetworkHintsInterface&,
                                  LinkCaller);
   static Resource* PrefetchIfNeeded(const LinkLoadParameters&, Document&);
   static Resource* PreloadIfNeeded(const LinkLoadParameters&,
                                    Document&,
                                    const KURL& base_url,
                                    LinkCaller,
-                                   ViewportDescription*,
+                                   const base::Optional<ViewportDescription>&,
                                    ParserDisposition);
   static void ModulePreloadIfNeeded(const LinkLoadParameters&,
                                     Document&,
-                                    ViewportDescription*,
+                                    const base::Optional<ViewportDescription>&,
                                     SingleModuleClient*);
 
   static base::Optional<ResourceType> GetResourceTypeFromAsAttribute(

@@ -6,35 +6,40 @@
 
 #include <stdint.h>
 
-#import "third_party/google_toolbox_for_mac/src/Foundation/GTMStringEncoding.h"
+#include "base/base64url.h"
+#include "base/strings/stringprintf.h"
+#include "base/strings/sys_string_conversions.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-NSString* const kGMOLocationDescriptorFormat =
-    @"role: CURRENT_LOCATION\n"
-    @"producer: DEVICE_LOCATION\n"
-    @"timestamp: %lld\n"
-    @"radius: %ld\n"
-    @"latlng <\n"
-    @"  latitude_e7: %.f\n"
-    @"  longitude_e7: %.f\n"
-    @">";
+namespace {
+// Returns the LocationDescriptor as an ASCII proto encoded in web safe base64.
+std::string LocationDescriptorAsWebSafeBase64(int64_t timestamp,
+                                              long radius,
+                                              double latitude,
+                                              double longitude) {
+  const std::string location_descriptor =
+      base::StringPrintf("role: CURRENT_LOCATION\n"
+                         "producer: DEVICE_LOCATION\n"
+                         "timestamp: %lld\n"
+                         "radius: %ld\n"
+                         "latlng <\n"
+                         "  latitude_e7: %.f\n"
+                         "  longitude_e7: %.f\n"
+                         ">",
+                         timestamp, radius, latitude, longitude);
+
+  std::string encoded_descriptor;
+  base::Base64UrlEncode(location_descriptor,
+                        base::Base64UrlEncodePolicy::INCLUDE_PADDING,
+                        &encoded_descriptor);
+  return encoded_descriptor;
+}
+}  // namespace
 
 @implementation CLLocation (XGeoHeader)
-
-- (NSString*)cr_serializeStringToWebSafeBase64String:(NSString*)data {
-  GTMStringEncoding* encoder =
-      [GTMStringEncoding rfc4648Base64WebsafeStringEncoding];
-  NSString* base64 =
-      [encoder encode:[data dataUsingEncoding:NSUTF8StringEncoding]
-                error:nullptr];
-  if (base64) {
-    return base64;
-  }
-  return @"";
-}
 
 // Returns the timestamp of this location in microseconds since the UNIX epoch.
 // Returns 0 if the timestamp is unavailable or invalid.
@@ -58,22 +63,16 @@ NSString* const kGMOLocationDescriptorFormat =
   return -1L;
 }
 
-// Returns the LocationDescriptor as an ASCII proto.
-- (NSString*)cr_locationDescriptor {
-  // Construct the location descriptor using its format string.
-  return [NSString stringWithFormat:kGMOLocationDescriptorFormat,
-                                    [self cr_timestampInMicroseconds],
-                                    [self cr_accuracyInMillimeters],
-                                    floor(self.coordinate.latitude * 1e7),
-                                    floor(self.coordinate.longitude * 1e7)];
-}
-
 - (NSString*)cr_xGeoString {
-  NSString* locationDescriptor = [self cr_locationDescriptor];
+  const std::string encoded_location_descriptor =
+      LocationDescriptorAsWebSafeBase64([self cr_timestampInMicroseconds],
+                                        [self cr_accuracyInMillimeters],
+                                        floor(self.coordinate.latitude * 1e7),
+                                        floor(self.coordinate.longitude * 1e7));
+
   // The "a" indicates that it is an ASCII proto.
-  return [NSString
-      stringWithFormat:@"a %@", [self cr_serializeStringToWebSafeBase64String:
-                                          locationDescriptor]];
+  return base::SysUTF8ToNSString(
+      base::StringPrintf("a %s", encoded_location_descriptor.c_str()));
 }
 
 @end

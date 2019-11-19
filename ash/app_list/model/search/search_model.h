@@ -16,7 +16,7 @@
 #include "base/callback.h"
 #include "ui/base/models/list_model.h"
 
-namespace app_list {
+namespace ash {
 
 class SearchBoxModel;
 
@@ -79,6 +79,6 @@ class APP_LIST_MODEL_EXPORT SearchModel {
   DISALLOW_COPY_AND_ASSIGN(SearchModel);
 };
 
-}  // namespace app_list
+}  // namespace ash
 
 #endif  // ASH_APP_LIST_MODEL_SEARCH_SEARCH_MODEL_H_

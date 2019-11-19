@@ -53,6 +53,7 @@
 #include "gpu/command_buffer/common/sync_token.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/gl/gpu_preference.h"
 
 #if !defined(__native_client__)
 #include "ui/gfx/color_space.h"
@@ -208,6 +209,8 @@ GLES2Implementation::GLES2Implementation(
       bound_atomic_counter_buffer_(0),
       bound_copy_read_buffer_(0),
       bound_copy_write_buffer_(0),
+      bound_dispatch_indirect_buffer_(0),
+      bound_draw_indirect_buffer_(0),
       bound_pixel_pack_buffer_(0),
       bound_pixel_unpack_buffer_(0),
       bound_shader_storage_buffer_(0),
@@ -223,8 +226,7 @@ GLES2Implementation::GLES2Implementation(
       max_extra_transfer_buffer_size_(0),
       current_trace_stack_(0),
       aggressively_free_resources_(false),
-      cached_extension_string_(nullptr),
-      weak_ptr_factory_(this) {
+      cached_extension_string_(nullptr) {
   DCHECK(helper);
 
   std::stringstream ss;
@@ -377,8 +379,27 @@ void GLES2Implementation::OnGpuControlSwapBuffersCompleted(
   if (found == pending_swap_callbacks_.end())
     return;
 
-  std::move(found->second).Run(params);
+  // Erase the entry before running the callback to guard against the callback
+  // mutating the |pending_swap_callbacks_|.
+  auto callback = std::move(found->second);
   pending_swap_callbacks_.erase(found);
+
+  std::move(callback).Run(params);
+}
+
+void GLES2Implementation::OnGpuSwitched(
+    gl::GpuPreference active_gpu_heuristic) {
+  gpu_switched_ = true;
+  active_gpu_heuristic_ = active_gpu_heuristic;
+}
+
+GLboolean GLES2Implementation::DidGpuSwitch(gl::GpuPreference* active_gpu) {
+  if (gpu_switched_) {
+    *active_gpu = active_gpu_heuristic_;
+  }
+  GLboolean result = gpu_switched_ ? GL_TRUE : GL_FALSE;
+  gpu_switched_ = false;
+  return result;
 }
 
 void GLES2Implementation::SendErrorMessage(std::string message, int32_t id) {
@@ -416,8 +437,13 @@ void GLES2Implementation::OnSwapBufferPresented(
   auto found = pending_presentation_callbacks_.find(swap_id);
   if (found == pending_presentation_callbacks_.end())
     return;
-  std::move(found->second).Run(feedback);
+
+  // Erase the entry before running the callback to guard against the callback
+  // mutating the |pending_presentation_callbacks_|.
+  auto callback = std::move(found->second);
   pending_presentation_callbacks_.erase(found);
+
+  std::move(callback).Run(feedback);
 }
 
 void GLES2Implementation::OnGpuControlReturnData(
@@ -1045,6 +1071,12 @@ bool GLES2Implementation::GetHelper(GLenum pname, GLint* params) {
     case GL_ATOMIC_COUNTER_BUFFER_BINDING:
       *params = bound_atomic_counter_buffer_;
       return true;
+    case GL_DISPATCH_INDIRECT_BUFFER_BINDING:
+      *params = bound_dispatch_indirect_buffer_;
+      return true;
+    case GL_DRAW_INDIRECT_BUFFER_BINDING:
+      *params = bound_draw_indirect_buffer_;
+      return true;
     case GL_SHADER_STORAGE_BUFFER_BINDING:
       *params = bound_shader_storage_buffer_;
       return true;
@@ -1346,6 +1378,33 @@ void GLES2Implementation::DrawElementsImpl(GLenum mode,
   CheckGLError();
 }
 
+void GLES2Implementation::DrawElementsIndirect(GLenum mode,
+                                               GLenum type,
+                                               const void* offset) {
+  GPU_CLIENT_SINGLE_THREAD_CHECK();
+  GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glDrawElementsIndirect("
+                     << GLES2Util::GetStringDrawMode(mode) << ", "
+                     << GLES2Util::GetStringIndexType(type) << ", " << offset
+                     << ")");
+  if (!ValidateOffset("glDrawElementsIndirect",
+                      reinterpret_cast<GLintptr>(offset))) {
+    return;
+  }
+  // This is for WebGL 2.0 Compute which doesn't support client side arrays
+  if (vertex_array_object_manager_->bound_element_array_buffer() == 0) {
+    SetGLError(GL_INVALID_OPERATION, "glDrawElementsIndirect",
+               "No element array buffer");
+    return;
+  }
+  if (vertex_array_object_manager_->SupportsClientSideBuffers()) {
+    SetGLError(GL_INVALID_OPERATION, "glDrawElementsIndirect",
+               "Missing array buffer for vertex attribute");
+    return;
+  }
+  helper_->DrawElementsIndirect(mode, type, ToGLuint(offset));
+  CheckGLError();
+}
+
 void GLES2Implementation::Flush() {
   GPU_CLIENT_SINGLE_THREAD_CHECK();
   GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glFlush()");
@@ -1355,6 +1414,22 @@ void GLES2Implementation::Flush() {
   FlushHelper();
 }
 
+// InterfaceBase implementation.
+void GLES2Implementation::GenSyncTokenCHROMIUM(GLbyte* sync_token) {
+  ImplementationBase::GenSyncToken(sync_token);
+}
+void GLES2Implementation::GenUnverifiedSyncTokenCHROMIUM(GLbyte* sync_token) {
+  ImplementationBase::GenUnverifiedSyncToken(sync_token);
+}
+void GLES2Implementation::VerifySyncTokensCHROMIUM(GLbyte** sync_tokens,
+                                                   GLsizei count) {
+  ImplementationBase::VerifySyncTokens(sync_tokens, count);
+}
+void GLES2Implementation::WaitSyncTokenCHROMIUM(const GLbyte* sync_token) {
+  ImplementationBase::WaitSyncToken(sync_token);
+}
+
+// ImplementationBase implementation.
 void GLES2Implementation::IssueShallowFlush() {
   GPU_CLIENT_SINGLE_THREAD_CHECK();
   GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glShallowFlushCHROMIUM()");
@@ -2449,6 +2524,36 @@ void GLES2Implementation::MultiDrawArraysInstancedWEBGLHelper(
   helper_->MultiDrawEndCHROMIUM();
 }
 
+void GLES2Implementation::MultiDrawArraysInstancedBaseInstanceWEBGLHelper(
+    GLenum mode,
+    const GLint* firsts,
+    const GLsizei* counts,
+    const GLsizei* instance_counts,
+    const GLuint* baseinstances,
+    GLsizei drawcount) {
+  DCHECK_GT(drawcount, 0);
+
+  uint32_t buffer_size = ComputeCombinedCopySize(
+      drawcount, firsts, counts, instance_counts, baseinstances);
+  ScopedTransferBufferPtr buffer(buffer_size, helper_, transfer_buffer_);
+
+  helper_->MultiDrawBeginCHROMIUM(drawcount);
+  auto DoMultiDraw = [&](const std::array<uint32_t, 4>& offsets, uint32_t,
+                         uint32_t copy_count) {
+    helper_->MultiDrawArraysInstancedBaseInstanceCHROMIUM(
+        mode, buffer.shm_id(), buffer.offset() + offsets[0], buffer.shm_id(),
+        buffer.offset() + offsets[1], buffer.shm_id(),
+        buffer.offset() + offsets[2], buffer.shm_id(),
+        buffer.offset() + offsets[3], copy_count);
+  };
+  if (!TransferArraysAndExecute(drawcount, &buffer, DoMultiDraw, firsts, counts,
+                                instance_counts, baseinstances)) {
+    SetGLError(GL_OUT_OF_MEMORY, "glMultiDrawArraysInstancedBaseInstanceWEBGL",
+               "out of memory");
+  }
+  helper_->MultiDrawEndCHROMIUM();
+}
+
 void GLES2Implementation::MultiDrawElementsWEBGLHelper(GLenum mode,
                                                        const GLsizei* counts,
                                                        GLenum type,
@@ -2497,6 +2602,42 @@ void GLES2Implementation::MultiDrawElementsInstancedWEBGLHelper(
   if (!TransferArraysAndExecute(drawcount, &buffer, DoMultiDraw, counts,
                                 offsets, instance_counts)) {
     SetGLError(GL_OUT_OF_MEMORY, "glMultiDrawElementsInstancedWEBGL",
+               "out of memory");
+  }
+  helper_->MultiDrawEndCHROMIUM();
+}
+
+void GLES2Implementation::
+    MultiDrawElementsInstancedBaseVertexBaseInstanceWEBGLHelper(
+        GLenum mode,
+        const GLsizei* counts,
+        GLenum type,
+        const GLsizei* offsets,
+        const GLsizei* instance_counts,
+        const GLint* basevertices,
+        const GLuint* baseinstances,
+        GLsizei drawcount) {
+  DCHECK_GT(drawcount, 0);
+
+  uint32_t buffer_size = ComputeCombinedCopySize(
+      drawcount, counts, offsets, instance_counts, basevertices, baseinstances);
+  ScopedTransferBufferPtr buffer(buffer_size, helper_, transfer_buffer_);
+
+  helper_->MultiDrawBeginCHROMIUM(drawcount);
+  auto DoMultiDraw = [&](const std::array<uint32_t, 5>& offsets, uint32_t,
+                         uint32_t copy_count) {
+    helper_->MultiDrawElementsInstancedBaseVertexBaseInstanceCHROMIUM(
+        mode, buffer.shm_id(), buffer.offset() + offsets[0], type,
+        buffer.shm_id(), buffer.offset() + offsets[1], buffer.shm_id(),
+        buffer.offset() + offsets[2], buffer.shm_id(),
+        buffer.offset() + offsets[3], buffer.shm_id(),
+        buffer.offset() + offsets[4], copy_count);
+  };
+  if (!TransferArraysAndExecute(drawcount, &buffer, DoMultiDraw, counts,
+                                offsets, instance_counts, basevertices,
+                                baseinstances)) {
+    SetGLError(GL_OUT_OF_MEMORY,
+               "glMultiDrawElementsInstancedBaseVertexBaseInstanceWEBGL",
                "out of memory");
   }
   helper_->MultiDrawEndCHROMIUM();
@@ -2554,6 +2695,39 @@ void GLES2Implementation::MultiDrawArraysInstancedWEBGL(
   }
   MultiDrawArraysInstancedWEBGLHelper(mode, firsts, counts, instance_counts,
                                       drawcount);
+  CheckGLError();
+}
+
+void GLES2Implementation::MultiDrawArraysInstancedBaseInstanceWEBGL(
+    GLenum mode,
+    const GLint* firsts,
+    const GLsizei* counts,
+    const GLsizei* instance_counts,
+    const GLuint* baseinstances,
+    GLsizei drawcount) {
+  GPU_CLIENT_SINGLE_THREAD_CHECK();
+  GPU_CLIENT_LOG("[" << GetLogPrefix()
+                     << "] glMultiDrawArraysInstancedBaseInstanceWEBGL("
+                     << GLES2Util::GetStringDrawMode(mode) << ", " << firsts
+                     << ", " << counts << ", " << instance_counts << ", "
+                     << baseinstances << ", " << drawcount << ")");
+  if (drawcount < 0) {
+    SetGLError(GL_INVALID_VALUE, "glMultiDrawArraysInstancedBaseInstanceWEBGL",
+               "drawcount < 0");
+    return;
+  }
+  if (drawcount == 0) {
+    return;
+  }
+  // This is for an extension for WebGL which doesn't support client side arrays
+  if (vertex_array_object_manager_->SupportsClientSideBuffers()) {
+    SetGLError(GL_INVALID_OPERATION,
+               "glMultiDrawArraysInstancedBaseInstanceWEBGL",
+               "Missing array buffer for vertex attribute");
+    return;
+  }
+  MultiDrawArraysInstancedBaseInstanceWEBGLHelper(
+      mode, firsts, counts, instance_counts, baseinstances, drawcount);
   CheckGLError();
 }
 
@@ -2623,6 +2797,50 @@ void GLES2Implementation::MultiDrawElementsInstancedWEBGL(
   }
   MultiDrawElementsInstancedWEBGLHelper(mode, counts, type, offsets,
                                         instance_counts, drawcount);
+  CheckGLError();
+}
+
+void GLES2Implementation::MultiDrawElementsInstancedBaseVertexBaseInstanceWEBGL(
+    GLenum mode,
+    const GLsizei* counts,
+    GLenum type,
+    const GLsizei* offsets,
+    const GLsizei* instance_counts,
+    const GLint* basevertices,
+    const GLuint* baseinstances,
+    GLsizei drawcount) {
+  GPU_CLIENT_SINGLE_THREAD_CHECK();
+  GPU_CLIENT_LOG(
+      "[" << GetLogPrefix()
+          << "] glMultiDrawElementsInstancedBaseVertexBaseInstanceWEBGL("
+          << GLES2Util::GetStringDrawMode(mode) << ", " << counts << ", "
+          << GLES2Util::GetStringIndexType(type) << ", " << offsets << ", "
+          << instance_counts << ", " << basevertices << ", " << baseinstances
+          << drawcount << ")");
+  if (drawcount < 0) {
+    SetGLError(GL_INVALID_VALUE, "glMultiDrawElementsInstancedWEBGL",
+               "drawcount < 0");
+    return;
+  }
+  if (drawcount == 0) {
+    return;
+  }
+  // This is for an extension for WebGL which doesn't support client side arrays
+  if (vertex_array_object_manager_->bound_element_array_buffer() == 0) {
+    SetGLError(GL_INVALID_OPERATION,
+               "glMultiDrawElementsInstancedBaseVertexBaseInstanceWEBGL",
+               "No element array buffer");
+    return;
+  }
+  if (vertex_array_object_manager_->SupportsClientSideBuffers()) {
+    SetGLError(GL_INVALID_OPERATION,
+               "glMultiDrawElementsInstancedBaseVertexBaseInstanceWEBGL",
+               "Missing array buffer for vertex attribute");
+    return;
+  }
+  MultiDrawElementsInstancedBaseVertexBaseInstanceWEBGLHelper(
+      mode, counts, type, offsets, instance_counts, basevertices, baseinstances,
+      drawcount);
   CheckGLError();
 }
 
@@ -4629,6 +4847,18 @@ void GLES2Implementation::BindBufferHelper(GLenum target, GLuint buffer_id) {
         changed = true;
       }
       break;
+    case GL_DISPATCH_INDIRECT_BUFFER:
+      if (bound_dispatch_indirect_buffer_ != buffer_id) {
+        bound_dispatch_indirect_buffer_ = buffer_id;
+        changed = true;
+      }
+      break;
+    case GL_DRAW_INDIRECT_BUFFER:
+      if (bound_draw_indirect_buffer_ != buffer_id) {
+        bound_draw_indirect_buffer_ = buffer_id;
+        changed = true;
+      }
+      break;
     case GL_ELEMENT_ARRAY_BUFFER:
       changed = vertex_array_object_manager_->BindElementArray(buffer_id);
       break;
@@ -4951,6 +5181,12 @@ void GLES2Implementation::DeleteBuffersHelper(GLsizei n,
     if (buffers[ii] == bound_copy_write_buffer_) {
       bound_copy_write_buffer_ = 0;
     }
+    if (buffers[ii] == bound_dispatch_indirect_buffer_) {
+      bound_dispatch_indirect_buffer_ = 0;
+    }
+    if (buffers[ii] == bound_draw_indirect_buffer_) {
+      bound_draw_indirect_buffer_ = 0;
+    }
     if (buffers[ii] == bound_pixel_pack_buffer_) {
       bound_pixel_pack_buffer_ = 0;
     }
@@ -5140,6 +5376,25 @@ void GLES2Implementation::DrawArrays(GLenum mode, GLint first, GLsizei count) {
   }
   helper_->DrawArrays(mode, first, count);
   RestoreArrayBuffer(simulated);
+  CheckGLError();
+}
+
+void GLES2Implementation::DrawArraysIndirect(GLenum mode, const void* offset) {
+  GPU_CLIENT_SINGLE_THREAD_CHECK();
+  GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glDrawArraysIndirect("
+                     << GLES2Util::GetStringDrawMode(mode) << ", " << offset
+                     << ")");
+  if (!ValidateOffset("glDrawArraysIndirect",
+                      reinterpret_cast<GLintptr>(offset))) {
+    return;
+  }
+  // This is for WebGL 2.0 Compute which doesn't support client side arrays
+  if (vertex_array_object_manager_->SupportsClientSideBuffers()) {
+    SetGLError(GL_INVALID_OPERATION, "glDrawArraysIndirect",
+               "Missing array buffer for vertex attribute");
+    return;
+  }
+  helper_->DrawArraysIndirect(mode, ToGLuint(offset));
   CheckGLError();
 }
 
@@ -5360,9 +5615,11 @@ void GLES2Implementation::ScheduleCALayerSharedStateCHROMIUM(
     GLfloat opacity,
     GLboolean is_clipped,
     const GLfloat* clip_rect,
+    const GLfloat* rounded_corner_bounds,
     GLint sorting_context_id,
     const GLfloat* transform) {
-  uint32_t shm_size = 20 * sizeof(GLfloat);
+  // 4 for clip_rect, 5 for rounded_corner_rect, 16 for transform.
+  uint32_t shm_size = 25 * sizeof(GLfloat);
   ScopedTransferBufferPtr buffer(shm_size, helper_, transfer_buffer_);
   if (!buffer.valid() || buffer.size() < shm_size) {
     SetGLError(GL_OUT_OF_MEMORY, "GLES2::ScheduleCALayerSharedStateCHROMIUM",
@@ -5371,7 +5628,8 @@ void GLES2Implementation::ScheduleCALayerSharedStateCHROMIUM(
   }
   GLfloat* mem = static_cast<GLfloat*>(buffer.address());
   memcpy(mem + 0, clip_rect, 4 * sizeof(GLfloat));
-  memcpy(mem + 4, transform, 16 * sizeof(GLfloat));
+  memcpy(mem + 4, rounded_corner_bounds, 5 * sizeof(GLfloat));
+  memcpy(mem + 9, transform, 16 * sizeof(GLfloat));
   helper_->ScheduleCALayerSharedStateCHROMIUM(opacity, is_clipped,
                                               sorting_context_id,
                                               buffer.shm_id(), buffer.offset());
@@ -5653,6 +5911,8 @@ GLboolean GLES2Implementation::UnmapBuffer(GLenum target) {
     case GL_ELEMENT_ARRAY_BUFFER:
     case GL_COPY_READ_BUFFER:
     case GL_COPY_WRITE_BUFFER:
+    case GL_DISPATCH_INDIRECT_BUFFER:
+    case GL_DRAW_INDIRECT_BUFFER:
     case GL_PIXEL_PACK_BUFFER:
     case GL_PIXEL_UNPACK_BUFFER:
     case GL_SHADER_STORAGE_BUFFER:
@@ -6062,6 +6322,7 @@ void GLES2Implementation::BeginQueryEXT(GLenum target, GLuint id) {
     case GL_LATENCY_QUERY_CHROMIUM:
     case GL_ASYNC_PIXEL_PACK_COMPLETED_CHROMIUM:
     case GL_GET_ERROR_QUERY_CHROMIUM:
+    case GL_PROGRAM_COMPLETION_QUERY_CHROMIUM:
       break;
     case GL_READBACK_SHADOW_COPIES_UPDATED_CHROMIUM:
     case GL_COMMANDS_COMPLETED_CHROMIUM:
@@ -6202,6 +6463,8 @@ void GLES2Implementation::QueryCounterEXT(GLuint id, GLenum target) {
                      << GLES2Util::GetStringQueryTarget(target) << ")");
 
   switch (target) {
+    case GL_COMMANDS_ISSUED_TIMESTAMP_CHROMIUM:
+      break;
     case GL_TIMESTAMP_EXT:
       if (!capabilities_.timer_queries) {
         SetGLError(GL_INVALID_OPERATION, "glQueryCounterEXT",
@@ -6257,6 +6520,7 @@ void GLES2Implementation::GetQueryivEXT(GLenum target,
         // the better supported time elapsed queries.
         *params = 0;
         break;
+      case GL_COMMANDS_ISSUED_TIMESTAMP_CHROMIUM:
       case GL_TIME_ELAPSED_EXT:
         // We convert all queries to CPU time so we support 64 bits.
         *params = 64;
@@ -6350,6 +6614,51 @@ void GLES2Implementation::DrawArraysInstancedANGLE(GLenum mode,
   CheckGLError();
 }
 
+void GLES2Implementation::DrawArraysInstancedBaseInstanceANGLE(
+    GLenum mode,
+    GLint first,
+    GLsizei count,
+    GLsizei primcount,
+    GLuint baseinstance) {
+  GPU_CLIENT_SINGLE_THREAD_CHECK();
+  GPU_CLIENT_LOG(
+      "[" << GetLogPrefix() << "] glDrawArraysInstancedBaseInstanceANGLE("
+          << GLES2Util::GetStringDrawMode(mode) << ", " << first << ", "
+          << count << ", " << primcount << ", " << baseinstance << ")");
+  if (count < 0) {
+    SetGLError(GL_INVALID_VALUE, "glDrawArraysInstancedBaseInstanceANGLE",
+               "count < 0");
+    return;
+  }
+  if (primcount < 0) {
+    SetGLError(GL_INVALID_VALUE, "glDrawArraysInstancedBaseInstanceANGLE",
+               "primcount < 0");
+    return;
+  }
+  if (primcount == 0) {
+    return;
+  }
+  bool simulated = false;
+  if (vertex_array_object_manager_->SupportsClientSideBuffers()) {
+    GLsizei num_elements;
+    if (!base::CheckAdd(first, count).AssignIfValid(&num_elements)) {
+      SetGLError(GL_INVALID_VALUE, "glDrawArraysInstancedBaseInstanceANGLE",
+                 "first+count overflow");
+      return;
+    }
+    // Client side buffer is not used by WebGL so leave it as is.
+    if (!vertex_array_object_manager_->SetupSimulatedClientSideBuffers(
+            "glDrawArraysInstancedBaseInstanceANGLE", this, helper_,
+            num_elements, primcount, &simulated)) {
+      return;
+    }
+  }
+  helper_->DrawArraysInstancedBaseInstanceANGLE(mode, first, count, primcount,
+                                                baseinstance);
+  RestoreArrayBuffer(simulated);
+  CheckGLError();
+}
+
 void GLES2Implementation::DrawElementsInstancedANGLE(GLenum mode,
                                                      GLsizei count,
                                                      GLenum type,
@@ -6390,6 +6699,54 @@ void GLES2Implementation::DrawElementsInstancedANGLE(GLenum mode,
   CheckGLError();
 }
 
+void GLES2Implementation::DrawElementsInstancedBaseVertexBaseInstanceANGLE(
+    GLenum mode,
+    GLsizei count,
+    GLenum type,
+    const void* indices,
+    GLsizei primcount,
+    GLint basevertex,
+    GLuint baseinstance) {
+  GPU_CLIENT_SINGLE_THREAD_CHECK();
+  GPU_CLIENT_LOG("[" << GetLogPrefix()
+                     << "] glDrawElementsInstancedBaseVertexBaseInstanceANGLE("
+                     << GLES2Util::GetStringDrawMode(mode) << ", " << count
+                     << ", " << GLES2Util::GetStringIndexType(type) << ", "
+                     << static_cast<const void*>(indices) << ", " << primcount
+                     << ", " << basevertex << ", " << baseinstance << ")");
+  if (count < 0) {
+    SetGLError(GL_INVALID_VALUE,
+               "glDrawElementsInstancedBaseVertexBaseInstanceANGLE",
+               "count less than 0.");
+    return;
+  }
+  if (primcount < 0) {
+    SetGLError(GL_INVALID_VALUE,
+               "glDrawElementsInstancedBaseVertexBaseInstanceANGLE",
+               "primcount < 0");
+    return;
+  }
+  GLuint offset = 0;
+  bool simulated = false;
+  if (count > 0 && primcount > 0) {
+    if (vertex_array_object_manager_->bound_element_array_buffer() != 0 &&
+        !ValidateOffset("glDrawElementsInstancedBaseVertexBaseInstanceANGLE",
+                        reinterpret_cast<GLintptr>(indices))) {
+      return;
+    }
+    // Client side buffer is not used by WebGL so leave it as is.
+    if (!vertex_array_object_manager_->SetupSimulatedIndexAndClientSideBuffers(
+            "glDrawElementsInstancedBaseVertexBaseInstanceANGLE", this, helper_,
+            count, type, primcount, indices, &offset, &simulated)) {
+      return;
+    }
+  }
+  helper_->DrawElementsInstancedBaseVertexBaseInstanceANGLE(
+      mode, count, type, offset, primcount, basevertex, baseinstance);
+  RestoreElementAndArrayBuffers(simulated);
+  CheckGLError();
+}
+
 void GLES2Implementation::ProduceTextureDirectCHROMIUM(GLuint texture,
                                                        GLbyte* data) {
   GPU_CLIENT_SINGLE_THREAD_CHECK();
@@ -6422,18 +6779,19 @@ GLuint GLES2Implementation::CreateAndConsumeTextureCHROMIUM(
 }
 
 GLuint GLES2Implementation::CreateAndTexStorage2DSharedImageCHROMIUM(
-    const GLbyte* data) {
+    const GLbyte* mailbox_data) {
   GPU_CLIENT_SINGLE_THREAD_CHECK();
   GPU_CLIENT_LOG("[" << GetLogPrefix()
                      << "] CreateAndTexStorage2DSharedImageCHROMIUM("
-                     << static_cast<const void*>(data) << ")");
-  const Mailbox& mailbox = *reinterpret_cast<const Mailbox*>(data);
+                     << static_cast<const void*>(mailbox_data) << ")");
+  const Mailbox& mailbox = *reinterpret_cast<const Mailbox*>(mailbox_data);
   DCHECK(mailbox.Verify()) << "CreateAndTexStorage2DSharedImageCHROMIUM was "
                               "passed an invalid mailbox.";
+  DCHECK(mailbox.IsSharedImage());
   GLuint client_id;
   GetIdHandler(SharedIdNamespaces::kTextures)->MakeIds(this, 0, 1, &client_id);
-  helper_->CreateAndTexStorage2DSharedImageINTERNALImmediate(client_id, data,
-                                                             GL_NONE);
+  helper_->CreateAndTexStorage2DSharedImageINTERNALImmediate(client_id, GL_NONE,
+                                                             mailbox_data);
   if (share_group_->bind_generates_resource())
     helper_->CommandBufferHelper::OrderingBarrier();
   CheckGLError();
@@ -6442,21 +6800,23 @@ GLuint GLES2Implementation::CreateAndTexStorage2DSharedImageCHROMIUM(
 
 GLuint
 GLES2Implementation::CreateAndTexStorage2DSharedImageWithInternalFormatCHROMIUM(
-    const GLbyte* data,
+    const GLbyte* mailbox_data,
     GLenum internalformat) {
   GPU_CLIENT_SINGLE_THREAD_CHECK();
   GPU_CLIENT_LOG(
       "[" << GetLogPrefix()
           << "] CreateAndTexStorage2DSharedImageWithInternalFormatCHROMIUM("
-          << static_cast<const void*>(data) << ", " << internalformat << ")");
-  const Mailbox& mailbox = *reinterpret_cast<const Mailbox*>(data);
+          << static_cast<const void*>(mailbox_data) << ", " << internalformat
+          << ")");
+  const Mailbox& mailbox = *reinterpret_cast<const Mailbox*>(mailbox_data);
   DCHECK(mailbox.Verify())
       << "CreateAndTexStorage2DSharedImageWithInternalFormatCHROMIUM was "
          "passed an invalid mailbox.";
+  DCHECK(mailbox.IsSharedImage());
   GLuint client_id;
   GetIdHandler(SharedIdNamespaces::kTextures)->MakeIds(this, 0, 1, &client_id);
-  helper_->CreateAndTexStorage2DSharedImageINTERNALImmediate(client_id, data,
-                                                             internalformat);
+  helper_->CreateAndTexStorage2DSharedImageINTERNALImmediate(
+      client_id, internalformat, mailbox_data);
   if (share_group_->bind_generates_resource())
     helper_->CommandBufferHelper::OrderingBarrier();
   CheckGLError();
@@ -6656,91 +7016,20 @@ unsigned int GLES2Implementation::GetTransferBufferFreeSize() const {
   return 0;
 }
 
-void GLES2Implementation::GenSyncTokenCHROMIUM(GLbyte* sync_token) {
-  if (!sync_token) {
-    SetGLError(GL_INVALID_VALUE, "glGenSyncTokenCHROMIUM", "empty sync_token");
-    return;
-  }
-
-  uint64_t fence_sync = gpu_control_->GenerateFenceSyncRelease();
-  helper_->InsertFenceSyncCHROMIUM(fence_sync);
-  helper_->CommandBufferHelper::OrderingBarrier();
-  gpu_control_->EnsureWorkVisible();
-
-  // Copy the data over after setting the data to ensure alignment.
-  SyncToken sync_token_data(gpu_control_->GetNamespaceID(),
-                            gpu_control_->GetCommandBufferID(), fence_sync);
-  sync_token_data.SetVerifyFlush();
-  memcpy(sync_token, &sync_token_data, sizeof(sync_token_data));
+bool GLES2Implementation::IsJpegDecodeAccelerationSupported() const {
+  NOTREACHED();
+  return false;
 }
 
-void GLES2Implementation::GenUnverifiedSyncTokenCHROMIUM(GLbyte* sync_token) {
-  if (!sync_token) {
-    SetGLError(GL_INVALID_VALUE, "glGenUnverifiedSyncTokenCHROMIUM",
-               "empty sync_token");
-    return;
-  }
-
-  uint64_t fence_sync = gpu_control_->GenerateFenceSyncRelease();
-  helper_->InsertFenceSyncCHROMIUM(fence_sync);
-  helper_->CommandBufferHelper::OrderingBarrier();
-
-  // Copy the data over after setting the data to ensure alignment.
-  SyncToken sync_token_data(gpu_control_->GetNamespaceID(),
-                            gpu_control_->GetCommandBufferID(), fence_sync);
-  memcpy(sync_token, &sync_token_data, sizeof(sync_token_data));
+bool GLES2Implementation::IsWebPDecodeAccelerationSupported() const {
+  NOTREACHED();
+  return false;
 }
 
-void GLES2Implementation::VerifySyncTokensCHROMIUM(GLbyte** sync_tokens,
-                                                   GLsizei count) {
-  bool requires_synchronization = false;
-  for (GLsizei i = 0; i < count; ++i) {
-    if (sync_tokens[i]) {
-      SyncToken sync_token;
-      memcpy(&sync_token, sync_tokens[i], sizeof(sync_token));
-
-      if (sync_token.HasData() && !sync_token.verified_flush()) {
-        if (!GetVerifiedSyncTokenForIPC(sync_token, &sync_token)) {
-          SetGLError(GL_INVALID_VALUE, "glVerifySyncTokensCHROMIUM",
-                     "Cannot verify sync token using this context.");
-          return;
-        }
-        requires_synchronization = true;
-        DCHECK(sync_token.verified_flush());
-      }
-
-      // Set verify bit on empty sync tokens too.
-      sync_token.SetVerifyFlush();
-
-      memcpy(sync_tokens[i], &sync_token, sizeof(sync_token));
-    }
-  }
-
-  // Ensure all the fence syncs are visible on GPU service.
-  if (requires_synchronization)
-    gpu_control_->EnsureWorkVisible();
-}
-
-void GLES2Implementation::WaitSyncTokenCHROMIUM(const GLbyte* sync_token_data) {
-  if (!sync_token_data)
-    return;
-
-  // Copy the data over before data access to ensure alignment.
-  SyncToken sync_token, verified_sync_token;
-  memcpy(&sync_token, sync_token_data, sizeof(SyncToken));
-
-  if (!sync_token.HasData())
-    return;
-
-  if (!GetVerifiedSyncTokenForIPC(sync_token, &verified_sync_token)) {
-    SetGLError(GL_INVALID_VALUE, "glWaitSyncTokenCHROMIUM",
-               "Cannot wait on sync_token which has not been verified");
-    return;
-  }
-
-  // Enqueue sync token in flush after inserting command so that it's not
-  // included in an automatic flush.
-  gpu_control_->WaitSyncToken(verified_sync_token);
+bool GLES2Implementation::CanDecodeWithHardwareAcceleration(
+    const cc::ImageHeaderMetadata* image_metadata) const {
+  NOTREACHED();
+  return false;
 }
 
 namespace {
@@ -6752,6 +7041,8 @@ bool CreateImageValidInternalFormat(GLenum internalformat,
       return capabilities.texture_norm16;
     case GL_RGB10_A2_EXT:
       return capabilities.image_xr30 || capabilities.image_xb30;
+    case GL_RGB_YCBCR_P010_CHROMIUM:
+      return capabilities.image_ycbcr_p010;
     case GL_RED:
     case GL_RG_EXT:
     case GL_RGB:

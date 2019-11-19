@@ -12,7 +12,7 @@
 namespace dom_distiller {
 
 // Set the world for JavaScript to execute in. This can only be called once.
-void SetDistillerJavaScriptWorldId(const int id);
+void SetDistillerJavaScriptWorldId(const int32_t id);
 
 bool DistillerJavaScriptWorldIdIsSet();
 
@@ -20,7 +20,7 @@ bool DistillerJavaScriptWorldIdIsSet();
 void RunIsolatedJavaScript(
     content::RenderFrameHost* render_frame_host,
     const std::string& buffer,
-    const content::RenderFrameHost::JavaScriptResultCallback& callback);
+    content::RenderFrameHost::JavaScriptResultCallback callback);
 
 // Same as above without a callback.
 void RunIsolatedJavaScript(content::RenderFrameHost* render_frame_host,

@@ -13,7 +13,7 @@ def GetWriter(config):
   See the constructor of TemplateWriter for description of
   arguments.
   '''
-  return RegWriter(['win'], config)
+  return RegWriter(['win', 'win7'], config)
 
 
 class RegWriter(template_writer.TemplateWriter):

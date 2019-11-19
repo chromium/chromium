@@ -8,11 +8,12 @@
 #include <memory>
 #include <vector>
 
-#include "ash/public/interfaces/cros_display_config.mojom.h"
+#include "ash/public/mojom/cros_display_config.mojom.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/chromeos/settings/cros_settings.h"
-#include "mojo/public/cpp/bindings/associated_binding.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace policy {
 
@@ -94,10 +95,10 @@ class DisplaySettingsHandler : public ash::mojom::CrosDisplayConfigObserver {
 
   // Provides access to the current display configurations, both for reading and
   // updating.
-  ash::mojom::CrosDisplayConfigControllerPtr cros_display_config_;
+  mojo::Remote<ash::mojom::CrosDisplayConfigController> cros_display_config_;
   std::vector<std::unique_ptr<DisplaySettingsPolicyHandler>> handlers_;
-  mojo::AssociatedBinding<ash::mojom::CrosDisplayConfigObserver>
-      cros_display_config_observer_binding_{this};
+  mojo::AssociatedReceiver<ash::mojom::CrosDisplayConfigObserver>
+      cros_display_config_observer_receiver_{this};
   std::vector<std::unique_ptr<chromeos::CrosSettings::ObserverSubscription>>
       settings_observers_;
   bool started_ = false;

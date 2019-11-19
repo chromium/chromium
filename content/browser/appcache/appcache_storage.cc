@@ -24,8 +24,7 @@ AppCacheStorage::AppCacheStorage(AppCacheServiceImpl* service)
     : last_cache_id_(kUnitializedId),
       last_group_id_(kUnitializedId),
       last_response_id_(kUnitializedId),
-      service_(service),
-      weak_factory_(this) {}
+      service_(service) {}
 
 AppCacheStorage::~AppCacheStorage() {
   DCHECK(delegate_references_.empty());
@@ -35,7 +34,7 @@ AppCacheStorage::DelegateReference::DelegateReference(
     Delegate* delegate, AppCacheStorage* storage)
     : delegate(delegate), storage(storage) {
   storage->delegate_references_.insert(
-      DelegateReferenceMap::value_type(delegate, this));
+      std::map<Delegate*, DelegateReference*>::value_type(delegate, this));
 }
 
 AppCacheStorage::DelegateReference::~DelegateReference() {
@@ -50,12 +49,11 @@ AppCacheStorage::ResponseInfoLoadTask::ResponseInfoLoadTask(
     : storage_(storage),
       manifest_url_(manifest_url),
       response_id_(response_id),
-      info_buffer_(new HttpResponseInfoIOBuffer) {
+      info_buffer_(base::MakeRefCounted<HttpResponseInfoIOBuffer>()) {
   storage_->pending_info_loads_[response_id] = base::WrapUnique(this);
 }
 
-AppCacheStorage::ResponseInfoLoadTask::~ResponseInfoLoadTask() {
-}
+AppCacheStorage::ResponseInfoLoadTask::~ResponseInfoLoadTask() = default;
 
 void AppCacheStorage::ResponseInfoLoadTask::StartIfNeeded() {
   if (reader_)
@@ -73,11 +71,14 @@ void AppCacheStorage::ResponseInfoLoadTask::OnReadComplete(int result) {
 
   scoped_refptr<AppCacheResponseInfo> info;
   if (result >= 0) {
-    info = new AppCacheResponseInfo(
+    info = base::MakeRefCounted<AppCacheResponseInfo>(
         storage_->GetWeakPtr(), manifest_url_, response_id_,
         std::move(info_buffer_->http_info), info_buffer_->response_data_size);
   }
-  FOR_EACH_DELEGATE(delegates_, OnResponseInfoLoaded(info.get(), response_id_));
+  AppCacheStorage::ForEachDelegate(
+      delegates_, [&](AppCacheStorage::Delegate* delegate) {
+        delegate->OnResponseInfoLoaded(info.get(), response_id_);
+      });
 
   // returning deletes this
 }

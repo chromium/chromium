@@ -34,11 +34,12 @@ namespace {
 void SetLengthAndDigestForContainedFile(
     const base::FilePath& path,
     base::File* temp_file,
+    int file_length,
     ClientDownloadRequest::ArchivedBinary* archived_binary) {
   std::string file_basename(path.BaseName().AsUTF8Unsafe());
   if (base::StreamingUtf8Validator::Validate(file_basename))
     archived_binary->set_file_basename(file_basename);
-  archived_binary->set_length(temp_file->GetLength());
+  archived_binary->set_length(file_length);
 
   std::unique_ptr<crypto::SecureHash> hasher =
       crypto::SecureHash::Create(crypto::SecureHash::SHA256);
@@ -46,14 +47,19 @@ void SetLengthAndDigestForContainedFile(
   const size_t kReadBufferSize = 4096;
   char block[kReadBufferSize];
 
+  int bytes_read_previously = 0;
   temp_file->Seek(base::File::Whence::FROM_BEGIN, 0);
   while (true) {
-    int bytes_read = temp_file->ReadAtCurrentPos(block, kReadBufferSize);
+    int bytes_read_now = temp_file->ReadAtCurrentPos(block, kReadBufferSize);
 
-    if (bytes_read <= 0)
+    if (bytes_read_previously + bytes_read_now > file_length)
+      bytes_read_now = file_length - bytes_read_previously;
+
+    if (bytes_read_now <= 0)
       break;
 
-    hasher->Update(block, bytes_read);
+    hasher->Update(block, bytes_read_now);
+    bytes_read_previously += bytes_read_now;
   }
 
   uint8_t digest[crypto::kSHA256Length];
@@ -94,6 +100,7 @@ ArchiveAnalyzerResults::~ArchiveAnalyzerResults() {}
 
 void UpdateArchiveAnalyzerResultsWithFile(base::FilePath path,
                                           base::File* file,
+                                          int file_length,
                                           bool is_encrypted,
                                           ArchiveAnalyzerResults* results) {
   scoped_refptr<BinaryFeatureExtractor> binary_feature_extractor(
@@ -143,7 +150,8 @@ void UpdateArchiveAnalyzerResultsWithFile(base::FilePath path,
         results->archived_binary.Add();
     archived_archive->set_download_type(ClientDownloadRequest::ARCHIVE);
     archived_archive->set_is_encrypted(is_encrypted);
-    SetLengthAndDigestForContainedFile(path, file, archived_archive);
+    SetLengthAndDigestForContainedFile(path, file, file_length,
+                                       archived_archive);
   } else if (current_entry_is_executable) {
 #if defined(OS_MACOSX)
     // This check prevents running analysis on .app files since they are
@@ -160,7 +168,8 @@ void UpdateArchiveAnalyzerResultsWithFile(base::FilePath path,
       archived_binary->set_is_encrypted(is_encrypted);
       archived_binary->set_download_type(
           download_type_util::GetDownloadType(path));
-      SetLengthAndDigestForContainedFile(path, file, archived_binary);
+      SetLengthAndDigestForContainedFile(path, file, file_length,
+                                         archived_binary);
       AnalyzeContainedBinary(binary_feature_extractor, file, archived_binary);
 #if defined(OS_MACOSX)
     }

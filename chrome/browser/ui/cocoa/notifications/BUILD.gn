@@ -2,8 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/util/branding.gni")
 import("//build/config/mac/rules.gni")
+import("//build/util/branding.gni")
 
 mac_app_bundle("alert_notification_xpc_service") {
   output_name = "AlertNotificationService"
@@ -24,7 +24,7 @@ mac_app_bundle("alert_notification_xpc_service") {
 
   deps = [
     ":common",
-    "//base:base",
+    "//base",
     "//third_party/crashpad/crashpad/client",
   ]
 
@@ -60,6 +60,6 @@ static_library("common") {
   ]
 
   deps = [
-    "//base:base",
+    "//base",
   ]
 }

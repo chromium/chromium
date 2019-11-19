@@ -7,9 +7,12 @@
 #include "third_party/blink/renderer/core/editing/commands/editor_command.h"
 #include "third_party/blink/renderer/core/editing/commands/editor_command_names.h"
 #include "third_party/blink/renderer/core/editing/editor.h"
+#include "third_party/blink/renderer/core/editing/frame_selection.h"
+#include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
-#include "third_party/blink/renderer/platform/wtf/string_extras.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
@@ -37,8 +40,9 @@ class EditingCommandTest : public EditingTestBase {};
 
 TEST_F(EditingCommandTest, EditorCommandOrder) {
   for (size_t i = 1; i < base::size(kCommandNameEntries); ++i) {
-    EXPECT_GT(0, strcasecmp(kCommandNameEntries[i - 1].name,
-                            kCommandNameEntries[i].name))
+    EXPECT_GT(0,
+              WTF::CodeUnitCompareIgnoringASCIICase(
+                  kCommandNameEntries[i - 1].name, kCommandNameEntries[i].name))
         << "EDITOR_COMMAND_MAP must be case-folding ordered. Incorrect index:"
         << i;
   }
@@ -76,6 +80,66 @@ TEST_F(EditingCommandTest, CreateCommandFromInvalidString) {
     const EditorCommand command = dummy_editor.CreateCommand(command_name);
     EXPECT_EQ(0, command.IdForHistogram());
   }
+}
+
+TEST_F(EditingCommandTest, EnabledVisibleSelection) {
+  Editor& editor = GetDocument().GetFrame()->GetEditor();
+  const EditorCommand command =
+      editor.CreateCommand("MoveRightAndModifySelection");
+  Selection().SetSelection(
+      SetSelectionTextToBody("<div contenteditable>a|b<div>"),
+      SetSelectionOptions());
+  Element* div = GetDocument().QuerySelector("div");
+  GetDocument().SetFocusedElement(
+      div,
+      FocusParams(SelectionBehaviorOnFocus::kNone, kWebFocusTypeNone, nullptr));
+  EXPECT_TRUE(command.IsEnabled());
+  div->removeAttribute("contenteditable");
+  EXPECT_FALSE(command.IsEnabled());
+  GetDocument().GetFrame()->GetSettings()->SetCaretBrowsingEnabled(true);
+  EXPECT_TRUE(command.IsEnabled());
+}
+
+TEST_F(EditingCommandTest, EnabledVisibleSelectionAndMark) {
+  Editor& editor = GetDocument().GetFrame()->GetEditor();
+  const EditorCommand command = editor.CreateCommand("SelectToMark");
+  Selection().SetSelection(
+      SetSelectionTextToBody("<div contenteditable>a|b<div>"),
+      SetSelectionOptions());
+  Element* div = GetDocument().QuerySelector("div");
+  GetDocument().SetFocusedElement(
+      div,
+      FocusParams(SelectionBehaviorOnFocus::kNone, kWebFocusTypeNone, nullptr));
+  EXPECT_FALSE(command.IsEnabled());
+  editor.SetMark();
+  EXPECT_TRUE(command.IsEnabled());
+  div->removeAttribute("contenteditable");
+  EXPECT_FALSE(command.IsEnabled());
+  GetDocument().GetFrame()->GetSettings()->SetCaretBrowsingEnabled(true);
+  EXPECT_TRUE(command.IsEnabled());
+}
+
+TEST_F(EditingCommandTest, EnabledInEditableTextOrCaretBrowsing) {
+  Editor& editor = GetDocument().GetFrame()->GetEditor();
+  const EditorCommand command = editor.CreateCommand("MoveRight");
+
+  SetBodyContent("<div>abc</div>");
+  GetDocument().GetFrame()->GetSettings()->SetCaretBrowsingEnabled(false);
+  EXPECT_FALSE(command.IsEnabled());
+  GetDocument().GetFrame()->GetSettings()->SetCaretBrowsingEnabled(true);
+  EXPECT_TRUE(command.IsEnabled());
+
+  GetDocument().GetFrame()->GetSettings()->SetCaretBrowsingEnabled(false);
+  Selection().SetSelection(
+      SetSelectionTextToBody("<div contenteditable>a|b<div>"),
+      SetSelectionOptions());
+  Element* div = GetDocument().QuerySelector("div");
+  GetDocument().SetFocusedElement(
+      div,
+      FocusParams(SelectionBehaviorOnFocus::kNone, kWebFocusTypeNone, nullptr));
+  EXPECT_TRUE(command.IsEnabled());
+  div->removeAttribute("contenteditable");
+  EXPECT_FALSE(command.IsEnabled());
 }
 
 }  // namespace blink

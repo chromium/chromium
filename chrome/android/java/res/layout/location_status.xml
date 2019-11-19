@@ -11,6 +11,15 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent">
 
+        <!-- End padding is adjusted programmatically. -->
+        <ViewStub
+            android:id="@+id/location_bar_incognito_badge_stub"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:inflatedId="@+id/location_bar_incognito_badge"
+            android:layout="@layout/location_status_incognito_badge" />
+
         <include layout="@layout/location_status_icon" />
 
         <TextView android:id="@+id/location_bar_verbose_status"

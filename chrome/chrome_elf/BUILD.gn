@@ -1,0 +1,361 @@
+# Copyright 2015 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Chrome elf targets (excepting tests) should only link in kernel32.
+# Please don't add dependencies on any other system libraries.
+
+import("//build/config/compiler/compiler.gni")
+import("//build/config/win/manifest.gni")
+import("//chrome/process_version_rc_template.gni")
+import("//testing/test.gni")
+
+##------------------------------------------------------------------------------
+## chrome_elf
+##------------------------------------------------------------------------------
+
+process_version_rc_template("chrome_elf_resources") {
+  sources = [
+    "chrome_elf.ver",
+  ]
+  output = "$target_gen_dir/chrome_elf_version.rc"
+}
+
+# This manifest matches what GYP produces. It may not even be necessary.
+windows_manifest("chrome_elf_manifest") {
+  sources = [
+    as_invoker_manifest,
+  ]
+}
+
+# Users of chrome_elf exports can depend on this target, which doesn't
+# pin them to linking either chrome_elf.dll or test_stubs.
+source_set("chrome_elf_main_include") {
+  sources = [
+    "chrome_elf_main.h",
+  ]
+}
+
+# For code that isn't Chrome-the browser, like test binaries, these stubs stand
+# in for chrome_elf.;
+static_library("test_stubs") {
+  testonly = true
+
+  sources = [
+    "chrome_elf_main.h",
+    "chrome_elf_test_stubs.cc",
+  ]
+
+  deps = [
+    ":sha1",
+    ":third_party_shared_defines",
+    "//base",
+    "//chrome/common:constants",
+  ]
+}
+
+# We should move chrome_result_codes.h to another target which does not bring
+# in the world.
+shared_library("chrome_elf") {
+  sources = [
+    "chrome_elf_main.cc",
+    "chrome_elf_main.h",
+  ]
+  if (target_cpu == "x86") {
+    sources += [ "chrome_elf_x86.def" ]
+  } else if (target_cpu == "arm64") {
+    sources += [ "chrome_elf_arm64.def" ]
+  } else {
+    sources += [ "chrome_elf_x64.def" ]
+  }
+
+  deps = [
+    ":chrome_elf_manifest",
+    ":chrome_elf_resources",
+    ":constants",
+    ":crash",
+    ":hook_util",
+    ":nt_registry",
+    ":security",
+    ":third_party_dlls",
+    "//chrome/install_static:install_static_util",
+    "//chrome/install_static:primary_module",
+    "//components/crash/content/app:crash_export_thunks",
+  ]
+
+  configs += [ "//build/config/win:windowed" ]
+  configs -= [ "//build/config/win:console" ]
+
+  configs += [
+    "//build/config/win:delayloads",
+    "//build/config/win:delayloads_not_for_child_dll",
+  ]
+
+  if (current_cpu == "x86") {
+    # Don"t set an x64 base address (to avoid breaking HE-ASLR).
+    ldflags = [ "/BASE:0x01c20000" ]
+  }
+}
+
+##------------------------------------------------------------------------------
+## chrome_elf sub targets
+##------------------------------------------------------------------------------
+
+source_set("constants") {
+  sources = [
+    "chrome_elf_constants.cc",
+    "chrome_elf_constants.h",
+  ]
+}
+
+static_library("crash") {
+  sources = [
+    "../app/chrome_crash_reporter_client_win.cc",
+    "../app/chrome_crash_reporter_client_win.h",
+    "../common/chrome_result_codes.h",
+    "crash/crash_helper.cc",
+    "crash/crash_helper.h",
+  ]
+  deps = [
+    ":hook_util",
+    "//base",  # This needs to go.  DEP of app, crash_keys, client.
+    "//base:base_static",  # pe_image
+    "//chrome/install_static:install_static_util",
+    "//components/crash/content/app",
+    "//components/crash/core/common",  # crash_keys
+    "//components/version_info:channel",
+    "//content/public/common:result_codes",
+    "//third_party/crashpad/crashpad/client",  # DumpWithoutCrash
+  ]
+}
+
+source_set("dll_hash") {
+  deps = [
+    "//base",
+  ]
+  sources = [
+    "dll_hash/dll_hash.cc",
+    "dll_hash/dll_hash.h",
+  ]
+}
+
+executable("dll_hash_main") {
+  sources = [
+    "dll_hash/dll_hash_main.cc",
+  ]
+  deps = [
+    ":dll_hash",
+    "//build/win:default_exe_manifest",
+  ]
+}
+
+static_library("hook_util") {
+  sources = [
+    "../../base/macros.h",
+    "hook_util/hook_util.cc",
+    "hook_util/hook_util.h",
+  ]
+  deps = [
+    ":nt_registry",  # utils
+    "//base:base_static",  # pe_image
+  ]
+  public_deps = [
+    "//sandbox",
+  ]
+}
+
+# This target contains utility functions which must only depend on
+# kernel32. Please don't add dependencies on other system libraries.
+static_library("nt_registry") {
+  sources = [
+    "../../sandbox/win/src/nt_internals.h",
+    "nt_registry/nt_registry.cc",
+    "nt_registry/nt_registry.h",
+  ]
+  if (is_official_build && full_wpo_on_official == true) {
+    # This library doen't build with WPO enabled due to a MSVC compiler bug.
+    # TODO(pennymac|sebmarchand): Remove this once MS has fixed this compiler
+    # bug: https://connect.microsoft.com/VisualStudio/feedback/details/3104499
+    configs -= [ "//build/config/compiler:default_optimization" ]
+    configs += [ "//build/config/compiler:optimize_no_wpo" ]
+  }
+
+  libs = [ "kernel32.lib" ]
+}
+
+source_set("pe_image_safe") {
+  sources = [
+    "pe_image_safe/pe_image_safe.cc",
+    "pe_image_safe/pe_image_safe.h",
+  ]
+}
+
+source_set("security") {
+  sources = [
+    "chrome_elf_security.cc",
+    "chrome_elf_security.h",
+  ]
+  deps = [
+    ":constants",
+    ":nt_registry",
+    "//chrome/install_static:install_static_util",
+  ]
+}
+
+source_set("sha1") {
+  sources = [
+    "sha1/sha1.cc",
+    "sha1/sha1.h",
+  ]
+}
+
+source_set("third_party_dlls") {
+  visibility = [ ":*" ]  # Only targets in this file can depend on this.
+  sources = [
+    "third_party_dlls/beacon.cc",
+    "third_party_dlls/beacon.h",
+    "third_party_dlls/hardcoded_blocklist.cc",
+    "third_party_dlls/hardcoded_blocklist.h",
+    "third_party_dlls/hook.cc",
+    "third_party_dlls/hook.h",
+    "third_party_dlls/logs.cc",
+    "third_party_dlls/logs.h",
+    "third_party_dlls/main.cc",
+    "third_party_dlls/main.h",
+    "third_party_dlls/packed_list_file.cc",
+    "third_party_dlls/packed_list_file.h",
+  ]
+  public_deps = [
+    ":constants",
+    ":crash",
+    ":hook_util",
+    ":nt_registry",
+    ":pe_image_safe",
+    ":sha1",
+    ":third_party_shared_defines",
+    "//chrome/install_static:install_static_util",
+  ]
+}
+
+# This source_set defines third-party-related structures and APIs used from
+# outside chrome_elf.dll.  The APIs are exported from chrome_elf (add a
+# data_dep on //chrome/chrome_elf:chrome_elf), which will always be loaded
+# before chrome.dll.
+source_set("third_party_shared_defines") {
+  sources = [
+    "sha1/sha1.h",
+    "third_party_dlls/packed_list_format.cc",
+    "third_party_dlls/packed_list_format.h",
+    "third_party_dlls/public_api.cc",
+    "third_party_dlls/public_api.h",
+    "third_party_dlls/status_codes.cc",
+    "third_party_dlls/status_codes.h",
+  ]
+}
+
+##------------------------------------------------------------------------------
+## tests
+##------------------------------------------------------------------------------
+
+test("chrome_elf_unittests") {
+  output_name = "chrome_elf_unittests"
+  sources = [
+    "chrome_elf_util_unittest.cc",
+    "hook_util/test/hook_util_test.cc",
+    "nt_registry/nt_registry_unittest.cc",
+    "pe_image_safe/pe_image_safe_unittest.cc",
+    "run_all_unittests.cc",
+    "sha1/sha1_unittest.cc",
+    "third_party_dlls/beacon_unittest.cc",
+    "third_party_dlls/logs_unittest.cc",
+    "third_party_dlls/main_unittest.cc",
+    "third_party_dlls/main_unittest_exe.h",
+    "third_party_dlls/packed_list_file_unittest.cc",
+  ]
+  include_dirs = [ "$target_gen_dir" ]
+  deps = [
+    ":constants",
+    ":crash",
+    ":hook_util",
+    ":hook_util_test_dll",
+    ":nt_registry",
+    ":pe_image_safe",
+    ":security",
+    ":sha1",
+    ":third_party_dlls",
+    ":third_party_shared_defines",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/common:version_header",
+    "//chrome/install_static:install_static_util",
+    "//chrome/install_static/test:test_support",
+    "//components/crash/content/app:test_support",
+    "//sandbox",
+    "//testing/gtest",
+  ]
+  data_deps = [
+    ":chrome_elf",
+    ":main_unittest_dll_1",
+    ":main_unittest_dll_2",
+    ":third_party_dlls_test_exe",
+  ]
+}
+
+##------------------------------------------------------------------------------
+## tests - data_deps
+##------------------------------------------------------------------------------
+
+shared_library("hook_util_test_dll") {
+  testonly = true
+  sources = [
+    "hook_util/test/hook_util_test_dll.cc",
+    "hook_util/test/hook_util_test_dll.h",
+  ]
+}
+
+shared_library("main_unittest_dll_1") {
+  testonly = true
+  sources = [
+    "third_party_dlls/main_unittest_dll_1.cc",
+  ]
+
+  # Disable sanitizer instrumentation in the test DLLs to avoid unwanted
+  # exports.
+  no_default_deps = true
+  configs -= [
+    "//build/config/sanitizers:default_sanitizer_flags",
+    "//build/config:shared_library_config",
+  ]
+}
+
+shared_library("main_unittest_dll_2") {
+  testonly = true
+  sources = [
+    "third_party_dlls/main_unittest_dll_2.cc",
+    "third_party_dlls/main_unittest_dll_2.def",
+  ]
+
+  # Disable sanitizer instrumentation in the test DLLs to avoid unwanted
+  # exports.
+  no_default_deps = true
+  configs -= [
+    "//build/config/sanitizers:default_sanitizer_flags",
+    "//build/config:shared_library_config",
+  ]
+}
+
+executable("third_party_dlls_test_exe") {
+  testonly = true
+  sources = [
+    "third_party_dlls/main_unittest_exe.cc",
+    "third_party_dlls/main_unittest_exe.h",
+  ]
+  deps = [
+    ":third_party_dlls",
+    "//base",
+    "//base/test:test_support",
+    "//build/win:default_exe_manifest",
+    "//chrome/install_static:install_static_util",
+    "//components/crash/content/app:crash_export_stubs",
+  ]
+}

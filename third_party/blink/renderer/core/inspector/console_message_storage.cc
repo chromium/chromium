@@ -13,35 +13,35 @@ static const unsigned kMaxConsoleMessageCount = 1000;
 
 namespace {
 
-const char* MessageSourceToString(MessageSource source) {
+const char* MessageSourceToString(mojom::ConsoleMessageSource source) {
   switch (source) {
-    case kXMLMessageSource:
+    case mojom::ConsoleMessageSource::kXml:
       return "XML";
-    case kJSMessageSource:
+    case mojom::ConsoleMessageSource::kJavaScript:
       return "JS";
-    case kNetworkMessageSource:
+    case mojom::ConsoleMessageSource::kNetwork:
       return "Network";
-    case kConsoleAPIMessageSource:
+    case mojom::ConsoleMessageSource::kConsoleApi:
       return "ConsoleAPI";
-    case kStorageMessageSource:
+    case mojom::ConsoleMessageSource::kStorage:
       return "Storage";
-    case kAppCacheMessageSource:
+    case mojom::ConsoleMessageSource::kAppCache:
       return "AppCache";
-    case kRenderingMessageSource:
+    case mojom::ConsoleMessageSource::kRendering:
       return "Rendering";
-    case kSecurityMessageSource:
+    case mojom::ConsoleMessageSource::kSecurity:
       return "Security";
-    case kOtherMessageSource:
+    case mojom::ConsoleMessageSource::kOther:
       return "Other";
-    case kDeprecationMessageSource:
+    case mojom::ConsoleMessageSource::kDeprecation:
       return "Deprecation";
-    case kWorkerMessageSource:
+    case mojom::ConsoleMessageSource::kWorker:
       return "Worker";
-    case kViolationMessageSource:
+    case mojom::ConsoleMessageSource::kViolation:
       return "Violation";
-    case kInterventionMessageSource:
+    case mojom::ConsoleMessageSource::kIntervention:
       return "Intervention";
-    case kRecommendationMessageSource:
+    case mojom::ConsoleMessageSource::kRecommendation:
       return "Recommendation";
   }
   LOG(FATAL) << "Unreachable code.";
@@ -62,16 +62,24 @@ void TraceConsoleMessageEvent(ConsoleMessage* message) {
 
 ConsoleMessageStorage::ConsoleMessageStorage() : expired_count_(0) {}
 
-void ConsoleMessageStorage::AddConsoleMessage(ExecutionContext* context,
-                                              ConsoleMessage* message) {
+bool ConsoleMessageStorage::AddConsoleMessage(ExecutionContext* context,
+                                              ConsoleMessage* message,
+                                              bool discard_duplicates) {
+  DCHECK(messages_.size() <= kMaxConsoleMessageCount);
+  if (discard_duplicates) {
+    for (auto& console_message : messages_) {
+      if (message->Message() == console_message->Message())
+        return false;
+    }
+  }
   TraceConsoleMessageEvent(message);
   probe::ConsoleMessageAdded(context, message);
-  DCHECK(messages_.size() <= kMaxConsoleMessageCount);
   if (messages_.size() == kMaxConsoleMessageCount) {
     ++expired_count_;
     messages_.pop_front();
   }
   messages_.push_back(message);
+  return true;
 }
 
 void ConsoleMessageStorage::Clear() {

@@ -14,6 +14,7 @@
 #include "base/macros.h"
 #include "base/strings/string16.h"
 #include "chrome/browser/ui/app_list/search/mixer.h"
+#include "chrome/browser/ui/app_list/search/search_result_ranker/app_launch_data.h"
 
 class AppListControllerDelegate;
 class AppListModelUpdater;
@@ -22,8 +23,7 @@ class Profile;
 
 namespace app_list {
 
-class AppSearchResultRanker;
-class RecurrenceRanker;
+class SearchResultRanker;
 class SearchProvider;
 enum class RankingItemType;
 
@@ -37,7 +37,10 @@ class SearchController {
                    Profile* profile);
   virtual ~SearchController();
 
+  void InitializeRankers();
+
   void Start(const base::string16& query);
+  void ViewClosing();
 
   void OpenResult(ChromeSearchResult* result, int event_flags);
   void InvokeResultAction(ChromeSearchResult* result,
@@ -50,31 +53,51 @@ class SearchController {
   // Takes ownership of |provider| and associates it with given mixer group.
   void AddProvider(size_t group_id, std::unique_ptr<SearchProvider> provider);
 
-  ChromeSearchResult* FindSearchResult(const std::string& result_id);
+  virtual ChromeSearchResult* FindSearchResult(const std::string& result_id);
   ChromeSearchResult* GetResultByTitleForTest(const std::string& title);
 
-  // Set a |RecurrenceRanker| to tweak search results.
-  void SetRecurrenceRanker(std::unique_ptr<RecurrenceRanker> ranker);
-
   // Sends training signal to each |providers_|
-  void Train(const std::string& id, RankingItemType type);
+  void Train(AppLaunchData&& app_launch_data);
 
-  // Get the app search result ranker owned by this object.
-  AppSearchResultRanker* GetSearchResultRanker();
+  // Invoked when the app list is shown.
+  void AppListShown();
+
+  // Gets the search result ranker owned by the Mixer that is used for all
+  // other ranking.
+  SearchResultRanker* GetNonAppSearchResultRanker();
+
+  // Gets the length of the most recent query.
+  int GetLastQueryLength() const;
+
+  // Called when items in the results list have been on screen for some amount
+  // of time, or the user clicked a search result.
+  // TODO(959679): Rename this function to better reflect its nature.
+  void OnSearchResultsDisplayed(
+      const base::string16& trimmed_query,
+      const ash::SearchResultIdWithPositionIndices& results,
+      int launched_index);
 
  private:
   // Invoked when the search results are changed.
   void OnResultsChanged();
+
+  Profile* profile_;
 
   bool dispatching_query_ = false;
 
   // If true, the search results are shown on the launcher start page.
   bool query_for_recommendation_ = false;
 
+  // The query associated with the most recent search.
+  base::string16 last_query_;
+
+  // The ID of the most recently launched app. This is used for app list launch
+  // recording.
+  std::string last_launched_app_id_;
+
+  std::unique_ptr<Mixer> mixer_;
   using Providers = std::vector<std::unique_ptr<SearchProvider>>;
   Providers providers_;
-  std::unique_ptr<Mixer> mixer_;
-  std::unique_ptr<AppSearchResultRanker> ranker_;
   AppListControllerDelegate* list_controller_;
 
   DISALLOW_COPY_AND_ASSIGN(SearchController);

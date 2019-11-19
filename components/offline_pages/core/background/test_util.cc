@@ -4,6 +4,7 @@
 
 #include "base/json/json_writer.h"
 #include "base/values.h"
+#include "components/offline_pages/core/background/offliner.h"
 #include "components/offline_pages/core/background/save_page_request.h"
 
 namespace offline_pages {
@@ -48,6 +49,11 @@ std::string SavePageRequest::ToString() const {
 std::ostream& operator<<(std::ostream& out,
                          SavePageRequest::AutoFetchNotificationState value) {
   return out << EnumString(value);
+}
+
+std::ostream& operator<<(std::ostream& out,
+                         const Offliner::RequestStatus& value) {
+  return out << Offliner::RequestStatusToString(value);
 }
 
 }  // namespace offline_pages

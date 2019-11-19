@@ -72,17 +72,6 @@ public class CastWebContentsIntentUtilsTest {
     }
 
     @Test
-    public void testOnKeyDown() {
-        Intent in = CastWebContentsIntentUtils.onKeyDown(SESSION_ID, 32);
-        String uri = in.getDataString();
-        Assert.assertNotNull(uri);
-        Assert.assertEquals(EXPECTED_URI, uri);
-        int type = CastWebContentsIntentUtils.getKeyCode(in);
-        Assert.assertEquals(32, type);
-        Assert.assertTrue(CastWebContentsIntentUtils.isIntentOfKeyEvent(in));
-    }
-
-    @Test
     public void testOnVisibilityChange() {
         Intent in = CastWebContentsIntentUtils.onVisibilityChange(SESSION_ID, 3);
         String uri = in.getDataString();

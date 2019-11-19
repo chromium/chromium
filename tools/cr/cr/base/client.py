@@ -10,6 +10,8 @@ It is responsible for writing out the client specific plugins that tell the
 rest of the cr tool what the client is capable of.
 """
 
+from __future__ import print_function
+
 import os
 import pprint
 import sys
@@ -109,11 +111,11 @@ def _MigrateAndGetConfigDir(use_build_dir):
 
   if old_config_exists:
     if new_config_exists:
-      print 'Warning: Old config file %s superseded by new config file %s' % (
-          old_config_file, new_config_file)
+      print('Warning: Old config file %s superseded by new config file %s' %
+            (old_config_file, new_config_file))
     else:
-      print 'Migrating config file from %s to %s...' % (
-          old_config_file, new_config_file)
+      print('Migrating config file from %s to %s...' % (old_config_file,
+                                                        new_config_file))
       if not cr.context.dry_run:
         # Make the new config directory (if necessary).
         try:
@@ -128,8 +130,8 @@ def _MigrateAndGetConfigDir(use_build_dir):
           try:
             os.removedirs(old_config_dir)
           except OSError:
-            print 'Warning: Old config directory %s could not be removed' % (
-                old_config_dir)
+            print('Warning: Old config directory %s could not be removed' %
+                  (old_config_dir))
 
   return new_config_dir
 
@@ -194,8 +196,8 @@ def WriteGClient():
   spec = '\n'.join('%s = %s' % (key, pprint.pformat(value))
       for key,value in cr.context.gclient.items())
   if cr.context.dry_run:
-    print 'Write the following spec to', gclient_file
-    print spec
+    print('Write the following spec to', gclient_file)
+    print(spec)
   else:
     with open(gclient_file, 'w') as spec_file:
       spec_file.write(spec)
@@ -239,8 +241,8 @@ def WriteConfig(use_build_dir, data):
   config_dir = _GetConfigDir(use_build_dir)
   filename = _GetConfigFile(config_dir)
   if cr.context.dry_run:
-    print 'makedirs', config_dir
-    print 'Write config to', filename
+    print('makedirs', config_dir)
+    print('Write config to', filename)
     _WriteConfig(sys.stdout, data)
   else:
     try:
@@ -253,12 +255,12 @@ def WriteConfig(use_build_dir, data):
 
 
 def PrintInfo():
-  print 'Selected output directory is', cr.context.Find('CR_BUILD_DIR')
-  print 'Build config file is', _GetConfigFile(_GetConfigDir(
-      use_build_dir=True))
+  print('Selected output directory is', cr.context.Find('CR_BUILD_DIR'))
+  print('Build config file is', _GetConfigFile(
+      _GetConfigDir(use_build_dir=True)))
   try:
     for name in cr.auto.build.config.OVERRIDES.exported.keys():
-      print ' ', name, '=', cr.context.Get(name)
+      print(' ', name, '=', cr.context.Get(name))
   except AttributeError:
     pass
 

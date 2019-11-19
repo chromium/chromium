@@ -64,8 +64,6 @@ bool ExtractSyncEntity(ModelType type,
     DCHECK_NE(BOOKMARKS, type);
   }
 
-  // It looks like there are fancy other ways to get e.g. passwords specifics
-  // out of Entry. Do we need to special-case them when we ship those types?
   entity->mutable_specifics()->CopyFrom(entry.GetServerSpecifics());
   return true;
 }

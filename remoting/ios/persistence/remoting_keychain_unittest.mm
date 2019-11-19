@@ -38,8 +38,8 @@ NSString* KeyToService(Keychain::Key key) {
 
 void RemoveAllKeychainsForKey(Keychain::Key key) {
   NSDictionary* remove_all_query = @{
-    (__bridge id)kSecClass : (__bridge id)kSecClassGenericPassword,
-    (__bridge id)kSecAttrService : KeyToService(key)
+    (__bridge NSString*)kSecClass : (__bridge id)kSecClassGenericPassword,
+    (__bridge NSString*)kSecAttrService : KeyToService(key)
   };
   OSStatus status = SecItemDelete((__bridge CFDictionaryRef)remove_all_query);
   ASSERT_TRUE(status == errSecSuccess || status == errSecItemNotFound);
@@ -47,9 +47,9 @@ void RemoveAllKeychainsForKey(Keychain::Key key) {
 
 void VerifyNoKeychainForKey(Keychain::Key key) {
   NSDictionary* get_all_query = @{
-    (__bridge id)kSecClass : (__bridge id)kSecClassGenericPassword,
-    (__bridge id)kSecAttrService : KeyToService(key),
-    (__bridge id)kSecReturnData : @YES,
+    (__bridge NSString*)kSecClass : (__bridge id)kSecClassGenericPassword,
+    (__bridge NSString*)kSecAttrService : KeyToService(key),
+    (__bridge NSString*)kSecReturnData : @YES,
   };
   base::ScopedCFTypeRef<CFTypeRef> cf_result;
   OSStatus status = SecItemCopyMatching((__bridge CFDictionaryRef)get_all_query,

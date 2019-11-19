@@ -9,6 +9,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/gcm_driver/gcm_driver.h"
+#include "services/network/test/test_url_loader_factory.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -46,7 +47,7 @@ class FakeGCMDriver : public GCMDriver {
   void SetAccountTokens(
       const std::vector<GCMClient::AccountTokenInfo>& account_tokens) override;
   void UpdateAccountMapping(const AccountMapping& account_mapping) override;
-  void RemoveAccountMapping(const std::string& account_id) override;
+  void RemoveAccountMapping(const CoreAccountId& account_id) override;
   base::Time GetLastTokenFetchTime() override;
   void SetLastTokenFetchTime(const base::Time& time) override;
   void WakeFromSuspendForHeartbeat(bool wake) override;
@@ -68,6 +69,8 @@ class FakeGCMDriver : public GCMDriver {
                                GCMDecryptionResult result) override;
 
  private:
+  network::TestURLLoaderFactory test_url_loader_factory_;
+
   DISALLOW_COPY_AND_ASSIGN(FakeGCMDriver);
 };
 

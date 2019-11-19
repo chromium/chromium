@@ -25,7 +25,7 @@ namespace content {
 // TODO: Rewrite other observers to use this (or be replaced by it).
 class DownloadUpdatedObserver : public download::DownloadItem::Observer {
  public:
-  typedef base::Callback<bool(download::DownloadItem*)> EventFilter;
+  using EventFilter = base::RepeatingCallback<bool(download::DownloadItem*)>;
 
   // The filter passed may be called multiple times, even after it
   // returns true.
@@ -167,7 +167,7 @@ class DownloadTestObserver : public DownloadManager::Observer,
   // Holds the download ids which were dangerous.
   std::set<uint32_t> dangerous_downloads_seen_;
 
-  base::WeakPtrFactory<DownloadTestObserver> weak_factory_;
+  base::WeakPtrFactory<DownloadTestObserver> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DownloadTestObserver);
 };
@@ -286,7 +286,7 @@ class DownloadTestItemCreationObserver
            interrupt_reason_ == download::DOWNLOAD_INTERRUPT_REASON_NONE;
   }
 
-  const download::DownloadUrlParameters::OnStartedCallback callback();
+  download::DownloadUrlParameters::OnStartedCallback callback();
 
  private:
   friend class base::RefCountedThreadSafe<DownloadTestItemCreationObserver>;

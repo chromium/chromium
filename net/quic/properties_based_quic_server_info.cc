@@ -25,8 +25,10 @@ namespace net {
 
 PropertiesBasedQuicServerInfo::PropertiesBasedQuicServerInfo(
     const quic::QuicServerId& server_id,
+    const NetworkIsolationKey& network_isolation_key,
     HttpServerProperties* http_server_properties)
     : QuicServerInfo(server_id),
+      network_isolation_key_(network_isolation_key),
       http_server_properties_(http_server_properties) {
   DCHECK(http_server_properties_);
 }
@@ -34,7 +36,8 @@ PropertiesBasedQuicServerInfo::PropertiesBasedQuicServerInfo(
 PropertiesBasedQuicServerInfo::~PropertiesBasedQuicServerInfo() {}
 
 bool PropertiesBasedQuicServerInfo::Load() {
-  const string* data = http_server_properties_->GetQuicServerInfo(server_id_);
+  const string* data = http_server_properties_->GetQuicServerInfo(
+      server_id_, network_isolation_key_);
   string decoded;
   if (!data) {
     RecordQuicServerInfoFailure(PARSE_NO_DATA_FAILURE);
@@ -54,7 +57,8 @@ bool PropertiesBasedQuicServerInfo::Load() {
 void PropertiesBasedQuicServerInfo::Persist() {
   string encoded;
   base::Base64Encode(Serialize(), &encoded);
-  http_server_properties_->SetQuicServerInfo(server_id_, encoded);
+  http_server_properties_->SetQuicServerInfo(server_id_, network_isolation_key_,
+                                             encoded);
 }
 
 size_t PropertiesBasedQuicServerInfo::EstimateMemoryUsage() const {

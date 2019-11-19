@@ -10,10 +10,14 @@
 #include <string>
 
 #include "base/memory/ref_counted.h"
+#include "base/optional.h"
 #include "base/threading/thread_checker.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_export.h"
+#include "net/base/network_isolation_key.h"
 #include "net/http/http_auth.h"
+#include "net/http/http_auth_preferences.h"
+#include "net/log/net_log_with_source.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -29,23 +33,59 @@ class NetLogWithSource;
 struct HttpRequestInfo;
 class SSLInfo;
 
-// HttpAuthController is interface between other classes and HttpAuthHandlers.
-// It handles all challenges when attempting to make a single request to a
-// server, both in the case of trying multiple sets of credentials (Possibly on
-// different sockets), and when going through multiple rounds of auth with
-// connection-based auth, creating new HttpAuthHandlers as necessary.
+// HttpAuthController is the main entry point for external callers into the HTTP
+// authentication stack. A single instance of an HttpAuthController can be used
+// to handle authentication to a single "target", where "target" is a HTTP
+// server or a proxy. During its lifetime, the HttpAuthController can make use
+// of multiple authentication handlers (implemented as HttpAuthHandler
+// subclasses), and respond to multiple challenges.
 //
-// It is unaware of when a round of auth uses a new socket, which can lead to
-// problems for connection-based auth.
+// Individual HTTP authentication schemes can have additional requirements other
+// than what's prescribed in RFC 7235. See HandleAuthChallenge() for details.
 class NET_EXPORT_PRIVATE HttpAuthController
     : public base::RefCounted<HttpAuthController> {
  public:
-  // The arguments are self explanatory except possibly for |auth_url|, which
-  // should be both the auth target and auth path in a single url argument.
-  // |target| indicates whether this is for authenticating with a proxy or
-  // destination server.
+  // Construct a new HttpAuthController.
+  //
+  // * |target| is either PROXY or SERVER and determines the authentication
+  //       headers to use ("WWW-Authenticate"/"Authorization" vs.
+  //       "Proxy-Authenticate","Proxy-Authorization") and how ambient
+  //       credentials are used.
+  //
+  // * |auth_url| specifies the target URL. The origin of the URL identifies the
+  //       target host. The path (hierarchical part defined in RFC 3986 section
+  //       3.3) of the URL is used by HTTP basic authentication to determine
+  //       cached credentials can be used to preemptively send an authorization
+  //       header. See RFC 7627 section 2.2 (Reusing Credentials) for details.
+  //       If |target| is PROXY, then |auth_url| should have no hierarchical
+  //       part since that is meaningless.
+  //
+  // * |network_isolation_key| specifies the NetworkIsolationKey associated with
+  //       the resource load. Depending on settings, credentials may be scoped
+  //       to a single NetworkIsolationKey.
+  //
+  // * |http_auth_cache| specifies the credentials cache to use. During
+  //       authentication if explicit (user-provided) credentials are used and
+  //       they can be cached to respond to authentication challenges in the
+  //       future, they are stored in the cache. In addition, the HTTP Digest
+  //       authentication is stateful across requests. So the |http_auth_cache|
+  //       is also used to maintain state for this authentication scheme.
+  //
+  // * |http_auth_handler_factory| is used to contruct instances of
+  //       HttpAuthHandler subclass to handle scheme specific authentication
+  //       logic. The |http_auth_handler_factory| is also responsible for
+  //       determining whether the authentication stack should use a specific
+  //       authentication scheme or not.
+  //
+  // * |host_resolver| is used for determining the canonical hostname given a
+  //       possibly non-canonical host name. Name canonicalization is used for
+  //       NTLM and Negotiate HTTP authentication schemes.
+  //
+  // * |allow_default_credentials| is used for determining if the current
+  //       context allows ambient authentication using default credentials.
   HttpAuthController(HttpAuth::Target target,
                      const GURL& auth_url,
+                     const NetworkIsolationKey& network_isolation_key,
                      HttpAuthCache* http_auth_cache,
                      HttpAuthHandlerFactory* http_auth_handler_factory,
                      HostResolver* host_resolver);
@@ -82,7 +122,8 @@ class NET_EXPORT_PRIVATE HttpAuthController
   // and thus the server would presumably reject a request on HTTP/2 anyway.
   bool NeedsHTTP11() const;
 
-  scoped_refptr<AuthChallengeInfo> auth_info();
+  // Swaps the authentication challenge info into |other|.
+  void TakeAuthInfo(base::Optional<AuthChallengeInfo>* other);
 
   bool IsAuthSchemeDisabled(HttpAuth::Scheme scheme) const;
   void DisableAuthScheme(HttpAuth::Scheme scheme);
@@ -107,10 +148,15 @@ class NET_EXPORT_PRIVATE HttpAuthController
 
   ~HttpAuthController();
 
+  // If this controller's NetLog hasn't been created yet, creates it and
+  // associates it with |caller_net_log|. Does nothing after the first
+  // invocation.
+  void BindToCallingNetLog(const NetLogWithSource& caller_net_log);
+
   // Searches the auth cache for an entry that encompasses the request's path.
   // If such an entry is found, updates |identity_| and |handler_| with the
   // cache entry's data and returns true.
-  bool SelectPreemptiveAuth(const NetLogWithSource& net_log);
+  bool SelectPreemptiveAuth(const NetLogWithSource& caller_net_log);
 
   // Invalidates the current handler.  If |action| is
   // INVALIDATE_HANDLER_AND_CACHED_CREDENTIALS, then also invalidate
@@ -155,8 +201,11 @@ class NET_EXPORT_PRIVATE HttpAuthController
   // For proxy authentication the path is empty.
   const std::string auth_path_;
 
+  // NetworkIsolationKey assocaied with the request.
+  const NetworkIsolationKey network_isolation_key_;
+
   // |handler_| encapsulates the logic for the particular auth-scheme.
-  // This includes the challenge's parameters. If NULL, then there is no
+  // This includes the challenge's parameters. If nullptr, then there is no
   // associated auth handler.
   std::unique_ptr<HttpAuthHandler> handler_;
 
@@ -170,7 +219,7 @@ class NET_EXPORT_PRIVATE HttpAuthController
   std::string auth_token_;
 
   // Contains information about the auth challenge.
-  scoped_refptr<AuthChallengeInfo> auth_info_;
+  base::Optional<AuthChallengeInfo> auth_info_;
 
   // True if we've used the username:password embedded in the URL.  This
   // makes sure we use the embedded identity only once for the transaction,
@@ -191,6 +240,9 @@ class NET_EXPORT_PRIVATE HttpAuthController
   std::set<HttpAuth::Scheme> disabled_schemes_;
 
   CompletionOnceCallback callback_;
+
+  // NetLog to be used for logging in this controller.
+  NetLogWithSource net_log_;
 
   THREAD_CHECKER(thread_checker_);
 };

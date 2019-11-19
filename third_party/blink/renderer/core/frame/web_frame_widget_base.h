@@ -6,16 +6,16 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_WEB_FRAME_WIDGET_BASE_H_
 
 #include "base/single_thread_task_runner.h"
-#include "services/network/public/mojom/referrer_policy.mojom-blink.h"
+#include "services/network/public/mojom/referrer_policy.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/web_coalesced_input_event.h"
 #include "third_party/blink/public/platform/web_drag_data.h"
 #include "third_party/blink/public/platform/web_gesture_device.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/renderer/core/clipboard/data_object.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/dom/user_gesture_indicator.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_image.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace cc {
@@ -29,17 +29,17 @@ class Point;
 
 namespace blink {
 class AnimationWorkletMutatorDispatcherImpl;
-class GraphicsLayer;
 class HitTestResult;
+class Page;
 class PageWidgetEventHandler;
-class WebLayerTreeView;
+class PaintWorkletPaintDispatcher;
 class WebLocalFrameImpl;
 class WebViewImpl;
 struct IntrinsicSizingInfo;
 struct WebFloatPoint;
 
 class CORE_EXPORT WebFrameWidgetBase
-    : public GarbageCollectedFinalized<WebFrameWidgetBase>,
+    : public GarbageCollected<WebFrameWidgetBase>,
       public WebFrameWidget {
  public:
   explicit WebFrameWidgetBase(WebWidgetClient&);
@@ -64,15 +64,15 @@ class CORE_EXPORT WebFrameWidgetBase
   EnsureCompositorMutatorDispatcher(
       scoped_refptr<base::SingleThreadTaskRunner>* mutator_task_runner);
 
-  // Sets the root graphics layer. |GraphicsLayer| can be null when detaching
-  // the root layer.
-  virtual void SetRootGraphicsLayer(GraphicsLayer*) = 0;
-  virtual GraphicsLayer* RootGraphicsLayer() const = 0;
+  // TODO: consider merge the input and return value to be one parameter.
+  // Creates or returns cached paint dispatcher. The returned WeakPtr must only
+  // be dereferenced on the output |paint_task_runner|.
+  base::WeakPtr<PaintWorkletPaintDispatcher> EnsureCompositorPaintDispatcher(
+      scoped_refptr<base::SingleThreadTaskRunner>* paint_task_runner);
 
   // Sets the root layer. The |layer| can be null when detaching the root layer.
   virtual void SetRootLayer(scoped_refptr<cc::Layer> layer) = 0;
 
-  virtual WebLayerTreeView* GetLayerTreeView() const = 0;
   virtual cc::AnimationHost* AnimationHost() const = 0;
 
   virtual HitTestResult CoreHitTestResultAt(const gfx::Point&) = 0;
@@ -80,7 +80,6 @@ class CORE_EXPORT WebFrameWidgetBase
   // WebFrameWidget implementation.
   void Close() override;
   WebLocalFrame* LocalRoot() const override;
-  void UpdateAllLifecyclePhasesAndCompositeForTesting(bool do_raster) override;
   WebDragOperation DragTargetDragEnter(const WebDragData&,
                                        const WebFloatPoint& point_in_viewport,
                                        const WebFloatPoint& screen_point,
@@ -137,6 +136,8 @@ class CORE_EXPORT WebFrameWidgetBase
   // focused frame has a different local root.
   LocalFrame* FocusedLocalFrameInWidget() const;
 
+  void RequestAnimationAfterDelay(const base::TimeDelta&);
+
   virtual void Trace(blink::Visitor*);
 
  protected:
@@ -181,6 +182,7 @@ class CORE_EXPORT WebFrameWidgetBase
 
  private:
   void CancelDrag();
+  void RequestAnimationAfterDelayTimerFired(TimerBase*);
 
   WebWidgetClient* client_;
 
@@ -190,13 +192,23 @@ class CORE_EXPORT WebFrameWidgetBase
   Member<WebLocalFrameImpl> local_root_;
 
   static bool ignore_input_events_;
-  scoped_refptr<UserGestureToken> pointer_lock_gesture_token_;
 
   // This is owned by the LayerTreeHostImpl, and should only be used on the
   // compositor thread, so we keep the TaskRunner where you post tasks to
   // make that happen.
   base::WeakPtr<AnimationWorkletMutatorDispatcherImpl> mutator_dispatcher_;
   scoped_refptr<base::SingleThreadTaskRunner> mutator_task_runner_;
+
+  // The |paint_dispatcher_| should only be dereferenced on the
+  // |paint_task_runner_| (in practice this is the compositor thread). We keep a
+  // copy of it here to provide to new PaintWorkletProxyClient objects (which
+  // run on the worklet thread) so that they can talk to the
+  // PaintWorkletPaintDispatcher on the compositor thread.
+  base::WeakPtr<PaintWorkletPaintDispatcher> paint_dispatcher_;
+  scoped_refptr<base::SingleThreadTaskRunner> paint_task_runner_;
+
+  std::unique_ptr<TaskRunnerTimer<WebFrameWidgetBase>>
+      request_animation_after_delay_timer_;
 
   friend class WebViewImpl;
 };

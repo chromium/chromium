@@ -1,0 +1,6 @@
+file://content/browser/native_file_system/OWNERS
+
+per-file *permission*=file://chrome/browser/permissions/PERMISSIONS_OWNERS
+
+# TEAM: storage-dev@chromium.org
+# COMPONENT: Blink>Storage>FileSystem

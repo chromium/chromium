@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/containers/mru_cache.h"
 #include "components/favicon/core/favicon_service.h"
-#include "components/history/core/browser/history_service.h"
 #include "components/omnibox/browser/autocomplete_result.h"
 
 namespace {
@@ -32,8 +31,7 @@ FaviconCache::FaviconCache(favicon::FaviconService* favicon_service,
     : favicon_service_(favicon_service),
       history_observer_(this),
       mru_cache_(GetFaviconCacheSize()),
-      responses_without_favicons_(GetFaviconCacheSize()),
-      weak_factory_(this) {
+      responses_without_favicons_(GetFaviconCacheSize()) {
   if (history_service) {
     history_observer_.Add(history_service);
 

@@ -1,0 +1,31 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "third_party/blink/public/mojom/webauthn/authenticator.mojom";
+
+
+// Interface similar to blink::mojom::Authenticator meant only for internal
+// components in Chrome to use in order to direct authenticators to create or
+// use a public key credential. Unlike Authenticator, the caller will be
+// allowed to set its own effective origin.
+interface InternalAuthenticator {
+  // Gets the credential info for a new public key credential created by an
+  // authenticator for the given |PublicKeyCredentialCreationOptions|
+  // [MakeCredentialAuthenticatorResponse] will be set if and only if status == SUCCESS.
+  MakeCredential(PublicKeyCredentialCreationOptions options)
+      => (AuthenticatorStatus status, MakeCredentialAuthenticatorResponse? credential);
+
+  // Uses an existing credential to produce an assertion for the given
+  // |PublicKeyCredentialRequestOptions|.
+  // |GetAssertionResponse| will be set if and only if status == SUCCESS.
+  GetAssertion(PublicKeyCredentialRequestOptions options)
+      => (AuthenticatorStatus status, GetAssertionAuthenticatorResponse? credential);
+
+  // Returns true if the user platform provides an authenticator. Relying
+  // Parties use this method to determine whether they can create a new
+  // credential using a user-verifying platform authenticator.
+  IsUserVerifyingPlatformAuthenticatorAvailable() => (bool available);
+};

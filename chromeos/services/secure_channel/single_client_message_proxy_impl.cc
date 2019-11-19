@@ -48,8 +48,8 @@ SingleClientMessageProxyImpl::SingleClientMessageProxyImpl(
       channel_(std::make_unique<ChannelImpl>(this /* delegate */)) {
   DCHECK(client_connection_parameters_);
   client_connection_parameters_->SetConnectionSucceeded(
-      channel_->GenerateInterfacePtr(),
-      mojo::MakeRequest(&message_receiver_ptr_));
+      channel_->GenerateRemote(),
+      message_receiver_remote_.BindNewPipeAndPassReceiver());
 }
 
 SingleClientMessageProxyImpl::~SingleClientMessageProxyImpl() = default;
@@ -65,7 +65,7 @@ void SingleClientMessageProxyImpl::HandleReceivedMessage(
   if (feature != client_connection_parameters_->feature())
     return;
 
-  message_receiver_ptr_->OnMessageReceived(payload);
+  message_receiver_remote_->OnMessageReceived(payload);
 }
 
 void SingleClientMessageProxyImpl::HandleRemoteDeviceDisconnection() {
@@ -89,8 +89,8 @@ void SingleClientMessageProxyImpl::OnClientDisconnected() {
 }
 
 void SingleClientMessageProxyImpl::FlushForTesting() {
-  DCHECK(message_receiver_ptr_);
-  message_receiver_ptr_.FlushForTesting();
+  DCHECK(message_receiver_remote_);
+  message_receiver_remote_.FlushForTesting();
 }
 
 }  // namespace secure_channel

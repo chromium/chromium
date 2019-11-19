@@ -409,7 +409,7 @@ class ShadowBoundaryAdjuster final {
 
   static bool IsSelectionBoundary(const Node& node) {
     return IsHTMLTextAreaElement(node) || IsHTMLInputElement(node) ||
-           IsHTMLSelectElement(node);
+           IsA<HTMLSelectElement>(node);
   }
 
   static Node* EnclosingShadowHostForStart(const PositionInFlatTree& position) {
@@ -612,7 +612,7 @@ class EditingBoundaryAdjuster final {
   // subtree.
   template <typename Strategy>
   static const Node& RootBoundaryElementOf(const Node& start) {
-    if (IsHTMLBodyElement(start))
+    if (IsA<HTMLBodyElement>(start))
       return start;
 
     const bool is_editable = HasEditableStyle(start);
@@ -621,7 +621,7 @@ class EditingBoundaryAdjuster final {
       if (IsEditingBoundary<Strategy>(ancestor, *result, is_editable))
         break;
       result = &ancestor;
-      if (IsHTMLBodyElement(*result))
+      if (IsA<HTMLBodyElement>(*result))
         break;
     }
 
@@ -673,7 +673,7 @@ class EditingBoundaryAdjuster final {
                                       previous_editable))
         boundary = previous_ancestor;
 
-      if (ancestor == base_rbe || IsHTMLBodyElement(ancestor))
+      if (ancestor == base_rbe || IsA<HTMLBodyElement>(ancestor))
         break;
       previous_editable = HasEditableStyle(ancestor);
       previous_ancestor = &ancestor;

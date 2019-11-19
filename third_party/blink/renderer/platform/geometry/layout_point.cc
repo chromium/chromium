@@ -23,8 +23,8 @@ std::ostream& operator<<(std::ostream& ostream, const LayoutPoint& point) {
 }
 
 String LayoutPoint::ToString() const {
-  return String::Format("%s,%s", X().ToString().Ascii().data(),
-                        Y().ToString().Ascii().data());
+  return String::Format("%s,%s", X().ToString().Ascii().c_str(),
+                        Y().ToString().Ascii().c_str());
 }
 
 WTF::TextStream& operator<<(WTF::TextStream& ts, const LayoutPoint& point) {

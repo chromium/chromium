@@ -21,12 +21,12 @@
 #include "content/public/browser/notification_types.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/test/accessibility_notification_waiter.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
-#include "content/test/accessibility_browser_test_utils.h"
 #include "content/test/content_browser_test_utils_internal.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -75,7 +75,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_SitePerProcessAccessibilityBrowserTest,
   BrowserAccessibilityState::GetInstance()->EnableAccessibility();
 
   GURL main_url(embedded_test_server()->GetURL("/site_per_process_main.html"));
-  NavigateToURL(shell(), main_url);
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   // It is safe to obtain the root frame tree node here, as it doesn't change.
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
@@ -136,13 +136,14 @@ IN_PROC_BROWSER_TEST_F(MAYBE_SitePerProcessAccessibilityBrowserTest,
   EXPECT_EQ(ax_child_frame_root->PlatformGetParent(), ax_iframe);
 }
 
+// TODO(aboxhall): Flaky test, discuss with dmazzoni
 IN_PROC_BROWSER_TEST_F(MAYBE_SitePerProcessAccessibilityBrowserTest,
-                       TwoCrossSiteNavigations) {
+                       DISABLED_TwoCrossSiteNavigations) {
   // Enable full accessibility for all current and future WebContents.
   BrowserAccessibilityState::GetInstance()->EnableAccessibility();
 
   GURL main_url(embedded_test_server()->GetURL("/site_per_process_main.html"));
-  NavigateToURL(shell(), main_url);
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   // It is safe to obtain the root frame tree node here, as it doesn't change.
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
@@ -172,7 +173,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_SitePerProcessAccessibilityBrowserTest,
   BrowserAccessibilityState::GetInstance()->EnableAccessibility();
 
   GURL main_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
-  NavigateToURL(shell(), main_url);
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
   WaitForAccessibilityTreeToContainNodeWithName(shell()->web_contents(),
                                                 "This page has no title.");
 
@@ -185,7 +186,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_SitePerProcessAccessibilityBrowserTest,
 
   // Navigate the original tab to b.com as well.  This performs a
   // remote-to-local main frame navigation in b.com and shouldn't crash.
-  NavigateToURL(shell(), b_url);
+  EXPECT_TRUE(NavigateToURL(shell(), b_url));
   WaitForAccessibilityTreeToContainNodeWithName(shell()->web_contents(),
                                                 "Title Of Awesomeness");
 }

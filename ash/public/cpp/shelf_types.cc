@@ -17,10 +17,18 @@ constexpr char kDelimiter[] = "|";
 }  // namespace
 
 bool IsValidShelfItemType(int64_t type) {
-  return type == TYPE_PINNED_APP || type == TYPE_APP_LIST ||
-         type == TYPE_BROWSER_SHORTCUT || type == TYPE_APP ||
-         type == TYPE_DIALOG || type == TYPE_BACK_BUTTON ||
-         type == TYPE_UNDEFINED;
+  return type == TYPE_PINNED_APP || type == TYPE_BROWSER_SHORTCUT ||
+         type == TYPE_APP || type == TYPE_DIALOG || type == TYPE_UNDEFINED;
+}
+
+bool SamePinState(ShelfItemType a, ShelfItemType b) {
+  if ((a != TYPE_PINNED_APP && a != TYPE_APP && a != TYPE_BROWSER_SHORTCUT) ||
+      (b != TYPE_PINNED_APP && b != TYPE_APP && b != TYPE_BROWSER_SHORTCUT)) {
+    return false;
+  }
+  const bool a_unpinned = (a == TYPE_APP);
+  const bool b_unpinned = (b == TYPE_APP);
+  return a_unpinned == b_unpinned;
 }
 
 ShelfID::ShelfID(const std::string& app_id, const std::string& launch_id)

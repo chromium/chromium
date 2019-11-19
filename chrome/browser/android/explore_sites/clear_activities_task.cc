@@ -36,11 +36,7 @@ ClearActivitiesTask::ClearActivitiesTask(ExploreSitesStore* store,
                                          base::Time begin,
                                          base::Time end,
                                          BooleanCallback callback)
-    : store_(store),
-      begin_(begin),
-      end_(end),
-      callback_(std::move(callback)),
-      weak_factory_(this) {}
+    : store_(store), begin_(begin), end_(end), callback_(std::move(callback)) {}
 
 ClearActivitiesTask::~ClearActivitiesTask() = default;
 

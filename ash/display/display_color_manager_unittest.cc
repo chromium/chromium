@@ -12,12 +12,12 @@
 #include "base/strings/pattern.h"
 #include "base/task/post_task.h"
 #include "base/test/scoped_path_override.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "chromeos/constants/chromeos_paths.h"
 #include "components/quirks/quirks_manager.h"
 #include "net/url_request/url_request_context_getter.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/display/manager/fake_display_snapshot.h"
+#include "ui/display/fake/fake_display_snapshot.h"
 #include "ui/display/manager/test/action_logger_util.h"
 #include "ui/display/manager/test/test_native_display_delegate.h"
 
@@ -144,7 +144,7 @@ class DisplayColorManagerTest : public testing::Test {
   ~DisplayColorManagerTest() override = default;
 
  protected:
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   std::unique_ptr<base::ScopedPathOverride> path_override_;
   base::FilePath color_path_;
   std::unique_ptr<display::test::ActionLogger> log_;

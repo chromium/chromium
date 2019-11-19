@@ -14,7 +14,7 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/document_provider.h"
-#include "components/omnibox/browser/omnibox_field_trial.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "url/gurl.h"
 
@@ -44,8 +44,12 @@ int AutocompleteClassifier::DefaultOmniboxProviders() {
       AutocompleteProvider::TYPE_CLIPBOARD |
 #endif
       AutocompleteProvider::TYPE_ZERO_SUGGEST |
+      AutocompleteProvider::TYPE_ZERO_SUGGEST_LOCAL_HISTORY |
       (base::FeatureList::IsEnabled(omnibox::kDocumentProvider)
            ? AutocompleteProvider::TYPE_DOCUMENT
+           : 0) |
+      (base::FeatureList::IsEnabled(omnibox::kOnDeviceHeadProvider)
+           ? AutocompleteProvider::TYPE_ON_DEVICE_HEAD
            : 0) |
       AutocompleteProvider::TYPE_BOOKMARK | AutocompleteProvider::TYPE_BUILTIN |
       AutocompleteProvider::TYPE_HISTORY_QUICK |
@@ -78,14 +82,15 @@ void AutocompleteClassifier::Classify(
   controller_->Start(input);
   DCHECK(controller_->done());
   const AutocompleteResult& result = controller_->result();
-  if (result.empty()) {
+  if (result.empty() || result.default_match() == result.end()) {
     if (alternate_nav_url)
       *alternate_nav_url = GURL();
     return;
   }
 
-  DCHECK(result.default_match() != result.end());
-  *match = *result.default_match();
-  if (alternate_nav_url)
-    *alternate_nav_url = result.alternate_nav_url();
+  *match = *result.begin();
+  if (alternate_nav_url) {
+    *alternate_nav_url =
+        AutocompleteResult::ComputeAlternateNavUrl(input, *match);
+  }
 }

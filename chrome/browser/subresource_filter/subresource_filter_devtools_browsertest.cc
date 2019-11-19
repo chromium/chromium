@@ -153,14 +153,22 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterDevtoolsBrowserTest,
   console_observer.Wait();
 }
 
+class SubresourceFilterDevtoolsBrowserTestWithSitePerProcess
+    : public SubresourceFilterDevtoolsBrowserTest {
+ public:
+  SubresourceFilterDevtoolsBrowserTestWithSitePerProcess() {
+    feature_list_.InitAndEnableFeature(features::kSitePerProcess);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 // See crbug.com/813197, where agent hosts from subframes could send messages to
 // disable ad blocking when they are detached (e.g. when the subframe goes
 // away).
-IN_PROC_BROWSER_TEST_F(SubresourceFilterDevtoolsBrowserTest,
+IN_PROC_BROWSER_TEST_F(SubresourceFilterDevtoolsBrowserTestWithSitePerProcess,
                        IsolatedSubframe_DoesNotSendAdBlockingMessages) {
-  base::test::ScopedFeatureList scoped_isolation;
-  scoped_isolation.InitAndEnableFeature(features::kSitePerProcess);
-
   ASSERT_NO_FATAL_FAILURE(
       SetRulesetToDisallowURLsWithPathSuffix("included_script.js"));
   ScopedDevtoolsOpener page_opener(web_contents());

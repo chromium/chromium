@@ -1,0 +1,28 @@
+// Copyright 2016 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module gfx.mojom;
+
+import "ui/gfx/mojom/accelerated_widget.mojom";
+import "ui/gfx/mojom/buffer_types.mojom";
+import "ui/gfx/mojom/rrect_f.mojom";
+import "ui/gfx/mojom/selection_bound.mojom";
+import "ui/gfx/mojom/transform.mojom";
+
+// All functions on this interface echo their arguments to test StructTraits
+// serialization and deserialization.
+interface TraitsTestService {
+  [Sync]
+  EchoSelectionBound(SelectionBound s) => (SelectionBound pass);
+
+  [Sync]
+  EchoTransform(Transform t) => (Transform pass);
+
+  [Sync]
+  EchoGpuMemoryBufferHandle(GpuMemoryBufferHandle g)
+      => (GpuMemoryBufferHandle pass);
+
+  [Sync]
+  EchoRRectF(RRectF t) => (RRectF pass);
+};

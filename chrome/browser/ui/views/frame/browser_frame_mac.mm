@@ -23,17 +23,17 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
+#import "components/remote_cocoa/app_shim/native_widget_mac_nswindow.h"
+#import "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
+#import "components/remote_cocoa/app_shim/window_touch_bar_delegate.h"
+#include "components/remote_cocoa/common/application.mojom.h"
+#include "components/remote_cocoa/common/native_widget_ns_window.mojom.h"
+#include "components/remote_cocoa/common/native_widget_ns_window_host.mojom.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "content/public/browser/native_web_keyboard_event.h"
 #import "ui/base/cocoa/window_size_constants.h"
 #include "ui/base/l10n/l10n_util.h"
-#import "ui/views/cocoa/bridged_native_widget_host_impl.h"
-#import "ui/views_bridge_mac/bridged_native_widget_impl.h"
-#include "ui/views_bridge_mac/mojo/bridge_factory.mojom.h"
-#include "ui/views_bridge_mac/mojo/bridged_native_widget.mojom.h"
-#include "ui/views_bridge_mac/mojo/bridged_native_widget_host.mojom.h"
-#import "ui/views_bridge_mac/native_widget_mac_nswindow.h"
-#import "ui/views_bridge_mac/window_touch_bar_delegate.h"
+#import "ui/views/cocoa/native_widget_mac_ns_window_host.h"
 
 namespace {
 
@@ -151,7 +151,7 @@ void BrowserFrameMac::OnWindowFullscreenStateChange() {
 
 void BrowserFrameMac::ValidateUserInterfaceItem(
     int32_t tag,
-    views_bridge_mac::mojom::ValidateUserInterfaceItemResult* result) {
+    remote_cocoa::mojom::ValidateUserInterfaceItemResult* result) {
   Browser* browser = browser_view_->browser();
   if (!chrome::SupportsCommand(browser, tag)) {
     result->enable = false;
@@ -174,13 +174,13 @@ void BrowserFrameMac::ValidateUserInterfaceItem(
                                             : IDS_ENTER_FULLSCREEN_MAC));
       break;
     }
-    case IDC_BOOKMARK_PAGE: {
-      // Extensions have the ability to hide the bookmark page menu item.
-      // This only affects the bookmark page menu item under the main menu.
-      // The bookmark page menu item under the app menu has its visibility
+    case IDC_BOOKMARK_THIS_TAB: {
+      // Extensions have the ability to hide the bookmark tab menu item.
+      // This only affects the bookmark tab menu item under the main menu.
+      // The bookmark tab menu item under the app menu has its visibility
       // controlled by AppMenuModel.
       result->new_hidden_state =
-          chrome::ShouldRemoveBookmarkThisPageUI(browser->profile());
+          chrome::ShouldRemoveBookmarkThisTabUI(browser->profile());
       break;
     }
     case IDC_BOOKMARK_ALL_TABS: {
@@ -189,14 +189,14 @@ void BrowserFrameMac::ValidateUserInterfaceItem(
       // menu.  The bookmark page menu item under the app menu has its
       // visibility controlled by AppMenuModel.
       result->new_hidden_state =
-          chrome::ShouldRemoveBookmarkOpenPagesUI(browser->profile());
+          chrome::ShouldRemoveBookmarkAllTabsUI(browser->profile());
       break;
     }
     case IDC_SHOW_AS_TAB: {
       // Hide this menu option if the window is tabbed or is the devtools
       // window.
       result->new_hidden_state =
-          browser->is_type_tabbed() || browser->is_devtools();
+          browser->is_type_normal() || browser->is_type_devtools();
       break;
     }
     case IDC_ROUTE_MEDIA: {
@@ -239,10 +239,7 @@ void BrowserFrameMac::ValidateUserInterfaceItem(
     }
     case IDC_WINDOW_MUTE_SITE: {
       TabStripModel* model = browser->tab_strip_model();
-      bool will_mute =
-          base::FeatureList::IsEnabled(features::kSoundContentSetting)
-              ? model->WillContextMenuMuteSites(model->active_index())
-              : model->WillContextMenuMute(model->active_index());
+      bool will_mute = model->WillContextMenuMuteSites(model->active_index());
       // Menu items may be validated during browser startup, before the
       // TabStripModel has been populated.
       result->new_toggle_state = !model->empty() && !will_mute;
@@ -292,30 +289,30 @@ bool BrowserFrameMac::ExecuteCommand(
 
 void BrowserFrameMac::PopulateCreateWindowParams(
     const views::Widget::InitParams& widget_params,
-    views_bridge_mac::mojom::CreateWindowParams* params) {
+    remote_cocoa::mojom::CreateWindowParams* params) {
   params->style_mask = NSTitledWindowMask | NSClosableWindowMask |
                        NSMiniaturizableWindowMask | NSResizableWindowMask;
 
   base::scoped_nsobject<NativeWidgetMacNSWindow> ns_window;
   if (browser_view_->IsBrowserTypeNormal() ||
-      browser_view_->IsBrowserTypeHostedApp()) {
-    params->window_class = views_bridge_mac::mojom::WindowClass::kBrowser;
+      browser_view_->IsBrowserTypeWebApp()) {
+    params->window_class = remote_cocoa::mojom::WindowClass::kBrowser;
     params->style_mask |= NSFullSizeContentViewWindowMask;
 
     // Ensure tabstrip/profile button are visible.
     params->titlebar_appears_transparent = true;
 
     // Hosted apps draw their own window title.
-    if (browser_view_->IsBrowserTypeHostedApp())
+    if (browser_view_->IsBrowserTypeWebApp())
       params->window_title_hidden = true;
   } else {
-    params->window_class = views_bridge_mac::mojom::WindowClass::kDefault;
+    params->window_class = remote_cocoa::mojom::WindowClass::kDefault;
   }
   params->animation_enabled = true;
 }
 
 NativeWidgetMacNSWindow* BrowserFrameMac::CreateNSWindow(
-    const views_bridge_mac::mojom::CreateWindowParams* params) {
+    const remote_cocoa::mojom::CreateWindowParams* params) {
   NativeWidgetMacNSWindow* ns_window = NativeWidgetMac::CreateNSWindow(params);
   if (@available(macOS 10.12.2, *)) {
     touch_bar_delegate_.reset([[BrowserWindowTouchBarViewsDelegate alloc]
@@ -327,21 +324,22 @@ NativeWidgetMacNSWindow* BrowserFrameMac::CreateNSWindow(
   return ns_window;
 }
 
-views::BridgeFactoryHost* BrowserFrameMac::GetBridgeFactoryHost() {
+remote_cocoa::ApplicationHost*
+BrowserFrameMac::GetRemoteCocoaApplicationHost() {
   if (auto* host = GetHostForBrowser(browser_view_->browser()))
-    return host->GetViewsBridgeFactoryHost();
+    return host->GetRemoteCocoaApplicationHost();
   return nullptr;
 }
 
 void BrowserFrameMac::OnWindowInitialized() {
-  if (bridge_impl()) {
-    bridge_impl()->SetCommandDispatcher(
+  if (auto* bridge = GetInProcessNSWindowBridge()) {
+    bridge->SetCommandDispatcher(
         [[[ChromeCommandDispatcherDelegate alloc] init] autorelease],
         [[[BrowserWindowCommandHandler alloc] init] autorelease]);
   } else {
     if (auto* host = GetHostForBrowser(browser_view_->browser())) {
       host->GetAppShim()->CreateCommandDispatcherForWidget(
-          bridge_host()->bridged_native_widget_id());
+          GetNSWindowHost()->bridged_native_widget_id());
     }
   }
 }
@@ -374,7 +372,7 @@ bool BrowserFrameMac::UseCustomFrame() const {
 }
 
 bool BrowserFrameMac::UsesNativeSystemMenu() const {
-  return true;
+  return false;
 }
 
 bool BrowserFrameMac::ShouldSaveWindowPlacement() const {
@@ -411,5 +409,5 @@ bool BrowserFrameMac::HandleKeyboardEvent(
 
   // Redispatch the event. If it's a keyEquivalent:, this gives
   // CommandDispatcher the opportunity to finish passing the event to consumers.
-  return RedispatchKeyEvent(event.os_event);
+  return GetNSWindowHost()->RedispatchKeyEvent(event.os_event);
 }

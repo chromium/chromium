@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<link rel="match" href="visual-viewport-scrolled-from-main-expected.html">
+<style>
+  body, html {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    background-color: red;
+  }
+  div {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 50%;
+    height: 50%;
+    background-color: green;
+  }
+</style>
+<script>
+  // This test ensures that changes to the visual viewport scroll offset set
+  // from the main thread are propagated to the compositor. Use a ref test to
+  // ensure the compositor layers have the expected state. Test passes if the
+  // output is a fully green screen.
+  window.onload = () => {
+    if (window.internals) {
+      window.internals.setPageScaleFactor(2);
+      window.internals.setVisualViewportOffset(400, 300);
+    }
+  };
+</script>
+<div></div>

@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define _USE_MATH_DEFINES  // For VC++ to get M_PI. This has to be first.
-
 #include <cmath>
 
+#include "base/numerics/math_constants.h"
 #include "base/stl_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/quaternion.h"
@@ -39,7 +38,7 @@ TEST(QuatTest, AxisAngleCommon) {
 
 TEST(QuatTest, VectorToVectorRotation) {
   Quaternion q(Vector3dF(1.0f, 0.0f, 0.0f), Vector3dF(0.0f, 1.0f, 0.0f));
-  Quaternion r(Vector3dF(0.0f, 0.0f, 1.0f), M_PI_2);
+  Quaternion r(Vector3dF(0.0f, 0.0f, 1.0f), base::kPiFloat / 2);
 
   EXPECT_FLOAT_EQ(r.x(), q.x());
   EXPECT_FLOAT_EQ(r.y(), q.y());
@@ -150,8 +149,8 @@ TEST(QuatTest, Slerp) {
 
 TEST(QuatTest, SlerpOppositeAngles) {
   Vector3dF axis(1, 1, 1);
-  double start_radians = -M_PI_2;
-  double stop_radians = M_PI_2;
+  double start_radians = -base::kPiDouble / 2;
+  double stop_radians = base::kPiDouble / 2;
   Quaternion start(axis, start_radians);
   Quaternion stop(axis, stop_radians);
 

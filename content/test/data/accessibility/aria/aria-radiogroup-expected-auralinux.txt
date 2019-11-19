@@ -1,0 +1,4 @@
+[document web]
+++[panel] name='My group' xml-roles:radiogroup
+++++[radio button] name='Radio 1' checkable:true xml-roles:radio
+++++[radio button] name='Radio 2' checkable:true xml-roles:radio

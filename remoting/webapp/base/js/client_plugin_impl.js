@@ -114,8 +114,6 @@ remoting.ClientPluginImpl = function(container, capabilities) {
 remoting.ClientPluginImpl.createPluginElement_ = function() {
   var plugin =
       /** @type {HTMLEmbedElement} */ (document.createElement('embed'));
-  plugin.src = 'remoting_client_pnacl.nmf';
-  plugin.type = 'application/x-pnacl';
   plugin.width = '0';
   plugin.height = '0';
   plugin.tabIndex = 0;  // Required, otherwise focus() doesn't work.

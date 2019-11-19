@@ -8,19 +8,68 @@
 #include "base/bind_helpers.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "gpu/ipc/common/vulkan_ycbcr_info.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
 #include "gpu/vulkan/vulkan_instance.h"
+#include "gpu/vulkan/vulkan_posix_util.h"
 #include "gpu/vulkan/vulkan_surface.h"
+#include "gpu/vulkan/vulkan_util.h"
 #include "ui/gfx/gpu_fence.h"
+#include "ui/gfx/gpu_memory_buffer.h"
 
 namespace gpu {
+
+namespace {
+bool GetAhbProps(
+    const VkDevice& vk_device,
+    AHardwareBuffer* hardware_buffer,
+    VkAndroidHardwareBufferFormatPropertiesANDROID* ahb_format_props,
+    VkAndroidHardwareBufferPropertiesANDROID* ahb_props) {
+  DCHECK(ahb_format_props);
+  DCHECK(ahb_props);
+
+  // To obtain format properties of an Android hardware buffer, include an
+  // instance of VkAndroidHardwareBufferFormatPropertiesANDROID in the pNext
+  // chain of the VkAndroidHardwareBufferPropertiesANDROID instance passed to
+  // vkGetAndroidHardwareBufferPropertiesANDROID.
+  ahb_format_props->sType =
+      VK_STRUCTURE_TYPE_ANDROID_HARDWARE_BUFFER_FORMAT_PROPERTIES_ANDROID;
+  ahb_format_props->pNext = nullptr;
+
+  ahb_props->sType =
+      VK_STRUCTURE_TYPE_ANDROID_HARDWARE_BUFFER_PROPERTIES_ANDROID;
+  ahb_props->pNext = ahb_format_props;
+
+  bool result = vkGetAndroidHardwareBufferPropertiesANDROID(
+      vk_device, hardware_buffer, ahb_props);
+  if (result != VK_SUCCESS) {
+    LOG(ERROR)
+        << "GetAhbProps: vkGetAndroidHardwareBufferPropertiesANDROID failed : "
+        << result;
+    return false;
+  }
+  return true;
+}
+
+VulkanYCbCrInfo GetYcbcrInfoFromBufferProps(
+    const VkAndroidHardwareBufferFormatPropertiesANDROID& ahb_format_props) {
+  return VulkanYCbCrInfo(VK_FORMAT_UNDEFINED, ahb_format_props.externalFormat,
+                         ahb_format_props.suggestedYcbcrModel,
+                         ahb_format_props.suggestedYcbcrRange,
+                         ahb_format_props.suggestedXChromaOffset,
+                         ahb_format_props.suggestedYChromaOffset,
+                         ahb_format_props.formatFeatures);
+}
+
+}  // namespace
 
 VulkanImplementationAndroid::VulkanImplementationAndroid() = default;
 
 VulkanImplementationAndroid::~VulkanImplementationAndroid() = default;
 
-bool VulkanImplementationAndroid::InitializeVulkanInstance() {
+bool VulkanImplementationAndroid::InitializeVulkanInstance(bool using_surface) {
+  DCHECK(using_surface);
   std::vector<const char*> required_extensions = {
       VK_KHR_SURFACE_EXTENSION_NAME, VK_KHR_ANDROID_SURFACE_EXTENSION_NAME,
       VK_KHR_EXTERNAL_MEMORY_CAPABILITIES_EXTENSION_NAME,
@@ -35,17 +84,7 @@ bool VulkanImplementationAndroid::InitializeVulkanInstance() {
   if (!vulkan_function_pointers->vulkan_loader_library_)
     return false;
 
-  if (!vulkan_instance_.Initialize(required_extensions, {}))
-    return false;
-
-  // Initialize platform function pointers
-  vkCreateAndroidSurfaceKHR_ =
-      reinterpret_cast<PFN_vkCreateAndroidSurfaceKHR>(vkGetInstanceProcAddr(
-          vulkan_instance_.vk_instance(), "vkCreateAndroidSurfaceKHR"));
-  if (!vkCreateAndroidSurfaceKHR_)
-    return false;
-
-  return true;
+  return vulkan_instance_.Initialize(required_extensions, {});
 }
 
 VulkanInstance* VulkanImplementationAndroid::GetVulkanInstance() {
@@ -58,7 +97,7 @@ std::unique_ptr<VulkanSurface> VulkanImplementationAndroid::CreateViewSurface(
   VkAndroidSurfaceCreateInfoKHR surface_create_info = {};
   surface_create_info.sType = VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR;
   surface_create_info.window = window;
-  VkResult result = vkCreateAndroidSurfaceKHR_(
+  VkResult result = vkCreateAndroidSurfaceKHR(
       vulkan_instance_.vk_instance(), &surface_create_info, nullptr, &surface);
   if (VK_SUCCESS != result) {
     DLOG(ERROR) << "vkCreateAndroidSurfaceKHR() failed: " << result;
@@ -66,7 +105,8 @@ std::unique_ptr<VulkanSurface> VulkanImplementationAndroid::CreateViewSurface(
   }
 
   return std::make_unique<VulkanSurface>(vulkan_instance_.vk_instance(),
-                                         surface);
+                                         surface,
+                                         false /* use_protected_memory */);
 }
 
 bool VulkanImplementationAndroid::GetPhysicalDevicePresentationSupport(
@@ -89,7 +129,8 @@ VulkanImplementationAndroid::GetRequiredDeviceExtensions() {
           VK_ANDROID_EXTERNAL_MEMORY_ANDROID_HARDWARE_BUFFER_EXTENSION_NAME,
           VK_KHR_EXTERNAL_MEMORY_EXTENSION_NAME,
           VK_KHR_DEDICATED_ALLOCATION_EXTENSION_NAME,
-          VK_KHR_GET_MEMORY_REQUIREMENTS_2_EXTENSION_NAME};
+          VK_KHR_GET_MEMORY_REQUIREMENTS_2_EXTENSION_NAME,
+          VK_KHR_SAMPLER_YCBCR_CONVERSION_EXTENSION_NAME};
 }
 
 VkFence VulkanImplementationAndroid::CreateVkFenceForGpuFence(
@@ -105,65 +146,50 @@ VulkanImplementationAndroid::ExportVkFenceToGpuFence(VkDevice vk_device,
   return nullptr;
 }
 
-bool VulkanImplementationAndroid::ImportSemaphoreFdKHR(
-    VkDevice vk_device,
-    base::ScopedFD sync_fd,
-    VkSemaphore* vk_semaphore) {
-  // Create a VkSemaphore.
-  VkSemaphoreCreateInfo info = {VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO};
-  bool result = vkCreateSemaphore(vk_device, &info, nullptr, vk_semaphore);
-  if (result != VK_SUCCESS) {
-    LOG(ERROR) << "vkCreateSemaphore failed : " << result;
-    return false;
-  }
-
-  // Create VkImportSemaphoreFdInfoKHR structure.
-  VkImportSemaphoreFdInfoKHR import;
-  import.sType = VK_STRUCTURE_TYPE_IMPORT_SEMAPHORE_FD_INFO_KHR;
-  import.pNext = nullptr;
-  import.semaphore = *vk_semaphore;
-  import.flags = VK_SEMAPHORE_IMPORT_TEMPORARY_BIT_KHR;
-
-  // VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_SYNC_FD_BIT specifies a POSIX file
-  // descriptor handle to a Linux Sync File or Android Fence object.
-  import.handleType = VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_SYNC_FD_BIT;
-  import.fd = sync_fd.get();
-
-  // Import the fd into the semaphore.
-  result = vkImportSemaphoreFdKHR(vk_device, &import);
-  if (result != VK_SUCCESS) {
-    LOG(ERROR) << "vkImportSemaphoreFdKHR failed : " << result;
-    vkDestroySemaphore(vk_device, *vk_semaphore, nullptr);
-    return false;
-  }
-
-  // If import is successful, the VkSemaphore object takes the ownership of fd.
-  ignore_result(sync_fd.release());
-  return true;
+VkSemaphore VulkanImplementationAndroid::CreateExternalSemaphore(
+    VkDevice vk_device) {
+  return CreateExternalVkSemaphore(
+      vk_device, VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_SYNC_FD_BIT);
 }
 
-bool VulkanImplementationAndroid::GetSemaphoreFdKHR(VkDevice vk_device,
-                                                    VkSemaphore vk_semaphore,
-                                                    base::ScopedFD* sync_fd) {
-  // Create VkSemaphoreGetFdInfoKHR structure.
-  VkSemaphoreGetFdInfoKHR info;
-  info.sType = VK_STRUCTURE_TYPE_SEMAPHORE_GET_FD_INFO_KHR;
-  info.pNext = nullptr;
-  info.semaphore = vk_semaphore;
-  info.handleType = VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_SYNC_FD_BIT;
+VkSemaphore VulkanImplementationAndroid::ImportSemaphoreHandle(
+    VkDevice vk_device,
+    SemaphoreHandle sync_handle) {
+  return ImportVkSemaphoreHandlePosix(vk_device, std::move(sync_handle));
+}
 
-  // Create a new sync fd from the semaphore.
-  int fd = -1;
-  bool result = vkGetSemaphoreFdKHR(vk_device, &info, &fd);
-  if (result != VK_SUCCESS) {
-    LOG(ERROR) << "vkGetSemaphoreFdKHR failed : " << result;
-    sync_fd->reset(-1);
-    return false;
-  }
+SemaphoreHandle VulkanImplementationAndroid::GetSemaphoreHandle(
+    VkDevice vk_device,
+    VkSemaphore vk_semaphore) {
+  // VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_SYNC_FD_BIT specifies a POSIX file
+  // descriptor handle to a Linux Sync File or Android Fence object.
+  return GetVkSemaphoreHandlePosix(
+      vk_device, vk_semaphore, VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_SYNC_FD_BIT);
+}
 
-  // Transfer the ownership of the fd to the caller.
-  sync_fd->reset(fd);
-  return true;
+VkExternalMemoryHandleTypeFlagBits
+VulkanImplementationAndroid::GetExternalImageHandleType() {
+  return VK_EXTERNAL_MEMORY_HANDLE_TYPE_ANDROID_HARDWARE_BUFFER_BIT_ANDROID;
+}
+
+bool VulkanImplementationAndroid::CanImportGpuMemoryBuffer(
+    gfx::GpuMemoryBufferType memory_buffer_type) {
+  return false;
+}
+
+bool VulkanImplementationAndroid::CreateImageFromGpuMemoryHandle(
+    VkDevice vk_device,
+    gfx::GpuMemoryBufferHandle gmb_handle,
+    gfx::Size size,
+    VkImage* vk_image,
+    VkImageCreateInfo* vk_image_info,
+    VkDeviceMemory* vk_device_memory,
+    VkDeviceSize* mem_allocation_size,
+    base::Optional<VulkanYCbCrInfo>* ycbcr_info) {
+  // TODO(sergeyu): Move code from CreateVkImageAndImportAHB() here and remove
+  // CreateVkImageAndImportAHB().
+  NOTIMPLEMENTED();
+  return false;
 }
 
 bool VulkanImplementationAndroid::CreateVkImageAndImportAHB(
@@ -174,33 +200,19 @@ bool VulkanImplementationAndroid::CreateVkImageAndImportAHB(
     VkImage* vk_image,
     VkImageCreateInfo* vk_image_info,
     VkDeviceMemory* vk_device_memory,
-    VkDeviceSize* mem_allocation_size) {
+    VkDeviceSize* mem_allocation_size,
+    VulkanYCbCrInfo* ycbcr_info) {
   DCHECK(ahb_handle.is_valid());
   DCHECK(vk_image);
   DCHECK(vk_image_info);
   DCHECK(vk_device_memory);
   DCHECK(mem_allocation_size);
 
-  // To obtain format properties of an Android hardware buffer, include an
-  // instance of VkAndroidHardwareBufferFormatPropertiesANDROID in the pNext
-  // chain of the VkAndroidHardwareBufferPropertiesANDROID instance passed to
-  // vkGetAndroidHardwareBufferPropertiesANDROID.
-  VkAndroidHardwareBufferFormatPropertiesANDROID ahb_format_props;
-  ahb_format_props.sType =
-      VK_STRUCTURE_TYPE_ANDROID_HARDWARE_BUFFER_FORMAT_PROPERTIES_ANDROID;
-  ahb_format_props.pNext = nullptr;
-
-  VkAndroidHardwareBufferPropertiesANDROID ahb_props;
-  ahb_props.sType =
-      VK_STRUCTURE_TYPE_ANDROID_HARDWARE_BUFFER_PROPERTIES_ANDROID;
-  ahb_props.pNext = &ahb_format_props;
-
-  bool result = vkGetAndroidHardwareBufferPropertiesANDROID(
-      vk_device, ahb_handle.get(), &ahb_props);
-  if (result != VK_SUCCESS) {
-    LOG(ERROR) << "GetAndroidHardwareBufferProperties failed : " << result;
+  // Get the image format properties of an Android hardware buffer.
+  VkAndroidHardwareBufferFormatPropertiesANDROID ahb_format_props = {};
+  VkAndroidHardwareBufferPropertiesANDROID ahb_props = {};
+  if (!GetAhbProps(vk_device, ahb_handle.get(), &ahb_format_props, &ahb_props))
     return false;
-  }
 
   // To create an image with an external format, include an instance of
   // VkExternalFormatANDROID in the pNext chain of VkImageCreateInfo.
@@ -294,7 +306,7 @@ bool VulkanImplementationAndroid::CreateVkImageAndImportAHB(
   vk_image_info->initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 
   // Create Vk Image.
-  result = vkCreateImage(vk_device, vk_image_info, nullptr, vk_image);
+  bool result = vkCreateImage(vk_device, vk_image_info, nullptr, vk_image);
   if (result != VK_SUCCESS) {
     LOG(ERROR) << "vkCreateImage failed : " << result;
     return false;
@@ -354,6 +366,24 @@ bool VulkanImplementationAndroid::CreateVkImageAndImportAHB(
   }
 
   *mem_allocation_size = mem_alloc_info.allocationSize;
+  if (ycbcr_info)
+    *ycbcr_info = GetYcbcrInfoFromBufferProps(ahb_format_props);
+  return true;
+}
+
+bool VulkanImplementationAndroid::GetSamplerYcbcrConversionInfo(
+    const VkDevice& vk_device,
+    base::android::ScopedHardwareBufferHandle ahb_handle,
+    VulkanYCbCrInfo* ycbcr_info) {
+  DCHECK(ycbcr_info);
+
+  // Get the image format properties of an Android hardware buffer.
+  VkAndroidHardwareBufferFormatPropertiesANDROID ahb_format_props = {};
+  VkAndroidHardwareBufferPropertiesANDROID ahb_props = {};
+  if (!GetAhbProps(vk_device, ahb_handle.get(), &ahb_format_props, &ahb_props))
+    return false;
+
+  *ycbcr_info = GetYcbcrInfoFromBufferProps(ahb_format_props);
   return true;
 }
 

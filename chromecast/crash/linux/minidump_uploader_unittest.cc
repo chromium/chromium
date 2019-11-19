@@ -97,7 +97,7 @@ class MinidumpUploaderTest : public testing::Test {
     // Must pass in non-empty MinidumpParams to circumvent the internal checks.
     std::unique_ptr<DumpInfo> dump(new DumpInfo(
         minidump_path.value(), logfile_path.value(), base::Time::Now(),
-        MinidumpParams("_", 0, "_", "_", "_", "_", "_", "_", "_")));
+        MinidumpParams(0, "_", "_", "_", "_", "_", "_", "_")));
 
     CHECK(AppendLockFile(lockfile_.value(), metadata_.value(), *dump));
     base::File minidump(

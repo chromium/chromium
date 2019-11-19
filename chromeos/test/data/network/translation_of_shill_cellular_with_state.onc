@@ -6,7 +6,6 @@
     "ActivationType": "OTASP",
     "AllowRoaming": true,
     "AutoConnect": true,
-    "Carrier": "cellular_provider",
     "HomeProvider": {
       "Country": "us",
       "Name": "cellular_provider"
@@ -22,10 +21,6 @@
       "Country": "test-country",
       "Name": "test-name"
     },
-    "SupportedCarriers": [
-      "cellular_provider",
-      "generic_provider"
-    ],
     "APN": {
       "AccessPointName": "test-apn",
       "Authentication": "chap",

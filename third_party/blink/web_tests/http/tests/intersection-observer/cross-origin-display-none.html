@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<style>
+pre, #log {
+  position: absolute;
+  top: 0;
+  left: 200px;
+}
+iframe {
+  width: 300px;
+  height: 150px;
+  border: none;
+}
+</style>
+
+<iframe src="http://localhost:8080/intersection-observer/resources/cross-origin-display-none-subframe.html"></iframe>
+
+<script>
+function waitForFrame(t, f) {
+  requestAnimationFrame(function() {
+    t.step_timeout(f, 0);
+  });
+}
+
+async_test(
+function(t) {
+  let iframe = document.querySelector("iframe");
+
+  // When an iframe is OOP, it will not run lifecycle updates while it's not
+  // visible. In that case, we can't use requestAnimationFrame to wait for
+  // IntersectionObserver to run.
+  let iframeIsOOP = false;
+
+  function step0(event) {
+    assert_equals(event.data,"");
+    this.properties.raf = true;
+  }
+
+  function step1(event) {
+    iframe.style.display = "none";
+    assert_equals(JSON.stringify(event.data),
+                  JSON.stringify([true]),
+                  'First notification');
+    this.properties.raf = !iframeIsOOP;
+  }
+
+  function step2(event) {
+    iframe.style.display = "";
+    assert_equals(JSON.stringify(event.data),
+                  JSON.stringify([false]),
+                  'iframe.style.display = "none"');
+    this.properties.raf = true;
+  }
+
+  function step3(event) {
+    iframe.style.visibility = "hidden";
+    assert_equals(JSON.stringify(event.data),
+                  JSON.stringify([true]),
+                  'iframe.style.display = ""');
+    this.properties.raf = !iframeIsOOP;
+  }
+
+  function step4(event) {
+    iframe.style.visibility = "";
+    assert_equals(JSON.stringify(event.data),
+                  JSON.stringify([false]),
+                  'iframe.style.visibility = "hidden"');
+  }
+
+  let steps = [step0, step1, step2, step3, step4];
+
+  window.addEventListener("message", event => {
+    if (self.internals) {
+      iframeIsOOP = internals.isSiteIsolated(iframe);
+    }
+
+    if (steps.length) {
+      t.step(steps.shift().bind(t, event));
+      waitForFrame(t, () => {
+        iframe.contentWindow.postMessage({raf: t.properties.raf}, "*");
+      });
+    } else {
+      t.done();
+    }
+  });
+},
+"Intersection observer V2: test display and visibility CSS properties applied to iframe",
+{raf: null});
+</script>

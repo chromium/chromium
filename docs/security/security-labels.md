@@ -25,16 +25,33 @@ that.)
 * **Security_Severity-**{**Critical**, **High**, **Medium**, **Low**,
 **None**}: Designates the severity of a vulnerability according to our
 [severity guidelines](severity-guidelines.md).
-* **Pri-#**: Priority should generally match Severity:
+* **Pri-#**: Priority should generally match Severity (but should be higher if
+  there is evidence of active exploitation):
   * **Security_Severity-Critical**: **Pri-0**.
   * **High** and **Medium**: **Pri-1**.
   * **Low**: **Pri-2**.
 * **Security_Impact-**{**Head**, **Beta**, **Stable**, **None**}: Designates
 which branch(es) were impacted by the bug. Only apply the label corresponding
 with the earliest affected branch. **None** means that a security bug is in a
-disabled feature, or otherwise doesn't impact Chrome. Note that
-**Security_Severity** should still be set on **Security_Impact-None** issues, as
-if the feature were enabled or the code reachable.
+disabled feature, or otherwise doesn't impact Chrome. A disabled feature does
+not _guarantee_ impact **None**:
+    * The feature really must be disabled on 100% of devices. Specifically,
+      if the feature is controlled by field trials or some other network
+      configuration service, the feature must also be disabled by default in
+      the code, such that the code is inactive even on devices that can't
+      access the network configuration service.
+    * The feature control check must be somewhere that the attacker could not
+      have influenced. For example a privilege escalation from a lower-
+      privileged process to a higher-privileged process assumes that the lower-
+      privileged process is already compromised. The attacker could overwrite
+      memory for any feature checks performed within that lower-privileged
+      process; the bug only qualifies as impact **None** if checks are
+      performed in the higher-privileged process. (For example, in a
+      privilege escalation from the renderer to the browser process, the
+      checks would need to be in the browser process.)
+    * Note that **Security_Severity** should still be set on
+      **Security_Impact-None** issues, as if the feature were enabled or the
+      code reachable.
 * **Restrict-View-**{**SecurityTeam**, **SecurityNotify**, **Google**,
 **SecurityEmbargo**}: Labels that restrict access to the bug. Meaning and usage
 guidelines are as follows:
@@ -71,6 +88,10 @@ guidelines are as follows:
 * **reward-**{**topanel**, **unpaid**, **na**, **inprocess**, _#_}: Labels used
 in tracking bugs nominated for our [Vulnerability Reward
 Program](https://www.chromium.org/Home/chromium-security/vulnerability-rewards-program).
+If a bug is filed by a Google or Chromium user on behalf of an external party,
+but is not within scope for a vulnerability reward, nevertheless use **reward-na**
+to ensure that the report is still properly credited to the external reporter
+in the release notes.
 * **M-#**: Target milestone for the fix.
 * Component: For bugs filed as **Type-Bug-Security**, we also want to track
 which component(s) the bug is in.
@@ -86,7 +107,7 @@ This is more fine-grained than the **M-#** label. **Release-0-M50** denotes the
 initial release of a M50 to Stable.
 * **CVE-####-####**: For security bugs that get assigned a CVE, we tag the
 appropriate bug(s) with the label for easy searching.
-**Type-Bug-Security** bugs should always have **Security_Severity**, 
+**Type-Bug-Security** bugs should always have **Security_Severity**,
 **Security_Impact**, **OS**, **Pri**, **M**, **Component**, and an
 **owner** set.
 
@@ -159,7 +180,8 @@ Similarly, critical security regressions are marked **ReleaseBlock-Beta**.
 ### Adjust **Pri-#** To Match Severity
 
 Adjust **Pri-#** according to the priority rules for severity labels described
-above.
+above. If there is evidence of active exploitation then a higher priority should
+be used.
 
 ### Drop **Restrict-View-{SecurityTeam,SecurityNotify}** From Old And Fixed Bugs
 
@@ -178,10 +200,11 @@ fixed security bugs. Rationale is that while fixed bugs are generally not
 intended to become public immediately, we'd like to give access to external
 parties depending on Chromium via *security-notify@chromium.org*.
 
-### Set **Merge-Request-X** For Beta Branch For Fixed Bugs
+### Set **Merge-Request-X** For Fixed Bugs
 
 Fixed security bugs that affect stable or beta and are critical or high severity
-will automatically trigger a merge request for the current beta branch.
+will automatically trigger a merge request for the current beta branch, and
+perhaps stable if also impacted.
 
 ### Drop **ReleaseBlock-X** Labels From **Security_Impact-None** Bugs
 

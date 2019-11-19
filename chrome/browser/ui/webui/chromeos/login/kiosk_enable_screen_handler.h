@@ -9,21 +9,36 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_app_manager.h"
-#include "chrome/browser/chromeos/login/screens/kiosk_enable_screen_view.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 
 namespace chromeos {
+
+class KioskEnableScreen;
+
+// Interface between enable kiosk screen and its representation.
+// Note, do not forget to call OnViewDestroyed in the dtor.
+class KioskEnableScreenView {
+ public:
+  constexpr static StaticOobeScreenId kScreenId{"kiosk-enable"};
+
+  virtual ~KioskEnableScreenView() {}
+
+  virtual void Show() = 0;
+  virtual void SetDelegate(KioskEnableScreen* delegate) = 0;
+};
 
 // WebUI implementation of KioskEnableScreenActor.
 class KioskEnableScreenHandler : public KioskEnableScreenView,
                                  public BaseScreenHandler {
  public:
+  using TView = KioskEnableScreenView;
+
   explicit KioskEnableScreenHandler(JSCallsContainer* js_calls_container);
   ~KioskEnableScreenHandler() override;
 
   // KioskEnableScreenActor implementation:
   void Show() override;
-  void SetDelegate(Delegate* delegate) override;
+  void SetDelegate(KioskEnableScreen* delegate) override;
 
   // BaseScreenHandler implementation:
   void DeclareLocalizedValues(
@@ -45,7 +60,7 @@ class KioskEnableScreenHandler : public KioskEnableScreenView,
   void OnGetConsumerKioskAutoLaunchStatus(
       KioskAppManager::ConsumerKioskAutoLaunchStatus status);
 
-  Delegate* delegate_ = nullptr;
+  KioskEnableScreen* delegate_ = nullptr;
 
   // Keeps whether screen should be shown right after initialization.
   bool show_on_init_ = false;
@@ -53,7 +68,7 @@ class KioskEnableScreenHandler : public KioskEnableScreenView,
   // True if machine's consumer kiosk mode is in a configurable state.
   bool is_configurable_ = false;
 
-  base::WeakPtrFactory<KioskEnableScreenHandler> weak_ptr_factory_;
+  base::WeakPtrFactory<KioskEnableScreenHandler> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(KioskEnableScreenHandler);
 };

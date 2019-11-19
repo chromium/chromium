@@ -7,45 +7,69 @@
 <translation id="1627744224761163218">4x4</translation>
 <translation id="1664224225747386870">Mitään ei kuvattu</translation>
 <translation id="1862930711583847113">Vienti epäonnistui: <ph name="FILE" /></translation>
+<translation id="1899697626337024495">Kuvaresoluutio</translation>
 <translation id="2036868001356139588">Ajastimen kesto</translation>
+<translation id="2050339315714019657">Pystysuunta</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> on aktiivinen.</translation>
 <translation id="229579744168541441">Vie paikalliselle levylle</translation>
 <translation id="2501278716633472235">Takaisin</translation>
 <translation id="2501853267655415902">Tallennus lopetettu</translation>
 <translation id="2501953888035679275">Ota kuvia ja kuvaa videoita kameralla.</translation>
 <translation id="2549985041256363841">Aloita tallennus</translation>
+<translation id="2599796128805996109">Takakamera</translation>
+<translation id="2912439424121107408">Asiantuntija-tilaa ei tueta tällä laitteella.</translation>
 <translation id="2968794441791257519">Kameralla otetut kuvat ja videot siirretään Lataukset-kansioon. Voit käyttää niitä avaamalla Tiedostot.
 
         Jos sovelluksella on tallennustilan käyttöoikeus, se voi käyttää kuvia ja videoita.</translation>
 <translation id="3081586908890909590">Vaihda videon kuvaamiseen</translation>
+<translation id="313467653172006084">30 FPS</translation>
 <translation id="3183731565330012717">Ruudukkotyyppi</translation>
 <translation id="3227137524299004712">Mikrofoni</translation>
+<translation id="3259149966178251584">Kameran resoluutio</translation>
+<translation id="3517926952904427380">Muotokuvan ottaminen epäonnistui</translation>
 <translation id="3569311554794739032">Haluatko varmasti, että <ph name="FILE" /> poistetaan?</translation>
+<translation id="3810838688059735925">Video</translation>
 <translation id="4279490309300973883">Peilaus päällä</translation>
+<translation id="4329152592498422850">Vaihda neliökuviin</translation>
 <translation id="4445542136948522167">Lopeta kuvan ottaminen</translation>
+<translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> megapikseliä</translation>
+<translation id="4570032796877367747">Etukamera</translation>
+<translation id="4628948037717959914">Valokuva</translation>
 <translation id="4649291346448517080">Tiedoston tallennus epäonnistui.</translation>
 <translation id="4890010094662541459">3x3</translation>
 <translation id="5057360777601936059">Kamerasi ei ole käytettävissä tällä hetkellä.
         Tarkista, onko kamera yhdistetty oikein.</translation>
 <translation id="5152121255775685072">Siirry galleriaan</translation>
+<translation id="5671277269877808209">Neliö</translation>
+<translation id="5775960006311140197">Asiantuntija-tila</translation>
 <translation id="5869546221129391014">Ruudukko</translation>
 <translation id="6073451960410192870">Lopeta tallennus</translation>
+<translation id="6197807149213783179">Tallenna sisällönkuvaustiedot</translation>
 <translation id="6233780560267770709">3x3</translation>
 <translation id="6243827288366940320">Kultainen leikkaus</translation>
+<translation id="6248749904681914629">Ulkoinen kamera</translation>
+<translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> – <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> megapikseliä</translation>
 <translation id="6681668084120808868">Ota valokuva</translation>
 <translation id="6778482348691154169">Kuvan ottaminen epäonnistui</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="698156982839284926">3 sekuntia</translation>
 <translation id="712848772518857951">Haluatko varmasti poistaa <ph name="COUNT" /> kohdetta?</translation>
+<translation id="7243947652761655814">Videon resoluutio</translation>
 <translation id="7337660886763914220">Tiedostojärjestelmän virheitä</translation>
 <translation id="7557677699350329807">Vaihda seuraavaan kameraan</translation>
 <translation id="7608223098072244877">4x4</translation>
 <translation id="7649070708921625228">Ohje</translation>
 <translation id="7658239707568436148">Peruuta</translation>
+<translation id="7670511624014457267">60 FPS</translation>
 <translation id="8049189770492311300">Ajastin</translation>
+<translation id="8067883171444229417">Toista video</translation>
+<translation id="8131740175452115882">Vahvista</translation>
 <translation id="8145038249676204903">Vaihda kuvan ottamiseen</translation>
 <translation id="8261506727792406068">Poista</translation>
 <translation id="8428213095426709021">Asetukset</translation>
+<translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
+<translation id="8732462232047530626">Esikatsele sisällönkuvaustiedot</translation>
+<translation id="8815966864175525708">Vaihda muotokuvatilaan</translation>
 <translation id="8870695351537079478">Tallennuksen aloittaminen epäonnistui</translation>
 <translation id="9045155556724273246">10 sekuntia</translation>
 <translation id="945522503751344254">Lähetä palautetta</translation>

@@ -29,6 +29,7 @@
 #include "chrome/chrome_cleaner/crash/crash_keys.h"
 #include "chrome/chrome_cleaner/os/disk_util.h"
 #include "chrome/chrome_cleaner/os/file_path_sanitization.h"
+#include "chrome/chrome_cleaner/settings/engine_settings.h"
 #include "chrome/chrome_cleaner/settings/settings.h"
 #include "chrome/chrome_cleaner/settings/settings_types.h"
 #include "third_party/crashpad/crashpad/client/crash_report_database.h"
@@ -193,8 +194,10 @@ bool CrashpadCrashClient::InitializeCrashReporting(Mode mode,
     case SandboxType::kNonSandboxed:
       SetCrashKey(kProcessType, "broker");
       break;
-    case SandboxType::kEset:
-      SetCrashKey(kProcessType, "eset");
+    case SandboxType::kEngine:
+      SetCrashKey(
+          kProcessType,
+          base::ToLowerASCII(GetEngineName(Settings::GetInstance()->engine())));
       break;
     case SandboxType::kParser:
       SetCrashKey(kProcessType, "parser");

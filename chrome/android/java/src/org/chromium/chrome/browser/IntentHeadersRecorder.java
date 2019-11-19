@@ -4,10 +4,11 @@
 
 package org.chromium.chrome.browser;
 
-import android.support.annotation.IntDef;
+import androidx.annotation.IntDef;
+import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.VisibleForTesting;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
 
 import java.lang.annotation.Retention;
@@ -26,11 +27,9 @@ public class IntentHeadersRecorder {
     @JNINamespace("chrome::android")
     /* package */ static class HeaderClassifier {
         /* package */ boolean isCorsSafelistedHeader(String name, String value) {
-            return nativeIsCorsSafelistedHeader(name, value);
+            return IntentHeadersRecorderJni.get().isCorsSafelistedHeader(name, value);
         }
     }
-
-    private static native boolean nativeIsCorsSafelistedHeader(String name, String value);
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({IntentHeadersResult.FIRST_PARTY_NO_HEADERS,
@@ -99,5 +98,10 @@ public class IntentHeadersRecorder {
     private static void record(@IntentHeadersResult int result) {
         RecordHistogram.recordEnumeratedHistogram("Android.IntentHeaders", result,
                 IntentHeadersResult.NUM_ENTRIES);
+    }
+
+    @NativeMethods
+    interface Natives {
+        boolean isCorsSafelistedHeader(String name, String value);
     }
 }

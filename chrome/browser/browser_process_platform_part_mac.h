@@ -9,7 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "chrome/browser/apps/app_shim/app_shim_host_manager_mac.h"
+#include "chrome/browser/apps/app_shim/app_shim_listener.h"
 #include "chrome/browser/browser_process_platform_part_base.h"
 
 class BrowserProcessPlatformPart : public BrowserProcessPlatformPartBase {
@@ -22,11 +22,11 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartBase {
   void AttemptExit(bool try_to_quit_application) override;
   void PreMainMessageLoopRun() override;
 
-  AppShimHostManager* app_shim_host_manager();
+  AppShimListener* app_shim_listener();
 
  private:
   // Hosts the IPC channel factory that App Shims connect to on Mac.
-  scoped_refptr<AppShimHostManager> app_shim_host_manager_;
+  scoped_refptr<AppShimListener> app_shim_listener_;
 
   DISALLOW_COPY_AND_ASSIGN(BrowserProcessPlatformPart);
 };

@@ -14,13 +14,12 @@
 #include "net/base/escape.h"
 #include "net/base/hex_utils.h"
 #include "net/third_party/quiche/src/http2/platform/api/http2_export.h"
-#include "net/third_party/quiche/src/http2/platform/api/http2_string.h"
 #include "net/third_party/quiche/src/http2/platform/api/http2_string_piece.h"
 
 namespace http2 {
 
 template <typename... Args>
-inline Http2String Http2StrCatImpl(const Args&... args) {
+inline std::string Http2StrCatImpl(const Args&... args) {
   std::ostringstream oss;
   int dummy[] = {1, (oss << args, 0)...};
   static_cast<void>(dummy);
@@ -28,33 +27,36 @@ inline Http2String Http2StrCatImpl(const Args&... args) {
 }
 
 template <typename... Args>
-inline void Http2StrAppendImpl(Http2String* output, Args... args) {
+inline void Http2StrAppendImpl(std::string* output, Args... args) {
   output->append(Http2StrCatImpl(args...));
 }
 
 template <typename... Args>
-inline Http2String Http2StringPrintfImpl(const Args&... args) {
+inline std::string Http2StringPrintfImpl(const Args&... args) {
   return base::StringPrintf(std::forward<const Args&>(args)...);
 }
 
-inline Http2String Http2HexEncodeImpl(const void* bytes, size_t size) {
+inline std::string Http2HexEncodeImpl(const void* bytes, size_t size) {
   return base::HexEncode(bytes, size);
 }
 
-inline Http2String Http2HexDecodeImpl(Http2StringPiece data) {
-  return net::HexDecode(data);
+inline std::string Http2HexDecodeImpl(Http2StringPiece data) {
+  std::string result;
+  if (!base::HexStringToString(data, &result))
+    result.clear();
+  return result;
 }
 
-inline Http2String Http2HexDumpImpl(Http2StringPiece data) {
+inline std::string Http2HexDumpImpl(Http2StringPiece data) {
   return net::HexDump(data);
 }
 
-inline Http2String Http2HexEscapeImpl(Http2StringPiece data) {
+inline std::string Http2HexEscapeImpl(Http2StringPiece data) {
   return net::EscapeQueryParamValue(data, false);
 }
 
 template <typename Number>
-inline Http2String Http2HexImpl(Number number) {
+inline std::string Http2HexImpl(Number number) {
   std::stringstream str;
   str << std::hex << number;
   return str.str();

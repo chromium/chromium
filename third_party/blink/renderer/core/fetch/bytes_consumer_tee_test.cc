@@ -21,7 +21,7 @@ namespace {
 using Result = BytesConsumer::Result;
 
 class BytesConsumerTestClient final
-    : public GarbageCollectedFinalized<BytesConsumerTestClient>,
+    : public GarbageCollected<BytesConsumerTestClient>,
       public BytesConsumer::Client {
   USING_GARBAGE_COLLECTED_MIXIN(BytesConsumerTestClient);
 
@@ -351,7 +351,7 @@ TEST_F(BytesConsumerTeeTest, CancelShouldNotAffectTheOtherDestination2) {
 
 TEST_F(BytesConsumerTeeTest, BlobHandle) {
   scoped_refptr<BlobDataHandle> blob_data_handle =
-      BlobDataHandle::Create(BlobData::Create(), 12345);
+      BlobDataHandle::Create(std::make_unique<BlobData>(), 12345);
   BytesConsumer* src =
       MakeGarbageCollected<FakeBlobBytesConsumer>(blob_data_handle);
 
@@ -372,8 +372,8 @@ TEST_F(BytesConsumerTeeTest, BlobHandle) {
 }
 
 TEST_F(BytesConsumerTeeTest, BlobHandleWithInvalidSize) {
-  scoped_refptr<BlobDataHandle> blob_data_handle =
-      BlobDataHandle::Create(BlobData::Create(), -1);
+  scoped_refptr<BlobDataHandle> blob_data_handle = BlobDataHandle::Create(
+      std::make_unique<BlobData>(), std::numeric_limits<uint64_t>::max());
   BytesConsumer* src =
       MakeGarbageCollected<FakeBlobBytesConsumer>(blob_data_handle);
 

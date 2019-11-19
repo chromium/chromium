@@ -106,8 +106,8 @@ TEST_F(OAuth2ManifestTest, OAuth2SectionParsing) {
   base_manifest.SetPath(TokenizeDictionaryPath(keys::kOAuth2ClientId),
                         base::Value("client1"));
   base::Value scopes(base::Value::Type::LIST);
-  scopes.GetList().push_back(base::Value("scope1"));
-  scopes.GetList().push_back(base::Value("scope2"));
+  scopes.Append(base::Value("scope1"));
+  scopes.Append(base::Value("scope2"));
   base_manifest.SetPath(TokenizeDictionaryPath(keys::kOAuth2Scopes),
                         std::move(scopes));
 

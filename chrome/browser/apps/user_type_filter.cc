@@ -6,7 +6,6 @@
 
 #include "base/values.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
-#include "chrome/browser/policy/profile_policy_connector_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -31,8 +30,7 @@ std::string DetermineUserType(Profile* profile) {
     return kUserTypeChild;
   if (profile->IsLegacySupervised())
     return kUserTypeSupervised;
-  if (policy::ProfilePolicyConnectorFactory::GetForBrowserContext(profile)
-          ->IsManaged()) {
+  if (profile->GetProfilePolicyConnector()->IsManaged()) {
     return kUserTypeManaged;
   }
   return kUserTypeUnmanaged;

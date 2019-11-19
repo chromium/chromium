@@ -30,6 +30,7 @@ New Tokens
     GL_COLOR_SPACE_SCRGB_LINEAR_CHROMIUM              0x8AF2
     GL_COLOR_SPACE_SRGB_CHROMIUM                      0x8AF3
     GL_COLOR_SPACE_DISPLAY_P3_CHROMIUM                0x8AF4
+    GL_COLOR_SPACE_HDR10_CHROMIUM                     0x8AF5
 
 New Procedures and Functions
 
@@ -53,7 +54,7 @@ New Procedures and Functions
         GL_COLOR_SPACE_SRGB_CHROMIUM: Indicates that the display system should
         interpret output colors as being sRGB values. On EGL-based systems this
         corresponds to using the default value, EGL_GL_COLORSPACE_LINEAR_KHR,
-        for the EGL_GL_COLORSPACE_KHR property in EGL_KHR_gl_colorspace. 
+        for the EGL_GL_COLORSPACE_KHR property in EGL_KHR_gl_colorspace.
         GL_COLOR_SPACE_DISPLAY_P3_CHROMIUM: Indicates that the display system
         should interpret output colors as being in P3 D65 color space. As above,
         this corresponds to the EGL_GL_COLORSPACE_DISPLAY_P3_LINEAR_EXT value

@@ -14,8 +14,7 @@ WebMemoryStatistics WebMemoryStatistics::Get() {
   statistics.partition_alloc_total_allocated_bytes =
       WTF::Partitions::TotalActiveBytes();
   statistics.blink_gc_total_allocated_bytes =
-      ProcessHeap::TotalAllocatedObjectSize() +
-      ProcessHeap::TotalMarkedObjectSize();
+      ProcessHeap::TotalAllocatedObjectSize();
   return statistics;
 }
 

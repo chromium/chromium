@@ -1,0 +1,30 @@
+<!DOCTYPE HTML>
+<style>
+#scroller {
+    overflow: scroll;
+    height: 300px;
+    width: 300px;
+    background-color: red;
+}
+
+#inner {
+    height: 1000px;
+    width: 250px;
+    background-color: blue;
+    clip-path: polygon(40px 550px,432px 302px,409px 237px,46px 156px);
+}
+
+#fixed {
+    position: fixed;
+    height: 100px;
+    width: 100px;
+    background-color: green;
+    top: 400px;
+    left: 100px;
+}
+</style>
+<div id="scroller">
+    <div id="inner">
+        <div id="fixed"></div>
+    </div>
+</div>

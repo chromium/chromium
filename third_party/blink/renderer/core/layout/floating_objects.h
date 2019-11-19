@@ -267,7 +267,7 @@ class FloatingObjects {
   LayoutUnit FindNextFloatLogicalBottomBelowForBlock(LayoutUnit logical_height);
 
   LayoutUnit LowestFloatLogicalBottom(FloatingObject::Type);
-  FloatingObject* LowestFloatingObject() const;
+  FloatingObject* LowestFloatingObject();
 
  private:
   bool HasLowestFloatLogicalBottomCached(bool is_horizontal,

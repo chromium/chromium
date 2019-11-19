@@ -32,9 +32,7 @@ WebGLVertexArrayObjectBase::WebGLVertexArrayObjectBase(
   }
 }
 
-WebGLVertexArrayObjectBase::~WebGLVertexArrayObjectBase() {
-  RunDestructor();
-}
+WebGLVertexArrayObjectBase::~WebGLVertexArrayObjectBase() = default;
 
 void WebGLVertexArrayObjectBase::DispatchDetached(
     gpu::gles2::GLES2Interface* gl) {

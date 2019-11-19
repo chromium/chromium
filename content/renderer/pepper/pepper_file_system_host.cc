@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/optional.h"
 #include "content/common/pepper_file_util.h"
 #include "content/public/common/service_names.mojom.h"
 #include "content/public/renderer/render_view.h"
@@ -18,14 +19,31 @@
 #include "ppapi/proxy/ppapi_messages.h"
 #include "ppapi/shared_impl/file_system_util.h"
 #include "ppapi/shared_impl/file_type_conversion.h"
-#include "services/service_manager/public/cpp/connector.h"
-#include "storage/common/fileapi/file_system_type_converters.h"
-#include "storage/common/fileapi/file_system_util.h"
+#include "storage/common/file_system/file_system_util.h"
+#include "third_party/blink/public/mojom/filesystem/file_system.mojom.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_view.h"
 
 namespace content {
+
+namespace {
+
+base::Optional<blink::mojom::FileSystemType>
+PepperFileSystemTypeToMojoFileSystemType(PP_FileSystemType type) {
+  switch (type) {
+    case PP_FILESYSTEMTYPE_LOCALTEMPORARY:
+      return blink::mojom::FileSystemType::kTemporary;
+    case PP_FILESYSTEMTYPE_LOCALPERSISTENT:
+      return blink::mojom::FileSystemType::kPersistent;
+    case PP_FILESYSTEMTYPE_EXTERNAL:
+      return blink::mojom::FileSystemType::kExternal;
+    default:
+      return base::nullopt;
+  }
+}
+
+}  // namespace
 
 PepperFileSystemHost::PepperFileSystemHost(RendererPpapiHost* host,
                                            PP_Instance instance,
@@ -97,9 +115,9 @@ int32_t PepperFileSystemHost::OnHostMsgOpen(
     return PP_ERROR_INPROGRESS;
   called_open_ = true;
 
-  storage::FileSystemType file_system_type =
-      PepperFileSystemTypeToFileSystemType(type_);
-  if (file_system_type == storage::kFileSystemTypeUnknown)
+  base::Optional<blink::mojom::FileSystemType> file_system_type =
+      PepperFileSystemTypeToMojoFileSystemType(type_);
+  if (!file_system_type.has_value())
     return PP_ERROR_FAILED;
 
   GURL document_url = renderer_ppapi_host_->GetDocumentURL(pp_instance());
@@ -108,8 +126,7 @@ int32_t PepperFileSystemHost::OnHostMsgOpen(
 
   reply_context_ = context->MakeReplyMessageContext();
   GetFileSystemManager().Open(
-      url::Origin::Create(document_url),
-      mojo::ConvertTo<blink::mojom::FileSystemType>(file_system_type),
+      url::Origin::Create(document_url), file_system_type.value(),
       base::BindOnce(&PepperFileSystemHost::DidOpenFileSystem, AsWeakPtr()));
   return PP_OK_COMPLETIONPENDING;
 }
@@ -145,8 +162,8 @@ int32_t PepperFileSystemHost::OnHostMsgInitIsolatedFileSystem(
 
 blink::mojom::FileSystemManager& PepperFileSystemHost::GetFileSystemManager() {
   if (!file_system_manager_) {
-    ChildThreadImpl::current()->GetConnector()->BindInterface(
-        mojom::kBrowserServiceName, mojo::MakeRequest(&file_system_manager_));
+    ChildThreadImpl::current()->BindHostReceiver(
+        file_system_manager_.BindNewPipeAndPassReceiver());
   }
   return *file_system_manager_;
 }

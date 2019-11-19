@@ -12,13 +12,12 @@
 #include "base/task/post_task.h"
 #include "base/version.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/common/pref_names.h"
 #include "components/component_updater/component_updater_paths.h"
-#include "components/data_reduction_proxy/core/common/data_reduction_proxy_switches.h"
+#include "components/data_reduction_proxy/core/browser/data_reduction_proxy_settings.h"
 #include "components/optimization_guide/optimization_guide_constants.h"
+#include "components/optimization_guide/optimization_guide_features.h"
 #include "components/optimization_guide/optimization_guide_service.h"
 #include "components/prefs/pref_service.h"
-#include "components/previews/core/previews_experiments.h"
 
 using component_updater::ComponentUpdateService;
 
@@ -137,17 +136,16 @@ OptimizationHintsComponentInstallerPolicy::GetMimeTypes() const {
 }
 
 void RegisterOptimizationHintsComponent(ComponentUpdateService* cus,
+                                        bool is_off_the_record_profile,
                                         PrefService* profile_prefs) {
-  if (!previews::params::IsOptimizationHintsEnabled()) {
+  if (!optimization_guide::features::IsOptimizationHintsEnabled()) {
     return;
   }
 
-  bool data_saver_enabled =
-      base::CommandLine::ForCurrentProcess()->HasSwitch(
-          data_reduction_proxy::switches::kEnableDataReductionProxy) ||
-      (profile_prefs && profile_prefs->GetBoolean(prefs::kDataSaverEnabled));
-  if (!data_saver_enabled)
+  if (!data_reduction_proxy::DataReductionProxySettings::
+          IsDataSaverEnabledByUser(is_off_the_record_profile, profile_prefs)) {
     return;
+  }
   auto installer = base::MakeRefCounted<ComponentInstaller>(
       std::make_unique<OptimizationHintsComponentInstallerPolicy>());
   installer->Register(cus, base::OnceClosure());

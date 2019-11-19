@@ -101,7 +101,7 @@ void HidService::RemoveDevice(const HidPlatformDeviceId& platform_device_id) {
   if (!device_guid.empty()) {
     HID_LOG(USER) << "HID device removed: deviceId='" << platform_device_id
                   << "'";
-    DCHECK(base::ContainsKey(devices_, device_guid));
+    DCHECK(base::Contains(devices_, device_guid));
 
     scoped_refptr<HidDeviceInfo> device_info = devices_[device_guid];
     if (enumeration_ready_) {

@@ -49,7 +49,7 @@ ConstrainedWebDialogDelegateBase::ConstrainedWebDialogDelegateBase(
   renderer_preferences_util::UpdateFromSystemSettings(
       prefs, Profile::FromBrowserContext(browser_context));
 
-  web_contents_->GetRenderViewHost()->SyncRendererPrefs();
+  web_contents_->SyncRendererPrefs();
 
   // Set |this| as a delegate so the ConstrainedWebDialogUI can retrieve it.
   ConstrainedWebDialogUI::SetConstrainedDelegate(web_contents_, this);

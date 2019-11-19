@@ -11,10 +11,11 @@
 #include "base/synchronization/lock.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/memory_dump_request_args.h"
-#include "mojo/public/cpp/bindings/binding.h"
-#include "services/resource_coordinator/public/cpp/memory_instrumentation/coordinator.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom.h"
-#include "services/service_manager/public/cpp/connector.h"
 
 namespace memory_instrumentation {
 
@@ -31,27 +32,19 @@ class TracingObserver;
 class COMPONENT_EXPORT(RESOURCE_COORDINATOR_PUBLIC_MEMORY_INSTRUMENTATION)
     ClientProcessImpl : public mojom::ClientProcess {
  public:
-  struct COMPONENT_EXPORT(
-      RESOURCE_COORDINATOR_PUBLIC_MEMORY_INSTRUMENTATION) Config {
-   public:
-    Config(service_manager::Connector* connector,
-           const std::string& service_name,
-           mojom::ProcessType process_type);
-    ~Config();
-
-    service_manager::Connector* const connector;
-    Coordinator* coordinator_for_testing;
-    const std::string service_name;
-    const mojom::ProcessType process_type;
-  };
-
-  static void CreateInstance(const Config& config);
+  static void CreateInstance(
+      mojo::PendingReceiver<mojom::ClientProcess> receiver,
+      mojo::PendingRemote<mojom::Coordinator> coordinator,
+      bool is_browser_process = false);
 
  private:
   friend std::default_delete<ClientProcessImpl>;  // For testing
   friend class MemoryTracingIntegrationTest;
 
-  ClientProcessImpl(const Config& config);
+  ClientProcessImpl(mojo::PendingReceiver<mojom::ClientProcess> receiver,
+                    mojo::PendingRemote<mojom::Coordinator> coordinator,
+                    bool is_browser_process,
+                    bool initialize_memory_instrumentation);
   ~ClientProcessImpl() override;
 
   // Implements base::trace_event::MemoryDumpManager::RequestGlobalDumpCallback.
@@ -99,9 +92,8 @@ class COMPONENT_EXPORT(RESOURCE_COORDINATOR_PUBLIC_MEMORY_INSTRUMENTATION)
       delayed_os_memory_dump_callbacks_;
   base::Optional<uint64_t> most_recent_chrome_memory_dump_guid_;
 
-  mojom::CoordinatorPtr coordinator_;
-  mojo::Binding<mojom::ClientProcess> binding_;
-  const mojom::ProcessType process_type_;
+  mojo::Receiver<mojom::ClientProcess> receiver_;
+  mojo::Remote<mojom::Coordinator> coordinator_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   // TODO(ssid): This should be moved to coordinator instead of clients once we

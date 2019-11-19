@@ -6,20 +6,17 @@ importScripts("/resources/testharness.js");
 
 self.addEventListener('install', (event) => {
   event.waitUntil((async () => {
-    await cookieStore.subscribeToChanges([
-      { name: 'cookie-name', matchType: 'equals', url: '/scope/path' }]);
+    try {
+      await cookieStore.subscribeToChanges([
+        { name: 'cookie-name', matchType: 'equals',
+          url: '/cookie-store/scope/path' }]);
+
+      // If the worker enters the "redundant" state, the UA may terminate it
+      // before all tests have been reported to the client. Stifle errors in
+      // order to avoid this and ensure all tests are consistently reported.
+    } catch (err) {}
   })());
 });
-
-// Workaround because add_cleanup doesn't support async functions yet.
-// See https://github.com/web-platform-tests/wpt/issues/6075
-async function async_cleanup(cleanup_function) {
-  try {
-    await cleanup_function();
-  } catch (e) {
-    // Errors in cleanup functions shouldn't result in test failures.
-  }
-}
 
 // Resolves when the service worker receives the 'activate' event.
 const kServiceWorkerActivatedPromise = new Promise(resolve => {
@@ -47,6 +44,9 @@ promise_test(async testCase => {
   });
 
   await cookieStore.set('cookie-name', 'cookie-value');
+  testCase.add_cleanup(async () => {
+    await cookieStore.delete('cookie-name');
+  });
 
   const event = await cookie_change_received_promise;
   assert_equals(event.type, 'cookiechange');
@@ -56,8 +56,6 @@ promise_test(async testCase => {
   assert_equals(event.deleted.length, 0);
   assert_true(event instanceof ExtendableCookieChangeEvent);
   assert_true(event instanceof ExtendableEvent);
-
-  await async_cleanup(() => cookieStore.delete('cookie-name'));
 }, 'cookiechange dispatched with cookie change that matches subscription ' +
    'to event handler registered with addEventListener');
 

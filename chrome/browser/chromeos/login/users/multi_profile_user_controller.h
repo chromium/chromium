@@ -9,13 +9,16 @@
 #include <string>
 #include <vector>
 
-#include "ash/public/interfaces/login_user_info.mojom.h"
 #include "base/macros.h"
 
 class PrefChangeRegistrar;
 class PrefRegistrySimple;
 class PrefService;
 class Profile;
+
+namespace ash {
+enum class MultiProfileUserBehavior;
+}
 
 namespace user_prefs {
 class PrefRegistrySyncable;
@@ -72,7 +75,7 @@ class MultiProfileUserController {
   static UserAllowedInSessionReason GetPrimaryUserPolicy();
 
   // Returns the user behavior in MultiProfileUserBehavior enum.
-  static ash::mojom::MultiProfileUserBehavior UserBehaviorStringToEnum(
+  static ash::MultiProfileUserBehavior UserBehaviorStringToEnum(
       const std::string& behavior);
 
   // Returns true if user allowed to be in the current session. If |reason| not

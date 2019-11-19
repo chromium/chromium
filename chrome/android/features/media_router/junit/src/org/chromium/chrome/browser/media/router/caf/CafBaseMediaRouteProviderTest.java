@@ -23,9 +23,10 @@ import static org.mockito.Mockito.verify;
 import static org.chromium.chrome.browser.media.router.caf.CafBaseMediaRouteProvider.NO_SINKS;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
 import android.support.v7.media.MediaRouteSelector;
 import android.support.v7.media.MediaRouter;
+
+import androidx.annotation.NonNull;
 
 import com.google.android.gms.cast.framework.CastContext;
 import com.google.android.gms.cast.framework.CastSession;

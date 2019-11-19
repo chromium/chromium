@@ -81,7 +81,7 @@ std::string MakeDeviceUniqueId(struct udev_device* device) {
 // device details.
 class ScopedGetDeviceInfoResultRecorder {
  public:
-  ScopedGetDeviceInfoResultRecorder() : result_(false) {}
+  ScopedGetDeviceInfoResultRecorder() = default;
   ~ScopedGetDeviceInfoResultRecorder() {
     UMA_HISTOGRAM_BOOLEAN("MediaDeviceNotification.UdevRequestSuccess",
                           result_);
@@ -92,7 +92,7 @@ class ScopedGetDeviceInfoResultRecorder {
   }
 
  private:
-  bool result_;
+  bool result_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(ScopedGetDeviceInfoResultRecorder);
 };
@@ -194,14 +194,14 @@ void BounceMtabUpdateToStorageMonitorTaskRunner(
                                         base::BindOnce(callback, new_mtab));
 }
 
-MtabWatcherLinux* CreateMtabWatcherLinuxOnMtabWatcherTaskRunner(
+std::unique_ptr<MtabWatcherLinux> CreateMtabWatcherLinuxOnMtabWatcherTaskRunner(
     const base::FilePath& mtab_path,
     scoped_refptr<base::SequencedTaskRunner> storage_monitor_task_runner,
     const MtabWatcherLinux::UpdateMtabCallback& callback) {
-  // Owned by caller.
-  return new MtabWatcherLinux(
-      mtab_path, base::Bind(&BounceMtabUpdateToStorageMonitorTaskRunner,
-                            storage_monitor_task_runner, callback));
+  return std::make_unique<MtabWatcherLinux>(
+      mtab_path,
+      base::BindRepeating(&BounceMtabUpdateToStorageMonitorTaskRunner,
+                          storage_monitor_task_runner, callback));
 }
 
 StorageMonitor::EjectStatus EjectPathOnBlockingTaskRunner(
@@ -212,18 +212,16 @@ StorageMonitor::EjectStatus EjectPathOnBlockingTaskRunner(
 
   // Note: Linux LSB says umount should exist in /bin.
   static const char kUmountBinary[] = "/bin/umount";
-  std::vector<std::string> command;
-  command.push_back(kUmountBinary);
-  command.push_back(path.value());
+  std::vector<std::string> command{kUmountBinary, path.value()};
 
   base::LaunchOptions options;
   base::Process process = base::LaunchProcess(command, options);
   if (!process.IsValid())
     return StorageMonitor::EJECT_FAILURE;
 
+  static constexpr auto kEjectTimeout = base::TimeDelta::FromSeconds(3);
   int exit_code = -1;
-  if (!process.WaitForExitWithTimeout(base::TimeDelta::FromMilliseconds(3000),
-                                      &exit_code)) {
+  if (!process.WaitForExitWithTimeout(kEjectTimeout, &exit_code)) {
     process.Terminate(-1, false);
     base::EnsureProcessTerminated(std::move(process));
     return StorageMonitor::EJECT_FAILURE;
@@ -244,10 +242,10 @@ StorageMonitor::EjectStatus EjectPathOnBlockingTaskRunner(
 
 StorageMonitorLinux::StorageMonitorLinux(const base::FilePath& path)
     : mtab_path_(path),
-      get_device_info_callback_(base::Bind(&GetDeviceInfo)),
-      mtab_watcher_task_runner_(base::CreateSequencedTaskRunnerWithTraits(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT})),
-      weak_ptr_factory_(this) {}
+      get_device_info_callback_(base::BindRepeating(&GetDeviceInfo)),
+      mtab_watcher_task_runner_(
+          base::CreateSequencedTaskRunner({base::ThreadPool(), base::MayBlock(),
+                                           base::TaskPriority::BEST_EFFORT})) {}
 
 StorageMonitorLinux::~StorageMonitorLinux() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -260,12 +258,12 @@ void StorageMonitorLinux::Init() {
 
   base::PostTaskAndReplyWithResult(
       mtab_watcher_task_runner_.get(), FROM_HERE,
-      base::Bind(&CreateMtabWatcherLinuxOnMtabWatcherTaskRunner, mtab_path_,
-                 base::SequencedTaskRunnerHandle::Get(),
-                 base::Bind(&StorageMonitorLinux::UpdateMtab,
-                            weak_ptr_factory_.GetWeakPtr())),
-      base::Bind(&StorageMonitorLinux::OnMtabWatcherCreated,
-                 weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(&CreateMtabWatcherLinuxOnMtabWatcherTaskRunner, mtab_path_,
+                     base::SequencedTaskRunnerHandle::Get(),
+                     base::BindRepeating(&StorageMonitorLinux::UpdateMtab,
+                                         weak_ptr_factory_.GetWeakPtr())),
+      base::BindOnce(&StorageMonitorLinux::OnMtabWatcherCreated,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 bool StorageMonitorLinux::GetStorageInfoForPath(
@@ -278,7 +276,7 @@ bool StorageMonitorLinux::GetStorageInfoForPath(
     return false;
 
   base::FilePath current = path;
-  while (!base::ContainsKey(mount_info_map_, current) &&
+  while (!base::Contains(mount_info_map_, current) &&
          current != current.DirName())
     current = current.DirName();
 
@@ -327,14 +325,16 @@ void StorageMonitorLinux::EjectDevice(
 
   receiver()->ProcessDetach(device_id);
 
-  base::PostTaskWithTraitsAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+  base::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::Bind(&EjectPathOnBlockingTaskRunner, path, device), callback);
 }
 
-void StorageMonitorLinux::OnMtabWatcherCreated(MtabWatcherLinux* watcher) {
+void StorageMonitorLinux::OnMtabWatcherCreated(
+    std::unique_ptr<MtabWatcherLinux> watcher) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  mtab_watcher_.reset(watcher);
+  mtab_watcher_ = std::move(watcher);
 }
 
 void StorageMonitorLinux::UpdateMtab(const MountPointDeviceMap& new_mtab) {
@@ -400,8 +400,8 @@ void StorageMonitorLinux::UpdateMtab(const MountPointDeviceMap& new_mtab) {
 
   // Check new mtab entries against existing ones.
   scoped_refptr<base::SequencedTaskRunner> mounting_task_runner =
-      base::CreateSequencedTaskRunnerWithTraits(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
+      base::CreateSequencedTaskRunner({base::ThreadPool(), base::MayBlock(),
+                                       base::TaskPriority::BEST_EFFORT});
   for (auto new_iter = new_mtab.begin(); new_iter != new_mtab.end();
        ++new_iter) {
     const base::FilePath& mount_point = new_iter->first;
@@ -416,9 +416,10 @@ void StorageMonitorLinux::UpdateMtab(const MountPointDeviceMap& new_mtab) {
       } else {
         base::PostTaskAndReplyWithResult(
             mounting_task_runner.get(), FROM_HERE,
-            base::Bind(get_device_info_callback_, mount_device, mount_point),
-            base::Bind(&StorageMonitorLinux::AddNewMount,
-                       weak_ptr_factory_.GetWeakPtr(), mount_device));
+            base::BindOnce(get_device_info_callback_, mount_device,
+                           mount_point),
+            base::BindOnce(&StorageMonitorLinux::AddNewMount,
+                           weak_ptr_factory_.GetWeakPtr(), mount_device));
       }
     }
   }
@@ -431,15 +432,15 @@ void StorageMonitorLinux::UpdateMtab(const MountPointDeviceMap& new_mtab) {
   if (!IsInitialized()) {
     mounting_task_runner->PostTaskAndReply(
         FROM_HERE, base::DoNothing(),
-        base::Bind(&StorageMonitorLinux::MarkInitialized,
-                   weak_ptr_factory_.GetWeakPtr()));
+        base::BindOnce(&StorageMonitorLinux::MarkInitialized,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
 }
 
 bool StorageMonitorLinux::IsDeviceAlreadyMounted(
     const base::FilePath& mount_device) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return base::ContainsKey(mount_priority_map_, mount_device);
+  return base::Contains(mount_priority_map_, mount_device);
 }
 
 void StorageMonitorLinux::HandleDeviceMountedMultipleTimes(

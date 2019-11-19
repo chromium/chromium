@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/autofill/manual_fill/card_coordinator.h"
 
 #include "base/memory/ref_counted.h"
-#include "components/autofill/core/browser/credit_card.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "components/autofill/ios/browser/personal_data_manager_observer_bridge.h"
@@ -18,9 +18,7 @@
 #import "ios/chrome/browser/ui/table_view/table_view_navigation_controller.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
-#include "ios/web/public/web_state/web_frame.h"
-#include "ios/web/public/web_state/web_frame_util.h"
-#import "ios/web/public/web_state/web_state.h"
+#include "ios/web/public/js_messaging/web_frame.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -55,10 +53,11 @@
 @dynamic delegate;
 
 - (instancetype)
-initWithBaseViewController:(UIViewController*)viewController
-              browserState:(ios::ChromeBrowserState*)browserState
-              webStateList:(WebStateList*)webStateList
-          injectionHandler:(ManualFillInjectionHandler*)injectionHandler {
+    initWithBaseViewController:(UIViewController*)viewController
+                  browserState:(ios::ChromeBrowserState*)browserState
+                  webStateList:(WebStateList*)webStateList
+              injectionHandler:(ManualFillInjectionHandler*)injectionHandler
+                    dispatcher:(id<BrowserCoordinatorCommands>)dispatcher {
   self = [super initWithBaseViewController:viewController
                               browserState:browserState
                           injectionHandler:injectionHandler];
@@ -77,9 +76,10 @@ initWithBaseViewController:(UIViewController*)viewController
     std::vector<autofill::CreditCard*> cards =
         _personalDataManager->GetCreditCards();
 
-    _cardMediator = [[ManualFillCardMediator alloc] initWithCards:cards];
+    _cardMediator = [[ManualFillCardMediator alloc] initWithCards:cards
+                                                       dispatcher:dispatcher];
     _cardMediator.navigationDelegate = self;
-    _cardMediator.contentDelegate = self.manualFillInjectionHandler;
+    _cardMediator.contentInjector = self.injectionHandler;
     _cardMediator.consumer = _cardViewController;
 
     _cardRequester = [[ManualFillFullCardRequester alloc]
@@ -108,6 +108,10 @@ initWithBaseViewController:(UIViewController*)viewController
   __weak id<CardCoordinatorDelegate> delegate = self.delegate;
   [self dismissIfNecessaryThenDoCompletion:^{
     [delegate openCardSettings];
+    if (IsIPadIdiom()) {
+      // Settings close the popover but don't send a message to reopen it.
+      [delegate fallbackCoordinatorDidDismissPopover:self];
+    }
   }];
 }
 

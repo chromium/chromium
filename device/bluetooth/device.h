@@ -19,7 +19,7 @@
 #include "device/bluetooth/bluetooth_remote_gatt_descriptor.h"
 #include "device/bluetooth/bluetooth_remote_gatt_service.h"
 #include "device/bluetooth/public/mojom/device.mojom.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 namespace bluetooth {
 
@@ -37,7 +37,7 @@ class Device : public mojom::Device, public device::BluetoothAdapter::Observer {
   static void Create(
       scoped_refptr<device::BluetoothAdapter> adapter,
       std::unique_ptr<device::BluetoothGattConnection> connection,
-      mojom::DeviceRequest request);
+      mojo::PendingReceiver<mojom::Device> receiver);
 
   // Creates a mojom::DeviceInfo using info from the given |device|.
   static mojom::DeviceInfoPtr ConstructDeviceInfoStruct(
@@ -122,13 +122,13 @@ class Device : public mojom::Device, public device::BluetoothAdapter::Observer {
   // The GATT connection to this device.
   std::unique_ptr<device::BluetoothGattConnection> connection_;
 
-  mojo::StrongBindingPtr<mojom::Device> binding_;
+  mojo::SelfOwnedReceiverRef<mojom::Device> receiver_;
 
   // The services request queue which holds callbacks that are waiting for
   // services to be discovered for this device.
-  std::vector<base::Closure> pending_services_requests_;
+  std::vector<base::OnceClosure> pending_services_requests_;
 
-  base::WeakPtrFactory<Device> weak_ptr_factory_;
+  base::WeakPtrFactory<Device> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(Device);
 };

@@ -50,7 +50,7 @@ class PaintLayer;
 // painting non-hardware accelerated filters (FilterEffect). Hardware
 // accelerated CSS filters use CompositorFilterOperations, that is backed by cc.
 class PaintLayerResourceInfo final
-    : public GarbageCollectedFinalized<PaintLayerResourceInfo>,
+    : public GarbageCollected<PaintLayerResourceInfo>,
       public SVGResourceClient {
   USING_GARBAGE_COLLECTED_MIXIN(PaintLayerResourceInfo);
 

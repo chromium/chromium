@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 #include "device/gamepad/public/cpp/gamepad_mojom_traits.h"
-#include "base/message_loop/message_loop.h"
+
+#include "base/test/task_environment.h"
 #include "device/gamepad/public/cpp/gamepad.h"
 #include "device/gamepad/public/mojom/gamepad.mojom.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
@@ -54,17 +55,19 @@ Gamepad GetWebGamepadInstance(GamepadTestDataType type) {
     wgp.angular_acceleration = wgv;
   }
 
-  UChar wch[Gamepad::kMappingLengthCap] = {
-      1,    8,    9,     127,   128,   1024,  1025,  1949,
-      2047, 2048, 16383, 16384, 20000, 32767, 32768, 65535};
+  constexpr base::char16 kTestIdString[] = {L'M', L'o', L'c', L'k', L'S',
+                                            L't', L'i', L'c', L'k', L' ',
+                                            L'3', L'0', L'0', L'0', L'\0'};
+  constexpr size_t kTestIdStringLength = base::size(kTestIdString);
 
   Gamepad send;
   memset(&send, 0, sizeof(Gamepad));
 
   send.connected = true;
-  for (size_t i = 0; i < Gamepad::kMappingLengthCap; i++) {
-    send.id[i] = send.mapping[i] = wch[i];
+  for (size_t i = 0; i < kTestIdStringLength; i++) {
+    send.id[i] = kTestIdString[i];
   }
+  send.mapping = GamepadMapping::kNone;
   send.timestamp = base::TimeTicks::Now().since_origin().InMicroseconds();
   send.axes_length = 0U;
   for (size_t i = 0; i < Gamepad::kAxesLengthCap; i++) {
@@ -134,7 +137,7 @@ bool isWebGamepadEqual(const Gamepad& send, const Gamepad& echo) {
       send.axes_length != echo.axes_length ||
       send.buttons_length != echo.buttons_length ||
       !isWebGamepadPoseEqual(send.pose, echo.pose) || send.hand != echo.hand ||
-      send.display_id != echo.display_id) {
+      send.display_id != echo.display_id || send.mapping != echo.mapping) {
     return false;
   }
   for (size_t i = 0; i < Gamepad::kIdLengthCap; i++) {
@@ -152,11 +155,6 @@ bool isWebGamepadEqual(const Gamepad& send, const Gamepad& echo) {
       return false;
     }
   }
-  for (size_t i = 0; i < Gamepad::kMappingLengthCap; i++) {
-    if (send.mapping[i] != echo.mapping[i]) {
-      return false;
-    }
-  }
   return true;
 }
 }  // namespace
@@ -166,7 +164,7 @@ class GamepadStructTraitsTest : public testing::Test {
   GamepadStructTraitsTest() {}
 
  private:
-  base::MessageLoop message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
 
   DISALLOW_COPY_AND_ASSIGN(GamepadStructTraitsTest);
 };

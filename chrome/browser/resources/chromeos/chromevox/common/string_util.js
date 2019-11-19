@@ -50,10 +50,12 @@ StringUtil.MAX_BMP_CODEPOINT = 65535;
  * @return {number} A valid index of |str| or |str.length|.
  */
 StringUtil.nextCodePointOffset = function(str, offset) {
-  if (offset >= str.length)
+  if (offset >= str.length) {
     return str.length;
-  if (str.codePointAt(offset) > StringUtil.MAX_BMP_CODEPOINT)
+  }
+  if (str.codePointAt(offset) > StringUtil.MAX_BMP_CODEPOINT) {
     return offset + 2;
+  }
   return offset + 1;
 };
 
@@ -67,9 +69,12 @@ StringUtil.nextCodePointOffset = function(str, offset) {
  *     where |offset| is 0).
  */
 StringUtil.previousCodePointOffset = function(str, offset) {
-  if (offset <= 0)
+  if (offset <= 0) {
     return -1;
-  if (offset > 1 && str.codePointAt(offset - 2) > StringUtil.MAX_BMP_CODEPOINT)
+  }
+  if (offset > 1 &&
+      str.codePointAt(offset - 2) > StringUtil.MAX_BMP_CODEPOINT) {
     return offset - 2;
+  }
   return offset - 1;
 };

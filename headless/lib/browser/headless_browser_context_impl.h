@@ -12,6 +12,7 @@
 
 #include "base/files/file_path.h"
 #include "base/unguessable_token.h"
+#include "components/keyed_service/core/simple_factory_key.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/resource_context.h"
@@ -20,6 +21,7 @@
 #include "headless/public/headless_browser.h"
 #include "headless/public/headless_browser_context.h"
 #include "headless/public/headless_export.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace headless {
 class HeadlessBrowserImpl;
@@ -45,7 +47,7 @@ class HEADLESS_EXPORT HeadlessBrowserContextImpl final
   HeadlessWebContents* GetWebContentsForDevToolsAgentHostId(
       const std::string& devtools_agent_host_id) override;
   void Close() override;
-  const std::string& Id() const override;
+  const std::string& Id() override;
 
   void SetDevToolsFrameToken(int render_process_id,
                              int render_frame_routing_id,
@@ -59,13 +61,14 @@ class HEADLESS_EXPORT HeadlessBrowserContextImpl final
   // BrowserContext implementation:
   std::unique_ptr<content::ZoomLevelDelegate> CreateZoomLevelDelegate(
       const base::FilePath& partition_path) override;
-  base::FilePath GetPath() const override;
-  bool IsOffTheRecord() const override;
+  base::FilePath GetPath() override;
+  bool IsOffTheRecord() override;
   content::ResourceContext* GetResourceContext() override;
   content::DownloadManagerDelegate* GetDownloadManagerDelegate() override;
   content::BrowserPluginGuestManager* GetGuestManager() override;
   ::storage::SpecialStoragePolicy* GetSpecialStoragePolicy() override;
   content::PushMessagingService* GetPushMessagingService() override;
+  content::StorageNotificationService* GetStorageNotificationService() override;
   content::SSLHostStateDelegate* GetSSLHostStateDelegate() override;
   content::PermissionControllerDelegate* GetPermissionControllerDelegate()
       override;
@@ -75,18 +78,6 @@ class HEADLESS_EXPORT HeadlessBrowserContextImpl final
   content::BackgroundSyncController* GetBackgroundSyncController() override;
   content::BrowsingDataRemoverDelegate* GetBrowsingDataRemoverDelegate()
       override;
-  net::URLRequestContextGetter* CreateRequestContext(
-      content::ProtocolHandlerMap* protocol_handlers,
-      content::URLRequestInterceptorScopedVector request_interceptors) override;
-  net::URLRequestContextGetter* CreateRequestContextForStoragePartition(
-      const base::FilePath& partition_path,
-      bool in_memory,
-      content::ProtocolHandlerMap* protocol_handlers,
-      content::URLRequestInterceptorScopedVector request_interceptors) override;
-  net::URLRequestContextGetter* CreateMediaRequestContext() override;
-  net::URLRequestContextGetter* CreateMediaRequestContextForStoragePartition(
-      const base::FilePath& partition_path,
-      bool in_memory) override;
 
   HeadlessWebContents* CreateWebContents(HeadlessWebContents::Builder* builder);
   // Register web contents which were created not through Headless API
@@ -109,7 +100,7 @@ class HEADLESS_EXPORT HeadlessBrowserContextImpl final
   const base::UnguessableToken* GetDevToolsFrameTokenForFrameTreeNodeId(
       int frame_tree_node_id) const;
 
-  ::network::mojom::NetworkContextPtr CreateNetworkContext(
+  mojo::Remote<::network::mojom::NetworkContext> CreateNetworkContext(
       bool in_memory,
       const base::FilePath& relative_partition_path);
 
@@ -143,6 +134,7 @@ class HEADLESS_EXPORT HeadlessBrowserContextImpl final
       permission_controller_delegate_;
 
   std::unique_ptr<HeadlessRequestContextManager> request_context_manager_;
+  std::unique_ptr<SimpleFactoryKey> simple_factory_key_;
 
   DISALLOW_COPY_AND_ASSIGN(HeadlessBrowserContextImpl);
 };

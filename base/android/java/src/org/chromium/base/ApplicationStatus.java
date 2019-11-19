@@ -9,13 +9,16 @@ import android.app.Activity;
 import android.app.Application;
 import android.app.Application.ActivityLifecycleCallbacks;
 import android.os.Bundle;
-import android.support.annotation.AnyThread;
-import android.support.annotation.MainThread;
-import android.support.annotation.Nullable;
 import android.view.Window;
+
+import androidx.annotation.AnyThread;
+import androidx.annotation.MainThread;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
@@ -464,6 +467,7 @@ public class ApplicationStatus {
      * @return Whether any Activity under this Application is visible.
      */
     @AnyThread
+    @CalledByNative
     public static boolean hasVisibleActivities() {
         assert isInitialized();
         int state = getStateForApplication();
@@ -579,7 +583,7 @@ public class ApplicationStatus {
                 sNativeApplicationStateListener = new ApplicationStateListener() {
                     @Override
                     public void onApplicationStateChange(int newState) {
-                        nativeOnApplicationStateChange(newState);
+                        ApplicationStatusJni.get().onApplicationStateChange(newState);
                     }
                 };
                 registerApplicationStateListener(sNativeApplicationStateListener);
@@ -619,7 +623,10 @@ public class ApplicationStatus {
         return ApplicationState.HAS_DESTROYED_ACTIVITIES;
     }
 
-    // Called to notify the native side of state changes.
-    // IMPORTANT: This is always called on the main thread!
-    private static native void nativeOnApplicationStateChange(@ApplicationState int newState);
+    @NativeMethods
+    interface Natives {
+        // Called to notify the native side of state changes.
+        // IMPORTANT: This is always called on the main thread!
+        void onApplicationStateChange(@ApplicationState int newState);
+    }
 }

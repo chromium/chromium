@@ -13,7 +13,7 @@
 namespace feed {
 
 FeedHistoryHelper::FeedHistoryHelper(history::HistoryService* history_service)
-    : history_service_(history_service), weak_ptr_factory_(this) {}
+    : history_service_(history_service) {}
 
 FeedHistoryHelper::~FeedHistoryHelper() = default;
 
@@ -30,10 +30,8 @@ void FeedHistoryHelper::CheckURL(
 
 void FeedHistoryHelper::OnCheckURLDone(
     FeedLoggingMetrics::CheckURLVisitCallback callback,
-    bool success,
-    const history::URLRow& row,
-    const history::VisitVector& visit_vector) {
-  std::move(callback).Run(success && row.visit_count() != 0);
+    history::QueryURLResult result) {
+  std::move(callback).Run(result.success && result.row.visit_count() != 0);
 }
 
 }  // namespace feed

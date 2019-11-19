@@ -12,12 +12,13 @@
 namespace blink {
 
 class ModuleScript;
+class ScriptState;
 
 // This is an implementation of ModuleTreeClient for service workers that lives
 // on the worker context's thread.
 class ServiceWorkerModuleTreeClient final : public ModuleTreeClient {
  public:
-  explicit ServiceWorkerModuleTreeClient(Modulator*);
+  explicit ServiceWorkerModuleTreeClient(ScriptState*);
 
   // Implements ModuleTreeClient.
   void NotifyModuleTreeLoadFinished(ModuleScript*) final;
@@ -25,7 +26,7 @@ class ServiceWorkerModuleTreeClient final : public ModuleTreeClient {
   void Trace(blink::Visitor*) override;
 
  private:
-  Member<Modulator> modulator_;
+  Member<ScriptState> script_state_;
 };
 
 }  // namespace blink

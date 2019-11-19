@@ -10,17 +10,20 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
-import android.support.annotation.IntDef;
 import android.text.TextUtils;
+
+import androidx.annotation.IntDef;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.library_loader.LibraryProcessType;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.BackgroundOnlyAsyncTask;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.preferences.ChromePreferenceManager;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.content_public.browser.BrowserStartupController;
 
 import java.lang.annotation.Retention;
@@ -36,7 +39,7 @@ import java.util.concurrent.RejectedExecutionException;
  * A utility class for querying information about the default browser setting.
  */
 public final class DefaultBrowserInfo {
-    private static final String SAMPLE_URL = "https://www.madeupdomainforcheck123.com/";
+    private static final String SAMPLE_URL = "https://www.madeupdomainforcheck123.chrome/";
 
     /**
      * A list of potential default browser states.  To add a type to this list please update
@@ -95,14 +98,14 @@ public final class DefaultBrowserInfo {
                                 context, BuildInfo.getInstance().hostPackageLabel));
 
                         PackageManager pm = context.getPackageManager();
-                        ResolveInfo info = getResolveInfoForViewIntent(pm);
+                        ResolveInfo info = getResolveInfoForViewIntent();
 
                         // Caches whether Chrome is set as a default browser on the device.
                         boolean isDefault = info != null && info.match != 0
                                 && TextUtils.equals(
                                            context.getPackageName(), info.activityInfo.packageName);
-                        ChromePreferenceManager.getInstance().writeBoolean(
-                                ChromePreferenceManager.CHROME_DEFAULT_BROWSER, isDefault);
+                        SharedPreferencesManager.getInstance().writeBoolean(
+                                ChromePreferenceKeys.CHROME_DEFAULT_BROWSER, isDefault);
 
                         // Check if there is a default handler for the Intent.  If so, store its
                         // label.
@@ -127,24 +130,15 @@ public final class DefaultBrowserInfo {
 
     /**
      * @return Default ResolveInfo to handle a VIEW intent for a url.
-     * @param pm The PackageManager of current context.
      */
-    private static ResolveInfo getResolveInfoForViewIntent(PackageManager pm) {
+    private static ResolveInfo getResolveInfoForViewIntent() {
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(SAMPLE_URL));
-        try {
-            return pm.resolveActivity(intent, 0);
-        } catch (NullPointerException e) {
-            return null;
-        }
+        return PackageManagerUtils.resolveActivity(intent, 0);
     }
 
-    private static List<ResolveInfo> getResolveInfoListForViewIntent(PackageManager pm) {
+    private static List<ResolveInfo> getResolveInfoListForViewIntent() {
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(SAMPLE_URL));
-        try {
-            return pm.queryIntentActivities(intent, PackageManager.MATCH_ALL);
-        } catch (NullPointerException ex) {
-            return null;
-        }
+        return PackageManagerUtils.queryIntentActivities(intent, PackageManager.MATCH_ALL);
     }
 
     /**
@@ -171,7 +165,7 @@ public final class DefaultBrowserInfo {
      */
     public static void logDefaultBrowserStats() {
         assert BrowserStartupController.get(LibraryProcessType.PROCESS_BROWSER)
-                .isStartupSuccessfullyCompleted();
+                .isFullBrowserStarted();
 
         try {
             new AsyncTask<DefaultInfo>() {
@@ -179,12 +173,10 @@ public final class DefaultBrowserInfo {
                 protected DefaultInfo doInBackground() {
                     Context context = ContextUtils.getApplicationContext();
 
-                    PackageManager pm = context.getPackageManager();
-
                     DefaultInfo info = new DefaultInfo();
 
                     // Query the default handler first.
-                    ResolveInfo defaultRi = getResolveInfoForViewIntent(pm);
+                    ResolveInfo defaultRi = getResolveInfoForViewIntent();
                     if (defaultRi != null && defaultRi.match != 0) {
                         info.hasDefault = true;
                         info.isChromeDefault = isSamePackage(context, defaultRi);
@@ -193,7 +185,7 @@ public final class DefaultBrowserInfo {
 
                     // Query all other intent handlers.
                     Set<String> uniquePackages = new HashSet<>();
-                    List<ResolveInfo> ris = getResolveInfoListForViewIntent(pm);
+                    List<ResolveInfo> ris = getResolveInfoListForViewIntent();
                     if (ris != null) {
                         for (ResolveInfo ri : ris) {
                             String packageName = ri.activityInfo.applicationInfo.packageName;

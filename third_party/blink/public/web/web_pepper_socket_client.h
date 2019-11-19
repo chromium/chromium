@@ -59,8 +59,8 @@ class WebPepperSocketClient {
 
   // FIXME: Deperecate these methods.
   virtual void DidConnect() {}
-  virtual void DidUpdateBufferedAmount(unsigned long buffered_amount) {}
-  virtual void DidClose(unsigned long unhandled_buffered_amount,
+  virtual void DidUpdateBufferedAmount(uint64_t buffered_amount) {}
+  virtual void DidClose(uint64_t unhandled_buffered_amount,
                         ClosingHandshakeCompletionStatus,
                         uint16_t code,
                         const WebString& reason) {}

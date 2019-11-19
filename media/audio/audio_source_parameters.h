@@ -20,11 +20,11 @@ namespace media {
 // input device will be selected. This is the state when default constructed.
 struct MEDIA_EXPORT AudioSourceParameters final {
   AudioSourceParameters();
-  explicit AudioSourceParameters(int session_id);
+  explicit AudioSourceParameters(const base::UnguessableToken& session_id);
   AudioSourceParameters(const AudioSourceParameters& params);
   ~AudioSourceParameters();
 
-  int session_id = 0;
+  base::UnguessableToken session_id;
 
   struct MEDIA_EXPORT ProcessingConfig {
     ProcessingConfig(base::UnguessableToken id,

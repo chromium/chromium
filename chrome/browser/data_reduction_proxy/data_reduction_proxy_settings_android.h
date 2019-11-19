@@ -124,7 +124,7 @@ class DataReductionProxySettingsAndroid {
 
   virtual data_reduction_proxy::DataReductionProxySettings* Settings();
 
-  base::WeakPtrFactory<DataReductionProxySettingsAndroid> weak_factory_;
+  base::WeakPtrFactory<DataReductionProxySettingsAndroid> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DataReductionProxySettingsAndroid);
 };

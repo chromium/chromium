@@ -10,16 +10,18 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/component_export.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
 #include "build/buildflag.h"
-#include "chrome/browser/ui/libgtkui/libgtkui_export.h"
 #include "ui/base/glib/glib_signal.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/views/linux_ui/linux_ui.h"
 #include "ui/views/window/frame_buttons.h"
 
 typedef struct _GParamSpec GParamSpec;
+typedef struct _GtkParamSpec GtkParamSpec;
+typedef struct _GtkSettings GtkSettings;
 typedef struct _GtkStyle GtkStyle;
 typedef struct _GtkWidget GtkWidget;
 
@@ -28,6 +30,7 @@ using ColorMap = std::map<int, SkColor>;
 
 class GtkKeyBindingsHandler;
 class DeviceScaleFactorObserver;
+class NativeThemeGtk;
 class SettingsProvider;
 
 // Interface to GTK desktop features.
@@ -36,19 +39,12 @@ class GtkUi : public views::LinuxUI {
   GtkUi();
   ~GtkUi() override;
 
-  typedef base::Callback<ui::NativeTheme*(aura::Window* window)>
-      NativeThemeGetter;
-
   // Setters used by SettingsProvider:
   void SetWindowButtonOrdering(
       const std::vector<views::FrameButton>& leading_buttons,
       const std::vector<views::FrameButton>& trailing_buttons);
-  void SetNonClientWindowFrameAction(
-      NonClientWindowFrameActionSourceType source,
-      NonClientWindowFrameAction action);
-
-  // Called when gtk style changes
-  void ResetStyle();
+  void SetWindowFrameAction(WindowFrameActionSource source,
+                            WindowFrameAction action);
 
   // ui::LinuxInputMethodContextFactory:
   std::unique_ptr<ui::LinuxInputMethodContext> CreateInputMethodContext(
@@ -83,15 +79,8 @@ class GtkUi : public views::LinuxUI {
   SkColor GetInactiveSelectionFgColor() const override;
   base::TimeDelta GetCursorBlinkInterval() const override;
   ui::NativeTheme* GetNativeTheme(aura::Window* window) const override;
-  void SetNativeThemeOverride(const NativeThemeGetter& callback) override;
+  void SetUseSystemThemeCallback(UseSystemThemeCallback callback) override;
   bool GetDefaultUsesSystemTheme() const override;
-  void SetDownloadCount(int count) const override;
-  void SetProgressFraction(float percentage) const override;
-  bool IsStatusIconSupported() const override;
-  std::unique_ptr<views::StatusIconLinux> CreateLinuxStatusIcon(
-      const gfx::ImageSkia& image,
-      const base::string16& tool_tip,
-      const char* id_prefix) const override;
   gfx::Image GetIconForContentType(const std::string& content_type,
                                    int size) const override;
   std::unique_ptr<views::Border> CreateNativeBorder(
@@ -101,8 +90,8 @@ class GtkUi : public views::LinuxUI {
       views::WindowButtonOrderObserver* observer) override;
   void RemoveWindowButtonOrderObserver(
       views::WindowButtonOrderObserver* observer) override;
-  NonClientWindowFrameAction GetNonClientWindowFrameAction(
-      NonClientWindowFrameActionSourceType source) override;
+  WindowFrameAction GetWindowFrameAction(
+      WindowFrameActionSource source) override;
   void NotifyWindowManagerStartupComplete() override;
   void UpdateDeviceScaleFactor() override;
   float GetDeviceScaleFactor() const override;
@@ -115,6 +104,8 @@ class GtkUi : public views::LinuxUI {
   std::unique_ptr<views::NavButtonProvider> CreateNavButtonProvider() override;
 #endif
   base::flat_map<std::string, std::string> GetKeyboardLayoutMap() override;
+  std::string GetCursorThemeName() override;
+  int GetCursorThemeSize() override;
 
   // ui::TextEditKeybindingDelegate:
   bool MatchEvent(const ui::Event& event,
@@ -122,6 +113,20 @@ class GtkUi : public views::LinuxUI {
 
  private:
   using TintMap = std::map<int, color_utils::HSL>;
+
+  CHROMEG_CALLBACK_1(GtkUi, void, OnThemeChanged, GtkSettings*, GtkParamSpec*);
+
+  CHROMEG_CALLBACK_1(GtkUi,
+                     void,
+                     OnCursorThemeNameChanged,
+                     GtkSettings*,
+                     GtkParamSpec*);
+
+  CHROMEG_CALLBACK_1(GtkUi,
+                     void,
+                     OnCursorThemeSizeChanged,
+                     GtkSettings*,
+                     GtkParamSpec*);
 
   CHROMEG_CALLBACK_1(GtkUi,
                      void,
@@ -133,18 +138,15 @@ class GtkUi : public views::LinuxUI {
   void LoadGtkValues();
 
   // Extracts colors and tints from the GTK theme, both for the
-  // ThemeService interface and the colors we send to webkit.
+  // ThemeService interface and the colors we send to Blink.
   void UpdateColors();
-
-  // Sets the Xcursor theme and size with the GTK theme and size.
-  void UpdateCursorTheme();
 
   // Updates |default_font_*|.
   void UpdateDefaultFont();
 
   float GetRawDeviceScaleFactor();
 
-  ui::NativeTheme* native_theme_;
+  NativeThemeGtk* native_theme_;
 
   // A regular GtkWindow.
   GtkWidget* fake_window_;
@@ -161,7 +163,7 @@ class GtkUi : public views::LinuxUI {
   // system-rendered borders and titlebar.
   ColorMap native_frame_colors_;
 
-  // Colors that we pass to WebKit. These are generated each time the theme
+  // Colors that we pass to Blink. These are generated each time the theme
   // changes.
   SkColor focus_ring_color_;
   SkColor active_selection_bg_color_;
@@ -196,13 +198,13 @@ class GtkUi : public views::LinuxUI {
       device_scale_factor_observer_list_;
 
   // The action to take when middle, double, or right clicking the titlebar.
-  NonClientWindowFrameAction
-      window_frame_actions_[WINDOW_FRAME_ACTION_SOURCE_LAST];
+  base::flat_map<WindowFrameActionSource, WindowFrameAction>
+      window_frame_actions_;
 
-  // Used to override the native theme for a window. If no override is provided
-  // or the callback returns nullptr, GtkUi will default to a NativeThemeGtk
-  // instance.
-  NativeThemeGetter native_theme_overrider_;
+  // Used to determine whether the system theme should be used for a window.  If
+  // no override is provided or the callback returns true, GtkUi will default
+  // to a NativeThemeGtk instance.
+  UseSystemThemeCallback use_system_theme_callback_;
 
   float device_scale_factor_ = 1.0f;
 
@@ -212,6 +214,6 @@ class GtkUi : public views::LinuxUI {
 }  // namespace libgtkui
 
 // Access point to the GTK desktop system.
-LIBGTKUI_EXPORT views::LinuxUI* BuildGtkUi();
+COMPONENT_EXPORT(LIBGTKUI) views::LinuxUI* BuildGtkUi();
 
 #endif  // CHROME_BROWSER_UI_LIBGTKUI_GTK_UI_H_

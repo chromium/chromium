@@ -12,6 +12,9 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/strings/string_util.h"
+#include "components/password_manager/core/browser/import/csv_field_parser.h"
+
+namespace password_manager {
 
 namespace {
 
@@ -56,195 +59,6 @@ base::StringPiece ConsumeLine(base::StringPiece* input) {
   return ret;
 }
 
-// Created for a row (line) of comma-separated-values, iteratively returns
-// individual fields.
-class FieldParser {
- public:
-  explicit FieldParser(base::StringPiece row);
-  ~FieldParser();
-
-  // Advances the parser over the next comma-separated field and writes its
-  // contents into |field_contents| (comma separator excluded, enclosing
-  // quotation marks excluded, if present). Returns true if there were no
-  // errors. The input must not be empty (check with HasMoreFields() before
-  // calling).
-  // TODO(crbug.com/918530): Also unescape the field contents.
-  bool NextField(base::StringPiece* field_contents);
-
-  bool HasMoreFields() const {
-    return state_ != State::kError && position_ <= row_.size();
-  }
-
- private:
-  enum class State {
-    // The state just before a new field begins.
-    kInit,
-    // The state after parsing a syntax error.
-    kError,
-    // When inside a non-escaped block.
-    kPlain,
-    // When inside a quotation-mark-escaped block.
-    kQuoted,
-    // When after reading a block starting and ending with quotation marks. For
-    // the following input, the state would be visited after reading characters
-    // 4 and 7:
-    // a,"b""c",d
-    // 0123456789
-    kAfter,
-  };
-
-  // Returns the next character to be read and updates |position_|.
-  char ConsumeChar();
-
-  // Updates |state_| based on the next character to be read, according to this
-  // diagram (made with help of asciiflow.com):
-  //
-  //   ,
-  //  +--+  +--------------------------+
-  //  |  |  |                          |
-  // +V--+--V+all but " or , +--------+|
-  // |       +--------------->        ||
-  // | kInit |               | kPlain ||
-  // |       <---------------+        ||
-  // ++------+      ,        +^------++|
-  //  |                       |      | |
-  // "|                       +------+ |
-  //  |                    all but ,   |,
-  //  |                                |
-  //  |                                |
-  //  |   +---------+    "     +-------++
-  //  |   |         +---------->        |
-  //  +---> kQuoted |          | kAfter |
-  //      |         <----------+        |
-  //      +---------+    "     +-----+--+
-  //                                |
-  //      +--------+                |
-  //      |        |                |
-  //      | kError <----------------+
-  //      |        |   all but " or ,
-  //      +--------+
-  //
-  // The state kError has no outgoing transitions and so UpdateState should not
-  // be called when this state has been entered.
-  void UpdateState();
-
-  // State of the parser.
-  State state_ = State::kInit;
-  // The input.
-  const base::StringPiece row_;
-  // If |position_| is >=0 and < |row_.size()|, then it points at the character
-  // to be read next from |row_|. If it is equal to |row_.size()|, then it means
-  // a fake trailing "," will be read next. If it is |row_.size() + 1|, then
-  // reading is done.
-  size_t position_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(FieldParser);
-};
-
-FieldParser::FieldParser(base::StringPiece row) : row_(row) {}
-
-FieldParser::~FieldParser() = default;
-
-bool FieldParser::NextField(base::StringPiece* field_contents) {
-  DCHECK(HasMoreFields());
-
-  if (state_ != State::kInit) {
-    state_ = State::kError;
-    return false;
-  }
-
-  const size_t start = position_;
-  do {
-    UpdateState();
-  } while (state_ != State::kInit && state_ != State::kError);
-
-  if (state_ != State::kError) {
-    DCHECK_GT(position_, start);  // There must have been at least the ','.
-    *field_contents =
-        base::StringPiece(row_.data() + start, position_ - start - 1);
-
-    if (field_contents->starts_with("\"")) {
-      DCHECK(field_contents->ends_with("\"")) << *field_contents;
-      DCHECK_GE(field_contents->size(), 2u);
-      field_contents->remove_prefix(1);
-      field_contents->remove_suffix(1);
-    }
-    return true;
-  }
-  return false;
-}
-
-char FieldParser::ConsumeChar() {
-  DCHECK_LE(position_, row_.size());
-  // The default character to return once all from |row_| are consumed and
-  // |position_| == |row_.size()|.
-  char ret = ',';
-  if (position_ < row_.size())
-    ret = row_[position_];
-  ++position_;
-  return ret;
-}
-
-void FieldParser::UpdateState() {
-  if (position_ > row_.size()) {
-    // If in state |kInit| then the program attempts to read one field too many.
-    DCHECK_NE(state_, State::kInit);
-    // Otherwise a quotation mark was not matched before the end of input.
-    state_ = State::kError;
-    return;
-  }
-
-  char read = ConsumeChar();
-  switch (state_) {
-    case State::kInit:
-      switch (read) {
-        case ',':
-          break;
-        case '"':
-          state_ = State::kQuoted;
-          break;
-        default:
-          state_ = State::kPlain;
-          break;
-      }
-      break;
-    case State::kPlain:
-      switch (read) {
-        case ',':
-          state_ = State::kInit;
-          break;
-        default:
-          break;
-      }
-      break;
-    case State::kQuoted:
-      switch (read) {
-        case '"':
-          state_ = State::kAfter;
-          break;
-        default:
-          break;
-      }
-      break;
-    case State::kAfter:
-      switch (read) {
-        case ',':
-          state_ = State::kInit;
-          break;
-        case '"':
-          state_ = State::kQuoted;
-          break;
-        default:
-          state_ = State::kError;
-          break;
-      }
-      break;
-    case State::kError:
-      NOTREACHED();
-      break;
-  }
-}
-
 // Created for a string with potentially multiple rows of
 // comma-separated-values, iteratively returns individual fields from row after
 // row.
@@ -274,7 +88,7 @@ bool CSVParser::ParseNextCSVRow(std::vector<std::string>* fields) {
   fields->clear();
 
   DCHECK(HasMoreRows());
-  FieldParser parser(ConsumeLine(&remaining_csv_piece_));
+  CSVFieldParser parser(ConsumeLine(&remaining_csv_piece_));
   base::StringPiece current_field;
   while (parser.HasMoreFields()) {
     if (!parser.NextField(&current_field))
@@ -289,8 +103,6 @@ bool CSVParser::ParseNextCSVRow(std::vector<std::string>* fields) {
 }
 
 }  // namespace
-
-namespace password_manager {
 
 CSVTable::CSVTable() = default;
 

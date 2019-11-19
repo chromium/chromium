@@ -36,7 +36,7 @@ gfx::Insets GlassAppWindowFrameViewWin::GetGlassInsets() const {
       display::win::ScreenWin::GetSystemMetricsInDIP(SM_CYCAPTION);
 
   int frame_size =
-      base::win::GetVersion() < base::win::VERSION_WIN10
+      base::win::GetVersion() < base::win::Version::WIN10
           ? display::win::ScreenWin::GetSystemMetricsInDIP(SM_CXSIZEFRAME)
           : 0;
 
@@ -46,7 +46,7 @@ gfx::Insets GlassAppWindowFrameViewWin::GetGlassInsets() const {
 gfx::Insets GlassAppWindowFrameViewWin::GetClientAreaInsets(
     HMONITOR monitor) const {
   gfx::Insets insets;
-  if (base::win::GetVersion() < base::win::VERSION_WIN10) {
+  if (base::win::GetVersion() < base::win::Version::WIN10) {
     // This tells Windows that most of the window is a client area, meaning
     // Chrome will draw it. Windows still fills in the glass bits because of the
     // DwmExtendFrameIntoClientArea call in |UpdateDWMFrame|.

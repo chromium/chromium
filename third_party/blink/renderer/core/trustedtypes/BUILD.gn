@@ -18,7 +18,5 @@ blink_core_sources("trustedtypes") {
     "trusted_type_policy_factory.h",
     "trusted_types_util.cc",
     "trusted_types_util.h",
-    "trusted_url.cc",
-    "trusted_url.h",
   ]
 }

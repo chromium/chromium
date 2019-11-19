@@ -30,7 +30,7 @@ struct TestTraits {
             class CheckArgumentsAreValid = std::enable_if_t<
                 trait_helpers::AreValidTraits<ValidTrait, ArgTypes...>::value>>
   constexpr TestTraits(ArgTypes... args)
-      : has_example_trait(trait_helpers::HasTrait<ExampleTrait>(args...)),
+      : has_example_trait(trait_helpers::HasTrait<ExampleTrait, ArgTypes...>()),
         enum_trait_a(
             trait_helpers::GetEnum<EnumTraitA, EnumTraitA::A>(args...)),
         enum_trait_b(

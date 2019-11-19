@@ -1,0 +1,38 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package cryptauthv2;
+
+option optimize_for = LITE_RUNTIME;
+
+// A seed used to feed an EID BLE advertisement for some time period.
+// Next ID: 4
+message BeaconSeed {
+  // The beacon seed bytes.
+  bytes data = 1;
+
+  // The time at which this key becomes active.
+  int64 start_time_millis = 2;
+
+  // The time at which this key becomes inactive.
+  int64 end_time_millis = 3;
+}
+
+// Device metadata relevant to the suite of multi-device (Better Together)
+// features. This data is sent to and received from CryptAuth--using end-to-end
+// encryption--as part of DeviceSync v2.
+// Next ID: 4
+message BetterTogetherDeviceMetadata {
+  // A cryptographic public key associated with the device.
+  // The format of this key is a serialized SecureMessage.GenericPublicKey.
+  bytes public_key = 1;
+
+  // A device model name that's guaranteed not to contain any PII.
+  string no_pii_device_name = 2;
+
+  // A list of seeds for EID BLE advertisements targeting this device.
+  repeated BeaconSeed beacon_seeds = 3;
+}

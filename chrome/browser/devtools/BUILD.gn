@@ -26,6 +26,8 @@ if (!is_android) {
     "protocol/page.h",
     "protocol/protocol.cc",
     "protocol/protocol.h",
+    "protocol/security.cc",
+    "protocol/security.h",
     "protocol/target.cc",
     "protocol/target.h",
   ]
@@ -100,7 +102,7 @@ static_library("devtools") {
     "//base",
     "//content/public/browser",
     "//net",
-    "//services/viz/privileged/interfaces/compositing",
+    "//services/viz/privileged/mojom/compositing",
     "//third_party/blink/public:buildflags",
     "//ui/events:dom_keycode_converter",
   ]
@@ -198,7 +200,10 @@ static_library("devtools") {
     sources += [ "devtools_dock_tile.cc" ]
   }
   if (!is_android) {
-    deps += [ ":protocol_generated_sources" ]
+    deps += [
+      ":protocol_generated_sources",
+      "//third_party/inspector_protocol:crdtp",
+    ]
     sources += [
       "protocol/browser_handler.cc",
       "protocol/browser_handler.h",
@@ -206,6 +211,8 @@ static_library("devtools") {
       "protocol/cast_handler.h",
       "protocol/page_handler.cc",
       "protocol/page_handler.h",
+      "protocol/security_handler.cc",
+      "protocol/security_handler.h",
       "protocol/target_handler.cc",
       "protocol/target_handler.h",
     ]

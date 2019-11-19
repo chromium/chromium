@@ -36,6 +36,7 @@ api::audio::DeviceType GetAsAudioApiDeviceType(chromeos::AudioDeviceType type) {
     case chromeos::AUDIO_TYPE_USB:
       return api::audio::DEVICE_TYPE_USB;
     case chromeos::AUDIO_TYPE_BLUETOOTH:
+    case chromeos::AUDIO_TYPE_BLUETOOTH_NB_MIC:
       return api::audio::DEVICE_TYPE_BLUETOOTH;
     case chromeos::AUDIO_TYPE_HDMI:
       return api::audio::DEVICE_TYPE_HDMI;
@@ -96,7 +97,7 @@ class AudioServiceImpl : public AudioService,
   // chromeos::CrasAudioHandler::AudioObserver overrides.
   void OnOutputNodeVolumeChanged(uint64_t id, int volume) override;
   void OnInputNodeGainChanged(uint64_t id, int gain) override;
-  void OnOutputMuteChanged(bool mute_on, bool system_adjust) override;
+  void OnOutputMuteChanged(bool mute_on) override;
   void OnInputMuteChanged(bool mute_on) override;
   void OnAudioNodesChanged() override;
   void OnActiveOutputNodeChanged() override;
@@ -123,27 +124,25 @@ class AudioServiceImpl : public AudioService,
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate the weak pointers before any other members are destroyed.
-  base::WeakPtrFactory<AudioServiceImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<AudioServiceImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AudioServiceImpl);
 };
 
 AudioServiceImpl::AudioServiceImpl(AudioDeviceIdCalculator* id_calculator)
-    : cras_audio_handler_(NULL),
-      id_calculator_(id_calculator),
-      weak_ptr_factory_(this) {
+    : cras_audio_handler_(chromeos::CrasAudioHandler::Get()),
+      id_calculator_(id_calculator) {
   CHECK(id_calculator_);
 
-  if (chromeos::CrasAudioHandler::IsInitialized()) {
-    cras_audio_handler_ = chromeos::CrasAudioHandler::Get();
+  if (cras_audio_handler_)
     cras_audio_handler_->AddAudioObserver(this);
-  }
 }
 
 AudioServiceImpl::~AudioServiceImpl() {
-  if (cras_audio_handler_ && chromeos::CrasAudioHandler::IsInitialized()) {
-    cras_audio_handler_->RemoveAudioObserver(this);
-  }
+  // The CrasAudioHandler global instance may have already been destroyed, so
+  // do not used the cached pointer here.
+  if (chromeos::CrasAudioHandler::Get())
+    chromeos::CrasAudioHandler::Get()->RemoveAudioObserver(this);
 }
 
 void AudioServiceImpl::AddObserver(AudioService::Observer* observer) {
@@ -201,10 +200,10 @@ bool AudioServiceImpl::GetDevices(const api::audio::DeviceFilter* filter,
 
   bool accept_input =
       !(filter && filter->stream_types) ||
-      base::ContainsValue(*filter->stream_types, api::audio::STREAM_TYPE_INPUT);
-  bool accept_output = !(filter && filter->stream_types) ||
-                       base::ContainsValue(*filter->stream_types,
-                                           api::audio::STREAM_TYPE_OUTPUT);
+      base::Contains(*filter->stream_types, api::audio::STREAM_TYPE_INPUT);
+  bool accept_output =
+      !(filter && filter->stream_types) ||
+      base::Contains(*filter->stream_types, api::audio::STREAM_TYPE_OUTPUT);
 
   for (const auto& device : devices) {
     if (filter && filter->is_active && *filter->is_active != device.active)
@@ -375,7 +374,7 @@ void AudioServiceImpl::OnOutputNodeVolumeChanged(uint64_t id, int volume) {
   NotifyLevelChanged(id, volume);
 }
 
-void AudioServiceImpl::OnOutputMuteChanged(bool mute_on, bool system_adjust) {
+void AudioServiceImpl::OnOutputMuteChanged(bool mute_on) {
   NotifyMuteChanged(false, mute_on);
 }
 

@@ -234,7 +234,7 @@ class VR_UI_EXPORT Ui : public UiInterface,
   std::unique_ptr<TextInputDelegate> text_input_delegate_;
   std::unique_ptr<AudioDelegate> audio_delegate_;
 
-  base::WeakPtrFactory<Ui> weak_ptr_factory_;
+  base::WeakPtrFactory<Ui> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(Ui);
 };

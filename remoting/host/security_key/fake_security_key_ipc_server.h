@@ -103,7 +103,7 @@ class FakeSecurityKeyIpcServer : public SecurityKeyIpcServer,
   std::unique_ptr<IPC::Channel> ipc_channel_;
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
-  base::WeakPtrFactory<FakeSecurityKeyIpcServer> weak_factory_;
+  base::WeakPtrFactory<FakeSecurityKeyIpcServer> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FakeSecurityKeyIpcServer);
 };

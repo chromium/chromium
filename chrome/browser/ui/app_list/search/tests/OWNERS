@@ -1,0 +1,5 @@
+# Mainly for ML search-ranking purposes, see app_list/OWNERS for other reviews.
+per-file zero_state_file_provider_unittest.cc=jiameng@chromium.org
+per-file zero_state_file_result_unittest.cc=jiameng@chromium.org
+
+# COMPONENT: UI>Shell>Launcher

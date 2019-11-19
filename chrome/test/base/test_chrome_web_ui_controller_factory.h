@@ -36,6 +36,9 @@ class TestChromeWebUIControllerFactory : public ChromeWebUIControllerFactory {
   TestChromeWebUIControllerFactory();
   ~TestChromeWebUIControllerFactory() override;
 
+  // Sets the Web UI host.
+  void set_webui_host(const std::string& webui_host);
+
   // Override the creation for urls having |host| with |provider|.
   void AddFactoryOverride(const std::string& host, WebUIProvider* provider);
 
@@ -44,17 +47,27 @@ class TestChromeWebUIControllerFactory : public ChromeWebUIControllerFactory {
 
   // ChromeWebUIFactory overrides.
   content::WebUI::TypeID GetWebUIType(content::BrowserContext* browser_context,
-                                      const GURL& url) const override;
+                                      const GURL& url) override;
   std::unique_ptr<content::WebUIController> CreateWebUIControllerForURL(
       content::WebUI* web_ui,
-      const GURL& url) const override;
+      const GURL& url) override;
 
  private:
   // Return the WebUIProvider for the |url|'s host if it exists, otherwise NULL.
   WebUIProvider* GetWebUIProvider(Profile* profile, const GURL& url) const;
 
+  // Replace |url|'s host with the Web UI host if |url| is a test URL served
+  // from the TestDataSource. This ensures the factory always creates the
+  // appropriate Web UI controller when these URLs are encountered instead of
+  // failing.
+  GURL TestURLToWebUIURL(const GURL& url) const;
+
   // Stores the mapping of host to WebUIProvider.
   FactoryOverridesMap factory_overrides_;
+
+  // Stores the Web UI host to create the correct Web UI controller for
+  // chrome://test URL requests.
+  std::string webui_host_;
 
   DISALLOW_COPY_AND_ASSIGN(TestChromeWebUIControllerFactory);
 };

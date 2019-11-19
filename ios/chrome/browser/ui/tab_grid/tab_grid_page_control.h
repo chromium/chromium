@@ -36,7 +36,8 @@
 // trailing side of the control. Setting this property will update the position
 // of the slider without animation. Setting a value below 0.0 or above 1.0 will
 // set 0.0 or 1.0 instead.
-// Setting this property will *not* update the selected page.
+// Setting this property may change the |selectedPage| property of the reciever,
+// but will not cause any UIControl actions to be sent.
 @property(nonatomic, assign) CGFloat sliderPosition;
 
 // The numbers that the control should display in the appropriate sections.

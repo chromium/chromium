@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+PASS If constructing entry list flag of form is true, then return
+PASS If form's firing submission events is true, then return; 'invalid' event
+PASS If form's firing submission events is true, then return; 'submit' event
+FAIL firing an event named submit; clicking a submit button assert_equals: expected (object) Element node <input name="n1" value="submit" type="submit"></input> but got (undefined) undefined
+FAIL firing an event named submit; form.requestSubmit() assert_equals: expected (object) null but got (undefined) undefined
+FAIL firing an event named submit; form.requestSubmit(null) promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'requestSubmit' on 'HTMLFormElement': parameter 1 is not of type 'HTMLElement'."
+FAIL firing an event named submit; form.requestSubmit(submitter) assert_equals: expected (object) Element node <button type="submit"></button> but got (undefined) undefined
+PASS Cannot navigate (after constructing the entry list)
+Harness: the test ran to completion.
+

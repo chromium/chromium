@@ -1,0 +1,36 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <script src="../../../resources/testharness.js"></script>
+  <script src="../../../resources/testharnessreport.js"></script>
+</head>
+<body>
+  <script>
+    async_test((t) => {
+      var img = new Image();
+      // Use a cross-origin URL.
+      img.src = "http://localhost:8000/resources/square.png";
+
+      img.onload = function() {
+        var canvas2d = document.createElement("canvas");
+        var context2d = canvas2d.getContext("2d");
+        context2d.drawImage(img, 0, 0);
+        assert_throws("SecurityError", () => {
+          canvas2d.toDataURL();
+        }, "x-origin image should prevent calls to toDataURL() in 2d canvas");
+
+        createImageBitmap(img, 0, 0, img.width, img.height).then(function(bitmap) {
+          var canvasBitmap = document.createElement("canvas");
+          var contextBitmap = canvasBitmap.getContext("bitmaprenderer");
+          contextBitmap.transferFromImageBitmap(bitmap);
+          assert_throws("SecurityError", () => {
+            canvasBitmap.toDataURL();
+          }, `x-origin image should prevent calls to toDataURL()
+              in bitmaprenderer canvas`);
+          t.done();
+        });
+      };
+    });
+  </script>
+</body>
+</html>

@@ -202,7 +202,8 @@ class CodeGeneratorV8(CodeGeneratorV8Base):
             cpp_template_filename = 'interface.cc.tmpl'
             interface_context = v8_interface.interface_context
 
-        template_context = interface_context(interface, definitions.interfaces)
+        component_info = self.info_provider.component_info
+        template_context = interface_context(interface, definitions.interfaces, component_info)
         includes.update(interface_info.get('cpp_includes', {}).get(component, set()))
         if not interface.is_partial and not is_testing_target(full_path):
             template_context['header_includes'].add(self.info_provider.include_path_for_export)
@@ -237,8 +238,9 @@ class CodeGeneratorV8(CodeGeneratorV8Base):
         header_template = self.jinja_env.get_template('dictionary_v8.h.tmpl')
         cpp_template = self.jinja_env.get_template('dictionary_v8.cc.tmpl')
         interface_info = interfaces_info[dictionary_name]
+        component_info = self.info_provider.component_info
         template_context = v8_dictionary.dictionary_context(
-            dictionary, interfaces_info)
+            dictionary, interfaces_info, component_info)
         include_paths = interface_info.get('dependencies_include_paths')
         # Add the include for interface itself
         template_context['header_includes'].add(interface_info['include_path'])

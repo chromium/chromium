@@ -7,6 +7,7 @@
 #include <drm.h>
 #include <string.h>
 #include <xf86drm.h>
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -59,9 +60,7 @@ void DrawCursor(DrmDumbBuffer* cursor, const SkBitmap& image) {
 HardwareDisplayController::HardwareDisplayController(
     std::unique_ptr<CrtcController> controller,
     const gfx::Point& origin)
-    : origin_(origin),
-      is_disabled_(controller->is_disabled()),
-      weak_ptr_factory_(this) {
+    : origin_(origin), is_disabled_(controller->is_disabled()) {
   AddCrtc(std::move(controller));
   AllocateCursorBuffers();
 }
@@ -136,9 +135,9 @@ void HardwareDisplayController::SchedulePageFlip(
       .Run(gfx::SwapResult::SWAP_ACK, std::move(out_fence));
 
   // Everything was submitted successfully, wait for asynchronous completion.
-  page_flip_request->TakeCallback(base::BindOnce(
-      &CompletePageFlip, weak_ptr_factory_.GetWeakPtr(),
-      base::Passed(&presentation_callback), base::Passed(&plane_list)));
+  page_flip_request->TakeCallback(
+      base::BindOnce(&CompletePageFlip, weak_ptr_factory_.GetWeakPtr(),
+                     std::move(presentation_callback), std::move(plane_list)));
   page_flip_request_ = std::move(page_flip_request);
 }
 
@@ -178,7 +177,7 @@ bool HardwareDisplayController::ScheduleOrTestPageFlip(
 }
 
 std::vector<uint64_t> HardwareDisplayController::GetFormatModifiers(
-    uint32_t format) {
+    uint32_t format) const {
   std::vector<uint64_t> modifiers;
 
   if (crtc_controllers_.empty())
@@ -201,7 +200,7 @@ std::vector<uint64_t> HardwareDisplayController::GetFormatModifiers(
 
 std::vector<uint64_t>
 HardwareDisplayController::GetFormatModifiersForModesetting(
-    uint32_t fourcc_format) {
+    uint32_t fourcc_format) const {
   const auto& modifiers = GetFormatModifiers(fourcc_format);
   std::vector<uint64_t> filtered_modifiers;
   for (auto modifier : modifiers) {

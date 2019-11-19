@@ -29,6 +29,13 @@ namespace elevation_service {
 
 namespace {
 
+// Input CRX files over 10 MB are considered invalid.
+constexpr int64_t kMaxFileSize = 10u * 1000u * 1000u;
+
+// The hard-coded file name that the Recovery CRX is copied to.
+constexpr base::FilePath::CharType kCRXFileName[] =
+    FILE_PATH_LITERAL("ChromeRecoveryCRX.crx");
+
 // The hard-coded Recovery subdirectory where the CRX is unpacked and executed.
 constexpr base::FilePath::CharType kRecoveryDirectory[] =
     FILE_PATH_LITERAL("ChromeRecovery");
@@ -60,22 +67,91 @@ HRESULT HRESULTFromLastError() {
 // Opens and returns the COM caller's |process| given the process id, or the
 // current process if |proc_id| is 0.
 HRESULT OpenCallingProcess(uint32_t proc_id, base::Process* process) {
+  DCHECK(proc_id);
   DCHECK(process);
-
-  if (!proc_id) {
-    *process = base::Process::Current();
-    return S_OK;
-  }
 
   HRESULT hr = ::CoImpersonateClient();
   if (FAILED(hr))
     return hr;
 
   base::ScopedClosureRunner revert_to_self(
-      base::BindOnce(base::IgnoreResult(&::CoRevertToSelf)));
+      base::BindOnce([]() { ::CoRevertToSelf(); }));
 
   *process = base::Process::OpenWithAccess(proc_id, PROCESS_DUP_HANDLE);
   return process->IsValid() ? S_OK : HRESULTFromLastError();
+}
+
+// Opens and returns a base::File instance for the |file_path|. We impersonate
+// the COM caller when opening the base::File instance. This is to ensure that
+// the COM caller has access to the file.
+HRESULT OpenFileImpersonated(const base::FilePath& file_path,
+                             int flags,
+                             base::File* file) {
+  DCHECK(file);
+
+  HRESULT hr = ::CoImpersonateClient();
+  if (FAILED(hr))
+    return hr;
+
+  base::ScopedClosureRunner revert_to_self(
+      base::BindOnce([]() { ::CoRevertToSelf(); }));
+
+  file->Initialize(file_path, flags);
+  if (!file->IsValid())
+    return HRESULTFromLastError();
+
+  if (::GetFileType(file->GetPlatformFile()) != FILE_TYPE_DISK)
+    return E_INVALIDARG;
+
+  int64_t from_length = file->GetLength();
+  return from_length > 0 && from_length < kMaxFileSize ? S_OK : E_INVALIDARG;
+}
+
+// Opens |from| while impersonating the COM caller, and then copies the contents
+// of |from| to |to|. |from| is opened impersonated to ensure that the COM
+// caller has access to the file.
+HRESULT CopyFileImpersonated(const base::FilePath from,
+                             const base::FilePath& to) {
+  base::File from_file;
+  HRESULT hr =
+      OpenFileImpersonated(from,
+                           base::File::FLAG_READ | base::File::FLAG_OPEN |
+                               base::File::FLAG_SEQUENTIAL_SCAN,
+                           &from_file);
+  if (FAILED(hr))
+    return hr;
+
+  base::File to_file;
+  to_file.Initialize(to, base::File::FLAG_WRITE |
+                             base::File::FLAG_CREATE_ALWAYS |
+                             base::File::FLAG_SEQUENTIAL_SCAN);
+  if (!to_file.IsValid())
+    return HRESULTFromLastError();
+
+  constexpr size_t kBufferSize = 0x10000;
+  std::vector<char> buffer(kBufferSize);
+
+  for (uint64_t total_bytes_read = 0;;) {
+    const int bytes_read =
+        from_file.ReadAtCurrentPos(buffer.data(), buffer.size());
+    if (bytes_read < 0)
+      return HRESULTFromLastError();
+    if (bytes_read == 0)
+      return S_OK;
+
+    total_bytes_read += bytes_read;
+    if (total_bytes_read > kMaxFileSize)
+      return E_INVALIDARG;
+
+    const int bytes_written = to_file.WriteAtCurrentPos(&buffer[0], bytes_read);
+    if (bytes_written < 0)
+      return HRESULTFromLastError();
+    if (bytes_written != bytes_read)
+      return E_UNEXPECTED;
+  }
+
+  NOTREACHED();
+  return S_OK;
 }
 
 // Validates the provided CRX using the |crx_hash|, and if validation succeeds,
@@ -92,11 +168,13 @@ HRESULT ValidateAndUnpackCRX(const base::FilePath& from_crx_path,
   if (!to_dir.CreateUniqueTempDirUnderPath(unpack_under_path))
     return HRESULTFromLastError();
 
-  const base::FilePath to_crx_path =
-      to_dir.GetPath().Append(from_crx_path.BaseName());
+  const base::FilePath to_crx_path = to_dir.GetPath().Append(kCRXFileName);
 
-  if (!base::CopyFile(from_crx_path, to_crx_path))
-    return HRESULTFromLastError();
+  // Copy |from_crx_path| impersonated. This is to prevent us from copying files
+  // that may not be accessible to the calling COM user.
+  HRESULT hr = CopyFileImpersonated(from_crx_path, to_crx_path);
+  if (FAILED(hr))
+    return hr;
 
   std::string public_key;
   if (crx_file::Verify(to_crx_path, crx_format, {crx_hash}, {}, &public_key,
@@ -232,7 +310,7 @@ HRESULT RunChromeRecoveryCRX(const base::FilePath& crx_path,
                              const base::string16& session_id,
                              uint32_t caller_proc_id,
                              base::win::ScopedHandle* proc_handle) {
-  if (crx_path.empty() || !proc_handle)
+  if (crx_path.empty() || !caller_proc_id || !proc_handle)
     return E_INVALIDARG;
 
   HRESULT hr = ValidateCRXArgs(browser_appid, browser_version, session_id);
@@ -265,11 +343,12 @@ HRESULT RunCRX(const base::FilePath& crx_path,
                const base::FilePath& exe_filename,
                uint32_t caller_proc_id,
                base::win::ScopedHandle* proc_handle) {
-  DCHECK(proc_handle);
   DCHECK(!crx_path.empty());
   DCHECK(!crx_hash.empty());
   DCHECK(!unpack_under_path.empty());
   DCHECK(!exe_filename.empty());
+  DCHECK(caller_proc_id);
+  DCHECK(proc_handle);
 
   base::Process calling_process;
   HRESULT hr = OpenCallingProcess(caller_proc_id, &calling_process);

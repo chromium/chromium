@@ -87,7 +87,6 @@ class CORE_EXPORT InspectorAnimationAgent final
   v8_inspector::V8InspectorSession* v8_session_;
   HeapHashMap<String, Member<blink::Animation>> id_to_animation_;
   HeapHashMap<String, Member<blink::Animation>> id_to_animation_clone_;
-  HashMap<String, String> id_to_animation_type_;
   bool is_cloning_;
   HashSet<String> cleared_animations_;
   InspectorAgentState::Boolean enabled_;

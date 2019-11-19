@@ -127,8 +127,8 @@ class TabStatsTrackerTest : public ChromeRenderViewHostTestHarness {
 
   TabStatsTrackerTest() {
     power_monitor_source_ = new base::PowerMonitorTestSource();
-    power_monitor_.reset(new base::PowerMonitor(
-        std::unique_ptr<base::PowerMonitorSource>(power_monitor_source_)));
+    base::PowerMonitor::Initialize(
+        std::unique_ptr<base::PowerMonitorSource>(power_monitor_source_));
 
     TabStatsTracker::RegisterPrefs(pref_service_.registry());
 
@@ -140,6 +140,7 @@ class TabStatsTrackerTest : public ChromeRenderViewHostTestHarness {
   void TearDown() override {
     tab_stats_tracker_.reset(nullptr);
     ChromeRenderViewHostTestHarness::TearDown();
+    base::PowerMonitor::ShutdownForTesting();
   }
 
   // The tabs stat tracker instance, it should be created in the SetUp
@@ -147,7 +148,6 @@ class TabStatsTrackerTest : public ChromeRenderViewHostTestHarness {
 
   // Used to simulate power events.
   base::PowerMonitorTestSource* power_monitor_source_;
-  std::unique_ptr<base::PowerMonitor> power_monitor_;
 
   // Used to make sure that the metrics are reported properly.
   base::HistogramTester histogram_tester_;

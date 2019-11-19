@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pl">
+<translation id="1036550831858290950">Zapisz bieżącą kartę jako zakładkę</translation>
 <translation id="104962181688258143">Otwórz aplikację Pliki</translation>
 <translation id="1122869341872663659">Wyświetlam wyniki wyszukiwania (<ph name="N" />) dla: <ph name="QUERY" /></translation>
 <translation id="1195667586424773550">Przeciągnij link na pasek adresu na karcie</translation>
@@ -12,6 +13,7 @@
 <translation id="1383876407941801731">Szukaj</translation>
 <translation id="1454364489140280055"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT1" /><ph name="SEPARATOR2" /><ph name="G" /> lub <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="ENTER" /></translation>
 <translation id="1477442857810932985">Przejdź na koniec wiersza</translation>
+<translation id="1499072997694708844">Zamknij wszystkie otwarte okna lub zatrzymaj wczytywanie bieżącej strony</translation>
 <translation id="1510238584712386396">Menu z aplikacjami</translation>
 <translation id="152892567002884378">Zwiększ głośność</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, a następnie <ph name="ESC" /></translation>
@@ -21,6 +23,7 @@
 <translation id="169515659049020177">Shift</translation>
 <translation id="1732295673545939435"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="KEY" /></translation>
 <translation id="1733525068429116555">Dodaj www. i .com do ciągu wpisanego w pasku adresu i otwórz stronę</translation>
+<translation id="1872219238824176091">Usuń bieżące biurko</translation>
 <translation id="1920446759863417809"><ph name="SHIFT1" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, a następnie <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="TAB" /> lub <ph name="LEFT" /></translation>
 <translation id="1996162290124031907">Przejdź do następnej karty</translation>
 <translation id="2010818616644390445">Przejdź do ostatniej karty w oknie</translation>
@@ -33,26 +36,29 @@
 <translation id="2185166372312820725">Przejdź do poprzedniej karty</translation>
 <translation id="2194790690264064655">Naciśnij <ph name="CTRL" /> i kliknij link</translation>
 <translation id="2246352309084894470">Otwórz/zamknij pełnoekranowe menu z aplikacjami</translation>
+<translation id="2354531887393764880">kropka</translation>
 <translation id="2382644247745281995">Nieobsługiwany w bieżącym układzie klawiatury</translation>
 <translation id="2397416548179033562">Pokaż menu Chrome</translation>
 <translation id="2424073332829844142">Włącz lub wyłącz Caps Lock</translation>
 <translation id="2441202986792279177">Przejdź szybko do innego okna</translation>
 <translation id="2454251766545114447">Pomniejsz obraz na ekranie</translation>
 <translation id="2478303094958140141">Włącz lub wyłącz ChromeVox (komunikaty głosowe)</translation>
+<translation id="2480851840841871861">Otwórz Asystenta Google</translation>
+<translation id="2488661730534396940">Aktywuj biurko po lewej</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2530339807289914946">Przewiń stronę internetową w dół</translation>
 <translation id="2574014812750545982">Zresetuj poziom powiększenia na stronie</translation>
 <translation id="2596078834055697711">Zrób zrzut ekranu okna</translation>
 <translation id="2685170433750953446"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, a następnie <ph name="TAB" /> lub <ph name="RIGHT" /></translation>
-<translation id="2699509451653686398">Zapisz bieżącą stronę internetową jako zakładkę</translation>
 <translation id="2750942583782703988">Ponownie załaduj bieżącą stronę</translation>
 <translation id="2764005613199379871">Ustaw zaznaczenie na pasku adresu i wyszukiwania</translation>
+<translation id="2774822903829597107">Utwórz nowe biurko</translation>
 <translation id="2789868185375229787">Pomniejsz widok strony</translation>
 <translation id="2804480015716812239">Naciśnij <ph name="ALT" /> i kliknij link</translation>
 <translation id="2830827904629746450">Zadokuj okno po prawej stronie</translation>
 <translation id="2840766858109427815">Przejdź na następną stronę</translation>
 <translation id="2872353916818027657">Zamień główny monitor</translation>
-<translation id="2914313326123580426">Pokaż lub ukryj panel narzędzi dla programistów</translation>
+<translation id="2914313326123580426">Pokaż lub ukryj panel narzędzi dla deweloperów</translation>
 <translation id="292495055542441795">Włącz lub wyłącz pełny ekran</translation>
 <translation id="3020183492814296499">Skróty</translation>
 <translation id="3084301071537457911">Zaznacz następny element na półce</translation>
@@ -78,6 +84,7 @@
 <translation id="3792178297143798024">Otwórz zaznaczony element na półce</translation>
 <translation id="379295446891231126"><ph name="CTRL" /><ph name="SEPARATOR" /> od 1 do 8</translation>
 <translation id="3837047332182291558">Rozjaśnij klawiaturę (dotyczy tylko klawiatur podświetlanych)</translation>
+<translation id="3949671998904569433">przecinek</translation>
 <translation id="3976863468609830880">Kliknij ostatnią ikonę na półce</translation>
 <translation id="3994783594793697310">Zresetuj poziom powiększenia ekranu</translation>
 <translation id="4026843240379844265">Przenieś aktywne okno na inny ekran</translation>
@@ -97,6 +104,7 @@
 <translation id="4642092649622328492">Zrób zrzut części ekranu</translation>
 <translation id="4698850295812410683">Pokaż narzędzia rysika</translation>
 <translation id="4801989101741319327">Przejdź na koniec następnego słowa</translation>
+<translation id="4866066940972151697">Aktywuj biurko po prawej</translation>
 <translation id="4916163929714267752">Otwórz link w nowym oknie</translation>
 <translation id="5030659775136592441">Pokaż menedżera zakładek</translation>
 <translation id="5034421018520995080">Przejdź na górę strony</translation>
@@ -112,17 +120,17 @@
 <translation id="5554139136362089836">Przeszukaj bieżącą stronę</translation>
 <translation id="5563050856984839829">Naciśnij <ph name="CTRL" /><ph name="SEPARATOR" /><ph name="SHIFT" /> i kliknij link</translation>
 <translation id="561814908794220892">Otwórz stronę w nowej karcie</translation>
+<translation id="5620219513321115856">Przenieś aktywne okno na biurko po prawej</translation>
 <translation id="5710621673935162997"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="L" /> lub <ph name="ALT" /><ph name="SEPARATOR2" /><ph name="D" /></translation>
 <translation id="5757111373163288447">Otwórz link w tej karcie</translation>
 <translation id="5757474750054631686">Przyciemnij klawiaturę (dotyczy tylko klawiatur podświetlanych)</translation>
 <translation id="587531134027443617">Usuń poprzednie słowo</translation>
-<translation id="5899919361772749550">Pokaż lub ukryj konsolę Narzędzi dla programistów</translation>
+<translation id="5899919361772749550">Pokaż lub ukryj konsolę Narzędzi dla deweloperów</translation>
 <translation id="5921745308587794300">Obróć okno</translation>
 <translation id="6022924867608035986">Wyczyść tekst w polu wyszukiwania</translation>
 <translation id="6045998054441862242">Włącz tryb wysokiego kontrastu</translation>
 <translation id="6052614013050385269">Kliknij link prawym przyciskiem myszy</translation>
 <translation id="6129953537138746214">Spacja</translation>
-<translation id="613146727819833328">Przenieś okno na środek</translation>
 <translation id="6143669479988153888">Powiększ widok strony</translation>
 <translation id="6185696379715117369">Strona do góry</translation>
 <translation id="6228457605945141550">Zmniejsz jasność</translation>
@@ -160,19 +168,21 @@
 <translation id="7422707470576323858">Przełącz na następną dostępną metodę wprowadzania tekstu</translation>
 <translation id="743754632698445141">Odepnij aplikację</translation>
 <translation id="7439718573248533901">Usuń następny znak (usuwanie do przodu)</translation>
+<translation id="7500368597227394048">łącznik</translation>
 <translation id="7611271430932669992">Przenieś sterowanie na wyskakujące okienka i okna dialogowe</translation>
 <translation id="766326951329901120">Wklej zawartość schowka jako zwykły tekst</translation>
+<translation id="7703010453515335249">lewy nawias</translation>
 <translation id="7724603315864178912">Wytnij</translation>
 <translation id="7730490981846175479"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, a następnie <ph name="SPACE" /> lub <ph name="ENTER" /></translation>
 <translation id="7787242579016742662">Otwórz plik w przeglądarce</translation>
-<translation id="7917881398263220094">Zatrzymaj wczytywanie bieżącej strony</translation>
 <translation id="7952165122793773711">Przejdź do karty 1–8</translation>
 <translation id="8026334261755873520">Wyczyść dane przeglądania</translation>
 <translation id="8130528849632411619">Przejdź na początek dokumentu</translation>
 <translation id="8147954207400281792"><ph name="CTRL" /><ph name="SEPARATOR" /><ph name="K" /> lub <ph name="E" /></translation>
 <translation id="8232835244134740473">Przełączaj zaznaczenie między: paskiem stanu (tam, gdzie widać obraz konta), Menu z aplikacjami, paskiem adresu, paskiem zakładek (jeśli jest widoczny), otwartą aktualnie stroną, paskiem pobranych plików (jeśli jest widoczny).</translation>
 <translation id="8234414138295101081">Obróć ekran o 90 stopni</translation>
-<translation id="8264941229485248811">Pokaż lub ukryj inspektora z Narzędzi dla programistów</translation>
+<translation id="8241665785394195545">prawy nawias</translation>
+<translation id="8264941229485248811">Pokaż lub ukryj inspektora z Narzędzi dla deweloperów</translation>
 <translation id="836869401750819675">Otwórz stronę Pobrane pliki</translation>
 <translation id="8388247778047144397">Przeciągnij link na pusty obszar na pasku kart</translation>
 <translation id="8389638407792712197">Otwórz nowe okno</translation>
@@ -184,6 +194,7 @@
 <translation id="8717459106217102612">Zaznacz poprzednie słowo lub znak</translation>
 <translation id="8727232706774971183">Zobacz powiadomienia</translation>
 <translation id="8855885154700222542">Klawisz trybu pełnoekranowego</translation>
+<translation id="8881584919399569791">Przenieś aktywne okno na biurko po lewej</translation>
 <translation id="88986195241502842">Strona w dół</translation>
 <translation id="8924883688469390268">Przełącz do poprzedniego użytkownika</translation>
 <translation id="8977648847395357314">Zaznacz zawartość paska adresu</translation>

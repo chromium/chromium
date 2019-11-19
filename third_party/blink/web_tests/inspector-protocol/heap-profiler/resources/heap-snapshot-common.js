@@ -6,12 +6,23 @@
 
   // This script is supposed to be evaluated in inspector-protocol/heap-profiler tests
   // and the relative paths below are relative to that location.
-  await testRunner.loadScript('../../../../blink/renderer/devtools/front_end/platform/utilities.js');
-  await testRunner.loadScript('../../../../blink/renderer/devtools/front_end/common/UIString.js');
-  await testRunner.loadScript('../../../../blink/renderer/devtools/front_end/heap_snapshot_model/HeapSnapshotModel.js');
-  await testRunner.loadScript('../../../../blink/renderer/devtools/front_end/heap_snapshot_worker/HeapSnapshot.js');
-  await testRunner.loadScript('../../../../blink/renderer/devtools/front_end/text_utils/TextUtils.js');
-  await testRunner.loadScript('../../../../blink/renderer/devtools/front_end/heap_snapshot_worker/HeapSnapshotLoader.js');
+  await testRunner.loadScriptModule(
+      '../../../../devtools-frontend/src/front_end/platform/utilities.js');
+  await testRunner.loadScriptModule(
+      '../../../../devtools-frontend/src/front_end/common/UIString.js');
+  await testRunner.loadScriptModule(
+      '../../../../devtools-frontend/src/front_end/heap_snapshot_model/HeapSnapshotModel.js');
+  await testRunner.loadScriptModule(
+      '../../../../devtools-frontend/src/front_end/heap_snapshot_worker/HeapSnapshot.js');
+  await testRunner.loadScriptModule(
+      '../../../../devtools-frontend/src/front_end/text_utils/TextUtils.js');
+  await testRunner.loadScriptModule(
+      '../../../../devtools-frontend/src/front_end/heap_snapshot_worker/HeapSnapshotLoader.js');
+
+  // Expose the (de)serialize code from Common because the worker expects it on self.
+  // TODO(https://crbug.com/680046) Remove the dupe code below.
+  self.serializeUIString = Common.serializeUIString;
+  self.deserializeUIString = Common.deserializeUIString;
 
   async function takeHeapSnapshotInternal(command) {
     var loader = new HeapSnapshotWorker.HeapSnapshotLoader();

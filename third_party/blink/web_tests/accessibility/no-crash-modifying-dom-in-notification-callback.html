@@ -1,0 +1,27 @@
+<html>
+<head>
+<script>
+
+if (window.testRunner) {
+
+testRunner.waitUntilDone();
+testRunner.dumpAsText();
+
+accessibilityController.addNotificationListener(() => {
+  try {
+    document.open();
+    document.write();
+    gc();
+  } catch(e) {
+  }
+
+  testRunner.notifyDone();
+});
+
+var docElement = document.body ? document.body : document.documentElement;
+tCF3 = document.createElementNS("http://www.w3.org/1999/xhtml", "frame");
+docElement.appendChild(tCF3);
+
+}
+
+</script>

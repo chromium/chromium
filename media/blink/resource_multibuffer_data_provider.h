@@ -52,10 +52,9 @@ class MEDIA_BLINK_EXPORT ResourceMultiBufferDataProvider
   bool WillFollowRedirect(
       const blink::WebURL& new_url,
       const blink::WebURLResponse& redirect_response) override;
-  void DidSendData(unsigned long long bytesSent,
-                   unsigned long long totalBytesToBeSent) override;
+  void DidSendData(uint64_t bytesSent, uint64_t totalBytesToBeSent) override;
   void DidReceiveResponse(const blink::WebURLResponse& response) override;
-  void DidDownloadData(unsigned long long data_length) override;
+  void DidDownloadData(uint64_t data_length) override;
   void DidReceiveData(const char* data, int data_length) override;
   void DidReceiveCachedMetadata(const char* data, int dataLength) override;
   void DidFinishLoading() override;
@@ -125,7 +124,7 @@ class MEDIA_BLINK_EXPORT ResourceMultiBufferDataProvider
   // Is the client an audio element?
   bool is_client_audio_element_ = false;
 
-  base::WeakPtrFactory<ResourceMultiBufferDataProvider> weak_factory_;
+  base::WeakPtrFactory<ResourceMultiBufferDataProvider> weak_factory_{this};
 };
 
 }  // namespace media

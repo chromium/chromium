@@ -53,8 +53,7 @@ class CONTENT_EXPORT SharedCorsOriginAccessList
 
   // Gets a shared OriginAccessList instance pointer. |this| should outlives
   // callers' OriginAccessList instance uses. Should be called on the IO thread.
-  virtual const network::cors::OriginAccessList& GetOriginAccessList()
-      const = 0;
+  virtual const network::cors::OriginAccessList& GetOriginAccessList() = 0;
 
  protected:
   virtual ~SharedCorsOriginAccessList() = default;

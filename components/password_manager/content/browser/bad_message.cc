@@ -66,7 +66,7 @@ bool CheckChildProcessSecurityPolicy(
          CheckChildProcessSecurityPolicyForURL(
              frame, GURL(password_form.signon_realm), reason) &&
          CheckChildProcessSecurityPolicyForURL(
-             frame, password_form.form_data.origin, reason);
+             frame, password_form.form_data.url, reason);
 }
 
 bool CheckChildProcessSecurityPolicy(

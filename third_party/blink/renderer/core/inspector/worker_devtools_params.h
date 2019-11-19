@@ -11,8 +11,8 @@
 namespace blink {
 
 struct CORE_EXPORT WorkerDevToolsParams {
-  mojom::blink::DevToolsAgentRequest agent_request;
-  mojom::blink::DevToolsAgentHostPtrInfo agent_host_ptr_info;
+  mojo::PendingReceiver<mojom::blink::DevToolsAgent> agent_receiver;
+  mojo::PendingRemote<mojom::blink::DevToolsAgentHost> agent_host_remote;
   bool wait_for_debugger = false;
   base::UnguessableToken devtools_worker_token;
 };

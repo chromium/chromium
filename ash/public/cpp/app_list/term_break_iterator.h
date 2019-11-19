@@ -19,7 +19,7 @@ class UTF16CharIterator;
 }
 }  // namespace base
 
-namespace app_list {
+namespace ash {
 
 // TermBreakIterator breaks terms out of a word. Terms are broken on
 // camel case boundaries and alpha/number boundaries. Numbers are defined
@@ -68,6 +68,6 @@ class ASH_PUBLIC_EXPORT TermBreakIterator {
   DISALLOW_COPY_AND_ASSIGN(TermBreakIterator);
 };
 
-}  // namespace app_list
+}  // namespace ash
 
 #endif  // ASH_PUBLIC_CPP_APP_LIST_TERM_BREAK_ITERATOR_H_

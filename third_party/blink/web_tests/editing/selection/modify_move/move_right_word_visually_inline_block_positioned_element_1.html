@@ -1,0 +1,548 @@
+<!doctype html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../assert_selection.js"></script>
+<script>
+if (window.internals)
+  internals.settings.setEditingBehavior('win');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>|begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin |start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  '1-0 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>b|egin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin |start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  '1-1 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>be|gin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin |start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  '1-2 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>beg|in start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin |start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  '1-3 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begi|n start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin |start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  '1-4 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin| start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start|</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  '1-5 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin |start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start|</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  '1-6 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin s|tart</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start|</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  '1-7 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin st|art</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start|</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  '1-8 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin sta|rt</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start|</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  '1-9 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin star|t</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start|</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  '1-10 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start|</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc |def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  '1-11 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">|abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc |def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  '1-12 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">a|bc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc |def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  '1-13 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">ab|c def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc |def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  '1-14 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc| def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def|</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  '1-15 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc |def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def|</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  '1-16 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc d|ef</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def|</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  '1-17 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc de|f</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def|</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  '1-18 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def|</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end |ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  '1-19 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>|end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end |ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  '1-20 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>e|nd ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end |ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  '1-21 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>en|d ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end |ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  '1-22 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end| ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing|</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  '1-23 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end |ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing|</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  '1-24 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end i|ng</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing|</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  '1-25 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end in|g</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing|</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  '1-26 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing|</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this |is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  '1-27 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">|this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this |is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  '1-28 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">t|his is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this |is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  '1-29 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">th|is is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this |is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  '1-30 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">thi|s is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this |is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  '1-31 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this| is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is |float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  '1-32 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this |is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is |float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  '1-33 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this i|s float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is |float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  '1-34 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is| float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float|</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  '1-35 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is |float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float|</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  '1-36 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is f|loat</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float|</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  '1-37 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is fl|oat</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float|</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  '1-38 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is flo|at</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float|</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  '1-39 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is floa|t</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float|</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  '1-40 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float|</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this |is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  '1-41 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">|this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this |is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  '1-42 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">t|his is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this |is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  '1-43 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">th|is is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this |is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  '1-44 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">thi|s is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this |is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  '1-45 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this| is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is |fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  '1-46 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this |is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is |fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  '1-47 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this i|s fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is |fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  '1-48 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is| fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed|</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  '1-49 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is |fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed|</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  '1-50 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is f|ixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed|</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  '1-51 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fi|xed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed|</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  '1-52 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fix|ed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed|</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  '1-53 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixe|d</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed|</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  '1-54 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed|</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this |is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  '1-55 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">|this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this |is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  '1-56 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">t|his is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this |is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  '1-57 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">th|is is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this |is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  '1-58 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">thi|s is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this |is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  '1-59 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this| is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is |relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  '1-60 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this |is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is |relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  '1-61 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this i|s relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is |relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  '1-62 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is| relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative|</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  '1-63 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is |relative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative|</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  '1-64 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is r|elative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative|</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  '1-65 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is re|lative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative|</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  '1-66 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is rel|ative</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative|</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  '1-67 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is rela|tive</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative|</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  '1-68 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relat|ive</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative|</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  '1-69 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relati|ve</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative|</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  '1-70 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relativ|e</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative|</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  '1-71 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative|</div><div style="position:absolute; left:100px; top:150px">this is absolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this |is absolute</div></div>',
+  '1-72 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">|this is absolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this |is absolute</div></div>',
+  '1-73 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">t|his is absolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this |is absolute</div></div>',
+  '1-74 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">th|is is absolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this |is absolute</div></div>',
+  '1-75 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">thi|s is absolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this |is absolute</div></div>',
+  '1-76 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this| is absolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is |absolute</div></div>',
+  '1-77 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this |is absolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is |absolute</div></div>',
+  '1-78 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this i|s absolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is |absolute</div></div>',
+  '1-79 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is| absolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute|</div></div>',
+  '1-80 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is |absolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute|</div></div>',
+  '1-81 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is a|bsolute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute|</div></div>',
+  '1-82 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is ab|solute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute|</div></div>',
+  '1-83 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is abs|olute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute|</div></div>',
+  '1-84 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is abso|lute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute|</div></div>',
+  '1-85 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absol|ute</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute|</div></div>',
+  '1-86 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolu|te</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute|</div></div>',
+  '1-87 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolut|e</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute|</div></div>',
+  '1-88 right word');
+
+selection_test(
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute|</div></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable style="width:2000px; height:2000px"><div>begin start</div><div style="display:inline-block">abc def</div><div>end ing</div><div style="float:left">this is float</div><div style="position:fixed; top:30px; right:5px">this is fixed</div><div style="position:relative; left:20px">this is relative</div><div style="position:absolute; left:100px; top:150px">this is absolute|</div></div>',
+  '1-89 right word');
+</script>

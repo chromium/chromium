@@ -44,9 +44,8 @@ class UpdatePasswordInfoBarDelegate : public PasswordManagerInfoBarDelegate {
   const std::vector<std::unique_ptr<autofill::PasswordForm>>&
   GetCurrentForms() const;
 
-  // Returns the username of the saved credentials in the case when there is
-  // only one credential pair stored.
-  base::string16 get_username_for_single_account() {
+  // Returns the username of the saved credentials to be updated by default.
+  const base::string16& get_default_username() const {
     return passwords_state_.form_manager()
         ->GetPendingCredentials()
         .username_value;

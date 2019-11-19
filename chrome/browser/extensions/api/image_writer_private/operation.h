@@ -12,7 +12,7 @@
 #include "base/callback.h"
 #include "base/files/file.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/md5.h"
+#include "base/hash/md5.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequenced_task_runner.h"
@@ -31,10 +31,6 @@ namespace image_writer_api = extensions::api::image_writer_private;
 namespace base {
 class FilePath;
 }  // namespace base
-
-namespace service_manager {
-class Connector;
-}
 
 namespace extensions {
 namespace image_writer {
@@ -67,7 +63,6 @@ class Operation : public base::RefCountedThreadSafe<Operation> {
       base::OnceCallback<void(bool, const std::string&)>;
 
   Operation(base::WeakPtr<OperationManager> manager,
-            std::unique_ptr<service_manager::Connector> connector,
             const ExtensionId& extension_id,
             const std::string& device_path,
             const base::FilePath& download_folder);
@@ -219,9 +214,6 @@ class Operation : public base::RefCountedThreadSafe<Operation> {
   // Runs all cleanup functions.
   void CleanUp();
 
-  // Connector to the service manager. Used and deleted on |task_runner_|.
-  std::unique_ptr<service_manager::Connector> connector_;
-
   // |stage_| and |progress_| are owned by the FILE thread, use |SetStage| and
   // |SetProgress| to update.  Progress should be in the interval [0,100]
   image_writer_api::Stage stage_;
@@ -237,6 +229,7 @@ class Operation : public base::RefCountedThreadSafe<Operation> {
 
   static constexpr base::TaskTraits blocking_task_traits() {
     return {
+        base::ThreadPool(),
         // Requires I/O.
         base::MayBlock(),
         // Apps (e.g. Chromebook Recovery Utility) present UI feedback based on

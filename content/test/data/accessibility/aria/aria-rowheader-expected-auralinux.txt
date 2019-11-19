@@ -1,0 +1,16 @@
+[document web]
+++[table] xml-roles:grid cols=3 headers=(NONE); rows=2 headers=('Browser', 'Rendering Engine'); caption=false; spans=(all: 1x1)
+++++[table row] selectable xml-roles:row
+++++++[row header] name='Browser' selectable xml-roles:rowheader (row=0, col=0, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
+++++++++[static] name='Browser'
+++++++[table cell] name='Chrome' selectable xml-roles:gridcell (row=0, col=1, row_span=1, col_span=1, n_row_headers=1, n_col_headers=0)
+++++++++[static] name='Chrome'
+++++++[table cell] name='Safari' selectable xml-roles:gridcell (row=0, col=2, row_span=1, col_span=1, n_row_headers=1, n_col_headers=0)
+++++++++[static] name='Safari'
+++++[table row] selectable xml-roles:row
+++++++[row header] name='Rendering Engine' selectable xml-roles:rowheader (row=1, col=0, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
+++++++++[static] name='Rendering Engine'
+++++++[table cell] name='Blink' selectable xml-roles:gridcell (row=1, col=1, row_span=1, col_span=1, n_row_headers=1, n_col_headers=0)
+++++++++[static] name='Blink'
+++++++[table cell] name='WebKit' selectable xml-roles:gridcell (row=1, col=2, row_span=1, col_span=1, n_row_headers=1, n_col_headers=0)
+++++++++[static] name='WebKit'

@@ -11,7 +11,7 @@
 #include "chrome/browser/chromeos/settings/stub_cros_settings_provider.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/settings/cros_settings_names.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
@@ -43,7 +43,7 @@ class ShutdownPolicyHandlerTest : public testing::Test,
   }
 
  protected:
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   ScopedTestingCrosSettings scoped_testing_cros_settings_;
   bool reboot_on_shutdown_;
   int delegate_invocations_count_;

@@ -1,0 +1,95 @@
+<!DOCTYPE HTML>
+
+<!-- READ BEFORE UPDATING:
+If this test is updated make sure to increment the "revision" value of the
+associated test in content/test/gpu/page_sets/pixel_tests.py. This will ensure
+that the baseline images are regenerated on the next run.
+-->
+
+<html>
+<head>
+<title>Low Latency Alpha False WebGL Canvas Test: Should render an opaque green box</title>
+<style type="text/css">
+.nomargin {
+  margin: 0px auto;
+}
+</style>
+<script>
+// For debugging.
+if (!domAutomationController) {
+  var domAutomationController = {send : function(msg) { console.log(msg); }};
+}
+
+let g_swapsBeforeAck = 15;
+let g_canvas;
+let g_gl;
+
+function main() {
+  g_canvas = document.getElementById("c");
+  g_gl = g_canvas.getContext("webgl2", {
+    desynchronized : true,
+    alpha : false,
+    antialias : false
+  });
+  requestAnimationFrame(draw);
+}
+
+function draw() {
+  let gl = g_gl;
+  let w = g_canvas.width;
+  let h = g_canvas.height;
+
+  // Clear default framebuffer to red.
+  gl.clearColor(1, 0, 0, 1);
+  gl.clear(g_gl.COLOR_BUFFER_BIT);
+
+  // Create a framebuffer with a multisampled RGB8 renderbuffer.
+  let samples =
+      gl.getInternalformatParameter(gl.RENDERBUFFER, gl.RGB8, gl.SAMPLES);
+  console.assert(samples && samples.length > 0);
+
+  let rb = gl.createRenderbuffer();
+  gl.bindRenderbuffer(gl.RENDERBUFFER, rb);
+  gl.renderbufferStorageMultisample(gl.RENDERBUFFER, samples[0], gl.RGB8, w, h);
+
+  let fb = gl.createFramebuffer();
+  gl.bindFramebuffer(gl.FRAMEBUFFER, fb);
+  gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0,
+                             gl.RENDERBUFFER, rb);
+
+  console.assert(gl.checkFramebufferStatus(gl.FRAMEBUFFER) ==
+                 gl.FRAMEBUFFER_COMPLETE);
+
+  // Clear render buffer to green.
+  gl.clearColor(0, 1, 0, 1);
+  gl.clear(gl.COLOR_BUFFER_BIT);
+
+  // Bind default framebuffer for draw.
+  gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, null);
+
+  // Resolving RGB8 multisampled renderbuffer to alpha: false context should not
+  // fail.
+  gl.blitFramebuffer(0, 0, w, h, 0, 0, w, h, gl.COLOR_BUFFER_BIT, gl.NEAREST);
+
+  gl.deleteFramebuffer(fb);
+  gl.deleteRenderbuffer(rb);
+
+  waitForFinish();
+}
+
+function waitForFinish() {
+  if (g_swapsBeforeAck == 0) {
+    domAutomationController.send("SUCCESS");
+  } else {
+    g_swapsBeforeAck--;
+    window.requestAnimationFrame(waitForFinish);
+  }
+}
+</script>
+</head>
+<body onload="main()">
+<div id="container" style="position:absolute; top:0px; left:0px">
+<canvas id="c" width="100" height="100" class="nomargin" style="background-color:black"></canvas>
+</div>
+</body>
+</html>

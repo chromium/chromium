@@ -14,7 +14,10 @@
 #include "base/containers/span.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/ip_endpoint.h"
 #include "net/socket/datagram_socket.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -58,8 +61,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocket : public mojom::P2PSocket {
   // Creates P2PSocket of the specific type.
   static std::unique_ptr<P2PSocket> Create(
       Delegate* delegate,
-      mojom::P2PSocketClientPtr client,
-      mojom::P2PSocketRequest socket,
+      mojo::PendingRemote<mojom::P2PSocketClient> client,
+      mojo::PendingReceiver<mojom::P2PSocket> socket,
       P2PSocketType type,
       net::NetLog* net_log,
       ProxyResolvingClientSocketFactory* proxy_resolving_socket_factory,
@@ -81,8 +84,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocket : public mojom::P2PSocket {
                     uint16_t max_port,
                     const P2PHostAndIPEndPoint& remote_address) = 0;
 
-  mojom::P2PSocketClientPtr ReleaseClientForTesting();
-  mojom::P2PSocketRequest ReleaseBindingForTesting();
+  mojo::PendingRemote<mojom::P2PSocketClient> ReleaseClientForTesting();
+  mojo::PendingReceiver<mojom::P2PSocket> ReleaseReceiverForTesting();
 
  protected:
   friend class P2PSocketTcpTestBase;
@@ -123,8 +126,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocket : public mojom::P2PSocket {
   };
 
   P2PSocket(Delegate* delegate,
-            mojom::P2PSocketClientPtr client,
-            mojom::P2PSocketRequest socket,
+            mojo::PendingRemote<mojom::P2PSocketClient> client,
+            mojo::PendingReceiver<mojom::P2PSocket> socket,
             ProtocolType protocol_type);
 
   // Verifies that the packet |data| has a valid STUN header. In case
@@ -148,8 +151,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocket : public mojom::P2PSocket {
   void DecrementDelayedBytes(uint32_t size);
 
   Delegate* delegate_;
-  mojom::P2PSocketClientPtr client_;
-  mojo::Binding<mojom::P2PSocket> binding_;
+  mojo::Remote<mojom::P2PSocketClient> client_;
+  mojo::Receiver<mojom::P2PSocket> receiver_;
 
   ProtocolType protocol_type_;
 
@@ -164,7 +167,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocket : public mojom::P2PSocket {
   int32_t send_bytes_delayed_max_ = 0;
   int32_t send_bytes_delayed_cur_ = 0;
 
-  base::WeakPtrFactory<P2PSocket> weak_ptr_factory_;
+  base::WeakPtrFactory<P2PSocket> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(P2PSocket);
 };

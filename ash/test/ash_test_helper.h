@@ -10,18 +10,17 @@
 #include <memory>
 #include <utility>
 
+#include "ash/assistant/test/test_assistant_service.h"
 #include "ash/session/test_session_controller_client.h"
+#include "ash/shell_init_params.h"
 #include "base/macros.h"
+#include "base/optional.h"
 #include "base/test/scoped_command_line.h"
-#include "services/service_manager/public/cpp/test/test_connector_factory.h"
 
 class PrefService;
 
 namespace aura {
 class Window;
-namespace test {
-class EnvWindowTreeClientSetter;
-}
 }
 
 namespace chromeos {
@@ -34,16 +33,9 @@ namespace display {
 class Display;
 }
 
-namespace service_manager {
-class Connector;
-}
-
 namespace ui {
 class ScopedAnimationDurationScaleMode;
-}
-
-namespace views {
-class MusClient;
+class TestContextFactories;
 }
 
 namespace wm {
@@ -55,29 +47,48 @@ namespace ash {
 class AppListTestHelper;
 class AshTestViewsDelegate;
 class TestKeyboardControllerObserver;
+class TestNewWindowDelegate;
+class TestNotifierSettingsController;
+class TestPrefServiceProvider;
 class TestShellDelegate;
+class TestSystemTrayClient;
 
 // A helper class that does common initialization required for Ash. Creates a
 // root window and an ash::Shell instance with a test delegate.
 class AshTestHelper {
  public:
+  // Instantiates/destroys an AshTestHelper. This can happen in a
+  // single-threaded phase without a backing task environment. As such, the vast
+  // majority of initialization/tear down will be done in SetUp()/TearDown().
   AshTestHelper();
   ~AshTestHelper();
 
-  // Creates the ash::Shell and performs associated initialization.  Set
-  // |start_session| to true if the user should log in before the test is run.
-  // Set |provide_local_state| to true to inject local-state PrefService into
-  // the Shell before the test is run.
-  void SetUp(bool start_session, bool provide_local_state = true);
+  enum ConfigType {
+    // The configuration for shell executable.
+    kShell,
+    // The configuration for unit tests.
+    kUnitTest,
+    // The configuration for perf tests. Unlike kUnitTest, this
+    // does not disable animations.
+    kPerfTest,
+  };
+
+  struct InitParams {
+    // True if the user should log in.
+    bool start_session = true;
+    // True to inject local-state PrefService into the Shell.
+    bool provide_local_state = true;
+    ConfigType config_type = kUnitTest;
+  };
+
+  // Creates the ash::Shell and performs associated initialization according
+  // to |init_params|. |shell_init_params| is used to initialize ash::Shell,
+  // or it uses test settings if omitted.
+  void SetUp(const InitParams& init_params,
+             base::Optional<ShellInitParams> shell_init_params = base::nullopt);
 
   // Destroys the ash::Shell and performs associated cleanup.
   void TearDown();
-
-  // Call this only if this code is being run outside of ash, for example, in
-  // browser tests that use AshTestBase. This disables CHECKs that are
-  // applicable only when used inside ash.
-  // TODO: remove this and ban usage of AshTestHelper outside of ash.
-  void SetRunningOutsideAsh();
 
   // Returns a root Window. Usually this is the active root Window, but that
   // method can return NULL sometimes, and in those cases, we fall back on the
@@ -94,7 +105,7 @@ class AshTestHelper {
     return test_views_delegate_.get();
   }
 
-  display::Display GetSecondaryDisplay();
+  display::Display GetSecondaryDisplay() const;
 
   TestSessionControllerClient* test_session_controller_client() {
     return session_controller_client_.get();
@@ -103,6 +114,13 @@ class AshTestHelper {
       std::unique_ptr<TestSessionControllerClient> session_controller_client) {
     session_controller_client_ = std::move(session_controller_client);
   }
+  TestNotifierSettingsController* notifier_settings_controller() {
+    return notifier_settings_controller_.get();
+  }
+  TestSystemTrayClient* system_tray_client() {
+    return system_tray_client_.get();
+  }
+  TestPrefServiceProvider* prefs_provider() { return prefs_provider_.get(); }
 
   AppListTestHelper* app_list_test_helper() {
     return app_list_test_helper_.get();
@@ -112,22 +130,16 @@ class AshTestHelper {
     return test_keyboard_controller_observer_.get();
   }
 
+  TestAssistantService* test_assistant_service() {
+    return assistant_service_.get();
+  }
+
   void reset_commandline() { command_line_.reset(); }
 
-  // Creates a MusClient. aura::Env's *must* be set to Mode::MUS. Easiest way
-  // to ensure that is by subclassing SingleProcessMashTestBase.
-  void CreateMusClient();
-
-  // Gets a Connector that talks directly to the WindowService.
-  service_manager::Connector* GetWindowServiceConnector();
-
  private:
-  // Forces creation of the WindowService. The WindowService is normally created
-  // on demand, this force the creation.
-  void CreateWindowService();
-
   // Called when running in ash to create Shell.
-  void CreateShell();
+  void CreateShell(bool provide_local_state,
+                   base::Optional<ShellInitParams> init_params);
 
   std::unique_ptr<chromeos::system::ScopedFakeStatisticsProvider>
       statistics_provider_;
@@ -139,27 +151,26 @@ class AshTestHelper {
   std::unique_ptr<AshTestViewsDelegate> test_views_delegate_;
 
   // Flags for whether various services were initialized here.
-  bool dbus_thread_manager_initialized_ = false;
   bool bluez_dbus_manager_initialized_ = false;
   bool power_policy_controller_initialized_ = false;
 
   std::unique_ptr<TestSessionControllerClient> session_controller_client_;
+  std::unique_ptr<TestNotifierSettingsController> notifier_settings_controller_;
+  std::unique_ptr<TestSystemTrayClient> system_tray_client_;
+  std::unique_ptr<TestPrefServiceProvider> prefs_provider_;
+  std::unique_ptr<TestAssistantService> assistant_service_;
+  std::unique_ptr<ui::TestContextFactories> context_factories_;
 
   std::unique_ptr<base::test::ScopedCommandLine> command_line_;
 
   std::unique_ptr<AppListTestHelper> app_list_test_helper_;
 
+  std::unique_ptr<TestNewWindowDelegate> new_window_delegate_;
+
   std::unique_ptr<TestKeyboardControllerObserver>
       test_keyboard_controller_observer_;
 
-  service_manager::TestConnectorFactory test_connector_factory_;
-  std::unique_ptr<service_manager::Connector> window_service_connector_;
-
-  // |window_tree_client_setter_| and |mus_client_| are created by
-  // CreateMusClient(). See it for details.
-  std::unique_ptr<aura::test::EnvWindowTreeClientSetter>
-      window_tree_client_setter_;
-  std::unique_ptr<views::MusClient> mus_client_;
+  std::unique_ptr<PrefService> local_state_;
 
   DISALLOW_COPY_AND_ASSIGN(AshTestHelper);
 };

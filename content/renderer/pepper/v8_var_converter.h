@@ -69,7 +69,7 @@ class CONTENT_EXPORT V8VarConverter {
   VarResult FromV8Value(
       v8::Local<v8::Value> val,
       v8::Local<v8::Context> context,
-      const base::Callback<void(const ppapi::ScopedPPVar&, bool)>& callback);
+      base::OnceCallback<void(const ppapi::ScopedPPVar&, bool)> callback);
   bool FromV8ValueSync(v8::Local<v8::Value> val,
                        v8::Local<v8::Context> context,
                        ppapi::ScopedPPVar* result_var);

@@ -8,26 +8,31 @@
 #include <memory>
 #include <utility>
 
-#include "android_webview/browser/gfx/aw_gl_surface.h"
 #include "android_webview/browser/gfx/aw_render_thread_context_provider.h"
+#include "android_webview/browser/gfx/aw_vulkan_context_provider.h"
 #include "android_webview/browser/gfx/deferred_gpu_command_service.h"
+#include "android_webview/browser/gfx/gpu_service_web_view.h"
+#include "android_webview/browser/gfx/output_surface_provider_webview.h"
 #include "android_webview/browser/gfx/parent_output_surface.h"
+#include "android_webview/browser/gfx/skia_output_surface_dependency_webview.h"
+#include "android_webview/browser/gfx/task_queue_web_view.h"
 #include "android_webview/common/aw_switches.h"
+#include "base/android/build_info.h"
 #include "base/command_line.h"
 #include "base/stl_util.h"
 #include "components/viz/common/display/renderer_settings.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
+#include "components/viz/common/quads/render_pass_draw_quad.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/surface_draw_quad.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "components/viz/service/display/display.h"
 #include "components/viz/service/display/display_scheduler.h"
 #include "components/viz/service/display_embedder/skia_output_surface_impl.h"
-#include "components/viz/service/display_embedder/skia_output_surface_impl_non_ddl.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
-#include "gpu/command_buffer/service/shared_context_state.h"
+#include "gpu/command_buffer/service/sequence_id.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/presentation_feedback.h"
@@ -44,10 +49,6 @@ namespace {
 constexpr uint32_t kDefaultClientId = 0u;
 SurfacesInstance* g_surfaces_instance = nullptr;
 
-void OnContextLost() {
-  NOTREACHED() << "Non owned context lost!";
-}
-
 }  // namespace
 
 // static
@@ -60,18 +61,6 @@ scoped_refptr<SurfacesInstance> SurfacesInstance::GetOrCreateInstance() {
 SurfacesInstance::SurfacesInstance()
     : frame_sink_id_allocator_(kDefaultClientId),
       frame_sink_id_(AllocateFrameSinkId()) {
-  viz::RendererSettings settings;
-
-  // Should be kept in sync with compositor_impl_android.cc.
-  settings.allow_antialiasing = false;
-  settings.highp_threshold_min = 2048;
-
-  // Webview does not own the surface so should not clear it.
-  settings.should_clear_root_render_pass = false;
-
-  settings.use_skia_renderer = features::IsUsingSkiaRenderer();
-  settings.use_skia_renderer_non_ddl = features::IsUsingSkiaRendererNonDDL();
-
   // The SharedBitmapManager is null as we do not support or use software
   // compositing on Android.
   frame_sink_manager_ = std::make_unique<viz::FrameSinkManagerImpl>(
@@ -85,61 +74,20 @@ SurfacesInstance::SurfacesInstance()
       this, frame_sink_manager_.get(), frame_sink_id_, is_root,
       needs_sync_points);
 
-  std::unique_ptr<viz::OutputSurface> output_surface;
-  viz::SkiaOutputSurface* skia_output_surface = nullptr;
-  if (settings.use_skia_renderer || settings.use_skia_renderer_non_ddl) {
-    auto* task_executor = DeferredGpuCommandService::GetInstance();
-    if (!shared_context_state_) {
-      auto surface = base::MakeRefCounted<AwGLSurface>();
-      auto gl_context =
-          gl::init::CreateGLContext(task_executor->share_group().get(),
-                                    surface.get(), gl::GLContextAttribs());
-      gl_context->MakeCurrent(surface.get());
-      shared_context_state_ = base::MakeRefCounted<gpu::SharedContextState>(
-          task_executor->share_group(), std::move(surface),
-          std::move(gl_context), false /* use_virtualized_gl_contexts */,
-          base::BindOnce(&OnContextLost),
-          nullptr /* vulkan_context_provider */);
-      shared_context_state_->InitializeGrContext(
-          gpu::GpuDriverBugWorkarounds(task_executor->gpu_feature_info()
-                                           .enabled_gpu_driver_bug_workarounds),
-          nullptr /* gr_shader_cache */);
-    }
-    if (settings.use_skia_renderer_non_ddl) {
-      output_surface = std::make_unique<viz::SkiaOutputSurfaceImplNonDDL>(
-          base::MakeRefCounted<AwGLSurface>(), shared_context_state_,
-          task_executor->mailbox_manager(),
-          task_executor->shared_image_manager(),
-          task_executor->sync_point_manager(),
-          false /* need_swapbuffers_ack */);
-    } else {
-      output_surface = std::make_unique<viz::SkiaOutputSurfaceImpl>(
-          task_executor, base::MakeRefCounted<AwGLSurface>(),
-          shared_context_state_);
-    }
-    skia_output_surface =
-        static_cast<viz::SkiaOutputSurface*>(output_surface.get());
-  } else {
-    auto context_provider = AwRenderThreadContextProvider::Create(
-        base::MakeRefCounted<AwGLSurface>(),
-        DeferredGpuCommandService::GetInstance());
-    output_surface =
-        std::make_unique<ParentOutputSurface>(std::move(context_provider));
-  }
+  std::unique_ptr<viz::OutputSurface> output_surface =
+      output_surface_provider_.CreateOutputSurface();
 
   begin_frame_source_ = std::make_unique<viz::StubBeginFrameSource>();
   auto scheduler = std::make_unique<viz::DisplayScheduler>(
       begin_frame_source_.get(), nullptr /* current_task_runner */,
       output_surface->capabilities().max_frames_pending);
   display_ = std::make_unique<viz::Display>(
-      nullptr /* shared_bitmap_manager */, settings, frame_sink_id_,
+      nullptr /* shared_bitmap_manager */,
+      output_surface_provider_.renderer_settings(), frame_sink_id_,
       std::move(output_surface), std::move(scheduler),
-      nullptr /* current_task_runner */, skia_output_surface);
-  const bool enable_shared_image =
-      base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kWebViewEnableSharedImage);
+      nullptr /* current_task_runner */);
   display_->Initialize(this, frame_sink_manager_->surface_manager(),
-                       enable_shared_image);
+                       output_surface_provider_.enable_shared_image());
   frame_sink_manager_->RegisterBeginFrameSource(begin_frame_source_.get(),
                                                 frame_sink_id_);
 
@@ -154,7 +102,8 @@ SurfacesInstance::~SurfacesInstance() {
   frame_sink_manager_->UnregisterBeginFrameSource(begin_frame_source_.get());
   g_surfaces_instance = nullptr;
   display_ = nullptr;
-  DCHECK(!shared_context_state_ || shared_context_state_->HasOneRef());
+  DCHECK(!output_surface_provider_.shared_context_state() ||
+         output_surface_provider_.shared_context_state()->HasOneRef());
   DCHECK(child_ids_.empty());
 }
 
@@ -178,11 +127,11 @@ void SurfacesInstance::DrawAndSwap(const gfx::Size& viewport,
                                    const viz::SurfaceId& child_id,
                                    float device_scale_factor,
                                    const gfx::ColorSpace& color_space) {
-  DCHECK(base::ContainsValue(child_ids_, child_id));
+  DCHECK(base::Contains(child_ids_, child_id));
 
   gfx::ColorSpace display_color_space =
       color_space.IsValid() ? color_space : gfx::ColorSpace::CreateSRGB();
-  display_->SetColorSpace(display_color_space, display_color_space);
+  display_->SetColorSpace(display_color_space);
 
   // Create a frame with a single SurfaceDrawQuad referencing the child
   // Surface and transformed using the given transform.
@@ -206,6 +155,7 @@ void SurfacesInstance::DrawAndSwap(const gfx::Size& viewport,
                        viz::SurfaceRange(base::nullopt, child_id),
                        SK_ColorWHITE, /*stretch_content_to_fill_bounds=*/false,
                        /*ignores_input_event=*/false);
+  surface_quad->allow_merge = !BackdropFiltersPreventMerge(child_id);
 
   viz::CompositorFrame frame;
   // We draw synchronously, so acknowledge a manual BeginFrame.
@@ -229,19 +179,29 @@ void SurfacesInstance::DrawAndSwap(const gfx::Size& viewport,
   support_->SubmitCompositorFrame(root_id_allocation_.local_surface_id(),
                                   std::move(frame));
 
-  if (shared_context_state_) {
+  if (output_surface_provider_.shared_context_state()) {
     // GL state could be changed across frames, so we need reset GrContext.
-    shared_context_state_->PessimisticallyResetGrContext();
+    output_surface_provider_.shared_context_state()
+        ->PessimisticallyResetGrContext();
   }
+  output_surface_provider_.gl_surface()->SetSize(viewport);
   display_->Resize(viewport);
   display_->DrawAndSwap();
-  display_->DidReceiveSwapBuffersAck();
-  display_->DidReceivePresentationFeedback(gfx::PresentationFeedback(
-      base::TimeTicks::Now(), base::TimeDelta(), 0 /* flags */));
+  // SkiaRenderer generates DidReceiveSwapBuffersAck calls.
+  if (!features::IsUsingSkiaRenderer()) {
+    // Metrics tracking in CompositorFrameReporter expects that every frame
+    // has non-null SwapTimings. We don't know the exact swap start/end times
+    // here so we use Now() as a filler.
+    base::TimeTicks now = base::TimeTicks::Now();
+    display_->DidReceiveSwapBuffersAck({now, now});
+  }
+  output_surface_provider_.gl_surface()->MaybeDidPresent(
+      gfx::PresentationFeedback(base::TimeTicks::Now(), base::TimeDelta(),
+                                0 /* flags */));
 }
 
 void SurfacesInstance::AddChildId(const viz::SurfaceId& child_id) {
-  DCHECK(!base::ContainsValue(child_ids_, child_id));
+  DCHECK(!base::Contains(child_ids_, child_id));
   child_ids_.push_back(child_id);
   if (root_id_allocation_.IsValid())
     SetSolidColorRootFrame();
@@ -264,8 +224,9 @@ void SurfacesInstance::SetSolidColorRootFrame() {
   render_pass->SetNew(1, rect, rect, gfx::Transform());
   viz::SharedQuadState* quad_state =
       render_pass->CreateAndAppendSharedQuadState();
-  quad_state->SetAll(gfx::Transform(), rect, rect, rect, is_clipped,
-                     are_contents_opaque, 1.f, SkBlendMode::kSrcOver, 0);
+  quad_state->SetAll(gfx::Transform(), rect, rect, gfx::RRectF(), rect,
+                     is_clipped, are_contents_opaque, 1.f,
+                     SkBlendMode::kSrcOver, 0);
   viz::SolidColorDrawQuad* solid_quad =
       render_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
   solid_quad->SetNew(quad_state, rect, rect, SK_ColorBLACK, false);
@@ -295,7 +256,7 @@ std::vector<viz::SurfaceRange> SurfacesInstance::GetChildIdsRanges() {
 
 void SurfacesInstance::OnBeginFrame(
     const viz::BeginFrameArgs& args,
-    const base::flat_map<uint32_t, gfx::PresentationFeedback>& feedbacks) {}
+    const viz::FrameTimingDetailsMap& timing_details) {}
 
 void SurfacesInstance::ReclaimResources(
     const std::vector<viz::ReturnedResource>& resources) {
@@ -304,5 +265,46 @@ void SurfacesInstance::ReclaimResources(
 }
 
 void SurfacesInstance::OnBeginFramePausedChanged(bool paused) {}
+
+base::TimeDelta SurfacesInstance::GetPreferredFrameIntervalForFrameSinkId(
+    const viz::FrameSinkId& id) {
+  return frame_sink_manager_->GetPreferredFrameIntervalForFrameSinkId(id);
+}
+
+bool SurfacesInstance::BackdropFiltersPreventMerge(
+    const viz::SurfaceId& surface_id) {
+  // TODO(ericrk): This function makes the pessemistic assumption that any
+  // backdrop filter prevents merging this surface. This is not true in a
+  // number of cases:
+  //  - SkiaRenderer may handle framebuffer readback in some cases.
+  //  - This is not needed if framebuffer format is not floating point.
+  //
+  //  In the future we should optimize this more and avoid the intermediate
+  //  in the cases listed above. crbug.com/996434
+  const viz::Surface* surface =
+      frame_sink_manager_->surface_manager()->GetSurfaceForId(surface_id);
+  const auto& frame = surface->GetActiveFrame();
+  base::flat_set<viz::RenderPassId> backdrop_filter_passes;
+  for (const auto& render_pass : frame.render_pass_list) {
+    if (!render_pass->backdrop_filters.IsEmpty())
+      backdrop_filter_passes.insert(render_pass->id);
+  }
+
+  if (backdrop_filter_passes.empty())
+    return false;
+
+  const auto* root_pass = frame.render_pass_list.back().get();
+  for (const auto* quad : root_pass->quad_list) {
+    if (quad->material != viz::DrawQuad::Material::kRenderPass)
+      continue;
+    const auto* pass_quad = viz::RenderPassDrawQuad::MaterialCast(quad);
+    if (backdrop_filter_passes.find(pass_quad->render_pass_id) !=
+        backdrop_filter_passes.end()) {
+      return true;
+    }
+  }
+
+  return false;
+}
 
 }  // namespace android_webview

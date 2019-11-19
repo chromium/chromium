@@ -34,6 +34,8 @@ class TestSafeBrowsingDatabaseManager : public SafeBrowsingDatabaseManager {
   bool CheckExtensionIDs(const std::set<std::string>& extension_ids,
                          Client* client) override;
   bool CheckResourceUrl(const GURL& url, Client* client) override;
+  AsyncMatch CheckUrlForHighConfidenceAllowlist(const GURL& url,
+                                                Client* client) override;
   bool CheckUrlForSubresourceFilter(const GURL& url, Client* client) override;
   bool MatchDownloadWhitelistString(const std::string& str) override;
   bool MatchDownloadWhitelistUrl(const GURL& url) override;

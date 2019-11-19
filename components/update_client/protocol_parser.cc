@@ -4,7 +4,6 @@
 
 #include "components/update_client/protocol_parser.h"
 #include "base/strings/stringprintf.h"
-#include "components/update_client/protocol_parser_xml.h"
 
 namespace update_client {
 
@@ -51,10 +50,6 @@ bool ProtocolParser::Parse(const std::string& response) {
   errors_.clear();
 
   return DoParse(response, &results_);
-}
-
-std::unique_ptr<ProtocolParser> ProtocolParser::Create() {
-  return std::make_unique<ProtocolParserXml>();
 }
 
 }  // namespace update_client

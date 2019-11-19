@@ -1,0 +1,14 @@
+Test filtering in Bottom-Up Timeline Tree View panel.
+
+Initial:
+ BBB selfTime: 80
+  AAA selfTime: 80
+ AAA selfTime: 20
+
+Filtered by 'AAA':
+ AAA selfTime: 20
+
+Filtered by 'BBB':
+ BBB selfTime: 80
+
+

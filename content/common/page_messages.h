@@ -5,8 +5,11 @@
 #ifndef CONTENT_COMMON_PAGE_MESSAGES_H_
 #define CONTENT_COMMON_PAGE_MESSAGES_H_
 
+#include "content/public/common/common_param_traits.h"
+#include "content/public/common/page_visibility_state.h"
 #include "content/public/common/screen_info.h"
 #include "ipc/ipc_message_macros.h"
+#include "third_party/blink/public/platform/web_text_autosizer_page_info.h"
 #include "ui/gfx/geometry/rect.h"
 
 // IPC messages for page-level actions.
@@ -19,11 +22,7 @@
 
 // Messages sent from the browser to the renderer.
 
-// Informs the renderer that the page was hidden.
-IPC_MESSAGE_ROUTED0(PageMsg_WasHidden)
-
-// Informs the renderer that the page is no longer hidden.
-IPC_MESSAGE_ROUTED0(PageMsg_WasShown)
+IPC_MESSAGE_ROUTED1(PageMsg_VisibilityChanged, content::PageVisibilityState)
 
 // Sent when the history for this page is altered from another process. The
 // history list should be reset to |history_length| length, and the offset
@@ -34,13 +33,26 @@ IPC_MESSAGE_ROUTED2(PageMsg_SetHistoryOffsetAndLength,
 
 IPC_MESSAGE_ROUTED1(PageMsg_AudioStateChanged, bool /* is_audio_playing */)
 
-// Sent to OOPIF renderers when the main frame's ScreenInfo changes.
-IPC_MESSAGE_ROUTED1(PageMsg_UpdateScreenInfo,
-                    content::ScreenInfo /* screen_info */)
-
 // Sent to all renderers, instructing them to freeze or unfreeze all frames that
 // belongs to this page.
 IPC_MESSAGE_ROUTED1(PageMsg_SetPageFrozen, bool /* frozen */)
+
+// Sent to all renderers to freeze all frames and dispatch page visibility
+// events for bfcache.
+IPC_MESSAGE_ROUTED0(PageMsg_PutPageIntoBackForwardCache)
+
+// Sent to all renderers to resume all frames and dispatch page visibility
+// events for bfcache.
+IPC_MESSAGE_ROUTED1(PageMsg_RestorePageFromBackForwardCache,
+                    base::TimeTicks /* navigation_start */)
+
+// Sent to all renderers when the mainframe state required by
+// blink::TextAutosizer changes in the main frame's renderer.
+IPC_MESSAGE_ROUTED1(PageMsg_UpdateTextAutosizerPageInfoForRemoteMainFrames,
+                    blink::WebTextAutosizerPageInfo /* page_info */)
+
+// Sends updated preferences to the renderer.
+IPC_MESSAGE_ROUTED1(PageMsg_SetRendererPrefs, blink::mojom::RendererPreferences)
 
 // -----------------------------------------------------------------------------
 // Messages sent from the renderer to the browser.

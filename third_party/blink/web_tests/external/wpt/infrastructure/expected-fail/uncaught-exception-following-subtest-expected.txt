@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Uncaught Error: error outside any setup or test
+PASS Uncaught exception following subtest
+Harness: the test ran to completion.
+

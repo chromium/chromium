@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+PASS Property image-orientation value 'from-image' computes to 'from-image'
+FAIL Property image-orientation value 'none' computes to 'none' assert_true: 'none' is a supported value for image-orientation. expected true got false
+Harness: the test ran to completion.
+

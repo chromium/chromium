@@ -162,6 +162,9 @@ class AXTreeSerializer {
   // Invalidate the subtree rooted at this node.
   void InvalidateClientSubtree(ClientTreeNode* client_node);
 
+  // Delete all descendants of this node.
+  void DeleteDescendants(ClientTreeNode* client_node);
+
   // Delete the client subtree rooted at this node.
   void DeleteClientSubtree(ClientTreeNode* client_node);
 
@@ -208,6 +211,7 @@ struct AX_EXPORT ClientTreeNode {
   int32_t id;
   ClientTreeNode* parent;
   std::vector<ClientTreeNode*> children;
+  bool ignored;
   bool invalid;
 };
 
@@ -405,7 +409,7 @@ bool AXTreeSerializer<AXSourceNode, AXNodeData, AXTreeData>::SerializeChanges(
         out_update->node_id_to_clear = tree_->GetId(lca);
         ClientTreeNode* client_lca = ClientTreeNodeById(tree_->GetId(lca));
         CHECK(client_lca);
-        DeleteClientSubtree(client_lca);
+        DeleteDescendants(client_lca);
       }
     }
   } while (need_delete);
@@ -446,7 +450,8 @@ void AXTreeSerializer<AXSourceNode, AXNodeData, AXTreeData>::InvalidateSubtree(
 template <typename AXSourceNode, typename AXNodeData, typename AXTreeData>
 bool AXTreeSerializer<AXSourceNode, AXNodeData, AXTreeData>::IsInClientTree(
     AXSourceNode node) {
-  return !!ClientTreeNodeById(tree_->GetId(node));
+  ClientTreeNode* client_node = ClientTreeNodeById(tree_->GetId(node));
+  return client_node ? !client_node->invalid : false;
 }
 
 template <typename AXSourceNode, typename AXNodeData, typename AXTreeData>
@@ -460,11 +465,20 @@ void AXTreeSerializer<AXSourceNode, AXNodeData, AXTreeData>::
 template <typename AXSourceNode, typename AXNodeData, typename AXTreeData>
 void AXTreeSerializer<AXSourceNode, AXNodeData, AXTreeData>::
     DeleteClientSubtree(ClientTreeNode* client_node) {
-  for (size_t i = 0; i < client_node->children.size(); ++i) {
-    client_id_map_.erase(client_node->children[i]->id);
-    DeleteClientSubtree(client_node->children[i]);
-    delete client_node->children[i];
+  if (client_node == client_root_) {
+    Reset();  // Do not try to reuse a bad root later.
+  } else {
+    DeleteDescendants(client_node);
+    client_id_map_.erase(client_node->id);
+    delete client_node;
   }
+}
+
+template <typename AXSourceNode, typename AXNodeData, typename AXTreeData>
+void AXTreeSerializer<AXSourceNode, AXNodeData, AXTreeData>::DeleteDescendants(
+    ClientTreeNode* client_node) {
+  for (size_t i = 0; i < client_node->children.size(); ++i)
+    DeleteClientSubtree(client_node->children[i]);
   client_node->children.clear();
 }
 
@@ -499,6 +513,7 @@ bool AXTreeSerializer<AXSourceNode, AXNodeData, AXTreeData>::
 
   // We're about to serialize it, so mark it as valid.
   client_node->invalid = false;
+  client_node->ignored = tree_->IsIgnored(node);
 
   // Iterate over the ids of the children of |node|.
   // Create a set of the child ids so we can quickly look
@@ -506,6 +521,7 @@ bool AXTreeSerializer<AXSourceNode, AXNodeData, AXTreeData>::
   // If we've hit the maximum number of serialized nodes, pretend
   // this node has no children but keep going so that we get
   // consistent results.
+  std::unordered_set<int32_t> new_ignored_ids;
   std::unordered_set<int32_t> new_child_ids;
   std::vector<AXSourceNode> children;
   if (max_node_count_ == 0 || out_update->nodes.size() < max_node_count_) {
@@ -522,10 +538,13 @@ bool AXTreeSerializer<AXSourceNode, AXNodeData, AXTreeData>::
     AXSourceNode& child = children[i];
     int new_child_id = tree_->GetId(child);
     new_child_ids.insert(new_child_id);
+    if (tree_->IsIgnored(child))
+      new_ignored_ids.insert(new_child_id);
 
     // There shouldn't be any reparenting because we've already handled it
     // above. If this happens, reset and return an error.
-    ClientTreeNode* client_child = client_id_map_[new_child_id];
+
+    ClientTreeNode* client_child = ClientTreeNodeById(new_child_id);
     if (client_child && client_child->parent != client_node) {
       DVLOG(1) << "Reparenting detected";
       Reset();
@@ -546,9 +565,7 @@ bool AXTreeSerializer<AXSourceNode, AXNodeData, AXTreeData>::
     ClientTreeNode* old_child = old_children[i];
     int old_child_id = old_child->id;
     if (new_child_ids.find(old_child_id) == new_child_ids.end()) {
-      client_id_map_.erase(old_child_id);
       DeleteClientSubtree(old_child);
-      delete old_child;
     } else {
       client_child_id_map[old_child_id] = old_child;
     }
@@ -587,12 +604,17 @@ bool AXTreeSerializer<AXSourceNode, AXNodeData, AXTreeData>::
 
     new_child_ids.erase(child_id);
     actual_serialized_node_child_ids.push_back(child_id);
-    if (client_child_id_map.find(child_id) != client_child_id_map.end()) {
-      ClientTreeNode* reused_child = client_child_id_map[child_id];
+    ClientTreeNode* reused_child = nullptr;
+    if (client_child_id_map.find(child_id) != client_child_id_map.end())
+      reused_child = ClientTreeNodeById(child_id);
+    if (reused_child) {
       client_node->children.push_back(reused_child);
+      const bool ignored_state_changed =
+          reused_child->ignored !=
+          (new_ignored_ids.find(reused_child->id) != new_ignored_ids.end());
       // Re-serialize it if the child is marked as invalid, otherwise
       // we don't have to because the client already has it.
-      if (reused_child->invalid) {
+      if (reused_child->invalid || ignored_state_changed) {
         if (!SerializeChangedNodes(child, out_update))
           return false;
       }
@@ -600,6 +622,7 @@ bool AXTreeSerializer<AXSourceNode, AXNodeData, AXTreeData>::
       ClientTreeNode* new_child = new ClientTreeNode();
       new_child->id = child_id;
       new_child->parent = client_node;
+      new_child->ignored = tree_->IsIgnored(child);
       new_child->invalid = false;
       client_node->children.push_back(new_child);
       client_id_map_[child_id] = new_child;

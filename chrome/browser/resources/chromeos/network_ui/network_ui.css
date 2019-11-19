@@ -11,11 +11,6 @@ div {
   margin: 10px 0;
 }
 
-paper-button[raised].colored {
-  background: rgb(66, 133, 244);
-  color: white;
-}
-
 #select-div {
   display: flex;
   height: 100px;
@@ -63,6 +58,6 @@ paper-button[raised].colored {
   width: 32px;
 }
 
-cr-network-select {
+network-select {
   flex: 1;
 }

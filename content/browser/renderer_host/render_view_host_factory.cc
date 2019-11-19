@@ -10,6 +10,7 @@
 #include "base/memory/ptr_util.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_factory.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace content {
 
@@ -27,8 +28,7 @@ RenderViewHost* RenderViewHostFactory::Create(
     int32_t routing_id,
     int32_t main_frame_routing_id,
     int32_t widget_routing_id,
-    bool swapped_out,
-    bool hidden) {
+    bool swapped_out) {
   // RenderViewHost creation can be either browser-driven (by the user opening a
   // new tab) or renderer-driven (by script calling window.open, etc).
   //
@@ -51,13 +51,15 @@ RenderViewHost* RenderViewHostFactory::Create(
                                           routing_id, main_frame_routing_id,
                                           widget_routing_id, swapped_out);
   }
-  return new RenderViewHostImpl(
+
+  RenderViewHostImpl* view_host = new RenderViewHostImpl(
       instance,
-      base::WrapUnique(RenderWidgetHostFactory::Create(
-          widget_delegate, instance->GetProcess(), widget_routing_id, nullptr,
-          hidden)),
+      RenderWidgetHostFactory::Create(widget_delegate, instance->GetProcess(),
+                                      widget_routing_id, mojo::NullRemote(),
+                                      /*hidden=*/true),
       delegate, routing_id, main_frame_routing_id, swapped_out,
       true /* has_initialized_audio_host */);
+  return view_host;
 }
 
 // static

@@ -20,9 +20,9 @@
 #include "base/time/time.h"
 #include "components/blacklist/opt_out_blacklist/opt_out_blacklist_data.h"
 #include "components/blacklist/opt_out_blacklist/opt_out_blacklist_delegate.h"
+#include "components/previews/content/previews_decider.h"
 #include "components/previews/content/previews_optimization_guide.h"
 #include "components/previews/core/previews_black_list.h"
-#include "components/previews/core/previews_decider.h"
 #include "components/previews/core/previews_experiments.h"
 #include "components/previews/core/previews_logger.h"
 #include "net/nqe/effective_connection_type.h"
@@ -34,6 +34,10 @@ class Clock;
 
 namespace blacklist {
 class OptOutStore;
+}
+
+namespace content {
+class NavigationHandle;
 }
 
 namespace previews {
@@ -84,7 +88,7 @@ class PreviewsDeciderImpl : public PreviewsDecider,
       base::Time time,
       PreviewsType type,
       std::vector<PreviewsEligibilityReason>&& passed_reasons,
-      uint64_t page_id) const;
+      PreviewsUserData* user_data) const;
 
   // Adds a navigation to |url| to the black list with result |opt_out|.
   void AddPreviewNavigation(const GURL& url,
@@ -93,7 +97,9 @@ class PreviewsDeciderImpl : public PreviewsDecider,
                             uint64_t page_id);
 
   // Clears the history of the black list between |begin_time| and |end_time|,
-  // both inclusive.
+  // both inclusive. Additional, clears the appropriate data from the hint
+  // cache. TODO(mcrouse): Rename to denote clearing all necessary data,
+  // including the Fetched hints and the blacklist.
   void ClearBlackList(base::Time begin_time, base::Time end_time);
 
   // Change the status of whether to ignore the decisions made by
@@ -104,25 +110,24 @@ class PreviewsDeciderImpl : public PreviewsDecider,
   PreviewsBlackList* black_list() const { return previews_black_list_.get(); }
 
   // PreviewsDecider implementation:
-  bool ShouldAllowPreviewAtNavigationStart(PreviewsUserData* previews_data,
-                                           const GURL& url,
-                                           bool is_reload,
-                                           PreviewsType type) const override;
+  bool ShouldAllowPreviewAtNavigationStart(
+      PreviewsUserData* previews_data,
+      content::NavigationHandle* navigation_handle,
+      bool is_reload,
+      PreviewsType type) const override;
   bool ShouldCommitPreview(PreviewsUserData* previews_data,
-                           const GURL& committed_url,
+                           content::NavigationHandle* navigation_handle,
                            PreviewsType type) const override;
 
   // Set whether to ignore the long term blacklist rules for server previews.
   void SetIgnoreLongTermBlackListForServerPreviews(
       bool ignore_long_term_blacklist_for_server_previews);
 
-  bool LoadPageHints(const GURL& url) override;
+  bool LoadPageHints(content::NavigationHandle* navigation_handle) override;
 
   bool GetResourceLoadingHints(
       const GURL& url,
       std::vector<std::string>* out_resource_patterns_to_block) const override;
-
-  void LogHintCacheMatch(const GURL& url, bool is_committed) const override;
 
   // Generates a page ID that is guaranteed to be unique from any other page ID
   // generated in this browser session. Also, guaranteed to be non-zero.
@@ -155,8 +160,15 @@ class PreviewsDeciderImpl : public PreviewsDecider,
   // Determines the eligibility of the preview |type| for |url|.
   PreviewsEligibilityReason DeterminePreviewEligibility(
       PreviewsUserData* previews_data,
-      const GURL& url,
+      content::NavigationHandle* navigation_handle,
       bool is_reload,
+      PreviewsType type,
+      bool is_drp_server_preview,
+      std::vector<PreviewsEligibilityReason>* passed_reasons) const;
+
+  // Returns previews eligibility with respect to the local blacklist.
+  PreviewsEligibilityReason CheckLocalBlacklist(
+      const GURL& url,
       PreviewsType type,
       bool is_drp_server_preview,
       std::vector<PreviewsEligibilityReason>* passed_reasons) const;
@@ -167,7 +179,7 @@ class PreviewsDeciderImpl : public PreviewsDecider,
   // to deny the preview for consideration.
   PreviewsEligibilityReason ShouldAllowPreviewPerOptimizationHints(
       PreviewsUserData* previews_data,
-      const GURL& url,
+      content::NavigationHandle* navigation_handle,
       PreviewsType type,
       std::vector<PreviewsEligibilityReason>* passed_reasons) const;
 
@@ -176,7 +188,7 @@ class PreviewsDeciderImpl : public PreviewsDecider,
   // navigation URL against any specific hint details.
   PreviewsEligibilityReason ShouldCommitPreviewPerOptimizationHints(
       PreviewsUserData* previews_data,
-      const GURL& url,
+      content::NavigationHandle* navigation_handle,
       PreviewsType type,
       std::vector<PreviewsEligibilityReason>* passed_reasons) const;
 
@@ -184,10 +196,6 @@ class PreviewsDeciderImpl : public PreviewsDecider,
   PreviewsUIService* previews_ui_service_;
 
   std::unique_ptr<PreviewsBlackList> previews_black_list_;
-
-  // Only used when the blacklist has been disabled to allow "Show Original" to
-  // function as expected. The time of the most recent opt out event.
-  base::Time last_opt_out_time_;
 
   // Holds optimization guidance from the server.
   std::unique_ptr<PreviewsOptimizationGuide> previews_opt_guide_;
@@ -218,7 +226,7 @@ class PreviewsDeciderImpl : public PreviewsDecider,
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::WeakPtrFactory<PreviewsDeciderImpl> weak_factory_;
+  base::WeakPtrFactory<PreviewsDeciderImpl> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PreviewsDeciderImpl);
 };

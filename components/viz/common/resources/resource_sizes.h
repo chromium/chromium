@@ -71,18 +71,37 @@ class VIZ_RESOURCE_FORMAT_EXPORT ResourceSizes {
   static inline void VerifyType();
 
   template <typename T>
-  static bool VerifyFitsInBytesInternal(int width,
-                                        int height,
+  static bool VerifyWidthInBytesInternal(int width,
+                                         ResourceFormat format,
+                                         bool aligned);
+
+  template <typename T>
+  static bool VerifySizeInBytesInternal(const gfx::Size& size,
                                         ResourceFormat format,
-                                        bool verify_size,
                                         bool aligned);
 
   template <typename T>
-  static T BytesInternal(int width,
-                         int height,
-                         ResourceFormat format,
-                         bool verify_size,
-                         bool aligned);
+  static bool MaybeWidthInBytesInternal(int width,
+                                        ResourceFormat format,
+                                        bool aligned,
+                                        T* bytes);
+
+  template <typename T>
+  static bool MaybeSizeInBytesInternal(const gfx::Size& size,
+                                       ResourceFormat format,
+                                       bool aligned,
+                                       T* bytes);
+
+  template <typename T>
+  static T WidthInBytesInternal(int width, ResourceFormat format, bool aligned);
+
+  template <typename T>
+  static T SizeInBytesInternal(const gfx::Size& size,
+                               ResourceFormat format,
+                               bool aligned);
+
+  template <typename T>
+  static bool MaybeRound(base::CheckedNumeric<T>* value, T mul);
 
   // Not instantiable.
   ResourceSizes() = delete;
@@ -93,7 +112,7 @@ bool ResourceSizes::VerifyWidthInBytes(int width, ResourceFormat format) {
   VerifyType<T>();
   if (width <= 0)
     return false;
-  return VerifyFitsInBytesInternal<T>(width, 0, format, false, false);
+  return VerifyWidthInBytesInternal<T>(width, format, false);
 }
 
 template <typename T>
@@ -102,8 +121,7 @@ bool ResourceSizes::VerifySizeInBytes(const gfx::Size& size,
   VerifyType<T>();
   if (size.IsEmpty())
     return false;
-  return VerifyFitsInBytesInternal<T>(size.width(), size.height(), format, true,
-                                      false);
+  return VerifySizeInBytesInternal<T>(size, format, false);
 }
 
 template <typename T>
@@ -113,15 +131,7 @@ bool ResourceSizes::MaybeWidthInBytes(int width,
   VerifyType<T>();
   if (width <= 0)
     return false;
-  base::CheckedNumeric<T> checked_value = BitsPerPixel(format);
-  checked_value *= width;
-  checked_value =
-      cc::MathUtil::CheckedRoundUp<T>(checked_value.ValueOrDie(), 8);
-  checked_value /= 8;
-  if (!checked_value.IsValid())
-    return false;
-  *bytes = checked_value.ValueOrDie();
-  return true;
+  return MaybeWidthInBytesInternal<T>(width, format, false, bytes);
 }
 
 template <typename T>
@@ -131,29 +141,16 @@ bool ResourceSizes::MaybeSizeInBytes(const gfx::Size& size,
   VerifyType<T>();
   if (size.IsEmpty())
     return false;
-  base::CheckedNumeric<T> checked_value = BitsPerPixel(format);
-  checked_value *= size.width();
-  checked_value =
-      cc::MathUtil::CheckedRoundUp<T>(checked_value.ValueOrDie(), 8);
-  checked_value /= 8;
-  checked_value *= size.height();
-  if (!checked_value.IsValid())
-    return false;
-  *bytes = checked_value.ValueOrDie();
-  return true;
+  return MaybeSizeInBytesInternal<T>(size, format, false, bytes);
 }
 
 template <typename T>
 T ResourceSizes::CheckedWidthInBytes(int width, ResourceFormat format) {
   VerifyType<T>();
   CHECK_GT(width, 0);
-  DCHECK(VerifyFitsInBytesInternal<T>(width, 0, format, false, false));
-  base::CheckedNumeric<T> checked_value = BitsPerPixel(format);
-  checked_value *= width;
-  checked_value =
-      cc::MathUtil::CheckedRoundUp<T>(checked_value.ValueOrDie(), 8);
-  checked_value /= 8;
-  return checked_value.ValueOrDie();
+  T bytes;
+  CHECK(MaybeWidthInBytesInternal<T>(width, format, false, &bytes));
+  return bytes;
 }
 
 template <typename T>
@@ -161,23 +158,17 @@ T ResourceSizes::CheckedSizeInBytes(const gfx::Size& size,
                                     ResourceFormat format) {
   VerifyType<T>();
   CHECK(!size.IsEmpty());
-  DCHECK(VerifyFitsInBytesInternal<T>(size.width(), size.height(), format, true,
-                                      false));
-  base::CheckedNumeric<T> checked_value = BitsPerPixel(format);
-  checked_value *= size.width();
-  checked_value =
-      cc::MathUtil::CheckedRoundUp<T>(checked_value.ValueOrDie(), 8);
-  checked_value /= 8;
-  checked_value *= size.height();
-  return checked_value.ValueOrDie();
+  T bytes;
+  CHECK(MaybeSizeInBytesInternal<T>(size, format, false, &bytes));
+  return bytes;
 }
 
 template <typename T>
 T ResourceSizes::UncheckedWidthInBytes(int width, ResourceFormat format) {
   VerifyType<T>();
   DCHECK_GT(width, 0);
-  DCHECK(VerifyFitsInBytesInternal<T>(width, 0, format, false, false));
-  return BytesInternal<T>(width, 0, format, false, false);
+  DCHECK(VerifyWidthInBytesInternal<T>(width, format, false));
+  return WidthInBytesInternal<T>(width, format, false);
 }
 
 template <typename T>
@@ -185,9 +176,8 @@ T ResourceSizes::UncheckedSizeInBytes(const gfx::Size& size,
                                       ResourceFormat format) {
   VerifyType<T>();
   DCHECK(!size.IsEmpty());
-  DCHECK(VerifyFitsInBytesInternal<T>(size.width(), size.height(), format, true,
-                                      false));
-  return BytesInternal<T>(size.width(), size.height(), format, true, false);
+  DCHECK(VerifySizeInBytesInternal<T>(size, format, false));
+  return SizeInBytesInternal<T>(size, format, false);
 }
 
 template <typename T>
@@ -195,8 +185,8 @@ T ResourceSizes::UncheckedWidthInBytesAligned(int width,
                                               ResourceFormat format) {
   VerifyType<T>();
   DCHECK_GT(width, 0);
-  DCHECK(VerifyFitsInBytesInternal<T>(width, 0, format, false, true));
-  return BytesInternal<T>(width, 0, format, false, true);
+  DCHECK(VerifyWidthInBytesInternal<T>(width, format, true));
+  return WidthInBytesInternal<T>(width, format, true);
 }
 
 template <typename T>
@@ -204,9 +194,8 @@ T ResourceSizes::UncheckedSizeInBytesAligned(const gfx::Size& size,
                                              ResourceFormat format) {
   VerifyType<T>();
   CHECK(!size.IsEmpty());
-  DCHECK(VerifyFitsInBytesInternal<T>(size.width(), size.height(), format, true,
-                                      true));
-  return BytesInternal<T>(size.width(), size.height(), format, true, true);
+  DCHECK(VerifySizeInBytesInternal<T>(size, format, true));
+  return SizeInBytesInternal<T>(size, format, true);
 }
 
 template <typename T>
@@ -217,59 +206,105 @@ void ResourceSizes::VerifyType() {
 }
 
 template <typename T>
-bool ResourceSizes::VerifyFitsInBytesInternal(int width,
-                                              int height,
+bool ResourceSizes::VerifyWidthInBytesInternal(int width,
+                                               ResourceFormat format,
+                                               bool aligned) {
+  T ignored;
+  return MaybeWidthInBytesInternal(width, format, aligned, &ignored);
+}
+
+template <typename T>
+bool ResourceSizes::VerifySizeInBytesInternal(const gfx::Size& size,
                                               ResourceFormat format,
-                                              bool verify_size,
                                               bool aligned) {
-  base::CheckedNumeric<T> checked_value = BitsPerPixel(format);
-  checked_value *= width;
-  if (!checked_value.IsValid())
+  T ignored;
+  return MaybeSizeInBytesInternal(size, format, aligned, &ignored);
+}
+
+template <typename T>
+bool ResourceSizes::MaybeWidthInBytesInternal(int width,
+                                              ResourceFormat format,
+                                              bool aligned,
+                                              T* bytes) {
+  base::CheckedNumeric<T> bits_per_row = BitsPerPixel(format);
+  bits_per_row *= width;
+  if (!bits_per_row.IsValid())
     return false;
 
   // Roundup bits to byte (8 bits) boundary. If width is 3 and BitsPerPixel is
   // 4, then it should return 16, so that row pixels do not get truncated.
-  checked_value =
-      cc::MathUtil::UncheckedRoundUp<T>(checked_value.ValueOrDie(), 8);
+  if (!MaybeRound<T>(&bits_per_row, 8))
+    return false;
+
+  // Convert to bytes by dividing by 8. This can't fail as we've rounded to a
+  // multiple of 8 above.
+  base::CheckedNumeric<T> bytes_per_row = bits_per_row / 8;
+  DCHECK(bytes_per_row.IsValid());
 
   // If aligned is true, bytes are aligned on 4-bytes boundaries for upload
   // performance, assuming that GL_PACK_ALIGNMENT or GL_UNPACK_ALIGNMENT have
   // not changed from default.
   if (aligned) {
-    checked_value /= 8;
-    if (!checked_value.IsValid())
-      return false;
-    checked_value =
-        cc::MathUtil::UncheckedRoundUp<T>(checked_value.ValueOrDie(), 4);
-    checked_value *= 8;
+    // This can't fail as we've just divided by 8, so we can always round up to
+    // the nearest multiple of 4.
+    bool succeeded = MaybeRound<T>(&bytes_per_row, 4);
+    DCHECK(succeeded);
   }
 
-  if (verify_size)
-    checked_value *= height;
-  if (!checked_value.IsValid())
-    return false;
-  T value = checked_value.ValueOrDie();
-  if ((value % 8) != 0)
-    return false;
+  *bytes = bytes_per_row.ValueOrDie();
   return true;
 }
 
 template <typename T>
-T ResourceSizes::BytesInternal(int width,
-                               int height,
-                               ResourceFormat format,
-                               bool verify_size,
-                               bool aligned) {
+bool ResourceSizes::MaybeSizeInBytesInternal(const gfx::Size& size,
+                                             ResourceFormat format,
+                                             bool aligned,
+                                             T* bytes) {
+  T width_in_bytes;
+  if (!MaybeWidthInBytesInternal<T>(size.width(), format, aligned,
+                                    &width_in_bytes)) {
+    return false;
+  }
+
+  base::CheckedNumeric<T> total_bytes = width_in_bytes;
+  total_bytes *= size.height();
+  if (!total_bytes.IsValid())
+    return false;
+
+  *bytes = total_bytes.ValueOrDie();
+  return true;
+}
+
+template <typename T>
+T ResourceSizes::WidthInBytesInternal(int width,
+                                      ResourceFormat format,
+                                      bool aligned) {
   T bytes = BitsPerPixel(format);
   bytes *= width;
   bytes = cc::MathUtil::UncheckedRoundUp<T>(bytes, 8);
   bytes /= 8;
   if (aligned)
     bytes = cc::MathUtil::UncheckedRoundUp<T>(bytes, 4);
-  if (verify_size)
-    bytes *= height;
-
   return bytes;
+}
+
+template <typename T>
+T ResourceSizes::SizeInBytesInternal(const gfx::Size& size,
+                                     ResourceFormat format,
+                                     bool aligned) {
+  T bytes = WidthInBytesInternal<T>(size.width(), format, aligned);
+  bytes *= size.height();
+  return bytes;
+}
+
+template <typename T>
+bool ResourceSizes::MaybeRound(base::CheckedNumeric<T>* value, T mul) {
+  DCHECK(value->IsValid());
+  T to_round = value->ValueOrDie();
+  if (!cc::MathUtil::VerifyRoundup<T>(to_round, mul))
+    return false;
+  *value = cc::MathUtil::UncheckedRoundUp<T>(to_round, mul);
+  return true;
 }
 
 }  // namespace viz

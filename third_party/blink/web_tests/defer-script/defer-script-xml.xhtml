@@ -1,0 +1,51 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+   "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>Defer Script Execution Order</title>
+  <script src="../resources/testharness.js"></script>
+  <script src="../resources/testharnessreport.js"></script>
+</head>
+<body>
+  <div id="scriptlog"/>
+  <input id="testElement"/>
+  <script>
+  function log(msg) {
+    document.getElementById("scriptlog").textContent += msg + ";";
+  }
+  function checkIfReachedBodyEnd() {
+    const endelement = document.getElementById("bodyend");
+    if (endelement != null) {
+      if (endelement.textContent === "End") {
+        log("EndOfBody");
+        endelement.textContent = "Detected";
+      }
+    }
+  }
+  function logScript(msg) {
+    checkIfReachedBodyEnd();
+    log(msg);
+  }
+  function finish() {
+    const actual = document.getElementById("scriptlog").textContent;
+    const xmlscriptorder = "Inline1;Sync1;Defer1;Inline2;Defer2;Sync2;EndOfBody;DOMContentLoaded;";
+    <!-- HTML defer order would be: "Inline1;Sync1;Inline2;Sync2;EndOfBody;Defer1;Defer2;DOMContentLoaded;"; -->
+    assert_equals(actual, xmlscriptorder, "XML script execution order comparison");
+    done();
+  }
+  logScript("Inline1");
+  window.addEventListener("load", finish);
+  document.addEventListener("DOMContentLoaded", function() { logScript("DOMContentLoaded"); });
+  </script>
+
+  <script src="resources/sync-script-1.js"></script>
+  <script src="resources/defer-script-1.js" defer="defer"></script>
+  <script>
+  logScript("Inline2");
+  </script>
+  <script src="resources/defer-script-2.js" defer="defer"></script>
+  <script src="resources/sync-script-2.js"></script>
+  <pre id="bodyend">End</pre>
+</body>
+</html>
+

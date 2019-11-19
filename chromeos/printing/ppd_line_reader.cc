@@ -47,18 +47,21 @@ class StringSourceStream : public net::SourceStream {
   int Read(net::IOBuffer* dest_buffer,
            int buffer_size,
            net::CompletionOnceCallback) override {
-    int read_size = src_.size() - read_ofs_;
-    if (read_size > buffer_size) {
-      read_size = buffer_size;
-    }
+    if (buffer_size < 0)
+      return net::ERR_INVALID_ARGUMENT;
+    if (!MayHaveMoreBytes())
+      return net::OK;
+    const size_t read_size =
+        std::min(src_.size() - read_ofs_, static_cast<size_t>(buffer_size));
     memcpy(dest_buffer->data(), src_.data() + read_ofs_, read_size);
     read_ofs_ += read_size;
     return read_size;
   }
   std::string Description() const override { return ""; }
+  bool MayHaveMoreBytes() const override { return read_ofs_ < src_.size(); }
 
  private:
-  int read_ofs_ = 0;
+  size_t read_ofs_ = 0;
   const std::string& src_;
 };
 
@@ -133,7 +136,7 @@ class PpdLineReaderImpl : public PpdLineReader {
       // uses it, we should never see the callback used.
       int result = input_->Read(
           read_buf_.get(), kReadBufCapacity,
-          base::Bind([](int) { LOG(FATAL) << "Unexpected async read"; }));
+          base::BindOnce([](int) { LOG(FATAL) << "Unexpected async read"; }));
       if (result == 0) {
         eof_ = true;
         return '\0';
@@ -177,13 +180,13 @@ constexpr int PpdLineReaderImpl::kReadBufCapacity;
 // static
 std::unique_ptr<PpdLineReader> PpdLineReader::Create(
     const std::string& contents,
-    int max_line_length) {
+    size_t max_line_length) {
   return std::make_unique<PpdLineReaderImpl>(contents, max_line_length);
 }
 
 // static
 bool PpdLineReader::ContainsMagicNumber(const std::string& contents,
-                                        int max_line_length) {
+                                        size_t max_line_length) {
   auto line_reader = PpdLineReader::Create(contents, max_line_length);
   std::string line;
   return line_reader->NextLine(&line) &&

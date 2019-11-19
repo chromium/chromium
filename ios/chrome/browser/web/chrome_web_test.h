@@ -22,11 +22,11 @@ class ChromeWebTest : public web::WebTestWithWebState {
   ~ChromeWebTest() override;
 
  protected:
-  ChromeWebTest(web::TestWebThreadBundle::Options =
-                    web::TestWebThreadBundle::Options::DEFAULT);
+  ChromeWebTest(web::WebTaskEnvironment::Options =
+                    web::WebTaskEnvironment::Options::DEFAULT);
   explicit ChromeWebTest(std::unique_ptr<web::WebClient> web_client,
-                         web::TestWebThreadBundle::Options =
-                             web::TestWebThreadBundle::Options::DEFAULT);
+                         web::WebTaskEnvironment::Options =
+                             web::WebTaskEnvironment::Options::DEFAULT);
   // WebTest implementation.
   void SetUp() override;
   void TearDown() override;

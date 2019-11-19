@@ -1,9 +1,13 @@
 dewittj@chromium.org
 dimich@chromium.org
+knollr@chromium.org
 mukai@chromium.org
 peter@chromium.org
 stevenjb@chromium.org
 yoshiki@chromium.org
+
+# Linux files
+per-file *_linux*=thomasanderson@chromium.org
 
 # Mac files
 per-file *_mac*=rsesek@chromium.org

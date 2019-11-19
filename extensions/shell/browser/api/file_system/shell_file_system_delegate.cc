@@ -22,7 +22,7 @@ base::FilePath ShellFileSystemDelegate::GetDefaultDirectory() {
 }
 
 bool ShellFileSystemDelegate::ShowSelectFileDialog(
-    scoped_refptr<UIThreadExtensionFunction> extension_function,
+    scoped_refptr<ExtensionFunction> extension_function,
     ui::SelectFileDialog::Type type,
     const base::FilePath& default_path,
     const ui::SelectFileDialog::FileTypeInfo* file_types,

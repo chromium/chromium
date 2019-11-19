@@ -2,15 +2,15 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-mojom = "//services/viz/public/interfaces/compositing/copy_output_request.mojom"
+mojom = "//services/viz/public/mojom/compositing/copy_output_request.mojom"
 deps = [
   "//components/viz/common",
 ]
 public_headers = [ "//components/viz/common/frame_sinks/copy_output_request.h" ]
 traits_headers = [
-  "//services/viz/public/cpp/compositing/copy_output_request_struct_traits.h",
+  "//services/viz/public/cpp/compositing/copy_output_request_mojom_traits.h",
 ]
 sources = [
-  "//services/viz/public/cpp/compositing/copy_output_request_struct_traits.cc",
+  "//services/viz/public/cpp/compositing/copy_output_request_mojom_traits.cc",
 ]
-type_mappings = [ "viz.mojom.CopyOutputRequest=std::unique_ptr<viz::CopyOutputRequest>[move_only]" ]
+type_mappings = [ "viz.mojom.CopyOutputRequest=::std::unique_ptr<::viz::CopyOutputRequest>[move_only]" ]

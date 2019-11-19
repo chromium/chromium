@@ -9,7 +9,7 @@ namespace blink {
 CSSParserLocalContext::CSSParserLocalContext()
     : use_alias_parsing_(false),
       is_animation_tainted_(false),
-      current_shorthand_(CSSPropertyInvalid),
+      current_shorthand_(CSSPropertyID::kInvalid),
       variable_mode_(VariableMode::kTyped) {}
 
 CSSParserLocalContext CSSParserLocalContext::WithAliasParsing(

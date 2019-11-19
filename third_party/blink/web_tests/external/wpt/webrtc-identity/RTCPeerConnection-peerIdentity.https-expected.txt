@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+FAIL setRemoteDescription() on offer with a=identity should establish peerIdentity promise_test: Unhandled rejection with value: object "TypeError: pc1.setIdentityProvider is not a function"
+FAIL setRemoteDescription() on offer with a=identity that resolve to value different from target peer identity should reject with OperationError promise_test: Unhandled rejection with value: object "TypeError: pc1.setIdentityProvider is not a function"
+FAIL setRemoteDescription() with peerIdentity set and with IdP proxy that return validationAssertion with mismatch contents should reject with OperationError pc1.setIdentityProvider is not a function
+FAIL setRemoteDescription() and peerIdentity should reject with OperationError if IdP return validated identity that is different from its own domain pc1.setIdentityProvider is not a function
+FAIL When IdP throws error and pc has target peer identity, setRemoteDescription() and peerIdentity rejected with RTCError('idp-execution-error') pc1.setIdentityProvider is not a function
+FAIL IdP failure with no target peer identity should have following setRemoteDescription() succeed and replace pc.peerIdentity with a new promise pc1.setIdentityProvider is not a function
+Harness: the test ran to completion.
+

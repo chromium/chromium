@@ -1,0 +1,4 @@
+HTTP/1.1 200 OK
+Content-Type: application/javascript
+Cache-Control: max-age=100000
+Access-Control-Allow-Origin: *

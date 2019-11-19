@@ -15,7 +15,8 @@ window.loadTimeData.getString = id => {
 };
 
 function testSimpleProgress() {
-  const group = new ProgressCenterItemGroup(/* name */ 'test', /* quite */ false);
+  const group =
+      new ProgressCenterItemGroup(/* name */ 'test', /* quiet */ false);
   assertEquals(ProgressCenterItemGroup.State.EMPTY, group.state);
 
   const item = new ProgressCenterItem();
@@ -65,7 +66,8 @@ function testSimpleProgress() {
 }
 
 function testCompleteAnimationDuringProgress() {
-  const group = new ProgressCenterItemGroup(/* name */ 'test', /* quite */ false);
+  const group =
+      new ProgressCenterItemGroup(/* name */ 'test', /* quiet */ false);
   const item = new ProgressCenterItem();
   item.id = 'test-item-1';
   item.message = 'TestItemMessage1';
@@ -127,7 +129,8 @@ function testCompleteAnimationDuringProgress() {
 }
 
 function testAddMaxProgressItem() {
-  const group = new ProgressCenterItemGroup(/* name */ 'test', /* quite */ false);
+  const group =
+      new ProgressCenterItemGroup(/* name */ 'test', /* quiet */ false);
   const item = new ProgressCenterItem();
   item.id = 'test-item-1';
   item.message = 'TestItemMessage1';
@@ -154,7 +157,8 @@ function testAddMaxProgressItem() {
 }
 
 function testCompleteDuringAnimation() {
-  const group = new ProgressCenterItemGroup(/* name */ 'test', /* quite */ false);
+  const group =
+      new ProgressCenterItemGroup(/* name */ 'test', /* quiet */ false);
   const item = new ProgressCenterItem();
   item.id = 'test-item-1';
   item.message = 'TestItemMessage1';
@@ -190,7 +194,8 @@ function testCompleteDuringAnimation() {
 }
 
 function testTwoItems() {
-  const group = new ProgressCenterItemGroup(/* name */ 'test', /* quite */ false);
+  const group =
+      new ProgressCenterItemGroup(/* name */ 'test', /* quiet */ false);
   const item1 = new ProgressCenterItem();
   item1.id = 'test-item-1';
   item1.message = 'TestItemMessage1';
@@ -280,7 +285,8 @@ function testTwoItems() {
 }
 
 function testOneError() {
-  const group = new ProgressCenterItemGroup(/* name */ 'test', /* quite */ false);
+  const group =
+      new ProgressCenterItemGroup(/* name */ 'test', /* quiet */ false);
   const item1 = new ProgressCenterItem();
   item1.id = 'test-item-1';
   item1.message = 'TestItemMessage1';
@@ -293,7 +299,7 @@ function testOneError() {
   group.update(item1);
 
   // Item 1 becomes error.
-  item1.message = "Error.";
+  item1.message = 'Error.';
   item1.state = ProgressItemState.ERROR;
   group.update(item1);
 
@@ -334,7 +340,8 @@ function testOneError() {
 }
 
 function testOneItemWithError() {
-  const group = new ProgressCenterItemGroup(/* name */ 'test', /* quite */ false);
+  const group =
+      new ProgressCenterItemGroup(/* name */ 'test', /* quiet */ false);
   const item1 = new ProgressCenterItem();
   item1.id = 'test-item-1';
   item1.message = 'TestItemMessage1';
@@ -390,16 +397,18 @@ function testOneItemWithError() {
   assertFalse(group.isAnimated(item1.id));
   assertFalse(group.isSummarizedAnimated());
   assertFalse(!!group.getSummarizedItem(0));
-  assertEquals('Error message.',
-               ProgressCenterItemGroup.getSummarizedErrorItem(group).message);
-  assertEquals('2 Errors.',
-               ProgressCenterItemGroup.getSummarizedErrorItem(
-                   group, group).message);
+  assertEquals(
+      'Error message.',
+      ProgressCenterItemGroup.getSummarizedErrorItem(group).message);
+  assertEquals(
+      '2 Errors.',
+      ProgressCenterItemGroup.getSummarizedErrorItem(group, group).message);
   assertFalse(!!group.getItem(item1.id));
   assertTrue(!!group.getItem(item2.id));
 
-  assertEquals('Error message.',
-               ProgressCenterItemGroup.getSummarizedErrorItem(group).message);
+  assertEquals(
+      'Error message.',
+      ProgressCenterItemGroup.getSummarizedErrorItem(group).message);
   assertFalse(group.isSummarizedAnimated());
   assertEquals(ProgressCenterItemGroup.State.INACTIVE, group.state);
 
@@ -410,7 +419,8 @@ function testOneItemWithError() {
 }
 
 function testOneItemWithErrorDuringAnimation() {
-  const group = new ProgressCenterItemGroup(/* name */ 'test', /* quite */ false);
+  const group =
+      new ProgressCenterItemGroup(/* name */ 'test', /* quiet */ false);
   const item1 = new ProgressCenterItem();
   item1.id = 'test-item-1';
   item1.message = 'TestItemMessage1';
@@ -453,7 +463,8 @@ function testOneItemWithErrorDuringAnimation() {
 }
 
 function testTwoErrors() {
-  const group = new ProgressCenterItemGroup(/* name */ 'test', /* quite */ false);
+  const group =
+      new ProgressCenterItemGroup(/* name */ 'test', /* quiet */ false);
   const item1 = new ProgressCenterItem();
   item1.id = 'test-item-1';
   item1.message = 'Error message 1';
@@ -470,8 +481,9 @@ function testTwoErrors() {
   group.update(item1);
   assertFalse(group.isAnimated(item1.id));
   assertFalse(group.isSummarizedAnimated());
-  assertEquals('Error message 1',
-               ProgressCenterItemGroup.getSummarizedErrorItem(group).message);
+  assertEquals(
+      'Error message 1',
+      ProgressCenterItemGroup.getSummarizedErrorItem(group).message);
   assertEquals(ProgressCenterItemGroup.State.INACTIVE, group.state);
 
   // Add another error item.
@@ -480,8 +492,9 @@ function testTwoErrors() {
   assertTrue(!!group.getItem(item2.id));
   assertFalse(group.isAnimated(item2.id));
   assertFalse(group.isSummarizedAnimated());
-  assertEquals('2 Errors.',
-               ProgressCenterItemGroup.getSummarizedErrorItem(group).message);
+  assertEquals(
+      '2 Errors.',
+      ProgressCenterItemGroup.getSummarizedErrorItem(group).message);
   assertEquals(ProgressCenterItemGroup.State.INACTIVE, group.state);
 
   // Dismiss Error message 1.
@@ -489,13 +502,15 @@ function testTwoErrors() {
 
   assertFalse(!!group.getItem(item1.id));
   assertTrue(!!group.getItem(item2.id));
-  assertEquals('Error message 2',
+  assertEquals(
+      'Error message 2',
       ProgressCenterItemGroup.getSummarizedErrorItem(group).message);
   assertEquals(ProgressCenterItemGroup.State.INACTIVE, group.state);
 }
 
 function testCancel() {
-  const group = new ProgressCenterItemGroup(/* name */ 'test', /* quite */ false);
+  const group =
+      new ProgressCenterItemGroup(/* name */ 'test', /* quiet */ false);
   const item = new ProgressCenterItem();
   item.id = 'test-item-1';
   item.message = 'TestItemMessage1';
@@ -522,7 +537,8 @@ function testCancel() {
 }
 
 function testCancelWithError() {
-  const group = new ProgressCenterItemGroup(/* name */ 'test', /* quite */ false);
+  const group =
+      new ProgressCenterItemGroup(/* name */ 'test', /* quiet */ false);
   const item1 = new ProgressCenterItem();
   item1.id = 'test-item-1';
   item1.message = 'TestItemMessage1';
@@ -556,13 +572,15 @@ function testCancelWithError() {
   assertEquals(null, group.getItem(item1.id));
   assertTrue(!!group.getItem(item2.id));
   assertEquals(null, group.getSummarizedItem(0));
-  assertEquals('Error message 2',
-               ProgressCenterItemGroup.getSummarizedErrorItem(group).message);
+  assertEquals(
+      'Error message 2',
+      ProgressCenterItemGroup.getSummarizedErrorItem(group).message);
   assertEquals(ProgressCenterItemGroup.State.INACTIVE, group.state);
 }
 
 function testQuietItem() {
-  const group = new ProgressCenterItemGroup(/* name */ 'test', /* quite */ true);
+  const group =
+      new ProgressCenterItemGroup(/* name */ 'test', /* quiet */ true);
   const item = new ProgressCenterItem();
   item.id = 'test-item-1';
   item.message = 'TestItemMessage1';

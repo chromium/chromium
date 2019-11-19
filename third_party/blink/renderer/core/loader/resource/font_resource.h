@@ -106,7 +106,7 @@ class CORE_EXPORT FontResource final : public Resource {
   TaskHandle font_load_long_limit_;
 
   friend class MemoryCache;
-  FRIEND_TEST_ALL_PREFIXES(FontResourceTest, CacheAwareFontLoading);
+  FRIEND_TEST_ALL_PREFIXES(CacheAwareFontResourceTest, CacheAwareFontLoading);
 };
 
 DEFINE_RESOURCE_TYPE_CASTS(Font);

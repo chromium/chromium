@@ -2,12 +2,27 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//chromeos/services/ime/public/features.gni")
-
 assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
+
+component("constants") {
+  output_name = "chromeos_ime_constants"
+  defines = [ "IS_CHROMEOS_IME_CONSTANTS_IMPL" ]
+  deps = [
+    "//base",
+    "//build:branding_buildflags",
+  ]
+  sources = [
+    "constants.cc",
+    "constants.h",
+  ]
+}
 
 source_set("lib") {
   sources = [
+    "decoder/decoder_engine.cc",
+    "decoder/decoder_engine.h",
+    "decoder/downloader_impl.cc",
+    "decoder/downloader_impl.h",
     "ime_service.cc",
     "ime_service.h",
     "input_engine.cc",
@@ -15,20 +30,14 @@ source_set("lib") {
   ]
 
   deps = [
+    ":constants",
     "//base",
+    "//chromeos/constants",
     "//chromeos/services/ime/public/cpp:buildflags",
     "//chromeos/services/ime/public/cpp:rulebased",
+    "//chromeos/services/ime/public/cpp/shared_lib:interfaces",
     "//chromeos/services/ime/public/mojom",
-    "//services/service_manager/public/cpp",
-    "//services/service_manager/public/mojom",
   ]
-
-  if (enable_cros_ime_decoder) {
-    sources += [
-      "decoder/decoder_engine.cc",
-      "decoder/decoder_engine.h",
-    ]
-  }
 }
 
 source_set("sandbox_hook") {
@@ -38,7 +47,9 @@ source_set("sandbox_hook") {
   ]
 
   deps = [
+    ":constants",
     "//base",
+    "//chromeos/services/ime/public/cpp:buildflags",
     "//sandbox/linux:sandbox_services",
     "//services/service_manager/sandbox:sandbox",
   ]
@@ -60,8 +71,6 @@ source_set("services_unittests") {
     "//chromeos/services/ime/public/mojom",
     "//mojo/public/cpp/bindings",
     "//services/network:test_support",
-    "//services/service_manager/public/cpp",
-    "//services/service_manager/public/cpp/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]

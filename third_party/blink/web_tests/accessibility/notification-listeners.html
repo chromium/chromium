@@ -1,65 +1,125 @@
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 
 <select id="select" value="Select"></select>
 
 <div id="slider" tabindex="0" role="slider" aria-valuenow="5">Slider</div>
 
 <script>
-async_test_after_layout_and_paint((t) => {
+async_test((t) => {
     window.selectNotificationCount = 0;
     window.sliderNotificationCount = 0;
     window.globalNotificationCount = 0;
 
     window.select = accessibilityController.accessibleElementById("select");
     window.slider = accessibilityController.accessibleElementById("slider");
-    let expected_notifications = [
-        [select, "Blur"],
-        [select, "InvalidStatusChanged"],
-        ["global", "InvalidStatusChanged", "AXRole: AXPopUpButton"],
-        [slider, "ValueChanged"],
-        ["global", "ValueChanged", "AXRole: AXSlider"]
-    ];
 
+    let expected_element_notifications = new Map([
+      ["Focus", new Map([
+        ["select", 1],
+        ["slider", 1],
+      ])],
+      ["Blur", new Map([
+        ["select", 1],
+      ])],
+      ["TextChanged", new Map([
+        ["select", 2],
+      ])],
+      ["InvalidStatusChanged", new Map([
+        ["select", 1],
+      ])],
+      ["ValueChanged", new Map([
+        ["slider", 1],
+      ])],
+    ]);
 
-    document.getElementById("select").focus();
+    let expected_global_notifications = new Map([
+      ["Focus", new Map([
+        ["AXRole: AXPopUpButton", 1],
+        ["AXRole: AXSlider", 1],
+      ])],
+      ["Blur", new Map([
+        ["AXRole: AXPopUpButton", 1],
+      ])],
+      ["TextChanged", new Map([
+        ["AXRole: AXPopUpButton", 2],
+      ])],
+      ["InvalidStatusChanged", new Map([
+        ["AXRole: AXPopUpButton", 1],
+      ])],
+      ["ValueChanged", new Map([
+        ["AXRole: AXSlider", 1],
+      ])],
+    ]);
+
+    let HandleElementNotification = function(notification, element_key) {
+      assert_true(expected_element_notifications.has(notification));
+      let element_map = expected_element_notifications.get(notification);
+      assert_true(element_map.has(element_key));
+      let expected_notification_count = element_map.get(element_key);
+      assert_greater_than(expected_notification_count, 0);
+      if (expected_notification_count > 1) {
+        element_map.set(element_key, expected_notification_count - 1);
+      } else {
+        element_map.delete(element_key);
+        if (element_map.size == 0) {
+          expected_element_notifications.delete(notification);
+        }
+      }
+    };
+
+    let HandleGlobalNotification = function(notification, role_key) {
+      assert_true(expected_global_notifications.has(notification));
+      let role_map = expected_global_notifications.get(notification);
+      assert_true(role_map.has(role_key));
+      let expected_notification_count = role_map.get(role_key);
+      assert_greater_than(expected_notification_count, 0);
+      if (expected_notification_count > 1) {
+        role_map.set(role_key, expected_notification_count - 1);
+      } else {
+        role_map.delete(role_key);
+        if (role_map.size == 0) {
+          expected_global_notifications.delete(notification);
+        }
+      }
+    };
+
     select.addNotificationListener(t.step_func(function(notification) {
-        selectNotificationCount++;
-        console.log("got " + notification + " on select");
-        let expected_notification = expected_notifications.shift();
-        assert_equals(expected_notification[0], select);
-        assert_equals(notification, expected_notification[1]);
+      selectNotificationCount++;
+      console.log("got " + notification + " on select");
+      HandleElementNotification(notification, "select");
     }));
 
-    document.getElementById("slider").focus();
     slider.addNotificationListener(t.step_func(function(notification) {
-        sliderNotificationCount++;
-        console.log("got " + notification + " on slider");
-        let expected_notification = expected_notifications.shift();
-        assert_equals(expected_notification[0], slider);
-        assert_equals(notification, expected_notification[1]);
+      sliderNotificationCount++;
+      console.log("got " + notification + " on slider");
+      HandleElementNotification(notification, "slider");
     }));
 
     accessibilityController.addNotificationListener(t.step_func(function(element, notification) {
-        if (element.isEqual(slider) || element.isEqual(select)) {
-            globalNotificationCount++;
-            console.log("got " + notification + " on global");
-            let expected_notification = expected_notifications.shift();
-            assert_equals(expected_notification[0], "global");
-            assert_equals(notification, expected_notification[1]);
-            assert_equals(element.role, expected_notification[2]);
-        }
-        if (expected_notifications.length === 0) {
-            assert_equals(selectNotificationCount, 2);
-            assert_equals(sliderNotificationCount, 1);
-            assert_equals(globalNotificationCount, 2);
-            accessibilityController.removeNotificationListener();
-            select.removeNotificationListener();
-            slider.removeNotificationListener();
-            t.done();
-        }
+      if (element.isEqual(slider) || element.isEqual(select)) {
+        globalNotificationCount++;
+        console.log("got " + notification + " on global");
+        HandleGlobalNotification(notification, element.role);
+      }
+      if (expected_element_notifications.size == 0 &&
+        expected_global_notifications.size === 0) {
+        assert_equals(selectNotificationCount, 5);
+        assert_equals(sliderNotificationCount, 2);
+        assert_equals(globalNotificationCount, 7);
+        accessibilityController.removeNotificationListener();
+        select.removeNotificationListener();
+        slider.removeNotificationListener();
+        t.done();
+      }
     }));
+
+    // This should trigger a "Focus" notification on the select.
+    document.getElementById("select").focus();
+
+    // This should trigger a "Blur" notification on the select,
+    // followed by a "Focus" notification on the slider.
+    document.getElementById("slider").focus();
 
     // This should trigger a "invalid status changed" notification on the select.
     document.getElementById("select").setAttribute("aria-invalid", "true");
@@ -68,7 +128,7 @@ async_test_after_layout_and_paint((t) => {
     document.getElementById("slider").setAttribute("aria-valuenow", "6");
 
     window.setTimeout(t.step_func_done(() => {
-        assert_unreached();
+      assert_unreached();
     }), 100);
 }, "This tests that a notification listener on an element only listens to that one element, and that a global notification listener listens to all notifications.");
 

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <div id="ch1" aria-label="columnheader1" role="columnheader"></div>
+  <div id="ch2" aria-label="columnheader2" role="columnheader"></div>
+  <div id="ch3" aria-label="columnheader3" role="columnheader"></div>
+  <div id="ch4" aria-label="columnheader4" role="columnheader"></div>
+  <div id="ch5" aria-label="columnheader5" role="columnheader" aria-sort="ascending"></div>
+  <script>
+    function go() {
+      // Set aria-sort from default 'none'->'none'; should not fire an event.
+      document.getElementById('ch1').setAttribute('aria-sort', 'none');
+
+      // Set aria-sort from default 'none'->'ascending'; should fire an event.
+      document.getElementById('ch2').setAttribute('aria-sort', 'ascending');
+
+      // Set aria-sort from default 'none'->'descending'; should fire an event.
+      document.getElementById('ch3').setAttribute('aria-sort', 'descending');
+
+      // Set aria-sort from default 'none'->'other'; should fire an event.
+      document.getElementById('ch4').setAttribute('aria-sort', 'other');
+
+      // Set aria-sort from 'ascending'->[removed]; should fire an event.
+      document.getElementById('ch5').removeAttribute('aria-sort');
+    }
+  </script>
+</body>
+</html>

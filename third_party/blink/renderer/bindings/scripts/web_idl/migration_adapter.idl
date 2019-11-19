@@ -1,0 +1,28 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+
+// This file makes it easier and more smooth to migrate from the old bindings
+// generator to the new one filling their gap.  Once the migration gets done
+// and the *.idl files get updated to be spec conformant, almost all (if not
+// really all) the followings will be gone.
+
+typedef object Date;
+
+typedef object SerializedScriptValue;
+
+typedef object? Dictionary;
+
+typedef EventHandlerNonNull? EventHandler;
+
+typedef DOMMatrix DOMMatrixConstructor;
+typedef MediaStream MediaStreamConstructor;
+typedef MutationObserver MutationObserverConstructor;
+typedef RTCPeerConnection RTCPeerConnectionConstructor;
+typedef SpeechGrammar SpeechGrammarConstructor;
+typedef SpeechGrammarList SpeechGrammarListConstructor;
+typedef SpeechRecognition SpeechRecognitionConstructor;
+typedef SpeechRecognitionErrorEvent SpeechRecognitionErrorEventConstructor;
+typedef SpeechRecognitionEvent SpeechRecognitionEventConstructor;
+typedef URL URLConstructor;

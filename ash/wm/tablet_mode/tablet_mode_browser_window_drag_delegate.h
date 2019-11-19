@@ -27,7 +27,7 @@ class ASH_EXPORT TabletModeBrowserWindowDragDelegate
   // TabletModeWindowDragDelegate:
   void PrepareWindowDrag(const gfx::Point& location_in_screen) override;
   void UpdateWindowDrag(const gfx::Point& location_in_screen) override;
-  void EndingWindowDrag(wm::WmToplevelWindowEventHandler::DragResult result,
+  void EndingWindowDrag(ToplevelWindowEventHandler::DragResult result,
                         const gfx::Point& location_in_screen) override;
   void EndedWindowDrag(const gfx::Point& location_in_screen) override;
   void StartFling(const ui::GestureEvent* event) override;

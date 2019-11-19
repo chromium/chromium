@@ -1,0 +1,23 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/protobuf/proto_library.gni")
+
+assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
+
+component("permission_broker") {
+  defines = [ "IS_PERMISSION_BROKER_IMPL" ]
+
+  deps = [
+    "//base",
+    "//dbus",
+  ]
+
+  sources = [
+    "fake_permission_broker_client.cc",
+    "fake_permission_broker_client.h",
+    "permission_broker_client.cc",
+    "permission_broker_client.h",
+  ]
+}

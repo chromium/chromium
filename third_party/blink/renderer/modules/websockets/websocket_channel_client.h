@@ -33,6 +33,7 @@
 
 #include <stdint.h>
 #include <memory>
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -46,7 +47,8 @@ class MODULES_EXPORT WebSocketChannelClient : public GarbageCollectedMixin {
   virtual void DidConnect(const String& subprotocol, const String& extensions) {
   }
   virtual void DidReceiveTextMessage(const String&) {}
-  virtual void DidReceiveBinaryMessage(std::unique_ptr<Vector<char>>) {}
+  virtual void DidReceiveBinaryMessage(
+      const Vector<base::span<const char>>& data) {}
   virtual void DidError() {}
   virtual void DidConsumeBufferedAmount(uint64_t consumed) {}
   virtual void DidStartClosingHandshake() {}

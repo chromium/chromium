@@ -1,0 +1,14 @@
+<html>
+  <body>
+    <form method="POST" action="/inspector-protocol/resources/iframe.html" target="subframe-same-origin">
+      <input type="hidden" name="step">
+    </form>
+    <form method="GET"
+        action="http://oopif.test:8000/inspector-protocol/resources/iframe.html"
+        target="subframe-cross-origin">
+      <input type="hidden" name="step">
+    </form>
+    <iframe name="subframe-same-origin"></iframe>
+    <iframe id="frame2" name="subframe-cross-origin" src="http://oopif.test:8000/inspector-protocol/resources/iframe.html"></iframe>
+  </body>
+</html>

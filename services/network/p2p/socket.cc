@@ -64,15 +64,14 @@ static SocketErrorCode MapNetErrorToSocketErrorCode(int net_err) {
 namespace network {
 
 P2PSocket::P2PSocket(Delegate* delegate,
-                     mojom::P2PSocketClientPtr client,
-                     mojom::P2PSocketRequest socket,
+                     mojo::PendingRemote<mojom::P2PSocketClient> client,
+                     mojo::PendingReceiver<mojom::P2PSocket> socket,
                      ProtocolType protocol_type)
     : delegate_(delegate),
       client_(std::move(client)),
-      binding_(this, std::move(socket)),
-      protocol_type_(protocol_type),
-      weak_ptr_factory_(this) {
-  binding_.set_connection_error_handler(
+      receiver_(this, std::move(socket)),
+      protocol_type_(protocol_type) {
+  receiver_.set_disconnect_handler(
       base::BindOnce(&P2PSocket::OnError, base::Unretained(this)));
 }
 
@@ -160,8 +159,8 @@ void P2PSocket::ReportSocketError(int result, const char* histogram_name) {
 // static
 std::unique_ptr<P2PSocket> P2PSocket::Create(
     Delegate* delegate,
-    mojom::P2PSocketClientPtr client,
-    mojom::P2PSocketRequest socket,
+    mojo::PendingRemote<mojom::P2PSocketClient> client,
+    mojo::PendingReceiver<mojom::P2PSocket> socket,
     P2PSocketType type,
     net::NetLog* net_log,
     ProxyResolvingClientSocketFactory* proxy_resolving_socket_factory,
@@ -199,12 +198,13 @@ std::unique_ptr<P2PSocket> P2PSocket::Create(
   return nullptr;
 }
 
-mojom::P2PSocketClientPtr P2PSocket::ReleaseClientForTesting() {
-  return std::move(client_);
+mojo::PendingRemote<mojom::P2PSocketClient>
+P2PSocket::ReleaseClientForTesting() {
+  return client_.Unbind();
 }
 
-mojom::P2PSocketRequest P2PSocket::ReleaseBindingForTesting() {
-  return binding_.Unbind();
+mojo::PendingReceiver<mojom::P2PSocket> P2PSocket::ReleaseReceiverForTesting() {
+  return receiver_.Unbind();
 }
 
 void P2PSocket::IncrementDelayedPackets() {
@@ -228,7 +228,7 @@ void P2PSocket::DecrementDelayedBytes(uint32_t size) {
 }
 
 void P2PSocket::OnError() {
-  binding_.Close();
+  receiver_.reset();
   client_.reset();
   delegate_->DestroySocket(this);
 }

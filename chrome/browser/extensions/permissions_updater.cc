@@ -37,12 +37,10 @@
 #include "extensions/browser/notification_types.h"
 #include "extensions/common/cors_util.h"
 #include "extensions/common/extension.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/manifest_handlers/permissions_parser.h"
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/permissions/permissions_data.h"
-#include "services/network/public/cpp/features.h"
 
 using content::RenderProcessHost;
 using extensions::permissions_api_helpers::PackPermissionSet;
@@ -155,7 +153,7 @@ class PermissionsUpdater::NetworkPermissionsUpdateHelper {
   base::OnceClosure dispatch_event_;
   std::unique_ptr<KeyedServiceShutdownNotifier::Subscription>
       shutdown_subscription_;
-  base::WeakPtrFactory<NetworkPermissionsUpdateHelper> weak_factory_;
+  base::WeakPtrFactory<NetworkPermissionsUpdateHelper> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(NetworkPermissionsUpdateHelper);
 };
@@ -182,10 +180,6 @@ void PermissionsUpdater::NetworkPermissionsUpdateHelper::UpdatePermissions(
       CreateCorsOriginAccessAllowList(
           *extension,
           PermissionsData::EffectiveHostPermissionsMode::kOmitTabSpecific);
-  if (!base::FeatureList::IsEnabled(network::features::kNetworkService)) {
-    ExtensionsClient::Get()->AddOriginAccessPermissions(*extension, true,
-                                                        &allow_list);
-  }
 
   NetworkPermissionsUpdateHelper* helper = new NetworkPermissionsUpdateHelper(
       browser_context,
@@ -227,10 +221,6 @@ void PermissionsUpdater::NetworkPermissionsUpdateHelper::
         CreateCorsOriginAccessAllowList(
             *extension,
             PermissionsData::EffectiveHostPermissionsMode::kOmitTabSpecific);
-    if (!base::FeatureList::IsEnabled(network::features::kNetworkService)) {
-      ExtensionsClient::Get()->AddOriginAccessPermissions(*extension, true,
-                                                          &allow_list);
-    }
     browser_context->SetCorsOriginAccessListForOrigin(
         url::Origin::Create(extension->url()), std::move(allow_list),
         CreateCorsOriginAccessBlockList(*extension), barrier_closure);
@@ -246,8 +236,7 @@ PermissionsUpdater::NetworkPermissionsUpdateHelper::
               ->Get(browser_context)
               ->Subscribe(
                   base::Bind(&NetworkPermissionsUpdateHelper::OnShutdown,
-                             base::Unretained(this)))),
-      weak_factory_(this) {}
+                             base::Unretained(this)))) {}
 
 PermissionsUpdater::NetworkPermissionsUpdateHelper::
     ~NetworkPermissionsUpdateHelper() {}
@@ -307,9 +296,6 @@ void PermissionsUpdater::GrantRuntimePermissions(
     const Extension& extension,
     const PermissionSet& permissions,
     base::OnceClosure completion_callback) {
-  DCHECK(base::FeatureList::IsEnabled(
-      extensions_features::kRuntimeHostPermissions));
-
   // We don't want to grant the extension object/process more privilege than it
   // requested, even if the user grants additional permission. For instance, if
   // the extension requests https://maps.google.com and the user grants
@@ -372,8 +358,6 @@ void PermissionsUpdater::RevokeRuntimePermissions(
     const Extension& extension,
     const PermissionSet& permissions,
     base::OnceClosure completion_callback) {
-  DCHECK(base::FeatureList::IsEnabled(
-      extensions_features::kRuntimeHostPermissions));
   // Similar to the process in adding permissions, we might be revoking more
   // permissions than the extension currently has explicit access to. For
   // instance, we might be revoking https://*.google.com/* even if the extension
@@ -533,9 +517,9 @@ void PermissionsUpdater::InitializePermissions(const Extension* extension) {
     bounded_active = bounded_wrapper.get();
   }
 
-  std::unique_ptr<const PermissionSet> granted_permissions;
-  ScriptingPermissionsModifier::WithholdPermissionsIfNecessary(
-      *extension, *prefs, *bounded_active, &granted_permissions);
+  std::unique_ptr<const PermissionSet> granted_permissions =
+      ScriptingPermissionsModifier::WithholdPermissionsIfNecessary(
+          *extension, *prefs, *bounded_active);
 
   if (GetDelegate())
     GetDelegate()->InitializePermissions(extension, &granted_permissions);

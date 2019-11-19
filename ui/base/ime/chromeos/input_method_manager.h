@@ -12,10 +12,12 @@
 #include <string>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/memory/ref_counted.h"
+#include "chromeos/services/ime/public/mojom/input_engine.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/base/ime/chromeos/input_method_descriptor.h"
-#include "ui/base/ime/chromeos/public/interfaces/ime_keyset.mojom.h"
-#include "ui/base/ime/ui_base_ime_export.h"
+#include "ui/base/ime/chromeos/public/mojom/ime_keyset.mojom.h"
 
 class Profile;
 
@@ -33,7 +35,7 @@ class ImeKeyboard;
 // This class manages input methodshandles.  Classes can add themselves as
 // observers. Clients can get an instance of this library class by:
 // InputMethodManager::Get().
-class UI_BASE_IME_EXPORT InputMethodManager {
+class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) InputMethodManager {
  public:
   enum UISessionState {
     STATE_LOGIN_SCREEN = 0,
@@ -75,7 +77,7 @@ class UI_BASE_IME_EXPORT InputMethodManager {
 
   class Observer {
    public:
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
     // Called when the current input method is changed.  |show_message|
     // indicates whether the user should be notified of this change.
     virtual void InputMethodChanged(InputMethodManager* manager,
@@ -103,7 +105,7 @@ class UI_BASE_IME_EXPORT InputMethodManager {
   // keyboard is used, since it controls its own candidate window.
   class CandidateWindowObserver {
    public:
-    virtual ~CandidateWindowObserver() {}
+    virtual ~CandidateWindowObserver() = default;
     // Called when the candidate window is opened.
     virtual void CandidateWindowOpened(InputMethodManager* manager) = 0;
     // Called when the candidate window is closed.
@@ -114,7 +116,7 @@ class UI_BASE_IME_EXPORT InputMethodManager {
   // bar.
   class ImeMenuObserver {
    public:
-    virtual ~ImeMenuObserver() {}
+    virtual ~ImeMenuObserver() = default;
 
     // Called when the IME menu is activated or deactivated.
     virtual void ImeMenuActivationChanged(bool is_active) = 0;
@@ -255,20 +257,21 @@ class UI_BASE_IME_EXPORT InputMethodManager {
     virtual ~State();
   };
 
-  virtual ~InputMethodManager() {}
+  virtual ~InputMethodManager() = default;
 
   // Gets the global instance of InputMethodManager. Initialize() must be called
   // first.
-  static UI_BASE_IME_EXPORT InputMethodManager* Get();
+  static COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) InputMethodManager* Get();
 
   // Sets the global instance. |instance| will be owned by the internal pointer
   // and deleted by Shutdown().
   // TODO(nona): Instanciate InputMethodManagerImpl inside of this function once
   //             crbug.com/164375 is fixed.
-  static UI_BASE_IME_EXPORT void Initialize(InputMethodManager* instance);
+  static COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) void Initialize(
+      InputMethodManager* instance);
 
   // Destroy the global instance.
-  static UI_BASE_IME_EXPORT void Shutdown();
+  static COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) void Shutdown();
 
   // Get the current UI session state (e.g. login screen, lock screen, etc.).
   virtual UISessionState GetUISessionState() = 0;
@@ -292,6 +295,11 @@ class UI_BASE_IME_EXPORT InputMethodManager {
 
   // Activates the input method property specified by the |key|.
   virtual void ActivateInputMethodMenuItem(const std::string& key) = 0;
+
+  // Connects a receiver to the InputEngineManager instance.
+  virtual void ConnectInputEngineManager(
+      mojo::PendingReceiver<chromeos::ime::mojom::InputEngineManager>
+          receiver) = 0;
 
   virtual bool IsISOLevel5ShiftUsedByCurrentInputMethod() const = 0;
 

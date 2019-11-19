@@ -15,6 +15,8 @@
 
 #include "base/bind.h"
 #include "base/bind_helpers.h"
+#include "base/macros.h"
+#include "base/optional.h"
 #include "base/run_loop.h"
 #include "content/public/browser/presentation_request.h"
 #include "content/public/browser/presentation_service_delegate.h"
@@ -23,18 +25,19 @@
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
 #include "mojo/public/cpp/bindings/interface_ptr.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 using blink::mojom::PresentationConnection;
 using blink::mojom::PresentationConnectionCloseReason;
 using blink::mojom::PresentationConnectionMessagePtr;
-using blink::mojom::PresentationConnectionPtr;
-using blink::mojom::PresentationConnectionPtrInfo;
 using blink::mojom::PresentationConnectionResult;
 using blink::mojom::PresentationConnectionResultPtr;
 using blink::mojom::PresentationConnectionState;
 using blink::mojom::PresentationController;
-using blink::mojom::PresentationControllerPtr;
 using blink::mojom::PresentationError;
 using blink::mojom::PresentationErrorPtr;
 using blink::mojom::PresentationErrorType;
@@ -155,10 +158,12 @@ class MockPresentationServiceDelegate
 
 class MockPresentationReceiver : public blink::mojom::PresentationReceiver {
  public:
-  MOCK_METHOD3(OnReceiverConnectionAvailable,
-               void(PresentationInfoPtr info,
-                    PresentationConnectionPtr controller_connection,
-                    PresentationConnectionRequest receiver_connection_request));
+  MOCK_METHOD3(
+      OnReceiverConnectionAvailable,
+      void(PresentationInfoPtr info,
+           mojo::PendingRemote<PresentationConnection> controller_connection,
+           mojo::PendingReceiver<PresentationConnection>
+               presentation_receiver_receiver));
 };
 
 class MockReceiverPresentationServiceDelegate
@@ -220,10 +225,11 @@ class PresentationServiceImplTest : public RenderViewHostImplTestHarness {
     service_impl_.reset(new PresentationServiceImpl(
         render_frame_host, contents(), &mock_delegate_, nullptr));
 
-    PresentationControllerPtr controller_ptr;
-    controller_binding_.reset(new mojo::Binding<PresentationController>(
-        &mock_controller_, mojo::MakeRequest(&controller_ptr)));
-    service_impl_->SetController(std::move(controller_ptr));
+    mojo::PendingRemote<PresentationController> presentation_controller_remote;
+    controller_receiver_.emplace(
+        &mock_controller_,
+        presentation_controller_remote.InitWithNewPipeAndPassReceiver());
+    service_impl_->SetController(std::move(presentation_controller_remote));
 
     presentation_urls_.push_back(presentation_url1_);
     presentation_urls_.push_back(presentation_url2_);
@@ -312,7 +318,7 @@ class PresentationServiceImplTest : public RenderViewHostImplTestHarness {
   std::unique_ptr<PresentationServiceImpl> service_impl_;
 
   MockPresentationController mock_controller_;
-  std::unique_ptr<mojo::Binding<PresentationController>> controller_binding_;
+  base::Optional<mojo::Receiver<PresentationController>> controller_receiver_;
 
   GURL presentation_url1_;
   GURL presentation_url2_;
@@ -406,18 +412,14 @@ TEST_F(PresentationServiceImplTest, SetDefaultPresentationUrls) {
       });
   EXPECT_CALL(mock_delegate_, ListenForConnectionStateChange(_, _, _, _));
 
-  // Mojo requires we not send nullptr for the InterfacePtrInfo and
-  // InterfaceRequest in PresentationConnectionResult, but there's no reason to
-  // actually have them properly bound in the test.  To get around this, we
-  // create mojo pipes but bind to a nullptr for the implementation.
-  PresentationConnectionPtrInfo receiver_ptr;
-  PresentationConnectionPtr controller_ptr;
-  auto request = mojo::MakeRequest(&controller_ptr);
-  mojo::Binding<PresentationConnection> binding(
-      /** impl */ nullptr, mojo::MakeRequest(&receiver_ptr));
+  mojo::PendingRemote<PresentationConnection> presentation_connection_remote;
+  mojo::Remote<PresentationConnection> controller_remote;
+  ignore_result(
+      presentation_connection_remote.InitWithNewPipeAndPassReceiver());
   std::move(callback).Run(PresentationConnectionResult::New(
       blink::mojom::PresentationInfo::New(presentation_url2_, kPresentationId),
-      std::move(receiver_ptr), std::move(request)));
+      std::move(presentation_connection_remote),
+      controller_remote.BindNewPipeAndPassReceiver()));
   base::RunLoop().RunUntilIdle();
 }
 
@@ -504,7 +506,7 @@ TEST_F(PresentationServiceImplTest, StartPresentationSuccess) {
       .Run(PresentationConnectionResult::New(
           blink::mojom::PresentationInfo::New(presentation_url1_,
                                               kPresentationId),
-          nullptr, nullptr));
+          mojo::NullRemote(), mojo::NullReceiver()));
   ExpectPresentationCallbackWasRun();
 }
 
@@ -552,7 +554,7 @@ TEST_F(PresentationServiceImplTest, ReconnectPresentationSuccess) {
       .Run(PresentationConnectionResult::New(
           blink::mojom::PresentationInfo::New(presentation_url1_,
                                               kPresentationId),
-          nullptr, nullptr));
+          mojo::NullRemote(), mojo::NullReceiver()));
   ExpectPresentationCallbackWasRun();
 }
 
@@ -615,28 +617,28 @@ TEST_F(PresentationServiceImplTest, ReceiverPresentationServiceDelegate) {
       .WillOnce(SaveArg<0>(&callback));
 
   MockPresentationReceiver mock_receiver;
-  blink::mojom::PresentationReceiverPtr receiver_ptr;
-  mojo::Binding<blink::mojom::PresentationReceiver> receiver_binding(
-      &mock_receiver, mojo::MakeRequest(&receiver_ptr));
-  service_impl.controller_delegate_ = nullptr;
-  service_impl.SetReceiver(std::move(receiver_ptr));
+  mojo::Receiver<blink::mojom::PresentationReceiver>
+      presentation_receiver_receiver(&mock_receiver);
+  service_impl.SetReceiver(
+      presentation_receiver_receiver.BindNewPipeAndPassRemote());
   EXPECT_FALSE(callback.is_null());
 
   PresentationInfo expected(presentation_url1_, kPresentationId);
 
   // Client gets notified of receiver connections.
-  PresentationConnectionPtr controller_connection;
+  mojo::PendingRemote<PresentationConnection> controller_connection;
   MockPresentationConnection mock_presentation_connection;
-  mojo::Binding<PresentationConnection> connection_binding(
-      &mock_presentation_connection, mojo::MakeRequest(&controller_connection));
-  PresentationConnectionPtr receiver_connection;
+  mojo::Receiver<PresentationConnection> connection_binding(
+      &mock_presentation_connection,
+      controller_connection.InitWithNewPipeAndPassReceiver());
+  mojo::Remote<PresentationConnection> receiver_connection;
 
   EXPECT_CALL(mock_receiver,
               OnReceiverConnectionAvailable(InfoPtrEquals(expected), _, _))
       .Times(1);
   callback.Run(PresentationInfo::New(expected),
                std::move(controller_connection),
-               mojo::MakeRequest(&receiver_connection));
+               receiver_connection.BindNewPipeAndPassReceiver());
   base::RunLoop().RunUntilIdle();
 
   EXPECT_CALL(mock_receiver_delegate_, RemoveObserver(_, _)).Times(1);
@@ -654,11 +656,12 @@ TEST_F(PresentationServiceImplTest, ReceiverDelegateOnSubFrame) {
               RegisterReceiverConnectionAvailableCallback(_))
       .Times(0);
 
-  PresentationControllerPtr controller_ptr;
-  controller_binding_.reset(new mojo::Binding<PresentationController>(
-      &mock_controller_, mojo::MakeRequest(&controller_ptr)));
+  mojo::PendingRemote<PresentationController> presentation_controller_remote;
+  controller_receiver_.emplace(
+      &mock_controller_,
+      presentation_controller_remote.InitWithNewPipeAndPassReceiver());
   service_impl.controller_delegate_ = nullptr;
-  service_impl.SetController(std::move(controller_ptr));
+  service_impl.SetController(std::move(presentation_controller_remote));
 
   EXPECT_CALL(mock_receiver_delegate_, Reset(_, _)).Times(0);
   service_impl.Reset();

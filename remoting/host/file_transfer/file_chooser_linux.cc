@@ -65,7 +65,7 @@ class FileChooserLinux : public FileChooser {
  private:
   FileChooser::ResultCallback callback_;
   base::SequenceBound<GtkFileChooserOnUiThread> gtk_file_chooser_on_ui_thread_;
-  base::WeakPtrFactory<FileChooserLinux> weak_ptr_factory_;
+  base::WeakPtrFactory<FileChooserLinux> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FileChooserLinux);
 };
@@ -122,11 +122,14 @@ void GtkFileChooserOnUiThread::RunCallback(FileChooser::Result result) {
 }
 
 void GtkFileChooserOnUiThread::CleanUp() {
+  if (file_dialog_) {
 #if GTK_CHECK_VERSION(3, 90, 0)
-  g_clear_object(&file_dialog_);
+    g_object_unref(file_dialog_);
 #else
-  g_clear_pointer(&file_dialog_, gtk_widget_destroy);
+    gtk_widget_destroy(GTK_WIDGET(file_dialog_));
 #endif
+    file_dialog_ = nullptr;
+  }
 }
 
 void GtkFileChooserOnUiThread::OnResponse(GtkWidget* dialog, int response_id) {
@@ -148,7 +151,7 @@ void GtkFileChooserOnUiThread::OnResponse(GtkWidget* dialog, int response_id) {
 FileChooserLinux::FileChooserLinux(
     scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
     ResultCallback callback)
-    : callback_(std::move(callback)), weak_ptr_factory_(this) {
+    : callback_(std::move(callback)) {
   gtk_file_chooser_on_ui_thread_ =
       base::SequenceBound<GtkFileChooserOnUiThread>(
           ui_task_runner, base::SequencedTaskRunnerHandle::Get(),

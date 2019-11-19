@@ -8,9 +8,9 @@
 
 #include "ash/assistant/assistant_controller.h"
 #include "ash/assistant/assistant_ui_controller.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
-#include "ash/voice_interaction/voice_interaction_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/macros.h"
 #include "base/test/scoped_feature_list.h"
@@ -30,15 +30,7 @@ class AssistantContainerViewTest : public AshTestBase {
   ~AssistantContainerViewTest() override = default;
 
   void SetUp() override {
-    // Enable Assistant feature.
-    scoped_feature_list_.InitAndEnableFeature(
-        chromeos::switches::kAssistantFeature);
-    ASSERT_TRUE(chromeos::switches::IsAssistantEnabled());
-
     AshTestBase::SetUp();
-
-    // Enable Assistant in settings.
-    Shell::Get()->voice_interaction_controller()->NotifySettingsEnabled(true);
 
     // Cache controller.
     controller_ = Shell::Get()->assistant_controller();
@@ -48,40 +40,18 @@ class AssistantContainerViewTest : public AshTestBase {
     ui_controller_ = controller_->ui_controller();
     DCHECK(ui_controller_);
 
-    SetUpMocks();
+    // Enable Assistant in settings.
+    Shell::Get()->session_controller()->GetPrimaryUserPrefService()->SetBoolean(
+        chromeos::assistant::prefs::kAssistantEnabled, true);
 
     // After mocks are set up our Assistant service is ready for use. Indicate
     // this by changing status from NOT_READY to STOPPED.
-    Shell::Get()->voice_interaction_controller()->NotifyStatusChanged(
-        mojom::VoiceInteractionState::STOPPED);
+    AssistantState::Get()->NotifyStatusChanged(mojom::AssistantState::READY);
   }
 
   AssistantUiController* ui_controller() { return ui_controller_; }
 
  private:
-  void SetUpMocks() {
-    // Mock the Assistant service.
-    assistant_ = std::make_unique<chromeos::assistant::MockAssistant>();
-    assistant_binding_ =
-        std::make_unique<mojo::Binding<chromeos::assistant::mojom::Assistant>>(
-            assistant_.get());
-    chromeos::assistant::mojom::AssistantPtr assistant;
-    assistant_binding_->Bind(mojo::MakeRequest(&assistant));
-    controller_->SetAssistant(std::move(assistant));
-
-    // Mock any screen context cache requests by immediately invoking callback.
-    ON_CALL(*assistant_, DoCacheScreenContext(testing::_))
-        .WillByDefault(testing::Invoke(
-            [](base::OnceClosure* callback) { std::move(*callback).Run(); }));
-  }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
-
-  std::unique_ptr<chromeos::assistant::MockAssistant> assistant_;
-
-  std::unique_ptr<mojo::Binding<chromeos::assistant::mojom::Assistant>>
-      assistant_binding_;
-
   AssistantController* controller_ = nullptr;
   AssistantUiController* ui_controller_ = nullptr;
 
@@ -101,10 +71,7 @@ TEST_F(AssistantContainerViewTest, InitialAnchoring) {
 
   // We expect the view to appear in the work area where new windows will open.
   gfx::Rect expected_work_area =
-      display::Screen::GetScreen()
-          ->GetDisplayMatching(
-              Shell::Get()->GetRootWindowForNewWindows()->GetBoundsInScreen())
-          .work_area();
+      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
 
   // We expect the view to be horizontally centered and bottom aligned.
   gfx::Rect expected_bounds = gfx::Rect(expected_work_area);

@@ -35,8 +35,7 @@ class MockDemuxerStreamAdapter {
       const std::string& name,
       DemuxerStream* demuxer_stream,
       mojom::RemotingDataStreamSenderPtrInfo stream_sender_info,
-      mojo::ScopedDataPipeProducerHandle producer_handle)
-      : weak_factory_(this) {
+      mojo::ScopedDataPipeProducerHandle producer_handle) {
     rpc_broker_.reset(
         new RpcBroker(base::Bind(&MockDemuxerStreamAdapter::OnSendMessageToSink,
                                  weak_factory_.GetWeakPtr())));
@@ -45,8 +44,8 @@ class MockDemuxerStreamAdapter {
         demuxer_stream, rpc_broker_->GetWeakPtr(),
         rpc_broker_->GetUniqueHandle(), std::move(stream_sender_info),
         std::move(producer_handle),
-        base::Bind(&MockDemuxerStreamAdapter::OnError,
-                   weak_factory_.GetWeakPtr())));
+        base::BindOnce(&MockDemuxerStreamAdapter::OnError,
+                       weak_factory_.GetWeakPtr())));
 
     // Faking initialization with random callback handle to start mojo watcher.
     demuxer_stream_adapter_->Initialize(3);
@@ -104,7 +103,7 @@ class MockDemuxerStreamAdapter {
 
   std::vector<StopTrigger> errors_;
 
-  base::WeakPtrFactory<MockDemuxerStreamAdapter> weak_factory_;
+  base::WeakPtrFactory<MockDemuxerStreamAdapter> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(MockDemuxerStreamAdapter);
 };

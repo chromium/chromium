@@ -24,7 +24,7 @@ class SampleExecutor {
   // Gets Cronet_ExecutorPtr implemented by |this|.
   Cronet_ExecutorPtr GetExecutor();
 
-  // Shuts down the executor, so all pendning tasks are destroyed without
+  // Shuts down the executor, so all pending tasks are destroyed without
   // getting executed.
   void ShutdownExecutor();
 

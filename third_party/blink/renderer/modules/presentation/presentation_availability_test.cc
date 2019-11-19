@@ -41,7 +41,8 @@ TEST(PresentationAvailabilityTest, NoPageVisibilityChangeAfterDetach) {
   // TODO(dcheng): Why are we calling functions on Page after it's been closed?
   // This case doesn't seem like it should be reachable as we should be shutting
   // down communication from the embedder on context detach.
-  page->SetIsHidden(/*is_hidden=*/true, /*initial_state=*/false);
+  page->SetVisibilityState(PageVisibilityState::kHidden,
+                           /*initial_state=*/false);
 }
 
 }  // anonymous namespace

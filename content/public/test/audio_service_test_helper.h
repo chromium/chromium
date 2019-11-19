@@ -8,28 +8,30 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/audio/public/mojom/testing_api.mojom.h"
-#include "services/service_manager/public/cpp/binder_registry.h"
+#include "services/service_manager/public/cpp/binder_map.h"
 
 namespace content {
 
 // Used by testing environments to inject test-only interface binders into an
 // audio service instance. Test suites should create a long-lived instance of
-// this class and call RegisterAudioBinders() on a BinderRegistry which will be
-// used to fulfill interface requests within the audio service.
+// this class and call RegisterAudioBinders() on a BinderMap which will be used
+// to fulfill interface requests within the audio service.
 class AudioServiceTestHelper {
  public:
   AudioServiceTestHelper();
   ~AudioServiceTestHelper();
 
-  // Registers the helper's interfaces on |registry|. Note that this object
-  // must outlive |registry|.
-  void RegisterAudioBinders(service_manager::BinderRegistry* registry);
+  // Registers the helper's interfaces on |binders|. Note that this object must
+  // must outlive |binders|.
+  void RegisterAudioBinders(service_manager::BinderMap* binders);
 
  private:
   class TestingApi;
 
-  void BindTestingApiRequest(audio::mojom::TestingApiRequest request);
+  void BindTestingApiReceiver(
+      mojo::PendingReceiver<audio::mojom::TestingApi> receiver);
 
   std::unique_ptr<TestingApi> testing_api_;
 

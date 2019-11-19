@@ -1,0 +1,3 @@
+[document web]
+++[entry] single-line selectable-text
+++[entry] multi-line selectable-text

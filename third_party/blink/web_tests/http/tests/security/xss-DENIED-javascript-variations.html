@@ -6,25 +6,20 @@ if (window.testRunner) {
   testRunner.dumpChildFrames();
 }
 
+var cases = [
+  " javascript:document.write('FAIL')",
+  "javascript\t:document.write('FAIL')",
+  "javascript:document.write('FAIL')"
+];
+
 function runTest() {
   var a = window.frames[0];
-// java\0script is invalid url.
 
-  a.location.href = " javascript:document.write('FAIL')";
-  a.location.href = "javascript\t:document.write('FAIL')";
-  a.location.href = "javascript\1:document.write('FAIL')";
-  a.location.href = "javascript:document.write('FAIL')";
-
-
-  a.location.replace(" javascript:document.write('FAIL')");
-  a.location.replace("javascript\t:document.write('FAIL')");
-  a.location.replace("javascript\1:document.write('FAIL')");
-  a.location.replace("javascript:document.write('FAIL')");
-
-  a.location = " javascript:document.write('FAIL')";
-  a.location = "javascript\t:document.write('FAIL')";
-  a.location = "javascript\1:document.write('FAIL')";
-  a.location = "javascript:document.write('FAIL')";
+  for (var i = 0; i < cases.length; i++) {
+    try { a.location.href = cases[i]; } catch(e) {}
+    try { a.location.replace(cases[i]); } catch(e) {}
+    try { a.location = cases[i]; } catch(e) {}
+  }
 }
 </script>
 

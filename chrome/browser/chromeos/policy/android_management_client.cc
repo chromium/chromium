@@ -4,18 +4,21 @@
 
 #include "chrome/browser/chromeos/policy/android_management_client.h"
 
+#include <utility>
+
 #include "base/bind.h"
 #include "base/bind_helpers.h"
-#include "base/callback_helpers.h"
 #include "base/guid.h"
 #include "base/logging.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
+#include "components/policy/core/common/cloud/dm_auth.h"
+#include "components/policy/core/common/cloud/dmserver_job_configurations.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "components/signin/public/identity_manager/access_token_fetcher.h"
+#include "components/signin/public/identity_manager/access_token_info.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/google_service_auth_error.h"
-#include "services/identity/public/cpp/access_token_fetcher.h"
-#include "services/identity/public/cpp/access_token_info.h"
-#include "services/identity/public/cpp/identity_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace em = enterprise_management;
@@ -26,12 +29,11 @@ AndroidManagementClient::AndroidManagementClient(
     DeviceManagementService* device_management_service,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const std::string& account_id,
-    identity::IdentityManager* identity_manager)
+    signin::IdentityManager* identity_manager)
     : device_management_service_(device_management_service),
       url_loader_factory_(url_loader_factory),
       account_id_(account_id),
-      identity_manager_(identity_manager),
-      weak_ptr_factory_(this) {}
+      identity_manager_(identity_manager) {}
 
 AndroidManagementClient::~AndroidManagementClient() {}
 
@@ -46,7 +48,7 @@ void AndroidManagementClient::StartCheckAndroidManagement(
 
 void AndroidManagementClient::OnAccessTokenFetchComplete(
     GoogleServiceAuthError error,
-    identity::AccessTokenInfo token_info) {
+    signin::AccessTokenInfo token_info) {
   access_token_fetcher_.reset();
 
   if (error.state() != GoogleServiceAuthError::NONE) {
@@ -72,24 +74,27 @@ void AndroidManagementClient::RequestAccessToken() {
       account_id_, "android_management_client", scopes,
       base::BindOnce(&AndroidManagementClient::OnAccessTokenFetchComplete,
                      base::Unretained(this)),
-      identity::AccessTokenFetcher::Mode::kImmediate);
+      signin::AccessTokenFetcher::Mode::kImmediate);
 }
 
 void AndroidManagementClient::CheckAndroidManagement(
     const std::string& access_token) {
-  request_job_.reset(device_management_service_->CreateJob(
-      DeviceManagementRequestJob::TYPE_ANDROID_MANAGEMENT_CHECK,
-      url_loader_factory_));
-  request_job_->SetOAuthTokenParameter(access_token);
-  request_job_->SetClientID(base::GenerateGUID());
-  request_job_->GetRequest()->mutable_check_android_management_request();
+  std::unique_ptr<DMServerJobConfiguration> config = std::make_unique<
+      DMServerJobConfiguration>(
+      device_management_service_,
+      DeviceManagementService::JobConfiguration::TYPE_ANDROID_MANAGEMENT_CHECK,
+      /*client_id=*/base::GenerateGUID(),
+      /*critical=*/false, DMAuth::NoAuth(), access_token, url_loader_factory_,
+      base::BindOnce(&AndroidManagementClient::OnAndroidManagementChecked,
+                     weak_ptr_factory_.GetWeakPtr()));
 
-  request_job_->Start(
-      base::Bind(&AndroidManagementClient::OnAndroidManagementChecked,
-                 weak_ptr_factory_.GetWeakPtr()));
+  config->request()->mutable_check_android_management_request();
+
+  request_job_ = device_management_service_->CreateJob(std::move(config));
 }
 
 void AndroidManagementClient::OnAndroidManagementChecked(
+    DeviceManagementService::Job* job,
     DeviceManagementStatus status,
     int net_error,
     const em::DeviceManagementResponse& response) {
@@ -113,7 +118,7 @@ void AndroidManagementClient::OnAndroidManagementChecked(
   }
 
   request_job_.reset();
-  base::ResetAndReturn(&callback_).Run(result);
+  std::move(callback_).Run(result);
 }
 
 std::ostream& operator<<(std::ostream& os,

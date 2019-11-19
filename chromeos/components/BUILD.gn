@@ -17,11 +17,23 @@ test("chromeos_components_unittests") {
     "//base",
     "//base/test:test_support",
     "//chromeos:chromeos_buildflags",
+    "//chromeos/components/account_manager:unit_tests",
     "//chromeos/components/drivefs:unit_tests",
+    "//chromeos/components/mojo_bootstrap:unit_tests",
     "//chromeos/components/multidevice:unit_tests",
     "//chromeos/components/nearby:unit_tests",
+    "//chromeos/components/power:unit_tests",
     "//chromeos/components/proximity_auth:unit_tests",
+    "//chromeos/components/sync_wifi:unit_tests",
     "//chromeos/components/tether:unit_tests",
     "//mojo/core/embedder",
+  ]
+}
+
+group("closure_compile") {
+  testonly = true
+  deps = [
+    "//chromeos/components/media_app_ui:closure_compile",
+    "//chromeos/components/multidevice/debug_webui/resources:closure_compile",
   ]
 }

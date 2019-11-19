@@ -7,11 +7,12 @@
 #include "base/mac/foundation_util.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/password_manager/core/browser/password_store.h"
+#import "ios/chrome/browser/favicon/favicon_loader.h"
+#include "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
 #include "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
-#import "ios/chrome/browser/ui/autofill/manual_fill/all_password_coordinator.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_injection_handler.h"
+#import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_password_mediator.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/password_list_navigator.h"
-#import "ios/chrome/browser/ui/autofill/manual_fill/password_mediator.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/password_view_controller.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
 
@@ -56,13 +57,19 @@
 
     auto passwordStore = IOSChromePasswordStoreFactory::GetForBrowserState(
         browserState, ServiceAccessType::EXPLICIT_ACCESS);
+    FaviconLoader* faviconLoader =
+        IOSChromeFaviconLoaderFactory::GetForBrowserState(self.browserState);
+
     _passwordMediator = [[ManualFillPasswordMediator alloc]
-        initWithPasswordStore:passwordStore];
+        initWithPasswordStore:passwordStore
+                faviconLoader:faviconLoader];
     [_passwordMediator fetchPasswordsForURL:URL];
     _passwordMediator.actionSectionEnabled = YES;
     _passwordMediator.consumer = _passwordViewController;
     _passwordMediator.navigator = self;
-    _passwordMediator.contentDelegate = injectionHandler;
+    _passwordMediator.contentInjector = injectionHandler;
+
+    _passwordViewController.imageDataSource = _passwordMediator;
   }
   return self;
 }
@@ -97,40 +104,17 @@
                            }];
     return;
   }
-
-  ManualFillAllPasswordCoordinator* allPasswordCoordinator =
-      [[ManualFillAllPasswordCoordinator alloc]
-          initWithBaseViewController:self.baseViewController
-                        browserState:self.browserState
-                    injectionHandler:self.manualFillInjectionHandler
-                           navigator:self];
-  [allPasswordCoordinator start];
-  [self.childCoordinators addObject:allPasswordCoordinator];
-}
-
-- (void)dismissPresentedViewController {
-  if (self.viewController.presentingViewController) {
-    return;
-  }
-
-  // Dismiss the full screen view controller and present the pop over.
-  __weak __typeof(self) weakSelf = self;
-  FallbackCoordinator* activeCoordinator =
-      base::mac::ObjCCast<FallbackCoordinator>(self.activeChildCoordinator);
-  [activeCoordinator.viewController.presentingViewController
-      dismissViewControllerAnimated:YES
-                         completion:^{
-                           [weakSelf.childCoordinators removeAllObjects];
-                           if (weakSelf.presentingButton) {
-                             [weakSelf presentFromButton:self.presentingButton];
-                           }
-                         }];
+  [self.delegate openAllPasswordsPicker];
 }
 
 - (void)openPasswordSettings {
   __weak id<PasswordCoordinatorDelegate> delegate = self.delegate;
   [self dismissIfNecessaryThenDoCompletion:^{
     [delegate openPasswordSettings];
+    if (IsIPadIdiom()) {
+      // Settings close the popover but don't send a message to reopen it.
+      [delegate fallbackCoordinatorDidDismissPopover:self];
+    }
   }];
 }
 

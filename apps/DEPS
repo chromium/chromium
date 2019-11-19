@@ -2,6 +2,7 @@ include_rules = [
   "+content/public/browser",
   "+content/public/common",
   "+content/public/test",
+  "+components/services/app_service/public",
   "+components/keyed_service",
   "+components/user_manager",
   "+extensions",

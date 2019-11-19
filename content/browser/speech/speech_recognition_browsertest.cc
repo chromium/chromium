@@ -60,7 +60,7 @@ class MockAudioSystem : public media::AudioSystem {
 
     // Posting callback to allow current SpeechRecognizerImpl dispatching event
     // to complete before transitioning to the next FSM state.
-    base::PostTaskWithTraits(
+    base::PostTask(
         FROM_HERE, {content::BrowserThread::IO},
         base::BindOnce(std::move(on_params_cb),
                        media::AudioParameters::UnavailableDeviceParams()));
@@ -229,10 +229,9 @@ class SpeechRecognitionBrowserTest : public ContentBrowserTest {
     // AudioCaptureSourcer::Stop() again.
     SpeechRecognizerImpl::SetAudioEnvironmentForTesting(nullptr, nullptr);
 
-    base::PostTaskWithTraits(
-        FROM_HERE, {content::BrowserThread::UI},
-        base::BindOnce(&SpeechRecognitionBrowserTest::SendResponse,
-                       base::Unretained(this)));
+    base::PostTask(FROM_HERE, {content::BrowserThread::UI},
+                   base::BindOnce(&SpeechRecognitionBrowserTest::SendResponse,
+                                  base::Unretained(this)));
   }
 
   void SendResponse() {}
@@ -257,7 +256,8 @@ class SpeechRecognitionBrowserTest : public ContentBrowserTest {
     audio_bus->FromInterleaved<media::SignedInt16SampleTypeTraits>(
         reinterpret_cast<int16_t*>(&audio_buffer.get()[0]),
         audio_bus->frames());
-    capture_callback->Capture(audio_bus.get(), 0, 0.0, false);
+    capture_callback->Capture(audio_bus.get(), base::TimeTicks::Now(), 0.0,
+                              false);
   }
 
   void FeedAudioCapturerSource(const media::AudioParameters& audio_params,

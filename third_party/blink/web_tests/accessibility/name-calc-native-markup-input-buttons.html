@@ -1,14 +1,13 @@
 <!DOCTYPE HTML>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 
 <div class="container">
     <input id="button1" type="button">
 </div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var axButtonInput1 = accessibilityController.accessibleElementById("button1");
     assert_equals(axButtonInput1.name, "");
 }, "Input button with no value");
@@ -19,7 +18,7 @@ test_after_layout_and_paint(function(t) {
 </div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var axButtonInput2 = accessibilityController.accessibleElementById("button2");
     assert_equals(axButtonInput2.name, "button-value2");
     assert_equals(axButtonInput2.nameFrom, "value");
@@ -31,7 +30,7 @@ test_after_layout_and_paint(function(t) {
 </div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var axButtonInput3 = accessibilityController.accessibleElementById("button3");
     assert_equals(axButtonInput3.name, "button-value3");
     assert_equals(axButtonInput3.nameFrom, "value");
@@ -43,7 +42,7 @@ test_after_layout_and_paint(function(t) {
 </div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var axButtonInput4 = accessibilityController.accessibleElementById("button4");
     assert_equals(axButtonInput4.name, "button-title4");
     assert_equals(axButtonInput4.nameFrom, "title");
@@ -56,7 +55,7 @@ test_after_layout_and_paint(function(t) {
 </div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var axButtonInput5 = accessibilityController.accessibleElementById("button5");
     assert_equals(axButtonInput5.name, "button-label-5");
     assert_equals(axButtonInput5.nameFrom, "relatedElement");
@@ -68,7 +67,7 @@ test_after_layout_and_paint(function(t) {
 </div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var axButtonInput6 = accessibilityController.accessibleElementById("button6");
     assert_equals(axButtonInput6.name, "button-label-6");
     assert_equals(axButtonInput6.nameFrom, "relatedElement");
@@ -81,7 +80,7 @@ test_after_layout_and_paint(function(t) {
 </div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var axButtonInput7 = accessibilityController.accessibleElementById("button7");
     assert_equals(axButtonInput7.name, "button-label-7");
     assert_equals(axButtonInput7.nameFrom, "relatedElement");
@@ -94,7 +93,7 @@ test_after_layout_and_paint(function(t) {
 </div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var axButtonInput8 = accessibilityController.accessibleElementById("button8");
     assert_equals(axButtonInput8.name, "button-aria-label-8");
     assert_equals(axButtonInput8.nameFrom, "attribute");
@@ -108,7 +107,7 @@ test_after_layout_and_paint(function(t) {
 </div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var axButtonInput9 = accessibilityController.accessibleElementById("button9");
     assert_equals(axButtonInput9.name, "button9-aria-labelledby");
     assert_equals(axButtonInput9.nameFrom, "relatedElement");
@@ -120,7 +119,7 @@ test_after_layout_and_paint(function(t) {
 </div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var axSubmitButton1 = accessibilityController.accessibleElementById("submit1");
     assert_equals(axSubmitButton1.name, "Submit");
     assert_equals(axSubmitButton1.nameFrom, "contents");
@@ -132,7 +131,7 @@ test_after_layout_and_paint(function(t) {
 </div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var axSubmitButton2 = accessibilityController.accessibleElementById("submit2");
     assert_equals(axSubmitButton2.name, "submit-value2");
     assert_equals(axSubmitButton2.nameFrom, "value");
@@ -144,7 +143,7 @@ test_after_layout_and_paint(function(t) {
 </div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var axSubmitButton3 = accessibilityController.accessibleElementById("submit3");
     assert_equals(axSubmitButton3.name, "Submit");
     assert_equals(axSubmitButton3.nameFrom, "contents");
@@ -156,7 +155,7 @@ test_after_layout_and_paint(function(t) {
 </div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var axResetButton1 = accessibilityController.accessibleElementById("reset1");
     assert_equals(axResetButton1.name, "Reset");
     assert_equals(axResetButton1.nameFrom, "contents");
@@ -168,7 +167,7 @@ test_after_layout_and_paint(function(t) {
 </div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var axImageInput1 = accessibilityController.accessibleElementById("image-input1");
     assert_equals(axImageInput1.name, "Submit");
     assert_equals(axImageInput1.nameFrom, "value");
@@ -180,7 +179,7 @@ test_after_layout_and_paint(function(t) {
 </div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var axImageInput2 = accessibilityController.accessibleElementById("image-input2");
     assert_equals(axImageInput2.name, "image-input-value2");
     assert_equals(axImageInput2.nameFrom, "attribute");
@@ -192,7 +191,7 @@ test_after_layout_and_paint(function(t) {
 </div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var axImageInput3 = accessibilityController.accessibleElementById("image-input3");
     assert_equals(axImageInput3.name, "image-input-alt3");
     assert_equals(axImageInput3.nameFrom, "attribute");
@@ -204,7 +203,7 @@ test_after_layout_and_paint(function(t) {
 </div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var axImageInput4 = accessibilityController.accessibleElementById("image-input4");
     assert_equals(axImageInput4.name, "image-input-alt4");
     assert_equals(axImageInput4.nameFrom, "attribute");
@@ -216,7 +215,7 @@ test_after_layout_and_paint(function(t) {
 </div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var axImageInput5 = accessibilityController.accessibleElementById("image-input5");
     assert_equals(axImageInput5.name, "image-input-title5");
     assert_equals(axImageInput5.nameFrom, "title");

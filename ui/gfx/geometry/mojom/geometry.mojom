@@ -1,0 +1,94 @@
+// Copyright 2014 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module gfx.mojom;
+
+// Don't make backwards-incompatible changes to this definition!
+// It's used in PageState serialization, so backwards incompatible changes
+// would cause stored PageState objects to be un-parseable.
+struct Point {
+  int32 x;
+  int32 y;
+};
+
+// Don't make backwards-incompatible changes to this definition!
+// It's used in PageState serialization, so backwards incompatible changes
+// would cause stored PageState objects to be un-parseable. Please contact the
+// page state serialization owners before making such a change.
+struct PointF {
+  float x;
+  float y;
+};
+
+struct Point3F {
+  float x;
+  float y;
+  float z;
+};
+
+struct Size {
+  int32 width;
+  int32 height;
+};
+
+struct SizeF {
+  float width;
+  float height;
+};
+
+struct Rect {
+  int32 x;
+  int32 y;
+  int32 width;
+  int32 height;
+};
+
+struct RectF {
+  float x;
+  float y;
+  float width;
+  float height;
+};
+
+struct Insets {
+  int32 top;
+  int32 left;
+  int32 bottom;
+  int32 right;
+};
+
+struct InsetsF {
+  float top;
+  float left;
+  float bottom;
+  float right;
+};
+
+struct Vector2d {
+  int32 x;
+  int32 y;
+};
+
+struct Vector2dF {
+  float x;
+  float y;
+};
+
+struct Vector3dF {
+  float x;
+  float y;
+  float z;
+};
+
+struct ScrollOffset {
+  float x;
+  float y;
+};
+
+struct Quaternion {
+  double x;
+  double y;
+  double z;
+  double w;
+};

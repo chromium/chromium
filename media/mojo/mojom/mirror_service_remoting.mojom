@@ -1,0 +1,60 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module media.mojom;
+
+import "media/mojo/mojom/remoting_common.mojom";
+
+// Interface used by the source to start/stop remoting and send data to the
+// sink.
+interface MirrorServiceRemoter {
+  // Starts a remoting session. Always assumes the remoting session will be
+  // stared successfully. If any failure happens,
+  // MirrorServiceRemotingSource::OnError() will be called.
+  Start();
+
+  // Starts remoting the media data streams. This is called after Start() to
+  // indicate audio/video bitstream data is ready to be consumed. Returns
+  // audio/video stream IDs. A valid stream ID should be greater than 0. When
+  // there is no audio/video, or if the data stream is not successfully started,
+  // the returned stream ID is -1.
+  StartDataStreams(bool has_audio, bool has_video)
+      => (int32 audio_stream_id, int32 video_stream_id);
+
+  // Stops remoting media. Messages in both directions will be dropped after
+  // this point as well as any pending or in-transit media bitstream data.
+  Stop(RemotingStopReason reason);
+
+  // Sends|message| to the sink. |message| is a serialized protobuf from
+  // src/media/remoting/proto.
+  SendMessageToSink(array<uint8> message);
+
+  // Estimates the transmission capacity. Returns the result in
+  // bytes per second.
+  EstimateTransmissionCapacity() => (double rate);
+};
+
+// Interface used for sending notifications back to the source's control logic,
+// and to pass messages from the sink back to the source.
+interface MirrorServiceRemotingSource {
+  // Notifies the source that the sink is now available to start remoting and
+  // passes the receiver's metadata. It is up to the source's control logic
+  // to decide whether/when to start remoting.
+  OnSinkAvailable(RemotingSinkMetadata metadata);
+
+  // Passes a |message| from the sink back to the source. The |message| consists
+  // of a serialized protobuf from src/media/remoting/proto. This will only be
+  // called after OnStarted() and before OnStopped().
+  OnMessageFromSink(array<uint8> message);
+
+  // Notifies the source that remoting has terminated. This may or may not be in
+  // response to a MirrorServiceRemoter.Stop() call, as other events (possibly
+  // external) may have caused remoting to end.
+  OnStopped(RemotingStopReason reason);
+
+  // Notifies the source that a fatal error has occurred. Remoting session will
+  // be stopped immediately once this is called.
+  // TODO(xjz): Add error codes in future to indicate different errors.
+  OnError();
+};

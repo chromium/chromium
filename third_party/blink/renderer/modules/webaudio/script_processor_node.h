@@ -159,6 +159,10 @@ class ScriptProcessorNode final
 
   void Trace(blink::Visitor* visitor) override;
 
+  // InspectorHelperMixin
+  void ReportDidCreate() final;
+  void ReportWillBeDestroyed() final;
+
  private:
   HeapVector<Member<AudioBuffer>> input_buffers_;
   HeapVector<Member<AudioBuffer>> output_buffers_;

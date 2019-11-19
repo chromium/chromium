@@ -6,9 +6,6 @@
  * @fileoverview Framework for running async JS tests for cr.js utility methods.
  */
 
-/** @const {string} Path to source root. */
-var ROOT_PATH = '../../../../';
-
 /** @const {string} Name of the chrome.send() message to be used in tests. */
 var CHROME_SEND_NAME = 'echoMessage';
 
@@ -33,10 +30,10 @@ WebUIResourceAsyncTest.prototype = {
 
   /** @override */
   extraLibraries: [
-    ROOT_PATH + 'third_party/mocha/mocha.js',
-    ROOT_PATH + 'chrome/test/data/webui/mocha_adapter.js',
-    ROOT_PATH + 'ui/webui/resources/js/promise_resolver.js',
-    ROOT_PATH + 'ui/webui/resources/js/cr.js',
+    '//third_party/mocha/mocha.js',
+    '//chrome/test/data/webui/mocha_adapter.js',
+    '//ui/webui/resources/js/promise_resolver.js',
+    '//ui/webui/resources/js/cr.js',
   ],
 };
 

@@ -103,23 +103,14 @@ namespace {
 class FindFieldVisitor : public RecursiveASTVisitor<FindFieldVisitor> {
  public:
   FindFieldVisitor();
-  MemberExpr* member() const;
   FieldDecl* field() const;
   bool TraverseMemberExpr(MemberExpr* member);
 
  private:
-  MemberExpr* member_;
   FieldDecl* field_;
 };
 
-FindFieldVisitor::FindFieldVisitor()
-    : member_(0),
-      field_(0) {
-}
-
-MemberExpr* FindFieldVisitor::member() const {
-  return member_;
-}
+FindFieldVisitor::FindFieldVisitor() : field_(0) {}
 
 FieldDecl* FindFieldVisitor::field() const {
   return field_;
@@ -127,7 +118,6 @@ FieldDecl* FindFieldVisitor::field() const {
 
 bool FindFieldVisitor::TraverseMemberExpr(MemberExpr* member) {
   if (FieldDecl* field = dyn_cast<FieldDecl>(member->getMemberDecl())) {
-    member_ = member;
     field_ = field;
     return false;
   }

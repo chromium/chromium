@@ -21,7 +21,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.Log;
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags.Add;
 import org.chromium.base.test.util.Feature;
@@ -37,6 +36,7 @@ import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnEvaluateJavaScriptResultHelper;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.content_public.browser.test.util.WebContentsUtils;
 
@@ -63,7 +63,7 @@ public class JavascriptAppModalDialogTest {
             + "};</script></head></html>");
 
     @Before
-    public void setUp() throws InterruptedException {
+    public void setUp() {
         mActivityTestRule.startMainActivityWithURL(EMPTY_PAGE);
     }
 
@@ -74,8 +74,7 @@ public class JavascriptAppModalDialogTest {
     @Test
     @MediumTest
     @Feature({"Browser", "Main"})
-    public void testBeforeUnloadDialog()
-            throws InterruptedException, TimeoutException, ExecutionException {
+    public void testBeforeUnloadDialog() throws TimeoutException, ExecutionException {
         mActivityTestRule.loadUrl(BEFORE_UNLOAD_URL);
         // JavaScript onbeforeunload dialogs require a user gesture.
         tapViewAndWait();
@@ -110,8 +109,7 @@ public class JavascriptAppModalDialogTest {
     @Test
     @MediumTest
     @Feature({"Browser", "Main"})
-    public void testBeforeUnloadOnReloadDialog()
-            throws InterruptedException, TimeoutException, ExecutionException {
+    public void testBeforeUnloadOnReloadDialog() throws TimeoutException, ExecutionException {
         mActivityTestRule.loadUrl(BEFORE_UNLOAD_URL);
         // JavaScript onbeforeunload dialogs require a user gesture.
         tapViewAndWait();
@@ -131,8 +129,7 @@ public class JavascriptAppModalDialogTest {
     @Test
     @MediumTest
     @Feature({"Browser", "Main"})
-    public void testDisableRepeatedDialogs()
-            throws InterruptedException, TimeoutException, ExecutionException {
+    public void testDisableRepeatedDialogs() throws TimeoutException, ExecutionException {
         mActivityTestRule.loadUrl(BEFORE_UNLOAD_URL);
         // JavaScript onbeforeunload dialogs require a user gesture.
         tapViewAndWait();
@@ -173,14 +170,13 @@ public class JavascriptAppModalDialogTest {
     @Test
     @MediumTest
     @Feature({"Browser", "Main"})
-    public void testDialogDismissedAfterClosingTab()
-            throws InterruptedException, TimeoutException, ExecutionException {
+    public void testDialogDismissedAfterClosingTab() throws TimeoutException {
         mActivityTestRule.loadUrl(BEFORE_UNLOAD_URL);
         // JavaScript onbeforeunload dialogs require a user gesture.
         tapViewAndWait();
         executeJavaScriptAndWaitForDialog("history.back();");
 
-        ThreadUtils.runOnUiThreadBlocking(() -> {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
             ChromeActivity activity = mActivityTestRule.getActivity();
             activity.getCurrentTabModel().closeTab(activity.getActivityTab());
         });
@@ -193,7 +189,7 @@ public class JavascriptAppModalDialogTest {
     /**
      * Taps on a view and waits for a callback.
      */
-    private void tapViewAndWait() throws InterruptedException, TimeoutException {
+    private void tapViewAndWait() throws TimeoutException {
         final TapGestureStateListener tapGestureStateListener = new TapGestureStateListener();
         int callCount = tapGestureStateListener.getCallCount();
         WebContentsUtils.getGestureListenerManager(mActivityTestRule.getWebContents())
@@ -229,7 +225,7 @@ public class JavascriptAppModalDialogTest {
      * showing.
      */
     private JavascriptAppModalDialog getCurrentDialog() throws ExecutionException {
-        return ThreadUtils.runOnUiThreadBlocking(
+        return TestThreadUtils.runOnUiThreadBlocking(
                 () -> JavascriptAppModalDialog.getCurrentDialogForTest());
     }
 
@@ -240,7 +236,7 @@ public class JavascriptAppModalDialogTest {
             return mCallbackHelper.getCallCount();
         }
 
-        public void waitForTap(int currentCallCount) throws InterruptedException, TimeoutException {
+        public void waitForTap(int currentCallCount) throws TimeoutException {
             mCallbackHelper.waitForCallback(currentCallCount);
         }
 
@@ -261,7 +257,7 @@ public class JavascriptAppModalDialogTest {
         @Override
         public boolean isSatisfied() {
             try {
-                return ThreadUtils.runOnUiThreadBlocking(() -> {
+                return TestThreadUtils.runOnUiThreadBlocking(() -> {
                     final boolean isShown =
                             JavascriptAppModalDialog.getCurrentDialogForTest() != null;
                     return mShouldBeShown == isShown;

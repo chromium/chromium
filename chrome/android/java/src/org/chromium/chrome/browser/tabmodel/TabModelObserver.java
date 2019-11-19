@@ -87,11 +87,12 @@ public interface TabModelObserver {
     void tabClosureCommitted(Tab tab);
 
     /**
-     * Called when "all tabs" are pending closure.
+     * Called when multiple tabs are pending closure.
      *
      * @param tabs The tabs that are pending closure.
+     * @param isAllTabs Whether |tabs| are all the tabs.
      */
-    void allTabsPendingClosure(List<Tab> tabs);
+    void multipleTabsPendingClosure(List<Tab> tabs, boolean isAllTabs);
 
     /**
      * Called when an "all tabs" closure has been committed and can't be undone anymore.

@@ -39,13 +39,13 @@ void ClientConnectionParameters::SetConnectionAttemptFailed(
 }
 
 void ClientConnectionParameters::SetConnectionSucceeded(
-    mojom::ChannelPtr channel,
-    mojom::MessageReceiverRequest message_receiver_request) {
+    mojo::PendingRemote<mojom::Channel> channel,
+    mojo::PendingReceiver<mojom::MessageReceiver> message_receiver_receiver) {
   static const std::string kFunctionName = "SetConnectionSucceeded";
   VerifyDelegateWaitingForResponse(kFunctionName);
   has_invoked_delegate_function_ = true;
   PerformSetConnectionSucceeded(std::move(channel),
-                                std::move(message_receiver_request));
+                                std::move(message_receiver_receiver));
 }
 
 bool ClientConnectionParameters::operator==(

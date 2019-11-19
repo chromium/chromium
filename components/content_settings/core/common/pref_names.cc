@@ -10,6 +10,11 @@ namespace prefs {
 // regardless of other content settings.
 const char kBlockThirdPartyCookies[] = "profile.block_third_party_cookies";
 
+// CookieControlsMode enum value that decides when the cookie controls UI is
+// enabled. This will block third-party cookies similar to
+// kBlockThirdPartyCookies but with a new UI.
+const char kCookieControlsMode[] = "profile.cookie_controls_mode";
+
 // Version of the pattern format used to define content settings.
 const char kContentSettingsVersion[] = "profile.content_settings.pref_version";
 
@@ -28,6 +33,8 @@ const char kManagedDefaultGeolocationSetting[] =
     "profile.managed_default_content_settings.geolocation";
 const char kManagedDefaultImagesSetting[] =
     "profile.managed_default_content_settings.images";
+const char kManagedDefaultInsecureContentSetting[] =
+    "profile.managed_default_content_settings.insecure_content";
 const char kManagedDefaultJavaScriptSetting[] =
     "profile.managed_default_content_settings.javascript";
 const char kManagedDefaultNotificationsSetting[] =
@@ -42,6 +49,8 @@ const char kManagedDefaultWebBluetoothGuardSetting[] =
     "profile.managed_default_content_settings.web_bluetooth_guard";
 const char kManagedDefaultWebUsbGuardSetting[] =
     "profile.managed_default_content_settings.web_usb_guard";
+const char kManagedDefaultLegacyCookieAccessSetting[] =
+    "profile.managed_default_content_settings.legacy_cookie_access";
 
 // Preferences that are exclusively used to store managed
 // content settings patterns.
@@ -57,6 +66,10 @@ const char kManagedImagesAllowedForUrls[] =
     "profile.managed_images_allowed_for_urls";
 const char kManagedImagesBlockedForUrls[] =
     "profile.managed_images_blocked_for_urls";
+const char kManagedInsecureContentAllowedForUrls[] =
+    "profile.managed_insecure_content_allowed_for_urls";
+const char kManagedInsecureContentBlockedForUrls[] =
+    "profile.managed_insecure_content_blocked_for_urls";
 const char kManagedJavaScriptAllowedForUrls[] =
     "profile.managed_javascript_allowed_for_urls";
 const char kManagedJavaScriptBlockedForUrls[] =
@@ -78,5 +91,7 @@ const char kManagedWebUsbAllowDevicesForUrls[] =
 const char kManagedWebUsbAskForUrls[] = "profile.managed_web_usb_ask_for_urls";
 const char kManagedWebUsbBlockedForUrls[] =
     "profile.managed_web_usb_blocked_for_urls";
+const char kManagedLegacyCookieAccessAllowedForDomains[] =
+    "profile.managed_legacy_cookie_access_allowed_for_domains";
 
 }  // namespace prefs

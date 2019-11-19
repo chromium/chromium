@@ -3,4 +3,5 @@ include_rules = [
   "+components/prefs",
   "+components/sync",
   "+components/variations",
+  "+google_apis/gaia",
 ]

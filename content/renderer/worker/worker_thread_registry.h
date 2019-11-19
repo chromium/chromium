@@ -24,7 +24,7 @@ class CONTENT_EXPORT WorkerThreadRegistry {
  public:
   WorkerThreadRegistry();
 
-  int PostTaskToAllThreads(base::Closure task);
+  int PostTaskToAllThreads(const base::RepeatingClosure& task);
   static WorkerThreadRegistry* Instance();
 
   void DidStartCurrentWorkerThread();
@@ -41,8 +41,6 @@ class CONTENT_EXPORT WorkerThreadRegistry {
 
   bool PostTask(int id, base::OnceClosure task);
 
-  using IDToTaskRunnerMap = std::map<base::PlatformThreadId, base::TaskRunner*>;
-
   ~WorkerThreadRegistry();
 
   // It is possible for an IPC message to arrive for a worker thread that has
@@ -53,7 +51,7 @@ class CONTENT_EXPORT WorkerThreadRegistry {
   // which silently discards all the tasks it receives.
   scoped_refptr<base::TaskRunner> task_runner_for_dead_worker_;
 
-  IDToTaskRunnerMap task_runner_map_;
+  std::map<int /* worker_thread_id */, base::TaskRunner*> task_runner_map_;
   base::Lock task_runner_map_lock_;
 };
 

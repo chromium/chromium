@@ -3,7 +3,6 @@ include_rules = [
   "+components/dns_prefetch/common",
   "+components/guest_view/common",
   "+components/nacl/common",
-  "+components/network_hints/common",
   "+components/password_manager/content/common",
   "+components/pdf/common",
   "+components/safe_browsing",

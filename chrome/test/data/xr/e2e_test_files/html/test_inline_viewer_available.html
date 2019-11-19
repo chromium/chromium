@@ -1,0 +1,66 @@
+<!doctype html>
+<!--
+Tests that it is always possible to create an inline session and access the
+identity reference space
+-->
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="../resources/webxr_e2e.css">
+  </head>
+  <body>
+    <script src="../../../../../../third_party/blink/web_tests/resources/testharness.js"></script>
+    <script src="../resources/webxr_e2e.js"></script>
+    <script>
+      let session = null;
+      let testFrames = 5;
+      let numFramesReceived = 0;
+      function onRequestAnimationFrame() {
+        if (session === null) {
+          assert_unreached("Session should not be null");
+        }
+
+        numFramesReceived++;
+        if (numFramesReceived < testFrames) {
+          session.requestAnimationFrame(onRequestAnimationFrame);
+        } else {
+          done();
+        }
+      }
+
+      // TODO (crbug.com/934912): Consider improving flow once methods are
+      // updated.
+      let step = "supportsInline";
+      navigator.xr.isSessionSupported('inline')
+      .then((supported)=> {
+        assert_true(supported);
+        step = "requestSession";
+        return navigator.xr.requestSession('inline');
+      })
+      .then((xrSession) => {
+        session = xrSession;
+
+        step = "requestReferenceSpace";
+        return xrSession.requestReferenceSpace('viewer');
+      })
+      .then((referenceSpace) => {
+        assert_not_equals(referenceSpace, null);
+        step = "Request Animation Frames";
+
+        // Create an offscreen canvas and get its context
+        let offscreenCanvas = document.createElement('canvas');
+        let gl = offscreenCanvas.getContext('webgl', { xrCompatible: true });
+        if (!gl) {
+          throw 'Failed to get WebGL context';
+        }
+
+        session.updateRenderState({
+            baseLayer: new XRWebGLLayer(session, gl)
+        });
+        session.requestAnimationFrame(onRequestAnimationFrame);
+      })
+      .catch((err) => {
+        assert_unreached("Failed with " + err + " at step " + step);
+      });
+    </script>
+  </body>
+</html>

@@ -31,11 +31,4 @@ TestModelTypeStoreService::GetBackendTaskRunner() {
   return base::SequencedTaskRunnerHandle::Get();
 }
 
-std::unique_ptr<BlockingModelTypeStore>
-TestModelTypeStoreService::CreateBlockingStoreFromBackendSequence(
-    ModelType type) {
-  return std::make_unique<BlockingModelTypeStoreImpl>(type,
-                                                      store_backend_.get());
-}
-
 }  // namespace syncer

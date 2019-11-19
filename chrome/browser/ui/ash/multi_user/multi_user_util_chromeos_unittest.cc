@@ -12,11 +12,11 @@
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/account_id/account_id.h"
-#include "components/signin/core/browser/account_info.h"
+#include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user.h"
-#include "services/identity/public/cpp/identity_manager.h"
-#include "services/identity/public/cpp/identity_test_environment.h"
 
 namespace ash {
 
@@ -73,7 +73,7 @@ class MultiUserUtilTest : public ChromeAshTestBase {
 
   TestingProfile* profile() { return profile_.get(); }
 
-  identity::IdentityTestEnvironment* identity_test_env() {
+  signin::IdentityTestEnvironment* identity_test_env() {
     return identity_test_env_adaptor_->identity_test_env();
   }
 
@@ -93,7 +93,7 @@ class MultiUserUtilTest : public ChromeAshTestBase {
 // revoked. (On Chrome OS we don't force to end the session in this case.)
 TEST_F(MultiUserUtilTest, ReturnValidAccountIdIfTokenRevoked) {
   std::string account_id = AddUserAndSignIn(kTestAccountEmail);
-  identity::IdentityManager* identity_manager =
+  signin::IdentityManager* identity_manager =
       identity_test_env()->identity_manager();
 
   EXPECT_TRUE(identity_manager->HasAccountWithRefreshToken(account_id));

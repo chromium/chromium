@@ -10,9 +10,9 @@
 #include "base/files/file_path.h"
 #include "base/strings/string_split.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_task_environment.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/simple_test_tick_clock.h"
+#include "base/test/task_environment.h"
 #include "base/time/default_clock.h"
 #include "base/time/default_tick_clock.h"
 #include "components/network_time/network_time_test_utils.h"
@@ -363,8 +363,8 @@ TEST_F(SSLErrorClassificationTest, GetClockState) {
 // Tests that all possible NetworkClockState histogram values are recorded
 // appropriately.
 TEST_F(SSLErrorClassificationTest, NetworkClockStateHistogram) {
-  base::test::ScopedTaskEnvironment task_environment(
-      base::test::ScopedTaskEnvironment::MainThreadType::IO);
+  base::test::SingleThreadTaskEnvironment task_environment(
+      base::test::SingleThreadTaskEnvironment::MainThreadType::IO);
 
   scoped_refptr<network::TestSharedURLLoaderFactory> shared_url_loader_factory =
       base::MakeRefCounted<network::TestSharedURLLoaderFactory>();

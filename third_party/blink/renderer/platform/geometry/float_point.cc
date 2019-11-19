@@ -27,33 +27,18 @@
 #include "third_party/blink/renderer/platform/geometry/float_point.h"
 
 #include <math.h>
+
 #include <algorithm>
 #include <limits>
 
-#include "SkPoint.h"
-#include "third_party/blink/renderer/platform/geometry/double_point.h"
 #include "third_party/blink/renderer/platform/geometry/layout_point.h"
 #include "third_party/blink/renderer/platform/geometry/layout_size.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/skia/include/core/SkPoint.h"
-#include "ui/gfx/geometry/point3_f.h"
-#include "ui/gfx/geometry/scroll_offset.h"
 
 namespace blink {
-
-FloatPoint::FloatPoint(const IntPoint& p) : x_(p.X()), y_(p.Y()) {}
-
-FloatPoint::FloatPoint(const SkPoint& point) : x_(point.x()), y_(point.y()) {}
-
-FloatPoint::FloatPoint(const DoublePoint& p) : x_(p.X()), y_(p.Y()) {}
-
-FloatPoint::FloatPoint(const LayoutPoint& p)
-    : x_(p.X().ToFloat()), y_(p.Y().ToFloat()) {}
-
-FloatPoint::FloatPoint(const LayoutSize& size)
-    : x_(size.Width().ToFloat()), y_(size.Height().ToFloat()) {}
 
 float FloatPoint::SlopeAngleRadians() const {
   return atan2f(y_, x_);
@@ -69,16 +54,6 @@ FloatPoint FloatPoint::ExpandedTo(const FloatPoint& other) const {
 
 FloatPoint FloatPoint::ShrunkTo(const FloatPoint& other) const {
   return FloatPoint(std::min(x_, other.x_), std::min(y_, other.y_));
-}
-
-void FloatPoint::Move(const LayoutSize& size) {
-  x_ += size.Width();
-  y_ += size.Height();
-}
-
-void FloatPoint::MoveBy(const LayoutPoint& point) {
-  x_ += point.X();
-  y_ += point.Y();
 }
 
 FloatPoint FloatPoint::NarrowPrecision(double x, double y) {
@@ -106,22 +81,6 @@ bool FindIntersection(const FloatPoint& p1,
   intersection.SetX(p1.X() + param * px_length);
   intersection.SetY(p1.Y() + param * py_length);
   return true;
-}
-
-FloatPoint::operator gfx::PointF() const {
-  return gfx::PointF(x_, y_);
-}
-
-FloatPoint::operator gfx::ScrollOffset() const {
-  return gfx::ScrollOffset(x_, y_);
-}
-
-FloatPoint::operator gfx::Vector2dF() const {
-  return gfx::Vector2dF(x_, y_);
-}
-
-FloatPoint::operator gfx::Point3F() const {
-  return gfx::Point3F(x_, y_, 0.f);
 }
 
 std::ostream& operator<<(std::ostream& ostream, const FloatPoint& point) {

@@ -1,0 +1,168 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_checkbox/cr_checkbox.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_input/cr_input.html">
+<link rel="import" href="chrome://resources/cr_elements/icons.html">
+<link rel="import" href="chrome://resources/cr_elements/policy/cr_policy_indicator.html">
+<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
+<link rel="import" href="chrome://resources/html/action_link.html">
+<link rel="import" href="chrome://resources/html/i18n_behavior.html">
+<link rel="import" href="chrome://resources/html/load_time_data.html">
+<link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
+<link rel="import" href="../controls/settings_textarea.html">
+<link rel="import" href="../settings_shared_css.html">
+<link rel="import" href="kerberos_accounts_browser_proxy.html">
+
+<dom-module id="kerberos-add-account-dialog">
+  <template>
+    <style include="settings-shared action-link">
+      #advancedConfigDesc {
+        align-items: center;
+        display: flex;
+      }
+
+      #advancedConfigPolicyIndicator {
+        margin-inline-start: 1em;
+      }
+
+      #credentials {
+        margin-top: 16px;
+      }
+
+      #credentials > *:not(:last-child) {
+        margin-bottom: var(--cr-form-field-bottom-spacing);
+      }
+
+      #general-error-container {
+        display: flex;
+        height: 56px;
+      }
+
+      #config-error-container {
+        display: flex;
+        height: 40px;
+        margin-top: 16px;
+      }
+
+      #general-error-message,
+      #config-error-message {
+        color: var(--settings-error-color);
+      }
+
+      iron-icon[icon='cr:error'] {
+        fill: var(--settings-error-color);
+        margin-inline-end: 8px;
+      }
+
+      #rememberPasswordContainer {
+        align-items: center;
+        display: flex;
+        margin-bottom: 32px;
+      }
+
+      #rememberPassword {
+        margin-inline-end: 1em;
+      }
+    </style>
+
+    <cr-dialog id="addDialog" hidden="[[showAdvancedConfig_]]">
+      <div slot="title">[[title_]]</div>
+
+      <div slot="body" spellcheck="false">
+        <h2 class="start first">
+          $i18n{addKerberosAccountDescription}
+        </h2>
+
+        <div id="general-error-container"
+            hidden="[[!showError_(generalErrorText_)]]">
+          <iron-icon id="error-icon" icon="cr:error"></iron-icon>
+          <div id="general-error-message">[[generalErrorText_]]</div>
+        </div>
+
+        <div id="credentials">
+          <cr-input id="username" label="$i18n{kerberosUsername}"
+              value="{{username_}}" invalid="[[showError_(usernameErrorText_)]]"
+              placeholder="user@example.com"
+              error-message="[[usernameErrorText_]]">
+          </cr-input>
+
+          <cr-input id="password" type="password"
+              label="$i18n{kerberosPassword}" value="{{password_}}"
+              invalid="[[showError_(passwordErrorText_)]]"
+              error-message="[[passwordErrorText_]]"
+              on-input="onPasswordInput_">
+          </cr-input>
+
+          <div id="rememberPasswordContainer">
+            <cr-checkbox id="rememberPassword" checked="{{rememberPassword_}}"
+                disabled="[[!rememberPasswordEnabled_]]">
+              $i18n{addKerberosAccountRememberPassword}
+            </cr-checkbox>
+            <template is="dom-if" if="[[!rememberPasswordEnabled_]]">
+              <cr-policy-indicator id="rememberPasswordPolicyIndicator"
+                  indicator-type="userPolicy">
+              </cr-policy-indicator>
+            </template>
+          </div>
+
+          <a is="action-link" id="advancedConfigButton"
+              on-click="onAdvancedConfigClick_">
+            $i18n{kerberosAccountsAdvancedConfigLabel}
+          </a>
+        </div>
+      </div>
+
+      <div slot="button-container">
+        <cr-button class="cancel-button" on-click="onCancel_" id="cancel">
+          $i18n{cancel}
+        </cr-button>
+        <cr-button class="action-button" on-click="onAdd_"
+            disabled="[[inProgress_]]">
+          [[actionButtonLabel_]]
+        </cr-button>
+      </div>
+    </cr-dialog>
+
+    <template is="dom-if" if="[[showAdvancedConfig_]]" restamp>
+      <cr-dialog id="advancedConfigDialog" on-close="onAdvancedConfigClose_">
+        <div slot="title">$i18n{kerberosAdvancedConfigTitle}</div>
+
+        <div slot="body">
+          <h2 class="first" id="advancedConfigDesc">
+            $i18n{kerberosAdvancedConfigDesc}
+            <template is="dom-if" if="[[isManaged_]]">
+              <cr-policy-indicator id="advancedConfigPolicyIndicator"
+                  indicator-type="userPolicy">
+              </cr-policy-indicator>
+            </template>
+          </h2>
+
+          <settings-textarea id="config" value="{{editableConfig_}}" rows=12
+              spellcheck="false" disabled="[[isManaged_]]">
+          </settings-textarea>
+
+          <div id="config-error-container"
+              hidden="[[!showError_(configErrorText_)]]">
+            <iron-icon id="error-icon" icon="cr:error"></iron-icon>
+            <div id="config-error-message">[[configErrorText_]]</div>
+          </div>
+        </div>
+
+        <div slot="button-container">
+          <cr-button class="cancel-button"
+              on-click="onAdvancedConfigCancel_">
+            $i18n{cancel}
+          </cr-button>
+          <cr-button class="action-button" on-click="onAdvancedConfigSave_"
+              disabled="[[inProgress_]]">
+            $i18n{save}
+          </cr-button>
+        </div>
+      </cr-dialog>
+    </template>
+  </template>
+  <script src="kerberos_add_account_dialog.js"></script>
+</dom-module>

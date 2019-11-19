@@ -9,12 +9,12 @@
 
 #include "base/macros.h"
 #include "net/quic/crypto/proof_verifier_chromium.h"
-#include "net/third_party/quic/core/crypto/crypto_handshake.h"
-#include "net/third_party/quic/core/crypto/crypto_protocol.h"
-#include "net/third_party/quic/core/http/quic_spdy_client_session_base.h"
-#include "net/third_party/quic/core/quic_crypto_client_stream.h"
-#include "net/third_party/quic/core/quic_server_id.h"
-#include "net/third_party/quic/core/quic_session.h"
+#include "net/third_party/quiche/src/quic/core/crypto/crypto_handshake.h"
+#include "net/third_party/quiche/src/quic/core/crypto/crypto_protocol.h"
+#include "net/third_party/quiche/src/quic/core/http/quic_spdy_client_session_base.h"
+#include "net/third_party/quiche/src/quic/core/quic_crypto_client_stream.h"
+#include "net/third_party/quiche/src/quic/core/quic_server_id.h"
+#include "net/third_party/quiche/src/quic/core/quic_session.h"
 
 namespace net {
 
@@ -78,6 +78,10 @@ class MockCryptoClientStream : public quic::QuicCryptoClientStream,
 
  private:
   void SetConfigNegotiated();
+
+  // Called from CryptoConnect to set appropriate values in
+  // |crypto_negotiated_params_|.
+  void FillCryptoParams();
 
   HandshakeMode handshake_mode_;
   bool encryption_established_;

@@ -9,8 +9,9 @@
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "chrome/android/chrome_jni_headers/JavascriptAppModalDialog_jni.h"
 #include "chrome/browser/android/tab_android.h"
-#include "chrome/browser/ui/javascript_dialogs/chrome_javascript_native_dialog_factory.h"
+#include "chrome/browser/ui/javascript_dialogs/chrome_javascript_native_app_modal_dialog_factory.h"
 #include "components/app_modal/app_modal_dialog_queue.h"
 #include "components/app_modal/javascript_app_modal_dialog.h"
 #include "components/app_modal/javascript_dialog_manager.h"
@@ -19,7 +20,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/javascript_dialog_type.h"
-#include "jni/JavascriptAppModalDialog_jni.h"
 #include "ui/android/window_android.h"
 
 using base::android::AttachCurrentThread;
@@ -194,8 +194,7 @@ class ChromeJavaScriptNativeDialogAndroidFactory
 
 }  // namespace
 
-void InstallChromeJavaScriptNativeDialogFactory() {
+void InstallChromeJavaScriptNativeAppModalDialogFactory() {
   app_modal::JavaScriptDialogManager::GetInstance()->SetNativeDialogFactory(
       base::WrapUnique(new ChromeJavaScriptNativeDialogAndroidFactory));
 }
-

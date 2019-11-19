@@ -10,7 +10,7 @@
 <script>
 'use strict';
 
-sensor_test(async sensorProvider => {
+sensor_test(async (t, sensorProvider) => {
   const orientationData = generateOrientationData(1.1, 2.2, 3.3, true);
 
   setMockOrientationData(sensorProvider, orientationData);

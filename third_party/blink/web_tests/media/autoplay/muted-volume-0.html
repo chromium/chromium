@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<title>Test that the autoplay muted applies for volume=0</title>
+<script src='../../resources/testharness.js'></script>
+<script src='../../resources/testharnessreport.js'></script>
+<body></body>
+<script>
+async_test(t => {
+  t.add_cleanup(() => {
+    internals.settings.setAutoplayPolicy('no-user-gesture-required');
+    internals.runtimeFlags.autoplayMutedVideosEnabled = false;
+  });
+  internals.settings.setAutoplayPolicy('document-user-activation-required');
+  internals.runtimeFlags.autoplayMutedVideosEnabled = true;
+
+  var video = document.createElement('video');
+  video.autoplay = true;
+  video.volume = 0;
+  video.src = '../content/test.ogv';
+  document.body.appendChild(video);
+
+  video.addEventListener('play', t.step_func(e => {
+    video.volume = 0.1;
+    video.addEventListener('pause', t.step_func_done());
+  }), { once: true });
+}, "volume=0 allows muted autoplay, volume!=0 pauses");
+
+async_test(t => {
+  t.add_cleanup(() => {
+    internals.settings.setAutoplayPolicy('no-user-gesture-required');
+    internals.runtimeFlags.autoplayMutedVideosEnabled = false;
+  });
+  internals.settings.setAutoplayPolicy('document-user-activation-required');
+  internals.runtimeFlags.autoplayMutedVideosEnabled = true;
+
+  var video = document.createElement('video');
+  video.autoplay = true;
+  video.volume = 0;
+  video.src = '../content/test.ogv';
+  document.body.appendChild(video);
+
+  video.addEventListener('play', t.step_func(e => {
+    video.muted = true;
+    video.volume = 0.1;
+    var timeUpdateCount = 0;
+    video.addEventListener('timeupdate', t.step_func(e => {
+      timeUpdateCount++;
+      if (timeUpdateCount == 3) t.done();
+    }));
+  }), { once: true });
+}, "muted after volume=0 will not pause if volume!=0");
+
+
+async_test(t => {
+  t.add_cleanup(() => {
+    internals.settings.setAutoplayPolicy('no-user-gesture-required');
+    internals.runtimeFlags.autoplayMutedVideosEnabled = false;
+  });
+  internals.settings.setAutoplayPolicy('document-user-activation-required');
+  internals.runtimeFlags.autoplayMutedVideosEnabled = true;
+
+  var video = document.createElement('video');
+  video.autoplay = true;
+  video.muted = true;
+  video.src = '../content/test.ogv';
+  document.body.appendChild(video);
+
+  video.addEventListener('play', t.step_func(e => {
+    video.volume = 0;
+    video.muted = false;
+    var timeUpdateCount = 0;
+    video.addEventListener('timeupdate', t.step_func(e => {
+      timeUpdateCount++;
+      if (timeUpdateCount == 3) t.done();
+    }));
+  }), { once: true });
+}, "unmuted after setting volume to 0 does not pause");
+</script>

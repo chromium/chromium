@@ -30,6 +30,14 @@ Polymer({
       type: Boolean,
       value: false,
     },
+
+    /** @private */
+    isChild_: {
+      type: Boolean,
+      value: function() {
+        return loadTimeData.getBoolean('isSupervised');
+      },
+    },
   },
 
   /** @override */
@@ -71,11 +79,13 @@ Polymer({
    * @param {boolean} isOwner
    * @param {boolean} isWhitelistManaged
    * @param {boolean} allowGuest
+   * @param {boolean} isChild
    * @private
    * @return {boolean}
    */
-  isEditingUsersDisabled_: function(isOwner, isWhitelistManaged, allowGuest) {
-    return !isOwner || isWhitelistManaged || allowGuest;
+  isEditingUsersEnabled_: function(
+      isOwner, isWhitelistManaged, allowGuest, isChild) {
+    return isOwner && !isWhitelistManaged && !allowGuest && !isChild;
   },
 
   /** @return {boolean} */

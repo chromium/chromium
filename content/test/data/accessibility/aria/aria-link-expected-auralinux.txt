@@ -1,0 +1,3 @@
+[document web]
+++[link] name='ARIA Link'
+++++[static] name='ARIA Link'

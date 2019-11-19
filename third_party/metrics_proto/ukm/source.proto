@@ -9,7 +9,7 @@ option optimize_for = LITE_RUNTIME;
 package ukm;
 
 // Source contains data related to a top-level navigation.
-// Next tag: 15
+// Next tag: 16
 message Source {
   // The URL scheme, such as HTTP, HTTPS, CHROME_EXTENSION, etc.
   enum UrlScheme {
@@ -21,15 +21,23 @@ message Source {
     CHROME = 5;
     CHROME_EXTENSION = 6;
     APP = 7;
-  };
+  }
 
   // An identifier for the source. This should be unique within a session.
   optional int64 id = 1;
 
-  // The previous source id for the tab this source is in. Should only
-  // be set for navigation sources. Note that only non-same-document
-  // sources are included here. If you want to include same-document
-  // navigations, use previous_same_document_source_id.
+  // The source id of the last committed non-same-document navigation for the
+  // tab this source is in. Should only be set for navigation sources. For
+  // backward compatibility, this field will never be set to the source id of a
+  // same-document source. In cases where the last committed navigation was a
+  // same-document navigation, previous_same_document_source_id will contain
+  // the source id of that previous same document navigation, while
+  // previous_source_id will contain the source id of the last committed
+  // non-same-document navigation. For example, if a user starts on page A (a
+  // non same document page load), then performs a same document navigation to
+  // B, then navigates to C (which could be either a same document or a non same
+  // document navigation), previous_source_id will reference A, and
+  // previous_same_document_source_id will reference B.
   optional int64 previous_source_id = 11;
 
   // The source id for the previous same document navigation, if the
@@ -59,6 +67,10 @@ message Source {
   // or partial redirect chains for main frame navigations.
   repeated UrlInfo urls = 8;
 
+  // Data about the URL of the Document, copied from the Source message whose
+  // id matched the navigation source id of the DocumentCreated event.
+  repeated UrlInfo resolved_urls = 15;
+
   // Whether this source is for a same document navigation. Examples of same
   // document navigations are fragment navigations, pushState/replaceState,
   // and same page history navigation.
@@ -84,8 +96,12 @@ message Source {
   // Flag indicating if the metric was collected while inside a "custom tab".
   optional bool is_custom_tab = 7;
 
-  // Timestamp of navigation to this Source, as seen by the client. Time of
-  // events related to this Source will generally be relative to this timestamp.
+  // Relative time of navigation for this Source, as seen by the client, and is
+  // set for sources of type ukm::SourceIdType::NAVIGATION_ID. Time of events
+  // related to this Source will generally be relative to this timestamp. The
+  // recorded navigation time is in TimeTicks, which is the relative time since
+  // the origin. The origin is platform-specific but is guaranteed to be
+  // monotonically increase within each session.
   optional int64 navigation_time_msec = 3;
 
   // Unique identifier (for a given client_id/session_id) for the tab this

@@ -97,14 +97,19 @@ class HeadlessPrintManager
   bool OnMessageReceived(const IPC::Message& message,
                          content::RenderFrameHost* render_frame_host) override;
 
-  // IPC Message handlers.
-  struct FrameDispatchHelper;
-  void OnGetDefaultPrintSettings(IPC::Message* reply_msg);
-  void OnScriptedPrint(const PrintHostMsg_ScriptedPrint_Params& params,
-                       IPC::Message* reply_msg);
-  void OnShowInvalidPrinterSettingsError();
+  // printing::PrintManager:
+  void OnDidPrintDocument(
+      content::RenderFrameHost* render_frame_host,
+      const PrintHostMsg_DidPrintDocument_Params& params,
+      std::unique_ptr<DelayedFrameDispatchHelper> helper) override;
+  void OnGetDefaultPrintSettings(content::RenderFrameHost* render_frame_host,
+                                 IPC::Message* reply_msg) override;
   void OnPrintingFailed(int cookie) override;
-  void OnDidPrintDocument(const PrintHostMsg_DidPrintDocument_Params& params);
+  void OnScriptedPrint(content::RenderFrameHost* render_frame_host,
+                       const PrintHostMsg_ScriptedPrint_Params& params,
+                       IPC::Message* reply_msg) override;
+
+  void OnShowInvalidPrinterSettingsError();
 
   void Reset();
   void ReleaseJob(PrintResult result);

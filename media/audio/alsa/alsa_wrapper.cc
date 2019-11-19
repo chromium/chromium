@@ -51,6 +51,10 @@ int AlsaWrapper::PcmDelay(snd_pcm_t* handle, snd_pcm_sframes_t* delay) {
   return snd_pcm_delay(handle, delay);
 }
 
+int AlsaWrapper::PcmResume(snd_pcm_t* handle) {
+  return snd_pcm_resume(handle);
+}
+
 snd_pcm_sframes_t AlsaWrapper::PcmWritei(snd_pcm_t* handle,
                                          const void* buffer,
                                          snd_pcm_uframes_t size) {
@@ -96,6 +100,10 @@ int AlsaWrapper::PcmHwParamsMalloc(snd_pcm_hw_params_t** hw_params) {
 int AlsaWrapper::PcmHwParamsAny(snd_pcm_t* handle,
                                 snd_pcm_hw_params_t* hw_params) {
   return snd_pcm_hw_params_any(handle, hw_params);
+}
+
+int AlsaWrapper::PcmHwParamsCanResume(snd_pcm_hw_params_t* hw_params) {
+  return snd_pcm_hw_params_can_resume(hw_params);
 }
 
 int AlsaWrapper::PcmHwParamsSetRateResample(snd_pcm_t* handle,

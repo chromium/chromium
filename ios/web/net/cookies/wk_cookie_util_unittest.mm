@@ -14,14 +14,12 @@
 
 namespace web {
 
-// Tests that web::WKCookieStoreForBrowserState returns valid WKHTTPCookieStore
-// object on iOS 11.
 using WKCookieUtilTest = WebTest;
+
+// Tests that web::WKCookieStoreForBrowserState returns valid WKHTTPCookieStore.
 TEST_F(WKCookieUtilTest, WKCookieStoreForBrowserState) {
-  if (@available(iOS 11, *)) {
-    WKHTTPCookieStore* store = WKCookieStoreForBrowserState(GetBrowserState());
-    EXPECT_TRUE([store isKindOfClass:[WKHTTPCookieStore class]]);
-  }
+  WKHTTPCookieStore* store = WKCookieStoreForBrowserState(GetBrowserState());
+  EXPECT_TRUE([store isKindOfClass:[WKHTTPCookieStore class]]);
 }
 
 }  // namespace web

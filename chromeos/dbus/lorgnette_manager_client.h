@@ -6,6 +6,7 @@
 #define CHROMEOS_DBUS_LORGNETTE_MANAGER_CLIENT_H_
 
 #include <map>
+#include <memory>
 #include <string>
 
 #include "base/callback.h"
@@ -45,7 +46,7 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) LorgnetteManagerClient
 
   // Factory function, creates a new instance and returns ownership.
   // For normal usage, access the singleton via DBusThreadManager::Get().
-  static LorgnetteManagerClient* Create();
+  static std::unique_ptr<LorgnetteManagerClient> Create();
 
  protected:
   // Create() should be used instead.

@@ -3,10 +3,13 @@
 <head>
   <meta charset="utf-8">
   <title>AnalyserNode output</title>
+  <meta name="timeout" content="long">
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
   <script src="/webaudio/js/helpers.js"></script>
   <script>
+setup({ single_test: true });
+
 var gTest = {
   length: 2048,
   numberOfChannels: 1,

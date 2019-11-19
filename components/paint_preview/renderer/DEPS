@@ -1,0 +1,7 @@
+include_rules = [
+  "+cc/paint",
+  "+content/public/renderer",
+  "+content/public/test",
+  "+third_party/blink/public",
+  "+ui/native_theme/native_theme_features.h",
+]

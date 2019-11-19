@@ -6,13 +6,9 @@ import("//third_party/blink/renderer/modules/modules.gni")
 
 blink_modules_sources("idle") {
   sources = [
-    "idle_manager.cc",
-    "idle_manager.h",
+    "idle_detector.cc",
+    "idle_detector.h",
     "idle_state.cc",
     "idle_state.h",
-    "idle_status.cc",
-    "idle_status.h",
-    "navigator_idle.cc",
-    "navigator_idle.h",
   ]
 }

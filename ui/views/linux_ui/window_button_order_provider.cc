@@ -51,7 +51,7 @@ void WindowButtonOrderObserverDelegate::OnWindowButtonOrderingChange(
 }  // namespace
 
 // static
-WindowButtonOrderProvider* WindowButtonOrderProvider::instance_ = NULL;
+WindowButtonOrderProvider* WindowButtonOrderProvider::instance_ = nullptr;
 
 ///////////////////////////////////////////////////////////////////////////////
 // WindowButtonOrderProvider, public:
@@ -67,13 +67,12 @@ WindowButtonOrderProvider* WindowButtonOrderProvider::GetInstance() {
 // WindowButtonOrderProvider, protected:
 
 WindowButtonOrderProvider::WindowButtonOrderProvider() {
-  trailing_buttons_.push_back(views::FRAME_BUTTON_MINIMIZE);
-  trailing_buttons_.push_back(views::FRAME_BUTTON_MAXIMIZE);
-  trailing_buttons_.push_back(views::FRAME_BUTTON_CLOSE);
+  trailing_buttons_.push_back(views::FrameButton::kMinimize);
+  trailing_buttons_.push_back(views::FrameButton::kMaximize);
+  trailing_buttons_.push_back(views::FrameButton::kClose);
 }
 
-WindowButtonOrderProvider::~WindowButtonOrderProvider() {
-}
+WindowButtonOrderProvider::~WindowButtonOrderProvider() = default;
 
 void WindowButtonOrderProvider::SetWindowButtonOrder(
     const std::vector<views::FrameButton>& leading_buttons,

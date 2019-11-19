@@ -5,6 +5,8 @@
 #include "ui/ozone/demo/vulkan_overlay_renderer.h"
 
 #include <vulkan/vulkan.h>
+#include <memory>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/location.h"
@@ -23,6 +25,7 @@
 #include "ui/ozone/public/overlay_plane.h"
 #include "ui/ozone/public/overlay_surface.h"
 #include "ui/ozone/public/ozone_platform.h"
+#include "ui/ozone/public/platform_window_surface.h"
 #include "ui/ozone/public/surface_factory_ozone.h"
 
 namespace ui {
@@ -35,16 +38,17 @@ constexpr int kMinimumBuffersForForwardProgress = 2;
 }  // namespace
 
 VulkanOverlayRenderer::VulkanOverlayRenderer(
+    std::unique_ptr<PlatformWindowSurface> window_surface,
     std::unique_ptr<OverlaySurface> overlay_surface,
     SurfaceFactoryOzone* surface_factory_ozone,
     gpu::VulkanImplementation* vulkan_implementation,
     gfx::AcceleratedWidget widget,
     const gfx::Size& size)
     : RendererBase(widget, size),
+      window_surface_(std::move(window_surface)),
       surface_factory_ozone_(surface_factory_ozone),
       vulkan_implementation_(vulkan_implementation),
-      overlay_surface_(std::move(overlay_surface)),
-      weak_ptr_factory_(this) {}
+      overlay_surface_(std::move(overlay_surface)) {}
 
 VulkanOverlayRenderer::~VulkanOverlayRenderer() {
   DestroyBuffers();
@@ -110,7 +114,7 @@ bool VulkanOverlayRenderer::Initialize() {
            VK_SUCCESS);
 
   command_pool_ = std::make_unique<gpu::VulkanCommandPool>(device_queue_.get());
-  CHECK(command_pool_->Initialize());
+  CHECK(command_pool_->Initialize(false /* use_protected_memory */));
 
   RecreateBuffers();
 
@@ -383,7 +387,8 @@ VulkanOverlayRenderer::Buffer::Create(
   }
 
   auto command_buffer = std::make_unique<gpu::VulkanCommandBuffer>(
-      vulkan_device_queue, vulkan_command_pool, true /* primary */);
+      vulkan_device_queue, vulkan_command_pool, true /* primary */,
+      false /* use_protected_memory */);
   CHECK(command_buffer->Initialize());
 
   VkFence fence = vulkan_implementation->CreateVkFenceForGpuFence(vk_device);

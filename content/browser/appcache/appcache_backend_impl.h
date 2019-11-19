@@ -10,6 +10,8 @@
 
 #include "content/browser/appcache/appcache_host.h"
 #include "content/common/content_export.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/appcache/appcache.mojom.h"
 
 namespace content {
@@ -19,33 +21,23 @@ class AppCacheServiceImpl;
 class CONTENT_EXPORT AppCacheBackendImpl
     : public blink::mojom::AppCacheBackend {
  public:
-  AppCacheBackendImpl(AppCacheServiceImpl* service, int process_id);
+  AppCacheBackendImpl(AppCacheServiceImpl* service,
+                      int process_id,
+                      int routing_id);
   ~AppCacheBackendImpl() override;
 
-  int process_id() const { return process_id_; }
-
   // blink::mojom::AppCacheBackend
-  void RegisterHost(blink::mojom::AppCacheHostRequest host_request,
-                    blink::mojom::AppCacheFrontendPtr frontend,
-                    int32_t host_id,
-                    int32_t render_frame_id) override;
-  void UnregisterHost(int32_t host_id);
-
-  // Returns a pointer to a registered host. The backend retains ownership.
-  AppCacheHost* GetHost(int host_id) {
-    auto it = hosts_.find(host_id);
-    return (it != hosts_.end()) ? (it->second.get()) : nullptr;
-  }
-
-  using HostMap = std::unordered_map<int, std::unique_ptr<AppCacheHost>>;
-  const HostMap& hosts() { return hosts_; }
+  void RegisterHost(
+      mojo::PendingReceiver<blink::mojom::AppCacheHost> host_receiver,
+      mojo::PendingRemote<blink::mojom::AppCacheFrontend> frontend_remote,
+      const base::UnguessableToken& host_id) override;
 
  private:
   // Raw pointer is safe because instances of this class are owned by
   // |service_|.
   AppCacheServiceImpl* service_;
-  int process_id_;
-  HostMap hosts_;
+  const int process_id_;
+  const int routing_id_;
 
   DISALLOW_COPY_AND_ASSIGN(AppCacheBackendImpl);
 };

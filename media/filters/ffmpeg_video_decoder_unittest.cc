@@ -14,11 +14,11 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/singleton.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
+#include "base/test/gmock_callback_support.h"
+#include "base/test/task_environment.h"
 #include "media/base/decoder_buffer.h"
-#include "media/base/gmock_callback_support.h"
 #include "media/base/limits.h"
 #include "media/base/media_log.h"
 #include "media/base/media_util.h"
@@ -44,7 +44,6 @@ using ::testing::StrictMock;
 
 namespace media {
 
-static const VideoPixelFormat kVideoFormat = PIXEL_FORMAT_I420;
 static const gfx::Size kCodedSize(320, 240);
 static const gfx::Rect kVisibleRect(320, 240);
 static const gfx::Size kNaturalSize(320, 240);
@@ -59,10 +58,7 @@ MATCHER(ContainsFailedToSendLog, "") {
 
 class FFmpegVideoDecoderTest : public testing::Test {
  public:
-  FFmpegVideoDecoderTest()
-      : decoder_(new FFmpegVideoDecoder(&media_log_)),
-        decode_cb_(base::Bind(&FFmpegVideoDecoderTest::DecodeDone,
-                              base::Unretained(this))) {
+  FFmpegVideoDecoderTest() : decoder_(new FFmpegVideoDecoder(&media_log_)) {
     // Initialize various test buffers.
     frame_buffer_.reset(new uint8_t[kCodedSize.GetArea()]);
     end_of_stream_buffer_ = DecoderBuffer::CreateEOSBuffer();
@@ -187,26 +183,25 @@ class FFmpegVideoDecoderTest : public testing::Test {
     DecodeStatus status;
     EXPECT_CALL(*this, DecodeDone(_)).WillOnce(SaveArg<0>(&status));
 
-    decoder_->Decode(buffer, decode_cb_);
+    decoder_->Decode(buffer, base::BindOnce(&FFmpegVideoDecoderTest::DecodeDone,
+                                            base::Unretained(this)));
 
     base::RunLoop().RunUntilIdle();
 
     return status;
   }
 
-  void FrameReady(const scoped_refptr<VideoFrame>& frame) {
+  void FrameReady(scoped_refptr<VideoFrame> frame) {
     DCHECK(!frame->metadata()->IsTrue(VideoFrameMetadata::END_OF_STREAM));
-    output_frames_.push_back(frame);
+    output_frames_.push_back(std::move(frame));
   }
 
   MOCK_METHOD1(DecodeDone, void(DecodeStatus));
 
   StrictMock<MockMediaLog> media_log_;
 
-  base::MessageLoop message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   std::unique_ptr<FFmpegVideoDecoder> decoder_;
-
-  VideoDecoder::DecodeCB decode_cb_;
 
   // Various buffers for testing.
   std::unique_ptr<uint8_t[]> frame_buffer_;
@@ -227,9 +222,10 @@ TEST_F(FFmpegVideoDecoderTest, Initialize_Normal) {
 TEST_F(FFmpegVideoDecoderTest, Initialize_OpenDecoderFails) {
   // Specify Theora w/o extra data so that avcodec_open2() fails.
   VideoDecoderConfig config(kCodecTheora, VIDEO_CODEC_PROFILE_UNKNOWN,
-                            kVideoFormat, VideoColorSpace(), VIDEO_ROTATION_0,
-                            kCodedSize, kVisibleRect, kNaturalSize,
-                            EmptyExtraData(), Unencrypted());
+                            VideoDecoderConfig::AlphaMode::kIsOpaque,
+                            VideoColorSpace(), kNoTransformation, kCodedSize,
+                            kVisibleRect, kNaturalSize, EmptyExtraData(),
+                            EncryptionScheme::kUnencrypted);
   InitializeWithConfigWithResult(config, false);
 }
 

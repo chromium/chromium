@@ -129,8 +129,9 @@ void HatsDialog::CreateAndShow(bool is_google_account) {
   if (!user_locale.length())
     user_locale = kDefaultProfileLocale;
 
-  base::PostTaskWithTraitsAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+  base::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&GetFormattedSiteContext, user_locale,
                      kDeviceInfoStopKeyword),
       base::BindOnce(&HatsDialog::Show, is_google_account));

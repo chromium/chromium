@@ -1,0 +1,4 @@
+[document web]
+++[page tab list] horizontal setsize:2
+++++[page tab] name='Tab 1' selectable posinset:1 setsize:2
+++++[page tab] name='Tab 2' selectable posinset:2 setsize:2

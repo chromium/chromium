@@ -4,8 +4,6 @@
 
 package org.chromium.content_shell_apk;
 
-import static org.chromium.base.test.util.ScalableTimeout.scaleTimeout;
-
 import android.annotation.TargetApi;
 import android.content.ComponentName;
 import android.content.Context;
@@ -21,7 +19,6 @@ import android.view.ViewGroup;
 import org.junit.Assert;
 
 import org.chromium.base.Log;
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.content.browser.RenderCoordinatesImpl;
@@ -38,6 +35,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_shell.Shell;
 import org.chromium.content_shell.ShellViewAndroidDelegate.OnCursorUpdateHelper;
 
@@ -56,11 +54,11 @@ import java.util.concurrent.TimeUnit;
  */
 public class ContentShellActivityTestRule extends ActivityTestRule<ContentShellActivity> {
     /** The maximum time the waitForActiveShellToBeDoneLoading method will wait. */
-    private static final long WAIT_FOR_ACTIVE_SHELL_LOADING_TIMEOUT = scaleTimeout(10000);
+    private static final long WAIT_FOR_ACTIVE_SHELL_LOADING_TIMEOUT = 10000L;
 
     private static final String TAG = "ContentShellATR";
 
-    protected static final long WAIT_PAGE_LOADING_TIMEOUT_SECONDS = scaleTimeout(15);
+    protected static final long WAIT_PAGE_LOADING_TIMEOUT_SECONDS = 15L;
 
     private final boolean mLaunchActivity;
 
@@ -123,7 +121,7 @@ public class ContentShellActivityTestRule extends ActivityTestRule<ContentShellA
      * Returns the OnCursorUpdateHelper.
      */
     public OnCursorUpdateHelper getOnCursorUpdateHelper() throws ExecutionException {
-        return ThreadUtils.runOnUiThreadBlocking(new Callable<OnCursorUpdateHelper>() {
+        return TestThreadUtils.runOnUiThreadBlocking(new Callable<OnCursorUpdateHelper>() {
             @Override
             public OnCursorUpdateHelper call() {
                 return getActivity()
@@ -139,7 +137,7 @@ public class ContentShellActivityTestRule extends ActivityTestRule<ContentShellA
      */
     public ViewEventSink getViewEventSink() {
         try {
-            return ThreadUtils.runOnUiThreadBlocking(() -> {
+            return TestThreadUtils.runOnUiThreadBlocking(() -> {
                 return ViewEventSink.from(getActivity().getActiveShell().getWebContents());
             });
         } catch (ExecutionException e) {
@@ -152,9 +150,8 @@ public class ContentShellActivityTestRule extends ActivityTestRule<ContentShellA
      */
     public WebContents getWebContents() {
         try {
-            return ThreadUtils.runOnUiThreadBlocking(() -> {
-                return getActivity().getActiveShell().getWebContents();
-            });
+            return TestThreadUtils.runOnUiThreadBlocking(
+                    () -> { return getActivity().getActiveShell().getWebContents(); });
         } catch (ExecutionException e) {
             return null;
         }
@@ -165,7 +162,7 @@ public class ContentShellActivityTestRule extends ActivityTestRule<ContentShellA
      */
     public SelectionPopupControllerImpl getSelectionPopupController() {
         try {
-            return ThreadUtils.runOnUiThreadBlocking(() -> {
+            return TestThreadUtils.runOnUiThreadBlocking(() -> {
                 return SelectionPopupControllerImpl.fromWebContents(
                         getActivity().getActiveShell().getWebContents());
             });
@@ -179,7 +176,7 @@ public class ContentShellActivityTestRule extends ActivityTestRule<ContentShellA
      */
     public ImeAdapterImpl getImeAdapter() {
         try {
-            return ThreadUtils.runOnUiThreadBlocking(
+            return TestThreadUtils.runOnUiThreadBlocking(
                     () -> ImeAdapterImpl.fromWebContents(getWebContents()));
         } catch (ExecutionException e) {
             return null;
@@ -191,7 +188,7 @@ public class ContentShellActivityTestRule extends ActivityTestRule<ContentShellA
      */
     public SelectPopup getSelectPopup() {
         try {
-            return ThreadUtils.runOnUiThreadBlocking(
+            return TestThreadUtils.runOnUiThreadBlocking(
                     () -> SelectPopup.fromWebContents(getWebContents()));
         } catch (ExecutionException e) {
             return null;
@@ -200,7 +197,7 @@ public class ContentShellActivityTestRule extends ActivityTestRule<ContentShellA
 
     public WebContentsAccessibilityImpl getWebContentsAccessibility() {
         try {
-            return ThreadUtils.runOnUiThreadBlocking(
+            return TestThreadUtils.runOnUiThreadBlocking(
                     () -> WebContentsAccessibilityImpl.fromWebContents(getWebContents()));
         } catch (ExecutionException e) {
             return null;
@@ -212,7 +209,7 @@ public class ContentShellActivityTestRule extends ActivityTestRule<ContentShellA
      */
     public RenderCoordinatesImpl getRenderCoordinates() {
         try {
-            return ThreadUtils.runOnUiThreadBlocking(
+            return TestThreadUtils.runOnUiThreadBlocking(
                     () -> ((WebContentsImpl) getWebContents()).getRenderCoordinates());
         } catch (ExecutionException e) {
             return null;
@@ -225,7 +222,7 @@ public class ContentShellActivityTestRule extends ActivityTestRule<ContentShellA
     public ViewGroup getContainerView() {
         final WebContents webContents = getWebContents();
         try {
-            return ThreadUtils.runOnUiThreadBlocking(() -> {
+            return TestThreadUtils.runOnUiThreadBlocking(() -> {
                 return webContents != null ? webContents.getViewAndroidDelegate().getContainerView()
                                            : null;
             });
@@ -279,7 +276,7 @@ public class ContentShellActivityTestRule extends ActivityTestRule<ContentShellA
      * @throws ExecutionException
      */
     public Shell loadNewShell(String url) throws ExecutionException {
-        Shell shell = ThreadUtils.runOnUiThreadBlocking(new Callable<Shell>() {
+        Shell shell = TestThreadUtils.runOnUiThreadBlocking(new Callable<Shell>() {
             @Override
             public Shell call() {
                 getActivity().getShellManager().launchShell(url);

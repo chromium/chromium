@@ -10,7 +10,7 @@
 #include "mojo/public/cpp/bindings/binding_set.h"
 #include "services/device/public/mojom/geolocation.mojom.h"
 #include "services/device/public/mojom/geolocation_context.mojom.h"
-#include "third_party/blink/public/platform/modules/geolocation/geolocation_service.mojom.h"
+#include "third_party/blink/public/mojom/geolocation/geolocation_service.mojom.h"
 
 namespace blink {
 namespace mojom {
@@ -30,17 +30,17 @@ class GeolocationServiceImplContext {
   void RequestPermission(
       RenderFrameHost* render_frame_host,
       bool user_gesture,
-      const base::Callback<void(blink::mojom::PermissionStatus)>& callback);
+      base::OnceCallback<void(blink::mojom::PermissionStatus)> callback);
 
  private:
   PermissionControllerImpl* permission_controller_;
   int request_id_;
 
   void HandlePermissionStatus(
-      const base::Callback<void(blink::mojom::PermissionStatus)>& callback,
+      base::OnceCallback<void(blink::mojom::PermissionStatus)> callback,
       blink::mojom::PermissionStatus permission_status);
 
-  base::WeakPtrFactory<GeolocationServiceImplContext> weak_factory_;
+  base::WeakPtrFactory<GeolocationServiceImplContext> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(GeolocationServiceImplContext);
 };
@@ -59,13 +59,16 @@ class CONTENT_EXPORT GeolocationServiceImpl
   // Creates a Geolocation instance.
   // This may not be called a second time until the Geolocation instance has
   // been created.
-  void CreateGeolocation(device::mojom::GeolocationRequest request,
-                         bool user_gesture) override;
+  void CreateGeolocation(
+      mojo::PendingReceiver<device::mojom::Geolocation> receiver,
+      bool user_gesture,
+      CreateGeolocationCallback callback) override;
 
  private:
   // Creates the Geolocation Service.
   void CreateGeolocationWithPermissionStatus(
-      device::mojom::GeolocationRequest request,
+      mojo::PendingReceiver<device::mojom::Geolocation> receiver,
+      CreateGeolocationCallback callback,
       blink::mojom::PermissionStatus permission_status);
 
   device::mojom::GeolocationContext* geolocation_context_;

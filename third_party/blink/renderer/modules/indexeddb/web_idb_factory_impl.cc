@@ -5,7 +5,8 @@
 #include "third_party/blink/renderer/modules/indexeddb/web_idb_factory_impl.h"
 
 #include "base/memory/ptr_util.h"
-#include "mojo/public/cpp/bindings/strong_associated_binding.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
 #include "third_party/blink/renderer/modules/indexeddb/indexed_db_database_callbacks_impl.h"
 #include "third_party/blink/renderer/modules/indexeddb/web_idb_callbacks_impl.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -13,10 +14,10 @@
 namespace blink {
 
 WebIDBFactoryImpl::WebIDBFactoryImpl(
-    mojom::blink::IDBFactoryPtrInfo factory_info,
+    mojo::PendingRemote<mojom::blink::IDBFactory> pending_factory,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : task_runner_(std::move(task_runner)) {
-  factory_.Bind(std::move(factory_info), task_runner_);
+  factory_.Bind(std::move(pending_factory), task_runner_);
 }
 
 WebIDBFactoryImpl::~WebIDBFactoryImpl() = default;
@@ -35,8 +36,10 @@ void WebIDBFactoryImpl::GetDatabaseNames(
 
 void WebIDBFactoryImpl::Open(
     const String& name,
-    long long version,
-    long long transaction_id,
+    int64_t version,
+    mojo::PendingAssociatedReceiver<mojom::blink::IDBTransaction>
+        transaction_receiver,
+    int64_t transaction_id,
     std::unique_ptr<WebIDBCallbacks> callbacks,
     std::unique_ptr<WebIDBDatabaseCallbacks> database_callbacks) {
   callbacks->SetState(nullptr, WebIDBCallbacksImpl::kNoTransaction);
@@ -46,7 +49,8 @@ void WebIDBFactoryImpl::Open(
   DCHECK(!name.IsNull());
   factory_->Open(GetCallbacksProxy(std::move(callbacks)),
                  GetDatabaseCallbacksProxy(std::move(database_callbacks_impl)),
-                 name, version, transaction_id);
+                 name, version, std::move(transaction_receiver),
+                 transaction_id);
 }
 
 void WebIDBFactoryImpl::DeleteDatabase(
@@ -59,24 +63,24 @@ void WebIDBFactoryImpl::DeleteDatabase(
                            force_close);
 }
 
-mojom::blink::IDBCallbacksAssociatedPtrInfo
+mojo::PendingAssociatedRemote<mojom::blink::IDBCallbacks>
 WebIDBFactoryImpl::GetCallbacksProxy(
-    std::unique_ptr<WebIDBCallbacks> callbacks) {
-  mojom::blink::IDBCallbacksAssociatedPtrInfo ptr_info;
-  auto request = mojo::MakeRequest(&ptr_info);
-  mojo::MakeStrongAssociatedBinding(std::move(callbacks), std::move(request),
-                                    task_runner_);
-  return ptr_info;
+    std::unique_ptr<WebIDBCallbacks> callbacks_impl) {
+  mojo::PendingAssociatedRemote<mojom::blink::IDBCallbacks> pending_callbacks;
+  mojo::MakeSelfOwnedAssociatedReceiver(
+      std::move(callbacks_impl),
+      pending_callbacks.InitWithNewEndpointAndPassReceiver(), task_runner_);
+  return pending_callbacks;
 }
 
-mojom::blink::IDBDatabaseCallbacksAssociatedPtrInfo
+mojo::PendingAssociatedRemote<mojom::blink::IDBDatabaseCallbacks>
 WebIDBFactoryImpl::GetDatabaseCallbacksProxy(
     std::unique_ptr<IndexedDBDatabaseCallbacksImpl> callbacks) {
-  mojom::blink::IDBDatabaseCallbacksAssociatedPtrInfo ptr_info;
-  auto request = mojo::MakeRequest(&ptr_info);
-  mojo::MakeStrongAssociatedBinding(std::move(callbacks), std::move(request),
-                                    task_runner_);
-  return ptr_info;
+  mojo::PendingAssociatedRemote<mojom::blink::IDBDatabaseCallbacks> remote;
+  mojo::MakeSelfOwnedAssociatedReceiver(
+      std::move(callbacks), remote.InitWithNewEndpointAndPassReceiver(),
+      task_runner_);
+  return remote;
 }
 
 }  // namespace blink

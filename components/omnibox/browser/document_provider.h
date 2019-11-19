@@ -13,10 +13,12 @@
 #include <string>
 
 #include "base/compiler_specific.h"
+#include "base/containers/mru_cache.h"
 #include "base/feature_list.h"
 #include "base/macros.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
+#include "components/omnibox/browser/autocomplete_provider_debouncer.h"
 #include "components/omnibox/browser/search_provider.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 
@@ -42,7 +44,8 @@ class DocumentProvider : public AutocompleteProvider {
  public:
   // Creates and returns an instance of this provider.
   static DocumentProvider* Create(AutocompleteProviderClient* client,
-                                  AutocompleteProviderListener* listener);
+                                  AutocompleteProviderListener* listener,
+                                  size_t cache_size = 20);
 
   // AutocompleteProvider:
   void Start(const AutocompleteInput& input, bool minimal_changes) override;
@@ -53,6 +56,18 @@ class DocumentProvider : public AutocompleteProvider {
 
   // Registers a client-side preference to enable document suggestions.
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
+
+  // Returns a set of classifications that highlight all the occurrences of
+  // |input_text| at word breaks in |text|. E.g., given |input_text|
+  // "rain if you dare" and |text| "how to tell if your kitten is a rainbow",
+  // will return the classifications:
+  //             __ ___              ____
+  // how to tell if your kitten is a rainbow
+  // ^           ^ ^^   ^            ^  ^
+  // NONE        M |M   |            |  NONE
+  //               NONE NONE         MATCH
+  static ACMatchClassifications Classify(const base::string16& input_text,
+                                         const base::string16& text);
 
   // Builds a GURL to use for deduping against other document/history
   // suggestions. Multiple URLs may refer to the same document.
@@ -72,9 +87,13 @@ class DocumentProvider : public AutocompleteProvider {
   FRIEND_TEST_ALL_PREFIXES(DocumentProviderTest,
                            CheckFeaturePrerequisiteDefaultSearch);
   FRIEND_TEST_ALL_PREFIXES(DocumentProviderTest,
+                           CheckFeatureNotInExplicitKeywordMode);
+  FRIEND_TEST_ALL_PREFIXES(DocumentProviderTest,
                            CheckFeaturePrerequisiteServerBackoff);
   FRIEND_TEST_ALL_PREFIXES(DocumentProviderTest, IsInputLikelyURL);
   FRIEND_TEST_ALL_PREFIXES(DocumentProviderTest, ParseDocumentSearchResults);
+  FRIEND_TEST_ALL_PREFIXES(DocumentProviderTest,
+                           ProductDescriptionStringsAndAccessibleLabels);
   FRIEND_TEST_ALL_PREFIXES(DocumentProviderTest,
                            ParseDocumentSearchResultsBreakTies);
   FRIEND_TEST_ALL_PREFIXES(DocumentProviderTest,
@@ -86,21 +105,31 @@ class DocumentProvider : public AutocompleteProvider {
   FRIEND_TEST_ALL_PREFIXES(DocumentProviderTest,
                            ParseDocumentSearchResultsWithIneligibleFlag);
   FRIEND_TEST_ALL_PREFIXES(DocumentProviderTest, GenerateLastModifiedString);
+  FRIEND_TEST_ALL_PREFIXES(DocumentProviderTest, Scoring);
+  FRIEND_TEST_ALL_PREFIXES(DocumentProviderTest, Caching);
+  FRIEND_TEST_ALL_PREFIXES(DocumentProviderTest, MinQueryLength);
+
+  using MatchesCache = base::MRUCache<GURL, AutocompleteMatch>;
 
   DocumentProvider(AutocompleteProviderClient* client,
-                   AutocompleteProviderListener* listener);
+                   AutocompleteProviderListener* listener,
+                   size_t cache_size);
 
   ~DocumentProvider() override;
 
   // Determines whether the profile/session/window meet the feature
   // prerequisites.
-  bool IsDocumentProviderAllowed(AutocompleteProviderClient* client);
+  bool IsDocumentProviderAllowed(AutocompleteProviderClient* client,
+                                 const AutocompleteInput& input);
 
   // Determines if the input is a URL, or is the start of the user entering one.
   // We avoid queries for these cases for quality and scaling reasons.
   static bool IsInputLikelyURL(const AutocompleteInput& input);
 
-  // Called when loading is complete.
+  // Called by |debouncer_|, queued when |start| is called.
+  void Run();
+
+  // Called when the network request for suggestions has completed.
   void OnURLLoadComplete(const network::SimpleURLLoader* source,
                          std::unique_ptr<std::string> response_body);
 
@@ -115,8 +144,15 @@ class DocumentProvider : public AutocompleteProvider {
 
   // Parses document search result JSON.
   // Returns true if |matches| was populated with fresh suggestions.
-  bool ParseDocumentSearchResults(const base::Value& root_val,
-                                  ACMatches* matches);
+  ACMatches ParseDocumentSearchResults(const base::Value& root_val);
+
+  // Appends |matches_cache_| to |matches_|. Updates their classifications
+  // according to |input_.text()| and sets their relevance to 0.
+  // |skip_n_most_recent_matches| indicates the number of cached matches already
+  // in |matches_|. E.g. if the drive server responded with 3 docs, these 3 docs
+  // are added both to |matches_| and |matches_cache| prior to invoking
+  // |AddCachedMatches| in order to avoid duplicate matches.
+  void CopyCachedMatchesToMatches(size_t skip_n_most_recent_matches = 0);
 
   // Generates the localized last-modified timestamp to present to the user.
   // Full date for old files, mm/dd within the same calendar year, or time-of-
@@ -126,17 +162,26 @@ class DocumentProvider : public AutocompleteProvider {
       const std::string& modified_timestamp_string,
       base::Time now);
 
-  // Returns a set of classifications that highlight all the occurrences of
-  // |input_text| at word breaks in |text|. E.g., given |input_text|
-  // "rain if you dare" and |text| "how to tell if your kitten is a rainbow",
-  // will return the classifications:
-  //             __ ___              ____
-  // how to tell if your kitten is a rainbow
-  // ^           ^ ^^   ^            ^  ^
-  // NONE        M |M   |            |  NONE
-  //               NONE NONE         MATCH
-  static ACMatchClassifications Classify(const base::string16& input_text,
-                                         const base::string16& text);
+  // Don't request doc suggestions for inputs shorter than |min_query_length_|
+  // or longer than |max_query_length_|. A value of -1 indicates no limit. These
+  // help limit the load on backend servers.
+  const size_t min_query_length_;
+  const size_t max_query_length_;
+  // Hide doc suggestions for inputs shorter than |min_query_show_length_| or
+  // longer than |max_query_show_length_|. A value of -1 indicates no limit.
+  // These help analyze experiments by allowing observing the effect of changing
+  // |min(max)_query_length_| while keeping data populations consistent.
+  const size_t min_query_show_length_;
+  const size_t max_query_show_length_;
+  // Don't log doc suggestions for inputs shorter than |min_query_log_length_|
+  // or longer than |max_query_log_length_| (i.e. don't trigger
+  // field_trial_triggered and field_trial_triggered_in_session). A value of -1
+  // indicates no limit. These help analyze experiments by restricting data
+  // populations to avoid noise when only interested in a range of input
+  // lengths. E.g. experimenting with |max_query_show_length_| would affect only
+  // the small subset of long queries.
+  const size_t min_query_log_length_;
+  const size_t max_query_log_length_;
 
   // Whether a field trial has triggered for this query and this session,
   // respectively. Works similarly to BaseSearchProvider, though this class does
@@ -161,8 +206,20 @@ class DocumentProvider : public AutocompleteProvider {
   // Loader used to retrieve results.
   std::unique_ptr<network::SimpleURLLoader> loader_;
 
+  // Because the drive server is async and may intermittently provide a
+  // particular suggestion for consecutive inputs, without caching, doc
+  // suggestions flicker between drive format (title - date - doc_type) and URL
+  // format (title - URL) suggestions from the history and bookmark providers.
+  // Appending cached doc suggestions with relevance 0 ensures cached
+  // suggestions only display if deduped with a non-cached suggestion and do not
+  // affect which autocomplete results are displayed and their ranks.
+  const size_t cache_size_;
+  MatchesCache matches_cache_;
+
+  std::unique_ptr<AutocompleteProviderDebouncer> debouncer_;
+
   // For callbacks that may be run after destruction. Must be declared last.
-  base::WeakPtrFactory<DocumentProvider> weak_ptr_factory_;
+  base::WeakPtrFactory<DocumentProvider> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DocumentProvider);
 };

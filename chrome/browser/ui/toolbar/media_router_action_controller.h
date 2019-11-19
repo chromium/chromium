@@ -72,12 +72,12 @@ class MediaRouterActionController : public media_router::IssuesObserver,
   void OnContextMenuShown() override;
   void OnContextMenuHidden() override;
 
-  // On Windows, when the user right-clicks on the toolbar icon, the context
-  // menu appears on mouse release. Since the dialog, if shown, disappears on
-  // mouse press, we need to make sure that the icon does not get hidden between
-  // mouse press and mouse release. These methods ensure that.
-  void KeepIconOnRightMousePressed();
-  void MaybeHideIconOnRightMouseReleased();
+  // On Windows (with a right click) and Chrome OS (with touch), pressing the
+  // toolbar icon makes the dialog disappear, but the context menu does not
+  // appear until mouse/touch release. These methods ensure that the icon is
+  // still shown at mouse/touch release so that the context menu can be shown.
+  void KeepIconShownOnPressed();
+  void MaybeHideIconOnReleased();
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -114,18 +114,18 @@ class MediaRouterActionController : public media_router::IssuesObserver,
   // should not be hidden while a context menu is shown.
   bool context_menu_shown_ = false;
 
-  // Whether the right mouse button is pressed on the toolbar icon. On Windows,
-  // when the user right clicks on the toolbar icon, the dialog gets hidden on
-  // mouse press, and the context menu gets shown on mouse release. If the icon
-  // is ephemeral, it gets hidden on mouse press and can't show the context
-  // menu. So we must keep the icon shown while right mouse button is pressed.
-  bool keep_visible_for_right_mouse_button_ = false;
+  // On Windows (with the right mouse button) and on Chrome OS (with touch),
+  // when the user presses the toolbar icon, the dialog gets hidden, but the
+  // context menu is not shown until mouse/touch release. If the icon is
+  // ephemeral, it gets hidden on press and can't show the context menu. So we
+  // must keep the icon shown while the right click or touch is held.
+  bool keep_visible_for_right_click_or_hold_ = false;
 
   PrefChangeRegistrar pref_change_registrar_;
 
   base::ObserverList<Observer>::Unchecked observers_;
 
-  base::WeakPtrFactory<MediaRouterActionController> weak_factory_;
+  base::WeakPtrFactory<MediaRouterActionController> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(MediaRouterActionController);
 };

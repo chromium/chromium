@@ -6,6 +6,7 @@ package org.chromium.mojo.system.impl;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.mojo.system.RunLoop;
 
 /**
@@ -21,31 +22,31 @@ class BaseRunLoop implements RunLoop {
 
     BaseRunLoop(CoreImpl core) {
         this.mCore = core;
-        this.mRunLoopID = nativeCreateBaseRunLoop();
+        this.mRunLoopID = BaseRunLoopJni.get().createBaseRunLoop(BaseRunLoop.this);
     }
 
     @Override
     public void run() {
         assert mRunLoopID != 0 : "The run loop cannot run once closed";
-        nativeRun();
+        BaseRunLoopJni.get().run(BaseRunLoop.this);
     }
 
     @Override
     public void runUntilIdle() {
         assert mRunLoopID != 0 : "The run loop cannot run once closed";
-        nativeRunUntilIdle();
+        BaseRunLoopJni.get().runUntilIdle(BaseRunLoop.this);
     }
 
     @Override
     public void quit() {
         assert mRunLoopID != 0 : "The run loop cannot be quitted run once closed";
-        nativeQuit();
+        BaseRunLoopJni.get().quit(BaseRunLoop.this);
     }
 
     @Override
     public void postDelayedTask(Runnable runnable, long delay) {
         assert mRunLoopID != 0 : "The run loop cannot run tasks once closed";
-        nativePostDelayedTask(mRunLoopID, runnable, delay);
+        BaseRunLoopJni.get().postDelayedTask(BaseRunLoop.this, mRunLoopID, runnable, delay);
     }
 
     @Override
@@ -56,7 +57,7 @@ class BaseRunLoop implements RunLoop {
         // We don't want to de-register a different run loop!
         assert mCore.getCurrentRunLoop() == this : "Only the current run loop can be closed";
         mCore.clearCurrentRunLoop();
-        nativeDeleteMessageLoop(mRunLoopID);
+        BaseRunLoopJni.get().deleteMessageLoop(BaseRunLoop.this, mRunLoopID);
         mRunLoopID = 0;
     }
 
@@ -65,10 +66,13 @@ class BaseRunLoop implements RunLoop {
         runnable.run();
     }
 
-    private native long nativeCreateBaseRunLoop();
-    private native void nativeRun();
-    private native void nativeRunUntilIdle();
-    private native void nativeQuit();
-    private native void nativePostDelayedTask(long runLoopID, Runnable runnable, long delay);
-    private native void nativeDeleteMessageLoop(long runLoopID);
+    @NativeMethods
+    interface Natives {
+        long createBaseRunLoop(BaseRunLoop caller);
+        void run(BaseRunLoop caller);
+        void runUntilIdle(BaseRunLoop caller);
+        void quit(BaseRunLoop caller);
+        void postDelayedTask(BaseRunLoop caller, long runLoopID, Runnable runnable, long delay);
+        void deleteMessageLoop(BaseRunLoop caller, long runLoopID);
+    }
 }

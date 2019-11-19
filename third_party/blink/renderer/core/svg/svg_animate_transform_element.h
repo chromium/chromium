@@ -32,12 +32,10 @@ class SVGAnimateTransformElement final : public SVGAnimateElement {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  DECLARE_NODE_FACTORY(SVGAnimateTransformElement);
-
   explicit SVGAnimateTransformElement(Document&);
 
  private:
-  bool HasValidTarget() override;
+  bool HasValidTarget() const override;
 
   void ParseAttribute(const AttributeModificationParams&) override;
 

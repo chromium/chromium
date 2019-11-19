@@ -130,7 +130,7 @@ BufferingState::State BufferingState::GetBufferLevelState() const {
   }
 
   base::TimeDelta buffer_duration = buffered_time_ - media_time_;
-  if (buffer_duration < config_->low_level())
+  if (buffer_duration <= config_->low_level())
     return kLowLevel;
   if (buffer_duration >= config_->high_level())
     return kHighLevel;

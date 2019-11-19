@@ -21,7 +21,7 @@ VariationID GetIDForTrial(IDCollectionKey key, base::FieldTrial* trial) {
   return GetGoogleVariationID(key, trial->trial_name(), trial->group_name());
 }
 
-// Call FieldTrialList::FactoryGetFieldTrial() with a future expiry date.
+// Call FieldTrialList::FactoryGetFieldTrial().
 scoped_refptr<base::FieldTrial> CreateFieldTrial(
     const std::string& trial_name,
     int total_probability,
@@ -29,7 +29,6 @@ scoped_refptr<base::FieldTrial> CreateFieldTrial(
     int* default_group_number) {
   return base::FieldTrialList::FactoryGetFieldTrial(
       trial_name, total_probability, default_group_name,
-      base::FieldTrialList::kNoExpirationYear, 1, 1,
       base::FieldTrial::SESSION_RANDOMIZED, default_group_number);
 }
 
@@ -37,7 +36,7 @@ scoped_refptr<base::FieldTrial> CreateFieldTrial(
 
 class VariationsAssociatedDataTest : public ::testing::Test {
  public:
-  VariationsAssociatedDataTest() : field_trial_list_(nullptr) {}
+  VariationsAssociatedDataTest() {}
 
   ~VariationsAssociatedDataTest() override {
     // Ensure that the maps are cleared between tests, since they are stored as
@@ -46,8 +45,6 @@ class VariationsAssociatedDataTest : public ::testing::Test {
   }
 
  private:
-  base::FieldTrialList field_trial_list_;
-
   DISALLOW_COPY_AND_ASSIGN(VariationsAssociatedDataTest);
 };
 
@@ -150,56 +147,6 @@ TEST_F(VariationsAssociatedDataTest, ForceAssociation) {
                                   TEST_VALUE_B);
   EXPECT_EQ(TEST_VALUE_B,
             GetGoogleVariationID(GOOGLE_WEB_PROPERTIES, "trial", "group"));
-}
-
-// Ensure that two collections can coexist without affecting each other.
-TEST_F(VariationsAssociatedDataTest, CollectionsCoexist) {
-  const std::string default_name = "default";
-  int default_group_number = -1;
-  scoped_refptr<base::FieldTrial> trial_true(
-      CreateFieldTrial("d1", 10, default_name, &default_group_number));
-  ASSERT_EQ(default_group_number, trial_true->group());
-  ASSERT_EQ(default_name, trial_true->group_name());
-
-  EXPECT_EQ(EMPTY_ID,
-            GetIDForTrial(GOOGLE_WEB_PROPERTIES, trial_true.get()));
-  EXPECT_EQ(EMPTY_ID,
-            GetIDForTrial(GOOGLE_WEB_PROPERTIES_TRIGGER, trial_true.get()));
-  EXPECT_EQ(EMPTY_ID,
-            GetIDForTrial(CHROME_SYNC_EVENT_LOGGER, trial_true.get()));
-
-  AssociateGoogleVariationID(GOOGLE_WEB_PROPERTIES, trial_true->trial_name(),
-      default_name, TEST_VALUE_A);
-  EXPECT_EQ(TEST_VALUE_A,
-            GetIDForTrial(GOOGLE_WEB_PROPERTIES, trial_true.get()));
-  EXPECT_EQ(EMPTY_ID,
-            GetIDForTrial(CHROME_SYNC_EVENT_LOGGER, trial_true.get()));
-
-  AssociateGoogleVariationID(CHROME_SYNC_EVENT_LOGGER, trial_true->trial_name(),
-                             default_name, TEST_VALUE_A);
-  EXPECT_EQ(TEST_VALUE_A,
-            GetIDForTrial(GOOGLE_WEB_PROPERTIES, trial_true.get()));
-  EXPECT_EQ(TEST_VALUE_A,
-            GetIDForTrial(CHROME_SYNC_EVENT_LOGGER, trial_true.get()));
-
-  trial_true = CreateFieldTrial("d2", 10, default_name, &default_group_number);
-  ASSERT_EQ(default_group_number, trial_true->group());
-  ASSERT_EQ(default_name, trial_true->group_name());
-
-  AssociateGoogleVariationID(GOOGLE_WEB_PROPERTIES_TRIGGER,
-                             trial_true->trial_name(), default_name,
-                             TEST_VALUE_A);
-  EXPECT_EQ(TEST_VALUE_A,
-            GetIDForTrial(GOOGLE_WEB_PROPERTIES_TRIGGER, trial_true.get()));
-  EXPECT_EQ(EMPTY_ID,
-            GetIDForTrial(CHROME_SYNC_EVENT_LOGGER, trial_true.get()));
-
-  AssociateGoogleVariationID(CHROME_SYNC_EVENT_LOGGER, trial_true->trial_name(),
-                             default_name, TEST_VALUE_A);
-  EXPECT_EQ(TEST_VALUE_A,
-            GetIDForTrial(GOOGLE_WEB_PROPERTIES_TRIGGER, trial_true.get()));
-  EXPECT_EQ(TEST_VALUE_A,
-            GetIDForTrial(CHROME_SYNC_EVENT_LOGGER, trial_true.get()));
 }
 
 }  // namespace variations

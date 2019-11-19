@@ -31,7 +31,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AttestationStatement {
   // https://www.w3.org/TR/2017/WD-webauthn-20170505/#defined-attestation-formats
   // This is not a CBOR-encoded byte array, but the map that will be
   // nested within another CBOR object and encoded then.
-  virtual cbor::Value::MapValue GetAsCBORMap() const = 0;
+  virtual cbor::Value AsCBOR() const = 0;
 
   // Returns true if the attestation is a "self" attestation, i.e. is just the
   // private key signing itself to show that it is fresh.
@@ -66,14 +66,17 @@ class COMPONENT_EXPORT(DEVICE_FIDO) NoneAttestationStatement
   NoneAttestationStatement();
   ~NoneAttestationStatement() override;
 
+  cbor::Value AsCBOR() const override;
   bool IsSelfAttestation() override;
   bool IsAttestationCertificateInappropriatelyIdentifying() override;
-  cbor::Value::MapValue GetAsCBORMap() const override;
   base::Optional<base::span<const uint8_t>> GetLeafCertificate() const override;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(NoneAttestationStatement);
 };
+
+COMPONENT_EXPORT(DEVICE_FIDO)
+cbor::Value AsCBOR(const AttestationStatement&);
 
 }  // namespace device
 

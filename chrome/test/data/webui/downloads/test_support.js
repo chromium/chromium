@@ -2,25 +2,30 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-class TestDownloadsProxy {
+import {DangerType, States} from 'chrome://downloads/downloads.js';
+
+import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.m.js';
+
+export class TestDownloadsProxy {
   constructor() {
     /** @type {downloads.mojom.PageCallbackRouter} */
     this.callbackRouter = new downloads.mojom.PageCallbackRouter();
 
-    /** @type {!downloads.mojom.PageInterface} */
-    this.pageRouterProxy = this.callbackRouter.createProxy();
+    /** @type {!downloads.mojom.PageRemote} */
+    this.callbackRouterRemote =
+        this.callbackRouter.$.bindNewPipeAndPassRemote();
 
     /** @type {downloads.mojom.PageHandlerInterface} */
-    this.handler = new TestDownloadsMojoHandler(this.pageRouterProxy);
+    this.handler = new FakePageHandler(this.callbackRouterRemote);
   }
 }
 
 /** @implements {downloads.mojom.PageHandlerInterface} */
-class TestDownloadsMojoHandler {
+class FakePageHandler {
   /** @param {downloads.mojom.PageInterface} */
-  constructor(pageRouterProxy) {
+  constructor(callbackRouterRemote) {
     /** @private {downloads.mojom.PageInterface} */
-    this.pageRouterProxy_ = pageRouterProxy;
+    this.callbackRouterRemote_ = callbackRouterRemote;
 
     /** @private {TestBrowserProxy} */
     this.callTracker_ = new TestBrowserProxy(['remove']);
@@ -36,8 +41,8 @@ class TestDownloadsMojoHandler {
 
   /** @override */
   async remove(id) {
-    this.pageRouterProxy_.removeItem(id);
-    await this.pageRouterProxy_.$.flushForTesting();
+    this.callbackRouterRemote_.removeItem(id);
+    await this.callbackRouterRemote_.$.flushForTesting();
     this.callTracker_.methodCalled('remove', id);
   }
 
@@ -81,7 +86,7 @@ class TestDownloadsMojoHandler {
   openDownloadsFolderRequiringGesture() {}
 }
 
-class TestIconLoader extends TestBrowserProxy {
+export class TestIconLoader extends TestBrowserProxy {
   constructor() {
     super(['loadIcon']);
 
@@ -108,12 +113,12 @@ class TestIconLoader extends TestBrowserProxy {
  * @param {Object=} config
  * @return {!downloads.Data}
  */
-function createDownload(config) {
+export function createDownload(config) {
   return Object.assign(
       {
         byExtId: '',
         byExtName: '',
-        dangerType: downloads.DangerType.NOT_DANGEROUS,
+        dangerType: DangerType.NOT_DANGEROUS,
         dateString: '',
         fileExternallyRemoved: false,
         filePath: '/some/file/path',
@@ -129,7 +134,7 @@ function createDownload(config) {
         return: false,
         sinceString: 'Today',
         started: Date.now() - 10000,
-        state: downloads.States.COMPLETE,
+        state: States.COMPLETE,
         total: -1,
         url: 'http://permission.site',
       },

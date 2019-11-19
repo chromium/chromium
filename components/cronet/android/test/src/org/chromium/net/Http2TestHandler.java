@@ -101,7 +101,7 @@ public final class Http2TestHandler extends Http2ConnectionHandler implements Ht
         void onHeadersRead(ChannelHandlerContext ctx, int streamId, boolean endOfStream,
                 Http2Headers headers) {
             encoder().writeHeaders(ctx, streamId, createResponseHeadersFromRequestHeaders(headers),
-                    0, false, ctx.newPromise());
+                    0, endOfStream, ctx.newPromise());
             ctx.flush();
         }
 

@@ -23,6 +23,14 @@ void CloneStrings(const std::vector<std::string>& clone_from,
   }
 }
 
+void CloneIntentFilters(
+    const std::vector<apps::mojom::IntentFilterPtr>& clone_from,
+    std::vector<apps::mojom::IntentFilterPtr>* clone_to) {
+  for (const auto& intent_filter : clone_from) {
+    clone_to->push_back(intent_filter->Clone());
+  }
+}
+
 }  // namespace
 
 namespace apps {
@@ -52,9 +60,16 @@ void AppUpdate::Merge(apps::mojom::App* state, const apps::mojom::App* delta) {
   if (delta->short_name.has_value()) {
     state->short_name = delta->short_name;
   }
+  if (delta->publisher_id.has_value()) {
+    state->publisher_id = delta->publisher_id;
+  }
+  if (delta->description.has_value()) {
+    state->description = delta->description;
+  }
+  if (delta->version.has_value()) {
+    state->version = delta->version;
+  }
   if (!delta->additional_search_terms.empty()) {
-    DCHECK(state->permissions.empty() ||
-           (delta->permissions.size() == state->permissions.size()));
     state->additional_search_terms.clear();
     CloneStrings(delta->additional_search_terms,
                  &state->additional_search_terms);
@@ -74,11 +89,17 @@ void AppUpdate::Merge(apps::mojom::App* state, const apps::mojom::App* delta) {
     state->permissions.clear();
     ClonePermissions(delta->permissions, &state->permissions);
   }
-  if (delta->installed_internally != apps::mojom::OptionalBool::kUnknown) {
-    state->installed_internally = delta->installed_internally;
+  if (delta->install_source != apps::mojom::InstallSource::kUnknown) {
+    state->install_source = delta->install_source;
   }
   if (delta->is_platform_app != apps::mojom::OptionalBool::kUnknown) {
     state->is_platform_app = delta->is_platform_app;
+  }
+  if (delta->recommendable != apps::mojom::OptionalBool::kUnknown) {
+    state->recommendable = delta->recommendable;
+  }
+  if (delta->searchable != apps::mojom::OptionalBool::kUnknown) {
+    state->searchable = delta->searchable;
   }
   if (delta->show_in_launcher != apps::mojom::OptionalBool::kUnknown) {
     state->show_in_launcher = delta->show_in_launcher;
@@ -88,6 +109,14 @@ void AppUpdate::Merge(apps::mojom::App* state, const apps::mojom::App* delta) {
   }
   if (delta->show_in_management != apps::mojom::OptionalBool::kUnknown) {
     state->show_in_management = delta->show_in_management;
+  }
+  if (delta->paused != apps::mojom::OptionalBool::kUnknown) {
+    state->paused = delta->paused;
+  }
+
+  if (!delta->intent_filters.empty()) {
+    state->intent_filters.clear();
+    CloneIntentFilters(delta->intent_filters, &state->intent_filters);
   }
 
   // When adding new fields to the App Mojo type, this function should also be
@@ -159,6 +188,51 @@ const std::string& AppUpdate::ShortName() const {
 bool AppUpdate::ShortNameChanged() const {
   return delta_ && delta_->short_name.has_value() &&
          (!state_ || (delta_->short_name != state_->short_name));
+}
+
+const std::string& AppUpdate::PublisherId() const {
+  if (delta_ && delta_->publisher_id.has_value()) {
+    return delta_->publisher_id.value();
+  }
+  if (state_ && state_->publisher_id.has_value()) {
+    return state_->publisher_id.value();
+  }
+  return base::EmptyString();
+}
+
+bool AppUpdate::PublisherIdChanged() const {
+  return delta_ && delta_->publisher_id.has_value() &&
+         (!state_ || (delta_->publisher_id != state_->publisher_id));
+}
+
+const std::string& AppUpdate::Description() const {
+  if (delta_ && delta_->description.has_value()) {
+    return delta_->description.value();
+  }
+  if (state_ && state_->description.has_value()) {
+    return state_->description.value();
+  }
+  return base::EmptyString();
+}
+
+bool AppUpdate::DescriptionChanged() const {
+  return delta_ && delta_->description.has_value() &&
+         (!state_ || (delta_->description != state_->description));
+}
+
+const std::string& AppUpdate::Version() const {
+  if (delta_ && delta_->version.has_value()) {
+    return delta_->version.value();
+  }
+  if (state_ && state_->version.has_value()) {
+    return state_->version.value();
+  }
+  return base::EmptyString();
+}
+
+bool AppUpdate::VersionChanged() const {
+  return delta_ && delta_->version.has_value() &&
+         (!state_ || (delta_->version != state_->version));
 }
 
 std::vector<std::string> AppUpdate::AdditionalSearchTerms() const {
@@ -241,23 +315,35 @@ bool AppUpdate::PermissionsChanged() const {
          (!state_ || (delta_->permissions != state_->permissions));
 }
 
-apps::mojom::OptionalBool AppUpdate::InstalledInternally() const {
+apps::mojom::InstallSource AppUpdate::InstallSource() const {
   if (delta_ &&
-      (delta_->installed_internally != apps::mojom::OptionalBool::kUnknown)) {
-    return delta_->installed_internally;
+      (delta_->install_source != apps::mojom::InstallSource::kUnknown)) {
+    return delta_->install_source;
   }
   if (state_) {
-    return state_->installed_internally;
+    return state_->install_source;
   }
-  return apps::mojom::OptionalBool::kUnknown;
+  return apps::mojom::InstallSource::kUnknown;
 }
 
-bool AppUpdate::InstalledInternallyChanged() const {
+bool AppUpdate::InstallSourceChanged() const {
   return delta_ &&
-         (delta_->installed_internally !=
-          apps::mojom::OptionalBool::kUnknown) &&
-         (!state_ ||
-          (delta_->installed_internally != state_->installed_internally));
+         (delta_->install_source != apps::mojom::InstallSource::kUnknown) &&
+         (!state_ || (delta_->install_source != state_->install_source));
+}
+
+apps::mojom::OptionalBool AppUpdate::InstalledInternally() const {
+  switch (InstallSource()) {
+    case apps::mojom::InstallSource::kUnknown:
+      return apps::mojom::OptionalBool::kUnknown;
+    case apps::mojom::InstallSource::kSystem:
+    case apps::mojom::InstallSource::kPolicy:
+    case apps::mojom::InstallSource::kOem:
+    case apps::mojom::InstallSource::kDefault:
+      return apps::mojom::OptionalBool::kTrue;
+    default:
+      return apps::mojom::OptionalBool::kFalse;
+  }
 }
 
 apps::mojom::OptionalBool AppUpdate::IsPlatformApp() const {
@@ -275,6 +361,39 @@ bool AppUpdate::IsPlatformAppChanged() const {
   return delta_ &&
          (delta_->is_platform_app != apps::mojom::OptionalBool::kUnknown) &&
          (!state_ || (delta_->is_platform_app != state_->is_platform_app));
+}
+
+apps::mojom::OptionalBool AppUpdate::Recommendable() const {
+  if (delta_ &&
+      (delta_->recommendable != apps::mojom::OptionalBool::kUnknown)) {
+    return delta_->recommendable;
+  }
+  if (state_) {
+    return state_->recommendable;
+  }
+  return apps::mojom::OptionalBool::kUnknown;
+}
+
+bool AppUpdate::RecommendableChanged() const {
+  return delta_ &&
+         (delta_->recommendable != apps::mojom::OptionalBool::kUnknown) &&
+         (!state_ || (delta_->recommendable != state_->recommendable));
+}
+
+apps::mojom::OptionalBool AppUpdate::Searchable() const {
+  if (delta_ && (delta_->searchable != apps::mojom::OptionalBool::kUnknown)) {
+    return delta_->searchable;
+  }
+  if (state_) {
+    return state_->searchable;
+  }
+  return apps::mojom::OptionalBool::kUnknown;
+}
+
+bool AppUpdate::SearchableChanged() const {
+  return delta_ &&
+         (delta_->searchable != apps::mojom::OptionalBool::kUnknown) &&
+         (!state_ || (delta_->searchable != state_->searchable));
 }
 
 apps::mojom::OptionalBool AppUpdate::ShowInLauncher() const {
@@ -327,6 +446,38 @@ bool AppUpdate::ShowInManagementChanged() const {
          (delta_->show_in_management != apps::mojom::OptionalBool::kUnknown) &&
          (!state_ ||
           (delta_->show_in_management != state_->show_in_management));
+}
+
+apps::mojom::OptionalBool AppUpdate::Paused() const {
+  if (delta_ && (delta_->paused != apps::mojom::OptionalBool::kUnknown)) {
+    return delta_->paused;
+  }
+  if (state_) {
+    return state_->paused;
+  }
+  return apps::mojom::OptionalBool::kUnknown;
+}
+
+bool AppUpdate::PausedChanged() const {
+  return delta_ && (delta_->paused != apps::mojom::OptionalBool::kUnknown) &&
+         (!state_ || (delta_->paused != state_->paused));
+}
+
+std::vector<apps::mojom::IntentFilterPtr> AppUpdate::IntentFilters() const {
+  std::vector<apps::mojom::IntentFilterPtr> intent_filters;
+
+  if (delta_ && !delta_->intent_filters.empty()) {
+    CloneIntentFilters(delta_->intent_filters, &intent_filters);
+  } else if (state_ && !state_->intent_filters.empty()) {
+    CloneIntentFilters(state_->intent_filters, &intent_filters);
+  }
+
+  return intent_filters;
+}
+
+bool AppUpdate::IntentFiltersChanged() const {
+  return delta_ && !delta_->intent_filters.empty() &&
+         (!state_ || (delta_->intent_filters != state_->intent_filters));
 }
 
 }  // namespace apps

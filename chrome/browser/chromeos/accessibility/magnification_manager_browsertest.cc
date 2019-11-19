@@ -99,12 +99,14 @@ void PrepareNonNewProfile(const AccountId& account_id) {
 }
 
 // Simulates how UserSessionManager starts a user session by loading user
-// profile and mark session as started.
+// profile, notify user profile is loaded, and mark session as started.
 void StartUserSession(const AccountId& account_id) {
   ProfileHelper::GetProfileByUserIdHashForTest(
       user_manager::UserManager::Get()->FindUser(account_id)->username_hash());
 
-  session_manager::SessionManager::Get()->SessionStarted();
+  auto* session_manager = session_manager::SessionManager::Get();
+  session_manager->NotifyUserProfileLoaded(account_id);
+  session_manager->SessionStarted();
 }
 
 }  // namespace

@@ -1,0 +1,16 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "third_party/blink/public/mojom/loader/url_loader_factory_bundle.mojom";
+
+// An interface for pushing updated subresource loader factories to workers in
+// renderers, for example, after Network Service crashes or DevTools network
+// interception is enabled/disabled.
+interface SubresourceLoaderUpdater {
+  // Pushes updated set of subresource URL loader factories to a renderer.
+  UpdateSubresourceLoaderFactories(
+      URLLoaderFactoryBundle subresource_loader_factories);
+};

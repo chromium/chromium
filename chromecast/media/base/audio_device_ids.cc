@@ -12,6 +12,7 @@ const char kPlatformAudioDeviceId[] = "platform";
 const char kAlarmAudioDeviceId[] = "assistant-alarm";
 const char kTtsAudioDeviceId[] = "assistant-tts";
 const char kBypassAudioDeviceId[] = "bypass";
+const char kNoDelayDeviceId[] = "no_delay";
 
 }  // namespace media
 }  // namespace chromecast

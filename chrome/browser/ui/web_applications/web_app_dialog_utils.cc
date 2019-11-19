@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/bind_helpers.h"
 #include "base/callback.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
@@ -15,6 +16,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/web_applications/components/install_manager.h"
+#include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_features.h"
@@ -24,46 +26,38 @@ namespace web_app {
 
 namespace {
 
-// Use tricky function adapters here to connect old API with new unique_ptr
-// based API. TODO(loyso): Erase these type adapters. crbug.com/915043.
-using AcceptanceCallback = InstallManager::WebAppInstallationAcceptanceCallback;
-
-void BookmarkAppAcceptanceCallback(
-    AcceptanceCallback web_app_acceptance_callback,
-    bool user_accepted,
-    const WebApplicationInfo& web_app_info) {
-  std::move(web_app_acceptance_callback)
-      .Run(user_accepted, std::make_unique<WebApplicationInfo>(web_app_info));
-}
-
 void WebAppInstallDialogCallback(
+    WebappInstallSource install_source,
     content::WebContents* initiator_web_contents,
     std::unique_ptr<WebApplicationInfo> web_app_info,
     ForInstallableSite for_installable_site,
-    AcceptanceCallback web_app_acceptance_callback) {
-  if (base::FeatureList::IsEnabled(::features::kDesktopPWAWindowing) &&
-      for_installable_site == ForInstallableSite::kYes) {
+    InstallManager::WebAppInstallationAcceptanceCallback
+        web_app_acceptance_callback) {
+  DCHECK(web_app_info);
+  if (for_installable_site == ForInstallableSite::kYes) {
     web_app_info->open_as_window = true;
-    chrome::ShowPWAInstallDialog(
-        initiator_web_contents, *web_app_info,
-        base::BindOnce(BookmarkAppAcceptanceCallback,
-                       std::move(web_app_acceptance_callback)));
+    chrome::ShowPWAInstallBubble(initiator_web_contents,
+                                 std::move(web_app_info),
+                                 std::move(web_app_acceptance_callback));
   } else {
-    chrome::ShowBookmarkAppDialog(
-        initiator_web_contents, *web_app_info,
-        base::BindOnce(BookmarkAppAcceptanceCallback,
-                       std::move(web_app_acceptance_callback)));
+    chrome::ShowBookmarkAppDialog(initiator_web_contents,
+                                  std::move(web_app_info),
+                                  std::move(web_app_acceptance_callback));
   }
 }
 
-WebAppInstalledCallbackForTesting& GetInstalledCallbackForTesting() {
-  static base::NoDestructor<WebAppInstalledCallbackForTesting> instance;
+WebAppInstalledCallback& GetInstalledCallbackForTesting() {
+  static base::NoDestructor<WebAppInstalledCallback> instance;
   return *instance;
 }
 
-void OnWebAppInstalled(const AppId& installed_app_id, InstallResultCode code) {
+void OnWebAppInstalled(WebAppInstalledCallback callback,
+                       const AppId& installed_app_id,
+                       InstallResultCode code) {
   if (GetInstalledCallbackForTesting())
     std::move(GetInstalledCallbackForTesting()).Run(installed_app_id, code);
+
+  std::move(callback).Run(installed_app_id, code);
 }
 
 }  // namespace
@@ -78,8 +72,10 @@ bool CanCreateWebApp(const Browser* browser) {
   return provider->install_manager().CanInstallWebApp(web_contents);
 }
 
-void CreateWebAppFromCurrentWebContents(Browser* browser,
-                                        bool force_shortcut_app) {
+void CreateWebAppFromCurrentWebContents(
+    Browser* browser,
+    bool force_shortcut_app,
+    WebAppInstalledCallback installed_callback) {
   DCHECK(CanCreateWebApp(browser));
 
   content::WebContents* web_contents =
@@ -87,15 +83,30 @@ void CreateWebAppFromCurrentWebContents(Browser* browser,
   auto* provider = WebAppProvider::GetForWebContents(web_contents);
   DCHECK(provider);
 
-  provider->install_manager().InstallWebApp(
-      web_contents, force_shortcut_app,
-      InstallableMetrics::GetInstallSource(web_contents, InstallTrigger::MENU),
-      base::BindOnce(WebAppInstallDialogCallback),
-      base::BindOnce(OnWebAppInstalled));
+  WebappInstallSource install_source =
+      InstallableMetrics::GetInstallSource(web_contents, InstallTrigger::MENU);
+
+  provider->install_manager().InstallWebAppFromManifestWithFallback(
+      web_contents, force_shortcut_app, install_source,
+      base::BindOnce(WebAppInstallDialogCallback, install_source),
+      base::BindOnce(OnWebAppInstalled, std::move(installed_callback)));
 }
 
-void SetInstalledCallbackForTesting(
-    WebAppInstalledCallbackForTesting callback) {
+bool CreateWebAppFromManifest(content::WebContents* web_contents,
+                              WebappInstallSource install_source,
+                              WebAppInstalledCallback installed_callback) {
+  auto* provider = WebAppProvider::GetForWebContents(web_contents);
+  if (!provider)
+    return false;
+
+  provider->install_manager().InstallWebAppFromManifest(
+      web_contents, install_source,
+      base::BindOnce(WebAppInstallDialogCallback, install_source),
+      base::BindOnce(OnWebAppInstalled, std::move(installed_callback)));
+  return true;
+}
+
+void SetInstalledCallbackForTesting(WebAppInstalledCallback callback) {
   GetInstalledCallbackForTesting() = std::move(callback);
 }
 

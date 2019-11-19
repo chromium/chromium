@@ -10,10 +10,44 @@
 #include "components/viz/common/surfaces/local_surface_id_allocation.h"
 #include "content/common/content_export.h"
 #include "content/public/common/screen_info.h"
-#include "third_party/blink/public/common/manifest/web_display_mode.h"
+#include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace content {
+
+// Visual properties contain context required to render a frame tree.
+// For legacy reasons, both Page visual properties [shared by all Renderers] and
+// Widget visual properties [unique to local frame roots] are passed along the
+// same data structure. Separating these is tricky because they both affect
+// rendering, and if updates are received asynchronously, this can cause
+// incorrect behavior.
+// Visual properties are also used for Pepper fullscreen and popups, which are
+// also based on Widgets.
+//
+// The data flow for VisualProperties is tricky. For legacy reasons, visual
+// properties are currently always sent from RenderWidgetHosts to RenderWidgets.
+// However, RenderWidgets can also send visual properties to out-of-process
+// subframes [by bouncing through CrossProcessFrameConnector]. This causes a
+// cascading series of VisualProperty messages. This is necessary due to the
+// current implementation to make sure that cross-process surfaces get
+// simultaneously synchronized. For more details, see:
+// https://docs.google.com/document/d/1VKOLBYlujcn862w9LAyUbv6oW9RZgD65oDCI_G5AEVQ/edit#heading=h.wno2seszsyen
+// https://docs.google.com/document/d/1J7BTRsylGApm6KHaaTu-m6LLvSWJgf1B9CM-USKIp1k/edit#heading=h.ichmoicfam1y
+//
+// Known problems:
+// + It's not clear which properties are page-specific and which are
+// widget-specific. We should document them.
+// + It's not clear which properties are only set by the browser, which are only
+// set by the renderer, and which are set by both.
+// + Given the frame tree A(B(A')) where A and A' are same-origin, same process
+// and B is separate origin separate process:
+//   (1) RenderWidget A gets SynchronizeVisualProperties, passes it to proxy for
+//   B, sets values on RenderView/Page.
+//   (2) RenderWidget B gets SynchronizeVisualProperties, passes it to proxy for
+//   A'
+//   (3) RenderWidget A' gets SynchronizeVisualProperties.
+// In between (1) and (3), frames associated with RenderWidget A' will see
+// updated page properties from (1) but are still seeing old widget properties.
 
 struct CONTENT_EXPORT VisualProperties {
   VisualProperties();
@@ -37,10 +71,24 @@ struct CONTENT_EXPORT VisualProperties {
   // The size for the widget in DIPs.
   gfx::Size new_size;
 
-  // The size of compositor's viewport in pixels. Note that this may differ
-  // from a ScaleToCeiledSize of |new_size| due to Android's keyboard or due
-  // to rounding particulars.
-  gfx::Size compositor_viewport_pixel_size;
+  // The size of the area of the widget that is visible to the user, in DIPs.
+  // The visible area may be empty if the visible area does not intersect with
+  // the widget, for example in the case of a child frame that is entirely
+  // scrolled out of the main frame's viewport. It may also be smaller than the
+  // widget's size in |new_size| due to the UI hiding part of the widget, such
+  // as with an on-screen keyboard.
+  gfx::Size visible_viewport_size;
+
+  // The rect of compositor's viewport in pixels. Note that for top level
+  // widgets this is roughly the DSF scaled new_size put into a rect. For child
+  // frame widgets it is a pixel-perfect bounds of the visible region of the
+  // widget. The size would be similar to visible_viewport_size, but in physical
+  // pixels and computed via very different means.
+  // TODO(danakj): It would be super nice to remove one of |new_size|,
+  // |visible_viewport_size| and |compositor_viewport_pixel_rect|. Their values
+  // overlap in purpose, creating a very confusing situation about which to use
+  // for what, and how they should relate or not.
+  gfx::Rect compositor_viewport_pixel_rect;
 
   // Whether or not Blink's viewport size should be shrunk by the height of the
   // URL-bar (always false on platforms where URL-bar hiding isn't supported).
@@ -60,16 +108,12 @@ struct CONTENT_EXPORT VisualProperties {
   // The local surface ID to use (if valid) and its allocation time.
   base::Optional<viz::LocalSurfaceIdAllocation> local_surface_id_allocation;
 
-  // The size of the visible viewport, which may be smaller than the view if the
-  // view is partially occluded (e.g. by a virtual keyboard).  The size is in
-  // DPI-adjusted pixels.
-  gfx::Size visible_viewport_size;
-
   // Indicates whether tab-initiated fullscreen was granted.
   bool is_fullscreen_granted = false;
 
   // The display mode.
-  blink::WebDisplayMode display_mode = blink::kWebDisplayModeUndefined;
+  blink::mojom::DisplayMode display_mode =
+      blink::mojom::DisplayMode::kUndefined;
 
   // This represents the latest capture sequence number requested. When this is
   // incremented, that means the caller wants to synchronize surfaces which
@@ -83,6 +127,10 @@ struct CONTENT_EXPORT VisualProperties {
   // This represents the page's scale factor, which changes during pinch zoom.
   // It needs to be shared with subframes.
   float page_scale_factor = 1.f;
+
+  // Indicates whether a pinch gesture is currently active. Originates in the
+  // main frame's renderer, and needs to be shared with subframes.
+  bool is_pinch_gesture_active = false;
 };
 
 }  // namespace content

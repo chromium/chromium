@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<resources>
+    <declare-styleable name="AssistantChoiceList">
+        <attr name="add_button_text" format="string"/>
+        <attr name="row_spacing" format="dimension"/>
+        <attr name="column_spacing" format="dimension"/>
+        <attr name="can_add_items" format="boolean"/>
+
+        <attr name="layout_has_edit_button" format="boolean"/>
+    </declare-styleable>
+    <declare-styleable name="AssistantVerticalExpander">
+        <attr name="layout_expander_widget" format="enum">
+            <enum name="title_widget" value="0"/>
+            <enum name="collapsed_widget" value="1"/>
+            <enum name="expanded_widget" value="2"/>
+        </attr>
+    </declare-styleable>
+
+    <!-- Forked from ChipView attributes. -->
+    <declare-styleable name="ButtonView">
+        <attr name="chipColor" format="color"/>
+        <attr name="chipStyle" format="reference"/>
+        <attr name="cornerRadius" format="dimension"/>
+        <attr name="iconWidth" format="reference|dimension"/>
+        <attr name="iconHeight" format="reference|dimension"/>
+        <attr name="primaryTextAppearance" format="reference"/>
+        <attr name="secondaryTextAppearance" format="reference"/>
+        <attr name="rippleColor"/>
+        <attr name="chipBorderWidth" format="reference"/>
+        <attr name="verticalInset"/>
+    </declare-styleable>
+</resources>

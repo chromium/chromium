@@ -1,5 +1,0 @@
-PASS attr.ownerDocument.title is anotherDocument.title
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

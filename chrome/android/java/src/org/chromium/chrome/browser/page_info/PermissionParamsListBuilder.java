@@ -18,7 +18,8 @@ import org.chromium.base.Callback;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeFeatureList;
 import org.chromium.chrome.browser.ContentSettingsType;
-import org.chromium.chrome.browser.preferences.PrefServiceBridge;
+import org.chromium.chrome.browser.browserservices.Origin;
+import org.chromium.chrome.browser.browserservices.permissiondelegation.TrustedWebActivityPermissionManager;
 import org.chromium.chrome.browser.preferences.website.ContentSettingValues;
 import org.chromium.chrome.browser.preferences.website.ContentSettingsResources;
 import org.chromium.chrome.browser.preferences.website.WebsitePreferenceBridge;
@@ -86,19 +87,19 @@ class PermissionParamsListBuilder {
             LocationUtils locationUtils = LocationUtils.getInstance();
             Intent intentOverride = null;
             String[] androidPermissions = null;
-            if (permission.type == ContentSettingsType.CONTENT_SETTINGS_TYPE_GEOLOCATION
+            if (permission.type == ContentSettingsType.GEOLOCATION
                     && !locationUtils.isSystemLocationSettingEnabled()) {
                 permissionParams.warningTextResource = R.string.page_info_android_location_blocked;
                 intentOverride = locationUtils.getSystemLocationSettingsIntent();
             } else if (shouldShowNotificationsDisabledWarning(permission)) {
                 permissionParams.warningTextResource =
                         R.string.page_info_android_permission_blocked;
-                intentOverride = ApiCompatibilityUtils.getNotificationSettingsIntent(mContext);
+                intentOverride = ApiCompatibilityUtils.getNotificationSettingsIntent();
             } else if (!hasAndroidPermission(permission.type)) {
                 permissionParams.warningTextResource =
                         R.string.page_info_android_permission_blocked;
-                androidPermissions =
-                        PrefServiceBridge.getAndroidPermissionsForContentSetting(permission.type);
+                androidPermissions = WebsitePreferenceBridge.getAndroidPermissionsForContentSetting(
+                        permission.type);
             }
 
             if (permissionParams.warningTextResource != 0) {
@@ -110,7 +111,7 @@ class PermissionParamsListBuilder {
         }
 
         // The ads permission requires an additional static subtitle.
-        if (permission.type == ContentSettingsType.CONTENT_SETTINGS_TYPE_ADS) {
+        if (permission.type == ContentSettingsType.ADS) {
             permissionParams.subtitleTextResource = R.string.page_info_permission_ads_subtitle;
         }
 
@@ -122,19 +123,34 @@ class PermissionParamsListBuilder {
         builder.append(nameString);
         builder.append(" – "); // en-dash.
         String status_text = "";
-        switch (permission.setting) {
-            case ContentSettingValues.ALLOW:
-                status_text = mContext.getString(R.string.page_info_permission_allowed);
-                break;
-            case ContentSettingValues.BLOCK:
-                status_text = mContext.getString(R.string.page_info_permission_blocked);
-                break;
-            default:
-                assert false : "Invalid setting " + permission.setting + " for permission "
-                               + permission.type;
+
+        String managedBy = null;
+        if (permission.type == ContentSettingsType.NOTIFICATIONS) {
+            TrustedWebActivityPermissionManager manager = TrustedWebActivityPermissionManager.get();
+            Origin origin = Origin.create(mFullUrl);
+            if (origin != null) {
+                managedBy = manager.getDelegateAppName(origin);
+            }
         }
-        if (WebsitePreferenceBridge.isPermissionControlledByDSE(permission.type, mFullUrl, false)) {
-            status_text = statusTextForDSEPermission(permission.setting);
+        if (managedBy != null) {
+            status_text = String.format(
+                    mContext.getString(R.string.website_notification_managed_by_app), managedBy);
+        } else {
+            switch (permission.setting) {
+                case ContentSettingValues.ALLOW:
+                    status_text = mContext.getString(R.string.page_info_permission_allowed);
+                    break;
+                case ContentSettingValues.BLOCK:
+                    status_text = mContext.getString(R.string.page_info_permission_blocked);
+                    break;
+                default:
+                    assert false : "Invalid setting " + permission.setting + " for permission "
+                                   + permission.type;
+            }
+            if (WebsitePreferenceBridge.isPermissionControlledByDSE(
+                        permission.type, mFullUrl, false)) {
+                status_text = statusTextForDSEPermission(permission.setting);
+            }
         }
         builder.append(status_text);
         permissionParams.status = builder;
@@ -143,14 +159,14 @@ class PermissionParamsListBuilder {
     }
 
     private boolean shouldShowNotificationsDisabledWarning(PageInfoPermissionEntry permission) {
-        return permission.type == ContentSettingsType.CONTENT_SETTINGS_TYPE_NOTIFICATIONS
+        return permission.type == ContentSettingsType.NOTIFICATIONS
                 && !NotificationManagerCompat.from(mContext).areNotificationsEnabled()
                 && ChromeFeatureList.isEnabled(ChromeFeatureList.APP_NOTIFICATION_STATUS_MESSAGING);
     }
 
     private boolean hasAndroidPermission(int contentSettingType) {
         String[] androidPermissions =
-                PrefServiceBridge.getAndroidPermissionsForContentSetting(contentSettingType);
+                WebsitePreferenceBridge.getAndroidPermissionsForContentSetting(contentSettingType);
         if (androidPermissions == null) return true;
         for (int i = 0; i < androidPermissions.length; i++) {
             if (!mPermissionDelegate.hasPermission(androidPermissions[i])) {

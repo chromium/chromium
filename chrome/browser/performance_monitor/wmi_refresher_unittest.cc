@@ -11,7 +11,7 @@
 #include "base/sequenced_task_runner.h"
 #include "base/task/post_task.h"
 #include "base/task_runner_util.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace performance_monitor {
@@ -25,8 +25,11 @@ using WMIRefresherTest = testing::Test;
 
 // This test assume that the WMI service is available in all supported version
 // of Windows.
-TEST_F(WMIRefresherTest, EndToEnd) {
-  base::test::ScopedTaskEnvironment env;
+//
+// TODO(https://crbug.com/956638): Investigate why the initialization of WMI
+// might fail in some situations and reenable this test.
+TEST_F(WMIRefresherTest, DISABLED_EndToEnd) {
+  base::test::TaskEnvironment env;
   PostTask(FROM_HERE, base::BindOnce([] {
              // The WMIRefresher objects have to live on a sequence with the
              // MayBlock trait.

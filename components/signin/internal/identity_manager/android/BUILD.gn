@@ -1,0 +1,11 @@
+import("//build/config/android/rules.gni")
+
+generate_jni("jni_headers") {
+  namespace = "signin"
+  sources = [
+    "//components/signin/public/identity_manager/android/java/src/org/chromium/components/signin/identitymanager/CoreAccountId.java",
+    "//components/signin/public/identity_manager/android/java/src/org/chromium/components/signin/identitymanager/CoreAccountInfo.java",
+    "//components/signin/public/identity_manager/android/java/src/org/chromium/components/signin/identitymanager/IdentityManager.java",
+    "//components/signin/public/identity_manager/android/java/src/org/chromium/components/signin/identitymanager/IdentityMutator.java",
+  ]
+}

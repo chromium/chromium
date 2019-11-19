@@ -15,10 +15,18 @@ namespace media {
 
 namespace mp4 {
 
-// The structure of the configuration is defined in Dolby Streams Within the ISO
-// Base Media File Format v1.1 section 3.2.
-struct MEDIA_EXPORT DolbyVisionConfiguration : Box {
-  DECLARE_BOX_METHODS(DolbyVisionConfiguration);
+struct MEDIA_EXPORT DOVIDecoderConfigurationRecord {
+  uint8_t dv_version_major = 0;
+  uint8_t dv_version_minor = 0;
+  uint8_t dv_profile = 0;
+  uint8_t dv_level = 0;
+  uint8_t rpu_present_flag = 0;
+  uint8_t el_present_flag = 0;
+  uint8_t bl_present_flag = 0;
+
+  VideoCodecProfile codec_profile = VIDEO_CODEC_PROFILE_UNKNOWN;
+
+  bool Parse(BufferReader* reader, MediaLog* media_log);
 
   // Parses DolbyVisionConfiguration data encoded in |data|.
   // Note: This method is intended to parse data outside the MP4StreamParser
@@ -26,19 +34,23 @@ struct MEDIA_EXPORT DolbyVisionConfiguration : Box {
   //       in |data|.
   // Returns true if |data| was successfully parsed.
   bool ParseForTesting(const uint8_t* data, int data_size);
+};
 
-  uint8_t dv_version_major;
-  uint8_t dv_version_minor;
-  uint8_t dv_profile;
-  uint8_t dv_level;
-  uint8_t rpu_present_flag;
-  uint8_t el_present_flag;
-  uint8_t bl_present_flag;
+// The structures of the configuration is defined in Dolby Streams Within the
+// ISO Base Media File Format v2.0 section 3.1.
 
-  VideoCodecProfile codec_profile;
+// dvcC, used for profile 7 and earlier.
+struct MEDIA_EXPORT DolbyVisionConfiguration : Box {
+  DECLARE_BOX_METHODS(DolbyVisionConfiguration);
 
- private:
-  bool ParseInternal(BufferReader* reader, MediaLog* media_log);
+  DOVIDecoderConfigurationRecord dovi_config;
+};
+
+// dvvC, used for profile 8 and later.
+struct MEDIA_EXPORT DolbyVisionConfiguration8 : Box {
+  DECLARE_BOX_METHODS(DolbyVisionConfiguration8);
+
+  DOVIDecoderConfigurationRecord dovi_config;
 };
 
 }  // namespace mp4

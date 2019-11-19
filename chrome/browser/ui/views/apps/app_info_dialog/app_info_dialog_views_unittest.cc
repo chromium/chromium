@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/views/apps/app_info_dialog/app_info_header_panel.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -59,7 +60,7 @@ class AppInfoDialogTestApi {
   explicit AppInfoDialogTestApi(AppInfoDialog* dialog) : dialog_(dialog) {}
 
   AppInfoHeaderPanel* header_panel() {
-    return static_cast<AppInfoHeaderPanel*>(dialog_->child_at(0));
+    return static_cast<AppInfoHeaderPanel*>(dialog_->children().front());
   }
 
   views::Link* view_in_store_link() {
@@ -110,6 +111,16 @@ class AppInfoDialogViewsTest : public BrowserWithTestWindowTest,
     chrome_launcher_controller_.reset();
     shelf_model_.reset();
 #endif
+
+    // The Browser class had dependencies on LocalState, which is owned by
+    // |extension_environment_|.
+    auto* browser = release_browser();
+    if (browser) {
+      browser->tab_strip_model()->CloseAllTabs();
+      delete browser;
+    }
+    extension_environment_.DeleteProfile();
+
     BrowserWithTestWindowTest::TearDown();
   }
 
@@ -125,18 +136,17 @@ class AppInfoDialogViewsTest : public BrowserWithTestWindowTest,
 
   void ShowAppInfoForProfile(const std::string& app_id, Profile* profile) {
     const extensions::Extension* extension =
-        extensions::ExtensionSystem::Get(profile)
-            ->extension_service()
-            ->GetExtensionById(app_id, true);
+        extensions::ExtensionRegistry::Get(profile)
+            ->enabled_extensions()
+            .GetByID(app_id);
     DCHECK(extension);
 
     DCHECK(!widget_);
     widget_ = views::DialogDelegate::CreateDialogWidget(
         new views::DialogDelegateView(), GetContext(), nullptr);
     widget_->AddObserver(this);
-    dialog_ = new AppInfoDialog(profile, extension);
-
-    widget_->GetContentsView()->AddChildView(dialog_);
+    dialog_ = widget_->GetContentsView()->AddChildView(
+        std::make_unique<AppInfoDialog>(profile, extension));
     widget_->Show();
   }
 
@@ -328,21 +338,21 @@ TEST_F(AppInfoDialogViewsTest, PinButtonsAreFocusedAfterPinUnpin) {
   views::View* unpin_button = dialog_footer->unpin_from_shelf_button_;
 
   pin_button->RequestFocus();
-  EXPECT_TRUE(pin_button->visible());
-  EXPECT_FALSE(unpin_button->visible());
+  EXPECT_TRUE(pin_button->GetVisible());
+  EXPECT_FALSE(unpin_button->GetVisible());
   EXPECT_TRUE(pin_button->HasFocus());
 
   // Avoid attempting to use sync, it's not initialized in this test.
   auto sync_disabler = chrome_launcher_controller_->GetScopedPinSyncDisabler();
 
   dialog_footer->SetPinnedToShelf(true);
-  EXPECT_FALSE(pin_button->visible());
-  EXPECT_TRUE(unpin_button->visible());
+  EXPECT_FALSE(pin_button->GetVisible());
+  EXPECT_TRUE(unpin_button->GetVisible());
   EXPECT_TRUE(unpin_button->HasFocus());
 
   dialog_footer->SetPinnedToShelf(false);
-  EXPECT_TRUE(pin_button->visible());
-  EXPECT_FALSE(unpin_button->visible());
+  EXPECT_TRUE(pin_button->GetVisible());
+  EXPECT_FALSE(unpin_button->GetVisible());
   EXPECT_TRUE(pin_button->HasFocus());
 }
 #endif

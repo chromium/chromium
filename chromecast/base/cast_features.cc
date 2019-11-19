@@ -148,6 +148,20 @@ const base::Feature kDisableIdleSocketsCloseOnMemoryPressure{
     "disable_idle_sockets_close_on_memory_pressure",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kEnableGeneralAudienceBrowsing{
+    "enable_general_audience_browsing", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Uses unified IPC QueryableData bindings backend instead of v8 injection.
+const base::Feature kUseQueryableDataBackend{"use_queryable_data_backend",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kEnableSideGesturePassThrough{
+    "enable_side_gesture_pass_through", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Lowers frame rate for headless
+const base::Feature kReduceHeadlessFrameRate{"reduce_headless_frame_rate",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
+
 // End Chromecast Feature definitions.
 const base::Feature* kFeatures[] = {
     &kAllowUserMediaAccess,
@@ -155,6 +169,10 @@ const base::Feature* kFeatures[] = {
     &kTripleBuffer720,
     &kSingleBuffer,
     &kDisableIdleSocketsCloseOnMemoryPressure,
+    &kEnableGeneralAudienceBrowsing,
+    &kUseQueryableDataBackend,
+    &kEnableSideGesturePassThrough,
+    &kReduceHeadlessFrameRate,
 };
 
 // An iterator for a base::DictionaryValue. Use an alias for brevity in loops.
@@ -220,7 +238,6 @@ void InitializeFeatureList(const base::DictionaryValue& dcs_features,
     const std::string& feature_name = it.key();
     auto* field_trial = base::FieldTrialList::FactoryGetFieldTrial(
         feature_name, k100PercentProbability, kDefaultDCSFeaturesGroup,
-        base::FieldTrialList::kNoExpirationYear, 1 /* month */, 1 /* day */,
         base::FieldTrial::SESSION_RANDOMIZED, nullptr);
 
     bool enabled;
@@ -247,7 +264,7 @@ void InitializeFeatureList(const base::DictionaryValue& dcs_features,
               feature_name, base::FeatureList::OVERRIDE_DISABLE_FEATURE)) {
         // Build a map of the FieldTrial parameters and associate it to the
         // FieldTrial.
-        base::FieldTrialParamAssociator::FieldTrialParams params;
+        base::FieldTrialParams params;
         for (Iterator p(*params_dict); !p.IsAtEnd(); p.Advance()) {
           std::string val;
           if (p.value().GetAsString(&val)) {
@@ -275,7 +292,7 @@ void InitializeFeatureList(const base::DictionaryValue& dcs_features,
 }
 
 bool IsFeatureEnabled(const base::Feature& feature) {
-  DCHECK(base::ContainsValue(GetFeatures(), &feature)) << feature.name;
+  DCHECK(base::Contains(GetFeatures(), &feature)) << feature.name;
   return base::FeatureList::IsEnabled(feature);
 }
 

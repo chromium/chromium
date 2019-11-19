@@ -9,11 +9,12 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/test_data_util.h"
 #include "media/capture/video/file_video_capture_device.h"
 #include "media/capture/video/mock_video_capture_device_client.h"
+#include "media/video/fake_gpu_memory_buffer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -50,23 +51,43 @@ class MockImageCaptureClient {
 
 class FileVideoCaptureDeviceTest : public ::testing::Test {
  protected:
-  FileVideoCaptureDeviceTest() : client_(new MockVideoCaptureDeviceClient()) {}
+  FileVideoCaptureDeviceTest()
+      : client_(new NiceMockVideoCaptureDeviceClient()) {}
 
   void SetUp() override {
     EXPECT_CALL(*client_, OnError(_, _, _)).Times(0);
     EXPECT_CALL(*client_, OnStarted());
     device_ = std::make_unique<FileVideoCaptureDevice>(
-        GetTestDataFilePath("bear.mjpeg"));
+        GetTestDataFilePath("bear.mjpeg"),
+        std::make_unique<FakeGpuMemoryBufferSupport>());
     device_->AllocateAndStart(VideoCaptureParams(), std::move(client_));
   }
 
   void TearDown() override { device_->StopAndDeAllocate(); }
 
-  std::unique_ptr<MockVideoCaptureDeviceClient> client_;
+  std::unique_ptr<MockVideoCaptureDeviceClient> CreateClient() {
+    return MockVideoCaptureDeviceClient::CreateMockClientWithBufferAllocator(
+        BindToCurrentLoop(
+            base::BindRepeating(&FileVideoCaptureDeviceTest::OnFrameCaptured,
+                                base::Unretained(this))));
+  }
+
+  void OnFrameCaptured(const VideoCaptureFormat& format) {
+    last_format_ = format;
+    run_loop_->Quit();
+  }
+
+  void WaitForCapturedFrame() {
+    run_loop_.reset(new base::RunLoop());
+    run_loop_->Run();
+  }
+
+  std::unique_ptr<NiceMockVideoCaptureDeviceClient> client_;
   MockImageCaptureClient image_capture_client_;
   std::unique_ptr<VideoCaptureDevice> device_;
   VideoCaptureFormat last_format_;
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
+  std::unique_ptr<base::RunLoop> run_loop_;
 };
 
 TEST_F(FileVideoCaptureDeviceTest, GetPhotoState) {
@@ -102,6 +123,19 @@ TEST_F(FileVideoCaptureDeviceTest, TakePhoto) {
       .WillOnce(InvokeWithoutArgs([quit_closure]() { quit_closure.Run(); }));
   device_->TakePhoto(std::move(scoped_callback));
   run_loop.Run();
+}
+
+TEST_F(FileVideoCaptureDeviceTest, CaptureWithGpuMemoryBuffer) {
+  auto client = CreateClient();
+  VideoCaptureParams params;
+  params.buffer_type = VideoCaptureBufferType::kGpuMemoryBuffer;
+  auto device = std::make_unique<FileVideoCaptureDevice>(
+      GetTestDataFilePath("bear.mjpeg"),
+      std::make_unique<FakeGpuMemoryBufferSupport>());
+  device->AllocateAndStart(params, std::move(client));
+  WaitForCapturedFrame();
+  EXPECT_EQ(last_format_.pixel_format, PIXEL_FORMAT_NV12);
+  device->StopAndDeAllocate();
 }
 
 }  // namespace media

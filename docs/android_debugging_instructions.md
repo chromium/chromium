@@ -80,7 +80,7 @@ out/Default/bin/run_chrome_junit_tests --wait-for-java-debugger  # Specify custo
 *   Run Android Device Monitor:
 
     ```shell
-    third_party/android_tools/sdk/tools/monitor
+    third_party/android_sdk/public/tools/monitor
     ```
 
 *   Now select the process you want to debug in Device Monitor (the port column
@@ -114,6 +114,17 @@ warning: Could not load shared library symbols for 211 libraries, e.g. /system/f
 Use the "info sharedlibrary" command to see the complete listing.
 Do you need "set solib-search-path" or "set sysroot"?
 Failed to read a valid object file image from memory.
+```
+
+If you have ever run an ASAN build of chromium on the device, you may get
+an error like the following when you start up gdb:
+```
+/tmp/<username>-adb-gdb-tmp-<pid>/gdb.init:11: Error in sourced command file:
+"/tmp/<username>-adb-gdb-tmp-<pid>/app_process32": not in executable format: file format not recognized
+```
+If this happens, run the following command and try again:
+```shell
+$ src/android/asan/third_party/asan_device_setup.sh --revert
 ```
 
 ### Using Visual Studio Code
@@ -192,7 +203,23 @@ out/Default/apks/ChromeModernPublic.apk.mapping
 etc.
 ```
 
-Build the `java_deobfuscate` tool:
+When debugging a failing test on the build waterfall, you can find the mapping
+file as follows:
+
+1. Open buildbot page for the failing build (e.g.,
+   https://ci.chromium.org/p/chrome/builders/ci/android-go-perf/1234).
+2. Open the swarming page for the failing shard (e.g., shard #3).
+3. Click on "Isolated Inputs" to locate the files the shard used to run the
+   test.
+4. Download the `.mapping` file for the APK used by the test (e.g.,
+   `ChromePublic.apk.mapping`). Note that you may need to use the
+   `tools/swarming_client/isolateserver.py` script to download the mapping
+   file if it's too big. The viewer will provide instructions for this.
+
+**Googlers Only**: For official build mapping files, see
+[go/chromejavadeobfuscation](https://goto.google.com/chromejavadeobfuscation).
+
+Once you have a .mapping file, build the `java_deobfuscate` tool:
 
 ```shell
 ninja -C out/Default java_deobfuscate

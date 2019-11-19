@@ -11,7 +11,7 @@
 
 #include "base/strings/string_number_conversions.h"
 
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_test_data.h"
 #include "device/fido/test_callback_receiver.h"
@@ -44,7 +44,7 @@ CtapMakeCredentialRequest MakeTestRequest() {
 // keychain-access-group entitlement.
 TEST(MakeCredentialOperationTest, DISABLED_TestRun)
 API_AVAILABLE(macosx(10.12.2)) {
-  base::test::ScopedTaskEnvironment scoped_task_environment;
+  base::test::TaskEnvironment task_environment;
   TestCallbackReceiver<CtapDeviceResponseCode,
                        base::Optional<AuthenticatorMakeCredentialResponse>>
       callback_receiver;

@@ -7,6 +7,8 @@
 that they are suitable for publication on a Google documentation site.
 '''
 
+from __future__ import print_function
+
 import optparse
 import os
 import re
@@ -16,10 +18,10 @@ import sys
 try:
   from BeautifulSoup import BeautifulSoup, Tag
 except (ImportError, NotImplementedError):
-  print ("This tool requires the BeautifulSoup package "
-         "(see http://www.crummy.com/software/BeautifulSoup/).\n"
-         "Make sure that the file BeautifulSoup.py is either in this directory "
-         "or is available in your PYTHON_PATH")
+  print("This tool requires the BeautifulSoup package "
+        "(see http://www.crummy.com/software/BeautifulSoup/).\n"
+        "Make sure that the file BeautifulSoup.py is either in this directory "
+        "or is available in your PYTHON_PATH")
   raise
 
 
@@ -65,10 +67,10 @@ class HTMLFixer(object):
     table_headers.reverse()
     # Split up tables that have multiple table header (th) rows
     for tag in table_headers:
-      print "Header tag: %s is %s" % (tag.name, tag.string.strip())
+      print("Header tag: %s is %s" % (tag.name, tag.string.strip()))
       # Is this a heading in the middle of a table?
       if tag.findPreviousSibling('tr') and tag.parent.name == 'table':
-        print "Splitting Table named %s" % tag.string.strip()
+        print("Splitting Table named %s" % tag.string.strip())
         table = tag.parent
         table_parent = table.parent
         table_index = table_parent.contents.index(table)
@@ -120,7 +122,7 @@ def main():
       with open(filename, 'r') as file:
         html = file.read()
 
-      print "Processing %s" % filename
+      print("Processing %s" % filename)
       fixer = HTMLFixer(html)
       fixer.FixAll()
       with open(filename, 'w') as file:
@@ -132,7 +134,7 @@ def main():
           os.mkdir(new_directory)
         shutil.move(filename, new_directory)
     except:
-      print "Error while processing %s" % filename
+      print("Error while processing %s" % filename)
       raise
 
   return 0

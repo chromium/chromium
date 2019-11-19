@@ -11,6 +11,7 @@
 #include "base/command_line.h"
 #include "base/containers/circular_deque.h"
 #include "base/lazy_instance.h"
+#include "base/optional.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/surfaces/local_surface_id_allocation.h"
@@ -261,7 +262,7 @@ void BrowserCompositorMac::TransitionToState(State new_state) {
     // Don't transiently hide the DelegatedFrameHost because that can cause the
     // current frame to be inappropriately evicted.
     // https://crbug.com/897156
-    delegated_frame_host_->WasHidden();
+    delegated_frame_host_->WasHidden(DelegatedFrameHost::HiddenCause::kOther);
     return;
   }
 
@@ -289,9 +290,11 @@ void BrowserCompositorMac::TransitionToState(State new_state) {
   }
   DCHECK_EQ(state_, new_state);
   delegated_frame_host_->AttachToCompositor(GetCompositor());
+  has_saved_frame_before_state_transition_ =
+      delegated_frame_host_->HasSavedFrame();
   delegated_frame_host_->WasShown(
       GetRendererLocalSurfaceIdAllocation().local_surface_id(), dfh_size_dip_,
-      false /* record_presentation_time */);
+      base::nullopt /* record_tab_switch_time_request */);
 }
 
 // static

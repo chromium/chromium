@@ -8,6 +8,7 @@
 #include "base/macros.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
@@ -40,6 +41,8 @@ class CORE_EXPORT CSSParserTokenStream {
   // Instantiate this to start reading from a block. When the guard is out of
   // scope, the rest of the block is consumed.
   class BlockGuard {
+    STACK_ALLOCATED();
+
    public:
     explicit BlockGuard(CSSParserTokenStream& stream) : stream_(stream) {
       const CSSParserToken next = stream.ConsumeInternal();

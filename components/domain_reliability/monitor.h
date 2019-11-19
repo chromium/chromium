@@ -171,7 +171,7 @@ class DOMAIN_RELIABILITY_EXPORT DomainReliabilityMonitor
 
   bool discard_uploads_set_;
 
-  base::WeakPtrFactory<DomainReliabilityMonitor> weak_factory_;
+  base::WeakPtrFactory<DomainReliabilityMonitor> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DomainReliabilityMonitor);
 };

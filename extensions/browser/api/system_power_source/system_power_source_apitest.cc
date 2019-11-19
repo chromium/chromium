@@ -6,7 +6,7 @@
 #include <utility>
 
 #include "base/macros.h"
-#include "chromeos/dbus/fake_power_manager_client.h"
+#include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
 #include "extensions/common/features/feature_session_type.h"
 #include "extensions/shell/test/shell_apitest.h"

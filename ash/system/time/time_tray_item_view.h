@@ -28,6 +28,9 @@ class TimeTrayItemView : public TrayItemView, public SessionObserver {
   // SessionObserver:
   void OnSessionStateChanged(session_manager::SessionState state) override;
 
+  // views::View:
+  const char* GetClassName() const override;
+
  private:
   TimeView* time_view_ = nullptr;
   ScopedSessionObserver session_observer_;

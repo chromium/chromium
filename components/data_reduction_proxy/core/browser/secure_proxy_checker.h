@@ -11,7 +11,7 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "net/url_request/url_request_status.h"
+#include "services/network/public/mojom/url_response_head.mojom-forward.h"
 
 namespace net {
 struct RedirectInfo;
@@ -20,7 +20,6 @@ struct RedirectInfo;
 namespace network {
 class SharedURLLoaderFactory;
 class SimpleURLLoader;
-struct ResourceResponseHead;
 }  // namespace network
 
 namespace data_reduction_proxy {
@@ -45,7 +44,7 @@ class SecureProxyChecker {
                                    int response_code);
 
   void OnURLLoaderRedirect(const net::RedirectInfo& redirect_info,
-                           const network::ResourceResponseHead& response_head,
+                           const network::mojom::URLResponseHead& response_head,
                            std::vector<std::string>* to_be_removed_headers);
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;

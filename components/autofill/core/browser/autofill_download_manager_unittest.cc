@@ -23,7 +23,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/autofill/core/browser/autofill_field.h"
@@ -34,6 +34,7 @@
 #include "components/autofill/core/browser/randomized_encoder.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
+#include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_switches.h"
 #include "components/autofill/core/common/form_data.h"
@@ -52,6 +53,7 @@
 #include "services/network/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/re2/src/re2/re2.h"
 #include "url/third_party/mozilla/url_parse.h"
 
 using base::UTF8ToUTF16;
@@ -60,6 +62,8 @@ using net::test_server::EmbeddedTestServer;
 using net::test_server::HttpRequest;
 using net::test_server::HttpResponse;
 namespace autofill {
+
+using mojom::SubmissionSource;
 
 namespace {
 
@@ -105,6 +109,10 @@ std::string GetStringFromDataElements(
 bool GetUploadRequestProtoFromRequest(
     network::TestURLLoaderFactory::PendingRequest* loader_request,
     AutofillUploadRequest* upload_request) {
+  if (loader_request == nullptr) {
+    return false;
+  }
+
   if (loader_request->request.request_body == nullptr) {
     return false;
   }
@@ -116,6 +124,62 @@ bool GetUploadRequestProtoFromRequest(
   }
   return true;
 }
+
+bool GetAutofillPageResourceQueryRequestFromRequest(
+    network::TestURLLoaderFactory::PendingRequest* loader_request,
+    AutofillPageResourceQueryRequest* query_request) {
+  if (loader_request == nullptr) {
+    return false;
+  }
+
+  if (loader_request->request.request_body == nullptr) {
+    return false;
+  }
+
+  std::string request_body_content = GetStringFromDataElements(
+      loader_request->request.request_body->elements());
+  if (!query_request->ParseFromString(request_body_content)) {
+    return false;
+  }
+  return true;
+}
+
+bool DeserializeAutofillPageQueryRequest(base::StringPiece serialized_content,
+                                         AutofillPageQueryRequest* request) {
+  std::string decoded_content;
+  if (!base::Base64UrlDecode(serialized_content,
+                             base::Base64UrlDecodePolicy::REQUIRE_PADDING,
+                             &decoded_content)) {
+    return false;
+  }
+  if (!request->ParseFromString(decoded_content)) {
+    return false;
+  }
+  return true;
+}
+
+class AutofillDownloadManagerWithCustomPayloadSize
+    : public AutofillDownloadManager {
+ public:
+  ~AutofillDownloadManagerWithCustomPayloadSize() override {}
+  AutofillDownloadManagerWithCustomPayloadSize(AutofillDriver* driver,
+                                               Observer* observer,
+                                               const std::string& api_key,
+                                               size_t length)
+      : AutofillDownloadManager(driver,
+                                observer,
+                                api_key,
+                                /*log_manager=*/nullptr),
+        length_(length) {}
+
+ protected:
+  size_t GetPayloadLength(base::StringPiece payload) const override {
+    return length_;
+  }
+
+ private:
+  size_t length_;
+};
 
 }  // namespace
 
@@ -166,8 +230,9 @@ class AutofillDownloadManagerTest : public AutofillDownloadManager::Observer,
     response.signature = form_signature;
     response.error = http_error;
     response.type_of_response =
-        request_type == AutofillDownloadManager::REQUEST_QUERY ?
-            REQUEST_QUERY_FAILED : REQUEST_UPLOAD_FAILED;
+        request_type == AutofillDownloadManager::REQUEST_QUERY
+            ? REQUEST_QUERY_FAILED
+            : REQUEST_UPLOAD_FAILED;
     responses_.push_back(response);
   }
 
@@ -188,7 +253,7 @@ class AutofillDownloadManagerTest : public AutofillDownloadManager::Observer,
   };
 
   ScopedActiveAutofillExperiments scoped_active_autofill_experiments;
-  base::test::ScopedTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
   std::list<ResponseData> responses_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
   network::TestURLLoaderFactory test_url_loader_factory_;
@@ -286,7 +351,8 @@ TEST_F(AutofillDownloadManagerTest, QueryAndUploadTest) {
   form_structures.push_back(std::make_unique<FormStructure>(form));
 
   // Make download manager.
-  AutofillDownloadManager download_manager(&driver_, this, "dummykey");
+  AutofillDownloadManager download_manager(&driver_, this, "dummykey",
+                                           /*log_manager=*/nullptr);
 
   // Request with id 0.
   base::HistogramTester histogram;
@@ -329,7 +395,8 @@ TEST_F(AutofillDownloadManagerTest, QueryAndUploadTest) {
       "<field autofilltype=\"31\" />"
       "<field autofilltype=\"33\" />"
       "</autofillqueryresponse>",
-      "", "<html></html>",
+      "",
+      "<html></html>",
   };
 
   // Return them out of sequence.
@@ -344,7 +411,7 @@ TEST_F(AutofillDownloadManagerTest, QueryAndUploadTest) {
   // Request 2: Unsuccessful upload.
   request = test_url_loader_factory_.GetPendingRequest(2);
   test_url_loader_factory_.SimulateResponseWithoutRemovingFromPendingList(
-      request, network::CreateResourceResponseHead(net::HTTP_NOT_FOUND),
+      request, network::CreateURLResponseHead(net::HTTP_NOT_FOUND),
       responses[2], network::URLLoaderCompletionStatus(net::OK));
   histogram.ExpectBucketCount("Autofill.Upload.HttpResponseOrErrorCode",
                               net::HTTP_NOT_FOUND, 1);
@@ -400,8 +467,7 @@ TEST_F(AutofillDownloadManagerTest, QueryAndUploadTest) {
                                AutofillMetrics::QUERY_SENT, 2);
   histogram.ExpectUniqueSample("Autofill.Query.Method", METHOD_GET, 2);
   test_url_loader_factory_.SimulateResponseWithoutRemovingFromPendingList(
-      request,
-      network::CreateResourceResponseHead(net::HTTP_INTERNAL_SERVER_ERROR),
+      request, network::CreateURLResponseHead(net::HTTP_INTERNAL_SERVER_ERROR),
       responses[0], network::URLLoaderCompletionStatus(net::OK));
   histogram.ExpectBucketCount("Autofill.Query.HttpResponseOrErrorCode",
                               net::HTTP_INTERNAL_SERVER_ERROR, 1);
@@ -425,7 +491,7 @@ TEST_F(AutofillDownloadManagerTest, QueryAndUploadTest) {
   network::URLLoaderCompletionStatus status(net::OK);
   status.exists_in_cache = true;
   test_url_loader_factory_.SimulateResponseWithoutRemovingFromPendingList(
-      request, network::CreateResourceResponseHead(net::HTTP_OK), responses[0],
+      request, network::CreateURLResponseHead(net::HTTP_OK), responses[0],
       status);
 
   // Check Request 5.
@@ -483,7 +549,8 @@ TEST_F(AutofillDownloadManagerTest, QueryAPITest) {
   std::vector<std::unique_ptr<FormStructure>> form_structures;
   form_structures.push_back(std::make_unique<FormStructure>(form));
 
-  AutofillDownloadManager download_manager(&driver_, this, "dummykey");
+  AutofillDownloadManager download_manager(&driver_, this, "dummykey",
+                                           /*log_manager=*/nullptr);
 
   // Start the query request and look if it is successful. No response was
   // received yet.
@@ -495,26 +562,161 @@ TEST_F(AutofillDownloadManagerTest, QueryAPITest) {
   histogram.ExpectUniqueSample("Autofill.ServerQueryResponse",
                                AutofillMetrics::QUERY_SENT, 1);
   histogram.ExpectUniqueSample("Autofill.Query.Method", METHOD_GET, 1);
+  {
+    auto buckets = histogram.GetAllSamples("Autofill.Query.GetUrlLength");
+    ASSERT_EQ(1U, buckets.size());
+    EXPECT_GT(buckets[0].count, 0);
+  }
+  histogram.ExpectUniqueSample("Autofill.Query.ApiUrlIsTooLong", false, 1);
 
   // Inspect the request that the test URL loader sent.
   network::TestURLLoaderFactory::PendingRequest* request =
       test_url_loader_factory_.GetPendingRequest(0);
-  // This is the URL we expect to query the API. The sub-path right after
-  // "/page" corresponds to the serialized AutofillPageQueryRequest proto (that
-  // we filled forms in) encoded in base64. The Autofill
-  // https://clients1.google.com/ domain URL corresponds to the default domain
-  // used by the download manager.
-  const std::string expected_url = {
-      "https://clients1.google.com/v1/pages/"
-      "Chc2LjEuMTcxNS4xNDQyL2VuIChHR0xMKRIlCU9O84MyjH9NEgsNeu"
-      "FP4BIAGgAiABILDZxOStASABoAIgAaAA==?"
-      "alt=proto"};
-  EXPECT_EQ(request->request.url, expected_url);
-  std::string api_key_header_value;
-  EXPECT_TRUE(request->request.headers.GetHeader("X-Goog-Api-Key",
-                                                 &api_key_header_value));
-  EXPECT_EQ(api_key_header_value, "dummykey");
 
+  // Verify request URL and the data payload it carries.
+  {
+    // This is the URL we expect to query the API. The sub-path right after
+    // "/page" corresponds to the serialized AutofillPageQueryRequest proto
+    // (that we filled forms in) encoded in base64. The Autofill
+    // https://clients1.google.com/ domain URL corresponds to the default domain
+    // used by the download manager, which is invalid, but good for testing.
+    const std::string expected_url =
+        R"(https://clients1.google.com/v1/pages/(.+)\?alt=proto)";
+    std::string encoded_request;
+    ASSERT_TRUE(re2::RE2::FullMatch(request->request.url.spec(), expected_url,
+                                    &encoded_request));
+    AutofillPageQueryRequest request_content;
+    ASSERT_TRUE(
+        DeserializeAutofillPageQueryRequest(encoded_request, &request_content));
+    // Verify form content.
+    ASSERT_EQ(request_content.forms().size(), 1);
+    EXPECT_EQ(request_content.forms(0).signature(),
+              form_structures[0]->form_signature());
+    // Verify field content.
+    ASSERT_EQ(request_content.forms(0).fields().size(), 2);
+    EXPECT_EQ(request_content.forms(0).fields(0).signature(),
+              form_structures[0]->field(0)->GetFieldSignature());
+    EXPECT_EQ(request_content.forms(0).fields(1).signature(),
+              form_structures[0]->field(1)->GetFieldSignature());
+  }
+
+  // Verify API key header.
+  {
+    std::string header_value;
+    EXPECT_TRUE(
+        request->request.headers.GetHeader("X-Goog-Api-Key", &header_value));
+    EXPECT_EQ(header_value, "dummykey");
+  }
+  // Verify binary response header.
+  {
+    std::string header_value;
+    ASSERT_TRUE(request->request.headers.GetHeader(
+        "X-Goog-Encode-Response-If-Executable", &header_value));
+    EXPECT_EQ(header_value, "base64");
+  }
+
+  // Verify response.
+  test_url_loader_factory_.SimulateResponseWithoutRemovingFromPendingList(
+      request, "dummy response");
+  // Upon reception of a suggestions query, we expect OnLoadedServerPredictions
+  // to be called back from the observer and some histograms be incremented.
+  EXPECT_EQ(1U, responses_.size());
+  EXPECT_EQ(responses_.front().type_of_response,
+            AutofillDownloadManagerTest::QUERY_SUCCESSFULL);
+  histogram.ExpectBucketCount("Autofill.Query.WasInCache", CACHE_MISS, 1);
+  histogram.ExpectBucketCount("Autofill.Query.HttpResponseOrErrorCode",
+                              net::HTTP_OK, 1);
+}
+
+TEST_F(AutofillDownloadManagerTest, QueryAPITestWhenTooLongUrl) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      // Enabled
+      // We want to query the API rather than the legacy server.
+      {features::kAutofillUseApi},
+      // Disabled
+      {});
+
+  // Build the form structures that we want to query.
+  FormData form;
+  FormFieldData field;
+  field.label = UTF8ToUTF16("First Name");
+  field.name = UTF8ToUTF16("firstname");
+  field.form_control_type = "text";
+  form.fields.push_back(field);
+
+  std::vector<std::unique_ptr<FormStructure>> form_structures;
+  {
+    auto form_structure = std::make_unique<FormStructure>(form);
+    form_structure->set_is_rich_query_enabled(true);
+    form_structures.push_back(std::move(form_structure));
+  }
+
+  AutofillDownloadManagerWithCustomPayloadSize download_manager(
+      &driver_, this, "dummykey", kMaxAPIQueryGetSize + 1);
+
+  // Start the query request and look if it is successful. No response was
+  // received yet.
+  base::HistogramTester histogram;
+  EXPECT_TRUE(
+      download_manager.StartQueryRequest(ToRawPointerVector(form_structures)));
+
+  // Verify request.
+  // Verify if histograms are right.
+  histogram.ExpectUniqueSample("Autofill.ServerQueryResponse",
+                               AutofillMetrics::QUERY_SENT, 1);
+  // Verify that the logged method is POST.
+  histogram.ExpectUniqueSample("Autofill.Query.Method", METHOD_POST, 1);
+  // Verify that too long URL is tracked.
+  histogram.ExpectUniqueSample("Autofill.Query.ApiUrlIsTooLong", true, 1);
+
+  // Get the latest request that the test URL loader sent.
+  network::TestURLLoaderFactory::PendingRequest* request =
+      test_url_loader_factory_.GetPendingRequest(0);
+  // Verify that the POST URL is used when request data too large.
+  const std::string expected_url = {
+      "https://clients1.google.com/v1/pages:get?alt=proto"};
+  // Verify API key header.
+  EXPECT_EQ(request->request.url, expected_url);
+  {
+    std::string header_value;
+    EXPECT_TRUE(
+        request->request.headers.GetHeader("X-Goog-Api-Key", &header_value));
+    EXPECT_EQ(header_value, "dummykey");
+  }
+  // Verify Content-Type header.
+  {
+    std::string header_value;
+    ASSERT_TRUE(
+        request->request.headers.GetHeader("Content-Type", &header_value));
+    EXPECT_EQ(header_value, "application/x-protobuf");
+  }
+  // Verify binary response header.
+  {
+    std::string header_value;
+    ASSERT_TRUE(request->request.headers.GetHeader(
+        "X-Goog-Encode-Response-If-Executable", &header_value));
+    EXPECT_EQ(header_value, "base64");
+  }
+  // Verify content of the POST body data.
+  {
+    AutofillPageResourceQueryRequest query_request;
+    ASSERT_TRUE(GetAutofillPageResourceQueryRequestFromRequest(request,
+                                                               &query_request));
+    AutofillPageQueryRequest request_content;
+    ASSERT_TRUE(DeserializeAutofillPageQueryRequest(
+        query_request.serialized_request(), &request_content));
+    // Verify form content.
+    ASSERT_EQ(request_content.forms().size(), 1);
+    EXPECT_EQ(request_content.forms(0).signature(),
+              form_structures[0]->form_signature());
+    // Verify field content.
+    ASSERT_EQ(request_content.forms(0).fields().size(), 1);
+    EXPECT_EQ(request_content.forms(0).fields(0).signature(),
+              form_structures[0]->field(0)->GetFieldSignature());
+  }
+
+  // Verify response.
   test_url_loader_factory_.SimulateResponseWithoutRemovingFromPendingList(
       request, "dummy response");
   // Upon reception of a suggestions query, we expect OnLoadedServerPredictions
@@ -561,7 +763,8 @@ TEST_F(AutofillDownloadManagerTest, UploadToAPITest) {
   form_structure.set_submission_source(SubmissionSource::FORM_SUBMISSION);
 
   std::unique_ptr<PrefService> pref_service = test::PrefServiceForTesting();
-  AutofillDownloadManager download_manager(&driver_, this, "dummykey");
+  AutofillDownloadManager download_manager(&driver_, this, "dummykey",
+                                           /*log_manager=*/nullptr);
   EXPECT_TRUE(download_manager.StartUploadRequest(form_structure, true,
                                                   ServerFieldTypeSet(), "",
                                                   true, pref_service.get()));
@@ -644,9 +847,8 @@ TEST_F(AutofillDownloadManagerTest, BackoffLogic_Query) {
 
   // Request error incurs a retry after 1 second.
   test_url_loader_factory_.SimulateResponseWithoutRemovingFromPendingList(
-      request,
-      network::CreateResourceResponseHead(net::HTTP_INTERNAL_SERVER_ERROR), "",
-      network::URLLoaderCompletionStatus(net::OK));
+      request, network::CreateURLResponseHead(net::HTTP_INTERNAL_SERVER_ERROR),
+      "", network::URLLoaderCompletionStatus(net::OK));
 
   EXPECT_EQ(1U, responses_.size());
   EXPECT_LT(download_manager_.loader_backoff_.GetTimeUntilRelease(),
@@ -663,7 +865,7 @@ TEST_F(AutofillDownloadManagerTest, BackoffLogic_Query) {
   // Next error incurs a retry after 2 seconds.
   test_url_loader_factory_.SimulateResponseWithoutRemovingFromPendingList(
       request,
-      network::CreateResourceResponseHead(net::HTTP_REQUEST_ENTITY_TOO_LARGE),
+      network::CreateURLResponseHead(net::HTTP_REQUEST_ENTITY_TOO_LARGE),
       "<html></html>", network::URLLoaderCompletionStatus(net::OK));
 
   EXPECT_EQ(2U, responses_.size());
@@ -714,9 +916,8 @@ TEST_F(AutofillDownloadManagerTest, BackoffLogic_Upload) {
 
   // Error incurs a retry after 1 second.
   test_url_loader_factory_.SimulateResponseWithoutRemovingFromPendingList(
-      request,
-      network::CreateResourceResponseHead(net::HTTP_INTERNAL_SERVER_ERROR), "",
-      network::URLLoaderCompletionStatus(net::OK));
+      request, network::CreateURLResponseHead(net::HTTP_INTERNAL_SERVER_ERROR),
+      "", network::URLLoaderCompletionStatus(net::OK));
   EXPECT_EQ(1U, responses_.size());
   EXPECT_LT(download_manager_.loader_backoff_.GetTimeUntilRelease(),
             base::TimeDelta::FromMilliseconds(1100));
@@ -758,8 +959,8 @@ TEST_F(AutofillDownloadManagerTest, BackoffLogic_Upload) {
   request = test_url_loader_factory_.GetPendingRequest(2);
   test_url_loader_factory_.SimulateResponseWithoutRemovingFromPendingList(
       request,
-      network::CreateResourceResponseHead(net::HTTP_REQUEST_ENTITY_TOO_LARGE),
-      "", network::URLLoaderCompletionStatus(net::OK));
+      network::CreateURLResponseHead(net::HTTP_REQUEST_ENTITY_TOO_LARGE), "",
+      network::URLLoaderCompletionStatus(net::OK));
   ASSERT_EQ(test_url_loader_factory_.NumPending(), 0);
   histogram.ExpectBucketCount("Autofill.Upload.HttpResponseOrErrorCode",
                               net::HTTP_REQUEST_ENTITY_TOO_LARGE, 1);
@@ -811,7 +1012,7 @@ TEST_F(AutofillDownloadManagerTest, RetryLimit_Query) {
     // Request error incurs a retry after 1 second.
     test_url_loader_factory_.SimulateResponseWithoutRemovingFromPendingList(
         request,
-        network::CreateResourceResponseHead(net::HTTP_INTERNAL_SERVER_ERROR),
+        network::CreateURLResponseHead(net::HTTP_INTERNAL_SERVER_ERROR),
         "<html></html>", network::URLLoaderCompletionStatus(net::OK));
 
     EXPECT_EQ(1U, responses_.size());
@@ -888,8 +1089,8 @@ TEST_F(AutofillDownloadManagerTest, RetryLimit_Upload) {
     // Simulate a server failure.
     test_url_loader_factory_.SimulateResponseWithoutRemovingFromPendingList(
         request,
-        network::CreateResourceResponseHead(net::HTTP_INTERNAL_SERVER_ERROR),
-        "", network::URLLoaderCompletionStatus(net::OK));
+        network::CreateURLResponseHead(net::HTTP_INTERNAL_SERVER_ERROR), "",
+        network::URLLoaderCompletionStatus(net::OK));
 
     // Check that it was a failure.
     ASSERT_EQ(1U, responses_.size());
@@ -1005,25 +1206,25 @@ TEST_F(AutofillDownloadManagerTest, CacheQueryTest) {
   // Limit cache to two forms.
   LimitCache(2);
 
-  const char *responses[] = {
-    "<autofillqueryresponse>"
+  const char* responses[] = {
+      "<autofillqueryresponse>"
       "<field autofilltype=\"0\" />"
       "<field autofilltype=\"3\" />"
       "<field autofilltype=\"5\" />"
-    "</autofillqueryresponse>",
-    "<autofillqueryresponse>"
-      "<field autofilltype=\"0\" />"
-      "<field autofilltype=\"3\" />"
-      "<field autofilltype=\"5\" />"
-      "<field autofilltype=\"9\" />"
-    "</autofillqueryresponse>",
-    "<autofillqueryresponse>"
+      "</autofillqueryresponse>",
+      "<autofillqueryresponse>"
       "<field autofilltype=\"0\" />"
       "<field autofilltype=\"3\" />"
       "<field autofilltype=\"5\" />"
       "<field autofilltype=\"9\" />"
+      "</autofillqueryresponse>",
+      "<autofillqueryresponse>"
       "<field autofilltype=\"0\" />"
-    "</autofillqueryresponse>",
+      "<field autofilltype=\"3\" />"
+      "<field autofilltype=\"5\" />"
+      "<field autofilltype=\"9\" />"
+      "<field autofilltype=\"0\" />"
+      "</autofillqueryresponse>",
   };
 
   base::HistogramTester histogram;
@@ -1152,9 +1353,13 @@ class AutofillServerCommunicationTest
 
     // Intialize the autofill driver.
     shared_url_loader_factory_ =
-        base::MakeRefCounted<network::TestSharedURLLoaderFactory>();
+        base::MakeRefCounted<network::TestSharedURLLoaderFactory>(
+            nullptr /* network_service */, true /* is_trusted */);
     driver_ = std::make_unique<TestAutofillDriver>();
     driver_->SetSharedURLLoaderFactory(shared_url_loader_factory_);
+    driver_->SetNetworkIsolationKey(
+        net::NetworkIsolationKey(url::Origin::Create(GURL("https://abc.com")),
+                                 url::Origin::Create(GURL("https://xyz.com"))));
 
     // Configure the autofill server communications channel.
     switch (GetParam()) {
@@ -1291,8 +1496,8 @@ class AutofillServerCommunicationTest
     return succeeded;
   }
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_{
-      base::test::ScopedTaskEnvironment::MainThreadType::IO};
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::MainThreadType::IO};
   base::test::ScopedCommandLine scoped_command_line_;
   base::test::ScopedFeatureList scoped_feature_list_1_;
   base::test::ScopedFeatureList scoped_feature_list_2_;
@@ -1525,7 +1730,7 @@ TEST_P(AutofillQueryTest, ExpiredCacheInResponse) {
 TEST_P(AutofillQueryTest, RichMetadata_Enabled) {
   // Initialize a form. Note that this state is post-parse.
   FormData form;
-  form.origin = GURL("https://origin.com");
+  form.url = GURL("https://origin.com");
   form.action = GURL("https://origin.com/submit-me");
   form.id_attribute = UTF8ToUTF16("form-id-attribute");
   form.name_attribute = UTF8ToUTF16("form-name-attribute");
@@ -1625,7 +1830,7 @@ TEST_P(AutofillQueryTest, RichMetadata_Enabled) {
 TEST_P(AutofillQueryTest, RichMetadata_Disabled) {
   // Initialize a form. Note that this state is post-parse.
   FormData form;
-  form.origin = GURL("https://origin.com");
+  form.url = GURL("https://origin.com");
   form.action = GURL("https://origin.com/submit-me");
   form.id_attribute = UTF8ToUTF16("form-id-attribute");
   form.name_attribute = UTF8ToUTF16("form-name-attribute");
@@ -1715,7 +1920,7 @@ TEST_P(AutofillUploadTest, RichMetadata) {
   local_feature.InitAndEnableFeature(features::kAutofillMetadataUploads);
 
   FormData form;
-  form.origin = GURL("https://origin.com");
+  form.url = GURL("https://origin.com");
   form.action = GURL("https://origin.com/submit-me");
   form.id_attribute = UTF8ToUTF16("form-id_attribute");
   form.name_attribute = UTF8ToUTF16("form-id_attribute");
@@ -1759,10 +1964,11 @@ TEST_P(AutofillUploadTest, RichMetadata) {
   FormStructure form_structure(form);
   form_structure.set_page_language("fr-ca");
 
-  for (int i = 0; i < 8; ++i) {
-    SCOPED_TRACE(base::StringPrintf("submission source = %d", i));
+  for (int i = 0; i <= static_cast<int>(SubmissionSource::kMaxValue); ++i) {
     base::HistogramTester histogram_tester;
     auto submission_source = static_cast<SubmissionSource>(i);
+    SCOPED_TRACE(testing::Message()
+                 << "submission source = " << submission_source);
     form_structure.set_submission_source(submission_source);
     form_structure.set_randomized_encoder(
         RandomizedEncoder::Create(pref_service_.get()));
@@ -1830,10 +2036,11 @@ TEST_P(AutofillUploadTest, Throttling) {
 
   AutofillDownloadManager download_manager(driver_.get(), this);
   FormStructure form_structure(form);
-  for (int i = 0; i < 8; ++i) {
-    SCOPED_TRACE(base::StringPrintf("submission source = %d", i));
+  for (int i = 0; i <= static_cast<int>(SubmissionSource::kMaxValue); ++i) {
     base::HistogramTester histogram_tester;
     auto submission_source = static_cast<SubmissionSource>(i);
+    SCOPED_TRACE(testing::Message()
+                 << "submission source = " << submission_source);
     form_structure.set_submission_source(submission_source);
 
     // The first attempt should succeed.
@@ -1891,10 +2098,11 @@ TEST_P(AutofillUploadTest, ThrottlingDisabled) {
   FormStructure form_structure(form);
   FormStructure small_form_structure(small_form);
 
-  for (int i = 0; i < 8; ++i) {
-    SCOPED_TRACE(base::StringPrintf("submission source = %d", i));
+  for (int i = 0; i <= static_cast<int>(SubmissionSource::kMaxValue); ++i) {
     base::HistogramTester histogram_tester;
     auto submission_source = static_cast<SubmissionSource>(i);
+    SCOPED_TRACE(testing::Message()
+                 << "submission source = " << submission_source);
     form_structure.set_submission_source(submission_source);
     small_form_structure.set_submission_source(submission_source);
 
@@ -1975,7 +2183,7 @@ TEST_P(AutofillUploadTest, PeriodicReset) {
   base::HistogramTester histogram_tester;
 
   TestAutofillClock test_clock;
-  test_clock.SetNow(base::Time::Now());
+  test_clock.SetNow(AutofillClock::Now());
 
   // The first attempt should succeed.
   EXPECT_TRUE(SendUploadRequest(form_structure, true, {}, "", true));
@@ -2033,7 +2241,7 @@ TEST_P(AutofillUploadTest, ResetOnClearUploadHisotry) {
   base::HistogramTester histogram_tester;
 
   TestAutofillClock test_clock;
-  test_clock.SetNow(base::Time::Now());
+  test_clock.SetNow(AutofillClock::Now());
 
   // The first attempt should succeed.
   EXPECT_TRUE(SendUploadRequest(form_structure, true, {}, "", true));

@@ -2,14 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "third_party/blink/renderer/modules/document_metadata/copyless_paste_extractor.h"
+
 #include <memory>
 #include <utility>
+
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/platform/modules/document_metadata/copyless_paste.mojom-blink.h"
+#include "third_party/blink/public/mojom/document_metadata/copyless_paste.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
-#include "third_party/blink/renderer/modules/document_metadata/copyless_paste_extractor.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
 
@@ -29,10 +32,12 @@ class CopylessPasteExtractorTest : public PageTestBase {
   CopylessPasteExtractorTest() = default;
 
  protected:
-  void TearDown() override { ThreadState::Current()->CollectAllGarbage(); }
+  void TearDown() override {
+    ThreadState::Current()->CollectAllGarbageForTesting();
+  }
 
   WebPagePtr Extract() {
-    return CopylessPasteExtractor::extract(GetDocument());
+    return CopylessPasteExtractor::Extract(GetDocument());
   }
 
   void SetHTMLInnerHTML(const String&);
@@ -41,15 +46,15 @@ class CopylessPasteExtractorTest : public PageTestBase {
 
   void SetTitle(const String&);
 
-  PropertyPtr createStringProperty(const String& name, const String& value);
+  PropertyPtr CreateStringProperty(const String& name, const String& value);
 
-  PropertyPtr createBooleanProperty(const String& name, const bool& value);
+  PropertyPtr CreateBooleanProperty(const String& name, const bool& value);
 
-  PropertyPtr createLongProperty(const String& name, const int64_t& value);
+  PropertyPtr CreateLongProperty(const String& name, const int64_t& value);
 
-  PropertyPtr createEntityProperty(const String& name, EntityPtr value);
+  PropertyPtr CreateEntityProperty(const String& name, EntityPtr value);
 
-  WebPagePtr createWebPage(const String& url, const String& title);
+  WebPagePtr CreateWebPage(const String& url, const String& title);
 };
 
 void CopylessPasteExtractorTest::SetHTMLInnerHTML(const String& html_content) {
@@ -64,7 +69,7 @@ void CopylessPasteExtractorTest::SetTitle(const String& title) {
   GetDocument().setTitle(title);
 }
 
-PropertyPtr CopylessPasteExtractorTest::createStringProperty(
+PropertyPtr CopylessPasteExtractorTest::CreateStringProperty(
     const String& name,
     const String& value) {
   PropertyPtr property = Property::New();
@@ -74,7 +79,7 @@ PropertyPtr CopylessPasteExtractorTest::createStringProperty(
   return property;
 }
 
-PropertyPtr CopylessPasteExtractorTest::createBooleanProperty(
+PropertyPtr CopylessPasteExtractorTest::CreateBooleanProperty(
     const String& name,
     const bool& value) {
   PropertyPtr property = Property::New();
@@ -84,7 +89,7 @@ PropertyPtr CopylessPasteExtractorTest::createBooleanProperty(
   return property;
 }
 
-PropertyPtr CopylessPasteExtractorTest::createLongProperty(
+PropertyPtr CopylessPasteExtractorTest::CreateLongProperty(
     const String& name,
     const int64_t& value) {
   PropertyPtr property = Property::New();
@@ -94,7 +99,7 @@ PropertyPtr CopylessPasteExtractorTest::createLongProperty(
   return property;
 }
 
-PropertyPtr CopylessPasteExtractorTest::createEntityProperty(const String& name,
+PropertyPtr CopylessPasteExtractorTest::CreateEntityProperty(const String& name,
                                                              EntityPtr value) {
   PropertyPtr property = Property::New();
   property->name = name;
@@ -104,7 +109,7 @@ PropertyPtr CopylessPasteExtractorTest::createEntityProperty(const String& name,
   return property;
 }
 
-WebPagePtr CopylessPasteExtractorTest::createWebPage(const String& url,
+WebPagePtr CopylessPasteExtractorTest::CreateWebPage(const String& url,
                                                      const String& title) {
   WebPagePtr page = WebPage::New();
   page->url = blink::KURL(url);
@@ -135,12 +140,12 @@ TEST_F(CopylessPasteExtractorTest, basic) {
   ASSERT_FALSE(extracted.is_null());
 
   WebPagePtr expected =
-      createWebPage("http://www.test.com/", "My neat website about cool stuff");
+      CreateWebPage("http://www.test.com/", "My neat website about cool stuff");
 
   EntityPtr restaurant = Entity::New();
   restaurant->type = "Restaurant";
   restaurant->properties.push_back(
-      createStringProperty("name", "Special characters for ya >_<;"));
+      CreateStringProperty("name", "Special characters for ya >_<;"));
 
   expected->entities.push_back(std::move(restaurant));
   EXPECT_EQ(expected, extracted);
@@ -166,12 +171,12 @@ TEST_F(CopylessPasteExtractorTest, header) {
   ASSERT_FALSE(extracted.is_null());
 
   WebPagePtr expected =
-      createWebPage("http://www.test.com/", "My neat website about cool stuff");
+      CreateWebPage("http://www.test.com/", "My neat website about cool stuff");
 
   EntityPtr restaurant = Entity::New();
   restaurant->type = "Restaurant";
   restaurant->properties.push_back(
-      createStringProperty("name", "Special characters for ya >_<;"));
+      CreateStringProperty("name", "Special characters for ya >_<;"));
 
   expected->entities.push_back(std::move(restaurant));
   EXPECT_EQ(expected, extracted);
@@ -196,11 +201,11 @@ TEST_F(CopylessPasteExtractorTest, booleanValue) {
   ASSERT_FALSE(extracted.is_null());
 
   WebPagePtr expected =
-      createWebPage("http://www.test.com/", "My neat website about cool stuff");
+      CreateWebPage("http://www.test.com/", "My neat website about cool stuff");
 
   EntityPtr restaurant = Entity::New();
   restaurant->type = "Restaurant";
-  restaurant->properties.push_back(createBooleanProperty("open", true));
+  restaurant->properties.push_back(CreateBooleanProperty("open", true));
 
   expected->entities.push_back(std::move(restaurant));
   EXPECT_EQ(expected, extracted);
@@ -225,11 +230,11 @@ TEST_F(CopylessPasteExtractorTest, longValue) {
   ASSERT_FALSE(extracted.is_null());
 
   WebPagePtr expected =
-      createWebPage("http://www.test.com/", "My neat website about cool stuff");
+      CreateWebPage("http://www.test.com/", "My neat website about cool stuff");
 
   EntityPtr restaurant = Entity::New();
   restaurant->type = "Restaurant";
-  restaurant->properties.push_back(createLongProperty("long", 1ll));
+  restaurant->properties.push_back(CreateLongProperty("long", 1ll));
 
   expected->entities.push_back(std::move(restaurant));
   EXPECT_EQ(expected, extracted);
@@ -254,11 +259,11 @@ TEST_F(CopylessPasteExtractorTest, doubleValue) {
   ASSERT_FALSE(extracted.is_null());
 
   WebPagePtr expected =
-      createWebPage("http://www.test.com/", "My neat website about cool stuff");
+      CreateWebPage("http://www.test.com/", "My neat website about cool stuff");
 
   EntityPtr restaurant = Entity::New();
   restaurant->type = "Restaurant";
-  restaurant->properties.push_back(createStringProperty("double", "1.5"));
+  restaurant->properties.push_back(CreateStringProperty("double", "1.5"));
 
   expected->entities.push_back(std::move(restaurant));
   EXPECT_EQ(expected, extracted);
@@ -302,13 +307,13 @@ TEST_F(CopylessPasteExtractorTest, multiple) {
   ASSERT_FALSE(extracted.is_null());
 
   WebPagePtr expected =
-      createWebPage("http://www.test.com/", "My neat website about cool stuff");
+      CreateWebPage("http://www.test.com/", "My neat website about cool stuff");
 
   for (int i = 0; i < 3; ++i) {
     EntityPtr restaurant = Entity::New();
     restaurant->type = "Restaurant";
     restaurant->properties.push_back(
-        createStringProperty("name", "Special characters for ya >_<;"));
+        CreateStringProperty("name", "Special characters for ya >_<;"));
 
     expected->entities.push_back(std::move(restaurant));
   }
@@ -339,22 +344,22 @@ TEST_F(CopylessPasteExtractorTest, nested) {
   ASSERT_FALSE(extracted.is_null());
 
   WebPagePtr expected =
-      createWebPage("http://www.test.com/", "My neat website about cool stuff");
+      CreateWebPage("http://www.test.com/", "My neat website about cool stuff");
 
   EntityPtr restaurant = Entity::New();
   restaurant->type = "Restaurant";
   restaurant->properties.push_back(
-      createStringProperty("name", "Ye ol greasy diner"));
+      CreateStringProperty("name", "Ye ol greasy diner"));
 
   EntityPtr address = Entity::New();
   address->type = "Thing";
   address->properties.push_back(
-      createStringProperty("streetAddress", "123 Big Oak Road"));
+      CreateStringProperty("streetAddress", "123 Big Oak Road"));
   address->properties.push_back(
-      createStringProperty("addressLocality", "San Francisco"));
+      CreateStringProperty("addressLocality", "San Francisco"));
 
   restaurant->properties.push_back(
-      createEntityProperty("address", std::move(address)));
+      CreateEntityProperty("address", std::move(address)));
 
   expected->entities.push_back(std::move(restaurant));
   EXPECT_EQ(expected, extracted);
@@ -379,7 +384,7 @@ TEST_F(CopylessPasteExtractorTest, repeated) {
   ASSERT_FALSE(extracted.is_null());
 
   WebPagePtr expected =
-      createWebPage("http://www.test.com/", "My neat website about cool stuff");
+      CreateWebPage("http://www.test.com/", "My neat website about cool stuff");
 
   EntityPtr restaurant = Entity::New();
   restaurant->type = "Restaurant";
@@ -429,12 +434,12 @@ TEST_F(CopylessPasteExtractorTest, repeatedObject) {
   ASSERT_FALSE(extracted.is_null());
 
   WebPagePtr expected =
-      createWebPage("http://www.test.com/", "My neat website about cool stuff");
+      CreateWebPage("http://www.test.com/", "My neat website about cool stuff");
 
   EntityPtr restaurant = Entity::New();
   restaurant->type = "Restaurant";
   restaurant->properties.push_back(
-      createStringProperty("name", "Ye ol greasy diner"));
+      CreateStringProperty("name", "Ye ol greasy diner"));
 
   PropertyPtr addressProperty = Property::New();
   addressProperty->name = "address";
@@ -444,9 +449,9 @@ TEST_F(CopylessPasteExtractorTest, repeatedObject) {
     EntityPtr address = Entity::New();
     address->type = "Thing";
     address->properties.push_back(
-        createStringProperty("streetAddress", "123 Big Oak Road"));
+        CreateStringProperty("streetAddress", "123 Big Oak Road"));
     address->properties.push_back(
-        createStringProperty("addressLocality", "San Francisco"));
+        CreateStringProperty("addressLocality", "San Francisco"));
     addressProperty->values->get_entity_values().push_back(std::move(address));
   }
   restaurant->properties.push_back(std::move(addressProperty));
@@ -456,12 +461,13 @@ TEST_F(CopylessPasteExtractorTest, repeatedObject) {
 }
 
 TEST_F(CopylessPasteExtractorTest, truncateLongString) {
-  String maxLengthString;
+  StringBuilder maxLengthString;
   for (int i = 0; i < 200; ++i) {
-    maxLengthString.append("a");
+    maxLengthString.Append("a");
   }
-  String tooLongString(maxLengthString);
-  tooLongString.append("a");
+  StringBuilder tooLongString;
+  tooLongString.Append(maxLengthString);
+  tooLongString.Append("a");
   SetHTMLInnerHTML(
       "<body>"
       "<script type=\"application/ld+json\">"
@@ -469,7 +475,7 @@ TEST_F(CopylessPasteExtractorTest, truncateLongString) {
       "\n"
       "{\"@type\": \"Restaurant\","
       "\"name\": \"" +
-      tooLongString +
+      tooLongString.ToString() +
       "\""
       "}\n"
       "\n"
@@ -482,12 +488,12 @@ TEST_F(CopylessPasteExtractorTest, truncateLongString) {
   ASSERT_FALSE(extracted.is_null());
 
   WebPagePtr expected =
-      createWebPage("http://www.test.com/", "My neat website about cool stuff");
+      CreateWebPage("http://www.test.com/", "My neat website about cool stuff");
 
   EntityPtr restaurant = Entity::New();
   restaurant->type = "Restaurant";
   restaurant->properties.push_back(
-      createStringProperty("name", maxLengthString));
+      CreateStringProperty("name", maxLengthString.ToString()));
 
   expected->entities.push_back(std::move(restaurant));
   EXPECT_EQ(expected, extracted);
@@ -511,7 +517,7 @@ TEST_F(CopylessPasteExtractorTest, enforceTypeExists) {
   ASSERT_TRUE(extracted.is_null());
 }
 
-TEST_F(CopylessPasteExtractorTest, enforceTypeWhitelist) {
+TEST_F(CopylessPasteExtractorTest, UnhandledTypeIgnored) {
   SetHTMLInnerHTML(
       "<body>"
       "<script type=\"application/ld+json\">"
@@ -531,14 +537,15 @@ TEST_F(CopylessPasteExtractorTest, enforceTypeWhitelist) {
 }
 
 TEST_F(CopylessPasteExtractorTest, truncateTooManyValuesInField) {
-  String largeRepeatedField = "[";
+  StringBuilder largeRepeatedField;
+  largeRepeatedField.Append("[");
   for (int i = 0; i < 101; ++i) {
-    largeRepeatedField.append("\"a\"");
+    largeRepeatedField.Append("\"a\"");
     if (i != 100) {
-      largeRepeatedField.append(", ");
+      largeRepeatedField.Append(", ");
     }
   }
-  largeRepeatedField.append("]");
+  largeRepeatedField.Append("]");
   SetHTMLInnerHTML(
       "<body>"
       "<script type=\"application/ld+json\">"
@@ -546,7 +553,7 @@ TEST_F(CopylessPasteExtractorTest, truncateTooManyValuesInField) {
       "\n"
       "{\"@type\": \"Restaurant\","
       "\"name\": " +
-      largeRepeatedField +
+      largeRepeatedField.ToString() +
       "}\n"
       "\n"
       "</script>"
@@ -558,7 +565,7 @@ TEST_F(CopylessPasteExtractorTest, truncateTooManyValuesInField) {
   ASSERT_FALSE(extracted.is_null());
 
   WebPagePtr expected =
-      createWebPage("http://www.test.com/", "My neat website about cool stuff");
+      CreateWebPage("http://www.test.com/", "My neat website about cool stuff");
 
   EntityPtr restaurant = Entity::New();
   restaurant->type = "Restaurant";
@@ -580,11 +587,11 @@ TEST_F(CopylessPasteExtractorTest, truncateTooManyValuesInField) {
 }
 
 TEST_F(CopylessPasteExtractorTest, truncateTooManyFields) {
-  String tooManyFields;
+  StringBuilder tooManyFields;
   for (int i = 0; i < 20; ++i) {
-    tooManyFields.append(String::Format("\"%d\": \"a\"", i));
+    tooManyFields.AppendFormat("\"%d\": \"a\"", i);
     if (i != 19) {
-      tooManyFields.append(",\n");
+      tooManyFields.Append(",\n");
     }
   }
   SetHTMLInnerHTML(
@@ -593,7 +600,7 @@ TEST_F(CopylessPasteExtractorTest, truncateTooManyFields) {
       "\n"
       "\n"
       "{\"@type\": \"Restaurant\"," +
-      tooManyFields +
+      tooManyFields.ToString() +
       "}\n"
       "\n"
       "</script>"
@@ -605,14 +612,14 @@ TEST_F(CopylessPasteExtractorTest, truncateTooManyFields) {
   ASSERT_FALSE(extracted.is_null());
 
   WebPagePtr expected =
-      createWebPage("http://www.test.com/", "My neat website about cool stuff");
+      CreateWebPage("http://www.test.com/", "My neat website about cool stuff");
 
   EntityPtr restaurant = Entity::New();
   restaurant->type = "Restaurant";
 
   for (int i = 0; i < 19; ++i) {
     restaurant->properties.push_back(
-        createStringProperty(String::Number(i), "a"));
+        CreateStringProperty(String::Number(i), "a"));
   }
 
   expected->entities.push_back(std::move(restaurant));
@@ -638,7 +645,7 @@ TEST_F(CopylessPasteExtractorTest, ignorePropertyWithEmptyArray) {
   ASSERT_FALSE(extracted.is_null());
 
   WebPagePtr expected =
-      createWebPage("http://www.test.com/", "My neat website about cool stuff");
+      CreateWebPage("http://www.test.com/", "My neat website about cool stuff");
 
   EntityPtr restaurant = Entity::New();
   restaurant->type = "Restaurant";
@@ -667,7 +674,7 @@ TEST_F(CopylessPasteExtractorTest, ignorePropertyWithMixedTypes) {
   ASSERT_FALSE(extracted.is_null());
 
   WebPagePtr expected =
-      createWebPage("http://www.test.com/", "My neat website about cool stuff");
+      CreateWebPage("http://www.test.com/", "My neat website about cool stuff");
 
   EntityPtr restaurant = Entity::New();
   restaurant->type = "Restaurant";
@@ -696,7 +703,7 @@ TEST_F(CopylessPasteExtractorTest, ignorePropertyWithNestedArray) {
   ASSERT_FALSE(extracted.is_null());
 
   WebPagePtr expected =
-      createWebPage("http://www.test.com/", "My neat website about cool stuff");
+      CreateWebPage("http://www.test.com/", "My neat website about cool stuff");
 
   EntityPtr restaurant = Entity::New();
   restaurant->type = "Restaurant";
@@ -734,12 +741,12 @@ TEST_F(CopylessPasteExtractorTest, enforceMaxNestingDepth) {
   ASSERT_FALSE(extracted.is_null());
 
   WebPagePtr expected =
-      createWebPage("http://www.test.com/", "My neat website about cool stuff");
+      CreateWebPage("http://www.test.com/", "My neat website about cool stuff");
 
   EntityPtr restaurant = Entity::New();
   restaurant->type = "Restaurant";
   restaurant->properties.push_back(
-      createStringProperty("name", "Ye ol greasy diner"));
+      CreateStringProperty("name", "Ye ol greasy diner"));
 
   EntityPtr entity1 = Entity::New();
   entity1->type = "Thing";
@@ -750,12 +757,12 @@ TEST_F(CopylessPasteExtractorTest, enforceMaxNestingDepth) {
   EntityPtr entity3 = Entity::New();
   entity3->type = "Thing";
 
-  entity2->properties.push_back(createEntityProperty("3", std::move(entity3)));
+  entity2->properties.push_back(CreateEntityProperty("3", std::move(entity3)));
 
-  entity1->properties.push_back(createEntityProperty("2", std::move(entity2)));
+  entity1->properties.push_back(CreateEntityProperty("2", std::move(entity2)));
 
   restaurant->properties.push_back(
-      createEntityProperty("1", std::move(entity1)));
+      CreateEntityProperty("1", std::move(entity1)));
 
   expected->entities.push_back(std::move(restaurant));
   EXPECT_EQ(expected, extracted);
@@ -787,12 +794,12 @@ TEST_F(CopylessPasteExtractorTest, maxNestingDepthWithTerminalProperty) {
   ASSERT_FALSE(extracted.is_null());
 
   WebPagePtr expected =
-      createWebPage("http://www.test.com/", "My neat website about cool stuff");
+      CreateWebPage("http://www.test.com/", "My neat website about cool stuff");
 
   EntityPtr restaurant = Entity::New();
   restaurant->type = "Restaurant";
   restaurant->properties.push_back(
-      createStringProperty("name", "Ye ol greasy diner"));
+      CreateStringProperty("name", "Ye ol greasy diner"));
 
   EntityPtr entity1 = Entity::New();
   entity1->type = "Thing";
@@ -803,14 +810,14 @@ TEST_F(CopylessPasteExtractorTest, maxNestingDepthWithTerminalProperty) {
   EntityPtr entity3 = Entity::New();
   entity3->type = "Thing";
 
-  entity3->properties.push_back(createLongProperty("4", 5));
+  entity3->properties.push_back(CreateLongProperty("4", 5));
 
-  entity2->properties.push_back(createEntityProperty("3", std::move(entity3)));
+  entity2->properties.push_back(CreateEntityProperty("3", std::move(entity3)));
 
-  entity1->properties.push_back(createEntityProperty("2", std::move(entity2)));
+  entity1->properties.push_back(CreateEntityProperty("2", std::move(entity2)));
 
   restaurant->properties.push_back(
-      createEntityProperty("1", std::move(entity1)));
+      CreateEntityProperty("1", std::move(entity1)));
 
   expected->entities.push_back(std::move(restaurant));
   EXPECT_EQ(expected, extracted);

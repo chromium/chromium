@@ -61,7 +61,7 @@ namespace content {
 PepperVpnProviderMessageFilter::PepperVpnProviderMessageFilter(
     BrowserPpapiHostImpl* host,
     PP_Instance instance)
-    : browser_context_(nullptr), bound_(false), weak_factory_(this) {
+    : browser_context_(nullptr), bound_(false) {
   DCHECK(host);
 
   document_url_ = host->GetDocumentURLForInstance(instance);
@@ -96,7 +96,7 @@ PepperVpnProviderMessageFilter::OverrideTaskRunnerForMessage(
     case PpapiHostMsg_VpnProvider_Bind::ID:
     case PpapiHostMsg_VpnProvider_SendPacket::ID:
     case PpapiHostMsg_VpnProvider_OnPacketReceivedReply::ID:
-      return base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::UI});
+      return base::CreateSingleThreadTaskRunner({BrowserThread::UI});
   }
   return nullptr;
 }
@@ -205,17 +205,24 @@ int32_t PepperVpnProviderMessageFilter::DoBind(
     FailureCallback failure_callback) {
   // Initialize shared memory
   if (!send_packet_buffer_ || !recv_packet_buffer_) {
-    std::unique_ptr<base::SharedMemory> send_buffer(new base::SharedMemory);
-    std::unique_ptr<base::SharedMemory> recv_buffer(new base::SharedMemory);
+    base::UnsafeSharedMemoryRegion send_buffer =
+        base::UnsafeSharedMemoryRegion::Create(kBufferSize);
+    base::UnsafeSharedMemoryRegion recv_buffer =
+        base::UnsafeSharedMemoryRegion::Create(kBufferSize);
+    if (!send_buffer.IsValid() || !recv_buffer.IsValid())
+      return PP_ERROR_NOMEMORY;
 
-    if (!send_buffer->CreateAndMapAnonymous(kBufferSize) ||
-        !recv_buffer->CreateAndMapAnonymous(kBufferSize))
+    base::WritableSharedMemoryMapping send_mapping = send_buffer.Map();
+    base::WritableSharedMemoryMapping recv_mapping = recv_buffer.Map();
+    if (!send_mapping.IsValid() || !recv_mapping.IsValid())
       return PP_ERROR_NOMEMORY;
 
     send_packet_buffer_ = std::make_unique<ppapi::VpnProviderSharedBuffer>(
-        kMaxBufferedPackets, kMaxPacketSize, std::move(send_buffer));
+        kMaxBufferedPackets, kMaxPacketSize, std::move(send_buffer),
+        std::move(send_mapping));
     recv_packet_buffer_ = std::make_unique<ppapi::VpnProviderSharedBuffer>(
-        kMaxBufferedPackets, kMaxPacketSize, std::move(recv_buffer));
+        kMaxBufferedPackets, kMaxPacketSize, std::move(recv_buffer),
+        std::move(recv_mapping));
   }
 
   vpn_service_proxy_->Bind(
@@ -231,10 +238,10 @@ void PepperVpnProviderMessageFilter::OnBindSuccess(
     const ppapi::host::ReplyMessageContext& context) {
   bound_ = true;
 
-  context.params.AppendHandle(ppapi::proxy::SerializedHandle(
-      send_packet_buffer_->GetHandle(), kBufferSize));
-  context.params.AppendHandle(ppapi::proxy::SerializedHandle(
-      recv_packet_buffer_->GetHandle(), kBufferSize));
+  context.params.AppendHandle(
+      ppapi::proxy::SerializedHandle(send_packet_buffer_->DuplicateRegion()));
+  context.params.AppendHandle(
+      ppapi::proxy::SerializedHandle(recv_packet_buffer_->DuplicateRegion()));
 
   OnBindReply(context, PP_OK);
 }

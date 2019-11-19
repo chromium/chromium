@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import print_function
+
 import difflib
 import logging
 import os
@@ -85,7 +87,7 @@ def DoPresubmit(argv, original_filename, backup_filename, script_name,
   if diff:
     for line in difflib.unified_diff(original_xml.splitlines(),
                                      pretty.splitlines()):
-      print line
+      print(line)
     return 0
 
   logging.info('Creating backup file: %s', backup_filename)

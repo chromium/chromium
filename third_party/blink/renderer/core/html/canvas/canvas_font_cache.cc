@@ -8,9 +8,11 @@
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
-#include "third_party/blink/renderer/platform/memory_pressure_listener.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/instrumentation/memory_pressure_listener.h"
 
 namespace {
 
@@ -55,7 +57,8 @@ unsigned CanvasFontCache::HardMaxFonts() {
                                     : CanvasFontCacheHardMaxFonts);
 }
 
-bool CanvasFontCache::GetFontUsingDefaultStyle(const String& font_string,
+bool CanvasFontCache::GetFontUsingDefaultStyle(HTMLCanvasElement& element,
+                                               const String& font_string,
                                                Font& resolved_font) {
   HashMap<String, Font>::iterator i =
       fonts_resolved_using_default_style_.find(font_string);
@@ -73,7 +76,8 @@ bool CanvasFontCache::GetFontUsingDefaultStyle(const String& font_string,
 
   scoped_refptr<ComputedStyle> font_style =
       ComputedStyle::Clone(*default_font_style_.get());
-  document_->EnsureStyleResolver().ComputeFont(font_style.get(), *parsed_style);
+  document_->EnsureStyleResolver().ComputeFont(element, font_style.get(),
+                                               *parsed_style);
   fonts_resolved_using_default_style_.insert(font_string,
                                              font_style->GetFont());
   resolved_font = fonts_resolved_using_default_style_.find(font_string)->value;
@@ -89,8 +93,9 @@ MutableCSSPropertyValueSet* CanvasFontCache::ParseFont(
     DCHECK(!add_result.is_new_entry);
     parsed_style = i->value;
   } else {
-    parsed_style = MutableCSSPropertyValueSet::Create(kHTMLStandardMode);
-    CSSParser::ParseValue(parsed_style, CSSPropertyFont, font_string, true,
+    parsed_style =
+        MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLStandardMode);
+    CSSParser::ParseValue(parsed_style, CSSPropertyID::kFont, font_string, true,
                           document_->GetSecureContextMode());
     if (parsed_style->IsEmpty())
       return nullptr;
@@ -98,7 +103,7 @@ MutableCSSPropertyValueSet* CanvasFontCache::ParseFont(
     // http://lists.w3.org/Archives/Public/public-html/2009Jul/0947.html,
     // the "inherit", "initial" and "unset" values must be ignored.
     const CSSValue* font_value =
-        parsed_style->GetPropertyCSSValue(CSSPropertyFontSize);
+        parsed_style->GetPropertyCSSValue(CSSPropertyID::kFontSize);
     if (font_value && font_value->IsCSSWideKeyword())
       return nullptr;
     fetched_fonts_.insert(font_string, parsed_style);

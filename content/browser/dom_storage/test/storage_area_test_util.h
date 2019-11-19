@@ -9,8 +9,9 @@
 
 #include "base/callback.h"
 #include "base/optional.h"
-#include "components/services/leveldb/public/interfaces/leveldb.mojom.h"
-#include "mojo/public/cpp/bindings/associated_binding.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/mojom/dom_storage/storage_area.mojom.h"
 
@@ -68,11 +69,10 @@ MakeGetAllCallback(bool* success_out,
 // When the call is complete, the |callback| will be called.
 class GetAllCallback : public blink::mojom::StorageAreaGetAllCallback {
  public:
-  static blink::mojom::StorageAreaGetAllCallbackAssociatedPtrInfo CreateAndBind(
-      bool* result,
-      base::OnceClosure callback);
+  static mojo::PendingAssociatedRemote<blink::mojom::StorageAreaGetAllCallback>
+  CreateAndBind(bool* result, base::OnceClosure callback);
 
-  static blink::mojom::StorageAreaGetAllCallbackAssociatedPtrInfo
+  static mojo::PendingAssociatedRemote<blink::mojom::StorageAreaGetAllCallback>
   CreateAndBindOnDedicatedPipe(bool* result, base::OnceClosure callback);
 
   ~GetAllCallback() override;
@@ -108,10 +108,10 @@ class MockLevelDBObserver : public blink::mojom::StorageAreaObserver {
   MOCK_METHOD1(AllDeleted, void(const std::string& source));
   MOCK_METHOD1(ShouldSendOldValueOnMutations, void(bool value));
 
-  blink::mojom::StorageAreaObserverAssociatedPtrInfo Bind();
+  mojo::PendingAssociatedRemote<blink::mojom::StorageAreaObserver> Bind();
 
  private:
-  mojo::AssociatedBinding<blink::mojom::StorageAreaObserver> binding_;
+  mojo::AssociatedReceiver<blink::mojom::StorageAreaObserver> receiver_{this};
 };
 
 }  // namespace test

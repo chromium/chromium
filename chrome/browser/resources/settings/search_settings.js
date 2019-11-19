@@ -39,8 +39,6 @@ cr.define('settings', function() {
     'IMG',
     'IRON-ICON',
     'IRON-LIST',
-    'PAPER-ICON-BUTTON',
-    'PAPER-ICON-BUTTON-LIGHT',
     'PAPER-RIPPLE',
     'PAPER-SPINNER-LITE',
     'SLOT',
@@ -63,8 +61,6 @@ cr.define('settings', function() {
     const highlights = [];
     const bubbles = [];
 
-    const domIfTag = Polymer.DomIf ? 'DOM-IF' : 'TEMPLATE';
-
     function doSearch(node) {
       // NOTE: For subpage wrappers <template route-path="..."> when |no-search|
       // participates in a data binding:
@@ -75,8 +71,7 @@ cr.define('settings', function() {
       //
       // The latter throws an error during the automatic Polymer 2 conversion to
       // <dom-if><template...></dom-if> syntax.
-      // TODO(dpapad):Clean this up once Polymer 2 migration has finished.
-      if (node.nodeName == domIfTag && node.hasAttribute('route-path') &&
+      if (node.nodeName == 'DOM-IF' && node.hasAttribute('route-path') &&
           !node.if && !node['noSearch'] &&
           !node.hasAttribute(SKIP_SEARCH_CSS_ATTRIBUTE)) {
         request.queue_.addRenderTask(new RenderTask(request, node));
@@ -154,10 +149,14 @@ cr.define('settings', function() {
     let associatedControl = null;
     // Find corresponding SETTINGS-SECTION parent and make it visible.
     let parent = node;
-    while (parent && parent.nodeName !== 'SETTINGS-SECTION') {
+    while (parent.nodeName !== 'SETTINGS-SECTION') {
       parent = parent.nodeType == Node.DOCUMENT_FRAGMENT_NODE ?
           parent.host :
           parent.parentNode;
+      if (!parent) {
+        // |node| wasn't inside a SETTINGS-SECTION.
+        return null;
+      }
       if (parent.nodeName == 'SETTINGS-SUBPAGE') {
         // TODO(dpapad): Cast to SettingsSubpageElement here.
         associatedControl = assert(
@@ -166,9 +165,7 @@ cr.define('settings', function() {
                 parent.pageTitle + ', but was not found.');
       }
     }
-    if (parent) {
-      parent.hiddenBySearch = false;
-    }
+    parent.hiddenBySearch = false;
 
     // Need to add the search bubble after the parent SETTINGS-SECTION has
     // become visible, otherwise |offsetWidth| returns zero.
@@ -218,9 +215,8 @@ cr.define('settings', function() {
     exec() {
       const routePath = this.node.getAttribute('route-path');
 
-      const content = Polymer.DomIf ?
-          Polymer.DomIf._contentForTemplate(this.node.firstElementChild) :
-          /** @type {{_content: DocumentFragment}} */ (this.node)._content;
+      const content = Polymer.DomIf._contentForTemplate(
+          /** @type {!HTMLTemplateElement} */ (this.node.firstElementChild));
       const subpageTemplate = content.querySelector('settings-subpage');
       subpageTemplate.setAttribute('route-path', routePath);
       assert(!this.node.if);

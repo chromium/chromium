@@ -104,7 +104,7 @@ class AutoscrollBrowserTest : public ContentBrowserTest {
 
   void LoadURL(const std::string& page_data) {
     const GURL data_url("data:text/html," + page_data);
-    NavigateToURL(shell(), data_url);
+    EXPECT_TRUE(NavigateToURL(shell(), data_url));
 
     RenderWidgetHostImpl* host = GetWidgetHost();
     host->GetView()->SetSize(gfx::Size(400, 400));
@@ -269,7 +269,9 @@ IN_PROC_BROWSER_TEST_F(AutoscrollBrowserTest,
   RenderFrameSubmissionObserver observer(
       GetWidgetHost()->render_frame_metadata_provider());
   blink::WebMouseWheelEvent wheel_event =
-      SyntheticWebMouseWheelEventBuilder::Build(10, 10, 0, -53, 0, true);
+      SyntheticWebMouseWheelEventBuilder::Build(
+          10, 10, 0, -53, 0,
+          ui::input_types::ScrollGranularity::kScrollByPrecisePixel);
   wheel_event.phase = blink::WebMouseWheelEvent::kPhaseBegan;
   GetWidgetHost()->ForwardWheelEvent(wheel_event);
   WaitForScroll(observer);
@@ -288,7 +290,9 @@ IN_PROC_BROWSER_TEST_F(AutoscrollBrowserTest,
   RenderFrameSubmissionObserver observer(
       GetWidgetHost()->render_frame_metadata_provider());
   blink::WebMouseWheelEvent wheel_event =
-      SyntheticWebMouseWheelEventBuilder::Build(10, 10, 0, -53, 0, true);
+      SyntheticWebMouseWheelEventBuilder::Build(
+          10, 10, 0, -53, 0,
+          ui::input_types::ScrollGranularity::kScrollByPrecisePixel);
   wheel_event.phase = blink::WebMouseWheelEvent::kPhaseBegan;
   GetWidgetHost()->ForwardWheelEvent(wheel_event);
 

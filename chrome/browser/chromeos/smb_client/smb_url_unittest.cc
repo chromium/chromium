@@ -24,11 +24,13 @@ class SmbUrlTest : public testing::Test {
 
   void ExpectValidUrl(const std::string& url,
                       const std::string& expected_url,
-                      const std::string& expected_host) {
+                      const std::string& expected_host,
+                      const std::string& expected_share) {
     SmbUrl smb_url(url);
     EXPECT_TRUE(smb_url.IsValid());
     EXPECT_EQ(expected_url, smb_url.ToString());
     EXPECT_EQ(expected_host, smb_url.GetHost());
+    EXPECT_EQ(expected_share, smb_url.GetShare());
   }
 
   void ExpectValidWindowsUNC(const std::string& url,
@@ -58,19 +60,24 @@ TEST_F(SmbUrlTest, InvalidUrls) {
 }
 
 TEST_F(SmbUrlTest, ValidUrls) {
-  ExpectValidUrl("smb://x", "smb://x/", "x");
-  ExpectValidUrl("smb:///x", "smb://x/", "x");
+  ExpectValidUrl("smb://x", "smb://x/", "x", "");
+  ExpectValidUrl("smb:///x", "smb://x/", "x", "");
+  ExpectValidUrl("smb:///x/y", "smb://x/y", "x", "y");
+  ExpectValidUrl("smb:///x/y/", "smb://x/y/", "x", "y");
+  ExpectValidUrl("smb:///x//y", "smb://x//y", "x", "");
+  ExpectValidUrl("smb:///x//y//", "smb://x//y//", "x", "");
   ExpectValidUrl("smb://server/share/long/folder",
-                 "smb://server/share/long/folder", "server");
+                 "smb://server/share/long/folder", "server", "share");
   ExpectValidUrl("smb://server/share/folder.with.dots",
-                 "smb://server/share/folder.with.dots", "server");
+                 "smb://server/share/folder.with.dots", "server", "share");
   ExpectValidUrl("smb://server\\share/mixed\\slashes",
-                 "smb://server/share/mixed/slashes", "server");
-  ExpectValidUrl("\\\\server/share", "smb://server/share", "server");
+                 "smb://server/share/mixed/slashes", "server", "share");
+  ExpectValidUrl("\\\\server", "smb://server/", "server", "");
+  ExpectValidUrl("\\\\server/share", "smb://server/share", "server", "share");
   ExpectValidUrl("\\\\server\\share/mixed//slashes",
-                 "smb://server/share/mixed//slashes", "server");
+                 "smb://server/share/mixed//slashes", "server", "share");
   ExpectValidUrl("smb://192.168.0.1/share", "smb://192.168.0.1/share",
-                 "192.168.0.1");
+                 "192.168.0.1", "share");
 }
 
 TEST_F(SmbUrlTest, NotValidIfStartsWithoutSchemeOrDoubleBackslash) {
@@ -79,20 +86,20 @@ TEST_F(SmbUrlTest, NotValidIfStartsWithoutSchemeOrDoubleBackslash) {
 
 TEST_F(SmbUrlTest, StartsWithBackslashRemovesBackslashAndAddsScheme) {
   ExpectValidUrl("\\\\192.168.0.1\\share", "smb://192.168.0.1/share",
-                 "192.168.0.1");
+                 "192.168.0.1", "share");
 }
 
 TEST_F(SmbUrlTest, GetHostWithIp) {
   ExpectValidUrl("smb://192.168.0.1/share", "smb://192.168.0.1/share",
-                 "192.168.0.1");
+                 "192.168.0.1", "share");
 }
 
 TEST_F(SmbUrlTest, GetHostWithDomain) {
-  ExpectValidUrl("smb://server/share", "smb://server/share", "server");
+  ExpectValidUrl("smb://server/share", "smb://server/share", "server", "share");
 }
 
 TEST_F(SmbUrlTest, HostBecomesLowerCase) {
-  ExpectValidUrl("smb://SERVER/share", "smb://server/share", "server");
+  ExpectValidUrl("smb://SERVER/share", "smb://server/share", "server", "share");
 }
 
 TEST_F(SmbUrlTest, ReplacesHost) {

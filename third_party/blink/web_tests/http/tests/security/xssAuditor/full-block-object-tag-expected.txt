@@ -1,9 +1,0 @@
-CONSOLE ERROR: line 4: The XSS Auditor blocked access to 'http://127.0.0.1:8000/security/xssAuditor/resources/echo-intertag.pl?enable-full-block=1&q=%3Cobject%20name=%27plugin%27%20type=%27application/x-blink-test-plugin%27%3E%3Cparam%20name=%27movie%27%20value=%27http://localhost:8000/security/xssAuditor/resources/dummy.swf%27%20/%3E%3C/object%3E' because the source code of a script was found within the request. The server sent an 'X-XSS-Protection' header requesting this behavior.
-CONSOLE MESSAGE: line 31: PASS: "frame" is cross-origin.
-The loading of iframe below should be blocked:
-
---------
-Frame: 'frame'
---------
-Could not load the requested resource.
-Error code: -28 (net::ERR_BLOCKED_BY_XSS_AUDITOR)

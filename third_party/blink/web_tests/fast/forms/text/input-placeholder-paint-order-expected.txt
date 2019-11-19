@@ -1,1 +1,0 @@
-The green caret in the following text box should painted over the red placeholder text.

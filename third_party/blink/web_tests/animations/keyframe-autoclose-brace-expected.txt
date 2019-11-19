@@ -1,2 +1,0 @@
-Tests parsing the @keyframes rule without closing brace. "User agents must close all open constructs ... at the end of the style sheet." (http://www.w3.org/TR/CSS21/syndata.html#parsing-errors). So it must be parsed as if all braces are closed.
-PASS: keyframes rule has length 4

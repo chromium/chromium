@@ -24,6 +24,16 @@ from grit.format import data_pack
 def ParseLine(line):
   return re.match('  {"([^"]+)", ([^},]+)', line)
 
+def GetFileAndDirName(out_path, pak_dir, resource_path):
+  dirname = os.path.dirname(resource_path)
+  # When files are generated, |dirname| becomes
+  # @out_folder@/<gen_path>/path_to_resource. To make the structure look as if
+  # this file was not generated, remove @out_folder@ and <gen_path>.
+  if ('@out_folder@' in dirname):
+    dirname = os.path.relpath(dirname, os.path.join('@out_folder@', pak_dir))
+  filename = os.path.basename(resource_path)
+  dirname = os.path.join(out_path, dirname)
+  return (filename, dirname)
 
 def Unpack(pak_path, out_path):
   pak_dir = os.path.dirname(pak_path)
@@ -54,11 +64,11 @@ def Unpack(pak_path, out_path):
 
   # Extract packed files, while preserving directory structure.
   for (resource_id, text) in data.resources.iteritems():
-    filename = resource_filenames[resource_ids[resource_id]]
-    dirname = os.path.join(out_path, os.path.dirname(filename))
+    (filename, dirname) = GetFileAndDirName(
+        out_path, pak_dir, resource_filenames[resource_ids[resource_id]])
     if not os.path.exists(dirname):
       os.makedirs(dirname)
-    with open(os.path.join(out_path, filename), 'w') as file:
+    with open(os.path.join(dirname, filename), 'w') as file:
       file.write(text)
 
 

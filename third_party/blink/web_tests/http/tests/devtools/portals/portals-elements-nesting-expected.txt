@@ -1,0 +1,21 @@
+Tests that portals are rendered inline.
+
+
+Running: testSetUp
+
+Running: testRemove
+- <html>
+      <head></head>
+    - <body>
+        - <div>
+            - <portal src="http://devtools.oopif.test:8000/devtools/oopif/resources/empty.html">
+                - #document
+                    - <html>
+                          <head></head>
+                          <body>\n\n</body>
+                      </html>
+              </portal>
+          </div>
+      </body>
+  </html>
+

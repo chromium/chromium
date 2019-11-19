@@ -1,1 +1,0 @@
-This tests that plugin content that doesn't match the declared type doesn't load, even if the document's CSP would allow it. This test passes if "FAIL!" isn't logged. 

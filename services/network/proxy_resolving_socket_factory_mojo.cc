@@ -27,8 +27,8 @@ void ProxyResolvingSocketFactoryMojo::CreateProxyResolvingSocket(
     const GURL& url,
     mojom::ProxyResolvingSocketOptionsPtr options,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
-    mojom::ProxyResolvingSocketRequest request,
-    mojom::SocketObserverPtr observer,
+    mojo::PendingReceiver<mojom::ProxyResolvingSocket> receiver,
+    mojo::PendingRemote<mojom::SocketObserver> observer,
     CreateProxyResolvingSocketCallback callback) {
   std::unique_ptr<net::StreamSocket> net_socket =
       factory_impl_.CreateSocket(url, options && options->use_tls);
@@ -43,8 +43,7 @@ void ProxyResolvingSocketFactoryMojo::CreateProxyResolvingSocket(
       static_cast<net::NetworkTrafficAnnotationTag>(traffic_annotation),
       std::move(observer), &tls_socket_factory_);
   ProxyResolvingSocketMojo* socket_raw = socket.get();
-  proxy_resolving_socket_bindings_.AddBinding(std::move(socket),
-                                              std::move(request));
+  proxy_resolving_socket_receivers_.Add(std::move(socket), std::move(receiver));
   socket_raw->Connect(std::move(callback));
 }
 

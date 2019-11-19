@@ -1,0 +1,3 @@
+document
+++contentinfo LocalizedControlType='content information'
+++++description Name='This is ARIA role contentinfo.'

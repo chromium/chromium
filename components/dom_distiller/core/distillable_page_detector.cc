@@ -17,9 +17,8 @@ const DistillablePageDetector* DistillablePageDetector::GetNewModel() {
   static DistillablePageDetector* detector = nullptr;
   if (!detector) {
     std::string serialized_proto =
-        ui::ResourceBundle::GetSharedInstance()
-            .GetRawDataResource(IDR_DISTILLABLE_PAGE_SERIALIZED_MODEL_NEW)
-            .as_string();
+        ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
+            IDR_DISTILLABLE_PAGE_SERIALIZED_MODEL_NEW);
     std::unique_ptr<AdaBoostProto> proto(new AdaBoostProto);
     CHECK(proto->ParseFromString(serialized_proto));
     detector = new DistillablePageDetector(std::move(proto));
@@ -31,9 +30,8 @@ const DistillablePageDetector* DistillablePageDetector::GetLongPageModel() {
   static DistillablePageDetector* detector = nullptr;
   if (!detector) {
     std::string serialized_proto =
-        ui::ResourceBundle::GetSharedInstance()
-            .GetRawDataResource(IDR_LONG_PAGE_SERIALIZED_MODEL)
-            .as_string();
+        ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
+            IDR_LONG_PAGE_SERIALIZED_MODEL);
     std::unique_ptr<AdaBoostProto> proto(new AdaBoostProto);
     CHECK(proto->ParseFromString(serialized_proto));
     detector = new DistillablePageDetector(std::move(proto));
@@ -53,8 +51,7 @@ DistillablePageDetector::DistillablePageDetector(
   }
 }
 
-DistillablePageDetector::~DistillablePageDetector() {
-}
+DistillablePageDetector::~DistillablePageDetector() {}
 
 bool DistillablePageDetector::Classify(
     const std::vector<double>& features) const {

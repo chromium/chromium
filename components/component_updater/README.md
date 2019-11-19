@@ -37,7 +37,7 @@ out into a dynamically-linked library or data file.
 ### Create a CRX Package Signing Key & Manifest (Non-Google)
 All components are delivered as CRX files (signed ZIP archives). You need to
 create a signing key. If you are a Googler, follow the instructions at
-http://go/newchromecomponents for maximum key security. Otherwise, you can
+http://go/newchromecomponent for maximum key security. Otherwise, you can
 create an RSA key pair using `openssl` or a similar tool.
 
 You will additionally need to create a manifest.json file. If nothing else, the

@@ -31,7 +31,7 @@
 #include "components/component_updater/mock_component_updater_service.h"
 #include "components/update_client/utils.h"
 #include "components/user_manager/scoped_user_manager.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace component_updater {
@@ -75,8 +75,8 @@ class TestUpdater : public OnDemandUpdater {
 
   // Whether has a pending update request (either foreground or background).
   bool HasPendingUpdate(const std::string& name) {
-    return base::ContainsKey(background_updates_, name) ||
-           base::ContainsKey(foreground_updates_, name);
+    return base::Contains(background_updates_, name) ||
+           base::Contains(foreground_updates_, name);
   }
 
   // Finishes a foreground update request. Returns false if there is no pending
@@ -152,8 +152,8 @@ class TestUpdater : public OnDemandUpdater {
     if (!installer)
       return false;
 
-    base::PostTaskWithTraits(
-        FROM_HERE, {base::MayBlock()},
+    base::PostTask(
+        FROM_HERE, {base::ThreadPool(), base::MayBlock()},
         base::BindOnce(
             &update_client::CrxInstaller::Install, installer, unpacked_path, "",
             base::BindOnce(&WrapInstallerCallback, std::move(callback))));
@@ -274,7 +274,7 @@ class CrOSComponentInstallerTest : public testing::Test {
     return service;
   }
 
-  void RunUntilIdle() { thread_bundle_.RunUntilIdle(); }
+  void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
   chromeos::FakeImageLoaderClient* image_loader_client() {
     return image_loader_client_;
@@ -327,7 +327,7 @@ class CrOSComponentInstallerTest : public testing::Test {
     return base::make_optional(path);
   }
 
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
 
   user_manager::ScopedUserManager user_manager_;
 

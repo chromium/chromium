@@ -2,12 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/android/config.gni")
 import("//printing/buildflags/buildflags.gni")
 import("//tools/grit/grit_rule.gni")
-import("//third_party/brotli/brotli.gni")
 
 about_credits_file = "$target_gen_dir/about_credits.html"
-about_credits_file_bro = "$target_gen_dir/about_credits.bro"
 
 group("resources") {
   public_deps = [
@@ -19,15 +18,21 @@ group("resources") {
 grit("components_resources") {
   source = "components_resources.grd"
 
+  inputs = [
+    about_credits_file,
+  ]
+
   outputs = [
     "grit/components_resources.h",
     "components_resources.pak",
   ]
   output_dir = "$root_gen_dir/components"
 
+  use_brotli = true
+
   grit_flags = [
     "-E",
-    "about_credits_file=" + rebase_path(about_credits_file_bro, root_build_dir),
+    "about_credits_file=" + rebase_path(about_credits_file, root_build_dir),
   ]
   defines = [
     "enable_basic_printing=$enable_basic_printing",
@@ -35,7 +40,7 @@ grit("components_resources") {
   ]
 
   deps = [
-    ":compressed_about_credits",
+    ":about_credits",
   ]
 }
 
@@ -51,14 +56,6 @@ grit("components_scaled_resources") {
     "components_resources_300_percent.pak",
   ]
   output_dir = "$root_gen_dir/components"
-}
-
-compress_file_brotli("compressed_about_credits") {
-  input_file = about_credits_file
-  output_file = about_credits_file_bro
-  deps = [
-    ":about_credits",
-  ]
 }
 
 action("about_credits") {

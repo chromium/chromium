@@ -1,30 +1,18 @@
 # Clang
 
-[Clang](http://clang.llvm.org/) is the main supported compiler when
-building Chromium on all platforms.
+Chromium ships a prebuilt [clang](http://clang.llvm.org) binary.
+It's just upstream clang built at a known-good revision that we
+bump every two weeks or so.
 
-Known [clang bugs and feature
-requests](http://code.google.com/p/chromium/issues/list?q=label:clang).
+This is the only supported compiler for building Chromium.
 
 [TOC]
 
-## Building with clang
+## Using gcc on Linux
 
-This happens by default, with clang binaries being fetched by gclient
-during the `gclient runhooks` phase. To fetch them manually, or build
-a local custom clang, use
-
-    tools/clang/scripts/update.py
-
-Run `gn args` and make sure there is no `is_clang = false` in your args.gn file.
-
-Build: `ninja -C out/gn chrome`
-
-## Reverting to gcc on Linux or MSVC on Windows
-
-There are no bots that test this but `is_clang = false` will revert to
-gcc on Linux and to Visual Studio on Windows. There is no guarantee it
-will work.
+`is_clang = false` will make the build use system gcc on Linux. There are no
+bots that test this and there is no guarantee it will work, but we accept
+patches for this configuration.
 
 ## Mailing List
 
@@ -38,7 +26,7 @@ is used by default when clang is used.
 
 If you're working on the plugin, you can build it locally like so:
 
-1.  Run `./tools/clang/scripts/update.py --force-local-build --without-android`
+1.  Run `./tools/clang/scripts/build.py --without-android`
     to build the plugin.
 1.  Run `ninja -C third_party/llvm-build/Release+Asserts/` to build incrementally.
 1.  Build with clang like described above, but, if you use goma, disable it.
@@ -66,21 +54,13 @@ See [clang_static_analyzer.md](clang_static_analyzer.md).
 
 ## Windows
 
-Since October 2017, clang is the default compiler on Windows. It uses
-MSVC's linker and SDK, so you still need to have Visual Studio with
-C++ support installed.
-
-To use MSVC's compiler (if it still works), use `is_clang = false`.
-
-Current brokenness:
-
-*   To get colored diagnostics, you need to be running
-    [ansicon](https://github.com/adoxa/ansicon/releases).
+clang is the default compiler on Windows. It uses MSVC's SDK, so you still need
+to have Visual Studio with C++ support installed.
 
 ## Using a custom clang binary
 
 Set `clang_base_path` in your args.gn to the llvm build directory containing
-`bin/clang` (i.e. the directory you ran cmake). This [must][1] be an absolute
+`bin/clang` (i.e. the directory you ran cmake). This must be an absolute
 path. You also need to disable chromium's clang plugin.
 
 Here's an example that also disables debug info and enables the component build
@@ -94,11 +74,17 @@ symbol_level = 1
 is_component_build = true
 ```
 
+On Windows, for `clang_base_path` use something like this instead:
+
+```
+clang_base_path = "c:/src/llvm-build"
+```
+
 You can then run `head out/gn/toolchain.ninja` and check that the first to
 lines set `cc` and `cxx` to your clang binary. If things look good, run `ninja
 -C out/gn` to build.
 
-If your clang revision is very different from the one currently used in chromium
-
-*   Check `tools/clang/scripts/update.py` to find chromium's clang revision
-*   You might have to tweak warning flags.
+Chromium tries to be buildable with its currently pinned clang, and with clang
+trunk. Set `llvm_force_head_revision = true` in your args.gn if the clang you're
+trying to build with is closer to clang trunk than to Chromium's pinned clang
+(which `tools/clang/scripts/update.py --print-revision` prints).

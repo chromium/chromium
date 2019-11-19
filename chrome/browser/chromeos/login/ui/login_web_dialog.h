@@ -45,9 +45,6 @@ class LoginWebDialog : public ui::WebDialogDelegate {
 
   void Show();
 
-  // Overrides default width/height for dialog.
-  void SetDialogSize(int width, int height);
-
   // Overrides dialog title.
   void SetDialogTitle(const base::string16& title);
 
@@ -69,8 +66,7 @@ class LoginWebDialog : public ui::WebDialogDelegate {
   void GetDialogSize(gfx::Size* size) const override;
   void GetMinimumDialogSize(gfx::Size* size) const override;
   std::string GetDialogArgs() const override;
-  void OnDialogShown(content::WebUI* webui,
-                     content::RenderViewHost* render_view_host) override;
+  void OnDialogShown(content::WebUI* webui) override;
   // NOTE: This function deletes this object at the end.
   void OnDialogClosed(const std::string& json_retval) override;
   void OnCloseContents(content::WebContents* source,
@@ -81,7 +77,7 @@ class LoginWebDialog : public ui::WebDialogDelegate {
   bool HandleOpenURLFromTab(content::WebContents* source,
                             const content::OpenURLParams& params,
                             content::WebContents** out_new_contents) override;
-  bool HandleShouldCreateWebContents() override;
+  bool HandleShouldOverrideWebContentsCreation() override;
   std::vector<ui::Accelerator> GetAccelerators() override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
 
@@ -94,10 +90,6 @@ class LoginWebDialog : public ui::WebDialogDelegate {
 
   base::string16 title_;
   const GURL url_;
-
-  // Dialog display size.
-  int width_;
-  int height_;
 
   DISALLOW_COPY_AND_ASSIGN(LoginWebDialog);
 };

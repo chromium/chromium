@@ -19,7 +19,7 @@ DestructionObservable::CreateDestructionObserver() {
 }
 
 DestructionObserver::DestructionObserver(DestructionObservable* observable)
-    : destructed_(false), weak_factory_(this) {
+    : destructed_(false) {
   // Only one observer is allowed.
   DCHECK(!observable->destruction_cb.Release());
   observable->destruction_cb.ReplaceClosure(

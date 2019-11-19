@@ -5,7 +5,8 @@
 module blink.mojom;
 
 import "media/capture/mojom/video_capture_types.mojom";
-import "media/mojo/interfaces/audio_parameters.mojom";
+import "media/mojo/mojom/audio_parameters.mojom";
+import "mojo/public/mojom/base/time.mojom";
 
 enum MediaDeviceType {
   MEDIA_AUDIO_INPUT,
@@ -37,6 +38,13 @@ struct AudioInputDeviceCapabilities {
   string device_id;
   string group_id;
   media.mojom.AudioParameters parameters;
+  // Values copied from the device parameters (Blink-use only).
+  // TODO(crbug.com/787252): remove the copies below in favour of |parameters|
+  // when it becomes visible in Blink.
+  bool is_valid;
+  int32 channels;
+  int32 sample_rate;
+  mojo_base.mojom.TimeDelta latency;
 };
 
 // This object lives in the browser and is responsible for processing device
@@ -44,19 +52,23 @@ struct AudioInputDeviceCapabilities {
 // notifications.
 interface MediaDevicesDispatcherHost {
   // Enumerates media devices and capabilities. The reply contains the
-  // |enumeration| and |video_input_device_capabilities| arrays. The
-  // |enumeration| array always has NUM_MEDIA_DEVICE_TYPES elements indexed by
-  // device type as defined in MediaDeviceType. Each element of |enumeration| is
-  // an array with as many elements as devices of the corresponding type exist
-  // in the system, or zero if the device types was not requested. Similarly,
-  // the number of elements in |video_input_device_capabilities| is equal to the
-  // number of video input devices in the system, or zero if not requested.
+  // |enumeration|, |video_input_device_capabilities|, and
+  // |audio_input_device_capabilities| arrays. The |enumeration| array always
+  // has NUM_MEDIA_DEVICE_TYPES elements indexed by device type as defined in
+  // MediaDeviceType. Each element of |enumeration| is an array with as many
+  // elements as devices of the corresponding type exist in the system, or zero
+  // if the device types was not requested. Similarly, the number of elements in
+  // |audio_input_device_capabilities| and |video_input_device_capabilities| is
+  // equal to respectively the number of video and audio input devices in the
+  // system, or zero if not requested.
   EnumerateDevices(bool request_audio_input,
                    bool request_video_input,
                    bool request_audio_output,
-                   bool request_video_input_capabilities)
+                   bool request_video_input_capabilities,
+                   bool request_audio_input_capabilities)
       => (array<array<MediaDeviceInfo>> enumeration,
-          array<VideoInputDeviceCapabilities> video_input_device_capabilities);
+          array<VideoInputDeviceCapabilities> video_input_device_capabilities,
+          array<AudioInputDeviceCapabilities> audio_input_device_capabilities);
 
   // Returns a list of video devices and their capabilities.
   // If there is a user-preferred device, it is the first in the result.
@@ -98,7 +110,7 @@ interface MediaDevicesDispatcherHost {
   AddMediaDevicesListener(bool subscribe_audio_input,
                           bool subscribe_video_input,
                           bool subscribe_audio_output,
-                          MediaDevicesListener listener);
+                          pending_remote<MediaDevicesListener> listener);
 };
 
 // This object lives in the renderer process and is used by the browser process

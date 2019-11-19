@@ -1,0 +1,38 @@
+<!doctype HTML>
+<html class="reftest-wait">
+<meta charset="utf8">
+<title>Display Locking: acquire in iframe</title>
+<link rel="author" title="Vladimir Levin" href="mailto:vmpstr@chromium.org">
+<link rel="help" href="https://github.com/WICG/display-locking">
+<link rel="match" href="acquire-in-iframe-ref.html">
+<script src="/common/reftest-wait.js"></script>
+<script src="resources/utils.js"></script>
+
+<div id="log"></div>
+<iframe id="frame" srcdoc='
+  <style>
+  #container {
+    width: 100px;
+    height: 100px;
+  }
+  </style>
+  <div id="container">Lorem</div>
+'></iframe>
+
+<script>
+function finishTest(status_string) {
+  if (document.getElementById("log").innerHTML === "")
+    document.getElementById("log").innerHTML = status_string;
+  takeScreenshot();
+}
+
+function runTest() {
+  const container = document.getElementById("frame").contentDocument.getElementById("container");
+  setInvisible(container).then(
+    () => { finishTest("PASS"); },
+    (e) => { finishTest("FAIL " + e.message); });
+}
+
+window.onload = runTest;
+</script>
+</html>

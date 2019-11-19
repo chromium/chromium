@@ -22,7 +22,7 @@ source_set("browser") {
     "//media/cast:common",
     "//media/cast:net",
     "//media/mojo/common:common",
-    "//media/mojo/interfaces:remoting",
+    "//media/mojo/mojom:remoting",
     "//mojo/public/cpp/bindings",
   ]
 }
@@ -42,7 +42,7 @@ source_set("unittests") {
     "//media/cast:common",
     "//media/cast:net",
     "//media/cast:test_support",
-    "//media/mojo/interfaces:remoting",
+    "//media/mojo/mojom:remoting",
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/system",
     "//testing/gmock",

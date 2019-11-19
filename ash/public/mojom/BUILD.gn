@@ -1,0 +1,57 @@
+# Copyright 2015 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom("mojom") {
+  disable_variants = true
+
+  sources = [
+    "assistant_controller.mojom",
+    "assistant_state_controller.mojom",
+    "assistant_volume_control.mojom",
+    "constants.mojom",
+    "cros_display_config.mojom",
+    "ime_controller.mojom",
+    "ime_info.mojom",
+    "tray_action.mojom",
+    "voice_interaction_controller.mojom",
+  ]
+
+  public_deps = [
+    "//chromeos/components/proximity_auth/public/mojom",
+    "//chromeos/services/assistant/public/mojom:notification",
+    "//components/account_id/mojom",
+    "//components/sync/mojom",
+    "//mojo/public/mojom/base",
+    "//services/content/public/mojom",
+    "//services/preferences/public/mojom",
+    "//skia/public/mojom",
+    "//ui/base/ime/chromeos/public/mojom",
+    "//ui/display/mojom:mojom",
+    "//ui/gfx/geometry/mojom",
+    "//ui/gfx/image/mojom",
+    "//ui/gfx/range/mojom",
+    "//url/mojom:url_mojom_gurl",
+  ]
+
+  component_output_prefix = "ash_public_interfaces"
+  export_class_attribute = "ASH_PUBLIC_EXPORT"
+  export_define = "ASH_PUBLIC_IMPLEMENTATION=1"
+  export_header = "ash/public/cpp/ash_public_export.h"
+}
+
+mojom("test_interfaces") {
+  testonly = true
+  disable_variants = true
+  sources = [
+    "status_area_widget_test_api.test-mojom",
+  ]
+  deps = [
+    ":mojom",
+    "//components/account_id/mojom",
+    "//mojo/public/mojom/base",
+    "//ui/gfx/geometry/mojom",
+  ]
+}

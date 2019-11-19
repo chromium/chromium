@@ -20,9 +20,8 @@ class NET_EXPORT_PRIVATE ClientCertIdentityMac : public ClientCertIdentity {
                         base::ScopedCFTypeRef<SecIdentityRef> sec_identity);
   ~ClientCertIdentityMac() override;
 
-  void AcquirePrivateKey(
-      const base::Callback<void(scoped_refptr<SSLPrivateKey>)>&
-          private_key_callback) override;
+  void AcquirePrivateKey(base::OnceCallback<void(scoped_refptr<SSLPrivateKey>)>
+                             private_key_callback) override;
   SecIdentityRef sec_identity_ref() const override;
 
  private:

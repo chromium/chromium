@@ -12,6 +12,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/post_task.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -23,6 +24,8 @@
 #include "components/safe_browsing/common/safe_browsing_prefs.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "net/base/features.h"
+#include "net/net_buildflags.h"
 
 namespace {
 
@@ -55,9 +58,17 @@ TrialComparisonCertVerifierController::
 bool TrialComparisonCertVerifierController::MaybeAllowedForProfile(
     Profile* profile) {
   bool is_official_build = g_is_fake_official_build_for_cert_verifier_testing;
-#if defined(OFFICIAL_BUILD) && defined(GOOGLE_CHROME_BUILD)
+#if defined(OFFICIAL_BUILD) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   is_official_build = true;
 #endif
+
+#if BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED)
+  // If the builtin verifier is enabled as the default verifier, the trial does
+  // not make sense.
+  if (base::FeatureList::IsEnabled(net::features::kCertVerifierBuiltinFeature))
+    return false;
+#endif
+
   return is_official_build &&
          base::FeatureList::IsEnabled(
              features::kCertDualVerificationTrialFeature) &&
@@ -65,11 +76,13 @@ bool TrialComparisonCertVerifierController::MaybeAllowedForProfile(
 }
 
 void TrialComparisonCertVerifierController::AddClient(
-    network::mojom::TrialComparisonCertVerifierConfigClientPtr config_client,
-    network::mojom::TrialComparisonCertVerifierReportClientRequest
-        report_client_request) {
-  binding_set_.AddBinding(this, std::move(report_client_request));
-  config_client_set_.AddPtr(std::move(config_client));
+    mojo::PendingRemote<network::mojom::TrialComparisonCertVerifierConfigClient>
+        config_client,
+    mojo::PendingReceiver<
+        network::mojom::TrialComparisonCertVerifierReportClient>
+        report_client_receiver) {
+  receiver_set_.Add(this, std::move(report_client_receiver));
+  config_client_set_.Add(std::move(config_client));
 }
 
 bool TrialComparisonCertVerifierController::IsAllowed() const {
@@ -94,17 +107,19 @@ void TrialComparisonCertVerifierController::SendTrialReport(
     bool enable_sha1_local_anchors,
     bool disable_symantec_enforcement,
     const net::CertVerifyResult& primary_result,
-    const net::CertVerifyResult& trial_result) {
+    const net::CertVerifyResult& trial_result,
+    network::mojom::CertVerifierDebugInfoPtr debug_info) {
   if (!IsAllowed() ||
       base::GetFieldTrialParamByFeatureAsBool(
           features::kCertDualVerificationTrialFeature, "uma_only", false)) {
     return;
   }
 
-  CertificateErrorReport report(
-      hostname, *unverified_cert, enable_rev_checking,
-      require_rev_checking_local_anchors, enable_sha1_local_anchors,
-      disable_symantec_enforcement, primary_result, trial_result);
+  CertificateErrorReport report(hostname, *unverified_cert, enable_rev_checking,
+                                require_rev_checking_local_anchors,
+                                enable_sha1_local_anchors,
+                                disable_symantec_enforcement, primary_result,
+                                trial_result, std::move(debug_info));
 
   report.AddNetworkTimeInfo(g_browser_process->network_time_tracker());
   report.AddChromeChannel(chrome::GetChannel());
@@ -125,9 +140,6 @@ void TrialComparisonCertVerifierController::SetFakeOfficialBuildForTesting(
 
 void TrialComparisonCertVerifierController::RefreshState() {
   const bool is_allowed = IsAllowed();
-  config_client_set_.ForAllPtrs(
-      [is_allowed](
-          network::mojom::TrialComparisonCertVerifierConfigClient* client) {
-        client->OnTrialConfigUpdated(is_allowed);
-      });
+  for (auto& client : config_client_set_)
+    client->OnTrialConfigUpdated(is_allowed);
 }

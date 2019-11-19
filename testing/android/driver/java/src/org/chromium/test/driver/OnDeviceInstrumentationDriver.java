@@ -155,8 +155,7 @@ public class OnDeviceInstrumentationDriver extends Instrumentation {
     }
 
     private class Driver implements Runnable {
-
-        private static final String TAG = OnDeviceInstrumentationDriver.TAG + ".Driver";
+        private static final String TAG = OnDeviceInstrumentationDriver.TAG + "_Driver";
 
         private Bundle mTargetArgs;
         private String mTargetClass;

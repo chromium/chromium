@@ -65,6 +65,7 @@
   },
 
   "ui/base/strings/app_locale_settings.grd": {
+    "META": {"join": 2},
     "messages": [7500],
   },
   "chrome/app/resources/locale_settings.grd": {
@@ -87,6 +88,7 @@
   },
 
   "ui/base/strings/ui_strings.grd": {
+    "META": {"join": 4},
     "messages": [9500],
   },
   # Chromium strings and Google Chrome strings must start at the same id.
@@ -101,6 +103,7 @@
   # Leave lots of space for generated_resources since it has most of our
   # strings.
   "chrome/app/generated_resources.grd": {
+    "META": {"join": 2},
     "structures": [10500],
     "messages": [11000],
   },
@@ -151,6 +154,7 @@
   },
   # This file is generated during the build.
   "chrome/browser/debugger/frontend/devtools_frontend_resources.grd": {
+    "META": {"join": 2},
     "includes": [21500],
   },
   "cloud_print/virtual_driver/win/install/virtual_driver_setup_resources.grd": {

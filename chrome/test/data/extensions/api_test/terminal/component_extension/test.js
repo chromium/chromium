@@ -14,7 +14,7 @@ var startCharacter = '#';
 var croshName = 'crosh';
 var invalidName = 'some name';
 
-var invalidNameError = 'Invalid process name.';
+var invalidNameError = 'Invalid process name: some name';
 
 var testLineNum = 10;
 var testProcessTotal = 2;
@@ -260,5 +260,29 @@ chrome.test.runTests([
   function invalidProcessNameTest() {
     chrome.terminalPrivate.openTerminalProcess(invalidName,
         chrome.test.callbackFail(invalidNameError));
+  },
+
+  function settingsTest() {
+    chrome.terminalPrivate.onSettingsChanged.addListener((settings) => {
+      // 3. Event is fired - {'k': 'v'}.
+      chrome.test.assertEq(1, Object.keys(settings).length);
+      chrome.test.assertEq('v', settings['k']);
+
+      // 4. Get settings - {'k': 'v'}.
+      chrome.terminalPrivate.getSettings(
+          chrome.test.callbackPass((settings) => {
+            chrome.test.assertEq(1, Object.keys(settings).length);
+            chrome.test.assertEq('v', settings['k']);
+            chrome.test.succeed();
+          }));
+    });
+
+    // 1. Get settings - {}.
+    chrome.terminalPrivate.getSettings(chrome.test.callbackPass((settings) => {
+      chrome.test.assertEq(0, Object.keys(settings).length);
+
+      // 2. Set {'k': 'v'}.
+      chrome.terminalPrivate.setSettings({k: 'v'}, chrome.test.callbackPass());
+    }));
   }
 ]);

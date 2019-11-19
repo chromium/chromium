@@ -68,14 +68,14 @@ TEST(DnsRecordParserTest, ReadName) {
   EXPECT_EQ("bar.example.com", out);
 
   // Parse name without storing it.
-  EXPECT_EQ(0x11u, parser.ReadName(data + 0x00, NULL));
-  EXPECT_EQ(0x1u, parser.ReadName(data + 0x10, NULL));
-  EXPECT_EQ(0x6u, parser.ReadName(data + 0x11, NULL));
-  EXPECT_EQ(0x2u, parser.ReadName(data + 0x17, NULL));
+  EXPECT_EQ(0x11u, parser.ReadName(data + 0x00, nullptr));
+  EXPECT_EQ(0x1u, parser.ReadName(data + 0x10, nullptr));
+  EXPECT_EQ(0x6u, parser.ReadName(data + 0x11, nullptr));
+  EXPECT_EQ(0x2u, parser.ReadName(data + 0x17, nullptr));
 
   // Check that it works even if initial position is different.
   parser = DnsRecordParser(data, sizeof(data), 0x12);
-  EXPECT_EQ(0x6u, parser.ReadName(data + 0x11, NULL));
+  EXPECT_EQ(0x6u, parser.ReadName(data + 0x11, nullptr));
 }
 
 TEST(DnsRecordParserTest, ReadNameFail) {

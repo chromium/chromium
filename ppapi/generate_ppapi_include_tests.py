@@ -17,6 +17,8 @@ These tests are checked in to SVN.
 #                  tests to some 'generated' area, and remove them from version
 #                  control.
 
+from __future__ import print_function
+
 import re
 import os
 import sys
@@ -75,11 +77,11 @@ def VerifyGypFile(gyp_file_data):
   in_gyp_not_file = gyp_sources - file_sources
   in_file_not_gyp = file_sources - gyp_sources
   if len(in_gyp_not_file):
-    print 'Found source file(s) in ppapi.gyp but not in the directory:', \
-      in_gyp_not_file
+    print('Found source file(s) in ppapi.gyp but not in the directory:', \
+      in_gyp_not_file)
   if len(in_file_not_gyp):
-    print 'Found source file(s) in the directory but not in ppapi.gyp:', \
-      in_file_not_gyp
+    print('Found source file(s) in the directory but not in ppapi.gyp:', \
+      in_file_not_gyp)
   error_count = len(in_gyp_not_file) + len(in_file_not_gyp)
   if error_count:
     sys.exit(error_count)
@@ -122,7 +124,7 @@ def GetSourcesForTarget(target_name, gyp_file_data):
       sources = target[GYP_SOURCES_KEY]
       sources.sort()
       return sources
-  print 'Warning: no target named ', target, ' found.'
+  print('Warning: no target named ', target, ' found.')
   return []
 
 
@@ -168,4 +170,4 @@ def main():
 
 
 if __name__ == '__main__':
-    sys.exit(main())
+  sys.exit(main())

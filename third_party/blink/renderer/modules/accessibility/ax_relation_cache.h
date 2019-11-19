@@ -8,7 +8,7 @@
 #include "base/macros.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
@@ -21,6 +21,9 @@ class AXRelationCache {
  public:
   explicit AXRelationCache(AXObjectCacheImpl*);
   virtual ~AXRelationCache();
+
+  // Scan the initial document.
+  void Init();
 
   // Returns true if the given object's position in the tree was due to
   // aria-owns.
@@ -38,6 +41,9 @@ class AXRelationCache {
                       const Vector<String>& id_vector,
                       HeapVector<Member<AXObject>>& owned_children);
 
+  // Return true if any label ever pointed to the element via the for attribute.
+  bool MayHaveHTMLLabelViaForAttribute(const HTMLElement&);
+
   // Given an element in the DOM tree that was either just added or whose id
   // just changed, check to see if another object wants to be its parent due to
   // aria-owns. If so, update the tree by calling childrenChanged() on the
@@ -53,6 +59,8 @@ class AXRelationCache {
   // UpdateRelatedTree.
   void UpdateReverseRelations(const AXObject* relation_source,
                               const Vector<String>& target_ids);
+
+  void LabelChanged(Node*);
 
  private:
   // If any object is related to this object via <label for>, aria-owns,
@@ -90,13 +98,19 @@ class AXRelationCache {
   //   and fire the appropriate change events.
   HashMap<String, HashSet<AXID>> id_attr_to_related_mapping_;
 
+  // HTML id attributes that at one time havehad a <label for> pointing to it.
+  // IDs are not necessarily removed from this set. It is not necessary to
+  // remove IDs as false positives are ok. Being able to determine that a
+  // labelable element has never had an associated label allows the accessible
+  // name calculation to be optimized.
+  HashSet<AtomicString> all_previously_seen_label_target_ids_;
+
   // Helpers that call back into object cache
   AXObject* ObjectFromAXID(AXID) const;
   AXObject* GetOrCreate(Node*);
   AXObject* Get(Node*);
   void ChildrenChanged(AXObject*);
   void TextChanged(AXObject*);
-  void LabelChanged(Node*);
 
   DISALLOW_COPY_AND_ASSIGN(AXRelationCache);
 };

@@ -11,19 +11,19 @@
 #include <string>
 #include <vector>
 
+#include "ash/public/cpp/multi_user_window_manager_observer.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/chromeos/login/existing_user_controller.h"
 #include "chrome/browser/chromeos/login/oobe_configuration.h"
 #include "chrome/browser/chromeos/login/signin_screen_controller.h"
-#include "chrome/browser/chromeos/login/ui/kiosk_app_menu_updater.h"
 #include "chrome/browser/chromeos/login/ui/login_display.h"
 #include "chrome/browser/chromeos/login/ui/login_display_host_common.h"
 #include "chrome/browser/chromeos/login/wizard_controller.h"
 #include "chrome/browser/chromeos/settings/device_settings_service.h"
-#include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_client.h"
+#include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
 #include "chromeos/audio/cras_audio_handler.h"
-#include "chromeos/dbus/session_manager_client.h"
+#include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -42,8 +42,13 @@ namespace chromeos {
 class LoginDisplayWebUI;
 class WebUILoginView;
 
-// An implementation class for OOBE/login WebUI screen host.
-// It encapsulates controllers, wallpaper integration and flow.
+// An implementation class for OOBE and user adding screen host via WebUI.
+// For OOBE, it provides wizard screens such as welcome, network, EULA, update,
+// GAIA etc. For user adding, it is legacy support and provides the user
+// selection screen (aka account picker).
+// The WebUI (chrome://oobe) is loaded hidden on start and made visible when
+// WebUI signals ready (via NOTIFICATION_LOGIN_OR_LOCK_WEBUI_VISIBLE) or there
+// is a network error (via NOTIFICATION_LOGIN_NETWORK_ERROR_SHOWN).
 class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
                               public content::WebContentsObserver,
                               public chromeos::SessionManagerClient::Observer,
@@ -53,7 +58,7 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
                               public ui::InputDeviceEventObserver,
                               public views::WidgetRemovalsObserver,
                               public views::WidgetObserver,
-                              public MultiUserWindowManagerClient::Observer {
+                              public ash::MultiUserWindowManagerObserver {
  public:
   LoginDisplayHostWebUI();
   ~LoginDisplayHostWebUI() override;
@@ -67,7 +72,7 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
   WebUILoginView* GetWebUILoginView() const override;
   void OnFinalize() override;
   void SetStatusAreaVisible(bool visible) override;
-  void StartWizard(OobeScreen first_screen) override;
+  void StartWizard(OobeScreenId first_screen) override;
   WizardController* GetWizardController() override;
   void OnStartUserAdding() override;
   void CancelUserAdding() override;
@@ -75,18 +80,18 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
   void OnPreferencesChanged() override;
   void OnStartAppLaunch() override;
   void OnStartArcKiosk() override;
+  void OnStartWebKiosk() override;
   void OnBrowserCreated() override;
-  void ShowGaiaDialog(
-      bool can_close,
-      const base::Optional<AccountId>& prefilled_account) override;
+  void ShowGaiaDialog(bool can_close,
+                      const AccountId& prefilled_account) override;
   void HideOobeDialog() override;
-  void UpdateOobeDialogSize(int width, int height) override;
-  void UpdateOobeDialogState(ash::mojom::OobeDialogState state) override;
+  void UpdateOobeDialogState(ash::OobeDialogState state) override;
   const user_manager::UserList GetUsers() override;
   void ShowFeedback() override;
   void ShowResetScreen() override;
   void HandleDisplayCaptivePortal() override;
   void UpdateAddUserButtonStatus() override;
+  void RequestSystemInfoUpdate() override;
 
   void OnCancelPasswordChangedFlow() override;
 
@@ -133,7 +138,7 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
   // views::WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;
 
-  // MultiUserWindowManagerClient::Observer:
+  // ash::MultiUserWindowManagerObserver:
   void OnUserSwitchAnimationFinished() override;
 
  private:
@@ -166,10 +171,6 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
 
   // Shows OOBE/sign in WebUI that was previously initialized in hidden state.
   void ShowWebUI();
-
-  // Starts postponed WebUI (OOBE/sign in) if it was waiting for
-  // wallpaper animation end.
-  void StartPostponedWebUI();
 
   // Initializes |login_window_| and |login_view_| fields if needed.
   void InitLoginWindowAndView();
@@ -217,23 +218,9 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
   // True if the login display is the current screen.
   bool is_showing_login_ = false;
 
-  // True if NOTIFICATION_WALLPAPER_ANIMATION_FINISHED notification has been
-  // received.
-  bool is_wallpaper_loaded_ = false;
-
   // Stores status area current visibility to be applied once login WebUI
   // is shown.
   bool status_area_saved_visibility_ = false;
-
-  // If true, WebUI is initialized in a hidden state and shown after the
-  // wallpaper animation is finished (when it is enabled) or the user pods have
-  // been loaded (otherwise).
-  // By default is true. Could be used to tune performance if needed.
-  bool initialize_webui_hidden_;
-
-  // True if WebUI is initialized in hidden state and we're waiting for
-  // wallpaper load animation to finish.
-  bool waiting_for_wallpaper_load_;
 
   // True if WebUI is initialized in hidden state, the OOBE is not completed
   // and we're waiting for OOBE configuration check to finish.
@@ -248,7 +235,7 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
   RestorePath restore_path_ = RESTORE_UNKNOWN;
 
   // Stored parameters for StartWizard, required to restore in case of crash.
-  OobeScreen first_screen_;
+  OobeScreenId first_screen_ = OobeScreen::SCREEN_UNKNOWN;
 
   // A focus ring controller to draw focus ring around view for keyboard
   // driven oobe.
@@ -272,10 +259,7 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
   // True if we need to play startup sound when audio device becomes available.
   bool need_to_play_startup_sound_ = false;
 
-  // Updates shelf kiosk app list.
-  KioskAppMenuUpdater kiosk_updater_;
-
-  base::WeakPtrFactory<LoginDisplayHostWebUI> weak_factory_;
+  base::WeakPtrFactory<LoginDisplayHostWebUI> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(LoginDisplayHostWebUI);
 };

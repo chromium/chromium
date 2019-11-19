@@ -1,17 +1,27 @@
-<!DOCTYPE html>
+<!doctype html>
+<title>Window.moveTo(): basic behavior for popup windows</title>
+<link rel="help" href="http://crbug.com/897300">
 <script src="../../../resources/testharness.js"></script>
 <script src="../../../resources/testharnessreport.js"></script>
 <script>
-  let minWindowDimension = 100;
+if (window.testRunner) {
+  testRunner.setCanOpenWindows();
+  testRunner.setCloseRemainingWindowsWhenComplete();
+  testRunner.dumpAsText();
+}
+test(function () {
+  // Tests behavior when attempting to place a window outside the screen bounds.
+  let w = window.open('about:blank', '', 'resizable=1,menubar=0,status=1');
+  w.moveTo(screen.width + 1000, screen.height + 1000);
 
-  if (window.testRunner) {
-    testRunner.setCanOpenWindows();
-    testRunner.setCloseRemainingWindowsWhenComplete();
-  }
-  test(t => {
-    let w = window.open('about:blank', '', 'resizable=1,menubar=0,status=1');
-    w.moveTo(screen.width + 1000, screen.height + 1000);
-    assert_equals(w.screenY, (screen.availTop + screen.availHeight) - minWindowDimension);
-    assert_equals(w.screenX, (screen.availLeft + screen.availWidth) - minWindowDimension);
-  }, 'popup must not be moved outside of screen');
+  // TODO(http://crbug.com/897300): This test should assert expected behavior
+  // instead of comparing setCustomTextOutput() baselines, but the baseline
+  // approach more clearly documents stable vs. experimental behavior.
+  // Actual placement values differ per platform; only test the basic conainment.
+  testRunner.setCustomTextOutput(
+    'Window right edge exceeds screen right edge? (stable should be false): ' +
+    ((w.screenX + w.outerWidth) > (screen.availLeft + screen.availWidth)) + '\n' +
+    'Window bottom edge exceeds screen bottom edge? (stable should be false): ' +
+     ((w.screenY + w.outerHeight) > (screen.availTop + screen.availHeight)));
+});
 </script>

@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#import "ios/chrome/browser/ui/network_activity_indicator_manager.h"
+#import "ios/chrome/browser/network_activity/network_activity_indicator_manager.h"
 #import "ios/chrome/test/fakes/fake_download_manager_tab_helper_delegate.h"
 #import "ios/web/public/test/fakes/fake_download_task.h"
 #import "ios/web/public/test/fakes/test_web_state.h"

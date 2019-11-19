@@ -7,21 +7,10 @@
 
 #import <UIKit/UIKit.h>
 
-#include "base/memory/ref_counted.h"
 #import "ios/chrome/browser/web/web_state_printer.h"
-
-namespace net {
-class URLRequestContextGetter;
-}  // namespace net
 
 // Interface for printing.
 @interface PrintController : NSObject <WebStatePrinter>
-
-- (instancetype)initWithContextGetter:
-    (scoped_refptr<net::URLRequestContextGetter>)getter
-    NS_DESIGNATED_INITIALIZER;
-
-- (instancetype)init NS_UNAVAILABLE;
 
 // Shows print UI for |view| with |title|.
 - (void)printView:(UIView*)view withTitle:(NSString*)title;

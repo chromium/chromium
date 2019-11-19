@@ -15,22 +15,46 @@
 #include "base/macros.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
 #include "components/services/pdf_compositor/public/cpp/pdf_service_mojo_types.h"
-#include "components/services/pdf_compositor/public/interfaces/pdf_compositor.mojom.h"
-#include "services/service_manager/public/cpp/service_context_ref.h"
+#include "components/services/pdf_compositor/public/mojom/pdf_compositor.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/skia/include/core/SkPicture.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
+#include "third_party/skia/include/core/SkStream.h"
+
+class SkDocument;
+
+namespace base {
+class SingleThreadTaskRunner;
+}
+
+namespace discardable_memory {
+class ClientDiscardableSharedMemoryManager;
+}
 
 namespace printing {
 
 class PdfCompositorImpl : public mojom::PdfCompositor {
  public:
-  explicit PdfCompositorImpl(
-      std::unique_ptr<service_manager::ServiceContextRef> service_ref);
+  // Creates an instance with an optional Mojo receiver (may be null) and
+  // optional initialization of the runtime environment necessary for
+  // compositing operations. |io_task_runner| is used for shared memory
+  // management, if and only if |SetDiscardableSharedMemoryManager()| is
+  // eventually called, which may not be the case in unit tests. In practice,
+  // |initialize_environment| is only false in unit tests.
+  PdfCompositorImpl(mojo::PendingReceiver<mojom::PdfCompositor> receiver,
+                    bool initialize_environment,
+                    scoped_refptr<base::SingleThreadTaskRunner> io_task_runner);
   ~PdfCompositorImpl() override;
 
   // mojom::PdfCompositor
+  void SetDiscardableSharedMemoryManager(
+      mojo::PendingRemote<
+          discardable_memory::mojom::DiscardableSharedMemoryManager> manager)
+      override;
   void NotifyUnavailableSubframe(uint64_t frame_guid) override;
   void AddSubframeContent(
       uint64_t frame_guid,
@@ -46,6 +70,11 @@ class PdfCompositorImpl : public mojom::PdfCompositor {
       base::ReadOnlySharedMemoryRegion serialized_content,
       const ContentToFrameMap& subframe_content_map,
       mojom::PdfCompositor::CompositeDocumentToPdfCallback callback) override;
+  void PrepareForDocumentToPdf(
+      mojom::PdfCompositor::PrepareForDocumentToPdfCallback callback) override;
+  void CompleteDocumentToPdf(
+      uint32_t page_count,
+      mojom::PdfCompositor::CompleteDocumentToPdfCallback callback) override;
   void SetWebContentsURL(const GURL& url) override;
   void SetUserAgent(const std::string& user_agent) override;
 
@@ -57,16 +86,31 @@ class PdfCompositorImpl : public mojom::PdfCompositor {
       base::OnceCallback<void(PdfCompositor::Status,
                               base::ReadOnlySharedMemoryRegion)>;
 
+  using PrepareForDocumentToPdfCallback =
+      base::OnceCallback<void(PdfCompositor::Status)>;
+  using CompleteDocumentToPdfCallback =
+      base::OnceCallback<void(PdfCompositor::Status,
+                              base::ReadOnlySharedMemoryRegion)>;
+
+  // The core function for content composition and conversion to a pdf file.
   // Make this function virtual so tests can override it.
+  virtual mojom::PdfCompositor::Status CompositeToPdf(
+      base::ReadOnlySharedMemoryMapping shared_mem,
+      const ContentToFrameMap& subframe_content_map,
+      base::ReadOnlySharedMemoryRegion* region);
+
+  // Make these functions virtual so tests can override them.
   virtual void FulfillRequest(
       base::ReadOnlySharedMemoryMapping serialized_content,
       const ContentToFrameMap& subframe_content_map,
       CompositeToPdfCallback callback);
+  virtual void CompleteDocumentRequest(CompleteDocumentToPdfCallback callback);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(PdfCompositorImplTest, IsReadyToComposite);
   FRIEND_TEST_ALL_PREFIXES(PdfCompositorImplTest, MultiLayerDependency);
   FRIEND_TEST_ALL_PREFIXES(PdfCompositorImplTest, DependencyLoop);
+  friend class MockCompletionPdfCompositorImpl;
 
   // The map needed during content deserialization. It stores the mapping
   // between content id and its actual content.
@@ -118,6 +162,22 @@ class PdfCompositorImpl : public mojom::PdfCompositor {
     base::flat_set<uint64_t> pending_subframes;
 
     CompositeToPdfCallback callback;
+    bool is_concurrent_doc_composition = false;
+  };
+
+  // Stores the concurrent document composition information.
+  struct DocumentInfo {
+    // Create the DocumentInfo object, which also creates a corresponding Skia
+    // document object.
+    explicit DocumentInfo(const std::string& creator);
+    ~DocumentInfo();
+
+    SkDynamicMemoryWStream compositor_stream;
+    sk_sp<SkDocument> doc;
+    uint32_t pages_provided = 0;
+    uint32_t pages_written = 0;
+    uint32_t page_count = 0;
+    CompleteDocumentToPdfCallback callback;
   };
 
   // Check whether any request is waiting for the specific subframe, if so,
@@ -146,11 +206,14 @@ class PdfCompositorImpl : public mojom::PdfCompositor {
       base::ReadOnlySharedMemoryRegion serialized_content,
       const ContentToFrameMap& subframe_content_ids,
       CompositeToPdfCallback callback);
+  void HandleDocumentCompletionRequest();
 
-  // The core function for content composition and conversion to a pdf file.
-  mojom::PdfCompositor::Status CompositeToPdf(
-      base::ReadOnlySharedMemoryMapping shared_mem,
-      const ContentToFrameMap& subframe_content_map,
+  // Document content composition support functions when document is compiled
+  // using individual pages' content.  These are not used when document is
+  // composited with a separate metafile object.
+  mojom::PdfCompositor::Status PrepareForDocumentToPdf();
+  mojom::PdfCompositor::Status UpdateDocumentMetadata(uint32_t page_count);
+  mojom::PdfCompositor::Status CompleteDocumentToPdf(
       base::ReadOnlySharedMemoryRegion* region);
 
   // Composite the content of a subframe.
@@ -159,9 +222,13 @@ class PdfCompositorImpl : public mojom::PdfCompositor {
   DeserializationContext GetDeserializationContext(
       const ContentToFrameMap& subframe_content_map);
 
-  const std::unique_ptr<service_manager::ServiceContextRef> service_ref_;
-  // The creator of this service.
+  mojo::Receiver<mojom::PdfCompositor> receiver_{this};
 
+  const scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
+  std::unique_ptr<discardable_memory::ClientDiscardableSharedMemoryManager>
+      discardable_shared_memory_manager_;
+
+  // The creator of this service.
   // Currently contains the service creator's user agent string if given,
   // otherwise just use string "Chromium".
   std::string creator_ = "Chromium";
@@ -170,6 +237,7 @@ class PdfCompositorImpl : public mojom::PdfCompositor {
   FrameMap frame_info_map_;
 
   std::vector<std::unique_ptr<RequestInfo>> requests_;
+  std::unique_ptr<DocumentInfo> docinfo_;
 
   DISALLOW_COPY_AND_ASSIGN(PdfCompositorImpl);
 };

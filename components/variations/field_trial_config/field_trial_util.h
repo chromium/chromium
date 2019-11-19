@@ -8,6 +8,7 @@
 #include <string>
 
 #include "components/variations/proto/study.pb.h"
+#include "components/variations/variations_seed_processor.h"
 
 namespace base {
 class FeatureList;
@@ -34,15 +35,19 @@ bool AssociateParamsFromString(const std::string& variations_string);
 // multiple groups with the |config| struct. This will also force the selection
 // of FieldTrial groups specified in the |config|. Registers features associated
 // with default field trials with |feature_list|.
-void AssociateParamsFromFieldTrialConfig(const FieldTrialTestingConfig& config,
-                                         base::FeatureList* feature_list,
-                                         Study::Platform platform);
+void AssociateParamsFromFieldTrialConfig(
+    const FieldTrialTestingConfig& config,
+    const VariationsSeedProcessor::UIStringOverrideCallback& callback,
+    Study::Platform platform,
+    base::FeatureList* feature_list);
 
 // Associates params and features to FieldTrial groups and forces the selection
 // of groups specified in testing/variations/fieldtrial_testing_config.json.
 // Registers features associated with default field trials with |feature_list|.
-void AssociateDefaultFieldTrialConfig(base::FeatureList* feature_list,
-                                      Study::Platform platform);
+void AssociateDefaultFieldTrialConfig(
+    const VariationsSeedProcessor::UIStringOverrideCallback& callback,
+    Study::Platform platform,
+    base::FeatureList* feature_list);
 
 }  // namespace variations
 

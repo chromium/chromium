@@ -12,7 +12,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "extensions/common/extension.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -33,12 +33,11 @@ class MockExternalLoader : public ExternalLoader {
 class DefaultAppsTest : public testing::Test {
  public:
   DefaultAppsTest()
-      : test_browser_thread_bundle_(
-            content::TestBrowserThreadBundle::IO_MAINLOOP) {}
+      : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP) {}
   ~DefaultAppsTest() override {}
 
  private:
-  content::TestBrowserThreadBundle test_browser_thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
 };
 
 #if !defined(OS_CHROMEOS)

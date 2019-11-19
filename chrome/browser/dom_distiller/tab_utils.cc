@@ -25,15 +25,15 @@
 
 namespace {
 
-using dom_distiller::ViewRequestDelegate;
-using dom_distiller::DistilledArticleProto;
 using dom_distiller::ArticleDistillationUpdate;
-using dom_distiller::ViewerHandle;
-using dom_distiller::SourcePageHandleWebContents;
+using dom_distiller::DistilledArticleProto;
+using dom_distiller::DistillerPage;
 using dom_distiller::DomDistillerService;
 using dom_distiller::DomDistillerServiceFactory;
-using dom_distiller::DistillerPage;
 using dom_distiller::SourcePageHandle;
+using dom_distiller::SourcePageHandleWebContents;
+using dom_distiller::ViewerHandle;
+using dom_distiller::ViewRequestDelegate;
 
 // An no-op ViewRequestDelegate which holds a ViewerHandle and deletes itself
 // after the WebContents navigates or goes away. This class is a band-aid to
@@ -86,19 +86,15 @@ void SelfDeletingRequestDelegate::WebContentsDestroyed() {
 
 SelfDeletingRequestDelegate::SelfDeletingRequestDelegate(
     content::WebContents* web_contents)
-    : WebContentsObserver(web_contents) {
-}
+    : WebContentsObserver(web_contents) {}
 
-SelfDeletingRequestDelegate::~SelfDeletingRequestDelegate() {
-}
+SelfDeletingRequestDelegate::~SelfDeletingRequestDelegate() {}
 
 void SelfDeletingRequestDelegate::OnArticleReady(
-    const DistilledArticleProto* article_proto) {
-}
+    const DistilledArticleProto* article_proto) {}
 
 void SelfDeletingRequestDelegate::OnArticleUpdated(
-    ArticleDistillationUpdate article_update) {
-}
+    ArticleDistillationUpdate article_update) {}
 
 void SelfDeletingRequestDelegate::TakeViewerHandle(
     std::unique_ptr<ViewerHandle> viewer_handle) {
@@ -188,4 +184,23 @@ void DistillAndView(content::WebContents* source_web_contents,
 
   StartNavigationToDistillerViewer(destination_web_contents,
                                    source_web_contents->GetLastCommittedURL());
+}
+
+void ReturnToOriginalPage(content::WebContents* distilled_web_contents) {
+  DCHECK(distilled_web_contents);
+  DCHECK(dom_distiller::url_utils::IsDistilledPage(
+      distilled_web_contents->GetLastCommittedURL()));
+
+  GURL distilled_url = distilled_web_contents->GetLastCommittedURL();
+  GURL source_url =
+      dom_distiller::url_utils::GetOriginalUrlFromDistillerUrl(distilled_url);
+  DCHECK_NE(source_url, distilled_url)
+      << "Could not retrieve original page for distilled URL: "
+      << distilled_url;
+
+  // TODO(https://crbug.com/925965): Consider saving & retrieving the original
+  // page web contents instead of reloading the page.
+  content::NavigationController::LoadURLParams params(source_url);
+  params.transition_type = ui::PAGE_TRANSITION_AUTO_BOOKMARK;
+  distilled_web_contents->GetController().LoadURLWithParams(params);
 }

@@ -13,7 +13,7 @@ class FloatClipRectTest : public testing::Test {
  public:
 };
 
-TEST_F(FloatClipRectTest, InfinitRect) {
+TEST_F(FloatClipRectTest, InfiniteRect) {
   FloatClipRect rect;
   EXPECT_TRUE(rect.IsInfinite());
   EXPECT_FALSE(rect.HasRadius());
@@ -60,6 +60,28 @@ TEST_F(FloatClipRectTest, Intersect) {
   EXPECT_FALSE(rect.IsTight());
 }
 
+TEST_F(FloatClipRectTest, IntersectWithInfinite) {
+  FloatClipRect infinite;
+  FloatRect large(0, 0, std::numeric_limits<int>::max(),
+                  std::numeric_limits<int>::max());
+  FloatClipRect unclipped(large);
+
+  unclipped.Intersect(infinite);
+  EXPECT_FALSE(unclipped.IsInfinite());
+  EXPECT_EQ(large, unclipped.Rect());
+}
+
+TEST_F(FloatClipRectTest, InclusiveIntersectWithInfinite) {
+  FloatClipRect infinite;
+  FloatRect large(0, 0, std::numeric_limits<int>::max(),
+                  std::numeric_limits<int>::max());
+  FloatClipRect unclipped(large);
+
+  ASSERT_TRUE(unclipped.InclusiveIntersect(infinite));
+  EXPECT_FALSE(unclipped.IsInfinite());
+  EXPECT_EQ(large, unclipped.Rect());
+}
+
 TEST_F(FloatClipRectTest, SetHasRadius) {
   FloatClipRect rect;
   rect.SetHasRadius();
@@ -86,20 +108,16 @@ TEST_F(FloatClipRectTest, Map) {
   EXPECT_TRUE(rect.IsInfinite());
   EXPECT_FALSE(rect.IsTight());
 
+  // FloatClipRect::Map() assumes that the transform always makes the clip rect
+  // not tight. The caller should use MoveBy() to keep tightness if the
+  // transform is known to be identity or a 2d translation.
   FloatClipRect rect2(FloatRect(1, 2, 3, 4));
   rect2.Map(identity);
   EXPECT_EQ(FloatRect(1, 2, 3, 4), rect2.Rect());
-  EXPECT_TRUE(rect2.IsTight());
+  EXPECT_FALSE(rect2.IsTight());
 
   rect2.Map(translation);
   EXPECT_EQ(FloatRect(11, 22, 3, 4), rect2.Rect());
-  EXPECT_TRUE(rect2.IsTight());
-
-  rect2.Map(rotate);
-  EXPECT_EQ(rotate.MapRect(FloatRect(11, 22, 3, 4)), rect2.Rect());
-  EXPECT_FALSE(rect2.IsTight());
-
-  rect2.Map(identity);
   EXPECT_FALSE(rect2.IsTight());
 }
 

@@ -7,7 +7,7 @@ module blink.mojom;
 import "services/device/public/mojom/screen_orientation_lock_types.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "third_party/blink/public/mojom/manifest/display_mode.mojom";
-import "ui/gfx/geometry/mojo/geometry.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
 
 
@@ -20,27 +20,23 @@ struct Manifest {
 
   mojo_base.mojom.String16? short_name;
 
-  url.mojom.Url? start_url;
+  url.mojom.Url start_url;
 
   DisplayMode display;
 
   device.mojom.ScreenOrientationLockType orientation;
 
-  array<ManifestImageResource>? icons;
+  array<ManifestImageResource> icons;
 
-  // TODO(constantina): This field is non-standard and part of a Chrome
-  // experiment. See:
-  // https://github.com/WICG/web-share-target/blob/master/docs/interface.md
-  // As such, this field should not be exposed to the drive-by web.
   ManifestShareTarget? share_target;
 
   // TODO(harrisjay): This field is non-standard and part of a Chrome
   // experiment. See:
   // https://github.com/WICG/file-handling/blob/master/explainer.md
   // As such, this field should not be exposed to the drive-by web.
-  array<ManifestFileFilter>? file_handler;
+  ManifestFileHandler? file_handler;
 
-  array<ManifestRelatedApplication>? related_applications;
+  array<ManifestRelatedApplication> related_applications;
 
   // A boolean that is used as a hint for the user agent to say that related
   // applications should be preferred over the web application. False if missing
@@ -55,12 +51,9 @@ struct Manifest {
   bool has_background_color;
   uint32 background_color;
 
-  // A URL of the HTML splash screen.
-  url.mojom.Url? splash_screen_url;
-
   mojo_base.mojom.String16? gcm_sender_id;
 
-  url.mojom.Url? scope;
+  url.mojom.Url scope;
 };
 
 // Structure representing an icon as per the Manifest specification, see:
@@ -139,8 +132,8 @@ struct ManifestShareTarget {
   // to application/x-www-url-encoded and kMultipart corresponds to
   // multipart/form-data.
   enum Enctype {
-    kApplication,
-    kMultipart,
+    kFormUrlEncoded,
+    kMultipartFormData,
   };
 
   // The URL that will be opened when the share target is invoked.
@@ -154,6 +147,12 @@ struct ManifestShareTarget {
   Enctype enctype;
 
   ManifestShareTargetParams params;
+};
+
+struct ManifestFileHandler {
+  // The URL that will be opened when the file handler is invoked.
+  url.mojom.Url action;
+  array<ManifestFileFilter> files;
 };
 
 // Debug information for a parsed manifest.

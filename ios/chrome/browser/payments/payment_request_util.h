@@ -19,7 +19,7 @@ class AutofillProfile;
 }  // namespace autofill
 
 namespace payments {
-class PaymentInstrument;
+class PaymentApp;
 class PaymentRequest;
 class PaymentResponse;
 }  // namespace payments
@@ -64,7 +64,7 @@ NSString* GetAddressNotificationLabelFromAutofillProfile(
 // Helper function to create a notification label for what's missing from a
 // payment method. Returns nil if the resulting label is empty.
 NSString* GetPaymentMethodNotificationLabelFromPaymentMethod(
-    const payments::PaymentInstrument& payment_method,
+    const payments::PaymentApp& payment_method,
     const std::vector<autofill::AutofillProfile*>& billing_profiles);
 
 // Returns the title for the shipping section of the payment summary view given

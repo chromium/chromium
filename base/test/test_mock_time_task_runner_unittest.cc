@@ -243,7 +243,7 @@ TEST(TestMockTimeTaskRunnerTest, TakePendingTasks) {
 
 TEST(TestMockTimeTaskRunnerTest, CancelPendingTask) {
   auto task_runner = MakeRefCounted<TestMockTimeTaskRunner>();
-  CancelableClosure task1(Bind([]() {}));
+  CancelableOnceClosure task1(DoNothing::Once());
   task_runner->PostDelayedTask(FROM_HERE, task1.callback(),
                                TimeDelta::FromSeconds(1));
   EXPECT_TRUE(task_runner->HasPendingTask());
@@ -252,19 +252,19 @@ TEST(TestMockTimeTaskRunnerTest, CancelPendingTask) {
   task1.Cancel();
   EXPECT_FALSE(task_runner->HasPendingTask());
 
-  CancelableClosure task2(Bind([]() {}));
+  CancelableOnceClosure task2(DoNothing::Once());
   task_runner->PostDelayedTask(FROM_HERE, task2.callback(),
                                TimeDelta::FromSeconds(1));
   task2.Cancel();
   EXPECT_EQ(0u, task_runner->GetPendingTaskCount());
 
-  CancelableClosure task3(Bind([]() {}));
+  CancelableOnceClosure task3(DoNothing::Once());
   task_runner->PostDelayedTask(FROM_HERE, task3.callback(),
                                TimeDelta::FromSeconds(1));
   task3.Cancel();
   EXPECT_EQ(TimeDelta::Max(), task_runner->NextPendingTaskDelay());
 
-  CancelableClosure task4(Bind([]() {}));
+  CancelableOnceClosure task4(DoNothing::Once());
   task_runner->PostDelayedTask(FROM_HERE, task4.callback(),
                                TimeDelta::FromSeconds(1));
   task4.Cancel();
@@ -274,7 +274,7 @@ TEST(TestMockTimeTaskRunnerTest, CancelPendingTask) {
 TEST(TestMockTimeTaskRunnerTest, NoFastForwardToCancelledTask) {
   auto task_runner = MakeRefCounted<TestMockTimeTaskRunner>();
   TimeTicks start_time = task_runner->NowTicks();
-  CancelableClosure task(Bind([]() {}));
+  CancelableOnceClosure task(DoNothing::Once());
   task_runner->PostDelayedTask(FROM_HERE, task.callback(),
                                TimeDelta::FromSeconds(1));
   EXPECT_EQ(TimeDelta::FromSeconds(1), task_runner->NextPendingTaskDelay());

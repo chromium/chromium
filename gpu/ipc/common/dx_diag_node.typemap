@@ -4,8 +4,8 @@
 
 mojom = "//gpu/ipc/common/dx_diag_node.mojom"
 public_headers = [ "//gpu/config/dx_diag_node.h" ]
-traits_headers = [ "//gpu/ipc/common/dx_diag_node_struct_traits.h" ]
+traits_headers = [ "//gpu/ipc/common/dx_diag_node_mojom_traits.h" ]
 sources = [
-  "//gpu/ipc/common/dx_diag_node_struct_traits.cc",
+  "//gpu/ipc/common/dx_diag_node_mojom_traits.cc",
 ]
-type_mappings = [ "gpu.mojom.DxDiagNode=gpu::DxDiagNode" ]
+type_mappings = [ "gpu.mojom.DxDiagNode=::gpu::DxDiagNode" ]

@@ -58,9 +58,6 @@ int32_t PPB_Broker_Impl::Connect(
     scoped_refptr<TrackedCallback> connect_callback) {
   // TODO(ddorwin): Return PP_ERROR_FAILED if plugin is in-process.
 
-  UMA_HISTOGRAM_ENUMERATION("Pepper.BrokerAction", PepperBrokerAction::CONNECT,
-                            PepperBrokerAction::NUM);
-
   if (broker_) {
     // May only be called once.
     return PP_ERROR_FAILED;

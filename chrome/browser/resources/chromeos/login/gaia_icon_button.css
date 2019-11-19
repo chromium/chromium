@@ -2,8 +2,9 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
-#iconButton {
-  height: 24px;
-  padding: 0;
-  width: 24px;
+cr-icon-button {
+  --cr-icon-button-color: currentColor;
+  --cr-icon-button-icon-size: 24px;
+  --cr-icon-button-size: 24px;
+  margin: 0;
 }

@@ -13,6 +13,7 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "components/invalidation/impl/channels_states.h"
 #include "components/invalidation/impl/per_user_topic_registration_request.h"
 #include "components/invalidation/public/identity_provider.h"
 #include "components/invalidation/public/invalidation_export.h"
@@ -46,21 +47,36 @@ class INVALIDATION_EXPORT PerUserTopicRegistrationManager {
   class Observer {
    public:
     virtual void OnSubscriptionChannelStateChanged(
-        InvalidatorState invalidator_state) = 0;
+        SubscriptionChannelState state) = 0;
   };
 
   PerUserTopicRegistrationManager(
       invalidation::IdentityProvider* identity_provider,
       PrefService* local_state,
       network::mojom::URLLoaderFactory* url_loader_factory,
-      const ParseJSONCallback& parse_json,
-      const std::string& project_id);
+      const std::string& project_id,
+      bool migrate_prefs);
 
   virtual ~PerUserTopicRegistrationManager();
 
-  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
+  // Just calls std::make_unique. For ease of base::Bind'ing
+  static std::unique_ptr<PerUserTopicRegistrationManager> Create(
+      invalidation::IdentityProvider* identity_provider,
+      PrefService* local_state,
+      network::mojom::URLLoaderFactory* url_loader_factory,
+      const std::string& project_id,
+      bool migrate_prefs);
 
-  virtual void UpdateRegisteredTopics(const TopicSet& ids,
+  // RegisterProfilePrefs and RegisterPrefs register the same prefs, because on
+  // device level (sign in screen, device local account) we spin up separate
+  // InvalidationService and on profile level (when user signed in) we have
+  // another InvalidationService, and we want to keep profile data in an
+  // encrypted area of disk. While device data which is public can be kept in an
+  // unencrypted area.
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
+  static void RegisterPrefs(PrefRegistrySimple* registry);
+
+  virtual void UpdateRegisteredTopics(const Topics& ids,
                                       const std::string& token);
 
   virtual void Init();
@@ -77,13 +93,16 @@ class INVALIDATION_EXPORT PerUserTopicRegistrationManager {
     return registration_statuses_.empty();
   }
 
+  virtual base::Optional<Topic> LookupRegisteredPublicTopicByPrivateTopic(
+      const std::string& private_topic) const;
+
  private:
   struct RegistrationEntry;
 
   void DoRegistrationUpdate();
 
-  // Tries to register |id|. No retry in case of failure.
-  void StartRegistrationRequest(const Topic& id);
+  // Tries to register |topic|. No retry in case of failure.
+  void StartRegistrationRequest(const Topic& topic);
 
   void ActOnSuccesfullRegistration(
       const Topic& topic,
@@ -103,17 +122,19 @@ class INVALIDATION_EXPORT PerUserTopicRegistrationManager {
   void OnAccessTokenRequestSucceeded(std::string access_token);
   void OnAccessTokenRequestFailed(GoogleServiceAuthError error);
 
-  void DropAllSavedRegistrationsOnTokenChange(
-      const std::string& instance_id_token);
-  void NotifySubscriptionChannelStateChange(InvalidatorState invalidator_state);
+  void DropAllSavedRegistrationsOnTokenChange();
+  void NotifySubscriptionChannelStateChange(
+      SubscriptionChannelState invalidator_state);
 
   std::map<Topic, std::unique_ptr<RegistrationEntry>> registration_statuses_;
 
-  // For registered ids it maps the id value to the topic value.
+  // For registered topics, these map from the topic to the private topic name
+  // and vice versa.
   std::map<Topic, std::string> topic_to_private_topic_;
+  std::map<std::string, Topic> private_topic_to_topic_;
 
-  // Token derrived from GCM IID.
-  std::string token_;
+  // Token derived from GCM IID.
+  std::string instance_id_token_;
 
   PrefService* local_state_ = nullptr;
 
@@ -124,14 +145,14 @@ class INVALIDATION_EXPORT PerUserTopicRegistrationManager {
   base::OneShotTimer request_access_token_retry_timer_;
   net::BackoffEntry request_access_token_backoff_;
 
-  // The callback for Parsing JSON.
-  ParseJSONCallback parse_json_;
-  network::mojom::URLLoaderFactory* url_loader_factory_;
+  network::mojom::URLLoaderFactory* const url_loader_factory_;
 
   const std::string project_id_;
+  const bool migrate_prefs_;
 
   base::ObserverList<Observer>::Unchecked observers_;
-  InvalidatorState last_issued_state_ = TRANSIENT_INVALIDATION_ERROR;
+  SubscriptionChannelState last_issued_state_ =
+      SubscriptionChannelState::NOT_STARTED;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

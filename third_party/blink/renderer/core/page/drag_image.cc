@@ -201,12 +201,15 @@ std::unique_ptr<DragImage> DragImage::Create(const KURL& url,
   // fill the background
   IntSize scaled_image_size = image_size;
   scaled_image_size.Scale(device_scale_factor);
+  // TODO(fserb): are we sure this should be software?
   std::unique_ptr<CanvasResourceProvider> resource_provider(
       CanvasResourceProvider::Create(
-          scaled_image_size, CanvasResourceProvider::kSoftwareResourceUsage,
+          scaled_image_size,
+          CanvasResourceProvider::ResourceUsage::kSoftwareResourceUsage,
           nullptr,  // context_provider_wrapper
           0,        // msaa_sample_count
-          CanvasColorParams(), CanvasResourceProvider::kDefaultPresentationMode,
+          kLow_SkFilterQuality, CanvasColorParams(),
+          CanvasResourceProvider::kDefaultPresentationMode,
           nullptr));  // canvas_resource_dispatcher
   if (!resource_provider)
     return nullptr;

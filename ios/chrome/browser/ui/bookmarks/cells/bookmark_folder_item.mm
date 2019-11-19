@@ -11,7 +11,6 @@
 #import "ios/chrome/browser/ui/bookmarks/cells/bookmark_table_cell_title_edit_delegate.h"
 #import "ios/chrome/browser/ui/util/rtl_geometry.h"
 #include "ios/chrome/grit/ios_strings.h"
-#import "ios/third_party/material_components_ios/src/components/Typography/src/MaterialTypography.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -19,10 +18,6 @@
 #endif
 
 namespace {
-// The amount in points by which to offset horizontally the text label.
-const CGFloat kTitleLabelLeadingOffset = 18.0;
-// The amount in points by which to offset horizontally the image view.
-const CGFloat kImageViewLeadingOffset = 1.0;
 // Width by which to indent folder cell's content. This is multiplied by the
 // |indentationLevel| of the cell.
 const CGFloat kFolderCellIndentationWidth = 32.0;
@@ -249,70 +244,6 @@ const CGFloat kFolderCellHorizonalInset = 17.0;
 
 - (NSString*)accessibilityLabel {
   return self.folderTitleTextField.text;
-}
-
-@end
-
-#pragma mark - LegacyTableViewBookmarkFolderCell
-
-@implementation LegacyTableViewBookmarkFolderCell
-@synthesize checked = _checked;
-@synthesize enabled = _enabled;
-
-- (instancetype)initWithStyle:(UITableViewCellStyle)style
-              reuseIdentifier:(NSString*)reuseIdentifier {
-  self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
-  if (self) {
-    self.textLabel.font = [MDCTypography subheadFont];
-    self.textLabel.textColor = bookmark_utils_ios::darkTextColor();
-    self.selectionStyle = UITableViewCellSelectionStyleGray;
-    self.accessibilityTraits |= UIAccessibilityTraitButton;
-    _enabled = YES;
-  }
-  return self;
-}
-
-- (void)setChecked:(BOOL)checked {
-  if (checked != _checked) {
-    _checked = checked;
-    UIImageView* checkImageView =
-        checked ? [[UIImageView alloc]
-                      initWithImage:[UIImage imageNamed:@"bookmark_blue_check"]]
-                : nil;
-    self.accessoryView = checkImageView;
-  }
-}
-
-- (void)setEnabled:(BOOL)enabled {
-  if (enabled != _enabled) {
-    _enabled = enabled;
-    self.userInteractionEnabled = enabled;
-    self.textLabel.enabled = enabled;
-  }
-}
-
-- (void)layoutSubviews {
-  [super layoutSubviews];
-
-  // Move the text label as required by the design.
-  UIEdgeInsets insets =
-      UIEdgeInsetsMakeDirected(0, kTitleLabelLeadingOffset, 0, 0);
-  self.textLabel.frame = UIEdgeInsetsInsetRect(self.textLabel.frame, insets);
-
-  // Indent the image. An offset is required in the design.
-  LayoutRect layout = LayoutRectForRectInBoundingRect(self.imageView.frame,
-                                                      self.contentView.bounds);
-  layout.position.leading +=
-      self.indentationWidth * self.indentationLevel + kImageViewLeadingOffset;
-  self.imageView.frame = LayoutRectGetRect(layout);
-}
-
-- (void)prepareForReuse {
-  [super prepareForReuse];
-  self.checked = NO;
-  self.enabled = YES;
-  self.indentationWidth = 0;
-  self.imageView.image = nil;
 }
 
 @end

@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 
 <div role="grid">
   <div role="row" id="row0">
@@ -17,7 +16,7 @@ function axElementById(id) {
     return accessibilityController.accessibleElementById(id);
 }
 
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var row = document.getElementById("row0");
     var cell = new AccessibleNode();
     cell.role = "gridcell";
@@ -27,7 +26,7 @@ test_after_layout_and_paint(function(t) {
     assert_equals(axChild.role, "AXRole: AXCell");
 }, "An ARIA cell without a layout object does not crash");
 
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var ax = axElementById("row1");
     assert_equals(ax.role, "AXRole: AXRow");
 }, "An ARIA row in a select in a canvas does not crash");

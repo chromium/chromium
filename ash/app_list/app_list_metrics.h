@@ -6,8 +6,10 @@
 #define ASH_APP_LIST_APP_LIST_METRICS_H_
 
 #include "ash/app_list/app_list_export.h"
+#include "ash/public/cpp/app_list/app_list_types.h"
+#include "ui/events/event.h"
 
-namespace app_list {
+namespace ash {
 
 class AppListModel;
 class SearchModel;
@@ -23,14 +25,6 @@ constexpr char kAppListShowInputLatencyHistogram[] =
 constexpr char kAppListHideInputLatencyHistogram[] =
     "Apps.AppListHide.InputLatency";
 
-// The UMA histogram that logs usage of suggested and regular apps.
-constexpr char kAppListAppLaunched[] = "Apps.AppListAppLaunched";
-
-// The UMA histogram that logs usage of suggested and regular apps while the
-// fullscreen launcher is enabled.
-constexpr char kAppListAppLaunchedFullscreen[] =
-    "Apps.AppListAppLaunchedFullscreen";
-
 // The UMA histogram that logs different ways to move an app in app list's apps
 // grid.
 constexpr char kAppListAppMovingType[] = "Apps.AppListAppMovingType";
@@ -43,10 +37,20 @@ constexpr char kAppListCreationTimeHistogram[] = "Apps.AppListCreationTime";
 constexpr char kAppListStateTransitionSourceHistogram[] =
     "Apps.AppListStateTransitionSource";
 
-// The UMA histogram that logs the source of vertical page switcher usage in the
-// app list.
+// The UMA histogram that logs the source of root app grid page switcher usage
+// in the app list.
 constexpr char kAppListPageSwitcherSourceHistogram[] =
     "Apps.AppListPageSwitcherSource";
+
+// The UMA histogram that logs the source of root app grid page switcher usage
+// in the app list in tablet mode.
+constexpr char kAppListPageSwitcherSourceHistogramInTablet[] =
+    "Apps.AppListPageSwitcherSource.TabletMode";
+
+// The UMA histogram that logs the source of root app grid page switcher usage
+// in the app list in clamshell mode.
+constexpr char kAppListPageSwitcherSourceHistogramInClamshell[] =
+    "Apps.AppListPageSwitcherSource.ClamshellMode";
 
 // The UMA histogram that logs usage of the original and redesigned folders.
 constexpr char kAppListFolderOpenedHistogram[] = "Apps.AppListFolderOpened";
@@ -58,6 +62,22 @@ constexpr char kAppListPeekingToFullscreenHistogram[] =
 
 // The UMA histogram that logs how the app list is shown.
 constexpr char kAppListToggleMethodHistogram[] = "Apps.AppListShowSource";
+
+// The UMA histogram that logs the index launched item in the results list and
+// the query length.
+constexpr char kAppListResultLaunchIndexAndQueryLength[] =
+    "Apps.AppListResultLaunchIndexAndQueryLength";
+
+// The UMA histogram that logs the index launched item in the app tile list and
+// the query length.
+constexpr char kAppListTileLaunchIndexAndQueryLength[] =
+    "Apps.AppListTileLaunchIndexAndQueryLength";
+
+// The UMA histogram that logs the presence or absence of Drive QuickAccess
+// search results in the zero-state results list. Differentiates between results
+// existing in the model's results list, but not being displayed in the view.
+constexpr char kDriveQuickAccessResultPresence[] =
+    "Apps.AppListDriveQuickAccessProvider.ResultPresence";
 
 // The UMA histogram that logs which page gets opened by the user.
 constexpr char kPageOpenedHistogram[] = "Apps.AppListPageOpened";
@@ -84,10 +104,30 @@ constexpr char kSearchResultOpenDisplayTypeHistogram[] =
 // opened.
 constexpr char kSearchQueryLength[] = "Apps.AppListSearchQueryLength";
 
+// The UMA histogram that logs how long the search query was when a result was
+// opened in clamshell mode.
+constexpr char kSearchQueryLengthInClamshell[] =
+    "Apps.AppListSearchQueryLength.ClamshellMode";
+
+// The UMA histogram that logs how long the search query was when a result was
+// opened in tablet mode.
+constexpr char kSearchQueryLengthInTablet[] =
+    "Apps.AppListSearchQueryLength.TabletMode";
+
 // The UMA histogram that logs the Manhattan distance from the origin of the
 // search results to the selected result.
 constexpr char kSearchResultDistanceFromOrigin[] =
     "Apps.AppListSearchResultDistanceFromOrigin";
+
+// The different ways to create a new page in the apps grid. These values are
+// written to logs. New enum values can be added, but existing enums must never
+// be renumbered or deleted and reused.
+enum class AppListPageCreationType {
+  kDraggingApp = 0,
+  kMovingAppWithKeyboard = 1,
+  kSyncOrInstall = 2,
+  kMaxValue = kSyncOrInstall,
+};
 
 // These are used in histograms, do not remove/renumber entries. If you're
 // adding to this enum with the intention that it will be logged, update the
@@ -132,7 +172,8 @@ enum AppListShowSource {
   kSearchKeyFullscreen = 4,
   kShelfButtonFullscreen = 5,
   kAssistantEntryPoint = 6,
-  kMaxValue = kAssistantEntryPoint,
+  kScrollFromShelf = 7,
+  kMaxValue = kScrollFromShelf,
 };
 
 // The two versions of folders. These values are written to logs.  New enum
@@ -174,28 +215,106 @@ enum AppListPageSwitcherSource {
   kMouseWheelScroll = 4,
   kMousePadScroll = 5,
   kDragAppToBorder = 6,
-  kMaxAppListPageSwitcherSource = 7,
+  kMoveAppWithKeyboard = 7,
+  kMouseDrag = 8,
+  kMaxAppListPageSwitcherSource = 9,
 };
 
 // The different ways to move an app in app list's apps grid. These values are
 // written to logs. New enum values can be added, but existing enums must never
 // be renumbered or deleted and reused.
 enum AppListAppMovingType {
-  kMoveIntoFolder = 0,
-  kMoveOutOfFolder = 1,
+  kMoveByDragIntoFolder = 0,
+  kMoveByDragOutOfFolder = 1,
   kMoveIntoAnotherFolder = 2,
-  kReorderInFolder = 3,
-  kReorderInTopLevel = 4,
-  kMaxAppListAppMovingType = 5,
+  kReorderByDragInFolder = 3,
+  kReorderByDragInTopLevel = 4,
+  kReorderByKeyboardInFolder = 5,
+  kReorderByKeyboardInTopLevel = 6,
+  kMoveByKeyboardIntoFolder = 7,
+  kMoveByKeyboardOutOfFolder = 8,
+  kMaxAppListAppMovingType = 9,
+};
+
+// The presence of Drive QuickAccess search results when updating the zero-state
+// results list. These values are persisted to logs. Entries should not be
+// renumbered and numeric values should never be reused.
+enum class DriveQuickAccessResultPresence {
+  kPresentAndShown = 0,
+  kPresentAndNotShown = 1,
+  kAbsent = 2,
+  kMaxValue = kAbsent
+};
+
+// Different places a search result can be launched from. These values do not
+// persist to logs, so can be changed as-needed. However, changes should be
+// reflected in RecordSearchLaunchIndexAndQueryLength().
+enum SearchResultLaunchLocation {
+  kResultList = 0,
+  kTileList = 1,
+};
+
+// Different ways to trigger launcher animation in tablet mode.
+enum TabletModeAnimationTransition {
+  // Release drag to show the launcher (launcher animates the rest of the way).
+  kDragReleaseShow,
+
+  // Release drag to hide the launcher (launcher animates the rest of the way).
+  kDragReleaseHide,
+
+  // Click the Home button in tablet mode.
+  kHomeButtonShow,
+
+  // Activate a window from shelf to hide the launcher in tablet mode.
+  kHideHomeLauncherForWindow,
+
+  // Enter the overview mode in tablet
+  kEnterOverviewMode,
+
+  // Exit the overview mode in tablet
+  kExitOverviewMode,
+
+  // Enter the kFullscreenAllApps state (usually by deactivating the search box)
+  kEnterFullscreenAllApps,
+
+  // Enter the kFullscreenSearch state (usually by activating the search box).
+  kEnterFullscreenSearch,
+
+  // Enter the overview mode in tablet, with overview fading in instead of
+  // sliding (as is the case with kEnterOverviewMode).
+  kFadeInOverview,
+
+  // Exit the overview mode in tablet, with overview fading out instead of
+  // sliding (as is the case with kExitOverviewMode).
+  kFadeOutOverview,
+};
+
+// Parameters to call RecordAppListAppLaunched. Passed to code that does not
+// directly have access to them, such ash AppListMenuModelAdapter.
+struct AppLaunchedMetricParams {
+  ash::AppListLaunchedFrom launched_from =
+      ash::AppListLaunchedFrom::kLaunchedFromGrid;
+  ash::AppListLaunchType search_launch_type =
+      ash::AppListLaunchType::kSearchResult;
+  ash::AppListViewState app_list_view_state = ash::AppListViewState::kClosed;
+  bool is_tablet_mode = false;
+  bool home_launcher_shown = false;
 };
 
 void RecordFolderShowHideAnimationSmoothness(int actual_frames,
-                                             int ideal_duration_ms,
+                                             base::TimeDelta ideal_duration,
                                              float refresh_rate);
 
+void AppListRecordPageSwitcherSourceByEventType(ui::EventType type,
+                                                bool is_tablet_mode);
+
+void RecordPageSwitcherSource(AppListPageSwitcherSource source,
+                              bool is_tablet_mode);
+
 void RecordPaginationAnimationSmoothness(int actual_frames,
-                                         int ideal_duration_ms,
-                                         float refresh_rate);
+                                         base::TimeDelta ideal_duration,
+                                         float refresh_rate,
+                                         bool is_tablet_mode);
 
 void RecordZeroStateSearchResultUserActionHistogram(
     ZeroStateSearchResultUserActionType action);
@@ -203,11 +322,27 @@ void RecordZeroStateSearchResultUserActionHistogram(
 void RecordZeroStateSearchResultRemovalHistogram(
     ZeroStateSearchResutRemovalConfirmation removal_decision);
 
+APP_LIST_EXPORT void RecordSearchAbandonWithQueryLengthHistogram(
+    int query_length);
+
 APP_LIST_EXPORT void RecordSearchResultOpenSource(
     const SearchResult* result,
     const AppListModel* model,
     const SearchModel* search_model);
 
-}  // namespace app_list
+APP_LIST_EXPORT void RecordSearchLaunchIndexAndQueryLength(
+    SearchResultLaunchLocation launch_location,
+    int query_length,
+    int suggestion_index);
+
+APP_LIST_EXPORT void RecordAppListAppLaunched(
+    ash::AppListLaunchedFrom launched_from,
+    ash::AppListViewState app_list_state,
+    bool is_tablet_mode,
+    bool home_launcher_shown);
+
+APP_LIST_EXPORT bool IsCommandIdAnAppLaunch(int command_id);
+
+}  // namespace ash
 
 #endif  // ASH_APP_LIST_APP_LIST_METRICS_H_

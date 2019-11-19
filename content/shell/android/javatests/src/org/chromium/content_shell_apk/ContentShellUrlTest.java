@@ -28,7 +28,7 @@ public class ContentShellUrlTest {
     @Test
     @SmallTest
     @Feature({"Main"})
-    public void testBaseStartup() throws Exception {
+    public void testBaseStartup() {
         ContentShellActivity activity = mActivityTestRule.launchContentShellWithUrl(URL);
 
         // Make sure the activity was created as expected.

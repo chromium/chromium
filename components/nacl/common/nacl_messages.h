@@ -8,6 +8,7 @@
 
 #include <stdint.h>
 
+#include "base/memory/read_only_shared_memory_region.h"
 #include "base/process/process.h"
 #include "build/build_config.h"
 #include "components/nacl/common/nacl_types.h"
@@ -38,7 +39,7 @@ IPC_STRUCT_TRAITS_BEGIN(nacl::NaClStartParams)
   IPC_STRUCT_TRAITS_MEMBER(version)
   IPC_STRUCT_TRAITS_MEMBER(enable_debug_stub)
   IPC_STRUCT_TRAITS_MEMBER(process_type)
-  IPC_STRUCT_TRAITS_MEMBER(crash_info_shmem_handle)
+  IPC_STRUCT_TRAITS_MEMBER(crash_info_shmem_region)
 IPC_STRUCT_TRAITS_END()
 
 IPC_STRUCT_TRAITS_BEGIN(nacl::NaClResourcePrefetchResult)
@@ -129,8 +130,10 @@ IPC_MESSAGE_CONTROL4(NaClProcessMsg_ResolveFileTokenReply,
 // created successfully.
 // This is used for SFI mode only. Non-SFI mode passes channel handles in
 // NaClStartParams instead.
-IPC_MESSAGE_CONTROL4(NaClProcessHostMsg_PpapiChannelsCreated,
-                     IPC::ChannelHandle, /* browser_channel_handle */
-                     IPC::ChannelHandle, /* ppapi_renderer_channel_handle */
-                     IPC::ChannelHandle, /* trusted_renderer_channel_handle */
-                     IPC::ChannelHandle /* manifest_service_channel_handle */)
+IPC_MESSAGE_CONTROL5(
+    NaClProcessHostMsg_PpapiChannelsCreated,
+    IPC::ChannelHandle, /* browser_channel_handle */
+    IPC::ChannelHandle, /* ppapi_renderer_channel_handle */
+    IPC::ChannelHandle, /* trusted_renderer_channel_handle */
+    IPC::ChannelHandle, /* manifest_service_channel_handle */
+    base::ReadOnlySharedMemoryRegion /* crash_info_shmem_region */)

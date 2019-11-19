@@ -18,7 +18,7 @@
 #include "chrome/browser/sync_file_system/sync_callbacks.h"
 #include "chrome/browser/sync_file_system/sync_file_metadata.h"
 #include "google_apis/drive/drive_api_error_codes.h"
-#include "storage/browser/fileapi/file_system_url.h"
+#include "storage/browser/file_system/file_system_url.h"
 
 namespace drive {
 class DriveServiceInterface;
@@ -214,7 +214,7 @@ class RemoteToLocalSyncer : public SyncTask {
   std::unique_ptr<SyncFileMetadata> local_metadata_;
   std::unique_ptr<FileChangeList> local_changes_;
 
-  base::WeakPtrFactory<RemoteToLocalSyncer> weak_ptr_factory_;
+  base::WeakPtrFactory<RemoteToLocalSyncer> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(RemoteToLocalSyncer);
 };

@@ -35,21 +35,14 @@ class SecureChannelSessionKeysTest : public testing::Test {
 };
 
 TEST_F(SecureChannelSessionKeysTest, GenerateKeys) {
-  std::vector<uint8_t> data;
+  std::string master_key;
+  ASSERT_TRUE(base::HexStringToString(kMasterKeyHex, &master_key));
 
-  std::string master_key(kMasterKeyHex);
-  ASSERT_TRUE(base::HexStringToBytes(master_key, &data));
-  master_key.assign(reinterpret_cast<char*>(&data[0]), data.size());
+  std::string initiator_key;
+  ASSERT_TRUE(base::HexStringToString(kInitiatorKeyHex, &initiator_key));
 
-  data.clear();
-  std::string initiator_key(kInitiatorKeyHex);
-  ASSERT_TRUE(base::HexStringToBytes(initiator_key, &data));
-  initiator_key.assign(reinterpret_cast<char*>(&data[0]), data.size());
-
-  data.clear();
-  std::string responder_key(kResponderKeyHex);
-  ASSERT_TRUE(base::HexStringToBytes(responder_key, &data));
-  responder_key.assign(reinterpret_cast<char*>(&data[0]), data.size());
+  std::string responder_key;
+  ASSERT_TRUE(base::HexStringToString(kResponderKeyHex, &responder_key));
 
   SessionKeys session_keys(master_key);
   EXPECT_EQ(initiator_key, session_keys.initiator_encode_key());

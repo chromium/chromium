@@ -11,3 +11,18 @@ function populateForm(optionalContentHtml) {
   ++frameCounter;
   return document.body.firstChild.nextSibling;
 }
+
+function submitPromise(form, iframe) {
+  return new Promise((resolve, reject) => {
+    iframe.onload = () => resolve(iframe.contentWindow.location.search);
+    iframe.onerror = () => reject(new Error('iframe onerror fired'));
+    form.submit();
+  });
+}
+
+function loadPromise(iframe) {
+  return new Promise((resolve, reject) => {
+    iframe.onload = resolve;
+    iframe.onerror = () => reject(new Error('iframe onerror fired'));
+  });
+}

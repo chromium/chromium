@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-goog.provide('cvox.ChromeVoxEditableTextBase');
-goog.provide('cvox.TextChangeEvent');
-goog.provide('cvox.TypingEcho');
+goog.provide('ChromeVoxEditableTextBase');
+goog.provide('TextChangeEvent');
+goog.provide('TypingEcho');
 
-goog.require('cvox.AbstractTts');
-goog.require('cvox.ChromeVox');
-goog.require('cvox.TtsInterface');
+goog.require('AbstractTts');
+goog.require('ChromeVox');
+goog.require('TtsInterface');
 goog.require('goog.i18n.MessageFormat');
 
 
@@ -35,7 +35,7 @@ goog.require('goog.i18n.MessageFormat');
  * @param {number} newEnd The new 0-based end cursor/selection index.
  * @param {boolean} triggeredByUser .
  */
-cvox.TextChangeEvent = function(newValue, newStart, newEnd, triggeredByUser) {
+TextChangeEvent = function(newValue, newStart, newEnd, triggeredByUser) {
   Object.defineProperty(this, 'value', {
     get: function() {
       return this.value_;
@@ -69,7 +69,7 @@ cvox.TextChangeEvent = function(newValue, newStart, newEnd, triggeredByUser) {
  * COUNT: The number of possible echo levels.
  * @enum
  */
-cvox.TypingEcho = {
+TypingEcho = {
   CHARACTER: 0,
   WORD: 1,
   CHARACTER_AND_WORD: 2,
@@ -82,8 +82,8 @@ cvox.TypingEcho = {
  * @param {number} cur Current typing echo.
  * @return {number} Next typing echo.
  */
-cvox.TypingEcho.cycle = function(cur) {
-  return (cur + 1) % cvox.TypingEcho.COUNT;
+TypingEcho.cycle = function(cur) {
+  return (cur + 1) % TypingEcho.COUNT;
 };
 
 
@@ -92,9 +92,9 @@ cvox.TypingEcho.cycle = function(cur) {
  * @param {number} typingEcho Typing echo option.
  * @return {boolean} Whether the character should be spoken.
  */
-cvox.TypingEcho.shouldSpeakChar = function(typingEcho) {
-  return typingEcho == cvox.TypingEcho.CHARACTER_AND_WORD ||
-      typingEcho == cvox.TypingEcho.CHARACTER;
+TypingEcho.shouldSpeakChar = function(typingEcho) {
+  return typingEcho == TypingEcho.CHARACTER_AND_WORD ||
+      typingEcho == TypingEcho.CHARACTER;
 };
 
 
@@ -104,10 +104,10 @@ cvox.TypingEcho.shouldSpeakChar = function(typingEcho) {
  * @param {number} start The 0-based start cursor/selection index.
  * @param {number} end The 0-based end cursor/selection index.
  * @param {boolean} isPassword Whether the text control if a password field.
- * @param {cvox.TtsInterface} tts A TTS object.
+ * @param {TtsInterface} tts A TTS object.
  * @constructor
  */
-cvox.ChromeVoxEditableTextBase = function(value, start, end, isPassword, tts) {
+ChromeVoxEditableTextBase = function(value, start, end, isPassword, tts) {
   /**
    * Current value of the text field.
    * @type {string}
@@ -147,7 +147,7 @@ cvox.ChromeVoxEditableTextBase = function(value, start, end, isPassword, tts) {
 
   /**
    * Text-to-speech object implementing speak() and stop() methods.
-   * @type {cvox.TtsInterface}
+   * @type {TtsInterface}
    * @protected
    */
   this.tts = tts;
@@ -167,20 +167,19 @@ cvox.ChromeVoxEditableTextBase = function(value, start, end, isPassword, tts) {
    * @type {boolean}
    */
   this.lastChangeDescribed = false;
-
 };
 
 
 /**
  * Performs setup for this element.
  */
-cvox.ChromeVoxEditableTextBase.prototype.setup = function() {};
+ChromeVoxEditableTextBase.prototype.setup = function() {};
 
 
 /**
  * Performs teardown for this element.
  */
-cvox.ChromeVoxEditableTextBase.prototype.teardown = function() {};
+ChromeVoxEditableTextBase.prototype.teardown = function() {};
 
 
 /**
@@ -200,23 +199,14 @@ cvox.ChromeVoxEditableTextBase.prototype.teardown = function() {};
  *
  * @type {boolean}
  */
-cvox.ChromeVoxEditableTextBase.useIBeamCursor = cvox.ChromeVox.isMac;
-
-
-/**
- * Switches on or off typing echo based on events. When set, editable text
- * updates for single-character insertions are handled in event watcher's key
- * press handler.
- * @type {boolean}
- */
-cvox.ChromeVoxEditableTextBase.eventTypingEcho = false;
+ChromeVoxEditableTextBase.useIBeamCursor = false;
 
 
 /**
  * @type {boolean} Whether insertions (i.e. changes of greater than one
  * character) should be spoken.
  */
-cvox.ChromeVoxEditableTextBase.shouldSpeakInsertions = false;
+ChromeVoxEditableTextBase.shouldSpeakInsertions = false;
 
 
 /**
@@ -227,7 +217,7 @@ cvox.ChromeVoxEditableTextBase.shouldSpeakInsertions = false;
  *
  * @type {number}
  */
-cvox.ChromeVoxEditableTextBase.prototype.maxShortPhraseLen = 60;
+ChromeVoxEditableTextBase.prototype.maxShortPhraseLen = 60;
 
 
 /**
@@ -236,7 +226,7 @@ cvox.ChromeVoxEditableTextBase.prototype.maxShortPhraseLen = 60;
  * @param {number} index The 0-based character index.
  * @return {number} The 0-based line number corresponding to that character.
  */
-cvox.ChromeVoxEditableTextBase.prototype.getLineIndex = function(index) {
+ChromeVoxEditableTextBase.prototype.getLineIndex = function(index) {
   return 0;
 };
 
@@ -247,7 +237,7 @@ cvox.ChromeVoxEditableTextBase.prototype.getLineIndex = function(index) {
  * @param {number} index The 0-based line index.
  * @return {number} The 0-based index of the first character in this line.
  */
-cvox.ChromeVoxEditableTextBase.prototype.getLineStart = function(index) {
+ChromeVoxEditableTextBase.prototype.getLineStart = function(index) {
   return 0;
 };
 
@@ -258,7 +248,7 @@ cvox.ChromeVoxEditableTextBase.prototype.getLineStart = function(index) {
  * @param {number} index The 0-based line index.
  * @return {number} The 0-based index of the end of this line.
  */
-cvox.ChromeVoxEditableTextBase.prototype.getLineEnd = function(index) {
+ChromeVoxEditableTextBase.prototype.getLineEnd = function(index) {
   return this.value.length;
 };
 
@@ -268,7 +258,7 @@ cvox.ChromeVoxEditableTextBase.prototype.getLineEnd = function(index) {
  * @param {number} index The 0-based line index.
  * @return {string} The text of the line.
  */
-cvox.ChromeVoxEditableTextBase.prototype.getLine = function(index) {
+ChromeVoxEditableTextBase.prototype.getLine = function(index) {
   var lineStart = this.getLineStart(index);
   var lineEnd = this.getLineEnd(index);
   return this.value.substr(lineStart, lineEnd - lineStart);
@@ -279,7 +269,7 @@ cvox.ChromeVoxEditableTextBase.prototype.getLine = function(index) {
  * @param {string} ch The character to test.
  * @return {boolean} True if a character is whitespace.
  */
-cvox.ChromeVoxEditableTextBase.prototype.isWhitespaceChar = function(ch) {
+ChromeVoxEditableTextBase.prototype.isWhitespaceChar = function(ch) {
   return ch == ' ' || ch == '\n' || ch == '\r' || ch == '\t';
 };
 
@@ -289,17 +279,17 @@ cvox.ChromeVoxEditableTextBase.prototype.isWhitespaceChar = function(ch) {
  * @return {boolean} True if a character breaks a word, used to determine
  *     if the previous word should be spoken.
  */
-cvox.ChromeVoxEditableTextBase.prototype.isWordBreakChar = function(ch) {
+ChromeVoxEditableTextBase.prototype.isWordBreakChar = function(ch) {
   return !!ch.match(/^\W$/);
 };
 
 
 /**
- * @param {cvox.TextChangeEvent} evt The new text changed event to test.
+ * @param {TextChangeEvent} evt The new text changed event to test.
  * @return {boolean} True if the event, when compared to the previous text,
  * should trigger description.
  */
-cvox.ChromeVoxEditableTextBase.prototype.shouldDescribeChange = function(evt) {
+ChromeVoxEditableTextBase.prototype.shouldDescribeChange = function(evt) {
   if (evt.value == this.value && evt.start == this.start &&
       evt.end == this.end) {
     return false;
@@ -315,14 +305,14 @@ cvox.ChromeVoxEditableTextBase.prototype.shouldDescribeChange = function(evt) {
  * user action.
  * @param {Object=} opt_personality Personality used to speak text.
  */
-cvox.ChromeVoxEditableTextBase.prototype.speak = function(
+ChromeVoxEditableTextBase.prototype.speak = function(
     str, opt_triggeredByUser, opt_personality) {
   if (!str) {
     return;
   }
-  var queueMode = cvox.QueueMode.QUEUE;
+  var queueMode = QueueMode.QUEUE;
   if (opt_triggeredByUser === true) {
-    queueMode = cvox.QueueMode.FLUSH;
+    queueMode = QueueMode.FLUSH;
   }
   this.tts.speak(str, queueMode, opt_personality || {});
 };
@@ -332,9 +322,9 @@ cvox.ChromeVoxEditableTextBase.prototype.speak = function(
  * Update the state of the text and selection and describe any changes as
  * appropriate.
  *
- * @param {cvox.TextChangeEvent} evt The text change event.
+ * @param {TextChangeEvent} evt The text change event.
  */
-cvox.ChromeVoxEditableTextBase.prototype.changed = function(evt) {
+ChromeVoxEditableTextBase.prototype.changed = function(evt) {
   if (!this.shouldDescribeChange(evt)) {
     this.lastChangeDescribed = false;
     return;
@@ -344,7 +334,7 @@ cvox.ChromeVoxEditableTextBase.prototype.changed = function(evt) {
     this.describeSelectionChanged(evt);
   } else {
     this.describeTextChanged(
-        new cvox.TextChangeEvent(this.value, this.start, this.end, true), evt);
+        new TextChangeEvent(this.value, this.start, this.end, true), evt);
   }
   this.lastChangeDescribed = true;
 
@@ -357,10 +347,9 @@ cvox.ChromeVoxEditableTextBase.prototype.changed = function(evt) {
 /**
  * Describe a change in the selection or cursor position when the text
  * stays the same.
- * @param {cvox.TextChangeEvent} evt The text change event.
+ * @param {TextChangeEvent} evt The text change event.
  */
-cvox.ChromeVoxEditableTextBase.prototype.describeSelectionChanged = function(
-    evt) {
+ChromeVoxEditableTextBase.prototype.describeSelectionChanged = function(evt) {
   // TODO(deboer): Factor this into two function:
   //   - one to determine the selection event
   //   - one to speak
@@ -391,9 +380,9 @@ cvox.ChromeVoxEditableTextBase.prototype.describeSelectionChanged = function(
       this.speak(lineValue, evt.triggeredByUser);
     } else if (this.start == evt.start + 1 || this.start == evt.start - 1) {
       // Moved by one character; read it.
-      if (!cvox.ChromeVoxEditableTextBase.useIBeamCursor) {
+      if (!ChromeVoxEditableTextBase.useIBeamCursor) {
         if (evt.start == this.value.length) {
-          if (cvox.ChromeVox.verbosity == cvox.VERBOSITY_VERBOSE) {
+          if (ChromeVox.verbosity == ChromeVox.VerbosityType.VERBOSE) {
             this.speak(Msgs.getMsg('end_of_text_verbose'), evt.triggeredByUser);
           } else {
             this.speak(Msgs.getMsg('end_of_text_brief'), evt.triggeredByUser);
@@ -421,7 +410,10 @@ cvox.ChromeVoxEditableTextBase.prototype.describeSelectionChanged = function(
     if (this.start + 1 == evt.start && this.end == this.value.length &&
         evt.end == this.value.length) {
       // Autocomplete: the user typed one character of autocompleted text.
-      this.speak(this.value.substr(this.start, 1), evt.triggeredByUser);
+      if (ChromeVox.typingEcho == TypingEcho.CHARACTER ||
+          ChromeVox.typingEcho == TypingEcho.CHARACTER_AND_WORD) {
+        this.speak(this.value.substr(this.start, 1), evt.triggeredByUser);
+      }
       this.speak(this.value.substr(evt.start));
     } else if (this.start == this.end) {
       // It was previously a cursor.
@@ -461,14 +453,13 @@ cvox.ChromeVoxEditableTextBase.prototype.describeSelectionChanged = function(
 
 /**
  * Describe a change where the text changes.
- * @param {cvox.TextChangeEvent} prev The previous text change event.
- * @param {cvox.TextChangeEvent} evt The text change event.
+ * @param {TextChangeEvent} prev The previous text change event.
+ * @param {TextChangeEvent} evt The text change event.
  */
-cvox.ChromeVoxEditableTextBase.prototype.describeTextChanged = function(
-    prev, evt) {
+ChromeVoxEditableTextBase.prototype.describeTextChanged = function(prev, evt) {
   var personality = {};
   if (evt.value.length < (prev.value.length - 1)) {
-    personality = cvox.AbstractTts.PERSONALITY_DELETED;
+    personality = AbstractTts.PERSONALITY_DELETED;
   }
   if (this.isPassword) {
     this.speak(
@@ -505,17 +496,8 @@ cvox.ChromeVoxEditableTextBase.prototype.describeTextChanged = function(
   if (newLen >= prefixLen + suffixLen + (evtEnd - evt.start) &&
       evtValue.substr(0, prefixLen) == value.substr(0, prefixLen) &&
       evtValue.substr(newLen - suffixLen) == value.substr(prev.end)) {
-    // However, in a dynamic content editable, defer to authoritative events
-    // (clipboard, key press) to reduce guess work when observing insertions.
-    // Only use this logic when observing deletions (and insertion of word
-    // breakers).
-    // TODO(dtseng): Think about a more reliable way to do this.
-    if (!(cvox.ChromeVoxEditableContentEditable &&
-          this instanceof cvox.ChromeVoxEditableContentEditable) ||
-        newLen < len || this.isWordBreakChar(evt.value[newLen - 1] || '')) {
       this.describeTextChangedHelper(
           prev, evt, prefixLen, suffixLen, autocompleteSuffix, personality);
-    }
     return;
   }
 
@@ -532,7 +514,7 @@ cvox.ChromeVoxEditableTextBase.prototype.describeTextChanged = function(
     // right of the caret or the deleted text depending on the iBeam cursor
     // setting.
     if (prev.start == evt.start && prev.end == evt.end &&
-        !cvox.ChromeVoxEditableTextBase.useIBeamCursor) {
+        !ChromeVoxEditableTextBase.useIBeamCursor) {
       this.speak(evt.value[evt.start], evt.triggeredByUser);
     } else {
       this.describeTextChangedHelper(
@@ -624,8 +606,8 @@ cvox.ChromeVoxEditableTextBase.prototype.describeTextChanged = function(
  * The function called by describeTextChanged after it's figured out
  * what text was deleted, what text was inserted, and what additional
  * autocomplete text was added.
- * @param {cvox.TextChangeEvent} prev The previous text change event.
- * @param {cvox.TextChangeEvent} evt The text change event.
+ * @param {TextChangeEvent} prev The previous text change event.
+ * @param {TextChangeEvent} evt The text change event.
  * @param {number} prefixLen The number of characters in the common prefix
  *     of this.value and newValue.
  * @param {number} suffixLen The number of characters in the common suffix
@@ -635,7 +617,7 @@ cvox.ChromeVoxEditableTextBase.prototype.describeTextChanged = function(
  *     describing the change.
  * @param {Object=} opt_personality Personality to speak the text.
  */
-cvox.ChromeVoxEditableTextBase.prototype.describeTextChangedHelper = function(
+ChromeVoxEditableTextBase.prototype.describeTextChangedHelper = function(
     prev, evt, prefixLen, suffixLen, autocompleteSuffix, opt_personality) {
   var len = prev.value.length;
   var newLen = evt.value.length;
@@ -647,12 +629,13 @@ cvox.ChromeVoxEditableTextBase.prototype.describeTextChangedHelper = function(
   var triggeredByUser = evt.triggeredByUser;
 
   if (insertedLen > 1) {
-    if (!cvox.ChromeVoxEditableTextBase.shouldSpeakInsertions)
+    if (!ChromeVoxEditableTextBase.shouldSpeakInsertions) {
       return;
+    }
     utterance = inserted;
   } else if (insertedLen == 1) {
-    if ((cvox.ChromeVox.typingEcho == cvox.TypingEcho.WORD ||
-         cvox.ChromeVox.typingEcho == cvox.TypingEcho.CHARACTER_AND_WORD) &&
+    if ((ChromeVox.typingEcho == TypingEcho.WORD ||
+         ChromeVox.typingEcho == TypingEcho.CHARACTER_AND_WORD) &&
         this.isWordBreakChar(inserted) && prefixLen > 0 &&
         !this.isWordBreakChar(evt.value.substr(prefixLen - 1, 1))) {
       // Speak previous word.
@@ -667,17 +650,16 @@ cvox.ChromeVoxEditableTextBase.prototype.describeTextChangedHelper = function(
         triggeredByUser = false;  // Implies QUEUE_MODE_QUEUE.
       }
     } else if (
-        cvox.ChromeVox.typingEcho == cvox.TypingEcho.CHARACTER ||
-        cvox.ChromeVox.typingEcho == cvox.TypingEcho.CHARACTER_AND_WORD) {
-      // This particular case is handled in event watcher. See the key press
-      // handler for more details.
-      utterance =
-          cvox.ChromeVoxEditableTextBase.eventTypingEcho ? '' : inserted;
+        ChromeVox.typingEcho == TypingEcho.CHARACTER ||
+        ChromeVox.typingEcho == TypingEcho.CHARACTER_AND_WORD) {
+      utterance = inserted;
     }
   } else if (deletedLen > 1 && !autocompleteSuffix) {
     utterance = deleted + ', deleted';
   } else if (deletedLen == 1) {
     utterance = deleted;
+    // Single-deleted characters should also use PERSONALITY_DELETED.
+    opt_personality = AbstractTts.PERSONALITY_DELETED;
   }
 
   if (autocompleteSuffix && utterance) {
@@ -696,8 +678,7 @@ cvox.ChromeVoxEditableTextBase.prototype.describeTextChangedHelper = function(
  * Moves the cursor forward by one character.
  * @return {boolean} True if the action was handled.
  */
-cvox.ChromeVoxEditableTextBase.prototype.moveCursorToNextCharacter =
-    function() {
+ChromeVoxEditableTextBase.prototype.moveCursorToNextCharacter = function() {
   return false;
 };
 
@@ -706,8 +687,7 @@ cvox.ChromeVoxEditableTextBase.prototype.moveCursorToNextCharacter =
  * Moves the cursor backward by one character.
  * @return {boolean} True if the action was handled.
  */
-cvox.ChromeVoxEditableTextBase.prototype.moveCursorToPreviousCharacter =
-    function() {
+ChromeVoxEditableTextBase.prototype.moveCursorToPreviousCharacter = function() {
   return false;
 };
 
@@ -716,7 +696,7 @@ cvox.ChromeVoxEditableTextBase.prototype.moveCursorToPreviousCharacter =
  * Moves the cursor forward by one word.
  * @return {boolean} True if the action was handled.
  */
-cvox.ChromeVoxEditableTextBase.prototype.moveCursorToNextWord = function() {
+ChromeVoxEditableTextBase.prototype.moveCursorToNextWord = function() {
   return false;
 };
 
@@ -725,7 +705,7 @@ cvox.ChromeVoxEditableTextBase.prototype.moveCursorToNextWord = function() {
  * Moves the cursor backward by one word.
  * @return {boolean} True if the action was handled.
  */
-cvox.ChromeVoxEditableTextBase.prototype.moveCursorToPreviousWord = function() {
+ChromeVoxEditableTextBase.prototype.moveCursorToPreviousWord = function() {
   return false;
 };
 
@@ -734,7 +714,7 @@ cvox.ChromeVoxEditableTextBase.prototype.moveCursorToPreviousWord = function() {
  * Moves the cursor forward by one line.
  * @return {boolean} True if the action was handled.
  */
-cvox.ChromeVoxEditableTextBase.prototype.moveCursorToNextLine = function() {
+ChromeVoxEditableTextBase.prototype.moveCursorToNextLine = function() {
   return false;
 };
 
@@ -743,7 +723,7 @@ cvox.ChromeVoxEditableTextBase.prototype.moveCursorToNextLine = function() {
  * Moves the cursor backward by one line.
  * @return {boolean} True if the action was handled.
  */
-cvox.ChromeVoxEditableTextBase.prototype.moveCursorToPreviousLine = function() {
+ChromeVoxEditableTextBase.prototype.moveCursorToPreviousLine = function() {
   return false;
 };
 
@@ -752,8 +732,7 @@ cvox.ChromeVoxEditableTextBase.prototype.moveCursorToPreviousLine = function() {
  * Moves the cursor forward by one paragraph.
  * @return {boolean} True if the action was handled.
  */
-cvox.ChromeVoxEditableTextBase.prototype.moveCursorToNextParagraph =
-    function() {
+ChromeVoxEditableTextBase.prototype.moveCursorToNextParagraph = function() {
   return false;
 };
 
@@ -762,8 +741,7 @@ cvox.ChromeVoxEditableTextBase.prototype.moveCursorToNextParagraph =
  * Moves the cursor backward by one paragraph.
  * @return {boolean} True if the action was handled.
  */
-cvox.ChromeVoxEditableTextBase.prototype.moveCursorToPreviousParagraph =
-    function() {
+ChromeVoxEditableTextBase.prototype.moveCursorToPreviousParagraph = function() {
   return false;
 };
 

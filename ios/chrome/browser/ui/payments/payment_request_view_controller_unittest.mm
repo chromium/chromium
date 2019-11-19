@@ -8,9 +8,9 @@
 
 #include "base/mac/foundation_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/browser/autofill_profile.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/credit_card.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/strings/grit/components_strings.h"
 #include "ios/chrome/browser/payments/payment_request_test_util.h"
 #import "ios/chrome/browser/payments/payment_request_unittest_base.h"
@@ -131,7 +131,10 @@ class PaymentRequestViewControllerTest : public CollectionViewControllerTest,
   }
 
   // CollectionViewControllerTest:
-  void TearDown() override { DoTearDown(); }
+  void TearDown() override {
+    DoTearDown();
+    CollectionViewControllerTest::TearDown();
+  }
 
   CollectionViewController* InstantiateController() override {
     PaymentRequestViewController* viewController =

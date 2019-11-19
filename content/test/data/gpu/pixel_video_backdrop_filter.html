@@ -1,0 +1,39 @@
+<!DOCTYPE HTML>
+
+<!-- READ BEFORE UPDATING:
+If this test is updated make sure to increment the "revision" value of the
+associated test in content/test/gpu/page_sets/pixel_tests.py. This will ensure
+that the baseline images are regenerated on the next run.
+-->
+
+<html>
+<head>
+<meta name="viewport" content="initial-scale=1">
+<title>MP4 Video with Backdrop Filter Test</title>
+<style type="text/css">
+.nomargin {
+  margin: 0px auto;
+}
+.absolute {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+}
+.backdrop {
+  width: 200px;
+  height: 100px;
+  backdrop-filter: grayscale(1);
+  z-index: 1;
+}
+</style>
+<script src="pixel_video_test.js"></script>
+</head>
+<body onload="main()">
+<div id="container" class="absolute">
+<video class="nomargin" id="video" width="240" height="135">
+<source src="/media/test/data/four-colors.mp4" type="video/mp4">
+</video>
+<div class="nomargin absolute backdrop"></div>
+</div>
+</body>
+</html>

@@ -10,6 +10,7 @@
 
 @class BookmarkEditViewController;
 @class BookmarkFolderViewController;
+@protocol BrowserCommands;
 
 namespace bookmarks {
 class BookmarkNode;
@@ -45,7 +46,8 @@ class ChromeBrowserState;
 // This view controller will also monitor bookmark model change events and react
 // accordingly depending on whether the bookmark and folder it is editing
 // changes underneath it.
-@interface BookmarkEditViewController : ChromeTableViewController
+@interface BookmarkEditViewController
+    : ChromeTableViewController <UIAdaptivePresentationControllerDelegate>
 
 @property(nonatomic, weak) id<BookmarkEditViewControllerDelegate> delegate;
 
@@ -54,6 +56,7 @@ class ChromeBrowserState;
 //             folder.
 - (instancetype)initWithBookmark:(const bookmarks::BookmarkNode*)bookmark
                     browserState:(ios::ChromeBrowserState*)browserState
+                      dispatcher:(id<BrowserCommands>)dispatcher
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithTableViewStyle:(UITableViewStyle)style
                            appBarStyle:(ChromeTableViewControllerStyle)style

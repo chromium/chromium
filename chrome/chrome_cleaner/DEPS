@@ -1,5 +1,14 @@
+# chrome_cleaner is built into a separate executable and should not inherit
+# rules from chromium.
+noparent = True
+
 include_rules = [
+  "+base",
   "+components/chrome_cleaner",
+  "+crypto",
+  "+mojo/public",
   "+sandbox/win/src",
+  "+testing",
   "+third_party/protobuf/src/google/protobuf",
+  "+url",
 ]

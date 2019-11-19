@@ -541,8 +541,8 @@ gfx::SizeF KeyframedSizeAnimationCurve::GetValue(base::TimeDelta t) const {
   double progress =
       TransformedKeyframeProgress(keyframes_, scaled_duration(), t, i);
 
-  return gfx::Tween::SizeValueBetween(progress, keyframes_[i]->Value(),
-                                      keyframes_[i + 1]->Value());
+  return gfx::Tween::SizeFValueBetween(progress, keyframes_[i]->Value(),
+                                       keyframes_[i + 1]->Value());
 }
 
 }  // namespace cc

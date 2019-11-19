@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/location.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -49,6 +48,7 @@ UrlData::UrlData(const GURL& url, CorsMode cors_mode, UrlIndex* url_index)
     : url_(url),
       have_data_origin_(false),
       cors_mode_(cors_mode),
+      has_access_control_(false),
       url_index_(url_index),
       length_(kPositionNotSpecified),
       range_supported_(false),
@@ -56,12 +56,7 @@ UrlData::UrlData(const GURL& url, CorsMode cors_mode, UrlIndex* url_index)
       last_used_(),
       multibuffer_(this, url_index_->block_shift_) {}
 
-UrlData::~UrlData() {
-  UMA_HISTOGRAM_MEMORY_KB("Media.BytesReadFromCache",
-                          BytesReadFromCache() >> 10);
-  UMA_HISTOGRAM_MEMORY_KB("Media.BytesReadFromNetwork",
-                          BytesReadFromNetwork() >> 10);
-}
+UrlData::~UrlData() = default;
 
 std::pair<GURL, UrlData::CorsMode> UrlData::key() const {
   DCHECK(thread_checker_.CalledOnValidThread());
@@ -90,6 +85,7 @@ void UrlData::MergeFrom(const scoped_refptr<UrlData>& other) {
     bytes_read_from_cache_ += other->bytes_read_from_cache_;
     // is_cors_corss_origin_ will not relax from true to false.
     set_is_cors_cross_origin(other->is_cors_cross_origin_);
+    has_access_control_ |= other->has_access_control_;
     multibuffer()->MergeFrom(other->multibuffer());
   }
 }
@@ -112,16 +108,14 @@ void UrlData::set_is_cors_cross_origin(bool is_cors_cross_origin) {
   is_cors_cross_origin_ = is_cors_cross_origin;
 }
 
+void UrlData::set_has_access_control() {
+  has_access_control_ = true;
+}
+
 void UrlData::RedirectTo(const scoped_refptr<UrlData>& url_data) {
   DCHECK(thread_checker_.CalledOnValidThread());
   // Copy any cached data over to the new location.
   url_data->multibuffer()->MergeFrom(multibuffer());
-
-  // All |bytes_received_callbacks_| should also listen for bytes on the
-  // redirect UrlData.
-  for (const auto& cb : bytes_received_callbacks_) {
-    url_data->AddBytesReceivedCallback(cb);
-  }
 
   std::vector<RedirectCB> redirect_callbacks;
   redirect_callbacks.swap(redirect_callbacks_);
@@ -209,18 +203,6 @@ void UrlData::set_range_supported() {
 ResourceMultiBuffer* UrlData::multibuffer() {
   DCHECK(thread_checker_.CalledOnValidThread());
   return &multibuffer_;
-}
-
-void UrlData::AddBytesReceivedCallback(BytesReceivedCB bytes_received_cb) {
-  bytes_received_callbacks_.emplace_back(std::move(bytes_received_cb));
-}
-
-void UrlData::AddBytesReadFromNetwork(int64_t b) {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  bytes_read_from_network_ += b;
-  for (const auto& cb : bytes_received_callbacks_) {
-    cb.Run(b);
-  }
 }
 
 size_t UrlData::CachedSize() {

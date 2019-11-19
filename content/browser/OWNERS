@@ -7,17 +7,17 @@ per-file BUILD.gn=*
 
 # For security review.
 per-file child_process_security_policy_impl.*=set noparent
-per-file child_process_security_policy_impl.*=alexmos@chromium.org
-per-file child_process_security_policy_impl.*=creis@chromium.org
-per-file child_process_security_policy_impl.*=lukasza@chromium.org
-per-file child_process_security_policy_impl.*=mkwst@chromium.org
-per-file child_process_security_policy_impl.*=tsepez@chromium.org
+per-file child_process_security_policy_impl.*=file://content/browser/SITE_ISOLATION_OWNERS
 per-file child_process_security_policy_unittest.cc=set noparent
-per-file child_process_security_policy_unittest.cc=alexmos@chromium.org
-per-file child_process_security_policy_unittest.cc=creis@chromium.org
-per-file child_process_security_policy_unittest.cc=lukasza@chromium.org
-per-file child_process_security_policy_unittest.cc=mkwst@chromium.org
-per-file child_process_security_policy_unittest.cc=tsepez@chromium.org
+per-file child_process_security_policy_unittest.cc=file://content/browser/SITE_ISOLATION_OWNERS
+per-file browser_interface_binders.cc=set noparent
+per-file browser_interface_binders.cc=file://ipc/SECURITY_OWNERS
+per-file ppapi_plugin_process_host_receiver_bindings.cc=set noparent
+per-file ppapi_plugin_process_host_receiver_bindings.cc=file://ipc/SECURITY_OWNERS
+per-file browser_child_process_host_impl_receiver_bindings.cc=set noparent
+per-file browser_child_process_host_impl_receiver_bindings.cc=file://ipc/SECURITY_OWNERS
+per-file utility_process_host_receiver_bindings.cc=set noparent
+per-file utility_process_host_receiver_bindings.cc=file://ipc/SECURITY_OWNERS
 
 per-file host_zoom_*=wjmaclean@chromium.org
 per-file find_request_manager*=paulmeyer@chromium.org
@@ -30,3 +30,17 @@ per-file sandbox_mac_unittest.*=file://sandbox/mac/OWNERS
 # Linux sandboxing.
 per-file sandbox_host_linux.*=file://sandbox/linux/OWNERS
 per-file sandbox_ipc_linux.*=file://sandbox/linux/OWNERS
+
+# Service manifests provided by content require security review
+per-file builtin_service_manifests.cc=set noparent
+per-file builtin_service_manifests.cc=file://ipc/SECURITY_OWNERS
+per-file builtin_service_manifests.h=set noparent
+per-file builtin_service_manifests.h=file://ipc/SECURITY_OWNERS
+
+# BackForwardCache
+per-file back_forward_cache_browsertest.cc=arthursonzogni@chromium.org
+per-file back_forward_cache_browsertest.cc=altimin@chromium.org
+
+# Storage API dependencies.
+per-file storage_partition*=file://storage/OWNERS
+per-file quota_dispatcher_host*=file://storage/OWNERS

@@ -30,13 +30,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_FILE_CHOOSER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_FILE_CHOOSER_H_
 
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/choosers/file_chooser.mojom-blink.h"
 #include "third_party/blink/renderer/core/page/popup_opening_observer.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -60,12 +60,13 @@ class CORE_EXPORT FileChooserClient : public PopupOpeningObserver {
   // DisconnectFileChooser().
   FileChooser* FileChooserOrNull() const { return chooser_.get(); }
 
- protected:
-  FileChooser* NewFileChooser(const mojom::blink::FileChooserParams&);
-  bool HasConnectedFileChooser() const { return chooser_.get(); }
-
   // This should be called if a user chose files or cancel the dialog.
   void DisconnectFileChooser();
+
+  FileChooser* NewFileChooser(const mojom::blink::FileChooserParams&);
+
+ protected:
+  bool HasConnectedFileChooser() const { return chooser_.get(); }
 
  private:
   scoped_refptr<FileChooser> chooser_;
@@ -96,10 +97,10 @@ class FileChooser : public RefCounted<FileChooser> {
   // mojom::blink::FileChooser callback
   void DidChooseFiles(mojom::blink::FileChooserResultPtr result);
 
-  WeakPersistent<FileChooserClient> client_;
+  Persistent<FileChooserClient> client_;
   mojom::blink::FileChooserParamsPtr params_;
   Persistent<ChromeClientImpl> chrome_client_impl_;
-  mojom::blink::FileChooserPtr file_chooser_;
+  mojo::Remote<mojom::blink::FileChooser> file_chooser_;
 };
 
 CORE_EXPORT mojom::blink::FileChooserFileInfoPtr

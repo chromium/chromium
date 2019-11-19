@@ -15,11 +15,21 @@ enum class AnimationChangeType;
 // Used to observe changes to the shelf.
 class ASH_EXPORT ShelfObserver {
  public:
+  // Invoked when background type is changed.
   virtual void OnBackgroundTypeChanged(ShelfBackgroundType background_type,
                                        AnimationChangeType change_type) {}
+
+  // Invoked when Shelf's visibility state will be changed to |new_state|.
   virtual void WillChangeVisibilityState(ShelfVisibilityState new_state) {}
+
+  // Invoked when Shelf's auto hide state is changed to |new_state|.
   virtual void OnAutoHideStateChanged(ShelfAutoHideState new_state) {}
+
+  // Invoked when the positions of Shelf Icons are changed.
   virtual void OnShelfIconPositionsChanged() {}
+
+  // Invoked when the Shelf has updated its insets in work area insets.
+  virtual void OnShelfWorkAreaInsetsChanged() {}
 
  protected:
   virtual ~ShelfObserver() {}

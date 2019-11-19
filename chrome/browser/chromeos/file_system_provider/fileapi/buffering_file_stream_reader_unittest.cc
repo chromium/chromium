@@ -17,7 +17,7 @@
 #include "base/run_loop.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/chromeos/fileapi/file_system_backend.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -89,7 +89,7 @@ class FileSystemProviderBufferingFileStreamReaderTest : public testing::Test {
   FileSystemProviderBufferingFileStreamReaderTest() {}
   ~FileSystemProviderBufferingFileStreamReaderTest() override {}
 
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
 };
 
 TEST_F(FileSystemProviderBufferingFileStreamReaderTest, Read) {

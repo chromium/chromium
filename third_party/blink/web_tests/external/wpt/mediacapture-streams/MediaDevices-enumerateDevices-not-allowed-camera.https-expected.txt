@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Camera is not exposed in mediaDevices.enumerateDevices() assert_in_array: value "videoinput" not in array ["audioinput", "audiooutput"]
+Harness: the test ran to completion.
+

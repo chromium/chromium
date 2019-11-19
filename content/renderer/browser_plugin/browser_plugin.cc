@@ -33,7 +33,6 @@
 #include "content/renderer/accessibility/render_accessibility_impl.h"
 #include "content/renderer/browser_plugin/browser_plugin_manager.h"
 #include "content/renderer/child_frame_compositing_helper.h"
-#include "content/renderer/cursor_utils.h"
 #include "content/renderer/drop_data_builder.h"
 #include "content/renderer/render_thread_impl.h"
 #include "content/renderer/sad_plugin.h"
@@ -48,13 +47,7 @@
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_plugin_container.h"
 #include "third_party/blink/public/web/web_view.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/events/keycodes/keyboard_codes.h"
-
-#if defined(USE_AURA)
-#include "content/renderer/mus/mus_embedded_frame.h"
-#include "content/renderer/mus/renderer_window_tree_client.h"
-#endif
 
 using blink::WebPluginContainer;
 using blink::WebPoint;
@@ -98,8 +91,9 @@ BrowserPlugin::BrowserPlugin(
       browser_plugin_instance_id_(browser_plugin::kInstanceIDNone),
       delegate_(delegate),
       task_runner_(
-          render_frame->GetTaskRunner(blink::TaskType::kInternalDefault)),
-      weak_ptr_factory_(this) {
+          // Make sure BrowserPlugin::UpdateInternalInstanceId runs in FIFO
+          // order with respect to other loading tasks.
+          render_frame->GetTaskRunner(blink::TaskType::kInternalLoading)) {
   browser_plugin_instance_id_ =
       BrowserPluginManager::Get()->GetNextInstanceID();
 
@@ -137,9 +131,6 @@ bool BrowserPlugin::OnMessageReceived(const IPC::Message& message) {
                         OnDidUpdateVisualProperties)
     IPC_MESSAGE_HANDLER(BrowserPluginMsg_SetCursor, OnSetCursor)
     IPC_MESSAGE_HANDLER(BrowserPluginMsg_SetMouseLock, OnSetMouseLock)
-#if defined(USE_AURA)
-    IPC_MESSAGE_HANDLER(BrowserPluginMsg_SetMusEmbedToken, OnSetMusEmbedToken)
-#endif
     IPC_MESSAGE_HANDLER(BrowserPluginMsg_ShouldAcceptTouchEvents,
                         OnShouldAcceptTouchEvents)
   IPC_END_MESSAGE_MAP()
@@ -174,14 +165,6 @@ void BrowserPlugin::Attach() {
             ->GetDocument()
             .IsPluginDocument();
   }
-#if defined(USE_AURA)
-  if (pending_embed_token_) {
-    base::Optional<base::UnguessableToken> embed_token =
-        std::move(pending_embed_token_);
-    CreateMusWindowAndEmbed(*embed_token);
-  }
-#endif
-
   BrowserPluginManager::Get()->Send(new BrowserPluginHostMsg_Attach(
       render_frame_routing_id_,
       browser_plugin_instance_id_,
@@ -219,28 +202,6 @@ BrowserPlugin::GetLocalSurfaceIdAllocation() const {
   return parent_local_surface_id_allocator_
       .GetCurrentLocalSurfaceIdAllocation();
 }
-
-#if defined(USE_AURA)
-void BrowserPlugin::CreateMusWindowAndEmbed(
-    const base::UnguessableToken& embed_token) {
-  RenderFrameImpl* render_frame =
-      RenderFrameImpl::FromRoutingID(render_frame_routing_id_);
-  if (!render_frame) {
-    pending_embed_token_ = embed_token;
-    return;
-  }
-  RendererWindowTreeClient* renderer_window_tree_client =
-      RendererWindowTreeClient::Get(
-          render_frame->GetLocalRootRenderWidget()->routing_id());
-  DCHECK(renderer_window_tree_client);
-  mus_embedded_frame_ =
-      renderer_window_tree_client->CreateMusEmbeddedFrame(this, embed_token);
-  if (attached() && GetLocalSurfaceIdAllocation().IsValid()) {
-    mus_embedded_frame_->SetWindowBounds(GetLocalSurfaceIdAllocation(),
-                                         FrameRectInPixels());
-  }
-}
-#endif
 
 void BrowserPlugin::SynchronizeVisualProperties() {
   bool size_changed = !sent_visual_properties_ ||
@@ -312,13 +273,6 @@ void BrowserPlugin::SynchronizeVisualProperties() {
 
   if (visual_properties_changed && attached())
     sent_visual_properties_ = pending_visual_properties_;
-
-#if defined(USE_AURA)
-  if (features::IsMultiProcessMash() && mus_embedded_frame_) {
-    mus_embedded_frame_->SetWindowBounds(GetLocalSurfaceIdAllocation(),
-                                         FrameRectInPixels());
-  }
-#endif
 }
 
 void BrowserPlugin::OnAdvanceFocus(int browser_plugin_instance_id,
@@ -385,11 +339,14 @@ void BrowserPlugin::OnSetCursor(int browser_plugin_instance_id,
 
 void BrowserPlugin::OnSetMouseLock(int browser_plugin_instance_id,
                                    bool enable) {
-  RenderWidget* render_widget = GetMainWidget();
+  RenderWidget* render_widget = embedding_render_widget_.get();
   if (enable) {
     if (mouse_locked_ || !render_widget)
       return;
-    render_widget->mouse_lock_dispatcher()->LockMouse(this);
+    blink::WebLocalFrame* requester_frame =
+        Container()->GetDocument().GetFrame();
+    render_widget->mouse_lock_dispatcher()->LockMouse(
+        this, requester_frame, false /*request_unadjusted_movement*/);
   } else {
     if (!mouse_locked_) {
       OnLockMouseACK(false);
@@ -401,20 +358,6 @@ void BrowserPlugin::OnSetMouseLock(int browser_plugin_instance_id,
   }
 }
 
-#if defined(USE_AURA)
-void BrowserPlugin::OnSetMusEmbedToken(
-    int instance_id,
-    const base::UnguessableToken& embed_token) {
-  DCHECK(features::IsMultiProcessMash());
-  if (!attached_) {
-    pending_embed_token_ = embed_token;
-  } else {
-    pending_embed_token_.reset();
-    CreateMusWindowAndEmbed(embed_token);
-  }
-}
-#endif
-
 void BrowserPlugin::OnShouldAcceptTouchEvents(int browser_plugin_instance_id,
                                               bool accept) {
   if (Container()) {
@@ -422,32 +365,6 @@ void BrowserPlugin::OnShouldAcceptTouchEvents(int browser_plugin_instance_id,
         accept ? WebPluginContainer::kTouchEventRequestTypeRaw
                : WebPluginContainer::kTouchEventRequestTypeNone);
   }
-}
-
-gfx::Rect BrowserPlugin::FrameRectInPixels() const {
-  const float device_scale_factor = GetDeviceScaleFactor();
-  return gfx::Rect(
-      gfx::ScaleToFlooredPoint(screen_space_rect().origin(),
-                               device_scale_factor),
-      gfx::ScaleToCeiledSize(screen_space_rect().size(), device_scale_factor));
-}
-
-float BrowserPlugin::GetDeviceScaleFactor() const {
-  return pending_visual_properties_.screen_info.device_scale_factor;
-}
-
-RenderWidget* BrowserPlugin::GetMainWidget() const {
-  RenderFrameImpl* frame =
-      RenderFrameImpl::FromRoutingID(render_frame_routing_id());
-  if (frame) {
-    RenderViewImpl* render_view =
-        static_cast<RenderViewImpl*>(frame->GetRenderView());
-    if (render_view) {
-      return render_view->GetWidget();
-    }
-  }
-
-  return nullptr;
 }
 
 void BrowserPlugin::UpdateInternalInstanceId() {
@@ -494,9 +411,8 @@ void BrowserPlugin::UpdateCaptureSequenceNumber(
 
 bool BrowserPlugin::ShouldGuestBeFocused() const {
   bool embedder_focused = false;
-  RenderWidget* render_widget = GetMainWidget();
-  if (render_widget)
-    embedder_focused = render_widget->has_focus();
+  if (embedding_render_widget_)
+    embedder_focused = embedding_render_widget_->has_focus();
   return plugin_focused_ && embedder_focused;
 }
 
@@ -524,6 +440,8 @@ bool BrowserPlugin::Initialize(WebPluginContainer* container) {
 
   compositing_helper_ = std::make_unique<ChildFrameCompositingHelper>(this);
 
+  DCHECK_EQ(RenderFrameImpl::FromWebFrame(container_->GetDocument().GetFrame()),
+            RenderFrameImpl::FromRoutingID(render_frame_routing_id()));
   embedding_render_widget_ =
       RenderFrameImpl::FromWebFrame(container_->GetDocument().GetFrame())
           ->GetLocalRootRenderWidget()
@@ -547,9 +465,10 @@ void BrowserPlugin::Destroy() {
 
   container_ = nullptr;
   // Will be a no-op if the mouse is not currently locked.
-  RenderWidget* render_widget = GetMainWidget();
-  if (render_widget)
-    render_widget->mouse_lock_dispatcher()->OnLockTargetDestroyed(this);
+  if (embedding_render_widget_) {
+    embedding_render_widget_->mouse_lock_dispatcher()->OnLockTargetDestroyed(
+        this);
+  }
 
   task_runner_->DeleteSoon(FROM_HERE, this);
 }
@@ -659,8 +578,6 @@ blink::WebInputEventResult BrowserPlugin::HandleInputEvent(
 
   if (blink::WebInputEvent::IsGestureEventType(event.GetType())) {
     auto gesture_event = static_cast<const blink::WebGestureEvent&>(event);
-    DCHECK(blink::WebInputEvent::kGestureTapDown == event.GetType() ||
-           gesture_event.resending_plugin_id == browser_plugin_instance_id_);
 
     // We shouldn't be forwarding GestureEvents to the Guest anymore. Indicate
     // we handled this only if it's a non-resent event.
@@ -684,7 +601,7 @@ blink::WebInputEventResult BrowserPlugin::HandleInputEvent(
   BrowserPluginManager::Get()->Send(
       new BrowserPluginHostMsg_HandleInputEvent(browser_plugin_instance_id_,
                                                 &event));
-  GetWebCursorInfo(cursor_, &cursor_info);
+  cursor_info = cursor_.info().GetWebCursorInfo();
 
   // Although we forward this event to the guest, we don't report it as consumed
   // since other targets of this event in Blink never get that chance either.
@@ -838,15 +755,6 @@ bool BrowserPlugin::HandleMouseLockedInputEvent(
                                                 &event));
   return true;
 }
-
-#if defined(USE_AURA)
-void BrowserPlugin::OnMusEmbeddedFrameSinkIdAllocated(
-    const viz::FrameSinkId& frame_sink_id) {
-  // RendererWindowTreeClient should only call this when mus is hosting viz.
-  DCHECK(features::IsMultiProcessMash());
-  OnGuestReady(browser_plugin_instance_id_, frame_sink_id);
-}
-#endif
 
 cc::Layer* BrowserPlugin::GetLayer() {
   return embedded_layer_.get();

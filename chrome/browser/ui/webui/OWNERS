@@ -25,5 +25,6 @@ per-file sync_internals*=file://components/sync/OWNERS
 per-file invalidations_message_handler.*=file://components/invalidation/OWNERS
 
 per-file policy*=file://chromeos/policy/OWNERS
+per-file policy*=file://chrome/browser/policy/OWNERS
 
 # COMPONENT: UI>Browser>WebUI

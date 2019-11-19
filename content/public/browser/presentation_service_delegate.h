@@ -13,6 +13,8 @@
 #include "base/callback.h"
 #include "content/common/content_export.h"
 #include "media/base/flinging_controller.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/presentation/presentation.mojom.h"
 
 namespace content {
@@ -46,14 +48,10 @@ struct PresentationConnectionStateChangeInfo {
 using PresentationConnectionStateChangedCallback =
     base::RepeatingCallback<void(const PresentationConnectionStateChangeInfo&)>;
 
-using PresentationConnectionPtr = blink::mojom::PresentationConnectionPtr;
-using PresentationConnectionRequest =
-    blink::mojom::PresentationConnectionRequest;
-
-using ReceiverConnectionAvailableCallback =
-    base::RepeatingCallback<void(blink::mojom::PresentationInfoPtr,
-                                 PresentationConnectionPtr,
-                                 PresentationConnectionRequest)>;
+using ReceiverConnectionAvailableCallback = base::RepeatingCallback<void(
+    blink::mojom::PresentationInfoPtr,
+    mojo::PendingRemote<blink::mojom::PresentationConnection>,
+    mojo::PendingReceiver<blink::mojom::PresentationConnection>)>;
 
 // Base class for ControllerPresentationServiceDelegate and
 // ReceiverPresentationServiceDelegate.

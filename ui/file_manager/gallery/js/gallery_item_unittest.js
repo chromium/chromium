@@ -63,7 +63,7 @@ function makeMockSavePromise(item, metadataModel, overwrite) {
 function testSaveToFile(callback) {
   var fileSystem = new MockFileSystem('volumeId');
   fileSystem.populate(['/test.jpg']);
-  var entry = assertInstanceof(fileSystem.entries['/test.jpg'], MockFileEntry);
+  var entry = /** @type {FileEntry} */ (fileSystem.entries['/test.jpg']);
   entry.createWriter = function(callback) {
     let mockWriter = /**@lends {FileWriter} */ ({
       write: function() {
@@ -82,6 +82,7 @@ function testSaveToFile(callback) {
   metadataModel.notifyEntriesChanged = function() {
     entryChanged = true;
   };
+
 
   var item =
       new MockGalleryItem(entry, null, {size: 100}, null, true /*original */);
@@ -102,7 +103,7 @@ function testSaveToFile(callback) {
 function testSaveToFileWriteFailCase(callback) {
   var fileSystem = new MockFileSystem('volumeId');
   fileSystem.populate(['/test.jpg']);
-  var entry = assertInstanceof(fileSystem.entries['/test.jpg'], MockFileEntry);
+  var entry = /** @type {FileEntry} */ (fileSystem.entries['/test.jpg']);
 
   entry.createWriter = function(callback) {
     let mockWriter = /**@lends {FileWriter} */ ({
@@ -142,7 +143,7 @@ function testSaveToFileGetBlobFailCase(callback) {
 
   var fileSystem = new MockFileSystem('volumeId');
   fileSystem.populate(['/test.jpg']);
-  var entry = assertInstanceof(fileSystem.entries['/test.jpg'], MockFileEntry);
+  var entry = /** @type {FileEntry} */ (fileSystem.entries['/test.jpg']);
 
   var writeOperationRun = false;
   entry.createWriter = function(callback) {
@@ -204,9 +205,9 @@ function testSaveToFileRaw(callback) {
     entryChanged = true;
   };
 
-  var item = new MockGalleryItem(
-      assertInstanceof(fileSystem.entries['/test.arw'], MockFileEntry), null,
-      {size: 100}, null, true /*original */);
+  var entry = /** @type {!FileEntry} */ (fileSystem.entries['/test.arw']);
+  var item =
+      new MockGalleryItem(entry, null, {size: 100}, null, true /*original */);
   assertEquals(100, item.getMetadataItem().size);
   assertFalse(entryChanged);
   reportPromise(

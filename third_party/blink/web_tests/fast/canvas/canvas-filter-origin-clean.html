@@ -2,7 +2,7 @@
   <defs>
     <filter id="drop-shadow">
       <feOffset dx="0" dy="10" result="offset" in="SourceAlpha"></feOffset>
-      <feFlood flood-color="rgba(0,0,0,1)"></feFlood>
+      <feFlood flood-color="currentcolor"></feFlood>
       <feComposite in2="offset" operator="in"></feComposite>
       <feMerge>
         <feMergeNode></feMergeNode>
@@ -30,90 +30,85 @@
 <script src="../../resources/testharnessreport.js"></script>
 <script>
 
+function assert_not_tainted(performCommands, description) {
+  let ctx = document.createElement('canvas').getContext('2d');
+  performCommands(ctx);
+  assert_not_equals(ctx.getImageData(0, 0, 1, 1), null, description);
+}
+
+function assert_tainted(performCommands, description) {
+  let ctx = document.createElement('canvas').getContext('2d');
+  performCommands(ctx);
+  assert_throws("SecurityError", () => ctx.getImageData(0, 0, 1, 1), description);
+}
+
 // CSS shorthand filters never taint the canvas.
 test(function() {
-    var canvas = document.createElement('canvas');
-    var ctx = canvas.getContext('2d');
+  assert_not_tainted(ctx => {
     ctx.fillStyle = '#0f0';
     ctx.filter = 'brightness(0.5)';
     ctx.fillRect(5, 5, 10, 10);
-    assert_not_equals(ctx.getImageData(0, 0, 1, 1), null);
+  }, 'brightness(0.5)');
 
-    canvas = document.createElement('canvas');
-    ctx = canvas.getContext('2d');
+  assert_not_tainted(ctx => {
     ctx.filter = 'blur(5px)';
     ctx.fillRect(5, 5, 10, 10);
-    assert_not_equals(ctx.getImageData(0, 0, 1, 1), null);
+  }, 'blur(5px)');
 
-    canvas = document.createElement('canvas');
-    ctx = canvas.getContext('2d');
+  assert_not_tainted(ctx => {
     ctx.filter = 'hue-rotate(45deg) drop-shadow(16px 16px 20px blue)';
     ctx.fillRect(5, 5, 10, 10);
-    assert_not_equals(ctx.getImageData(0, 0, 1, 1), null);
+  }, 'hue-rotate(45deg) drop-shadow(16px 16px 20px blue)');
 }, "CSS shorthand filters never taint the canvas");
 
-// SVG reference filters taint the canvas, unless the filter DAG consists only
-// of some combination of:
-// 1. SourceGraphic
-// 2. SourceAlpha
-// 3. FillPaint
-// 4. StrokePaint
-// 5. feColorMatrix
-// 6. feMerge
+// SVG reference filters taint the canvas according to
+// https://drafts.fxtf.org/filter-effects/#tainted-filter-primitives
 
 test(function() {
-    var canvas = document.createElement('canvas');
-    var ctx = canvas.getContext('2d');
+  assert_not_tainted(ctx => {
     ctx.filter = 'url(#merge-clean)';
     ctx.fillRect(5, 5, 10, 10);
-    assert_not_equals(ctx.getImageData(0, 0, 1, 1), null);
+  }, 'url(#merge-clean)');
 
-    canvas = document.createElement('canvas');
-    ctx = canvas.getContext('2d');
+  assert_not_tainted(ctx => {
     ctx.filter = 'blur(5px) url(#merge-clean) blur(5px)';
     ctx.fillRect(5, 5, 10, 10);
-    assert_not_equals(ctx.getImageData(0, 0, 1, 1), null);
+  }, 'blur(5px) url(#merge-clean) blur(5px)');
 }, "Whitelisted SVG filters don't taint the canvas");
 
 test(function() {
-    var canvas = document.createElement('canvas');
-    var ctx = canvas.getContext('2d');
+  assert_tainted(ctx => {
     ctx.filter = 'url(#drop-shadow)';
     ctx.fillRect(5, 5, 10, 10);
-    assert_throws("SecurityError", () => ctx.getImageData(0, 0, 1, 1));
+  }, 'url(#drop-shadow)');
 
-    canvas = document.createElement('canvas');
-    ctx = canvas.getContext('2d');
+  assert_tainted(ctx => {
     ctx.fillStyle = '#0f0';
     ctx.filter = 'url(#drop-shadow) brightness(0.5) url(#merge-clean)';
     ctx.fillRect(5, 5, 10, 10);
-    assert_throws("SecurityError", () => ctx.getImageData(0, 0, 1, 1));
+  }, 'url(#drop-shadow) brightness(0.5) url(#merge-clean)');
 
-    canvas = document.createElement('canvas');
-    ctx = canvas.getContext('2d');
+  assert_tainted(ctx => {
     ctx.fillStyle = '#0f0';
     ctx.filter = 'brightness(0.5) url(#drop-shadow)';
     ctx.fillRect(5, 5, 10, 10);
-    assert_throws("SecurityError", () => ctx.getImageData(0, 0, 1, 1));
+  }, 'brightness(0.5) url(#drop-shadow)');
 
-    canvas = document.createElement('canvas');
-    ctx = canvas.getContext('2d');
+  assert_tainted(ctx => {
     ctx.fillStyle = '#0f0';
     ctx.filter = 'brightness(0.5) url(#drop-shadow) brightness(0.5)';
     ctx.fillRect(5, 5, 10, 10);
-    assert_throws("SecurityError", () => ctx.getImageData(0, 0, 1, 1));
+  }, 'brightness(0.5) url(#drop-shadow) brightness(0.5)');
 
-    canvas = document.createElement('canvas');
-    ctx = canvas.getContext('2d');
+  assert_tainted(ctx => {
     ctx.fillStyle = '#0f0';
     ctx.filter = 'brightness(0.5) url(#drop-shadow) brightness(0.5)';
     ctx.fillRect(5, 5, 10, 10);
-    assert_throws("SecurityError", () => ctx.getImageData(0, 0, 1, 1));
+  }, 'brightness(0.5) url(#drop-shadow) brightness(0.5)');
 
-    canvas = document.createElement('canvas');
-    ctx = canvas.getContext('2d');
+  assert_tainted(ctx => {
     ctx.filter = 'url(#image)';
     ctx.fillRect(5, 5, 10, 10);
-    assert_throws("SecurityError", () => ctx.getImageData(0, 0, 1, 1));
+  }, 'url(#image)');
 }, "Non-whitelisted SVG filters taint the canvas");
 </script>

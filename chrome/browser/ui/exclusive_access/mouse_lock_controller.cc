@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -14,7 +13,6 @@
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -34,8 +32,7 @@ MouseLockController::MouseLockController(ExclusiveAccessManager* manager)
     : ExclusiveAccessControllerBase(manager),
       mouse_lock_state_(MOUSELOCK_UNLOCKED),
       fake_mouse_lock_for_test_(false),
-      bubble_hide_callback_for_test_(),
-      weak_ptr_factory_(this) {}
+      bubble_hide_callback_for_test_() {}
 
 MouseLockController::~MouseLockController() {
 }
@@ -53,7 +50,8 @@ void MouseLockController::RequestToLockMouse(WebContents* web_contents,
                                              bool user_gesture,
                                              bool last_unlocked_by_target) {
   DCHECK(!IsMouseLocked());
-  NotifyMouseLockChange();
+  if (lock_state_callback_for_test_)
+    std::move(lock_state_callback_for_test_).Run();
 
   // Must have a user gesture to prevent misbehaving sites from constantly
   // re-locking the mouse. Exceptions are when the page has unlocked
@@ -122,19 +120,14 @@ void MouseLockController::ExitExclusiveAccessToPreviousState() {
 }
 
 void MouseLockController::LostMouseLock() {
+  if (lock_state_callback_for_test_)
+    std::move(lock_state_callback_for_test_).Run();
+
   RecordExitingUMA();
   mouse_lock_state_ = MOUSELOCK_UNLOCKED;
   SetTabWithExclusiveAccess(nullptr);
-  NotifyMouseLockChange();
   exclusive_access_manager()->UpdateExclusiveAccessExitBubbleContent(
       ExclusiveAccessBubbleHideCallback());
-}
-
-void MouseLockController::NotifyMouseLockChange() {
-  content::NotificationService::current()->Notify(
-      chrome::NOTIFICATION_MOUSE_LOCK_CHANGED,
-      content::Source<MouseLockController>(this),
-      content::NotificationService::NoDetails());
 }
 
 void MouseLockController::UnlockMouse() {

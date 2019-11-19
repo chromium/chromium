@@ -33,7 +33,7 @@ class PLATFORM_EXPORT HyphenationMinikin final : public Hyphenation {
  private:
   bool OpenDictionary(base::File);
 
-  std::vector<uint8_t> Hyphenate(const StringView&) const;
+  Vector<uint8_t> Hyphenate(const StringView&) const;
 
   base::MemoryMappedFile file_;
   std::unique_ptr<android::Hyphenator> hyphenator_;

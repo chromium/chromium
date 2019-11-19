@@ -37,15 +37,23 @@ class CORE_EXPORT ModuleScriptFetcher : public ResourceClient {
 
   // Takes a non-const reference to FetchParameters because
   // ScriptResource::Fetch() requires it.
+  //
+  // Do not use |modulator_for_built_in_modules| other than for built-in
+  // modules. Fetching should depend sorely on the ResourceFetcher that
+  // represents fetch client settings object. https://crbug.com/928435
+  // |modulator_for_built_in_modules| can be nullptr in unit tests, and
+  // in such cases built-in modules are not loaded at all.
   virtual void Fetch(FetchParameters&,
                      ResourceFetcher*,
+                     const Modulator* modulator_for_built_in_modules,
                      ModuleGraphLevel,
                      Client*) = 0;
 
  protected:
   static bool WasModuleLoadSuccessful(
-      Resource*,
-      HeapVector<Member<ConsoleMessage>>* error_messages);
+      Resource* resource,
+      HeapVector<Member<ConsoleMessage>>* error_messages,
+      ModuleScriptCreationParams::ModuleType* module_type);
 };
 
 }  // namespace blink

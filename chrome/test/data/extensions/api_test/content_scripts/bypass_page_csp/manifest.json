@@ -9,7 +9,7 @@
   "permissions": ["http://*/*", "tabs"],
   "content_scripts": [
     {
-      "matches": ["http://*/*"],
+      "matches": ["http://*/extensions/*test_file_with_csp.html"],
       "js": ["a.js"]
     }
   ]

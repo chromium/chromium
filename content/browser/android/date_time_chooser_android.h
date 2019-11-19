@@ -11,33 +11,34 @@
 
 #include "base/android/jni_weak_ref.h"
 #include "base/macros.h"
+#include "content/public/browser/web_contents_observer.h"
+#include "content/public/browser/web_contents_user_data.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "third_party/blink/public/mojom/choosers/date_time_chooser.mojom.h"
 #include "ui/base/ime/text_input_type.h"
 #include "ui/gfx/native_widget_types.h"
 
 namespace content {
 
-class RenderViewHost;
-struct DateTimeSuggestion;
-
 // Android implementation for DateTimeChooser dialogs.
-class DateTimeChooserAndroid {
+class DateTimeChooserAndroid
+    : public blink::mojom::DateTimeChooser,
+      public WebContentsObserver,
+      public WebContentsUserData<DateTimeChooserAndroid> {
  public:
-  DateTimeChooserAndroid();
-  ~DateTimeChooserAndroid();
+  explicit DateTimeChooserAndroid(WebContents* web_contents);
+  ~DateTimeChooserAndroid() override;
 
-  // DateTimeChooser implementation:
-  // Shows the dialog. |dialog_value| is the date/time value converted to a
+  void OnDateTimeChooserReceiver(
+      mojo::PendingReceiver<blink::mojom::DateTimeChooser> receiver);
+
+  // blink::mojom::DateTimeChooser implementation:
+  // Shows the dialog. |value| is the date/time value converted to a
   // number as defined in HTML. (See blink::InputType::parseToNumber())
-  void ShowDialog(gfx::NativeWindow native_window,
-                  RenderViewHost* host,
-                  ui::TextInputType dialog_type,
-                  double dialog_value,
-                  double min,
-                  double max,
-                  double step,
-                  const std::vector<DateTimeSuggestion>& suggestions);
+  void OpenDateTimeDialog(blink::mojom::DateTimeDialogValuePtr value,
+                          OpenDateTimeDialogCallback callback) override;
 
-  // Replaces the current value
+  // Replaces the current value.
   void ReplaceDateTime(JNIEnv* env,
                        const base::android::JavaRef<jobject>&,
                        jdouble value);
@@ -46,9 +47,14 @@ class DateTimeChooserAndroid {
   void CancelDialog(JNIEnv* env, const base::android::JavaRef<jobject>&);
 
  private:
-  RenderViewHost* host_;
+  friend class content::WebContentsUserData<DateTimeChooserAndroid>;
+  OpenDateTimeDialogCallback open_date_time_response_callback_;
 
   base::android::ScopedJavaGlobalRef<jobject> j_date_time_chooser_;
+
+  mojo::Receiver<blink::mojom::DateTimeChooser> date_time_chooser_receiver_;
+
+  WEB_CONTENTS_USER_DATA_KEY_DECL();
 
   DISALLOW_COPY_AND_ASSIGN(DateTimeChooserAndroid);
 };

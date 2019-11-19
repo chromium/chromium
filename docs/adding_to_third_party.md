@@ -18,6 +18,15 @@ situations and need explicit approval; don't assume that because there's some
 other directory with third_party in the name it's okay to put new things
 there.
 
+## Before you start
+
+To make sure the inclusion of a new third_party project makes sense for the
+Chromium project, you should first obtain Chrome Eng Review approval.
+Googlers should see go/chrome-eng-review and review existing topics in
+g/chrome-eng-review. Please include information about the additional checkout
+size, build times, and binary sizes. Please also make sure that the motivation
+for your project is clear, e.g., a design doc has been circulated.
+
 ## Get the code
 
 There are two common ways to depend on third-party code: you can reference a
@@ -26,6 +35,14 @@ snapshot. The former is preferable if you are actively developing in it or need
 access to the history; the latter is better if you don't need the full history
 of the repo or don't need to pick up every single change. And, of course, if
 the code you need isn't in a Git repo, you have to do the latter.
+
+### Node packages
+
+To include a Node package, add the dependency to the
+[Node package.json](../third_party/node/package.json). Make sure to update
+the corresponding [`npm_exclude.txt`](../third_party/node/npm_exclude.txt)
+and [`npm_include.txt`](../third_party/node/npm_include.txt) to make the code
+available during checkout.
 
 ### Pulling the code via DEPS
 
@@ -126,10 +143,8 @@ following sign-offs. Some of these are accessible to Googlers only.
 Non-Googlers can email one of the people in
 [//third_party/OWNERS](../third_party/OWNERS) for help.
 
-* Get Chrome Eng Review approval. Googlers should see
-  go/chrome-eng-review. Please include information about the additional
-  checkout size, build times, and binary sizes. Please also make sure that the
-  motivation for your project is clear, e.g., a design doc has been circulated.
+* Make sure you have the approval from Chrome Eng Review as mentioned
+  [above](#before-you-start).
 * Get security@chromium.org approval. Email the list with relevant details and
   a link to the CL. Third party code is a hot spot for security vulnerabilities.
   When adding a new package that could potentially carry security risk, make

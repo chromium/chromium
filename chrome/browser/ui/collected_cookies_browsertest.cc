@@ -66,6 +66,6 @@ IN_PROC_BROWSER_TEST_F(CollectedCookiesTest, NavigateAway) {
   ShowUi(std::string());
 
   // Navigate to another page.
-  ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/cookie2.html"));
+  ui_test_utils::NavigateToURL(browser(),
+                               embedded_test_server()->GetURL("/cookie2.html"));
 }

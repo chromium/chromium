@@ -16,6 +16,8 @@ resilient across phone disconnects and reconnects and start the logcat
 early enough to not miss anything.
 """
 
+from __future__ import print_function
+
 import logging
 import os
 import re
@@ -98,7 +100,7 @@ def main(base_dir, adb_cmd='adb'):
   """Monitor adb forever.  Expects a SIGINT (Ctrl-C) to kill."""
   # We create the directory to ensure 'run once' semantics
   if os.path.exists(base_dir):
-    print 'adb_logcat_monitor: %s already exists? Cleaning' % base_dir
+    print('adb_logcat_monitor: %s already exists? Cleaning' % base_dir)
     shutil.rmtree(base_dir, ignore_errors=True)
 
   os.makedirs(base_dir)
@@ -150,7 +152,7 @@ def main(base_dir, adb_cmd='adb'):
 
 if __name__ == '__main__':
   if 2 <= len(sys.argv) <= 3:
-    print 'adb_logcat_monitor: Initializing'
+    print('adb_logcat_monitor: Initializing')
     sys.exit(main(*sys.argv[1:3]))
 
-  print 'Usage: %s <base_dir> [<adb_binary_path>]' % sys.argv[0]
+  print('Usage: %s <base_dir> [<adb_binary_path>]' % sys.argv[0])

@@ -13,13 +13,13 @@
 namespace mojo {
 namespace internal {
 
-BindingStateBase::BindingStateBase() : weak_ptr_factory_(this) {}
+BindingStateBase::BindingStateBase() = default;
 
 BindingStateBase::~BindingStateBase() = default;
 
-void BindingStateBase::AddFilter(std::unique_ptr<MessageReceiver> filter) {
+void BindingStateBase::SetFilter(std::unique_ptr<MessageFilter> filter) {
   DCHECK(endpoint_client_);
-  endpoint_client_->AddFilter(std::move(filter));
+  endpoint_client_->SetFilter(std::move(filter));
 }
 
 bool BindingStateBase::HasAssociatedInterfaces() const {
@@ -90,7 +90,7 @@ scoped_refptr<internal::MultiplexRouter> BindingStateBase::RouterForTesting() {
 }
 
 void BindingStateBase::BindInternal(
-    ScopedMessagePipeHandle handle,
+    PendingReceiverState* receiver_state,
     scoped_refptr<base::SequencedTaskRunner> runner,
     const char* interface_name,
     std::unique_ptr<MessageReceiver> request_validator,
@@ -110,14 +110,17 @@ void BindingStateBase::BindInternal(
           : (has_sync_methods
                  ? MultiplexRouter::SINGLE_INTERFACE_WITH_SYNC_METHODS
                  : MultiplexRouter::SINGLE_INTERFACE);
-  router_ =
-      new MultiplexRouter(std::move(handle), config, false, sequenced_runner);
+  router_ = new MultiplexRouter(std::move(receiver_state->pipe), config, false,
+                                sequenced_runner);
   router_->SetMasterInterfaceName(interface_name);
+  router_->SetConnectionGroup(std::move(receiver_state->connection_group));
 
   endpoint_client_.reset(new InterfaceEndpointClient(
       router_->CreateLocalEndpointHandle(kMasterInterfaceId), stub,
       std::move(request_validator), has_sync_methods,
-      std::move(sequenced_runner), interface_version));
+      std::move(sequenced_runner), interface_version, interface_name));
+  endpoint_client_->SetIdleTrackingEnabledCallback(
+      base::BindOnce(&MultiplexRouter::SetConnectionGroup, router_));
 
 #if BUILDFLAG(MOJO_RANDOM_DELAYS_ENABLED)
   MakeBindingRandomlyPaused(base::SequencedTaskRunnerHandle::Get(),

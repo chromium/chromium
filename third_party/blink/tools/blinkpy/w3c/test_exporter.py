@@ -19,6 +19,7 @@ from blinkpy.w3c.common import (
 )
 from blinkpy.w3c.gerrit import GerritAPI, GerritCL, GerritError
 from blinkpy.w3c.wpt_github import WPTGitHub, MergeError
+from blinkpy.w3c.export_notifier import ExportNotifier
 
 _log = logging.getLogger(__name__)
 
@@ -84,7 +85,19 @@ class TestExporter(object):
             for error in git_errors:
                 _log.error(error)
 
-        return not (gerrit_error or git_errors)
+        export_error = gerrit_error or git_errors
+        if export_error:
+            return not export_error
+
+        _log.info('Automatic export process has finished successfully.')
+
+        export_notifier_failure = False
+        if options.surface_failures_to_gerrit:
+            _log.info('Starting surfacing cross-browser failures to Gerrit.')
+            export_notifier_failure = ExportNotifier(
+                self.host, self.wpt_github, self.gerrit, self.dry_run).main()
+
+        return not export_notifier_failure
 
     def parse_args(self, argv):
         parser = argparse.ArgumentParser(description=__doc__)
@@ -99,6 +112,10 @@ class TestExporter(object):
             '--credentials-json', required=True,
             help='A JSON file with an object containing zero or more of the '
                  'following keys: GH_USER, GH_TOKEN, GERRIT_USER, GERRIT_TOKEN')
+        parser.add_argument(
+            '--surface-failures-to-gerrit', action='store_true',
+            help='Indicates whether to run the service that surfaces GitHub '
+                 'faliures to Gerrit through comments.')
         return parser.parse_args(argv)
 
     def process_gerrit_cls(self, gerrit_cls):
@@ -280,11 +297,9 @@ class TestExporter(object):
             cl.post_comment((
                 'Exportable changes to web-platform-tests were detected in this CL '
                 'and a pull request in the upstream repo has been made: {pr_url}.\n\n'
-                'If this CL lands and Travis CI upstream is green, we will auto-merge the PR.\n\n'
-                'Note: Please check the Travis CI status (at the bottom of the PR) '
-                'before landing this CL and only land this CL if the status is green. '
-                'Otherwise a human needs to step in and resolve it manually. '
-                '(This may be automated in the future, see https://crbug.com/711447)\n\n'
+                'When this CL lands, the bot will automatically merge the PR '
+                'on GitHub if the required GitHub checks pass; otherwise, '
+                'ecosystem-infra@ team will triage the failures and may contact you.\n\n'
                 'WPT Export docs:\n'
                 'https://chromium.googlesource.com/chromium/src/+/master'
                 '/docs/testing/web_platform_tests.md#Automatic-export-process'
@@ -339,7 +354,7 @@ class TestExporter(object):
             _log.debug('END_OF_PATCH_EXCERPT')
             return
 
-        self.local_wpt.create_branch_with_patch(pr_branch_name, message, patch, author, force_push=updating)
+        self.local_wpt.create_branch_with_patch(pr_branch_name, message, patch, author, force_push=True)
 
         if updating:
             self.wpt_github.update_pr(pr_number, subject, pr_description)

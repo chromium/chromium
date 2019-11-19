@@ -7,7 +7,7 @@
 
 #include "content/browser/media/session/media_session_service_impl.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/blink/public/platform/modules/mediasession/media_session.mojom.h"
+#include "third_party/blink/public/mojom/mediasession/media_session.mojom.h"
 
 namespace content {
 
@@ -16,13 +16,15 @@ class MockMediaSessionClient : public blink::mojom::MediaSessionClient {
   MockMediaSessionClient();
   ~MockMediaSessionClient() override;
 
-  blink::mojom::MediaSessionClientPtr CreateInterfacePtrAndBind();
+  mojo::PendingRemote<blink::mojom::MediaSessionClient>
+  CreateInterfaceRemoteAndBind();
 
-  MOCK_METHOD1(DidReceiveAction,
-               void(media_session::mojom::MediaSessionAction action));
+  MOCK_METHOD2(DidReceiveAction,
+               void(media_session::mojom::MediaSessionAction action,
+                    blink::mojom::MediaSessionActionDetailsPtr details));
 
  private:
-  mojo::Binding<blink::mojom::MediaSessionClient> binding_{this};
+  mojo::Receiver<blink::mojom::MediaSessionClient> receiver_{this};
 
   DISALLOW_COPY_AND_ASSIGN(MockMediaSessionClient);
 };

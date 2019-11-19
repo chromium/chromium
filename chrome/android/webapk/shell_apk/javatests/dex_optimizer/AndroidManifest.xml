@@ -7,10 +7,6 @@
     package="org.chromium.webapk.shell_apk.test.dex_optimizer"
     android:versionName="1.0" >
 
-    <uses-sdk
-        android:minSdkVersion="16"
-        android:targetSdkVersion="23" />
-
     <application android:label="DexOptimizer">
         <service
             android:name="org.chromium.webapk.shell_apk.test.dex_optimizer.DexOptimizerServiceImpl"

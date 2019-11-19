@@ -2,32 +2,21 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
-:root {
-  color: #333;
-  font: 13px Roboto, sans-serif;
-  font-weight: 400; /* roboto-regular */
-  height: 640px;
-  width: 768px;
-}
-
-[slot='footer'] {
-  padding: 18px 64px 0;
-}
-
 #recommend-apps-skip-button {
   color: rgba(0, 0, 0, 0.54);
   padding-inline-end: 6px;
 }
 
 .recommend-apps-loaded .app-list-loading,
-.recommend-apps-loaded .app-list-error,
-.recommend-apps-loading .subtitle,
+.recommend-apps-loaded #app-list-error,
+.recommend-apps-loading #subtitle,
 .recommend-apps-loading #app-list-view-container,
-.recommend-apps-loading .app-list-error,
+.recommend-apps-loading #download-fail-illustration,
+.recommend-apps-loading #app-list-error,
 .recommend-apps-loaded #recommend-apps-retry-button,
 .recommend-apps-loading #recommend-apps-install-button,
 .recommend-apps-loading #recommend-apps-retry-button,
-.error .subtitle,
+.error #subtitle,
 .error #app-list-view-container,
 .error .app-list-loading,
 .error #recommend-apps-install-button {

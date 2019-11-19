@@ -1,0 +1,72 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module chromeos_camera.mojom;
+
+import "components/chromeos_camera/common/dmabuf.mojom";
+import "media/mojo/mojom/media_types.mojom";
+
+// Encode errors (see components/chromeos_camera/jpeg_encode_accelerator.h).
+enum EncodeStatus {
+  ENCODE_OK,
+  HW_JPEG_ENCODE_NOT_SUPPORTED,
+  THREAD_CREATION_FAILED,
+  INVALID_ARGUMENT,
+  INACCESSIBLE_OUTPUT_BUFFER,
+  PARSE_IMAGE_FAILED,
+  PLATFORM_FAILURE,
+};
+
+// GPU process interface exposed to the browser for encoding JPEG images.
+interface JpegEncodeAccelerator {
+  // Initializes the JPEG encoder. Should be called once per encoder
+  // construction and before using EncodeWithFD(). This call returns true if
+  // initialization is successful.
+  Initialize() => (bool success);
+
+  // TODO(wtlee): To be deprecated. (crbug.com/944705)
+  //
+  // Encodes the given buffer that contains one I420 image.
+  // |input_fd| and |output_fd| are file descriptors of shared memory.
+  // The image is encoded from memory of |input_fd|
+  // with size |input_buffer_size|. |task_id| is used to distinguish different
+  // tasks. The dimension of I420 image is |coded_size_width| and
+  // |coded_size_height|.
+  // |exif_fd| is the shared memory buffer, with |exif_buffer_size| as size,
+  // containing Exif data which will be put onto APP1 segment in the output
+  // JPEG image.
+  // Encoded JPEG image will be put onto memory associated with |output_fd|
+  // with allocated size |output_buffer_size|.
+  // Returns |task_id| and |error| in a callback to notify the
+  // encode status. |status| is the status code. |encoded_buffer_size| is the
+  // actual size of the encoded JPEG.
+  EncodeWithFD(int32 task_id, handle input_fd, uint32 input_buffer_size,
+               int32 coded_size_width, int32 coded_size_height,
+               handle exif_fd, uint32 exif_buffer_size,
+               handle output_fd, uint32 output_buffer_size)
+      => (int32 task_id, uint32 encoded_buffer_size, EncodeStatus status);
+
+  // Encodes the given DMA-buf. |task_id| is used to distinguish different
+  // tasks. The size of input image defined in |coded_size_width| and
+  // |coded_size_height| and the format |input_format| represents by its fourcc
+  // value. The plane information of input DMA-buf and output DMA-buf is stored
+  // in |input_planes| and |output_planes| respectively. Although the actual
+  // amount of buffers could be equal to or less than the number of planes, the
+  // amount of plane information |input_planes| and |output_planes| should be
+  // same as the number of planes. |exif_handle| is the shared memory buffer,
+  // with |exif_buffer_size| as size, containing Exif data which will be put
+  // onto APP1 segment in the output JPEG image. When the task ends, it returns
+  // |status| as the status code and |encoded_buffer_size| is the actual size of
+  // the encoded JPEG.
+  EncodeWithDmaBuf(
+      int32 task_id,
+      uint32 input_format,
+      array<DmaBufPlane> input_planes,
+      array<DmaBufPlane> output_planes,
+      handle exif_handle,
+      uint32 exif_buffer_size,
+      int32 coded_size_width,
+      int32 coded_size_height)
+      => (uint32 encoded_buffer_size, EncodeStatus status);
+};

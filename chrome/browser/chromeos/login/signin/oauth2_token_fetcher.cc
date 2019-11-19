@@ -76,7 +76,7 @@ void OAuth2TokenFetcher::RetryOnError(const GoogleServiceAuthError& error,
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (error.IsTransientError() && retry_count_ < kMaxRequestAttemptCount) {
     retry_count_++;
-    base::PostDelayedTaskWithTraits(
+    base::PostDelayedTask(
         FROM_HERE, {BrowserThread::UI}, task,
         base::TimeDelta::FromMilliseconds(kRequestRestartDelay));
     return;

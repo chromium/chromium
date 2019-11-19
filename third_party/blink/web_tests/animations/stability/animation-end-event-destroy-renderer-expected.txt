@@ -1,3 +1,0 @@
-Tests element removal and hiding within the animationend event handler. Should not crash.
-
-Did not crash, so PASSED

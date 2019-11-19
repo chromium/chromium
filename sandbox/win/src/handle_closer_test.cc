@@ -23,7 +23,7 @@ const wchar_t* kFileExtensions[] = {L".1", L".2", L".3", L".4"};
 HANDLE GetMarkerFile(const wchar_t* extension) {
   wchar_t path_buffer[MAX_PATH + 1];
   CHECK(::GetTempPath(MAX_PATH, path_buffer));
-  base::string16 marker_path = path_buffer;
+  std::wstring marker_path = path_buffer;
   marker_path += L"\\sbox_marker_";
 
   // Generate a unique value from the exe's size and timestamp.
@@ -98,7 +98,7 @@ SBOX_TESTS_COMMAND int CheckForFileHandles(int argc, wchar_t** argv) {
       const size_t kHandleOffset = 4;  // Handles are always a multiple of 4.
       HANDLE handle = nullptr;
       int invalid_count = 0;
-      base::string16 handle_name;
+      std::wstring handle_name;
 
       if (!::GetProcessHandleCount(::GetCurrentProcess(), &handle_count))
         return SBOX_TEST_FAILED_TO_RUN_TEST;
@@ -195,9 +195,9 @@ TEST(HandleCloserTest, CheckForMarkerFiles) {
   runner.SetTimeout(2000);
   runner.SetTestState(EVERY_STATE);
 
-  base::string16 command = base::string16(L"CheckForFileHandles Y");
+  std::wstring command = std::wstring(L"CheckForFileHandles Y");
   for (const wchar_t* kExtension : kFileExtensions) {
-    base::string16 handle_name;
+    std::wstring handle_name;
     base::win::ScopedHandle marker(GetMarkerFile(kExtension));
     CHECK(marker.IsValid());
     CHECK(sandbox::GetHandleName(marker.Get(), &handle_name));
@@ -215,9 +215,9 @@ TEST(HandleCloserTest, CloseMarkerFiles) {
   runner.SetTestState(EVERY_STATE);
   sandbox::TargetPolicy* policy = runner.GetPolicy();
 
-  base::string16 command = base::string16(L"CheckForFileHandles N");
+  std::wstring command = std::wstring(L"CheckForFileHandles N");
   for (const wchar_t* kExtension : kFileExtensions) {
-    base::string16 handle_name;
+    std::wstring handle_name;
     base::win::ScopedHandle marker(GetMarkerFile(kExtension));
     CHECK(marker.IsValid());
     CHECK(sandbox::GetHandleName(marker.Get(), &handle_name));
@@ -238,7 +238,7 @@ TEST(HandleCloserTest, CheckStuffedHandle) {
   sandbox::TargetPolicy* policy = runner.GetPolicy();
 
   for (const wchar_t* kExtension : kFileExtensions) {
-    base::string16 handle_name;
+    std::wstring handle_name;
     base::win::ScopedHandle marker(GetMarkerFile(kExtension));
     CHECK(marker.IsValid());
     CHECK(sandbox::GetHandleName(marker.Get(), &handle_name));

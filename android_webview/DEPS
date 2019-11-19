@@ -7,9 +7,13 @@ include_rules = [
   # lib is the top-level target, and must remain a leaf in the dependency tree.
   "-android_webview/lib",
 
+  "+android_webview/browser_jni_headers",
+  "+components/about_ui",
   "+components/content_capture",
+  "+components/embedder_support/android/java",
   "+components/heap_profiling",
   "+components/google/core",
+  "+components/gwp_asan",
   "+components/network_session_configurator/common",
   "+components/metrics",
   "+components/prefs",
@@ -18,12 +22,10 @@ include_rules = [
   # Only allow this header in spellchecking since allowing all of spellchecking
   # would include both browser and renderer components.
   "+components/spellcheck/spellcheck_buildflags.h",
-  "+components/supervised_user_error_page",
-  "+components/web_restrictions",
+  "+components/ui_devtools/buildflags.h",
   "+content/public/common",
   "+crypto",
   "+gpu",
-  "+jni",
   # Only this one header in media which doesn't depend on anything else.
   "+media/media_buildflags.h",
   "+mojo/public/cpp/bindings",
@@ -32,7 +34,7 @@ include_rules = [
   "+services/network/public/cpp",
   "+services/preferences/tracked",
   "+services/service_manager/public",
-  "+services/viz/public/interfaces",
+  "+services/viz/public/mojom",
   "+skia",
   "+third_party/skia/include",
   "+third_party/boringssl/src/include",

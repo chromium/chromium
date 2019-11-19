@@ -25,14 +25,14 @@ class TopLevelDispatcher : public Dispatcher {
 
   Dispatcher* OnMessageReady(IPCParams* ipc,
                              CallbackGeneric* callback) override;
-  bool SetupService(InterceptionManager* manager, int service) override;
+  bool SetupService(InterceptionManager* manager, IpcTag service) override;
 
  private:
   // Test IPC provider.
   bool Ping(IPCInfo* ipc, void* cookie);
 
   // Returns a dispatcher from ipc_targets_.
-  Dispatcher* GetDispatcher(int ipc_tag);
+  Dispatcher* GetDispatcher(IpcTag ipc_tag);
 
   PolicyBase* policy_;
   std::unique_ptr<Dispatcher> filesystem_dispatcher_;
@@ -42,7 +42,8 @@ class TopLevelDispatcher : public Dispatcher {
   std::unique_ptr<Dispatcher> registry_dispatcher_;
   std::unique_ptr<Dispatcher> handle_dispatcher_;
   std::unique_ptr<Dispatcher> process_mitigations_win32k_dispatcher_;
-  Dispatcher* ipc_targets_[IPC_LAST_TAG];
+  std::unique_ptr<Dispatcher> signed_dispatcher_;
+  Dispatcher* ipc_targets_[kMaxIpcTag];
 
   DISALLOW_COPY_AND_ASSIGN(TopLevelDispatcher);
 };

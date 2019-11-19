@@ -1,0 +1,101 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [1026, 996],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "LayoutNGBlockFlow HTML",
+          "rect": [18, 17, 998, 220],
+          "reason": "chunk appeared"
+        }
+      ],
+      "transform": 1
+    },
+    {
+      "name": "HorizontalScrollbar",
+      "bounds": [800, 600],
+      "paintInvalidations": [
+        {
+          "object": "VerticalScrollbar",
+          "rect": [785, 0, 15, 585],
+          "reason": "scroll control"
+        }
+      ]
+    },
+    {
+      "name": "LayoutSVGContainer g",
+      "position": [19, -18],
+      "bounds": [251, 201],
+      "paintInvalidations": [
+        {
+          "object": "LayoutSVGContainer g",
+          "rect": [0, 0, 251, 201],
+          "reason": "full layer"
+        }
+      ],
+      "transform": 3
+    },
+    {
+      "name": "InlineTextBox '$Revision: 1.6 $'",
+      "bounds": [480, 360],
+      "paintInvalidations": [
+        {
+          "object": "InlineTextBox '$Revision: 1.6 $'",
+          "rect": [0, 0, 480, 360],
+          "reason": "full layer"
+        }
+      ],
+      "transform": 2
+    },
+    {
+      "name": "LayoutImage IMG",
+      "position": [31, 247],
+      "bounds": [975, 745],
+      "paintInvalidations": [
+        {
+          "object": "LayoutImage IMG",
+          "rect": [0, 0, 975, 745],
+          "reason": "full layer"
+        }
+      ],
+      "transform": 1
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [0, -411, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "parent": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [28, 247, 0, 1]
+      ]
+    },
+    {
+      "id": 3,
+      "parent": 2,
+      "transform": [
+        [1.79999995231628, 0, 0, 0],
+        [0, 1.79999995231628, 0, 0],
+        [0, 0, 1, 0],
+        [0, 0, 0, 1]
+      ],
+      "origin": [0, 0],
+      "flattenInheritedTransform": false
+    }
+  ]
+}
+

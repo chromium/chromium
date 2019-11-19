@@ -1,6 +1,12 @@
 # Mojo JavaScript Bindings API
 This document is a subset of the [Mojo documentation](/mojo/README.md).
 
+*** note
+TODO(crbug.com/912327): this document mentions deprecated JavaScript bindings.
+
+We need to update it to describe the new bindings (bindings_lite).
+***
+
 [TOC]
 
 ## Getting Started

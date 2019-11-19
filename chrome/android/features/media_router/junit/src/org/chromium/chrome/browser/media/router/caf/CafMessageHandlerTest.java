@@ -87,7 +87,7 @@ public class CafMessageHandlerTest {
     private CafMessageHandler mMessageHandler;
     private int mNumStopApplicationCalled;
 
-    private interface CheckedRunnable { void run() throws Exception; }
+    private interface CheckedRunnable { void run(); }
 
     @Before
     public void setUp() {
@@ -513,7 +513,7 @@ public class CafMessageHandlerTest {
     }
 
     @Test
-    public void testHandleStopMessage() throws JSONException {
+    public void testHandleStopMessage() {
         InOrder inOrder = inOrder(mSessionController);
         assertEquals(0, mMessageHandler.getStopRequestsForTest().size());
         mMessageHandler.handleStopMessage(CLIENT_ID1, SEQUENCE_NUMBER1);
@@ -754,7 +754,7 @@ public class CafMessageHandlerTest {
     }
 
     @Test
-    public void testOnMessageReceivedWithoutRequestId() throws JSONException {
+    public void testOnMessageReceivedWithoutRequestId() {
         doNothing()
                 .when(mMessageHandler)
                 .onAppMessage(anyString(), anyString(), any(RequestRecord.class));
@@ -770,7 +770,7 @@ public class CafMessageHandlerTest {
     }
 
     @Test
-    public void testOnMessageReceivedOfMediaNamespace() throws JSONException {
+    public void testOnMessageReceivedOfMediaNamespace() {
         doNothing().when(mMessageHandler).onMediaMessage(anyString(), any(RequestRecord.class));
         mMessageHandler.onMessageReceived(MEDIA_NAMESPACE, "anymessage");
         verify(mMessageHandler).onMediaMessage(eq("anymessage"), (RequestRecord) isNull());
@@ -939,7 +939,7 @@ public class CafMessageHandlerTest {
     }
 
     @Test
-    public void testSendEnclosedMessageToClient() throws JSONException {
+    public void testSendEnclosedMessageToClient() {
         String message = "dontcare_message1";
         doReturn(message)
                 .when(mMessageHandler)

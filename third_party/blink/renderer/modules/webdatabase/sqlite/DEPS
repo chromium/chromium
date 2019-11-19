@@ -1,4 +1,6 @@
 include_rules = [
+    "+base/files/file.h",
+    "+base/threading/platform_thread.h",
     "+sql/initialization.h",
     "+third_party/sqlite/sqlite3.h",
 ]

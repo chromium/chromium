@@ -85,14 +85,6 @@ class CORE_EXPORT FilterOperations {
 class FilterOperationsWrapper
     : public GarbageCollected<FilterOperationsWrapper> {
  public:
-  static FilterOperationsWrapper* Create() {
-    return MakeGarbageCollected<FilterOperationsWrapper>();
-  }
-
-  static FilterOperationsWrapper* Create(const FilterOperations& operations) {
-    return MakeGarbageCollected<FilterOperationsWrapper>(operations);
-  }
-
   FilterOperationsWrapper() = default;
   explicit FilterOperationsWrapper(const FilterOperations& operations)
       : operations_(operations) {}

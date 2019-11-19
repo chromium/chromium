@@ -27,6 +27,12 @@ function getWorkerURL() {
   return getServerURL('empty.html?as-worker', '127.0.0.1');
 }
 
+function getSharedWorkerURL() {
+  // This file is empty, so it does not generate JavaScript errors when loaded
+  // as a worker script.
+  return getServerURL('empty.html?as-shared-worker', '127.0.0.1');
+}
+
 function getPingURL() {
   return getServerURL('empty.html?as-ping');
 }
@@ -436,10 +442,89 @@ runTests([
       new Worker(getWorkerURL());
     });
 
-    // TODO(robwu): add tests for SharedWorker and ServiceWorker.
+    // TODO(robwu): add tests for ServiceWorker.
     // (probably same as above, but using -1 because they are not specific to
     //  any tab. In general we really need a lot more test coverage for the
     //  interaction between Service workers and extensions.)
+  },
+
+  function typeSharedWorker() {
+    expect([
+      { label: 'onBeforeRequest',
+        event: 'onBeforeRequest',
+        details: {
+          type: 'script',
+          url: getSharedWorkerURL(),
+          frameUrl: 'unknown frame URL',
+          // tabId 0 = tab opened by test runner;
+          // tabId 1 = this tab.
+          tabId: 1,
+          initiator: getDomain(initiators.WEB_INITIATED)
+        }
+      },
+      { label: 'onBeforeSendHeaders',
+        event: 'onBeforeSendHeaders',
+        details: {
+          type: 'script',
+          url: getSharedWorkerURL(),
+          tabId: 1,
+          initiator: getDomain(initiators.WEB_INITIATED)
+        },
+      },
+      { label: 'onSendHeaders',
+        event: 'onSendHeaders',
+        details: {
+          type: 'script',
+          url: getSharedWorkerURL(),
+          tabId: 1,
+          initiator: getDomain(initiators.WEB_INITIATED)
+        },
+      },
+      { label: 'onHeadersReceived',
+        event: 'onHeadersReceived',
+        details: {
+          type: 'script',
+          url: getSharedWorkerURL(),
+          tabId: 1,
+          statusLine: 'HTTP/1.1 200 OK',
+          statusCode: 200,
+          initiator: getDomain(initiators.WEB_INITIATED)
+        },
+      },
+      { label: 'onResponseStarted',
+        event: 'onResponseStarted',
+        details: {
+          type: 'script',
+          url: getSharedWorkerURL(),
+          tabId: 1,
+          ip: '127.0.0.1',
+          fromCache: false,
+          statusLine: 'HTTP/1.1 200 OK',
+          statusCode: 200,
+          initiator: getDomain(initiators.WEB_INITIATED)
+        },
+      },
+      { label: 'onCompleted',
+        event: 'onCompleted',
+        details: {
+          type: 'script',
+          url: getSharedWorkerURL(),
+          tabId: 1,
+          ip: '127.0.0.1',
+          fromCache: false,
+          statusLine: 'HTTP/1.1 200 OK',
+          statusCode: 200,
+          initiator: getDomain(initiators.WEB_INITIATED)
+        },
+      }],
+      [['onBeforeRequest', 'onBeforeSendHeaders', 'onSendHeaders',
+        'onHeadersReceived', 'onResponseStarted', 'onCompleted']],
+      getScriptFilter());
+
+    // Load a page to be sure webRequest listeners are set up.
+    navigateAndWait(getURL('simpleLoad/a.html'), function() {
+      new SharedWorker(getSharedWorkerURL(), 'name');
+    });
   },
 
   function typePing() {

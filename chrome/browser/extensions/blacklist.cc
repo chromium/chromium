@@ -21,6 +21,7 @@
 #include "chrome/browser/extensions/blacklist_state_fetcher.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/db/util.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -39,7 +40,7 @@ namespace {
 class LazySafeBrowsingDatabaseManager {
  public:
   LazySafeBrowsingDatabaseManager() {
-#if defined(SAFE_BROWSING_DB_LOCAL)
+#if BUILDFLAG(SAFE_BROWSING_DB_LOCAL)
     if (g_browser_process && g_browser_process->safe_browsing_service()) {
       instance_ =
           g_browser_process->safe_browsing_service()->database_manager();
@@ -86,7 +87,7 @@ class SafeBrowsingClientImpl
       const OnResultCallback& callback) {
     auto safe_browsing_client = base::WrapRefCounted(
         new SafeBrowsingClientImpl(extension_ids, callback));
-    base::PostTaskWithTraits(
+    base::PostTask(
         FROM_HERE, {BrowserThread::IO},
         base::BindOnce(&SafeBrowsingClientImpl::StartCheck,
                        safe_browsing_client, g_database_manager.Get().get(),
@@ -301,7 +302,7 @@ void Blacklist::OnBlacklistStateReceived(const std::string& id,
 
     bool have_all_in_cache = true;
     for (const auto& id : ids) {
-      if (!base::ContainsKey(blacklist_state_cache_, id)) {
+      if (!base::Contains(blacklist_state_cache_, id)) {
         have_all_in_cache = false;
         break;
       }

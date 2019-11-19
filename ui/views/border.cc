@@ -124,7 +124,7 @@ class EmptyBorder : public Border {
 
   // Overridden from Border:
   void Paint(const View& view, gfx::Canvas* canvas) override;
-  gfx::Insets GetInsets() const override ;
+  gfx::Insets GetInsets() const override;
   gfx::Size GetMinimumSize() const override;
 
  private:
@@ -217,9 +217,9 @@ gfx::Size BorderPainter::GetMinimumSize() const {
 
 }  // namespace
 
-Border::Border() {}
+Border::Border() = default;
 
-Border::~Border() {}
+Border::~Border() = default;
 
 std::unique_ptr<Border> NullBorder() {
   return nullptr;

@@ -60,14 +60,12 @@ class TaskManagerView : public TableViewDelegate,
   bool CanMinimize() const override;
   bool ExecuteWindowsCommand(int command_id) override;
   base::string16 GetWindowTitle() const override;
+  gfx::ImageSkia GetWindowIcon() override;
   std::string GetWindowName() const override;
   bool Accept() override;
   bool Close() override;
-  int GetDialogButtons() const override;
-  base::string16 GetDialogButtonLabel(ui::DialogButton button) const override;
   bool IsDialogButtonEnabled(ui::DialogButton button) const override;
   void WindowClosing() override;
-  bool ShouldUseCustomFrame() const override;
 
   // views::TableGrouper:
   void GetGroupRange(int model_index, views::GroupRange* range) override;
@@ -78,9 +76,9 @@ class TaskManagerView : public TableViewDelegate,
   void OnKeyDown(ui::KeyboardCode keycode) override;
 
   // views::ContextMenuController:
-  void ShowContextMenuForView(views::View* source,
-                              const gfx::Point& point,
-                              ui::MenuSourceType source_type) override;
+  void ShowContextMenuForViewImpl(views::View* source,
+                                  const gfx::Point& point,
+                                  ui::MenuSourceType source_type) override;
 
   // ui::SimpleMenuModel::Delegate:
   bool IsCommandIdChecked(int id) const override;

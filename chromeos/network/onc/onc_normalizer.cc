@@ -93,26 +93,27 @@ bool IsIpConfigTypeStatic(base::Value* network,
 }  // namespace
 
 void Normalizer::NormalizeCertificate(base::DictionaryValue* cert) {
-  using namespace ::onc::certificate;
-
   std::string type;
   cert->GetStringWithoutPathExpansion(::onc::certificate::kType, &type);
-  RemoveEntryUnless(cert, kPKCS12, type == kClient);
-  RemoveEntryUnless(cert, kTrustBits, type == kServer || type == kAuthority);
-  RemoveEntryUnless(cert, kX509, type == kServer || type == kAuthority);
+  RemoveEntryUnless(cert, ::onc::certificate::kPKCS12,
+                    type == ::onc::certificate::kClient);
+  RemoveEntryUnless(cert, ::onc::certificate::kTrustBits,
+                    type == ::onc::certificate::kServer ||
+                        type == ::onc::certificate::kAuthority);
+  RemoveEntryUnless(cert, ::onc::certificate::kX509,
+                    type == ::onc::certificate::kServer ||
+                        type == ::onc::certificate::kAuthority);
 }
 
 void Normalizer::NormalizeEthernet(base::DictionaryValue* ethernet) {
-  using namespace ::onc::ethernet;
-
   std::string auth;
-  ethernet->GetStringWithoutPathExpansion(kAuthentication, &auth);
-  RemoveEntryUnless(ethernet, kEAP, auth == k8021X);
+  ethernet->GetStringWithoutPathExpansion(::onc::ethernet::kAuthentication,
+                                          &auth);
+  RemoveEntryUnless(ethernet, ::onc::ethernet::kEAP,
+                    auth == ::onc::ethernet::k8021X);
 }
 
 void Normalizer::NormalizeEAP(base::DictionaryValue* eap) {
-  using namespace ::onc::eap;
-
   std::string clientcert_type;
   eap->GetStringWithoutPathExpansion(::onc::client_cert::kClientCertType,
                                      &clientcert_type);
@@ -124,23 +125,27 @@ void Normalizer::NormalizeEAP(base::DictionaryValue* eap) {
                     clientcert_type == ::onc::client_cert::kRef);
 
   std::string outer;
-  eap->GetStringWithoutPathExpansion(kOuter, &outer);
-  RemoveEntryUnless(eap, kAnonymousIdentity,
-                    outer == kPEAP || outer == kEAP_TTLS);
-  RemoveEntryUnless(eap, kInner,
-                    outer == kPEAP || outer == kEAP_TTLS || outer == kEAP_FAST);
+  eap->GetStringWithoutPathExpansion(::onc::eap::kOuter, &outer);
+  RemoveEntryUnless(
+      eap, ::onc::eap::kAnonymousIdentity,
+      outer == ::onc::eap::kPEAP || outer == ::onc::eap::kEAP_TTLS);
+  RemoveEntryUnless(eap, ::onc::eap::kInner,
+                    outer == ::onc::eap::kPEAP ||
+                        outer == ::onc::eap::kEAP_TTLS ||
+                        outer == ::onc::eap::kEAP_FAST);
 }
 
 void Normalizer::NormalizeIPsec(base::DictionaryValue* ipsec) {
-  using namespace ::onc::ipsec;
-
   std::string auth_type;
-  ipsec->GetStringWithoutPathExpansion(kAuthenticationType, &auth_type);
-  RemoveEntryUnless(
-      ipsec, ::onc::client_cert::kClientCertType, auth_type == kCert);
-  RemoveEntryUnless(ipsec, kServerCARef, auth_type == kCert);
-  RemoveEntryUnless(ipsec, kPSK, auth_type == kPSK);
-  RemoveEntryUnless(ipsec, ::onc::vpn::kSaveCredentials, auth_type == kPSK);
+  ipsec->GetStringWithoutPathExpansion(::onc::ipsec::kAuthenticationType,
+                                       &auth_type);
+  RemoveEntryUnless(ipsec, ::onc::client_cert::kClientCertType,
+                    auth_type == ::onc::ipsec::kCert);
+  RemoveEntryUnless(ipsec, ::onc::ipsec::kServerCARef,
+                    auth_type == ::onc::ipsec::kCert);
+  RemoveEntryUnless(ipsec, ::onc::ipsec::kPSK, auth_type == ::onc::ipsec::kPSK);
+  RemoveEntryUnless(ipsec, ::onc::vpn::kSaveCredentials,
+                    auth_type == ::onc::ipsec::kPSK);
 
   std::string clientcert_type;
   ipsec->GetStringWithoutPathExpansion(::onc::client_cert::kClientCertType,
@@ -153,10 +158,11 @@ void Normalizer::NormalizeIPsec(base::DictionaryValue* ipsec) {
                     clientcert_type == ::onc::client_cert::kRef);
 
   int ike_version = -1;
-  ipsec->GetIntegerWithoutPathExpansion(kIKEVersion, &ike_version);
-  RemoveEntryUnless(ipsec, kEAP, ike_version == 2);
-  RemoveEntryUnless(ipsec, kGroup, ike_version == 1);
-  RemoveEntryUnless(ipsec, kXAUTH, ike_version == 1);
+  ipsec->GetIntegerWithoutPathExpansion(::onc::ipsec::kIKEVersion,
+                                        &ike_version);
+  RemoveEntryUnless(ipsec, ::onc::ipsec::kEAP, ike_version == 2);
+  RemoveEntryUnless(ipsec, ::onc::ipsec::kGroup, ike_version == 1);
+  RemoveEntryUnless(ipsec, ::onc::ipsec::kXAUTH, ike_version == 1);
 }
 
 void Normalizer::NormalizeNetworkConfiguration(base::DictionaryValue* network) {
@@ -216,35 +222,38 @@ void Normalizer::NormalizeOpenVPN(base::DictionaryValue* openvpn) {
 }
 
 void Normalizer::NormalizeProxySettings(base::DictionaryValue* proxy) {
-  using namespace ::onc::proxy;
-
   std::string type;
   proxy->GetStringWithoutPathExpansion(::onc::proxy::kType, &type);
-  RemoveEntryUnless(proxy, kManual, type == kManual);
-  RemoveEntryUnless(proxy, kExcludeDomains, type == kManual);
-  RemoveEntryUnless(proxy, kPAC, type == kPAC);
+  RemoveEntryUnless(proxy, ::onc::proxy::kManual,
+                    type == ::onc::proxy::kManual);
+  RemoveEntryUnless(proxy, ::onc::proxy::kExcludeDomains,
+                    type == ::onc::proxy::kManual);
+  RemoveEntryUnless(proxy, ::onc::proxy::kPAC, type == ::onc::proxy::kPAC);
 }
 
 void Normalizer::NormalizeVPN(base::DictionaryValue* vpn) {
-  using namespace ::onc::vpn;
-
   std::string type;
   vpn->GetStringWithoutPathExpansion(::onc::vpn::kType, &type);
-  RemoveEntryUnless(vpn, kOpenVPN, type == kOpenVPN);
-  RemoveEntryUnless(vpn, kIPsec, type == kIPsec || type == kTypeL2TP_IPsec);
-  RemoveEntryUnless(vpn, kL2TP, type == kTypeL2TP_IPsec);
-  RemoveEntryUnless(vpn, kThirdPartyVpn, type == kThirdPartyVpn);
-  RemoveEntryUnless(vpn, kArcVpn, type == kArcVpn);
+  RemoveEntryUnless(vpn, ::onc::vpn::kOpenVPN, type == ::onc::vpn::kOpenVPN);
+  RemoveEntryUnless(
+      vpn, ::onc::vpn::kIPsec,
+      type == ::onc::vpn::kIPsec || type == ::onc::vpn::kTypeL2TP_IPsec);
+  RemoveEntryUnless(vpn, ::onc::vpn::kL2TP,
+                    type == ::onc::vpn::kTypeL2TP_IPsec);
+  RemoveEntryUnless(vpn, ::onc::vpn::kThirdPartyVpn,
+                    type == ::onc::vpn::kThirdPartyVpn);
+  RemoveEntryUnless(vpn, ::onc::vpn::kArcVpn, type == ::onc::vpn::kArcVpn);
 }
 
 void Normalizer::NormalizeWiFi(base::DictionaryValue* wifi) {
-  using namespace ::onc::wifi;
-
   std::string security;
   wifi->GetStringWithoutPathExpansion(::onc::wifi::kSecurity, &security);
-  RemoveEntryUnless(wifi, kEAP, security == kWEP_8021X || security == kWPA_EAP);
-  RemoveEntryUnless(wifi, kPassphrase,
-                    security == kWEP_PSK || security == kWPA_PSK);
+  RemoveEntryUnless(
+      wifi, ::onc::wifi::kEAP,
+      security == ::onc::wifi::kWEP_8021X || security == ::onc::wifi::kWPA_EAP);
+  RemoveEntryUnless(
+      wifi, ::onc::wifi::kPassphrase,
+      security == ::onc::wifi::kWEP_PSK || security == ::onc::wifi::kWPA_PSK);
   FillInHexSSIDField(wifi);
 }
 

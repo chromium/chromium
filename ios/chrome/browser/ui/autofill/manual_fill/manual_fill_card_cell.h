@@ -11,14 +11,14 @@
 #import "ios/chrome/browser/ui/table_view/cells/table_view_item.h"
 
 @protocol CardListDelegate;
-@protocol ManualFillContentDelegate;
+@protocol ManualFillContentInjector;
 
 // Wrapper to show card cells in a ChromeTableViewController.
 @interface ManualFillCardItem : TableViewItem
 
 - (instancetype)initWithCreditCard:(ManualFillCreditCard*)card
-                   contentDelegate:
-                       (id<ManualFillContentDelegate>)contentDelegate
+                   contentInjector:
+                       (id<ManualFillContentInjector>)contentInjector
                 navigationDelegate:(id<CardListDelegate>)navigationDelegate
     NS_DESIGNATED_INITIALIZER;
 
@@ -32,7 +32,7 @@
 
 // Updates the cell with credit card and the |delegate| to be notified.
 - (void)setUpWithCreditCard:(ManualFillCreditCard*)card
-            contentDelegate:(id<ManualFillContentDelegate>)contentDelegate
+            contentInjector:(id<ManualFillContentInjector>)contentInjector
          navigationDelegate:(id<CardListDelegate>)navigationDelegate;
 
 @end

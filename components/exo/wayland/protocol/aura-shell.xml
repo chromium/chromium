@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
   </copyright>
 
-  <interface name="zaura_shell" version="8">
+  <interface name="zaura_shell" version="9">
     <description summary="aura_shell">
       The global interface exposing aura shell capabilities is used to
       instantiate an interface extension for a wl_surface object.
@@ -68,7 +68,7 @@
     </request>
   </interface>
 
-  <interface name="zaura_surface" version="8">
+  <interface name="zaura_surface" version="9">
     <description summary="aura shell interface to a wl_surface">
       An additional interface to a wl_surface object, which allows the
       client to access aura shell specific functionality for surface.
@@ -172,6 +172,29 @@
       <arg name="occlusion_fraction" type="fixed"/>
       <arg name="occlusion_reason" type="uint"/>
     </event>
+
+    <!-- Version 9 additions -->
+
+    <request name="activate" since="9">
+      <description summary="Indicate that this window wants to be the active window">
+	Make this the active window. This usually implies something like
+	restacking this surface to the foreground. The compositor is free to
+	ignore this request if it deems the client to be misbehaving. Typically
+	this request will only be honoured in response to some user driven
+	event, such as executing an application or opening a file in a window
+	that already exists.
+      </description>
+    </request>
+
+    <request name="draw_attention" since="9">
+      <description summary="Indicate that this window wants some of the user's attention">
+	Draw attention to this surface in a way that does not change the user's
+	focus. This usually means animating window decorations or taskbar icons.
+	The compositor can still ignore this request if it deems fit, but unlike
+	draw_focus, these requests are expected to come from background tasks,
+	and are more likely to be honoured.
+      </description>
+    </request>
   </interface>
 
   <interface name="zaura_output" version="6">

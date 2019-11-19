@@ -16,7 +16,6 @@ login.createScreen(
 
         /** @Override */
         onBeforeShow: function(data) {
-          Oobe.getInstance().headerHidden = true;
           $('assistant-optin-flow-card').onShow();
         },
 

@@ -15,7 +15,7 @@ class PrintPreviewTest : public BrowserWithTestWindowTest {
 
  protected:
   // Create a browser window to provide parenting for web contents modal dialog.
-  BrowserWindow* CreateBrowserWindow() override;
+  std::unique_ptr<BrowserWindow> CreateBrowserWindow() override;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(PrintPreviewTest);

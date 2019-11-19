@@ -29,10 +29,9 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "third_party/blink/public/platform/web_localized_string.h"
-#include "third_party/blink/renderer/platform/date_components.h"
 #include "third_party/blink/renderer/platform/language.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/text/date_components.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -45,9 +44,9 @@ class PLATFORM_EXPORT Locale {
   static Locale& DefaultLocale();
   static void ResetDefaultLocale();
 
-  String QueryString(WebLocalizedString::Name);
-  String QueryString(WebLocalizedString::Name, const String& parameter);
-  String QueryString(WebLocalizedString::Name,
+  String QueryString(int resource_id);
+  String QueryString(int resource_id, const String& parameter);
+  String QueryString(int resource_id,
                      const String& parameter1,
                      const String& parameter2);
   String ValidationMessageTooLongText(unsigned value_length, int max_length);

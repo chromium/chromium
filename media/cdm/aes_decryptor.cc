@@ -155,10 +155,10 @@ static scoped_refptr<DecoderBuffer> DecryptData(
   CHECK(input.data_size());
   CHECK(input.decrypt_config());
 
-  if (input.decrypt_config()->encryption_mode() == EncryptionMode::kCenc)
+  if (input.decrypt_config()->encryption_scheme() == EncryptionScheme::kCenc)
     return DecryptCencBuffer(input, key);
 
-  if (input.decrypt_config()->encryption_mode() == EncryptionMode::kCbcs)
+  if (input.decrypt_config()->encryption_scheme() == EncryptionScheme::kCbcs)
     return DecryptCbcsBuffer(input, key);
 
   DVLOG(1) << "Only 'cenc' and 'cbcs' modes supported.";
@@ -174,6 +174,7 @@ AesDecryptor::AesDecryptor(
       session_closed_cb_(session_closed_cb),
       session_keys_change_cb_(session_keys_change_cb),
       session_expiration_update_cb_(session_expiration_update_cb) {
+  DVLOG(1) << __func__;
   // AesDecryptor doesn't keep any persistent data, so no need to do anything
   // with |security_origin|.
   DCHECK(session_message_cb_);
@@ -182,6 +183,7 @@ AesDecryptor::AesDecryptor(
 }
 
 AesDecryptor::~AesDecryptor() {
+  DVLOG(1) << __func__;
   key_map_.clear();
 }
 

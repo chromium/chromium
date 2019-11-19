@@ -8,8 +8,8 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
-#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-shared.h"
-#include "third_party/blink/public/mojom/script/script_type.mojom-blink.h"
+#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/script/script_type.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/script/script.h"
 #include "third_party/blink/renderer/platform/loader/fetch/client_hints_preferences.h"
@@ -18,7 +18,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/integrity_metadata.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_position.h"
 
 namespace blink {
@@ -72,6 +72,8 @@ class CORE_EXPORT PreloadRequest {
   Resource* Start(Document*);
 
   void SetDefer(FetchParameters::DeferOption defer) { defer_ = defer; }
+  FetchParameters::DeferOption DeferOption() const { return defer_; }
+
   void SetCharset(const String& charset) { charset_ = charset; }
   void SetCrossOrigin(CrossOriginAttributeValue cross_origin) {
     cross_origin_ = cross_origin;
@@ -126,11 +128,11 @@ class CORE_EXPORT PreloadRequest {
     return is_image_set_ == ResourceFetcher::kImageIsImageSet;
   }
 
-  void SetIsLazyloadImageDisabled(bool is_lazyload_image_disable) {
-    is_lazyload_image_disabled_ = is_lazyload_image_disable;
+  void SetIsLazyLoadImageEnabled(bool is_enabled) {
+    is_lazy_load_image_enabled_ = is_enabled;
   }
-  bool IsLazyloadImageDisabledForTesting() {
-    return is_lazyload_image_disabled_;
+  bool IsLazyLoadImageEnabledForTesting() {
+    return is_lazy_load_image_enabled_;
   }
 
  private:
@@ -161,7 +163,7 @@ class CORE_EXPORT PreloadRequest {
         referrer_source_(referrer_source),
         from_insertion_scanner_(false),
         is_image_set_(is_image_set),
-        is_lazyload_image_disabled_(false) {}
+        is_lazy_load_image_enabled_(false) {}
 
   KURL CompleteURL(Document*);
 
@@ -184,7 +186,7 @@ class CORE_EXPORT PreloadRequest {
   IntegrityMetadataSet integrity_metadata_;
   bool from_insertion_scanner_;
   ResourceFetcher::IsImageSet is_image_set_;
-  bool is_lazyload_image_disabled_;
+  bool is_lazy_load_image_enabled_;
 };
 
 typedef Vector<std::unique_ptr<PreloadRequest>> PreloadRequestStream;

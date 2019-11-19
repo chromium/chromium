@@ -257,10 +257,6 @@ bool Character::IsEmojiModifierBase(UChar32 ch) {
 }
 #endif  // defined(USING_SYSTEM_ICU) && (U_ICU_VERSION_MAJOR_NUM <= 57)
 
-bool Character::IsEmojiKeycapBase(UChar32 ch) {
-  return (ch >= '0' && ch <= '9') || ch == '#' || ch == '*';
-}
-
 bool Character::IsRegionalIndicator(UChar32 ch) {
   return (ch >= 0x1F1E6 && ch <= 0x1F1FF);
 }

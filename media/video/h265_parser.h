@@ -79,6 +79,22 @@ struct MEDIA_EXPORT H265NALU {
     RSV_NVCL45 = 45,
     RSV_NVCL46 = 46,
     RSV_NVCL47 = 47,
+    UNSPEC48 = 48,
+    UNSPEC49 = 49,
+    UNSPEC50 = 50,
+    UNSPEC51 = 51,
+    UNSPEC52 = 52,
+    UNSPEC53 = 53,
+    UNSPEC54 = 54,
+    UNSPEC55 = 55,
+    UNSPEC56 = 56,
+    UNSPEC57 = 57,
+    UNSPEC58 = 58,
+    UNSPEC59 = 59,
+    UNSPEC60 = 60,
+    UNSPEC61 = 61,
+    UNSPEC62 = 62,
+    UNSPEC63 = 63,
   };
 
   // After (without) start code; we don't own the underlying memory

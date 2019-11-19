@@ -1,0 +1,30 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module viz.mojom;
+
+import "mojo/public/mojom/base/shared_memory.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
+// The syscalls needed to update a layered window are blocked by the GPU
+// sandbox. This interface lets the GPU draw into shared memory and then send
+// an IPC to the browser to call UpdateLayeredWindow().
+interface LayeredWindowUpdater {
+  // A new shared memory buffer has been allocated for |pixel_size|. The shared
+  // memory buffer must be at least big enough to contain |pixel_size| in
+  // RGBA_8888. The shared memory buffer will be used with subsequent calls to
+  // Draw(). The shared memory is used with
+  // skia::CreatePlatformCanvasWithSharedSection() on both ends to create a
+  // canvas and therefore must be writable (and Unsafe) on both ends.
+
+  OnAllocatedSharedMemory(
+    gfx.mojom.Size pixel_size,
+    mojo_base.mojom.UnsafeSharedMemoryRegion region
+  );
+
+  // Draws to the HWND by copying pixels from shared memory. Callback must be
+  // called after draw operation is complete to signal shared memory can be
+  // modified.
+  Draw() => ();
+};

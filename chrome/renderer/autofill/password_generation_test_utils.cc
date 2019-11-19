@@ -7,13 +7,21 @@
 #include <base/strings/utf_string_conversions.h>
 #include "base/strings/stringprintf.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
-#include "components/autofill/content/renderer/test_password_generation_agent.h"
+#include "components/autofill/content/renderer/password_generation_agent.h"
 #include "components/autofill/core/common/password_form_generation_data.h"
 #include "components/autofill/core/common/signatures_util.h"
 #include "net/base/escape.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_form_element.h"
+
+using blink::WebDocument;
+using blink::WebElement;
+using blink::WebFormControlElement;
+using blink::WebFormElement;
+using blink::WebString;
+using blink::WebVector;
 
 namespace autofill {
 
@@ -22,57 +30,29 @@ namespace {
 // Events that should be triggered when Chrome fills a field.
 const char* const kEvents[] = {"focus",  "keydown", "input",
                                "change", "keyup",   "blur"};
+
+// Returns renderer id of WebInput element with id attribute |input_id|.
+uint32_t GetRendererId(WebDocument document, const char* input_id) {
+  WebElement element = document.GetElementById(WebString::FromUTF8(input_id));
+  auto* input = ToWebInputElement(&element);
+  return input->UniqueRendererFormControlId();
+}
+
 }  // namespace
 
-void SetNotBlacklistedMessage(TestPasswordGenerationAgent* generation_agent,
-                              const char* form_str) {
-  std::string escaped_form = net::EscapeQueryParamValue(form_str, false);
-  autofill::PasswordForm form;
-  form.origin = form_util::StripAuthAndParams(GURL(base::StringPrintf(
-      "data:text/html;charset=utf-8,%s", escaped_form.c_str())));
-  generation_agent->FormNotBlacklisted(form);
-}
+void SetFoundFormEligibleForGeneration(
+    PasswordGenerationAgent* generation_agent,
+    WebDocument document,
+    const char* new_password_id,
+    const char* cofirm_password_id) {
+  PasswordFormGenerationData data;
+  data.new_password_renderer_id = GetRendererId(document, new_password_id);
+  if (cofirm_password_id) {
+    data.confirmation_password_renderer_id =
+        GetRendererId(document, cofirm_password_id);
+  }
 
-// Sends a message that the |form_index| form on the page is valid for
-// account creation.
-void SetAccountCreationFormsDetectedMessage(
-    TestPasswordGenerationAgent* generation_agent,
-    blink::WebDocument document,
-    int form_index,
-    int field_index) {
-  blink::WebVector<blink::WebFormElement> web_forms;
-  document.Forms(web_forms);
-
-  autofill::FormData form_data;
-  WebFormElementToFormData(
-      web_forms[form_index], blink::WebFormControlElement(), nullptr,
-      form_util::EXTRACT_NONE, &form_data, nullptr /* FormFieldData */);
-
-  std::vector<autofill::PasswordFormGenerationData> forms;
-  forms.push_back(autofill::PasswordFormGenerationData{
-      CalculateFormSignature(form_data),
-      CalculateFieldSignatureForField(form_data.fields[field_index])});
-  generation_agent->FoundFormsEligibleForGeneration(forms);
-}
-
-// Sends a message that the form of unowned <inputs>s on the page is valid for
-// account creation.
-void SetAccountCreationFormsDetectedMessageForUnownedInputs(
-    TestPasswordGenerationAgent* generation_agent,
-    blink::WebDocument document) {
-  std::vector<blink::WebElement> fieldsets;
-  std::vector<blink::WebFormControlElement> control_elements =
-      form_util::GetUnownedFormFieldElements(document.All(), &fieldsets);
-  autofill::FormData form_data;
-  UnownedPasswordFormElementsAndFieldSetsToFormData(
-      fieldsets, control_elements, nullptr, document,
-      nullptr /* field_value_and_properties_map */, form_util::EXTRACT_NONE,
-      &form_data, nullptr /* FormFieldData */);
-  std::vector<autofill::PasswordFormGenerationData> forms;
-  forms.push_back(autofill::PasswordFormGenerationData{
-      CalculateFormSignature(form_data),
-      CalculateFieldSignatureForField(form_data.fields[1])});
-  generation_agent->FoundFormsEligibleForGeneration(forms);
+  generation_agent->FoundFormEligibleForGeneration(data);
 }
 
 // Creates script that registers event listeners for |element_name| field. To

@@ -5,7 +5,7 @@
 #include "chrome/browser/prefs/in_process_service_factory_factory.h"
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/keyed_service/core/simple_dependency_manager.h"
 #include "services/preferences/public/cpp/in_process_service_factory.h"
 #include "services/service_manager/public/cpp/service.h"
 
@@ -17,27 +17,25 @@ InProcessPrefServiceFactoryFactory::GetInstance() {
 
 // static
 prefs::InProcessPrefServiceFactory*
-InProcessPrefServiceFactoryFactory::GetInstanceForContext(
-    content::BrowserContext* context) {
+InProcessPrefServiceFactoryFactory::GetInstanceForKey(SimpleFactoryKey* key) {
   return static_cast<prefs::InProcessPrefServiceFactory*>(
-      GetInstance()->GetServiceForBrowserContext(context, true));
+      GetInstance()->GetServiceForKey(key, true));
 }
 
 InProcessPrefServiceFactoryFactory::InProcessPrefServiceFactoryFactory()
-    : BrowserContextKeyedServiceFactory(
-          "InProcessPrefServiceFactory",
-          BrowserContextDependencyManager::GetInstance()) {}
+    : SimpleKeyedServiceFactory("InProcessPrefServiceFactory",
+                                SimpleDependencyManager::GetInstance()) {}
 
 InProcessPrefServiceFactoryFactory::~InProcessPrefServiceFactoryFactory() =
     default;
 
-KeyedService* InProcessPrefServiceFactoryFactory::BuildServiceInstanceFor(
-    content::BrowserContext* context) const {
-  return new prefs::InProcessPrefServiceFactory;
+std::unique_ptr<KeyedService>
+InProcessPrefServiceFactoryFactory::BuildServiceInstanceFor(
+    SimpleFactoryKey* key) const {
+  return std::make_unique<prefs::InProcessPrefServiceFactory>();
 }
 
-content::BrowserContext*
-InProcessPrefServiceFactoryFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return context;
+SimpleFactoryKey* InProcessPrefServiceFactoryFactory::GetKeyToUse(
+    SimpleFactoryKey* key) const {
+  return key;
 }

@@ -4,63 +4,79 @@
 
 package org.chromium.ui.modelutil;
 
-import android.content.Context;
 import android.util.Pair;
 import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
-import org.chromium.ui.R;
-import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
-import org.chromium.ui.modelutil.PropertyModel.WritableFloatPropertyKey;
-import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
-import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.chromium.ui.R;
+import org.chromium.ui.modelutil.ListObservable.ListObserver;
+import org.chromium.ui.modelutil.PropertyModelChangeProcessor.ViewBinder;
+
+import java.util.Collection;
 
 /**
- * Adapter for providing data and views to the omnibox results list.
+ * Adapter for providing data and views to a ListView.
+ *
+ * To use, register a {@link PropertyModelChangeProcessor.ViewBinder} and {@link ViewBuilder}
+ * for each view type in the list using
+ * {@link #registerType(int, ViewBuilder, PropertyModelChangeProcessor.ViewBinder)}.
+ * The constructor takes a {@link ListObservable} list in the form of a {@link ModelList}. Any
+ * changes that occur in the list will be automatically updated in the view.
+ *
+ * When creating a new view, ModelListAdapter will bind all set properties. When reusing/rebinding
+ * a view, in addition to binding all properties set on the new model, properties that were
+ * previously set on the old model but are not set on the new model will be bound to "reset" the
+ * view. ViewBinders registered for this adapter may therefore need to handle bind calls for
+ * properties that are not set on the model being bound.
+ *
+ * Additionally, ModelListAdapter will hook up a {@link PropertyModelChangeProcessor} when binding
+ * views to ensure that changes to the PropertyModel for that list item are bound to the view.
  */
-public class ModelListAdapter extends BaseAdapter {
-    /**
-     * An interface to provide a means to build specific view types.
-     * @param <T> The type of view that the implementor will build.
-     */
-    public interface ViewBuilder<T extends View> {
-        /**
-         * @return A new view to show in the list.
-         */
-        T buildView();
-    }
+public class ModelListAdapter extends BaseAdapter implements MVCListAdapter {
+    private final ModelList mModelList;
+    private final SparseArray<Pair<ViewBuilder, ViewBinder>> mViewBuilderMap = new SparseArray<>();
+    private final ListObserver<Void> mListObserver;
 
-    private final Context mContext;
-    private final List<Pair<Integer, PropertyModel>> mSuggestionItems = new ArrayList<>();
-    private final SparseArray<Pair<ViewBuilder, PropertyModelChangeProcessor.ViewBinder>>
-            mViewBuilderMap = new SparseArray<>();
+    public ModelListAdapter(ModelList data) {
+        mModelList = data;
+        mListObserver = new ListObserver<Void>() {
+            @Override
+            public void onItemRangeInserted(ListObservable source, int index, int count) {
+                notifyDataSetChanged();
+            }
 
-    public ModelListAdapter(Context context) {
-        mContext = context;
-    }
+            @Override
+            public void onItemRangeRemoved(ListObservable source, int index, int count) {
+                notifyDataSetChanged();
+            }
 
-    /**
-     * Update the visible omnibox suggestions.
-     */
-    public void updateSuggestions(List<Pair<Integer, PropertyModel>> suggestionModels) {
-        mSuggestionItems.clear();
-        mSuggestionItems.addAll(suggestionModels);
-        notifyDataSetChanged();
+            @Override
+            public void onItemRangeChanged(
+                    ListObservable<Void> source, int index, int count, @Nullable Void payload) {
+                notifyDataSetChanged();
+            }
+
+            @Override
+            public void onItemMoved(ListObservable source, int curIndex, int newIndex) {
+                notifyDataSetChanged();
+            }
+        };
+        mModelList.addObserver(mListObserver);
     }
 
     @Override
     public int getCount() {
-        return mSuggestionItems.size();
+        return mModelList.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return mSuggestionItems.get(position);
+        return mModelList.get(position);
     }
 
     @Override
@@ -68,22 +84,16 @@ public class ModelListAdapter extends BaseAdapter {
         return position;
     }
 
-    /**
-     * Register a new view type that this adapter knows how to show.
-     * @param typeId The ID of the view type. This should not match any other view type registered
-     *               in this adapter.
-     * @param builder A mechanism for building new views of the specified type.
-     * @param binder A means of binding a model to the provided view.
-     */
-    public <T extends View> void registerType(int typeId, ViewBuilder<T> builder,
-            PropertyModelChangeProcessor.ViewBinder<PropertyModel, T, PropertyKey> binder) {
-        assert mViewBuilderMap.valueAt(typeId) == null;
+    @Override
+    public <T extends View> void registerType(
+            int typeId, ViewBuilder<T> builder, ViewBinder<PropertyModel, T, PropertyKey> binder) {
+        assert mViewBuilderMap.get(typeId) == null;
         mViewBuilderMap.put(typeId, new Pair<>(builder, binder));
     }
 
     @Override
     public int getItemViewType(int position) {
-        return mSuggestionItems.get(position).first;
+        return mModelList.get(position).type;
     }
 
     @Override
@@ -94,55 +104,81 @@ public class ModelListAdapter extends BaseAdapter {
     @SuppressWarnings("unchecked")
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+        //  1. Destroy the old PropertyModelChangeProcessor if it exists.
+        if (convertView != null && convertView.getTag(R.id.view_mcp) != null) {
+            PropertyModelChangeProcessor propertyModelChangeProcessor =
+                    (PropertyModelChangeProcessor) convertView.getTag(R.id.view_mcp);
+            propertyModelChangeProcessor.destroy();
+        }
+
+        // 2. Build a new view if needed. Otherwise, fetch the old model from the convertView.
+        PropertyModel oldModel = null;
         if (convertView == null || convertView.getTag(R.id.view_type) == null
                 || (int) convertView.getTag(R.id.view_type) != getItemViewType(position)) {
-            int suggestionTypeId = mSuggestionItems.get(position).first;
-            convertView = mViewBuilderMap.get(suggestionTypeId).first.buildView();
+            int modelTypeId = mModelList.get(position).type;
+            convertView = mViewBuilderMap.get(modelTypeId).first.buildView();
 
             // Since the view type returned by getView is not guaranteed to return a view of that
             // type, we need a means of checking it. The "view_type" tag is attached to the views
             // and identify what type the view is. This should allow lists that aren't necessarily
             // recycler views to work correctly with heterogeneous lists.
-            convertView.setTag(R.id.view_type, suggestionTypeId);
+            convertView.setTag(R.id.view_type, modelTypeId);
+        } else {
+            oldModel = (PropertyModel) convertView.getTag(R.id.view_model);
         }
 
-        PropertyModel suggestionModel = mSuggestionItems.get(position).second;
-        PropertyModel viewModel =
-                getOrCreateModelFromExisting(convertView, mSuggestionItems.get(position));
-        for (PropertyKey key : suggestionModel.getAllSetProperties()) {
-            if (key instanceof WritableIntPropertyKey) {
-                WritableIntPropertyKey intKey = (WritableIntPropertyKey) key;
-                viewModel.set(intKey, suggestionModel.get(intKey));
-            } else if (key instanceof WritableBooleanPropertyKey) {
-                WritableBooleanPropertyKey booleanKey = (WritableBooleanPropertyKey) key;
-                viewModel.set(booleanKey, suggestionModel.get(booleanKey));
-            } else if (key instanceof WritableFloatPropertyKey) {
-                WritableFloatPropertyKey floatKey = (WritableFloatPropertyKey) key;
-                viewModel.set(floatKey, suggestionModel.get(floatKey));
-            } else if (key instanceof WritableObjectPropertyKey<?>) {
-                @SuppressWarnings({"unchecked", "rawtypes"})
-                WritableObjectPropertyKey objectKey = (WritableObjectPropertyKey) key;
-                viewModel.set(objectKey, suggestionModel.get(objectKey));
-            } else {
-                assert false : "Unexpected key received";
-            }
-        }
+        PropertyModel model = mModelList.get(position).model;
+        PropertyModelChangeProcessor.ViewBinder binder =
+                mViewBuilderMap.get(mModelList.get(position).type).second;
+
+        // 3. Attach a PropertyModelChangeProcessor and PropertyModel to the view (for #1/2 above
+        //    when re-using a view).
+        convertView.setTag(R.id.view_mcp,
+                PropertyModelChangeProcessor.create(
+                        model, convertView, binder, /* performInitialBind = */ false));
+        convertView.setTag(R.id.view_model, model);
+
+        // 4. Bind properties to the convertView.
+        bindNewModel(model, oldModel, convertView, binder);
+
         // TODO(tedchoc): Investigate whether this is still needed.
         convertView.jumpDrawablesToCurrentState();
 
         return convertView;
     }
 
-    @SuppressWarnings("unchecked")
-    private PropertyModel getOrCreateModelFromExisting(
-            View view, Pair<Integer, PropertyModel> item) {
-        PropertyModel model = (PropertyModel) view.getTag(R.id.view_model);
-        if (model == null) {
-            model = new PropertyModel(item.second.getAllProperties());
-            PropertyModelChangeProcessor.create(
-                    model, view, mViewBuilderMap.get(item.first).second);
-            view.setTag(R.id.view_model, model);
+    /**
+     * Binds all set properties to the view. If oldModel is not null, binds properties that were
+     * previously set in the oldModel but are not set in the new model.
+     *
+     * @param newModel The new model to bind to {@code view}.
+     * @param oldModel The old model previously bound to {@code view}. May be null.
+     * @param view The view to bind.
+     * @param binder The ViewBinder that will bind model properties to {@code view}.
+     */
+    @VisibleForTesting
+    static void bindNewModel(PropertyModel newModel, @Nullable PropertyModel oldModel, View view,
+            PropertyModelChangeProcessor.ViewBinder binder) {
+        Collection<PropertyKey> setProperties = newModel.getAllSetProperties();
+        for (PropertyKey key : newModel.getAllProperties()) {
+            if (oldModel != null) {
+                // Skip binding properties that haven't changed.
+                if (newModel.compareValue(oldModel, key)) {
+                    continue;
+                } else {
+                    // When rebinding a view, if the value has changed it should be writable as
+                    // views reasonably may not expect read-only keys not to change or be rebound.
+                    assert key instanceof PropertyModel.WritableObjectPropertyKey
+                            || key instanceof PropertyModel.WritableIntPropertyKey
+                            || key instanceof PropertyModel.WritableBooleanPropertyKey
+                            || key instanceof PropertyModel.WritableFloatPropertyKey;
+                }
+            } else if (!setProperties.contains(key)) {
+                // If there is no previous model, skip binding properties that haven't been set.
+                continue;
+            }
+
+            binder.bind(newModel, view, key);
         }
-        return model;
     }
 }

@@ -9,6 +9,9 @@
 
 syntax = "proto2";
 
+option java_multiple_files = true;
+option java_package = "org.chromium.components.sync.protocol";
+
 option optimize_for = LITE_RUNTIME;
 
 package sync_pb;
@@ -25,24 +28,15 @@ message TypeHint {
   optional bool has_valid_hint = 2;
 }
 
-// A dummy message definition for deprecated fields. Never add any fields to
-// this message.
-message DeprecatedMessage {}
-
 // The additional info here is from the StatusController. They get sent when
 // the event SYNC_CYCLE_COMPLETED  is sent.
 message SyncCycleCompletedEventInfo {
-  // optional bool syncer_stuck = 1; // Was always false, now obsolete.
-
-  // The client has never set these values correctly.  It set
-  // num_blocking_conflicts to the total number of conflicts detected and set
-  // num_non_blocking_conflicts to the number of blocking (aka. simple)
-  // conflicts.
-  //
-  // These counters have been deprecated to avoid further confusion.  The newer
-  // counters provide more detail and are less buggy.
-  optional int32 num_blocking_conflicts = 2 [deprecated = true];
-  optional int32 num_non_blocking_conflicts = 3 [deprecated = true];
+  reserved 1;
+  reserved "syncer_stuck";
+  reserved 2;
+  reserved "num_blocking_conflicts";
+  reserved 3;
+  reserved "num_non_blocking_conflicts";
 
   // These new conflict counters replace the ones above.
   optional int32 num_encryption_conflicts = 4;
@@ -58,8 +52,9 @@ message SyncCycleCompletedEventInfo {
   // contains the |notifications_enabled| flag.
   optional GetUpdatesCallerInfo caller_info = 10;
 
-  // |source_info| was unused and marked deprecated in M67.
-  repeated DeprecatedMessage source_info = 11 [deprecated = true];
+  // Deprecated in M67.
+  reserved 11;
+  reserved "source_info";
 
   optional SyncEnums.GetUpdatesOrigin get_updates_origin = 12;
 }

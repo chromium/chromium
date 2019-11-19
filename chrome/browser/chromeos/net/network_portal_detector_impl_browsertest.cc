@@ -25,7 +25,7 @@
 #include "chrome/common/pref_names.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/shill_service_client.h"
+#include "chromeos/dbus/shill/shill_service_client.h"
 #include "chromeos/network/portal_detector/network_portal_detector.h"
 #include "chromeos/network/portal_detector/network_portal_detector_strategy.h"
 #include "components/account_id/account_id.h"
@@ -55,6 +55,7 @@ constexpr char kTestUser[] = "test-user@gmail.com";
 constexpr char kTestUserGaiaId[] = "1234567890";
 constexpr char kWifiServicePath[] = "/service/wifi";
 constexpr char kWifiGuid[] = "wifi";
+constexpr char kProbeUrl[] = "http://play.googleapis.com/generate_204";
 
 void ErrorCallbackFunction(const std::string& error_name,
                            const std::string& error_message) {
@@ -93,7 +94,11 @@ class NetworkPortalDetectorImplBrowserTest
                              true /* add_to_visible */);
     DBusThreadManager::Get()->GetShillServiceClient()->SetProperty(
         dbus::ObjectPath(kWifiServicePath), shill::kStateProperty,
-        base::Value(shill::kStatePortal), base::DoNothing(),
+        base::Value(shill::kStateRedirectFound), base::DoNothing(),
+        base::Bind(&ErrorCallbackFunction));
+    DBusThreadManager::Get()->GetShillServiceClient()->SetProperty(
+        dbus::ObjectPath(kWifiServicePath), shill::kProbeUrlProperty,
+        base::Value(kProbeUrl), base::DoNothing(),
         base::Bind(&ErrorCallbackFunction));
 
     display_service_ = std::make_unique<NotificationDisplayServiceTester>(
@@ -175,6 +180,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPortalDetectorImplBrowserTest,
   // No notification until portal detection is completed.
   EXPECT_FALSE(display_service_->GetNotification(kNotificationId));
   RestartDetection();
+  EXPECT_EQ(kProbeUrl, get_probe_url());
   CompleteURLFetch(net::OK, 200, nullptr);
 
   // Check that wifi is marked as behind the portal and that notification

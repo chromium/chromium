@@ -9,7 +9,7 @@
 <script>
 test(t => {
   // Setting the zoom factor should not change the value of strokeWidth.
-  internals.setZoomFactor(5);
+  eventSender.setPageZoomFactor(5);
 
   const anim = target.animate([
     { strokeWidth: '10px' },

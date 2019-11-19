@@ -6,6 +6,8 @@ package org.chromium.components.background_task_scheduler;
 
 import android.content.Context;
 
+import androidx.annotation.MainThread;
+
 /**
  * A BackgroundTaskScheduler is used to schedule jobs that run in the background.
  * It is backed by system APIs ({@link android.app.job.JobScheduler}) on newer platforms
@@ -23,6 +25,7 @@ public interface BackgroundTaskScheduler {
      * @return true if the schedule operation succeeded, and false otherwise.
      * @see TaskInfo
      */
+    @MainThread
     boolean schedule(Context context, TaskInfo taskInfo);
 
     /**
@@ -31,6 +34,7 @@ public interface BackgroundTaskScheduler {
      * @param context the current context.
      * @param taskId the ID of the task to cancel. See {@link TaskIds} for a list.
      */
+    @MainThread
     void cancel(Context context, int taskId);
 
     /**
@@ -40,11 +44,13 @@ public interface BackgroundTaskScheduler {
      *
      * @param context the current context.
      */
+    @MainThread
     void checkForOSUpgrade(Context context);
 
     /**
      * Reschedules all the tasks currently scheduler through BackgroundTaskSheduler.
      * @param context the current context.
      */
+    @MainThread
     void reschedule(Context context);
 }

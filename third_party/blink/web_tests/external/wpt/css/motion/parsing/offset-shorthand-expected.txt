@@ -1,0 +1,21 @@
+This is a testharness.js-based test.
+PASS e.style['offset'] = "left bottom ray(0rad closest-side) 10px auto 30deg / right bottom" should set offset-anchor
+PASS e.style['offset'] = "left bottom ray(0rad closest-side) 10px auto 30deg / right bottom" should set offset-distance
+PASS e.style['offset'] = "left bottom ray(0rad closest-side) 10px auto 30deg / right bottom" should set offset-path
+PASS e.style['offset'] = "left bottom ray(0rad closest-side) 10px auto 30deg / right bottom" should set offset-position
+PASS e.style['offset'] = "left bottom ray(0rad closest-side) 10px auto 30deg / right bottom" should set offset-rotate
+PASS e.style['offset'] = "left bottom ray(0rad closest-side) 10px auto 30deg / right bottom" should not set unrelated longhands
+PASS e.style['offset'] = "top right / top left" should set offset-anchor
+FAIL e.style['offset'] = "top right / top left" should set offset-distance assert_equals: offset-distance should be canonical expected "0px" but got "initial"
+FAIL e.style['offset'] = "top right / top left" should set offset-path assert_equals: offset-path should be canonical expected "none" but got "initial"
+PASS e.style['offset'] = "top right / top left" should set offset-position
+FAIL e.style['offset'] = "top right / top left" should set offset-rotate assert_equals: offset-rotate should be canonical expected "auto" but got "initial"
+PASS e.style['offset'] = "top right / top left" should not set unrelated longhands
+FAIL e.style['offset'] = "path(\"M 0 0 H 2\") reverse 50%" should set offset-anchor assert_equals: offset-anchor should be canonical expected "auto" but got "initial"
+PASS e.style['offset'] = "path(\"M 0 0 H 2\") reverse 50%" should set offset-distance
+PASS e.style['offset'] = "path(\"M 0 0 H 2\") reverse 50%" should set offset-path
+FAIL e.style['offset'] = "path(\"M 0 0 H 2\") reverse 50%" should set offset-position assert_equals: offset-position should be canonical expected "auto" but got "initial"
+PASS e.style['offset'] = "path(\"M 0 0 H 2\") reverse 50%" should set offset-rotate
+PASS e.style['offset'] = "path(\"M 0 0 H 2\") reverse 50%" should not set unrelated longhands
+Harness: the test ran to completion.
+

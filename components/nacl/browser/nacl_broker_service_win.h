@@ -14,7 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/process/process.h"
 #include "components/nacl/browser/nacl_broker_host_win.h"
-#include "services/service_manager/public/mojom/service.mojom.h"
+#include "mojo/public/cpp/system/message_pipe.h"
 
 namespace nacl {
 
@@ -31,7 +31,7 @@ class NaClBrokerService {
   // Send a message to the broker process, causing it to launch
   // a Native Client loader process.
   bool LaunchLoader(base::WeakPtr<NaClProcessHost> client,
-                    service_manager::mojom::ServiceRequest service_request);
+                    mojo::ScopedMessagePipeHandle ipc_channel_handle);
 
   // Called by NaClBrokerHost to notify the service that a loader was launched.
   void OnLoaderLaunched(int launch_id, base::Process process);

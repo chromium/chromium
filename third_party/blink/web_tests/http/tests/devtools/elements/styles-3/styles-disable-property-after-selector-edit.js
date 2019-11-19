@@ -31,7 +31,7 @@
     function testDisableProperty(next) {
       var treeItem = ElementsTestRunner.getMatchedStylePropertyTreeItem('color');
       ElementsTestRunner.waitForStyleApplied(onPropertyDisabled);
-      treeItem._toggleEnabled({target: {checked: false}, consume: function() {}});
+      treeItem._toggleDisabled(true);
 
       function onPropertyDisabled() {
         TestRunner.addResult('\n\n#### AFTER PROPERTY DISABLED ####\n\n');

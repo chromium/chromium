@@ -41,13 +41,12 @@ struct RequestParams {
 };
 
 // Callbacks for JSON parsing to allow injecting platform-dependent code.
-using SuccessCallback =
-    base::Callback<void(std::unique_ptr<base::Value> result)>;
-using ErrorCallback = base::Callback<void(const std::string& error)>;
+using SuccessCallback = base::OnceCallback<void(base::Value result)>;
+using ErrorCallback = base::OnceCallback<void(const std::string& error)>;
 using ParseJSONCallback =
     base::Callback<void(const std::string& raw_json_string,
-                        const SuccessCallback& success_callback,
-                        const ErrorCallback& error_callback)>;
+                        SuccessCallback success_callback,
+                        ErrorCallback error_callback)>;
 
 }  // namespace ntp_snippets
 

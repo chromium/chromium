@@ -32,13 +32,15 @@ void ReportingPolicy::UsePolicyForTesting(const ReportingPolicy& policy) {
 
 ReportingPolicy::ReportingPolicy()
     : max_report_count(100u),
-      max_client_count(1000u),
+      max_endpoint_count(1000u),
+      max_endpoints_per_origin(40u),
       delivery_interval(base::TimeDelta::FromMinutes(1)),
       persistence_interval(base::TimeDelta::FromMinutes(1)),
       persist_reports_across_restarts(false),
       persist_clients_across_restarts(true),
       garbage_collection_interval(base::TimeDelta::FromMinutes(5)),
       max_report_age(base::TimeDelta::FromMinutes(15)),
+      max_group_staleness(base::TimeDelta::FromDays(7)),
       max_report_attempts(5),
       persist_reports_across_network_changes(false),
       persist_clients_across_network_changes(true) {

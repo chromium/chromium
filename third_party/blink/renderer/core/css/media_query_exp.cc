@@ -29,6 +29,9 @@
 
 #include "third_party/blink/renderer/core/css/media_query_exp.h"
 
+#include "third_party/blink/renderer/core/css/css_math_expression_node.h"
+#include "third_party/blink/renderer/core/css/css_math_function_value.h"
+#include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
 #include "third_party/blink/renderer/core/css/parser/css_property_parser_helpers.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
@@ -39,48 +42,65 @@
 
 namespace blink {
 
-using namespace media_feature_names;
+using media_feature_names::kMaxDeviceAspectRatioMediaFeature;
+using media_feature_names::kMaxDevicePixelRatioMediaFeature;
+using media_feature_names::kMinDeviceAspectRatioMediaFeature;
 
 static inline bool FeatureWithValidIdent(const String& media_feature,
                                          CSSValueID ident) {
-  if (media_feature == kDisplayModeMediaFeature)
-    return ident == CSSValueFullscreen || ident == CSSValueStandalone ||
-           ident == CSSValueMinimalUi || ident == CSSValueBrowser;
-
-  if (media_feature == kOrientationMediaFeature)
-    return ident == CSSValuePortrait || ident == CSSValueLandscape;
-
-  if (media_feature == kPointerMediaFeature ||
-      media_feature == kAnyPointerMediaFeature)
-    return ident == CSSValueNone || ident == CSSValueCoarse ||
-           ident == CSSValueFine;
-
-  if (media_feature == kHoverMediaFeature ||
-      media_feature == kAnyHoverMediaFeature)
-    return ident == CSSValueNone || ident == CSSValueHover;
-
-  if (media_feature == kScanMediaFeature)
-    return ident == CSSValueInterlace || ident == CSSValueProgressive;
-
-  if (RuntimeEnabledFeatures::MediaQueryShapeEnabled()) {
-    if (media_feature == kShapeMediaFeature)
-      return ident == CSSValueRect || ident == CSSValueRound;
+  if (media_feature == media_feature_names::kDisplayModeMediaFeature) {
+    return ident == CSSValueID::kFullscreen ||
+           ident == CSSValueID::kStandalone ||
+           ident == CSSValueID::kMinimalUi || ident == CSSValueID::kBrowser;
   }
 
-  if (media_feature == kColorGamutMediaFeature) {
-    return ident == CSSValueSRGB || ident == CSSValueP3 ||
-           ident == CSSValueRec2020;
+  if (media_feature == media_feature_names::kOrientationMediaFeature)
+    return ident == CSSValueID::kPortrait || ident == CSSValueID::kLandscape;
+
+  if (media_feature == media_feature_names::kPointerMediaFeature ||
+      media_feature == media_feature_names::kAnyPointerMediaFeature) {
+    return ident == CSSValueID::kNone || ident == CSSValueID::kCoarse ||
+           ident == CSSValueID::kFine;
+  }
+
+  if (media_feature == media_feature_names::kHoverMediaFeature ||
+      media_feature == media_feature_names::kAnyHoverMediaFeature)
+    return ident == CSSValueID::kNone || ident == CSSValueID::kHover;
+
+  if (media_feature == media_feature_names::kScanMediaFeature)
+    return ident == CSSValueID::kInterlace || ident == CSSValueID::kProgressive;
+
+  if (RuntimeEnabledFeatures::MediaQueryShapeEnabled()) {
+    if (media_feature == media_feature_names::kShapeMediaFeature)
+      return ident == CSSValueID::kRect || ident == CSSValueID::kRound;
+  }
+
+  if (media_feature == media_feature_names::kColorGamutMediaFeature) {
+    return ident == CSSValueID::kSRGB || ident == CSSValueID::kP3 ||
+           ident == CSSValueID::kRec2020;
   }
 
   if (RuntimeEnabledFeatures::MediaQueryPrefersColorSchemeEnabled()) {
-    if (media_feature == kPrefersColorSchemeMediaFeature) {
-      return ident == CSSValueNoPreference || ident == CSSValueDark ||
-             ident == CSSValueLight;
+    if (media_feature == media_feature_names::kPrefersColorSchemeMediaFeature) {
+      return ident == CSSValueID::kNoPreference || ident == CSSValueID::kDark ||
+             ident == CSSValueID::kLight;
     }
   }
 
-  if (media_feature == kPrefersReducedMotionMediaFeature)
-    return ident == CSSValueNoPreference || ident == CSSValueReduce;
+  if (media_feature == media_feature_names::kPrefersReducedMotionMediaFeature)
+    return ident == CSSValueID::kNoPreference || ident == CSSValueID::kReduce;
+
+  if (RuntimeEnabledFeatures::ForcedColorsEnabled()) {
+    if (media_feature == media_feature_names::kForcedColorsMediaFeature) {
+      return ident == CSSValueID::kNone || ident == CSSValueID::kActive;
+    }
+  }
+
+  if (RuntimeEnabledFeatures::MediaQueryNavigationControlsEnabled()) {
+    if (media_feature == media_feature_names::kNavigationControlsMediaFeature) {
+      return ident == CSSValueID::kNone || ident == CSSValueID::kBackButton;
+    }
+  }
 
   return false;
 }
@@ -92,53 +112,47 @@ static inline bool FeatureWithValidPositiveLength(
         (value->IsNumber() && value->GetDoubleValue() == 0)))
     return false;
 
-  return media_feature == kHeightMediaFeature ||
-         media_feature == kMaxHeightMediaFeature ||
-         media_feature == kMinHeightMediaFeature ||
-         media_feature == kWidthMediaFeature ||
-         media_feature == kMaxWidthMediaFeature ||
-         media_feature == kMinWidthMediaFeature ||
-         media_feature == kDeviceHeightMediaFeature ||
-         media_feature == kMaxDeviceHeightMediaFeature ||
-         media_feature == kMinDeviceHeightMediaFeature ||
-         media_feature == kDeviceWidthMediaFeature ||
-         media_feature == kMinDeviceWidthMediaFeature ||
-         media_feature == kMaxDeviceWidthMediaFeature;
+  return media_feature == media_feature_names::kHeightMediaFeature ||
+         media_feature == media_feature_names::kMaxHeightMediaFeature ||
+         media_feature == media_feature_names::kMinHeightMediaFeature ||
+         media_feature == media_feature_names::kWidthMediaFeature ||
+         media_feature == media_feature_names::kMaxWidthMediaFeature ||
+         media_feature == media_feature_names::kMinWidthMediaFeature ||
+         media_feature == media_feature_names::kDeviceHeightMediaFeature ||
+         media_feature == media_feature_names::kMaxDeviceHeightMediaFeature ||
+         media_feature == media_feature_names::kMinDeviceHeightMediaFeature ||
+         media_feature == media_feature_names::kDeviceWidthMediaFeature ||
+         media_feature == media_feature_names::kMinDeviceWidthMediaFeature ||
+         media_feature == media_feature_names::kMaxDeviceWidthMediaFeature;
 }
 
 static inline bool FeatureWithValidDensity(const String& media_feature,
                                            const CSSPrimitiveValue* value) {
-  if ((value->TypeWithCalcResolved() !=
-           CSSPrimitiveValue::UnitType::kDotsPerPixel &&
-       value->TypeWithCalcResolved() !=
-           CSSPrimitiveValue::UnitType::kDotsPerInch &&
-       value->TypeWithCalcResolved() !=
-           CSSPrimitiveValue::UnitType::kDotsPerCentimeter) ||
-      value->GetDoubleValue() <= 0)
+  if (!value->IsResolution() || value->GetDoubleValue() <= 0)
     return false;
 
-  return media_feature == kResolutionMediaFeature ||
-         media_feature == kMinResolutionMediaFeature ||
-         media_feature == kMaxResolutionMediaFeature;
+  return media_feature == media_feature_names::kResolutionMediaFeature ||
+         media_feature == media_feature_names::kMinResolutionMediaFeature ||
+         media_feature == media_feature_names::kMaxResolutionMediaFeature;
 }
 
 static inline bool FeatureExpectingPositiveInteger(
     const String& media_feature) {
-  return media_feature == kColorMediaFeature ||
-         media_feature == kMaxColorMediaFeature ||
-         media_feature == kMinColorMediaFeature ||
-         media_feature == kColorIndexMediaFeature ||
-         media_feature == kMaxColorIndexMediaFeature ||
-         media_feature == kMinColorIndexMediaFeature ||
-         media_feature == kMonochromeMediaFeature ||
-         media_feature == kMaxMonochromeMediaFeature ||
-         media_feature == kMinMonochromeMediaFeature ||
-         media_feature == kImmersiveMediaFeature;
+  return media_feature == media_feature_names::kColorMediaFeature ||
+         media_feature == media_feature_names::kMaxColorMediaFeature ||
+         media_feature == media_feature_names::kMinColorMediaFeature ||
+         media_feature == media_feature_names::kColorIndexMediaFeature ||
+         media_feature == media_feature_names::kMaxColorIndexMediaFeature ||
+         media_feature == media_feature_names::kMinColorIndexMediaFeature ||
+         media_feature == media_feature_names::kMonochromeMediaFeature ||
+         media_feature == media_feature_names::kMaxMonochromeMediaFeature ||
+         media_feature == media_feature_names::kMinMonochromeMediaFeature ||
+         media_feature == media_feature_names::kImmersiveMediaFeature;
 }
 
 static inline bool FeatureWithPositiveInteger(const String& media_feature,
                                               const CSSPrimitiveValue* value) {
-  if (value->TypeWithCalcResolved() != CSSPrimitiveValue::UnitType::kInteger)
+  if (!value->IsInteger())
     return false;
   return FeatureExpectingPositiveInteger(media_feature);
 }
@@ -148,87 +162,93 @@ static inline bool FeatureWithPositiveNumber(const String& media_feature,
   if (!value->IsNumber())
     return false;
 
-  return media_feature == kTransform3dMediaFeature ||
-         media_feature == kDevicePixelRatioMediaFeature ||
+  return media_feature == media_feature_names::kTransform3dMediaFeature ||
+         media_feature == media_feature_names::kDevicePixelRatioMediaFeature ||
          media_feature == kMaxDevicePixelRatioMediaFeature ||
-         media_feature == kMinDevicePixelRatioMediaFeature;
+         media_feature == media_feature_names::kMinDevicePixelRatioMediaFeature;
 }
 
 static inline bool FeatureWithZeroOrOne(const String& media_feature,
                                         const CSSPrimitiveValue* value) {
-  if (value->TypeWithCalcResolved() != CSSPrimitiveValue::UnitType::kInteger ||
+  if (!value->IsInteger() ||
       !(value->GetDoubleValue() == 1 || !value->GetDoubleValue()))
     return false;
 
-  return media_feature == kGridMediaFeature;
+  return media_feature == media_feature_names::kGridMediaFeature;
 }
 
 static inline bool FeatureWithAspectRatio(const String& media_feature) {
-  return media_feature == kAspectRatioMediaFeature ||
-         media_feature == kDeviceAspectRatioMediaFeature ||
-         media_feature == kMinAspectRatioMediaFeature ||
-         media_feature == kMaxAspectRatioMediaFeature ||
+  return media_feature == media_feature_names::kAspectRatioMediaFeature ||
+         media_feature == media_feature_names::kDeviceAspectRatioMediaFeature ||
+         media_feature == media_feature_names::kMinAspectRatioMediaFeature ||
+         media_feature == media_feature_names::kMaxAspectRatioMediaFeature ||
          media_feature == kMinDeviceAspectRatioMediaFeature ||
          media_feature == kMaxDeviceAspectRatioMediaFeature;
 }
 
 static inline bool FeatureWithoutValue(const String& media_feature) {
   // Media features that are prefixed by min/max cannot be used without a value.
-  return media_feature == kMonochromeMediaFeature ||
-         media_feature == kColorMediaFeature ||
-         media_feature == kColorIndexMediaFeature ||
-         media_feature == kGridMediaFeature ||
-         media_feature == kHeightMediaFeature ||
-         media_feature == kWidthMediaFeature ||
-         media_feature == kDeviceHeightMediaFeature ||
-         media_feature == kDeviceWidthMediaFeature ||
-         media_feature == kOrientationMediaFeature ||
-         media_feature == kAspectRatioMediaFeature ||
-         media_feature == kDeviceAspectRatioMediaFeature ||
-         media_feature == kHoverMediaFeature ||
-         media_feature == kAnyHoverMediaFeature ||
-         media_feature == kTransform3dMediaFeature ||
-         media_feature == kPointerMediaFeature ||
-         media_feature == kAnyPointerMediaFeature ||
-         media_feature == kDevicePixelRatioMediaFeature ||
-         media_feature == kResolutionMediaFeature ||
-         media_feature == kDisplayModeMediaFeature ||
-         media_feature == kScanMediaFeature ||
-         media_feature == kShapeMediaFeature ||
-         media_feature == kColorGamutMediaFeature ||
-         media_feature == kImmersiveMediaFeature ||
-         media_feature == kPrefersColorSchemeMediaFeature ||
-         media_feature == kPrefersReducedMotionMediaFeature;
+  return media_feature == media_feature_names::kMonochromeMediaFeature ||
+         media_feature == media_feature_names::kColorMediaFeature ||
+         media_feature == media_feature_names::kColorIndexMediaFeature ||
+         media_feature == media_feature_names::kGridMediaFeature ||
+         media_feature == media_feature_names::kHeightMediaFeature ||
+         media_feature == media_feature_names::kWidthMediaFeature ||
+         media_feature == media_feature_names::kDeviceHeightMediaFeature ||
+         media_feature == media_feature_names::kDeviceWidthMediaFeature ||
+         media_feature == media_feature_names::kOrientationMediaFeature ||
+         media_feature == media_feature_names::kAspectRatioMediaFeature ||
+         media_feature == media_feature_names::kDeviceAspectRatioMediaFeature ||
+         media_feature == media_feature_names::kHoverMediaFeature ||
+         media_feature == media_feature_names::kAnyHoverMediaFeature ||
+         media_feature == media_feature_names::kTransform3dMediaFeature ||
+         media_feature == media_feature_names::kPointerMediaFeature ||
+         media_feature == media_feature_names::kAnyPointerMediaFeature ||
+         media_feature == media_feature_names::kDevicePixelRatioMediaFeature ||
+         media_feature == media_feature_names::kResolutionMediaFeature ||
+         media_feature == media_feature_names::kDisplayModeMediaFeature ||
+         media_feature == media_feature_names::kScanMediaFeature ||
+         media_feature == media_feature_names::kShapeMediaFeature ||
+         media_feature == media_feature_names::kColorGamutMediaFeature ||
+         media_feature == media_feature_names::kImmersiveMediaFeature ||
+         media_feature ==
+             media_feature_names::kPrefersColorSchemeMediaFeature ||
+         media_feature ==
+             media_feature_names::kPrefersReducedMotionMediaFeature ||
+         media_feature == media_feature_names::kForcedColorsMediaFeature ||
+         media_feature == media_feature_names::kNavigationControlsMediaFeature;
 }
 
 bool MediaQueryExp::IsViewportDependent() const {
-  return media_feature_ == kWidthMediaFeature ||
-         media_feature_ == kHeightMediaFeature ||
-         media_feature_ == kMinWidthMediaFeature ||
-         media_feature_ == kMinHeightMediaFeature ||
-         media_feature_ == kMaxWidthMediaFeature ||
-         media_feature_ == kMaxHeightMediaFeature ||
-         media_feature_ == kOrientationMediaFeature ||
-         media_feature_ == kAspectRatioMediaFeature ||
-         media_feature_ == kMinAspectRatioMediaFeature ||
-         media_feature_ == kDevicePixelRatioMediaFeature ||
-         media_feature_ == kResolutionMediaFeature ||
-         media_feature_ == kMaxAspectRatioMediaFeature ||
+  return media_feature_ == media_feature_names::kWidthMediaFeature ||
+         media_feature_ == media_feature_names::kHeightMediaFeature ||
+         media_feature_ == media_feature_names::kMinWidthMediaFeature ||
+         media_feature_ == media_feature_names::kMinHeightMediaFeature ||
+         media_feature_ == media_feature_names::kMaxWidthMediaFeature ||
+         media_feature_ == media_feature_names::kMaxHeightMediaFeature ||
+         media_feature_ == media_feature_names::kOrientationMediaFeature ||
+         media_feature_ == media_feature_names::kAspectRatioMediaFeature ||
+         media_feature_ == media_feature_names::kMinAspectRatioMediaFeature ||
+         media_feature_ == media_feature_names::kDevicePixelRatioMediaFeature ||
+         media_feature_ == media_feature_names::kResolutionMediaFeature ||
+         media_feature_ == media_feature_names::kMaxAspectRatioMediaFeature ||
          media_feature_ == kMaxDevicePixelRatioMediaFeature ||
-         media_feature_ == kMinDevicePixelRatioMediaFeature;
+         media_feature_ ==
+             media_feature_names::kMinDevicePixelRatioMediaFeature;
 }
 
 bool MediaQueryExp::IsDeviceDependent() const {
-  return media_feature_ == kDeviceAspectRatioMediaFeature ||
-         media_feature_ == kDeviceWidthMediaFeature ||
-         media_feature_ == kDeviceHeightMediaFeature ||
+  return media_feature_ ==
+             media_feature_names::kDeviceAspectRatioMediaFeature ||
+         media_feature_ == media_feature_names::kDeviceWidthMediaFeature ||
+         media_feature_ == media_feature_names::kDeviceHeightMediaFeature ||
          media_feature_ == kMinDeviceAspectRatioMediaFeature ||
-         media_feature_ == kMinDeviceWidthMediaFeature ||
-         media_feature_ == kMinDeviceHeightMediaFeature ||
+         media_feature_ == media_feature_names::kMinDeviceWidthMediaFeature ||
+         media_feature_ == media_feature_names::kMinDeviceHeightMediaFeature ||
          media_feature_ == kMaxDeviceAspectRatioMediaFeature ||
-         media_feature_ == kMaxDeviceWidthMediaFeature ||
-         media_feature_ == kMaxDeviceHeightMediaFeature ||
-         media_feature_ == kShapeMediaFeature;
+         media_feature_ == media_feature_names::kMaxDeviceWidthMediaFeature ||
+         media_feature_ == media_feature_names::kMaxDeviceHeightMediaFeature ||
+         media_feature_ == media_feature_names::kShapeMediaFeature;
 }
 
 MediaQueryExp::MediaQueryExp(const MediaQueryExp& other)
@@ -259,51 +279,93 @@ MediaQueryExp MediaQueryExp::Create(const String& media_feature,
   }
   if (!value)
     value = css_property_parser_helpers::ConsumeResolution(range);
-  // Create value for media query expression that must have 1 or more values.
-  if (value) {
-    if (FeatureWithAspectRatio(lower_media_feature)) {
-      if (value->TypeWithCalcResolved() !=
-              CSSPrimitiveValue::UnitType::kInteger ||
-          value->GetDoubleValue() == 0)
-        return Invalid();
-      if (!css_property_parser_helpers::ConsumeSlashIncludingWhitespace(range))
-        return Invalid();
-      CSSPrimitiveValue* denominator =
-          css_property_parser_helpers::ConsumePositiveInteger(range);
-      if (!denominator)
-        return Invalid();
 
-      exp_value.numerator = clampTo<unsigned>(value->GetDoubleValue());
-      exp_value.denominator = clampTo<unsigned>(denominator->GetDoubleValue());
-      exp_value.is_ratio = true;
-    } else if (FeatureWithValidDensity(lower_media_feature, value) ||
-               FeatureWithValidPositiveLength(lower_media_feature, value) ||
-               FeatureWithPositiveInteger(lower_media_feature, value) ||
-               FeatureWithPositiveNumber(lower_media_feature, value) ||
-               FeatureWithZeroOrOne(lower_media_feature, value)) {
-      exp_value.value = value->GetDoubleValue();
-      if (value->IsNumber())
-        exp_value.unit = CSSPrimitiveValue::UnitType::kNumber;
-      else
-        exp_value.unit = value->TypeWithCalcResolved();
-      exp_value.is_value = true;
-    } else {
-      return Invalid();
+  if (!value) {
+    if (CSSIdentifierValue* ident =
+            css_property_parser_helpers::ConsumeIdent(range)) {
+      CSSValueID ident_id = ident->GetValueID();
+      if (!FeatureWithValidIdent(lower_media_feature, ident_id))
+        return Invalid();
+      exp_value.id = ident_id;
+      exp_value.is_id = true;
+      return MediaQueryExp(lower_media_feature, exp_value);
     }
-  } else if (CSSIdentifierValue* ident =
-                 css_property_parser_helpers::ConsumeIdent(range)) {
-    CSSValueID ident_id = ident->GetValueID();
-    if (!FeatureWithValidIdent(lower_media_feature, ident_id))
-      return Invalid();
-    exp_value.id = ident_id;
-    exp_value.is_id = true;
-  } else if (FeatureWithoutValue(lower_media_feature)) {
-    // Valid, creates a MediaQueryExp with an 'invalid' MediaQueryExpValue
-  } else {
+    if (FeatureWithoutValue(lower_media_feature)) {
+      // Valid, creates a MediaQueryExp with an 'invalid' MediaQueryExpValue
+      return MediaQueryExp(lower_media_feature, exp_value);
+    }
     return Invalid();
   }
 
-  return MediaQueryExp(lower_media_feature, exp_value);
+  // Now we have |value| as a number, length or resolution
+  // Create value for media query expression that must have 1 or more values.
+  if (FeatureWithAspectRatio(lower_media_feature)) {
+    if (!value->IsInteger() || value->GetDoubleValue() == 0)
+      return Invalid();
+    if (!css_property_parser_helpers::ConsumeSlashIncludingWhitespace(range))
+      return Invalid();
+    CSSPrimitiveValue* denominator =
+        css_property_parser_helpers::ConsumePositiveInteger(range);
+    if (!denominator)
+      return Invalid();
+
+    exp_value.numerator = clampTo<unsigned>(value->GetDoubleValue());
+    exp_value.denominator = clampTo<unsigned>(denominator->GetDoubleValue());
+    exp_value.is_ratio = true;
+    return MediaQueryExp(lower_media_feature, exp_value);
+  }
+
+  if (FeatureWithValidDensity(lower_media_feature, value)) {
+    // TODO(crbug.com/983613): Support resolution in math functions.
+    DCHECK(value->IsNumericLiteralValue());
+    const auto* numeric_literal = To<CSSNumericLiteralValue>(value);
+    exp_value.value = numeric_literal->DoubleValue();
+    exp_value.unit = numeric_literal->GetType();
+    exp_value.is_value = true;
+    return MediaQueryExp(lower_media_feature, exp_value);
+  }
+
+  if (FeatureWithPositiveInteger(lower_media_feature, value) ||
+      FeatureWithPositiveNumber(lower_media_feature, value) ||
+      FeatureWithZeroOrOne(lower_media_feature, value)) {
+    exp_value.value = value->GetDoubleValue();
+    exp_value.unit = CSSPrimitiveValue::UnitType::kNumber;
+    exp_value.is_value = true;
+    return MediaQueryExp(lower_media_feature, exp_value);
+  }
+
+  if (FeatureWithValidPositiveLength(lower_media_feature, value)) {
+    if (value->IsNumber()) {
+      exp_value.value = value->GetDoubleValue();
+      exp_value.unit = CSSPrimitiveValue::UnitType::kNumber;
+      exp_value.is_value = true;
+      return MediaQueryExp(lower_media_feature, exp_value);
+    }
+
+    DCHECK(value->IsLength());
+    if (const auto* numeric_literal =
+            DynamicTo<CSSNumericLiteralValue>(value)) {
+      exp_value.value = numeric_literal->GetDoubleValue();
+      exp_value.unit = numeric_literal->GetType();
+      exp_value.is_value = true;
+      return MediaQueryExp(lower_media_feature, exp_value);
+    }
+
+    const auto* math_value = To<CSSMathFunctionValue>(value);
+    CSSPrimitiveValue::UnitType expression_unit =
+        math_value->ExpressionNode()->ResolvedUnitType();
+    if (expression_unit == CSSPrimitiveValue::UnitType::kUnknown) {
+      // TODO(crbug.com/982542): Support math expressions involving type
+      // conversions properly. For example, calc(10px + 1em).
+      return Invalid();
+    }
+    exp_value.value = math_value->DoubleValue();
+    exp_value.unit = expression_unit;
+    exp_value.is_value = true;
+    return MediaQueryExp(lower_media_feature, exp_value);
+  }
+
+  return Invalid();
 }
 
 MediaQueryExp::~MediaQueryExp() = default;

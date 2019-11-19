@@ -17,6 +17,7 @@
 #include <tlhelp32.h>
 
 #include "test/errors.h"
+#include "util/process/process_id.h"
 #include "util/win/process_info.h"
 
 namespace crashpad {
@@ -28,20 +29,20 @@ constexpr wchar_t kTempDirEnvName[] = L"CRASHPAD_TEST_TEMP_DIR";
 
 // Returns the process IDs of all processes that have |parent_pid| as
 // parent process ID.
-std::vector<pid_t> GetPotentialChildProcessesOf(pid_t parent_pid) {
+std::vector<ProcessID> GetPotentialChildProcessesOf(ProcessID parent_pid) {
   ScopedFileHANDLE snapshot(CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0));
   if (!snapshot.is_valid()) {
     ADD_FAILURE() << ErrorMessage("CreateToolhelp32Snapshot");
-    return std::vector<pid_t>();
+    return std::vector<ProcessID>();
   }
 
   PROCESSENTRY32 entry = {sizeof(entry)};
   if (!Process32First(snapshot.get(), &entry)) {
     ADD_FAILURE() << ErrorMessage("Process32First");
-    return std::vector<pid_t>();
+    return std::vector<ProcessID>();
   }
 
-  std::vector<pid_t> child_pids;
+  std::vector<ProcessID> child_pids;
   do {
     if (entry.th32ParentProcessID == parent_pid)
       child_pids.push_back(entry.th32ProcessID);
@@ -68,11 +69,11 @@ ULARGE_INTEGER GetProcessCreationTime(HANDLE process) {
 // not their offspring. For this to work without race, |parent| has to be
 // suspended or have exited.
 void WaitForAllChildProcessesOf(HANDLE parent) {
-  pid_t parent_pid = GetProcessId(parent);
-  std::vector<pid_t> child_pids = GetPotentialChildProcessesOf(parent_pid);
+  ProcessID parent_pid = GetProcessId(parent);
+  std::vector<ProcessID> child_pids = GetPotentialChildProcessesOf(parent_pid);
 
   ULARGE_INTEGER parent_creationtime = GetProcessCreationTime(parent);
-  for (pid_t child_pid : child_pids) {
+  for (ProcessID child_pid : child_pids) {
     // Try and open the process. This may fail for reasons such as:
     // 1. The process isn't |parent|'s child process, but rather a
     //    higher-privilege sub-process of an earlier process that had

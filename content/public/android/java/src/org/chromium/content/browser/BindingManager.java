@@ -10,6 +10,7 @@ import android.content.res.Configuration;
 import android.support.v4.util.ArraySet;
 
 import org.chromium.base.Log;
+import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.process_launcher.ChildProcessConnection;
 
@@ -21,7 +22,7 @@ import java.util.Set;
  * This object must only be accessed from the launcher thread.
  */
 class BindingManager implements ComponentCallbacks2 {
-    private static final String TAG = "cr_BindingManager";
+    private static final String TAG = "BindingManager";
 
     // Low reduce ratio of moderate binding.
     private static final float MODERATE_BINDING_LOW_REDUCE_RATIO = 0.25f;
@@ -32,6 +33,7 @@ class BindingManager implements ComponentCallbacks2 {
     private static final long MODERATE_BINDING_POOL_CLEARER_DELAY_MILLIS = 10 * 1000;
 
     private final Set<ChildProcessConnection> mConnections = new ArraySet<ChildProcessConnection>();
+    // Can be -1 to mean no max size.
     private final int mMaxSize;
     private final Iterable<ChildProcessConnection> mRanking;
     private final Runnable mDelayedClearer;
@@ -144,28 +146,36 @@ class BindingManager implements ComponentCallbacks2 {
         LauncherThread.removeCallbacks(mDelayedClearer);
     }
 
-    // Whether this instance is used on testing.
-    private final boolean mOnTesting;
+    /**
+     * Construct instance without maxsize and can support arbitrary number of connections.
+     */
+    BindingManager(Context context, Iterable<ChildProcessConnection> ranking) {
+        this(-1, ranking, context);
+    }
 
     /**
-     * The constructor is private to hide parameters exposed for testing from the regular consumer.
-     * Use factory methods to create an instance.
+     * Construct instance with maxSize.
      */
-    BindingManager(Context context, int maxSize, Iterable<ChildProcessConnection> ranking,
-            boolean onTesting) {
+    BindingManager(Context context, int maxSize, Iterable<ChildProcessConnection> ranking) {
+        this(maxSize, ranking, context);
+        assert maxSize > 0;
+    }
+
+    private BindingManager(int maxSize, Iterable<ChildProcessConnection> ranking, Context context) {
         assert LauncherThread.runningOnLauncherThread();
         Log.i(TAG, "Moderate binding enabled: maxSize=%d", maxSize);
 
-        mOnTesting = onTesting;
         mMaxSize = maxSize;
         mRanking = ranking;
-        assert mMaxSize > 0;
+        assert mMaxSize > 0 || mMaxSize == -1;
 
         mDelayedClearer = new Runnable() {
             @Override
             public void run() {
                 Log.i(TAG, "Release moderate connections: %d", mConnections.size());
-                if (!mOnTesting) {
+                // Tests may not load the native library which is required for
+                // recording histograms.
+                if (LibraryLoader.getInstance().isInitialized()) {
                     RecordHistogram.recordCountHistogram(
                             "Android.ModerateBindingCount", mConnections.size());
                 }
@@ -185,7 +195,7 @@ class BindingManager implements ComponentCallbacks2 {
         // If it became bigger we should consider using an alternate data structure.
         boolean alreadyInQueue = !mConnections.add(connection);
         if (!alreadyInQueue) connection.addModerateBinding();
-        assert mConnections.size() <= mMaxSize;
+        assert mMaxSize == -1 || mConnections.size() <= mMaxSize;
     }
 
     public void removeConnection(ChildProcessConnection connection) {

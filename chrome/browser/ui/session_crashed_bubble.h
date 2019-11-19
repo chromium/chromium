@@ -14,10 +14,12 @@ class Browser;
 // reporting, if it not enabled already.
 class SessionCrashedBubble {
  public:
-  // Create a session recovery bubble if the last session crashed. It also
-  // offers the option to enable metrics reporting if it's not already enabled.
-  // Returns true if a bubble is created, returns false if nothing is created.
-  static bool Show(Browser* browser);
+  // Shows the session crashed bubble if the current profile is neither an
+  // Incognito nor a Guest profile. It also offers the option to enable metrics
+  // reporting if it's not already enabled.
+  // Note: It is the caller's responsibility to determine if the previous
+  // session ended with a crash.
+  static void ShowIfNotOffTheRecordProfile(Browser* browser);
 
   virtual ~SessionCrashedBubble() {}
 

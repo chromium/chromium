@@ -148,35 +148,9 @@ are considered security vulnerabilities in more detail.
 <a name="TOC-Are-XSS-filter-bypasses-considered-security-bugs-"></a>
 ## Are XSS filter bypasses considered security bugs?
 
-No. Chromium contains a reflected XSS filter (called XSSAuditor) that is a
-best-effort second line of defense against reflected XSS flaws found in web
-sites. We do not treat these bypasses as security bugs in Chromium because the
-underlying security issue is in the web site itself. Instead, we treat them as
-functional bugs in Chromium.
-
-We do appreciate reports of XSSAuditor bypasses, and endeavor to close them.
-When reporting an XSSAuditor bypass, two pieces of information are essential:
-*    The exact URL (and for POSTs, the request body) triggering the reflection.
-*    The view-source: of the page showing the reflection in the page text.
-
-Please do not provide links to vulnerable production sites seen in the wild,
-as that forces us to embargo the information in the bug.
-
-Note that the XSSAuditor is not able to defend against persistent XSS or
-DOM-based XSS. Nor is it able to defend against injections deep inside
-existing JavaScript blocks, [for
-example](https://bugs.chromium.org/p/chromium/issues/detail?id=135029), since
-the XSSAuditor is part of the HTML parser, not the JavaScript parser.
-
-There will also be a number of infrequently occurring reflected XSS corner
-case in an HTML context that it will never be able to cover. Among
-these are:
-*    Multiple unsanitized variables injected into the page.
-*    Unexpected server side transformation or decoding of the payload.
-
-XSSAuditor bypasses are not considered under the security vulnerability rewards
-program; the [severity guidelines](severity-guidelines.md) outline the types of
-bugs that are considered security vulnerabilities in more detail.
+No. Chromium once contained a reflected XSS filter called the [XSSAuditor](https://www.chromium.org/developers/design-documents/xss-auditor)
+that was a best-effort second line of defense against reflected XSS flaws found
+in web sites. The XSS Auditor was [removed in Chrome 78](https://groups.google.com/a/chromium.org/forum/#!msg/blink-dev/TuYw-EZhO9g/blGViehIAwAJ).
 
 <a name="TOC-Why-aren-t-physically-local-attacks-in-Chrome-s-threat-model-"></a>
 ## Why aren't physically-local attacks in Chrome's threat model?
@@ -288,42 +262,46 @@ mislead the user. For instance, navigating to
 `http://evil.example.com` after the page loads.
 
 <a name="TOC-Why-isn-t-passive-browser-fingerprinting-including-passive-cookies-in-Chrome-s-threat-model-"></a>
-## Why isn't passive browser fingerprinting (including passive cookies) in Chrome's threat model?
+<a name="TOC-What-is-Chrome-s-threat-model-for-fingerprinting-"></a>
+## What is Chrome's threat model for fingerprinting?
 
-As discussed in [Issue 49075](https://crbug.com/49075), we currently do not
-attempt to defeat "passive fingerprinting" or
-"[evercookies](https://en.wikipedia.org/wiki/Evercookie)" or [ETag
-cookies](https://en.wikipedia.org/wiki/HTTP_ETag#Tracking_using_ETags), because
-defeating such fingerprinting is likely not practical without fundamental
-changes to how the Web works. One needs roughly 33 bits of non-correlated,
-distinguishing information to have a good chance of telling apart most user
-agents on the planet (see [Arvind Narayanan's site](https://33bits.org/about/)
-and [Peter Eckersley's discussion of the information theory behind
-Panopticlick](https://www.eff.org/deeplinks/2010/01/primer-information-theory-and-privacy).)
+> **Update, August 2019:** Please note that this answer has changed. We have
+> updated our threat model to include fingerprinting.
 
-Although Chrome developers could try to reduce the fingerprintability of the
-browser by taking away (e.g.) JavaScript APIs, doing so would not achieve the
-security goal for a few reasons: (a) we could not likely get the
-distinguishability below 33 bits; (b) reducing fingerprintability requires
-breaking many (or even most) useful web features; and (c) so few people would
-tolerate the breakage that it would likely be easier to distinguish people who
-use the fingerprint-defense configuration. (See "[Anonymity Loves Company:
-Usability and the Network
-Effect](https://freehaven.net/anonbib/cache/usability:weis2006.pdf)" by
-Dingledine and Mathewson for more information.)
+Although [we do not consider fingerprinting issues to be *security
+vulnerabilities*](#TOC-Are-privacy-issues-considered-security-bugs-), we do now
+consider them to be privacy bugs that we will try to resolve. We distinguish two
+forms of fingerprinting.
 
-There is a pretty good analysis of in-browser fingerprinting vectors on [this
-wiki
-page](https://dev.chromium.org/Home/chromium-security/client-identification-mechanisms).
-Browser vectors aside, it's possible that the browser could be accurately
-fingerprinted entirely passively, without access to JavaScript or other web
-features or APIs, by its network traffic profile alone. (See e.g. *[Silence on
-the Wire](http://lcamtuf.coredump.cx/silence.shtml#/)* by Michal Zalewski
-generally.)
+* **Passive fingerprinting** refers to fingerprinting techniques that do not
+require a JavaScript API call to achieve. This includes (but is not limited to)
+mechanisms like [ETag
+cookies](https://en.wikipedia.org/wiki/HTTP_ETag#Tracking_using_ETags) and [HSTS
+cookies](https://security.stackexchange.com/questions/79518/what-are-hsts-super-cookies).
+* **Active fingerprinting** refers to fingerprinting techniques that do require
+a JavaScript API call to achieve. Examples include most of the techniques in
+[EFF's Panopticlick proof of concept](https://panopticlick.eff.org).
 
-Since we don't believe it's feasible to provide some mode of Chrome that can
-truly prevent passive fingerprinting, we will mark all related bugs and feature
-requests as WontFix.
+For passive fingerprinting, our ultimate goal is (to the extent possible) to
+reduce the information content available to below the threshold for usefulness.
+
+For active fingerprinting, our ultimate goal is to establish a [privacy
+budget](https://github.com/bslassey/privacy-budget) and to keep web origins
+below the budget (such as by rejecting some API calls when the origin exceeds
+its budget). To avoid breaking rich web applications that people want to use,
+Chrome may increase an origin's budget when it detects that a person is using
+the origin heavily. As with passive fingerprinting, our goal is to set the
+default budget below the threshold of usefulness for fingerprinting.
+
+These are both long-term goals. As of this writing (August 2019) we do not
+expect that Chrome will immediately achieve them.
+
+For background on fingerprinting and the difficulty of stopping it, see [Arvind
+Narayanan's site](https://33bits.wordpress.com/about/) and [Peter Eckersley's
+discussion of the information theory behind
+Panopticlick](https://www.eff.org/deeplinks/2010/01/primer-information-theory-and-privacy).
+There is also [a pretty good analysis of in-browser fingerprinting
+vectors](https://dev.chromium.org/Home/chromium-security/client-identification-mechanisms).
 
 <a name="TOC-Where-are-the-security-indicators-located-in-the-browser-window-"></a>
 ## Where are the security indicators located in the browser window?
@@ -545,9 +523,9 @@ of the certificate, thus exposing a user's HTTPS browsing history to the
 responder (a third party).
 
 That said, you can use enterprise policies to [enable soft-fail
-OCSP](https://www.chromium.org/administrators/policy-list-3#EnableOnlineRevocationChecks)
+OCSP](https://cloud.google.com/docs/chrome-enterprise/policies/?policy=EnableOnlineRevocationChecks)
 and hard-fail OCSP for [local trust
-anchors](https://www.chromium.org/administrators/policy-list-3#RequireOnlineRevocationChecksForLocalAnchors).
+anchors](https://cloud.google.com/docs/chrome-enterprise/policies/?policy=RequireOnlineRevocationChecksForLocalAnchors).
 
 Chrome performs online checking for [Extended
 Validation](https://cabforum.org/about-ev-ssl/) certificates if it does not
@@ -621,10 +599,12 @@ specific:
      credentials in "Login Data" in the Chrome users profile directory, but
      encrypted on disk with a key that is then stored in the user's Keychain.
      See [Issue 466638](https://crbug.com/466638) for further explanation.
-*    On Linux, credentials are stored into Gnome-Keyring or KWallet, depending
-     on the environment. On environments which don't ship with Gnome-Keyring
-     or KWallet, the password is stored into "Login Data" in an unprotected
-     format.
+*    On Linux, Chrome previously stored credentials directly in the user's
+     Gnome Keyring or KWallet, but for technical reasons, it has switched to
+     storing the credentials in "Login Data" in the Chrome user's profile directory,
+     but encrypted on disk with a key that is then stored in the user's Gnome
+     Keyring or KWallet. If there is no available Keyring or KWallet, the data is
+     not encrypted when stored.
 *    On iOS, passwords are currently stored directly in the iOS Keychain and
      referenced from the rest of the metadata stored in a separate DB. The plan
      there is to just store them in plain text in the DB, because iOS gives
@@ -656,6 +636,18 @@ vulnerability in the relevant feature, not Safe Browsing itself.
 
 See our dedicated [Service Worker Security
 FAQ](https://chromium.googlesource.com/chromium/src/+/master/docs/security/service-worker-security-faq.md).
+
+<a name="TOC-What-about-URL-spoofs-using-Internationalized-Domain-Names-IDN-"></a>
+## What about URL spoofs using Internationalized Domain Names (IDN)?
+
+We try to balance the needs of our international userbase while protecting users
+against confusable homograph attacks. Despite this, there are a list of known
+IDN display issues we are still working on.
+
+*    Please see [this document](https://docs.google.com/document/d/1_xJz3J9kkAPwk3pma6K3X12SyPTyyaJDSCxTfF8Y5sU)
+for a list of known issues and how we handle them.
+*    [This document](https://www.chromium.org/developers/design-documents/idn-in-google-chrome)
+describes Chrome's IDN policy in detail.
 
 ## TODO
 

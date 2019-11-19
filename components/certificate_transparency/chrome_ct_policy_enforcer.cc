@@ -11,23 +11,23 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/build_time.h"
 #include "base/callback_helpers.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "components/certificate_transparency/ct_known_logs.h"
+#include "crypto/sha2.h"
 #include "net/cert/ct_policy_status.h"
 #include "net/cert/signed_certificate_timestamp.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_certificate_net_log_param.h"
 #include "net/log/net_log_capture_mode.h"
 #include "net/log/net_log_event_type.h"
-#include "net/log/net_log_parameters_callback.h"
 #include "net/log/net_log_with_source.h"
 
 using net::ct::CTPolicyCompliance;
@@ -35,15 +35,6 @@ using net::ct::CTPolicyCompliance;
 namespace certificate_transparency {
 
 namespace {
-
-// Returns true if the current build is recent enough to ensure that
-// built-in security information (e.g. CT Logs) is fresh enough.
-// TODO(eranm): Move to base or net/base
-bool IsBuildTimely() {
-  const base::Time build_time = base::GetBuildTime();
-  // We consider built-in information to be timely for 10 weeks.
-  return (base::Time::Now() - build_time).InDays() < 70 /* 10 weeks */;
-}
 
 // Returns a rounded-down months difference of |start| and |end|,
 // together with an indication of whether the last month was
@@ -96,25 +87,87 @@ const char* CTPolicyComplianceToString(CTPolicyCompliance status) {
   return "unknown";
 }
 
-std::unique_ptr<base::Value> NetLogCertComplianceCheckResultCallback(
+base::Value NetLogCertComplianceCheckResultParams(
     net::X509Certificate* cert,
     bool build_timely,
-    CTPolicyCompliance compliance,
-    net::NetLogCaptureMode capture_mode) {
-  std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
-  dict->Set("certificate",
-            net::NetLogX509CertificateCallback(cert, capture_mode));
-  dict->SetBoolean("build_timely", build_timely);
-  dict->SetString("ct_compliance_status",
-                  CTPolicyComplianceToString(compliance));
+    CTPolicyCompliance compliance) {
+  base::DictionaryValue dict;
+  dict.SetKey("certificate", net::NetLogX509CertificateParams(cert));
+  dict.SetBoolean("build_timely", build_timely);
+  dict.SetString("ct_compliance_status",
+                 CTPolicyComplianceToString(compliance));
   return std::move(dict);
+}
+
+}  // namespace
+
+ChromeCTPolicyEnforcer::ChromeCTPolicyEnforcer(
+    base::Time log_list_date,
+    std::vector<std::pair<std::string, base::TimeDelta>> disqualified_logs,
+    std::vector<std::string> operated_by_google_logs)
+    : disqualified_logs_(disqualified_logs),
+      operated_by_google_logs_(operated_by_google_logs),
+      clock_(base::DefaultClock::GetInstance()),
+      log_list_date_(log_list_date) {}
+
+ChromeCTPolicyEnforcer::~ChromeCTPolicyEnforcer() {}
+
+CTPolicyCompliance ChromeCTPolicyEnforcer::CheckCompliance(
+    net::X509Certificate* cert,
+    const net::ct::SCTList& verified_scts,
+    const net::NetLogWithSource& net_log) {
+  // If the build is not timely, no certificate is considered compliant
+  // with CT policy. The reasoning is that, for example, a log might
+  // have been pulled and is no longer considered valid; thus, a client
+  // needs up-to-date information about logs to consider certificates to
+  // be compliant with policy.
+  bool build_timely = IsLogDataTimely();
+  CTPolicyCompliance compliance;
+  if (!build_timely) {
+    compliance = CTPolicyCompliance::CT_POLICY_BUILD_NOT_TIMELY;
+  } else {
+    compliance = CheckCTPolicyCompliance(*cert, verified_scts);
+  }
+
+  net_log.AddEvent(net::NetLogEventType::CERT_CT_COMPLIANCE_CHECKED, [&] {
+    return NetLogCertComplianceCheckResultParams(cert, build_timely,
+                                                 compliance);
+  });
+
+  return compliance;
+}
+
+bool ChromeCTPolicyEnforcer::IsLogDisqualified(
+    base::StringPiece log_id,
+    base::Time* disqualification_date) const {
+  CHECK_EQ(log_id.size(), crypto::kSHA256Length);
+
+  auto p = std::lower_bound(
+      std::begin(disqualified_logs_), std::end(disqualified_logs_), log_id,
+      [](const auto& a, base::StringPiece b) { return a.first < b; });
+  if (p == std::end(disqualified_logs_) || p->first != log_id) {
+    return false;
+  }
+  *disqualification_date = base::Time::UnixEpoch() + p->second;
+  return true;
+}
+
+bool ChromeCTPolicyEnforcer::IsLogOperatedByGoogle(
+    base::StringPiece log_id) const {
+  return std::binary_search(std::begin(operated_by_google_logs_),
+                            std::end(operated_by_google_logs_), log_id);
+}
+
+bool ChromeCTPolicyEnforcer::IsLogDataTimely() const {
+  // We consider built-in information to be timely for 10 weeks.
+  return (clock_->Now() - log_list_date_).InDays() < 70 /* 10 weeks */;
 }
 
 // Evaluates against the policy specified at
 // https://sites.google.com/a/chromium.org/dev/Home/chromium-security/root-ca-policy/EVCTPlanMay2015edition.pdf?attredirects=0
-CTPolicyCompliance CheckCTPolicyCompliance(
+CTPolicyCompliance ChromeCTPolicyEnforcer::CheckCTPolicyCompliance(
     const net::X509Certificate& cert,
-    const net::ct::SCTList& verified_scts) {
+    const net::ct::SCTList& verified_scts) const {
   // Cert is outside the bounds of parsable; reject it.
   if (cert.valid_start().is_null() || cert.valid_expiry().is_null() ||
       cert.valid_start().is_max() || cert.valid_expiry().is_max()) {
@@ -273,35 +326,6 @@ CTPolicyCompliance CheckCTPolicyCompliance(
   return has_valid_nonembedded_sct
              ? CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS
              : CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS;
-}
-
-}  // namespace
-
-CTPolicyCompliance ChromeCTPolicyEnforcer::CheckCompliance(
-    net::X509Certificate* cert,
-    const net::ct::SCTList& verified_scts,
-    const net::NetLogWithSource& net_log) {
-  // If the build is not timely, no certificate is considered compliant
-  // with CT policy. The reasoning is that, for example, a log might
-  // have been pulled and is no longer considered valid; thus, a client
-  // needs up-to-date information about logs to consider certificates to
-  // be compliant with policy.
-  bool build_timely = IsBuildTimely();
-  CTPolicyCompliance compliance;
-  if (!build_timely) {
-    compliance = CTPolicyCompliance::CT_POLICY_BUILD_NOT_TIMELY;
-  } else {
-    compliance = CheckCTPolicyCompliance(*cert, verified_scts);
-  }
-
-  net::NetLogParametersCallback net_log_callback =
-      base::BindRepeating(&NetLogCertComplianceCheckResultCallback,
-                          base::Unretained(cert), build_timely, compliance);
-
-  net_log.AddEvent(net::NetLogEventType::CERT_CT_COMPLIANCE_CHECKED,
-                   net_log_callback);
-
-  return compliance;
 }
 
 }  // namespace certificate_transparency

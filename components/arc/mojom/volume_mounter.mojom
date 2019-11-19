@@ -1,0 +1,62 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Next MinVersion: 3
+
+module arc.mojom;
+
+[Extensible]
+enum MountEvent {
+  // Mounts a volume in Android.
+  MOUNTING,
+  // Unmounts a volume in Android.
+  UNMOUNTING,
+};
+
+[Extensible]
+enum DeviceType {
+  // Neither USB device nor SD card is inserted.
+  DEVICE_TYPE_UNKNOWN,
+  // USB device is inserted.
+  DEVICE_TYPE_USB,
+  // SD card is inserted.
+  DEVICE_TYPE_SD,
+};
+
+struct MountPointInfo {
+  // The type of mount event to be triggered in Android.
+  MountEvent mount_event;
+  // The device source path of this mount point.
+  string source_path;
+  // The path to the mounted volume.
+  string mount_path;
+  // The fs_uuid of the disk. If empty, the event should be ignored.
+  string fs_uuid;
+  // The file system label.
+  string label;
+  // The device type that contains this mount point. If unknown, the event
+  // should be ignored.
+  DeviceType device_type;
+  // Whether the mounted volume should be visible to Android apps.
+  // This is a user-controlled setting, which is accessible in "External
+  // storage preferences" screen in device settings.
+  [MinVersion=2] bool visible;
+};
+
+// Next Method ID: 1
+interface VolumeMounterHost {
+  // Requests all recorded MountPointInfos to be sent through a series of
+  // VolumeMounterInstance::OnMountEvent call.
+  [MinVersion=0] RequestAllMountPoints@1();
+};
+
+// Notifies Android about Mounting events.
+// Next Method ID: 2
+interface VolumeMounterInstance {
+  // Establishes full-duplex communication with the host.
+  [MinVersion=1] Init@0(VolumeMounterHost host_ptr) => ();
+
+  // Triggers a mount event in Android.
+  OnMountEvent@1(MountPointInfo mount_point_info);
+};

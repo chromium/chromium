@@ -10,8 +10,10 @@
 #include <vector>
 
 #include "base/android/scoped_java_ref.h"
+#include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "chrome/browser/autofill/autofill_keyboard_accessory_adapter.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
 
 namespace autofill {
@@ -21,55 +23,49 @@ class AutofillPopupController;
 // A suggestion view that acts as an alternative to the field-attached popup
 // window. This view appears above the keyboard and spans the width of the
 // screen, condensing rather than overlaying the content area.
-class AutofillKeyboardAccessoryView : public AutofillPopupView {
+class AutofillKeyboardAccessoryView
+    : public AutofillKeyboardAccessoryAdapter::AccessoryView {
  public:
-  AutofillKeyboardAccessoryView(AutofillPopupController* controller,
-                                unsigned int animation_duration_millis,
-                                bool should_limit_label_width);
+  explicit AutofillKeyboardAccessoryView(AutofillPopupController* controller);
+  ~AutofillKeyboardAccessoryView() override;
+
+  // Implementation of AutofillKeyboardAccessoryAdapter::AccessoryView.
+  void Initialize(unsigned int animation_duration_millis,
+                  bool limit_label_width) override;
+  void Hide() override;
+  void Show() override;
+  void ConfirmDeletion(const base::string16& confirmation_title,
+                       const base::string16& confirmation_body,
+                       base::OnceClosure confirm_deletion) override;
 
   // --------------------------------------------------------------------------
   // Methods called from Java via JNI
   // --------------------------------------------------------------------------
+
   // Called when an autofill item was selected.
   void SuggestionSelected(JNIEnv* env,
                           const base::android::JavaParamRef<jobject>& obj,
                           jint list_index);
 
+  // Called when the deletion of an autofill item was requested.
   void DeletionRequested(JNIEnv* env,
                          const base::android::JavaParamRef<jobject>& obj,
                          jint list_index);
 
+  // Called when the deletion of an autofill item was confirmed.
   void DeletionConfirmed(JNIEnv* env,
                          const base::android::JavaParamRef<jobject>& obj);
 
+  // Called when this view was dismissed.
   void ViewDismissed(JNIEnv* env,
                      const base::android::JavaParamRef<jobject>& obj);
 
- protected:
-  // AutofillPopupView implementation.
-  void Show() override;
-  void Hide() override;
-  void OnSelectedRowChanged(base::Optional<int> previous_row_selection,
-                            base::Optional<int> current_row_selection) override;
-  void OnSuggestionsChanged() override;
-
  private:
-  ~AutofillKeyboardAccessoryView() override;
+  // Weak reference to owner of this class. Always outlives this view.
+  AutofillPopupController* controller_;
 
-  AutofillPopupController* controller_;  // weak.
-
-  // If 0, don't animate suggestion view.
-  const unsigned int animation_duration_millis_;
-
-  // If true, limits label width to 1/2 device's width.
-  const bool should_limit_label_width_;
-
-  // The index of the last item the user long-pressed (they will be shown a
-  // confirmation dialog).
-  int deleting_index_;
-
-  // Mapping from Java list index to autofill suggestion index.
-  std::vector<int> positions_;
+  // Call to confirm a requested deletion.
+  base::OnceClosure confirm_deletion_;
 
   // The corresponding java object.
   base::android::ScopedJavaGlobalRef<jobject> java_object_;

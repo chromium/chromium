@@ -37,7 +37,7 @@ class HtmlChecker(object):
         "Do not close single tags.")
 
   def DoNotUseBrElementCheck(self, line_number, line):
-    regex = r"(<br)"
+    regex = r"(<br\b)"
     return regex_check.RegexCheck(self.input_api.re, line_number, line, regex,
         "Do not use <br>; place blocking elements (<div>) as appropriate.")
 

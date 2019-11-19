@@ -10,25 +10,41 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/login/wizard_controller.h"
+#include "chrome/browser/ui/webui/chromeos/login/device_disabled_screen_handler.h"
 
 namespace chromeos {
 
-DeviceDisabledScreen::DeviceDisabledScreen(
-    BaseScreenDelegate* base_screen_delegate,
-    DeviceDisabledScreenView* view)
-    : BaseScreen(base_screen_delegate, OobeScreen::SCREEN_DEVICE_DISABLED),
-      view_(view),
-      device_disabling_manager_(
-          g_browser_process->platform_part()->device_disabling_manager()),
-      showing_(false) {
+namespace {
+system::DeviceDisablingManager* DeviceDisablingManager() {
+  return g_browser_process->platform_part()->device_disabling_manager();
+}
+}  // namespace
+
+DeviceDisabledScreen::DeviceDisabledScreen(DeviceDisabledScreenView* view)
+    : BaseScreen(DeviceDisabledScreenView::kScreenId), view_(view) {
   view_->SetDelegate(this);
-  device_disabling_manager_->AddObserver(this);
 }
 
 DeviceDisabledScreen::~DeviceDisabledScreen() {
   if (view_)
     view_->SetDelegate(nullptr);
-  device_disabling_manager_->RemoveObserver(this);
+}
+
+void DeviceDisabledScreen::OnViewDestroyed(DeviceDisabledScreenView* view) {
+  if (view_ == view)
+    view_ = nullptr;
+}
+
+const std::string& DeviceDisabledScreen::GetEnrollmentDomain() const {
+  return DeviceDisablingManager()->enrollment_domain();
+}
+
+const std::string& DeviceDisabledScreen::GetMessage() const {
+  return DeviceDisablingManager()->disabled_message();
+}
+
+const std::string& DeviceDisabledScreen::GetSerialNumber() const {
+  return DeviceDisablingManager()->serial_number();
 }
 
 void DeviceDisabledScreen::Show() {
@@ -37,6 +53,9 @@ void DeviceDisabledScreen::Show() {
 
   showing_ = true;
   view_->Show();
+  DeviceDisablingManager()->AddObserver(this);
+  if (!DeviceDisablingManager()->disabled_message().empty())
+    view_->UpdateMessage(DeviceDisablingManager()->disabled_message());
 }
 
 void DeviceDisabledScreen::Hide() {
@@ -46,23 +65,7 @@ void DeviceDisabledScreen::Hide() {
 
   if (view_)
     view_->Hide();
-}
-
-void DeviceDisabledScreen::OnViewDestroyed(DeviceDisabledScreenView* view) {
-  if (view_ == view)
-    view_ = nullptr;
-}
-
-const std::string& DeviceDisabledScreen::GetEnrollmentDomain() const {
-  return device_disabling_manager_->enrollment_domain();
-}
-
-const std::string& DeviceDisabledScreen::GetMessage() const {
-  return device_disabling_manager_->disabled_message();
-}
-
-const std::string& DeviceDisabledScreen::GetSerialNumber() const {
-  return device_disabling_manager_->serial_number();
+  DeviceDisablingManager()->RemoveObserver(this);
 }
 
 void DeviceDisabledScreen::OnDisabledMessageChanged(

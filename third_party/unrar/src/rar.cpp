@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
   
     CommandData *Cmd=new CommandData;
 #ifdef SFX_MODULE
-    wcscpy(Cmd->Command,L"X");
+    wcsncpyz(Cmd->Command,L"X",ASIZE(Cmd->Command));
     char *Switch=argc>1 ? argv[1]:NULL;
     if (Switch!=NULL && Cmd->IsSwitch(Switch[0]))
     {
@@ -68,6 +68,8 @@ int main(int argc, char *argv[])
 
 #if defined(_WIN_ALL) && !defined(SFX_MODULE)
     ShutdownOnClose=Cmd->Shutdown;
+    if (ShutdownOnClose)
+      ShutdownCheckAnother(true);
 #endif
 
     uiInit(Cmd->Sound);
@@ -93,7 +95,8 @@ int main(int argc, char *argv[])
   }
 
 #if defined(_WIN_ALL) && !defined(SFX_MODULE)
-  if (ShutdownOnClose!=POWERMODE_KEEP && ErrHandler.IsShutdownEnabled())
+  if (ShutdownOnClose!=POWERMODE_KEEP && ErrHandler.IsShutdownEnabled() &&
+      !ShutdownCheckAnother(false))
     Shutdown(ShutdownOnClose);
 #endif
   ErrHandler.MainExit=true;

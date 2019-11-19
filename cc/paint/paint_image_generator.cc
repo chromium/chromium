@@ -33,4 +33,9 @@ SkISize PaintImageGenerator::GetSupportedDecodeSize(
   return info_.dimensions();
 }
 
+const ImageHeaderMetadata*
+PaintImageGenerator::GetMetadataForDecodeAcceleration() const {
+  return nullptr;
+}
+
 }  // namespace cc

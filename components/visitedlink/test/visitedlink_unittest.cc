@@ -11,8 +11,8 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/location.h"
 #include "base/macros.h"
 #include "base/process/process_handle.h"
@@ -30,12 +30,13 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_types.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/test_browser_context.h"
-#include "content/public/test/test_browser_thread_bundle.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_utils.h"
-#include "mojo/public/cpp/bindings/binding_set.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -239,7 +240,10 @@ class VisitedLinkTest : public testing::Test {
     visited_file_ = history_dir_.Append(FILE_PATH_LITERAL("VisitedLinks"));
   }
 
-  void TearDown() override { ClearDB(); }
+  void TearDown() override {
+    ClearDB();
+    ASSERT_TRUE(temp_dir_.Delete());
+  }
 
   base::ScopedTempDir temp_dir_;
 
@@ -249,7 +253,7 @@ class VisitedLinkTest : public testing::Test {
 
   std::unique_ptr<VisitedLinkMaster> master_;
   TestVisitedLinkDelegate delegate_;
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
 };
 
 // This test creates and reads some databases to make sure the data is
@@ -532,8 +536,9 @@ class VisitCountingContext : public mojom::VisitedLinkNotificationSink {
         new_table_count_(0) {}
 
   void Bind(mojo::ScopedMessagePipeHandle handle) {
-    binding_.AddBinding(
-        this, mojom::VisitedLinkNotificationSinkRequest(std::move(handle)));
+    receiver_.Add(this,
+                  mojo::PendingReceiver<mojom::VisitedLinkNotificationSink>(
+                      std::move(handle)));
   }
 
   void WaitForUpdate() {
@@ -542,15 +547,15 @@ class VisitCountingContext : public mojom::VisitedLinkNotificationSink {
     run_loop.Run();
   }
 
-  void WaitForNoUpdate() { binding_.FlushForTesting(); }
+  void WaitForNoUpdate() { receiver_.FlushForTesting(); }
 
-  mojo::BindingSet<mojom::VisitedLinkNotificationSink>& binding() {
-    return binding_;
+  mojo::ReceiverSet<mojom::VisitedLinkNotificationSink>& binding() {
+    return receiver_;
   }
 
   void NotifyUpdate() {
     if (!quit_closure_.is_null())
-      base::ResetAndReturn(&quit_closure_).Run();
+      std::move(quit_closure_).Run();
   }
 
   void UpdateVisitedLinks(
@@ -589,7 +594,7 @@ class VisitCountingContext : public mojom::VisitedLinkNotificationSink {
   int new_table_count_;
 
   base::Closure quit_closure_;
-  mojo::BindingSet<mojom::VisitedLinkNotificationSink> binding_;
+  mojo::ReceiverSet<mojom::VisitedLinkNotificationSink> receiver_;
 
   DISALLOW_COPY_AND_ASSIGN(VisitCountingContext);
 };
@@ -626,7 +631,7 @@ class VisitedLinkRenderProcessHostFactory
   VisitedLinkRenderProcessHostFactory() : context_(new VisitCountingContext) {}
   content::RenderProcessHost* CreateRenderProcessHost(
       content::BrowserContext* browser_context,
-      content::SiteInstance* site_instance) const override {
+      content::SiteInstance* site_instance) override {
     return new VisitRelayingRenderProcessHost(browser_context, context_.get());
   }
 
@@ -654,9 +659,9 @@ class VisitedLinkEventsTest : public content::RenderViewHostTestHarness {
     RenderViewHostTestHarness::TearDown();
   }
 
-  content::BrowserContext* CreateBrowserContext() override {
-    content::BrowserContext* context = new content::TestBrowserContext();
-    CreateVisitedLinkMaster(context);
+  std::unique_ptr<content::BrowserContext> CreateBrowserContext() override {
+    auto context = std::make_unique<content::TestBrowserContext>();
+    CreateVisitedLinkMaster(context.get());
     return context;
   }
 
@@ -849,10 +854,10 @@ TEST_F(VisitedLinkEventsTest, IgnoreRendererCreationFromDifferentContext) {
 
 class VisitedLinkCompletelyResetEventTest : public VisitedLinkEventsTest {
  public:
-  content::BrowserContext* CreateBrowserContext() override {
-    content::BrowserContext* context = new content::TestBrowserContext();
-    CreateVisitedLinkFile(context);
-    CreateVisitedLinkMaster(context);
+  std::unique_ptr<content::BrowserContext> CreateBrowserContext() override {
+    auto context = std::make_unique<content::TestBrowserContext>();
+    CreateVisitedLinkFile(context.get());
+    CreateVisitedLinkMaster(context.get());
     return context;
   }
 

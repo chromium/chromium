@@ -11,9 +11,11 @@ import java.io.Closeable;
 /**
  * Enables try-with-resources compatible StrictMode violation whitelisting.
  *
+ * Prefer "ignored" as the variable name to appease Android Studio's "Unused symbol" inspection.
+ *
  * Example:
  * <pre>
- *     try (StrictModeContext unused = StrictModeContext.allowDiskWrites()) {
+ *     try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
  *         return Example.doThingThatRequiresDiskWrites();
  *     }
  * </pre>
@@ -44,6 +46,17 @@ public final class StrictModeContext implements Closeable {
     public static StrictModeContext allowAllVmPolicies() {
         StrictMode.VmPolicy oldPolicy = StrictMode.getVmPolicy();
         StrictMode.setVmPolicy(StrictMode.VmPolicy.LAX);
+        return new StrictModeContext(oldPolicy);
+    }
+
+    /**
+     * Convenience method for disabling all thread-level StrictMode checks with try-with-resources.
+     * Includes everything listed here:
+     *     https://developer.android.com/reference/android/os/StrictMode.ThreadPolicy.Builder.html
+     */
+    public static StrictModeContext allowAllThreadPolicies() {
+        StrictMode.ThreadPolicy oldPolicy = StrictMode.getThreadPolicy();
+        StrictMode.setThreadPolicy(StrictMode.ThreadPolicy.LAX);
         return new StrictModeContext(oldPolicy);
     }
 

@@ -71,18 +71,15 @@ static FloatRect ToNormalizedRect(const FloatRect& absolute_rect,
   // We want to normalize by the max layout overflow size instead of only the
   // visible bounding box.  Quads and their enclosing bounding boxes need to be
   // used in order to keep results transform-friendly.
-  FloatPoint scrolled_origin;
+  PhysicalRect overflow_rect = container->FlipForWritingMode(
+      LayoutRect(LayoutPoint(), container->MaxLayoutOverflow()));
 
   // For overflow:scroll we need to get where the actual origin is independently
   // of the scroll.
   if (container->HasOverflowClip())
-    scrolled_origin = -FloatPoint(container->ScrolledContentOffset());
+    overflow_rect.Move(-PhysicalOffset(container->ScrolledContentOffset()));
 
-  FloatRect overflow_rect(scrolled_origin,
-                          FloatSize(container->MaxLayoutOverflow()));
-  FloatRect container_rect =
-      FloatRect(container->LocalToAbsoluteQuad(FloatQuad(overflow_rect))
-                    .EnclosingBoundingBox());
+  FloatRect container_rect(container->LocalToAbsoluteRect(overflow_rect));
 
   if (container_rect.IsEmpty())
     return FloatRect();

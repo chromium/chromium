@@ -12,8 +12,8 @@
 #include "chrome/browser/ui/autofill/autofill_popup_view_delegate.h"
 #include "chrome/browser/ui/autofill/popup_constants.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "components/autofill/core/browser/popup_item_ids.h"
-#include "components/autofill/core/browser/suggestion.h"
+#include "components/autofill/core/browser/ui/popup_item_ids.h"
+#include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/grit/components_scaled_resources.h"
 #include "content/public/browser/web_contents.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -56,7 +56,6 @@ class TestAutofillPopupViewDelegate : public AutofillPopupViewDelegate {
     return suggestions;
   }
 #if !defined(OS_ANDROID)
-  void SetTypesetter(gfx::Typesetter typesetter) override {}
   int GetElidedValueWidthForRow(int row) override { return 0; }
   int GetElidedLabelWidthForRow(int row) override { return 0; }
 #endif
@@ -71,9 +70,9 @@ class AutofillPopupLayoutModelTest : public ChromeRenderViewHostTestHarness {
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
 
-    delegate_.reset(new TestAutofillPopupViewDelegate(web_contents()));
-    layout_model_.reset(new AutofillPopupLayoutModel(
-        delegate_.get(), false /* is_credit_card_field */));
+    delegate_ = std::make_unique<TestAutofillPopupViewDelegate>(web_contents());
+    layout_model_ = std::make_unique<AutofillPopupLayoutModel>(
+        delegate_.get(), false /* is_credit_card_field */);
   }
 
   AutofillPopupLayoutModel* layout_model() { return layout_model_.get(); }

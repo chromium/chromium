@@ -109,7 +109,7 @@ void FrameSwapMessageQueue::DidActivate(int source_frame_number) {
 
 void FrameSwapMessageQueue::DidSwap(int source_frame_number) {}
 
-void FrameSwapMessageQueue::DidNotSwap(
+cc::SwapPromise::DidNotSwapAction FrameSwapMessageQueue::DidNotSwap(
     int source_frame_number,
     cc::SwapPromise::DidNotSwapReason reason,
     std::vector<std::unique_ptr<IPC::Message>>* messages) {
@@ -119,14 +119,15 @@ void FrameSwapMessageQueue::DidNotSwap(
     case cc::SwapPromise::COMMIT_NO_UPDATE:
       DrainMessages(messages);
       visual_state_queue_->DrainMessages(source_frame_number, messages);
-      break;
+      return cc::SwapPromise::DidNotSwapAction::BREAK_PROMISE;
     case cc::SwapPromise::COMMIT_FAILS:
+      return cc::SwapPromise::DidNotSwapAction::KEEP_ACTIVE;
     case cc::SwapPromise::ACTIVATION_FAILS:
-      // Do not queue any responses here. If ACTIVATION_FAILS or
-      // COMMIT_FAILS the renderer is shutting down, which will result
+      // Do not queue any responses or return KEEP_ALIVE here. If
+      // ACTIVATION_FAILS the renderer is shutting down, which will result
       // in the RenderFrameHostImpl destructor firing the remaining
       // response callbacks itself.
-      break;
+      return cc::SwapPromise::DidNotSwapAction::BREAK_PROMISE;
   }
 }
 

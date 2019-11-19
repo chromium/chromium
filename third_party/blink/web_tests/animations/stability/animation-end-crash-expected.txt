@@ -1,1 +1,0 @@
-This tests waiting for a composited animation to end. It passes if it does not crash.

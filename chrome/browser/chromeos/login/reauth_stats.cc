@@ -16,6 +16,7 @@ void RecordReauthReason(const AccountId& account_id, ReauthReason reason) {
   if (!user_manager::known_user::FindReauthReason(account_id, &old_reason) ||
       (static_cast<ReauthReason>(old_reason) == ReauthReason::NONE &&
        reason != ReauthReason::NONE)) {
+    VLOG(1) << "Reauth reason updated: " << reason;
     user_manager::known_user::UpdateReauthReason(account_id,
                                                  static_cast<int>(reason));
   }

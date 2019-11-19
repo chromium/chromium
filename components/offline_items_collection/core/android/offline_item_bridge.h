@@ -10,6 +10,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "components/offline_items_collection/core/offline_item.h"
+#include "components/offline_items_collection/core/update_delta.h"
 
 namespace offline_items_collection {
 namespace android {
@@ -27,6 +28,11 @@ class OfflineItemBridge {
   static base::android::ScopedJavaLocalRef<jobject> CreateOfflineItemList(
       JNIEnv* env,
       const std::vector<OfflineItem>& items);
+
+  // Creates a Java UpdateDelta from |update_delta|.
+  static base::android::ScopedJavaLocalRef<jobject> CreateUpdateDelta(
+      JNIEnv* env,
+      const base::Optional<UpdateDelta>& update_delta);
 
  private:
   OfflineItemBridge();

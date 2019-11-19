@@ -107,13 +107,12 @@ KioskAppsHandler::KioskAppsHandler(OwnerSettingsServiceChromeOS* service)
       initialized_(false),
       is_kiosk_enabled_(false),
       is_auto_launch_enabled_(false),
-      owner_settings_service_(service),
-      weak_ptr_factory_(this) {}
+      owner_settings_service_(service) {}
 
 KioskAppsHandler::~KioskAppsHandler() {
-  // TODO(scottchen): This is needed because OnJavascriptDisallowed only called
+  // TODO(tommycli): This is needed because OnJavascriptDisallowed only called
   // with refresh or off-page navigation, otherwise DCHECK triggered when
-  // exiting. Ask tommycli for more information.
+  // exiting.
   kiosk_app_manager_->RemoveObserver(this);
 }
 
@@ -225,7 +224,7 @@ KioskAppsHandler::GetSettingsDictionary() {
   settings->SetBoolean("hasAutoLaunchApp",
                        !kiosk_app_manager_->GetAutoLaunchApp().empty());
 
-  KioskAppManager::Apps apps;
+  KioskAppManager::AppList apps;
   kiosk_app_manager_->GetApps(&apps);
 
   std::unique_ptr<base::ListValue> apps_list(new base::ListValue);

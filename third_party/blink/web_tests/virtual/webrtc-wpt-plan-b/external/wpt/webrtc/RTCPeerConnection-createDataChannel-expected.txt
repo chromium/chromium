@@ -1,0 +1,47 @@
+This is a testharness.js-based test.
+PASS createDataChannel with no argument should throw TypeError
+PASS createDataChannel with closed connection should throw InvalidStateError
+FAIL createDataChannel attribute default values assert_equals: expected (string) "low" but got (undefined) undefined
+FAIL createDataChannel with provided parameters should initialize attributes to provided values assert_equals: expected (string) "high" but got (undefined) undefined
+PASS createDataChannel with label "foo" should succeed
+PASS createDataChannel with label null should succeed
+PASS createDataChannel with label undefined should succeed
+PASS createDataChannel with label lone surrogate should succeed
+PASS createDataChannel with ordered false should succeed
+PASS createDataChannel with ordered null/undefined should succeed
+PASS createDataChannel with maxPacketLifeTime 0 should succeed
+PASS createDataChannel with maxRetransmits 0 should succeed
+PASS createDataChannel with both maxPacketLifeTime and maxRetransmits undefined should succeed
+PASS createDataChannel with both maxPacketLifeTime and maxRetransmits should throw TypeError
+PASS createDataChannel with protocol "foo" should succeed
+PASS createDataChannel with protocol null should succeed
+PASS createDataChannel with protocol undefined should succeed
+PASS createDataChannel with protocol lone surrogate should succeed
+PASS createDataChannel with id 0 should succeed
+PASS createDataChannel with id 1 should succeed
+FAIL createDataChannel with id 65534 should succeed Failed to execute 'createDataChannel' on 'RTCPeerConnection': RTCDataChannel creation failed
+PASS createDataChannel with id -1 should throw TypeError
+PASS createDataChannel with id 65535 should throw TypeError
+PASS createDataChannel with id 65536 should throw TypeError
+FAIL createDataChannel with priority "high" should succeed assert_equals: expected (string) "high" but got (undefined) undefined
+FAIL createDataChannel with invalid priority should throw TypeError assert_throws: function "() => pc.createDataChannel('', { priority: 'invalid' })" did not throw
+PASS createDataChannel with too long label should throw TypeError
+PASS createDataChannel with too long label (2 byte unicode) should throw TypeError
+PASS createDataChannel with same label used twice should not throw
+PASS createDataChannel with negotiated true and id should succeed
+PASS createDataChannel with too long protocol should throw TypeError
+PASS createDataChannel with too long protocol (2 byte unicode) should throw TypeError
+PASS createDataChannel with maximum length label and protocol should succeed
+PASS createDataChannel with negotiated false should succeed
+PASS createDataChannel with negotiated false and id 42 should ignore the id
+PASS createDataChannel with negotiated true and id not defined should throw TypeError
+PASS Channels created (after setRemoteDescription) should have id assigned
+PASS Reusing a data channel id that is in use should throw OperationError
+PASS Reusing a data channel id that is in use (after setRemoteDescription) should throw OperationError
+PASS Reusing a data channel id that is in use (after setRemoteDescription, negotiated via DCEP) should throw OperationError
+PASS New data channel should be in the connecting state after creation (after connection establishment)
+PASS addTrack, then createDataChannel, should negotiate properly
+PASS addTrack, then createDataChannel, should negotiate properly when max-bundle is used
+FAIL Stopping the bundle-tag when there is a DataChannel in the bundle should kill the DataChannel promise_test: Unhandled rejection with value: object "TypeError: Cannot read property 'stop' of undefined"
+Harness: the test ran to completion.
+

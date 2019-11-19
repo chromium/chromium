@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/core/layout/hit_test_cache.h"
 
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/renderer/platform/histogram.h"
+#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 
 namespace blink {
 

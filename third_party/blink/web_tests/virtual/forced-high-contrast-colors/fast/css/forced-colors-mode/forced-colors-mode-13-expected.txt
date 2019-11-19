@@ -1,0 +1,2 @@
+PASS - "color" property for "target" element at 0.5s saw something close to: 128,0,0
+

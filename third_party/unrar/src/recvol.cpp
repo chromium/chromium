@@ -3,7 +3,7 @@
 #include "recvol3.cpp"
 #include "recvol5.cpp"
 
-namespace third_party_unrar {
+
 
 bool RecVolumesRestore(RAROptions *Cmd,const wchar *Name,bool Silent)
 {
@@ -109,5 +109,3 @@ void RecVolumesTest(RAROptions *Cmd,Archive *Arc,const wchar *Name)
     RecVol.Test(Cmd,Name);
   }
 }
-
-}  // namespace third_party_unrar

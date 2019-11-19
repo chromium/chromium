@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_PAGE_LOAD_METRICS_PAGE_LOAD_METRICS_INITIALIZE_H_
 #define CHROME_BROWSER_PAGE_LOAD_METRICS_PAGE_LOAD_METRICS_INITIALIZE_H_
 
-#include "chrome/browser/page_load_metrics/metrics_web_contents_observer.h"
-
 namespace content {
 class WebContents;
 }

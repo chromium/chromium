@@ -6,17 +6,34 @@
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_APP_DOWNLOADING_SCREEN_HANDLER_H_
 
 #include "base/macros.h"
-#include "chrome/browser/chromeos/login/screens/app_downloading_screen_view.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 
 namespace chromeos {
 
 class AppDownloadingScreen;
 
+class AppDownloadingScreenView {
+ public:
+  constexpr static StaticOobeScreenId kScreenId{"app-downloading"};
+
+  virtual ~AppDownloadingScreenView() = default;
+
+  // Sets screen this view belongs to.
+  virtual void Bind(AppDownloadingScreen* screen) = 0;
+
+  // Shows the contents of the screen.
+  virtual void Show() = 0;
+
+  // Hides the contents of the screen.
+  virtual void Hide() = 0;
+};
+
 // The sole implementation of the AppDownloadingScreenView, using WebUI.
 class AppDownloadingScreenHandler : public BaseScreenHandler,
                                     public AppDownloadingScreenView {
  public:
+  using TView = AppDownloadingScreenView;
+
   explicit AppDownloadingScreenHandler(JSCallsContainer* js_calls_container);
   ~AppDownloadingScreenHandler() override;
 

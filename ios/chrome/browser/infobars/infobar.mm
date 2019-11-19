@@ -28,11 +28,6 @@ InfoBarIOS::~InfoBarIOS() {
   controller_ = nil;
 }
 
-UIView* InfoBarIOS::View() {
-  DCHECK(controller_);
-  return [controller_ view];
-}
-
 id<InfobarUIDelegate> InfoBarIOS::InfobarUIDelegate() {
   DCHECK(controller_);
   return controller_;

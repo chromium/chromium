@@ -1,0 +1,215 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+
+js_type_check("closure_compile") {
+  deps = [
+    ":actions",
+    ":api_listener",
+    ":app_item",
+    ":app_management_page",
+    ":app_permission_view",
+    ":arc_permission_view",
+    ":browser_proxy",
+    ":chrome_app_permission_view",
+    ":constants",
+    ":dom_switch",
+    ":fake_page_handler",
+    ":main_view",
+    ":permission_item",
+    ":pin_to_shelf_item",
+    ":pwa_permission_view",
+    ":reducers",
+    ":store",
+    ":store_client",
+    ":toggle_row",
+    ":types",
+    ":uninstall_button",
+    ":util",
+  ]
+}
+
+js_library("actions") {
+  deps = [
+    "//chrome/browser/ui/webui/app_management:mojo_bindings_js_library_for_compile",
+    "//ui/webui/resources/js:cr",
+  ]
+}
+
+js_library("api_listener") {
+  deps = [
+    ":actions",
+    ":store",
+    ":util",
+    "//ui/webui/resources/js:cr",
+  ]
+}
+
+js_library("app_item") {
+  deps = [
+    ":actions",
+    ":store_client",
+    "//ui/webui/resources/js:load_time_data",
+  ]
+}
+
+js_library("app_management_page") {
+  deps = [
+    ":actions",
+    ":browser_proxy",
+    ":main_view",
+    ":store",
+    ":store_client",
+  ]
+}
+
+js_library("app_permission_view") {
+  deps = [
+    ":arc_permission_view",
+    ":chrome_app_permission_view",
+    ":dom_switch",
+    ":pwa_permission_view",
+    ":store_client",
+    "../../..:route",
+  ]
+}
+
+js_library("arc_permission_view") {
+  deps = [
+    ":constants",
+    ":fake_page_handler",
+    ":permission_item",
+    ":pin_to_shelf_item",
+    ":store_client",
+  ]
+}
+
+js_library("browser_proxy") {
+  deps = [
+    ":fake_page_handler",
+    "//chrome/browser/ui/webui/app_management:mojo_bindings_js_library_for_compile",
+    "//ui/webui/resources/js:cr",
+  ]
+}
+
+js_library("chrome_app_permission_view") {
+  deps = [
+    ":fake_page_handler",
+    ":pin_to_shelf_item",
+    ":store_client",
+  ]
+}
+
+js_library("constants") {
+}
+
+js_library("dom_switch") {
+}
+
+js_library("fake_page_handler") {
+  deps = [
+    ":constants",
+    ":types",
+    ":util",
+    "//chrome/browser/ui/webui/app_management:mojo_bindings_js_library_for_compile",
+    "//ui/webui/resources/js:cr",
+  ]
+}
+
+js_library("main_view") {
+  deps = [
+    ":app_item",
+    ":browser_proxy",
+    ":constants",
+    ":store_client",
+    "//ui/webui/resources/js:load_time_data",
+  ]
+}
+
+js_library("permission_item") {
+  deps = [
+    ":fake_page_handler",
+    ":store_client",
+    ":toggle_row",
+    ":util",
+  ]
+}
+
+js_library("pin_to_shelf_item") {
+  deps = [
+    ":browser_proxy",
+    ":toggle_row",
+    ":types",
+  ]
+}
+
+js_library("pwa_permission_view") {
+  deps = [
+    ":constants",
+    ":fake_page_handler",
+    ":permission_item",
+    ":pin_to_shelf_item",
+    ":store_client",
+  ]
+}
+
+js_library("reducers") {
+  deps = [
+    ":types",
+    ":util",
+    "//ui/webui/resources/js:cr",
+  ]
+}
+
+js_library("store") {
+  deps = [
+    ":reducers",
+    ":util",
+    "//ui/webui/resources/js:cr",
+    "//ui/webui/resources/js/cr/ui:store",
+  ]
+}
+
+js_library("store_client") {
+  deps = [
+    ":store",
+    ":types",
+    "//ui/webui/resources/js:cr",
+    "//ui/webui/resources/js/cr/ui:store",
+    "//ui/webui/resources/js/cr/ui:store_client",
+  ]
+}
+
+js_library("toggle_row") {
+  deps = [
+    ":types",
+    "//ui/webui/resources/cr_elements/cr_toggle:cr_toggle",
+    "//ui/webui/resources/cr_elements/policy:cr_policy_indicator",
+  ]
+}
+
+js_library("types") {
+  deps = [
+    "//chrome/browser/ui/webui/app_management:mojo_bindings_js_library_for_compile",
+  ]
+}
+
+js_library("uninstall_button") {
+  deps = [
+    ":store_client",
+    ":util",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button",
+    "//ui/webui/resources/cr_elements/policy:cr_tooltip_icon",
+    "//ui/webui/resources/js:i18n_behavior",
+  ]
+}
+
+js_library("util") {
+  deps = [
+    ":constants",
+    ":types",
+    "//ui/webui/resources/js:cr",
+  ]
+}

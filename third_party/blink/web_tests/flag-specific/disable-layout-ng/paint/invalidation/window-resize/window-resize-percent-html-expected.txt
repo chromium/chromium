@@ -1,0 +1,79 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [600, 250],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "LayoutBlockFlow DIV",
+          "rect": [0, 0, 300, 125],
+          "reason": "geometry"
+        }
+      ]
+    }
+  ]
+}
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [400, 250],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "LayoutBlockFlow DIV",
+          "rect": [0, 0, 300, 63],
+          "reason": "geometry"
+        }
+      ]
+    }
+  ]
+}
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [400, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "Scrolling background of LayoutView #document",
+          "rect": [0, 250, 400, 350],
+          "reason": "incremental"
+        },
+        {
+          "object": "LayoutBlockFlow DIV",
+          "rect": [0, 0, 200, 150],
+          "reason": "geometry"
+        }
+      ]
+    }
+  ]
+}
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "Scrolling background of LayoutView #document",
+          "rect": [400, 0, 400, 600],
+          "reason": "incremental"
+        },
+        {
+          "object": "LayoutBlockFlow DIV",
+          "rect": [200, 0, 200, 150],
+          "reason": "incremental"
+        }
+      ]
+    }
+  ]
+}
+

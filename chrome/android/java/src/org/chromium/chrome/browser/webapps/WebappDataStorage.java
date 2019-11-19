@@ -7,21 +7,21 @@ package org.chromium.chrome.browser.webapps;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.support.annotation.Nullable;
-import android.text.TextUtils;
 import android.text.format.DateUtils;
+
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
-import org.chromium.base.VisibleForTesting;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
-import org.chromium.blink_public.platform.WebDisplayMode;
 import org.chromium.chrome.browser.ShortcutHelper;
 import org.chromium.chrome.browser.ShortcutSource;
-import org.chromium.chrome.browser.util.IntentUtils;
 import org.chromium.content_public.common.ScreenOrientationValues;
 import org.chromium.webapk.lib.common.WebApkConstants;
 
@@ -40,7 +40,6 @@ public class WebappDataStorage {
     static final String KEY_LAST_USED = "last_used";
     static final String KEY_HAS_BEEN_LAUNCHED = "has_been_launched";
     static final String KEY_URL = "url";
-    static final String KEY_SPLASH_SCREEN_URL = "splash_screen_url";
     static final String KEY_SCOPE = "scope";
     static final String KEY_ICON = "icon";
     static final String KEY_NAME = "name";
@@ -50,11 +49,15 @@ public class WebappDataStorage {
     static final String KEY_THEME_COLOR = "theme_color";
     static final String KEY_BACKGROUND_COLOR = "background_color";
     static final String KEY_SOURCE = "source";
-    static final String KEY_ACTION = "action";
     static final String KEY_IS_ICON_GENERATED = "is_icon_generated";
     static final String KEY_IS_ICON_ADAPTIVE = "is_icon_adaptive";
+    static final String KEY_LAUNCH_COUNT = "launch_count";
     static final String KEY_VERSION = "version";
     static final String KEY_WEBAPK_PACKAGE_NAME = "webapk_package_name";
+    static final String KEY_WEBAPK_INSTALL_TIMESTAMP = "webapk_install_timestamp";
+    static final String KEY_WEBAPK_UNINSTALL_TIMESTAMP = "webapk_uninstall_timestamp";
+    static final String KEY_WEBAPK_MANIFEST_URL = "webapk_manifest_url";
+    static final String KEY_WEBAPK_VERSION_CODE = "webapk_version_code";
 
     // The completion time of the last check for whether the WebAPK's Web Manifest was updated.
     static final String KEY_LAST_CHECK_WEB_MANIFEST_UPDATE_TIME =
@@ -78,16 +81,21 @@ public class WebappDataStorage {
     // The path where serialized update data is written before uploading to the WebAPK server.
     static final String KEY_PENDING_UPDATE_FILE_PATH = "pending_update_file_path";
 
+    // Whether to force an update.
+    static final String KEY_SHOULD_FORCE_UPDATE = "should_force_update";
+
+    // Whether an update has been scheduled.
+    static final String KEY_UPDATE_SCHEDULED = "update_scheduled";
+
+    // Status indicating a WebAPK is not updatable through chrome://webapks.
+    public static final String NOT_UPDATABLE = "Not updatable";
+
     // Number of milliseconds between checks for whether the WebAPK's Web Manifest has changed.
-    public static final long UPDATE_INTERVAL = DateUtils.DAY_IN_MILLIS * 3;
+    public static final long UPDATE_INTERVAL = DateUtils.DAY_IN_MILLIS;
 
     // Number of milliseconds between checks of updates for a WebAPK that is expected to check
     // updates less frequently. crbug.com/680128.
     public static final long RELAXED_UPDATE_INTERVAL = DateUtils.DAY_IN_MILLIS * 30;
-
-    // Number of milliseconds to wait before re-requesting an updated WebAPK from the WebAPK
-    // server if the previous update attempt failed.
-    public static final long RETRY_UPDATE_DURATION = DateUtils.DAY_IN_MILLIS;
 
     // The default shell Apk version of WebAPKs.
     static final int DEFAULT_SHELL_APK_VERSION = 1;
@@ -209,29 +217,26 @@ public class WebappDataStorage {
 
         // Use "standalone" as the default display mode as this was the original assumed default for
         // all web apps.
-        return ShortcutHelper.createWebappShortcutIntent(mId,
-                mPreferences.getString(KEY_ACTION, null), mPreferences.getString(KEY_URL, null),
+        return ShortcutHelper.createWebappShortcutIntent(mId, mPreferences.getString(KEY_URL, null),
                 mPreferences.getString(KEY_SCOPE, null), mPreferences.getString(KEY_NAME, null),
                 mPreferences.getString(KEY_SHORT_NAME, null),
-                mPreferences.getString(KEY_ICON, null),
-                version,
+                mPreferences.getString(KEY_ICON, null), version,
                 mPreferences.getInt(KEY_DISPLAY_MODE, WebDisplayMode.STANDALONE),
                 mPreferences.getInt(KEY_ORIENTATION, ScreenOrientationValues.DEFAULT),
                 mPreferences.getLong(
                         KEY_THEME_COLOR, ShortcutHelper.MANIFEST_COLOR_INVALID_OR_MISSING),
                 mPreferences.getLong(
                         KEY_BACKGROUND_COLOR, ShortcutHelper.MANIFEST_COLOR_INVALID_OR_MISSING),
-                mPreferences.getString(KEY_SPLASH_SCREEN_URL, ""),
                 mPreferences.getBoolean(KEY_IS_ICON_GENERATED, false),
                 mPreferences.getBoolean(KEY_IS_ICON_ADAPTIVE, false));
     }
 
     /**
-     * Updates the data stored in this object to match that in the supplied intent.
-     * @param shortcutIntent The intent to pull web app data from.
+     * Updates the data stored in this object to match that in the supplied {@link WebappInfo}.
+     * @param info The WebappInfo to pull web app data from.
      */
-    public void updateFromShortcutIntent(Intent shortcutIntent) {
-        if (shortcutIntent == null) return;
+    public void updateFromWebappInfo(WebappInfo info) {
+        if (info == null) return;
 
         SharedPreferences.Editor editor = mPreferences.edit();
         boolean updated = false;
@@ -240,18 +245,13 @@ public class WebappDataStorage {
         // they are present, and update if necessary.
         String url = mPreferences.getString(KEY_URL, URL_INVALID);
         if (url.equals(URL_INVALID)) {
-            url = IntentUtils.safeGetStringExtra(shortcutIntent, ShortcutHelper.EXTRA_URL);
+            url = info.url();
             editor.putString(KEY_URL, url);
             updated = true;
         }
 
         if (mPreferences.getString(KEY_SCOPE, URL_INVALID).equals(URL_INVALID)) {
-            String scope = IntentUtils.safeGetStringExtra(
-                    shortcutIntent, ShortcutHelper.EXTRA_SCOPE);
-            if (scope == null) {
-                scope = ShortcutHelper.getScopeFromUrl(url);
-            }
-            editor.putString(KEY_SCOPE, scope);
+            editor.putString(KEY_SCOPE, info.scopeUrl());
             updated = true;
         }
 
@@ -261,44 +261,26 @@ public class WebappDataStorage {
         // cleared together.
         if (mPreferences.getInt(KEY_VERSION, VERSION_INVALID)
                 != ShortcutHelper.WEBAPP_SHORTCUT_VERSION) {
-            editor.putString(KEY_SPLASH_SCREEN_URL,
-                    IntentUtils.safeGetStringExtra(
-                            shortcutIntent, ShortcutHelper.EXTRA_SPLASH_SCREEN_URL));
-            editor.putString(KEY_NAME, IntentUtils.safeGetStringExtra(
-                        shortcutIntent, ShortcutHelper.EXTRA_NAME));
-            editor.putString(KEY_SHORT_NAME, IntentUtils.safeGetStringExtra(
-                        shortcutIntent, ShortcutHelper.EXTRA_SHORT_NAME));
-            editor.putString(KEY_ICON, IntentUtils.safeGetStringExtra(
-                        shortcutIntent, ShortcutHelper.EXTRA_ICON));
             editor.putInt(KEY_VERSION, ShortcutHelper.WEBAPP_SHORTCUT_VERSION);
 
-            // "Standalone" was the original assumed default for all web apps.
-            editor.putInt(KEY_DISPLAY_MODE,
-                    IntentUtils.safeGetIntExtra(shortcutIntent, ShortcutHelper.EXTRA_DISPLAY_MODE,
-                            WebDisplayMode.STANDALONE));
-            editor.putInt(KEY_ORIENTATION, IntentUtils.safeGetIntExtra(
-                        shortcutIntent, ShortcutHelper.EXTRA_ORIENTATION,
-                        ScreenOrientationValues.DEFAULT));
-            editor.putLong(KEY_THEME_COLOR, IntentUtils.safeGetLongExtra(
-                        shortcutIntent, ShortcutHelper.EXTRA_THEME_COLOR,
-                        ShortcutHelper.MANIFEST_COLOR_INVALID_OR_MISSING));
-            editor.putLong(KEY_BACKGROUND_COLOR, IntentUtils.safeGetLongExtra(
-                        shortcutIntent, ShortcutHelper.EXTRA_BACKGROUND_COLOR,
-                        ShortcutHelper.MANIFEST_COLOR_INVALID_OR_MISSING));
-            editor.putBoolean(KEY_IS_ICON_GENERATED, IntentUtils.safeGetBooleanExtra(
-                        shortcutIntent, ShortcutHelper.EXTRA_IS_ICON_GENERATED, false));
-            editor.putBoolean(KEY_IS_ICON_ADAPTIVE, IntentUtils.safeGetBooleanExtra(
-                        shortcutIntent, ShortcutHelper.EXTRA_IS_ICON_ADAPTIVE, false));
-            editor.putString(KEY_ACTION, shortcutIntent.getAction());
-
-            String webApkPackageName = IntentUtils.safeGetStringExtra(
-                    shortcutIntent, WebApkConstants.EXTRA_WEBAPK_PACKAGE_NAME);
-            editor.putString(KEY_WEBAPK_PACKAGE_NAME, webApkPackageName);
-
-            if (TextUtils.isEmpty(webApkPackageName)) {
-                editor.putInt(KEY_SOURCE,
-                        IntentUtils.safeGetIntExtra(shortcutIntent, ShortcutHelper.EXTRA_SOURCE,
-                                ShortcutSource.UNKNOWN));
+            if (info.isForWebApk()) {
+                WebApkInfo webApkInfo = (WebApkInfo) info;
+                editor.putString(KEY_WEBAPK_PACKAGE_NAME, webApkInfo.webApkPackageName());
+                editor.putString(KEY_WEBAPK_MANIFEST_URL, webApkInfo.manifestUrl());
+                editor.putInt(KEY_WEBAPK_VERSION_CODE, webApkInfo.webApkVersionCode());
+                editor.putLong(KEY_WEBAPK_INSTALL_TIMESTAMP,
+                        fetchWebApkInstallTimestamp(webApkInfo.webApkPackageName()));
+            } else {
+                editor.putString(KEY_NAME, info.name());
+                editor.putString(KEY_SHORT_NAME, info.shortName());
+                editor.putString(KEY_ICON, info.icon().encoded());
+                editor.putInt(KEY_DISPLAY_MODE, info.displayMode());
+                editor.putInt(KEY_ORIENTATION, info.orientation());
+                editor.putLong(KEY_THEME_COLOR, info.toolbarColor());
+                editor.putLong(KEY_BACKGROUND_COLOR, info.backgroundColor());
+                editor.putBoolean(KEY_IS_ICON_GENERATED, info.isIconGenerated());
+                editor.putBoolean(KEY_IS_ICON_ADAPTIVE, info.isIconAdaptive());
+                editor.putInt(KEY_SOURCE, info.source());
             }
             updated = true;
         }
@@ -343,7 +325,11 @@ public class WebappDataStorage {
         editor.remove(KEY_DID_LAST_UPDATE_REQUEST_SUCCEED);
         editor.remove(KEY_RELAX_UPDATES);
         editor.remove(KEY_SHOW_DISCLOSURE);
+        editor.remove(KEY_LAUNCH_COUNT);
+        editor.remove(KEY_WEBAPK_UNINSTALL_TIMESTAMP);
         editor.apply();
+
+        // Don't clear fields which can be fetched from WebAPK manifest.
     }
 
     /**
@@ -390,6 +376,15 @@ public class WebappDataStorage {
     @VisibleForTesting
     void updateSplashScreenImageForTests(String splashScreenImage) {
         mPreferences.edit().putString(KEY_SPLASH_ICON, splashScreenImage).apply();
+    }
+
+    /**
+     * Update the package name of the WebAPK. Used for testing.
+     * @param webApkPackageName The package name of the WebAPK.
+     */
+    @VisibleForTesting
+    void updateWebApkPackageNameForTests(String webApkPackageName) {
+        mPreferences.edit().putString(KEY_WEBAPK_PACKAGE_NAME, webApkPackageName).apply();
     }
 
     /**
@@ -447,7 +442,7 @@ public class WebappDataStorage {
      * Returns the time, in milliseconds, that the last WebAPK update request completed
      * (successfully or unsuccessfully). This time needs to be set when the WebAPK is registered.
      */
-    long getLastWebApkUpdateRequestCompletionTimeMs() {
+    public long getLastWebApkUpdateRequestCompletionTimeMs() {
         return mPreferences.getLong(KEY_LAST_UPDATE_REQUEST_COMPLETE_TIME, TIMESTAMP_INVALID);
     }
 
@@ -523,6 +518,43 @@ public class WebappDataStorage {
         return mPreferences.getBoolean(KEY_RELAX_UPDATES, false);
     }
 
+    /** Sets whether an update has been scheduled. */
+    public void setUpdateScheduled(boolean isUpdateScheduled) {
+        mPreferences.edit().putBoolean(KEY_UPDATE_SCHEDULED, isUpdateScheduled).apply();
+    }
+
+    /** Gets whether an update has been scheduled. */
+    public boolean isUpdateScheduled() {
+        return mPreferences.getBoolean(KEY_UPDATE_SCHEDULED, false);
+    }
+
+    /** Whether a WebAPK is unbound. */
+    private boolean isUnboundWebApk() {
+        String webApkPackageName = getWebApkPackageName();
+        return (webApkPackageName != null
+                && !webApkPackageName.startsWith(WebApkConstants.WEBAPK_PACKAGE_PREFIX));
+    }
+
+    /** Sets whether an update should be forced. */
+    public void setShouldForceUpdate(boolean forceUpdate) {
+        if (!isUnboundWebApk()) {
+            mPreferences.edit().putBoolean(KEY_SHOULD_FORCE_UPDATE, forceUpdate).apply();
+        }
+    }
+
+    /** Whether to force an update. */
+    public boolean shouldForceUpdate() {
+        return mPreferences.getBoolean(KEY_SHOULD_FORCE_UPDATE, false);
+    }
+
+    /** Returns the update status. */
+    public String getUpdateStatus() {
+        if (isUnboundWebApk()) return NOT_UPDATABLE;
+        if (isUpdateScheduled()) return "Scheduled";
+        if (shouldForceUpdate()) return "Pending";
+        return didPreviousUpdateSucceed() ? "Succeeded" : "Failed";
+    }
+
     /**
      * Returns file where WebAPK update data should be stored and stores the file name in
      * SharedPreferences.
@@ -565,20 +597,83 @@ public class WebappDataStorage {
 
     /** Returns whether we should check for update. */
     boolean shouldCheckForUpdate() {
+        if (shouldForceUpdate()) return true;
         long checkUpdatesInterval =
                 shouldRelaxUpdates() ? RELAXED_UPDATE_INTERVAL : UPDATE_INTERVAL;
         long now = sClock.currentTimeMillis();
         long sinceLastCheckDurationMs = now - getLastCheckForWebManifestUpdateTimeMs();
-        if (sinceLastCheckDurationMs >= checkUpdatesInterval) return true;
-
-        long sinceLastUpdateRequestDurationMs = now - getLastWebApkUpdateRequestCompletionTimeMs();
-        return sinceLastUpdateRequestDurationMs >= RETRY_UPDATE_DURATION
-                && !didPreviousUpdateSucceed();
+        return sinceLastCheckDurationMs >= checkUpdatesInterval;
     }
 
     protected WebappDataStorage(String webappId) {
         mId = webappId;
         mPreferences = ContextUtils.getApplicationContext().getSharedPreferences(
                 SHARED_PREFS_FILE_PREFIX + webappId, Context.MODE_PRIVATE);
+    }
+
+    /**
+     * Fetches the timestamp that the WebAPK was installed from the PackageManager.
+     */
+    private long fetchWebApkInstallTimestamp(String webApkPackageName) {
+        try {
+            PackageManager packageManager =
+                    ContextUtils.getApplicationContext().getPackageManager();
+            PackageInfo packageInfo = packageManager.getPackageInfo(webApkPackageName, 0);
+            return packageInfo.firstInstallTime;
+        } catch (PackageManager.NameNotFoundException e) {
+        }
+        return 0;
+    }
+
+    /**
+     * Returns the timestamp when the WebAPK was installed.
+     */
+    public long getWebApkInstallTimestamp() {
+        return mPreferences.getLong(KEY_WEBAPK_INSTALL_TIMESTAMP, 0);
+    }
+
+    /**
+     * Sets the timestamp when the WebAPK was uninstalled to the current time.
+     */
+    public void setWebApkUninstallTimestamp() {
+        mPreferences.edit()
+                .putLong(KEY_WEBAPK_UNINSTALL_TIMESTAMP, sClock.currentTimeMillis())
+                .apply();
+    }
+
+    /**
+     * Returns the timestamp when the WebAPK was uninstalled.
+     */
+    public long getWebApkUninstallTimestamp() {
+        return mPreferences.getLong(KEY_WEBAPK_UNINSTALL_TIMESTAMP, 0);
+    }
+
+    /**
+     * Increments the number of times that the webapp was launched.
+     */
+    public void incrementLaunchCount() {
+        int launchCount = getLaunchCount();
+        mPreferences.edit().putInt(KEY_LAUNCH_COUNT, launchCount + 1).apply();
+    }
+
+    /**
+     * Returns the number of times that the webapp was launched.
+     */
+    public int getLaunchCount() {
+        return mPreferences.getInt(KEY_LAUNCH_COUNT, 0);
+    }
+
+    /**
+     * Returns cached Web Manifest URL.
+     */
+    public String getWebApkManifestUrl() {
+        return mPreferences.getString(KEY_WEBAPK_MANIFEST_URL, null);
+    }
+
+    /**
+     * Returns cached WebAPK version code.
+     */
+    public int getWebApkVersionCode() {
+        return mPreferences.getInt(KEY_WEBAPK_VERSION_CODE, 0);
     }
 }

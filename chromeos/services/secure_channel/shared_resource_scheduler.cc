@@ -57,7 +57,7 @@ SharedResourceScheduler::~SharedResourceScheduler() = default;
 void SharedResourceScheduler::ScheduleRequest(
     const DeviceIdPair& request,
     ConnectionPriority connection_priority) {
-  if (base::ContainsKey(request_to_priority_map_, request)) {
+  if (base::Contains(request_to_priority_map_, request)) {
     PA_LOG(ERROR) << "SharedResourceScheduler::ScheduleRequest(): Tried to "
                   << "schedule a request which was already scheduled. Request: "
                   << request << ", Priority: " << connection_priority;
@@ -71,7 +71,7 @@ void SharedResourceScheduler::ScheduleRequest(
 void SharedResourceScheduler::UpdateRequestPriority(
     const DeviceIdPair& request,
     ConnectionPriority connection_priority) {
-  if (!base::ContainsKey(request_to_priority_map_, request)) {
+  if (!base::Contains(request_to_priority_map_, request)) {
     PA_LOG(ERROR) << "SharedResourceScheduler::UpdateRequestPriority(): Tried "
                   << "to update priority for a request which was not "
                   << "scheduled. Request: " << request
@@ -100,7 +100,7 @@ void SharedResourceScheduler::UpdateRequestPriority(
 
 void SharedResourceScheduler::RemoveScheduledRequest(
     const DeviceIdPair& request) {
-  if (!base::ContainsKey(request_to_priority_map_, request)) {
+  if (!base::Contains(request_to_priority_map_, request)) {
     PA_LOG(ERROR) << "SharedResourceScheduler::RemoveScheduledRequest(): Tried "
                   << "to remove a scheduled request, but that request was not "
                   << "actually scheduled. Request: " << request;

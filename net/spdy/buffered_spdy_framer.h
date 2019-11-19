@@ -240,7 +240,7 @@ class NET_EXPORT_PRIVATE BufferedSpdyFramer
   http2::Http2DecoderAdapter deframer_;
   BufferedSpdyFramerVisitorInterface* visitor_;
 
-  int frames_received_;
+  int frames_received_ = 0;
 
   // Collection of fields from control frames that we need to
   // buffer up from the spdy framer.
@@ -248,16 +248,16 @@ class NET_EXPORT_PRIVATE BufferedSpdyFramer
     ControlFrameFields();
 
     spdy::SpdyFrameType type;
-    spdy::SpdyStreamId stream_id;
-    spdy::SpdyStreamId associated_stream_id;
-    spdy::SpdyStreamId promised_stream_id;
-    bool has_priority;
-    spdy::SpdyPriority priority;
-    int weight;
-    spdy::SpdyStreamId parent_stream_id;
-    bool exclusive;
-    bool fin;
-    bool unidirectional;
+    spdy::SpdyStreamId stream_id = 0U;
+    spdy::SpdyStreamId associated_stream_id = 0U;
+    spdy::SpdyStreamId promised_stream_id = 0U;
+    bool has_priority = false;
+    spdy::SpdyPriority priority = 0U;
+    int weight = 0;
+    spdy::SpdyStreamId parent_stream_id = 0U;
+    bool exclusive = false;
+    bool fin = false;
+    bool unidirectional = false;
     base::TimeTicks recv_first_byte_time;
   };
   std::unique_ptr<ControlFrameFields> control_frame_fields_;

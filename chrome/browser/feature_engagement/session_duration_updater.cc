@@ -4,13 +4,10 @@
 
 #include "chrome/browser/feature_engagement/session_duration_updater.h"
 
-#include "base/observer_list.h"
-#include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/values.h"
 #include "chrome/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
-#include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 
 namespace feature_engagement {
@@ -32,19 +29,19 @@ void SessionDurationUpdater::RegisterProfilePrefs(
   registry->RegisterDictionaryPref(prefs::kObservedSessionTime);
 }
 
-base::TimeDelta SessionDurationUpdater::GetCumulativeElapsedSessionTime() {
+base::TimeDelta SessionDurationUpdater::GetCumulativeElapsedSessionTime()
+    const {
   base::TimeDelta elapsed_time = GetRecordedObservedSessionTime();
   return current_session_timer_
              ? elapsed_time + current_session_timer_.get()->Elapsed()
              : elapsed_time;
 }
 
-base::TimeDelta SessionDurationUpdater::GetRecordedObservedSessionTime() {
+base::TimeDelta SessionDurationUpdater::GetRecordedObservedSessionTime() const {
   const base::DictionaryValue* dict =
       pref_service_->GetDictionary(prefs::kObservedSessionTime);
-  const base::Value* dict_value =
-      dict->FindKey(observed_session_time_dict_key_);
-  const double stored_value = dict_value ? dict_value->GetDouble() : 0L;
+  const double stored_value =
+      dict->FindDoubleKey(observed_session_time_dict_key_).value_or(0);
   return base::TimeDelta::FromSeconds(stored_value);
 }
 
@@ -85,15 +82,13 @@ void SessionDurationUpdater::OnSessionEnded(base::TimeDelta elapsed) {
     return;
   }
 
-  base::TimeDelta elapsed_session_time;
-
   const base::DictionaryValue* dict =
       pref_service_->GetDictionary(prefs::kObservedSessionTime);
-  const base::Value* dict_value =
-      dict->FindKey(observed_session_time_dict_key_);
-  const double stored_value = dict_value ? dict_value->GetDouble() : 0L;
+  const double stored_value =
+      dict->FindDoubleKey(observed_session_time_dict_key_).value_or(0);
 
-  elapsed_session_time += base::TimeDelta::FromSeconds(stored_value) + elapsed;
+  base::TimeDelta elapsed_session_time =
+      base::TimeDelta::FromSeconds(stored_value) + elapsed;
 
   DictionaryPrefUpdate update(pref_service_, prefs::kObservedSessionTime);
   update->SetKey(

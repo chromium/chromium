@@ -1,7 +1,7 @@
-<script src="../../resources/js-test.js"></script>
+<title>Tests :first-child rule under DocumentFragment</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
 <script>
-description('Tests :first-child rule under DocumentFragment.');
-
 var fragment = document.createDocumentFragment();
 var div = document.createElement('div');
 var a1 = document.createElement('a');
@@ -13,6 +13,7 @@ div.appendChild(a2);
 var fragmentSelected = fragment.querySelector('a:first-child');
 var elementSelected  = div.querySelector('a:first-child');
 
-shouldBe("fragmentSelected", "a1");
-shouldBe("elementSelected", "a2");
+assert_equals(fragmentSelected, a1);
+assert_equals(elementSelected, a2);
+done();
 </script>

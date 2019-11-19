@@ -1,4 +1,6 @@
 from __future__ import print_function
+import time
+import subprocess
 from .base import Browser, ExecutorBrowser, require_arg
 from ..webdriver_server import EdgeDriverServer
 from ..executors import executor_kwargs as base_executor_kwargs
@@ -16,6 +18,7 @@ __wptrunner__ = {"product": "edge",
                  "executor_kwargs": "executor_kwargs",
                  "env_extras": "env_extras",
                  "env_options": "env_options",
+                 "run_info_extras": "run_info_extras",
                  "timeout_multiplier": "get_timeout_multiplier"}
 
 
@@ -82,6 +85,21 @@ class EdgeBrowser(Browser):
 
     def stop(self, force=False):
         self.server.stop(force=force)
+        # Wait for Edge browser process to exit if driver process is found
+        edge_proc_name = 'MicrosoftEdge.exe'
+        for i in range(0,5):
+            procs = subprocess.check_output(['tasklist', '/fi', 'ImageName eq ' + edge_proc_name])
+            if 'MicrosoftWebDriver.exe' not in procs:
+                # Edge driver process already exited, don't wait for browser process to exit
+                break
+            elif edge_proc_name in procs:
+                time.sleep(0.5)
+            else:
+                break
+
+        if edge_proc_name in procs:
+            # close Edge process if it is still running
+            subprocess.call(['taskkill.exe', '/f', '/im', 'microsoftedge*'])
 
     def pid(self):
         return self.server.pid
@@ -90,10 +108,24 @@ class EdgeBrowser(Browser):
         # TODO(ato): This only indicates the server is alive,
         # and doesn't say anything about whether a browser session
         # is active.
-        return self.server.is_alive()
+        return self.server.is_alive
 
     def cleanup(self):
         self.stop()
 
     def executor_browser(self):
         return ExecutorBrowser, {"webdriver_url": self.server.url}
+
+
+def run_info_extras(**kwargs):
+    osReleaseCommand = r"(Get-ItemProperty 'HKLM:\Software\Microsoft\Windows NT\CurrentVersion').ReleaseId"
+    osBuildCommand = r"(Get-ItemProperty 'HKLM:\Software\Microsoft\Windows NT\CurrentVersion').BuildLabEx"
+    try:
+        os_release = subprocess.check_output(["powershell.exe", osReleaseCommand]).strip()
+        os_build = subprocess.check_output(["powershell.exe", osBuildCommand]).strip()
+    except (subprocess.CalledProcessError, OSError):
+        return {}
+
+    rv = {"os_build": os_build,
+          "os_release": os_release}
+    return rv

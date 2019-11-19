@@ -11,9 +11,7 @@ namespace blink {
 
 class CORE_EXPORT MediaValuesInitialViewport final : public MediaValuesDynamic {
  public:
-  static MediaValuesInitialViewport* Create(LocalFrame&);
-
-  MediaValuesInitialViewport(LocalFrame&);
+  explicit MediaValuesInitialViewport(LocalFrame&);
 
   double ViewportWidth() const override;
   double ViewportHeight() const override;

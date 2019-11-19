@@ -13,13 +13,14 @@
 #include "base/bind_helpers.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/debug/debugger.h"
 #include "base/environment.h"
 #include "base/file_version_info.h"
 #include "base/files/file_path.h"
 #include "base/logging_win.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/message_loop/message_loop.h"
+#include "base/message_loop/message_pump_type.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/path_service.h"
 #include "base/process/memory.h"
@@ -33,6 +34,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/syslog_logging.h"
+#include "base/task/single_thread_task_executor.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -113,7 +115,7 @@ LoggingDestination DetermineLoggingDestination(
     // Let --enable-logging=stderr force only stderr, particularly useful for
     // non-debug builds where otherwise you can't get logs to stderr at all.
     if (command_line.GetSwitchValueASCII(switches::kEnableLogging) == "stderr")
-      log_mode = LOG_TO_SYSTEM_DEBUG_LOG;
+      log_mode = LOG_TO_SYSTEM_DEBUG_LOG | LOG_TO_STDERR;
     else
       log_mode = kDefaultLoggingMode;
   } else {
@@ -180,7 +182,7 @@ void InitChromeWatcherLogging(const base::CommandLine& command_line,
 
   LoggingSettings settings;
   settings.logging_dest = logging_dest;
-  settings.log_file = log_path.value().c_str();
+  settings.log_file_path = log_path.value().c_str();
   settings.lock_log = log_locking_state;
   settings.delete_old = delete_old_log_file;
   bool success = InitLogging(settings);
@@ -317,7 +319,7 @@ bool BrowserMonitor::StartWatching(
     return false;
 
   if (!background_thread_.StartWithOptions(
-        base::Thread::Options(base::MessageLoop::TYPE_IO, 0))) {
+          base::Thread::Options(base::MessagePumpType::IO, 0))) {
     return false;
   }
 
@@ -415,9 +417,10 @@ extern "C" int WatcherMain(const base::char16* registry_path,
   base::win::RegisterInvalidParamHandler();
   base::win::SetupCRT(cmd_line);
 
-  // Run a UI message loop on the main thread.
+  // Run a UI task executor on the main thread.
   base::PlatformThread::SetName("WatcherMainThread");
-  base::MessageLoop msg_loop(base::MessageLoop::TYPE_UI);
+  base::SingleThreadTaskExecutor main_thread_task_executor(
+      base::MessagePumpType::UI);
 
   base::RunLoop run_loop;
   BrowserMonitor monitor(registry_path, &run_loop);

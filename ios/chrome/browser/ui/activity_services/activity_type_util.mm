@@ -91,6 +91,7 @@ const PrefixTypeAssociation prefixTypeAssociations[] = {
     {READ_LATER, @"com.google.chrome.readingListActivity", true},
     {REQUEST_DESKTOP_MOBILE_SITE,
      @"com.google.chrome.requestDesktopOrMobileSiteActivity", true},
+    {SEND_TAB_TO_SELF, @"com.google.com.sendTabToSelfActivity", true},
     {THIRD_PARTY_MAILBOX, @"com.orchestra.v2.", false},
     {THIRD_PARTY_FACEBOOK_MESSENGER, @"com.facebook.Messenger.", false},
     {THIRD_PARTY_WHATS_APP, @"net.whatsapp.WhatsApp.", false},
@@ -223,6 +224,10 @@ void RecordMetricForActivity(ActivityType type) {
     case APPEX_PASSWORD_MANAGEMENT:
       base::RecordAction(
           base::UserMetricsAction("MobileAppExFormFilledByPasswordManager"));
+      break;
+    case SEND_TAB_TO_SELF:
+      base::RecordAction(
+          base::UserMetricsAction("MobileShareMenuSendTabToSelf"));
       break;
   }
 }

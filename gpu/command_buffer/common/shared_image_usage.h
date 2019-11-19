@@ -20,12 +20,21 @@ enum SharedImageUsage : uint32_t {
   SHARED_IMAGE_USAGE_DISPLAY = 1 << 3,
   // Image will be used as a scanout buffer (overlay)
   SHARED_IMAGE_USAGE_SCANOUT = 1 << 4,
-  // Image will be used in OOP rasterization
-  // TODO(backer): Fold back into SHARED_IMAGE_USAGE_RASTER once RasterInterface
-  // can CPU raster (CopySubImage?) to SkImage.
+  // Image will be used in OOP rasterization. This flag is used on top of
+  // SHARED_IMAGE_USAGE_RASTER to indicate that the client will only use
+  // RasterInterface for OOP rasterization. TODO(backer): Eliminate once we can
+  // CPU raster to SkImage via RasterInterface.
   SHARED_IMAGE_USAGE_OOP_RASTERIZATION = 1 << 5,
   // Image will be used for RGB emulation in WebGL on Mac.
   SHARED_IMAGE_USAGE_RGB_EMULATION = 1 << 6,
+  // Image will be used by Dawn (for WebGPU)
+  SHARED_IMAGE_USAGE_WEBGPU = 1 << 7,
+  // Image will be used in a protected Vulkan context on Fuchsia.
+  SHARED_IMAGE_USAGE_PROTECTED = 1 << 8,
+  // Image may use concurrent read/write access. Used by single buffered canvas.
+  // TODO(crbug.com/969114): This usage is currently not supported in GL/Vulkan
+  // interop cases.
+  SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE = 1 << 9,
 };
 
 }  // namespace gpu

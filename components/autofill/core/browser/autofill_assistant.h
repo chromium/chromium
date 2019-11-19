@@ -56,7 +56,7 @@ class AutofillAssistant : public payments::FullCardRequest::ResultDelegate {
   // AutofillAssistant.
   AutofillManager* autofill_manager_;
 
-  base::WeakPtrFactory<AutofillAssistant> weak_ptr_factory_;
+  base::WeakPtrFactory<AutofillAssistant> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AutofillAssistant);
 };

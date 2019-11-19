@@ -4,27 +4,19 @@
 
 // Custom binding for the chrome.app.runtime API.
 
-var binding = apiBridge || require('binding').Binding.create('app.runtime');
-
 var AppViewGuestInternal;
 // appViewGuestInternal isn't available in lock screen contexts.
 if (requireNative('v8_context').GetAvailability('appViewGuestInternal').
         is_available) {
-  AppViewGuestInternal =
-      getInternalApi ?
-          getInternalApi('appViewGuestInternal') :
-          require('binding').Binding.create('appViewGuestInternal').generate();
+  AppViewGuestInternal = getInternalApi('appViewGuestInternal');
 }
-var registerArgumentMassager = bindingUtil ?
-    $Function.bind(bindingUtil.registerEventArgumentMassager, bindingUtil) :
-    require('event_bindings').registerArgumentMassager;
 var fileSystemHelpers = requireNative('file_system_natives');
 var GetIsolatedFileSystem = fileSystemHelpers.GetIsolatedFileSystem;
 var entryIdManager = require('entryIdManager');
 
 if (AppViewGuestInternal) {
-  registerArgumentMassager('app.runtime.onEmbedRequested',
-                           function(args, dispatch) {
+  bindingUtil.registerEventArgumentMassager('app.runtime.onEmbedRequested',
+                                            function(args, dispatch) {
     var appEmbeddingRequest = args[0];
     var id = appEmbeddingRequest.guestInstanceId;
     delete appEmbeddingRequest.guestInstanceId;
@@ -40,7 +32,8 @@ if (AppViewGuestInternal) {
   });
 }
 
-registerArgumentMassager('app.runtime.onLaunched', function(args, dispatch) {
+bindingUtil.registerEventArgumentMassager('app.runtime.onLaunched',
+                                          function(args, dispatch) {
   var launchData = args[0];
   if (launchData.items) {
     // An onLaunched corresponding to file_handlers in the app's manifest.
@@ -91,6 +84,3 @@ registerArgumentMassager('app.runtime.onLaunched', function(args, dispatch) {
     dispatch([launchData]);
   }
 });
-
-if (!apiBridge)
-  exports.$set('binding', binding.generate());

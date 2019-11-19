@@ -29,6 +29,7 @@ class FakeSyncableService : public SyncableService {
   bool syncing() const;
 
   // SyncableService implementation.
+  void WaitUntilReadyToSync(base::OnceClosure done) override;
   SyncMergeResult MergeDataAndStartSyncing(
       ModelType type,
       const SyncDataList& initial_sync_data,

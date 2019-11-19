@@ -251,6 +251,16 @@ function run_all_fp_tests_allow_all(
       },
       'Feature policy "' + feature_name +
           '" can be disabled in cross-origin iframes using "allow" attribute.');
+
+  // 5. Blocked in same-origin iframe with "allow" attribute set to 'none'.
+  async_test(
+      t => {
+        test_feature_availability_with_post_message_result(
+            t, same_origin_frame_pathname, '#' + error_name,
+            feature_name + " 'none'");
+      },
+      'Feature policy "' + feature_name +
+          '" can be disabled in same-origin iframes using "allow" attribute.');
 }
 
 // This function tests that a given policy allows each feature for the correct
@@ -432,4 +442,17 @@ function test_frame_policy(
   } else {
     assert_false(frame_policy.allowedFeatures().includes(feature));
   }
+}
+
+function expect_reports(report_count, policy_name, description) {
+  async_test(t => {
+    var num_received_reports = 0;
+    new ReportingObserver(t.step_func((reports, observer) => {
+        const relevant_reports = reports.filter(r => (r.body.featureId === policy_name));
+        num_received_reports += relevant_reports.length;
+        if (num_received_reports >= report_count) {
+            t.done();
+        }
+   }), {types: ['feature-policy-violation'], buffered: true}).observe();
+  }, description);
 }

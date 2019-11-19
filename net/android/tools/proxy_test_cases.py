@@ -311,7 +311,7 @@ class GenerateJava:
 
   def Generate(self):
     for test_case in test_cases:
-      if test_case.has_key("cpp-only"):
+      if "cpp-only" in test_case:
         continue
       if "description" in test_case:
         self._GenerateDescription(test_case["description"]);

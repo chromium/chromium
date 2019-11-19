@@ -5,6 +5,8 @@
 
 """Make sure all of the per-file *_messages.h OWNERS are consistent"""
 
+from __future__ import print_function
+
 import os
 import re
 import sys
@@ -47,7 +49,8 @@ def print_missing_owners(owner_dict, owner_set):
   for key in owner_dict:
     for owner in owner_set:
       if not owner in owner_dict[key]:
-        print key + " is missing " + owner
+        print(key + " is missing " + owner)
+
 
 if '__main__' == __name__:
   sys.exit(main())

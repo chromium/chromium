@@ -1,0 +1,11 @@
+Test navigator.language and navigator.languages in insecure context.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+FAIL navigator.language should be en-US. Was .
+FAIL navigator.languages.length should be 1. Was 0.
+FAIL navigator.languages[0] should be en-US (of type string). Was undefined (of type undefined).
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

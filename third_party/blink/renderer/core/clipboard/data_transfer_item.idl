@@ -30,7 +30,9 @@
 
 // https://html.spec.whatwg.org/C/#the-datatransferitem-interface
 
-interface DataTransferItem {
+[
+    Exposed=Window
+] interface DataTransferItem {
     readonly attribute DOMString kind;
     readonly attribute DOMString type;
     [CallWith=ScriptState] void getAsString(FunctionStringCallback? callback);

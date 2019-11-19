@@ -17,12 +17,11 @@
 
 namespace printing {
 
-scoped_refptr<PrinterQuery> TestPrintQueriesQueue::CreatePrinterQuery(
+std::unique_ptr<PrinterQuery> TestPrintQueriesQueue::CreatePrinterQuery(
     int render_process_id,
     int render_frame_id) {
-  scoped_refptr<TestPrinterQuery> test_query =
-      base::MakeRefCounted<TestPrinterQuery>(render_process_id,
-                                             render_frame_id);
+  auto test_query =
+      std::make_unique<TestPrinterQuery>(render_process_id, render_frame_id);
 #if defined(OS_WIN)
   test_query->SetPrinterType(printer_type_);
 #endif
@@ -53,28 +52,27 @@ void TestPrinterQuery::SetSettings(base::Value new_settings,
 #if defined(OS_WIN)
   DCHECK(printer_type_);
 #endif
-  set_callback(std::move(callback));
-  PrintSettings settings;
+  auto settings = std::make_unique<PrintSettings>();
   PrintingContext::Result result =
-      PrintSettingsFromJobSettings(new_settings, &settings)
+      PrintSettingsFromJobSettings(new_settings, settings.get())
           ? PrintingContext::OK
           : PrintingContext::FAILED;
 
   float device_microns_per_device_unit =
-      static_cast<float>(kMicronsPerInch) / settings.device_units_per_inch();
+      static_cast<float>(kMicronsPerInch) / settings->device_units_per_inch();
   gfx::Size paper_size =
-      gfx::Size(settings.requested_media().size_microns.width() /
+      gfx::Size(settings->requested_media().size_microns.width() /
                     device_microns_per_device_unit,
-                settings.requested_media().size_microns.height() /
+                settings->requested_media().size_microns.height() /
                     device_microns_per_device_unit);
   gfx::Rect paper_rect(0, 0, paper_size.width(), paper_size.height());
   paper_rect.Inset(offsets_->x(), offsets_->y());
-  settings.SetPrinterPrintableArea(paper_size, paper_rect, true);
+  settings->SetPrinterPrintableArea(paper_size, paper_rect, true);
 #if defined(OS_WIN)
-  settings.set_printer_type(*printer_type_);
+  settings->set_printer_type(*printer_type_);
 #endif
 
-  GetSettingsDone(settings, result);
+  GetSettingsDone(std::move(callback), std::move(settings), result);
 }
 
 #if defined(OS_WIN)

@@ -11,19 +11,17 @@
 
 namespace download {
 
-DownloadJob::DownloadJob(
-    DownloadItem* download_item,
-    std::unique_ptr<DownloadRequestHandleInterface> request_handle)
+DownloadJob::DownloadJob(DownloadItem* download_item,
+                         CancelRequestCallback cancel_request_callback)
     : download_item_(download_item),
-      request_handle_(std::move(request_handle)),
-      is_paused_(false),
-      weak_ptr_factory_(this) {}
+      cancel_request_callback_(std::move(cancel_request_callback)),
+      is_paused_(false) {}
 
 DownloadJob::~DownloadJob() = default;
 
 void DownloadJob::Cancel(bool user_cancel) {
-  if (request_handle_)
-    request_handle_->CancelRequest(user_cancel);
+  if (cancel_request_callback_)
+    std::move(cancel_request_callback_).Run(user_cancel);
 }
 
 void DownloadJob::Pause() {
@@ -37,8 +35,6 @@ void DownloadJob::Pause() {
                        // Safe because we control download file lifetime.
                        base::Unretained(download_file)));
   }
-  if (request_handle_)
-    request_handle_->PauseRequest();
 }
 
 void DownloadJob::Resume(bool resume_request) {
@@ -54,9 +50,6 @@ void DownloadJob::Resume(bool resume_request) {
                        // Safe because we control download file lifetime.
                        base::Unretained(download_file)));
   }
-
-  if (request_handle_)
-    request_handle_->ResumeRequest();
 }
 
 void DownloadJob::Start(DownloadFile* download_file_,
@@ -83,8 +76,7 @@ void DownloadJob::OnDownloadFileInitialized(
 }
 
 bool DownloadJob::AddInputStream(std::unique_ptr<InputStream> stream,
-                                 int64_t offset,
-                                 int64_t length) {
+                                 int64_t offset) {
   DownloadFile* download_file = download_item_->GetDownloadFile();
   if (!download_file) {
     CancelRequestWithOffset(offset);
@@ -97,7 +89,7 @@ bool DownloadJob::AddInputStream(std::unique_ptr<InputStream> stream,
   GetDownloadTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(&DownloadFile::AddInputStream,
                                 base::Unretained(download_file),
-                                std::move(stream), offset, length));
+                                std::move(stream), offset));
   return true;
 }
 

@@ -17,6 +17,7 @@
 #include "net/base/escape.h"
 #include "net/base/filename_util_internal.h"
 #include "net/base/net_string_util.h"
+#include "net/base/url_util.h"
 #include "net/http/http_content_disposition.h"
 #include "url/gurl.h"
 
@@ -69,6 +70,10 @@ bool FileURLToFilePath(const GURL& url, base::FilePath* file_path) {
   if (!url.is_valid())
     return false;
 
+  // We may want to change this to a CHECK in the future.
+  if (!url.SchemeIsFile())
+    return false;
+
 #if defined(OS_WIN)
   std::string path;
   std::string host = url.host();
@@ -89,10 +94,13 @@ bool FileURLToFilePath(const GURL& url, base::FilePath* file_path) {
   }
   std::replace(path.begin(), path.end(), '/', '\\');
 #else  // defined(OS_WIN)
-  // Firefox seems to ignore the "host" of a file url if there is one. That is,
-  // file://foo/bar.txt maps to /bar.txt.
-  // TODO(dhg): This should probably take into account UNCs which could
-  // include a hostname other than localhost or blank
+  // On POSIX, there's no obvious interpretation of file:// URLs with a host.
+  // Usually, remote mounts are still mounted onto the local filesystem.
+  // Therefore, we discard all URLs that are not obviously local to prevent
+  // spoofing attacks using file:// URLs. See crbug.com/881675.
+  if (!url.host().empty() && !net::IsLocalhost(url)) {
+    return false;
+  }
   std::string path = url.path();
 #endif  // !defined(OS_WIN)
 
@@ -117,10 +125,10 @@ bool FileURLToFilePath(const GURL& url, base::FilePath* file_path) {
   if (ContainsEncodedBytes(path, illegal_encoded_bytes))
     return false;
 
-  // Unescape all percent-encoded sequences, including blacklisted-for-display
+  // Unescape all percent-encoded sequences, including blocked-for-display
   // characters, control characters and invalid UTF-8 byte sequences.
   // Percent-encoded bytes are not meaningful in a file system.
-  UnescapeBinaryURLComponent(path, &path);
+  path = UnescapeBinaryURLComponent(path);
 
 #if defined(OS_WIN)
   if (base::IsStringUTF8(path)) {

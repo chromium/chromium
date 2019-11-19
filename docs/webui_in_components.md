@@ -169,7 +169,7 @@ HelloWorldUI::HelloWorldUI(content::WebUI* web_ui)
 
   // As a demonstration of passing a variable for JS to use we pass in the name "Bob".
   html_source->AddString("userName", "Bob");
-  html_source->SetJsonPath("strings.js");
+  html_source->UseStringsJs();
 
   // Add required resources.
   html_source->AddResourcePath("hello_world.css", IDR_HELLO_WORLD_CSS);

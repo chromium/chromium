@@ -1,0 +1,18 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+mojom = "//gpu/ipc/common/gpu_extra_info.mojom"
+public_headers = [ "//gpu/config/gpu_extra_info.h" ]
+traits_headers = [ "//gpu/ipc/common/gpu_extra_info_mojom_traits.h" ]
+sources = [
+  "//gpu/ipc/common/gpu_extra_info_mojom_traits.cc",
+]
+public_deps = [
+  "//gpu/config",
+  "//ui/gfx/geometry/mojom",
+]
+type_mappings = [
+  "gpu.mojom.GpuExtraInfo=::gpu::GpuExtraInfo",
+  "gpu.mojom.ANGLEFeature=::gpu::ANGLEFeature",
+]

@@ -59,19 +59,7 @@ void WriteHandle(int handle_index,
                  base::Pickle* msg) {
   SerializedHandle::WriteHeader(handle.header(), msg);
 
-  if (handle.type() == SerializedHandle::SHARED_MEMORY) {
-    // Now write the handle itself in POSIX style.
-    // This serialization must be kept in sync with
-    // ParamTraits<SharedMemoryHandle>::Write.
-    if (handle.shmem().IsValid()) {
-      msg->WriteBool(true);  // valid == true
-      msg->WriteInt(handle_index);
-      IPC::WriteParam(msg, handle.shmem().GetGUID());
-      msg->WriteUInt64(handle.shmem().GetSize());
-    } else {
-      msg->WriteBool(false);  // valid == false
-    }
-  } else if (handle.type() == SerializedHandle::SHARED_MEMORY_REGION) {
+  if (handle.type() == SerializedHandle::SHARED_MEMORY_REGION) {
     // Write the region in POSIX style.
     // This serialization must be kept in sync with
     // ParamTraits<PlatformSharedMemoryRegion>::Write.

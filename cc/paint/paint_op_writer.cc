@@ -39,7 +39,7 @@ SkIRect MakeSrcRect(const PaintImage& image) {
 size_t PaintOpWriter::GetFlattenableSize(const SkFlattenable* flattenable) {
   // The first bit is always written to indicate the serialized size of the
   // flattenable, or zero if it doesn't exist.
-  size_t total_size = sizeof(uint64_t) + alignof(uint64_t);
+  size_t total_size = sizeof(uint64_t) + sizeof(uint64_t) /* alignment */;
   if (!flattenable)
     return total_size;
 
@@ -60,7 +60,7 @@ size_t PaintOpWriter::GetImageSize(const PaintImage& image) {
     image_size += sizeof(info.colorType());
     image_size += sizeof(info.width());
     image_size += sizeof(info.height());
-    image_size += sizeof(uint64_t) + alignof(uint64_t);
+    image_size += sizeof(uint64_t) + sizeof(uint64_t) /* alignment */;
     image_size += info.computeMinByteSize();
   }
   return image_size;
@@ -368,8 +368,10 @@ sk_sp<PaintShader> PaintOpWriter::TransformShaderIfNecessary(
                                         &quality, paint_image_needs_mips);
   }
 
-  if (type == PaintShader::Type::kPaintRecord)
-    return original->CreateScaledPaintRecord(ctm, paint_record_post_scale);
+  if (type == PaintShader::Type::kPaintRecord) {
+    return original->CreateScaledPaintRecord(ctm, options_.max_texture_size,
+                                             paint_record_post_scale);
+  }
 
   return sk_ref_sp<PaintShader>(original);
 }
@@ -406,7 +408,7 @@ void PaintOpWriter::Write(const PaintShader* shader, SkFilterQuality quality) {
   WriteSimple(shader->flags_);
   WriteSimple(shader->end_radius_);
   WriteSimple(shader->start_radius_);
-  // SkShader::TileMode does not have an explicitly defined backing type, so
+  // SkTileMode does not have an explicitly defined backing type, so
   // write a consistently sized value.
   Write(static_cast<int32_t>(shader->tx_));
   Write(static_cast<int32_t>(shader->ty_));
@@ -462,6 +464,10 @@ void PaintOpWriter::Write(const PaintShader* shader, SkFilterQuality quality) {
 
 void PaintOpWriter::Write(SkColorType color_type) {
   WriteSimple(static_cast<uint32_t>(color_type));
+}
+
+void PaintOpWriter::Write(SkYUVColorSpace yuv_color_space) {
+  WriteSimple(static_cast<uint32_t>(yuv_color_space));
 }
 
 void PaintOpWriter::WriteData(size_t bytes, const void* input) {

@@ -32,13 +32,8 @@ namespace blink {
 
 class LabelsNodeList final : public LiveNodeList {
  public:
-  static LabelsNodeList* Create(ContainerNode& owner_node,
-                                CollectionType type) {
-    DCHECK_EQ(type, kLabelsNodeListType);
-    return MakeGarbageCollected<LabelsNodeList>(owner_node);
-  }
-
   explicit LabelsNodeList(ContainerNode&);
+  LabelsNodeList(ContainerNode& owner_node, CollectionType type);
   ~LabelsNodeList() override;
 
  protected:

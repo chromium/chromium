@@ -14,13 +14,11 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
-#include "content/public/common/service_manager_connection.h"
 #include "extensions/common/extension_urls.h"
 #include "net/base/load_flags.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/url_fetcher.h"
 #include "net/url_request/url_request_status.h"
-#include "services/data_decoder/public/cpp/safe_json_parser.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
@@ -98,21 +96,20 @@ void WebstoreDataFetcher::Start(
                      base::Unretained(this)));
 }
 
-void WebstoreDataFetcher::OnJsonParseSuccess(
-    std::unique_ptr<base::Value> parsed_json) {
-  if (!parsed_json->is_dict()) {
-    OnJsonParseFailure(kInvalidWebstoreResponseError);
+void WebstoreDataFetcher::OnJsonParsed(
+    data_decoder::DataDecoder::ValueOrError result) {
+  if (!result.value) {
+    delegate_->OnWebstoreResponseParseFailure(*result.error);
     return;
   }
 
-  delegate_->OnWebstoreResponseParseSuccess(
-      std::unique_ptr<base::DictionaryValue>(
-          static_cast<base::DictionaryValue*>(parsed_json.release())));
-}
+  if (!result.value->is_dict()) {
+    delegate_->OnWebstoreResponseParseFailure(kInvalidWebstoreResponseError);
+    return;
+  }
 
-void WebstoreDataFetcher::OnJsonParseFailure(
-    const std::string& error) {
-  delegate_->OnWebstoreResponseParseFailure(error);
+  delegate_->OnWebstoreResponseParseSuccess(base::DictionaryValue::From(
+      base::Value::ToUniquePtrValue(std::move(*result.value))));
 }
 
 void WebstoreDataFetcher::OnSimpleLoaderComplete(
@@ -123,11 +120,9 @@ void WebstoreDataFetcher::OnSimpleLoaderComplete(
   }
 
   // The parser will call us back via one of the callbacks.
-  data_decoder::SafeJsonParser::Parse(
-      content::ServiceManagerConnection::GetForProcess()->GetConnector(),
+  data_decoder::DataDecoder::ParseJsonIsolated(
       *response_body,
-      base::Bind(&WebstoreDataFetcher::OnJsonParseSuccess, AsWeakPtr()),
-      base::Bind(&WebstoreDataFetcher::OnJsonParseFailure, AsWeakPtr()));
+      base::BindOnce(&WebstoreDataFetcher::OnJsonParsed, AsWeakPtr()));
 }
 
 }  // namespace extensions

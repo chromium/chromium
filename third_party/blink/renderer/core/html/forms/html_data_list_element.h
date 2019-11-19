@@ -42,8 +42,6 @@ class CORE_EXPORT HTMLDataListElement final : public HTMLElement {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static HTMLDataListElement* Create(Document&);
-
   HTMLDataListElement(Document&);
 
   HTMLDataListOptionsCollection* options();

@@ -146,13 +146,20 @@ make_patch_fs() {
   readonly KS_VERSION_KEY="KSVersion"
   readonly KS_PRODUCT_KEY="KSProductID"
   readonly KS_CHANNEL_KEY="KSChannelID"
-  readonly VERSIONS_DIR="Contents/Versions"
+  readonly VERSIONS_DIR_OLD="Contents/Versions"
   readonly BUILD_RE="^[0-9]+\\.[0-9]+\\.([0-9]+)\\.[0-9]+\$"
   readonly MIN_BUILD=434
 
-  local product_url="http://www.google.com/chrome/"
+  local versions_dir_new
+  local product_url
   if [[ "${product_name}" = "Google Chrome Canary" ]]; then
-    product_url="http://tools.google.com/dlpage/chromesxs"
+    versions_dir_new=\
+"Contents/Frameworks/Google Chrome Framework.framework/Versions"
+    product_url="https://www.google.com/chrome/canary/"
+  else
+    versions_dir_new=\
+"Contents/Frameworks/${product_name} Framework.framework/Versions"
+    product_url="https://www.google.com/chrome/"
   fi
 
   local old_app_path="${old_fs}/${APP_NAME}"
@@ -234,8 +241,21 @@ make_patch_fs() {
     name_extra=" ${new_ks_channel}"
   fi
 
-  local old_versioned_dir="${old_app_path}/${VERSIONS_DIR}/${old_app_version}"
-  local new_versioned_dir="${new_app_path}/${VERSIONS_DIR}/${new_app_version}"
+  local old_versioned_dir
+  if [[ -e "${old_app_path}/${versions_dir_new}" ]]; then
+    old_versioned_dir="${old_app_path}/${versions_dir_new}/${old_app_version}"
+  else
+    old_versioned_dir="${old_app_path}/${VERSIONS_DIR_OLD}/${old_app_version}"
+  fi
+
+  local new_versioned_dir
+  local layout_new
+  if [[ -e "${new_app_path}/${versions_dir_new}" ]]; then
+    new_versioned_dir="${new_app_path}/${versions_dir_new}/${new_app_version}"
+    layout_new="y"
+  else
+    new_versioned_dir="${new_app_path}/${VERSIONS_DIR_OLD}/${new_app_version}"
+  fi
 
   if ! cp -p "${SCRIPT_DIR}/keystone_install.sh" \
              "${patch_fs}/.keystone_install"; then
@@ -287,15 +307,23 @@ make_patch_fs() {
 This disk image contains a differential updater that can update
 ${product_name} from version ${old_app_version} to ${new_app_version_extra}.
 
-This image is part of the auto-update system and is not independently
-useful.
+This image is part of the auto-update system and is not independently useful.
 
-To install ${product_name}, please visit
-<${product_url}>.
+To install ${product_name}, please visit ${product_url}.
 __EOF__
 
-  local patch_versioned_dir="\
-${patch_dotpatch_dir}/version_${old_app_version}_${new_app_version}.dirpatch"
+  # version_patch_name is how keystone_install.sh distinguishes between diff
+  # updates intended to place the versioned directory in the new layout
+  # ("framework") and the old ("version").
+  local version_patch_name
+  if [[ -n "${layout_new}" ]]; then
+    version_patch_name="framework"
+  else
+    version_patch_name="version"
+  fi
+
+  local patch_versioned_dir="${patch_dotpatch_dir}/\
+${version_patch_name}_${old_app_version}_${new_app_version}.dirpatch"
 
   if ! "${DIRDIFFER}" "${old_versioned_dir}" \
                       "${new_versioned_dir}" \
@@ -308,12 +336,22 @@ ${patch_dotpatch_dir}/version_${old_app_version}_${new_app_version}.dirpatch"
   # Set DIRDIFFER_EXCLUDE to exclude the contents of the Versions directory,
   # but to include an empty Versions directory. The versioned directory was
   # already addressed in the preceding dirpatch.
-  export DIRDIFFER_EXCLUDE="/${APP_NAME_RE}/Contents/Versions/"
+  if [[ -n "${layout_new}" ]]; then
+    # Transform versions_dir_new and the version into a regular expression
+    # pattern by backslashing the dots.
+    export DIRDIFFER_EXCLUDE=\
+"/${APP_NAME_RE}/$(echo "${versions_dir_new}/${new_app_version}" |
+                       sed -e 's/\./\\./g')"
+  else
+    # VERSIONS_DIR_OLD doesn't contain anything that a regular expression parser
+    # would misinterpret.
+    export DIRDIFFER_EXCLUDE="/${APP_NAME_RE}/${VERSIONS_DIR_OLD}/"
+  fi
 
   # Set DIRDIFFER_NO_DIFF to exclude files introduced by or modified by
   # Keystone channel and brand tagging and subsequent code signing.
-  export DIRDIFFER_NO_DIFF="\
-/${APP_NAME_RE}/Contents/\
+  export DIRDIFFER_NO_DIFF=\
+"/${APP_NAME_RE}/Contents/\
 (CodeResources|Info\\.plist|MacOS/${product_name}|_CodeSignature/.*)$"
 
   local patch_app_dir="${patch_dotpatch_dir}/application.dirpatch"

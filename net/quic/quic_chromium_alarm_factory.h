@@ -13,10 +13,10 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "net/base/net_export.h"
-#include "net/third_party/quic/core/quic_alarm_factory.h"
-#include "net/third_party/quic/core/quic_packets.h"
-#include "net/third_party/quic/core/quic_time.h"
-#include "net/third_party/quic/platform/api/quic_clock.h"
+#include "net/third_party/quiche/src/quic/core/quic_alarm_factory.h"
+#include "net/third_party/quiche/src/quic/core/quic_packets.h"
+#include "net/third_party/quiche/src/quic/core/quic_time.h"
+#include "net/third_party/quiche/src/quic/platform/api/quic_clock.h"
 
 namespace base {
 class TaskRunner;
@@ -40,7 +40,7 @@ class NET_EXPORT_PRIVATE QuicChromiumAlarmFactory
  private:
   base::TaskRunner* task_runner_;
   const quic::QuicClock* clock_;
-  base::WeakPtrFactory<QuicChromiumAlarmFactory> weak_factory_;
+  base::WeakPtrFactory<QuicChromiumAlarmFactory> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(QuicChromiumAlarmFactory);
 };

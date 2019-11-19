@@ -32,7 +32,7 @@ function zoomDuringAnimation(property, values) {
 
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
-      internals.setZoomFactor(2);
+      eventSender.setPageZoomFactor(2);
       if (!window.testRunner)
         return;
 
@@ -50,7 +50,7 @@ function zoomDuringAnimation(property, values) {
 }
 
 function zoomBeforeAnimation(property, values) {
-  internals.setZoomFactor(2);
+  eventSender.setPageZoomFactor(2);
 
   var footer = document.createElement('div');
   document.body.appendChild(footer);

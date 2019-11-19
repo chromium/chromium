@@ -20,9 +20,10 @@ namespace mirroring {
 // Holds the default settings for a mirroring session. This class provides the
 // audio/video configs that this sender supports. And also provides the
 // audio/video constraints used for capturing.
-// TODO(xjz): Add the function to generate the audio capture contraints.
-// TODO(xjz): Add setters to the settings that might be overriden by integration
-// tests.
+// TODO(crbug.com/1015458): Add the function to generate the audio capture
+// contraints.
+// TODO(crbug.com/1015458): Add setters to the settings that might be overriden
+// by integration tests.
 class COMPONENT_EXPORT(MIRRORING_SERVICE) MirrorSettings {
  public:
   MirrorSettings();
@@ -56,6 +57,10 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) MirrorSettings {
   const int min_height_;
   int max_width_;
   int max_height_;
+
+  // TODO(crbug.com/1002603): Disable sender-side letterboxing for Chromecast
+  // devices that support arbitrary aspect ratios.
+  bool enable_sender_side_letterboxing_ = true;
 
   DISALLOW_COPY_AND_ASSIGN(MirrorSettings);
 };

@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chrome_build.gni")
+
 assert(is_chromeos)
 
 declare_args() {
@@ -11,7 +13,8 @@ declare_args() {
 declare_args() {
   # Determines if we're running tests on VMs or on devices.
   # TODO(crbug.com/866062): Is there a better way to do this?
-  cros_is_vm = cros_board == "amd64-generic"
+  cros_is_vm = cros_board == "amd64-generic" || cros_board == "betty" ||
+               cros_board == "betty-pi-arc"
 }
 
 # Ensure that if one is set, the other is as well.
@@ -59,7 +62,7 @@ template("generate_runner_script") {
   # These are the only 2 conditions when ${_cache_path_prefix} is used, so
   # initialize it in a conditional.
   if (deploy_chrome || cros_is_vm) {
-    _cache_path_prefix = "//build/cros_cache/chrome-sdk/tarballs/${cros_board}+${cros_sdk_version}"
+    _cache_path_prefix = "//build/cros_cache/chrome-sdk/tarballs/"
   }
 
   assert(defined(generated_script),
@@ -95,7 +98,10 @@ template("generate_runner_script") {
       "//build/android/pylib/results/",
       generated_script,
       "//build/chromeos/",
+
+      # Needed for various SDK components used below.
       "//build/cros_cache/chrome-sdk/misc/",
+      "//build/cros_cache/chrome-sdk/symlinks/",
 
       # We use luci-py's subprocess42 to launch test processes.
       "//tools/swarming_client/utils/",
@@ -109,13 +115,19 @@ template("generate_runner_script") {
     # Add the VM/QEMU-launching bits if needed.
     if (cros_is_vm) {
       assert(defined(_cache_path_prefix))
-      _vm_image_path = "${_cache_path_prefix}+chromiumos_qemu_image.tar.xz/"
-      _qemu_dir = "${_cache_path_prefix}+app-emulation/"
-      _firmware_dir = "${_cache_path_prefix}+sys-firmware/"
+      _vm_image_path = "${_cache_path_prefix}/chromiumos_qemu_image.tar.xz/"
+      _qemu_dir = "${_cache_path_prefix}/app-emulation/"
+      _firmware_dir = "${_cache_path_prefix}/sys-firmware/"
       data += [
         _firmware_dir,
         _vm_image_path,
         _qemu_dir,
+      ]
+    }
+    if (is_tast) {
+      data += [
+        "${_cache_path_prefix}/chromeos-base/tast-cmd/",
+        "${_cache_path_prefix}/chromeos-base/tast-remote-tests-cros/",
       ]
     }
     if (defined(invoker.data)) {
@@ -150,8 +162,8 @@ template("generate_runner_script") {
       # toolchain to the data.
       assert(defined(_cache_path_prefix))
       data += [
-        "${_cache_path_prefix}+environment_chromeos-base_chromeos-chrome.tar.xz",
-        "${_cache_path_prefix}+target_toolchain/",
+        "${_cache_path_prefix}/environment_chromeos-base_chromeos-chrome.tar.xz",
+        "${_cache_path_prefix}/target_toolchain/",
       ]
     }
 
@@ -198,8 +210,21 @@ template("tast_test") {
 
   # Default the expression to match any chrome-related test.
   if (!defined(tast_attr_expr) && !defined(tast_tests)) {
-    tast_attr_expr = "!disabled && !\"group:*\" && !informational" +
-                     " && (\"dep:chrome\" || \"dep:chrome_login\")"
+    # The following expression filters out all non-critical tests. See the link
+    # below for more details:
+    # https://chromium.googlesource.com/chromiumos/platform/tast/+/master/docs/test_attributes.md
+    tast_attr_expr =
+        "!disabled && (\"group:mainline\" || !\"group:*\") && \"dep:chrome\""
+
+    if (defined(enable_tast_informational_tests) &&
+        enable_tast_informational_tests) {
+      tast_attr_expr += " && informational"
+    } else {
+      tast_attr_expr += " && !informational"
+    }
+    if (!is_chrome_branded) {
+      tast_attr_expr += " && !\"dep:chrome_internal\""
+    }
   } else {
     assert(defined(tast_attr_expr) != defined(tast_tests),
            "Specify one of tast_tests or tast_attr_expr.")

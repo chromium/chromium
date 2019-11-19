@@ -1,0 +1,15 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# TODO(gayane): This should be a separate build target when circular dependencies are removed.
+share_java_sources = [
+  "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/qrcode/QrCodeCoordinator.java",
+  "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/qrcode/QrCodeDialog.java",
+  "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/qrcode/QrCodeShareActivity.java",
+  "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/qrcode/share_tab/QrCodeShareView.java",
+  "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/qrcode/share_tab/QrCodeShareCoordinator.java",
+  "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/qrcode/scan_tab/QrCodeScanView.java",
+  "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/qrcode/scan_tab/QrCodeScanCoordinator.java",
+  "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/qrcode/QrCodePageAdapter.java",
+]

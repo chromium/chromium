@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <memory>
 
 #include "base/rand_util.h"
 #include "base/sys_byteorder.h"
@@ -80,7 +81,7 @@ SpdyHeaderBlock HpackFuzzUtil::NextGeneratedHeaderSet(
   for (size_t j = 0; j != header_count; ++j) {
     size_t name_index = SampleExponential(kHeaderIndexMean, kHeaderIndexMax);
     size_t value_index = SampleExponential(kHeaderIndexMean, kHeaderIndexMax);
-    SpdyString name, value;
+    std::string name, value;
     if (name_index >= context->names.size()) {
       context->names.push_back(RandBytesAsString(
           1 + SampleExponential(kNameLengthMean, kNameLengthMax)));
@@ -128,17 +129,17 @@ bool HpackFuzzUtil::NextHeaderBlock(Input* input, SpdyStringPiece* out) {
 }
 
 // static
-SpdyString HpackFuzzUtil::HeaderBlockPrefix(size_t block_size) {
+std::string HpackFuzzUtil::HeaderBlockPrefix(size_t block_size) {
   uint32_t length = base::HostToNet32(static_cast<uint32_t>(block_size));
-  return SpdyString(reinterpret_cast<char*>(&length), sizeof(uint32_t));
+  return std::string(reinterpret_cast<char*>(&length), sizeof(uint32_t));
 }
 
 // static
 void HpackFuzzUtil::InitializeFuzzerContext(FuzzerContext* context) {
-  context->first_stage = SpdyMakeUnique<HpackDecoderAdapter>();
+  context->first_stage = std::make_unique<HpackDecoderAdapter>();
   context->second_stage =
-      SpdyMakeUnique<HpackEncoder>(ObtainHpackHuffmanTable());
-  context->third_stage = SpdyMakeUnique<HpackDecoderAdapter>();
+      std::make_unique<HpackEncoder>(ObtainHpackHuffmanTable());
+  context->third_stage = std::make_unique<HpackDecoderAdapter>();
 }
 
 // static
@@ -154,7 +155,7 @@ bool HpackFuzzUtil::RunHeaderBlockThroughFuzzerStages(
     return false;
   }
   // Second stage: Re-encode the decoded header block. This must succeed.
-  SpdyString second_stage_out;
+  std::string second_stage_out;
   CHECK(context->second_stage->EncodeHeaderSet(
       context->first_stage->decoded_block(), &second_stage_out));
 

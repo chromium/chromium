@@ -18,6 +18,7 @@ namespace blink {
 class ThreadedWorkletMessagingProxy;
 class WorkletPendingTasks;
 class WorkerThread;
+class WorkerResourceTimingNotifier;
 struct CrossThreadFetchClientSettingsObjectData;
 
 // A proxy to talk to the parent worker object. See class comments on
@@ -36,9 +37,10 @@ class CORE_EXPORT ThreadedWorkletObjectProxy : public ThreadedObjectProxyBase {
 
   void FetchAndInvokeScript(
       const KURL& module_url_record,
-      network::mojom::FetchCredentialsMode,
+      network::mojom::CredentialsMode,
       std::unique_ptr<CrossThreadFetchClientSettingsObjectData>
           outside_settings_object,
+      WorkerResourceTimingNotifier* outside_resource_timing_notifier,
       scoped_refptr<base::SingleThreadTaskRunner> outside_settings_task_runner,
       WorkletPendingTasks*,
       WorkerThread*);

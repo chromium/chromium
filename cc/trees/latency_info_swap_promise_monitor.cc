@@ -25,16 +25,6 @@ bool AddRenderingScheduledComponent(ui::LatencyInfo* latency_info,
   return true;
 }
 
-bool AddForwardingScrollUpdateToMainComponent(ui::LatencyInfo* latency_info) {
-  if (latency_info->FindLatency(
-          ui::INPUT_EVENT_LATENCY_FORWARD_SCROLL_UPDATE_TO_MAIN_COMPONENT,
-          nullptr))
-    return false;
-  latency_info->AddLatencyNumber(
-      ui::INPUT_EVENT_LATENCY_FORWARD_SCROLL_UPDATE_TO_MAIN_COMPONENT);
-  return true;
-}
-
 }  // namespace
 
 namespace cc {
@@ -64,22 +54,6 @@ void LatencyInfoSwapPromiseMonitor::OnSetNeedsRedrawOnImpl() {
     // promise is pinned so that it is not interrupted by new incoming
     // activations (which would otherwise break the swap promise).
     host_impl_->active_tree()->QueuePinnedSwapPromise(std::move(swap_promise));
-  }
-}
-
-void LatencyInfoSwapPromiseMonitor::OnForwardScrollUpdateToMainThreadOnImpl() {
-  if (AddForwardingScrollUpdateToMainComponent(latency_)) {
-    ui::LatencyInfo new_latency;
-    new_latency.CopyLatencyFrom(
-        *latency_,
-        ui::INPUT_EVENT_LATENCY_FORWARD_SCROLL_UPDATE_TO_MAIN_COMPONENT);
-    new_latency.AddLatencyNumberWithTraceName(
-        ui::LATENCY_BEGIN_SCROLL_LISTENER_UPDATE_MAIN_COMPONENT,
-        "ScrollUpdate");
-    std::unique_ptr<SwapPromise> swap_promise(
-        new LatencyInfoSwapPromise(new_latency));
-    host_impl_->QueueSwapPromiseForMainThreadScrollUpdate(
-        std::move(swap_promise));
   }
 }
 

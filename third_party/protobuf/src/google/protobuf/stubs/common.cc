@@ -30,13 +30,9 @@
 
 // Author: kenton@google.com (Kenton Varda)
 
-#include <google/protobuf/message_lite.h>  // TODO(gerbens) ideally remove this.
 #include <google/protobuf/stubs/common.h>
-#include <google/protobuf/stubs/once.h>
-#include <google/protobuf/stubs/status.h>
-#include <google/protobuf/stubs/stringpiece.h>
-#include <google/protobuf/stubs/strutil.h>
-#include <google/protobuf/stubs/int128.h>
+
+#include <atomic>
 #include <errno.h>
 #include <sstream>
 #include <stdio.h>
@@ -54,6 +50,17 @@
 #if defined(__ANDROID__)
 #include <android/log.h>
 #endif
+
+#include <google/protobuf/stubs/callback.h>
+#include <google/protobuf/stubs/logging.h>
+#include <google/protobuf/stubs/mutex.h>
+#include <google/protobuf/stubs/once.h>
+#include <google/protobuf/stubs/status.h>
+#include <google/protobuf/stubs/stringpiece.h>
+#include <google/protobuf/stubs/strutil.h>
+#include <google/protobuf/stubs/int128.h>
+
+#include <google/protobuf/port_def.inc>
 
 namespace google {
 namespace protobuf {
@@ -174,23 +181,7 @@ void NullLogHandler(LogLevel /* level */, const char* /* filename */,
 }
 
 static LogHandler* log_handler_ = &DefaultLogHandler;
-static int log_silencer_count_ = 0;
-
-static Mutex* log_silencer_count_mutex_ = NULL;
-GOOGLE_PROTOBUF_DECLARE_ONCE(log_silencer_count_init_);
-
-void DeleteLogSilencerCount() {
-  delete log_silencer_count_mutex_;
-  log_silencer_count_mutex_ = NULL;
-}
-void InitLogSilencerCount() {
-  log_silencer_count_mutex_ = new Mutex;
-  OnShutdown(&DeleteLogSilencerCount);
-}
-void InitLogSilencerCountOnce() {
-  GoogleOnceInit(&GOOGLE_PROTOBUF_GET_ONCE(log_silencer_count_init_),
-                 &InitLogSilencerCount);
-}
+static std::atomic<int> log_silencer_count_ = ATOMIC_VAR_INIT(0);
 
 LogMessage& LogMessage::operator<<(const string& value) {
   message_ += value;
@@ -207,8 +198,7 @@ LogMessage& LogMessage::operator<<(const StringPiece& value) {
   return *this;
 }
 
-LogMessage& LogMessage::operator<<(
-    const ::google::protobuf::util::Status& status) {
+LogMessage& LogMessage::operator<<(const util::Status& status) {
   message_ += status.ToString();
   return *this;
 }
@@ -244,8 +234,8 @@ DECLARE_STREAM_OPERATOR(long         , "%ld")
 DECLARE_STREAM_OPERATOR(unsigned long, "%lu")
 DECLARE_STREAM_OPERATOR(double       , "%g" )
 DECLARE_STREAM_OPERATOR(void*        , "%p" )
-DECLARE_STREAM_OPERATOR(long long         , "%" GOOGLE_LL_FORMAT "d")
-DECLARE_STREAM_OPERATOR(unsigned long long, "%" GOOGLE_LL_FORMAT "u")
+DECLARE_STREAM_OPERATOR(long long         , "%" PROTOBUF_LL_FORMAT "d")
+DECLARE_STREAM_OPERATOR(unsigned long long, "%" PROTOBUF_LL_FORMAT "u")
 #undef DECLARE_STREAM_OPERATOR
 
 LogMessage::LogMessage(LogLevel level, const char* filename, int line)
@@ -256,8 +246,6 @@ void LogMessage::Finish() {
   bool suppress = false;
 
   if (level_ != LOGLEVEL_FATAL) {
-    InitLogSilencerCountOnce();
-    MutexLock lock(log_silencer_count_mutex_);
     suppress = log_silencer_count_ > 0;
   }
 
@@ -283,9 +271,9 @@ void LogFinisher::operator=(LogMessage& other) {
 LogHandler* SetLogHandler(LogHandler* new_func) {
   LogHandler* old = internal::log_handler_;
   if (old == &internal::NullLogHandler) {
-    old = NULL;
+    old = nullptr;
   }
-  if (new_func == NULL) {
+  if (new_func == nullptr) {
     internal::log_handler_ = &internal::NullLogHandler;
   } else {
     internal::log_handler_ = new_func;
@@ -294,14 +282,10 @@ LogHandler* SetLogHandler(LogHandler* new_func) {
 }
 
 LogSilencer::LogSilencer() {
-  internal::InitLogSilencerCountOnce();
-  MutexLock lock(internal::log_silencer_count_mutex_);
   ++internal::log_silencer_count_;
 };
 
 LogSilencer::~LogSilencer() {
-  internal::InitLogSilencerCountOnce();
-  MutexLock lock(internal::log_silencer_count_mutex_);
   --internal::log_silencer_count_;
 };
 
@@ -337,70 +321,45 @@ uint32 ghtonl(uint32 x) {
 
 namespace internal {
 
-typedef void OnShutdownFunc();
 struct ShutdownData {
   ~ShutdownData() {
-    for (int i = 0; i < functions.size(); i++) {
-      functions[i]();
-    }
-    for (int i = 0; i < strings.size(); i++) {
-      strings[i]->~string();
-    }
-    for (int i = 0; i < messages.size(); i++) {
-      messages[i]->~MessageLite();
-    }
+    std::reverse(functions.begin(), functions.end());
+    for (auto pair : functions) pair.first(pair.second);
   }
 
-  std::vector<void (*)()> functions;
-  std::vector<const std::string*> strings;
-  std::vector<const MessageLite*> messages;
+  static ShutdownData* get() {
+    static auto* data = new ShutdownData;
+    return data;
+  }
+
+  std::vector<std::pair<void (*)(const void*), const void*>> functions;
   Mutex mutex;
 };
 
-ShutdownData* shutdown_data = NULL;
-GOOGLE_PROTOBUF_DECLARE_ONCE(shutdown_functions_init);
-
-void InitShutdownFunctions() {
-  shutdown_data = new ShutdownData;
-}
-
-inline void InitShutdownFunctionsOnce() {
-  GoogleOnceInit(&GOOGLE_PROTOBUF_GET_ONCE(shutdown_functions_init),
-                 &InitShutdownFunctions);
+static void RunZeroArgFunc(const void* arg) {
+  void (*func)() = reinterpret_cast<void (*)()>(const_cast<void*>(arg));
+  func();
 }
 
 void OnShutdown(void (*func)()) {
-  InitShutdownFunctionsOnce();
-  MutexLock lock(&shutdown_data->mutex);
-  shutdown_data->functions.push_back(func);
+  OnShutdownRun(RunZeroArgFunc, reinterpret_cast<void*>(func));
 }
 
-void OnShutdownDestroyString(const std::string* ptr) {
-  InitShutdownFunctionsOnce();
+void OnShutdownRun(void (*f)(const void*), const void* arg) {
+  auto shutdown_data = ShutdownData::get();
   MutexLock lock(&shutdown_data->mutex);
-  shutdown_data->strings.push_back(ptr);
-}
-
-void OnShutdownDestroyMessage(const void* ptr) {
-  InitShutdownFunctionsOnce();
-  MutexLock lock(&shutdown_data->mutex);
-  shutdown_data->messages.push_back(static_cast<const MessageLite*>(ptr));
+  shutdown_data->functions.push_back(std::make_pair(f, arg));
 }
 
 }  // namespace internal
 
 void ShutdownProtobufLibrary() {
-  internal::InitShutdownFunctionsOnce();
-
-  // We don't need to lock shutdown_functions_mutex because it's up to the
-  // caller to make sure that no one is using the library before this is
-  // called.
-
-  // Make it safe to call this multiple times.
-  if (internal::shutdown_data == NULL) return;
-
-  delete internal::shutdown_data;
-  internal::shutdown_data = NULL;
+  // This function should be called only once, but accepts multiple calls.
+  static bool is_shutdown = false;
+  if (!is_shutdown) {
+    delete internal::ShutdownData::get();
+    is_shutdown = true;
+  }
 }
 
 #if PROTOBUF_USE_EXCEPTIONS

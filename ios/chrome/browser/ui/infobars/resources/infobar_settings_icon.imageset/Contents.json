@@ -1,0 +1,23 @@
+{
+    "images": [
+        {
+            "idiom": "universal",
+            "scale": "1x",
+            "filename": "infobar_settings_icon.png"
+        },
+        {
+            "idiom": "universal",
+            "scale": "2x",
+            "filename": "infobar_settings_icon@2x.png"
+        },
+        {
+            "idiom": "universal",
+            "scale": "3x",
+            "filename": "infobar_settings_icon@3x.png"
+        }
+    ],
+    "info": {
+        "version": 1,
+        "author": "xcode"
+    }
+}

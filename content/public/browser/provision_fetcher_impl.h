@@ -12,7 +12,8 @@
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/provision_fetcher_factory.h"
 #include "media/base/provision_fetcher.h"
-#include "media/mojo/interfaces/provision_fetcher.mojom.h"
+#include "media/mojo/mojom/provision_fetcher.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -27,7 +28,7 @@ class CONTENT_EXPORT ProvisionFetcherImpl
  public:
   static void Create(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      media::mojom::ProvisionFetcherRequest request);
+      mojo::PendingReceiver<media::mojom::ProvisionFetcher> receiver);
 
   explicit ProvisionFetcherImpl(
       std::unique_ptr<media::ProvisionFetcher> provision_fetcher);
@@ -46,7 +47,7 @@ class CONTENT_EXPORT ProvisionFetcherImpl
 
   std::unique_ptr<media::ProvisionFetcher> provision_fetcher_;
 
-  base::WeakPtrFactory<ProvisionFetcherImpl> weak_factory_;
+  base::WeakPtrFactory<ProvisionFetcherImpl> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ProvisionFetcherImpl);
 };

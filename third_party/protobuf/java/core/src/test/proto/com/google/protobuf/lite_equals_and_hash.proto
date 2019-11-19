@@ -34,7 +34,6 @@ syntax = "proto2";
 
 package protobuf_unittest.lite_equals_and_hash;
 
-option optimize_for = LITE_RUNTIME;
 
 message TestOneofEquals {
   oneof oneof_field {
@@ -70,8 +69,7 @@ message BarPrime {
   optional string name = 1;
 }
 
-message Empty {
-}
+message Empty {}
 
 extend Foo {
   optional int32 varint = 101;

@@ -28,13 +28,18 @@ SerializedColorParams::SerializedColorParams(CanvasColorParams color_params) {
       break;
   }
 
-  switch (color_params.PixelFormat()) {
-    case kRGBA8CanvasPixelFormat:
-      pixel_format_ = SerializedPixelFormat::kRGBA8;
-      break;
-    case kF16CanvasPixelFormat:
-      pixel_format_ = SerializedPixelFormat::kF16;
-      break;
+  // todo(crbug/1021986) remove force_rgba in canvasColorParams
+  if (color_params.GetForceRGBA() == CanvasForceRGBA::kForced) {
+    pixel_format_ = SerializedPixelFormat::kForceRGBA8;
+  } else {
+    switch (color_params.PixelFormat()) {
+      case kRGBA8CanvasPixelFormat:
+        pixel_format_ = SerializedPixelFormat::kRGBA8;
+        break;
+      case kF16CanvasPixelFormat:
+        pixel_format_ = SerializedPixelFormat::kF16;
+        break;
+    }
   }
 
   opacity_mode_ = SerializedOpacityMode::kNonOpaque;
@@ -89,13 +94,21 @@ CanvasColorParams SerializedColorParams::GetCanvasColorParams() const {
       break;
   }
 
+  // todo(crbug/1021986) remove force_rgba in canvasColorParams
+  CanvasForceRGBA force_rgba = CanvasForceRGBA::kNotForced;
   CanvasPixelFormat pixel_format = kRGBA8CanvasPixelFormat;
-  if (pixel_format_ == SerializedPixelFormat::kF16)
+  if (pixel_format_ == SerializedPixelFormat::kForceRGBA8) {
+    force_rgba = CanvasForceRGBA::kForced;
+  } else if (pixel_format_ == SerializedPixelFormat::kF16)
     pixel_format = kF16CanvasPixelFormat;
+  else if (pixel_format_ == SerializedPixelFormat::kRGBA8)
+    pixel_format = kRGBA8CanvasPixelFormat;
+
   blink::OpacityMode opacity_mode = blink::kNonOpaque;
   if (opacity_mode_ == SerializedOpacityMode::kOpaque)
     opacity_mode = blink::kOpaque;
-  return CanvasColorParams(color_space, pixel_format, opacity_mode);
+
+  return CanvasColorParams(color_space, pixel_format, opacity_mode, force_rgba);
 }
 
 CanvasColorSpace SerializedColorParams::GetColorSpace() const {

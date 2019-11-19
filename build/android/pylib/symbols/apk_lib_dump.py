@@ -22,6 +22,8 @@ easy to use in a Python script, e.g. with a line like:
   (0x<start-offset>, 0x<end-offset>, 0x<file-size>, <file-path>),
 """
 
+from __future__ import print_function
+
 import argparse
 import os
 import sys
@@ -46,11 +48,11 @@ def main():
   lib_map = apk_native_libs.ApkNativeLibraries(apk_reader)
   for lib_path, file_offset, file_size in lib_map.GetDumpList():
     if args.format == 'python':
-      print '(0x%08x, 0x%08x, 0x%08x, \'%s\'),' % (
-          file_offset, file_offset + file_size, file_size, lib_path)
+      print('(0x%08x, 0x%08x, 0x%08x, \'%s\'),' %
+            (file_offset, file_offset + file_size, file_size, lib_path))
     else:
-      print '0x%08x 0x%08x 0x%08x %s' % (
-          file_offset, file_offset + file_size, file_size, lib_path)
+      print('0x%08x 0x%08x 0x%08x %s' % (file_offset, file_offset + file_size,
+                                         file_size, lib_path))
 
   return 0
 

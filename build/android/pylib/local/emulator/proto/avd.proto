@@ -1,0 +1,35 @@
+
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package tools.android.avd.proto;
+
+message CIPDPackage {
+  // CIPD package name.
+  string package_name = 1;
+  // CIPD package version to use.
+  // Ignored when creating AVD packages.
+  string version = 2;
+  // Path into which the package should be installed.
+  // src-relative.
+  string dest_path = 3;
+}
+
+message Avd {
+  // The emulator to use in running the AVD.
+  CIPDPackage emulator_package = 1;
+
+  // The system image to use.
+  CIPDPackage system_image_package = 2;
+  // The name of the system image to use, as reported by sdkmanager.
+  string system_image_name = 3;
+
+  // The AVD to create or use.
+  // (Only the package_name is used during AVD creation.)
+  CIPDPackage avd_package = 4;
+  // The name of the AVD to create or use.
+  string avd_name = 5;
+}

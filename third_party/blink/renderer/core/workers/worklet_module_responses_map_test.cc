@@ -3,13 +3,13 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/workers/worklet_module_responses_map.h"
+
 #include "base/optional.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/web_url_loader_mock_factory.h"
 #include "third_party/blink/renderer/core/loader/modulescript/module_script_creation_params.h"
 #include "third_party/blink/renderer/core/loader/modulescript/worklet_module_script_fetcher.h"
 #include "third_party/blink/renderer/core/script/modulator.h"
-#include "third_party/blink/renderer/core/workers/worker_fetch_test_helper.h"
 #include "third_party/blink/renderer/platform/loader/testing/fetch_testing_platform_support.h"
 #include "third_party/blink/renderer/platform/loader/testing/mock_fetch_context.h"
 #include "third_party/blink/renderer/platform/loader/testing/test_loader_factory.h"
@@ -28,11 +28,41 @@ class WorkletModuleResponsesMapTest : public testing::Test {
     platform_->AdvanceClockSeconds(1.);  // For non-zero DocumentParserTimings
     auto* properties = MakeGarbageCollected<TestResourceFetcherProperties>();
     auto* context = MakeGarbageCollected<MockFetchContext>();
-    fetcher_ = MakeGarbageCollected<ResourceFetcher>(ResourceFetcherInit(
-        *properties, context, base::MakeRefCounted<scheduler::FakeTaskRunner>(),
-        MakeGarbageCollected<TestLoaderFactory>()));
+    fetcher_ = MakeGarbageCollected<ResourceFetcher>(
+        ResourceFetcherInit(properties->MakeDetachable(), context,
+                            base::MakeRefCounted<scheduler::FakeTaskRunner>(),
+                            MakeGarbageCollected<TestLoaderFactory>()));
     map_ = MakeGarbageCollected<WorkletModuleResponsesMap>();
   }
+
+  class ClientImpl final : public GarbageCollected<ClientImpl>,
+                           public ModuleScriptFetcher::Client {
+    USING_GARBAGE_COLLECTED_MIXIN(ClientImpl);
+
+   public:
+    enum class Result { kInitial, kOK, kFailed };
+
+    void NotifyFetchFinished(
+        const base::Optional<ModuleScriptCreationParams>& params,
+        const HeapVector<Member<ConsoleMessage>>&) override {
+      ASSERT_EQ(Result::kInitial, result_);
+      if (params) {
+        result_ = Result::kOK;
+        params_.emplace(*params);
+      } else {
+        result_ = Result::kFailed;
+      }
+    }
+
+    Result GetResult() const { return result_; }
+    base::Optional<ModuleScriptCreationParams> GetParams() const {
+      return params_;
+    }
+
+   private:
+    Result result_ = Result::kInitial;
+    base::Optional<ModuleScriptCreationParams> params_;
+  };
 
   void Fetch(const KURL& url, ClientImpl* client) {
     ResourceRequest resource_request(url);
@@ -43,6 +73,7 @@ class WorkletModuleResponsesMapTest : public testing::Test {
     WorkletModuleScriptFetcher* module_fetcher =
         MakeGarbageCollected<WorkletModuleScriptFetcher>(map_.Get());
     module_fetcher->Fetch(fetch_params, fetcher_.Get(),
+                          nullptr /* modulator_for_built_in_modules */,
                           ModuleGraphLevel::kTopLevelModuleFetch, client);
   }
 

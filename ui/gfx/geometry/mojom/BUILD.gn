@@ -1,0 +1,53 @@
+# Copyright 2016 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+# This target does NOT depend on skia. One can depend on this target to avoid
+# picking up a dependency on skia.
+mojom("mojom") {
+  generate_java = true
+  sources = [
+    "geometry.mojom",
+  ]
+
+  check_includes_blink = false
+}
+
+mojom("test_interfaces") {
+  sources = [
+    "geometry_traits_test_service.mojom",
+  ]
+
+  public_deps = [
+    ":mojom",
+  ]
+}
+
+source_set("unit_test") {
+  testonly = true
+
+  sources = [
+    "geometry_mojom_traits_unittest.cc",
+  ]
+
+  deps = [
+    ":test_interfaces",
+    "//base",
+    "//base/test:test_support",
+    "//mojo/public/cpp/bindings",
+    "//testing/gtest",
+    "//ui/gfx/geometry",
+  ]
+}
+
+source_set("mojom_traits") {
+  sources = [
+    "geometry_mojom_traits.h",
+  ]
+  public_deps = [
+    ":mojom_shared_cpp_sources",
+    "//ui/gfx/geometry",
+  ]
+}

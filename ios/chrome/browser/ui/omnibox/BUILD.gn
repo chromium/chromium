@@ -23,18 +23,45 @@ source_set("omnibox_popup_shared") {
   sources = [
     "omnibox_constants.h",
     "omnibox_constants.mm",
-    "truncating_attributed_label.h",
-    "truncating_attributed_label.mm",
-  ]
-  deps = [
-    "//base",
-    "//components/omnibox/browser",
-  ]
-  public_deps = [
-    "//ui/base",
   ]
 }
 
+# This util file must be separate from the below
+# omnibox_util file because it is used in showcase. This
+# means that its dependencies should be limited, avoiding
+# components code.
+source_set("omnibox_suggestion_icon_util") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+
+  sources = [
+    "omnibox_suggestion_icon_util.h",
+    "omnibox_suggestion_icon_util.mm",
+  ]
+  deps = [
+    "resources:answer_calculator",
+    "resources:answer_conversion",
+    "resources:answer_dictionary",
+    "resources:answer_local_time",
+    "resources:answer_stock",
+    "resources:answer_sunrise",
+    "resources:answer_translation",
+    "resources:answer_when_is",
+    "resources:background_solid",
+    "resources:background_stroke",
+    "resources:favicon_fallback",
+    "resources:omnibox_completion_bookmark",
+    "resources:omnibox_completion_calculator",
+    "resources:omnibox_completion_default_favicon",
+    "resources:omnibox_completion_history",
+    "resources:omnibox_completion_search",
+    "resources:omnibox_popup_recent_query",
+    "resources:search",
+    "//base",
+  ]
+}
+
+# See the comment above on omnibox_suggestion_icon_util
+# for why these two targets are separated.
 source_set("omnibox_util") {
   configs += [ "//build/config/compiler:enable_arc" ]
 
@@ -43,25 +70,43 @@ source_set("omnibox_util") {
     "omnibox_util.mm",
   ]
   deps = [
+    ":omnibox_suggestion_icon_util",
+    "resources:omnibox_background",
+    "resources:omnibox_completion_bookmark",
+    "resources:omnibox_completion_calculator",
+    "resources:omnibox_completion_default_favicon",
+    "resources:omnibox_completion_history",
+    "resources:omnibox_completion_search",
+    "resources:search",
     "//base",
     "//components/omnibox/browser",
     "//components/security_state/core",
+    "//ios/chrome/browser/ui:feature_flags",
   ]
   public_deps = [
+    ":omnibox_icon_type_constants",
     "//ios/chrome/app/theme",
+  ]
+}
+
+# This target can also be used on EG2 tests, so it should only contain constants
+source_set("omnibox_icon_type_constants") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+
+  sources = [
+    "omnibox_icon_type.h",
+    "omnibox_icon_type.mm",
+  ]
+  deps = [
+    "//base",
   ]
 }
 
 source_set("omnibox_internal") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "autocomplete_match_formatter.h",
-    "autocomplete_match_formatter.mm",
-    "autocomplete_result_consumer.h",
-    "autocomplete_suggestion.h",
     "chrome_omnibox_client_ios.h",
     "chrome_omnibox_client_ios.mm",
-    "image_retriever.h",
     "omnibox_consumer.h",
     "omnibox_container_view.h",
     "omnibox_container_view.mm",
@@ -69,6 +114,7 @@ source_set("omnibox_internal") {
     "omnibox_coordinator.mm",
     "omnibox_mediator.h",
     "omnibox_mediator.mm",
+    "omnibox_text_change_delegate.h",
     "omnibox_text_field_delegate.h",
     "omnibox_text_field_ios.h",
     "omnibox_text_field_ios.mm",
@@ -85,62 +131,51 @@ source_set("omnibox_internal") {
     ":omnibox",
     ":omnibox_popup_shared",
     ":omnibox_util",
-    "resources:omnibox_background",
     "resources:omnibox_clear_icon",
-    "resources:omnibox_completion_bookmark",
-    "resources:omnibox_completion_calculator",
-    "resources:omnibox_completion_default_favicon",
-    "resources:omnibox_completion_history",
-    "resources:omnibox_completion_search",
     "resources:omnibox_transparent_background",
     "//base",
     "//components/favicon/ios",
-    "//components/image_fetcher/ios",
     "//components/open_from_clipboard:",
     "//components/resources",
     "//components/search_engines",
     "//components/security_state/core",
     "//components/strings",
     "//ios/chrome/app/strings",
-    "//ios/chrome/app/theme",
     "//ios/chrome/browser",
     "//ios/chrome/browser/autocomplete",
     "//ios/chrome/browser/bookmarks",
     "//ios/chrome/browser/bookmarks:bookmarks_utils",
     "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/favicon",
     "//ios/chrome/browser/net",
     "//ios/chrome/browser/prerender",
     "//ios/chrome/browser/search_engines",
     "//ios/chrome/browser/sessions",
-    "//ios/chrome/browser/ui",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/fullscreen",
     "//ios/chrome/browser/ui/location_bar:constants",
     "//ios/chrome/browser/ui/omnibox/popup",
     "//ios/chrome/browser/ui/orchestrator:orchestrator",
-    "//ios/chrome/browser/ui/toolbar/buttons",
     "//ios/chrome/browser/ui/toolbar/public",
     "//ios/chrome/browser/ui/toolbar/public:feature_flags",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/common",
+    "//ios/chrome/common/colors",
+    "//ios/chrome/common/favicon",
     "//ios/public/provider/chrome/browser",
-    "//ios/third_party/material_components_ios",
+    "//ios/public/provider/chrome/browser/images",
     "//ios/third_party/material_roboto_font_loader_ios",
     "//ios/web",
     "//net",
     "//skia",
-    "//third_party/google_toolbox_for_mac",
     "//ui/base",
     "//ui/gfx",
     "//ui/gfx/geometry",
     "//url",
   ]
-  allow_circular_includes_from = [
-    "//ios/chrome/browser/ui/omnibox/popup",
-    ":omnibox",
-  ]
   public_deps = [
+    ":omnibox_icon_type_constants",
     "//components/omnibox/browser",
   ]
   libs = [
@@ -151,20 +186,52 @@ source_set("omnibox_internal") {
   ]
 }
 
+source_set("eg_tests") {
+  testonly = true
+  sources = [
+    "omnibox_egtest.mm",
+  ]
+  deps = [
+    ":omnibox",
+    ":omnibox_internal",
+    "//base",
+    "//base/test:test_support",
+    "//components/omnibox/browser",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/ui/content_suggestions:content_suggestions_constant",
+    "//ios/chrome/browser/ui/omnibox/popup:popup_ui",
+    "//ios/chrome/test/app:test_support",
+    "//ios/chrome/test/earl_grey:test_support",
+    "//ios/testing:hardware_keyboarr_support",
+    "//ios/testing/earl_grey:earl_grey_support",
+    "//ios/third_party/earl_grey:earl_grey+link",
+    "//net:test_support",
+    "//testing/gmock",
+    "//ui/base",
+  ]
+  libs = [ "XCTest.framework" ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
 source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "omnibox_text_field_ios_unittest.mm",
+    "omnibox_view_ios_unittest.mm",
   ]
   deps = [
     ":omnibox",
     ":omnibox_internal",
     ":resources_unit_tests",
     "//base",
+    "//base/test:test_support",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser",
+    "//ios/chrome/browser/browser_state:test_support",
     "//testing/gtest",
+    "//third_party/ocmock",
     "//ui/base",
   ]
 }
@@ -179,4 +246,36 @@ bundle_data("resources_unit_tests") {
     "{{bundle_resources_dir}}/" +
         "ios/chrome/test/data/omnibox/{{source_file_part}}",
   ]
+}
+
+source_set("perf_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [
+    "omnibox_perftest.mm",
+  ]
+  deps = [
+    ":omnibox_internal",
+    "//base",
+    "//base/test:test_support",
+    "//components/omnibox/browser:test_support",
+    "//ios/chrome/browser/autocomplete",
+    "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/main:test_support",
+    "//ios/chrome/browser/search_engines",
+    "//ios/chrome/browser/tabs",
+    "//ios/chrome/browser/tabs:tabs_internal",
+    "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/location_bar:location_bar_model_delegate",
+    "//ios/chrome/browser/ui/toolbar",
+    "//ios/chrome/browser/ui/util",
+    "//ios/chrome/browser/web_state_list",
+    "//ios/chrome/browser/web_state_list:test_support",
+    "//ios/chrome/test/base:perf_test_support",
+    "//ios/web/public/test/fakes",
+    "//testing/gtest",
+    "//third_party/ocmock",
+    "//ui/base:test_support",
+  ]
+  libs = [ "UIKit.framework" ]
 }

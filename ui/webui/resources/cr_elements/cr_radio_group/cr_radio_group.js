@@ -30,7 +30,7 @@
         observer: 'update_',
       },
 
-      selectable: {
+      selectableElements: {
         type: String,
         value: 'cr-radio-button, controlled-radio-button',
       },
@@ -41,7 +41,7 @@
        */
       selectableRegExp_: {
         value: Object,
-        computed: 'computeSelectableRegExp_(selectable)',
+        computed: 'computeSelectableRegExp_(selectableElements)',
       },
     },
 
@@ -164,7 +164,12 @@
         // If nothing selected, start from the first radio then add |delta|.
         const lastSelection = enabledRadios.findIndex(radio => radio.checked);
         selectedIndex = Math.max(0, lastSelection) + delta;
-        selectedIndex = Math.min(max, Math.max(0, selectedIndex));
+        // Wrap the selection, if needed.
+        if (selectedIndex > max) {
+          selectedIndex = 0;
+        } else if (selectedIndex < 0) {
+          selectedIndex = max;
+        }
       } else {
         return;
       }
@@ -183,7 +188,7 @@
      * @private
      */
     computeSelectableRegExp_: function() {
-      const tags = this.selectable.split(', ').join('|');
+      const tags = this.selectableElements.split(', ').join('|');
       return new RegExp(`^(${tags})$`, 'i');
     },
 
@@ -211,7 +216,7 @@
           this.$$('slot')
               .assignedNodes({flatten: true})
               .filter(n => this.selectableRegExp_.test(n.tagName)) :
-          this.queryAllEffectiveChildren(this.selectable);
+          this.queryAllEffectiveChildren(this.selectableElements);
       this.buttonEventTracker_.removeAll();
       this.buttons_.forEach(el => {
         this.buttonEventTracker_.add(

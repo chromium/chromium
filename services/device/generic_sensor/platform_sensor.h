@@ -22,7 +22,6 @@ namespace device {
 
 class PlatformSensorProvider;
 class PlatformSensorConfiguration;
-class SensorReadingSharedBufferReader;
 
 // Base class for the sensors provided by the platform. Concrete instances of
 // this class are created by platform specific PlatformSensorProvider.
@@ -107,12 +106,11 @@ class PlatformSensor : public base::RefCountedThreadSafe<PlatformSensor> {
  private:
   friend class base::RefCountedThreadSafe<PlatformSensor>;
   SensorReadingSharedBuffer* reading_buffer_;  // NOTE: Owned by |provider_|.
-  std::unique_ptr<SensorReadingSharedBufferReader> shared_buffer_reader_;
   mojom::SensorType type_;
   ConfigMap config_map_;
   PlatformSensorProvider* provider_;
   bool is_active_ = false;
-  base::WeakPtrFactory<PlatformSensor> weak_factory_;
+  base::WeakPtrFactory<PlatformSensor> weak_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(PlatformSensor);
 };
 

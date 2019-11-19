@@ -1,0 +1,63 @@
+# Copyright 2016 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("form_input_accessory") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "form_input_accessory_consumer.h",
+    "form_input_accessory_coordinator.h",
+    "form_input_accessory_coordinator.mm",
+    "form_input_accessory_mediator.h",
+    "form_input_accessory_mediator.mm",
+    "form_input_accessory_view_controller.h",
+    "form_input_accessory_view_controller.mm",
+  ]
+  deps = [
+    ":form_input_accessory_ui",
+    "//base",
+    "//components/autofill/core/browser",
+    "//components/autofill/ios/browser",
+    "//components/autofill/ios/form_util",
+    "//components/keyed_service/core",
+    "//components/password_manager/core/browser",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/autofill:autofill",
+    "//ios/chrome/browser/autofill:autofill_shared",
+    "//ios/chrome/browser/autofill/manual_fill",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/passwords",
+    "//ios/chrome/browser/ui/autofill/manual_fill",
+    "//ios/chrome/browser/ui/autofill/manual_fill:manual_fill_ui",
+    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/browser/ui/util",
+    "//ios/chrome/browser/web_state_list",
+    "//ios/chrome/common/ui_util",
+    "//ios/web/common",
+    "//ios/web/public",
+    "//ios/web/public/deprecated",
+    "//ios/web/public/js_messaging",
+    "//ui/base",
+  ]
+  libs = [ "UIKit.framework" ]
+}
+
+source_set("form_input_accessory_ui") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "form_input_accessory_view.h",
+    "form_input_accessory_view.mm",
+  ]
+  deps = [
+    "//base",
+    "//base:i18n",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/autofill:autofill_shared",
+    "//ios/chrome/browser/ui/image_util",
+    "//ios/chrome/browser/ui/util",
+    "//ios/chrome/common/colors",
+    "//ios/chrome/common/ui_util",
+    "//ui/base",
+  ]
+  libs = [ "UIKit.framework" ]
+}

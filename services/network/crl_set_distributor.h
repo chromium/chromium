@@ -58,7 +58,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CRLSetDistributor {
                      false /*allow_reentrancy*/>::Unchecked observers_;
   scoped_refptr<net::CRLSet> crl_set_;
 
-  base::WeakPtrFactory<CRLSetDistributor> weak_factory_;
+  base::WeakPtrFactory<CRLSetDistributor> weak_factory_{this};
 };
 
 }  // namespace network

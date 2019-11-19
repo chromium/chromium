@@ -1,0 +1,22 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/blink/renderer/modules/modules.gni")
+
+blink_modules_sources("launch") {
+  sources = [
+    "dom_window_launch_queue.cc",
+    "dom_window_launch_queue.h",
+    "launch_params.cc",
+    "launch_params.h",
+    "launch_queue.cc",
+    "launch_queue.h",
+    "web_launch_service_impl.cc",
+    "web_launch_service_impl.h",
+  ]
+
+  deps = [
+    "//third_party/blink/renderer/modules/filesystem",
+  ]
+}

@@ -13,7 +13,6 @@
 #include "base/strings/sys_string_conversions.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/net/url_scheme_util.h"
-#include "net/url_request/url_request.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -40,13 +39,9 @@ bool IsURLNtp(const GURL& url) {
 
 bool IsHandledProtocol(const std::string& scheme) {
   DCHECK_EQ(scheme, base::ToLowerASCII(scheme));
-  if (scheme == url::kAboutScheme)
-    return true;
-  if (scheme == url::kDataScheme)
-    return true;
-  if (scheme == kChromeUIScheme)
-    return true;
-  return net::URLRequest::IsHandledProtocol(scheme);
+  return (scheme == url::kHttpScheme || scheme == url::kHttpsScheme ||
+          scheme == url::kAboutScheme || scheme == url::kDataScheme ||
+          scheme == kChromeUIScheme);
 }
 
 @implementation ChromeAppConstants {

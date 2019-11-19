@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>
+  Forced colors mode - backplate.
+  Tests backplate invalidation.
+</title>
+<link rel="help" href="https://www.w3.org/TR/css-color-adjust-1/#forced">
+<link rel=match href="forced-colors-mode-backplate-07-expected.html">
+<style>
+  body {
+    background-image: url("../resources/test-image.jpg");
+    font-family: Ahem;
+    font-size: 10px;
+  }
+</style>
+<body>
+  <span>
+    There should be a backplate covering one line of text.
+    <br>
+    <span id="text">this second line should be removed</span>
+    <br>
+  </span>
+  <script>
+    if (window.testRunner)
+      testRunner.waitUntilDone();
+    window.onload = function() {
+      requestAnimationFrame(function() {
+        text.innerText = '';
+        if (window.testRunner)
+          testRunner.notifyDone();
+      });
+    }
+  </script>
+</body>

@@ -16,7 +16,7 @@
 #include "net/base/upload_element_reader.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
-#include "net/test/test_with_scoped_task_environment.h"
+#include "net/test/test_with_task_environment.h"
 #include "net/test/url_request/url_request_failed_job.h"
 #include "net/test/url_request/url_request_mock_data_job.h"
 #include "net/test/url_request/url_request_mock_http_job.h"
@@ -40,7 +40,7 @@ void MarkURLRequestDestroyed(bool* url_request_destroyed) {
 // data. Erases the sent reports from |expect_reports|.
 void CheckUploadData(const URLRequest& request,
                      std::set<std::string>* expect_reports) {
-  const UploadDataStream* upload = request.get_upload();
+  const UploadDataStream* upload = request.get_upload_for_testing();
   ASSERT_TRUE(upload);
   ASSERT_TRUE(upload->GetElementReaders());
   ASSERT_EQ(1u, upload->GetElementReaders()->size());
@@ -184,7 +184,7 @@ class TestReportSenderNetworkDelegate : public NetworkDelegateImpl {
   DISALLOW_COPY_AND_ASSIGN(TestReportSenderNetworkDelegate);
 };
 
-class ReportSenderTest : public TestWithScopedTaskEnvironment {
+class ReportSenderTest : public TestWithTaskEnvironment {
  public:
   ReportSenderTest() : context_(true) {
     context_.set_network_delegate(&network_delegate_);

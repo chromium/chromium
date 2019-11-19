@@ -9,6 +9,7 @@
 #include "ui/compositor/compositor_export.h"
 #include "ui/compositor/property_change_reason.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/transform.h"
 
 namespace cc {
@@ -38,6 +39,11 @@ class COMPOSITOR_EXPORT LayerAnimationDelegate {
                                          PropertyChangeReason reason) = 0;
   virtual void SetColorFromAnimation(SkColor color,
                                      PropertyChangeReason reason) = 0;
+  virtual void SetClipRectFromAnimation(const gfx::Rect& clip_rect,
+                                        PropertyChangeReason reason) = 0;
+  virtual void SetRoundedCornersFromAnimation(
+      const gfx::RoundedCornersF& rounded_corners,
+      PropertyChangeReason reason) = 0;
   virtual void ScheduleDrawForAnimation() = 0;
   virtual const gfx::Rect& GetBoundsForAnimation() const = 0;
   virtual gfx::Transform GetTransformForAnimation() const = 0;
@@ -46,6 +52,8 @@ class COMPOSITOR_EXPORT LayerAnimationDelegate {
   virtual float GetBrightnessForAnimation() const = 0;
   virtual float GetGrayscaleForAnimation() const = 0;
   virtual SkColor GetColorForAnimation() const = 0;
+  virtual gfx::Rect GetClipRectForAnimation() const = 0;
+  virtual gfx::RoundedCornersF GetRoundedCornersForAnimation() const = 0;
   virtual float GetDeviceScaleFactor() const = 0;
   virtual ui::Layer* GetLayer() = 0;
   virtual cc::Layer* GetCcLayer() const = 0;

@@ -1,3 +1,0 @@
-Corners on top should be rounded and a border of 1px black on the bottom.
-
-Corners on top should be rounded and a border of 1px black all around.

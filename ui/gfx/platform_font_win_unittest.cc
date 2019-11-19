@@ -15,126 +15,13 @@
 #include "base/win/scoped_hdc.h"
 #include "base/win/scoped_select_object.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkFontMgr.h"
 #include "ui/gfx/font.h"
-#include "ui/gfx/win/direct_write.h"
+#include "ui/gfx/font_render_params.h"
+#include "ui/gfx/platform_font_skia.h"
 #include "ui/gfx/win/scoped_set_map_mode.h"
 
 namespace gfx {
-
-TEST(PlatformFontWinTest, AdjustFontSize) {
-  PlatformFontWin::SetGetMinimumFontSizeCallback(nullptr);
-  EXPECT_EQ(10, PlatformFontWin::AdjustFontSize(10, 0));
-  EXPECT_EQ(-10, PlatformFontWin::AdjustFontSize(-10, 0));
-  EXPECT_EQ(8, PlatformFontWin::AdjustFontSize(10, -2));
-  EXPECT_EQ(-8, PlatformFontWin::AdjustFontSize(-10, -2));
-  EXPECT_EQ(13, PlatformFontWin::AdjustFontSize(10, 3));
-  EXPECT_EQ(-13, PlatformFontWin::AdjustFontSize(-10, 3));
-  EXPECT_EQ(1, PlatformFontWin::AdjustFontSize(10, -9));
-  EXPECT_EQ(-1, PlatformFontWin::AdjustFontSize(-10, -9));
-  EXPECT_EQ(0, PlatformFontWin::AdjustFontSize(10, -12));
-  EXPECT_EQ(0, PlatformFontWin::AdjustFontSize(-10, -12));
-}
-
-TEST(PlatformFontWinTest, AdjustFontSize_MinimumSizeSpecified) {
-  PlatformFontWin::SetGetMinimumFontSizeCallback([] { return 1; });
-  EXPECT_EQ(10, PlatformFontWin::AdjustFontSize(10, 0));
-  EXPECT_EQ(-10, PlatformFontWin::AdjustFontSize(-10, 0));
-  EXPECT_EQ(8, PlatformFontWin::AdjustFontSize(10, -2));
-  EXPECT_EQ(-8, PlatformFontWin::AdjustFontSize(-10, -2));
-  EXPECT_EQ(13, PlatformFontWin::AdjustFontSize(10, 3));
-  EXPECT_EQ(-13, PlatformFontWin::AdjustFontSize(-10, 3));
-  EXPECT_EQ(1, PlatformFontWin::AdjustFontSize(10, -9));
-  EXPECT_EQ(-1, PlatformFontWin::AdjustFontSize(-10, -9));
-  EXPECT_EQ(1, PlatformFontWin::AdjustFontSize(10, -12));
-  EXPECT_EQ(-1, PlatformFontWin::AdjustFontSize(-10, -12));
-}
-
-namespace {
-
-LOGFONT CreateLOGFONT(const base::string16& name, LONG height) {
-  LOGFONT logfont{};
-  logfont.lfHeight = height;
-  auto result = wcscpy_s(logfont.lfFaceName, name.c_str());
-  DCHECK_EQ(0, result);
-  return logfont;
-}
-
-const base::string16 kSegoeUI(L"Segoe UI");
-const base::string16 kArial(L"Arial");
-
-}  // namespace
-
-TEST(PlatformFontWinTest, AdjustLOGFONT_NoAdjustment) {
-  LOGFONT logfont = CreateLOGFONT(kSegoeUI, -12);
-  PlatformFontWin::FontAdjustment adjustment;
-  PlatformFontWin::AdjustLOGFONT(adjustment, &logfont);
-  EXPECT_EQ(-12, logfont.lfHeight);
-  EXPECT_EQ(kSegoeUI, logfont.lfFaceName);
-}
-
-TEST(PlatformFontWinTest, AdjustLOGFONT_ChangeFace) {
-  LOGFONT logfont = CreateLOGFONT(kSegoeUI, -12);
-  PlatformFontWin::FontAdjustment adjustment{kArial, 1.0};
-  PlatformFontWin::AdjustLOGFONT(adjustment, &logfont);
-  EXPECT_EQ(-12, logfont.lfHeight);
-  EXPECT_EQ(kArial, logfont.lfFaceName);
-}
-
-TEST(PlatformFontWinTest, AdjustLOGFONT_ScaleDown) {
-  LOGFONT logfont = CreateLOGFONT(kSegoeUI, -12);
-  PlatformFontWin::FontAdjustment adjustment{L"", 0.5};
-  PlatformFontWin::AdjustLOGFONT(adjustment, &logfont);
-  EXPECT_EQ(-6, logfont.lfHeight);
-  EXPECT_EQ(kSegoeUI, logfont.lfFaceName);
-
-  logfont = CreateLOGFONT(kSegoeUI, 12);
-  adjustment = {L"", 0.5};
-  PlatformFontWin::AdjustLOGFONT(adjustment, &logfont);
-  EXPECT_EQ(6, logfont.lfHeight);
-  EXPECT_EQ(kSegoeUI, logfont.lfFaceName);
-}
-
-TEST(PlatformFontWinTest, AdjustLOGFONT_ScaleDownWithRounding) {
-  LOGFONT logfont = CreateLOGFONT(kSegoeUI, -10);
-  PlatformFontWin::FontAdjustment adjustment{L"", 0.85};
-  PlatformFontWin::AdjustLOGFONT(adjustment, &logfont);
-  EXPECT_EQ(-9, logfont.lfHeight);
-  EXPECT_EQ(kSegoeUI, logfont.lfFaceName);
-
-  logfont = CreateLOGFONT(kSegoeUI, 10);
-  adjustment = {L"", 0.85};
-  PlatformFontWin::AdjustLOGFONT(adjustment, &logfont);
-  EXPECT_EQ(9, logfont.lfHeight);
-  EXPECT_EQ(kSegoeUI, logfont.lfFaceName);
-}
-
-TEST(PlatformFontWinTest, AdjustLOGFONT_ScaleUpWithFaceChange) {
-  LOGFONT logfont = CreateLOGFONT(kSegoeUI, -12);
-  PlatformFontWin::FontAdjustment adjustment{kArial, 1.5};
-  PlatformFontWin::AdjustLOGFONT(adjustment, &logfont);
-  EXPECT_EQ(-18, logfont.lfHeight);
-  EXPECT_EQ(kArial, logfont.lfFaceName);
-
-  logfont = CreateLOGFONT(kSegoeUI, 12);
-  adjustment = {kArial, 1.5};
-  PlatformFontWin::AdjustLOGFONT(adjustment, &logfont);
-  EXPECT_EQ(18, logfont.lfHeight);
-  EXPECT_EQ(kArial, logfont.lfFaceName);
-}
-
-TEST(PlatformFontWinTest, AdjustLOGFONT_ScaleUpWithRounding) {
-  LOGFONT logfont = CreateLOGFONT(kSegoeUI, -10);
-  PlatformFontWin::FontAdjustment adjustment{L"", 1.111};
-  PlatformFontWin::AdjustLOGFONT(adjustment, &logfont);
-  EXPECT_EQ(-11, logfont.lfHeight);
-  EXPECT_EQ(kSegoeUI, logfont.lfFaceName);
-
-  logfont = CreateLOGFONT(kSegoeUI, 10);
-  adjustment = {L"", 1.11};
-  PlatformFontWin::AdjustLOGFONT(adjustment, &logfont);
-  EXPECT_EQ(11, logfont.lfHeight);
-  EXPECT_EQ(kSegoeUI, logfont.lfFaceName);
-}
 
 // Test whether font metrics retrieved by DirectWrite (skia) and GDI match as
 // per assumptions mentioned below:-
@@ -242,6 +129,37 @@ TEST(PlatformFontWinTest, DirectWriteFontSubstitution) {
 
     EXPECT_EQ(font.expected_font_name, h_font_skia->font_name());
   }
+}
+
+// TODO(etienneb): Move this test to platform_font_skia_unittest when the
+// font migration to skia font is completed.
+TEST(PlatformFontWinTest, DefaultFontRenderParams) {
+  scoped_refptr<PlatformFontSkia> default_font(new PlatformFontSkia());
+  scoped_refptr<PlatformFontSkia> named_font(new PlatformFontSkia(
+      default_font->GetFontName(), default_font->GetFontSize()));
+
+  // Ensures that both constructors are producing fonts with the same render
+  // params.
+  EXPECT_EQ(default_font->GetFontRenderParams(),
+            named_font->GetFontRenderParams());
+}
+
+TEST(PlatformFontWinTest, SkiaTypefaceConstructor) {
+  gfx::Font default_font;
+
+  // The PlatformFontWin constructor doesn't create a skia typeface.
+  if (!base::FeatureList::IsEnabled(kPlatformFontSkiaOnWindows)) {
+    EXPECT_EQ(default_font.platform_font()->GetNativeSkTypefaceIfAvailable(),
+              nullptr);
+  }
+
+  sk_sp<SkFontMgr> font_mgr = SkFontMgr::RefDefault();
+  sk_sp<SkTypeface> typeface(
+      font_mgr->matchFamilyStyle("Segoe UI", SkFontStyle()));
+  ASSERT_TRUE(typeface);
+  gfx::Font fallback_font(new PlatformFontWin(typeface, 13, base::nullopt));
+  EXPECT_EQ(fallback_font.platform_font()->GetNativeSkTypefaceIfAvailable(),
+            typeface);
 }
 
 }  // namespace gfx

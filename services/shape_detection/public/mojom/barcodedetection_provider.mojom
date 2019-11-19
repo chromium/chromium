@@ -8,31 +8,13 @@ module shape_detection.mojom;
 
 import "services/shape_detection/public/mojom/barcodedetection.mojom";
 
-// https://wicg.github.io/shape-detection-api/#barcodeformat-section
-enum BarcodeFormat {
-  AZTEC,
-  CODE_128,
-  CODE_39,
-  CODE_93,
-  CODABAR,
-  DATA_MATRIX,
-  EAN_13,
-  EAN_8,
-  ITF,
-  PDF417,
-  QR_CODE,
-  UNKNOWN,
-  UPC_A,
-  UPC_E
-};
-
 // https://wicg.github.io/shape-detection-api/#barcodedetectoroptions-section
 struct BarcodeDetectorOptions {
   array<BarcodeFormat> formats;
 };
 
 interface BarcodeDetectionProvider {
-  CreateBarcodeDetection(BarcodeDetection& request,
+  CreateBarcodeDetection(pending_receiver<BarcodeDetection> receiver,
                          BarcodeDetectorOptions options);
 
   EnumerateSupportedFormats() => (array<BarcodeFormat> supported_formats);

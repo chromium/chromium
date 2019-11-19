@@ -13,6 +13,7 @@
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
 
 class GURL;
@@ -22,10 +23,6 @@ class Profile;
 namespace base {
 class DictionaryValue;
 }  // namespace base
-
-namespace history {
-class HistoryService;
-}  // namespace history
 
 // This class contains helpers to get/set content and website settings related
 // to subresource filtering.
@@ -83,7 +80,7 @@ class SubresourceFilterContentSettingsManager
                        std::unique_ptr<base::DictionaryValue> dict);
 
   ScopedObserver<history::HistoryService, history::HistoryServiceObserver>
-      history_observer_;
+      history_observer_{this};
 
   HostContentSettingsMap* settings_map_;
 

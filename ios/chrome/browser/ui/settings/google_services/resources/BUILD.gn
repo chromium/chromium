@@ -4,6 +4,14 @@
 
 import("//build/config/ios/asset_catalog.gni")
 
+imageset("google_services_enterprise") {
+  sources = [
+    "google_services_enterprise.imageset/Contents.json",
+    "google_services_enterprise.imageset/google_services_enterprise@2x.png",
+    "google_services_enterprise.imageset/google_services_enterprise@3x.png",
+  ]
+}
+
 imageset("google_services_sync_error") {
   sources = [
     "google_services_sync_error.imageset/Contents.json",

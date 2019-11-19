@@ -192,7 +192,7 @@ class ExtensionRegistrar {
   // which were disabled for a reload.
   ExtensionIdSet reloading_extensions_;
 
-  base::WeakPtrFactory<ExtensionRegistrar> weak_factory_;
+  base::WeakPtrFactory<ExtensionRegistrar> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ExtensionRegistrar);
 };

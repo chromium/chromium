@@ -23,7 +23,7 @@ class CaptureAccessHandlerBase : public MediaAccessHandler {
   void UpdateMediaRequestState(int render_process_id,
                                int render_frame_id,
                                int page_request_id,
-                               blink::MediaStreamType stream_type,
+                               blink::mojom::MediaStreamType stream_type,
                                content::MediaRequestState state) override;
 
   // Returns true if there is any ongoing insecured capturing. Returns false

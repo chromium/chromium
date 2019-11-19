@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/web/public/global_state/ios_global_state_configuration.h"
+#include "ios/web/public/init/ios_global_state_configuration.h"
 
 namespace ios_global_state {
 

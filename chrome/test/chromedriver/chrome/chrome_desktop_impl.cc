@@ -12,6 +12,7 @@
 #include "base/posix/eintr_wrapper.h"
 #include "base/process/kill.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
@@ -21,7 +22,9 @@
 #include "chrome/test/chromedriver/chrome/devtools_event_listener.h"
 #include "chrome/test/chromedriver/chrome/devtools_http_client.h"
 #include "chrome/test/chromedriver/chrome/status.h"
+#include "chrome/test/chromedriver/chrome/version.h"
 #include "chrome/test/chromedriver/chrome/web_view_impl.h"
+#include "chrome/test/chromedriver/constants/version.h"
 #include "chrome/test/chromedriver/net/timeout.h"
 
 #if defined(OS_POSIX)
@@ -99,12 +102,15 @@ ChromeDesktopImpl::~ChromeDesktopImpl() {
   if (!quit_) {
     base::FilePath user_data_dir = user_data_dir_.Take();
     base::FilePath extension_dir = extension_dir_.Take();
-    LOG(WARNING) << "chrome quit unexpectedly, leaving behind temporary "
-        "directories for debugging:";
+    LOG(WARNING) << kBrowserShortName
+                 << " quit unexpectedly, leaving behind temporary directories"
+                    "for debugging:";
     if (user_data_dir_.IsValid())
-      LOG(WARNING) << "chrome user data directory: " << user_data_dir.value();
+      LOG(WARNING) << kBrowserShortName
+                   << " user data directory: " << user_data_dir.value();
     if (extension_dir_.IsValid())
-      LOG(WARNING) << "chromedriver automation extension directory: "
+      LOG(WARNING) << kChromeDriverProductShortName
+                   << " automation extension directory: "
                    << extension_dir.value();
   }
 }
@@ -230,7 +236,8 @@ Status ChromeDesktopImpl::QuitImpl() {
   // to allow Chrome to write out all the net logs to the log path.
   kill_gracefully |= command_.HasSwitch("log-net-log");
   if (!KillProcess(process_, kill_gracefully))
-    return Status(kUnknownError, "cannot kill Chrome");
+    return Status(kUnknownError,
+                  base::StringPrintf("cannot kill %s", kBrowserShortName));
   return Status(kOk);
 }
 

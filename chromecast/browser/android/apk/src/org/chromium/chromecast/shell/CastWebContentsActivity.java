@@ -10,9 +10,9 @@ import android.content.IntentFilter;
 import android.graphics.Color;
 import android.media.AudioManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
@@ -39,7 +39,7 @@ import org.chromium.chromecast.base.Unit;
  * activity is destroyed, CastContentWindowAndroid should be notified by intent.
  */
 public class CastWebContentsActivity extends Activity {
-    private static final String TAG = "cr_CastWebActivity";
+    private static final String TAG = "CastWebActivity";
     private static final boolean DEBUG = true;
 
     // Tracks whether this Activity is between onCreate() and onDestroy().
@@ -112,8 +112,7 @@ public class CastWebContentsActivity extends Activity {
                     // Set flags to both exit sleep mode when this activity starts and
                     // avoid entering sleep mode while playing media. If an app that shouldn't turn
                     // on the screen is launching, we don't add TURN_SCREEN_ON.
-                    if (CastWebContentsIntentUtils.shouldTurnOnScreen(intent))
-                        window.addFlags(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
+                    if (CastWebContentsIntentUtils.shouldTurnOnScreen(intent)) turnScreenOn();
                     window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
                 })));
 
@@ -236,47 +235,6 @@ public class CastWebContentsActivity extends Activity {
     }
 
     @Override
-    public boolean dispatchKeyEvent(KeyEvent event) {
-        if (DEBUG) Log.d(TAG, "dispatchKeyEvent");
-        int keyCode = event.getKeyCode();
-        int action = event.getAction();
-
-        // Similar condition for all single-click events.
-        if (action == KeyEvent.ACTION_DOWN && event.getRepeatCount() == 0) {
-            if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_DPAD_LEFT
-                    || keyCode == KeyEvent.KEYCODE_MEDIA_REWIND
-                    || keyCode == KeyEvent.KEYCODE_DPAD_RIGHT
-                    || keyCode == KeyEvent.KEYCODE_MEDIA_FAST_FORWARD
-                    || keyCode == KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE
-                    || keyCode == KeyEvent.KEYCODE_MEDIA_PLAY
-                    || keyCode == KeyEvent.KEYCODE_MEDIA_PAUSE
-                    || keyCode == KeyEvent.KEYCODE_MEDIA_STOP
-                    || keyCode == KeyEvent.KEYCODE_MEDIA_NEXT
-                    || keyCode == KeyEvent.KEYCODE_MEDIA_PREVIOUS) {
-                if (mSurfaceHelper != null) {
-                    CastWebContentsComponent.onKeyDown(mSurfaceHelper.getSessionId(), keyCode);
-                }
-                return true;
-            }
-        }
-
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            return super.dispatchKeyEvent(event);
-        }
-        return false;
-    }
-
-    @Override
-    public boolean dispatchGenericMotionEvent(MotionEvent ev) {
-        return false;
-    }
-
-    @Override
-    public boolean dispatchKeyShortcutEvent(KeyEvent event) {
-        return false;
-    }
-
-    @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
         if (mSurfaceHelper != null && mSurfaceHelper.isTouchInputEnabled()) {
             return super.dispatchTouchEvent(ev);
@@ -285,9 +243,12 @@ public class CastWebContentsActivity extends Activity {
         }
     }
 
-    @Override
-    public boolean dispatchTrackballEvent(MotionEvent ev) {
-        return false;
+    private void turnScreenOn() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+            setTurnScreenOn(true);
+        } else {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
+        }
     }
 
     @RemovableInRelease

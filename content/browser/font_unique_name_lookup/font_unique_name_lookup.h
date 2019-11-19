@@ -7,7 +7,9 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/read_only_shared_memory_region.h"
+#include "base/sequenced_task_runner.h"
 #include "content/common/content_export.h"
+#include "third_party/blink/public/mojom/font_unique_name_lookup/font_unique_name_lookup.mojom.h"
 
 #include <ft2build.h>
 #include FT_SYSTEM_H
@@ -15,10 +17,6 @@
 #include FT_SFNT_NAMES_H
 
 #include <string>
-
-namespace blink {
-class FontUniqueNameTable;
-}
 
 namespace content {
 
@@ -32,11 +30,12 @@ class CONTENT_EXPORT FontUniqueNameLookup {
  public:
   FontUniqueNameLookup() = delete;
 
-  // Retrieve an initialized instance of FontUniqueNameLookup that has read the
-  // table from cache if there was one, updated the lookup table if needed
-  // (i.e. if there was an Android firmware update) from the standard Android
-  // font directories, and written the updated lookup table back to file. It is
-  // ready to use with FontTableMatcher.
+  // Retrieve an instance of FontUniqueNameLookup. On the first call to
+  // GetInstance() this that will start a task reading the lookup table from
+  // cache if there was a cached one, updating the lookup table if needed
+  // (i.e. if there was an Android firmware update or no cached one existed)
+  // from the standard Android font directories, and writing the updated lookup
+  // table back to file.
   static FontUniqueNameLookup& GetInstance();
 
   // Construct a FontUniqueNameLookup given a cache directory path
@@ -46,15 +45,14 @@ class CONTENT_EXPORT FontUniqueNameLookup {
   FontUniqueNameLookup(const base::FilePath& cache_directory);
   ~FontUniqueNameLookup();
 
-  // Default move contructor.
-  FontUniqueNameLookup(FontUniqueNameLookup&&);
-  // Default move assigment operator.
-  FontUniqueNameLookup& operator=(FontUniqueNameLookup&&) = default;
-
   // Return a ReadOnlySharedMemoryRegion to access the serialized form of the
   // current lookup table. To be used with FontTableMatcher.
-  base::ReadOnlySharedMemoryRegion GetUniqueNameTableAsSharedMemoryRegion()
-      const;
+  base::ReadOnlySharedMemoryRegion DuplicateMemoryRegion();
+
+  void QueueShareMemoryRegionWhenReady(
+      scoped_refptr<base::SequencedTaskRunner> task_runner,
+      blink::mojom::FontUniqueNameLookup::GetUniqueNameLookupTableCallback
+          callback);
 
   // Returns true if an up-to-date, consistent font table is present.
   bool IsValid();
@@ -99,16 +97,10 @@ class CONTENT_EXPORT FontUniqueNameLookup {
   // Returns the storage location of the table cache protobuf file.
   base::FilePath TableCacheFilePathForTesting() { return TableCacheFilePath(); }
 
+ protected:
+  void ScheduleLoadOrUpdateTable();
+
  private:
-  // Scan the font file at |font_file_path| and given |ttc_index| and extract
-  // full font name and postscript name from the font and store it into the
-  // font_index_entry protobuf object.
-  void IndexFile(blink::FontUniqueNameTable* font_table,
-                 const std::string& font_file_path,
-                 uint32_t ttc_index);
-  // For a TrueType font collection, determine how many font faces are
-  // available in a file.
-  int32_t NumberOfFacesInFontFile(const std::string& font_filename) const;
 
   // If an Android build fingerprint override is set through
   // SetAndroidBuildFingerprint() return that, otherwise return the actual
@@ -122,13 +114,35 @@ class CONTENT_EXPORT FontUniqueNameLookup {
 
   base::FilePath TableCacheFilePath();
 
-  base::FilePath cache_directory_;
-  FT_Library ft_library_;
+  void PostCallbacks();
+
+  // We have a asynchronous update tasks which need write access to the
+  // proto_storage_ MappedReadOnlyRegion after reading the index file from disk,
+  // or after scanning and indexing metadata from font files. At the same time,
+  // we may receive incoming Mojo requests to tell whether the proto_storage_
+  // storage area is already ready early for sync access by the
+  // renderers. Synchronize the information on whether the proto_storage_ is
+  // ready by means of a WaitableEvent.
+  base::WaitableEvent proto_storage_ready_;
   base::MappedReadOnlyRegion proto_storage_;
 
+  base::FilePath cache_directory_;
   std::string android_build_fingerprint_for_testing_ = "";
   std::vector<std::string> font_file_paths_for_testing_ =
       std::vector<std::string>();
+
+  struct CallbackOnTaskRunner {
+    CallbackOnTaskRunner(
+        scoped_refptr<base::SequencedTaskRunner>,
+        blink::mojom::FontUniqueNameLookup::GetUniqueNameLookupTableCallback);
+    CallbackOnTaskRunner(CallbackOnTaskRunner&&);
+    ~CallbackOnTaskRunner();
+    scoped_refptr<base::SequencedTaskRunner> task_runner;
+    blink::mojom::FontUniqueNameLookup::GetUniqueNameLookupTableCallback
+        mojo_callback;
+  };
+
+  std::vector<CallbackOnTaskRunner> pending_callbacks_;
 };
 }  // namespace content
 

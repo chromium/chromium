@@ -8,8 +8,8 @@
 #include <string>
 #include <utility>
 
+#include "base/hash/sha1.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sha1.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/default_clock.h"
 #include "components/consent_auditor/pref_names.h"
@@ -37,9 +37,6 @@ const char kLocalConsentLocaleKey[] = "locale";
 // Fake product version for testing.
 const char kCurrentAppVersion[] = "1.2.3.4";
 const char kCurrentAppLocale[] = "en-US";
-
-// Fake account ID for testing.
-const char kAccountId[] = "testing_account_id";
 
 // A helper function to load the |description|, |confirmation|, |version|,
 // and |locale|, in that order, from a record for the |feature| in
@@ -110,6 +107,11 @@ class FakeConsentSyncBridge : public ConsentSyncBridge {
 
 class ConsentAuditorImplTest : public testing::Test {
  public:
+  // Fake account ID for testing.
+  const CoreAccountId kAccountId;
+
+  ConsentAuditorImplTest() : kAccountId("testing_account_id") {}
+
   void SetUp() override {
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
     // Use normal clock by default.
@@ -258,7 +260,7 @@ TEST_F(ConsentAuditorImplTest, RecordGaiaConsentAsUserConsent) {
 
   EXPECT_EQ(now.since_origin().InMicroseconds(),
             consent.client_consent_time_usec());
-  EXPECT_EQ(kAccountId, consent.account_id());
+  EXPECT_EQ(kAccountId.id, consent.account_id());
   EXPECT_EQ(kCurrentAppLocale, consent.locale());
 
   EXPECT_TRUE(consent.has_sync_consent());
@@ -305,7 +307,7 @@ TEST_F(ConsentAuditorImplTest, RecordArcPlayConsentRevocation) {
   ASSERT_EQ(1U, consents.size());
   UserConsentSpecifics consent = consents[0];
 
-  EXPECT_EQ(kAccountId, consent.account_id());
+  EXPECT_EQ(kAccountId.id, consent.account_id());
   EXPECT_EQ(kCurrentAppLocale, consent.locale());
 
   EXPECT_TRUE(consent.has_arc_play_terms_of_service_consent());
@@ -361,7 +363,7 @@ TEST_F(ConsentAuditorImplTest, RecordArcPlayConsent) {
   ASSERT_EQ(1U, consents.size());
   UserConsentSpecifics consent = consents[0];
 
-  EXPECT_EQ(kAccountId, consent.account_id());
+  EXPECT_EQ(kAccountId.id, consent.account_id());
   EXPECT_EQ(kCurrentAppLocale, consent.locale());
 
   EXPECT_TRUE(consent.has_arc_play_terms_of_service_consent());
@@ -421,7 +423,7 @@ TEST_F(ConsentAuditorImplTest, RecordAssistantActivityControlConsent) {
   ASSERT_EQ(1U, consents.size());
   UserConsentSpecifics consent = consents[0];
 
-  EXPECT_EQ(kAccountId, consent.account_id());
+  EXPECT_EQ(kAccountId.id, consent.account_id());
   EXPECT_EQ(kCurrentAppLocale, consent.locale());
 
   EXPECT_EQ(true, consent.has_assistant_activity_control_consent());

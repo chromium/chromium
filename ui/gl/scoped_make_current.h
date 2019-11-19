@@ -37,20 +37,6 @@ class GL_EXPORT ScopedMakeCurrent {
   DISALLOW_COPY_AND_ASSIGN(ScopedMakeCurrent);
 };
 
-// This behaves similarly to ScopedMakeCurrent, except that it releases the
-// current context on creation and restores it on destruction.
-class GL_EXPORT ScopedReleaseCurrent {
- public:
-  ScopedReleaseCurrent();
-  ~ScopedReleaseCurrent();
-
- private:
-  scoped_refptr<gl::GLContext> previous_context_;
-  scoped_refptr<gl::GLSurface> previous_surface_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedReleaseCurrent);
-};
-
 }  // namespace ui
 
 #endif  // UI_GL_SCOPED_MAKE_CURRENT_H_

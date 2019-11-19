@@ -61,7 +61,7 @@ extern const char kInvalidOriginError[];
 
 }  // namespace extension_browsing_data_api_constants
 
-class BrowsingDataSettingsFunction : public UIThreadExtensionFunction {
+class BrowsingDataSettingsFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("browsingData.settings", BROWSINGDATA_SETTINGS)
 

@@ -20,14 +20,16 @@ const ClipPaintPropertyNode& ClipPaintPropertyNode::Root() {
 }
 
 bool ClipPaintPropertyNode::Changed(
+    PaintPropertyChangeType change,
     const PropertyTreeState& relative_to_state,
     const TransformPaintPropertyNode* transform_not_to_check) const {
   for (const auto* node = this; node && node != &relative_to_state.Clip();
        node = node->Parent()) {
-    if (node->NodeChanged())
+    if (node->NodeChanged() >= change)
       return true;
     if (&node->LocalTransformSpace() != transform_not_to_check &&
-        node->LocalTransformSpace().Changed(relative_to_state.Transform()))
+        node->LocalTransformSpace().Changed(change,
+                                            relative_to_state.Transform()))
       return true;
   }
 
@@ -35,25 +37,21 @@ bool ClipPaintPropertyNode::Changed(
 }
 
 std::unique_ptr<JSONObject> ClipPaintPropertyNode::ToJSON() const {
-  auto json = JSONObject::Create();
+  auto json = std::make_unique<JSONObject>();
   if (Parent())
     json->SetString("parent", String::Format("%p", Parent()));
-  if (NodeChanged())
-    json->SetBoolean("changed", true);
+  if (NodeChanged() != PaintPropertyChangeType::kUnchanged)
+    json->SetString("changed", PaintPropertyChangeTypeToString(NodeChanged()));
   json->SetString("localTransformSpace",
                   String::Format("%p", state_.local_transform_space.get()));
   json->SetString("rect", state_.clip_rect.ToString());
   if (state_.clip_rect_excluding_overlay_scrollbars) {
-    json->SetString("rectExcludingOverlayScrollbars",
-                    state_.clip_rect_excluding_overlay_scrollbars->ToString());
+    json->SetString(
+        "rectExcludingOverlayScrollbars",
+        state_.clip_rect_excluding_overlay_scrollbars->Rect().ToString());
   }
   if (state_.clip_path) {
     json->SetBoolean("hasClipPath", true);
-  }
-  if (state_.direct_compositing_reasons != CompositingReason::kNone) {
-    json->SetString(
-        "directCompositingReasons",
-        CompositingReason::ToString(state_.direct_compositing_reasons));
   }
   return json;
 }

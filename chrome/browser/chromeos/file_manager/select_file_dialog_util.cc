@@ -4,8 +4,8 @@
 
 #include "chrome/browser/chromeos/file_manager/select_file_dialog_util.h"
 
-#include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
 
 namespace file_manager {
 namespace util {

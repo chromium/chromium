@@ -6,7 +6,7 @@
 
 AndroidProfileSessionDurationsService::AndroidProfileSessionDurationsService(
     syncer::SyncService* sync_service,
-    identity::IdentityManager* identity_manager)
+    signin::IdentityManager* identity_manager)
     : metrics_recorder_(
           std::make_unique<syncer::SyncSessionDurationsMetricsRecorder>(
               sync_service,

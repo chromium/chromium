@@ -430,11 +430,11 @@ rtc::AsyncPacketSocket* PepperPacketSocketFactory::CreateServerTcpSocket(
 }
 
 rtc::AsyncPacketSocket* PepperPacketSocketFactory::CreateClientTcpSocket(
-      const rtc::SocketAddress& local_address,
-      const rtc::SocketAddress& remote_address,
-      const rtc::ProxyInfo& proxy_info,
-      const std::string& user_agent,
-      int opts) {
+    const rtc::SocketAddress& local_address,
+    const rtc::SocketAddress& remote_address,
+    const rtc::ProxyInfo& proxy_info,
+    const std::string& user_agent,
+    const rtc::PacketSocketTcpOptions& opts) {
   // We don't use TCP sockets for remoting connections.
   NOTREACHED();
   return nullptr;

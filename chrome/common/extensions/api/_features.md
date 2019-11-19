@@ -245,15 +245,16 @@ that can use the feature.  It is very common for certain features to only be
 allowed in certain extension classes, rather than available to all types.
 
 Accepted values are lists of strings from `extension`, `hosted_app`,
-`legacy_packaged_app`, `platform_app`, `shared_module`, and `theme`.
+`legacy_packaged_app`, `platform_app`, `shared_module`, `theme`, and
+`login_screen_extension`.
 
 ### location
 
 The `location` property specifies the required install location of the
 extension.
 
-Accepted values are a single string from `component`, `external_component`, and
-`policy`.
+Accepted values are a single string from `component`, `external_component`,
+`policy`, and `unpacked`.
 
 ### internal
 
@@ -286,8 +287,8 @@ The `min_manifest_version` property specifies the minimum manifest version to be
 allowed to access a feature. Extensions with a lesser manifest version cannot
 access the feature.
 
-The only accepted value is `2`, as this is currently the highest possible
-manifest version.
+Accepted values are `2` and `3`, as 3 is currently the highest possible manifest
+version.
 
 ### noparent
 
@@ -320,7 +321,7 @@ The accepted values are lists of strings from `regular`, `kiosk` and
 `regular` session is a session launched for a regular, authenticated user.
 
 `kiosk` session is a session launched for a kiosk app - an app that runs on its
-own, in full control of the current session. 
+own, in full control of the current session.
 
 `kiosk.autolaunched` represents auto-launched kiosk session - a kiosk session
 that is launched automatically from Chrome OS login screen, without any user

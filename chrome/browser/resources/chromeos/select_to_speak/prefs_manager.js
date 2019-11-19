@@ -65,8 +65,9 @@ PrefsManager.prototype.updateDefaultVoice_ = function() {
   chrome.tts.getVoices((voices) => {
     this.validVoiceNames_ = new Set();
 
-    if (voices.length == 0)
+    if (voices.length == 0) {
       return;
+    }
 
     voices.forEach((voice) => {
       if (!voice.eventTypes.includes('start') ||
@@ -80,14 +81,17 @@ PrefsManager.prototype.updateDefaultVoice_ = function() {
 
     voices.sort(function(a, b) {
       function score(voice) {
-        if (voice.lang === undefined)
+        if (voice.lang === undefined) {
           return -1;
+        }
         var lang = voice.lang.toLowerCase();
         var s = 0;
-        if (lang == uiLocale)
+        if (lang == uiLocale) {
           s += 2;
-        if (lang.substr(0, 2) == uiLocale.substr(0, 2))
+        }
+        if (lang.substr(0, 2) == uiLocale.substr(0, 2)) {
           s += 1;
+        }
         return s;
       }
       return score(b) - score(a);
@@ -96,8 +100,9 @@ PrefsManager.prototype.updateDefaultVoice_ = function() {
     this.voiceNameFromLocale_ = voices[0].voiceName;
 
     chrome.storage.sync.get(['voice'], (prefs) => {
-      if (!prefs['voice'])
+      if (!prefs['voice']) {
         chrome.storage.sync.set({'voice': PrefsManager.SYSTEM_VOICE});
+      }
     });
   });
 };
@@ -112,8 +117,9 @@ PrefsManager.prototype.updateDefaultVoice_ = function() {
  */
 PrefsManager.prototype.migrateToGlobalTtsSettings_ = function(
     rateStr, pitchStr) {
-  if (this.migrationInProgress_)
+  if (this.migrationInProgress_) {
     return;
+  }
   this.migrationInProgress_ = true;
   let stsRate = PrefsManager.DEFAULT_RATE;
   let stsPitch = PrefsManager.DEFAULT_PITCH;
@@ -131,16 +137,18 @@ PrefsManager.prototype.migrateToGlobalTtsSettings_ = function(
   let getPrefsPromises = [];
   getPrefsPromises.push(new Promise((resolve, reject) => {
     chrome.settingsPrivate.getPref('settings.tts.speech_rate', (pref) => {
-      if (pref === undefined)
+      if (pref === undefined) {
         reject();
+      }
       globalRate = pref.value;
       resolve();
     });
   }));
   getPrefsPromises.push(new Promise((resolve, reject) => {
     chrome.settingsPrivate.getPref('settings.tts.speech_pitch', (pref) => {
-      if (pref === undefined)
+      if (pref === undefined) {
         reject();
+      }
       globalPitch = pref.value;
       resolve();
     });
@@ -169,20 +177,22 @@ PrefsManager.prototype.migrateToGlobalTtsSettings_ = function(
                 chrome.settingsPrivate.setPref(
                     'settings.tts.speech_rate', stsRate,
                     '' /* unused, see crbug.com/866161 */, (success) => {
-                      if (success)
+                      if (success) {
                         resolve();
-                      else
+                      } else {
                         reject();
+                      }
                     });
               }));
               setPrefsPromises.push(new Promise((resolve, reject) => {
                 chrome.settingsPrivate.setPref(
                     'settings.tts.speech_pitch', stsPitch,
                     '' /* unused, see crbug.com/866161 */, (success) => {
-                      if (success)
+                      if (success) {
                         resolve();
-                      else
+                      } else {
                         reject();
+                      }
                     });
               }));
               Promise.all(setPrefsPromises)
@@ -259,17 +269,16 @@ PrefsManager.prototype.initPreferences = function() {
 /**
  * Generates the basic speech options for Select-to-Speak based on user
  * preferences. Call for each chrome.tts.speak.
- * @return {Object} options The TTS options.
+ * @return {!TtsOptions} options The TTS options.
  * @public
  */
 PrefsManager.prototype.speechOptions = function() {
-  let options = {
-    enqueue: true
-  };
+  let options = {enqueue: true};
 
   // To use the default (system) voice: don't specify options['voiceName'].
-  if (this.voiceNameFromPrefs_ === PrefsManager.SYSTEM_VOICE)
+  if (this.voiceNameFromPrefs_ === PrefsManager.SYSTEM_VOICE) {
     return options;
+  }
 
   // Pick the voice name from prefs first, or the one that matches
   // the locale next, but don't pick a voice that isn't currently
@@ -278,8 +287,9 @@ PrefsManager.prototype.speechOptions = function() {
   // anyway if possible.
   var valid = '';
   this.validVoiceNames_.forEach(function(voiceName) {
-    if (valid)
+    if (valid) {
       valid += ',';
+    }
     valid += voiceName;
   });
   if (this.voiceNameFromPrefs_ &&

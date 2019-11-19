@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_SERVICE_MANAGER_PUBLIC_CPP_INTERFACE_PROVIDER_SPEC_STRUCT_TRAITS_H_
-#define SERVICES_SERVICE_MANAGER_PUBLIC_CPP_INTERFACE_PROVIDER_SPEC_STRUCT_TRAITS_H_
+#ifndef SERVICES_SERVICE_MANAGER_PUBLIC_CPP_INTERFACE_PROVIDER_SPEC_MOJOM_TRAITS_H_
+#define SERVICES_SERVICE_MANAGER_PUBLIC_CPP_INTERFACE_PROVIDER_SPEC_MOJOM_TRAITS_H_
 
 #include "services/service_manager/public/cpp/interface_provider_spec.h"
 #include "services/service_manager/public/mojom/interface_provider_spec.mojom.h"
@@ -82,4 +82,4 @@ struct COMPONENT_EXPORT(SERVICE_MANAGER_MOJOM)
 
 }  // namespace mojo
 
-#endif  // SERVICES_SERVICE_MANAGER_PUBLIC_CPP_INTERFACE_PROVIDER_SPEC_STRUCT_TRAITS_H_
+#endif  // SERVICES_SERVICE_MANAGER_PUBLIC_CPP_INTERFACE_PROVIDER_SPEC_MOJOM_TRAITS_H_

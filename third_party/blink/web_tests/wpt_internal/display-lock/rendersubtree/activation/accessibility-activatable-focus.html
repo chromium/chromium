@@ -1,0 +1,40 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../resources/utils.js"></script>
+</head>
+<body>
+
+<div id="locked" rendersubtree="invisible">
+  foo
+  <div id="child" tabindex="0">
+    bar
+  </div>
+</div>
+
+<script>
+function axElementById(id) {
+  return accessibilityController.accessibleElementById(id);
+}
+
+async_test(async(t) => {
+  const lockedEl = document.getElementById("locked");
+  t.step(() => { assert_equals(lockedEl.renderSubtree, INVISIBLE_ACTIVATABLE) });
+  let axLocked = axElementById("locked");
+  t.step(() => { assert_equals(axLocked.childrenCount, 3, "Child count after acquire"); });
+  axElementById("child").takeFocus();
+
+  t.step(() => { assert_equals(lockedEl.renderSubtree, "") });
+  // Wait for the next frame for the ax object to be recreated.
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      axLocked = axElementById("locked");
+      t.step(() => { assert_equals(axLocked.childrenCount, 2, "Child count after activation"); });
+      t.done();
+    });
+  });
+}, "Accessiblility focus causes activatable locked tree to activate");
+
+</script>

@@ -48,6 +48,14 @@ class GCMAppHandler {
   virtual void OnSendAcknowledged(const std::string& app_id,
                                   const std::string& message_id) = 0;
 
+  // Called when a GCM message has been received but decryption failed.
+  // |message_id| is a message identifier sent by the GCM server.
+  // |error_message| is human-readable description of the error, for reporting
+  // purposes. By default this handler does nothing.
+  virtual void OnMessageDecryptionFailed(const std::string& app_id,
+                                         const std::string& message_id,
+                                         const std::string& error_message);
+
   // If no app handler has been added with the exact app_id of an incoming
   // event, all handlers will be asked (in arbitrary order) whether they can
   // handle the app_id, and the first to return true will receive the event.

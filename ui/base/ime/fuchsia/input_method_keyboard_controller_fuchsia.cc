@@ -4,10 +4,11 @@
 
 #include "ui/base/ime/fuchsia/input_method_keyboard_controller_fuchsia.h"
 
+#include <lib/sys/cpp/component_context.h>
 #include <utility>
 
+#include "base/fuchsia/default_context.h"
 #include "base/fuchsia/fuchsia_logging.h"
-#include "base/fuchsia/service_directory_client.h"
 #include "base/logging.h"
 
 namespace ui {
@@ -16,8 +17,9 @@ InputMethodKeyboardControllerFuchsia::InputMethodKeyboardControllerFuchsia(
     fuchsia::ui::input::ImeService* ime_service)
     : ime_service_(ime_service),
       ime_visibility_(
-          base::fuchsia::ServiceDirectoryClient::ForCurrentProcess()
-              ->ConnectToService<fuchsia::ui::input::ImeVisibilityService>()) {
+          base::fuchsia::ComponentContextForCurrentProcess()
+              ->svc()
+              ->Connect<fuchsia::ui::input::ImeVisibilityService>()) {
   DCHECK(ime_service_);
 
   ime_visibility_.set_error_handler([](zx_status_t status) {

@@ -18,13 +18,13 @@ ABI_REG = re.compile('ABI: \'(.+?)\'')
 
 
 def _DeviceAbiToArch(device_abi):
-    # The order of this list is significant to find the more specific match
-    # (e.g., arm64) before the less specific (e.g., arm).
-    arches = ['arm64', 'arm', 'x86_64', 'x86_64', 'x86', 'mips']
-    for arch in arches:
-      if arch in device_abi:
-        return arch
-    raise RuntimeError('Unknown device ABI: %s' % device_abi)
+  # The order of this list is significant to find the more specific match
+  # (e.g., arm64) before the less specific (e.g., arm).
+  arches = ['arm64', 'arm', 'x86_64', 'x86_64', 'x86', 'mips']
+  for arch in arches:
+    if arch in device_abi:
+      return arch
+  raise RuntimeError('Unknown device ABI: %s' % device_abi)
 
 
 class Symbolizer(object):
@@ -58,6 +58,11 @@ class Symbolizer(object):
     Yields:
       A string for each line of resolved stack output.
     """
+    if not os.path.exists(_STACK_TOOL):
+      logging.warning('%s missing. Unable to resolve native stack traces.',
+                      _STACK_TOOL)
+      return
+
     arch = _DeviceAbiToArch(device_abi)
     if not arch:
       logging.warning('No device_abi can be found.')

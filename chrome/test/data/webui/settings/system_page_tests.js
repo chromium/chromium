@@ -73,7 +73,7 @@ suite('settings system page', function() {
     expectEquals(HARDWARE_ACCELERATION_AT_STARTUP, control.checked);
 
     // Restart button should be hidden by default.
-    expectFalse(!!control.querySelector('paper-button'));
+    expectFalse(!!control.querySelector('cr-button'));
 
     systemPage.set(
         'prefs.hardware_acceleration_mode.enabled.value',
@@ -81,7 +81,7 @@ suite('settings system page', function() {
     Polymer.dom.flush();
     expectNotEquals(HARDWARE_ACCELERATION_AT_STARTUP, control.checked);
 
-    const restart = control.querySelector('paper-button');
+    const restart = control.querySelector('cr-button');
     expectTrue(!!restart);  // The "RESTART" button should be showing now.
 
     restart.click();
@@ -95,7 +95,7 @@ suite('settings system page', function() {
 
   test('proxy row enforcement', function() {
     const control = systemPage.$.proxy;
-    const showProxyButton = control.querySelector('paper-icon-button-light');
+    const showProxyButton = control.querySelector('cr-icon-button');
     assertTrue(control.hasAttribute('actionable'));
     assertEquals(null, control.querySelector('cr-policy-pref-indicator'));
     assertFalse(showProxyButton.hidden);
@@ -110,9 +110,9 @@ suite('settings system page', function() {
     });
     Polymer.dom.flush();
 
-    // The ability to show proxy settings should still be allowed when
-    // extensions are installed.
-    expectTrue(control.hasAttribute('actionable'));
+    // When managed by extensions, we disable the ability to show proxy
+    // settings.
+    expectFalse(control.hasAttribute('actionable'));
     expectEquals(null, control.querySelector('cr-policy-pref-indicator'));
     expectFalse(showProxyButton.hidden);
 

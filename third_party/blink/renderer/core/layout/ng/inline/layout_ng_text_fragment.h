@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_INLINE_LAYOUT_NG_TEXT_FRAGMENT_H_
 
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_items.h"
 
 namespace blink {
 
@@ -24,15 +23,17 @@ class CORE_EXPORT LayoutNGTextFragment final : public LayoutTextFragment {
   bool IsLayoutNGObject() const final { return true; }
 
  private:
-  const NGInlineItems* GetNGInlineItems() const final { return &inline_items_; }
-  NGInlineItems* GetNGInlineItems() final { return &inline_items_; }
+  const base::span<NGInlineItem>* GetNGInlineItems() const final {
+    return &inline_items_;
+  }
+  base::span<NGInlineItem>* GetNGInlineItems() final { return &inline_items_; }
 
   void InsertedIntoTree() final {
     valid_ng_items_ = false;
     LayoutText::InsertedIntoTree();
   }
 
-  NGInlineItems inline_items_;
+  base::span<NGInlineItem> inline_items_;
 };
 
 }  // namespace blink

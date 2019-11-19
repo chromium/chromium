@@ -16,9 +16,11 @@ namespace blink {
 // these methods.
 
 inline const ComputedStyle* LayoutObject::FirstLineStyle() const {
-  return GetDocument().GetStyleEngine().UsesFirstLineRules()
-             ? CachedFirstLineStyle()
-             : Style();
+  if (GetDocument().GetStyleEngine().UsesFirstLineRules()) {
+    if (const ComputedStyle* first_line_style = FirstLineStyleWithoutFallback())
+      return first_line_style;
+  }
+  return Style();
 }
 
 inline const ComputedStyle& LayoutObject::FirstLineStyleRef() const {

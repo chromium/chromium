@@ -1,2 +1,0 @@
-CONSOLE ERROR: line 4: The XSS Auditor refused to execute a script in 'http://localhost:8000/security/xssAuditor/resources/echo-intertag.pl?q=%3Ciframe%20src=%22javascript://%250Aalert(String.fromCharCode(0x58,0x53,0x53))%22%3E%3C/iframe%3E' because its source code was found within the request. The server sent an 'X-XSS-Protection' header requesting this behavior.
-

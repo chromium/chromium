@@ -1,7 +1,7 @@
 This is a testharness.js-based test.
 FAIL getCurrentPosition success callback tests assert_unreached: Error callback called in error Reached unreachable code
 PASS getCurrentPosition error callback tests
-PASS PositionError toString
+PASS GeolocationPositionError toString
 PASS PERMISSION_DENIED value is 1
 PASS POSITION_UNAVAILABLE is 2
 PASS TIMEOUT value is 3

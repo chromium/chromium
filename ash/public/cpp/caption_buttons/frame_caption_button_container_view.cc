@@ -9,11 +9,13 @@
 
 #include "ash/public/cpp/caption_buttons/caption_button_model.h"
 #include "ash/public/cpp/caption_buttons/frame_size_button.h"
+#include "ash/public/cpp/caption_buttons/snap_controller.h"
 #include "ash/public/cpp/gesture_action_type.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/public/cpp/window_properties.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
+#include "base/numerics/ranges.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -37,67 +39,82 @@ namespace {
 
 // Duration of the animation of the position of buttons to the left of
 // |size_button_|.
-const int kPositionAnimationDurationMs = 500;
+constexpr auto kPositionAnimationDuration =
+    base::TimeDelta::FromMilliseconds(500);
 
 // Duration of the animation of the alpha of |size_button_|.
-const int kAlphaAnimationDurationMs = 250;
+constexpr auto kAlphaAnimationDuration = base::TimeDelta::FromMilliseconds(250);
 
 // Delay during |tablet_mode_animation_| hide to wait before beginning to
 // animate the position of buttons to the left of |size_button_|.
-const int kHidePositionDelayMs = 100;
+constexpr auto kHidePositionDelay = base::TimeDelta::FromMilliseconds(100);
 
 // Duration of |tablet_mode_animation_| hiding.
 // Hiding size button 250
 // |------------------------|
 // Delay 100      Slide other buttons 500
 // |---------|-------------------------------------------------|
-const int kHideAnimationDurationMs =
-    kHidePositionDelayMs + kPositionAnimationDurationMs;
+constexpr auto kHideAnimationDuration =
+    kHidePositionDelay + kPositionAnimationDuration;
 
 // Delay during |tablet_mode_animation_| show to wait before beginning to
 // animate the alpha of |size_button_|.
-const int kShowAnimationAlphaDelayMs = 100;
+constexpr auto kShowAnimationAlphaDelay =
+    base::TimeDelta::FromMilliseconds(100);
 
 // Duration of |tablet_mode_animation_| showing.
 // Slide other buttons 500
 // |-------------------------------------------------|
 // Delay 100   Show size button 250
 // |---------|-----------------------|
-const int kShowAnimationDurationMs = kPositionAnimationDurationMs;
+constexpr auto kShowAnimationDuration = kPositionAnimationDuration;
 
 // Value of |tablet_mode_animation_| showing to begin animating alpha of
 // |size_button_|.
 float SizeButtonShowStartValue() {
-  return static_cast<float>(kShowAnimationAlphaDelayMs) /
-         kShowAnimationDurationMs;
+  return kShowAnimationAlphaDelay.InMillisecondsF() /
+         kShowAnimationDuration.InMillisecondsF();
 }
 
 // Amount of |tablet_mode_animation_| showing to animate the alpha of
 // |size_button_|.
 float SizeButtonShowDuration() {
-  return static_cast<float>(kAlphaAnimationDurationMs) /
-         kShowAnimationDurationMs;
+  return kAlphaAnimationDuration.InMillisecondsF() /
+         kShowAnimationDuration.InMillisecondsF();
 }
 
 // Amount of |tablet_mode_animation_| hiding to animate the alpha of
 // |size_button_|.
 float SizeButtonHideDuration() {
-  return static_cast<float>(kAlphaAnimationDurationMs) /
-         kHideAnimationDurationMs;
+  return kAlphaAnimationDuration.InMillisecondsF() /
+         kHideAnimationDuration.InMillisecondsF();
 }
 
 // Value of |tablet_mode_animation_| hiding to begin animating the position of
 // buttons to the left of |size_button_|.
 float HidePositionStartValue() {
-  return 1.0f -
-         static_cast<float>(kHidePositionDelayMs) / kHideAnimationDurationMs;
+  return 1.0f - kHidePositionDelay.InMillisecondsF() /
+                    kHideAnimationDuration.InMillisecondsF();
 }
 
 // Bounds animation values to the range 0.0 - 1.0. Allows for mapping of offset
 // animations to the expected range so that gfx::Tween::CalculateValue() can be
 // used.
 double CapAnimationValue(double value) {
-  return std::min(1.0, std::max(0.0, value));
+  return base::ClampToRange(value, 0.0, 1.0);
+}
+
+// Returns a |views::BoxLayout| layout manager with the settings needed by
+// FrameCaptionButtonContainerView.
+std::unique_ptr<views::BoxLayout> MakeBoxLayoutManager(
+    int minimum_cross_axis_size) {
+  std::unique_ptr<views::BoxLayout> layout = std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kHorizontal);
+  layout->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kCenter);
+  layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kEnd);
+  layout->set_minimum_cross_axis_size(minimum_cross_axis_size);
+  return layout;
 }
 
 // A default CaptionButtonModel that uses the widget delegate's state
@@ -119,7 +136,7 @@ class DefaultCaptionButtonModel : public CaptionButtonModel {
       case views::CAPTION_BUTTON_ICON_RIGHT_SNAPPED:
         return frame_->widget_delegate()->CanResize();
       case views::CAPTION_BUTTON_ICON_CLOSE:
-        return true;
+        return frame_->widget_delegate()->ShouldShowCloseButton();
 
       // No back or menu button by default.
       case views::CAPTION_BUTTON_ICON_BACK:
@@ -127,9 +144,10 @@ class DefaultCaptionButtonModel : public CaptionButtonModel {
       case views::CAPTION_BUTTON_ICON_ZOOM:
         return false;
       case views::CAPTION_BUTTON_ICON_LOCATION:
+        // not used
+        return false;
       case views::CAPTION_BUTTON_ICON_COUNT:
         break;
-        // not used
     }
     NOTREACHED();
     return false;
@@ -149,17 +167,11 @@ const char FrameCaptionButtonContainerView::kViewClassName[] =
     "FrameCaptionButtonContainerView";
 
 FrameCaptionButtonContainerView::FrameCaptionButtonContainerView(
-    views::Widget* frame,
-    FrameCaptionDelegate* delegate)
-    : frame_(frame),
-      delegate_(delegate),
+    views::Widget* frame)
+    : views::AnimationDelegateViews(frame->GetRootView()),
+      frame_(frame),
       model_(std::make_unique<DefaultCaptionButtonModel>(frame)) {
-  auto layout =
-      std::make_unique<views::BoxLayout>(views::BoxLayout::kHorizontal);
-  layout->set_cross_axis_alignment(
-      views::BoxLayout::CROSS_AXIS_ALIGNMENT_CENTER);
-  layout->set_main_axis_alignment(views::BoxLayout::MAIN_AXIS_ALIGNMENT_END);
-  SetLayoutManager(std::move(layout));
+  SetLayoutManager(MakeBoxLayoutManager(/*minimum_cross_axis_size=*/0));
   tablet_mode_animation_.reset(new gfx::SlideAnimation(this));
   tablet_mode_animation_->SetTweenType(gfx::Tween::LINEAR);
 
@@ -242,12 +254,12 @@ void FrameCaptionButtonContainerView::UpdateCaptionButtonState(bool animate) {
   if (size_button_visible) {
     size_button_->SetVisible(true);
     if (animate) {
-      tablet_mode_animation_->SetSlideDuration(kShowAnimationDurationMs);
+      tablet_mode_animation_->SetSlideDuration(kShowAnimationDuration);
       tablet_mode_animation_->Show();
     }
   } else {
     if (animate) {
-      tablet_mode_animation_->SetSlideDuration(kHideAnimationDurationMs);
+      tablet_mode_animation_->SetSlideDuration(kHideAnimationDuration);
       tablet_mode_animation_->Hide();
     } else {
       size_button_->SetVisible(false);
@@ -262,6 +274,8 @@ void FrameCaptionButtonContainerView::UpdateCaptionButtonState(bool animate) {
       model_->IsEnabled(views::CAPTION_BUTTON_ICON_MINIMIZE));
   menu_button_->SetVisible(model_->IsVisible(views::CAPTION_BUTTON_ICON_MENU));
   menu_button_->SetEnabled(model_->IsEnabled(views::CAPTION_BUTTON_ICON_MENU));
+  close_button_->SetVisible(
+      model_->IsVisible(views::CAPTION_BUTTON_ICON_CLOSE));
 }
 
 void FrameCaptionButtonContainerView::SetButtonSize(const gfx::Size& size) {
@@ -269,6 +283,8 @@ void FrameCaptionButtonContainerView::SetButtonSize(const gfx::Size& size) {
   minimize_button_->SetPreferredSize(size);
   size_button_->SetPreferredSize(size);
   close_button_->SetPreferredSize(size);
+
+  SetLayoutManager(MakeBoxLayoutManager(size.height()));
 }
 
 void FrameCaptionButtonContainerView::SetModel(
@@ -284,10 +300,14 @@ void FrameCaptionButtonContainerView::Layout() {
   if (tablet_mode_animation_->is_animating())
     AnimationProgressed(tablet_mode_animation_.get());
 
-  // The top right corner must be occupied by the close button for easy mouse
-  // access. This check is agnostic to RTL layout.
-  DCHECK_EQ(close_button_->y(), 0);
-  DCHECK_EQ(close_button_->bounds().right(), width());
+#if DCHECK_IS_ON()
+  if (close_button_->GetVisible()) {
+    // The top right corner must be occupied by the close button for easy mouse
+    // access. This check is agnostic to RTL layout.
+    DCHECK_EQ(close_button_->y(), 0);
+    DCHECK_EQ(close_button_->bounds().right(), width());
+  }
+#endif  // DCHECK_IS_ON()
 }
 
 const char* FrameCaptionButtonContainerView::GetClassName() const {
@@ -348,8 +368,9 @@ void FrameCaptionButtonContainerView::AnimationProgressed(
   // Slide all buttons to the left of the size button. Usually this is just the
   // minimize button but it can also include a PWA menu button.
   int previous_x = 0;
-  for (int i = 0; i < child_count() && child_at(i) != size_button_; ++i) {
-    views::View* button = child_at(i);
+  for (auto* button : children()) {
+    if (button == size_button_)
+      break;
     button->SetX(previous_x + x_slide);
     previous_x += button->width();
   }
@@ -403,7 +424,7 @@ void FrameCaptionButtonContainerView::ButtonPressed(views::Button* sender,
     }
   } else if (sender == close_button_) {
     frame_->Close();
-    if (TabletMode::IsEnabled())
+    if (TabletMode::Get()->InTabletMode())
       RecordAction(UserMetricsAction("Tablet_WindowCloseFromCaptionButton"));
     else
       RecordAction(UserMetricsAction("CloseButton_Clk"));
@@ -424,7 +445,7 @@ void FrameCaptionButtonContainerView::ButtonPressed(views::Button* sender,
 }
 
 bool FrameCaptionButtonContainerView::IsMinimizeButtonVisible() const {
-  return minimize_button_->visible();
+  return minimize_button_->GetVisible();
 }
 
 void FrameCaptionButtonContainerView::SetButtonsToNormal(Animate animate) {
@@ -459,7 +480,7 @@ FrameCaptionButtonContainerView::GetButtonClosestTo(
   views::FrameCaptionButton* closest_button = NULL;
   for (size_t i = 0; i < base::size(buttons); ++i) {
     views::FrameCaptionButton* button = buttons[i];
-    if (!button->visible())
+    if (!button->GetVisible())
       continue;
 
     gfx::Point center_point = button->GetLocalBounds().CenterPoint();
@@ -492,16 +513,15 @@ void FrameCaptionButtonContainerView::SetHoveredAndPressedButtons(
 }
 
 bool FrameCaptionButtonContainerView::CanSnap() {
-  return delegate_->CanSnap(frame_->GetNativeWindow());
+  return SnapController::Get()->CanSnap(frame_->GetNativeWindow());
 }
 
-void FrameCaptionButtonContainerView::ShowSnapPreview(
-    mojom::SnapDirection snap) {
-  delegate_->ShowSnapPreview(frame_->GetNativeWindow(), snap);
+void FrameCaptionButtonContainerView::ShowSnapPreview(SnapDirection snap) {
+  SnapController::Get()->ShowSnapPreview(frame_->GetNativeWindow(), snap);
 }
 
-void FrameCaptionButtonContainerView::CommitSnap(mojom::SnapDirection snap) {
-  delegate_->CommitSnap(frame_->GetNativeWindow(), snap);
+void FrameCaptionButtonContainerView::CommitSnap(SnapDirection snap) {
+  SnapController::Get()->CommitSnap(frame_->GetNativeWindow(), snap);
 }
 
 }  // namespace ash

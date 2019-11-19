@@ -11,7 +11,6 @@
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread.h"
-#include "components/viz/client/local_surface_id_provider.h"
 #include "components/viz/common/hit_test/hit_test_region_list.h"
 #include "components/viz/common/quads/render_pass_draw_quad.h"
 #include "components/viz/common/quads/surface_draw_quad.h"
@@ -45,8 +44,8 @@ std::unique_ptr<RenderPass> CreateRenderPassWithChildSurface(
   pass->SetNew(render_pass_id, rect, rect, render_pass_transform);
 
   auto* shared_state = pass->CreateAndAppendSharedQuadState();
-  shared_state->SetAll(shared_state_transform, rect, rect, rect, false, false,
-                       1, SkBlendMode::kSrcOver, 0);
+  shared_state->SetAll(shared_state_transform, rect, rect, gfx::RRectF(), rect,
+                       false, false, 1, SkBlendMode::kSrcOver, 0);
 
   auto* surface_quad = pass->CreateAndAppendDrawQuad<SurfaceDrawQuad>();
   surface_quad->SetNew(
@@ -173,7 +172,8 @@ TEST(HitTestDataProviderDrawQuad, HitTestDataSkipQuads) {
   gfx::Rect rect4_root(kFrameRect);
   shared_quad_state4_root->SetAll(
       gfx::Transform(), /*quad_layer_rect=*/rect4_root,
-      /*visible_quad_layer_rect=*/rect4_root, /*clip_rect=*/rect4_root,
+      /*visible_quad_layer_rect=*/rect4_root,
+      /*rounded_corner_bounds=*/gfx::RRectF(), /*clip_rect=*/rect4_root,
       /*is_clipped=*/false, /*are_contents_opaque=*/false,
       /*opacity=*/0.5f, SkBlendMode::kSrcOver, /*sorting_context_id=*/0);
   auto* quad4_root_1 =
@@ -336,7 +336,8 @@ TEST(HitTestDataProviderDrawQuad, HitTestDataShapeFilters) {
   pass1->filters = filters;
   auto* shared_state_1 = pass1->CreateAndAppendSharedQuadState();
   shared_state_1->SetAll(invertible_transform, kFrameRect, kFrameRect,
-                         kFrameRect, false, false, 1, SkBlendMode::kSrcOver, 0);
+                         gfx::RRectF(), kFrameRect, false, false, 1,
+                         SkBlendMode::kSrcOver, 0);
 
   auto* surface_quad_1 = pass1->CreateAndAppendDrawQuad<SurfaceDrawQuad>();
   surface_quad_1->SetNew(
@@ -384,7 +385,8 @@ TEST(HitTestDataProviderDrawQuad, HitTestDataShapeFilters) {
   pass2->filters = filters2;
   auto* shared_state_2 = pass2->CreateAndAppendSharedQuadState();
   shared_state_2->SetAll(invertible_transform, kFrameRect, kFrameRect,
-                         kFrameRect, false, false, 1, SkBlendMode::kSrcOver, 0);
+                         gfx::RRectF(), kFrameRect, false, false, 1,
+                         SkBlendMode::kSrcOver, 0);
 
   auto* surface_quad_3 = pass2->CreateAndAppendDrawQuad<SurfaceDrawQuad>();
   surface_quad_3->SetNew(
@@ -407,6 +409,155 @@ TEST(HitTestDataProviderDrawQuad, HitTestDataShapeFilters) {
             hit_test_region_list_2->regions[0].frame_sink_id);
   EXPECT_EQ(gfx::Rect(100, 0, 100, 100),
             hit_test_region_list_2->regions[0].rect);
+}
+
+// Test to ensure that render_pass_list caching works correctly.
+TEST(HitTestDataProviderDrawQuad, HitTestDataRenderPassListCache) {
+  std::unique_ptr<HitTestDataProvider> hit_test_data_provider =
+      std::make_unique<HitTestDataProviderDrawQuad>(
+          true /* should_ask_for_child_region */,
+          true /* root_accepts_events */);
+
+  constexpr gfx::Rect frame_rect(1024, 768);
+  constexpr gfx::Rect child_rect(200, 100);
+  gfx::Transform invertible_transform;
+  invertible_transform.Translate(-200, -100);
+
+  RenderPassList pass_list;
+
+  // A RenderPass that has two SurfaceDrawQuad.
+  SurfaceId child_surface_id1 = CreateChildSurfaceId(2);
+  SurfaceId child_surface_id2 = CreateChildSurfaceId(3);
+  auto pass1 = RenderPass::Create();
+  pass1->SetNew(1, frame_rect, frame_rect, invertible_transform);
+  auto* shared_state_1 = pass1->CreateAndAppendSharedQuadState();
+  shared_state_1->SetAll(invertible_transform, frame_rect, frame_rect,
+                         gfx::RRectF(), frame_rect, false, false, 1,
+                         SkBlendMode::kSrcOver, 0);
+  auto* surface_quad_1 = pass1->CreateAndAppendDrawQuad<SurfaceDrawQuad>();
+  surface_quad_1->SetNew(
+      pass1->shared_quad_state_list.back(), child_rect, child_rect,
+      SurfaceRange(child_surface_id1), SK_ColorWHITE,
+      /*stretch_content_to_fill_bounds=*/false, /*ignores_input_event=*/false);
+  gfx::Rect child_rect2(400, 400, 100, 100);
+  auto* surface_quad_2 = pass1->CreateAndAppendDrawQuad<SurfaceDrawQuad>();
+  surface_quad_2->SetNew(
+      pass1->shared_quad_state_list.back(), child_rect2, child_rect2,
+      SurfaceRange(child_surface_id2), SK_ColorWHITE,
+      /*stretch_content_to_fill_bounds=*/false, /*ignores_input_event=*/false);
+  pass_list.push_back(std::move(pass1));
+
+  // A RenderPass that has a RenderPassDrawQuad pointing to pass1, a
+  // SurfaceDrawQuad and a RenderPassDrawQuad pointing to pass1.
+  auto pass2 = RenderPass::Create();
+  pass2->SetNew(4, frame_rect, frame_rect, invertible_transform);
+  auto* shared_state_2 = pass2->CreateAndAppendSharedQuadState();
+  shared_state_2->SetAll(invertible_transform, frame_rect, frame_rect,
+                         gfx::RRectF(), frame_rect, false, false, 1,
+                         SkBlendMode::kSrcOver, 0);
+  auto* render_pass_quad_1 =
+      pass2->CreateAndAppendDrawQuad<RenderPassDrawQuad>();
+  render_pass_quad_1->SetNew(
+      pass2->shared_quad_state_list.back(), child_rect, child_rect,
+      /*render_pass_id=*/1, /*mask_resource_id=*/0, gfx::RectF(), gfx::Size(),
+      gfx::Vector2dF(1, 1), gfx::PointF(), gfx::RectF(), false, 1.0f);
+  SurfaceId child_surface_id3 = CreateChildSurfaceId(4);
+  gfx::Rect child_rect3(500, 500, 100, 100);
+  auto* surface_quad_3 = pass2->CreateAndAppendDrawQuad<SurfaceDrawQuad>();
+  surface_quad_3->SetNew(
+      pass2->shared_quad_state_list.back(), child_rect3, child_rect3,
+      SurfaceRange(child_surface_id3), SK_ColorWHITE,
+      /*stretch_content_to_fill_bounds=*/false, /*ignores_input_event=*/false);
+  auto* render_pass_quad_2 =
+      pass2->CreateAndAppendDrawQuad<RenderPassDrawQuad>();
+  render_pass_quad_2->SetNew(
+      pass2->shared_quad_state_list.back(), child_rect2, child_rect2,
+      /*render_pass_id=*/1, /*mask_resource_id=*/0, gfx::RectF(), gfx::Size(),
+      gfx::Vector2dF(1, 1), gfx::PointF(), gfx::RectF(), false, 1.0f);
+  pass_list.push_back(std::move(pass2));
+
+  // The root RenderPass that has three RenderPassDrawQuad point to pass2.
+  auto pass_root = RenderPass::Create();
+  pass_root->SetNew(5, frame_rect, frame_rect, invertible_transform);
+  auto* shared_state_3 = pass_root->CreateAndAppendSharedQuadState();
+  shared_state_3->SetAll(invertible_transform, frame_rect, frame_rect,
+                         gfx::RRectF(), frame_rect, false, false, 1,
+                         SkBlendMode::kSrcOver, 0);
+  auto* render_pass_quad_3 =
+      pass_root->CreateAndAppendDrawQuad<RenderPassDrawQuad>();
+  render_pass_quad_3->SetNew(
+      pass_root->shared_quad_state_list.back(), child_rect, child_rect,
+      /*render_pass_id=*/4, /*mask_resource_id=*/0, gfx::RectF(), gfx::Size(),
+      gfx::Vector2dF(1, 1), gfx::PointF(), gfx::RectF(), false, 1.0f);
+  auto* render_pass_quad_4 =
+      pass_root->CreateAndAppendDrawQuad<RenderPassDrawQuad>();
+  render_pass_quad_4->SetNew(
+      pass_root->shared_quad_state_list.back(), child_rect2, child_rect2,
+      /*render_pass_id=*/4, /*mask_resource_id=*/0, gfx::RectF(), gfx::Size(),
+      gfx::Vector2dF(1, 1), gfx::PointF(), gfx::RectF(), false, 1.0f);
+  auto* render_pass_quad_5 =
+      pass_root->CreateAndAppendDrawQuad<RenderPassDrawQuad>();
+  render_pass_quad_5->SetNew(
+      pass_root->shared_quad_state_list.back(), child_rect, child_rect,
+      /*render_pass_id=*/4, /*mask_resource_id=*/0, gfx::RectF(), gfx::Size(),
+      gfx::Vector2dF(1, 10), gfx::PointF(), gfx::RectF(), false, 1.0f);
+  pass_list.push_back(std::move(pass_root));
+
+  CompositorFrame compositor_frame =
+      CompositorFrameBuilder().SetRenderPassList(std::move(pass_list)).Build();
+
+  base::Optional<HitTestRegionList> hit_test_region_list =
+      hit_test_data_provider->GetHitTestData(compositor_frame);
+
+  // We should have the three SurfaceDrawQuad associated HitTestRegion, repeated
+  // based on RenderPassDrawQuad.
+  EXPECT_EQ(15u, hit_test_region_list->regions.size());
+  for (size_t i = 0; i < 15; i += 5) {
+    EXPECT_EQ(child_surface_id1.frame_sink_id(),
+              hit_test_region_list->regions[i].frame_sink_id);
+    EXPECT_EQ(HitTestRegionFlags::kHitTestMouse |
+                  HitTestRegionFlags::kHitTestTouch |
+                  HitTestRegionFlags::kHitTestChildSurface |
+                  HitTestRegionFlags::kHitTestAsk,
+              hit_test_region_list->regions[i].flags);
+    EXPECT_EQ(child_rect, hit_test_region_list->regions[i].rect);
+
+    EXPECT_EQ(child_surface_id2.frame_sink_id(),
+              hit_test_region_list->regions[i + 1].frame_sink_id);
+    EXPECT_EQ(HitTestRegionFlags::kHitTestMouse |
+                  HitTestRegionFlags::kHitTestTouch |
+                  HitTestRegionFlags::kHitTestChildSurface |
+                  HitTestRegionFlags::kHitTestAsk,
+              hit_test_region_list->regions[i + 1].flags);
+    EXPECT_EQ(child_rect2, hit_test_region_list->regions[i + 1].rect);
+
+    EXPECT_EQ(child_surface_id3.frame_sink_id(),
+              hit_test_region_list->regions[i + 2].frame_sink_id);
+    EXPECT_EQ(HitTestRegionFlags::kHitTestMouse |
+                  HitTestRegionFlags::kHitTestTouch |
+                  HitTestRegionFlags::kHitTestChildSurface |
+                  HitTestRegionFlags::kHitTestAsk,
+              hit_test_region_list->regions[i + 2].flags);
+    EXPECT_EQ(child_rect3, hit_test_region_list->regions[i + 2].rect);
+
+    EXPECT_EQ(child_surface_id1.frame_sink_id(),
+              hit_test_region_list->regions[i + 3].frame_sink_id);
+    EXPECT_EQ(HitTestRegionFlags::kHitTestMouse |
+                  HitTestRegionFlags::kHitTestTouch |
+                  HitTestRegionFlags::kHitTestChildSurface |
+                  HitTestRegionFlags::kHitTestAsk,
+              hit_test_region_list->regions[i + 3].flags);
+    EXPECT_EQ(child_rect, hit_test_region_list->regions[i + 3].rect);
+
+    EXPECT_EQ(child_surface_id2.frame_sink_id(),
+              hit_test_region_list->regions[i + 4].frame_sink_id);
+    EXPECT_EQ(HitTestRegionFlags::kHitTestMouse |
+                  HitTestRegionFlags::kHitTestTouch |
+                  HitTestRegionFlags::kHitTestChildSurface |
+                  HitTestRegionFlags::kHitTestAsk,
+              hit_test_region_list->regions[i + 4].flags);
+    EXPECT_EQ(child_rect2, hit_test_region_list->regions[i + 4].rect);
+  }
 }
 
 }  // namespace viz

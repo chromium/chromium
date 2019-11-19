@@ -49,7 +49,7 @@ class EasyUnlockGetKeysOperation {
   size_t key_index_;
   EasyUnlockDeviceKeyDataList devices_;
 
-  base::WeakPtrFactory<EasyUnlockGetKeysOperation> weak_ptr_factory_;
+  base::WeakPtrFactory<EasyUnlockGetKeysOperation> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(EasyUnlockGetKeysOperation);
 };

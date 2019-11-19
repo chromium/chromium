@@ -84,4 +84,14 @@ class FilterView {
     public void setShowTabs(boolean show) {
         mTabsView.setVisibility(show ? View.VISIBLE : View.GONE);
     }
+
+    /** Sets the title for the files tab. */
+    public void setFilesTabTitle(String title) {
+        mTabsView.getTabAt(0).setText(title);
+    }
+
+    /** Sets the title for the prefetch tab. */
+    public void setPrefetchTabTitle(String title) {
+        mTabsView.getTabAt(1).setText(title);
+    }
 }

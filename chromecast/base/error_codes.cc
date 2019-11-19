@@ -36,8 +36,8 @@ ErrorCode GetInitialErrorCode() {
   int initial_error_code = 0;
   if (base::StringToInt(initial_error_code_str, &initial_error_code) &&
       initial_error_code >= NO_ERROR && initial_error_code <= ERROR_UNKNOWN) {
-    VLOG(1) << "Initial error from " << GetInitialErrorFilePath().value()
-            << ": " << initial_error_code;
+    DVLOG(1) << "Initial error from " << GetInitialErrorFilePath().value()
+             << ": " << initial_error_code;
     return static_cast<ErrorCode>(initial_error_code);
   }
 

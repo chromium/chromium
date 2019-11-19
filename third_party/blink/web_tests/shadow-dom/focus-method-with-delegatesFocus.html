@@ -94,6 +94,6 @@ test(() => {
     xshadow4.focus();
     assert_equals(document.activeElement.id, 'xshadow4');
     xshadow5.focus();
-    assert_equals(document.activeElement.id, 'xshadow5');
-}, 'If no element is focusable within shadow root, but the shadow host is focusable, then the host gets focus regardless of delegatesFocus.');
+    assert_equals(document.activeElement.id, 'xshadow4');
+}, 'If no element is focusable within a delegatesFocus shadow root, the host can\'t get focus regardless of host\'s tabIndex.');
 </script>

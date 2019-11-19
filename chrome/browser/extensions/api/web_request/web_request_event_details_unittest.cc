@@ -5,15 +5,13 @@
 #include "extensions/browser/api/web_request/web_request_event_details.h"
 
 #include "base/stl_util.h"
-#include "base/test/scoped_task_environment.h"
 #include "base/values.h"
 #include "extensions/browser/api/web_request/web_request_api_constants.h"
 #include "extensions/browser/api/web_request/web_request_api_helpers.h"
+#include "extensions/browser/api/web_request/web_request_info.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"
-#include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
-#include "net/url_request/url_request_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -76,24 +74,20 @@ TEST(WebRequestEventDetailsTest, WhitelistedCopyForPublicSession) {
 TEST(WebRequestEventDetailsTest, SetResponseHeaders) {
   const int kFilter =
       extension_web_request_api_helpers::ExtraInfoSpec::RESPONSE_HEADERS;
-  base::test::ScopedTaskEnvironment scoped_task_environment;
-  net::TestURLRequestContext context;
 
   char headers_string[] =
       "HTTP/1.0 200 OK\r\n"
       "Key1: Value1\r\n"
       "X-Chrome-ID-Consistency-Response: Value2\r\n"
       "\r\n";
-  scoped_refptr<net::HttpResponseHeaders> headers(
-      new net::HttpResponseHeaders(net::HttpUtil::AssembleRawHeaders(
-          headers_string, sizeof(headers_string))));
+  auto headers = base::MakeRefCounted<net::HttpResponseHeaders>(
+      net::HttpUtil::AssembleRawHeaders(headers_string));
 
   {
     // Non-Gaia URL.
-    std::unique_ptr<net::URLRequest> request = context.CreateRequest(
-        GURL("http://www.example.com"), net::DEFAULT_PRIORITY, nullptr,
-        TRAFFIC_ANNOTATION_FOR_TESTS);
-    WebRequestInfo request_info(request.get());
+    WebRequestInfoInitParams params;
+    params.url = GURL("http://www.example.com");
+    WebRequestInfo request_info(std::move(params));
     WebRequestEventDetails details(request_info, kFilter);
     details.SetResponseHeaders(request_info, headers.get());
     std::unique_ptr<base::DictionaryValue> dict =
@@ -113,10 +107,9 @@ TEST(WebRequestEventDetailsTest, SetResponseHeaders) {
 
   {
     // Gaia URL.
-    std::unique_ptr<net::URLRequest> gaia_request = context.CreateRequest(
-        GaiaUrls::GetInstance()->gaia_url(), net::DEFAULT_PRIORITY, nullptr,
-        TRAFFIC_ANNOTATION_FOR_TESTS);
-    WebRequestInfo gaia_request_info(gaia_request.get());
+    WebRequestInfoInitParams params;
+    params.url = GaiaUrls::GetInstance()->gaia_url();
+    WebRequestInfo gaia_request_info(std::move(params));
     WebRequestEventDetails gaia_details(gaia_request_info, kFilter);
     gaia_details.SetResponseHeaders(gaia_request_info, headers.get());
     std::unique_ptr<base::DictionaryValue> dict =

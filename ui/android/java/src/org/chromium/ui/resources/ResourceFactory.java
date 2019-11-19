@@ -7,6 +7,7 @@ package org.chromium.ui.resources;
 import android.graphics.Rect;
 
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.ui.resources.statics.NinePatchData;
 
 /**
@@ -15,18 +16,22 @@ import org.chromium.ui.resources.statics.NinePatchData;
 @JNINamespace("ui")
 public class ResourceFactory {
     public static long createBitmapResource(NinePatchData ninePatchData) {
-        return ninePatchData == null ? nativeCreateBitmapResource()
+        return ninePatchData == null ? ResourceFactoryJni.get().createBitmapResource()
                                      : createNinePatchBitmapResource(ninePatchData.getPadding(),
-                                               ninePatchData.getAperture());
+                                             ninePatchData.getAperture());
     }
 
     private static long createNinePatchBitmapResource(Rect padding, Rect aperture) {
-        return nativeCreateNinePatchBitmapResource(padding.left, padding.top, padding.right,
-                padding.bottom, aperture.left, aperture.top, aperture.right, aperture.bottom);
+        return ResourceFactoryJni.get().createNinePatchBitmapResource(padding.left, padding.top,
+                padding.right, padding.bottom, aperture.left, aperture.top, aperture.right,
+                aperture.bottom);
     }
 
-    private static native long nativeCreateBitmapResource();
-    private static native long nativeCreateNinePatchBitmapResource(int paddingLeft, int paddingTop,
-            int paddingRight, int paddingBottom, int apertureLeft, int apertureTop,
-            int apertureRight, int apertureBottom);
+    @NativeMethods
+    interface Natives {
+        long createBitmapResource();
+        long createNinePatchBitmapResource(int paddingLeft, int paddingTop, int paddingRight,
+                int paddingBottom, int apertureLeft, int apertureTop, int apertureRight,
+                int apertureBottom);
+    }
 }

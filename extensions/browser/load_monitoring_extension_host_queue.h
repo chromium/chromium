@@ -106,7 +106,8 @@ class LoadMonitoringExtensionHostQueue
   // The maximum number of hosts that were loading at the same time.
   size_t max_active_loading_;
 
-  base::WeakPtrFactory<LoadMonitoringExtensionHostQueue> weak_ptr_factory_;
+  base::WeakPtrFactory<LoadMonitoringExtensionHostQueue> weak_ptr_factory_{
+      this};
 
   DISALLOW_COPY_AND_ASSIGN(LoadMonitoringExtensionHostQueue);
 };

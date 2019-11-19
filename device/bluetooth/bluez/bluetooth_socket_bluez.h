@@ -16,9 +16,9 @@
 #include "device/bluetooth/bluetooth_export.h"
 #include "device/bluetooth/bluetooth_socket.h"
 #include "device/bluetooth/bluetooth_socket_net.h"
-#include "device/bluetooth/bluetooth_uuid.h"
 #include "device/bluetooth/dbus/bluetooth_profile_manager_client.h"
 #include "device/bluetooth/dbus/bluetooth_profile_service_provider.h"
+#include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 
 namespace bluez {
 
@@ -112,9 +112,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothSocketBlueZ
       const dbus::ObjectPath& device_path,
       base::ScopedFD fd,
       const bluez::BluetoothProfileServiceProvider::Delegate::Options& options,
-      const ConfirmationCallback& callback) override;
+      ConfirmationCallback callback) override;
   void RequestDisconnection(const dbus::ObjectPath& device_path,
-                            const ConfirmationCallback& callback) override;
+                            ConfirmationCallback callback) override;
   void Cancel() override;
 
   // Method run to accept a single incoming connection.
@@ -126,19 +126,14 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothSocketBlueZ
       const dbus::ObjectPath& device_path,
       base::ScopedFD fd,
       const bluez::BluetoothProfileServiceProvider::Delegate::Options& options,
-      const ConfirmationCallback& callback);
+      ConfirmationCallback callback);
 
   // Method run on the UI thread after a new connection has been accepted and
   // a socket allocated in |socket|. Takes care of calling the Accept()
   // callback and |callback| with the right arguments based on |status|.
   void OnNewConnection(scoped_refptr<BluetoothSocket> socket,
-                       const ConfirmationCallback& callback,
+                       ConfirmationCallback callback,
                        Status status);
-
-  // Method run on the socket thread with a valid file descriptor |fd|, once
-  // complete calls |callback| on the UI thread with an appropriate argument
-  // indicating success or failure.
-  void DoConnect(base::ScopedFD fd, const ConfirmationCallback& callback);
 
   // Method run to clean-up a listening socket.
   void DoCloseListening();

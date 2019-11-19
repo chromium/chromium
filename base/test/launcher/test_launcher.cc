@@ -19,7 +19,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/format_macros.h"
-#include "base/hash.h"
+#include "base/hash/hash.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -40,8 +40,9 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/task/post_task.h"
-#include "base/task/task_scheduler/task_scheduler.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/gtest_util.h"
+#include "base/test/gtest_xml_util.h"
 #include "base/test/launcher/test_launcher_tracer.h"
 #include "base/test/launcher/test_results_tracker.h"
 #include "base/test/test_switches.h"
@@ -86,6 +87,12 @@ using ::operator<<;
 const char kTestTotalShards[] = "GTEST_TOTAL_SHARDS";
 // The environment variable name for the test shard index.
 const char kTestShardIndex[] = "GTEST_SHARD_INDEX";
+
+// Prefix indicating test has to run prior to the other test.
+const char kPreTestPrefix[] = "PRE_";
+
+// Prefix indicating test is disabled, will not run unless specified.
+const char kDisabledTestPrefix[] = "DISABLED_";
 
 namespace {
 
@@ -133,23 +140,6 @@ TestLauncherTracer* GetTestLauncherTracer() {
   return tracer;
 }
 
-// Creates and starts a TaskScheduler with |num_parallel_jobs| dedicated to
-// foreground blocking tasks (corresponds to the traits used to launch and wait
-// for child processes).
-void CreateAndStartTaskScheduler(int num_parallel_jobs) {
-  // These values are taken from TaskScheduler::StartWithDefaultParams(), which
-  // is not used directly to allow a custom number of threads in the foreground
-  // pool.
-  // TODO(etiennep): Change this to 2 in future CL.
-  constexpr int kMaxBackgroundThreads = 3;
-  constexpr base::TimeDelta kSuggestedReclaimTime =
-      base::TimeDelta::FromSeconds(30);
-  base::TaskScheduler::Create("TestLauncher");
-  base::TaskScheduler::GetInstance()->Start(
-      {{kMaxBackgroundThreads, kSuggestedReclaimTime},
-       {num_parallel_jobs, kSuggestedReclaimTime}});
-}
-
 #if defined(OS_POSIX)
 // Self-pipe that makes it possible to do complex shutdown handling
 // outside of the signal handler.
@@ -164,7 +154,7 @@ void KillSpawnedTestProcesses() {
   // from being spawned.
   AutoLock lock(*GetLiveProcessesLock());
 
-  fprintf(stdout, "Sending SIGTERM to %" PRIuS " child processes... ",
+  fprintf(stdout, "Sending SIGTERM to %zu child processes... ",
           GetLiveProcesses()->size());
   fflush(stdout);
 
@@ -182,7 +172,7 @@ void KillSpawnedTestProcesses() {
   fprintf(stdout, "done.\n");
   fflush(stdout);
 
-  fprintf(stdout, "Sending SIGKILL to %" PRIuS " child processes... ",
+  fprintf(stdout, "Sending SIGKILL to %zu child processes... ",
           GetLiveProcesses()->size());
   fflush(stdout);
 
@@ -232,11 +222,10 @@ bool UnsetEnvironmentVariableIfExists(const std::string& name) {
 // Returns true if bot mode has been requested, i.e. defaults optimized
 // for continuous integration bots. This way developers don't have to remember
 // special command-line flags.
-bool BotModeEnabled() {
+bool BotModeEnabled(const CommandLine* command_line) {
   std::unique_ptr<Environment> env(Environment::Create());
-  return CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kTestLauncherBotMode) ||
-      env->HasVar("CHROMIUM_TEST_LAUNCHER_BOT_MODE");
+  return command_line->HasSwitch(switches::kTestLauncherBotMode) ||
+         env->HasVar("CHROMIUM_TEST_LAUNCHER_BOT_MODE");
 }
 
 // Returns command line command line after gtest-specific processing
@@ -249,8 +238,6 @@ CommandLine PrepareCommandLineForGTest(const CommandLine& command_line,
   // Handled by the launcher process.
   switches.erase(kGTestRepeatFlag);
   switches.erase(kIsolatedScriptTestRepeatFlag);
-  switches.erase(kGTestShuffleFlag);
-  switches.erase(kGTestRandomSeedFlag);
 
   // Don't try to write the final XML report in child processes.
   switches.erase(kGTestOutputFlag);
@@ -280,7 +267,7 @@ int LaunchChildTestProcessWithOptions(const CommandLine& command_line,
                                       const LaunchOptions& options,
                                       int flags,
                                       TimeDelta timeout,
-                                      ProcessLifetimeObserver* observer,
+                                      TestLauncherDelegate* delegate,
                                       bool* was_timeout) {
   TimeTicks start_time(TimeTicks::Now());
 
@@ -306,7 +293,7 @@ int LaunchChildTestProcessWithOptions(const CommandLine& command_line,
 
     // Allow break-away from job since sandbox and few other places rely on it
     // on Windows versions prior to Windows 8 (which supports nested jobs).
-    if (win::GetVersion() < win::VERSION_WIN8 &&
+    if (win::GetVersion() < win::Version::WIN8 &&
         flags & TestLauncher::ALLOW_BREAKAWAY_FROM_JOB) {
       job_flags |= JOB_OBJECT_LIMIT_BREAKAWAY_OK;
     }
@@ -325,7 +312,7 @@ int LaunchChildTestProcessWithOptions(const CommandLine& command_line,
   // that we can install a different /data.
   new_options.spawn_flags = FDIO_SPAWN_CLONE_STDIO | FDIO_SPAWN_CLONE_JOB;
 
-  const base::FilePath kDataPath("/data");
+  const base::FilePath kDataPath(base::fuchsia::kPersistedDataDirectoryPath);
 
   // Clone all namespace entries from the current process, except /data, which
   // is overridden below.
@@ -359,7 +346,7 @@ int LaunchChildTestProcessWithOptions(const CommandLine& command_line,
   // index).
   static base::AtomicSequenceNumber child_launch_index;
   base::FilePath nested_data_path = kDataPath.AppendASCII(
-      base::StringPrintf("test-%" PRIuS "-%d", base::Process::Current().Pid(),
+      base::StringPrintf("test-%zu-%d", base::Process::Current().Pid(),
                          child_launch_index.GetNext()));
   CHECK(!base::DirectoryExists(nested_data_path));
   CHECK(base::CreateDirectory(nested_data_path));
@@ -367,12 +354,8 @@ int LaunchChildTestProcessWithOptions(const CommandLine& command_line,
 
   // Bind the new test subdirectory to /data in the child process' namespace.
   new_options.paths_to_transfer.push_back(
-      {kDataPath, base::fuchsia::GetHandleFromFile(
-                      base::File(nested_data_path,
-                                 base::File::FLAG_OPEN | base::File::FLAG_READ |
-                                     base::File::FLAG_DELETE_ON_CLOSE))
-                      .release()});
-
+      {kDataPath,
+       base::fuchsia::OpenDirectory(nested_data_path).TakeChannel().release()});
 #endif  // defined(OS_FUCHSIA)
 
 #if defined(OS_LINUX)
@@ -417,9 +400,6 @@ int LaunchChildTestProcessWithOptions(const CommandLine& command_line,
     GetLiveProcesses()->insert(std::make_pair(process.Handle(), command_line));
   }
 
-  if (observer)
-    observer->OnLaunched(process.Handle(), process.Pid());
-
   int exit_code = 0;
   bool did_exit = false;
 
@@ -429,8 +409,8 @@ int LaunchChildTestProcessWithOptions(const CommandLine& command_line,
   }
 
   if (!did_exit) {
-    if (observer)
-      observer->OnTimedOut(command_line);
+    if (delegate)
+      delegate->OnTestTimedOut(command_line);
 
     *was_timeout = true;
     exit_code = -1;  // Set a non-zero exit code to signal a failure.
@@ -452,9 +432,8 @@ int LaunchChildTestProcessWithOptions(const CommandLine& command_line,
     zx_status_t status = job_handle.kill();
     ZX_CHECK(status == ZX_OK, status);
 
-    // The child process' data dir should have been deleted automatically,
-    // thanks to the DELETE_ON_CLOSE flag.
-    DCHECK(!base::DirectoryExists(nested_data_path));
+    // Cleanup the data directory.
+    CHECK(DeleteFileRecursively(nested_data_path));
 #elif defined(OS_POSIX)
     if (exit_code != 0) {
       // On POSIX, in case the test does not exit cleanly, either due to a crash
@@ -474,14 +453,28 @@ int LaunchChildTestProcessWithOptions(const CommandLine& command_line,
   return exit_code;
 }
 
-void DoLaunchChildTestProcess(
+struct ChildProcessResults {
+  // Total time for DoLaunchChildTest Process to execute.
+  TimeDelta elapsed_time;
+  // If stdio is redirected, pass output file content.
+  std::string output_file_contents;
+  // True if child process timed out.
+  bool was_timeout = false;
+  // Exit code of child process.
+  int exit_code;
+};
+
+// This launches the child test process, waits for it to complete,
+// and returns child process results.
+ChildProcessResults DoLaunchChildTestProcess(
     const CommandLine& command_line,
     TimeDelta timeout,
     const TestLauncher::LaunchOptions& test_launch_options,
     bool redirect_stdio,
-    SingleThreadTaskRunner* task_runner,
-    std::unique_ptr<ProcessLifetimeObserver> observer) {
+    TestLauncherDelegate* delegate) {
   TimeTicks start_time = TimeTicks::Now();
+
+  ChildProcessResults result;
 
   ScopedFILE output_file;
   FilePath output_filename;
@@ -532,34 +525,26 @@ void DoLaunchChildTestProcess(
 
 #endif  // !defined(OS_WIN)
 
-  bool was_timeout = false;
-  int exit_code = LaunchChildTestProcessWithOptions(
-      command_line, options, test_launch_options.flags, timeout, observer.get(),
-      &was_timeout);
+  result.exit_code = LaunchChildTestProcessWithOptions(
+      command_line, options, test_launch_options.flags, timeout, delegate,
+      &result.was_timeout);
 
-  std::string output_file_contents;
   if (redirect_stdio) {
     fflush(output_file.get());
     output_file.reset();
     // Reading the file can sometimes fail when the process was killed midflight
     // (e.g. on test suite timeout): https://crbug.com/826408. Attempt to read
     // the output file anyways, but do not crash on failure in this case.
-    CHECK(ReadFileToString(output_filename, &output_file_contents) ||
-          exit_code != 0);
+    CHECK(ReadFileToString(output_filename, &result.output_file_contents) ||
+          result.exit_code != 0);
 
     if (!DeleteFile(output_filename, false)) {
       // This needs to be non-fatal at least for Windows.
       LOG(WARNING) << "Failed to delete " << output_filename.AsUTF8Unsafe();
     }
   }
-
-  // Invoke OnCompleted on the thread it was originating from, not on a worker
-  // pool thread.
-  task_runner->PostTask(
-      FROM_HERE,
-      BindOnce(&ProcessLifetimeObserver::OnCompleted, std::move(observer),
-               exit_code, TimeTicks::Now() - start_time, was_timeout,
-               output_file_contents));
+  result.elapsed_time = TimeTicks::Now() - start_time;
+  return result;
 }
 
 std::vector<std::string> ExtractTestsFromFilter(const std::string& filter,
@@ -574,6 +559,121 @@ std::vector<std::string> ExtractTestsFromFilter(const std::string& filter,
         SplitString(filter, ":", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   }
   return tests;
+}
+
+// A test runner object to run tests across a number of sequence runners,
+// and control running pre tests in sequence.
+class TestRunner {
+ public:
+  explicit TestRunner(TestLauncher* launcher,
+                      size_t runner_count = 1u,
+                      size_t batch_size = 1u)
+      : launcher_(launcher),
+        runner_count_(runner_count),
+        batch_size_(batch_size) {}
+
+  // Sets |test_names| to be run, with |batch_size| tests per process.
+  // Posts LaunchNextTask |runner_count| number of times, each with a separate
+  // task runner.
+  void Run(const std::vector<std::string>& test_names);
+
+ private:
+  // Called to check if the next batch has to run on the same
+  // sequence task runner and using the same temporary directory.
+  bool ShouldReuseStateFromLastBatch(
+      const std::vector<std::string>& test_names) {
+    return test_names.size() == 1u &&
+           test_names.front().find(kPreTestPrefix) != std::string::npos;
+  }
+
+  // Launch next child process on |task_runner|,
+  // and clear |temp_dir| from previous process.
+  void LaunchNextTask(scoped_refptr<TaskRunner> task_runner, FilePath temp_dir);
+
+  // Forward |temp_dir| and Launch next task on main thread.
+  // The method is called on |task_runner|.
+  void ClearAndLaunchNext(scoped_refptr<TaskRunner> main_thread_runner,
+                          scoped_refptr<TaskRunner> task_runner,
+                          const FilePath& temp_dir) {
+    main_thread_runner->PostTask(
+        FROM_HERE,
+        BindOnce(&TestRunner::LaunchNextTask, weak_ptr_factory_.GetWeakPtr(),
+                 task_runner, temp_dir));
+  }
+
+  ThreadChecker thread_checker_;
+
+  std::vector<std::string> tests_to_run_;
+  TestLauncher* const launcher_;
+  std::vector<scoped_refptr<TaskRunner>> task_runners_;
+  // Number of sequenced task runners to use.
+  const size_t runner_count_;
+  // Number of TaskRunners that have finished.
+  size_t runners_done_ = 0;
+  // Number of tests per process, 0 is special case for all tests.
+  const size_t batch_size_;
+  RunLoop run_loop_;
+
+  base::WeakPtrFactory<TestRunner> weak_ptr_factory_{this};
+};
+
+void TestRunner::Run(const std::vector<std::string>& test_names) {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  // No sequence runners, fail immediately.
+  CHECK_GT(runner_count_, 0u);
+  tests_to_run_ = test_names;
+  // Reverse test order to avoid coping the whole vector when removing tests.
+  std::reverse(tests_to_run_.begin(), tests_to_run_.end());
+  runners_done_ = 0;
+  task_runners_.clear();
+  for (size_t i = 0; i < runner_count_; i++) {
+    task_runners_.push_back(CreateSequencedTaskRunner(
+        {ThreadPool(), MayBlock(), TaskShutdownBehavior::BLOCK_SHUTDOWN}));
+    ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
+        BindOnce(&TestRunner::LaunchNextTask, weak_ptr_factory_.GetWeakPtr(),
+                 task_runners_.back(), FilePath()));
+  }
+  run_loop_.Run();
+}
+
+void TestRunner::LaunchNextTask(scoped_refptr<TaskRunner> task_runner,
+                                FilePath temp_dir) {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  // delete previous temporary directory
+  if (!temp_dir.empty() && !DeleteFileRecursively(temp_dir)) {
+    // This needs to be non-fatal at least for Windows.
+    LOG(WARNING) << "Failed to delete " << temp_dir.AsUTF8Unsafe();
+  }
+
+  // No more tests to run, finish sequence.
+  if (tests_to_run_.empty()) {
+    runners_done_++;
+    // All sequence runners are done, quit the loop.
+    if (runners_done_ == runner_count_)
+      run_loop_.QuitWhenIdle();
+    return;
+  }
+
+  CreateNewTempDirectory(FilePath::StringType(), &temp_dir);
+  bool post_to_current_runner = true;
+  size_t batch_size = (batch_size_ == 0) ? tests_to_run_.size() : batch_size_;
+
+  while (post_to_current_runner && !tests_to_run_.empty()) {
+    batch_size = std::min(batch_size, tests_to_run_.size());
+    std::vector<std::string> batch(tests_to_run_.rbegin(),
+                                   tests_to_run_.rbegin() + batch_size);
+    tests_to_run_.erase(tests_to_run_.end() - batch_size, tests_to_run_.end());
+    task_runner->PostTask(
+        FROM_HERE,
+        BindOnce(&TestLauncher::LaunchChildGTestProcess, Unretained(launcher_),
+                 ThreadTaskRunnerHandle::Get(), batch, temp_dir));
+    post_to_current_runner = ShouldReuseStateFromLastBatch(batch);
+  }
+  task_runner->PostTask(
+      FROM_HERE,
+      BindOnce(&TestRunner::ClearAndLaunchNext, Unretained(this),
+               ThreadTaskRunnerHandle::Get(), task_runner, temp_dir));
 }
 
 }  // namespace
@@ -593,7 +693,83 @@ const char kIsolatedScriptRunDisabledTestsFlag[] =
 const char kIsolatedScriptTestFilterFlag[] = "isolated-script-test-filter";
 const char kIsolatedScriptTestRepeatFlag[] = "isolated-script-test-repeat";
 
+class TestLauncher::TestInfo {
+ public:
+  TestInfo() = default;
+  TestInfo(const TestInfo& other) = default;
+  TestInfo(const TestIdentifier& test_id);
+  ~TestInfo() = default;
+
+  // Returns test name excluding DISABLE_ prefix.
+  std::string GetDisabledStrippedName() const;
+
+  // Returns full test name.
+  std::string GetFullName() const;
+
+  // Returns test name with PRE_ prefix added, excluding DISABLE_ prefix.
+  std::string GetPreName() const;
+
+  // Returns test name excluding DISABLED_ and PRE_ prefixes.
+  std::string GetPrefixStrippedName() const;
+
+  const std::string& test_case_name() const { return test_case_name_; }
+  const std::string& test_name() const { return test_name_; }
+  const std::string& file() const { return file_; }
+  int line() const { return line_; }
+  bool disabled() const { return disabled_; }
+  bool pre_test() const { return pre_test_; }
+
+ private:
+  std::string test_case_name_;
+  std::string test_name_;
+  std::string file_;
+  int line_;
+  bool disabled_;
+  bool pre_test_;
+};
+
+TestLauncher::TestInfo::TestInfo(const TestIdentifier& test_id)
+    : test_case_name_(test_id.test_case_name),
+      test_name_(test_id.test_name),
+      file_(test_id.file),
+      line_(test_id.line),
+      disabled_(false),
+      pre_test_(false) {
+  disabled_ = GetFullName().find(kDisabledTestPrefix) != std::string::npos;
+  pre_test_ = test_name_.find(kPreTestPrefix) != std::string::npos;
+}
+
+std::string TestLauncher::TestInfo::GetDisabledStrippedName() const {
+  std::string test_name = GetFullName();
+  ReplaceSubstringsAfterOffset(&test_name, 0, kDisabledTestPrefix,
+                               std::string());
+  return test_name;
+}
+
+std::string TestLauncher::TestInfo::GetFullName() const {
+  return FormatFullTestName(test_case_name_, test_name_);
+}
+
+std::string TestLauncher::TestInfo::GetPreName() const {
+  std::string name = test_name_;
+  ReplaceSubstringsAfterOffset(&name, 0, kDisabledTestPrefix, std::string());
+  std::string case_name = test_case_name_;
+  ReplaceSubstringsAfterOffset(&case_name, 0, kDisabledTestPrefix,
+                               std::string());
+  return FormatFullTestName(case_name, kPreTestPrefix + name);
+}
+
+std::string TestLauncher::TestInfo::GetPrefixStrippedName() const {
+  std::string test_name = GetDisabledStrippedName();
+  ReplaceSubstringsAfterOffset(&test_name, 0, kPreTestPrefix, std::string());
+  return test_name;
+}
+
 TestLauncherDelegate::~TestLauncherDelegate() = default;
+
+bool TestLauncherDelegate::ShouldRunTest(const TestIdentifier& test) {
+  return true;
+}
 
 TestLauncher::LaunchOptions::LaunchOptions() = default;
 TestLauncher::LaunchOptions::LaunchOptions(const LaunchOptions& other) =
@@ -601,41 +777,37 @@ TestLauncher::LaunchOptions::LaunchOptions(const LaunchOptions& other) =
 TestLauncher::LaunchOptions::~LaunchOptions() = default;
 
 TestLauncher::TestLauncher(TestLauncherDelegate* launcher_delegate,
-                           size_t parallel_jobs)
+                           size_t parallel_jobs,
+                           size_t retry_limit)
     : launcher_delegate_(launcher_delegate),
       total_shards_(1),
       shard_index_(0),
       cycles_(1),
-      test_found_count_(0),
+      broken_threshold_(0),
       test_started_count_(0),
       test_finished_count_(0),
       test_success_count_(0),
       test_broken_count_(0),
-      retry_count_(0),
-      retry_limit_(0),
+      retry_limit_(retry_limit),
       force_run_broken_tests_(false),
-      run_result_(true),
-      shuffle_(false),
-      shuffle_seed_(0),
       watchdog_timer_(FROM_HERE,
                       kOutputTimeout,
                       this,
                       &TestLauncher::OnOutputTimeout),
-      parallel_jobs_(parallel_jobs) {}
+      parallel_jobs_(parallel_jobs),
+      print_test_stdio_(AUTO) {}
 
 TestLauncher::~TestLauncher() {
-  if (base::TaskScheduler::GetInstance()) {
-    base::TaskScheduler::GetInstance()->Shutdown();
+  if (base::ThreadPoolInstance::Get()) {
+    base::ThreadPoolInstance::Get()->Shutdown();
   }
 }
 
-bool TestLauncher::Run() {
-  if (!Init())
+bool TestLauncher::Run(CommandLine* command_line) {
+  if (!Init((command_line == nullptr) ? CommandLine::ForCurrentProcess()
+                                      : command_line))
     return false;
 
-  // Value of |cycles_| changes after each iteration. Keep track of the
-  // original value.
-  int requested_cycles = cycles_;
 
 #if defined(OS_POSIX)
   CHECK_EQ(0, pipe(g_shutdown_pipe));
@@ -651,47 +823,186 @@ bool TestLauncher::Run() {
 
   auto controller = base::FileDescriptorWatcher::WatchReadable(
       g_shutdown_pipe[0],
-      base::Bind(&TestLauncher::OnShutdownPipeReadable, Unretained(this)));
+      base::BindRepeating(&TestLauncher::OnShutdownPipeReadable,
+                          Unretained(this)));
 #endif  // defined(OS_POSIX)
 
   // Start the watchdog timer.
   watchdog_timer_.Reset();
 
-  ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, BindOnce(&TestLauncher::RunTestIteration, Unretained(this)));
+  // Indicate a test did not succeed.
+  bool test_failed = false;
+  int cycles = cycles_;
+  // Set to false if any iteration fails.
+  bool run_result = true;
 
-  RunLoop().Run();
+  while ((cycles > 0 || cycles == -1) && !(stop_on_failure_ && test_failed)) {
+    OnTestIterationStart();
 
-  if (requested_cycles != 1)
+    RunTests();
+    bool retry_result = RunRetryTests();
+    // Signal failure, but continue to run all requested test iterations.
+    // With the summary of all iterations at the end this is a good default.
+    run_result = run_result && retry_result;
+
+    if (retry_result) {
+      fprintf(stdout, "SUCCESS: all tests passed.\n");
+      fflush(stdout);
+    }
+
+    test_failed = test_success_count_ != test_finished_count_;
+    OnTestIterationFinished();
+    // Special value "-1" means "repeat indefinitely".
+    cycles = (cycles == -1) ? cycles : cycles - 1;
+  }
+
+  if (cycles_ != 1)
     results_tracker_.PrintSummaryOfAllIterations();
 
   MaybeSaveSummaryAsJSON(std::vector<std::string>());
 
-  return run_result_;
+  return run_result;
 }
 
 void TestLauncher::LaunchChildGTestProcess(
-    const CommandLine& command_line,
-    const std::string& wrapper,
-    TimeDelta timeout,
-    const LaunchOptions& options,
-    std::unique_ptr<ProcessLifetimeObserver> observer) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+    scoped_refptr<TaskRunner> task_runner,
+    const std::vector<std::string>& test_names,
+    const FilePath& temp_dir) {
+  FilePath result_file;
+  CommandLine cmd_line =
+      launcher_delegate_->GetCommandLine(test_names, temp_dir, &result_file);
 
   // Record the exact command line used to launch the child.
   CommandLine new_command_line(
-      PrepareCommandLineForGTest(command_line, wrapper));
+      PrepareCommandLineForGTest(cmd_line, launcher_delegate_->GetWrapper()));
+  LaunchOptions options;
+  options.flags = launcher_delegate_->GetLaunchOptions();
 
-  // When running in parallel mode we need to redirect stdio to avoid mixed-up
-  // output. We also always redirect on the bots to get the test output into
-  // JSON summary.
-  bool redirect_stdio = (parallel_jobs_ > 1) || BotModeEnabled();
+  ChildProcessResults process_results = DoLaunchChildTestProcess(
+      new_command_line, launcher_delegate_->GetTimeout() * test_names.size(),
+      options, redirect_stdio_, launcher_delegate_);
 
-  PostTaskWithTraits(
-      FROM_HERE, {MayBlock(), TaskShutdownBehavior::BLOCK_SHUTDOWN},
-      BindOnce(&DoLaunchChildTestProcess, new_command_line, timeout, options,
-               redirect_stdio, RetainedRef(ThreadTaskRunnerHandle::Get()),
-               std::move(observer)));
+  // Invoke ProcessTestResults on the original thread, not
+  // on a worker pool thread.
+  task_runner->PostTask(
+      FROM_HERE,
+      BindOnce(&TestLauncher::ProcessTestResults, Unretained(this), test_names,
+               result_file, process_results.output_file_contents,
+               process_results.elapsed_time, process_results.exit_code,
+               process_results.was_timeout));
+}
+
+// Determines which result status will be assigned for missing test results.
+TestResult::Status MissingResultStatus(size_t tests_to_run_count,
+                                       bool was_timeout,
+                                       bool exit_code) {
+  // There is more than one test, cannot assess status.
+  if (tests_to_run_count > 1u)
+    return TestResult::TEST_SKIPPED;
+
+  // There is only one test and no results.
+  // Try to determine status by timeout or exit code.
+  if (was_timeout)
+    return TestResult::TEST_TIMEOUT;
+  if (exit_code != 0)
+    return TestResult::TEST_FAILURE;
+
+  // It's strange case when test executed successfully,
+  // but we failed to read machine-readable report for it.
+  return TestResult::TEST_UNKNOWN;
+}
+
+// Returns interpreted test results.
+void TestLauncher::ProcessTestResults(
+    const std::vector<std::string>& test_names,
+    const FilePath& result_file,
+    const std::string& output,
+    TimeDelta elapsed_time,
+    int exit_code,
+    bool was_timeout) {
+  std::vector<TestResult> test_results;
+  bool crashed = false;
+  bool have_test_results =
+      ProcessGTestOutput(result_file, &test_results, &crashed);
+
+  if (!have_test_results) {
+    // We do not have reliable details about test results (parsing test
+    // stdout is known to be unreliable).
+    LOG(ERROR) << "Failed to get out-of-band test success data, "
+                  "dumping full stdio below:\n"
+               << output << "\n";
+    // This is odd, but sometimes ProcessGtestOutput returns
+    // false, but TestResults is not empty.
+    test_results.clear();
+  }
+
+  TestResult::Status missing_result_status =
+      MissingResultStatus(test_names.size(), was_timeout, exit_code);
+
+  // TODO(phajdan.jr): Check for duplicates and mismatches between
+  // the results we got from XML file and tests we intended to run.
+  std::map<std::string, TestResult> results_map;
+  for (const auto& i : test_results)
+    results_map[i.full_name] = i;
+
+  // Results to be reported back to the test launcher.
+  std::vector<TestResult> final_results;
+
+  for (const auto& i : test_names) {
+    if (Contains(results_map, i)) {
+      TestResult test_result = results_map[i];
+      // Fix up the test status: we forcibly kill the child process
+      // after the timeout, so from XML results it looks just like
+      // a crash.
+      if ((was_timeout && test_result.status == TestResult::TEST_CRASH) ||
+          // If we run multiple tests in a batch with a timeout applied
+          // to the entire batch. It is possible that with other tests
+          // running quickly some tests take longer than the per-test timeout.
+          // For consistent handling of tests independent of order and other
+          // factors, mark them as timing out.
+          test_result.elapsed_time > launcher_delegate_->GetTimeout()) {
+        test_result.status = TestResult::TEST_TIMEOUT;
+      }
+      final_results.push_back(test_result);
+    } else {
+      // TODO(phajdan.jr): Explicitly pass the info that the test didn't
+      // run for a mysterious reason.
+      LOG(ERROR) << "no test result for " << i;
+      TestResult test_result;
+      test_result.full_name = i;
+      test_result.status = missing_result_status;
+      final_results.push_back(test_result);
+    }
+  }
+  // TODO(phajdan.jr): Handle the case where processing XML output
+  // indicates a crash but none of the test results is marked as crashing.
+
+  bool has_non_success_test = false;
+  for (const auto& i : final_results) {
+    if (i.status != TestResult::TEST_SUCCESS) {
+      has_non_success_test = true;
+      break;
+    }
+  }
+
+  if (!has_non_success_test && exit_code != 0) {
+    // This is a bit surprising case: all tests are marked as successful,
+    // but the exit code was not zero. This can happen e.g. under memory
+    // tools that report leaks this way. Mark all tests as a failure on exit,
+    // and for more precise info they'd need to be retried serially.
+    for (auto& i : final_results)
+      i.status = TestResult::TEST_FAILURE_ON_EXIT;
+  }
+
+  for (auto& i : final_results) {
+    // Fix the output snippet after possible changes to the test result.
+    i.output_snippet = GetTestOutputSnippet(i, output);
+  }
+
+  launcher_delegate_->ProcessTestResults(final_results, elapsed_time);
+
+  for (const auto& result : final_results)
+    OnTestFinished(result);
 }
 
 void TestLauncher::OnTestFinished(const TestResult& original_result) {
@@ -706,7 +1017,7 @@ void TestLauncher::OnTestFinished(const TestResult& original_result) {
     // Keep the top and bottom of the log and truncate the middle part.
     result.output_snippet =
         result.output_snippet.substr(0, kOutputSnippetBytesLimit / 2) + "\n" +
-        StringPrintf("<truncated (%" PRIuS " bytes)>\n",
+        StringPrintf("<truncated (%zu bytes)>\n",
                      result.output_snippet.length()) +
         result.output_snippet.substr(result.output_snippet.length() -
                                      kOutputSnippetBytesLimit / 2) +
@@ -714,21 +1025,12 @@ void TestLauncher::OnTestFinished(const TestResult& original_result) {
   }
 
   bool print_snippet = false;
-  std::string print_test_stdio("auto");
-  if (CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kTestLauncherPrintTestStdio)) {
-    print_test_stdio = CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-        switches::kTestLauncherPrintTestStdio);
-  }
-  if (print_test_stdio == "auto") {
+  if (print_test_stdio_ == AUTO) {
     print_snippet = (result.status != TestResult::TEST_SUCCESS);
-  } else if (print_test_stdio == "always") {
+  } else if (print_test_stdio_ == ALWAYS) {
     print_snippet = true;
-  } else if (print_test_stdio == "never") {
+  } else if (print_test_stdio_ == NEVER) {
     print_snippet = false;
-  } else {
-    LOG(WARNING) << "Invalid value of " << switches::kTestLauncherPrintTestStdio
-                 << ": " << print_test_stdio;
   }
   if (print_snippet) {
     std::vector<base::StringPiece> snippet_lines =
@@ -748,17 +1050,23 @@ void TestLauncher::OnTestFinished(const TestResult& original_result) {
   if (result.status == TestResult::TEST_SUCCESS) {
     ++test_success_count_;
   } else {
-    tests_to_retry_.insert(result.full_name);
+    // Records prefix stripped name to run all dependent tests.
+    std::string test_name(result.full_name);
+    ReplaceSubstringsAfterOffset(&test_name, 0, kPreTestPrefix, std::string());
+    ReplaceSubstringsAfterOffset(&test_name, 0, kDisabledTestPrefix,
+                                 std::string());
+    tests_to_retry_.insert(test_name);
   }
 
-  results_tracker_.AddTestResult(result);
+  // There are no results for this tests,
+  // most likley due to another test failing in the same batch.
+  if (result.status != TestResult::TEST_SKIPPED)
+    results_tracker_.AddTestResult(result);
 
   // TODO(phajdan.jr): Align counter (padding).
-  std::string status_line(
-      StringPrintf("[%" PRIuS "/%" PRIuS "] %s ",
-                   test_finished_count_,
-                   test_started_count_,
-                   result.full_name.c_str()));
+  std::string status_line(StringPrintf("[%zu/%zu] %s ", test_finished_count_,
+                                       test_started_count_,
+                                       result.full_name.c_str()));
   if (result.completed()) {
     status_line.append(StringPrintf("(%" PRId64 " ms)",
                                     result.elapsed_time.InMilliseconds()));
@@ -780,17 +1088,12 @@ void TestLauncher::OnTestFinished(const TestResult& original_result) {
   // We just printed a status line, reset the watchdog timer.
   watchdog_timer_.Reset();
 
-  // Do not waste time on timeouts. We include tests with unknown results here
-  // because sometimes (e.g. hang in between unit tests) that's how a timeout
-  // gets reported.
-  if (result.status == TestResult::TEST_TIMEOUT ||
-      result.status == TestResult::TEST_UNKNOWN) {
+  // Do not waste time on timeouts.
+  if (result.status == TestResult::TEST_TIMEOUT) {
     test_broken_count_++;
   }
-  size_t broken_threshold =
-      std::max(static_cast<size_t>(20), test_found_count_ / 10);
-  if (!force_run_broken_tests_ && test_broken_count_ >= broken_threshold) {
-    fprintf(stdout, "Too many badly broken tests (%" PRIuS "), exiting now.\n",
+  if (!force_run_broken_tests_ && test_broken_count_ >= broken_threshold_) {
+    fprintf(stdout, "Too many badly broken tests (%zu), exiting now.\n",
             test_broken_count_);
     fflush(stdout);
 
@@ -802,51 +1105,6 @@ void TestLauncher::OnTestFinished(const TestResult& original_result) {
 
     exit(1);
   }
-
-  if (test_finished_count_ != test_started_count_)
-    return;
-
-  if (tests_to_retry_.empty() || retry_count_ >= retry_limit_) {
-    OnTestIterationFinished();
-    return;
-  }
-
-  if (!force_run_broken_tests_ && tests_to_retry_.size() >= broken_threshold) {
-    fprintf(stdout,
-            "Too many failing tests (%" PRIuS "), skipping retries.\n",
-            tests_to_retry_.size());
-    fflush(stdout);
-
-    results_tracker_.AddGlobalTag("BROKEN_TEST_SKIPPED_RETRIES");
-
-    OnTestIterationFinished();
-    return;
-  }
-
-  retry_count_++;
-
-  std::vector<std::string> test_names(tests_to_retry_.begin(),
-                                      tests_to_retry_.end());
-
-  tests_to_retry_.clear();
-
-  size_t retry_started_count = launcher_delegate_->RetryTests(this, test_names);
-  if (retry_started_count == 0) {
-    // Signal failure, but continue to run all requested test iterations.
-    // With the summary of all iterations at the end this is a good default.
-    run_result_ = false;
-
-    OnTestIterationFinished();
-    return;
-  }
-
-  fprintf(stdout, "Retrying %" PRIuS " test%s (retry #%" PRIuS ")\n",
-          retry_started_count,
-          retry_started_count > 1 ? "s" : "",
-          retry_count_);
-  fflush(stdout);
-
-  test_started_count_ += retry_started_count;
 }
 
 // Helper used to parse test filter files. Syntax is documented in
@@ -901,9 +1159,7 @@ bool LoadFilterFile(const FilePath& file_path,
   return true;
 }
 
-bool TestLauncher::Init() {
-  const CommandLine* command_line = CommandLine::ForCurrentProcess();
-
+bool TestLauncher::Init(CommandLine* command_line) {
   // Initialize sharding. Command line takes precedence over legacy environment
   // variables.
   if (command_line->HasSwitch(switches::kTestLauncherTotalShards) &&
@@ -988,53 +1244,21 @@ bool TestLauncher::Init() {
     }
 
     retry_limit_ = retry_limit;
-  } else if (BotModeEnabled() ||
-             !(command_line->HasSwitch(kGTestFilterFlag) ||
-               command_line->HasSwitch(kIsolatedScriptTestFilterFlag))) {
-    // Retry failures 3 times by default if we are running all of the tests or
-    // in bot mode.
-    retry_limit_ = 3;
+  } else if (!BotModeEnabled(command_line) &&
+             (command_line->HasSwitch(kGTestFilterFlag) ||
+              command_line->HasSwitch(kIsolatedScriptTestFilterFlag))) {
+    // No retry flag specified, not in bot mode and filtered by flag
+    // Set reties to zero
+    retry_limit_ = 0U;
   }
 
-  if (command_line->HasSwitch(switches::kTestLauncherForceRunBrokenTests))
-    force_run_broken_tests_ = true;
+  force_run_broken_tests_ =
+      command_line->HasSwitch(switches::kTestLauncherForceRunBrokenTests);
 
-  // Some of the TestLauncherDelegate implementations don't call into gtest
-  // until they've already split into test-specific processes. This results
-  // in gtest's native shuffle implementation attempting to shuffle one test.
-  // Shuffling the list of tests in the test launcher (before the delegate
-  // gets involved) ensures that the entire shard is shuffled.
-  if (command_line->HasSwitch(kGTestShuffleFlag)) {
-    shuffle_ = true;
-
-    if (command_line->HasSwitch(kGTestRandomSeedFlag)) {
-      const std::string custom_seed_str =
-          command_line->GetSwitchValueASCII(kGTestRandomSeedFlag);
-      uint32_t custom_seed = 0;
-      if (!StringToUint(custom_seed_str, &custom_seed)) {
-        LOG(ERROR) << "Unable to parse seed \"" << custom_seed_str << "\".";
-        return false;
-      }
-      if (custom_seed >= kRandomSeedUpperBound) {
-        LOG(ERROR) << "Seed " << custom_seed << " outside of expected range "
-                   << "[0, " << kRandomSeedUpperBound << ")";
-        return false;
-      }
-      shuffle_seed_ = custom_seed;
-    } else {
-      std::uniform_int_distribution<uint32_t> dist(0, kRandomSeedUpperBound);
-      std::random_device random_dev;
-      shuffle_seed_ = dist(random_dev);
-    }
-  } else if (command_line->HasSwitch(kGTestRandomSeedFlag)) {
-    LOG(ERROR) << kGTestRandomSeedFlag << " requires " << kGTestShuffleFlag;
-    return false;
-  }
-
-  fprintf(stdout, "Using %" PRIuS " parallel jobs.\n", parallel_jobs_);
+  fprintf(stdout, "Using %zu parallel jobs.\n", parallel_jobs_);
   fflush(stdout);
 
-  CreateAndStartTaskScheduler(static_cast<int>(parallel_jobs_));
+  CreateAndStartThreadPool(static_cast<int>(parallel_jobs_));
 
   std::vector<std::string> positive_file_filter;
   std::vector<std::string> positive_gtest_filter;
@@ -1075,10 +1299,51 @@ bool TestLauncher::Init() {
     }
   }
 
-  if (!launcher_delegate_->GetTests(&tests_)) {
-    LOG(ERROR) << "Failed to get list of tests.";
+  skip_diabled_tests_ =
+      !command_line->HasSwitch(kGTestRunDisabledTestsFlag) &&
+      !command_line->HasSwitch(kIsolatedScriptRunDisabledTestsFlag);
+
+  if (!InitTests())
     return false;
+
+  if (!ShuffleTests(command_line))
+    return false;
+
+  if (!ProcessAndValidateTests())
+    return false;
+
+  if (command_line->HasSwitch(switches::kTestLauncherPrintTestStdio)) {
+    std::string print_test_stdio = command_line->GetSwitchValueASCII(
+        switches::kTestLauncherPrintTestStdio);
+    if (print_test_stdio == "auto") {
+      print_test_stdio_ = AUTO;
+    } else if (print_test_stdio == "always") {
+      print_test_stdio_ = ALWAYS;
+    } else if (print_test_stdio == "never") {
+      print_test_stdio_ = NEVER;
+    } else {
+      LOG(WARNING) << "Invalid value of "
+                   << switches::kTestLauncherPrintTestStdio << ": "
+                   << print_test_stdio;
+      return false;
+    }
   }
+
+  stop_on_failure_ = command_line->HasSwitch(kGTestBreakOnFailure);
+
+  if (command_line->HasSwitch(switches::kTestLauncherSummaryOutput)) {
+    summary_path_ = FilePath(
+        command_line->GetSwitchValuePath(switches::kTestLauncherSummaryOutput));
+  }
+  if (command_line->HasSwitch(switches::kTestLauncherTrace)) {
+    trace_path_ = FilePath(
+        command_line->GetSwitchValuePath(switches::kTestLauncherTrace));
+  }
+
+  // When running in parallel mode we need to redirect stdio to avoid mixed-up
+  // output. We also always redirect on the bots to get the test output into
+  // JSON summary.
+  redirect_stdio_ = (parallel_jobs_ > 1) || BotModeEnabled(command_line);
 
   CombinePositiveTestFilters(std::move(positive_gtest_filter),
                              std::move(positive_file_filter));
@@ -1157,6 +1422,115 @@ bool TestLauncher::Init() {
   return true;
 }
 
+bool TestLauncher::InitTests() {
+  std::vector<TestIdentifier> tests;
+  if (!launcher_delegate_->GetTests(&tests)) {
+    LOG(ERROR) << "Failed to get list of tests.";
+    return false;
+  }
+  for (const TestIdentifier& test_id : tests) {
+    TestInfo test_info(test_id);
+    // TODO(isamsonov): crbug.com/1004417 remove when windows builders
+    // stop flaking on MANAUAL_ tests.
+    if (launcher_delegate_->ShouldRunTest(test_id))
+      tests_.push_back(test_info);
+  }
+  return true;
+}
+
+bool TestLauncher::ShuffleTests(CommandLine* command_line) {
+  if (command_line->HasSwitch(kGTestShuffleFlag)) {
+    uint32_t shuffle_seed;
+    if (command_line->HasSwitch(kGTestRandomSeedFlag)) {
+      const std::string custom_seed_str =
+          command_line->GetSwitchValueASCII(kGTestRandomSeedFlag);
+      uint32_t custom_seed = 0;
+      if (!StringToUint(custom_seed_str, &custom_seed)) {
+        LOG(ERROR) << "Unable to parse seed \"" << custom_seed_str << "\".";
+        return false;
+      }
+      if (custom_seed >= kRandomSeedUpperBound) {
+        LOG(ERROR) << "Seed " << custom_seed << " outside of expected range "
+                   << "[0, " << kRandomSeedUpperBound << ")";
+        return false;
+      }
+      shuffle_seed = custom_seed;
+    } else {
+      std::uniform_int_distribution<uint32_t> dist(0, kRandomSeedUpperBound);
+      std::random_device random_dev;
+      shuffle_seed = dist(random_dev);
+    }
+
+    std::mt19937 randomizer;
+    randomizer.seed(shuffle_seed);
+    std::shuffle(tests_.begin(), tests_.end(), randomizer);
+
+    fprintf(stdout, "Randomizing with seed %u\n", shuffle_seed);
+    fflush(stdout);
+  } else if (command_line->HasSwitch(kGTestRandomSeedFlag)) {
+    LOG(ERROR) << kGTestRandomSeedFlag << " requires " << kGTestShuffleFlag;
+    return false;
+  }
+  return true;
+}
+
+bool TestLauncher::ProcessAndValidateTests() {
+  bool result = true;
+  std::unordered_set<std::string> disabled_tests;
+  std::unordered_map<std::string, TestInfo> pre_tests;
+
+  // Find disabled and pre tests
+  for (const TestInfo& test_info : tests_) {
+    std::string test_name = test_info.GetFullName();
+    results_tracker_.AddTest(test_name);
+    if (test_info.disabled()) {
+      disabled_tests.insert(test_info.GetDisabledStrippedName());
+      results_tracker_.AddDisabledTest(test_name);
+    }
+    if (test_info.pre_test())
+      pre_tests[test_info.GetDisabledStrippedName()] = test_info;
+  }
+
+  std::vector<TestInfo> tests_to_run;
+  for (const TestInfo& test_info : tests_) {
+    std::string test_name = test_info.GetFullName();
+    // If any test has a matching disabled test, fail and log for audit.
+    if (base::Contains(disabled_tests, test_name)) {
+      LOG(ERROR) << test_name << " duplicated by a DISABLED_ test";
+      result = false;
+    }
+
+    // Passes on PRE tests, those will append when final test is found.
+    if (test_info.pre_test())
+      continue;
+
+    std::vector<TestInfo> test_sequence;
+    test_sequence.push_back(test_info);
+    // Move Pre Tests prior to final test in order.
+    while (base::Contains(pre_tests, test_sequence.back().GetPreName())) {
+      test_sequence.push_back(pre_tests[test_sequence.back().GetPreName()]);
+      pre_tests.erase(test_sequence.back().GetDisabledStrippedName());
+    }
+    // Skip disabled tests unless explicitly requested.
+    if (!test_info.disabled() || !skip_diabled_tests_)
+      tests_to_run.insert(tests_to_run.end(), test_sequence.rbegin(),
+                          test_sequence.rend());
+  }
+  tests_ = std::move(tests_to_run);
+
+  // If any tests remain in |pre_tests| map, fail and log for audit.
+  for (const auto& i : pre_tests) {
+    LOG(ERROR) << i.first << " is an orphaned pre test";
+    result = false;
+  }
+  return result;
+}
+
+void TestLauncher::CreateAndStartThreadPool(int num_parallel_jobs) {
+  base::ThreadPoolInstance::Create("TestLauncher");
+  base::ThreadPoolInstance::Get()->Start({num_parallel_jobs});
+}
+
 void TestLauncher::CombinePositiveTestFilters(
     std::vector<std::string> filter_a,
     std::vector<std::string> filter_b) {
@@ -1168,7 +1542,7 @@ void TestLauncher::CombinePositiveTestFilters(
   // in both filters.
   if (!filter_a.empty() && !filter_b.empty()) {
     for (const auto& i : tests_) {
-      std::string test_name = FormatFullTestName(i.test_case_name, i.test_name);
+      std::string test_name = i.GetFullName();
       bool found_a = false;
       bool found_b = false;
       for (const auto& k : filter_a) {
@@ -1190,39 +1564,21 @@ void TestLauncher::CombinePositiveTestFilters(
 
 void TestLauncher::RunTests() {
   std::vector<std::string> test_names;
-  const CommandLine* command_line = CommandLine::ForCurrentProcess();
-  for (const TestIdentifier& test_id : tests_) {
-    std::string test_name =
-        FormatFullTestName(test_id.test_case_name, test_id.test_name);
-
-    results_tracker_.AddTest(test_name);
-
-    if (test_name.find("DISABLED") != std::string::npos) {
-      results_tracker_.AddDisabledTest(test_name);
-
-      // Skip disabled tests unless explicitly requested.
-      if (!command_line->HasSwitch(kGTestRunDisabledTestsFlag) &&
-          !command_line->HasSwitch(kIsolatedScriptRunDisabledTestsFlag))
-        continue;
-    }
-
-    bool will_run_test = launcher_delegate_->WillRunTest(test_id.test_case_name,
-                                                         test_id.test_name);
-    if (!will_run_test)
-      continue;
+  size_t test_found_count = 0;
+  for (const TestInfo& test_info : tests_) {
+    std::string test_name = test_info.GetFullName();
 
     // Count tests in the binary, before we apply filter and sharding.
-    test_found_count_++;
+    test_found_count++;
 
-    std::string test_name_no_disabled =
-        TestNameWithoutDisabledPrefix(test_name);
+    std::string prefix_stripped_name = test_info.GetPrefixStrippedName();
 
     // Skip the test that doesn't match the filter (if given).
     if (has_at_least_one_positive_filter_) {
       bool found = false;
       for (auto filter : positive_test_filter_) {
         if (MatchPattern(test_name, filter) ||
-            MatchPattern(test_name_no_disabled, filter)) {
+            MatchPattern(prefix_stripped_name, filter)) {
           found = true;
           break;
         }
@@ -1235,7 +1591,7 @@ void TestLauncher::RunTests() {
       bool excluded = false;
       for (auto filter : negative_test_filter_) {
         if (MatchPattern(test_name, filter) ||
-            MatchPattern(test_name_no_disabled, filter)) {
+            MatchPattern(prefix_stripped_name, filter)) {
           excluded = true;
           break;
         }
@@ -1247,81 +1603,74 @@ void TestLauncher::RunTests() {
 
     // Tests with the name XYZ will cause tests with the name PRE_XYZ to run. We
     // should bucket all of these tests together.
-    std::string test_name_to_bucket = test_name;
-    size_t index_of_first_period = test_name_to_bucket.find(".");
-    if (index_of_first_period == std::string::npos)
-      index_of_first_period = 0;
-    base::ReplaceSubstringsAfterOffset(&test_name_to_bucket,
-                                       index_of_first_period, "PRE_", "");
-
-    if (Hash(test_name_to_bucket) % total_shards_ !=
+    if (Hash(prefix_stripped_name) % total_shards_ !=
         static_cast<uint32_t>(shard_index_)) {
       continue;
     }
 
     // Report test locations after applying all filters, so that we report test
     // locations only for those tests that were run as part of this shard.
-    results_tracker_.AddTestLocation(test_name, test_id.file, test_id.line);
-
-    bool should_run_test = launcher_delegate_->ShouldRunTest(
-        test_id.test_case_name, test_id.test_name);
-    if (should_run_test) {
+    results_tracker_.AddTestLocation(test_name, test_info.file(),
+                                     test_info.line());
+    if (!test_info.pre_test()) {
       // Only a subset of tests that are run require placeholders -- namely,
       // those that will output results.
       results_tracker_.AddTestPlaceholder(test_name);
-
-      test_names.push_back(test_name);
     }
-  }
 
-  if (shuffle_) {
-    std::mt19937 randomizer;
-    randomizer.seed(shuffle_seed_);
-    std::shuffle(test_names.begin(), test_names.end(), randomizer);
-
-    fprintf(stdout, "Randomizing with seed %u\n", shuffle_seed_);
-    fflush(stdout);
+    test_names.push_back(test_name);
   }
 
   // Save an early test summary in case the launcher crashes or gets killed.
   results_tracker_.GeneratePlaceholderIteration();
   MaybeSaveSummaryAsJSON({"EARLY_SUMMARY"});
 
-  test_started_count_ = launcher_delegate_->RunTests(this, test_names);
+  broken_threshold_ = std::max(static_cast<size_t>(20), test_found_count / 10);
 
-  if (test_started_count_ == 0) {
-    fprintf(stdout, "0 tests run\n");
-    fflush(stdout);
+  test_started_count_ = test_names.size();
 
-    // No tests have actually been started, so kick off the next iteration.
-    ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, BindOnce(&TestLauncher::RunTestIteration, Unretained(this)));
-  }
+  TestRunner test_runner(this, parallel_jobs_,
+                         launcher_delegate_->GetBatchSize());
+  test_runner.Run(test_names);
 }
 
-void TestLauncher::RunTestIteration() {
-  const bool stop_on_failure =
-      CommandLine::ForCurrentProcess()->HasSwitch(kGTestBreakOnFailure);
-  if (cycles_ == 0 ||
-      (stop_on_failure && test_success_count_ != test_finished_count_)) {
-    RunLoop::QuitCurrentWhenIdleDeprecated();
-    return;
+bool TestLauncher::RunRetryTests() {
+  // Number of retries in this iteration.
+  size_t retry_count = 0;
+  while (!tests_to_retry_.empty() && retry_count < retry_limit_) {
+    // Retry all tests that depend on a failing test.
+    std::vector<std::string> test_names;
+    for (const TestInfo& test_info : tests_) {
+      if (base::Contains(tests_to_retry_, test_info.GetPrefixStrippedName()))
+        test_names.push_back(test_info.GetFullName());
+    }
+    tests_to_retry_.clear();
+
+    size_t retry_started_count = test_names.size();
+    test_started_count_ += retry_started_count;
+
+    // Only invoke RunLoop if there are any tasks to run.
+    if (retry_started_count == 0)
+      return false;
+
+    fprintf(stdout, "Retrying %zu test%s (retry #%zu)\n", retry_started_count,
+            retry_started_count > 1 ? "s" : "", retry_count);
+    fflush(stdout);
+
+    TestRunner test_runner(this);
+    test_runner.Run(test_names);
+    retry_count++;
   }
+  return tests_to_retry_.empty();
+}
 
-  // Special value "-1" means "repeat indefinitely".
-  cycles_ = (cycles_ == -1) ? cycles_ : cycles_ - 1;
-
-  test_found_count_ = 0;
+void TestLauncher::OnTestIterationStart() {
   test_started_count_ = 0;
   test_finished_count_ = 0;
   test_success_count_ = 0;
   test_broken_count_ = 0;
-  retry_count_ = 0;
   tests_to_retry_.clear();
   results_tracker_.OnTestIterationStarting();
-
-  ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, BindOnce(&TestLauncher::RunTests, Unretained(this)));
 }
 
 #if defined(OS_POSIX)
@@ -1342,18 +1691,13 @@ void TestLauncher::OnShutdownPipeReadable() {
 
 void TestLauncher::MaybeSaveSummaryAsJSON(
     const std::vector<std::string>& additional_tags) {
-  const CommandLine* command_line = CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(switches::kTestLauncherSummaryOutput)) {
-    FilePath summary_path(command_line->GetSwitchValuePath(
-                              switches::kTestLauncherSummaryOutput));
-    if (!results_tracker_.SaveSummaryAsJSON(summary_path, additional_tags)) {
+  if (!summary_path_.empty()) {
+    if (!results_tracker_.SaveSummaryAsJSON(summary_path_, additional_tags)) {
       LOG(ERROR) << "Failed to save test launcher output summary.";
     }
   }
-  if (command_line->HasSwitch(switches::kTestLauncherTrace)) {
-    FilePath trace_path(
-        command_line->GetSwitchValuePath(switches::kTestLauncherTrace));
-    if (!GetTestLauncherTracer()->Dump(trace_path)) {
+  if (!trace_path_.empty()) {
+    if (!GetTestLauncherTracer()->Dump(trace_path_)) {
       LOG(ERROR) << "Failed to save test launcher trace.";
     }
   }
@@ -1365,23 +1709,7 @@ void TestLauncher::OnTestIterationFinished() {
   if (!tests_by_status[TestResult::TEST_UNKNOWN].empty())
     results_tracker_.AddGlobalTag(kUnreliableResultsTag);
 
-  // When we retry tests, success is determined by having nothing more
-  // to retry (everything eventually passed), as opposed to having
-  // no failures at all.
-  if (tests_to_retry_.empty()) {
-    fprintf(stdout, "SUCCESS: all tests passed.\n");
-    fflush(stdout);
-  } else {
-    // Signal failure, but continue to run all requested test iterations.
-    // With the summary of all iterations at the end this is a good default.
-    run_result_ = false;
-  }
-
   results_tracker_.PrintSummaryOfCurrentIteration();
-
-  // Kick off the next iteration.
-  ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, BindOnce(&TestLauncher::RunTestIteration, Unretained(this)));
 }
 
 void TestLauncher::OnOutputTimeout() {
@@ -1420,7 +1748,7 @@ size_t NumParallelJobs() {
     }
     return jobs;
   }
-  if (!BotModeEnabled() &&
+  if (!BotModeEnabled(command_line) &&
       (command_line->HasSwitch(kGTestFilterFlag) ||
        command_line->HasSwitch(kIsolatedScriptTestFilterFlag))) {
     // Do not run jobs in parallel by default if we are running a subset of
@@ -1429,7 +1757,14 @@ size_t NumParallelJobs() {
   }
 
   // Default to the number of processor cores.
+#if defined(OS_WIN)
+  // Use processors in all groups (Windows splits more than 64 logical
+  // processors into groups).
+  return base::checked_cast<size_t>(
+      ::GetActiveProcessorCount(ALL_PROCESSOR_GROUPS));
+#else
   return base::checked_cast<size_t>(SysInfo::NumberOfProcessors());
+#endif
 }
 
 std::string GetTestOutputSnippet(const TestResult& result,

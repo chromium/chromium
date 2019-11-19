@@ -13,14 +13,14 @@
 #include "base/compiler_specific.h"
 #include "base/lazy_instance.h"
 #include "base/macros.h"
-#include "base/message_loop/message_loop.h"
+#include "base/no_destructor.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/task/post_task.h"
 #include "base/task/task_executor.h"
 #include "base/time/time.h"
-#include "ios/web/public/web_task_traits.h"
-#include "ios/web/public/web_thread_delegate.h"
+#include "ios/web/public/thread/web_task_traits.h"
+#include "ios/web/public/thread/web_thread_delegate.h"
 
 namespace web {
 
@@ -36,15 +36,14 @@ class WebThreadTaskRunner : public base::SingleThreadTaskRunner {
   bool PostDelayedTask(const base::Location& from_here,
                        base::OnceClosure task,
                        base::TimeDelta delay) override {
-    return base::PostDelayedTaskWithTraits(from_here, {id_}, std::move(task),
-                                           delay);
+    return base::PostDelayedTask(from_here, {id_}, std::move(task), delay);
   }
 
   bool PostNonNestableDelayedTask(const base::Location& from_here,
                                   base::OnceClosure task,
                                   base::TimeDelta delay) override {
-    return base::PostDelayedTaskWithTraits(from_here, {id_, NonNestable()},
-                                           std::move(task), delay);
+    return base::PostDelayedTask(from_here, {id_, NonNestable()},
+                                 std::move(task), delay);
   }
 
   bool RunsTasksInCurrentSequence() const override {
@@ -146,38 +145,51 @@ bool PostTaskHelper(WebThread::ID identifier,
   return accepting_tasks;
 }
 
+const scoped_refptr<base::SequencedTaskRunner>& GetNullTaskRunner() {
+  static const base::NoDestructor<scoped_refptr<base::SequencedTaskRunner>>
+      null_task_runner;
+  return *null_task_runner;
+}
+
+// Task executor for UI and IO threads.
 class WebThreadTaskExecutor : public base::TaskExecutor {
  public:
   WebThreadTaskExecutor() {}
   ~WebThreadTaskExecutor() override {}
 
   // base::TaskExecutor implementation.
-  bool PostDelayedTaskWithTraits(const base::Location& from_here,
-                                 const base::TaskTraits& traits,
-                                 base::OnceClosure task,
-                                 base::TimeDelta delay) override {
+  bool PostDelayedTask(const base::Location& from_here,
+                       const base::TaskTraits& traits,
+                       base::OnceClosure task,
+                       base::TimeDelta delay) override {
     return PostTaskHelper(
         GetWebThreadIdentifier(traits), from_here, std::move(task), delay,
         traits.GetExtension<WebTaskTraitsExtension>().nestable());
   }
 
-  scoped_refptr<base::TaskRunner> CreateTaskRunnerWithTraits(
+  scoped_refptr<base::TaskRunner> CreateTaskRunner(
       const base::TaskTraits& traits) override {
     return GetTaskRunnerForThread(GetWebThreadIdentifier(traits));
   }
 
-  scoped_refptr<base::SequencedTaskRunner> CreateSequencedTaskRunnerWithTraits(
+  scoped_refptr<base::SequencedTaskRunner> CreateSequencedTaskRunner(
       const base::TaskTraits& traits) override {
     return GetTaskRunnerForThread(GetWebThreadIdentifier(traits));
   }
 
-  scoped_refptr<base::SingleThreadTaskRunner>
-  CreateSingleThreadTaskRunnerWithTraits(
+  scoped_refptr<base::SingleThreadTaskRunner> CreateSingleThreadTaskRunner(
       const base::TaskTraits& traits,
       base::SingleThreadTaskRunnerThreadMode thread_mode) override {
     // It's not possible to request DEDICATED access to a WebThread.
     DCHECK_EQ(thread_mode, base::SingleThreadTaskRunnerThreadMode::SHARED);
     return GetTaskRunnerForThread(GetWebThreadIdentifier(traits));
+  }
+
+  const scoped_refptr<base::SequencedTaskRunner>& GetContinuationTaskRunner()
+      override {
+    NOTREACHED() << "WebThreadTaskExecutor isn't registered via "
+                    "base::SetTaskExecutorForCurrentThread";
+    return GetNullTaskRunner();
   }
 
  private:
@@ -186,6 +198,9 @@ class WebThreadTaskExecutor : public base::TaskExecutor {
     WebThread::ID id =
         traits.GetExtension<WebTaskTraitsExtension>().web_thread();
     DCHECK_LT(id, WebThread::ID_COUNT);
+    DCHECK(!traits.use_current_thread())
+        << "WebThreadTaskExecutor isn't registered via "
+           "base::SetTaskExecutorForCurrentThread";
 
     // TODO(crbug.com/872372): Support shutdown behavior on UI/IO threads.
     if (traits.shutdown_behavior_set_explicitly()) {
@@ -219,6 +234,13 @@ WebThreadImpl::WebThreadImpl(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : identifier_(identifier) {
   DCHECK(task_runner);
+
+  if (identifier == WebThread::UI) {
+    DCHECK(task_runner->BelongsToCurrentThread());
+    // TODO(scheduler-dev): Pass the backing SequenceManager in here to ensure
+    // GetContinuationTaskRunner DCHECKS when there's no task running.
+    ui_thread_tls_executor_.emplace(nullptr, task_runner);
+  }
 
   WebThreadGlobals& globals = g_globals.Get();
 

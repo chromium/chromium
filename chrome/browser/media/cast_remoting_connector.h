@@ -11,11 +11,15 @@
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/supports_user_data.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/sessions/core/session_id.h"
-#include "media/mojo/interfaces/mirror_service_remoting.mojom.h"
-#include "media/mojo/interfaces/remoting.mojom.h"
-#include "media/mojo/interfaces/remoting_common.mojom.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "media/mojo/mojom/mirror_service_remoting.mojom.h"
+#include "media/mojo/mojom/remoting.mojom.h"
+#include "media/mojo/mojom/remoting_common.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace content {
 class RenderFrameHost;
@@ -74,8 +78,8 @@ class MediaRouter;
 // reference for how CastRemotingConnector and a MediaRemoter interact to
 // start/execute/stop remoting sessions.
 //
-// TODO(xjz): Remove media::mojom::MirrorServiceRemotingSource interface and
-// implementation after Mirroring Service is launched.
+// TODO(crbug.com/1015486): Remove media::mojom::MirrorServiceRemotingSource
+// interface and implementation after Mirroring Service is launched.
 class CastRemotingConnector : public base::SupportsUserData::Data,
                               public media::mojom::MirrorServiceRemotingSource,
                               public media::mojom::RemotingSource {
@@ -89,23 +93,26 @@ class CastRemotingConnector : public base::SupportsUserData::Data,
 
   // Used by ChromeContentBrowserClient to request a binding to a new
   // Remoter for each new source in a render frame.
-  static void CreateMediaRemoter(content::RenderFrameHost* render_frame_host,
-                                 media::mojom::RemotingSourcePtr source,
-                                 media::mojom::RemoterRequest request);
+  static void CreateMediaRemoter(
+      content::RenderFrameHost* render_frame_host,
+      mojo::PendingRemote<media::mojom::RemotingSource> source,
+      mojo::PendingReceiver<media::mojom::Remoter> receiver);
 
   // Called when a MediaRemoter is created and started in the Cast MRP. This
   // call connects the CastRemotingConnector with the MediaRemoter. Remoting
   // sessions can only be started after this is called.
   void ConnectToService(
-      media::mojom::MirrorServiceRemotingSourceRequest source_request,
-      media::mojom::MirrorServiceRemoterPtr remoter);
+      mojo::PendingReceiver<media::mojom::MirrorServiceRemotingSource>
+          source_receiver,
+      mojo::PendingRemote<media::mojom::MirrorServiceRemoter> remoter);
 
   // Called at the start of mirroring to reset the permission.
   void ResetRemotingPermission();
 
   // Used by Mirroring Service to connect the media remoter with this source.
-  void ConnectWithMediaRemoter(media::mojom::RemoterPtr remoter,
-                               media::mojom::RemotingSourceRequest request);
+  void ConnectWithMediaRemoter(
+      mojo::PendingRemote<media::mojom::Remoter> remoter,
+      mojo::PendingReceiver<media::mojom::RemotingSource> receiver);
 
  private:
   // Allow unit tests access to the private constructor and CreateBridge()
@@ -129,13 +136,14 @@ class CastRemotingConnector : public base::SupportsUserData::Data,
       base::RepeatingCallback<CancelPermissionRequestCallback(
           PermissionResultCallback)>;
   CastRemotingConnector(media_router::MediaRouter* router,
+                        PrefService* pref_service,
                         SessionID tab_id,
                         PermissionRequestCallback request_callback);
 
   // Creates a RemotingBridge that implements the requested Remoter service, and
-  // binds it to the interface |request|.
-  void CreateBridge(media::mojom::RemotingSourcePtr source,
-                    media::mojom::RemoterRequest request);
+  // binds it to the interface |receiver|.
+  void CreateBridge(mojo::PendingRemote<media::mojom::RemotingSource> source,
+                    mojo::PendingReceiver<media::mojom::Remoter> receiver);
 
   // Called by the RemotingBridge constructor/destructor to register/deregister
   // an instance. This allows this connector to broadcast notifications to all
@@ -167,8 +175,10 @@ class CastRemotingConnector : public base::SupportsUserData::Data,
       RemotingBridge* bridge,
       mojo::ScopedDataPipeConsumerHandle audio_pipe,
       mojo::ScopedDataPipeConsumerHandle video_pipe,
-      media::mojom::RemotingDataStreamSenderRequest audio_sender_request,
-      media::mojom::RemotingDataStreamSenderRequest video_sender_request);
+      mojo::PendingReceiver<media::mojom::RemotingDataStreamSender>
+          audio_sender_receiver,
+      mojo::PendingReceiver<media::mojom::RemotingDataStreamSender>
+          video_sender_receiver);
   void StopRemoting(RemotingBridge* bridge,
                     media::mojom::RemotingStopReason reason,
                     bool is_initiated_by_source);
@@ -197,6 +207,14 @@ class CastRemotingConnector : public base::SupportsUserData::Data,
   // Called when any connection error/lost occurs with the MediaRemoter.
   void OnMirrorServiceStopped();
 
+  // Starts observing for changes to the user preference to enable/disable
+  // remoting.
+  void StartObservingPref();
+
+  // Called when the user preference to enable/disable remoting changes. Stops
+  // remoting if necessary.
+  void OnPrefChanged();
+
   media_router::MediaRouter* const media_router_;
 
   const SessionID tab_id_;
@@ -218,12 +236,13 @@ class CastRemotingConnector : public base::SupportsUserData::Data,
   // pointing to the RemotingBridge being used to communicate with the source.
   RemotingBridge* active_bridge_;
 
-  // TODO(xjz): Remove these after Mirroring Service is launched.
-  mojo::Binding<media::mojom::MirrorServiceRemotingSource> deprecated_binding_;
-  media::mojom::MirrorServiceRemoterPtr deprecated_remoter_;
+  // TODO(crbug.com/1015486): Remove these after Mirroring Service is launched.
+  mojo::Receiver<media::mojom::MirrorServiceRemotingSource>
+      deprecated_receiver_{this};
+  mojo::Remote<media::mojom::MirrorServiceRemoter> deprecated_remoter_;
 
-  mojo::Binding<media::mojom::RemotingSource> binding_;
-  media::mojom::RemoterPtr remoter_;
+  mojo::Receiver<media::mojom::RemotingSource> receiver_{this};
+  mojo::Remote<media::mojom::Remoter> remoter_;
 
   // Permission is checked the first time remoting requested to start for each
   // casting session.
@@ -233,10 +252,13 @@ class CastRemotingConnector : public base::SupportsUserData::Data,
   // permission, and is reset when the dialog closes.
   CancelPermissionRequestCallback permission_request_cancel_callback_;
 
+  PrefService* const pref_service_;
+  PrefChangeRegistrar pref_change_registrar_;
+
   // Produces weak pointers that are only valid for the current remoting
   // session. This is used to cancel any outstanding callbacks when a remoting
   // session is stopped.
-  base::WeakPtrFactory<CastRemotingConnector> weak_factory_;
+  base::WeakPtrFactory<CastRemotingConnector> weak_factory_{this};
 
   // Key used with the base::SupportsUserData interface to search for an
   // instance of CastRemotingConnector owned by a WebContents.

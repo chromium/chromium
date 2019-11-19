@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <bitset>
 #include "base/single_thread_task_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
-#include "third_party/blink/renderer/core/frame/use_counter.h"
 #include "third_party/blink/renderer/core/origin_trials/origin_trial_context.h"
 #include "third_party/blink/renderer/core/script/script.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/workers/main_thread_worklet_reporting_proxy.h"
 #include "third_party/blink/renderer/core/workers/worklet_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worklet_module_responses_map.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
 namespace blink {
@@ -22,25 +23,25 @@ class MainThreadWorkletReportingProxyForTest final
     : public MainThreadWorkletReportingProxy {
  public:
   explicit MainThreadWorkletReportingProxyForTest(Document* document)
-      : MainThreadWorkletReportingProxy(document),
-        reported_features_(static_cast<int>(WebFeature::kNumberOfFeatures)) {}
+      : MainThreadWorkletReportingProxy(document) {}
 
   void CountFeature(WebFeature feature) override {
     // Any feature should be reported only one time.
-    EXPECT_FALSE(reported_features_.QuickGet(static_cast<int>(feature)));
-    reported_features_.QuickSet(static_cast<int>(feature));
+    EXPECT_FALSE(reported_features_[static_cast<size_t>(feature)]);
+    reported_features_.set(static_cast<size_t>(feature));
     MainThreadWorkletReportingProxy::CountFeature(feature);
   }
 
   void CountDeprecation(WebFeature feature) override {
     // Any feature should be reported only one time.
-    EXPECT_FALSE(reported_features_.QuickGet(static_cast<int>(feature)));
-    reported_features_.QuickSet(static_cast<int>(feature));
+    EXPECT_FALSE(reported_features_[static_cast<size_t>(feature)]);
+    reported_features_.set(static_cast<size_t>(feature));
     MainThreadWorkletReportingProxy::CountDeprecation(feature);
   }
 
  private:
-  BitVector reported_features_;
+  std::bitset<static_cast<size_t>(WebFeature::kNumberOfFeatures)>
+      reported_features_;
 };
 
 class MainThreadWorkletTest : public PageTestBase {
@@ -50,13 +51,12 @@ class MainThreadWorkletTest : public PageTestBase {
   }
   void SetUpScope(const String& csp_header) {
     PageTestBase::SetUp(IntSize());
+    NavigateTo(KURL("https://example.com/"));
     Document* document = &GetDocument();
-    document->SetURL(KURL("https://example.com/"));
-    document->UpdateSecurityOrigin(SecurityOrigin::Create(document->Url()));
 
     // Set up the CSP for Document before starting MainThreadWorklet because
     // MainThreadWorklet inherits the owner Document's CSP.
-    ContentSecurityPolicy* csp = ContentSecurityPolicy::Create();
+    auto* csp = MakeGarbageCollected<ContentSecurityPolicy>();
     csp->DidReceiveHeader(csp_header, kContentSecurityPolicyHeaderTypeEnforce,
                           kContentSecurityPolicyHeaderSourceHTTP);
     document->InitContentSecurityPolicy(csp);
@@ -70,8 +70,8 @@ class MainThreadWorkletTest : public PageTestBase {
         document->GetContentSecurityPolicy()->Headers(),
         document->GetReferrerPolicy(), document->GetSecurityOrigin(),
         document->IsSecureContext(), document->GetHttpsState(),
-        nullptr /* worker_clients */, document->AddressSpace(),
-        OriginTrialContext::GetTokens(document).get(),
+        nullptr /* worker_clients */, nullptr /* content_settings_client */,
+        document->AddressSpace(), OriginTrialContext::GetTokens(document).get(),
         base::UnguessableToken::Create(), nullptr /* worker_settings */,
         kV8CacheOptionsDefault,
         MakeGarbageCollected<WorkletModuleResponsesMap>());
@@ -124,9 +124,9 @@ TEST_F(MainThreadWorkletTest, UseCounter) {
 
   // API use on WorkletGlobalScope for the main thread should be recorded in
   // UseCounter on the Document.
-  EXPECT_FALSE(UseCounter::IsCounted(GetDocument(), kFeature1));
+  EXPECT_FALSE(GetDocument().IsUseCounted(kFeature1));
   UseCounter::Count(global_scope_, kFeature1);
-  EXPECT_TRUE(UseCounter::IsCounted(GetDocument(), kFeature1));
+  EXPECT_TRUE(GetDocument().IsUseCounted(kFeature1));
 
   // API use should be reported to the Document only one time. See comments in
   // MainThreadWorkletReportingProxyForTest::ReportFeature.
@@ -137,9 +137,9 @@ TEST_F(MainThreadWorkletTest, UseCounter) {
 
   // Deprecated API use on WorkletGlobalScope for the main thread should be
   // recorded in UseCounter on the Document.
-  EXPECT_FALSE(UseCounter::IsCounted(GetDocument(), kFeature2));
+  EXPECT_FALSE(GetDocument().IsUseCounted(kFeature2));
   Deprecation::CountDeprecation(global_scope_, kFeature2);
-  EXPECT_TRUE(UseCounter::IsCounted(GetDocument(), kFeature2));
+  EXPECT_TRUE(GetDocument().IsUseCounted(kFeature2));
 
   // API use should be reported to the Document only one time. See comments in
   // MainThreadWorkletReportingProxyForTest::ReportDeprecation.

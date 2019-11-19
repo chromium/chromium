@@ -19,8 +19,9 @@ void PasswordStoreSigninNotifier::NotifySignedOut(const std::string& username,
     return;
 
   if (primary_account) {
-    metrics_util::LogSyncPasswordHashChange(
-        metrics_util::SyncPasswordHashChange::CLEARED_ON_CHROME_SIGNOUT);
+    metrics_util::LogGaiaPasswordHashChange(
+        metrics_util::GaiaPasswordHashChange::CLEARED_ON_CHROME_SIGNOUT,
+        /*is_sync_password=*/true);
     store_->ClearAllGaiaPasswordHash();
   } else {
     store_->ClearGaiaPasswordHash(username);

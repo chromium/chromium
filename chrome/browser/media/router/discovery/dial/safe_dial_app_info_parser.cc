@@ -10,6 +10,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/media/router/data_decoder_util.h"
+#include "services/data_decoder/public/cpp/safe_xml_parser.h"
 #include "url/gurl.h"
 
 namespace media_router {
@@ -76,8 +77,7 @@ SafeDialAppInfoParser::ParsingResult ValidateParsedAppInfo(
 
 }  // namespace
 
-SafeDialAppInfoParser::SafeDialAppInfoParser(DataDecoder* data_decoder)
-    : data_decoder_(data_decoder), weak_factory_(this) {}
+SafeDialAppInfoParser::SafeDialAppInfoParser() = default;
 
 SafeDialAppInfoParser::~SafeDialAppInfoParser() {}
 
@@ -86,7 +86,7 @@ void SafeDialAppInfoParser::Parse(const std::string& xml_text,
   DVLOG(2) << "Parsing app info...";
   DCHECK(callback);
 
-  data_decoder_->ParseXml(
+  GetDataDecoder().ParseXml(
       xml_text,
       base::BindOnce(&SafeDialAppInfoParser::OnXmlParsingDone,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
@@ -94,14 +94,13 @@ void SafeDialAppInfoParser::Parse(const std::string& xml_text,
 
 void SafeDialAppInfoParser::OnXmlParsingDone(
     SafeDialAppInfoParser::ParseCallback callback,
-    std::unique_ptr<base::Value> value,
-    const base::Optional<std::string>& error) {
-  if (error) {
+    data_decoder::DataDecoder::ValueOrError result) {
+  if (!result.value) {
     DVLOG(1) << "Fail to parse XML in utility process, error: "
-             << error.value();
+             << *result.error;
   }
 
-  if (!value || !value->is_dict()) {
+  if (!result.value || !result.value->is_dict()) {
     std::move(callback).Run(nullptr, ParsingResult::kInvalidXML);
     return;
   }
@@ -109,8 +108,8 @@ void SafeDialAppInfoParser::OnXmlParsingDone(
   // NOTE: enforce namespace check for <service> element in future. Namespace
   // value will be "urn:dial-multiscreen-org:schemas:dial".
   bool unique_service = true;
-  const base::Value* service_element =
-      data_decoder::FindXmlElementPath(*value, {"service"}, &unique_service);
+  const base::Value* service_element = data_decoder::FindXmlElementPath(
+      *result.value, {"service"}, &unique_service);
   if (!service_element || !unique_service) {
     std::move(callback).Run(nullptr, ParsingResult::kInvalidXML);
     return;

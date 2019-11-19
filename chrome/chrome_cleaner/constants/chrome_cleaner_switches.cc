@@ -4,6 +4,8 @@
 
 #include "chrome/chrome_cleaner/constants/chrome_cleaner_switches.h"
 
+#include "chrome/chrome_cleaner/buildflags.h"
+
 namespace chrome_cleaner {
 
 // Command line switches
@@ -52,12 +54,6 @@ const char kForceRecoveryComponentSwitch[] = "force-recovery-component";
 // Force self-deletion even on non-official builds.
 const char kForceSelfDeleteSwitch[] = "force-self-delete";
 
-// Log all removable UwS that were not detected, but the scanner found some
-// UwS-related footprints.
-// WARNING: this switch is used by internal test systems. Be careful when making
-// changes.
-const char kForceUwsDetectionSwitch[] = "force-uws-detection";
-
 // The handle of an event to signal when the initialization of the main process
 // is complete (including loading all DLL's). This is used by the integration
 // test to check that forbidden modules aren't loaded outside the sandbox. If
@@ -81,6 +77,10 @@ const char kLogInterfaceCallsToSwitch[] = "log-interface-calls-to";
 
 // Specify the time to wait between logs upload retries, in minutes.
 const char kLogUploadRetryIntervalSwitch[] = "logs-upload-retry-interval";
+
+// The Mojo pipe token for IPC communication between the Software Reporter and
+// Chrome. Dropped in M80.
+const char kChromeMojoPipeTokenSwitch[] = "chrome-mojo-pipe-token";
 
 // Prevent the crash client from uploading crash reports.
 const char kNoCrashUploadSwitch[] = "no-crash-upload";
@@ -169,10 +169,15 @@ const char kUserResponseTimeoutMinutesSwitch[] = "user-response-timeout";
 // shouldn't be set if |kExecutionModeSwitch| is not ExecutionMode::kCleaner.
 const char kWithCleanupModeLogsSwitch[] = "with-cleanup-mode-logs";
 
-#if !defined(CHROME_CLEANER_OFFICIAL_BUILD)
+#if !BUILDFLAG(IS_OFFICIAL_CHROME_CLEANER_BUILD)
 // Don't allow EnableSecureDllLoading to run when this is set. This is only to
 // be used in tests.
 const char kAllowUnsecureDLLsSwitch[] = "allow-unsecure-dlls";
-#endif  // CHROME_CLEANER_OFFICIAL_BUILD
+
+// Load the engine outside the sandbox. This is only to be used for manual
+// testing.
+const char kRunWithoutSandboxForTestingSwitch[] =
+    "run-without-sandbox-for-testing";
+#endif
 
 }  // namespace chrome_cleaner
